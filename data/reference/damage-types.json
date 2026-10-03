@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "name": "damage-types",
+  "source": {
+    "database_id": "5db7647603614c41bb7acc47a89986d6",
+    "archived_path": "archive/notion-export/Privé et partagé/Jeu de Mercenaires/03 — Combat/Types de dégâts 5db7647603614c41bb7acc47a89986d6_all.csv",
+    "migrated_on": "2026-10-03"
+  },
+  "columns": [
+    {
+      "source": "Nom",
+      "key": "nom"
+    },
+    {
+      "source": "Code",
+      "key": "code"
+    },
+    {
+      "source": "Description",
+      "key": "description"
+    },
+    {
+      "source": "Famille",
+      "key": "famille"
+    }
+  ],
+  "row_count": 7,
+  "rows": [
+    {
+      "nom": "Brûlant",
+      "code": "burning",
+      "description": "Feu, chaleur et combustion.",
+      "famille": "Élémentaire"
+    },
+    {
+      "nom": "Foudroyant",
+      "code": "lightning",
+      "description": "Électricité et foudre.",
+      "famille": "Élémentaire"
+    },
+    {
+      "nom": "Perforant",
+      "code": "piercing",
+      "description": "Pointes, estocs, flèches et perforation.",
+      "famille": "Physique"
+    },
+    {
+      "nom": "Glaçant",
+      "code": "freezing",
+      "description": "Froid intense, glace et gel.",
+      "famille": "Élémentaire"
+    },
+    {
+      "nom": "Corrosif",
+      "code": "corrosive",
+      "description": "Acide, bile, corrosion et substances dissolvantes.",
+      "famille": "Autre"
+    },
+    {
+      "nom": "Contondant",
+      "code": "blunt",
+      "description": "Chocs, masses, marteaux et écrasement.",
+      "famille": "Physique"
+    },
+    {
+      "nom": "Tranchant",
+      "code": "slashing",
+      "description": "Coupures, tailles et lames.",
+      "famille": "Physique"
+    }
+  ]
+}

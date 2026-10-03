@@ -1,0 +1,198 @@
+{
+  "schema_version": 1,
+  "name": "base-armors",
+  "source": {
+    "database_id": "f4f4cb3ca59c4e9aa987205928976f58",
+    "archived_path": "archive/notion-export/Privé et partagé/Jeu de Mercenaires/04 — Équipement/Armures de base f4f4cb3ca59c4e9aa987205928976f58_all.csv",
+    "migrated_on": "2026-10-03"
+  },
+  "columns": [
+    {
+      "source": "Nom",
+      "key": "nom"
+    },
+    {
+      "source": "Altération magique base",
+      "key": "alteration_magique_base"
+    },
+    {
+      "source": "Code",
+      "key": "code"
+    },
+    {
+      "source": "Description",
+      "key": "description"
+    },
+    {
+      "source": "Malus esquive base",
+      "key": "malus_esquive_base"
+    },
+    {
+      "source": "Malus vitesse base",
+      "key": "malus_vitesse_base"
+    },
+    {
+      "source": "Résistance brûlant",
+      "key": "resistance_brulant"
+    },
+    {
+      "source": "Résistance contondant",
+      "key": "resistance_contondant"
+    },
+    {
+      "source": "Résistance corrosif",
+      "key": "resistance_corrosif"
+    },
+    {
+      "source": "Résistance foudroyant",
+      "key": "resistance_foudroyant"
+    },
+    {
+      "source": "Résistance glaçant",
+      "key": "resistance_glacant"
+    },
+    {
+      "source": "Résistance perforant",
+      "key": "resistance_perforant"
+    },
+    {
+      "source": "Résistance tranchant",
+      "key": "resistance_tranchant"
+    },
+    {
+      "source": "Type armure",
+      "key": "type_armure"
+    }
+  ],
+  "row_count": 8,
+  "rows": [
+    {
+      "nom": "Armure de plates",
+      "alteration_magique_base": 45,
+      "code": "plate_armor",
+      "description": "Protection physique maximale au prix de la mobilité, de la magie et d'une forte vulnérabilité élémentaire.",
+      "malus_esquive_base": 16,
+      "malus_vitesse_base": 12,
+      "resistance_brulant": -20,
+      "resistance_contondant": 38,
+      "resistance_corrosif": -15,
+      "resistance_foudroyant": -45,
+      "resistance_glacant": -25,
+      "resistance_perforant": 70,
+      "resistance_tranchant": 90,
+      "type_armure": "Lourde"
+    },
+    {
+      "nom": "Vêtements",
+      "alteration_magique_base": 0,
+      "code": "clothes",
+      "description": "Protection minimale, aucune gêne notable.",
+      "malus_esquive_base": 0,
+      "malus_vitesse_base": 0,
+      "resistance_brulant": 5,
+      "resistance_contondant": 2,
+      "resistance_corrosif": 3,
+      "resistance_foudroyant": 5,
+      "resistance_glacant": 8,
+      "resistance_perforant": 3,
+      "resistance_tranchant": 5,
+      "type_armure": "Légère"
+    },
+    {
+      "nom": "Gambison",
+      "alteration_magique_base": 2,
+      "code": "gambeson",
+      "description": "Très bon amortissement des chocs et bonne isolation thermique.",
+      "malus_esquive_base": 2,
+      "malus_vitesse_base": 1,
+      "resistance_brulant": 0,
+      "resistance_contondant": 30,
+      "resistance_corrosif": 5,
+      "resistance_foudroyant": 15,
+      "resistance_glacant": 35,
+      "resistance_perforant": 10,
+      "resistance_tranchant": 18,
+      "type_armure": "Légère"
+    },
+    {
+      "nom": "Armure d'écailles",
+      "alteration_magique_base": 12,
+      "code": "scale_armor",
+      "description": "Armure lourde équilibrée, bien meilleure que la plate face aux dégâts élémentaires.",
+      "malus_esquive_base": 12,
+      "malus_vitesse_base": 9,
+      "resistance_brulant": 35,
+      "resistance_contondant": 30,
+      "resistance_corrosif": 30,
+      "resistance_foudroyant": 25,
+      "resistance_glacant": 35,
+      "resistance_perforant": 55,
+      "resistance_tranchant": 70,
+      "type_armure": "Lourde"
+    },
+    {
+      "nom": "Cotte de mailles",
+      "alteration_magique_base": 25,
+      "code": "chainmail",
+      "description": "Excellente contre le tranchant, faible contre les chocs et très vulnérable aux éléments conducteurs.",
+      "malus_esquive_base": 8,
+      "malus_vitesse_base": 6,
+      "resistance_brulant": -10,
+      "resistance_contondant": 8,
+      "resistance_corrosif": -5,
+      "resistance_foudroyant": -30,
+      "resistance_glacant": -15,
+      "resistance_perforant": 35,
+      "resistance_tranchant": 65,
+      "type_armure": "Intermédiaire"
+    },
+    {
+      "nom": "Brigandine",
+      "alteration_magique_base": 20,
+      "code": "brigandine",
+      "description": "Protection physique intermédiaire très polyvalente.",
+      "malus_esquive_base": 9,
+      "malus_vitesse_base": 7,
+      "resistance_brulant": -5,
+      "resistance_contondant": 28,
+      "resistance_corrosif": 5,
+      "resistance_foudroyant": -18,
+      "resistance_glacant": -8,
+      "resistance_perforant": 50,
+      "resistance_tranchant": 58,
+      "type_armure": "Intermédiaire"
+    },
+    {
+      "nom": "Armure de cuir",
+      "alteration_magique_base": 5,
+      "code": "leather",
+      "description": "Protection légère polyvalente, notamment utile contre la foudre.",
+      "malus_esquive_base": 3,
+      "malus_vitesse_base": 2,
+      "resistance_brulant": 15,
+      "resistance_contondant": 10,
+      "resistance_corrosif": 18,
+      "resistance_foudroyant": 30,
+      "resistance_glacant": 22,
+      "resistance_perforant": 18,
+      "resistance_tranchant": 30,
+      "type_armure": "Légère"
+    },
+    {
+      "nom": "Cuir renforcé",
+      "alteration_magique_base": 10,
+      "code": "reinforced_leather",
+      "description": "Compromis entre mobilité, protection physique et élémentaire.",
+      "malus_esquive_base": 5,
+      "malus_vitesse_base": 4,
+      "resistance_brulant": 18,
+      "resistance_contondant": 18,
+      "resistance_corrosif": 20,
+      "resistance_foudroyant": 28,
+      "resistance_glacant": 28,
+      "resistance_perforant": 32,
+      "resistance_tranchant": 40,
+      "type_armure": "Intermédiaire"
+    }
+  ]
+}

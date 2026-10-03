@@ -1,0 +1,286 @@
+> Source de vérité Git. Migré depuis l'export Notion figé du 2026-10-03.
+
+# Camp & château en ruines
+
+<aside>
+🏰
+
+**Camp = château en ruines à restaurer.** La couche stratégique est une interface **2D cliquable**, façon XCOM / jeu de gestion mobile. Le joueur ne se promène pas librement en 3D dans le château.
+
+</aside>
+
+## 1 — État initial
+
+La partie commence avec le château en ruines comme future base de la compagnie.
+
+Éléments de départ retenus :
+
+- **Taverne** à proximité / « au coin de la rue » ;
+- **Dortoir : capacité 20** ;
+- **1 000 pièces d’or** ;
+- l’**Initial Squad** générée par la fonction déjà existante.
+
+Les constructions et améliorations doivent progresser en **jours**.
+
+## 2 — Taverne
+
+La taverne est le **cœur du début de partie**.
+
+Elle est tenue par un **vieux nain caustique**, personnage récurrent et aide volontaire : il n’est pas un assistant omniprésent qui dit au joueur où cliquer ; le joueur vient lui parler quand il le souhaite.
+
+Fonctions validées :
+
+- recrutement de mercenaires ;
+- consultation des missions proposées ;
+- améliorations permettant davantage de candidats et davantage de missions ;
+- achat de renseignements supplémentaires sur les missions.
+
+<aside>
+🍺
+
+**Un candidat est généré avant son recrutement.** Les mercenaires présents à la taverne sont de vrais objets `Mercenary` déjà générés et peuvent rester disponibles pendant plusieurs jours / semaines. Ils ne sont pas régénérés au moment où le joueur clique sur « recruter ». Cela permet notamment les candidats qui traînent longtemps à la taverne faute de succès.
+
+</aside>
+
+<aside>
+🍺
+
+**Un candidat est généré avant son recrutement.** Les mercenaires présents à la taverne sont de vrais objets `Mercenary` déjà générés et peuvent rester disponibles pendant plusieurs jours / semaines. Ils ne sont pas régénérés au moment où le joueur clique sur « recruter ». Cela permet notamment les candidats qui traînent longtemps à la taverne faute de succès.
+
+</aside>
+
+### Renseignements sur les missions
+
+Au lieu d’une salle des cartes dédiée, l’information supplémentaire passe par **un vieux type louche qui connaît un mec qui connaît un mec…**
+
+Les renseignements sont **payants** et peuvent révéler progressivement des informations normalement cachées sur une mission : ennemis, terrain, effectifs, danger, objectif secondaire, butin, etc. La liste exacte d’informations et les tarifs restent à définir.
+
+## 3 — Bureau du Capitaine
+
+Lieu de gestion administrative de la compagnie.
+
+Fonctions envisagées / retenues :
+
+- budget ;
+- affectation des mercenaires ;
+- politiques de compagnie ;
+- éventuellement exposition d’une partie des trophées.
+
+## 4 — Dortoir
+
+Le dortoir fixe la **capacité maximale de mercenaires** hébergés.
+
+- capacité initiale : `20` ;
+- amélioration → plus de places ;
+- embellissement / qualité → contribution possible à la renommée / attractivité.
+
+## 5 — Salle de sport / terrain d’entraînement / cour intérieure
+
+Un **seul concept de bâtiment** regroupe ces fonctions.
+
+Il sert aux entraînements :
+
+- physiques ;
+- techniques ;
+- martiaux / maîtrise d’armes.
+
+Il doit accueillir une partie du système d’XP choisie au camp.
+
+## 6 — Petit salon
+
+Lieu d’entraînement et de travail des **capacités mentales**.
+
+Le décor peut assumer le gag du beau canapé / divan de psychanalyse.
+
+## 7 — Tours de magie
+
+Fonctions :
+
+- apprentissage des sorts ;
+- entraînement des écoles de magie ;
+- développement des capacités magiques.
+
+## 8 — Bâtiments pour animaux et montures
+
+Le château peut accueillir des structures spécialisées selon les espèces :
+
+- écuries ;
+- porcherie ;
+- salle / antre pour dragon ;
+- autres bâtiments spécifiques à définir.
+
+Objectif : supporter des unités montées, y compris des compositions volontairement extravagantes comme une troupe se déplaçant sur plusieurs dragons.
+
+## 9 — Soins & mémorial
+
+### Soins
+
+Les bâtiments médicaux améliorent :
+
+- qualité / vitesse de guérison ;
+- récupération de fatigue ;
+- capacités soignantes utilisées dans la durée des blessures.
+
+### Mémorial
+
+Le mémorial a une **capacité illimitée** et conserve la mémoire des mercenaires morts.
+
+## 10 — Grande salle du château
+
+Lieu de vie et de discussions avec les mercenaires.
+
+Peut accueillir :
+
+- conversations calmes ;
+- disputes / négociations ;
+- décisions sociales importantes ;
+- éventuellement la salle des trophées.
+
+## 11 — Prison
+
+La prison peut contenir :
+
+- prisonniers ennemis ;
+- mercenaires dissidents / contestataires.
+
+Elle pourra plus tard se connecter aux systèmes d’interrogatoire, intimidation, torture ou événements internes.
+
+## 12 — Embellissement / prestige kitsch
+
+Le joueur peut dépenser beaucoup d’or dans des améliorations purement ou largement prestigieuses qui alimentent la **renommée de la compagnie**.
+
+Exemples retenus :
+
+- immense statue dorée à l’effigie du capitaine ;
+- tapis érotiques ;
+- décorations volontairement excessives / ridicules.
+
+Ce système constitue un **gold sink** assumé.
+
+## 13 — Forge
+
+La forge couvre :
+
+- travail du métal ;
+- fabrication / modification d’équipement métallique ;
+- enchantement magique associé aux objets concernés.
+
+## 14 — Atelier de couture
+
+Couvre notamment :
+
+- cuir ;
+- vêtements ;
+- équipements textiles ;
+- enchantement magique associé.
+
+## 15 — Joaillerie
+
+Couvre notamment :
+
+- bagues ;
+- amulettes ;
+- bijoux ;
+- futurs systèmes d’enchantement / gemmes.
+
+## 16 — Armurerie / Intendance
+
+Fonctions validées :
+
+- stockage d’un **nombre limité** de matériels / équipements ;
+- gestion de l’équipement mis à disposition des mercenaires ;
+- possibilité de proposer des **échanges** à un mercenaire pour récupérer un objet qui lui avait été donné.
+
+Le matériel attribué à un mercenaire ne doit donc pas être considéré comme automatiquement récupérable sans interaction.
+
+## 17 — Laboratoire d’alchimie
+
+Fonctions :
+
+- potions ;
+- poisons ;
+- recettes ;
+- fabrication / recherche alchimique.
+
+## 18 — Cuisine / Réfectoire
+
+Lieu de vie quotidien pouvant intervenir dans :
+
+- récupération ;
+- fatigue ;
+- satisfaction / ambiance de compagnie ;
+- relations entre mercenaires.
+
+Le réfectoire peut aussi devenir le lieu où des conflits dégénèrent si l’Arène n’a pas permis de les régler.
+
+## 19 — Bibliothèque
+
+La bibliothèque sert notamment de **lieu d’aide intégré au jeu** :
+
+- formules ;
+- explications ;
+- règles ;
+- informations de référence.
+
+Elle pourra aussi soutenir des mécaniques de formation / Intelligence / Transmission du savoir si cela est retenu plus tard.
+
+## 20 — Arène / fosse d’entraînement
+
+Bâtiment volontairement riche en événements.
+
+Fonctions validées :
+
+- duels ;
+- entraînement réel ;
+- paris ;
+- règlements de compte « encadrés » entre mercenaires ;
+- progression potentiellement plus rapide de certaines compétences ;
+- **risque réel de blessure**.
+
+L’Arène sert aussi de soupape sociale avant que deux mercenaires ne se poignardent au réfectoire.
+
+## 21 — Atelier bois / ingénierie
+
+Fonctions envisagées :
+
+- arcs ;
+- hampes ;
+- boucliers / éléments en bois ;
+- pièges ;
+- objets techniques et ingénierie non métallique.
+
+## 22 — Salle des trophées
+
+Concept validé, emplacement encore ouvert :
+
+- Bureau du Capitaine ;
+- Grande salle ;
+- Bibliothèque.
+
+Les trophées peuvent contribuer au prestige / à la renommée.
+
+## 23 — Muraille / tours de garde
+
+Le château pourra être **attaqué**.
+
+Les murailles et tours de garde doivent donc pouvoir être réparées / améliorées et participer à la défense du camp.
+
+Les règles de siège / attaque du château restent à définir.
+
+## 24 — Principe de design des bâtiments
+
+Les bâtiments doivent autant que possible **ouvrir des actions, des choix ou des capacités**, pas seulement fournir des bonus passifs.
+
+Exemples :
+
+- Taverne → plus de candidats, missions et renseignements ;
+- Dortoir → capacité de roster ;
+- bâtiments de soins → réduction d’indisponibilité ;
+- salles d’entraînement → actions de formation ;
+- Forge / ateliers → production et modification d’objets ;
+- Arène → duels, paris, progression risquée ;
+- Armurerie → stockage et négociation de récupération d’équipement.
+
+## 25 — Non retenu pour l’instant
+
+Les idées non explicitement validées lors de la discussion restent hors de cette page. La carte détaillée du château et le découpage spatial des ailes / tours / sous-sols seront définis plus tard.

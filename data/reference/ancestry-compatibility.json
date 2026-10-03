@@ -1,0 +1,804 @@
+{
+  "schema_version": 1,
+  "name": "ancestry-compatibility",
+  "source": {
+    "database_id": "2104bbf4810e484ea41807534924b989",
+    "archived_path": "archive/notion-export/Privé et partagé/Jeu de Mercenaires/01 — Génération & identité/Compatibilités d’ascendance 2104bbf4810e484ea41807534924b989_all.csv",
+    "migrated_on": "2026-10-03"
+  },
+  "columns": [
+    {
+      "source": "Association",
+      "key": "association"
+    },
+    {
+      "source": "Ascendance",
+      "key": "ascendance"
+    },
+    {
+      "source": "Peuple",
+      "key": "peuple"
+    },
+    {
+      "source": "Poids relatif",
+      "key": "poids_relatif"
+    },
+    {
+      "source": "Possible",
+      "key": "possible"
+    }
+  ],
+  "row_count": 110,
+  "rows": [
+    {
+      "association": "Elfe — Sang d’orc",
+      "ascendance": "Sang d’orc (Ascendances/Sang%20d%E2%80%99orc%203e9c799da3d181cfa519f51eec9bf020.csv)",
+      "peuple": "Elfe (Peuples/Elfe%203e9c799da3d181a6ad48d76461417bda.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Nain — Sang de troll",
+      "ascendance": "Sang de troll (Ascendances/Sang%20de%20troll%203e9c799da3d181649e9ae4f8de0a399e.csv)",
+      "peuple": "Nain (Peuples/Nain%203e9c799da3d181ee9e4ad52517136b2a.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Humain — Sang de dragon",
+      "ascendance": "Sang de dragon (Ascendances/Sang%20de%20dragon%203e9c799da3d18131bfc9cbffcea9fd21.csv)",
+      "peuple": "Humain (Peuples/Humain%203e9c799da3d1816ea19beea93b3794b1.csv)",
+      "poids_relatif": 1,
+      "possible": true
+    },
+    {
+      "association": "Nain — Sang de dragon",
+      "ascendance": "Sang de dragon (Ascendances/Sang%20de%20dragon%203e9c799da3d18131bfc9cbffcea9fd21.csv)",
+      "peuple": "Nain (Peuples/Nain%203e9c799da3d181ee9e4ad52517136b2a.csv)",
+      "poids_relatif": 2,
+      "possible": true
+    },
+    {
+      "association": "Elfe — Sang de dragon",
+      "ascendance": "Sang de dragon (Ascendances/Sang%20de%20dragon%203e9c799da3d18131bfc9cbffcea9fd21.csv)",
+      "peuple": "Elfe (Peuples/Elfe%203e9c799da3d181a6ad48d76461417bda.csv)",
+      "poids_relatif": 2,
+      "possible": true
+    },
+    {
+      "association": "Elfe — Sang divin",
+      "ascendance": "Sang divin (Ascendances/Sang%20divin%203e9c799da3d1812cad9dfd2e65d58fa7.csv)",
+      "peuple": "Elfe (Peuples/Elfe%203e9c799da3d181a6ad48d76461417bda.csv)",
+      "poids_relatif": 1,
+      "possible": true
+    },
+    {
+      "association": "Humain — Sang féerique",
+      "ascendance": "Sang féerique (Ascendances/Sang%20f%C3%A9erique%203e9c799da3d1818abe3ef784abf673d2.csv)",
+      "peuple": "Humain (Peuples/Humain%203e9c799da3d1816ea19beea93b3794b1.csv)",
+      "poids_relatif": 1,
+      "possible": true
+    },
+    {
+      "association": "Elfe — Sang de dryade",
+      "ascendance": "Sang de dryade (Ascendances/Sang%20de%20dryade%203e9c799da3d181d68442d90c58261549.csv)",
+      "peuple": "Elfe (Peuples/Elfe%203e9c799da3d181a6ad48d76461417bda.csv)",
+      "poids_relatif": 3,
+      "possible": true
+    },
+    {
+      "association": "Orc — Sang de dragon",
+      "ascendance": "Sang de dragon (Ascendances/Sang%20de%20dragon%203e9c799da3d18131bfc9cbffcea9fd21.csv)",
+      "peuple": "Orc (Peuples/Orc%203e9c799da3d181219711c434b8e9e55e.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Nain — Sang de djinn",
+      "ascendance": "Sang de djinn (Ascendances/Sang%20de%20djinn%203e9c799da3d1814f8fb7fc4bc5efa4c1.csv)",
+      "peuple": "Nain (Peuples/Nain%203e9c799da3d181ee9e4ad52517136b2a.csv)",
+      "poids_relatif": 2,
+      "possible": true
+    },
+    {
+      "association": "Nain — Sang d’humain",
+      "ascendance": "Sang d’humain (Ascendances/Sang%20d%E2%80%99humain%203e9c799da3d181bdb912c668959c2c0f.csv)",
+      "peuple": "Nain (Peuples/Nain%203e9c799da3d181ee9e4ad52517136b2a.csv)",
+      "poids_relatif": 3,
+      "possible": true
+    },
+    {
+      "association": "Orc — Sang d’orc",
+      "ascendance": "Sang d’orc (Ascendances/Sang%20d%E2%80%99orc%203e9c799da3d181cfa519f51eec9bf020.csv)",
+      "peuple": "Orc (Peuples/Orc%203e9c799da3d181219711c434b8e9e55e.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Nain — Sang féerique",
+      "ascendance": "Sang féerique (Ascendances/Sang%20f%C3%A9erique%203e9c799da3d1818abe3ef784abf673d2.csv)",
+      "peuple": "Nain (Peuples/Nain%203e9c799da3d181ee9e4ad52517136b2a.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Orc — Sang de démon",
+      "ascendance": "Sang de démon (Ascendances/Sang%20de%20d%C3%A9mon%203e9c799da3d181bc9e75c94847e96d86.csv)",
+      "peuple": "Orc (Peuples/Orc%203e9c799da3d181219711c434b8e9e55e.csv)",
+      "poids_relatif": 1,
+      "possible": true
+    },
+    {
+      "association": "Nain — Sang de sirène",
+      "ascendance": "Sang de sirène (Ascendances/Sang%20de%20sir%C3%A8ne%203e9c799da3d1815ebdf7c7a38aec52d2.csv)",
+      "peuple": "Nain (Peuples/Nain%203e9c799da3d181ee9e4ad52517136b2a.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Orc — Sang de djinn",
+      "ascendance": "Sang de djinn (Ascendances/Sang%20de%20djinn%203e9c799da3d1814f8fb7fc4bc5efa4c1.csv)",
+      "peuple": "Orc (Peuples/Orc%203e9c799da3d181219711c434b8e9e55e.csv)",
+      "poids_relatif": 1,
+      "possible": true
+    },
+    {
+      "association": "Humain — Sang de djinn",
+      "ascendance": "Sang de djinn (Ascendances/Sang%20de%20djinn%203e9c799da3d1814f8fb7fc4bc5efa4c1.csv)",
+      "peuple": "Humain (Peuples/Humain%203e9c799da3d1816ea19beea93b3794b1.csv)",
+      "poids_relatif": 1,
+      "possible": true
+    },
+    {
+      "association": "Humain — Sang de démon",
+      "ascendance": "Sang de démon (Ascendances/Sang%20de%20d%C3%A9mon%203e9c799da3d181bc9e75c94847e96d86.csv)",
+      "peuple": "Humain (Peuples/Humain%203e9c799da3d1816ea19beea93b3794b1.csv)",
+      "poids_relatif": 1,
+      "possible": true
+    },
+    {
+      "association": "Nain — Sang d’elfe",
+      "ascendance": "Sang d’elfe (Ascendances/Sang%20d%E2%80%99elfe%203e9c799da3d18158b229f62d3a824861.csv)",
+      "peuple": "Nain (Peuples/Nain%203e9c799da3d181ee9e4ad52517136b2a.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Humain — Sang divin",
+      "ascendance": "Sang divin (Ascendances/Sang%20divin%203e9c799da3d1812cad9dfd2e65d58fa7.csv)",
+      "peuple": "Humain (Peuples/Humain%203e9c799da3d1816ea19beea93b3794b1.csv)",
+      "poids_relatif": 1,
+      "possible": true
+    },
+    {
+      "association": "Humain — Sang d’elfe",
+      "ascendance": "Sang d’elfe (Ascendances/Sang%20d%E2%80%99elfe%203e9c799da3d18158b229f62d3a824861.csv)",
+      "peuple": "Humain (Peuples/Humain%203e9c799da3d1816ea19beea93b3794b1.csv)",
+      "poids_relatif": 3,
+      "possible": true
+    },
+    {
+      "association": "Elfe — Sang d’elfe",
+      "ascendance": "Sang d’elfe (Ascendances/Sang%20d%E2%80%99elfe%203e9c799da3d18158b229f62d3a824861.csv)",
+      "peuple": "Elfe (Peuples/Elfe%203e9c799da3d181a6ad48d76461417bda.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Humain — Sang de sirène",
+      "ascendance": "Sang de sirène (Ascendances/Sang%20de%20sir%C3%A8ne%203e9c799da3d1815ebdf7c7a38aec52d2.csv)",
+      "peuple": "Humain (Peuples/Humain%203e9c799da3d1816ea19beea93b3794b1.csv)",
+      "poids_relatif": 1,
+      "possible": true
+    },
+    {
+      "association": "Humain — Sang d’humain",
+      "ascendance": "Sang d’humain (Ascendances/Sang%20d%E2%80%99humain%203e9c799da3d181bdb912c668959c2c0f.csv)",
+      "peuple": "Humain (Peuples/Humain%203e9c799da3d1816ea19beea93b3794b1.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Elfe — Sang de sirène",
+      "ascendance": "Sang de sirène (Ascendances/Sang%20de%20sir%C3%A8ne%203e9c799da3d1815ebdf7c7a38aec52d2.csv)",
+      "peuple": "Elfe (Peuples/Elfe%203e9c799da3d181a6ad48d76461417bda.csv)",
+      "poids_relatif": 1,
+      "possible": true
+    },
+    {
+      "association": "Nain — Sang d’orc",
+      "ascendance": "Sang d’orc (Ascendances/Sang%20d%E2%80%99orc%203e9c799da3d181cfa519f51eec9bf020.csv)",
+      "peuple": "Nain (Peuples/Nain%203e9c799da3d181ee9e4ad52517136b2a.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Humain — Sang de troll",
+      "ascendance": "Sang de troll (Ascendances/Sang%20de%20troll%203e9c799da3d181649e9ae4f8de0a399e.csv)",
+      "peuple": "Humain (Peuples/Humain%203e9c799da3d1816ea19beea93b3794b1.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Nain — Sang de démon",
+      "ascendance": "Sang de démon (Ascendances/Sang%20de%20d%C3%A9mon%203e9c799da3d181bc9e75c94847e96d86.csv)",
+      "peuple": "Nain (Peuples/Nain%203e9c799da3d181ee9e4ad52517136b2a.csv)",
+      "poids_relatif": 2,
+      "possible": true
+    },
+    {
+      "association": "Elfe — Sang de djinn",
+      "ascendance": "Sang de djinn (Ascendances/Sang%20de%20djinn%203e9c799da3d1814f8fb7fc4bc5efa4c1.csv)",
+      "peuple": "Elfe (Peuples/Elfe%203e9c799da3d181a6ad48d76461417bda.csv)",
+      "poids_relatif": 1,
+      "possible": true
+    },
+    {
+      "association": "Elfe — Sang féerique",
+      "ascendance": "Sang féerique (Ascendances/Sang%20f%C3%A9erique%203e9c799da3d1818abe3ef784abf673d2.csv)",
+      "peuple": "Elfe (Peuples/Elfe%203e9c799da3d181a6ad48d76461417bda.csv)",
+      "poids_relatif": 2,
+      "possible": true
+    },
+    {
+      "association": "Nain — Sang divin",
+      "ascendance": "Sang divin (Ascendances/Sang%20divin%203e9c799da3d1812cad9dfd2e65d58fa7.csv)",
+      "peuple": "Nain (Peuples/Nain%203e9c799da3d181ee9e4ad52517136b2a.csv)",
+      "poids_relatif": 2,
+      "possible": true
+    },
+    {
+      "association": "Humain — Sang d’orc",
+      "ascendance": "Sang d’orc (Ascendances/Sang%20d%E2%80%99orc%203e9c799da3d181cfa519f51eec9bf020.csv)",
+      "peuple": "Humain (Peuples/Humain%203e9c799da3d1816ea19beea93b3794b1.csv)",
+      "poids_relatif": 2,
+      "possible": true
+    },
+    {
+      "association": "Elfe — Sang d’humain",
+      "ascendance": "Sang d’humain (Ascendances/Sang%20d%E2%80%99humain%203e9c799da3d181bdb912c668959c2c0f.csv)",
+      "peuple": "Elfe (Peuples/Elfe%203e9c799da3d181a6ad48d76461417bda.csv)",
+      "poids_relatif": 3,
+      "possible": true
+    },
+    {
+      "association": "Orc — Sang féerique",
+      "ascendance": "Sang féerique (Ascendances/Sang%20f%C3%A9erique%203e9c799da3d1818abe3ef784abf673d2.csv)",
+      "peuple": "Orc (Peuples/Orc%203e9c799da3d181219711c434b8e9e55e.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Elfe — Sang de troll",
+      "ascendance": "Sang de troll (Ascendances/Sang%20de%20troll%203e9c799da3d181649e9ae4f8de0a399e.csv)",
+      "peuple": "Elfe (Peuples/Elfe%203e9c799da3d181a6ad48d76461417bda.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Orc — Sang d’humain",
+      "ascendance": "Sang d’humain (Ascendances/Sang%20d%E2%80%99humain%203e9c799da3d181bdb912c668959c2c0f.csv)",
+      "peuple": "Orc (Peuples/Orc%203e9c799da3d181219711c434b8e9e55e.csv)",
+      "poids_relatif": 3,
+      "possible": true
+    },
+    {
+      "association": "Elfe — Sang de démon",
+      "ascendance": "Sang de démon (Ascendances/Sang%20de%20d%C3%A9mon%203e9c799da3d181bc9e75c94847e96d86.csv)",
+      "peuple": "Elfe (Peuples/Elfe%203e9c799da3d181a6ad48d76461417bda.csv)",
+      "poids_relatif": 1,
+      "possible": true
+    },
+    {
+      "association": "Nain — Sang de dryade",
+      "ascendance": "Sang de dryade (Ascendances/Sang%20de%20dryade%203e9c799da3d181d68442d90c58261549.csv)",
+      "peuple": "Nain (Peuples/Nain%203e9c799da3d181ee9e4ad52517136b2a.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Orc — Sang d’elfe",
+      "ascendance": "Sang d’elfe (Ascendances/Sang%20d%E2%80%99elfe%203e9c799da3d18158b229f62d3a824861.csv)",
+      "peuple": "Orc (Peuples/Orc%203e9c799da3d181219711c434b8e9e55e.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Humain — Sang de dryade",
+      "ascendance": "Sang de dryade (Ascendances/Sang%20de%20dryade%203e9c799da3d181d68442d90c58261549.csv)",
+      "peuple": "Humain (Peuples/Humain%203e9c799da3d1816ea19beea93b3794b1.csv)",
+      "poids_relatif": 1,
+      "possible": true
+    },
+    {
+      "association": "Gobelin — Sang divin",
+      "ascendance": "Sang divin (Ascendances/Sang%20divin%203e9c799da3d1812cad9dfd2e65d58fa7.csv)",
+      "peuple": "Gobelin (Peuples/Gobelin%203e9c799da3d181b28fdddd40c97cfae5.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Gnome — Sang d’humain",
+      "ascendance": "Sang d’humain (Ascendances/Sang%20d%E2%80%99humain%203e9c799da3d181bdb912c668959c2c0f.csv)",
+      "peuple": "Gnome (Peuples/Gnome%203e9c799da3d181baa304c5591507657c.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Halfling — Sang divin",
+      "ascendance": "Sang divin (Ascendances/Sang%20divin%203e9c799da3d1812cad9dfd2e65d58fa7.csv)",
+      "peuple": "Halfling (Peuples/Halfling%203e9c799da3d18171b3c9f93cf48ea4d1.csv)",
+      "poids_relatif": 1,
+      "possible": true
+    },
+    {
+      "association": "Halfling — Sang de démon",
+      "ascendance": "Sang de démon (Ascendances/Sang%20de%20d%C3%A9mon%203e9c799da3d181bc9e75c94847e96d86.csv)",
+      "peuple": "Halfling (Peuples/Halfling%203e9c799da3d18171b3c9f93cf48ea4d1.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Halfling — Sang de troll",
+      "ascendance": "Sang de troll (Ascendances/Sang%20de%20troll%203e9c799da3d181649e9ae4f8de0a399e.csv)",
+      "peuple": "Halfling (Peuples/Halfling%203e9c799da3d18171b3c9f93cf48ea4d1.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Halfling — Sang de dryade",
+      "ascendance": "Sang de dryade (Ascendances/Sang%20de%20dryade%203e9c799da3d181d68442d90c58261549.csv)",
+      "peuple": "Halfling (Peuples/Halfling%203e9c799da3d18171b3c9f93cf48ea4d1.csv)",
+      "poids_relatif": 1,
+      "possible": true
+    },
+    {
+      "association": "Gobelin — Sang féerique",
+      "ascendance": "Sang féerique (Ascendances/Sang%20f%C3%A9erique%203e9c799da3d1818abe3ef784abf673d2.csv)",
+      "peuple": "Gobelin (Peuples/Gobelin%203e9c799da3d181b28fdddd40c97cfae5.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Ogre — Sang de dragon",
+      "ascendance": "Sang de dragon (Ascendances/Sang%20de%20dragon%203e9c799da3d18131bfc9cbffcea9fd21.csv)",
+      "peuple": "Ogre (Peuples/Ogre%203e9c799da3d181cfbc78f19ae00a401a.csv)",
+      "poids_relatif": 1,
+      "possible": true
+    },
+    {
+      "association": "Orc — Sang de sirène",
+      "ascendance": "Sang de sirène (Ascendances/Sang%20de%20sir%C3%A8ne%203e9c799da3d1815ebdf7c7a38aec52d2.csv)",
+      "peuple": "Orc (Peuples/Orc%203e9c799da3d181219711c434b8e9e55e.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Gnome — Sang de troll",
+      "ascendance": "Sang de troll (Ascendances/Sang%20de%20troll%203e9c799da3d181649e9ae4f8de0a399e.csv)",
+      "peuple": "Gnome (Peuples/Gnome%203e9c799da3d181baa304c5591507657c.csv)",
+      "poids_relatif": 1,
+      "possible": true
+    },
+    {
+      "association": "Ogre — Sang de démon",
+      "ascendance": "Sang de démon (Ascendances/Sang%20de%20d%C3%A9mon%203e9c799da3d181bc9e75c94847e96d86.csv)",
+      "peuple": "Ogre (Peuples/Ogre%203e9c799da3d181cfbc78f19ae00a401a.csv)",
+      "poids_relatif": 1,
+      "possible": true
+    },
+    {
+      "association": "Orc — Sang divin",
+      "ascendance": "Sang divin (Ascendances/Sang%20divin%203e9c799da3d1812cad9dfd2e65d58fa7.csv)",
+      "peuple": "Orc (Peuples/Orc%203e9c799da3d181219711c434b8e9e55e.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Gnome — Sang de dragon",
+      "ascendance": "Sang de dragon (Ascendances/Sang%20de%20dragon%203e9c799da3d18131bfc9cbffcea9fd21.csv)",
+      "peuple": "Gnome (Peuples/Gnome%203e9c799da3d181baa304c5591507657c.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Gobelin — Sang d’orc",
+      "ascendance": "Sang d’orc (Ascendances/Sang%20d%E2%80%99orc%203e9c799da3d181cfa519f51eec9bf020.csv)",
+      "peuple": "Gobelin (Peuples/Gobelin%203e9c799da3d181b28fdddd40c97cfae5.csv)",
+      "poids_relatif": 3,
+      "possible": true
+    },
+    {
+      "association": "Gobelin — Sang de sirène",
+      "ascendance": "Sang de sirène (Ascendances/Sang%20de%20sir%C3%A8ne%203e9c799da3d1815ebdf7c7a38aec52d2.csv)",
+      "peuple": "Gobelin (Peuples/Gobelin%203e9c799da3d181b28fdddd40c97cfae5.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Ogre — Sang d’elfe",
+      "ascendance": "Sang d’elfe (Ascendances/Sang%20d%E2%80%99elfe%203e9c799da3d18158b229f62d3a824861.csv)",
+      "peuple": "Ogre (Peuples/Ogre%203e9c799da3d181cfbc78f19ae00a401a.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Gnome — Sang féerique",
+      "ascendance": "Sang féerique (Ascendances/Sang%20f%C3%A9erique%203e9c799da3d1818abe3ef784abf673d2.csv)",
+      "peuple": "Gnome (Peuples/Gnome%203e9c799da3d181baa304c5591507657c.csv)",
+      "poids_relatif": 2,
+      "possible": true
+    },
+    {
+      "association": "Halfling — Sang de sirène",
+      "ascendance": "Sang de sirène (Ascendances/Sang%20de%20sir%C3%A8ne%203e9c799da3d1815ebdf7c7a38aec52d2.csv)",
+      "peuple": "Halfling (Peuples/Halfling%203e9c799da3d18171b3c9f93cf48ea4d1.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Halfling — Sang de dragon",
+      "ascendance": "Sang de dragon (Ascendances/Sang%20de%20dragon%203e9c799da3d18131bfc9cbffcea9fd21.csv)",
+      "peuple": "Halfling (Peuples/Halfling%203e9c799da3d18171b3c9f93cf48ea4d1.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Halfling — Sang d’elfe",
+      "ascendance": "Sang d’elfe (Ascendances/Sang%20d%E2%80%99elfe%203e9c799da3d18158b229f62d3a824861.csv)",
+      "peuple": "Halfling (Peuples/Halfling%203e9c799da3d18171b3c9f93cf48ea4d1.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Gobelin — Sang de dragon",
+      "ascendance": "Sang de dragon (Ascendances/Sang%20de%20dragon%203e9c799da3d18131bfc9cbffcea9fd21.csv)",
+      "peuple": "Gobelin (Peuples/Gobelin%203e9c799da3d181b28fdddd40c97cfae5.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Orc — Sang de dryade",
+      "ascendance": "Sang de dryade (Ascendances/Sang%20de%20dryade%203e9c799da3d181d68442d90c58261549.csv)",
+      "peuple": "Orc (Peuples/Orc%203e9c799da3d181219711c434b8e9e55e.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Halfling — Sang de djinn",
+      "ascendance": "Sang de djinn (Ascendances/Sang%20de%20djinn%203e9c799da3d1814f8fb7fc4bc5efa4c1.csv)",
+      "peuple": "Halfling (Peuples/Halfling%203e9c799da3d18171b3c9f93cf48ea4d1.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Gnome — Sang de sirène",
+      "ascendance": "Sang de sirène (Ascendances/Sang%20de%20sir%C3%A8ne%203e9c799da3d1815ebdf7c7a38aec52d2.csv)",
+      "peuple": "Gnome (Peuples/Gnome%203e9c799da3d181baa304c5591507657c.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Orc — Sang de troll",
+      "ascendance": "Sang de troll (Ascendances/Sang%20de%20troll%203e9c799da3d181649e9ae4f8de0a399e.csv)",
+      "peuple": "Orc (Peuples/Orc%203e9c799da3d181219711c434b8e9e55e.csv)",
+      "poids_relatif": 3,
+      "possible": true
+    },
+    {
+      "association": "Gobelin — Sang de dryade",
+      "ascendance": "Sang de dryade (Ascendances/Sang%20de%20dryade%203e9c799da3d181d68442d90c58261549.csv)",
+      "peuple": "Gobelin (Peuples/Gobelin%203e9c799da3d181b28fdddd40c97cfae5.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Gnome — Sang d’orc",
+      "ascendance": "Sang d’orc (Ascendances/Sang%20d%E2%80%99orc%203e9c799da3d181cfa519f51eec9bf020.csv)",
+      "peuple": "Gnome (Peuples/Gnome%203e9c799da3d181baa304c5591507657c.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Halfling — Sang d’humain",
+      "ascendance": "Sang d’humain (Ascendances/Sang%20d%E2%80%99humain%203e9c799da3d181bdb912c668959c2c0f.csv)",
+      "peuple": "Halfling (Peuples/Halfling%203e9c799da3d18171b3c9f93cf48ea4d1.csv)",
+      "poids_relatif": 3,
+      "possible": true
+    },
+    {
+      "association": "Gnome — Sang d’elfe",
+      "ascendance": "Sang d’elfe (Ascendances/Sang%20d%E2%80%99elfe%203e9c799da3d18158b229f62d3a824861.csv)",
+      "peuple": "Gnome (Peuples/Gnome%203e9c799da3d181baa304c5591507657c.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Gobelin — Sang d’humain",
+      "ascendance": "Sang d’humain (Ascendances/Sang%20d%E2%80%99humain%203e9c799da3d181bdb912c668959c2c0f.csv)",
+      "peuple": "Gobelin (Peuples/Gobelin%203e9c799da3d181b28fdddd40c97cfae5.csv)",
+      "poids_relatif": 3,
+      "possible": true
+    },
+    {
+      "association": "Gobelin — Sang de démon",
+      "ascendance": "Sang de démon (Ascendances/Sang%20de%20d%C3%A9mon%203e9c799da3d181bc9e75c94847e96d86.csv)",
+      "peuple": "Gobelin (Peuples/Gobelin%203e9c799da3d181b28fdddd40c97cfae5.csv)",
+      "poids_relatif": 1,
+      "possible": true
+    },
+    {
+      "association": "Gnome — Sang de djinn",
+      "ascendance": "Sang de djinn (Ascendances/Sang%20de%20djinn%203e9c799da3d1814f8fb7fc4bc5efa4c1.csv)",
+      "peuple": "Gnome (Peuples/Gnome%203e9c799da3d181baa304c5591507657c.csv)",
+      "poids_relatif": 3,
+      "possible": true
+    },
+    {
+      "association": "Gobelin — Sang de troll",
+      "ascendance": "Sang de troll (Ascendances/Sang%20de%20troll%203e9c799da3d181649e9ae4f8de0a399e.csv)",
+      "peuple": "Gobelin (Peuples/Gobelin%203e9c799da3d181b28fdddd40c97cfae5.csv)",
+      "poids_relatif": 2,
+      "possible": true
+    },
+    {
+      "association": "Gobelin — Sang de djinn",
+      "ascendance": "Sang de djinn (Ascendances/Sang%20de%20djinn%203e9c799da3d1814f8fb7fc4bc5efa4c1.csv)",
+      "peuple": "Gobelin (Peuples/Gobelin%203e9c799da3d181b28fdddd40c97cfae5.csv)",
+      "poids_relatif": 1,
+      "possible": true
+    },
+    {
+      "association": "Gobelin — Sang d’elfe",
+      "ascendance": "Sang d’elfe (Ascendances/Sang%20d%E2%80%99elfe%203e9c799da3d18158b229f62d3a824861.csv)",
+      "peuple": "Gobelin (Peuples/Gobelin%203e9c799da3d181b28fdddd40c97cfae5.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Gnome — Sang divin",
+      "ascendance": "Sang divin (Ascendances/Sang%20divin%203e9c799da3d1812cad9dfd2e65d58fa7.csv)",
+      "peuple": "Gnome (Peuples/Gnome%203e9c799da3d181baa304c5591507657c.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Gnome — Sang de dryade",
+      "ascendance": "Sang de dryade (Ascendances/Sang%20de%20dryade%203e9c799da3d181d68442d90c58261549.csv)",
+      "peuple": "Gnome (Peuples/Gnome%203e9c799da3d181baa304c5591507657c.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Halfling — Sang féerique",
+      "ascendance": "Sang féerique (Ascendances/Sang%20f%C3%A9erique%203e9c799da3d1818abe3ef784abf673d2.csv)",
+      "peuple": "Halfling (Peuples/Halfling%203e9c799da3d18171b3c9f93cf48ea4d1.csv)",
+      "poids_relatif": 3,
+      "possible": true
+    },
+    {
+      "association": "Halfling — Sang d’orc",
+      "ascendance": "Sang d’orc (Ascendances/Sang%20d%E2%80%99orc%203e9c799da3d181cfa519f51eec9bf020.csv)",
+      "peuple": "Halfling (Peuples/Halfling%203e9c799da3d18171b3c9f93cf48ea4d1.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Gnome — Sang de démon",
+      "ascendance": "Sang de démon (Ascendances/Sang%20de%20d%C3%A9mon%203e9c799da3d181bc9e75c94847e96d86.csv)",
+      "peuple": "Gnome (Peuples/Gnome%203e9c799da3d181baa304c5591507657c.csv)",
+      "poids_relatif": 2,
+      "possible": true
+    },
+    {
+      "association": "Homme-bête — Sang de dryade",
+      "ascendance": "Sang de dryade (Ascendances/Sang%20de%20dryade%203e9c799da3d181d68442d90c58261549.csv)",
+      "peuple": "Homme-bête (Peuples/Homme-b%C3%AAte%203e9c799da3d181258b60eb1cbbb545fe.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Reptilien — Sang féerique",
+      "ascendance": "Sang féerique (Ascendances/Sang%20f%C3%A9erique%203e9c799da3d1818abe3ef784abf673d2.csv)",
+      "peuple": "Reptilien (Peuples/Reptilien%203e9c799da3d18138870ae83c77748148.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Reptilien — Sang de dragon",
+      "ascendance": "Sang de dragon (Ascendances/Sang%20de%20dragon%203e9c799da3d18131bfc9cbffcea9fd21.csv)",
+      "peuple": "Reptilien (Peuples/Reptilien%203e9c799da3d18138870ae83c77748148.csv)",
+      "poids_relatif": 2,
+      "possible": true
+    },
+    {
+      "association": "Homme-bête — Sang d’orc",
+      "ascendance": "Sang d’orc (Ascendances/Sang%20d%E2%80%99orc%203e9c799da3d181cfa519f51eec9bf020.csv)",
+      "peuple": "Homme-bête (Peuples/Homme-b%C3%AAte%203e9c799da3d181258b60eb1cbbb545fe.csv)",
+      "poids_relatif": 2,
+      "possible": true
+    },
+    {
+      "association": "Ogre — Sang d’orc",
+      "ascendance": "Sang d’orc (Ascendances/Sang%20d%E2%80%99orc%203e9c799da3d181cfa519f51eec9bf020.csv)",
+      "peuple": "Ogre (Peuples/Ogre%203e9c799da3d181cfbc78f19ae00a401a.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Reptilien — Sang d’humain",
+      "ascendance": "Sang d’humain (Ascendances/Sang%20d%E2%80%99humain%203e9c799da3d181bdb912c668959c2c0f.csv)",
+      "peuple": "Reptilien (Peuples/Reptilien%203e9c799da3d18138870ae83c77748148.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Homme-bête — Sang féerique",
+      "ascendance": "Sang féerique (Ascendances/Sang%20f%C3%A9erique%203e9c799da3d1818abe3ef784abf673d2.csv)",
+      "peuple": "Homme-bête (Peuples/Homme-b%C3%AAte%203e9c799da3d181258b60eb1cbbb545fe.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Reptilien — Sang d’elfe",
+      "ascendance": "Sang d’elfe (Ascendances/Sang%20d%E2%80%99elfe%203e9c799da3d18158b229f62d3a824861.csv)",
+      "peuple": "Reptilien (Peuples/Reptilien%203e9c799da3d18138870ae83c77748148.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Ogre — Sang de troll",
+      "ascendance": "Sang de troll (Ascendances/Sang%20de%20troll%203e9c799da3d181649e9ae4f8de0a399e.csv)",
+      "peuple": "Ogre (Peuples/Ogre%203e9c799da3d181cfbc78f19ae00a401a.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Reptilien — Sang de démon",
+      "ascendance": "Sang de démon (Ascendances/Sang%20de%20d%C3%A9mon%203e9c799da3d181bc9e75c94847e96d86.csv)",
+      "peuple": "Reptilien (Peuples/Reptilien%203e9c799da3d18138870ae83c77748148.csv)",
+      "poids_relatif": 1,
+      "possible": true
+    },
+    {
+      "association": "Reptilien — Sang de djinn",
+      "ascendance": "Sang de djinn (Ascendances/Sang%20de%20djinn%203e9c799da3d1814f8fb7fc4bc5efa4c1.csv)",
+      "peuple": "Reptilien (Peuples/Reptilien%203e9c799da3d18138870ae83c77748148.csv)",
+      "poids_relatif": 2,
+      "possible": true
+    },
+    {
+      "association": "Reptilien — Sang de troll",
+      "ascendance": "Sang de troll (Ascendances/Sang%20de%20troll%203e9c799da3d181649e9ae4f8de0a399e.csv)",
+      "peuple": "Reptilien (Peuples/Reptilien%203e9c799da3d18138870ae83c77748148.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Homme-bête — Sang d’humain",
+      "ascendance": "Sang d’humain (Ascendances/Sang%20d%E2%80%99humain%203e9c799da3d181bdb912c668959c2c0f.csv)",
+      "peuple": "Homme-bête (Peuples/Homme-b%C3%AAte%203e9c799da3d181258b60eb1cbbb545fe.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Ogre — Sang de sirène",
+      "ascendance": "Sang de sirène (Ascendances/Sang%20de%20sir%C3%A8ne%203e9c799da3d1815ebdf7c7a38aec52d2.csv)",
+      "peuple": "Ogre (Peuples/Ogre%203e9c799da3d181cfbc78f19ae00a401a.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Homme-bête — Sang divin",
+      "ascendance": "Sang divin (Ascendances/Sang%20divin%203e9c799da3d1812cad9dfd2e65d58fa7.csv)",
+      "peuple": "Homme-bête (Peuples/Homme-b%C3%AAte%203e9c799da3d181258b60eb1cbbb545fe.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Reptilien — Sang divin",
+      "ascendance": "Sang divin (Ascendances/Sang%20divin%203e9c799da3d1812cad9dfd2e65d58fa7.csv)",
+      "peuple": "Reptilien (Peuples/Reptilien%203e9c799da3d18138870ae83c77748148.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Homme-bête — Sang de démon",
+      "ascendance": "Sang de démon (Ascendances/Sang%20de%20d%C3%A9mon%203e9c799da3d181bc9e75c94847e96d86.csv)",
+      "peuple": "Homme-bête (Peuples/Homme-b%C3%AAte%203e9c799da3d181258b60eb1cbbb545fe.csv)",
+      "poids_relatif": 2,
+      "possible": true
+    },
+    {
+      "association": "Ogre — Sang de dryade",
+      "ascendance": "Sang de dryade (Ascendances/Sang%20de%20dryade%203e9c799da3d181d68442d90c58261549.csv)",
+      "peuple": "Ogre (Peuples/Ogre%203e9c799da3d181cfbc78f19ae00a401a.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Homme-bête — Sang de sirène",
+      "ascendance": "Sang de sirène (Ascendances/Sang%20de%20sir%C3%A8ne%203e9c799da3d1815ebdf7c7a38aec52d2.csv)",
+      "peuple": "Homme-bête (Peuples/Homme-b%C3%AAte%203e9c799da3d181258b60eb1cbbb545fe.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Ogre — Sang d’humain",
+      "ascendance": "Sang d’humain (Ascendances/Sang%20d%E2%80%99humain%203e9c799da3d181bdb912c668959c2c0f.csv)",
+      "peuple": "Ogre (Peuples/Ogre%203e9c799da3d181cfbc78f19ae00a401a.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Reptilien — Sang de dryade",
+      "ascendance": "Sang de dryade (Ascendances/Sang%20de%20dryade%203e9c799da3d181d68442d90c58261549.csv)",
+      "peuple": "Reptilien (Peuples/Reptilien%203e9c799da3d18138870ae83c77748148.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Reptilien — Sang de sirène",
+      "ascendance": "Sang de sirène (Ascendances/Sang%20de%20sir%C3%A8ne%203e9c799da3d1815ebdf7c7a38aec52d2.csv)",
+      "peuple": "Reptilien (Peuples/Reptilien%203e9c799da3d18138870ae83c77748148.csv)",
+      "poids_relatif": 2,
+      "possible": true
+    },
+    {
+      "association": "Homme-bête — Sang de djinn",
+      "ascendance": "Sang de djinn (Ascendances/Sang%20de%20djinn%203e9c799da3d1814f8fb7fc4bc5efa4c1.csv)",
+      "peuple": "Homme-bête (Peuples/Homme-b%C3%AAte%203e9c799da3d181258b60eb1cbbb545fe.csv)",
+      "poids_relatif": 1,
+      "possible": true
+    },
+    {
+      "association": "Homme-bête — Sang d’elfe",
+      "ascendance": "Sang d’elfe (Ascendances/Sang%20d%E2%80%99elfe%203e9c799da3d18158b229f62d3a824861.csv)",
+      "peuple": "Homme-bête (Peuples/Homme-b%C3%AAte%203e9c799da3d181258b60eb1cbbb545fe.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Homme-bête — Sang de troll",
+      "ascendance": "Sang de troll (Ascendances/Sang%20de%20troll%203e9c799da3d181649e9ae4f8de0a399e.csv)",
+      "peuple": "Homme-bête (Peuples/Homme-b%C3%AAte%203e9c799da3d181258b60eb1cbbb545fe.csv)",
+      "poids_relatif": 1,
+      "possible": true
+    },
+    {
+      "association": "Reptilien — Sang d’orc",
+      "ascendance": "Sang d’orc (Ascendances/Sang%20d%E2%80%99orc%203e9c799da3d181cfa519f51eec9bf020.csv)",
+      "peuple": "Reptilien (Peuples/Reptilien%203e9c799da3d18138870ae83c77748148.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Ogre — Sang de djinn",
+      "ascendance": "Sang de djinn (Ascendances/Sang%20de%20djinn%203e9c799da3d1814f8fb7fc4bc5efa4c1.csv)",
+      "peuple": "Ogre (Peuples/Ogre%203e9c799da3d181cfbc78f19ae00a401a.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Homme-bête — Sang de dragon",
+      "ascendance": "Sang de dragon (Ascendances/Sang%20de%20dragon%203e9c799da3d18131bfc9cbffcea9fd21.csv)",
+      "peuple": "Homme-bête (Peuples/Homme-b%C3%AAte%203e9c799da3d181258b60eb1cbbb545fe.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Ogre — Sang féerique",
+      "ascendance": "Sang féerique (Ascendances/Sang%20f%C3%A9erique%203e9c799da3d1818abe3ef784abf673d2.csv)",
+      "peuple": "Ogre (Peuples/Ogre%203e9c799da3d181cfbc78f19ae00a401a.csv)",
+      "poids_relatif": null,
+      "possible": false
+    },
+    {
+      "association": "Ogre — Sang divin",
+      "ascendance": "Sang divin (Ascendances/Sang%20divin%203e9c799da3d1812cad9dfd2e65d58fa7.csv)",
+      "peuple": "Ogre (Peuples/Ogre%203e9c799da3d181cfbc78f19ae00a401a.csv)",
+      "poids_relatif": null,
+      "possible": false
+    }
+  ]
+}

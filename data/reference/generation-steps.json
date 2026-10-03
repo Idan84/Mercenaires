@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "name": "generation-steps",
+  "source": {
+    "database_id": "905a18852ebc4f148f18e0b10c2ecca6",
+    "archived_path": "archive/notion-export/Privé et partagé/Jeu de Mercenaires/01 — Génération & identité/Étapes de génération 905a18852ebc4f148f18e0b10c2ecca6_all.csv",
+    "migrated_on": "2026-10-03"
+  },
+  "columns": [
+    {
+      "source": "Étape",
+      "key": "etape"
+    },
+    {
+      "source": "Entrées",
+      "key": "entrees"
+    },
+    {
+      "source": "Ordre",
+      "key": "ordre"
+    },
+    {
+      "source": "Règle",
+      "key": "regle"
+    },
+    {
+      "source": "Sortie",
+      "key": "sortie"
+    }
+  ],
+  "row_count": 12,
+  "rows": [
+    {
+      "etape": "Tirage brut des caractéristiques",
+      "entrees": "Mercenaire non généré",
+      "ordre": 1,
+      "regle": "Distribution de base V1 : caractéristiques fondamentales = 20 + 3D20 ; résistances = 1D6. Ces jets ne doivent pas être codés comme des constantes rigides : Create_Mercenary doit pouvoir les pondérer selon la renommée / réputation du capitaine-compagnie afin d’élever la qualité moyenne des candidats au fil de la partie.",
+      "sortie": "Valeurs brutes initiales, avant pondération identitaire"
+    },
+    {
+      "etape": "Tirage du peuple",
+      "entrees": "Table Peuples + contexte capitaine éventuel",
+      "ordre": 2,
+      "regle": "Create_Mercenary : partir des probabilités de base ; peuple du capitaine +9 points, chacun des 9 autres peuples −1 point, puis tirage pondéré. Create_Captain_Mercenary : peuple choisi directement par le joueur ; aucun biais sur les jets bruts.",
+      "sortie": "Peuple du mercenaire"
+    },
+    {
+      "etape": "Modificateurs du peuple",
+      "entrees": "Peuple + Matrice de génération + Échelle D6",
+      "ordre": 3,
+      "regle": "Lire les intensités signées du peuple dans la matrice. Appliquer immédiatement les effets sur caractéristiques / résistances. Pour les compétences, mémoriser les modificateurs afin qu’ils puissent d’abord influencer le tirage brut puis être appliqués numériquement après initialisation.",
+      "sortie": "Caractéristiques/résistances après peuple + modificateurs de compétences collectés"
+    },
+    {
+      "etape": "Tirage de l’ascendance",
+      "entrees": "Peuple + probabilité d’ascendance + compatibilités + niveaux d’ascendance + contexte capitaine éventuel",
+      "ordre": 4,
+      "regle": "Create_Mercenary : jet de présence d’ascendance inchangé. Si oui, tirage parmi les ascendances compatibles ; poids uniformes par défaut, sauf si le mercenaire a le même peuple que le capitaine et que le capitaine possède une ascendance : le poids du type d’ascendance du capitaine est alors ×2 s’il est compatible. Puis tirage normal du niveau. Create_Captain_Mercenary : le joueur choisit s’il veut une ascendance ; si oui, type tiré parmi les compatibles et niveau fixé à 3.",
+      "sortie": "Ascendance éventuelle + niveau"
+    },
+    {
+      "etape": "Modificateurs d’ascendance",
+      "entrees": "Ascendance + niveau + Matrice de génération + Échelle D6",
+      "ordre": 5,
+      "regle": "Lire les intensités signées de l’ascendance selon son niveau. Appliquer caractéristiques / résistances avec l’échelle D6 du niveau ; mémoriser les modificateurs de compétences pour la phase de génération brute puis application.",
+      "sortie": "Valeurs après ascendance + modificateurs de compétences collectés"
+    },
+    {
+      "etape": "Tirage de la culture",
+      "entrees": "Peuple + cultures associées + contexte capitaine éventuel",
+      "ordre": 6,
+      "regle": "Create_Mercenary : tirer parmi les cultures compatibles avec le peuple ; poids uniformes par défaut, sauf pour la culture du capitaine dont le poids est ×2 lorsqu’elle est compatible avec le peuple du mercenaire. Create_Captain_Mercenary : culture choisie directement par le joueur.",
+      "sortie": "Culture du mercenaire"
+    },
+    {
+      "etape": "Tirage de l’origine sociale",
+      "entrees": "Culture + Compatibilités culture–origine sociale + contexte d’appel",
+      "ordre": 8,
+      "regle": "Create_Mercenary : tirage parmi les origines sociales compatibles avec la culture, pondération uniforme par défaut tant qu’aucun poids spécifique n’est défini. Create_Captain_Mercenary : origine sociale choisie directement par le joueur.",
+      "sortie": "Origine sociale du mercenaire"
+    },
+    {
+      "etape": "Modificateurs d’origine sociale",
+      "entrees": "Origine sociale + Matrice de génération + Échelle D6",
+      "ordre": 9,
+      "regle": "Lire les intensités signées de l’origine sociale. Appliquer caractéristiques / résistances ; mémoriser les modificateurs de compétences. Après cette étape, le profil identitaire est complet et permet de générer les compétences brutes.",
+      "sortie": "Caractéristiques/résistances finales + modificateurs de compétences complets"
+    },
+    {
+      "etape": "Modificateurs de culture",
+      "entrees": "Culture + Matrice de génération + Échelle D6",
+      "ordre": 7,
+      "regle": "Lire les intensités signées de la culture. Appliquer caractéristiques / résistances ; mémoriser les modificateurs de compétences pour la phase de génération brute puis application.",
+      "sortie": "Valeurs après culture + modificateurs de compétences collectés"
+    },
+    {
+      "etape": "Post-traitement — valeurs dérivées",
+      "entrees": "Caractéristiques, résistances et compétences initiales finales",
+      "ordre": 12,
+      "regle": "Après la génération identitaire et les compétences, calculer les valeurs dérivées connues. PV maximum = ceil(3 × (Constitution + 0,2 × Endurance + 0,1 × Volonté)). PV actuels = PV maximum. Mana actuel = Réserve de mana. Calculer également la réputation personnelle initiale à partir de son pool dédié. Les autres valeurs dérivées sont calculées selon leurs formules lorsqu’elles existent.",
+      "sortie": "Mercenaire initialisé : PV max + PV actuels + Mana actuel + réputation personnelle + autres valeurs dérivées"
+    },
+    {
+      "etape": "Génération brute des compétences",
+      "entrees": "Profil identitaire complet + caractéristiques finales + modificateurs de compétences collectés",
+      "ordre": 10,
+      "regle": "Générer les compétences selon leur famille : Martial, Animal, Magie, Camp, Artisanat, Physiologie, Social. La présence d’un bonus de génération peut modifier le tirage brut. Les distributions restent pondérables par la renommée du capitaine / de la compagnie.",
+      "sortie": "Compétences initiales brutes"
+    },
+    {
+      "etape": "Application des modificateurs de compétences",
+      "entrees": "Compétences initiales brutes + modificateurs collectés depuis peuple, ascendance, culture et origine",
+      "ordre": 11,
+      "regle": "Appliquer après le tirage brut les modificateurs numériques issus de la Matrice de génération. Les bonus ne doivent pas être appliqués à une compétence non initialisée.",
+      "sortie": "Compétences initiales finales"
+    }
+  ]
+}

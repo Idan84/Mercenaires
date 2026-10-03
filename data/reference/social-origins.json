@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "name": "social-origins",
+  "source": {
+    "database_id": "17bc7a7e1e6a45ef861358747dbafb83",
+    "archived_path": "archive/notion-export/Privé et partagé/Jeu de Mercenaires/01 — Génération & identité/Origines sociales 17bc7a7e1e6a45ef861358747dbafb83_all.csv",
+    "migrated_on": "2026-10-03"
+  },
+  "columns": [
+    {
+      "source": "Nom",
+      "key": "nom"
+    }
+  ],
+  "row_count": 7,
+  "rows": [
+    {
+      "nom": "Érudit"
+    },
+    {
+      "nom": "Paysan / Ouvrier"
+    },
+    {
+      "nom": "Soldat / Guerrier / Combattant"
+    },
+    {
+      "nom": "Esclave"
+    },
+    {
+      "nom": "Commerçant"
+    },
+    {
+      "nom": "Hors-la-loi"
+    },
+    {
+      "nom": "Noble"
+    }
+  ]
+}

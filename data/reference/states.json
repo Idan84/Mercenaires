@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "name": "states",
+  "source": {
+    "database_id": "a2ea68aea2414a24a343f374c6fb19e3",
+    "archived_path": "archive/notion-export/Privé et partagé/Jeu de Mercenaires/03 — Combat/États a2ea68aea2414a24a343f374c6fb19e3_all.csv",
+    "migrated_on": "2026-10-03"
+  },
+  "columns": [
+    {
+      "source": "Nom",
+      "key": "nom"
+    },
+    {
+      "source": "Catégorie",
+      "key": "categorie"
+    },
+    {
+      "source": "Code",
+      "key": "code"
+    },
+    {
+      "source": "Effet mécanique",
+      "key": "effet_mecanique"
+    },
+    {
+      "source": "Utilise l'esquive en défense",
+      "key": "utilise_l_esquive_en_defense"
+    }
+  ],
+  "row_count": 2,
+  "rows": [
+    {
+      "nom": "Au Sol",
+      "categorie": "Combat",
+      "code": "state.prone",
+      "effet_mecanique": "Lorsqu'un personnage est Au Sol, son Esquive n'est pas utilisée pour calculer la défense contre une attaque visant à le toucher.",
+      "utilise_l_esquive_en_defense": false
+    },
+    {
+      "nom": "En Fuite",
+      "categorie": "Mental",
+      "code": "state.fleeing",
+      "effet_mecanique": "État appliqué après un échec de Courage. À l'application, le personnage dépense immédiatement tout mouvement restant pour s'éloigner. Au début de chacun de ses tours, il tente une reprise de contrôle de plus en plus facile ; en cas d'échec, un D3 impose Course effrénée, Cachons-nous ou Feu à volonté.",
+      "utilise_l_esquive_en_defense": true
+    }
+  ]
+}

@@ -1,0 +1,1651 @@
+{
+  "schema_version": 1,
+  "name": "culture-origin-compatibility",
+  "source": {
+    "database_id": "84e0baa713b547da90526b430d76a29c",
+    "archived_path": "archive/notion-export/Privé et partagé/Jeu de Mercenaires/01 — Génération & identité/Compatibilités culture–origine sociale 84e0baa713b547da90526b430d76a29c_all.csv",
+    "migrated_on": "2026-10-03"
+  },
+  "columns": [
+    {
+      "source": "Association",
+      "key": "association"
+    },
+    {
+      "source": "Culture",
+      "key": "culture"
+    },
+    {
+      "source": "Note",
+      "key": "note"
+    },
+    {
+      "source": "Origine sociale",
+      "key": "origine_sociale"
+    },
+    {
+      "source": "Possible",
+      "key": "possible"
+    }
+  ],
+  "row_count": 231,
+  "rows": [
+    {
+      "association": "Clans des grandes steppes — Hors-la-loi",
+      "culture": "Clans des grandes steppes (Cultures/Clans%20des%20grandes%20steppes%203e9c799da3d1811e87c9ee54ee110b1b.csv)",
+      "note": null,
+      "origine_sociale": "Hors-la-loi (Origines%20sociales/Hors-la-loi%203e9c799da3d181b4b0d6fe1b841d4ac5.csv)",
+      "possible": true
+    },
+    {
+      "association": "Ogres des cités humaines — Esclave",
+      "culture": "Ogres des cités humaines (Cultures/Ogres%20des%20cit%C3%A9s%20humaines%203e9c799da3d18120b554e903e3edab3d.csv)",
+      "note": null,
+      "origine_sociale": "Esclave (Origines%20sociales/Esclave%203e9c799da3d1817e944fca1ffc99c113.csv)",
+      "possible": true
+    },
+    {
+      "association": "Reptiliens des villes — Hors-la-loi",
+      "culture": "Reptiliens des villes (Cultures/Reptiliens%20des%20villes%203e9c799da3d181279e4cff724476c368.csv)",
+      "note": null,
+      "origine_sociale": "Hors-la-loi (Origines%20sociales/Hors-la-loi%203e9c799da3d181b4b0d6fe1b841d4ac5.csv)",
+      "possible": true
+    },
+    {
+      "association": "Tribus nordiques — Commerçant",
+      "culture": "Tribus nordiques (Cultures/Tribus%20nordiques%203e9c799da3d1810cbe2cfe479f3bf3d1.csv)",
+      "note": null,
+      "origine_sociale": "Commerçant (Origines%20sociales/Commer%C3%A7ant%203e9c799da3d18197ad10df846ef35f3d.csv)",
+      "possible": true
+    },
+    {
+      "association": "Tribus nordiques — Érudit",
+      "culture": "Tribus nordiques (Cultures/Tribus%20nordiques%203e9c799da3d1810cbe2cfe479f3bf3d1.csv)",
+      "note": null,
+      "origine_sociale": "Érudit (Origines%20sociales/%C3%89rudit%203e9c799da3d181199b11f9aa65c6e7e2.csv)",
+      "possible": true
+    },
+    {
+      "association": "Montagnes du Nord — Hors-la-loi",
+      "culture": "Montagnes du Nord (Cultures/Montagnes%20du%20Nord%203e9c799da3d1812ea0eeefaf4f99b343.csv)",
+      "note": null,
+      "origine_sociale": "Hors-la-loi (Origines%20sociales/Hors-la-loi%203e9c799da3d181b4b0d6fe1b841d4ac5.csv)",
+      "possible": true
+    },
+    {
+      "association": "Clans des grandes steppes — Noble",
+      "culture": "Clans des grandes steppes (Cultures/Clans%20des%20grandes%20steppes%203e9c799da3d1811e87c9ee54ee110b1b.csv)",
+      "note": null,
+      "origine_sociale": "Noble (Origines%20sociales/Noble%203e9c799da3d181e295a8d65b05c3d877.csv)",
+      "possible": true
+    },
+    {
+      "association": "Clans des grandes steppes — Érudit",
+      "culture": "Clans des grandes steppes (Cultures/Clans%20des%20grandes%20steppes%203e9c799da3d1811e87c9ee54ee110b1b.csv)",
+      "note": null,
+      "origine_sociale": "Érudit (Origines%20sociales/%C3%89rudit%203e9c799da3d181199b11f9aa65c6e7e2.csv)",
+      "possible": true
+    },
+    {
+      "association": "Tribus nordiques — Esclave",
+      "culture": "Tribus nordiques (Cultures/Tribus%20nordiques%203e9c799da3d1810cbe2cfe479f3bf3d1.csv)",
+      "note": null,
+      "origine_sociale": "Esclave (Origines%20sociales/Esclave%203e9c799da3d1817e944fca1ffc99c113.csv)",
+      "possible": true
+    },
+    {
+      "association": "Ogres des cités humaines — Soldat / Guerrier / Combattant",
+      "culture": "Ogres des cités humaines (Cultures/Ogres%20des%20cit%C3%A9s%20humaines%203e9c799da3d18120b554e903e3edab3d.csv)",
+      "note": null,
+      "origine_sociale": "Soldat / Guerrier / Combattant (Origines%20sociales/Soldat%20Guerrier%20Combattant%203e9c799da3d1813d87d7d69ea4e4f335.csv)",
+      "possible": true
+    },
+    {
+      "association": "Ogres des cités humaines — Érudit",
+      "culture": "Ogres des cités humaines (Cultures/Ogres%20des%20cit%C3%A9s%20humaines%203e9c799da3d18120b554e903e3edab3d.csv)",
+      "note": null,
+      "origine_sociale": "Érudit (Origines%20sociales/%C3%89rudit%203e9c799da3d181199b11f9aa65c6e7e2.csv)",
+      "possible": true
+    },
+    {
+      "association": "Montagnes du Nord — Commerçant",
+      "culture": "Montagnes du Nord (Cultures/Montagnes%20du%20Nord%203e9c799da3d1812ea0eeefaf4f99b343.csv)",
+      "note": null,
+      "origine_sociale": "Commerçant (Origines%20sociales/Commer%C3%A7ant%203e9c799da3d18197ad10df846ef35f3d.csv)",
+      "possible": true
+    },
+    {
+      "association": "Montagnes du Nord — Esclave",
+      "culture": "Montagnes du Nord (Cultures/Montagnes%20du%20Nord%203e9c799da3d1812ea0eeefaf4f99b343.csv)",
+      "note": null,
+      "origine_sociale": "Esclave (Origines%20sociales/Esclave%203e9c799da3d1817e944fca1ffc99c113.csv)",
+      "possible": true
+    },
+    {
+      "association": "Tribus nordiques — Noble",
+      "culture": "Tribus nordiques (Cultures/Tribus%20nordiques%203e9c799da3d1810cbe2cfe479f3bf3d1.csv)",
+      "note": null,
+      "origine_sociale": "Noble (Origines%20sociales/Noble%203e9c799da3d181e295a8d65b05c3d877.csv)",
+      "possible": true
+    },
+    {
+      "association": "Tribus nordiques — Soldat / Guerrier / Combattant",
+      "culture": "Tribus nordiques (Cultures/Tribus%20nordiques%203e9c799da3d1810cbe2cfe479f3bf3d1.csv)",
+      "note": null,
+      "origine_sociale": "Soldat / Guerrier / Combattant (Origines%20sociales/Soldat%20Guerrier%20Combattant%203e9c799da3d1813d87d7d69ea4e4f335.csv)",
+      "possible": true
+    },
+    {
+      "association": "Tribus nordiques — Paysan / Ouvrier",
+      "culture": "Tribus nordiques (Cultures/Tribus%20nordiques%203e9c799da3d1810cbe2cfe479f3bf3d1.csv)",
+      "note": null,
+      "origine_sociale": "Paysan / Ouvrier (Origines%20sociales/Paysan%20Ouvrier%203e9c799da3d1812aa7e9d1e66f7be2a9.csv)",
+      "possible": true
+    },
+    {
+      "association": "Montagnes du Nord — Soldat / Guerrier / Combattant",
+      "culture": "Montagnes du Nord (Cultures/Montagnes%20du%20Nord%203e9c799da3d1812ea0eeefaf4f99b343.csv)",
+      "note": null,
+      "origine_sociale": "Soldat / Guerrier / Combattant (Origines%20sociales/Soldat%20Guerrier%20Combattant%203e9c799da3d1813d87d7d69ea4e4f335.csv)",
+      "possible": true
+    },
+    {
+      "association": "Reptiliens des villes — Noble",
+      "culture": "Reptiliens des villes (Cultures/Reptiliens%20des%20villes%203e9c799da3d181279e4cff724476c368.csv)",
+      "note": null,
+      "origine_sociale": "Noble (Origines%20sociales/Noble%203e9c799da3d181e295a8d65b05c3d877.csv)",
+      "possible": true
+    },
+    {
+      "association": "Ogres des cités humaines — Commerçant",
+      "culture": "Ogres des cités humaines (Cultures/Ogres%20des%20cit%C3%A9s%20humaines%203e9c799da3d18120b554e903e3edab3d.csv)",
+      "note": null,
+      "origine_sociale": "Commerçant (Origines%20sociales/Commer%C3%A7ant%203e9c799da3d18197ad10df846ef35f3d.csv)",
+      "possible": true
+    },
+    {
+      "association": "Clans des grandes steppes — Paysan / Ouvrier",
+      "culture": "Clans des grandes steppes (Cultures/Clans%20des%20grandes%20steppes%203e9c799da3d1811e87c9ee54ee110b1b.csv)",
+      "note": null,
+      "origine_sociale": "Paysan / Ouvrier (Origines%20sociales/Paysan%20Ouvrier%203e9c799da3d1812aa7e9d1e66f7be2a9.csv)",
+      "possible": true
+    },
+    {
+      "association": "Tribus nordiques — Hors-la-loi",
+      "culture": "Tribus nordiques (Cultures/Tribus%20nordiques%203e9c799da3d1810cbe2cfe479f3bf3d1.csv)",
+      "note": null,
+      "origine_sociale": "Hors-la-loi (Origines%20sociales/Hors-la-loi%203e9c799da3d181b4b0d6fe1b841d4ac5.csv)",
+      "possible": true
+    },
+    {
+      "association": "Reptiliens des villes — Commerçant",
+      "culture": "Reptiliens des villes (Cultures/Reptiliens%20des%20villes%203e9c799da3d181279e4cff724476c368.csv)",
+      "note": null,
+      "origine_sociale": "Commerçant (Origines%20sociales/Commer%C3%A7ant%203e9c799da3d18197ad10df846ef35f3d.csv)",
+      "possible": true
+    },
+    {
+      "association": "Ogres des cités humaines — Noble",
+      "culture": "Ogres des cités humaines (Cultures/Ogres%20des%20cit%C3%A9s%20humaines%203e9c799da3d18120b554e903e3edab3d.csv)",
+      "note": null,
+      "origine_sociale": "Noble (Origines%20sociales/Noble%203e9c799da3d181e295a8d65b05c3d877.csv)",
+      "possible": true
+    },
+    {
+      "association": "Reptiliens des villes — Érudit",
+      "culture": "Reptiliens des villes (Cultures/Reptiliens%20des%20villes%203e9c799da3d181279e4cff724476c368.csv)",
+      "note": null,
+      "origine_sociale": "Érudit (Origines%20sociales/%C3%89rudit%203e9c799da3d181199b11f9aa65c6e7e2.csv)",
+      "possible": true
+    },
+    {
+      "association": "Montagnes du Nord — Noble",
+      "culture": "Montagnes du Nord (Cultures/Montagnes%20du%20Nord%203e9c799da3d1812ea0eeefaf4f99b343.csv)",
+      "note": null,
+      "origine_sociale": "Noble (Origines%20sociales/Noble%203e9c799da3d181e295a8d65b05c3d877.csv)",
+      "possible": true
+    },
+    {
+      "association": "Ogres des cités humaines — Paysan / Ouvrier",
+      "culture": "Ogres des cités humaines (Cultures/Ogres%20des%20cit%C3%A9s%20humaines%203e9c799da3d18120b554e903e3edab3d.csv)",
+      "note": null,
+      "origine_sociale": "Paysan / Ouvrier (Origines%20sociales/Paysan%20Ouvrier%203e9c799da3d1812aa7e9d1e66f7be2a9.csv)",
+      "possible": true
+    },
+    {
+      "association": "Reptiliens des villes — Paysan / Ouvrier",
+      "culture": "Reptiliens des villes (Cultures/Reptiliens%20des%20villes%203e9c799da3d181279e4cff724476c368.csv)",
+      "note": null,
+      "origine_sociale": "Paysan / Ouvrier (Origines%20sociales/Paysan%20Ouvrier%203e9c799da3d1812aa7e9d1e66f7be2a9.csv)",
+      "possible": true
+    },
+    {
+      "association": "Reptiliens des villes — Esclave",
+      "culture": "Reptiliens des villes (Cultures/Reptiliens%20des%20villes%203e9c799da3d181279e4cff724476c368.csv)",
+      "note": null,
+      "origine_sociale": "Esclave (Origines%20sociales/Esclave%203e9c799da3d1817e944fca1ffc99c113.csv)",
+      "possible": true
+    },
+    {
+      "association": "Montagnes du Nord — Paysan / Ouvrier",
+      "culture": "Montagnes du Nord (Cultures/Montagnes%20du%20Nord%203e9c799da3d1812ea0eeefaf4f99b343.csv)",
+      "note": null,
+      "origine_sociale": "Paysan / Ouvrier (Origines%20sociales/Paysan%20Ouvrier%203e9c799da3d1812aa7e9d1e66f7be2a9.csv)",
+      "possible": true
+    },
+    {
+      "association": "Clans des grandes steppes — Esclave",
+      "culture": "Clans des grandes steppes (Cultures/Clans%20des%20grandes%20steppes%203e9c799da3d1811e87c9ee54ee110b1b.csv)",
+      "note": null,
+      "origine_sociale": "Esclave (Origines%20sociales/Esclave%203e9c799da3d1817e944fca1ffc99c113.csv)",
+      "possible": true
+    },
+    {
+      "association": "Ogres des cités humaines — Hors-la-loi",
+      "culture": "Ogres des cités humaines (Cultures/Ogres%20des%20cit%C3%A9s%20humaines%203e9c799da3d18120b554e903e3edab3d.csv)",
+      "note": null,
+      "origine_sociale": "Hors-la-loi (Origines%20sociales/Hors-la-loi%203e9c799da3d181b4b0d6fe1b841d4ac5.csv)",
+      "possible": true
+    },
+    {
+      "association": "Clans des grandes steppes — Commerçant",
+      "culture": "Clans des grandes steppes (Cultures/Clans%20des%20grandes%20steppes%203e9c799da3d1811e87c9ee54ee110b1b.csv)",
+      "note": null,
+      "origine_sociale": "Commerçant (Origines%20sociales/Commer%C3%A7ant%203e9c799da3d18197ad10df846ef35f3d.csv)",
+      "possible": true
+    },
+    {
+      "association": "Montagnes du Nord — Érudit",
+      "culture": "Montagnes du Nord (Cultures/Montagnes%20du%20Nord%203e9c799da3d1812ea0eeefaf4f99b343.csv)",
+      "note": null,
+      "origine_sociale": "Érudit (Origines%20sociales/%C3%89rudit%203e9c799da3d181199b11f9aa65c6e7e2.csv)",
+      "possible": true
+    },
+    {
+      "association": "Clans des grandes steppes — Soldat / Guerrier / Combattant",
+      "culture": "Clans des grandes steppes (Cultures/Clans%20des%20grandes%20steppes%203e9c799da3d1811e87c9ee54ee110b1b.csv)",
+      "note": null,
+      "origine_sociale": "Soldat / Guerrier / Combattant (Origines%20sociales/Soldat%20Guerrier%20Combattant%203e9c799da3d1813d87d7d69ea4e4f335.csv)",
+      "possible": true
+    },
+    {
+      "association": "Reptiliens des villes — Soldat / Guerrier / Combattant",
+      "culture": "Reptiliens des villes (Cultures/Reptiliens%20des%20villes%203e9c799da3d181279e4cff724476c368.csv)",
+      "note": null,
+      "origine_sociale": "Soldat / Guerrier / Combattant (Origines%20sociales/Soldat%20Guerrier%20Combattant%203e9c799da3d1813d87d7d69ea4e4f335.csv)",
+      "possible": true
+    },
+    {
+      "association": "Tribus de la jungle — Noble",
+      "culture": "Tribus de la jungle (Cultures/Tribus%20de%20la%20jungle%203e9c799da3d181639027d7da29210c7e.csv)",
+      "note": null,
+      "origine_sociale": "Noble (Origines%20sociales/Noble%203e9c799da3d181e295a8d65b05c3d877.csv)",
+      "possible": true
+    },
+    {
+      "association": "Cités libres — Esclave",
+      "culture": "Cités libres (Cultures/Cit%C3%A9s%20libres%203e9c799da3d1816f8715ebd710a596d4.csv)",
+      "note": null,
+      "origine_sociale": "Esclave (Origines%20sociales/Esclave%203e9c799da3d1817e944fca1ffc99c113.csv)",
+      "possible": true
+    },
+    {
+      "association": "Halflings des cités humaines — Esclave",
+      "culture": "Halflings des cités humaines (Cultures/Halflings%20des%20cit%C3%A9s%20humaines%203e9c799da3d1814aa8d2f8024ed71826.csv)",
+      "note": null,
+      "origine_sociale": "Esclave (Origines%20sociales/Esclave%203e9c799da3d1817e944fca1ffc99c113.csv)",
+      "possible": true
+    },
+    {
+      "association": "Elfes noirs — Paysan / Ouvrier",
+      "culture": "Elfes noirs (Cultures/Elfes%20noirs%203e9c799da3d1814290aae43fae1b1b92.csv)",
+      "note": null,
+      "origine_sociale": "Paysan / Ouvrier (Origines%20sociales/Paysan%20Ouvrier%203e9c799da3d1812aa7e9d1e66f7be2a9.csv)",
+      "possible": true
+    },
+    {
+      "association": "Cités libres — Érudit",
+      "culture": "Cités libres (Cultures/Cit%C3%A9s%20libres%203e9c799da3d1816f8715ebd710a596d4.csv)",
+      "note": null,
+      "origine_sociale": "Érudit (Origines%20sociales/%C3%89rudit%203e9c799da3d181199b11f9aa65c6e7e2.csv)",
+      "possible": true
+    },
+    {
+      "association": "Elfes noirs — Hors-la-loi",
+      "culture": "Elfes noirs (Cultures/Elfes%20noirs%203e9c799da3d1814290aae43fae1b1b92.csv)",
+      "note": null,
+      "origine_sociale": "Hors-la-loi (Origines%20sociales/Hors-la-loi%203e9c799da3d181b4b0d6fe1b841d4ac5.csv)",
+      "possible": true
+    },
+    {
+      "association": "Cités libres — Hors-la-loi",
+      "culture": "Cités libres (Cultures/Cit%C3%A9s%20libres%203e9c799da3d1816f8715ebd710a596d4.csv)",
+      "note": null,
+      "origine_sociale": "Hors-la-loi (Origines%20sociales/Hors-la-loi%203e9c799da3d181b4b0d6fe1b841d4ac5.csv)",
+      "possible": true
+    },
+    {
+      "association": "Tribus de la jungle — Commerçant",
+      "culture": "Tribus de la jungle (Cultures/Tribus%20de%20la%20jungle%203e9c799da3d181639027d7da29210c7e.csv)",
+      "note": null,
+      "origine_sociale": "Commerçant (Origines%20sociales/Commer%C3%A7ant%203e9c799da3d18197ad10df846ef35f3d.csv)",
+      "possible": true
+    },
+    {
+      "association": "Reptiliens des marécages — Commerçant",
+      "culture": "Reptiliens des marécages (Cultures/Reptiliens%20des%20mar%C3%A9cages%203e9c799da3d18139a4d3c52f78099721.csv)",
+      "note": null,
+      "origine_sociale": "Commerçant (Origines%20sociales/Commer%C3%A7ant%203e9c799da3d18197ad10df846ef35f3d.csv)",
+      "possible": true
+    },
+    {
+      "association": "Cités libres — Commerçant",
+      "culture": "Cités libres (Cultures/Cit%C3%A9s%20libres%203e9c799da3d1816f8715ebd710a596d4.csv)",
+      "note": null,
+      "origine_sociale": "Commerçant (Origines%20sociales/Commer%C3%A7ant%203e9c799da3d18197ad10df846ef35f3d.csv)",
+      "possible": true
+    },
+    {
+      "association": "Cités libres — Soldat / Guerrier / Combattant",
+      "culture": "Cités libres (Cultures/Cit%C3%A9s%20libres%203e9c799da3d1816f8715ebd710a596d4.csv)",
+      "note": null,
+      "origine_sociale": "Soldat / Guerrier / Combattant (Origines%20sociales/Soldat%20Guerrier%20Combattant%203e9c799da3d1813d87d7d69ea4e4f335.csv)",
+      "possible": true
+    },
+    {
+      "association": "Tribus de la jungle — Hors-la-loi",
+      "culture": "Tribus de la jungle (Cultures/Tribus%20de%20la%20jungle%203e9c799da3d181639027d7da29210c7e.csv)",
+      "note": null,
+      "origine_sociale": "Hors-la-loi (Origines%20sociales/Hors-la-loi%203e9c799da3d181b4b0d6fe1b841d4ac5.csv)",
+      "possible": true
+    },
+    {
+      "association": "Elfes noirs — Érudit",
+      "culture": "Elfes noirs (Cultures/Elfes%20noirs%203e9c799da3d1814290aae43fae1b1b92.csv)",
+      "note": null,
+      "origine_sociale": "Érudit (Origines%20sociales/%C3%89rudit%203e9c799da3d181199b11f9aa65c6e7e2.csv)",
+      "possible": true
+    },
+    {
+      "association": "Reptiliens des marécages — Hors-la-loi",
+      "culture": "Reptiliens des marécages (Cultures/Reptiliens%20des%20mar%C3%A9cages%203e9c799da3d18139a4d3c52f78099721.csv)",
+      "note": null,
+      "origine_sociale": "Hors-la-loi (Origines%20sociales/Hors-la-loi%203e9c799da3d181b4b0d6fe1b841d4ac5.csv)",
+      "possible": true
+    },
+    {
+      "association": "Tribus de la jungle — Esclave",
+      "culture": "Tribus de la jungle (Cultures/Tribus%20de%20la%20jungle%203e9c799da3d181639027d7da29210c7e.csv)",
+      "note": null,
+      "origine_sociale": "Esclave (Origines%20sociales/Esclave%203e9c799da3d1817e944fca1ffc99c113.csv)",
+      "possible": true
+    },
+    {
+      "association": "Halflings des cités humaines — Paysan / Ouvrier",
+      "culture": "Halflings des cités humaines (Cultures/Halflings%20des%20cit%C3%A9s%20humaines%203e9c799da3d1814aa8d2f8024ed71826.csv)",
+      "note": null,
+      "origine_sociale": "Paysan / Ouvrier (Origines%20sociales/Paysan%20Ouvrier%203e9c799da3d1812aa7e9d1e66f7be2a9.csv)",
+      "possible": true
+    },
+    {
+      "association": "Elfes noirs — Esclave",
+      "culture": "Elfes noirs (Cultures/Elfes%20noirs%203e9c799da3d1814290aae43fae1b1b92.csv)",
+      "note": null,
+      "origine_sociale": "Esclave (Origines%20sociales/Esclave%203e9c799da3d1817e944fca1ffc99c113.csv)",
+      "possible": true
+    },
+    {
+      "association": "Halflings des cités humaines — Commerçant",
+      "culture": "Halflings des cités humaines (Cultures/Halflings%20des%20cit%C3%A9s%20humaines%203e9c799da3d1814aa8d2f8024ed71826.csv)",
+      "note": null,
+      "origine_sociale": "Commerçant (Origines%20sociales/Commer%C3%A7ant%203e9c799da3d18197ad10df846ef35f3d.csv)",
+      "possible": true
+    },
+    {
+      "association": "Reptiliens des marécages — Paysan / Ouvrier",
+      "culture": "Reptiliens des marécages (Cultures/Reptiliens%20des%20mar%C3%A9cages%203e9c799da3d18139a4d3c52f78099721.csv)",
+      "note": null,
+      "origine_sociale": "Paysan / Ouvrier (Origines%20sociales/Paysan%20Ouvrier%203e9c799da3d1812aa7e9d1e66f7be2a9.csv)",
+      "possible": true
+    },
+    {
+      "association": "Halflings des cités humaines — Hors-la-loi",
+      "culture": "Halflings des cités humaines (Cultures/Halflings%20des%20cit%C3%A9s%20humaines%203e9c799da3d1814aa8d2f8024ed71826.csv)",
+      "note": null,
+      "origine_sociale": "Hors-la-loi (Origines%20sociales/Hors-la-loi%203e9c799da3d181b4b0d6fe1b841d4ac5.csv)",
+      "possible": true
+    },
+    {
+      "association": "Tribus de la jungle — Paysan / Ouvrier",
+      "culture": "Tribus de la jungle (Cultures/Tribus%20de%20la%20jungle%203e9c799da3d181639027d7da29210c7e.csv)",
+      "note": null,
+      "origine_sociale": "Paysan / Ouvrier (Origines%20sociales/Paysan%20Ouvrier%203e9c799da3d1812aa7e9d1e66f7be2a9.csv)",
+      "possible": true
+    },
+    {
+      "association": "Halflings des cités humaines — Noble",
+      "culture": "Halflings des cités humaines (Cultures/Halflings%20des%20cit%C3%A9s%20humaines%203e9c799da3d1814aa8d2f8024ed71826.csv)",
+      "note": null,
+      "origine_sociale": "Noble (Origines%20sociales/Noble%203e9c799da3d181e295a8d65b05c3d877.csv)",
+      "possible": true
+    },
+    {
+      "association": "Elfes noirs — Commerçant",
+      "culture": "Elfes noirs (Cultures/Elfes%20noirs%203e9c799da3d1814290aae43fae1b1b92.csv)",
+      "note": null,
+      "origine_sociale": "Commerçant (Origines%20sociales/Commer%C3%A7ant%203e9c799da3d18197ad10df846ef35f3d.csv)",
+      "possible": true
+    },
+    {
+      "association": "Tribus de la jungle — Érudit",
+      "culture": "Tribus de la jungle (Cultures/Tribus%20de%20la%20jungle%203e9c799da3d181639027d7da29210c7e.csv)",
+      "note": null,
+      "origine_sociale": "Érudit (Origines%20sociales/%C3%89rudit%203e9c799da3d181199b11f9aa65c6e7e2.csv)",
+      "possible": true
+    },
+    {
+      "association": "Cités libres — Noble",
+      "culture": "Cités libres (Cultures/Cit%C3%A9s%20libres%203e9c799da3d1816f8715ebd710a596d4.csv)",
+      "note": null,
+      "origine_sociale": "Noble (Origines%20sociales/Noble%203e9c799da3d181e295a8d65b05c3d877.csv)",
+      "possible": true
+    },
+    {
+      "association": "Reptiliens des marécages — Noble",
+      "culture": "Reptiliens des marécages (Cultures/Reptiliens%20des%20mar%C3%A9cages%203e9c799da3d18139a4d3c52f78099721.csv)",
+      "note": null,
+      "origine_sociale": "Noble (Origines%20sociales/Noble%203e9c799da3d181e295a8d65b05c3d877.csv)",
+      "possible": true
+    },
+    {
+      "association": "Halflings des cités humaines — Érudit",
+      "culture": "Halflings des cités humaines (Cultures/Halflings%20des%20cit%C3%A9s%20humaines%203e9c799da3d1814aa8d2f8024ed71826.csv)",
+      "note": null,
+      "origine_sociale": "Érudit (Origines%20sociales/%C3%89rudit%203e9c799da3d181199b11f9aa65c6e7e2.csv)",
+      "possible": true
+    },
+    {
+      "association": "Cités libres — Paysan / Ouvrier",
+      "culture": "Cités libres (Cultures/Cit%C3%A9s%20libres%203e9c799da3d1816f8715ebd710a596d4.csv)",
+      "note": null,
+      "origine_sociale": "Paysan / Ouvrier (Origines%20sociales/Paysan%20Ouvrier%203e9c799da3d1812aa7e9d1e66f7be2a9.csv)",
+      "possible": true
+    },
+    {
+      "association": "Reptiliens des marécages — Soldat / Guerrier / Combattant",
+      "culture": "Reptiliens des marécages (Cultures/Reptiliens%20des%20mar%C3%A9cages%203e9c799da3d18139a4d3c52f78099721.csv)",
+      "note": null,
+      "origine_sociale": "Soldat / Guerrier / Combattant (Origines%20sociales/Soldat%20Guerrier%20Combattant%203e9c799da3d1813d87d7d69ea4e4f335.csv)",
+      "possible": true
+    },
+    {
+      "association": "Halflings des cités humaines — Soldat / Guerrier / Combattant",
+      "culture": "Halflings des cités humaines (Cultures/Halflings%20des%20cit%C3%A9s%20humaines%203e9c799da3d1814aa8d2f8024ed71826.csv)",
+      "note": null,
+      "origine_sociale": "Soldat / Guerrier / Combattant (Origines%20sociales/Soldat%20Guerrier%20Combattant%203e9c799da3d1813d87d7d69ea4e4f335.csv)",
+      "possible": true
+    },
+    {
+      "association": "Tribus de la jungle — Soldat / Guerrier / Combattant",
+      "culture": "Tribus de la jungle (Cultures/Tribus%20de%20la%20jungle%203e9c799da3d181639027d7da29210c7e.csv)",
+      "note": null,
+      "origine_sociale": "Soldat / Guerrier / Combattant (Origines%20sociales/Soldat%20Guerrier%20Combattant%203e9c799da3d1813d87d7d69ea4e4f335.csv)",
+      "possible": true
+    },
+    {
+      "association": "Elfes noirs — Noble",
+      "culture": "Elfes noirs (Cultures/Elfes%20noirs%203e9c799da3d1814290aae43fae1b1b92.csv)",
+      "note": null,
+      "origine_sociale": "Noble (Origines%20sociales/Noble%203e9c799da3d181e295a8d65b05c3d877.csv)",
+      "possible": true
+    },
+    {
+      "association": "Elfes noirs — Soldat / Guerrier / Combattant",
+      "culture": "Elfes noirs (Cultures/Elfes%20noirs%203e9c799da3d1814290aae43fae1b1b92.csv)",
+      "note": null,
+      "origine_sociale": "Soldat / Guerrier / Combattant (Origines%20sociales/Soldat%20Guerrier%20Combattant%203e9c799da3d1813d87d7d69ea4e4f335.csv)",
+      "possible": true
+    },
+    {
+      "association": "Reptiliens des marécages — Esclave",
+      "culture": "Reptiliens des marécages (Cultures/Reptiliens%20des%20mar%C3%A9cages%203e9c799da3d18139a4d3c52f78099721.csv)",
+      "note": null,
+      "origine_sociale": "Esclave (Origines%20sociales/Esclave%203e9c799da3d1817e944fca1ffc99c113.csv)",
+      "possible": true
+    },
+    {
+      "association": "Reptiliens des marécages — Érudit",
+      "culture": "Reptiliens des marécages (Cultures/Reptiliens%20des%20mar%C3%A9cages%203e9c799da3d18139a4d3c52f78099721.csv)",
+      "note": null,
+      "origine_sociale": "Érudit (Origines%20sociales/%C3%89rudit%203e9c799da3d181199b11f9aa65c6e7e2.csv)",
+      "possible": true
+    },
+    {
+      "association": "Caravanes de ferrailleurs — Noble",
+      "culture": "Caravanes de ferrailleurs (Cultures/Caravanes%20de%20ferrailleurs%203e9c799da3d181709302d9188b803881.csv)",
+      "note": null,
+      "origine_sociale": "Noble (Origines%20sociales/Noble%203e9c799da3d181e295a8d65b05c3d877.csv)",
+      "possible": true
+    },
+    {
+      "association": "Steppes désertiques — Commerçant",
+      "culture": "Steppes désertiques (Cultures/Steppes%20d%C3%A9sertiques%203e9c799da3d18180b0f5e6d98ef0ad89.csv)",
+      "note": null,
+      "origine_sociale": "Commerçant (Origines%20sociales/Commer%C3%A7ant%203e9c799da3d18197ad10df846ef35f3d.csv)",
+      "possible": true
+    },
+    {
+      "association": "Orcs noirs — Soldat / Guerrier / Combattant",
+      "culture": "Orcs noirs (Cultures/Orcs%20noirs%203e9c799da3d181818102d0e82cf5126c.csv)",
+      "note": null,
+      "origine_sociale": "Soldat / Guerrier / Combattant (Origines%20sociales/Soldat%20Guerrier%20Combattant%203e9c799da3d1813d87d7d69ea4e4f335.csv)",
+      "possible": true
+    },
+    {
+      "association": "Explorateurs — Paysan / Ouvrier",
+      "culture": "Explorateurs (Cultures/Explorateurs%203e9c799da3d1817b9baaff134d49c7a6.csv)",
+      "note": null,
+      "origine_sociale": "Paysan / Ouvrier (Origines%20sociales/Paysan%20Ouvrier%203e9c799da3d1812aa7e9d1e66f7be2a9.csv)",
+      "possible": true
+    },
+    {
+      "association": "Caravanes de ferrailleurs — Commerçant",
+      "culture": "Caravanes de ferrailleurs (Cultures/Caravanes%20de%20ferrailleurs%203e9c799da3d181709302d9188b803881.csv)",
+      "note": null,
+      "origine_sociale": "Commerçant (Origines%20sociales/Commer%C3%A7ant%203e9c799da3d18197ad10df846ef35f3d.csv)",
+      "possible": true
+    },
+    {
+      "association": "Orcs noirs — Paysan / Ouvrier",
+      "culture": "Orcs noirs (Cultures/Orcs%20noirs%203e9c799da3d181818102d0e82cf5126c.csv)",
+      "note": null,
+      "origine_sociale": "Paysan / Ouvrier (Origines%20sociales/Paysan%20Ouvrier%203e9c799da3d1812aa7e9d1e66f7be2a9.csv)",
+      "possible": true
+    },
+    {
+      "association": "Gnomes des forêts — Commerçant",
+      "culture": "Gnomes des forêts (Cultures/Gnomes%20des%20for%C3%AAts%203e9c799da3d18178bc9ec3ea7355d3fd.csv)",
+      "note": null,
+      "origine_sociale": "Commerçant (Origines%20sociales/Commer%C3%A7ant%203e9c799da3d18197ad10df846ef35f3d.csv)",
+      "possible": true
+    },
+    {
+      "association": "Caravanes de ferrailleurs — Hors-la-loi",
+      "culture": "Caravanes de ferrailleurs (Cultures/Caravanes%20de%20ferrailleurs%203e9c799da3d181709302d9188b803881.csv)",
+      "note": null,
+      "origine_sociale": "Hors-la-loi (Origines%20sociales/Hors-la-loi%203e9c799da3d181b4b0d6fe1b841d4ac5.csv)",
+      "possible": true
+    },
+    {
+      "association": "Steppes désertiques — Hors-la-loi",
+      "culture": "Steppes désertiques (Cultures/Steppes%20d%C3%A9sertiques%203e9c799da3d18180b0f5e6d98ef0ad89.csv)",
+      "note": null,
+      "origine_sociale": "Hors-la-loi (Origines%20sociales/Hors-la-loi%203e9c799da3d181b4b0d6fe1b841d4ac5.csv)",
+      "possible": true
+    },
+    {
+      "association": "Gnomes des forêts — Esclave",
+      "culture": "Gnomes des forêts (Cultures/Gnomes%20des%20for%C3%AAts%203e9c799da3d18178bc9ec3ea7355d3fd.csv)",
+      "note": null,
+      "origine_sociale": "Esclave (Origines%20sociales/Esclave%203e9c799da3d1817e944fca1ffc99c113.csv)",
+      "possible": true
+    },
+    {
+      "association": "Explorateurs — Hors-la-loi",
+      "culture": "Explorateurs (Cultures/Explorateurs%203e9c799da3d1817b9baaff134d49c7a6.csv)",
+      "note": null,
+      "origine_sociale": "Hors-la-loi (Origines%20sociales/Hors-la-loi%203e9c799da3d181b4b0d6fe1b841d4ac5.csv)",
+      "possible": true
+    },
+    {
+      "association": "Explorateurs — Soldat / Guerrier / Combattant",
+      "culture": "Explorateurs (Cultures/Explorateurs%203e9c799da3d1817b9baaff134d49c7a6.csv)",
+      "note": null,
+      "origine_sociale": "Soldat / Guerrier / Combattant (Origines%20sociales/Soldat%20Guerrier%20Combattant%203e9c799da3d1813d87d7d69ea4e4f335.csv)",
+      "possible": true
+    },
+    {
+      "association": "Gnomes des forêts — Hors-la-loi",
+      "culture": "Gnomes des forêts (Cultures/Gnomes%20des%20for%C3%AAts%203e9c799da3d18178bc9ec3ea7355d3fd.csv)",
+      "note": null,
+      "origine_sociale": "Hors-la-loi (Origines%20sociales/Hors-la-loi%203e9c799da3d181b4b0d6fe1b841d4ac5.csv)",
+      "possible": true
+    },
+    {
+      "association": "Caravanes de ferrailleurs — Érudit",
+      "culture": "Caravanes de ferrailleurs (Cultures/Caravanes%20de%20ferrailleurs%203e9c799da3d181709302d9188b803881.csv)",
+      "note": null,
+      "origine_sociale": "Érudit (Origines%20sociales/%C3%89rudit%203e9c799da3d181199b11f9aa65c6e7e2.csv)",
+      "possible": true
+    },
+    {
+      "association": "Orcs noirs — Érudit",
+      "culture": "Orcs noirs (Cultures/Orcs%20noirs%203e9c799da3d181818102d0e82cf5126c.csv)",
+      "note": null,
+      "origine_sociale": "Érudit (Origines%20sociales/%C3%89rudit%203e9c799da3d181199b11f9aa65c6e7e2.csv)",
+      "possible": true
+    },
+    {
+      "association": "Steppes désertiques — Paysan / Ouvrier",
+      "culture": "Steppes désertiques (Cultures/Steppes%20d%C3%A9sertiques%203e9c799da3d18180b0f5e6d98ef0ad89.csv)",
+      "note": null,
+      "origine_sociale": "Paysan / Ouvrier (Origines%20sociales/Paysan%20Ouvrier%203e9c799da3d1812aa7e9d1e66f7be2a9.csv)",
+      "possible": true
+    },
+    {
+      "association": "Gnomes des forêts — Paysan / Ouvrier",
+      "culture": "Gnomes des forêts (Cultures/Gnomes%20des%20for%C3%AAts%203e9c799da3d18178bc9ec3ea7355d3fd.csv)",
+      "note": null,
+      "origine_sociale": "Paysan / Ouvrier (Origines%20sociales/Paysan%20Ouvrier%203e9c799da3d1812aa7e9d1e66f7be2a9.csv)",
+      "possible": true
+    },
+    {
+      "association": "Caravanes de ferrailleurs — Soldat / Guerrier / Combattant",
+      "culture": "Caravanes de ferrailleurs (Cultures/Caravanes%20de%20ferrailleurs%203e9c799da3d181709302d9188b803881.csv)",
+      "note": null,
+      "origine_sociale": "Soldat / Guerrier / Combattant (Origines%20sociales/Soldat%20Guerrier%20Combattant%203e9c799da3d1813d87d7d69ea4e4f335.csv)",
+      "possible": true
+    },
+    {
+      "association": "Steppes désertiques — Esclave",
+      "culture": "Steppes désertiques (Cultures/Steppes%20d%C3%A9sertiques%203e9c799da3d18180b0f5e6d98ef0ad89.csv)",
+      "note": null,
+      "origine_sociale": "Esclave (Origines%20sociales/Esclave%203e9c799da3d1817e944fca1ffc99c113.csv)",
+      "possible": true
+    },
+    {
+      "association": "Orcs noirs — Noble",
+      "culture": "Orcs noirs (Cultures/Orcs%20noirs%203e9c799da3d181818102d0e82cf5126c.csv)",
+      "note": null,
+      "origine_sociale": "Noble (Origines%20sociales/Noble%203e9c799da3d181e295a8d65b05c3d877.csv)",
+      "possible": true
+    },
+    {
+      "association": "Gnomes des forêts — Noble",
+      "culture": "Gnomes des forêts (Cultures/Gnomes%20des%20for%C3%AAts%203e9c799da3d18178bc9ec3ea7355d3fd.csv)",
+      "note": null,
+      "origine_sociale": "Noble (Origines%20sociales/Noble%203e9c799da3d181e295a8d65b05c3d877.csv)",
+      "possible": true
+    },
+    {
+      "association": "Gnomes des forêts — Érudit",
+      "culture": "Gnomes des forêts (Cultures/Gnomes%20des%20for%C3%AAts%203e9c799da3d18178bc9ec3ea7355d3fd.csv)",
+      "note": null,
+      "origine_sociale": "Érudit (Origines%20sociales/%C3%89rudit%203e9c799da3d181199b11f9aa65c6e7e2.csv)",
+      "possible": true
+    },
+    {
+      "association": "Explorateurs — Noble",
+      "culture": "Explorateurs (Cultures/Explorateurs%203e9c799da3d1817b9baaff134d49c7a6.csv)",
+      "note": null,
+      "origine_sociale": "Noble (Origines%20sociales/Noble%203e9c799da3d181e295a8d65b05c3d877.csv)",
+      "possible": true
+    },
+    {
+      "association": "Caravanes de ferrailleurs — Esclave",
+      "culture": "Caravanes de ferrailleurs (Cultures/Caravanes%20de%20ferrailleurs%203e9c799da3d181709302d9188b803881.csv)",
+      "note": null,
+      "origine_sociale": "Esclave (Origines%20sociales/Esclave%203e9c799da3d1817e944fca1ffc99c113.csv)",
+      "possible": true
+    },
+    {
+      "association": "Orcs noirs — Commerçant",
+      "culture": "Orcs noirs (Cultures/Orcs%20noirs%203e9c799da3d181818102d0e82cf5126c.csv)",
+      "note": null,
+      "origine_sociale": "Commerçant (Origines%20sociales/Commer%C3%A7ant%203e9c799da3d18197ad10df846ef35f3d.csv)",
+      "possible": true
+    },
+    {
+      "association": "Explorateurs — Commerçant",
+      "culture": "Explorateurs (Cultures/Explorateurs%203e9c799da3d1817b9baaff134d49c7a6.csv)",
+      "note": null,
+      "origine_sociale": "Commerçant (Origines%20sociales/Commer%C3%A7ant%203e9c799da3d18197ad10df846ef35f3d.csv)",
+      "possible": true
+    },
+    {
+      "association": "Steppes désertiques — Érudit",
+      "culture": "Steppes désertiques (Cultures/Steppes%20d%C3%A9sertiques%203e9c799da3d18180b0f5e6d98ef0ad89.csv)",
+      "note": null,
+      "origine_sociale": "Érudit (Origines%20sociales/%C3%89rudit%203e9c799da3d181199b11f9aa65c6e7e2.csv)",
+      "possible": true
+    },
+    {
+      "association": "Orcs noirs — Hors-la-loi",
+      "culture": "Orcs noirs (Cultures/Orcs%20noirs%203e9c799da3d181818102d0e82cf5126c.csv)",
+      "note": null,
+      "origine_sociale": "Hors-la-loi (Origines%20sociales/Hors-la-loi%203e9c799da3d181b4b0d6fe1b841d4ac5.csv)",
+      "possible": true
+    },
+    {
+      "association": "Explorateurs — Érudit",
+      "culture": "Explorateurs (Cultures/Explorateurs%203e9c799da3d1817b9baaff134d49c7a6.csv)",
+      "note": null,
+      "origine_sociale": "Érudit (Origines%20sociales/%C3%89rudit%203e9c799da3d181199b11f9aa65c6e7e2.csv)",
+      "possible": true
+    },
+    {
+      "association": "Orcs noirs — Esclave",
+      "culture": "Orcs noirs (Cultures/Orcs%20noirs%203e9c799da3d181818102d0e82cf5126c.csv)",
+      "note": null,
+      "origine_sociale": "Esclave (Origines%20sociales/Esclave%203e9c799da3d1817e944fca1ffc99c113.csv)",
+      "possible": true
+    },
+    {
+      "association": "Steppes désertiques — Soldat / Guerrier / Combattant",
+      "culture": "Steppes désertiques (Cultures/Steppes%20d%C3%A9sertiques%203e9c799da3d18180b0f5e6d98ef0ad89.csv)",
+      "note": null,
+      "origine_sociale": "Soldat / Guerrier / Combattant (Origines%20sociales/Soldat%20Guerrier%20Combattant%203e9c799da3d1813d87d7d69ea4e4f335.csv)",
+      "possible": true
+    },
+    {
+      "association": "Explorateurs — Esclave",
+      "culture": "Explorateurs (Cultures/Explorateurs%203e9c799da3d1817b9baaff134d49c7a6.csv)",
+      "note": null,
+      "origine_sociale": "Esclave (Origines%20sociales/Esclave%203e9c799da3d1817e944fca1ffc99c113.csv)",
+      "possible": true
+    },
+    {
+      "association": "Gnomes des forêts — Soldat / Guerrier / Combattant",
+      "culture": "Gnomes des forêts (Cultures/Gnomes%20des%20for%C3%AAts%203e9c799da3d18178bc9ec3ea7355d3fd.csv)",
+      "note": null,
+      "origine_sociale": "Soldat / Guerrier / Combattant (Origines%20sociales/Soldat%20Guerrier%20Combattant%203e9c799da3d1813d87d7d69ea4e4f335.csv)",
+      "possible": true
+    },
+    {
+      "association": "Steppes désertiques — Noble",
+      "culture": "Steppes désertiques (Cultures/Steppes%20d%C3%A9sertiques%203e9c799da3d18180b0f5e6d98ef0ad89.csv)",
+      "note": null,
+      "origine_sociale": "Noble (Origines%20sociales/Noble%203e9c799da3d181e295a8d65b05c3d877.csv)",
+      "possible": true
+    },
+    {
+      "association": "Caravanes de ferrailleurs — Paysan / Ouvrier",
+      "culture": "Caravanes de ferrailleurs (Cultures/Caravanes%20de%20ferrailleurs%203e9c799da3d181709302d9188b803881.csv)",
+      "note": null,
+      "origine_sociale": "Paysan / Ouvrier (Origines%20sociales/Paysan%20Ouvrier%203e9c799da3d1812aa7e9d1e66f7be2a9.csv)",
+      "possible": true
+    },
+    {
+      "association": "Elfes des grandes cités — Hors-la-loi",
+      "culture": "Elfes des grandes cités (Cultures/Elfes%20des%20grandes%20cit%C3%A9s%203e9c799da3d181a48d7fe607bbe6ee78.csv)",
+      "note": null,
+      "origine_sociale": "Hors-la-loi (Origines%20sociales/Hors-la-loi%203e9c799da3d181b4b0d6fe1b841d4ac5.csv)",
+      "possible": true
+    },
+    {
+      "association": "Halflings des villages isolés — Esclave",
+      "culture": "Halflings des villages isolés (Cultures/Halflings%20des%20villages%20isol%C3%A9s%203e9c799da3d181ae9174db7a7d4b7c6d.csv)",
+      "note": null,
+      "origine_sociale": "Esclave (Origines%20sociales/Esclave%203e9c799da3d1817e944fca1ffc99c113.csv)",
+      "possible": true
+    },
+    {
+      "association": "Elfes des grandes cités — Commerçant",
+      "culture": "Elfes des grandes cités (Cultures/Elfes%20des%20grandes%20cit%C3%A9s%203e9c799da3d181a48d7fe607bbe6ee78.csv)",
+      "note": null,
+      "origine_sociale": "Commerçant (Origines%20sociales/Commer%C3%A7ant%203e9c799da3d18197ad10df846ef35f3d.csv)",
+      "possible": true
+    },
+    {
+      "association": "Tribus des forêts anciennes — Paysan / Ouvrier",
+      "culture": "Tribus des forêts anciennes (Cultures/Tribus%20des%20for%C3%AAts%20anciennes%203e9c799da3d181b79389c87539bdbb93.csv)",
+      "note": null,
+      "origine_sociale": "Paysan / Ouvrier (Origines%20sociales/Paysan%20Ouvrier%203e9c799da3d1812aa7e9d1e66f7be2a9.csv)",
+      "possible": true
+    },
+    {
+      "association": "Tribus des forêts anciennes — Érudit",
+      "culture": "Tribus des forêts anciennes (Cultures/Tribus%20des%20for%C3%AAts%20anciennes%203e9c799da3d181b79389c87539bdbb93.csv)",
+      "note": null,
+      "origine_sociale": "Érudit (Origines%20sociales/%C3%89rudit%203e9c799da3d181199b11f9aa65c6e7e2.csv)",
+      "possible": true
+    },
+    {
+      "association": "Halflings des villages isolés — Hors-la-loi",
+      "culture": "Halflings des villages isolés (Cultures/Halflings%20des%20villages%20isol%C3%A9s%203e9c799da3d181ae9174db7a7d4b7c6d.csv)",
+      "note": null,
+      "origine_sociale": "Hors-la-loi (Origines%20sociales/Hors-la-loi%203e9c799da3d181b4b0d6fe1b841d4ac5.csv)",
+      "possible": true
+    },
+    {
+      "association": "Tribus des forêts anciennes — Hors-la-loi",
+      "culture": "Tribus des forêts anciennes (Cultures/Tribus%20des%20for%C3%AAts%20anciennes%203e9c799da3d181b79389c87539bdbb93.csv)",
+      "note": null,
+      "origine_sociale": "Hors-la-loi (Origines%20sociales/Hors-la-loi%203e9c799da3d181b4b0d6fe1b841d4ac5.csv)",
+      "possible": true
+    },
+    {
+      "association": "Tribus des forêts anciennes — Noble",
+      "culture": "Tribus des forêts anciennes (Cultures/Tribus%20des%20for%C3%AAts%20anciennes%203e9c799da3d181b79389c87539bdbb93.csv)",
+      "note": null,
+      "origine_sociale": "Noble (Origines%20sociales/Noble%203e9c799da3d181e295a8d65b05c3d877.csv)",
+      "possible": true
+    },
+    {
+      "association": "Orcs des villes — Esclave",
+      "culture": "Orcs des villes (Cultures/Orcs%20des%20villes%203e9c799da3d181b18361d85613efe8e3.csv)",
+      "note": null,
+      "origine_sociale": "Esclave (Origines%20sociales/Esclave%203e9c799da3d1817e944fca1ffc99c113.csv)",
+      "possible": true
+    },
+    {
+      "association": "Gobelins des cavernes — Hors-la-loi",
+      "culture": "Gobelins des cavernes (Cultures/Gobelins%20des%20cavernes%203e9c799da3d181a8b773c71038ce4087.csv)",
+      "note": null,
+      "origine_sociale": "Hors-la-loi (Origines%20sociales/Hors-la-loi%203e9c799da3d181b4b0d6fe1b841d4ac5.csv)",
+      "possible": true
+    },
+    {
+      "association": "Gobelins des cavernes — Soldat / Guerrier / Combattant",
+      "culture": "Gobelins des cavernes (Cultures/Gobelins%20des%20cavernes%203e9c799da3d181a8b773c71038ce4087.csv)",
+      "note": null,
+      "origine_sociale": "Soldat / Guerrier / Combattant (Origines%20sociales/Soldat%20Guerrier%20Combattant%203e9c799da3d1813d87d7d69ea4e4f335.csv)",
+      "possible": true
+    },
+    {
+      "association": "Halflings des villages isolés — Commerçant",
+      "culture": "Halflings des villages isolés (Cultures/Halflings%20des%20villages%20isol%C3%A9s%203e9c799da3d181ae9174db7a7d4b7c6d.csv)",
+      "note": null,
+      "origine_sociale": "Commerçant (Origines%20sociales/Commer%C3%A7ant%203e9c799da3d18197ad10df846ef35f3d.csv)",
+      "possible": true
+    },
+    {
+      "association": "Tribus des forêts anciennes — Commerçant",
+      "culture": "Tribus des forêts anciennes (Cultures/Tribus%20des%20for%C3%AAts%20anciennes%203e9c799da3d181b79389c87539bdbb93.csv)",
+      "note": null,
+      "origine_sociale": "Commerçant (Origines%20sociales/Commer%C3%A7ant%203e9c799da3d18197ad10df846ef35f3d.csv)",
+      "possible": true
+    },
+    {
+      "association": "Halflings des villages isolés — Noble",
+      "culture": "Halflings des villages isolés (Cultures/Halflings%20des%20villages%20isol%C3%A9s%203e9c799da3d181ae9174db7a7d4b7c6d.csv)",
+      "note": null,
+      "origine_sociale": "Noble (Origines%20sociales/Noble%203e9c799da3d181e295a8d65b05c3d877.csv)",
+      "possible": true
+    },
+    {
+      "association": "Gobelins des cavernes — Commerçant",
+      "culture": "Gobelins des cavernes (Cultures/Gobelins%20des%20cavernes%203e9c799da3d181a8b773c71038ce4087.csv)",
+      "note": null,
+      "origine_sociale": "Commerçant (Origines%20sociales/Commer%C3%A7ant%203e9c799da3d18197ad10df846ef35f3d.csv)",
+      "possible": true
+    },
+    {
+      "association": "Orcs des villes — Noble",
+      "culture": "Orcs des villes (Cultures/Orcs%20des%20villes%203e9c799da3d181b18361d85613efe8e3.csv)",
+      "note": null,
+      "origine_sociale": "Noble (Origines%20sociales/Noble%203e9c799da3d181e295a8d65b05c3d877.csv)",
+      "possible": true
+    },
+    {
+      "association": "Gobelins des cavernes — Esclave",
+      "culture": "Gobelins des cavernes (Cultures/Gobelins%20des%20cavernes%203e9c799da3d181a8b773c71038ce4087.csv)",
+      "note": null,
+      "origine_sociale": "Esclave (Origines%20sociales/Esclave%203e9c799da3d1817e944fca1ffc99c113.csv)",
+      "possible": true
+    },
+    {
+      "association": "Elfes des grandes cités — Paysan / Ouvrier",
+      "culture": "Elfes des grandes cités (Cultures/Elfes%20des%20grandes%20cit%C3%A9s%203e9c799da3d181a48d7fe607bbe6ee78.csv)",
+      "note": null,
+      "origine_sociale": "Paysan / Ouvrier (Origines%20sociales/Paysan%20Ouvrier%203e9c799da3d1812aa7e9d1e66f7be2a9.csv)",
+      "possible": true
+    },
+    {
+      "association": "Gobelins des cavernes — Érudit",
+      "culture": "Gobelins des cavernes (Cultures/Gobelins%20des%20cavernes%203e9c799da3d181a8b773c71038ce4087.csv)",
+      "note": null,
+      "origine_sociale": "Érudit (Origines%20sociales/%C3%89rudit%203e9c799da3d181199b11f9aa65c6e7e2.csv)",
+      "possible": true
+    },
+    {
+      "association": "Orcs des villes — Commerçant",
+      "culture": "Orcs des villes (Cultures/Orcs%20des%20villes%203e9c799da3d181b18361d85613efe8e3.csv)",
+      "note": null,
+      "origine_sociale": "Commerçant (Origines%20sociales/Commer%C3%A7ant%203e9c799da3d18197ad10df846ef35f3d.csv)",
+      "possible": true
+    },
+    {
+      "association": "Tribus des forêts anciennes — Soldat / Guerrier / Combattant",
+      "culture": "Tribus des forêts anciennes (Cultures/Tribus%20des%20for%C3%AAts%20anciennes%203e9c799da3d181b79389c87539bdbb93.csv)",
+      "note": null,
+      "origine_sociale": "Soldat / Guerrier / Combattant (Origines%20sociales/Soldat%20Guerrier%20Combattant%203e9c799da3d1813d87d7d69ea4e4f335.csv)",
+      "possible": true
+    },
+    {
+      "association": "Orcs des villes — Érudit",
+      "culture": "Orcs des villes (Cultures/Orcs%20des%20villes%203e9c799da3d181b18361d85613efe8e3.csv)",
+      "note": null,
+      "origine_sociale": "Érudit (Origines%20sociales/%C3%89rudit%203e9c799da3d181199b11f9aa65c6e7e2.csv)",
+      "possible": true
+    },
+    {
+      "association": "Orcs des villes — Soldat / Guerrier / Combattant",
+      "culture": "Orcs des villes (Cultures/Orcs%20des%20villes%203e9c799da3d181b18361d85613efe8e3.csv)",
+      "note": null,
+      "origine_sociale": "Soldat / Guerrier / Combattant (Origines%20sociales/Soldat%20Guerrier%20Combattant%203e9c799da3d1813d87d7d69ea4e4f335.csv)",
+      "possible": true
+    },
+    {
+      "association": "Orcs des villes — Paysan / Ouvrier",
+      "culture": "Orcs des villes (Cultures/Orcs%20des%20villes%203e9c799da3d181b18361d85613efe8e3.csv)",
+      "note": null,
+      "origine_sociale": "Paysan / Ouvrier (Origines%20sociales/Paysan%20Ouvrier%203e9c799da3d1812aa7e9d1e66f7be2a9.csv)",
+      "possible": true
+    },
+    {
+      "association": "Tribus des forêts anciennes — Esclave",
+      "culture": "Tribus des forêts anciennes (Cultures/Tribus%20des%20for%C3%AAts%20anciennes%203e9c799da3d181b79389c87539bdbb93.csv)",
+      "note": null,
+      "origine_sociale": "Esclave (Origines%20sociales/Esclave%203e9c799da3d1817e944fca1ffc99c113.csv)",
+      "possible": true
+    },
+    {
+      "association": "Elfes des grandes cités — Noble",
+      "culture": "Elfes des grandes cités (Cultures/Elfes%20des%20grandes%20cit%C3%A9s%203e9c799da3d181a48d7fe607bbe6ee78.csv)",
+      "note": null,
+      "origine_sociale": "Noble (Origines%20sociales/Noble%203e9c799da3d181e295a8d65b05c3d877.csv)",
+      "possible": true
+    },
+    {
+      "association": "Gobelins des cavernes — Noble",
+      "culture": "Gobelins des cavernes (Cultures/Gobelins%20des%20cavernes%203e9c799da3d181a8b773c71038ce4087.csv)",
+      "note": null,
+      "origine_sociale": "Noble (Origines%20sociales/Noble%203e9c799da3d181e295a8d65b05c3d877.csv)",
+      "possible": true
+    },
+    {
+      "association": "Halflings des villages isolés — Paysan / Ouvrier",
+      "culture": "Halflings des villages isolés (Cultures/Halflings%20des%20villages%20isol%C3%A9s%203e9c799da3d181ae9174db7a7d4b7c6d.csv)",
+      "note": null,
+      "origine_sociale": "Paysan / Ouvrier (Origines%20sociales/Paysan%20Ouvrier%203e9c799da3d1812aa7e9d1e66f7be2a9.csv)",
+      "possible": true
+    },
+    {
+      "association": "Orcs des villes — Hors-la-loi",
+      "culture": "Orcs des villes (Cultures/Orcs%20des%20villes%203e9c799da3d181b18361d85613efe8e3.csv)",
+      "note": null,
+      "origine_sociale": "Hors-la-loi (Origines%20sociales/Hors-la-loi%203e9c799da3d181b4b0d6fe1b841d4ac5.csv)",
+      "possible": true
+    },
+    {
+      "association": "Elfes des grandes cités — Esclave",
+      "culture": "Elfes des grandes cités (Cultures/Elfes%20des%20grandes%20cit%C3%A9s%203e9c799da3d181a48d7fe607bbe6ee78.csv)",
+      "note": null,
+      "origine_sociale": "Esclave (Origines%20sociales/Esclave%203e9c799da3d1817e944fca1ffc99c113.csv)",
+      "possible": true
+    },
+    {
+      "association": "Gobelins des cavernes — Paysan / Ouvrier",
+      "culture": "Gobelins des cavernes (Cultures/Gobelins%20des%20cavernes%203e9c799da3d181a8b773c71038ce4087.csv)",
+      "note": null,
+      "origine_sociale": "Paysan / Ouvrier (Origines%20sociales/Paysan%20Ouvrier%203e9c799da3d1812aa7e9d1e66f7be2a9.csv)",
+      "possible": true
+    },
+    {
+      "association": "Elfes des grandes cités — Érudit",
+      "culture": "Elfes des grandes cités (Cultures/Elfes%20des%20grandes%20cit%C3%A9s%203e9c799da3d181a48d7fe607bbe6ee78.csv)",
+      "note": null,
+      "origine_sociale": "Érudit (Origines%20sociales/%C3%89rudit%203e9c799da3d181199b11f9aa65c6e7e2.csv)",
+      "possible": true
+    },
+    {
+      "association": "Halflings des villages isolés — Soldat / Guerrier / Combattant",
+      "culture": "Halflings des villages isolés (Cultures/Halflings%20des%20villages%20isol%C3%A9s%203e9c799da3d181ae9174db7a7d4b7c6d.csv)",
+      "note": null,
+      "origine_sociale": "Soldat / Guerrier / Combattant (Origines%20sociales/Soldat%20Guerrier%20Combattant%203e9c799da3d1813d87d7d69ea4e4f335.csv)",
+      "possible": true
+    },
+    {
+      "association": "Halflings des villages isolés — Érudit",
+      "culture": "Halflings des villages isolés (Cultures/Halflings%20des%20villages%20isol%C3%A9s%203e9c799da3d181ae9174db7a7d4b7c6d.csv)",
+      "note": null,
+      "origine_sociale": "Érudit (Origines%20sociales/%C3%89rudit%203e9c799da3d181199b11f9aa65c6e7e2.csv)",
+      "possible": true
+    },
+    {
+      "association": "Elfes des grandes cités — Soldat / Guerrier / Combattant",
+      "culture": "Elfes des grandes cités (Cultures/Elfes%20des%20grandes%20cit%C3%A9s%203e9c799da3d181a48d7fe607bbe6ee78.csv)",
+      "note": null,
+      "origine_sociale": "Soldat / Guerrier / Combattant (Origines%20sociales/Soldat%20Guerrier%20Combattant%203e9c799da3d1813d87d7d69ea4e4f335.csv)",
+      "possible": true
+    },
+    {
+      "association": "Gnomes des cavernes — Noble",
+      "culture": "Gnomes des cavernes (Cultures/Gnomes%20des%20cavernes%203e9c799da3d181e18a6fc12f48ab4b16.csv)",
+      "note": null,
+      "origine_sociale": "Noble (Origines%20sociales/Noble%203e9c799da3d181e295a8d65b05c3d877.csv)",
+      "possible": true
+    },
+    {
+      "association": "Ogres des montagnes — Soldat / Guerrier / Combattant",
+      "culture": "Ogres des montagnes (Cultures/Ogres%20des%20montagnes%203e9c799da3d181df9c98ef7f9322576b.csv)",
+      "note": null,
+      "origine_sociale": "Soldat / Guerrier / Combattant (Origines%20sociales/Soldat%20Guerrier%20Combattant%203e9c799da3d1813d87d7d69ea4e4f335.csv)",
+      "possible": true
+    },
+    {
+      "association": "Nains des plaines — Érudit",
+      "culture": "Nains des plaines (Cultures/Nains%20des%20plaines%203e9c799da3d181eb854bcf35dd89d5c7.csv)",
+      "note": null,
+      "origine_sociale": "Érudit (Origines%20sociales/%C3%89rudit%203e9c799da3d181199b11f9aa65c6e7e2.csv)",
+      "possible": true
+    },
+    {
+      "association": "Nains des plaines — Hors-la-loi",
+      "culture": "Nains des plaines (Cultures/Nains%20des%20plaines%203e9c799da3d181eb854bcf35dd89d5c7.csv)",
+      "note": null,
+      "origine_sociale": "Hors-la-loi (Origines%20sociales/Hors-la-loi%203e9c799da3d181b4b0d6fe1b841d4ac5.csv)",
+      "possible": true
+    },
+    {
+      "association": "Gnomes des cavernes — Érudit",
+      "culture": "Gnomes des cavernes (Cultures/Gnomes%20des%20cavernes%203e9c799da3d181e18a6fc12f48ab4b16.csv)",
+      "note": null,
+      "origine_sociale": "Érudit (Origines%20sociales/%C3%89rudit%203e9c799da3d181199b11f9aa65c6e7e2.csv)",
+      "possible": true
+    },
+    {
+      "association": "Ogres des montagnes — Noble",
+      "culture": "Ogres des montagnes (Cultures/Ogres%20des%20montagnes%203e9c799da3d181df9c98ef7f9322576b.csv)",
+      "note": null,
+      "origine_sociale": "Noble (Origines%20sociales/Noble%203e9c799da3d181e295a8d65b05c3d877.csv)",
+      "possible": true
+    },
+    {
+      "association": "Nains des plaines — Noble",
+      "culture": "Nains des plaines (Cultures/Nains%20des%20plaines%203e9c799da3d181eb854bcf35dd89d5c7.csv)",
+      "note": null,
+      "origine_sociale": "Noble (Origines%20sociales/Noble%203e9c799da3d181e295a8d65b05c3d877.csv)",
+      "possible": true
+    },
+    {
+      "association": "Reptiliens des cités-temples — Esclave",
+      "culture": "Reptiliens des cités-temples (Cultures/Reptiliens%20des%20cit%C3%A9s-temples%203e9c799da3d181ef8894d04c9f3c172f.csv)",
+      "note": null,
+      "origine_sociale": "Esclave (Origines%20sociales/Esclave%203e9c799da3d1817e944fca1ffc99c113.csv)",
+      "possible": true
+    },
+    {
+      "association": "Ogres des montagnes — Hors-la-loi",
+      "culture": "Ogres des montagnes (Cultures/Ogres%20des%20montagnes%203e9c799da3d181df9c98ef7f9322576b.csv)",
+      "note": null,
+      "origine_sociale": "Hors-la-loi (Origines%20sociales/Hors-la-loi%203e9c799da3d181b4b0d6fe1b841d4ac5.csv)",
+      "possible": true
+    },
+    {
+      "association": "Nains des plaines — Esclave",
+      "culture": "Nains des plaines (Cultures/Nains%20des%20plaines%203e9c799da3d181eb854bcf35dd89d5c7.csv)",
+      "note": null,
+      "origine_sociale": "Esclave (Origines%20sociales/Esclave%203e9c799da3d1817e944fca1ffc99c113.csv)",
+      "possible": true
+    },
+    {
+      "association": "Reptiliens des cités-temples — Noble",
+      "culture": "Reptiliens des cités-temples (Cultures/Reptiliens%20des%20cit%C3%A9s-temples%203e9c799da3d181ef8894d04c9f3c172f.csv)",
+      "note": null,
+      "origine_sociale": "Noble (Origines%20sociales/Noble%203e9c799da3d181e295a8d65b05c3d877.csv)",
+      "possible": true
+    },
+    {
+      "association": "Nains des plaines — Soldat / Guerrier / Combattant",
+      "culture": "Nains des plaines (Cultures/Nains%20des%20plaines%203e9c799da3d181eb854bcf35dd89d5c7.csv)",
+      "note": null,
+      "origine_sociale": "Soldat / Guerrier / Combattant (Origines%20sociales/Soldat%20Guerrier%20Combattant%203e9c799da3d1813d87d7d69ea4e4f335.csv)",
+      "possible": true
+    },
+    {
+      "association": "Nains des plaines — Paysan / Ouvrier",
+      "culture": "Nains des plaines (Cultures/Nains%20des%20plaines%203e9c799da3d181eb854bcf35dd89d5c7.csv)",
+      "note": null,
+      "origine_sociale": "Paysan / Ouvrier (Origines%20sociales/Paysan%20Ouvrier%203e9c799da3d1812aa7e9d1e66f7be2a9.csv)",
+      "possible": true
+    },
+    {
+      "association": "Elfes sylvains — Commerçant",
+      "culture": "Elfes sylvains (Cultures/Elfes%20sylvains%203e9c799da3d181e7a12ac6a8101d53d1.csv)",
+      "note": null,
+      "origine_sociale": "Commerçant (Origines%20sociales/Commer%C3%A7ant%203e9c799da3d18197ad10df846ef35f3d.csv)",
+      "possible": true
+    },
+    {
+      "association": "Reptiliens des cités-temples — Commerçant",
+      "culture": "Reptiliens des cités-temples (Cultures/Reptiliens%20des%20cit%C3%A9s-temples%203e9c799da3d181ef8894d04c9f3c172f.csv)",
+      "note": null,
+      "origine_sociale": "Commerçant (Origines%20sociales/Commer%C3%A7ant%203e9c799da3d18197ad10df846ef35f3d.csv)",
+      "possible": true
+    },
+    {
+      "association": "Reptiliens des cités-temples — Érudit",
+      "culture": "Reptiliens des cités-temples (Cultures/Reptiliens%20des%20cit%C3%A9s-temples%203e9c799da3d181ef8894d04c9f3c172f.csv)",
+      "note": null,
+      "origine_sociale": "Érudit (Origines%20sociales/%C3%89rudit%203e9c799da3d181199b11f9aa65c6e7e2.csv)",
+      "possible": true
+    },
+    {
+      "association": "Gnomes des cavernes — Hors-la-loi",
+      "culture": "Gnomes des cavernes (Cultures/Gnomes%20des%20cavernes%203e9c799da3d181e18a6fc12f48ab4b16.csv)",
+      "note": null,
+      "origine_sociale": "Hors-la-loi (Origines%20sociales/Hors-la-loi%203e9c799da3d181b4b0d6fe1b841d4ac5.csv)",
+      "possible": true
+    },
+    {
+      "association": "Ogres des montagnes — Paysan / Ouvrier",
+      "culture": "Ogres des montagnes (Cultures/Ogres%20des%20montagnes%203e9c799da3d181df9c98ef7f9322576b.csv)",
+      "note": null,
+      "origine_sociale": "Paysan / Ouvrier (Origines%20sociales/Paysan%20Ouvrier%203e9c799da3d1812aa7e9d1e66f7be2a9.csv)",
+      "possible": true
+    },
+    {
+      "association": "Elfes sylvains — Noble",
+      "culture": "Elfes sylvains (Cultures/Elfes%20sylvains%203e9c799da3d181e7a12ac6a8101d53d1.csv)",
+      "note": null,
+      "origine_sociale": "Noble (Origines%20sociales/Noble%203e9c799da3d181e295a8d65b05c3d877.csv)",
+      "possible": true
+    },
+    {
+      "association": "Elfes sylvains — Hors-la-loi",
+      "culture": "Elfes sylvains (Cultures/Elfes%20sylvains%203e9c799da3d181e7a12ac6a8101d53d1.csv)",
+      "note": null,
+      "origine_sociale": "Hors-la-loi (Origines%20sociales/Hors-la-loi%203e9c799da3d181b4b0d6fe1b841d4ac5.csv)",
+      "possible": true
+    },
+    {
+      "association": "Reptiliens des cités-temples — Paysan / Ouvrier",
+      "culture": "Reptiliens des cités-temples (Cultures/Reptiliens%20des%20cit%C3%A9s-temples%203e9c799da3d181ef8894d04c9f3c172f.csv)",
+      "note": null,
+      "origine_sociale": "Paysan / Ouvrier (Origines%20sociales/Paysan%20Ouvrier%203e9c799da3d1812aa7e9d1e66f7be2a9.csv)",
+      "possible": true
+    },
+    {
+      "association": "Gnomes des cavernes — Esclave",
+      "culture": "Gnomes des cavernes (Cultures/Gnomes%20des%20cavernes%203e9c799da3d181e18a6fc12f48ab4b16.csv)",
+      "note": null,
+      "origine_sociale": "Esclave (Origines%20sociales/Esclave%203e9c799da3d1817e944fca1ffc99c113.csv)",
+      "possible": true
+    },
+    {
+      "association": "Gnomes des cavernes — Paysan / Ouvrier",
+      "culture": "Gnomes des cavernes (Cultures/Gnomes%20des%20cavernes%203e9c799da3d181e18a6fc12f48ab4b16.csv)",
+      "note": null,
+      "origine_sociale": "Paysan / Ouvrier (Origines%20sociales/Paysan%20Ouvrier%203e9c799da3d1812aa7e9d1e66f7be2a9.csv)",
+      "possible": true
+    },
+    {
+      "association": "Elfes sylvains — Paysan / Ouvrier",
+      "culture": "Elfes sylvains (Cultures/Elfes%20sylvains%203e9c799da3d181e7a12ac6a8101d53d1.csv)",
+      "note": null,
+      "origine_sociale": "Paysan / Ouvrier (Origines%20sociales/Paysan%20Ouvrier%203e9c799da3d1812aa7e9d1e66f7be2a9.csv)",
+      "possible": true
+    },
+    {
+      "association": "Reptiliens des cités-temples — Soldat / Guerrier / Combattant",
+      "culture": "Reptiliens des cités-temples (Cultures/Reptiliens%20des%20cit%C3%A9s-temples%203e9c799da3d181ef8894d04c9f3c172f.csv)",
+      "note": null,
+      "origine_sociale": "Soldat / Guerrier / Combattant (Origines%20sociales/Soldat%20Guerrier%20Combattant%203e9c799da3d1813d87d7d69ea4e4f335.csv)",
+      "possible": true
+    },
+    {
+      "association": "Ogres des montagnes — Érudit",
+      "culture": "Ogres des montagnes (Cultures/Ogres%20des%20montagnes%203e9c799da3d181df9c98ef7f9322576b.csv)",
+      "note": null,
+      "origine_sociale": "Érudit (Origines%20sociales/%C3%89rudit%203e9c799da3d181199b11f9aa65c6e7e2.csv)",
+      "possible": true
+    },
+    {
+      "association": "Reptiliens des cités-temples — Hors-la-loi",
+      "culture": "Reptiliens des cités-temples (Cultures/Reptiliens%20des%20cit%C3%A9s-temples%203e9c799da3d181ef8894d04c9f3c172f.csv)",
+      "note": null,
+      "origine_sociale": "Hors-la-loi (Origines%20sociales/Hors-la-loi%203e9c799da3d181b4b0d6fe1b841d4ac5.csv)",
+      "possible": true
+    },
+    {
+      "association": "Ogres des montagnes — Commerçant",
+      "culture": "Ogres des montagnes (Cultures/Ogres%20des%20montagnes%203e9c799da3d181df9c98ef7f9322576b.csv)",
+      "note": null,
+      "origine_sociale": "Commerçant (Origines%20sociales/Commer%C3%A7ant%203e9c799da3d18197ad10df846ef35f3d.csv)",
+      "possible": true
+    },
+    {
+      "association": "Gnomes des cavernes — Soldat / Guerrier / Combattant",
+      "culture": "Gnomes des cavernes (Cultures/Gnomes%20des%20cavernes%203e9c799da3d181e18a6fc12f48ab4b16.csv)",
+      "note": null,
+      "origine_sociale": "Soldat / Guerrier / Combattant (Origines%20sociales/Soldat%20Guerrier%20Combattant%203e9c799da3d1813d87d7d69ea4e4f335.csv)",
+      "possible": true
+    },
+    {
+      "association": "Elfes sylvains — Soldat / Guerrier / Combattant",
+      "culture": "Elfes sylvains (Cultures/Elfes%20sylvains%203e9c799da3d181e7a12ac6a8101d53d1.csv)",
+      "note": null,
+      "origine_sociale": "Soldat / Guerrier / Combattant (Origines%20sociales/Soldat%20Guerrier%20Combattant%203e9c799da3d1813d87d7d69ea4e4f335.csv)",
+      "possible": true
+    },
+    {
+      "association": "Elfes sylvains — Érudit",
+      "culture": "Elfes sylvains (Cultures/Elfes%20sylvains%203e9c799da3d181e7a12ac6a8101d53d1.csv)",
+      "note": null,
+      "origine_sociale": "Érudit (Origines%20sociales/%C3%89rudit%203e9c799da3d181199b11f9aa65c6e7e2.csv)",
+      "possible": true
+    },
+    {
+      "association": "Gnomes des cavernes — Commerçant",
+      "culture": "Gnomes des cavernes (Cultures/Gnomes%20des%20cavernes%203e9c799da3d181e18a6fc12f48ab4b16.csv)",
+      "note": null,
+      "origine_sociale": "Commerçant (Origines%20sociales/Commer%C3%A7ant%203e9c799da3d18197ad10df846ef35f3d.csv)",
+      "possible": true
+    },
+    {
+      "association": "Elfes sylvains — Esclave",
+      "culture": "Elfes sylvains (Cultures/Elfes%20sylvains%203e9c799da3d181e7a12ac6a8101d53d1.csv)",
+      "note": null,
+      "origine_sociale": "Esclave (Origines%20sociales/Esclave%203e9c799da3d1817e944fca1ffc99c113.csv)",
+      "possible": true
+    },
+    {
+      "association": "Nains des plaines — Commerçant",
+      "culture": "Nains des plaines (Cultures/Nains%20des%20plaines%203e9c799da3d181eb854bcf35dd89d5c7.csv)",
+      "note": null,
+      "origine_sociale": "Commerçant (Origines%20sociales/Commer%C3%A7ant%203e9c799da3d18197ad10df846ef35f3d.csv)",
+      "possible": true
+    },
+    {
+      "association": "Ogres des montagnes — Esclave",
+      "culture": "Ogres des montagnes (Cultures/Ogres%20des%20montagnes%203e9c799da3d181df9c98ef7f9322576b.csv)",
+      "note": null,
+      "origine_sociale": "Esclave (Origines%20sociales/Esclave%203e9c799da3d1817e944fca1ffc99c113.csv)",
+      "possible": true
+    },
+    {
+      "association": "Orcs des steppes — Paysan / Ouvrier",
+      "culture": "Orcs des steppes (Cultures/Orcs%20des%20steppes%203e9c799da3d181cb92bec4f49f61348b.csv)",
+      "note": null,
+      "origine_sociale": "Paysan / Ouvrier (Origines%20sociales/Paysan%20Ouvrier%203e9c799da3d1812aa7e9d1e66f7be2a9.csv)",
+      "possible": true
+    },
+    {
+      "association": "Gobelins des villes — Érudit",
+      "culture": "Gobelins des villes (Cultures/Gobelins%20des%20villes%203e9c799da3d181bd9a7ff173d3ff2b36.csv)",
+      "note": null,
+      "origine_sociale": "Érudit (Origines%20sociales/%C3%89rudit%203e9c799da3d181199b11f9aa65c6e7e2.csv)",
+      "possible": true
+    },
+    {
+      "association": "Orcs des steppes — Soldat / Guerrier / Combattant",
+      "culture": "Orcs des steppes (Cultures/Orcs%20des%20steppes%203e9c799da3d181cb92bec4f49f61348b.csv)",
+      "note": null,
+      "origine_sociale": "Soldat / Guerrier / Combattant (Origines%20sociales/Soldat%20Guerrier%20Combattant%203e9c799da3d1813d87d7d69ea4e4f335.csv)",
+      "possible": true
+    },
+    {
+      "association": "Orcs des steppes — Hors-la-loi",
+      "culture": "Orcs des steppes (Cultures/Orcs%20des%20steppes%203e9c799da3d181cb92bec4f49f61348b.csv)",
+      "note": null,
+      "origine_sociale": "Hors-la-loi (Origines%20sociales/Hors-la-loi%203e9c799da3d181b4b0d6fe1b841d4ac5.csv)",
+      "possible": true
+    },
+    {
+      "association": "Royaumes du Soleil Levant — Paysan / Ouvrier",
+      "culture": "Royaumes du Soleil Levant (Cultures/Royaumes%20du%20Soleil%20Levant%203e9c799da3d181c3b895d06a3e927f93.csv)",
+      "note": null,
+      "origine_sociale": "Paysan / Ouvrier (Origines%20sociales/Paysan%20Ouvrier%203e9c799da3d1812aa7e9d1e66f7be2a9.csv)",
+      "possible": true
+    },
+    {
+      "association": "Nains des montagnes — Soldat / Guerrier / Combattant",
+      "culture": "Nains des montagnes (Cultures/Nains%20des%20montagnes%203e9c799da3d181dcb710dd642dc9cc93.csv)",
+      "note": null,
+      "origine_sociale": "Soldat / Guerrier / Combattant (Origines%20sociales/Soldat%20Guerrier%20Combattant%203e9c799da3d1813d87d7d69ea4e4f335.csv)",
+      "possible": true
+    },
+    {
+      "association": "Esclaves des cités humaines — Érudit",
+      "culture": null,
+      "note": null,
+      "origine_sociale": "Érudit (Origines%20sociales/%C3%89rudit%203e9c799da3d181199b11f9aa65c6e7e2.csv)",
+      "possible": true
+    },
+    {
+      "association": "Orcs des steppes — Noble",
+      "culture": "Orcs des steppes (Cultures/Orcs%20des%20steppes%203e9c799da3d181cb92bec4f49f61348b.csv)",
+      "note": null,
+      "origine_sociale": "Noble (Origines%20sociales/Noble%203e9c799da3d181e295a8d65b05c3d877.csv)",
+      "possible": true
+    },
+    {
+      "association": "Orcs des steppes — Érudit",
+      "culture": "Orcs des steppes (Cultures/Orcs%20des%20steppes%203e9c799da3d181cb92bec4f49f61348b.csv)",
+      "note": null,
+      "origine_sociale": "Érudit (Origines%20sociales/%C3%89rudit%203e9c799da3d181199b11f9aa65c6e7e2.csv)",
+      "possible": true
+    },
+    {
+      "association": "Royaumes du Soleil Levant — Commerçant",
+      "culture": "Royaumes du Soleil Levant (Cultures/Royaumes%20du%20Soleil%20Levant%203e9c799da3d181c3b895d06a3e927f93.csv)",
+      "note": null,
+      "origine_sociale": "Commerçant (Origines%20sociales/Commer%C3%A7ant%203e9c799da3d18197ad10df846ef35f3d.csv)",
+      "possible": true
+    },
+    {
+      "association": "Gobelins des villes — Soldat / Guerrier / Combattant",
+      "culture": "Gobelins des villes (Cultures/Gobelins%20des%20villes%203e9c799da3d181bd9a7ff173d3ff2b36.csv)",
+      "note": null,
+      "origine_sociale": "Soldat / Guerrier / Combattant (Origines%20sociales/Soldat%20Guerrier%20Combattant%203e9c799da3d1813d87d7d69ea4e4f335.csv)",
+      "possible": true
+    },
+    {
+      "association": "Esclaves des cités humaines — Commerçant",
+      "culture": null,
+      "note": "Les esclaves n’y disposent pas d’un statut de commerçant indépendant.",
+      "origine_sociale": "Commerçant (Origines%20sociales/Commer%C3%A7ant%203e9c799da3d18197ad10df846ef35f3d.csv)",
+      "possible": false
+    },
+    {
+      "association": "Esclaves des cités humaines — Soldat / Guerrier / Combattant",
+      "culture": null,
+      "note": null,
+      "origine_sociale": "Soldat / Guerrier / Combattant (Origines%20sociales/Soldat%20Guerrier%20Combattant%203e9c799da3d1813d87d7d69ea4e4f335.csv)",
+      "possible": true
+    },
+    {
+      "association": "Nains des montagnes — Paysan / Ouvrier",
+      "culture": "Nains des montagnes (Cultures/Nains%20des%20montagnes%203e9c799da3d181dcb710dd642dc9cc93.csv)",
+      "note": null,
+      "origine_sociale": "Paysan / Ouvrier (Origines%20sociales/Paysan%20Ouvrier%203e9c799da3d1812aa7e9d1e66f7be2a9.csv)",
+      "possible": true
+    },
+    {
+      "association": "Esclaves des cités humaines — Esclave",
+      "culture": null,
+      "note": null,
+      "origine_sociale": "Esclave (Origines%20sociales/Esclave%203e9c799da3d1817e944fca1ffc99c113.csv)",
+      "possible": true
+    },
+    {
+      "association": "Esclaves des cités humaines — Paysan / Ouvrier",
+      "culture": null,
+      "note": null,
+      "origine_sociale": "Paysan / Ouvrier (Origines%20sociales/Paysan%20Ouvrier%203e9c799da3d1812aa7e9d1e66f7be2a9.csv)",
+      "possible": true
+    },
+    {
+      "association": "Orcs des steppes — Esclave",
+      "culture": "Orcs des steppes (Cultures/Orcs%20des%20steppes%203e9c799da3d181cb92bec4f49f61348b.csv)",
+      "note": null,
+      "origine_sociale": "Esclave (Origines%20sociales/Esclave%203e9c799da3d1817e944fca1ffc99c113.csv)",
+      "possible": true
+    },
+    {
+      "association": "Nains des montagnes — Hors-la-loi",
+      "culture": "Nains des montagnes (Cultures/Nains%20des%20montagnes%203e9c799da3d181dcb710dd642dc9cc93.csv)",
+      "note": null,
+      "origine_sociale": "Hors-la-loi (Origines%20sociales/Hors-la-loi%203e9c799da3d181b4b0d6fe1b841d4ac5.csv)",
+      "possible": true
+    },
+    {
+      "association": "Gobelins des villes — Hors-la-loi",
+      "culture": "Gobelins des villes (Cultures/Gobelins%20des%20villes%203e9c799da3d181bd9a7ff173d3ff2b36.csv)",
+      "note": null,
+      "origine_sociale": "Hors-la-loi (Origines%20sociales/Hors-la-loi%203e9c799da3d181b4b0d6fe1b841d4ac5.csv)",
+      "possible": true
+    },
+    {
+      "association": "Esclaves des cités humaines — Hors-la-loi",
+      "culture": null,
+      "note": null,
+      "origine_sociale": "Hors-la-loi (Origines%20sociales/Hors-la-loi%203e9c799da3d181b4b0d6fe1b841d4ac5.csv)",
+      "possible": true
+    },
+    {
+      "association": "Gobelins des villes — Paysan / Ouvrier",
+      "culture": "Gobelins des villes (Cultures/Gobelins%20des%20villes%203e9c799da3d181bd9a7ff173d3ff2b36.csv)",
+      "note": null,
+      "origine_sociale": "Paysan / Ouvrier (Origines%20sociales/Paysan%20Ouvrier%203e9c799da3d1812aa7e9d1e66f7be2a9.csv)",
+      "possible": true
+    },
+    {
+      "association": "Nains des montagnes — Érudit",
+      "culture": "Nains des montagnes (Cultures/Nains%20des%20montagnes%203e9c799da3d181dcb710dd642dc9cc93.csv)",
+      "note": null,
+      "origine_sociale": "Érudit (Origines%20sociales/%C3%89rudit%203e9c799da3d181199b11f9aa65c6e7e2.csv)",
+      "possible": true
+    },
+    {
+      "association": "Royaumes du Soleil Levant — Soldat / Guerrier / Combattant",
+      "culture": "Royaumes du Soleil Levant (Cultures/Royaumes%20du%20Soleil%20Levant%203e9c799da3d181c3b895d06a3e927f93.csv)",
+      "note": null,
+      "origine_sociale": "Soldat / Guerrier / Combattant (Origines%20sociales/Soldat%20Guerrier%20Combattant%203e9c799da3d1813d87d7d69ea4e4f335.csv)",
+      "possible": true
+    },
+    {
+      "association": "Gobelins des villes — Esclave",
+      "culture": "Gobelins des villes (Cultures/Gobelins%20des%20villes%203e9c799da3d181bd9a7ff173d3ff2b36.csv)",
+      "note": null,
+      "origine_sociale": "Esclave (Origines%20sociales/Esclave%203e9c799da3d1817e944fca1ffc99c113.csv)",
+      "possible": true
+    },
+    {
+      "association": "Nains des montagnes — Esclave",
+      "culture": "Nains des montagnes (Cultures/Nains%20des%20montagnes%203e9c799da3d181dcb710dd642dc9cc93.csv)",
+      "note": null,
+      "origine_sociale": "Esclave (Origines%20sociales/Esclave%203e9c799da3d1817e944fca1ffc99c113.csv)",
+      "possible": true
+    },
+    {
+      "association": "Gobelins des villes — Noble",
+      "culture": "Gobelins des villes (Cultures/Gobelins%20des%20villes%203e9c799da3d181bd9a7ff173d3ff2b36.csv)",
+      "note": null,
+      "origine_sociale": "Noble (Origines%20sociales/Noble%203e9c799da3d181e295a8d65b05c3d877.csv)",
+      "possible": true
+    },
+    {
+      "association": "Royaumes du Soleil Levant — Noble",
+      "culture": "Royaumes du Soleil Levant (Cultures/Royaumes%20du%20Soleil%20Levant%203e9c799da3d181c3b895d06a3e927f93.csv)",
+      "note": null,
+      "origine_sociale": "Noble (Origines%20sociales/Noble%203e9c799da3d181e295a8d65b05c3d877.csv)",
+      "possible": true
+    },
+    {
+      "association": "Gobelins des villes — Commerçant",
+      "culture": "Gobelins des villes (Cultures/Gobelins%20des%20villes%203e9c799da3d181bd9a7ff173d3ff2b36.csv)",
+      "note": null,
+      "origine_sociale": "Commerçant (Origines%20sociales/Commer%C3%A7ant%203e9c799da3d18197ad10df846ef35f3d.csv)",
+      "possible": true
+    },
+    {
+      "association": "Royaumes du Soleil Levant — Hors-la-loi",
+      "culture": "Royaumes du Soleil Levant (Cultures/Royaumes%20du%20Soleil%20Levant%203e9c799da3d181c3b895d06a3e927f93.csv)",
+      "note": null,
+      "origine_sociale": "Hors-la-loi (Origines%20sociales/Hors-la-loi%203e9c799da3d181b4b0d6fe1b841d4ac5.csv)",
+      "possible": true
+    },
+    {
+      "association": "Nains des montagnes — Commerçant",
+      "culture": "Nains des montagnes (Cultures/Nains%20des%20montagnes%203e9c799da3d181dcb710dd642dc9cc93.csv)",
+      "note": null,
+      "origine_sociale": "Commerçant (Origines%20sociales/Commer%C3%A7ant%203e9c799da3d18197ad10df846ef35f3d.csv)",
+      "possible": true
+    },
+    {
+      "association": "Esclaves des cités humaines — Noble",
+      "culture": null,
+      "note": "Le statut servile est incompatible avec une origine noble reconnue.",
+      "origine_sociale": "Noble (Origines%20sociales/Noble%203e9c799da3d181e295a8d65b05c3d877.csv)",
+      "possible": false
+    },
+    {
+      "association": "Nains des montagnes — Noble",
+      "culture": "Nains des montagnes (Cultures/Nains%20des%20montagnes%203e9c799da3d181dcb710dd642dc9cc93.csv)",
+      "note": null,
+      "origine_sociale": "Noble (Origines%20sociales/Noble%203e9c799da3d181e295a8d65b05c3d877.csv)",
+      "possible": true
+    },
+    {
+      "association": "Orcs des steppes — Commerçant",
+      "culture": "Orcs des steppes (Cultures/Orcs%20des%20steppes%203e9c799da3d181cb92bec4f49f61348b.csv)",
+      "note": null,
+      "origine_sociale": "Commerçant (Origines%20sociales/Commer%C3%A7ant%203e9c799da3d18197ad10df846ef35f3d.csv)",
+      "possible": true
+    },
+    {
+      "association": "Royaumes du Soleil Levant — Esclave",
+      "culture": "Royaumes du Soleil Levant (Cultures/Royaumes%20du%20Soleil%20Levant%203e9c799da3d181c3b895d06a3e927f93.csv)",
+      "note": null,
+      "origine_sociale": "Esclave (Origines%20sociales/Esclave%203e9c799da3d1817e944fca1ffc99c113.csv)",
+      "possible": true
+    },
+    {
+      "association": "Royaumes du Soleil Levant — Érudit",
+      "culture": "Royaumes du Soleil Levant (Cultures/Royaumes%20du%20Soleil%20Levant%203e9c799da3d181c3b895d06a3e927f93.csv)",
+      "note": null,
+      "origine_sociale": "Érudit (Origines%20sociales/%C3%89rudit%203e9c799da3d181199b11f9aa65c6e7e2.csv)",
+      "possible": true
+    },
+    {
+      "association": "Ogres des steppes — Paysan / Ouvrier",
+      "culture": "Ogres des steppes (Cultures/Ogres%20des%20steppes%203e9c799da3d181fc83ccf4158da362f3.csv)",
+      "note": null,
+      "origine_sociale": "Paysan / Ouvrier (Origines%20sociales/Paysan%20Ouvrier%203e9c799da3d1812aa7e9d1e66f7be2a9.csv)",
+      "possible": true
+    },
+    {
+      "association": "Ogres des steppes — Noble",
+      "culture": "Ogres des steppes (Cultures/Ogres%20des%20steppes%203e9c799da3d181fc83ccf4158da362f3.csv)",
+      "note": null,
+      "origine_sociale": "Noble (Origines%20sociales/Noble%203e9c799da3d181e295a8d65b05c3d877.csv)",
+      "possible": true
+    },
+    {
+      "association": "Gnomes des villes — Paysan / Ouvrier",
+      "culture": "Gnomes des villes (Cultures/Gnomes%20des%20villes%203e9c799da3d181f781d5e06fd503b721.csv)",
+      "note": null,
+      "origine_sociale": "Paysan / Ouvrier (Origines%20sociales/Paysan%20Ouvrier%203e9c799da3d1812aa7e9d1e66f7be2a9.csv)",
+      "possible": true
+    },
+    {
+      "association": "Nains réduits en esclavage dans les colonies — Hors-la-loi",
+      "culture": "Nains réduits en esclavage dans les colonies (Cultures/Nains%20r%C3%A9duits%20en%20esclavage%20dans%20les%20colonies%203e9c799da3d181f59e1ecffe7c9690f9.csv)",
+      "note": null,
+      "origine_sociale": "Hors-la-loi (Origines%20sociales/Hors-la-loi%203e9c799da3d181b4b0d6fe1b841d4ac5.csv)",
+      "possible": true
+    },
+    {
+      "association": "Gnomes des villes — Commerçant",
+      "culture": "Gnomes des villes (Cultures/Gnomes%20des%20villes%203e9c799da3d181f781d5e06fd503b721.csv)",
+      "note": null,
+      "origine_sociale": "Commerçant (Origines%20sociales/Commer%C3%A7ant%203e9c799da3d18197ad10df846ef35f3d.csv)",
+      "possible": true
+    },
+    {
+      "association": "Nains réduits en esclavage dans les colonies — Soldat / Guerrier / Combattant",
+      "culture": "Nains réduits en esclavage dans les colonies (Cultures/Nains%20r%C3%A9duits%20en%20esclavage%20dans%20les%20colonies%203e9c799da3d181f59e1ecffe7c9690f9.csv)",
+      "note": null,
+      "origine_sociale": "Soldat / Guerrier / Combattant (Origines%20sociales/Soldat%20Guerrier%20Combattant%203e9c799da3d1813d87d7d69ea4e4f335.csv)",
+      "possible": true
+    },
+    {
+      "association": "Nains réduits en esclavage dans les colonies — Commerçant",
+      "culture": "Nains réduits en esclavage dans les colonies (Cultures/Nains%20r%C3%A9duits%20en%20esclavage%20dans%20les%20colonies%203e9c799da3d181f59e1ecffe7c9690f9.csv)",
+      "note": "Les esclaves n’y exercent pas de commerce indépendant.",
+      "origine_sociale": "Commerçant (Origines%20sociales/Commer%C3%A7ant%203e9c799da3d18197ad10df846ef35f3d.csv)",
+      "possible": false
+    },
+    {
+      "association": "Gnomes des villes — Érudit",
+      "culture": "Gnomes des villes (Cultures/Gnomes%20des%20villes%203e9c799da3d181f781d5e06fd503b721.csv)",
+      "note": null,
+      "origine_sociale": "Érudit (Origines%20sociales/%C3%89rudit%203e9c799da3d181199b11f9aa65c6e7e2.csv)",
+      "possible": true
+    },
+    {
+      "association": "Ogres des steppes — Soldat / Guerrier / Combattant",
+      "culture": "Ogres des steppes (Cultures/Ogres%20des%20steppes%203e9c799da3d181fc83ccf4158da362f3.csv)",
+      "note": null,
+      "origine_sociale": "Soldat / Guerrier / Combattant (Origines%20sociales/Soldat%20Guerrier%20Combattant%203e9c799da3d1813d87d7d69ea4e4f335.csv)",
+      "possible": true
+    },
+    {
+      "association": "Ogres des steppes — Esclave",
+      "culture": "Ogres des steppes (Cultures/Ogres%20des%20steppes%203e9c799da3d181fc83ccf4158da362f3.csv)",
+      "note": null,
+      "origine_sociale": "Esclave (Origines%20sociales/Esclave%203e9c799da3d1817e944fca1ffc99c113.csv)",
+      "possible": true
+    },
+    {
+      "association": "Nains réduits en esclavage dans les colonies — Érudit",
+      "culture": "Nains réduits en esclavage dans les colonies (Cultures/Nains%20r%C3%A9duits%20en%20esclavage%20dans%20les%20colonies%203e9c799da3d181f59e1ecffe7c9690f9.csv)",
+      "note": "L’accès à une formation érudite est interdit dans cette colonie servile.",
+      "origine_sociale": "Érudit (Origines%20sociales/%C3%89rudit%203e9c799da3d181199b11f9aa65c6e7e2.csv)",
+      "possible": false
+    },
+    {
+      "association": "Ogres des steppes — Commerçant",
+      "culture": "Ogres des steppes (Cultures/Ogres%20des%20steppes%203e9c799da3d181fc83ccf4158da362f3.csv)",
+      "note": null,
+      "origine_sociale": "Commerçant (Origines%20sociales/Commer%C3%A7ant%203e9c799da3d18197ad10df846ef35f3d.csv)",
+      "possible": true
+    },
+    {
+      "association": "Gnomes des villes — Hors-la-loi",
+      "culture": "Gnomes des villes (Cultures/Gnomes%20des%20villes%203e9c799da3d181f781d5e06fd503b721.csv)",
+      "note": null,
+      "origine_sociale": "Hors-la-loi (Origines%20sociales/Hors-la-loi%203e9c799da3d181b4b0d6fe1b841d4ac5.csv)",
+      "possible": true
+    },
+    {
+      "association": "Ogres des steppes — Érudit",
+      "culture": "Ogres des steppes (Cultures/Ogres%20des%20steppes%203e9c799da3d181fc83ccf4158da362f3.csv)",
+      "note": null,
+      "origine_sociale": "Érudit (Origines%20sociales/%C3%89rudit%203e9c799da3d181199b11f9aa65c6e7e2.csv)",
+      "possible": true
+    },
+    {
+      "association": "Nains réduits en esclavage dans les colonies — Noble",
+      "culture": "Nains réduits en esclavage dans les colonies (Cultures/Nains%20r%C3%A9duits%20en%20esclavage%20dans%20les%20colonies%203e9c799da3d181f59e1ecffe7c9690f9.csv)",
+      "note": "La colonie ne reconnaît aucune noblesse parmi les Nains asservis.",
+      "origine_sociale": "Noble (Origines%20sociales/Noble%203e9c799da3d181e295a8d65b05c3d877.csv)",
+      "possible": false
+    },
+    {
+      "association": "Nains réduits en esclavage dans les colonies — Paysan / Ouvrier",
+      "culture": "Nains réduits en esclavage dans les colonies (Cultures/Nains%20r%C3%A9duits%20en%20esclavage%20dans%20les%20colonies%203e9c799da3d181f59e1ecffe7c9690f9.csv)",
+      "note": null,
+      "origine_sociale": "Paysan / Ouvrier (Origines%20sociales/Paysan%20Ouvrier%203e9c799da3d1812aa7e9d1e66f7be2a9.csv)",
+      "possible": true
+    },
+    {
+      "association": "Gnomes des villes — Noble",
+      "culture": "Gnomes des villes (Cultures/Gnomes%20des%20villes%203e9c799da3d181f781d5e06fd503b721.csv)",
+      "note": null,
+      "origine_sociale": "Noble (Origines%20sociales/Noble%203e9c799da3d181e295a8d65b05c3d877.csv)",
+      "possible": true
+    },
+    {
+      "association": "Gnomes des villes — Esclave",
+      "culture": "Gnomes des villes (Cultures/Gnomes%20des%20villes%203e9c799da3d181f781d5e06fd503b721.csv)",
+      "note": null,
+      "origine_sociale": "Esclave (Origines%20sociales/Esclave%203e9c799da3d1817e944fca1ffc99c113.csv)",
+      "possible": true
+    },
+    {
+      "association": "Gnomes des villes — Soldat / Guerrier / Combattant",
+      "culture": "Gnomes des villes (Cultures/Gnomes%20des%20villes%203e9c799da3d181f781d5e06fd503b721.csv)",
+      "note": null,
+      "origine_sociale": "Soldat / Guerrier / Combattant (Origines%20sociales/Soldat%20Guerrier%20Combattant%203e9c799da3d1813d87d7d69ea4e4f335.csv)",
+      "possible": true
+    },
+    {
+      "association": "Nains réduits en esclavage dans les colonies — Esclave",
+      "culture": "Nains réduits en esclavage dans les colonies (Cultures/Nains%20r%C3%A9duits%20en%20esclavage%20dans%20les%20colonies%203e9c799da3d181f59e1ecffe7c9690f9.csv)",
+      "note": null,
+      "origine_sociale": "Esclave (Origines%20sociales/Esclave%203e9c799da3d1817e944fca1ffc99c113.csv)",
+      "possible": true
+    },
+    {
+      "association": "Ogres des steppes — Hors-la-loi",
+      "culture": "Ogres des steppes (Cultures/Ogres%20des%20steppes%203e9c799da3d181fc83ccf4158da362f3.csv)",
+      "note": null,
+      "origine_sociale": "Hors-la-loi (Origines%20sociales/Hors-la-loi%203e9c799da3d181b4b0d6fe1b841d4ac5.csv)",
+      "possible": true
+    }
+  ]
+}

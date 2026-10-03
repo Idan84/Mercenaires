@@ -2,7 +2,7 @@
 
 Tableau de bord de l'équipe, pas un roman. À lire au début de chaque session, juste après `AGENTS.md`.
 
-Dernière mise à jour : 2026-10-03 — JC3
+Dernière mise à jour : 2026-10-03 (soir) — JC3
 
 ## Rôles
 
@@ -74,8 +74,11 @@ Aucun agent ne travaille spontanément : il faut qu'une session soit lancée. Gi
 | Correctifs : profil Magie (Issue #12), PV négatifs (Issue #13) | JC3 | PR #16 | Fusionné |
 | Fin de mission V1 : design (blessures, fatigue, indisponibilité) | Chatty + Idan | Issue #14 | Valeurs PLAYTEST, à ajuster en jeu |
 | Fin de mission V1, étape 1 : règles (`game-core/mission-end.js`) et bilan dans la Mission Test | JC3 | PR #18 | Fusionné |
-| Fin de mission V1, étape 2 : bilan appliqué à la compagnie (morts, indisponibilités, guérison, primes, Game Over) et bouton d'or de test | JC3 | PR #20 | En relecture |
+| Fin de mission V1, étape 2 : bilan appliqué à la compagnie (morts, indisponibilités, guérison, primes, Game Over) et bouton d'or de test | JC3 | PR #20 | Fusionné |
+| Fin de mission : zone du jet de blessure portée à 0–50 % des PV | JC3 | PR #25 | Fusionné |
+| Or de départ : 10 000 PO | JC3 | PR #24 | Fusionné |
 | Avatars des mercenaires : plein pied et portrait carré | Chatty, images Jean-Mimi | PR #21 | Fusionné ; images à intégrer (Idan les tague) |
+| Camp V1 : règles de construction (proposition Groky consolidée par Chatty) | Chatty + Idan | Issue #23 | Décision d'Idan attendue ; prix après calibrage de l'économie |
 | Registre d'équilibrage (`docs/design/92-balance-questions.md`) | JC3, puis Idan + Chatty | PR #7 | Équilibrage reporté par Idan |
 | Taverne : design V1 (`docs/design/14-tavern-recruitment.md`) | Chatty + Idan | PR #6 | Fusionné |
 | Taverne : code V1, étape 1 — état de partie, `AdvanceTime`, boucle quotidienne, entretien, négociation (`game-core/`) | JC3 | PR #11 | Fusionné |
@@ -103,6 +106,9 @@ Aucun agent ne travaille spontanément : il faut qu'une session soit lancée. Gi
 ## En attente de décision
 
 - **Escouade initiale sans contrat** (Idan + Chatty) : à décider avant de brancher la paie quotidienne, sinon l'escouade initiale travaillerait gratuitement pour toujours.
+- **Camp V1 : règles de construction** (Idan, Issue #23) : or et jours seulement, un seul chantier à la fois, prérequis rares, Dortoir de 40 places utilisable dès le jour 1. Les prix viendront avec le calibrage de l'économie (or de départ, salaires, revenus des missions).
+- **Combat interrompu** (Idan + Chatty) : recharger la page en plein combat revient à l'état d'avant le combat. À trancher avec les vraies missions : retraite, défaite ou combat sauvegardé.
+- **Trésor négatif** (Idan + Chatty) : la prime de mission peut faire passer l'or sous 0, sans conséquence pour l'instant.
 - **Sélection du type de dégâts, cas « moyen »** (Idan + Chatty) : la formule dit `AVERAGE(matchups)`, le moteur choisit le type le plus proche de cette moyenne. Faut-il une moyenne numérique, ou le type le plus proche ?
 
 ## Dépendances

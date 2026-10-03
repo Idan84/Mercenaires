@@ -68,7 +68,7 @@ function makeMissionUnit(character,team,index){
     character,team,q:spawn.q,r:spawn.r,
     hp:character.pvMax,alive:true,activeSet:1,prone:false,
     acted:false,movementRemaining:0,attackAvailable:true,quickAvailable:true,
-    fleeing:false,fleeTurn:0,offMap:false
+    fleeing:false,fleeTurn:0,offMap:false,damageTaken:0
   };
 }
 
@@ -128,14 +128,15 @@ function startMissionFromSelection(){
 
   const enemyChars=Array.from({length:3},()=>createCharacter({role:"Ennemi test"}));
   const engine=MercenairesCombat.createCombatEngine(game.referenceData);
+  const endRules=MercenairesMissionEnd.createMissionEndRules({reference:game.referenceData});
   const players=chosen.map((c,i)=>makeMissionUnit(c,"player",i));
   const enemies=enemyChars.map((c,i)=>makeMissionUnit(c,"enemy",i));
 
   game.mission={
-    engine,players,enemies,
+    engine,endRules,players,enemies,
     playerOrder:sortMissionInitiative(players,engine),
     enemyOrder:sortMissionInitiative(enemies,engine),
-    activeUnit:null,phase:"player",turn:1,mode:null,log:[],over:false,winner:null
+    activeUnit:null,phase:"player",turn:1,mode:null,log:[],over:false,winner:null,aftermath:null
   };
 
   $("mission-select-dialog").close();
@@ -194,7 +195,55 @@ function checkMissionEnd(){
   missionLog(game.mission.winner==="player"
     ?"VICTOIRE — les 3 ennemis sont hors combat."
     :"DÉFAITE — votre équipe est hors combat.","turn");
+  resolveMissionAftermath();
   return true;
+}
+
+// Fin de mission V1 (10-mission-time-and-unavailability.md §7) : seule votre équipe passe la chaîne
+// mort → blessure → fatigue. Mission Test : le bilan est affiché, il n'est pas encore appliqué à la compagnie.
+function resolveMissionAftermath(){
+  const m=game.mission;
+  const captainId=game.campaign?game.campaign.company.captainId:game.captain?.id;
+  const participants=m.players.map(u=>({
+    id:u.character.id,name:u.character.name,hp:u.hp,pvMax:u.character.pvMax,
+    damageTaken:u.damageTaken,stats:u.character.stats,
+    isCaptain:captainId!=null&&u.character.id===captainId,offMap:u.offMap
+  }));
+  m.aftermath=m.endRules.resolveMissionEnd(participants);
+  missionLog("Fin de mission : bilan de votre équipe.","turn");
+  for(const r of m.aftermath.results) missionLog(r.name+" — "+missionAftermathText(r),r.dead?"death":r.wounded?"bad":"info");
+  if(m.aftermath.captainDead) missionLog("Le capitaine est mort : dans une campagne, c'est la fin de la partie.","death");
+}
+
+function missionAftermathDetail(r){
+  const pct=x=>Math.round(x)+" %";
+  const parts=[];
+  if(r.offMap) parts.push("a fui le combat");
+  if(r.death) parts.push((r.dead?"jet de mort ":"survit au jet de mort ")+pct(r.death.p)+" ("+r.death.roll+")");
+  if(r.death&&!r.dead) parts.push("blessure automatique");
+  if(r.wound&&!r.wound.automatic) parts.push((r.wounded?"jet de blessure ":"évite la blessure ")+pct(r.wound.p)+" ("+r.wound.roll+")");
+  if(r.wounded) parts.push("gravité "+Math.round(r.severity));
+  if(!r.dead) parts.push(r.damageTaken+" PV encaissés");
+  return parts.join(", ");
+}
+
+function missionAftermathText(r){
+  const status=r.dead?"Mort":r.wounded?"Blessé, indisponible "+r.woundDays+" j":"Fatigué, indisponible "+r.fatigueDays+" j";
+  return status+" ("+missionAftermathDetail(r)+")";
+}
+
+function renderMissionAftermath(m){
+  if(!m.aftermath) return "";
+  const label={dead:"Mort",wounded:"Blessé",fatigued:"Fatigué"};
+  const rows=m.aftermath.results.map(r=>`
+    <li class="aftermath-${r.outcome}">
+      <strong>${esc(r.name)}${r.isCaptain?" (capitaine)":""}</strong>
+      <span>${label[r.outcome]}${r.dead?"":" · "+(r.wounded?r.woundDays:r.fatigueDays)+" j"}</span>
+      <small>${esc(missionAftermathDetail(r))}</small>
+    </li>`).join("");
+  return `<ul class="mission-aftermath">${rows}</ul>
+    ${m.aftermath.captainDead?`<p class="aftermath-gameover">Le capitaine est mort : dans une campagne, c'est la fin de la partie.</p>`:""}
+    <p class="aftermath-note">Mission Test : ce bilan n'est pas encore appliqué à la compagnie.</p>`;
 }
 
 function logMissionAttack(a,d,result,kind="attack"){
@@ -791,6 +840,7 @@ function renderMission(){
   $("mission-roster-enemy").innerHTML=renderMissionRoster(m.enemyOrder);
   $("mission-console").innerHTML=m.log.slice().reverse().map(x=>`<div class="combat-log ${x.kind}">${esc(x.message)}</div>`).join("");
   $("mission-result").classList.toggle("hidden",!m.over);
+  $("mission-aftermath").innerHTML=m.over?renderMissionAftermath(m):"";
 }
 
 function leaveMission(){

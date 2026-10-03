@@ -285,7 +285,17 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
 .combat-log.gear{border-left-color:#92762e}
 .combat-log.miss{color:#847b71}
 .combat-log.bad{background:#f6e0da;border-left-color:#b53025}
-.mission-result{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:10px;padding:12px 14px;border-radius:11px;background:#efe4cb}
+.mission-result{display:flex;flex-direction:column;gap:10px;margin-top:10px;padding:12px 14px;border-radius:11px;background:#efe4cb}
+.mission-result-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.mission-aftermath{display:grid;gap:6px;margin:0;padding:0;list-style:none}
+.mission-aftermath li{display:grid;grid-template-columns:minmax(120px,auto) auto 1fr;align-items:baseline;gap:4px 12px;padding:7px 9px;border-radius:8px;background:white;border-left:3px solid #c4bcb0}
+.mission-aftermath li small{color:#6d655c}
+.mission-aftermath li.aftermath-dead{border-left-color:#1f1c1a;background:#e8e3dc}
+.mission-aftermath li.aftermath-wounded{border-left-color:#b53025;background:#f6e0da}
+.mission-aftermath li.aftermath-fatigued{border-left-color:#92762e}
+.aftermath-gameover{margin:0;font-weight:800;color:#b53025}
+.aftermath-note{margin:0;font-size:.75rem;color:#6d655c}
+@media(max-width:760px){.mission-aftermath li{grid-template-columns:1fr auto}.mission-aftermath li small{grid-column:1/-1}}
 @media(max-width:1100px){.mission-layout{grid-template-columns:160px minmax(560px,1fr)}.mission-console-wrap{grid-column:1/-1}.mission-console{height:220px}}
 @media(max-width:760px){.company-actions{align-items:flex-start;flex-direction:column}.mission-layout{grid-template-columns:1fr}.mission-side{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mission-center{overflow:hidden}.mission-map-scroll{min-height:420px}.mission-console{height:220px}}
 .tavern-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}

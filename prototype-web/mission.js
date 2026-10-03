@@ -4,10 +4,18 @@ const HEX_DIRS=[
   {q:1,r:0},{q:1,r:-1},{q:0,r:-1},
   {q:-1,r:0},{q:-1,r:1},{q:0,r:1}
 ];
-const MISSION_MAP={cols:9,rows:7,size:34};
+// Carte rectangulaire en coordonnées « offset » (lignes impaires décalées) ; la logique reste en axial (q, r).
+const MISSION_MAP={cols:13,rows:9,size:34,spawnRows:[3,4,5],spawnInset:2};
+function missionColumn(q,r){ return q+((r-(r&1))>>1); }
+function missionAxial(col,r){ return {q:col-((r-(r&1))>>1),r}; }
+function missionCells(){
+  const cells=[];
+  for(let r=0;r<MISSION_MAP.rows;r++) for(let col=0;col<MISSION_MAP.cols;col++) cells.push(missionAxial(col,r));
+  return cells;
+}
 
 function missionKey(q,r){ return q+","+r; }
-function validMissionHex(q,r){ return q>=0&&q<MISSION_MAP.cols&&r>=0&&r<MISSION_MAP.rows; }
+function validMissionHex(q,r){ const col=missionColumn(q,r); return r>=0&&r<MISSION_MAP.rows&&col>=0&&col<MISSION_MAP.cols; }
 function missionNeighbors(c){ return HEX_DIRS.map(d=>({q:c.q+d.q,r:c.r+d.r})).filter(n=>validMissionHex(n.q,n.r)); }
 function missionUnits(){ return game.mission?[...game.mission.players,...game.mission.enemies]:[]; }
 function livingMissionUnits(team){ return (team==="player"?game.mission.players:game.mission.enemies).filter(u=>u.alive); }
@@ -53,9 +61,8 @@ function missionHexPixel(q,r){
 }
 
 function makeMissionUnit(character,team,index){
-  const spawn=team==="player"
-    ? [{q:0,r:2},{q:0,r:3},{q:0,r:4}][index]
-    : [{q:8,r:2},{q:8,r:3},{q:8,r:4}][index];
+  const col=team==="player"?MISSION_MAP.spawnInset:MISSION_MAP.cols-1-MISSION_MAP.spawnInset;
+  const spawn=missionAxial(col,MISSION_MAP.spawnRows[index]);
   return {
     id:team+"-"+character.id+"-"+index,
     character,team,q:spawn.q,r:spawn.r,
@@ -85,6 +92,7 @@ function resetMissionActivation(unit){
   unit.attackAvailable=true;
   unit.quickAvailable=true;
   unit.prone=false;
+  unit.secondMove=false;
 }
 
 function openMissionSelection(){
@@ -366,7 +374,8 @@ function missionBestPath(unit,budget,score){
 }
 
 function isMissionBorder(c){
-  return c.q===0||c.r===0||c.q===MISSION_MAP.cols-1||c.r===MISSION_MAP.rows-1;
+  const col=missionColumn(c.q,c.r);
+  return col===0||c.r===0||col===MISSION_MAP.cols-1||c.r===MISSION_MAP.rows-1;
 }
 
 // Sortie de carte : atteindre une case du bord, puis 1 hexagone de mouvement pour quitter la carte.
@@ -502,6 +511,18 @@ function handleMissionHexClick(q,r){
     if(missionActiveUnitLost()) return;
     renderMission();
   }
+}
+
+// Activation hexagonale V1 : l'Attaque peut être sacrifiée pour une seconde action de Mouvement.
+function missionSecondMove(){
+  const u=missionActiveUnit(),m=game.mission;
+  if(!u||!u.attackAvailable||m.phase!=="player"||m.over) return;
+  u.attackAvailable=false;
+  u.secondMove=true;
+  u.movementRemaining+=m.engine.movementBase(u);
+  m.mode="move";
+  missionLog(u.character.name+" renonce à attaquer pour un second mouvement.","move");
+  renderMission();
 }
 
 function switchMissionWeapon(){
@@ -649,6 +670,7 @@ function missionActionAvailability(){
     ranged:u.attackAvailable&&e.isRangedWeapon(w),
     charge:u.attackAvailable&&e.isMeleeWeapon(w)&&u.movementRemaining===e.movementBase(u),
     switch:u.quickAvailable&&e.canSwitchWeaponSet(u),
+    secondMove:u.attackAvailable,
     end:true
   };
 }
@@ -658,12 +680,7 @@ function targetableMissionCells(){
   if(!m||!u||m.phase!=="player") return set;
 
   if(m.mode==="move"){
-    const occupied=occupiedMissionKeys(u);
-    for(let q=0;q<MISSION_MAP.cols;q++) for(let r=0;r<MISSION_MAP.rows;r++){
-      if(occupied.has(missionKey(q,r))) continue;
-      const path=shortestMissionPath(u,{q,r},u);
-      if(path&&path.length<=u.movementRemaining) set.add(missionKey(q,r));
-    }
+    for(const [key,path] of missionReachablePaths(u,u.movementRemaining)) if(path.length) set.add(key);
     return set;
   }
 
@@ -690,16 +707,16 @@ function renderMission(){
   const m=game.mission;
   if(!m) return;
   const e=m.engine,u=missionActiveUnit(),targets=targetableMissionCells();
-  const width=Math.ceil(88+Math.sqrt(3)*MISSION_MAP.size*(MISSION_MAP.cols+(MISSION_MAP.rows-1)/2));
+  const width=Math.ceil(88+Math.sqrt(3)*MISSION_MAP.size*(MISSION_MAP.cols+0.5));
   const height=Math.ceil(88+1.5*MISSION_MAP.size*(MISSION_MAP.rows-1)+2*MISSION_MAP.size);
 
   $("mission-turn").textContent=m.over?(m.winner==="player"?"Victoire":"Défaite"):"Tour "+m.turn+" · "+(m.phase==="player"?"Votre équipe":"Ennemi");
   $("mission-active").textContent=u
-    ?"Actif : "+u.character.name+" · Mouvement "+u.movementRemaining+"/"+e.movementBase(u)+" · Set "+u.activeSet
+    ?"Actif : "+u.character.name+" · Mouvement "+u.movementRemaining+"/"+e.movementBase(u)*(u.secondMove?2:1)+" · Set "+u.activeSet
     :"";
 
   let cells="";
-  for(let q=0;q<MISSION_MAP.cols;q++) for(let r=0;r<MISSION_MAP.rows;r++){
+  for(const {q,r} of missionCells()){
     const p=missionHexPixel(q,r),key=missionKey(q,r),classes=["hex-cell"];
     let title="";
     if(targets.has(key)) classes.push(m.mode==="move"?"reachable":"targetable");
@@ -730,14 +747,17 @@ function renderMission(){
     </div>`;
   }).join("");
 
-  $("mission-map").style.width=width+"px";
-  $("mission-map").style.height=height+"px";
-  $("mission-map").innerHTML=cells+tokens;
+  // La carte entière tient dans la colonne centrale : réduction si la place manque.
+  const map=$("mission-map"),available=map.parentElement.clientWidth-2;
+  map.style.width=width+"px";
+  map.style.height=height+"px";
+  map.style.zoom=available>0&&available<width?String(available/width):"";
+  map.innerHTML=cells+tokens;
 
   const availability=missionActionAvailability();
   const buttons=[
     ["mission-move-btn","move"],["mission-attack-btn","melee"],["mission-charge-btn","charge"],
-    ["mission-switch-btn","switch"],["mission-ranged-btn","ranged"],["mission-end-activation-btn","end"]
+    ["mission-switch-btn","switch"],["mission-ranged-btn","ranged"],["mission-second-move-btn","secondMove"],["mission-end-activation-btn","end"]
   ];
   for(const [id,key] of buttons){
     $(id).disabled=!availability[key];
@@ -767,6 +787,8 @@ function initializeMissionUi(){
   $("mission-charge-btn").addEventListener("click",()=>setMissionMode("charge"));
   $("mission-ranged-btn").addEventListener("click",()=>setMissionMode("ranged"));
   $("mission-switch-btn").addEventListener("click",switchMissionWeapon);
+  $("mission-second-move-btn").addEventListener("click",missionSecondMove);
+  window.addEventListener("resize",()=>{ if(game.mission) renderMission(); });
   $("mission-end-activation-btn").addEventListener("click",endMissionActivation);
   $("mission-leave-btn").addEventListener("click",leaveMission);
   $("mission-result-back-btn").addEventListener("click",leaveMission);

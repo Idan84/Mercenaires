@@ -509,6 +509,9 @@ function showCharacter(c) {
   const rb = c.reputationBreakdown;
 
   $("dialog-content").innerHTML = `
+    <section class="character-overview">
+      ${renderAvatar(c,{variant:"detail"})}
+      <div class="character-overview-copy">
     <div class="identity-grid">
       <div class="metric"><small>Peuple</small><strong>${esc(c.people)}</strong></div>
       <div class="metric"><small>Culture</small><strong>${esc(c.culture)}</strong></div>
@@ -526,6 +529,8 @@ function showCharacter(c) {
       <div class="metric"><small>Moyenne pool réputation</small><strong>${fmt(rb.mean)}</strong></div>
       <div class="metric"><small>Max / Min pool</small><strong>${Math.round(rb.max)} / ${Math.round(rb.min)}</strong></div>
     </div>
+      </div>
+    </section>
 
     ${renderEquipment(c)}
     ${renderWeaponPreferences(c)}

@@ -109,7 +109,6 @@ assert.equal(low.askQuestion(c1,"stats.Courage",merc({skills:{camp:{Intendance:0
 assert.equal(low.askQuestion(c1,"stats.Intelligence",merc({skills:{camp:{Intendance:100}}})).answer.estimate,50);
 assert.equal(c1.interview.questionsLeft,0);
 assert.equal(low.askQuestion(c1,"stats.Volonté").ok,false,"3 questions par candidat");
-assert.equal(tavern.bestIntendant([merc({id:1,skills:{camp:{Intendance:20}}}),merc({id:2,skills:{camp:{Intendance:60}}})]).id,2);
 
 // §9 — Négociation.
 function fresh(){ return {mercenary:merc(),arrivedDay:1,interview:{questionsLeft:3,answers:[]},negotiation:null}; }
@@ -139,6 +138,11 @@ assert.equal(always(0.999).makeOffer(cc,{salary:79,bonus:200}).outcome,"invalid"
 const deal=always(0.999).makeOffer(cc,{salary:cc.negotiation.salary,bonus:cc.negotiation.bonus});
 assert.equal(deal.outcome,"accepted");
 
+// Départ après un refus : 5 + 1,5 × Concession + 0,10 × Prétentions + 0,10 × Volonté, borné à 5–95 (réglage Idan).
+const quitCheck=always(0.999).makeOffer(fresh(),{salary:45,bonus:135});
+assert.ok(Math.abs(quitCheck.pQuit-(5+1.5*10+3.5+5))<1e-9);
+assert.equal(always(0.999).makeOffer(fresh(),{salary:1,bonus:1}).pQuit,95,"plafond 95 %");
+
 // Départ après un refus : jet d'acceptation raté (100), puis jet de départ réussi (1).
 const quitter=createTavernRules({random:scripted([0.999,0]),reference});
 const s3=createCampaignRules({generator,tavern:quitter,reference}).createCampaign({captain,squad});
@@ -146,6 +150,17 @@ const target=s3.tavern.candidates[0].mercenary.id;
 const gone=createCampaignRules({generator,tavern:quitter,reference}).offerToCandidate(s3,target,{salary:1,bonus:1});
 assert.equal(gone.outcome,"left");
 assert.equal(s3.tavern.candidates.length,4,"la place sera remplie le lendemain matin");
+
+// Intendant : un rôle assigné à un membre de la compagnie ; sans assignation, le candidat répond lui-même.
+const s5=campaignOf(always(0)).createCampaign({captain,squad});
+const asked=s5.tavern.candidates[0].mercenary.id;
+assert.equal(s5.company.intendantId,null);
+assert.equal(campaignOf(always(0)).askCandidate(s5,asked,"stats.Force").answer.source.type,"candidate");
+assert.equal(campaignOf(always(0)).assignIntendant(s5,s5.tavern.candidates[1].mercenary.id).ok,false,"un candidat ne peut pas être Intendant");
+assert.equal(campaignOf(always(0)).assignIntendant(s5,squad[0].id).ok,true);
+assert.equal(campaignOf(always(0)).askCandidate(s5,asked,"stats.Courage").answer.source.name,squad[0].name);
+assert.equal(campaignOf(always(0)).assignIntendant(s5,null).ok,true);
+assert.equal(campaignOf(always(0)).askCandidate(s5,asked,"stats.Volonté").answer.source.type,"candidate");
 
 // §10 — Signature : accord requis, puis place libre au Dortoir.
 const s4=stable.createCampaign({captain,squad});

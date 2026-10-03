@@ -306,3 +306,5 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
 .tavern-offer input{width:120px}
 .tavern-answers{margin:10px 0 0;padding-left:18px;display:grid;gap:4px}
 .tavern-result{min-height:1.2em;font-weight:600}
+.tavern-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:flex-end}
+.tavern-intendant{display:flex;align-items:center;gap:6px;font-size:.85rem}

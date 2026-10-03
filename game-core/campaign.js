@@ -33,6 +33,7 @@
           gold:STARTING_GOLD,
           captainId:captain.id,
           roster:[captain,...squad],
+          intendantId:null,
           camp:{dormitoryCapacity:STARTING_DORMITORY_CAPACITY}
         },
         tavern:tavern.createTavernState()
@@ -82,10 +83,24 @@
       return result;
     }
 
+    // L'Intendant est un rôle que le joueur assigne à un mercenaire de la compagnie ;
+    // sans assignation, la compagnie n'a pas d'Intendant (décision Idan, PR #11).
+    function intendantOf(state){
+      return rosterOf(state).find(m=>m.id===state.company.intendantId)||null;
+    }
+
+    function assignIntendant(state,mercenaryId){
+      if(mercenaryId===null||mercenaryId===undefined){ state.company.intendantId=null; return {ok:true,intendant:null}; }
+      const mercenary=rosterOf(state).find(m=>m.id===mercenaryId);
+      if(!mercenary) return {ok:false,reason:"Seul un membre de la compagnie peut être Intendant."};
+      state.company.intendantId=mercenary.id;
+      return {ok:true,intendant:mercenary};
+    }
+
     function askCandidate(state,mercenaryId,key){
       const candidate=tavern.findCandidate(state.tavern,mercenaryId);
       if(!candidate) return {ok:false,reason:"Candidat introuvable."};
-      return tavern.askQuestion(candidate,key,tavern.bestIntendant(rosterOf(state)));
+      return tavern.askQuestion(candidate,key,intendantOf(state));
     }
 
     return {
@@ -96,6 +111,8 @@
       dormitoryFree,
       signCandidate,
       offerToCandidate,
+      intendantOf,
+      assignIntendant,
       askCandidate
     };
   }

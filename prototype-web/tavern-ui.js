@@ -67,10 +67,27 @@ function renderTavernCard(candidate){
   </article>`;
 }
 
+// L'Intendant est un rôle assigné à un membre de la compagnie ; « Aucun » par défaut.
+function renderIntendantSelect(){
+  const current=game.campaign.company.intendantId;
+  const options=[...campaignRoster()].sort((a,b)=>(Number(b.skills?.camp?.Intendance)||0)-(Number(a.skills?.camp?.Intendance)||0));
+  $("tavern-intendant").innerHTML=`<option value="">Aucun</option>`+options.map(m=>
+    `<option value="${m.id}" ${m.id===current?"selected":""}>${esc(m.name)} — Intendance ${fmt(m.skills?.camp?.Intendance||0)}</option>`
+  ).join("");
+}
+
+function assignTavernIntendant(){
+  const value=$("tavern-intendant").value;
+  const result=campaignRules().assignIntendant(game.campaign,value?Number(value):null);
+  if(result.ok) tavernLog(result.intendant?result.intendant.name+" devient l’Intendant de la compagnie.":"La compagnie n’a plus d’Intendant.","turn");
+  renderTavern();
+}
+
 function renderTavern(){
   const c=game.campaign;
   if(!c) return;
   renderCompanyMeta();
+  renderIntendantSelect();
   $("tavern-candidates").innerHTML=c.tavern.candidates.length
     ?c.tavern.candidates.map(renderTavernCard).join("")
     :`<p class="muted">La Taverne est vide. De nouveaux candidats arriveront demain matin.</p>`;
@@ -118,7 +135,7 @@ function renderInterview(){
   const n=rules.negotiationState(candidate);
   const targets=interviewTargets(candidate);
   const asked=new Set(candidate.interview.answers.map(a=>a.key));
-  const intendant=rules.bestIntendant(campaignRoster());
+  const intendant=campaignRules().intendantOf(c);
   const dormFree=campaignRules().dormitoryFree(c);
 
   $("tavern-dialog-name").textContent=shown.name;
@@ -134,7 +151,7 @@ function renderInterview(){
       <h3>Questions (${candidate.interview.questionsLeft} restantes)</h3>
       <p class="muted">${intendant
         ?`Votre Intendant, ${esc(intendant.name)} (Intendance ${fmt(intendant.skills.camp.Intendance)}), estime les réponses.`
-        :"Sans Intendant, le candidat répond lui-même… et se vante."}</p>
+        :"Vous n’avez pas d’Intendant : le candidat répond lui-même… et se vante. Assignez un Intendant depuis la Taverne."}</p>
       <div class="tavern-question">
         <select id="tavern-question-target" ${candidate.interview.questionsLeft?"":"disabled"}>
           ${targets.filter(t=>!asked.has(t.key)).map(t=>`<option value="${esc(t.key)}">${esc(t.label)}</option>`).join("")}
@@ -215,6 +232,7 @@ function signTavernCandidate(){
 
 function initializeTavernUi(){
   $("tavern-next-day-btn").addEventListener("click",advanceTavernDay);
+  $("tavern-intendant").addEventListener("change",assignTavernIntendant);
   $("close-tavern-dialog").addEventListener("click",()=>{ game.tavernSelected=null; $("tavern-dialog").close(); });
   $("tavern-candidates").addEventListener("click",e=>{
     const btn=e.target.closest("[data-tavern-open]");

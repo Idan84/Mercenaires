@@ -21,6 +21,9 @@
   function createTavernRules(options={}){
     const random=options.random||Math.random;
     const INITIAL_SLOTS=referenceConstant(options.reference,"tavern.slots.initial",5);
+    // Départ après un refus (PLAYTEST) : poids de la concession demandée et plafond de la probabilité.
+    const QUIT_CONCESSION_COEFFICIENT=referenceConstant(options.reference,"tavern.negotiation.quit_concession_coefficient",0.75);
+    const QUIT_MAX=referenceConstant(options.reference,"tavern.negotiation.quit_max",75);
     function d100(){ return Math.floor(random()*100)+1; }
     function uniform(min,max){ return min+random()*(max-min); }
 
@@ -123,13 +126,6 @@
       return {ok:true,answer,repeated:false};
     }
 
-    // L'Intendant V1 : le meilleur score d'Intendance de la compagnie (choix JC3 accepté par Chatty, PR #6).
-    function bestIntendant(roster){
-      return [...(roster||[])]
-        .filter(m=>Number(m?.skills?.camp?.Intendance)>0)
-        .sort((a,b)=>Number(b.skills.camp.Intendance)-Number(a.skills.camp.Intendance))[0]||null;
-    }
-
     function negotiationState(candidate){
       if(!candidate.negotiation){
         candidate.negotiation={
@@ -182,7 +178,7 @@
       }
 
       n.refused={salary,bonus};
-      const pQuit=clamp(5+0.75*concession+0.10*(Number(m.salaryPretension)||0)+0.10*stat(m,"Volonté"),5,75);
+      const pQuit=clamp(5+QUIT_CONCESSION_COEFFICIENT*concession+0.10*(Number(m.salaryPretension)||0)+0.10*stat(m,"Volonté"),5,QUIT_MAX);
       const quitRoll=d100();
       if(quitRoll<=pQuit) return {outcome:"left",pAccept,acceptRoll,pQuit,quitRoll,concession};
 
@@ -209,7 +205,6 @@
       tavernMorning,
       findCandidate,
       askQuestion,
-      bestIntendant,
       negotiationState,
       negotiationResistance,
       makeOffer,

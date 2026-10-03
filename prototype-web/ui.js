@@ -377,6 +377,36 @@ function renderWeaponPreferences(c) {
   </section>`;
 }
 
+function renderMagicPreferences(c) {
+  const top = Object.entries(c.skills.magic || {})
+    .filter(([,value]) => Number.isFinite(value))
+    .sort((a,b)=>b[1]-a[1])
+    .slice(0,3);
+
+  return `<section class="magic-preferences">
+    <div class="section-title-row compact">
+      <div>
+        <p class="eyebrow">Affinités magiques</p>
+        <h3>Magies de prédilection</h3>
+      </div>
+      <span class="muted">Top 3 des écoles</span>
+    </div>
+    <div class="preference-grid magic-grid">
+      ${[0,1,2].map(index => {
+        const entry = top[index];
+        if (!entry) return `<div class="preference-card magic-card"><small>#${index+1}</small><strong>—</strong></div>`;
+        const [name,value] = entry;
+        return `<div class="preference-card magic-card">
+          <small>#${index+1}</small>
+          <strong>${esc(name)}</strong>
+          <span>Maîtrise de l'école</span>
+          <b>${fmt(value)}</b>
+        </div>`;
+      }).join("")}
+    </div>
+  </section>`;
+}
+
 function renderPending(c) {
   const pending = c.generationTrace.pending || [];
   const cosmetics = (c.generationTrace.cosmetics || []).filter(x => x.status === "deferred");
@@ -424,6 +454,7 @@ function showCharacter(c) {
     </div>
 
     ${renderWeaponPreferences(c)}
+    ${renderMagicPreferences(c)}
 
     <details class="debug-section" open>
       <summary><h3>Caractéristiques — trace de génération</h3><span>brut → identités → final</span></summary>
@@ -433,8 +464,9 @@ function showCharacter(c) {
     <details class="debug-section" open>
       <summary><h3>Compétences — trace de génération</h3><span>tirage brut → matrice → final</span></summary>
       <div class="skill-groups">
+        ${renderMartialGroup(c)}
         ${Object.entries(c.skills)
-          .filter(([,values]) => Object.keys(values).length)
+          .filter(([group,values]) => group !== "martial" && Object.keys(values).length)
           .map(([group,values]) => renderSkillGroup(c,group,values))
           .join("")}
       </div>

@@ -19,18 +19,31 @@ jobs:
       - name: Checkout migration branch
         uses: actions/checkout@v4
 
-      - name: Extract Notion archive
+      - name: Extract Notion archive with UTF-8 filenames
         shell: bash
         run: |
           set -euo pipefail
-          ZIP="$(find docs/notion -maxdepth 1 -type f -name '*_ExportBlock-*.zip' | head -n 1)"
-          test -n "$ZIP"
-          rm -rf archive/notion-export
-          mkdir -p archive/notion-export
-          unzip -q "$ZIP" -d archive/notion-export
-          find archive/notion-export -type f -printf '%P\n' | LC_ALL=C sort > archive/notion-export/MANIFEST.txt
-          printf '\nFiles: ' >> archive/notion-export/MANIFEST.txt
-          find archive/notion-export -type f ! -name MANIFEST.txt | wc -l >> archive/notion-export/MANIFEST.txt
+          python - <<'PY'
+          from pathlib import Path
+          from zipfile import ZipFile
+          import shutil
+
+          zips = sorted(Path("docs/notion").glob("*_ExportBlock-*.zip"))
+          if not zips:
+              raise SystemExit("No Notion export ZIP found")
+          out = Path("archive/notion-export")
+          if out.exists():
+              shutil.rmtree(out)
+          out.mkdir(parents=True)
+          with ZipFile(zips[0]) as zf:
+              zf.extractall(out)
+
+          files = sorted(str(p.relative_to(out)) for p in out.rglob("*") if p.is_file())
+          (out / "MANIFEST.txt").write_text(
+              "\n".join(files) + f"\n\nFiles: {len(files)}\n",
+              encoding="utf-8",
+          )
+          PY
 
       - name: Commit extracted archive
         shell: bash
@@ -38,10 +51,10 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add archive/notion-export
+          git add -A archive/notion-export
           if git diff --cached --quiet; then
             echo "No extracted changes."
             exit 0
           fi
-          git commit -m "archive: extract complete Notion export"
+          git commit -m "archive: re-extract Notion export with UTF-8 filenames"
           git push

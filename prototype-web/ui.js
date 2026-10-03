@@ -27,6 +27,7 @@ function renderAudit() {
   const pendingSkills = audit.skillCoverage.filter(x => x.status === "pending").length;
   const catalogSkills = audit.skillCoverage.filter(x => x.status === "catalog").length;
   const binaryPending = audit.binaryPending?.length || 0;
+  const binaryDisabled = audit.binaryDisabled?.length || 0;
   const cosmeticDeferred = audit.cosmetics?.length || 0;
 
   $("audit-status").textContent = audit.issues.length ? `${audit.issues.length} problème(s)` : "Référentiels cohérents";
@@ -42,6 +43,7 @@ function renderAudit() {
     ["Compétences générées/dérivées", generatedSkills],
     ["Règles gameplay en attente", pendingSkills],
     ["Aptitudes binaires à paramétrer", binaryPending],
+    ["Aptitudes désactivées V1", binaryDisabled],
     ["Aptitudes hors pipeline", catalogSkills],
     ["Cosmétiques différés", cosmeticDeferred]
   ];
@@ -149,6 +151,39 @@ function skillLabel(group) {
   })[group] || group;
 }
 
+function renderBinaryTrace(trace, value) {
+  if (!trace) return {raw:"—", sources:"—", modifier:"—", final:value ? "Oui" : "Non"};
+
+  if (trace.mode === "automatic") {
+    const names = (trace.sources || []).map(x => x.name);
+    return {
+      raw: names.length ? "Automatique" : "Non",
+      sources: names.length ? esc(names.join(" + ")) : "—",
+      modifier: "—",
+      final: value ? "Oui" : "Non"
+    };
+  }
+
+  if (trace.mode === "probability") {
+    const sources = (trace.sources || []).map(x => `${x.name} +${fmt(x.pp)} pp`);
+    const extras = [];
+    if (trace.warriorBonus) extras.push(`guerrier +${fmt(trace.warriorBonus)} pp`);
+    if (trace.magicMultiplier && trace.magicMultiplier !== 1) extras.push(`magie ×${fmt(trace.magicMultiplier)}`);
+    return {
+      raw: `${fmt(trace.probability)} % · jet ${fmt(trace.percentileRoll)}`,
+      sources: sources.length ? esc(sources.join(" · ")) : "—",
+      modifier: extras.length ? esc(extras.join(" · ")) : "—",
+      final: value ? "Oui" : "Non"
+    };
+  }
+
+  if (trace.mode === "disabled") {
+    return {raw:"Désactivé V1", sources:"—", modifier:"—", final:"Non"};
+  }
+
+  return {raw:value ? "Oui" : "Non", sources:"—", modifier:"—", final:value ? "Oui" : "Non"};
+}
+
 function renderSkillGroup(c, group, values) {
   const entries = Object.entries(values).sort((a,b) => {
     const av = Number.isFinite(a[1]) ? a[1] : -Infinity;
@@ -169,14 +204,18 @@ function renderSkillGroup(c, group, values) {
           : "—";
         const isBinary = typeof value === "boolean";
         const defined = Number.isFinite(value) || isBinary;
-        const rawDisplay = isBinary ? (trace?.raw ? "Oui" : "Non") : (Number.isFinite(trace?.raw) ? fmt(trace.raw) : "À définir");
-        const finalDisplay = isBinary ? (value ? "Oui" : "Non") : (Number.isFinite(value) ? fmt(value) : "—");
+        const binary = isBinary ? renderBinaryTrace(trace, value) : null;
+        const rawDisplay = isBinary ? binary.raw : (Number.isFinite(trace?.raw) ? fmt(trace.raw) : "À définir");
+        const sourceDisplay = isBinary ? binary.sources : bonus;
+        const modifierDisplay = isBinary ? binary.modifier : fmtDelta(modifier);
+        const finalDisplay = isBinary ? binary.final : (Number.isFinite(value) ? fmt(value) : "—");
+        const inherited = trace?.inheritedFrom ? `<small>hérité de ${esc(trace.inheritedFrom)}</small>` : "";
         return `<tr class="${defined ? "" : "pending-row"}">
           <td><strong>${esc(name)}</strong><small>${esc(trace?.rawFormula || (defined ? "" : "Règle non définie"))}</small></td>
           <td>${rawDisplay}</td>
-          <td>${bonus}</td>
-          <td class="${modifier>0?"positive":modifier<0?"negative":""}">${isBinary ? "—" : fmtDelta(modifier)}</td>
-          <td><strong>${finalDisplay}</strong></td>
+          <td>${sourceDisplay}</td>
+          <td class="${!isBinary && modifier>0?"positive":!isBinary && modifier<0?"negative":""}">${modifierDisplay}</td>
+          <td><strong>${finalDisplay}</strong>${inherited}</td>
         </tr>`;
       }).join("")}</tbody>
     </table></div>

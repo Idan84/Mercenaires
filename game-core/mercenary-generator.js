@@ -304,8 +304,73 @@
         });
       }
 
+      const isRangedWeapon = weapon => /Armes de tir|Armes à feu/.test(String(weapon.domaine || ""));
+      const isShield = weapon => /Boucliers/.test(String(weapon.domaine || ""));
+      const oneHandMeleeValues = weaponRows
+        .filter(w => !isRangedWeapon(w) && !isShield(w) && ["1 main", "Au choix"].includes(w.prise))
+        .map(w => skills.martial[w.nom])
+        .filter(Number.isFinite);
+      const twoHandMeleeValues = weaponRows
+        .filter(w => !isRangedWeapon(w) && !isShield(w) && ["2 mains", "Au choix"].includes(w.prise))
+        .map(w => skills.martial[w.nom])
+        .filter(Number.isFinite);
+
+      const specialMartial = new Set([
+        "Pièges",
+        "Discrétion",
+        "Combat à deux armes",
+        "Combat à mains nues",
+        "Combat à deux mains",
+        "Armes naturelles"
+      ]);
+
+      if (skillByName.has("Pièges")) {
+        setRawSkill(
+          skills, trace, "martial", "Pièges",
+          ((character.stats.Intelligence + character.stats.Perception) / 2) * randomBetween(0.8, 1.2),
+          {rawFormula: "Moyenne(Intelligence, Perception) × Rand(0,8 ; 1,2)"}
+        );
+      }
+
+      if (skillByName.has("Discrétion")) {
+        setRawSkill(
+          skills, trace, "martial", "Discrétion",
+          ((character.stats.Dextérité + character.stats.Perception + character.stats.Esquive) / 3) * randomBetween(0.8, 1.2),
+          {rawFormula: "Moyenne(Dextérité, Perception, Esquive) × Rand(0,8 ; 1,2)"}
+        );
+      }
+
+      if (skillByName.has("Combat à deux armes")) {
+        setRawSkill(
+          skills, trace, "martial", "Combat à deux armes",
+          maxNumeric(oneHandMeleeValues) * randomBetween(0.8, 1.2),
+          {rawFormula: "Max(armes de mêlée 1 main) × Rand(0,8 ; 1,2)"}
+        );
+      }
+
+      if (skillByName.has("Combat à mains nues")) {
+        setRawSkill(
+          skills, trace, "martial", "Combat à mains nues",
+          ((character.stats.Force + character.stats.Dextérité) / 2) * randomBetween(0.8, 1.2),
+          {rawFormula: "Moyenne(Force, Dextérité) × Rand(0,8 ; 1,2)"}
+        );
+      }
+
+      if (skillByName.has("Combat à deux mains")) {
+        setRawSkill(
+          skills, trace, "martial", "Combat à deux mains",
+          maxNumeric(twoHandMeleeValues) * randomBetween(0.8, 1.2),
+          {rawFormula: "Max(armes de mêlée 2 mains) × Rand(0,8 ; 1,2)"}
+        );
+      }
+
+      if (skillByName.has("Armes naturelles")) {
+        setRawSkill(skills, trace, "martial", "Armes naturelles", 0, {rawFormula: "0"});
+      }
+
       const martialCategories = skillRows.filter(r => r.niveau === "Catégorie" && r.domaine === "Martial");
       for (const category of martialCategories) {
+        if (specialMartial.has(category.nom)) continue;
         const children = (childrenByParent.get(category.nom) || [])
           .map(x => skills.martial[x.nom])
           .filter(Number.isFinite);
@@ -378,14 +443,6 @@
         setRawSkill(skills, trace, "craft", skill.nom, craftFactor * rollDice(6,6), {
           rawFormula: "(1 + (Dextérité + Intelligence) / 100) × 6D6"
         });
-      }
-      skills.craft.Artisanat = null;
-      addPending(trace, "Artisanat", "La catégorie existe, mais aucune formule dérivée de catégorie n’est définie.");
-
-      for (const name of ["Médecine", "Pièges", "Discrétion"]) {
-        if (!skillByName.has(name)) continue;
-        skills.technique[name] = null;
-        addPending(trace, name, "Compétence prévue dans la matrice mais tirage brut initial non défini.");
       }
 
       if (skillByName.has("Régénération")) {

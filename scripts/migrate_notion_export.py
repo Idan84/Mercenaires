@@ -57,6 +57,8 @@ ID_RE = re.compile(r"\s+[0-9a-f]{32}$", re.I)
 PERCENT_RE = re.compile(r"^(-?\d+(?:[.,]\d+)?)\s*%$")
 NUMBER_RE = re.compile(r"^-?\d+(?:[.,]\d+)?$")
 LINK_RE = re.compile(r"\]\(([^)]+)\)")
+EXPORT_REF_RE = re.compile(r"([^,\n]+?) \([^)]*[0-9a-f]{32}\.(?:csv|md)\)", re.I)
+PAGE_FILE_RE = re.compile(r"([0-9a-f]{32})\.md$", re.I)
 
 def key(s):
     s = unicodedata.normalize("NFKD", s)
@@ -69,6 +71,7 @@ def slug(s):
 def scalar(v):
     if v is None: return None
     v = v.replace("\ufeff","").replace("\xa0"," ").strip()
+    v = EXPORT_REF_RE.sub(lambda m: m.group(1).strip(), v)
     if not v: return None
     if v.lower() in ("yes","true"): return True
     if v.lower() in ("no","false"): return False

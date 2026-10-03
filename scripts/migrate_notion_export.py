@@ -109,9 +109,21 @@ def rewrite_links(text,src,dst):
         except Exception:
             return m.group(0)
         if not target.exists(): return m.group(0)
-        rel=Path(os.path.relpath(target,dst.parent)).as_posix()
-        url=quote(rel,safe="/") + (("#"+anchor) if sep else "")
-        return "]("+url+")"
+        page_match = PAGE_FILE_RE.search(target.name)
+        if page_match:
+            page_id = page_match.group(1).lower()
+            if page_id in CANONICAL_DOCS:
+                url = "/design/#doc=" + quote(CANONICAL_DOCS[page_id], safe="/")
+                return "](" + url + ")"
+            if target.parent.name == "Formules de jeu":
+                formula_name = slug(ID_RE.sub("", target.stem)) + ".md"
+                url = "/design/#doc=" + quote("formulas/" + formula_name, safe="/")
+                return "](" + url + ")"
+        archived = target.relative_to(ROOT).as_posix()
+        url = "https://github.com/Idan84/Mercenaires/blob/main/" + quote(archived, safe="/")
+        if sep:
+            url += "#" + anchor
+        return "](" + url + ")"
     return LINK_RE.sub(repl,text)
 
 def copy_doc(src,dst):

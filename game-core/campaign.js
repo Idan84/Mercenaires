@@ -46,15 +46,41 @@
     return Number.isFinite(value)?value:fallback;
   }
 
-  // generator : createGenerator(...) ; tavern : createTavernRules(...) ; reference : data/reference/.
-  function createCampaignRules({generator,tavern,reference}){
+  // generator : createGenerator(...) ; tavern : createTavernRules(...) ; reference : data/reference/ ;
+  // biographies (facultatif) : createBiographyRules(...) de game-core/biography.js.
+  function createCampaignRules({generator,tavern,reference,biographies=null}){
     const STARTING_GOLD=referenceConstant(reference,"company.gold.initial",10000);
     const STARTING_DORMITORY_CAPACITY=referenceConstant(reference,"camp.dormitory.initial_capacity",40);
     function rosterOf(state){ return state.company.roster; }
 
+    // Biographie figée sur le mercenaire ; une bio n'est jamais réutilisée dans une même sauvegarde,
+    // même après la mort de son mercenaire (proposition Chatty, doc 15).
+    function assignBiography(state,mercenary){
+      if(!biographies||mercenary.biography?.id) return mercenary.biography||null;
+      state.biographiesUsed=state.biographiesUsed||[];
+      const used=new Set(state.biographiesUsed);
+      const bio=biographies.assign(mercenary,used);
+      if(bio&&!state.biographiesUsed.includes(bio.id)) state.biographiesUsed.push(bio.id);
+      return bio;
+    }
+
+    // Parties sauvegardées avant les biographies : on complète ceux qui n'en ont pas.
+    function ensureBiographies(state){
+      state.biographiesUsed=state.biographiesUsed||[];
+      const everyone=()=>[...rosterOf(state),...state.tavern.candidates.map(c=>c.mercenary)];
+      for(const m of everyone()){
+        if(m.biography?.id&&!state.biographiesUsed.includes(m.biography.id)) state.biographiesUsed.push(m.biography.id);
+      }
+      for(const m of everyone()) assignBiography(state,m);
+    }
+
     // Un candidat de la Taverne est généré avec les biais du capitaine, comme tout nouveau mercenaire.
     function candidateFactory(state){
-      return ()=>generator.createMercenary({id:state.nextId++,captain:state.company.roster.find(m=>m.id===state.company.captainId)||null});
+      return ()=>{
+        const mercenary=generator.createMercenary({id:state.nextId++,captain:state.company.roster.find(m=>m.id===state.company.captainId)||null});
+        assignBiography(state,mercenary);
+        return mercenary;
+      };
     }
 
     function createCampaign({captain,squad=[],companyName=null}){
@@ -70,8 +96,10 @@
           intendantId:null,
           camp:{dormitoryCapacity:STARTING_DORMITORY_CAPACITY}
         },
-        tavern:tavern.createTavernState()
+        tavern:tavern.createTavernState(),
+        biographiesUsed:[]
       };
+      for(const m of state.company.roster) assignBiography(state,m);
       tavern.fillTavern(state.tavern,state.day,candidateFactory(state));
       return state;
     }
@@ -208,7 +236,9 @@
       assignIntendant,
       askCandidate,
       isAvailable,
-      applyMissionAftermath
+      applyMissionAftermath,
+      assignBiography,
+      ensureBiographies
     };
   }
 

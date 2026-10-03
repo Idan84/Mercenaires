@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "description": "Attribution déterministe des aptitudes binaires à la création. Une aptitude vaut true si au moins une source d'identité correspondante l'accorde.",
+  "rule": "people OR ancestry OR culture OR origin",
+  "rows": [
+    {
+      "aptitude": "Vision nocturne",
+      "domaine": "Physiologie",
+      "peoples": [],
+      "ancestries": [],
+      "cultures": [],
+      "origins": []
+    },
+    {
+      "aptitude": "Vol",
+      "domaine": "Physiologie",
+      "peoples": [],
+      "ancestries": [],
+      "cultures": [],
+      "origins": []
+    },
+    {
+      "aptitude": "Empoisonnement des armes",
+      "domaine": "Martial",
+      "peoples": [],
+      "ancestries": [],
+      "cultures": [],
+      "origins": []
+    },
+    {
+      "aptitude": "Port d’armure légère",
+      "domaine": "Martial",
+      "peoples": [],
+      "ancestries": [],
+      "cultures": [],
+      "origins": []
+    },
+    {
+      "aptitude": "Port d’armure intermédiaire",
+      "domaine": "Martial",
+      "peoples": [],
+      "ancestries": [],
+      "cultures": [],
+      "origins": []
+    },
+    {
+      "aptitude": "Port d’armure lourde",
+      "domaine": "Martial",
+      "peoples": [],
+      "ancestries": [],
+      "cultures": [],
+      "origins": []
+    }
+  ]
+}

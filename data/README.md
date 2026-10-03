@@ -1,5 +1,11 @@
-# Data
+# Données du jeu
 
-Répertoire réservé aux futurs fichiers JSON / tables portables vers Unreal : peuples, cultures, origines, ascendances, matrice de génération, équilibrage, etc.
+## Référentiels canoniques
 
-Objectif : aucune règle importante ne doit rester enfermée uniquement dans le DOM ou le CSS du prototype web.
+`data/reference/` contient les tables de design utilisées comme source de vérité :
+peuples, cultures, ascendances, compatibilités, matrice de génération, compétences,
+caractéristiques, dégâts, états, équipement, formules et constantes.
+
+Voir `data/reference/CATALOG.md` pour l'inventaire complet.
+
+Les fichiers de `archive/notion-export/` sont historiques et ne doivent pas être consommés par le jeu.

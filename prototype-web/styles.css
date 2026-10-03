@@ -148,3 +148,44 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
 
 .binary-item { background:#eef5ec; border-color:#c9dfc3; }
 .binary-item span { color:#526b4d; }
+
+
+/* Team comparison */
+.compare-cell { min-width: 320px; }
+.team-compare { min-width: 300px; }
+.compare-track { position: relative; height: 18px; margin: 2px 8px 5px; }
+.compare-line { position: absolute; left: 0; right: 0; top: 8px; height: 2px; background: #d7d0c6; }
+.compare-dot { position: absolute; top: 4px; width: 9px; height: 9px; border-radius: 50%; transform: translateX(-50%); background: #9b9287; border: 2px solid #fff; box-shadow: 0 0 0 1px #bdb4aa; }
+.compare-dot.current { width: 13px; height: 13px; top: 2px; background: #7a2d23; box-shadow: 0 0 0 1px #7a2d23; z-index: 3; }
+.compare-dot.avg { background: #315d77; }
+.compare-dot.median { background: #7b6a34; }
+.compare-dot.min,.compare-dot.max { background: #999188; }
+.compare-legend { display: grid; grid-template-columns: repeat(5,minmax(52px,1fr)); gap: 4px; font-size: .63rem; color: #7f766c; }
+.compare-legend span { min-width: 0; text-align: center; }
+.compare-legend small { display: block; text-transform: uppercase; letter-spacing: .03em; font-size: .56rem; }
+.compare-legend b { display: block; color: #3e3934; font-size: .73rem; font-variant-numeric: tabular-nums; }
+.compare-legend em { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-style: normal; font-size: .55rem; }
+
+/* Martial hierarchy */
+.martial-tree { display: grid; gap: 12px; padding: 12px; }
+.martial-category { border: 1px solid #ddd6cc; border-radius: 11px; overflow: hidden; background: #fff; }
+.martial-category-head { display: grid; grid-template-columns: minmax(180px,1fr) 70px minmax(300px,1.35fr); gap: 12px; align-items: center; padding: 11px 12px; background: #ece7df; }
+.martial-category-head small { display: block; text-transform: uppercase; letter-spacing: .07em; font-size: .58rem; color: #7b7269; }
+.martial-category-head strong { font-size: 1rem; color: #312c27; }
+.martial-category-score { text-align: center; font-size: 1.2rem; font-weight: 850; color: #792d23; font-variant-numeric: tabular-nums; }
+.martial-category-compare .team-compare { min-width: 280px; }
+.martial-weapons { margin: 0; border: 0; border-radius: 0; }
+.martial-child strong { font-weight: 650; }
+.branch { display: inline-block; width: 20px; color: #a59b90; }
+.martial-aptitudes { padding: 0 12px 12px; }
+.martial-aptitudes h4 { margin: 8px 0 7px; }
+
+/* Magic preferences */
+.magic-preferences { margin-top: 14px; padding-top: 14px; border-top: 1px solid #e6dfd5; }
+.magic-card strong { color: #4c356b; }
+
+@media (max-width: 980px) {
+  .martial-category-head { grid-template-columns: 1fr 70px; }
+  .martial-category-compare { grid-column: 1/-1; }
+  .compare-cell { min-width: 280px; }
+}

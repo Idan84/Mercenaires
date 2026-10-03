@@ -25,6 +25,7 @@ function renderAudit() {
   const blockedMatrix = audit.matrixCoverage.filter(x => x.status === "blocked").length;
   const generatedSkills = audit.skillCoverage.filter(x => ["generated","derived"].includes(x.status)).length;
   const pendingSkills = audit.skillCoverage.filter(x => x.status === "pending").length;
+  const cosmeticDeferred = audit.cosmetics?.length || 0;
 
   $("audit-status").textContent = audit.issues.length ? `${audit.issues.length} problème(s)` : "Référentiels cohérents";
   $("audit-status").classList.toggle("badge-ok", audit.issues.length === 0);
@@ -37,7 +38,8 @@ function renderAudit() {
     ["Compat. culture/origine", audit.counts.cultureOriginCompatibilities],
     ["Matrice active", `${activeMatrix}/${audit.counts.matrixRows}`],
     ["Compétences générées/dérivées", generatedSkills],
-    ["Règles compétence en attente", pendingSkills]
+    ["Règles gameplay en attente", pendingSkills],
+    ["Cosmétiques différés", cosmeticDeferred]
   ];
 
   $("audit-metrics").innerHTML = metrics.map(([label,value]) => `
@@ -45,10 +47,16 @@ function renderAudit() {
   `).join("");
 
   const uniquePending = [...new Map(audit.pending.map(x => [x.target, x])).values()];
-  $("audit-pending-title").textContent = `${uniquePending.length} règles encore à définir`;
-  $("audit-pending").innerHTML = uniquePending.map(item => `
-    <div class="pending-item"><strong>${esc(item.target)}</strong><span>${esc(item.reason)}</span></div>
-  `).join("");
+  const cosmetics = audit.cosmetics || [];
+  $("audit-pending-title").textContent = `${uniquePending.length} règles gameplay à définir · ${cosmetics.length} champs cosmétiques différés`;
+  $("audit-pending").innerHTML = [
+    ...uniquePending.map(item => `
+      <div class="pending-item"><strong>${esc(item.target)}</strong><span>${esc(item.reason)}</span></div>
+    `),
+    ...cosmetics.map(item => `
+      <div class="pending-item cosmetic-item"><strong>${esc(item.target)}</strong><span>${esc(item.reason)}</span></div>
+    `)
+  ].join("");
 }
 
 function renderGame() {
@@ -165,13 +173,20 @@ function renderSkillGroup(c, group, values) {
 
 function renderPending(c) {
   const pending = c.generationTrace.pending || [];
-  if (!pending.length) return "";
+  const cosmetics = (c.generationTrace.cosmetics || []).filter(x => x.status === "deferred");
+  if (!pending.length && !cosmetics.length) return "";
   return `<div class="pending-box">
-    <h3>Règles encore non définies</h3>
-    <p class="muted">Le moteur n’invente pas de valeur : ces éléments restent explicitement en attente.</p>
-    <div class="pending-list">${pending.map(x => `
-      <div class="pending-item"><strong>${esc(x.target)}</strong><span>${esc(x.reason)}</span></div>
-    `).join("")}</div>
+    <h3>Éléments encore à générer</h3>
+    ${pending.length ? `
+      <p class="muted">Gameplay : le moteur n’invente pas de valeur tant que la règle n’est pas définie.</p>
+      <div class="pending-list">${pending.map(x => `
+        <div class="pending-item"><strong>${esc(x.target)}</strong><span>${esc(x.reason)}</span></div>
+      `).join("")}</div>` : ""}
+    ${cosmetics.length ? `
+      <p class="muted cosmetic-heading">Cosmétique : généré plus tard à partir du profil mécanique.</p>
+      <div class="pending-list">${cosmetics.map(x => `
+        <div class="pending-item cosmetic-item"><strong>${esc(x.target)}</strong><span>${esc(x.reason)}</span></div>
+      `).join("")}</div>` : ""}
   </div>`;
 }
 

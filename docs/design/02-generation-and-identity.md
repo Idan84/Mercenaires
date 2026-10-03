@@ -176,3 +176,7 @@ Exemple : pour un peuple principalement **Chaotique bon** :
 Pour **Neutre**, les huit autres cases touchent la case centrale : elles se partagent donc les 60 % restants, soit **7,5 % chacune**.
 
 Le capitaine choisi par le joueur peut toujours avoir un alignement forcé ; cette distribution ne s'applique qu'aux alignements générés automatiquement.
+
+### Exception culturelle — Elfes noirs
+
+La culture **Elfes noirs** remplace l'alignement principal du peuple Elfe par **Chaotique mauvais** avant application de la distribution 40/45/15.

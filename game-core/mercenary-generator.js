@@ -767,8 +767,12 @@
       if (skill.domaine === "Magie" && skill.niveau === "Catégorie") return {status:"generated", rule:"École de magie"};
       if (skill.domaine === "Camp" && skill.niveau === "Catégorie") return {status:"generated", rule:"Camp 6D6 pondéré"};
       if (skill.parent === "Artisanat") return {status:"generated", rule:"Artisanat 6D6 pondéré"};
-      if (skill.nom === "Artisanat") return {status:"pending", reason:"Formule de catégorie non définie."};
-      if (["Médecine","Pièges","Discrétion"].includes(skill.nom)) return {status:"pending", reason:"Tirage brut initial non défini."};
+      if (skill.nom === "Pièges") return {status:"derived", rule:"Moyenne(Intelligence, Perception) × Rand(0,8 ; 1,2)"};
+      if (skill.nom === "Discrétion") return {status:"derived", rule:"Moyenne(Dextérité, Perception, Esquive) × Rand(0,8 ; 1,2)"};
+      if (skill.nom === "Combat à deux armes") return {status:"derived", rule:"Max arme de mêlée 1 main × Rand(0,8 ; 1,2)"};
+      if (skill.nom === "Combat à mains nues") return {status:"derived", rule:"Moyenne(Force, Dextérité) × Rand(0,8 ; 1,2)"};
+      if (skill.nom === "Combat à deux mains") return {status:"derived", rule:"Max arme de mêlée 2 mains × Rand(0,8 ; 1,2)"};
+      if (skill.nom === "Armes naturelles") return {status:"generated", rule:"0 puis modificateurs"};
       if (skill.nom === "Régénération") return {status:"generated", rule:"0 puis modificateurs"};
       if (skill.domaine === "Social" && skill.niveau === "Catégorie") return {status:"generated", rule:"10D6"};
       if (skill.niveau === "Catégorie" && skill.domaine === "Martial") {

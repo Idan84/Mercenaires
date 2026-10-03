@@ -47,6 +47,7 @@
     const skillRows = rows.skills || [];
     const characteristicRows = rows.characteristics || [];
     const formulaConstantRows = rows.formulaConstants || [];
+    const weaponRows = rows.weapons || [];
 
     const peopleByName = new Map(peopleRows.map(r => [r.nom, r]));
     const skillByName = new Map(skillRows.map(r => [r.nom, r]));

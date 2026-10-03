@@ -453,7 +453,7 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
 }
 
 /* Fiche : biographie et grimoire (styles de Chatty, PR #29) */
-.character-bio-placeholder{display:grid;gap:6px;margin:16px 0 0;padding:14px 15px;border-radius:12px;background:#211e1b;color:#f4eee6;line-height:1.45}
+.character-bio-placeholder{display:grid;gap:6px;margin:0 0 16px;padding:14px 15px;border-radius:12px;background:#211e1b;color:#f4eee6;line-height:1.45}
 .character-bio-placeholder strong{font-family:Georgia,"Times New Roman",serif;font-size:1.05rem}
 .character-bio-placeholder span{color:#bdb3a8;font-size:.8rem}
 .spellbook-section{padding-top:18px;margin-top:18px;border-top:1px solid #e6dfd5}
@@ -465,3 +465,8 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
 .spell-card small{color:#7b668b;font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em}
 .spell-card strong{font-size:1rem;color:#4c356b}
 .spell-card span{font-size:.75rem;color:#766c7d}
+.character-bio{display:grid;gap:6px;margin:0 0 16px;padding:16px 18px;border-radius:12px;background:#211e1b;color:#f4eee6;line-height:1.5}
+.character-bio strong{font-family:Georgia,"Times New Roman",serif;font-size:1.05rem;color:#c9aa7d}
+.character-bio p{margin:0;font-size:.95rem}
+.character-bio .bio-rumor{color:#bdb3a8;font-style:italic;font-size:.85rem}
+.character-bio .bio-motto{color:#c9aa7d;font-family:Georgia,"Times New Roman",serif;font-size:.85rem}

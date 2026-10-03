@@ -52,6 +52,7 @@ function continueSavedGame(){
   if(!save?.ok){ alert(save?.reason||"Aucune sauvegarde."); renderSaveStatus(); return; }
   const roster=save.state.company.roster;
   game.campaign=save.state;
+  campaignRules().ensureBiographies(game.campaign);
   game.captain=roster.find(m=>m.id===save.state.company.captainId)||roster[0];
   game.initialSquad=roster.filter(m=>m!==game.captain&&!m.contract);
   game.generated=[];

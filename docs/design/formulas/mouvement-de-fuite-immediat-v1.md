@@ -16,4 +16,6 @@ Lorsqu'un personnage échoue à un test de Courage et passe **En Fuite**, il dé
 
 S'il ne lui reste aucun mouvement, il ne bouge pas mais conserve l'état **En Fuite**.
 
+Si la panique survient **en dehors de sa propre activation** (par exemple pendant le tour adverse), son budget de fuite immédiate est `MouvementBase` (décision Idan du 2026-10-03, PR #7).
+
 Les activations suivantes sont réglées par [Reprise de contrôle — En Fuite V1](/design/#doc=formulas/reprise-de-controle-en-fuite-v1.md) et [Comportement automatique — En Fuite V1](/design/#doc=formulas/comportement-automatique-en-fuite-v1.md).

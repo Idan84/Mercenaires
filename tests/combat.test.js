@@ -247,6 +247,17 @@ assert.equal(panicky.rollRecovery(hero,brute,1).recovered,false);
 assert.equal(combat.rollFleeBehavior(),1);
 assert.equal(panicky.rollFleeBehavior(),3);
 
+// Issue #13 : les PV restent signés sous 0 (profondeur conservée pour la fin de mission), et la cible est hors combat.
+const doomed=unit(b,1,0);doomed.hp=1;
+const finisher=unit(a,0,0);setFamily(finisher,"melee");
+const finish=combat.resolveAttack(finisher,doomed,{mode:"melee",distance:1});
+assert.equal(finish.wound,true);
+assert.equal(doomed.hp,1-finish.damage);
+assert.ok(doomed.hp<0,"PV négatifs conservés");
+assert.equal(doomed.alive,false);
+assert.equal(finish.targetHp,doomed.hp);
+assert.equal(finish.targetDown,true);
+
 // Charge : le chemin suit la ligne droite jusqu'à la case d'arrivée.
 const charger=unit(a,0,0),chargeTarget=unit(b,4,0);
 const charge=combat.chargeData(charger,chargeTarget);

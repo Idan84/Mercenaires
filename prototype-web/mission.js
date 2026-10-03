@@ -215,7 +215,7 @@ function logMissionAttack(a,d,result,kind="attack"){
     missionLog(prefix+" : touche mais ne blesse pas ("+Math.round(result.pWound||0)+" %, jet "+(result.woundRoll||"—")+").","hit");
     return;
   }
-  missionLog(prefix+" : "+result.damage+" PV. "+d.character.name+" reste à "+result.targetHp+" PV.","damage");
+  missionLog(prefix+" : "+result.damage+" PV. "+d.character.name+" reste à "+Math.max(0,result.targetHp)+" PV"+(result.targetHp<0?" ("+result.targetHp+" sous zéro)":"")+".","damage");
   if(result.targetDown) missionLog(d.character.name+" est hors combat.","death");
 }
 
@@ -720,7 +720,7 @@ function renderMissionRoster(units){
   return units.map(u=>`
     <div class="mission-roster-row ${u.alive?"":"down"}">
       <strong>${esc(u.character.name)}</strong>
-      <span>${u.offMap?"A quitté le combat":u.hp+"/"+u.character.pvMax+" PV"+(u.alive&&u.fleeing?" · En fuite":"")}</span>
+      <span>${u.offMap?"A quitté le combat":Math.max(0,u.hp)+"/"+u.character.pvMax+" PV"+(u.hp<0?" ("+u.hp+")":"")+(u.alive&&u.fleeing?" · En fuite":"")}</span>
       <small>Init ${Math.round(game.mission.engine.initiative(u))} · Mvt ${game.mission.engine.movementBase(u)}</small>
     </div>
   `).join("");
@@ -764,7 +764,7 @@ function renderMission(){
     const weapon=e.activeWeaponItem(unit);
     return `<div class="${classes.join(" ")}" style="left:${p.x-24}px;top:${p.y-24}px">
       <strong>${esc(unit.character.name.split(" ")[0])}</strong>
-      <small>${unit.hp}/${unit.character.pvMax}</small>
+      <small>${Math.max(0,unit.hp)}/${unit.character.pvMax}</small>
       <span class="token-hp"><i style="width:${pct}%"></i></span>
       <em>${unit.alive&&unit.fleeing?"En fuite · ":""}${esc(weapon?.name||"Sans arme")}</em>
     </div>`;

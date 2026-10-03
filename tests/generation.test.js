@@ -13,7 +13,8 @@ const files = {
   cultureOriginCompatibility:"culture-origin-compatibility.json",
   ancestryLevels:"ancestry-levels.json", d6Scale:"d6-generation-scale.json",
   generationMatrix:"generation-matrix.json", skills:"skills.json",
-  characteristics:"characteristics.json", formulaConstants:"formula-constants.json"
+  characteristics:"characteristics.json", formulaConstants:"formula-constants.json",
+  weapons:"weapons.json"
 };
 
 const reference = Object.fromEntries(Object.entries(files).map(([key,file]) => [
@@ -46,11 +47,9 @@ assert.equal(audit.probabilities.peopleProbability, 1);
 assert.equal(audit.probabilities.ancestryLevelProbability, 1);
 assert.equal(audit.matrixCoverage.filter(x => x.status === "missing-target").length, 0);
 
-const pending = new Set(audit.pending.map(x => x.target));
-for (const expected of [
-  "Armes naturelles", "Combat à deux armes", "Combat à mains nues", "Combat à deux mains",
-  "Médecine", "Pièges", "Discrétion", "Artisanat"
-]) assert.ok(pending.has(expected), `Pending rule not surfaced: ${expected}`);
+assert.equal(audit.pending.length, 0, `Gameplay generation still has pending rules: ${JSON.stringify(audit.pending)}`);
+assert.equal(audit.matrixCoverage.filter(x => x.status === "active").length, 106);
+assert.equal(audit.matrixCoverage.filter(x => x.status === "blocked").length, 0);
 
 const cosmetics = new Set(audit.cosmetics.map(x => x.target));
 for (const expected of ["Âge","Taille","Corpulence","Biographie courte"]) {
@@ -68,6 +67,12 @@ for (let i = 0; i < 1000; i++) {
   assert.ok(Number.isFinite(c.reputation) && c.reputation > 0);
   assert.ok(Number.isFinite(c.salary) && c.salary > 0);
   assert.equal(c.mana, c.stats["Réserve de mana"]);
+  for (const key of ["oneHand","twoHands","ranged"]) {
+    const pref = c.weaponPreferences[key];
+    assert.ok(pref, `Missing weapon preference ${key}`);
+    assert.ok(Number.isFinite(pref.score));
+    assert.equal(pref.score, pref.categoryScore + pref.specificScore);
+  }
 }
 
 assert.throws(() => generator.createMercenary({
@@ -106,6 +111,34 @@ assert.equal(dague.generationBonus, true);
 assert.ok(dague.contributions.some(x => x.name === "Gobelin"));
 assert.ok(dague.contributions.some(x => x.name === "Gobelins des cavernes"));
 assert.ok(dague.contributions.some(x => x.name === "Hors-la-loi"));
+
+for (const [skill, formula] of [
+  ["Pièges", "Moyenne(Intelligence, Perception) × Rand(0,8 ; 1,2)"],
+  ["Discrétion", "Moyenne(Dextérité, Perception, Esquive) × Rand(0,8 ; 1,2)"],
+  ["Combat à deux armes", "Max(armes de mêlée 1 main) × Rand(0,8 ; 1,2)"],
+  ["Combat à mains nues", "Moyenne(Force, Dextérité) × Rand(0,8 ; 1,2)"],
+  ["Combat à deux mains", "Max(armes de mêlée 2 mains) × Rand(0,8 ; 1,2)"]
+]) {
+  assert.equal(goblin.generationTrace.skills[skill].rawFormula, formula);
+  assert.ok(Number.isFinite(goblin.skills.martial[skill]));
+}
+assert.equal(goblin.generationTrace.skills["Armes naturelles"].rawFormula, "0");
+assert.ok(Number.isFinite(goblin.skills.martial["Armes naturelles"]));
+assert.ok(Number.isFinite(goblin.skills.camp["Médecine"]));
+assert.ok(Number.isFinite(goblin.skills.camp["Artisanat"]));
+assert.equal(
+  goblin.generationTrace.skills["Médecine"].rawFormula,
+  "(1 + (Charisme + Intelligence) / 100) × 6D6"
+);
+assert.equal(
+  goblin.generationTrace.skills["Artisanat"].rawFormula,
+  "(1 + (Charisme + Intelligence) / 100) × 6D6"
+);
+for (const pref of Object.values(goblin.weaponPreferences)) {
+  assert.ok(pref.weapon);
+  assert.ok(pref.category);
+  assert.equal(pref.score, pref.categoryScore + pref.specificScore);
+}
 
 const captain = generator.createCaptain({
   id:2004,

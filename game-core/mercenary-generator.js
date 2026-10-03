@@ -487,6 +487,43 @@
       return Object.values(group || {}).filter(Number.isFinite);
     }
 
+    function weaponPreferenceScore(skills, weapon) {
+      const specific = skills.martial[weapon.nom];
+      const categoryName = skillByName.get(weapon.nom)?.parent || null;
+      const category = categoryName ? skills.martial[categoryName] : null;
+      if (!Number.isFinite(specific) || !Number.isFinite(category)) return null;
+      return {
+        weapon: weapon.nom,
+        category: categoryName,
+        categoryScore: category,
+        specificScore: specific,
+        score: category + specific,
+        prise: weapon.prise,
+        domaine: weapon.domaine
+      };
+    }
+
+    function bestWeaponPreference(skills, predicate) {
+      const candidates = weaponRows
+        .filter(predicate)
+        .map(weapon => weaponPreferenceScore(skills, weapon))
+        .filter(Boolean)
+        .sort((a,b) => b.score - a.score || a.weapon.localeCompare(b.weapon, "fr"));
+      return candidates[0] || null;
+    }
+
+    function computeWeaponPreferences(skills) {
+      const ranged = weapon => /Armes de tir|Armes à feu/.test(String(weapon.domaine || ""));
+      const shield = weapon => /Boucliers/.test(String(weapon.domaine || ""));
+      const melee = weapon => !ranged(weapon) && !shield(weapon);
+
+      return {
+        oneHand: bestWeaponPreference(skills, weapon => melee(weapon) && ["1 main", "Au choix"].includes(weapon.prise)),
+        twoHands: bestWeaponPreference(skills, weapon => melee(weapon) && ["2 mains", "Au choix"].includes(weapon.prise)),
+        ranged: bestWeaponPreference(skills, weapon => ranged(weapon))
+      };
+    }
+
     function calcReputation(character) {
       const pool = [
         ...fundamentalStats.map(r => character.stats[r.nom]),
@@ -654,6 +691,7 @@
       applyIdentityStatModifiers(character, identity, trace);
       character.skills = generateRawSkills(character, identity, trace);
       applySkillModifiers(character.skills, identity, trace);
+      character.weaponPreferences = computeWeaponPreferences(character.skills);
 
       character.salaryPretension = rollDice(10,6);
       character.pvMax = Math.ceil(3 * (
@@ -671,7 +709,8 @@
         mana: {formula: "Réserve de mana", value: character.mana},
         salaryPretension: {formula: "10D6", value: character.salaryPretension},
         reputation: {value: character.reputation},
-        salary: {value: character.salary}
+        salary: {value: character.salary},
+        weaponPreferences: character.weaponPreferences
       };
 
       return character;

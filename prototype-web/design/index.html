@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Mercenaires — Design Lab</title>
+  <link rel="stylesheet" href="./design.css">
+</head>
+<body>
+  <div class="lab-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <a href="/" class="back">← Prototype</a>
+        <p class="eyebrow">Mercenaires</p>
+        <h1>Design Lab</h1>
+        <p class="muted">Git est la source de vérité.</p>
+      </div>
+
+      <div class="switcher" role="tablist">
+        <button class="switch active" data-mode="docs">Docs</button>
+        <button class="switch" data-mode="tables">Tableaux</button>
+      </div>
+
+      <input id="nav-search" class="search" type="search" placeholder="Filtrer…">
+      <nav id="nav-list" class="nav-list"></nav>
+    </aside>
+
+    <main class="content">
+      <div class="content-head">
+        <div>
+          <p id="content-kicker" class="eyebrow">Design</p>
+          <h2 id="content-title">Chargement…</h2>
+        </div>
+        <div id="content-meta" class="meta"></div>
+      </div>
+
+      <div id="table-tools" class="table-tools hidden">
+        <input id="table-search" class="search" type="search" placeholder="Rechercher dans le tableau…">
+        <span id="table-count" class="count"></span>
+      </div>
+
+      <section id="viewer" class="viewer">
+        <p class="muted">Chargement des référentiels…</p>
+      </section>
+    </main>
+  </div>
+  <script src="./design.js"></script>
+</body>
+</html>

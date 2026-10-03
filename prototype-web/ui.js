@@ -89,6 +89,74 @@ function allCharacters() {
   return [game.captain, ...game.initialSquad, ...game.generated].filter(Boolean);
 }
 
+function teamCharacters() {
+  return [game.captain, ...game.initialSquad].filter(Boolean);
+}
+
+function median(values) {
+  const sorted = [...values].sort((a,b)=>a-b);
+  if (!sorted.length) return null;
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 ? sorted[mid] : (sorted[mid-1] + sorted[mid]) / 2;
+}
+
+function comparisonData(currentValue, accessor) {
+  if (!Number.isFinite(currentValue)) return null;
+  const team = teamCharacters()
+    .map(member => ({member, value: accessor(member)}))
+    .filter(x => Number.isFinite(x.value));
+  if (!team.length) return null;
+
+  const values = team.map(x=>x.value);
+  const minItem = team.reduce((a,b)=>b.value<a.value?b:a);
+  const maxItem = team.reduce((a,b)=>b.value>a.value?b:a);
+  const min = minItem.value;
+  const max = maxItem.value;
+  const avg = values.reduce((a,b)=>a+b,0)/values.length;
+  const med = median(values);
+  const pos = value => max === min ? 50 : Math.max(0,Math.min(100,((value-min)/(max-min))*100));
+
+  return {
+    min,max,avg,median:med,current:currentValue,
+    minName:minItem.member.name,
+    maxName:maxItem.member.name,
+    positions:{
+      min:0,
+      max:100,
+      avg:pos(avg),
+      median:pos(med),
+      current:pos(currentValue)
+    }
+  };
+}
+
+function renderComparison(currentValue, accessor) {
+  const c = comparisonData(currentValue, accessor);
+  if (!c) return "";
+  const p = c.positions;
+  return `<div class="team-compare">
+    <div class="compare-track" aria-label="Comparaison avec l'équipe">
+      <span class="compare-line"></span>
+      <i class="compare-dot min" style="left:${p.min}%"></i>
+      <i class="compare-dot max" style="left:${p.max}%"></i>
+      <i class="compare-dot avg" style="left:${p.avg}%"></i>
+      <i class="compare-dot median" style="left:${p.median}%"></i>
+      <i class="compare-dot current" style="left:${p.current}%"></i>
+    </div>
+    <div class="compare-legend">
+      <span><small>Faible</small><b>${fmt(c.min)}</b><em>${esc(c.minName)}</em></span>
+      <span><small>Merc.</small><b>${fmt(c.current)}</b></span>
+      <span><small>Médiane</small><b>${fmt(c.median)}</b></span>
+      <span><small>Moyenne</small><b>${fmt(c.avg)}</b></span>
+      <span><small>Fort</small><b>${fmt(c.max)}</b><em>${esc(c.maxName)}</em></span>
+    </div>
+  </div>`;
+}
+
+function skillMeta(name) {
+  return game.referenceData?.skills?.rows?.find(r => r.nom === name) || null;
+}
+
 function fmt(n) {
   if (!Number.isFinite(n)) return "—";
   const rounded = Math.round(n * 10) / 10;

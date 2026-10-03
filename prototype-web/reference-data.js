@@ -13,7 +13,8 @@ const REFERENCE_FILES = {
   generationMatrix: "generation-matrix.json",
   skills: "skills.json",
   characteristics: "characteristics.json",
-  formulaConstants: "formula-constants.json"
+  formulaConstants: "formula-constants.json",
+  weapons: "weapons.json"
 };
 
 async function loadReferenceData(base = "/data/") {

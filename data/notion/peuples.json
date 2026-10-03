@@ -1,0 +1,88 @@
+{
+  "synced_at": "2026-10-03",
+  "notion_database_id": "9a5cd156-f444-4837-ae63-0b1862f60541",
+  "data_source_url": "collection://38a69f94-eb57-4c24-a240-b2f0f66b2ea9",
+  "schema": {
+    "metadata": {
+      "type": "database"
+    },
+    "title": "Peuples",
+    "url": "https://app.notion.com/p/9a5cd156f4444837ae630b1862f60541?pvs=204",
+    "text": "<database url=\"{{https://app.notion.com/p/9a5cd156f4444837ae630b1862f60541}}\" inline=\"false\">\nThe title of this Database is: Peuples\n<ancestor-path>\n<parent-page url=\"https://app.notion.com/p/3eac799da3d181c491e3d99c69fa2317\" title=\"01 — Génération & identité\"/>\n<ancestor-2-page url=\"https://app.notion.com/p/3eac799da3d181478858f51a008acbda\" title=\"Jeu de Mercenaires\"/>\n</ancestor-path>\nHere are the Database's Data Sources:\nYou can use the \"fetch\" tool on the URL of any Data Source to see its full schema configuration.\n<data-sources>\n<data-source url=\"{{collection://38a69f94-eb57-4c24-a240-b2f0f66b2ea9}}\">\nThe title of this Data Source is: Peuples\n\nHere is the database's configurable state:\nProperties with `readOnly: true` are synced or system-managed. Do not try to update their values with page update tools.\n<data-source-state>\n{\"name\":\"Peuples\",\"schema\":{\"Alignement Principal\":{\"dataSourceUrl\":\"collection://12775972-503f-464f-abf5-fab2c7fd8258\",\"description\":\"\",\"limit\":1,\"name\":\"Alignement Principal\",\"type\":\"relation\"},\"Nom\":{\"description\":\"\",\"name\":\"Nom\",\"type\":\"title\"},\"Probabilité de base\":{\"description\":\"\",\"name\":\"Probabilité de base\",\"number_format\":\"percent\",\"type\":\"number\"},\"Probabilité d’ascendance\":{\"description\":\"\",\"name\":\"Probabilité d’ascendance\",\"number_format\":\"percent\",\"type\":\"number\"}},\"url\":\"collection://38a69f94-eb57-4c24-a240-b2f0f66b2ea9\"}\n</data-source-state>\n\nHere is the SQLite table definition for this data source.\n<sqlite-table>\nCREATE TABLE IF NOT EXISTS \"collection://38a69f94-eb57-4c24-a240-b2f0f66b2ea9\" (\n\turl TEXT UNIQUE,\n\tcreatedTime TEXT, -- ISO-8601 datetime string, automatically set. This is the canonical time for when the page was created.\n\t\"Probabilité d’ascendance\" FLOAT,\n\t\"Alignement Principal\" TEXT, -- JSON string of a single page URL relating to {{collection://12775972-503f-464f-abf5-fab2c7fd8258}} data source, you must \"view\" {{collection://12775972-503f-464f-abf5-fab2c7fd8258}} to query this column\n\t\"Probabilité de base\" FLOAT,\n\t\"Nom\" TEXT\n)\n</sqlite-table>\n</data-source>\n</data-sources>\nHere are the Database's Views:\nYou can use the \"fetch\" tool on the URL of any View to see its full configuration.\n<views>\n<view url=\"{{view://b384292f-f4f4-4ffd-aa65-45435a9fb1bb}}\">\n{\"dataSourceUrl\":\"{{collection://38a69f94-eb57-4c24-a240-b2f0f66b2ea9}}\",\"displayProperties\":[\"Nom\",\"Probabilité de base\",\"Probabilité d’ascendance\",\"Alignement Principal\"],\"name\":\"Default view\",\"type\":\"table\"}\n</view>\n</views>\n</database>"
+  },
+  "rows": {
+    "results": [
+      {
+        "Probabilité d'ascendance": 0.2,
+        "Alignement Principal": "[\"https://app.notion.com/p/3e9c799da3d181a7afdfd8e7deb436bf\"]",
+        "Probabilité de base": 0.15,
+        "Nom": "Orc",
+        "url": "https://app.notion.com/p/3e9c799da3d181219711c434b8e9e55e"
+      },
+      {
+        "Probabilité d'ascendance": 0.2,
+        "Alignement Principal": "[\"https://app.notion.com/p/3e9c799da3d181e180a9ce08266bcdce\"]",
+        "Probabilité de base": 0.05,
+        "Nom": "Homme-bête",
+        "url": "https://app.notion.com/p/3e9c799da3d181258b60eb1cbbb545fe"
+      },
+      {
+        "Probabilité d'ascendance": 0.2,
+        "Alignement Principal": "[\"https://app.notion.com/p/3e9c799da3d1815fa666ffc5fc49cd0b\"]",
+        "Probabilité de base": 0.05,
+        "Nom": "Reptilien",
+        "url": "https://app.notion.com/p/3e9c799da3d18138870ae83c77748148"
+      },
+      {
+        "Probabilité d'ascendance": 0.2,
+        "Alignement Principal": "[\"https://app.notion.com/p/3e9c799da3d1811fbc38f72918ec53cd\"]",
+        "Probabilité de base": 0.2,
+        "Nom": "Humain",
+        "url": "https://app.notion.com/p/3e9c799da3d1816ea19beea93b3794b1"
+      },
+      {
+        "Probabilité d'ascendance": 0.2,
+        "Alignement Principal": "[\"https://app.notion.com/p/3e9c799da3d1811488b8ec32840d582f\"]",
+        "Probabilité de base": 0.07,
+        "Nom": "Halfling",
+        "url": "https://app.notion.com/p/3e9c799da3d18171b3c9f93cf48ea4d1"
+      },
+      {
+        "Probabilité d'ascendance": 0.2,
+        "Alignement Principal": "[\"https://app.notion.com/p/3e9c799da3d1818fa7c8e88a97ef252d\"]",
+        "Probabilité de base": 0.15,
+        "Nom": "Elfe",
+        "url": "https://app.notion.com/p/3e9c799da3d181a6ad48d76461417bda"
+      },
+      {
+        "Probabilité d'ascendance": 0.2,
+        "Alignement Principal": "[\"https://app.notion.com/p/3e9c799da3d181a7afdfd8e7deb436bf\"]",
+        "Probabilité de base": 0.08,
+        "Nom": "Gobelin",
+        "url": "https://app.notion.com/p/3e9c799da3d181b28fdddd40c97cfae5"
+      },
+      {
+        "Probabilité d'ascendance": 0.2,
+        "Alignement Principal": "[\"https://app.notion.com/p/3e9c799da3d181f881dde14c35f2ad2c\"]",
+        "Probabilité de base": 0.07,
+        "Nom": "Gnome",
+        "url": "https://app.notion.com/p/3e9c799da3d181baa304c5591507657c"
+      },
+      {
+        "Probabilité d'ascendance": 0.2,
+        "Alignement Principal": "[\"https://app.notion.com/p/3e9c799da3d18153a1d8f747176142ee\"]",
+        "Probabilité de base": 0.03,
+        "Nom": "Ogre",
+        "url": "https://app.notion.com/p/3e9c799da3d181cfbc78f19ae00a401a"
+      },
+      {
+        "Probabilité d'ascendance": 0.2,
+        "Alignement Principal": "[\"https://app.notion.com/p/3e9c799da3d181cc9bcaf53f023a5336\"]",
+        "Probabilité de base": 0.15,
+        "Nom": "Nain",
+        "url": "https://app.notion.com/p/3e9c799da3d181ee9e4ad52517136b2a"
+      }
+    ],
+    "has_more": false
+  }
+}

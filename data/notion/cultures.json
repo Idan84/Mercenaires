@@ -1,0 +1,242 @@
+{
+  "synced_at": "2026-10-03",
+  "notion_database_id": "901364a7-f401-4595-9494-0d1e11ed10d2",
+  "data_source_url": "collection://89fea441-dc19-43f8-93df-0d14627a9998",
+  "schema": {
+    "metadata": {
+      "type": "database"
+    },
+    "title": "Cultures",
+    "url": "https://app.notion.com/p/901364a7f401459594940d1e11ed10d2?pvs=204",
+    "text": "<database url=\"{{https://app.notion.com/p/901364a7f401459594940d1e11ed10d2}}\" inline=\"false\">\nThe title of this Database is: Cultures\n<ancestor-path>\n<parent-page url=\"https://app.notion.com/p/3eac799da3d181c491e3d99c69fa2317\" title=\"01 — Génération & identité\"/>\n<ancestor-2-page url=\"https://app.notion.com/p/3eac799da3d181478858f51a008acbda\" title=\"Jeu de Mercenaires\"/>\n</ancestor-path>\nHere are the Database's Data Sources:\nYou can use the \"fetch\" tool on the URL of any Data Source to see its full schema configuration.\n<data-sources>\n<data-source url=\"{{collection://89fea441-dc19-43f8-93df-0d14627a9998}}\">\nThe title of this Data Source is: Cultures\n\nHere is the database's configurable state:\nProperties with `readOnly: true` are synced or system-managed. Do not try to update their values with page update tools.\n<data-source-state>\n{\"name\":\"Cultures\",\"schema\":{\"Idées Bonus\":{\"description\":\"\",\"name\":\"Idées Bonus\",\"type\":\"text\"},\"Idées Malus\":{\"description\":\"\",\"name\":\"Idées Malus\",\"type\":\"text\"},\"Nom\":{\"description\":\"\",\"name\":\"Nom\",\"type\":\"title\"},\"Peuples\":{\"dataSourceUrl\":\"collection://38a69f94-eb57-4c24-a240-b2f0f66b2ea9\",\"description\":\"\",\"name\":\"Peuples\",\"type\":\"relation\"}},\"url\":\"collection://89fea441-dc19-43f8-93df-0d14627a9998\"}\n</data-source-state>\n\nHere is the SQLite table definition for this data source.\n<sqlite-table>\nCREATE TABLE IF NOT EXISTS \"collection://89fea441-dc19-43f8-93df-0d14627a9998\" (\n\turl TEXT UNIQUE,\n\tcreatedTime TEXT, -- ISO-8601 datetime string, automatically set. This is the canonical time for when the page was created.\n\t\"Peuples\" TEXT, -- JSON array of page URLs relating to {{collection://38a69f94-eb57-4c24-a240-b2f0f66b2ea9}} data source, you must \"view\" {{collection://38a69f94-eb57-4c24-a240-b2f0f66b2ea9}} to query this column\n\t\"Idées Bonus\" TEXT,\n\t\"Idées Malus\" TEXT,\n\t\"Nom\" TEXT\n)\n</sqlite-table>\n</data-source>\n</data-sources>\nHere are the Database's Views:\nYou can use the \"fetch\" tool on the URL of any View to see its full configuration.\n<views>\n<view url=\"{{view://4ef6869b-7fb0-44de-b7f9-5650f8e610d8}}\">\n{\"dataSourceUrl\":\"{{collection://89fea441-dc19-43f8-93df-0d14627a9998}}\",\"displayProperties\":[\"Nom\",\"Idées Bonus\",\"Idées Malus\",\"Peuples\"],\"name\":\"Default view\",\"type\":\"table\"}\n</view>\n</views>\n</database>"
+  },
+  "rows": {
+    "results": [
+      {
+        "Peuples": "[\"https://app.notion.com/p/3e9c799da3d181258b60eb1cbbb545fe\"]",
+        "Idées Bonus": "",
+        "Idées Malus": "",
+        "Nom": "Tribus nordiques",
+        "url": "https://app.notion.com/p/3e9c799da3d1810cbe2cfe479f3bf3d1"
+      },
+      {
+        "Peuples": "[\"https://app.notion.com/p/3e9c799da3d181258b60eb1cbbb545fe\"]",
+        "Idées Bonus": "",
+        "Idées Malus": "",
+        "Nom": "Clans des grandes steppes",
+        "url": "https://app.notion.com/p/3e9c799da3d1811e87c9ee54ee110b1b"
+      },
+      {
+        "Peuples": "[\"https://app.notion.com/p/3e9c799da3d181cfbc78f19ae00a401a\"]",
+        "Idées Bonus": "",
+        "Idées Malus": "",
+        "Nom": "Ogres des cités humaines",
+        "url": "https://app.notion.com/p/3e9c799da3d18120b554e903e3edab3d"
+      },
+      {
+        "Peuples": "[\"https://app.notion.com/p/3e9c799da3d18138870ae83c77748148\"]",
+        "Idées Bonus": "",
+        "Idées Malus": "",
+        "Nom": "Reptiliens des villes",
+        "url": "https://app.notion.com/p/3e9c799da3d181279e4cff724476c368"
+      },
+      {
+        "Peuples": "[\"https://app.notion.com/p/3e9c799da3d1816ea19beea93b3794b1\"]",
+        "Idées Bonus": "Résistance au froid · Armes : haches, armes à deux mains",
+        "Idées Malus": "Intelligence",
+        "Nom": "Montagnes du Nord",
+        "url": "https://app.notion.com/p/3e9c799da3d1812ea0eeefaf4f99b343"
+      },
+      {
+        "Peuples": "[\"https://app.notion.com/p/3e9c799da3d18138870ae83c77748148\"]",
+        "Idées Bonus": "",
+        "Idées Malus": "",
+        "Nom": "Reptiliens des marécages",
+        "url": "https://app.notion.com/p/3e9c799da3d18139a4d3c52f78099721"
+      },
+      {
+        "Peuples": "[\"https://app.notion.com/p/3e9c799da3d181a6ad48d76461417bda\"]",
+        "Idées Bonus": "Dextérité · Résistance au poison · Armes : dagues, arbalètes · Magie de l’illusion et nécromancie",
+        "Idées Malus": "Charisme · Magie de la vie",
+        "Nom": "Elfes noirs",
+        "url": "https://app.notion.com/p/3e9c799da3d1814290aae43fae1b1b92"
+      },
+      {
+        "Peuples": "[\"https://app.notion.com/p/3e9c799da3d18171b3c9f93cf48ea4d1\"]",
+        "Idées Bonus": "Charisme · Intelligence · Armes : dagues, arbalètes",
+        "Idées Malus": "Volonté · Courage",
+        "Nom": "Halflings des cités humaines",
+        "url": "https://app.notion.com/p/3e9c799da3d1814aa8d2f8024ed71826"
+      },
+      {
+        "Peuples": "[\"https://app.notion.com/p/3e9c799da3d1816ea19beea93b3794b1\"]",
+        "Idées Bonus": "Résistance au poison ×2 · Armes : lances",
+        "Idées Malus": "Résistance au froid",
+        "Nom": "Tribus de la jungle",
+        "url": "https://app.notion.com/p/3e9c799da3d181639027d7da29210c7e"
+      },
+      {
+        "Peuples": "[\"https://app.notion.com/p/3e9c799da3d1816ea19beea93b3794b1\"]",
+        "Idées Bonus": "Charisme · Intelligence",
+        "Idées Malus": "Perception",
+        "Nom": "Cités libres",
+        "url": "https://app.notion.com/p/3e9c799da3d1816f8715ebd710a596d4"
+      },
+      {
+        "Peuples": "[\"https://app.notion.com/p/3e9c799da3d181b28fdddd40c97cfae5\"]",
+        "Idées Bonus": "Intelligence · Chance · Armes : arbalètes",
+        "Idées Malus": "Puissance magique · Courage",
+        "Nom": "Caravanes de ferrailleurs",
+        "url": "https://app.notion.com/p/3e9c799da3d181709302d9188b803881"
+      },
+      {
+        "Peuples": "[\"https://app.notion.com/p/3e9c799da3d181baa304c5591507657c\"]",
+        "Idées Bonus": "",
+        "Idées Malus": "",
+        "Nom": "Gnomes des forêts",
+        "url": "https://app.notion.com/p/3e9c799da3d18178bc9ec3ea7355d3fd"
+      },
+      {
+        "Peuples": "[\"https://app.notion.com/p/3e9c799da3d18171b3c9f93cf48ea4d1\"]",
+        "Idées Bonus": "Courage · Perception · Chance · Armes : arcs",
+        "Idées Malus": "Armures lourdes",
+        "Nom": "Explorateurs",
+        "url": "https://app.notion.com/p/3e9c799da3d1817b9baaff134d49c7a6"
+      },
+      {
+        "Peuples": "[\"https://app.notion.com/p/3e9c799da3d1816ea19beea93b3794b1\"]",
+        "Idées Bonus": "Armes : arcs, sabres · Montures",
+        "Idées Malus": "Armures lourdes",
+        "Nom": "Steppes désertiques",
+        "url": "https://app.notion.com/p/3e9c799da3d18180b0f5e6d98ef0ad89"
+      },
+      {
+        "Peuples": "[\"https://app.notion.com/p/3e9c799da3d181219711c434b8e9e55e\"]",
+        "Idées Bonus": "Force · Armes à deux mains · Armures lourdes",
+        "Idées Malus": "Résistance à la foudre",
+        "Nom": "Orcs noirs",
+        "url": "https://app.notion.com/p/3e9c799da3d181818102d0e82cf5126c"
+      },
+      {
+        "Peuples": "[\"https://app.notion.com/p/3e9c799da3d181a6ad48d76461417bda\"]",
+        "Idées Bonus": "Réserve de mana · Armes : épées fines",
+        "Idées Malus": "Exigences salariales élevées",
+        "Nom": "Elfes des grandes cités",
+        "url": "https://app.notion.com/p/3e9c799da3d181a48d7fe607bbe6ee78"
+      },
+      {
+        "Peuples": "[\"https://app.notion.com/p/3e9c799da3d181b28fdddd40c97cfae5\"]",
+        "Idées Bonus": "Perception · Esquive · Résistance au poison · Armes : dagues",
+        "Idées Malus": "Résistance au feu · Intelligence",
+        "Nom": "Gobelins des cavernes",
+        "url": "https://app.notion.com/p/3e9c799da3d181a8b773c71038ce4087"
+      },
+      {
+        "Peuples": "[\"https://app.notion.com/p/3e9c799da3d18171b3c9f93cf48ea4d1\"]",
+        "Idées Bonus": "Magie de la vie · Puissance magique",
+        "Idées Malus": "Force · Endurance",
+        "Nom": "Halflings des villages isolés",
+        "url": "https://app.notion.com/p/3e9c799da3d181ae9174db7a7d4b7c6d"
+      },
+      {
+        "Peuples": "[\"https://app.notion.com/p/3e9c799da3d181219711c434b8e9e55e\"]",
+        "Idées Bonus": "Intelligence · Charisme · Armes : épées, dagues, arbalètes",
+        "Idées Malus": "Courage · Armes à deux mains",
+        "Nom": "Orcs des villes",
+        "url": "https://app.notion.com/p/3e9c799da3d181b18361d85613efe8e3"
+      },
+      {
+        "Peuples": "[\"https://app.notion.com/p/3e9c799da3d181258b60eb1cbbb545fe\"]",
+        "Idées Bonus": "",
+        "Idées Malus": "",
+        "Nom": "Tribus des forêts anciennes",
+        "url": "https://app.notion.com/p/3e9c799da3d181b79389c87539bdbb93"
+      },
+      {
+        "Peuples": "[\"https://app.notion.com/p/3e9c799da3d181b28fdddd40c97cfae5\"]",
+        "Idées Bonus": "Dextérité · Armes : dagues",
+        "Idées Malus": "Courage · Volonté · Force",
+        "Nom": "Gobelins des villes",
+        "url": "https://app.notion.com/p/3e9c799da3d181bd9a7ff173d3ff2b36"
+      },
+      {
+        "Peuples": "[\"https://app.notion.com/p/3e9c799da3d1816ea19beea93b3794b1\"]",
+        "Idées Bonus": "Volonté · Armes asiatiques (à détailler)",
+        "Idées Malus": "Exigences salariales élevées",
+        "Nom": "Royaumes du Soleil Levant",
+        "url": "https://app.notion.com/p/3e9c799da3d181c3b895d06a3e927f93"
+      },
+      {
+        "Peuples": "[\"https://app.notion.com/p/3e9c799da3d181219711c434b8e9e55e\"]",
+        "Idées Bonus": "Vitesse · Armes : lances, arcs · Montures",
+        "Idées Malus": "Armures lourdes",
+        "Nom": "Orcs des steppes",
+        "url": "https://app.notion.com/p/3e9c799da3d181cb92bec4f49f61348b"
+      },
+      {
+        "Peuples": "[\"https://app.notion.com/p/3e9c799da3d181ee9e4ad52517136b2a\"]",
+        "Idées Bonus": "Résistance au froid · Armes : haches, marteaux, boucliers · Armures lourdes",
+        "Idées Malus": "Vitesse · Esquive · Armes : arcs",
+        "Nom": "Nains des montagnes",
+        "url": "https://app.notion.com/p/3e9c799da3d181dcb710dd642dc9cc93"
+      },
+      {
+        "Peuples": "[\"https://app.notion.com/p/3e9c799da3d181cfbc78f19ae00a401a\"]",
+        "Idées Bonus": "",
+        "Idées Malus": "",
+        "Nom": "Ogres des montagnes",
+        "url": "https://app.notion.com/p/3e9c799da3d181df9c98ef7f9322576b"
+      },
+      {
+        "Peuples": "[\"https://app.notion.com/p/3e9c799da3d181baa304c5591507657c\"]",
+        "Idées Bonus": "",
+        "Idées Malus": "",
+        "Nom": "Gnomes des cavernes",
+        "url": "https://app.notion.com/p/3e9c799da3d181e18a6fc12f48ab4b16"
+      },
+      {
+        "Peuples": "[\"https://app.notion.com/p/3e9c799da3d181a6ad48d76461417bda\"]",
+        "Idées Bonus": "Perception · Esquive · Armes : arcs",
+        "Idées Malus": "Armures lourdes · Nécromancie",
+        "Nom": "Elfes sylvains",
+        "url": "https://app.notion.com/p/3e9c799da3d181e7a12ac6a8101d53d1"
+      },
+      {
+        "Peuples": "[\"https://app.notion.com/p/3e9c799da3d181ee9e4ad52517136b2a\"]",
+        "Idées Bonus": "Armes : arbalètes, armes à feu",
+        "Idées Malus": "Volonté · Perception",
+        "Nom": "Nains des plaines",
+        "url": "https://app.notion.com/p/3e9c799da3d181eb854bcf35dd89d5c7"
+      },
+      {
+        "Peuples": "[\"https://app.notion.com/p/3e9c799da3d18138870ae83c77748148\"]",
+        "Idées Bonus": "",
+        "Idées Malus": "",
+        "Nom": "Reptiliens des cités-temples",
+        "url": "https://app.notion.com/p/3e9c799da3d181ef8894d04c9f3c172f"
+      },
+      {
+        "Peuples": "[\"https://app.notion.com/p/3e9c799da3d181ee9e4ad52517136b2a\"]",
+        "Idées Bonus": "Endurance · Volonté · Chance · Combat à mains nues",
+        "Idées Malus": "Charisme · Réserve de mana",
+        "Nom": "Nains réduits en esclavage dans les colonies",
+        "url": "https://app.notion.com/p/3e9c799da3d181f59e1ecffe7c9690f9"
+      },
+      {
+        "Peuples": "[\"https://app.notion.com/p/3e9c799da3d181baa304c5591507657c\"]",
+        "Idées Bonus": "",
+        "Idées Malus": "",
+        "Nom": "Gnomes des villes",
+        "url": "https://app.notion.com/p/3e9c799da3d181f781d5e06fd503b721"
+      },
+      {
+        "Peuples": "[\"https://app.notion.com/p/3e9c799da3d181cfbc78f19ae00a401a\"]",
+        "Idées Bonus": "",
+        "Idées Malus": "",
+        "Nom": "Ogres des steppes",
+        "url": "https://app.notion.com/p/3e9c799da3d181fc83ccf4158da362f3"
+      }
+    ],
+    "has_more": false
+  }
+}

@@ -169,6 +169,8 @@ Arrondi(
 
 Le candidat se survend donc systématiquement dans cette première version. Les bornes seront équilibrées après quelques recrutements réels.
 
+**Décision V1 : ce mensonge reste volontairement simple.** Charisme, Intelligence ou d'autres caractéristiques n'affinent pas encore l'auto-évaluation. L'objectif est notamment de rendre l'Intendant rapidement désirable ; ses autres utilités seront définies plus tard.
+
 Les 3 questions constituent un budget commun : avec ou sans Intendant, pas de questions supplémentaires gratuites.
 
 ## 8 — Salaire journalier et prime de mission
@@ -211,6 +213,8 @@ Exemple avec salaire demandé 50 PO et prétentions 35 :
 La constante `3` est un coefficient d'échelle de playtest.
 
 La prime contractuelle est payée uniquement si le mercenaire **revient** de mission, conformément aux règles de fin de mission.
+
+**Décision V1 : la Prime de mission contractuelle est un montant fixe.** Elle n'est pas recalculée selon le danger de la mission. Une éventuelle **prime de risque** liée à une mission dangereuse pourra être ajoutée plus tard comme mécanisme séparé ; elle est volontairement hors V1 afin de conserver seulement deux montants négociés au recrutement : salaire journalier + prime de mission.
 
 ## 9 — Négociation du contrat
 
@@ -347,6 +351,8 @@ PrimeNouvelle >= PrimeRefusee
 
 Cette règle évite de marteler des offres de plus en plus insultantes en espérant gagner un jet aléatoire.
 
+**Décision V1 : le plancher reste composante par composante.** On ne peut donc pas compenser une baisse supplémentaire de salaire par une hausse de prime, ni l'inverse, après qu'une offre a déjà été refusée. Une négociation de package global pourra être envisagée plus tard si la V1 paraît trop rigide.
+
 ## 10 — Dortoir plein
 
 Le joueur peut :
@@ -414,6 +420,6 @@ Les principes ci-dessus sont suffisamment définis pour permettre un prototype. 
 7. liste exacte des valeurs qu'une question d'entretien peut cibler ;
 8. future renégociation après recrutement ;
 9. licenciement / indemnités ;
-10. influence éventuelle du danger propre à une mission sur sa prime.
+10. future **prime de risque** éventuelle, séparée de la prime de mission contractuelle fixe.
 
 Ces points peuvent être équilibrés sans remettre en cause la boucle fondamentale.

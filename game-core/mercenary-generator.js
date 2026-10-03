@@ -48,6 +48,7 @@
     const characteristicRows = rows.characteristics || [];
     const formulaConstantRows = rows.formulaConstants || [];
     const weaponRows = rows.weapons || [];
+    const binaryAptitudeRows = rows.binaryAptitudeGrants || [];
 
     const peopleByName = new Map(peopleRows.map(r => [r.nom, r]));
     const skillByName = new Map(skillRows.map(r => [r.nom, r]));
@@ -289,6 +290,35 @@
       return result;
     }
 
+    function identityGrantsAptitude(row, identity) {
+      const grants = [];
+      if ((row.peoples || []).includes(identity.people)) grants.push({kind:"people",name:identity.people});
+      if (identity.ascendance && (row.ancestries || []).includes(identity.ascendance)) grants.push({kind:"ascendance",name:identity.ascendance});
+      if ((row.cultures || []).includes(identity.culture)) grants.push({kind:"culture",name:identity.culture});
+      if ((row.origins || []).includes(identity.origin)) grants.push({kind:"origin",name:identity.origin});
+      return grants;
+    }
+
+    function generateBinaryAptitudes(skills, identity, trace) {
+      for (const row of binaryAptitudeRows) {
+        const grants = identityGrantsAptitude(row, identity);
+        const value = grants.length > 0;
+        const group = row.domaine === "Physiologie" ? "physiology" : "martial";
+        skills[group][row.aptitude] = value;
+        trace.skills[row.aptitude] = {
+          group,
+          raw: value,
+          rawFormula: "Peuple OR Ascendance OR Culture OR Origine",
+          generationBonus: false,
+          generationBonusSources: grants,
+          contributions: [],
+          final: value,
+          binary: true,
+          grants
+        };
+      }
+    }
+
     function generateRawSkills(character, identity, trace) {
       const skills = createSkillStore();
 
@@ -448,6 +478,8 @@
       if (skillByName.has("Régénération")) {
         setRawSkill(skills, trace, "physiology", "Régénération", 0, {rawFormula: "0"});
       }
+
+      generateBinaryAptitudes(skills, identity, trace);
 
       const socialSkills = skillRows.filter(r => r.domaine === "Social" && r.niveau === "Catégorie");
       for (const skill of socialSkills) {
@@ -781,7 +813,16 @@
           ? {status:"derived", rule:"Max × Rand(0,8 ; 1,2)"}
           : {status:"pending", reason:"Catégorie martiale sans sous-catégorie et sans tirage brut défini."};
       }
-      if (skill.niveau === "Aptitude") return {status:"catalog", reason:"Acquisition/effet hors pipeline brut actuel."};
+      if (skill.niveau === "Aptitude") {
+        const configured = binaryAptitudeRows.find(r => r.aptitude === skill.nom);
+        if (configured) {
+          const hasGrant = ["peoples","ancestries","cultures","origins"].some(key => (configured[key] || []).length > 0);
+          return hasGrant
+            ? {status:"binary", rule:"Peuple OR Ascendance OR Culture OR Origine"}
+            : {status:"binary-pending", reason:"Aptitude binaire classée mais aucune identité ne l’accorde encore."};
+        }
+        return {status:"catalog", reason:"Acquisition/effet hors pipeline brut actuel."};
+      }
       return {status:"catalog", reason:"Pas de règle de génération brute V1."};
     }
 
@@ -812,7 +853,7 @@
           return {
             target: row.cible,
             type: row.type,
-            status: ["generated","derived"].includes(classification.status) ? "active" : "blocked",
+            status: ["generated","derived","binary"].includes(classification.status) ? "active" : "blocked",
             reason: classification.reason || null
           };
         }
@@ -842,7 +883,8 @@
           cultureOriginCompatibilities: cultureOriginRows.length,
           matrixRows: matrixRows.length,
           skills: skillRows.length,
-          generatedCharacteristics: characteristicRows.filter(r => r.genere_a_la_creation === true).length
+          generatedCharacteristics: characteristicRows.filter(r => r.genere_a_la_creation === true).length,
+          binaryAptitudes: binaryAptitudeRows.length
         },
         probabilities: {peopleProbability, ancestryLevelProbability},
         issues,
@@ -854,6 +896,9 @@
           .map(x => ({target:x.name,reason:x.reason})),
         pending: skillCoverage
           .filter(x => x.status === "pending")
+          .map(x => ({target:x.name,reason:x.reason})),
+        binaryPending: skillCoverage
+          .filter(x => x.status === "binary-pending")
           .map(x => ({target:x.name,reason:x.reason}))
       };
     }

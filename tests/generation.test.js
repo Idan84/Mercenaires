@@ -146,6 +146,20 @@ const demonHuman = lowGenerator.createMercenary({
 assert.equal(demonHuman.skills.physiology["Vision nocturne"], true);
 assert.equal(demonHuman.generationTrace.skills["Vision nocturne"].sources[0].name, "Sang de démon");
 
+
+const nonMage = lowGenerator.createMercenary({
+  id:1503,
+  forcedPeople:"Humain",
+  forcedCulture:"Cités libres",
+  forcedOrigin:"Commerçant",
+  forcedAscendance:null,
+  forcedAlignment:"Neutre"
+});
+assert.ok(nonMage.generationTrace.skills["Port d’armure légère"].magicMax <= 50);
+assert.equal(nonMage.generationTrace.skills["Port d’armure légère"].probability, 50);
+assert.equal(nonMage.generationTrace.skills["Port d’armure intermédiaire"].probability, 30);
+assert.equal(nonMage.generationTrace.skills["Port d’armure lourde"].probability, 20);
+
 assert.throws(() => generator.createMercenary({
   id:2001,
   forcedPeople:"Ogre",

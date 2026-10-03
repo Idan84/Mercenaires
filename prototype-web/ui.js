@@ -503,6 +503,51 @@ function renderPending(c) {
   </div>`;
 }
 
+function activateCharacterTab(name){
+  const root=$("dialog-content");
+  if(!root) return;
+  for(const button of root.querySelectorAll("[data-character-tab]")){
+    const selected=button.dataset.characterTab===name;
+    button.classList.toggle("active",selected);
+    button.setAttribute("aria-selected",selected?"true":"false");
+    button.tabIndex=selected?0:-1;
+  }
+  for(const panel of root.querySelectorAll("[data-character-panel]")){
+    const selected=panel.dataset.characterPanel===name;
+    panel.classList.toggle("active",selected);
+    panel.hidden=!selected;
+  }
+}
+
+function renderCharacterSpellbook(c){
+  const spells=Array.isArray(c.spells)?c.spells:[];
+  if(!spells.length){
+    return `<section class="spellbook-section">
+      <div class="section-title-row compact">
+        <div><p class="eyebrow">Grimoire personnel</p><h3>Sorts connus</h3></div>
+        <span class="muted">Catalogue V0 en préparation</span>
+      </div>
+      <div class="spellbook-empty">
+        <strong>Aucun sort enregistré dans le prototype.</strong>
+        <span>Les écoles existent déjà ; cet espace accueillera les sorts appris, leur maîtrise et leurs écoles parentes.</span>
+      </div>
+    </section>`;
+  }
+  return `<section class="spellbook-section">
+    <div class="section-title-row compact">
+      <div><p class="eyebrow">Grimoire personnel</p><h3>Sorts connus</h3></div>
+      <span class="muted">${spells.length} sort${spells.length>1?"s":""}</span>
+    </div>
+    <div class="spellbook-grid">
+      ${spells.map(spell=>`<article class="spell-card">
+        <small>${esc(spell.school||spell.parent||"Magie")}</small>
+        <strong>${esc(spell.name||spell.nom||"Sort")}</strong>
+        <span>Maîtrise ${fmt(Number(spell.mastery))}</span>
+      </article>`).join("")}
+    </div>
+  </section>`;
+}
+
 function showCharacter(c) {
   $("dialog-role").textContent = c.role;
   $("dialog-name").textContent = c.name;
@@ -512,56 +557,82 @@ function showCharacter(c) {
   const rb = c.reputationBreakdown;
 
   $("dialog-content").innerHTML = `
-    <section class="character-overview">
-      ${renderAvatar(c,{variant:"detail"})}
-      <div class="character-overview-copy">
-    <div class="identity-grid">
-      <div class="metric"><small>Peuple</small><strong>${esc(c.people)}</strong></div>
-      <div class="metric"><small>Culture</small><strong>${esc(c.culture)}</strong></div>
-      <div class="metric"><small>Origine</small><strong>${esc(c.origin)}</strong></div>
-      <div class="metric"><small>Ascendance</small><strong>${esc(asc)}</strong></div>
-      <div class="metric"><small>Alignement</small><strong>${esc(c.alignment)}</strong></div>
-      <div class="metric"><small>Réputation</small><strong>${Math.round(c.reputation)}</strong></div>
-      <div class="metric"><small>Prétentions</small><strong>${c.salaryPretension}</strong></div>
-      <div class="metric"><small>Salaire demandé</small><strong>${fmt(c.salary)} PO/j</strong></div>
-    </div>
+    <nav class="character-tabs" role="tablist" aria-label="Fiche de ${esc(c.name)}">
+      <button type="button" class="character-tab active" role="tab" aria-selected="true" data-character-tab="profile">Profil</button>
+      <button type="button" class="character-tab" role="tab" aria-selected="false" data-character-tab="combat" tabindex="-1">Combat</button>
+      <button type="button" class="character-tab" role="tab" aria-selected="false" data-character-tab="magic" tabindex="-1">Magie</button>
+      <button type="button" class="character-tab" role="tab" aria-selected="false" data-character-tab="skills" tabindex="-1">Compétences</button>
+      <button type="button" class="character-tab character-tab-debug" role="tab" aria-selected="false" data-character-tab="debug" tabindex="-1">Debug</button>
+    </nav>
 
-    <div class="metric-grid">
-      <div class="metric"><small>PV max</small><strong>${c.pvMax}</strong></div>
-      <div class="metric"><small>Mana</small><strong>${c.mana}</strong></div>
-      <div class="metric"><small>Moyenne pool réputation</small><strong>${fmt(rb.mean)}</strong></div>
-      <div class="metric"><small>Max / Min pool</small><strong>${Math.round(rb.max)} / ${Math.round(rb.min)}</strong></div>
-    </div>
-      </div>
+    <section class="character-tab-panel active" role="tabpanel" data-character-panel="profile">
+      <section class="character-overview">
+        ${renderAvatar(c,{variant:"detail"})}
+        <div class="character-overview-copy">
+          <p class="character-bio-placeholder"><strong>Biographie</strong><span>Le moteur de bio taggé viendra ici : courte, personnelle, parfois héroïque, souvent douteuse.</span></p>
+          <div class="identity-grid">
+            <div class="metric"><small>Peuple</small><strong>${esc(c.people)}</strong></div>
+            <div class="metric"><small>Culture</small><strong>${esc(c.culture)}</strong></div>
+            <div class="metric"><small>Origine</small><strong>${esc(c.origin)}</strong></div>
+            <div class="metric"><small>Ascendance</small><strong>${esc(asc)}</strong></div>
+            <div class="metric"><small>Alignement</small><strong>${esc(c.alignment)}</strong></div>
+            <div class="metric"><small>Réputation</small><strong>${Math.round(c.reputation)}</strong></div>
+            <div class="metric"><small>Prétentions</small><strong>${c.salaryPretension}</strong></div>
+            <div class="metric"><small>Salaire demandé</small><strong>${fmt(c.salary)} PO/j</strong></div>
+          </div>
+          <div class="metric-grid">
+            <div class="metric"><small>PV max</small><strong>${c.pvMax}</strong></div>
+            <div class="metric"><small>Mana</small><strong>${c.mana}</strong></div>
+            <div class="metric"><small>Moyenne pool réputation</small><strong>${fmt(rb.mean)}</strong></div>
+            <div class="metric"><small>Max / Min pool</small><strong>${Math.round(rb.max)} / ${Math.round(rb.min)}</strong></div>
+          </div>
+        </div>
+      </section>
     </section>
 
-    ${renderEquipment(c)}
-    ${renderWeaponPreferences(c)}
-    ${renderMagicPreferences(c)}
+    <section class="character-tab-panel" role="tabpanel" data-character-panel="combat" hidden>
+      ${renderEquipment(c)}
+      ${renderWeaponPreferences(c)}
+    </section>
 
-    <details class="debug-section" open>
-      <summary><h3>Caractéristiques — trace de génération</h3><span>brut → identités → final · comparaison = capitaine + escouade</span></summary>
-      ${traceNotice(c)}
-      ${renderCharacteristicTrace(c)}
-    </details>
+    <section class="character-tab-panel" role="tabpanel" data-character-panel="magic" hidden>
+      ${renderMagicPreferences(c)}
+      ${renderCharacterSpellbook(c)}
+    </section>
 
-    <details class="debug-section" open>
-      <summary><h3>Compétences — trace de génération</h3><span>tirage brut → matrice → final · comparaison = capitaine + escouade</span></summary>
-      <div class="skill-groups">
+    <section class="character-tab-panel" role="tabpanel" data-character-panel="skills" hidden>
+      <div class="skill-groups character-skill-groups">
         ${renderMartialGroup(c)}
         ${Object.entries(c.skills)
-          .filter(([group,values]) => group !== "martial" && Object.keys(values).length)
+          .filter(([group,values]) => group !== "martial" && group !== "magic" && Object.keys(values).length)
           .map(([group,values]) => renderSkillGroup(c,group,values))
           .join("")}
       </div>
-    </details>
+    </section>
 
-    ${renderPending(c)}
+    <section class="character-tab-panel character-debug-panel" role="tabpanel" data-character-panel="debug" hidden>
+      <details class="debug-section" open>
+        <summary><h3>Caractéristiques — trace de génération</h3><span>brut → identités → final · comparaison = capitaine + escouade</span></summary>
+        ${traceNotice(c)}
+        ${renderCharacteristicTrace(c)}
+      </details>
+      <details class="debug-section" open>
+        <summary><h3>Compétences — trace complète</h3><span>tirage brut → matrice → final</span></summary>
+        <div class="skill-groups">
+          ${renderMartialGroup(c)}
+          ${Object.entries(c.skills)
+            .filter(([group,values]) => group !== "martial" && Object.keys(values).length)
+            .map(([group,values]) => renderSkillGroup(c,group,values))
+            .join("")}
+        </div>
+      </details>
+      ${renderPending(c)}
+    </section>
   `;
 
   $("character-dialog").showModal();
+  activateCharacterTab("profile");
 }
-
 function fillSelect(select, values, includeNone=false) {
   select.innerHTML = `${includeNone ? '<option value="">Aucune</option>' : ""}${values.map(x => `<option value="${esc(x)}">${esc(x)}</option>`).join("")}`;
 }
@@ -627,6 +698,11 @@ async function init() {
     });
 
     document.addEventListener("click", (e) => {
+      const tab=e.target.closest("[data-character-tab]");
+      if(tab){
+        activateCharacterTab(tab.dataset.characterTab);
+        return;
+      }
       const btn = e.target.closest("[data-character-id]");
       if (!btn) return;
       const c = allCharacters().find(x => x.id === Number(btn.dataset.characterId));

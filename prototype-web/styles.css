@@ -238,7 +238,7 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
 #mission-select-dialog::backdrop{background:rgba(20,18,16,.55)}
 .mission-select-content{padding:20px 22px 24px}
 .mission-select-list{display:grid;gap:8px;margin-top:14px}
-.mission-pick{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;padding:11px 12px;border:1px solid #ded7cd;border-radius:11px;background:#f8f5f0;cursor:pointer}
+.mission-pick{display:grid;grid-template-columns:auto 42px 1fr auto;align-items:center;gap:12px;padding:9px 12px;border:1px solid #ded7cd;border-radius:11px;background:#f8f5f0;cursor:pointer}
 .mission-pick input{width:auto}
 .mission-pick span small{display:block;margin-top:2px;color:#81796f;font-weight:500}
 .mission-pick em{font-style:normal;font-size:.8rem;color:#6f675f}
@@ -247,8 +247,10 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
 .mission-side,.mission-console-wrap{border:1px solid #dfd8ce;border-radius:12px;background:#f8f5f0;padding:12px}
 .mission-side h3,.mission-console-wrap h3{margin:0 0 9px;font-size:.82rem;text-transform:uppercase;letter-spacing:.06em;color:#6d655c}
 .mission-side h3:not(:first-child){margin-top:18px}
-.mission-roster-row{display:grid;gap:2px;padding:8px 7px;border-bottom:1px solid #e4ddd3}
-.mission-roster-row strong{font-size:.78rem}
+.mission-roster-row{display:grid;grid-template-columns:36px minmax(0,1fr);gap:8px;align-items:center;padding:7px 5px;border-bottom:1px solid #e4ddd3}
+.mission-roster-row .avatar-frame--compact{width:36px;height:36px;flex-basis:36px;border-radius:7px}
+.mission-roster-copy{display:grid;gap:1px;min-width:0}
+.mission-roster-row strong{font-size:.78rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .mission-roster-row span{font-size:.7rem}
 .mission-roster-row small{color:#81796f;font-size:.64rem}
 .mission-roster-row.down{opacity:.42;text-decoration:line-through}
@@ -264,17 +266,16 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
 .hex-cell.reachable{background:#d7ead4;opacity:.95}
 .hex-cell.targetable{background:#efc8bf;opacity:.98}
 .hex-cell.reachable.provokes{background:#ecd9a8;box-shadow:inset 0 0 0 2px #c9952e}
-.mission-token{position:absolute;z-index:5;width:48px;min-height:48px;border-radius:50%;display:grid;place-items:center;align-content:center;padding:5px;border:3px solid white;box-shadow:0 3px 12px rgba(0,0,0,.28);text-align:center;pointer-events:none}
-.mission-token.player{background:#365f7b;color:white}
-.mission-token.enemy{background:#8b3529;color:white}
+.mission-token{position:absolute;z-index:5;width:48px;height:48px;border-radius:10px;padding:2px;border:3px solid white;box-shadow:0 3px 12px rgba(0,0,0,.28);text-align:center;pointer-events:none;background:#191919;color:white}
+.mission-token.player{border-color:#365f7b}
+.mission-token.enemy{border-color:#8b3529}
 .mission-token.active{box-shadow:0 0 0 4px #f0bf4e,0 5px 18px rgba(0,0,0,.35)}
 .mission-token.down{opacity:.35;filter:grayscale(1)}
 .mission-token.encircled{outline:3px dashed #d9822b;outline-offset:3px}
 .mission-token.fleeing{border-style:dashed;filter:saturate(.45)}
-.mission-token strong{max-width:42px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.62rem}
-.mission-token small{font-size:.53rem}
-.mission-token em{position:absolute;top:52px;width:100px;left:50%;transform:translateX(-50%);font-style:normal;font-size:.52rem;color:#302b27;background:rgba(255,255,255,.82);border-radius:4px;padding:1px 3px}
-.token-hp{width:35px;height:4px;background:rgba(0,0,0,.3);border-radius:99px;overflow:hidden}
+.mission-token strong{position:absolute;top:49px;left:50%;transform:translateX(-50%);max-width:84px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.58rem;color:#302b27;background:rgba(255,255,255,.9);border-radius:4px;padding:1px 4px}
+.mission-token em{position:absolute;top:62px;width:76px;left:50%;transform:translateX(-50%);font-style:normal;font-size:.49rem;color:#5e564f;background:rgba(255,255,255,.82);border-radius:4px;padding:1px 3px}
+.token-hp{position:absolute;z-index:3;left:4px;right:4px;bottom:3px;height:4px;background:rgba(0,0,0,.55);border-radius:99px;overflow:hidden}
 .token-hp i{display:block;height:100%;background:#d9efb0}
 .mission-console{height:500px;overflow:auto;display:flex;flex-direction:column;gap:5px}
 .combat-log{padding:6px 7px;border-radius:7px;background:white;font-size:.68rem;line-height:1.3;border-left:3px solid #c4bcb0}
@@ -380,9 +381,17 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
 }
 .avatar-frame--detail{width:min(280px,100%);}
 .avatar-frame--interview{width:min(185px,100%);border-radius:13px;}
-.avatar-frame--card{width:100%;border-radius:10px;box-shadow:0 8px 20px rgba(20,17,14,.14);}
+.avatar-frame--card{width:100%;aspect-ratio:1 / 1;border-radius:10px;box-shadow:0 8px 20px rgba(20,17,14,.14);}
 .avatar-frame--card .avatar-fallback{padding:11px;}
 .avatar-frame--card .avatar-fallback span{font-size:2.6rem;}
+.avatar-frame--compact{width:42px;height:42px;aspect-ratio:1;border-radius:9px;box-shadow:none;flex:0 0 42px;}
+.avatar-frame--compact .avatar-fallback{padding:5px;}
+.avatar-frame--compact .avatar-fallback span{font-size:1.05rem;}
+.avatar-frame--compact .avatar-fallback small{display:none;}
+.avatar-frame--battle{width:100%;height:100%;aspect-ratio:1;border:0;border-radius:7px;box-shadow:none;}
+.avatar-frame--battle .avatar-fallback{padding:4px;justify-content:center;align-items:center;}
+.avatar-frame--battle .avatar-fallback span{font-size:1rem;}
+.avatar-frame--battle .avatar-fallback small{display:none;}
 
 .character-overview{
   display:grid;

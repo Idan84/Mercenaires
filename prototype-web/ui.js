@@ -136,21 +136,25 @@ function renderComparison(currentValue, accessor) {
   const c = comparisonData(currentValue, accessor);
   if (!c) return "";
   const p = c.positions;
+  const points = [
+    {key:"min", label:"Min équipe", value:c.min, name:c.minName, position:p.min, tieOrder:0},
+    {key:"median", label:"Médiane équipe", value:c.median, position:p.median, tieOrder:1},
+    {key:"avg", label:"Moyenne équipe", value:c.avg, position:p.avg, tieOrder:2},
+    {key:"current", label:"Mercenaire", value:c.current, position:p.current, tieOrder:3},
+    {key:"max", label:"Max équipe", value:c.max, name:c.maxName, position:p.max, tieOrder:4}
+  ].sort((a,b) => a.value - b.value || a.tieOrder - b.tieOrder);
+
   return `<div class="team-compare">
     <div class="compare-track" aria-label="Comparaison avec l'équipe">
       <span class="compare-line"></span>
-      <i class="compare-dot min" style="left:${p.min}%"></i>
-      <i class="compare-dot max" style="left:${p.max}%"></i>
-      <i class="compare-dot avg" style="left:${p.avg}%"></i>
-      <i class="compare-dot median" style="left:${p.median}%"></i>
-      <i class="compare-dot current" style="left:${p.current}%"></i>
+      ${points.map(point => `<i class="compare-dot ${point.key}" style="left:${point.position}%" title="${esc(point.label)} : ${fmt(point.value)}"></i>`).join("")}
     </div>
     <div class="compare-legend">
-      <span class="legend-current"><small>Mercenaire</small><b>${fmt(c.current)}</b></span>
-      <span><small>Moyenne équipe</small><b>${fmt(c.avg)}</b></span>
-      <span><small>Médiane équipe</small><b>${fmt(c.median)}</b></span>
-      <span><small>Min équipe</small><b>${fmt(c.min)}</b><em>${esc(c.minName)}</em></span>
-      <span><small>Max équipe</small><b>${fmt(c.max)}</b><em>${esc(c.maxName)}</em></span>
+      ${points.map(point => `<span class="${point.key === "current" ? "legend-current" : ""}">
+        <small>${esc(point.label)}</small>
+        <b>${fmt(point.value)}</b>
+        ${point.name ? `<em>${esc(point.name)}</em>` : ""}
+      </span>`).join("")}
     </div>
   </div>`;
 }

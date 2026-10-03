@@ -33,3 +33,43 @@ Elles sont générées **après** le profil mécanique afin de pouvoir s'en insp
 La **Biographie courte** est destinée à être drôle et marquée, en s'appuyant sur le peuple, la culture, l'origine, les caractéristiques dominantes/faibles, les compétences et les particularités du mercenaire.
 
 Le générateur cosmétique précis reste à définir ; son absence ne bloque pas `Create_Mercenary()` côté gameplay.
+
+
+## Génération V1 — Camp, compétences de terrain et styles martiaux
+
+### Camp
+
+**Médecine** et la catégorie **Artisanat** appartiennent au domaine **Camp** et utilisent la même génération brute que les autres compétences Camp :
+
+`Valeur = (1 + (Charisme + Intelligence) / 100) × 6D6`
+
+Les sous-compétences d’Artisanat (Forge, Alchimie, Couture, etc.) conservent leur génération propre :
+
+`Sous-compétence Artisanat = (1 + (Dextérité + Intelligence) / 100) × 6D6`
+
+### Martial — compétences dérivées
+
+Dans les formules ci-dessous, le terme **Agilité** du design correspond à la caractéristique mécanique **Dextérité**.
+
+- **Pièges** = `Moyenne(Intelligence, Perception) × Rand(0,8 ; 1,2)`
+- **Discrétion** = `Moyenne(Dextérité, Perception, Esquive) × Rand(0,8 ; 1,2)`
+- **Combat à deux armes** = `Max(arme de mêlée utilisable à 1 main) × Rand(0,8 ; 1,2)`
+- **Combat à mains nues** = `Moyenne(Force, Dextérité) × Rand(0,8 ; 1,2)`
+- **Combat à deux mains** = `Max(arme de mêlée utilisable à 2 mains) × Rand(0,8 ; 1,2)`
+- **Armes naturelles** = `0` avant application des modificateurs de la Matrice de génération.
+
+Pour les styles à une/deux mains, les armes à distance et les boucliers sont exclus. Une arme dont la prise est **Au choix** peut servir dans les deux calculs.
+
+### Armes de prédilection
+
+Après génération et application de tous les modificateurs, chaque mercenaire reçoit trois indications de prédilection :
+
+- **Une main**
+- **Deux mains**
+- **Distance**
+
+Pour chaque arme candidate :
+
+`ScorePredilection = MaîtriseCatégorieMartiale + MaîtriseArmePrécise`
+
+L’arme possédant le score le plus élevé dans chaque famille devient l’arme de prédilection correspondante. Ce résultat sert d’indication sur la fiche et pourra guider la génération / attribution d’équipement initial.

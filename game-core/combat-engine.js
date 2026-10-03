@@ -318,7 +318,8 @@
       }
 
       const damageData=physicalDamage(attacker,defender,mode,chargePower);
-      defender.hp=Math.max(0,defender.hp-damageData.damage);
+      // Les PV restent signés : la profondeur sous 0 sert au jet de mort de fin de mission (Issue #13).
+      defender.hp-=damageData.damage;
       if(defender.hp<=0) defender.alive=false;
 
       return {

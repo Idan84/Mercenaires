@@ -121,8 +121,14 @@ for (const expected of ["Âge","Taille","Corpulence","Biographie courte"]) {
 let sawNonMageArmorBonus = false;
 let sawHighMagicArmorPenalty = false;
 let secondaryWeaponCount = 0;
+const profileCounts = {melee:0, ranged:0, magic:0};
 for (let i = 0; i < 1000; i++) {
   const c = generator.createMercenary({id:i+1});
+  profileCounts[c.equipment.profile.type] += 1;
+  const meanOf = values => values.reduce((a,b) => a + b, 0) / values.length;
+  const expectedMagicScore = 0.6 * ((c.equipment.profile.bestMagic?.score || 0) / 2)
+    + 0.4 * meanOf([c.stats.Intelligence, c.stats["Puissance magique"], c.stats["Réserve de mana"]]);
+  assert.ok(Math.abs(c.equipment.profile.scores.magic - expectedMagicScore) < 1e-9, "Profil Magie : école divisée par 2 (Issue #12)");
   assert.ok(generator.culturesForPeople(c.people).includes(c.culture), `Invalid culture: ${c.people} / ${c.culture}`);
   assert.ok(generator.originsForCulture(c.culture).includes(c.origin), `Invalid origin: ${c.culture} / ${c.origin}`);
   if (c.ascendance) assert.ok(generator.isAncestryCompatible(c.people, c.ascendance), `Invalid ancestry: ${c.people} / ${c.ascendance}`);
@@ -216,6 +222,9 @@ for (let i = 0; i < 1000; i++) {
 assert.equal(sawNonMageArmorBonus, true);
 assert.equal(sawHighMagicArmorPenalty, true);
 assert.ok(secondaryWeaponCount > 350 && secondaryWeaponCount < 650, `Unexpected secondary weapon rate: ${secondaryWeaponCount}/1000`);
+// Issue #12 : avant correction, ~89 % des mercenaires sortaient « Magie ». Garde-fou contre un retour accidentel.
+assert.ok(profileCounts.magic < 600, `Profil Magie trop fréquent : ${JSON.stringify(profileCounts)}`);
+assert.ok(profileCounts.melee > 200 && profileCounts.ranged > 50, `Profils CAC / Distance trop rares : ${JSON.stringify(profileCounts)}`);
 
 const lowGenerator = createGenerator(reference, {
   random: () => 0,

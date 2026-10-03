@@ -774,7 +774,8 @@
         ranged: 0.6 * ((bestRanged?.score || 0) / 2) + 0.4 * mean([
           character.stats.Dextérité, character.stats.Perception, character.stats.Vitesse
         ]),
-        magic: 0.6 * bestMagic + 0.4 * mean([
+        // Même échelle que les armes : la meilleure école est aussi divisée par 2 (décision Idan + Chatty, Issue #12).
+        magic: 0.6 * (bestMagic / 2) + 0.4 * mean([
           character.stats.Intelligence, character.stats["Puissance magique"], character.stats["Réserve de mana"]
         ])
       };

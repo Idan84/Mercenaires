@@ -24,3 +24,12 @@ La base **Caractéristiques & attributs** possède des vues séparées pour Cara
 [Progression & expérience](/design/#doc=08-progression-and-experience.md)
 
 [Réputation, renommée & salaires](/design/#doc=09-reputation-renown-and-salaries.md)
+## Identité descriptive / cosmétique
+
+Les champs **Nom du mercenaire**, **Âge**, **Taille**, **Corpulence** et **Biographie courte** sont des informations **non-codantes** : elles n'entrent dans aucune formule de gameplay.
+
+Elles sont générées **après** le profil mécanique afin de pouvoir s'en inspirer sans créer de boucle de calcul. Exemple : une Force très élevée peut augmenter la probabilité d'une corpulence massive ou d'une grande taille, mais la taille générée ne revient jamais augmenter la Force.
+
+La **Biographie courte** est destinée à être drôle et marquée, en s'appuyant sur le peuple, la culture, l'origine, les caractéristiques dominantes/faibles, les compétences et les particularités du mercenaire.
+
+Le générateur cosmétique précis reste à définir ; son absence ne bloque pas `Create_Mercenary()` côté gameplay.

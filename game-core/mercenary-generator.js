@@ -82,9 +82,8 @@
       .filter(r => r.genere_a_la_creation === true && r.famille === RESISTANCE_FAMILY && r.type_de_valeur === "Numérique")
       .sort((a,b) => (a.ordre ?? 999) - (b.ordre ?? 999));
 
-    const unresolvedCharacteristics = characteristicRows
-      .filter(r => r.genere_a_la_creation === true && ["Morphologie", "État temporaire"].includes(r.famille))
-      .filter(r => ["Âge", "Taille", "Corpulence"].includes(r.nom))
+    const cosmeticFields = characteristicRows
+      .filter(r => r.genere_a_la_creation === true && r.famille === "Cosmétique")
       .map(r => r.nom);
 
     function roll(sides) {
@@ -562,11 +561,14 @@
         characteristics: {},
         resistances: {},
         skills: {},
-        pending: unresolvedCharacteristics.map(target => ({
+        cosmetics: cosmeticFields.map(target => ({
           target,
-          domain: target === "Taille" || target === "Corpulence" ? "Morphologie" : "Identité",
-          reason: "Marqué « généré à la création », mais aucune distribution V1 n’est encore définie."
-        }))
+          status: target === "Nom du mercenaire" ? "generated" : "deferred",
+          reason: target === "Nom du mercenaire"
+            ? "Nom provisoire généré actuellement."
+            : "Champ cosmétique : sera généré après le profil mécanique et pourra dépendre de ses caractéristiques."
+        })),
+        pending: []
       };
 
       const base = generateBaseCharacteristics(trace);
@@ -586,6 +588,7 @@
         age: null,
         size: null,
         corpulence: null,
+        biography: null,
         reputationCareerDelta: Number(createOptions.reputationCareerDelta) || 0,
         generationTrace: trace
       };
@@ -722,7 +725,11 @@
           if (r.nom === "Réputation") return {name:r.nom,status:"derived"};
           if (r.nom === "Prétentions salariales") return {name:r.nom,status:"generated"};
           if (r.nom === "Nom du mercenaire") return {name:r.nom,status:"generated"};
-          if (unresolvedCharacteristics.includes(r.nom)) return {name:r.nom,status:"pending",reason:"Distribution V1 absente."};
+          if (r.famille === "Cosmétique") return {
+            name:r.nom,
+            status:r.nom === "Nom du mercenaire" ? "generated" : "cosmetic",
+            reason:"Champ descriptif non-codant, généré après le profil mécanique."
+          };
           return {name:r.nom,status:"catalog"};
         });
 
@@ -741,10 +748,12 @@
         characteristicCoverage,
         skillCoverage,
         matrixCoverage,
-        pending: [
-          ...characteristicCoverage.filter(x => x.status === "pending").map(x => ({target:x.name,reason:x.reason})),
-          ...skillCoverage.filter(x => x.status === "pending").map(x => ({target:x.name,reason:x.reason}))
-        ]
+        cosmetics: characteristicCoverage
+          .filter(x => x.status === "cosmetic")
+          .map(x => ({target:x.name,reason:x.reason})),
+        pending: skillCoverage
+          .filter(x => x.status === "pending")
+          .map(x => ({target:x.name,reason:x.reason}))
       };
     }
 

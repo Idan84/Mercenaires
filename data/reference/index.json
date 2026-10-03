@@ -428,7 +428,7 @@
     {
       "name": "biographies",
       "file": "biographies.json",
-      "rows": 17,
+      "rows": 30,
       "columns": [
         "id",
         "short",

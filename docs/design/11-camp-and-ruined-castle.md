@@ -42,13 +42,6 @@ Fonctions validées :
 
 </aside>
 
-<aside>
-🍺
-
-**Un candidat est généré avant son recrutement.** Les mercenaires présents à la taverne sont de vrais objets `Mercenary` déjà générés et peuvent rester disponibles pendant plusieurs jours / semaines. Ils ne sont pas régénérés au moment où le joueur clique sur « recruter ». Cela permet notamment les candidats qui traînent longtemps à la taverne faute de succès.
-
-</aside>
-
 ### Renseignements sur les missions
 
 Au lieu d’une salle des cartes dédiée, l’information supplémentaire passe par **un vieux type louche qui connaît un mec qui connaît un mec…**
@@ -70,7 +63,7 @@ Fonctions envisagées / retenues :
 
 Le dortoir fixe la **capacité maximale de mercenaires** hébergés.
 
-- capacité initiale : `20` ;
+- capacité initiale : `40` (décision Idan du 2026-10-03 ; constante `camp.dormitory.initial_capacity`) ;
 - amélioration → plus de places ;
 - embellissement / qualité → contribution possible à la renommée / attractivité.
 

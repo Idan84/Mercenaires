@@ -90,6 +90,7 @@ Aucun agent ne travaille spontanément : il faut qu'une session soit lancée. Gi
 
 ## En attente de décision
 
+- **Escouade initiale sans contrat** (Idan + Chatty) : à décider avant de brancher la paie quotidienne, sinon l'escouade initiale travaillerait gratuitement pour toujours.
 - **Profil temporaire d'équipement** (Chatty + Idan, Issue #12) : 89 % des mercenaires générés sortent « Magie », car le score d'arme est divisé par 2 mais pas celui d'école. Cela vide de sens le profil affiché à la Taverne.
 - **Sélection du type de dégâts, cas « moyen »** (Idan + Chatty) : la formule dit `AVERAGE(matchups)`, le moteur choisit le type le plus proche de cette moyenne. Faut-il une moyenne numérique, ou le type le plus proche ?
 

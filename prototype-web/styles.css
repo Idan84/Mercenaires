@@ -189,3 +189,6 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
   .martial-category-compare { grid-column: 1/-1; }
   .compare-cell { min-width: 280px; }
 }
+
+.compare-legend .legend-current b { color:#7a2d23; }
+.compare-legend .legend-current small { color:#7a2d23; font-weight:800; }

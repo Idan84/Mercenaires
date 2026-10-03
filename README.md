@@ -2,6 +2,10 @@
 
 Prototype de game design et futur projet Unreal du jeu tactique / gestion de mercenaires.
 
+## Prototype en ligne
+
+https://mercenaires-s708.netlify.app
+
 ## Structure
 
 - `prototype-web/` — laboratoire HTML/CSS/JS déployé sur Netlify.

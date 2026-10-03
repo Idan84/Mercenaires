@@ -443,20 +443,6 @@
         "ton",
         "notes"
       ]
-    },
-    {
-      "name": "biography-packs",
-      "file": "biography-packs.json",
-      "rows": 30,
-      "columns": [
-        "id",
-        "short",
-        "rumor",
-        "motto",
-        "hard_tags",
-        "soft_tags",
-        "weight"
-      ]
     }
   ]
 }

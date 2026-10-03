@@ -130,3 +130,7 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
   .audit-metrics { grid-template-columns: repeat(2,1fr); }
   .pending-item { grid-template-columns: 1fr; gap: 3px; }
 }
+
+.cosmetic-item { background:#eef1f5; border-color:#ccd4df; }
+.cosmetic-item span { color:#5c6672; }
+.cosmetic-heading { margin-top:14px; }

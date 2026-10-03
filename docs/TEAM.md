@@ -72,7 +72,8 @@ Aucun agent ne travaille spontanément : il faut qu'une session soit lancée. Gi
 | Corrections Mission Test : second Mouvement, carte 13×9 rectangulaire et entièrement visible | JC3 | `claude/friendly-bardeen-edzi87` (PR #7) | En relecture |
 | Registre d'équilibrage (`docs/design/92-balance-questions.md`) | JC3, puis Idan + Chatty | PR #7 | Équilibrage reporté par Idan |
 | Taverne : design V1 (`docs/design/14-tavern-recruitment.md`) | Chatty + Idan | PR #6 | Fusionné |
-| Taverne : code V1 (état de partie, `AdvanceTime`, boucle quotidienne, entretien, négociation, écran) | JC3 | `claude/tavern-v1` | À démarrer |
+| Taverne : code V1, étape 1 — état de partie, `AdvanceTime`, boucle quotidienne, entretien, négociation (`game-core/`) | JC3 | `claude/tavern-v1` | En relecture |
+| Taverne : code V1, étape 2 — écran Taverne dans le prototype | JC3 | — | À faire |
 | Tâche test : casser les règles de Fuite | Groky | Issue #4 | Transmise par Idan |
 
 ## Décisions récentes
@@ -87,6 +88,7 @@ Aucun agent ne travaille spontanément : il faut qu'une session soit lancée. Gi
 
 ## En attente de décision
 
+- **Escouade initiale et Dortoir** (Idan + Chatty) : l'escouade initiale peut compter jusqu'à 30 mercenaires (`4D6 + 6` pour les petits peuples), capitaine en plus, alors que le Dortoir initial a 20 places. La compagnie peut donc commencer avec un Dortoir plein, voire au-delà, ce qui bloque tout recrutement. Est-ce voulu ?
 - **Sélection du type de dégâts, cas « moyen »** (Idan + Chatty) : la formule dit `AVERAGE(matchups)`, le moteur choisit le type le plus proche de cette moyenne. Faut-il une moyenne numérique, ou le type le plus proche ?
 
 ## Dépendances

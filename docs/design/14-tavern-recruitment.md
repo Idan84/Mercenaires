@@ -431,6 +431,8 @@ La Taverne dépend de :
 
 Le besoin d'un état de partie persistant a été signalé par JC3 : les candidats ne peuvent pas rester plusieurs jours si l'état stratégique reste uniquement dans l'interface web.
 
+**Implémentation** : `game-core/tavern.js` (règles de la Taverne) et `game-core/campaign.js` (état de partie, `AdvanceTime`, signature). Choix V1 confirmés par Chatty (PR #6) : l'Intendant est le meilleur score d'Intendance de la compagnie ; 3 questions pour tout le séjour d'un candidat, réponse figée une fois obtenue ; une négociation interrompue reprend au package courant. Le Dortoir compte le capitaine.
+
 ## 13 — Points encore à arbitrer / playtester
 
 Les principes ci-dessus sont suffisamment définis pour permettre un prototype. Restent à traiter séparément :

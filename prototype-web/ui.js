@@ -13,7 +13,7 @@ function characterRow(c, hero=false) {
     <div class="character-cell"><small>Peuple</small><strong>${esc(c.people)}</strong></div>
     <div class="character-cell"><small>Ascendance</small><strong>${esc(asc)}</strong></div>
     <div class="character-cell"><small>Réputation</small><strong>${Math.round(c.reputation)}</strong></div>
-    <div class="character-cell"><small>Salaire demandé</small><strong>${round1(c.salary)} PO/j</strong></div>
+    <div class="character-cell"><small>Salaire demandé</small><strong>${fmt(c.salary)} PO/j</strong></div>
     <div class="character-cell"><small>PV</small><strong>${c.pvMax}</strong></div>
     ${hero ? "" : `<div class="character-cell"><small>Stats</small><strong>${esc(statSummary(c))}</strong></div>`}
   </div>`;
@@ -165,8 +165,14 @@ function skillMeta(name) {
 
 function fmt(n) {
   if (!Number.isFinite(n)) return "—";
-  const rounded = Math.round(n * 10) / 10;
-  return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(1);
+  return String(Math.round(n));
+}
+
+function fmtDecimal(n, digits = 1) {
+  if (!Number.isFinite(n)) return "—";
+  const factor = 10 ** digits;
+  const rounded = Math.round(n * factor) / factor;
+  return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(digits);
 }
 
 function fmtDelta(n) {
@@ -243,7 +249,7 @@ function renderBinaryTrace(trace, value) {
     const sources = (trace.sources || []).map(x => `${x.name} +${fmt(x.pp)} pp`);
     const extras = [];
     if (trace.warriorBonus) extras.push(`guerrier +${fmt(trace.warriorBonus)} pp`);
-    if (trace.magicMultiplier && trace.magicMultiplier !== 1) extras.push(`magie ×${fmt(trace.magicMultiplier)}`);
+    if (trace.magicMultiplier && trace.magicMultiplier !== 1) extras.push(`magie ×${fmtDecimal(trace.magicMultiplier)}`);
     return {
       raw: `${fmt(trace.probability)} % · jet ${fmt(trace.percentileRoll)}`,
       sources: sources.length ? esc(sources.join(" · ")) : "—",
@@ -449,13 +455,13 @@ function showCharacter(c) {
       <div class="metric"><small>Alignement</small><strong>${esc(c.alignment)}</strong></div>
       <div class="metric"><small>Réputation</small><strong>${Math.round(c.reputation)}</strong></div>
       <div class="metric"><small>Prétentions</small><strong>${c.salaryPretension}</strong></div>
-      <div class="metric"><small>Salaire demandé</small><strong>${round1(c.salary)} PO/j</strong></div>
+      <div class="metric"><small>Salaire demandé</small><strong>${fmt(c.salary)} PO/j</strong></div>
     </div>
 
     <div class="metric-grid">
       <div class="metric"><small>PV max</small><strong>${c.pvMax}</strong></div>
       <div class="metric"><small>Mana</small><strong>${c.mana}</strong></div>
-      <div class="metric"><small>Moyenne pool réputation</small><strong>${round1(rb.mean)}</strong></div>
+      <div class="metric"><small>Moyenne pool réputation</small><strong>${fmt(rb.mean)}</strong></div>
       <div class="metric"><small>Max / Min pool</small><strong>${Math.round(rb.max)} / ${Math.round(rb.min)}</strong></div>
     </div>
 

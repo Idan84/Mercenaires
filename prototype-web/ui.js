@@ -574,8 +574,8 @@ function renderBiography(c) {
     game.biographiesUsed = game.biographiesUsed || new Set(game.campaign?.biographiesUsed || []);
     biographyRules().assign(c, game.biographiesUsed);
   }
-  const bio = c.biography;
-  if (!bio?.id) {
+  const bio = biographyRules().render(c);
+  if (!bio) {
     return `<p class="character-bio-placeholder"><strong>Biographie</strong><span>Pas encore de biographie : la banque n’en contient que ${biographyRules().packs.length} pour l’instant, et une bio ne sert qu’une fois par partie.</span></p>`;
   }
   return `<section class="character-bio">

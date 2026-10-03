@@ -57,6 +57,21 @@ assert.equal(bio.id,"soldat");
 assert.deepEqual(Object.keys(m.biography),["id","short","rumor","motto"],"contenu figé sur le mercenaire");
 assert.equal(rules.assign(m,new Set()).id,"soldat","une bio déjà attribuée ne change plus");
 
+// Review Chatty (PR #34) : le pack est figé, la grammaire non. Le texte stocké reste un modèle,
+// et l'accord se fait à l'affichage avec le sexe connu à ce moment-là (il viendra de l'avatar).
+const gendered=createBiographyRules({catalog:[pack("g",{},{short:"{nom} part. {Il|Elle} reviendra."})],random:()=>0});
+const later=merc({id:9});
+gendered.assign(later,new Set());
+assert.equal(later.biography.short,"{nom} part. {Il|Elle} reviendra.","modèle stocké, sans accord figé");
+assert.equal(gendered.render(later).short,"Morga part. Il reviendra.");
+later.sex="femme";
+assert.equal(gendered.render(later).short,"Morga part. Elle reviendra.","même bio, accordée après l'avatar");
+assert.equal(gendered.render(merc()),null,"pas de bio, pas de rendu");
+
+// `weight` est réservé : il ne multiplie pas le score (review Chatty).
+const weighted=createBiographyRules({catalog:[pack("lourd",{},{weight:100}),pack("pertinent",{origin:["Soldat / Guerrier / Combattant"]})],random:()=>0});
+assert.equal(weighted.choose(merc(),new Set()).pack.id,"pertinent");
+
 // Unicité : une bio n'est jamais réutilisée ; sans candidate restante, pas de bio.
 const used=new Set();
 const first=rules.assign(merc({id:2}),used), second=rules.assign(merc({id:3}),used), third=rules.assign(merc({id:4}),used);
@@ -119,8 +134,9 @@ assert.deepEqual(reloaded.company.roster.map(m=>m.biography),state.company.roste
 // Une partie antérieure aux bios est complétée au chargement.
 for(const m of reloaded.company.roster) m.biography=null;
 delete reloaded.biographiesUsed;
-campaignRules.ensureBiographies(reloaded);
+assert.equal(campaignRules.ensureBiographies(reloaded),true,"complément : à sauvegarder");
 assert.ok(reloaded.company.roster.some(m=>m.biography?.id));
+assert.equal(campaignRules.ensureBiographies(reloaded),false,"rien de nouveau : pas de sauvegarde inutile");
 const after=[...reloaded.company.roster,...reloaded.tavern.candidates.map(c=>c.mercenary)].map(m=>m.biography?.id).filter(Boolean);
 assert.equal(new Set(after).size,after.length,"toujours uniques après complément");
 

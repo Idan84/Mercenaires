@@ -3,7 +3,9 @@
 // Biographies de mercenaires : banque de packs tagués (proposition Chatty,
 // docs/design/15-biographies-and-narrative-tags.md). Un pack est un petit texte cohérent
 // {id, short, rumor, motto} ; le moteur choisit le plus compatible avec le mercenaire,
-// puis le contenu est figé sur le mercenaire. Purement cosmétique : aucune formule n'en dépend.
+// puis le pack choisi est figé sur le mercenaire. Les textes restent des modèles ({nom}, {Il|Elle})
+// rendus à l'affichage : le sexe viendra de l'avatar, attribué après la bio (review Chatty, PR #34).
+// Purement cosmétique : aucune formule n'en dépend.
 (function(root,factory){
   const api=factory();
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
@@ -75,24 +77,32 @@
         if(used.has(pack.id)) continue;
         const score=scorePack(pack,tags);
         if(score===null) continue;
-        const value=(score+random()*NOISE_MAX)*(Number(pack.weight)||1);
+        // `weight` est réservé : futur poids de tirage parmi les finalistes, pas un multiplicateur (Chatty).
+        const value=score+random()*NOISE_MAX;
         if(!best||value>best.value) best={pack,value,score};
       }
       return best;
     }
 
-    // Fige la biographie choisie sur le mercenaire et réserve son identifiant.
+    // Fige le pack choisi sur le mercenaire (textes modèles) et réserve son identifiant.
     function assign(m,used=new Set()){
       if(m.biography?.id) return m.biography;
       const best=choose(m,used);
       if(!best) return null;
       const p=best.pack;
-      m.biography={id:p.id,short:fillText(p.short,m),rumor:fillText(p.rumor,m),motto:fillText(p.motto,m)};
+      m.biography={id:p.id,short:p.short||"",rumor:p.rumor||"",motto:p.motto||""};
       used.add(p.id);
       return m.biography;
     }
 
-    return {packs,choose,assign};
+    // Texte affiché : variantes et {nom} résolus avec ce que l'on sait du mercenaire à cet instant.
+    function render(m){
+      const bio=m.biography;
+      if(!bio?.id) return null;
+      return {id:bio.id,short:fillText(bio.short,m),rumor:fillText(bio.rumor,m),motto:fillText(bio.motto,m)};
+    }
+
+    return {packs,choose,assign,render};
   }
 
   return {createBiographyRules,mercenaryTags,scorePack,fillText,SCORE};

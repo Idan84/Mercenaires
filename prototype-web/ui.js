@@ -263,7 +263,7 @@ function renderSkillGroup(c, group, values) {
   return `<details class="skill-group" ${["martial","magic"].includes(group) ? "open" : ""}>
     <summary><strong>${esc(skillLabel(group))}</strong><span>${entries.filter(([,v])=>Number.isFinite(v)).length} valeurs</span></summary>
     <div class="trace-table-wrap"><table class="trace-table skill-trace-table">
-      <thead><tr><th>Compétence</th><th>Brut</th><th>Bonus génération</th><th>Modifs</th><th>Final</th></tr></thead>
+      <thead><tr><th>Compétence</th><th>Brut</th><th>Bonus génération</th><th>Modifs</th><th>Final</th><th>Équipe</th></tr></thead>
       <tbody>${entries.map(([name,value]) => {
         const trace = c.generationTrace.skills[name];
         const modifier = trace ? (trace.contributions || []).reduce((s,x)=>s+Number(x.delta||0),0) : 0;
@@ -285,6 +285,7 @@ function renderSkillGroup(c, group, values) {
           <td>${sourceDisplay}</td>
           <td class="${!isBinary && modifier>0?"positive":!isBinary && modifier<0?"negative":""}">${modifierDisplay}</td>
           <td><strong>${finalDisplay}</strong>${inherited}</td>
+          <td class="compare-cell">${isBinary ? "—" : renderComparison(value, member => member.skills?.[group]?.[name])}</td>
         </tr>`;
       }).join("")}</tbody>
     </table></div>

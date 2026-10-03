@@ -69,6 +69,14 @@ for (const name of ["Loyal bon","Neutre bon","Chaotique bon","Loyal neutre","Loy
 }
 assert.ok(Math.abs(Object.values(orcAlignment).reduce((sum,x)=>sum+x.probability,0)-1) < 1e-9);
 
+const darkElfAlignment = Object.fromEntries(
+  generator.alignmentDistributionForPeople("Elfe","Elfes noirs").map(x => [x.name,x])
+);
+assert.equal(darkElfAlignment["Chaotique mauvais"].probability, 0.4);
+for (const name of ["Chaotique neutre","Neutre","Neutre mauvais"]) {
+  assert.ok(Math.abs(darkElfAlignment[name].probability - 0.15) < 1e-12);
+}
+
 const humanAlignment = distributionMap("Humain");
 assert.equal(humanAlignment.Neutre.probability, 0.4);
 for (const name of [

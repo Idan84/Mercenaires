@@ -459,7 +459,7 @@
       "version": "V1"
     },
     {
-      "nom": "Fin de mission — Jet de blessure — zone critique",
+      "nom": "Fin de mission — Jet de blessure — zone de blessure",
       "code": "mission.wound.zone_ratio",
       "description": "Part des PV max sous laquelle un survivant passe un jet de blessure (0 ≤ PV_restants ≤ zone × PV_max). Portée de 20 % à 50 % par Idan le 2026-10-03 : on veut plus de blessés que de morts.",
       "formule": "Fin de mission V1 — jet de blessure",
@@ -493,7 +493,7 @@
     {
       "nom": "Fin de mission — Jet de blessure — plancher",
       "code": "mission.wound.min",
-      "description": "Probabilité minimale (%) de blessure dans la zone critique : y arriver doit déjà être dangereux. Issue #14 — valeurs PLAYTEST validées par Idan pour le code, à ajuster au jeu.",
+      "description": "Probabilité minimale (%) de blessure dans la zone de blessure : y arriver doit déjà être dangereux. Issue #14 — valeurs PLAYTEST validées par Idan pour le code, à ajuster au jeu.",
       "formule": "Fin de mission V1 — jet de blessure",
       "valeur": 20,
       "version": "V1"
@@ -501,7 +501,7 @@
     {
       "nom": "Fin de mission — Jet de blessure — plafond",
       "code": "mission.wound.max",
-      "description": "Probabilité maximale (%) de blessure dans la zone critique. Issue #14 — valeurs PLAYTEST validées par Idan pour le code, à ajuster au jeu.",
+      "description": "Probabilité maximale (%) de blessure dans la zone de blessure. Issue #14 — valeurs PLAYTEST validées par Idan pour le code, à ajuster au jeu.",
       "formule": "Fin de mission V1 — jet de blessure",
       "valeur": 95,
       "version": "V1"

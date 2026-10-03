@@ -92,7 +92,7 @@ $$
 
 **Zone portée de 20 % à 50 % des PV max par Idan le 2026-10-03 : on veut plus de blessés que de morts.** Peu de mercenaires finissent un combat entre 0 et 20 % de leurs PV ; élargir la zone est le seul levier qui ajoute vraiment des blessés (mesure : 8,5 % → 16,3 % de blessés, morts inchangés, voir le registre d’équilibrage E7).
 
-Avec Endurance 50 : ~27 % à 50 % PV, ~43 % à 37,5 %, ~59 % à 25 %, ~75 % à 12,5 %, ~92 % à 0 PV. Le plancher de 20 % est voulu : finir une mission dans la zone critique doit déjà être dangereux.
+Avec Endurance 50 : ~27 % à 50 % PV, ~43 % à 37,5 %, ~59 % à 25 %, ~75 % à 12,5 %, ~92 % à 0 PV. Le plancher de 20 % est voulu : finir une mission dans la zone de blessure doit déjà être dangereux.
 
 ## 5 — Fatigue
 

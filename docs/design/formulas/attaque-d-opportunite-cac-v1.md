@@ -54,6 +54,8 @@ La réaction intervient **avant la fin de l'action qui l'a provoquée**. Si ses 
 
 Une fuite peut elle-même provoquer des attaques d'opportunité en quittant des zones de menace.
 
+Un personnage **En Fuite** ne menace personne : il ne fait pas d'attaque d'opportunité (décision Idan du 2026-10-03, Issue #8).
+
 <aside>
 🗡️
 

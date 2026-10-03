@@ -68,8 +68,7 @@ Aucun agent ne travaille spontanément : il faut qu'une session soit lancée. Gi
 
 | Chantier | Responsable | Branche / PR | État |
 |---|---|---|---|
-| Combat lot 1 : Attaques d'opportunité + Frappe dans le dos + Encerclement + Force de charge au Blesser | JC3 | `claude/friendly-bardeen-edzi87` (PR #7) | En relecture |
-| Combat lot 1, suite : Courage → Fuite | JC3 | — | Courage à faire ; Fuite bloquée par l'Issue #8 |
+| Combat lot 1 complet : Attaques d'opportunité, Frappe dans le dos, Encerclement, Courage, Fuite (+ Force de charge au Blesser) | JC3 | `claude/friendly-bardeen-edzi87` (PR #7) | En relecture |
 | Corrections Mission Test : second Mouvement, carte coupée à droite | JC3 | — | À faire |
 | Taverne : design du cycle de recrutement | Chatty + Idan | — | À démarrer |
 | Tâche test : casser les règles de Fuite | Groky | Issue #4 | Transmise par Idan |
@@ -80,16 +79,16 @@ Aucun agent ne travaille spontanément : il faut qu'une session soit lancée. Gi
 - **2026-10-03** — Circuit Git : PR vers `test`, fusion par JC3, `test` → `main` sur feu vert d'Idan. Idan ne fusionne rien.
 - **2026-10-03** — Tâches et échanges entre agents via GitHub Issues et PR.
 - **2026-10-03** — Jean-Mimi travaille dans Google Flow, hors Git, avec Idan en liaison. Groky rejoint l'équipe.
+- **2026-10-03** — Fuite V1 (Issue #8) : pas de nouveau test de Courage En Fuite ; un fuyard ne fait pas d'attaque d'opportunité ; ennemi actif = vivant et pas En Fuite ; sortie de carte prioritaire si atteignable ce tour-ci ; Mission Test : sortie de carte = hors combat.
 
 ## En attente de décision
 
 - **Sélection du type de dégâts, cas « moyen »** (Idan + Chatty) : la formule dit `AVERAGE(matchups)`, le moteur choisit le type le plus proche de cette moyenne. Faut-il une moyenne numérique, ou le type le plus proche ?
 - **Attaques d'opportunité — questions ouvertes** (Idan + Chatty). Choix provisoires dans le code, entre parenthèses :
   - Un même adversaire peut-il réagir plusieurs fois dans le même tour ? (oui, sans limite)
-  - Un personnage Au Sol, ou En Fuite, peut-il faire une attaque d'opportunité, ou compter pour un encerclement ? (oui)
+  - Un personnage Au Sol peut-il faire une attaque d'opportunité, ou compter pour un encerclement ? (oui) — En Fuite : non, tranché par Idan.
   - Si plusieurs adversaires réagissent en même temps, dans quel ordre ? (ordre d'initiative de leur équipe)
   - Une charge peut-elle traverser une case occupée ? (non)
-- **Fuite V1** (Idan + Chatty) : 4 trous dans les règles, relevés par Groky et vérifiés par JC3. Voir l'Issue #8.
 - **Passage du temps** (Idan) : JC3 propose un `AdvanceTime(days)` unique dans `game-core/`, auquel la Taverne, les soins, les salaires et les retours de mission viendront se brancher.
 
 ## Dépendances

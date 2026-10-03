@@ -19,6 +19,12 @@ Il n'est pas assimilé à `Au Sol` : le personnage reste mobile et conserve son 
 
 S'il ne reste aucun mouvement disponible, le personnage ne bouge pas mais demeure **En Fuite**.
 
+## Règles complémentaires (décision Idan du 2026-10-03, Issue #8)
+
+- Un personnage déjà **En Fuite** ne reteste pas son Courage lorsqu'il est de nouveau blessé : son seul test est la reprise de contrôle au début de ses tours.
+- Un personnage **En Fuite** ne fait pas d'attaque d'opportunité.
+- Un ennemi **actif** est vivant et n'est pas En Fuite.
+
 ## Tours suivants — reprise de contrôle
 
 Au début de chaque tour commencé **En Fuite**, résoudre [Reprise de contrôle — En Fuite V1](/design/#doc=formulas/reprise-de-controle-en-fuite-v1.md).

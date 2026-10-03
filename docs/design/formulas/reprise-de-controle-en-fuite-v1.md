@@ -17,7 +17,7 @@ Version: V1
 
 Au **début de son tour**, un personnage **En Fuite** tente immédiatement de reprendre ses esprits.
 
-L'adversaire de référence est l'**ennemi actif le plus proche** au moment du test.
+L'adversaire de référence est l'**ennemi actif le plus proche** au moment du test. Un ennemi **actif** est vivant et n'est pas lui-même En Fuite (décision Idan du 2026-10-03, Issue #8).
 
 $$
 ScoreRecuperation=Courage+0.25\times Volonte-0.25\times Intimidation_{ennemi\ proche}+10\times TourFuite

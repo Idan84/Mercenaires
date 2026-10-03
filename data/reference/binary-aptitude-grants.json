@@ -1,55 +1,129 @@
 {
-  "schema_version": 1,
-  "description": "Attribution déterministe des aptitudes binaires à la création. Une aptitude vaut true si au moins une source d'identité correspondante l'accorde.",
-  "rule": "people OR ancestry OR culture OR origin",
+  "schema_version": 2,
+  "description": "Règles V1 de génération des aptitudes binaires. Vision nocturne est automatique par identité ; Vol est désactivé pour l'instant ; poison et ports d'armure utilisent des probabilités cumulées en points de pourcentage.",
+  "armor_rules": {
+    "hierarchy": [
+      "Port d’armure lourde",
+      "Port d’armure intermédiaire",
+      "Port d’armure légère"
+    ],
+    "warrior_magic_threshold": 50,
+    "warrior_bonus_pp": {
+      "Port d’armure lourde": 20,
+      "Port d’armure intermédiaire": 30,
+      "Port d’armure légère": 50
+    },
+    "magic_penalty_threshold": 75,
+    "magic_penalty_multiplier": 0.8,
+    "notes": "Si aucune école de magie ne dépasse 50, ajouter le bonus guerrier. Si au moins une école dépasse 75, multiplier la probabilité finale d'armure par 0,8. Les chances sont plafonnées à 100 %."
+  },
   "rows": [
     {
       "aptitude": "Vision nocturne",
       "domaine": "Physiologie",
-      "peoples": [],
-      "ancestries": [],
-      "cultures": [],
-      "origins": []
+      "mode": "automatic",
+      "automatic": {
+        "peoples": [],
+        "ancestries": [
+          "Sang de démon"
+        ],
+        "cultures": [
+          "Elfes noirs",
+          "Gobelins des cavernes",
+          "Gnomes des cavernes",
+          "Reptiliens des marécages",
+          "Tribus des forêts anciennes"
+        ],
+        "origins": []
+      }
     },
     {
       "aptitude": "Vol",
       "domaine": "Physiologie",
-      "peoples": [],
-      "ancestries": [],
-      "cultures": [],
-      "origins": []
+      "mode": "disabled",
+      "reason": "Désactivé en V1 : la mécanique de vol sera définie plus tard."
     },
     {
       "aptitude": "Empoisonnement des armes",
       "domaine": "Martial",
-      "peoples": [],
-      "ancestries": [],
-      "cultures": [],
-      "origins": []
+      "mode": "probability",
+      "bonuses_pp": {
+        "peoples": {},
+        "ancestries": {},
+        "cultures": {
+          "Elfes noirs": 45,
+          "Reptiliens des marécages": 30,
+          "Tribus de la jungle": 25,
+          "Gobelins des cavernes": 20,
+          "Reptiliens des cités-temples": 10
+        },
+        "origins": {
+          "Hors-la-loi": 25
+        }
+      }
     },
     {
       "aptitude": "Port d’armure légère",
       "domaine": "Martial",
-      "peoples": [],
-      "ancestries": [],
-      "cultures": [],
-      "origins": []
+      "mode": "probability",
+      "armor": true,
+      "bonuses_pp": {
+        "peoples": {},
+        "ancestries": {},
+        "cultures": {
+          "Orcs noirs": 25,
+          "Nains des montagnes": 25,
+          "Montagnes du Nord": 15,
+          "Tribus nordiques": 15,
+          "Ogres des cités humaines": 10
+        },
+        "origins": {
+          "Soldat / Guerrier / Combattant": 90,
+          "Noble": 20
+        }
+      }
     },
     {
       "aptitude": "Port d’armure intermédiaire",
       "domaine": "Martial",
-      "peoples": [],
-      "ancestries": [],
-      "cultures": [],
-      "origins": []
+      "mode": "probability",
+      "armor": true,
+      "bonuses_pp": {
+        "peoples": {},
+        "ancestries": {},
+        "cultures": {
+          "Orcs noirs": 30,
+          "Nains des montagnes": 35,
+          "Montagnes du Nord": 20,
+          "Tribus nordiques": 20,
+          "Ogres des cités humaines": 15
+        },
+        "origins": {
+          "Soldat / Guerrier / Combattant": 55,
+          "Noble": 10
+        }
+      }
     },
     {
       "aptitude": "Port d’armure lourde",
       "domaine": "Martial",
-      "peoples": [],
-      "ancestries": [],
-      "cultures": [],
-      "origins": []
+      "mode": "probability",
+      "armor": true,
+      "bonuses_pp": {
+        "peoples": {},
+        "ancestries": {},
+        "cultures": {
+          "Orcs noirs": 30,
+          "Nains des montagnes": 40,
+          "Montagnes du Nord": 25,
+          "Tribus nordiques": 20,
+          "Ogres des cités humaines": 15
+        },
+        "origins": {
+          "Soldat / Guerrier / Combattant": 15,
+          "Noble": 10
+        }
+      }
     }
   ]
 }

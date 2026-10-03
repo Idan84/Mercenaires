@@ -502,6 +502,11 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
   color:#bdb3a8;
   font-size:.8rem;
 }
+.character-bio-placeholder small{
+  color:#8f857b;
+  font-size:.7rem;
+  font-style:italic;
+}
 
 .spellbook-section{
   padding-top:18px;

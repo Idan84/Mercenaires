@@ -132,6 +132,8 @@ Chaque question cible une valeur chiffrée cachée du mercenaire : caractéristi
 
 ### Avec un Intendant
 
+L'Intendant est un **rôle que le joueur assigne** à un mercenaire de la compagnie. Sans assignation, la compagnie n'a pas d'Intendant (décision Idan du 2026-10-03, PR #11).
+
 L'Intendant utilise sa compétence Camp **Intendance** pour estimer la valeur réelle.
 
 Formule PLAYTEST :
@@ -310,13 +312,26 @@ Après un refus :
 P_QuitterNegociation (%) =
 Clamp(
   5
-  + 0.75 × ConcessionDemandee
+  + 1.5 × ConcessionDemandee
   + 0.10 × PretentionsSalariales
   + 0.10 × Volonte,
   5,
-  75
+  95
 )
 ```
+
+**Réglage Idan du 2026-10-03 (PR #11)** : coefficient de concession porté de 0,75 à **1,5** et plafond de 75 à **95 %**, pour que les offres très basses ne deviennent pas une loterie. Constantes `tavern.negotiation.quit_concession_coefficient` et `tavern.negotiation.quit_max`.
+
+Mesure sur 3 000 mercenaires générés (première offre à une fraction de la demande, puis acceptation de la contre-proposition) :
+
+| Première offre | Avant (0,75 / 75) | Après (1,5 / 95) |
+|---:|---|---|
+| 90 % | 95 % signés, à 91 % du salaire demandé | 93 % signés, à 91 % |
+| 80 % | 87 % signés, à 84 % | 82 % signés, à 84 % |
+| 50 % | 53 % signés, à 76 % | 17 % signés, à 71 % |
+| 2 % | 29 % signés, à 47 % | 10 % signés, à 25 % |
+
+Les 10 % restants des offres extrêmes viennent du plancher de 5 % de `P_Accepter` et de la contre-proposition, qui part de l'offre du joueur.
 
 - réussite du jet → le candidat quitte immédiatement la Taverne ;
 - échec → il fait une contre-proposition.
@@ -431,7 +446,7 @@ La Taverne dépend de :
 
 Le besoin d'un état de partie persistant a été signalé par JC3 : les candidats ne peuvent pas rester plusieurs jours si l'état stratégique reste uniquement dans l'interface web.
 
-**Implémentation** : `game-core/tavern.js` (règles de la Taverne), `game-core/campaign.js` (état de partie, `AdvanceTime`, signature) et `prototype-web/tavern-ui.js` (écran Taverne : candidats, entretien, négociation, signature, jour suivant). Dans l'écran V1, une question peut viser une caractéristique, une résistance ou la compétence de prédilection affichée. Choix V1 confirmés par Chatty (PR #6) : l'Intendant est le meilleur score d'Intendance de la compagnie ; 3 questions pour tout le séjour d'un candidat, réponse figée une fois obtenue ; une négociation interrompue reprend au package courant. Le Dortoir compte le capitaine.
+**Implémentation** : `game-core/tavern.js` (règles de la Taverne), `game-core/campaign.js` (état de partie, `AdvanceTime`, signature) et `prototype-web/tavern-ui.js` (écran Taverne : candidats, entretien, négociation, signature, jour suivant). Dans l'écran V1, une question peut viser une caractéristique, une résistance ou la compétence de prédilection affichée. Choix V1 confirmés par Chatty (PR #6) : 3 questions pour tout le séjour d'un candidat, réponse figée une fois obtenue ; une négociation interrompue reprend au package courant. Le Dortoir compte le capitaine.
 
 ## 13 — Points encore à arbitrer / playtester
 

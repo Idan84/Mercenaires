@@ -17,6 +17,7 @@ jobs:
       - run: node tests/combat.test.js
       - run: node tests/tavern.test.js
       - run: node tests/mission-end.test.js
+      - run: node tests/biography.test.js
       - run: node --check prototype-web/mission.js
       - run: node --check prototype-web/ui.js
       - run: node --check prototype-web/tavern-ui.js

@@ -424,6 +424,21 @@
         "t2",
         "t3"
       ]
+    },
+    {
+      "name": "biographies",
+      "file": "biographies.json",
+      "rows": 17,
+      "columns": [
+        "id",
+        "short",
+        "rumor",
+        "motto",
+        "tags",
+        "gender",
+        "weight",
+        "statut"
+      ]
     }
   ]
 }

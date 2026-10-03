@@ -146,11 +146,11 @@ function renderComparison(currentValue, accessor) {
       <i class="compare-dot current" style="left:${p.current}%"></i>
     </div>
     <div class="compare-legend">
-      <span><small>Faible</small><b>${fmt(c.min)}</b><em>${esc(c.minName)}</em></span>
-      <span><small>Merc.</small><b>${fmt(c.current)}</b></span>
-      <span><small>Médiane</small><b>${fmt(c.median)}</b></span>
-      <span><small>Moyenne</small><b>${fmt(c.avg)}</b></span>
-      <span><small>Fort</small><b>${fmt(c.max)}</b><em>${esc(c.maxName)}</em></span>
+      <span class="legend-current"><small>Mercenaire</small><b>${fmt(c.current)}</b></span>
+      <span><small>Moyenne équipe</small><b>${fmt(c.avg)}</b></span>
+      <span><small>Médiane équipe</small><b>${fmt(c.median)}</b></span>
+      <span><small>Min équipe</small><b>${fmt(c.min)}</b><em>${esc(c.minName)}</em></span>
+      <span><small>Max équipe</small><b>${fmt(c.max)}</b><em>${esc(c.maxName)}</em></span>
     </div>
   </div>`;
 }
@@ -290,7 +290,7 @@ function renderSkillGroup(c, group, values) {
     return bv - av || a[0].localeCompare(b[0], "fr");
   });
 
-  return `<details class="skill-group" ${["magic"].includes(group) ? "open" : ""}>
+  return `<details class="skill-group" ${["magic","camp"].includes(group) ? "open" : ""}>
     <summary><strong>${esc(skillLabel(group))}</strong><span>${entries.filter(([,v])=>Number.isFinite(v)).length} valeurs</span></summary>
     <div class="trace-table-wrap"><table class="trace-table skill-trace-table">
       <thead><tr><th>Compétence</th><th>Brut</th><th>Bonus génération</th><th>Modifs</th><th>Final</th><th>Équipe</th></tr></thead>
@@ -459,12 +459,12 @@ function showCharacter(c) {
     ${renderMagicPreferences(c)}
 
     <details class="debug-section" open>
-      <summary><h3>Caractéristiques — trace de génération</h3><span>brut → identités → final</span></summary>
+      <summary><h3>Caractéristiques — trace de génération</h3><span>brut → identités → final · comparaison = capitaine + escouade</span></summary>
       ${renderCharacteristicTrace(c)}
     </details>
 
     <details class="debug-section" open>
-      <summary><h3>Compétences — trace de génération</h3><span>tirage brut → matrice → final</span></summary>
+      <summary><h3>Compétences — trace de génération</h3><span>tirage brut → matrice → final · comparaison = capitaine + escouade</span></summary>
       <div class="skill-groups">
         ${renderMartialGroup(c)}
         ${Object.entries(c.skills)

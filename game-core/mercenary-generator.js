@@ -373,10 +373,7 @@
             const warriorThreshold = Number(armorRules.warrior_magic_threshold);
             if (Number.isFinite(warriorThreshold) && maxMagic <= warriorThreshold) {
               warriorBonus = Number(armorRules.warrior_bonus_pp?.[row.aptitude]) || 0;
-              if (warriorBonus) {
-                sources.push({kind:"magic-profile",name:`Aucune école > ${warriorThreshold}`,pp:warriorBonus});
-                probabilityBeforePenalty += warriorBonus;
-              }
+              if (warriorBonus) probabilityBeforePenalty += warriorBonus;
             }
 
             const penaltyThreshold = Number(armorRules.magic_penalty_threshold);

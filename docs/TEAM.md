@@ -73,7 +73,7 @@ Aucun agent ne travaille spontanément : il faut qu'une session soit lancée. Gi
 | Registre d'équilibrage (`docs/design/92-balance-questions.md`) | JC3, puis Idan + Chatty | PR #7 | Équilibrage reporté par Idan |
 | Taverne : design V1 (`docs/design/14-tavern-recruitment.md`) | Chatty + Idan | PR #6 | Fusionné |
 | Taverne : code V1, étape 1 — état de partie, `AdvanceTime`, boucle quotidienne, entretien, négociation (`game-core/`) | JC3 | `claude/tavern-v1` | En relecture |
-| Taverne : code V1, étape 2 — écran Taverne dans le prototype | JC3 | — | À faire |
+| Taverne : code V1, étape 2 — écran Taverne dans le prototype | JC3 | `claude/tavern-v1` (PR #11) | En relecture |
 | Tâche test : casser les règles de Fuite | Groky | Issue #4 | Transmise par Idan |
 
 ## Décisions récentes
@@ -89,6 +89,7 @@ Aucun agent ne travaille spontanément : il faut qu'une session soit lancée. Gi
 
 ## En attente de décision
 
+- **Profil temporaire d'équipement** (Chatty + Idan, Issue #12) : 89 % des mercenaires générés sortent « Magie », car le score d'arme est divisé par 2 mais pas celui d'école. Cela vide de sens le profil affiché à la Taverne.
 - **Sélection du type de dégâts, cas « moyen »** (Idan + Chatty) : la formule dit `AVERAGE(matchups)`, le moteur choisit le type le plus proche de cette moyenne. Faut-il une moyenne numérique, ou le type le plus proche ?
 
 ## Dépendances

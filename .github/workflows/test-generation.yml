@@ -15,5 +15,7 @@ jobs:
           node-version: 22
       - run: node tests/generation.test.js
       - run: node tests/combat.test.js
+      - run: node tests/tavern.test.js
       - run: node --check prototype-web/mission.js
       - run: node --check prototype-web/ui.js
+      - run: node --check prototype-web/tavern-ui.js

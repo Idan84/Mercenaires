@@ -71,8 +71,9 @@
           </div>
           <div class="company-actions">
             <div class="company-meta">
-              <span>Or <strong>1 000</strong></span>
-              <span>Jour <strong>1</strong></span>
+              <span>Or <strong id="company-gold">1 000</strong></span>
+              <span>Jour <strong id="company-day">1</strong></span>
+              <span>Dortoir <strong id="company-dorm">—</strong></span>
             </div>
             <button id="mission-test-btn" class="primary">Mission Test</button>
           </div>
@@ -80,11 +81,27 @@
         <div id="captain-summary"></div>
       </section>
 
+      <section class="panel tavern-panel">
+        <div class="section-title-row">
+          <div>
+            <p class="eyebrow">Taverne — recrutement V1</p>
+            <h2>Candidats du jour</h2>
+            <p class="muted">Chaque matin, certains candidats sont engagés ailleurs et de nouveaux arrivent sur les places libres.</p>
+          </div>
+          <div class="tavern-actions">
+            <label class="tavern-intendant">Intendant <select id="tavern-intendant"></select></label>
+            <button id="tavern-next-day-btn" class="primary">Jour suivant</button>
+          </div>
+        </div>
+        <div id="tavern-candidates" class="tavern-grid"></div>
+        <div id="tavern-log" class="tavern-log"></div>
+      </section>
+
       <section class="panel">
         <div class="section-title-row">
           <div>
             <p class="eyebrow">Create_Initial_Squad()</p>
-            <h2>Escouade initiale</h2>
+            <h2>Escouade</h2>
           </div>
           <span id="initial-count" class="badge"></span>
         </div>
@@ -161,6 +178,16 @@
       </div>
     </div>
   </dialog>
+  <dialog id="tavern-dialog">
+    <div class="dialog-head">
+      <div>
+        <p class="eyebrow">Entretien à la Taverne</p>
+        <h2 id="tavern-dialog-name"></h2>
+      </div>
+      <button id="close-tavern-dialog" class="icon-btn" aria-label="Fermer">×</button>
+    </div>
+    <div id="tavern-dialog-content"></div>
+  </dialog>
   <dialog id="character-dialog">
     <div class="dialog-head">
       <div>
@@ -174,10 +201,13 @@
 
   <script src="/core/mercenary-generator.js"></script>
   <script src="/core/combat-engine.js"></script>
+  <script src="/core/tavern.js"></script>
+  <script src="/core/campaign.js"></script>
   <script src="reference-data.js"></script>
   <script src="core-data.js"></script>
   <script src="generation.js"></script>
   <script src="mission.js"></script>
+  <script src="tavern-ui.js"></script>
   <script src="ui.js"></script>
 </body>
 </html>

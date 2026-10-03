@@ -74,9 +74,11 @@ function renderGame() {
   $("game-panel").classList.remove("hidden");
   $("company-title").textContent = `Compagnie de ${game.captain.name}`;
   $("captain-summary").innerHTML = characterRow(game.captain, true);
-  $("initial-count").textContent = `${game.initialSquad.length} mercenaire${game.initialSquad.length>1?"s":""}`;
-  $("initial-squad").innerHTML = game.initialSquad.map(c => characterRow(c)).join("");
+  const squad = teamCharacters().filter(c => c !== game.captain);
+  $("initial-count").textContent = `${squad.length} mercenaire${squad.length>1?"s":""}`;
+  $("initial-squad").innerHTML = squad.map(c => characterRow(c)).join("");
   renderGenerated();
+  renderTavern();
 }
 
 function renderGenerated() {
@@ -86,10 +88,12 @@ function renderGenerated() {
 }
 
 function allCharacters() {
-  return [game.captain, ...game.initialSquad, ...game.generated].filter(Boolean);
+  return [...teamCharacters(), ...game.generated].filter(Boolean);
 }
 
+// La compagnie : capitaine, escouade initiale et recrues de la Taverne (game.campaign).
 function teamCharacters() {
+  if (game.campaign) return campaignRoster();
   return [game.captain, ...game.initialSquad].filter(Boolean);
 }
 
@@ -581,6 +585,7 @@ async function init() {
     updateCultureSelect();
 
     initializeMissionUi();
+    initializeTavernUi();
 
     $("new-game-btn").addEventListener("click", openSetup);
     $("cancel-setup-btn").addEventListener("click", () => $("setup-panel").classList.add("hidden"));
@@ -590,8 +595,10 @@ async function init() {
     $("create-game-btn").addEventListener("click", () => {
       game.idCounter = 1;
       game.captain = createCaptainFromForm();
+      game.campaign = null;
       game.initialSquad = createInitialSquad(game.captain);
       game.generated = [];
+      startCampaign(game.captain, game.initialSquad);
       renderGame();
     });
 

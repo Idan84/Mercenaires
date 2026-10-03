@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 46,
+  "row_count": 51,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -400,6 +400,46 @@
       "description": "Nombre de points de probabilité de toucher retirés par hex d'écart à la case ciblée.",
       "formule": "Précision d'attaque de zone V1",
       "valeur": 10,
+      "version": "V1"
+    },
+    {
+      "nom": "Dortoir — capacité initiale",
+      "code": "camp.dormitory.initial_capacity",
+      "description": "Nombre de mercenaires de la compagnie, capitaine compris, que le Dortoir peut héberger en début de partie. Porté de 20 à 40 par Idan le 2026-10-03, car l'escouade initiale peut dépasser 20.",
+      "formule": "Camp & château en ruines",
+      "valeur": 40,
+      "version": "V1"
+    },
+    {
+      "nom": "Or de départ",
+      "code": "company.gold.initial",
+      "description": "Pièces d'or de la compagnie en début de partie.",
+      "formule": "Camp & château en ruines",
+      "valeur": 1000,
+      "version": "V1"
+    },
+    {
+      "nom": "Taverne — places de candidats au départ",
+      "code": "tavern.slots.initial",
+      "description": "Nombre de places de candidats de la Taverne en début de partie, avant tout effet de la Renommée.",
+      "formule": "Taverne — recrutement V1",
+      "valeur": 5,
+      "version": "V1"
+    },
+    {
+      "nom": "Taverne — départ après refus, poids de la concession",
+      "code": "tavern.negotiation.quit_concession_coefficient",
+      "description": "Poids de la concession demandée dans la probabilité qu'un candidat quitte la Taverne après avoir refusé une offre. Porté de 0,75 à 1,5 à la demande d'Idan (2026-10-03) pour que les offres très basses ne deviennent pas une loterie.",
+      "formule": "Taverne — recrutement V1",
+      "valeur": 1.5,
+      "version": "V1"
+    },
+    {
+      "nom": "Taverne — départ après refus, plafond",
+      "code": "tavern.negotiation.quit_max",
+      "description": "Probabilité maximale (%) qu'un candidat quitte la Taverne après avoir refusé une offre. Porté de 75 à 95 à la demande d'Idan (2026-10-03).",
+      "formule": "Taverne — recrutement V1",
+      "valeur": 95,
       "version": "V1"
     }
   ]

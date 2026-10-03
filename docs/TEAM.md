@@ -72,7 +72,8 @@ Aucun agent ne travaille spontanément : il faut qu'une session soit lancée. Gi
 | Corrections Mission Test : second Mouvement, carte 13×9 rectangulaire et entièrement visible | JC3 | `claude/friendly-bardeen-edzi87` (PR #7) | En relecture |
 | Registre d'équilibrage (`docs/design/92-balance-questions.md`) | JC3, puis Idan + Chatty | PR #7 | Équilibrage reporté par Idan |
 | Taverne : design V1 (`docs/design/14-tavern-recruitment.md`) | Chatty + Idan | PR #6 | Fusionné |
-| Taverne : code V1 (état de partie, `AdvanceTime`, boucle quotidienne, entretien, négociation, écran) | JC3 | `claude/tavern-v1` | À démarrer |
+| Taverne : code V1, étape 1 — état de partie, `AdvanceTime`, boucle quotidienne, entretien, négociation (`game-core/`) | JC3 | `claude/tavern-v1` | En relecture |
+| Taverne : code V1, étape 2 — écran Taverne dans le prototype | JC3 | `claude/tavern-v1` (PR #11) | En relecture |
 | Tâche test : casser les règles de Fuite | Groky | Issue #4 | Transmise par Idan |
 
 ## Décisions récentes
@@ -81,12 +82,16 @@ Aucun agent ne travaille spontanément : il faut qu'une session soit lancée. Gi
 - **2026-10-03** — Circuit Git : PR vers `test`, fusion par JC3, `test` → `main` sur feu vert d'Idan. Idan ne fusionne rien.
 - **2026-10-03** — Tâches et échanges entre agents via GitHub Issues et PR.
 - **2026-10-03** — Jean-Mimi travaille dans Google Flow, hors Git, avec Idan en liaison. Groky rejoint l'équipe.
+- **2026-10-03** — Taverne (PR #11) : l'Intendant est un rôle assigné par le joueur (aucun par défaut) ; départ après refus durci (coefficient 1,5, plafond 95 %) pour que les offres très basses ne soient pas une loterie.
+- **2026-10-03** — Dortoir initial porté à **40 places** : l'escouade initiale peut compter jusqu'à 30 mercenaires plus le capitaine.
 - **2026-10-03** — Taverne V1 (Issues #5 et #9) et horloge stratégique unique `AdvanceTime(days)`, résolue jour par jour : validées par Idan.
 - **2026-10-03** — Combat V1 (PR #7) : toute attaque contre un personnage En Fuite est une Frappe dans le dos ; panique hors de sa propre activation = fuite immédiate de `MouvementBase` ; choix d'implémentation des attaques d'opportunité confirmés par Chatty.
 - **2026-10-03** — Fuite V1 (Issue #8) : pas de nouveau test de Courage En Fuite ; un fuyard ne fait pas d'attaque d'opportunité ; ennemi actif = vivant et pas En Fuite ; sortie de carte prioritaire si atteignable ce tour-ci ; Mission Test : sortie de carte = hors combat.
 
 ## En attente de décision
 
+- **Escouade initiale sans contrat** (Idan + Chatty) : à décider avant de brancher la paie quotidienne, sinon l'escouade initiale travaillerait gratuitement pour toujours.
+- **Profil temporaire d'équipement** (Chatty + Idan, Issue #12) : 89 % des mercenaires générés sortent « Magie », car le score d'arme est divisé par 2 mais pas celui d'école. Cela vide de sens le profil affiché à la Taverne.
 - **Sélection du type de dégâts, cas « moyen »** (Idan + Chatty) : la formule dit `AVERAGE(matchups)`, le moteur choisit le type le plus proche de cette moyenne. Faut-il une moyenne numérique, ou le type le plus proche ?
 
 ## Dépendances

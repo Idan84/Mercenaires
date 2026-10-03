@@ -185,7 +185,7 @@
     {
       "name": "characteristics",
       "file": "characteristics.json",
-      "rows": 32,
+      "rows": 33,
       "columns": [
         "nom",
         "cache",

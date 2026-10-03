@@ -15,7 +15,7 @@ Git est la source de vérité. Les JSON ci-dessous sont les référentiels struc
 | peoples.json | 10 | nom, alignement_principal, probabilite_de_base, probabilite_d_ascendance |
 | d6-generation-scale.json | 3 | intensite, ascendance_niveau_1_d6, ascendance_niveau_2_d6, ascendance_niveau_3_d6, standard_nombre_de_d6 |
 | generation-steps.json | 12 | etape, entrees, ordre, regle, sortie |
-| characteristics.json | 32 | nom, cache, description, est_utilise_dans_les_formules, famille, genere_a_la_creation, maximum, minimum, ordre, type_de_valeur, unite, evolutif |
+| characteristics.json | 33 | nom, cache, description, est_utilise_dans_les_formules, famille, genere_a_la_creation, maximum, minimum, ordre, type_de_valeur, unite, evolutif |
 | skills.json | 94 | nom, acquisition_possible, alteration_magique_base, attaque_de_zone, bonus_blocage_base, bonus_charge_base, cadence_tir, contre_charge, description, domaine, degats_pv_base, exemples, malus_vitesse_arme_base, mode, niveau, ordre, parent, portee_max_hex, portee_min_hex, prise, puissance_contondante_base, puissance_perforante_base, puissance_tranchante_base, recharge_action_rapide, type_de_valeur, types_de_degats, valeur_maximale, ecoles_d_influence, ecoles_opposees |
 | damage-types.json | 7 | nom, code, description, famille |
 | states.json | 2 | nom, categorie, code, effet_mecanique, utilise_l_esquive_en_defense |

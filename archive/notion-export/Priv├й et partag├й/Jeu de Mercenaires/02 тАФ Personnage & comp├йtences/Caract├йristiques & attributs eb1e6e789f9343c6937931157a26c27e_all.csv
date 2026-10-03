@@ -1,0 +1,33 @@
+﻿Nom,Caché,Description,Est utilisé dans les formules ?,Famille,Généré à la création,Maximum,Minimum,Ordre,Type de valeur,Unité,Évolutif
+PV actuels,No,État courant des points de vie. Borné en jeu par les PV maximum ; zéro entraîne la mort selon les règles du système. Fait partie des états temporaires/dynamiques du mercenaire.,No,État temporaire,No,,0,21,Numérique,,Yes
+Dextérité,No,"Coordination, précision gestuelle et finesse motrice.",Yes,Caractéristique,Yes,,1,3,Numérique,,Yes
+Esquive,No,Capacité générale à éviter une attaque ou un danger physique.,Yes,Caractéristique,Yes,,1,6,Numérique,,Yes
+Taille,No,Taille physique du mercenaire. Doit notamment servir plus tard à la génération et à l’échelle du mesh 3D.,No,Morphologie,Yes,,1,24,Numérique,cm,No
+Résistance au feu,No,Résistance aux effets du feu et de la chaleur.,Yes,Résistance,Yes,,1,16,Numérique,,Yes
+Résistance physique,No,Résistance naturelle ou acquise aux dégâts et contraintes physiques.,Yes,Résistance,Yes,,1,15,Numérique,,Yes
+Courage,No,"Capacité à affronter le danger, la peur et la pression.",No,Caractéristique,Yes,,1,9,Numérique,,Yes
+Corpulence,No,"Morphologie générale indépendante du peuple : maigre, athlétique, massif, corpulent, etc. Valeur numérique exploitable plus tard pour le mesh 3D.",No,Morphologie,Yes,,1,25,Numérique,,Yes
+Perception,No,Capacité à détecter et interpréter les informations de l’environnement.,Yes,Caractéristique,Yes,,1,12,Numérique,,Yes
+Surnom actif,No,"Titre actuellement affiché comme surnom. Il est choisi parmi les titres ou grades acquis par le mercenaire, par exemple « Le tueur de mouches », « Le Bienfaiteur » ou « Le Doc ».",No,Identité,No,,,27,Référence,,Yes
+Nom du mercenaire,No,"Nom propre du mercenaire, généré ou choisi selon le contexte.",No,Identité,Yes,,,26,Texte,,No
+PV maximum,No,"Valeur dérivée calculée par la formule V1 : ceil(3 × (Constitution + 0,2 × Endurance + 0,1 × Volonté)). La Constitution domine, l'Endurance contribue secondairement et la Volonté apporte une faible marge de survie. Aucun multiplicateur global ×10 n'est appliqué aux PV maximum. Les caractéristiques peuvent ensuite être modifiées par progression, équipement, magie, blessures ou autres effets.",Yes,Valeur dérivée,No,,1,20,Calculée,,Yes
+Réputation,Yes,Notoriété personnelle calculée du mercenaire. Représente ce que les autres perçoivent de lui ; utilisée notamment pour le salaire et la renommée de compagnie.,Yes,Attribut caché,Yes,,1,22,Calculée,,Yes
+Résistance au froid,No,Résistance aux effets du froid.,Yes,Résistance,Yes,,1,17,Numérique,,Yes
+Chance,No,Propension individuelle à bénéficier d’issues favorables dans les situations incertaines.,Yes,Caractéristique,Yes,,1,7,Numérique,,Yes
+Endurance,No,Capacité à soutenir l’effort et à résister à la fatigue.,No,Caractéristique,Yes,,1,5,Numérique,,Yes
+Volonté,No,"Force mentale, discipline et capacité à maintenir une décision malgré les contraintes.",No,Caractéristique,Yes,,1,11,Numérique,,Yes
+Force,No,Puissance musculaire brute. Valeur initiale pondérée par l’identité du mercenaire puis susceptible d’évoluer.,No,Caractéristique,Yes,,1,1,Numérique,,Yes
+Constitution,No,Robustesse générale de l’organisme. Participe notamment au calcul des PV maximum.,No,Caractéristique,Yes,,1,2,Numérique,,Yes
+Résistance à la foudre,No,Résistance aux effets électriques et à la foudre.,Yes,Résistance,Yes,,1,18,Numérique,,Yes
+Intelligence,No,"Capacité de compréhension, d’apprentissage et de raisonnement.",Yes,Caractéristique,Yes,,1,10,Numérique,,Yes
+Réserve de mana,No,Quantité de mana disponible pour utiliser la magie.,No,Caractéristique,Yes,,1,14,Numérique,,Yes
+Puissance magique,No,Potentiel brut permettant d’amplifier les effets magiques.,No,Caractéristique,Yes,,1,13,Numérique,,Yes
+Vitesse,No,Rapidité de déplacement et d’exécution.,Yes,Caractéristique,Yes,,1,4,Numérique,,Yes
+Prétentions salariales,Yes,Attribut social caché représentant la disposition personnelle du mercenaire à exiger une rémunération élevée. Tirage brut 10D6 ; utilisé dans le salaire demandé ; exclu du Max Social de réputation.,Yes,Attribut caché,Yes,,1,23,Numérique,,Yes
+Charisme,No,"Présence sociale, capacité d’influence et impact sur autrui.",No,Caractéristique,Yes,,1,8,Numérique,,Yes
+Résistance au poison,No,Résistance aux poisons et substances toxiques.,Yes,Résistance,Yes,,1,19,Numérique,,Yes
+Âge,No,"Âge courant du mercenaire. Pour l’instant stocké sans effet mécanique. Plus tard, son influence sur les caractéristiques mentales et physiques dépendra du peuple : un vieil Elfe ou un vieux Nain n’a évidemment pas le même âge qu’un vieil Humain.",No,État temporaire,Yes,,1,28,Numérique,ans,Yes
+Initiative,No,"Valeur calculée de manière contextuelle à partir de plusieurs caractéristiques et états, notamment la Vitesse et la Fatigue, avec une variabilité suffisante pour empêcher un ordre de jeu parfaitement déterministe d’un combat à l’autre. Formule à définir.",No,Valeur dérivée,No,,1,32,Calculée,,Yes
+Stress actuel,No,"État de stress courant. Valeur dynamique distincte du Courage et de la Volonté, susceptible d’influencer les réactions, la panique et les traumatismes.",No,État temporaire,No,,0,31,Numérique,,Yes
+Fatigue actuelle,No,"État de fatigue courant. Valeur très dynamique influençant ensuite plusieurs valeurs dérivées et actions, notamment l’initiative.",No,État temporaire,No,,0,30,Numérique,,Yes
+Mana actuel,No,"Réserve de mana disponible à l’instant présent. N’est pas tirée indépendamment à la génération : à la création, elle est initialisée à la Réserve de mana du personnage puis varie avec les dépenses et récupérations.",No,État temporaire,No,,0,29,Numérique,,Yes

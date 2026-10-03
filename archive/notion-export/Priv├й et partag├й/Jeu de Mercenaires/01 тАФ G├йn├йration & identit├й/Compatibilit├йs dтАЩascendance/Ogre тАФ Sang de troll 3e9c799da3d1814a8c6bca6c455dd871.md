@@ -1,0 +1,5 @@
+# Ogre — Sang de troll
+
+Ascendance: Sang de troll (../Ascendances/Sang%20de%20troll%203e9c799da3d181649e9ae4f8de0a399e.md)
+Peuple: Ogre (../Peuples/Ogre%203e9c799da3d181cfbc78f19ae00a401a.md)
+Possible: No

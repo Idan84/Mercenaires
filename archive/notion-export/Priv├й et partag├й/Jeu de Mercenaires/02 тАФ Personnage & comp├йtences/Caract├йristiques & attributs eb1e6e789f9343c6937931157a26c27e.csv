@@ -1,0 +1,15 @@
+﻿Nom,Minimum,Maximum,Évolutif,Description
+Force,1,,Yes,Puissance musculaire brute. Valeur initiale pondérée par l’identité du mercenaire puis susceptible d’évoluer.
+Constitution,1,,Yes,Robustesse générale de l’organisme. Participe notamment au calcul des PV maximum.
+Dextérité,1,,Yes,"Coordination, précision gestuelle et finesse motrice."
+Vitesse,1,,Yes,Rapidité de déplacement et d’exécution.
+Endurance,1,,Yes,Capacité à soutenir l’effort et à résister à la fatigue.
+Esquive,1,,Yes,Capacité générale à éviter une attaque ou un danger physique.
+Chance,1,,Yes,Propension individuelle à bénéficier d’issues favorables dans les situations incertaines.
+Charisme,1,,Yes,"Présence sociale, capacité d’influence et impact sur autrui."
+Courage,1,,Yes,"Capacité à affronter le danger, la peur et la pression."
+Intelligence,1,,Yes,"Capacité de compréhension, d’apprentissage et de raisonnement."
+Volonté,1,,Yes,"Force mentale, discipline et capacité à maintenir une décision malgré les contraintes."
+Perception,1,,Yes,Capacité à détecter et interpréter les informations de l’environnement.
+Puissance magique,1,,Yes,Potentiel brut permettant d’amplifier les effets magiques.
+Réserve de mana,1,,Yes,Quantité de mana disponible pour utiliser la magie.

@@ -1,0 +1,8 @@
+﻿Nom,Code,Description,Famille
+Brûlant,burning,"Feu, chaleur et combustion.",Élémentaire
+Foudroyant,lightning,Électricité et foudre.,Élémentaire
+Perforant,piercing,"Pointes, estocs, flèches et perforation.",Physique
+Glaçant,freezing,"Froid intense, glace et gel.",Élémentaire
+Corrosif,corrosive,"Acide, bile, corrosion et substances dissolvantes.",Autre
+Contondant,blunt,"Chocs, masses, marteaux et écrasement.",Physique
+Tranchant,slashing,"Coupures, tailles et lames.",Physique

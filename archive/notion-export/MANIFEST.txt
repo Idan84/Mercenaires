@@ -1,0 +1,733 @@
+MANIFEST.txt
+Priv├й et partag├й/Jeu de Mercenaires 3eac799da3d181478858f51a008acbda.md
+Priv├й et partag├й/Jeu de Mercenaires/00 тАФ D├йmarrage de partie & fonctions de g├йn├йration 3ebc799da3d18106a6d0dc0a410e55a8.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й 3eac799da3d181c491e3d99c69fa2317.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Alignements 268aef3cc286435ea9aa0bcaaa5be428.csv
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Alignements 268aef3cc286435ea9aa0bcaaa5be428_all.csv
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Alignements/Chaotique bon 3e9c799da3d1811488b8ec32840d582f.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Alignements/Chaotique mauvais 3e9c799da3d181a7afdfd8e7deb436bf.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Alignements/Chaotique neutre 3e9c799da3d181f881dde14c35f2ad2c.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Alignements/Loyal bon 3e9c799da3d1818fa7c8e88a97ef252d.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Alignements/Loyal mauvais 3e9c799da3d181e180a9ce08266bcdce.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Alignements/Loyal neutre 3e9c799da3d1815fa666ffc5fc49cd0b.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Alignements/Neutre 3e9c799da3d1811fbc38f72918ec53cd.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Alignements/Neutre bon 3e9c799da3d181cc9bcaf53f023a5336.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Alignements/Neutre mauvais 3e9c799da3d18153a1d8f747176142ee.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Ascendances e2bd4f129d754ce1885acf62ea90f487.csv
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Ascendances e2bd4f129d754ce1885acf62ea90f487_all.csv
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Ascendances/Sang de djinn 3e9c799da3d1814f8fb7fc4bc5efa4c1.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Ascendances/Sang de dragon 3e9c799da3d18131bfc9cbffcea9fd21.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Ascendances/Sang de dryade 3e9c799da3d181d68442d90c58261549.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Ascendances/Sang de d├йmon 3e9c799da3d181bc9e75c94847e96d86.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Ascendances/Sang de sir├иne 3e9c799da3d1815ebdf7c7a38aec52d2.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Ascendances/Sang de troll 3e9c799da3d181649e9ae4f8de0a399e.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Ascendances/Sang divin 3e9c799da3d1812cad9dfd2e65d58fa7.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Ascendances/Sang dтАЩelfe 3e9c799da3d18158b229f62d3a824861.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Ascendances/Sang dтАЩhumain 3e9c799da3d181bdb912c668959c2c0f.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Ascendances/Sang dтАЩorc 3e9c799da3d181cfa519f51eec9bf020.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Ascendances/Sang f├йerique 3e9c799da3d1818abe3ef784abf673d2.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale 84e0baa713b547da90526b430d76a29c.csv
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale 84e0baa713b547da90526b430d76a29c_all.csv
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Caravanes de ferrailleurs тАФ Commer├зant 3e9c799da3d18131af8cc365c637fa34.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Caravanes de ferrailleurs тАФ Esclave 3e9c799da3d181c8bf45d51088763642.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Caravanes de ferrailleurs тАФ Hors-la-loi 3e9c799da3d1813ebf78d93dc9caf0e0.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Caravanes de ferrailleurs тАФ Noble 3e9c799da3d181009b95f5d39b4d129f.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Caravanes de ferrailleurs тАФ Paysan Ouvrier 3e9c799da3d181f4bd4bc42983ddf25a.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Caravanes de ferrailleurs тАФ Soldat Guerrier Combat 3e9c799da3d181a79609d190c219081e.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Caravanes de ferrailleurs тАФ ├Йrudit 3e9c799da3d18174ba60f4f85f953a79.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Cit├йs libres тАФ Commer├зant 3e9c799da3d18141bc9dea60377eb638.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Cit├йs libres тАФ Esclave 3e9c799da3d181059649f4efe3aa2c8d.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Cit├йs libres тАФ Hors-la-loi 3e9c799da3d181339305ffaf43860524.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Cit├йs libres тАФ Noble 3e9c799da3d1818d9651d143e8d30819.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Cit├йs libres тАФ Paysan Ouvrier 3e9c799da3d181c2839ce204e7f44019.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Cit├йs libres тАФ Soldat Guerrier Combattant 3e9c799da3d1814384dde701d1a55d35.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Cit├йs libres тАФ ├Йrudit 3e9c799da3d18129aa13c210a58d510b.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Clans des grandes steppes тАФ Commer├зant 3e9c799da3d181df88f5f7098f11ca79.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Clans des grandes steppes тАФ Esclave 3e9c799da3d181d18c98fe5ef827e0d8.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Clans des grandes steppes тАФ Hors-la-loi 3e9c799da3d18109aac7dc230f107537.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Clans des grandes steppes тАФ Noble 3e9c799da3d1812982a4e74098d46d05.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Clans des grandes steppes тАФ Paysan Ouvrier 3e9c799da3d18181a554ee60fdf58986.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Clans des grandes steppes тАФ Soldat Guerrier Combat 3e9c799da3d181e4ac16c746464c006b.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Clans des grandes steppes тАФ ├Йrudit 3e9c799da3d1812bbcb1f98bf147fab0.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Elfes des grandes cit├йs тАФ Commer├зant 3e9c799da3d18112a9dfd1472beee7a2.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Elfes des grandes cit├йs тАФ Esclave 3e9c799da3d181e9b814df9e2aac38f9.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Elfes des grandes cit├йs тАФ Hors-la-loi 3e9c799da3d1810a9ea9deeca2a28ad2.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Elfes des grandes cit├йs тАФ Noble 3e9c799da3d181aca932c2bf6c57bf4e.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Elfes des grandes cit├йs тАФ Paysan Ouvrier 3e9c799da3d1817c9c66e27c0429982f.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Elfes des grandes cit├йs тАФ Soldat Guerrier Combatta 3e9c799da3d181ff8d35ed6156604d99.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Elfes des grandes cit├йs тАФ ├Йrudit 3e9c799da3d181f0b462d420de8b7635.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Elfes noirs тАФ Commer├зant 3e9c799da3d181709307fe9e2b81ee5d.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Elfes noirs тАФ Esclave 3e9c799da3d18155b91eda0ad985962c.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Elfes noirs тАФ Hors-la-loi 3e9c799da3d1812e97c8ed9b948787e8.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Elfes noirs тАФ Noble 3e9c799da3d181d5aed7ed3679ded969.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Elfes noirs тАФ Paysan Ouvrier 3e9c799da3d18116a7c4e946ee201b61.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Elfes noirs тАФ Soldat Guerrier Combattant 3e9c799da3d181dfa4b1d5c763a91378.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Elfes noirs тАФ ├Йrudit 3e9c799da3d1814891d3e3c5a154ffb7.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Elfes sylvains тАФ Commer├зant 3e9c799da3d181479925f1c72df1545b.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Elfes sylvains тАФ Esclave 3e9c799da3d181f0baaddc63bdffdc0f.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Elfes sylvains тАФ Hors-la-loi 3e9c799da3d181708c01e764a6a57ab1.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Elfes sylvains тАФ Noble 3e9c799da3d181608235f3995a559632.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Elfes sylvains тАФ Paysan Ouvrier 3e9c799da3d18190b40fcc37fdb50528.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Elfes sylvains тАФ Soldat Guerrier Combattant 3e9c799da3d181ddbb9cfa97f6512936.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Elfes sylvains тАФ ├Йrudit 3e9c799da3d181e097a8daafeb3416ce.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Esclaves des cit├йs humaines тАФ Commer├зant 3e9c799da3d1812fb1e7d252f2c03c1f.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Esclaves des cit├йs humaines тАФ Esclave 3e9c799da3d181458e56c41d161dda8e.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Esclaves des cit├йs humaines тАФ Hors-la-loi 3e9c799da3d1817f84f6e06f9381c66b.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Esclaves des cit├йs humaines тАФ Noble 3e9c799da3d181d78e97eea889949b9b.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Esclaves des cit├йs humaines тАФ Paysan Ouvrier 3e9c799da3d1815bb5effcc661412e60.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Esclaves des cit├йs humaines тАФ Soldat Guerrier Comb 3e9c799da3d18136a02be244431db8b2.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Esclaves des cit├йs humaines тАФ ├Йrudit 3e9c799da3d181169002d1e1f1b75357.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Explorateurs тАФ Commer├зant 3e9c799da3d181cea15dcd7de34e122f.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Explorateurs тАФ Esclave 3e9c799da3d181e98c43f6b3c3d70111.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Explorateurs тАФ Hors-la-loi 3e9c799da3d18157a9cac5c7485f2469.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Explorateurs тАФ Noble 3e9c799da3d181bba45dc05cfc6228a9.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Explorateurs тАФ Paysan Ouvrier 3e9c799da3d18130ba35df8051637a83.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Explorateurs тАФ Soldat Guerrier Combattant 3e9c799da3d18161913dd5cd35aa8d4e.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Explorateurs тАФ ├Йrudit 3e9c799da3d181d59000d07c43c0e0b7.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Gnomes des cavernes тАФ Commer├зant 3e9c799da3d181e984cddb17b60a1da3.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Gnomes des cavernes тАФ Esclave 3e9c799da3d1817dadd0fb948997e7fd.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Gnomes des cavernes тАФ Hors-la-loi 3e9c799da3d1815ab479ff22273e963a.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Gnomes des cavernes тАФ Noble 3e9c799da3d18108a46cdaa6c30f0a67.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Gnomes des cavernes тАФ Paysan Ouvrier 3e9c799da3d1818bb6bef6e80c2e4df4.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Gnomes des cavernes тАФ Soldat Guerrier Combattant 3e9c799da3d181d394abf6d636f1b9d5.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Gnomes des cavernes тАФ ├Йrudit 3e9c799da3d18123a9fcd5be3712c48c.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Gnomes des for├кts тАФ Commer├зant 3e9c799da3d18137b1d2cc65c9ef7b8b.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Gnomes des for├кts тАФ Esclave 3e9c799da3d181469ca6e430f6a37f71.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Gnomes des for├кts тАФ Hors-la-loi 3e9c799da3d18172954fd64d19df283f.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Gnomes des for├кts тАФ Noble 3e9c799da3d181b699d1d124bbc2e94a.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Gnomes des for├кts тАФ Paysan Ouvrier 3e9c799da3d181918faff8e5e600f5a8.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Gnomes des for├кts тАФ Soldat Guerrier Combattant 3e9c799da3d181eab0cbdda563ae4308.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Gnomes des for├кts тАФ ├Йrudit 3e9c799da3d181b7bb39ffb0a8b1620c.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Gnomes des villes тАФ Commer├зant 3e9c799da3d1813d921ff8f729a8e0ed.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Gnomes des villes тАФ Esclave 3e9c799da3d181d7b463ef19b88a6993.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Gnomes des villes тАФ Hors-la-loi 3e9c799da3d18186adabc736a3e0b338.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Gnomes des villes тАФ Noble 3e9c799da3d181adba17ceab98a2d3fb.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Gnomes des villes тАФ Paysan Ouvrier 3e9c799da3d18122a5ced30ed87972de.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Gnomes des villes тАФ Soldat Guerrier Combattant 3e9c799da3d181de8f98c3c3a0a62e7c.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Gnomes des villes тАФ ├Йrudit 3e9c799da3d18156b7acd6749603a721.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Gobelins des cavernes тАФ Commer├зant 3e9c799da3d1816d950ff40cddc98e7d.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Gobelins des cavernes тАФ Esclave 3e9c799da3d1816f82dfe712a5e6d3c3.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Gobelins des cavernes тАФ Hors-la-loi 3e9c799da3d1814fb4c1c51fa316fb6a.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Gobelins des cavernes тАФ Noble 3e9c799da3d181b680b5c4a2c404a099.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Gobelins des cavernes тАФ Paysan Ouvrier 3e9c799da3d181ea90effce6915153b6.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Gobelins des cavernes тАФ Soldat Guerrier Combattant 3e9c799da3d1815688cde8e580189689.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Gobelins des cavernes тАФ ├Йrudit 3e9c799da3d18185b0a6ec35731a5b1a.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Gobelins des villes тАФ Commer├зant 3e9c799da3d181c29708e2e34959d62a.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Gobelins des villes тАФ Esclave 3e9c799da3d181b285cfd77441cfed63.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Gobelins des villes тАФ Hors-la-loi 3e9c799da3d1816fb866f49560c97459.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Gobelins des villes тАФ Noble 3e9c799da3d181bda602c0d112751c81.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Gobelins des villes тАФ Paysan Ouvrier 3e9c799da3d18191ba6edb7483494d8c.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Gobelins des villes тАФ Soldat Guerrier Combattant 3e9c799da3d1812cb25ce6811e66c504.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Gobelins des villes тАФ ├Йrudit 3e9c799da3d181099ac4e417d6d106a2.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Halflings des cit├йs humaines тАФ Commer├зant 3e9c799da3d181569454f18127653c62.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Halflings des cit├йs humaines тАФ Esclave 3e9c799da3d1810d8487dcd1d0ac9b4c.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Halflings des cit├йs humaines тАФ Hors-la-loi 3e9c799da3d1815fb6ebd0e1974127ae.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Halflings des cit├йs humaines тАФ Noble 3e9c799da3d1816faa1cc0d6f2de362c.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Halflings des cit├йs humaines тАФ Paysan Ouvrier 3e9c799da3d18153adc9f9b2662192c5.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Halflings des cit├йs humaines тАФ Soldat Guerrier Com 3e9c799da3d181d290ecc7348f12134f.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Halflings des cit├йs humaines тАФ ├Йrudit 3e9c799da3d181a0a2a6fa5a115ca664.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Halflings des villages isol├йs тАФ Commer├зant 3e9c799da3d1815aacd5db3e7eec2486.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Halflings des villages isol├йs тАФ Esclave 3e9c799da3d18111b2bcf86ab85ba43e.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Halflings des villages isol├йs тАФ Hors-la-loi 3e9c799da3d18129b686f390c3dd2d8d.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Halflings des villages isol├йs тАФ Noble 3e9c799da3d181689bc1e720fde5a104.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Halflings des villages isol├йs тАФ Paysan Ouvrier 3e9c799da3d181b78009cfa7a254a540.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Halflings des villages isol├йs тАФ Soldat Guerrier Co 3e9c799da3d181f6889acc35432736e9.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Halflings des villages isol├йs тАФ ├Йrudit 3e9c799da3d181fdb25eda898c07b9e0.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Montagnes du Nord тАФ Commer├зant 3e9c799da3d1813ba9a3e270769ca60d.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Montagnes du Nord тАФ Esclave 3e9c799da3d18141bab4f5dce0da5640.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Montagnes du Nord тАФ Hors-la-loi 3e9c799da3d181199723e996a592a1d0.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Montagnes du Nord тАФ Noble 3e9c799da3d181c3958fdee3219887a8.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Montagnes du Nord тАФ Paysan Ouvrier 3e9c799da3d181cca9b2e8f6007834e1.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Montagnes du Nord тАФ Soldat Guerrier Combattant 3e9c799da3d1815b8cd9cb7e851cee2a.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Montagnes du Nord тАФ ├Йrudit 3e9c799da3d181e29b7fc5888370e7e9.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Nains des montagnes тАФ Commer├зant 3e9c799da3d181cab81eed55681dd174.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Nains des montagnes тАФ Esclave 3e9c799da3d181b99cebf14b8a217fda.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Nains des montagnes тАФ Hors-la-loi 3e9c799da3d1816baf6ee39f421b6e29.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Nains des montagnes тАФ Noble 3e9c799da3d181d79f49f8504b0d0cc8.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Nains des montagnes тАФ Paysan Ouvrier 3e9c799da3d181438128da9e82811b94.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Nains des montagnes тАФ Soldat Guerrier Combattant 3e9c799da3d1811283ddcb01e599e8fd.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Nains des montagnes тАФ ├Йrudit 3e9c799da3d181a8bc08d6407f9920e7.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Nains des plaines тАФ Commer├зant 3e9c799da3d181f99ef6c5378bb0422d.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Nains des plaines тАФ Esclave 3e9c799da3d1813bb1cce095dd0cea72.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Nains des plaines тАФ Hors-la-loi 3e9c799da3d18120be89ce6dbe72532a.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Nains des plaines тАФ Noble 3e9c799da3d18131be96f459eb8fe850.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Nains des plaines тАФ Paysan Ouvrier 3e9c799da3d1814290b6cf55d569c106.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Nains des plaines тАФ Soldat Guerrier Combattant 3e9c799da3d18141b654fedd6a858f74.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Nains des plaines тАФ ├Йrudit 3e9c799da3d1811d8c76ecb3102db35d.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Nains r├йduits en esclavage dans les colonies тАФ Com 3e9c799da3d1814e82c7e2ecde19c31c.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Nains r├йduits en esclavage dans les colonies тАФ Esc 3e9c799da3d181e0b634cf1f20bebe0a.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Nains r├йduits en esclavage dans les colonies тАФ Hor 3e9c799da3d1812ba9a1e0f8bc68d4cb.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Nains r├йduits en esclavage dans les colonies тАФ Nob 3e9c799da3d18199b3b8c9f57bae5568.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Nains r├йduits en esclavage dans les colonies тАФ Pay 3e9c799da3d181a1aa44e03d6c6da42b.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Nains r├йduits en esclavage dans les colonies тАФ Sol 3e9c799da3d1813dab0bc38161ef569a.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Nains r├йduits en esclavage dans les colonies тАФ ├Йru 3e9c799da3d181808db2f20a9928a34b.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Ogres des cit├йs humaines тАФ Commer├зant 3e9c799da3d18178aa7ac1d4e057bed6.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Ogres des cit├йs humaines тАФ Esclave 3e9c799da3d1810aac9af764a3ecfe2f.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Ogres des cit├йs humaines тАФ Hors-la-loi 3e9c799da3d181da88ffec1779029091.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Ogres des cit├йs humaines тАФ Noble 3e9c799da3d1819f93a7dac323e1512b.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Ogres des cit├йs humaines тАФ Paysan Ouvrier 3e9c799da3d181c6a0dcffeb26c1c7ed.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Ogres des cit├йs humaines тАФ Soldat Guerrier Combatt 3e9c799da3d181398a76f24c910b2e6e.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Ogres des cit├йs humaines тАФ ├Йrudit 3e9c799da3d18139a511d769f960d365.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Ogres des montagnes тАФ Commer├зant 3e9c799da3d181ca8892feccc47d8ec5.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Ogres des montagnes тАФ Esclave 3e9c799da3d181ff9e51e5ad70a8d04b.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Ogres des montagnes тАФ Hors-la-loi 3e9c799da3d181388cf5fc56aca88512.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Ogres des montagnes тАФ Noble 3e9c799da3d1812c8efdee94718a68d7.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Ogres des montagnes тАФ Paysan Ouvrier 3e9c799da3d1815ab988f178f86ad7fa.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Ogres des montagnes тАФ Soldat Guerrier Combattant 3e9c799da3d1810e9b79f8e57369c709.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Ogres des montagnes тАФ ├Йrudit 3e9c799da3d181af8206e0a82cfee799.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Ogres des steppes тАФ Commer├зant 3e9c799da3d18183abd3d628e26b2a89.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Ogres des steppes тАФ Esclave 3e9c799da3d1817d8aeee10a9895ac66.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Ogres des steppes тАФ Hors-la-loi 3e9c799da3d181ecacc8c8d27473abe0.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Ogres des steppes тАФ Noble 3e9c799da3d1811a8b93c0db993523ae.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Ogres des steppes тАФ Paysan Ouvrier 3e9c799da3d18109a402dcea4b79e90b.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Ogres des steppes тАФ Soldat Guerrier Combattant 3e9c799da3d181658007eef262973fc0.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Ogres des steppes тАФ ├Йrudit 3e9c799da3d1818daab0efeff46c04ff.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Orcs des steppes тАФ Commer├зant 3e9c799da3d181d8b5c3d5a687cd882f.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Orcs des steppes тАФ Esclave 3e9c799da3d1815daae6cede6720dca7.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Orcs des steppes тАФ Hors-la-loi 3e9c799da3d1810ba466d28c10aed57b.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Orcs des steppes тАФ Noble 3e9c799da3d18122a778e107dc5c534e.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Orcs des steppes тАФ Paysan Ouvrier 3e9c799da3d1810682a4fda8af29a5e9.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Orcs des steppes тАФ Soldat Guerrier Combattant 3e9c799da3d18109af87eea09687d646.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Orcs des steppes тАФ ├Йrudit 3e9c799da3d1812382fdc463049ec4bb.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Orcs des villes тАФ Commer├зant 3e9c799da3d1818ea4e0c56fc5ac6296.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Orcs des villes тАФ Esclave 3e9c799da3d1813a84aac0062779c072.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Orcs des villes тАФ Hors-la-loi 3e9c799da3d181c1a212d20996ea38f9.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Orcs des villes тАФ Noble 3e9c799da3d1816eb81eeb5a39494b20.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Orcs des villes тАФ Paysan Ouvrier 3e9c799da3d181a780dfc5fd1590f2f1.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Orcs des villes тАФ Soldat Guerrier Combattant 3e9c799da3d1819a8d8df68de43d9737.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Orcs des villes тАФ ├Йrudit 3e9c799da3d181959a16cdab506c3931.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Orcs noirs тАФ Commer├зant 3e9c799da3d181cbbfa4c0eca5e2114c.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Orcs noirs тАФ Esclave 3e9c799da3d181e09a47c58542119d62.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Orcs noirs тАФ Hors-la-loi 3e9c799da3d181d0a231fb304ce7e034.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Orcs noirs тАФ Noble 3e9c799da3d181b2ae85f6a478da097c.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Orcs noirs тАФ Paysan Ouvrier 3e9c799da3d1813480c3f13630f8d8ec.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Orcs noirs тАФ Soldat Guerrier Combattant 3e9c799da3d1812fbabae07687071817.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Orcs noirs тАФ ├Йrudit 3e9c799da3d18177bc50ce331b6e0ff9.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Reptiliens des cit├йs-temples тАФ Commer├зant 3e9c799da3d181549d80ccd8e075e71e.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Reptiliens des cit├йs-temples тАФ Esclave 3e9c799da3d18137a88cd2a2237c3462.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Reptiliens des cit├йs-temples тАФ Hors-la-loi 3e9c799da3d181beb81ccc33c4fe5ad9.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Reptiliens des cit├йs-temples тАФ Noble 3e9c799da3d18140982fc3a722c329a5.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Reptiliens des cit├йs-temples тАФ Paysan Ouvrier 3e9c799da3d181769a79d0eed18d1121.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Reptiliens des cit├йs-temples тАФ Soldat Guerrier Com 3e9c799da3d181a484a1d11f1e19889a.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Reptiliens des cit├йs-temples тАФ ├Йrudit 3e9c799da3d181559475f2ce8a7ab851.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Reptiliens des mar├йcages тАФ Commer├зant 3e9c799da3d18139b358e4d27f854634.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Reptiliens des mar├йcages тАФ Esclave 3e9c799da3d181ecae26fcc681f64fb4.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Reptiliens des mar├йcages тАФ Hors-la-loi 3e9c799da3d181499093cb8a2fe43af5.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Reptiliens des mar├йcages тАФ Noble 3e9c799da3d18196ba09fefd97dbe7fa.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Reptiliens des mar├йcages тАФ Paysan Ouvrier 3e9c799da3d1815ab7f1f41f32de6928.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Reptiliens des mar├йcages тАФ Soldat Guerrier Combatt 3e9c799da3d181c48e01d5d5df4dcc13.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Reptiliens des mar├йcages тАФ ├Йrudit 3e9c799da3d181fcb871c223e4f78278.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Reptiliens des villes тАФ Commer├зant 3e9c799da3d181999f88e60123015f66.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Reptiliens des villes тАФ Esclave 3e9c799da3d181cca5d4d4495d073be7.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Reptiliens des villes тАФ Hors-la-loi 3e9c799da3d1810ba837ce94032b5cc8.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Reptiliens des villes тАФ Noble 3e9c799da3d1815caa30c281daaf33e5.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Reptiliens des villes тАФ Paysan Ouvrier 3e9c799da3d181c9a6ffd91fd5561b8a.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Reptiliens des villes тАФ Soldat Guerrier Combattant 3e9c799da3d181f3a834fbc041b95420.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Reptiliens des villes тАФ ├Йrudit 3e9c799da3d181b9822ce7db5d9d3f33.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Royaumes du Soleil Levant тАФ Commer├зant 3e9c799da3d1812ab8b6f35b9df0d6a7.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Royaumes du Soleil Levant тАФ Esclave 3e9c799da3d181dbb8c6dc2e15c74bc1.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Royaumes du Soleil Levant тАФ Hors-la-loi 3e9c799da3d181c391f1ce638e501050.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Royaumes du Soleil Levant тАФ Noble 3e9c799da3d181be81d2e85f4e7fb5b9.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Royaumes du Soleil Levant тАФ Paysan Ouvrier 3e9c799da3d1810fb57efd217761f450.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Royaumes du Soleil Levant тАФ Soldat Guerrier Combat 3e9c799da3d181aaaabfe5c1eb199607.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Royaumes du Soleil Levant тАФ ├Йrudit 3e9c799da3d181e7bb3ad9b08b6183d6.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Steppes d├йsertiques тАФ Commer├зant 3e9c799da3d181149476f5febf25f387.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Steppes d├йsertiques тАФ Esclave 3e9c799da3d181ad8da2e7da37bd93ac.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Steppes d├йsertiques тАФ Hors-la-loi 3e9c799da3d18142978bc12df94b35a9.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Steppes d├йsertiques тАФ Noble 3e9c799da3d181f297d1c7343e0b0b41.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Steppes d├йsertiques тАФ Paysan Ouvrier 3e9c799da3d18184b6aad64a8f5162db.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Steppes d├йsertiques тАФ Soldat Guerrier Combattant 3e9c799da3d181e3900ddbcbdb0bebb7.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Steppes d├йsertiques тАФ ├Йrudit 3e9c799da3d181d0891bc9a20391e173.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Tribus de la jungle тАФ Commer├зant 3e9c799da3d1813485a0e4448e1627c3.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Tribus de la jungle тАФ Esclave 3e9c799da3d1814b9e2bf6d4c6dd77e6.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Tribus de la jungle тАФ Hors-la-loi 3e9c799da3d18143a4a4cebdd0c3f1fe.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Tribus de la jungle тАФ Noble 3e9c799da3d1810085c6d87d10d63582.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Tribus de la jungle тАФ Paysan Ouvrier 3e9c799da3d181668c5de2cf75fb6934.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Tribus de la jungle тАФ Soldat Guerrier Combattant 3e9c799da3d181d5ad39dd5b5ed40e38.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Tribus de la jungle тАФ ├Йrudit 3e9c799da3d1817f962fe111ed83f797.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Tribus des for├кts anciennes тАФ Commer├зant 3e9c799da3d1815cbf5be22f451305a9.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Tribus des for├кts anciennes тАФ Esclave 3e9c799da3d181a98bedc72f6faa9330.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Tribus des for├кts anciennes тАФ Hors-la-loi 3e9c799da3d181358254d93646796c2e.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Tribus des for├кts anciennes тАФ Noble 3e9c799da3d18139b005f5589e17ca8e.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Tribus des for├кts anciennes тАФ Paysan Ouvrier 3e9c799da3d18119806ce983b02350be.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Tribus des for├кts anciennes тАФ Soldat Guerrier Comb 3e9c799da3d18191ad84f38b8278f562.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Tribus des for├кts anciennes тАФ ├Йrudit 3e9c799da3d1811a9042f314be936b25.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Tribus nordiques тАФ Commer├зant 3e9c799da3d18111bd41e258140c9339.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Tribus nordiques тАФ Esclave 3e9c799da3d181388a94f999ab53f275.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Tribus nordiques тАФ Hors-la-loi 3e9c799da3d181989c97fd8acc72d505.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Tribus nordiques тАФ Noble 3e9c799da3d181479127f365ba402312.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Tribus nordiques тАФ Paysan Ouvrier 3e9c799da3d1815987b5d93ff5961571.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Tribus nordiques тАФ Soldat Guerrier Combattant 3e9c799da3d1815390edd92bca41befe.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs cultureтАУorigine sociale/Tribus nordiques тАФ ├Йrudit 3e9c799da3d18115b731c03926eb500c.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance 2104bbf4810e484ea41807534924b989.csv
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance 2104bbf4810e484ea41807534924b989_all.csv
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Elfe тАФ Sang de djinn 3e9c799da3d181bd972ef055ef028fd0.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Elfe тАФ Sang de dragon 3e9c799da3d18120b13ed89008484423.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Elfe тАФ Sang de dryade 3e9c799da3d1812f92f9f4d6352b9daa.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Elfe тАФ Sang de d├йmon 3e9c799da3d181ec91a2f7c52a91108a.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Elfe тАФ Sang de sir├иne 3e9c799da3d181a6acf4fe153ab040e8.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Elfe тАФ Sang de troll 3e9c799da3d181dca51fd828c72dfdae.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Elfe тАФ Sang divin 3e9c799da3d1812c876ac0c69b6381ff.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Elfe тАФ Sang dтАЩelfe 3e9c799da3d18181b5bffb43fe8a8020.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Elfe тАФ Sang dтАЩhumain 3e9c799da3d181cd9a0bc3fce9059a42.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Elfe тАФ Sang dтАЩorc 3e9c799da3d18102ac9ac4ccd6fd86be.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Elfe тАФ Sang f├йerique 3e9c799da3d181c6bcabde0d290b5b77.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Gnome тАФ Sang de djinn 3e9c799da3d181d0a394e4239d39bc95.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Gnome тАФ Sang de dragon 3e9c799da3d18159bf1eefc3ac688ca1.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Gnome тАФ Sang de dryade 3e9c799da3d181ed8dcfe5b4ab981bb6.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Gnome тАФ Sang de d├йmon 3e9c799da3d181fe94abc1e8cc043557.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Gnome тАФ Sang de sir├иne 3e9c799da3d181929c34faf7066da6c9.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Gnome тАФ Sang de troll 3e9c799da3d18145981fd807bd7ed035.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Gnome тАФ Sang divin 3e9c799da3d181ebbbd4e867685c1876.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Gnome тАФ Sang dтАЩelfe 3e9c799da3d181a89e0fc4bd0928fe0c.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Gnome тАФ Sang dтАЩhumain 3e9c799da3d18110a177d8e7937bce9f.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Gnome тАФ Sang dтАЩorc 3e9c799da3d1819fbf2fd66d87c7a922.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Gnome тАФ Sang f├йerique 3e9c799da3d1817291a8c5e94f91ee62.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Gobelin тАФ Sang de djinn 3e9c799da3d181e1a75fd10a2d55a8ad.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Gobelin тАФ Sang de dragon 3e9c799da3d181838b18eb4e83489910.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Gobelin тАФ Sang de dryade 3e9c799da3d18197a1fae54e72a289e8.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Gobelin тАФ Sang de d├йmon 3e9c799da3d181c2b5a1f24f0c2444f6.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Gobelin тАФ Sang de sir├иne 3e9c799da3d1816cb7b3cf076199e311.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Gobelin тАФ Sang de troll 3e9c799da3d181d581c9d078b579ffa2.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Gobelin тАФ Sang divin 3e9c799da3d181018b8dd46dd701d3d0.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Gobelin тАФ Sang dтАЩelfe 3e9c799da3d181e2bc93dd4ae0dca0a1.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Gobelin тАФ Sang dтАЩhumain 3e9c799da3d181ad9816ea3a1f8216a5.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Gobelin тАФ Sang dтАЩorc 3e9c799da3d1815bb014c174f9090e80.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Gobelin тАФ Sang f├йerique 3e9c799da3d1812da173faf110970f4a.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Halfling тАФ Sang de djinn 3e9c799da3d1818ca0edf891cefb5427.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Halfling тАФ Sang de dragon 3e9c799da3d18179ab57e11626ec6655.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Halfling тАФ Sang de dryade 3e9c799da3d181238681f41e23c80411.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Halfling тАФ Sang de d├йmon 3e9c799da3d1811dafcae33a650db35e.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Halfling тАФ Sang de sir├иne 3e9c799da3d18178a008cec3ed541f47.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Halfling тАФ Sang de troll 3e9c799da3d181209481cdd57b2bbea8.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Halfling тАФ Sang divin 3e9c799da3d1811294ede6d46231779e.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Halfling тАФ Sang dтАЩelfe 3e9c799da3d1817c86bce17aabe6a578.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Halfling тАФ Sang dтАЩhumain 3e9c799da3d181a182a0cee937f7262a.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Halfling тАФ Sang dтАЩorc 3e9c799da3d181f5a380fb87b1445dc6.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Halfling тАФ Sang f├йerique 3e9c799da3d181f28153df3adb7645a8.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Homme-b├кte тАФ Sang de djinn 3e9c799da3d181b08335d276cd2b790b.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Homme-b├кte тАФ Sang de dragon 3e9c799da3d181e395ebee0f5ed3dbb6.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Homme-b├кte тАФ Sang de dryade 3e9c799da3d1810ebdead38d51135aa9.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Homme-b├кte тАФ Sang de d├йmon 3e9c799da3d18181888ce97c2c48822f.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Homme-b├кte тАФ Sang de sir├иne 3e9c799da3d1819abf8df24b477a347a.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Homme-b├кte тАФ Sang de troll 3e9c799da3d181b89476f9bcbc2d3a2c.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Homme-b├кte тАФ Sang divin 3e9c799da3d181749345d529231d4ee3.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Homme-b├кte тАФ Sang dтАЩelfe 3e9c799da3d181b3abdfe8665bf4b1a2.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Homme-b├кte тАФ Sang dтАЩhumain 3e9c799da3d181618013ce32d60bbc33.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Homme-b├кte тАФ Sang dтАЩorc 3e9c799da3d181229f2fefa13e8a4ed3.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Homme-b├кte тАФ Sang f├йerique 3e9c799da3d1813a984dc78dca59c56f.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Humain тАФ Sang de djinn 3e9c799da3d18157a8c2da395b241fee.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Humain тАФ Sang de dragon 3e9c799da3d1811796b8d663dea9bb28.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Humain тАФ Sang de dryade 3e9c799da3d181f8bf5ff29232a80c2d.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Humain тАФ Sang de d├йmon 3e9c799da3d18158a319ee26155a37b4.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Humain тАФ Sang de sir├иne 3e9c799da3d18186b9dee8f96b58da30.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Humain тАФ Sang de troll 3e9c799da3d181adb97ae59749996e6a.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Humain тАФ Sang divin 3e9c799da3d18170a498ca6dff66ce2f.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Humain тАФ Sang dтАЩelfe 3e9c799da3d1817d8601c21e1c6dc37a.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Humain тАФ Sang dтАЩhumain 3e9c799da3d1819cbcbdd56f748a6b34.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Humain тАФ Sang dтАЩorc 3e9c799da3d181cb8443e2dedc2e16f0.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Humain тАФ Sang f├йerique 3e9c799da3d1812c9af4f7c5fee0d0d5.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Nain тАФ Sang de djinn 3e9c799da3d18133bf93ed6457f25fd3.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Nain тАФ Sang de dragon 3e9c799da3d1811db35ffdcc65cf3ec3.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Nain тАФ Sang de dryade 3e9c799da3d181ecb6cfd3b099793840.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Nain тАФ Sang de d├йmon 3e9c799da3d181b9b160cb319c875500.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Nain тАФ Sang de sir├иne 3e9c799da3d18148a29bc00e70d83755.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Nain тАФ Sang de troll 3e9c799da3d1810ba4eee07ce282b983.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Nain тАФ Sang divin 3e9c799da3d181c8974be0aa048141bd.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Nain тАФ Sang dтАЩelfe 3e9c799da3d1815baed9ec7e29642f00.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Nain тАФ Sang dтАЩhumain 3e9c799da3d18137bbc9d26655c10752.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Nain тАФ Sang dтАЩorc 3e9c799da3d181a99dd8e852cef23b19.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Nain тАФ Sang f├йerique 3e9c799da3d181428036e6d34b498706.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Ogre тАФ Sang de djinn 3e9c799da3d181d49306c9bfd880285b.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Ogre тАФ Sang de dragon 3e9c799da3d1812f93d9d59564db6b75.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Ogre тАФ Sang de dryade 3e9c799da3d1818eb83cf3cf8d613b6f.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Ogre тАФ Sang de d├йmon 3e9c799da3d18149856eed6c1c065735.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Ogre тАФ Sang de sir├иne 3e9c799da3d1816dbe41d3a43df2409b.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Ogre тАФ Sang de troll 3e9c799da3d1814a8c6bca6c455dd871.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Ogre тАФ Sang divin 3e9c799da3d181f7a8d3ef381ccb370e.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Ogre тАФ Sang dтАЩelfe 3e9c799da3d1816f8181ff5b1e64b003.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Ogre тАФ Sang dтАЩhumain 3e9c799da3d181a8b5dad2f1c0fc96aa.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Ogre тАФ Sang dтАЩorc 3e9c799da3d181339a6ad146954a690f.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Ogre тАФ Sang f├йerique 3e9c799da3d181e7ab3bec7af96a8a6a.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Orc тАФ Sang de djinn 3e9c799da3d1814c8795f5e95e83d7f4.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Orc тАФ Sang de dragon 3e9c799da3d18132ab14d34c3f82e710.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Orc тАФ Sang de dryade 3e9c799da3d1818a91efdd9d073eff85.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Orc тАФ Sang de d├йmon 3e9c799da3d18146bdd9f3b9d384ae8c.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Orc тАФ Sang de sir├иne 3e9c799da3d18138903ff70d4e80dea0.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Orc тАФ Sang de troll 3e9c799da3d18193bd4ef4a60143428f.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Orc тАФ Sang divin 3e9c799da3d1814cac38d8746fbe961b.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Orc тАФ Sang dтАЩelfe 3e9c799da3d181f690b1c22521ee3641.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Orc тАФ Sang dтАЩhumain 3e9c799da3d181debf35cd2e6355949c.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Orc тАФ Sang dтАЩorc 3e9c799da3d18141ad15fb2467edabdc.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Orc тАФ Sang f├йerique 3e9c799da3d181d3bdffdff594e03a7b.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Reptilien тАФ Sang de djinn 3e9c799da3d18155973bf5f5bd0ff113.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Reptilien тАФ Sang de dragon 3e9c799da3d18117b89beaaef7b96045.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Reptilien тАФ Sang de dryade 3e9c799da3d181aab60ffdee191b9842.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Reptilien тАФ Sang de d├йmon 3e9c799da3d1814d8953effd78923793.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Reptilien тАФ Sang de sir├иne 3e9c799da3d181acbd00dc00ae6a5f6c.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Reptilien тАФ Sang de troll 3e9c799da3d181568fcbf95ca3532bc6.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Reptilien тАФ Sang divin 3e9c799da3d181768a1eecf298040755.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Reptilien тАФ Sang dтАЩelfe 3e9c799da3d1813c9af4d296503f814e.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Reptilien тАФ Sang dтАЩhumain 3e9c799da3d18138b063d9da20284bd1.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Reptilien тАФ Sang dтАЩorc 3e9c799da3d181c9a833f68824db3762.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Compatibilit├йs dтАЩascendance/Reptilien тАФ Sang f├йerique 3e9c799da3d18116b75afae426d14564.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Cultures 901364a7f401459594940d1e11ed10d2.csv
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Cultures 901364a7f401459594940d1e11ed10d2_all.csv
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Cultures/Caravanes de ferrailleurs 3e9c799da3d181709302d9188b803881.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Cultures/Cit├йs libres 3e9c799da3d1816f8715ebd710a596d4.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Cultures/Clans des grandes steppes 3e9c799da3d1811e87c9ee54ee110b1b.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Cultures/Elfes des grandes cit├йs 3e9c799da3d181a48d7fe607bbe6ee78.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Cultures/Elfes noirs 3e9c799da3d1814290aae43fae1b1b92.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Cultures/Elfes sylvains 3e9c799da3d181e7a12ac6a8101d53d1.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Cultures/Explorateurs 3e9c799da3d1817b9baaff134d49c7a6.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Cultures/Gnomes des cavernes 3e9c799da3d181e18a6fc12f48ab4b16.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Cultures/Gnomes des for├кts 3e9c799da3d18178bc9ec3ea7355d3fd.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Cultures/Gnomes des villes 3e9c799da3d181f781d5e06fd503b721.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Cultures/Gobelins des cavernes 3e9c799da3d181a8b773c71038ce4087.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Cultures/Gobelins des villes 3e9c799da3d181bd9a7ff173d3ff2b36.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Cultures/Halflings des cit├йs humaines 3e9c799da3d1814aa8d2f8024ed71826.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Cultures/Halflings des villages isol├йs 3e9c799da3d181ae9174db7a7d4b7c6d.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Cultures/Montagnes du Nord 3e9c799da3d1812ea0eeefaf4f99b343.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Cultures/Nains des montagnes 3e9c799da3d181dcb710dd642dc9cc93.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Cultures/Nains des plaines 3e9c799da3d181eb854bcf35dd89d5c7.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Cultures/Nains r├йduits en esclavage dans les colonies 3e9c799da3d181f59e1ecffe7c9690f9.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Cultures/Ogres des cit├йs humaines 3e9c799da3d18120b554e903e3edab3d.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Cultures/Ogres des montagnes 3e9c799da3d181df9c98ef7f9322576b.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Cultures/Ogres des steppes 3e9c799da3d181fc83ccf4158da362f3.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Cultures/Orcs des steppes 3e9c799da3d181cb92bec4f49f61348b.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Cultures/Orcs des villes 3e9c799da3d181b18361d85613efe8e3.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Cultures/Orcs noirs 3e9c799da3d181818102d0e82cf5126c.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Cultures/Reptiliens des cit├йs-temples 3e9c799da3d181ef8894d04c9f3c172f.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Cultures/Reptiliens des mar├йcages 3e9c799da3d18139a4d3c52f78099721.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Cultures/Reptiliens des villes 3e9c799da3d181279e4cff724476c368.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Cultures/Royaumes du Soleil Levant 3e9c799da3d181c3b895d06a3e927f93.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Cultures/Steppes d├йsertiques 3e9c799da3d18180b0f5e6d98ef0ad89.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Cultures/Tribus de la jungle 3e9c799da3d181639027d7da29210c7e.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Cultures/Tribus des for├кts anciennes 3e9c799da3d181b79389c87539bdbb93.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Cultures/Tribus nordiques 3e9c799da3d1810cbe2cfe479f3bf3d1.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Matrice de g├йn├йration fb435c78a6e74068965f53f164b0d8e7.csv
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Matrice de g├йn├йration fb435c78a6e74068965f53f164b0d8e7_all.csv
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Matrice de g├йn├йration/Chance 3ebc799da3d181448694d88444517911.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Matrice de g├йn├йration/Charisme 3ebc799da3d18155904cdcda0f8133c2.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Matrice de g├йn├йration/Constitution 3ebc799da3d1812aaed0da033c13dbb2.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Matrice de g├йn├йration/Courage 3ebc799da3d181679500e1a4764ac461.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Matrice de g├йn├йration/Dext├йrit├й 3ebc799da3d1818798b1e3ea97c7f1e6.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Matrice de g├йn├йration/Endurance 3ebc799da3d181b1a6b3e6342c91b306.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Matrice de g├йn├йration/Esquive 3ebc799da3d181c6af54dd931502e6c5.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Matrice de g├йn├йration/Force 3ebc799da3d1814d9c9be5af25f2112b.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Matrice de g├йn├йration/Intelligence 3ebc799da3d18177967de8cf61ad8798.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Matrice de g├йn├йration/Perception 3ebc799da3d181ea87c4eb2a250b1a3a.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Matrice de g├йn├йration/Puissance magique 3ebc799da3d181d8b746d4c737767208.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Matrice de g├йn├йration/R├йserve de mana 3ebc799da3d1814e8fbde6a096683fd6.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Matrice de g├йn├йration/Vitesse 3ebc799da3d1812cb6cddb6abe0c45f6.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Matrice de g├йn├йration/Volont├й 3ebc799da3d18188babdf4560bd690ab.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Niveaux dтАЩascendance 5b78a963a81e43f7869b1920e369efcd.csv
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Niveaux dтАЩascendance 5b78a963a81e43f7869b1920e369efcd_all.csv
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Niveaux dтАЩascendance/B├вtard 3e9c799da3d1812d9152cf14667bf1fb.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Niveaux dтАЩascendance/Lign├йe proche 3e9c799da3d18147b8f7cd734cad7d31.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Niveaux dтАЩascendance/Lointain anc├кtre 3e9c799da3d1815a9f66cdab8aae9300.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Origines sociales 17bc7a7e1e6a45ef861358747dbafb83.csv
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Origines sociales 17bc7a7e1e6a45ef861358747dbafb83_all.csv
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Origines sociales/Commer├зant 3e9c799da3d18197ad10df846ef35f3d.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Origines sociales/Esclave 3e9c799da3d1817e944fca1ffc99c113.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Origines sociales/Hors-la-loi 3e9c799da3d181b4b0d6fe1b841d4ac5.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Origines sociales/Noble 3e9c799da3d181e295a8d65b05c3d877.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Origines sociales/Paysan Ouvrier 3e9c799da3d1812aa7e9d1e66f7be2a9.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Origines sociales/Soldat Guerrier Combattant 3e9c799da3d1813d87d7d69ea4e4f335.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Origines sociales/├Йrudit 3e9c799da3d181199b11f9aa65c6e7e2.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Peuples 9a5cd156f4444837ae630b1862f60541.csv
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Peuples 9a5cd156f4444837ae630b1862f60541_all.csv
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Peuples/Elfe 3e9c799da3d181a6ad48d76461417bda.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Peuples/Gnome 3e9c799da3d181baa304c5591507657c.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Peuples/Gobelin 3e9c799da3d181b28fdddd40c97cfae5.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Peuples/Halfling 3e9c799da3d18171b3c9f93cf48ea4d1.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Peuples/Homme-b├кte 3e9c799da3d181258b60eb1cbbb545fe.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Peuples/Humain 3e9c799da3d1816ea19beea93b3794b1.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Peuples/Nain 3e9c799da3d181ee9e4ad52517136b2a.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Peuples/Ogre 3e9c799da3d181cfbc78f19ae00a401a.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Peuples/Orc 3e9c799da3d181219711c434b8e9e55e.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/Peuples/Reptilien 3e9c799da3d18138870ae83c77748148.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/├Йchelle D6 тАФ g├йn├йration b949e703e1b7435396a99b36ecf6e417.csv
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/├Йchelle D6 тАФ g├йn├йration b949e703e1b7435396a99b36ecf6e417_all.csv
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/├Йchelle D6 тАФ g├йn├йration/1 3ebc799da3d181978ae6ea8d5f155c90.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/├Йchelle D6 тАФ g├йn├йration/2 3ebc799da3d181e791f5c4d52b9f0c84.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/├Йchelle D6 тАФ g├йn├йration/3 3ebc799da3d181e2a35eda643388249c.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/├Йtapes de g├йn├йration 905a18852ebc4f148f18e0b10c2ecca6.csv
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/├Йtapes de g├йn├йration 905a18852ebc4f148f18e0b10c2ecca6_all.csv
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/├Йtapes de g├йn├йration/Application des modificateurs de comp├йtences 3edc799da3d181ec9dc4c9b67b8d87c6.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/├Йtapes de g├йn├йration/G├йn├йration brute des comp├йtences 3edc799da3d1817ba319e9d47c81d0e8.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/├Йtapes de g├йn├йration/Modificateurs de culture 3eac799da3d1818b9214e311da4ad965.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/├Йtapes de g├йn├йration/Modificateurs du peuple 3e9c799da3d181c194e2fe1b1896e831.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/├Йtapes de g├йn├йration/Modificateurs dтАЩascendance 3e9c799da3d18134b654fc6d1d05d497.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/├Йtapes de g├йn├йration/Modificateurs dтАЩorigine sociale 3eac799da3d1816d9a06fbee61e5bf09.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/├Йtapes de g├йn├йration/Post-traitement тАФ valeurs d├йriv├йes 3eac799da3d181c4a83bd361a9409f72.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/├Йtapes de g├йn├йration/Tirage brut des caract├йristiques 3e9c799da3d1819fb1facd2cacc4a198.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/├Йtapes de g├йn├йration/Tirage de la culture 3e9c799da3d181848759ecc11205dfac.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/├Йtapes de g├йn├йration/Tirage de lтАЩascendance 3e9c799da3d181f2917ec3d7ff3c12f2.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/├Йtapes de g├йn├йration/Tirage de lтАЩorigine sociale 3eac799da3d18162b1a2cc507858b0e1.md
+Priv├й et partag├й/Jeu de Mercenaires/01 тАФ G├йn├йration & identit├й/├Йtapes de g├йn├йration/Tirage du peuple 3e9c799da3d181878356f4f502f7cb20.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences 3eac799da3d18130b3cddc2686cb77c4.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Caract├йristiques & attributs eb1e6e789f9343c6937931157a26c27e.csv
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Caract├йristiques & attributs eb1e6e789f9343c6937931157a26c27e_all.csv
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Caract├йristiques & attributs/Chance 3eac799da3d18185b642e53c26107b02.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Caract├йristiques & attributs/Charisme 3eac799da3d181dca302ed39cda88a49.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Caract├йristiques & attributs/Constitution 3eac799da3d1819cb98be8f1663f416c.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Caract├йristiques & attributs/Courage 3eac799da3d1813c9affea80382819e7.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Caract├йristiques & attributs/Dext├йrit├й 3eac799da3d1811b90f7d468d8271139.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Caract├йristiques & attributs/Endurance 3eac799da3d181909fddd8e6b46cb3db.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Caract├йristiques & attributs/Esquive 3eac799da3d18121b5d7e482331560ab.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Caract├йristiques & attributs/Force 3eac799da3d1819ba603f778d8ac62cf.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Caract├йristiques & attributs/Intelligence 3eac799da3d181a49d88e72091a601c7.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Caract├йristiques & attributs/Perception 3eac799da3d18154a534d22b3744c2e8.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Caract├йristiques & attributs/Puissance magique 3eac799da3d181b082c2db69948562dc.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Caract├йristiques & attributs/R├йserve de mana 3eac799da3d181adbed4f159e2f7dd98.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Caract├йristiques & attributs/Vitesse 3eac799da3d181b4abe2fc875c288e0c.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Caract├йristiques & attributs/Volont├й 3eac799da3d1819ba4dff3844893aa7c.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences 13a89648818840a7aa9a0698e018b039.csv
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences 13a89648818840a7aa9a0698e018b039_all.csv
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Alchimie 3eac799da3d181d1b16cfff5bc7f236c.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Araign├йes g├йantes 3eac799da3d181e18c06c792a8ffd377.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Arbal├иte 3eac799da3d181e4a88ec5c6d646b431.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Arc 3eac799da3d181e5b3bdc417a76dc9f6.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Arme dтАЩhast double 3eac799da3d181afac7fd5b2c5fd80c2.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Armes contondantes 3eac799da3d181d1b2f0e415f3032a40.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Armes de tir 3eac799da3d181eb94e8f36238b93608.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Armes dтАЩhast 3eac799da3d181548280dffea0458cef.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Armes flexibles ou articul├йes 3eac799da3d1816ca994c58564ec5ef7.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Armes naturelles 3eac799da3d18154bcc3d7f213c78dd1.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Armes ├а feu & Explosifs 3eac799da3d18182a08bd26a378188a1.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Armes ├а feu 3eac799da3d181d09aa1dfc29075100f.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Arquebuse Mousquet 3eac799da3d1814f84aef5500a110a2b.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Artisanat 3eac799da3d18176adf2f386cd4f9783.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Bardiche 3eac799da3d181699215ca033d5164be.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Boucliers 3eac799da3d18191a5ccfd43cc2e936a.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/B├вton court 3eac799da3d181a089ccd0d470c887bc.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/B├вton long 3eac799da3d181bfb1c5d0d25ab86f4e.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/B├вtons 3eac799da3d18182b231c44623f0308e.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Canid├йs 3eac799da3d1814da69be01e781618c3.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Canon ├а main 3eac799da3d181e2a566e4cf9a1bd5ee.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Combat ├а deux armes 3eac799da3d181bf9d19e3a4d3ead08c.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Combat ├а deux mains 3eac799da3d181f19b7cf85c9dec2fd7.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Combat ├а mains nues 3eac799da3d181d0ada9ca94fa76fac8.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Compagnon animal 3eac799da3d181b591d0cbb256a9f093.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Couture 3eac799da3d18175970cc94f54fcc29c.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Dague 3eac799da3d181109498ed1ae7b616bc.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Discr├йtion 3eac799da3d181c0984af1794c83d12b.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Dragons 3eac799da3d181a9afb4cce592aae96b.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Eau 3eac799da3d18108b500e17901ed2493.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Empoisonnement des armes 3eac799da3d18158862bd434c2fcdaad.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Enchantement 3eac799da3d18176bccbf5d991c1f578.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Estoc 3eac799da3d181018620eb84e51d7f89.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Feu 3eac799da3d1817797c9dd2c691e9c78.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Fl├йau dтАЩarmes 3eac799da3d1815b828ad7e3a854e0c1.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Forge 3eac799da3d181cbabaee0d9d10dc565.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Foudre 3eac799da3d1812e8622e83effaab2c3.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Fouet 3eac799da3d1819fb8cdfffec3976ac4.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Fronde 3eac799da3d1811aa756fba90b97e1c1.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/F├йlins 3eac799da3d181f5ae3ccfd3702c3c8a.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Grande ├йp├йe 3eac799da3d181f1afb0e07db39efb5f.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Grands monstres 3eac799da3d181c28383db3d7b2bcf7d.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Hache de guerre 3eac799da3d181a9bdd9c8f9be7429ae.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Hache double 3eac799da3d181408bd6fce4bff5b488.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Haches 3eac799da3d1817692a2d3704765e6d6.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Hachette 3eac799da3d1812f8759f9b730407223.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Hallebarde 3eac799da3d181838144c29eb2322cee.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Illusion 3eac799da3d1819ba771ca62cdfd779b.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Intendance 3eac799da3d181249fb8ec14a93d04c5.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Intimidation 3eac799da3d1817dbc60d64a29b59852.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Invocation 3eac799da3d1811b9422d59fa5828529.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Joaillerie 3eac799da3d18155a21ef984bc091cee.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Katana 3eac799da3d181d49072cf9e61bdeeb5.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Kukri 3eac799da3d181f09386d1f88912ffc5.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Lames courtes 3eac799da3d1812ebb75e0749dd8ccf4.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Lames longues 3eac799da3d18115bfb7c15ee6855959.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Lance 3eac799da3d18117adb1fb297d78d72e.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Marteau de guerre 3eac799da3d181f0a547d4ae0a770d78.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Masse dтАЩarmes 3eac799da3d181e5aa8dfc5f2baab8a0.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Massue Gourdin 3eac799da3d1811cbab5cdc7682eee38.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/M├йdecine 3eac799da3d181318b34e4cee3ea6acd.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Nunchaku 3eac799da3d181a1a154d86b91e5dd4c.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/N├йcromancie 3eac799da3d181688cb7fa3b3d219bc1.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Papillons 3eac799da3d18195b98cde96daf0eae7.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Pavois 3eac799da3d18186943dd6254cf1db04.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Pic de guerre 3eac799da3d181e18698e2e3b39c51f5.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Pistolet 3eac799da3d181a7b513f247a2171e6a.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Pi├иges 3eac799da3d181659584cc90143712d0.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Port dтАЩarmure interm├йdiaire 3eac799da3d18141bb25def14af03325.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Port dтАЩarmure lourde 3eac799da3d18145a2a2cd76ba2d6b86.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Port dтАЩarmure l├йg├иre 3eac799da3d181d1a82ed074e04afd45.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Rapaces 3eac799da3d18120baacc331e549a593.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Rondache 3eac799da3d1816994ffc92b90edfe55.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/R├йg├йn├йration 3eac799da3d181f5b840d69b1f42098f.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Sabre 3eac799da3d181888918ee9c90ccfc82.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Sai 3eac799da3d18194b5c9d6e7790dac15.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Sangliers de combat 3eac799da3d181509992c2ba95ab19f8.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Sarbacane 3eac799da3d1816db8e1dec641729c28.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Sort ├а cr├йer 3eac799da3d18135bf1acebdde97eba7.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Transmission du savoir 3eac799da3d18105bd29e6af6b6f4b8a.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Transmutation 3eac799da3d1811da210f48c78ad6b29.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Travail du bois 3eac799da3d181e69810cee3419c9da4.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Travail du cuir 3eac799da3d181e19d9fd2d47edf934f.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Trident 3eac799da3d181b78a2dc16722e22d33.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Tromblon 3eac799da3d181d6bcc7d55395dfae7b.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/T├йl├йkin├йsie 3eac799da3d181238604f252365d890e.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Vie 3eac799da3d181ae8b59e91e605ae41f.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Vision nocturne 3eac799da3d1814a89c4ee58bfe55802.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/Vol 3eac799da3d181a8b877d19a76d737d0.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/├Йcu 3eac799da3d1812eb3c4c6235db07d64.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/├Йp├йe courte 3eac799da3d18175acaad5c008721f34.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/├Йp├йe double 3eac799da3d1813c8ed6f8cb0b9633b2.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/├Йp├йe longue 3eac799da3d1817f80f2f887301a6237.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Comp├йtences/├Йquid├йs 3eac799da3d1818fa9f0ea9cc52287a3.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Magie тАФ apprentissage, incantation & premier catal 3ecc799da3d18183b4a9e6b17170afdf.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Progression & exp├йrience 3ecc799da3d1815fbc4cef440b53d83b.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/R├йputation, renomm├йe & salaires 3edc799da3d1816d8c56ef472f3ea9ec.md
+Priv├й et partag├й/Jeu de Mercenaires/02 тАФ Personnage & comp├йtences/Titres acquis 3eac799da3d181b58ccceb1fbb60d42f.md
+Priv├й et partag├й/Jeu de Mercenaires/03 тАФ Combat 3eac799da3d181cfa22deb2373595671.md
+Priv├й et partag├й/Jeu de Mercenaires/03 тАФ Combat/Bo├оte ├а id├йes тАФ Combat 3ecc799da3d181c3a45ed60fccf36ebf.md
+Priv├й et partag├й/Jeu de Mercenaires/03 тАФ Combat/Fin de mission, temps & indisponibilit├йs 3edc799da3d181b593b4d808c233d592.md
+Priv├й et partag├й/Jeu de Mercenaires/03 тАФ Combat/M├йcaniques ├а int├йgrer ensuite 3eac799da3d181fd89ecffed4135a594.md
+Priv├й et partag├й/Jeu de Mercenaires/03 тАФ Combat/Types de d├йg├вts 5db7647603614c41bb7acc47a89986d6.csv
+Priv├й et partag├й/Jeu de Mercenaires/03 тАФ Combat/Types de d├йg├вts 5db7647603614c41bb7acc47a89986d6_all.csv
+Priv├й et partag├й/Jeu de Mercenaires/03 тАФ Combat/Types de d├йg├вts/Br├╗lant 3eac799da3d1810f8b87cf23b6526eda.md
+Priv├й et partag├й/Jeu de Mercenaires/03 тАФ Combat/Types de d├йg├вts/Contondant 3eac799da3d181eeba26ef851a9b6c25.md
+Priv├й et partag├й/Jeu de Mercenaires/03 тАФ Combat/Types de d├йg├вts/Corrosif 3eac799da3d181dfa7d3dcab91d0f43d.md
+Priv├й et partag├й/Jeu de Mercenaires/03 тАФ Combat/Types de d├йg├вts/Foudroyant 3eac799da3d1814f89b3f6be4d354042.md
+Priv├й et partag├й/Jeu de Mercenaires/03 тАФ Combat/Types de d├йg├вts/Gla├зant 3eac799da3d1819b8dcae66d9c4f7eba.md
+Priv├й et partag├й/Jeu de Mercenaires/03 тАФ Combat/Types de d├йg├вts/Perforant 3eac799da3d18182b8c3cd292cded2f6.md
+Priv├й et partag├й/Jeu de Mercenaires/03 тАФ Combat/Types de d├йg├вts/Tranchant 3eac799da3d181f19f37d11e7c3d9b01.md
+Priv├й et partag├й/Jeu de Mercenaires/03 тАФ Combat/├Йtats a2ea68aea2414a24a343f374c6fb19e3.csv
+Priv├й et partag├й/Jeu de Mercenaires/03 тАФ Combat/├Йtats a2ea68aea2414a24a343f374c6fb19e3_all.csv
+Priv├й et partag├й/Jeu de Mercenaires/03 тАФ Combat/├Йtats/Au Sol 3ebc799da3d1815fa0b3fe7c48c39602.md
+Priv├й et partag├й/Jeu de Mercenaires/03 тАФ Combat/├Йtats/En Fuite 3ebc799da3d1817a804fd813fe29a521.md
+Priv├й et partag├й/Jeu de Mercenaires/04 тАФ ├Йquipement 3eac799da3d1816f9fbde097e65f5e65.md
+Priv├й et partag├й/Jeu de Mercenaires/04 тАФ ├Йquipement/Armures de base f4f4cb3ca59c4e9aa987205928976f58.csv
+Priv├й et partag├й/Jeu de Mercenaires/04 тАФ ├Йquipement/Armures de base f4f4cb3ca59c4e9aa987205928976f58_all.csv
+Priv├й et partag├й/Jeu de Mercenaires/04 тАФ ├Йquipement/Armures de base/Armure d'├йcailles 3eac799da3d1814fbb30f649afd159fe.md
+Priv├й et partag├й/Jeu de Mercenaires/04 тАФ ├Йquipement/Armures de base/Armure de cuir 3eac799da3d181b99d13c046f4757efe.md
+Priv├й et partag├й/Jeu de Mercenaires/04 тАФ ├Йquipement/Armures de base/Armure de plates 3eac799da3d1810a97def013d2ec081b.md
+Priv├й et partag├й/Jeu de Mercenaires/04 тАФ ├Йquipement/Armures de base/Brigandine 3eac799da3d181b3bd09d409e16e3027.md
+Priv├й et partag├й/Jeu de Mercenaires/04 тАФ ├Йquipement/Armures de base/Cotte de mailles 3eac799da3d18177bda6cb66584d8d15.md
+Priv├й et partag├й/Jeu de Mercenaires/04 тАФ ├Йquipement/Armures de base/Cuir renforc├й 3eac799da3d181faa74bc5bc603ec700.md
+Priv├й et partag├й/Jeu de Mercenaires/04 тАФ ├Йquipement/Armures de base/Gambison 3eac799da3d1812c9781f9cb885efc01.md
+Priv├й et partag├й/Jeu de Mercenaires/04 тАФ ├Йquipement/Armures de base/V├кtements 3eac799da3d18128bccace74d5efd185.md
+Priv├й et partag├й/Jeu de Mercenaires/04 тАФ ├Йquipement/Qualit├йs d'item 786aac3436ff470a8a92d8fdd0b152cb.csv
+Priv├й et partag├й/Jeu de Mercenaires/04 тАФ ├Йquipement/Qualit├йs d'item 786aac3436ff470a8a92d8fdd0b152cb_all.csv
+Priv├й et partag├й/Jeu de Mercenaires/04 тАФ ├Йquipement/Qualit├йs d'item/Correcte 3eac799da3d1814ab673cc6a915b99d5.md
+Priv├й et partag├й/Jeu de Mercenaires/04 тАФ ├Йquipement/Qualit├йs d'item/Grand Luxe 3eac799da3d181989b2adc9a493e6923.md
+Priv├й et partag├й/Jeu de Mercenaires/04 тАФ ├Йquipement/Qualit├йs d'item/Us├йe 3eac799da3d18169b91edff62857edef.md
+Priv├й et partag├й/Jeu de Mercenaires/04 тАФ ├Йquipement/Sans titre 3ebc799da3d18124874bfce7508cfe33.csv
+Priv├й et partag├й/Jeu de Mercenaires/04 тАФ ├Йquipement/Sans titre 3ebc799da3d1814dab67dac17219fbf4.csv
+Priv├й et partag├й/Jeu de Mercenaires/04 тАФ ├Йquipement/Slots dтАЩ├йquipement & Pierres magiques тАФ chantier 3ecc799da3d1818bb33ae8a5b3100288.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques 3eac799da3d181c584bfca6dfc669087.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule 2a25d0db802141bb8e0273935c2be8c2.csv
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule 2a25d0db802141bb8e0273935c2be8c2_all.csv
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule/Blocage bouclier тАФ maximum 3ebc799da3d18168a870f8c3555819d7.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule/Blocage bouclier тАФ minimum 3ebc799da3d1813f810de762028968c2.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule/Capitaine тАФ bonus de peuple 3ebc799da3d181e48148eaaf9afc1aea.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule/Capitaine тАФ malus autres peuples 3ebc799da3d181a89d19fda5f47582da.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule/Capitaine тАФ poids ascendance 3ebc799da3d1816ba63cdd202bc68a75.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule/Capitaine тАФ poids culture 3ebc799da3d181e287eff14b4a1262a2.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule/Charge тАФ distance maximale 3ebc799da3d1810a90c6f9405932df99.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule/Charge тАФ distance minimale 3ebc799da3d18115b763f4516cd7d70a.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule/Charge тАФ diviseur d├йg├вts 3ebc799da3d18127bfccf7d25527e510.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule/Charge тАФ risque chute de base 3ebc799da3d181cab0d0c13e3a7a417d.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule/Courage тАФ coefficient Intimidation 3ebc799da3d18185bcfefffcff4f20b0.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule/Courage тАФ coefficient Volont├й 3ebc799da3d18162a722fa2c994708ab.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule/Courage тАФ maximum tenir 3ebc799da3d1814faeaef85d38140ebe.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule/Courage тАФ minimum tenir 3ebc799da3d18179aa36ec52bb52a28a.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule/Courage тАФ multiplicateur fuite sans blessure 3ebc799da3d181aab0d5d384968990c5.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule/Critique positif тАФ diviseur de Chance 3ebc799da3d181b08e43f29bc8c5f7e2.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule/Critique positif тАФ maximum 3ebc799da3d181cb9a0acbbd8042f592.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule/Critique positif тАФ minimum 3ebc799da3d18171b4f1cadbebd38619.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule/Deux armes тАФ d├йnominateur Dext├йrit├й 3ebc799da3d18193b1bccd261b1378b0.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule/Encha├оnement тАФ plafond 3ebc799da3d18121b6d4d5c25970001a.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule/Frappe dans le dos тАФ multiplicateur r├йsistance typ 3ecc799da3d181daac98e421ccfd9f3e.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule/Fuite тАФ bonus r├йcup├йration par tour 3ecc799da3d181509dcdcc70ca2bc972.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule/Initiative тАФ coefficient Courage 3ecc799da3d18118be49fe1e583b1f20.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule/Initiative тАФ coefficient Intelligence 3ecc799da3d181b6bed2d679ce5168d6.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule/Initiative тАФ coefficient Volont├й 3ecc799da3d181c9a35ff0d1cb0666f3.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule/Mouvement тАФ coefficient Endurance 3ebc799da3d181a7be3fdbe7ac1e7993.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule/Mouvement тАФ coefficient Volont├й 3ebc799da3d181488e56e82f75fd2fc6.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule/Mouvement тАФ diviseur hex 3ebc799da3d18174b5bad2a27ac79f2f.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule/Opportunit├й тАФ multiplicateur Esquive d├йfenseur 3ecc799da3d1818099f1dceb28b21ca8.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule/Prise au choix тАФ multiplicateur d├йg├вts 3ebc799da3d1813c96a0df6b0f8dc12e.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule/Prise au choix тАФ multiplicateur vitesse 3ebc799da3d1814c85f7d7c79dcf8fa2.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule/Sous-nombre тАФ malus Courage par ennemi de surplus 3ecc799da3d18139ba3deaa8c6426776.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule/Tir тАФ approximation premier candidat 3ebc799da3d181858632eb9993faa271.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule/Tir тАФ couverture forte 3ebc799da3d1810cadc6e8cee5f2e71e.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule/Tir тАФ couverture partielle 3ebc799da3d1812283d5e94f1d8099fb.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule/Tir тАФ diviseur cadence 3ebc799da3d1812f821ec56e32e69fcc.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule/Tir тАФ d├йcroissance approximation 3ebc799da3d18127bdd7f3a7d4e2f8ed.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule/Tir тАФ fraction de port├йe sans malus 3ebc799da3d18158942cc7b223873c65.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule/Tir тАФ p├йnalit├й distance ├а port├йe max 3ebc799da3d181a49f70e7a5d8a845f5.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule/Toucher CAC тАФ maximum 3eac799da3d18130bc70d519dbf4e997.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule/Toucher CAC тАФ minimum 3eac799da3d181c6b26eda6e936496f6.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule/Toucher CAC тАФ ├йchelle logistique 3eac799da3d1816bba78cc35b5f0a6d5.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule/Vitesse arme тАФ diviseur de ma├оtrise 3ebc799da3d181568147e9c4d289795e.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule/Zone тАФ perte de Toucher par hex 3ecc799da3d181deb4b0c4752bac351d.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Constantes de formule/├Йchec critique тАФ seuil naturel 3ebc799da3d1810a8d1ee1a18330a722.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Formules de jeu b096926b35a04a96995cad7aa5544c31.csv
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Formules de jeu b096926b35a04a96995cad7aa5544c31_all.csv
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Formules de jeu/Activation hexagonale V1 3ebc799da3d181509eced727ad375486.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Formules de jeu/Approximation projectile V1 3ebc799da3d181a4be4dcbd527f992e8.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Formules de jeu/Armes ├а feu тАФ recharge et double pistolet V1 3ebc799da3d181f1aa6be53eb35e371e.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Formules de jeu/Attaque d'opportunit├й CAC V1 3ecc799da3d181559829dce0edf3a0d0.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Formules de jeu/Blesser CAC V1 3eac799da3d181c5965ef78a521d952c.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Formules de jeu/Blesser distance V1 3ebc799da3d1818e9a97facf95fbd163.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Formules de jeu/Blocage bouclier physique V1 3ebc799da3d18126b594dcad23bb1b17.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Formules de jeu/Charge CAC V1 3ebc799da3d181a7b49bdb3808c3ddce.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Formules de jeu/Combat ├а deux armes CAC V1 3ebc799da3d181358861cee9d366aab5.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Formules de jeu/Comportement automatique тАФ En Fuite V1 3ecc799da3d1817eb862f3983cc06338.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Formules de jeu/Contre-charge V1 3ebc799da3d18132a479c4110eb08760.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Formules de jeu/Courage en sous-nombre V1 3ecc799da3d1812e9014c8e88ce61b72.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Formules de jeu/Courage post-attaque CAC V1 3ebc799da3d181feab89f2e269b76863.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Formules de jeu/Courage post-tir V1 3ebc799da3d181bf854ae3f4850a61d3.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Formules de jeu/Critique de blessure positif CAC V1 3ebc799da3d181488d08f35e58215458.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Formules de jeu/Critique positif CAC V1 3ebc799da3d18157b83cf6fb1a9d8ea2.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Formules de jeu/Critique toucher тАФ armure ignor├йe V1 3ebc799da3d18179891acefabeb182a5.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Formules de jeu/D├йg├вts PV physiques V1 3eac799da3d181c38685f9fb040d3bdf.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Formules de jeu/D├йg├вts PV physiques distance V1 3ebc799da3d18169904ae0ef89f0b710.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Formules de jeu/Encerclement CAC V1 3ecc799da3d181ae8e82ccd7c73a1cc7.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Formules de jeu/Encha├оnement d'attaques CAC V1 3ebc799da3d18161a2f3c9a50f6b964e.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Formules de jeu/Encha├оnement de tirs distance V1 3ebc799da3d181a8b9f8d3348f1180b2.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Formules de jeu/Esquive effective sous armure 3eac799da3d181e397a8dc7dddedd29c.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Formules de jeu/Frappe dans le dos V1 3ecc799da3d1819ba68cc80196e7861e.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Formules de jeu/Initiative interne d'├йquipe V1 3ecc799da3d181bc98a5edf2469614ac.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Formules de jeu/Malus mobilit├й effectif d'armure 3eac799da3d181da8a29c802e07825ae.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Formules de jeu/Malus vitesse arme effectif V1 3ebc799da3d1811fab4fd320244be6f8.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Formules de jeu/Mouvement de fuite imm├йdiat V1 3ebc799da3d18112bec1e0ee97616436.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Formules de jeu/Mouvement hexagonal V1 3ebc799da3d18139a297ecfe65b067ae.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Formules de jeu/PV maximum V1 3eac799da3d181a2adc4e8e3717a781f.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Formules de jeu/Permutation de set d'armes V1 3ecc799da3d1817dbe21fd70f8711f59.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Formules de jeu/Port├йe d'arme V1 3ebc799da3d181a19905f8c5d3dfa2c6.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Formules de jeu/Prise d'arme et mode deux mains V1 3ebc799da3d18153820fd1d9f3bcc82b.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Formules de jeu/Pr├йcision d'attaque de zone V1 3ecc799da3d181828c34f857d4be7366.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Formules de jeu/Reprise de contr├┤le тАФ En Fuite V1 3ecc799da3d1817ca2fdd04ed14f0afe.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Formules de jeu/R├йsistance effective d'armure 3eac799da3d18189898ece6c6c779379.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Formules de jeu/S├йlection du type de d├йg├вts par Intelligence 3eac799da3d1813cab14d308c76d6773.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Formules de jeu/Toucher CAC V1 3eac799da3d181bbbe04d7e9f08395ce.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Formules de jeu/Toucher distance V1 3ebc799da3d181a3ba94d19f810bed85.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Formules de jeu/Vitesse apr├иs armure тАФ interm├йdiaire 3eac799da3d181c28294c9d70738c2de.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Formules de jeu/Vitesse combat effective CAC V1 3ebc799da3d1813daa4ccfafab0ea2c5.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Formules de jeu/├Йchec critique CAC V1 3ebc799da3d181019ea6cc4583820d39.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Formules de jeu/├Йchec critique de blessure CAC V1 3ebc799da3d181688a91f508768adac2.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Termes de formule 29df19d52e964abf8956c8ae8371a4da.csv
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Termes de formule 29df19d52e964abf8956c8ae8371a4da_all.csv
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Termes de formule/Dext├йrit├й attaquant 3eac799da3d1810eb4cfe4b2bbaee886.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Termes de formule/Endurance d├йfenseur тАФ Blessure 3eac799da3d1810bbe69f03964d7f7c0.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Termes de formule/Esquive d├йfenseur 3eac799da3d18180b3edf0143d4a86fe.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Termes de formule/Force attaquant тАФ Blessure 3eac799da3d181f4bc85d274f599e609.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Termes de formule/Matchup d├йg├вts s├йlectionn├й 3eac799da3d1810d8682cfd5d6d02e0b.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Termes de formule/Ma├оtrise arme pr├йcise тАФ Blessure 3eac799da3d1818ab14be264e3b08ca4.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Termes de formule/Ma├оtrise arme pr├йcise ├йquip├йe 3eac799da3d18122bbdadfb999874955.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Termes de formule/Ma├оtrise cat├йgorie arme тАФ Blessure 3eac799da3d181da8af4f125729aaeb3.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Termes de formule/Ma├оtrise cat├йgorie arme ├йquip├йe 3eac799da3d18113b1f7e4af51c573c0.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Termes de formule/Perception attaquant 3eac799da3d181feaf7ce0e39d04e643.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Termes de formule/Perception d├йfenseur 3eac799da3d181fd93cfcd2c82f2706e.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Termes de formule/Vitesse attaquant 3eac799da3d181ba8dc8c07057512be0.md
+Priv├й et partag├й/Jeu de Mercenaires/05 тАФ R├йf├йrentiels techniques/Termes de formule/Vitesse d├йfenseur 3eac799da3d18176b55ee03cf7b4197a.md
+Priv├й et partag├й/Jeu de Mercenaires/06 тАФ Architecture & objets de jeu 3edc799da3d1818e97d9d2e3238bc475.md
+Priv├й et partag├й/Jeu de Mercenaires/06 тАФ Architecture & objets de jeu/Camp & ch├вteau en ruines 3edc799da3d181808127ed574b81ba78.md
+
+Files: 730

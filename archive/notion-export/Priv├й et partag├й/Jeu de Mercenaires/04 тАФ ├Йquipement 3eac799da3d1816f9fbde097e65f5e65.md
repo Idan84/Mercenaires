@@ -1,0 +1,55 @@
+# 04 — Équipement
+
+Référentiels d’équipement. La **qualité est commune à tous les items** ; les résistances, malus de mobilité et altération magique sont portés directement par chaque type d’armure.
+
+[Qualités d'item](04%20%E2%80%94%20%C3%89quipement/Qualit%C3%A9s%20d'item%20786aac3436ff470a8a92d8fdd0b152cb.csv)
+
+[Armures de base](04%20%E2%80%94%20%C3%89quipement/Armures%20de%20base%20f4f4cb3ca59c4e9aa987205928976f58.csv)
+
+[Sans titre](04%20%E2%80%94%20%C3%89quipement/Sans%20titre%203ebc799da3d1814dab67dac17219fbf4.csv)
+
+## Règles d'équipement actives
+
+- La **qualité d'item** est commune : `Multiplicateur qualité` agit sur les valeurs positives ; `Multiplicateur malus` agit sur les handicaps, y compris désormais le malus vitesse d'arme.
+- La prise et les bonus `1 main / 2 mains / Au choix` sont définis dans [Prise d'arme et mode deux mains V1](05%20%E2%80%94%20R%C3%A9f%C3%A9rentiels%20techniques/Formules%20de%20jeu/Prise%20d'arme%20et%20mode%20deux%20mains%20V1%203ebc799da3d18153820fd1d9f3bcc82b.md).
+- Le calcul du malus vitesse réel d'une arme est défini dans [Malus vitesse arme effectif V1](05%20%E2%80%94%20R%C3%A9f%C3%A9rentiels%20techniques/Formules%20de%20jeu/Malus%20vitesse%20arme%20effectif%20V1%203ebc799da3d1811fab4fd320244be6f8.md).
+
+<aside>
+⚖️
+
+La vue **Armes — équilibrage** est la table à modifier pour ajuster dégâts, puissance de blessure, prise, inertie, portée, bonus de charge et capacité de contre-charge sans toucher aux formules.
+
+</aside>
+
+## Portée, tir et charge
+
+Les fiches d'armes portent désormais les champs `Portée min hex`, `Portée max hex`, `Cadence tir`, `Recharge action rapide`, `Contre-charge`, `Bonus charge base` et `Attaque de zone`.
+
+- Une arme de mêlée ordinaire sans portée explicite est traitée comme **1–1**.
+- Les armes d'hast configurées ici sont **1–2** et peuvent contre-charger.
+- Les armes de tir disposent de leurs portées V1 et de leur cadence `Répétable` ou `Tir unique`.
+- Les armes à feu sont à tir unique et nécessitent une Action rapide pour recharger.
+- Le **Tromblon** est marqué comme attaque de zone ; sa géométrie sera définie avec les attaques de zone.
+- `Bonus charge base` est renseigné sur les armes : **1** par défaut, **2** pour les armes d'hast et les armes `2 mains`. Ce premier équilibrage pourra être affiné arme par arme.
+
+La vue **Tir — portée & cadence** expose les paramètres utiles au réglage des armes à distance.
+
+## Sets d'armes & armes à feu
+
+- Deux sets peuvent être préparés ; [Permutation de set d'armes V1](05%20%E2%80%94%20R%C3%A9f%C3%A9rentiels%20techniques/Formules%20de%20jeu/Permutation%20de%20set%20d'armes%20V1%203ecc799da3d1817dbe21fd70f8711f59.md) : **changer de set = 1 Action rapide**.
+- Épée + pistolet ou deux pistolets utilisent la logique générale du combat à deux armes : inerties cumulées et une attaque de base par arme utilisable.
+- [Armes à feu — recharge et double pistolet V1](05%20%E2%80%94%20R%C3%A9f%C3%A9rentiels%20techniques/Formules%20de%20jeu/Armes%20%C3%A0%20feu%20%E2%80%94%20recharge%20et%20double%20pistolet%20V1%203ebc799da3d181f1aa6be53eb35e371e.md) : **recharger une arme à feu = 1 Action rapide** ; une arme déchargée devient indisponible sans empêcher l'autre arme du set de fonctionner.
+
+## Boucliers
+
+Le même jet de blocage est utilisé au **CAC et contre les projectiles physiques**, y compris lorsqu'une attaque bénéficie de Frappe dans le dos.
+
+Les boucliers ne sont pas traités comme des armures. Ils ajoutent leur propre **malus de vitesse** et utilisent [Blocage bouclier physique V1](05%20%E2%80%94%20R%C3%A9f%C3%A9rentiels%20techniques/Formules%20de%20jeu/Blocage%20bouclier%20physique%20V1%203ebc799da3d18126b594dcad23bb1b17.md) comme jet de sauvegarde après un Toucher réussi.
+
+Ils possèdent aussi désormais le champ numérique **`Altération magique base`**, identique à celui des armures, afin que les boucliers métalliques puissent pénaliser ultérieurement les mécaniques de magie sans passer par le système d'armure.
+
+La vue **Boucliers — équilibrage** expose `Bonus blocage base`, `Malus vitesse arme base` et `Altération magique base` ensemble.
+
+[Sans titre](04%20%E2%80%94%20%C3%89quipement/Sans%20titre%203ebc799da3d18124874bfce7508cfe33.csv)
+
+[Slots d’équipement & Pierres magiques — chantier](04%20%E2%80%94%20%C3%89quipement/Slots%20d%E2%80%99%C3%A9quipement%20&%20Pierres%20magiques%20%E2%80%94%20chantier%203ecc799da3d1818bb33ae8a5b3100288.md)

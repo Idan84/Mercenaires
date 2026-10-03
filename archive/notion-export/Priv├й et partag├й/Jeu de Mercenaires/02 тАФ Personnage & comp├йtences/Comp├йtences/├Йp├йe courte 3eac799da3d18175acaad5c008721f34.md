@@ -1,0 +1,21 @@
+# Épée courte
+
+Attaque de zone: No
+Bonus charge base: 1
+Contre-charge: No
+Description: Intermédiaire entre l’épée longue et la dague, avec une portée réduite mais une bonne polyvalence.
+Domaine: Lames courtes, Martial
+Dégâts PV base: 1D6
+Exemples: Gladius, xiphos, wakizashi et autres épées compactes
+Malus vitesse arme base: 6
+Niveau: Sous-catégorie
+Ordre: 7
+Parent: Lames courtes (Lames%20courtes%203eac799da3d1812ebb75e0749dd8ccf4.md)
+Prise: 1 main
+Puissance contondante base: 0
+Puissance perforante base: 35
+Puissance tranchante base: 35
+Recharge action rapide: No
+Type de valeur: Progressive
+Types de dégâts: Tranchant (../../03%20%E2%80%94%20Combat/Types%20de%20d%C3%A9g%C3%A2ts/Tranchant%203eac799da3d181f19f37d11e7c3d9b01.md), Perforant (../../03%20%E2%80%94%20Combat/Types%20de%20d%C3%A9g%C3%A2ts/Perforant%203eac799da3d18182b8c3cd292cded2f6.md)
+Valeur maximale: 100

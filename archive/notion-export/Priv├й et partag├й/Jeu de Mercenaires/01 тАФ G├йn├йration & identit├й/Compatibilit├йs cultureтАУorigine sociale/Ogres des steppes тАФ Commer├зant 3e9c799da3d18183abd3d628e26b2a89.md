@@ -1,0 +1,5 @@
+# Ogres des steppes — Commerçant
+
+Culture: Ogres des steppes (../Cultures/Ogres%20des%20steppes%203e9c799da3d181fc83ccf4158da362f3.md)
+Origine sociale: Commerçant (../Origines%20sociales/Commer%C3%A7ant%203e9c799da3d18197ad10df846ef35f3d.md)
+Possible: Yes

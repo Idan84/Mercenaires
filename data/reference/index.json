@@ -385,10 +385,11 @@
       "columns": [
         "aptitude",
         "domaine",
-        "peoples",
-        "ancestries",
-        "cultures",
-        "origins"
+        "mode",
+        "automatic",
+        "bonuses_pp",
+        "armor",
+        "reason"
       ]
     }
   ]

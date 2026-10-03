@@ -346,8 +346,10 @@ function missionMinDistance(cell,units){
 }
 
 // Chemins les plus courts vers chaque case libre atteignable, dans l'ordre de distance.
-function missionReachablePaths(unit,budget=Infinity){
+// forbidden : cases interdites en plus des cases occupées (la case de départ reste permise).
+function missionReachablePaths(unit,budget=Infinity,forbidden=null){
   const blocked=occupiedMissionKeys(unit),start={q:unit.q,r:unit.r};
+  if(forbidden) for(const key of forbidden) blocked.add(key);
   const paths=new Map([[missionKey(start.q,start.r),[]]]),queue=[start];
   while(queue.length){
     const cur=queue.shift(),path=paths.get(missionKey(cur.q,cur.r));
@@ -363,9 +365,9 @@ function missionReachablePaths(unit,budget=Infinity){
 }
 
 // Meilleure destination selon le score ; à score égal, le chemin le plus court (ordre de parcours).
-function missionBestPath(unit,budget,score){
+function missionBestPath(unit,budget,score,forbidden=null){
   let best=[],bestScore=score({q:unit.q,r:unit.r});
-  for(const path of missionReachablePaths(unit,budget).values()){
+  for(const path of missionReachablePaths(unit,budget,forbidden).values()){
     if(!path.length) continue;
     const value=score(path[path.length-1]);
     if(value>bestScore){ best=path;bestScore=value; }
@@ -380,9 +382,9 @@ function isMissionBorder(c){
 
 // Sortie de carte : atteindre une case du bord, puis 1 hexagone de mouvement pour quitter la carte.
 // Parmi les sorties possibles, la plus éloignée des ennemis.
-function missionExitPath(unit,budget,threats){
+function missionExitPath(unit,budget,threats,forbidden=null){
   let best=null,bestScore=-1;
-  for(const path of missionReachablePaths(unit,budget).values()){
+  for(const path of missionReachablePaths(unit,budget,forbidden).values()){
     const cell=path.length?path[path.length-1]:unit;
     if(!isMissionBorder(cell)||path.length+1>budget) continue;
     const value=missionMinDistance(cell,threats);
@@ -391,8 +393,8 @@ function missionExitPath(unit,budget,threats){
   return best;
 }
 
-function missionTryExit(unit,budget){
-  const path=missionExitPath(unit,budget,missionThreatSources(unit));
+function missionTryExit(unit,budget,forbidden=null){
+  const path=missionExitPath(unit,budget,missionThreatSources(unit),forbidden);
   if(!path) return false;
   const target=path.length?path[path.length-1]:{q:unit.q,r:unit.r};
   if(path.length) missionFollowFleePath(unit,path,"court vers le bord");
@@ -420,12 +422,25 @@ function missionRunAway(unit,budget){
   missionFollowFleePath(unit,missionBestPath(unit,budget,cell=>missionMinDistance(cell,threats)),"court");
 }
 
+// Cases adjacentes à un ennemi, que le trajet de « Cachons-nous » ne doit jamais emprunter.
+function missionCellsNextToEnemies(unit){
+  const keys=new Set();
+  for(const enemy of missionOpponents(unit)) for(const n of missionNeighbors(enemy)) keys.add(missionKey(n.q,n.r));
+  return keys;
+}
+
 // 2 : Cachons-nous. La Mission Test n'a aucun abri total : le fuyard file vers la sortie de carte.
+// Le trajet n'entre jamais dans une case adjacente à un ennemi, y compris vers la sortie (relecture Chatty, PR #7).
+// Sans trajet sûr vers une sortie, il s'éloigne au mieux par les cases sûres, sinon il reste sur place.
 function missionSeekCover(unit,budget){
-  if(missionTryExit(unit,budget)) return;
-  const path=missionExitPath(unit,Infinity,missionThreatSources(unit));
-  if(!path?.length){ missionRunAway(unit,budget); return; }
-  missionFollowFleePath(unit,path.slice(0,budget),"file vers la sortie");
+  const forbidden=missionCellsNextToEnemies(unit);
+  if(missionTryExit(unit,budget,forbidden)) return;
+  const threats=missionThreatSources(unit);
+  const path=missionExitPath(unit,Infinity,threats,forbidden);
+  if(path?.length){ missionFollowFleePath(unit,path.slice(0,budget),"file vers la sortie"); return; }
+  const away=missionBestPath(unit,budget,cell=>missionMinDistance(cell,threats),forbidden);
+  if(away.length) missionFollowFleePath(unit,away,"se terre");
+  else missionLog(unit.character.name+" ne trouve aucun chemin sûr et reste sur place.","move");
 }
 
 // 3 : Feu à volonté sur l'ennemi le plus proche, sinon il reste sur place.

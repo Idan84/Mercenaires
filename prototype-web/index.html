@@ -152,8 +152,11 @@
           </div>
           <div class="mission-map-scroll"><div id="mission-map" class="mission-map"></div></div>
           <div id="mission-result" class="mission-result hidden">
-            <strong>Combat terminé</strong>
-            <button id="mission-result-back-btn" class="primary">Retour à la compagnie</button>
+            <div class="mission-result-head">
+              <strong>Combat terminé · bilan de fin de mission</strong>
+              <button id="mission-result-back-btn" class="primary">Retour à la compagnie</button>
+            </div>
+            <div id="mission-aftermath"></div>
           </div>
         </div>
 
@@ -205,6 +208,7 @@
   <script src="/core/combat-engine.js"></script>
   <script src="/core/tavern.js"></script>
   <script src="/core/campaign.js"></script>
+  <script src="/core/mission-end.js"></script>
   <script src="reference-data.js"></script>
   <script src="core-data.js"></script>
   <script src="generation.js"></script>

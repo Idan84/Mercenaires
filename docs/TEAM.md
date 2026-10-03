@@ -72,7 +72,9 @@ Aucun agent ne travaille spontanément : il faut qu'une session soit lancée. Gi
 | Corrections Mission Test : second Mouvement, carte 13×9 rectangulaire et entièrement visible | JC3 | PR #7 | Fusionné |
 | Sauvegarde de la partie (automatique, « Continuer » au démarrage) | JC3 | PR #15 | Fusionné |
 | Correctifs : profil Magie (Issue #12), PV négatifs (Issue #13) | JC3 | PR #16 | Fusionné |
-| Fin de mission V1 : blessures, fatigue, indisponibilité | Chatty + Idan | Issue #14 | Design en cours ; code JC3 après validation des valeurs |
+| Fin de mission V1 : design (blessures, fatigue, indisponibilité) | Chatty + Idan | Issue #14 | Valeurs PLAYTEST, à ajuster en jeu |
+| Fin de mission V1, étape 1 : règles (`game-core/mission-end.js`) et bilan dans la Mission Test | JC3 | `claude/mission-end-v1` | En relecture |
+| Fin de mission V1, étape 2 : appliquer le bilan à la compagnie (morts, indisponibilités, récupération) | JC3 | — | À lancer sur feu vert d'Idan |
 | Registre d'équilibrage (`docs/design/92-balance-questions.md`) | JC3, puis Idan + Chatty | PR #7 | Équilibrage reporté par Idan |
 | Taverne : design V1 (`docs/design/14-tavern-recruitment.md`) | Chatty + Idan | PR #6 | Fusionné |
 | Taverne : code V1, étape 1 — état de partie, `AdvanceTime`, boucle quotidienne, entretien, négociation (`game-core/`) | JC3 | PR #11 | Fusionné |
@@ -85,6 +87,7 @@ Aucun agent ne travaille spontanément : il faut qu'une session soit lancée. Gi
 - **2026-10-03** — Circuit Git : PR vers `test`, fusion par JC3, `test` → `main` sur feu vert d'Idan. Idan ne fusionne rien.
 - **2026-10-03** — Tâches et échanges entre agents via GitHub Issues et PR.
 - **2026-10-03** — Jean-Mimi travaille dans Google Flow, hors Git, avec Idan en liaison. Groky rejoint l'équipe.
+- **2026-10-03** — Fin de mission V1 (Issue #14) : tout survivant non blessé est fatigué (pas de jet) ; courbe de blessure plus agressive, pour faire tourner le roster ; séquelles permanentes reportées ; une blessure dure de 7 à 60 jours, la fatigue approche la semaine ; les morts de la Mission Test seront définitives. Les valeurs PLAYTEST sont codées et s'ajustent dans les données.
 - **2026-10-03** — Profil temporaire d'équipement (Issue #12) : la meilleure école de magie est divisée par 2, comme la meilleure arme.
 - **2026-10-03** — Taverne (PR #11) : l'Intendant est un rôle assigné par le joueur (aucun par défaut) ; départ après refus durci (coefficient 1,5, plafond 95 %) pour que les offres très basses ne soient pas une loterie.
 - **2026-10-03** — Dortoir initial porté à **40 places** : l'escouade initiale peut compter jusqu'à 30 mercenaires plus le capitaine.

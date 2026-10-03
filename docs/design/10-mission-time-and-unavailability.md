@@ -80,13 +80,23 @@ La probabilité doit :
 - augmenter en se rapprochant de 0 PV ;
 - être réduite par l’Endurance.
 
-La formule exacte reste à définir.
+**Formule PLAYTEST V1** (Issue #14 : courbe volontairement agressive, pour que l’indisponibilité fasse tourner le roster) :
+
+$$
+DangerBlessure = 100 \times \left(1 - \frac{PV_{restants}}{0.2 \times PV_{max}}\right)
+$$
+
+$$
+P_{Blessure}\% = Clamp\left(35 + 0.65 \times DangerBlessure - \frac{Endurance}{6},\ 20,\ 95\right)
+$$
+
+Avec Endurance 50 : ~27 % à 20 % PV, ~43 % à 15 %, ~59 % à 10 %, ~75 % à 5 %, ~92 % à 0 PV. Le plancher de 20 % est voulu : finir une mission dans la zone critique doit déjà être dangereux.
 
 ## 5 — Fatigue
 
-Tous les mercenaires survivants **non blessés** passent ensuite un jet de fatigue.
+**Décision Idan (Issue #14) :** la fatigue n’est pas un jet. Tout mercenaire survivant **non blessé** termine la mission fatigué. Un blessé n’a pas de compteur Fatigue en plus de sa blessure.
 
-Le jet doit dépendre de :
+La **durée** de fatigue dépend de :
 
 - l’Endurance ;
 - la **quantité cumulée de dégâts réellement subis pendant toute la mission**.
@@ -98,7 +108,13 @@ Les soins restaurent les PV mais **n’effacent pas la contrainte physique déj�
 
 </aside>
 
-La formule exacte de fatigue reste à définir.
+**Formule PLAYTEST V1** (Issue #14 ; base portée de 1 à 5 jours par Idan le 2026-10-03 : la fatigue doit approcher la semaine) :
+
+$$
+JoursFatigue = Clamp\left(Ceil\left(5 + 2 \times \frac{DegatsCumulesSubis}{PV_{max}} - \frac{Endurance}{100}\right),\ 1,\ 7\right)
+$$
+
+Avec Endurance 50 : 5 jours sans dégâts, 6 jours après 0,5 × PV max encaissés, 7 jours dès 1 × PV max. Un tank soigné plusieurs fois peut revenir à pleins PV mais complètement rincé.
 
 ## 6 — Durée d’une blessure
 
@@ -108,7 +124,19 @@ La durée d’indisponibilité d’un blessé dépend au minimum de :
 - l’Endurance ;
 - les **capacités soignantes du camp**.
 
-La formule exacte n’est pas encore validée.
+**Formule PLAYTEST V1** (gravité : proposition Chatty, Issue #14 ; durée ajustée par Idan le 2026-10-03 : une blessure dure de 7 à 60 jours) :
+
+$$
+Gravite = Clamp\left(50 - 250 \times \frac{PV_{restants}}{PV_{max}},\ 0,\ 100\right)
+$$
+
+Repères : 0 à 20 % PV, 25 à 10 %, 50 à 0 PV, 75 à -10 %, 100 à -20 %.
+
+$$
+JoursBlessure = Ceil\left(Clamp\left((7 + Gravite) \times \left(1 - \frac{Endurance}{300}\right) \times FacteurSoinsCamp,\ 7,\ 60\right)\right)
+$$
+
+Soit 7 jours, plus 1 jour par point de gravité, réduits par l’Endurance, entre 7 et 60 jours. En V1, `FacteurSoinsCamp = 1` ; les bâtiments médicaux le feront baisser. Avec Endurance 50 : gravité 0 → 7 jours, 25 → 27 jours, 50 → 48 jours, 75 → 60 jours.
 
 ## 7 — Chaîne de résolution post-mission
 
@@ -118,10 +146,10 @@ Ordre retenu :
 2. mort → fin du traitement du personnage ;
 3. survivant avec `PV < 0` → blessure automatique ;
 4. `0 à 20 % PV max` → jet de blessure ;
-5. tous les survivants non blessés → jet de fatigue ;
+5. tous les survivants non blessés → fatigue automatique, dont seule la durée varie ;
 6. résolution des récompenses, réputation, XP, butin et retour.
 
-Les sorties opérationnelles sont donc au minimum : **mort / blessé / fatigué / opérationnel**.
+Les sorties opérationnelles sont donc au minimum : **mort / blessé / fatigué / opérationnel** (après récupération).
 
 ## 8 — Retour et paiement
 
@@ -143,9 +171,15 @@ En complément des données déjà prévues dans l’architecture :
 
 ## 10 — Points encore ouverts
 
-- formule du jet de blessure entre 0 et 20 % ;
-- formule du jet de fatigue ;
-- formule de durée des blessures ;
-- moment exact où commencent les soins pendant le trajet retour ;
+- coefficients PLAYTEST des formules de blessure, de fatigue et de durée, à ajuster en jeu ;
+- moment exact où commencent les soins : dès la fin du combat (le trajet retour compte) ou seulement au retour au camp ;
 - influence précise des bâtiments médicaux ;
-- séquelles permanentes.
+- séquelles permanentes (reportées, décision Idan) ;
+- sort exact des mercenaires ayant fui hors de la carte, capturés ou disparus, abandon et extraction des personnages laissés sur place.
+
+## 11 — Implémentation (prototype)
+
+- Les règles §3 à §7 sont codées dans `game-core/mission-end.js`, sans dépendance à l’interface. Toutes les valeurs PLAYTEST sont des constantes `mission.*` de `data/reference/formula-constants.json` : on les ajuste sans toucher au code.
+- Le moteur de combat tient le compteur de dégâts cumulés de chaque personnage : les PV perdus à chaque coup reçu, y compris sous 0 PV. Cette part sous 0 ne change aucun résultat, puisqu’un blessé n’a pas de compteur Fatigue.
+- Mission Test : à la fin du combat, votre équipe passe la chaîne §7 et un bilan s’affiche (mort, blessé ou fatigué, durée d’indisponibilité, détail des jets). Ce bilan **n’est pas encore appliqué à la compagnie**.
+- Choix d’implémentation à confirmer, en attendant les règles du §10 : la chaîne s’applique après une victoire comme après une défaite ; un mercenaire sorti de la carte en fuite la passe comme tout survivant, avec ses PV restants ; les ennemis ne la passent pas.

@@ -258,6 +258,14 @@ assert.equal(doomed.alive,false);
 assert.equal(finish.targetHp,doomed.hp);
 assert.equal(finish.targetDown,true);
 
+// Fin de mission V1 : les dégâts subis s'additionnent sur toute la mission (base de la durée de fatigue).
+const worn=unit(b,1,0);worn.damageTaken=7;
+const hitter=unit(a,0,0);setFamily(hitter,"melee");
+const blow=combat.resolveAttack(hitter,worn,{mode:"melee",distance:1});
+assert.equal(blow.wound,true);
+assert.equal(worn.damageTaken,7+blow.damage);
+assert.equal(doomed.damageTaken,finish.damage);
+
 // Charge : le chemin suit la ligne droite jusqu'à la case d'arrivée.
 const charger=unit(a,0,0),chargeTarget=unit(b,4,0);
 const charge=combat.chargeData(charger,chargeTarget);

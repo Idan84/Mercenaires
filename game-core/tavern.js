@@ -8,13 +8,19 @@
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesTavern=api;
 })(typeof globalThis!=="undefined"?globalThis:this,function(){
-  const INITIAL_SLOTS=5;
   const QUESTIONS_PER_CANDIDATE=3;
 
   function clamp(v,min,max){ return Math.max(min,Math.min(max,v)); }
 
+  function referenceConstant(reference,code,fallback){
+    const value=Number((reference?.formulaConstants?.rows||[]).find(r=>r.code===code)?.valeur);
+    return Number.isFinite(value)?value:fallback;
+  }
+
+  // options : { random, reference } ; reference = référentiels de data/reference/ (formulaConstants).
   function createTavernRules(options={}){
     const random=options.random||Math.random;
+    const INITIAL_SLOTS=referenceConstant(options.reference,"tavern.slots.initial",5);
     function d100(){ return Math.floor(random()*100)+1; }
     function uniform(min,max){ return min+random()*(max-min); }
 
@@ -211,5 +217,5 @@
     };
   }
 
-  return {createTavernRules};
+  return {createTavernRules,referenceConstant};
 });

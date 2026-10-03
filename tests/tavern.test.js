@@ -37,9 +37,9 @@ function seeded(seed){
 function scripted(values){ let i=0; return ()=>values[Math.min(i++,values.length-1)]; }
 
 const generator=createGenerator(reference,{random:seeded(42),nameGenerator:(people,id)=>people+" "+id});
-const always=value=>createTavernRules({random:()=>value});
+const always=value=>createTavernRules({random:()=>value,reference});
 const tavern=always(0.5);
-const campaignOf=rules=>createCampaignRules({generator,tavern:rules});
+const campaignOf=rules=>createCampaignRules({generator,tavern:rules,reference});
 
 function merc(overrides={}){
   return {id:9000,name:"Marcel",reputation:150,salary:50,salaryPretension:35,
@@ -58,14 +58,14 @@ assert.equal(tavern.missionBonusDemand(merc({stats:{Courage:20}})),195);
 assert.equal(tavern.missionBonusDemand(merc({stats:{Courage:50}})),150);
 assert.equal(tavern.missionBonusDemand(merc({stats:{Courage:100}})),75);
 
-// État de partie initial : jour 1, 1 000 PO, Dortoir 20, Taverne remplie (5 places).
+// État de partie initial : jour 1, 1 000 PO, Dortoir 40 (décision Idan), Taverne remplie (5 places).
 const captain=generator.createCaptain({id:1});
 const squad=[2,3].map(id=>generator.createMercenary({id,captain}));
 const stable=campaignOf(always(0.999));
 const state=stable.createCampaign({captain,squad});
 assert.equal(state.day,1);
 assert.equal(state.company.gold,1000);
-assert.equal(state.company.camp.dormitoryCapacity,20);
+assert.equal(state.company.camp.dormitoryCapacity,40);
 assert.equal(state.company.roster.length,3);
 assert.equal(state.tavern.slots,5);
 assert.equal(state.tavern.candidates.length,5);
@@ -140,10 +140,10 @@ const deal=always(0.999).makeOffer(cc,{salary:cc.negotiation.salary,bonus:cc.neg
 assert.equal(deal.outcome,"accepted");
 
 // Départ après un refus : jet d'acceptation raté (100), puis jet de départ réussi (1).
-const quitter=createTavernRules({random:scripted([0.999,0])});
-const s3=createCampaignRules({generator,tavern:quitter}).createCampaign({captain,squad});
+const quitter=createTavernRules({random:scripted([0.999,0]),reference});
+const s3=createCampaignRules({generator,tavern:quitter,reference}).createCampaign({captain,squad});
 const target=s3.tavern.candidates[0].mercenary.id;
-const gone=createCampaignRules({generator,tavern:quitter}).offerToCandidate(s3,target,{salary:1,bonus:1});
+const gone=createCampaignRules({generator,tavern:quitter,reference}).offerToCandidate(s3,target,{salary:1,bonus:1});
 assert.equal(gone.outcome,"left");
 assert.equal(s3.tavern.candidates.length,4,"la place sera remplie le lendemain matin");
 
@@ -155,7 +155,7 @@ const n=tavern.negotiationState(pick);
 stable.offerToCandidate(s4,pick.mercenary.id,{salary:n.salary,bonus:n.bonus});
 s4.company.camp.dormitoryCapacity=s4.company.roster.length;
 assert.equal(stable.signCandidate(s4,pick.mercenary.id).ok,false,"Dortoir plein");
-s4.company.camp.dormitoryCapacity=20;
+s4.company.camp.dormitoryCapacity=40;
 const signed=stable.signCandidate(s4,pick.mercenary.id);
 assert.equal(signed.ok,true);
 assert.deepEqual(signed.mercenary.contract,{dailySalary:n.salary,missionBonus:n.bonus,signedDay:1});

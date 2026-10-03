@@ -7,11 +7,15 @@
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesCampaign=api;
 })(typeof globalThis!=="undefined"?globalThis:this,function(){
-  const STARTING_GOLD=1000;
-  const STARTING_DORMITORY_CAPACITY=20;
+  function referenceConstant(reference,code,fallback){
+    const value=Number((reference?.formulaConstants?.rows||[]).find(r=>r.code===code)?.valeur);
+    return Number.isFinite(value)?value:fallback;
+  }
 
-  // generator : createGenerator(...) ; tavern : createTavernRules(...).
-  function createCampaignRules({generator,tavern}){
+  // generator : createGenerator(...) ; tavern : createTavernRules(...) ; reference : data/reference/.
+  function createCampaignRules({generator,tavern,reference}){
+    const STARTING_GOLD=referenceConstant(reference,"company.gold.initial",1000);
+    const STARTING_DORMITORY_CAPACITY=referenceConstant(reference,"camp.dormitory.initial_capacity",40);
     function rosterOf(state){ return state.company.roster; }
 
     // Un candidat de la Taverne est généré avec les biais du capitaine, comme tout nouveau mercenaire.

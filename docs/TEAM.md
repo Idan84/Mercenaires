@@ -68,13 +68,14 @@ Aucun agent ne travaille spontanément : il faut qu'une session soit lancée. Gi
 
 | Chantier | Responsable | Branche / PR | État |
 |---|---|---|---|
-| Combat lot 1 complet : Attaques d'opportunité, Frappe dans le dos, Encerclement, Courage, Fuite (+ Force de charge au Blesser) | JC3 | `claude/friendly-bardeen-edzi87` (PR #7) | En relecture |
-| Corrections Mission Test : second Mouvement, carte 13×9 rectangulaire et entièrement visible | JC3 | `claude/friendly-bardeen-edzi87` (PR #7) | En relecture |
+| Combat lot 1 complet : Attaques d'opportunité, Frappe dans le dos, Encerclement, Courage, Fuite (+ Force de charge au Blesser) | JC3 | PR #7 | Fusionné |
+| Corrections Mission Test : second Mouvement, carte 13×9 rectangulaire et entièrement visible | JC3 | PR #7 | Fusionné |
+| Sauvegarde de la partie (automatique, « Continuer » au démarrage) | JC3 | `claude/friendly-bardeen-edzi87` | En relecture |
 | Registre d'équilibrage (`docs/design/92-balance-questions.md`) | JC3, puis Idan + Chatty | PR #7 | Équilibrage reporté par Idan |
 | Taverne : design V1 (`docs/design/14-tavern-recruitment.md`) | Chatty + Idan | PR #6 | Fusionné |
-| Taverne : code V1, étape 1 — état de partie, `AdvanceTime`, boucle quotidienne, entretien, négociation (`game-core/`) | JC3 | `claude/tavern-v1` | En relecture |
-| Taverne : code V1, étape 2 — écran Taverne dans le prototype | JC3 | `claude/tavern-v1` (PR #11) | En relecture |
-| Tâche test : casser les règles de Fuite | Groky | Issue #4 | Transmise par Idan |
+| Taverne : code V1, étape 1 — état de partie, `AdvanceTime`, boucle quotidienne, entretien, négociation (`game-core/`) | JC3 | PR #11 | Fusionné |
+| Taverne : code V1, étape 2 — écran Taverne dans le prototype | JC3 | PR #11 | Fusionné |
+| Tâche test : casser les règles de Fuite | Groky | Issue #4 | Terminée, décisions dans l'Issue #8 |
 
 ## Décisions récentes
 

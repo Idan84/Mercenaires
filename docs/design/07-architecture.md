@@ -17,6 +17,10 @@ La sauvegarde conserve les **sources de vérité persistantes** et évite de sto
 - Les PV max, l’initiative, les chances de toucher et autres valeurs calculées sont **dérivées**.
 - Les objets procéduraux importants sont **générés une fois puis stockés** : un mercenaire recruté ne doit pas être régénéré à chaque chargement ; une mission proposée doit rester identique tant qu’elle existe.
 
+### Sauvegarde du prototype
+
+Implémentation actuelle (prototype web) : l'état de partie de `game-core/campaign.js` (jour, compagnie, Taverne) est sérialisé en JSON avec un format (`mercenaires-save`) et une version (`1`) par `serializeCampaign`, puis relu et vérifié par `restoreCampaign`. Le prototype le sauvegarde automatiquement dans le navigateur après chaque action de la compagnie ou de la Taverne, et propose « Continuer » au démarrage. Un combat en cours et le banc de test du générateur ne sont pas sauvegardés. Ordre de grandeur : environ 36 Ko par mercenaire, dont 31 Ko de trace de génération.
+
 ## Vue d’ensemble
 
 ```mermaid

@@ -25,14 +25,14 @@ function renderAvatar(mercenary,{variant="detail"}={}){
   const people=String(mercenary?.people||"");
   const avatarId=String(mercenary?.avatar?.id||"");
   const image=src
-    ? \`<img src="\${esc(src)}" alt="Portrait de \${esc(name)}" loading="\${variant==="card"?"lazy":"eager"}" decoding="async" onerror="this.hidden=true;this.parentElement.classList.add('avatar-frame--missing')">\`
+    ? `<img src="${esc(src)}" alt="Portrait de ${esc(name)}" loading="${variant==="card"?"lazy":"eager"}" decoding="async" onerror="this.hidden=true;this.parentElement.classList.add('avatar-frame--missing')">`
     : "";
 
-  return \`<figure class="avatar-frame avatar-frame--\${esc(variant)} \${src?"":"avatar-frame--missing"}" \${avatarId?\`data-avatar-id="\${esc(avatarId)}"\`:""}>
+  return `<figure class="avatar-frame avatar-frame--${esc(variant)} ${src?"":"avatar-frame--missing"}" ${avatarId?`data-avatar-id="${esc(avatarId)}"`:""}>
     <div class="avatar-fallback" aria-hidden="true">
-      <span>\${esc(avatarInitials(mercenary))}</span>
-      <small>\${esc(people||"Portrait à attribuer")}</small>
+      <span>${esc(avatarInitials(mercenary))}</span>
+      <small>${esc(people||"Portrait à attribuer")}</small>
     </div>
-    \${image}
-  </figure>\`;
+    ${image}
+  </figure>`;
 }

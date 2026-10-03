@@ -31,4 +31,4 @@ Git est la source de vérité. Les JSON ci-dessous sont les référentiels struc
 
 | alignment-generation.json | 1 | distribution, neighborhood, grid, notes |
 
-| biographies.json | 17 | id, short, rumor, motto, tags, gender, weight, statut |
+| biographies.json | 30 | id, short, rumor, motto, tags, gender, weight, statut |

@@ -230,18 +230,34 @@ Le joueur peut :
 
 ### Acceptation garantie
 
-Si la proposition atteint ou dépasse le package courant, elle est acceptée automatiquement.
+L'acceptation automatique est évaluée **composante par composante** :
 
-Le package demandé initialement est donc **toujours recrutable** si le joueur peut le payer et dispose d'une place au Dortoir.
+```
+SalairePropose >= SalaireCourant
+ET
+PrimeProposee >= PrimeCourante
+```
+
+Si les deux conditions sont vraies, le candidat accepte automatiquement.
+
+Un excès sur une composante **ne compense jamais automatiquement** un manque sur l'autre. Le package demandé initialement reste donc toujours recrutable si le joueur peut le payer et dispose d'une place au Dortoir.
 
 ### Valeur relative de l'offre
 
 Pour une proposition inférieure :
 
 ```
+RatioSalaire =
+si SalaireCourant <= 0 : 1
+sinon Min(SalairePropose / SalaireCourant, 1)
+
+RatioPrime =
+si PrimeCourante <= 0 : 1
+sinon Min(PrimeProposee / PrimeCourante, 1)
+
 RatioPackage =
-0.65 × (SalairePropose / SalaireCourant)
-+ 0.35 × (PrimePropose / PrimeCourante)
+0.65 × RatioSalaire
++ 0.35 × RatioPrime
 
 ConcessionDemandee =
 100 × (1 - RatioPackage)
@@ -320,19 +336,27 @@ Clamp(
 )
 
 NouveauSalaireCourant =
-ArrondiSup(
-  SalairePropose
-  + FacteurContre × (SalaireCourant - SalairePropose)
+Max(
+  SalairePropose,
+  ArrondiSup(
+    SalairePropose
+    + FacteurContre × (SalaireCourant - SalairePropose)
+  )
 )
 
 NouvellePrimeCourante =
-ArrondiSup(
-  PrimePropose
-  + FacteurContre × (PrimeCourante - PrimePropose)
+Max(
+  PrimeProposee,
+  ArrondiSup(
+    PrimeProposee
+    + FacteurContre × (PrimeCourante - PrimeProposee)
+  )
 )
 ```
 
 Un personnage difficile à négocier reste donc plus proche de ses exigences précédentes.
+
+**Règle absolue : une contre-proposition ne peut jamais être inférieure à l'offre que le joueur vient de faire sur aucune composante.** Si le joueur a déjà proposé davantage que la demande courante sur le salaire ou la prime, le candidat conserve au minimum ce montant généreux dans sa contre-proposition.
 
 La négociation peut recommencer jusqu'à :
 

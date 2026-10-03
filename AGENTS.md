@@ -1,5 +1,7 @@
 # Instructions agents — Mercenaires
 
+Lire ensuite `docs/TEAM.md` : rôles, zones, chantiers en cours et circuit de travail de l'équipe.
+
 ## Source de vérité
 
 Git est la source de vérité du game design. **Ne pas utiliser Notion.**

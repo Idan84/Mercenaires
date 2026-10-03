@@ -169,10 +169,13 @@
       const grid = alignmentGeneration.grid || [];
       if (!position) return [];
       const result = [];
-      for (const [dr, dc] of [[-1,0],[1,0],[0,-1],[0,1]]) {
-        const row = grid[position.row + dr];
-        const value = row?.[position.col + dc];
-        if (value) result.push(value);
+      for (let dr = -1; dr <= 1; dr++) {
+        for (let dc = -1; dc <= 1; dc++) {
+          if (dr === 0 && dc === 0) continue;
+          const row = grid[position.row + dr];
+          const value = row?.[position.col + dc];
+          if (value) result.push(value);
+        }
       }
       return result;
     }
@@ -186,11 +189,11 @@
 
       const distribution = alignmentGeneration.distribution || {};
       const principalProbability = Number(distribution.principal) || 0.4;
-      const adjacentTotal = Number(distribution.adjacent_total) || 0.2;
-      const othersTotal = Number(distribution.others_total) || 0.4;
-      const adjacent = adjacentAlignments(principal).filter(name => name !== principal);
-      const adjacentSet = new Set(adjacent);
-      const others = all.filter(name => name !== principal && !adjacentSet.has(name));
+      const nearbyTotal = Number(distribution.nearby_total) || 0.45;
+      const distantTotal = Number(distribution.distant_total) || 0.15;
+      const nearby = adjacentAlignments(principal).filter(name => name !== principal);
+      const nearbySet = new Set(nearby);
+      const distant = all.filter(name => name !== principal && !nearbySet.has(name));
 
       const entries = [{
         name: principal,
@@ -198,19 +201,31 @@
         bucket:"principal"
       }];
 
-      for (const name of adjacent) {
+      if (distant.length === 0) {
+        const remaining = 1 - principalProbability;
+        for (const name of nearby) {
+          entries.push({
+            name,
+            probability: nearby.length ? remaining / nearby.length : 0,
+            bucket:"nearby"
+          });
+        }
+        return entries;
+      }
+
+      for (const name of nearby) {
         entries.push({
           name,
-          probability: adjacent.length ? adjacentTotal / adjacent.length : 0,
-          bucket:"adjacent"
+          probability: nearby.length ? nearbyTotal / nearby.length : 0,
+          bucket:"nearby"
         });
       }
 
-      for (const name of others) {
+      for (const name of distant) {
         entries.push({
           name,
-          probability: others.length ? othersTotal / others.length : 0,
-          bucket:"other"
+          probability: distant.length ? distantTotal / distant.length : 0,
+          bucket:"distant"
         });
       }
 

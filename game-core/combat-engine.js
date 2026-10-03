@@ -284,9 +284,11 @@
       if(!weapon) return {ok:false,reason:"Aucune arme active."};
       if(!canAttackAtDistance(attacker,distance,mode)) return {ok:false,reason:"Cible hors portée ou arme incompatible."};
 
-      // Toute attaque d'opportunité bénéficie de Frappe dans le dos (Attaque d'opportunité CAC V1).
+      // Toute attaque d'opportunité bénéficie de Frappe dans le dos (Attaque d'opportunité CAC V1),
+      // de même que toute attaque au CAC contre une cible encerclée (Encerclement CAC V1).
       const opportunity=Boolean(options.opportunity);
-      const backstab=opportunity||Boolean(options.backstab);
+      const encircled=mode==="melee"&&Boolean(options.encircled);
+      const backstab=opportunity||encircled||Boolean(options.backstab);
       if(opportunity&&(mode!=="melee"||Number(options.chargeDistance)>0)) return {ok:false,reason:"Une attaque d'opportunité est un coup de mêlée simple."};
 
       let chargePower=0;
@@ -299,7 +301,7 @@
         chargePower=Number(options.chargeDistance)*bonus*(Number(quality(item).multiplicateur_qualite)||1);
       }
 
-      const tags={chargePower,opportunity,backstab};
+      const tags={chargePower,opportunity,encircled,backstab};
       const pHit=hitProbability(attacker,defender,mode,distance,{opportunity,backstab});
       const hitRoll=d100(),hit=hitRoll<=pHit;
       if(!hit){
@@ -339,6 +341,13 @@
     // Tirer sur une autre cible que l'adversaire qui menace déclenche sa réaction.
     function rangedOpportunityReactors(opponents,shooter,target){
       return opponents.filter(o=>o!==target&&threatens(o,shooter));
+    }
+
+    // Encerclement CAC V1 : au moins deux adversaires au contact, armés pour le CAC,
+    // sur des cases de contact non adjacentes entre elles.
+    function isEncircled(target,opponents){
+      const contact=opponents.filter(o=>axialDistance(o,target)===1&&threatens(o,target));
+      return contact.some((a,i)=>contact.slice(i+1).some(b=>axialDistance(a,b)>1));
     }
 
     function canSwitchWeaponSet(unit){
@@ -402,6 +411,7 @@
       switchWeaponSet,
       chargeData,
       threatens,
+      isEncircled,
       opportunityReactors,
       rangedOpportunityReactors
     };

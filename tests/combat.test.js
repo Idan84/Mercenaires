@@ -159,6 +159,37 @@ assert.equal(opp.opportunity,true);
 assert.equal(opp.backstab,true);
 assert.equal(combat.resolveAttack(striker,victim,{mode:"melee",opportunity:true,chargeDistance:3}).ok,false);
 
+// Encerclement : deux adversaires au contact, sur des cases de contact non adjacentes entre elles.
+function meleeAt(q,r){ const u=unit(a,q,r); setFamily(u,"melee"); return u; }
+const center={q:3,r:3};
+assert.equal(combat.isEncircled(center,[meleeAt(4,3)]),false);
+assert.equal(combat.isEncircled(center,[meleeAt(4,3),meleeAt(4,2)]),false,"deux cases de contact adjacentes");
+assert.equal(combat.isEncircled(center,[meleeAt(4,3),meleeAt(3,2)]),true,"une case d'écart");
+assert.equal(combat.isEncircled(center,[meleeAt(4,3),meleeAt(2,3)]),true,"cases opposées");
+assert.equal(combat.isEncircled(center,[meleeAt(4,3),meleeAt(4,2),meleeAt(2,4)]),true,"trois assaillants");
+assert.equal(combat.isEncircled(center,[meleeAt(4,3),{...meleeAt(2,3),alive:false}]),false,"assaillant hors combat");
+const archer=unit(a,2,3);
+if(setFamily(archer,"ranged")){
+  assert.equal(combat.isEncircled(center,[meleeAt(4,3),archer]),false,"arme de tir active : pas au CAC");
+}
+const reach=unit(withMainWeapon(a,"Hallebarde"),5,3);
+assert.equal(combat.isEncircled(center,[meleeAt(2,3),reach]),false,"arme d'hast à 2 hex : pas sur une case de contact");
+
+// Une cible encerclée subit une Frappe dans le dos au CAC, pas au tir.
+victim.hp=b.pvMax;victim.alive=true;
+const encircledHit=combat.resolveAttack(striker,victim,{mode:"melee",encircled:true});
+assert.equal(encircledHit.encircled,true);
+assert.equal(encircledHit.backstab,true);
+const plainHit=combat.resolveAttack(striker,victim,{mode:"melee"});
+assert.equal(plainHit.backstab,false);
+const gunner=unit(a,0,0),distantVictim=unit(b,3,0);
+if(setFamily(gunner,"ranged")){
+  const rangedRange=combat.weaponRange(gunner);
+  distantVictim.q=Math.max(rangedRange.min,Math.min(rangedRange.max,3));
+  const shot=combat.resolveAttack(gunner,distantVictim,{mode:"ranged",encircled:true});
+  assert.equal(shot.backstab,false);
+}
+
 // Charge : le chemin suit la ligne droite jusqu'à la case d'arrivée.
 const charger=unit(a,0,0),chargeTarget=unit(b,4,0);
 const charge=combat.chargeData(charger,chargeTarget);

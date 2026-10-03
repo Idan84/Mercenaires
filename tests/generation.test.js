@@ -113,6 +113,14 @@ for (let i = 0; i < 1000; i++) {
   assert.ok(Number.isFinite(c.pvMax) && c.pvMax >= 1);
   assert.ok(Number.isFinite(c.reputation) && c.reputation > 0);
   assert.ok(Number.isFinite(c.salary) && c.salary > 0);
+  assert.equal(Number.isInteger(c.salary), true);
+  const expectedSalary = Math.round(
+    10
+    * Math.max(1, c.reputation / 30)
+    * (1 + (c.salaryPretension - 35) / 100)
+    * (1 + 0.25 * Math.pow((c.stats.Intelligence - 100) / 100, 2))
+  );
+  assert.equal(c.salary, expectedSalary);
   assert.equal(c.mana, c.stats["Réserve de mana"]);
   assert.equal(typeof c.skills.physiology["Vision nocturne"], "boolean");
   assert.equal(typeof c.skills.physiology.Vol, "boolean");

@@ -146,7 +146,7 @@ $$
 SalaireBase = max\left(1, \frac{ReputationPerso}{30}\right)
 $$
 
-`1–10 PO/jour` correspond à la plage normale d’un mercenaire ordinaire, **pas à un plafond**. Un vétéran célèbre ou une légende peut dépasser largement `10 PO/jour`.
+`10–100 PO/jour` correspond désormais à la plage normale d’un mercenaire ordinaire, **pas à un plafond**. L’échelle monétaire des salaires est multipliée par `10` afin d’offrir davantage de granularité en pièces d’or. Un vétéran célèbre ou une légende peut dépasser largement `100 PO/jour`.
 
 ### Déformation — Prétentions salariales
 
@@ -173,11 +173,17 @@ $$
 ### Formule finale V1
 
 $$
-SalaireDemande = max\left(1, \frac{ReputationPerso}{30}\right) \times \left(1 + \frac{PretentionsSalariales - 35}{100}\right) \times \left[1 + 0,25 \times \left(\frac{Intelligence - 100}{100}\right)^2\right]
+SalaireDemande = arrondi\left(
+10 \times
+max\left(1, \frac{ReputationPerso}{30}\right)
+\times \left(1 + \frac{PretentionsSalariales - 35}{100}\right)
+\times \left[1 + 0,25 \times \left(\frac{Intelligence - 100}{100}\right)^2\right]
+\right)
 $$
 
-Le résultat est exprimé en **pièces d’or par jour** et n’a pas de plafond.
+Le multiplicateur `×10` est une **échelle monétaire** : il ne change pas la hiérarchie relative des mercenaires, mais permet de manipuler davantage de pièces d’or et rend les écarts de salaire plus granulaires.
 
+Le résultat est exprimé en **pièces d’or entières par jour**, arrondi à l’entier le plus proche, et n’a pas de plafond.
 ## 5 — Prétentions salariales
 
 `Prétentions salariales` reste un **attribut caché**, mais appartient conceptuellement au domaine **Social caché**.

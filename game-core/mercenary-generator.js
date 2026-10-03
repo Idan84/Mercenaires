@@ -782,7 +782,7 @@
       const base = Math.max(1, character.reputation / 30);
       const pretensions = 1 + (character.salaryPretension - 35) / 100;
       const intelligence = 1 + 0.25 * Math.pow((character.stats.Intelligence - 100) / 100, 2);
-      return base * pretensions * intelligence;
+      return Math.round(10 * base * pretensions * intelligence);
     }
 
     function choosePeople(captain) {
@@ -932,7 +932,10 @@
         mana: {formula: "Réserve de mana", value: character.mana},
         salaryPretension: {formula: "10D6", value: character.salaryPretension},
         reputation: {value: character.reputation},
-        salary: {value: character.salary},
+        salary: {
+          formula: "round(10 × max(1, Réputation / 30) × FacteurPrétentions × FacteurIntelligence)",
+          value: character.salary
+        },
         weaponPreferences: character.weaponPreferences
       };
 

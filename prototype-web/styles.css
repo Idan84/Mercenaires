@@ -269,6 +269,7 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
 .mission-token.enemy{background:#8b3529;color:white}
 .mission-token.active{box-shadow:0 0 0 4px #f0bf4e,0 5px 18px rgba(0,0,0,.35)}
 .mission-token.down{opacity:.35;filter:grayscale(1)}
+.mission-token.encircled{outline:3px dashed #d9822b;outline-offset:3px}
 .mission-token strong{max-width:42px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.62rem}
 .mission-token small{font-size:.53rem}
 .mission-token em{position:absolute;top:52px;width:100px;left:50%;transform:translateX(-50%);font-style:normal;font-size:.52rem;color:#302b27;background:rgba(255,255,255,.82);border-radius:4px;padding:1px 3px}

@@ -13,6 +13,7 @@ function missionUnits(){ return game.mission?[...game.mission.players,...game.mi
 function livingMissionUnits(team){ return (team==="player"?game.mission.players:game.mission.enemies).filter(u=>u.alive); }
 function missionActiveUnit(){ return game.mission?.activeUnit||null; }
 function missionOpponents(unit){ return livingMissionUnits(unit.team==="player"?"enemy":"player"); }
+function missionEncircled(unit){ return game.mission.engine.isEncircled(unit,missionOpponents(unit)); }
 
 function occupiedMissionKeys(except=null){
   return new Set(missionUnits().filter(u=>u.alive&&u!==except).map(u=>missionKey(u.q,u.r)));
@@ -183,7 +184,7 @@ function logMissionAttack(a,d,result,kind="attack"){
   if(!result.ok){ missionLog(result.reason||"Attaque impossible.","bad"); return; }
   const verb={charge:" charge ",opportunity:" profite de l’ouverture et frappe "}[kind]||" attaque ";
   const prefix=a.character.name+verb+d.character.name+" avec "+result.weapon
-    +(result.opportunity?" (attaque d’opportunité, dans le dos)":result.backstab?" (dans le dos)":"");
+    +(result.opportunity?" (attaque d’opportunité, dans le dos)":result.encircled?" (cible encerclée, dans le dos)":result.backstab?" (dans le dos)":"");
 
   if(result.chargeFall){
     missionLog(a.character.name+" chute pendant sa charge et perd son attaque !","bad");
@@ -265,7 +266,7 @@ function performMissionAttack(attacker,target,mode,distance){
       if(!resolveOpportunityAttacks(reactors,attacker)) return null;
     }
   }
-  const result=m.engine.resolveAttack(attacker,target,{mode,distance});
+  const result=m.engine.resolveAttack(attacker,target,{mode,distance,encircled:missionEncircled(target)});
   logMissionAttack(attacker,target,result);
   checkMissionEnd();
   return result;
@@ -314,7 +315,7 @@ function handleMissionHexClick(q,r){
     u.attackAvailable=false;u.movementRemaining=0;m.mode=null;
     moveMissionUnitAlongPath(u,charge.path);
     if(missionActiveUnitFell()) return;
-    const result=m.engine.resolveAttack(u,clicked,{mode:"melee",distance:1,chargeDistance:charge.travel});
+    const result=m.engine.resolveAttack(u,clicked,{mode:"melee",distance:1,chargeDistance:charge.travel,encircled:missionEncircled(clicked)});
     if(result.chargeFall) u.prone=true;
     logMissionAttack(u,clicked,result,"charge");
     checkMissionEnd();
@@ -394,7 +395,7 @@ function enemyTryCharge(unit,target){
 
   moveMissionUnitAlongPath(unit,charge.path);
   if(!unit.alive) return true;
-  const result=e.resolveAttack(unit,target,{mode:"melee",distance:1,chargeDistance:charge.travel});
+  const result=e.resolveAttack(unit,target,{mode:"melee",distance:1,chargeDistance:charge.travel,encircled:missionEncircled(target)});
   if(result.chargeFall) unit.prone=true;
   logMissionAttack(unit,target,result,"charge");
   checkMissionEnd();
@@ -531,6 +532,8 @@ function renderMission(){
     const pct=Math.max(0,Math.round(unit.hp/unit.character.pvMax*100));
     const classes=["mission-token",unit.team,unit.alive?"alive":"down"];
     if(u===unit) classes.push("active");
+    const encircled=unit.alive&&missionEncircled(unit);
+    if(encircled) classes.push("encircled");
     const weapon=e.activeWeaponItem(unit);
     return `<div class="${classes.join(" ")}" style="left:${p.x-24}px;top:${p.y-24}px">
       <strong>${esc(unit.character.name.split(" ")[0])}</strong>

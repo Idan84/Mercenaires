@@ -27,4 +27,4 @@ Git est la source de vérité. Les JSON ci-dessous sont les référentiels struc
 | game-formulas.json | 43 | nom, code, domaine, expression, maximum, minimum, notes, statut, type_attaque, version, etape |
 | formula-terms.json | 13 | nom, caracteristique, code_variable, coefficient, cote, description, formule, ordre, source |
 
-| binary-aptitude-grants.json | 6 | aptitude, domaine, peoples, ancestries, cultures, origins |
+| binary-aptitude-grants.json | 6 | aptitude, domaine, mode, automatic, bonuses_pp, armor, reason |

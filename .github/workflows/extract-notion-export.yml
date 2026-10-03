@@ -1,0 +1,46 @@
+name: Extract Notion export
+
+on:
+  push:
+    branches:
+      - migration/notion-to-git
+    paths:
+      - "docs/notion/*.zip"
+      - ".github/workflows/extract-notion-export.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout migration branch
+        uses: actions/checkout@v4
+
+      - name: Extract Notion archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          ZIP="$(find docs/notion -maxdepth 1 -type f -name '*_ExportBlock-*.zip' | head -n 1)"
+          test -n "$ZIP"
+          rm -rf archive/notion-export
+          mkdir -p archive/notion-export
+          unzip -q "$ZIP" -d archive/notion-export
+          find archive/notion-export -type f -printf '%P\n' | LC_ALL=C sort > archive/notion-export/MANIFEST.txt
+          printf '\nFiles: ' >> archive/notion-export/MANIFEST.txt
+          find archive/notion-export -type f ! -name MANIFEST.txt | wc -l >> archive/notion-export/MANIFEST.txt
+
+      - name: Commit extracted archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add archive/notion-export
+          if git diff --cached --quiet; then
+            echo "No extracted changes."
+            exit 0
+          fi
+          git commit -m "archive: extract complete Notion export"
+          git push

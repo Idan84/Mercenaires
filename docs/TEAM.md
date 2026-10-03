@@ -69,7 +69,8 @@ Aucun agent ne travaille spontanément : il faut qu'une session soit lancée. Gi
 | Chantier | Responsable | Branche / PR | État |
 |---|---|---|---|
 | Combat lot 1 complet : Attaques d'opportunité, Frappe dans le dos, Encerclement, Courage, Fuite (+ Force de charge au Blesser) | JC3 | `claude/friendly-bardeen-edzi87` (PR #7) | En relecture |
-| Corrections Mission Test : second Mouvement, carte coupée à droite | JC3 | — | À faire |
+| Corrections Mission Test : second Mouvement, carte 13×9 rectangulaire et entièrement visible | JC3 | `claude/friendly-bardeen-edzi87` (PR #7) | En relecture |
+| Registre d'équilibrage (`docs/design/92-balance-questions.md`) | JC3, puis Idan + Chatty | PR #7 | Équilibrage reporté par Idan |
 | Taverne : design du cycle de recrutement | Chatty + Idan | — | À démarrer |
 | Tâche test : casser les règles de Fuite | Groky | Issue #4 | Transmise par Idan |
 

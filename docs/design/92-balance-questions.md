@@ -10,7 +10,7 @@ Combats automatiques 3 contre 3 dans la Mission Test, exécutés dans un navigat
 
 - l'équipe du joueur est jouée par un bot simple : il attaque s'il le peut, sinon il avance vers l'ennemi le plus proche ;
 - l'équipe ennemie utilise l'IA V1 de la Mission Test ;
-- carte 9×7, équipes qui apparaissent sur les bords.
+- carte 9×7 avec des équipes sur les bords, puis 13×9 avec des équipes à deux colonnes du bord (à partir de la mesure E2 bis).
 
 Les bots ne cherchent ni à se placer, ni à encercler, ni à éviter les attaques d'opportunité. Les chiffres donnent des **ordres de grandeur**, pas un verdict.
 
@@ -19,7 +19,7 @@ Les bots ne cherchent ni à se placer, ni à encercler, ni à éviter les attaqu
 | # | Sujet | Observation | Statut |
 |---|---|---|---|
 | E1 | Courage | 41 % des tests de Courage échouent | Ouvert |
-| E2 | Fuite et sortie de carte | Les fuyards sortent de la carte dans 71 % des combats | En cours (carte agrandie) |
+| E2 | Fuite et sortie de carte | Les fuyards sortent de la carte dans 71 % des combats (83 % sur la carte 13×9) | Ouvert |
 | E3 | Encerclement | Un encerclement survient dans 81 % des combats | Ouvert |
 | E4 | Avantage de l'équipe qui commence | Le joueur gagne environ 75 % des combats | À mesurer |
 | E5 | Létalité de la chaîne de fuite | Sous-nombre → blessure → Fuite → attaques d'opportunité dans le dos | À mesurer |
@@ -46,7 +46,11 @@ Avec des valeurs générées typiques (Courage autour de 45, Volonté et Intimid
 
 La carte 9×7 et des points d'apparition collés au bord rendent la sortie presque toujours atteignable.
 
-**En cours** : carte agrandie à 13×9, équipes à deux colonnes du bord. Mesure à refaire ensuite.
+**Mesure E2 bis (2026-10-03, carte 13×9, équipes à deux colonnes du bord, 200 combats)** : 347 sorties de carte dans 165 combats sur 200. Agrandir la carte **ne suffit pas**.
+
+Cause probable : un fuyard dispose de `2 × MouvementBase` (souvent 6 à 10 hexagones), alors que sur 9 lignes aucune case n'est à plus de 4 lignes du bord haut ou bas. La sortie est donc presque toujours atteignable en un tour, et la règle la rend prioritaire.
+
+**Pistes à discuter (aucune n'est décidée)** : sorties limitées à certains bords (par exemple le bord de déploiement de l'équipe) ; cartes plus hautes ; un coût de sortie ; un autre statut pour un fuyard sorti (aujourd'hui hors combat dans la Mission Test).
 
 ### E3 — Encerclement fréquent
 

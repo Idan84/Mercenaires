@@ -161,11 +161,11 @@ Périmètre actif :
 
 - sélection de **3 mercenaires** ;
 - génération automatique de **3 ennemis** ;
-- petite carte **hexagonale 2D vue du dessus** ;
+- carte **hexagonale 2D vue du dessus**, rectangulaire, de **13×9** cases ; les équipes apparaissent à deux colonnes de leur bord ;
 - équipe du joueur en premier, puis équipe ennemie ;
 - ordre interne par la formule d'Initiative validée ;
 - activation avec Mouvement + Action rapide + Attaque ;
-- actions disponibles : **Se déplacer, Attaquer, Charger, Changer de set d'armes, Attaquer à distance** ;
+- actions disponibles : **Se déplacer, Attaquer, Charger, Changer de set d'armes, Attaquer à distance, Second mouvement** (l'Attaque est sacrifiée pour une seconde action de Mouvement, [Activation hexagonale V1](/design/#doc=formulas/activation-hexagonale-v1.md)) ;
 - IA V1 : attaque si possible, sinon charge si valide, sinon avance vers la cible la plus proche puis attaque si elle entre en portée ;
 - [Attaques d'opportunité](/design/#doc=formulas/attaque-d-opportunite-cac-v1.md) avec [Frappe dans le dos](/design/#doc=formulas/frappe-dans-le-dos-v1.md) : en quittant une zone de menace (déplacement ou charge, résolu hexagone par hexagone) et en tirant sur une autre cible que l'adversaire qui menace ; en mode déplacement, la carte signale les destinations qui en provoquent ;
 - [Encerclement](/design/#doc=formulas/encerclement-cac-v1.md) : toute attaque au CAC contre une cible encerclée est une Frappe dans le dos ; la carte entoure de pointillés les personnages encerclés ;

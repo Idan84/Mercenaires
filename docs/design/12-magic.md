@@ -288,3 +288,7 @@ Cette séparation évite de dupliquer toute la définition du sort dans chaque m
 ### Identifiants stables et sauvegarde
 
 Le nom affiché d'un sort n'est jamais utilisé comme clé persistante. Le catalogue porte un `id` stable (ex. `fire.fireball`) et l'état du mercenaire référence uniquement cet identifiant via `spellId`. On peut ainsi renommer / traduire « Boule de feu » sans casser les sauvegardes.
+
+### Types de dégâts du catalogue
+
+Quand un sort possède `type_degats`, la valeur référence le `code` stable de `data/reference/damage-types.json` (`burning`, `freezing`, `lightning`, `blunt`, etc.), jamais le libellé affiché. Cela évite de casser les données lors d'un renommage ou d'une traduction.

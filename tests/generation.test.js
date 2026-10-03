@@ -61,26 +61,31 @@ function distributionMap(people) {
 
 const orcAlignment = distributionMap("Orc");
 assert.equal(orcAlignment["Chaotique mauvais"].probability, 0.4);
-assert.equal(orcAlignment["Chaotique neutre"].probability, 0.1);
-assert.equal(orcAlignment["Neutre mauvais"].probability, 0.1);
+for (const name of ["Chaotique neutre","Neutre","Neutre mauvais"]) {
+  assert.ok(Math.abs(orcAlignment[name].probability - 0.15) < 1e-12);
+}
+for (const name of ["Loyal bon","Neutre bon","Chaotique bon","Loyal neutre","Loyal mauvais"]) {
+  assert.ok(Math.abs(orcAlignment[name].probability - 0.03) < 1e-12);
+}
 assert.ok(Math.abs(Object.values(orcAlignment).reduce((sum,x)=>sum+x.probability,0)-1) < 1e-9);
 
 const humanAlignment = distributionMap("Humain");
 assert.equal(humanAlignment.Neutre.probability, 0.4);
-for (const name of ["Loyal neutre","Chaotique neutre","Neutre bon","Neutre mauvais"]) {
-  assert.equal(humanAlignment[name].probability, 0.05);
-}
-for (const name of ["Loyal bon","Chaotique bon","Loyal mauvais","Chaotique mauvais"]) {
-  assert.equal(humanAlignment[name].probability, 0.1);
+for (const name of [
+  "Loyal bon","Neutre bon","Chaotique bon",
+  "Loyal neutre","Chaotique neutre",
+  "Loyal mauvais","Neutre mauvais","Chaotique mauvais"
+]) {
+  assert.ok(Math.abs(humanAlignment[name].probability - 0.075) < 1e-12);
 }
 
 const reptilianAlignment = distributionMap("Reptilien");
 assert.equal(reptilianAlignment["Loyal neutre"].probability, 0.4);
-for (const name of ["Loyal bon","Loyal mauvais","Neutre"]) {
-  assert.ok(Math.abs(reptilianAlignment[name].probability - (0.2/3)) < 1e-12);
+for (const name of ["Loyal bon","Neutre bon","Neutre","Loyal mauvais","Neutre mauvais"]) {
+  assert.ok(Math.abs(reptilianAlignment[name].probability - 0.09) < 1e-12);
 }
-for (const name of ["Neutre bon","Chaotique bon","Chaotique neutre","Neutre mauvais","Chaotique mauvais"]) {
-  assert.ok(Math.abs(reptilianAlignment[name].probability - 0.08) < 1e-12);
+for (const name of ["Chaotique bon","Chaotique neutre","Chaotique mauvais"]) {
+  assert.ok(Math.abs(reptilianAlignment[name].probability - 0.05) < 1e-12);
 }
 
 const cosmetics = new Set(audit.cosmetics.map(x => x.target));

@@ -424,6 +424,25 @@
         "t2",
         "t3"
       ]
+    },
+    {
+      "name": "spells",
+      "file": "spells.json",
+      "rows": 66,
+      "columns": [
+        "nom",
+        "code",
+        "ecoles",
+        "palier",
+        "cible",
+        "forme",
+        "portee",
+        "duree",
+        "type_degats",
+        "effet",
+        "ton",
+        "notes"
+      ]
     }
   ]
 }

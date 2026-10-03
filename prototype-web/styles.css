@@ -145,3 +145,6 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
 .preference-card span { display: block; font-size: .72rem; color: #786f65; margin-top: 7px; line-height: 1.35; }
 .preference-card b { position: absolute; right: 12px; top: 13px; font-size: 1.25rem; font-variant-numeric: tabular-nums; }
 @media (max-width: 700px) { .preference-grid { grid-template-columns: 1fr; } }
+
+.binary-item { background:#eef5ec; border-color:#c9dfc3; }
+.binary-item span { color:#526b4d; }

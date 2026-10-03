@@ -108,6 +108,7 @@ function openMissionSelection(){
   $("mission-select-list").innerHTML=eligible.map(c=>`
     <label class="mission-pick${c.recovery?" unavailable":""}">
       <input type="checkbox" value="${c.id}" ${preselected.has(c)?"checked":""} ${c.recovery?"disabled":""}>
+      ${renderAvatar(c,{variant:"compact",kind:"portrait"})}
       <span><strong>${esc(c.name)}</strong><small>${esc(c.people)} · ${esc(c.equipment?.profile?.type||"")}${c.recovery?" · "+esc(recoveryLabel(c)):""}</small></span>
       <em>${c.pvMax} PV</em>
     </label>
@@ -791,9 +792,12 @@ function targetableMissionCells(){
 function renderMissionRoster(units){
   return units.map(u=>`
     <div class="mission-roster-row ${u.alive?"":"down"}">
-      <strong>${esc(u.character.name)}</strong>
-      <span>${u.offMap?"A quitté le combat":Math.max(0,u.hp)+"/"+u.character.pvMax+" PV"+(u.hp<0?" ("+u.hp+")":"")+(u.alive&&u.fleeing?" · En fuite":"")}</span>
-      <small>Init ${Math.round(game.mission.engine.initiative(u))} · Mvt ${game.mission.engine.movementBase(u)}</small>
+      ${renderAvatar(u.character,{variant:"compact",kind:"portrait"})}
+      <div class="mission-roster-copy">
+        <strong>${esc(u.character.name)}</strong>
+        <span>${u.offMap?"A quitté le combat":Math.max(0,u.hp)+"/"+u.character.pvMax+" PV"+(u.hp<0?" ("+u.hp+")":"")+(u.alive&&u.fleeing?" · En fuite":"")}</span>
+        <small>Init ${Math.round(game.mission.engine.initiative(u))} · Mvt ${game.mission.engine.movementBase(u)}</small>
+      </div>
     </div>
   `).join("");
 }
@@ -834,11 +838,11 @@ function renderMission(){
     if(encircled) classes.push("encircled");
     if(unit.alive&&unit.fleeing) classes.push("fleeing");
     const weapon=e.activeWeaponItem(unit);
-    return `<div class="${classes.join(" ")}" style="left:${p.x-24}px;top:${p.y-24}px">
-      <strong>${esc(unit.character.name.split(" ")[0])}</strong>
-      <small>${Math.max(0,unit.hp)}/${unit.character.pvMax}</small>
+    return `<div class="${classes.join(" ")}" style="left:${p.x-24}px;top:${p.y-24}px" title="${esc(unit.character.name)} — ${Math.max(0,unit.hp)}/${unit.character.pvMax} PV — ${esc(weapon?.name||"Sans arme")}">
+      ${renderAvatar(unit.character,{variant:"battle",kind:"portrait"})}
       <span class="token-hp"><i style="width:${pct}%"></i></span>
-      <em>${unit.alive&&unit.fleeing?"En fuite · ":""}${esc(weapon?.name||"Sans arme")}</em>
+      <strong>${esc(unit.character.name.split(" ")[0])}</strong>
+      <em>${unit.alive&&unit.fleeing?"En fuite":Math.max(0,unit.hp)+"/"+unit.character.pvMax+" PV"}</em>
     </div>`;
   }).join("");
 

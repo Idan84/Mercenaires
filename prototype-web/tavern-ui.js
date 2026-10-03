@@ -53,6 +53,7 @@ function renderTavernCard(candidate){
   const shown=tavernRules().visibleProfile(candidate.mercenary);
   const agreed=candidate.negotiation?.agreed;
   return `<article class="tavern-card">
+    ${renderAvatar(candidate.mercenary,{variant:"card"})}
     <header>
       <strong>${esc(shown.name)}</strong>
       <small>${esc(shown.people)} · ${esc(shown.culture)}</small>
@@ -155,12 +156,17 @@ function renderInterview(){
 
   $("tavern-dialog-name").textContent=shown.name;
   $("tavern-dialog-content").innerHTML=`
+    <section class="tavern-interview-overview">
+      ${renderAvatar(candidate.mercenary,{variant:"interview"})}
+      <div>
     <div class="identity-grid">
       <div class="metric"><small>Peuple</small><strong>${esc(shown.people)}</strong></div>
       <div class="metric"><small>Culture</small><strong>${esc(shown.culture)}</strong></div>
       <div class="metric"><small>Profil</small><strong>${esc(profileText(shown))}</strong></div>
       <div class="metric"><small>Réputation</small><strong>${fmt(shown.reputation)}</strong></div>
     </div>
+      </div>
+    </section>
 
     <section class="tavern-section">
       <h3>Questions (${candidate.interview.questionsLeft} restantes)</h3>

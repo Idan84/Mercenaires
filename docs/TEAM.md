@@ -68,9 +68,9 @@ Aucun agent ne travaille spontanément : il faut qu'une session soit lancée. Gi
 
 | Chantier | Responsable | Branche / PR | État |
 |---|---|---|---|
-| Tableau de bord d'équipe (ce fichier) | JC3 | `claude/friendly-bardeen-edzi87` | En relecture |
-| Combat lot 1 : Attaque d'opportunité → Frappe dans le dos → Encerclement → Courage → Fuite | JC3 | — | À démarrer |
-| Corrections Mission Test : Force de charge au Blesser, second Mouvement, carte coupée à droite | JC3 | — | À faire |
+| Combat lot 1, étape 1 : Attaques d'opportunité + Frappe dans le dos + Force de charge au Blesser | JC3 | `claude/friendly-bardeen-edzi87` | En relecture |
+| Combat lot 1, suite : Encerclement → Courage → Fuite | JC3 | — | À faire |
+| Corrections Mission Test : second Mouvement, carte coupée à droite | JC3 | — | À faire |
 | Taverne : design du cycle de recrutement | Chatty + Idan | — | À démarrer |
 | Tâche test : casser les règles de Fuite | Groky | Issue #4 | Transmise par Idan |
 
@@ -84,6 +84,11 @@ Aucun agent ne travaille spontanément : il faut qu'une session soit lancée. Gi
 ## En attente de décision
 
 - **Sélection du type de dégâts, cas « moyen »** (Idan + Chatty) : la formule dit `AVERAGE(matchups)`, le moteur choisit le type le plus proche de cette moyenne. Faut-il une moyenne numérique, ou le type le plus proche ?
+- **Attaques d'opportunité — questions ouvertes** (Idan + Chatty). Choix provisoires dans le code, entre parenthèses :
+  - Un même adversaire peut-il réagir plusieurs fois dans le même tour ? (oui, sans limite)
+  - Un personnage Au Sol, ou En Fuite, peut-il faire une attaque d'opportunité ? (oui)
+  - Si plusieurs adversaires réagissent en même temps, dans quel ordre ? (ordre d'initiative de leur équipe)
+  - Une charge peut-elle traverser une case occupée ? (non)
 - **Passage du temps** (Idan) : JC3 propose un `AdvanceTime(days)` unique dans `game-core/`, auquel la Taverne, les soins, les salaires et les retours de mission viendront se brancher.
 
 ## Dépendances

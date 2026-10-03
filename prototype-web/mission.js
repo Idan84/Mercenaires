@@ -95,19 +95,27 @@ function resetMissionActivation(unit){
   unit.secondMove=false;
 }
 
+// Un blessé ou un fatigué de la compagnie ne peut pas partir en mission (10-mission-time §4 à §6).
+function recoveryLabel(c){
+  if(!c.recovery) return "";
+  return (c.recovery.kind==="wounded"?"Blessé":"Fatigué")+" · "+c.recovery.daysLeft+" j";
+}
+
 function openMissionSelection(){
   const eligible=allCharacters();
-  $("mission-select-list").innerHTML=eligible.map((c,i)=>`
-    <label class="mission-pick">
-      <input type="checkbox" value="${c.id}" ${i<3?"checked":""}>
+  const available=eligible.filter(c=>!c.recovery);
+  const preselected=new Set(available.slice(0,3));
+  $("mission-select-list").innerHTML=eligible.map(c=>`
+    <label class="mission-pick${c.recovery?" unavailable":""}">
+      <input type="checkbox" value="${c.id}" ${preselected.has(c)?"checked":""} ${c.recovery?"disabled":""}>
       ${renderAvatar(c,{variant:"compact",kind:"portrait"})}
-      <span><strong>${esc(c.name)}</strong><small>${esc(c.people)} · ${esc(c.equipment?.profile?.type||"")}</small></span>
+      <span><strong>${esc(c.name)}</strong><small>${esc(c.people)} · ${esc(c.equipment?.profile?.type||"")}${c.recovery?" · "+esc(recoveryLabel(c)):""}</small></span>
       <em>${c.pvMax} PV</em>
     </label>
   `).join("");
 
-  $("mission-select-error").textContent=eligible.length<3
-    ?"Il faut au moins 3 personnages disponibles. Génère quelques candidats de test."
+  $("mission-select-error").textContent=available.length<3
+    ?"Il faut au moins 3 personnages disponibles. Passe des jours pour soigner les blessés, ou génère quelques candidats de test."
     :"";
   updateMissionSelectionCount();
   $("mission-select-dialog").showModal();
@@ -201,7 +209,8 @@ function checkMissionEnd(){
 }
 
 // Fin de mission V1 (10-mission-time-and-unavailability.md §7) : seule votre équipe passe la chaîne
-// mort → blessure → fatigue. Mission Test : le bilan est affiché, il n'est pas encore appliqué à la compagnie.
+// mort → blessure → fatigue. Le bilan est appliqué à la compagnie (morts définitives, indisponibilités,
+// primes de mission, Game Over si le capitaine meurt), puis la partie est sauvegardée ou effacée.
 function resolveMissionAftermath(){
   const m=game.mission;
   const captainId=game.campaign?game.campaign.company.captainId:game.captain?.id;
@@ -213,7 +222,15 @@ function resolveMissionAftermath(){
   m.aftermath=m.endRules.resolveMissionEnd(participants);
   missionLog("Fin de mission : bilan de votre équipe.","turn");
   for(const r of m.aftermath.results) missionLog(r.name+" — "+missionAftermathText(r),r.dead?"death":r.wounded?"bad":"info");
-  if(m.aftermath.captainDead) missionLog("Le capitaine est mort : dans une campagne, c'est la fin de la partie.","death");
+  if(!game.campaign) return;
+  const report=m.companyReport=campaignRules().applyMissionAftermath(game.campaign,m.aftermath);
+  if(report.bonusPaid) missionLog("Primes de mission versées : "+report.bonusPaid+" PO ("+report.bonuses.map(b=>b.mercenary.name+" "+b.bonus).join(", ")+").","gear");
+  if(report.gameOver){
+    missionLog("Le capitaine est mort : la partie est terminée.","death");
+    deleteSavedGame();
+  }else{
+    saveGame();
+  }
 }
 
 function missionAftermathDetail(r){
@@ -242,9 +259,15 @@ function renderMissionAftermath(m){
       <span>${label[r.outcome]}${r.dead?"":" · "+(r.wounded?r.woundDays:r.fatigueDays)+" j"}</span>
       <small>${esc(missionAftermathDetail(r))}</small>
     </li>`).join("");
+  const report=m.companyReport;
+  const note=!report
+    ?"Ces personnages ne font pas partie d’une compagnie : bilan non appliqué."
+    :report.gameOver
+      ?""
+      :"Bilan appliqué à la compagnie. Primes de mission versées : "+report.bonusPaid+" PO.";
   return `<ul class="mission-aftermath">${rows}</ul>
-    ${m.aftermath.captainDead?`<p class="aftermath-gameover">Le capitaine est mort : dans une campagne, c'est la fin de la partie.</p>`:""}
-    <p class="aftermath-note">Mission Test : ce bilan n'est pas encore appliqué à la compagnie.</p>`;
+    ${report?.gameOver?`<p class="aftermath-gameover">Le capitaine est mort : la partie est terminée et la sauvegarde est effacée.</p>`:""}
+    ${note?`<p class="aftermath-note">${esc(note)}</p>`:""}`;
 }
 
 function logMissionAttack(a,d,result,kind="attack"){
@@ -845,12 +868,21 @@ function renderMission(){
   $("mission-console").innerHTML=m.log.slice().reverse().map(x=>`<div class="combat-log ${x.kind}">${esc(x.message)}</div>`).join("");
   $("mission-result").classList.toggle("hidden",!m.over);
   $("mission-aftermath").innerHTML=m.over?renderMissionAftermath(m):"";
+  $("mission-result-back-btn").textContent=m.companyReport?.gameOver?"Fin de la partie":"Retour à la compagnie";
+  $("mission-leave-btn").disabled=!m.over;
+  $("mission-leave-btn").title=m.over?"":"Disponible une fois le combat terminé";
 }
 
+// Les morts étant définitives, on ne quitte la Mission Test qu'une fois le combat résolu
+// (review Chatty, PR #20). Une vraie retraite aura plus tard sa propre résolution.
 function leaveMission(){
+  if(game.mission&&!game.mission.over) return;
+  const gameOver=game.mission?.companyReport?.gameOver;
   game.mission=null;
   $("mission-panel").classList.add("hidden");
+  if(gameOver){ showGameOver(); return; }
   $("game-panel").classList.remove("hidden");
+  if(game.campaign) renderGame();
 }
 
 function initializeMissionUi(){

@@ -80,11 +80,31 @@
       return state.company.camp.dormitoryCapacity-rosterOf(state).length;
     }
 
-    // Une journée stratégique. Ordre V1 : Taverne (départs du matin, puis remplissage des places libres).
+    // Indisponibilité après mission (10-mission-time §4 à §6) : un blessé ou un fatigué ne peut pas
+    // partir en mission tant que son compteur de jours n'est pas écoulé.
+    function isAvailable(mercenary){
+      return !mercenary.recovery;
+    }
+
+    function recoverOneDay(state){
+      const recovered=[];
+      for(const mercenary of rosterOf(state)){
+        if(!mercenary.recovery) continue;
+        mercenary.recovery.daysLeft-=1;
+        if(mercenary.recovery.daysLeft<=0){
+          recovered.push({mercenary,kind:mercenary.recovery.kind});
+          delete mercenary.recovery;
+        }
+      }
+      return recovered;
+    }
+
+    // Une journée stratégique. Ordre V1 : guérison et repos, puis Taverne (départs du matin, puis remplissage des places libres).
     function advanceOneDay(state){
       state.day+=1;
+      const recovered=recoverOneDay(state);
       const tavernReport=tavern.tavernMorning(state.tavern,state.day,candidateFactory(state));
-      return {day:state.day,tavern:tavernReport};
+      return {day:state.day,recovered,tavern:tavernReport};
     }
 
     // AdvanceTime(5) = cinq résolutions successives d'une journée. Seul un nombre entier de jours ≥ 0 est accepté.
@@ -132,6 +152,44 @@
       return {ok:true,intendant:mercenary};
     }
 
+    // Bilan de fin de mission appliqué à la compagnie (10-mission-time §7 et §8, décisions Idan du 2026-10-03) :
+    // les morts quittent la compagnie, les blessés et les fatigués deviennent indisponibles,
+    // la prime de mission de chaque survivant sous contrat est payée, et la mort du capitaine met fin à la partie.
+    // aftermath : résultat de MercenairesMissionEnd.resolveMissionEnd. Les participants hors compagnie sont ignorés.
+    function applyMissionAftermath(state,aftermath){
+      const report={deaths:[],wounded:[],fatigued:[],bonuses:[],bonusPaid:0,gameOver:false};
+      for(const result of aftermath.results){
+        const roster=rosterOf(state);
+        const mercenary=roster.find(m=>m.id===result.id);
+        if(!mercenary) continue;
+        if(result.dead){
+          roster.splice(roster.indexOf(mercenary),1);
+          if(state.company.intendantId===mercenary.id) state.company.intendantId=null;
+          report.deaths.push(mercenary);
+          continue;
+        }
+        if(result.wounded){
+          mercenary.recovery={kind:"wounded",daysLeft:result.woundDays,sinceDay:state.day};
+          report.wounded.push(mercenary);
+        }else{
+          mercenary.recovery={kind:"fatigued",daysLeft:result.fatigueDays,sinceDay:state.day};
+          report.fatigued.push(mercenary);
+        }
+        // §8 — La prime de mission individuelle n'est payée que si le mercenaire revient.
+        const bonus=Number(mercenary.contract?.missionBonus)||0;
+        if(bonus>0){
+          state.company.gold-=bonus;
+          report.bonusPaid+=bonus;
+          report.bonuses.push({mercenary,bonus});
+        }
+      }
+      if(aftermath.captainDead){
+        state.gameOver={day:state.day,reason:"captain-dead"};
+        report.gameOver=true;
+      }
+      return report;
+    }
+
     function askCandidate(state,mercenaryId,key){
       const candidate=tavern.findCandidate(state.tavern,mercenaryId);
       if(!candidate) return {ok:false,reason:"Candidat introuvable."};
@@ -148,7 +206,9 @@
       offerToCandidate,
       intendantOf,
       assignIntendant,
-      askCandidate
+      askCandidate,
+      isAvailable,
+      applyMissionAftermath
     };
   }
 

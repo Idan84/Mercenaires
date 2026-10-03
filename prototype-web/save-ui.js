@@ -16,7 +16,7 @@ function savedGame(){
 }
 
 function saveGame(){
-  if(!game.campaign) return;
+  if(!game.campaign||game.campaign.gameOver) return;
   try{
     localStorage.setItem(SAVE_KEY,MercenairesCampaign.serializeCampaign(game.campaign,{tavernLog:game.tavernLog||[]}));
     game.saveError=null;
@@ -24,6 +24,26 @@ function saveGame(){
     game.saveError="Sauvegarde impossible : "+(error.message||error);
     console.warn(game.saveError);
   }
+  renderSaveStatus();
+}
+
+// Mort du capitaine = Game Over : la sauvegarde est effacée (décision Idan, 2026-10-03).
+function deleteSavedGame(){
+  try{ localStorage.removeItem(SAVE_KEY); }catch(error){ console.warn(error); }
+}
+
+function showGameOver(){
+  const name=game.captain?.name||"Le capitaine";
+  const day=game.campaign?.day;
+  game.campaign=null;
+  game.captain=null;
+  game.initialSquad=[];
+  game.mission=null;
+  game.tavernLog=[];
+  game.tavernSelected=null;
+  $("game-panel").classList.add("hidden");
+  $("game-over-text").textContent=`${name} est mort${day?" au jour "+day:""}. La compagnie est dissoute et la sauvegarde a été effacée.`;
+  $("game-over-panel").classList.remove("hidden");
   renderSaveStatus();
 }
 
@@ -38,6 +58,7 @@ function continueSavedGame(){
   game.mission=null;
   game.tavernLog=save.extra.tavernLog||[];
   game.tavernSelected=null;
+  $("game-over-panel").classList.add("hidden");
   renderGame();
   renderSaveStatus();
 }

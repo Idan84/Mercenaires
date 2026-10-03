@@ -213,4 +213,50 @@ assert.equal(restoreCampaign(JSON.stringify({format:"autre"})).ok,false);
 assert.equal(restoreCampaign(JSON.stringify({format:"mercenaires-save",version:99,state:{}})).ok,false);
 assert.equal(restoreCampaign(JSON.stringify({format:"mercenaires-save",version:1,state:{day:1}})).ok,false);
 
+// Fin de mission appliquée à la compagnie (10-mission-time §7 et §8, décisions Idan du 2026-10-03).
+const s7=stable.createCampaign({captain,squad});
+const [cap,vet,rookie]=s7.company.roster;
+rookie.contract={dailySalary:20,missionBonus:60,signedDay:1};
+vet.contract={dailySalary:30,missionBonus:90,signedDay:1};
+stable.assignIntendant(s7,vet.id);
+const goldBefore=s7.company.gold;
+const report=stable.applyMissionAftermath(s7,{captainDead:false,results:[
+  {id:cap.id,dead:false,wounded:true,woundDays:20,fatigueDays:null},
+  {id:vet.id,dead:true,wounded:false},
+  {id:rookie.id,dead:false,wounded:false,fatigueDays:2},
+  {id:999999,dead:true,wounded:false}
+]});
+assert.equal(s7.company.roster.includes(vet),false,"un mort quitte la compagnie");
+assert.equal(s7.company.intendantId,null,"un Intendant mort n'est plus Intendant");
+assert.deepEqual(report.deaths.map(m=>m.id),[vet.id]);
+assert.deepEqual(cap.recovery,{kind:"wounded",daysLeft:20,sinceDay:1});
+assert.deepEqual(rookie.recovery,{kind:"fatigued",daysLeft:2,sinceDay:1});
+assert.equal(report.bonusPaid,60,"seul le survivant sous contrat touche sa prime");
+assert.equal(s7.company.gold,goldBefore-60);
+assert.equal(report.gameOver,false);
+assert.equal(stable.isAvailable(rookie),false);
+const [day2]=stable.advanceTime(s7,1);
+assert.deepEqual(day2.recovered,[]);
+assert.equal(rookie.recovery.daysLeft,1);
+const [day3]=stable.advanceTime(s7,1);
+assert.deepEqual(day3.recovered.map(r=>[r.mercenary.id,r.kind]),[[rookie.id,"fatigued"]]);
+assert.equal(stable.isAvailable(rookie),true,"disponible après 2 jours de repos");
+assert.equal(cap.recovery.daysLeft,18);
+stable.advanceTime(s7,18);
+assert.equal(stable.isAvailable(cap),true,"guéri après 20 jours");
+const restored=restoreCampaign(serializeCampaign(s7));
+assert.equal(restored.ok,true,"l'indisponibilité se sauvegarde");
+
+// La prime peut faire passer l'or sous 0 ; la mort du capitaine met fin à la partie.
+const s8=stable.createCampaign({captain,squad});
+const paid=s8.company.roster[1];
+paid.contract={dailySalary:10,missionBonus:s8.company.gold+50,signedDay:1};
+const end=stable.applyMissionAftermath(s8,{captainDead:true,results:[
+  {id:s8.company.captainId,dead:true,wounded:false},
+  {id:paid.id,dead:false,wounded:false,fatigueDays:5}
+]});
+assert.equal(s8.company.gold,-50);
+assert.equal(end.gameOver,true);
+assert.deepEqual(s8.gameOver,{day:1,reason:"captain-dead"});
+
 console.log(JSON.stringify({ok:true},null,2));

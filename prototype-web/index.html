@@ -63,6 +63,13 @@
       </div>
     </section>
 
+    <section id="game-over-panel" class="panel game-over hidden">
+      <p class="eyebrow">Game Over</p>
+      <h2>La compagnie est dissoute</h2>
+      <p id="game-over-text"></p>
+      <p class="muted">Lance une nouvelle partie avec « New Game ».</p>
+    </section>
+
     <section id="game-panel" class="hidden">
       <section class="panel">
         <div class="section-title-row">
@@ -72,7 +79,7 @@
           </div>
           <div class="company-actions">
             <div class="company-meta">
-              <span>Or <strong id="company-gold">1 000</strong></span>
+              <span>Or <strong id="company-gold">1 000</strong> <button id="test-gold-btn" class="test-tool" title="Outil de test : ajoute 1 000 PO">+1 000 (test)</button></span>
               <span>Jour <strong id="company-day">1</strong></span>
               <span>Dortoir <strong id="company-dorm">—</strong></span>
               <span id="save-status" class="save-status"></span>
@@ -174,7 +181,7 @@
       <span id="mission-select-count" class="badge">0/3</span>
     </div>
     <div class="mission-select-content">
-      <p class="muted">Le combat de test ne modifie pas durablement les PV de la compagnie.</p>
+      <p class="muted">Les morts sont définitives, les blessés et les fatigués deviennent indisponibles quelques jours. Les PV restants ne sont pas conservés d’un combat à l’autre.</p>
       <div id="mission-select-list" class="mission-select-list"></div>
       <p id="mission-select-error" class="mission-error"></p>
       <div class="actions-row">

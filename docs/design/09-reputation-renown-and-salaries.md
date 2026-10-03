@@ -237,6 +237,8 @@ PrimeMissionDemandee = Arrondi(
 
 Le coefficient \(3\) est une constante d'échelle de playtest. Le salaire demandé transmet déjà indirectement la Réputation, l'Intelligence et les Prétentions salariales à la prime.
 
+**V1 : la prime de mission contractuelle est fixe**, quelle que soit la mission. Une éventuelle prime de risque liée au danger sera traitée plus tard comme un mécanisme séparé afin de ne pas ajouter une troisième couche de négociation au recrutement.
+
 La négociation conjointe **Salaire + Prime de mission** est définie dans [Taverne — recrutement V1](/design/#doc=14-tavern-recruitment.md).
 
 ## 7 — Politique des blessés — « T’es pas à la Sécu ici »

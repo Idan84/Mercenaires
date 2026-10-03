@@ -14,7 +14,8 @@ const files = {
   ancestryLevels:"ancestry-levels.json", d6Scale:"d6-generation-scale.json",
   generationMatrix:"generation-matrix.json", skills:"skills.json",
   characteristics:"characteristics.json", formulaConstants:"formula-constants.json",
-  weapons:"weapons.json", binaryAptitudeGrants:"binary-aptitude-grants.json"
+  weapons:"weapons.json", binaryAptitudeGrants:"binary-aptitude-grants.json",
+  alignmentGeneration:"alignment-generation.json"
 };
 
 const reference = Object.fromEntries(Object.entries(files).map(([key,file]) => [
@@ -53,6 +54,34 @@ assert.equal(audit.binaryDisabled.length, 1);
 assert.equal(audit.binaryDisabled[0].target, "Vol");
 assert.equal(audit.matrixCoverage.filter(x => x.status === "active").length, 106);
 assert.equal(audit.matrixCoverage.filter(x => x.status === "blocked").length, 0);
+
+function distributionMap(people) {
+  return Object.fromEntries(generator.alignmentDistributionForPeople(people).map(x => [x.name, x]));
+}
+
+const orcAlignment = distributionMap("Orc");
+assert.equal(orcAlignment["Chaotique mauvais"].probability, 0.4);
+assert.equal(orcAlignment["Chaotique neutre"].probability, 0.1);
+assert.equal(orcAlignment["Neutre mauvais"].probability, 0.1);
+assert.ok(Math.abs(Object.values(orcAlignment).reduce((sum,x)=>sum+x.probability,0)-1) < 1e-9);
+
+const humanAlignment = distributionMap("Humain");
+assert.equal(humanAlignment.Neutre.probability, 0.4);
+for (const name of ["Loyal neutre","Chaotique neutre","Neutre bon","Neutre mauvais"]) {
+  assert.equal(humanAlignment[name].probability, 0.05);
+}
+for (const name of ["Loyal bon","Chaotique bon","Loyal mauvais","Chaotique mauvais"]) {
+  assert.equal(humanAlignment[name].probability, 0.1);
+}
+
+const reptilianAlignment = distributionMap("Reptilien");
+assert.equal(reptilianAlignment["Loyal neutre"].probability, 0.4);
+for (const name of ["Loyal bon","Loyal mauvais","Neutre"]) {
+  assert.ok(Math.abs(reptilianAlignment[name].probability - (0.2/3)) < 1e-12);
+}
+for (const name of ["Neutre bon","Chaotique bon","Chaotique neutre","Neutre mauvais","Chaotique mauvais"]) {
+  assert.ok(Math.abs(reptilianAlignment[name].probability - 0.08) < 1e-12);
+}
 
 const cosmetics = new Set(audit.cosmetics.map(x => x.target));
 for (const expected of ["Âge","Taille","Corpulence","Biographie courte"]) {
@@ -235,6 +264,7 @@ const captain = generator.createCaptain({
 });
 assert.equal(captain.ascendanceLevel, 3);
 assert.equal(captain.ascendanceLevelName, "Bâtard");
+assert.equal(captain.alignment, "Neutre"); // forced captain choice must bypass people distribution
 
 console.log(JSON.stringify({
   ok:true,

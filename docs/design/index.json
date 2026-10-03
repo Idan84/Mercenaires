@@ -1,0 +1,200 @@
+{
+  "generated_on": "2026-10-03",
+  "documents": [
+    {
+      "file": "00-overview.md",
+      "source": "archive/notion-export/Privé et partagé/Jeu de Mercenaires 3eac799da3d181478858f51a008acbda.md"
+    },
+    {
+      "file": "01-start-and-generation-functions.md",
+      "source": "archive/notion-export/Privé et partagé/Jeu de Mercenaires/00 — Démarrage de partie & fonctions de génération 3ebc799da3d18106a6d0dc0a410e55a8.md"
+    },
+    {
+      "file": "02-generation-and-identity.md",
+      "source": "archive/notion-export/Privé et partagé/Jeu de Mercenaires/01 — Génération & identité 3eac799da3d181c491e3d99c69fa2317.md"
+    },
+    {
+      "file": "03-character-and-skills.md",
+      "source": "archive/notion-export/Privé et partagé/Jeu de Mercenaires/02 — Personnage & compétences 3eac799da3d18130b3cddc2686cb77c4.md"
+    },
+    {
+      "file": "04-combat.md",
+      "source": "archive/notion-export/Privé et partagé/Jeu de Mercenaires/03 — Combat 3eac799da3d181cfa22deb2373595671.md"
+    },
+    {
+      "file": "05-equipment.md",
+      "source": "archive/notion-export/Privé et partagé/Jeu de Mercenaires/04 — Équipement 3eac799da3d1816f9fbde097e65f5e65.md"
+    },
+    {
+      "file": "06-technical-reference.md",
+      "source": "archive/notion-export/Privé et partagé/Jeu de Mercenaires/05 — Référentiels techniques 3eac799da3d181c584bfca6dfc669087.md"
+    },
+    {
+      "file": "07-architecture.md",
+      "source": "archive/notion-export/Privé et partagé/Jeu de Mercenaires/06 — Architecture & objets de jeu 3edc799da3d1818e97d9d2e3238bc475.md"
+    },
+    {
+      "file": "08-progression-and-experience.md",
+      "source": "archive/notion-export/Privé et partagé/Jeu de Mercenaires/02 — Personnage & compétences/Progression & expérience 3ecc799da3d1815fbc4cef440b53d83b.md"
+    },
+    {
+      "file": "09-reputation-renown-and-salaries.md",
+      "source": "archive/notion-export/Privé et partagé/Jeu de Mercenaires/02 — Personnage & compétences/Réputation, renommée & salaires 3edc799da3d1816d8c56ef472f3ea9ec.md"
+    },
+    {
+      "file": "10-mission-time-and-unavailability.md",
+      "source": "archive/notion-export/Privé et partagé/Jeu de Mercenaires/03 — Combat/Fin de mission, temps & indisponibilités 3edc799da3d181b593b4d808c233d592.md"
+    },
+    {
+      "file": "11-camp-and-ruined-castle.md",
+      "source": "archive/notion-export/Privé et partagé/Jeu de Mercenaires/06 — Architecture & objets de jeu/Camp & château en ruines 3edc799da3d181808127ed574b81ba78.md"
+    },
+    {
+      "file": "12-magic.md",
+      "source": "archive/notion-export/Privé et partagé/Jeu de Mercenaires/02 — Personnage & compétences/Magie — apprentissage, incantation & premier catal 3ecc799da3d18183b4a9e6b17170afdf.md"
+    },
+    {
+      "file": "13-fleeing.md",
+      "source": "archive/notion-export/Privé et partagé/Jeu de Mercenaires/03 — Combat/États/En Fuite 3ebc799da3d1817a804fd813fe29a521.md"
+    },
+    {
+      "file": "90-mechanics-backlog.md",
+      "source": "archive/notion-export/Privé et partagé/Jeu de Mercenaires/03 — Combat/Mécaniques à intégrer ensuite 3eac799da3d181fd89ecffed4135a594.md"
+    },
+    {
+      "file": "91-combat-ideas.md",
+      "source": "archive/notion-export/Privé et partagé/Jeu de Mercenaires/03 — Combat/Boîte à idées — Combat 3ecc799da3d181c3a45ed60fccf36ebf.md"
+    }
+  ],
+  "formulas": [
+    {
+      "file": "formulas/activation-hexagonale-v1.md"
+    },
+    {
+      "file": "formulas/approximation-projectile-v1.md"
+    },
+    {
+      "file": "formulas/armes-a-feu-recharge-et-double-pistolet-v1.md"
+    },
+    {
+      "file": "formulas/attaque-d-opportunite-cac-v1.md"
+    },
+    {
+      "file": "formulas/blesser-cac-v1.md"
+    },
+    {
+      "file": "formulas/blesser-distance-v1.md"
+    },
+    {
+      "file": "formulas/blocage-bouclier-physique-v1.md"
+    },
+    {
+      "file": "formulas/charge-cac-v1.md"
+    },
+    {
+      "file": "formulas/combat-a-deux-armes-cac-v1.md"
+    },
+    {
+      "file": "formulas/comportement-automatique-en-fuite-v1.md"
+    },
+    {
+      "file": "formulas/contre-charge-v1.md"
+    },
+    {
+      "file": "formulas/courage-en-sous-nombre-v1.md"
+    },
+    {
+      "file": "formulas/courage-post-attaque-cac-v1.md"
+    },
+    {
+      "file": "formulas/courage-post-tir-v1.md"
+    },
+    {
+      "file": "formulas/critique-de-blessure-positif-cac-v1.md"
+    },
+    {
+      "file": "formulas/critique-positif-cac-v1.md"
+    },
+    {
+      "file": "formulas/critique-toucher-armure-ignoree-v1.md"
+    },
+    {
+      "file": "formulas/degats-pv-physiques-distance-v1.md"
+    },
+    {
+      "file": "formulas/degats-pv-physiques-v1.md"
+    },
+    {
+      "file": "formulas/echec-critique-cac-v1.md"
+    },
+    {
+      "file": "formulas/echec-critique-de-blessure-cac-v1.md"
+    },
+    {
+      "file": "formulas/encerclement-cac-v1.md"
+    },
+    {
+      "file": "formulas/enchainement-d-attaques-cac-v1.md"
+    },
+    {
+      "file": "formulas/enchainement-de-tirs-distance-v1.md"
+    },
+    {
+      "file": "formulas/esquive-effective-sous-armure.md"
+    },
+    {
+      "file": "formulas/frappe-dans-le-dos-v1.md"
+    },
+    {
+      "file": "formulas/initiative-interne-d-equipe-v1.md"
+    },
+    {
+      "file": "formulas/malus-mobilite-effectif-d-armure.md"
+    },
+    {
+      "file": "formulas/malus-vitesse-arme-effectif-v1.md"
+    },
+    {
+      "file": "formulas/mouvement-de-fuite-immediat-v1.md"
+    },
+    {
+      "file": "formulas/mouvement-hexagonal-v1.md"
+    },
+    {
+      "file": "formulas/permutation-de-set-d-armes-v1.md"
+    },
+    {
+      "file": "formulas/portee-d-arme-v1.md"
+    },
+    {
+      "file": "formulas/precision-d-attaque-de-zone-v1.md"
+    },
+    {
+      "file": "formulas/prise-d-arme-et-mode-deux-mains-v1.md"
+    },
+    {
+      "file": "formulas/pv-maximum-v1.md"
+    },
+    {
+      "file": "formulas/reprise-de-controle-en-fuite-v1.md"
+    },
+    {
+      "file": "formulas/resistance-effective-d-armure.md"
+    },
+    {
+      "file": "formulas/selection-du-type-de-degats-par-intelligence.md"
+    },
+    {
+      "file": "formulas/toucher-cac-v1.md"
+    },
+    {
+      "file": "formulas/toucher-distance-v1.md"
+    },
+    {
+      "file": "formulas/vitesse-apres-armure-intermediaire.md"
+    },
+    {
+      "file": "formulas/vitesse-combat-effective-cac-v1.md"
+    }
+  ]
+}

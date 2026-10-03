@@ -12,6 +12,7 @@ function missionNeighbors(c){ return HEX_DIRS.map(d=>({q:c.q+d.q,r:c.r+d.r})).fi
 function missionUnits(){ return game.mission?[...game.mission.players,...game.mission.enemies]:[]; }
 function livingMissionUnits(team){ return (team==="player"?game.mission.players:game.mission.enemies).filter(u=>u.alive); }
 function missionActiveUnit(){ return game.mission?.activeUnit||null; }
+function missionOpponents(unit){ return livingMissionUnits(unit.team==="player"?"enemy":"player"); }
 
 function occupiedMissionKeys(except=null){
   return new Set(missionUnits().filter(u=>u.alive&&u!==except).map(u=>missionKey(u.q,u.r)));
@@ -178,9 +179,11 @@ function checkMissionEnd(){
   return true;
 }
 
-function logMissionAttack(a,d,result,isCharge=false){
-  const prefix=(isCharge?a.character.name+" charge ":a.character.name+" attaque ")
-    +d.character.name+" avec "+result.weapon;
+function logMissionAttack(a,d,result,kind="attack"){
+  if(!result.ok){ missionLog(result.reason||"Attaque impossible.","bad"); return; }
+  const verb={charge:" charge ",opportunity:" profite de l’ouverture et frappe "}[kind]||" attaque ";
+  const prefix=a.character.name+verb+d.character.name+" avec "+result.weapon
+    +(result.opportunity?" (attaque d’opportunité, dans le dos)":result.backstab?" (dans le dos)":"");
 
   if(result.chargeFall){
     missionLog(a.character.name+" chute pendant sa charge et perd son attaque !","bad");
@@ -198,13 +201,83 @@ function logMissionAttack(a,d,result,isCharge=false){
   if(result.targetDown) missionLog(d.character.name+" est hors combat.","death");
 }
 
-function resolvePlayerMissionAttack(a,d,mode,distance){
-  const result=game.mission.engine.resolveAttack(a,d,{mode,distance});
-  if(!result.ok){ missionLog(result.reason||"Attaque impossible.","bad"); return; }
-  a.attackAvailable=false;
-  game.mission.mode=null;
-  logMissionAttack(a,d,result,false);
+// Attaque d'opportunité CAC V1 : les réactions sont résolues avant la fin de l'action déclenchante,
+// dans l'ordre d'initiative de l'équipe qui réagit.
+function resolveOpportunityAttacks(reactors,target){
+  const m=game.mission,order=target.team==="player"?m.enemyOrder:m.playerOrder;
+  const sorted=[...reactors].sort((x,y)=>order.indexOf(x)-order.indexOf(y));
+  for(const reactor of sorted){
+    if(m.over||!target.alive) break;
+    const result=m.engine.resolveAttack(reactor,target,{mode:"melee",opportunity:true});
+    logMissionAttack(reactor,target,result,"opportunity");
+    checkMissionEnd();
+  }
+  return target.alive;
+}
+
+// Déplacement hex par hex : quitter une zone de menace provoque les réactions avant de quitter la case.
+function moveMissionUnitAlongPath(unit,path){
+  const e=game.mission.engine;
+  let moved=0;
+  for(const step of path){
+    const reactors=e.opportunityReactors(missionOpponents(unit),unit,step);
+    if(reactors.length){
+      missionLog(unit.character.name+" quitte la zone de menace de "+reactors.map(x=>x.character.name).join(", ")+".","move");
+      if(!resolveOpportunityAttacks(reactors,unit)) break;
+    }
+    unit.q=step.q;unit.r=step.r;moved++;
+  }
+  return moved;
+}
+
+function missionPathOpportunityCount(unit,path){
+  const e=game.mission.engine,opponents=missionOpponents(unit);
+  let from={q:unit.q,r:unit.r},count=0;
+  for(const step of path){
+    count+=e.opportunityReactors(opponents,from,step).length;
+    from=step;
+  }
+  return count;
+}
+
+// La charge suit une ligne droite : chaque case du trajet doit être libre.
+function missionChargeIfClear(unit,target){
+  const charge=game.mission.engine.chargeData(unit,target);
+  if(!charge.valid) return null;
+  const occupied=occupiedMissionKeys(unit);
+  return charge.path.some(h=>occupied.has(missionKey(h.q,h.r)))?null:charge;
+}
+
+function missionActiveUnitFell(){
+  const m=game.mission,u=m?.activeUnit;
+  if(!u||u.alive) return false;
+  u.acted=true;m.activeUnit=null;m.mode=null;
+  if(m.over) renderMission(); else selectNextMissionPlayer();
+  return true;
+}
+
+function performMissionAttack(attacker,target,mode,distance){
+  const m=game.mission;
+  if(mode==="ranged"){
+    const reactors=m.engine.rangedOpportunityReactors(missionOpponents(attacker),attacker,target);
+    if(reactors.length){
+      missionLog(attacker.character.name+" tire alors qu’il est menacé par "+reactors.map(x=>x.character.name).join(", ")+".","move");
+      if(!resolveOpportunityAttacks(reactors,attacker)) return null;
+    }
+  }
+  const result=m.engine.resolveAttack(attacker,target,{mode,distance});
+  logMissionAttack(attacker,target,result);
   checkMissionEnd();
+  return result;
+}
+
+function resolvePlayerMissionAttack(a,d,mode,distance){
+  const m=game.mission;
+  if(!m.engine.canAttackAtDistance(a,distance,mode)){ missionLog("Cible hors portée ou arme incompatible.","bad"); return; }
+  a.attackAvailable=false;
+  m.mode=null;
+  performMissionAttack(a,d,mode,distance);
+  if(missionActiveUnitFell()) return;
   renderMission();
 }
 
@@ -217,9 +290,11 @@ function handleMissionHexClick(q,r){
   if(m.mode==="move"&&!clicked){
     const path=shortestMissionPath(u,{q,r},u);
     if(path&&path.length<=u.movementRemaining){
-      u.q=q;u.r=r;u.movementRemaining-=path.length;
-      missionLog(u.character.name+" se déplace de "+path.length+" hex.","move");
       m.mode=null;
+      const moved=moveMissionUnitAlongPath(u,path);
+      u.movementRemaining-=moved;
+      if(moved) missionLog(u.character.name+" se déplace de "+moved+" hex.","move");
+      if(missionActiveUnitFell()) return;
       renderMission();
     }
     return;
@@ -233,15 +308,15 @@ function handleMissionHexClick(q,r){
   }else if(m.mode==="ranged"){
     resolvePlayerMissionAttack(u,clicked,"ranged",distance);
   }else if(m.mode==="charge"){
-    const charge=m.engine.chargeData(u,clicked);
-    if(!charge.valid) return;
-    if(occupiedMissionKeys(u).has(missionKey(charge.destination.q,charge.destination.r))) return;
+    const charge=missionChargeIfClear(u,clicked);
+    if(!charge) return;
 
-    u.q=charge.destination.q;u.r=charge.destination.r;u.movementRemaining=0;
+    u.attackAvailable=false;u.movementRemaining=0;m.mode=null;
+    moveMissionUnitAlongPath(u,charge.path);
+    if(missionActiveUnitFell()) return;
     const result=m.engine.resolveAttack(u,clicked,{mode:"melee",distance:1,chargeDistance:charge.travel});
-    u.attackAvailable=false;m.mode=null;
     if(result.chargeFall) u.prone=true;
-    logMissionAttack(u,clicked,result,true);
+    logMissionAttack(u,clicked,result,"charge");
     checkMissionEnd();
     renderMission();
   }
@@ -308,20 +383,20 @@ function enemyMoveToward(unit,target){
   }
 
   if(best.path.length){
-    unit.q=best.q;unit.r=best.r;
-    missionLog(unit.character.name+" avance de "+best.path.length+" hex.","move");
+    const moved=moveMissionUnitAlongPath(unit,best.path);
+    if(moved) missionLog(unit.character.name+" avance de "+moved+" hex.","move");
   }
 }
 
 function enemyTryCharge(unit,target){
-  const e=game.mission.engine,charge=e.chargeData(unit,target);
-  if(!charge.valid) return false;
-  if(occupiedMissionKeys(unit).has(missionKey(charge.destination.q,charge.destination.r))) return false;
+  const e=game.mission.engine,charge=missionChargeIfClear(unit,target);
+  if(!charge) return false;
 
-  unit.q=charge.destination.q;unit.r=charge.destination.r;
+  moveMissionUnitAlongPath(unit,charge.path);
+  if(!unit.alive) return true;
   const result=e.resolveAttack(unit,target,{mode:"melee",distance:1,chargeDistance:charge.travel});
   if(result.chargeFall) unit.prone=true;
-  logMissionAttack(unit,target,result,true);
+  logMissionAttack(unit,target,result,"charge");
   checkMissionEnd();
   return true;
 }
@@ -337,16 +412,14 @@ function enemyMissionAct(unit){
   let distance=e.axialDistance(unit,target);
 
   if(e.canAttackAtDistance(unit,distance,mode)){
-    const result=e.resolveAttack(unit,target,{mode,distance});
-    logMissionAttack(unit,target,result,false);
-    checkMissionEnd();
+    performMissionAttack(unit,target,mode,distance);
     return;
   }
 
   if(mode==="melee"&&enemyTryCharge(unit,target)) return;
 
   enemyMoveToward(unit,target);
-  if(game.mission.over) return;
+  if(game.mission.over||!unit.alive) return;
 
   target=nearestMissionTarget(unit);
   if(!target) return;
@@ -356,9 +429,7 @@ function enemyMissionAct(unit){
   distance=e.axialDistance(unit,target);
 
   if(e.canAttackAtDistance(unit,distance,mode)){
-    const result=e.resolveAttack(unit,target,{mode,distance});
-    logMissionAttack(unit,target,result,false);
-    checkMissionEnd();
+    performMissionAttack(unit,target,mode,distance);
   }
 }
 
@@ -413,12 +484,7 @@ function targetableMissionCells(){
     const distance=m.engine.axialDistance(u,enemy);
     if(m.mode==="melee"&&m.engine.canAttackAtDistance(u,distance,"melee")) set.add(missionKey(enemy.q,enemy.r));
     if(m.mode==="ranged"&&m.engine.canAttackAtDistance(u,distance,"ranged")) set.add(missionKey(enemy.q,enemy.r));
-    if(m.mode==="charge"){
-      const charge=m.engine.chargeData(u,enemy);
-      if(charge.valid&&!occupiedMissionKeys(u).has(missionKey(charge.destination.q,charge.destination.r))){
-        set.add(missionKey(enemy.q,enemy.r));
-      }
-    }
+    if(m.mode==="charge"&&missionChargeIfClear(u,enemy)) set.add(missionKey(enemy.q,enemy.r));
   }
   return set;
 }
@@ -448,8 +514,16 @@ function renderMission(){
   let cells="";
   for(let q=0;q<MISSION_MAP.cols;q++) for(let r=0;r<MISSION_MAP.rows;r++){
     const p=missionHexPixel(q,r),key=missionKey(q,r),classes=["hex-cell"];
+    let title="";
     if(targets.has(key)) classes.push(m.mode==="move"?"reachable":"targetable");
-    cells+=`<button class="${classes.join(" ")}" data-hex-q="${q}" data-hex-r="${r}" style="left:${p.x-MISSION_MAP.size}px;top:${p.y-MISSION_MAP.size}px"></button>`;
+    if(targets.has(key)&&m.mode==="move"){
+      const risk=missionPathOpportunityCount(u,shortestMissionPath(u,{q,r},u));
+      if(risk){
+        classes.push("provokes");
+        title=` title="Provoque ${risk} attaque${risk>1?"s":""} d’opportunité"`;
+      }
+    }
+    cells+=`<button class="${classes.join(" ")}" data-hex-q="${q}" data-hex-r="${r}"${title} style="left:${p.x-MISSION_MAP.size}px;top:${p.y-MISSION_MAP.size}px"></button>`;
   }
 
   const tokens=missionUnits().map(unit=>{

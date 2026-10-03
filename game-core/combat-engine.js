@@ -320,6 +320,8 @@
       const damageData=physicalDamage(attacker,defender,mode,chargePower);
       // Les PV restent signés : la profondeur sous 0 sert au jet de mort de fin de mission (Issue #13).
       defender.hp-=damageData.damage;
+      // Les soins n'effacent pas l'usure : la fatigue de fin de mission se calcule sur le cumul (10-mission-time §5).
+      defender.damageTaken=(Number(defender.damageTaken)||0)+damageData.damage;
       if(defender.hp<=0) defender.alive=false;
 
       return {

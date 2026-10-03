@@ -1,0 +1,24 @@
+# 02 — Personnage & compétences
+
+Caractéristiques, attributs, compétences et éléments persistants qui décrivent un mercenaire après sa génération.
+
+<aside>
+🧬
+
+Architecture de référence : **caractéristiques fondamentales → états temporaires → valeurs dérivées**. Les bases conservent aussi les résistances, l’identité, la morphologie et les attributs cachés sans les mélanger avec les valeurs calculées.
+
+</aside>
+
+La base **Caractéristiques & attributs** possède des vues séparées pour Caractéristiques, Résistances, États temporaires et Valeurs dérivées. La base **Compétences** porte également les fiches d'armes : maîtrise, dés et puissances de blessure, **Prise** (`1 main / 2 mains / Au choix`), **Malus vitesse arme base**, portée en hexagones, cadence de tir, recharge, capacité de contre-charge, attaque de zone et **Bonus charge base** (valeurs à équilibrer). Les vues d'équilibrage dédiées sont exposées dans `04 — Équipement`.
+
+[Compétences](02%20%E2%80%94%20Personnage%20&%20comp%C3%A9tences/Comp%C3%A9tences%2013a89648818840a7aa9a0698e018b039.csv)
+
+[Caractéristiques & attributs](02%20%E2%80%94%20Personnage%20&%20comp%C3%A9tences/Caract%C3%A9ristiques%20&%20attributs%20eb1e6e789f9343c6937931157a26c27e.csv)
+
+[Titres acquis](02%20%E2%80%94%20Personnage%20&%20comp%C3%A9tences/Titres%20acquis%203eac799da3d181b58ccceb1fbb60d42f.md)
+
+[Magie — apprentissage, incantation & premier catalogue](02%20%E2%80%94%20Personnage%20&%20comp%C3%A9tences/Magie%20%E2%80%94%20apprentissage,%20incantation%20&%20premier%20catal%203ecc799da3d18183b4a9e6b17170afdf.md)
+
+[Progression & expérience](02%20%E2%80%94%20Personnage%20&%20comp%C3%A9tences/Progression%20&%20exp%C3%A9rience%203ecc799da3d1815fbc4cef440b53d83b.md)
+
+[Réputation, renommée & salaires](02%20%E2%80%94%20Personnage%20&%20comp%C3%A9tences/R%C3%A9putation,%20renomm%C3%A9e%20&%20salaires%203edc799da3d1816d8c56ef472f3ea9ec.md)

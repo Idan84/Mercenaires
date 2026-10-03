@@ -1,0 +1,222 @@
+{
+  "schema_version": 1,
+  "name": "cultures",
+  "source": {
+    "database_id": "901364a7f401459594940d1e11ed10d2",
+    "archived_path": "archive/notion-export/Privé et partagé/Jeu de Mercenaires/01 — Génération & identité/Cultures 901364a7f401459594940d1e11ed10d2_all.csv",
+    "migrated_on": "2026-10-03"
+  },
+  "columns": [
+    {
+      "source": "Nom",
+      "key": "nom"
+    },
+    {
+      "source": "Idées Bonus",
+      "key": "idees_bonus"
+    },
+    {
+      "source": "Idées Malus",
+      "key": "idees_malus"
+    },
+    {
+      "source": "Peuples",
+      "key": "peuples"
+    }
+  ],
+  "row_count": 32,
+  "rows": [
+    {
+      "nom": "Tribus nordiques",
+      "idees_bonus": null,
+      "idees_malus": null,
+      "peuples": "Homme-bête"
+    },
+    {
+      "nom": "Clans des grandes steppes",
+      "idees_bonus": null,
+      "idees_malus": null,
+      "peuples": "Homme-bête"
+    },
+    {
+      "nom": "Ogres des cités humaines",
+      "idees_bonus": null,
+      "idees_malus": null,
+      "peuples": "Ogre"
+    },
+    {
+      "nom": "Reptiliens des villes",
+      "idees_bonus": null,
+      "idees_malus": null,
+      "peuples": "Reptilien"
+    },
+    {
+      "nom": "Montagnes du Nord",
+      "idees_bonus": "Résistance au froid · Armes : haches, armes à deux mains",
+      "idees_malus": "Intelligence",
+      "peuples": "Humain"
+    },
+    {
+      "nom": "Reptiliens des marécages",
+      "idees_bonus": null,
+      "idees_malus": null,
+      "peuples": "Reptilien"
+    },
+    {
+      "nom": "Elfes noirs",
+      "idees_bonus": "Dextérité · Résistance au poison · Armes : dagues, arbalètes · Magie de l’illusion et nécromancie",
+      "idees_malus": "Charisme · Magie de la vie",
+      "peuples": "Elfe"
+    },
+    {
+      "nom": "Halflings des cités humaines",
+      "idees_bonus": "Charisme · Intelligence · Armes : dagues, arbalètes",
+      "idees_malus": "Volonté · Courage",
+      "peuples": "Halfling"
+    },
+    {
+      "nom": "Tribus de la jungle",
+      "idees_bonus": "Résistance au poison ×2 · Armes : lances",
+      "idees_malus": "Résistance au froid",
+      "peuples": "Humain"
+    },
+    {
+      "nom": "Cités libres",
+      "idees_bonus": "Charisme · Intelligence",
+      "idees_malus": "Perception",
+      "peuples": "Humain"
+    },
+    {
+      "nom": "Caravanes de ferrailleurs",
+      "idees_bonus": "Intelligence · Chance · Armes : arbalètes",
+      "idees_malus": "Puissance magique · Courage",
+      "peuples": "Gobelin"
+    },
+    {
+      "nom": "Gnomes des forêts",
+      "idees_bonus": null,
+      "idees_malus": null,
+      "peuples": "Gnome"
+    },
+    {
+      "nom": "Explorateurs",
+      "idees_bonus": "Courage · Perception · Chance · Armes : arcs",
+      "idees_malus": "Armures lourdes",
+      "peuples": "Halfling"
+    },
+    {
+      "nom": "Steppes désertiques",
+      "idees_bonus": "Armes : arcs, sabres · Montures",
+      "idees_malus": "Armures lourdes",
+      "peuples": "Humain"
+    },
+    {
+      "nom": "Orcs noirs",
+      "idees_bonus": "Force · Armes à deux mains · Armures lourdes",
+      "idees_malus": "Résistance à la foudre",
+      "peuples": "Orc"
+    },
+    {
+      "nom": "Elfes des grandes cités",
+      "idees_bonus": "Réserve de mana · Armes : épées fines",
+      "idees_malus": "Exigences salariales élevées",
+      "peuples": "Elfe"
+    },
+    {
+      "nom": "Gobelins des cavernes",
+      "idees_bonus": "Perception · Esquive · Résistance au poison · Armes : dagues",
+      "idees_malus": "Résistance au feu · Intelligence",
+      "peuples": "Gobelin"
+    },
+    {
+      "nom": "Halflings des villages isolés",
+      "idees_bonus": "Magie de la vie · Puissance magique",
+      "idees_malus": "Force · Endurance",
+      "peuples": "Halfling"
+    },
+    {
+      "nom": "Orcs des villes",
+      "idees_bonus": "Intelligence · Charisme · Armes : épées, dagues, arbalètes",
+      "idees_malus": "Courage · Armes à deux mains",
+      "peuples": "Orc"
+    },
+    {
+      "nom": "Tribus des forêts anciennes",
+      "idees_bonus": null,
+      "idees_malus": null,
+      "peuples": "Homme-bête"
+    },
+    {
+      "nom": "Gobelins des villes",
+      "idees_bonus": "Dextérité · Armes : dagues",
+      "idees_malus": "Courage · Volonté · Force",
+      "peuples": "Gobelin"
+    },
+    {
+      "nom": "Royaumes du Soleil Levant",
+      "idees_bonus": "Volonté · Armes asiatiques (à détailler)",
+      "idees_malus": "Exigences salariales élevées",
+      "peuples": "Humain"
+    },
+    {
+      "nom": "Orcs des steppes",
+      "idees_bonus": "Vitesse · Armes : lances, arcs · Montures",
+      "idees_malus": "Armures lourdes",
+      "peuples": "Orc"
+    },
+    {
+      "nom": "Nains des montagnes",
+      "idees_bonus": "Résistance au froid · Armes : haches, marteaux, boucliers · Armures lourdes",
+      "idees_malus": "Vitesse · Esquive · Armes : arcs",
+      "peuples": "Nain"
+    },
+    {
+      "nom": "Ogres des montagnes",
+      "idees_bonus": null,
+      "idees_malus": null,
+      "peuples": "Ogre"
+    },
+    {
+      "nom": "Gnomes des cavernes",
+      "idees_bonus": null,
+      "idees_malus": null,
+      "peuples": "Gnome"
+    },
+    {
+      "nom": "Elfes sylvains",
+      "idees_bonus": "Perception · Esquive · Armes : arcs",
+      "idees_malus": "Armures lourdes · Nécromancie",
+      "peuples": "Elfe"
+    },
+    {
+      "nom": "Nains des plaines",
+      "idees_bonus": "Armes : arbalètes, armes à feu",
+      "idees_malus": "Volonté · Perception",
+      "peuples": "Nain"
+    },
+    {
+      "nom": "Reptiliens des cités-temples",
+      "idees_bonus": null,
+      "idees_malus": null,
+      "peuples": "Reptilien"
+    },
+    {
+      "nom": "Nains réduits en esclavage dans les colonies",
+      "idees_bonus": "Endurance · Volonté · Chance · Combat à mains nues",
+      "idees_malus": "Charisme · Réserve de mana",
+      "peuples": "Nain"
+    },
+    {
+      "nom": "Gnomes des villes",
+      "idees_bonus": null,
+      "idees_malus": null,
+      "peuples": "Gnome"
+    },
+    {
+      "nom": "Ogres des steppes",
+      "idees_bonus": null,
+      "idees_malus": null,
+      "peuples": "Ogre"
+    }
+  ]
+}

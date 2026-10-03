@@ -23,6 +23,8 @@ h2 { margin: 0; letter-spacing: -0.025em; }
 .company-meta { display: flex; gap: 18px; color: #6d675f; }
 
 .primary, .secondary { border: 0; border-radius: 11px; padding: 11px 16px; font-weight: 750; }
+.top-actions { display: flex; gap: 10px; align-items: center; }
+.link-button { display: inline-flex; align-items: center; text-decoration: none; }
 .primary { background: #792d23; color: white; }
 .primary:hover { background: #67251d; }
 .secondary { background: #e9e3d9; color: #312c27; }

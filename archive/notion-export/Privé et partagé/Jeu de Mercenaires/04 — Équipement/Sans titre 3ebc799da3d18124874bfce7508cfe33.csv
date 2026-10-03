@@ -1,0 +1,9 @@
+﻿Nom,Domaine,Portée min hex,Portée max hex,Cadence tir,Recharge action rapide,Contre-charge,Attaque de zone,Dégâts PV base,Puissance perforante base,Prise,Malus vitesse arme base
+Tromblon,"Armes à feu, Martial",1,6,Tir unique,Yes,Yes,Yes,1D10,55,2 mains,28
+Pistolet,"Armes à feu, Martial",1,8,Tir unique,Yes,Yes,No,1D8,65,1 main,8
+Canon à main,"Armes à feu, Martial",2,10,Tir unique,Yes,Yes,No,2D6,95,2 mains,40
+Sarbacane,"Armes de tir, Martial",2,10,Répétable,No,Yes,No,1D4,10,2 mains,6
+Fronde,"Armes de tir, Martial",2,14,Répétable,No,Yes,No,1D4,0,1 main,4
+Arc,"Armes de tir, Martial",2,18,Répétable,No,Yes,No,1D6,45,2 mains,12
+Arbalète,"Armes de tir, Martial",2,20,Tir unique,No,Yes,No,1D10,65,2 mains,22
+Arquebuse / Mousquet,"Armes à feu, Martial",2,24,Tir unique,Yes,Yes,No,1D12,80,2 mains,30

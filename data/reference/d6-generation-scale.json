@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "name": "d6-generation-scale",
+  "source": {
+    "database_id": "b949e703e1b7435396a99b36ecf6e417",
+    "archived_path": "archive/notion-export/Privé et partagé/Jeu de Mercenaires/01 — Génération & identité/Échelle D6 — génération b949e703e1b7435396a99b36ecf6e417_all.csv",
+    "migrated_on": "2026-10-03"
+  },
+  "columns": [
+    {
+      "source": "Intensité",
+      "key": "intensite"
+    },
+    {
+      "source": "Ascendance niveau 1 — D6",
+      "key": "ascendance_niveau_1_d6"
+    },
+    {
+      "source": "Ascendance niveau 2 — D6",
+      "key": "ascendance_niveau_2_d6"
+    },
+    {
+      "source": "Ascendance niveau 3 — D6",
+      "key": "ascendance_niveau_3_d6"
+    },
+    {
+      "source": "Standard — nombre de D6",
+      "key": "standard_nombre_de_d6"
+    }
+  ],
+  "row_count": 3,
+  "rows": [
+    {
+      "intensite": 1,
+      "ascendance_niveau_1_d6": 2,
+      "ascendance_niveau_2_d6": 4,
+      "ascendance_niveau_3_d6": 6,
+      "standard_nombre_de_d6": 2
+    },
+    {
+      "intensite": 3,
+      "ascendance_niveau_1_d6": 6,
+      "ascendance_niveau_2_d6": 12,
+      "ascendance_niveau_3_d6": 15,
+      "standard_nombre_de_d6": 6
+    },
+    {
+      "intensite": 2,
+      "ascendance_niveau_1_d6": 4,
+      "ascendance_niveau_2_d6": 8,
+      "ascendance_niveau_3_d6": 10,
+      "standard_nombre_de_d6": 4
+    }
+  ]
+}

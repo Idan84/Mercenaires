@@ -1,38 +1,29 @@
 # Mercenaires
 
-Prototype de game design et futur projet Unreal du jeu tactique / gestion de mercenaires.
+Jeu tactique / gestion heroic-fantasy et laboratoire de game design, avec cible finale Unreal Engine.
 
 ## Prototype en ligne
 
 https://mercenaires-s708.netlify.app
 
-## Structure
+Le **Design Lab** est accessible depuis le prototype ou directement via `/design/`.
 
-- `prototype-web/` — laboratoire HTML/CSS/JS déployé sur Netlify.
-- `docs/` — règles validées nécessaires au code.
-- `data/` — futur référentiel de données portable vers Unreal.
-- `game-core/` — futur noyau de logique détaché de l'interface.
-- `netlify.toml` — déploiement automatique du prototype web.
-- `AGENTS.md` — consignes pour Codex et autres agents.
-- `CLAUDE.md` — consignes Claude Code.
+## Source de vérité
 
-## Prototype web
+Depuis le 3 octobre 2026, **Git remplace Notion** pour le projet.
 
-Aucun build nécessaire. Netlify publie directement `prototype-web/`.
+- `docs/design/` — règles, concepts, formules et chantiers.
+- `data/reference/` — 22 référentiels structurés issus de l'export complet.
+- `archive/notion-export/` — export Notion intégral figé (688 Markdown + 42 CSV).
+- `prototype-web/design/` — interface de consultation des docs et tableaux.
+- `game-core/` — futur noyau de logique indépendant de l'UI.
 
-Pour tester localement, ouvrir `prototype-web/index.html` dans un navigateur moderne.
+L'archive Notion est conservée uniquement pour vérifier l'historique. Toute nouvelle décision doit être écrite dans Git.
 
-## Philosophie technique
+## Workflow
 
-Le HTML/CSS sert à prototyper rapidement l'interface et les flux de gestion. Le jeu final sera porté dans Unreal Engine. Les règles, données et cas de test doivent rester indépendants de l'interface afin de faciliter le portage JS → C++ / Blueprint.
+- `main` : version stable.
+- branches de travail / PR : expérimentation et revue.
+- Netlify : déploiement automatique du prototype et Deploy Previews.
 
-
-## Documentation Notion synchronisée
-
-Une partie importante de la spécification Notion est maintenant miroir dans le dépôt :
-
-- `docs/notion/` — pages de conception, combat, progression, camp, magie et formules V1 ;
-- `data/notion/` — exports JSON des référentiels de génération et schémas des bases techniques ;
-- `docs/notion/INDEX.md` — point d'entrée pour naviguer dans le snapshot.
-
-Les agents de code doivent utiliser ces sources avant d'inventer ou de modifier une règle de jeu.
+Les agents doivent lire `AGENTS.md` avant de modifier la logique.

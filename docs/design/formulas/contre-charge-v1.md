@@ -1,0 +1,33 @@
+> Source de vérité Git. Migré depuis l'export Notion figé du 2026-10-03.
+
+# Contre-charge V1
+
+Code: combat.reaction.countercharge
+Domaine: Combat
+Expression: if charge_target.can_countercharge: if reaction_http://weapon.is_ranged: trigger at 50% of charge_path; else trigger when charger enters reaction_weapon melee reach; resolve one reaction_attack; if reaction_wounds_charger: cancel_charge_attack; resolve courage vs defender; if courage_fails: apply_fleeing and spend remaining_charge_movement in opposite_direction; if no wound: resolve charge normally
+Notes: Réaction réservée en V1 à la cible directe de la charge. Une contre-charge à distance part à mi-course. Une arme à feu doit être chargée. Armes d'hast : réaction à leur portée de contact normale. Pour une distance impaire, la règle d'arrondi de la case médiane sera fixée avec la géométrie de déplacement.
+Statut: Validée
+Type attaque: N/A
+Version: V1
+Étape: Autre
+
+## Déclenchement
+
+La **cible directe** d'une charge peut effectuer une unique attaque de contre-charge si son arme le permet (`Contre-charge = oui`).
+
+Les armes d'hast et armes à distance appropriées sont concernées. Une arme à feu doit être **chargée**.
+
+## Moment de déclenchement
+
+- **Contre-charge à distance** : la réaction part lorsque le chargeur a parcouru **la moitié de sa course**.
+- **Contre-charge de mêlée / arme d'hast** : elle part lorsque le chargeur entre dans la portée de réaction de l'arme.
+- Pour une distance de charge impaire, la convention d'arrondi de la case médiane sera fixée avec les règles géométriques de déplacement.
+
+## Résolution
+
+La réaction est résolue avant l'attaque du chargeur. Si une contre-charge à distance provoque une Fuite, le mouvement de charge restant est calculé depuis le point médian où la réaction a eu lieu.
+
+- Si elle ne **blesse pas**, la charge continue normalement.
+- Si elle **blesse**, l'attaque de charge est annulée et le chargeur effectue immédiatement un test de Courage face au défenseur.
+- Si ce test échoue, le chargeur passe En Fuite, fait demi-tour et dépense tout le **mouvement de charge restant** dans la direction opposée.
+- S'il n'a plus de mouvement disponible, il reste sur place En Fuite.

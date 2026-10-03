@@ -1,0 +1,3 @@
+﻿Nom,Catégorie,Code,Effet mécanique,Utilise l'esquive en défense
+Au Sol,Combat,state.prone,"Lorsqu'un personnage est Au Sol, son Esquive n'est pas utilisée pour calculer la défense contre une attaque visant à le toucher.",No
+En Fuite,Mental,state.fleeing,"État appliqué après un échec de Courage. À l'application, le personnage dépense immédiatement tout mouvement restant pour s'éloigner. Au début de chacun de ses tours, il tente une reprise de contrôle de plus en plus facile ; en cas d'échec, un D3 impose Course effrénée, Cachons-nous ou Feu à volonté.",Yes

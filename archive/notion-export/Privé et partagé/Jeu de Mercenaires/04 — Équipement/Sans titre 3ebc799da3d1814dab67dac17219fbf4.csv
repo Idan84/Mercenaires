@@ -1,0 +1,39 @@
+﻿Nom,Domaine,Prise,Malus vitesse arme base,Portée min hex,Portée max hex,Bonus charge base,Contre-charge,Dégâts PV base,Puissance tranchante base,Puissance perforante base,Puissance contondante base
+Arbalète,"Armes de tir, Martial",2 mains,22,2,20,2,Yes,1D10,0,65,0
+Arc,"Armes de tir, Martial",2 mains,12,2,18,2,Yes,1D6,0,45,0
+Arme d’hast double,"Armes d’hast, Martial",2 mains,28,1,2,2,Yes,2D6,55,45,0
+Arquebuse / Mousquet,"Armes à feu, Martial",2 mains,30,2,24,2,Yes,1D12,0,80,0
+Bardiche,"Armes d’hast, Martial",2 mains,35,1,2,2,Yes,2D8,75,0,0
+Bâton court,"Bâtons, Martial",1 main,4,,,1,No,1D4,0,0,20
+Bâton long,"Bâtons, Martial",2 mains,22,,,2,No,1D8,0,0,30
+Canon à main,"Armes à feu, Martial",2 mains,40,2,10,2,Yes,2D6,0,95,0
+Dague,"Lames courtes, Martial",1 main,0,,,1,No,1D4,25,35,0
+Écu,"Boucliers, Martial",1 main,10,,,,No,1D4,0,0,25
+Épée courte,"Lames courtes, Martial",1 main,6,,,1,No,1D6,35,35,0
+Épée double,"Lames longues, Martial",2 mains,25,,,2,No,2D6,50,35,0
+Épée longue,"Lames longues, Martial",Au choix,12,,,1,No,1D8,50,40,0
+Estoc,"Lames longues, Martial",1 main,8,,,1,No,1D6,0,55,0
+Fléau d’armes,"Armes flexibles ou articulées, Martial",1 main,18,,,1,No,1D8,0,0,55
+Fouet,"Armes flexibles ou articulées, Martial",1 main,3,,,1,No,1D4,20,0,0
+Fronde,"Armes de tir, Martial",1 main,4,2,14,1,Yes,1D4,0,0,25
+Grande épée,"Lames longues, Martial",2 mains,35,,,2,No,2D8,70,50,0
+Hache de guerre,"Haches, Martial",Au choix,20,,,1,No,1D10,65,0,0
+Hache double,"Haches, Martial",2 mains,40,,,2,No,2D8,80,0,0
+Hachette,"Haches, Martial",1 main,8,,,1,No,1D6,40,0,0
+Hallebarde,"Armes d’hast, Martial",2 mains,32,1,2,2,Yes,2D6,70,65,0
+Katana,"Lames longues, Martial",Au choix,12,,,1,No,1D10,60,0,0
+Kukri,"Lames courtes, Martial",1 main,5,,,1,No,1D6,45,0,0
+Lance,"Armes d’hast, Martial",Au choix,12,1,2,2,Yes,1D8,0,55,0
+Marteau de guerre,"Armes contondantes, Martial",2 mains,38,,,2,No,2D8,0,0,70
+Masse d’armes,"Armes contondantes, Martial",1 main,14,,,1,No,1D8,0,0,55
+Massue / Gourdin,"Armes contondantes, Martial",1 main,10,,,1,No,1D6,0,0,35
+Nunchaku,"Armes flexibles ou articulées, Martial",1 main,6,,,1,No,1D6,0,0,35
+Pavois,"Boucliers, Martial",1 main,20,,,,No,1D6,0,0,30
+Pic de guerre,"Armes contondantes, Martial",1 main,16,,,1,No,1D8,0,70,0
+Pistolet,"Armes à feu, Martial",1 main,8,1,8,1,Yes,1D8,0,65,0
+Rondache,"Boucliers, Martial",1 main,6,,,,No,1D4,0,0,20
+Sabre,"Lames longues, Martial",1 main,10,,,1,No,1D8,50,0,0
+Sai,"Lames courtes, Martial",1 main,0,,,1,No,1D4,0,30,0
+Sarbacane,"Armes de tir, Martial",2 mains,6,2,10,2,Yes,1D4,0,10,0
+Trident,"Armes d’hast, Martial",Au choix,14,1,2,2,Yes,1D8,0,50,0
+Tromblon,"Armes à feu, Martial",2 mains,28,1,6,2,Yes,1D10,0,55,0

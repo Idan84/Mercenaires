@@ -1,0 +1,4 @@
+﻿Nom,Code,Description,Multiplicateur malus,Multiplicateur qualité
+Correcte,standard,Qualité de référence d’un objet.,1,1
+Usée,worn,"Objet usé, abîmé ou mal entretenu. Ses valeurs bénéfiques sont réduites et ses éventuels malus augmentés.","1,2","0,8"
+Grand Luxe,luxury,Objet de fabrication supérieure : ses valeurs bénéfiques sont augmentées et ses éventuels malus réduits.,"0,8","1,2"

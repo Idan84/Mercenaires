@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "name": "ancestry-levels",
+  "source": {
+    "database_id": "5b78a963a81e43f7869b1920e369efcd",
+    "archived_path": "archive/notion-export/Privé et partagé/Jeu de Mercenaires/01 — Génération & identité/Niveaux d’ascendance 5b78a963a81e43f7869b1920e369efcd_all.csv",
+    "migrated_on": "2026-10-03"
+  },
+  "columns": [
+    {
+      "source": "Nom",
+      "key": "nom"
+    },
+    {
+      "source": "Multiplicateur d’effet",
+      "key": "multiplicateur_d_effet"
+    },
+    {
+      "source": "Probabilité de base",
+      "key": "probabilite_de_base"
+    }
+  ],
+  "row_count": 3,
+  "rows": [
+    {
+      "nom": "Bâtard",
+      "multiplicateur_d_effet": 2,
+      "probabilite_de_base": 0.2
+    },
+    {
+      "nom": "Lignée proche",
+      "multiplicateur_d_effet": 1,
+      "probabilite_de_base": 0.4
+    },
+    {
+      "nom": "Lointain ancêtre",
+      "multiplicateur_d_effet": 0.5,
+      "probabilite_de_base": 0.4
+    }
+  ]
+}

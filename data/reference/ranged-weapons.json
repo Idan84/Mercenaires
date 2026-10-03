@@ -1,0 +1,174 @@
+{
+  "schema_version": 1,
+  "name": "ranged-weapons",
+  "source": {
+    "database_id": "3ebc799da3d18124874bfce7508cfe33",
+    "archived_path": "archive/notion-export/Privé et partagé/Jeu de Mercenaires/04 — Équipement/Sans titre 3ebc799da3d18124874bfce7508cfe33.csv",
+    "migrated_on": "2026-10-03"
+  },
+  "columns": [
+    {
+      "source": "Nom",
+      "key": "nom"
+    },
+    {
+      "source": "Domaine",
+      "key": "domaine"
+    },
+    {
+      "source": "Portée min hex",
+      "key": "portee_min_hex"
+    },
+    {
+      "source": "Portée max hex",
+      "key": "portee_max_hex"
+    },
+    {
+      "source": "Cadence tir",
+      "key": "cadence_tir"
+    },
+    {
+      "source": "Recharge action rapide",
+      "key": "recharge_action_rapide"
+    },
+    {
+      "source": "Contre-charge",
+      "key": "contre_charge"
+    },
+    {
+      "source": "Attaque de zone",
+      "key": "attaque_de_zone"
+    },
+    {
+      "source": "Dégâts PV base",
+      "key": "degats_pv_base"
+    },
+    {
+      "source": "Puissance perforante base",
+      "key": "puissance_perforante_base"
+    },
+    {
+      "source": "Prise",
+      "key": "prise"
+    },
+    {
+      "source": "Malus vitesse arme base",
+      "key": "malus_vitesse_arme_base"
+    }
+  ],
+  "row_count": 8,
+  "rows": [
+    {
+      "nom": "Tromblon",
+      "domaine": "Armes à feu, Martial",
+      "portee_min_hex": 1,
+      "portee_max_hex": 6,
+      "cadence_tir": "Tir unique",
+      "recharge_action_rapide": true,
+      "contre_charge": true,
+      "attaque_de_zone": true,
+      "degats_pv_base": "1D10",
+      "puissance_perforante_base": 55,
+      "prise": "2 mains",
+      "malus_vitesse_arme_base": 28
+    },
+    {
+      "nom": "Pistolet",
+      "domaine": "Armes à feu, Martial",
+      "portee_min_hex": 1,
+      "portee_max_hex": 8,
+      "cadence_tir": "Tir unique",
+      "recharge_action_rapide": true,
+      "contre_charge": true,
+      "attaque_de_zone": false,
+      "degats_pv_base": "1D8",
+      "puissance_perforante_base": 65,
+      "prise": "1 main",
+      "malus_vitesse_arme_base": 8
+    },
+    {
+      "nom": "Canon à main",
+      "domaine": "Armes à feu, Martial",
+      "portee_min_hex": 2,
+      "portee_max_hex": 10,
+      "cadence_tir": "Tir unique",
+      "recharge_action_rapide": true,
+      "contre_charge": true,
+      "attaque_de_zone": false,
+      "degats_pv_base": "2D6",
+      "puissance_perforante_base": 95,
+      "prise": "2 mains",
+      "malus_vitesse_arme_base": 40
+    },
+    {
+      "nom": "Sarbacane",
+      "domaine": "Armes de tir, Martial",
+      "portee_min_hex": 2,
+      "portee_max_hex": 10,
+      "cadence_tir": "Répétable",
+      "recharge_action_rapide": false,
+      "contre_charge": true,
+      "attaque_de_zone": false,
+      "degats_pv_base": "1D4",
+      "puissance_perforante_base": 10,
+      "prise": "2 mains",
+      "malus_vitesse_arme_base": 6
+    },
+    {
+      "nom": "Fronde",
+      "domaine": "Armes de tir, Martial",
+      "portee_min_hex": 2,
+      "portee_max_hex": 14,
+      "cadence_tir": "Répétable",
+      "recharge_action_rapide": false,
+      "contre_charge": true,
+      "attaque_de_zone": false,
+      "degats_pv_base": "1D4",
+      "puissance_perforante_base": 0,
+      "prise": "1 main",
+      "malus_vitesse_arme_base": 4
+    },
+    {
+      "nom": "Arc",
+      "domaine": "Armes de tir, Martial",
+      "portee_min_hex": 2,
+      "portee_max_hex": 18,
+      "cadence_tir": "Répétable",
+      "recharge_action_rapide": false,
+      "contre_charge": true,
+      "attaque_de_zone": false,
+      "degats_pv_base": "1D6",
+      "puissance_perforante_base": 45,
+      "prise": "2 mains",
+      "malus_vitesse_arme_base": 12
+    },
+    {
+      "nom": "Arbalète",
+      "domaine": "Armes de tir, Martial",
+      "portee_min_hex": 2,
+      "portee_max_hex": 20,
+      "cadence_tir": "Tir unique",
+      "recharge_action_rapide": false,
+      "contre_charge": true,
+      "attaque_de_zone": false,
+      "degats_pv_base": "1D10",
+      "puissance_perforante_base": 65,
+      "prise": "2 mains",
+      "malus_vitesse_arme_base": 22
+    },
+    {
+      "nom": "Arquebuse / Mousquet",
+      "domaine": "Armes à feu, Martial",
+      "portee_min_hex": 2,
+      "portee_max_hex": 24,
+      "cadence_tir": "Tir unique",
+      "recharge_action_rapide": true,
+      "contre_charge": true,
+      "attaque_de_zone": false,
+      "degats_pv_base": "1D12",
+      "puissance_perforante_base": 80,
+      "prise": "2 mains",
+      "malus_vitesse_arme_base": 30
+    }
+  ]
+}

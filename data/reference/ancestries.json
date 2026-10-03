@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "name": "ancestries",
+  "source": {
+    "database_id": "e2bd4f129d754ce1885acf62ea90f487",
+    "archived_path": "archive/notion-export/Privé et partagé/Jeu de Mercenaires/01 — Génération & identité/Ascendances e2bd4f129d754ce1885acf62ea90f487_all.csv",
+    "migrated_on": "2026-10-03"
+  },
+  "columns": [
+    {
+      "source": "Nom",
+      "key": "nom"
+    },
+    {
+      "source": "Idées Bonus",
+      "key": "idees_bonus"
+    }
+  ],
+  "row_count": 11,
+  "rows": [
+    {
+      "nom": "Sang divin",
+      "idees_bonus": "Chance ×3 · Puissance magique ×2 · Réserve de mana ×2"
+    },
+    {
+      "nom": "Sang de dragon",
+      "idees_bonus": "Force ×2 · Résistance au feu ×2"
+    },
+    {
+      "nom": "Sang de djinn",
+      "idees_bonus": "Réserve de mana ×2 · Résistance à la foudre ×2"
+    },
+    {
+      "nom": "Sang d’elfe",
+      "idees_bonus": "Dextérité · Esquive · Intelligence"
+    },
+    {
+      "nom": "Sang de sirène",
+      "idees_bonus": "Charisme ×2 · Résistance au froid ×2"
+    },
+    {
+      "nom": "Sang de troll",
+      "idees_bonus": "Force ×2 · Endurance ×2"
+    },
+    {
+      "nom": "Sang féerique",
+      "idees_bonus": "Puissance magique · Chance ×2"
+    },
+    {
+      "nom": "Sang de démon",
+      "idees_bonus": "Force ×2 · Puissance magique ×2"
+    },
+    {
+      "nom": "Sang d’humain",
+      "idees_bonus": "Courage · Charisme"
+    },
+    {
+      "nom": "Sang d’orc",
+      "idees_bonus": "Force · Endurance"
+    },
+    {
+      "nom": "Sang de dryade",
+      "idees_bonus": "Intelligence · Résistance au poison ×2"
+    }
+  ]
+}

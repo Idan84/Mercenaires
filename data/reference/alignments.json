@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "name": "alignments",
+  "source": {
+    "database_id": "268aef3cc286435ea9aa0bcaaa5be428",
+    "archived_path": "archive/notion-export/Privé et partagé/Jeu de Mercenaires/01 — Génération & identité/Alignements 268aef3cc286435ea9aa0bcaaa5be428_all.csv",
+    "migrated_on": "2026-10-03"
+  },
+  "columns": [
+    {
+      "source": "Nom",
+      "key": "nom"
+    }
+  ],
+  "row_count": 9,
+  "rows": [
+    {
+      "nom": "Chaotique bon"
+    },
+    {
+      "nom": "Neutre"
+    },
+    {
+      "nom": "Neutre mauvais"
+    },
+    {
+      "nom": "Loyal neutre"
+    },
+    {
+      "nom": "Loyal bon"
+    },
+    {
+      "nom": "Chaotique mauvais"
+    },
+    {
+      "nom": "Neutre bon"
+    },
+    {
+      "nom": "Loyal mauvais"
+    },
+    {
+      "nom": "Chaotique neutre"
+    }
+  ]
+}

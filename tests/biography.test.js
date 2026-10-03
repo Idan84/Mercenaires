@@ -66,15 +66,18 @@ assert.equal(third,null,"le pack Nain ne convient pas à un Orc, les autres sont
 assert.deepEqual([...used],["soldat","generique"]);
 
 // Catalogue réel : chaque pack est valide et tous ses tags existent dans les référentiels.
+// Comparaison sans casse ni accents, comme le moteur (« Réserve de Mana » = « Réserve de mana »).
+const norm=v=>String(v).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();
+const names=(file,filter=()=>true)=>new Set(read(file).rows.filter(filter).map(r=>norm(r.nom)));
 const known={
-  people:new Set(read("peoples.json").rows.map(r=>r.nom)),
-  culture:new Set(read("cultures.json").rows.map(r=>r.nom)),
-  origin:new Set(read("social-origins.json").rows.map(r=>r.nom)),
-  alignment:new Set(read("alignments.json").rows.map(r=>r.nom)),
+  people:names("peoples.json"),
+  culture:names("cultures.json"),
+  origin:names("social-origins.json"),
+  alignment:names("alignments.json"),
   profile:new Set(["melee","ranged","magic"]),
-  high:new Set(read("characteristics.json").rows.map(r=>r.nom)),
-  low:new Set(read("characteristics.json").rows.map(r=>r.nom)),
-  magic:new Set(read("skills.json").rows.filter(r=>r.domaine==="Magie").map(r=>r.nom))
+  high:names("characteristics.json"),
+  low:names("characteristics.json"),
+  magic:names("skills.json",r=>r.domaine==="Magie")
 };
 const ids=new Set();
 for(const p of catalog){
@@ -83,7 +86,7 @@ for(const p of catalog){
   assert.ok(["any","homme","femme"].includes(p.gender),p.id+" : genre inconnu");
   for(const [key,values] of Object.entries(p.tags)){
     if(!known[key]) continue;
-    for(const v of values) assert.ok(known[key].has(v),p.id+" : tag inconnu "+key+":"+v);
+    for(const v of values) assert.ok(known[key].has(norm(v)),p.id+" : tag inconnu "+key+":"+v);
   }
   for(const text of [p.short,p.rumor,p.motto]) assert.ok(!/\{(?!nom\})[^|}]*\}/.test(text),p.id+" : variable inconnue dans « "+text+" »");
 }

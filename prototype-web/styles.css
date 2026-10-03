@@ -319,4 +319,12 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
 .tavern-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:flex-end}
 .tavern-intendant{display:flex;align-items:center;gap:6px;font-size:.85rem}
 .save-status{font-size:.75rem;color:#6d655c}
+.company-meta strong.negative{color:#b53025}
+.test-tool{margin-left:4px;padding:2px 7px;border:1px dashed #b9ad9c;border-radius:6px;background:transparent;color:#6d655c;font-size:.7rem;cursor:pointer}
+.test-tool:hover{border-style:solid;color:#201d1a}
+.recovery-badge{display:inline-block;margin-top:3px;padding:1px 7px;border-radius:999px;font-size:.68rem;font-weight:700;background:#efe4cb;color:#6f5a1f}
+.recovery-badge.wounded{background:#f6e0da;color:#9a2a20}
+.mission-pick.unavailable{opacity:.55;cursor:not-allowed}
+.game-over{border-left:4px solid #b53025}
+.game-over h2{margin:4px 0 8px}
 .save-status.save-error{color:#a33c2f;font-weight:700}

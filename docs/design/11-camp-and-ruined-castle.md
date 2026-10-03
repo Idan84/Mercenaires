@@ -16,7 +16,7 @@ La partie commence avec le château en ruines comme future base de la compagnie.
 Éléments de départ retenus :
 
 - **Taverne** à proximité / « au coin de la rue » ;
-- **Dortoir : capacité 20** ;
+- **Dortoir : capacité 40** (portée de 20 à 40 par Idan le 2026-10-03, car l'escouade initiale peut dépasser 20 mercenaires) ;
 - **1 000 pièces d’or** ;
 - l’**Initial Squad** générée par la fonction déjà existante.
 

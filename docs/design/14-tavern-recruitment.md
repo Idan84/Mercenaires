@@ -25,7 +25,7 @@ Cette capacité est totalement distincte de celle du Dortoir :
 
 - Taverne : candidats non recrutés ;
 - Dortoir : mercenaires membres de la compagnie ;
-- Dortoir initial : **20 places**.
+- Dortoir initial : **40 places** (décision Idan du 2026-10-03 ; constante `camp.dormitory.initial_capacity`).
 
 Un candidat de la Taverne n'occupe aucune place de Dortoir.
 

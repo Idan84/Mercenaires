@@ -82,4 +82,88 @@ if(combat.canSwitchWeaponSet(sw)){
 }
 
 assert.equal(combat.axialDistance({q:0,r:0},{q:3,r:-3}),3);
+
+// Inverse de la courbe 10 + 80/(1+exp(-delta/20)) : retrouve le delta d'une probabilité non bornée.
+function deltaOf(p){
+  assert.ok(p>10&&p<90,"probabilité bornée : delta non mesurable ("+p+")");
+  return -20*Math.log(80/(p-10)-1);
+}
+function near(actual,expected,label){
+  assert.ok(Math.abs(actual-expected)<1e-6,label+" : "+actual+" au lieu de "+expected);
+}
+function withMainWeapon(character,name){
+  const item={id:"test-"+name,name,templateId:"test",itemType:"weapon",qualityCode:"standard"};
+  return {
+    ...character,
+    items:[...(character.items||[]),item],
+    equipment:{...character.equipment,slots:{...character.equipment.slots,weapon_set_1_main:item.id}}
+  };
+}
+
+// Zone de menace : arme de mêlée standard 1 hex, arme d'hast 1–2 hex, rien avec une arme de tir.
+const guard=unit(a,0,0);
+assert.equal(setFamily(guard,"melee"),true);
+assert.equal(combat.weaponRange(guard).max,1);
+assert.equal(combat.threatens(guard,{q:1,r:0}),true);
+assert.equal(combat.threatens(guard,{q:2,r:0}),false);
+assert.equal(combat.threatens(guard,{q:0,r:0}),false);
+assert.equal(combat.threatens({...guard,alive:false},{q:1,r:0}),false);
+
+const pike=unit(withMainWeapon(a,"Hallebarde"),0,0);
+assert.equal(combat.threatens(pike,{q:2,r:0}),true);
+assert.equal(combat.threatens(pike,{q:3,r:0}),false);
+
+// Sortir de la zone déclenche la réaction ; se déplacer à l'intérieur ne déclenche rien.
+assert.deepEqual(combat.opportunityReactors([guard],{q:1,r:0},{q:2,r:0}),[guard]);
+assert.deepEqual(combat.opportunityReactors([guard],{q:1,r:0},{q:1,r:-1}),[]);
+assert.deepEqual(combat.opportunityReactors([pike],{q:1,r:0},{q:2,r:0}),[]);
+assert.deepEqual(combat.opportunityReactors([pike],{q:2,r:0},{q:3,r:0}),[pike]);
+assert.deepEqual(combat.opportunityReactors([guard,pike],{q:3,r:0},{q:4,r:0}),[]);
+
+// Tir : réaction des adversaires qui menacent le tireur, sauf la cible du tir.
+const shooter=unit(b,1,0),farTarget=unit(b,6,0);
+assert.deepEqual(combat.rangedOpportunityReactors([guard],shooter,farTarget),[guard]);
+assert.deepEqual(combat.rangedOpportunityReactors([guard],shooter,guard),[]);
+
+// Toucher : opportunité = Esquive ×0,5 et Perception défensive annulée ; dos = Perception annulée.
+const striker=unit(a,0,0),victim=unit(b,1,0);
+setFamily(striker,"melee");
+const dodge=combat.effectiveDodge(victim),perception=Number(b.stats.Perception)||0;
+const pNormal=combat.hitProbability(striker,victim,"melee",1);
+const pBack=combat.hitProbability(striker,victim,"melee",1,{backstab:true});
+const pOpp=combat.hitProbability(striker,victim,"melee",1,{opportunity:true});
+near(deltaOf(pBack)-deltaOf(pNormal),0.2*perception,"Frappe dans le dos (Toucher)");
+near(deltaOf(pOpp)-deltaOf(pNormal),0.5*dodge+0.2*perception,"Attaque d'opportunité (Toucher)");
+
+// Blesser : la Frappe dans le dos divise par deux la résistance d'armure au type de dégâts.
+const weapon=combat.weaponTemplate(combat.activeWeaponItem(striker));
+const normalMatchups=combat.damageMatchups(victim,weapon);
+const backMatchups=combat.damageMatchups(victim,weapon,{backstab:true});
+assert.ok(normalMatchups.length>0);
+normalMatchups.forEach((m,i)=>{
+  near(backMatchups[i].armorResistance,0.5*m.armorResistance,"résistance "+m.type);
+  near(backMatchups[i].matchup,m.power-0.5*m.armorResistance,"matchup "+m.type);
+});
+
+// Charge : ForceEffectiveCharge = Force + PuissanceCharge au jet de Blesser.
+const flatMatchup={matchup:0};
+const pWound=combat.woundProbability(striker,victim,"melee",flatMatchup);
+const pChargeWound=combat.woundProbability(striker,victim,"melee",flatMatchup,{chargePower:12});
+near(deltaOf(pChargeWound)-deltaOf(pWound),12,"Force de charge (Blesser)");
+
+// Une attaque d'opportunité est toujours une Frappe dans le dos, et seulement un coup de mêlée.
+victim.hp=b.pvMax;victim.alive=true;
+const opp=combat.resolveAttack(striker,victim,{mode:"melee",opportunity:true});
+assert.equal(opp.ok,true);
+assert.equal(opp.opportunity,true);
+assert.equal(opp.backstab,true);
+assert.equal(combat.resolveAttack(striker,victim,{mode:"melee",opportunity:true,chargeDistance:3}).ok,false);
+
+// Charge : le chemin suit la ligne droite jusqu'à la case d'arrivée.
+const charger=unit(a,0,0),chargeTarget=unit(b,4,0);
+const charge=combat.chargeData(charger,chargeTarget);
+assert.equal(charge.path.length,charge.travel);
+assert.deepEqual(charge.path[0],{q:1,r:0});
+assert.deepEqual(charge.path[charge.path.length-1],charge.destination);
+
 console.log(JSON.stringify({ok:true},null,2));

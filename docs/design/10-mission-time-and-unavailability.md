@@ -32,7 +32,7 @@ Le passage des jours doit faire progresser de façon cohérente :
 - salaires journaliers ;
 - entraînements au camp.
 
-Une fonction conceptuelle de type `AdvanceTime(days)` pourra centraliser ces changements.
+**Décision validée :** une fonction centrale `AdvanceTime(days)` fait avancer tous ces systèmes. Le temps stratégique est résolu **jour par jour** : `AdvanceTime(5)` doit être équivalent à cinq résolutions successives d’une journée, afin de conserver l’ordre des événements quotidiens.
 
 <aside>
 🗺️

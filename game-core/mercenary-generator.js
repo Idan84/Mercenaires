@@ -49,6 +49,7 @@
     const formulaConstantRows = rows.formulaConstants || [];
     const weaponRows = rows.weapons || [];
     const binaryAptitudeRows = rows.binaryAptitudeGrants || [];
+    const alignmentGeneration = reference.alignmentGeneration || {};
 
     const peopleByName = new Map(peopleRows.map(r => [r.nom, r]));
     const skillByName = new Map(skillRows.map(r => [r.nom, r]));
@@ -152,6 +153,76 @@
 
     function isOriginCompatible(culture, origin) {
       return originsForCulture(culture).includes(origin);
+    }
+
+    function alignmentPosition(name) {
+      const grid = alignmentGeneration.grid || [];
+      for (let row = 0; row < grid.length; row++) {
+        const col = (grid[row] || []).indexOf(name);
+        if (col >= 0) return {row, col};
+      }
+      return null;
+    }
+
+    function adjacentAlignments(name) {
+      const position = alignmentPosition(name);
+      const grid = alignmentGeneration.grid || [];
+      if (!position) return [];
+      const result = [];
+      for (const [dr, dc] of [[-1,0],[1,0],[0,-1],[0,1]]) {
+        const row = grid[position.row + dr];
+        const value = row?.[position.col + dc];
+        if (value) result.push(value);
+      }
+      return result;
+    }
+
+    function alignmentDistributionForPeople(people) {
+      const principal = peopleByName.get(people)?.alignement_principal;
+      const all = alignmentRows.map(r => r.nom);
+      if (!principal || !all.includes(principal)) {
+        return all.map(name => ({name, probability: all.length ? 1 / all.length : 0, bucket:"fallback"}));
+      }
+
+      const distribution = alignmentGeneration.distribution || {};
+      const principalProbability = Number(distribution.principal) || 0.4;
+      const adjacentTotal = Number(distribution.adjacent_total) || 0.2;
+      const othersTotal = Number(distribution.others_total) || 0.4;
+      const adjacent = adjacentAlignments(principal).filter(name => name !== principal);
+      const adjacentSet = new Set(adjacent);
+      const others = all.filter(name => name !== principal && !adjacentSet.has(name));
+
+      const entries = [{
+        name: principal,
+        probability: principalProbability,
+        bucket:"principal"
+      }];
+
+      for (const name of adjacent) {
+        entries.push({
+          name,
+          probability: adjacent.length ? adjacentTotal / adjacent.length : 0,
+          bucket:"adjacent"
+        });
+      }
+
+      for (const name of others) {
+        entries.push({
+          name,
+          probability: others.length ? othersTotal / others.length : 0,
+          bucket:"other"
+        });
+      }
+
+      return entries;
+    }
+
+    function chooseAlignment(people) {
+      const distribution = alignmentDistributionForPeople(people);
+      return weightedChoice(distribution.map(entry => ({
+        value: entry.name,
+        weight: entry.probability
+      })));
     }
 
     function rollAncestryLevel() {
@@ -770,7 +841,7 @@
 
       validateForcedIdentity({people, culture, origin, ascendance: ancestry.name});
 
-      const alignment = createOptions.forcedAlignment || randomChoice(alignmentRows.map(r => r.nom));
+      const alignment = createOptions.forcedAlignment || chooseAlignment(people);
       const identity = {
         people,
         culture,
@@ -781,7 +852,12 @@
       };
 
       const trace = {
-        identity: {...identity, ascendanceLevelName: ancestry.levelName},
+        identity: {
+          ...identity,
+          ascendanceLevelName: ancestry.levelName,
+          alignmentPrincipal: peopleByName.get(people)?.alignement_principal || null,
+          alignmentDistribution: alignmentDistributionForPeople(people)
+        },
         characteristics: {},
         resistances: {},
         skills: {},
@@ -937,6 +1013,14 @@
       for (const p of peopleRows) {
         if (!culturesForPeople(p.nom).length) issues.push(`No culture for ${p.nom}`);
         if (!compatibleAncestries(p.nom).length) issues.push(`No ancestry compatibility for ${p.nom}`);
+        const alignmentDistribution = alignmentDistributionForPeople(p.nom);
+        const alignmentProbability = sum(alignmentDistribution.map(x => x.probability));
+        if (!p.alignement_principal || !alignmentRows.some(a => a.nom === p.alignement_principal)) {
+          issues.push(`Invalid principal alignment for ${p.nom}: ${p.alignement_principal || "missing"}`);
+        }
+        if (Math.abs(alignmentProbability - 1) > 1e-9) {
+          issues.push(`Alignment probability sum for ${p.nom} = ${alignmentProbability}`);
+        }
       }
       for (const c of cultureRows) {
         if (!originsForCulture(c.nom).length) issues.push(`No origin for ${c.nom}`);
@@ -1019,6 +1103,8 @@
       isAncestryCompatible,
       isCultureCompatible,
       isOriginCompatible,
+      alignmentDistributionForPeople,
+      adjacentAlignments,
       people: () => peopleRows.map(r => r.nom),
       alignments: () => alignmentRows.map(r => r.nom),
       ancestries: () => ancestryRows.map(r => r.nom),

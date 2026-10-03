@@ -14,7 +14,7 @@ const files = {
   ancestryLevels:"ancestry-levels.json", d6Scale:"d6-generation-scale.json",
   generationMatrix:"generation-matrix.json", skills:"skills.json",
   characteristics:"characteristics.json", formulaConstants:"formula-constants.json",
-  weapons:"weapons.json"
+  weapons:"weapons.json", binaryAptitudeGrants:"binary-aptitude-grants.json"
 };
 
 const reference = Object.fromEntries(Object.entries(files).map(([key,file]) => [
@@ -48,6 +48,11 @@ assert.equal(audit.probabilities.ancestryLevelProbability, 1);
 assert.equal(audit.matrixCoverage.filter(x => x.status === "missing-target").length, 0);
 
 assert.equal(audit.pending.length, 0, `Gameplay generation still has pending rules: ${JSON.stringify(audit.pending)}`);
+assert.equal(audit.binaryPending.length, 6);
+for (const expected of [
+  "Vision nocturne","Vol","Empoisonnement des armes",
+  "Port d’armure légère","Port d’armure intermédiaire","Port d’armure lourde"
+]) assert.ok(audit.binaryPending.some(x => x.target === expected), `Missing binary aptitude pending config: ${expected}`);
 assert.equal(audit.matrixCoverage.filter(x => x.status === "active").length, 106);
 assert.equal(audit.matrixCoverage.filter(x => x.status === "blocked").length, 0);
 
@@ -67,6 +72,12 @@ for (let i = 0; i < 1000; i++) {
   assert.ok(Number.isFinite(c.reputation) && c.reputation > 0);
   assert.ok(Number.isFinite(c.salary) && c.salary > 0);
   assert.equal(c.mana, c.stats["Réserve de mana"]);
+  assert.equal(typeof c.skills.physiology["Vision nocturne"], "boolean");
+  assert.equal(typeof c.skills.physiology.Vol, "boolean");
+  assert.equal(typeof c.skills.martial["Empoisonnement des armes"], "boolean");
+  assert.equal(typeof c.skills.martial["Port d’armure légère"], "boolean");
+  assert.equal(typeof c.skills.martial["Port d’armure intermédiaire"], "boolean");
+  assert.equal(typeof c.skills.martial["Port d’armure lourde"], "boolean");
   for (const key of ["oneHand","twoHands","ranged"]) {
     const pref = c.weaponPreferences[key];
     assert.ok(pref, `Missing weapon preference ${key}`);

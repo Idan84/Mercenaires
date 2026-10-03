@@ -162,13 +162,19 @@
       return base>=0?base*mult:base/mult;
     }
 
-    function selectDamageMatchup(attacker,defender,weapon){
-      const candidates=PHYSICAL_TYPES.map(type=>{
-        const power=Number(weapon[type.weapon])||0;
+    // Frappe dans le dos V1 : la résistance au type de dégâts est divisée par deux pour l'étape Blesser.
+    function damageMatchups(defender,weapon,context={}){
+      const factor=context.backstab?0.5:1;
+      return PHYSICAL_TYPES.map(type=>{
+        const power=Number(weapon?.[type.weapon])||0;
         if(power<=0) return null;
-        const armorResistance=effectiveArmorResistance(defender,type.name);
+        const armorResistance=effectiveArmorResistance(defender,type.name)*factor;
         return {type:type.name,power,armorResistance,matchup:power-armorResistance};
       }).filter(Boolean);
+    }
+
+    function selectDamageMatchup(attacker,defender,weapon,context={}){
+      const candidates=damageMatchups(defender,weapon,context);
 
       if(!candidates.length) return {type:"contondant",power:0,armorResistance:0,matchup:0};
 
@@ -187,14 +193,18 @@
       return 10+80/(1+Math.exp(-delta/20));
     }
 
-    function hitProbability(attacker,defender,mode,distance){
+    // Attaque d'opportunité V1 : Esquive ×0,5 et Perception défensive annulée.
+    // Frappe dans le dos V1 : Perception défensive annulée.
+    function hitProbability(attacker,defender,mode,distance,context={}){
       const weapon=weaponTemplate(activeWeaponItem(attacker));
       const m=mastery(attacker.character,weapon);
       const a=attacker.character.stats||{},d=defender.character.stats||{};
+      const defensivePerception=context.opportunity||context.backstab?0:(Number(d.Perception)||0);
+      const dodgeFactor=context.opportunity?0.5:1;
       let delta=(Number(a["Dextérité"])||0)
         +0.2*(m.categoryScore+m.weaponScore+(Number(a.Perception)||0)+effectiveSpeed(attacker))
-        -effectiveDodge(defender)
-        -0.2*((Number(d.Perception)||0)+effectiveSpeed(defender));
+        -dodgeFactor*effectiveDodge(defender)
+        -0.2*(defensivePerception+effectiveSpeed(defender));
 
       if(mode==="ranged"){
         const range=weaponRange(attacker);
@@ -206,7 +216,8 @@
       return clamp(logistic(delta),10,90);
     }
 
-    function woundProbability(attacker,defender,mode,matchup){
+    // Charge CAC V1 : ForceEffectiveCharge = Force + PuissanceCharge pour Blesser.
+    function woundProbability(attacker,defender,mode,matchup,context={}){
       const weapon=weaponTemplate(activeWeaponItem(attacker));
       const m=mastery(attacker.character,weapon);
       const a=attacker.character.stats||{},d=defender.character.stats||{};
@@ -215,7 +226,7 @@
       if(mode==="ranged"){
         attackStat=Number(a.Perception)||0;
       }else{
-        attackStat=Number(a.Force)||0;
+        attackStat=(Number(a.Force)||0)+(Number(context.chargePower)||0);
         if(usesTwoHands(attacker,weapon)){
           twoHands=Number(attacker.character.skills?.martial?.["Combat à deux mains"])||0;
         }
@@ -273,6 +284,11 @@
       if(!weapon) return {ok:false,reason:"Aucune arme active."};
       if(!canAttackAtDistance(attacker,distance,mode)) return {ok:false,reason:"Cible hors portée ou arme incompatible."};
 
+      // Toute attaque d'opportunité bénéficie de Frappe dans le dos (Attaque d'opportunité CAC V1).
+      const opportunity=Boolean(options.opportunity);
+      const backstab=opportunity||Boolean(options.backstab);
+      if(opportunity&&(mode!=="melee"||Number(options.chargeDistance)>0)) return {ok:false,reason:"Une attaque d'opportunité est un coup de mêlée simple."};
+
       let chargePower=0;
       if(Number(options.chargeDistance)>0){
         const fallRoll=d100();
@@ -283,17 +299,18 @@
         chargePower=Number(options.chargeDistance)*bonus*(Number(quality(item).multiplicateur_qualite)||1);
       }
 
-      const pHit=hitProbability(attacker,defender,mode,distance);
+      const tags={chargePower,opportunity,backstab};
+      const pHit=hitProbability(attacker,defender,mode,distance,{opportunity,backstab});
       const hitRoll=d100(),hit=hitRoll<=pHit;
       if(!hit){
-        return {ok:true,mode,weapon:weapon.nom,distance,pHit,hitRoll,hit:false,wound:false,damage:0,chargePower};
+        return {ok:true,mode,weapon:weapon.nom,distance,pHit,hitRoll,hit:false,wound:false,damage:0,...tags};
       }
 
-      const matchup=selectDamageMatchup(attacker,defender,weapon);
-      const pWound=woundProbability(attacker,defender,mode,matchup);
+      const matchup=selectDamageMatchup(attacker,defender,weapon,{backstab});
+      const pWound=woundProbability(attacker,defender,mode,matchup,{chargePower});
       const woundRoll=d100(),wound=woundRoll<=pWound;
       if(!wound){
-        return {ok:true,mode,weapon:weapon.nom,distance,pHit,hitRoll,hit:true,matchup,pWound,woundRoll,wound:false,damage:0,chargePower};
+        return {ok:true,mode,weapon:weapon.nom,distance,pHit,hitRoll,hit:true,matchup,pWound,woundRoll,wound:false,damage:0,...tags};
       }
 
       const damageData=physicalDamage(attacker,defender,mode,chargePower);
@@ -303,8 +320,25 @@
       return {
         ok:true,mode,weapon:weapon.nom,distance,pHit,hitRoll,hit:true,
         matchup,pWound,woundRoll,wound:true,...damageData,
-        targetHp:defender.hp,targetDown:!defender.alive,chargePower
+        targetHp:defender.hp,targetDown:!defender.alive,...tags
       };
+    }
+
+    // Attaque d'opportunité CAC V1 : un combattant menace les hexagones atteignables par son arme de mêlée active.
+    function threatens(unit,hex){
+      if(!unit?.alive) return false;
+      if(!isMeleeWeapon(weaponTemplate(activeWeaponItem(unit)))) return false;
+      return canAttackAtDistance(unit,axialDistance(unit,hex),"melee");
+    }
+
+    // Sortir de la zone menacée déclenche la réaction ; s'y déplacer ne déclenche rien.
+    function opportunityReactors(opponents,from,to){
+      return opponents.filter(o=>threatens(o,from)&&!threatens(o,to));
+    }
+
+    // Tirer sur une autre cible que l'adversaire qui menace déclenche sa réaction.
+    function rangedOpportunityReactors(opponents,shooter,target){
+      return opponents.filter(o=>o!==target&&threatens(o,shooter));
     }
 
     function canSwitchWeaponSet(unit){
@@ -337,6 +371,7 @@
       return {
         valid:travel>=base&&travel<=2*base,
         travel,
+        path:Array.from({length:travel},(_,i)=>({q:attacker.q+step.q*(i+1),r:attacker.r+step.r*(i+1)})),
         destination:{q:defender.q-step.q,r:defender.r-step.r},
         min:base,
         max:2*base
@@ -359,11 +394,16 @@
       weaponRange,
       canAttackAtDistance,
       hitProbability,
+      damageMatchups,
+      selectDamageMatchup,
       woundProbability,
       resolveAttack,
       canSwitchWeaponSet,
       switchWeaponSet,
-      chargeData
+      chargeData,
+      threatens,
+      opportunityReactors,
+      rangedOpportunityReactors
     };
   }
 

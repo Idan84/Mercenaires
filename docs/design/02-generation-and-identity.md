@@ -146,3 +146,33 @@ Ces règles sont elles aussi soumises au principe général de pondération futu
 Piste de conception retenue pour le futur générateur narratif : créer une **grande banque de biographies courtes, plutôt drôles et marquées**, puis faire correspondre ces biographies aux profils générés plutôt que rédiger systématiquement un texte depuis zéro.
 
 Le matching pourra s'appuyer sur peuple, culture, origine sociale, caractéristiques dominantes/faibles, compétences, équipement, personnalité et particularités. Le système précis et le volume de biographies restent à définir.
+
+## Alignement — affinité du peuple
+
+Chaque peuple possède un **alignement principal** dans `peoples.json`.
+
+Pour un mercenaire généré automatiquement :
+
+- **40 %** : alignement principal du peuple ;
+- **45 % au total** : répartis uniformément entre les cases qui touchent l'alignement principal dans la grille 3×3, **côtés et diagonales compris** ;
+- **15 % au total** : répartis uniformément entre tous les autres alignements.
+
+Grille canonique :
+
+| | | |
+|---|---|---|
+| Loyal bon | Neutre bon | Chaotique bon |
+| Loyal neutre | Neutre | Chaotique neutre |
+| Loyal mauvais | Neutre mauvais | Chaotique mauvais |
+
+Exemple : pour un peuple principalement **Chaotique bon** :
+
+- Chaotique bon : **40 %**
+- Chaotique neutre : **15 %**
+- Neutre bon : **15 %**
+- Neutre : **15 %**
+- chacun des cinq autres alignements : **3 %**
+
+Pour **Neutre**, les huit autres cases touchent la case centrale : elles se partagent donc les 60 % restants, soit **7,5 % chacune**.
+
+Le capitaine choisi par le joueur peut toujours avoir un alignement forcé ; cette distribution ne s'applique qu'aux alignements générés automatiquement.

@@ -114,15 +114,17 @@ function comparisonData(currentValue, accessor) {
   const max = maxItem.value;
   const avg = values.reduce((a,b)=>a+b,0)/values.length;
   const med = median(values);
-  const pos = value => max === min ? 50 : Math.max(0,Math.min(100,((value-min)/(max-min))*100));
+  const scaleMin = Math.min(min,currentValue);
+  const scaleMax = Math.max(max,currentValue);
+  const pos = value => scaleMax === scaleMin ? 50 : ((value-scaleMin)/(scaleMax-scaleMin))*100;
 
   return {
     min,max,avg,median:med,current:currentValue,
     minName:minItem.member.name,
     maxName:maxItem.member.name,
     positions:{
-      min:0,
-      max:100,
+      min:pos(min),
+      max:pos(max),
       avg:pos(avg),
       median:pos(med),
       current:pos(currentValue)

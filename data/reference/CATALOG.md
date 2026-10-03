@@ -30,5 +30,5 @@ Git est la source de vérité. Les JSON ci-dessous sont les référentiels struc
 | binary-aptitude-grants.json | 6 | aptitude, domaine, mode, automatic, bonuses_pp, armor, reason |
 
 | alignment-generation.json | 1 | distribution, neighborhood, grid, notes |
-| spells.json | 66 | nom, code, ecoles, palier, cible, forme, portee, duree, type_degats, effet, ton, notes |
+| spells.json | 66 | id, nom, ecoles, palier, cible, forme, portee, duree, type_degats, effet, ton, notes |
 | biography-packs.json | 30 | id, short, rumor, motto, hard_tags, soft_tags, weight |

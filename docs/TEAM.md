@@ -70,7 +70,9 @@ Aucun agent ne travaille spontanément : il faut qu'une session soit lancée. Gi
 |---|---|---|---|
 | Combat lot 1 complet : Attaques d'opportunité, Frappe dans le dos, Encerclement, Courage, Fuite (+ Force de charge au Blesser) | JC3 | PR #7 | Fusionné |
 | Corrections Mission Test : second Mouvement, carte 13×9 rectangulaire et entièrement visible | JC3 | PR #7 | Fusionné |
-| Sauvegarde de la partie (automatique, « Continuer » au démarrage) | JC3 | `claude/friendly-bardeen-edzi87` | En relecture |
+| Sauvegarde de la partie (automatique, « Continuer » au démarrage) | JC3 | PR #15 | Fusionné |
+| Correctifs : profil Magie (Issue #12), PV négatifs (Issue #13) | JC3 | PR #16 | Fusionné |
+| Fin de mission V1 : blessures, fatigue, indisponibilité | Chatty + Idan | Issue #14 | Design en cours ; code JC3 après validation des valeurs |
 | Registre d'équilibrage (`docs/design/92-balance-questions.md`) | JC3, puis Idan + Chatty | PR #7 | Équilibrage reporté par Idan |
 | Taverne : design V1 (`docs/design/14-tavern-recruitment.md`) | Chatty + Idan | PR #6 | Fusionné |
 | Taverne : code V1, étape 1 — état de partie, `AdvanceTime`, boucle quotidienne, entretien, négociation (`game-core/`) | JC3 | PR #11 | Fusionné |
@@ -98,4 +100,5 @@ Aucun agent ne travaille spontanément : il faut qu'une session soit lancée. Gi
 ## Dépendances
 
 - La Taverne a besoin de la boucle de temps (`AdvanceTime`), d'un état de partie persistant (`Game` / `Company`) et du générateur de mercenaires.
+- Sauvegarde (review Chatty, PR #15) : quand missions, retour, blessures, fatigue, paie et constructions passeront par `AdvanceTime`, toute modification de l'état de partie devra être sauvegardée par un même point central, jamais par un chemin à part.
 - Combat lot 1 : l'Attaque d'opportunité et l'Encerclement appliquent la Frappe dans le dos ; la Fuite dépend du Courage et peut déclencher des Attaques d'opportunité.

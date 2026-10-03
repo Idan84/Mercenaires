@@ -24,6 +24,8 @@ Les bots ne cherchent ni à se placer, ni à encercler, ni à éviter les attaqu
 | E4 | Avantage de l'équipe qui commence | Le joueur gagne environ 75 % des combats | À mesurer |
 | E5 | Létalité de la chaîne de fuite | Sous-nombre → blessure → Fuite → attaques d'opportunité dans le dos | À mesurer |
 | E6 | Fuite immédiate sans mouvement | Un personnage qui panique sans mouvement restant reste sur place | À observer en jeu |
+| E7 | Fin de mission : mort sous 0 PV | 74 % des mercenaires tombés sous 0 PV meurent ; le capitaine meurt dans 11,5 % des combats où il se bat | Ouvert |
+| E8 | Fin de mission : poids de l'Endurance | Environ 7 points de risque de blessure entre un mercenaire peu et très endurant | Ouvert |
 
 ### E1 — Courage : 41 % d'échecs
 
@@ -77,3 +79,23 @@ Déjà demandé par le [backlog](/design/#doc=90-mechanics-backlog.md) et relev�
 Conforme à [Mouvement de fuite immédiat V1](/design/#doc=formulas/mouvement-de-fuite-immediat-v1.md) : sans mouvement restant, le personnage reste sur place, puis peut parcourir jusqu'à `2 × MouvementBase` au tour suivant. Relevé par Groky (Issue #4) : effet « arrêt sur image ».
 
 **À observer** en jouant, avant tout changement.
+
+### E7 — Fin de mission : mort sous 0 PV
+
+Mesure sur 400 combats (1 200 mercenaires du joueur, capitaine présent dans chaque combat), avec les valeurs PLAYTEST de [Fin de mission](/design/#doc=10-mission-time-and-unavailability.md) :
+
+| Bilan | Part des mercenaires |
+|---|---:|
+| Mort | 13 % |
+| Blessé (4,8 jours en moyenne) | 9 % |
+| Fatigué (1 jour : 56 %, 2 jours : 42 %, 3 jours : 3 %) | 78 % |
+
+**Cause** : le jet de mort (formule validée) vaut 100 % dès -10 % des PV max, et un coup retire souvent bien plus que cela. Sur 213 mercenaires tombés sous 0 PV, 158 meurent (74 %). Le capitaine meurt dans 46 combats sur 400 (11,5 %), ce qui serait un Game Over en campagne.
+
+**Pistes** : aucune pour l'instant ; à rejouer avec de vraies missions, où le joueur choisira d'engager ou non son capitaine.
+
+### E8 — Fin de mission : poids de l'Endurance
+
+Relevé par JC3 (Issue #14) sur 3 000 mercenaires générés : l'Endurance va de 35 à 75 pour 80 % d'entre eux. Dans le jet de blessure (`- Endurance / 6`), cela ne fait varier le risque que d'environ 7 points ; ce sont les PV restants qui décident presque tout.
+
+**Piste** : si l'Endurance doit compter davantage, baisser le diviseur `mission.wound.endurance_divisor`.

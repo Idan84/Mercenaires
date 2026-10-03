@@ -189,4 +189,5 @@ En complément des données déjà prévues dans l’architecture :
   - la mort du capitaine met fin à la partie : **la sauvegarde est effacée**.
 - Outil de test, pas une règle : un bouton « +1 000 (test) » ajoute de l’or à la compagnie.
 - Choix d’implémentation à confirmer, en attendant les règles du §10 : la chaîne s’applique après une victoire comme après une défaite ; un mercenaire sorti de la carte en fuite la passe comme tout survivant, avec ses PV restants ; les ennemis ne la passent pas.
-- Encore ouvert : quitter la Mission Test en cours de combat (bouton « Quitter ») n’applique aucun bilan ; l’escouade initiale et le capitaine n’ont pas de contrat, donc pas de prime ; un trésor négatif n’a encore aucune conséquence ; les salaires journaliers ne sont pas encore payés.
+- On ne quitte la Mission Test qu’une fois le combat résolu : le bouton de retour reste désactivé pendant le combat (review Chatty, PR #20). Une vraie retraite ou un abandon auront plus tard leur propre résolution.
+- Encore ouvert : recharger la page pendant un combat revient à l’état d’avant le combat, car un combat en cours n’est pas sauvegardé ; l’escouade initiale et le capitaine n’ont pas de contrat, donc pas de prime ; un trésor négatif n’a encore aucune conséquence ; les salaires journaliers ne sont pas encore payés.

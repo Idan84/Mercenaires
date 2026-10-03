@@ -869,9 +869,14 @@ function renderMission(){
   $("mission-result").classList.toggle("hidden",!m.over);
   $("mission-aftermath").innerHTML=m.over?renderMissionAftermath(m):"";
   $("mission-result-back-btn").textContent=m.companyReport?.gameOver?"Fin de la partie":"Retour à la compagnie";
+  $("mission-leave-btn").disabled=!m.over;
+  $("mission-leave-btn").title=m.over?"":"Disponible une fois le combat terminé";
 }
 
+// Les morts étant définitives, on ne quitte la Mission Test qu'une fois le combat résolu
+// (review Chatty, PR #20). Une vraie retraite aura plus tard sa propre résolution.
 function leaveMission(){
+  if(game.mission&&!game.mission.over) return;
   const gameOver=game.mission?.companyReport?.gameOver;
   game.mission=null;
   $("mission-panel").classList.add("hidden");

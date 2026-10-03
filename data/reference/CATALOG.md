@@ -28,3 +28,5 @@ Git est la source de vérité. Les JSON ci-dessous sont les référentiels struc
 | formula-terms.json | 13 | nom, caracteristique, code_variable, coefficient, cote, description, formule, ordre, source |
 
 | binary-aptitude-grants.json | 6 | aptitude, domaine, mode, automatic, bonuses_pp, armor, reason |
+
+| alignment-generation.json | 1 | distribution, neighborhood, grid, notes |

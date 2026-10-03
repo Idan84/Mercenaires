@@ -247,12 +247,10 @@ Un sort peut être stocké comme contenu statique :
 
 ```json
 {
-  "id": "fireball",
+  "id": "fire.fireball",
   "name": "Boule de feu",
   "schools": ["Feu"],
-  "tags": ["attaque", "zone", "projectile"],
-  "known": false,
-  "mastery": 0
+  "tags": ["attaque", "zone", "projectile"]
 }
 ```
 
@@ -279,10 +277,14 @@ SpellDefinition {
 
 ```js
 MercenarySpell {
-  spellId,
+  spellId,      // référence SpellDefinition.id ; clé stable de sauvegarde
   known: true,
   mastery: 0..100
 }
 ```
 
 Cette séparation évite de dupliquer toute la définition du sort dans chaque mercenaire.
+
+### Identifiants stables et sauvegarde
+
+Le nom affiché d'un sort n'est jamais utilisé comme clé persistante. Le catalogue porte un `id` stable (ex. `fire.fireball`) et l'état du mercenaire référence uniquement cet identifiant via `spellId`. On peut ainsi renommer / traduire « Boule de feu » sans casser les sauvegardes.

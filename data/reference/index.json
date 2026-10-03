@@ -430,8 +430,8 @@
       "file": "spells.json",
       "rows": 66,
       "columns": [
+        "id",
         "nom",
-        "code",
         "ecoles",
         "palier",
         "cible",

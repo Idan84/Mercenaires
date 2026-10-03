@@ -2,6 +2,7 @@
 
 async function initializeGenerator() {
   const reference = await loadReferenceData();
+  game.referenceData = reference;
   game.generator = MercenairesCore.createGenerator(reference, {
     nameGenerator: (people, id) => provisionalName(people, id)
   });

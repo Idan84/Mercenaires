@@ -1,0 +1,879 @@
+{
+  "schema_version": 1,
+  "name": "biography-packs",
+  "source": {
+    "type": "authored",
+    "design_path": "docs/design/15-biographies-and-narrative-tags.md",
+    "created_on": "2026-10-04",
+    "status": "proposal-v0"
+  },
+  "columns": [
+    "id",
+    "short",
+    "rumor",
+    "motto",
+    "hard_tags",
+    "soft_tags",
+    "weight"
+  ],
+  "row_count": 30,
+  "rows": [
+    {
+      "id": "bio.generic.veteran",
+      "short": "A servi dans trois armées. Deux n'existent plus. Refuse de préciser si c'est une coïncidence.",
+      "rumor": "On raconte qu'il dort en armure pour gagner du temps.",
+      "motto": "On verra bien.",
+      "hard_tags": {
+        "people": [],
+        "cultures": [],
+        "gender": "any"
+      },
+      "soft_tags": {
+        "origins": [
+          "Soldat / Guerrier / Combattant"
+        ],
+        "profiles": [
+          "melee"
+        ],
+        "high": [
+          "Endurance"
+        ],
+        "low": [],
+        "alignments": [],
+        "magic": [],
+        "weapons": []
+      },
+      "weight": 1
+    },
+    {
+      "id": "bio.generic.optimist",
+      "short": "N'a jamais remporté une bataille facile. Soutient que cela prouve seulement qu'on ne lui confie que les importantes.",
+      "rumor": "Aurait déjà célébré une victoire avant le début du combat. Personne n'a osé lui dire le résultat.",
+      "motto": "Ça va passer.",
+      "hard_tags": {
+        "people": [],
+        "cultures": [],
+        "gender": "any"
+      },
+      "soft_tags": {
+        "origins": [],
+        "profiles": [],
+        "high": [
+          "Courage"
+        ],
+        "low": [],
+        "alignments": [
+          "Chaotique bon",
+          "Neutre bon"
+        ],
+        "magic": [],
+        "weapons": []
+      },
+      "weight": 1
+    },
+    {
+      "id": "bio.generic.business",
+      "short": "A calculé le prix exact auquel sa loyauté devient négociable. Le chiffre change curieusement chaque semaine.",
+      "rumor": "Garde un registre de dettes plus à jour que son testament.",
+      "motto": "Tout se discute.",
+      "hard_tags": {
+        "people": [],
+        "cultures": [],
+        "gender": "any"
+      },
+      "soft_tags": {
+        "origins": [
+          "Commerçant"
+        ],
+        "profiles": [],
+        "high": [
+          "Charisme"
+        ],
+        "low": [],
+        "alignments": [],
+        "magic": [],
+        "weapons": []
+      },
+      "weight": 1
+    },
+    {
+      "id": "bio.generic.goat",
+      "short": "Porte trois cicatrices qu'il attribue à trois monstres différents. Les témoins parlent d'une seule chèvre particulièrement agressive.",
+      "rumor": "Évite désormais les fermes avec un professionnalisme admirable.",
+      "motto": "Pas les chèvres.",
+      "hard_tags": {
+        "people": [],
+        "cultures": [],
+        "gender": "any"
+      },
+      "soft_tags": {
+        "origins": [
+          "Paysan / Ouvrier"
+        ],
+        "profiles": [],
+        "high": [
+          "Endurance"
+        ],
+        "low": [
+          "Charisme"
+        ],
+        "alignments": [],
+        "magic": [],
+        "weapons": []
+      },
+      "weight": 1
+    },
+    {
+      "id": "bio.generic.scholar",
+      "short": "A quitté une carrière académique après avoir découvert que les bibliothèques interdisent formellement les duels dans les rayonnages.",
+      "rumor": "Continue d'affirmer que l'autre érudit avait commencé.",
+      "motto": "Source ?",
+      "hard_tags": {
+        "people": [],
+        "cultures": [],
+        "gender": "any"
+      },
+      "soft_tags": {
+        "origins": [
+          "Érudit"
+        ],
+        "profiles": [
+          "magic"
+        ],
+        "high": [
+          "Intelligence"
+        ],
+        "low": [],
+        "alignments": [],
+        "magic": [],
+        "weapons": []
+      },
+      "weight": 1
+    },
+    {
+      "id": "bio.generic.outlaw",
+      "short": "N'est recherché dans aucune juridiction où la compagnie compte actuellement travailler. Cette précision semble importante.",
+      "rumor": "Connaît étonnamment bien les horaires des patrouilles.",
+      "motto": "Techniquement innocent.",
+      "hard_tags": {
+        "people": [],
+        "cultures": [],
+        "gender": "any"
+      },
+      "soft_tags": {
+        "origins": [
+          "Hors-la-loi"
+        ],
+        "profiles": [
+          "ranged"
+        ],
+        "high": [
+          "Perception"
+        ],
+        "low": [],
+        "alignments": [
+          "Chaotique neutre",
+          "Chaotique mauvais"
+        ],
+        "magic": [],
+        "weapons": []
+      },
+      "weight": 1
+    },
+    {
+      "id": "bio.generic.noble",
+      "short": "Possède encore un titre, un sceau et absolument aucun domaine. Exige néanmoins qu'on respecte cet ordre de préséance.",
+      "rumor": "Le sceau aurait été récupéré dans un coffre dont la provenance reste discutée.",
+      "motto": "La noblesse oblige les autres.",
+      "hard_tags": {
+        "people": [],
+        "cultures": [],
+        "gender": "any"
+      },
+      "soft_tags": {
+        "origins": [
+          "Noble"
+        ],
+        "profiles": [],
+        "high": [
+          "Charisme"
+        ],
+        "low": [],
+        "alignments": [],
+        "magic": [],
+        "weapons": []
+      },
+      "weight": 1
+    },
+    {
+      "id": "bio.generic.fast_coward",
+      "short": "A développé une vitesse remarquable au cours d'une carrière entièrement consacrée à survivre aux mauvaises décisions des autres.",
+      "rumor": "Peut quitter une pièce avant la fin d'une menace.",
+      "motto": "La prudence a des jambes.",
+      "hard_tags": {
+        "people": [],
+        "cultures": [],
+        "gender": "any"
+      },
+      "soft_tags": {
+        "origins": [],
+        "profiles": [],
+        "high": [
+          "Vitesse"
+        ],
+        "low": [
+          "Courage"
+        ],
+        "alignments": [],
+        "magic": [],
+        "weapons": []
+      },
+      "weight": 1
+    },
+    {
+      "id": "bio.generic.firemage",
+      "short": "A appris la magie du feu pour impressionner quelqu'un. Ne se rappelle plus qui, mais continue par respect pour les dégâts matériels déjà engagés.",
+      "rumor": "Le précédent logement n'a pas rendu la caution.",
+      "motto": "C'était presque maîtrisé.",
+      "hard_tags": {
+        "people": [],
+        "cultures": [],
+        "gender": "any"
+      },
+      "soft_tags": {
+        "origins": [],
+        "profiles": [
+          "magic"
+        ],
+        "high": [
+          "Puissance magique"
+        ],
+        "low": [],
+        "alignments": [],
+        "magic": [
+          "Feu"
+        ],
+        "weapons": []
+      },
+      "weight": 1
+    },
+    {
+      "id": "bio.generic.healer",
+      "short": "A choisi la magie de Vie après avoir découvert que ses camarades considéraient « ne pas mourir » comme un avantage contractuel.",
+      "rumor": "Facture parfois les bandages séparément.",
+      "motto": "Respire. C'est déjà ça.",
+      "hard_tags": {
+        "people": [],
+        "cultures": [],
+        "gender": "any"
+      },
+      "soft_tags": {
+        "origins": [
+          "Érudit"
+        ],
+        "profiles": [
+          "magic"
+        ],
+        "high": [
+          "Intelligence"
+        ],
+        "low": [],
+        "alignments": [],
+        "magic": [
+          "Vie"
+        ],
+        "weapons": []
+      },
+      "weight": 1
+    },
+    {
+      "id": "bio.human.paperwork",
+      "short": "A survécu à une guerre, deux sièges et quatre changements d'administration. Considère les formulaires comme l'ennemi le plus tenace.",
+      "rumor": "Sait obtenir une autorisation de port d'arme en moins de trois semaines.",
+      "motto": "Il manque un tampon.",
+      "hard_tags": {
+        "people": [
+          "Humain"
+        ],
+        "cultures": [],
+        "gender": "any"
+      },
+      "soft_tags": {
+        "origins": [
+          "Soldat / Guerrier / Combattant"
+        ],
+        "profiles": [],
+        "high": [
+          "Volonté"
+        ],
+        "low": [],
+        "alignments": [],
+        "magic": [],
+        "weapons": []
+      },
+      "weight": 1
+    },
+    {
+      "id": "bio.human.promoted",
+      "short": "A commencé comme simple recrue et a été promu après que tous ses supérieurs ont successivement cessé d'être disponibles.",
+      "rumor": "N'aime pas qu'on emploie le mot « succession ».",
+      "motto": "Présent.",
+      "hard_tags": {
+        "people": [
+          "Humain"
+        ],
+        "cultures": [],
+        "gender": "any"
+      },
+      "soft_tags": {
+        "origins": [
+          "Soldat / Guerrier / Combattant"
+        ],
+        "profiles": [
+          "melee"
+        ],
+        "high": [
+          "Courage"
+        ],
+        "low": [],
+        "alignments": [],
+        "magic": [],
+        "weapons": []
+      },
+      "weight": 1
+    },
+    {
+      "id": "bio.elf.memory",
+      "short": "Se souvient parfaitement d'une insulte prononcée il y a cent douze ans. A oublié le nom de la personne, mais pas le programme de vengeance.",
+      "rumor": "Possède un carnet uniquement consacré aux rancunes mineures.",
+      "motto": "Je n'oublie rien d'important.",
+      "hard_tags": {
+        "people": [
+          "Elfe"
+        ],
+        "cultures": [],
+        "gender": "any"
+      },
+      "soft_tags": {
+        "origins": [],
+        "profiles": [],
+        "high": [
+          "Volonté"
+        ],
+        "low": [],
+        "alignments": [],
+        "magic": [],
+        "weapons": []
+      },
+      "weight": 1
+    },
+    {
+      "id": "bio.elf.wine",
+      "short": "A étudié la magie pendant plus longtemps que la plupart des humains ne vivent. Utilise principalement ce savoir pour réchauffer son vin.",
+      "rumor": "Prétend que la température exacte dépend du cépage.",
+      "motto": "La précision distingue l'art de l'incendie.",
+      "hard_tags": {
+        "people": [
+          "Elfe"
+        ],
+        "cultures": [],
+        "gender": "any"
+      },
+      "soft_tags": {
+        "origins": [
+          "Érudit"
+        ],
+        "profiles": [
+          "magic"
+        ],
+        "high": [
+          "Intelligence"
+        ],
+        "low": [],
+        "alignments": [],
+        "magic": [
+          "Feu"
+        ],
+        "weapons": []
+      },
+      "weight": 1
+    },
+    {
+      "id": "bio.dwarf.notary",
+      "short": "Sa famille lui parle encore, mais uniquement par l'intermédiaire d'un notaire. Il considère cela comme une amélioration.",
+      "rumor": "Le dossier familial occupe deux étagères et demie.",
+      "motto": "Tout doit être écrit.",
+      "hard_tags": {
+        "people": [
+          "Nain"
+        ],
+        "cultures": [],
+        "gender": "any"
+      },
+      "soft_tags": {
+        "origins": [
+          "Noble",
+          "Commerçant"
+        ],
+        "profiles": [],
+        "high": [
+          "Volonté"
+        ],
+        "low": [],
+        "alignments": [],
+        "magic": [],
+        "weapons": []
+      },
+      "weight": 1
+    },
+    {
+      "id": "bio.dwarf.perfectionist",
+      "short": "A quitté son ancienne compagnie après qu'on lui a demandé de réparer une épée « à peu près correctement ».",
+      "rumor": "A déjà recommencé une poignée parce qu'un rivet le regardait mal.",
+      "motto": "Ou bien c'est droit, ou bien c'est faux.",
+      "hard_tags": {
+        "people": [
+          "Nain"
+        ],
+        "cultures": [],
+        "gender": "any"
+      },
+      "soft_tags": {
+        "origins": [
+          "Paysan / Ouvrier"
+        ],
+        "profiles": [
+          "melee"
+        ],
+        "high": [
+          "Dextérité",
+          "Intelligence"
+        ],
+        "low": [],
+        "alignments": [],
+        "magic": [],
+        "weapons": []
+      },
+      "weight": 1
+    },
+    {
+      "id": "bio.orc.discussion",
+      "short": "Pense que tous les conflits peuvent être résolus par la discussion. Il appelle « discussion » la période très courte avant le premier coup.",
+      "rumor": "A déjà gagné un débat contre une porte.",
+      "motto": "On en parle ?",
+      "hard_tags": {
+        "people": [
+          "Orc"
+        ],
+        "cultures": [],
+        "gender": "any"
+      },
+      "soft_tags": {
+        "origins": [
+          "Soldat / Guerrier / Combattant"
+        ],
+        "profiles": [
+          "melee"
+        ],
+        "high": [
+          "Force"
+        ],
+        "low": [],
+        "alignments": [],
+        "magic": [],
+        "weapons": []
+      },
+      "weight": 1
+    },
+    {
+      "id": "bio.orc.runner",
+      "short": "Sa réputation le précède. Lui aussi, généralement, parce qu'il court très vite quand elle arrive.",
+      "rumor": "A plusieurs ennemis qui ignorent encore l'avoir rencontré.",
+      "motto": "Repli stratégique.",
+      "hard_tags": {
+        "people": [
+          "Orc"
+        ],
+        "cultures": [],
+        "gender": "any"
+      },
+      "soft_tags": {
+        "origins": [
+          "Hors-la-loi"
+        ],
+        "profiles": [],
+        "high": [
+          "Vitesse"
+        ],
+        "low": [
+          "Courage"
+        ],
+        "alignments": [],
+        "magic": [],
+        "weapons": []
+      },
+      "weight": 1
+    },
+    {
+      "id": "bio.goblin.crossbow",
+      "short": "Affirme avoir inventé une arbalète pliable. Les trois premiers prototypes ont surtout plié leurs utilisateurs.",
+      "rumor": "Le quatrième est vendu avec une notice très courte et un testament prérempli.",
+      "motto": "Cette fois, ça tient.",
+      "hard_tags": {
+        "people": [
+          "Gobelin"
+        ],
+        "cultures": [],
+        "gender": "any"
+      },
+      "soft_tags": {
+        "origins": [
+          "Paysan / Ouvrier"
+        ],
+        "profiles": [
+          "ranged"
+        ],
+        "high": [
+          "Dextérité"
+        ],
+        "low": [],
+        "alignments": [],
+        "magic": [],
+        "weapons": [
+          "Arbalètes"
+        ]
+      },
+      "weight": 1
+    },
+    {
+      "id": "bio.goblin.property",
+      "short": "Ne vole jamais. Il récupère des objets dont les propriétaires ont momentanément perdu le contrôle administratif.",
+      "rumor": "Possède beaucoup d'objets administrativement instables.",
+      "motto": "Trouvé, donc disponible.",
+      "hard_tags": {
+        "people": [
+          "Gobelin"
+        ],
+        "cultures": [],
+        "gender": "any"
+      },
+      "soft_tags": {
+        "origins": [
+          "Hors-la-loi"
+        ],
+        "profiles": [],
+        "high": [
+          "Chance"
+        ],
+        "low": [],
+        "alignments": [
+          "Chaotique neutre",
+          "Chaotique mauvais"
+        ],
+        "magic": [],
+        "weapons": []
+      },
+      "weight": 1
+    },
+    {
+      "id": "bio.halfling.map",
+      "short": "A traversé trois royaumes avec une carte tenue à l'envers. Soutient que le voyage aurait été moins intéressant dans l'autre sens.",
+      "rumor": "N'admet jamais être perdu tant qu'il reste de la nourriture.",
+      "motto": "On finira bien quelque part.",
+      "hard_tags": {
+        "people": [
+          "Halfling"
+        ],
+        "cultures": [],
+        "gender": "any"
+      },
+      "soft_tags": {
+        "origins": [],
+        "profiles": [
+          "ranged"
+        ],
+        "high": [
+          "Chance",
+          "Perception"
+        ],
+        "low": [],
+        "alignments": [
+          "Chaotique bon"
+        ],
+        "magic": [],
+        "weapons": []
+      },
+      "weight": 1
+    },
+    {
+      "id": "bio.halfling.pockets",
+      "short": "A des poches spécialement conçues pour transporter des objets qui n'étaient pas prévus pour lui appartenir.",
+      "rumor": "Une de ses poches contient probablement une autre poche.",
+      "motto": "Ça rentre.",
+      "hard_tags": {
+        "people": [
+          "Halfling"
+        ],
+        "cultures": [],
+        "gender": "any"
+      },
+      "soft_tags": {
+        "origins": [
+          "Hors-la-loi"
+        ],
+        "profiles": [],
+        "high": [
+          "Dextérité"
+        ],
+        "low": [],
+        "alignments": [],
+        "magic": [],
+        "weapons": []
+      },
+      "weight": 1
+    },
+    {
+      "id": "bio.gnome.prototype",
+      "short": "Considère qu'une invention n'est réellement terminée qu'après la troisième explosion imprévue.",
+      "rumor": "La quatrième explosion, en revanche, est généralement volontaire.",
+      "motto": "J'ai une amélioration.",
+      "hard_tags": {
+        "people": [
+          "Gnome"
+        ],
+        "cultures": [],
+        "gender": "any"
+      },
+      "soft_tags": {
+        "origins": [
+          "Érudit"
+        ],
+        "profiles": [],
+        "high": [
+          "Intelligence"
+        ],
+        "low": [
+          "Courage"
+        ],
+        "alignments": [],
+        "magic": [],
+        "weapons": []
+      },
+      "weight": 1
+    },
+    {
+      "id": "bio.gnome.magic",
+      "short": "A étudié neuf écoles de magie parce qu'on lui avait conseillé d'en choisir une seule. La contradiction lui a semblé pédagogiquement stimulante.",
+      "rumor": "Prend des notes pendant les catastrophes.",
+      "motto": "Pour la science.",
+      "hard_tags": {
+        "people": [
+          "Gnome"
+        ],
+        "cultures": [],
+        "gender": "any"
+      },
+      "soft_tags": {
+        "origins": [
+          "Érudit"
+        ],
+        "profiles": [
+          "magic"
+        ],
+        "high": [
+          "Intelligence",
+          "Réserve de Mana"
+        ],
+        "low": [],
+        "alignments": [],
+        "magic": [],
+        "weapons": []
+      },
+      "weight": 1
+    },
+    {
+      "id": "bio.ogre.table",
+      "short": "A découvert tardivement que « poser calmement le problème sur la table » était une expression. La table précédente n'a pas survécu.",
+      "rumor": "Les meubles négocient désormais à distance.",
+      "motto": "Je suis calme.",
+      "hard_tags": {
+        "people": [
+          "Ogre"
+        ],
+        "cultures": [],
+        "gender": "any"
+      },
+      "soft_tags": {
+        "origins": [],
+        "profiles": [
+          "melee"
+        ],
+        "high": [
+          "Force"
+        ],
+        "low": [
+          "Charisme"
+        ],
+        "alignments": [],
+        "magic": [],
+        "weapons": []
+      },
+      "weight": 1
+    },
+    {
+      "id": "bio.ogre.scholar",
+      "short": "Lit très lentement, mais retient tout. Possède une opinion argumentée sur chaque livre qu'il a mangé par erreur.",
+      "rumor": "Les marges sont sa partie préférée.",
+      "motto": "C'était le chapitre trois.",
+      "hard_tags": {
+        "people": [
+          "Ogre"
+        ],
+        "cultures": [],
+        "gender": "any"
+      },
+      "soft_tags": {
+        "origins": [
+          "Érudit"
+        ],
+        "profiles": [],
+        "high": [
+          "Intelligence"
+        ],
+        "low": [
+          "Dextérité"
+        ],
+        "alignments": [],
+        "magic": [],
+        "weapons": []
+      },
+      "weight": 1
+    },
+    {
+      "id": "bio.reptilian.patience",
+      "short": "Peut rester immobile pendant des heures avant de prendre une décision. Ses créanciers appellent cela de la patience ; ses alliés, beaucoup moins.",
+      "rumor": "A déjà remporté un duel simplement en attendant que l'autre parte.",
+      "motto": "Il n'y a pas d'urgence.",
+      "hard_tags": {
+        "people": [
+          "Reptilien"
+        ],
+        "cultures": [],
+        "gender": "any"
+      },
+      "soft_tags": {
+        "origins": [
+          "Commerçant"
+        ],
+        "profiles": [],
+        "high": [
+          "Perception"
+        ],
+        "low": [
+          "Charisme"
+        ],
+        "alignments": [
+          "Loyal neutre"
+        ],
+        "magic": [],
+        "weapons": []
+      },
+      "weight": 1
+    },
+    {
+      "id": "bio.reptilian.temple",
+      "short": "A appris très jeune qu'un rituel sacré devient beaucoup moins impressionnant quand on doit ensuite nettoyer la salle.",
+      "rumor": "Possède une connaissance inquiétante des produits détachants cérémoniels.",
+      "motto": "Le sacré tache aussi.",
+      "hard_tags": {
+        "people": [
+          "Reptilien"
+        ],
+        "cultures": [],
+        "gender": "any"
+      },
+      "soft_tags": {
+        "origins": [
+          "Érudit"
+        ],
+        "profiles": [
+          "magic"
+        ],
+        "high": [
+          "Volonté"
+        ],
+        "low": [],
+        "alignments": [
+          "Loyal neutre"
+        ],
+        "magic": [],
+        "weapons": []
+      },
+      "weight": 1
+    },
+    {
+      "id": "bio.beastman.city",
+      "short": "A passé assez de temps dans les cités humaines pour maîtriser leurs deux langues principales : l'argent et la menace polie.",
+      "rumor": "Préfère la seconde, qu'il trouve plus sincère.",
+      "motto": "On peut s'entendre.",
+      "hard_tags": {
+        "people": [
+          "Homme-bête"
+        ],
+        "cultures": [],
+        "gender": "any"
+      },
+      "soft_tags": {
+        "origins": [
+          "Esclave",
+          "Commerçant"
+        ],
+        "profiles": [
+          "melee"
+        ],
+        "high": [
+          "Courage"
+        ],
+        "low": [
+          "Charisme"
+        ],
+        "alignments": [],
+        "magic": [],
+        "weapons": []
+      },
+      "weight": 1
+    },
+    {
+      "id": "bio.beastman.hunt",
+      "short": "Ne raconte jamais ses chasses. Se contente de poser les trophées sur la table jusqu'à ce que quelqu'un change de sujet.",
+      "rumor": "Le silence est considéré comme une compétence sociale dans sa tribu.",
+      "motto": "Tu as fini ?",
+      "hard_tags": {
+        "people": [
+          "Homme-bête"
+        ],
+        "cultures": [],
+        "gender": "any"
+      },
+      "soft_tags": {
+        "origins": [
+          "Soldat / Guerrier / Combattant"
+        ],
+        "profiles": [
+          "melee"
+        ],
+        "high": [
+          "Perception",
+          "Courage"
+        ],
+        "low": [
+          "Charisme"
+        ],
+        "alignments": [],
+        "magic": [],
+        "weapons": []
+      },
+      "weight": 1
+    }
+  ]
+}

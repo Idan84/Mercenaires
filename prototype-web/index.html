@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Jeu de Mercenaires — Prototype génération</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Prototype V0.1 — Git ready</p>
+        <h1>Jeu de Mercenaires</h1>
+        <p class="subtitle">Génération du capitaine, escouade initiale et banc de test des mercenaires.</p>
+      </div>
+      <button id="new-game-btn" class="primary">New Game</button>
+    </header>
+
+    <section id="setup-panel" class="panel hidden">
+      <div class="section-title-row">
+        <div>
+          <p class="eyebrow">Création du capitaine</p>
+          <h2>Vous vous appelez Bob ?</h2>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <label>
+          Nom
+          <input id="captain-name" value="Bob" maxlength="30" />
+        </label>
+        <label>
+          Peuple
+          <select id="captain-people"></select>
+        </label>
+        <label>
+          Culture
+          <select id="captain-culture"></select>
+        </label>
+        <label>
+          Ascendance
+          <select id="captain-ascendance"></select>
+        </label>
+        <label>
+          Origine sociale
+          <select id="captain-origin"></select>
+        </label>
+        <label>
+          Alignement
+          <select id="captain-alignment"></select>
+        </label>
+      </div>
+
+      <div class="notice">
+        <strong>Prototype :</strong> les compatibilités d’ascendance et certaines restrictions d’origine seront resserrées à partir du référentiel Notion complet. Le reste du pipeline est déjà câblé.
+      </div>
+
+      <div class="actions-row">
+        <button id="create-game-btn" class="primary">Créer le capitaine et l’escouade</button>
+        <button id="cancel-setup-btn" class="secondary">Annuler</button>
+      </div>
+    </section>
+
+    <section id="game-panel" class="hidden">
+      <section class="panel">
+        <div class="section-title-row">
+          <div>
+            <p class="eyebrow">Compagnie</p>
+            <h2 id="company-title">Compagnie sans nom</h2>
+          </div>
+          <div class="company-meta">
+            <span>Or <strong>1 000</strong></span>
+            <span>Jour <strong>1</strong></span>
+          </div>
+        </div>
+        <div id="captain-summary"></div>
+      </section>
+
+      <section class="panel">
+        <div class="section-title-row">
+          <div>
+            <p class="eyebrow">Create_Initial_Squad()</p>
+            <h2>Escouade initiale</h2>
+          </div>
+          <span id="initial-count" class="badge"></span>
+        </div>
+        <div id="initial-squad" class="character-list"></div>
+      </section>
+
+      <section class="panel sandbox-panel">
+        <div class="section-title-row">
+          <div>
+            <p class="eyebrow">Banc de test</p>
+            <h2>Générateur de mercenaires</h2>
+          </div>
+          <button id="generate-merc-btn" class="primary">Créer un nouveau mercenaire</button>
+        </div>
+        <p class="muted">Le mercenaire utilise les biais du capitaine : +9 points sur son peuple, culture du capitaine ×2 si compatible, ascendance du capitaine ×2 si applicable.</p>
+        <div id="generated-list" class="character-list"></div>
+      </section>
+    </section>
+  </main>
+
+  <dialog id="character-dialog">
+    <div class="dialog-head">
+      <div>
+        <p id="dialog-role" class="eyebrow"></p>
+        <h2 id="dialog-name"></h2>
+      </div>
+      <button id="close-dialog" class="icon-btn" aria-label="Fermer">×</button>
+    </div>
+    <div id="dialog-content"></div>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>

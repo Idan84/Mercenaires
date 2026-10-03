@@ -21,7 +21,7 @@
     {
       "name": "culture-origin-compatibility",
       "file": "culture-origin-compatibility.json",
-      "rows": 231,
+      "rows": 224,
       "columns": [
         "association",
         "culture",
@@ -70,7 +70,6 @@
         "elfes_noirs",
         "elfes_sylvains",
         "esclave",
-        "esclaves_des_cites_humaines",
         "explorateurs",
         "gnome",
         "gnomes_des_cavernes",

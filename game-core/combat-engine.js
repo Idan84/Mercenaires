@@ -162,13 +162,19 @@
       return base>=0?base*mult:base/mult;
     }
 
-    function selectDamageMatchup(attacker,defender,weapon){
-      const candidates=PHYSICAL_TYPES.map(type=>{
-        const power=Number(weapon[type.weapon])||0;
+    // Frappe dans le dos V1 : la résistance au type de dégâts est divisée par deux pour l'étape Blesser.
+    function damageMatchups(defender,weapon,context={}){
+      const factor=context.backstab?0.5:1;
+      return PHYSICAL_TYPES.map(type=>{
+        const power=Number(weapon?.[type.weapon])||0;
         if(power<=0) return null;
-        const armorResistance=effectiveArmorResistance(defender,type.name);
+        const armorResistance=effectiveArmorResistance(defender,type.name)*factor;
         return {type:type.name,power,armorResistance,matchup:power-armorResistance};
       }).filter(Boolean);
+    }
+
+    function selectDamageMatchup(attacker,defender,weapon,context={}){
+      const candidates=damageMatchups(defender,weapon,context);
 
       if(!candidates.length) return {type:"contondant",power:0,armorResistance:0,matchup:0};
 
@@ -187,14 +193,18 @@
       return 10+80/(1+Math.exp(-delta/20));
     }
 
-    function hitProbability(attacker,defender,mode,distance){
+    // Attaque d'opportunité V1 : Esquive ×0,5 et Perception défensive annulée.
+    // Frappe dans le dos V1 : Perception défensive annulée.
+    function hitProbability(attacker,defender,mode,distance,context={}){
       const weapon=weaponTemplate(activeWeaponItem(attacker));
       const m=mastery(attacker.character,weapon);
       const a=attacker.character.stats||{},d=defender.character.stats||{};
+      const defensivePerception=context.opportunity||context.backstab?0:(Number(d.Perception)||0);
+      const dodgeFactor=context.opportunity?0.5:1;
       let delta=(Number(a["Dextérité"])||0)
         +0.2*(m.categoryScore+m.weaponScore+(Number(a.Perception)||0)+effectiveSpeed(attacker))
-        -effectiveDodge(defender)
-        -0.2*((Number(d.Perception)||0)+effectiveSpeed(defender));
+        -dodgeFactor*effectiveDodge(defender)
+        -0.2*(defensivePerception+effectiveSpeed(defender));
 
       if(mode==="ranged"){
         const range=weaponRange(attacker);
@@ -206,7 +216,8 @@
       return clamp(logistic(delta),10,90);
     }
 
-    function woundProbability(attacker,defender,mode,matchup){
+    // Charge CAC V1 : ForceEffectiveCharge = Force + PuissanceCharge pour Blesser.
+    function woundProbability(attacker,defender,mode,matchup,context={}){
       const weapon=weaponTemplate(activeWeaponItem(attacker));
       const m=mastery(attacker.character,weapon);
       const a=attacker.character.stats||{},d=defender.character.stats||{};
@@ -215,7 +226,7 @@
       if(mode==="ranged"){
         attackStat=Number(a.Perception)||0;
       }else{
-        attackStat=Number(a.Force)||0;
+        attackStat=(Number(a.Force)||0)+(Number(context.chargePower)||0);
         if(usesTwoHands(attacker,weapon)){
           twoHands=Number(attacker.character.skills?.martial?.["Combat à deux mains"])||0;
         }
@@ -273,6 +284,15 @@
       if(!weapon) return {ok:false,reason:"Aucune arme active."};
       if(!canAttackAtDistance(attacker,distance,mode)) return {ok:false,reason:"Cible hors portée ou arme incompatible."};
 
+      // Toute attaque d'opportunité bénéficie de Frappe dans le dos (Attaque d'opportunité CAC V1),
+      // de même que toute attaque au CAC contre une cible encerclée (Encerclement CAC V1).
+      // Une cible En Fuite subit aussi une Frappe dans le dos (Frappe dans le dos V1).
+      const opportunity=Boolean(options.opportunity);
+      const encircled=mode==="melee"&&Boolean(options.encircled);
+      const fleeingTarget=Boolean(defender.fleeing);
+      const backstab=opportunity||encircled||fleeingTarget||Boolean(options.backstab);
+      if(opportunity&&(mode!=="melee"||Number(options.chargeDistance)>0)) return {ok:false,reason:"Une attaque d'opportunité est un coup de mêlée simple."};
+
       let chargePower=0;
       if(Number(options.chargeDistance)>0){
         const fallRoll=d100();
@@ -283,17 +303,18 @@
         chargePower=Number(options.chargeDistance)*bonus*(Number(quality(item).multiplicateur_qualite)||1);
       }
 
-      const pHit=hitProbability(attacker,defender,mode,distance);
+      const tags={chargePower,opportunity,encircled,fleeingTarget,backstab};
+      const pHit=hitProbability(attacker,defender,mode,distance,{opportunity,backstab});
       const hitRoll=d100(),hit=hitRoll<=pHit;
       if(!hit){
-        return {ok:true,mode,weapon:weapon.nom,distance,pHit,hitRoll,hit:false,wound:false,damage:0,chargePower};
+        return {ok:true,mode,weapon:weapon.nom,distance,pHit,hitRoll,hit:false,wound:false,damage:0,...tags};
       }
 
-      const matchup=selectDamageMatchup(attacker,defender,weapon);
-      const pWound=woundProbability(attacker,defender,mode,matchup);
+      const matchup=selectDamageMatchup(attacker,defender,weapon,{backstab});
+      const pWound=woundProbability(attacker,defender,mode,matchup,{chargePower});
       const woundRoll=d100(),wound=woundRoll<=pWound;
       if(!wound){
-        return {ok:true,mode,weapon:weapon.nom,distance,pHit,hitRoll,hit:true,matchup,pWound,woundRoll,wound:false,damage:0,chargePower};
+        return {ok:true,mode,weapon:weapon.nom,distance,pHit,hitRoll,hit:true,matchup,pWound,woundRoll,wound:false,damage:0,...tags};
       }
 
       const damageData=physicalDamage(attacker,defender,mode,chargePower);
@@ -303,9 +324,95 @@
       return {
         ok:true,mode,weapon:weapon.nom,distance,pHit,hitRoll,hit:true,
         matchup,pWound,woundRoll,wound:true,...damageData,
-        targetHp:defender.hp,targetDown:!defender.alive,chargePower
+        targetHp:defender.hp,targetDown:!defender.alive,...tags
       };
     }
+
+    // Attaque d'opportunité CAC V1 : un combattant menace les hexagones atteignables par son arme de mêlée active.
+    // Un personnage En Fuite ne menace personne : il ne fait pas d'attaque d'opportunité (décision Idan, Issue #8).
+    function threatens(unit,hex){
+      if(!unit?.alive||unit.fleeing) return false;
+      if(!isMeleeWeapon(weaponTemplate(activeWeaponItem(unit)))) return false;
+      return canAttackAtDistance(unit,axialDistance(unit,hex),"melee");
+    }
+
+    // Sortir de la zone menacée déclenche la réaction ; s'y déplacer ne déclenche rien.
+    function opportunityReactors(opponents,from,to){
+      return opponents.filter(o=>threatens(o,from)&&!threatens(o,to));
+    }
+
+    // Tirer sur une autre cible que l'adversaire qui menace déclenche sa réaction.
+    function rangedOpportunityReactors(opponents,shooter,target){
+      return opponents.filter(o=>o!==target&&threatens(o,shooter));
+    }
+
+    // Encerclement CAC V1 : au moins deux adversaires au contact, armés pour le CAC,
+    // sur des cases de contact non adjacentes entre elles.
+    function isEncircled(target,opponents){
+      const contact=opponents.filter(o=>axialDistance(o,target)===1&&threatens(o,target));
+      return contact.some((a,i)=>contact.slice(i+1).some(b=>axialDistance(a,b)>1));
+    }
+
+    function intimidation(unit){
+      return Number(unit?.character?.skills?.social?.Intimidation)||0;
+    }
+
+    // Courage post-attaque CAC V1 / Courage post-tir V1, avec le malus de Courage en sous-nombre V1.
+    function courageHold(subject,opponent,surplus=0){
+      const s=subject.character.stats||{};
+      return clamp((Number(s.Courage)||0)+0.25*(Number(s["Volonté"])||0)-0.25*intimidation(opponent)-10*surplus,5,95);
+    }
+
+    // Courage en sous-nombre V1 : mêlée locale = groupe connecté de combattants liés par leurs zones de menace CAC.
+    function localMelee(subject,units){
+      const alive=units.filter(u=>u.alive);
+      const linked=(a,b)=>a.team!==b.team&&(threatens(a,b)||threatens(b,a));
+      const group=new Set([subject]),queue=[subject];
+      while(queue.length){
+        const cur=queue.shift();
+        for(const other of alive) if(!group.has(other)&&linked(cur,other)){ group.add(other); queue.push(other); }
+      }
+      const allies=[...group].filter(u=>u.team===subject.team).length;
+      const enemies=group.size-allies;
+      return {allies,enemies,surplus:Math.max(0,enemies-allies)};
+    }
+
+    // Qui teste son Courage après une attaque, et avec quelle probabilité de tenir.
+    // context : { defenderSurplus, attackerEncircles }.
+    function resolveCourage(attacker,defender,result,context={}){
+      if(!result?.ok||result.chargeFall) return null;
+      let subject,source,pHold,rule;
+      if(result.wound){
+        // Une cible déjà En Fuite ne reteste pas (décision Idan, Issue #8).
+        if(!defender.alive||defender.fleeing) return null;
+        const surplus=result.mode==="melee"?Math.max(0,Number(context.defenderSurplus)||0):0;
+        subject=defender;source=attacker;
+        pHold=courageHold(defender,attacker,surplus);
+        rule=surplus>0?"outnumbered":"wounded";
+      }else{
+        // Tir : le tireur ne teste jamais. CAC : un attaquant qui participe à un encerclement ne teste pas.
+        if(result.mode!=="melee"||!attacker.alive||attacker.fleeing||context.attackerEncircles) return null;
+        subject=attacker;source=defender;
+        pHold=100-(100-courageHold(attacker,defender))/2;
+        rule="no-wound";
+      }
+      const roll=d100();
+      return {subject,source,pHold,roll,flees:roll>pHold,rule};
+    }
+
+    // Reprise de contrôle — En Fuite V1 ; ennemi de référence = ennemi actif le plus proche (vivant, pas En Fuite).
+    function recoveryChance(unit,referenceEnemy,fleeTurn){
+      const s=unit.character.stats||{};
+      return clamp((Number(s.Courage)||0)+0.25*(Number(s["Volonté"])||0)-0.25*intimidation(referenceEnemy)+10*fleeTurn,5,95);
+    }
+
+    function rollRecovery(unit,referenceEnemy,fleeTurn){
+      const p=recoveryChance(unit,referenceEnemy,fleeTurn),roll=d100();
+      return {p,roll,recovered:roll<=p};
+    }
+
+    // Comportement automatique — En Fuite V1 : 1 Course effrénée, 2 Cachons-nous, 3 Feu à volonté.
+    function rollFleeBehavior(){ return die(3); }
 
     function canSwitchWeaponSet(unit){
       const other=unit.activeSet===1?2:1;
@@ -337,6 +444,7 @@
       return {
         valid:travel>=base&&travel<=2*base,
         travel,
+        path:Array.from({length:travel},(_,i)=>({q:attacker.q+step.q*(i+1),r:attacker.r+step.r*(i+1)})),
         destination:{q:defender.q-step.q,r:defender.r-step.r},
         min:base,
         max:2*base
@@ -359,11 +467,24 @@
       weaponRange,
       canAttackAtDistance,
       hitProbability,
+      damageMatchups,
+      selectDamageMatchup,
       woundProbability,
       resolveAttack,
       canSwitchWeaponSet,
       switchWeaponSet,
-      chargeData
+      chargeData,
+      threatens,
+      isEncircled,
+      intimidation,
+      courageHold,
+      localMelee,
+      resolveCourage,
+      recoveryChance,
+      rollRecovery,
+      rollFleeBehavior,
+      opportunityReactors,
+      rangedOpportunityReactors
     };
   }
 

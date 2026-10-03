@@ -23,7 +23,7 @@ $$
 BudgetMouvement=2\times MouvementBase
 $$
 
-À chaque étape, il choisit une trajectoire qui **augmente autant que possible sa distance avec l'ennemi le plus proche**. S'il existe un chemin permettant de quitter la carte, la sortie devient prioritaire.
+À chaque étape, il choisit une trajectoire qui **augmente autant que possible sa distance avec l'ennemi le plus proche**. Si la sortie de carte est **atteignable pendant cette activation**, elle devient prioritaire, même si la distance obtenue n'est pas maximale ; sinon, il s'éloigne au maximum (décision Idan du 2026-10-03, Issue #8).
 
 Le déplacement peut provoquer normalement des **attaques d'opportunité**.
 

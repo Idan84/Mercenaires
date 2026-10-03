@@ -290,33 +290,135 @@
       return result;
     }
 
-    function identityGrantsAptitude(row, identity) {
-      const grants = [];
-      if ((row.peoples || []).includes(identity.people)) grants.push({kind:"people",name:identity.people});
-      if (identity.ascendance && (row.ancestries || []).includes(identity.ascendance)) grants.push({kind:"ascendance",name:identity.ascendance});
-      if ((row.cultures || []).includes(identity.culture)) grants.push({kind:"culture",name:identity.culture});
-      if ((row.origins || []).includes(identity.origin)) grants.push({kind:"origin",name:identity.origin});
-      return grants;
+    function automaticAptitudeSources(row, identity) {
+      const automatic = row.automatic || {};
+      const sources = [];
+      if ((automatic.peoples || []).includes(identity.people)) sources.push({kind:"people",name:identity.people});
+      if (identity.ascendance && (automatic.ancestries || []).includes(identity.ascendance)) sources.push({kind:"ascendance",name:identity.ascendance});
+      if ((automatic.cultures || []).includes(identity.culture)) sources.push({kind:"culture",name:identity.culture});
+      if ((automatic.origins || []).includes(identity.origin)) sources.push({kind:"origin",name:identity.origin});
+      return sources;
+    }
+
+    function probabilityAptitudeSources(row, identity) {
+      const bonuses = row.bonuses_pp || {};
+      const sources = [];
+      const candidates = [
+        ["people", identity.people, bonuses.peoples || {}],
+        ["ascendance", identity.ascendance, bonuses.ancestries || {}],
+        ["culture", identity.culture, bonuses.cultures || {}],
+        ["origin", identity.origin, bonuses.origins || {}]
+      ];
+      for (const [kind, name, map] of candidates) {
+        if (!name) continue;
+        const pp = Number(map[name]) || 0;
+        if (pp) sources.push({kind,name,pp});
+      }
+      return sources;
+    }
+
+    function applyArmorHierarchy(skills, trace) {
+      const heavy = "Port d’armure lourde";
+      const intermediate = "Port d’armure intermédiaire";
+      const light = "Port d’armure légère";
+
+      if (skills.martial[heavy]) {
+        skills.martial[intermediate] = true;
+        skills.martial[light] = true;
+        if (trace.skills[intermediate]) {
+          trace.skills[intermediate].final = true;
+          trace.skills[intermediate].inheritedFrom = heavy;
+        }
+        if (trace.skills[light]) {
+          trace.skills[light].final = true;
+          trace.skills[light].inheritedFrom = heavy;
+        }
+      } else if (skills.martial[intermediate]) {
+        skills.martial[light] = true;
+        if (trace.skills[light]) {
+          trace.skills[light].final = true;
+          trace.skills[light].inheritedFrom = intermediate;
+        }
+      }
     }
 
     function generateBinaryAptitudes(skills, identity, trace) {
+      const armorRules = reference.binaryAptitudeGrants?.armor_rules || {};
+      const magicValues = Object.values(skills.magic || {}).filter(Number.isFinite);
+      const maxMagic = maxNumeric(magicValues, 0);
+
       for (const row of binaryAptitudeRows) {
-        const grants = identityGrantsAptitude(row, identity);
-        const value = grants.length > 0;
         const group = row.domaine === "Physiologie" ? "physiology" : "martial";
+        let value = false;
+        let formula = "Binaire";
+        let generationBonusSources = [];
+        const details = {
+          mode: row.mode || "disabled",
+          magicMax: maxMagic
+        };
+
+        if (row.mode === "automatic") {
+          const sources = automaticAptitudeSources(row, identity);
+          value = sources.length > 0;
+          formula = "Automatique selon identité";
+          generationBonusSources = sources;
+          details.sources = sources;
+        } else if (row.mode === "probability") {
+          const sources = probabilityAptitudeSources(row, identity);
+          let probabilityBeforePenalty = sum(sources.map(x => x.pp));
+          let warriorBonus = 0;
+          let magicMultiplier = 1;
+
+          if (row.armor === true) {
+            const warriorThreshold = Number(armorRules.warrior_magic_threshold);
+            if (Number.isFinite(warriorThreshold) && maxMagic <= warriorThreshold) {
+              warriorBonus = Number(armorRules.warrior_bonus_pp?.[row.aptitude]) || 0;
+              if (warriorBonus) {
+                sources.push({kind:"magic-profile",name:`Aucune école > ${warriorThreshold}`,pp:warriorBonus});
+                probabilityBeforePenalty += warriorBonus;
+              }
+            }
+
+            const penaltyThreshold = Number(armorRules.magic_penalty_threshold);
+            if (Number.isFinite(penaltyThreshold) && maxMagic > penaltyThreshold) {
+              magicMultiplier = Number(armorRules.magic_penalty_multiplier) || 1;
+            }
+          }
+
+          const probability = Math.max(0, Math.min(100, probabilityBeforePenalty * magicMultiplier));
+          const percentileRoll = random() * 100;
+          value = percentileRoll < probability;
+          formula = "Somme bonus identité/profil → jet %";
+          generationBonusSources = sources;
+          Object.assign(details, {
+            sources,
+            probabilityBeforePenalty,
+            warriorBonus,
+            magicMultiplier,
+            probability,
+            percentileRoll
+          });
+        } else if (row.mode === "disabled") {
+          value = false;
+          formula = row.reason || "Désactivé";
+          details.reason = row.reason || null;
+        }
+
         skills[group][row.aptitude] = value;
         trace.skills[row.aptitude] = {
           group,
           raw: value,
-          rawFormula: "Peuple OR Ascendance OR Culture OR Origine",
+          rawFormula: formula,
           generationBonus: false,
-          generationBonusSources: grants,
+          generationBonusSources,
           contributions: [],
           final: value,
           binary: true,
-          grants
+          ...details
         };
       }
+
+      applyArmorHierarchy(skills, trace);
     }
 
     function generateRawSkills(character, identity, trace) {
@@ -478,8 +580,6 @@
       if (skillByName.has("Régénération")) {
         setRawSkill(skills, trace, "physiology", "Régénération", 0, {rawFormula: "0"});
       }
-
-      generateBinaryAptitudes(skills, identity, trace);
 
       const socialSkills = skillRows.filter(r => r.domaine === "Social" && r.niveau === "Catégorie");
       for (const skill of socialSkills) {
@@ -723,6 +823,7 @@
       applyIdentityStatModifiers(character, identity, trace);
       character.skills = generateRawSkills(character, identity, trace);
       applySkillModifiers(character.skills, identity, trace);
+      generateBinaryAptitudes(character.skills, identity, trace);
       character.weaponPreferences = computeWeaponPreferences(character.skills);
 
       character.salaryPretension = rollDice(10,6);
@@ -816,10 +917,13 @@
       if (skill.niveau === "Aptitude") {
         const configured = binaryAptitudeRows.find(r => r.aptitude === skill.nom);
         if (configured) {
-          const hasGrant = ["peoples","ancestries","cultures","origins"].some(key => (configured[key] || []).length > 0);
-          return hasGrant
-            ? {status:"binary", rule:"Peuple OR Ascendance OR Culture OR Origine"}
-            : {status:"binary-pending", reason:"Aptitude binaire classée mais aucune identité ne l’accorde encore."};
+          if (configured.mode === "disabled") {
+            return {status:"binary-disabled", reason:configured.reason || "Désactivée pour cette version."};
+          }
+          if (configured.mode === "automatic" || configured.mode === "probability") {
+            return {status:"binary", rule:configured.mode === "automatic" ? "Automatique selon identité" : "Probabilité selon identité/profil"};
+          }
+          return {status:"binary-pending", reason:"Aptitude binaire sans règle de génération."};
         }
         return {status:"catalog", reason:"Acquisition/effet hors pipeline brut actuel."};
       }
@@ -899,6 +1003,9 @@
           .map(x => ({target:x.name,reason:x.reason})),
         binaryPending: skillCoverage
           .filter(x => x.status === "binary-pending")
+          .map(x => ({target:x.name,reason:x.reason})),
+        binaryDisabled: skillCoverage
+          .filter(x => x.status === "binary-disabled")
           .map(x => ({target:x.name,reason:x.reason}))
       };
     }

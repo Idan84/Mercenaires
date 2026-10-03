@@ -770,7 +770,7 @@ function renderMission(){
       ${renderAvatar(unit.character,{variant:"battle",kind:"portrait"})}
       <span class="token-hp"><i style="width:${pct}%"></i></span>
       <strong>${esc(unit.character.name.split(" ")[0])}</strong>
-      <em>${unit.alive&&unit.fleeing?"En fuite":"${Math.max(0,unit.hp)}/${unit.character.pvMax} PV"}</em>
+      <em>${unit.alive&&unit.fleeing?"En fuite":Math.max(0,unit.hp)+"/"+unit.character.pvMax+" PV"}</em>
     </div>`;
   }).join("");
 

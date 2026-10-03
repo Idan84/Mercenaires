@@ -1,0 +1,761 @@
+{
+  "synced_at": "2026-10-03",
+  "notion_database_id": "2104bbf4-810e-484e-a418-07534924b989",
+  "data_source_url": "collection://0c570ca2-205c-4612-8a3e-e99eb80bc889",
+  "schema": {
+    "metadata": {
+      "type": "database"
+    },
+    "title": "Compatibilités d’ascendance",
+    "url": "https://app.notion.com/p/2104bbf4810e484ea41807534924b989?pvs=204",
+    "text": "<database url=\"{{https://app.notion.com/p/2104bbf4810e484ea41807534924b989}}\" inline=\"false\">\nThe title of this Database is: Compatibilités d’ascendance\n<ancestor-path>\n<parent-page url=\"https://app.notion.com/p/3eac799da3d181c491e3d99c69fa2317\" title=\"01 — Génération & identité\"/>\n<ancestor-2-page url=\"https://app.notion.com/p/3eac799da3d181478858f51a008acbda\" title=\"Jeu de Mercenaires\"/>\n</ancestor-path>\nHere are the Database's Data Sources:\nYou can use the \"fetch\" tool on the URL of any Data Source to see its full schema configuration.\n<data-sources>\n<data-source url=\"{{collection://0c570ca2-205c-4612-8a3e-e99eb80bc889}}\">\nThe title of this Data Source is: Compatibilités d’ascendance\n\nHere is the database's configurable state:\nProperties with `readOnly: true` are synced or system-managed. Do not try to update their values with page update tools.\n<data-source-state>\n{\"name\":\"Compatibilités d’ascendance\",\"schema\":{\"Ascendance\":{\"dataSourceUrl\":\"collection://d4d2e45b-5b8b-4a3f-8437-b17d3219b49a\",\"description\":\"\",\"name\":\"Ascendance\",\"type\":\"relation\"},\"Association\":{\"description\":\"\",\"name\":\"Association\",\"type\":\"title\"},\"Peuple\":{\"dataSourceUrl\":\"collection://38a69f94-eb57-4c24-a240-b2f0f66b2ea9\",\"description\":\"\",\"name\":\"Peuple\",\"type\":\"relation\"},\"Poids relatif\":{\"description\":\"\",\"name\":\"Poids relatif\",\"type\":\"number\"},\"Possible\":{\"description\":\"\",\"name\":\"Possible\",\"type\":\"checkbox\"}},\"url\":\"collection://0c570ca2-205c-4612-8a3e-e99eb80bc889\"}\n</data-source-state>\n\nHere is the SQLite table definition for this data source.\n<sqlite-table>\nCREATE TABLE IF NOT EXISTS \"collection://0c570ca2-205c-4612-8a3e-e99eb80bc889\" (\n\turl TEXT UNIQUE,\n\tcreatedTime TEXT, -- ISO-8601 datetime string, automatically set. This is the canonical time for when the page was created.\n\t\"Ascendance\" TEXT, -- JSON array of page URLs relating to {{collection://d4d2e45b-5b8b-4a3f-8437-b17d3219b49a}} data source, you must \"view\" {{collection://d4d2e45b-5b8b-4a3f-8437-b17d3219b49a}} to query this column\n\t\"Peuple\" TEXT, -- JSON array of page URLs relating to {{collection://38a69f94-eb57-4c24-a240-b2f0f66b2ea9}} data source, you must \"view\" {{collection://38a69f94-eb57-4c24-a240-b2f0f66b2ea9}} to query this column\n\t\"Possible\" TEXT, -- \"__YES__\" = true, \"__NO__\" = false, NULL defaults to false\n\t\"Poids relatif\" FLOAT,\n\t\"Association\" TEXT\n)\n</sqlite-table>\n</data-source>\n</data-sources>\nHere are the Database's Views:\nYou can use the \"fetch\" tool on the URL of any View to see its full configuration.\n<views>\n<view url=\"{{view://22dcaa60-eae7-4d69-8564-79e2711f2ca1}}\">\n{\"dataSourceUrl\":\"{{collection://0c570ca2-205c-4612-8a3e-e99eb80bc889}}\",\"displayProperties\":[\"Association\",\"Ascendance\",\"Peuple\",\"Poids relatif\",\"Possible\"],\"name\":\"Default view\",\"type\":\"table\"}\n</view>\n</views>\n</database>"
+  },
+  "rows": {
+    "results": [
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d181d68442d90c58261549\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181258b60eb1cbbb545fe\"]",
+        "Possible": "__NO__",
+        "Association": "Homme-bête — Sang de dryade",
+        "url": "https://app.notion.com/p/3e9c799da3d1810ebdead38d51135aa9"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d1818abe3ef784abf673d2\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d18138870ae83c77748148\"]",
+        "Possible": "__NO__",
+        "Association": "Reptilien — Sang féerique",
+        "url": "https://app.notion.com/p/3e9c799da3d18116b75afae426d14564"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d18131bfc9cbffcea9fd21\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d18138870ae83c77748148\"]",
+        "Possible": "__YES__",
+        "Poids relatif": 2,
+        "Association": "Reptilien — Sang de dragon",
+        "url": "https://app.notion.com/p/3e9c799da3d18117b89beaaef7b96045"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d181cfa519f51eec9bf020\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181258b60eb1cbbb545fe\"]",
+        "Possible": "__YES__",
+        "Poids relatif": 2,
+        "Association": "Homme-bête — Sang d’orc",
+        "url": "https://app.notion.com/p/3e9c799da3d181229f2fefa13e8a4ed3"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d181cfa519f51eec9bf020\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181cfbc78f19ae00a401a\"]",
+        "Possible": "__NO__",
+        "Association": "Ogre — Sang d’orc",
+        "url": "https://app.notion.com/p/3e9c799da3d181339a6ad146954a690f"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d181bdb912c668959c2c0f\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d18138870ae83c77748148\"]",
+        "Possible": "__NO__",
+        "Association": "Reptilien — Sang d’humain",
+        "url": "https://app.notion.com/p/3e9c799da3d18138b063d9da20284bd1"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d1818abe3ef784abf673d2\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181258b60eb1cbbb545fe\"]",
+        "Possible": "__NO__",
+        "Association": "Homme-bête — Sang féerique",
+        "url": "https://app.notion.com/p/3e9c799da3d1813a984dc78dca59c56f"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d18158b229f62d3a824861\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d18138870ae83c77748148\"]",
+        "Possible": "__NO__",
+        "Association": "Reptilien — Sang d’elfe",
+        "url": "https://app.notion.com/p/3e9c799da3d1813c9af4d296503f814e"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d181649e9ae4f8de0a399e\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181cfbc78f19ae00a401a\"]",
+        "Possible": "__NO__",
+        "Association": "Ogre — Sang de troll",
+        "url": "https://app.notion.com/p/3e9c799da3d1814a8c6bca6c455dd871"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d181bc9e75c94847e96d86\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d18138870ae83c77748148\"]",
+        "Possible": "__YES__",
+        "Poids relatif": 1,
+        "Association": "Reptilien — Sang de démon",
+        "url": "https://app.notion.com/p/3e9c799da3d1814d8953effd78923793"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d1814f8fb7fc4bc5efa4c1\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d18138870ae83c77748148\"]",
+        "Possible": "__YES__",
+        "Poids relatif": 2,
+        "Association": "Reptilien — Sang de djinn",
+        "url": "https://app.notion.com/p/3e9c799da3d18155973bf5f5bd0ff113"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d181649e9ae4f8de0a399e\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d18138870ae83c77748148\"]",
+        "Possible": "__NO__",
+        "Association": "Reptilien — Sang de troll",
+        "url": "https://app.notion.com/p/3e9c799da3d181568fcbf95ca3532bc6"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d181bdb912c668959c2c0f\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181258b60eb1cbbb545fe\"]",
+        "Possible": "__NO__",
+        "Association": "Homme-bête — Sang d’humain",
+        "url": "https://app.notion.com/p/3e9c799da3d181618013ce32d60bbc33"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d1815ebdf7c7a38aec52d2\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181cfbc78f19ae00a401a\"]",
+        "Possible": "__NO__",
+        "Association": "Ogre — Sang de sirène",
+        "url": "https://app.notion.com/p/3e9c799da3d1816dbe41d3a43df2409b"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d1812cad9dfd2e65d58fa7\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181258b60eb1cbbb545fe\"]",
+        "Possible": "__NO__",
+        "Association": "Homme-bête — Sang divin",
+        "url": "https://app.notion.com/p/3e9c799da3d181749345d529231d4ee3"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d1812cad9dfd2e65d58fa7\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d18138870ae83c77748148\"]",
+        "Possible": "__NO__",
+        "Association": "Reptilien — Sang divin",
+        "url": "https://app.notion.com/p/3e9c799da3d181768a1eecf298040755"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d181bc9e75c94847e96d86\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181258b60eb1cbbb545fe\"]",
+        "Possible": "__YES__",
+        "Poids relatif": 2,
+        "Association": "Homme-bête — Sang de démon",
+        "url": "https://app.notion.com/p/3e9c799da3d18181888ce97c2c48822f"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d181d68442d90c58261549\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181cfbc78f19ae00a401a\"]",
+        "Possible": "__NO__",
+        "Association": "Ogre — Sang de dryade",
+        "url": "https://app.notion.com/p/3e9c799da3d1818eb83cf3cf8d613b6f"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d1815ebdf7c7a38aec52d2\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181258b60eb1cbbb545fe\"]",
+        "Possible": "__NO__",
+        "Association": "Homme-bête — Sang de sirène",
+        "url": "https://app.notion.com/p/3e9c799da3d1819abf8df24b477a347a"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d181bdb912c668959c2c0f\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181cfbc78f19ae00a401a\"]",
+        "Possible": "__NO__",
+        "Association": "Ogre — Sang d’humain",
+        "url": "https://app.notion.com/p/3e9c799da3d181a8b5dad2f1c0fc96aa"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d181d68442d90c58261549\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d18138870ae83c77748148\"]",
+        "Possible": "__NO__",
+        "Association": "Reptilien — Sang de dryade",
+        "url": "https://app.notion.com/p/3e9c799da3d181aab60ffdee191b9842"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d1815ebdf7c7a38aec52d2\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d18138870ae83c77748148\"]",
+        "Possible": "__YES__",
+        "Poids relatif": 2,
+        "Association": "Reptilien — Sang de sirène",
+        "url": "https://app.notion.com/p/3e9c799da3d181acbd00dc00ae6a5f6c"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d1814f8fb7fc4bc5efa4c1\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181258b60eb1cbbb545fe\"]",
+        "Possible": "__YES__",
+        "Poids relatif": 1,
+        "Association": "Homme-bête — Sang de djinn",
+        "url": "https://app.notion.com/p/3e9c799da3d181b08335d276cd2b790b"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d18158b229f62d3a824861\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181258b60eb1cbbb545fe\"]",
+        "Possible": "__NO__",
+        "Association": "Homme-bête — Sang d’elfe",
+        "url": "https://app.notion.com/p/3e9c799da3d181b3abdfe8665bf4b1a2"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d181649e9ae4f8de0a399e\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181258b60eb1cbbb545fe\"]",
+        "Possible": "__YES__",
+        "Poids relatif": 1,
+        "Association": "Homme-bête — Sang de troll",
+        "url": "https://app.notion.com/p/3e9c799da3d181b89476f9bcbc2d3a2c"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d181cfa519f51eec9bf020\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d18138870ae83c77748148\"]",
+        "Possible": "__NO__",
+        "Association": "Reptilien — Sang d’orc",
+        "url": "https://app.notion.com/p/3e9c799da3d181c9a833f68824db3762"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d1814f8fb7fc4bc5efa4c1\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181cfbc78f19ae00a401a\"]",
+        "Possible": "__NO__",
+        "Association": "Ogre — Sang de djinn",
+        "url": "https://app.notion.com/p/3e9c799da3d181d49306c9bfd880285b"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d18131bfc9cbffcea9fd21\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181258b60eb1cbbb545fe\"]",
+        "Possible": "__NO__",
+        "Association": "Homme-bête — Sang de dragon",
+        "url": "https://app.notion.com/p/3e9c799da3d181e395ebee0f5ed3dbb6"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d1818abe3ef784abf673d2\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181cfbc78f19ae00a401a\"]",
+        "Possible": "__NO__",
+        "Association": "Ogre — Sang féerique",
+        "url": "https://app.notion.com/p/3e9c799da3d181e7ab3bec7af96a8a6a"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d1812cad9dfd2e65d58fa7\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181cfbc78f19ae00a401a\"]",
+        "Possible": "__NO__",
+        "Association": "Ogre — Sang divin",
+        "url": "https://app.notion.com/p/3e9c799da3d181f7a8d3ef381ccb370e"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d1812cad9dfd2e65d58fa7\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181b28fdddd40c97cfae5\"]",
+        "Possible": "__NO__",
+        "Association": "Gobelin — Sang divin",
+        "url": "https://app.notion.com/p/3e9c799da3d181018b8dd46dd701d3d0"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d181bdb912c668959c2c0f\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181baa304c5591507657c\"]",
+        "Possible": "__NO__",
+        "Association": "Gnome — Sang d’humain",
+        "url": "https://app.notion.com/p/3e9c799da3d18110a177d8e7937bce9f"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d1812cad9dfd2e65d58fa7\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d18171b3c9f93cf48ea4d1\"]",
+        "Possible": "__YES__",
+        "Poids relatif": 1,
+        "Association": "Halfling — Sang divin",
+        "url": "https://app.notion.com/p/3e9c799da3d1811294ede6d46231779e"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d181bc9e75c94847e96d86\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d18171b3c9f93cf48ea4d1\"]",
+        "Possible": "__NO__",
+        "Association": "Halfling — Sang de démon",
+        "url": "https://app.notion.com/p/3e9c799da3d1811dafcae33a650db35e"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d181649e9ae4f8de0a399e\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d18171b3c9f93cf48ea4d1\"]",
+        "Possible": "__NO__",
+        "Association": "Halfling — Sang de troll",
+        "url": "https://app.notion.com/p/3e9c799da3d181209481cdd57b2bbea8"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d181d68442d90c58261549\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d18171b3c9f93cf48ea4d1\"]",
+        "Possible": "__YES__",
+        "Poids relatif": 1,
+        "Association": "Halfling — Sang de dryade",
+        "url": "https://app.notion.com/p/3e9c799da3d181238681f41e23c80411"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d1818abe3ef784abf673d2\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181b28fdddd40c97cfae5\"]",
+        "Possible": "__NO__",
+        "Association": "Gobelin — Sang féerique",
+        "url": "https://app.notion.com/p/3e9c799da3d1812da173faf110970f4a"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d18131bfc9cbffcea9fd21\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181cfbc78f19ae00a401a\"]",
+        "Possible": "__YES__",
+        "Poids relatif": 1,
+        "Association": "Ogre — Sang de dragon",
+        "url": "https://app.notion.com/p/3e9c799da3d1812f93d9d59564db6b75"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d1815ebdf7c7a38aec52d2\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181219711c434b8e9e55e\"]",
+        "Possible": "__NO__",
+        "Association": "Orc — Sang de sirène",
+        "url": "https://app.notion.com/p/3e9c799da3d18138903ff70d4e80dea0"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d181649e9ae4f8de0a399e\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181baa304c5591507657c\"]",
+        "Possible": "__YES__",
+        "Poids relatif": 1,
+        "Association": "Gnome — Sang de troll",
+        "url": "https://app.notion.com/p/3e9c799da3d18145981fd807bd7ed035"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d181bc9e75c94847e96d86\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181cfbc78f19ae00a401a\"]",
+        "Possible": "__YES__",
+        "Poids relatif": 1,
+        "Association": "Ogre — Sang de démon",
+        "url": "https://app.notion.com/p/3e9c799da3d18149856eed6c1c065735"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d1812cad9dfd2e65d58fa7\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181219711c434b8e9e55e\"]",
+        "Possible": "__NO__",
+        "Association": "Orc — Sang divin",
+        "url": "https://app.notion.com/p/3e9c799da3d1814cac38d8746fbe961b"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d18131bfc9cbffcea9fd21\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181baa304c5591507657c\"]",
+        "Possible": "__NO__",
+        "Association": "Gnome — Sang de dragon",
+        "url": "https://app.notion.com/p/3e9c799da3d18159bf1eefc3ac688ca1"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d181cfa519f51eec9bf020\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181b28fdddd40c97cfae5\"]",
+        "Possible": "__YES__",
+        "Poids relatif": 3,
+        "Association": "Gobelin — Sang d’orc",
+        "url": "https://app.notion.com/p/3e9c799da3d1815bb014c174f9090e80"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d1815ebdf7c7a38aec52d2\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181b28fdddd40c97cfae5\"]",
+        "Possible": "__NO__",
+        "Association": "Gobelin — Sang de sirène",
+        "url": "https://app.notion.com/p/3e9c799da3d1816cb7b3cf076199e311"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d18158b229f62d3a824861\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181cfbc78f19ae00a401a\"]",
+        "Possible": "__NO__",
+        "Association": "Ogre — Sang d’elfe",
+        "url": "https://app.notion.com/p/3e9c799da3d1816f8181ff5b1e64b003"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d1818abe3ef784abf673d2\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181baa304c5591507657c\"]",
+        "Possible": "__YES__",
+        "Poids relatif": 2,
+        "Association": "Gnome — Sang féerique",
+        "url": "https://app.notion.com/p/3e9c799da3d1817291a8c5e94f91ee62"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d1815ebdf7c7a38aec52d2\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d18171b3c9f93cf48ea4d1\"]",
+        "Possible": "__NO__",
+        "Association": "Halfling — Sang de sirène",
+        "url": "https://app.notion.com/p/3e9c799da3d18178a008cec3ed541f47"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d18131bfc9cbffcea9fd21\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d18171b3c9f93cf48ea4d1\"]",
+        "Possible": "__NO__",
+        "Association": "Halfling — Sang de dragon",
+        "url": "https://app.notion.com/p/3e9c799da3d18179ab57e11626ec6655"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d18158b229f62d3a824861\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d18171b3c9f93cf48ea4d1\"]",
+        "Possible": "__NO__",
+        "Association": "Halfling — Sang d’elfe",
+        "url": "https://app.notion.com/p/3e9c799da3d1817c86bce17aabe6a578"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d18131bfc9cbffcea9fd21\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181b28fdddd40c97cfae5\"]",
+        "Possible": "__NO__",
+        "Association": "Gobelin — Sang de dragon",
+        "url": "https://app.notion.com/p/3e9c799da3d181838b18eb4e83489910"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d181d68442d90c58261549\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181219711c434b8e9e55e\"]",
+        "Possible": "__NO__",
+        "Association": "Orc — Sang de dryade",
+        "url": "https://app.notion.com/p/3e9c799da3d1818a91efdd9d073eff85"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d1814f8fb7fc4bc5efa4c1\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d18171b3c9f93cf48ea4d1\"]",
+        "Possible": "__NO__",
+        "Association": "Halfling — Sang de djinn",
+        "url": "https://app.notion.com/p/3e9c799da3d1818ca0edf891cefb5427"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d1815ebdf7c7a38aec52d2\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181baa304c5591507657c\"]",
+        "Possible": "__NO__",
+        "Association": "Gnome — Sang de sirène",
+        "url": "https://app.notion.com/p/3e9c799da3d181929c34faf7066da6c9"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d181649e9ae4f8de0a399e\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181219711c434b8e9e55e\"]",
+        "Possible": "__YES__",
+        "Poids relatif": 3,
+        "Association": "Orc — Sang de troll",
+        "url": "https://app.notion.com/p/3e9c799da3d18193bd4ef4a60143428f"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d181d68442d90c58261549\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181b28fdddd40c97cfae5\"]",
+        "Possible": "__NO__",
+        "Association": "Gobelin — Sang de dryade",
+        "url": "https://app.notion.com/p/3e9c799da3d18197a1fae54e72a289e8"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d181cfa519f51eec9bf020\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181baa304c5591507657c\"]",
+        "Possible": "__NO__",
+        "Association": "Gnome — Sang d’orc",
+        "url": "https://app.notion.com/p/3e9c799da3d1819fbf2fd66d87c7a922"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d181bdb912c668959c2c0f\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d18171b3c9f93cf48ea4d1\"]",
+        "Possible": "__YES__",
+        "Poids relatif": 3,
+        "Association": "Halfling — Sang d’humain",
+        "url": "https://app.notion.com/p/3e9c799da3d181a182a0cee937f7262a"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d18158b229f62d3a824861\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181baa304c5591507657c\"]",
+        "Possible": "__NO__",
+        "Association": "Gnome — Sang d’elfe",
+        "url": "https://app.notion.com/p/3e9c799da3d181a89e0fc4bd0928fe0c"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d181bdb912c668959c2c0f\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181b28fdddd40c97cfae5\"]",
+        "Possible": "__YES__",
+        "Poids relatif": 3,
+        "Association": "Gobelin — Sang d’humain",
+        "url": "https://app.notion.com/p/3e9c799da3d181ad9816ea3a1f8216a5"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d181bc9e75c94847e96d86\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181b28fdddd40c97cfae5\"]",
+        "Possible": "__YES__",
+        "Poids relatif": 1,
+        "Association": "Gobelin — Sang de démon",
+        "url": "https://app.notion.com/p/3e9c799da3d181c2b5a1f24f0c2444f6"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d1814f8fb7fc4bc5efa4c1\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181baa304c5591507657c\"]",
+        "Possible": "__YES__",
+        "Poids relatif": 3,
+        "Association": "Gnome — Sang de djinn",
+        "url": "https://app.notion.com/p/3e9c799da3d181d0a394e4239d39bc95"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d181649e9ae4f8de0a399e\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181b28fdddd40c97cfae5\"]",
+        "Possible": "__YES__",
+        "Poids relatif": 2,
+        "Association": "Gobelin — Sang de troll",
+        "url": "https://app.notion.com/p/3e9c799da3d181d581c9d078b579ffa2"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d1814f8fb7fc4bc5efa4c1\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181b28fdddd40c97cfae5\"]",
+        "Possible": "__YES__",
+        "Poids relatif": 1,
+        "Association": "Gobelin — Sang de djinn",
+        "url": "https://app.notion.com/p/3e9c799da3d181e1a75fd10a2d55a8ad"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d18158b229f62d3a824861\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181b28fdddd40c97cfae5\"]",
+        "Possible": "__NO__",
+        "Association": "Gobelin — Sang d’elfe",
+        "url": "https://app.notion.com/p/3e9c799da3d181e2bc93dd4ae0dca0a1"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d1812cad9dfd2e65d58fa7\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181baa304c5591507657c\"]",
+        "Possible": "__NO__",
+        "Association": "Gnome — Sang divin",
+        "url": "https://app.notion.com/p/3e9c799da3d181ebbbd4e867685c1876"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d181d68442d90c58261549\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181baa304c5591507657c\"]",
+        "Possible": "__NO__",
+        "Association": "Gnome — Sang de dryade",
+        "url": "https://app.notion.com/p/3e9c799da3d181ed8dcfe5b4ab981bb6"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d1818abe3ef784abf673d2\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d18171b3c9f93cf48ea4d1\"]",
+        "Possible": "__YES__",
+        "Poids relatif": 3,
+        "Association": "Halfling — Sang féerique",
+        "url": "https://app.notion.com/p/3e9c799da3d181f28153df3adb7645a8"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d181cfa519f51eec9bf020\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d18171b3c9f93cf48ea4d1\"]",
+        "Possible": "__NO__",
+        "Association": "Halfling — Sang d’orc",
+        "url": "https://app.notion.com/p/3e9c799da3d181f5a380fb87b1445dc6"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d181bc9e75c94847e96d86\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181baa304c5591507657c\"]",
+        "Possible": "__YES__",
+        "Poids relatif": 2,
+        "Association": "Gnome — Sang de démon",
+        "url": "https://app.notion.com/p/3e9c799da3d181fe94abc1e8cc043557"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d181cfa519f51eec9bf020\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181a6ad48d76461417bda\"]",
+        "Possible": "__NO__",
+        "Association": "Elfe — Sang d’orc",
+        "url": "https://app.notion.com/p/3e9c799da3d18102ac9ac4ccd6fd86be"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d181649e9ae4f8de0a399e\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181ee9e4ad52517136b2a\"]",
+        "Possible": "__NO__",
+        "Association": "Nain — Sang de troll",
+        "url": "https://app.notion.com/p/3e9c799da3d1810ba4eee07ce282b983"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d18131bfc9cbffcea9fd21\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d1816ea19beea93b3794b1\"]",
+        "Possible": "__YES__",
+        "Poids relatif": 1,
+        "Association": "Humain — Sang de dragon",
+        "url": "https://app.notion.com/p/3e9c799da3d1811796b8d663dea9bb28"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d18131bfc9cbffcea9fd21\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181ee9e4ad52517136b2a\"]",
+        "Possible": "__YES__",
+        "Poids relatif": 2,
+        "Association": "Nain — Sang de dragon",
+        "url": "https://app.notion.com/p/3e9c799da3d1811db35ffdcc65cf3ec3"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d18131bfc9cbffcea9fd21\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181a6ad48d76461417bda\"]",
+        "Possible": "__YES__",
+        "Poids relatif": 2,
+        "Association": "Elfe — Sang de dragon",
+        "url": "https://app.notion.com/p/3e9c799da3d18120b13ed89008484423"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d1812cad9dfd2e65d58fa7\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181a6ad48d76461417bda\"]",
+        "Possible": "__YES__",
+        "Poids relatif": 1,
+        "Association": "Elfe — Sang divin",
+        "url": "https://app.notion.com/p/3e9c799da3d1812c876ac0c69b6381ff"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d1818abe3ef784abf673d2\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d1816ea19beea93b3794b1\"]",
+        "Possible": "__YES__",
+        "Poids relatif": 1,
+        "Association": "Humain — Sang féerique",
+        "url": "https://app.notion.com/p/3e9c799da3d1812c9af4f7c5fee0d0d5"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d181d68442d90c58261549\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181a6ad48d76461417bda\"]",
+        "Possible": "__YES__",
+        "Poids relatif": 3,
+        "Association": "Elfe — Sang de dryade",
+        "url": "https://app.notion.com/p/3e9c799da3d1812f92f9f4d6352b9daa"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d18131bfc9cbffcea9fd21\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181219711c434b8e9e55e\"]",
+        "Possible": "__NO__",
+        "Association": "Orc — Sang de dragon",
+        "url": "https://app.notion.com/p/3e9c799da3d18132ab14d34c3f82e710"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d1814f8fb7fc4bc5efa4c1\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181ee9e4ad52517136b2a\"]",
+        "Possible": "__YES__",
+        "Poids relatif": 2,
+        "Association": "Nain — Sang de djinn",
+        "url": "https://app.notion.com/p/3e9c799da3d18133bf93ed6457f25fd3"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d181bdb912c668959c2c0f\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181ee9e4ad52517136b2a\"]",
+        "Possible": "__YES__",
+        "Poids relatif": 3,
+        "Association": "Nain — Sang d’humain",
+        "url": "https://app.notion.com/p/3e9c799da3d18137bbc9d26655c10752"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d181cfa519f51eec9bf020\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181219711c434b8e9e55e\"]",
+        "Possible": "__NO__",
+        "Association": "Orc — Sang d’orc",
+        "url": "https://app.notion.com/p/3e9c799da3d18141ad15fb2467edabdc"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d1818abe3ef784abf673d2\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181ee9e4ad52517136b2a\"]",
+        "Possible": "__NO__",
+        "Association": "Nain — Sang féerique",
+        "url": "https://app.notion.com/p/3e9c799da3d181428036e6d34b498706"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d181bc9e75c94847e96d86\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181219711c434b8e9e55e\"]",
+        "Possible": "__YES__",
+        "Poids relatif": 1,
+        "Association": "Orc — Sang de démon",
+        "url": "https://app.notion.com/p/3e9c799da3d18146bdd9f3b9d384ae8c"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d1815ebdf7c7a38aec52d2\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181ee9e4ad52517136b2a\"]",
+        "Possible": "__NO__",
+        "Association": "Nain — Sang de sirène",
+        "url": "https://app.notion.com/p/3e9c799da3d18148a29bc00e70d83755"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d1814f8fb7fc4bc5efa4c1\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181219711c434b8e9e55e\"]",
+        "Possible": "__YES__",
+        "Poids relatif": 1,
+        "Association": "Orc — Sang de djinn",
+        "url": "https://app.notion.com/p/3e9c799da3d1814c8795f5e95e83d7f4"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d1814f8fb7fc4bc5efa4c1\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d1816ea19beea93b3794b1\"]",
+        "Possible": "__YES__",
+        "Poids relatif": 1,
+        "Association": "Humain — Sang de djinn",
+        "url": "https://app.notion.com/p/3e9c799da3d18157a8c2da395b241fee"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d181bc9e75c94847e96d86\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d1816ea19beea93b3794b1\"]",
+        "Possible": "__YES__",
+        "Poids relatif": 1,
+        "Association": "Humain — Sang de démon",
+        "url": "https://app.notion.com/p/3e9c799da3d18158a319ee26155a37b4"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d18158b229f62d3a824861\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181ee9e4ad52517136b2a\"]",
+        "Possible": "__NO__",
+        "Association": "Nain — Sang d’elfe",
+        "url": "https://app.notion.com/p/3e9c799da3d1815baed9ec7e29642f00"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d1812cad9dfd2e65d58fa7\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d1816ea19beea93b3794b1\"]",
+        "Possible": "__YES__",
+        "Poids relatif": 1,
+        "Association": "Humain — Sang divin",
+        "url": "https://app.notion.com/p/3e9c799da3d18170a498ca6dff66ce2f"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d18158b229f62d3a824861\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d1816ea19beea93b3794b1\"]",
+        "Possible": "__YES__",
+        "Poids relatif": 3,
+        "Association": "Humain — Sang d’elfe",
+        "url": "https://app.notion.com/p/3e9c799da3d1817d8601c21e1c6dc37a"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d18158b229f62d3a824861\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181a6ad48d76461417bda\"]",
+        "Possible": "__NO__",
+        "Association": "Elfe — Sang d’elfe",
+        "url": "https://app.notion.com/p/3e9c799da3d18181b5bffb43fe8a8020"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d1815ebdf7c7a38aec52d2\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d1816ea19beea93b3794b1\"]",
+        "Possible": "__YES__",
+        "Poids relatif": 1,
+        "Association": "Humain — Sang de sirène",
+        "url": "https://app.notion.com/p/3e9c799da3d18186b9dee8f96b58da30"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d181bdb912c668959c2c0f\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d1816ea19beea93b3794b1\"]",
+        "Possible": "__NO__",
+        "Association": "Humain — Sang d’humain",
+        "url": "https://app.notion.com/p/3e9c799da3d1819cbcbdd56f748a6b34"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d1815ebdf7c7a38aec52d2\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181a6ad48d76461417bda\"]",
+        "Possible": "__YES__",
+        "Poids relatif": 1,
+        "Association": "Elfe — Sang de sirène",
+        "url": "https://app.notion.com/p/3e9c799da3d181a6acf4fe153ab040e8"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d181cfa519f51eec9bf020\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181ee9e4ad52517136b2a\"]",
+        "Possible": "__NO__",
+        "Association": "Nain — Sang d’orc",
+        "url": "https://app.notion.com/p/3e9c799da3d181a99dd8e852cef23b19"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d181649e9ae4f8de0a399e\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d1816ea19beea93b3794b1\"]",
+        "Possible": "__NO__",
+        "Association": "Humain — Sang de troll",
+        "url": "https://app.notion.com/p/3e9c799da3d181adb97ae59749996e6a"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d181bc9e75c94847e96d86\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181ee9e4ad52517136b2a\"]",
+        "Possible": "__YES__",
+        "Poids relatif": 2,
+        "Association": "Nain — Sang de démon",
+        "url": "https://app.notion.com/p/3e9c799da3d181b9b160cb319c875500"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d1814f8fb7fc4bc5efa4c1\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181a6ad48d76461417bda\"]",
+        "Possible": "__YES__",
+        "Poids relatif": 1,
+        "Association": "Elfe — Sang de djinn",
+        "url": "https://app.notion.com/p/3e9c799da3d181bd972ef055ef028fd0"
+      },
+      {
+        "Ascendance": "[\"https://app.notion.com/p/3e9c799da3d1818abe3ef784abf673d2\"]",
+        "Peuple": "[\"https://app.notion.com/p/3e9c799da3d181a6ad48d76461417bda\"]",
+        "Possible": "__YES__",
+        "Poids relatif": 2,
+        "Association": "Elfe — Sang féerique",
+        "url": "https://app.notion.com/p/3e9c799da3d181c6bcabde0d290b5b77"
+      }
+    ],
+    "has_more": true
+  }
+}

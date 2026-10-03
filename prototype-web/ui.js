@@ -563,7 +563,8 @@ function renderProfileTab(c) {
         </div>
       </div>
     </section>
-    ${renderSituation(c)}`;
+    ${renderSituation(c)}
+    <p class="character-bio-placeholder"><strong>Biographie</strong><span>Le moteur de bios tagué viendra ici : courte, personnelle, parfois héroïque, souvent douteuse.</span></p>`;
 }
 
 function renderStatsTab(c) {
@@ -574,6 +575,7 @@ function renderStatsTab(c) {
   </section>`;
 }
 
+// La magie a son propre onglet : elle n'est pas répétée ici (idée de Chatty, PR #29).
 function renderSkillsTab(c) {
   return `<section class="sheet-section">
     <div class="section-title-row compact"><div><h3>Compétences</h3></div><span class="muted">tirage brut → matrice → final · comparaison = capitaine + escouade</span></div>
@@ -581,14 +583,44 @@ function renderSkillsTab(c) {
     <div class="skill-groups">
       ${renderMartialGroup(c)}
       ${Object.entries(c.skills)
-        .filter(([group,values]) => group !== "martial" && Object.keys(values).length)
+        .filter(([group,values]) => group !== "martial" && group !== "magic" && Object.keys(values).length)
         .map(([group,values]) => renderSkillGroup(c,group,values))
         .join("")}
     </div>
   </section>`;
 }
 
-// Toutes les écoles du mercenaire ; les sorts viendront avec le catalogue (Issue #28).
+// Grimoire (Chatty, PR #29) : accepte déjà mercenary.spells = [{name, school, mastery}], sans l'exiger.
+function renderCharacterSpellbook(c) {
+  const spells = Array.isArray(c.spells) ? c.spells : [];
+  if (!spells.length) {
+    return `<section class="spellbook-section">
+      <div class="section-title-row compact">
+        <div><p class="eyebrow">Grimoire personnel</p><h3>Sorts connus</h3></div>
+        <span class="muted">Catalogue en préparation (Issue #28)</span>
+      </div>
+      <div class="spellbook-empty">
+        <strong>Aucun sort enregistré dans le prototype.</strong>
+        <span>Les écoles existent déjà ; cet espace accueillera les sorts appris, leur maîtrise et leur école.</span>
+      </div>
+    </section>`;
+  }
+  return `<section class="spellbook-section">
+    <div class="section-title-row compact">
+      <div><p class="eyebrow">Grimoire personnel</p><h3>Sorts connus</h3></div>
+      <span class="muted">${spells.length} sort${spells.length > 1 ? "s" : ""}</span>
+    </div>
+    <div class="spellbook-grid">
+      ${spells.map(spell => `<article class="spell-card">
+        <small>${esc(spell.school || spell.parent || "Magie")}</small>
+        <strong>${esc(spell.name || spell.nom || "Sort")}</strong>
+        <span>Maîtrise ${fmt(Number(spell.mastery))}</span>
+      </article>`).join("")}
+    </div>
+  </section>`;
+}
+
+// Toutes les écoles du mercenaire, puis son grimoire.
 function renderMagicTab(c) {
   const schools = Object.entries(c.skills.magic || {})
     .filter(([,value]) => Number.isFinite(value))
@@ -599,8 +631,8 @@ function renderMagicTab(c) {
       ${schools.length ? `<div class="school-list">${schools.map(([name,value]) => `
         <div class="school-row"><span>${esc(name)}</span><i style="width:${Math.max(0,Math.min(100,value))}%"></i><b>${fmt(value)}</b></div>`).join("")}</div>`
         : `<p class="muted">Aucune école de magie.</p>`}
-      <p class="muted">Sorts connus et apprenables : en attente du catalogue de sorts (Issue #28).</p>
-    </section>`;
+    </section>
+    ${renderCharacterSpellbook(c)}`;
 }
 
 function renderSheetTab(c, tab) {
@@ -620,6 +652,7 @@ function renderSheet() {
     `<button type="button" role="tab" class="sheet-tab${key === tab ? " active" : ""}" aria-selected="${key === tab}" data-sheet-tab="${key}">${esc(label)}</button>`
   ).join("");
   $("dialog-content").innerHTML = renderSheetTab(c, tab);
+  $("dialog-content").setAttribute("aria-label", SHEET_TABS.find(([key]) => key === tab)[1]);
 }
 
 function showCharacter(c) {

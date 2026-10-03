@@ -1,0 +1,31 @@
+name: Rebuild design source
+
+on:
+  push:
+    branches:
+      - migration/notion-to-git
+    paths:
+      - "scripts/migrate_notion_export.py"
+      - ".github/workflows/rebuild-design.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python scripts/migrate_notion_export.py
+      - name: Commit regenerated design source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A docs/design data/reference
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "data: regenerate clean Git-native design source"
+          git push

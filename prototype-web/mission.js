@@ -60,7 +60,8 @@ function makeMissionUnit(character,team,index){
     id:team+"-"+character.id+"-"+index,
     character,team,q:spawn.q,r:spawn.r,
     hp:character.pvMax,alive:true,activeSet:1,prone:false,
-    acted:false,movementRemaining:0,attackAvailable:true,quickAvailable:true
+    acted:false,movementRemaining:0,attackAvailable:true,quickAvailable:true,
+    fleeing:false,fleeTurn:0,offMap:false
   };
 }
 
@@ -140,14 +141,22 @@ function startMissionFromSelection(){
 function selectNextMissionPlayer(){
   const m=game.mission;
   if(!m||m.over) return;
-  const next=m.playerOrder.find(u=>u.alive&&!u.acted);
-  if(!next){ runMissionEnemyTurn(); return; }
-  m.phase="player";
-  m.activeUnit=next;
-  m.mode=null;
-  resetMissionActivation(next);
-  missionLog("Activation de "+next.character.name+".","turn");
-  renderMission();
+  for(;;){
+    const next=m.playerOrder.find(u=>u.alive&&!u.acted);
+    if(!next){ runMissionEnemyTurn(); return; }
+    resetMissionActivation(next);
+    if(next.fleeing&&resolveMissionFleeingActivation(next)){
+      next.acted=true;
+      if(m.over){ renderMission(); return; }
+      continue;
+    }
+    m.phase="player";
+    m.activeUnit=next;
+    m.mode=null;
+    missionLog("Activation de "+next.character.name+".","turn");
+    renderMission();
+    return;
+  }
 }
 
 function endMissionActivation(){
@@ -207,11 +216,14 @@ function logMissionAttack(a,d,result,kind="attack"){
 function resolveOpportunityAttacks(reactors,target){
   const m=game.mission,order=target.team==="player"?m.enemyOrder:m.playerOrder;
   const sorted=[...reactors].sort((x,y)=>order.indexOf(x)-order.indexOf(y));
+  const from={q:target.q,r:target.r};
   for(const reactor of sorted){
-    if(m.over||!target.alive) break;
+    if(m.over||!target.alive||target.q!==from.q||target.r!==from.r) break;
+    if(!m.engine.threatens(reactor,target)) continue;
     const result=m.engine.resolveAttack(reactor,target,{mode:"melee",opportunity:true});
     logMissionAttack(reactor,target,result,"opportunity");
     checkMissionEnd();
+    resolveMissionCourage(reactor,target,result);
   }
   return target.alive;
 }
@@ -221,12 +233,16 @@ function moveMissionUnitAlongPath(unit,path){
   const e=game.mission.engine;
   let moved=0;
   for(const step of path){
+    if(!unit.alive||game.mission.over) break;
+    const from={q:unit.q,r:unit.r},wasFleeing=unit.fleeing;
     const reactors=e.opportunityReactors(missionOpponents(unit),unit,step);
     if(reactors.length){
       missionLog(unit.character.name+" quitte la zone de menace de "+reactors.map(x=>x.character.name).join(", ")+".","move");
-      if(!resolveOpportunityAttacks(reactors,unit)) break;
+      resolveOpportunityAttacks(reactors,unit);
+      if(!unit.alive||unit.q!==from.q||unit.r!==from.r||unit.fleeing!==wasFleeing) break;
     }
     unit.q=step.q;unit.r=step.r;moved++;
+    unit.movementRemaining=Math.max(0,(unit.movementRemaining||0)-1);
   }
   return moved;
 }
@@ -249,9 +265,9 @@ function missionChargeIfClear(unit,target){
   return charge.path.some(h=>occupied.has(missionKey(h.q,h.r)))?null:charge;
 }
 
-function missionActiveUnitFell(){
+function missionActiveUnitLost(){
   const m=game.mission,u=m?.activeUnit;
-  if(!u||u.alive) return false;
+  if(!u||(u.alive&&!u.fleeing)) return false;
   u.acted=true;m.activeUnit=null;m.mode=null;
   if(m.over) renderMission(); else selectNextMissionPlayer();
   return true;
@@ -262,14 +278,178 @@ function performMissionAttack(attacker,target,mode,distance){
   if(mode==="ranged"){
     const reactors=m.engine.rangedOpportunityReactors(missionOpponents(attacker),attacker,target);
     if(reactors.length){
+      const from={q:attacker.q,r:attacker.r},wasFleeing=attacker.fleeing;
       missionLog(attacker.character.name+" tire alors qu’il est menacé par "+reactors.map(x=>x.character.name).join(", ")+".","move");
-      if(!resolveOpportunityAttacks(reactors,attacker)) return null;
+      resolveOpportunityAttacks(reactors,attacker);
+      if(!attacker.alive||attacker.q!==from.q||attacker.r!==from.r||attacker.fleeing!==wasFleeing) return null;
     }
   }
   const result=m.engine.resolveAttack(attacker,target,{mode,distance,encircled:missionEncircled(target)});
   logMissionAttack(attacker,target,result);
   checkMissionEnd();
+  resolveMissionCourage(attacker,target,result);
   return result;
+}
+
+// Courage post-attaque CAC V1 / post-tir V1 / en sous-nombre V1 : un échec applique En Fuite.
+function resolveMissionCourage(attacker,defender,result){
+  const m=game.mission;
+  if(!m||m.over||!result?.ok) return;
+  const e=m.engine;
+  const context={
+    defenderSurplus:e.localMelee(defender,missionUnits()).surplus,
+    attackerEncircles:e.axialDistance(attacker,defender)===1&&e.threatens(attacker,defender)&&missionEncircled(defender)
+  };
+  const c=e.resolveCourage(attacker,defender,result,context);
+  if(!c) return;
+  const detail=" (Courage "+Math.round(c.pHold)+" %"+(c.rule==="outnumbered"?", en sous-nombre":"")+", jet "+c.roll+")";
+  if(!c.flees){ missionLog(c.subject.character.name+" tient bon"+detail+".","info"); return; }
+  missionLog(c.subject.character.name+" panique et prend la fuite"+detail+" !","bad");
+  applyMissionFlee(c.subject,c.source);
+}
+
+// Mouvement de fuite immédiat V1 : tout le mouvement restant pour s'éloigner de l'adversaire qui a déclenché le test.
+function applyMissionFlee(unit,source){
+  unit.fleeing=true;unit.fleeTurn=0;
+  const budget=Math.max(0,unit.movementRemaining||0);
+  if(!budget){ missionLog(unit.character.name+" n’a plus de mouvement et reste sur place, en fuite.","move"); return; }
+  missionFollowFleePath(unit,missionBestPath(unit,budget,cell=>game.mission.engine.axialDistance(cell,source)),"s’enfuit");
+}
+
+function missionFollowFleePath(unit,path,verb){
+  if(!path?.length){ missionLog(unit.character.name+" ne trouve aucune issue.","move"); return; }
+  const moved=moveMissionUnitAlongPath(unit,path);
+  if(moved) missionLog(unit.character.name+" "+verb+" de "+moved+" hex.","move");
+}
+
+// Ennemi actif = vivant et pas En Fuite (décision Idan, Issue #8).
+function missionThreatSources(unit){
+  const opponents=missionOpponents(unit),active=opponents.filter(o=>!o.fleeing);
+  return active.length?active:opponents;
+}
+
+function nearestActiveMissionEnemy(unit){
+  const e=game.mission.engine;
+  return missionOpponents(unit).filter(o=>!o.fleeing).sort((a,b)=>e.axialDistance(unit,a)-e.axialDistance(unit,b))[0]||null;
+}
+
+function missionMinDistance(cell,units){
+  return units.length?Math.min(...units.map(u=>game.mission.engine.axialDistance(cell,u))):0;
+}
+
+// Chemins les plus courts vers chaque case libre atteignable, dans l'ordre de distance.
+function missionReachablePaths(unit,budget=Infinity){
+  const blocked=occupiedMissionKeys(unit),start={q:unit.q,r:unit.r};
+  const paths=new Map([[missionKey(start.q,start.r),[]]]),queue=[start];
+  while(queue.length){
+    const cur=queue.shift(),path=paths.get(missionKey(cur.q,cur.r));
+    if(path.length>=budget) continue;
+    for(const next of missionNeighbors(cur)){
+      const key=missionKey(next.q,next.r);
+      if(paths.has(key)||blocked.has(key)) continue;
+      paths.set(key,[...path,next]);
+      queue.push(next);
+    }
+  }
+  return paths;
+}
+
+// Meilleure destination selon le score ; à score égal, le chemin le plus court (ordre de parcours).
+function missionBestPath(unit,budget,score){
+  let best=[],bestScore=score({q:unit.q,r:unit.r});
+  for(const path of missionReachablePaths(unit,budget).values()){
+    if(!path.length) continue;
+    const value=score(path[path.length-1]);
+    if(value>bestScore){ best=path;bestScore=value; }
+  }
+  return best;
+}
+
+function isMissionBorder(c){
+  return c.q===0||c.r===0||c.q===MISSION_MAP.cols-1||c.r===MISSION_MAP.rows-1;
+}
+
+// Sortie de carte : atteindre une case du bord, puis 1 hexagone de mouvement pour quitter la carte.
+// Parmi les sorties possibles, la plus éloignée des ennemis.
+function missionExitPath(unit,budget,threats){
+  let best=null,bestScore=-1;
+  for(const path of missionReachablePaths(unit,budget).values()){
+    const cell=path.length?path[path.length-1]:unit;
+    if(!isMissionBorder(cell)||path.length+1>budget) continue;
+    const value=missionMinDistance(cell,threats);
+    if(value>bestScore){ best=path;bestScore=value; }
+  }
+  return best;
+}
+
+function missionTryExit(unit,budget){
+  const path=missionExitPath(unit,budget,missionThreatSources(unit));
+  if(!path) return false;
+  const target=path.length?path[path.length-1]:{q:unit.q,r:unit.r};
+  if(path.length) missionFollowFleePath(unit,path,"court vers le bord");
+  if(unit.alive&&unit.q===target.q&&unit.r===target.r&&unit.movementRemaining>=1) missionExitMap(unit);
+  return true;
+}
+
+// Mission Test : un fuyard qui sort de la carte compte comme hors combat (décision Idan, Issue #8).
+// Sortir de la carte quitte les zones de menace : les attaques d'opportunité s'appliquent.
+function missionExitMap(unit){
+  const reactors=missionOpponents(unit).filter(o=>game.mission.engine.threatens(o,unit));
+  if(reactors.length){
+    missionLog(unit.character.name+" quitte la zone de menace de "+reactors.map(x=>x.character.name).join(", ")+".","move");
+    if(!resolveOpportunityAttacks(reactors,unit)) return;
+  }
+  unit.alive=false;unit.offMap=true;unit.movementRemaining=0;
+  missionLog(unit.character.name+" quitte le champ de bataille.","death");
+  checkMissionEnd();
+}
+
+// Comportement automatique — En Fuite V1, 1 : Course effrénée.
+function missionRunAway(unit,budget){
+  if(missionTryExit(unit,budget)) return;
+  const threats=missionThreatSources(unit);
+  missionFollowFleePath(unit,missionBestPath(unit,budget,cell=>missionMinDistance(cell,threats)),"court");
+}
+
+// 2 : Cachons-nous. La Mission Test n'a aucun abri total : le fuyard file vers la sortie de carte.
+function missionSeekCover(unit,budget){
+  if(missionTryExit(unit,budget)) return;
+  const path=missionExitPath(unit,Infinity,missionThreatSources(unit));
+  if(!path?.length){ missionRunAway(unit,budget); return; }
+  missionFollowFleePath(unit,path.slice(0,budget),"file vers la sortie");
+}
+
+// 3 : Feu à volonté sur l'ennemi le plus proche, sinon il reste sur place.
+function missionPanicFire(unit){
+  const e=game.mission.engine,threats=missionThreatSources(unit);
+  const target=[...threats].sort((a,b)=>e.axialDistance(unit,a)-e.axialDistance(unit,b))[0];
+  const distance=target?e.axialDistance(unit,target):0;
+  if(target&&e.isRangedWeapon(e.weaponTemplate(e.activeWeaponItem(unit)))&&e.canAttackAtDistance(unit,distance,"ranged")){
+    performMissionAttack(unit,target,"ranged",distance);
+    return;
+  }
+  missionLog(unit.character.name+" reste tétanisé sur place.","move");
+}
+
+// Reprise de contrôle — En Fuite V1, au début de l'activation. Retourne true si l'activation est consommée.
+function resolveMissionFleeingActivation(unit){
+  const e=game.mission.engine;
+  unit.fleeTurn=(unit.fleeTurn||0)+1;
+  const recovery=e.rollRecovery(unit,nearestActiveMissionEnemy(unit),unit.fleeTurn);
+  const detail=" (reprise "+Math.round(recovery.p)+" %, jet "+recovery.roll+")";
+  if(recovery.recovered){
+    unit.fleeing=false;unit.fleeTurn=0;
+    missionLog(unit.character.name+" reprend ses esprits"+detail+".","turn");
+    return false;
+  }
+  const budget=2*e.movementBase(unit),behavior=e.rollFleeBehavior();
+  missionLog(unit.character.name+" reste en fuite"+detail+" : "+["Course effrénée","Cachons-nous","Feu à volonté"][behavior-1]+".","bad");
+  unit.movementRemaining=budget;unit.attackAvailable=false;unit.quickAvailable=false;
+  if(behavior===1) missionRunAway(unit,budget);
+  else if(behavior===2) missionSeekCover(unit,budget);
+  else missionPanicFire(unit);
+  unit.movementRemaining=0;
+  return true;
 }
 
 function resolvePlayerMissionAttack(a,d,mode,distance){
@@ -278,7 +458,7 @@ function resolvePlayerMissionAttack(a,d,mode,distance){
   a.attackAvailable=false;
   m.mode=null;
   performMissionAttack(a,d,mode,distance);
-  if(missionActiveUnitFell()) return;
+  if(missionActiveUnitLost()) return;
   renderMission();
 }
 
@@ -293,9 +473,8 @@ function handleMissionHexClick(q,r){
     if(path&&path.length<=u.movementRemaining){
       m.mode=null;
       const moved=moveMissionUnitAlongPath(u,path);
-      u.movementRemaining-=moved;
       if(moved) missionLog(u.character.name+" se déplace de "+moved+" hex.","move");
-      if(missionActiveUnitFell()) return;
+      if(missionActiveUnitLost()) return;
       renderMission();
     }
     return;
@@ -314,11 +493,13 @@ function handleMissionHexClick(q,r){
 
     u.attackAvailable=false;u.movementRemaining=0;m.mode=null;
     moveMissionUnitAlongPath(u,charge.path);
-    if(missionActiveUnitFell()) return;
+    if(missionActiveUnitLost()) return;
     const result=m.engine.resolveAttack(u,clicked,{mode:"melee",distance:1,chargeDistance:charge.travel,encircled:missionEncircled(clicked)});
     if(result.chargeFall) u.prone=true;
     logMissionAttack(u,clicked,result,"charge");
     checkMissionEnd();
+    resolveMissionCourage(u,clicked,result);
+    if(missionActiveUnitLost()) return;
     renderMission();
   }
 }
@@ -393,16 +574,21 @@ function enemyTryCharge(unit,target){
   const e=game.mission.engine,charge=missionChargeIfClear(unit,target);
   if(!charge) return false;
 
+  unit.movementRemaining=0;
   moveMissionUnitAlongPath(unit,charge.path);
-  if(!unit.alive) return true;
+  if(!unit.alive||unit.fleeing) return true;
   const result=e.resolveAttack(unit,target,{mode:"melee",distance:1,chargeDistance:charge.travel,encircled:missionEncircled(target)});
   if(result.chargeFall) unit.prone=true;
   logMissionAttack(unit,target,result,"charge");
   checkMissionEnd();
+  resolveMissionCourage(unit,target,result);
   return true;
 }
 
 function enemyMissionAct(unit){
+  if(!unit.alive||game.mission.over) return;
+  resetMissionActivation(unit);
+  if(unit.fleeing&&resolveMissionFleeingActivation(unit)) return;
   if(!unit.alive||game.mission.over) return;
   let target=nearestMissionTarget(unit);
   if(!target) return;
@@ -420,7 +606,7 @@ function enemyMissionAct(unit){
   if(mode==="melee"&&enemyTryCharge(unit,target)) return;
 
   enemyMoveToward(unit,target);
-  if(game.mission.over||!unit.alive) return;
+  if(game.mission.over||!unit.alive||unit.fleeing) return;
 
   target=nearestMissionTarget(unit);
   if(!target) return;
@@ -494,7 +680,7 @@ function renderMissionRoster(units){
   return units.map(u=>`
     <div class="mission-roster-row ${u.alive?"":"down"}">
       <strong>${esc(u.character.name)}</strong>
-      <span>${u.hp}/${u.character.pvMax} PV</span>
+      <span>${u.offMap?"A quitté le combat":u.hp+"/"+u.character.pvMax+" PV"+(u.alive&&u.fleeing?" · En fuite":"")}</span>
       <small>Init ${Math.round(game.mission.engine.initiative(u))} · Mvt ${game.mission.engine.movementBase(u)}</small>
     </div>
   `).join("");
@@ -527,19 +713,20 @@ function renderMission(){
     cells+=`<button class="${classes.join(" ")}" data-hex-q="${q}" data-hex-r="${r}"${title} style="left:${p.x-MISSION_MAP.size}px;top:${p.y-MISSION_MAP.size}px"></button>`;
   }
 
-  const tokens=missionUnits().map(unit=>{
+  const tokens=missionUnits().filter(unit=>!unit.offMap).map(unit=>{
     const p=missionHexPixel(unit.q,unit.r);
     const pct=Math.max(0,Math.round(unit.hp/unit.character.pvMax*100));
     const classes=["mission-token",unit.team,unit.alive?"alive":"down"];
     if(u===unit) classes.push("active");
     const encircled=unit.alive&&missionEncircled(unit);
     if(encircled) classes.push("encircled");
+    if(unit.alive&&unit.fleeing) classes.push("fleeing");
     const weapon=e.activeWeaponItem(unit);
     return `<div class="${classes.join(" ")}" style="left:${p.x-24}px;top:${p.y-24}px">
       <strong>${esc(unit.character.name.split(" ")[0])}</strong>
       <small>${unit.hp}/${unit.character.pvMax}</small>
       <span class="token-hp"><i style="width:${pct}%"></i></span>
-      <em>${esc(weapon?.name||"Sans arme")}</em>
+      <em>${unit.alive&&unit.fleeing?"En fuite · ":""}${esc(weapon?.name||"Sans arme")}</em>
     </div>`;
   }).join("");
 

@@ -14,7 +14,9 @@ const files = {
   ancestryLevels:"ancestry-levels.json", d6Scale:"d6-generation-scale.json",
   generationMatrix:"generation-matrix.json", skills:"skills.json",
   characteristics:"characteristics.json", formulaConstants:"formula-constants.json",
-  weapons:"weapons.json", binaryAptitudeGrants:"binary-aptitude-grants.json",
+  weapons:"weapons.json", baseArmors:"base-armors.json", itemQualities:"item-qualities.json",
+  equipmentSlots:"equipment-slots.json", startingEquipmentGeneration:"starting-equipment-generation.json",
+  binaryAptitudeGrants:"binary-aptitude-grants.json",
   alignmentGeneration:"alignment-generation.json"
 };
 
@@ -44,6 +46,10 @@ assert.equal(audit.counts.cultures, 32);
 assert.equal(audit.counts.cultureOriginCompatibilities, 224);
 assert.equal(audit.counts.matrixRows, 106);
 assert.equal(audit.counts.skills, 94);
+assert.equal(audit.counts.baseArmors, 8);
+assert.equal(audit.counts.equipmentSlots, 21);
+assert.deepEqual(generator.equipmentTierDistribution(0), {1:0.9,2:0.09,3:0.01});
+assert.deepEqual(generator.equipmentTierDistribution(400), {1:0.25,2:0.45,3:0.30});
 assert.equal(audit.probabilities.peopleProbability, 1);
 assert.equal(audit.probabilities.ancestryLevelProbability, 1);
 assert.equal(audit.matrixCoverage.filter(x => x.status === "missing-target").length, 0);
@@ -114,6 +120,7 @@ for (const expected of ["Âge","Taille","Corpulence","Biographie courte"]) {
 
 let sawNonMageArmorBonus = false;
 let sawHighMagicArmorPenalty = false;
+let secondaryWeaponCount = 0;
 for (let i = 0; i < 1000; i++) {
   const c = generator.createMercenary({id:i+1});
   assert.ok(generator.culturesForPeople(c.people).includes(c.culture), `Invalid culture: ${c.people} / ${c.culture}`);
@@ -140,6 +147,41 @@ for (let i = 0; i < 1000; i++) {
   assert.equal(typeof c.skills.martial["Port d’armure intermédiaire"], "boolean");
   assert.equal(typeof c.skills.martial["Port d’armure lourde"], "boolean");
   assert.equal(c.skills.physiology.Vol, false);
+
+  assert.ok(c.equipment && c.equipment.profile && c.equipment.slots);
+  assert.equal(Object.keys(c.equipment.slots).length, 21);
+  assert.ok(["melee","ranged","magic"].includes(c.equipment.profile.type));
+  assert.ok(Number.isFinite(c.equipment.profile.scores.melee));
+  assert.ok(Number.isFinite(c.equipment.profile.scores.ranged));
+  assert.ok(Number.isFinite(c.equipment.profile.scores.magic));
+  assert.ok(Array.isArray(c.items));
+  assert.ok(c.items.length === 2 || c.items.length === 3);
+  assert.ok(c.equipment.slots.armor);
+  assert.ok(c.equipment.slots.weapon_set_1_main);
+  const armorItem = c.items.find(item => item.id === c.equipment.slots.armor);
+  const primaryItem = c.items.find(item => item.id === c.equipment.slots.weapon_set_1_main);
+  assert.equal(armorItem.itemType, "armor");
+  assert.equal(primaryItem.itemType, "weapon");
+  const expectedArmorClass = c.skills.martial["Port d’armure lourde"] ? "Lourde"
+    : c.skills.martial["Port d’armure intermédiaire"] ? "Intermédiaire"
+    : c.skills.martial["Port d’armure légère"] ? "Légère" : "Vêtement";
+  assert.equal(c.equipment.armorClass, expectedArmorClass);
+  assert.equal(armorItem.category, expectedArmorClass);
+  for (const item of c.items) {
+    assert.equal(item.owner, c.id);
+    assert.ok([1,2,3].includes(item.tier));
+    assert.ok(["worn","standard","luxury"].includes(item.qualityCode));
+    assert.equal(c.equipment.slots[item.slot], item.id);
+  }
+  if (c.equipment.slots.weapon_set_2_main) {
+    secondaryWeaponCount += 1;
+    const secondaryItem = c.items.find(item => item.id === c.equipment.slots.weapon_set_2_main);
+    assert.equal(secondaryItem.itemType, "weapon");
+    assert.notEqual(secondaryItem.combatFamily, primaryItem.combatFamily);
+  }
+  for (const emptySlot of ["head","amulet","cape","belt","boots","ring_1","ring_2","ring_3","ring_4","ring_5","ring_6","weapon_set_1_off","weapon_set_2_off","belt_item_1","belt_item_2","belt_item_3","belt_item_4","mount"]) {
+    assert.equal(c.equipment.slots[emptySlot], null);
+  }
 
   const light = c.generationTrace.skills["Port d’armure légère"];
   const intermediate = c.generationTrace.skills["Port d’armure intermédiaire"];
@@ -173,6 +215,7 @@ for (let i = 0; i < 1000; i++) {
 }
 assert.equal(sawNonMageArmorBonus, true);
 assert.equal(sawHighMagicArmorPenalty, true);
+assert.ok(secondaryWeaponCount > 350 && secondaryWeaponCount < 650, `Unexpected secondary weapon rate: ${secondaryWeaponCount}/1000`);
 
 const lowGenerator = createGenerator(reference, {
   random: () => 0,

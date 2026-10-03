@@ -48,14 +48,20 @@
     const characteristicRows = rows.characteristics || [];
     const formulaConstantRows = rows.formulaConstants || [];
     const weaponRows = rows.weapons || [];
+    const baseArmorRows = rows.baseArmors || [];
+    const itemQualityRows = rows.itemQualities || [];
+    const equipmentSlotRows = rows.equipmentSlots || [];
     const binaryAptitudeRows = rows.binaryAptitudeGrants || [];
     const alignmentGeneration = reference.alignmentGeneration || {};
+    const startingEquipmentGeneration = reference.startingEquipmentGeneration || {};
 
     const peopleByName = new Map(peopleRows.map(r => [r.nom, r]));
     const skillByName = new Map(skillRows.map(r => [r.nom, r]));
     const charByName = new Map(characteristicRows.map(r => [r.nom, r]));
     const matrixByTarget = new Map(matrixRows.map(r => [r.cible, r]));
     const constants = new Map(formulaConstantRows.map(r => [r.code, Number(r.valeur)]));
+    const weaponByName = new Map(weaponRows.map(r => [r.nom, r]));
+    const itemQualityByCode = new Map(itemQualityRows.map(r => [r.code, r]));
 
     const childrenByParent = new Map();
     for (const skill of skillRows) {
@@ -736,6 +742,205 @@
       };
     }
 
+    function isRangedWeapon(weapon) {
+      return /Armes de tir|Armes à feu/.test(String(weapon?.domaine || ""));
+    }
+
+    function isShieldWeapon(weapon) {
+      return /Boucliers/.test(String(weapon?.domaine || ""));
+    }
+
+    function isMeleeWeapon(weapon) {
+      return !isRangedWeapon(weapon) && !isShieldWeapon(weapon);
+    }
+
+    function mean(values) {
+      const numeric = values.filter(Number.isFinite);
+      return numeric.length ? sum(numeric) / numeric.length : 0;
+    }
+
+    function computeEquipmentProfile(character) {
+      const bestMelee = bestWeaponPreference(character.skills, isMeleeWeapon);
+      const bestRanged = bestWeaponPreference(character.skills, isRangedWeapon);
+      const bestMagicEntry = Object.entries(character.skills.magic || {})
+        .filter(([,value]) => Number.isFinite(value))
+        .sort((a,b) => b[1] - a[1] || a[0].localeCompare(b[0], "fr"))[0] || null;
+      const bestMagic = bestMagicEntry ? bestMagicEntry[1] : 0;
+
+      const scores = {
+        melee: 0.6 * ((bestMelee?.score || 0) / 2) + 0.4 * mean([
+          character.stats.Force, character.stats.Dextérité, character.stats.Endurance, character.stats.Courage
+        ]),
+        ranged: 0.6 * ((bestRanged?.score || 0) / 2) + 0.4 * mean([
+          character.stats.Dextérité, character.stats.Perception, character.stats.Vitesse
+        ]),
+        magic: 0.6 * bestMagic + 0.4 * mean([
+          character.stats.Intelligence, character.stats["Puissance magique"], character.stats["Réserve de mana"]
+        ])
+      };
+
+      const type = Object.entries(scores)
+        .sort((a,b) => b[1] - a[1] || a[0].localeCompare(b[0]))[0]?.[0] || "melee";
+
+      return {
+        type,
+        scores,
+        bestMelee,
+        bestRanged,
+        bestMagic: bestMagicEntry ? {school:bestMagicEntry[0], score:bestMagicEntry[1]} : null
+      };
+    }
+
+    function equipmentTierDistribution(reputation) {
+      const anchors = [...(startingEquipmentGeneration.rows || [])]
+        .filter(row => Number.isFinite(Number(row.reputation)))
+        .sort((a,b) => Number(a.reputation) - Number(b.reputation));
+      if (!anchors.length) return {1:0.9,2:0.09,3:0.01};
+
+      const rep = Number(reputation) || 0;
+      if (rep <= Number(anchors[0].reputation)) return {1:Number(anchors[0].t1),2:Number(anchors[0].t2),3:Number(anchors[0].t3)};
+      const last = anchors[anchors.length - 1];
+      if (rep >= Number(last.reputation)) return {1:Number(last.t1),2:Number(last.t2),3:Number(last.t3)};
+
+      for (let i = 0; i < anchors.length - 1; i++) {
+        const a = anchors[i];
+        const b = anchors[i + 1];
+        const ar = Number(a.reputation);
+        const br = Number(b.reputation);
+        if (rep < ar || rep > br) continue;
+        const t = (rep - ar) / (br - ar);
+        return {
+          1: Number(a.t1) + (Number(b.t1) - Number(a.t1)) * t,
+          2: Number(a.t2) + (Number(b.t2) - Number(a.t2)) * t,
+          3: Number(a.t3) + (Number(b.t3) - Number(a.t3)) * t
+        };
+      }
+      return {1:0.9,2:0.09,3:0.01};
+    }
+
+    function rollEquipmentTier(reputation) {
+      const distribution = equipmentTierDistribution(reputation);
+      return weightedChoice([1,2,3].map(tier => ({value:tier, weight:distribution[tier]})));
+    }
+
+    function highestArmorClass(skills) {
+      if (skills.martial["Port d’armure lourde"] === true) return "Lourde";
+      if (skills.martial["Port d’armure intermédiaire"] === true) return "Intermédiaire";
+      if (skills.martial["Port d’armure légère"] === true) return "Légère";
+      return "Vêtement";
+    }
+
+    function qualityForTier(tier) {
+      const qualityCode = startingEquipmentGeneration.quality_by_tier?.[String(tier)] || ({1:"worn",2:"standard",3:"luxury"})[tier];
+      return itemQualityByCode.get(qualityCode) || {code:qualityCode,nom:`T${tier}`};
+    }
+
+    let itemSequence = 0;
+    function makeItemId(character, slot) {
+      itemSequence += 1;
+      const owner = character.id ?? "anon";
+      const randomPart = Math.floor(random() * 0x7fffffff).toString(36);
+      return `item-${owner}-${itemSequence}-${randomPart}`;
+    }
+
+    function createItemInstance(character, payload) {
+      const tier = rollEquipmentTier(character.reputation);
+      const quality = qualityForTier(tier);
+      return {
+        id: makeItemId(character, payload.slot),
+        templateId: payload.templateId,
+        name: payload.name,
+        itemType: payload.itemType,
+        slot: payload.slot,
+        owner: character.id ?? null,
+        tier,
+        qualityCode: quality.code || null,
+        qualityName: quality.nom || null,
+        category: payload.category || null,
+        combatFamily: payload.combatFamily || null,
+        grip: payload.grip || null,
+        description: payload.description || null
+      };
+    }
+
+    function weaponItem(character, preference, slot) {
+      if (!preference) return null;
+      const template = weaponByName.get(preference.weapon);
+      if (!template) return null;
+      return createItemInstance(character, {
+        templateId:`weapon:${normalizeKey(template.nom)}`,
+        name:template.nom,
+        itemType:"weapon",
+        slot,
+        category:preference.category,
+        combatFamily:isRangedWeapon(template) ? "ranged" : "melee",
+        grip:template.prise
+      });
+    }
+
+    function armorItem(character, armorClass) {
+      const candidates = baseArmorRows.filter(row => row.type_armure === armorClass);
+      if (!candidates.length) return null;
+      const template = randomChoice(candidates);
+      return createItemInstance(character, {
+        templateId:`armor:${template.code || normalizeKey(template.nom)}`,
+        name:template.nom,
+        itemType:"armor",
+        slot:"armor",
+        category:armorClass,
+        description:template.description
+      });
+    }
+
+    function generateStartingEquipment(character) {
+      const profile = computeEquipmentProfile(character);
+      const slots = Object.fromEntries(equipmentSlotRows.map(slot => [slot.id, null]));
+      const items = [];
+
+      let primaryPreference;
+      if (profile.type === "melee") primaryPreference = profile.bestMelee;
+      else if (profile.type === "ranged") primaryPreference = profile.bestRanged;
+      else {
+        const options = [profile.bestMelee, profile.bestRanged].filter(Boolean).sort((a,b) => b.score - a.score);
+        primaryPreference = options[0] || null;
+      }
+
+      const primary = weaponItem(character, primaryPreference, "weapon_set_1_main");
+      if (primary) {
+        items.push(primary);
+        slots.weapon_set_1_main = primary.id;
+      }
+
+      const secondaryChance = Number(startingEquipmentGeneration.secondary_weapon_chance);
+      if (primary && random() < (Number.isFinite(secondaryChance) ? secondaryChance : 0.5)) {
+        const complementary = primary.combatFamily === "ranged" ? profile.bestMelee : profile.bestRanged;
+        if (complementary && complementary.score > 1) {
+          const secondary = weaponItem(character, complementary, "weapon_set_2_main");
+          if (secondary) {
+            items.push(secondary);
+            slots.weapon_set_2_main = secondary.id;
+          }
+        }
+      }
+
+      const armorClass = highestArmorClass(character.skills);
+      const armor = armorItem(character, armorClass);
+      if (armor) {
+        items.push(armor);
+        slots.armor = armor.id;
+      }
+
+      return {
+        profile:{
+          type:profile.type,
+          scores:profile.scores,
+          bestMagic:profile.bestMagic
+        },
+        armorClass,
+        slots,
+        items
+      };
+    }
     function calcReputation(character) {
       const pool = [
         ...fundamentalStats.map(r => character.stats[r.nom]),
@@ -925,6 +1130,13 @@
       character.pv = character.pvMax;
       character.mana = character.stats["Réserve de mana"];
       character.reputation = calcReputation(character);
+      const startingEquipment = generateStartingEquipment(character);
+      character.equipment = {
+        profile: startingEquipment.profile,
+        armorClass: startingEquipment.armorClass,
+        slots: startingEquipment.slots
+      };
+      character.items = startingEquipment.items;
       character.salary = calcSalary(character);
 
       trace.derived = {
@@ -936,7 +1148,12 @@
           formula: "round(10 × max(1, Réputation / 30) × FacteurPrétentions × FacteurIntelligence)",
           value: character.salary
         },
-        weaponPreferences: character.weaponPreferences
+        weaponPreferences: character.weaponPreferences,
+        startingEquipment: {
+          profile: character.equipment.profile,
+          armorClass: character.equipment.armorClass,
+          itemIds: character.items.map(item => item.id)
+        }
       };
 
       return character;
@@ -1046,6 +1263,17 @@
         if (!originsForCulture(c.nom).length) issues.push(`No origin for ${c.nom}`);
       }
 
+      const requiredEquipmentSlots = ["armor","weapon_set_1_main","weapon_set_2_main","ring_1","ring_6","belt_item_1","belt_item_4","mount"];
+      const equipmentSlotIds = new Set(equipmentSlotRows.map(row => row.id));
+      for (const slot of requiredEquipmentSlots) if (!equipmentSlotIds.has(slot)) issues.push(`Missing equipment slot ${slot}`);
+      for (const armorClass of ["Vêtement","Légère","Intermédiaire","Lourde"]) {
+        if (!baseArmorRows.some(row => row.type_armure === armorClass)) issues.push(`Missing armor class ${armorClass}`);
+      }
+      for (const anchor of startingEquipmentGeneration.rows || []) {
+        const total = Number(anchor.t1) + Number(anchor.t2) + Number(anchor.t3);
+        if (Math.abs(total - 1) > 1e-9) issues.push(`Equipment tier probability sum at reputation ${anchor.reputation} = ${total}`);
+      }
+
       const skillCoverage = skillRows.map(skill => ({name: skill.nom, ...classifySkill(skill)}));
       const matrixCoverage = matrixRows.map(row => {
         if (["Caractéristique","Résistance"].includes(row.type)) {
@@ -1089,7 +1317,9 @@
           matrixRows: matrixRows.length,
           skills: skillRows.length,
           generatedCharacteristics: characteristicRows.filter(r => r.genere_a_la_creation === true).length,
-          binaryAptitudes: binaryAptitudeRows.length
+          binaryAptitudes: binaryAptitudeRows.length,
+          baseArmors: baseArmorRows.length,
+          equipmentSlots: equipmentSlotRows.length
         },
         probabilities: {peopleProbability, ancestryLevelProbability},
         issues,
@@ -1125,6 +1355,7 @@
       isOriginCompatible,
       alignmentDistributionForPeople,
       adjacentAlignments,
+      equipmentTierDistribution,
       people: () => peopleRows.map(r => r.nom),
       alignments: () => alignmentRows.map(r => r.nom),
       ancestries: () => ancestryRows.map(r => r.nom),

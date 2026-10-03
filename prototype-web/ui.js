@@ -359,6 +359,59 @@ function renderMartialGroup(c) {
   </details>`;
 }
 
+function renderEquipment(c) {
+  const slotRows = game.referenceData?.equipmentSlots?.rows || [];
+  const items = new Map((c.items || []).map(item => [item.id,item]));
+  const slots = c.equipment?.slots || {};
+  const profile = c.equipment?.profile || {};
+
+  const renderSlot = slot => {
+    const itemId = slots[slot.id];
+    const item = itemId ? items.get(itemId) : null;
+    const icon = item?.itemType === "weapon" ? "⚔" : item?.itemType === "armor" ? "◈" : "·";
+    const detail = item ? `
+      <div class="item-tooltip">
+        <strong>${esc(item.name)}</strong>
+        <span>T${item.tier} — ${esc(item.qualityName || "")}</span>
+        <span>${esc(item.category || item.itemType)}</span>
+        ${item.grip ? `<span>Prise : ${esc(item.grip)}</span>` : ""}
+        <span>Propriétaire : ${esc(c.name)}</span>
+        ${item.description ? `<small>${esc(item.description)}</small>` : ""}
+      </div>` : "";
+    return `<div class="equipment-slot ${item ? "filled" : "empty"}" data-slot="${esc(slot.id)}">
+      <span class="slot-icon">${icon}</span>
+      <span class="slot-copy"><small>${esc(slot.label)}</small><strong>${item ? esc(item.name) : "Vide"}</strong>${item ? `<em>T${item.tier}</em>` : ""}</span>
+      ${detail}
+    </div>`;
+  };
+
+  const group = name => slotRows.filter(slot => slot.group === name).sort((a,b)=>a.order-b.order).map(renderSlot).join("");
+  const profileLabel = ({melee:"CAC",ranged:"Distance",magic:"Magie"})[profile.type] || "—";
+  const scores = profile.scores || {};
+
+  return `<section class="equipment-section">
+    <div class="section-title-row compact">
+      <div><p class="eyebrow">Matériel personnel</p><h3>Équipement</h3></div>
+      <span class="equipment-profile">Profil ${esc(profileLabel)} · CAC ${fmt(scores.melee)} · Distance ${fmt(scores.ranged)} · Magie ${fmt(scores.magic)}</span>
+    </div>
+    <div class="equipment-board">
+      <div class="equipment-column equipment-body-slots">${group("body")}</div>
+      <div class="equipment-mannequin" aria-label="Silhouette du mercenaire">
+        <span class="mannequin-head"></span>
+        <span class="mannequin-body"></span>
+        <span class="mannequin-arm left"></span><span class="mannequin-arm right"></span>
+        <span class="mannequin-leg left"></span><span class="mannequin-leg right"></span>
+      </div>
+      <div class="equipment-column equipment-ring-slots"><h4>Bagues</h4>${group("rings")}</div>
+    </div>
+    <div class="equipment-subgrid">
+      <div><h4>Sets d’armes</h4><div class="equipment-grid weapons-grid">${group("weapons")}</div></div>
+      <div><h4>Équipements de ceinture</h4><div class="equipment-grid belt-grid">${group("belt-items")}</div></div>
+      <div><h4>Monture / compagnon</h4><div class="equipment-grid mount-grid">${group("mount")}</div></div>
+    </div>
+    <p class="equipment-note">Matériel personnel : pas de drag & drop. Les changements passeront plus tard par négociation, échange ou <code>change_item</code>.</p>
+  </section>`;
+}
 function renderWeaponPreferences(c) {
   const labels = {
     oneHand: "Une main",
@@ -465,6 +518,7 @@ function showCharacter(c) {
       <div class="metric"><small>Max / Min pool</small><strong>${Math.round(rb.max)} / ${Math.round(rb.min)}</strong></div>
     </div>
 
+    ${renderEquipment(c)}
     ${renderWeaponPreferences(c)}
     ${renderMagicPreferences(c)}
 

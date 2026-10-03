@@ -15,6 +15,10 @@ const REFERENCE_FILES = {
   characteristics: "characteristics.json",
   formulaConstants: "formula-constants.json",
   weapons: "weapons.json",
+  baseArmors: "base-armors.json",
+  itemQualities: "item-qualities.json",
+  equipmentSlots: "equipment-slots.json",
+  startingEquipmentGeneration: "starting-equipment-generation.json",
   binaryAptitudeGrants: "binary-aptitude-grants.json",
   alignmentGeneration: "alignment-generation.json"
 };

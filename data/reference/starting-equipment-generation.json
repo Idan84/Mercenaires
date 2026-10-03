@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "name": "starting-equipment-generation",
+  "description": "V1 de génération de l’équipement possédé à la création du mercenaire.",
+  "secondary_weapon_chance": 0.5,
+  "profile_formula": {
+    "melee": "0,6 × (meilleure arme CAC / 2) + 0,4 × moyenne(Force, Dextérité, Endurance, Courage)",
+    "ranged": "0,6 × (meilleure arme Distance / 2) + 0,4 × moyenne(Dextérité, Perception, Vitesse)",
+    "magic": "0,6 × meilleure école de magie + 0,4 × moyenne(Intelligence, Puissance magique, Réserve de mana)"
+  },
+  "quality_by_tier": {
+    "1": "worn",
+    "2": "standard",
+    "3": "luxury"
+  },
+  "columns": [
+    {
+      "source": "Réputation",
+      "key": "reputation"
+    },
+    {
+      "source": "T1",
+      "key": "t1"
+    },
+    {
+      "source": "T2",
+      "key": "t2"
+    },
+    {
+      "source": "T3",
+      "key": "t3"
+    }
+  ],
+  "row_count": 5,
+  "rows": [
+    {
+      "reputation": 0,
+      "t1": 0.9,
+      "t2": 0.09,
+      "t3": 0.01
+    },
+    {
+      "reputation": 100,
+      "t1": 0.82,
+      "t2": 0.16,
+      "t3": 0.02
+    },
+    {
+      "reputation": 200,
+      "t1": 0.65,
+      "t2": 0.3,
+      "t3": 0.05
+    },
+    {
+      "reputation": 300,
+      "t1": 0.45,
+      "t2": 0.4,
+      "t3": 0.15
+    },
+    {
+      "reputation": 400,
+      "t1": 0.25,
+      "t2": 0.45,
+      "t3": 0.3
+    }
+  ],
+  "notes": "Interpolation linéaire entre les paliers ; borné au premier/dernier palier. Chaque item tire son tier indépendamment."
+}

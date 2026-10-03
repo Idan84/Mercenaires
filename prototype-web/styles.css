@@ -192,3 +192,42 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
 
 .compare-legend .legend-current b { color:#7a2d23; }
 .compare-legend .legend-current small { color:#7a2d23; font-weight:800; }
+
+/* Persistent mercenary equipment */
+.equipment-section { margin-top:20px; padding-top:18px; border-top:1px solid #e6dfd5; }
+.equipment-profile { color:#6f675f; font-size:.78rem; }
+.equipment-board { display:grid; grid-template-columns:minmax(210px,1fr) 190px minmax(210px,1fr); gap:16px; align-items:center; padding:14px; border:1px solid #ded7cd; border-radius:14px; background:#f8f5f0; }
+.equipment-column { display:grid; gap:7px; }
+.equipment-column h4,.equipment-subgrid h4 { margin:0 0 7px; font-size:.8rem; text-transform:uppercase; letter-spacing:.06em; color:#756c62; }
+.equipment-slot { position:relative; min-height:48px; display:flex; align-items:center; gap:9px; padding:8px 9px; border:1px solid #dcd5cb; border-radius:9px; background:#fff; }
+.equipment-slot.empty { background:#f2eee8; border-style:dashed; color:#9a9187; }
+.equipment-slot.filled { border-color:#c3b6a8; box-shadow:0 3px 10px rgba(70,55,38,.05); }
+.slot-icon { width:28px; height:28px; flex:0 0 28px; display:grid; place-items:center; border-radius:7px; background:#ebe5dd; font-size:1.05rem; }
+.equipment-slot.filled .slot-icon { background:#e4d8cb; color:#712b22; }
+.slot-copy { min-width:0; flex:1; }
+.slot-copy small { display:block; font-size:.58rem; text-transform:uppercase; letter-spacing:.05em; color:#877e74; }
+.slot-copy strong { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:.78rem; }
+.slot-copy em { display:inline-block; margin-top:2px; font-style:normal; font-size:.62rem; font-weight:850; color:#792d23; }
+.item-tooltip { display:none; position:absolute; z-index:20; left:50%; bottom:calc(100% + 8px); width:230px; transform:translateX(-50%); padding:10px 11px; border-radius:10px; background:#201d1a; color:#f8f3ec; box-shadow:0 12px 35px rgba(0,0,0,.28); pointer-events:none; }
+.equipment-slot.filled:hover .item-tooltip { display:grid; gap:3px; }
+.item-tooltip strong { color:#fff; font-size:.88rem; }
+.item-tooltip span { font-size:.7rem; color:#d8cec3; }
+.item-tooltip small { margin-top:4px; font-size:.65rem; line-height:1.35; color:#afa398; }
+.equipment-mannequin { position:relative; height:300px; min-width:150px; }
+.equipment-mannequin span { position:absolute; display:block; background:#c9c0b5; }
+.mannequin-head { width:58px; height:58px; border-radius:50%; top:10px; left:66px; }
+.mannequin-body { width:86px; height:112px; border-radius:36px 36px 22px 22px; top:75px; left:52px; }
+.mannequin-arm { width:25px; height:112px; border-radius:16px; top:86px; transform-origin:top center; }
+.mannequin-arm.left { left:30px; transform:rotate(11deg); }
+.mannequin-arm.right { right:30px; transform:rotate(-11deg); }
+.mannequin-leg { width:31px; height:104px; border-radius:15px; top:180px; }
+.mannequin-leg.left { left:58px; transform:rotate(4deg); }
+.mannequin-leg.right { right:58px; transform:rotate(-4deg); }
+.equipment-subgrid { display:grid; grid-template-columns:1.25fr 1fr .8fr; gap:14px; margin-top:12px; }
+.equipment-subgrid > div { padding:11px; border:1px solid #e1dad1; border-radius:11px; background:#faf8f4; }
+.equipment-grid { display:grid; gap:7px; }
+.weapons-grid,.belt-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.mount-grid { grid-template-columns:1fr; }
+.equipment-note { margin:10px 2px 0; font-size:.72rem; color:#81786e; }
+@media (max-width:850px){ .equipment-board{grid-template-columns:1fr 150px 1fr}.equipment-mannequin{transform:scale(.85)}.equipment-subgrid{grid-template-columns:1fr} }
+@media (max-width:620px){ .equipment-board{grid-template-columns:1fr}.equipment-mannequin{height:230px; transform:scale(.72); transform-origin:center top}.equipment-subgrid{grid-template-columns:1fr}.weapons-grid,.belt-grid{grid-template-columns:1fr 1fr} }

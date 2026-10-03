@@ -55,3 +55,50 @@ La vue **Boucliers — équilibrage** expose `Bonus blocage base`, `Malus vitess
 [Sans titre](https://github.com/Idan84/Mercenaires/blob/main/archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/04%20%E2%80%94%20%C3%89quipement/Sans%20titre%203ebc799da3d18124874bfce7508cfe33.csv)
 
 [Slots d’équipement & Pierres magiques — chantier](https://github.com/Idan84/Mercenaires/blob/main/archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/04%20%E2%80%94%20%C3%89quipement/Slots%20d%E2%80%99%C3%A9quipement%20%26%20Pierres%20magiques%20%E2%80%94%20chantier%203ecc799da3d1818bb33ae8a5b3100288.md)
+## Équipement de départ — V1 active
+
+`Create_Mercenary()` génère maintenant du **matériel personnel persistant**. Chaque objet est une `ItemInstance` avec un `owner` unique correspondant au mercenaire. Le joueur ne déplace pas librement ces objets : les futurs changements d’équipement passeront par une règle `change_item` (Intelligence, Volonté, négociation, échange/troc, etc.).
+
+### Slots canoniques
+
+- Casque / Chapeau ; Amulette ; Armure ; Bottes ; Ceinturon ; Cape ;
+- **6 bagues** ;
+- **2 sets d’armes**, chacun avec arme principale + main secondaire ;
+- **4 équipements de ceinture** (potions / consommables / petits objets actifs) ;
+- **1 Monture / Animal de combat**.
+
+À la création, seuls l’**armure**, le **set d’armes 1** et éventuellement le **set d’armes 2** sont remplis. Tous les autres slots existent mais restent vides.
+
+### Profil temporaire d’équipement
+
+Trois scores non persistants comme « classe » sont comparés : **CAC**, **Distance**, **Magie**. Ils servent uniquement à orienter le matériel initial.
+
+- `CAC = 0,6 × (meilleure arme CAC / 2) + 0,4 × moyenne(Force, Dextérité, Endurance, Courage)` ;
+- `Distance = 0,6 × (meilleure arme Distance / 2) + 0,4 × moyenne(Dextérité, Perception, Vitesse)` ;
+- `Magie = 0,6 × meilleure école + 0,4 × moyenne(Intelligence, Puissance magique, Réserve de mana)`.
+
+La meilleure arme est déterminée avec le score existant `Maîtrise catégorie + Maîtrise arme précise`. Un profil Magie reçoit pour l’instant sa meilleure arme réelle, sans créer de focus magique artificiel.
+
+### Arme secondaire
+
+Après l’arme principale : **50 % de chance** de recevoir une arme complémentaire. Si l’arme principale est CAC, on cherche la meilleure arme Distance ; si elle est Distance, on cherche la meilleure arme CAC. Cette seconde arme va dans le set d’armes 2.
+
+### Armure
+
+Le mercenaire reçoit au hasard une armure de la catégorie la plus lourde qu’il sait porter : **Lourde → Intermédiaire → Légère → Vêtement**. `Vêtement` est désormais une catégorie propre, inférieure à légère et ne nécessitant aucune aptitude.
+
+### Tier / qualité
+
+Chaque objet tire son tier **indépendamment** selon la réputation personnelle du mercenaire, avec interpolation linéaire entre ces points :
+
+| Réputation | T1 | T2 | T3 |
+|---:|---:|---:|---:|
+| 0 | 90 % | 9 % | 1 % |
+| 100 | 82 % | 16 % | 2 % |
+| 200 | 65 % | 30 % | 5 % |
+| 300 | 45 % | 40 % | 15 % |
+| 400+ | 25 % | 45 % | 30 % |
+
+Mapping actuel vers les qualités existantes : **T1 = Usée**, **T2 = Correcte**, **T3 = Grand Luxe**.
+
+La fiche du mercenaire affiche tous les slots autour d’une silhouette simplifiée. Les cases remplies utilisent une icône provisoire et exposent la fiche de l’item au survol ; aucun drag & drop n’est prévu.

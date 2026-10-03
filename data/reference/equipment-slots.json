@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "name": "equipment-slots",
+  "description": "Slots persistants d’équipement du mercenaire. L’équipement n’est pas manipulé directement par le joueur ; les changements passeront par des règles de négociation/change_item.",
+  "columns": [
+    {
+      "source": "ID",
+      "key": "id"
+    },
+    {
+      "source": "Libellé",
+      "key": "label"
+    },
+    {
+      "source": "Groupe",
+      "key": "group"
+    },
+    {
+      "source": "Ordre",
+      "key": "order"
+    }
+  ],
+  "row_count": 21,
+  "rows": [
+    {
+      "id": "head",
+      "label": "Casque / Chapeau",
+      "group": "body",
+      "order": 1
+    },
+    {
+      "id": "amulet",
+      "label": "Amulette",
+      "group": "body",
+      "order": 2
+    },
+    {
+      "id": "armor",
+      "label": "Armure",
+      "group": "body",
+      "order": 3
+    },
+    {
+      "id": "cape",
+      "label": "Cape",
+      "group": "body",
+      "order": 4
+    },
+    {
+      "id": "belt",
+      "label": "Ceinturon",
+      "group": "body",
+      "order": 5
+    },
+    {
+      "id": "boots",
+      "label": "Bottes",
+      "group": "body",
+      "order": 6
+    },
+    {
+      "id": "ring_1",
+      "label": "Bague 1",
+      "group": "rings",
+      "order": 10
+    },
+    {
+      "id": "ring_2",
+      "label": "Bague 2",
+      "group": "rings",
+      "order": 11
+    },
+    {
+      "id": "ring_3",
+      "label": "Bague 3",
+      "group": "rings",
+      "order": 12
+    },
+    {
+      "id": "ring_4",
+      "label": "Bague 4",
+      "group": "rings",
+      "order": 13
+    },
+    {
+      "id": "ring_5",
+      "label": "Bague 5",
+      "group": "rings",
+      "order": 14
+    },
+    {
+      "id": "ring_6",
+      "label": "Bague 6",
+      "group": "rings",
+      "order": 15
+    },
+    {
+      "id": "weapon_set_1_main",
+      "label": "Set 1 — arme principale",
+      "group": "weapons",
+      "order": 20
+    },
+    {
+      "id": "weapon_set_1_off",
+      "label": "Set 1 — main secondaire",
+      "group": "weapons",
+      "order": 21
+    },
+    {
+      "id": "weapon_set_2_main",
+      "label": "Set 2 — arme principale",
+      "group": "weapons",
+      "order": 22
+    },
+    {
+      "id": "weapon_set_2_off",
+      "label": "Set 2 — main secondaire",
+      "group": "weapons",
+      "order": 23
+    },
+    {
+      "id": "belt_item_1",
+      "label": "Ceinture — objet 1",
+      "group": "belt-items",
+      "order": 30
+    },
+    {
+      "id": "belt_item_2",
+      "label": "Ceinture — objet 2",
+      "group": "belt-items",
+      "order": 31
+    },
+    {
+      "id": "belt_item_3",
+      "label": "Ceinture — objet 3",
+      "group": "belt-items",
+      "order": 32
+    },
+    {
+      "id": "belt_item_4",
+      "label": "Ceinture — objet 4",
+      "group": "belt-items",
+      "order": 33
+    },
+    {
+      "id": "mount",
+      "label": "Monture / Animal de combat",
+      "group": "mount",
+      "order": 40
+    }
+  ]
+}

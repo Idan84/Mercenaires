@@ -402,6 +402,28 @@
         "grid",
         "notes"
       ]
+    },
+    {
+      "name": "equipment-slots",
+      "file": "equipment-slots.json",
+      "rows": 21,
+      "columns": [
+        "id",
+        "label",
+        "group",
+        "order"
+      ]
+    },
+    {
+      "name": "starting-equipment-generation",
+      "file": "starting-equipment-generation.json",
+      "rows": 5,
+      "columns": [
+        "reputation",
+        "t1",
+        "t2",
+        "t3"
+      ]
     }
   ]
 }

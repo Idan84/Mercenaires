@@ -8,7 +8,7 @@ Dernière mise à jour : 2026-10-03 — JC3
 
 | Qui | Rôle | Responsabilités |
 |---|---|---|
-| 👑 **Idan** | Game Director | Vision, décision finale, validation des règles, direction artistique, tests en conditions réelles (joue les démos). Fait la liaison avec Jean-Mimi et Groky. Ne fusionne rien dans Git et ne touche pas au code. |
+| 👑 **Idan** | Game Director | Vision, décision finale, validation des règles, direction artistique, tests en conditions réelles (joue les démos). Fait la liaison avec Jean-Mimi et Groky. Ne fusionne rien dans Git et n'a pas à toucher au code. |
 | ⚔️ **JC3** (Claude Code) | Lead Dev | Architecture, intégration, moteur de combat et Mission Test, simulations et tests techniques, fusions dans `test`, passage `test` → `main`, déploiements Netlify. Tient l'état technique du projet et ce tableau de bord. Peut déléguer du travail à Chatty. |
 | 🍺 **Chatty** (ChatGPT) | Co-Game Designer · Copywriter · Reviewer en chef | Design des systèmes avec Idan, rédaction des règles dans `docs/design/`, contenu, fiches, dialogues, revue fonctionnelle des PR (conformité aux règles). Code ponctuellement, sur des domaines précis, à la demande de JC3. |
 | 🎨 **Jean-Mimi** (Gemini) | Créa | Visuels, ambiance, cinématiques, portraits, icônes, produits dans Google Flow. Ne travaille pas sur Git : Idan fait la liaison et JC3 intègre les livrables. |
@@ -39,7 +39,7 @@ Avant de toucher au cœur d'une zone qui appartient à quelqu'un d'autre, on le 
 
 1. Le travail se fait sur une branche de chantier.
 2. Une Pull Request (PR) est ouverte vers `test`. Si une relecture est souhaitée, la description le dit : `Review Chatty : vérifier la conformité avec Combat V1`.
-3. Les tests automatiques doivent être verts. Tout changement de règle ou de mécanique est relu par Chatty.
+3. Les tests automatiques doivent être verts. Tout changement de règle ou de comportement de jeu est relu par Chatty ; une correction purement technique, qui ne change aucun comportement défini, n'attend pas sa relecture.
 4. JC3 fusionne dans `test`.
 5. Idan reçoit au plus un lien de prévisualisation et une question : « Essaie ça, ça te plaît ? »
 6. Quand `test` est stable et qu'Idan donne son feu vert, JC3 passe `test` dans `main`.

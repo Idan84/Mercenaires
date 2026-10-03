@@ -52,7 +52,17 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
 
 #character-dialog { width: min(1220px, calc(100vw - 28px)); max-height: 90vh; overflow: auto; border: 0; border-radius: 18px; padding: 0; box-shadow: 0 24px 80px rgba(0,0,0,.28); }
 #character-dialog::backdrop { background: rgba(20,18,16,.55); }
-.dialog-head { position: sticky; top: 0; z-index: 2; background: #fff; display: flex; justify-content: space-between; padding: 20px 22px; border-bottom: 1px solid #e5e1da; }
+.dialog-head { position: sticky; top: 0; z-index: 2; background: #fff; display: flex; flex-wrap: wrap; justify-content: space-between; padding: 20px 22px 0; border-bottom: 1px solid #e5e1da; }
+.sheet-tabs { flex-basis: 100%; display: flex; gap: 4px; margin-top: 14px; overflow-x: auto; }
+.sheet-tab { border: 0; border-bottom: 3px solid transparent; background: none; padding: 9px 14px; font-weight: 750; color: #6d655c; border-radius: 8px 8px 0 0; white-space: nowrap; cursor: pointer; }
+.sheet-tab:hover { color: #201d1a; background: #f4f1ec; }
+.sheet-tab.active { color: #712b22; border-bottom-color: #712b22; }
+.sheet-situation h3, .sheet-section h3 { margin: 0 0 10px; }
+.sheet-section { margin-top: 6px; }
+.school-list { display: grid; gap: 6px; margin-bottom: 12px; }
+.school-row { display: grid; grid-template-columns: 140px 1fr 48px; align-items: center; gap: 10px; padding: 6px 10px; border-radius: 9px; background: #f4f1ec; }
+.school-row i { display: block; height: 8px; border-radius: 99px; background: linear-gradient(90deg,#6c4ca0,#b07cd8); }
+.school-row b { text-align: right; }
 #dialog-content { padding: 22px; }
 .icon-btn { width: 38px; height: 38px; border: 0; border-radius: 50%; background: #eeeae4; font-size: 1.6rem; }
 
@@ -441,3 +451,17 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
   .avatar-frame--detail{width:min(240px,72vw);margin-inline:auto;}
   .avatar-frame--interview{width:min(200px,62vw);margin-inline:auto;}
 }
+
+/* Fiche : biographie et grimoire (styles de Chatty, PR #29) */
+.character-bio-placeholder{display:grid;gap:6px;margin:16px 0 0;padding:14px 15px;border-radius:12px;background:#211e1b;color:#f4eee6;line-height:1.45}
+.character-bio-placeholder strong{font-family:Georgia,"Times New Roman",serif;font-size:1.05rem}
+.character-bio-placeholder span{color:#bdb3a8;font-size:.8rem}
+.spellbook-section{padding-top:18px;margin-top:18px;border-top:1px solid #e6dfd5}
+.spellbook-empty{display:grid;gap:5px;padding:18px;border:1px dashed #cfc2d8;border-radius:12px;background:#f8f3fb}
+.spellbook-empty strong{color:#4c356b}
+.spellbook-empty span{color:#766c7d;font-size:.8rem;line-height:1.4}
+.spellbook-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
+.spell-card{display:grid;gap:5px;padding:13px;border:1px solid #d7cbe0;border-radius:11px;background:#faf7fc}
+.spell-card small{color:#7b668b;font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em}
+.spell-card strong{font-size:1rem;color:#4c356b}
+.spell-card span{font-size:.75rem;color:#766c7d}

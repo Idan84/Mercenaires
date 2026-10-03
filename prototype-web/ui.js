@@ -503,62 +503,163 @@ function renderPending(c) {
   </div>`;
 }
 
-function showCharacter(c) {
-  $("dialog-role").textContent = c.role;
-  $("dialog-name").textContent = c.name;
+// Fiche mercenaire en onglets. L'onglet choisi est conservé d'une fiche à l'autre.
+const SHEET_TABS = [
+  ["profile", "Profil"],
+  ["stats", "Caractéristiques"],
+  ["skills", "Compétences"],
+  ["equipment", "Équipement"],
+  ["magic", "Magie"],
+  ["pending", "À définir"]
+];
+
+// Situation dans la compagnie : rôle, contrat, indisponibilité.
+function renderSituation(c) {
+  const company = game.campaign?.company;
+  const inCompany = company?.roster.includes(c);
+  const roles = [];
+  if (company && c.id === company.captainId) roles.push("Capitaine");
+  if (company && c.id === company.intendantId) roles.push("Intendant");
+  const rows = [
+    `<div class="metric"><small>Statut</small><strong>${inCompany ? (roles.join(" · ") || "Membre de la compagnie") : esc(c.role || "Hors compagnie")}</strong></div>`,
+    `<div class="metric"><small>État</small><strong>${c.recovery ? esc(recoveryLabel(c)) : "Disponible"}</strong></div>`
+  ];
+  if (c.contract) {
+    rows.push(`<div class="metric"><small>Salaire du contrat</small><strong>${fmt(c.contract.dailySalary)} PO/j</strong></div>`);
+    rows.push(`<div class="metric"><small>Prime de mission</small><strong>${fmt(c.contract.missionBonus)} PO</strong></div>`);
+  } else if (inCompany) {
+    rows.push(`<div class="metric"><small>Contrat</small><strong>Aucun</strong></div>`);
+  }
+  return `<section class="sheet-situation">
+    <h3>Situation</h3>
+    <div class="metric-grid">${rows.join("")}</div>
+  </section>`;
+}
+
+function renderProfileTab(c) {
   const asc = c.ascendance
     ? `${c.ascendance} — ${c.ascendanceLevelName || "niveau "+c.ascendanceLevel}`
     : "Aucune";
   const rb = c.reputationBreakdown;
-
-  $("dialog-content").innerHTML = `
+  return `
     <section class="character-overview">
       ${renderAvatar(c,{variant:"detail"})}
       <div class="character-overview-copy">
-    <div class="identity-grid">
-      <div class="metric"><small>Peuple</small><strong>${esc(c.people)}</strong></div>
-      <div class="metric"><small>Culture</small><strong>${esc(c.culture)}</strong></div>
-      <div class="metric"><small>Origine</small><strong>${esc(c.origin)}</strong></div>
-      <div class="metric"><small>Ascendance</small><strong>${esc(asc)}</strong></div>
-      <div class="metric"><small>Alignement</small><strong>${esc(c.alignment)}</strong></div>
-      <div class="metric"><small>Réputation</small><strong>${Math.round(c.reputation)}</strong></div>
-      <div class="metric"><small>Prétentions</small><strong>${c.salaryPretension}</strong></div>
-      <div class="metric"><small>Salaire demandé</small><strong>${fmt(c.salary)} PO/j</strong></div>
-    </div>
-
-    <div class="metric-grid">
-      <div class="metric"><small>PV max</small><strong>${c.pvMax}</strong></div>
-      <div class="metric"><small>Mana</small><strong>${c.mana}</strong></div>
-      <div class="metric"><small>Moyenne pool réputation</small><strong>${fmt(rb.mean)}</strong></div>
-      <div class="metric"><small>Max / Min pool</small><strong>${Math.round(rb.max)} / ${Math.round(rb.min)}</strong></div>
-    </div>
+        <div class="identity-grid">
+          <div class="metric"><small>Peuple</small><strong>${esc(c.people)}</strong></div>
+          <div class="metric"><small>Culture</small><strong>${esc(c.culture)}</strong></div>
+          <div class="metric"><small>Origine</small><strong>${esc(c.origin)}</strong></div>
+          <div class="metric"><small>Ascendance</small><strong>${esc(asc)}</strong></div>
+          <div class="metric"><small>Alignement</small><strong>${esc(c.alignment)}</strong></div>
+          <div class="metric"><small>Réputation</small><strong>${Math.round(c.reputation)}</strong></div>
+          <div class="metric"><small>Prétentions</small><strong>${c.salaryPretension}</strong></div>
+          <div class="metric"><small>Salaire demandé</small><strong>${fmt(c.salary)} PO/j</strong></div>
+        </div>
+        <div class="metric-grid">
+          <div class="metric"><small>PV max</small><strong>${c.pvMax}</strong></div>
+          <div class="metric"><small>Mana</small><strong>${c.mana}</strong></div>
+          ${rb ? `<div class="metric"><small>Moyenne pool réputation</small><strong>${fmt(rb.mean)}</strong></div>
+          <div class="metric"><small>Max / Min pool</small><strong>${Math.round(rb.max)} / ${Math.round(rb.min)}</strong></div>` : ""}
+        </div>
       </div>
     </section>
+    ${renderSituation(c)}
+    <p class="character-bio-placeholder"><strong>Biographie</strong><span>Le moteur de bios tagué viendra ici : courte, personnelle, parfois héroïque, souvent douteuse.</span></p>`;
+}
 
-    ${renderEquipment(c)}
-    ${renderWeaponPreferences(c)}
-    ${renderMagicPreferences(c)}
+function renderStatsTab(c) {
+  return `<section class="sheet-section">
+    <div class="section-title-row compact"><div><h3>Caractéristiques et résistances</h3></div><span class="muted">brut → identités → final · comparaison = capitaine + escouade</span></div>
+    ${traceNotice(c)}
+    ${renderCharacteristicTrace(c)}
+  </section>`;
+}
 
-    <details class="debug-section" open>
-      <summary><h3>Caractéristiques — trace de génération</h3><span>brut → identités → final · comparaison = capitaine + escouade</span></summary>
-      ${traceNotice(c)}
-      ${renderCharacteristicTrace(c)}
-    </details>
+// La magie a son propre onglet : elle n'est pas répétée ici (idée de Chatty, PR #29).
+function renderSkillsTab(c) {
+  return `<section class="sheet-section">
+    <div class="section-title-row compact"><div><h3>Compétences</h3></div><span class="muted">tirage brut → matrice → final · comparaison = capitaine + escouade</span></div>
+    ${traceNotice(c)}
+    <div class="skill-groups">
+      ${renderMartialGroup(c)}
+      ${Object.entries(c.skills)
+        .filter(([group,values]) => group !== "martial" && group !== "magic" && Object.keys(values).length)
+        .map(([group,values]) => renderSkillGroup(c,group,values))
+        .join("")}
+    </div>
+  </section>`;
+}
 
-    <details class="debug-section" open>
-      <summary><h3>Compétences — trace de génération</h3><span>tirage brut → matrice → final · comparaison = capitaine + escouade</span></summary>
-      <div class="skill-groups">
-        ${renderMartialGroup(c)}
-        ${Object.entries(c.skills)
-          .filter(([group,values]) => group !== "martial" && Object.keys(values).length)
-          .map(([group,values]) => renderSkillGroup(c,group,values))
-          .join("")}
+// Grimoire (Chatty, PR #29) : accepte déjà mercenary.spells = [{name, school, mastery}], sans l'exiger.
+function renderCharacterSpellbook(c) {
+  const spells = Array.isArray(c.spells) ? c.spells : [];
+  if (!spells.length) {
+    return `<section class="spellbook-section">
+      <div class="section-title-row compact">
+        <div><p class="eyebrow">Grimoire personnel</p><h3>Sorts connus</h3></div>
+        <span class="muted">Catalogue en préparation (Issue #28)</span>
       </div>
-    </details>
+      <div class="spellbook-empty">
+        <strong>Aucun sort enregistré dans le prototype.</strong>
+        <span>Les écoles existent déjà ; cet espace accueillera les sorts appris, leur maîtrise et leur école.</span>
+      </div>
+    </section>`;
+  }
+  return `<section class="spellbook-section">
+    <div class="section-title-row compact">
+      <div><p class="eyebrow">Grimoire personnel</p><h3>Sorts connus</h3></div>
+      <span class="muted">${spells.length} sort${spells.length > 1 ? "s" : ""}</span>
+    </div>
+    <div class="spellbook-grid">
+      ${spells.map(spell => `<article class="spell-card">
+        <small>${esc(spell.school || spell.parent || "Magie")}</small>
+        <strong>${esc(spell.name || spell.nom || "Sort")}</strong>
+        <span>Maîtrise ${fmt(Number(spell.mastery))}</span>
+      </article>`).join("")}
+    </div>
+  </section>`;
+}
 
-    ${renderPending(c)}
-  `;
+// Toutes les écoles du mercenaire, puis son grimoire.
+function renderMagicTab(c) {
+  const schools = Object.entries(c.skills.magic || {})
+    .filter(([,value]) => Number.isFinite(value))
+    .sort((a,b) => b[1]-a[1]);
+  return `${renderMagicPreferences(c)}
+    <section class="sheet-section">
+      <h3>Toutes les écoles</h3>
+      ${schools.length ? `<div class="school-list">${schools.map(([name,value]) => `
+        <div class="school-row"><span>${esc(name)}</span><i style="width:${Math.max(0,Math.min(100,value))}%"></i><b>${fmt(value)}</b></div>`).join("")}</div>`
+        : `<p class="muted">Aucune école de magie.</p>`}
+    </section>
+    ${renderCharacterSpellbook(c)}`;
+}
 
+function renderSheetTab(c, tab) {
+  if (tab === "stats") return renderStatsTab(c);
+  if (tab === "skills") return renderSkillsTab(c);
+  if (tab === "equipment") return renderEquipment(c) + renderWeaponPreferences(c);
+  if (tab === "magic") return renderMagicTab(c);
+  if (tab === "pending") return renderPending(c) || `<p class="muted">Rien à définir pour ce mercenaire : tout ce que le moteur sait générer l’a été.</p>`;
+  return renderProfileTab(c);
+}
+
+function renderSheet() {
+  const c = game.sheetCharacter;
+  if (!c) return;
+  const tab = SHEET_TABS.some(([key]) => key === game.sheetTab) ? game.sheetTab : "profile";
+  $("dialog-tabs").innerHTML = SHEET_TABS.map(([key,label]) =>
+    `<button type="button" role="tab" class="sheet-tab${key === tab ? " active" : ""}" aria-selected="${key === tab}" data-sheet-tab="${key}">${esc(label)}</button>`
+  ).join("");
+  $("dialog-content").innerHTML = renderSheetTab(c, tab);
+  $("dialog-content").setAttribute("aria-label", SHEET_TABS.find(([key]) => key === tab)[1]);
+}
+
+function showCharacter(c) {
+  $("dialog-role").textContent = c.role;
+  $("dialog-name").textContent = c.name;
+  game.sheetCharacter = c;
+  renderSheet();
   $("character-dialog").showModal();
 }
 
@@ -634,6 +735,13 @@ async function init() {
     });
 
     $("close-dialog").addEventListener("click", () => $("character-dialog").close());
+    $("dialog-tabs").addEventListener("click", event => {
+      const btn = event.target.closest("[data-sheet-tab]");
+      if (!btn) return;
+      game.sheetTab = btn.dataset.sheetTab;
+      renderSheet();
+      $("character-dialog").scrollTop = 0;
+    });
     openSetup();
   } catch (error) {
     showFatal(error);

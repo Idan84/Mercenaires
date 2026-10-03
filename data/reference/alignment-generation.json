@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "description": "Distribution V1 de l'alignement à partir de l'alignement principal du peuple.",
+  "distribution": {
+    "principal": 0.4,
+    "adjacent_total": 0.2,
+    "others_total": 0.4
+  },
+  "adjacency": "orthogonal",
+  "grid": [
+    [
+      "Loyal bon",
+      "Neutre bon",
+      "Chaotique bon"
+    ],
+    [
+      "Loyal neutre",
+      "Neutre",
+      "Chaotique neutre"
+    ],
+    [
+      "Loyal mauvais",
+      "Neutre mauvais",
+      "Chaotique mauvais"
+    ]
+  ],
+  "notes": "Les 20 % voisins sont répartis uniformément entre les cases partageant un côté avec l'alignement principal. Les 40 % restants sont répartis uniformément entre toutes les autres cases."
+}

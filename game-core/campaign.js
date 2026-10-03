@@ -7,6 +7,34 @@
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesCampaign=api;
 })(typeof globalThis!=="undefined"?globalThis:this,function(){
+  // Sauvegarde : l'état de partie complet, sérialisé en JSON avec un format et une version.
+  const SAVE_FORMAT="mercenaires-save";
+  const SAVE_VERSION=1;
+
+  function serializeCampaign(state,extra={}){
+    return JSON.stringify({
+      format:SAVE_FORMAT,
+      version:SAVE_VERSION,
+      savedAt:new Date().toISOString(),
+      day:state.day,
+      company:state.company.name,
+      state,
+      extra
+    });
+  }
+
+  function restoreCampaign(text){
+    let data;
+    try{ data=JSON.parse(text); }catch(error){ return {ok:false,reason:"Sauvegarde illisible."}; }
+    if(data?.format!==SAVE_FORMAT) return {ok:false,reason:"Ce n'est pas une sauvegarde de Mercenaires."};
+    if(data.version!==SAVE_VERSION) return {ok:false,reason:"Version de sauvegarde non prise en charge : "+data.version+"."};
+    const state=data.state;
+    if(!Number.isInteger(state?.day)||!Array.isArray(state?.company?.roster)||!Array.isArray(state?.tavern?.candidates)){
+      return {ok:false,reason:"Sauvegarde incomplète."};
+    }
+    return {ok:true,state,extra:data.extra||{},savedAt:data.savedAt||null};
+  }
+
   function referenceConstant(reference,code,fallback){
     const value=Number((reference?.formulaConstants?.rows||[]).find(r=>r.code===code)?.valeur);
     return Number.isFinite(value)?value:fallback;
@@ -118,5 +146,5 @@
     };
   }
 
-  return {createCampaignRules};
+  return {createCampaignRules,serializeCampaign,restoreCampaign,SAVE_VERSION};
 });

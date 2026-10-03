@@ -184,4 +184,30 @@ assert.deepEqual(signed.mercenary.contract,{dailySalary:n.salary,missionBonus:n.
 assert.equal(s4.company.roster.length,4);
 assert.equal(s4.tavern.candidates.length,4);
 
+// Sauvegarde : aller-retour JSON fidèle, et la partie continue normalement après chargement.
+const {serializeCampaign,restoreCampaign}=require("../game-core/campaign.js");
+const s6=stable.createCampaign({captain,squad});
+stable.assignIntendant(s6,squad[1].id);
+const kept=s6.tavern.candidates[0];
+stable.askCandidate(s6,kept.mercenary.id,"stats.Force");
+stable.offerToCandidate(s6,kept.mercenary.id,{salary:1,bonus:1});
+stable.advanceTime(s6,2);
+const saved=serializeCampaign(s6,{tavernLog:[{message:"test"}]});
+const loaded=restoreCampaign(saved);
+assert.equal(loaded.ok,true);
+assert.deepEqual(loaded.state,JSON.parse(JSON.stringify(s6)));
+assert.deepEqual(loaded.extra,{tavernLog:[{message:"test"}]});
+assert.equal(stable.intendantOf(loaded.state).id,squad[1].id);
+const reloaded=tavern.findCandidate(loaded.state.tavern,kept.mercenary.id);
+assert.equal(reloaded.interview.questionsLeft,2,"entretien conservé");
+assert.deepEqual(reloaded.negotiation.refused,{salary:1,bonus:1},"négociation conservée");
+stable.advanceTime(loaded.state,1);
+assert.equal(loaded.state.day,4);
+const loadedIds=new Set([...loaded.state.company.roster,...loaded.state.tavern.candidates.map(c=>c.mercenary)].map(m=>m.id));
+assert.equal(loadedIds.size,loaded.state.company.roster.length+loaded.state.tavern.candidates.length,"identifiants uniques après chargement");
+assert.equal(restoreCampaign("pas du json").ok,false);
+assert.equal(restoreCampaign(JSON.stringify({format:"autre"})).ok,false);
+assert.equal(restoreCampaign(JSON.stringify({format:"mercenaires-save",version:99,state:{}})).ok,false);
+assert.equal(restoreCampaign(JSON.stringify({format:"mercenaires-save",version:1,state:{day:1}})).ok,false);
+
 console.log(JSON.stringify({ok:true},null,2));

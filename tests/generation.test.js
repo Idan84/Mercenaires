@@ -48,10 +48,14 @@ assert.equal(audit.matrixCoverage.filter(x => x.status === "missing-target").len
 
 const pending = new Set(audit.pending.map(x => x.target));
 for (const expected of [
-  "Âge", "Taille", "Corpulence",
   "Armes naturelles", "Combat à deux armes", "Combat à mains nues", "Combat à deux mains",
   "Médecine", "Pièges", "Discrétion", "Artisanat"
 ]) assert.ok(pending.has(expected), `Pending rule not surfaced: ${expected}`);
+
+const cosmetics = new Set(audit.cosmetics.map(x => x.target));
+for (const expected of ["Âge","Taille","Corpulence","Biographie courte"]) {
+  assert.ok(cosmetics.has(expected), `Cosmetic field not surfaced: ${expected}`);
+}
 
 for (let i = 0; i < 1000; i++) {
   const c = generator.createMercenary({id:i+1});

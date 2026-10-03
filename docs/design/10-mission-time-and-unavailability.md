@@ -108,13 +108,13 @@ Les soins restaurent les PV mais **n’effacent pas la contrainte physique déj�
 
 </aside>
 
-**Formule PLAYTEST V1** (Issue #14) :
+**Formule PLAYTEST V1** (Issue #14 ; base portée de 1 à 5 jours par Idan le 2026-10-03 : la fatigue doit approcher la semaine) :
 
 $$
-JoursFatigue = Clamp\left(Ceil\left(1 + 2 \times \frac{DegatsCumulesSubis}{PV_{max}} - \frac{Endurance}{100}\right),\ 1,\ 7\right)
+JoursFatigue = Clamp\left(Ceil\left(5 + 2 \times \frac{DegatsCumulesSubis}{PV_{max}} - \frac{Endurance}{100}\right),\ 1,\ 7\right)
 $$
 
-Avec Endurance 50 : 1 jour sans dégâts, 2 jours après 0,5 × PV max encaissés, 3 jours après 1 × PV max, 5 jours après 2 × PV max, 7 jours après 3 × PV max. Un tank soigné plusieurs fois peut revenir à pleins PV mais complètement rincé.
+Avec Endurance 50 : 5 jours sans dégâts, 6 jours après 0,5 × PV max encaissés, 7 jours dès 1 × PV max. Un tank soigné plusieurs fois peut revenir à pleins PV mais complètement rincé.
 
 ## 6 — Durée d’une blessure
 
@@ -124,7 +124,7 @@ La durée d’indisponibilité d’un blessé dépend au minimum de :
 - l’Endurance ;
 - les **capacités soignantes du camp**.
 
-**Formule PLAYTEST V1** (proposition Chatty, Issue #14) :
+**Formule PLAYTEST V1** (gravité : proposition Chatty, Issue #14 ; durée ajustée par Idan le 2026-10-03 : une blessure dure de 7 à 60 jours) :
 
 $$
 Gravite = Clamp\left(50 - 250 \times \frac{PV_{restants}}{PV_{max}},\ 0,\ 100\right)
@@ -133,10 +133,10 @@ $$
 Repères : 0 à 20 % PV, 25 à 10 %, 50 à 0 PV, 75 à -10 %, 100 à -20 %.
 
 $$
-JoursBlessure = Ceil\left(Max\left(1,\ \left(1 + \frac{Gravite}{10}\right) \times \left(1 - \frac{Endurance}{300}\right) \times FacteurSoinsCamp\right)\right)
+JoursBlessure = Ceil\left(Clamp\left((7 + Gravite) \times \left(1 - \frac{Endurance}{300}\right) \times FacteurSoinsCamp,\ 7,\ 60\right)\right)
 $$
 
-En V1, `FacteurSoinsCamp = 1` ; les bâtiments médicaux le feront baisser. Avec Endurance 50 : gravité 25 → 3 jours, 50 → 5 jours, 75 → 8 jours, 100 → 10 jours.
+Soit 7 jours, plus 1 jour par point de gravité, réduits par l’Endurance, entre 7 et 60 jours. En V1, `FacteurSoinsCamp = 1` ; les bâtiments médicaux le feront baisser. Avec Endurance 50 : gravité 0 → 7 jours, 25 → 27 jours, 50 → 48 jours, 75 → 60 jours.
 
 ## 7 — Chaîne de résolution post-mission
 

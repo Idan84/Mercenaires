@@ -20,8 +20,8 @@ const merc=(hp,extra={})=>({id:1,name:"Test",hp,pvMax:100,damageTaken:0,stats:{E
 
 // Toutes les constantes viennent des données de référence (aucune valeur de repli utilisée).
 const codes=reference.formulaConstants.rows.map(r=>r.code).filter(c=>c.startsWith("mission."));
-assert.equal(codes.length,18);
-assert.equal(Object.keys(rules.constants).length,18);
+assert.equal(codes.length,21);
+assert.equal(Object.keys(rules.constants).length,21);
 
 // §3 — Jet de mort (formule validée) : à -10 % des PV max, la base vaut 100 %, moins Volonté / 20.
 assert.equal(rules.deathChance(merc(0)),null);
@@ -40,18 +40,21 @@ assert.equal(rules.woundChance(merc(-1)),null,"sous 0 PV : jet de mort, pas de j
 assert.equal(rules.woundChance(merc(20,{stats:{Endurance:120}})),20,"plancher");
 assert.equal(rules.woundChance(merc(0,{stats:{Endurance:0}})),95,"plafond");
 
-// §6 — Gravité et durée de blessure (exemples Chatty, Endurance 50, sans bonus médical).
+// §6 — Gravité (exemples Chatty) et durée de blessure : 7 jours + 1 jour par point de gravité, de 7 à 60 jours
+// (Idan, 2026-10-03), Endurance 50, sans bonus médical.
 for(const [hp,expected] of [[20,0],[10,25],[0,50],[-10,75],[-20,100],[-35,100],[40,0]]){
   assert.equal(rules.woundSeverity(merc(hp)),expected,"gravité à "+hp+" % PV");
 }
-for(const [hp,days] of [[10,3],[0,5],[-10,8],[-20,10]]) assert.equal(rules.woundDays(merc(hp)),days,"durée à "+hp+" % PV");
-assert.equal(rules.woundDays(merc(-20),{campCareFactor:0.5}),5,"un camp soignant raccourcit la convalescence");
-assert.equal(rules.woundDays(merc(20,{stats:{Endurance:300}})),1,"au moins 1 jour");
+for(const [hp,days] of [[20,7],[10,27],[0,48],[-10,60],[-20,60]]) assert.equal(rules.woundDays(merc(hp)),days,"durée à "+hp+" % PV");
+assert.equal(rules.woundDays(merc(-10,{stats:{Endurance:0}})),60,"plafond de 60 jours");
+assert.equal(rules.woundDays(merc(0),{campCareFactor:0.5}),24,"un camp soignant raccourcit la convalescence");
+assert.equal(rules.woundDays(merc(20,{stats:{Endurance:300}})),7,"au moins 7 jours");
 
-// §5 — Fatigue : durée selon les dégâts cumulés (exemples Chatty recalibrés, Endurance 50).
-for(const [taken,days] of [[0,1],[50,2],[100,3],[200,5],[300,7],[1000,7]]){
+// §5 — Fatigue : durée selon les dégâts cumulés, base portée à 5 jours (Idan, 2026-10-03), Endurance 50.
+for(const [taken,days] of [[0,5],[50,6],[100,7],[200,7],[1000,7]]){
   assert.equal(rules.fatigueDays(merc(100,{damageTaken:taken})),days,"fatigue après "+taken+" PV encaissés");
 }
+assert.equal(rules.fatigueDays(merc(100,{stats:{Endurance:400}})),1,"au moins 1 jour");
 
 // §7 — Chaîne de résolution.
 const chain=values=>createMissionEndRules({reference,random:scripted(values)});
@@ -69,18 +72,18 @@ assert.equal(r.outcome,"wounded");
 assert.equal(r.dead,false);
 assert.deepEqual(r.wound,{automatic:true});
 assert.equal(r.severity,75);
-assert.equal(r.woundDays,8);
+assert.equal(r.woundDays,60);
 assert.equal(r.fatigueDays,null);
 
 // Zone critique, jet de blessure réussi puis raté.
 r=chain([roll(59)]).resolveParticipant(merc(10));
 assert.equal(r.outcome,"wounded");
 assert.equal(r.wound.automatic,false);
-assert.equal(r.woundDays,3);
+assert.equal(r.woundDays,27);
 r=chain([roll(60)]).resolveParticipant(merc(10,{damageTaken:100}));
 assert.equal(r.outcome,"fatigued");
 assert.equal(r.wounded,false);
-assert.equal(r.fatigueDays,3);
+assert.equal(r.fatigueDays,7);
 
 // Au-dessus de 20 % PV : aucun jet, fatigue automatique.
 let draws=0;
@@ -88,7 +91,7 @@ const counting=createMissionEndRules({reference,random:()=>{ draws++; return 0; 
 r=counting.resolveParticipant(merc(80,{damageTaken:20,offMap:true}));
 assert.equal(draws,0);
 assert.equal(r.outcome,"fatigued");
-assert.equal(r.fatigueDays,1);
+assert.equal(r.fatigueDays,5);
 assert.equal(r.offMap,true);
 assert.equal(r.death,null);
 assert.equal(r.wound,null);

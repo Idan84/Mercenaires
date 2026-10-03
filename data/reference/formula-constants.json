@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 69,
+  "row_count": 72,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -523,11 +523,35 @@
       "version": "V1"
     },
     {
+      "nom": "Fin de mission — Durée de blessure — jours de base",
+      "code": "mission.wound_duration.base_days",
+      "description": "Jours de convalescence d'une blessure de gravité 0, avant l'effet de l'Endurance et des soins du camp. Ajusté à la demande d'Idan (2026-10-03) : une blessure dure de 7 à 60 jours.",
+      "formule": "Fin de mission V1 — durée de blessure",
+      "valeur": 7,
+      "version": "V1"
+    },
+    {
+      "nom": "Fin de mission — Durée de blessure — minimum",
+      "code": "mission.wound_duration.min_days",
+      "description": "Durée minimale d'une blessure, en jours. Ajusté à la demande d'Idan (2026-10-03) : une blessure dure de 7 à 60 jours.",
+      "formule": "Fin de mission V1 — durée de blessure",
+      "valeur": 7,
+      "version": "V1"
+    },
+    {
+      "nom": "Fin de mission — Durée de blessure — maximum",
+      "code": "mission.wound_duration.max_days",
+      "description": "Durée maximale d'une blessure, en jours. Ajusté à la demande d'Idan (2026-10-03) : une blessure dure de 7 à 60 jours.",
+      "formule": "Fin de mission V1 — durée de blessure",
+      "valeur": 60,
+      "version": "V1"
+    },
+    {
       "nom": "Fin de mission — Durée de blessure — diviseur de la gravité",
       "code": "mission.wound_duration.severity_divisor",
-      "description": "JoursBlessure = Ceil(Max(1, (1 + Gravité / diviseur) × (1 - Endurance / diviseur Endurance) × FacteurSoinsCamp)). Issue #14 — valeurs PLAYTEST validées par Idan pour le code, à ajuster au jeu.",
+      "description": "JoursBlessure = Ceil(Clamp((jours de base + Gravité / diviseur) × (1 - Endurance / diviseur Endurance) × FacteurSoinsCamp, minimum, maximum)). Avec un diviseur de 1, chaque point de gravité ajoute un jour. Ajusté à la demande d'Idan (2026-10-03) : une blessure dure de 7 à 60 jours.",
       "formule": "Fin de mission V1 — durée de blessure",
-      "valeur": 10,
+      "valeur": 1,
       "version": "V1"
     },
     {
@@ -549,9 +573,9 @@
     {
       "nom": "Fin de mission — Fatigue — jours de base",
       "code": "mission.fatigue.base_days",
-      "description": "Tout survivant non blessé est fatigué (décision Idan, Issue #14). JoursFatigue = Clamp(Ceil(base + coefficient × DégâtsCumulésSubis / PV_max - Endurance / diviseur), min, max). Issue #14 — valeurs PLAYTEST validées par Idan pour le code, à ajuster au jeu.",
+      "description": "Tout survivant non blessé est fatigué (décision Idan, Issue #14). JoursFatigue = Clamp(Ceil(base + coefficient × DégâtsCumulésSubis / PV_max - Endurance / diviseur), min, max). Porté de 1 à 5 jours à la demande d'Idan (2026-10-03) : la fatigue doit approcher la semaine.",
       "formule": "Fin de mission V1 — fatigue",
-      "valeur": 1,
+      "valeur": 5,
       "version": "V1"
     },
     {

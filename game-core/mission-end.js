@@ -27,10 +27,13 @@
       woundMax:k("mission.wound.max",95),
       severityBase:k("mission.wound_severity.base",50),
       severityHpCoefficient:k("mission.wound_severity.hp_ratio_coefficient",250),
-      durationSeverityDivisor:k("mission.wound_duration.severity_divisor",10),
+      durationBaseDays:k("mission.wound_duration.base_days",7),
+      durationSeverityDivisor:k("mission.wound_duration.severity_divisor",1),
       durationEnduranceDivisor:k("mission.wound_duration.endurance_divisor",300),
       campCareFactor:k("mission.wound_duration.camp_care_factor",1),
-      fatigueBaseDays:k("mission.fatigue.base_days",1),
+      durationMinDays:k("mission.wound_duration.min_days",7),
+      durationMaxDays:k("mission.wound_duration.max_days",60),
+      fatigueBaseDays:k("mission.fatigue.base_days",5),
       fatigueDamageCoefficient:k("mission.fatigue.damage_ratio_coefficient",2),
       fatigueEnduranceDivisor:k("mission.fatigue.endurance_divisor",100),
       fatigueMinDays:k("mission.fatigue.min_days",1),
@@ -55,14 +58,14 @@
       return clamp(C.woundBase+C.woundDangerCoefficient*danger-stat(p,"Endurance")/C.woundEnduranceDivisor,C.woundMin,C.woundMax);
     }
 
-    // §6 — Gravité et durée d'une blessure.
+    // §6 — Gravité et durée d'une blessure : de 7 à 60 jours (Idan, 2026-10-03).
     function woundSeverity(p){
       return clamp(C.severityBase-C.severityHpCoefficient*hpRatio(p),0,100);
     }
 
     function woundDays(p,{campCareFactor=C.campCareFactor}={}){
-      const days=(1+woundSeverity(p)/C.durationSeverityDivisor)*(1-stat(p,"Endurance")/C.durationEnduranceDivisor)*campCareFactor;
-      return Math.ceil(Math.max(1,days));
+      const days=(C.durationBaseDays+woundSeverity(p)/C.durationSeverityDivisor)*(1-stat(p,"Endurance")/C.durationEnduranceDivisor)*campCareFactor;
+      return Math.ceil(clamp(days,C.durationMinDays,C.durationMaxDays));
     }
 
     // §5 — Fatigue : automatique pour tout survivant non blessé ; seule la durée varie.

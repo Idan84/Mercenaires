@@ -87,7 +87,7 @@ Aucun agent ne travaille spontanément : il faut qu'une session soit lancée. Gi
 - **2026-10-03** — Circuit Git : PR vers `test`, fusion par JC3, `test` → `main` sur feu vert d'Idan. Idan ne fusionne rien.
 - **2026-10-03** — Tâches et échanges entre agents via GitHub Issues et PR.
 - **2026-10-03** — Jean-Mimi travaille dans Google Flow, hors Git, avec Idan en liaison. Groky rejoint l'équipe.
-- **2026-10-03** — Fin de mission V1 (Issue #14) : tout survivant non blessé est fatigué (pas de jet) ; courbe de blessure plus agressive, pour faire tourner le roster ; séquelles permanentes reportées. Les valeurs PLAYTEST sont codées et s'ajustent dans les données.
+- **2026-10-03** — Fin de mission V1 (Issue #14) : tout survivant non blessé est fatigué (pas de jet) ; courbe de blessure plus agressive, pour faire tourner le roster ; séquelles permanentes reportées ; une blessure dure de 7 à 60 jours, la fatigue approche la semaine ; les morts de la Mission Test seront définitives. Les valeurs PLAYTEST sont codées et s'ajustent dans les données.
 - **2026-10-03** — Profil temporaire d'équipement (Issue #12) : la meilleure école de magie est divisée par 2, comme la meilleure arme.
 - **2026-10-03** — Taverne (PR #11) : l'Intendant est un rôle assigné par le joueur (aucun par défaut) ; départ après refus durci (coefficient 1,5, plafond 95 %) pour que les offres très basses ne soient pas une loterie.
 - **2026-10-03** — Dortoir initial porté à **40 places** : l'escouade initiale peut compter jusqu'à 30 mercenaires plus le capitaine.

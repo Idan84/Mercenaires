@@ -24,7 +24,7 @@ Les bots ne cherchent ni à se placer, ni à encercler, ni à éviter les attaqu
 | E4 | Avantage de l'équipe qui commence | Le joueur gagne environ 75 % des combats | À mesurer |
 | E5 | Létalité de la chaîne de fuite | Sous-nombre → blessure → Fuite → attaques d'opportunité dans le dos | À mesurer |
 | E6 | Fuite immédiate sans mouvement | Un personnage qui panique sans mouvement restant reste sur place | À observer en jeu |
-| E7 | Fin de mission : mort sous 0 PV | 74 % des mercenaires tombés sous 0 PV meurent ; le capitaine meurt dans 11,5 % des combats où il se bat | Ouvert |
+| E7 | Fin de mission : mort sous 0 PV | 76 % des mercenaires tombés sous 0 PV meurent ; le capitaine meurt dans 12 % des combats où il se bat | Ouvert |
 | E8 | Fin de mission : poids de l'Endurance | Environ 7 points de risque de blessure entre un mercenaire peu et très endurant | Ouvert |
 
 ### E1 — Courage : 41 % d'échecs
@@ -82,15 +82,15 @@ Conforme à [Mouvement de fuite immédiat V1](/design/#doc=formulas/mouvement-de
 
 ### E7 — Fin de mission : mort sous 0 PV
 
-Mesure sur 400 combats (1 200 mercenaires du joueur, capitaine présent dans chaque combat), avec les valeurs PLAYTEST de [Fin de mission](/design/#doc=10-mission-time-and-unavailability.md) :
+Mesure sur 800 combats : 8 compagnies différentes, équipe de 3 tirée au hasard dans la compagnie à chaque combat (capitaine compris), avec les valeurs PLAYTEST de [Fin de mission](/design/#doc=10-mission-time-and-unavailability.md) et les durées ajustées par Idan (blessure de 7 à 60 jours, fatigue de base 5 jours) :
 
-| Bilan | Part des mercenaires |
-|---|---:|
-| Mort | 13 % |
-| Blessé (4,8 jours en moyenne) | 9 % |
-| Fatigué (1 jour : 56 %, 2 jours : 42 %, 3 jours : 3 %) | 78 % |
+| Bilan | Part des mercenaires | Durée |
+|---|---:|---|
+| Mort | 15 % | — |
+| Blessé | 8,5 % | 43 jours en moyenne (médiane 47, de 9 à 60 ; 6 % au plafond) |
+| Fatigué | 76 % | 5 jours : 60 %, 6 jours : 36 %, 7 jours : 4 % |
 
-**Cause** : le jet de mort (formule validée) vaut 100 % dès -10 % des PV max, et un coup retire souvent bien plus que cela. Sur 213 mercenaires tombés sous 0 PV, 158 meurent (74 %). Le capitaine meurt dans 46 combats sur 400 (11,5 %), ce qui serait un Game Over en campagne.
+**Cause** : le jet de mort (formule validée) vaut 100 % dès -10 % des PV max, et un coup retire souvent bien plus que cela. 76 % des mercenaires tombés sous 0 PV meurent. Le capitaine meurt dans 12 % des combats où il se bat, de 3 % à 27 % selon le capitaine : ce serait un Game Over en campagne.
 
 **Pistes** : aucune pour l'instant ; à rejouer avec de vraies missions, où le joueur choisira d'engager ou non son capitaine.
 

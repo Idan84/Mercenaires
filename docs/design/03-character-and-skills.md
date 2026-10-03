@@ -73,3 +73,31 @@ Pour chaque arme candidate :
 `ScorePredilection = MaîtriseCatégorieMartiale + MaîtriseArmePrécise`
 
 L’arme possédant le score le plus élevé dans chaque famille devient l’arme de prédilection correspondante. Ce résultat sert d’indication sur la fiche et pourra guider la génération / attribution d’équipement initial.
+
+
+## Aptitudes binaires générées par identité
+
+Ces aptitudes valent uniquement **true / false**.
+
+### Physiologie
+- Vision nocturne
+- Vol
+
+### Martial
+- Empoisonnement des armes
+- Port d’armure légère
+- Port d’armure intermédiaire
+- Port d’armure lourde
+
+Le jeu n’utilise pas de classes. À la création, ces aptitudes sont donc déterminées par :
+- Peuple
+- Ascendance
+- Culture
+- Origine sociale
+
+Règle V1 proposée et retenue :
+`Aptitude = PeupleAccorde OR AscendanceAccorde OR CultureAccorde OR OrigineAccorde`
+
+Il n’y a pas de jet aléatoire supplémentaire : l’aléatoire vient déjà du tirage de l’identité. Une aptitude peut aussi être acquise plus tard par les autres moyens prévus (entraînement, magie, mutation, enseignement, événement, etc.).
+
+Les tables précises indiquant quelles identités accordent quelles aptitudes restent à renseigner.

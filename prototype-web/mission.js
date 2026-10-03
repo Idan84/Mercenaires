@@ -316,10 +316,12 @@ function resolveMissionCourage(attacker,defender,result){
   applyMissionFlee(c.subject,c.source);
 }
 
-// Mouvement de fuite immédiat V1 : tout le mouvement restant pour s'éloigner de l'adversaire qui a déclenché le test.
+// Mouvement de fuite immédiat V1 : pendant sa propre activation, tout le mouvement restant ;
+// en dehors de son activation, MouvementBase (décision Idan, PR #7). Il s'éloigne de l'adversaire qui a déclenché le test.
 function applyMissionFlee(unit,source){
+  const m=game.mission,acting=m.activeUnit===unit||m.actingUnit===unit;
   unit.fleeing=true;unit.fleeTurn=0;
-  const budget=Math.max(0,unit.movementRemaining||0);
+  const budget=acting?Math.max(0,unit.movementRemaining||0):m.engine.movementBase(unit);
   if(!budget){ missionLog(unit.character.name+" n’a plus de mouvement et reste sur place, en fuite.","move"); return; }
   missionFollowFleePath(unit,missionBestPath(unit,budget,cell=>game.mission.engine.axialDistance(cell,source)),"s’enfuit");
 }
@@ -622,6 +624,12 @@ function enemyTryCharge(unit,target){
 }
 
 function enemyMissionAct(unit){
+  game.mission.actingUnit=unit;
+  try{ enemyMissionActivation(unit); }
+  finally{ if(game.mission) game.mission.actingUnit=null; }
+}
+
+function enemyMissionActivation(unit){
   if(!unit.alive||game.mission.over) return;
   resetMissionActivation(unit);
   if(unit.fleeing&&resolveMissionFleeingActivation(unit)) return;

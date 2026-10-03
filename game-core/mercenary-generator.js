@@ -180,8 +180,9 @@
       return result;
     }
 
-    function alignmentDistributionForPeople(people) {
-      const principal = peopleByName.get(people)?.alignement_principal;
+    function alignmentDistributionForPeople(people, culture = null) {
+      const cultureOverride = culture ? alignmentGeneration.culture_overrides?.[culture] : null;
+      const principal = cultureOverride || peopleByName.get(people)?.alignement_principal;
       const all = alignmentRows.map(r => r.nom);
       if (!principal || !all.includes(principal)) {
         return all.map(name => ({name, probability: all.length ? 1 / all.length : 0, bucket:"fallback"}));
@@ -232,8 +233,8 @@
       return entries;
     }
 
-    function chooseAlignment(people) {
-      const distribution = alignmentDistributionForPeople(people);
+    function chooseAlignment(people, culture = null) {
+      const distribution = alignmentDistributionForPeople(people, culture);
       return weightedChoice(distribution.map(entry => ({
         value: entry.name,
         weight: entry.probability
@@ -856,7 +857,7 @@
 
       validateForcedIdentity({people, culture, origin, ascendance: ancestry.name});
 
-      const alignment = createOptions.forcedAlignment || chooseAlignment(people);
+      const alignment = createOptions.forcedAlignment || chooseAlignment(people, culture);
       const identity = {
         people,
         culture,
@@ -870,8 +871,9 @@
         identity: {
           ...identity,
           ascendanceLevelName: ancestry.levelName,
-          alignmentPrincipal: peopleByName.get(people)?.alignement_principal || null,
-          alignmentDistribution: alignmentDistributionForPeople(people)
+          alignmentPrincipal: alignmentGeneration.culture_overrides?.[culture] || peopleByName.get(people)?.alignement_principal || null,
+          alignmentPrincipalSource: alignmentGeneration.culture_overrides?.[culture] ? "culture" : "people",
+          alignmentDistribution: alignmentDistributionForPeople(people, culture)
         },
         characteristics: {},
         resistances: {},

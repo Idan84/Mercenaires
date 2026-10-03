@@ -168,6 +168,10 @@ def main():
     for name,count,src,keys in db_report:
         cat.append("| "+name+".json | "+str(count)+" | "+", ".join(keys)+" |")
     (DATA/"CATALOG.md").write_text("\n".join(cat)+"\n",encoding="utf-8")
+    (DATA/"index.json").write_text(json.dumps({
+        "generated_on":"2026-10-03",
+        "tables":[{"name":n,"file":n+".json","rows":c,"columns":k} for n,c,src,k in db_report if src!="MISSING"]
+    },ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
 
     idx=["# Mercenaires — Design source","",
          "Git est désormais la source de vérité du game design. Notion n'est plus requis.","",
@@ -178,6 +182,11 @@ def main():
     idx += ["","## Formules détaillées","",str(len(formula_sources))+" pages dans formulas/.","",
             "## Règle d'édition","","Modifier Git directement. Ne plus synchroniser depuis Notion."]
     (DOCS/"README.md").write_text("\n".join(idx)+"\n",encoding="utf-8")
+    (DOCS/"index.json").write_text(json.dumps({
+        "generated_on":"2026-10-03",
+        "documents":[{"file":n,"source":src} for n,src in doc_report if src!="MISSING"],
+        "formulas":[{"file":"formulas/"+p.name} for p in sorted(formulas.glob("*.md"))]
+    },ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
 
     rep=["# Rapport de migration Notion → Git","","Date : 2026-10-03","",
          "## Export original","","Fichiers archivés : "+str(len(files))]

@@ -580,6 +580,8 @@ async function init() {
     fillSelect($("captain-alignment"), alignmentNames());
     updateCultureSelect();
 
+    initializeMissionUi();
+
     $("new-game-btn").addEventListener("click", openSetup);
     $("cancel-setup-btn").addEventListener("click", () => $("setup-panel").classList.add("hidden"));
     $("captain-people").addEventListener("change", updateCultureSelect);

@@ -69,9 +69,12 @@
             <p class="eyebrow">Compagnie</p>
             <h2 id="company-title">Compagnie sans nom</h2>
           </div>
-          <div class="company-meta">
-            <span>Or <strong>1 000</strong></span>
-            <span>Jour <strong>1</strong></span>
+          <div class="company-actions">
+            <div class="company-meta">
+              <span>Or <strong>1 000</strong></span>
+              <span>Jour <strong>1</strong></span>
+            </div>
+            <button id="mission-test-btn" class="primary">Mission Test</button>
           </div>
         </div>
         <div id="captain-summary"></div>
@@ -100,8 +103,63 @@
         <div id="generated-list" class="character-list"></div>
       </section>
     </section>
+    <section id="mission-panel" class="panel mission-panel hidden">
+      <div class="section-title-row">
+        <div>
+          <p class="eyebrow">Mission tactique V1</p>
+          <h2 id="mission-turn">Tour 1</h2>
+          <p id="mission-active" class="muted"></p>
+        </div>
+        <button id="mission-leave-btn" class="secondary">Retour compagnie</button>
+      </div>
+
+      <div class="mission-layout">
+        <aside class="mission-side">
+          <h3>Votre équipe</h3>
+          <div id="mission-roster-player"></div>
+          <h3>Ennemis</h3>
+          <div id="mission-roster-enemy"></div>
+        </aside>
+
+        <div class="mission-center">
+          <div class="mission-actions">
+            <button id="mission-move-btn" class="secondary">Se déplacer</button>
+            <button id="mission-attack-btn" class="secondary">Attaquer</button>
+            <button id="mission-charge-btn" class="secondary">Charger</button>
+            <button id="mission-switch-btn" class="secondary">Changer d’arme</button>
+            <button id="mission-ranged-btn" class="secondary">Attaquer à distance</button>
+            <button id="mission-end-activation-btn" class="primary">Fin activation</button>
+          </div>
+          <div class="mission-map-scroll"><div id="mission-map" class="mission-map"></div></div>
+          <div id="mission-result" class="mission-result hidden">
+            <strong>Combat terminé</strong>
+            <button id="mission-result-back-btn" class="primary">Retour à la compagnie</button>
+          </div>
+        </div>
+
+        <aside class="mission-console-wrap">
+          <h3>Console</h3>
+          <div id="mission-console" class="mission-console"></div>
+        </aside>
+      </div>
+    </section>
   </main>
 
+  <dialog id="mission-select-dialog">
+    <div class="dialog-head">
+      <div><p class="eyebrow">Mission Test</p><h2>Choisir 3 mercenaires</h2></div>
+      <span id="mission-select-count" class="badge">0/3</span>
+    </div>
+    <div class="mission-select-content">
+      <p class="muted">Le combat de test ne modifie pas durablement les PV de la compagnie.</p>
+      <div id="mission-select-list" class="mission-select-list"></div>
+      <p id="mission-select-error" class="mission-error"></p>
+      <div class="actions-row">
+        <button id="start-mission-btn" class="primary">Lancer la mission</button>
+        <button id="cancel-mission-select-btn" class="secondary">Annuler</button>
+      </div>
+    </div>
+  </dialog>
   <dialog id="character-dialog">
     <div class="dialog-head">
       <div>
@@ -114,9 +172,11 @@
   </dialog>
 
   <script src="/core/mercenary-generator.js"></script>
+  <script src="/core/combat-engine.js"></script>
   <script src="reference-data.js"></script>
   <script src="core-data.js"></script>
   <script src="generation.js"></script>
+  <script src="mission.js"></script>
   <script src="ui.js"></script>
 </body>
 </html>

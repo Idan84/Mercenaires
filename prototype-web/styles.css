@@ -231,3 +231,57 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
 .equipment-note { margin:10px 2px 0; font-size:.72rem; color:#81786e; }
 @media (max-width:850px){ .equipment-board{grid-template-columns:1fr 150px 1fr}.equipment-mannequin{transform:scale(.85)}.equipment-subgrid{grid-template-columns:1fr} }
 @media (max-width:620px){ .equipment-board{grid-template-columns:1fr}.equipment-mannequin{height:230px; transform:scale(.72); transform-origin:center top}.equipment-subgrid{grid-template-columns:1fr}.weapons-grid,.belt-grid{grid-template-columns:1fr 1fr} }
+
+/* Mission Test */
+.company-actions{display:flex;align-items:center;gap:14px}
+#mission-select-dialog{width:min(720px,calc(100vw - 28px));border:0;border-radius:18px;padding:0;box-shadow:0 24px 80px rgba(0,0,0,.28)}
+#mission-select-dialog::backdrop{background:rgba(20,18,16,.55)}
+.mission-select-content{padding:20px 22px 24px}
+.mission-select-list{display:grid;gap:8px;margin-top:14px}
+.mission-pick{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;padding:11px 12px;border:1px solid #ded7cd;border-radius:11px;background:#f8f5f0;cursor:pointer}
+.mission-pick input{width:auto}
+.mission-pick span small{display:block;margin-top:2px;color:#81796f;font-weight:500}
+.mission-pick em{font-style:normal;font-size:.8rem;color:#6f675f}
+.mission-error{color:#8b2f25;min-height:1.2em}
+.mission-layout{display:grid;grid-template-columns:190px minmax(600px,1fr) 280px;gap:14px;align-items:start}
+.mission-side,.mission-console-wrap{border:1px solid #dfd8ce;border-radius:12px;background:#f8f5f0;padding:12px}
+.mission-side h3,.mission-console-wrap h3{margin:0 0 9px;font-size:.82rem;text-transform:uppercase;letter-spacing:.06em;color:#6d655c}
+.mission-side h3:not(:first-child){margin-top:18px}
+.mission-roster-row{display:grid;gap:2px;padding:8px 7px;border-bottom:1px solid #e4ddd3}
+.mission-roster-row strong{font-size:.78rem}
+.mission-roster-row span{font-size:.7rem}
+.mission-roster-row small{color:#81796f;font-size:.64rem}
+.mission-roster-row.down{opacity:.42;text-decoration:line-through}
+.mission-center{min-width:0}
+.mission-actions{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px}
+.mission-actions button{padding:8px 10px;font-size:.78rem}
+.mission-actions button.selected{outline:2px solid #792d23;outline-offset:1px}
+.mission-actions button:disabled{opacity:.38;cursor:not-allowed}
+.mission-map-scroll{overflow:auto;border:1px solid #cfc7bc;border-radius:14px;background:#dfe7d9;min-height:500px}
+.mission-map{position:relative;margin:0 auto;min-height:500px;background:radial-gradient(circle at 20% 20%,rgba(255,255,255,.32),transparent 30%),linear-gradient(135deg,rgba(79,112,68,.13),rgba(128,112,75,.08))}
+.hex-cell{position:absolute;width:58.9px;height:68px;border:0;padding:0;background:#f0eadb;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);box-shadow:inset 0 0 0 2px #c7bfae;opacity:.74}
+.hex-cell:hover{opacity:1;background:#fff6df}
+.hex-cell.reachable{background:#d7ead4;opacity:.95}
+.hex-cell.targetable{background:#efc8bf;opacity:.98}
+.mission-token{position:absolute;z-index:5;width:48px;min-height:48px;border-radius:50%;display:grid;place-items:center;align-content:center;padding:5px;border:3px solid white;box-shadow:0 3px 12px rgba(0,0,0,.28);text-align:center;pointer-events:none}
+.mission-token.player{background:#365f7b;color:white}
+.mission-token.enemy{background:#8b3529;color:white}
+.mission-token.active{box-shadow:0 0 0 4px #f0bf4e,0 5px 18px rgba(0,0,0,.35)}
+.mission-token.down{opacity:.35;filter:grayscale(1)}
+.mission-token strong{max-width:42px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.62rem}
+.mission-token small{font-size:.53rem}
+.mission-token em{position:absolute;top:52px;width:100px;left:50%;transform:translateX(-50%);font-style:normal;font-size:.52rem;color:#302b27;background:rgba(255,255,255,.82);border-radius:4px;padding:1px 3px}
+.token-hp{width:35px;height:4px;background:rgba(0,0,0,.3);border-radius:99px;overflow:hidden}
+.token-hp i{display:block;height:100%;background:#d9efb0}
+.mission-console{height:500px;overflow:auto;display:flex;flex-direction:column;gap:5px}
+.combat-log{padding:6px 7px;border-radius:7px;background:white;font-size:.68rem;line-height:1.3;border-left:3px solid #c4bcb0}
+.combat-log.turn{border-left-color:#6c4ca0;font-weight:750}
+.combat-log.damage{border-left-color:#a33c2f}
+.combat-log.death{border-left-color:#1f1c1a;background:#e8e3dc;font-weight:800}
+.combat-log.move{border-left-color:#3f718e}
+.combat-log.gear{border-left-color:#92762e}
+.combat-log.miss{color:#847b71}
+.combat-log.bad{background:#f6e0da;border-left-color:#b53025}
+.mission-result{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:10px;padding:12px 14px;border-radius:11px;background:#efe4cb}
+@media(max-width:1100px){.mission-layout{grid-template-columns:160px minmax(560px,1fr)}.mission-console-wrap{grid-column:1/-1}.mission-console{height:220px}}
+@media(max-width:760px){.company-actions{align-items:flex-start;flex-direction:column}.mission-layout{grid-template-columns:1fr}.mission-side{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mission-center{overflow:hidden}.mission-map-scroll{min-height:420px}.mission-console{height:220px}}

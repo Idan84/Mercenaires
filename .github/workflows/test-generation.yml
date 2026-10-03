@@ -14,3 +14,4 @@ jobs:
         with:
           node-version: 22
       - run: node tests/generation.test.js
+      - run: node tests/combat.test.js

@@ -153,3 +153,27 @@ Si la contre-charge **blesse** le chargeur, son attaque est annulée et il teste
 [Boîte à idées — Combat](/design/#doc=91-combat-ideas.md)
 
 [Fin de mission, temps & indisponibilités](/design/#doc=10-mission-time-and-unavailability.md)
+## Mission Test — prototype tactique V1
+
+Le prototype web expose désormais un bouton **Mission Test** qui relie directement `Create_Mercenary()` au moteur physique de combat.
+
+Périmètre actif :
+
+- sélection de **3 mercenaires** ;
+- génération automatique de **3 ennemis** ;
+- petite carte **hexagonale 2D vue du dessus** ;
+- équipe du joueur en premier, puis équipe ennemie ;
+- ordre interne par la formule d'Initiative validée ;
+- activation avec Mouvement + Action rapide + Attaque ;
+- actions disponibles : **Se déplacer, Attaquer, Charger, Changer de set d'armes, Attaquer à distance** ;
+- IA V1 : attaque si possible, sinon charge si valide, sinon avance vers la cible la plus proche puis attaque si elle entre en portée ;
+- console détaillant mouvements, jets de Toucher/Blesser et dégâts ;
+- fin du test lorsque les trois membres d'une équipe sont **hors combat**.
+
+Le moteur tactique est isolé dans `game-core/combat-engine.js`. La carte web n'est qu'une interface de test.
+
+### Simplifications volontaires du premier test
+
+Le noyau utilise déjà les formules validées de portée, vitesse/esquive effectives, MouvementBase, Toucher, Blesser, résistances d'armure, qualité d'item et dégâts PV. En revanche, ce premier écran ne branche pas encore les systèmes secondaires : critiques, boucliers, encerclement, frappe dans le dos, attaques d'opportunité, courage/fuite, couverture/obstacles, approximation des projectiles et contre-charge automatique.
+
+Dans ce banc de test, `PV <= 0` signifie **hors combat** et déclenche la condition de victoire. La mortalité persistante de fin de mission reste un système séparé.

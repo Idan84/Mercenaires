@@ -1,0 +1,371 @@
+"use strict";
+
+(function(root,factory){
+  const api=factory();
+  if(typeof module!=="undefined"&&module.exports) module.exports=api;
+  root.MercenairesCombat=api;
+})(typeof globalThis!=="undefined"?globalThis:this,function(){
+  const PHYSICAL_TYPES=[
+    {name:"tranchant",weapon:"puissance_tranchante_base",armor:"resistance_tranchant"},
+    {name:"perforant",weapon:"puissance_perforante_base",armor:"resistance_perforant"},
+    {name:"contondant",weapon:"puissance_contondante_base",armor:"resistance_contondant"}
+  ];
+
+  function createCombatEngine(reference,options={}){
+    const random=options.random||Math.random;
+    const rows={};
+    for(const [name,payload] of Object.entries(reference||{})) rows[name]=payload?.rows||[];
+
+    const weapons=rows.weapons||[];
+    const armors=rows.baseArmors||[];
+    const qualities=rows.itemQualities||[];
+    const skills=rows.skills||[];
+
+    const weaponByName=new Map(weapons.map(x=>[x.nom,x]));
+    const armorByCode=new Map(armors.map(x=>[x.code,x]));
+    const qualityByCode=new Map(qualities.map(x=>[x.code,x]));
+    const skillByName=new Map(skills.map(x=>[x.nom,x]));
+
+    function die(sides){ return Math.floor(random()*sides)+1; }
+    function d100(){ return die(100); }
+    function clamp(v,min,max){ return Math.max(min,Math.min(max,v)); }
+
+    function axialDistance(a,b){
+      const dq=a.q-b.q,dr=a.r-b.r;
+      return (Math.abs(dq)+Math.abs(dr)+Math.abs(dq+dr))/2;
+    }
+
+    function itemBySlot(unit,slot){
+      const id=unit.character.equipment?.slots?.[slot];
+      return id?(unit.character.items||[]).find(x=>x.id===id)||null:null;
+    }
+
+    function activeWeaponItem(unit){ return itemBySlot(unit,"weapon_set_"+unit.activeSet+"_main"); }
+    function activeOffhandItem(unit){ return itemBySlot(unit,"weapon_set_"+unit.activeSet+"_off"); }
+    function armorItem(unit){ return itemBySlot(unit,"armor"); }
+    function weaponTemplate(item){ return item?weaponByName.get(item.name)||null:null; }
+
+    function armorTemplate(item){
+      if(!item) return null;
+      const code=String(item.templateId||"").replace(/^armor:/,"");
+      return armorByCode.get(code)||armors.find(x=>x.nom===item.name)||null;
+    }
+
+    function quality(item){
+      return qualityByCode.get(item?.qualityCode)||{
+        multiplicateur_qualite:1,
+        multiplicateur_malus:1
+      };
+    }
+
+    function weaponCategory(character,weapon){
+      return skillByName.get(weapon?.nom)?.parent
+        || character.items?.find(x=>x.name===weapon?.nom)?.category
+        || null;
+    }
+
+    function mastery(character,weapon){
+      const category=weaponCategory(character,weapon);
+      return {
+        category,
+        categoryScore:Number(character.skills?.martial?.[category])||0,
+        weaponScore:Number(character.skills?.martial?.[weapon?.nom])||0
+      };
+    }
+
+    function isRangedWeapon(weapon){
+      return /Armes de tir|Armes à feu/.test(String(weapon?.domaine||""));
+    }
+
+    function isMeleeWeapon(weapon){
+      return Boolean(weapon)&&!isRangedWeapon(weapon)&&!/Boucliers/.test(String(weapon.domaine||""));
+    }
+
+    function usesTwoHands(unit,weapon){
+      if(!weapon) return false;
+      if(weapon.prise==="2 mains") return true;
+      return weapon.prise==="Au choix"&&!activeOffhandItem(unit);
+    }
+
+    function armorMobility(unit){
+      const item=armorItem(unit),armor=armorTemplate(item);
+      if(!armor) return {speed:0,dodge:0};
+      const q=quality(item);
+      const malus=Number(q.multiplicateur_malus)||1;
+      return {
+        speed:(Number(armor.malus_vitesse_base)||0)*malus,
+        dodge:(Number(armor.malus_esquive_base)||0)*malus
+      };
+    }
+
+    function weaponSpeedPenalty(unit){
+      const item=activeWeaponItem(unit),weapon=weaponTemplate(item);
+      if(!weapon) return 0;
+      const q=quality(item),m=mastery(unit.character,weapon);
+      const qualityPenalty=(Number(weapon.malus_vitesse_arme_base)||0)*(Number(q.multiplicateur_malus)||1);
+      const masteryFactor=Math.max(0,1-(m.categoryScore+m.weaponScore)/400);
+      let penalty=qualityPenalty*masteryFactor;
+      if(weapon.prise==="Au choix"&&usesTwoHands(unit,weapon)) penalty*=0.5;
+      return Math.max(0,penalty);
+    }
+
+    function effectiveSpeed(unit){
+      return Math.max(1,(Number(unit.character.stats?.Vitesse)||1)-armorMobility(unit).speed-weaponSpeedPenalty(unit));
+    }
+
+    function effectiveDodge(unit){
+      if(unit.prone) return 0;
+      return Math.max(1,(Number(unit.character.stats?.Esquive)||1)-armorMobility(unit).dodge);
+    }
+
+    function movementBase(unit){
+      const score=effectiveSpeed(unit)
+        +0.25*(Number(unit.character.stats?.Endurance)||0)
+        +0.10*(Number(unit.character.stats?.["Volonté"])||0);
+      return Math.max(1,Math.ceil(score/15));
+    }
+
+    function initiative(unit){
+      return effectiveSpeed(unit)
+        +0.25*(Number(unit.character.stats?.Intelligence)||0)
+        +0.10*(Number(unit.character.stats?.Courage)||0)
+        +0.05*(Number(unit.character.stats?.["Volonté"])||0);
+    }
+
+    function weaponRange(unit){
+      const weapon=weaponTemplate(activeWeaponItem(unit));
+      if(!weapon) return {min:1,max:1};
+      const min=Number(weapon.portee_min_hex);
+      const max=Number(weapon.portee_max_hex);
+      return {
+        min:Number.isFinite(min)&&min>0?min:1,
+        max:Number.isFinite(max)&&max>0?max:1
+      };
+    }
+
+    function canAttackAtDistance(unit,distance,mode){
+      const weapon=weaponTemplate(activeWeaponItem(unit));
+      if(!weapon) return false;
+      if(mode==="ranged"&&!isRangedWeapon(weapon)) return false;
+      if(mode==="melee"&&!isMeleeWeapon(weapon)) return false;
+      const range=weaponRange(unit);
+      return distance>=range.min&&distance<=range.max;
+    }
+
+    function effectiveArmorResistance(unit,type){
+      const item=armorItem(unit),armor=armorTemplate(item);
+      if(!armor) return 0;
+      const meta=PHYSICAL_TYPES.find(x=>x.name===type);
+      if(!meta) return 0;
+      const base=Number(armor[meta.armor])||0;
+      const mult=Number(quality(item).multiplicateur_qualite)||1;
+      return base>=0?base*mult:base/mult;
+    }
+
+    function selectDamageMatchup(attacker,defender,weapon){
+      const candidates=PHYSICAL_TYPES.map(type=>{
+        const power=Number(weapon[type.weapon])||0;
+        if(power<=0) return null;
+        const armorResistance=effectiveArmorResistance(defender,type.name);
+        return {type:type.name,power,armorResistance,matchup:power-armorResistance};
+      }).filter(Boolean);
+
+      if(!candidates.length) return {type:"contondant",power:0,armorResistance:0,matchup:0};
+
+      const sorted=[...candidates].sort((a,b)=>a.matchup-b.matchup);
+      const intelligence=Number(attacker.character.stats?.Intelligence)||0;
+      const roll=d100();
+      if(roll<intelligence) return {...sorted[sorted.length-1],intelligenceRoll:roll,choice:"meilleur"};
+      if((roll/2)>intelligence) return {...sorted[0],intelligenceRoll:roll,choice:"pire"};
+
+      const avg=candidates.reduce((s,x)=>s+x.matchup,0)/candidates.length;
+      const chosen=[...candidates].sort((a,b)=>Math.abs(a.matchup-avg)-Math.abs(b.matchup-avg))[0];
+      return {...chosen,intelligenceRoll:roll,choice:"moyen"};
+    }
+
+    function logistic(delta){
+      return 10+80/(1+Math.exp(-delta/20));
+    }
+
+    function hitProbability(attacker,defender,mode,distance){
+      const weapon=weaponTemplate(activeWeaponItem(attacker));
+      const m=mastery(attacker.character,weapon);
+      const a=attacker.character.stats||{},d=defender.character.stats||{};
+      let delta=(Number(a["Dextérité"])||0)
+        +0.2*(m.categoryScore+m.weaponScore+(Number(a.Perception)||0)+effectiveSpeed(attacker))
+        -effectiveDodge(defender)
+        -0.2*((Number(d.Perception)||0)+effectiveSpeed(defender));
+
+      if(mode==="ranged"){
+        const range=weaponRange(attacker);
+        const free=Math.ceil(range.max/4);
+        if(distance>free&&range.max>free){
+          delta-=40*(distance-free)/(range.max-free);
+        }
+      }
+      return clamp(logistic(delta),10,90);
+    }
+
+    function woundProbability(attacker,defender,mode,matchup){
+      const weapon=weaponTemplate(activeWeaponItem(attacker));
+      const m=mastery(attacker.character,weapon);
+      const a=attacker.character.stats||{},d=defender.character.stats||{};
+      let attackStat=0,twoHands=0;
+
+      if(mode==="ranged"){
+        attackStat=Number(a.Perception)||0;
+      }else{
+        attackStat=Number(a.Force)||0;
+        if(usesTwoHands(attacker,weapon)){
+          twoHands=Number(attacker.character.skills?.martial?.["Combat à deux mains"])||0;
+        }
+      }
+
+      const delta=attackStat
+        +0.2*(m.categoryScore+m.weaponScore+twoHands)
+        +(Number(matchup?.matchup)||0)
+        -(Number(d.Endurance)||0);
+      return clamp(logistic(delta),10,90);
+    }
+
+    function parseDice(expr){
+      const m=String(expr||"").trim().match(/^(\d+)D(\d+)$/i);
+      return m?{count:Number(m[1]),sides:Number(m[2])}:{count:1,sides:4};
+    }
+
+    function rollWeaponDamage(weapon){
+      const dice=parseDice(weapon?.degats_pv_base);
+      let total=0;
+      for(let i=0;i<dice.count;i++) total+=die(dice.sides);
+      return {total,dice:dice.count+"D"+dice.sides};
+    }
+
+    function physicalDamage(attacker,defender,mode,chargePower=0){
+      const item=activeWeaponItem(attacker),weapon=weaponTemplate(item);
+      const rolled=rollWeaponDamage(weapon);
+      const q=quality(item);
+      let effective=rolled.total*(Number(q.multiplicateur_qualite)||1);
+
+      if(mode==="melee"&&weapon?.prise==="Au choix"&&usesTwoHands(attacker,weapon)) effective*=1.5;
+      if(chargePower>0) effective*=1+chargePower/100;
+
+      const physicalResistance=clamp(Number(defender.character.resistances?.["Résistance physique"])||0,0,50);
+      const resistanceRoll=die(3);
+      const resistanceFactor=1-(physicalResistance/100)*((resistanceRoll+8)/10);
+      const strengthFactor=mode==="melee"
+        ? 2*(Number(attacker.character.stats?.Force)||0)/100
+        : 1;
+
+      return {
+        damage:Math.max(0,Math.ceil(10*effective*strengthFactor*resistanceFactor)),
+        weaponRoll:rolled.total,
+        weaponDice:rolled.dice,
+        resistanceRoll,
+        physicalResistance,
+        qualityMultiplier:Number(q.multiplicateur_qualite)||1
+      };
+    }
+
+    function resolveAttack(attacker,defender,options={}){
+      const mode=options.mode||"melee";
+      const distance=Number(options.distance)||axialDistance(attacker,defender);
+      const item=activeWeaponItem(attacker),weapon=weaponTemplate(item);
+      if(!weapon) return {ok:false,reason:"Aucune arme active."};
+      if(!canAttackAtDistance(attacker,distance,mode)) return {ok:false,reason:"Cible hors portée ou arme incompatible."};
+
+      let chargePower=0;
+      if(Number(options.chargeDistance)>0){
+        const fallRoll=d100();
+        if(fallRoll<=2){
+          return {ok:true,mode,weapon:weapon.nom,charge:true,chargeFall:true,fallRoll,hit:false,wound:false,damage:0};
+        }
+        const bonus=Number(weapon.bonus_charge_base)||1;
+        chargePower=Number(options.chargeDistance)*bonus*(Number(quality(item).multiplicateur_qualite)||1);
+      }
+
+      const pHit=hitProbability(attacker,defender,mode,distance);
+      const hitRoll=d100(),hit=hitRoll<=pHit;
+      if(!hit){
+        return {ok:true,mode,weapon:weapon.nom,distance,pHit,hitRoll,hit:false,wound:false,damage:0,chargePower};
+      }
+
+      const matchup=selectDamageMatchup(attacker,defender,weapon);
+      const pWound=woundProbability(attacker,defender,mode,matchup);
+      const woundRoll=d100(),wound=woundRoll<=pWound;
+      if(!wound){
+        return {ok:true,mode,weapon:weapon.nom,distance,pHit,hitRoll,hit:true,matchup,pWound,woundRoll,wound:false,damage:0,chargePower};
+      }
+
+      const damageData=physicalDamage(attacker,defender,mode,chargePower);
+      defender.hp=Math.max(0,defender.hp-damageData.damage);
+      if(defender.hp<=0) defender.alive=false;
+
+      return {
+        ok:true,mode,weapon:weapon.nom,distance,pHit,hitRoll,hit:true,
+        matchup,pWound,woundRoll,wound:true,...damageData,
+        targetHp:defender.hp,targetDown:!defender.alive,chargePower
+      };
+    }
+
+    function canSwitchWeaponSet(unit){
+      const other=unit.activeSet===1?2:1;
+      return Boolean(itemBySlot(unit,"weapon_set_"+other+"_main"));
+    }
+
+    function switchWeaponSet(unit){
+      if(!canSwitchWeaponSet(unit)) return false;
+      unit.activeSet=unit.activeSet===1?2:1;
+      return true;
+    }
+
+    function chargeData(attacker,defender){
+      const weapon=weaponTemplate(activeWeaponItem(attacker));
+      if(!isMeleeWeapon(weapon)) return {valid:false};
+
+      const dq=defender.q-attacker.q,dr=defender.r-attacker.r;
+      const distance=axialDistance(attacker,defender);
+      const straight=dq===0||dr===0||dq+dr===0;
+      if(!straight||distance<2) return {valid:false};
+
+      let step;
+      if(dq===0) step={q:0,r:Math.sign(dr)};
+      else if(dr===0) step={q:Math.sign(dq),r:0};
+      else step={q:Math.sign(dq),r:Math.sign(dr)};
+
+      const travel=distance-1;
+      const base=movementBase(attacker);
+      return {
+        valid:travel>=base&&travel<=2*base,
+        travel,
+        destination:{q:defender.q-step.q,r:defender.r-step.r},
+        min:base,
+        max:2*base
+      };
+    }
+
+    return {
+      axialDistance,
+      activeWeaponItem,
+      weaponTemplate,
+      armorItem,
+      armorTemplate,
+      quality,
+      isRangedWeapon,
+      isMeleeWeapon,
+      effectiveSpeed,
+      effectiveDodge,
+      movementBase,
+      initiative,
+      weaponRange,
+      canAttackAtDistance,
+      hitProbability,
+      woundProbability,
+      resolveAttack,
+      canSwitchWeaponSet,
+      switchWeaponSet,
+      chargeData
+    };
+  }
+
+  return {createCombatEngine};
+});

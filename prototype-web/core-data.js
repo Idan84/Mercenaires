@@ -19,7 +19,8 @@ const game = {
   generated: [],
   idCounter: 1,
   generator: null,
-  audit: null
+  audit: null,
+  mission: null
 };
 
 const $ = (id) => document.getElementById(id);

@@ -9,7 +9,10 @@ function statSummary(c) {
 function characterRow(c, hero=false) {
   const asc = c.ascendance ? `${c.ascendance} (${c.ascendanceLevelName || "N"+c.ascendanceLevel})` : "Aucune";
   return `<div class="${hero ? "hero-card":"character-row"}">
-    <div class="character-cell"><small>${esc(c.role)}</small><button class="character-link" data-character-id="${c.id}">${esc(c.name)}</button></div>
+    <div class="character-cell character-identity-cell">
+      ${renderAvatar(c,{variant:"compact",kind:"portrait"})}
+      <div><small>${esc(c.role)}</small><button class="character-link" data-character-id="${c.id}">${esc(c.name)}</button></div>
+    </div>
     <div class="character-cell"><small>Peuple</small><strong>${esc(c.people)}</strong></div>
     <div class="character-cell"><small>Ascendance</small><strong>${esc(asc)}</strong></div>
     <div class="character-cell"><small>Réputation</small><strong>${Math.round(c.reputation)}</strong></div>

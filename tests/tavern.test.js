@@ -86,6 +86,13 @@ assert.deepEqual(reports.map(r=>r.day),[2,3,4,5,6]);
 assert.equal(state.day,6);
 assert.deepEqual(state.tavern.candidates.map(c=>c.mercenary.id),before,"candidats persistants");
 
+// AdvanceTime refuse un nombre de jours non entier ou négatif ; 0 jour ne change rien.
+assert.throws(()=>stable.advanceTime(state,1.5),RangeError);
+assert.throws(()=>stable.advanceTime(state,-3),RangeError);
+assert.throws(()=>stable.advanceTime(state,"2"),RangeError);
+assert.deepEqual(stable.advanceTime(state,0),[]);
+assert.equal(state.day,6);
+
 // Matin où tout le monde part (D100 = 1 ≤ 2 %) : chaque place est remplie par un nouveau candidat.
 const leaving=campaignOf(always(0));
 const s2=leaving.createCampaign({captain,squad});

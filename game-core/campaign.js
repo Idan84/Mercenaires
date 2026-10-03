@@ -53,8 +53,9 @@
       return {day:state.day,tavern:tavernReport};
     }
 
-    // AdvanceTime(5) = cinq résolutions successives d'une journée.
+    // AdvanceTime(5) = cinq résolutions successives d'une journée. Seul un nombre entier de jours ≥ 0 est accepté.
     function advanceTime(state,days=1){
+      if(!Number.isInteger(days)||days<0) throw new RangeError("AdvanceTime : nombre de jours entier ≥ 0 attendu, reçu "+days);
       const reports=[];
       for(let i=0;i<days;i++) reports.push(advanceOneDay(state));
       return reports;

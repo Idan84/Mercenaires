@@ -308,3 +308,5 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
 .tavern-result{min-height:1.2em;font-weight:600}
 .tavern-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:flex-end}
 .tavern-intendant{display:flex;align-items:center;gap:6px;font-size:.85rem}
+.save-status{font-size:.75rem;color:#6d655c}
+.save-status.save-error{color:#a33c2f;font-weight:700}

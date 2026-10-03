@@ -586,6 +586,7 @@ async function init() {
 
     initializeMissionUi();
     initializeTavernUi();
+    initializeSaveUi();
 
     $("new-game-btn").addEventListener("click", openSetup);
     $("cancel-setup-btn").addEventListener("click", () => $("setup-panel").classList.add("hidden"));
@@ -593,12 +594,14 @@ async function init() {
     $("captain-culture").addEventListener("change", updateOriginSelect);
 
     $("create-game-btn").addEventListener("click", () => {
+      if (!confirmOverwriteSave()) return;
       game.idCounter = 1;
       game.captain = createCaptainFromForm();
       game.campaign = null;
       game.initialSquad = createInitialSquad(game.captain);
       game.generated = [];
       startCampaign(game.captain, game.initialSquad);
+      saveGame();
       renderGame();
     });
 

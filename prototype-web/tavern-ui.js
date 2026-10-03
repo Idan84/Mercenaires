@@ -80,6 +80,7 @@ function assignTavernIntendant(){
   const value=$("tavern-intendant").value;
   const result=campaignRules().assignIntendant(game.campaign,value?Number(value):null);
   if(result.ok) tavernLog(result.intendant?result.intendant.name+" devient l’Intendant de la compagnie.":"La compagnie n’a plus d’Intendant.","turn");
+  saveGame();
   renderTavern();
 }
 
@@ -101,6 +102,7 @@ function advanceTavernDay(){
   const arrived=report.tavern.arrivals.map(a=>a.mercenary.name);
   tavernLog(gone.length?"Engagés ailleurs pendant la nuit : "+gone.join(", ")+".":"Personne n’a été engagé ailleurs cette nuit.",gone.length?"bad":"info");
   if(arrived.length) tavernLog("Nouveaux candidats : "+arrived.join(", ")+".","turn");
+  saveGame();
   renderTavern();
   if(game.tavernSelected) renderInterview();
 }
@@ -192,6 +194,7 @@ function askTavernQuestion(){
   if(!key) return;
   const result=campaignRules().askCandidate(game.campaign,game.tavernSelected,key);
   if(!result.ok) game.tavernOfferMessage=result.reason;
+  saveGame();
   renderInterview();
   renderTavern();
 }
@@ -211,11 +214,13 @@ function makeTavernOffer(){
     game.tavernOfferMessage=name+" refuse et contre-propose "+fmt(result.counter.salary)+" PO/j et "+fmt(result.counter.bonus)+" PO.";
   }else if(result.outcome==="left"){
     tavernLog(name+" se vexe et quitte la Taverne.","bad");
+    saveGame();
     game.tavernSelected=null;
     $("tavern-dialog").close();
     renderTavern();
     return;
   }
+  saveGame();
   renderInterview();
   renderTavern();
 }
@@ -225,6 +230,7 @@ function signTavernCandidate(){
   if(!result.ok){ game.tavernOfferMessage=result.reason; renderInterview(); return; }
   result.mercenary.role="Recrue";
   tavernLog(result.mercenary.name+" signe et rejoint la compagnie.","turn");
+  saveGame();
   game.tavernSelected=null;
   $("tavern-dialog").close();
   renderGame();

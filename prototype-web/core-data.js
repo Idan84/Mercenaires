@@ -20,7 +20,8 @@ const game = {
   idCounter: 1,
   generator: null,
   audit: null,
-  mission: null
+  mission: null,
+  campaign: null
 };
 
 const $ = (id) => document.getElementById(id);
@@ -39,6 +40,7 @@ function provisionalName(people, id) {
   return `${base} ${id ?? ""}`.trim();
 }
 
+// Une fois la partie créée, tous les identifiants viennent du même compteur que les candidats de la Taverne.
 function nextCharacterId() {
-  return game.idCounter++;
+  return game.campaign ? game.campaign.nextId++ : game.idCounter++;
 }

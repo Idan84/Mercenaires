@@ -129,6 +129,8 @@ Il évolue selon les choix du joueur et influence notamment :
 
 Ces effets doivent être probabilistes plutôt que des exclusions automatiques.
 
+Pour `Create_Mercenary()`, cet effet est désormais chiffré : l’alignement exact du capitaine reçoit **+15 points de probabilité** dans le tirage du candidat. Les autres alignements sont réduits proportionnellement pour conserver une distribution totale de 100 %. Ce biais ne modifie que l’orientation générée du mercenaire.
+
 ## 4 — Salaire : formule V1
 
 Le salaire ne mesure pas la valeur réelle du mercenaire.

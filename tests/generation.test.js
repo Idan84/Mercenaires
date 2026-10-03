@@ -96,6 +96,17 @@ for (const name of ["Chaotique bon","Chaotique neutre","Chaotique mauvais"]) {
   assert.ok(Math.abs(reptilianAlignment[name].probability - 0.05) < 1e-12);
 }
 
+const alignmentCaptain = {alignment:"Chaotique mauvais"};
+const humanWithCaptainAlignment = Object.fromEntries(
+  generator.alignmentDistributionForPeople("Humain", null, alignmentCaptain).map(x => [x.name,x])
+);
+assert.ok(Math.abs(humanWithCaptainAlignment["Chaotique mauvais"].probability - 0.225) < 1e-12);
+assert.ok(Math.abs(Object.values(humanWithCaptainAlignment).reduce((sum,x)=>sum+x.probability,0)-1) < 1e-12);
+for (const name of Object.keys(humanAlignment)) {
+  if (name === "Chaotique mauvais") continue;
+  assert.ok(humanWithCaptainAlignment[name].probability < humanAlignment[name].probability);
+}
+
 const cosmetics = new Set(audit.cosmetics.map(x => x.target));
 for (const expected of ["Âge","Taille","Corpulence","Biographie courte"]) {
   assert.ok(cosmetics.has(expected), `Cosmetic field not surfaced: ${expected}`);

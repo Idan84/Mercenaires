@@ -177,6 +177,16 @@ Pour **Neutre**, les huit autres cases touchent la case centrale : elles se part
 
 Le capitaine choisi par le joueur peut toujours avoir un alignement forcé ; cette distribution ne s'applique qu'aux alignements générés automatiquement.
 
+### Influence du capitaine
+
+Après calcul de la distribution peuple/culture, `Create_Mercenary()` applique l’influence du capitaine :
+
+- **+15 points de probabilité** sur l’alignement exact du capitaine ;
+- réduction proportionnelle de toutes les autres probabilités pour conserver un total de 100 % ;
+- aucun autre élément du profil n’est modifié par ce biais.
+
+Le bonus est appliqué même si le peuple ou la culture du candidat ont un alignement principal très différent : le capitaine **attire** davantage de profils de sa propre orientation, sans créer d’exclusion.
+
 ### Exception culturelle — Elfes noirs
 
 La culture **Elfes noirs** remplace l'alignement principal du peuple Elfe par **Chaotique mauvais** avant application de la distribution 40/45/15.

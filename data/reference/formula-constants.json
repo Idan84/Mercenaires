@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 45,
+  "row_count": 46,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -88,6 +88,14 @@
       "description": "Points de pourcentage ajoutés à la probabilité du peuple du capitaine dans Create_Mercenary.",
       "formule": null,
       "valeur": 9,
+      "version": "V1"
+    },
+    {
+      "nom": "Capitaine — bonus alignement",
+      "code": "generation.captain.alignment_bonus_pp",
+      "description": "Points de pourcentage ajoutés à la probabilité de l’alignement exact du capitaine dans Create_Mercenary ; les autres alignements sont réduits proportionnellement pour conserver un total de 100 %.",
+      "formule": null,
+      "valeur": 15,
       "version": "V1"
     },
     {

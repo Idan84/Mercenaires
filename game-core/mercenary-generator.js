@@ -180,12 +180,35 @@
       return result;
     }
 
-    function alignmentDistributionForPeople(people, culture = null) {
+    function applyCaptainAlignmentInfluence(entries, captain) {
+      if (!captain?.alignment) return entries;
+
+      const bonus = constant("generation.captain.alignment_bonus_pp", 15) / 100;
+      if (!(bonus > 0)) return entries;
+
+      const captainEntry = entries.find(entry => entry.name === captain.alignment);
+      if (!captainEntry) return entries;
+
+      const current = Number(captainEntry.probability) || 0;
+      const target = Math.min(1, current + bonus);
+      const otherTotal = 1 - current;
+      if (otherTotal <= 0) return entries;
+
+      const scale = (1 - target) / otherTotal;
+      return entries.map(entry => {
+        const baseProbability = Number(entry.probability) || 0;
+        const probability = entry.name === captain.alignment ? target : baseProbability * scale;
+        return {...entry, baseProbability, probability, captainDelta: probability - baseProbability};
+      });
+    }
+
+    function alignmentDistributionForPeople(people, culture = null, captain = null) {
       const cultureOverride = culture ? alignmentGeneration.culture_overrides?.[culture] : null;
       const principal = cultureOverride || peopleByName.get(people)?.alignement_principal;
       const all = alignmentRows.map(r => r.nom);
       if (!principal || !all.includes(principal)) {
-        return all.map(name => ({name, probability: all.length ? 1 / all.length : 0, bucket:"fallback"}));
+        const fallback = all.map(name => ({name, probability: all.length ? 1 / all.length : 0, bucket:"fallback"}));
+        return applyCaptainAlignmentInfluence(fallback, captain);
       }
 
       const distribution = alignmentGeneration.distribution || {};
@@ -196,51 +219,24 @@
       const nearbySet = new Set(nearby);
       const distant = all.filter(name => name !== principal && !nearbySet.has(name));
 
-      const entries = [{
-        name: principal,
-        probability: principalProbability,
-        bucket:"principal"
-      }];
+      const entries = [{name: principal, probability: principalProbability, bucket:"principal"}];
 
       if (distant.length === 0) {
         const remaining = 1 - principalProbability;
-        for (const name of nearby) {
-          entries.push({
-            name,
-            probability: nearby.length ? remaining / nearby.length : 0,
-            bucket:"nearby"
-          });
-        }
-        return entries;
+        for (const name of nearby) entries.push({name, probability: nearby.length ? remaining / nearby.length : 0, bucket:"nearby"});
+        return applyCaptainAlignmentInfluence(entries, captain);
       }
 
-      for (const name of nearby) {
-        entries.push({
-          name,
-          probability: nearby.length ? nearbyTotal / nearby.length : 0,
-          bucket:"nearby"
-        });
-      }
+      for (const name of nearby) entries.push({name, probability: nearby.length ? nearbyTotal / nearby.length : 0, bucket:"nearby"});
+      for (const name of distant) entries.push({name, probability: distant.length ? distantTotal / distant.length : 0, bucket:"distant"});
 
-      for (const name of distant) {
-        entries.push({
-          name,
-          probability: distant.length ? distantTotal / distant.length : 0,
-          bucket:"distant"
-        });
-      }
-
-      return entries;
+      return applyCaptainAlignmentInfluence(entries, captain);
     }
 
-    function chooseAlignment(people, culture = null) {
-      const distribution = alignmentDistributionForPeople(people, culture);
-      return weightedChoice(distribution.map(entry => ({
-        value: entry.name,
-        weight: entry.probability
-      })));
+    function chooseAlignment(people, culture = null, captain = null) {
+      const distribution = alignmentDistributionForPeople(people, culture, captain);
+      return weightedChoice(distribution.map(entry => ({value: entry.name, weight: entry.probability})));
     }
-
     function rollAncestryLevel() {
       const selected = weightedChoice(ancestryLevels.map(r => ({value: r, weight: Number(r.probabilite_de_base) || 0})));
       return {level: selected.level, name: selected.nom, multiplier: selected.multiplicateur_d_effet};
@@ -857,7 +853,7 @@
 
       validateForcedIdentity({people, culture, origin, ascendance: ancestry.name});
 
-      const alignment = createOptions.forcedAlignment || chooseAlignment(people, culture);
+      const alignment = createOptions.forcedAlignment || chooseAlignment(people, culture, captain);
       const identity = {
         people,
         culture,
@@ -873,7 +869,11 @@
           ascendanceLevelName: ancestry.levelName,
           alignmentPrincipal: alignmentGeneration.culture_overrides?.[culture] || peopleByName.get(people)?.alignement_principal || null,
           alignmentPrincipalSource: alignmentGeneration.culture_overrides?.[culture] ? "culture" : "people",
-          alignmentDistribution: alignmentDistributionForPeople(people, culture)
+          alignmentDistribution: alignmentDistributionForPeople(people, culture, captain),
+          alignmentCaptainInfluence: captain?.alignment ? {
+            alignment: captain.alignment,
+            bonusPp: constant("generation.captain.alignment_bonus_pp", 15)
+          } : null
         },
         characteristics: {},
         resistances: {},

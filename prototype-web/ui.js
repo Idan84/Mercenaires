@@ -184,15 +184,15 @@ function sourceTooltip(trace, kind) {
 function renderCharacteristicTrace(c) {
   const rows = [];
   for (const [name, value] of Object.entries(c.stats)) {
-    rows.push({name,value,trace:c.generationTrace.characteristics[name]});
+    rows.push({name,value,trace:c.generationTrace.characteristics[name],bucket:"stats"});
   }
   for (const [name, value] of Object.entries(c.resistances)) {
-    rows.push({name,value,trace:c.generationTrace.resistances[name]});
+    rows.push({name,value,trace:c.generationTrace.resistances[name],bucket:"resistances"});
   }
 
   return `<div class="trace-table-wrap"><table class="trace-table">
     <thead><tr>
-      <th>Valeur</th><th>Brut</th><th>Peuple</th><th>Ascendance</th><th>Culture</th><th>Origine</th><th>Final</th>
+      <th>Valeur</th><th>Brut</th><th>Peuple</th><th>Ascendance</th><th>Culture</th><th>Origine</th><th>Final</th><th>Équipe</th>
     </tr></thead>
     <tbody>${rows.map(row => `<tr>
       <td><strong>${esc(row.name)}</strong><small>${esc(row.trace?.baseFormula || "")}</small></td>
@@ -202,6 +202,7 @@ function renderCharacteristicTrace(c) {
         return `<td title="${esc(sourceTooltip(row.trace,kind))}" class="${delta > 0 ? "positive" : delta < 0 ? "negative" : ""}">${fmtDelta(delta)}</td>`;
       }).join("")}
       <td><strong>${fmt(row.value)}</strong></td>
+      <td class="compare-cell">${renderComparison(row.value, member => member[row.bucket]?.[row.name])}</td>
     </tr>`).join("")}</tbody>
   </table></div>`;
 }

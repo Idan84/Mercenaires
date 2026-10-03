@@ -48,7 +48,7 @@
 
   // generator : createGenerator(...) ; tavern : createTavernRules(...) ; reference : data/reference/.
   function createCampaignRules({generator,tavern,reference}){
-    const STARTING_GOLD=referenceConstant(reference,"company.gold.initial",1000);
+    const STARTING_GOLD=referenceConstant(reference,"company.gold.initial",10000);
     const STARTING_DORMITORY_CAPACITY=referenceConstant(reference,"camp.dormitory.initial_capacity",40);
     function rosterOf(state){ return state.company.roster; }
 

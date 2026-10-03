@@ -58,13 +58,13 @@ assert.equal(tavern.missionBonusDemand(merc({stats:{Courage:20}})),195);
 assert.equal(tavern.missionBonusDemand(merc({stats:{Courage:50}})),150);
 assert.equal(tavern.missionBonusDemand(merc({stats:{Courage:100}})),75);
 
-// État de partie initial : jour 1, 1 000 PO, Dortoir 40 (décision Idan), Taverne remplie (5 places).
+// État de partie initial : jour 1, 10 000 PO et Dortoir 40 (décisions Idan), Taverne remplie (5 places).
 const captain=generator.createCaptain({id:1});
 const squad=[2,3].map(id=>generator.createMercenary({id,captain}));
 const stable=campaignOf(always(0.999));
 const state=stable.createCampaign({captain,squad});
 assert.equal(state.day,1);
-assert.equal(state.company.gold,1000);
+assert.equal(state.company.gold,10000);
 assert.equal(state.company.camp.dormitoryCapacity,40);
 assert.equal(state.company.roster.length,3);
 assert.equal(state.tavern.slots,5);

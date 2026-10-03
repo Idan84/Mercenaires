@@ -26,6 +26,7 @@ function renderAudit() {
   const generatedSkills = audit.skillCoverage.filter(x => ["generated","derived"].includes(x.status)).length;
   const pendingSkills = audit.skillCoverage.filter(x => x.status === "pending").length;
   const catalogSkills = audit.skillCoverage.filter(x => x.status === "catalog").length;
+  const binaryPending = audit.binaryPending?.length || 0;
   const cosmeticDeferred = audit.cosmetics?.length || 0;
 
   $("audit-status").textContent = audit.issues.length ? `${audit.issues.length} problème(s)` : "Référentiels cohérents";
@@ -40,6 +41,7 @@ function renderAudit() {
     ["Matrice active", `${activeMatrix}/${audit.counts.matrixRows}`],
     ["Compétences générées/dérivées", generatedSkills],
     ["Règles gameplay en attente", pendingSkills],
+    ["Aptitudes binaires à paramétrer", binaryPending],
     ["Aptitudes hors pipeline", catalogSkills],
     ["Cosmétiques différés", cosmeticDeferred]
   ];
@@ -50,10 +52,14 @@ function renderAudit() {
 
   const uniquePending = [...new Map(audit.pending.map(x => [x.target, x])).values()];
   const cosmetics = audit.cosmetics || [];
-  $("audit-pending-title").textContent = `${uniquePending.length} règles gameplay à définir · ${cosmetics.length} champs cosmétiques différés`;
+  const binaryPendingItems = audit.binaryPending || [];
+  $("audit-pending-title").textContent = `${uniquePending.length} règles gameplay à définir · ${binaryPendingItems.length} aptitudes binaires à paramétrer · ${cosmetics.length} champs cosmétiques différés`;
   $("audit-pending").innerHTML = [
     ...uniquePending.map(item => `
       <div class="pending-item"><strong>${esc(item.target)}</strong><span>${esc(item.reason)}</span></div>
+    `),
+    ...binaryPendingItems.map(item => `
+      <div class="pending-item binary-item"><strong>${esc(item.target)}</strong><span>${esc(item.reason)}</span></div>
     `),
     ...cosmetics.map(item => `
       <div class="pending-item cosmetic-item"><strong>${esc(item.target)}</strong><span>${esc(item.reason)}</span></div>
@@ -161,12 +167,16 @@ function renderSkillGroup(c, group, values) {
         const bonus = trace?.generationBonus
           ? `<span class="mini-badge" title="${esc(bonusSources.map(x=>`${x.name} → ${x.target} (+${x.intensity})`).join("\n"))}">Oui</span>`
           : "—";
-        return `<tr class="${Number.isFinite(value) ? "" : "pending-row"}">
-          <td><strong>${esc(name)}</strong><small>${esc(trace?.rawFormula || (Number.isFinite(value) ? "" : "Règle non définie"))}</small></td>
-          <td>${Number.isFinite(trace?.raw) ? fmt(trace.raw) : "À définir"}</td>
+        const isBinary = typeof value === "boolean";
+        const defined = Number.isFinite(value) || isBinary;
+        const rawDisplay = isBinary ? (trace?.raw ? "Oui" : "Non") : (Number.isFinite(trace?.raw) ? fmt(trace.raw) : "À définir");
+        const finalDisplay = isBinary ? (value ? "Oui" : "Non") : (Number.isFinite(value) ? fmt(value) : "—");
+        return `<tr class="${defined ? "" : "pending-row"}">
+          <td><strong>${esc(name)}</strong><small>${esc(trace?.rawFormula || (defined ? "" : "Règle non définie"))}</small></td>
+          <td>${rawDisplay}</td>
           <td>${bonus}</td>
-          <td class="${modifier>0?"positive":modifier<0?"negative":""}">${fmtDelta(modifier)}</td>
-          <td><strong>${Number.isFinite(value) ? fmt(value) : "—"}</strong></td>
+          <td class="${modifier>0?"positive":modifier<0?"negative":""}">${isBinary ? "—" : fmtDelta(modifier)}</td>
+          <td><strong>${finalDisplay}</strong></td>
         </tr>`;
       }).join("")}</tbody>
     </table></div>

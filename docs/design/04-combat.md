@@ -168,6 +168,7 @@ Périmètre actif :
 - actions disponibles : **Se déplacer, Attaquer, Charger, Changer de set d'armes, Attaquer à distance** ;
 - IA V1 : attaque si possible, sinon charge si valide, sinon avance vers la cible la plus proche puis attaque si elle entre en portée ;
 - [Attaques d'opportunité](/design/#doc=formulas/attaque-d-opportunite-cac-v1.md) avec [Frappe dans le dos](/design/#doc=formulas/frappe-dans-le-dos-v1.md) : en quittant une zone de menace (déplacement ou charge, résolu hexagone par hexagone) et en tirant sur une autre cible que l'adversaire qui menace ; en mode déplacement, la carte signale les destinations qui en provoquent ;
+- [Encerclement](/design/#doc=formulas/encerclement-cac-v1.md) : toute attaque au CAC contre une cible encerclée est une Frappe dans le dos ; la carte entoure de pointillés les personnages encerclés ;
 - console détaillant mouvements, jets de Toucher/Blesser et dégâts ;
 - fin du test lorsque les trois membres d'une équipe sont **hors combat**.
 
@@ -175,8 +176,8 @@ Le moteur tactique est isolé dans `game-core/combat-engine.js`. La carte web n'
 
 ### Simplifications volontaires du premier test
 
-Le noyau utilise déjà les formules validées de portée, vitesse/esquive effectives, MouvementBase, Toucher, Blesser, résistances d'armure, qualité d'item, dégâts PV, charge, attaques d'opportunité et Frappe dans le dos. En revanche, ce premier écran ne branche pas encore les systèmes secondaires : critiques, boucliers, combat à deux armes, encerclement, courage/fuite, couverture/obstacles, approximation des projectiles et contre-charge automatique.
+Le noyau utilise déjà les formules validées de portée, vitesse/esquive effectives, MouvementBase, Toucher, Blesser, résistances d'armure, qualité d'item, dégâts PV, charge, attaques d'opportunité, Frappe dans le dos et encerclement. En revanche, ce premier écran ne branche pas encore les systèmes secondaires : critiques, boucliers, combat à deux armes, courage/fuite, couverture/obstacles, approximation des projectiles et contre-charge automatique.
 
-Choix d'implémentation provisoires, en attente de décision (voir `docs/TEAM.md`) : aucune limite au nombre d'attaques d'opportunité par adversaire et par tour ; un personnage Au Sol réagit normalement ; plusieurs réactions simultanées sont résolues dans l'ordre d'initiative de l'équipe qui réagit ; une charge ne peut pas traverser une case occupée.
+Choix d'implémentation provisoires, en attente de décision (voir `docs/TEAM.md`) : aucune limite au nombre d'attaques d'opportunité par adversaire et par tour ; un personnage Au Sol réagit normalement et compte pour l'encerclement ; plusieurs réactions simultanées sont résolues dans l'ordre d'initiative de l'équipe qui réagit ; une charge ne peut pas traverser une case occupée.
 
 Dans ce banc de test, `PV <= 0` signifie **hors combat** et déclenche la condition de victoire. La mortalité persistante de fin de mission reste un système séparé.

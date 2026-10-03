@@ -286,9 +286,11 @@
 
       // Toute attaque d'opportunité bénéficie de Frappe dans le dos (Attaque d'opportunité CAC V1),
       // de même que toute attaque au CAC contre une cible encerclée (Encerclement CAC V1).
+      // Une cible En Fuite subit aussi une Frappe dans le dos (Frappe dans le dos V1).
       const opportunity=Boolean(options.opportunity);
       const encircled=mode==="melee"&&Boolean(options.encircled);
-      const backstab=opportunity||encircled||Boolean(options.backstab);
+      const fleeingTarget=Boolean(defender.fleeing);
+      const backstab=opportunity||encircled||fleeingTarget||Boolean(options.backstab);
       if(opportunity&&(mode!=="melee"||Number(options.chargeDistance)>0)) return {ok:false,reason:"Une attaque d'opportunité est un coup de mêlée simple."};
 
       let chargePower=0;
@@ -301,7 +303,7 @@
         chargePower=Number(options.chargeDistance)*bonus*(Number(quality(item).multiplicateur_qualite)||1);
       }
 
-      const tags={chargePower,opportunity,encircled,backstab};
+      const tags={chargePower,opportunity,encircled,fleeingTarget,backstab};
       const pHit=hitProbability(attacker,defender,mode,distance,{opportunity,backstab});
       const hitRoll=d100(),hit=hitRoll<=pHit;
       if(!hit){
@@ -327,8 +329,9 @@
     }
 
     // Attaque d'opportunité CAC V1 : un combattant menace les hexagones atteignables par son arme de mêlée active.
+    // Un personnage En Fuite ne menace personne : il ne fait pas d'attaque d'opportunité (décision Idan, Issue #8).
     function threatens(unit,hex){
-      if(!unit?.alive) return false;
+      if(!unit?.alive||unit.fleeing) return false;
       if(!isMeleeWeapon(weaponTemplate(activeWeaponItem(unit)))) return false;
       return canAttackAtDistance(unit,axialDistance(unit,hex),"melee");
     }
@@ -349,6 +352,67 @@
       const contact=opponents.filter(o=>axialDistance(o,target)===1&&threatens(o,target));
       return contact.some((a,i)=>contact.slice(i+1).some(b=>axialDistance(a,b)>1));
     }
+
+    function intimidation(unit){
+      return Number(unit?.character?.skills?.social?.Intimidation)||0;
+    }
+
+    // Courage post-attaque CAC V1 / Courage post-tir V1, avec le malus de Courage en sous-nombre V1.
+    function courageHold(subject,opponent,surplus=0){
+      const s=subject.character.stats||{};
+      return clamp((Number(s.Courage)||0)+0.25*(Number(s["Volonté"])||0)-0.25*intimidation(opponent)-10*surplus,5,95);
+    }
+
+    // Courage en sous-nombre V1 : mêlée locale = groupe connecté de combattants liés par leurs zones de menace CAC.
+    function localMelee(subject,units){
+      const alive=units.filter(u=>u.alive);
+      const linked=(a,b)=>a.team!==b.team&&(threatens(a,b)||threatens(b,a));
+      const group=new Set([subject]),queue=[subject];
+      while(queue.length){
+        const cur=queue.shift();
+        for(const other of alive) if(!group.has(other)&&linked(cur,other)){ group.add(other); queue.push(other); }
+      }
+      const allies=[...group].filter(u=>u.team===subject.team).length;
+      const enemies=group.size-allies;
+      return {allies,enemies,surplus:Math.max(0,enemies-allies)};
+    }
+
+    // Qui teste son Courage après une attaque, et avec quelle probabilité de tenir.
+    // context : { defenderSurplus, attackerEncircles }.
+    function resolveCourage(attacker,defender,result,context={}){
+      if(!result?.ok||result.chargeFall) return null;
+      let subject,source,pHold,rule;
+      if(result.wound){
+        // Une cible déjà En Fuite ne reteste pas (décision Idan, Issue #8).
+        if(!defender.alive||defender.fleeing) return null;
+        const surplus=result.mode==="melee"?Math.max(0,Number(context.defenderSurplus)||0):0;
+        subject=defender;source=attacker;
+        pHold=courageHold(defender,attacker,surplus);
+        rule=surplus>0?"outnumbered":"wounded";
+      }else{
+        // Tir : le tireur ne teste jamais. CAC : un attaquant qui participe à un encerclement ne teste pas.
+        if(result.mode!=="melee"||!attacker.alive||attacker.fleeing||context.attackerEncircles) return null;
+        subject=attacker;source=defender;
+        pHold=100-(100-courageHold(attacker,defender))/2;
+        rule="no-wound";
+      }
+      const roll=d100();
+      return {subject,source,pHold,roll,flees:roll>pHold,rule};
+    }
+
+    // Reprise de contrôle — En Fuite V1 ; ennemi de référence = ennemi actif le plus proche (vivant, pas En Fuite).
+    function recoveryChance(unit,referenceEnemy,fleeTurn){
+      const s=unit.character.stats||{};
+      return clamp((Number(s.Courage)||0)+0.25*(Number(s["Volonté"])||0)-0.25*intimidation(referenceEnemy)+10*fleeTurn,5,95);
+    }
+
+    function rollRecovery(unit,referenceEnemy,fleeTurn){
+      const p=recoveryChance(unit,referenceEnemy,fleeTurn),roll=d100();
+      return {p,roll,recovered:roll<=p};
+    }
+
+    // Comportement automatique — En Fuite V1 : 1 Course effrénée, 2 Cachons-nous, 3 Feu à volonté.
+    function rollFleeBehavior(){ return die(3); }
 
     function canSwitchWeaponSet(unit){
       const other=unit.activeSet===1?2:1;
@@ -412,6 +476,13 @@
       chargeData,
       threatens,
       isEncircled,
+      intimidation,
+      courageHold,
+      localMelee,
+      resolveCourage,
+      recoveryChance,
+      rollRecovery,
+      rollFleeBehavior,
       opportunityReactors,
       rangedOpportunityReactors
     };

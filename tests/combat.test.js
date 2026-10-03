@@ -190,6 +190,63 @@ if(setFamily(gunner,"ranged")){
   assert.equal(shot.backstab,false);
 }
 
+// En Fuite : ne menace plus personne, et toute attaque contre lui est une Frappe dans le dos.
+const runner=meleeAt(4,3);runner.fleeing=true;
+assert.equal(combat.threatens(runner,center),false);
+assert.equal(combat.isEncircled(center,[runner,meleeAt(2,3)]),false);
+victim.hp=b.pvMax;victim.alive=true;victim.fleeing=true;
+const hitRunner=combat.resolveAttack(striker,victim,{mode:"melee"});
+assert.equal(hitRunner.fleeingTarget,true);
+assert.equal(hitRunner.backstab,true);
+victim.fleeing=false;
+
+// Courage : Courage + 0,25 × Volonté − 0,25 × Intimidation adverse − 10 × surplus, borné à 5–95.
+function teamUnit(character,team,q,r){ const u=unit(character,q,r); u.team=team; setFamily(u,"melee"); return u; }
+const hero=teamUnit(a,"player",3,3),brute=teamUnit(b,"enemy",4,3);
+const heroScore=a.stats.Courage+0.25*a.stats["Volonté"]-0.25*combat.intimidation(brute);
+near(combat.courageHold(hero,brute),Math.min(95,Math.max(5,heroScore)),"Courage de base");
+near(combat.courageHold(hero,brute,2),Math.min(95,Math.max(5,heroScore-20)),"Courage en sous-nombre");
+assert.equal(combat.courageHold({character:{stats:{Courage:0,"Volonté":0}}},brute),5);
+assert.equal(combat.courageHold({character:{stats:{Courage:300,"Volonté":0}}},brute),95);
+
+// Mêlée locale : groupe connecté par les zones de menace CAC.
+const brute2=teamUnit(b,"enemy",2,3),farBrute=teamUnit(b,"enemy",8,0);
+assert.deepEqual(combat.localMelee(hero,[hero,brute,brute2,farBrute]),{allies:1,enemies:2,surplus:1});
+const buddy=teamUnit(a,"player",5,3);
+assert.deepEqual(combat.localMelee(hero,[hero,brute,brute2,buddy,farBrute]),{allies:2,enemies:2,surplus:0});
+
+// Qui teste ? random 0 → D100 = 1 (tient toujours) ; panicky → D100 = 100 (fuit toujours).
+const panicky=createCombatEngine(reference,{random:()=>0.999});
+const woundMelee={ok:true,mode:"melee",hit:true,wound:true};
+const missMelee={ok:true,mode:"melee",hit:false,wound:false};
+const woundShot={ok:true,mode:"ranged",hit:true,wound:true};
+const missShot={ok:true,mode:"ranged",hit:false,wound:false};
+let c=combat.resolveCourage(brute,hero,woundMelee);
+assert.equal(c.subject,hero);assert.equal(c.rule,"wounded");assert.equal(c.flees,false);
+near(c.pHold,combat.courageHold(hero,brute),"cible blessée");
+c=panicky.resolveCourage(brute,hero,woundMelee,{defenderSurplus:2});
+assert.equal(c.rule,"outnumbered");assert.equal(c.flees,true);
+near(c.pHold,combat.courageHold(hero,brute,2),"cible blessée en sous-nombre");
+c=combat.resolveCourage(brute,hero,woundShot,{defenderSurplus:2});
+assert.equal(c.rule,"wounded","le sous-nombre ne s'applique qu'au CAC");
+c=combat.resolveCourage(brute,hero,missMelee);
+assert.equal(c.subject,brute);assert.equal(c.rule,"no-wound");
+near(c.pHold,100-(100-combat.courageHold(brute,hero))/2,"attaquant sans blessure");
+assert.equal(combat.resolveCourage(brute,hero,missMelee,{attackerEncircles:true}),null);
+assert.equal(combat.resolveCourage(brute,hero,missShot),null,"le tireur ne teste jamais");
+assert.equal(combat.resolveCourage(brute,{...hero,fleeing:true},woundMelee),null,"déjà En Fuite : pas de nouveau test");
+assert.equal(combat.resolveCourage(brute,{...hero,alive:false},woundMelee),null);
+assert.equal(combat.resolveCourage(brute,hero,{ok:true,chargeFall:true}),null);
+
+// Reprise de contrôle : +10 par tour commencé En Fuite, borné à 5–95.
+near(combat.recoveryChance(hero,brute,1),Math.min(95,Math.max(5,heroScore+10)),"reprise tour 1");
+near(combat.recoveryChance(hero,brute,3),Math.min(95,Math.max(5,heroScore+30)),"reprise tour 3");
+near(combat.recoveryChance(hero,null,1),Math.min(95,Math.max(5,a.stats.Courage+0.25*a.stats["Volonté"]+10)),"sans ennemi actif");
+assert.equal(combat.rollRecovery(hero,brute,1).recovered,true);
+assert.equal(panicky.rollRecovery(hero,brute,1).recovered,false);
+assert.equal(combat.rollFleeBehavior(),1);
+assert.equal(panicky.rollFleeBehavior(),3);
+
 // Charge : le chemin suit la ligne droite jusqu'à la case d'arrivée.
 const charger=unit(a,0,0),chargeTarget=unit(b,4,0);
 const charge=combat.chargeData(charger,chargeTarget);

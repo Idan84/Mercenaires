@@ -98,6 +98,7 @@ Aucun agent ne travaille spontanément : il faut qu'une session soit lancée. Gi
 - **2026-10-03** — Combat V1 (PR #7) : toute attaque contre un personnage En Fuite est une Frappe dans le dos ; panique hors de sa propre activation = fuite immédiate de `MouvementBase` ; choix d'implémentation des attaques d'opportunité confirmés par Chatty.
 - **2026-10-03** — Fuite V1 (Issue #8) : pas de nouveau test de Courage En Fuite ; un fuyard ne fait pas d'attaque d'opportunité ; ennemi actif = vivant et pas En Fuite ; sortie de carte prioritaire si atteignable ce tour-ci ; Mission Test : sortie de carte = hors combat.
 - **2026-10-03** — Or de départ porté à **10 000 PO** (les salaires avaient été multipliés par 10) ; l'or de départ et les revenus seront recalés ensemble. Cible : **PC / Steam**, le téléphone n'est pas prioritaire.
+- **2026-10-03** — Fin de mission : on tue assez, on ne blesse pas assez. La zone du jet de blessure passe de 0–20 % à **0–50 % des PV** ; les morts ne changent pas (Idan).
 
 ## En attente de décision
 

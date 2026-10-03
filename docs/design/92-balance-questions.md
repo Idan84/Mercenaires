@@ -24,7 +24,7 @@ Les bots ne cherchent ni à se placer, ni à encercler, ni à éviter les attaqu
 | E4 | Avantage de l'équipe qui commence | Le joueur gagne environ 75 % des combats | À mesurer |
 | E5 | Létalité de la chaîne de fuite | Sous-nombre → blessure → Fuite → attaques d'opportunité dans le dos | À mesurer |
 | E6 | Fuite immédiate sans mouvement | Un personnage qui panique sans mouvement restant reste sur place | À observer en jeu |
-| E7 | Fin de mission : mort sous 0 PV | 76 % des mercenaires tombés sous 0 PV meurent ; le capitaine meurt dans 12 % des combats où il se bat | Ouvert |
+| E7 | Fin de mission : mort sous 0 PV | 76 % des mercenaires tombés sous 0 PV meurent ; le capitaine meurt dans 12 % des combats où il se bat | Blessés : tranché (zone 0–50 %) ; morts : ouvert |
 | E8 | Fin de mission : poids de l'Endurance | Environ 7 points de risque de blessure entre un mercenaire peu et très endurant | Ouvert |
 
 ### E1 — Courage : 41 % d'échecs
@@ -93,6 +93,17 @@ Mesure sur 800 combats : 8 compagnies différentes, équipe de 3 tirée au hasar
 **Cause** : le jet de mort (formule validée) vaut 100 % dès -10 % des PV max, et un coup retire souvent bien plus que cela. 76 % des mercenaires tombés sous 0 PV meurent. Le capitaine meurt dans 12 % des combats où il se bat, de 3 % à 27 % selon le capitaine : ce serait un Game Over en campagne.
 
 **Pistes** : aucune pour l'instant ; à rejouer avec de vraies missions, où le joueur choisira d'engager ou non son capitaine.
+
+**Décision d'Idan (2026-10-03)** : « on tue assez, on ne blesse pas assez ». Les morts restent inchangés, et la zone du jet de blessure passe de 0–20 % à **0–50 % des PV max**, pour avoir plus de blessés que de morts. Seuls 7 % des combattants finissent entre 0 et 20 % de leurs PV, et 59 % au-dessus de la moitié : augmenter la probabilité dans l'ancienne zone ne faisait passer les blessés que de 8,5 % à 9,5 %.
+
+Espérance mesurée sur les mêmes 800 combats :
+
+| Jet de blessure entre… | Morts | Blessés | Fatigués | Durée moyenne d'une blessure |
+|---|---:|---:|---:|---:|
+| 0 et 20 % (avant) | 14,5 % | 8,5 % | 77 % | 42 j |
+| 0 et 30 % | 14,5 % | 10,5 % | 75 % | 37 j |
+| 0 et 40 % | 14,5 % | 13,4 % | 72 % | 31 j |
+| **0 et 50 % (retenu)** | 14,5 % | **16,3 %** | 69 % | 27 j |
 
 ### E8 — Fin de mission : poids de l'Endurance
 

@@ -19,7 +19,7 @@
     const C={
       deathHpCoefficient:k("mission.death.hp_ratio_coefficient",1000),
       deathWillpowerDivisor:k("mission.death.willpower_divisor",20),
-      woundZoneRatio:k("mission.wound.zone_ratio",0.2),
+      woundZoneRatio:k("mission.wound.zone_ratio",0.5),
       woundBase:k("mission.wound.base",35),
       woundDangerCoefficient:k("mission.wound.danger_coefficient",0.65),
       woundEnduranceDivisor:k("mission.wound.endurance_divisor",6),
@@ -51,7 +51,7 @@
       return clamp(-C.deathHpCoefficient*hpRatio(p)-stat(p,"Volonté")/C.deathWillpowerDivisor,0,100);
     }
 
-    // §4 — Jet de blessure, uniquement entre 0 et 20 % des PV max.
+    // §4 — Jet de blessure, uniquement entre 0 et 50 % des PV max (zone portée de 20 à 50 % par Idan).
     function woundChance(p){
       if(p.hp<0||p.hp>C.woundZoneRatio*p.pvMax) return null;
       const danger=100*(1-p.hp/(C.woundZoneRatio*p.pvMax));

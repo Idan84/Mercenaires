@@ -31,13 +31,13 @@ assert.equal(rules.deathChance(merc(-1,{stats:{"Volonté":100}})),5);
 assert.equal(rules.deathChance(merc(-1,{stats:{"Volonté":400}})),0);
 assert.equal(rules.deathChance(merc(-50)),100);
 
-// §4 — Jet de blessure entre 0 et 20 % PV (exemples Chatty, Endurance 50, Issue #14).
-for(const [hp,expected] of [[20,26.67],[15,42.92],[10,59.17],[5,75.42],[0,91.67]]){
+// §4 — Jet de blessure entre 0 et 50 % PV (zone portée de 20 à 50 % par Idan ; courbe Chatty, Endurance 50).
+for(const [hp,expected] of [[50,26.67],[37.5,42.92],[25,59.17],[12.5,75.42],[0,91.67]]){
   near(rules.woundChance(merc(hp)),expected,"P_Blessure à "+hp+" % PV");
 }
-assert.equal(rules.woundChance(merc(21)),null,"au-dessus de 20 % PV : pas de jet");
+assert.equal(rules.woundChance(merc(51)),null,"au-dessus de 50 % PV : pas de jet");
 assert.equal(rules.woundChance(merc(-1)),null,"sous 0 PV : jet de mort, pas de jet de blessure");
-assert.equal(rules.woundChance(merc(20,{stats:{Endurance:120}})),20,"plancher");
+assert.equal(rules.woundChance(merc(50,{stats:{Endurance:120}})),20,"plancher");
 assert.equal(rules.woundChance(merc(0,{stats:{Endurance:0}})),95,"plafond");
 
 // §6 — Gravité (exemples Chatty) et durée de blessure : 7 jours + 1 jour par point de gravité, de 7 à 60 jours
@@ -80,12 +80,12 @@ r=chain([roll(59)]).resolveParticipant(merc(10));
 assert.equal(r.outcome,"wounded");
 assert.equal(r.wound.automatic,false);
 assert.equal(r.woundDays,27);
-r=chain([roll(60)]).resolveParticipant(merc(10,{damageTaken:100}));
+r=chain([roll(79)]).resolveParticipant(merc(10,{damageTaken:100}));
 assert.equal(r.outcome,"fatigued");
 assert.equal(r.wounded,false);
 assert.equal(r.fatigueDays,7);
 
-// Au-dessus de 20 % PV : aucun jet, fatigue automatique.
+// Au-dessus de 50 % PV : aucun jet, fatigue automatique.
 let draws=0;
 const counting=createMissionEndRules({reference,random:()=>{ draws++; return 0; }});
 r=counting.resolveParticipant(merc(80,{damageTaken:20,offMap:true}));

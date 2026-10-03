@@ -25,6 +25,7 @@ function renderAudit() {
   const blockedMatrix = audit.matrixCoverage.filter(x => x.status === "blocked").length;
   const generatedSkills = audit.skillCoverage.filter(x => ["generated","derived"].includes(x.status)).length;
   const pendingSkills = audit.skillCoverage.filter(x => x.status === "pending").length;
+  const catalogSkills = audit.skillCoverage.filter(x => x.status === "catalog").length;
   const cosmeticDeferred = audit.cosmetics?.length || 0;
 
   $("audit-status").textContent = audit.issues.length ? `${audit.issues.length} problème(s)` : "Référentiels cohérents";
@@ -39,6 +40,7 @@ function renderAudit() {
     ["Matrice active", `${activeMatrix}/${audit.counts.matrixRows}`],
     ["Compétences générées/dérivées", generatedSkills],
     ["Règles gameplay en attente", pendingSkills],
+    ["Aptitudes hors pipeline", catalogSkills],
     ["Cosmétiques différés", cosmeticDeferred]
   ];
 
@@ -171,6 +173,36 @@ function renderSkillGroup(c, group, values) {
   </details>`;
 }
 
+function renderWeaponPreferences(c) {
+  const labels = {
+    oneHand: "Une main",
+    twoHands: "Deux mains",
+    ranged: "Distance"
+  };
+  const prefs = c.weaponPreferences || {};
+  return `<section class="weapon-preferences">
+    <div class="section-title-row compact">
+      <div>
+        <p class="eyebrow">Équipement conseillé</p>
+        <h3>Armes de prédilection</h3>
+      </div>
+      <span class="muted">Score = Catégorie + Arme précise</span>
+    </div>
+    <div class="preference-grid">
+      ${Object.entries(labels).map(([key,label]) => {
+        const pref = prefs[key];
+        if (!pref) return `<div class="preference-card"><small>${esc(label)}</small><strong>—</strong></div>`;
+        return `<div class="preference-card">
+          <small>${esc(label)}</small>
+          <strong>${esc(pref.weapon)}</strong>
+          <span>${esc(pref.category)} ${fmt(pref.categoryScore)} + ${esc(pref.weapon)} ${fmt(pref.specificScore)}</span>
+          <b>${fmt(pref.score)}</b>
+        </div>`;
+      }).join("")}
+    </div>
+  </section>`;
+}
+
 function renderPending(c) {
   const pending = c.generationTrace.pending || [];
   const cosmetics = (c.generationTrace.cosmetics || []).filter(x => x.status === "deferred");
@@ -217,6 +249,8 @@ function showCharacter(c) {
       <div class="metric"><small>Max / Min pool</small><strong>${Math.round(rb.max)} / ${Math.round(rb.min)}</strong></div>
     </div>
 
+    ${renderWeaponPreferences(c)}
+
     <details class="debug-section" open>
       <summary><h3>Caractéristiques — trace de génération</h3><span>brut → identités → final</span></summary>
       ${renderCharacteristicTrace(c)}
@@ -225,7 +259,10 @@ function showCharacter(c) {
     <details class="debug-section" open>
       <summary><h3>Compétences — trace de génération</h3><span>tirage brut → matrice → final</span></summary>
       <div class="skill-groups">
-        ${Object.entries(c.skills).map(([group,values]) => renderSkillGroup(c,group,values)).join("")}
+        ${Object.entries(c.skills)
+          .filter(([,values]) => Object.keys(values).length)
+          .map(([group,values]) => renderSkillGroup(c,group,values))
+          .join("")}
       </div>
     </details>
 

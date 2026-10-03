@@ -461,9 +461,9 @@
     {
       "nom": "Fin de mission — Jet de blessure — zone critique",
       "code": "mission.wound.zone_ratio",
-      "description": "Part des PV max sous laquelle un survivant passe un jet de blessure (0 ≤ PV_restants ≤ zone × PV_max). Règle validée (§4).",
+      "description": "Part des PV max sous laquelle un survivant passe un jet de blessure (0 ≤ PV_restants ≤ zone × PV_max). Portée de 20 % à 50 % par Idan le 2026-10-03 : on veut plus de blessés que de morts.",
       "formule": "Fin de mission V1 — jet de blessure",
-      "valeur": 0.2,
+      "valeur": 0.5,
       "version": "V1"
     },
     {

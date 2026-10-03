@@ -65,12 +65,12 @@ Un mercenaire qui échoue au jet meurt. **La mort du capitaine entraîne Game Ov
 
 Si le mercenaire avait `PV_restants < 0` et survit au jet de mort, il reçoit **automatiquement une blessure**.
 
-### Mercenaire entre 0 et 20 % de ses PV max
+### Mercenaire entre 0 et 50 % de ses PV max
 
 Si :
 
 $$
-0 \le PV_{restants} \le 0.2 \times PV_{max}
+0 \le PV_{restants} \le 0.5 \times PV_{max}
 $$
 
 alors un **jet de blessure** est effectué.
@@ -83,14 +83,16 @@ La probabilité doit :
 **Formule PLAYTEST V1** (Issue #14 : courbe volontairement agressive, pour que l’indisponibilité fasse tourner le roster) :
 
 $$
-DangerBlessure = 100 \times \left(1 - \frac{PV_{restants}}{0.2 \times PV_{max}}\right)
+DangerBlessure = 100 \times \left(1 - \frac{PV_{restants}}{0.5 \times PV_{max}}\right)
 $$
 
 $$
 P_{Blessure}\% = Clamp\left(35 + 0.65 \times DangerBlessure - \frac{Endurance}{6},\ 20,\ 95\right)
 $$
 
-Avec Endurance 50 : ~27 % à 20 % PV, ~43 % à 15 %, ~59 % à 10 %, ~75 % à 5 %, ~92 % à 0 PV. Le plancher de 20 % est voulu : finir une mission dans la zone critique doit déjà être dangereux.
+**Zone portée de 20 % à 50 % des PV max par Idan le 2026-10-03 : on veut plus de blessés que de morts.** Peu de mercenaires finissent un combat entre 0 et 20 % de leurs PV ; élargir la zone est le seul levier qui ajoute vraiment des blessés (mesure : 8,5 % → 16,3 % de blessés, morts inchangés, voir le registre d’équilibrage E7).
+
+Avec Endurance 50 : ~27 % à 50 % PV, ~43 % à 37,5 %, ~59 % à 25 %, ~75 % à 12,5 %, ~92 % à 0 PV. Le plancher de 20 % est voulu : finir une mission dans la zone critique doit déjà être dangereux.
 
 ## 5 — Fatigue
 
@@ -145,7 +147,7 @@ Ordre retenu :
 1. `PV < 0` → jet de mort ;
 2. mort → fin du traitement du personnage ;
 3. survivant avec `PV < 0` → blessure automatique ;
-4. `0 à 20 % PV max` → jet de blessure ;
+4. `0 à 50 % PV max` → jet de blessure ;
 5. tous les survivants non blessés → fatigue automatique, dont seule la durée varie ;
 6. résolution des récompenses, réputation, XP, butin et retour.
 

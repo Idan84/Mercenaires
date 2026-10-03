@@ -391,6 +391,17 @@
         "armor",
         "reason"
       ]
+    },
+    {
+      "name": "alignment-generation",
+      "file": "alignment-generation.json",
+      "rows": 1,
+      "columns": [
+        "distribution",
+        "neighborhood",
+        "grid",
+        "notes"
+      ]
     }
   ]
 }

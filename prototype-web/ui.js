@@ -197,13 +197,18 @@ function sourceTooltip(trace, kind) {
     .join("\n");
 }
 
+// La trace de génération n'est pas sauvegardée : après un chargement, seules les valeurs finales s'affichent.
+function traceNotice(c) {
+  return c.generationTrace ? "" : `<p class="muted">Trace de génération non conservée dans la sauvegarde : seules les valeurs finales sont affichées.</p>`;
+}
+
 function renderCharacteristicTrace(c) {
   const rows = [];
   for (const [name, value] of Object.entries(c.stats)) {
-    rows.push({name,value,trace:c.generationTrace.characteristics[name],bucket:"stats"});
+    rows.push({name,value,trace:c.generationTrace?.characteristics?.[name],bucket:"stats"});
   }
   for (const [name, value] of Object.entries(c.resistances)) {
-    rows.push({name,value,trace:c.generationTrace.resistances[name],bucket:"resistances"});
+    rows.push({name,value,trace:c.generationTrace?.resistances?.[name],bucket:"resistances"});
   }
 
   return `<div class="trace-table-wrap"><table class="trace-table">
@@ -270,7 +275,7 @@ function renderBinaryTrace(trace, value) {
 }
 
 function renderSkillRow(c, group, name, value, options = {}) {
-  const trace = c.generationTrace.skills[name];
+  const trace = c.generationTrace?.skills?.[name];
   const modifier = trace ? (trace.contributions || []).reduce((sum,x)=>sum+Number(x.delta||0),0) : 0;
   const bonusSources = trace?.generationBonusSources || [];
   const bonus = trace?.generationBonus
@@ -477,8 +482,8 @@ function renderMagicPreferences(c) {
 }
 
 function renderPending(c) {
-  const pending = c.generationTrace.pending || [];
-  const cosmetics = (c.generationTrace.cosmetics || []).filter(x => x.status === "deferred");
+  const pending = c.generationTrace?.pending || [];
+  const cosmetics = (c.generationTrace?.cosmetics || []).filter(x => x.status === "deferred");
   if (!pending.length && !cosmetics.length) return "";
   return `<div class="pending-box">
     <h3>Éléments encore à générer</h3>
@@ -528,6 +533,7 @@ function showCharacter(c) {
 
     <details class="debug-section" open>
       <summary><h3>Caractéristiques — trace de génération</h3><span>brut → identités → final · comparaison = capitaine + escouade</span></summary>
+      ${traceNotice(c)}
       ${renderCharacteristicTrace(c)}
     </details>
 
@@ -586,6 +592,7 @@ async function init() {
 
     initializeMissionUi();
     initializeTavernUi();
+    initializeSaveUi();
 
     $("new-game-btn").addEventListener("click", openSetup);
     $("cancel-setup-btn").addEventListener("click", () => $("setup-panel").classList.add("hidden"));
@@ -593,12 +600,14 @@ async function init() {
     $("captain-culture").addEventListener("change", updateOriginSelect);
 
     $("create-game-btn").addEventListener("click", () => {
+      if (!confirmOverwriteSave()) return;
       game.idCounter = 1;
       game.captain = createCaptainFromForm();
       game.campaign = null;
       game.initialSquad = createInitialSquad(game.captain);
       game.generated = [];
       startCampaign(game.captain, game.initialSquad);
+      saveGame();
       renderGame();
     });
 

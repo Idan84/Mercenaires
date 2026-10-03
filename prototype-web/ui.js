@@ -253,6 +253,34 @@ function renderBinaryTrace(trace, value) {
   return {raw:value ? "Oui" : "Non", sources:"—", modifier:"—", final:value ? "Oui" : "Non"};
 }
 
+function renderSkillRow(c, group, name, value, options = {}) {
+  const trace = c.generationTrace.skills[name];
+  const modifier = trace ? (trace.contributions || []).reduce((sum,x)=>sum+Number(x.delta||0),0) : 0;
+  const bonusSources = trace?.generationBonusSources || [];
+  const bonus = trace?.generationBonus
+    ? `<span class="mini-badge" title="${esc(bonusSources.map(x=>`${x.name} → ${x.target} (+${x.intensity})`).join("\n"))}">Oui</span>`
+    : "—";
+  const isBinary = typeof value === "boolean";
+  const defined = Number.isFinite(value) || isBinary;
+  const binary = isBinary ? renderBinaryTrace(trace, value) : null;
+  const rawDisplay = isBinary ? binary.raw : (Number.isFinite(trace?.raw) ? fmt(trace.raw) : "À définir");
+  const sourceDisplay = isBinary ? binary.sources : bonus;
+  const modifierDisplay = isBinary ? binary.modifier : fmtDelta(modifier);
+  const finalDisplay = isBinary ? binary.final : (Number.isFinite(value) ? fmt(value) : "—");
+  const inherited = trace?.inheritedFrom ? `<small>hérité de ${esc(trace.inheritedFrom)}</small>` : "";
+  const labelClass = options.labelClass || "";
+  const prefix = options.prefix || "";
+
+  return `<tr class="${defined ? "" : "pending-row"} ${options.rowClass || ""}">
+    <td class="${labelClass}">${prefix}<strong>${esc(name)}</strong><small>${esc(trace?.rawFormula || (defined ? "" : "Règle non définie"))}</small></td>
+    <td>${rawDisplay}</td>
+    <td>${sourceDisplay}</td>
+    <td class="${!isBinary && modifier>0?"positive":!isBinary && modifier<0?"negative":""}">${modifierDisplay}</td>
+    <td><strong>${finalDisplay}</strong>${inherited}</td>
+    <td class="compare-cell">${isBinary ? "—" : renderComparison(value, member => member.skills?.[group]?.[name])}</td>
+  </tr>`;
+}
+
 function renderSkillGroup(c, group, values) {
   const entries = Object.entries(values).sort((a,b) => {
     const av = Number.isFinite(a[1]) ? a[1] : -Infinity;
@@ -260,35 +288,62 @@ function renderSkillGroup(c, group, values) {
     return bv - av || a[0].localeCompare(b[0], "fr");
   });
 
-  return `<details class="skill-group" ${["martial","magic"].includes(group) ? "open" : ""}>
+  return `<details class="skill-group" ${["magic"].includes(group) ? "open" : ""}>
     <summary><strong>${esc(skillLabel(group))}</strong><span>${entries.filter(([,v])=>Number.isFinite(v)).length} valeurs</span></summary>
     <div class="trace-table-wrap"><table class="trace-table skill-trace-table">
       <thead><tr><th>Compétence</th><th>Brut</th><th>Bonus génération</th><th>Modifs</th><th>Final</th><th>Équipe</th></tr></thead>
-      <tbody>${entries.map(([name,value]) => {
-        const trace = c.generationTrace.skills[name];
-        const modifier = trace ? (trace.contributions || []).reduce((s,x)=>s+Number(x.delta||0),0) : 0;
-        const bonusSources = trace?.generationBonusSources || [];
-        const bonus = trace?.generationBonus
-          ? `<span class="mini-badge" title="${esc(bonusSources.map(x=>`${x.name} → ${x.target} (+${x.intensity})`).join("\n"))}">Oui</span>`
-          : "—";
-        const isBinary = typeof value === "boolean";
-        const defined = Number.isFinite(value) || isBinary;
-        const binary = isBinary ? renderBinaryTrace(trace, value) : null;
-        const rawDisplay = isBinary ? binary.raw : (Number.isFinite(trace?.raw) ? fmt(trace.raw) : "À définir");
-        const sourceDisplay = isBinary ? binary.sources : bonus;
-        const modifierDisplay = isBinary ? binary.modifier : fmtDelta(modifier);
-        const finalDisplay = isBinary ? binary.final : (Number.isFinite(value) ? fmt(value) : "—");
-        const inherited = trace?.inheritedFrom ? `<small>hérité de ${esc(trace.inheritedFrom)}</small>` : "";
-        return `<tr class="${defined ? "" : "pending-row"}">
-          <td><strong>${esc(name)}</strong><small>${esc(trace?.rawFormula || (defined ? "" : "Règle non définie"))}</small></td>
-          <td>${rawDisplay}</td>
-          <td>${sourceDisplay}</td>
-          <td class="${!isBinary && modifier>0?"positive":!isBinary && modifier<0?"negative":""}">${modifierDisplay}</td>
-          <td><strong>${finalDisplay}</strong>${inherited}</td>
-          <td class="compare-cell">${isBinary ? "—" : renderComparison(value, member => member.skills?.[group]?.[name])}</td>
-        </tr>`;
-      }).join("")}</tbody>
+      <tbody>${entries.map(([name,value]) => renderSkillRow(c,group,name,value)).join("")}</tbody>
     </table></div>
+  </details>`;
+}
+
+function renderMartialGroup(c) {
+  const metadata = game.referenceData?.skills?.rows || [];
+  const categories = metadata
+    .filter(r => r.domaine === "Martial" && r.niveau === "Catégorie")
+    .sort((a,b)=>(a.ordre??999)-(b.ordre??999) || a.nom.localeCompare(b.nom,"fr"));
+  const aptitudes = metadata
+    .filter(r => r.domaine === "Martial" && r.niveau === "Aptitude")
+    .sort((a,b)=>(a.ordre??999)-(b.ordre??999) || a.nom.localeCompare(b.nom,"fr"));
+
+  const blocks = categories.map(category => {
+    const categoryValue = c.skills.martial[category.nom];
+    const children = metadata
+      .filter(r => r.parent === category.nom)
+      .sort((a,b)=>(a.ordre??999)-(b.ordre??999) || a.nom.localeCompare(b.nom,"fr"))
+      .filter(child => Object.prototype.hasOwnProperty.call(c.skills.martial, child.nom));
+
+    return `<section class="martial-category">
+      <div class="martial-category-head">
+        <div>
+          <small>Catégorie</small>
+          <strong>${esc(category.nom)}</strong>
+        </div>
+        <div class="martial-category-score">${Number.isFinite(categoryValue) ? fmt(categoryValue) : (typeof categoryValue === "boolean" ? (categoryValue?"Oui":"Non") : "—")}</div>
+        <div class="martial-category-compare">${Number.isFinite(categoryValue) ? renderComparison(categoryValue, member => member.skills?.martial?.[category.nom]) : ""}</div>
+      </div>
+      ${children.length ? `<div class="trace-table-wrap martial-weapons"><table class="trace-table skill-trace-table">
+        <thead><tr><th>Arme</th><th>Brut</th><th>Bonus génération</th><th>Modifs</th><th>Final</th><th>Équipe</th></tr></thead>
+        <tbody>${children.map(child => renderSkillRow(c,"martial",child.nom,c.skills.martial[child.nom],{labelClass:"martial-child",prefix:'<span class="branch">↳</span>'})).join("")}</tbody>
+      </table></div>` : ""}
+    </section>`;
+  }).join("");
+
+  const aptitudeRows = aptitudes
+    .filter(a => Object.prototype.hasOwnProperty.call(c.skills.martial,a.nom))
+    .map(a => renderSkillRow(c,"martial",a.nom,c.skills.martial[a.nom]))
+    .join("");
+
+  return `<details class="skill-group martial-group" open>
+    <summary><strong>Martial</strong><span>catégories + armes</span></summary>
+    <div class="martial-tree">${blocks}</div>
+    ${aptitudeRows ? `<div class="martial-aptitudes">
+      <h4>Aptitudes martiales</h4>
+      <div class="trace-table-wrap"><table class="trace-table skill-trace-table">
+        <thead><tr><th>Aptitude</th><th>Brut</th><th>Source</th><th>Modifs</th><th>Final</th><th>Équipe</th></tr></thead>
+        <tbody>${aptitudeRows}</tbody>
+      </table></div>
+    </div>` : ""}
   </details>`;
 }
 

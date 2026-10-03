@@ -377,6 +377,19 @@
         "ordre",
         "source"
       ]
+    },
+    {
+      "name": "binary-aptitude-grants",
+      "file": "binary-aptitude-grants.json",
+      "rows": 6,
+      "columns": [
+        "aptitude",
+        "domaine",
+        "peoples",
+        "ancestries",
+        "cultures",
+        "origins"
+      ]
     }
   ]
 }

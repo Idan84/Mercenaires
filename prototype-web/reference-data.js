@@ -15,7 +15,8 @@ const REFERENCE_FILES = {
   characteristics: "characteristics.json",
   formulaConstants: "formula-constants.json",
   weapons: "weapons.json",
-  binaryAptitudeGrants: "binary-aptitude-grants.json"
+  binaryAptitudeGrants: "binary-aptitude-grants.json",
+  alignmentGeneration: "alignment-generation.json"
 };
 
 async function loadReferenceData(base = "/data/") {

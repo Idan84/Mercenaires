@@ -28,7 +28,7 @@
       "key": "possible"
     }
   ],
-  "row_count": 231,
+  "row_count": 224,
   "rows": [
     {
       "association": "Clans des grandes steppes — Hors-la-loi",
@@ -1298,13 +1298,6 @@
       "possible": true
     },
     {
-      "association": "Esclaves des cités humaines — Érudit",
-      "culture": null,
-      "note": null,
-      "origine_sociale": "Érudit",
-      "possible": true
-    },
-    {
       "association": "Orcs des steppes — Noble",
       "culture": "Orcs des steppes",
       "note": null,
@@ -1333,36 +1326,8 @@
       "possible": true
     },
     {
-      "association": "Esclaves des cités humaines — Commerçant",
-      "culture": null,
-      "note": "Les esclaves n’y disposent pas d’un statut de commerçant indépendant.",
-      "origine_sociale": "Commerçant",
-      "possible": false
-    },
-    {
-      "association": "Esclaves des cités humaines — Soldat / Guerrier / Combattant",
-      "culture": null,
-      "note": null,
-      "origine_sociale": "Soldat / Guerrier / Combattant",
-      "possible": true
-    },
-    {
       "association": "Nains des montagnes — Paysan / Ouvrier",
       "culture": "Nains des montagnes",
-      "note": null,
-      "origine_sociale": "Paysan / Ouvrier",
-      "possible": true
-    },
-    {
-      "association": "Esclaves des cités humaines — Esclave",
-      "culture": null,
-      "note": null,
-      "origine_sociale": "Esclave",
-      "possible": true
-    },
-    {
-      "association": "Esclaves des cités humaines — Paysan / Ouvrier",
-      "culture": null,
       "note": null,
       "origine_sociale": "Paysan / Ouvrier",
       "possible": true
@@ -1384,13 +1349,6 @@
     {
       "association": "Gobelins des villes — Hors-la-loi",
       "culture": "Gobelins des villes",
-      "note": null,
-      "origine_sociale": "Hors-la-loi",
-      "possible": true
-    },
-    {
-      "association": "Esclaves des cités humaines — Hors-la-loi",
-      "culture": null,
       "note": null,
       "origine_sociale": "Hors-la-loi",
       "possible": true
@@ -1464,13 +1422,6 @@
       "note": null,
       "origine_sociale": "Commerçant",
       "possible": true
-    },
-    {
-      "association": "Esclaves des cités humaines — Noble",
-      "culture": null,
-      "note": "Le statut servile est incompatible avec une origine noble reconnue.",
-      "origine_sociale": "Noble",
-      "possible": false
     },
     {
       "association": "Nains des montagnes — Noble",

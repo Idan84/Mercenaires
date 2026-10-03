@@ -1,5 +1,6 @@
 [build]
-  publish = "prototype-web"
+  command = "rm -rf .netlify-dist && mkdir -p .netlify-dist && cp -R prototype-web/. .netlify-dist/ && mkdir -p .netlify-dist/data .netlify-dist/docs && cp -R data/reference/. .netlify-dist/data/ && cp -R docs/design/. .netlify-dist/docs/"
+  publish = ".netlify-dist"
 
 [[headers]]
   for = "/*"

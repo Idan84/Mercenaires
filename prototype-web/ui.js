@@ -569,7 +569,11 @@ function showCharacter(c) {
       <section class="character-overview">
         ${renderAvatar(c,{variant:"detail"})}
         <div class="character-overview-copy">
-          <p class="character-bio-placeholder"><strong>Biographie</strong><span>Le moteur de bio taggé viendra ici : courte, personnelle, parfois héroïque, souvent douteuse.</span></p>
+          <div class="character-bio-placeholder">
+            <strong>Biographie</strong>
+            <span>${esc(c.biography?.short||"Le moteur de bio taggé viendra ici : courte, personnelle, parfois héroïque, souvent douteuse.")}</span>
+            ${c.biography?.rumor?`<small>On raconte : ${esc(c.biography.rumor)}</small>`:""}
+          </div>
           <div class="identity-grid">
             <div class="metric"><small>Peuple</small><strong>${esc(c.people)}</strong></div>
             <div class="metric"><small>Culture</small><strong>${esc(c.culture)}</strong></div>

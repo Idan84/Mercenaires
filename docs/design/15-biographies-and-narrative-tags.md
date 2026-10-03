@@ -253,3 +253,9 @@ Pour éviter qu'un changement ultérieur du catalogue réécrive le passé d'un 
 - afficher `motto` ou le réserver aux écrans secondaires ?
 - le joueur découvre-t-il toute la bio dès la Taverne, ou seulement après recrutement ?
 - veut-on plus tard des biographies évolutives : une seconde ligne ajoutée après un exploit, une blessure, une trahison, etc. ?
+
+## Banque V0 structurée
+
+Une première banque de **30 packs** est ajoutée dans `data/reference/biography-packs.json` pour tester le ton et le futur matching. Elle contient des packs génériques et au moins deux propositions ciblées pour chacun des dix peuples.
+
+Cette banque est explicitement `proposal-v0` : elle sert de matériau de test et de direction éditoriale, pas de contenu verrouillé.

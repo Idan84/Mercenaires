@@ -48,11 +48,9 @@ assert.equal(audit.probabilities.ancestryLevelProbability, 1);
 assert.equal(audit.matrixCoverage.filter(x => x.status === "missing-target").length, 0);
 
 assert.equal(audit.pending.length, 0, `Gameplay generation still has pending rules: ${JSON.stringify(audit.pending)}`);
-assert.equal(audit.binaryPending.length, 6);
-for (const expected of [
-  "Vision nocturne","Vol","Empoisonnement des armes",
-  "Port d’armure légère","Port d’armure intermédiaire","Port d’armure lourde"
-]) assert.ok(audit.binaryPending.some(x => x.target === expected), `Missing binary aptitude pending config: ${expected}`);
+assert.equal(audit.binaryPending.length, 0);
+assert.equal(audit.binaryDisabled.length, 1);
+assert.equal(audit.binaryDisabled[0].target, "Vol");
 assert.equal(audit.matrixCoverage.filter(x => x.status === "active").length, 106);
 assert.equal(audit.matrixCoverage.filter(x => x.status === "blocked").length, 0);
 
@@ -61,6 +59,8 @@ for (const expected of ["Âge","Taille","Corpulence","Biographie courte"]) {
   assert.ok(cosmetics.has(expected), `Cosmetic field not surfaced: ${expected}`);
 }
 
+let sawNonMageArmorBonus = false;
+let sawHighMagicArmorPenalty = false;
 for (let i = 0; i < 1000; i++) {
   const c = generator.createMercenary({id:i+1});
   assert.ok(generator.culturesForPeople(c.people).includes(c.culture), `Invalid culture: ${c.people} / ${c.culture}`);
@@ -78,6 +78,31 @@ for (let i = 0; i < 1000; i++) {
   assert.equal(typeof c.skills.martial["Port d’armure légère"], "boolean");
   assert.equal(typeof c.skills.martial["Port d’armure intermédiaire"], "boolean");
   assert.equal(typeof c.skills.martial["Port d’armure lourde"], "boolean");
+  assert.equal(c.skills.physiology.Vol, false);
+
+  const light = c.generationTrace.skills["Port d’armure légère"];
+  const intermediate = c.generationTrace.skills["Port d’armure intermédiaire"];
+  const heavy = c.generationTrace.skills["Port d’armure lourde"];
+  if (heavy.magicMax <= 50) {
+    sawNonMageArmorBonus = true;
+    assert.equal(heavy.warriorBonus, 20);
+    assert.equal(intermediate.warriorBonus, 30);
+    assert.equal(light.warriorBonus, 50);
+  }
+  if (heavy.magicMax > 75) {
+    sawHighMagicArmorPenalty = true;
+    assert.equal(heavy.magicMultiplier, 0.8);
+    assert.equal(intermediate.magicMultiplier, 0.8);
+    assert.equal(light.magicMultiplier, 0.8);
+  }
+  if (c.skills.martial["Port d’armure lourde"]) {
+    assert.equal(c.skills.martial["Port d’armure intermédiaire"], true);
+    assert.equal(c.skills.martial["Port d’armure légère"], true);
+  }
+  if (c.skills.martial["Port d’armure intermédiaire"]) {
+    assert.equal(c.skills.martial["Port d’armure légère"], true);
+  }
+
   for (const key of ["oneHand","twoHands","ranged"]) {
     const pref = c.weaponPreferences[key];
     assert.ok(pref, `Missing weapon preference ${key}`);
@@ -85,6 +110,41 @@ for (let i = 0; i < 1000; i++) {
     assert.equal(pref.score, pref.categoryScore + pref.specificScore);
   }
 }
+assert.equal(sawNonMageArmorBonus, true);
+assert.equal(sawHighMagicArmorPenalty, true);
+
+const lowGenerator = createGenerator(reference, {
+  random: () => 0,
+  nameGenerator: (people,id) => `${people} ${id}`
+});
+
+const nightElf = lowGenerator.createMercenary({
+  id:1501,
+  forcedPeople:"Elfe",
+  forcedCulture:"Elfes noirs",
+  forcedOrigin:"Hors-la-loi",
+  forcedAscendance:null,
+  forcedAlignment:"Neutre"
+});
+assert.equal(nightElf.skills.physiology["Vision nocturne"], true);
+assert.equal(nightElf.skills.martial["Empoisonnement des armes"], true);
+assert.equal(nightElf.generationTrace.skills["Empoisonnement des armes"].probability, 70);
+assert.deepEqual(
+  nightElf.generationTrace.skills["Empoisonnement des armes"].sources.map(x => [x.kind,x.name,x.pp]),
+  [["culture","Elfes noirs",45],["origin","Hors-la-loi",25]]
+);
+
+const demonHuman = lowGenerator.createMercenary({
+  id:1502,
+  forcedPeople:"Humain",
+  forcedCulture:"Cités libres",
+  forcedOrigin:"Commerçant",
+  forcedAscendance:"Sang de démon",
+  forcedAscendanceLevel:1,
+  forcedAlignment:"Neutre"
+});
+assert.equal(demonHuman.skills.physiology["Vision nocturne"], true);
+assert.equal(demonHuman.generationTrace.skills["Vision nocturne"].sources[0].name, "Sang de démon");
 
 assert.throws(() => generator.createMercenary({
   id:2001,

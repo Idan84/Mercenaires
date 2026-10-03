@@ -181,5 +181,12 @@ En complément des données déjà prévues dans l’architecture :
 
 - Les règles §3 à §7 sont codées dans `game-core/mission-end.js`, sans dépendance à l’interface. Toutes les valeurs PLAYTEST sont des constantes `mission.*` de `data/reference/formula-constants.json` : on les ajuste sans toucher au code.
 - Le moteur de combat tient le compteur de dégâts cumulés de chaque personnage : les PV perdus à chaque coup reçu, y compris sous 0 PV. Cette part sous 0 ne change aucun résultat, puisqu’un blessé n’a pas de compteur Fatigue.
-- Mission Test : à la fin du combat, votre équipe passe la chaîne §7 et un bilan s’affiche (mort, blessé ou fatigué, durée d’indisponibilité, détail des jets). Ce bilan **n’est pas encore appliqué à la compagnie**.
+- Mission Test : à la fin du combat, votre équipe passe la chaîne §7 et un bilan s’affiche (mort, blessé ou fatigué, durée d’indisponibilité, détail des jets).
+- Ce bilan est **appliqué à la compagnie** (décisions Idan du 2026-10-03) :
+  - un mort quitte définitivement la compagnie ; s’il était Intendant, la compagnie n’a plus d’Intendant ;
+  - un blessé ou un fatigué reçoit un compteur de jours ; il ne peut pas partir en mission tant qu’il n’est pas écoulé ; chaque jour de `AdvanceTime` le diminue de 1, avant la Taverne ; la Mission Test n’ayant pas de trajet, le compteur part du jour du combat ;
+  - la prime de mission (§8) est payée à chaque survivant sous contrat ; l’or peut alors passer sous 0 ;
+  - la mort du capitaine met fin à la partie : **la sauvegarde est effacée**.
+- Outil de test, pas une règle : un bouton « +1 000 (test) » ajoute de l’or à la compagnie.
 - Choix d’implémentation à confirmer, en attendant les règles du §10 : la chaîne s’applique après une victoire comme après une défaite ; un mercenaire sorti de la carte en fuite la passe comme tout survivant, avec ses PV restants ; les ennemis ne la passent pas.
+- Encore ouvert : quitter la Mission Test en cours de combat (bouton « Quitter ») n’applique aucun bilan ; l’escouade initiale et le capitaine n’ont pas de contrat, donc pas de prime ; un trésor négatif n’a encore aucune conséquence ; les salaires journaliers ne sont pas encore payés.

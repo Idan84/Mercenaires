@@ -256,6 +256,6 @@ Pour éviter qu'un changement ultérieur du catalogue réécrive le passé d'un 
 
 ## Banque V0 structurée
 
-Une première banque de **30 packs** est ajoutée dans `data/reference/biography-packs.json` pour tester le ton et le futur matching. Elle contient des packs génériques et au moins deux propositions ciblées pour chacun des dix peuples.
+Une première banque de **30 packs** a été préparée puis transférée dans le catalogue canonique `data/reference/biographies.json` de la PR #34, qui contient aussi le moteur de matching. Cette page reste la source de design ; le référentiel d'exécution n'est pas dupliqué dans cette branche.
 
-Cette banque est explicitement `proposal-v0` : elle sert de matériau de test et de direction éditoriale, pas de contenu verrouillé.
+La banque est explicitement `proposal-v0` : elle sert de matériau de test et de direction éditoriale, pas de contenu verrouillé.

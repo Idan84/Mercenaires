@@ -75,29 +75,99 @@ Pour chaque arme candidate :
 L’arme possédant le score le plus élevé dans chaque famille devient l’arme de prédilection correspondante. Ce résultat sert d’indication sur la fiche et pourra guider la génération / attribution d’équipement initial.
 
 
-## Aptitudes binaires générées par identité
 
-Ces aptitudes valent uniquement **true / false**.
+
+## Aptitudes binaires V1
+
+Ces aptitudes valent uniquement **true / false** et n’entrent pas dans les maîtrises numériques.
 
 ### Physiologie
-- Vision nocturne
-- Vol
+
+#### Vision nocturne — automatique
+
+Vision nocturne vaut `true` si au moins une des conditions suivantes est satisfaite :
+
+- Culture : Elfes noirs
+- Culture : Gobelins des cavernes
+- Culture : Gnomes des cavernes
+- Culture : Reptiliens des marécages
+- Culture : Tribus des forêts anciennes
+- Ascendance : Sang de démon
+
+Aucun peuple entier ne possède Vision nocturne par défaut.
+
+#### Vol
+
+`Vol = false` en V1.
+
+La mécanique de vol est volontairement reportée : elle implique déplacement, vitesse, endurance, maniabilité et interactions de terrain supplémentaires.
 
 ### Martial
-- Empoisonnement des armes
-- Port d’armure légère
-- Port d’armure intermédiaire
-- Port d’armure lourde
 
-Le jeu n’utilise pas de classes. À la création, ces aptitudes sont donc déterminées par :
-- Peuple
-- Ascendance
-- Culture
-- Origine sociale
+#### Empoisonnement des armes
 
-Règle V1 proposée et retenue :
-`Aptitude = PeupleAccorde OR AscendanceAccorde OR CultureAccorde OR OrigineAccorde`
+Probabilité finale = somme des bonus identitaires en **points de pourcentage**, plafonnée entre 0 et 100 %, puis jet binaire.
 
-Il n’y a pas de jet aléatoire supplémentaire : l’aléatoire vient déjà du tirage de l’identité. Une aptitude peut aussi être acquise plus tard par les autres moyens prévus (entraînement, magie, mutation, enseignement, événement, etc.).
+Origine :
+- Hors-la-loi : +25 pp
 
-Les tables précises indiquant quelles identités accordent quelles aptitudes restent à renseigner.
+Cultures :
+- Elfes noirs : +45 pp
+- Reptiliens des marécages : +30 pp
+- Tribus de la jungle : +25 pp
+- Gobelins des cavernes : +20 pp
+- Reptiliens des cités-temples : +10 pp
+
+Les bonus se cumulent.
+
+### Ports d’armure
+
+Les chances identitaires se cumulent en points de pourcentage.
+
+#### Port d’armure légère
+- Soldat / Guerrier / Combattant : +90 pp
+- Noble : +20 pp
+- Orcs noirs : +25 pp
+- Nains des montagnes : +25 pp
+- Montagnes du Nord : +15 pp
+- Tribus nordiques : +15 pp
+- Ogres des cités humaines : +10 pp
+
+#### Port d’armure intermédiaire
+- Soldat / Guerrier / Combattant : +55 pp
+- Noble : +10 pp
+- Orcs noirs : +30 pp
+- Nains des montagnes : +35 pp
+- Montagnes du Nord : +20 pp
+- Tribus nordiques : +20 pp
+- Ogres des cités humaines : +15 pp
+
+#### Port d’armure lourde
+- Soldat / Guerrier / Combattant : +15 pp
+- Noble : +10 pp
+- Orcs noirs : +30 pp
+- Nains des montagnes : +40 pp
+- Montagnes du Nord : +25 pp
+- Tribus nordiques : +20 pp
+- Ogres des cités humaines : +15 pp
+
+### Profil magique et armures
+
+Après génération finale des écoles de magie :
+
+- si **aucune école de magie ne dépasse 50**, ajouter :
+  - +50 pp pour légère
+  - +30 pp pour intermédiaire
+  - +20 pp pour lourde
+- si **au moins une école dépasse 75**, multiplier la probabilité finale de chaque port d’armure par `0,8`.
+
+Le malus de 20 % est donc relatif, pas une soustraction de 20 points.
+
+La probabilité finale est plafonnée à 100 %.
+
+### Hiérarchie des ports
+
+- Port d’armure lourde ⇒ Port d’armure intermédiaire ⇒ Port d’armure légère
+- Port d’armure intermédiaire ⇒ Port d’armure légère
+
+Les trois jets peuvent être calculés, puis la hiérarchie est appliquée au résultat final.

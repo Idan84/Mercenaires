@@ -134,3 +134,14 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
 .cosmetic-item { background:#eef1f5; border-color:#ccd4df; }
 .cosmetic-item span { color:#5c6672; }
 .cosmetic-heading { margin-top:14px; }
+
+.weapon-preferences { margin-top: 20px; padding-top: 18px; border-top: 1px solid #e6dfd5; }
+.section-title-row.compact { margin-bottom: 10px; align-items: flex-end; }
+.section-title-row.compact h3 { margin: 0; }
+.preference-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 10px; }
+.preference-card { position: relative; border: 1px solid #ddd5ca; background: #f8f5f0; border-radius: 11px; padding: 12px 13px; min-height: 104px; }
+.preference-card small { display: block; text-transform: uppercase; letter-spacing: .06em; font-size: .66rem; color: #82786e; margin-bottom: 4px; }
+.preference-card strong { display: block; font-size: 1.05rem; color: #6d2b22; margin-right: 54px; }
+.preference-card span { display: block; font-size: .72rem; color: #786f65; margin-top: 7px; line-height: 1.35; }
+.preference-card b { position: absolute; right: 12px; top: 13px; font-size: 1.25rem; font-variant-numeric: tabular-nums; }
+@media (max-width: 700px) { .preference-grid { grid-template-columns: 1fr; } }

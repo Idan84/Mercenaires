@@ -39,6 +39,7 @@ function renderCompanyMeta(){
   const c=game.campaign;
   if(!c) return;
   $("company-gold").textContent=fmt(c.company.gold);
+  $("company-gold").classList.toggle("negative",c.company.gold<0);
   $("company-day").textContent=c.day;
   $("company-dorm").textContent=c.company.roster.length+" / "+c.company.camp.dormitoryCapacity;
 }
@@ -96,15 +97,27 @@ function renderTavern(){
   $("tavern-log").innerHTML=(game.tavernLog||[]).map(x=>`<div class="combat-log ${x.kind}"><small>Jour ${x.day}</small> ${esc(x.message)}</div>`).join("");
 }
 
+// Outil de test (pas une règle du jeu) : ajoute de l'or pour tester les paiements (demande d'Idan).
+const TEST_GOLD=1000;
+
+function addTestGold(){
+  if(!game.campaign) return;
+  game.campaign.company.gold+=TEST_GOLD;
+  tavernLog("Outil de test : +"+TEST_GOLD+" PO.","gear");
+  saveGame();
+  renderTavern();
+}
+
 function advanceTavernDay(){
   if(!game.campaign) return;
   const [report]=campaignRules().advanceTime(game.campaign,1);
+  for(const r of report.recovered) tavernLog(r.mercenary.name+(r.kind==="wounded"?" est guéri de ses blessures.":" est reposé."),"turn");
   const gone=report.tavern.departures.map(d=>d.candidate.mercenary.name);
   const arrived=report.tavern.arrivals.map(a=>a.mercenary.name);
   tavernLog(gone.length?"Engagés ailleurs pendant la nuit : "+gone.join(", ")+".":"Personne n’a été engagé ailleurs cette nuit.",gone.length?"bad":"info");
   if(arrived.length) tavernLog("Nouveaux candidats : "+arrived.join(", ")+".","turn");
   saveGame();
-  renderTavern();
+  renderGame();
   if(game.tavernSelected) renderInterview();
 }
 
@@ -244,6 +257,7 @@ function signTavernCandidate(){
 
 function initializeTavernUi(){
   $("tavern-next-day-btn").addEventListener("click",advanceTavernDay);
+  $("test-gold-btn").addEventListener("click",addTestGold);
   $("tavern-intendant").addEventListener("change",assignTavernIntendant);
   $("close-tavern-dialog").addEventListener("click",()=>{ game.tavernSelected=null; $("tavern-dialog").close(); });
   $("tavern-candidates").addEventListener("click",e=>{

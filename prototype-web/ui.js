@@ -11,7 +11,7 @@ function characterRow(c, hero=false) {
   return `<div class="${hero ? "hero-card":"character-row"}">
     <div class="character-cell character-identity-cell">
       ${renderAvatar(c,{variant:"compact",kind:"portrait"})}
-      <div><small>${esc(c.role)}</small><button class="character-link" data-character-id="${c.id}">${esc(c.name)}</button></div>
+      <div><small>${esc(c.role)}</small><button class="character-link" data-character-id="${c.id}">${esc(c.name)}</button>${c.recovery ? `<span class="recovery-badge ${c.recovery.kind}">${esc(recoveryLabel(c))}</span>` : ""}</div>
     </div>
     <div class="character-cell"><small>Peuple</small><strong>${esc(c.people)}</strong></div>
     <div class="character-cell"><small>Ascendance</small><strong>${esc(asc)}</strong></div>
@@ -578,6 +578,7 @@ function updateOriginSelect() {
 }
 
 function openSetup() {
+  $("game-over-panel").classList.add("hidden");
   $("setup-panel").classList.remove("hidden");
   $("game-panel").classList.add("hidden");
 }

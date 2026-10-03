@@ -8,8 +8,14 @@
   root.MercenairesCampaign=api;
 })(typeof globalThis!=="undefined"?globalThis:this,function(){
   // Sauvegarde : l'état de partie complet, sérialisé en JSON avec un format et une version.
+  // La trace de génération des mercenaires (détail de calcul pour le Design Lab, ~85 % du poids)
+  // n'est pas sauvegardée : un mercenaire passe d'environ 36 Ko à 5 Ko.
   const SAVE_FORMAT="mercenaires-save";
   const SAVE_VERSION=1;
+
+  function withoutGenerationTrace(key,value){
+    return key==="generationTrace"?undefined:value;
+  }
 
   function serializeCampaign(state,extra={}){
     return JSON.stringify({
@@ -20,7 +26,7 @@
       company:state.company.name,
       state,
       extra
-    });
+    },withoutGenerationTrace);
   }
 
   function restoreCampaign(text){

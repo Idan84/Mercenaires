@@ -216,6 +216,29 @@ Le salaire de base est une **rémunération journalière**, cohérente avec la c
 
 Règle retenue pour les primes : **la prime de mission est payée au mercenaire s’il revient**.
 
+### Prime de mission demandée — PLAYTEST V1
+
+La prime contractuelle de mission est distincte du salaire journalier. Elle représente notamment la prime de risque : **plus le Courage est élevé, plus cette prime baisse**.
+
+\[
+FacteurCouragePrime = Clamp(1.5 - Courage/100,\ 0.5,\ 1.5)
+\]
+
+\[
+FacteurPretentionsPrime = 1 + \frac{PretentionsSalariales - 35}{200}
+\]
+
+\[
+PrimeMissionDemandee = Arrondi(
+3 \times SalaireDemande
+\times FacteurCouragePrime
+\times FacteurPretentionsPrime)
+\]
+
+Le coefficient \(3\) est une constante d'échelle de playtest. Le salaire demandé transmet déjà indirectement la Réputation, l'Intelligence et les Prétentions salariales à la prime.
+
+La négociation conjointe **Salaire + Prime de mission** est définie dans [Taverne — recrutement V1](/design/#doc=14-tavern-recruitment.md).
+
 ## 7 — Politique des blessés — « T’es pas à la Sécu ici »
 
 La compagnie pourra définir un **taux de salaire des blessés de 0 à 100 %**.

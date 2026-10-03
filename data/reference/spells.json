@@ -1,0 +1,1096 @@
+{
+  "schema_version": 1,
+  "name": "spells",
+  "source": {
+    "type": "authored",
+    "design_path": "docs/design/12-magic.md",
+    "created_on": "2026-10-04",
+    "status": "proposal-v0",
+    "note": "id est la clé stable de sauvegarde ; nom est purement affiché/localisable. type_degats utilise le code stable de damage-types.json."
+  },
+  "columns": [
+    "id",
+    "nom",
+    "ecoles",
+    "palier",
+    "cible",
+    "forme",
+    "portee",
+    "duree",
+    "type_degats",
+    "effet",
+    "ton",
+    "notes"
+  ],
+  "row_count": 66,
+  "rows": [
+    {
+      "nom": "Double trompeur",
+      "ecoles": [
+        "Illusion"
+      ],
+      "palier": "Novice",
+      "cible": "soi",
+      "forme": "leurre",
+      "portee": "courte",
+      "duree": "quelques tours",
+      "type_degats": null,
+      "effet": "Crée un double susceptible d'absorber une erreur de ciblage.",
+      "ton": "Deux mercenaires pour le prix d'un, dont un ne réclame pas de salaire.",
+      "notes": "Test futur Perception / Intelligence.",
+      "id": "illusion.double"
+    },
+    {
+      "nom": "Voile trouble",
+      "ecoles": [
+        "Illusion"
+      ],
+      "palier": "Novice",
+      "cible": "allié",
+      "forme": "protection",
+      "portee": "courte",
+      "duree": "quelques tours",
+      "type_degats": null,
+      "effet": "Rend une cible plus difficile à identifier et viser.",
+      "ton": "À force de flouter les détails, même les dettes deviennent abstraites.",
+      "notes": "Défense contre attaques ciblées.",
+      "id": "illusion.blur"
+    },
+    {
+      "nom": "Faux ordre",
+      "ecoles": [
+        "Illusion"
+      ],
+      "palier": "Adepte",
+      "cible": "ennemi",
+      "forme": "contrôle",
+      "portee": "moyenne",
+      "duree": "instantané",
+      "type_degats": null,
+      "effet": "Fait croire brièvement à une cible qu'un ordre vient d'un allié.",
+      "ton": "La hiérarchie est surtout une question de confiance mal placée.",
+      "notes": "Interaction future avec Intelligence / Volonté.",
+      "id": "illusion.false_order"
+    },
+    {
+      "nom": "Mur présent",
+      "ecoles": [
+        "Illusion"
+      ],
+      "palier": "Adepte",
+      "cible": "case",
+      "forme": "terrain illusoire",
+      "portee": "moyenne",
+      "duree": "quelques tours",
+      "type_degats": null,
+      "effet": "Fait croire qu'une zone est bloquée ou protégée.",
+      "ton": "Ce mur respecte toutes les normes, sauf l'existence.",
+      "notes": "IA ennemie / pathfinding à tester.",
+      "id": "illusion.fake_wall"
+    },
+    {
+      "nom": "Panique imaginaire",
+      "ecoles": [
+        "Illusion"
+      ],
+      "palier": "Expert",
+      "cible": "ennemi",
+      "forme": "psychologie",
+      "portee": "moyenne",
+      "duree": "quelques tours",
+      "type_degats": null,
+      "effet": "Projette une peur crédible dans l'esprit d'une cible.",
+      "ton": "Le cerveau fournit lui-même les meilleurs monstres.",
+      "notes": "Doit dialoguer avec Courage.",
+      "id": "illusion.fear"
+    },
+    {
+      "nom": "Disparition",
+      "ecoles": [
+        "Illusion"
+      ],
+      "palier": "Maître",
+      "cible": "soi",
+      "forme": "camouflage",
+      "portee": "soi",
+      "duree": "quelques tours",
+      "type_degats": null,
+      "effet": "Masque presque complètement le lanceur jusqu'à détection ou action hostile.",
+      "ton": "Partir sans payer devient enfin une école de magie.",
+      "notes": "Base future du camouflage magique.",
+      "id": "illusion.vanish"
+    },
+    {
+      "nom": "Corbeaux éclaireurs",
+      "ecoles": [
+        "Invocation"
+      ],
+      "palier": "Novice",
+      "cible": "zone",
+      "forme": "invocation",
+      "portee": "longue",
+      "duree": "quelques tours",
+      "type_degats": null,
+      "effet": "Invoque des corbeaux qui révèlent une portion de carte.",
+      "ton": "Ils voient tout et jugent énormément.",
+      "notes": "Brouillard de guerre.",
+      "id": "summoning.crows"
+    },
+    {
+      "nom": "Familier",
+      "ecoles": [
+        "Invocation"
+      ],
+      "palier": "Novice",
+      "cible": "soi",
+      "forme": "invocation",
+      "portee": "soi",
+      "duree": "tout le combat",
+      "type_degats": null,
+      "effet": "Invoque une petite créature utilitaire aux capacités limitées.",
+      "ton": "Toujours moins cher qu'un apprenti et souvent plus ponctuel.",
+      "notes": "Profil du familier à définir.",
+      "id": "summoning.familiar"
+    },
+    {
+      "nom": "Élémentaire mineur",
+      "ecoles": [
+        "Invocation"
+      ],
+      "palier": "Adepte",
+      "cible": "case",
+      "forme": "invocation",
+      "portee": "moyenne",
+      "duree": "quelques tours",
+      "type_degats": null,
+      "effet": "Invoque une créature élémentaire simple.",
+      "ton": "Petit par la taille, pas nécessairement par les dégâts matériels.",
+      "notes": "Le type peut dépendre d'une seconde école.",
+      "id": "summoning.minor_elemental"
+    },
+    {
+      "nom": "Bourbier",
+      "ecoles": [
+        "Invocation"
+      ],
+      "palier": "Adepte",
+      "cible": "zone",
+      "forme": "terrain persistant",
+      "portee": "moyenne",
+      "duree": "quelques tours",
+      "type_degats": null,
+      "effet": "Fait apparaître une zone boueuse qui ralentit ou retient.",
+      "ton": "Très efficace contre les bottes chères.",
+      "notes": "Peut retenir un allié en fuite.",
+      "id": "summoning.quagmire"
+    },
+    {
+      "nom": "Porte fugace",
+      "ecoles": [
+        "Invocation"
+      ],
+      "palier": "Expert",
+      "cible": "case",
+      "forme": "téléportation",
+      "portee": "moyenne",
+      "duree": "instantané",
+      "type_degats": null,
+      "effet": "Ouvre brièvement un passage entre deux positions visibles.",
+      "ton": "Les règles de bagages restent à préciser.",
+      "notes": "Déplacement tactique, pas voyage stratégique.",
+      "id": "summoning.short_gate"
+    },
+    {
+      "nom": "Élémentaire majeur",
+      "ecoles": [
+        "Invocation"
+      ],
+      "palier": "Maître",
+      "cible": "case",
+      "forme": "invocation",
+      "portee": "moyenne",
+      "duree": "tout le combat",
+      "type_degats": null,
+      "effet": "Invoque une créature élémentaire de combat puissante.",
+      "ton": "On recommande de prévenir le propriétaire du bâtiment.",
+      "notes": "Coût et contrôle à définir.",
+      "id": "summoning.major_elemental"
+    },
+    {
+      "nom": "Premiers soins",
+      "ecoles": [
+        "Vie"
+      ],
+      "palier": "Novice",
+      "cible": "allié",
+      "forme": "soin",
+      "portee": "courte",
+      "duree": "instantané",
+      "type_degats": null,
+      "effet": "Restaure une petite quantité de vitalité.",
+      "ton": "Ne remplace ni un médecin ni une bonne assurance.",
+      "notes": "Soin monocible fiable.",
+      "id": "life.first_aid"
+    },
+    {
+      "nom": "Suture magique",
+      "ecoles": [
+        "Vie"
+      ],
+      "palier": "Novice",
+      "cible": "allié",
+      "forme": "soin",
+      "portee": "courte",
+      "duree": "instantané",
+      "type_degats": null,
+      "effet": "Referme rapidement une blessure récente.",
+      "ton": "Les points sont invisibles, la douleur beaucoup moins.",
+      "notes": "Bon sur cible blessée.",
+      "id": "life.magic_suture"
+    },
+    {
+      "nom": "Régénération",
+      "ecoles": [
+        "Vie"
+      ],
+      "palier": "Adepte",
+      "cible": "allié",
+      "forme": "soin sur durée",
+      "portee": "courte",
+      "duree": "quelques tours",
+      "type_degats": null,
+      "effet": "Restaure progressivement des PV.",
+      "ton": "Le corps travaille, le mage prend le crédit.",
+      "notes": "Ne doit pas effacer damageTaken.",
+      "id": "life.regeneration"
+    },
+    {
+      "nom": "Purge",
+      "ecoles": [
+        "Vie"
+      ],
+      "palier": "Adepte",
+      "cible": "allié",
+      "forme": "dissipation",
+      "portee": "courte",
+      "duree": "instantané",
+      "type_degats": null,
+      "effet": "Retire une altération biologique compatible.",
+      "ton": "Ce qui sort du patient n'est pas contractuellement décrit.",
+      "notes": "Poison / maladie / effets futurs.",
+      "id": "life.purge"
+    },
+    {
+      "nom": "Soins de masse",
+      "ecoles": [
+        "Vie"
+      ],
+      "palier": "Expert",
+      "cible": "zone",
+      "forme": "soin de zone",
+      "portee": "moyenne",
+      "duree": "instantané",
+      "type_degats": null,
+      "effet": "Soigne plusieurs alliés proches.",
+      "ton": "La médecine devient rentable à partir de trois patients.",
+      "notes": "Cible alliés uniquement.",
+      "id": "life.mass_heal"
+    },
+    {
+      "nom": "Refus de mourir",
+      "ecoles": [
+        "Vie"
+      ],
+      "palier": "Maître",
+      "cible": "allié",
+      "forme": "protection",
+      "portee": "courte",
+      "duree": "quelques tours",
+      "type_degats": null,
+      "effet": "Empêche temporairement une cible de succomber à une blessure fatale.",
+      "ton": "La mort peut patienter, elle a l'habitude.",
+      "notes": "Interaction avec PV négatifs à définir.",
+      "id": "life.refuse_death"
+    },
+    {
+      "nom": "Nécrose",
+      "ecoles": [
+        "Nécromancie"
+      ],
+      "palier": "Novice",
+      "cible": "ennemi",
+      "forme": "attaque",
+      "portee": "contact",
+      "duree": "instantané",
+      "type_degats": null,
+      "effet": "Détruit localement les tissus d'une cible vivante.",
+      "ton": "Une solution simple à un problème qui l'était aussi.",
+      "notes": "Type de dégâts futur à définir.",
+      "id": "necro.necrosis"
+    },
+    {
+      "nom": "Toucher flétrissant",
+      "ecoles": [
+        "Nécromancie"
+      ],
+      "palier": "Novice",
+      "cible": "ennemi",
+      "forme": "debuff",
+      "portee": "contact",
+      "duree": "quelques tours",
+      "type_degats": null,
+      "effet": "Réduit temporairement Force ou Endurance.",
+      "ton": "On appelle cela un vieillissement accéléré pour rester polis.",
+      "notes": "Debuff physique.",
+      "id": "necro.wither"
+    },
+    {
+      "nom": "Zombification",
+      "ecoles": [
+        "Nécromancie"
+      ],
+      "palier": "Adepte",
+      "cible": "cadavre",
+      "forme": "invocation",
+      "portee": "courte",
+      "duree": "tout le combat",
+      "type_degats": null,
+      "effet": "Relève un cadavre sous forme de zombie simple.",
+      "ton": "Le contrat de travail est réputé tacitement accepté.",
+      "notes": "Nécessite un cadavre.",
+      "id": "necro.zombify"
+    },
+    {
+      "nom": "Main du tombeau",
+      "ecoles": [
+        "Nécromancie"
+      ],
+      "palier": "Adepte",
+      "cible": "case",
+      "forme": "contrôle",
+      "portee": "moyenne",
+      "duree": "quelques tours",
+      "type_degats": null,
+      "effet": "Des mains surgissent du sol pour immobiliser une cible.",
+      "ton": "Le terrain devient soudain très attachant.",
+      "notes": "Contrôle de case.",
+      "id": "necro.grave_hand"
+    },
+    {
+      "nom": "Vol de vigueur",
+      "ecoles": [
+        "Nécromancie"
+      ],
+      "palier": "Expert",
+      "cible": "ennemi",
+      "forme": "drain",
+      "portee": "courte",
+      "duree": "instantané",
+      "type_degats": null,
+      "effet": "Blesse une cible et transfère une partie de sa vigueur au lanceur.",
+      "ton": "Un transfert de ressources parfaitement vertical.",
+      "notes": "Dégâts + soin à équilibrer.",
+      "id": "necro.vigor_drain"
+    },
+    {
+      "nom": "Spectre",
+      "ecoles": [
+        "Nécromancie"
+      ],
+      "palier": "Maître",
+      "cible": "case",
+      "forme": "invocation",
+      "portee": "moyenne",
+      "duree": "quelques tours",
+      "type_degats": null,
+      "effet": "Invoque une entité spectrale difficile à atteindre physiquement.",
+      "ton": "Le service après-vie décline toute responsabilité.",
+      "notes": "Résistances spécifiques à définir.",
+      "id": "necro.specter"
+    },
+    {
+      "nom": "Flèche de feu",
+      "ecoles": [
+        "Feu"
+      ],
+      "palier": "Novice",
+      "cible": "ennemi",
+      "forme": "monocible",
+      "portee": "moyenne",
+      "duree": "instantané",
+      "type_degats": "burning",
+      "effet": "Projette une flèche de feu sur une cible.",
+      "ton": "Classique, fiable, inflammable.",
+      "notes": "Projectile simple.",
+      "id": "fire.fire_arrow"
+    },
+    {
+      "nom": "Arme enflammée",
+      "ecoles": [
+        "Feu"
+      ],
+      "palier": "Novice",
+      "cible": "allié",
+      "forme": "enchantement d'arme",
+      "portee": "courte",
+      "duree": "quelques tours",
+      "type_degats": "burning",
+      "effet": "Ajoute une composante brûlante à une arme.",
+      "ton": "Ne convient pas aux manches en bois bon marché.",
+      "notes": "Buff arme.",
+      "id": "fire.flaming_weapon"
+    },
+    {
+      "nom": "Boule de feu",
+      "ecoles": [
+        "Feu"
+      ],
+      "palier": "Adepte",
+      "cible": "zone",
+      "forme": "attaque de zone",
+      "portee": "moyenne",
+      "duree": "instantané",
+      "type_degats": "burning",
+      "effet": "Explose sur une zone et brûle plusieurs cibles.",
+      "ton": "La diplomatie avec rayon d'action.",
+      "notes": "Cas test zone.",
+      "id": "fire.fireball"
+    },
+    {
+      "nom": "Mur de feu",
+      "ecoles": [
+        "Feu"
+      ],
+      "palier": "Adepte",
+      "cible": "ligne",
+      "forme": "terrain persistant",
+      "portee": "moyenne",
+      "duree": "quelques tours",
+      "type_degats": "burning",
+      "effet": "Crée une ligne de flammes persistante.",
+      "ton": "Une frontière nette, chaude et juridiquement contestable.",
+      "notes": "Contrôle terrain.",
+      "id": "fire.fire_wall"
+    },
+    {
+      "nom": "Flaque de magma",
+      "ecoles": [
+        "Feu"
+      ],
+      "palier": "Expert",
+      "cible": "zone",
+      "forme": "terrain persistant",
+      "portee": "moyenne",
+      "duree": "quelques tours",
+      "type_degats": "burning",
+      "effet": "Transforme temporairement une zone en terrain extrêmement dangereux.",
+      "ton": "Le propriétaire récupère rarement sa caution.",
+      "notes": "Terrain très dissuasif.",
+      "id": "fire.magma_pool"
+    },
+    {
+      "nom": "Combustion",
+      "ecoles": [
+        "Feu"
+      ],
+      "palier": "Maître",
+      "cible": "ennemi",
+      "forme": "exécution",
+      "portee": "moyenne",
+      "duree": "instantané",
+      "type_degats": "burning",
+      "effet": "Déclenche brutalement la chaleur accumulée sur une cible.",
+      "ton": "Une conclusion thermique.",
+      "notes": "Synergie avec cible déjà brûlée.",
+      "id": "fire.combustion"
+    },
+    {
+      "nom": "Éclair",
+      "ecoles": [
+        "Foudre"
+      ],
+      "palier": "Novice",
+      "cible": "ennemi",
+      "forme": "monocible",
+      "portee": "moyenne",
+      "duree": "instantané",
+      "type_degats": "lightning",
+      "effet": "Frappe une cible d'une décharge électrique.",
+      "ton": "Rapide, lumineux, mauvais pour les coiffures.",
+      "notes": "Projectile / rayon simple.",
+      "id": "lightning.bolt"
+    },
+    {
+      "nom": "Décharge",
+      "ecoles": [
+        "Foudre"
+      ],
+      "palier": "Novice",
+      "cible": "ennemi",
+      "forme": "attaque de contact",
+      "portee": "contact",
+      "duree": "instantané",
+      "type_degats": "lightning",
+      "effet": "Libère une forte décharge au contact.",
+      "ton": "Le contact humain reste important.",
+      "notes": "CAC magique.",
+      "id": "lightning.shock"
+    },
+    {
+      "nom": "Arme foudroyante",
+      "ecoles": [
+        "Foudre"
+      ],
+      "palier": "Adepte",
+      "cible": "allié",
+      "forme": "enchantement d'arme",
+      "portee": "courte",
+      "duree": "quelques tours",
+      "type_degats": "lightning",
+      "effet": "Charge une arme en électricité.",
+      "ton": "Les poignées isolantes sont recommandées après coup.",
+      "notes": "Buff arme.",
+      "id": "lightning.weapon"
+    },
+    {
+      "nom": "Éclair rebondissant",
+      "ecoles": [
+        "Foudre"
+      ],
+      "palier": "Adepte",
+      "cible": "ennemis",
+      "forme": "rebond",
+      "portee": "moyenne",
+      "duree": "instantané",
+      "type_degats": "lightning",
+      "effet": "Saute entre plusieurs cibles assez proches.",
+      "ton": "La foudre aussi aime le travail d'équipe.",
+      "notes": "Cas test multi-cible.",
+      "id": "lightning.chain"
+    },
+    {
+      "nom": "Magnétisme brutal",
+      "ecoles": [
+        "Foudre"
+      ],
+      "palier": "Expert",
+      "cible": "ennemi",
+      "forme": "déplacement forcé",
+      "portee": "moyenne",
+      "duree": "instantané",
+      "type_degats": null,
+      "effet": "Attire ou repousse fortement une cible équipée de métal.",
+      "ton": "L'armure lourde révèle ses inconvénients pédagogiques.",
+      "notes": "Dépend de l'équipement.",
+      "id": "lightning.magnetism"
+    },
+    {
+      "nom": "Orage local",
+      "ecoles": [
+        "Foudre"
+      ],
+      "palier": "Maître",
+      "cible": "zone",
+      "forme": "terrain persistant",
+      "portee": "longue",
+      "duree": "quelques tours",
+      "type_degats": "lightning",
+      "effet": "Maintient une zone sous des frappes électriques répétées.",
+      "ton": "Prévisions : très mauvais temps sur six hexagones.",
+      "notes": "Zone persistante.",
+      "id": "lightning.storm"
+    },
+    {
+      "nom": "Carreau de glace",
+      "ecoles": [
+        "Eau"
+      ],
+      "palier": "Novice",
+      "cible": "ennemi",
+      "forme": "monocible",
+      "portee": "moyenne",
+      "duree": "instantané",
+      "type_degats": "freezing",
+      "effet": "Projette un carreau de glace compact.",
+      "ton": "Un glaçon qui a fait des études.",
+      "notes": "Projectile simple.",
+      "id": "water.ice_bolt"
+    },
+    {
+      "nom": "Armure climatisée",
+      "ecoles": [
+        "Eau"
+      ],
+      "palier": "Novice",
+      "cible": "allié",
+      "forme": "protection",
+      "portee": "courte",
+      "duree": "quelques tours",
+      "type_degats": null,
+      "effet": "Refroidit et protège une cible contre la chaleur.",
+      "ton": "Le confort thermique rencontre la guerre.",
+      "notes": "Protection feu.",
+      "id": "water.cool_armor"
+    },
+    {
+      "nom": "Bloc de glace",
+      "ecoles": [
+        "Eau"
+      ],
+      "palier": "Adepte",
+      "cible": "case",
+      "forme": "obstacle",
+      "portee": "moyenne",
+      "duree": "quelques tours",
+      "type_degats": null,
+      "effet": "Crée un bloc de glace servant de couverture destructible.",
+      "ton": "Mobilier tactique saisonnier.",
+      "notes": "Cas test obstacle.",
+      "id": "water.ice_block"
+    },
+    {
+      "nom": "Sol gelé",
+      "ecoles": [
+        "Eau"
+      ],
+      "palier": "Adepte",
+      "cible": "zone",
+      "forme": "terrain persistant",
+      "portee": "moyenne",
+      "duree": "quelques tours",
+      "type_degats": "freezing",
+      "effet": "Gèle le sol et gêne les déplacements.",
+      "ton": "La dignité tombe souvent avant les combattants.",
+      "notes": "Terrain mobilité.",
+      "id": "water.frozen_ground"
+    },
+    {
+      "nom": "Brume froide",
+      "ecoles": [
+        "Eau"
+      ],
+      "palier": "Expert",
+      "cible": "zone",
+      "forme": "aura",
+      "portee": "moyenne",
+      "duree": "quelques tours",
+      "type_degats": "freezing",
+      "effet": "Crée une brume froide qui gêne perception et mobilité.",
+      "ton": "On ne voit rien, mais on le voit très froidement.",
+      "notes": "Interaction Perception.",
+      "id": "water.cold_mist"
+    },
+    {
+      "nom": "Prison de glace",
+      "ecoles": [
+        "Eau"
+      ],
+      "palier": "Maître",
+      "cible": "ennemi",
+      "forme": "contrôle",
+      "portee": "moyenne",
+      "duree": "quelques tours",
+      "type_degats": "freezing",
+      "effet": "Enferme une cible dans un bloc destructible.",
+      "ton": "Une cellule avec vue sur absolument rien.",
+      "notes": "Contrôle fort, bloc destructible.",
+      "id": "water.ice_prison"
+    },
+    {
+      "nom": "Main invisible",
+      "ecoles": [
+        "Télékinésie"
+      ],
+      "palier": "Novice",
+      "cible": "objet ou cible",
+      "forme": "déplacement",
+      "portee": "moyenne",
+      "duree": "instantané",
+      "type_degats": null,
+      "effet": "Déplace sans contact un objet ou une cible légère.",
+      "ton": "Enfin quelqu'un pour ramasser ce qui tombe.",
+      "notes": "Utilitaire / contrôle léger.",
+      "id": "telekinesis.invisible_hand"
+    },
+    {
+      "nom": "Attraction",
+      "ecoles": [
+        "Télékinésie"
+      ],
+      "palier": "Novice",
+      "cible": "ennemi",
+      "forme": "déplacement forcé",
+      "portee": "moyenne",
+      "duree": "instantané",
+      "type_degats": null,
+      "effet": "Tire une cible vers le lanceur.",
+      "ton": "Le rapprochement est obligatoire.",
+      "notes": "Contrôle position.",
+      "id": "telekinesis.pull"
+    },
+    {
+      "nom": "Éjection",
+      "ecoles": [
+        "Télékinésie"
+      ],
+      "palier": "Adepte",
+      "cible": "ennemi",
+      "forme": "déplacement forcé",
+      "portee": "moyenne",
+      "duree": "instantané",
+      "type_degats": "blunt",
+      "effet": "Repousse violemment une cible et peut provoquer une collision.",
+      "ton": "La sortie est par là.",
+      "notes": "Collision à définir.",
+      "id": "telekinesis.push"
+    },
+    {
+      "nom": "Lancer d'arme",
+      "ecoles": [
+        "Télékinésie"
+      ],
+      "palier": "Adepte",
+      "cible": "ennemi",
+      "forme": "attaque",
+      "portee": "moyenne",
+      "duree": "instantané",
+      "type_degats": null,
+      "effet": "Projette l'arme équipée puis la ramène.",
+      "ton": "Parce qu'une hache mérite parfois de voyager.",
+      "notes": "Utilise l'arme actuelle.",
+      "id": "telekinesis.weapon_throw"
+    },
+    {
+      "nom": "Bouclier cinétique",
+      "ecoles": [
+        "Télékinésie"
+      ],
+      "palier": "Expert",
+      "cible": "allié",
+      "forme": "protection",
+      "portee": "courte",
+      "duree": "quelques tours",
+      "type_degats": null,
+      "effet": "Dévie une partie des projectiles arrivants.",
+      "ton": "Les flèches sont priées de contourner.",
+      "notes": "Défense distance.",
+      "id": "telekinesis.kinetic_shield"
+    },
+    {
+      "nom": "Écrasement",
+      "ecoles": [
+        "Télékinésie"
+      ],
+      "palier": "Maître",
+      "cible": "ennemi",
+      "forme": "contrôle",
+      "portee": "moyenne",
+      "duree": "instantané",
+      "type_degats": "blunt",
+      "effet": "Plaque brutalement une cible au sol ou contre un obstacle.",
+      "ton": "La gravité déteste la concurrence.",
+      "notes": "Prone / collision.",
+      "id": "telekinesis.crush"
+    },
+    {
+      "nom": "Célérité",
+      "ecoles": [
+        "Transmutation"
+      ],
+      "palier": "Novice",
+      "cible": "allié",
+      "forme": "buff",
+      "portee": "courte",
+      "duree": "quelques tours",
+      "type_degats": null,
+      "effet": "Augmente temporairement la Vitesse.",
+      "ton": "Le temps ne ralentit pas ; vous faites juste plus de bêtises dedans.",
+      "notes": "Buff Vitesse.",
+      "id": "transmutation.haste"
+    },
+    {
+      "nom": "Peau de pierre",
+      "ecoles": [
+        "Transmutation"
+      ],
+      "palier": "Novice",
+      "cible": "allié",
+      "forme": "buff",
+      "portee": "courte",
+      "duree": "quelques tours",
+      "type_degats": null,
+      "effet": "Durcit le corps et augmente sa résistance.",
+      "ton": "Très solide, moins agréable pour les câlins.",
+      "notes": "Buff Endurance / armure.",
+      "id": "transmutation.stone_skin"
+    },
+    {
+      "nom": "Force démoniaque",
+      "ecoles": [
+        "Transmutation"
+      ],
+      "palier": "Adepte",
+      "cible": "allié",
+      "forme": "buff",
+      "portee": "courte",
+      "duree": "quelques tours",
+      "type_degats": null,
+      "effet": "Augmente fortement la Force.",
+      "ton": "Le nom du sort n'engage aucun démon contractuellement.",
+      "notes": "Buff Force.",
+      "id": "transmutation.demonic_strength"
+    },
+    {
+      "nom": "Chair de plume",
+      "ecoles": [
+        "Transmutation"
+      ],
+      "palier": "Adepte",
+      "cible": "allié",
+      "forme": "buff",
+      "portee": "courte",
+      "duree": "quelques tours",
+      "type_degats": null,
+      "effet": "Allège fortement le corps d'une cible.",
+      "ton": "Idéal pour tomber doucement et être poussé très loin.",
+      "notes": "Masse / chute / poussée.",
+      "id": "transmutation.feather_flesh"
+    },
+    {
+      "nom": "Fer vivant",
+      "ecoles": [
+        "Transmutation"
+      ],
+      "palier": "Expert",
+      "cible": "allié",
+      "forme": "buff d'armure",
+      "portee": "courte",
+      "duree": "quelques tours",
+      "type_degats": null,
+      "effet": "Améliore temporairement une armure métallique.",
+      "ton": "La métallurgie prend personnellement la situation.",
+      "notes": "Dépend de l'armure.",
+      "id": "transmutation.living_iron"
+    },
+    {
+      "nom": "Forme monstrueuse",
+      "ecoles": [
+        "Transmutation"
+      ],
+      "palier": "Maître",
+      "cible": "soi",
+      "forme": "transformation",
+      "portee": "soi",
+      "duree": "quelques tours",
+      "type_degats": null,
+      "effet": "Transforme le lanceur en forme physique surpuissante avec contreparties.",
+      "ton": "Une évolution professionnelle très visible.",
+      "notes": "Buff physique / malus mental à définir.",
+      "id": "transmutation.monstrous_form"
+    },
+    {
+      "nom": "Élémentaire de feu",
+      "ecoles": [
+        "Invocation",
+        "Feu"
+      ],
+      "palier": "Expert",
+      "cible": "case",
+      "forme": "invocation",
+      "portee": "moyenne",
+      "duree": "quelques tours",
+      "type_degats": "burning",
+      "effet": "Invoque un élémentaire offensif de feu.",
+      "ton": "Un collègue chaleureux et temporaire.",
+      "notes": "Parents multiples.",
+      "id": "hybrid.fire_elemental"
+    },
+    {
+      "nom": "Élémentaire de glace",
+      "ecoles": [
+        "Invocation",
+        "Eau"
+      ],
+      "palier": "Expert",
+      "cible": "case",
+      "forme": "invocation",
+      "portee": "moyenne",
+      "duree": "quelques tours",
+      "type_degats": "freezing",
+      "effet": "Invoque un élémentaire de glace orienté défense et contrôle.",
+      "ton": "Il brise la glace au sens littéral.",
+      "notes": "Parents multiples.",
+      "id": "hybrid.ice_elemental"
+    },
+    {
+      "nom": "Tempête électrique",
+      "ecoles": [
+        "Foudre",
+        "Eau"
+      ],
+      "palier": "Maître",
+      "cible": "zone",
+      "forme": "terrain persistant",
+      "portee": "longue",
+      "duree": "quelques tours",
+      "type_degats": "lightning",
+      "effet": "Crée une zone humide parcourue de décharges électriques.",
+      "ton": "Mélanger eau et électricité reste une mauvaise idée, donc une excellente magie.",
+      "notes": "Synergie terrain.",
+      "id": "hybrid.thunderstorm"
+    },
+    {
+      "nom": "Mirage brûlant",
+      "ecoles": [
+        "Illusion",
+        "Feu"
+      ],
+      "palier": "Expert",
+      "cible": "zone",
+      "forme": "contrôle",
+      "portee": "moyenne",
+      "duree": "quelques tours",
+      "type_degats": null,
+      "effet": "Crée une illusion de chaleur et de flammes capable de désorganiser les cibles.",
+      "ton": "La température est imaginaire, la panique parfaitement réelle.",
+      "notes": "Psychologie.",
+      "id": "hybrid.heat_mirage"
+    },
+    {
+      "nom": "Faux revenant",
+      "ecoles": [
+        "Illusion",
+        "Nécromancie"
+      ],
+      "palier": "Expert",
+      "cible": "ennemi",
+      "forme": "psychologie",
+      "portee": "moyenne",
+      "duree": "quelques tours",
+      "type_degats": null,
+      "effet": "Fait apparaître le simulacre crédible d'un mort.",
+      "ton": "Les retrouvailles familiales prennent une tournure compliquée.",
+      "notes": "Peut cibler souvenirs / morale.",
+      "id": "hybrid.false_ghost"
+    },
+    {
+      "nom": "Marionnette cadavérique",
+      "ecoles": [
+        "Nécromancie",
+        "Télékinésie"
+      ],
+      "palier": "Expert",
+      "cible": "cadavre",
+      "forme": "contrôle",
+      "portee": "moyenne",
+      "duree": "quelques tours",
+      "type_degats": null,
+      "effet": "Anime mécaniquement un cadavre sans le ressusciter.",
+      "ton": "Techniquement, personne n'a dit qu'il était vivant.",
+      "notes": "Ne crée pas un vrai zombie.",
+      "id": "hybrid.corpse_puppet"
+    },
+    {
+      "nom": "Sang bouillant",
+      "ecoles": [
+        "Vie",
+        "Feu"
+      ],
+      "palier": "Expert",
+      "cible": "ennemi",
+      "forme": "attaque interne",
+      "portee": "moyenne",
+      "duree": "instantané",
+      "type_degats": "burning",
+      "effet": "Exploite la vitalité d'une cible pour chauffer son propre sang.",
+      "ton": "La médecine n'approuve pas cette branche.",
+      "notes": "Cible vivante uniquement.",
+      "id": "hybrid.boiling_blood"
+    },
+    {
+      "nom": "Cryostase",
+      "ecoles": [
+        "Vie",
+        "Eau"
+      ],
+      "palier": "Expert",
+      "cible": "allié",
+      "forme": "stase",
+      "portee": "courte",
+      "duree": "quelques tours",
+      "type_degats": null,
+      "effet": "Met temporairement une cible vivante en stase froide protectrice.",
+      "ton": "On ne guérit pas le problème, on le met au frais.",
+      "notes": "Protection / incapacité volontaire.",
+      "id": "hybrid.cryostasis"
+    },
+    {
+      "nom": "Corps de foudre",
+      "ecoles": [
+        "Transmutation",
+        "Foudre"
+      ],
+      "palier": "Maître",
+      "cible": "soi",
+      "forme": "transformation",
+      "portee": "soi",
+      "duree": "instantané",
+      "type_degats": "lightning",
+      "effet": "Transforme brièvement le corps en énergie pour un déplacement fulgurant.",
+      "ton": "Ne pas reproduire près d'un paratonnerre.",
+      "notes": "Mobilité extrême.",
+      "id": "hybrid.lightning_body"
+    },
+    {
+      "nom": "Golem improvisé",
+      "ecoles": [
+        "Transmutation",
+        "Invocation"
+      ],
+      "palier": "Expert",
+      "cible": "case",
+      "forme": "invocation",
+      "portee": "moyenne",
+      "duree": "quelques tours",
+      "type_degats": null,
+      "effet": "Anime temporairement une masse de matière disponible.",
+      "ton": "Le mobilier local peut être réquisitionné.",
+      "notes": "Dépend du décor.",
+      "id": "hybrid.improvised_golem"
+    },
+    {
+      "nom": "Main du géant",
+      "ecoles": [
+        "Télékinésie",
+        "Transmutation"
+      ],
+      "palier": "Maître",
+      "cible": "zone",
+      "forme": "contrôle",
+      "portee": "moyenne",
+      "duree": "instantané",
+      "type_degats": "blunt",
+      "effet": "Crée une force massive capable de déplacer plusieurs corps.",
+      "ton": "Pour les négociations de groupe.",
+      "notes": "Déplacement forcé de zone.",
+      "id": "hybrid.giant_hand"
+    },
+    {
+      "nom": "Résurrection imparfaite",
+      "ecoles": [
+        "Vie",
+        "Nécromancie"
+      ],
+      "palier": "Maître",
+      "cible": "cadavre",
+      "forme": "exceptionnel",
+      "portee": "courte",
+      "duree": "à définir",
+      "type_degats": null,
+      "effet": "Ramène provisoirement un mort au prix d'un coût et d'un risque considérables.",
+      "ton": "Même la mort demande parfois une période d'essai.",
+      "notes": "Règles de mort / coût à définir avant activation.",
+      "id": "hybrid.imperfect_resurrection"
+    }
+  ]
+}

@@ -76,13 +76,13 @@ La **compagnie** est le conteneur principal de la couche gestion.
 - centraliser les missions disponibles et engagées ;
 - conserver l’historique de campagne.
 
-La renommée de compagnie est distincte de la réputation personnelle d’un mercenaire et de l’alignement moral. Architecture actuelle : `PointsMissions + ReputationDeveloppementCamp + PrestigeTop10Mercenaires`. Voir [Réputation, renommée & salaires](../../archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/02%20%E2%80%94%20Personnage%20%26%20comp%C3%A9tences/R%C3%A9putation%2C%20renomm%C3%A9e%20%26%20salaires%203edc799da3d1816d8c56ef472f3ea9ec.md). Les réputations par faction seront précisées avec l’objet **Faction**.
+La renommée de compagnie est distincte de la réputation personnelle d’un mercenaire et de l’alignement moral. Architecture actuelle : `PointsMissions + ReputationDeveloppementCamp + PrestigeTop10Mercenaires`. Voir [Réputation, renommée & salaires](/design/#doc=09-reputation-renown-and-salaries.md). Les réputations par faction seront précisées avec l’objet **Faction**.
 
 ## 3 — Mercenary
 
 Le mercenaire est un objet **généré procéduralement puis persistant pendant toute sa carrière**.
 
-La fonction de génération existe déjà dans [00 — Démarrage de partie & fonctions de génération](../../archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/00%20%E2%80%94%20D%C3%A9marrage%20de%20partie%20%26%20fonctions%20de%20g%C3%A9n%C3%A9ration%203ebc799da3d18106a6d0dc0a410e55a8.md). Jusqu’ici, sa structure était répartie entre identité, caractéristiques, compétences et combat ; cette section formalise l’objet global.
+La fonction de génération existe déjà dans [00 — Démarrage de partie & fonctions de génération](/design/#doc=01-start-and-generation-functions.md). Jusqu’ici, sa structure était répartie entre identité, caractéristiques, compétences et combat ; cette section formalise l’objet global.
 
 ### Identité
 
@@ -105,7 +105,7 @@ Hiérarchie : **1 Capitaine**, plusieurs Lieutenants possibles, puis les Mercena
 - résistances : valeur + XP ;
 - compétences : valeur + XP.
 
-La conversion universelle XP → niveau est définie dans [Progression & expérience](../../archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/02%20%E2%80%94%20Personnage%20%26%20comp%C3%A9tences/Progression%20%26%20exp%C3%A9rience%203ecc799da3d1815fbc4cef440b53d83b.md).
+La conversion universelle XP → niveau est définie dans [Progression & expérience](/design/#doc=08-progression-and-experience.md).
 
 ### État courant
 
@@ -167,7 +167,7 @@ Règle V1 : **le combat lui-même compte pour 0 jour**.
 
 `Temps voyage = Distance camp × 2`
 
-Hors événement spécial, `Temps total mission = Distance camp × 2`. La couche gestion avance en jours. Voir [Fin de mission, temps & indisponibilités](../../archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/03%20%E2%80%94%20Combat/Fin%20de%20mission%2C%20temps%20%26%20indisponibilit%C3%A9s%203edc799da3d181b593b4d808c233d592.md).
+Hors événement spécial, `Temps total mission = Distance camp × 2`. La couche gestion avance en jours. Voir [Fin de mission, temps & indisponibilités](/design/#doc=10-mission-time-and-unavailability.md).
 
 ### Objectifs
 
@@ -275,7 +275,7 @@ MissionResult doit aussi pouvoir conserver les données nécessaires à la réso
 - événements de retour ;
 - autres conséquences de fin de mission.
 
-Voir [Fin de mission, temps & indisponibilités](../../archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/03%20%E2%80%94%20Combat/Fin%20de%20mission%2C%20temps%20%26%20indisponibilit%C3%A9s%203edc799da3d181b593b4d808c233d592.md).
+Voir [Fin de mission, temps & indisponibilités](/design/#doc=10-mission-time-and-unavailability.md).
 
 ## 6 — Camp
 
@@ -301,7 +301,7 @@ Responsabilités :
 - affectation professeurs / élèves ;
 - futurs systèmes de production ou recherche.
 
-Le système d’XP choisie au camp est décrit dans [Progression & expérience](../../archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/02%20%E2%80%94%20Personnage%20%26%20comp%C3%A9tences/Progression%20%26%20exp%C3%A9rience%203ecc799da3d1815fbc4cef440b53d83b.md).
+Le système d’XP choisie au camp est décrit dans [Progression & expérience](/design/#doc=08-progression-and-experience.md).
 
 ## 7 — Inventory / Item
 
@@ -353,4 +353,4 @@ Les missions pourront notamment référencer une **faction commanditaire** et un
 
 Cette page reste volontairement une **vue d’ensemble**. Les formules précises et les mécaniques détaillées restent dans leurs sections spécialisées afin de conserver une seule source de vérité par règle.
 
-[Camp & château en ruines](../../archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/06%20%E2%80%94%20Architecture%20%26%20objets%20de%20jeu/Camp%20%26%20ch%C3%A2teau%20en%20ruines%203edc799da3d181808127ed574b81ba78.md)
+[Camp & château en ruines](/design/#doc=11-camp-and-ruined-castle.md)

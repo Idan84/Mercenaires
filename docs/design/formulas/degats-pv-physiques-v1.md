@@ -55,9 +55,9 @@ Le résultat final est multiplié par **10** puis arrondi à l’entier supérie
 
 ## Overrides critiques CAC V1
 
-Après une blessure réussie, [Critique de blessure positif CAC V1](../../../archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/05%20%E2%80%94%20R%C3%A9f%C3%A9rentiels%20techniques/Formules%20de%20jeu/Critique%20de%20blessure%20positif%20CAC%20V1%203ebc799da3d181488d08f35e58215458.md) peut remplacer les composantes aléatoires du calcul par leur maximum favorable à l'attaquant.
+Après une blessure réussie, [Critique de blessure positif CAC V1](/design/#doc=formulas/critique-de-blessure-positif-cac-v1.md) peut remplacer les composantes aléatoires du calcul par leur maximum favorable à l'attaquant.
 
-Sur un résultat naturel **96–100** au jet de Blesser, [Échec critique de blessure CAC V1](../../../archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/05%20%E2%80%94%20R%C3%A9f%C3%A9rentiels%20techniques/Formules%20de%20jeu/%C3%89chec%20critique%20de%20blessure%20CAC%20V1%203ebc799da3d181688a91f508768adac2.md) peut au contraire infliger à l'attaquant les dégâts minimum de son propre coup.
+Sur un résultat naturel **96–100** au jet de Blesser, [Échec critique de blessure CAC V1](/design/#doc=formulas/echec-critique-de-blessure-cac-v1.md) peut au contraire infliger à l'attaquant les dégâts minimum de son propre coup.
 
 <aside>
 ⚙️

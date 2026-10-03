@@ -13,14 +13,14 @@ Architecture de référence : **caractéristiques fondamentales → états tempo
 
 La base **Caractéristiques & attributs** possède des vues séparées pour Caractéristiques, Résistances, États temporaires et Valeurs dérivées. La base **Compétences** porte également les fiches d'armes : maîtrise, dés et puissances de blessure, **Prise** (`1 main / 2 mains / Au choix`), **Malus vitesse arme base**, portée en hexagones, cadence de tir, recharge, capacité de contre-charge, attaque de zone et **Bonus charge base** (valeurs à équilibrer). Les vues d'équilibrage dédiées sont exposées dans `04 — Équipement`.
 
-[Compétences](../../archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/02%20%E2%80%94%20Personnage%20%26%20comp%C3%A9tences/Comp%C3%A9tences%2013a89648818840a7aa9a0698e018b039.csv)
+[Compétences](https://github.com/Idan84/Mercenaires/blob/main/archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/02%20%E2%80%94%20Personnage%20%26%20comp%C3%A9tences/Comp%C3%A9tences%2013a89648818840a7aa9a0698e018b039.csv)
 
-[Caractéristiques & attributs](../../archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/02%20%E2%80%94%20Personnage%20%26%20comp%C3%A9tences/Caract%C3%A9ristiques%20%26%20attributs%20eb1e6e789f9343c6937931157a26c27e.csv)
+[Caractéristiques & attributs](https://github.com/Idan84/Mercenaires/blob/main/archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/02%20%E2%80%94%20Personnage%20%26%20comp%C3%A9tences/Caract%C3%A9ristiques%20%26%20attributs%20eb1e6e789f9343c6937931157a26c27e.csv)
 
-[Titres acquis](../../archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/02%20%E2%80%94%20Personnage%20%26%20comp%C3%A9tences/Titres%20acquis%203eac799da3d181b58ccceb1fbb60d42f.md)
+[Titres acquis](https://github.com/Idan84/Mercenaires/blob/main/archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/02%20%E2%80%94%20Personnage%20%26%20comp%C3%A9tences/Titres%20acquis%203eac799da3d181b58ccceb1fbb60d42f.md)
 
-[Magie — apprentissage, incantation & premier catalogue](../../archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/02%20%E2%80%94%20Personnage%20%26%20comp%C3%A9tences/Magie%20%E2%80%94%20apprentissage%2C%20incantation%20%26%20premier%20catal%203ecc799da3d18183b4a9e6b17170afdf.md)
+[Magie — apprentissage, incantation & premier catalogue](/design/#doc=12-magic.md)
 
-[Progression & expérience](../../archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/02%20%E2%80%94%20Personnage%20%26%20comp%C3%A9tences/Progression%20%26%20exp%C3%A9rience%203ecc799da3d1815fbc4cef440b53d83b.md)
+[Progression & expérience](/design/#doc=08-progression-and-experience.md)
 
-[Réputation, renommée & salaires](../../archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/02%20%E2%80%94%20Personnage%20%26%20comp%C3%A9tences/R%C3%A9putation%2C%20renomm%C3%A9e%20%26%20salaires%203edc799da3d1816d8c56ef472f3ea9ec.md)
+[Réputation, renommée & salaires](/design/#doc=09-reputation-renown-and-salaries.md)

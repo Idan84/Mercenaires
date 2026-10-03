@@ -33,8 +33,8 @@ La probabilité reste comprise entre **10 % et 90 %**. `DexteriteEffective` est 
 
 ## État : Au Sol
 
-Si le défenseur possède l’état [Au Sol](../../../archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/03%20%E2%80%94%20Combat/%C3%89tats/Au%20Sol%203ebc799da3d1815fa0b3fe7c48c39602.md), alors `EsquiveEffective_def = 0` pour le calcul du toucher. Sa Perception et sa Vitesse effective restent utilisées normalement dans le score de défense.
+Si le défenseur possède l’état [Au Sol](https://github.com/Idan84/Mercenaires/blob/main/archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/03%20%E2%80%94%20Combat/%C3%89tats/Au%20Sol%203ebc799da3d1815fa0b3fe7c48c39602.md), alors `EsquiveEffective_def = 0` pour le calcul du toucher. Sa Perception et sa Vitesse effective restent utilisées normalement dans le score de défense.
 
 ## Bouclier
 
-Un bouclier ne modifie pas directement $P_{touche}$. Après un Toucher réussi, [Blocage bouclier physique V1](../../../archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/05%20%E2%80%94%20R%C3%A9f%C3%A9rentiels%20techniques/Formules%20de%20jeu/Blocage%20bouclier%20physique%20V1%203ebc799da3d18126b594dcad23bb1b17.md) effectue un jet de sauvegarde basé sur la Dextérité du défenseur et ses maîtrises de bouclier. Un blocage réussi transforme le Toucher en **coup bloqué** avant le critique positif de Toucher.
+Un bouclier ne modifie pas directement $P_{touche}$. Après un Toucher réussi, [Blocage bouclier physique V1](/design/#doc=formulas/blocage-bouclier-physique-v1.md) effectue un jet de sauvegarde basé sur la Dextérité du défenseur et ses maîtrises de bouclier. Un blocage réussi transforme le Toucher en **coup bloqué** avant le critique positif de Toucher.

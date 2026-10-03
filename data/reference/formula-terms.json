@@ -48,12 +48,12 @@
   "rows": [
     {
       "nom": "Dextérité attaquant",
-      "caracteristique": "Dextérité (../02%20%E2%80%94%20Personnage%20&%20comp%C3%A9tences/Caract%C3%A9ristiques%20&%20attributs/Dext%C3%A9rit%C3%A9%203eac799da3d1811b90f7d468d8271139.csv)",
+      "caracteristique": "Dextérité",
       "code_variable": "attacker.dexterity",
       "coefficient": 1,
       "cote": "Attaquant",
       "description": "Dextérité actuelle de l’attaquant.",
-      "formule": "Toucher CAC V1 (Formules%20de%20jeu/Toucher%20CAC%20V1%203eac799da3d181bbbe04d7e9f08395ce.csv)",
+      "formule": "Toucher CAC V1",
       "ordre": 1,
       "source": "Caractéristique"
     },
@@ -64,7 +64,7 @@
       "coefficient": 0.2,
       "cote": "Attaquant",
       "description": "Maîtrise 0–100 de la catégorie correspondant à l’arme actuellement équipée.",
-      "formule": "Toucher CAC V1 (Formules%20de%20jeu/Toucher%20CAC%20V1%203eac799da3d181bbbe04d7e9f08395ce.csv)",
+      "formule": "Toucher CAC V1",
       "ordre": 2,
       "source": "Maîtrise contextuelle"
     },
@@ -75,62 +75,62 @@
       "coefficient": 0.2,
       "cote": "Attaquant",
       "description": "Maîtrise 0–100 de l’arme précise actuellement équipée.",
-      "formule": "Toucher CAC V1 (Formules%20de%20jeu/Toucher%20CAC%20V1%203eac799da3d181bbbe04d7e9f08395ce.csv)",
+      "formule": "Toucher CAC V1",
       "ordre": 3,
       "source": "Maîtrise contextuelle"
     },
     {
       "nom": "Vitesse défenseur",
-      "caracteristique": "Vitesse (../02%20%E2%80%94%20Personnage%20&%20comp%C3%A9tences/Caract%C3%A9ristiques%20&%20attributs/Vitesse%203eac799da3d181b4abe2fc875c288e0c.csv)",
+      "caracteristique": "Vitesse",
       "code_variable": "defender.speed",
       "coefficient": -0.2,
       "cote": "Défenseur",
       "description": "Vitesse actuelle du défenseur.",
-      "formule": "Toucher CAC V1 (Formules%20de%20jeu/Toucher%20CAC%20V1%203eac799da3d181bbbe04d7e9f08395ce.csv)",
+      "formule": "Toucher CAC V1",
       "ordre": 8,
       "source": "Caractéristique"
     },
     {
       "nom": "Esquive défenseur",
-      "caracteristique": "Esquive (../02%20%E2%80%94%20Personnage%20&%20comp%C3%A9tences/Caract%C3%A9ristiques%20&%20attributs/Esquive%203eac799da3d18121b5d7e482331560ab.csv)",
+      "caracteristique": "Esquive",
       "code_variable": "defender.dodge",
       "coefficient": -1,
       "cote": "Défenseur",
       "description": "Esquive actuelle du défenseur.",
-      "formule": "Toucher CAC V1 (Formules%20de%20jeu/Toucher%20CAC%20V1%203eac799da3d181bbbe04d7e9f08395ce.csv)",
+      "formule": "Toucher CAC V1",
       "ordre": 6,
       "source": "Caractéristique"
     },
     {
       "nom": "Vitesse attaquant",
-      "caracteristique": "Vitesse (../02%20%E2%80%94%20Personnage%20&%20comp%C3%A9tences/Caract%C3%A9ristiques%20&%20attributs/Vitesse%203eac799da3d181b4abe2fc875c288e0c.csv)",
+      "caracteristique": "Vitesse",
       "code_variable": "attacker.speed",
       "coefficient": 0.2,
       "cote": "Attaquant",
       "description": "Vitesse actuelle de l’attaquant.",
-      "formule": "Toucher CAC V1 (Formules%20de%20jeu/Toucher%20CAC%20V1%203eac799da3d181bbbe04d7e9f08395ce.csv)",
+      "formule": "Toucher CAC V1",
       "ordre": 5,
       "source": "Caractéristique"
     },
     {
       "nom": "Perception défenseur",
-      "caracteristique": "Perception (../02%20%E2%80%94%20Personnage%20&%20comp%C3%A9tences/Caract%C3%A9ristiques%20&%20attributs/Perception%203eac799da3d18154a534d22b3744c2e8.csv)",
+      "caracteristique": "Perception",
       "code_variable": "defender.perception",
       "coefficient": -0.2,
       "cote": "Défenseur",
       "description": "Perception actuelle du défenseur.",
-      "formule": "Toucher CAC V1 (Formules%20de%20jeu/Toucher%20CAC%20V1%203eac799da3d181bbbe04d7e9f08395ce.csv)",
+      "formule": "Toucher CAC V1",
       "ordre": 7,
       "source": "Caractéristique"
     },
     {
       "nom": "Perception attaquant",
-      "caracteristique": "Perception (../02%20%E2%80%94%20Personnage%20&%20comp%C3%A9tences/Caract%C3%A9ristiques%20&%20attributs/Perception%203eac799da3d18154a534d22b3744c2e8.csv)",
+      "caracteristique": "Perception",
       "code_variable": "attacker.perception",
       "coefficient": 0.2,
       "cote": "Attaquant",
       "description": "Perception actuelle de l’attaquant.",
-      "formule": "Toucher CAC V1 (Formules%20de%20jeu/Toucher%20CAC%20V1%203eac799da3d181bbbe04d7e9f08395ce.csv)",
+      "formule": "Toucher CAC V1",
       "ordre": 4,
       "source": "Caractéristique"
     },
@@ -141,7 +141,7 @@
       "coefficient": -1,
       "cote": "Défenseur",
       "description": "Endurance actuelle du défenseur. Relation vers la caractéristique à lier lors de la prochaine passe de validation si nécessaire.",
-      "formule": "Blesser CAC V1 (Formules%20de%20jeu/Blesser%20CAC%20V1%203eac799da3d181c5965ef78a521d952c.csv)",
+      "formule": "Blesser CAC V1",
       "ordre": 4,
       "source": "Caractéristique"
     },
@@ -152,7 +152,7 @@
       "coefficient": 1,
       "cote": "Attaquant",
       "description": "Résultat arme vs résistance d'armure après sélection du pire/moyen/meilleur matchup selon l'Intelligence.",
-      "formule": "Blesser CAC V1 (Formules%20de%20jeu/Blesser%20CAC%20V1%203eac799da3d181c5965ef78a521d952c.csv)",
+      "formule": "Blesser CAC V1",
       "ordre": 3,
       "source": "Équipement"
     },
@@ -163,7 +163,7 @@
       "coefficient": 0.2,
       "cote": "Attaquant",
       "description": "Maîtrise 0–100 de l'arme précise équipée.",
-      "formule": "Blesser CAC V1 (Formules%20de%20jeu/Blesser%20CAC%20V1%203eac799da3d181c5965ef78a521d952c.csv)",
+      "formule": "Blesser CAC V1",
       "ordre": 2.1,
       "source": "Maîtrise contextuelle"
     },
@@ -174,7 +174,7 @@
       "coefficient": 0.2,
       "cote": "Attaquant",
       "description": "Maîtrise 0–100 de la catégorie de l'arme équipée.",
-      "formule": "Blesser CAC V1 (Formules%20de%20jeu/Blesser%20CAC%20V1%203eac799da3d181c5965ef78a521d952c.csv)",
+      "formule": "Blesser CAC V1",
       "ordre": 2,
       "source": "Maîtrise contextuelle"
     },
@@ -185,7 +185,7 @@
       "coefficient": 1,
       "cote": "Attaquant",
       "description": "Force actuelle de l'attaquant. Relation vers la caractéristique à lier lors de la prochaine passe de validation si nécessaire.",
-      "formule": "Blesser CAC V1 (Formules%20de%20jeu/Blesser%20CAC%20V1%203eac799da3d181c5965ef78a521d952c.csv)",
+      "formule": "Blesser CAC V1",
       "ordre": 1,
       "source": "Caractéristique"
     }

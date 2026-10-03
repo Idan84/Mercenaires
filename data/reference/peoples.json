@@ -28,61 +28,61 @@
   "rows": [
     {
       "nom": "Orc",
-      "alignement_principal": "Chaotique mauvais (Alignements/Chaotique%20mauvais%203e9c799da3d181a7afdfd8e7deb436bf.csv)",
+      "alignement_principal": "Chaotique mauvais",
       "probabilite_de_base": 0.15,
       "probabilite_d_ascendance": 0.2
     },
     {
       "nom": "Homme-bête",
-      "alignement_principal": "Loyal mauvais (Alignements/Loyal%20mauvais%203e9c799da3d181e180a9ce08266bcdce.csv)",
+      "alignement_principal": "Loyal mauvais",
       "probabilite_de_base": 0.05,
       "probabilite_d_ascendance": 0.2
     },
     {
       "nom": "Reptilien",
-      "alignement_principal": "Loyal neutre (Alignements/Loyal%20neutre%203e9c799da3d1815fa666ffc5fc49cd0b.csv)",
+      "alignement_principal": "Loyal neutre",
       "probabilite_de_base": 0.05,
       "probabilite_d_ascendance": 0.2
     },
     {
       "nom": "Humain",
-      "alignement_principal": "Neutre (Alignements/Neutre%203e9c799da3d1811fbc38f72918ec53cd.csv)",
+      "alignement_principal": "Neutre",
       "probabilite_de_base": 0.2,
       "probabilite_d_ascendance": 0.2
     },
     {
       "nom": "Halfling",
-      "alignement_principal": "Chaotique bon (Alignements/Chaotique%20bon%203e9c799da3d1811488b8ec32840d582f.csv)",
+      "alignement_principal": "Chaotique bon",
       "probabilite_de_base": 0.07,
       "probabilite_d_ascendance": 0.2
     },
     {
       "nom": "Elfe",
-      "alignement_principal": "Loyal bon (Alignements/Loyal%20bon%203e9c799da3d1818fa7c8e88a97ef252d.csv)",
+      "alignement_principal": "Loyal bon",
       "probabilite_de_base": 0.15,
       "probabilite_d_ascendance": 0.2
     },
     {
       "nom": "Gobelin",
-      "alignement_principal": "Chaotique mauvais (Alignements/Chaotique%20mauvais%203e9c799da3d181a7afdfd8e7deb436bf.csv)",
+      "alignement_principal": "Chaotique mauvais",
       "probabilite_de_base": 0.08,
       "probabilite_d_ascendance": 0.2
     },
     {
       "nom": "Gnome",
-      "alignement_principal": "Chaotique neutre (Alignements/Chaotique%20neutre%203e9c799da3d181f881dde14c35f2ad2c.csv)",
+      "alignement_principal": "Chaotique neutre",
       "probabilite_de_base": 0.07,
       "probabilite_d_ascendance": 0.2
     },
     {
       "nom": "Ogre",
-      "alignement_principal": "Neutre mauvais (Alignements/Neutre%20mauvais%203e9c799da3d18153a1d8f747176142ee.csv)",
+      "alignement_principal": "Neutre mauvais",
       "probabilite_de_base": 0.03,
       "probabilite_d_ascendance": 0.2
     },
     {
       "nom": "Nain",
-      "alignement_principal": "Neutre bon (Alignements/Neutre%20bon%203e9c799da3d181cc9bcaf53f023a5336.csv)",
+      "alignement_principal": "Neutre bon",
       "probabilite_de_base": 0.15,
       "probabilite_d_ascendance": 0.2
     }

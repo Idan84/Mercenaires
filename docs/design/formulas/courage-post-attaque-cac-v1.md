@@ -33,13 +33,13 @@ $$
 P_{tenir}=P_{tenir,base}
 $$
 
-`D100 > P_tenir` → appliquer [En Fuite](../../../archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/03%20%E2%80%94%20Combat/%C3%89tats/En%20Fuite%203ebc799da3d1817a804fd813fe29a521.md).
+`D100 > P_tenir` → appliquer [En Fuite](/design/#doc=13-fleeing.md).
 
 ## Cas 2 — l'attaquant n'a blessé personne
 
 Si **aucun jet de Blesser n'a réussi** pendant la séquence, c'est normalement l'**attaquant** qui teste son Courage face à l'Intimidation du défenseur.
 
-**Exception encerclement :** si l'attaquant participe à un [Encerclement CAC V1](../../../archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/05%20%E2%80%94%20R%C3%A9f%C3%A9rentiels%20techniques/Formules%20de%20jeu/Encerclement%20CAC%20V1%203ecc799da3d181ae8e82ccd7c73a1cc7.md) valide contre cette cible, **aucun test n'est effectué**. Il compte sur ses alliés.
+**Exception encerclement :** si l'attaquant participe à un [Encerclement CAC V1](/design/#doc=formulas/encerclement-cac-v1.md) valide contre cette cible, **aucun test n'est effectué**. Il compte sur ses alliés.
 
 Dans les autres cas, la probabilité de fuite est divisée par deux :
 
@@ -63,7 +63,7 @@ Ainsi, avec la borne de base 5–95 %, ce cas donne une probabilité réelle de 
 
 En situation normale, le test n'est effectué **qu'une fois à la fin de la séquence/activation offensive**, pas après chaque coup individuel.
 
-**Exception sous-nombre :** une cible en sous-nombre utilise [Courage en sous-nombre V1](../../../archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/05%20%E2%80%94%20R%C3%A9f%C3%A9rentiels%20techniques/Formules%20de%20jeu/Courage%20en%20sous-nombre%20V1%203ecc799da3d1812e9014c8e88ce61b72.md) et teste **immédiatement après chaque blessure réellement reçue**. Un échec applique En Fuite sur-le-champ et peut interrompre la séquence si la cible se déplace.
+**Exception sous-nombre :** une cible en sous-nombre utilise [Courage en sous-nombre V1](/design/#doc=formulas/courage-en-sous-nombre-v1.md) et teste **immédiatement après chaque blessure réellement reçue**. Un échec applique En Fuite sur-le-champ et peut interrompre la séquence si la cible se déplace.
 
 <aside>
 🧠

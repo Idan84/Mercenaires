@@ -57,6 +57,6 @@ Une fuite peut elle-même provoquer des attaques d'opportunité en quittant des 
 <aside>
 🗡️
 
-Toute attaque d'opportunité bénéficie de [Frappe dans le dos V1](../../../archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/05%20%E2%80%94%20R%C3%A9f%C3%A9rentiels%20techniques/Formules%20de%20jeu/Frappe%20dans%20le%20dos%20V1%203ecc799da3d1819ba68cc80196e7861e.md) : Perception défensive annulée et résistance au type de dégâts divisée par deux pour l'étape Blesser. Le blocage au bouclier reste néanmoins possible.
+Toute attaque d'opportunité bénéficie de [Frappe dans le dos V1](/design/#doc=formulas/frappe-dans-le-dos-v1.md) : Perception défensive annulée et résistance au type de dégâts divisée par deux pour l'étape Blesser. Le blocage au bouclier reste néanmoins possible.
 
 </aside>

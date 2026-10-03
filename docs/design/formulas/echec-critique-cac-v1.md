@@ -27,7 +27,7 @@ $$
 D100>Chance\Rightarrow échec\ critique
 $$
 
-En cas d'échec critique, l'attaquant reçoit l'état [Au Sol](../../../archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/03%20%E2%80%94%20Combat/%C3%89tats/Au%20Sol%203ebc799da3d1815fa0b3fe7c48c39602.md).
+En cas d'échec critique, l'attaquant reçoit l'état [Au Sol](https://github.com/Idan84/Mercenaires/blob/main/archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/03%20%E2%80%94%20Combat/%C3%89tats/Au%20Sol%203ebc799da3d1815fa0b3fe7c48c39602.md).
 
 ## Conséquence
 

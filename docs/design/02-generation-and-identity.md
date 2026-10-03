@@ -7,7 +7,7 @@ Référentiels et règles utilisés pour générer l’identité initiale d’un
 <aside>
 🎮
 
-Le pipeline ci-dessous décrit la génération statistique commune. Son point d’entrée dépend de la fonction appelante : `Create_Captain_Mercenary` laisse le joueur choisir son identité sans modifier les jets bruts ; `Create_Mercenary` utilise les tirages aléatoires et les biais liés au capitaine. Voir [00 — Démarrage de partie & fonctions de génération](../../archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/00%20%E2%80%94%20D%C3%A9marrage%20de%20partie%20%26%20fonctions%20de%20g%C3%A9n%C3%A9ration%203ebc799da3d18106a6d0dc0a410e55a8.md).
+Le pipeline ci-dessous décrit la génération statistique commune. Son point d’entrée dépend de la fonction appelante : `Create_Captain_Mercenary` laisse le joueur choisir son identité sans modifier les jets bruts ; `Create_Mercenary` utilise les tirages aléatoires et les biais liés au capitaine. Voir [00 — Démarrage de partie & fonctions de génération](/design/#doc=01-start-and-generation-functions.md).
 
 </aside>
 
@@ -119,27 +119,27 @@ Ces règles sont elles aussi soumises au principe général de pondération futu
 
 </aside>
 
-[Peuples](../../archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/01%20%E2%80%94%20G%C3%A9n%C3%A9ration%20%26%20identit%C3%A9/Peuples%209a5cd156f4444837ae630b1862f60541.csv)
+[Peuples](https://github.com/Idan84/Mercenaires/blob/main/archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/01%20%E2%80%94%20G%C3%A9n%C3%A9ration%20%26%20identit%C3%A9/Peuples%209a5cd156f4444837ae630b1862f60541.csv)
 
-[Ascendances](../../archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/01%20%E2%80%94%20G%C3%A9n%C3%A9ration%20%26%20identit%C3%A9/Ascendances%20e2bd4f129d754ce1885acf62ea90f487.csv)
+[Ascendances](https://github.com/Idan84/Mercenaires/blob/main/archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/01%20%E2%80%94%20G%C3%A9n%C3%A9ration%20%26%20identit%C3%A9/Ascendances%20e2bd4f129d754ce1885acf62ea90f487.csv)
 
-[Cultures](../../archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/01%20%E2%80%94%20G%C3%A9n%C3%A9ration%20%26%20identit%C3%A9/Cultures%20901364a7f401459594940d1e11ed10d2.csv)
+[Cultures](https://github.com/Idan84/Mercenaires/blob/main/archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/01%20%E2%80%94%20G%C3%A9n%C3%A9ration%20%26%20identit%C3%A9/Cultures%20901364a7f401459594940d1e11ed10d2.csv)
 
-[Origines sociales](../../archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/01%20%E2%80%94%20G%C3%A9n%C3%A9ration%20%26%20identit%C3%A9/Origines%20sociales%2017bc7a7e1e6a45ef861358747dbafb83.csv)
+[Origines sociales](https://github.com/Idan84/Mercenaires/blob/main/archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/01%20%E2%80%94%20G%C3%A9n%C3%A9ration%20%26%20identit%C3%A9/Origines%20sociales%2017bc7a7e1e6a45ef861358747dbafb83.csv)
 
-[Alignements](../../archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/01%20%E2%80%94%20G%C3%A9n%C3%A9ration%20%26%20identit%C3%A9/Alignements%20268aef3cc286435ea9aa0bcaaa5be428.csv)
+[Alignements](https://github.com/Idan84/Mercenaires/blob/main/archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/01%20%E2%80%94%20G%C3%A9n%C3%A9ration%20%26%20identit%C3%A9/Alignements%20268aef3cc286435ea9aa0bcaaa5be428.csv)
 
-[Étapes de génération](../../archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/01%20%E2%80%94%20G%C3%A9n%C3%A9ration%20%26%20identit%C3%A9/%C3%89tapes%20de%20g%C3%A9n%C3%A9ration%20905a18852ebc4f148f18e0b10c2ecca6.csv)
+[Étapes de génération](https://github.com/Idan84/Mercenaires/blob/main/archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/01%20%E2%80%94%20G%C3%A9n%C3%A9ration%20%26%20identit%C3%A9/%C3%89tapes%20de%20g%C3%A9n%C3%A9ration%20905a18852ebc4f148f18e0b10c2ecca6.csv)
 
-[Niveaux d’ascendance](../../archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/01%20%E2%80%94%20G%C3%A9n%C3%A9ration%20%26%20identit%C3%A9/Niveaux%20d%E2%80%99ascendance%205b78a963a81e43f7869b1920e369efcd.csv)
+[Niveaux d’ascendance](https://github.com/Idan84/Mercenaires/blob/main/archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/01%20%E2%80%94%20G%C3%A9n%C3%A9ration%20%26%20identit%C3%A9/Niveaux%20d%E2%80%99ascendance%205b78a963a81e43f7869b1920e369efcd.csv)
 
-[Compatibilités d’ascendance](../../archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/01%20%E2%80%94%20G%C3%A9n%C3%A9ration%20%26%20identit%C3%A9/Compatibilit%C3%A9s%20d%E2%80%99ascendance%202104bbf4810e484ea41807534924b989.csv)
+[Compatibilités d’ascendance](https://github.com/Idan84/Mercenaires/blob/main/archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/01%20%E2%80%94%20G%C3%A9n%C3%A9ration%20%26%20identit%C3%A9/Compatibilit%C3%A9s%20d%E2%80%99ascendance%202104bbf4810e484ea41807534924b989.csv)
 
-[Compatibilités culture–origine sociale](../../archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/01%20%E2%80%94%20G%C3%A9n%C3%A9ration%20%26%20identit%C3%A9/Compatibilit%C3%A9s%20culture%E2%80%93origine%20sociale%2084e0baa713b547da90526b430d76a29c.csv)
+[Compatibilités culture–origine sociale](https://github.com/Idan84/Mercenaires/blob/main/archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/01%20%E2%80%94%20G%C3%A9n%C3%A9ration%20%26%20identit%C3%A9/Compatibilit%C3%A9s%20culture%E2%80%93origine%20sociale%2084e0baa713b547da90526b430d76a29c.csv)
 
-[Matrice de génération](../../archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/01%20%E2%80%94%20G%C3%A9n%C3%A9ration%20%26%20identit%C3%A9/Matrice%20de%20g%C3%A9n%C3%A9ration%20fb435c78a6e74068965f53f164b0d8e7.csv)
+[Matrice de génération](https://github.com/Idan84/Mercenaires/blob/main/archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/01%20%E2%80%94%20G%C3%A9n%C3%A9ration%20%26%20identit%C3%A9/Matrice%20de%20g%C3%A9n%C3%A9ration%20fb435c78a6e74068965f53f164b0d8e7.csv)
 
-[Échelle D6 — génération](../../archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/01%20%E2%80%94%20G%C3%A9n%C3%A9ration%20%26%20identit%C3%A9/%C3%89chelle%20D6%20%E2%80%94%20g%C3%A9n%C3%A9ration%20b949e703e1b7435396a99b36ecf6e417.csv)
+[Échelle D6 — génération](https://github.com/Idan84/Mercenaires/blob/main/archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/01%20%E2%80%94%20G%C3%A9n%C3%A9ration%20%26%20identit%C3%A9/%C3%89chelle%20D6%20%E2%80%94%20g%C3%A9n%C3%A9ration%20b949e703e1b7435396a99b36ecf6e417.csv)
 
 ## Backlog narratif — biographies de mercenaires
 

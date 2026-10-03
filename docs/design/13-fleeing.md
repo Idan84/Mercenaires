@@ -15,16 +15,16 @@ Il n'est pas assimilé à `Au Sol` : le personnage reste mobile et conserve son 
 
 ## Effet immédiat V1
 
-À l'application de l'état, [Mouvement de fuite immédiat V1](../../archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/05%20%E2%80%94%20R%C3%A9f%C3%A9rentiels%20techniques/Formules%20de%20jeu/Mouvement%20de%20fuite%20imm%C3%A9diat%20V1%203ebc799da3d18112bec1e0ee97616436.md) utilise **tout le mouvement restant** pour éloigner le personnage autant que possible de l'adversaire ayant déclenché la fuite.
+À l'application de l'état, [Mouvement de fuite immédiat V1](/design/#doc=formulas/mouvement-de-fuite-immediat-v1.md) utilise **tout le mouvement restant** pour éloigner le personnage autant que possible de l'adversaire ayant déclenché la fuite.
 
 S'il ne reste aucun mouvement disponible, le personnage ne bouge pas mais demeure **En Fuite**.
 
 ## Tours suivants — reprise de contrôle
 
-Au début de chaque tour commencé **En Fuite**, résoudre [Reprise de contrôle — En Fuite V1](../../archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/05%20%E2%80%94%20R%C3%A9f%C3%A9rentiels%20techniques/Formules%20de%20jeu/Reprise%20de%20contr%C3%B4le%20%E2%80%94%20En%20Fuite%20V1%203ecc799da3d1817ca2fdd04ed14f0afe.md).
+Au début de chaque tour commencé **En Fuite**, résoudre [Reprise de contrôle — En Fuite V1](/design/#doc=formulas/reprise-de-controle-en-fuite-v1.md).
 
 - réussite : l'état est retiré immédiatement ; le joueur récupère le contrôle et joue une activation normale complète ;
-- échec : le personnage reste En Fuite et son activation est remplacée par [Comportement automatique — En Fuite V1](../../archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/05%20%E2%80%94%20R%C3%A9f%C3%A9rentiels%20techniques/Formules%20de%20jeu/Comportement%20automatique%20%E2%80%94%20En%20Fuite%20V1%203ecc799da3d1817eb862f3983cc06338.md).
+- échec : le personnage reste En Fuite et son activation est remplacée par [Comportement automatique — En Fuite V1](/design/#doc=formulas/comportement-automatique-en-fuite-v1.md).
 
 Le test devient progressivement plus facile à chaque tour passé En Fuite. La première valeur d'équilibrage est **+10 au score de récupération par tour**, plafonnée par la borne générale de 95 %.
 

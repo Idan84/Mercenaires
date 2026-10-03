@@ -33,7 +33,7 @@ $$
 
 L'Endurance du défenseur et sa Résistance physique restent inchangées.
 
-Pour une arme multi-type, le matchup retenu est choisi par la règle [Sélection du type de dégâts par Intelligence](../../../archive/notion-export/Priv%C3%A9%20et%20partag%C3%A9/Jeu%20de%20Mercenaires/05%20%E2%80%94%20R%C3%A9f%C3%A9rentiels%20techniques/Formules%20de%20jeu/S%C3%A9lection%20du%20type%20de%20d%C3%A9g%C3%A2ts%20par%20Intelligence%203eac799da3d1813cab14d308c76d6773.md).
+Pour une arme multi-type, le matchup retenu est choisi par la règle [Sélection du type de dégâts par Intelligence](/design/#doc=formulas/selection-du-type-de-degats-par-intelligence.md).
 
 ## Delta de blessure
 

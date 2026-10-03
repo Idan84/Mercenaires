@@ -38,7 +38,7 @@
       "nom": "Toucher CAC — maximum",
       "code": "combat.melee.hit.max",
       "description": "Borne haute de la probabilité normale de toucher au CAC.",
-      "formule": "Toucher CAC V1 (Formules%20de%20jeu/Toucher%20CAC%20V1%203eac799da3d181bbbe04d7e9f08395ce.csv)",
+      "formule": "Toucher CAC V1",
       "valeur": 90,
       "version": "V1"
     },
@@ -46,7 +46,7 @@
       "nom": "Toucher CAC — échelle logistique",
       "code": "combat.melee.hit.scale",
       "description": "Diviseur de Delta dans l’exponentielle de la courbe logistique.",
-      "formule": "Toucher CAC V1 (Formules%20de%20jeu/Toucher%20CAC%20V1%203eac799da3d181bbbe04d7e9f08395ce.csv)",
+      "formule": "Toucher CAC V1",
       "valeur": 20,
       "version": "V1"
     },
@@ -54,7 +54,7 @@
       "nom": "Toucher CAC — minimum",
       "code": "combat.melee.hit.min",
       "description": "Borne basse de la probabilité normale de toucher au CAC.",
-      "formule": "Toucher CAC V1 (Formules%20de%20jeu/Toucher%20CAC%20V1%203eac799da3d181bbbe04d7e9f08395ce.csv)",
+      "formule": "Toucher CAC V1",
       "valeur": 10,
       "version": "V1"
     },
@@ -94,7 +94,7 @@
       "nom": "Échec critique — seuil naturel",
       "code": "combat.melee.fumble.threshold",
       "description": "Seuil naturel commun d'échec critique CAC : un résultat de 96 à 100 au jet concerné déclenche le test de Chance.",
-      "formule": "Échec critique CAC V1 (Formules%20de%20jeu/%C3%89chec%20critique%20CAC%20V1%203ebc799da3d181019ea6cc4583820d39.csv), Échec critique de blessure CAC V1 (Formules%20de%20jeu/%C3%89chec%20critique%20de%20blessure%20CAC%20V1%203ebc799da3d181688a91f508768adac2.csv)",
+      "formule": "Échec critique CAC V1,Échec critique de blessure CAC V1",
       "valeur": 96,
       "version": "V1"
     },
@@ -102,7 +102,7 @@
       "nom": "Critique positif — minimum",
       "code": "combat.melee.crit.min",
       "description": "Probabilité minimale commune des critiques positifs CAC, en pourcentage.",
-      "formule": "Critique positif CAC V1 (Formules%20de%20jeu/Critique%20positif%20CAC%20V1%203ebc799da3d18157b83cf6fb1a9d8ea2.csv), Critique de blessure positif CAC V1 (Formules%20de%20jeu/Critique%20de%20blessure%20positif%20CAC%20V1%203ebc799da3d181488d08f35e58215458.csv)",
+      "formule": "Critique positif CAC V1,Critique de blessure positif CAC V1",
       "valeur": 1,
       "version": "V1"
     },
@@ -110,7 +110,7 @@
       "nom": "Critique positif — diviseur de Chance",
       "code": "combat.melee.crit.luck_divisor",
       "description": "Diviseur commun appliqué à Chance pour les critiques positifs CAC : Chance / 10.",
-      "formule": "Critique positif CAC V1 (Formules%20de%20jeu/Critique%20positif%20CAC%20V1%203ebc799da3d18157b83cf6fb1a9d8ea2.csv), Critique de blessure positif CAC V1 (Formules%20de%20jeu/Critique%20de%20blessure%20positif%20CAC%20V1%203ebc799da3d181488d08f35e58215458.csv)",
+      "formule": "Critique positif CAC V1,Critique de blessure positif CAC V1",
       "valeur": 10,
       "version": "V1"
     },
@@ -118,7 +118,7 @@
       "nom": "Critique positif — maximum",
       "code": "combat.melee.crit.max",
       "description": "Probabilité maximale commune des critiques positifs CAC, en pourcentage.",
-      "formule": "Critique positif CAC V1 (Formules%20de%20jeu/Critique%20positif%20CAC%20V1%203ebc799da3d18157b83cf6fb1a9d8ea2.csv), Critique de blessure positif CAC V1 (Formules%20de%20jeu/Critique%20de%20blessure%20positif%20CAC%20V1%203ebc799da3d181488d08f35e58215458.csv)",
+      "formule": "Critique positif CAC V1,Critique de blessure positif CAC V1",
       "valeur": 25,
       "version": "V1"
     },
@@ -126,7 +126,7 @@
       "nom": "Enchaînement — plafond",
       "code": "combat.melee.chain.max_probability",
       "description": "Probabilité maximale d'ouvrir l'attaque ou la séquence suivante.",
-      "formule": "Enchaînement d'attaques CAC V1 (Formules%20de%20jeu/Encha%C3%AEnement%20d'attaques%20CAC%20V1%203ebc799da3d18161a2f3c9a50f6b964e.csv), Combat à deux armes CAC V1 (Formules%20de%20jeu/Combat%20%C3%A0%20deux%20armes%20CAC%20V1%203ebc799da3d181358861cee9d366aab5.csv)",
+      "formule": "Enchaînement d'attaques CAC V1,Combat à deux armes CAC V1",
       "valeur": 100,
       "version": "V1"
     },
@@ -134,7 +134,7 @@
       "nom": "Prise au choix — multiplicateur dégâts",
       "code": "combat.weapon.optional_two_handed.damage_multiplier",
       "description": "Une arme Au choix tenue à deux mains multiplie ses dégâts de base par 1,5.",
-      "formule": "Prise d'arme et mode deux mains V1 (Formules%20de%20jeu/Prise%20d'arme%20et%20mode%20deux%20mains%20V1%203ebc799da3d18153820fd1d9f3bcc82b.csv), Dégâts PV physiques V1 (Formules%20de%20jeu/D%C3%A9g%C3%A2ts%20PV%20physiques%20V1%203eac799da3d181c38685f9fb040d3bdf.csv)",
+      "formule": "Prise d'arme et mode deux mains V1,Dégâts PV physiques V1",
       "valeur": 1.5,
       "version": "V1"
     },
@@ -142,7 +142,7 @@
       "nom": "Prise au choix — multiplicateur vitesse",
       "code": "combat.weapon.optional_two_handed.speed_multiplier",
       "description": "Une arme Au choix tenue à deux mains divise son malus vitesse effectif par deux.",
-      "formule": "Prise d'arme et mode deux mains V1 (Formules%20de%20jeu/Prise%20d'arme%20et%20mode%20deux%20mains%20V1%203ebc799da3d18153820fd1d9f3bcc82b.csv), Malus vitesse arme effectif V1 (Formules%20de%20jeu/Malus%20vitesse%20arme%20effectif%20V1%203ebc799da3d1811fab4fd320244be6f8.csv)",
+      "formule": "Prise d'arme et mode deux mains V1,Malus vitesse arme effectif V1",
       "valeur": 0.5,
       "version": "V1"
     },
@@ -150,7 +150,7 @@
       "nom": "Vitesse arme — diviseur de maîtrise",
       "code": "combat.weapon.speed.mastery_divisor",
       "description": "Diviseur appliqué à MaitriseCategorieArme + MaitriseArme pour réduire le malus de vitesse d'une arme.",
-      "formule": "Malus vitesse arme effectif V1 (Formules%20de%20jeu/Malus%20vitesse%20arme%20effectif%20V1%203ebc799da3d1811fab4fd320244be6f8.csv)",
+      "formule": "Malus vitesse arme effectif V1",
       "valeur": 400,
       "version": "V1"
     },
@@ -158,7 +158,7 @@
       "nom": "Deux armes — dénominateur Dextérité",
       "code": "combat.dual_wield.dexterity_denominator_base",
       "description": "Base du dénominateur de Dextérité effective : Dex / (2 - MaitriseDeuxArmes/100).",
-      "formule": "Combat à deux armes CAC V1 (Formules%20de%20jeu/Combat%20%C3%A0%20deux%20armes%20CAC%20V1%203ebc799da3d181358861cee9d366aab5.csv)",
+      "formule": "Combat à deux armes CAC V1",
       "valeur": 2,
       "version": "V1"
     },
@@ -166,7 +166,7 @@
       "nom": "Blocage bouclier — minimum",
       "code": "combat.shield.block.min_probability",
       "description": "Borne basse du jet de sauvegarde au bouclier.",
-      "formule": "Blocage bouclier physique V1 (Formules%20de%20jeu/Blocage%20bouclier%20physique%20V1%203ebc799da3d18126b594dcad23bb1b17.csv)",
+      "formule": "Blocage bouclier physique V1",
       "valeur": 5,
       "version": "V1"
     },
@@ -174,7 +174,7 @@
       "nom": "Blocage bouclier — maximum",
       "code": "combat.shield.block.max_probability",
       "description": "Borne haute du jet de sauvegarde au bouclier.",
-      "formule": "Blocage bouclier physique V1 (Formules%20de%20jeu/Blocage%20bouclier%20physique%20V1%203ebc799da3d18126b594dcad23bb1b17.csv)",
+      "formule": "Blocage bouclier physique V1",
       "valeur": 80,
       "version": "V1"
     },
@@ -182,7 +182,7 @@
       "nom": "Courage — maximum tenir",
       "code": "combat.courage.max_hold_probability",
       "description": "Borne haute de la probabilité de tenir avant l'ajustement du cas sans blessure.",
-      "formule": "Courage post-attaque CAC V1 (Formules%20de%20jeu/Courage%20post-attaque%20CAC%20V1%203ebc799da3d181feab89f2e269b76863.csv)",
+      "formule": "Courage post-attaque CAC V1",
       "valeur": 95,
       "version": "V1"
     },
@@ -190,7 +190,7 @@
       "nom": "Courage — coefficient Volonté",
       "code": "combat.courage.will_coefficient",
       "description": "Contribution de Volonté au score de Courage post-attaque.",
-      "formule": "Courage post-attaque CAC V1 (Formules%20de%20jeu/Courage%20post-attaque%20CAC%20V1%203ebc799da3d181feab89f2e269b76863.csv)",
+      "formule": "Courage post-attaque CAC V1",
       "valeur": 0.25,
       "version": "V1"
     },
@@ -198,7 +198,7 @@
       "nom": "Courage — minimum tenir",
       "code": "combat.courage.min_hold_probability",
       "description": "Borne basse de la probabilité de tenir avant l'ajustement du cas sans blessure.",
-      "formule": "Courage post-attaque CAC V1 (Formules%20de%20jeu/Courage%20post-attaque%20CAC%20V1%203ebc799da3d181feab89f2e269b76863.csv)",
+      "formule": "Courage post-attaque CAC V1",
       "valeur": 5,
       "version": "V1"
     },
@@ -206,7 +206,7 @@
       "nom": "Courage — coefficient Intimidation",
       "code": "combat.courage.intimidation_coefficient",
       "description": "Poids de l'Intimidation adverse soustrait au score de Courage.",
-      "formule": "Courage post-attaque CAC V1 (Formules%20de%20jeu/Courage%20post-attaque%20CAC%20V1%203ebc799da3d181feab89f2e269b76863.csv)",
+      "formule": "Courage post-attaque CAC V1",
       "valeur": 0.25,
       "version": "V1"
     },
@@ -214,7 +214,7 @@
       "nom": "Courage — multiplicateur fuite sans blessure",
       "code": "http://combat.courage.no_wound_flee_multiplier",
       "description": "Quand l'attaquant n'a infligé aucune blessure, sa probabilité de fuite est multipliée par 0,5.",
-      "formule": "Courage post-attaque CAC V1 (Formules%20de%20jeu/Courage%20post-attaque%20CAC%20V1%203ebc799da3d181feab89f2e269b76863.csv)",
+      "formule": "Courage post-attaque CAC V1",
       "valeur": 0.5,
       "version": "V1"
     },
@@ -222,7 +222,7 @@
       "nom": "Charge — distance maximale",
       "code": "combat.charge.max_movement_multiplier",
       "description": "Distance maximale d'une charge exprimée en multiple de MouvementBase.",
-      "formule": "Charge CAC V1 (Formules%20de%20jeu/Charge%20CAC%20V1%203ebc799da3d181a7b49bdb3808c3ddce.csv)",
+      "formule": "Charge CAC V1",
       "valeur": 2,
       "version": "V1"
     },
@@ -230,7 +230,7 @@
       "nom": "Tir — couverture forte",
       "code": "combat.ranged.cover.strong_multiplier",
       "description": "Multiplicateur final de Toucher contre une cible fortement ou quasi totalement couverte.",
-      "formule": "Toucher distance V1 (Formules%20de%20jeu/Toucher%20distance%20V1%203ebc799da3d181a3ba94d19f810bed85.csv)",
+      "formule": "Toucher distance V1",
       "valeur": 0.25,
       "version": "V1"
     },
@@ -238,7 +238,7 @@
       "nom": "Charge — distance minimale",
       "code": "combat.charge.min_movement_multiplier",
       "description": "Distance minimale d'une charge exprimée en multiple de MouvementBase.",
-      "formule": "Charge CAC V1 (Formules%20de%20jeu/Charge%20CAC%20V1%203ebc799da3d181a7b49bdb3808c3ddce.csv)",
+      "formule": "Charge CAC V1",
       "valeur": 1,
       "version": "V1"
     },
@@ -246,7 +246,7 @@
       "nom": "Tir — couverture partielle",
       "code": "combat.ranged.cover.partial_multiplier",
       "description": "Multiplicateur final de Toucher contre une cible en couverture partielle.",
-      "formule": "Toucher distance V1 (Formules%20de%20jeu/Toucher%20distance%20V1%203ebc799da3d181a3ba94d19f810bed85.csv)",
+      "formule": "Toucher distance V1",
       "valeur": 0.5,
       "version": "V1"
     },
@@ -254,7 +254,7 @@
       "nom": "Tir — décroissance approximation",
       "code": "combat.ranged.stray.decay_factor",
       "description": "Facteur multiplicatif supplémentaire pour chaque candidat accidentel suivant.",
-      "formule": "Approximation projectile V1 (Formules%20de%20jeu/Approximation%20projectile%20V1%203ebc799da3d181a4be4dcbd527f992e8.csv)",
+      "formule": "Approximation projectile V1",
       "valeur": 0.5,
       "version": "V1"
     },
@@ -262,7 +262,7 @@
       "nom": "Charge — diviseur dégâts",
       "code": "combat.charge.damage_divisor",
       "description": "Diviseur de PuissanceCharge dans le multiplicateur de dégâts 1 + PuissanceCharge/100.",
-      "formule": "Charge CAC V1 (Formules%20de%20jeu/Charge%20CAC%20V1%203ebc799da3d181a7b49bdb3808c3ddce.csv)",
+      "formule": "Charge CAC V1",
       "valeur": 100,
       "version": "V1"
     },
@@ -270,7 +270,7 @@
       "nom": "Tir — diviseur cadence",
       "code": "combat.ranged.chain.divisor",
       "description": "Rend l'enchaînement de tirs plus restrictif que l'enchaînement CAC.",
-      "formule": "Enchaînement de tirs distance V1 (Formules%20de%20jeu/Encha%C3%AEnement%20de%20tirs%20distance%20V1%203ebc799da3d181a8b9f8d3348f1180b2.csv)",
+      "formule": "Enchaînement de tirs distance V1",
       "valeur": 1.5,
       "version": "V1"
     },
@@ -278,7 +278,7 @@
       "nom": "Mouvement — coefficient Volonté",
       "code": "combat.movement.will_coefficient",
       "description": "Poids de la Volonté dans le score de mobilité hexagonale.",
-      "formule": "Mouvement hexagonal V1 (Formules%20de%20jeu/Mouvement%20hexagonal%20V1%203ebc799da3d18139a297ecfe65b067ae.csv)",
+      "formule": "Mouvement hexagonal V1",
       "valeur": 0.1,
       "version": "V1"
     },
@@ -286,7 +286,7 @@
       "nom": "Mouvement — diviseur hex",
       "code": "combat.movement.hex_divisor",
       "description": "Diviseur du score de mobilité pour convertir en hexagones.",
-      "formule": "Mouvement hexagonal V1 (Formules%20de%20jeu/Mouvement%20hexagonal%20V1%203ebc799da3d18139a297ecfe65b067ae.csv)",
+      "formule": "Mouvement hexagonal V1",
       "valeur": 15,
       "version": "V1"
     },
@@ -294,7 +294,7 @@
       "nom": "Tir — approximation premier candidat",
       "code": "combat.ranged.stray.initial_factor",
       "description": "Part de la chance normale de Toucher appliquée au premier candidat accidentel.",
-      "formule": "Approximation projectile V1 (Formules%20de%20jeu/Approximation%20projectile%20V1%203ebc799da3d181a4be4dcbd527f992e8.csv)",
+      "formule": "Approximation projectile V1",
       "valeur": 0.35,
       "version": "V1"
     },
@@ -302,7 +302,7 @@
       "nom": "Tir — pénalité distance à portée max",
       "code": "combat.ranged.max_distance_delta_penalty",
       "description": "Malus de Delta atteint à la portée maximale ; progression linéaire après le quart de portée.",
-      "formule": "Toucher distance V1 (Formules%20de%20jeu/Toucher%20distance%20V1%203ebc799da3d181a3ba94d19f810bed85.csv)",
+      "formule": "Toucher distance V1",
       "valeur": 40,
       "version": "V1"
     },
@@ -310,7 +310,7 @@
       "nom": "Mouvement — coefficient Endurance",
       "code": "combat.movement.endurance_coefficient",
       "description": "Poids de l'Endurance dans le score de mobilité hexagonale.",
-      "formule": "Mouvement hexagonal V1 (Formules%20de%20jeu/Mouvement%20hexagonal%20V1%203ebc799da3d18139a297ecfe65b067ae.csv)",
+      "formule": "Mouvement hexagonal V1",
       "valeur": 0.25,
       "version": "V1"
     },
@@ -318,7 +318,7 @@
       "nom": "Charge — risque chute de base",
       "code": "combat.charge.base_fall_probability",
       "description": "Pourcentage de chute de base avant modificateurs de terrain.",
-      "formule": "Charge CAC V1 (Formules%20de%20jeu/Charge%20CAC%20V1%203ebc799da3d181a7b49bdb3808c3ddce.csv)",
+      "formule": "Charge CAC V1",
       "valeur": 2,
       "version": "V1"
     },
@@ -326,7 +326,7 @@
       "nom": "Tir — fraction de portée sans malus",
       "code": "http://combat.ranged.free_range_fraction",
       "description": "Fraction de la portée maximale couverte sans malus de distance avant la décroissance linéaire.",
-      "formule": "Toucher distance V1 (Formules%20de%20jeu/Toucher%20distance%20V1%203ebc799da3d181a3ba94d19f810bed85.csv)",
+      "formule": "Toucher distance V1",
       "valeur": 0.25,
       "version": "V1"
     },
@@ -334,7 +334,7 @@
       "nom": "Opportunité — multiplicateur Esquive défenseur",
       "code": "combat.opportunity.defender_dodge_multiplier",
       "description": "Pendant une attaque d'opportunité, l'Esquive effective de la cible est multipliée par 0,5 avant le calcul du Toucher.",
-      "formule": "Attaque d'opportunité CAC V1 (Formules%20de%20jeu/Attaque%20d'opportunit%C3%A9%20CAC%20V1%203ecc799da3d181559829dce0edf3a0d0.csv)",
+      "formule": "Attaque d'opportunité CAC V1",
       "valeur": 0.5,
       "version": "V1"
     },
@@ -342,7 +342,7 @@
       "nom": "Fuite — bonus récupération par tour",
       "code": "combat.flee.recovery_bonus_per_turn",
       "description": "Bonus ajouté au test de reprise de contrôle pour chaque tour complet commencé dans l'état En Fuite. Valeur d'équilibrage initiale à tester.",
-      "formule": "Reprise de contrôle — En Fuite V1 (Formules%20de%20jeu/Reprise%20de%20contr%C3%B4le%20%E2%80%94%20En%20Fuite%20V1%203ecc799da3d1817ca2fdd04ed14f0afe.csv)",
+      "formule": "Reprise de contrôle — En Fuite V1",
       "valeur": 10,
       "version": "V1"
     },
@@ -350,7 +350,7 @@
       "nom": "Initiative — coefficient Courage",
       "code": "combat.initiative.courage_coefficient",
       "description": "Poids du Courage dans l'initiative interne d'équipe.",
-      "formule": "Initiative interne d'équipe V1 (Formules%20de%20jeu/Initiative%20interne%20d'%C3%A9quipe%20V1%203ecc799da3d181bc98a5edf2469614ac.csv)",
+      "formule": "Initiative interne d'équipe V1",
       "valeur": 0.1,
       "version": "V1"
     },
@@ -358,7 +358,7 @@
       "nom": "Sous-nombre — malus Courage par ennemi de surplus",
       "code": "combat.courage.outnumbered_penalty_per_enemy",
       "description": "Malus au score de Courage pour chaque ennemi de surplus dans la mêlée locale.",
-      "formule": "Courage en sous-nombre V1 (Formules%20de%20jeu/Courage%20en%20sous-nombre%20V1%203ecc799da3d1812e9014c8e88ce61b72.csv)",
+      "formule": "Courage en sous-nombre V1",
       "valeur": 10,
       "version": "V1"
     },
@@ -366,7 +366,7 @@
       "nom": "Initiative — coefficient Intelligence",
       "code": "combat.initiative.intelligence_coefficient",
       "description": "Poids de l'Intelligence dans l'initiative interne d'équipe.",
-      "formule": "Initiative interne d'équipe V1 (Formules%20de%20jeu/Initiative%20interne%20d'%C3%A9quipe%20V1%203ecc799da3d181bc98a5edf2469614ac.csv)",
+      "formule": "Initiative interne d'équipe V1",
       "valeur": 0.25,
       "version": "V1"
     },
@@ -374,7 +374,7 @@
       "nom": "Initiative — coefficient Volonté",
       "code": "combat.initiative.will_coefficient",
       "description": "Poids de la Volonté dans l'initiative interne d'équipe.",
-      "formule": "Initiative interne d'équipe V1 (Formules%20de%20jeu/Initiative%20interne%20d'%C3%A9quipe%20V1%203ecc799da3d181bc98a5edf2469614ac.csv)",
+      "formule": "Initiative interne d'équipe V1",
       "valeur": 0.05,
       "version": "V1"
     },
@@ -382,7 +382,7 @@
       "nom": "Frappe dans le dos — multiplicateur résistance type",
       "code": "combat.backstab.damage_type_resistance_multiplier",
       "description": "Multiplie la résistance au type de dégâts utilisée pour Blesser lorsqu'une attaque bénéficie de Frappe dans le dos.",
-      "formule": "Frappe dans le dos V1 (Formules%20de%20jeu/Frappe%20dans%20le%20dos%20V1%203ecc799da3d1819ba68cc80196e7861e.csv)",
+      "formule": "Frappe dans le dos V1",
       "valeur": 0.5,
       "version": "V1"
     },
@@ -390,7 +390,7 @@
       "nom": "Zone — perte de Toucher par hex",
       "code": "combat.area.hit_penalty_per_hex",
       "description": "Nombre de points de probabilité de toucher retirés par hex d'écart à la case ciblée.",
-      "formule": "Précision d'attaque de zone V1 (Formules%20de%20jeu/Pr%C3%A9cision%20d'attaque%20de%20zone%20V1%203ecc799da3d181828c34f857d4be7366.csv)",
+      "formule": "Précision d'attaque de zone V1",
       "valeur": 10,
       "version": "V1"
     }

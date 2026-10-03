@@ -1,0 +1,12 @@
+{
+  "synced_at": "2026-10-03",
+  "note": "Schema only: row export blocked by Notion query quota.",
+  "source": {
+    "metadata": {
+      "type": "database"
+    },
+    "title": "Niveaux d’ascendance",
+    "url": "https://app.notion.com/p/5b78a963a81e43f7869b1920e369efcd?pvs=204",
+    "text": "<database url=\"{{https://app.notion.com/p/5b78a963a81e43f7869b1920e369efcd}}\" inline=\"false\">\nThe title of this Database is: Niveaux d’ascendance\n<ancestor-path>\n<parent-page url=\"https://app.notion.com/p/3eac799da3d181c491e3d99c69fa2317\" title=\"01 — Génération & identité\"/>\n<ancestor-2-page url=\"https://app.notion.com/p/3eac799da3d181478858f51a008acbda\" title=\"Jeu de Mercenaires\"/>\n</ancestor-path>\nHere are the Database's Data Sources:\nYou can use the \"fetch\" tool on the URL of any Data Source to see its full schema configuration.\n<data-sources>\n<data-source url=\"{{collection://73cdfc0c-6999-4613-a0c0-d70b1fe9fb58}}\">\nThe title of this Data Source is: Niveaux d’ascendance\n\nHere is the database's configurable state:\nProperties with `readOnly: true` are synced or system-managed. Do not try to update their values with page update tools.\n<data-source-state>\n{\"name\":\"Niveaux d’ascendance\",\"schema\":{\"Multiplicateur d’effet\":{\"description\":\"\",\"name\":\"Multiplicateur d’effet\",\"type\":\"number\"},\"Nom\":{\"description\":\"\",\"name\":\"Nom\",\"type\":\"title\"},\"Probabilité de base\":{\"description\":\"\",\"name\":\"Probabilité de base\",\"number_format\":\"percent\",\"type\":\"number\"}},\"url\":\"collection://73cdfc0c-6999-4613-a0c0-d70b1fe9fb58\"}\n</data-source-state>\n\nHere is the SQLite table definition for this data source.\n<sqlite-table>\nCREATE TABLE IF NOT EXISTS \"collection://73cdfc0c-6999-4613-a0c0-d70b1fe9fb58\" (\n\turl TEXT UNIQUE,\n\tcreatedTime TEXT, -- ISO-8601 datetime string, automatically set. This is the canonical time for when the page was created.\n\t\"Multiplicateur d’effet\" FLOAT,\n\t\"Probabilité de base\" FLOAT,\n\t\"Nom\" TEXT\n)\n</sqlite-table>\n</data-source>\n</data-sources>\nHere are the Database's Views:\nYou can use the \"fetch\" tool on the URL of any View to see its full configuration.\n<views>\n<view url=\"{{view://c7c329a1-09e5-4efa-8e9d-4124e1a7bedb}}\">\n{\"dataSourceUrl\":\"{{collection://73cdfc0c-6999-4613-a0c0-d70b1fe9fb58}}\",\"displayProperties\":[\"Nom\",\"Multiplicateur d’effet\",\"Probabilité de base\"],\"name\":\"Default view\",\"type\":\"table\"}\n</view>\n</views>\n</database>"
+  }
+}

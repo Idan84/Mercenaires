@@ -3,7 +3,7 @@
 // Écran courant sur <body data-screen> : accueil, création, camp, mission ou fin de partie.
 // Il se déduit des panneaux visibles, sans toucher aux modules qui les affichent ; styles.css
 // en tire la mise en page (accueil = logo + menu sur le château). Purement visuel.
-const SCREEN_PANELS=[["mission","mission-panel"],["gameover","game-over-panel"],["camp","game-panel"],["setup","setup-panel"]];
+const SCREEN_PANELS=[["mission","mission-panel"],["gameover","game-over-panel"],["creation","creation-wizard"],["intro","intro-panel"],["camp","game-panel"],["setup","setup-panel"]];
 
 function currentScreen(){
   for(const [screen,id] of SCREEN_PANELS){
@@ -24,7 +24,8 @@ function backToMenu(){
   game.captain=null;
   game.initialSquad=[];
   game.tavernSelected=null;
-  for(const id of ["setup-panel","game-panel","game-over-panel"]) $(id).classList.add("hidden");
+  if(typeof stopIntroVoice==="function") stopIntroVoice();
+  for(const id of ["setup-panel","game-panel","game-over-panel","intro-panel","creation-wizard"]) $(id).classList.add("hidden");
   renderSaveStatus();
 }
 

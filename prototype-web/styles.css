@@ -590,3 +590,152 @@ body:not([data-screen="setup"]) #engine-audit:not(.audit-error) { display: none;
   .main-menu { gap: 12px; }
   .menu-btn { min-height: 50px; padding-top: 8px; padding-bottom: 12px; font-size: 1.02rem; }
 }
+
+/* Introduction (intro-ui.js) : le capitaine mourant à droite, le texte à gauche sur un dégradé sombre. */
+body[data-screen="intro"],
+body[data-screen="creation"] { overflow: hidden; }
+body[data-screen="intro"] .topbar,
+body[data-screen="creation"] .topbar { display: none; }
+.picto-lg { width: 64px; height: 64px; }
+.picto-xl { width: 180px; height: 180px; }
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: #0b0908 url("assets/intro/capitaine-mourant.jpg") 70% center / cover no-repeat;
+}
+.intro::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(7,5,4,.94) 0%, rgba(7,5,4,.82) 34%, rgba(7,5,4,.35) 58%, rgba(7,5,4,0) 74%);
+}
+.intro-scene {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 26px;
+  height: 100%;
+  max-width: min(50vw, 660px);
+  padding: 6vh 0 6vh clamp(24px, 6vw, 100px);
+}
+.intro-text { cursor: pointer; }
+.intro-text p {
+  margin: 0 0 .85em;
+  font-family: Georgia, "Times New Roman", serif;
+  font-style: italic;
+  font-size: clamp(1rem, 1.22vw, 1.3rem);
+  line-height: 1.55;
+  color: #e9dec4;
+  text-shadow: 0 2px 6px #000;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 1s ease, transform 1s ease;
+}
+.intro-text p.is-shown { opacity: 1; transform: none; }
+.intro-text p:first-child { font-size: clamp(1.15rem, 1.5vw, 1.6rem); color: #f1e5c8; }
+.intro-text .intro-question { color: #f2cf7e; font-weight: 600; }
+.intro-actions { display: flex; align-items: center; gap: 22px; }
+.intro-cta { opacity: 0; pointer-events: none; transition: opacity .8s ease; }
+.intro.is-done .intro-cta { opacity: 1; pointer-events: auto; }
+.intro-skip {
+  border: 0;
+  background: none;
+  color: #b8a67c;
+  font-size: .78rem;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.intro.is-done .intro-skip { display: none; }
+.intro-exit {
+  position: absolute;
+  top: 18px;
+  right: 22px;
+  z-index: 2;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(201,164,92,.4);
+  border-radius: 50%;
+  background: rgba(0,0,0,.5);
+  color: #d8c9a3;
+  font-size: 1rem;
+  cursor: pointer;
+}
+.intro-exit:hover { color: #fff4d2; border-color: #c9a45c; }
+
+/* Création guidée : fond noir à 90 % par-dessus l'introduction. */
+.wizard {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28px;
+  background: rgba(0,0,0,.9);
+  color: #e9dec4;
+}
+.wizard-frame { display: flex; flex-direction: column; gap: 26px; width: min(1180px, 100%); height: min(760px, calc(100dvh - 56px)); }
+/* Derrière l'assistant, seule l'image de l'introduction reste visible. */
+body[data-screen="creation"] .intro-scene { visibility: hidden; }
+.wizard-head { text-align: center; }
+.wizard-step { margin: 0 0 6px; font-size: .74rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: #c9a45c; }
+.wizard-head h2 { font-family: Georgia, "Times New Roman", serif; font-size: clamp(1.6rem, 2.6vw, 2.4rem); font-weight: 600; letter-spacing: .02em; color: #f1e2b8; }
+.wizard-body { flex: 1; min-height: 0; overflow: auto; }
+.wizard-choice { display: grid; grid-template-columns: minmax(300px, 1.15fr) minmax(220px, .85fr) minmax(280px, 1fr); gap: 32px; align-items: start; }
+.wizard-list { display: grid; grid-auto-flow: column; gap: 4px 14px; margin: 0; padding: 0; list-style: none; }
+.wizard-option {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 9px 12px;
+  border: 0;
+  border-left: 3px solid transparent;
+  background: none;
+  color: #d6c7a2;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.05rem;
+  text-align: left;
+  cursor: pointer;
+}
+.wizard-option:hover { background: rgba(201,164,92,.08); color: #fff4d2; }
+.wizard-option.is-selected { border-left-color: #c9a45c; background: rgba(201,164,92,.15); color: #fff4d2; }
+.wizard-feature { display: flex; flex-direction: column; align-items: center; gap: 14px; padding-top: 6px; text-align: center; }
+.wizard-feature h3 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: 1.7rem; font-weight: 600; color: #f2cf7e; }
+.wizard-placeholder { color: #8f8266; font-style: italic; }
+.wizard-info { padding: 18px 20px; border: 1px solid rgba(201,164,92,.3); border-radius: 4px; background: rgba(28,22,17,.85); }
+.wizard-info h4 { margin: 0 0 8px; font-size: .74rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: #c9a45c; }
+.wizard-info h4:not(:first-child) { margin-top: 16px; }
+.wizard-info p { margin: 0; line-height: 1.5; }
+.trait-list { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.trait { padding: 3px 8px; border-radius: 3px; background: rgba(110,150,80,.2); color: #d4e8c4; font-size: .86rem; }
+.trait span { margin-left: 4px; font-size: .7rem; color: #9fcf86; }
+.trait--down { background: rgba(160,55,42,.24); color: #f2c9bd; }
+.trait--down span { color: #e48f7c; }
+.wizard-name input {
+  display: block;
+  width: min(440px, 90%);
+  margin: 6vh auto;
+  padding: 10px 8px;
+  border: 0;
+  border-bottom: 2px solid #c9a45c;
+  border-radius: 0;
+  background: transparent;
+  color: #fff4d2;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.8rem;
+  text-align: center;
+}
+.wizard-name input:focus { outline: none; border-bottom-color: #f2cf7e; }
+.wizard-recap { display: grid; grid-template-columns: repeat(2, minmax(220px, 1fr)); gap: 14px 40px; width: min(760px, 100%); margin: 2vh auto; }
+.wizard-recap div { padding: 10px 14px; border-left: 3px solid #c9a45c; background: rgba(201,164,92,.08); }
+.wizard-recap dt { font-size: .72rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: #c9a45c; }
+.wizard-recap dd { display: flex; align-items: center; margin: 4px 0 0; font-family: Georgia, "Times New Roman", serif; font-size: 1.2rem; color: #fff4d2; }
+.wizard-nav { display: flex; justify-content: space-between; }
+.wizard-btn { width: auto; min-width: 260px; min-height: 50px; }
+.intro-cta, .wizard-btn { white-space: nowrap; padding-left: 48px; padding-right: 48px; }
+.intro-cta { width: auto; }
+

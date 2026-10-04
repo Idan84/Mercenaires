@@ -485,3 +485,9 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
 .character-bio p{margin:0;font-size:.95rem}
 .character-bio .bio-rumor{color:#bdb3a8;font-style:italic;font-size:.85rem}
 .character-bio .bio-motto{color:#c9aa7d;font-family:Georgia,"Times New Roman",serif;font-size:.85rem}
+
+/* Pictos des peuples et des ascendances (picto-ui.js) : posés sur la ligne de texte sans l'agrandir. */
+.picto { display: inline-block; object-fit: contain; vertical-align: middle; flex: none; }
+.picto-xs { width: 20px; height: 20px; margin: -3px 4px -2px 0; }
+.picto-sm { width: 28px; height: 28px; margin: -6px 6px -6px 0; }
+.picto-md { width: 34px; height: 34px; margin: -2px 8px -2px 0; }

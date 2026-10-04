@@ -1,0 +1,434 @@
+{
+  "schema_version": 1,
+  "name": "captain-creation-copy",
+  "purpose": "Textes courts d'aide au choix pour l'écran de création du capitaine. Aucun chiffre d'équilibrage.",
+  "fields": [
+    "description",
+    "force",
+    "faiblesse"
+  ],
+  "peoples": [
+    {
+      "nom": "Humain",
+      "description": "Polyvalent et adaptable, l’Humain peut apprendre presque tous les métiers de la guerre.",
+      "force": "Grande polyvalence, montures et nombreuses familles d’armes.",
+      "faiblesse": "Moins spécialisé qu’un peuple construit autour d’un rôle précis."
+    },
+    {
+      "nom": "Elfe",
+      "description": "Agile, précis et naturellement sensible à la magie, l’Elfe privilégie finesse et maîtrise.",
+      "force": "Tir, mobilité, savoir et puissance magique.",
+      "faiblesse": "Moins robuste et moins endurant face aux combats prolongés."
+    },
+    {
+      "nom": "Nain",
+      "description": "Solide et méthodique, le Nain excelle avec les armes lourdes, les boucliers et la technologie.",
+      "force": "Résistance, intendance, armes lourdes et armes à feu.",
+      "faiblesse": "Mobilité, esquive et potentiel magique plus limités."
+    },
+    {
+      "nom": "Orc",
+      "description": "Combattant brutal et physique, l’Orc aime résoudre les problèmes à portée de hache.",
+      "force": "Force, constitution, armes lourdes et combat agressif.",
+      "faiblesse": "Discipline mentale, volonté et aptitudes intellectuelles plus fragiles."
+    },
+    {
+      "nom": "Gobelin",
+      "description": "Petit, nerveux et opportuniste, le Gobelin préfère la ruse, les armes légères et les mauvais coups.",
+      "force": "Dextérité, tir, armes légères et mobilité.",
+      "faiblesse": "Fragile, peu courageux et peu à l’aise dans les rôles de commandement."
+    },
+    {
+      "nom": "Halfling",
+      "description": "Observateur et débrouillard, le Halfling survit davantage par son œil et son sens pratique que par ses muscles.",
+      "force": "Perception, intendance, tir et invocation.",
+      "faiblesse": "Force et endurance modestes, peu fait pour encaisser au premier rang."
+    },
+    {
+      "nom": "Gnome",
+      "description": "Inventif et imprévisible, le Gnome combine adresse, chance, magie et solutions peu conventionnelles.",
+      "force": "Illusion, télékinésie, tir et chance.",
+      "faiblesse": "Peu puissant physiquement et relativement fragile."
+    },
+    {
+      "nom": "Ogre",
+      "description": "Une montagne de muscles capable d’encaisser et de frapper là où les autres auraient besoin d’un plan.",
+      "force": "Force, endurance et constitution exceptionnelles.",
+      "faiblesse": "Magie, savoir et tâches demandant beaucoup de finesse intellectuelle."
+    },
+    {
+      "nom": "Reptilien",
+      "description": "Patient et instinctif, le Reptilien excelle avec les armes d’hast, les créatures et les environnements hostiles.",
+      "force": "Armes d’hast, poison, compagnons animaux et combat naturel.",
+      "faiblesse": "Charisme et courage social moins naturels."
+    },
+    {
+      "nom": "Homme-bête",
+      "description": "Prédateur puissant et instinctif, l’Homme-bête mise sur la force brute et le combat au contact.",
+      "force": "Force, endurance, armes naturelles et combat à deux mains.",
+      "faiblesse": "Faible discipline, peu de goût pour l’étude et le commandement organisé."
+    }
+  ],
+  "cultures": [
+    {
+      "nom": "Montagnes du Nord",
+      "description": "Des communautés humaines endurcies par le froid, la roche et les guerres de frontière.",
+      "force": "Force, endurance, haches, marteaux et résistance au froid.",
+      "faiblesse": "Formation intellectuelle moins développée."
+    },
+    {
+      "nom": "Steppes désertiques",
+      "description": "Cavaliers nomades habitués aux longues distances, à la chaleur et aux combats mobiles.",
+      "force": "Vitesse, arcs, sabres, montures et résistance à la chaleur.",
+      "faiblesse": "Moins à l’aise avec les styles de combat lourds et statiques."
+    },
+    {
+      "nom": "Tribus de la jungle",
+      "description": "Chasseurs et pisteurs vivant dans un environnement où tout peut empoisonner, mordre ou piquer.",
+      "force": "Poison, lances, perception, pièges et alchimie.",
+      "faiblesse": "Supporte moins bien le froid."
+    },
+    {
+      "nom": "Cités libres",
+      "description": "Citadins cosmopolites qui apprennent vite à parler, négocier et saisir les bonnes occasions.",
+      "force": "Charisme, intelligence, chance et armes urbaines.",
+      "faiblesse": "Perception du terrain moins développée."
+    },
+    {
+      "nom": "Royaumes du Soleil Levant",
+      "description": "Culture martiale fondée sur la maîtrise du geste, la discipline personnelle et les armes spécialisées.",
+      "force": "Combat à deux armes, arts martiaux, discrétion et lames asiatiques.",
+      "faiblesse": "Aucune faiblesse marquée dans le profil actuel."
+    },
+    {
+      "nom": "Elfes des grandes cités",
+      "description": "Élites urbaines raffinées, nourries de magie, d’artisanat et de traditions anciennes.",
+      "force": "Mana, enchantement, artisanat, joaillerie et équipement raffiné.",
+      "faiblesse": "Goûts coûteux et attentes élevées."
+    },
+    {
+      "nom": "Elfes sylvains",
+      "description": "Éclaireurs des forêts qui privilégient la distance, la discrétion et la connaissance du vivant.",
+      "force": "Perception, esquive, arcs, animaux et travail du bois.",
+      "faiblesse": "Peu d’affinité avec la nécromancie et les équipements lourds."
+    },
+    {
+      "nom": "Elfes noirs",
+      "description": "Sociétés elfiques dures où la ruse, le poison et les magies sombres sont des outils ordinaires.",
+      "force": "Dextérité, poison, illusion, nécromancie et armes sournoises.",
+      "faiblesse": "Charisme plus rude et faible affinité avec la magie de la vie."
+    },
+    {
+      "nom": "Nains des montagnes",
+      "description": "Clans fortifiés de mineurs, forgerons et guerriers cuirassés.",
+      "force": "Forge, boucliers, haches, marteaux et résistance au froid.",
+      "faiblesse": "Lents, peu esquiveurs et peu portés sur l’arc."
+    },
+    {
+      "nom": "Nains des plaines",
+      "description": "Nains plus mobiles et techniciens, familiers des armes à poudre et du combat à distance.",
+      "force": "Arbalètes, armes à feu, intendance et explosifs.",
+      "faiblesse": "Perception et volonté moins marquées."
+    },
+    {
+      "nom": "Nains réduits en esclavage dans les colonies",
+      "description": "Survivants d’un système brutal, habitués au travail forcé, aux coups et à se battre sans équipement.",
+      "force": "Endurance, volonté, chance et combat à mains nues.",
+      "faiblesse": "Charisme et réserve de mana diminués par des conditions de vie extrêmes."
+    },
+    {
+      "nom": "Orcs des steppes",
+      "description": "Nomades rapides qui combattent depuis les plaines avec lances, arcs et montures.",
+      "force": "Vitesse, armes mobiles, montures et esquive.",
+      "faiblesse": "Moins adaptés aux armures lourdes et aux combats statiques."
+    },
+    {
+      "nom": "Orcs noirs",
+      "description": "Culture guerrière brutale où la puissance et l’armure valent souvent plus qu’un long discours.",
+      "force": "Force, armes à deux mains, intimidation et équipement lourd.",
+      "faiblesse": "Vulnérabilité accrue à la foudre."
+    },
+    {
+      "nom": "Orcs des villes",
+      "description": "Orcs urbanisés, plus polyvalents, habitués aux ruelles, aux affaires et aux armes compactes.",
+      "force": "Intelligence, charisme, perception et armes urbaines.",
+      "faiblesse": "Moins à l’aise avec le combat lourd et moins courageux que leurs cousins guerriers."
+    },
+    {
+      "nom": "Gobelins des cavernes",
+      "description": "Habitants des profondeurs spécialisés dans les embuscades, les pièges et les endroits où personne ne veut aller.",
+      "force": "Perception, esquive, discrétion, dagues et poison.",
+      "faiblesse": "Intelligence académique et résistance au feu limitées."
+    },
+    {
+      "nom": "Caravanes de ferrailleurs",
+      "description": "Récupérateurs itinérants qui transforment n’importe quel débris en outil, arme ou commerce.",
+      "force": "Forge, artisanat, chance, intelligence et armes techniques.",
+      "faiblesse": "Courage et puissance magique modestes."
+    },
+    {
+      "nom": "Gobelins des villes",
+      "description": "Petits survivants des quartiers populaires, rapides à dégainer et encore plus rapides à disparaître.",
+      "force": "Dextérité, dagues et illusion.",
+      "faiblesse": "Force, courage et volonté faibles."
+    },
+    {
+      "nom": "Explorateurs",
+      "description": "Halflings voyageurs qui compensent leur taille par leur curiosité et leur instinct de survie.",
+      "force": "Perception, courage, chance, arcs et exploration.",
+      "faiblesse": "Peu adaptés aux armures lourdes."
+    },
+    {
+      "nom": "Halflings des cités humaines",
+      "description": "Halflings intégrés aux villes humaines, à l’aise dans le commerce, les réseaux et les métiers urbains.",
+      "force": "Charisme, intelligence, discrétion et armes à distance.",
+      "faiblesse": "Courage et volonté plus fragiles."
+    },
+    {
+      "nom": "Halflings des villages isolés",
+      "description": "Communautés rurales où la médecine, les petits enchantements et l’entraide valent plus que la force brute.",
+      "force": "Médecine, magie de la vie, enchantement et artisanat.",
+      "faiblesse": "Faibles en force et en endurance."
+    },
+    {
+      "nom": "Gnomes des forêts",
+      "description": "Naturalistes excentriques mêlant alchimie, enchantement et illusions.",
+      "force": "Alchimie, enchantement, perception et magie subtile.",
+      "faiblesse": "Aucune faiblesse marquée dans le profil actuel."
+    },
+    {
+      "nom": "Gnomes des cavernes",
+      "description": "Expérimentateurs souterrains fascinés par l’alchimie, les pièges et les magies peu rassurantes.",
+      "force": "Alchimie, pièges, enchantement, invocation et transmutation.",
+      "faiblesse": "Aucune faiblesse marquée dans le profil actuel."
+    },
+    {
+      "nom": "Gnomes des villes",
+      "description": "Artisans urbains rusés qui excellent à bricoler, négocier et disparaître dans la foule.",
+      "force": "Intendance, artisanat, intelligence, discrétion et illusion.",
+      "faiblesse": "Force physique limitée."
+    },
+    {
+      "nom": "Ogres des montagnes",
+      "description": "Ogres acclimatés aux hauteurs, aux monstres et aux conditions où les autres préfèrent faire demi-tour.",
+      "force": "Constitution, intimidation, grands monstres et résistance au froid.",
+      "faiblesse": "Aucune faiblesse culturelle marquée dans le profil actuel."
+    },
+    {
+      "nom": "Ogres des cités humaines",
+      "description": "Ogres ayant appris à survivre parmi les humains en développant davantage leur intelligence pratique.",
+      "force": "Intelligence et résistance au poison.",
+      "faiblesse": "Aucune faiblesse culturelle marquée dans le profil actuel."
+    },
+    {
+      "nom": "Ogres des steppes",
+      "description": "Nomades massifs habitués à la chaleur, aux longues marches et aux créatures dangereuses.",
+      "force": "Endurance, intimidation, grands monstres et résistance au feu.",
+      "faiblesse": "Aucune faiblesse culturelle marquée dans le profil actuel."
+    },
+    {
+      "nom": "Reptiliens des villes",
+      "description": "Reptiliens urbanisés, plus techniques et plus instruits que leurs cousins sauvages.",
+      "force": "Dextérité, intelligence, artisanat, télékinésie et savoir.",
+      "faiblesse": "Aucune faiblesse culturelle marquée dans le profil actuel."
+    },
+    {
+      "nom": "Reptiliens des marécages",
+      "description": "Chasseurs des zones humides, experts des poisons, de la discrétion et des terrains ingrats.",
+      "force": "Perception, poison, eau, discrétion, pièges et alchimie.",
+      "faiblesse": "Aucune faiblesse culturelle marquée dans le profil actuel."
+    },
+    {
+      "nom": "Reptiliens des cités-temples",
+      "description": "Gardien·nes d’une tradition savante où magie, médecine et rites sont étroitement liés.",
+      "force": "Enchantement, invocation, médecine, savoir et résistance à la foudre.",
+      "faiblesse": "Aucune faiblesse culturelle marquée dans le profil actuel."
+    },
+    {
+      "nom": "Tribus nordiques",
+      "description": "Hommes-bêtes des terres froides où survivre exige autant de muscles que de fourrure.",
+      "force": "Force, froid, haches et magie de l’eau.",
+      "faiblesse": "Aucune faiblesse culturelle marquée dans le profil actuel."
+    },
+    {
+      "nom": "Clans des grandes steppes",
+      "description": "Clans hommes-bêtes mobiles, endurcis par la chaleur et les combats rapides.",
+      "force": "Constitution, feu, sabres et résistance à la chaleur.",
+      "faiblesse": "Aucune faiblesse culturelle marquée dans le profil actuel."
+    },
+    {
+      "nom": "Tribus des forêts anciennes",
+      "description": "Prédateurs des bois profonds, familiers des pièges, des monstres et des magies inquiétantes.",
+      "force": "Discrétion, esquive, intimidation, monstres et nécromancie.",
+      "faiblesse": "Aucune faiblesse culturelle marquée dans le profil actuel."
+    }
+  ],
+  "ancestries": [
+    {
+      "nom": "Sang divin",
+      "description": "Une trace de puissance divine coule dans la lignée, rare et difficile à ignorer.",
+      "force": "Chance, magie, réserve de mana et affinité avec la vie.",
+      "faiblesse": "Aucune faiblesse directe ; sa rareté en fait surtout une lignée exceptionnelle."
+    },
+    {
+      "nom": "Sang de dragon",
+      "description": "La lignée porte quelque chose de draconique : puissance, chaleur et présence physique.",
+      "force": "Force, feu, résistance au feu et combat naturel.",
+      "faiblesse": "Profil très orienté puissance brute et feu."
+    },
+    {
+      "nom": "Sang de djinn",
+      "description": "Une ascendance liée aux esprits élémentaires apporte mobilité, énergie et magie.",
+      "force": "Mana, foudre, esquive, illusion et combat rapide.",
+      "faiblesse": "Profil spécialisé, moins tourné vers la robustesse pure."
+    },
+    {
+      "nom": "Sang d’elfe",
+      "description": "Une branche elfique a laissé sa marque dans les réflexes, l’esprit et la silhouette.",
+      "force": "Dextérité, esquive, intelligence et lames fines.",
+      "faiblesse": "Apporte surtout de la finesse, peu de puissance physique."
+    },
+    {
+      "nom": "Sang de sirène",
+      "description": "Le sang marin donne une présence fascinante et une affinité naturelle avec le froid et l’eau.",
+      "force": "Charisme, froid, eau, chance et tridents.",
+      "faiblesse": "Peu d’avantages pour les rôles purement physiques."
+    },
+    {
+      "nom": "Sang de troll",
+      "description": "Une lignée troll se reconnaît à sa vitalité anormale et à sa difficulté à rester au sol.",
+      "force": "Endurance, régénération, force et résistance physique.",
+      "faiblesse": "Peu d’avantages pour la magie ou la finesse."
+    },
+    {
+      "nom": "Sang féerique",
+      "description": "Quelque chose de féerique rend le personnage chanceux, étrange et naturellement magique.",
+      "force": "Chance, magie, vitesse, illusion et magie de la vie.",
+      "faiblesse": "Peu d’apport en résistance ou en puissance brute."
+    },
+    {
+      "nom": "Sang de démon",
+      "description": "Une lignée démoniaque pousse vers la force, l’intimidation et les solutions excessives.",
+      "force": "Force, combat brutal, intimidation et armes lourdes.",
+      "faiblesse": "Peu d’avantages pour les rôles subtils ou défensifs."
+    },
+    {
+      "nom": "Sang d’humain",
+      "description": "Une branche humaine apporte surtout une capacité à tenir, convaincre et prendre sa place parmi les autres.",
+      "force": "Courage et charisme.",
+      "faiblesse": "Bonus plus modestes et moins spécialisés que les lignées surnaturelles."
+    },
+    {
+      "nom": "Sang d’orc",
+      "description": "Une ascendance orque renforce le physique et l’instinct du combattant.",
+      "force": "Force, endurance, haches et armes contondantes.",
+      "faiblesse": "Apporte peu aux profils magiques ou intellectuels."
+    },
+    {
+      "nom": "Sang de dryade",
+      "description": "Une lignée liée aux esprits végétaux favorise intelligence, perception et magie naturelle.",
+      "force": "Intelligence, poison, mana, perception et transmutation.",
+      "faiblesse": "Peu d’avantages pour le combat lourd."
+    }
+  ],
+  "origins": [
+    {
+      "nom": "Érudit",
+      "description": "A grandi dans les livres, les laboratoires ou auprès de personnes qui savaient expliquer pourquoi ça explose.",
+      "force": "Intelligence, alchimie, enchantement et transmission du savoir.",
+      "faiblesse": "Constitution moins développée par une vie peu physique."
+    },
+    {
+      "nom": "Paysan / Ouvrier",
+      "description": "A appris très tôt à travailler avec ses mains, porter lourd et réparer ce qui casse.",
+      "force": "Constitution, artisanat, forge et armes simples.",
+      "faiblesse": "Perception tactique moins développée."
+    },
+    {
+      "nom": "Soldat / Guerrier / Combattant",
+      "description": "A déjà connu l’entraînement, les ordres et probablement quelqu’un qui criait « formation ! ».",
+      "force": "Force, armes militaires, boucliers et expérience du combat.",
+      "faiblesse": "Formation intellectuelle plus limitée."
+    },
+    {
+      "nom": "Esclave",
+      "description": "A survécu à une vie où l’endurance et la volonté comptaient davantage que les bonnes manières.",
+      "force": "Endurance, volonté, résistance et combat sans équipement.",
+      "faiblesse": "Peu d’occasions et une chance rarement favorable."
+    },
+    {
+      "nom": "Commerçant",
+      "description": "Sait compter, négocier, organiser et reconnaître une mauvaise affaire — parfois après l’avoir signée.",
+      "force": "Charisme, intendance, intelligence et artisanat.",
+      "faiblesse": "Moins de force physique et d’expérience du combat lourd."
+    },
+    {
+      "nom": "Hors-la-loi",
+      "description": "A vécu assez longtemps hors des règles pour savoir quand frapper, fuir ou mentir.",
+      "force": "Dextérité, discrétion, pièges et combat à deux armes.",
+      "faiblesse": "Courage moins fiable lorsque la situation tourne vraiment mal."
+    },
+    {
+      "nom": "Noble",
+      "description": "A grandi avec des privilèges, une éducation coûteuse et l’idée très pratique que quelqu’un d’autre porterait les bagages.",
+      "force": "Chance, équitation, intendance et armes de prestige.",
+      "faiblesse": "Endurance moindre face aux conditions difficiles."
+    }
+  ],
+  "alignments": [
+    {
+      "nom": "Loyal bon",
+      "description": "Cherche à faire le bien sans renoncer aux règles, aux serments et à la responsabilité.",
+      "force": "Fiable, coopératif et naturellement porté vers le devoir.",
+      "faiblesse": "Peut devenir rigide lorsqu’une bonne action exige de contourner les règles."
+    },
+    {
+      "nom": "Neutre bon",
+      "description": "Veut généralement aider les autres, mais juge les actes davantage que les lois ou les traditions.",
+      "force": "Compassion et pragmatisme.",
+      "faiblesse": "Ses convictions personnelles peuvent passer avant la discipline du groupe."
+    },
+    {
+      "nom": "Chaotique bon",
+      "description": "Défend les autres et la liberté, surtout lorsqu’une autorité prétend savoir ce qui est bon pour tout le monde.",
+      "force": "Initiative, indépendance et capacité à improviser.",
+      "faiblesse": "Supporte mal la hiérarchie et les plans trop contraignants."
+    },
+    {
+      "nom": "Loyal neutre",
+      "description": "Accorde plus de valeur à l’ordre, au devoir et aux engagements qu’aux sentiments du moment.",
+      "force": "Discipline, constance et respect des responsabilités.",
+      "faiblesse": "Peut suivre une règle même lorsqu’elle produit un résultat discutable."
+    },
+    {
+      "nom": "Neutre",
+      "description": "Évite les grands absolus et préfère s’adapter aux personnes, aux circonstances et aux conséquences.",
+      "force": "Souplesse et capacité à chercher un compromis.",
+      "faiblesse": "Ses engagements peuvent sembler moins clairs aux personnalités très idéologiques."
+    },
+    {
+      "nom": "Chaotique neutre",
+      "description": "Place sa liberté personnelle au-dessus des règles et préfère décider au cas par cas.",
+      "force": "Imprévisible, adaptable et difficile à enfermer dans un rôle.",
+      "faiblesse": "Discipline et fiabilité collective peuvent en souffrir."
+    },
+    {
+      "nom": "Loyal mauvais",
+      "description": "Utilise règles, hiérarchie et contrats comme des outils efficaces au service de ses propres intérêts.",
+      "force": "Discipline, ambition et sens de l’organisation.",
+      "faiblesse": "Cruauté et rigidité peuvent empoisonner les relations."
+    },
+    {
+      "nom": "Neutre mauvais",
+      "description": "Place son intérêt personnel en premier sans attachement particulier à l’ordre ou au chaos.",
+      "force": "Pragmatisme, instinct de survie et absence de scrupules.",
+      "faiblesse": "Loyauté fragile dès que le coût devient supérieur au bénéfice."
+    },
+    {
+      "nom": "Chaotique mauvais",
+      "description": "Suit ses pulsions, sa colère ou son ambition et considère volontiers la violence comme une solution.",
+      "force": "Audace, intimidation et capacité à agir sans hésiter.",
+      "faiblesse": "Instable, difficile à contrôler et dangereux pour la cohésion du groupe."
+    }
+  ]
+}

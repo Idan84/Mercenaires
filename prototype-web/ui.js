@@ -705,6 +705,7 @@ function openSetup() {
 
 function showFatal(error) {
   console.error(error);
+  $("engine-audit").classList.add("audit-error");
   $("audit-status").textContent = "Erreur moteur";
   $("audit-status").classList.add("badge-warn");
   $("audit-metrics").innerHTML = `<div class="fatal-error">${esc(error.message || error)}</div>`;
@@ -722,8 +723,10 @@ async function init() {
     initializeMissionUi();
     initializeTavernUi();
     initializeSaveUi();
+    initializeScreenUi();
+    initializeIntroUi();
 
-    $("new-game-btn").addEventListener("click", openSetup);
+    $("new-game-btn").addEventListener("click", openIntro);
     $("cancel-setup-btn").addEventListener("click", () => $("setup-panel").classList.add("hidden"));
     $("captain-people").addEventListener("change", updateCultureSelect);
     $("captain-culture").addEventListener("change", updateOriginSelect);
@@ -761,7 +764,7 @@ async function init() {
       renderSheet();
       $("character-dialog").scrollTop = 0;
     });
-    openSetup();
+    // Le jeu démarre sur le menu principal (accueil) ; « Nouvelle partie » ouvre la création.
   } catch (error) {
     showFatal(error);
   }

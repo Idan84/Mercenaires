@@ -6,7 +6,7 @@
   <title>Blood &amp; Wages — Prototype</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
-<body>
+<body data-screen="home">
   <main class="app-shell">
     <header class="topbar">
       <div class="brand-block">
@@ -19,12 +19,50 @@
           height="450"
         />
       </div>
-      <div class="top-actions">
-        <a class="secondary link-button" href="/design/">Design Lab</a>
-        <button id="continue-game-btn" class="secondary hidden">Continuer</button>
-        <button id="new-game-btn" class="primary">New Game</button>
-      </div>
+      <nav class="main-menu" aria-label="Menu principal">
+        <button id="new-game-btn" class="menu-btn"><span>Nouvelle partie</span><i class="menu-btn-line"></i></button>
+        <button id="load-game-btn" class="menu-btn" disabled title="Bientôt : plusieurs sauvegardes"><span>Charger partie</span><i class="menu-btn-line"></i></button>
+        <button id="continue-game-btn" class="menu-btn" disabled><span>Continuer</span><small id="continue-game-detail"></small><i class="menu-btn-line"></i></button>
+        <button id="settings-btn" class="menu-btn" disabled title="Bientôt"><span>Paramètres</span><i class="menu-btn-line"></i></button>
+        <a class="menu-btn" href="/design/"><span>Design Lab</span><i class="menu-btn-line"></i></a>
+      </nav>
+      <button id="back-to-menu-btn" class="secondary menu-back" title="Revenir au menu principal (la partie est sauvegardée)">Menu</button>
     </header>
+
+    <!-- Introduction (texte et voix d'Idan) puis création guidée du capitaine : intro-ui.js. -->
+    <section id="intro-panel" class="intro hidden" aria-label="Introduction">
+      <div class="intro-scene">
+        <div id="intro-text" class="intro-text">
+          <p>C’est terminé… Ils ont gagné, ces bâtards.</p>
+          <p>Garreth est mort. Ses hommes ont leurs viscères qui décorent la herse.</p>
+          <p>Ludwig aussi. Enfin… Ludwig, ça ne devrait surprendre personne. Je lui avais dit de ne pas charger une ligne d’orques avec douze hommes et une chèvre.</p>
+          <p>Et moi… Moi, je crois que mon compte est bon.</p>
+          <p>Écoute-moi, petit. J’ai toujours cru en toi ! En ton potentiel, en ta force. En ta détermination. Et aussi, je pense que tu es le dernier debout.</p>
+          <p>Tu as donc pour mission de nous venger. Prends la chevalière de la compagnie. Et fais-les payer !</p>
+          <p class="intro-question">C’est toi le capitaine… Bob ? … Tu t’appelles bien Bob ?</p>
+        </div>
+        <div class="intro-actions">
+          <button id="not-bob-btn" class="menu-btn intro-cta"><span>Vous n’êtes pas Bob ?</span><i class="menu-btn-line"></i></button>
+          <button id="intro-skip-btn" class="intro-skip">Passer ▸</button>
+        </div>
+      </div>
+      <button id="intro-exit-btn" class="intro-exit" title="Revenir au menu" aria-label="Revenir au menu">✕</button>
+    </section>
+
+    <section id="creation-wizard" class="wizard hidden" aria-label="Création du capitaine">
+      <div class="wizard-frame">
+        <header class="wizard-head">
+          <p id="wizard-step-label" class="wizard-step"></p>
+          <h2 id="wizard-title"></h2>
+        </header>
+        <div id="wizard-body" class="wizard-body"></div>
+        <footer class="wizard-nav">
+          <button id="wizard-prev-btn" class="menu-btn wizard-btn"><span>Précédent</span><i class="menu-btn-line"></i></button>
+          <button id="wizard-next-btn" class="menu-btn wizard-btn"><span>Suivant</span><i class="menu-btn-line"></i></button>
+        </footer>
+      </div>
+      <button id="wizard-exit-btn" class="intro-exit" title="Revenir au menu" aria-label="Revenir au menu">✕</button>
+    </section>
 
     <section id="engine-audit" class="panel audit-panel">
       <div class="section-title-row">
@@ -72,7 +110,7 @@
       <p class="eyebrow">Game Over</p>
       <h2>La compagnie est dissoute</h2>
       <p id="game-over-text"></p>
-      <p class="muted">Lance une nouvelle partie avec « New Game ».</p>
+      <p class="muted">Reviens au menu pour lancer une nouvelle partie.</p>
     </section>
 
     <section id="game-panel" class="hidden">
@@ -218,6 +256,8 @@
     <div id="dialog-content" role="tabpanel"></div>
   </dialog>
 
+  <audio id="intro-audio" src="assets/audio/intro.mp3" preload="auto" loop></audio>
+
   <script src="/core/mercenary-generator.js"></script>
   <script src="/core/combat-engine.js"></script>
   <script src="/core/tavern.js"></script>
@@ -225,6 +265,7 @@
   <script src="/core/biography.js"></script>
   <script src="/core/avatars.js"></script>
   <script src="/core/mission-end.js"></script>
+  <script src="/core/creation.js"></script>
   <script src="reference-data.js"></script>
   <script src="core-data.js"></script>
   <script src="generation.js"></script>
@@ -233,6 +274,9 @@
   <script src="picto-ui.js"></script>
   <script src="tavern-ui.js"></script>
   <script src="save-ui.js"></script>
+  <script src="screen-ui.js"></script>
+  <script src="intro-ui.js"></script>
+  <script src="intro-audio.js"></script>
   <script src="ui.js"></script>
 </body>
 </html>

@@ -259,4 +259,28 @@ assert.equal(s8.company.gold,-50);
 assert.equal(end.gameOver,true);
 assert.deepEqual(s8.gameOver,{day:1,reason:"captain-dead"});
 
+// Escouade initiale sous contrat (décision Idan, 2026-10-04) et salaires journaliers (09-reputation §6).
+const s9=stable.createCampaign({captain,squad:[5,6,7].map(id=>generator.createMercenary({id,captain}))});
+const [boss,...crew]=s9.company.roster;
+assert.equal(boss.contract,undefined,"le capitaine n'a pas de contrat");
+for(const m of crew){
+  assert.deepEqual(m.contract,{dailySalary:m.salary,missionBonus:tavern.missionBonusDemand(m),signedDay:1,initial:true},"contrat aux conditions demandées");
+}
+const daily=crew.reduce((sum,m)=>sum+m.salary,0);
+assert.equal(stable.payroll(s9),daily);
+const gold9=s9.company.gold;
+const [pay]=stable.advanceTime(s9,1);
+assert.deepEqual(pay.salaries,{total:daily,count:crew.length});
+assert.equal(s9.company.gold,gold9-daily,"un jour de salaires versé");
+stable.advanceTime(s9,2);
+assert.equal(s9.company.gold,gold9-3*daily,"trois jours de salaires");
+crew[0].recovery={kind:"wounded",daysLeft:10,sinceDay:4};
+assert.equal(stable.payroll(s9),daily,"les blessés restent payés (politique des blessés à venir)");
+// Ancienne sauvegarde sans contrats initiaux : complétée, puis rien à faire.
+const old9=restoreCampaign(serializeCampaign(s9)).state;
+for(const m of old9.company.roster) delete m.contract;
+assert.equal(stable.ensureInitialContracts(old9),true);
+assert.equal(old9.company.roster.filter(m=>m.contract).length,crew.length);
+assert.equal(stable.ensureInitialContracts(old9),false);
+
 console.log(JSON.stringify({ok:true},null,2));

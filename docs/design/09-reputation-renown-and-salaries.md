@@ -241,6 +241,14 @@ Le coefficient \(3\) est une constante d'échelle de playtest. Le salaire demand
 
 La négociation conjointe **Salaire + Prime de mission** est définie dans [Taverne — recrutement V1](/design/#doc=14-tavern-recruitment.md).
 
+### Contrats et paie — implémentation V1
+
+- **L’escouade initiale est sous contrat** (décision Idan, 2026-10-04), aux conditions qu’elle demande : salaire demandé et prime de mission demandée. Le capitaine n’a pas de contrat.
+- Les recrues de la Taverne gardent le contrat négocié (`14-tavern-recruitment.md`).
+- Le **salaire contractuel est versé chaque jour** par `AdvanceTime`, après la guérison et avant la Taverne, à tous les membres sous contrat. Les blessés et les fatigués sont payés à 100 % tant que la politique des blessés (§7) n’existe pas.
+- La prime de mission est payée au retour de mission (`10-mission-time-and-unavailability.md` §8 et §11).
+- Si l’or manque, le trésor passe sous 0. Aucune conséquence n’est encore définie (question ouverte).
+
 ## 7 — Politique des blessés — « T’es pas à la Sécu ici »
 
 La compagnie pourra définir un **taux de salaire des blessés de 0 à 100 %**.

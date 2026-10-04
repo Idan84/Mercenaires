@@ -47,6 +47,7 @@ function renderCompanyMeta(){
   $("company-gold").classList.toggle("negative",c.company.gold<0);
   $("company-day").textContent=c.day;
   $("company-dorm").textContent=c.company.roster.length+" / "+c.company.camp.dormitoryCapacity;
+  $("company-payroll").textContent=fmt(campaignRules().payroll(c));
 }
 
 function profileText(shown){
@@ -117,6 +118,7 @@ function advanceTavernDay(){
   if(!game.campaign) return;
   const [report]=campaignRules().advanceTime(game.campaign,1);
   for(const r of report.recovered) tavernLog(r.mercenary.name+(r.kind==="wounded"?" est guéri de ses blessures.":" est reposé."),"turn");
+  if(report.salaries.total) tavernLog("Salaires versés : "+fmt(report.salaries.total)+" PO ("+report.salaries.count+" mercenaires sous contrat).","gear");
   const gone=report.tavern.departures.map(d=>d.candidate.mercenary.name);
   const arrived=report.tavern.arrivals.map(a=>a.mercenary.name);
   tavernLog(gone.length?"Engagés ailleurs pendant la nuit : "+gone.join(", ")+".":"Personne n’a été engagé ailleurs cette nuit.",gone.length?"bad":"info");

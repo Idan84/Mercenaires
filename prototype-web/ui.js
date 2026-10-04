@@ -724,8 +724,9 @@ async function init() {
     initializeTavernUi();
     initializeSaveUi();
     initializeScreenUi();
+    initializeIntroUi();
 
-    $("new-game-btn").addEventListener("click", openSetup);
+    $("new-game-btn").addEventListener("click", openIntro);
     $("cancel-setup-btn").addEventListener("click", () => $("setup-panel").classList.add("hidden"));
     $("captain-people").addEventListener("change", updateCultureSelect);
     $("captain-culture").addEventListener("change", updateOriginSelect);

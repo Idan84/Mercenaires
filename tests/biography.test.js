@@ -118,15 +118,21 @@ for(let i=1;i<=40;i++){ const b=real.assign(generator.createMercenary({id:i}),co
 assert.equal(new Set(given).size,given.length,"aucune bio en double dans la compagnie");
 assert.ok(given.length>=5,"le catalogue d'exemple sert au moins à quelques mercenaires");
 
-// Campagne : bios attribuées à la création et à l'arrivée en Taverne, jamais réutilisées, conservées par la sauvegarde.
+// Campagne : bios attribuées aux membres de la compagnie (création, puis recrutement), jamais à la Taverne
+// (décision Idan du 2026-10-04), jamais réutilisées, conservées par la sauvegarde.
 const {createTavernRules}=require("../game-core/tavern.js");
 const {createCampaignRules,serializeCampaign,restoreCampaign}=require("../game-core/campaign.js");
 const tavernRules=createTavernRules({reference,random:()=>0.999});
 const campaignRules=createCampaignRules({generator,tavern:tavernRules,reference,biographies:createBiographyRules({catalog})});
 const captain=generator.createCaptain({id:1});
 const state=campaignRules.createCampaign({captain,squad:[2,3,4].map(id=>generator.createMercenary({id,captain}))});
-const bios=[...state.company.roster,...state.tavern.candidates.map(c=>c.mercenary)].map(m=>m.biography?.id).filter(Boolean);
-assert.ok(bios.length>0);
+assert.ok(state.tavern.candidates.every(c=>!c.mercenary.biography),"pas de bio à la Taverne");
+const recruit=state.tavern.candidates[0];
+recruit.negotiation={...(recruit.negotiation||{}),agreed:{salary:50,bonus:150}};
+assert.equal(campaignRules.signCandidate(state,recruit.mercenary.id).ok,true);
+assert.ok(recruit.mercenary.biography?.id,"bio découverte au recrutement");
+const bios=state.company.roster.map(m=>m.biography?.id).filter(Boolean);
+assert.ok(bios.length>1);
 assert.equal(new Set(bios).size,bios.length,"bios uniques dans la partie");
 assert.deepEqual([...state.biographiesUsed].sort(),[...bios].sort());
 const reloaded=restoreCampaign(serializeCampaign(state)).state;

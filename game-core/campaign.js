@@ -54,7 +54,8 @@
     function rosterOf(state){ return state.company.roster; }
 
     // Biographie figée sur le mercenaire ; une bio n'est jamais réutilisée dans une même sauvegarde,
-    // même après la mort de son mercenaire (proposition Chatty, doc 15).
+    // même après la mort de son mercenaire (proposition Chatty, doc 15). Seuls les membres de la
+    // compagnie en ont une : la bio est découverte au recrutement, pas à la Taverne (Idan, 2026-10-04).
     function assignBiography(state,mercenary){
       if(!biographies||mercenary.biography?.id) return mercenary.biography||null;
       state.biographiesUsed=state.biographiesUsed||[];
@@ -64,26 +65,22 @@
       return bio;
     }
 
-    // Parties sauvegardées avant les biographies : on complète ceux qui n'en ont pas.
+    // Parties sauvegardées avant les biographies : on complète les membres qui n'en ont pas.
     // Renvoie true si l'état a changé, pour que l'interface le sauvegarde aussitôt (review Chatty, PR #34).
     function ensureBiographies(state){
       const before=JSON.stringify(state.biographiesUsed||null);
       state.biographiesUsed=state.biographiesUsed||[];
-      const everyone=()=>[...rosterOf(state),...state.tavern.candidates.map(c=>c.mercenary)];
-      for(const m of everyone()){
+      const everyone=[...rosterOf(state),...state.tavern.candidates.map(c=>c.mercenary)];
+      for(const m of everyone){
         if(m.biography?.id&&!state.biographiesUsed.includes(m.biography.id)) state.biographiesUsed.push(m.biography.id);
       }
-      for(const m of everyone()) assignBiography(state,m);
+      for(const m of rosterOf(state)) assignBiography(state,m);
       return JSON.stringify(state.biographiesUsed)!==before;
     }
 
     // Un candidat de la Taverne est généré avec les biais du capitaine, comme tout nouveau mercenaire.
     function candidateFactory(state){
-      return ()=>{
-        const mercenary=generator.createMercenary({id:state.nextId++,captain:state.company.roster.find(m=>m.id===state.company.captainId)||null});
-        assignBiography(state,mercenary);
-        return mercenary;
-      };
+      return ()=>generator.createMercenary({id:state.nextId++,captain:state.company.roster.find(m=>m.id===state.company.captainId)||null});
     }
 
     function createCampaign({captain,squad=[],companyName=null}){
@@ -156,6 +153,7 @@
       const mercenary=candidate.mercenary;
       mercenary.contract={dailySalary:agreed.salary,missionBonus:agreed.bonus,signedDay:state.day};
       rosterOf(state).push(mercenary);
+      assignBiography(state,mercenary);
       tavern.removeCandidate(state.tavern,candidate);
       return {ok:true,mercenary};
     }

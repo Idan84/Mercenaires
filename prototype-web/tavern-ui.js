@@ -62,7 +62,7 @@ function renderTavernCard(candidate){
     ${renderAvatar(candidate.mercenary,{variant:"card"})}
     <header>
       <strong>${esc(shown.name)}</strong>
-      <small>${esc(shown.people)} · ${esc(shown.culture)}</small>
+      <small>${renderPicto("people",shown.people,{size:"xs"})}${esc(shown.people)} · ${esc(shown.culture)}</small>
     </header>
     <dl>
       <div><dt>Profil</dt><dd>${esc(profileText(shown))}</dd></div>
@@ -167,7 +167,7 @@ function renderInterview(){
       ${renderAvatar(candidate.mercenary,{variant:"interview"})}
       <div>
     <div class="identity-grid">
-      <div class="metric"><small>Peuple</small><strong>${esc(shown.people)}</strong></div>
+      <div class="metric"><small>Peuple</small><strong>${renderPicto("people",shown.people,{size:"md"})}${esc(shown.people)}</strong></div>
       <div class="metric"><small>Culture</small><strong>${esc(shown.culture)}</strong></div>
       <div class="metric"><small>Profil</small><strong>${esc(profileText(shown))}</strong></div>
       <div class="metric"><small>Réputation</small><strong>${fmt(shown.reputation)}</strong></div>

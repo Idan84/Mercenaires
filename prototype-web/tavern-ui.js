@@ -10,9 +10,14 @@ function tavernRules(){
   return game.tavernRules;
 }
 
+function biographyRules(){
+  if(!game.biographyRules) game.biographyRules=MercenairesBiography.createBiographyRules({catalog:game.referenceData.biographies?.rows||[]});
+  return game.biographyRules;
+}
+
 function campaignRules(){
   if(!game.campaignRules){
-    game.campaignRules=MercenairesCampaign.createCampaignRules({generator:game.generator,tavern:tavernRules(),reference:game.referenceData});
+    game.campaignRules=MercenairesCampaign.createCampaignRules({generator:game.generator,tavern:tavernRules(),reference:game.referenceData,biographies:biographyRules()});
   }
   return game.campaignRules;
 }

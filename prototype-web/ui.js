@@ -545,6 +545,7 @@ function renderProfileTab(c) {
     <section class="character-overview">
       ${renderAvatar(c,{variant:"detail"})}
       <div class="character-overview-copy">
+        ${renderBiography(c)}
         <div class="identity-grid">
           <div class="metric"><small>Peuple</small><strong>${esc(c.people)}</strong></div>
           <div class="metric"><small>Culture</small><strong>${esc(c.culture)}</strong></div>
@@ -563,8 +564,26 @@ function renderProfileTab(c) {
         </div>
       </div>
     </section>
-    ${renderSituation(c)}
-    <p class="character-bio-placeholder"><strong>Biographie</strong><span>Le moteur de bios tagué viendra ici : courte, personnelle, parfois héroïque, souvent douteuse.</span></p>`;
+    ${renderSituation(c)}`;
+}
+
+// Biographie figée sur le mercenaire (game-core/biography.js). Hors campagne (banc de test),
+// elle est attribuée à la première ouverture de la fiche, sans réutilisation dans la session.
+function renderBiography(c) {
+  if (!c.biography?.id && !game.campaign?.company.roster.includes(c)) {
+    game.biographiesUsed = game.biographiesUsed || new Set(game.campaign?.biographiesUsed || []);
+    biographyRules().assign(c, game.biographiesUsed);
+  }
+  const bio = biographyRules().render(c);
+  if (!bio) {
+    return `<p class="character-bio-placeholder"><strong>Biographie</strong><span>Pas encore de biographie : la banque n’en contient que ${biographyRules().packs.length} pour l’instant, et une bio ne sert qu’une fois par partie.</span></p>`;
+  }
+  return `<section class="character-bio">
+    <strong>Biographie</strong>
+    <p>${esc(bio.short)}</p>
+    ${bio.rumor ? `<p class="bio-rumor">${esc(bio.rumor)}</p>` : ""}
+    ${bio.motto ? `<p class="bio-motto">« ${esc(bio.motto)} »</p>` : ""}
+  </section>`;
 }
 
 function renderStatsTab(c) {

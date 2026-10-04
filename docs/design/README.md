@@ -22,6 +22,7 @@ Archive historique : ../../archive/notion-export/
 - [12-magic.md](./12-magic.md)
 - [13-fleeing.md](./13-fleeing.md)
 - [14-tavern-recruitment.md](./14-tavern-recruitment.md)
+- [15-biographies-and-narrative-tags.md](./15-biographies-and-narrative-tags.md)
 - [90-mechanics-backlog.md](./90-mechanics-backlog.md)
 - [91-combat-ideas.md](./91-combat-ideas.md)
 - [92-balance-questions.md](./92-balance-questions.md)

@@ -1,6 +1,6 @@
 {
   "source": "Généré par scripts/build-avatars.js depuis assets-src/avatars/ (tags Bridge d'Idan). Ne pas modifier à la main.",
-  "row_count": 33,
+  "row_count": 47,
   "rows": [
     {
       "id": "halfling-001",
@@ -298,6 +298,198 @@
       "full": "ogre-019_full.webp",
       "portrait": "ogre-019_portrait.webp",
       "source": "Ogres/Ogre_19_20261004203100.jpg"
+    },
+    {
+      "id": "reptilien-001",
+      "people": "Reptilien",
+      "sex": "homme",
+      "tags": {
+        "weapon": [
+          "Trident"
+        ]
+      },
+      "full": "reptilien-001_full.webp",
+      "portrait": "reptilien-001_portrait.webp",
+      "source": "Reptiliens/Reptilien_1_20261004203034.jpg"
+    },
+    {
+      "id": "reptilien-002",
+      "people": "Reptilien",
+      "sex": "femme",
+      "tags": {
+        "profile": [
+          "magic"
+        ],
+        "magic": [
+          "Eau"
+        ]
+      },
+      "full": "reptilien-002_full.webp",
+      "portrait": "reptilien-002_portrait.webp",
+      "source": "Reptiliens/Reptilien_2_20261004203034.jpg"
+    },
+    {
+      "id": "reptilien-003",
+      "people": "Reptilien",
+      "sex": "homme",
+      "tags": {
+        "profile": [
+          "magic"
+        ],
+        "magic": [
+          "Feu"
+        ]
+      },
+      "full": "reptilien-003_full.webp",
+      "portrait": "reptilien-003_portrait.webp",
+      "source": "Reptiliens/Reptilien_3_20261004203034.jpg"
+    },
+    {
+      "id": "reptilien-004",
+      "people": "Reptilien",
+      "sex": "femme",
+      "tags": {
+        "profile": [
+          "magic"
+        ],
+        "magic": [
+          "Feu"
+        ]
+      },
+      "full": "reptilien-004_full.webp",
+      "portrait": "reptilien-004_portrait.webp",
+      "source": "Reptiliens/Reptilien_4_20261004203034.jpg"
+    },
+    {
+      "id": "reptilien-005",
+      "people": "Reptilien",
+      "sex": "homme",
+      "tags": {},
+      "full": "reptilien-005_full.webp",
+      "portrait": "reptilien-005_portrait.webp",
+      "source": "Reptiliens/Reptilien_5_20261004203034.jpg"
+    },
+    {
+      "id": "reptilien-006",
+      "people": "Reptilien",
+      "sex": "femme",
+      "tags": {
+        "weapon": [
+          "Trident"
+        ]
+      },
+      "full": "reptilien-006_full.webp",
+      "portrait": "reptilien-006_portrait.webp",
+      "source": "Reptiliens/Reptilien_6_20261004203034.jpg"
+    },
+    {
+      "id": "reptilien-007",
+      "people": "Reptilien",
+      "sex": "femme",
+      "tags": {
+        "weapon": [
+          "Arc"
+        ]
+      },
+      "full": "reptilien-007_full.webp",
+      "portrait": "reptilien-007_portrait.webp",
+      "source": "Reptiliens/Reptilien_7_20261004203034.jpg"
+    },
+    {
+      "id": "reptilien-008",
+      "people": "Reptilien",
+      "sex": "homme",
+      "tags": {},
+      "full": "reptilien-008_full.webp",
+      "portrait": "reptilien-008_portrait.webp",
+      "source": "Reptiliens/Reptilien_8_20261004203034.jpg"
+    },
+    {
+      "id": "reptilien-009",
+      "people": "Reptilien",
+      "sex": "femme",
+      "tags": {
+        "weapon": [
+          "Trident"
+        ]
+      },
+      "full": "reptilien-009_full.webp",
+      "portrait": "reptilien-009_portrait.webp",
+      "source": "Reptiliens/Reptilien_9_20261004203034.jpg"
+    },
+    {
+      "id": "reptilien-010",
+      "people": "Reptilien",
+      "sex": "homme",
+      "tags": {
+        "weapon": [
+          "Trident"
+        ]
+      },
+      "full": "reptilien-010_full.webp",
+      "portrait": "reptilien-010_portrait.webp",
+      "source": "Reptiliens/Reptilien_10_20261004203034.jpg"
+    },
+    {
+      "id": "reptilien-011",
+      "people": "Reptilien",
+      "sex": "femme",
+      "tags": {
+        "weapon": [
+          "Arc"
+        ]
+      },
+      "full": "reptilien-011_full.webp",
+      "portrait": "reptilien-011_portrait.webp",
+      "source": "Reptiliens/Reptilien_11_20261004203034.jpg"
+    },
+    {
+      "id": "reptilien-012",
+      "people": "Reptilien",
+      "sex": "homme",
+      "tags": {
+        "weapon": [
+          "Lance"
+        ]
+      },
+      "full": "reptilien-012_full.webp",
+      "portrait": "reptilien-012_portrait.webp",
+      "source": "Reptiliens/Reptilien_12_20261004203034.jpg"
+    },
+    {
+      "id": "reptilien-014",
+      "people": "Reptilien",
+      "sex": "femme",
+      "tags": {
+        "profile": [
+          "magic"
+        ],
+        "magic": [
+          "Foudre"
+        ]
+      },
+      "full": "reptilien-014_full.webp",
+      "portrait": "reptilien-014_portrait.webp",
+      "source": "Reptiliens/Reptilien_14_20261004203034.jpg"
+    },
+    {
+      "id": "reptilien-015",
+      "people": "Reptilien",
+      "sex": "homme",
+      "tags": {
+        "profile": [
+          "magic"
+        ],
+        "magic": [
+          "Foudre"
+        ],
+        "weapon": [
+          "Trident"
+        ]
+      },
+      "full": "reptilien-015_full.webp",
+      "portrait": "reptilien-015_portrait.webp",
+      "source": "Reptiliens/Reptilien_15_20261004203034.jpg"
     }
   ]
 }

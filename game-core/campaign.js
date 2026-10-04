@@ -48,7 +48,8 @@
 
   // generator : createGenerator(...) ; tavern : createTavernRules(...) ; reference : data/reference/ ;
   // biographies (facultatif) : createBiographyRules(...) de game-core/biography.js.
-  function createCampaignRules({generator,tavern,reference,biographies=null}){
+  // avatars (facultatif) : createAvatarRules(...) de game-core/avatars.js.
+  function createCampaignRules({generator,tavern,reference,biographies=null,avatars=null}){
     const STARTING_GOLD=referenceConstant(reference,"company.gold.initial",10000);
     const STARTING_DORMITORY_CAPACITY=referenceConstant(reference,"camp.dormitory.initial_capacity",40);
     function rosterOf(state){ return state.company.roster; }
@@ -63,6 +64,31 @@
       const bio=biographies.assign(mercenary,used);
       if(bio&&!state.biographiesUsed.includes(bio.id)) state.biographiesUsed.push(bio.id);
       return bio;
+    }
+
+    // Avatars (décisions Idan du 2026-10-04) : attribués dès la création de la compagnie et dès
+    // l'arrivée à la Taverne, puisque la carte du candidat montre son visage. Un visage n'est jamais
+    // porté par deux mercenaires présents (compagnie et Taverne) ; un candidat qui repart libère le
+    // sien ; celui d'un mort n'est plus attribué (state.avatarsRetired).
+    function avatarsInUse(state){
+      const present=[...rosterOf(state),...state.tavern.candidates.map(c=>c.mercenary)];
+      return new Set([...present.map(m=>m.avatar?.id).filter(Boolean),...(state.avatarsRetired||[])]);
+    }
+
+    function assignAvatar(state,mercenary){
+      if(!avatars) return mercenary.avatar||null;
+      return avatars.assign(mercenary,avatarsInUse(state));
+    }
+
+    // Parties sauvegardées avant les avatars, nouveaux avatars ajoutés au catalogue, avatar retiré du
+    // catalogue : on complète. Renvoie true si l'état a changé, pour que l'interface sauvegarde.
+    function ensureAvatars(state){
+      if(!avatars) return false;
+      const everyone=()=>[...rosterOf(state),...state.tavern.candidates.map(c=>c.mercenary)];
+      const before=JSON.stringify(everyone().map(m=>[m.avatar?.id||null,m.sex||null]));
+      state.avatarsRetired=state.avatarsRetired||[];
+      for(const m of everyone()) assignAvatar(state,m);
+      return JSON.stringify(everyone().map(m=>[m.avatar?.id||null,m.sex||null]))!==before;
     }
 
     // Parties sauvegardées avant les biographies : on complète les membres qui n'en ont pas.
@@ -80,7 +106,11 @@
 
     // Un candidat de la Taverne est généré avec les biais du capitaine, comme tout nouveau mercenaire.
     function candidateFactory(state){
-      return ()=>generator.createMercenary({id:state.nextId++,captain:state.company.roster.find(m=>m.id===state.company.captainId)||null});
+      return ()=>{
+        const mercenary=generator.createMercenary({id:state.nextId++,captain:state.company.roster.find(m=>m.id===state.company.captainId)||null});
+        assignAvatar(state,mercenary);
+        return mercenary;
+      };
     }
 
     // L'escouade initiale est sous contrat (décision Idan, 2026-10-04), aux conditions qu'elle demande :
@@ -126,10 +156,13 @@
           camp:{dormitoryCapacity:STARTING_DORMITORY_CAPACITY}
         },
         tavern:tavern.createTavernState(),
-        biographiesUsed:[]
+        biographiesUsed:[],
+        avatarsRetired:[]
       };
+      // L'avatar avant la bio : le sexe vient de l'image (doc 15).
       for(const m of state.company.roster){
         giveInitialContract(state,m);
+        assignAvatar(state,m);
         assignBiography(state,m);
       }
       tavern.fillTavern(state.tavern,state.day,candidateFactory(state));
@@ -228,6 +261,7 @@
         if(result.dead){
           roster.splice(roster.indexOf(mercenary),1);
           if(state.company.intendantId===mercenary.id) state.company.intendantId=null;
+          if(mercenary.avatar?.id) (state.avatarsRetired=state.avatarsRetired||[]).push(mercenary.avatar.id);
           report.deaths.push(mercenary);
           continue;
         }
@@ -275,6 +309,7 @@
       assignBiography,
       ensureBiographies,
       ensureInitialContracts,
+      ensureAvatars,
       payroll
     };
   }

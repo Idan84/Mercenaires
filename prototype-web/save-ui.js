@@ -53,7 +53,8 @@ function continueSavedGame(){
   const roster=save.state.company.roster;
   game.campaign=save.state;
   // Parties antérieures : contrats initiaux et bios complétés (les deux, sans court-circuit).
-  const migrated=[campaignRules().ensureInitialContracts(game.campaign),campaignRules().ensureBiographies(game.campaign)].some(Boolean);
+  // L'avatar avant la bio : le sexe vient de l'image.
+  const migrated=[campaignRules().ensureInitialContracts(game.campaign),campaignRules().ensureAvatars(game.campaign),campaignRules().ensureBiographies(game.campaign)].some(Boolean);
   game.captain=roster.find(m=>m.id===save.state.company.captainId)||roster[0];
   game.initialSquad=roster.filter(m=>m!==game.captain&&(!m.contract||m.contract.initial));
   game.generated=[];

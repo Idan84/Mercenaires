@@ -22,7 +22,8 @@ const REFERENCE_FILES = {
   binaryAptitudeGrants: "binary-aptitude-grants.json",
   alignmentGeneration: "alignment-generation.json",
   biographies: "biographies.json",
-  avatars: "avatars.json"
+  avatars: "avatars.json",
+  captainCreationCopy: "captain-creation-copy.json"
 };
 
 async function loadReferenceData(base = "/data/") {

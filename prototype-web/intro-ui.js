@@ -5,24 +5,26 @@
 // → assistant : nom, peuple, culture, origine sociale, ascendance, alignement → le camp.
 // L'assistant ne fait que remplir le formulaire de création existant (#captain-*) puis le valider :
 // la génération reste celle du moteur (createCaptainFromForm).
-// Textes de description, forces et faiblesses : champs `description`, `forces`, `faiblesses` des
-// référentiels (Chatty). En leur absence, forces et faiblesses viennent de la matrice de génération.
+// Textes de description, force et faiblesse : data/reference/captain-creation-copy.json (Chatty).
+// Sans texte, force et faiblesse affichent les modificateurs de la matrice de génération.
+// Après la création, le thème « Blood & Wages » accompagne l'arrivée au camp (Idan).
 
 const INTRO_VOICE_SRC="assets/audio/intro-voix.mp3";
+const THEME_SRC="assets/audio/blood-and-wages-theme.mp3";
 const INTRO_FALLBACK_SECONDS=56;
 
 const WIZARD_STEPS=[
   {key:"name",title:"Quel est votre nom ?"},
-  {key:"people",title:"De quel peuple venez-vous ?",table:"peoples",picto:"people",options:()=>peopleNames()},
-  {key:"culture",title:"Quelle est votre culture ?",table:"cultures",options:()=>culturesForPeople(wizard.choice.people)},
-  {key:"origin",title:"Quelle est votre origine sociale ?",table:"socialOrigins",options:()=>originsForCulture(wizard.choice.culture)},
-  {key:"ascendance",title:"Quelle est votre ascendance ?",table:"ancestries",picto:"ascendance",options:()=>["",...compatibleAscendances(wizard.choice.people)]},
-  {key:"alignment",title:"Quel est votre alignement ?",table:"alignments",options:()=>alignmentNames()},
+  {key:"people",title:"De quel peuple venez-vous ?",copy:"peoples",picto:"people",options:()=>peopleNames()},
+  {key:"culture",title:"Quelle est votre culture ?",copy:"cultures",options:()=>culturesForPeople(wizard.choice.people)},
+  {key:"origin",title:"Quelle est votre origine sociale ?",copy:"origins",options:()=>originsForCulture(wizard.choice.culture)},
+  {key:"ascendance",title:"Quelle est votre ascendance ?",copy:"ancestries",picto:"ascendance",options:()=>["",...compatibleAscendances(wizard.choice.people)]},
+  {key:"alignment",title:"Quel est votre alignement ?",copy:"alignments",options:()=>alignmentNames()},
   {key:"recap",title:"Prenez la chevalière"}
 ];
 const RECAP_ROWS=[["Nom","name"],["Peuple","people"],["Culture","culture"],["Origine sociale","origin"],["Ascendance","ascendance"],["Alignement","alignment"]];
 
-const wizard={step:0,choice:{},voice:null,timers:[]};
+const wizard={step:0,choice:{},voice:null,timers:[],theme:null};
 
 // --- Introduction -----------------------------------------------------------------------------
 
@@ -75,8 +77,22 @@ function openIntro(){
 
 // --- Assistant de création ---------------------------------------------------------------------
 
-function referenceRow(table,name){
-  return (game.referenceData?.[table]?.rows||[]).find(r=>r.nom===name)||null;
+function creationCopy(section,name){
+  return (game.referenceData?.captainCreationCopy?.[section]||[]).find(r=>r.nom===name)||null;
+}
+
+// Thème « Blood & Wages » : une fois, à l'arrivée au camp après la création ; coupé au retour au
+// menu, en mission ou en fin de partie (screen-ui.js).
+function playTheme(){
+  stopTheme();
+  const theme=new Audio(THEME_SRC);
+  theme.volume=0.7;
+  wizard.theme=theme;
+  theme.play().catch(()=>{});
+}
+
+function stopTheme(){
+  if(wizard.theme){ wizard.theme.pause(); wizard.theme=null; }
 }
 
 function choiceLabel(key,value){
@@ -117,7 +133,7 @@ function traitItems(list){
 }
 
 function renderInfo(step,value){
-  const row=referenceRow(step.table,value);
+  const copy=creationCopy(step.copy,value);
   if(step.key==="ascendance"&&!value) return `<aside class="wizard-info"><p>Aucune ascendance particulière.</p></aside>`;
   const traits=MercenairesCreation.traitsFor(game.referenceData,value);
   const section=(title,text,fallback)=>{
@@ -127,9 +143,9 @@ function renderInfo(step,value){
   const forces=traits.forces.length?`<ul class="trait-list">${traitItems(traits.forces)}</ul>`:"";
   const weaknesses=traits.faiblesses.length?`<ul class="trait-list">${traitItems(traits.faiblesses)}</ul>`:"";
   return `<aside class="wizard-info">
-    ${section("Description",row?.description,`<p class="wizard-placeholder">Description à venir.</p>`)}
-    ${section("Forces",row?.forces,forces)}
-    ${section("Faiblesses",row?.faiblesses,weaknesses)}
+    ${section("Description",copy?.description,`<p class="wizard-placeholder">Description à venir.</p>`)}
+    ${section("Force",copy?.force,forces)}
+    ${section("Faiblesse",copy?.faiblesse,weaknesses)}
   </aside>`;
 }
 
@@ -213,6 +229,7 @@ function finishWizard(){
   stopIntroVoice();
   $("creation-wizard").classList.add("hidden");
   $("intro-panel").classList.add("hidden");
+  playTheme();
 }
 
 function initializeIntroUi(){

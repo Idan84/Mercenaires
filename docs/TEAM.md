@@ -1,4 +1,4 @@
-# Équipe Mercenaires — tableau de bord
+# Équipe Blood & Wages — tableau de bord
 
 Tableau de bord de l'équipe, pas un roman. À lire au début de chaque session, juste après `AGENTS.md`.
 
@@ -91,6 +91,7 @@ Aucun agent ne travaille spontanément : il faut qu'une session soit lancée. Gi
 
 ## Décisions récentes
 
+- **2026-10-04** — Titre retenu : **Blood & Wages**. Tagline officielle : **“Manage your HR. Send them to die.”** Le dépôt et les namespaces techniques peuvent conserver provisoirement le nom historique `Mercenaires` pour éviter les renommages inutiles.
 - **2026-10-03** — Répartition des rôles ci-dessus.
 - **2026-10-03** — Circuit Git : PR vers `test`, fusion par JC3, `test` → `main` sur feu vert d'Idan. Idan ne fusionne rien.
 - **2026-10-03** — Tâches et échanges entre agents via GitHub Issues et PR.

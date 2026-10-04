@@ -13,8 +13,8 @@ function characterRow(c, hero=false) {
       ${renderAvatar(c,{variant:"compact",kind:"portrait"})}
       <div><small>${esc(c.role)}</small><button class="character-link" data-character-id="${c.id}">${esc(c.name)}</button>${c.recovery ? `<span class="recovery-badge ${c.recovery.kind}">${esc(recoveryLabel(c))}</span>` : ""}</div>
     </div>
-    <div class="character-cell"><small>Peuple</small><strong>${esc(c.people)}</strong></div>
-    <div class="character-cell"><small>Ascendance</small><strong>${esc(asc)}</strong></div>
+    <div class="character-cell"><small>Peuple</small><strong>${renderPicto("people",c.people)}${esc(c.people)}</strong></div>
+    <div class="character-cell"><small>Ascendance</small><strong>${renderPicto("ascendance",c.ascendance)}${esc(asc)}</strong></div>
     <div class="character-cell"><small>Réputation</small><strong>${Math.round(c.reputation)}</strong></div>
     <div class="character-cell"><small>Salaire demandé</small><strong>${fmt(c.salary)} PO/j</strong></div>
     <div class="character-cell"><small>PV</small><strong>${c.pvMax}</strong></div>
@@ -547,10 +547,10 @@ function renderProfileTab(c) {
       <div class="character-overview-copy">
         ${renderBiography(c)}
         <div class="identity-grid">
-          <div class="metric"><small>Peuple</small><strong>${esc(c.people)}</strong></div>
+          <div class="metric"><small>Peuple</small><strong>${renderPicto("people",c.people,{size:"md"})}${esc(c.people)}</strong></div>
           <div class="metric"><small>Culture</small><strong>${esc(c.culture)}</strong></div>
           <div class="metric"><small>Origine</small><strong>${esc(c.origin)}</strong></div>
-          <div class="metric"><small>Ascendance</small><strong>${esc(asc)}</strong></div>
+          <div class="metric"><small>Ascendance</small><strong>${renderPicto("ascendance",c.ascendance,{size:"md"})}${esc(asc)}</strong></div>
           <div class="metric"><small>Alignement</small><strong>${esc(c.alignment)}</strong></div>
           <div class="metric"><small>Réputation</small><strong>${Math.round(c.reputation)}</strong></div>
           <div class="metric"><small>Prétentions</small><strong>${c.salaryPretension}</strong></div>

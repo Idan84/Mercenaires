@@ -7,6 +7,21 @@
 
 * { box-sizing: border-box; }
 body { margin: 0; min-height: 100vh; }
+
+/* Fond du camp (Issue #40) : le château est le quartier général. Menu principal et home du camp,
+   pas la Mission tactique. Image d'Idan telle quelle, sans voile : les panneaux restent translucides. */
+body {
+  min-height: 100dvh;
+  background: #1d1a16 url("assets/camp-home-background.jpg") center center / cover no-repeat fixed;
+}
+body:has(#mission-panel:not(.hidden)) { background: #f3f0e9; }
+.topbar {
+  padding: 14px 20px;
+  border-radius: 18px;
+  background: rgba(243,240,233,.82);
+  box-shadow: 0 10px 35px rgba(20,10,8,.18);
+}
+body:has(#mission-panel:not(.hidden)) .topbar { background: none; box-shadow: none; padding: 0; }
 button, input, select { font: inherit; }
 button { cursor: pointer; }
 

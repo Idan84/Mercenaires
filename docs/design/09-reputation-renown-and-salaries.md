@@ -243,11 +243,11 @@ La négociation conjointe **Salaire + Prime de mission** est définie dans [Tave
 
 ### Contrats et paie — implémentation V1
 
-- **L’escouade initiale est sous contrat** (décision Idan, 2026-10-04), aux conditions qu’elle demande : salaire demandé et prime de mission demandée. Le capitaine n’a pas de contrat.
+- **L’escouade initiale est sous contrat** (décision Idan, 2026-10-04), aux conditions qu’elle demande : salaire demandé et prime de mission demandée, sans négociation. Le capitaine n’a pas de contrat. Validé par Idan après la review de Chatty (PR #37).
 - Les recrues de la Taverne gardent le contrat négocié (`14-tavern-recruitment.md`).
-- Le **salaire contractuel est versé chaque jour** par `AdvanceTime`, après la guérison et avant la Taverne, à tous les membres sous contrat. Les blessés et les fatigués sont payés à 100 % tant que la politique des blessés (§7) n’existe pas.
+- Le **salaire contractuel est versé chaque jour** par `AdvanceTime`, après la guérison et avant la Taverne, à tous les membres sous contrat. Les blessés et les fatigués sont payés à 100 % pour l’instant (Idan, 2026-10-04) ; le taux deviendra une option de l’Intendance avec la politique des blessés (§7).
 - La prime de mission est payée au retour de mission (`10-mission-time-and-unavailability.md` §8 et §11).
-- Si l’or manque, le trésor passe sous 0. Aucune conséquence n’est encore définie (question ouverte).
+- Si l’or manque, le trésor passe sous 0, sans conséquence pour l’instant (Idan, 2026-10-04). Dette, impayés et départs restent à concevoir.
 
 ## 7 — Politique des blessés — « T’es pas à la Sécu ici »
 

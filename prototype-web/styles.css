@@ -10,8 +10,20 @@ body { margin: 0; min-height: 100vh; }
 button, input, select { font: inherit; }
 button { cursor: pointer; }
 
-.app-shell { max-width: 1200px; margin: 0 auto; padding: 32px 20px 80px; }
-.topbar { display: flex; justify-content: space-between; gap: 24px; align-items: flex-start; margin-bottom: 22px; }
+.app-shell { max-width: 1200px; margin: 0 auto; padding: 24px 20px 80px; }
+.topbar { display: flex; justify-content: space-between; gap: 24px; align-items: center; margin-bottom: 18px; }
+.brand-block { min-width: 0; }
+.brand-kicker { margin-left: 6px; margin-bottom: -12px; position: relative; z-index: 1; }
+.brand-logo {
+  display: block;
+  width: clamp(320px, 48vw, 600px);
+  height: auto;
+  margin: 0;
+  object-fit: contain;
+  filter: drop-shadow(0 12px 18px rgba(20,10,8,.12));
+}
+body:has(#mission-panel:not(.hidden)) .brand-block { display: none; }
+body:has(#mission-panel:not(.hidden)) .topbar { justify-content: flex-end; min-height: 0; }
 h1 { font-size: clamp(2rem, 5vw, 4rem); margin: 0; letter-spacing: -0.05em; }
 h2 { margin: 0; letter-spacing: -0.025em; }
 .subtitle, .muted { color: #69645d; }
@@ -89,6 +101,10 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
 }
 @media (max-width: 560px) {
   .topbar, .section-title-row { flex-direction: column; }
+  .brand-block { width: 100%; }
+  .brand-logo { width: min(100%, 520px); margin-inline: auto; }
+  .brand-kicker { margin-left: 0; text-align: center; }
+  .top-actions { width: 100%; justify-content: center; }
   .form-grid, .identity-grid, .metric-grid, .stat-grid, .skill-columns { grid-template-columns: 1fr; }
   .character-row { grid-template-columns: 1fr 1fr; }
 }

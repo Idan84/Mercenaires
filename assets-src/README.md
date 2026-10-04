@@ -6,7 +6,7 @@ Dépôt des fichiers **bruts** (masters) d'Idan et de Jean-Mimi. Ce dossier n'es
 |---|---|
 | `fonds/` | Fonds d'écran : château du camp (menu principal et home du camp), autres décors |
 | `logo/` | Logo Blood & Wages : master sur fond blanc, variantes |
-| `avatars/` | Avatars des mercenaires : un plein pied et un portrait par personnage |
+| `avatars/` | Avatars des mercenaires : un plein pied et un portrait carré par personnage, nommés `Peuple_Numéro` (`Ogre_12…jpg`, `Ogre_12_Square…jpg`), tagués dans Bridge avec les mots-clés de `avatars/mots-cles-bridge.txt`. `node scripts/build-avatars.js` régénère le catalogue du jeu et les images web |
 | `Picto/Peuple/`, `Picto/Ascendance/` | Pictos des peuples et des ascendances. Après un ajout ou une retouche, `scripts/build-pictos.sh` régénère les versions du jeu (`prototype-web/assets/pictos/`) |
 | `audio/` | Musiques, ambiances, bruitages |
 | `divers/` | Tout le reste, ou en cas de doute |

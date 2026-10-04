@@ -148,6 +148,14 @@ def main():
         if not src:
             db_report.append((name,0,"MISSING",[])); continue
         original,keys,rows=read_csv(src)
+        if name == "culture-origin-compatibility":
+            rows = [r for r in rows if r.get("culture")]
+        if name == "generation-matrix" and "esclaves_des_cites_humaines" in keys:
+            idx = keys.index("esclaves_des_cites_humaines")
+            keys.pop(idx)
+            original.pop(idx)
+            for row in rows:
+                row.pop("esclaves_des_cites_humaines", None)
         payload={
           "schema_version":1,
           "name":name,

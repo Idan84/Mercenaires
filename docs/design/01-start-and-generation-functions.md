@@ -7,7 +7,7 @@ Cette page décrit l’ordre d’appel des fonctions de création au démarrage 
 <aside>
 🎛️
 
-Les valeurs réglables du biais capitaine sont centralisées dans [Constantes de formule](05%20%E2%80%94%20R%C3%A9f%C3%A9rentiels%20techniques/Constantes%20de%20formule%202a25d0db802141bb8e0273935c2be8c2.md), vue **Génération — capitaine** : `generation.captain.people_bonus_pp = 9`, `generation.captain.other_people_malus_pp = -1`, `generation.captain.ascendance_weight_multiplier = 2`, `generation.captain.culture_weight_multiplier = 2`.
+Les valeurs réglables du biais capitaine sont centralisées dans [Constantes de formule](05%20%E2%80%94%20R%C3%A9f%C3%A9rentiels%20techniques/Constantes%20de%20formule%202a25d0db802141bb8e0273935c2be8c2.md), vue **Génération — capitaine** : `generation.captain.people_bonus_pp = 9`, `generation.captain.other_people_malus_pp = -1`, `generation.captain.ascendance_weight_multiplier = 2`, `generation.captain.culture_weight_multiplier = 2`, `generation.captain.alignment_bonus_pp = 15`.
 
 </aside>
 
@@ -222,6 +222,16 @@ function Get_Culture_Weights(mercenary, captain, baseWeights) {
 }
 ```
 
+### 4. Biais d’alignement
+
+L’alignement de base est d’abord calculé depuis le peuple et, le cas échéant, l’exception culturelle. Ensuite, si un capitaine est présent, son **alignement exact gagne +15 points de probabilité**.
+
+Les autres alignements sont réduits **proportionnellement** afin de conserver une somme de 100 %. Cette règle ne modifie que l’orientation du mercenaire généré : elle ne change ni ses caractéristiques, ni ses compétences, ni son peuple, sa culture ou son origine.
+
+Exemple : si l’alignement du capitaine avait 7,5 % dans la distribution de base du candidat, il passe à **22,5 %** après influence.
+
+Le capitaine créé par le joueur n’est pas affecté par cette règle : son alignement choisi reste forcé.
+
 ### Pipeline résumé
 
 ```jsx
@@ -267,6 +277,10 @@ function Create_Mercenary(captain, overrides = {}) {
     Apply_Origin_Stat_Modifiers(mercenary);
     Collect_Origin_Skill_Modifiers(mercenary);
 
+    mercenary.alignment = overrides.forcedAlignment ?? Weighted_Draw(
+        Get_Alignment_Probabilities(mercenary.peuple, mercenary.culture, captain)
+    );
+
     Roll_Base_Mercenary_Skills(mercenary, captain);
     Apply_Collected_Skill_Modifiers(mercenary);
 
@@ -278,7 +292,7 @@ function Create_Mercenary(captain, overrides = {}) {
 <aside>
 🧭
 
-Le capitaine modifie les probabilités de peuple, de type d’ascendance et de culture. **Décision de conception : les jets de dés effectués dans `Create_Mercenary` doivent également être pondérés par la réputation du capitaine / de sa compagnie.** Les formules actuelles (`20 + 3D20`, `1D20`, `2D20`, etc.) sont donc des distributions de base et ne doivent pas être codées comme des constantes rigides. Plus la compagnie devient réputée, plus le niveau des candidats susceptibles de se présenter doit pouvoir monter. Dans `Create_Initial_Squad`, le peuple et la culture restent exceptionnellement forcés à ceux du capitaine.
+Le capitaine modifie les probabilités de peuple, de type d’ascendance, de culture et d’alignement. **Décision de conception : les jets de dés effectués dans `Create_Mercenary` doivent également être pondérés par la réputation du capitaine / de sa compagnie.** Les formules actuelles (`20 + 3D20`, `1D20`, `2D20`, etc.) sont donc des distributions de base et ne doivent pas être codées comme des constantes rigides. Plus la compagnie devient réputée, plus le niveau des candidats susceptibles de se présenter doit pouvoir monter. Dans `Create_Initial_Squad`, le peuple et la culture restent exceptionnellement forcés à ceux du capitaine.
 
 </aside>
 

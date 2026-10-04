@@ -21,7 +21,7 @@
     {
       "name": "culture-origin-compatibility",
       "file": "culture-origin-compatibility.json",
-      "rows": 231,
+      "rows": 224,
       "columns": [
         "association",
         "culture",
@@ -70,7 +70,6 @@
         "elfes_noirs",
         "elfes_sylvains",
         "esclave",
-        "esclaves_des_cites_humaines",
         "explorateurs",
         "gnome",
         "gnomes_des_cavernes",
@@ -186,7 +185,7 @@
     {
       "name": "characteristics",
       "file": "characteristics.json",
-      "rows": 32,
+      "rows": 33,
       "columns": [
         "nom",
         "cache",
@@ -335,7 +334,7 @@
     {
       "name": "formula-constants",
       "file": "formula-constants.json",
-      "rows": 45,
+      "rows": 72,
       "columns": [
         "nom",
         "code",
@@ -377,6 +376,68 @@
         "formule",
         "ordre",
         "source"
+      ]
+    },
+    {
+      "name": "binary-aptitude-grants",
+      "file": "binary-aptitude-grants.json",
+      "rows": 6,
+      "columns": [
+        "aptitude",
+        "domaine",
+        "mode",
+        "automatic",
+        "bonuses_pp",
+        "armor",
+        "reason"
+      ]
+    },
+    {
+      "name": "alignment-generation",
+      "file": "alignment-generation.json",
+      "rows": 1,
+      "columns": [
+        "distribution",
+        "neighborhood",
+        "grid",
+        "notes"
+      ]
+    },
+    {
+      "name": "equipment-slots",
+      "file": "equipment-slots.json",
+      "rows": 21,
+      "columns": [
+        "id",
+        "label",
+        "group",
+        "order"
+      ]
+    },
+    {
+      "name": "starting-equipment-generation",
+      "file": "starting-equipment-generation.json",
+      "rows": 5,
+      "columns": [
+        "reputation",
+        "t1",
+        "t2",
+        "t3"
+      ]
+    },
+    {
+      "name": "biographies",
+      "file": "biographies.json",
+      "rows": 30,
+      "columns": [
+        "id",
+        "short",
+        "rumor",
+        "motto",
+        "tags",
+        "gender",
+        "weight",
+        "statut"
       ]
     }
   ]

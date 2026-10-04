@@ -24,3 +24,150 @@ La base **Caractéristiques & attributs** possède des vues séparées pour Cara
 [Progression & expérience](/design/#doc=08-progression-and-experience.md)
 
 [Réputation, renommée & salaires](/design/#doc=09-reputation-renown-and-salaries.md)
+## Identité descriptive / cosmétique
+
+Les champs **Nom du mercenaire**, **Âge**, **Taille**, **Corpulence** et **Biographie courte** sont des informations **non-codantes** : elles n'entrent dans aucune formule de gameplay.
+
+Elles sont générées **après** le profil mécanique afin de pouvoir s'en inspirer sans créer de boucle de calcul. Exemple : une Force très élevée peut augmenter la probabilité d'une corpulence massive ou d'une grande taille, mais la taille générée ne revient jamais augmenter la Force.
+
+La **Biographie courte** est destinée à être drôle et marquée, en s'appuyant sur le peuple, la culture, l'origine, les caractéristiques dominantes/faibles, les compétences et les particularités du mercenaire.
+
+Le générateur cosmétique précis reste à définir ; son absence ne bloque pas `Create_Mercenary()` côté gameplay.
+
+
+## Génération V1 — Camp, compétences de terrain et styles martiaux
+
+### Camp
+
+**Médecine** et la catégorie **Artisanat** appartiennent au domaine **Camp** et utilisent la même génération brute que les autres compétences Camp :
+
+`Valeur = (1 + (Charisme + Intelligence) / 100) × 6D6`
+
+Les sous-compétences d’Artisanat (Forge, Alchimie, Couture, etc.) conservent leur génération propre :
+
+`Sous-compétence Artisanat = (1 + (Dextérité + Intelligence) / 100) × 6D6`
+
+### Martial — compétences dérivées
+
+Dans les formules ci-dessous, le terme **Agilité** du design correspond à la caractéristique mécanique **Dextérité**.
+
+- **Pièges** = `Moyenne(Intelligence, Perception) × Rand(0,8 ; 1,2)`
+- **Discrétion** = `Moyenne(Dextérité, Perception, Esquive) × Rand(0,8 ; 1,2)`
+- **Combat à deux armes** = `Max(arme de mêlée utilisable à 1 main) × Rand(0,8 ; 1,2)`
+- **Combat à mains nues** = `Moyenne(Force, Dextérité) × Rand(0,8 ; 1,2)`
+- **Combat à deux mains** = `Max(arme de mêlée utilisable à 2 mains) × Rand(0,8 ; 1,2)`
+- **Armes naturelles** = `0` avant application des modificateurs de la Matrice de génération.
+
+Pour les styles à une/deux mains, les armes à distance et les boucliers sont exclus. Une arme dont la prise est **Au choix** peut servir dans les deux calculs.
+
+### Armes de prédilection
+
+Après génération et application de tous les modificateurs, chaque mercenaire reçoit trois indications de prédilection :
+
+- **Une main**
+- **Deux mains**
+- **Distance**
+
+Pour chaque arme candidate :
+
+`ScorePredilection = MaîtriseCatégorieMartiale + MaîtriseArmePrécise`
+
+L’arme possédant le score le plus élevé dans chaque famille devient l’arme de prédilection correspondante. Ce résultat sert d’indication sur la fiche et pourra guider la génération / attribution d’équipement initial.
+
+
+
+
+## Aptitudes binaires V1
+
+Ces aptitudes valent uniquement **true / false** et n’entrent pas dans les maîtrises numériques.
+
+### Physiologie
+
+#### Vision nocturne — automatique
+
+Vision nocturne vaut `true` si au moins une des conditions suivantes est satisfaite :
+
+- Culture : Elfes noirs
+- Culture : Gobelins des cavernes
+- Culture : Gnomes des cavernes
+- Culture : Reptiliens des marécages
+- Culture : Tribus des forêts anciennes
+- Ascendance : Sang de démon
+
+Aucun peuple entier ne possède Vision nocturne par défaut.
+
+#### Vol
+
+`Vol = false` en V1.
+
+La mécanique de vol est volontairement reportée : elle implique déplacement, vitesse, endurance, maniabilité et interactions de terrain supplémentaires.
+
+### Martial
+
+#### Empoisonnement des armes
+
+Probabilité finale = somme des bonus identitaires en **points de pourcentage**, plafonnée entre 0 et 100 %, puis jet binaire.
+
+Origine :
+- Hors-la-loi : +25 pp
+
+Cultures :
+- Elfes noirs : +45 pp
+- Reptiliens des marécages : +30 pp
+- Tribus de la jungle : +25 pp
+- Gobelins des cavernes : +20 pp
+- Reptiliens des cités-temples : +10 pp
+
+Les bonus se cumulent.
+
+### Ports d’armure
+
+Les chances identitaires se cumulent en points de pourcentage.
+
+#### Port d’armure légère
+- Soldat / Guerrier / Combattant : +90 pp
+- Noble : +20 pp
+- Orcs noirs : +25 pp
+- Nains des montagnes : +25 pp
+- Montagnes du Nord : +15 pp
+- Tribus nordiques : +15 pp
+- Ogres des cités humaines : +10 pp
+
+#### Port d’armure intermédiaire
+- Soldat / Guerrier / Combattant : +55 pp
+- Noble : +10 pp
+- Orcs noirs : +30 pp
+- Nains des montagnes : +35 pp
+- Montagnes du Nord : +20 pp
+- Tribus nordiques : +20 pp
+- Ogres des cités humaines : +15 pp
+
+#### Port d’armure lourde
+- Soldat / Guerrier / Combattant : +15 pp
+- Noble : +10 pp
+- Orcs noirs : +30 pp
+- Nains des montagnes : +40 pp
+- Montagnes du Nord : +25 pp
+- Tribus nordiques : +20 pp
+- Ogres des cités humaines : +15 pp
+
+### Profil magique et armures
+
+Après génération finale des écoles de magie :
+
+- si **aucune école de magie ne dépasse 50**, ajouter :
+  - +50 pp pour légère
+  - +30 pp pour intermédiaire
+  - +20 pp pour lourde
+- si **au moins une école dépasse 75**, multiplier la probabilité finale de chaque port d’armure par `0,8`.
+
+Le malus de 20 % est donc relatif, pas une soustraction de 20 points.
+
+La probabilité finale est plafonnée à 100 %.
+
+### Hiérarchie des ports
+
+- Port d’armure lourde ⇒ Port d’armure intermédiaire ⇒ Port d’armure légère
+- Port d’armure intermédiaire ⇒ Port d’armure légère
+
+Les trois jets peuvent être calculés, puis la hiérarchie est appliquée au résultat final.

@@ -1,0 +1,31 @@
+{
+  "schema_version": 2,
+  "description": "Distribution V1 de l'alignement à partir de l'alignement principal du peuple. On privilégie fortement la case principale, puis les cases voisines (y compris diagonales), puis les alignements plus éloignés.",
+  "distribution": {
+    "principal": 0.4,
+    "nearby_total": 0.45,
+    "distant_total": 0.15
+  },
+  "neighborhood": "king_move",
+  "grid": [
+    [
+      "Loyal bon",
+      "Neutre bon",
+      "Chaotique bon"
+    ],
+    [
+      "Loyal neutre",
+      "Neutre",
+      "Chaotique neutre"
+    ],
+    [
+      "Loyal mauvais",
+      "Neutre mauvais",
+      "Chaotique mauvais"
+    ]
+  ],
+  "notes": "Une case proche touche la case principale par un côté ou un coin. Les 45 % proches sont répartis uniformément entre ces cases. Les 15 % restants sont répartis uniformément entre les autres cases. Pour un alignement central, les 8 autres cases sont toutes proches et se partagent donc les 60 % restants. La culture Elfes noirs remplace l'alignement principal du peuple par Chaotique mauvais avant application de la distribution.",
+  "culture_overrides": {
+    "Elfes noirs": "Chaotique mauvais"
+  }
+}

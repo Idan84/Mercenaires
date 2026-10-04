@@ -56,7 +56,7 @@
       "key": "evolutif"
     }
   ],
-  "row_count": 32,
+  "row_count": 33,
   "rows": [
     {
       "nom": "PV actuels",
@@ -105,7 +105,7 @@
       "cache": false,
       "description": "Taille physique du mercenaire. Doit notamment servir plus tard à la génération et à l’échelle du mesh 3D.",
       "est_utilise_dans_les_formules": false,
-      "famille": "Morphologie",
+      "famille": "Cosmétique",
       "genere_a_la_creation": true,
       "maximum": null,
       "minimum": 1,
@@ -161,7 +161,7 @@
       "cache": false,
       "description": "Morphologie générale indépendante du peuple : maigre, athlétique, massif, corpulent, etc. Valeur numérique exploitable plus tard pour le mesh 3D.",
       "est_utilise_dans_les_formules": false,
-      "famille": "Morphologie",
+      "famille": "Cosmétique",
       "genere_a_la_creation": true,
       "maximum": null,
       "minimum": 1,
@@ -203,7 +203,7 @@
       "cache": false,
       "description": "Nom propre du mercenaire, généré ou choisi selon le contexte.",
       "est_utilise_dans_les_formules": false,
-      "famille": "Identité",
+      "famille": "Cosmétique",
       "genere_a_la_creation": true,
       "maximum": null,
       "minimum": null,
@@ -441,7 +441,7 @@
       "cache": false,
       "description": "Âge courant du mercenaire. Pour l’instant stocké sans effet mécanique. Plus tard, son influence sur les caractéristiques mentales et physiques dépendra du peuple : un vieil Elfe ou un vieux Nain n’a évidemment pas le même âge qu’un vieil Humain.",
       "est_utilise_dans_les_formules": false,
-      "famille": "État temporaire",
+      "famille": "Cosmétique",
       "genere_a_la_creation": true,
       "maximum": null,
       "minimum": 1,
@@ -505,6 +505,20 @@
       "type_de_valeur": "Numérique",
       "unite": null,
       "evolutif": true
+    },
+    {
+      "nom": "Biographie courte",
+      "cache": false,
+      "description": "Texte descriptif court et plutôt drôle, généré à partir du profil du mercenaire (peuple, culture, origine, caractéristiques dominantes/faibles, compétences et particularités). Purement cosmétique : n'influence aucune formule de gameplay.",
+      "est_utilise_dans_les_formules": false,
+      "famille": "Cosmétique",
+      "genere_a_la_creation": true,
+      "maximum": null,
+      "minimum": null,
+      "ordre": 33,
+      "type_de_valeur": "Texte",
+      "unite": null,
+      "evolutif": false
     }
   ]
 }

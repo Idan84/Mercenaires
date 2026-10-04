@@ -153,3 +153,32 @@ Si la contre-charge **blesse** le chargeur, son attaque est annulée et il teste
 [Boîte à idées — Combat](/design/#doc=91-combat-ideas.md)
 
 [Fin de mission, temps & indisponibilités](/design/#doc=10-mission-time-and-unavailability.md)
+## Mission Test — prototype tactique V1
+
+Le prototype web expose désormais un bouton **Mission Test** qui relie directement `Create_Mercenary()` au moteur physique de combat.
+
+Périmètre actif :
+
+- sélection de **3 mercenaires** ;
+- génération automatique de **3 ennemis** ;
+- carte **hexagonale 2D vue du dessus**, rectangulaire, de **13×9** cases ; les équipes apparaissent à deux colonnes de leur bord ;
+- équipe du joueur en premier, puis équipe ennemie ;
+- ordre interne par la formule d'Initiative validée ;
+- activation avec Mouvement + Action rapide + Attaque ;
+- actions disponibles : **Se déplacer, Attaquer, Charger, Changer de set d'armes, Attaquer à distance, Second mouvement** (l'Attaque est sacrifiée pour une seconde action de Mouvement, [Activation hexagonale V1](/design/#doc=formulas/activation-hexagonale-v1.md)) ;
+- IA V1 : attaque si possible, sinon charge si valide, sinon avance vers la cible la plus proche puis attaque si elle entre en portée ;
+- [Attaques d'opportunité](/design/#doc=formulas/attaque-d-opportunite-cac-v1.md) avec [Frappe dans le dos](/design/#doc=formulas/frappe-dans-le-dos-v1.md) : en quittant une zone de menace (déplacement ou charge, résolu hexagone par hexagone) et en tirant sur une autre cible que l'adversaire qui menace ; en mode déplacement, la carte signale les destinations qui en provoquent ;
+- [Encerclement](/design/#doc=formulas/encerclement-cac-v1.md) : toute attaque au CAC contre une cible encerclée est une Frappe dans le dos ; la carte entoure de pointillés les personnages encerclés ;
+- [Courage](/design/#doc=formulas/courage-post-attaque-cac-v1.md) après chaque attaque (CAC, tir, charge, attaque d'opportunité), avec le [sous-nombre](/design/#doc=formulas/courage-en-sous-nombre-v1.md) ; un échec applique [En Fuite](/design/#doc=13-fleeing.md) : fuite immédiate, puis reprise de contrôle et comportement automatique `1D3` aux activations suivantes ; un fuyard qui sort de la carte est hors combat ;
+- console détaillant mouvements, jets de Toucher/Blesser et dégâts ;
+- fin du test lorsque les trois membres d'une équipe sont **hors combat**.
+
+Le moteur tactique est isolé dans `game-core/combat-engine.js`. La carte web n'est qu'une interface de test.
+
+### Simplifications volontaires du premier test
+
+Le noyau utilise déjà les formules validées de portée, vitesse/esquive effectives, MouvementBase, Toucher, Blesser, résistances d'armure, qualité d'item, dégâts PV, charge, attaques d'opportunité, Frappe dans le dos, encerclement, Courage et Fuite. En revanche, ce premier écran ne branche pas encore les systèmes secondaires : critiques, boucliers, combat à deux armes, couverture/obstacles, approximation des projectiles et contre-charge automatique.
+
+Choix d'implémentation V1, confirmés en relecture par Chatty (PR #7) : aucune limite au nombre d'attaques d'opportunité par adversaire et par tour ; un personnage Au Sol réagit normalement et compte pour l'encerclement ; plusieurs réactions simultanées sont résolues dans l'ordre d'initiative de l'équipe qui réagit ; une charge ne peut pas traverser une case occupée ; sortir de la carte coûte un hexagone de mouvement depuis une case du bord ; la Mission Test n'ayant aucun abri total, « Cachons-nous » file vers la sortie de carte sans jamais entrer dans une case adjacente à un ennemi (sans trajet sûr vers une sortie, il s'éloigne au mieux par les cases sûres, sinon il reste sur place) ; « Feu à volonté » tire une fois (cadence et recharge non branchées).
+
+Dans ce banc de test, `PV <= 0` signifie **hors combat** et déclenche la condition de victoire. La mortalité persistante de fin de mission reste un système séparé. Les PV restent **signés** sous 0 : l'interface affiche 0, mais la profondeur est conservée pour le jet de mort de fin de mission (Issue #13).

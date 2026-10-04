@@ -86,7 +86,7 @@
       "nom": "Vêtements",
       "alteration_magique_base": 0,
       "code": "clothes",
-      "description": "Protection minimale, aucune gêne notable.",
+      "description": "Protection minimale, aucune gêne notable. Catégorie inférieure à l’armure légère et utilisable sans aptitude de port d’armure.",
       "malus_esquive_base": 0,
       "malus_vitesse_base": 0,
       "resistance_brulant": 5,
@@ -96,7 +96,7 @@
       "resistance_glacant": 8,
       "resistance_perforant": 3,
       "resistance_tranchant": 5,
-      "type_armure": "Légère"
+      "type_armure": "Vêtement"
     },
     {
       "nom": "Gambison",

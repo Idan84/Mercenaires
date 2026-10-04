@@ -4,7 +4,7 @@
 
 Code: combat.position.backstab
 Domaine: Combat
-Expression: backstab = is_opportunity_attack || target_encircled || defender_is_fleeing_from_attacker || attack_not_detected; if backstab: defender_perception_for_hit=0; defender_damage_type_resistance_for_wound*=0.5; defender_physical_resistance_for_hp_damage unchanged
+Expression: backstab = is_opportunity_attack || target_encircled || defender_is_fleeing || attack_not_detected; if backstab: defender_perception_for_hit=0; defender_damage_type_resistance_for_wound*=0.5; defender_physical_resistance_for_hp_damage unchanged
 Notes: S'applique notamment à toute attaque d'opportunité, à l'encerclement, à une cible qui fuit et aux attaques non détectées. Le blocage au bouclier reste autorisé : abstraction volontaire, le bouclier peut aussi protéger le dos.
 Statut: Validée
 Type attaque: N/A
@@ -17,7 +17,7 @@ Une attaque bénéficie de **Frappe dans le dos** si au moins une condition est 
 
 - il s'agit d'une **attaque d'opportunité** ;
 - la cible est **encerclée** ;
-- la cible est en train de **fuir l'attaquant** ;
+- la cible est **En Fuite**, quel que soit l'attaquant (décision Idan du 2026-10-03, PR #7) ;
 - l'attaque n'a **pas été détectée** avant son déclenchement (camouflage, invisibilité, compétence, magie, embuscade, etc.).
 
 ## Effet sur Toucher

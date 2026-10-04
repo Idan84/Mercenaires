@@ -16,8 +16,8 @@ La partie commence avec le château en ruines comme future base de la compagnie.
 Éléments de départ retenus :
 
 - **Taverne** à proximité / « au coin de la rue » ;
-- **Dortoir : capacité 20** ;
-- **1 000 pièces d’or** ;
+- **Dortoir : capacité 40** (portée de 20 à 40 par Idan le 2026-10-03, car l'escouade initiale peut dépasser 20 mercenaires) ;
+- **10 000 pièces d’or** (portées de 1 000 à 10 000 par Idan le 2026-10-03, les salaires ayant été multipliés par 10 ; l’or de départ et les revenus seront recalés ensemble plus tard) ;
 - l’**Initial Squad** générée par la fonction déjà existante.
 
 Les constructions et améliorations doivent progresser en **jours**.
@@ -34,13 +34,6 @@ Fonctions validées :
 - consultation des missions proposées ;
 - améliorations permettant davantage de candidats et davantage de missions ;
 - achat de renseignements supplémentaires sur les missions.
-
-<aside>
-🍺
-
-**Un candidat est généré avant son recrutement.** Les mercenaires présents à la taverne sont de vrais objets `Mercenary` déjà générés et peuvent rester disponibles pendant plusieurs jours / semaines. Ils ne sont pas régénérés au moment où le joueur clique sur « recruter ». Cela permet notamment les candidats qui traînent longtemps à la taverne faute de succès.
-
-</aside>
 
 <aside>
 🍺
@@ -70,7 +63,7 @@ Fonctions envisagées / retenues :
 
 Le dortoir fixe la **capacité maximale de mercenaires** hébergés.
 
-- capacité initiale : `20` ;
+- capacité initiale : `40` (décision Idan du 2026-10-03 ; constante `camp.dormitory.initial_capacity`) ;
 - amélioration → plus de places ;
 - embellissement / qualité → contribution possible à la renommée / attractivité.
 

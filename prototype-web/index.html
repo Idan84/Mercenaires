@@ -10,15 +10,31 @@
   <main class="app-shell">
     <header class="topbar">
       <div>
-        <p class="eyebrow">Prototype V0.1 — Git ready</p>
+        <p class="eyebrow">Prototype V0.2 — moteur data-driven</p>
         <h1>Jeu de Mercenaires</h1>
         <p class="subtitle">Génération du capitaine, escouade initiale et banc de test des mercenaires.</p>
       </div>
       <div class="top-actions">
         <a class="secondary link-button" href="/design/">Design Lab</a>
+        <button id="continue-game-btn" class="secondary hidden">Continuer</button>
         <button id="new-game-btn" class="primary">New Game</button>
       </div>
     </header>
+
+    <section id="engine-audit" class="panel audit-panel">
+      <div class="section-title-row">
+        <div>
+          <p class="eyebrow">Create_Mercenary() — audit</p>
+          <h2>Moteur de génération</h2>
+        </div>
+        <span id="audit-status" class="badge">Chargement…</span>
+      </div>
+      <div id="audit-metrics" class="audit-metrics"></div>
+      <details id="audit-details">
+        <summary><strong id="audit-pending-title">Règles à définir</strong></summary>
+        <div id="audit-pending" class="pending-list"></div>
+      </details>
+    </section>
 
     <section id="setup-panel" class="panel hidden">
       <div class="section-title-row">
@@ -38,13 +54,20 @@
       </div>
 
       <div class="notice">
-        <strong>Prototype :</strong> les compatibilités d’ascendance et certaines restrictions d’origine sont désormais pilotées par les référentiels Git du Design Lab. Le reste du pipeline est déjà câblé.
+        <strong>V0.2 :</strong> peuple, ascendances conditionnelles, culture, origine, caractéristiques, résistances et compétences sont maintenant pilotés par les référentiels Git. Les règles non encore définies sont listées dans l’audit ci-dessus.
       </div>
 
       <div class="actions-row">
         <button id="create-game-btn" class="primary">Créer le capitaine et l’escouade</button>
         <button id="cancel-setup-btn" class="secondary">Annuler</button>
       </div>
+    </section>
+
+    <section id="game-over-panel" class="panel game-over hidden">
+      <p class="eyebrow">Game Over</p>
+      <h2>La compagnie est dissoute</h2>
+      <p id="game-over-text"></p>
+      <p class="muted">Lance une nouvelle partie avec « New Game ».</p>
     </section>
 
     <section id="game-panel" class="hidden">
@@ -54,19 +77,40 @@
             <p class="eyebrow">Compagnie</p>
             <h2 id="company-title">Compagnie sans nom</h2>
           </div>
-          <div class="company-meta">
-            <span>Or <strong>1 000</strong></span>
-            <span>Jour <strong>1</strong></span>
+          <div class="company-actions">
+            <div class="company-meta">
+              <span>Or <strong id="company-gold">1 000</strong> <button id="test-gold-btn" class="test-tool" title="Outil de test : ajoute 1 000 PO">+1 000 (test)</button></span>
+              <span>Jour <strong id="company-day">1</strong></span>
+              <span>Dortoir <strong id="company-dorm">—</strong></span>
+              <span id="save-status" class="save-status"></span>
+            </div>
+            <button id="mission-test-btn" class="primary">Mission Test</button>
           </div>
         </div>
         <div id="captain-summary"></div>
+      </section>
+
+      <section class="panel tavern-panel">
+        <div class="section-title-row">
+          <div>
+            <p class="eyebrow">Taverne — recrutement V1</p>
+            <h2>Candidats du jour</h2>
+            <p class="muted">Chaque matin, certains candidats sont engagés ailleurs et de nouveaux arrivent sur les places libres.</p>
+          </div>
+          <div class="tavern-actions">
+            <label class="tavern-intendant">Intendant <select id="tavern-intendant"></select></label>
+            <button id="tavern-next-day-btn" class="primary">Jour suivant</button>
+          </div>
+        </div>
+        <div id="tavern-candidates" class="tavern-grid"></div>
+        <div id="tavern-log" class="tavern-log"></div>
       </section>
 
       <section class="panel">
         <div class="section-title-row">
           <div>
             <p class="eyebrow">Create_Initial_Squad()</p>
-            <h2>Escouade initiale</h2>
+            <h2>Escouade</h2>
           </div>
           <span id="initial-count" class="badge"></span>
         </div>
@@ -85,8 +129,77 @@
         <div id="generated-list" class="character-list"></div>
       </section>
     </section>
+    <section id="mission-panel" class="panel mission-panel hidden">
+      <div class="section-title-row">
+        <div>
+          <p class="eyebrow">Mission tactique V1</p>
+          <h2 id="mission-turn">Tour 1</h2>
+          <p id="mission-active" class="muted"></p>
+        </div>
+        <button id="mission-leave-btn" class="secondary">Retour compagnie</button>
+      </div>
+
+      <div class="mission-layout">
+        <aside class="mission-side">
+          <h3>Votre équipe</h3>
+          <div id="mission-roster-player"></div>
+          <h3>Ennemis</h3>
+          <div id="mission-roster-enemy"></div>
+        </aside>
+
+        <div class="mission-center">
+          <div class="mission-actions">
+            <button id="mission-move-btn" class="secondary">Se déplacer</button>
+            <button id="mission-attack-btn" class="secondary">Attaquer</button>
+            <button id="mission-charge-btn" class="secondary">Charger</button>
+            <button id="mission-switch-btn" class="secondary">Changer d’arme</button>
+            <button id="mission-ranged-btn" class="secondary">Attaquer à distance</button>
+            <button id="mission-second-move-btn" class="secondary" title="Renoncer à l’attaque pour un second mouvement">Second mouvement</button>
+            <button id="mission-end-activation-btn" class="primary">Fin activation</button>
+          </div>
+          <div class="mission-map-scroll"><div id="mission-map" class="mission-map"></div></div>
+          <div id="mission-result" class="mission-result hidden">
+            <div class="mission-result-head">
+              <strong>Combat terminé · bilan de fin de mission</strong>
+              <button id="mission-result-back-btn" class="primary">Retour à la compagnie</button>
+            </div>
+            <div id="mission-aftermath"></div>
+          </div>
+        </div>
+
+        <aside class="mission-console-wrap">
+          <h3>Console</h3>
+          <div id="mission-console" class="mission-console"></div>
+        </aside>
+      </div>
+    </section>
   </main>
 
+  <dialog id="mission-select-dialog">
+    <div class="dialog-head">
+      <div><p class="eyebrow">Mission Test</p><h2>Choisir 3 mercenaires</h2></div>
+      <span id="mission-select-count" class="badge">0/3</span>
+    </div>
+    <div class="mission-select-content">
+      <p class="muted">Les morts sont définitives, les blessés et les fatigués deviennent indisponibles quelques jours. Les PV restants ne sont pas conservés d’un combat à l’autre.</p>
+      <div id="mission-select-list" class="mission-select-list"></div>
+      <p id="mission-select-error" class="mission-error"></p>
+      <div class="actions-row">
+        <button id="start-mission-btn" class="primary">Lancer la mission</button>
+        <button id="cancel-mission-select-btn" class="secondary">Annuler</button>
+      </div>
+    </div>
+  </dialog>
+  <dialog id="tavern-dialog">
+    <div class="dialog-head">
+      <div>
+        <p class="eyebrow">Entretien à la Taverne</p>
+        <h2 id="tavern-dialog-name"></h2>
+      </div>
+      <button id="close-tavern-dialog" class="icon-btn" aria-label="Fermer">×</button>
+    </div>
+    <div id="tavern-dialog-content"></div>
+  </dialog>
   <dialog id="character-dialog">
     <div class="dialog-head">
       <div>
@@ -94,12 +207,24 @@
         <h2 id="dialog-name"></h2>
       </div>
       <button id="close-dialog" class="icon-btn" aria-label="Fermer">×</button>
+      <nav id="dialog-tabs" class="sheet-tabs" role="tablist" aria-label="Fiche du mercenaire"></nav>
     </div>
-    <div id="dialog-content"></div>
+    <div id="dialog-content" role="tabpanel"></div>
   </dialog>
 
+  <script src="/core/mercenary-generator.js"></script>
+  <script src="/core/combat-engine.js"></script>
+  <script src="/core/tavern.js"></script>
+  <script src="/core/campaign.js"></script>
+  <script src="/core/biography.js"></script>
+  <script src="/core/mission-end.js"></script>
+  <script src="reference-data.js"></script>
   <script src="core-data.js"></script>
   <script src="generation.js"></script>
+  <script src="mission.js"></script>
+  <script src="avatar-ui.js"></script>
+  <script src="tavern-ui.js"></script>
+  <script src="save-ui.js"></script>
   <script src="ui.js"></script>
 </body>
 </html>

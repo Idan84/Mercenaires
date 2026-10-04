@@ -129,6 +129,8 @@ Il évolue selon les choix du joueur et influence notamment :
 
 Ces effets doivent être probabilistes plutôt que des exclusions automatiques.
 
+Pour `Create_Mercenary()`, cet effet est désormais chiffré : l’alignement exact du capitaine reçoit **+15 points de probabilité** dans le tirage du candidat. Les autres alignements sont réduits proportionnellement pour conserver une distribution totale de 100 %. Ce biais ne modifie que l’orientation générée du mercenaire.
+
 ## 4 — Salaire : formule V1
 
 Le salaire ne mesure pas la valeur réelle du mercenaire.
@@ -146,7 +148,7 @@ $$
 SalaireBase = max\left(1, \frac{ReputationPerso}{30}\right)
 $$
 
-`1–10 PO/jour` correspond à la plage normale d’un mercenaire ordinaire, **pas à un plafond**. Un vétéran célèbre ou une légende peut dépasser largement `10 PO/jour`.
+`10–100 PO/jour` correspond désormais à la plage normale d’un mercenaire ordinaire, **pas à un plafond**. L’échelle monétaire des salaires est multipliée par `10` afin d’offrir davantage de granularité en pièces d’or. Un vétéran célèbre ou une légende peut dépasser largement `100 PO/jour`.
 
 ### Déformation — Prétentions salariales
 
@@ -173,11 +175,17 @@ $$
 ### Formule finale V1
 
 $$
-SalaireDemande = max\left(1, \frac{ReputationPerso}{30}\right) \times \left(1 + \frac{PretentionsSalariales - 35}{100}\right) \times \left[1 + 0,25 \times \left(\frac{Intelligence - 100}{100}\right)^2\right]
+SalaireDemande = arrondi\left(
+10 \times
+max\left(1, \frac{ReputationPerso}{30}\right)
+\times \left(1 + \frac{PretentionsSalariales - 35}{100}\right)
+\times \left[1 + 0,25 \times \left(\frac{Intelligence - 100}{100}\right)^2\right]
+\right)
 $$
 
-Le résultat est exprimé en **pièces d’or par jour** et n’a pas de plafond.
+Le multiplicateur `×10` est une **échelle monétaire** : il ne change pas la hiérarchie relative des mercenaires, mais permet de manipuler davantage de pièces d’or et rend les écarts de salaire plus granulaires.
 
+Le résultat est exprimé en **pièces d’or entières par jour**, arrondi à l’entier le plus proche, et n’a pas de plafond.
 ## 5 — Prétentions salariales
 
 `Prétentions salariales` reste un **attribut caché**, mais appartient conceptuellement au domaine **Social caché**.
@@ -207,6 +215,31 @@ Le salaire de base est une **rémunération journalière**, cohérente avec la c
 - **salaire réellement versé** : peut dépendre des politiques de la compagnie.
 
 Règle retenue pour les primes : **la prime de mission est payée au mercenaire s’il revient**.
+
+### Prime de mission demandée — PLAYTEST V1
+
+La prime contractuelle de mission est distincte du salaire journalier. Elle représente notamment la prime de risque : **plus le Courage est élevé, plus cette prime baisse**.
+
+\[
+FacteurCouragePrime = Clamp(1.5 - Courage/100,\ 0.5,\ 1.5)
+\]
+
+\[
+FacteurPretentionsPrime = 1 + \frac{PretentionsSalariales - 35}{200}
+\]
+
+\[
+PrimeMissionDemandee = Arrondi(
+3 \times SalaireDemande
+\times FacteurCouragePrime
+\times FacteurPretentionsPrime)
+\]
+
+Le coefficient \(3\) est une constante d'échelle de playtest. Le salaire demandé transmet déjà indirectement la Réputation, l'Intelligence et les Prétentions salariales à la prime.
+
+**V1 : la prime de mission contractuelle est fixe**, quelle que soit la mission. Une éventuelle prime de risque liée au danger sera traitée plus tard comme un mécanisme séparé afin de ne pas ajouter une troisième couche de négociation au recrutement.
+
+La négociation conjointe **Salaire + Prime de mission** est définie dans [Taverne — recrutement V1](/design/#doc=14-tavern-recruitment.md).
 
 ## 7 — Politique des blessés — « T’es pas à la Sécu ici »
 

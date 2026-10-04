@@ -109,6 +109,7 @@ Aucun agent ne travaille spontanément : il faut qu'une session soit lancée. Gi
 - **2026-10-04** — Fin de mission : la convalescence commence **dès la fin du combat**, le trajet de retour compte (Idan).
 - **2026-10-04** — Camp V1 (Issue #23) : or et jours seulement ; un seul chantier majeur à la fois ; accélération par les mercenaires peut-être plus tard ; prérequis rares et logiques, sous forme d'**arbre** ; Dortoir de 40 places utilisable dès le jour 1 (Idan).
 - **2026-10-04** — L'**escouade initiale est sous contrat** ; l'or de départ sera ajusté si besoin (Idan). `test` et `main` : même rôle de version de test, mise en ligne autorisée.
+- **2026-10-04** — Titre du jeu : **Blood & Wages**, accroche **« Manage your HR. Send them to die. »** (Idan, après vote de l'équipe). Le dépôt garde son nom de code « Mercenaires ».
 - **2026-10-03** — Fin de mission : on tue assez, on ne blesse pas assez. La zone du jet de blessure passe de 0–20 % à **0–50 % des PV** ; les morts ne changent pas (Idan).
 
 ## En attente de décision

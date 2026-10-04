@@ -15,9 +15,14 @@ function biographyRules(){
   return game.biographyRules;
 }
 
+function avatarRules(){
+  if(!game.avatarRules) game.avatarRules=MercenairesAvatars.createAvatarRules({catalog:game.referenceData.avatars?.rows||[]});
+  return game.avatarRules;
+}
+
 function campaignRules(){
   if(!game.campaignRules){
-    game.campaignRules=MercenairesCampaign.createCampaignRules({generator:game.generator,tavern:tavernRules(),reference:game.referenceData,biographies:biographyRules()});
+    game.campaignRules=MercenairesCampaign.createCampaignRules({generator:game.generator,tavern:tavernRules(),reference:game.referenceData,biographies:biographyRules(),avatars:avatarRules()});
   }
   return game.campaignRules;
 }

@@ -13,7 +13,11 @@ function currentScreen(){
   return "home";
 }
 
-function updateScreen(){ document.body.dataset.screen=currentScreen(); }
+function updateScreen(){
+  const screen=currentScreen();
+  document.body.dataset.screen=screen;
+  if(["home","mission","gameover"].includes(screen)&&typeof stopTheme==="function") stopTheme();
+}
 
 // Retour au menu depuis la création, le camp ou la fin de partie. La partie est sauvegardée :
 // « Continuer » la reprend telle quelle. Jamais pendant un combat (bouton masqué en mission).

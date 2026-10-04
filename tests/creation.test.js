@@ -33,4 +33,12 @@ for(const [file,label] of [["peoples.json","peuple"],["cultures.json","culture"]
   }
 }
 
+// Textes de Chatty (captain-creation-copy.json) : une entrée complète par nom du référentiel, aucune en trop.
+const copy=read("captain-creation-copy.json");
+for(const [section,file] of [["peoples","peoples.json"],["cultures","cultures.json"],["origins","social-origins.json"],["ancestries","ancestries.json"],["alignments","alignments.json"]]){
+  const names=read(file).rows.map(r=>r.nom).sort();
+  assert.deepEqual(copy[section].map(r=>r.nom).sort(),names,`textes ${section} ≠ référentiel ${file}`);
+  for(const row of copy[section]) for(const field of copy.fields) assert.ok(String(row[field]||"").trim(),`${section} « ${row.nom} » : ${field} vide`);
+}
+
 console.log(JSON.stringify({ok:true},null,2));

@@ -705,6 +705,7 @@ function openSetup() {
 
 function showFatal(error) {
   console.error(error);
+  $("engine-audit").classList.add("audit-error");
   $("audit-status").textContent = "Erreur moteur";
   $("audit-status").classList.add("badge-warn");
   $("audit-metrics").innerHTML = `<div class="fatal-error">${esc(error.message || error)}</div>`;
@@ -722,6 +723,7 @@ async function init() {
     initializeMissionUi();
     initializeTavernUi();
     initializeSaveUi();
+    initializeScreenUi();
 
     $("new-game-btn").addEventListener("click", openSetup);
     $("cancel-setup-btn").addEventListener("click", () => $("setup-panel").classList.add("hidden"));
@@ -761,7 +763,7 @@ async function init() {
       renderSheet();
       $("character-dialog").scrollTop = 0;
     });
-    openSetup();
+    // Le jeu démarre sur le menu principal (accueil) ; « Nouvelle partie » ouvre la création.
   } catch (error) {
     showFatal(error);
   }

@@ -24,4 +24,5 @@ jobs:
       - run: node --check prototype-web/ui.js
       - run: node --check prototype-web/tavern-ui.js
       - run: node --check prototype-web/picto-ui.js
+      - run: node --check prototype-web/screen-ui.js
       - run: node --check prototype-web/save-ui.js

@@ -75,16 +75,14 @@ function confirmOverwriteSave(){
   return confirm(`Une partie est sauvegardée (${save.state.company.name}, jour ${save.state.day}). La remplacer par une nouvelle partie ?`);
 }
 
-// Le bouton « Continuer » n'apparaît qu'au démarrage, tant qu'aucune partie n'est en cours.
+// « Continuer » (menu principal) : actif s'il existe une sauvegarde, grisé sinon.
 function renderSaveStatus(){
   const status=$("save-status");
   status.textContent=game.saveError||(game.campaign?"Sauvegarde automatique":"");
   status.classList.toggle("save-error",Boolean(game.saveError));
-  const btn=$("continue-game-btn");
-  if(game.campaign){ btn.classList.add("hidden"); return; }
-  const save=savedGame();
-  btn.classList.toggle("hidden",!save?.ok);
-  if(save?.ok) btn.textContent=`Continuer — ${save.state.company.name}, jour ${save.state.day}`;
+  const save=game.campaign?null:savedGame();
+  $("continue-game-btn").disabled=!save?.ok;
+  $("continue-game-detail").textContent=save?.ok?`${save.state.company.name} · jour ${save.state.day}`:"";
 }
 
 function initializeSaveUi(){

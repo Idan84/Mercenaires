@@ -6,7 +6,7 @@
   <title>Blood &amp; Wages — Prototype</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
-<body>
+<body data-screen="home">
   <main class="app-shell">
     <header class="topbar">
       <div class="brand-block">
@@ -19,11 +19,14 @@
           height="450"
         />
       </div>
-      <div class="top-actions">
-        <a class="secondary link-button" href="/design/">Design Lab</a>
-        <button id="continue-game-btn" class="secondary hidden">Continuer</button>
-        <button id="new-game-btn" class="primary">New Game</button>
-      </div>
+      <nav class="main-menu" aria-label="Menu principal">
+        <button id="new-game-btn" class="menu-btn"><span>Nouvelle partie</span><i class="menu-btn-line"></i></button>
+        <button id="load-game-btn" class="menu-btn" disabled title="Bientôt : plusieurs sauvegardes"><span>Charger partie</span><i class="menu-btn-line"></i></button>
+        <button id="continue-game-btn" class="menu-btn" disabled><span>Continuer</span><small id="continue-game-detail"></small><i class="menu-btn-line"></i></button>
+        <button id="settings-btn" class="menu-btn" disabled title="Bientôt"><span>Paramètres</span><i class="menu-btn-line"></i></button>
+        <a class="menu-btn" href="/design/"><span>Design Lab</span><i class="menu-btn-line"></i></a>
+      </nav>
+      <button id="back-to-menu-btn" class="secondary menu-back" title="Revenir au menu principal (la partie est sauvegardée)">Menu</button>
     </header>
 
     <section id="engine-audit" class="panel audit-panel">
@@ -72,7 +75,7 @@
       <p class="eyebrow">Game Over</p>
       <h2>La compagnie est dissoute</h2>
       <p id="game-over-text"></p>
-      <p class="muted">Lance une nouvelle partie avec « New Game ».</p>
+      <p class="muted">Reviens au menu pour lancer une nouvelle partie.</p>
     </section>
 
     <section id="game-panel" class="hidden">
@@ -233,6 +236,7 @@
   <script src="picto-ui.js"></script>
   <script src="tavern-ui.js"></script>
   <script src="save-ui.js"></script>
+  <script src="screen-ui.js"></script>
   <script src="ui.js"></script>
 </body>
 </html>

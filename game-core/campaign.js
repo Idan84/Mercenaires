@@ -83,6 +83,35 @@
       return ()=>generator.createMercenary({id:state.nextId++,captain:state.company.roster.find(m=>m.id===state.company.captainId)||null});
     }
 
+    // L'escouade initiale est sous contrat (décision Idan, 2026-10-04), aux conditions qu'elle demande :
+    // salaire demandé et prime de mission demandée (09-reputation §4 et §6). Le capitaine n'a pas de contrat.
+    function giveInitialContract(state,mercenary){
+      if(mercenary.contract||mercenary.id===state.company.captainId) return false;
+      mercenary.contract={dailySalary:Number(mercenary.salary)||0,missionBonus:tavern.missionBonusDemand(mercenary),signedDay:state.day,initial:true};
+      return true;
+    }
+
+    // Parties sauvegardées avant les contrats initiaux : on les complète. Renvoie true si l'état a changé.
+    function ensureInitialContracts(state){
+      let changed=false;
+      for(const m of rosterOf(state)) changed=giveInitialContract(state,m)||changed;
+      return changed;
+    }
+
+    // Masse salariale journalière : tous les membres sous contrat, blessés et fatigués compris
+    // (la politique de salaire des blessés, 09-reputation §7, n'existe pas encore : taux de 100 %).
+    function payroll(state){
+      return rosterOf(state).reduce((sum,m)=>sum+(Number(m.contract?.dailySalary)||0),0);
+    }
+
+    // Salaire journalier versé chaque jour ; l'or peut passer sous 0 (aucune conséquence définie pour l'instant).
+    function paySalaries(state){
+      const paid=rosterOf(state).filter(m=>Number(m.contract?.dailySalary)>0);
+      const total=payroll(state);
+      state.company.gold-=total;
+      return {total,count:paid.length};
+    }
+
     function createCampaign({captain,squad=[],companyName=null}){
       const ids=[captain,...squad].map(m=>Number(m.id)||0);
       const state={
@@ -99,7 +128,10 @@
         tavern:tavern.createTavernState(),
         biographiesUsed:[]
       };
-      for(const m of state.company.roster) assignBiography(state,m);
+      for(const m of state.company.roster){
+        giveInitialContract(state,m);
+        assignBiography(state,m);
+      }
       tavern.fillTavern(state.tavern,state.day,candidateFactory(state));
       return state;
     }
@@ -127,12 +159,14 @@
       return recovered;
     }
 
-    // Une journée stratégique. Ordre V1 : guérison et repos, puis Taverne (départs du matin, puis remplissage des places libres).
+    // Une journée stratégique. Ordre V1 : guérison et repos, salaires du jour, puis Taverne
+    // (départs du matin, puis remplissage des places libres).
     function advanceOneDay(state){
       state.day+=1;
       const recovered=recoverOneDay(state);
+      const salaries=paySalaries(state);
       const tavernReport=tavern.tavernMorning(state.tavern,state.day,candidateFactory(state));
-      return {day:state.day,recovered,tavern:tavernReport};
+      return {day:state.day,recovered,salaries,tavern:tavernReport};
     }
 
     // AdvanceTime(5) = cinq résolutions successives d'une journée. Seul un nombre entier de jours ≥ 0 est accepté.
@@ -239,7 +273,9 @@
       isAvailable,
       applyMissionAftermath,
       assignBiography,
-      ensureBiographies
+      ensureBiographies,
+      ensureInitialContracts,
+      payroll
     };
   }
 

@@ -1,4 +1,8 @@
-# Mercenaires
+# Blood & Wages
+
+*Manage your HR. Send them to die.*
+
+Titre et accroche décidés par Idan le 2026-10-04. Le dépôt garde son nom de code, « Mercenaires ».
 
 Jeu tactique / gestion heroic-fantasy et laboratoire de game design, avec cible finale Unreal Engine.
 

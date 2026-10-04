@@ -1,6 +1,10 @@
-# Mercenaires
+# Blood & Wages
+
+**Manage your HR. Send them to die.**
 
 Jeu tactique / gestion heroic-fantasy et laboratoire de game design, avec cible finale Unreal Engine.
+
+Nom de dépôt / nom de code historique : `Mercenaires`.
 
 ## Prototype en ligne
 

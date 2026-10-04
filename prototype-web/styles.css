@@ -7,6 +7,21 @@
 
 * { box-sizing: border-box; }
 body { margin: 0; min-height: 100vh; }
+
+/* Fond du camp (Issue #40) : le château est le quartier général. Menu principal et home du camp,
+   pas la Mission tactique. Image d'Idan telle quelle, sans voile : les panneaux restent translucides. */
+body {
+  min-height: 100dvh;
+  background: #1d1a16 url("assets/camp-home-background.jpg") center center / cover no-repeat fixed;
+}
+body:has(#mission-panel:not(.hidden)) { background: #f3f0e9; }
+.topbar {
+  padding: 14px 20px;
+  border-radius: 18px;
+  background: rgba(243,240,233,.82);
+  box-shadow: 0 10px 35px rgba(20,10,8,.18);
+}
+body:has(#mission-panel:not(.hidden)) .topbar { background: none; box-shadow: none; padding: 0; }
 button, input, select { font: inherit; }
 button { cursor: pointer; }
 
@@ -486,3 +501,9 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
 .character-bio p{margin:0;font-size:.95rem}
 .character-bio .bio-rumor{color:#bdb3a8;font-style:italic;font-size:.85rem}
 .character-bio .bio-motto{color:#c9aa7d;font-family:Georgia,"Times New Roman",serif;font-size:.85rem}
+
+/* Pictos des peuples et des ascendances (picto-ui.js) : posés sur la ligne de texte sans l'agrandir. */
+.picto { display: inline-block; object-fit: contain; vertical-align: middle; flex: none; }
+.picto-xs { width: 20px; height: 20px; margin: -3px 4px -2px 0; }
+.picto-sm { width: 28px; height: 28px; margin: -6px 6px -6px 0; }
+.picto-md { width: 34px; height: 34px; margin: -2px 8px -2px 0; }

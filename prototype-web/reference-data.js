@@ -21,7 +21,8 @@ const REFERENCE_FILES = {
   startingEquipmentGeneration: "starting-equipment-generation.json",
   binaryAptitudeGrants: "binary-aptitude-grants.json",
   alignmentGeneration: "alignment-generation.json",
-  biographies: "biographies.json"
+  biographies: "biographies.json",
+  avatars: "avatars.json"
 };
 
 async function loadReferenceData(base = "/data/") {

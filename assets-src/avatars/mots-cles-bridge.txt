@@ -1,0 +1,141 @@
+[Peuple]
+	Orc
+	Homme-bête
+	Reptilien
+	Humain
+	Halfling
+	Elfe
+	Gobelin
+	Gnome
+	Ogre
+	Nain
+[Sexe]
+	F
+	M
+[Profil]
+	Corps à corps
+	Distance
+	Magie
+[Magie]
+	Eau
+	Invocation
+	Transmutation
+	Télékinésie
+	Foudre
+	Nécromancie
+	Feu
+	Illusion
+	Vie
+	Sort à créer
+[Arme]
+	Armes contondantes
+		Marteau de guerre
+		Masse d’armes
+		Massue / Gourdin
+		Pic de guerre
+	Armes de tir
+		Arbalète
+		Arc
+		Fronde
+		Sarbacane
+	Armes d’hast
+		Arme d’hast double
+		Bardiche
+		Hallebarde
+		Lance
+		Trident
+	Armes flexibles ou articulées
+		Fléau d’armes
+		Fouet
+		Nunchaku
+	Armes à feu
+		Arquebuse / Mousquet
+		Canon à main
+		Pistolet
+		Tromblon
+	Boucliers
+		Écu
+		Pavois
+		Rondache
+	Bâtons
+		Bâton court
+		Bâton long
+	Haches
+		Hache de guerre
+		Hache double
+		Hachette
+	Lames courtes
+		Dague
+		Épée courte
+		Kukri
+		Sai
+	Lames longues
+		Épée double
+		Épée longue
+		Estoc
+		Grande épée
+		Katana
+		Sabre
+[Culture]
+	Tribus nordiques
+	Clans des grandes steppes
+	Ogres des cités humaines
+	Reptiliens des villes
+	Montagnes du Nord
+	Reptiliens des marécages
+	Elfes noirs
+	Halflings des cités humaines
+	Tribus de la jungle
+	Cités libres
+	Caravanes de ferrailleurs
+	Gnomes des forêts
+	Explorateurs
+	Steppes désertiques
+	Orcs noirs
+	Elfes des grandes cités
+	Gobelins des cavernes
+	Halflings des villages isolés
+	Orcs des villes
+	Tribus des forêts anciennes
+	Gobelins des villes
+	Royaumes du Soleil Levant
+	Orcs des steppes
+	Nains des montagnes
+	Ogres des montagnes
+	Gnomes des cavernes
+	Elfes sylvains
+	Nains des plaines
+	Reptiliens des cités-temples
+	Nains réduits en esclavage dans les colonies
+	Gnomes des villes
+	Ogres des steppes
+[Origine]
+	Érudit
+	Paysan / Ouvrier
+	Soldat / Guerrier / Combattant
+	Esclave
+	Commerçant
+	Hors-la-loi
+	Noble
+[Ascendance]
+	Sang divin
+	Sang de dragon
+	Sang de djinn
+	Sang d’elfe
+	Sang de sirène
+	Sang de troll
+	Sang féerique
+	Sang de démon
+	Sang d’humain
+	Sang d’orc
+	Sang de dryade
+[Alignement]
+	Chaotique bon
+	Neutre
+	Neutre mauvais
+	Loyal neutre
+	Loyal bon
+	Chaotique mauvais
+	Neutre bon
+	Loyal mauvais
+	Chaotique neutre

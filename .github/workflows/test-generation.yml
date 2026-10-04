@@ -18,7 +18,10 @@ jobs:
       - run: node tests/tavern.test.js
       - run: node tests/mission-end.test.js
       - run: node tests/biography.test.js
+      - run: node tests/pictos.test.js
+      - run: node tests/avatars.test.js
       - run: node --check prototype-web/mission.js
       - run: node --check prototype-web/ui.js
       - run: node --check prototype-web/tavern-ui.js
+      - run: node --check prototype-web/picto-ui.js
       - run: node --check prototype-web/save-ui.js

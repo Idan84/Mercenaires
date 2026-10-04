@@ -1,4 +1,4 @@
-# Équipe Mercenaires — tableau de bord
+# Équipe Blood & Wages — tableau de bord
 
 Tableau de bord de l'équipe, pas un roman. À lire au début de chaque session, juste après `AGENTS.md`.
 
@@ -108,6 +108,8 @@ Aucun agent ne travaille spontanément : il faut qu'une session soit lancée. Gi
 - **2026-10-04** — Bios : principe validé, textes V0 acceptés tels quels ; la bio se découvre **au recrutement**, pas à la Taverne (Idan).
 - **2026-10-04** — Fin de mission : la convalescence commence **dès la fin du combat**, le trajet de retour compte (Idan).
 - **2026-10-04** — Camp V1 (Issue #23) : or et jours seulement ; un seul chantier majeur à la fois ; accélération par les mercenaires peut-être plus tard ; prérequis rares et logiques, sous forme d'**arbre** ; Dortoir de 40 places utilisable dès le jour 1 (Idan).
+- **2026-10-04** — Avatars V1 (Idan) : même peuple obligatoire, le sexe vient de l'image ; attribution à la création de la compagnie et dès l'arrivée à la Taverne ; jamais deux fois le même visage en même temps ; un candidat qui repart libère le sien, celui d'un mort n'est plus attribué. Idan tague ses images dans **Bridge** (mots-clés : peuple, sexe, profil, magie, arme, culture, origine…) et le jeu choisit l'avatar le plus proche du mercenaire.
+- **2026-10-04** — Paie V1 validée (Idan, après la review de Chatty) : contrat initial aux conditions demandées, sans négociation ; capitaine sans salaire ; blessés et fatigués payés à 100 % **pour l'instant**, le taux deviendra une option de l'**Intendance** ; trésor négatif sans conséquence **pour l'instant** ; 10 à 15 jours de réserve avec 10 000 PO : bon rythme, le bouton d'or sert aux tests.
 - **2026-10-04** — L'**escouade initiale est sous contrat** ; l'or de départ sera ajusté si besoin (Idan). `test` et `main` : même rôle de version de test, mise en ligne autorisée.
 - **2026-10-04** — Titre du jeu : **Blood & Wages**, accroche **« Manage your HR. Send them to die. »** (Idan, après vote de l'équipe). Le dépôt garde son nom de code « Mercenaires ».
 - **2026-10-03** — Fin de mission : on tue assez, on ne blesse pas assez. La zone du jet de blessure passe de 0–20 % à **0–50 % des PV** ; les morts ne changent pas (Idan).
@@ -116,7 +118,7 @@ Aucun agent ne travaille spontanément : il faut qu'une session soit lancée. Gi
 
 - **Camp V1 : arbre de prérequis et prix** (Chatty propose, Idan tranche ; Issue #23) : règles A à E décidées le 2026-10-04 ; l'arbre des bâtiments reste à proposer, et les prix viendront avec le calibrage de l'économie (or de départ, salaires, revenus des missions).
 - **Combat interrompu** (Idan + Chatty) : recharger la page en plein combat revient à l'état d'avant le combat. À trancher avec les vraies missions : retraite, défaite ou combat sauvegardé.
-- **Trésor négatif** (Idan + Chatty) : la prime de mission peut faire passer l'or sous 0, sans conséquence pour l'instant.
+- **Trésor négatif** (Idan + Chatty) : salaires et primes peuvent faire passer l'or sous 0, sans conséquence pour l'instant (Idan, 2026-10-04). Dette, impayés et départs restent à concevoir.
 - **Bios évolutives** (Idan, doc 15) : plus tard, ajouter une ligne après un exploit, une blessure, une trahison ?
 - **Sélection du type de dégâts, cas « moyen »** (Idan + Chatty) : la formule dit `AVERAGE(matchups)`, le moteur choisit le type le plus proche de cette moyenne. Faut-il une moyenne numérique, ou le type le plus proche ?
 

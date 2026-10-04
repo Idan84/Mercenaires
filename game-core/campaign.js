@@ -48,7 +48,8 @@
 
   // generator : createGenerator(...) ; tavern : createTavernRules(...) ; reference : data/reference/ ;
   // biographies (facultatif) : createBiographyRules(...) de game-core/biography.js.
-  function createCampaignRules({generator,tavern,reference,biographies=null}){
+  // avatars (facultatif) : createAvatarRules(...) de game-core/avatars.js.
+  function createCampaignRules({generator,tavern,reference,biographies=null,avatars=null}){
     const STARTING_GOLD=referenceConstant(reference,"company.gold.initial",10000);
     const STARTING_DORMITORY_CAPACITY=referenceConstant(reference,"camp.dormitory.initial_capacity",40);
     function rosterOf(state){ return state.company.roster; }
@@ -63,6 +64,31 @@
       const bio=biographies.assign(mercenary,used);
       if(bio&&!state.biographiesUsed.includes(bio.id)) state.biographiesUsed.push(bio.id);
       return bio;
+    }
+
+    // Avatars (décisions Idan du 2026-10-04) : attribués dès la création de la compagnie et dès
+    // l'arrivée à la Taverne, puisque la carte du candidat montre son visage. Un visage n'est jamais
+    // porté par deux mercenaires présents (compagnie et Taverne) ; un candidat qui repart libère le
+    // sien ; celui d'un mort n'est plus attribué (state.avatarsRetired).
+    function avatarsInUse(state){
+      const present=[...rosterOf(state),...state.tavern.candidates.map(c=>c.mercenary)];
+      return new Set([...present.map(m=>m.avatar?.id).filter(Boolean),...(state.avatarsRetired||[])]);
+    }
+
+    function assignAvatar(state,mercenary){
+      if(!avatars) return mercenary.avatar||null;
+      return avatars.assign(mercenary,avatarsInUse(state));
+    }
+
+    // Parties sauvegardées avant les avatars, nouveaux avatars ajoutés au catalogue, avatar retiré du
+    // catalogue : on complète. Renvoie true si l'état a changé, pour que l'interface sauvegarde.
+    function ensureAvatars(state){
+      if(!avatars) return false;
+      const everyone=()=>[...rosterOf(state),...state.tavern.candidates.map(c=>c.mercenary)];
+      const before=JSON.stringify(everyone().map(m=>[m.avatar?.id||null,m.sex||null]));
+      state.avatarsRetired=state.avatarsRetired||[];
+      for(const m of everyone()) assignAvatar(state,m);
+      return JSON.stringify(everyone().map(m=>[m.avatar?.id||null,m.sex||null]))!==before;
     }
 
     // Parties sauvegardées avant les biographies : on complète les membres qui n'en ont pas.
@@ -80,7 +106,40 @@
 
     // Un candidat de la Taverne est généré avec les biais du capitaine, comme tout nouveau mercenaire.
     function candidateFactory(state){
-      return ()=>generator.createMercenary({id:state.nextId++,captain:state.company.roster.find(m=>m.id===state.company.captainId)||null});
+      return ()=>{
+        const mercenary=generator.createMercenary({id:state.nextId++,captain:state.company.roster.find(m=>m.id===state.company.captainId)||null});
+        assignAvatar(state,mercenary);
+        return mercenary;
+      };
+    }
+
+    // L'escouade initiale est sous contrat (décision Idan, 2026-10-04), aux conditions qu'elle demande :
+    // salaire demandé et prime de mission demandée (09-reputation §4 et §6). Le capitaine n'a pas de contrat.
+    function giveInitialContract(state,mercenary){
+      if(mercenary.contract||mercenary.id===state.company.captainId) return false;
+      mercenary.contract={dailySalary:Number(mercenary.salary)||0,missionBonus:tavern.missionBonusDemand(mercenary),signedDay:state.day,initial:true};
+      return true;
+    }
+
+    // Parties sauvegardées avant les contrats initiaux : on les complète. Renvoie true si l'état a changé.
+    function ensureInitialContracts(state){
+      let changed=false;
+      for(const m of rosterOf(state)) changed=giveInitialContract(state,m)||changed;
+      return changed;
+    }
+
+    // Masse salariale journalière : tous les membres sous contrat, blessés et fatigués compris
+    // (la politique de salaire des blessés, 09-reputation §7, n'existe pas encore : taux de 100 %).
+    function payroll(state){
+      return rosterOf(state).reduce((sum,m)=>sum+(Number(m.contract?.dailySalary)||0),0);
+    }
+
+    // Salaire journalier versé chaque jour ; l'or peut passer sous 0 (aucune conséquence définie pour l'instant).
+    function paySalaries(state){
+      const paid=rosterOf(state).filter(m=>Number(m.contract?.dailySalary)>0);
+      const total=payroll(state);
+      state.company.gold-=total;
+      return {total,count:paid.length};
     }
 
     function createCampaign({captain,squad=[],companyName=null}){
@@ -97,9 +156,15 @@
           camp:{dormitoryCapacity:STARTING_DORMITORY_CAPACITY}
         },
         tavern:tavern.createTavernState(),
-        biographiesUsed:[]
+        biographiesUsed:[],
+        avatarsRetired:[]
       };
-      for(const m of state.company.roster) assignBiography(state,m);
+      // L'avatar avant la bio : le sexe vient de l'image (doc 15).
+      for(const m of state.company.roster){
+        giveInitialContract(state,m);
+        assignAvatar(state,m);
+        assignBiography(state,m);
+      }
       tavern.fillTavern(state.tavern,state.day,candidateFactory(state));
       return state;
     }
@@ -127,12 +192,14 @@
       return recovered;
     }
 
-    // Une journée stratégique. Ordre V1 : guérison et repos, puis Taverne (départs du matin, puis remplissage des places libres).
+    // Une journée stratégique. Ordre V1 : guérison et repos, salaires du jour, puis Taverne
+    // (départs du matin, puis remplissage des places libres).
     function advanceOneDay(state){
       state.day+=1;
       const recovered=recoverOneDay(state);
+      const salaries=paySalaries(state);
       const tavernReport=tavern.tavernMorning(state.tavern,state.day,candidateFactory(state));
-      return {day:state.day,recovered,tavern:tavernReport};
+      return {day:state.day,recovered,salaries,tavern:tavernReport};
     }
 
     // AdvanceTime(5) = cinq résolutions successives d'une journée. Seul un nombre entier de jours ≥ 0 est accepté.
@@ -194,6 +261,7 @@
         if(result.dead){
           roster.splice(roster.indexOf(mercenary),1);
           if(state.company.intendantId===mercenary.id) state.company.intendantId=null;
+          if(mercenary.avatar?.id) (state.avatarsRetired=state.avatarsRetired||[]).push(mercenary.avatar.id);
           report.deaths.push(mercenary);
           continue;
         }
@@ -239,7 +307,10 @@
       isAvailable,
       applyMissionAftermath,
       assignBiography,
-      ensureBiographies
+      ensureBiographies,
+      ensureInitialContracts,
+      ensureAvatars,
+      payroll
     };
   }
 

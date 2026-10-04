@@ -15,9 +15,14 @@ function biographyRules(){
   return game.biographyRules;
 }
 
+function avatarRules(){
+  if(!game.avatarRules) game.avatarRules=MercenairesAvatars.createAvatarRules({catalog:game.referenceData.avatars?.rows||[]});
+  return game.avatarRules;
+}
+
 function campaignRules(){
   if(!game.campaignRules){
-    game.campaignRules=MercenairesCampaign.createCampaignRules({generator:game.generator,tavern:tavernRules(),reference:game.referenceData,biographies:biographyRules()});
+    game.campaignRules=MercenairesCampaign.createCampaignRules({generator:game.generator,tavern:tavernRules(),reference:game.referenceData,biographies:biographyRules(),avatars:avatarRules()});
   }
   return game.campaignRules;
 }
@@ -47,6 +52,7 @@ function renderCompanyMeta(){
   $("company-gold").classList.toggle("negative",c.company.gold<0);
   $("company-day").textContent=c.day;
   $("company-dorm").textContent=c.company.roster.length+" / "+c.company.camp.dormitoryCapacity;
+  $("company-payroll").textContent=fmt(campaignRules().payroll(c));
 }
 
 function profileText(shown){
@@ -61,7 +67,7 @@ function renderTavernCard(candidate){
     ${renderAvatar(candidate.mercenary,{variant:"card"})}
     <header>
       <strong>${esc(shown.name)}</strong>
-      <small>${esc(shown.people)} · ${esc(shown.culture)}</small>
+      <small>${renderPicto("people",shown.people,{size:"xs"})}${esc(shown.people)} · ${esc(shown.culture)}</small>
     </header>
     <dl>
       <div><dt>Profil</dt><dd>${esc(profileText(shown))}</dd></div>
@@ -117,6 +123,7 @@ function advanceTavernDay(){
   if(!game.campaign) return;
   const [report]=campaignRules().advanceTime(game.campaign,1);
   for(const r of report.recovered) tavernLog(r.mercenary.name+(r.kind==="wounded"?" est guéri de ses blessures.":" est reposé."),"turn");
+  if(report.salaries.total) tavernLog("Salaires versés : "+fmt(report.salaries.total)+" PO ("+report.salaries.count+" mercenaires sous contrat).","gear");
   const gone=report.tavern.departures.map(d=>d.candidate.mercenary.name);
   const arrived=report.tavern.arrivals.map(a=>a.mercenary.name);
   tavernLog(gone.length?"Engagés ailleurs pendant la nuit : "+gone.join(", ")+".":"Personne n’a été engagé ailleurs cette nuit.",gone.length?"bad":"info");
@@ -165,7 +172,7 @@ function renderInterview(){
       ${renderAvatar(candidate.mercenary,{variant:"interview"})}
       <div>
     <div class="identity-grid">
-      <div class="metric"><small>Peuple</small><strong>${esc(shown.people)}</strong></div>
+      <div class="metric"><small>Peuple</small><strong>${renderPicto("people",shown.people,{size:"md"})}${esc(shown.people)}</strong></div>
       <div class="metric"><small>Culture</small><strong>${esc(shown.culture)}</strong></div>
       <div class="metric"><small>Profil</small><strong>${esc(profileText(shown))}</strong></div>
       <div class="metric"><small>Réputation</small><strong>${fmt(shown.reputation)}</strong></div>

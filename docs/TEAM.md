@@ -2,7 +2,7 @@
 
 Tableau de bord de l'équipe, pas un roman. À lire au début de chaque session, juste après `AGENTS.md`.
 
-Dernière mise à jour : 2026-10-04 (nuit) — JC3
+Dernière mise à jour : 2026-10-04 (matin) — JC3
 
 ## Rôles
 
@@ -105,15 +105,18 @@ Aucun agent ne travaille spontanément : il faut qu'une session soit lancée. Gi
 - **2026-10-03** — Combat V1 (PR #7) : toute attaque contre un personnage En Fuite est une Frappe dans le dos ; panique hors de sa propre activation = fuite immédiate de `MouvementBase` ; choix d'implémentation des attaques d'opportunité confirmés par Chatty.
 - **2026-10-03** — Fuite V1 (Issue #8) : pas de nouveau test de Courage En Fuite ; un fuyard ne fait pas d'attaque d'opportunité ; ennemi actif = vivant et pas En Fuite ; sortie de carte prioritaire si atteignable ce tour-ci ; Mission Test : sortie de carte = hors combat.
 - **2026-10-03** — Or de départ porté à **10 000 PO** (les salaires avaient été multipliés par 10) ; l'or de départ et les revenus seront recalés ensemble. Cible : **PC / Steam**, le téléphone n'est pas prioritaire.
+- **2026-10-04** — Bios : principe validé, textes V0 acceptés tels quels ; la bio se découvre **au recrutement**, pas à la Taverne (Idan).
+- **2026-10-04** — Fin de mission : la convalescence commence **dès la fin du combat**, le trajet de retour compte (Idan).
+- **2026-10-04** — Camp V1 (Issue #23) : or et jours seulement ; un seul chantier majeur à la fois ; accélération par les mercenaires peut-être plus tard ; prérequis rares et logiques, sous forme d'**arbre** ; Dortoir de 40 places utilisable dès le jour 1 (Idan).
+- **2026-10-04** — L'**escouade initiale est sous contrat** ; l'or de départ sera ajusté si besoin (Idan). `test` et `main` : même rôle de version de test, mise en ligne autorisée.
 - **2026-10-03** — Fin de mission : on tue assez, on ne blesse pas assez. La zone du jet de blessure passe de 0–20 % à **0–50 % des PV** ; les morts ne changent pas (Idan).
 
 ## En attente de décision
 
-- **Escouade initiale sans contrat** (Idan + Chatty) : à décider avant de brancher la paie quotidienne, sinon l'escouade initiale travaillerait gratuitement pour toujours.
-- **Camp V1 : règles de construction** (Idan, Issue #23) : or et jours seulement, un seul chantier à la fois, prérequis rares, Dortoir de 40 places utilisable dès le jour 1. Les prix viendront avec le calibrage de l'économie (or de départ, salaires, revenus des missions).
+- **Camp V1 : arbre de prérequis et prix** (Chatty propose, Idan tranche ; Issue #23) : règles A à E décidées le 2026-10-04 ; l'arbre des bâtiments reste à proposer, et les prix viendront avec le calibrage de l'économie (or de départ, salaires, revenus des missions).
 - **Combat interrompu** (Idan + Chatty) : recharger la page en plein combat revient à l'état d'avant le combat. À trancher avec les vraies missions : retraite, défaite ou combat sauvegardé.
 - **Trésor négatif** (Idan + Chatty) : la prime de mission peut faire passer l'or sous 0, sans conséquence pour l'instant.
-- **Bios** (Idan, doc 15 de la PR #32) : afficher la rumeur et la devise dans la fiche ? Bio visible dès la Taverne, ou seulement après recrutement ? Bios évolutives plus tard (exploit, blessure, trahison) ?
+- **Bios évolutives** (Idan, doc 15) : plus tard, ajouter une ligne après un exploit, une blessure, une trahison ?
 - **Sélection du type de dégâts, cas « moyen »** (Idan + Chatty) : la formule dit `AVERAGE(matchups)`, le moteur choisit le type le plus proche de cette moyenne. Faut-il une moyenne numérique, ou le type le plus proche ?
 
 ## Dépendances

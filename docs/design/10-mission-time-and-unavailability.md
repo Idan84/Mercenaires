@@ -171,10 +171,11 @@ En complément des données déjà prévues dans l’architecture :
 - date / jour de retour prévu ;
 - statut de retour réel.
 
+**Décision d’Idan (2026-10-04) : la convalescence commence dès la fin du combat.** Le trajet de retour compte comme du repos : un blessé à 7 jours, sur une mission à 3 jours du camp, n’a plus que 4 jours d’indisponibilité en rentrant.
+
 ## 10 — Points encore ouverts
 
 - coefficients PLAYTEST des formules de blessure, de fatigue et de durée, à ajuster en jeu ;
-- moment exact où commencent les soins : dès la fin du combat (le trajet retour compte) ou seulement au retour au camp ;
 - influence précise des bâtiments médicaux ;
 - séquelles permanentes (reportées, décision Idan) ;
 - sort exact des mercenaires ayant fui hors de la carte, capturés ou disparus, abandon et extraction des personnages laissés sur place.

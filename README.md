@@ -8,7 +8,7 @@ Jeu tactique / gestion heroic-fantasy et laboratoire de game design, avec cible 
 
 ## Prototype en ligne
 
-https://mercenaires-s708.netlify.app
+https://bloodandwages.idanwizen.com (hébergé chez Hostinger)
 
 Le **Design Lab** est accessible depuis le prototype ou directement via `/design/`.
 
@@ -28,6 +28,6 @@ L'archive Notion est conservée uniquement pour vérifier l'historique. Toute no
 
 - `main` : version stable.
 - branches de travail / PR : expérimentation et revue.
-- Netlify : déploiement automatique du prototype et Deploy Previews.
+- Hostinger : mise en ligne automatique de `main` (voir `docs/DEPLOYMENT.md`).
 
 Les agents doivent lire `AGENTS.md` avant de modifier la logique.

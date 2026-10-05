@@ -2,7 +2,7 @@
 
 Tableau de bord de l'équipe, pas un roman. À lire au début de chaque session, juste après `AGENTS.md`.
 
-Dernière mise à jour : 2026-10-04 (matin) — JC3
+Dernière mise à jour : 2026-10-05 — JC3
 
 ## Rôles
 
@@ -21,7 +21,7 @@ Dernière mise à jour : 2026-10-04 (matin) — JC3
 | `docs/design/`, `data/reference/` (contenu) | Chatty | Idan valide toute règle avant qu'elle soit codée. |
 | `game-core/`, `tests/` | JC3 | |
 | `prototype-web/` | JC3 | Intégration technique. Le contenu vient de Chatty ; la direction artistique vient d'Idan / Jean-Mimi. **JC ne recadre, ne redessine, ne détoure, ne recolore, ne régénère et ne compresse pas un asset visuel de sa propre initiative.** |
-| hébergement, `.github/`, `scripts/` | JC3 | **Netlify abandonné faute de crédits (2026-10-05). Migration vers Hostinger à préparer.** |
+| hébergement, `.github/`, `scripts/` | JC3 | Hostinger depuis le 2026-10-05 (Netlify abandonné faute de crédits). Mise en ligne automatique de `main` : `docs/DEPLOYMENT.md`. |
 | `docs/TEAM.md` | JC3 | Chacun peut mettre à jour sa ligne dans « Chantiers en cours ». |
 | `archive/notion-export/` | — | Archive figée, jamais modifiée. |
 
@@ -39,7 +39,7 @@ Avant de toucher au cœur d'une zone qui appartient à quelqu'un d'autre, on le 
 
 ### Les trois étages Git
 
-- `main` : la version officielle, celle du site public. On ne la casse pas.
+- `main` : la version officielle, celle du site public (https://bloodandwages.idanwizen.com, mis à jour automatiquement). On ne la casse pas.
 - `test` : l'atelier commun, où l'on assemble ce qui est assez propre pour être testé ensemble.
 - Branches courtes : une par chantier, créées à partir de `test`.
 
@@ -49,7 +49,7 @@ Avant de toucher au cœur d'une zone qui appartient à quelqu'un d'autre, on le 
 2. Une Pull Request (PR) est ouverte vers `test`. Si une relecture est souhaitée, la description le dit : `Review Chatty : vérifier la conformité avec Combat V1`.
 3. Les tests automatiques doivent être verts. Tout changement de règle ou de comportement de jeu est relu par Chatty ; une correction purement technique, qui ne change aucun comportement défini, n'attend pas sa relecture.
 4. JC3 fusionne dans `test`.
-5. Idan reçoit au plus un lien de prévisualisation et une question : « Essaie ça, ça te plaît ? »
+5. Idan reçoit au plus un lien et une question : « Essaie ça, ça te plaît ? »
 6. Quand `test` est stable et qu'Idan donne son feu vert, JC3 passe `test` dans `main`.
 
 ### Messagerie : GitHub Issues

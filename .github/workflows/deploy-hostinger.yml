@@ -1,0 +1,73 @@
+name: Mise en ligne Hostinger
+
+# À chaque mise en ligne sur main : assemble le site (scripts/build-site.sh) et l'envoie par FTP
+# sur Hostinger. L'envoi ajoute et remplace des fichiers, il n'en efface jamais : ce qu'Idan
+# dépose directement sur Hostinger (médias) n'est jamais touché.
+#
+# Secrets du dépôt (Settings → Secrets and variables → Actions) :
+#   HOSTINGER_FTP_HOST, HOSTINGER_FTP_USER, HOSTINGER_FTP_PASSWORD
+# Variables facultatives :
+#   HOSTINGER_FTP_DIR  dossier distant (par défaut : le dossier du compte FTP)
+#   HOSTINGER_SITE_URL adresse du site (par défaut : https://bloodandwages.idanwizen.com)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-hostinger
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      FTP_DIR: ${{ vars.HOSTINGER_FTP_DIR || '.' }}
+      SITE_URL: ${{ vars.HOSTINGER_SITE_URL || 'https://bloodandwages.idanwizen.com' }}
+    steps:
+      - name: Vérifier les secrets FTP
+        env:
+          FTP_HOST: ${{ secrets.HOSTINGER_FTP_HOST }}
+          FTP_USER: ${{ secrets.HOSTINGER_FTP_USER }}
+          LFTP_PASSWORD: ${{ secrets.HOSTINGER_FTP_PASSWORD }}
+        run: |
+          missing=""
+          [ -n "$FTP_HOST" ] || missing="$missing HOSTINGER_FTP_HOST"
+          [ -n "$FTP_USER" ] || missing="$missing HOSTINGER_FTP_USER"
+          [ -n "$LFTP_PASSWORD" ] || missing="$missing HOSTINGER_FTP_PASSWORD"
+          if [ -n "$missing" ]; then echo "::error::Secrets manquants :$missing"; exit 1; fi
+
+      - uses: actions/checkout@v4
+
+      - name: Assembler le site
+        run: bash scripts/build-site.sh site
+
+      - name: Installer lftp
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq lftp
+
+      - name: Envoyer sur Hostinger (FTP chiffré, sans rien effacer)
+        env:
+          FTP_HOST: ${{ secrets.HOSTINGER_FTP_HOST }}
+          FTP_USER: ${{ secrets.HOSTINGER_FTP_USER }}
+          LFTP_PASSWORD: ${{ secrets.HOSTINGER_FTP_PASSWORD }}
+        run: |
+          lftp -c "
+            set ftp:ssl-force true;
+            set ftp:ssl-protect-data true;
+            set net:max-retries 3;
+            set net:timeout 30;
+            open --env-password -u \"$FTP_USER\" \"$FTP_HOST\";
+            mirror --reverse --no-perms --parallel=4 --verbose site/ \"$FTP_DIR\";
+          "
+
+      - name: Vérifier le site en ligne
+        run: |
+          for path in / /core/campaign.js /data/index.json; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" "$SITE_URL$path")
+            echo "$code $SITE_URL$path"
+            [ "$code" = "200" ] || { echo "::error::$SITE_URL$path répond $code"; exit 1; }
+          done

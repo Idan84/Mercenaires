@@ -131,4 +131,13 @@ assert.equal(campaign.ensureAvatars(reloaded),false,"rien de nouveau : pas de sa
 const again=[...reloaded.company.roster,...reloaded.tavern.candidates.map(c=>c.mercenary)].map(x=>x.avatar.id);
 assert.equal(new Set(again).size,again.length);
 
+// Avatars déplacés sur Hostinger (mêmes identifiants, autres fichiers) : mêmes visages, nouveaux fichiers, à sauvegarder.
+const moved=createAvatarRules({catalog:testCatalog.map(a=>({...a,full:"/media/avatars/"+a.full,portrait:"/media/avatars/"+a.portrait}))});
+const campaignMoved=createCampaignRules({generator,tavern:createTavernRules({reference,random:()=>0.999}),reference,biographies:createBiographyRules({catalog:read("biographies.json").rows}),avatars:moved});
+assert.equal(campaignMoved.ensureAvatars(reloaded),true,"fichiers changés : à sauvegarder");
+const everyoneMoved=[...reloaded.company.roster,...reloaded.tavern.candidates.map(c=>c.mercenary)];
+assert.deepEqual(everyoneMoved.map(x=>x.avatar.id),again,"mêmes visages");
+assert.ok(everyoneMoved.every(x=>x.avatar.full.startsWith("/media/avatars/")&&x.avatar.portrait.startsWith("/media/avatars/")));
+assert.equal(campaignMoved.ensureAvatars(reloaded),false);
+
 console.log(JSON.stringify({ok:true,avatars:catalog.row_count},null,2));

@@ -508,22 +508,74 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
 .picto-sm { width: 28px; height: 28px; margin: -6px 6px -6px 0; }
 .picto-md { width: 34px; height: 34px; margin: -2px 8px -2px 0; }
 
-/* Écrans (screen-ui.js). Accueil : le logo et le menu seuls, posés sur le château. */
+/* Écrans (screen-ui.js). Accueil : logo + menu sur le château.
+   V1 visuelle Chatty : le JPG reste intact ; le traitement du fond est uniquement CSS. */
+body[data-screen="home"] {
+  position: relative;
+  overflow-x: hidden;
+  background: #15120f;
+}
+body[data-screen="home"]::before {
+  content: "";
+  position: fixed;
+  inset: -8px;
+  z-index: -2;
+  background: url("assets/camp-home-background.jpg") center center / cover no-repeat;
+  filter: blur(2px) brightness(.78) saturate(.92);
+  transform: scale(1.012);
+}
+body[data-screen="home"]::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 34%, rgba(0,0,0,0) 0 24%, rgba(7,5,4,.12) 58%, rgba(7,5,4,.28) 100%),
+    linear-gradient(180deg, rgba(9,7,6,.03), rgba(9,7,6,.16));
+}
+body[data-screen="home"] .app-shell {
+  position: relative;
+  z-index: 1;
+  padding-top: 16px;
+  padding-bottom: 20px;
+}
 body[data-screen="home"] .topbar {
+  position: relative;
   flex-direction: column;
-  justify-content: center;
-  min-height: calc(100dvh - 48px);
-  padding: 0;
-  gap: 10px;
+  justify-content: flex-start;
+  min-height: calc(100dvh - 36px);
+  padding: clamp(18px, 2.4dvh, 30px) 0 10px;
+  gap: 6px;
   margin-bottom: 0;
   background: none;
   box-shadow: none;
 }
-body[data-screen="home"] .app-shell { padding-bottom: 24px; }
-body[data-screen="home"] .brand-block { display: flex; flex-direction: column; align-items: center; }
-/* Logo de l'accueil limité aussi par la hauteur d'écran, pour que les cinq boutons tiennent en 1366×768. */
-body[data-screen="home"] .brand-logo { width: min(600px, 48vw, 54dvh); }
-body[data-screen="home"] .brand-kicker { margin: 0 0 -8px; color: #f3e6c4; text-shadow: 0 1px 3px rgba(0,0,0,.8); }
+body[data-screen="home"] .brand-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+body[data-screen="home"] .brand-logo {
+  width: min(680px, 54vw, 66dvh);
+  max-width: 92vw;
+  filter:
+    drop-shadow(0 8px 8px rgba(0,0,0,.48))
+    drop-shadow(0 18px 30px rgba(0,0,0,.28));
+}
+body[data-screen="home"] .brand-kicker {
+  position: absolute;
+  top: 0;
+  left: 10px;
+  margin: 0;
+  z-index: 2;
+  color: rgba(239,226,196,.72);
+  font-size: .58rem;
+  font-weight: 650;
+  letter-spacing: .16em;
+  text-shadow: 0 1px 3px rgba(0,0,0,.9);
+}
 body:not([data-screen="home"]) .main-menu { display: none; }
 body[data-screen="home"] .menu-back,
 body[data-screen="mission"] .menu-back { display: none; }
@@ -531,64 +583,153 @@ body:not([data-screen="home"]) .brand-logo { width: clamp(180px, 18vw, 250px); }
 /* L'audit du moteur est un outil de développement : il n'apparaît qu'à la création du capitaine (ou en cas d'erreur). */
 body:not([data-screen="setup"]) #engine-audit:not(.audit-error) { display: none; }
 
-/* Menu principal : plaques sombres, coins et ligne dorés tirés de l'image d'Idan
-   (assets-src/ui/menu-ornements.jpg → scripts/build-ui-ornaments.sh). Inactif = grisé. */
-.main-menu { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+/* Menu principal : plaques sombres sobres, métal vieilli et filet chaud.
+   Les états désactivés restent beaux : moins de contraste, jamais un filtre grayscale brutal. */
+.main-menu {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin-top: -2px;
+}
 .menu-btn {
   position: relative;
+  isolation: isolate;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: min(360px, 86vw);
-  min-height: 58px;
-  padding: 10px 44px 14px;
-  border: 1px solid rgba(201,164,92,.35);
-  border-radius: 3px;
-  background: linear-gradient(180deg, rgba(36,28,21,.9), rgba(14,10,8,.94));
-  color: #ead7a6;
+  width: min(380px, 86vw);
+  min-height: 52px;
+  padding: 9px 46px 13px;
+  overflow: visible;
+  border: 1px solid rgba(202,166,98,.42);
+  border-radius: 2px;
+  background:
+    linear-gradient(180deg, rgba(52,38,27,.94), rgba(20,14,11,.96)),
+    #19120e;
+  color: #ead9ad;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: 1.12rem;
+  font-size: 1rem;
   font-weight: 600;
-  letter-spacing: .16em;
+  letter-spacing: .135em;
+  line-height: 1.08;
   text-transform: uppercase;
   text-decoration: none;
-  text-shadow: 0 1px 2px #000;
-  box-shadow: 0 10px 26px rgba(0,0,0,.5);
+  text-shadow: 0 1px 2px rgba(0,0,0,.9);
+  box-shadow:
+    0 9px 24px rgba(0,0,0,.36),
+    inset 0 1px 0 rgba(255,224,164,.07),
+    inset 0 -1px 0 rgba(0,0,0,.55);
   cursor: pointer;
-  transition: transform .12s ease, color .12s ease;
+  transition:
+    transform .14s ease,
+    color .14s ease,
+    border-color .14s ease,
+    box-shadow .14s ease,
+    background .14s ease;
+}
+.main-menu .menu-btn:first-child {
+  border-color: rgba(218,172,82,.65);
+  background:
+    linear-gradient(180deg, rgba(72,43,27,.96), rgba(29,17,13,.97)),
+    #21140f;
+  box-shadow:
+    0 10px 28px rgba(0,0,0,.42),
+    0 0 18px rgba(174,111,38,.08),
+    inset 0 1px 0 rgba(255,224,164,.12);
 }
 .menu-btn::before,
 .menu-btn::after {
   content: "";
   position: absolute;
-  width: 38px;
-  height: 38px;
+  width: 32px;
+  height: 32px;
   background: center / contain no-repeat;
+  opacity: .72;
   pointer-events: none;
+  transition: opacity .14s ease, filter .14s ease;
 }
-.menu-btn::before { top: -7px; left: -7px; background-image: url("assets/ui/menu-corner-tl.webp"); }
-.menu-btn::after { right: -7px; bottom: -7px; background-image: url("assets/ui/menu-corner-br.webp"); }
+.menu-btn::before { top: -5px; left: -5px; background-image: url("assets/ui/menu-corner-tl.webp"); }
+.menu-btn::after { right: -5px; bottom: -5px; background-image: url("assets/ui/menu-corner-br.webp"); }
 .menu-btn-line {
   position: absolute;
-  left: 16%;
-  right: 16%;
+  left: 19%;
+  right: 19%;
   bottom: 6px;
-  height: 4px;
+  height: 3px;
   background: url("assets/ui/menu-line.webp") center / 100% 100% no-repeat;
-  opacity: .45;
-  transition: opacity .12s ease;
+  opacity: .38;
+  transition: opacity .14s ease;
 }
-.menu-btn small { margin-top: 2px; font-size: .68rem; font-weight: 500; letter-spacing: .06em; text-transform: none; color: #c9b27f; }
+.menu-btn small {
+  margin-top: 3px;
+  font-size: .64rem;
+  font-weight: 500;
+  letter-spacing: .045em;
+  text-transform: none;
+  color: #c8b282;
+}
 .menu-btn small:empty { display: none; }
 .menu-btn:not(:disabled):hover,
-.menu-btn:focus-visible { color: #fff4d2; transform: translateY(-1px); outline: none; }
+.menu-btn:focus-visible {
+  color: #fff1ca;
+  border-color: rgba(229,188,105,.72);
+  transform: translateY(-1px);
+  box-shadow:
+    0 12px 30px rgba(0,0,0,.46),
+    0 0 18px rgba(181,119,46,.11),
+    inset 0 1px 0 rgba(255,229,176,.13);
+  outline: none;
+}
 .menu-btn:not(:disabled):hover .menu-btn-line,
-.menu-btn:focus-visible .menu-btn-line { opacity: 1; }
-.menu-btn:disabled { cursor: not-allowed; filter: grayscale(1); opacity: .5; box-shadow: none; }
+.menu-btn:focus-visible .menu-btn-line { opacity: .82; }
+.menu-btn:not(:disabled):hover::before,
+.menu-btn:not(:disabled):hover::after,
+.menu-btn:focus-visible::before,
+.menu-btn:focus-visible::after { opacity: .92; }
+.menu-btn:disabled {
+  cursor: not-allowed;
+  opacity: .68;
+  color: rgba(205,198,184,.58);
+  border-color: rgba(157,139,108,.20);
+  background:
+    linear-gradient(180deg, rgba(28,27,25,.84), rgba(15,14,13,.9)),
+    #151412;
+  text-shadow: 0 1px 2px rgba(0,0,0,.75);
+  box-shadow:
+    0 7px 20px rgba(0,0,0,.22),
+    inset 0 1px 0 rgba(255,255,255,.025);
+}
+.menu-btn:disabled::before,
+.menu-btn:disabled::after {
+  opacity: .22;
+  filter: saturate(.35) brightness(.75);
+}
+.menu-btn:disabled .menu-btn-line { opacity: .14; }
+
 @media (max-height: 820px) {
-  .main-menu { gap: 12px; }
-  .menu-btn { min-height: 50px; padding-top: 8px; padding-bottom: 12px; font-size: 1.02rem; }
+  body[data-screen="home"] .topbar { padding-top: 16px; gap: 2px; }
+  body[data-screen="home"] .brand-logo { width: min(620px, 52vw, 62dvh); }
+  .main-menu { gap: 8px; }
+  .menu-btn {
+    min-height: 47px;
+    padding-top: 8px;
+    padding-bottom: 11px;
+    font-size: .94rem;
+  }
+}
+@media (max-width: 560px) {
+  body[data-screen="home"] .brand-kicker {
+    left: 50%;
+    transform: translateX(-50%);
+    width: max-content;
+    max-width: 90vw;
+    text-align: center;
+  }
+  body[data-screen="home"] .brand-logo { width: min(94vw, 560px); }
+  .menu-btn { width: min(88vw, 380px); }
 }
 
 /* Introduction (intro-ui.js) : le capitaine mourant à droite, le texte à gauche sur un dégradé sombre. */

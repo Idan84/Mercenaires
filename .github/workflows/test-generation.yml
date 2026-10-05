@@ -21,6 +21,10 @@ jobs:
       - run: node tests/pictos.test.js
       - run: node tests/avatars.test.js
       - run: node tests/creation.test.js
+      - run: node tests/avatar-catalog.test.js
+      - run: php tests/avatar-index.test.php
+      - run: php -l prototype-web/api/avatars.php
+      - run: php -l prototype-web/api/lib/avatar-index.php
       - run: node --check prototype-web/mission.js
       - run: node --check prototype-web/ui.js
       - run: node --check prototype-web/tavern-ui.js
@@ -28,3 +32,4 @@ jobs:
       - run: node --check prototype-web/screen-ui.js
       - run: node --check prototype-web/intro-ui.js
       - run: node --check prototype-web/save-ui.js
+      - run: node --check prototype-web/reference-data.js

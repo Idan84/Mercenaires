@@ -8,7 +8,8 @@
 //   portrait: "ogre_0042_portrait.webp"
 // }
 // "file" reste accepté comme fallback de compatibilité pendant la transition.
-// Les fichiers locaux sont servis depuis prototype-web/assets/avatars/.
+// Un nom de fichier seul est servi depuis prototype-web/assets/avatars/ (avatars de Git) ; une adresse
+// commençant par « / » est utilisée telle quelle (avatars déposés sur Hostinger : /media/avatars/…).
 
 function resolveMercenaryAvatarFile(mercenary,kind="portrait"){
   const avatar=mercenary?.avatar||{};

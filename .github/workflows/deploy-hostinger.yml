@@ -55,8 +55,10 @@ jobs:
           FTP_USER: ${{ secrets.HOSTINGER_FTP_USER }}
           LFTP_PASSWORD: ${{ secrets.HOSTINGER_FTP_PASSWORD }}
         run: |
-          # Le certificat FTP de Hostinger est au nom du serveur, pas de l'adresse configurée.
-          tls_host=$(bash scripts/ftp-tls-host.sh "$FTP_HOST")
+          # Le certificat FTP de Hostinger est générique (*.hstgr.io), pas au nom de l'adresse configurée :
+          # on se connecte sous un nom qu'il couvre, associé à l'IP du serveur, et il reste vérifié.
+          read -r tls_host tls_ip < <(bash scripts/ftp-tls-host.sh "$FTP_HOST")
+          if [ -n "${tls_ip:-}" ]; then echo "$tls_ip $tls_host" | sudo tee -a /etc/hosts >/dev/null; fi
           lftp -c "
             set ftp:ssl-force true;
             set ftp:ssl-protect-data true;

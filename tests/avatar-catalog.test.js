@@ -1,0 +1,74 @@
+"use strict";
+
+const assert=require("node:assert/strict");
+const fs=require("node:fs");
+const path=require("node:path");
+const {buildAvatarCatalog,groupAvatarFiles,mergeCatalogs,fileUrl}=require("../game-core/avatar-catalog.js");
+const {createAvatarRules}=require("../game-core/avatars.js");
+
+const ROOT=path.resolve(__dirname,"..");
+const read=file=>JSON.parse(fs.readFileSync(path.join(ROOT,"data","reference",file),"utf8"));
+const reference={
+  peoples:read("peoples.json"),cultures:read("cultures.json"),socialOrigins:read("social-origins.json"),
+  alignments:read("alignments.json"),ancestries:read("ancestries.json"),skills:read("skills.json"),weapons:read("weapons.json")
+};
+const FULL={w:768,h:1376}, SQUARE={w:1024,h:1024};
+
+// Index tel que le renvoie api/avatars.php (mots-clés Bridge d'Idan, hiérarchiques ou non).
+const files=[
+  {path:"Ogres/Ogre_12_20261004.jpg",...FULL,keywords:["Blood&Wages|Gender|F","Blood&Wages|Magie|Eau","Ogres des cités humaines"]},
+  {path:"Ogres/Ogre_12_Square_20261004.jpg",...SQUARE,keywords:["Arbalète"]},
+  {path:"Reptiliens/Lezard_3.png",...FULL,keywords:["Corps à corps","Mot inventé"]},
+  {path:"Reptiliens/Lezard_3_Square.png",...SQUARE,keywords:[]},
+  {path:"Halflings/Halfling_7_été #1.jpg",...FULL,keywords:["M","F"]},
+  {path:"Halflings/Halfling_7_Square.jpg",...SQUARE,keywords:[]},
+  {path:"Ogres/Ogre_20.jpg",...FULL,keywords:[]},
+  {path:"Ogres/sans-numero.jpg",...FULL,keywords:[]},
+  {path:"Divers/Truc_4.jpg",...FULL,keywords:[]}
+];
+const {rows,warnings}=buildAvatarCatalog(files,reference);
+const byId=Object.fromEntries(rows.map(r=>[r.id,r]));
+
+// Appariement : même peuple, même numéro ; le portrait est l'image carrée.
+assert.deepEqual(rows.map(r=>r.id),["halfling-007","ogre-012","reptilien-003"]);
+assert.equal(byId["ogre-012"].full,"/media/avatars/Ogres/Ogre_12_20261004.jpg");
+assert.equal(byId["ogre-012"].portrait,"/media/avatars/Ogres/Ogre_12_Square_20261004.jpg");
+assert.equal(byId["ogre-012"].source,"Ogres/Ogre_12_20261004.jpg");
+
+// Mots-clés des deux images réunis ; dernier segment d'un mot-clé hiérarchique ; la magie donne le profil.
+assert.equal(byId["ogre-012"].sex,"femme");
+assert.deepEqual(byId["ogre-012"].tags,{culture:["Ogres des cités humaines"],profile:["magic"],magic:["Eau"],weapon:["Arbalète"]});
+
+// Peuple tiré du dossier quand le nom ne le donne pas.
+assert.equal(byId["reptilien-003"].people,"Reptilien");
+assert.deepEqual(byId["reptilien-003"].tags,{profile:["melee"]});
+
+// Adresses encodées : espaces, accents, #.
+assert.equal(byId["halfling-007"].full,"/media/avatars/Halflings/Halfling_7_%C3%A9t%C3%A9%20%231.jpg");
+assert.equal(fileUrl("/media/avatars","a b/c.jpg"),"/media/avatars/a%20b/c.jpg");
+
+// Remarques pour Idan : rien n'est ignoré en silence.
+const expected=[
+  "reptilien-003 : mot-clé inconnu « Mot inventé »",
+  "halfling-007 : deux sexes tagués",
+  "ogre-020 : il manque le portrait, ignoré",
+  "Ogres/sans-numero.jpg : nom sans « Peuple_Numéro », ignoré",
+  "Divers/Truc_4.jpg : peuple inconnu (« Truc »), ignoré"
+];
+for(const w of expected) assert.ok(warnings.includes(w),"remarque attendue : "+w+"\n"+warnings.join("\n"));
+assert.equal(warnings.length,expected.length,warnings.join("\n"));
+assert.ok(groupAvatarFiles([{path:"Ogres/Ogre_1.jpg",...FULL},{path:"Ogres/Ogre_1_b.jpg",...FULL}],reference).warnings[0].includes("deux images « full »"));
+assert.deepEqual(buildAvatarCatalog([],reference),{rows:[],warnings:[]});
+
+// Git + Hostinger : à identifiant égal, Hostinger l'emporte.
+const git=[{id:"ogre-012",full:"ogre-012_full.webp",portrait:"ogre-012_portrait.webp"},{id:"ogre-001",full:"a",portrait:"b"}];
+const merged=mergeCatalogs(git,rows);
+assert.deepEqual(merged.map(a=>a.id),["halfling-007","ogre-001","ogre-012","reptilien-003"]);
+assert.equal(merged.find(a=>a.id==="ogre-012").full,byId["ogre-012"].full);
+
+// Partie sauvegardée avec l'ancien fichier : même visage, fichiers du catalogue actuel.
+const m={id:1,people:"Ogre",sex:"femme",avatar:{id:"ogre-012",full:"ogre-012_full.webp",portrait:"ogre-012_portrait.webp"}};
+const rules=createAvatarRules({catalog:merged});
+assert.deepEqual(rules.assign(m,new Set()),{id:"ogre-012",full:byId["ogre-012"].full,portrait:byId["ogre-012"].portrait});
+
+console.log(JSON.stringify({ok:true,avatars:rows.length,warnings:warnings.length},null,2));

@@ -51,6 +51,25 @@ L'envoi **ajoute et remplace** des fichiers, il **n'en efface jamais**. Un fichi
 
 Les identifiants ne s'écrivent jamais dans le dépôt, une Issue ou une conversation : seuls les secrets GitHub les contiennent.
 
+## Médias déposés sur Hostinger
+
+Idan dépose ses médias directement sur Hostinger (gestionnaire de fichiers de hPanel, ou un client FTP avec le compte du site), dans `public_html/bloodandwages/media/`. Ce dossier n'est pas dans Git et la mise en ligne automatique n'y touche jamais. Les fichiers sont servis tels quels : aucun redimensionnement, aucune compression.
+
+### Avatars : `media/avatars/`
+
+- Un sous-dossier par peuple, au choix (`Ogres/`, `Halflings/`…).
+- Un avatar = deux images de même peuple et même numéro : le plein pied `Ogre_12_….jpg` et le portrait carré `Ogre_12_Square_….jpg`. JPG, PNG ou WEBP.
+- Les tags sont les mots-clés Bridge (IPTC / XMP), avec le vocabulaire de `assets-src/avatars/mots-cles-bridge.txt`. Les mots-clés des deux images s'additionnent : **taguer le plein pied suffit**.
+- Attention aux exports (Photoshop « Exporter sous », « Enregistrer pour le web »…) : ils peuvent retirer les mots-clés. Vérifier dans Bridge que l'image exportée les a gardés.
+
+Comment le jeu les trouve :
+
+1. `api/avatars.php` liste `media/avatars/` et lit les dimensions et les mots-clés de chaque image. Un cache (`api/.cache/`) évite de relire les images inchangées. Il ne modifie aucun fichier.
+2. Le jeu en tire son catalogue avec `game-core/avatar-catalog.js` (même logique que `scripts/build-avatars.js`) et le réunit avec `data/reference/avatars.json` : à identifiant égal (`ogre-012`), l'avatar de Hostinger l'emporte.
+3. Une image ajoutée, retaguée ou supprimée est prise en compte au prochain chargement du jeu. Une partie sauvegardée garde ses visages ; leurs fichiers suivent le catalogue.
+
+Pour vérifier un dépôt : https://bloodandwages.idanwizen.com/api/avatars.php montre chaque image vue par le serveur, avec ses mots-clés. Les remarques (mot-clé inconnu, portrait manquant…) s'affichent dans la console du navigateur au chargement du jeu.
+
 ## Netlify (abandonné)
 
 Netlify a hébergé le prototype jusqu'au 2026-10-05 et a été abandonné faute de crédits (décision d'Idan, voir `docs/TEAM.md`). `netlify.toml` reste dans le dépôt tant que le projet Netlify n'est pas supprimé, pour qu'une reprise automatique des builds ne publie pas la racine du dépôt.

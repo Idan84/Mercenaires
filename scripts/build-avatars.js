@@ -1,17 +1,10 @@
 #!/usr/bin/env node
 "use strict";
 
-// Avatars des mercenaires : masters d'Idan (assets-src/avatars/, tagués dans Bridge)
+// Avatars des mercenaires, version Git : masters d'Idan (assets-src/avatars/, tagués dans Bridge)
 // → catalogue du jeu (data/reference/avatars.json) et images web (prototype-web/assets/avatars/).
-//
-// - Un avatar = un plein pied (image haute) + un portrait (image carrée) portant le même
-//   peuple et le même numéro dans le nom : « Ogre_12_….jpg » et « Ogre_12_Square_….jpg ».
-//   Le portrait est reconnu à sa forme carrée, pas à son nom.
-// - Les tags sont les mots-clés de l'image (IPTC et XMP, ceux qu'écrit Bridge). Chaque mot-clé
-//   est rangé dans sa famille (peuple, sexe, culture, origine, alignement, ascendance, profil,
-//   magie, arme) d'après les référentiels de data/reference/. Un mot-clé inconnu est signalé.
-// - L'identifiant (« ogre-012 ») ne dépend que du peuple et du numéro : retaguer ou renommer
-//   une image ne change pas l'avatar des parties sauvegardées.
+// Appariement plein pied / portrait, identifiants et classement des mots-clés :
+// game-core/avatar-catalog.js, partagé avec le catalogue lu sur Hostinger (api/avatars.php).
 //
 // Usage : node scripts/build-avatars.js   (nécessite ImageMagick : identify, convert)
 //         node scripts/build-avatars.js --bridge   (écrit aussi le fichier de mots-clés Bridge)
@@ -27,45 +20,14 @@ const OUT_JSON=path.join(ROOT,"data","reference","avatars.json");
 const BRIDGE_FILE=path.join(SRC,"mots-cles-bridge.txt");
 const FULL_WIDTH=560, PORTRAIT_SIZE=384, QUALITY=82;
 
-const rows=file=>JSON.parse(fs.readFileSync(path.join(ROOT,"data","reference",file),"utf8")).rows;
-const norm=v=>String(v??"").normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[’‘`´]/g,"'")
-  .toLowerCase().replace(/\s+/g," ").trim();
-const slug=v=>norm(v).replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
+const catalog=require("../game-core/avatar-catalog.js");
 
-// Vocabulaire : famille → valeurs de référence.
-const PROFILES={"Corps à corps":"melee","Distance":"ranged","Magie":"magic"};
-const SEXES={femme:["F","Femme","Femelle"],homme:["M","H","Homme","Masculin","Mâle"]};
-function vocabulary(){
-  const weapons=rows("weapons.json");
-  const weaponCategories=[...new Set(weapons.map(w=>String(w.domaine||"").split(",")[0].trim()).filter(Boolean))].sort();
-  return {
-    people:rows("peoples.json").map(r=>r.nom),
-    culture:rows("cultures.json").map(r=>r.nom),
-    origin:rows("social-origins.json").map(r=>r.nom),
-    alignment:rows("alignments.json").map(r=>r.nom),
-    ascendance:rows("ancestries.json").map(r=>r.nom),
-    profile:Object.keys(PROFILES),
-    magic:rows("skills.json").filter(r=>r.domaine==="Magie").map(r=>r.nom),
-    weaponCategories,
-    weapon:[...weaponCategories,...weapons.map(w=>w.nom)],
-    weaponsByCategory:Object.fromEntries(weaponCategories.map(c=>[c,weapons.filter(w=>String(w.domaine).startsWith(c+",")).map(w=>w.nom)]))
-  };
-}
-
-// Mot-clé → {family, value}. Accepte « Famille|Valeur » (mots-clés hiérarchiques) et les pluriels simples.
-function classifier(vocab){
-  const index=new Map();
-  const add=(family,label,value=label)=>index.set(norm(label),{family,value});
-  for(const family of ["people","culture","origin","alignment","ascendance","magic","weapon"]) for(const v of vocab[family]) add(family,v);
-  for(const [label,code] of Object.entries(PROFILES)) add("profile",label,code);
-  for(const [sex,labels] of Object.entries(SEXES)) for(const l of labels) add("sex",l,sex);
-  const singular=k=>k.split(/([ -])/).map(w=>w.length>3?w.replace(/[sx]$/,""):w).join("");
-  return keyword=>{
-    const last=String(keyword).split("|").pop();
-    const k=norm(last);
-    return index.get(k)||index.get(singular(k))||null;
-  };
-}
+const readTable=file=>JSON.parse(fs.readFileSync(path.join(ROOT,"data","reference",file),"utf8"));
+const reference={
+  peoples:readTable("peoples.json"),cultures:readTable("cultures.json"),socialOrigins:readTable("social-origins.json"),
+  alignments:readTable("alignments.json"),ancestries:readTable("ancestries.json"),skills:readTable("skills.json"),
+  weapons:readTable("weapons.json")
+};
 
 function keywordsOf(file){
   const out=new Set();
@@ -114,59 +76,33 @@ function writeBridgeKeywords(vocab){
 }
 
 function main(){
-  const vocab=vocabulary();
+  const vocab=catalog.vocabulary(reference);
   if(process.argv.includes("--bridge")) writeBridgeKeywords(vocab);
-  const classify=classifier(vocab);
-  const groups=new Map(), warnings=[];
-  for(const file of walk(SRC).sort()){
-    const rel=path.relative(SRC,file);
-    const match=path.basename(file).match(/^(.+?)_(\d+)(?:_|\.|$)/);
-    if(!match){ warnings.push(`${rel} : nom sans « Peuple_Numéro », ignoré`); continue; }
-    const folder=path.dirname(rel).split(path.sep)[0];
-    const people=classify(match[1])?.family==="people"?classify(match[1]).value
-      :classify(folder)?.family==="people"?classify(folder).value:null;
-    if(!people){ warnings.push(`${rel} : peuple inconnu (« ${match[1]} »), ignoré`); continue; }
-    const id=`${slug(people)}-${String(Number(match[2])).padStart(3,"0")}`;
+  const files=walk(SRC).map(file=>{
     const {w,h}=size(file);
-    const kind=Math.abs(w-h)<=w*0.05?"portrait":"full";
-    const g=groups.get(id)||{id,people,files:{},keywords:new Set()};
-    if(g.files[kind]) warnings.push(`${id} : deux images « ${kind} » (${path.relative(SRC,g.files[kind])}, ${rel})`);
-    g.files[kind]=file;
-    for(const k of keywordsOf(file)) g.keywords.add(k);
-    groups.set(id,g);
-  }
+    return {path:path.relative(SRC,file).split(path.sep).join("/"),abs:file,w,h,keywords:keywordsOf(file)};
+  });
+  const {avatars,warnings}=catalog.groupAvatarFiles(files,reference);
 
   fs.rmSync(OUT_IMG,{recursive:true,force:true});
   fs.mkdirSync(OUT_IMG,{recursive:true});
-  const catalog=[];
-  for(const g of [...groups.values()].sort((a,b)=>a.id.localeCompare(b.id))){
-    if(!g.files.full||!g.files.portrait){ warnings.push(`${g.id} : il manque le ${g.files.full?"portrait":"plein pied"}, ignoré`); continue; }
-    const tags={culture:[],origin:[],alignment:[],ascendance:[],profile:[],magic:[],weapon:[]};
-    let sex=null;
-    for(const k of g.keywords){
-      const c=classify(k);
-      if(!c){ warnings.push(`${g.id} : mot-clé inconnu « ${k} »`); continue; }
-      if(c.family==="people"){ if(c.value!==g.people) warnings.push(`${g.id} : tag peuple « ${k} » ≠ ${g.people}`); continue; }
-      if(c.family==="sex"){ if(sex&&sex!==c.value) warnings.push(`${g.id} : deux sexes tagués`); sex=c.value; continue; }
-      if(!tags[c.family].includes(c.value)) tags[c.family].push(c.value);
-    }
-    if(tags.magic.length&&!tags.profile.length) tags.profile.push("magic");
-    for(const k of Object.keys(tags)) if(!tags[k].length) delete tags[k];
-    const full=`${g.id}_full.webp`, portrait=`${g.id}_portrait.webp`;
-    execFileSync("convert",[g.files.full,"-strip","-resize",`${FULL_WIDTH}x`,"-quality",String(QUALITY),path.join(OUT_IMG,full)]);
-    execFileSync("convert",[g.files.portrait,"-strip","-resize",`${PORTRAIT_SIZE}x${PORTRAIT_SIZE}^`,"-gravity","center","-extent",`${PORTRAIT_SIZE}x${PORTRAIT_SIZE}`,"-quality",String(QUALITY),path.join(OUT_IMG,portrait)]);
-    catalog.push({id:g.id,people:g.people,sex,tags,full,portrait,source:path.relative(SRC,g.files.full).split(path.sep).join("/")});
+  const rows=[];
+  for(const a of avatars){
+    const full=`${a.id}_full.webp`, portrait=`${a.id}_portrait.webp`;
+    execFileSync("convert",[a.files.full.abs,"-strip","-resize",`${FULL_WIDTH}x`,"-quality",String(QUALITY),path.join(OUT_IMG,full)]);
+    execFileSync("convert",[a.files.portrait.abs,"-strip","-resize",`${PORTRAIT_SIZE}x${PORTRAIT_SIZE}^`,"-gravity","center","-extent",`${PORTRAIT_SIZE}x${PORTRAIT_SIZE}`,"-quality",String(QUALITY),path.join(OUT_IMG,portrait)]);
+    rows.push({id:a.id,people:a.people,sex:a.sex,tags:a.tags,full,portrait,source:a.files.full.path});
   }
 
   const doc={
     source:"Généré par scripts/build-avatars.js depuis assets-src/avatars/ (tags Bridge d'Idan). Ne pas modifier à la main.",
-    row_count:catalog.length,
-    rows:catalog
+    row_count:rows.length,
+    rows
   };
   fs.writeFileSync(OUT_JSON,JSON.stringify(doc,null,2)+"\n","utf8");
   const byPeople={};
-  for(const a of catalog) byPeople[a.people]=(byPeople[a.people]||0)+1;
-  console.log(`${catalog.length} avatars :`,byPeople);
+  for(const a of rows) byPeople[a.people]=(byPeople[a.people]||0)+1;
+  console.log(`${rows.length} avatars :`,byPeople);
   if(warnings.length){ console.log(`\n${warnings.length} remarque(s) :`); for(const w of warnings) console.log(" - "+w); }
 }
 

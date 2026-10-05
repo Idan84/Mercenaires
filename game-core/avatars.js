@@ -6,7 +6,8 @@
 // - parmi les avatars compatibles, le plus proche du mercenaire d'après les tags Bridge d'Idan
 //   (culture, origine, magie, arme…), avec un peu de hasard ;
 // - jamais deux fois le même visage en même temps ; les avatars des morts ne reviennent pas.
-// Le catalogue (data/reference/avatars.json) est généré par scripts/build-avatars.js. Purement visuel.
+// Le catalogue réunit data/reference/avatars.json (scripts/build-avatars.js) et les avatars déposés sur
+// Hostinger (api/avatars.php → avatar-catalog.js). Purement visuel.
 (function(root,factory){
   const bio=typeof module!=="undefined"&&module.exports?require("./biography.js"):root.MercenairesBiography;
   const api=factory(bio);
@@ -67,8 +68,14 @@
     }
 
     // Pose l'avatar sur le mercenaire ; le sexe de l'image devient celui du mercenaire.
+    // Un avatar déjà attribué est gardé, avec les fichiers actuels du catalogue (image déplacée sur
+    // Hostinger, nouveau format…).
     function assign(m,inUse=new Set()){
-      if(m.avatar?.id&&byId.has(m.avatar.id)) return m.avatar;
+      if(m.avatar?.id&&byId.has(m.avatar.id)){
+        const a=byId.get(m.avatar.id);
+        if(m.avatar.full!==a.full||m.avatar.portrait!==a.portrait) m.avatar={id:a.id,full:a.full,portrait:a.portrait};
+        return m.avatar;
+      }
       const best=choose(m,inUse);
       if(!best) return null;
       const a=best.avatar;

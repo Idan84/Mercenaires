@@ -81,14 +81,16 @@
     }
 
     // Parties sauvegardées avant les avatars, nouveaux avatars ajoutés au catalogue, avatar retiré du
-    // catalogue : on complète. Renvoie true si l'état a changé, pour que l'interface sauvegarde.
+    // catalogue ou dont les fichiers ont changé : on complète. Renvoie true si l'état a changé, pour que
+    // l'interface sauvegarde.
     function ensureAvatars(state){
       if(!avatars) return false;
       const everyone=()=>[...rosterOf(state),...state.tavern.candidates.map(c=>c.mercenary)];
-      const before=JSON.stringify(everyone().map(m=>[m.avatar?.id||null,m.sex||null]));
+      const snapshot=()=>JSON.stringify(everyone().map(m=>[m.avatar||null,m.sex||null]));
+      const before=snapshot();
       state.avatarsRetired=state.avatarsRetired||[];
       for(const m of everyone()) assignAvatar(state,m);
-      return JSON.stringify(everyone().map(m=>[m.avatar?.id||null,m.sex||null]))!==before;
+      return snapshot()!==before;
     }
 
     // Parties sauvegardées avant les biographies : on complète les membres qui n'en ont pas.

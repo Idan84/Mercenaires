@@ -55,12 +55,14 @@ jobs:
           FTP_USER: ${{ secrets.HOSTINGER_FTP_USER }}
           LFTP_PASSWORD: ${{ secrets.HOSTINGER_FTP_PASSWORD }}
         run: |
+          # Le certificat FTP de Hostinger est au nom du serveur, pas de l'adresse configurée.
+          tls_host=$(bash scripts/ftp-tls-host.sh "$FTP_HOST")
           lftp -c "
             set ftp:ssl-force true;
             set ftp:ssl-protect-data true;
             set net:max-retries 3;
             set net:timeout 30;
-            open --env-password -u \"$FTP_USER\" \"$FTP_HOST\";
+            open --env-password -u \"$FTP_USER\" \"$tls_host\";
             mirror --reverse --no-perms --parallel=4 --verbose site/ \"$FTP_DIR\";
           "
 

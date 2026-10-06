@@ -51,7 +51,8 @@ async function loadAvatarCatalog(reference, base = "/data/") {
     }
   };
   const [git, hosted] = await Promise.all([fetchJson(base + "avatars.json"), fetchJson("/api/avatars.php")]);
-  const media = hosted && Array.isArray(hosted.files) ? catalog.buildAvatarCatalog(hosted.files, reference) : { rows: [], warnings: [] };
+  const baseUrl = catalog.fileUrl("/", hosted?.base || "media/avatars");
+  const media = hosted && Array.isArray(hosted.files) ? catalog.buildAvatarCatalog(hosted.files, reference, { baseUrl }) : { rows: [], warnings: [] };
   if (media.warnings.length) console.warn("Avatars Hostinger :", media.warnings);
   const rows = catalog.mergeCatalogs(git?.rows || [], media.rows);
   return { row_count: rows.length, rows, warnings: media.warnings, sources: { git: git?.rows?.length || 0, hostinger: media.rows.length } };

@@ -25,7 +25,9 @@ Le prototype est un site statique (HTML, JS, JSON, images, sons) : pas de base d
 
 Le jeu charge ses fichiers depuis la racine (`/core/`, `/data/`) : il doit être servi à la racine d'un domaine ou d'un sous-domaine, pas dans un sous-dossier.
 
-`prototype-web/.htaccess` porte les en-têtes de sécurité (Apache).
+`prototype-web/.htaccess` porte les en-têtes de sécurité (Apache) et demande de toujours revérifier les pages HTML.
+
+Le CDN de Hostinger et les navigateurs gardent les scripts et les styles 7 jours. Pour que chaque mise en ligne soit vue tout de suite, le script ajoute dans les pages HTML un numéro de version aux scripts et styles locaux (`ui.js?v=<commit>`) : une nouvelle version a une nouvelle adresse.
 
 ### Mise en ligne automatique
 

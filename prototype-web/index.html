@@ -114,64 +114,97 @@
       <p class="muted">Reviens au menu pour lancer une nouvelle partie.</p>
     </section>
 
-    <section id="game-panel" class="hidden">
-      <section class="panel">
-        <div class="section-title-row">
-          <div>
-            <p class="eyebrow">Compagnie</p>
-            <h2 id="company-title">Compagnie sans nom</h2>
-          </div>
-          <div class="company-actions">
-            <div class="company-meta">
-              <span>Or <strong id="company-gold">1 000</strong> <button id="test-gold-btn" class="test-tool" title="Outil de test : ajoute 1 000 PO">+1 000 (test)</button></span>
-              <span>Jour <strong id="company-day">1</strong></span>
-              <span>Dortoir <strong id="company-dorm">—</strong></span>
-              <span title="Salaires versés chaque jour aux membres sous contrat">Salaires <strong id="company-payroll">—</strong> PO/j</span>
-              <span id="save-status" class="save-status"></span>
+    <section id="game-panel" class="camp-shell hidden">
+      <section id="camp-home" class="camp-hub" aria-label="Accueil du camp">
+        <div class="camp-hub-heading">
+          <p class="eyebrow">Quartier général</p>
+          <h2>Le camp</h2>
+        </div>
+        <nav class="camp-hub-menu" aria-label="Lieux du camp">
+          <button class="menu-btn camp-hub-btn" data-open-camp-scene="company"><span>Ma Compagnie</span><i class="menu-btn-line"></i></button>
+          <button class="menu-btn camp-hub-btn" data-open-camp-scene="mercenaries"><span>Mes mercenaires</span><i class="menu-btn-line"></i></button>
+          <button class="menu-btn camp-hub-btn" data-open-camp-scene="tavern"><span>Taverne</span><i class="menu-btn-line"></i></button>
+          <button class="menu-btn camp-hub-btn" data-open-camp-scene="quartermaster"><span>Intendance</span><i class="menu-btn-line"></i></button>
+        </nav>
+      </section>
+
+      <section class="camp-scene hidden" data-camp-scene-panel="company" aria-label="Ma Compagnie">
+        <div class="camp-scene-nav"><button class="secondary camp-scene-back" data-camp-back>← Retour au camp</button></div>
+        <section class="panel">
+          <div class="section-title-row">
+            <div>
+              <p class="eyebrow">Ma Compagnie</p>
+              <h2 id="company-title">Compagnie sans nom</h2>
             </div>
-            <button id="mission-test-btn" class="primary">Mission Test</button>
+            <div class="company-actions">
+              <div class="company-meta">
+                <span>Or <strong id="company-gold">1 000</strong> <button id="test-gold-btn" class="test-tool" title="Outil de test : ajoute 1 000 PO">+1 000 (test)</button></span>
+                <span>Jour <strong id="company-day">1</strong></span>
+                <span>Dortoir <strong id="company-dorm">—</strong></span>
+                <span title="Salaires versés chaque jour aux membres sous contrat">Salaires <strong id="company-payroll">—</strong> PO/j</span>
+                <span id="save-status" class="save-status"></span>
+              </div>
+              <button id="mission-test-btn" class="primary">Mission Test</button>
+            </div>
           </div>
-        </div>
-        <div id="captain-summary"></div>
+          <div id="captain-summary"></div>
+        </section>
       </section>
 
-      <section class="panel tavern-panel">
-        <div class="section-title-row">
-          <div>
-            <p class="eyebrow">Taverne — recrutement V1</p>
-            <h2>Candidats du jour</h2>
-            <p class="muted">Chaque matin, certains candidats sont engagés ailleurs et de nouveaux arrivent sur les places libres.</p>
+      <section class="camp-scene hidden" data-camp-scene-panel="mercenaries" aria-label="Mes mercenaires">
+        <div class="camp-scene-nav"><button class="secondary camp-scene-back" data-camp-back>← Retour au camp</button></div>
+        <section class="panel">
+          <div class="section-title-row">
+            <div>
+              <p class="eyebrow">Effectifs</p>
+              <h2>Mes mercenaires</h2>
+            </div>
+            <span id="initial-count" class="badge"></span>
           </div>
-          <div class="tavern-actions">
-            <label class="tavern-intendant">Intendant <select id="tavern-intendant"></select></label>
-            <button id="tavern-next-day-btn" class="primary">Jour suivant</button>
-          </div>
-        </div>
-        <div id="tavern-candidates" class="tavern-grid"></div>
-        <div id="tavern-log" class="tavern-log"></div>
+          <div id="initial-squad" class="character-list"></div>
+        </section>
       </section>
 
-      <section class="panel">
-        <div class="section-title-row">
-          <div>
-            <p class="eyebrow">Create_Initial_Squad()</p>
-            <h2>Escouade</h2>
+      <section class="camp-scene hidden" data-camp-scene-panel="tavern" aria-label="Taverne">
+        <div class="camp-scene-nav"><button class="secondary camp-scene-back" data-camp-back>← Retour au camp</button></div>
+        <section class="panel tavern-panel">
+          <div class="section-title-row">
+            <div>
+              <p class="eyebrow">Taverne — recrutement V1</p>
+              <h2>Candidats du jour</h2>
+              <p class="muted">Chaque matin, certains candidats sont engagés ailleurs et de nouveaux arrivent sur les places libres.</p>
+            </div>
+            <div class="tavern-actions">
+              <label class="tavern-intendant">Intendant <select id="tavern-intendant"></select></label>
+              <button id="tavern-next-day-btn" class="primary">Jour suivant</button>
+            </div>
           </div>
-          <span id="initial-count" class="badge"></span>
-        </div>
-        <div id="initial-squad" class="character-list"></div>
+          <div id="tavern-candidates" class="tavern-grid"></div>
+          <div id="tavern-log" class="tavern-log"></div>
+        </section>
       </section>
 
-      <section class="panel sandbox-panel">
-        <div class="section-title-row">
-          <div>
-            <p class="eyebrow">Banc de test</p>
-            <h2>Générateur de mercenaires</h2>
+      <section class="camp-scene hidden" data-camp-scene-panel="quartermaster" aria-label="Intendance">
+        <div class="camp-scene-nav"><button class="secondary camp-scene-back" data-camp-back>← Retour au camp</button></div>
+        <section class="panel camp-placeholder-panel">
+          <p class="eyebrow">Intendance</p>
+          <h2>Stock &amp; équipement</h2>
+          <p class="muted">Cette scène accueillera le stock de la compagnie, les échanges d’équipement et les retours de mission.</p>
+        </section>
+      </section>
+
+      <section class="camp-debug hidden" aria-hidden="true">
+        <section class="panel sandbox-panel">
+          <div class="section-title-row">
+            <div>
+              <p class="eyebrow">Banc de test</p>
+              <h2>Générateur de mercenaires</h2>
+            </div>
+            <button id="generate-merc-btn" class="primary">Créer un nouveau mercenaire</button>
           </div>
-          <button id="generate-merc-btn" class="primary">Créer un nouveau mercenaire</button>
-        </div>
-        <p class="muted">Le mercenaire utilise les biais du capitaine : +9 points sur son peuple, culture du capitaine ×2 si compatible, ascendance du capitaine ×2 si applicable.</p>
-        <div id="generated-list" class="character-list"></div>
+          <p class="muted">Le mercenaire utilise les biais du capitaine : +9 points sur son peuple, culture du capitaine ×2 si compatible, ascendance du capitaine ×2 si applicable.</p>
+          <div id="generated-list" class="character-list"></div>
+        </section>
       </section>
     </section>
     <section id="mission-panel" class="panel mission-panel hidden">

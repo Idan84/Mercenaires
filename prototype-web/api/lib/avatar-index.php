@@ -15,9 +15,38 @@ declare(strict_types=1);
 const AVATAR_INDEX_VERSION = 1;
 const AVATAR_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp'];
 
+// Dossier relatif à $site dont chaque segment correspond à $segments sans tenir compte des majuscules
+// (« Media/Avatars » pour ['media', 'avatars']). Entre plusieurs variantes, on préfère celle qui contient
+// des images, puis l'orthographe exacte. Renvoie null si aucune n'existe.
+function avatar_find_dir(string $site, array $segments): ?string
+{
+    $candidates = [''];
+    foreach ($segments as $segment) {
+        $next = [];
+        foreach ($candidates as $candidate) {
+            $dir = $candidate === '' ? $site : $site . '/' . $candidate;
+            foreach ((@scandir($dir) ?: []) as $entry) {
+                if ($entry[0] !== '.' && strcasecmp($entry, $segment) === 0 && is_dir($dir . '/' . $entry)) {
+                    $next[] = $candidate === '' ? $entry : $candidate . '/' . $entry;
+                }
+            }
+        }
+        $candidates = $next;
+    }
+    if ($candidates === []) {
+        return null;
+    }
+    $exact = implode('/', $segments);
+    usort($candidates, static function (string $a, string $b) use ($site, $exact): int {
+        $score = static fn (string $c) => (avatar_image_files($site . '/' . $c) !== [] ? 2 : 0) + ($c === $exact ? 1 : 0);
+        return [$score($b), $a] <=> [$score($a), $b];
+    });
+    return $candidates[0];
+}
+
 function avatar_index(string $root, ?string $cacheFile = null, float $budgetSeconds = 8.0): array
 {
-    $cache = avatar_cache_read($cacheFile);
+    $cache = avatar_cache_read($cacheFile, $root);
     $deadline = microtime(true) + $budgetSeconds;
     $files = [];
     $fresh = [];
@@ -46,7 +75,7 @@ function avatar_index(string $root, ?string $cacheFile = null, float $budgetSeco
     }
 
     if ($changed || count($fresh) !== count($cache)) {
-        avatar_cache_write($cacheFile, $fresh);
+        avatar_cache_write($cacheFile, $root, $fresh);
     }
     return ['version' => AVATAR_INDEX_VERSION, 'complete' => $complete, 'files' => $files];
 }
@@ -118,19 +147,20 @@ function avatar_utf8(string $value): string
     return $converted === false ? '' : $converted;
 }
 
-function avatar_cache_read(?string $cacheFile): array
+function avatar_cache_read(?string $cacheFile, string $root): array
 {
     if ($cacheFile === null || !is_file($cacheFile)) {
         return [];
     }
     $doc = json_decode((string) @file_get_contents($cacheFile), true);
-    if (!is_array($doc) || ($doc['version'] ?? null) !== AVATAR_INDEX_VERSION || !is_array($doc['files'] ?? null)) {
+    if (!is_array($doc) || ($doc['version'] ?? null) !== AVATAR_INDEX_VERSION || ($doc['root'] ?? null) !== $root
+        || !is_array($doc['files'] ?? null)) {
         return [];
     }
     return $doc['files'];
 }
 
-function avatar_cache_write(?string $cacheFile, array $files): void
+function avatar_cache_write(?string $cacheFile, string $root, array $files): void
 {
     if ($cacheFile === null) {
         return;
@@ -143,7 +173,7 @@ function avatar_cache_write(?string $cacheFile, array $files): void
     if (!is_file($deny)) {
         @file_put_contents($deny, "Require all denied\n");
     }
-    $json = json_encode(['version' => AVATAR_INDEX_VERSION, 'files' => $files], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    $json = json_encode(['version' => AVATAR_INDEX_VERSION, 'root' => $root, 'files' => $files], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     $tmp = $cacheFile . '.' . getmypid() . '.tmp';
     if ($json !== false && @file_put_contents($tmp, $json) !== false) {
         @rename($tmp, $cacheFile);

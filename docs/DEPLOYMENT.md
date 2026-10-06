@@ -57,6 +57,7 @@ Idan dépose ses médias directement sur Hostinger (gestionnaire de fichiers de 
 
 ### Avatars : `media/avatars/`
 
+- Majuscules indifférentes : `Media/Avatars/` convient aussi. S'il existe plusieurs variantes, celle qui contient des images l'emporte ; `api/avatars.php` indique dans `base` le dossier retenu.
 - Un sous-dossier par peuple, au choix (`Ogres/`, `Halflings/`…).
 - Un avatar = deux images de même peuple et même numéro : le plein pied `Ogre_12_….jpg` et le portrait carré `Ogre_12_Square_….jpg`. JPG, PNG ou WEBP.
 - Les tags sont les mots-clés Bridge (IPTC / XMP), avec le vocabulaire de `assets-src/avatars/mots-cles-bridge.txt`. Les mots-clés des deux images s'additionnent : **taguer le plein pied suffit**.

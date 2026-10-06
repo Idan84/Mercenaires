@@ -91,5 +91,26 @@ check($again['Ogres/Ogre_13.png']['keywords'] === ['Feu'] && $again['Ogres/Ogre_
 unlink($media . '/Ogres/Ogre_13.png');
 check(count(avatar_index($media, $cache)['files']) === 2, 'image supprimée retirée');
 
+// Dossier des avatars : majuscules indifférentes ; la variante qui contient des images l'emporte.
+$site = $root . '/site';
+check(avatar_find_dir($site, ['media', 'avatars']) === null, 'aucun dossier media/avatars');
+mkdir($site . '/Media/Avatars/Orcs', 0777, true);
+file_put_contents($site . '/Media/Avatars/Orcs/Orc_1.jpg', $tall);
+check(avatar_find_dir($site, ['media', 'avatars']) === 'Media/Avatars', 'Media/Avatars trouvé');
+mkdir($site . '/media/avatars', 0777, true);
+check(avatar_find_dir($site, ['media', 'avatars']) === 'Media/Avatars', 'variante avec images préférée à un dossier vide');
+file_put_contents($site . '/media/avatars/Orc_2.jpg', $tall);
+check(avatar_find_dir($site, ['media', 'avatars']) === 'media/avatars', 'orthographe exacte préférée à égalité');
+file_put_contents($site . '/MEDIA', 'un fichier, pas un dossier');
+check(avatar_find_dir($site, ['media', 'avatars']) === 'media/avatars', 'fichier homonyme ignoré');
+
+// Cache lié au dossier indexé : changer de dossier le refait.
+$siteCache = $root . '/site-cache.json';
+avatar_index($site . '/Media/Avatars', $siteCache);
+check(json_decode(file_get_contents($siteCache), true)['root'] === $site . '/Media/Avatars', 'cache marqué de son dossier');
+$other = avatar_index($site . '/media/avatars', $siteCache);
+check(array_column($other['files'], 'path') === ['Orc_2.jpg'], 'autre dossier indexé');
+check(json_decode(file_get_contents($siteCache), true)['root'] === $site . '/media/avatars', "cache refait pour l'autre dossier");
+
 exec('rm -rf ' . escapeshellarg($root));
 echo json_encode(['ok' => true]), "\n";

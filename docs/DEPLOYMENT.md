@@ -71,7 +71,9 @@ Comment le jeu les trouve :
 2. Le jeu en tire son catalogue avec `game-core/avatar-catalog.js` (même logique que `scripts/build-avatars.js`) et le réunit avec `data/reference/avatars.json` : à identifiant égal (`ogre-012`), l'avatar de Hostinger l'emporte.
 3. Une image ajoutée, retaguée ou supprimée est prise en compte au prochain chargement du jeu. Une partie sauvegardée garde ses visages ; leurs fichiers suivent le catalogue.
 
-Pour vérifier un dépôt : https://bloodandwages.idanwizen.com/api/avatars.php montre chaque image vue par le serveur, avec ses mots-clés. Les remarques (mot-clé inconnu, portrait manquant…) s'affichent dans la console du navigateur au chargement du jeu.
+Pour vérifier un dépôt : https://bloodandwages.idanwizen.com/api/avatars.php montre chaque image vue par le serveur, avec ses mots-clés.
+
+Pour savoir quoi produire : l'onglet **Avatars** du Design Lab (https://bloodandwages.idanwizen.com/design/#avatars) compare, pour chaque peuple, les avatars aux mercenaires que le jeu génère (`game-core/avatar-coverage.js`) : besoin, cultures, profils, armes, magie et ascendances sous-représentés, avatars sans tags. Les remarques (mot-clé inconnu, portrait manquant…) s'affichent dans la console du navigateur au chargement du jeu.
 
 ## Netlify (abandonné)
 

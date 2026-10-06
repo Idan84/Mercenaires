@@ -88,7 +88,7 @@ Pour chaque **1 PV réellement restauré par un soin** :
 
 ### Courage — « Courage, fuyons ! »
 
-Chaque **charge réussie contre un ennemi** :
+Chaque **charge tentée contre un ennemi**, même ratée ou finie en chute (« le courage, c'est de tenter » — Idan, 2026-10-06) :
 
 - `+50 XP Courage`.
 
@@ -100,7 +100,7 @@ Chaque **case parcourue en état de fuite** :
 
 ### Charisme — « Triste Monde ! »
 
-Chaque **adversaire tué** :
+Chaque **adversaire mis hors combat** par le mercenaire (décision Idan, 2026-10-06 : les ennemis ne font pas de jet de mort, « tué » = hors combat) :
 
 - `+50 XP Charisme`.
 
@@ -115,6 +115,16 @@ Chaque fois qu’un mercenaire est **effectivement blessé par une attaque reçu
 ### Force
 
 **À définir.** Ne pas inventer de « test de Force » tant que cette mécanique n’existe pas réellement dans le système de combat.
+
+### Application en fin de mission (V1 — décisions Idan du 2026-10-06)
+
+- La **valeur** d'une caractéristique ou d'une résistance **est son niveau** : une valeur de 50 correspond à 25 000 XP cumulés.
+- Pendant la mission, chaque mercenaire tient un **journal** de ce qu'il vit ; l'XP naturelle est calculée et appliquée **en fin de mission**, aux survivants (y compris ceux qui ont fui le combat).
+- Une valeur **monte ou descend** selon son XP ; l'XP ne descend jamais sous 0, ni la valeur sous son minimum.
+- Une valeur générée, qui n'a pas encore d'XP, démarre au **milieu de la tranche** de son niveau (constante `progression.xp_curve.start_position` = 0,5, proposition JC3 à valider) : sans cela, la première petite perte ferait tomber un point.
+- Le joueur voit un **récapitulatif** dans le bilan de fin de mission : XP gagnée ou perdue par caractéristique, et valeurs qui ont changé.
+- Toutes les valeurs de cette section sont des **constantes d'équilibrage** (`data/reference/formula-constants.json`, codes `progression.*`).
+- Branché dans le prototype : Résistances, Courage, Vitesse, Charisme, Perception. En attente : **Chance** (critiques pas encore joués par le moteur de combat) et **Constitution** (pas encore de soins en combat).
 
 ## 3 — XP choisie : formation au camp
 

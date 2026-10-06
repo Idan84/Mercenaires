@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 72,
+  "row_count": 83,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -608,6 +608,94 @@
       "description": "Durée maximale de fatigue, en jours. Issue #14 — valeurs PLAYTEST validées par Idan pour le code, à ajuster au jeu.",
       "formule": "Fin de mission V1 — fatigue",
       "valeur": 7,
+      "version": "V1"
+    },
+    {
+      "nom": "Progression — courbe XP → niveau — coefficient",
+      "code": "progression.xp_curve.coefficient",
+      "description": "XP cumulée = coefficient × Niveau² ; la valeur d'une caractéristique est son niveau (Idan, 2026-10-06). Même courbe pour caractéristiques et compétences (08-progression-and-experience.md §1).",
+      "formule": "Progression naturelle V1",
+      "valeur": 10,
+      "version": "V1"
+    },
+    {
+      "nom": "Progression — position de départ dans la tranche de niveau",
+      "code": "progression.xp_curve.start_position",
+      "description": "XP d'une valeur générée = XP(Niveau) + position × (XP(Niveau+1) − XP(Niveau)). 0 = bas de la tranche (la moindre perte fait baisser la valeur), 0,5 = milieu. Valeur d'équilibrage proposée par JC3, à valider.",
+      "formule": "Progression naturelle V1",
+      "valeur": 0.5,
+      "version": "V1"
+    },
+    {
+      "nom": "Progression — Chance — échec critique confirmé",
+      "code": "progression.chance.critical_failure_xp",
+      "description": "« La chance tourne » : XP de Chance par échec critique (EC) confirmé (08 §2). En attente des critiques dans le moteur de combat.",
+      "formule": "Progression naturelle V1",
+      "valeur": 30,
+      "version": "V1"
+    },
+    {
+      "nom": "Progression — Chance — coup critique",
+      "code": "progression.chance.critical_success_xp",
+      "description": "« La chance tourne » : XP de Chance par coup critique (CC), négative (08 §2). En attente des critiques dans le moteur de combat.",
+      "formule": "Progression naturelle V1",
+      "valeur": -5,
+      "version": "V1"
+    },
+    {
+      "nom": "Progression — Résistances — blessure subie",
+      "code": "progression.resistance.wound_xp",
+      "description": "« Ce qui ne te tue pas te rend plus fort » : XP de la résistance du type de dégâts, par blessure effectivement subie (08 §2).",
+      "formule": "Progression naturelle V1",
+      "valeur": 8,
+      "version": "V1"
+    },
+    {
+      "nom": "Progression — Résistances — autres résistances",
+      "code": "progression.resistance.other_resistances_xp",
+      "description": "XP de chacune des quatre autres résistances, par blessure effectivement subie (08 §2).",
+      "formule": "Progression naturelle V1",
+      "valeur": -2,
+      "version": "V1"
+    },
+    {
+      "nom": "Progression — Constitution — PV soigné",
+      "code": "progression.constitution.hp_healed_xp",
+      "description": "« Y'a quelque chose dans ta potion, non ? » : XP de Constitution par PV réellement restauré par un soin (08 §2). En attente des soins en combat.",
+      "formule": "Progression naturelle V1",
+      "valeur": 1,
+      "version": "V1"
+    },
+    {
+      "nom": "Progression — Courage — charge tentée",
+      "code": "progression.courage.charge_attempt_xp",
+      "description": "« Courage, fuyons ! » : XP de Courage par charge tentée, même ratée ou finie en chute (Idan, 2026-10-06).",
+      "formule": "Progression naturelle V1",
+      "valeur": 50,
+      "version": "V1"
+    },
+    {
+      "nom": "Progression — Vitesse — case parcourue en fuite",
+      "code": "progression.speed.flee_hex_xp",
+      "description": "« Cours Forest, cours ! » : XP de Vitesse par case parcourue en état de fuite (08 §2).",
+      "formule": "Progression naturelle V1",
+      "valeur": 2,
+      "version": "V1"
+    },
+    {
+      "nom": "Progression — Charisme — adversaire hors combat",
+      "code": "progression.charisma.knockout_xp",
+      "description": "« Triste Monde ! » : XP de Charisme par adversaire mis hors combat par le mercenaire (Idan, 2026-10-06).",
+      "formule": "Progression naturelle V1",
+      "valeur": 50,
+      "version": "V1"
+    },
+    {
+      "nom": "Progression — Perception — blessé dans le dos",
+      "code": "progression.perception.backstab_wound_xp",
+      "description": "« C'est comme ça que le métier rentre » : XP de Perception par blessure reçue d'une attaque dans le dos, y compris cible encerclée ou en fuite (08 §2 ; Frappe dans le dos V1).",
+      "formule": "Progression naturelle V1",
+      "valeur": 10,
       "version": "V1"
     }
   ]

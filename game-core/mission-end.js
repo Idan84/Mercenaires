@@ -78,7 +78,7 @@
     // §7 — Chaîne : mort → blessure automatique → jet de blessure → fatigue.
     function resolveParticipant(p,options={}){
       const result={
-        id:p.id,name:p.name,isCaptain:Boolean(p.isCaptain),offMap:Boolean(p.offMap),
+        id:p.id,name:p.name,isCaptain:Boolean(p.isCaptain),offMap:Boolean(p.offMap),progress:p.progress||null,
         hp:p.hp,pvMax:p.pvMax,damageTaken:Number(p.damageTaken)||0,
         death:null,wound:null,dead:false,wounded:false,severity:null,woundDays:null,fatigueDays:null
       };

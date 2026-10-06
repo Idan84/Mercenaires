@@ -14,7 +14,8 @@ async function init(){
     state.docs=await d.json(); state.tables=await t.json();
     bind(); renderNav();
     const hash=location.hash.slice(1);
-    if(hash.startsWith("table=")){setMode("tables");openTable(decodeURIComponent(hash.slice(6)))}
+    if(hash==="avatars"||hash.startsWith("cov-")){setMode("avatars")}
+    else if(hash.startsWith("table=")){setMode("tables");openTable(decodeURIComponent(hash.slice(6)))}
     else if(hash.startsWith("doc=")){openDoc(decodeURIComponent(hash.slice(4)))}
     else openDoc(state.docs.documents[0]?.file);
   }catch(e){showError(e)}
@@ -29,17 +30,44 @@ function setMode(mode){
   document.querySelectorAll(".switch").forEach(b=>b.classList.toggle("active",b.dataset.mode===mode));
   $("nav-search").value=""; renderNav();
   if(mode==="docs") openDoc(state.docs.documents[0]?.file);
+  else if(mode==="avatars") openAvatars();
   else openTable(state.tables.tables[0]?.file);
 }
 function renderNav(){
   const q=$("nav-search").value.trim().toLowerCase();
   const items=state.mode==="docs"
     ? [...state.docs.documents,...state.docs.formulas].map(x=>({id:x.file,label:titleFromFile(x.file),sub:x.file.startsWith("formulas/")?"Formule":"Document"}))
+    : state.mode==="avatars"
+    ? (state.coverage?.results||[]).map(r=>({id:AvatarsLab.anchor(r.people),label:r.people,sub:r.avatars+" / "+r.need+" avatars"}))
     : state.tables.tables.map(x=>({id:x.file,label:labelTable(x.name),sub:x.rows+" lignes"}));
   $("nav-list").innerHTML=items.filter(x=>(x.label+" "+x.id).toLowerCase().includes(q)).map(x=>
     `<button class="nav-item ${state.current===x.id?"active":""}" data-id="${esc(x.id)}">${esc(x.label)}<small>${esc(x.sub)}</small></button>`
   ).join("");
-  $("nav-list").querySelectorAll(".nav-item").forEach(b=>b.onclick=()=>state.mode==="docs"?openDoc(b.dataset.id):openTable(b.dataset.id));
+  $("nav-list").querySelectorAll(".nav-item").forEach(b=>b.onclick=()=>state.mode==="docs"?openDoc(b.dataset.id):state.mode==="avatars"?scrollToPeople(b.dataset.id):openTable(b.dataset.id));
+}
+// Onglet Avatars : couverture des avatars par peuple (avatars-lab.js).
+async function openAvatars(){
+  state.mode="avatars";state.current=null;
+  $("table-tools").classList.add("hidden");
+  $("content-kicker").textContent="Production";
+  $("content-title").textContent="Couverture des avatars";
+  $("content-meta").textContent="";
+  if(!location.hash.startsWith("#cov-")) location.hash="avatars";
+  $("viewer").innerHTML='<p class="cov-progress">Calcul…</p>';
+  try{
+    const data=await AvatarsLab.compute((i,n,people)=>{ $("viewer").innerHTML=`<p class="cov-progress">Calcul : ${esc(people)} (${i+1} / ${n})…</p>`; });
+    if(state.mode!=="avatars") return;
+    state.coverage=data;
+    $("content-meta").textContent=AvatarsLab.meta(data);
+    $("viewer").innerHTML=AvatarsLab.render(data);
+    $("viewer").querySelectorAll("[data-cov]").forEach(a=>a.onclick=e=>{e.preventDefault();scrollToPeople(a.dataset.cov)});
+    renderNav();
+    if(location.hash.startsWith("#cov-")) scrollToPeople(location.hash.slice(1));
+  }catch(e){showError(e)}
+}
+function scrollToPeople(id){
+  state.current=id;renderNav();
+  document.getElementById(id)?.scrollIntoView({behavior:"smooth",block:"start"});
 }
 async function openDoc(file){
   if(!file)return; state.mode="docs";state.current=file;renderNav();

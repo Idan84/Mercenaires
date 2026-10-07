@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 83,
+  "row_count": 85,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -696,6 +696,22 @@
       "description": "« C'est comme ça que le métier rentre » : XP de Perception par blessure reçue d'une attaque dans le dos, y compris cible encerclée ou en fuite (08 §2 ; Frappe dans le dos V1).",
       "formule": "Progression naturelle V1",
       "valeur": 10,
+      "version": "V1"
+    },
+    {
+      "nom": "Progression — Force — seuil du rapport charge / Force",
+      "code": "progression.force.load_ratio_threshold",
+      "description": "Force : XP par activation = coefficient × max(0, Charge / Force − seuil). En dessous du seuil, l'équipement ne pèse pas assez pour le mercenaire et ne fait pas progresser. Charge = malus de vitesse de base de l'armure + de toutes les armes équipées (les deux sets) (Idan, 2026-10-07).",
+      "formule": "Progression naturelle V1",
+      "valeur": 0.25,
+      "version": "V1"
+    },
+    {
+      "nom": "Progression — Force — XP par activation",
+      "code": "progression.force.load_ratio_xp",
+      "description": "Coefficient de la formule de Force : XP par activation en mission = coefficient × max(0, Charge / Force − seuil) (Idan, 2026-10-07).",
+      "formule": "Progression naturelle V1",
+      "valeur": 20,
       "version": "V1"
     }
   ]

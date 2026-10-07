@@ -3,7 +3,7 @@
 // Progression naturelle (08-progression-and-experience.md §1–2 ; décisions Idan du 2026-10-06) :
 // - la valeur d'une caractéristique est son niveau : XP cumulée = coefficient × Niveau² ;
 // - pendant la mission, chaque combattant tient un journal de ce qu'il vit (charges tentées,
-//   adversaires mis hors combat, blessures subies, cases parcourues en fuite…) ;
+//   adversaires mis hors combat, blessures subies, cases parcourues en fuite, activations…) ;
 // - en fin de mission, ce journal devient de l'XP : une caractéristique peut monter ou descendre,
 //   l'XP ne descend jamais sous 0 ;
 // - une valeur générée démarre dans la tranche de son niveau à la position
@@ -30,7 +30,7 @@
 
   // Journal d'un combattant pour une mission.
   function emptyLog(){
-    return {chargeAttempts:0,knockouts:0,fleeHexes:0,backstabWounds:0,wounds:{},hpHealed:0,criticalSuccesses:0,criticalFailures:0};
+    return {activations:0,chargeAttempts:0,knockouts:0,fleeHexes:0,backstabWounds:0,wounds:{},hpHealed:0,criticalSuccesses:0,criticalFailures:0};
   }
   function logOf(unit){ return unit.progress||(unit.progress=emptyLog()); }
 
@@ -48,6 +48,8 @@
     // Charisme : adversaire mis hors combat par ce coup (Idan, 2026-10-06).
     if(result.targetDown) logOf(attacker).knockouts++;
   }
+  // Chaque activation du combattant pendant la mission (Force : porter son équipement).
+  function recordActivation(unit){ logOf(unit).activations++; }
   // Chaque case parcourue en état de fuite.
   function recordFleeHex(unit){ logOf(unit).fleeHexes++; }
   // Pour les mécaniques à venir : soins (PV réellement restaurés) et critiques.
@@ -70,9 +72,33 @@
       courageChargeAttempt:k("progression.courage.charge_attempt_xp",50),
       speedFleeHex:k("progression.speed.flee_hex_xp",2),
       charismaKnockout:k("progression.charisma.knockout_xp",50),
-      perceptionBackstabWound:k("progression.perception.backstab_wound_xp",10)
+      perceptionBackstabWound:k("progression.perception.backstab_wound_xp",10),
+      forceLoadThreshold:k("progression.force.load_ratio_threshold",0.25),
+      forceLoadXp:k("progression.force.load_ratio_xp",20)
     };
     const minimum=new Map((reference?.characteristics?.rows||[]).map(r=>[r.nom,Number(r.minimum)]));
+    const weaponPenalty=new Map((reference?.weapons?.rows||[]).map(w=>[w.nom,Number(w.malus_vitesse_arme_base)||0]));
+    const armorRows=reference?.baseArmors?.rows||[];
+    const LOAD_SLOTS=["weapon_set_1_main","weapon_set_1_off","weapon_set_2_main","weapon_set_2_off","armor"];
+
+    // Charge portée (Force, décision Idan du 2026-10-07) : malus de vitesse de base de l'armure et de
+    // toutes les armes équipées (les deux sets, qu'il transporte), qui représente leur poids.
+    function loadOf(mercenary){
+      let load=0;
+      for(const slot of LOAD_SLOTS){
+        const id=mercenary?.equipment?.slots?.[slot];
+        const item=id?(mercenary.items||[]).find(x=>x.id===id):null;
+        if(!item) continue;
+        if(slot==="armor"){
+          const code=String(item.templateId||"").replace(/^armor:/,"");
+          const armor=armorRows.find(a=>a.code===code)||armorRows.find(a=>a.nom===item.name);
+          load+=Number(armor?.malus_vitesse_base)||0;
+        }else{
+          load+=weaponPenalty.get(item.name)||0;
+        }
+      }
+      return load;
+    }
 
     const xpForLevel=level=>C.curve*level*level;
     const levelForXp=xp=>Math.floor(Math.sqrt(Math.max(0,xp)/C.curve)+1e-9);
@@ -82,8 +108,9 @@
       return Math.round(xpForLevel(level)+C.startPosition*(xpForLevel(level+1)-xpForLevel(level)));
     }
 
-    // Journal → XP par caractéristique et par résistance (valeurs non nulles seulement).
-    function gains(log){
+    // Journal → XP par caractéristique et par résistance (valeurs non nulles seulement). Le mercenaire
+    // sert à la Force : XP par activation = coefficient × max(0, Charge / Force − seuil).
+    function gains(log,mercenary=null){
       const l={...emptyLog(),...(log||{})};
       const stats={},resistances={};
       const add=(target,name,xp)=>{ if(xp) target[name]=(target[name]||0)+xp; };
@@ -93,6 +120,10 @@
       add(stats,"Vitesse",l.fleeHexes*C.speedFleeHex);
       add(stats,"Charisme",l.knockouts*C.charismaKnockout);
       add(stats,"Perception",l.backstabWounds*C.perceptionBackstabWound);
+      const force=Number(mercenary?.stats?.Force)||0;
+      if(l.activations&&force>0){
+        add(stats,"Force",Math.round(l.activations*C.forceLoadXp*Math.max(0,loadOf(mercenary)/force-C.forceLoadThreshold)));
+      }
       // Chaque blessure : +XP à la résistance du type, −XP à chacune des quatre autres.
       for(const [hit,count] of Object.entries(l.wounds||{})){
         for(const resistance of RESISTANCES) add(resistances,resistance,count*(resistance===hit?C.resistanceWound:C.resistanceOthers));
@@ -126,8 +157,8 @@
       return changes;
     }
 
-    return {constants:C,xpForLevel,levelForXp,startingXp,gains,apply};
+    return {constants:C,xpForLevel,levelForXp,startingXp,loadOf,gains,apply};
   }
 
-  return {createProgressionRules,emptyLog,recordAttack,recordFleeHex,recordHeal,recordCritical,RESISTANCES,RESISTANCE_BY_DAMAGE};
+  return {createProgressionRules,emptyLog,recordActivation,recordAttack,recordFleeHex,recordHeal,recordCritical,RESISTANCES,RESISTANCE_BY_DAMAGE};
 });

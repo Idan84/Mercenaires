@@ -271,7 +271,7 @@
         // XP naturelle de la mission (08-progression-and-experience.md §2 ; Idan, 2026-10-06) : appliquée
         // en fin de mission aux survivants, y compris ceux qui ont fui le combat.
         if(progression){
-          const xp=progression.gains(result.progress);
+          const xp=progression.gains(result.progress,mercenary);
           report.progression.push({mercenary,xp,changes:progression.apply(mercenary,xp)});
         }
         if(result.wounded){

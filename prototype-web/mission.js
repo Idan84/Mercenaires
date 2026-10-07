@@ -163,6 +163,7 @@ function selectNextMissionPlayer(){
     const next=m.playerOrder.find(u=>u.alive&&!u.acted);
     if(!next){ runMissionEnemyTurn(); return; }
     resetMissionActivation(next);
+    MercenairesProgression.recordActivation(next);
     if(next.fleeing&&resolveMissionFleeingActivation(next)){
       next.acted=true;
       if(m.over){ renderMission(); return; }

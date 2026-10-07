@@ -19,7 +19,8 @@ const rules=P.createProgressionRules({reference});
 // et décisions Idan du 2026-10-06).
 assert.deepEqual(rules.constants,{
   curve:10,startPosition:0.5,chanceCriticalFailure:30,chanceCriticalSuccess:-5,resistanceWound:8,resistanceOthers:-2,
-  constitutionHpHealed:1,courageChargeAttempt:50,speedFleeHex:2,charismaKnockout:50,perceptionBackstabWound:10
+  constitutionHpHealed:1,courageChargeAttempt:50,speedFleeHex:2,charismaKnockout:50,perceptionBackstabWound:10,
+  forceLoadThreshold:0.25,forceLoadXp:20
 });
 const tuned=P.createProgressionRules({reference:{formulaConstants:{rows:[{code:"progression.charisma.knockout_xp",valeur:80}]}}});
 assert.equal(tuned.constants.charismaKnockout,80,"une constante modifiée est prise en compte");
@@ -55,6 +56,23 @@ assert.deepEqual(rules.gains(d.progress),{
   resistances:{"Résistance physique":16,"Résistance au feu":-4,"Résistance au froid":-4,"Résistance à la foudre":-4,"Résistance au poison":-4}
 });
 assert.deepEqual(rules.gains(null),{stats:{},resistances:{}});
+
+// Force (Idan, 2026-10-07) : charge = malus de vitesse de base de l'armure et des armes équipées (deux sets) ;
+// XP par activation = 20 × max(0, Charge / Force − 0,25).
+const porter=(force,slots,items)=>({stats:{Force:force},equipment:{slots},items});
+const lourd=porter(55,{weapon_set_1_main:"a",weapon_set_2_main:"c",armor:"b"},[
+  {id:"a",name:"Hache double"},{id:"b",templateId:"armor:plate_armor",name:"Armure de plates"},{id:"c",name:"Dague"},{id:"x",name:"Marteau de guerre"}
+]);
+assert.equal(rules.loadOf(lourd),40+12+0,"armes et armure équipées seulement");
+assert.equal(rules.gains({activations:5},lourd).stats.Force,70,"5 × 20 × (52/55 − 0,25) ≈ 70");
+const leger=porter(77,{weapon_set_1_main:"a",armor:"b"},[{id:"a",name:"Dague"},{id:"b",templateId:"armor:leather",name:"Armure de cuir"}]);
+assert.equal(rules.loadOf(leger),2);
+assert.equal(rules.gains({activations:5},leger).stats.Force,undefined,"équipement léger pour lui : rien");
+assert.equal(rules.gains({activations:0},lourd).stats.Force,undefined,"sans activation : rien");
+assert.equal(rules.gains({activations:5},porter(0,{},[])).stats.Force,undefined,"Force nulle : pas de division");
+assert.equal(rules.gains({activations:5}).stats.Force,undefined,"sans mercenaire : pas de Force");
+const a2={};P.recordActivation(a2);P.recordActivation(a2);
+assert.equal(a2.progress.activations,2);
 
 // Application : la valeur monte quand l'XP franchit le niveau suivant, baisse quand elle repasse dessous.
 const merc={stats:{Charisme:50,Courage:20},resistances:{"Résistance au feu":5,"Résistance physique":1}};

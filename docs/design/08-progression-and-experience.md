@@ -112,9 +112,19 @@ Chaque fois qu’un mercenaire est **effectivement blessé par une attaque reçu
 
 - `+10 XP Perception`.
 
-### Force
+### Force — porter son équipement
 
-**À définir.** Ne pas inventer de « test de Force » tant que cette mécanique n’existe pas réellement dans le système de combat.
+Décision Idan du 2026-10-07 : la Force progresse selon le **rapport entre le poids de l'équipement porté et la Force actuelle**.
+
+- **Charge** = malus de vitesse de base de l'armure + malus de vitesse de base de **toutes les armes équipées** (les deux sets, qu'il transporte). Ce malus représente déjà poids et inertie (formule *Malus vitesse arme effectif V1*) ; pas de colonne de poids distincte.
+- À chaque **activation** en mission :
+
+$$
+XP_{Force}=20\times\max\left(0;\ \frac{Charge}{Force}-0{,}25\right)
+$$
+
+- Un équipement léger pour le mercenaire (charge sous le quart de sa Force) ne rapporte rien ; plus il est lourd pour lui, plus il progresse. Le rendement baisse de lui-même quand la Force monte : le mercenaire tend à devenir « aussi fort que ce qu'il porte ».
+- Repères (≈ 5 activations par mission) : hache double + plates (charge 52) à Force 55 → ≈ 70 XP par mission ; épée longue + écu + mailles (28) → ≈ 25 XP ; dague + arc + cuir (14) → 0.
 
 ### Application en fin de mission (V1 — décisions Idan du 2026-10-06)
 
@@ -124,7 +134,7 @@ Chaque fois qu’un mercenaire est **effectivement blessé par une attaque reçu
 - Une valeur générée, qui n'a pas encore d'XP, démarre au **milieu de la tranche** de son niveau (constante `progression.xp_curve.start_position` = 0,5, proposition JC3 à valider) : sans cela, la première petite perte ferait tomber un point.
 - Le joueur voit un **récapitulatif** dans le bilan de fin de mission : XP gagnée ou perdue par caractéristique, et valeurs qui ont changé.
 - Toutes les valeurs de cette section sont des **constantes d'équilibrage** (`data/reference/formula-constants.json`, codes `progression.*`).
-- Branché dans le prototype : Résistances, Courage, Vitesse, Charisme, Perception. En attente : **Chance** (critiques pas encore joués par le moteur de combat) et **Constitution** (pas encore de soins en combat).
+- Branché dans le prototype : Résistances, Courage, Vitesse, Charisme, Perception, Force. En attente : **Chance** (critiques pas encore joués par le moteur de combat) et **Constitution** (pas encore de soins en combat).
 
 ## 3 — XP choisie : formation au camp
 

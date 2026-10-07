@@ -621,7 +621,7 @@
     {
       "nom": "Progression — position de départ dans la tranche de niveau",
       "code": "progression.xp_curve.start_position",
-      "description": "XP d'une valeur générée = XP(Niveau) + position × (XP(Niveau+1) − XP(Niveau)). 0 = bas de la tranche (la moindre perte fait baisser la valeur), 0,5 = milieu. Valeur d'équilibrage proposée par JC3, à valider.",
+      "description": "XP d'une valeur générée = XP(Niveau) + position × (XP(Niveau+1) − XP(Niveau)). 0 = bas de la tranche (la moindre perte fait baisser la valeur), 0,5 = milieu. Milieu de la tranche validé par Idan le 2026-10-07.",
       "formule": "Progression naturelle V1",
       "valeur": 0.5,
       "version": "V1"

@@ -131,7 +131,7 @@ $$
 - La **valeur** d'une caractéristique ou d'une résistance **est son niveau** : une valeur de 50 correspond à 25 000 XP cumulés.
 - Pendant la mission, chaque mercenaire tient un **journal** de ce qu'il vit ; l'XP naturelle est calculée et appliquée **en fin de mission**, aux survivants (y compris ceux qui ont fui le combat).
 - Une valeur **monte ou descend** selon son XP ; l'XP ne descend jamais sous 0, ni la valeur sous son minimum.
-- Une valeur générée, qui n'a pas encore d'XP, démarre au **milieu de la tranche** de son niveau (constante `progression.xp_curve.start_position` = 0,5, proposition JC3 à valider) : sans cela, la première petite perte ferait tomber un point.
+- Une valeur générée, qui n'a pas encore d'XP, démarre au **milieu de la tranche** de son niveau (constante `progression.xp_curve.start_position` = 0,5, validée par Idan le 2026-10-07) : sans cela, la première petite perte ferait tomber un point.
 - Le joueur voit un **récapitulatif** dans le bilan de fin de mission : XP gagnée ou perdue par caractéristique, et valeurs qui ont changé.
 - Toutes les valeurs de cette section sont des **constantes d'équilibrage** (`data/reference/formula-constants.json`, codes `progression.*`).
 - Branché dans le prototype : Résistances, Courage, Vitesse, Charisme, Perception, Force. En attente : **Chance** (critiques pas encore joués par le moteur de combat) et **Constitution** (pas encore de soins en combat).

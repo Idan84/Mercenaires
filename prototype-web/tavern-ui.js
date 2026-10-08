@@ -267,7 +267,45 @@ function signTavernCandidate(){
   renderGame();
 }
 
+// Les deux consommations sont pour l'instant des dépenses sans effet de gameplay.
+function showTavernView(view="home"){
+  for(const [name,id] of [["home","tavern-home"],["missions","tavern-missions-view"],["recruits","tavern-recruits-view"]]){
+    $(id).classList.toggle("hidden",name!==view);
+  }
+}
+function buyTavernDrink(kind){
+  const c=game.campaign;
+  if(!c) return;
+  const count=c.company.roster.length; // capitaine compris ; effectif sous contrat actuel
+  const cost=kind==="round"?count:1;
+  const feedback=$("tavern-action-feedback");
+  if(c.company.gold<cost){
+    feedback.textContent="Pas assez d'or : "+cost+" PO nécessaires.";
+    return;
+  }
+  c.company.gold-=cost;
+  const message=kind==="round"?"Tournée générale : "+cost+" PO pour "+count+" membres.":"Une bière : 1 PO.";
+  tavernLog(message+" Aucun effet pour l'instant.","gear");
+  feedback.textContent=message;
+  saveGame();
+  renderTavern();
+}
+
 function initializeTavernUi(){
+  $("tavern-home").addEventListener("click",event=>{
+    const open=event.target.closest("[data-tavern-view]");
+    if(open){showTavernView(open.dataset.tavernView);return;}
+    const drink=event.target.closest("[data-tavern-drink]");
+    if(drink) buyTavernDrink(drink.dataset.tavernDrink);
+  });
+  for(const id of ["tavern-missions-view","tavern-recruits-view"]){
+    $(id).addEventListener("click",event=>{
+      const btn=event.target.closest("[data-tavern-view]");
+      if(btn) showTavernView(btn.dataset.tavernView);
+    });
+  }
+  $("tavern-mission-test-btn").addEventListener("click",openMissionSelection);
+
   $("tavern-next-day-btn").addEventListener("click",advanceTavernDay);
   $("test-gold-btn").addEventListener("click",addTestGold);
   $("tavern-intendant").addEventListener("change",assignTavernIntendant);

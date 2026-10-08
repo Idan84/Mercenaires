@@ -1510,3 +1510,12 @@ body[data-screen="camp"] > .app-shell { position: relative; z-index: 1; }
 .captain-avatar-choice:hover,.captain-avatar-choice:focus-visible{border-color:#edc983;outline:none}
 .captain-avatar-choice.is-selected{border-color:#ffd582;box-shadow:0 0 0 2px rgba(255,213,130,.2)}
 .wizard-detail-panel:has(.avatar-frame--detail) .avatar-frame{margin:18px auto 0;max-height:380px}
+
+
+/* Taverne V1 — quatre actions, sans superposer les panneaux au décor. */
+.tavern-home-menu{display:grid;grid-template-columns:repeat(2,minmax(250px,1fr));gap:18px;max-width:850px;margin:10vh auto 0}
+.tavern-home-menu .camp-hub-btn{min-height:86px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:8px;text-align:center;color:#f7e8c8}
+.tavern-home-menu .camp-hub-btn small{font-size:.72rem;font-weight:500;color:#d5b882}
+.tavern-action-feedback{grid-column:1/-1;min-height:1.5em;color:#f8d897;text-align:center;text-shadow:0 1px 5px #090603}
+#tavern-missions-view,#tavern-recruits-view{margin-top:24px}
+#tavern-missions-view h2{margin:20px 0 12px}

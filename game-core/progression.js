@@ -47,6 +47,16 @@
     }
     // Charisme : adversaire mis hors combat par ce coup (Idan, 2026-10-06).
     if(result.targetDown) logOf(attacker).knockouts++;
+    // Chance : chaque critique (Toucher ou Blesser) et chaque échec critique confirmé.
+    if(result.criticalHit) recordCritical(attacker,"success");
+    if(result.criticalWound) recordCritical(attacker,"success");
+    if(result.fumble) recordCritical(attacker,"failure");
+    if(result.woundFumble){
+      recordCritical(attacker,"failure");
+      // Le contrecoup est une blessure physique subie par l'attaquant (« quelle que soit sa source »).
+      const log=logOf(attacker);
+      log.wounds["Résistance physique"]=(log.wounds["Résistance physique"]||0)+1;
+    }
   }
   // Chaque composante de dégâts qui blesse effectivement (doc 08, Résistances) : dégâts mixtes, dégâts sur
   // la durée et coups multiples appelleront recordWound une fois par composante et par blessure.
@@ -65,8 +75,9 @@
   }
   // Chaque case parcourue en état de fuite.
   function recordFleeHex(unit){ logOf(unit).fleeHexes++; }
-  // Pour les mécaniques à venir : soins (PV réellement restaurés) et critiques.
+  // Pour les mécaniques à venir : soins (PV réellement restaurés).
   function recordHeal(unit,hp){ logOf(unit).hpHealed+=Math.max(0,Number(hp)||0); }
+  // Critiques : success = critique positif, failure = échec critique confirmé.
   function recordCritical(unit,kind){
     if(kind==="success") logOf(unit).criticalSuccesses++;
     else if(kind==="failure") logOf(unit).criticalFailures++;

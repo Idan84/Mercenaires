@@ -29,6 +29,16 @@
     function die(sides){ return Math.floor(random()*sides)+1; }
     function d100(){ return die(100); }
     function clamp(v,min,max){ return Math.max(min,Math.min(max,v)); }
+    function constant(code,fallback){
+      const value=Number((rows.formulaConstants||[]).find(r=>r.code===code)?.valeur);
+      return Number.isFinite(value)?value:fallback;
+    }
+    const CRIT={
+      min:constant("combat.melee.crit.min",1),
+      max:constant("combat.melee.crit.max",25),
+      luckDivisor:constant("combat.melee.crit.luck_divisor",10),
+      fumbleThreshold:constant("combat.melee.fumble.threshold",96)
+    };
 
     function axialDistance(a,b){
       const dq=a.q-b.q,dr=a.r-b.r;
@@ -163,8 +173,9 @@
     }
 
     // Frappe dans le dos V1 : la résistance au type de dégâts est divisée par deux pour l'étape Blesser.
+    // Critique toucher — armure ignorée V1 : après un critique au Toucher, l'armure ne compte pas pour Blesser.
     function damageMatchups(defender,weapon,context={}){
-      const factor=context.backstab?0.5:1;
+      const factor=context.ignoreArmor?0:context.backstab?0.5:1;
       return PHYSICAL_TYPES.map(type=>{
         const power=Number(weapon?.[type.weapon])||0;
         if(power<=0) return null;
@@ -244,16 +255,22 @@
       return m?{count:Number(m[1]),sides:Number(m[2])}:{count:1,sides:4};
     }
 
-    function rollWeaponDamage(weapon){
+    // roll : "max" (Critique de blessure positif) ou "min" (Échec critique de blessure) remplace le jet.
+    function rollWeaponDamage(weapon,roll=null){
       const dice=parseDice(weapon?.degats_pv_base);
       let total=0;
-      for(let i=0;i<dice.count;i++) total+=die(dice.sides);
+      if(roll==="max") total=dice.count*dice.sides;
+      else if(roll==="min") total=dice.count;
+      else for(let i=0;i<dice.count;i++) total+=die(dice.sides);
       return {total,dice:dice.count+"D"+dice.sides};
     }
 
-    function physicalDamage(attacker,defender,mode,chargePower=0){
+    // fixed.roll : jet de dégâts imposé ("max" / "min") ; fixed.resistanceRoll : D3 de la variation de
+    // Résistance physique imposé (1 → 0,9, le plus favorable à l'attaquant ; 3 → 1,1, le plus favorable
+    // à la réduction). Pour le contrecoup d'un échec critique de blessure, defender est l'attaquant lui-même.
+    function physicalDamage(attacker,defender,mode,chargePower=0,fixed={}){
       const item=activeWeaponItem(attacker),weapon=weaponTemplate(item);
-      const rolled=rollWeaponDamage(weapon);
+      const rolled=rollWeaponDamage(weapon,fixed.roll);
       const q=quality(item);
       let effective=rolled.total*(Number(q.multiplicateur_qualite)||1);
 
@@ -261,7 +278,7 @@
       if(chargePower>0) effective*=1+chargePower/100;
 
       const physicalResistance=clamp(Number(defender.character.resistances?.["Résistance physique"])||0,0,50);
-      const resistanceRoll=die(3);
+      const resistanceRoll=fixed.resistanceRoll||die(3);
       const resistanceFactor=1-(physicalResistance/100)*((resistanceRoll+8)/10);
       const strengthFactor=mode==="melee"
         ? 2*(Number(attacker.character.stats?.Force)||0)/100
@@ -275,6 +292,18 @@
         physicalResistance,
         qualityMultiplier:Number(q.multiplicateur_qualite)||1
       };
+    }
+
+    // Critique positif CAC V1 : 1 % à 25 % selon la Chance, après un Toucher puis après un Blesser réussis.
+    // 04-combat « Critiques physiques V1 » : la V1 distance réutilise ce même principe.
+    function criticalChance(unit){
+      return clamp((Number(unit.character.stats?.Chance)||0)/CRIT.luckDivisor,CRIT.min,CRIT.max);
+    }
+    // Échec critique (Toucher ou Blesser) : naturel ≥ 96, puis D100 > Chance pour qu'il soit confirmé.
+    function fumbleTest(unit,naturalRoll){
+      if(naturalRoll<CRIT.fumbleThreshold) return {fumble:false};
+      const fumbleRoll=d100();
+      return {fumbleRoll,fumble:fumbleRoll>(Number(unit.character.stats?.Chance)||0)};
     }
 
     // Chaque attaque résolue est signalée au crochet options.onAttack(attaquant, défenseur, options,
@@ -305,6 +334,7 @@
       if(Number(options.chargeDistance)>0){
         const fallRoll=d100();
         if(fallRoll<=2){
+          attacker.prone=true;
           return {ok:true,mode,weapon:weapon.nom,charge:true,chargeFall:true,fallRoll,hit:false,wound:false,damage:0};
         }
         const bonus=Number(weapon.bonus_charge_base)||1;
@@ -315,17 +345,38 @@
       const pHit=hitProbability(attacker,defender,mode,distance,{opportunity,backstab});
       const hitRoll=d100(),hit=hitRoll<=pHit;
       if(!hit){
-        return {ok:true,mode,weapon:weapon.nom,distance,pHit,hitRoll,hit:false,wound:false,damage:0,...tags};
+        // Échec critique CAC V1 : un naturel 96–100 déclenche un test de Chance ; raté → Au Sol.
+        const fumble=fumbleTest(attacker,hitRoll);
+        if(fumble.fumble) attacker.prone=true;
+        return {ok:true,mode,weapon:weapon.nom,distance,pHit,hitRoll,hit:false,...fumble,wound:false,damage:0,...tags};
       }
 
-      const matchup=selectDamageMatchup(attacker,defender,weapon,{backstab});
+      // (Blocage bouclier physique V1 se placera ici, avant le critique de Toucher.)
+      const pCritical=criticalChance(attacker);
+      const criticalHitRoll=d100(),criticalHit=criticalHitRoll<=pCritical;
+      const crit={pCritical,criticalHitRoll,criticalHit};
+      const matchup=selectDamageMatchup(attacker,defender,weapon,{backstab,ignoreArmor:criticalHit});
       const pWound=woundProbability(attacker,defender,mode,matchup,{chargePower});
       const woundRoll=d100(),wound=woundRoll<=pWound;
       if(!wound){
-        return {ok:true,mode,weapon:weapon.nom,distance,pHit,hitRoll,hit:true,matchup,pWound,woundRoll,wound:false,damage:0,...tags};
+        // Échec critique de blessure CAC V1 : naturel 96–100 puis test de Chance raté → l'attaquant
+        // encaisse les dégâts minimum de son propre coup, réduits au mieux par sa Résistance physique.
+        const woundFumble=fumbleTest(attacker,woundRoll);
+        const recoil={woundFumbleRoll:woundFumble.fumbleRoll,woundFumble:woundFumble.fumble};
+        if(woundFumble.fumble){
+          const self=physicalDamage(attacker,attacker,mode,chargePower,{roll:"min",resistanceRoll:3});
+          attacker.hp-=self.damage;
+          attacker.damageTaken=(Number(attacker.damageTaken)||0)+self.damage;
+          if(attacker.hp<=0) attacker.alive=false;
+          Object.assign(recoil,{selfDamage:self.damage,attackerHp:attacker.hp,attackerDown:!attacker.alive});
+        }
+        return {ok:true,mode,weapon:weapon.nom,distance,pHit,hitRoll,hit:true,...crit,matchup,pWound,woundRoll,wound:false,...recoil,damage:0,...tags};
       }
 
-      const damageData=physicalDamage(attacker,defender,mode,chargePower);
+      // Critique de blessure positif CAC V1 : dégâts de l'arme au maximum et variation de Résistance à 0,9.
+      const criticalWoundRoll=d100(),criticalWound=criticalWoundRoll<=pCritical;
+      Object.assign(crit,{criticalWoundRoll,criticalWound});
+      const damageData=physicalDamage(attacker,defender,mode,chargePower,criticalWound?{roll:"max",resistanceRoll:1}:{});
       // Les PV restent signés : la profondeur sous 0 sert au jet de mort de fin de mission (Issue #13).
       defender.hp-=damageData.damage;
       // Les soins n'effacent pas l'usure : la fatigue de fin de mission se calcule sur le cumul (10-mission-time §5).
@@ -333,7 +384,7 @@
       if(defender.hp<=0) defender.alive=false;
 
       return {
-        ok:true,mode,weapon:weapon.nom,distance,pHit,hitRoll,hit:true,
+        ok:true,mode,weapon:weapon.nom,distance,pHit,hitRoll,hit:true,...crit,
         matchup,pWound,woundRoll,wound:true,...damageData,
         targetHp:defender.hp,targetDown:!defender.alive,...tags
       };
@@ -481,6 +532,7 @@
       damageMatchups,
       selectDamageMatchup,
       woundProbability,
+      criticalChance,
       resolveAttack,
       canSwitchWeaponSet,
       switchWeaponSet,

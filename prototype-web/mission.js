@@ -309,14 +309,29 @@ function logMissionAttack(a,d,result,kind="attack"){
   }
   if(!result.hit){
     missionLog(prefix+" : raté ("+Math.round(result.pHit||0)+" %, jet "+(result.hitRoll||"—")+").","miss");
+    logMissionFumble(a,result.fumbleRoll,result.fumble,"perd l’équilibre et tombe au sol");
     return;
   }
+  const critical=result.criticalHit?" Coup critique : l’armure est ignorée ("+result.criticalHitRoll+" ≤ "+missionPercent(result.pCritical)+").":"";
   if(!result.wound){
-    missionLog(prefix+" : touche mais ne blesse pas ("+Math.round(result.pWound||0)+" %, jet "+(result.woundRoll||"—")+").","hit");
+    missionLog(prefix+" : touche mais ne blesse pas ("+Math.round(result.pWound||0)+" %, jet "+(result.woundRoll||"—")+")."+critical,"hit");
+    logMissionFumble(a,result.woundFumbleRoll,result.woundFumble,"se blesse avec son propre coup : "+result.selfDamage+" PV, reste à "+Math.max(0,result.attackerHp)+" PV");
+    if(result.attackerDown) missionLog(a.character.name+" est hors combat.","death");
     return;
   }
-  missionLog(prefix+" : "+result.damage+" PV. "+d.character.name+" reste à "+Math.max(0,result.targetHp)+" PV"+(result.targetHp<0?" ("+result.targetHp+" sous zéro)":"")+".","damage");
+  const criticalWound=result.criticalWound?" Blessure critique : dégâts maximum ("+result.criticalWoundRoll+" ≤ "+missionPercent(result.pCritical)+").":"";
+  missionLog(prefix+" : "+result.damage+" PV. "+d.character.name+" reste à "+Math.max(0,result.targetHp)+" PV"+(result.targetHp<0?" ("+result.targetHp+" sous zéro)":"")+"."+critical+criticalWound,"damage");
   if(result.targetDown) missionLog(d.character.name+" est hors combat.","death");
+}
+
+function missionPercent(p){ return (Math.round((Number(p)||0)*10)/10).toLocaleString("fr-FR")+" %"; }
+
+// Échec critique (Toucher ou Blesser) : un naturel 96–100 impose un test de Chance (D100 > Chance = échec).
+function logMissionFumble(unit,roll,confirmed,effect){
+  if(!roll) return;
+  const luck="Chance "+(Number(unit.character.stats?.Chance)||0)+", jet "+roll;
+  if(confirmed) missionLog("Échec critique ! "+unit.character.name+" "+effect+" ("+luck+").","bad");
+  else missionLog(unit.character.name+" frôle l’échec critique mais se rattrape ("+luck+").","info");
 }
 
 // Attaque d'opportunité CAC V1 : les réactions sont résolues avant la fin de l'action déclenchante,
@@ -622,7 +637,6 @@ function handleMissionHexClick(q,r){
     moveMissionUnitAlongPath(u,charge.path);
     if(missionActiveUnitLost()) return;
     const result=m.engine.resolveAttack(u,clicked,{mode:"melee",distance:1,chargeDistance:charge.travel,encircled:missionEncircled(clicked)});
-    if(result.chargeFall) u.prone=true;
     logMissionAttack(u,clicked,result,"charge");
     checkMissionEnd();
     resolveMissionCourage(u,clicked,result);
@@ -717,7 +731,6 @@ function enemyTryCharge(unit,target){
   moveMissionUnitAlongPath(unit,charge.path);
   if(!unit.alive||unit.fleeing) return true;
   const result=e.resolveAttack(unit,target,{mode:"melee",distance:1,chargeDistance:charge.travel,encircled:missionEncircled(target)});
-  if(result.chargeFall) unit.prone=true;
   logMissionAttack(unit,target,result,"charge");
   checkMissionEnd();
   resolveMissionCourage(unit,target,result);

@@ -72,6 +72,12 @@ Les registres complets de formules, termes et constantes sont rangés dans **05 
 - **Blesser naturel 96–100** : échec du test de Chance → [Échec critique de blessure CAC V1](/design/#doc=formulas/echec-critique-de-blessure-cac-v1.md) inflige à l'attaquant les dégâts minimum de son propre coup.
 - La V1 distance réutilise ce même principe de critiques ; les exceptions propres à des armes ou sorts seront ajoutées séparément si nécessaire.
 
+Choix d'implémentation V1, à confirmer en relecture :
+- un seul jet de critique par étape : au Toucher (armure ignorée), puis à Blesser (dégâts maximum), avec la même probabilité Chance / 10 ;
+- en charge, la blessure critique et le contrecoup gardent le multiplicateur de charge : seuls le jet de dégâts et la variation de Résistance physique sont imposés ;
+- au tir, les quatre critiques s'appliquent avec la formule de dégâts à distance (sans la Force) : un échec critique au Toucher met le tireur Au Sol, un échec critique à Blesser lui inflige le contrecoup ;
+- Au Sol dure jusqu'à la prochaine activation du personnage, comme après une chute en charge.
+
 ## Vitesse, prise et cadence CAC V1
 
 Les règles validées de maniement et cadence sont centralisées ici :

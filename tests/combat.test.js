@@ -273,4 +273,74 @@ assert.equal(charge.path.length,charge.travel);
 assert.deepEqual(charge.path[0],{q:1,r:0});
 assert.deepEqual(charge.path[charge.path.length-1],charge.destination);
 
+// Critiques physiques V1 (04-combat) : probabilité de critique = Chance / 10, bornée à 1–25 %.
+const lucky=(character,luck)=>({...character,stats:{...character.stats,Chance:luck}});
+assert.equal(combat.criticalChance(unit(lucky(a,0),0,0)),1);
+assert.equal(combat.criticalChance(unit(lucky(a,75),0,0)),7.5);
+assert.equal(combat.criticalChance(unit(lucky(a,400),0,0)),25);
+
+// Jets imposés : chaque valeur est le résultat du dé lancé (D100, dé d'arme ou D3), dans l'ordre des jets.
+function scripted(rolls,sides){
+  let i=0;
+  return createCombatEngine(reference,{random:()=>{ const n=rolls[Math.min(i,rolls.length-1)],s=sides[Math.min(i,sides.length-1)]; i++; return (n-0.5)/s; }});
+}
+function expectedDamage(attacker,target,roll,variation){
+  const item=combat.activeWeaponItem(attacker),weapon=combat.weaponTemplate(item);
+  const q=Number(combat.quality(item).multiplicateur_qualite)||1;
+  // Prise d'arme V1 : une arme Au choix sans arme secondaire est tenue à deux mains (×1,5).
+  const grip=weapon.prise==="Au choix"&&!attacker.character.equipment.slots["weapon_set_"+attacker.activeSet+"_off"]?1.5:1;
+  const rp=Math.max(0,Math.min(50,Number(target.character.resistances?.["Résistance physique"])||0));
+  return Math.ceil(10*roll*q*grip*2*(Number(attacker.character.stats.Force)||0)/100*(1-(rp/100)*variation));
+}
+const diceOf=u=>{ const m=String(combat.weaponTemplate(combat.activeWeaponItem(u)).degats_pv_base).match(/^(\d+)D(\d+)$/i); return {count:Number(m[1]),sides:Number(m[2])}; };
+
+// Critique au Toucher puis critique de blessure (tous les D100 à 1) : armure ignorée, dégâts maximum, variation 0,9.
+const critAttacker=unit(a,0,0),critTarget=unit(b,1,0);setFamily(critAttacker,"melee");
+const crit=combat.resolveAttack(critAttacker,critTarget,{mode:"melee",distance:1});
+assert.equal(crit.criticalHit,true);
+assert.equal(crit.criticalWound,true);
+assert.equal(crit.matchup.armorResistance,0,"Critique toucher — armure ignorée V1");
+assert.equal(crit.matchup.matchup,crit.matchup.power);
+const critDice=diceOf(critAttacker);
+assert.equal(crit.weaponRoll,critDice.count*critDice.sides,"jet de dégâts maximum");
+assert.equal(crit.resistanceRoll,1,"variation de Résistance physique la plus favorable à l'attaquant (0,9)");
+assert.equal(crit.damage,expectedDamage(critAttacker,critTarget,critDice.count*critDice.sides,0.9));
+
+// Échec critique CAC V1 : naturel 96–100 au Toucher, puis D100 > Chance → Au Sol.
+const fumbler=unit(lucky(a,40),0,0),fumbleTarget=unit(b,1,0);setFamily(fumbler,"melee");
+let r=scripted([97,41],[100,100]).resolveAttack(fumbler,fumbleTarget,{mode:"melee",distance:1});
+assert.deepEqual([r.hit,r.fumbleRoll,r.fumble,fumbler.prone],[false,41,true,true]);
+fumbler.prone=false;
+r=scripted([97,40],[100,100]).resolveAttack(fumbler,fumbleTarget,{mode:"melee",distance:1});
+assert.deepEqual([r.fumbleRoll,r.fumble,fumbler.prone],[40,false,false],"D100 ≤ Chance : rattrapé");
+r=scripted([95],[100]).resolveAttack(fumbler,fumbleTarget,{mode:"melee",distance:1});
+assert.deepEqual([r.hit,r.fumbleRoll,r.fumble],[false,undefined,false],"sous 96 : simple raté");
+
+// Échec critique de blessure CAC V1 : Toucher 1, pas de critique (100), choix du type, Blesser 99, Chance ratée.
+const clumsy=unit(lucky(a,40),0,0),spared=unit(b,1,0);setFamily(clumsy,"melee");
+assert.ok(combat.damageMatchups(spared,combat.weaponTemplate(combat.activeWeaponItem(clumsy))).length>0);
+const clumsyHp=clumsy.hp;
+r=scripted([1,100,50,99,41],[100,100,100,100,100]).resolveAttack(clumsy,spared,{mode:"melee",distance:1});
+const clumsyDice=diceOf(clumsy);
+assert.deepEqual([r.hit,r.criticalHit,r.wound,r.woundFumble],[true,false,false,true]);
+assert.equal(r.selfDamage,expectedDamage(clumsy,clumsy,clumsyDice.count,1.1),"dégâts minimum de son propre coup, sa Résistance à 1,1");
+assert.equal(clumsy.hp,clumsyHp-r.selfDamage);
+assert.equal(clumsy.damageTaken,r.selfDamage);
+assert.equal(spared.hp,spared.character.pvMax,"le défenseur ne subit rien");
+assert.equal(r.attackerHp,clumsy.hp);
+
+// La chute en charge met aussi Au Sol (Charge CAC V1), désormais posée par le moteur.
+const faller=unit(a,0,0),chargeVictim=unit(b,4,0);setFamily(faller,"melee");
+const fall=combat.resolveAttack(faller,chargeVictim,{mode:"melee",distance:1,chargeDistance:3});
+assert.deepEqual([fall.chargeFall,faller.prone],[true,true]);
+
+// La V1 distance réutilise le même principe de critiques (04-combat).
+const critShooter=unit(a,0,0),mark=unit(b,2,0);
+if(setFamily(critShooter,"ranged")){
+  const d=Math.max(combat.weaponRange(critShooter).min,1);mark.q=d;
+  const shot=combat.resolveAttack(critShooter,mark,{mode:"ranged",distance:d});
+  assert.equal(shot.criticalHit,true);
+  assert.equal(shot.criticalWound,true);
+}
+
 console.log(JSON.stringify({ok:true},null,2));

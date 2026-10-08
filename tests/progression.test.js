@@ -49,6 +49,17 @@ assert.equal(d.progress.knockouts,0);
 P.recordFleeHex(d);P.recordFleeHex(d);P.recordFleeHex(d);
 P.recordHeal(d,12);P.recordCritical(d,"failure");P.recordCritical(d,"success");
 
+// Critiques (04-combat « Critiques physiques V1 ») : chaque critique positif et chaque échec critique confirmé
+// comptent pour la Chance ; le contrecoup d'un échec critique de blessure est une blessure physique subie.
+const lucky={},foe2={};
+P.recordAttack(lucky,foe2,{},{ok:true,hit:true,criticalHit:true,wound:true,criticalWound:true,matchup:{type:"tranchant"}});
+P.recordAttack(lucky,foe2,{},{ok:true,hit:false,fumbleRoll:99,fumble:true,wound:false});
+P.recordAttack(lucky,foe2,{},{ok:true,hit:false,fumbleRoll:12,fumble:false,wound:false});
+P.recordAttack(lucky,foe2,{},{ok:true,hit:true,wound:false,woundFumbleRoll:98,woundFumble:true,selfDamage:3});
+assert.deepEqual([lucky.progress.criticalSuccesses,lucky.progress.criticalFailures],[2,2]);
+assert.deepEqual(lucky.progress.wounds,{"Résistance physique":1},"le contrecoup compte comme blessure subie");
+assert.equal(rules.gains(lucky.progress).stats.Chance,2*30-2*5);
+
 // Journal → XP.
 assert.deepEqual(rules.gains(a.progress),{stats:{Courage:100,Charisme:50},resistances:{}});
 assert.deepEqual(rules.gains(d.progress),{
@@ -130,6 +141,16 @@ for(const [roll,label] of [[0,"chute"],[0.999,"raté"]]){
   assert.equal(ca.progress.chargeAttempts,1,"charge tentée comptée : "+label);
   assert.equal(rules.gains(ca.progress).stats.Courage,50,label);
 }
+
+// Charisme : un allié mis hors combat par accident (projectile raté) ne compte pas.
+const ownTeam={team:"player"},ally2={team:"player"},foe3={team:"enemy"};
+P.recordAttack(ownTeam,ally2,{},{ok:true,hit:true,wound:true,matchup:{type:"perforant"},targetDown:true});
+P.recordAttack(ownTeam,foe3,{},{ok:true,hit:true,wound:true,matchup:{type:"perforant"},targetDown:true});
+assert.equal(ownTeam.progress.knockouts,1);
+
+// Charge brisée avant son attaque (contre-charge, attaque d'opportunité) : toujours une charge tentée.
+const brokenCharge={};P.recordChargeAttempt(brokenCharge);
+assert.equal(rules.gains(brokenCharge.progress).stats.Courage,50);
 
 // Fin de mission : XP appliquée aux survivants, pas aux morts.
 const campaign=createCampaignRules({generator,tavern:createTavernRules({reference,random:()=>0.999}),reference,progression:rules});

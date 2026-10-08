@@ -299,7 +299,7 @@ function renderMissionProgression(entries){
 
 function logMissionAttack(a,d,result,kind="attack"){
   if(!result.ok){ missionLog(result.reason||"Attaque impossible.","bad"); return; }
-  const verb={charge:" charge ",opportunity:" profite de l’ouverture et frappe "}[kind]||" attaque ";
+  const verb={charge:" charge ",opportunity:" profite de l’ouverture et frappe ",countercharge:" contre-charge ",stray:" touche par accident "}[kind]||" attaque ";
   const prefix=a.character.name+verb+d.character.name+" avec "+result.weapon
     +(result.opportunity?" (attaque d’opportunité, dans le dos)":result.encircled?" (cible encerclée, dans le dos)":result.backstab?" (dans le dos)":"");
 
@@ -309,14 +309,33 @@ function logMissionAttack(a,d,result,kind="attack"){
   }
   if(!result.hit){
     missionLog(prefix+" : raté ("+Math.round(result.pHit||0)+" %, jet "+(result.hitRoll||"—")+").","miss");
+    logMissionFumble(a,result.fumbleRoll,result.fumble,"perd l’équilibre et tombe au sol");
     return;
   }
+  if(result.blocked){
+    missionLog(prefix+" : touche, mais "+d.character.name+" bloque avec son "+result.shield+" (blocage "+Math.round(result.pBlock)+" %, jet "+result.blockRoll+").","miss");
+    return;
+  }
+  const critical=result.criticalHit?" Coup critique : l’armure est ignorée ("+result.criticalHitRoll+" ≤ "+missionPercent(result.pCritical)+").":"";
   if(!result.wound){
-    missionLog(prefix+" : touche mais ne blesse pas ("+Math.round(result.pWound||0)+" %, jet "+(result.woundRoll||"—")+").","hit");
+    missionLog(prefix+" : touche mais ne blesse pas ("+Math.round(result.pWound||0)+" %, jet "+(result.woundRoll||"—")+")."+critical,"hit");
+    logMissionFumble(a,result.woundFumbleRoll,result.woundFumble,"se blesse avec son propre coup : "+result.selfDamage+" PV, reste à "+Math.max(0,result.attackerHp)+" PV");
+    if(result.attackerDown) missionLog(a.character.name+" est hors combat.","death");
     return;
   }
-  missionLog(prefix+" : "+result.damage+" PV. "+d.character.name+" reste à "+Math.max(0,result.targetHp)+" PV"+(result.targetHp<0?" ("+result.targetHp+" sous zéro)":"")+".","damage");
+  const criticalWound=result.criticalWound?" Blessure critique : dégâts maximum ("+result.criticalWoundRoll+" ≤ "+missionPercent(result.pCritical)+").":"";
+  missionLog(prefix+" : "+result.damage+" PV. "+d.character.name+" reste à "+Math.max(0,result.targetHp)+" PV"+(result.targetHp<0?" ("+result.targetHp+" sous zéro)":"")+"."+critical+criticalWound,"damage");
   if(result.targetDown) missionLog(d.character.name+" est hors combat.","death");
+}
+
+function missionPercent(p){ return (Math.round((Number(p)||0)*10)/10).toLocaleString("fr-FR")+" %"; }
+
+// Échec critique (Toucher ou Blesser) : un naturel 96–100 impose un test de Chance (D100 > Chance = échec).
+function logMissionFumble(unit,roll,confirmed,effect){
+  if(!roll) return;
+  const luck="Chance "+(Number(unit.character.stats?.Chance)||0)+", jet "+roll;
+  if(confirmed) missionLog("Échec critique ! "+unit.character.name+" "+effect+" ("+luck+").","bad");
+  else missionLog(unit.character.name+" frôle l’échec critique mais se rattrape ("+luck+").","info");
 }
 
 // Attaque d'opportunité CAC V1 : les réactions sont résolues avant la fin de l'action déclenchante,
@@ -393,21 +412,63 @@ function performMissionAttack(attacker,target,mode,distance){
       if(!attacker.alive||attacker.q!==from.q||attacker.r!==from.r||attacker.fleeing!==wasFleeing) return null;
     }
   }
-  const result=m.engine.resolveAttack(attacker,target,{mode,distance,encircled:missionEncircled(target)});
-  logMissionAttack(attacker,target,result);
-  checkMissionEnd();
-  resolveMissionCourage(attacker,target,result);
-  return result;
+  // Enchaînement d'attaques CAC V1 / de tirs distance V1 : tant qu'une attaque touche réellement, D100 ≤ P_N
+  // ouvre la suivante contre la même cible, si elle reste à portée.
+  // Courage post-attaque CAC V1 / post-tir V1 : un seul test en fin de séquence ; une cible en sous-nombre
+  // teste, elle, après chaque blessure reçue (Courage en sous-nombre V1).
+  const e=m.engine;
+  let first=null,wounded=false,testedPerWound=false;
+  const strayWounded=new Set();
+  for(let n=1;;n++){
+    const result=e.resolveAttack(attacker,target,{mode,distance,encircled:missionEncircled(target),bystanders:missionUnits()});
+    first=first||result;
+    logMissionAttack(attacker,target,result);
+    if(!result.ok) return first;
+    const stray=logMissionStray(attacker,result);
+    if(stray) strayWounded.add(stray);
+    checkMissionEnd();
+    if(result.wound){
+      wounded=true;
+      if(mode==="melee"&&!m.over&&e.localMelee(target,missionUnits()).surplus>0){
+        resolveMissionCourage(attacker,target,result);
+        testedPerWound=true;
+      }
+    }
+    if(m.over) return first;
+    distance=e.axialDistance(attacker,target);
+    if(!e.canAttackAtDistance(attacker,distance,mode)) break;
+    const chain=e.rollChain(attacker,target,result,n+1,mode);
+    if(!chain) break;
+    const detail=" ("+(mode==="ranged"?"tir":"attaque")+" n°"+chain.n+" : "+missionPercent(chain.p)+", jet "+chain.roll+")";
+    if(!chain.continues){ missionLog(attacker.character.name+" ne parvient pas à enchaîner"+detail+".","info"); break; }
+    missionLog(attacker.character.name+" enchaîne"+detail+" !","info");
+  }
+  if(!testedPerWound) resolveMissionCourage(attacker,target,{ok:true,mode,wound:wounded},{defenderSurplus:0});
+  // Courage post-tir V1 : le personnage blessé par accident teste lui aussi, face au tireur.
+  for(const unit of strayWounded) resolveMissionCourage(attacker,unit,{ok:true,mode:"ranged",wound:true});
+  return first;
+}
+
+// Approximation projectile V1 : un tir raté peut toucher un autre personnage du couloir de tir.
+// Renvoie le personnage blessé par accident, s'il y en a un.
+function logMissionStray(attacker,result){
+  const stray=result?.stray;
+  if(!stray?.unit) return null;
+  missionLog("Le tir de "+attacker.character.name+" part dans le couloir et atteint "+stray.unit.character.name
+    +" par accident ("+missionPercent(stray.result.pHit)+", jet "+stray.result.hitRoll+") !","bad");
+  logMissionAttack(attacker,stray.unit,stray.result,"stray");
+  return stray.result.wound&&stray.unit.alive?stray.unit:null;
 }
 
 // Courage post-attaque CAC V1 / post-tir V1 / en sous-nombre V1 : un échec applique En Fuite.
-function resolveMissionCourage(attacker,defender,result){
+function resolveMissionCourage(attacker,defender,result,override={}){
   const m=game.mission;
   if(!m||m.over||!result?.ok) return;
   const e=m.engine;
   const context={
     defenderSurplus:e.localMelee(defender,missionUnits()).surplus,
-    attackerEncircles:e.axialDistance(attacker,defender)===1&&e.threatens(attacker,defender)&&missionEncircled(defender)
+    attackerEncircles:e.axialDistance(attacker,defender)===1&&e.threatens(attacker,defender)&&missionEncircled(defender),
+    ...override
   };
   const c=e.resolveCourage(attacker,defender,result,context);
   if(!c) return;
@@ -619,13 +680,7 @@ function handleMissionHexClick(q,r){
     if(!charge) return;
 
     u.attackAvailable=false;u.movementRemaining=0;m.mode=null;
-    moveMissionUnitAlongPath(u,charge.path);
-    if(missionActiveUnitLost()) return;
-    const result=m.engine.resolveAttack(u,clicked,{mode:"melee",distance:1,chargeDistance:charge.travel,encircled:missionEncircled(clicked)});
-    if(result.chargeFall) u.prone=true;
-    logMissionAttack(u,clicked,result,"charge");
-    checkMissionEnd();
-    resolveMissionCourage(u,clicked,result);
+    performMissionCharge(u,clicked,charge);
     if(missionActiveUnitLost()) return;
     renderMission();
   }
@@ -654,6 +709,17 @@ function switchMissionWeapon(){
   }
 }
 
+// Armes à feu — recharge V1 : une Action rapide recharge une arme tenue.
+function reloadMissionWeapon(){
+  const u=missionActiveUnit(),m=game.mission;
+  if(!u||!u.quickAvailable||m.phase!=="player"||m.over) return;
+  const item=m.engine.reload(u);
+  if(!item) return;
+  u.quickAvailable=false;
+  missionLog(u.character.name+" recharge son "+item.name+".","gear");
+  renderMission();
+}
+
 function nearestMissionTarget(unit){
   const targets=livingMissionUnits(unit.team==="player"?"enemy":"player");
   return [...targets].sort((a,b)=>{
@@ -669,16 +735,26 @@ function enemyTryUsefulSet(unit,target){
   let mode=e.isRangedWeapon(weapon)?"ranged":"melee";
   if(e.canAttackAtDistance(unit,distance,mode)) return;
 
-  if(!e.canSwitchWeaponSet(unit)) return;
+  if(!unit.quickAvailable||!e.canSwitchWeaponSet(unit)) return;
   const before=unit.activeSet;
   e.switchWeaponSet(unit);
   weapon=e.weaponTemplate(e.activeWeaponItem(unit));
   mode=e.isRangedWeapon(weapon)?"ranged":"melee";
   if(e.canAttackAtDistance(unit,distance,mode)){
+    unit.quickAvailable=false;
     missionLog(unit.character.name+" change d’arme : "+e.activeWeaponItem(unit).name+".","gear");
   }else{
     unit.activeSet=before;
   }
+}
+
+// IA : une arme déchargée est rechargée avec l'Action rapide, si elle est encore disponible.
+function enemyTryReload(unit){
+  if(!unit.quickAvailable) return;
+  const item=game.mission.engine.reload(unit);
+  if(!item) return;
+  unit.quickAvailable=false;
+  missionLog(unit.character.name+" recharge son "+item.name+".","gear");
 }
 
 function enemyMoveToward(unit,target){
@@ -714,14 +790,66 @@ function enemyTryCharge(unit,target){
   if(!charge) return false;
 
   unit.movementRemaining=0;
-  moveMissionUnitAlongPath(unit,charge.path);
-  if(!unit.alive||unit.fleeing) return true;
+  performMissionCharge(unit,target,charge);
+  return true;
+}
+
+// Charge CAC V1, avec Contre-charge V1 : la cible réagit une fois pendant la course (mi-course pour une arme
+// à distance, entrée dans la portée pour une arme d'hast), avant l'attaque du chargeur. Si la réaction blesse,
+// la charge est brisée et le chargeur teste son Courage face à la cible.
+function performMissionCharge(unit,target,charge){
+  const m=game.mission,e=m.engine;
+  const reaction=e.counterchargeTrigger(target,unit,charge);
+  const legs=reaction?[charge.path.slice(0,reaction.at),charge.path.slice(reaction.at)]:[charge.path];
+  const stillCharging=()=>unit.alive&&!unit.fleeing&&!m.over;
+  // Une charge arrêtée avant son attaque reste une charge tentée (Courage, doc 08).
+  const broken=()=>{ MercenairesProgression.recordChargeAttempt(unit); };
+
+  if(moveMissionUnitAlongPath(unit,legs[0])<legs[0].length||!stillCharging()){ broken(); return; }
+  if(reaction){
+    const distance=e.axialDistance(target,unit);
+    if(target.alive&&!target.fleeing&&e.canAttackAtDistance(target,distance,reaction.mode)){
+      const r=e.resolveAttack(target,unit,{mode:reaction.mode,distance,bystanders:missionUnits()});
+      logMissionAttack(target,unit,r,"countercharge");
+      const stray=logMissionStray(target,r);
+      checkMissionEnd();
+      if(stray) resolveMissionCourage(target,stray,{ok:true,mode:"ranged",wound:true});
+      if(r.wound||!unit.alive){
+        broken();
+        if(unit.alive&&!m.over){
+          missionLog("La charge de "+unit.character.name+" est brisée.","bad");
+          resolveMissionCounterchargeCourage(target,unit,r,charge,charge.travel-reaction.at);
+        }
+        return;
+      }
+    }
+    if(moveMissionUnitAlongPath(unit,legs[1])<legs[1].length||!stillCharging()){ broken(); return; }
+  }
   const result=e.resolveAttack(unit,target,{mode:"melee",distance:1,chargeDistance:charge.travel,encircled:missionEncircled(target)});
-  if(result.chargeFall) unit.prone=true;
   logMissionAttack(unit,target,result,"charge");
   checkMissionEnd();
   resolveMissionCourage(unit,target,result);
-  return true;
+}
+
+// Contre-charge V1 : en cas d'échec, le chargeur passe En Fuite, fait demi-tour et dépense tout le mouvement
+// de charge restant dans la direction opposée ; sans mouvement restant (ou sans case libre), il reste sur place.
+function resolveMissionCounterchargeCourage(reactor,charger,result,charge,remaining){
+  const e=game.mission.engine;
+  const c=e.resolveCourage(reactor,charger,result,{defenderSurplus:0});
+  if(!c) return;
+  const detail=" (Courage "+Math.round(c.pHold)+" %, jet "+c.roll+")";
+  if(!c.flees){ missionLog(charger.character.name+" tient bon"+detail+".","info"); return; }
+  missionLog(charger.character.name+" panique et prend la fuite"+detail+" !","bad");
+  charger.fleeing=true;charger.fleeTurn=0;
+  const occupied=occupiedMissionKeys(charger),path=[];
+  let at={q:charger.q,r:charger.r};
+  for(let i=0;i<remaining;i++){
+    const next={q:at.q-charge.step.q,r:at.r-charge.step.r};
+    if(!validMissionHex(next.q,next.r)||occupied.has(missionKey(next.q,next.r))) break;
+    path.push(next);at=next;
+  }
+  if(!path.length){ missionLog(charger.character.name+" ne peut pas reculer et reste sur place, en fuite.","move"); return; }
+  missionFollowFleePath(charger,path,"fait demi-tour et s’enfuit");
 }
 
 function enemyMissionAct(unit){
@@ -739,6 +867,7 @@ function enemyMissionActivation(unit){
   if(!target) return;
 
   enemyTryUsefulSet(unit,target);
+  enemyTryReload(unit);
   let e=game.mission.engine,weapon=e.weaponTemplate(e.activeWeaponItem(unit));
   let mode=e.isRangedWeapon(weapon)?"ranged":"melee";
   let distance=e.axialDistance(unit,target);
@@ -756,6 +885,7 @@ function enemyMissionActivation(unit){
   target=nearestMissionTarget(unit);
   if(!target) return;
   enemyTryUsefulSet(unit,target);
+  enemyTryReload(unit);
   weapon=e.weaponTemplate(e.activeWeaponItem(unit));
   mode=e.isRangedWeapon(weapon)?"ranged":"melee";
   distance=e.axialDistance(unit,target);
@@ -791,9 +921,10 @@ function missionActionAvailability(){
   return {
     move:u.movementRemaining>0,
     melee:u.attackAvailable&&e.isMeleeWeapon(w),
-    ranged:u.attackAvailable&&e.isRangedWeapon(w),
+    ranged:u.attackAvailable&&e.isRangedWeapon(w)&&e.isLoaded(u,e.activeWeaponItem(u)),
     charge:u.attackAvailable&&e.isMeleeWeapon(w)&&u.movementRemaining===e.movementBase(u),
     switch:u.quickAvailable&&e.canSwitchWeaponSet(u),
+    reload:u.quickAvailable&&e.canReload(u),
     secondMove:u.attackAvailable,
     end:true
   };
@@ -823,7 +954,7 @@ function renderMissionRoster(units){
       ${renderAvatar(u.character,{variant:"compact",kind:"portrait"})}
       <div class="mission-roster-copy">
         <strong>${esc(u.character.name)}</strong>
-        <span>${u.offMap?"A quitté le combat":Math.max(0,u.hp)+"/"+u.character.pvMax+" PV"+(u.hp<0?" ("+u.hp+")":"")+(u.alive&&u.fleeing?" · En fuite":"")}</span>
+        <span>${u.offMap?"A quitté le combat":Math.max(0,u.hp)+"/"+u.character.pvMax+" PV"+(u.hp<0?" ("+u.hp+")":"")+(u.alive&&u.fleeing?" · En fuite":"")+(u.alive&&!game.mission.engine.isLoaded(u,game.mission.engine.activeWeaponItem(u))?" · Arme déchargée":"")}</span>
         <small>Init ${Math.round(game.mission.engine.initiative(u))} · Mvt ${game.mission.engine.movementBase(u)}</small>
       </div>
     </div>
@@ -884,7 +1015,7 @@ function renderMission(){
   const availability=missionActionAvailability();
   const buttons=[
     ["mission-move-btn","move"],["mission-attack-btn","melee"],["mission-charge-btn","charge"],
-    ["mission-switch-btn","switch"],["mission-ranged-btn","ranged"],["mission-second-move-btn","secondMove"],["mission-end-activation-btn","end"]
+    ["mission-switch-btn","switch"],["mission-reload-btn","reload"],["mission-ranged-btn","ranged"],["mission-second-move-btn","secondMove"],["mission-end-activation-btn","end"]
   ];
   for(const [id,key] of buttons){
     $(id).disabled=!availability[key];
@@ -924,6 +1055,7 @@ function initializeMissionUi(){
   $("mission-charge-btn").addEventListener("click",()=>setMissionMode("charge"));
   $("mission-ranged-btn").addEventListener("click",()=>setMissionMode("ranged"));
   $("mission-switch-btn").addEventListener("click",switchMissionWeapon);
+  $("mission-reload-btn").addEventListener("click",reloadMissionWeapon);
   $("mission-second-move-btn").addEventListener("click",missionSecondMove);
   window.addEventListener("resize",()=>{ if(game.mission) renderMission(); });
   $("mission-end-activation-btn").addEventListener("click",endMissionActivation);

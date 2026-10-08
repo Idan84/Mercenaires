@@ -273,4 +273,224 @@ assert.equal(charge.path.length,charge.travel);
 assert.deepEqual(charge.path[0],{q:1,r:0});
 assert.deepEqual(charge.path[charge.path.length-1],charge.destination);
 
+// Critiques physiques V1 (04-combat) : probabilité de critique = Chance / 10, bornée à 1–25 %.
+const lucky=(character,luck)=>({...character,stats:{...character.stats,Chance:luck}});
+assert.equal(combat.criticalChance(unit(lucky(a,0),0,0)),1);
+assert.equal(combat.criticalChance(unit(lucky(a,75),0,0)),7.5);
+assert.equal(combat.criticalChance(unit(lucky(a,400),0,0)),25);
+
+// Jets imposés : chaque valeur est le résultat du dé lancé (D100, dé d'arme ou D3), dans l'ordre des jets.
+function scripted(rolls,sides){
+  let i=0;
+  return createCombatEngine(reference,{random:()=>{ const n=rolls[Math.min(i,rolls.length-1)],s=sides[Math.min(i,sides.length-1)]; i++; return (n-0.5)/s; }});
+}
+function expectedDamage(attacker,target,roll,variation){
+  const item=combat.activeWeaponItem(attacker),weapon=combat.weaponTemplate(item);
+  const q=Number(combat.quality(item).multiplicateur_qualite)||1;
+  // Prise d'arme V1 : une arme Au choix sans arme secondaire est tenue à deux mains (×1,5).
+  const grip=weapon.prise==="Au choix"&&!attacker.character.equipment.slots["weapon_set_"+attacker.activeSet+"_off"]?1.5:1;
+  const rp=Math.max(0,Math.min(50,Number(target.character.resistances?.["Résistance physique"])||0));
+  return Math.ceil(10*roll*q*grip*2*(Number(attacker.character.stats.Force)||0)/100*(1-(rp/100)*variation));
+}
+const diceOf=u=>{ const m=String(combat.weaponTemplate(combat.activeWeaponItem(u)).degats_pv_base).match(/^(\d+)D(\d+)$/i); return {count:Number(m[1]),sides:Number(m[2])}; };
+
+// Critique au Toucher puis critique de blessure (tous les D100 à 1) : armure ignorée, dégâts maximum, variation 0,9.
+const critAttacker=unit(a,0,0),critTarget=unit(b,1,0);setFamily(critAttacker,"melee");
+const crit=combat.resolveAttack(critAttacker,critTarget,{mode:"melee",distance:1});
+assert.equal(crit.criticalHit,true);
+assert.equal(crit.criticalWound,true);
+assert.equal(crit.matchup.armorResistance,0,"Critique toucher — armure ignorée V1");
+assert.equal(crit.matchup.matchup,crit.matchup.power);
+const critDice=diceOf(critAttacker);
+assert.equal(crit.weaponRoll,critDice.count*critDice.sides,"jet de dégâts maximum");
+assert.equal(crit.resistanceRoll,1,"variation de Résistance physique la plus favorable à l'attaquant (0,9)");
+assert.equal(crit.damage,expectedDamage(critAttacker,critTarget,critDice.count*critDice.sides,0.9));
+
+// Échec critique CAC V1 : naturel 96–100 au Toucher, puis D100 > Chance → Au Sol.
+const fumbler=unit(lucky(a,40),0,0),fumbleTarget=unit(b,1,0);setFamily(fumbler,"melee");
+let r=scripted([97,41],[100,100]).resolveAttack(fumbler,fumbleTarget,{mode:"melee",distance:1});
+assert.deepEqual([r.hit,r.fumbleRoll,r.fumble,fumbler.prone],[false,41,true,true]);
+fumbler.prone=false;
+r=scripted([97,40],[100,100]).resolveAttack(fumbler,fumbleTarget,{mode:"melee",distance:1});
+assert.deepEqual([r.fumbleRoll,r.fumble,fumbler.prone],[40,false,false],"D100 ≤ Chance : rattrapé");
+r=scripted([95],[100]).resolveAttack(fumbler,fumbleTarget,{mode:"melee",distance:1});
+assert.deepEqual([r.hit,r.fumbleRoll,r.fumble],[false,undefined,false],"sous 96 : simple raté");
+
+// Échec critique de blessure CAC V1 : Toucher 1, pas de critique (100), choix du type, Blesser 99, Chance ratée.
+const clumsy=unit(lucky(a,40),0,0),spared=unit(b,1,0);setFamily(clumsy,"melee");
+assert.ok(combat.damageMatchups(spared,combat.weaponTemplate(combat.activeWeaponItem(clumsy))).length>0);
+const clumsyHp=clumsy.hp;
+r=scripted([1,100,50,99,41],[100,100,100,100,100]).resolveAttack(clumsy,spared,{mode:"melee",distance:1});
+const clumsyDice=diceOf(clumsy);
+assert.deepEqual([r.hit,r.criticalHit,r.wound,r.woundFumble],[true,false,false,true]);
+assert.equal(r.selfDamage,expectedDamage(clumsy,clumsy,clumsyDice.count,1.1),"dégâts minimum de son propre coup, sa Résistance à 1,1");
+assert.equal(clumsy.hp,clumsyHp-r.selfDamage);
+assert.equal(clumsy.damageTaken,r.selfDamage);
+assert.equal(spared.hp,spared.character.pvMax,"le défenseur ne subit rien");
+assert.equal(r.attackerHp,clumsy.hp);
+
+// La chute en charge met aussi Au Sol (Charge CAC V1), désormais posée par le moteur.
+const faller=unit(a,0,0),chargeVictim=unit(b,4,0);setFamily(faller,"melee");
+const fall=combat.resolveAttack(faller,chargeVictim,{mode:"melee",distance:1,chargeDistance:3});
+assert.deepEqual([fall.chargeFall,faller.prone],[true,true]);
+
+// La V1 distance réutilise le même principe de critiques (04-combat).
+const critShooter=unit(a,0,0),mark=unit(b,2,0);
+if(setFamily(critShooter,"ranged")){
+  const d=Math.max(combat.weaponRange(critShooter).min,1);mark.q=d;
+  const shot=combat.resolveAttack(critShooter,mark,{mode:"ranged",distance:d});
+  assert.equal(shot.criticalHit,true);
+  assert.equal(shot.criticalWound,true);
+}
+
+// Blocage bouclier physique V1 : bouclier en main secondaire du set actif.
+function withShield(character,shieldName,qualityCode="standard",stats={}){
+  const shield={id:"shield-"+character.id,templateId:"weapon:shield",name:shieldName,itemType:"weapon",slot:"weapon_set_1_off",owner:character.id,qualityCode,category:"Boucliers"};
+  return {
+    ...character,stats:{...character.stats,...stats},items:[...character.items,shield],
+    equipment:{...character.equipment,slots:{...character.equipment.slots,weapon_set_1_off:shield.id}}
+  };
+}
+const guardChar=withShield(a,"Écu");
+const shieldMastery=c=>((Number(c.skills.martial.Boucliers)||0)+(Number(c.skills.martial["Écu"])||0))/2;
+const blockOf=(c,bonus)=>Math.min(80,Math.max(5,((Number(c.stats["Dextérité"])||0)+shieldMastery(c))/2+bonus));
+assert.equal(combat.blockChance(unit(guardChar,1,0)),blockOf(guardChar,10),"(Dextérité + maîtrise effective) / 2 + bonus de l'Écu");
+assert.equal(combat.blockChance(unit(withShield(a,"Écu","luxury"),1,0)),blockOf(guardChar,10*1.2),"le bonus suit la qualité");
+assert.equal(combat.blockChance(unit(withShield(a,"Pavois","standard",{"Dextérité":300}),1,0)),80,"plafond 80 %");
+assert.equal(combat.blockChance(unit({...withShield(a,"Rondache","worn",{"Dextérité":0}),skills:{...a.skills,martial:{...a.skills.martial,Boucliers:0,"Rondache":0}}},1,0)),5,"plancher 5 %");
+assert.equal(combat.blockChance(unit(a,0,0)),null,"sans bouclier : pas de jet");
+
+// Coup bloqué (D100 à 1 : touche, puis bloque) : ni critique, ni Blesser, ni dégâts.
+const shieldBearer=unit(guardChar,1,0),guardAttacker=unit(b,0,0);setFamily(guardAttacker,"melee");
+const blocked=combat.resolveAttack(guardAttacker,shieldBearer,{mode:"melee",distance:1});
+assert.deepEqual([blocked.hit,blocked.blocked,blocked.shield,blocked.wound,blocked.criticalHit,shieldBearer.hp],[true,true,"Écu",false,undefined,guardChar.pvMax]);
+assert.equal(combat.resolveAttack(guardAttacker,shieldBearer,{mode:"melee",opportunity:true}).blocked,true,"possible même dans le dos");
+// Blocage raté (D100 = 100) : l'attaque continue normalement, avec le jet de blocage dans le résultat.
+r=scripted([1,100,100,50,1,100],[100]).resolveAttack(guardAttacker,shieldBearer,{mode:"melee",distance:1});
+assert.deepEqual([r.blocked,r.blockRoll,r.criticalHit,r.wound],[false,100,false,true]);
+// Contre un projectile physique aussi.
+const guardShooter=unit(a,0,0);
+if(setFamily(guardShooter,"ranged")){
+  const d=Math.max(combat.weaponRange(guardShooter).min,1);
+  assert.equal(combat.resolveAttack(guardShooter,unit(guardChar,d,0),{mode:"ranged",distance:d}).blocked,true);
+}
+
+// Vitesse combat effective CAC V1 : le malus du bouclier s'ajoute à celui de l'arme, et l'arme Au choix
+// passe en mode une main (son malus n'est plus divisé par deux).
+const penalty=(c,slot)=>{
+  const item=c.items.find(x=>x.id===c.equipment.slots[slot]),w=combat.weaponTemplate(item);
+  const m=(Number(c.skills.martial[w.nom])||0)+(Number(c.skills.martial[item.category||""])||0);
+  return w.malus_vitesse_arme_base*(Number(combat.quality(item).multiplicateur_malus)||1)*Math.max(0,1-m/400);
+};
+const bare=unit({...a,stats:{...a.stats,Vitesse:100}},0,0),shielded=unit(withShield(a,"Écu","standard",{Vitesse:100}),0,0);
+const swordPenalty=penalty(a,"weapon_set_1_main");
+const near2=(x,y,label)=>assert.ok(Math.abs(x-y)<1e-9,label+" : "+x+" ≠ "+y);
+assert.ok(combat.effectiveSpeed(shielded)>1,"Vitesse assez haute pour ne pas toucher le plancher");
+near2(combat.effectiveSpeed(bare)-combat.effectiveSpeed(shielded),swordPenalty*0.5+penalty(guardChar,"weapon_set_1_off"),"avec bouclier");
+
+// Enchaînement d'attaques CAC V1 : P_N = min(100, (Dextérité + Vitesse combat effective) / N) ;
+// Enchaînement de tirs distance V1 : divisé par 1,5 × N.
+const chainer=unit(a,0,0),chainTarget=unit(b,1,0);setFamily(chainer,"melee");
+const chainBase=(Number(a.stats["Dextérité"])||0)+combat.effectiveSpeed(chainer);
+near(combat.chainChance(chainer,2,"melee"),Math.min(100,chainBase/2),"attaque n°2");
+near(combat.chainChance(chainer,3,"melee"),Math.min(100,chainBase/3),"attaque n°3");
+near(combat.chainChance(chainer,2,"ranged"),Math.min(100,chainBase/3),"tir n°2");
+assert.equal(combat.chainChance(unit({...a,stats:{...a.stats,"Dextérité":900}},0,0),2,"melee"),100,"plafond 100");
+const realHit={ok:true,hit:true,wound:false};
+assert.deepEqual(combat.rollChain(chainer,chainTarget,realHit,2,"melee"),{n:2,p:combat.chainChance(chainer,2,"melee"),roll:1,continues:true});
+assert.equal(panicky.rollChain(chainer,chainTarget,realHit,2,"melee").continues,false,"D100 > P_N : la chaîne s'arrête");
+assert.ok(combat.rollChain(chainer,chainTarget,{ok:true,hit:true,criticalHit:true,wound:true,criticalWound:true},2,"melee"),"un critique positif n'arrête pas la chaîne");
+for(const [stop,label] of [
+  [{ok:true,hit:false},"raté"],[{ok:true,hit:true,blocked:true},"bloqué"],[{ok:true,hit:false,fumble:true},"échec critique au Toucher"],
+  [{ok:true,hit:true,wound:false,woundFumble:true},"échec critique de blessure"],[{ok:false},"attaque impossible"]
+]) assert.equal(combat.rollChain(chainer,chainTarget,stop,2,"melee"),null,label);
+assert.equal(combat.rollChain(chainer,{...chainTarget,alive:false},realHit,2,"melee"),null,"cible hors combat");
+assert.equal(combat.rollChain({...chainer,alive:false},chainTarget,realHit,2,"melee"),null,"attaquant hors combat");
+// Cadence : seules les armes « Répétable » enchaînent les tirs.
+assert.deepEqual(["Arc","Fronde","Sarbacane","Arbalète","Pistolet"].map(nom=>combat.isRepeatable({nom})),[true,true,true,false,false]);
+const crossbow=unit(a,0,0);
+if(setFamily(crossbow,"ranged")&&combat.weaponTemplate(combat.activeWeaponItem(crossbow)).nom==="Arbalète"){
+  assert.equal(combat.rollChain(crossbow,chainTarget,realHit,2,"ranged"),null,"Arbalète : tir unique");
+}
+
+// Armes à feu — recharge V1 : chargée pour tirer, déchargée après le tir, une Action rapide recharge.
+function withMainWeapon(character,name){
+  const item={id:"main-"+name+"-"+character.id,name,itemType:"weapon",slot:"weapon_set_1_main",owner:character.id,qualityCode:"standard"};
+  return {...character,items:[...character.items,item],equipment:{...character.equipment,slots:{...character.equipment.slots,weapon_set_1_main:item.id}}};
+}
+assert.deepEqual(["Pistolet","Arquebuse / Mousquet","Tromblon","Canon à main","Arc","Arbalète"].map(nom=>combat.needsLoading({nom})),[true,true,true,true,false,false]);
+const gunner2=unit(withMainWeapon(a,"Pistolet"),0,0),gunTarget=unit(b,3,0);
+const pistol=combat.activeWeaponItem(gunner2);
+assert.deepEqual([combat.isLoaded(gunner2,pistol),combat.canReload(gunner2),combat.canAttackAtDistance(gunner2,3,"ranged")],[true,false,true],"chargée au début de la mission");
+const firstShot=combat.resolveAttack(gunner2,gunTarget,{mode:"ranged",distance:3});
+assert.equal(firstShot.ok,true);
+assert.deepEqual([combat.isLoaded(gunner2,pistol),combat.canAttackAtDistance(gunner2,3,"ranged")],[false,false],"déchargée après le tir");
+const dry=combat.resolveAttack(gunner2,gunTarget,{mode:"ranged",distance:3});
+assert.equal(dry.ok,false);
+assert.match(dry.reason,/déchargé/);
+assert.equal(combat.canReload(gunner2),true);
+assert.equal(combat.reload(gunner2),pistol,"une Action rapide recharge l'arme");
+assert.deepEqual([combat.isLoaded(gunner2,pistol),combat.canReload(gunner2),combat.reload(gunner2)],[true,false,null]);
+// Raté ou non, le coup est parti : l'arme se décharge aussi (D100 = 100 → raté).
+const missGunner=unit(withMainWeapon(a,"Pistolet"),0,0);
+assert.equal(panicky.resolveAttack(missGunner,gunTarget,{mode:"ranged",distance:3}).hit,false);
+assert.equal(combat.isLoaded(missGunner,combat.activeWeaponItem(missGunner)),false);
+// Un arc ne se décharge jamais.
+const bowman=unit(withMainWeapon(a,"Arc"),0,0);
+combat.resolveAttack(bowman,gunTarget,{mode:"ranged",distance:3});
+assert.deepEqual([combat.isLoaded(bowman,combat.activeWeaponItem(bowman)),combat.canReload(bowman)],[true,false]);
+
+// Contre-charge V1 : quand la cible directe réagit pendant la course du chargeur.
+// Chargeur en q=0, cible en q=travel+1 : trajet q=1..travel, la dernière case est au contact.
+const chargeLine=(travel,reactorCharacter)=>{
+  const charger=unit(a,0,0),reactor=unit(reactorCharacter,travel+1,0);setFamily(charger,"melee");
+  const charge=combat.chargeData(charger,reactor);
+  assert.equal(charge.travel,travel);
+  return {charger,reactor,charge};
+};
+let cc=chargeLine(4,withMainWeapon(b,"Lance"));
+assert.deepEqual(cc.charge.step,{q:1,r:0},"direction de la charge");
+assert.deepEqual(combat.counterchargeTrigger(cc.reactor,cc.charger,cc.charge),{at:3,mode:"melee"},"Lance (portée 1–2) : à l'entrée dans sa portée, 2 cases avant la cible");
+cc=chargeLine(4,withMainWeapon(b,"Arc"));
+assert.deepEqual(combat.counterchargeTrigger(cc.reactor,cc.charger,cc.charge),{at:2,mode:"ranged"},"à distance : mi-course");
+cc=chargeLine(5,withMainWeapon(b,"Arc"));
+assert.deepEqual(combat.counterchargeTrigger(cc.reactor,cc.charger,cc.charge),{at:3,mode:"ranged"},"course impaire 2N+1 → case N+1 (Idan, 2026-10-08)");
+cc=chargeLine(4,withMainWeapon(b,"Pistolet"));
+assert.equal(combat.counterchargeTrigger(cc.reactor,cc.charger,cc.charge).mode,"ranged");
+cc.reactor.unloaded=[combat.activeWeaponItem(cc.reactor).id];
+assert.equal(combat.counterchargeTrigger(cc.reactor,cc.charger,cc.charge),null,"arme à feu déchargée : pas de contre-charge");
+cc=chargeLine(4,withMainWeapon(b,"Épée longue"));
+assert.equal(combat.counterchargeTrigger(cc.reactor,cc.charger,cc.charge),null,"arme sans contre-charge");
+cc=chargeLine(4,withMainWeapon(b,"Lance"));cc.reactor.fleeing=true;
+assert.equal(combat.counterchargeTrigger(cc.reactor,cc.charger,cc.charge),null,"un personnage En Fuite ne réagit pas");
+
+// Approximation projectile V1, couloir de tir d'Idan (2026-10-08) : cône de 30° (15° de chaque côté de l'axe
+// tireur → cible), de la moitié de la distance de la cible jusqu'à la portée max de l'arme.
+const strayShooter={...unit(withMainWeapon(a,"Arc"),0,0),team:"player"};
+const strayTarget={...unit(b,6,0),team:"enemy"};
+const at=(q,r,team)=>({...unit(b,q,r),team});
+const onAxis=at(4,0,"enemy"),tooClose=at(2,0,"enemy"),behind=at(8,0,"player"),slightlyOff=at(5,-1,"player"),wide=at(4,-2,"enemy"),far=at(20,0,"enemy");
+assert.equal(combat.weaponRange(strayShooter).max,18);
+assert.deepEqual([onAxis,tooClose,behind,slightlyOff,wide,far].map(u=>combat.inFiringCorridor(strayShooter,strayTarget,u)),
+  [true,false,true,true,false,false],"axe, trop près, derrière la cible, à ~11°, à 30°, hors portée");
+// Tri : distance à la cible initiale, puis un ennemi du tireur d'abord, puis le plus proche du tireur.
+assert.deepEqual(combat.strayCandidates(strayShooter,strayTarget,[strayShooter,strayTarget,behind,slightlyOff,onAxis,wide,{...at(5,0,"enemy"),alive:false}]),
+  [onAxis,slightlyOff,behind]);
+// Raté (100, Chance sauvée par 1), puis le 1er candidat est touché (D100 = 1) : P = P_toucher × 0,35.
+const bystanders=[strayShooter,strayTarget,onAxis,slightlyOff];
+r=scripted([100,1,1,100,50,100],[100]).resolveAttack(strayShooter,strayTarget,{mode:"ranged",distance:6,bystanders});
+assert.deepEqual([r.hit,r.stray.unit,r.stray.result.accidental,r.stray.result.hit,r.stray.tries.length],[false,onAxis,true,true,1]);
+near(r.stray.tries[0].p,combat.hitProbability(strayShooter,onAxis,"ranged",4)*0.35,"premier candidat ×0,35");
+// Le 1er est manqué (100), le 2e touché : facteur 0,35 × 0,5.
+r=scripted([100,1,100,1,100,50,100],[100]).resolveAttack(strayShooter,strayTarget,{mode:"ranged",distance:6,bystanders});
+assert.equal(r.stray.unit,slightlyOff);
+near(r.stray.tries[1].p,combat.hitProbability(strayShooter,slightlyOff,"ranged",5)*0.35*0.5,"deuxième candidat ×0,175");
+// Personne de touché : le tir se perd.
+r=scripted([100,1,100,100],[100]).resolveAttack(strayShooter,strayTarget,{mode:"ranged",distance:6,bystanders});
+assert.deepEqual([r.stray.unit,r.stray.tries.length],[null,2]);
+// Sans liste de présents, au CAC, ou avec une arme de zone (Tromblon) : pas d'approximation.
+assert.equal(scripted([100,1],[100]).resolveAttack(strayShooter,strayTarget,{mode:"ranged",distance:6}).stray,undefined);
+const blunderbuss={...unit(withMainWeapon(a,"Tromblon"),0,0),team:"player"},nearMark=at(4,0,"enemy");
+assert.equal(scripted([100,1],[100]).resolveAttack(blunderbuss,nearMark,{mode:"ranged",distance:4,bystanders:[at(3,0,"enemy")]}).stray,null);
+
 console.log(JSON.stringify({ok:true},null,2));

@@ -38,15 +38,23 @@
   // Après chaque attaque résolue par le moteur de combat (crochet onAttack de createCombatEngine).
   function recordAttack(attacker,defender,options,result){
     if(!result?.ok) return;
-    // Courage : la charge compte dès qu'elle est tentée, même ratée ou finie en chute (Idan, 2026-10-06).
-    if(Number(options?.chargeDistance)>0) logOf(attacker).chargeAttempts++;
+    if(Number(options?.chargeDistance)>0) recordChargeAttempt(attacker);
     if(result.wound){
       // Moteur V1 : une attaque blesse avec une seule composante, physique (result.matchup.type).
       recordWound(defender,result.matchup?.type);
       if(result.backstab) logOf(defender).backstabWounds++;
     }
-    // Charisme : adversaire mis hors combat par ce coup (Idan, 2026-10-06).
-    if(result.targetDown) logOf(attacker).knockouts++;
+    // Charisme : adversaire mis hors combat par ce coup (Idan, 2026-10-06) ; pas un allié touché par accident.
+    if(result.targetDown&&!(attacker.team&&attacker.team===defender.team)) logOf(attacker).knockouts++;
+    // Chance : chaque critique (Toucher ou Blesser) et chaque échec critique confirmé.
+    if(result.criticalHit) recordCritical(attacker,"success");
+    if(result.criticalWound) recordCritical(attacker,"success");
+    if(result.fumble) recordCritical(attacker,"failure");
+    if(result.woundFumble){
+      recordCritical(attacker,"failure");
+      // Le contrecoup est une blessure physique subie par l'attaquant (« quelle que soit sa source »).
+      recordWound(attacker,"physique");
+    }
   }
   // Chaque composante de dégâts qui blesse effectivement (doc 08, Résistances) : dégâts mixtes, dégâts sur
   // la durée et coups multiples appelleront recordWound une fois par composante et par blessure.
@@ -55,6 +63,10 @@
     const resistance=RESISTANCE_BY_DAMAGE[damageType]||"Résistance physique";
     log.wounds[resistance]=(log.wounds[resistance]||0)+1;
   }
+  // Courage : la charge compte dès qu'elle est tentée, même ratée, finie en chute ou brisée avant le coup
+  // (Idan, 2026-10-06). recordAttack la compte quand l'attaque de charge est résolue ; une charge arrêtée
+  // avant son attaque (contre-charge, attaque d'opportunité) est signalée directement.
+  function recordChargeAttempt(unit){ logOf(unit).chargeAttempts++; }
   // Chaque activation du combattant pendant la mission. carried = {load, force} au moment de l'activation :
   // un changement d'équipement en cours de mission ne réécrit pas l'XP de Force déjà acquise.
   function recordActivation(unit,carried=null){
@@ -65,8 +77,9 @@
   }
   // Chaque case parcourue en état de fuite.
   function recordFleeHex(unit){ logOf(unit).fleeHexes++; }
-  // Pour les mécaniques à venir : soins (PV réellement restaurés) et critiques.
+  // Pour les mécaniques à venir : soins (PV réellement restaurés).
   function recordHeal(unit,hp){ logOf(unit).hpHealed+=Math.max(0,Number(hp)||0); }
+  // Critiques : success = critique positif, failure = échec critique confirmé.
   function recordCritical(unit,kind){
     if(kind==="success") logOf(unit).criticalSuccesses++;
     else if(kind==="failure") logOf(unit).criticalFailures++;
@@ -175,5 +188,5 @@
     return {constants:C,xpForLevel,levelForXp,startingXp,loadOf,gains,apply,recordActivation:recordUnitActivation};
   }
 
-  return {createProgressionRules,emptyLog,recordActivation,recordAttack,recordWound,recordFleeHex,recordHeal,recordCritical,RESISTANCES,RESISTANCE_BY_DAMAGE};
+  return {createProgressionRules,emptyLog,recordActivation,recordAttack,recordChargeAttempt,recordWound,recordFleeHex,recordHeal,recordCritical,RESISTANCES,RESISTANCE_BY_DAMAGE};
 });

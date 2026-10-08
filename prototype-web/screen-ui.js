@@ -67,7 +67,8 @@ function renderGameHud(){
   hud.classList.toggle("hidden",!active);
   if(!active){$("game-pause").classList.add("hidden");return;}
   $("hud-company").textContent=game.campaign.company.name;
-  $("hud-resources").textContent="Jour "+game.campaign.day+"  ·  "+Math.round(game.campaign.company.gold)+" PO";
+  const upkeep=typeof campaignRules==="function"?campaignRules().payroll(game.campaign):0;
+  $("hud-resources").textContent="Jour "+game.campaign.day+"  ·  "+Math.round(game.campaign.company.gold)+" PO  ·  Entretien de la compagnie : "+Math.round(upkeep)+" PO / jour";
   $("game-action-lines").innerHTML=gameActionMessages.slice(0,8).map(x=>'<li><small>J'+(x.day||"—")+'</small> '+esc(x.message)+'</li>').join("");
 }
 function setPauseOpen(open){

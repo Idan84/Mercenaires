@@ -44,8 +44,8 @@
       recordWound(defender,result.matchup?.type);
       if(result.backstab) logOf(defender).backstabWounds++;
     }
-    // Charisme : adversaire mis hors combat par ce coup (Idan, 2026-10-06).
-    if(result.targetDown) logOf(attacker).knockouts++;
+    // Charisme : adversaire mis hors combat par ce coup (Idan, 2026-10-06) ; pas un allié touché par accident.
+    if(result.targetDown&&!(attacker.team&&attacker.team===defender.team)) logOf(attacker).knockouts++;
     // Chance : chaque critique (Toucher ou Blesser) et chaque échec critique confirmé.
     if(result.criticalHit) recordCritical(attacker,"success");
     if(result.criticalWound) recordCritical(attacker,"success");

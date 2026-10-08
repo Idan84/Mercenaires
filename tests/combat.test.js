@@ -464,4 +464,33 @@ assert.equal(combat.counterchargeTrigger(cc.reactor,cc.charger,cc.charge),null,"
 cc=chargeLine(4,withMainWeapon(b,"Lance"));cc.reactor.fleeing=true;
 assert.equal(combat.counterchargeTrigger(cc.reactor,cc.charger,cc.charge),null,"un personnage En Fuite ne réagit pas");
 
+// Approximation projectile V1, couloir de tir d'Idan (2026-10-08) : cône de 30° (15° de chaque côté de l'axe
+// tireur → cible), de la moitié de la distance de la cible jusqu'à la portée max de l'arme.
+const strayShooter={...unit(withMainWeapon(a,"Arc"),0,0),team:"player"};
+const strayTarget={...unit(b,6,0),team:"enemy"};
+const at=(q,r,team)=>({...unit(b,q,r),team});
+const onAxis=at(4,0,"enemy"),tooClose=at(2,0,"enemy"),behind=at(8,0,"player"),slightlyOff=at(5,-1,"player"),wide=at(4,-2,"enemy"),far=at(20,0,"enemy");
+assert.equal(combat.weaponRange(strayShooter).max,18);
+assert.deepEqual([onAxis,tooClose,behind,slightlyOff,wide,far].map(u=>combat.inFiringCorridor(strayShooter,strayTarget,u)),
+  [true,false,true,true,false,false],"axe, trop près, derrière la cible, à ~11°, à 30°, hors portée");
+// Tri : distance à la cible initiale, puis un ennemi du tireur d'abord, puis le plus proche du tireur.
+assert.deepEqual(combat.strayCandidates(strayShooter,strayTarget,[strayShooter,strayTarget,behind,slightlyOff,onAxis,wide,{...at(5,0,"enemy"),alive:false}]),
+  [onAxis,slightlyOff,behind]);
+// Raté (100, Chance sauvée par 1), puis le 1er candidat est touché (D100 = 1) : P = P_toucher × 0,35.
+const bystanders=[strayShooter,strayTarget,onAxis,slightlyOff];
+r=scripted([100,1,1,100,50,100],[100]).resolveAttack(strayShooter,strayTarget,{mode:"ranged",distance:6,bystanders});
+assert.deepEqual([r.hit,r.stray.unit,r.stray.result.accidental,r.stray.result.hit,r.stray.tries.length],[false,onAxis,true,true,1]);
+near(r.stray.tries[0].p,combat.hitProbability(strayShooter,onAxis,"ranged",4)*0.35,"premier candidat ×0,35");
+// Le 1er est manqué (100), le 2e touché : facteur 0,35 × 0,5.
+r=scripted([100,1,100,1,100,50,100],[100]).resolveAttack(strayShooter,strayTarget,{mode:"ranged",distance:6,bystanders});
+assert.equal(r.stray.unit,slightlyOff);
+near(r.stray.tries[1].p,combat.hitProbability(strayShooter,slightlyOff,"ranged",5)*0.35*0.5,"deuxième candidat ×0,175");
+// Personne de touché : le tir se perd.
+r=scripted([100,1,100,100],[100]).resolveAttack(strayShooter,strayTarget,{mode:"ranged",distance:6,bystanders});
+assert.deepEqual([r.stray.unit,r.stray.tries.length],[null,2]);
+// Sans liste de présents, au CAC, ou avec une arme de zone (Tromblon) : pas d'approximation.
+assert.equal(scripted([100,1],[100]).resolveAttack(strayShooter,strayTarget,{mode:"ranged",distance:6}).stray,undefined);
+const blunderbuss={...unit(withMainWeapon(a,"Tromblon"),0,0),team:"player"},nearMark=at(4,0,"enemy");
+assert.equal(scripted([100,1],[100]).resolveAttack(blunderbuss,nearMark,{mode:"ranged",distance:4,bystanders:[at(3,0,"enemy")]}).stray,null);
+
 console.log(JSON.stringify({ok:true},null,2));

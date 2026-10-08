@@ -139,7 +139,7 @@ Le tir est construit comme un combat physique à distance, sans créer un second
 - **Blesser** : [Blesser distance V1](/design/#doc=formulas/blesser-distance-v1.md). La **Perception remplace la Force**.
 - **Dégâts physiques** : [Dégâts PV physiques distance V1](/design/#doc=formulas/degats-pv-physiques-distance-v1.md). Aucun facteur Force : l'énergie est encodée dans les dés et puissances de l'arme.
 - **Cadence** : [Enchaînement de tirs distance V1](/design/#doc=formulas/enchainement-de-tirs-distance-v1.md) pour les armes `Répétable`.
-- **Projectile raté / approximation** : [Approximation projectile V1](/design/#doc=formulas/approximation-projectile-v1.md) peut toucher accidentellement un allié ou ennemi dans le couloir de tir.
+- **Projectile raté / approximation** : [Approximation projectile V1](/design/#doc=formulas/approximation-projectile-v1.md) peut toucher accidentellement un allié ou ennemi dans le couloir de tir. **Couloir de tir** (décision Idan du 2026-10-08) : cône de **30°** depuis le tireur, centré sur l'axe tireur → cible, compté de la **moitié de la distance** de la cible jusqu'à la **portée max** de l'arme (constantes `combat.ranged.stray.cone_angle`, `combat.ranged.stray.corridor_start_ratio`).
 - **Courage** : [Courage post-tir V1](/design/#doc=formulas/courage-post-tir-v1.md). Une cible réellement blessée peut fuir ; le tireur ne teste jamais son Courage simplement parce qu'il a raté ou n'a pas blessé.
 - **Armes à feu** : [Armes à feu — recharge et double pistolet V1](/design/#doc=formulas/armes-a-feu-recharge-et-double-pistolet-v1.md) : pas de stock de munitions normales ; **recharger une arme = 1 Action rapide** ; épée + pistolet et deux pistolets suivent le combat à deux armes, avec inerties cumulées et une attaque de base par arme actuellement utilisable.
 
@@ -148,6 +148,14 @@ Choix d'implémentation V1 de la recharge :
 - à confirmer en relecture : les armes à recharge sont celles marquées `recharge_action_rapide` dans `skills.json` (Pistolet, Arquebuse / Mousquet, Tromblon, Canon à main) ;
 - l'arme se décharge dès que le coup part, qu'il touche ou non ;
 - l'IA recharge avec son Action rapide quand son arme est déchargée (après un éventuel changement d'arme, qui consomme aussi l'Action rapide).
+
+Choix d'implémentation V1 de l'approximation, à confirmer en relecture :
+- elle suit tout tir raté, y compris un échec critique au Toucher, et aussi un tir de contre-charge ; un tir **bloqué** par un bouclier s'arrête là ;
+- le candidat touché suit la suite normale d'un toucher : blocage, critique, Blesser, dégâts ; la chaîne de tirs s'arrête, puisque la cible visée n'a pas été touchée ;
+- le personnage blessé par accident teste son Courage face au tireur (Courage post-tir V1), même s'il est son allié ;
+- un allié mis hors combat par accident ne compte pas pour l'XP de Charisme ;
+- le Tromblon, arme de zone dans `skills.json`, n'y est pas soumis (« ne s'applique pas aux attaques de zone ») ;
+- la Mission Test n'a ni décor ni couverture : aucun obstacle ne coupe le couloir.
 
 Une attaque à distance exige une **ligne de vue**. En V1, les éléments de décor indiquent directement leur protection : aucune, **partielle (`×0,5`)**, **forte / quasi-totale (`×0,25`)** ou **blocage total de ligne de vue** (tir impossible).
 
@@ -210,7 +218,7 @@ Le moteur tactique est isolé dans `game-core/combat-engine.js`. La carte web n'
 
 ### Simplifications volontaires du premier test
 
-Le noyau utilise déjà les formules validées de portée, vitesse/esquive effectives, MouvementBase, Toucher, Blesser, résistances d'armure, qualité d'item, dégâts PV, charge, attaques d'opportunité, Frappe dans le dos, encerclement, Courage et Fuite. Les critiques, échecs critiques, le blocage au bouclier, les enchaînements d'attaques et de tirs, la recharge des armes à feu et la contre-charge sont branchés. En revanche, ce premier écran ne branche pas encore les autres systèmes secondaires : combat à deux armes, couverture/obstacles et approximation des projectiles.
+Le noyau utilise déjà les formules validées de portée, vitesse/esquive effectives, MouvementBase, Toucher, Blesser, résistances d'armure, qualité d'item, dégâts PV, charge, attaques d'opportunité, Frappe dans le dos, encerclement, Courage et Fuite. Les critiques, échecs critiques, le blocage au bouclier, les enchaînements d'attaques et de tirs, la recharge des armes à feu, la contre-charge et l'approximation des projectiles sont branchés. En revanche, ce premier écran ne branche pas encore les autres systèmes secondaires : combat à deux armes et couverture/obstacles.
 
 Choix d'implémentation V1, confirmés en relecture par Chatty (PR #7) : aucune limite au nombre d'attaques d'opportunité par adversaire et par tour ; un personnage Au Sol réagit normalement et compte pour l'encerclement ; plusieurs réactions simultanées sont résolues dans l'ordre d'initiative de l'équipe qui réagit ; une charge ne peut pas traverser une case occupée ; sortir de la carte coûte un hexagone de mouvement depuis une case du bord ; la Mission Test n'ayant aucun abri total, « Cachons-nous » file vers la sortie de carte sans jamais entrer dans une case adjacente à un ennemi (sans trajet sûr vers une sortie, il s'éloigne au mieux par les cases sûres, sinon il reste sur place) ; « Feu à volonté » tire à la cadence de l'arme (Enchaînement de tirs distance V1) et ne recharge pas une arme déchargée.
 

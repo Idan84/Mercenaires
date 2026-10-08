@@ -142,6 +142,12 @@ for(const [roll,label] of [[0,"chute"],[0.999,"raté"]]){
   assert.equal(rules.gains(ca.progress).stats.Courage,50,label);
 }
 
+// Charisme : un allié mis hors combat par accident (projectile raté) ne compte pas.
+const ownTeam={team:"player"},ally2={team:"player"},foe3={team:"enemy"};
+P.recordAttack(ownTeam,ally2,{},{ok:true,hit:true,wound:true,matchup:{type:"perforant"},targetDown:true});
+P.recordAttack(ownTeam,foe3,{},{ok:true,hit:true,wound:true,matchup:{type:"perforant"},targetDown:true});
+assert.equal(ownTeam.progress.knockouts,1);
+
 // Charge brisée avant son attaque (contre-charge, attaque d'opportunité) : toujours une charge tentée.
 const brokenCharge={};P.recordChargeAttempt(brokenCharge);
 assert.equal(rules.gains(brokenCharge.progress).stats.Courage,50);

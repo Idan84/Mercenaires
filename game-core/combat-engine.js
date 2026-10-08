@@ -43,6 +43,13 @@
       max:constant("combat.melee.chain.max_probability",100),
       rangedDivisor:constant("combat.ranged.chain.divisor",1.5)
     };
+    // Approximation projectile V1 ; couloir de tir décidé par Idan le 2026-10-08.
+    const STRAY={
+      initial:constant("combat.ranged.stray.initial_factor",0.35),
+      decay:constant("combat.ranged.stray.decay_factor",0.5),
+      coneAngle:constant("combat.ranged.stray.cone_angle",30),
+      startRatio:constant("combat.ranged.stray.corridor_start_ratio",0.5)
+    };
     const BLOCK={
       min:constant("combat.shield.block.min_probability",5),
       max:constant("combat.shield.block.max_probability",80)
@@ -406,7 +413,10 @@
     // résultat), par exemple pour le journal de progression (game-core/progression.js).
     function resolveAttack(attacker,defender,attackOptions={}){
       const result=resolveAttackRolls(attacker,defender,attackOptions);
-      if(typeof options.onAttack==="function") options.onAttack(attacker,defender,attackOptions,result);
+      if(typeof options.onAttack==="function"){
+        options.onAttack(attacker,defender,attackOptions,result);
+        if(result.stray?.unit) options.onAttack(attacker,result.stray.unit,attackOptions,result.stray.result);
+      }
       return result;
     }
 
@@ -443,12 +453,22 @@
       const tags={chargePower,opportunity,encircled,fleeingTarget,backstab};
       const pHit=hitProbability(attacker,defender,mode,distance,{opportunity,backstab});
       const hitRoll=d100(),hit=hitRoll<=pHit;
+      const head={ok:true,mode,weapon:weapon.nom,distance,pHit,hitRoll};
       if(!hit){
         // Échec critique CAC V1 : un naturel 96–100 déclenche un test de Chance ; raté → Au Sol.
         const fumble=fumbleTest(attacker,hitRoll);
         if(fumble.fumble) attacker.prone=true;
-        return {ok:true,mode,weapon:weapon.nom,distance,pHit,hitRoll,hit:false,...fumble,wound:false,damage:0,...tags};
+        const missed={...head,hit:false,...fumble,wound:false,damage:0,...tags};
+        // Approximation projectile V1 : options.bystanders = les autres combattants présents.
+        if(mode==="ranged"&&Array.isArray(options.bystanders)) missed.stray=resolveStray(attacker,defender,options.bystanders,weapon);
+        return missed;
       }
+      return {...head,hit:true,...resolveHit(attacker,defender,mode,{chargePower,backstab}),...tags};
+    }
+
+    // Suite d'un Toucher réussi : blocage, critique au Toucher, Blesser, critique de blessure, dégâts.
+    function resolveHit(attacker,defender,mode,{chargePower=0,backstab=false}={}){
+      const weapon=weaponTemplate(activeWeaponItem(attacker));
 
       // Blocage bouclier physique V1 : après le Toucher, avant le critique ; au CAC comme au tir, même dans
       // le dos. Un coup bloqué ne compte pas comme un toucher réel : ni critique, ni Blesser, ni dégâts.
@@ -457,7 +477,7 @@
       if(pBlock!==null){
         const blockRoll=d100();
         Object.assign(block,{pBlock,blockRoll,blocked:blockRoll<=pBlock,shield:weaponTemplate(activeOffhandItem(defender)).nom});
-        if(block.blocked) return {ok:true,mode,weapon:weapon.nom,distance,pHit,hitRoll,hit:true,...block,wound:false,damage:0,...tags};
+        if(block.blocked) return {...block,wound:false,damage:0};
       }
 
       const pCritical=criticalChance(attacker);
@@ -478,7 +498,7 @@
           if(attacker.hp<=0) attacker.alive=false;
           Object.assign(recoil,{selfDamage:self.damage,attackerHp:attacker.hp,attackerDown:!attacker.alive});
         }
-        return {ok:true,mode,weapon:weapon.nom,distance,pHit,hitRoll,hit:true,...crit,matchup,pWound,woundRoll,wound:false,...recoil,damage:0,...tags};
+        return {...crit,matchup,pWound,woundRoll,wound:false,...recoil,damage:0};
       }
 
       // Critique de blessure positif CAC V1 : dégâts de l'arme au maximum et variation de Résistance à 0,9.
@@ -491,11 +511,46 @@
       defender.damageTaken=(Number(defender.damageTaken)||0)+damageData.damage;
       if(defender.hp<=0) defender.alive=false;
 
-      return {
-        ok:true,mode,weapon:weapon.nom,distance,pHit,hitRoll,hit:true,...crit,
-        matchup,pWound,woundRoll,wound:true,...damageData,
-        targetHp:defender.hp,targetDown:!defender.alive,...tags
-      };
+      return {...crit,matchup,pWound,woundRoll,wound:true,...damageData,targetHp:defender.hp,targetDown:!defender.alive};
+    }
+
+    // Approximation projectile V1. Couloir de tir (Idan, 2026-10-08) : cône de 30° depuis le tireur, centré sur
+    // l'axe tireur → cible, compté de la moitié de la distance de la cible jusqu'à la portée max de l'arme.
+    function cartesian(h){ return {x:Math.sqrt(3)*(h.q+h.r/2),y:1.5*h.r}; }
+    function inFiringCorridor(shooter,target,unit){
+      const reach=axialDistance(shooter,unit);
+      if(reach<STRAY.startRatio*axialDistance(shooter,target)||reach>weaponRange(shooter).max) return false;
+      const s=cartesian(shooter),t=cartesian(target),u=cartesian(unit);
+      const ax=t.x-s.x,ay=t.y-s.y,bx=u.x-s.x,by=u.y-s.y;
+      const cos=(ax*bx+ay*by)/(Math.hypot(ax,ay)*Math.hypot(bx,by));
+      return cos>=Math.cos(STRAY.coneAngle/2*Math.PI/180)-1e-9;
+    }
+    // Candidats : alliés et ennemis du couloir, du plus proche de la cible initiale au plus lointain ;
+    // à égalité, un ennemi du tireur d'abord, puis le plus proche du tireur.
+    function strayCandidates(shooter,target,units){
+      const ally=u=>Boolean(shooter.team)&&u.team===shooter.team;
+      return units
+        .filter(u=>u!==shooter&&u!==target&&u.alive&&!u.offMap&&inFiringCorridor(shooter,target,u))
+        .sort((a,b)=>axialDistance(a,target)-axialDistance(b,target)||ally(a)-ally(b)||axialDistance(shooter,a)-axialDistance(shooter,b));
+    }
+    // P_accident,i = P_toucher(candidat) × 0,35 × 0,5^(i−1) ; le premier touché devient la cible réelle
+    // (blocage, critique, Blesser, dégâts). Ne s'applique pas aux armes de zone.
+    function resolveStray(shooter,target,units,weapon){
+      if(skillByName.get(weapon.nom)?.attaque_de_zone) return null;
+      const tries=[];
+      let factor=STRAY.initial;
+      for(const unit of strayCandidates(shooter,target,units)){
+        const distance=axialDistance(shooter,unit),backstab=Boolean(unit.fleeing);
+        const p=hitProbability(shooter,unit,"ranged",distance,{backstab})*factor,roll=d100();
+        tries.push({unit,p,roll});
+        if(roll<=p){
+          const result={ok:true,mode:"ranged",weapon:weapon.nom,distance,pHit:p,hitRoll:roll,hit:true,accidental:true,
+            ...resolveHit(shooter,unit,"ranged",{backstab}),chargePower:0,opportunity:false,encircled:false,fleeingTarget:backstab,backstab};
+          return {tries,unit,result};
+        }
+        factor*=STRAY.decay;
+      }
+      return {tries,unit:null,result:null};
     }
 
     // Attaque d'opportunité CAC V1 : un combattant menace les hexagones atteignables par son arme de mêlée active.
@@ -655,6 +710,8 @@
       switchWeaponSet,
       chargeData,
       counterchargeTrigger,
+      inFiringCorridor,
+      strayCandidates,
       threatens,
       isEncircled,
       intimidation,

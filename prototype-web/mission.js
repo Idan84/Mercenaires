@@ -299,7 +299,7 @@ function renderMissionProgression(entries){
 
 function logMissionAttack(a,d,result,kind="attack"){
   if(!result.ok){ missionLog(result.reason||"Attaque impossible.","bad"); return; }
-  const verb={charge:" charge ",opportunity:" profite de l’ouverture et frappe ",countercharge:" contre-charge "}[kind]||" attaque ";
+  const verb={charge:" charge ",opportunity:" profite de l’ouverture et frappe ",countercharge:" contre-charge ",stray:" touche par accident "}[kind]||" attaque ";
   const prefix=a.character.name+verb+d.character.name+" avec "+result.weapon
     +(result.opportunity?" (attaque d’opportunité, dans le dos)":result.encircled?" (cible encerclée, dans le dos)":result.backstab?" (dans le dos)":"");
 
@@ -418,11 +418,14 @@ function performMissionAttack(attacker,target,mode,distance){
   // teste, elle, après chaque blessure reçue (Courage en sous-nombre V1).
   const e=m.engine;
   let first=null,wounded=false,testedPerWound=false;
+  const strayWounded=new Set();
   for(let n=1;;n++){
-    const result=e.resolveAttack(attacker,target,{mode,distance,encircled:missionEncircled(target)});
+    const result=e.resolveAttack(attacker,target,{mode,distance,encircled:missionEncircled(target),bystanders:missionUnits()});
     first=first||result;
     logMissionAttack(attacker,target,result);
     if(!result.ok) return first;
+    const stray=logMissionStray(attacker,result);
+    if(stray) strayWounded.add(stray);
     checkMissionEnd();
     if(result.wound){
       wounded=true;
@@ -441,7 +444,20 @@ function performMissionAttack(attacker,target,mode,distance){
     missionLog(attacker.character.name+" enchaîne"+detail+" !","info");
   }
   if(!testedPerWound) resolveMissionCourage(attacker,target,{ok:true,mode,wound:wounded},{defenderSurplus:0});
+  // Courage post-tir V1 : le personnage blessé par accident teste lui aussi, face au tireur.
+  for(const unit of strayWounded) resolveMissionCourage(attacker,unit,{ok:true,mode:"ranged",wound:true});
   return first;
+}
+
+// Approximation projectile V1 : un tir raté peut toucher un autre personnage du couloir de tir.
+// Renvoie le personnage blessé par accident, s'il y en a un.
+function logMissionStray(attacker,result){
+  const stray=result?.stray;
+  if(!stray?.unit) return null;
+  missionLog("Le tir de "+attacker.character.name+" part dans le couloir et atteint "+stray.unit.character.name
+    +" par accident ("+missionPercent(stray.result.pHit)+", jet "+stray.result.hitRoll+") !","bad");
+  logMissionAttack(attacker,stray.unit,stray.result,"stray");
+  return stray.result.wound&&stray.unit.alive?stray.unit:null;
 }
 
 // Courage post-attaque CAC V1 / post-tir V1 / en sous-nombre V1 : un échec applique En Fuite.
@@ -793,9 +809,11 @@ function performMissionCharge(unit,target,charge){
   if(reaction){
     const distance=e.axialDistance(target,unit);
     if(target.alive&&!target.fleeing&&e.canAttackAtDistance(target,distance,reaction.mode)){
-      const r=e.resolveAttack(target,unit,{mode:reaction.mode,distance});
+      const r=e.resolveAttack(target,unit,{mode:reaction.mode,distance,bystanders:missionUnits()});
       logMissionAttack(target,unit,r,"countercharge");
+      const stray=logMissionStray(target,r);
       checkMissionEnd();
+      if(stray) resolveMissionCourage(target,stray,{ok:true,mode:"ranged",wound:true});
       if(r.wound||!unit.alive){
         broken();
         if(unit.alive&&!m.over){

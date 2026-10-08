@@ -735,10 +735,20 @@ async function init() {
       if (!confirmOverwriteSave()) return;
       game.idCounter = 1;
       game.captain = createCaptainFromForm();
+      // Le portrait choisi par le joueur prime sur l'attribution automatique.
+      const pickedAvatar=typeof wizard!=="undefined"
+        ?(game.referenceData?.avatars?.rows||[]).find(a=>a.id===wizard.choice.avatar):null;
+      if(pickedAvatar){
+        game.captain.avatar={id:pickedAvatar.id,full:pickedAvatar.full,portrait:pickedAvatar.portrait};
+        if(pickedAvatar.sex) game.captain.sex=pickedAvatar.sex;
+      }
       game.campaign = null;
       game.initialSquad = createInitialSquad(game.captain);
       game.generated = [];
       startCampaign(game.captain, game.initialSquad);
+      if(game.campaign&&typeof wizard!=="undefined"&&wizard.choice.companyName?.trim()){
+        game.campaign.company.name=wizard.choice.companyName.trim();
+      }
       saveGame();
       renderGame();
     });

@@ -17,12 +17,14 @@ const WIZARD_STEPS=[
   {key:"name",nav:"Nom",title:"Quel est votre nom ?"},
   {key:"people",nav:"Peuple",title:"De quel peuple venez-vous ?",copy:"peoples",picto:"people",options:()=>peopleNames()},
   {key:"culture",nav:"Culture",title:"Quelle est votre culture ?",copy:"cultures",options:()=>culturesForPeople(wizard.choice.people)},
+  {key:"avatar",nav:"Portrait",title:"Quel visage portera votre capitaine ?"},
   {key:"origin",nav:"Origine",title:"Quelle est votre origine sociale ?",copy:"origins",options:()=>originsForCulture(wizard.choice.culture)},
   {key:"ascendance",nav:"Ascendance",title:"Quelle est votre ascendance ?",copy:"ancestries",picto:"ascendance",options:()=>["",...compatibleAscendances(wizard.choice.people)]},
   {key:"alignment",nav:"Alignement",title:"Quel est votre alignement ?",copy:"alignments",options:()=>alignmentNames()},
+  {key:"companyName",nav:"Compagnie",title:"Comment s’appelle votre compagnie ?"},
   {key:"recap",nav:"Récap",title:"Prenez la chevalière"}
 ];
-const RECAP_ROWS=[["Nom","name"],["Peuple","people"],["Culture","culture"],["Origine sociale","origin"],["Ascendance","ascendance"],["Alignement","alignment"]];
+const RECAP_ROWS=[["Nom","name"],["Peuple","people"],["Culture","culture"],["Origine sociale","origin"],["Ascendance","ascendance"],["Alignement","alignment"],["Compagnie","companyName"]];
 
 const wizard={step:0,choice:{},voice:null,timers:[],theme:null};
 
@@ -104,7 +106,7 @@ function openWizard(){
   stopIntroVoice();
   revealAllParagraphs();
   wizard.step=0;
-  wizard.choice={name:"",people:null,culture:null,origin:null,ascendance:"",alignment:null};
+  wizard.choice={name:"",people:null,culture:null,origin:null,ascendance:"",alignment:null,avatar:null,companyName:""};
   $("creation-wizard").classList.remove("hidden");
   renderWizard();
 }
@@ -117,12 +119,14 @@ function setChoice(key,value){
     if(!compatibleAscendances(value).includes(wizard.choice.ascendance)) wizard.choice.ascendance="";
   }
   if(key==="people"||key==="culture"){
+    if(!captainAvatarOptions().some(a=>a.id===wizard.choice.avatar)) wizard.choice.avatar=null;
     if(!wizard.choice.culture||!originsForCulture(wizard.choice.culture).includes(wizard.choice.origin)) wizard.choice.origin=null;
   }
 }
 
 function stepIsComplete(step){
-  if(step.key==="name") return Boolean(wizard.choice.name.trim());
+  if(step.key==="name"||step.key==="companyName") return Boolean(String(wizard.choice[step.key]||"").trim());
+  if(step.key==="avatar") return !captainAvatarOptions().length || captainAvatarOptions().some(a=>a.id===wizard.choice.avatar);
   if(step.key==="recap") return true;
   if(step.key==="ascendance") return wizard.choice.ascendance!==null;
   return Boolean(wizard.choice[step.key]);
@@ -267,6 +271,44 @@ function renderNameStep(){
   </div>`;
 }
 
+
+function captainAvatarOptions(){
+  const norm=s=>String(s||"").trim().toLocaleLowerCase("fr");
+  const people=norm(wizard.choice.people),culture=norm(wizard.choice.culture);
+  return (game.referenceData?.avatars?.rows||[]).filter(a=>{
+    if(!a.id||!a.full||!a.portrait||norm(a.people)!==people) return false;
+    const cultures=a.tags?.culture;
+    const tagged=Array.isArray(cultures)?cultures:typeof cultures==="string"?[cultures]:[];
+    return !tagged.length || tagged.some(c=>norm(c)===culture);
+  });
+}
+function renderAvatarChoice(){
+  const avatars=captainAvatarOptions();
+  if(!avatars.length) return '<div class="wizard-name-card"><h3>Aucun portrait compatible disponible.</h3><p>Votre capitaine utilisera le portrait générique jusqu’à l’arrivée de nouveaux avatars.</p></div>';
+  const chosen=avatars.find(a=>a.id===wizard.choice.avatar);
+  const cards=avatars.map(a=>{
+    const selected=a.id===wizard.choice.avatar;
+    const img=mercenaryAvatarUrl({avatar:a},"portrait");
+    return `<button type="button" class="captain-avatar-choice ${selected?"is-selected":""}" data-wizard-avatar="${esc(a.id)}" aria-pressed="${selected}">
+      <img src="${esc(img)}" alt="Portrait ${esc(a.id)}" loading="lazy" onerror="this.hidden=true"><span>${esc(a.id)}</span>
+    </button>`;
+  }).join("");
+  return `<div class="wizard-layout"><section class="wizard-options-panel">
+    <div class="wizard-options-head"><span>Choisissez votre visage</span><small>${avatars.length} portraits</small></div>
+    <div class="captain-avatar-grid">${cards}</div>
+  </section><aside class="wizard-detail-panel"><h3>${chosen?"Votre capitaine":"Sélectionnez un portrait"}</h3>
+    ${chosen?renderAvatar({name:wizard.choice.name||"Capitaine",people:wizard.choice.people,avatar:chosen},{variant:"detail",kind:"full"}):"<p>Les portraits correspondent à votre peuple et à votre culture, lorsqu’elle est renseignée sur l’avatar.</p>"}
+  </aside></div>`;
+}
+function renderCompanyNameStep(){
+  return `<div class="wizard-name-layout"><div class="wizard-name-card">
+    <p class="wizard-name-overline">Des salaires à payer. Des morts à remplacer.</p>
+    <label for="wizard-company-input">Le nom de votre compagnie</label>
+    <input id="wizard-company-input" maxlength="60" autocomplete="off" placeholder="Les Braves (enfin, presque)" value="${esc(wizard.choice.companyName)}">
+    <small>Le blason et les couleurs viendront plus tard.</small>
+  </div></div>`;
+}
+
 function renderRecap(){
   const c=wizard.choice;
   const icon=(key,v)=>key==="people"?renderPicto("people",v,{size:"wizard"}):key==="ascendance"&&v?renderPicto("ascendance",v,{size:"wizard"}):"";
@@ -294,6 +336,13 @@ function renderWizard(){
     input.addEventListener("input",()=>{ wizard.choice.name=input.value; updateWizardNav(); });
     input.addEventListener("keydown",e=>{ if(e.key==="Enter"&&stepIsComplete(step)) nextWizardStep(); });
     setTimeout(()=>input.focus(),0);
+  }else if(step.key==="companyName"){
+    $("wizard-body").innerHTML=renderCompanyNameStep();
+    const input=$("wizard-company-input");
+    input.addEventListener("input",()=>{wizard.choice.companyName=input.value;updateWizardNav();});
+    input.addEventListener("keydown",e=>{if(e.key==="Enter"&&stepIsComplete(step)) nextWizardStep();});
+  }else if(step.key==="avatar"){
+    $("wizard-body").innerHTML=renderAvatarChoice();
   }else if(step.key==="recap"){
     $("wizard-body").innerHTML=renderRecap();
   }else{
@@ -351,6 +400,8 @@ function initializeIntroUi(){
   $("wizard-prev-btn").addEventListener("click",previousWizardStep);
   $("wizard-next-btn").addEventListener("click",nextWizardStep);
   $("wizard-body").addEventListener("click",event=>{
+    const avatar=event.target.closest("[data-wizard-avatar]");
+    if(avatar){setChoice("avatar",avatar.dataset.wizardAvatar);renderWizard();return;}
     const btn=event.target.closest("[data-wizard-choice]");
     if(!btn) return;
     setChoice(WIZARD_STEPS[wizard.step].key,btn.dataset.wizardChoice);

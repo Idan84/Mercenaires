@@ -1345,3 +1345,136 @@ body[data-screen="creation"] .intro-scene { visibility: hidden; }
 }
 
 
+
+
+/* Camp V1 — hub à quatre portes.
+   Les scènes utilisent encore le fond du château ; data-camp-scene prépare les futurs backgrounds dédiés. */
+body[data-screen="camp"][data-camp-scene="home"] .app-shell {
+  max-width: none;
+  min-height: 100dvh;
+  padding: 18px clamp(18px,3vw,48px) 28px;
+}
+body[data-screen="camp"][data-camp-scene="home"] .topbar {
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+body[data-screen="camp"][data-camp-scene="home"] .brand-kicker { display: none; }
+body[data-screen="camp"][data-camp-scene="home"] .brand-logo {
+  width: clamp(170px,16vw,235px);
+  filter: drop-shadow(0 8px 16px rgba(0,0,0,.38));
+}
+body[data-screen="camp"][data-camp-scene="home"] .menu-back {
+  border: 1px solid rgba(220,190,132,.24);
+  background: rgba(20,15,12,.64);
+  color: #ead9ad;
+  box-shadow: 0 7px 22px rgba(0,0,0,.24);
+  backdrop-filter: blur(5px);
+}
+
+.camp-hub {
+  min-height: calc(100dvh - 116px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 2dvh clamp(4px,2vw,26px) 8dvh;
+}
+.camp-hub-heading,
+.camp-hub-menu { width: min(420px,90vw); }
+.camp-hub-heading {
+  margin-bottom: 16px;
+  padding-left: 4px;
+  color: #f1e5cd;
+  text-shadow: 0 2px 12px rgba(0,0,0,.78);
+}
+.camp-hub-heading .eyebrow {
+  color: rgba(235,204,145,.8);
+  font-size: .66rem;
+}
+.camp-hub-heading h2 {
+  color: #fff0cf;
+  font-family: Georgia,"Times New Roman",serif;
+  font-size: clamp(1.65rem,2.5vw,2.35rem);
+  font-weight: 500;
+  letter-spacing: .02em;
+}
+.camp-hub-menu {
+  display: grid;
+  gap: 12px;
+}
+.camp-hub-btn {
+  width: 100%;
+  min-height: 56px;
+  background:
+    linear-gradient(180deg,rgba(48,35,26,.92),rgba(18,13,10,.95)),
+    #18110d;
+}
+.camp-hub-btn:first-child {
+  border-color: rgba(218,172,82,.62);
+}
+
+.camp-scene {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.camp-scene-nav {
+  display: flex;
+  justify-content: flex-start;
+  margin: 0 0 12px;
+}
+.camp-scene-back {
+  border: 1px solid rgba(88,67,45,.18);
+  background: rgba(243,240,233,.86);
+  box-shadow: 0 7px 22px rgba(20,10,8,.12);
+  backdrop-filter: blur(5px);
+}
+.camp-placeholder-panel {
+  min-height: 260px;
+}
+.camp-placeholder-panel h2 { margin-bottom: 10px; }
+
+.camp-view-enter {
+  animation: camp-view-enter .26s ease-out both;
+}
+@keyframes camp-view-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 700px) {
+  body[data-screen="camp"][data-camp-scene="home"] .topbar {
+    flex-direction: row;
+    align-items: center;
+  }
+  body[data-screen="camp"][data-camp-scene="home"] .brand-block { width: auto; }
+  .camp-hub {
+    align-items: center;
+    justify-content: flex-end;
+    min-height: calc(100dvh - 98px);
+    padding-bottom: 6dvh;
+  }
+  .camp-hub-heading,
+  .camp-hub-menu { width: min(88vw,420px); }
+  .camp-hub-heading { text-align: center; }
+}
+
+
+/* Décor distant de la Taverne : fondu sur le château, sans modifier le fond des autres écrans.
+   Le fichier est déposé par Idan directement sur Hostinger, hors des assets gérés par Git. */
+body[data-screen="camp"]::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: #1d1a16 url("/media/background/tavern.jpg") center center / cover no-repeat;
+  opacity: 0;
+  transition: opacity .36s ease-in-out;
+}
+body[data-screen="camp"][data-camp-scene="tavern"]::before { opacity: 1; }
+body[data-screen="camp"] > .app-shell { position: relative; z-index: 1; }
+@media (prefers-reduced-motion: reduce) {
+  body[data-screen="camp"]::before { transition: none; }
+}

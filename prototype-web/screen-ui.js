@@ -4,6 +4,38 @@
 // Il se déduit des panneaux visibles, sans toucher aux modules qui les affichent ; styles.css
 // en tire la mise en page (accueil = logo + menu sur le château). Purement visuel.
 const SCREEN_PANELS=[["mission","mission-panel"],["gameover","game-over-panel"],["creation","creation-wizard"],["intro","intro-panel"],["camp","game-panel"],["setup","setup-panel"]];
+const CAMP_SCENES=["company","mercenaries","tavern","quartermaster"];
+
+function openCampScene(scene="home"){
+  const target=CAMP_SCENES.includes(scene)?scene:"home";
+  const home=document.getElementById("camp-home");
+  const panels=[...document.querySelectorAll("#game-panel [data-camp-scene-panel]")];
+  if(!home) return;
+
+  home.classList.toggle("hidden",target!=="home");
+  for(const panel of panels){
+    panel.classList.toggle("hidden",panel.dataset.campScenePanel!==target);
+  }
+  document.body.dataset.campScene=target;
+
+  const visible=target==="home"?home:panels.find(panel=>panel.dataset.campScenePanel===target);
+  if(visible){
+    visible.classList.remove("camp-view-enter");
+    requestAnimationFrame(()=>{
+      visible.classList.add("camp-view-enter");
+      setTimeout(()=>visible.classList.remove("camp-view-enter"),320);
+    });
+  }
+}
+
+function handleCampNavigation(event){
+  const open=event.target.closest("[data-open-camp-scene]");
+  if(open){
+    openCampScene(open.dataset.openCampScene);
+    return;
+  }
+  if(event.target.closest("[data-camp-back]")) openCampScene("home");
+}
 
 function currentScreen(){
   for(const [screen,id] of SCREEN_PANELS){
@@ -15,7 +47,9 @@ function currentScreen(){
 
 function updateScreen(){
   const screen=currentScreen();
+  const previous=document.body.dataset.screen;
   document.body.dataset.screen=screen;
+  if(screen==="camp"&&previous!=="camp") openCampScene("home");
   if(["home","mission","gameover"].includes(screen)&&typeof stopTheme==="function") stopTheme();
 }
 
@@ -40,5 +74,7 @@ function initializeScreenUi(){
     if(panel) observer.observe(panel,{attributes:true,attributeFilter:["class"]});
   }
   $("back-to-menu-btn").addEventListener("click",backToMenu);
+  $("game-panel")?.addEventListener("click",handleCampNavigation);
+  openCampScene("home");
   updateScreen();
 }

@@ -167,6 +167,21 @@
 
       <section class="camp-scene hidden" data-camp-scene-panel="tavern" aria-label="Taverne">
         <div class="camp-scene-nav"><button class="secondary camp-scene-back" data-camp-back>← Retour au camp</button></div>
+        <div id="tavern-home" class="tavern-home-menu">
+          <button class="menu-btn camp-hub-btn" data-tavern-view="missions">Les missions disponibles</button>
+          <button class="menu-btn camp-hub-btn" data-tavern-view="recruits">Les mercenaires disponibles</button>
+          <button class="menu-btn camp-hub-btn" data-tavern-drink="beer">Boire une bière <small>−1 PO</small></button>
+          <button class="menu-btn camp-hub-btn" data-tavern-drink="round">Payer sa tournée ! <small>−1 PO par membre de la compagnie</small></button>
+          <p id="tavern-action-feedback" class="tavern-action-feedback" role="status" aria-live="polite"></p>
+        </div>
+        <section id="tavern-missions-view" class="panel tavern-panel hidden">
+          <button class="secondary" data-tavern-view="home">← Retour à la taverne</button>
+          <h2>Missions disponibles</h2>
+          <p>Une seule mission est proposée pour l'instant.</p>
+          <button id="tavern-mission-test-btn" class="primary">Mission Test</button>
+        </section>
+        <section id="tavern-recruits-view" class="hidden">
+          <button class="secondary" data-tavern-view="home">← Retour à la taverne</button>
         <section class="panel tavern-panel">
           <div class="section-title-row">
             <div>
@@ -181,6 +196,7 @@
           </div>
           <div id="tavern-candidates" class="tavern-grid"></div>
           <div id="tavern-log" class="tavern-log"></div>
+        </section>
         </section>
       </section>
 

@@ -17,6 +17,7 @@ function openCampScene(scene="home"){
     panel.classList.toggle("hidden",panel.dataset.campScenePanel!==target);
   }
   document.body.dataset.campScene=target;
+  if(target==="tavern"&&typeof showTavernView==="function") showTavernView("home");
 
   const visible=target==="home"?home:panels.find(panel=>panel.dataset.campScenePanel===target);
   if(visible){

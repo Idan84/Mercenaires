@@ -1476,7 +1476,7 @@ body[data-screen="camp"]::before {
 body[data-screen="camp"][data-camp-scene="tavern"]::before { opacity: 1; }
 /* Intendance : même transition que la Taverne, sans modifier les futurs contrôles. */
 body[data-screen="camp"][data-camp-scene="quartermaster"]::before {
-  background-image: url("/media/background/intendance.jpg");
+  background-image: url("/media/background/Quatermaster.jpg");
   opacity: 1;
 }
 body[data-screen="camp"] > .app-shell { position: relative; z-index: 1; }

@@ -117,7 +117,7 @@ Chaque fois qu’un mercenaire est **effectivement blessé par une attaque reçu
 Décision Idan du 2026-10-07 : la Force progresse selon le **rapport entre le poids de l'équipement porté et la Force actuelle**.
 
 - **Charge** = malus de vitesse de base de l'armure + malus de vitesse de base de **toutes les armes équipées** (les deux sets, qu'il transporte). Ce malus représente déjà poids et inertie (formule *Malus vitesse arme effectif V1*) ; pas de colonne de poids distincte.
-- À chaque **activation** en mission :
+- À chaque **activation** en mission, avec la charge et la Force **du moment** (relevées à chaque activation : un changement d'équipement ne modifie pas l'XP déjà acquise) :
 
 $$
 XP_{Force}=20\times\max\left(0;\ \frac{Charge}{Force}-0{,}25\right)
@@ -132,6 +132,7 @@ $$
 - Pendant la mission, chaque mercenaire tient un **journal** de ce qu'il vit ; l'XP naturelle est calculée et appliquée **en fin de mission**, aux survivants (y compris ceux qui ont fui le combat).
 - Une valeur **monte ou descend** selon son XP ; l'XP ne descend jamais sous 0, ni la valeur sous son minimum.
 - Une valeur générée, qui n'a pas encore d'XP, démarre au **milieu de la tranche** de son niveau (constante `progression.xp_curve.start_position` = 0,5, validée par Idan le 2026-10-07) : sans cela, la première petite perte ferait tomber un point.
+- Résistances : chaque composante de dégâts qui blesse effectivement compte séparément. **Limite V1** : le moteur de combat ne produit encore qu'une composante, physique, par attaque ; les dégâts mixtes (physique + feu), les dégâts sur la durée et les coups multiples s'inscriront composante par composante quand ils existeront.
 - Le joueur voit un **récapitulatif** dans le bilan de fin de mission : XP gagnée ou perdue par caractéristique, et valeurs qui ont changé.
 - Toutes les valeurs de cette section sont des **constantes d'équilibrage** (`data/reference/formula-constants.json`, codes `progression.*`).
 - Branché dans le prototype : Résistances, Courage, Vitesse, Charisme, Perception, Force. En attente : **Chance** (critiques pas encore joués par le moteur de combat) et **Constitution** (pas encore de soins en combat).

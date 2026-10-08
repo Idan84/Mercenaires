@@ -8,7 +8,7 @@ const {createGenerator}=require("../game-core/mercenary-generator.js");
 const {createCombatEngine}=require("../game-core/combat-engine.js");
 const {createMissionEndRules}=require("../game-core/mission-end.js");
 const {createTavernRules}=require("../game-core/tavern.js");
-const {createCampaignRules}=require("../game-core/campaign.js");
+const {createCampaignRules,serializeCampaign,restoreCampaign}=require("../game-core/campaign.js");
 
 const ROOT=path.resolve(__dirname,"..");
 const files={peoples:"peoples.json",cultures:"cultures.json",socialOrigins:"social-origins.json",alignments:"alignments.json",ancestries:"ancestries.json",ancestryCompatibility:"ancestry-compatibility.json",cultureOriginCompatibility:"culture-origin-compatibility.json",ancestryLevels:"ancestry-levels.json",d6Scale:"d6-generation-scale.json",generationMatrix:"generation-matrix.json",skills:"skills.json",characteristics:"characteristics.json",formulaConstants:"formula-constants.json",weapons:"weapons.json",baseArmors:"base-armors.json",itemQualities:"item-qualities.json",equipmentSlots:"equipment-slots.json",startingEquipmentGeneration:"starting-equipment-generation.json",binaryAptitudeGrants:"binary-aptitude-grants.json",alignmentGeneration:"alignment-generation.json"};
@@ -57,6 +57,14 @@ assert.deepEqual(rules.gains(d.progress),{
 });
 assert.deepEqual(rules.gains(null),{stats:{},resistances:{}});
 
+// Contrat par composante (doc 08, dégâts mixtes) : une blessure à deux composantes appellera recordWound deux fois.
+const mixed={};
+P.recordWound(mixed,"tranchant");P.recordWound(mixed,"feu");
+assert.deepEqual(mixed.progress.wounds,{"Résistance physique":1,"Résistance au feu":1});
+assert.deepEqual(rules.gains(mixed.progress).resistances,{
+  "Résistance physique":8-2,"Résistance au feu":8-2,"Résistance au froid":-4,"Résistance à la foudre":-4,"Résistance au poison":-4
+});
+
 // Force (Idan, 2026-10-07) : charge = malus de vitesse de base de l'armure et des armes équipées (deux sets) ;
 // XP par activation = 20 × max(0, Charge / Force − 0,25).
 const porter=(force,slots,items)=>({stats:{Force:force},equipment:{slots},items});
@@ -64,15 +72,25 @@ const lourd=porter(55,{weapon_set_1_main:"a",weapon_set_2_main:"c",armor:"b"},[
   {id:"a",name:"Hache double"},{id:"b",templateId:"armor:plate_armor",name:"Armure de plates"},{id:"c",name:"Dague"},{id:"x",name:"Marteau de guerre"}
 ]);
 assert.equal(rules.loadOf(lourd),40+12+0,"armes et armure équipées seulement");
-assert.equal(rules.gains({activations:5},lourd).stats.Force,70,"5 × 20 × (52/55 − 0,25) ≈ 70");
+const activate=(character,times)=>{ const u={character}; for(let i=0;i<times;i++) rules.recordActivation(u); return u.progress; };
+const heavyLog=activate(lourd,5);
+assert.equal(heavyLog.activations,5);
+assert.equal(rules.gains(heavyLog).stats.Force,70,"5 × 20 × (52/55 − 0,25) ≈ 70");
 const leger=porter(77,{weapon_set_1_main:"a",armor:"b"},[{id:"a",name:"Dague"},{id:"b",templateId:"armor:leather",name:"Armure de cuir"}]);
 assert.equal(rules.loadOf(leger),2);
-assert.equal(rules.gains({activations:5},leger).stats.Force,undefined,"équipement léger pour lui : rien");
-assert.equal(rules.gains({activations:0},lourd).stats.Force,undefined,"sans activation : rien");
-assert.equal(rules.gains({activations:5},porter(0,{},[])).stats.Force,undefined,"Force nulle : pas de division");
-assert.equal(rules.gains({activations:5}).stats.Force,undefined,"sans mercenaire : pas de Force");
+assert.equal(rules.gains(activate(leger,5)).stats.Force,undefined,"équipement léger pour lui : rien");
+assert.equal(rules.gains(activate(lourd,0)).stats.Force,undefined,"sans activation : rien");
+assert.equal(rules.gains(activate(porter(0,{},[]),5)).stats.Force,undefined,"Force nulle : pas de division");
+// Charge et Force relevées à chaque activation (revue Chatty du 2026-10-08) : changer d'équipement ensuite
+// ne réécrit pas l'XP déjà acquise.
+const changing={character:porter(55,{...lourd.equipment.slots},lourd.items)};
+for(let i=0;i<5;i++) rules.recordActivation(changing);
+changing.character.equipment.slots={weapon_set_1_main:"c"};
+assert.equal(rules.gains(changing.progress).stats.Force,70,"équipement retiré après coup : XP inchangée");
+rules.recordActivation(changing);
+assert.equal(rules.gains(changing.progress).stats.Force,70,"activation avec une Dague seule (charge 0) : rien de plus");
 const a2={};P.recordActivation(a2);P.recordActivation(a2);
-assert.equal(a2.progress.activations,2);
+assert.deepEqual([a2.progress.activations,a2.progress.loadRatios],[2,[]],"sans charge relevée : activations seules");
 
 // Application : la valeur monte quand l'XP franchit le niveau suivant, baisse quand elle repasse dessous.
 const merc={stats:{Charisme:50,Courage:20},resistances:{"Résistance au feu":5,"Résistance physique":1}};
@@ -102,6 +120,17 @@ assert.equal(calls.length,1);
 assert.equal(calls[0][3],result,"le crochet reçoit le résultat de l'attaque");
 if(result.wound) assert.equal(uf.progress.wounds["Résistance physique"],1);
 
+// Charge tentée, via le crochet du vrai moteur : chute pendant la charge (D100 = 1) puis charge ratée (D100 = 100).
+for(const [roll,label] of [[0,"chute"],[0.999,"raté"]]){
+  const hook=createCombatEngine(reference,{random:()=>roll,onAttack:P.recordAttack});
+  const ca=unit(hero,0),cd=unit(foe,4);
+  for(const set of [1,2]){ ca.activeSet=set; if(hook.isMeleeWeapon(hook.weaponTemplate(hook.activeWeaponItem(ca)))) break; }
+  const r=hook.resolveAttack(ca,cd,{mode:"melee",distance:1,chargeDistance:3});
+  assert.equal(roll?r.hit:r.chargeFall,roll?false:true,label);
+  assert.equal(ca.progress.chargeAttempts,1,"charge tentée comptée : "+label);
+  assert.equal(rules.gains(ca.progress).stats.Courage,50,label);
+}
+
 // Fin de mission : XP appliquée aux survivants, pas aux morts.
 const campaign=createCampaignRules({generator,tavern:createTavernRules({reference,random:()=>0.999}),reference,progression:rules});
 const captain=generator.createCaptain({id:10});
@@ -122,5 +151,21 @@ assert.equal(report.progression[0].mercenary,m1);
 assert.equal(report.progression[0].xp.stats.Charisme,1500);
 assert.equal(m1.stats.Charisme,rules.levelForXp(rules.startingXp(charismaBefore)+1500));
 assert.ok(m1.stats.Charisme>charismaBefore,"30 adversaires hors combat : le Charisme monte");
+
+// Bilan : chaque ligne porte l'XP par valeur et les changements affichés dans le tableau « Progression ».
+const line=report.progression[0];
+assert.ok(line.changes.some(c=>c.name==="Charisme"&&c.after>c.before&&c.xp===1500));
+
+// Sauvegarde puis reprise : l'XP gardée sur le mercenaire survit à la sauvegarde et la mission suivante repart d'elle.
+const xpSaved=m1.xp.stats.Charisme;
+const restored=restoreCampaign(serializeCampaign(state));
+assert.equal(restored.ok,true);
+const m1Restored=restored.state.company.roster.find(m=>m.id===m1.id);
+assert.equal(m1Restored.xp.stats.Charisme,xpSaved);
+const again=campaign.applyMissionAftermath(restored.state,endRules.resolveMissionEnd([
+  participant(m1Restored,m1Restored.pvMax,{...P.emptyLog(),knockouts:1})
+]));
+assert.equal(again.progression[0].changes.find(c=>c.name==="Charisme").xpBefore,xpSaved);
+assert.equal(m1Restored.xp.stats.Charisme,xpSaved+50);
 
 console.log(JSON.stringify({ok:true,charisme:[charismaBefore,m1.stats.Charisme]},null,2));

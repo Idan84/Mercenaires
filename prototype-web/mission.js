@@ -138,11 +138,12 @@ function startMissionFromSelection(){
   const enemyChars=Array.from({length:3},()=>createCharacter({role:"Ennemi test"}));
   const engine=MercenairesCombat.createCombatEngine(game.referenceData,{onAttack:MercenairesProgression.recordAttack});
   const endRules=MercenairesMissionEnd.createMissionEndRules({reference:game.referenceData});
+  const progression=MercenairesProgression.createProgressionRules({reference:game.referenceData});
   const players=chosen.map((c,i)=>makeMissionUnit(c,"player",i));
   const enemies=enemyChars.map((c,i)=>makeMissionUnit(c,"enemy",i));
 
   game.mission={
-    engine,endRules,players,enemies,
+    engine,endRules,progression,players,enemies,
     playerOrder:sortMissionInitiative(players,engine),
     enemyOrder:sortMissionInitiative(enemies,engine),
     activeUnit:null,phase:"player",turn:1,mode:null,log:[],over:false,winner:null,aftermath:null
@@ -163,7 +164,7 @@ function selectNextMissionPlayer(){
     const next=m.playerOrder.find(u=>u.alive&&!u.acted);
     if(!next){ runMissionEnemyTurn(); return; }
     resetMissionActivation(next);
-    MercenairesProgression.recordActivation(next);
+    m.progression.recordActivation(next);
     if(next.fleeing&&resolveMissionFleeingActivation(next)){
       next.acted=true;
       if(m.over){ renderMission(); return; }

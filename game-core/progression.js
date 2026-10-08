@@ -29,8 +29,9 @@
   }
 
   // Journal d'un combattant pour une mission.
+  // loadRatios : Charge ÷ Force relevée à chaque activation (Force : porter son équipement).
   function emptyLog(){
-    return {activations:0,chargeAttempts:0,knockouts:0,fleeHexes:0,backstabWounds:0,wounds:{},hpHealed:0,criticalSuccesses:0,criticalFailures:0};
+    return {activations:0,loadRatios:[],chargeAttempts:0,knockouts:0,fleeHexes:0,backstabWounds:0,wounds:{},hpHealed:0,criticalSuccesses:0,criticalFailures:0};
   }
   function logOf(unit){ return unit.progress||(unit.progress=emptyLog()); }
 
@@ -40,16 +41,28 @@
     // Courage : la charge compte dès qu'elle est tentée, même ratée ou finie en chute (Idan, 2026-10-06).
     if(Number(options?.chargeDistance)>0) logOf(attacker).chargeAttempts++;
     if(result.wound){
-      const log=logOf(defender);
-      const resistance=RESISTANCE_BY_DAMAGE[result.matchup?.type]||"Résistance physique";
-      log.wounds[resistance]=(log.wounds[resistance]||0)+1;
-      if(result.backstab) log.backstabWounds++;
+      // Moteur V1 : une attaque blesse avec une seule composante, physique (result.matchup.type).
+      recordWound(defender,result.matchup?.type);
+      if(result.backstab) logOf(defender).backstabWounds++;
     }
     // Charisme : adversaire mis hors combat par ce coup (Idan, 2026-10-06).
     if(result.targetDown) logOf(attacker).knockouts++;
   }
-  // Chaque activation du combattant pendant la mission (Force : porter son équipement).
-  function recordActivation(unit){ logOf(unit).activations++; }
+  // Chaque composante de dégâts qui blesse effectivement (doc 08, Résistances) : dégâts mixtes, dégâts sur
+  // la durée et coups multiples appelleront recordWound une fois par composante et par blessure.
+  function recordWound(unit,damageType){
+    const log=logOf(unit);
+    const resistance=RESISTANCE_BY_DAMAGE[damageType]||"Résistance physique";
+    log.wounds[resistance]=(log.wounds[resistance]||0)+1;
+  }
+  // Chaque activation du combattant pendant la mission. carried = {load, force} au moment de l'activation :
+  // un changement d'équipement en cours de mission ne réécrit pas l'XP de Force déjà acquise.
+  function recordActivation(unit,carried=null){
+    const log=logOf(unit);
+    log.activations++;
+    const force=Number(carried?.force)||0;
+    if(force>0) (log.loadRatios||(log.loadRatios=[])).push((Number(carried.load)||0)/force);
+  }
   // Chaque case parcourue en état de fuite.
   function recordFleeHex(unit){ logOf(unit).fleeHexes++; }
   // Pour les mécaniques à venir : soins (PV réellement restaurés) et critiques.
@@ -108,9 +121,9 @@
       return Math.round(xpForLevel(level)+C.startPosition*(xpForLevel(level+1)-xpForLevel(level)));
     }
 
-    // Journal → XP par caractéristique et par résistance (valeurs non nulles seulement). Le mercenaire
-    // sert à la Force : XP par activation = coefficient × max(0, Charge / Force − seuil).
-    function gains(log,mercenary=null){
+    // Journal → XP par caractéristique et par résistance (valeurs non nulles seulement).
+    // Force : XP par activation = coefficient × max(0, Charge / Force − seuil).
+    function gains(log){
       const l={...emptyLog(),...(log||{})};
       const stats={},resistances={};
       const add=(target,name,xp)=>{ if(xp) target[name]=(target[name]||0)+xp; };
@@ -120,10 +133,7 @@
       add(stats,"Vitesse",l.fleeHexes*C.speedFleeHex);
       add(stats,"Charisme",l.knockouts*C.charismaKnockout);
       add(stats,"Perception",l.backstabWounds*C.perceptionBackstabWound);
-      const force=Number(mercenary?.stats?.Force)||0;
-      if(l.activations&&force>0){
-        add(stats,"Force",Math.round(l.activations*C.forceLoadXp*Math.max(0,loadOf(mercenary)/force-C.forceLoadThreshold)));
-      }
+      add(stats,"Force",Math.round((l.loadRatios||[]).reduce((sum,ratio)=>sum+C.forceLoadXp*Math.max(0,ratio-C.forceLoadThreshold),0)));
       // Chaque blessure : +XP à la résistance du type, −XP à chacune des quatre autres.
       for(const [hit,count] of Object.entries(l.wounds||{})){
         for(const resistance of RESISTANCES) add(resistances,resistance,count*(resistance===hit?C.resistanceWound:C.resistanceOthers));
@@ -157,8 +167,13 @@
       return changes;
     }
 
-    return {constants:C,xpForLevel,levelForXp,startingXp,loadOf,gains,apply};
+    // Activation d'un combattant en mission, avec sa charge et sa Force du moment.
+    function recordUnitActivation(unit){
+      recordActivation(unit,{load:loadOf(unit.character),force:unit.character?.stats?.Force});
+    }
+
+    return {constants:C,xpForLevel,levelForXp,startingXp,loadOf,gains,apply,recordActivation:recordUnitActivation};
   }
 
-  return {createProgressionRules,emptyLog,recordActivation,recordAttack,recordFleeHex,recordHeal,recordCritical,RESISTANCES,RESISTANCE_BY_DAMAGE};
+  return {createProgressionRules,emptyLog,recordActivation,recordAttack,recordWound,recordFleeHex,recordHeal,recordCritical,RESISTANCES,RESISTANCE_BY_DAMAGE};
 });

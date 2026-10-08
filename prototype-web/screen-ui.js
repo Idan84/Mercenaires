@@ -117,7 +117,6 @@ function initializeScreenUi(){
     const panel=document.getElementById(id);
     if(panel) observer.observe(panel,{attributes:true,attributeFilter:["class"]});
   }
-  $("back-to-menu-btn").addEventListener("click",backToMenu);
   $("camp-home-icon-btn").addEventListener("click",()=>{openCampScene("home");gameAction("Retour au château.");});
   $("hud-pause-btn").addEventListener("click",()=>setPauseOpen(true));
   $("hud-console-toggle").addEventListener("click",()=>{$("game-hud").classList.toggle("console-collapsed");});

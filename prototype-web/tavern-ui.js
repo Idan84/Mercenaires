@@ -22,7 +22,7 @@ function avatarRules(){
 
 function campaignRules(){
   if(!game.campaignRules){
-    game.campaignRules=MercenairesCampaign.createCampaignRules({generator:game.generator,tavern:tavernRules(),reference:game.referenceData,biographies:biographyRules(),avatars:avatarRules()});
+    game.campaignRules=MercenairesCampaign.createCampaignRules({generator:game.generator,tavern:tavernRules(),reference:game.referenceData,biographies:biographyRules(),avatars:avatarRules(),progression:MercenairesProgression.createProgressionRules({reference:game.referenceData})});
   }
   return game.campaignRules;
 }

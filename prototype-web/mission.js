@@ -136,13 +136,14 @@ function startMissionFromSelection(){
   if(chosen.length!==3) return;
 
   const enemyChars=Array.from({length:3},()=>createCharacter({role:"Ennemi test"}));
-  const engine=MercenairesCombat.createCombatEngine(game.referenceData);
+  const engine=MercenairesCombat.createCombatEngine(game.referenceData,{onAttack:MercenairesProgression.recordAttack});
   const endRules=MercenairesMissionEnd.createMissionEndRules({reference:game.referenceData});
+  const progression=MercenairesProgression.createProgressionRules({reference:game.referenceData});
   const players=chosen.map((c,i)=>makeMissionUnit(c,"player",i));
   const enemies=enemyChars.map((c,i)=>makeMissionUnit(c,"enemy",i));
 
   game.mission={
-    engine,endRules,players,enemies,
+    engine,endRules,progression,players,enemies,
     playerOrder:sortMissionInitiative(players,engine),
     enemyOrder:sortMissionInitiative(enemies,engine),
     activeUnit:null,phase:"player",turn:1,mode:null,log:[],over:false,winner:null,aftermath:null
@@ -163,6 +164,7 @@ function selectNextMissionPlayer(){
     const next=m.playerOrder.find(u=>u.alive&&!u.acted);
     if(!next){ runMissionEnemyTurn(); return; }
     resetMissionActivation(next);
+    m.progression.recordActivation(next);
     if(next.fleeing&&resolveMissionFleeingActivation(next)){
       next.acted=true;
       if(m.over){ renderMission(); return; }
@@ -217,7 +219,7 @@ function resolveMissionAftermath(){
   const participants=m.players.map(u=>({
     id:u.character.id,name:u.character.name,hp:u.hp,pvMax:u.character.pvMax,
     damageTaken:u.damageTaken,stats:u.character.stats,
-    isCaptain:captainId!=null&&u.character.id===captainId,offMap:u.offMap
+    isCaptain:captainId!=null&&u.character.id===captainId,offMap:u.offMap,progress:u.progress||null
   }));
   m.aftermath=m.endRules.resolveMissionEnd(participants);
   missionLog("Fin de mission : bilan de votre équipe.","turn");
@@ -225,6 +227,9 @@ function resolveMissionAftermath(){
   if(!game.campaign) return;
   const report=m.companyReport=campaignRules().applyMissionAftermath(game.campaign,m.aftermath);
   if(report.bonusPaid) missionLog("Primes de mission versées : "+report.bonusPaid+" PO ("+report.bonuses.map(b=>b.mercenary.name+" "+b.bonus).join(", ")+").","gear");
+  for(const {mercenary,changes} of report.progression||[]){
+    for(const c of changes.filter(c=>c.after!==c.before)) missionLog(mercenary.name+" : "+c.name+" "+c.before+" → "+c.after+".",c.after>c.before?"gear":"bad");
+  }
   if(report.gameOver){
     missionLog("Le capitaine est mort : la partie est terminée.","death");
     deleteSavedGame();
@@ -267,7 +272,29 @@ function renderMissionAftermath(m){
       :"Bilan appliqué à la compagnie. Primes de mission versées : "+report.bonusPaid+" PO.";
   return `<ul class="mission-aftermath">${rows}</ul>
     ${report?.gameOver?`<p class="aftermath-gameover">Le capitaine est mort : la partie est terminée et la sauvegarde est effacée.</p>`:""}
-    ${note?`<p class="aftermath-note">${esc(note)}</p>`:""}`;
+    ${note?`<p class="aftermath-note">${esc(note)}</p>`:""}
+    ${report&&!report.gameOver?renderMissionProgression(report.progression||[]):""}`;
+}
+
+// Récapitulatif de progression (08-progression-and-experience.md §2) : XP naturelle gagnée par chaque
+// survivant et caractéristiques qui ont changé.
+const PROGRESSION_LABELS={"Résistance physique":"Rés. physique","Résistance au feu":"Rés. feu","Résistance au froid":"Rés. froid","Résistance à la foudre":"Rés. foudre","Résistance au poison":"Rés. poison"};
+function progressionLabel(name){ return PROGRESSION_LABELS[name]||name; }
+function signed(n){ return (n>0?"+":"−")+Math.abs(n); }
+
+function renderMissionProgression(entries){
+  if(!entries.length) return "";
+  const rows=entries.map(({mercenary,xp,changes})=>{
+    const gained=[...Object.entries(xp.stats||{}),...Object.entries(xp.resistances||{})]
+      .map(([name,n])=>`<span class="${n<0?"xp-loss":"xp-gain"}">${esc(progressionLabel(name))} ${signed(n)}</span>`).join(" ");
+    const moved=changes.filter(c=>c.after!==c.before)
+      .map(c=>`<strong class="${c.after>c.before?"stat-up":"stat-down"}">${esc(progressionLabel(c.name))} ${c.before} → ${c.after} ${c.after>c.before?"▲":"▼"}</strong>`).join(" ");
+    return `<tr><td>${esc(mercenary.name)}</td><td>${gained||'<span class="muted">Aucune</span>'}</td><td>${moved||'<span class="muted">—</span>'}</td></tr>`;
+  }).join("");
+  return `<div class="mission-progression">
+    <h4>Progression</h4>
+    <table><thead><tr><th>Mercenaire</th><th>XP gagnée</th><th>Évolution</th></tr></thead><tbody>${rows}</tbody></table>
+  </div>`;
 }
 
 function logMissionAttack(a,d,result,kind="attack"){
@@ -323,6 +350,7 @@ function moveMissionUnitAlongPath(unit,path){
       if(!unit.alive||unit.q!==from.q||unit.r!==from.r||unit.fleeing!==wasFleeing) break;
     }
     unit.q=step.q;unit.r=step.r;moved++;
+    if(wasFleeing) MercenairesProgression.recordFleeHex(unit);
     unit.movementRemaining=Math.max(0,(unit.movementRemaining||0)-1);
   }
   return moved;

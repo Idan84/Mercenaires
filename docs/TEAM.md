@@ -123,6 +123,8 @@ Aucun agent ne travaille spontanément : il faut qu'une session soit lancée. Gi
 - **2026-10-04** — Titre du jeu : **Blood & Wages**, accroche **« Manage your HR. Send them to die. »** (Idan, après vote de l'équipe). Le dépôt garde son nom de code « Mercenaires ».
 - **2026-10-03** — Fin de mission : on tue assez, on ne blesse pas assez. La zone du jet de blessure passe de 0–20 % à **0–50 % des PV** ; les morts ne changent pas (Idan).
 
+- **2026-10-07** — Force (doc 08) : XP par activation en mission = 20 × max(0 ; Charge ÷ Force − 0,25), Charge = malus de vitesse de base de l'armure et de toutes les armes équipées ; pas de poids distinct ; démarrage des valeurs générées au milieu de leur tranche validé (Idan).
+- **2026-10-06** — XP naturelle (doc 08) : **calculée et appliquée en fin de mission** ; la valeur d'une caractéristique est son niveau (XP = 10 × Niveau²) et peut monter ou descendre ; Courage = **charge tentée** ; Charisme = **adversaire mis hors combat** ; récapitulatif pour le joueur dans le bilan ; toutes les valeurs en constantes d'équilibrage (Idan).
 - **2026-10-05** — Hébergement : **Netlify est abandonné** faute de crédits. Le prototype web doit migrer vers **Hostinger** (Idan).
 - **2026-10-05** — Gouvernance visuelle : **JC intègre mais ne crée ni ne transforme les assets visuels de sa propre initiative**. Direction artistique = Idan ; production = Jean-Mimi ; cadrage / cohérence d'usage = Chatty ; intégration technique = JC.
 

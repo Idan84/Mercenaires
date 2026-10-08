@@ -53,11 +53,45 @@ function currentScreen(){
   return "home";
 }
 
+
+const gameActionMessages=[];
+function gameAction(message){
+  const day=game.campaign?.day;
+  gameActionMessages.unshift({message:String(message),day});
+  gameActionMessages.length=Math.min(gameActionMessages.length,35);
+  renderGameHud();
+}
+function renderGameHud(){
+  const hud=$("game-hud");
+  const active=Boolean(game.campaign)&&["camp","mission"].includes(currentScreen());
+  hud.classList.toggle("hidden",!active);
+  if(!active){$("game-pause").classList.add("hidden");return;}
+  $("hud-company").textContent=game.campaign.company.name;
+  $("hud-resources").textContent="Jour "+game.campaign.day+"  ·  "+Math.round(game.campaign.company.gold)+" PO";
+  $("game-action-lines").innerHTML=gameActionMessages.slice(0,8).map(x=>'<li><small>J'+(x.day||"—")+'</small> '+esc(x.message)+'</li>').join("");
+}
+function setPauseOpen(open){
+  if(!game.campaign||!["camp","mission"].includes(currentScreen())) return;
+  const pause=$("game-pause");
+  pause.classList.toggle("hidden",!open);
+  if(open) pause.querySelector('[data-pause-action="resume"]').focus();
+}
+function handlePauseAction(action){
+  if(action==="resume"){setPauseOpen(false);return;}
+  if(action==="save"){saveGame();gameAction("Sauvegarde demandée.");setPauseOpen(false);return;}
+  if(action==="design"){window.location.assign("/design/");return;}
+  if(action==="menu"){
+    if(currentScreen()==="mission"){gameAction("Impossible de quitter au milieu d’un combat.");setPauseOpen(false);return;}
+    setPauseOpen(false);backToMenu();
+  }
+}
+
 function updateScreen(){
   const screen=currentScreen();
   const previous=document.body.dataset.screen;
   document.body.dataset.screen=screen;
   updateCampHomeIcon();
+  renderGameHud();
   if(screen==="camp"&&previous!=="camp") openCampScene("home");
   if(["home","mission","gameover"].includes(screen)&&typeof stopTheme==="function") stopTheme();
 }
@@ -74,6 +108,7 @@ function backToMenu(){
   if(typeof stopIntroVoice==="function") stopIntroVoice();
   for(const id of ["setup-panel","game-panel","game-over-panel","intro-panel","creation-wizard"]) $(id).classList.add("hidden");
   renderSaveStatus();
+  renderGameHud();
 }
 
 function initializeScreenUi(){
@@ -83,7 +118,23 @@ function initializeScreenUi(){
     if(panel) observer.observe(panel,{attributes:true,attributeFilter:["class"]});
   }
   $("back-to-menu-btn").addEventListener("click",backToMenu);
-  $("camp-home-icon-btn").addEventListener("click",()=>openCampScene("home"));
+  $("camp-home-icon-btn").addEventListener("click",()=>{openCampScene("home");gameAction("Retour au château.");});
+  $("hud-pause-btn").addEventListener("click",()=>setPauseOpen(true));
+  $("hud-console-toggle").addEventListener("click",()=>{$("game-hud").classList.toggle("console-collapsed");});
+  $("game-pause").addEventListener("click",event=>{
+    const button=event.target.closest("[data-pause-action]");
+    if(button&&!button.disabled)handlePauseAction(button.dataset.pauseAction);
+  });
+  document.addEventListener("keydown",event=>{
+    if(event.key!=="Escape"||event.repeat) return;
+    if(!$("game-pause").classList.contains("hidden")){event.preventDefault();setPauseOpen(false);return;}
+    if(document.querySelector("dialog[open]")) return;
+    if(game.campaign&&["camp","mission"].includes(currentScreen())){event.preventDefault();setPauseOpen(true);}
+  });
+  $("game-panel").addEventListener("click",event=>{
+    const open=event.target.closest("[data-open-camp-scene]");
+    if(open)gameAction("Destination : "+open.textContent.trim()+".");
+  });
   $("game-panel")?.addEventListener("click",handleCampNavigation);
   openCampScene("home");
   updateScreen();

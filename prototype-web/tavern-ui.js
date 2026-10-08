@@ -43,6 +43,7 @@ function tavernCandidate(id){
 
 function tavernLog(message,kind="info"){
   game.tavernLog=[{message,kind,day:game.campaign.day},...(game.tavernLog||[])].slice(0,40);
+  if(typeof gameAction==="function") gameAction(message);
 }
 
 function renderCompanyMeta(){
@@ -101,6 +102,7 @@ function renderTavern(){
   const c=game.campaign;
   if(!c) return;
   renderCompanyMeta();
+  if(typeof renderGameHud==="function") renderGameHud();
   renderIntendantSelect();
   $("tavern-candidates").innerHTML=c.tavern.candidates.length
     ?c.tavern.candidates.map(renderTavernCard).join("")

@@ -1540,3 +1540,29 @@ body[data-screen="camp"]:not([data-camp-scene="home"]) .app-shell{padding-top:32
 .camp-home-icon-btn:active{transform:translateY(0)}
 .camp-home-icon-btn.hidden{display:none!important}
 @media(prefers-reduced-motion:reduce){.camp-home-icon-btn{transition:none}}
+
+
+/* HUD desktop : barre inférieure réservée aux futures commandes + console d'actions. */
+body[data-screen="camp"] .app-shell,body[data-screen="mission"] .app-shell{padding-bottom:106px}
+.game-hud{position:fixed;inset:auto 0 0;z-index:90;pointer-events:none;color:#e9d9b9;font-family:Georgia,serif}
+.game-bottom-bar{position:absolute;bottom:0;left:0;right:0;min-height:62px;padding:12px 32px;display:flex;align-items:center;gap:22px;background:linear-gradient(180deg,#3b2b20f4,#17110eff);border-top:1px solid #b58c53;box-shadow:0 -8px 32px #0007;pointer-events:auto}
+#hud-company{font-size:1.12rem;color:#ffe3ab;max-width:32vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#hud-resources{font-size:.92rem;flex:1}
+#hud-pause-btn{border:1px solid #ab8959;border-radius:8px;padding:8px 12px;background:#241a15;color:#f2d7a6;font-size:16px}
+#hud-pause-btn span{font-size:11px;opacity:.8}
+.game-action-console{position:absolute;bottom:72px;right:22px;width:345px;max-height:220px;overflow:hidden;background:#1a1412ea;border:1px solid #95744d;border-radius:12px;box-shadow:0 12px 32px #0009;pointer-events:auto}
+.game-console-title{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:#423024;color:#f0d8ac;font:700 12px Georgia,serif;letter-spacing:.04em}
+.game-console-title button{border:0;background:transparent;color:#f4daa5;font-size:20px;line-height:1}
+#game-action-lines{margin:0;padding:8px 12px 10px 27px;max-height:168px;overflow-y:auto;font:12px/1.55 Georgia,serif}
+#game-action-lines li{padding:3px 0;border-bottom:1px solid #ffffff12}
+#game-action-lines small{color:#c6a576;margin-right:6px}
+.game-hud.console-collapsed .game-action-console{max-height:39px}
+.game-hud.console-collapsed #game-action-lines{display:none}
+.game-pause{position:fixed;inset:0;z-index:200;display:grid;place-items:center;background:#0e0c0be6;backdrop-filter:blur(7px)}
+.game-pause.hidden{display:none!important}
+.game-pause-panel{width:min(440px,90vw);padding:32px;border:1px solid #ae8654;border-radius:15px;background:linear-gradient(145deg,#403023,#17120f);box-shadow:0 20px 70px #000b;text-align:center}
+.game-pause-panel h2{font:normal 31px Georgia,serif;color:#f4dfb8;margin:10px 0 24px}
+.game-pause-panel button{display:flex;align-items:center;justify-content:space-between;width:100%;padding:13px 16px;margin:7px 0;border:1px solid #9f815a;border-radius:8px;background:#261d17;color:#f0d8ae;font:16px Georgia,serif;text-align:left}
+.game-pause-panel button:hover:not(:disabled){background:#63412a;border-color:#e3bd76}
+.game-pause-panel button:disabled{opacity:.35;cursor:not-allowed}
+.game-pause-panel small{font-size:11px;opacity:.7}

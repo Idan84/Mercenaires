@@ -172,7 +172,28 @@
       };
     }
 
+    // Armes à feu — recharge V1 : une arme à recharge (skills.json, recharge_action_rapide) doit être chargée
+    // pour tirer et se décharge après son tir ; une Action rapide recharge une arme. Pas de munitions ordinaires.
+    // État propre à la mission : unit.unloaded liste les armes déchargées ; tout est chargé au départ.
+    function needsLoading(weapon){
+      return Boolean(skillByName.get(weapon?.nom)?.recharge_action_rapide);
+    }
+    function isLoaded(unit,item){
+      return !item||!needsLoading(weaponTemplate(item))||!(unit.unloaded||[]).includes(item.id);
+    }
+    function heldUnloaded(unit){
+      return [activeWeaponItem(unit),activeOffhandItem(unit)].find(item=>item&&!isLoaded(unit,item))||null;
+    }
+    function canReload(unit){ return Boolean(heldUnloaded(unit)); }
+    // Recharge une arme tenue (arme principale d'abord) ; renvoie l'objet rechargé, ou null.
+    function reload(unit){
+      const item=heldUnloaded(unit);
+      if(item) unit.unloaded=unit.unloaded.filter(id=>id!==item.id);
+      return item;
+    }
+
     function canAttackAtDistance(unit,distance,mode){
+      if(!isLoaded(unit,activeWeaponItem(unit))) return false;
       const weapon=weaponTemplate(activeWeaponItem(unit));
       if(!weapon) return false;
       if(mode==="ranged"&&!isRangedWeapon(weapon)) return false;
@@ -374,6 +395,7 @@
       const distance=Number(options.distance)||axialDistance(attacker,defender);
       const item=activeWeaponItem(attacker),weapon=weaponTemplate(item);
       if(!weapon) return {ok:false,reason:"Aucune arme active."};
+      if(!isLoaded(attacker,item)) return {ok:false,reason:item.name+" est déchargé : une action rapide le recharge."};
       if(!canAttackAtDistance(attacker,distance,mode)) return {ok:false,reason:"Cible hors portée ou arme incompatible."};
 
       // Toute attaque d'opportunité bénéficie de Frappe dans le dos (Attaque d'opportunité CAC V1),
@@ -384,6 +406,8 @@
       const fleeingTarget=Boolean(defender.fleeing);
       const backstab=opportunity||encircled||fleeingTarget||Boolean(options.backstab);
       if(opportunity&&(mode!=="melee"||Number(options.chargeDistance)>0)) return {ok:false,reason:"Une attaque d'opportunité est un coup de mêlée simple."};
+      // Le coup part : une arme à recharge est désormais déchargée, qu'il touche ou non.
+      if(needsLoading(weapon)) attacker.unloaded=[...(attacker.unloaded||[]),item.id];
 
       let chargePower=0;
       if(Number(options.chargeDistance)>0){
@@ -599,6 +623,10 @@
       criticalChance,
       blockChance,
       isRepeatable,
+      needsLoading,
+      isLoaded,
+      canReload,
+      reload,
       chainChance,
       rollChain,
       resolveAttack,

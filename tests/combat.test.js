@@ -413,4 +413,31 @@ if(setFamily(crossbow,"ranged")&&combat.weaponTemplate(combat.activeWeaponItem(c
   assert.equal(combat.rollChain(crossbow,chainTarget,realHit,2,"ranged"),null,"Arbalète : tir unique");
 }
 
+// Armes à feu — recharge V1 : chargée pour tirer, déchargée après le tir, une Action rapide recharge.
+function withMainWeapon(character,name){
+  const item={id:"main-"+name+"-"+character.id,name,itemType:"weapon",slot:"weapon_set_1_main",owner:character.id,qualityCode:"standard"};
+  return {...character,items:[...character.items,item],equipment:{...character.equipment,slots:{...character.equipment.slots,weapon_set_1_main:item.id}}};
+}
+assert.deepEqual(["Pistolet","Arquebuse / Mousquet","Tromblon","Canon à main","Arc","Arbalète"].map(nom=>combat.needsLoading({nom})),[true,true,true,true,false,false]);
+const gunner2=unit(withMainWeapon(a,"Pistolet"),0,0),gunTarget=unit(b,3,0);
+const pistol=combat.activeWeaponItem(gunner2);
+assert.deepEqual([combat.isLoaded(gunner2,pistol),combat.canReload(gunner2),combat.canAttackAtDistance(gunner2,3,"ranged")],[true,false,true],"chargée au début de la mission");
+const firstShot=combat.resolveAttack(gunner2,gunTarget,{mode:"ranged",distance:3});
+assert.equal(firstShot.ok,true);
+assert.deepEqual([combat.isLoaded(gunner2,pistol),combat.canAttackAtDistance(gunner2,3,"ranged")],[false,false],"déchargée après le tir");
+const dry=combat.resolveAttack(gunner2,gunTarget,{mode:"ranged",distance:3});
+assert.equal(dry.ok,false);
+assert.match(dry.reason,/déchargé/);
+assert.equal(combat.canReload(gunner2),true);
+assert.equal(combat.reload(gunner2),pistol,"une Action rapide recharge l'arme");
+assert.deepEqual([combat.isLoaded(gunner2,pistol),combat.canReload(gunner2),combat.reload(gunner2)],[true,false,null]);
+// Raté ou non, le coup est parti : l'arme se décharge aussi (D100 = 100 → raté).
+const missGunner=unit(withMainWeapon(a,"Pistolet"),0,0);
+assert.equal(panicky.resolveAttack(missGunner,gunTarget,{mode:"ranged",distance:3}).hit,false);
+assert.equal(combat.isLoaded(missGunner,combat.activeWeaponItem(missGunner)),false);
+// Un arc ne se décharge jamais.
+const bowman=unit(withMainWeapon(a,"Arc"),0,0);
+combat.resolveAttack(bowman,gunTarget,{mode:"ranged",distance:3});
+assert.deepEqual([combat.isLoaded(bowman,combat.activeWeaponItem(bowman)),combat.canReload(bowman)],[true,false]);
+
 console.log(JSON.stringify({ok:true},null,2));

@@ -88,10 +88,9 @@ Les règles validées de maniement et cadence sont centralisées ici :
 - [Prise d'arme et mode deux mains V1](/design/#doc=formulas/prise-d-arme-et-mode-deux-mains-v1.md) : prises `1 main`, `2 mains`, `Au choix`.
 - [Combat à deux armes CAC V1](/design/#doc=formulas/combat-a-deux-armes-cac-v1.md) : combat à deux armes.
 
-Choix d'implémentation V1 des enchaînements (attaques CAC et tirs `Répétable`), à confirmer en relecture :
-- la chaîne vise toujours la même cible et s'arrête si elle n'est plus à portée (par exemple après avoir fui) ;
-- la **charge** reste une seule attaque : « arrivée suivie d'une attaque » (Charge CAC V1), sans enchaînement ;
-- au tir, les attaques d'opportunité des ennemis au contact sont résolues **une fois**, avant la séquence de tirs, pas avant chaque tir ;
+Choix d'implémentation V1 des enchaînements (attaques CAC et tirs `Répétable`) :
+- validés par Idan le 2026-10-08 : la **charge** reste une seule attaque (« arrivée suivie d'une attaque », Charge CAC V1), sans enchaînement ; au tir, les attaques d'opportunité des ennemis au contact sont résolues **une fois**, avant la séquence de tirs, pas avant chaque tir ;
+- à confirmer en relecture : la chaîne vise toujours la même cible et s'arrête si elle n'est plus à portée (par exemple après avoir fui) ;
 - Dextérité effective = Dextérité tant que le combat à deux armes n'est pas branché ;
 - Courage : un seul test en fin de séquence ([Courage post-attaque CAC V1](/design/#doc=formulas/courage-post-attaque-cac-v1.md), [Courage post-tir V1](/design/#doc=formulas/courage-post-tir-v1.md)) ; une cible en sous-nombre teste après chaque blessure reçue et ne reteste pas en fin de séquence.
 
@@ -143,6 +142,12 @@ Le tir est construit comme un combat physique à distance, sans créer un second
 - **Projectile raté / approximation** : [Approximation projectile V1](/design/#doc=formulas/approximation-projectile-v1.md) peut toucher accidentellement un allié ou ennemi dans le couloir de tir.
 - **Courage** : [Courage post-tir V1](/design/#doc=formulas/courage-post-tir-v1.md). Une cible réellement blessée peut fuir ; le tireur ne teste jamais son Courage simplement parce qu'il a raté ou n'a pas blessé.
 - **Armes à feu** : [Armes à feu — recharge et double pistolet V1](/design/#doc=formulas/armes-a-feu-recharge-et-double-pistolet-v1.md) : pas de stock de munitions normales ; **recharger une arme = 1 Action rapide** ; épée + pistolet et deux pistolets suivent le combat à deux armes, avec inerties cumulées et une attaque de base par arme actuellement utilisable.
+
+Choix d'implémentation V1 de la recharge, à confirmer en relecture :
+- les armes à recharge sont celles marquées `recharge_action_rapide` dans `skills.json` (Pistolet, Arquebuse / Mousquet, Tromblon, Canon à main) ;
+- toutes sont **chargées au début de la mission** ; l'état chargé ne dure que la mission ;
+- l'arme se décharge dès que le coup part, qu'il touche ou non ;
+- l'IA recharge avec son Action rapide quand son arme est déchargée (après un éventuel changement d'arme, qui consomme aussi l'Action rapide).
 
 Une attaque à distance exige une **ligne de vue**. En V1, les éléments de décor indiquent directement leur protection : aucune, **partielle (`×0,5`)**, **forte / quasi-totale (`×0,25`)** ou **blocage total de ligne de vue** (tir impossible).
 
@@ -196,8 +201,8 @@ Le moteur tactique est isolé dans `game-core/combat-engine.js`. La carte web n'
 
 ### Simplifications volontaires du premier test
 
-Le noyau utilise déjà les formules validées de portée, vitesse/esquive effectives, MouvementBase, Toucher, Blesser, résistances d'armure, qualité d'item, dégâts PV, charge, attaques d'opportunité, Frappe dans le dos, encerclement, Courage et Fuite. Les critiques, échecs critiques, le blocage au bouclier et les enchaînements d'attaques et de tirs sont branchés. En revanche, ce premier écran ne branche pas encore les autres systèmes secondaires : combat à deux armes, couverture/obstacles, approximation des projectiles et contre-charge automatique.
+Le noyau utilise déjà les formules validées de portée, vitesse/esquive effectives, MouvementBase, Toucher, Blesser, résistances d'armure, qualité d'item, dégâts PV, charge, attaques d'opportunité, Frappe dans le dos, encerclement, Courage et Fuite. Les critiques, échecs critiques, le blocage au bouclier, les enchaînements d'attaques et de tirs et la recharge des armes à feu sont branchés. En revanche, ce premier écran ne branche pas encore les autres systèmes secondaires : combat à deux armes, couverture/obstacles, approximation des projectiles et contre-charge automatique.
 
-Choix d'implémentation V1, confirmés en relecture par Chatty (PR #7) : aucune limite au nombre d'attaques d'opportunité par adversaire et par tour ; un personnage Au Sol réagit normalement et compte pour l'encerclement ; plusieurs réactions simultanées sont résolues dans l'ordre d'initiative de l'équipe qui réagit ; une charge ne peut pas traverser une case occupée ; sortir de la carte coûte un hexagone de mouvement depuis une case du bord ; la Mission Test n'ayant aucun abri total, « Cachons-nous » file vers la sortie de carte sans jamais entrer dans une case adjacente à un ennemi (sans trajet sûr vers une sortie, il s'éloigne au mieux par les cases sûres, sinon il reste sur place) ; « Feu à volonté » tire à la cadence de l'arme (Enchaînement de tirs distance V1) ; la recharge n'est pas branchée.
+Choix d'implémentation V1, confirmés en relecture par Chatty (PR #7) : aucune limite au nombre d'attaques d'opportunité par adversaire et par tour ; un personnage Au Sol réagit normalement et compte pour l'encerclement ; plusieurs réactions simultanées sont résolues dans l'ordre d'initiative de l'équipe qui réagit ; une charge ne peut pas traverser une case occupée ; sortir de la carte coûte un hexagone de mouvement depuis une case du bord ; la Mission Test n'ayant aucun abri total, « Cachons-nous » file vers la sortie de carte sans jamais entrer dans une case adjacente à un ennemi (sans trajet sûr vers une sortie, il s'éloigne au mieux par les cases sûres, sinon il reste sur place) ; « Feu à volonté » tire à la cadence de l'arme (Enchaînement de tirs distance V1) et ne recharge pas une arme déchargée.
 
 Dans ce banc de test, `PV <= 0` signifie **hors combat** et déclenche la condition de victoire. La mortalité persistante de fin de mission reste un système séparé. Les PV restent **signés** sous 0 : l'interface affiche 0, mais la profondeur est conservée pour le jet de mort de fin de mission (Issue #13).

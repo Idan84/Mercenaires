@@ -698,6 +698,17 @@ function switchMissionWeapon(){
   }
 }
 
+// Armes à feu — recharge V1 : une Action rapide recharge une arme tenue.
+function reloadMissionWeapon(){
+  const u=missionActiveUnit(),m=game.mission;
+  if(!u||!u.quickAvailable||m.phase!=="player"||m.over) return;
+  const item=m.engine.reload(u);
+  if(!item) return;
+  u.quickAvailable=false;
+  missionLog(u.character.name+" recharge son "+item.name+".","gear");
+  renderMission();
+}
+
 function nearestMissionTarget(unit){
   const targets=livingMissionUnits(unit.team==="player"?"enemy":"player");
   return [...targets].sort((a,b)=>{
@@ -713,16 +724,26 @@ function enemyTryUsefulSet(unit,target){
   let mode=e.isRangedWeapon(weapon)?"ranged":"melee";
   if(e.canAttackAtDistance(unit,distance,mode)) return;
 
-  if(!e.canSwitchWeaponSet(unit)) return;
+  if(!unit.quickAvailable||!e.canSwitchWeaponSet(unit)) return;
   const before=unit.activeSet;
   e.switchWeaponSet(unit);
   weapon=e.weaponTemplate(e.activeWeaponItem(unit));
   mode=e.isRangedWeapon(weapon)?"ranged":"melee";
   if(e.canAttackAtDistance(unit,distance,mode)){
+    unit.quickAvailable=false;
     missionLog(unit.character.name+" change d’arme : "+e.activeWeaponItem(unit).name+".","gear");
   }else{
     unit.activeSet=before;
   }
+}
+
+// IA : une arme déchargée est rechargée avec l'Action rapide, si elle est encore disponible.
+function enemyTryReload(unit){
+  if(!unit.quickAvailable) return;
+  const item=game.mission.engine.reload(unit);
+  if(!item) return;
+  unit.quickAvailable=false;
+  missionLog(unit.character.name+" recharge son "+item.name+".","gear");
 }
 
 function enemyMoveToward(unit,target){
@@ -782,6 +803,7 @@ function enemyMissionActivation(unit){
   if(!target) return;
 
   enemyTryUsefulSet(unit,target);
+  enemyTryReload(unit);
   let e=game.mission.engine,weapon=e.weaponTemplate(e.activeWeaponItem(unit));
   let mode=e.isRangedWeapon(weapon)?"ranged":"melee";
   let distance=e.axialDistance(unit,target);
@@ -799,6 +821,7 @@ function enemyMissionActivation(unit){
   target=nearestMissionTarget(unit);
   if(!target) return;
   enemyTryUsefulSet(unit,target);
+  enemyTryReload(unit);
   weapon=e.weaponTemplate(e.activeWeaponItem(unit));
   mode=e.isRangedWeapon(weapon)?"ranged":"melee";
   distance=e.axialDistance(unit,target);
@@ -834,9 +857,10 @@ function missionActionAvailability(){
   return {
     move:u.movementRemaining>0,
     melee:u.attackAvailable&&e.isMeleeWeapon(w),
-    ranged:u.attackAvailable&&e.isRangedWeapon(w),
+    ranged:u.attackAvailable&&e.isRangedWeapon(w)&&e.isLoaded(u,e.activeWeaponItem(u)),
     charge:u.attackAvailable&&e.isMeleeWeapon(w)&&u.movementRemaining===e.movementBase(u),
     switch:u.quickAvailable&&e.canSwitchWeaponSet(u),
+    reload:u.quickAvailable&&e.canReload(u),
     secondMove:u.attackAvailable,
     end:true
   };
@@ -866,7 +890,7 @@ function renderMissionRoster(units){
       ${renderAvatar(u.character,{variant:"compact",kind:"portrait"})}
       <div class="mission-roster-copy">
         <strong>${esc(u.character.name)}</strong>
-        <span>${u.offMap?"A quitté le combat":Math.max(0,u.hp)+"/"+u.character.pvMax+" PV"+(u.hp<0?" ("+u.hp+")":"")+(u.alive&&u.fleeing?" · En fuite":"")}</span>
+        <span>${u.offMap?"A quitté le combat":Math.max(0,u.hp)+"/"+u.character.pvMax+" PV"+(u.hp<0?" ("+u.hp+")":"")+(u.alive&&u.fleeing?" · En fuite":"")+(u.alive&&!game.mission.engine.isLoaded(u,game.mission.engine.activeWeaponItem(u))?" · Arme déchargée":"")}</span>
         <small>Init ${Math.round(game.mission.engine.initiative(u))} · Mvt ${game.mission.engine.movementBase(u)}</small>
       </div>
     </div>
@@ -927,7 +951,7 @@ function renderMission(){
   const availability=missionActionAvailability();
   const buttons=[
     ["mission-move-btn","move"],["mission-attack-btn","melee"],["mission-charge-btn","charge"],
-    ["mission-switch-btn","switch"],["mission-ranged-btn","ranged"],["mission-second-move-btn","secondMove"],["mission-end-activation-btn","end"]
+    ["mission-switch-btn","switch"],["mission-reload-btn","reload"],["mission-ranged-btn","ranged"],["mission-second-move-btn","secondMove"],["mission-end-activation-btn","end"]
   ];
   for(const [id,key] of buttons){
     $(id).disabled=!availability[key];
@@ -967,6 +991,7 @@ function initializeMissionUi(){
   $("mission-charge-btn").addEventListener("click",()=>setMissionMode("charge"));
   $("mission-ranged-btn").addEventListener("click",()=>setMissionMode("ranged"));
   $("mission-switch-btn").addEventListener("click",switchMissionWeapon);
+  $("mission-reload-btn").addEventListener("click",reloadMissionWeapon);
   $("mission-second-move-btn").addEventListener("click",missionSecondMove);
   window.addEventListener("resize",()=>{ if(game.mission) renderMission(); });
   $("mission-end-activation-btn").addEventListener("click",endMissionActivation);

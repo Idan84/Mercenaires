@@ -205,6 +205,32 @@ function renderDetail(step,value){
   </aside>`;
 }
 
+
+function renderAlignmentWheel(values,selected){
+  // Axes : Bien (nord), Mal (sud), Chaotique (ouest), Loyal (est).
+  const sectors=[
+    ["Neutre bon",270],["Loyal bon",315],["Loyal neutre",0],["Loyal mauvais",45],
+    ["Neutre mauvais",90],["Chaotique mauvais",135],["Chaotique neutre",180],["Chaotique bon",225]
+  ];
+  const cx=180,cy=180,outer=165,inner=53;
+  const point=(radius,angle)=>{const a=angle*Math.PI/180;return [cx+radius*Math.cos(a),cy+radius*Math.sin(a)];};
+  const coords=p=>p.map(n=>n.toFixed(2)).join(" ");
+  const items=sectors.filter(([value])=>values.includes(value)).map(([value,angle])=>{
+    const start=point(inner,angle-22.5),end=point(inner,angle+22.5);
+    const farStart=point(outer,angle-22.5),farEnd=point(outer,angle+22.5);
+    const p=`M ${coords(start)} L ${coords(farStart)} A ${outer} ${outer} 0 0 1 ${coords(farEnd)} L ${coords(end)} A ${inner} ${inner} 0 0 0 ${coords(start)} Z`;
+    const label=point(113,angle);
+    const words=value.split(" ");
+    return `<g class="alignment-sector ${selected===value?"is-selected":""}" data-wizard-choice="${esc(value)}" tabindex="0" role="button" aria-label="${esc(value)}" aria-pressed="${selected===value}">
+      <path d="${p}"></path><text x="${label[0]}" y="${label[1]-6}" text-anchor="middle"><tspan x="${label[0]}" dy="0">${esc(words[0])}</tspan><tspan x="${label[0]}" dy="15">${esc(words.slice(1).join(" "))}</tspan></text>
+    </g>`;
+  }).join("");
+  const neutral=values.includes("Neutre")?`<g class="alignment-sector alignment-center ${selected==="Neutre"?"is-selected":""}" data-wizard-choice="Neutre" role="button" tabindex="0" aria-label="Neutre" aria-pressed="${selected==="Neutre"}"><circle cx="180" cy="180" r="51"></circle><text x="180" y="184" text-anchor="middle">Neutre</text></g>`:"";
+  return `<div class="alignment-wheel-wrap"><div class="alignment-axis alignment-axis-top">BON</div><div class="alignment-axis alignment-axis-left">CHAOTIQUE</div>
+  <svg class="alignment-wheel" viewBox="0 0 360 360" aria-label="Roue interactive des alignements" role="group">${items}${neutral}</svg>
+  <div class="alignment-axis alignment-axis-right">LOYAL</div><div class="alignment-axis alignment-axis-bottom">MAUVAIS</div></div>`;
+}
+
 function renderChoiceStep(step){
   const values=step.options();
   const selected=wizard.choice[step.key];
@@ -224,7 +250,7 @@ function renderChoiceStep(step){
         <span>Votre choix</span>
         <small>${values.length} option${values.length>1?"s":""}</small>
       </div>
-      <div class="wizard-option-grid">${options}</div>
+      ${step.key==="alignment"?renderAlignmentWheel(values,selected):`<div class="wizard-option-grid">${options}</div>`}
     </section>
     ${renderDetail(step,selected)}
   </div>`;
@@ -328,6 +354,14 @@ function initializeIntroUi(){
     const btn=event.target.closest("[data-wizard-choice]");
     if(!btn) return;
     setChoice(WIZARD_STEPS[wizard.step].key,btn.dataset.wizardChoice);
+    renderWizard();
+  });
+  $("wizard-body").addEventListener("keydown",event=>{
+    if(event.key!=="Enter"&&event.key!==" ") return;
+    const sector=event.target.closest(".alignment-sector[data-wizard-choice]");
+    if(!sector) return;
+    event.preventDefault();
+    setChoice("alignment",sector.dataset.wizardChoice);
     renderWizard();
   });
 }

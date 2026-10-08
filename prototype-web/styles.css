@@ -1483,3 +1483,20 @@ body[data-screen="camp"] > .app-shell { position: relative; z-index: 1; }
 @media (prefers-reduced-motion: reduce) {
   body[data-screen="camp"]::before { transition: none; }
 }
+
+
+/* Roue d'alignement du capitaine — PC, neuf zones sélectionnables. */
+.alignment-wheel-wrap{position:relative;width:min(100%,420px);margin:22px auto 8px;padding:24px}
+.alignment-wheel{width:100%;display:block;overflow:visible;filter:drop-shadow(0 12px 25px rgba(0,0,0,.24))}
+.alignment-sector{cursor:pointer;outline:none}
+.alignment-sector path,.alignment-sector circle{fill:#302922;stroke:#bca478;stroke-width:2;transition:fill .16s,stroke .16s}
+.alignment-sector text{fill:#ead9b8;pointer-events:none;font:600 11px Georgia,serif}
+.alignment-sector:hover path,.alignment-sector:hover circle,.alignment-sector:focus-visible path,.alignment-sector:focus-visible circle{fill:#5d402d;stroke:#f9d58b;stroke-width:4}
+.alignment-sector.is-selected path,.alignment-sector.is-selected circle{fill:#80512e;stroke:#ffda86;stroke-width:4}
+.alignment-sector.is-selected text{fill:#fff3cf;font-weight:800}
+.alignment-center text{font-size:15px}
+.alignment-axis{position:absolute;color:#dac393;letter-spacing:.11em;font:700 10px Georgia,serif;text-shadow:0 2px 5px #000;text-align:center}
+.alignment-axis-top{top:0;left:0;right:0}
+.alignment-axis-bottom{bottom:0;left:0;right:0}
+.alignment-axis-left{left:0;top:50%;transform:translate(-36%,-50%) rotate(-90deg)}
+.alignment-axis-right{right:0;top:50%;transform:translate(35%,-50%) rotate(90deg)}

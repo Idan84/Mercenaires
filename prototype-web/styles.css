@@ -1453,3 +1453,22 @@ body[data-screen="camp"][data-camp-scene="home"] .menu-back {
   .camp-hub-menu { width: min(88vw,420px); }
   .camp-hub-heading { text-align: center; }
 }
+
+
+/* Décor distant de la Taverne : fondu sur le château, sans modifier le fond des autres écrans.
+   Le fichier est déposé par Idan directement sur Hostinger, hors des assets gérés par Git. */
+body[data-screen="camp"]::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: #1d1a16 url("/media/background/tavern.jpg") center center / cover no-repeat;
+  opacity: 0;
+  transition: opacity .36s ease-in-out;
+}
+body[data-screen="camp"][data-camp-scene="tavern"]::before { opacity: 1; }
+body[data-screen="camp"] > .app-shell { position: relative; z-index: 1; }
+@media (prefers-reduced-motion: reduce) {
+  body[data-screen="camp"]::before { transition: none; }
+}

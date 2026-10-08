@@ -382,6 +382,26 @@
       return {n,p,roll,continues:roll<=p};
     }
 
+    // Contre-charge V1 : la cible directe d'une charge réagit une fois si son arme active le permet
+    // (contre_charge) et, pour une arme à feu, si elle est chargée. Un personnage En Fuite ne réagit pas.
+    // Renvoie {at, mode} (at = cases parcourues par le chargeur avant la réaction), ou null :
+    // - arme à distance : à mi-course, arrondie au-dessus pour une course impaire (2N+1 → N+1, Idan 2026-10-08) ;
+    // - mêlée / arme d'hast : première case du trajet dans la portée de contact de l'arme.
+    function counterchargeTrigger(reactor,charger,charge){
+      if(!reactor?.alive||reactor.fleeing) return null;
+      const item=activeWeaponItem(reactor),weapon=weaponTemplate(item);
+      if(!weapon?.contre_charge||!isLoaded(reactor,item)) return null;
+      const mode=isRangedWeapon(weapon)?"ranged":"melee";
+      const path=charge?.path||[];
+      const inReach=at=>at>=1&&at<=path.length&&canAttackAtDistance(reactor,axialDistance(reactor,path[at-1]),mode);
+      if(mode==="ranged"){
+        const at=Math.ceil(path.length/2);
+        return inReach(at)?{at,mode}:null;
+      }
+      for(let at=1;at<=path.length;at++) if(inReach(at)) return {at,mode};
+      return null;
+    }
+
     // Chaque attaque résolue est signalée au crochet options.onAttack(attaquant, défenseur, options,
     // résultat), par exemple pour le journal de progression (game-core/progression.js).
     function resolveAttack(attacker,defender,attackOptions={}){
@@ -596,6 +616,7 @@
         travel,
         path:Array.from({length:travel},(_,i)=>({q:attacker.q+step.q*(i+1),r:attacker.r+step.r*(i+1)})),
         destination:{q:defender.q-step.q,r:defender.r-step.r},
+        step,
         min:base,
         max:2*base
       };
@@ -633,6 +654,7 @@
       canSwitchWeaponSet,
       switchWeaponSet,
       chargeData,
+      counterchargeTrigger,
       threatens,
       isEncircled,
       intimidation,

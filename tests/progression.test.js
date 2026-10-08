@@ -142,6 +142,10 @@ for(const [roll,label] of [[0,"chute"],[0.999,"raté"]]){
   assert.equal(rules.gains(ca.progress).stats.Courage,50,label);
 }
 
+// Charge brisée avant son attaque (contre-charge, attaque d'opportunité) : toujours une charge tentée.
+const brokenCharge={};P.recordChargeAttempt(brokenCharge);
+assert.equal(rules.gains(brokenCharge.progress).stats.Courage,50);
+
 // Fin de mission : XP appliquée aux survivants, pas aux morts.
 const campaign=createCampaignRules({generator,tavern:createTavernRules({reference,random:()=>0.999}),reference,progression:rules});
 const captain=generator.createCaptain({id:10});

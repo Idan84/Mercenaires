@@ -143,9 +143,9 @@ Le tir est construit comme un combat physique à distance, sans créer un second
 - **Courage** : [Courage post-tir V1](/design/#doc=formulas/courage-post-tir-v1.md). Une cible réellement blessée peut fuir ; le tireur ne teste jamais son Courage simplement parce qu'il a raté ou n'a pas blessé.
 - **Armes à feu** : [Armes à feu — recharge et double pistolet V1](/design/#doc=formulas/armes-a-feu-recharge-et-double-pistolet-v1.md) : pas de stock de munitions normales ; **recharger une arme = 1 Action rapide** ; épée + pistolet et deux pistolets suivent le combat à deux armes, avec inerties cumulées et une attaque de base par arme actuellement utilisable.
 
-Choix d'implémentation V1 de la recharge, à confirmer en relecture :
-- les armes à recharge sont celles marquées `recharge_action_rapide` dans `skills.json` (Pistolet, Arquebuse / Mousquet, Tromblon, Canon à main) ;
-- toutes sont **chargées au début de la mission** ; l'état chargé ne dure que la mission ;
+Choix d'implémentation V1 de la recharge :
+- validés par Idan le 2026-10-08 : toutes les armes à feu sont **chargées au début de la mission** ; l'état chargé ne dure que la mission ;
+- à confirmer en relecture : les armes à recharge sont celles marquées `recharge_action_rapide` dans `skills.json` (Pistolet, Arquebuse / Mousquet, Tromblon, Canon à main) ;
 - l'arme se décharge dès que le coup part, qu'il touche ou non ;
 - l'IA recharge avec son Action rapide quand son arme est déchargée (après un éventuel changement d'arme, qui consomme aussi l'Action rapide).
 
@@ -167,6 +167,15 @@ La **forme et le rayon** restent propres à l'arme ou au sort. Cette règle doit
 - [Contre-charge V1](/design/#doc=formulas/contre-charge-v1.md) : la cible d'une charge peut réagir avec une arme configurée `Contre-charge`. Une réaction **à distance part à mi-course** ; une réaction de mêlée / hast part à sa portée normale.
 
 Si la contre-charge **blesse** le chargeur, son attaque est annulée et il teste immédiatement son Courage. En cas d'échec, il fait demi-tour et consomme tout mouvement de charge restant pour repartir dans la direction opposée.
+
+Mi-course sur une course impaire `2N+1` : la réaction part à la case **N+1** (5 cases → 3e case) — décision Idan du 2026-10-08.
+
+Choix d'implémentation V1, à confirmer en relecture :
+- la contre-charge est **automatique** dès que l'arme active de la cible le permet ; une arme à feu doit être chargée et se décharge en tirant ; un personnage En Fuite ne contre-charge pas ;
+- c'est une seule attaque normale (Toucher, blocage, critiques, Blesser), sans enchaînement ; si elle ne blesse pas, personne ne teste son Courage et la charge continue ;
+- le test du chargeur blessé est le test normal face à la cible, sans malus de sous-nombre ;
+- le demi-tour suit la ligne de la charge à rebours ; il s'arrête sur une case occupée ou au bord de la carte, et peut provoquer des attaques d'opportunité ;
+- une charge brisée avant son attaque (contre-charge ou attaque d'opportunité pendant la course) compte quand même comme **charge tentée** pour l'XP de Courage (doc 08).
 
 ## En Fuite V1
 
@@ -201,7 +210,7 @@ Le moteur tactique est isolé dans `game-core/combat-engine.js`. La carte web n'
 
 ### Simplifications volontaires du premier test
 
-Le noyau utilise déjà les formules validées de portée, vitesse/esquive effectives, MouvementBase, Toucher, Blesser, résistances d'armure, qualité d'item, dégâts PV, charge, attaques d'opportunité, Frappe dans le dos, encerclement, Courage et Fuite. Les critiques, échecs critiques, le blocage au bouclier, les enchaînements d'attaques et de tirs et la recharge des armes à feu sont branchés. En revanche, ce premier écran ne branche pas encore les autres systèmes secondaires : combat à deux armes, couverture/obstacles, approximation des projectiles et contre-charge automatique.
+Le noyau utilise déjà les formules validées de portée, vitesse/esquive effectives, MouvementBase, Toucher, Blesser, résistances d'armure, qualité d'item, dégâts PV, charge, attaques d'opportunité, Frappe dans le dos, encerclement, Courage et Fuite. Les critiques, échecs critiques, le blocage au bouclier, les enchaînements d'attaques et de tirs, la recharge des armes à feu et la contre-charge sont branchés. En revanche, ce premier écran ne branche pas encore les autres systèmes secondaires : combat à deux armes, couverture/obstacles et approximation des projectiles.
 
 Choix d'implémentation V1, confirmés en relecture par Chatty (PR #7) : aucune limite au nombre d'attaques d'opportunité par adversaire et par tour ; un personnage Au Sol réagit normalement et compte pour l'encerclement ; plusieurs réactions simultanées sont résolues dans l'ordre d'initiative de l'équipe qui réagit ; une charge ne peut pas traverser une case occupée ; sortir de la carte coûte un hexagone de mouvement depuis une case du bord ; la Mission Test n'ayant aucun abri total, « Cachons-nous » file vers la sortie de carte sans jamais entrer dans une case adjacente à un ennemi (sans trajet sûr vers une sortie, il s'éloigne au mieux par les cases sûres, sinon il reste sur place) ; « Feu à volonté » tire à la cadence de l'arme (Enchaînement de tirs distance V1) et ne recharge pas une arme déchargée.
 

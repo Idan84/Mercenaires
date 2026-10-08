@@ -38,8 +38,7 @@
   // Après chaque attaque résolue par le moteur de combat (crochet onAttack de createCombatEngine).
   function recordAttack(attacker,defender,options,result){
     if(!result?.ok) return;
-    // Courage : la charge compte dès qu'elle est tentée, même ratée ou finie en chute (Idan, 2026-10-06).
-    if(Number(options?.chargeDistance)>0) logOf(attacker).chargeAttempts++;
+    if(Number(options?.chargeDistance)>0) recordChargeAttempt(attacker);
     if(result.wound){
       // Moteur V1 : une attaque blesse avec une seule composante, physique (result.matchup.type).
       recordWound(defender,result.matchup?.type);
@@ -64,6 +63,10 @@
     const resistance=RESISTANCE_BY_DAMAGE[damageType]||"Résistance physique";
     log.wounds[resistance]=(log.wounds[resistance]||0)+1;
   }
+  // Courage : la charge compte dès qu'elle est tentée, même ratée, finie en chute ou brisée avant le coup
+  // (Idan, 2026-10-06). recordAttack la compte quand l'attaque de charge est résolue ; une charge arrêtée
+  // avant son attaque (contre-charge, attaque d'opportunité) est signalée directement.
+  function recordChargeAttempt(unit){ logOf(unit).chargeAttempts++; }
   // Chaque activation du combattant pendant la mission. carried = {load, force} au moment de l'activation :
   // un changement d'équipement en cours de mission ne réécrit pas l'XP de Force déjà acquise.
   function recordActivation(unit,carried=null){
@@ -185,5 +188,5 @@
     return {constants:C,xpForLevel,levelForXp,startingXp,loadOf,gains,apply,recordActivation:recordUnitActivation};
   }
 
-  return {createProgressionRules,emptyLog,recordActivation,recordAttack,recordWound,recordFleeHex,recordHeal,recordCritical,RESISTANCES,RESISTANCE_BY_DAMAGE};
+  return {createProgressionRules,emptyLog,recordActivation,recordAttack,recordChargeAttempt,recordWound,recordFleeHex,recordHeal,recordCritical,RESISTANCES,RESISTANCE_BY_DAMAGE};
 });

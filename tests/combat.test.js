@@ -440,4 +440,28 @@ const bowman=unit(withMainWeapon(a,"Arc"),0,0);
 combat.resolveAttack(bowman,gunTarget,{mode:"ranged",distance:3});
 assert.deepEqual([combat.isLoaded(bowman,combat.activeWeaponItem(bowman)),combat.canReload(bowman)],[true,false]);
 
+// Contre-charge V1 : quand la cible directe réagit pendant la course du chargeur.
+// Chargeur en q=0, cible en q=travel+1 : trajet q=1..travel, la dernière case est au contact.
+const chargeLine=(travel,reactorCharacter)=>{
+  const charger=unit(a,0,0),reactor=unit(reactorCharacter,travel+1,0);setFamily(charger,"melee");
+  const charge=combat.chargeData(charger,reactor);
+  assert.equal(charge.travel,travel);
+  return {charger,reactor,charge};
+};
+let cc=chargeLine(4,withMainWeapon(b,"Lance"));
+assert.deepEqual(cc.charge.step,{q:1,r:0},"direction de la charge");
+assert.deepEqual(combat.counterchargeTrigger(cc.reactor,cc.charger,cc.charge),{at:3,mode:"melee"},"Lance (portée 1–2) : à l'entrée dans sa portée, 2 cases avant la cible");
+cc=chargeLine(4,withMainWeapon(b,"Arc"));
+assert.deepEqual(combat.counterchargeTrigger(cc.reactor,cc.charger,cc.charge),{at:2,mode:"ranged"},"à distance : mi-course");
+cc=chargeLine(5,withMainWeapon(b,"Arc"));
+assert.deepEqual(combat.counterchargeTrigger(cc.reactor,cc.charger,cc.charge),{at:3,mode:"ranged"},"course impaire 2N+1 → case N+1 (Idan, 2026-10-08)");
+cc=chargeLine(4,withMainWeapon(b,"Pistolet"));
+assert.equal(combat.counterchargeTrigger(cc.reactor,cc.charger,cc.charge).mode,"ranged");
+cc.reactor.unloaded=[combat.activeWeaponItem(cc.reactor).id];
+assert.equal(combat.counterchargeTrigger(cc.reactor,cc.charger,cc.charge),null,"arme à feu déchargée : pas de contre-charge");
+cc=chargeLine(4,withMainWeapon(b,"Épée longue"));
+assert.equal(combat.counterchargeTrigger(cc.reactor,cc.charger,cc.charge),null,"arme sans contre-charge");
+cc=chargeLine(4,withMainWeapon(b,"Lance"));cc.reactor.fleeing=true;
+assert.equal(combat.counterchargeTrigger(cc.reactor,cc.charger,cc.charge),null,"un personnage En Fuite ne réagit pas");
+
 console.log(JSON.stringify({ok:true},null,2));

@@ -299,7 +299,7 @@ function renderMissionProgression(entries){
 
 function logMissionAttack(a,d,result,kind="attack"){
   if(!result.ok){ missionLog(result.reason||"Attaque impossible.","bad"); return; }
-  const verb={charge:" charge ",opportunity:" profite de l’ouverture et frappe "}[kind]||" attaque ";
+  const verb={charge:" charge ",opportunity:" profite de l’ouverture et frappe ",countercharge:" contre-charge "}[kind]||" attaque ";
   const prefix=a.character.name+verb+d.character.name+" avec "+result.weapon
     +(result.opportunity?" (attaque d’opportunité, dans le dos)":result.encircled?" (cible encerclée, dans le dos)":result.backstab?" (dans le dos)":"");
 
@@ -664,12 +664,7 @@ function handleMissionHexClick(q,r){
     if(!charge) return;
 
     u.attackAvailable=false;u.movementRemaining=0;m.mode=null;
-    moveMissionUnitAlongPath(u,charge.path);
-    if(missionActiveUnitLost()) return;
-    const result=m.engine.resolveAttack(u,clicked,{mode:"melee",distance:1,chargeDistance:charge.travel,encircled:missionEncircled(clicked)});
-    logMissionAttack(u,clicked,result,"charge");
-    checkMissionEnd();
-    resolveMissionCourage(u,clicked,result);
+    performMissionCharge(u,clicked,charge);
     if(missionActiveUnitLost()) return;
     renderMission();
   }
@@ -779,13 +774,64 @@ function enemyTryCharge(unit,target){
   if(!charge) return false;
 
   unit.movementRemaining=0;
-  moveMissionUnitAlongPath(unit,charge.path);
-  if(!unit.alive||unit.fleeing) return true;
+  performMissionCharge(unit,target,charge);
+  return true;
+}
+
+// Charge CAC V1, avec Contre-charge V1 : la cible réagit une fois pendant la course (mi-course pour une arme
+// à distance, entrée dans la portée pour une arme d'hast), avant l'attaque du chargeur. Si la réaction blesse,
+// la charge est brisée et le chargeur teste son Courage face à la cible.
+function performMissionCharge(unit,target,charge){
+  const m=game.mission,e=m.engine;
+  const reaction=e.counterchargeTrigger(target,unit,charge);
+  const legs=reaction?[charge.path.slice(0,reaction.at),charge.path.slice(reaction.at)]:[charge.path];
+  const stillCharging=()=>unit.alive&&!unit.fleeing&&!m.over;
+  // Une charge arrêtée avant son attaque reste une charge tentée (Courage, doc 08).
+  const broken=()=>{ MercenairesProgression.recordChargeAttempt(unit); };
+
+  if(moveMissionUnitAlongPath(unit,legs[0])<legs[0].length||!stillCharging()){ broken(); return; }
+  if(reaction){
+    const distance=e.axialDistance(target,unit);
+    if(target.alive&&!target.fleeing&&e.canAttackAtDistance(target,distance,reaction.mode)){
+      const r=e.resolveAttack(target,unit,{mode:reaction.mode,distance});
+      logMissionAttack(target,unit,r,"countercharge");
+      checkMissionEnd();
+      if(r.wound||!unit.alive){
+        broken();
+        if(unit.alive&&!m.over){
+          missionLog("La charge de "+unit.character.name+" est brisée.","bad");
+          resolveMissionCounterchargeCourage(target,unit,r,charge,charge.travel-reaction.at);
+        }
+        return;
+      }
+    }
+    if(moveMissionUnitAlongPath(unit,legs[1])<legs[1].length||!stillCharging()){ broken(); return; }
+  }
   const result=e.resolveAttack(unit,target,{mode:"melee",distance:1,chargeDistance:charge.travel,encircled:missionEncircled(target)});
   logMissionAttack(unit,target,result,"charge");
   checkMissionEnd();
   resolveMissionCourage(unit,target,result);
-  return true;
+}
+
+// Contre-charge V1 : en cas d'échec, le chargeur passe En Fuite, fait demi-tour et dépense tout le mouvement
+// de charge restant dans la direction opposée ; sans mouvement restant (ou sans case libre), il reste sur place.
+function resolveMissionCounterchargeCourage(reactor,charger,result,charge,remaining){
+  const e=game.mission.engine;
+  const c=e.resolveCourage(reactor,charger,result,{defenderSurplus:0});
+  if(!c) return;
+  const detail=" (Courage "+Math.round(c.pHold)+" %, jet "+c.roll+")";
+  if(!c.flees){ missionLog(charger.character.name+" tient bon"+detail+".","info"); return; }
+  missionLog(charger.character.name+" panique et prend la fuite"+detail+" !","bad");
+  charger.fleeing=true;charger.fleeTurn=0;
+  const occupied=occupiedMissionKeys(charger),path=[];
+  let at={q:charger.q,r:charger.r};
+  for(let i=0;i<remaining;i++){
+    const next={q:at.q-charge.step.q,r:at.r-charge.step.r};
+    if(!validMissionHex(next.q,next.r)||occupied.has(missionKey(next.q,next.r))) break;
+    path.push(next);at=next;
+  }
+  if(!path.length){ missionLog(charger.character.name+" ne peut pas reculer et reste sur place, en fuite.","move"); return; }
+  missionFollowFleePath(charger,path,"fait demi-tour et s’enfuit");
 }
 
 function enemyMissionAct(unit){

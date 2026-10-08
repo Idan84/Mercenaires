@@ -1566,3 +1566,51 @@ body[data-screen="camp"] .app-shell,body[data-screen="mission"] .app-shell{paddi
 .game-pause-panel button:hover:not(:disabled){background:#63412a;border-color:#e3bd76}
 .game-pause-panel button:disabled{opacity:.35;cursor:not-allowed}
 .game-pause-panel small{font-size:11px;opacity:.7}
+
+
+/* Version joueur PC : informations techniques masquées, panneaux et fiches plus immersifs. */
+body[data-screen="camp"] .company-meta,
+body[data-screen="camp"] .company-actions,
+body[data-screen="camp"] .camp-debug,
+#test-gold-btn{display:none!important}
+body[data-screen="camp"] .camp-scene>.panel{background:rgba(25,20,17,.90);border:1px solid #957652;color:#f0e2ca;box-shadow:0 20px 60px #0008}
+body[data-screen="camp"] .camp-scene>.panel h2{font:normal 32px Georgia,serif;color:#f4d9a6}
+body[data-screen="camp"] .camp-scene>.panel .eyebrow{color:#d3ac76}
+body[data-screen="camp"] .camp-scene>.panel .muted{color:#c2b29e}
+#captain-summary{max-width:750px;margin:22px auto}
+.character-list{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.roster-card{display:flex;gap:14px;min-height:134px;padding:14px;border:1px solid #9c7952;border-radius:13px;background:linear-gradient(130deg,#443126,#201916);text-align:left;color:#e9d9c0;box-shadow:0 10px 25px #0005;min-width:0;transition:border-color .16s,transform .16s}
+.roster-card:hover,.roster-card:focus-visible{border-color:#eed098;transform:translateY(-2px);outline:none}
+.roster-card .avatar-frame{width:94px;aspect-ratio:1;flex:0 0 94px;margin:0}
+.roster-card-info{display:flex;flex-direction:column;gap:6px;min-width:0}
+.roster-card-info small{font:700 10px Georgia,serif;color:#cca56c;letter-spacing:.12em}
+.roster-card-info strong{font:normal 21px Georgia,serif;color:#ffdfad}
+.roster-card-info>span{font-size:12px;color:#d6c6b0}
+.roster-card-info em{font-style:normal;font-size:12px;color:#bcd39a}
+.roster-card-details{line-height:1.5}
+.roster-captain{max-width:570px}
+#character-dialog{background:#201916;color:#eadbc4;border:1px solid #987750;border-radius:15px;box-shadow:0 26px 80px #000c}
+#character-dialog .dialog-head{background:#34251d;border-bottom:1px solid #97724b;padding-bottom:10px}
+#character-dialog .dialog-head h2{font:normal 34px Georgia,serif;color:#f3d5a0}
+#character-dialog #dialog-role{color:#cca477}
+#character-dialog .sheet-tab{color:#cbb99e;border-radius:4px;background:transparent}
+#character-dialog .sheet-tab:hover{background:#473529;color:#ffdfaf}
+#character-dialog .sheet-tab.active{color:#ffdfad;border-color:#dbac6e}
+#character-dialog #dialog-content{padding:24px}
+.player-profile{display:grid;grid-template-columns:250px minmax(0,1fr);gap:28px}
+.player-profile>.avatar-frame{max-width:250px;margin:0}
+.player-profile-details{min-width:0}
+.player-profile-tag{color:#cfaa73;font:700 12px Georgia,serif;letter-spacing:.1em;text-transform:uppercase;margin-bottom:18px}
+.player-identity-grid,.player-vitals{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:18px}
+.player-vitals{grid-template-columns:repeat(4,minmax(0,1fr))}
+.player-identity-grid>div,.player-vitals>div,.player-stat{background:#382a22;border:1px solid #71583e;border-radius:8px;padding:11px;min-width:0}
+.player-identity-grid small,.player-vitals small{display:block;color:#bb9a6e;font-size:11px;margin-bottom:6px}
+.player-identity-grid strong,.player-vitals strong{font-size:15px;color:#f4e1c2}
+.player-stat-section{margin-bottom:22px}
+.player-stat-section h3{font:normal 22px Georgia,serif;color:#e8ca96;margin:4px 0 12px}
+.player-stat-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.player-stat{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.player-stat span{font-size:12px;color:#dfd0bb}.player-stat strong{color:#f7da9c}
+#character-dialog .character-bio{background:#2d231c;color:#e5d1b1;border-color:#72583d}
+#character-dialog .metric,#character-dialog .skill-group{background:#342820;color:#e5d4bc;border-color:#6e533a}
+#hud-resources{font-size:.88rem;white-space:nowrap}

@@ -6,20 +6,19 @@ function statSummary(c) {
     .join(" · ");
 }
 
-function characterRow(c, hero=false) {
-  const asc = c.ascendance ? `${c.ascendance} (${c.ascendanceLevelName || "N"+c.ascendanceLevel})` : "Aucune";
-  return `<div class="${hero ? "hero-card":"character-row"}">
-    <div class="character-cell character-identity-cell">
-      ${renderAvatar(c,{variant:"compact",kind:"portrait"})}
-      <div><small>${esc(c.role)}</small><button class="character-link" data-character-id="${c.id}">${esc(c.name)}</button>${c.recovery ? `<span class="recovery-badge ${c.recovery.kind}">${esc(recoveryLabel(c))}</span>` : ""}</div>
-    </div>
-    <div class="character-cell"><small>Peuple</small><strong>${renderPicto("people",c.people)}${esc(c.people)}</strong></div>
-    <div class="character-cell"><small>Ascendance</small><strong>${renderPicto("ascendance",c.ascendance)}${esc(asc)}</strong></div>
-    <div class="character-cell"><small>Réputation</small><strong>${Math.round(c.reputation)}</strong></div>
-    <div class="character-cell"><small>Salaire demandé</small><strong>${fmt(c.salary)} PO/j</strong></div>
-    <div class="character-cell"><small>PV</small><strong>${c.pvMax}</strong></div>
-    ${hero ? "" : `<div class="character-cell"><small>Stats</small><strong>${esc(statSummary(c))}</strong></div>`}
-  </div>`;
+function characterRow(c,hero=false){
+  const captain=game.campaign&&game.campaign.company.captainId===c.id;
+  const status=c.recovery?recoveryLabel(c):"Disponible";
+  const salary=Number(c.contract?.dailySalary??c.salary)||0;
+  return `<button type="button" class="roster-card ${captain?"roster-captain":""}" data-character-id="${c.id}">
+    ${renderAvatar(c,{variant:"card",kind:"portrait"})}
+    <span class="roster-card-info"><small>${captain?"CAPITAINE":esc(c.role||"MERCENAIRE")}</small>
+      <strong>${esc(c.name)}</strong>
+      <span>${esc(c.people)} · ${esc(c.culture||"")}</span>
+      <span class="roster-card-details">PV ${fmt(c.pvMax)} · Réputation ${fmt(c.reputation)} · ${fmt(salary)} PO/j</span>
+      <em>${esc(status)}</em>
+    </span>
+  </button>`;
 }
 
 function renderAudit() {
@@ -75,7 +74,7 @@ function renderAudit() {
 function renderGame() {
   $("setup-panel").classList.add("hidden");
   $("game-panel").classList.remove("hidden");
-  $("company-title").textContent = `Compagnie de ${game.captain.name}`;
+  $("company-title").textContent = game.campaign?.company.name || `Compagnie de ${game.captain.name}`;
   $("captain-summary").innerHTML = characterRow(game.captain, true);
   const squad = teamCharacters().filter(c => c !== game.captain);
   $("initial-count").textContent = `${squad.length} mercenaire${squad.length>1?"s":""}`;
@@ -509,8 +508,7 @@ const SHEET_TABS = [
   ["stats", "Caractéristiques"],
   ["skills", "Compétences"],
   ["equipment", "Équipement"],
-  ["magic", "Magie"],
-  ["pending", "À définir"]
+  ["magic", "Magie"]
 ];
 
 // Situation dans la compagnie : rôle, contrat, indisponibilité.
@@ -536,35 +534,29 @@ function renderSituation(c) {
   </section>`;
 }
 
-function renderProfileTab(c) {
-  const asc = c.ascendance
-    ? `${c.ascendance} — ${c.ascendanceLevelName || "niveau "+c.ascendanceLevel}`
-    : "Aucune";
-  const rb = c.reputationBreakdown;
-  return `
-    <section class="character-overview">
-      ${renderAvatar(c,{variant:"detail"})}
-      <div class="character-overview-copy">
-        ${renderBiography(c)}
-        <div class="identity-grid">
-          <div class="metric"><small>Peuple</small><strong>${renderPicto("people",c.people,{size:"md"})}${esc(c.people)}</strong></div>
-          <div class="metric"><small>Culture</small><strong>${esc(c.culture)}</strong></div>
-          <div class="metric"><small>Origine</small><strong>${esc(c.origin)}</strong></div>
-          <div class="metric"><small>Ascendance</small><strong>${renderPicto("ascendance",c.ascendance,{size:"md"})}${esc(asc)}</strong></div>
-          <div class="metric"><small>Alignement</small><strong>${esc(c.alignment)}</strong></div>
-          <div class="metric"><small>Réputation</small><strong>${Math.round(c.reputation)}</strong></div>
-          <div class="metric"><small>Prétentions</small><strong>${c.salaryPretension}</strong></div>
-          <div class="metric"><small>Salaire demandé</small><strong>${fmt(c.salary)} PO/j</strong></div>
-        </div>
-        <div class="metric-grid">
-          <div class="metric"><small>PV max</small><strong>${c.pvMax}</strong></div>
-          <div class="metric"><small>Mana</small><strong>${c.mana}</strong></div>
-          ${rb ? `<div class="metric"><small>Moyenne pool réputation</small><strong>${fmt(rb.mean)}</strong></div>
-          <div class="metric"><small>Max / Min pool</small><strong>${Math.round(rb.max)} / ${Math.round(rb.min)}</strong></div>` : ""}
-        </div>
+function renderProfileTab(c){
+  const captain=game.campaign?.company.captainId===c.id;
+  return `<section class="player-profile">
+    ${renderAvatar(c,{variant:"detail",kind:"full"})}
+    <div class="player-profile-details">
+      <div class="player-profile-tag">${captain?"Capitaine de la compagnie":"Mercenaire"}</div>
+      <div class="player-identity-grid">
+        <div><small>Peuple</small><strong>${esc(c.people)}</strong></div>
+        <div><small>Culture</small><strong>${esc(c.culture||"—")}</strong></div>
+        <div><small>Origine</small><strong>${esc(c.origin||"—")}</strong></div>
+        <div><small>Ascendance</small><strong>${esc(c.ascendance||"Aucune")}</strong></div>
+        <div><small>Alignement</small><strong>${esc(c.alignment||"—")}</strong></div>
+        <div><small>Réputation</small><strong>${fmt(c.reputation)}</strong></div>
       </div>
-    </section>
-    ${renderSituation(c)}`;
+      <div class="player-vitals">
+        <div><small>Points de vie</small><strong>${fmt(c.pvMax)}</strong></div>
+        <div><small>Mana</small><strong>${fmt(c.mana||0)}</strong></div>
+        <div><small>État</small><strong>${c.recovery?esc(recoveryLabel(c)):"Disponible"}</strong></div>
+        <div><small>Salaire quotidien</small><strong>${fmt(c.contract?.dailySalary??c.salary??0)} PO</strong></div>
+      </div>
+      ${renderBiography(c)}
+    </div>
+  </section>`;
 }
 
 // Biographie figée sur le mercenaire (game-core/biography.js). Hors campagne (banc de test),
@@ -586,27 +578,16 @@ function renderBiography(c) {
   </section>`;
 }
 
-function renderStatsTab(c) {
-  return `<section class="sheet-section">
-    <div class="section-title-row compact"><div><h3>Caractéristiques et résistances</h3></div><span class="muted">brut → identités → final · comparaison = capitaine + escouade</span></div>
-    ${traceNotice(c)}
-    ${renderCharacteristicTrace(c)}
-  </section>`;
+function renderStatsTab(c){
+  const section=(title,data)=>`<section class="player-stat-section"><h3>${title}</h3><div class="player-stat-grid">${Object.entries(data||{}).map(([key,value])=>`<div class="player-stat"><span>${esc(key)}</span><strong>${fmt(value)}</strong></div>`).join("")}</div></section>`;
+  return section("Caractéristiques",c.stats)+section("Résistances",c.resistances);
 }
-
-// La magie a son propre onglet : elle n'est pas répétée ici (idée de Chatty, PR #29).
-function renderSkillsTab(c) {
-  return `<section class="sheet-section">
-    <div class="section-title-row compact"><div><h3>Compétences</h3></div><span class="muted">tirage brut → matrice → final · comparaison = capitaine + escouade</span></div>
-    ${traceNotice(c)}
-    <div class="skill-groups">
-      ${renderMartialGroup(c)}
-      ${Object.entries(c.skills)
-        .filter(([group,values]) => group !== "martial" && group !== "magic" && Object.keys(values).length)
-        .map(([group,values]) => renderSkillGroup(c,group,values))
-        .join("")}
-    </div>
-  </section>`;
+function renderSkillsTab(c){
+  return `<div class="player-skills">${Object.entries(c.skills||{}).filter(([group])=>group!=="magic").map(([group,values])=>{
+    const entries=Object.entries(values||{}).filter(([,value])=>typeof value==="number").sort((a,b)=>b[1]-a[1]);
+    if(!entries.length)return "";
+    return `<section class="player-stat-section"><h3>${esc(skillLabel(group))}</h3><div class="player-stat-grid">${entries.map(([name,value])=>`<div class="player-stat"><span>${esc(name)}</span><strong>${fmt(value)}</strong></div>`).join("")}</div></section>`;
+  }).join("")}</div>`;
 }
 
 // Grimoire (Chatty, PR #29) : accepte déjà mercenary.spells = [{name, school, mastery}], sans l'exiger.
@@ -657,9 +638,8 @@ function renderMagicTab(c) {
 function renderSheetTab(c, tab) {
   if (tab === "stats") return renderStatsTab(c);
   if (tab === "skills") return renderSkillsTab(c);
-  if (tab === "equipment") return renderEquipment(c) + renderWeaponPreferences(c);
+  if (tab === "equipment") return renderEquipment(c);
   if (tab === "magic") return renderMagicTab(c);
-  if (tab === "pending") return renderPending(c) || `<p class="muted">Rien à définir pour ce mercenaire : tout ce que le moteur sait générer l’a été.</p>`;
   return renderProfileTab(c);
 }
 

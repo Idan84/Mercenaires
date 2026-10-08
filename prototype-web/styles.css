@@ -1519,3 +1519,24 @@ body[data-screen="camp"] > .app-shell { position: relative; z-index: 1; }
 .tavern-action-feedback{grid-column:1/-1;min-height:1.5em;color:#f8d897;text-align:center;text-shadow:0 1px 5px #090603}
 #tavern-missions-view,#tavern-recruits-view{margin-top:24px}
 #tavern-missions-view h2{margin:20px 0 12px}
+
+
+/* Navigation desktop des lieux : le château reste visible, pas le gros bandeau prototype. */
+body[data-screen="camp"]:not([data-camp-scene="home"]) .topbar{display:none}
+body[data-screen="camp"]:not([data-camp-scene="home"]) .camp-scene-nav{display:none}
+body[data-screen="camp"]:not([data-camp-scene="home"]) .app-shell{padding-top:32px}
+.camp-home-icon-btn{
+  position:fixed;top:24px;right:28px;z-index:80;
+  display:grid;place-items:center;width:58px;height:58px;
+  border:1px solid #bc9860;border-radius:14px;
+  background:linear-gradient(145deg,rgba(56,38,27,.97),rgba(20,16,15,.97));
+  color:#f1d49b;box-shadow:0 8px 25px #0008,inset 0 1px #ffda8740;
+  cursor:pointer;transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease;
+}
+.camp-home-icon-btn:hover,.camp-home-icon-btn:focus-visible{
+  transform:translateY(-2px);border-color:#ffe1a5;
+  box-shadow:0 11px 30px #000a,0 0 0 2px #f2c87955;outline:none;
+}
+.camp-home-icon-btn:active{transform:translateY(0)}
+.camp-home-icon-btn.hidden{display:none!important}
+@media(prefers-reduced-motion:reduce){.camp-home-icon-btn{transition:none}}

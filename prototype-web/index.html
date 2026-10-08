@@ -13,6 +13,20 @@
       <path d="M14 9V5m8 14v-5m4-8V3m8 3V3M7 19h34M17 41V30a7 7 0 0 1 14 0v11M22 23h4"/>
     </svg>
   </button>
+  <aside id="game-hud" class="game-hud hidden" aria-label="Interface de jeu">
+    <div class="game-bottom-bar"><span id="hud-company">Blood &amp; Wages</span><span id="hud-resources"></span><button id="hud-pause-btn" type="button" aria-label="Ouvrir le menu de pause">☰ <span>Échap</span></button></div>
+    <section class="game-action-console" aria-label="Journal des actions"><div class="game-console-title">Journal de la compagnie <button id="hud-console-toggle" type="button" aria-label="Réduire ou afficher le journal">−</button></div><ol id="game-action-lines" aria-live="polite" aria-relevant="additions"></ol></section>
+  </aside>
+  <div id="game-pause" class="game-pause hidden" role="dialog" aria-modal="true" aria-labelledby="game-pause-title">
+    <div class="game-pause-panel"><p class="eyebrow">Blood &amp; Wages</p><h2 id="game-pause-title">Menu de pause</h2>
+      <button type="button" data-pause-action="resume">Reprendre <small>Échap</small></button>
+      <button type="button" data-pause-action="save">Sauvegarder</button>
+      <button type="button" data-pause-action="load" disabled title="Chargement multi-emplacements à venir">Charger (bientôt)</button>
+      <button type="button" data-pause-action="options" disabled title="Options à développer">Options (bientôt)</button>
+      <button type="button" data-pause-action="design">Design Labs</button>
+      <button type="button" data-pause-action="menu">Menu principal</button>
+    </div>
+  </div>
   <main class="app-shell">
     <header class="topbar">
       <div class="brand-block">

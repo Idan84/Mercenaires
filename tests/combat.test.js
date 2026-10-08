@@ -388,4 +388,29 @@ const near2=(x,y,label)=>assert.ok(Math.abs(x-y)<1e-9,label+" : "+x+" ≠ "+y);
 assert.ok(combat.effectiveSpeed(shielded)>1,"Vitesse assez haute pour ne pas toucher le plancher");
 near2(combat.effectiveSpeed(bare)-combat.effectiveSpeed(shielded),swordPenalty*0.5+penalty(guardChar,"weapon_set_1_off"),"avec bouclier");
 
+// Enchaînement d'attaques CAC V1 : P_N = min(100, (Dextérité + Vitesse combat effective) / N) ;
+// Enchaînement de tirs distance V1 : divisé par 1,5 × N.
+const chainer=unit(a,0,0),chainTarget=unit(b,1,0);setFamily(chainer,"melee");
+const chainBase=(Number(a.stats["Dextérité"])||0)+combat.effectiveSpeed(chainer);
+near(combat.chainChance(chainer,2,"melee"),Math.min(100,chainBase/2),"attaque n°2");
+near(combat.chainChance(chainer,3,"melee"),Math.min(100,chainBase/3),"attaque n°3");
+near(combat.chainChance(chainer,2,"ranged"),Math.min(100,chainBase/3),"tir n°2");
+assert.equal(combat.chainChance(unit({...a,stats:{...a.stats,"Dextérité":900}},0,0),2,"melee"),100,"plafond 100");
+const realHit={ok:true,hit:true,wound:false};
+assert.deepEqual(combat.rollChain(chainer,chainTarget,realHit,2,"melee"),{n:2,p:combat.chainChance(chainer,2,"melee"),roll:1,continues:true});
+assert.equal(panicky.rollChain(chainer,chainTarget,realHit,2,"melee").continues,false,"D100 > P_N : la chaîne s'arrête");
+assert.ok(combat.rollChain(chainer,chainTarget,{ok:true,hit:true,criticalHit:true,wound:true,criticalWound:true},2,"melee"),"un critique positif n'arrête pas la chaîne");
+for(const [stop,label] of [
+  [{ok:true,hit:false},"raté"],[{ok:true,hit:true,blocked:true},"bloqué"],[{ok:true,hit:false,fumble:true},"échec critique au Toucher"],
+  [{ok:true,hit:true,wound:false,woundFumble:true},"échec critique de blessure"],[{ok:false},"attaque impossible"]
+]) assert.equal(combat.rollChain(chainer,chainTarget,stop,2,"melee"),null,label);
+assert.equal(combat.rollChain(chainer,{...chainTarget,alive:false},realHit,2,"melee"),null,"cible hors combat");
+assert.equal(combat.rollChain({...chainer,alive:false},chainTarget,realHit,2,"melee"),null,"attaquant hors combat");
+// Cadence : seules les armes « Répétable » enchaînent les tirs.
+assert.deepEqual(["Arc","Fronde","Sarbacane","Arbalète","Pistolet"].map(nom=>combat.isRepeatable({nom})),[true,true,true,false,false]);
+const crossbow=unit(a,0,0);
+if(setFamily(crossbow,"ranged")&&combat.weaponTemplate(combat.activeWeaponItem(crossbow)).nom==="Arbalète"){
+  assert.equal(combat.rollChain(crossbow,chainTarget,realHit,2,"ranged"),null,"Arbalète : tir unique");
+}
+
 console.log(JSON.stringify({ok:true},null,2));

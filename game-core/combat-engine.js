@@ -39,6 +39,10 @@
       luckDivisor:constant("combat.melee.crit.luck_divisor",10),
       fumbleThreshold:constant("combat.melee.fumble.threshold",96)
     };
+    const CHAIN={
+      max:constant("combat.melee.chain.max_probability",100),
+      rangedDivisor:constant("combat.ranged.chain.divisor",1.5)
+    };
     const BLOCK={
       min:constant("combat.shield.block.min_probability",5),
       max:constant("combat.shield.block.max_probability",80)
@@ -333,6 +337,30 @@
       return {fumbleRoll,fumble:fumbleRoll>(Number(unit.character.stats?.Chance)||0)};
     }
 
+    // Enchaînement d'attaques CAC V1 : P_N = min(100, (Dextérité effective + Vitesse combat effective) / N).
+    // Enchaînement de tirs distance V1 : même calcul divisé par 1,5 × N, armes « Répétable » seulement.
+    function isRepeatable(weapon){
+      return skillByName.get(weapon?.nom)?.cadence_tir==="Répétable";
+    }
+    function chainChance(attacker,n,mode){
+      const dexterity=Number(attacker.character.stats?.["Dextérité"])||0;
+      const divisor=mode==="ranged"?CHAIN.rangedDivisor*n:n;
+      return Math.min(CHAIN.max,(dexterity+effectiveSpeed(attacker))/divisor);
+    }
+    // L'attaque précédente doit avoir réellement touché (pas bloquée), sans échec critique, contre une cible
+    // encore vivante. Un critique positif n'arrête pas la chaîne.
+    function canChain(attacker,defender,result,mode){
+      if(!result?.ok||!result.hit||result.blocked||result.fumble||result.woundFumble) return false;
+      if(!attacker.alive||!defender.alive) return false;
+      return mode!=="ranged"||isRepeatable(weaponTemplate(activeWeaponItem(attacker)));
+    }
+    // Tente d'ouvrir l'attaque numéro n (n ≥ 2) ; null si la chaîne s'arrête d'elle-même.
+    function rollChain(attacker,defender,result,n,mode){
+      if(!canChain(attacker,defender,result,mode)) return null;
+      const p=chainChance(attacker,n,mode),roll=d100();
+      return {n,p,roll,continues:roll<=p};
+    }
+
     // Chaque attaque résolue est signalée au crochet options.onAttack(attaquant, défenseur, options,
     // résultat), par exemple pour le journal de progression (game-core/progression.js).
     function resolveAttack(attacker,defender,attackOptions={}){
@@ -570,6 +598,9 @@
       woundProbability,
       criticalChance,
       blockChance,
+      isRepeatable,
+      chainChance,
+      rollChain,
       resolveAttack,
       canSwitchWeaponSet,
       switchWeaponSet,

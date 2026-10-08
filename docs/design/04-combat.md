@@ -88,6 +88,13 @@ Les règles validées de maniement et cadence sont centralisées ici :
 - [Prise d'arme et mode deux mains V1](/design/#doc=formulas/prise-d-arme-et-mode-deux-mains-v1.md) : prises `1 main`, `2 mains`, `Au choix`.
 - [Combat à deux armes CAC V1](/design/#doc=formulas/combat-a-deux-armes-cac-v1.md) : combat à deux armes.
 
+Choix d'implémentation V1 des enchaînements (attaques CAC et tirs `Répétable`), à confirmer en relecture :
+- la chaîne vise toujours la même cible et s'arrête si elle n'est plus à portée (par exemple après avoir fui) ;
+- la **charge** reste une seule attaque : « arrivée suivie d'une attaque » (Charge CAC V1), sans enchaînement ;
+- au tir, les attaques d'opportunité des ennemis au contact sont résolues **une fois**, avant la séquence de tirs, pas avant chaque tir ;
+- Dextérité effective = Dextérité tant que le combat à deux armes n'est pas branché ;
+- Courage : un seul test en fin de séquence ([Courage post-attaque CAC V1](/design/#doc=formulas/courage-post-attaque-cac-v1.md), [Courage post-tir V1](/design/#doc=formulas/courage-post-tir-v1.md)) ; une cible en sous-nombre teste après chaque blessure reçue et ne reteste pas en fin de séquence.
+
 ## Bouclier physique V1
 
 La même règle de blocage s'applique au **CAC et aux projectiles physiques**, sans malus spécifique au tir. Le bouclier peut également bloquer une Frappe dans le dos / attaque non détectée.
@@ -189,8 +196,8 @@ Le moteur tactique est isolé dans `game-core/combat-engine.js`. La carte web n'
 
 ### Simplifications volontaires du premier test
 
-Le noyau utilise déjà les formules validées de portée, vitesse/esquive effectives, MouvementBase, Toucher, Blesser, résistances d'armure, qualité d'item, dégâts PV, charge, attaques d'opportunité, Frappe dans le dos, encerclement, Courage et Fuite. Les critiques, échecs critiques et le blocage au bouclier sont branchés. En revanche, ce premier écran ne branche pas encore les autres systèmes secondaires : combat à deux armes, couverture/obstacles, approximation des projectiles et contre-charge automatique.
+Le noyau utilise déjà les formules validées de portée, vitesse/esquive effectives, MouvementBase, Toucher, Blesser, résistances d'armure, qualité d'item, dégâts PV, charge, attaques d'opportunité, Frappe dans le dos, encerclement, Courage et Fuite. Les critiques, échecs critiques, le blocage au bouclier et les enchaînements d'attaques et de tirs sont branchés. En revanche, ce premier écran ne branche pas encore les autres systèmes secondaires : combat à deux armes, couverture/obstacles, approximation des projectiles et contre-charge automatique.
 
-Choix d'implémentation V1, confirmés en relecture par Chatty (PR #7) : aucune limite au nombre d'attaques d'opportunité par adversaire et par tour ; un personnage Au Sol réagit normalement et compte pour l'encerclement ; plusieurs réactions simultanées sont résolues dans l'ordre d'initiative de l'équipe qui réagit ; une charge ne peut pas traverser une case occupée ; sortir de la carte coûte un hexagone de mouvement depuis une case du bord ; la Mission Test n'ayant aucun abri total, « Cachons-nous » file vers la sortie de carte sans jamais entrer dans une case adjacente à un ennemi (sans trajet sûr vers une sortie, il s'éloigne au mieux par les cases sûres, sinon il reste sur place) ; « Feu à volonté » tire une fois (cadence et recharge non branchées).
+Choix d'implémentation V1, confirmés en relecture par Chatty (PR #7) : aucune limite au nombre d'attaques d'opportunité par adversaire et par tour ; un personnage Au Sol réagit normalement et compte pour l'encerclement ; plusieurs réactions simultanées sont résolues dans l'ordre d'initiative de l'équipe qui réagit ; une charge ne peut pas traverser une case occupée ; sortir de la carte coûte un hexagone de mouvement depuis une case du bord ; la Mission Test n'ayant aucun abri total, « Cachons-nous » file vers la sortie de carte sans jamais entrer dans une case adjacente à un ennemi (sans trajet sûr vers une sortie, il s'éloigne au mieux par les cases sûres, sinon il reste sur place) ; « Feu à volonté » tire à la cadence de l'arme (Enchaînement de tirs distance V1) ; la recharge n'est pas branchée.
 
 Dans ce banc de test, `PV <= 0` signifie **hors combat** et déclenche la condition de victoire. La mortalité persistante de fin de mission reste un système séparé. Les PV restent **signés** sous 0 : l'interface affiche 0, mais la profondeur est conservée pour le jet de mort de fin de mission (Issue #13).

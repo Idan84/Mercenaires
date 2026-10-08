@@ -412,21 +412,47 @@ function performMissionAttack(attacker,target,mode,distance){
       if(!attacker.alive||attacker.q!==from.q||attacker.r!==from.r||attacker.fleeing!==wasFleeing) return null;
     }
   }
-  const result=m.engine.resolveAttack(attacker,target,{mode,distance,encircled:missionEncircled(target)});
-  logMissionAttack(attacker,target,result);
-  checkMissionEnd();
-  resolveMissionCourage(attacker,target,result);
-  return result;
+  // Enchaînement d'attaques CAC V1 / de tirs distance V1 : tant qu'une attaque touche réellement, D100 ≤ P_N
+  // ouvre la suivante contre la même cible, si elle reste à portée.
+  // Courage post-attaque CAC V1 / post-tir V1 : un seul test en fin de séquence ; une cible en sous-nombre
+  // teste, elle, après chaque blessure reçue (Courage en sous-nombre V1).
+  const e=m.engine;
+  let first=null,wounded=false,testedPerWound=false;
+  for(let n=1;;n++){
+    const result=e.resolveAttack(attacker,target,{mode,distance,encircled:missionEncircled(target)});
+    first=first||result;
+    logMissionAttack(attacker,target,result);
+    if(!result.ok) return first;
+    checkMissionEnd();
+    if(result.wound){
+      wounded=true;
+      if(mode==="melee"&&!m.over&&e.localMelee(target,missionUnits()).surplus>0){
+        resolveMissionCourage(attacker,target,result);
+        testedPerWound=true;
+      }
+    }
+    if(m.over) return first;
+    distance=e.axialDistance(attacker,target);
+    if(!e.canAttackAtDistance(attacker,distance,mode)) break;
+    const chain=e.rollChain(attacker,target,result,n+1,mode);
+    if(!chain) break;
+    const detail=" ("+(mode==="ranged"?"tir":"attaque")+" n°"+chain.n+" : "+missionPercent(chain.p)+", jet "+chain.roll+")";
+    if(!chain.continues){ missionLog(attacker.character.name+" ne parvient pas à enchaîner"+detail+".","info"); break; }
+    missionLog(attacker.character.name+" enchaîne"+detail+" !","info");
+  }
+  if(!testedPerWound) resolveMissionCourage(attacker,target,{ok:true,mode,wound:wounded},{defenderSurplus:0});
+  return first;
 }
 
 // Courage post-attaque CAC V1 / post-tir V1 / en sous-nombre V1 : un échec applique En Fuite.
-function resolveMissionCourage(attacker,defender,result){
+function resolveMissionCourage(attacker,defender,result,override={}){
   const m=game.mission;
   if(!m||m.over||!result?.ok) return;
   const e=m.engine;
   const context={
     defenderSurplus:e.localMelee(defender,missionUnits()).surplus,
-    attackerEncircles:e.axialDistance(attacker,defender)===1&&e.threatens(attacker,defender)&&missionEncircled(defender)
+    attackerEncircles:e.axialDistance(attacker,defender)===1&&e.threatens(attacker,defender)&&missionEncircled(defender),
+    ...override
   };
   const c=e.resolveCourage(attacker,defender,result,context);
   if(!c) return;

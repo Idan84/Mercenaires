@@ -450,11 +450,11 @@ const chargeLine=(travel,reactorCharacter)=>{
 };
 let cc=chargeLine(4,withMainWeapon(b,"Lance"));
 assert.deepEqual(cc.charge.step,{q:1,r:0},"direction de la charge");
-assert.deepEqual(combat.counterchargeTrigger(cc.reactor,cc.charger,cc.charge),{at:3,mode:"melee"},"Lance (portée 1–2) : à l'entrée dans sa portée, 2 cases avant la cible");
+assert.deepEqual(combat.counterchargeTrigger(cc.reactor,cc.charger,cc.charge),{at:3,mode:"melee",hand:"main"},"Lance (portée 1–2) : à l'entrée dans sa portée, 2 cases avant la cible");
 cc=chargeLine(4,withMainWeapon(b,"Arc"));
-assert.deepEqual(combat.counterchargeTrigger(cc.reactor,cc.charger,cc.charge),{at:2,mode:"ranged"},"à distance : mi-course");
+assert.deepEqual(combat.counterchargeTrigger(cc.reactor,cc.charger,cc.charge),{at:2,mode:"ranged",hand:"main"},"à distance : mi-course");
 cc=chargeLine(5,withMainWeapon(b,"Arc"));
-assert.deepEqual(combat.counterchargeTrigger(cc.reactor,cc.charger,cc.charge),{at:3,mode:"ranged"},"course impaire 2N+1 → case N+1 (Idan, 2026-10-08)");
+assert.deepEqual(combat.counterchargeTrigger(cc.reactor,cc.charger,cc.charge),{at:3,mode:"ranged",hand:"main"},"course impaire 2N+1 → case N+1 (Idan, 2026-10-08)");
 cc=chargeLine(4,withMainWeapon(b,"Pistolet"));
 assert.equal(combat.counterchargeTrigger(cc.reactor,cc.charger,cc.charge).mode,"ranged");
 cc.reactor.unloaded=[combat.activeWeaponItem(cc.reactor).id];
@@ -534,5 +534,15 @@ assert.equal(combat.rollPairChain(pair,pairTarget,[missM,{...missM,hit:true,bloc
 assert.equal(combat.rollPairChain(pair,pairTarget,[hitM,{...missM,fumble:true}],2),null,"un échec critique coupe la chaîne");
 assert.equal(combat.rollPairChain(pair,pairTarget,[{...hitM,mode:"ranged"},{...hitM,mode:"ranged"}],2),null,"deux pistolets : la paire de base seulement");
 assert.equal(combat.rollPairChain(pair,{...pairTarget,alive:false},[hitM],2),null,"cible hors combat");
+
+// Charge et contre-charge à deux armes (décision Idan, 2026-10-08).
+// Contre-charge : chaque arme qui le permet riposte à son moment, dans l'ordre de la course.
+cc=chargeLine(4,withDual(b,"Lance","Pistolet"));
+assert.deepEqual(combat.counterchargeTriggers(cc.reactor,cc.charger,cc.charge),[{at:2,mode:"ranged",hand:"off"},{at:3,mode:"melee",hand:"main"}],"pistolet à mi-course, puis lance à l'entrée dans sa portée");
+cc=chargeLine(4,withDual(b,"Épée courte","Pistolet"));
+assert.deepEqual(combat.counterchargeTriggers(cc.reactor,cc.charger,cc.charge),[{at:2,mode:"ranged",hand:"off"}],"l'épée courte ne contre-charge pas");
+// Charge : la seconde arme ne retire pas la chute de charge (D100 = 1 tomberait) mais garde le bonus de charge.
+const followUp=combat.resolveAttack(unit(withDual(a,"Épée courte","Dague"),0,0),unit(b,1,0),{mode:"melee",distance:1,hand:"off",chargeDistance:3,chargeFollowUp:true});
+assert.deepEqual([followUp.chargeFall,followUp.hit,followUp.weapon,followUp.chargePower>0],[undefined,true,"Dague",true]);
 
 console.log(JSON.stringify({ok:true},null,2));

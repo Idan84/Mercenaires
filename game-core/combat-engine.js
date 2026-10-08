@@ -425,19 +425,27 @@
     // Renvoie {at, mode} (at = cases parcourues par le chargeur avant la réaction), ou null :
     // - arme à distance : à mi-course, arrondie au-dessus pour une course impaire (2N+1 → N+1, Idan 2026-10-08) ;
     // - mêlée / arme d'hast : première case du trajet dans la portée de contact de l'arme.
-    function counterchargeTrigger(reactor,charger,charge){
-      if(!reactor?.alive||reactor.fleeing) return null;
-      const item=activeWeaponItem(reactor),weapon=weaponTemplate(item);
-      if(!weapon?.contre_charge||!isLoaded(reactor,item)) return null;
-      const mode=isRangedWeapon(weapon)?"ranged":"melee";
+    // À deux armes (décision Idan, 2026-10-08), chaque arme qui le permet riposte une fois, à son propre moment :
+    // counterchargeTriggers renvoie ces réactions, dans l'ordre de la course ({at, mode, hand}).
+    function counterchargeTriggers(reactor,charger,charge){
+      if(!reactor?.alive||reactor.fleeing) return [];
       const path=charge?.path||[];
-      const inReach=at=>at>=1&&at<=path.length&&canAttackAtDistance(reactor,axialDistance(reactor,path[at-1]),mode);
-      if(mode==="ranged"){
-        const at=Math.ceil(path.length/2);
-        return inReach(at)?{at,mode}:null;
-      }
-      for(let at=1;at<=path.length;at++) if(inReach(at)) return {at,mode};
-      return null;
+      const hands=isDualWielding(reactor)?["main","off"]:["main"];
+      return hands.map(hand=>withHand(reactor,hand,()=>{
+        const item=activeWeaponItem(reactor),weapon=weaponTemplate(item);
+        if(!weapon?.contre_charge||!isLoaded(reactor,item)) return null;
+        const mode=isRangedWeapon(weapon)?"ranged":"melee";
+        const inReach=at=>at>=1&&at<=path.length&&canAttackAtDistance(reactor,axialDistance(reactor,path[at-1]),mode);
+        if(mode==="ranged"){
+          const at=Math.ceil(path.length/2);
+          return inReach(at)?{at,mode,hand}:null;
+        }
+        for(let at=1;at<=path.length;at++) if(inReach(at)) return {at,mode,hand};
+        return null;
+      })).filter(Boolean).sort((x,y)=>x.at-y.at);
+    }
+    function counterchargeTrigger(reactor,charger,charge){
+      return counterchargeTriggers(reactor,charger,charge)[0]||null;
     }
 
     // Combat à deux armes CAC V1 : la séquence n s'ouvre si au moins une attaque de la séquence précédente a
@@ -483,9 +491,11 @@
       // Le coup part : une arme à recharge est désormais déchargée, qu'il touche ou non.
       if(needsLoading(weapon)) attacker.unloaded=[...(attacker.unloaded||[]),item.id];
 
+      // options.chargeFollowUp : seconde arme d'une charge à deux armes (décision Idan, 2026-10-08) ; la chute
+      // de charge n'est tirée qu'une fois, pour la première arme.
       let chargePower=0;
       if(Number(options.chargeDistance)>0){
-        const fallRoll=d100();
+        const fallRoll=options.chargeFollowUp?100:d100();
         if(fallRoll<=2){
           attacker.prone=true;
           return {ok:true,mode,weapon:weapon.nom,charge:true,chargeFall:true,fallRoll,hit:false,wound:false,damage:0};
@@ -759,6 +769,7 @@
       switchWeaponSet,
       chargeData,
       counterchargeTrigger,
+      counterchargeTriggers,
       inFiringCorridor,
       strayCandidates,
       threatens,

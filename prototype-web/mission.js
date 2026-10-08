@@ -410,7 +410,9 @@ function missionActiveUnitLost(){
   return true;
 }
 
-function performMissionAttack(attacker,target,mode,distance){
+// charge (facultatif) : données de Charge CAC V1 ; la charge est une seule séquence, sans enchaînement, et
+// chaque arme de mêlée y reçoit le bonus de charge (à deux armes, chaque arme frappe : décision Idan, 2026-10-08).
+function performMissionAttack(attacker,target,mode,distance,charge=null){
   const m=game.mission,e=m.engine;
   // Combat à deux armes CAC V1 : à chaque séquence, chaque arme utilisable frappe une fois (principale puis
   // secondaire), chacune avec son propre mode ; sinon, la seule arme principale.
@@ -437,10 +439,15 @@ function performMissionAttack(attacker,target,mode,distance){
       if(m.over||!target.alive||!attacker.alive) break;
       const d=e.axialDistance(attacker,target);
       if(results.length&&!handsAt(d).some(x=>x.hand===h.hand)) continue;
-      const result=e.resolveAttack(attacker,target,{mode:h.mode,distance:d,hand:h.hand,encircled:h.mode==="melee"&&missionEncircled(target),bystanders:missionUnits()});
+      const charging=charge&&h.mode==="melee";
+      const result=e.resolveAttack(attacker,target,{
+        mode:h.mode,distance:d,hand:h.hand,encircled:h.mode==="melee"&&missionEncircled(target),bystanders:missionUnits(),
+        chargeDistance:charging?charge.travel:0,chargeFollowUp:Boolean(charging&&first)
+      });
       first=first||result;
-      logMissionAttack(attacker,target,result);
+      logMissionAttack(attacker,target,result,charging?"charge":"attack");
       if(!result.ok) continue;
+      if(result.chargeFall) break;
       results.push(result);
       if(h.mode==="melee") melee=true;
       const stray=logMissionStray(attacker,result);
@@ -457,7 +464,7 @@ function performMissionAttack(attacker,target,mode,distance){
       if(result.fumble||result.woundFumble) break;
     }
     if(!results.length){ if(n===1) return first; break; }
-    if(m.over||!handsAt(e.axialDistance(attacker,target)).length) break;
+    if(charge||m.over||!handsAt(e.axialDistance(attacker,target)).length) break;
     const chain=dual?e.rollPairChain(attacker,target,results,n+1):e.rollChain(attacker,target,results[0],n+1,mode);
     if(!chain) break;
     const label=dual?"séquence":mode==="ranged"?"tir":"attaque";
@@ -822,36 +829,39 @@ function enemyTryCharge(unit,target){
 // la charge est brisée et le chargeur teste son Courage face à la cible.
 function performMissionCharge(unit,target,charge){
   const m=game.mission,e=m.engine;
-  const reaction=e.counterchargeTrigger(target,unit,charge);
-  const legs=reaction?[charge.path.slice(0,reaction.at),charge.path.slice(reaction.at)]:[charge.path];
+  // À deux armes, chaque arme de contre-charge riposte à son propre moment (décision Idan, 2026-10-08).
+  const reactions=e.counterchargeTriggers(target,unit,charge);
   const stillCharging=()=>unit.alive&&!unit.fleeing&&!m.over;
   // Une charge arrêtée avant son attaque reste une charge tentée (Courage, doc 08).
   const broken=()=>{ MercenairesProgression.recordChargeAttempt(unit); };
+  let moved=0;
+  const advanceTo=at=>{
+    const leg=charge.path.slice(moved,at);
+    const done=moveMissionUnitAlongPath(unit,leg);
+    moved+=done;
+    return done===leg.length&&stillCharging();
+  };
 
-  if(moveMissionUnitAlongPath(unit,legs[0])<legs[0].length||!stillCharging()){ broken(); return; }
-  if(reaction){
+  for(const reaction of reactions){
+    if(!advanceTo(reaction.at)){ broken(); return; }
     const distance=e.axialDistance(target,unit);
-    if(target.alive&&!target.fleeing&&e.canAttackAtDistance(target,distance,reaction.mode)){
-      const r=e.resolveAttack(target,unit,{mode:reaction.mode,distance,bystanders:missionUnits()});
-      logMissionAttack(target,unit,r,"countercharge");
-      const stray=logMissionStray(target,r);
-      checkMissionEnd();
-      if(stray) resolveMissionCourage(target,stray,{ok:true,mode:"ranged",wound:true});
-      if(r.wound||!unit.alive){
-        broken();
-        if(unit.alive&&!m.over){
-          missionLog("La charge de "+unit.character.name+" est brisée.","bad");
-          resolveMissionCounterchargeCourage(target,unit,r,charge,charge.travel-reaction.at);
-        }
-        return;
+    if(!target.alive||target.fleeing||!e.usableHands(target,distance).some(h=>h.hand===reaction.hand&&h.mode===reaction.mode)) continue;
+    const r=e.resolveAttack(target,unit,{mode:reaction.mode,distance,hand:reaction.hand,bystanders:missionUnits()});
+    logMissionAttack(target,unit,r,"countercharge");
+    const stray=logMissionStray(target,r);
+    checkMissionEnd();
+    if(stray) resolveMissionCourage(target,stray,{ok:true,mode:"ranged",wound:true});
+    if(r.wound||!unit.alive){
+      broken();
+      if(unit.alive&&!m.over){
+        missionLog("La charge de "+unit.character.name+" est brisée.","bad");
+        resolveMissionCounterchargeCourage(target,unit,r,charge,charge.travel-moved);
       }
+      return;
     }
-    if(moveMissionUnitAlongPath(unit,legs[1])<legs[1].length||!stillCharging()){ broken(); return; }
   }
-  const result=e.resolveAttack(unit,target,{mode:"melee",distance:1,chargeDistance:charge.travel,encircled:missionEncircled(target)});
-  logMissionAttack(unit,target,result,"charge");
-  checkMissionEnd();
-  resolveMissionCourage(unit,target,result);
+  if(!advanceTo(charge.path.length)){ broken(); return; }
+  performMissionAttack(unit,target,"melee",1,charge);
 }
 
 // Contre-charge V1 : en cas d'échec, le chargeur passe En Fuite, fait demi-tour et dépense tout le mouvement

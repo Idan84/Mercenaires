@@ -6,6 +6,7 @@ Noyau de logique indépendant de l'interface, préparé pour un futur portage Un
 |---|---|---|
 | `mercenary-generator.js` | Génération des mercenaires et de leur équipement de départ | `01-start-and-generation-functions.md`, `05-equipment.md` |
 | `combat-engine.js` | Résolution du combat : Toucher, Blesser, Dégâts, attaques d'opportunité, Encerclement, Courage, Fuite | `04-combat.md`, `13-fleeing.md` |
+| `progression.js` | Progression naturelle : journal par combattant pendant la mission, XP → niveau, application en fin de mission | `08-progression-and-experience.md` |
 | `mission-end.js` | Fin de mission : jet de mort, blessure, fatigue, durées d'indisponibilité | `10-mission-time-and-unavailability.md` |
 | `tavern.js` | Taverne : candidats, entretien, négociation | `14-tavern-recruitment.md` |
 | `biography.js` | Biographies : choix d'un pack de texte tagué compatible avec le mercenaire, sans réutilisation | `15-biographies-and-narrative-tags.md` (proposition) |

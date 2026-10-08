@@ -49,7 +49,8 @@
   // generator : createGenerator(...) ; tavern : createTavernRules(...) ; reference : data/reference/ ;
   // biographies (facultatif) : createBiographyRules(...) de game-core/biography.js.
   // avatars (facultatif) : createAvatarRules(...) de game-core/avatars.js.
-  function createCampaignRules({generator,tavern,reference,biographies=null,avatars=null}){
+  // progression (facultatif) : createProgressionRules(...) de game-core/progression.js.
+  function createCampaignRules({generator,tavern,reference,biographies=null,avatars=null,progression=null}){
     const STARTING_GOLD=referenceConstant(reference,"company.gold.initial",10000);
     const STARTING_DORMITORY_CAPACITY=referenceConstant(reference,"camp.dormitory.initial_capacity",40);
     function rosterOf(state){ return state.company.roster; }
@@ -255,7 +256,7 @@
     // la prime de mission de chaque survivant sous contrat est payée, et la mort du capitaine met fin à la partie.
     // aftermath : résultat de MercenairesMissionEnd.resolveMissionEnd. Les participants hors compagnie sont ignorés.
     function applyMissionAftermath(state,aftermath){
-      const report={deaths:[],wounded:[],fatigued:[],bonuses:[],bonusPaid:0,gameOver:false};
+      const report={deaths:[],wounded:[],fatigued:[],bonuses:[],bonusPaid:0,gameOver:false,progression:[]};
       for(const result of aftermath.results){
         const roster=rosterOf(state);
         const mercenary=roster.find(m=>m.id===result.id);
@@ -266,6 +267,12 @@
           if(mercenary.avatar?.id) (state.avatarsRetired=state.avatarsRetired||[]).push(mercenary.avatar.id);
           report.deaths.push(mercenary);
           continue;
+        }
+        // XP naturelle de la mission (08-progression-and-experience.md §2 ; Idan, 2026-10-06) : appliquée
+        // en fin de mission aux survivants, y compris ceux qui ont fui le combat.
+        if(progression){
+          const xp=progression.gains(result.progress);
+          report.progression.push({mercenary,xp,changes:progression.apply(mercenary,xp)});
         }
         if(result.wounded){
           mercenary.recovery={kind:"wounded",daysLeft:result.woundDays,sinceDay:state.day};

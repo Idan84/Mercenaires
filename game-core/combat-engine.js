@@ -277,7 +277,15 @@
       };
     }
 
-    function resolveAttack(attacker,defender,options={}){
+    // Chaque attaque résolue est signalée au crochet options.onAttack(attaquant, défenseur, options,
+    // résultat), par exemple pour le journal de progression (game-core/progression.js).
+    function resolveAttack(attacker,defender,attackOptions={}){
+      const result=resolveAttackRolls(attacker,defender,attackOptions);
+      if(typeof options.onAttack==="function") options.onAttack(attacker,defender,attackOptions,result);
+      return result;
+    }
+
+    function resolveAttackRolls(attacker,defender,options={}){
       const mode=options.mode||"melee";
       const distance=Number(options.distance)||axialDistance(attacker,defender);
       const item=activeWeaponItem(attacker),weapon=weaponTemplate(item);

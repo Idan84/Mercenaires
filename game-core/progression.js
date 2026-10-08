@@ -54,8 +54,7 @@
     if(result.woundFumble){
       recordCritical(attacker,"failure");
       // Le contrecoup est une blessure physique subie par l'attaquant (« quelle que soit sa source »).
-      const log=logOf(attacker);
-      log.wounds["Résistance physique"]=(log.wounds["Résistance physique"]||0)+1;
+      recordWound(attacker,"physique");
     }
   }
   // Chaque composante de dégâts qui blesse effectivement (doc 08, Résistances) : dégâts mixtes, dégâts sur

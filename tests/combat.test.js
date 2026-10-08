@@ -343,4 +343,49 @@ if(setFamily(critShooter,"ranged")){
   assert.equal(shot.criticalWound,true);
 }
 
+// Blocage bouclier physique V1 : bouclier en main secondaire du set actif.
+function withShield(character,shieldName,qualityCode="standard",stats={}){
+  const shield={id:"shield-"+character.id,templateId:"weapon:shield",name:shieldName,itemType:"weapon",slot:"weapon_set_1_off",owner:character.id,qualityCode,category:"Boucliers"};
+  return {
+    ...character,stats:{...character.stats,...stats},items:[...character.items,shield],
+    equipment:{...character.equipment,slots:{...character.equipment.slots,weapon_set_1_off:shield.id}}
+  };
+}
+const guardChar=withShield(a,"Écu");
+const shieldMastery=c=>((Number(c.skills.martial.Boucliers)||0)+(Number(c.skills.martial["Écu"])||0))/2;
+const blockOf=(c,bonus)=>Math.min(80,Math.max(5,((Number(c.stats["Dextérité"])||0)+shieldMastery(c))/2+bonus));
+assert.equal(combat.blockChance(unit(guardChar,1,0)),blockOf(guardChar,10),"(Dextérité + maîtrise effective) / 2 + bonus de l'Écu");
+assert.equal(combat.blockChance(unit(withShield(a,"Écu","luxury"),1,0)),blockOf(guardChar,10*1.2),"le bonus suit la qualité");
+assert.equal(combat.blockChance(unit(withShield(a,"Pavois","standard",{"Dextérité":300}),1,0)),80,"plafond 80 %");
+assert.equal(combat.blockChance(unit({...withShield(a,"Rondache","worn",{"Dextérité":0}),skills:{...a.skills,martial:{...a.skills.martial,Boucliers:0,"Rondache":0}}},1,0)),5,"plancher 5 %");
+assert.equal(combat.blockChance(unit(a,0,0)),null,"sans bouclier : pas de jet");
+
+// Coup bloqué (D100 à 1 : touche, puis bloque) : ni critique, ni Blesser, ni dégâts.
+const shieldBearer=unit(guardChar,1,0),guardAttacker=unit(b,0,0);setFamily(guardAttacker,"melee");
+const blocked=combat.resolveAttack(guardAttacker,shieldBearer,{mode:"melee",distance:1});
+assert.deepEqual([blocked.hit,blocked.blocked,blocked.shield,blocked.wound,blocked.criticalHit,shieldBearer.hp],[true,true,"Écu",false,undefined,guardChar.pvMax]);
+assert.equal(combat.resolveAttack(guardAttacker,shieldBearer,{mode:"melee",opportunity:true}).blocked,true,"possible même dans le dos");
+// Blocage raté (D100 = 100) : l'attaque continue normalement, avec le jet de blocage dans le résultat.
+r=scripted([1,100,100,50,1,100],[100]).resolveAttack(guardAttacker,shieldBearer,{mode:"melee",distance:1});
+assert.deepEqual([r.blocked,r.blockRoll,r.criticalHit,r.wound],[false,100,false,true]);
+// Contre un projectile physique aussi.
+const guardShooter=unit(a,0,0);
+if(setFamily(guardShooter,"ranged")){
+  const d=Math.max(combat.weaponRange(guardShooter).min,1);
+  assert.equal(combat.resolveAttack(guardShooter,unit(guardChar,d,0),{mode:"ranged",distance:d}).blocked,true);
+}
+
+// Vitesse combat effective CAC V1 : le malus du bouclier s'ajoute à celui de l'arme, et l'arme Au choix
+// passe en mode une main (son malus n'est plus divisé par deux).
+const penalty=(c,slot)=>{
+  const item=c.items.find(x=>x.id===c.equipment.slots[slot]),w=combat.weaponTemplate(item);
+  const m=(Number(c.skills.martial[w.nom])||0)+(Number(c.skills.martial[item.category||""])||0);
+  return w.malus_vitesse_arme_base*(Number(combat.quality(item).multiplicateur_malus)||1)*Math.max(0,1-m/400);
+};
+const bare=unit({...a,stats:{...a.stats,Vitesse:100}},0,0),shielded=unit(withShield(a,"Écu","standard",{Vitesse:100}),0,0);
+const swordPenalty=penalty(a,"weapon_set_1_main");
+const near2=(x,y,label)=>assert.ok(Math.abs(x-y)<1e-9,label+" : "+x+" ≠ "+y);
+assert.ok(combat.effectiveSpeed(shielded)>1,"Vitesse assez haute pour ne pas toucher le plancher");
+near2(combat.effectiveSpeed(bare)-combat.effectiveSpeed(shielded),swordPenalty*0.5+penalty(guardChar,"weapon_set_1_off"),"avec bouclier");
+
 console.log(JSON.stringify({ok:true},null,2));

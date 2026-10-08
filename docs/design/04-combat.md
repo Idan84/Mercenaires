@@ -94,6 +94,12 @@ La même règle de blocage s'applique au **CAC et aux projectiles physiques**, s
 
 Un bouclier intervient **après un Toucher réussi et avant le critique positif de Toucher** via [Blocage bouclier physique V1](/design/#doc=formulas/blocage-bouclier-physique-v1.md).
 
+Choix d'implémentation V1, à confirmer en relecture :
+- le bouclier compte s'il est tenu en main secondaire du **set actif** ;
+- son `Bonus blocage base` est lu dans `skills.json` (ligne du bouclier : Rondache 5, Écu 10, Pavois 20), `weapons.json` n'ayant pas cette colonne ;
+- son malus de vitesse s'ajoute à celui de l'arme ([Vitesse combat effective CAC V1](/design/#doc=formulas/vitesse-combat-effective-cac-v1.md)), et une arme `Au choix` tenue avec lui passe en mode une main ;
+- à la création, aucun mercenaire ne reçoit encore de bouclier : seules les armes principales des sets sont remplies (05-equipment). Le blocage n'apparaîtra en Mission Test qu'avec une règle d'attribution des boucliers.
+
 Un blocage réussi signifie que l'attaque n'a pas réellement touché : pas de critique positif, pas de Blesser, pas de dégâts. Il casse l'enchaînement normal. En combat à deux armes, chaque attaque de la paire est testée séparément et la paire peut continuer si au moins une attaque touche réellement.
 
 ## Courage post-attaque CAC V1
@@ -183,7 +189,7 @@ Le moteur tactique est isolé dans `game-core/combat-engine.js`. La carte web n'
 
 ### Simplifications volontaires du premier test
 
-Le noyau utilise déjà les formules validées de portée, vitesse/esquive effectives, MouvementBase, Toucher, Blesser, résistances d'armure, qualité d'item, dégâts PV, charge, attaques d'opportunité, Frappe dans le dos, encerclement, Courage et Fuite. Les critiques et échecs critiques sont branchés. En revanche, ce premier écran ne branche pas encore les autres systèmes secondaires : boucliers, combat à deux armes, couverture/obstacles, approximation des projectiles et contre-charge automatique.
+Le noyau utilise déjà les formules validées de portée, vitesse/esquive effectives, MouvementBase, Toucher, Blesser, résistances d'armure, qualité d'item, dégâts PV, charge, attaques d'opportunité, Frappe dans le dos, encerclement, Courage et Fuite. Les critiques, échecs critiques et le blocage au bouclier sont branchés. En revanche, ce premier écran ne branche pas encore les autres systèmes secondaires : combat à deux armes, couverture/obstacles, approximation des projectiles et contre-charge automatique.
 
 Choix d'implémentation V1, confirmés en relecture par Chatty (PR #7) : aucune limite au nombre d'attaques d'opportunité par adversaire et par tour ; un personnage Au Sol réagit normalement et compte pour l'encerclement ; plusieurs réactions simultanées sont résolues dans l'ordre d'initiative de l'équipe qui réagit ; une charge ne peut pas traverser une case occupée ; sortir de la carte coûte un hexagone de mouvement depuis une case du bord ; la Mission Test n'ayant aucun abri total, « Cachons-nous » file vers la sortie de carte sans jamais entrer dans une case adjacente à un ennemi (sans trajet sûr vers une sortie, il s'éloigne au mieux par les cases sûres, sinon il reste sur place) ; « Feu à volonté » tire une fois (cadence et recharge non branchées).
 

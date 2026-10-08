@@ -39,6 +39,10 @@
       luckDivisor:constant("combat.melee.crit.luck_divisor",10),
       fumbleThreshold:constant("combat.melee.fumble.threshold",96)
     };
+    const BLOCK={
+      min:constant("combat.shield.block.min_probability",5),
+      max:constant("combat.shield.block.max_probability",80)
+    };
 
     function axialDistance(a,b){
       const dq=a.q-b.q,dr=a.r-b.r;
@@ -83,6 +87,10 @@
       };
     }
 
+    function isShield(weapon){
+      return /Boucliers/.test(String(weapon?.domaine||""));
+    }
+
     function isRangedWeapon(weapon){
       return /Armes de tir|Armes à feu/.test(String(weapon?.domaine||""));
     }
@@ -108,8 +116,15 @@
       };
     }
 
+    // Vitesse combat effective CAC V1 : les malus de tous les objets tenus s'additionnent (arme principale et
+    // main secondaire : seconde arme ou bouclier).
     function weaponSpeedPenalty(unit){
-      const item=activeWeaponItem(unit),weapon=weaponTemplate(item);
+      return heldItemSpeedPenalty(unit,activeWeaponItem(unit))+heldItemSpeedPenalty(unit,activeOffhandItem(unit));
+    }
+
+    // Malus vitesse arme effectif V1, pour un objet tenu.
+    function heldItemSpeedPenalty(unit,item){
+      const weapon=weaponTemplate(item);
       if(!weapon) return 0;
       const q=quality(item),m=mastery(unit.character,weapon);
       const qualityPenalty=(Number(weapon.malus_vitesse_arme_base)||0)*(Number(q.multiplicateur_malus)||1);
@@ -294,6 +309,18 @@
       };
     }
 
+    // Blocage bouclier physique V1 : bouclier tenu en main secondaire du set actif ; null sans bouclier.
+    // Maîtrise effective = moyenne de la catégorie Boucliers et du bouclier précis ; le bonus de blocage
+    // (skills.json, bonus_blocage_base) suit la qualité.
+    function blockChance(unit){
+      const item=activeOffhandItem(unit),shield=weaponTemplate(item);
+      if(!isShield(shield)) return null;
+      const m=mastery(unit.character,shield);
+      const bonus=(Number(skillByName.get(shield.nom)?.bonus_blocage_base)||0)*(Number(quality(item).multiplicateur_qualite)||1);
+      const dexterity=Number(unit.character.stats?.["Dextérité"])||0;
+      return clamp((dexterity+(m.categoryScore+m.weaponScore)/2)/2+bonus,BLOCK.min,BLOCK.max);
+    }
+
     // Critique positif CAC V1 : 1 % à 25 % selon la Chance, après un Toucher puis après un Blesser réussis.
     // 04-combat « Critiques physiques V1 » : la V1 distance réutilise ce même principe.
     function criticalChance(unit){
@@ -351,10 +378,19 @@
         return {ok:true,mode,weapon:weapon.nom,distance,pHit,hitRoll,hit:false,...fumble,wound:false,damage:0,...tags};
       }
 
-      // (Blocage bouclier physique V1 se placera ici, avant le critique de Toucher.)
+      // Blocage bouclier physique V1 : après le Toucher, avant le critique ; au CAC comme au tir, même dans
+      // le dos. Un coup bloqué ne compte pas comme un toucher réel : ni critique, ni Blesser, ni dégâts.
+      const pBlock=blockChance(defender);
+      const block={};
+      if(pBlock!==null){
+        const blockRoll=d100();
+        Object.assign(block,{pBlock,blockRoll,blocked:blockRoll<=pBlock,shield:weaponTemplate(activeOffhandItem(defender)).nom});
+        if(block.blocked) return {ok:true,mode,weapon:weapon.nom,distance,pHit,hitRoll,hit:true,...block,wound:false,damage:0,...tags};
+      }
+
       const pCritical=criticalChance(attacker);
       const criticalHitRoll=d100(),criticalHit=criticalHitRoll<=pCritical;
-      const crit={pCritical,criticalHitRoll,criticalHit};
+      const crit={...block,pCritical,criticalHitRoll,criticalHit};
       const matchup=selectDamageMatchup(attacker,defender,weapon,{backstab,ignoreArmor:criticalHit});
       const pWound=woundProbability(attacker,defender,mode,matchup,{chargePower});
       const woundRoll=d100(),wound=woundRoll<=pWound;
@@ -533,6 +569,7 @@
       selectDamageMatchup,
       woundProbability,
       criticalChance,
+      blockChance,
       resolveAttack,
       canSwitchWeaponSet,
       switchWeaponSet,

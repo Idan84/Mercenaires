@@ -312,6 +312,10 @@ function logMissionAttack(a,d,result,kind="attack"){
     logMissionFumble(a,result.fumbleRoll,result.fumble,"perd l’équilibre et tombe au sol");
     return;
   }
+  if(result.blocked){
+    missionLog(prefix+" : touche, mais "+d.character.name+" bloque avec son "+result.shield+" (blocage "+Math.round(result.pBlock)+" %, jet "+result.blockRoll+").","miss");
+    return;
+  }
   const critical=result.criticalHit?" Coup critique : l’armure est ignorée ("+result.criticalHitRoll+" ≤ "+missionPercent(result.pCritical)+").":"";
   if(!result.wound){
     missionLog(prefix+" : touche mais ne blesse pas ("+Math.round(result.pWound||0)+" %, jet "+(result.woundRoll||"—")+")."+critical,"hit");

@@ -1474,6 +1474,11 @@ body[data-screen="camp"]::before {
   transition: opacity .36s ease-in-out;
 }
 body[data-screen="camp"][data-camp-scene="tavern"]::before { opacity: 1; }
+/* Intendance : même transition que la Taverne, sans modifier les futurs contrôles. */
+body[data-screen="camp"][data-camp-scene="quartermaster"]::before {
+  background-image: url("/media/background/intendance.jpg");
+  opacity: 1;
+}
 body[data-screen="camp"] > .app-shell { position: relative; z-index: 1; }
 @media (prefers-reduced-motion: reduce) {
   body[data-screen="camp"]::before { transition: none; }

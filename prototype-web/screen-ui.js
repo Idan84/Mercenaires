@@ -6,6 +6,12 @@
 const SCREEN_PANELS=[["mission","mission-panel"],["gameover","game-over-panel"],["creation","creation-wizard"],["intro","intro-panel"],["camp","game-panel"],["setup","setup-panel"]];
 const CAMP_SCENES=["company","mercenaries","tavern","quartermaster"];
 
+function updateCampHomeIcon(){
+  const button=document.getElementById("camp-home-icon-btn");
+  if(!button) return;
+  button.classList.toggle("hidden",document.body.dataset.screen!=="camp"||document.body.dataset.campScene==="home");
+}
+
 function openCampScene(scene="home"){
   const target=CAMP_SCENES.includes(scene)?scene:"home";
   const home=document.getElementById("camp-home");
@@ -17,6 +23,7 @@ function openCampScene(scene="home"){
     panel.classList.toggle("hidden",panel.dataset.campScenePanel!==target);
   }
   document.body.dataset.campScene=target;
+  updateCampHomeIcon();
   if(target==="tavern"&&typeof showTavernView==="function") showTavernView("home");
 
   const visible=target==="home"?home:panels.find(panel=>panel.dataset.campScenePanel===target);
@@ -50,6 +57,7 @@ function updateScreen(){
   const screen=currentScreen();
   const previous=document.body.dataset.screen;
   document.body.dataset.screen=screen;
+  updateCampHomeIcon();
   if(screen==="camp"&&previous!=="camp") openCampScene("home");
   if(["home","mission","gameover"].includes(screen)&&typeof stopTheme==="function") stopTheme();
 }
@@ -75,6 +83,7 @@ function initializeScreenUi(){
     if(panel) observer.observe(panel,{attributes:true,attributeFilter:["class"]});
   }
   $("back-to-menu-btn").addEventListener("click",backToMenu);
+  $("camp-home-icon-btn").addEventListener("click",()=>openCampScene("home"));
   $("game-panel")?.addEventListener("click",handleCampNavigation);
   openCampScene("home");
   updateScreen();

@@ -29,6 +29,31 @@
     function die(sides){ return Math.floor(random()*sides)+1; }
     function d100(){ return die(100); }
     function clamp(v,min,max){ return Math.max(min,Math.min(max,v)); }
+    function constant(code,fallback){
+      const value=Number((rows.formulaConstants||[]).find(r=>r.code===code)?.valeur);
+      return Number.isFinite(value)?value:fallback;
+    }
+    const CRIT={
+      min:constant("combat.melee.crit.min",1),
+      max:constant("combat.melee.crit.max",25),
+      luckDivisor:constant("combat.melee.crit.luck_divisor",10),
+      fumbleThreshold:constant("combat.melee.fumble.threshold",96)
+    };
+    const CHAIN={
+      max:constant("combat.melee.chain.max_probability",100),
+      rangedDivisor:constant("combat.ranged.chain.divisor",1.5)
+    };
+    // Approximation projectile V1 ; couloir de tir décidé par Idan le 2026-10-08.
+    const STRAY={
+      initial:constant("combat.ranged.stray.initial_factor",0.35),
+      decay:constant("combat.ranged.stray.decay_factor",0.5),
+      coneAngle:constant("combat.ranged.stray.cone_angle",30),
+      startRatio:constant("combat.ranged.stray.corridor_start_ratio",0.5)
+    };
+    const BLOCK={
+      min:constant("combat.shield.block.min_probability",5),
+      max:constant("combat.shield.block.max_probability",80)
+    };
 
     function axialDistance(a,b){
       const dq=a.q-b.q,dr=a.r-b.r;
@@ -73,6 +98,10 @@
       };
     }
 
+    function isShield(weapon){
+      return /Boucliers/.test(String(weapon?.domaine||""));
+    }
+
     function isRangedWeapon(weapon){
       return /Armes de tir|Armes à feu/.test(String(weapon?.domaine||""));
     }
@@ -98,8 +127,15 @@
       };
     }
 
+    // Vitesse combat effective CAC V1 : les malus de tous les objets tenus s'additionnent (arme principale et
+    // main secondaire : seconde arme ou bouclier).
     function weaponSpeedPenalty(unit){
-      const item=activeWeaponItem(unit),weapon=weaponTemplate(item);
+      return heldItemSpeedPenalty(unit,activeWeaponItem(unit))+heldItemSpeedPenalty(unit,activeOffhandItem(unit));
+    }
+
+    // Malus vitesse arme effectif V1, pour un objet tenu.
+    function heldItemSpeedPenalty(unit,item){
+      const weapon=weaponTemplate(item);
       if(!weapon) return 0;
       const q=quality(item),m=mastery(unit.character,weapon);
       const qualityPenalty=(Number(weapon.malus_vitesse_arme_base)||0)*(Number(q.multiplicateur_malus)||1);
@@ -143,7 +179,28 @@
       };
     }
 
+    // Armes à feu — recharge V1 : une arme à recharge (skills.json, recharge_action_rapide) doit être chargée
+    // pour tirer et se décharge après son tir ; une Action rapide recharge une arme. Pas de munitions ordinaires.
+    // État propre à la mission : unit.unloaded liste les armes déchargées ; tout est chargé au départ.
+    function needsLoading(weapon){
+      return Boolean(skillByName.get(weapon?.nom)?.recharge_action_rapide);
+    }
+    function isLoaded(unit,item){
+      return !item||!needsLoading(weaponTemplate(item))||!(unit.unloaded||[]).includes(item.id);
+    }
+    function heldUnloaded(unit){
+      return [activeWeaponItem(unit),activeOffhandItem(unit)].find(item=>item&&!isLoaded(unit,item))||null;
+    }
+    function canReload(unit){ return Boolean(heldUnloaded(unit)); }
+    // Recharge une arme tenue (arme principale d'abord) ; renvoie l'objet rechargé, ou null.
+    function reload(unit){
+      const item=heldUnloaded(unit);
+      if(item) unit.unloaded=unit.unloaded.filter(id=>id!==item.id);
+      return item;
+    }
+
     function canAttackAtDistance(unit,distance,mode){
+      if(!isLoaded(unit,activeWeaponItem(unit))) return false;
       const weapon=weaponTemplate(activeWeaponItem(unit));
       if(!weapon) return false;
       if(mode==="ranged"&&!isRangedWeapon(weapon)) return false;
@@ -163,8 +220,9 @@
     }
 
     // Frappe dans le dos V1 : la résistance au type de dégâts est divisée par deux pour l'étape Blesser.
+    // Critique toucher — armure ignorée V1 : après un critique au Toucher, l'armure ne compte pas pour Blesser.
     function damageMatchups(defender,weapon,context={}){
-      const factor=context.backstab?0.5:1;
+      const factor=context.ignoreArmor?0:context.backstab?0.5:1;
       return PHYSICAL_TYPES.map(type=>{
         const power=Number(weapon?.[type.weapon])||0;
         if(power<=0) return null;
@@ -244,16 +302,22 @@
       return m?{count:Number(m[1]),sides:Number(m[2])}:{count:1,sides:4};
     }
 
-    function rollWeaponDamage(weapon){
+    // roll : "max" (Critique de blessure positif) ou "min" (Échec critique de blessure) remplace le jet.
+    function rollWeaponDamage(weapon,roll=null){
       const dice=parseDice(weapon?.degats_pv_base);
       let total=0;
-      for(let i=0;i<dice.count;i++) total+=die(dice.sides);
+      if(roll==="max") total=dice.count*dice.sides;
+      else if(roll==="min") total=dice.count;
+      else for(let i=0;i<dice.count;i++) total+=die(dice.sides);
       return {total,dice:dice.count+"D"+dice.sides};
     }
 
-    function physicalDamage(attacker,defender,mode,chargePower=0){
+    // fixed.roll : jet de dégâts imposé ("max" / "min") ; fixed.resistanceRoll : D3 de la variation de
+    // Résistance physique imposé (1 → 0,9, le plus favorable à l'attaquant ; 3 → 1,1, le plus favorable
+    // à la réduction). Pour le contrecoup d'un échec critique de blessure, defender est l'attaquant lui-même.
+    function physicalDamage(attacker,defender,mode,chargePower=0,fixed={}){
       const item=activeWeaponItem(attacker),weapon=weaponTemplate(item);
-      const rolled=rollWeaponDamage(weapon);
+      const rolled=rollWeaponDamage(weapon,fixed.roll);
       const q=quality(item);
       let effective=rolled.total*(Number(q.multiplicateur_qualite)||1);
 
@@ -261,7 +325,7 @@
       if(chargePower>0) effective*=1+chargePower/100;
 
       const physicalResistance=clamp(Number(defender.character.resistances?.["Résistance physique"])||0,0,50);
-      const resistanceRoll=die(3);
+      const resistanceRoll=fixed.resistanceRoll||die(3);
       const resistanceFactor=1-(physicalResistance/100)*((resistanceRoll+8)/10);
       const strengthFactor=mode==="melee"
         ? 2*(Number(attacker.character.stats?.Force)||0)/100
@@ -277,11 +341,82 @@
       };
     }
 
+    // Blocage bouclier physique V1 : bouclier tenu en main secondaire du set actif ; null sans bouclier.
+    // Maîtrise effective = moyenne de la catégorie Boucliers et du bouclier précis ; le bonus de blocage
+    // (skills.json, bonus_blocage_base) suit la qualité.
+    function blockChance(unit){
+      const item=activeOffhandItem(unit),shield=weaponTemplate(item);
+      if(!isShield(shield)) return null;
+      const m=mastery(unit.character,shield);
+      const bonus=(Number(skillByName.get(shield.nom)?.bonus_blocage_base)||0)*(Number(quality(item).multiplicateur_qualite)||1);
+      const dexterity=Number(unit.character.stats?.["Dextérité"])||0;
+      return clamp((dexterity+(m.categoryScore+m.weaponScore)/2)/2+bonus,BLOCK.min,BLOCK.max);
+    }
+
+    // Critique positif CAC V1 : 1 % à 25 % selon la Chance, après un Toucher puis après un Blesser réussis.
+    // 04-combat « Critiques physiques V1 » : la V1 distance réutilise ce même principe.
+    function criticalChance(unit){
+      return clamp((Number(unit.character.stats?.Chance)||0)/CRIT.luckDivisor,CRIT.min,CRIT.max);
+    }
+    // Échec critique (Toucher ou Blesser) : naturel ≥ 96, puis D100 > Chance pour qu'il soit confirmé.
+    function fumbleTest(unit,naturalRoll){
+      if(naturalRoll<CRIT.fumbleThreshold) return {fumble:false};
+      const fumbleRoll=d100();
+      return {fumbleRoll,fumble:fumbleRoll>(Number(unit.character.stats?.Chance)||0)};
+    }
+
+    // Enchaînement d'attaques CAC V1 : P_N = min(100, (Dextérité effective + Vitesse combat effective) / N).
+    // Enchaînement de tirs distance V1 : même calcul divisé par 1,5 × N, armes « Répétable » seulement.
+    function isRepeatable(weapon){
+      return skillByName.get(weapon?.nom)?.cadence_tir==="Répétable";
+    }
+    function chainChance(attacker,n,mode){
+      const dexterity=Number(attacker.character.stats?.["Dextérité"])||0;
+      const divisor=mode==="ranged"?CHAIN.rangedDivisor*n:n;
+      return Math.min(CHAIN.max,(dexterity+effectiveSpeed(attacker))/divisor);
+    }
+    // L'attaque précédente doit avoir réellement touché (pas bloquée), sans échec critique, contre une cible
+    // encore vivante. Un critique positif n'arrête pas la chaîne.
+    function canChain(attacker,defender,result,mode){
+      if(!result?.ok||!result.hit||result.blocked||result.fumble||result.woundFumble) return false;
+      if(!attacker.alive||!defender.alive) return false;
+      return mode!=="ranged"||isRepeatable(weaponTemplate(activeWeaponItem(attacker)));
+    }
+    // Tente d'ouvrir l'attaque numéro n (n ≥ 2) ; null si la chaîne s'arrête d'elle-même.
+    function rollChain(attacker,defender,result,n,mode){
+      if(!canChain(attacker,defender,result,mode)) return null;
+      const p=chainChance(attacker,n,mode),roll=d100();
+      return {n,p,roll,continues:roll<=p};
+    }
+
+    // Contre-charge V1 : la cible directe d'une charge réagit une fois si son arme active le permet
+    // (contre_charge) et, pour une arme à feu, si elle est chargée. Un personnage En Fuite ne réagit pas.
+    // Renvoie {at, mode} (at = cases parcourues par le chargeur avant la réaction), ou null :
+    // - arme à distance : à mi-course, arrondie au-dessus pour une course impaire (2N+1 → N+1, Idan 2026-10-08) ;
+    // - mêlée / arme d'hast : première case du trajet dans la portée de contact de l'arme.
+    function counterchargeTrigger(reactor,charger,charge){
+      if(!reactor?.alive||reactor.fleeing) return null;
+      const item=activeWeaponItem(reactor),weapon=weaponTemplate(item);
+      if(!weapon?.contre_charge||!isLoaded(reactor,item)) return null;
+      const mode=isRangedWeapon(weapon)?"ranged":"melee";
+      const path=charge?.path||[];
+      const inReach=at=>at>=1&&at<=path.length&&canAttackAtDistance(reactor,axialDistance(reactor,path[at-1]),mode);
+      if(mode==="ranged"){
+        const at=Math.ceil(path.length/2);
+        return inReach(at)?{at,mode}:null;
+      }
+      for(let at=1;at<=path.length;at++) if(inReach(at)) return {at,mode};
+      return null;
+    }
+
     // Chaque attaque résolue est signalée au crochet options.onAttack(attaquant, défenseur, options,
     // résultat), par exemple pour le journal de progression (game-core/progression.js).
     function resolveAttack(attacker,defender,attackOptions={}){
       const result=resolveAttackRolls(attacker,defender,attackOptions);
-      if(typeof options.onAttack==="function") options.onAttack(attacker,defender,attackOptions,result);
+      if(typeof options.onAttack==="function"){
+        options.onAttack(attacker,defender,attackOptions,result);
+        if(result.stray?.unit) options.onAttack(attacker,result.stray.unit,attackOptions,result.stray.result);
+      }
       return result;
     }
 
@@ -290,6 +425,7 @@
       const distance=Number(options.distance)||axialDistance(attacker,defender);
       const item=activeWeaponItem(attacker),weapon=weaponTemplate(item);
       if(!weapon) return {ok:false,reason:"Aucune arme active."};
+      if(!isLoaded(attacker,item)) return {ok:false,reason:item.name+" est déchargé : une action rapide le recharge."};
       if(!canAttackAtDistance(attacker,distance,mode)) return {ok:false,reason:"Cible hors portée ou arme incompatible."};
 
       // Toute attaque d'opportunité bénéficie de Frappe dans le dos (Attaque d'opportunité CAC V1),
@@ -300,11 +436,14 @@
       const fleeingTarget=Boolean(defender.fleeing);
       const backstab=opportunity||encircled||fleeingTarget||Boolean(options.backstab);
       if(opportunity&&(mode!=="melee"||Number(options.chargeDistance)>0)) return {ok:false,reason:"Une attaque d'opportunité est un coup de mêlée simple."};
+      // Le coup part : une arme à recharge est désormais déchargée, qu'il touche ou non.
+      if(needsLoading(weapon)) attacker.unloaded=[...(attacker.unloaded||[]),item.id];
 
       let chargePower=0;
       if(Number(options.chargeDistance)>0){
         const fallRoll=d100();
         if(fallRoll<=2){
+          attacker.prone=true;
           return {ok:true,mode,weapon:weapon.nom,charge:true,chargeFall:true,fallRoll,hit:false,wound:false,damage:0};
         }
         const bonus=Number(weapon.bonus_charge_base)||1;
@@ -314,29 +453,104 @@
       const tags={chargePower,opportunity,encircled,fleeingTarget,backstab};
       const pHit=hitProbability(attacker,defender,mode,distance,{opportunity,backstab});
       const hitRoll=d100(),hit=hitRoll<=pHit;
+      const head={ok:true,mode,weapon:weapon.nom,distance,pHit,hitRoll};
       if(!hit){
-        return {ok:true,mode,weapon:weapon.nom,distance,pHit,hitRoll,hit:false,wound:false,damage:0,...tags};
+        // Échec critique CAC V1 : un naturel 96–100 déclenche un test de Chance ; raté → Au Sol.
+        const fumble=fumbleTest(attacker,hitRoll);
+        if(fumble.fumble) attacker.prone=true;
+        const missed={...head,hit:false,...fumble,wound:false,damage:0,...tags};
+        // Approximation projectile V1 : options.bystanders = les autres combattants présents.
+        if(mode==="ranged"&&Array.isArray(options.bystanders)) missed.stray=resolveStray(attacker,defender,options.bystanders,weapon);
+        return missed;
+      }
+      return {...head,hit:true,...resolveHit(attacker,defender,mode,{chargePower,backstab}),...tags};
+    }
+
+    // Suite d'un Toucher réussi : blocage, critique au Toucher, Blesser, critique de blessure, dégâts.
+    function resolveHit(attacker,defender,mode,{chargePower=0,backstab=false}={}){
+      const weapon=weaponTemplate(activeWeaponItem(attacker));
+
+      // Blocage bouclier physique V1 : après le Toucher, avant le critique ; au CAC comme au tir, même dans
+      // le dos. Un coup bloqué ne compte pas comme un toucher réel : ni critique, ni Blesser, ni dégâts.
+      const pBlock=blockChance(defender);
+      const block={};
+      if(pBlock!==null){
+        const blockRoll=d100();
+        Object.assign(block,{pBlock,blockRoll,blocked:blockRoll<=pBlock,shield:weaponTemplate(activeOffhandItem(defender)).nom});
+        if(block.blocked) return {...block,wound:false,damage:0};
       }
 
-      const matchup=selectDamageMatchup(attacker,defender,weapon,{backstab});
+      const pCritical=criticalChance(attacker);
+      const criticalHitRoll=d100(),criticalHit=criticalHitRoll<=pCritical;
+      const crit={...block,pCritical,criticalHitRoll,criticalHit};
+      const matchup=selectDamageMatchup(attacker,defender,weapon,{backstab,ignoreArmor:criticalHit});
       const pWound=woundProbability(attacker,defender,mode,matchup,{chargePower});
       const woundRoll=d100(),wound=woundRoll<=pWound;
       if(!wound){
-        return {ok:true,mode,weapon:weapon.nom,distance,pHit,hitRoll,hit:true,matchup,pWound,woundRoll,wound:false,damage:0,...tags};
+        // Échec critique de blessure CAC V1 : naturel 96–100 puis test de Chance raté → l'attaquant
+        // encaisse les dégâts minimum de son propre coup, réduits au mieux par sa Résistance physique.
+        const woundFumble=fumbleTest(attacker,woundRoll);
+        const recoil={woundFumbleRoll:woundFumble.fumbleRoll,woundFumble:woundFumble.fumble};
+        if(woundFumble.fumble){
+          const self=physicalDamage(attacker,attacker,mode,chargePower,{roll:"min",resistanceRoll:3});
+          attacker.hp-=self.damage;
+          attacker.damageTaken=(Number(attacker.damageTaken)||0)+self.damage;
+          if(attacker.hp<=0) attacker.alive=false;
+          Object.assign(recoil,{selfDamage:self.damage,attackerHp:attacker.hp,attackerDown:!attacker.alive});
+        }
+        return {...crit,matchup,pWound,woundRoll,wound:false,...recoil,damage:0};
       }
 
-      const damageData=physicalDamage(attacker,defender,mode,chargePower);
+      // Critique de blessure positif CAC V1 : dégâts de l'arme au maximum et variation de Résistance à 0,9.
+      const criticalWoundRoll=d100(),criticalWound=criticalWoundRoll<=pCritical;
+      Object.assign(crit,{criticalWoundRoll,criticalWound});
+      const damageData=physicalDamage(attacker,defender,mode,chargePower,criticalWound?{roll:"max",resistanceRoll:1}:{});
       // Les PV restent signés : la profondeur sous 0 sert au jet de mort de fin de mission (Issue #13).
       defender.hp-=damageData.damage;
       // Les soins n'effacent pas l'usure : la fatigue de fin de mission se calcule sur le cumul (10-mission-time §5).
       defender.damageTaken=(Number(defender.damageTaken)||0)+damageData.damage;
       if(defender.hp<=0) defender.alive=false;
 
-      return {
-        ok:true,mode,weapon:weapon.nom,distance,pHit,hitRoll,hit:true,
-        matchup,pWound,woundRoll,wound:true,...damageData,
-        targetHp:defender.hp,targetDown:!defender.alive,...tags
-      };
+      return {...crit,matchup,pWound,woundRoll,wound:true,...damageData,targetHp:defender.hp,targetDown:!defender.alive};
+    }
+
+    // Approximation projectile V1. Couloir de tir (Idan, 2026-10-08) : cône de 30° depuis le tireur, centré sur
+    // l'axe tireur → cible, compté de la moitié de la distance de la cible jusqu'à la portée max de l'arme.
+    function cartesian(h){ return {x:Math.sqrt(3)*(h.q+h.r/2),y:1.5*h.r}; }
+    function inFiringCorridor(shooter,target,unit){
+      const reach=axialDistance(shooter,unit);
+      if(reach<STRAY.startRatio*axialDistance(shooter,target)||reach>weaponRange(shooter).max) return false;
+      const s=cartesian(shooter),t=cartesian(target),u=cartesian(unit);
+      const ax=t.x-s.x,ay=t.y-s.y,bx=u.x-s.x,by=u.y-s.y;
+      const cos=(ax*bx+ay*by)/(Math.hypot(ax,ay)*Math.hypot(bx,by));
+      return cos>=Math.cos(STRAY.coneAngle/2*Math.PI/180)-1e-9;
+    }
+    // Candidats : alliés et ennemis du couloir, du plus proche de la cible initiale au plus lointain ;
+    // à égalité, un ennemi du tireur d'abord, puis le plus proche du tireur.
+    function strayCandidates(shooter,target,units){
+      const ally=u=>Boolean(shooter.team)&&u.team===shooter.team;
+      return units
+        .filter(u=>u!==shooter&&u!==target&&u.alive&&!u.offMap&&inFiringCorridor(shooter,target,u))
+        .sort((a,b)=>axialDistance(a,target)-axialDistance(b,target)||ally(a)-ally(b)||axialDistance(shooter,a)-axialDistance(shooter,b));
+    }
+    // P_accident,i = P_toucher(candidat) × 0,35 × 0,5^(i−1) ; le premier touché devient la cible réelle
+    // (blocage, critique, Blesser, dégâts). Ne s'applique pas aux armes de zone.
+    function resolveStray(shooter,target,units,weapon){
+      if(skillByName.get(weapon.nom)?.attaque_de_zone) return null;
+      const tries=[];
+      let factor=STRAY.initial;
+      for(const unit of strayCandidates(shooter,target,units)){
+        const distance=axialDistance(shooter,unit),backstab=Boolean(unit.fleeing);
+        const p=hitProbability(shooter,unit,"ranged",distance,{backstab})*factor,roll=d100();
+        tries.push({unit,p,roll});
+        if(roll<=p){
+          const result={ok:true,mode:"ranged",weapon:weapon.nom,distance,pHit:p,hitRoll:roll,hit:true,accidental:true,
+            ...resolveHit(shooter,unit,"ranged",{backstab}),chargePower:0,opportunity:false,encircled:false,fleeingTarget:backstab,backstab};
+          return {tries,unit,result};
+        }
+        factor*=STRAY.decay;
+      }
+      return {tries,unit:null,result:null};
     }
 
     // Attaque d'opportunité CAC V1 : un combattant menace les hexagones atteignables par son arme de mêlée active.
@@ -457,6 +671,7 @@
         travel,
         path:Array.from({length:travel},(_,i)=>({q:attacker.q+step.q*(i+1),r:attacker.r+step.r*(i+1)})),
         destination:{q:defender.q-step.q,r:defender.r-step.r},
+        step,
         min:base,
         max:2*base
       };
@@ -481,10 +696,22 @@
       damageMatchups,
       selectDamageMatchup,
       woundProbability,
+      criticalChance,
+      blockChance,
+      isRepeatable,
+      needsLoading,
+      isLoaded,
+      canReload,
+      reload,
+      chainChance,
+      rollChain,
       resolveAttack,
       canSwitchWeaponSet,
       switchWeaponSet,
       chargeData,
+      counterchargeTrigger,
+      inFiringCorridor,
+      strayCandidates,
       threatens,
       isEncircled,
       intimidation,

@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 85,
+  "row_count": 87,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -304,6 +304,22 @@
       "description": "Part de la chance normale de Toucher appliquée au premier candidat accidentel.",
       "formule": "Approximation projectile V1",
       "valeur": 0.35,
+      "version": "V1"
+    },
+    {
+      "nom": "Tir — angle du couloir d'approximation",
+      "code": "combat.ranged.stray.cone_angle",
+      "description": "Ouverture totale, en degrés, du cône de tir centré sur l'axe tireur → cible où un projectile raté peut toucher un autre personnage (décision Idan du 2026-10-08).",
+      "formule": "Approximation projectile V1",
+      "valeur": 30,
+      "version": "V1"
+    },
+    {
+      "nom": "Tir — début du couloir d'approximation",
+      "code": "combat.ranged.stray.corridor_start_ratio",
+      "description": "Le couloir commence à cette fraction de la distance tireur → cible et s'arrête à la portée max de l'arme (décision Idan du 2026-10-08).",
+      "formule": "Approximation projectile V1",
+      "valeur": 0.5,
       "version": "V1"
     },
     {

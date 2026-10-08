@@ -347,10 +347,19 @@ function resolveOpportunityAttacks(reactors,target){
   for(const reactor of sorted){
     if(m.over||!target.alive||target.q!==from.q||target.r!==from.r) break;
     if(!m.engine.threatens(reactor,target)) continue;
-    const result=m.engine.resolveAttack(reactor,target,{mode:"melee",opportunity:true});
-    logMissionAttack(reactor,target,result,"opportunity");
-    checkMissionEnd();
-    resolveMissionCourage(reactor,target,result);
+    // Combat à deux armes : un coup avec chaque arme de mêlée, sans enchaînement (Attaque d'opportunité CAC V1).
+    const hands=m.engine.usableHands(reactor,m.engine.axialDistance(reactor,target)).filter(h=>h.mode==="melee");
+    let struck=false,wounded=false;
+    for(const h of hands){
+      if(m.over||!target.alive) break;
+      const result=m.engine.resolveAttack(reactor,target,{mode:"melee",opportunity:true,hand:h.hand});
+      logMissionAttack(reactor,target,result,"opportunity");
+      checkMissionEnd();
+      if(!result.ok) continue;
+      struck=true;wounded=wounded||result.wound;
+      if(result.fumble||result.woundFumble) break;
+    }
+    if(struck) resolveMissionCourage(reactor,target,{ok:true,mode:"melee",wound:wounded});
   }
   return target.alive;
 }
@@ -402,9 +411,13 @@ function missionActiveUnitLost(){
 }
 
 function performMissionAttack(attacker,target,mode,distance){
-  const m=game.mission;
-  if(mode==="ranged"){
-    const reactors=m.engine.rangedOpportunityReactors(missionOpponents(attacker),attacker,target);
+  const m=game.mission,e=m.engine;
+  // Combat à deux armes CAC V1 : à chaque séquence, chaque arme utilisable frappe une fois (principale puis
+  // secondaire), chacune avec son propre mode ; sinon, la seule arme principale.
+  const dual=e.isDualWielding(attacker);
+  const handsAt=d=>dual?e.usableHands(attacker,d):(e.canAttackAtDistance(attacker,d,mode)?[{hand:"main",mode}]:[]);
+  if(handsAt(distance).some(h=>h.mode==="ranged")){
+    const reactors=e.rangedOpportunityReactors(missionOpponents(attacker),attacker,target);
     if(reactors.length){
       const from={q:attacker.q,r:attacker.r},wasFleeing=attacker.fleeing;
       missionLog(attacker.character.name+" tire alors qu’il est menacé par "+reactors.map(x=>x.character.name).join(", ")+".","move");
@@ -412,38 +425,48 @@ function performMissionAttack(attacker,target,mode,distance){
       if(!attacker.alive||attacker.q!==from.q||attacker.r!==from.r||attacker.fleeing!==wasFleeing) return null;
     }
   }
-  // Enchaînement d'attaques CAC V1 / de tirs distance V1 : tant qu'une attaque touche réellement, D100 ≤ P_N
-  // ouvre la suivante contre la même cible, si elle reste à portée.
+  // Enchaînement d'attaques CAC V1 / de tirs distance V1 / séquences à deux armes : tant que la séquence touche
+  // réellement, D100 ≤ P_N ouvre la suivante contre la même cible, si elle reste à portée.
   // Courage post-attaque CAC V1 / post-tir V1 : un seul test en fin de séquence ; une cible en sous-nombre
   // teste, elle, après chaque blessure reçue (Courage en sous-nombre V1).
-  const e=m.engine;
-  let first=null,wounded=false,testedPerWound=false;
+  let first=null,wounded=false,testedPerWound=false,melee=false;
   const strayWounded=new Set();
   for(let n=1;;n++){
-    const result=e.resolveAttack(attacker,target,{mode,distance,encircled:missionEncircled(target),bystanders:missionUnits()});
-    first=first||result;
-    logMissionAttack(attacker,target,result);
-    if(!result.ok) return first;
-    const stray=logMissionStray(attacker,result);
-    if(stray) strayWounded.add(stray);
-    checkMissionEnd();
-    if(result.wound){
-      wounded=true;
-      if(mode==="melee"&&!m.over&&e.localMelee(target,missionUnits()).surplus>0){
-        resolveMissionCourage(attacker,target,result);
-        testedPerWound=true;
+    const results=[];
+    for(const h of handsAt(e.axialDistance(attacker,target))){
+      if(m.over||!target.alive||!attacker.alive) break;
+      const d=e.axialDistance(attacker,target);
+      if(results.length&&!handsAt(d).some(x=>x.hand===h.hand)) continue;
+      const result=e.resolveAttack(attacker,target,{mode:h.mode,distance:d,hand:h.hand,encircled:h.mode==="melee"&&missionEncircled(target),bystanders:missionUnits()});
+      first=first||result;
+      logMissionAttack(attacker,target,result);
+      if(!result.ok) continue;
+      results.push(result);
+      if(h.mode==="melee") melee=true;
+      const stray=logMissionStray(attacker,result);
+      if(stray) strayWounded.add(stray);
+      checkMissionEnd();
+      if(result.wound){
+        wounded=true;
+        if(h.mode==="melee"&&!m.over&&e.localMelee(target,missionUnits()).surplus>0){
+          resolveMissionCourage(attacker,target,result);
+          testedPerWound=true;
+        }
       }
+      // Un échec critique interrompt toute la chaîne, y compris avant la seconde arme.
+      if(result.fumble||result.woundFumble) break;
     }
-    if(m.over) return first;
-    distance=e.axialDistance(attacker,target);
-    if(!e.canAttackAtDistance(attacker,distance,mode)) break;
-    const chain=e.rollChain(attacker,target,result,n+1,mode);
+    if(!results.length){ if(n===1) return first; break; }
+    if(m.over||!handsAt(e.axialDistance(attacker,target)).length) break;
+    const chain=dual?e.rollPairChain(attacker,target,results,n+1):e.rollChain(attacker,target,results[0],n+1,mode);
     if(!chain) break;
-    const detail=" ("+(mode==="ranged"?"tir":"attaque")+" n°"+chain.n+" : "+missionPercent(chain.p)+", jet "+chain.roll+")";
+    const label=dual?"séquence":mode==="ranged"?"tir":"attaque";
+    const detail=" ("+label+" n°"+chain.n+" : "+missionPercent(chain.p)+", jet "+chain.roll+")";
     if(!chain.continues){ missionLog(attacker.character.name+" ne parvient pas à enchaîner"+detail+".","info"); break; }
     missionLog(attacker.character.name+" enchaîne"+detail+" !","info");
   }
-  if(!testedPerWound) resolveMissionCourage(attacker,target,{ok:true,mode,wound:wounded},{defenderSurplus:0});
+  const courageMode=dual?(melee?"melee":"ranged"):mode;
+  if(!testedPerWound) resolveMissionCourage(attacker,target,{ok:true,mode:courageMode,wound:wounded},{defenderSurplus:0});
   // Courage post-tir V1 : le personnage blessé par accident teste lui aussi, face au tireur.
   for(const unit of strayWounded) resolveMissionCourage(attacker,unit,{ok:true,mode:"ranged",wound:true});
   return first;
@@ -642,7 +665,7 @@ function resolveMissionFleeingActivation(unit){
 
 function resolvePlayerMissionAttack(a,d,mode,distance){
   const m=game.mission;
-  if(!m.engine.canAttackAtDistance(a,distance,mode)){ missionLog("Cible hors portée ou arme incompatible.","bad"); return; }
+  if(!missionCanAttack(a,distance,mode)){ missionLog("Cible hors portée ou arme incompatible.","bad"); return; }
   a.attackAvailable=false;
   m.mode=null;
   performMissionAttack(a,d,mode,distance);
@@ -872,7 +895,7 @@ function enemyMissionActivation(unit){
   let mode=e.isRangedWeapon(weapon)?"ranged":"melee";
   let distance=e.axialDistance(unit,target);
 
-  if(e.canAttackAtDistance(unit,distance,mode)){
+  if(e.usableHands(unit,distance).length){
     performMissionAttack(unit,target,mode,distance);
     return;
   }
@@ -890,7 +913,7 @@ function enemyMissionActivation(unit){
   mode=e.isRangedWeapon(weapon)?"ranged":"melee";
   distance=e.axialDistance(unit,target);
 
-  if(e.canAttackAtDistance(unit,distance,mode)){
+  if(e.usableHands(unit,distance).length){
     performMissionAttack(unit,target,mode,distance);
   }
 }
@@ -914,14 +937,30 @@ function runMissionEnemyTurn(){
   selectNextMissionPlayer();
 }
 
+// Modes d'attaque des armes tenues et prêtes (à deux armes, chaque main compte).
+function missionHeldModes(u){
+  const e=game.mission.engine,modes=new Set();
+  for(const hand of e.isDualWielding(u)?["main","off"]:["main"]){
+    const item=hand==="off"?e.activeOffhandItem(u):e.activeWeaponItem(u),w=e.weaponTemplate(item);
+    if(!w||!e.isLoaded(u,item)) continue;
+    if(e.isMeleeWeapon(w)) modes.add("melee");
+    if(e.isRangedWeapon(w)) modes.add("ranged");
+  }
+  return modes;
+}
+
+function missionCanAttack(u,distance,mode){
+  return game.mission.engine.usableHands(u,distance).some(h=>h.mode===mode);
+}
+
 function missionActionAvailability(){
   const u=missionActiveUnit(),m=game.mission;
   if(!u||!m||m.phase!=="player"||m.over) return {};
   const e=m.engine,w=e.weaponTemplate(e.activeWeaponItem(u));
   return {
     move:u.movementRemaining>0,
-    melee:u.attackAvailable&&e.isMeleeWeapon(w),
-    ranged:u.attackAvailable&&e.isRangedWeapon(w)&&e.isLoaded(u,e.activeWeaponItem(u)),
+    melee:u.attackAvailable&&missionHeldModes(u).has("melee"),
+    ranged:u.attackAvailable&&missionHeldModes(u).has("ranged"),
     charge:u.attackAvailable&&e.isMeleeWeapon(w)&&u.movementRemaining===e.movementBase(u),
     switch:u.quickAvailable&&e.canSwitchWeaponSet(u),
     reload:u.quickAvailable&&e.canReload(u),
@@ -941,8 +980,7 @@ function targetableMissionCells(){
 
   for(const enemy of livingMissionUnits("enemy")){
     const distance=m.engine.axialDistance(u,enemy);
-    if(m.mode==="melee"&&m.engine.canAttackAtDistance(u,distance,"melee")) set.add(missionKey(enemy.q,enemy.r));
-    if(m.mode==="ranged"&&m.engine.canAttackAtDistance(u,distance,"ranged")) set.add(missionKey(enemy.q,enemy.r));
+    if((m.mode==="melee"||m.mode==="ranged")&&missionCanAttack(u,distance,m.mode)) set.add(missionKey(enemy.q,enemy.r));
     if(m.mode==="charge"&&missionChargeIfClear(u,enemy)) set.add(missionKey(enemy.q,enemy.r));
   }
   return set;

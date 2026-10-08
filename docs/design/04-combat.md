@@ -88,10 +88,18 @@ Les règles validées de maniement et cadence sont centralisées ici :
 - [Prise d'arme et mode deux mains V1](/design/#doc=formulas/prise-d-arme-et-mode-deux-mains-v1.md) : prises `1 main`, `2 mains`, `Au choix`.
 - [Combat à deux armes CAC V1](/design/#doc=formulas/combat-a-deux-armes-cac-v1.md) : combat à deux armes.
 
+Choix d'implémentation V1 du combat à deux armes, à confirmer en relecture :
+- on combat à deux armes quand chaque main du set actif tient une **arme** (un bouclier n'en est pas une) ;
+- la **Dextérité effective** `Dextérité / (2 − Combat à deux armes / 100)` remplace la Dextérité au Toucher (CAC et distance) et dans les enchaînements ;
+- à chaque séquence, chaque arme **utilisable** frappe une fois, principale puis secondaire, chacune avec son mode : épée + pistolet = la lame au contact, le pistolet au contact comme à distance ; une arme déchargée ou hors portée est sautée ;
+- la séquence suivante n'existe que si la paire compte une arme de mêlée : deux pistolets tirent leur paire de base, puis s'arrêtent ;
+- attaque d'opportunité : un coup avec chaque arme de mêlée, puis un seul test de Courage ; la zone de menace couvre la portée de chaque arme de mêlée tenue ;
+- la charge reste une seule attaque, avec l'arme principale (décision Idan) ; la contre-charge utilise l'arme principale ;
+- aucun mercenaire n'a encore de seconde arme à la création : elle viendra avec le système de changement d'équipement (négociation avec le mercenaire, Idan, 2026-10-08).
+
 Choix d'implémentation V1 des enchaînements (attaques CAC et tirs `Répétable`) :
 - validés par Idan le 2026-10-08 : la **charge** reste une seule attaque (« arrivée suivie d'une attaque », Charge CAC V1), sans enchaînement ; au tir, les attaques d'opportunité des ennemis au contact sont résolues **une fois**, avant la séquence de tirs, pas avant chaque tir ;
 - à confirmer en relecture : la chaîne vise toujours la même cible et s'arrête si elle n'est plus à portée (par exemple après avoir fui) ;
-- Dextérité effective = Dextérité tant que le combat à deux armes n'est pas branché ;
 - Courage : un seul test en fin de séquence ([Courage post-attaque CAC V1](/design/#doc=formulas/courage-post-attaque-cac-v1.md), [Courage post-tir V1](/design/#doc=formulas/courage-post-tir-v1.md)) ; une cible en sous-nombre teste après chaque blessure reçue et ne reteste pas en fin de séquence.
 
 ## Bouclier physique V1
@@ -218,7 +226,7 @@ Le moteur tactique est isolé dans `game-core/combat-engine.js`. La carte web n'
 
 ### Simplifications volontaires du premier test
 
-Le noyau utilise déjà les formules validées de portée, vitesse/esquive effectives, MouvementBase, Toucher, Blesser, résistances d'armure, qualité d'item, dégâts PV, charge, attaques d'opportunité, Frappe dans le dos, encerclement, Courage et Fuite. Les critiques, échecs critiques, le blocage au bouclier, les enchaînements d'attaques et de tirs, la recharge des armes à feu, la contre-charge et l'approximation des projectiles sont branchés. En revanche, ce premier écran ne branche pas encore les autres systèmes secondaires : combat à deux armes et couverture/obstacles.
+Le noyau utilise déjà les formules validées de portée, vitesse/esquive effectives, MouvementBase, Toucher, Blesser, résistances d'armure, qualité d'item, dégâts PV, charge, attaques d'opportunité, Frappe dans le dos, encerclement, Courage et Fuite. Les critiques, échecs critiques, le blocage au bouclier, les enchaînements d'attaques et de tirs, la recharge des armes à feu, la contre-charge, l'approximation des projectiles et le combat à deux armes sont branchés. En revanche, ce premier écran ne branche pas encore la couverture et les obstacles.
 
 Choix d'implémentation V1, confirmés en relecture par Chatty (PR #7) : aucune limite au nombre d'attaques d'opportunité par adversaire et par tour ; un personnage Au Sol réagit normalement et compte pour l'encerclement ; plusieurs réactions simultanées sont résolues dans l'ordre d'initiative de l'équipe qui réagit ; une charge ne peut pas traverser une case occupée ; sortir de la carte coûte un hexagone de mouvement depuis une case du bord ; la Mission Test n'ayant aucun abri total, « Cachons-nous » file vers la sortie de carte sans jamais entrer dans une case adjacente à un ennemi (sans trajet sûr vers une sortie, il s'éloigne au mieux par les cases sûres, sinon il reste sur place) ; « Feu à volonté » tire à la cadence de l'arme (Enchaînement de tirs distance V1) et ne recharge pas une arme déchargée.
 

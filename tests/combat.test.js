@@ -493,4 +493,46 @@ assert.equal(scripted([100,1],[100]).resolveAttack(strayShooter,strayTarget,{mod
 const blunderbuss={...unit(withMainWeapon(a,"Tromblon"),0,0),team:"player"},nearMark=at(4,0,"enemy");
 assert.equal(scripted([100,1],[100]).resolveAttack(blunderbuss,nearMark,{mode:"ranged",distance:4,bystanders:[at(3,0,"enemy")]}).stray,null);
 
+// Combat à deux armes CAC V1 : une arme (pas un bouclier) dans chaque main du set actif.
+function withDual(character,mainName,offName,mastery=0){
+  const main={id:"dual-main-"+mainName,name:mainName,itemType:"weapon",qualityCode:"standard"};
+  const off={id:"dual-off-"+offName,name:offName,itemType:"weapon",qualityCode:"standard"};
+  return {
+    ...character,items:[...character.items,main,off],
+    skills:{...character.skills,martial:{...character.skills.martial,"Combat à deux armes":mastery}},
+    equipment:{...character.equipment,slots:{...character.equipment.slots,weapon_set_1_main:main.id,weapon_set_1_off:off.id}}
+  };
+}
+const dex=Number(a.stats["Dextérité"])||0;
+assert.equal(combat.isDualWielding(unit(withDual(a,"Épée courte","Dague"),0,0)),true);
+assert.equal(combat.isDualWielding(unit(withShield(a,"Écu"),0,0)),false,"un bouclier n'est pas une seconde arme");
+assert.equal(combat.isDualWielding(unit(a,0,0)),false);
+near(combat.effectiveDexterity(unit(withDual(a,"Épée courte","Dague",0),0,0)),dex/2,"maîtrise 0 : Dextérité / 2");
+near(combat.effectiveDexterity(unit(withDual(a,"Épée courte","Dague",50),0,0)),dex/1.5,"maîtrise 50 : Dextérité / 1,5");
+near(combat.effectiveDexterity(unit(withDual(a,"Épée courte","Dague",100),0,0)),dex,"maîtrise 100 : Dextérité complète");
+assert.equal(combat.effectiveDexterity(unit(a,0,0)),dex,"une seule arme : Dextérité normale");
+const pair=unit(withDual(a,"Épée courte","Dague",40),0,0);
+near(combat.chainChance(pair,2,"melee"),Math.min(100,(combat.effectiveDexterity(pair)+combat.effectiveSpeed(pair))/2),"P_N avec la Dextérité effective");
+
+// Chaque main frappe avec son arme et son mode ; épée + pistolet : la lame au contact, le pistolet aussi à distance.
+assert.deepEqual(combat.usableHands(pair,1).map(h=>[h.hand,h.mode,h.weapon]),[["main","melee","Épée courte"],["off","melee","Dague"]]);
+const swordGun=unit(withDual(a,"Épée courte","Pistolet"),0,0);
+assert.deepEqual(combat.usableHands(swordGun,1).map(h=>[h.hand,h.mode]),[["main","melee"],["off","ranged"]]);
+assert.deepEqual(combat.usableHands(swordGun,3).map(h=>[h.hand,h.mode]),[["off","ranged"]]);
+const offShot=combat.resolveAttack(swordGun,unit(b,3,0),{mode:"ranged",distance:3,hand:"off"});
+assert.deepEqual([offShot.ok,offShot.weapon,offShot.hand,swordGun.attackHand],[true,"Pistolet","off",undefined],"la main secondaire tire, puis les mains reviennent en place");
+assert.deepEqual(combat.usableHands(swordGun,3),[],"pistolet déchargé : plus rien à distance");
+assert.deepEqual(combat.usableHands(swordGun,1).map(h=>h.hand),["main"],"la lame reste utilisable");
+// La menace couvre la portée de chaque arme de mêlée tenue (Lance en main secondaire : 2 cases).
+assert.equal(combat.threatens(unit(withDual(a,"Dague","Lance"),0,0),{q:2,r:0}),true);
+assert.equal(combat.threatens(unit(withMainWeapon(a,"Dague"),0,0),{q:2,r:0}),false);
+
+// Séquence suivante : au moins un toucher réel, aucun échec critique, une arme de mêlée, cible vivante.
+const pairTarget=unit(b,1,0),hitM={ok:true,mode:"melee",hit:true},missM={ok:true,mode:"melee",hit:false};
+assert.deepEqual(combat.rollPairChain(pair,pairTarget,[missM,hitM],2),{n:2,p:combat.chainChance(pair,2,"melee"),roll:1,continues:true},"une des deux a touché");
+assert.equal(combat.rollPairChain(pair,pairTarget,[missM,{...missM,hit:true,blocked:true}],2),null,"rien n'a réellement touché");
+assert.equal(combat.rollPairChain(pair,pairTarget,[hitM,{...missM,fumble:true}],2),null,"un échec critique coupe la chaîne");
+assert.equal(combat.rollPairChain(pair,pairTarget,[{...hitM,mode:"ranged"},{...hitM,mode:"ranged"}],2),null,"deux pistolets : la paire de base seulement");
+assert.equal(combat.rollPairChain(pair,{...pairTarget,alive:false},[hitM],2),null,"cible hors combat");
+
 console.log(JSON.stringify({ok:true},null,2));

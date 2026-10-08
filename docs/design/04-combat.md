@@ -149,7 +149,7 @@ Choix d'implémentation V1 de la recharge :
 - l'arme se décharge dès que le coup part, qu'il touche ou non ;
 - l'IA recharge avec son Action rapide quand son arme est déchargée (après un éventuel changement d'arme, qui consomme aussi l'Action rapide).
 
-Choix d'implémentation V1 de l'approximation, à confirmer en relecture :
+Choix d'implémentation V1 de l'approximation, validés par Idan le 2026-10-08 :
 - elle suit tout tir raté, y compris un échec critique au Toucher, et aussi un tir de contre-charge ; un tir **bloqué** par un bouclier s'arrête là ;
 - le candidat touché suit la suite normale d'un toucher : blocage, critique, Blesser, dégâts ; la chaîne de tirs s'arrête, puisque la cible visée n'a pas été touchée ;
 - le personnage blessé par accident teste son Courage face au tireur (Courage post-tir V1), même s'il est son allié ;

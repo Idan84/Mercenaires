@@ -247,12 +247,23 @@ La sauvegarde stocke le texte choisi ou, au minimum, l'ID du pack avec une versi
 
 Pour éviter qu'un changement ultérieur du catalogue réécrive le passé d'un mercenaire existant, la solution la plus sûre est de **figer le contenu sélectionné dans la sauvegarde**.
 
-## À décider avec Idan
+## Décisions d'Idan (2026-10-04)
 
-- afficher seulement `short` dans la fiche ou aussi `rumor` ?
-- afficher `motto` ou le réserver aux écrans secondaires ?
-- le joueur découvre-t-il toute la bio dès la Taverne, ou seulement après recrutement ?
+- **Principe validé** : banque de packs tagués, choisis selon le profil, jamais réutilisés dans une sauvegarde.
+- **La bio se découvre au recrutement**, pas à la Taverne. Seuls les membres de la compagnie en ont une, ce qui demande aussi moins de textes.
+- **Textes V0 acceptés tels quels pour l'instant** ; Idan relira le fond plus tard.
+- Affichage : `short`, `rumor` et `motto` dans la fiche, en tête de l'onglet Profil (proposition non contestée).
+
+## Encore ouvert
+
 - veut-on plus tard des biographies évolutives : une seconde ligne ajoutée après un exploit, une blessure, une trahison, etc. ?
+
+## Implémentation (prototype)
+
+- Moteur : `game-core/biography.js` (PR #34). Contraintes dures : peuple, et genre si le pack est genré. Score souple avec les poids ci-dessus, plus un bruit de 0 à 5 ; le meilleur gagne. `weight` est réservé pour un futur tirage parmi les finalistes.
+- `high` et `low` : les **deux** caractéristiques les plus hautes et les plus basses. La culture est un tag souple.
+- Le **pack** est figé sur le mercenaire, mais ses textes restent des **modèles** (`{nom}`, `{Il|Elle}`), accordés à l'affichage : le sexe viendra de l'avatar.
+- Attribution : capitaine et escouade initiale à la création de la partie, puis chaque recrue à la signature. `state.biographiesUsed` empêche toute réutilisation, même après la mort. Une ancienne sauvegarde est complétée au chargement, puis sauvegardée aussitôt.
 
 ## Banque V0 structurée
 

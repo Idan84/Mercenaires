@@ -1330,6 +1330,9 @@ body[data-screen="creation"] .intro-scene { visibility: hidden; }
 }
 @media (max-width: 620px) {
   .wizard { padding: 14px; }
+  /* La croix fixe en haut à droite (18–58px) avait tendance à chevaucher le titre.
+     Réserver une première rangée sur mobile, sans réduire la largeur du titre ni des 9 jalons. */
+  .wizard-head { padding-top: 52px; }
   .wizard-frame { gap: 12px; }
   .wizard-progress { width: 94%; margin-top: 10px; }
   .wizard-option-grid { grid-template-columns: 1fr; }

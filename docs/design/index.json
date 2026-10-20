@@ -73,6 +73,10 @@
     },
     {
       "file": "92-balance-questions.md"
+    },
+    {
+      "file": "93-pending-and-parked.md",
+      "title": "En attente et mis de côté"
     }
   ],
   "formulas": [

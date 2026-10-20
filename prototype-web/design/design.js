@@ -6,6 +6,11 @@ function titleFromFile(file){
   return file.replace(/^\d+-/,"").replace(/\.md$/,"").replace(/-/g," ").replace(/\b\w/g,m=>m.toUpperCase());
 }
 function labelTable(name){return name.replace(/-/g," ").replace(/\b\w/g,m=>m.toUpperCase())}
+// Titre d'un document : « title » de docs/index.json s'il existe, sinon tiré du nom de fichier.
+function docTitle(file){
+  const entry=[...(state.docs?.documents||[]),...(state.docs?.formulas||[])].find(x=>x.file===file);
+  return entry?.title||titleFromFile(file.split("/").pop());
+}
 
 async function init(){
   try{
@@ -18,16 +23,22 @@ async function init(){
     else if(hash.startsWith("table=")){setMode("tables");openTable(decodeURIComponent(hash.slice(6)))}
     else if(hash.startsWith("doc=")){openDoc(decodeURIComponent(hash.slice(4)))}
     else openDoc(state.docs.documents[0]?.file);
+    // Liens internes (#doc=…, #table=…) cliqués dans un document ou dans l'en-tête.
+    window.addEventListener("hashchange",()=>{
+      const h=location.hash.slice(1);
+      if(h.startsWith("doc=")&&decodeURIComponent(h.slice(4))!==state.current) openDoc(decodeURIComponent(h.slice(4)));
+      else if(h.startsWith("table=")&&decodeURIComponent(h.slice(6))!==state.current){setMode("tables");openTable(decodeURIComponent(h.slice(6)))}
+    });
   }catch(e){showError(e)}
 }
 function bind(){
-  document.querySelectorAll(".switch").forEach(b=>b.addEventListener("click",()=>setMode(b.dataset.mode)));
+  document.querySelectorAll(".switch[data-mode]").forEach(b=>b.addEventListener("click",()=>setMode(b.dataset.mode)));
   $("nav-search").addEventListener("input",renderNav);
   $("table-search").addEventListener("input",renderTableRows);
 }
 function setMode(mode){
   state.mode=mode;
-  document.querySelectorAll(".switch").forEach(b=>b.classList.toggle("active",b.dataset.mode===mode));
+  document.querySelectorAll(".switch[data-mode]").forEach(b=>b.classList.toggle("active",b.dataset.mode===mode));
   $("nav-search").value=""; renderNav();
   if(mode==="docs") openDoc(state.docs.documents[0]?.file);
   else if(mode==="avatars") openAvatars();
@@ -36,7 +47,7 @@ function setMode(mode){
 function renderNav(){
   const q=$("nav-search").value.trim().toLowerCase();
   const items=state.mode==="docs"
-    ? [...state.docs.documents,...state.docs.formulas].map(x=>({id:x.file,label:titleFromFile(x.file),sub:x.file.startsWith("formulas/")?"Formule":"Document"}))
+    ? [...state.docs.documents,...state.docs.formulas].map(x=>({id:x.file,label:docTitle(x.file),sub:x.file.startsWith("formulas/")?"Formule":"Document"}))
     : state.mode==="avatars"
     ? (state.coverage?.results||[]).map(r=>({id:AvatarsLab.anchor(r.people),label:r.people,sub:r.avatars+" / "+r.need+" avatars"}))
     : state.tables.tables.map(x=>({id:x.file,label:labelTable(x.name),sub:x.rows+" lignes"}));
@@ -71,15 +82,18 @@ function scrollToPeople(id){
 }
 async function openDoc(file){
   if(!file)return; state.mode="docs";state.current=file;renderNav();
+  document.querySelectorAll(".switch[data-mode]").forEach(b=>b.classList.toggle("active",b.dataset.mode==="docs"));
   $("table-tools").classList.add("hidden");
   $("content-kicker").textContent=file.startsWith("formulas/")?"Formule":"Documentation";
-  $("content-title").textContent=titleFromFile(file.split("/").pop());
+  $("content-title").textContent=docTitle(file);
   $("content-meta").textContent=file;
   $("viewer").innerHTML='<p class="muted">Chargement…</p>';
   location.hash="doc="+encodeURIComponent(file);
   try{
     const r=await fetch("/docs/"+file); if(!r.ok)throw new Error("Document introuvable");
     $("viewer").innerHTML='<article class="markdown">'+markdown(await r.text())+'</article>';
+    // Téléphone : le document est sous la liste de navigation ; on y descend quand on l'ouvre.
+    if(matchMedia("(max-width:800px)").matches&&location.hash) $("content-kicker").scrollIntoView({block:"start"});
   }catch(e){showError(e)}
 }
 async function openTable(file){
@@ -114,6 +128,7 @@ function cell(v){
 }
 function inline(s){
   s=esc(s);
+  s=s.replace(/\[([^\]]+)\]\((https?:[^)]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>');
   s=s.replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2">$1</a>');
   s=s.replace(/\*\*([^*]+)\*\*/g,"<strong>$1</strong>");
   s=s.replace(/`([^`]+)`/g,"<code>$1</code>");

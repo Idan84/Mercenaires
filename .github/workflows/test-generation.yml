@@ -19,6 +19,7 @@ jobs:
       - run: node tests/mission-end.test.js
       - run: node tests/progression.test.js
       - run: node tests/renown.test.js
+      - run: node tests/affinity.test.js
       - run: node tests/biography.test.js
       - run: node tests/pictos.test.js
       - run: node tests/avatars.test.js

@@ -1,0 +1,26 @@
+# Design Graph — prototype de cartographie des dépendances
+
+Page servie dans le Design Lab : `/design/graph/` (source : `prototype-web/design/graph/index.html`, page autonome sans build ni CDN). C'est le seul exemplaire : la copie `design-graph/` à la racine a été retirée pour éviter qu'elles divergent.
+
+## Périmètre
+- 60+ nœuds : identité, caractéristiques, compétences, combat, équipement, progression, réputation, affinité, économie, recrutement, missions et camp.
+- Explorer conséquences et causes (1, 2, 3 niveaux ou graphe complet), rechercher un nœud, filtrer par statut, zoomer et déplacer.
+- Largeur des liens : **force qualitative estimée** (faible, moyenne, forte), pas une mesure de sensibilité mathématique.
+- Couleurs : **codé**, **validé mais non intégré**, **idée**.
+- Chaque lien contient une référence de module ou de document et parfois une explication.
+
+## Limites importantes
+Ce graphe est une **cartographie manuelle initiale**. Il n'analyse pas automatiquement les fonctions JS, ne mesure pas les variations chiffrées et n'injecte aucune modification dans les sauvegardes. Les liens du combat ont été revus par JC3 le 2026-10-20 d'après `game-core/combat-engine.js` (Toucher, défense, Blesser, critiques, enchaînements, PV, morts, moral). L'affinité (#118) et la renommée de compagnie (#115) sont codées ; leurs effets sur les négociations, les marchands, les missions, les recrues et les places de Taverne ne le sont pas. Les influences qualitatives ne doivent pas être prises pour des coefficients validés.
+
+## Prochaines étapes
+1. Revue JC3 sur les liens combat/XP/blessures ; revue Chatty sur UI et navigation.
+2. Brancher une entrée **Design Labs** dans l'interface du jeu après identification du routeur/menu actuel.
+3. Construire un registre de dépendances co-localisé avec les fonctions et constantes pour éviter la dérive.
+4. Ajouter le mode simulation avant/après en appelant les véritables fonctions pures du moteur et en affichant des deltas chiffrés.
+5. Tester la carte contre les formules et la mettre à jour à chaque PR de gameplay.
+
+Ne pas exposer les coefficients des systèmes futurs comme s'ils étaient déjà implémentés.
+
+## Intégration et simulation (deuxième étape)
+
+Le graphe est également accessible depuis `prototype-web/design/graph/` et un lien a été ajouté à `prototype-web/design/index.html` (chemin web `/design/graph/`). Le panneau de simulation utilise **les vraies fonctions** `MercenairesCampaign.createCampaignRules(...).companyRenown(state)` et `MercenairesTavern.createTavernRules().missionBonusDemand(m)`. Modifier une entrée et un delta pour comparer avant/après sans muter de sauvegarde. Les valeurs saisies sont des scénarios fictifs ; le moteur réel calcule les résultats. Les autres fonctions ne sont pas encore simulées. Vérifier en navigateur après déploiement de la branche de travail.

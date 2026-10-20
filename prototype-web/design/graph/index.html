@@ -16,7 +16,7 @@
 <div class="legend">Épaisseur = influence qualitative<br><span style="color:#56b8a6">━━</span> Codé · <span style="color:#dfaa59">┄┄</span> Validé, non branché · <span style="color:#ae8ddd">····</span> Envisagé<br>Molette : zoom · Glisser : déplacer · Clic : explorer</div>
 <div class="controls"><button id="plus">＋</button><button id="minus">－</button><button id="fit">Cadrer</button></div>
 </div>
-<aside><div id="panel"></div></aside></main>
+<aside><div id="panel"></div><div id="simulator"></div></aside></main>
 <script>
 "use strict";
 // Inventaire manuel initial, lié aux modules du dépôt : chaque arête cite sa source et son statut.
@@ -94,4 +94,4 @@ function resetCamera(){tx=ty=0;scale=1;camera()}document.getElementById("fit").o
 graph.addEventListener("wheel",e=>{e.preventDefault();zoom(e.deltaY<0?1.12:1/1.12)},{passive:false});
 let drag=null;graph.addEventListener("pointerdown",e=>{if(e.target.closest(".node"))return;drag={x:e.clientX,y:e.clientY,tx,ty};graph.setPointerCapture(e.pointerId)});graph.addEventListener("pointermove",e=>{if(!drag)return;const r=graph.getBoundingClientRect(),v=graph.viewBox.baseVal;tx=drag.tx+(e.clientX-drag.x)*v.width/r.width;ty=drag.ty+(e.clientY-drag.y)*v.height/r.height;camera()});graph.addEventListener("pointerup",()=>drag=null);graph.addEventListener("pointercancel",()=>drag=null);
 render();
-</script></body></html>
+</script><script src="/core/campaign.js"></script><script src="/core/tavern.js"></script><script src="./simulator.js"></script></body></html>

@@ -61,4 +61,24 @@ for(let i=0;i<200;i++){
   const x=memberAffinity(captain,generator.createMercenary({id:i+2,captain}));
   assert.equal(x.ok,true,x.reason);
 }
+// Salaire demandé (09 §4 ; Idan, 2026-10-20) : × (1 − 0,2 × Affinité / 100). Même graine, avec et sans
+// affinité : seul le salaire change, d'au plus 20 %.
+const fullReference={...Object.fromEntries(Object.entries(files).map(([k,f])=>[k,read(f)])),peopleAffinity:reference.peopleAffinity};
+const seededRandom=start=>{let x=start;return ()=>((x=(x*16807)%2147483647)-1)/2147483646;};
+const plain=createGenerator(fullReference,{random:seededRandom(11),nameGenerator:(p,id)=>p+" "+id});
+const bonded=createGenerator(fullReference,{random:seededRandom(11),nameGenerator:(p,id)=>p+" "+id,affinity:createAffinityRules({reference})});
+const capPlain=plain.createCaptain({id:1}),capBonded=bonded.createCaptain({id:1});
+assert.equal(capBonded.salary,capPlain.salary,"le capitaine n'a pas de capitaine : facteur 1");
+let lower=0,higher=0;
+for(let i=0;i<150;i++){
+  const a=plain.createMercenary({id:i+2,captain:capPlain}),b=bonded.createMercenary({id:i+2,captain:capBonded});
+  assert.equal(b.reputation,a.reputation,"même mercenaire");
+  const total=affinity(capBonded,b).total;
+  const raw=10*Math.max(1,b.reputation/30)*(1+(b.salaryPretension-35)/100)*(1+0.25*((b.stats.Intelligence-100)/100)**2);
+  assert.equal(b.salary,Math.round(raw*(1-0.2*total/100)));
+  assert.equal(b.generationTrace.derived.salary.affinity,total);
+  if(total>0&&b.salary<a.salary) lower++;
+  if(total<0&&b.salary>a.salary) higher++;
+}
+assert.ok(lower>0&&higher>0,"bonne affinité : moins cher ; mauvaise : plus cher");
 console.log("Affinity: OK");

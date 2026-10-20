@@ -929,6 +929,46 @@
       "formule": "Affinité capitaine ↔ mercenaire V1",
       "valeur": 2,
       "version": "V1"
+    },
+    {
+      "nom": "Salaire — effet de l'affinité",
+      "code": "salary.affinity.max_effect",
+      "description": "Effet maximal de l'affinité avec le capitaine sur le salaire demandé : × (1 − valeur × Affinité / 100), soit −20 % à +100 et +20 % à −100 (09 §4 ; décision Idan du 2026-10-20).",
+      "formule": "Salaire demandé V1",
+      "valeur": 0.2,
+      "version": "V1"
+    },
+    {
+      "nom": "Négociation — effet de l'affinité",
+      "code": "tavern.negotiation.affinity_coefficient",
+      "description": "Points de résistance à la négociation retirés par point d'affinité avec le capitaine (14 §9 ; décision Idan du 2026-10-20).",
+      "formule": "Taverne V1",
+      "valeur": 0.25,
+      "version": "V1"
+    },
+    {
+      "nom": "Recrues — renommée de départ des prétendants",
+      "code": "tavern.renown.suitors_base",
+      "description": "Renommée à partir de laquelle le tavernier compte les prétendants : N = 1 + ⌊(Renommée − base) / pas⌋ (14 §5 ; décision Idan du 2026-10-20).",
+      "formule": "Taverne V1",
+      "valeur": 500,
+      "version": "V1"
+    },
+    {
+      "nom": "Recrues — pas de renommée par prétendant",
+      "code": "tavern.renown.suitors_step",
+      "description": "Renommée supplémentaire pour un prétendant de plus : 750 → 2, 1000 → 3, 1250 → 4, 1500 → 5 (14 §5 ; décision Idan du 2026-10-20).",
+      "formule": "Taverne V1",
+      "valeur": 250,
+      "version": "V1"
+    },
+    {
+      "nom": "Recrues — prétendants au maximum",
+      "code": "tavern.renown.suitors_max",
+      "description": "Nombre maximal de prétendants dont le tavernier présente le plus réputé (14 §5 ; décision Idan du 2026-10-20).",
+      "formule": "Taverne V1",
+      "valeur": 5,
+      "version": "V1"
     }
   ]
 }

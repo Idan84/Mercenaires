@@ -283,4 +283,51 @@ assert.equal(stable.ensureInitialContracts(old9),true);
 assert.equal(old9.company.roster.filter(m=>m.contract).length,crew.length);
 assert.equal(stable.ensureInitialContracts(old9),false);
 
+// Affinité → négociation (14 §9 ; Idan, 2026-10-20) : résistance − 0,25 × affinité, bornée de 0 à 100.
+assert.equal(tavern.negotiationResistance(merc()),42.5);
+assert.equal(tavern.negotiationResistance(merc(),100),17.5);
+assert.equal(tavern.negotiationResistance(merc(),-100),67.5);
+assert.equal(tavern.negotiationResistance(merc({salaryPretension:0,stats:{}}),100),0,"plancher 0");
+// Offre à 90 % : concession 10, pAccept = 95 − 20 − 0,4 × (résistance − 50).
+const warm=always(0.999).makeOffer(fresh(),{salary:45,bonus:135},{affinity:56});
+const cold=always(0.999).makeOffer(fresh(),{salary:45,bonus:135},{affinity:-71});
+const neutral=always(0.999).makeOffer(fresh(),{salary:45,bonus:135});
+assert.ok(Math.abs(warm.pAccept-(75-0.4*(42.5-14-50)))<1e-9);
+assert.ok(warm.pAccept>neutral.pAccept&&neutral.pAccept>cold.pAccept,"une bonne affinité facilite l'accord");
+
+// La campagne passe l'affinité du candidat avec le capitaine à la négociation.
+const {createAffinityRules}=require("../game-core/affinity.js");
+const affinityRef={...reference,peopleAffinity:JSON.parse(fs.readFileSync(path.join(ROOT,"data","reference","people-affinity.json"),"utf8"))};
+const bonds=createAffinityRules({reference:affinityRef});
+const withBonds=createCampaignRules({generator,tavern:always(0.999),reference,affinity:bonds});
+const sA=withBonds.createCampaign({captain,squad:[2,3].map(id=>generator.createMercenary({id:id+500,captain}))});
+const bondTarget=sA.tavern.candidates[0];
+const expected=bonds.memberAffinity(captain,bondTarget.mercenary).total;
+const offerA=withBonds.offerToCandidate(sA,bondTarget.mercenary.id,{salary:Math.ceil(bondTarget.mercenary.salary*0.9),bonus:Math.ceil(tavern.missionBonusDemand(bondTarget.mercenary)*0.9)});
+const resistanceA=tavern.negotiationResistance(bondTarget.mercenary,expected);
+assert.ok(Math.abs(offerA.pAccept-Math.max(5,Math.min(95,95-2*offerA.concession-0.4*(resistanceA-50))))<1e-9,"pAccept calculé avec l'affinité");
+
+// Renommée → qualité des recrues (14 §5) : N = 1 + ⌊(Renommée − 500) / 250⌋, de 1 à 5.
+const fakeState=renown=>({company:{captainId:"c",roster:[{id:"c",reputation:renown}],renownHeritage:[]}});
+assert.deepEqual([0,499,500,749,750,999,1000,1250,1499,1500,9000].map(r=>stable.suitorCount(fakeState(r))),[1,1,1,1,2,2,3,4,4,5,5]);
+// Le candidat présenté est le plus réputé des prétendants, tirés avec un seul identifiant.
+const famous=createCampaignRules({generator,tavern:always(0.999),reference});
+const sF=famous.createCampaign({captain,squad:[]});
+sF.company.renownHeritage=[{id:"x",heritage:1500}];
+assert.equal(famous.suitorCount(sF),5);
+const idBefore=sF.nextId;
+const seen=[];
+const spy={...generator,createMercenary:o=>{const m=generator.createMercenary(o);seen.push(m);return m;}};
+const spyRules=createCampaignRules({generator:spy,tavern:always(0.999),reference});
+sF.tavern.candidates=[];
+spyRules.advanceTime(sF,1);
+const arrivals=sF.tavern.candidates;
+assert.equal(seen.length,5*arrivals.length,"5 prétendants par place");
+for(const c of arrivals){
+  const group=seen.filter(m=>m.id===c.mercenary.id);
+  assert.equal(group.length,5,"les prétendants partagent l'identifiant du candidat");
+  assert.equal(c.mercenary.reputation,Math.max(...group.map(m=>m.reputation)));
+}
+assert.equal(sF.nextId,idBefore+arrivals.length,"un identifiant par candidat, pas par prétendant");
+
 console.log(JSON.stringify({ok:true},null,2));

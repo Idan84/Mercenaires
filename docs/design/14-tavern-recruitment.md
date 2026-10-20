@@ -96,12 +96,23 @@ La qualité des candidats générés doit dépendre de la **Renommée de compagn
 
 Ce principe est déjà commun au générateur général : les distributions actuelles de `Create_Mercenary()` sont des distributions de base destinées à être pondérées.
 
-Le chiffrage de l'effet de Renommée sur :
+**Formule V1 (décision Idan du 2026-10-20) : le tavernier présente le meilleur de N prétendants.** Pour chaque place libre, le jeu tire N mercenaires avec `Create_Mercenary()` et garde le plus réputé (réputation personnelle). Les formules de génération ne changent pas : la réputation personnelle résume déjà caractéristiques et compétences.
 
-- qualité moyenne ;
-- variance ;
-- probabilité de profils exceptionnels ;
-- future capacité de la Taverne ;
+```
+N = Clamp(1 + ⌊(RenommeeCompagnie − 500) / 250⌋, 1, 5)
+```
+
+| Renommée | Prétendants |
+|---|---|
+| moins de 750 | 1 |
+| 750 à 999 | 2 |
+| 1000 à 1249 | 3 |
+| 1250 à 1499 | 4 |
+| 1500 et plus | 5 |
+
+Une compagnie démarre entre 410 et 590 de renommée (médiane 510) : rien ne change au début. Mesure sur 600 candidats : réputation médiane 140 avec 1 prétendant, 156 avec 3, 165 avec 5 ; les profils exceptionnels deviennent plus fréquents, et de meilleures recrues demandent un meilleur salaire. L'écran Taverne affiche le nombre de prétendants. Constantes : `tavern.renown.suitors_*`.
+
+Le chiffrage de l'effet de Renommée sur la **capacité de la Taverne** (nombre de places) est reporté (Idan, 2026-10-20).
 
 sera traité séparément après validation de la boucle V1.
 
@@ -277,11 +288,14 @@ ResistanceNegociation =
 Clamp(
   0.50 × PretentionsSalariales
   + 0.25 × Intelligence
-  + 0.25 × Volonte,
+  + 0.25 × Volonte
+  - 0.25 × Affinite,
   0,
   100
 )
 ```
+
+`Affinite` : affinité du candidat avec le capitaine qui négocie (doc 02, de −100 à +100 ; décision Idan du 2026-10-20). Une bonne affinité rend le candidat plus facile à convaincre et ses contre-offres plus souples. Exemple : une offre 10 % sous la demande, acceptée à 75 % avec une affinité nulle, passe à environ 81 % avec +56 et 68 % avec −71. La chance de partir après un refus ne dépend pas de l'affinité. Constante : `tavern.negotiation.affinity_coefficient`.
 
 ### Probabilité d'accepter une offre basse
 
@@ -454,7 +468,7 @@ Le besoin d'un état de partie persistant a été signalé par JC3 : les candida
 Les principes ci-dessus sont suffisamment définis pour permettre un prototype. Restent à traiter séparément :
 
 1. formule exacte Renommée → nombre de places de Taverne ;
-2. formule Renommée → qualité des nouveaux candidats ;
+2. ~~formule Renommée → qualité des nouveaux candidats~~ : tranché le 2026-10-20 (§5) ;
 3. constantes du test `Engagé ailleurs` ;
 4. coefficients exacts de la prime de mission ;
 5. coefficients de négociation ;

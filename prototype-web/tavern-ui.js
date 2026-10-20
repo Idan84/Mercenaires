@@ -22,7 +22,7 @@ function avatarRules(){
 
 function campaignRules(){
   if(!game.campaignRules){
-    game.campaignRules=MercenairesCampaign.createCampaignRules({generator:game.generator,tavern:tavernRules(),reference:game.referenceData,biographies:biographyRules(),avatars:avatarRules(),progression:MercenairesProgression.createProgressionRules({reference:game.referenceData})});
+    game.campaignRules=MercenairesCampaign.createCampaignRules({generator:game.generator,tavern:tavernRules(),reference:game.referenceData,biographies:biographyRules(),avatars:avatarRules(),progression:MercenairesProgression.createProgressionRules({reference:game.referenceData}),affinity:affinityRules()});
   }
   return game.campaignRules;
 }
@@ -119,6 +119,10 @@ function renderTavern(){
   renderCompanyMeta();
   if(typeof renderGameHud==="function") renderGameHud();
   renderIntendantSelect();
+  // Renommée → qualité des recrues (14 §5) : le tavernier présente le plus réputé de N prétendants.
+  const suitors=campaignRules().suitorCount(c);
+  $("tavern-suitors").textContent="Renommée "+fmt(campaignRules().companyRenown(c).total)+" : le tavernier vous présente "
+    +(suitors>1?"le meilleur de "+suitors+" prétendants pour chaque place.":"les prétendants comme ils viennent.");
   $("tavern-candidates").innerHTML=c.tavern.candidates.length
     ?c.tavern.candidates.map(renderTavernCard).join("")
     :`<p class="muted">La Taverne est vide. De nouveaux candidats arriveront demain matin.</p>`;

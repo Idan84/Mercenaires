@@ -889,6 +889,22 @@
       "formule": "Réputation de carrière V1",
       "valeur": 20,
       "version": "V1"
+    },
+    {
+      "nom": "Renommée — pondération par rang",
+      "code": "company.renown.rank_exponent",
+      "description": "Exposant du rang : chaque membre vivant autre que le capitaine, classé par réputation décroissante, compte pour réputation / rang^exposant ; le capitaine compte entier (09 §2 ; décision Idan du 2026-10-20, issue #111).",
+      "formule": "Renommée de compagnie V1",
+      "valeur": 1.5,
+      "version": "V1"
+    },
+    {
+      "nom": "Renommée — héritage d'un mort au combat",
+      "code": "company.renown.heritage_share",
+      "description": "Part de la contribution d'un mercenaire mort au combat, calculée juste avant son retrait, ajoutée pour toujours à l'héritage de la compagnie (09 §2 ; décision Idan du 2026-10-20, issue #111).",
+      "formule": "Renommée de compagnie V1",
+      "valeur": 0.2,
+      "version": "V1"
     }
   ]
 }

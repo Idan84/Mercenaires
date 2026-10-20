@@ -54,6 +54,10 @@ function renderCompanyMeta(){
   $("company-day").textContent=c.day;
   $("company-dorm").textContent=c.company.roster.length+" / "+c.company.camp.dormitoryCapacity;
   $("company-payroll").textContent=fmt(campaignRules().payroll(c));
+  // Renommée (09 §2) : total, et le détail au survol.
+  const renown=campaignRules().companyRenown(c);
+  $("company-renown").textContent=fmt(renown.total);
+  $("company-renown-meta").title="Capitaine "+fmt(renown.parts.captain)+" + mercenaires "+fmt(renown.parts.members)+" + héritage des morts "+fmt(renown.parts.heritage);
 }
 
 function profileText(shown){

@@ -11,7 +11,7 @@
 <select id="status" aria-label="Statut"><option value="all">Tous les statuts</option><option value="implemented">Codé seulement</option><option value="planned">Codé + validé</option></select>
 <button id="all">Vue globale</button><span id="stats"></span>
 </header>
-<main><div id="viewport">
+<main><div id="viewport"><a href="../" style="position:absolute;right:12px;top:12px;z-index:2;background:#1c2b3d;color:#d9efff;border:1px solid #53677c;padding:8px 12px;border-radius:7px;text-decoration:none">← Design Lab</a>
 <svg id="graph" viewBox="0 0 1100 700" role="img" aria-label="Réseau de dépendances du jeu"><defs><marker id="arrow" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0 0L6 3L0 6" fill="none" stroke="#aec5d7" stroke-width="1.4"/></marker></defs><g id="camera"><g id="edges"></g><g id="nodes"></g></g></svg>
 <div class="legend">Épaisseur = influence qualitative<br><span style="color:#56b8a6">━━</span> Codé · <span style="color:#dfaa59">┄┄</span> Validé, non branché · <span style="color:#ae8ddd">····</span> Envisagé<br>Molette : zoom · Glisser : déplacer · Clic : explorer</div>
 <div class="controls"><button id="plus">＋</button><button id="minus">－</button><button id="fit">Cadrer</button></div>

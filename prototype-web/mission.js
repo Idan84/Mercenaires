@@ -226,6 +226,8 @@ function resolveMissionAftermath(){
   for(const r of m.aftermath.results) missionLog(r.name+" — "+missionAftermathText(r),r.dead?"death":r.wounded?"bad":"info");
   if(!game.campaign) return;
   const report=m.companyReport=campaignRules().applyMissionAftermath(game.campaign,m.aftermath);
+  for(const h of report.heritage||[]) missionLog(h.name+" entre dans la mémoire de la compagnie : héritage +"+Math.round(h.heritage)+" de renommée.","death");
+  if(report.renown&&Math.round(report.renown.after)!==Math.round(report.renown.before)) missionLog("Renommée de la compagnie : "+Math.round(report.renown.before)+" → "+Math.round(report.renown.after)+".",report.renown.after>report.renown.before?"gear":"bad");
   if(report.bonusPaid) missionLog("Primes de mission versées : "+report.bonusPaid+" PO ("+report.bonuses.map(b=>b.mercenary.name+" "+b.bonus).join(", ")+").","gear");
   for(const {mercenary,changes,reputation} of report.progression||[]){
     for(const c of visibleProgressionChanges(changes)) missionLog(mercenary.name+" : "+c.name+" "+c.shownBefore+" → "+c.shownAfter+".",c.shownAfter>c.shownBefore?"gear":"bad");
@@ -270,11 +272,18 @@ function renderMissionAftermath(m){
     ?"Ces personnages ne font pas partie d’une compagnie : bilan non appliqué."
     :report.gameOver
       ?""
-      :"Bilan appliqué à la compagnie. Primes de mission versées : "+report.bonusPaid+" PO.";
+      :"Bilan appliqué à la compagnie. Primes de mission versées : "+report.bonusPaid+" PO."+missionRenownNote(report);
   return `<ul class="mission-aftermath">${rows}</ul>
     ${report?.gameOver?`<p class="aftermath-gameover">Le capitaine est mort : la partie est terminée et la sauvegarde est effacée.</p>`:""}
     ${note?`<p class="aftermath-note">${esc(note)}</p>`:""}
     ${report&&!report.gameOver?renderMissionProgression(report.progression||[]):""}`;
+}
+
+// Renommée de la compagnie (09 §2) : avant → après, et l'héritage laissé par chaque mort.
+function missionRenownNote(report){
+  if(!report.renown) return "";
+  const heritage=(report.heritage||[]).map(h=>h.name+" +"+Math.round(h.heritage)).join(", ");
+  return " Renommée de la compagnie : "+Math.round(report.renown.before)+" → "+Math.round(report.renown.after)+(heritage?" (héritage : "+heritage+")":"")+".";
 }
 
 // Récapitulatif de progression (08-progression-and-experience.md §2) : XP naturelle gagnée par chaque

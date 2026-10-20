@@ -50,11 +50,16 @@
   // biographies (facultatif) : createBiographyRules(...) de game-core/biography.js.
   // avatars (facultatif) : createAvatarRules(...) de game-core/avatars.js.
   // progression (facultatif) : createProgressionRules(...) de game-core/progression.js.
-  function createCampaignRules({generator,tavern,reference,biographies=null,avatars=null,progression=null}){
+  // affinity (facultatif) : createAffinityRules(...) de game-core/affinity.js (négociation à la Taverne).
+  function createCampaignRules({generator,tavern,reference,biographies=null,avatars=null,progression=null,affinity=null}){
     const STARTING_GOLD=referenceConstant(reference,"company.gold.initial",10000);
     const STARTING_DORMITORY_CAPACITY=referenceConstant(reference,"camp.dormitory.initial_capacity",40);
     const RENOWN_RANK_EXPONENT=referenceConstant(reference,"company.renown.rank_exponent",1.5);
     const RENOWN_HERITAGE_SHARE=referenceConstant(reference,"company.renown.heritage_share",0.2);
+    // Qualité des recrues (14 §5 ; Idan, 2026-10-20) : le tavernier présente le meilleur de N prétendants,
+    // N = 1 + ⌊(Renommée − 500) / 250⌋, borné de 1 à 5.
+    const SUITORS={base:referenceConstant(reference,"tavern.renown.suitors_base",500),
+      step:referenceConstant(reference,"tavern.renown.suitors_step",250),max:referenceConstant(reference,"tavern.renown.suitors_max",5)};
     function rosterOf(state){ return state.company.roster; }
 
     // Renommée de compagnie (09 §2 ; Idan, 2026-10-20, issue #111). Les membres vivants autres que le
@@ -138,12 +143,28 @@
     }
 
     // Un candidat de la Taverne est généré avec les biais du capitaine, comme tout nouveau mercenaire.
+    function suitorCount(state){
+      const n=1+Math.floor((companyRenown(state).total-SUITORS.base)/SUITORS.step);
+      return Math.max(1,Math.min(SUITORS.max,n));
+    }
+
+    // Chaque nouveau candidat est le plus réputé de N prétendants tirés avec le même identifiant.
     function candidateFactory(state){
       return ()=>{
-        const mercenary=generator.createMercenary({id:state.nextId++,captain:state.company.roster.find(m=>m.id===state.company.captainId)||null});
+        const captain=captainOf(state);
+        const id=state.nextId++;
+        let mercenary=null;
+        for(let i=suitorCount(state);i>0;i--){
+          const suitor=generator.createMercenary({id,captain});
+          if(!mercenary||suitor.reputation>mercenary.reputation) mercenary=suitor;
+        }
         assignAvatar(state,mercenary);
         return mercenary;
       };
+    }
+
+    function captainOf(state){
+      return state.company.roster.find(m=>m.id===state.company.captainId)||null;
     }
 
     // L'escouade initiale est sous contrat (décision Idan, 2026-10-04), aux conditions qu'elle demande :
@@ -263,7 +284,9 @@
     function offerToCandidate(state,mercenaryId,offer){
       const candidate=tavern.findCandidate(state.tavern,mercenaryId);
       if(!candidate) return {outcome:"invalid",reason:"Candidat introuvable."};
-      const result=tavern.makeOffer(candidate,offer);
+      const captain=captainOf(state);
+      const bond=captain&&affinity?affinity.memberAffinity(captain,candidate.mercenary):null;
+      const result=tavern.makeOffer(candidate,offer,{affinity:bond?.ok?bond.total:0});
       if(result.outcome==="left") tavern.removeCandidate(state.tavern,candidate);
       return result;
     }
@@ -369,6 +392,7 @@
       isAvailable,
       applyMissionAftermath,
       companyRenown,
+      suitorCount,
       assignBiography,
       ensureBiographies,
       ensureInitialContracts,

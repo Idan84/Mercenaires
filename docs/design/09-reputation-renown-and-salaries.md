@@ -191,6 +191,16 @@ $$
 - sous `100` : le mercenaire peut se **survendre** ;
 - au-dessus de `100` : il sait mieux **négocier sa valeur**.
 
+### Déformation — Affinité avec le capitaine
+
+Décision Idan du 2026-10-20 : un mercenaire qui apprécie son capitaine demande moins, celui qui le rejette demande plus.
+
+$$
+FacteurAffinite = 1 - 0,2 \times \frac{Affinite}{100}
+$$
+
+L'affinité (doc 02) va de −100 à +100 : le facteur va donc de `×1,2` à `×0,8`. Exemple sur 48 PO : `+100 → 38`, `+56 → 43`, `−71 → 55`. Il s'applique à tout mercenaire généré avec un capitaine, **escouade de départ comprise** ; le capitaine lui-même et les ennemis n'en ont pas (facteur 1). La prime de mission demandée, calculée à partir du salaire, suit. Constante : `salary.affinity.max_effect`.
+
 ### Formule finale V1
 
 $$
@@ -199,6 +209,7 @@ SalaireDemande = arrondi\left(
 max\left(1, \frac{ReputationPerso}{30}\right)
 \times \left(1 + \frac{PretentionsSalariales - 35}{100}\right)
 \times \left[1 + 0,25 \times \left(\frac{Intelligence - 100}{100}\right)^2\right]
+\times \left(1 - 0,2 \times \frac{Affinite}{100}\right)
 \right)
 $$
 

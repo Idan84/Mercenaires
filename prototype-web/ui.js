@@ -182,6 +182,13 @@ function fmtDecimal(n, digits = 1) {
   return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(digits);
 }
 
+// Réputation personnelle = part calculée (initiale) + delta de carrière (09 §1) : détail dès qu'il y a un gain.
+function renderReputationCareer(c) {
+  const career = Number(c.reputationCareerDelta) || 0;
+  if (!Math.round(career)) return "";
+  return `<span class="player-identity-note">initiale ${fmt(c.reputation - career)} · carrière ${fmtDelta(career)}</span>`;
+}
+
 function fmtDelta(n) {
   if (!Number.isFinite(n) || n === 0) return "—";
   return `${n > 0 ? "+" : ""}${fmt(n)}`;
@@ -547,7 +554,7 @@ function renderProfileTab(c){
         <div><small>Origine</small><strong>${esc(c.origin||"—")}</strong></div>
         <div><small>Ascendance</small><strong>${esc(c.ascendance||"Aucune")}</strong></div>
         <div><small>Alignement</small><strong>${esc(c.alignment||"—")}</strong></div>
-        <div><small>Réputation</small><strong>${fmt(c.reputation)}</strong></div>
+        <div><small>Réputation</small><strong>${fmt(c.reputation)}</strong>${renderReputationCareer(c)}</div>
       </div>
       <div class="player-vitals">
         <div><small>Points de vie</small><strong>${fmt(c.pvMax)}</strong></div>

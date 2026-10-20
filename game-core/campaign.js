@@ -53,7 +53,37 @@
   function createCampaignRules({generator,tavern,reference,biographies=null,avatars=null,progression=null}){
     const STARTING_GOLD=referenceConstant(reference,"company.gold.initial",10000);
     const STARTING_DORMITORY_CAPACITY=referenceConstant(reference,"camp.dormitory.initial_capacity",40);
+    const RENOWN_RANK_EXPONENT=referenceConstant(reference,"company.renown.rank_exponent",1.5);
+    const RENOWN_HERITAGE_SHARE=referenceConstant(reference,"company.renown.heritage_share",0.2);
     function rosterOf(state){ return state.company.roster; }
+
+    // Renommée de compagnie (09 §2 ; Idan, 2026-10-20, issue #111). Les membres vivants autres que le
+    // capitaine sont classés par réputation décroissante ; le rang i compte pour réputation / i^1,5.
+    // À réputation égale, le plus ancien dans la compagnie (ordre du roster) est mieux classé.
+    function renownRanking(state){
+      return rosterOf(state)
+        .filter(m=>m.id!==state.company.captainId)
+        .map((m,seniority)=>({m,seniority,reputation:Number(m.reputation)||0}))
+        .sort((a,b)=>b.reputation-a.reputation||a.seniority-b.seniority)
+        .map(({m,reputation},index)=>({
+          id:m.id,name:m.name,reputation,rank:index+1,
+          contribution:reputation/Math.pow(index+1,RENOWN_RANK_EXPONENT)
+        }));
+    }
+
+    // Renommée = réputation entière du capitaine + parts pondérées des membres vivants + héritage des morts.
+    // Pas de plafond ; l'héritage ne se perd pas.
+    function companyRenown(state){
+      const captain=rosterOf(state).find(m=>m.id===state.company.captainId);
+      const ranking=renownRanking(state);
+      const heritageEntries=state.company.renownHeritage||[];
+      const parts={
+        captain:Number(captain?.reputation)||0,
+        members:ranking.reduce((sum,x)=>sum+x.contribution,0),
+        heritage:heritageEntries.reduce((sum,x)=>sum+(Number(x.heritage)||0),0)
+      };
+      return {total:parts.captain+parts.members+parts.heritage,parts,ranking,heritageEntries};
+    }
 
     // Biographie figée sur le mercenaire ; une bio n'est jamais réutilisée dans une même sauvegarde,
     // même après la mort de son mercenaire (proposition Chatty, doc 15). Seuls les membres de la
@@ -156,7 +186,8 @@
           captainId:captain.id,
           roster:[captain,...squad],
           intendantId:null,
-          camp:{dormitoryCapacity:STARTING_DORMITORY_CAPACITY}
+          camp:{dormitoryCapacity:STARTING_DORMITORY_CAPACITY},
+          renownHeritage:[]
         },
         tavern:tavern.createTavernState(),
         biographiesUsed:[],
@@ -259,12 +290,26 @@
     const appliedAftermaths=new WeakMap();
     function applyMissionAftermath(state,aftermath){
       if(appliedAftermaths.has(aftermath)) return appliedAftermaths.get(aftermath);
-      const report={deaths:[],wounded:[],fatigued:[],bonuses:[],bonusPaid:0,gameOver:false,progression:[]};
+      const report={deaths:[],wounded:[],fatigued:[],bonuses:[],bonusPaid:0,gameOver:false,progression:[],heritage:[]};
+      // Classement du début de mission : les morts d'une même mission sont pondérés sur ce même classement,
+      // quel que soit l'ordre des résultats (Idan, 2026-10-20).
+      const renownBefore=companyRenown(state);
+      const standingAtStart=new Map(renownBefore.ranking.map(x=>[x.id,x]));
       for(const result of aftermath.results){
         const roster=rosterOf(state);
         const mercenary=roster.find(m=>m.id===result.id);
         if(!mercenary) continue;
         if(result.dead){
+          // Héritage (issue #111) : 20 % de la part du défunt juste avant son retrait, figés pour toujours
+          // et comptés une seule fois. Le capitaine n'en laisse pas : sa mort met fin à la partie.
+          const standing=standingAtStart.get(mercenary.id);
+          const heritage=state.company.renownHeritage||(state.company.renownHeritage=[]);
+          if(standing&&!heritage.some(h=>h.id===mercenary.id)){
+            const entry={id:mercenary.id,name:mercenary.name,day:state.day,reputation:standing.reputation,
+              rank:standing.rank,contribution:standing.contribution,heritage:standing.contribution*RENOWN_HERITAGE_SHARE};
+            heritage.push(entry);
+            report.heritage.push(entry);
+          }
           roster.splice(roster.indexOf(mercenary),1);
           if(state.company.intendantId===mercenary.id) state.company.intendantId=null;
           if(mercenary.avatar?.id) (state.avatarsRetired=state.avatarsRetired||[]).push(mercenary.avatar.id);
@@ -299,6 +344,7 @@
         state.gameOver={day:state.day,reason:"captain-dead"};
         report.gameOver=true;
       }
+      report.renown={before:renownBefore.total,after:companyRenown(state).total};
       appliedAftermaths.set(aftermath,report);
       return report;
     }
@@ -322,6 +368,7 @@
       askCandidate,
       isAvailable,
       applyMissionAftermath,
+      companyRenown,
       assignBiography,
       ensureBiographies,
       ensureInitialContracts,

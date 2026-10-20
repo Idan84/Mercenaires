@@ -111,15 +111,20 @@ Elle doit servir notamment à :
 - ouvrir l’accès à des missions plus difficiles ;
 - fournir une valeur synthétique comparable entre compagnies / parties.
 
-Architecture retenue :
+### Formule V1 (décision Idan du 2026-10-20, issue #111)
 
 $$
-RenommeeCompagnie = PointsMissions + ReputationDeveloppementCamp + PrestigeTop10Mercenaires
+RenommeeCompagnie = R_{capitaine} + \sum_{i \geq 1} \frac{R_i}{i^{1{,}5}} + Heritage
 $$
 
-Les pondérations exactes restent à définir.
+- **Capitaine** : sa réputation personnelle totale (calculée + carrière), comptée entière.
+- **Autres membres vivants** : classés par réputation personnelle totale décroissante ; le rang `i` (1, 2, 3…) compte pour `R_i / i^1,5`. À réputation égale, le plus ancien dans la compagnie est mieux classé. Tous les membres vivants comptent : la pondération remplace l'ancien « top 10 ».
+- **Héritage** : quand un mercenaire autre que le capitaine meurt au combat, on calcule sa contribution pondérée juste avant son retrait et on ajoute **20 %** de cette contribution à un cumul permanent. Exemple : le premier du classement, à 500 de réputation, laisse +100. Les survivants sont ensuite reclassés ; l'héritage reste fixe (ni repondéré, ni recalculé), n'est compté qu'une fois et garde l'identité et le jour de la mort pour un futur mémorial.
+- Si plusieurs mercenaires meurent pendant la même mission, leurs contributions sont calculées sur le classement du début de mission : l'ordre des morts ne change rien.
+- Pas de plafond ; pas de perte de l'héritage. La mort du capitaine reste un Game Over.
+- Constantes : `company.renown.rank_exponent` (1,5) et `company.renown.heritage_share` (0,2) dans `data/reference/formula-constants.json`.
 
-Le bloc **PrestigeTop10Mercenaires** utilise les 10 mercenaires les plus réputés de la compagnie avec une pondération à définir.
+**Ajouts futurs** : les points de missions et la réputation de développement du camp, prévus dans l'architecture d'origine (`PointsMissions + ReputationDeveloppementCamp + PrestigeTop10Mercenaires`), seront ajoutés quand ces systèmes existeront dans le jeu. Les effets de la renommée (qualité des recrues, missions, marchands, places de Taverne) attendent une validation distincte d'Idan.
 
 <aside>
 📈

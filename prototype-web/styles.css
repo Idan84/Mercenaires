@@ -1614,3 +1614,9 @@ body[data-screen="camp"] .camp-scene>.panel .muted{color:#c2b29e}
 #character-dialog .character-bio{background:#2d231c;color:#e5d1b1;border-color:#72583d}
 #character-dialog .metric,#character-dialog .skill-group{background:#342820;color:#e5d4bc;border-color:#6e533a}
 #hud-resources{font-size:.88rem;white-space:nowrap}
+
+
+/* Identité des mercenaires : le patronyme dispose de sa propre colonne visuelle. */
+.roster-surname{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin:1px 0 3px}
+.roster-card-info .roster-surname small{font-size:10px;letter-spacing:.02em;color:#be9c72;text-transform:none}
+.roster-surname b{font:600 14px Georgia,serif;color:#e8d2ad}

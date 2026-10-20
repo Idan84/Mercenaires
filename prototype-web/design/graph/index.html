@@ -29,7 +29,7 @@ const N=[
 ];
 const E=[];
 function edge(a,b,w=2,s="implemented",source="",detail=""){E.push({a,b,w,s,source,detail})}
-const G="game-core/mercenary-generator.js",P="game-core/progression.js",T="game-core/tavern.js",C="game-core/campaign.js",D="docs/design/09-reputation-renown-and-salaries.md",A="game-core/affinity.js (PR #114, non fusionnée)";
+const G="game-core/mercenary-generator.js",P="game-core/progression.js",T="game-core/tavern.js",C="game-core/campaign.js",D="docs/design/09-reputation-renown-and-salaries.md";
 for(const x of ["force","dex","chance","charisme","courage","intel","volonte","vitesse","endu","esquive","perception","constitution","resistances","magie","mana","social","martial","artisanat"])edge(x,"repbase",x==="charisme"?3:1,"implemented",G,"Pool de réputation initiale ; Charisme a aussi un multiplicateur.");
 edge("repbase","rep",3,"implemented",G);edge("repcarriere","rep",3,"implemented",P);
 edge("rep","salaire",3,"implemented",G,"Salaire demandé calculé lors de la génération.");edge("intel","salaire",2,"implemented",G);edge("pretentions","salaire",2,"implemented",G);

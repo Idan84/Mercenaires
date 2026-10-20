@@ -20,7 +20,10 @@ const rules=P.createProgressionRules({reference});
 assert.deepEqual(rules.constants,{
   curve:10,startPosition:0.5,chanceCriticalFailure:30,chanceCriticalSuccess:-5,resistanceWound:8,resistanceOthers:-2,
   constitutionHpHealed:1,courageChargeAttempt:50,speedFleeHex:2,charismaKnockout:50,perceptionBackstabWound:10,
-  forceLoadThreshold:0.25,forceLoadXp:20
+  forceLoadThreshold:0.25,forceLoadXp:20,
+  dexterityChain:50,dodgeWoundTaken:10,enduranceHeavyArmorHex:2,willCourageHeld:20,willRecovery:20,intelligenceWorstChoice:30,
+  skillWeaponAttack:10,skillWeaponHit:5,skillWeaponWound:5,skillTwoHandedAttack:10,skillDualSequence:10,skillShieldBlock:10,
+  skillIntimidation:50,skillRegressionRatio:0.5
 });
 const tuned=P.createProgressionRules({reference:{formulaConstants:{rows:[{code:"progression.charisma.knockout_xp",valeur:80}]}}});
 assert.equal(tuned.constants.charismaKnockout,80,"une constante modifiée est prise en compte");
@@ -61,12 +64,72 @@ assert.deepEqual(lucky.progress.wounds,{"Résistance physique":1},"le contrecoup
 assert.equal(rules.gains(lucky.progress).stats.Chance,2*30-2*5);
 
 // Journal → XP.
-assert.deepEqual(rules.gains(a.progress),{stats:{Courage:100,Charisme:50},resistances:{}});
+assert.deepEqual(rules.gains(a.progress),{stats:{Courage:100,Charisme:50},resistances:{},skills:{}});
 assert.deepEqual(rules.gains(d.progress),{
-  stats:{Chance:25,Constitution:12,Vitesse:6,Perception:10},
-  resistances:{"Résistance physique":16,"Résistance au feu":-4,"Résistance au froid":-4,"Résistance à la foudre":-4,"Résistance au poison":-4}
+  stats:{Chance:25,Constitution:12,Vitesse:6,Perception:10,Esquive:2*10},
+  resistances:{"Résistance physique":16,"Résistance au feu":-4,"Résistance au froid":-4,"Résistance à la foudre":-4,"Résistance au poison":-4},
+  skills:{}
 });
-assert.deepEqual(rules.gains(null),{stats:{},resistances:{}});
+assert.deepEqual(rules.gains(null),{stats:{},resistances:{},skills:{}});
+
+// Nouvelles sources (Idan, 2026-10-20) : Dextérité, Esquive, Endurance, Volonté, Intelligence.
+assert.deepEqual(rules.gains({chains:2,woundsTaken:3,heavyArmorHexes:10,courageHeld:2,recoveries:1,worstChoices:1}).stats,
+  {"Dextérité":2*50,Esquive:3*10,Endurance:10*2,"Volonté":2*20+1*20,Intelligence:1*30});
+const ev={team:"player"},foeEv={team:"enemy"};
+P.recordChain(ev);P.recordDualSequence(ev);P.recordCourageHeld(ev);P.recordRecovery(ev);
+P.recordIntimidation(ev,foeEv);P.recordIntimidation(ev,{team:"player"});
+assert.deepEqual([ev.progress.chains,ev.progress.dualSequences,ev.progress.courageHeld,ev.progress.recoveries,ev.progress.intimidations],[1,1,1,1,1],"un allié qui fuit ne compte pas pour l'Intimidation");
+// recordAttack : pratique des armes, touchers réels, blessures, deux mains, blocages, pire choix ; Esquive sur blessure reçue.
+const user={},target={};
+P.recordAttack(user,target,{},{ok:true,mode:"melee",weapon:"Épée longue",twoHanded:true,hit:true,wound:true,matchup:{type:"tranchant",choice:"pire"}});
+P.recordAttack(user,target,{},{ok:true,mode:"melee",weapon:"Épée longue",twoHanded:true,hit:true,blocked:true,shield:"Écu",wound:false});
+P.recordAttack(user,target,{},{ok:true,mode:"ranged",weapon:"Arc",twoHanded:true,hit:false,wound:false});
+P.recordAttack(user,target,{chargeDistance:3},{ok:true,mode:"melee",weapon:"Épée longue",chargeFall:true,hit:false,wound:false});
+P.recordAttack(user,target,{},{ok:true,mode:"ranged",weapon:"Arc",accidental:true,hit:true,wound:true,matchup:{type:"perforant",choice:"pire"}});
+assert.deepEqual(user.progress.weaponUses,{"Épée longue":{attacks:2,hits:1,wounds:1},Arc:{attacks:1,hits:0,wounds:0}},"ni la chute de charge ni le projectile perdu");
+assert.deepEqual([user.progress.twoHandedAttacks,user.progress.worstChoices],[2,1],"deux mains : au corps à corps seulement");
+assert.deepEqual([target.progress.blocks,target.progress.woundsTaken],[{"Écu":1},2],"le blessé par accident encaisse aussi");
+const selfHurt={};P.recordAttack(selfHurt,{},{},{ok:true,hit:true,wound:false,woundFumble:true});
+assert.equal(selfHurt.progress.woundsTaken,0,"le contrecoup n'est pas un coup encaissé");
+// Endurance : armure lourde (plates, écailles) au moment du pas.
+const plated={character:{equipment:{slots:{armor:"p"}},items:[{id:"p",templateId:"armor:plate_armor",name:"Armure de plates"}]}};
+const leathered={character:{equipment:{slots:{armor:"l"}},items:[{id:"l",templateId:"armor:leather",name:"Armure de cuir"}]}};
+rules.recordStep(plated);rules.recordStep(plated);rules.recordStep(leathered);
+assert.deepEqual([plated.progress.heavyArmorHexes,leathered.progress?.heavyArmorHexes||0],[2,0]);
+
+// Compétences : pratique puis régression (Idan, 2026-10-20) : la moitié du gain est perdue, à parts égales,
+// par les armes des AUTRES catégories (pas la même), les autres catégories, les autres styles possédés.
+const fighter={skills:{martial:{
+  "Épée longue":12,"Sabre":10,"Hachette":20,"Dague":5,"Arc":0,
+  "Lames longues":30,"Haches":20,"Lames courtes":10,"Armes de tir":0,
+  "Combat à deux mains":30,"Combat à deux armes":10,"Boucliers":0
+}}};
+let g=rules.gains({weaponUses:{"Épée longue":{attacks:2,hits:1,wounds:1}}},fighter).skills.martial;
+assert.deepEqual(g,{"Épée longue":30,"Lames longues":30,"Hachette":-7.5,"Dague":-7.5,"Haches":-7.5,"Lames courtes":-7.5},
+  "Sabre (même catégorie) épargné ; Arc et Armes de tir, à 0, non possédés");
+g=rules.gains({twoHandedAttacks:1},fighter).skills.martial;
+assert.deepEqual(g,{"Combat à deux mains":10,"Combat à deux armes":-5},"styles : Boucliers à 0 n'est pas possédé");
+g=rules.gains({blocks:{"Écu":2}},{skills:{martial:{"Écu":5,"Rondache":3,"Dague":8,"Boucliers":10,"Combat à deux mains":4}}}).skills.martial;
+assert.deepEqual(g,{"Écu":20,"Boucliers":20,"Dague":-10,"Combat à deux mains":-10},"bouclier précis : les armes des autres catégories ; Boucliers : les autres styles");
+assert.deepEqual(rules.gains({intimidations:2}).skills,{social:{Intimidation:100}});
+assert.deepEqual(rules.gains({weaponUses:{"Épée longue":{attacks:1,hits:0,wounds:0}}}).skills.martial,{"Épée longue":10,"Lames longues":10},"sans mercenaire : pas de régression");
+
+// Application : niveau continu (30,6 = niveau 30, à 60 % vers 31), plafond 100, valeur générée au-delà intacte.
+const near=(x,y,label)=>assert.ok(Math.abs(x-y)<1e-6,label+" : "+x+" ≠ "+y);
+near(rules.xpForContinuous(30.6),9000+0.6*610,"XP de 30,6");
+near(rules.continuousLevel(9366),30.6,"niveau de 9 366 XP");
+const learner={skills:{martial:{"Lames longues":30.6,"Épée longue":99.9,"Combat à mains nues":132.4,"Dague":0}}};
+let sk=rules.apply(learner,{skills:{martial:{"Lames longues":100,"Épée longue":10000,"Combat à mains nues":50,"Inconnue":10,"Dague":-5}}});
+near(learner.skills.martial["Lames longues"],30+466/610,"+100 XP depuis 30,6");
+assert.equal(learner.skills.martial["Épée longue"],100,"plafond 100");
+assert.equal(learner.skills.martial["Combat à mains nues"],132.4,"valeur générée au-delà de 100 : ne monte plus");
+assert.equal(learner.skills.martial["Dague"],0,"jamais sous 0");
+assert.deepEqual(sk.map(c=>c.name),["Lames longues","Épée longue","Combat à mains nues","Dague"],"compétence inconnue ignorée");
+assert.equal(sk[0].family,"skills");
+rules.apply(learner,{skills:{martial:{"Combat à mains nues":-50}}});
+assert.ok(learner.skills.martial["Combat à mains nues"]<132.4,"mais elle peut redescendre");
+rules.apply(learner,{skills:{martial:{"Lames longues":10}}});
+near(learner.xp.skills.martial["Lames longues"],9366+100+10,"l'XP gardée sert de base à la mission suivante");
 
 // Contrat par composante (doc 08, dégâts mixtes) : une blessure à deux composantes appellera recordWound deux fois.
 const mixed={};
@@ -182,6 +245,16 @@ assert.ok(m1.stats.Charisme>charismaBefore,"30 adversaires hors combat : le Char
 // Bilan : chaque ligne porte l'XP par valeur et les changements affichés dans le tableau « Progression ».
 const line=report.progression[0];
 assert.ok(line.changes.some(c=>c.name==="Charisme"&&c.after>c.before&&c.xp===1500));
+
+// Campagne : l'XP de compétence est appliquée au survivant, avec la régression de ses autres armes.
+const swordsman=state.company.roster.find(m=>m.id===m1.id);
+const swordBefore=swordsman.skills.martial["Épée longue"];
+const practice=campaign.applyMissionAftermath(state,endRules.resolveMissionEnd([
+  participant(swordsman,swordsman.pvMax,{...P.emptyLog(),weaponUses:{"Épée longue":{attacks:3,hits:2,wounds:1}}})
+]));
+assert.equal(practice.progression[0].xp.skills.martial["Épée longue"],3*10+2*5+1*5);
+assert.ok(swordsman.skills.martial["Épée longue"]>swordBefore,"l'arme pratiquée progresse");
+assert.ok(Object.values(practice.progression[0].xp.skills.martial).some(n=>n<0),"les armes des autres catégories reculent");
 
 // Sauvegarde puis reprise : l'XP gardée sur le mercenaire survit à la sauvegarde et la mission suivante repart d'elle.
 const xpSaved=m1.xp.stats.Charisme;

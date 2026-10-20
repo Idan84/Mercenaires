@@ -9,6 +9,9 @@
 // - une valeur générée démarre dans la tranche de son niveau à la position
 //   progression.xp_curve.start_position (0 = bas de la tranche, 0,5 = milieu), pour qu'une petite
 //   perte ne fasse pas tomber un point dès la première mission.
+// Compétences (décisions Idan du 2026-10-20) : même courbe, plafond à la valeur maximale de la compétence
+// (100) ; les valeurs générées ayant des décimales, une compétence est un niveau continu : 30,6 = niveau 30,
+// à 60 % de la tranche vers 31. On progresse dans ce qu'on pratique au détriment des autres armes et styles.
 // Toutes les valeurs sont des constantes d'équilibrage (data/reference/formula-constants.json).
 (function(root,factory){
   const api=factory();
@@ -30,8 +33,14 @@
 
   // Journal d'un combattant pour une mission.
   // loadRatios : Charge ÷ Force relevée à chaque activation (Force : porter son équipement).
+  // weaponUses : par arme, {attacks, hits, wounds} ; blocks : blocages par bouclier.
   function emptyLog(){
-    return {activations:0,loadRatios:[],chargeAttempts:0,knockouts:0,fleeHexes:0,backstabWounds:0,wounds:{},hpHealed:0,criticalSuccesses:0,criticalFailures:0};
+    return {
+      activations:0,loadRatios:[],chargeAttempts:0,knockouts:0,fleeHexes:0,backstabWounds:0,wounds:{},hpHealed:0,
+      criticalSuccesses:0,criticalFailures:0,
+      chains:0,woundsTaken:0,heavyArmorHexes:0,courageHeld:0,recoveries:0,worstChoices:0,
+      weaponUses:{},twoHandedAttacks:0,dualSequences:0,blocks:{},intimidations:0
+    };
   }
   function logOf(unit){ return unit.progress||(unit.progress=emptyLog()); }
 
@@ -44,7 +53,26 @@
       // Moteur V1 : une attaque blesse avec une seule composante, physique (result.matchup.type).
       recordWound(defender,result.matchup?.type);
       if(result.backstab) logOf(defender).backstabWounds++;
+      // Esquive : chaque coup encaissé qui blesse (Idan, 2026-10-20).
+      logOf(defender).woundsTaken++;
     }
+    // Boucliers : chaque blocage du défenseur.
+    if(result.blocked&&result.shield){
+      const blocks=logOf(defender).blocks;
+      blocks[result.shield]=(blocks[result.shield]||0)+1;
+    }
+    // Compétences d'armes : chaque attaque portée avec l'arme (pas la chute de charge, pas le projectile
+    // perdu, qui est le même tir), avec ses touchers réels et ses blessures.
+    if(result.weapon&&!result.chargeFall&&!result.accidental){
+      const uses=logOf(attacker).weaponUses;
+      const use=uses[result.weapon]||(uses[result.weapon]={attacks:0,hits:0,wounds:0});
+      use.attacks++;
+      if(result.hit&&!result.blocked) use.hits++;
+      if(result.wound) use.wounds++;
+      if(result.twoHanded&&result.mode==="melee") logOf(attacker).twoHandedAttacks++;
+    }
+    // Intelligence : apprendre de ses erreurs quand il choisit le pire type de dégâts (Idan, 2026-10-20).
+    if(result.matchup?.choice==="pire"&&!result.accidental) logOf(attacker).worstChoices++;
     // Charisme : adversaire mis hors combat par ce coup (Idan, 2026-10-06) ; pas un allié touché par accident.
     if(result.targetDown&&!(attacker.team&&attacker.team===defender.team)) logOf(attacker).knockouts++;
     // Chance : chaque critique (Toucher ou Blesser) et chaque échec critique confirmé.
@@ -78,6 +106,17 @@
   }
   // Chaque case parcourue en état de fuite.
   function recordFleeHex(unit){ logOf(unit).fleeHexes++; }
+  // Dextérité : chaque enchaînement réussi (attaque, tir ou séquence à deux armes supplémentaire).
+  function recordChain(unit){ logOf(unit).chains++; }
+  // Combat à deux armes : chaque séquence menée avec les deux armes.
+  function recordDualSequence(unit){ logOf(unit).dualSequences++; }
+  // Volonté : chaque test de Courage réussi et chaque reprise de contrôle en fuite.
+  function recordCourageHeld(unit){ logOf(unit).courageHeld++; }
+  function recordRecovery(unit){ logOf(unit).recoveries++; }
+  // Intimidation : un adversaire rate son test de Courage face à ce combattant (pas un allié).
+  function recordIntimidation(unit,subject){
+    if(unit&&!(unit.team&&unit.team===subject?.team)) logOf(unit).intimidations++;
+  }
   // Pour les mécaniques à venir : soins (PV réellement restaurés).
   function recordHeal(unit,hp){ logOf(unit).hpHealed+=Math.max(0,Number(hp)||0); }
   // Critiques : success = critique positif, failure = échec critique confirmé.
@@ -101,11 +140,35 @@
       charismaKnockout:k("progression.charisma.knockout_xp",50),
       perceptionBackstabWound:k("progression.perception.backstab_wound_xp",10),
       forceLoadThreshold:k("progression.force.load_ratio_threshold",0.25),
-      forceLoadXp:k("progression.force.load_ratio_xp",20)
+      forceLoadXp:k("progression.force.load_ratio_xp",20),
+      // Décisions Idan du 2026-10-20.
+      dexterityChain:k("progression.dexterity.chain_xp",50),
+      dodgeWoundTaken:k("progression.dodge.wound_taken_xp",10),
+      enduranceHeavyArmorHex:k("progression.endurance.heavy_armor_hex_xp",2),
+      willCourageHeld:k("progression.will.courage_held_xp",20),
+      willRecovery:k("progression.will.recovery_xp",20),
+      intelligenceWorstChoice:k("progression.intelligence.worst_choice_xp",30),
+      skillWeaponAttack:k("progression.skill.weapon_attack_xp",10),
+      skillWeaponHit:k("progression.skill.weapon_hit_xp",5),
+      skillWeaponWound:k("progression.skill.weapon_wound_xp",5),
+      skillTwoHandedAttack:k("progression.skill.two_handed_attack_xp",10),
+      skillDualSequence:k("progression.skill.dual_sequence_xp",10),
+      skillShieldBlock:k("progression.skill.shield_block_xp",10),
+      skillIntimidation:k("progression.skill.intimidation_xp",50),
+      skillRegressionRatio:k("progression.skill.regression_ratio",0.5)
     };
     const minimum=new Map((reference?.characteristics?.rows||[]).map(r=>[r.nom,Number(r.minimum)]));
     const weaponPenalty=new Map((reference?.weapons?.rows||[]).map(w=>[w.nom,Number(w.malus_vitesse_arme_base)||0]));
     const armorRows=reference?.baseArmors?.rows||[];
+    // Compétences martiales : arme précise → catégorie (skills.json, parent) ; plafond = valeur_maximale.
+    const skillRows=reference?.skills?.rows||[];
+    const weaponNames=new Set((reference?.weapons?.rows||[]).map(w=>w.nom));
+    const categoryOf=new Map(skillRows.filter(r=>weaponNames.has(r.nom)&&r.parent).map(r=>[r.nom,r.parent]));
+    const skillMax=new Map(skillRows.map(r=>[r.nom,Number(r.valeur_maximale)]));
+    // Les trois styles de combat progressent l'un au détriment des autres ; « Boucliers » en fait partie et
+    // sort donc des catégories d'armes.
+    const STYLES=["Combat à deux mains","Combat à deux armes","Boucliers"];
+    const weaponCategories=new Set([...categoryOf.values()].filter(c=>!STYLES.includes(c)));
     const LOAD_SLOTS=["weapon_set_1_main","weapon_set_1_off","weapon_set_2_main","weapon_set_2_off","armor"];
 
     // Charge portée (Force, décision Idan du 2026-10-07) : malus de vitesse de base de l'armure et de
@@ -135,9 +198,67 @@
       return Math.round(xpForLevel(level)+C.startPosition*(xpForLevel(level+1)-xpForLevel(level)));
     }
 
-    // Journal → XP par caractéristique et par résistance (valeurs non nulles seulement).
+    // Endurance : armure lourde (base-armors.json, type_armure) portée au moment du déplacement.
+    function wearsHeavyArmor(mercenary){
+      const id=mercenary?.equipment?.slots?.armor;
+      const item=id?(mercenary.items||[]).find(x=>x.id===id):null;
+      if(!item) return false;
+      const code=String(item.templateId||"").replace(/^armor:/,"");
+      const armor=armorRows.find(a=>a.code===code)||armorRows.find(a=>a.nom===item.name);
+      return armor?.type_armure==="Lourde";
+    }
+
+    // Niveau continu d'une compétence : 30,6 = niveau 30, à 60 % de la tranche vers 31 (Idan, 2026-10-20).
+    function continuousLevel(xp){
+      const level=levelForXp(xp);
+      const span=xpForLevel(level+1)-xpForLevel(level);
+      return level+(Math.max(0,xp)-xpForLevel(level))/span;
+    }
+    function xpForContinuous(value){
+      const v=Math.max(0,Number(value)||0),level=Math.floor(v);
+      return xpForLevel(level)+(v-level)*(xpForLevel(level+1)-xpForLevel(level));
+    }
+
+    // Compétences martiales : XP de pratique, puis régression (Idan, 2026-10-20) : chaque gain fait perdre au
+    // total ratio × gain, à parts égales, aux compétences que le mercenaire possède (valeur > 0) dans :
+    // - les armes des autres catégories, pour un gain d'arme (pas les armes de la même catégorie) ;
+    // - les autres catégories d'armes, pour un gain de catégorie ;
+    // - les autres styles (deux mains, deux armes, boucliers), pour un gain de style.
+    function martialGains(l,mercenary){
+      const raw={};
+      const add=(name,xp)=>{ if(xp) raw[name]=(raw[name]||0)+xp; };
+      for(const [weapon,use] of Object.entries(l.weaponUses||{})){
+        const xp=use.attacks*C.skillWeaponAttack+use.hits*C.skillWeaponHit+use.wounds*C.skillWeaponWound;
+        add(weapon,xp);
+        const category=categoryOf.get(weapon);
+        if(category) add(category,xp);
+      }
+      add("Combat à deux mains",l.twoHandedAttacks*C.skillTwoHandedAttack);
+      add("Combat à deux armes",l.dualSequences*C.skillDualSequence);
+      for(const [shield,count] of Object.entries(l.blocks||{})){
+        add(shield,count*C.skillShieldBlock);
+        add("Boucliers",count*C.skillShieldBlock);
+      }
+      const result={...raw};
+      const owned=mercenary?.skills?.martial||{};
+      const has=name=>Number(owned[name])>0;
+      for(const [name,xp] of Object.entries(raw)){
+        if(xp<=0) continue;
+        let others;
+        if(STYLES.includes(name)) others=STYLES.filter(x=>x!==name&&has(x));
+        else if(weaponCategories.has(name)) others=[...weaponCategories].filter(x=>x!==name&&has(x));
+        else if(categoryOf.has(name)) others=[...categoryOf.keys()].filter(x=>categoryOf.get(x)!==categoryOf.get(name)&&has(x));
+        else others=[];
+        for(const other of others) result[other]=(result[other]||0)-C.skillRegressionRatio*xp/others.length;
+      }
+      for(const name of Object.keys(result)) if(!result[name]) delete result[name];
+      return result;
+    }
+
+    // Journal → XP par caractéristique, résistance et compétence (valeurs non nulles seulement).
     // Force : XP par activation = coefficient × max(0, Charge / Force − seuil).
-    function gains(log){
+    // Le mercenaire sert aux régressions de compétences (celles qu'il possède).
+    function gains(log,mercenary=null){
       const l={...emptyLog(),...(log||{})};
       const stats={},resistances={};
       const add=(target,name,xp)=>{ if(xp) target[name]=(target[name]||0)+xp; };
@@ -148,12 +269,21 @@
       add(stats,"Charisme",l.knockouts*C.charismaKnockout);
       add(stats,"Perception",l.backstabWounds*C.perceptionBackstabWound);
       add(stats,"Force",Math.round((l.loadRatios||[]).reduce((sum,ratio)=>sum+C.forceLoadXp*Math.max(0,ratio-C.forceLoadThreshold),0)));
+      add(stats,"Dextérité",l.chains*C.dexterityChain);
+      add(stats,"Esquive",l.woundsTaken*C.dodgeWoundTaken);
+      add(stats,"Endurance",l.heavyArmorHexes*C.enduranceHeavyArmorHex);
+      add(stats,"Volonté",l.courageHeld*C.willCourageHeld+l.recoveries*C.willRecovery);
+      add(stats,"Intelligence",l.worstChoices*C.intelligenceWorstChoice);
       // Chaque blessure : +XP à la résistance du type, −XP à chacune des quatre autres.
       for(const [hit,count] of Object.entries(l.wounds||{})){
         for(const resistance of RESISTANCES) add(resistances,resistance,count*(resistance===hit?C.resistanceWound:C.resistanceOthers));
       }
       for(const target of [stats,resistances]) for(const name of Object.keys(target)) if(!target[name]) delete target[name];
-      return {stats,resistances};
+      const skills={};
+      const martial=martialGains(l,mercenary);
+      if(Object.keys(martial).length) skills.martial=martial;
+      if(l.intimidations) skills.social={Intimidation:l.intimidations*C.skillIntimidation};
+      return {stats,resistances,skills};
     }
 
     // Applique l'XP au mercenaire (mercenary.xp garde l'XP de chaque valeur) ; renvoie les changements.
@@ -178,6 +308,26 @@
           changes.push({family,name,xp:delta,before,after,xpBefore,xpAfter});
         }
       }
+      // Compétences : niveau continu, plafond à valeur_maximale (100). Une valeur générée au-delà du plafond
+      // n'est pas touchée (Idan, 2026-10-20) : elle ne monte plus, mais peut redescendre.
+      for(const [group,entries] of Object.entries(xp?.skills||{})){
+        const values=mercenary.skills?.[group];
+        for(const [name,delta] of Object.entries(entries||{})){
+          if(!values||!Number.isFinite(Number(values[name]))) continue;
+          const before=Number(values[name]);
+          const skillStore=mercenary.xp.skills||(mercenary.xp.skills={});
+          const store=skillStore[group]||(skillStore[group]={});
+          const stored=store[name];
+          const xpBefore=Number.isFinite(stored)&&Math.abs(continuousLevel(stored)-before)<1e-6?stored:xpForContinuous(before);
+          const cap=Number.isFinite(skillMax.get(name))?skillMax.get(name):Infinity;
+          let xpAfter=Math.max(0,xpBefore+delta);
+          if(delta>0) xpAfter=before>=cap?xpBefore:Math.min(xpAfter,xpForContinuous(cap));
+          const after=Math.round(continuousLevel(xpAfter)*1e6)/1e6;
+          store[name]=xpAfter;
+          values[name]=after;
+          changes.push({family:"skills",group,name,xp:delta,before,after,xpBefore,xpAfter});
+        }
+      }
       return changes;
     }
 
@@ -185,9 +335,19 @@
     function recordUnitActivation(unit){
       recordActivation(unit,{load:loadOf(unit.character),force:unit.character?.stats?.Force});
     }
+    // Chaque case parcourue : Endurance si l'armure portée à ce moment est lourde.
+    function recordStep(unit){
+      if(wearsHeavyArmor(unit.character)) logOf(unit).heavyArmorHexes++;
+    }
 
-    return {constants:C,xpForLevel,levelForXp,startingXp,loadOf,gains,apply,recordActivation:recordUnitActivation};
+    return {
+      constants:C,xpForLevel,levelForXp,startingXp,continuousLevel,xpForContinuous,loadOf,wearsHeavyArmor,
+      gains,apply,recordActivation:recordUnitActivation,recordStep
+    };
   }
 
-  return {createProgressionRules,emptyLog,recordActivation,recordAttack,recordChargeAttempt,recordWound,recordFleeHex,recordHeal,recordCritical,RESISTANCES,RESISTANCE_BY_DAMAGE};
+  return {
+    createProgressionRules,emptyLog,recordActivation,recordAttack,recordChargeAttempt,recordWound,recordFleeHex,recordHeal,
+    recordCritical,recordChain,recordDualSequence,recordCourageHeld,recordRecovery,recordIntimidation,RESISTANCES,RESISTANCE_BY_DAMAGE
+  };
 });

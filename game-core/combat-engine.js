@@ -507,7 +507,8 @@
       const tags={chargePower,opportunity,encircled,fleeingTarget,backstab};
       const pHit=hitProbability(attacker,defender,mode,distance,{opportunity,backstab});
       const hitRoll=d100(),hit=hitRoll<=pHit;
-      const head={ok:true,mode,weapon:weapon.nom,distance,pHit,hitRoll};
+      // twoHanded : arme tenue à deux mains (XP de la compétence Combat à deux mains).
+      const head={ok:true,mode,weapon:weapon.nom,distance,pHit,hitRoll,twoHanded:usesTwoHands(attacker,weapon)};
       if(!hit){
         // Échec critique CAC V1 : un naturel 96–100 déclenche un test de Chance ; raté → Au Sol.
         const fumble=fumbleTest(attacker,hitRoll);

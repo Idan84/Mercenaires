@@ -13,7 +13,8 @@ function characterRow(c,hero=false){
   return `<button type="button" class="roster-card ${captain?"roster-captain":""}" data-character-id="${c.id}">
     ${renderAvatar(c,{variant:"card",kind:"portrait"})}
     <span class="roster-card-info"><small>${captain?"CAPITAINE":esc(c.role||"MERCENAIRE")}</small>
-      <strong>${esc(c.name)}</strong>
+      <strong>${esc(c.firstName || c.name)}</strong>
+      ${c.familyName ? `<span class="roster-surname"><small>Nom de famille</small><b>${esc(c.familyName)}</b></span>` : ""}
       <span>${esc(c.people)} · ${esc(c.culture||"")}</span>
       <span class="roster-card-details">PV ${fmt(c.pvMax)} · Réputation ${fmt(c.reputation)} · ${fmt(salary)} PO/j</span>
       <em>${esc(status)}</em>

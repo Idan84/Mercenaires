@@ -97,8 +97,15 @@ function stopTheme(){
   if(wizard.theme){ wizard.theme.pause(); wizard.theme=null; }
 }
 
+// Libellés courts de l'origine : les valeurs canoniques restent inchangées pour le générateur,
+// la compatibilité culture/origine et les sauvegardes existantes.
+const ORIGIN_DISPLAY_LABELS={
+  "Soldat / Guerrier / Combattant":"Guerrier",
+  "Paysan / Ouvrier":"Travailleur"
+};
 function choiceLabel(key,value){
   if(key==="ascendance"&&!value) return "Aucune";
+  if(key==="origin") return ORIGIN_DISPLAY_LABELS[value]||value||"—";
   return value||"—";
 }
 
@@ -252,7 +259,6 @@ function renderChoiceStep(step){
     <section class="wizard-options-panel">
       <div class="wizard-options-head">
         <span>Votre choix</span>
-        <small>${values.length} option${values.length>1?"s":""}</small>
       </div>
       ${step.key==="alignment"?renderAlignmentWheel(values,selected):`<div class="wizard-option-grid">${options}</div>`}
     </section>
@@ -282,30 +288,49 @@ function captainAvatarOptions(){
     return !tagged.length || tagged.some(c=>norm(c)===culture);
   });
 }
+// Le sexe d'un capitaine est déduit de l'avatar (game-core/avatars.js).
+// Le classement ici est uniquement visuel : il n'élimine aucun portrait compatible.
+function avatarSexGroup(avatar){
+  const sex=String(avatar?.sex||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();
+  if(["femme","feminin","female"].includes(sex)) return "women";
+  if(["homme","masculin","male"].includes(sex)) return "men";
+  return "other";
+}
 function renderAvatarChoice(){
   const avatars=captainAvatarOptions();
   if(!avatars.length) return '<div class="wizard-name-card"><h3>Aucun portrait compatible disponible.</h3><p>Votre capitaine utilisera le portrait générique jusqu’à l’arrivée de nouveaux avatars.</p></div>';
   const chosen=avatars.find(a=>a.id===wizard.choice.avatar);
-  const cards=avatars.map(a=>{
+  const renderCard=a=>{
     const selected=a.id===wizard.choice.avatar;
     const img=mercenaryAvatarUrl({avatar:a},"portrait");
-    return `<button type="button" class="captain-avatar-choice ${selected?"is-selected":""}" data-wizard-avatar="${esc(a.id)}" aria-pressed="${selected}">
-      <img src="${esc(img)}" alt="Portrait ${esc(a.id)}" loading="lazy" onerror="this.hidden=true"><span>${esc(a.id)}</span>
+    return `<button type="button" class="captain-avatar-choice ${selected?"is-selected":""}" data-wizard-avatar="${esc(a.id)}" aria-label="Choisir le portrait ${esc(a.id)}" aria-pressed="${selected}">
+      <img src="${esc(img)}" alt="" loading="lazy" onerror="this.hidden=true">
     </button>`;
+  };
+  const groups=[
+    {key:"women",label:"Femmes"},
+    {key:"men",label:"Hommes"},
+    {key:"other",label:"Autres portraits"}
+  ].map(group=>{
+    const matching=avatars.filter(avatar=>avatarSexGroup(avatar)===group.key);
+    if(!matching.length) return "";
+    return `<section class="captain-avatar-group" aria-label="${group.label}">
+      <h4>${group.label}</h4>
+      <div class="captain-avatar-grid">${matching.map(renderCard).join("")}</div>
+    </section>`;
   }).join("");
   return `<div class="wizard-layout"><section class="wizard-options-panel">
-    <div class="wizard-options-head"><span>Choisissez votre visage</span><small>${avatars.length} portraits</small></div>
-    <div class="captain-avatar-grid">${cards}</div>
-  </section><aside class="wizard-detail-panel"><h3>${chosen?"Votre capitaine":"Sélectionnez un portrait"}</h3>
-    ${chosen?renderAvatar({name:wizard.choice.name||"Capitaine",people:wizard.choice.people,avatar:chosen},{variant:"detail",kind:"full"}):"<p>Les portraits correspondent à votre peuple et à votre culture, lorsqu’elle est renseignée sur l’avatar.</p>"}
+    <div class="wizard-options-head"><span>Choisissez votre visage</span></div>
+    <div class="captain-avatar-groups">${groups}</div>
+  </section><aside class="wizard-detail-panel">
+    ${chosen?renderAvatar({name:wizard.choice.name||"Capitaine",people:wizard.choice.people,avatar:chosen},{variant:"detail",kind:"full"}):"<h3>Sélectionnez un portrait</h3><p>Les portraits correspondent à votre peuple et à votre culture, lorsqu’elle est renseignée sur l’avatar.</p>"}
   </aside></div>`;
 }
 function renderCompanyNameStep(){
   return `<div class="wizard-name-layout"><div class="wizard-name-card">
-    <p class="wizard-name-overline">Des salaires à payer. Des morts à remplacer.</p>
+    <p class="wizard-name-overline">Des salaires. Des morts.</p>
     <label for="wizard-company-input">Le nom de votre compagnie</label>
-    <input id="wizard-company-input" maxlength="60" autocomplete="off" placeholder="Les Braves (enfin, presque)" value="${esc(wizard.choice.companyName)}">
-    <small>Le blason et les couleurs viendront plus tard.</small>
+    <input id="wizard-company-input" maxlength="60" autocomplete="off" placeholder="Les Braves (presque)" value="${esc(wizard.choice.companyName)}">
   </div></div>`;
 }
 

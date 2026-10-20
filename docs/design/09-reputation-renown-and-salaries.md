@@ -94,7 +94,7 @@ Mise en œuvre V1 (choix d'implémentation, relecture Chatty) :
 - **Participation** : le premier coup qui inflige des dégâts (> 0) à un ennemi, une seule fois par ennemi ; un allié touché par accident ne compte pas ; un projectile perdu qui blesse un ennemi compte.
 - **Coup de grâce** : le coup qui met l'ennemi hors combat (ennemi « tué » au sens V1).
 - **Réputation de l'ennemi** : sa réputation pendant la mission ; elle ne bouge pas avant le bilan, puisque les gains sont appliqués en fin de mission. Ennemis générés : leur réputation de génération.
-- **Retour de mission** : l'issue de fin de mission (10-mission-time §7). « Blessé » donne `+10` ; « Fatigué » donne `+20`, même si le mercenaire a perdu des PV ou a fui la carte. Un mort ne gagne rien.
+- **Retour de mission** (validé par Idan le 2026-10-20) : « revenir blessé » = finir la mission avec le statut « Blessé » (10-mission-time §7), qui donne `+10`. « Fatigué » donne `+20`, même si le mercenaire a perdu des PV ou a fui la carte. Un mort ne gagne rien.
 - Le delta garde ses décimales ; la fiche et le bilan l'affichent arrondi. La fiche montre la réputation totale, puis « initiale » (part calculée) et « carrière » (delta) dès qu'il y a un gain.
 - Un bilan déjà appliqué n'est pas crédité une seconde fois.
 - Constantes : `reputation.career.*` dans `data/reference/formula-constants.json`.

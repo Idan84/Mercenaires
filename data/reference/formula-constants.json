@@ -905,6 +905,30 @@
       "formule": "Renommée de compagnie V1",
       "valeur": 0.2,
       "version": "V1"
+    },
+    {
+      "nom": "Affinité — culture commune",
+      "code": "affinity.culture.same_bonus",
+      "description": "Points d'affinité brute quand le capitaine et le mercenaire ont la même culture (02 « Affinité capitaine ↔ mercenaire » ; décision Idan du 2026-10-20, PR #114).",
+      "formule": "Affinité capitaine ↔ mercenaire V1",
+      "valeur": 2,
+      "version": "V1"
+    },
+    {
+      "nom": "Affinité — alignement identique",
+      "code": "affinity.alignment.same_points",
+      "description": "Points d'affinité brute pour un alignement identique ; chaque pas de distance de Manhattan sur la grille 3×3 en retire affinity.alignment.step_penalty (02 « Affinité capitaine ↔ mercenaire » ; décision Idan du 2026-10-20, PR #114).",
+      "formule": "Affinité capitaine ↔ mercenaire V1",
+      "valeur": 4,
+      "version": "V1"
+    },
+    {
+      "nom": "Affinité — pas d'alignement",
+      "code": "affinity.alignment.step_penalty",
+      "description": "Points d'affinité brute retirés par pas de distance de Manhattan entre les alignements (0 à 4 pas : +4, +2, 0, −2, −4) (02 « Affinité capitaine ↔ mercenaire » ; décision Idan du 2026-10-20, PR #114).",
+      "formule": "Affinité capitaine ↔ mercenaire V1",
+      "valeur": 2,
+      "version": "V1"
     }
   ]
 }

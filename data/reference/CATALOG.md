@@ -23,12 +23,13 @@ Git est la source de vérité. Les JSON ci-dessous sont les référentiels struc
 | item-qualities.json | 3 | nom, code, description, multiplicateur_malus, multiplicateur_qualite |
 | ranged-weapons.json | 8 | nom, domaine, portee_min_hex, portee_max_hex, cadence_tir, recharge_action_rapide, contre_charge, attaque_de_zone, degats_pv_base, puissance_perforante_base, prise, malus_vitesse_arme_base |
 | weapons.json | 38 | nom, domaine, prise, malus_vitesse_arme_base, portee_min_hex, portee_max_hex, bonus_charge_base, contre_charge, degats_pv_base, puissance_tranchante_base, puissance_perforante_base, puissance_contondante_base |
-| formula-constants.json | 109 | nom, code, description, formule, valeur, version |
+| formula-constants.json | 112 | nom, code, description, formule, valeur, version |
 | game-formulas.json | 43 | nom, code, domaine, expression, maximum, minimum, notes, statut, type_attaque, version, etape |
 | formula-terms.json | 13 | nom, caracteristique, code_variable, coefficient, cote, description, formule, ordre, source |
 
 | binary-aptitude-grants.json | 6 | aptitude, domaine, mode, automatic, bonuses_pp, armor, reason |
 
+| people-affinity.json | 10 | peoples, matrix (ligne : peuple du mercenaire ; colonne : peuple du capitaine) |
 | alignment-generation.json | 1 | distribution, neighborhood, grid, notes |
 
 | biographies.json | 30 | id, short, rumor, motto, tags, gender, weight, statut |

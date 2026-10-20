@@ -182,6 +182,25 @@ function fmtDecimal(n, digits = 1) {
   return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(digits);
 }
 
+function affinityRules() {
+  return game.affinityRules || (game.affinityRules = MercenairesAffinity.createAffinityRules({ reference: game.referenceData }));
+}
+
+// Affinité envers le capitaine (02, phase 1) : score numérique et ses composantes, pour les membres de la
+// compagnie seulement. L'alignement d'un candidat reste caché à la Taverne (14 §6).
+function renderCaptainAffinity(c) {
+  const company = game.campaign?.company;
+  if (!company || c.id === company.captainId || !company.roster.includes(c)) return "";
+  const captain = company.roster.find(m => m.id === company.captainId);
+  const a = captain && affinityRules().memberAffinity(captain, c);
+  if (!a?.ok) return "";
+  const signed = n => (n > 0 ? "+" : "") + n;
+  const k = a.components;
+  const parts = [`peuple ${signed(k.people)}`, `culture ${signed(k.culture)}`, `alignement ${signed(k.alignment)}`];
+  if (a.acquired) parts.push(`acquise ${signed(Math.round(a.acquired))}`);
+  return `<div><small>Affinité avec le capitaine</small><strong>${signed(a.total)}</strong><span class="player-identity-note">${parts.join(" · ")}</span></div>`;
+}
+
 // Réputation personnelle = part calculée (initiale) + delta de carrière (09 §1) : détail dès qu'il y a un gain.
 function renderReputationCareer(c) {
   const career = Number(c.reputationCareerDelta) || 0;
@@ -555,6 +574,7 @@ function renderProfileTab(c){
         <div><small>Ascendance</small><strong>${esc(c.ascendance||"Aucune")}</strong></div>
         <div><small>Alignement</small><strong>${esc(c.alignment||"—")}</strong></div>
         <div><small>Réputation</small><strong>${fmt(c.reputation)}</strong>${renderReputationCareer(c)}</div>
+        ${renderCaptainAffinity(c)}
       </div>
       <div class="player-vitals">
         <div><small>Points de vie</small><strong>${fmt(c.pvMax)}</strong></div>

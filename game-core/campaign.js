@@ -255,7 +255,10 @@
     // les morts quittent la compagnie, les blessés et les fatigués deviennent indisponibles,
     // la prime de mission de chaque survivant sous contrat est payée, et la mort du capitaine met fin à la partie.
     // aftermath : résultat de MercenairesMissionEnd.resolveMissionEnd. Les participants hors compagnie sont ignorés.
+    // Un bilan déjà appliqué ne crédite pas une seconde fois l'XP, la réputation ni les primes.
+    const appliedAftermaths=new WeakMap();
     function applyMissionAftermath(state,aftermath){
+      if(appliedAftermaths.has(aftermath)) return appliedAftermaths.get(aftermath);
       const report={deaths:[],wounded:[],fatigued:[],bonuses:[],bonusPaid:0,gameOver:false,progression:[]};
       for(const result of aftermath.results){
         const roster=rosterOf(state);
@@ -270,9 +273,12 @@
         }
         // XP naturelle de la mission (08-progression-and-experience.md §2 ; Idan, 2026-10-06) : appliquée
         // en fin de mission aux survivants, y compris ceux qui ont fui le combat.
+        // Réputation de carrière (09 §1) : retour de mission, critiques et ennemis blessés / mis hors combat.
         if(progression){
           const xp=progression.gains(result.progress,mercenary);
-          report.progression.push({mercenary,xp,changes:progression.apply(mercenary,xp)});
+          const changes=progression.apply(mercenary,xp);
+          const gain=progression.reputationGains(result.progress,{wounded:result.wounded});
+          report.progression.push({mercenary,xp,changes,reputation:{...gain,...progression.applyReputation(mercenary,gain)}});
         }
         if(result.wounded){
           mercenary.recovery={kind:"wounded",daysLeft:result.woundDays,sinceDay:state.day};
@@ -293,6 +299,7 @@
         state.gameOver={day:state.day,reason:"captain-dead"};
         report.gameOver=true;
       }
+      appliedAftermaths.set(aftermath,report);
       return report;
     }
 

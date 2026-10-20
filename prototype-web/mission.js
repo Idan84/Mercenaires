@@ -227,8 +227,9 @@ function resolveMissionAftermath(){
   if(!game.campaign) return;
   const report=m.companyReport=campaignRules().applyMissionAftermath(game.campaign,m.aftermath);
   if(report.bonusPaid) missionLog("Primes de mission versées : "+report.bonusPaid+" PO ("+report.bonuses.map(b=>b.mercenary.name+" "+b.bonus).join(", ")+").","gear");
-  for(const {mercenary,changes} of report.progression||[]){
+  for(const {mercenary,changes,reputation} of report.progression||[]){
     for(const c of visibleProgressionChanges(changes)) missionLog(mercenary.name+" : "+c.name+" "+c.shownBefore+" → "+c.shownAfter+".",c.shownAfter>c.shownBefore?"gear":"bad");
+    if(reputation&&Math.round(reputation.after)!==Math.round(reputation.before)) missionLog(mercenary.name+" : Réputation "+Math.round(reputation.before)+" → "+Math.round(reputation.after)+".",reputation.after>reputation.before?"gear":"bad");
   }
   if(report.gameOver){
     missionLog("Le capitaine est mort : la partie est terminée.","death");
@@ -290,9 +291,21 @@ function visibleProgressionChanges(changes){
   }).filter(c=>c.shownAfter!==c.shownBefore);
 }
 
+// Réputation de carrière (09 §1) : chaque source de la mission, puis la réputation totale avant → après.
+const REPUTATION_SOURCES={missionReturn:"Retour de mission",criticalSuccesses:"Critiques",criticalFailures:"Échecs critiques",enemyWounds:"Ennemis blessés",enemyKnockouts:"Ennemis hors combat"};
+function renderMissionReputation(reputation){
+  if(!reputation) return '<span class="muted">—</span>';
+  const parts=Object.entries(REPUTATION_SOURCES)
+    .filter(([key])=>Math.round(reputation.sources[key]))
+    .map(([key,label])=>`<span class="${reputation.sources[key]<0?"xp-loss":"xp-gain"}">${esc(label)} ${signed(reputation.sources[key])}</span>`);
+  const before=Math.round(reputation.before),after=Math.round(reputation.after);
+  if(after!==before) parts.push(`<strong class="${after>before?"stat-up":"stat-down"}">${before} → ${after} ${after>before?"▲":"▼"}</strong>`);
+  return parts.join(" ")||'<span class="muted">—</span>';
+}
+
 function renderMissionProgression(entries){
   if(!entries.length) return "";
-  const rows=entries.map(({mercenary,xp,changes})=>{
+  const rows=entries.map(({mercenary,xp,changes,reputation})=>{
     const skills=Object.values(xp.skills||{}).flatMap(group=>Object.entries(group));
     // Compétences : les gains de pratique un à un ; la régression des autres armes et styles en un total.
     const regression=skills.filter(([,n])=>n<0).reduce((sum,[,n])=>sum+n,0);
@@ -303,11 +316,11 @@ function renderMissionProgression(entries){
       .join(" ");
     const moved=visibleProgressionChanges(changes)
       .map(c=>`<strong class="${c.shownAfter>c.shownBefore?"stat-up":"stat-down"}">${esc(progressionLabel(c.name))} ${c.shownBefore} → ${c.shownAfter} ${c.shownAfter>c.shownBefore?"▲":"▼"}</strong>`).join(" ");
-    return `<tr><td>${esc(mercenary.name)}</td><td>${gained||'<span class="muted">Aucune</span>'}</td><td>${moved||'<span class="muted">—</span>'}</td></tr>`;
+    return `<tr><td>${esc(mercenary.name)}</td><td>${gained||'<span class="muted">Aucune</span>'}</td><td>${moved||'<span class="muted">—</span>'}</td><td>${renderMissionReputation(reputation)}</td></tr>`;
   }).join("");
   return `<div class="mission-progression">
     <h4>Progression</h4>
-    <table><thead><tr><th>Mercenaire</th><th>XP gagnée</th><th>Évolution</th></tr></thead><tbody>${rows}</tbody></table>
+    <table><thead><tr><th>Mercenaire</th><th>XP gagnée</th><th>Évolution</th><th>Réputation</th></tr></thead><tbody>${rows}</tbody></table>
   </div>`;
 }
 

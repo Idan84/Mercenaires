@@ -108,8 +108,12 @@
   function recordFleeHex(unit){ logOf(unit).fleeHexes++; }
   // Dextérité : chaque enchaînement réussi (attaque, tir ou séquence à deux armes supplémentaire).
   function recordChain(unit){ logOf(unit).chains++; }
-  // Combat à deux armes : chaque séquence menée avec les deux armes.
-  function recordDualSequence(unit){ logOf(unit).dualSequences++; }
+  // Combat à deux armes : chaque séquence où les DEUX armes ont réellement frappé (revue Chatty du
+  // 2026-10-20) : une seconde arme déchargée ou hors de portée ne donne rien.
+  function recordDualSequence(unit,results){
+    const hands=new Set((results||[]).filter(r=>r?.ok).map(r=>r.hand==="off"?"off":"main"));
+    if(hands.has("main")&&hands.has("off")) logOf(unit).dualSequences++;
+  }
   // Volonté : chaque test de Courage réussi et chaque reprise de contrôle en fuite.
   function recordCourageHeld(unit){ logOf(unit).courageHeld++; }
   function recordRecovery(unit){ logOf(unit).recoveries++; }

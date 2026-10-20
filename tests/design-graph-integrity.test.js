@@ -27,7 +27,11 @@ for(const e of E){
 }
 assert.ok(E.some(e=>e.a==="chance"&&e.b==="critique"&&e.s==="implemented"));
 assert.ok(E.some(e=>e.a==="rep"&&e.b==="renommee"&&e.s==="implemented"));
-assert.ok(E.some(e=>e.a==="affinite"&&e.b==="negociation"&&e.s==="planned"));
+// Recrutement (Idan, 2026-10-20) : l'affinité pèse sur la négociation et le salaire, la renommée sur les recrues.
+assert.ok(E.some(e=>e.a==="affinite"&&e.b==="negociation"&&e.s==="implemented"));
+assert.ok(E.some(e=>e.a==="affinite"&&e.b==="salaire"&&e.s==="implemented"));
+assert.ok(E.some(e=>e.a==="renommee"&&e.b==="recrues"&&e.s==="implemented"));
+assert.ok(E.some(e=>e.a==="renommee"&&e.b==="marchands"&&e.s==="planned"),"marchands : pas encore décidé");
 assert.ok(!E.some(e=>e.a==="chance"&&e.b==="toucher"),"Chance ne modifie pas directement Toucher V1");
 assert.ok(!E.some(e=>e.a==="kill"&&e.b==="heritage"),"Tuer un ennemi n'est pas l'héritage d'un mercenaire mort");
 console.log("Design Graph catalogue: "+N.length+" noeuds / "+E.length+" liens valides.");

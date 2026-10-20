@@ -11,8 +11,8 @@ Page de suivi pour Idan, tenue par JC3 et relue par Chatty. Elle rassemble ce qu
 Rien de ce bloc n'est codé : JC3 attend ton choix avant d'y toucher.
 
 - **Affinité — matrice des peuples** : la saisie de Chatty correspond-elle à ta capture ? → [doc 02, fin de page](/design/#doc=02-generation-and-identity.md)
-- **Renommée — effets** : comment pèse-t-elle sur la qualité des recrues, les missions proposées, les marchands et les places de Taverne ? → [doc 09 §2](/design/#doc=09-reputation-renown-and-salaries.md), [doc 14](/design/#doc=14-tavern-recruitment.md)
-- **Affinité — effets** : quels coefficients sur les négociations (recrutement, équipement, autres) ? → [doc 02](/design/#doc=02-generation-and-identity.md)
+- **Renommée — autres effets** : comment pèse-t-elle sur les missions proposées et les marchands ? (Recrues : tranché le 2026-10-20.) → [doc 09 §2](/design/#doc=09-reputation-renown-and-salaries.md)
+- **Affinité — autres effets** : négociation d'équipement et autres interactions. (Salaire demandé et négociation de recrutement : tranchés le 2026-10-20.) → [doc 02](/design/#doc=02-generation-and-identity.md)
 - **Attaques de zone** : forme et rayon du Tromblon et des sorts de zone. → [doc 04](/design/#doc=04-combat.md)
 - **Camp V1** : arbre des bâtiments et prérequis ; les prix viendront avec le calibrage de l'économie. → [issue #23](https://github.com/Idan84/Mercenaires/issues/23), [doc 11](/design/#doc=11-camp-and-ruined-castle.md)
 - **Taverne — consommations** : quels effets positifs ? → [issue #87](https://github.com/Idan84/Mercenaires/issues/87)
@@ -28,6 +28,8 @@ Rien de ce bloc n'est codé : JC3 attend ton choix avant d'y toucher.
 On en a parlé, et on a choisi d'attendre.
 
 - **Ennemis typés** (Idan, 2026-10-20).
+- **Places de Taverne selon la renommée** : 5 places pour l'instant (Idan, 2026-10-20). → [doc 14](/design/#doc=14-tavern-recruitment.md)
+- **« Utiliser ma partie en cours »** dans le simulateur du graphe, sans passer par un fichier de sauvegarde (Idan, 2026-10-20).
 - **Réputation de départ recalculée quand les caractéristiques progressent** (doc 09 §1) : passée après la renommée.
 - **Changement d'équipement négocié avec le mercenaire**, dont le bouclier ou la seconde arme (Idan, 2026-10-08).
 - **Caractéristiques générées au-delà de 100** : on n'y touche pas pour l'instant (Idan, 2026-10-20).

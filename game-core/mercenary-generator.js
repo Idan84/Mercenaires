@@ -27,6 +27,8 @@
     return nums.length ? Math.max(...nums) : fallback;
   }
 
+  // options.affinity (facultatif) : createAffinityRules(...) de game-core/affinity.js, pour le facteur
+  // d'affinité du salaire demandé ; sans lui, le facteur vaut 1.
   function createGenerator(reference, options = {}) {
     const random = options.random || Math.random;
     const nameGenerator = options.nameGenerator || ((people, id) => `${people || "Mercenaire"} ${id || ""}`.trim());
@@ -980,11 +982,19 @@
       return calculated + (character.reputationCareerDelta || 0);
     }
 
-    function calcSalary(character) {
+    // Affinité avec le capitaine qui recrute (09 §4 ; Idan, 2026-10-20) : ±20 % au plus, une bonne
+    // affinité fait baisser le salaire demandé. Pas de capitaine (capitaine lui-même, ennemis) : facteur 1.
+    function salaryAffinityFactor(character, captain) {
+      const result = captain && options.affinity ? options.affinity.affinity(captain, character) : null;
+      if (!result?.ok) return {affinity: null, factor: 1};
+      return {affinity: result.total, factor: 1 - constant("salary.affinity.max_effect", 0.2) * result.total / 100};
+    }
+
+    function calcSalary(character, captain = null) {
       const base = Math.max(1, character.reputation / 30);
       const pretensions = 1 + (character.salaryPretension - 35) / 100;
       const intelligence = 1 + 0.25 * Math.pow((character.stats.Intelligence - 100) / 100, 2);
-      return Math.round(10 * base * pretensions * intelligence);
+      return Math.round(10 * base * pretensions * intelligence * salaryAffinityFactor(character, captain).factor);
     }
 
     function choosePeople(captain) {
@@ -1142,7 +1152,7 @@
         slots: startingEquipment.slots
       };
       character.items = startingEquipment.items;
-      character.salary = calcSalary(character);
+      character.salary = calcSalary(character, captain);
 
       trace.derived = {
         pvMax: {formula: "ceil(3 × (Constitution + 0,2×Endurance + 0,1×Volonté))", value: character.pvMax},
@@ -1150,7 +1160,8 @@
         salaryPretension: {formula: "10D6", value: character.salaryPretension},
         reputation: {value: character.reputation},
         salary: {
-          formula: "round(10 × max(1, Réputation / 30) × FacteurPrétentions × FacteurIntelligence)",
+          formula: "round(10 × max(1, Réputation / 30) × FacteurPrétentions × FacteurIntelligence × FacteurAffinité)",
+          ...salaryAffinityFactor(character, captain),
           value: character.salary
         },
         weaponPreferences: character.weaponPreferences,

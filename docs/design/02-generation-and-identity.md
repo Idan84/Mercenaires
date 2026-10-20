@@ -224,4 +224,5 @@ Données : `data/reference/people-affinity.json` (matrice) ; constantes `affinit
 
 - le score s'affiche sur la fiche des membres de la compagnie, avec ses composantes ;
 - à la Taverne, le score seul s'affiche sur la carte du candidat et dans l'entretien (décision Idan du 2026-10-20). L'alignement du candidat reste caché (14 §6), même si le score en laisse deviner une partie ;
-- aucun effet sur les négociations de recrutement, d'équipement ou autres tant que les coefficients ne sont pas définis avec Idan.
+- effets décidés par Idan le 2026-10-20 : salaire demandé × (1 − 0,2 × Affinité / 100) (doc 09 §4) et résistance à la négociation − 0,25 × Affinité (doc 14 §9) ;
+- pas encore d'effet sur la négociation d'équipement ni sur d'autres interactions : coefficients à définir avec Idan.

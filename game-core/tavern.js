@@ -24,6 +24,8 @@
     // Départ après un refus (PLAYTEST) : poids de la concession demandée et plafond de la probabilité.
     const QUIT_CONCESSION_COEFFICIENT=referenceConstant(options.reference,"tavern.negotiation.quit_concession_coefficient",0.75);
     const QUIT_MAX=referenceConstant(options.reference,"tavern.negotiation.quit_max",75);
+    // Affinité avec le capitaine (14 §9 ; Idan, 2026-10-20) : une bonne affinité adoucit la négociation.
+    const AFFINITY_RESISTANCE=referenceConstant(options.reference,"tavern.negotiation.affinity_coefficient",0.25);
     function d100(){ return Math.floor(random()*100)+1; }
     function uniform(min,max){ return min+random()*(max-min); }
 
@@ -139,8 +141,9 @@
       return candidate.negotiation;
     }
 
-    function negotiationResistance(m){
-      return clamp(0.50*(Number(m.salaryPretension)||0)+0.25*stat(m,"Intelligence")+0.25*stat(m,"Volonté"),0,100);
+    // affinity : affinité du candidat avec le capitaine qui négocie (−100 à +100 ; 0 si inconnue).
+    function negotiationResistance(m,affinity=0){
+      return clamp(0.50*(Number(m.salaryPretension)||0)+0.25*stat(m,"Intelligence")+0.25*stat(m,"Volonté")-AFFINITY_RESISTANCE*(Number(affinity)||0),0,100);
     }
 
     function componentRatio(offer,current){
@@ -148,8 +151,8 @@
     }
 
     // §9 — Négociation du contrat (salaire journalier + prime de mission).
-    // Résultat : accepted | invalid | left | counter.
-    function makeOffer(candidate,offer){
+    // Résultat : accepted | invalid | left | counter. context.affinity : affinité avec le capitaine.
+    function makeOffer(candidate,offer,context={}){
       const n=negotiationState(candidate),m=candidate.mercenary;
       if(n.agreed) return {outcome:"accepted",agreed:n.agreed,already:true};
       const salary=Math.max(0,Math.round(Number(offer?.salary)||0));
@@ -169,7 +172,7 @@
 
       const ratio=0.65*componentRatio(salary,n.salary)+0.35*componentRatio(bonus,n.bonus);
       const concession=100*(1-ratio);
-      const resistance=negotiationResistance(m);
+      const resistance=negotiationResistance(m,context.affinity);
       const pAccept=clamp(95-2.0*concession-0.4*(resistance-50),5,95);
       const acceptRoll=d100();
       if(acceptRoll<=pAccept){

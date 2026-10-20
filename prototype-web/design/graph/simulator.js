@@ -128,6 +128,13 @@
     const option=el("option",cfg.name);option.value=key;option.disabled=!engine.capabilities[key];modeSelect.appendChild(option);
   }
   mount.appendChild(modeSelect);
+  const saveTools=el("div");saveTools.style.cssText="display:grid;gap:7px;margin:12px 0;padding:10px;border:1px solid #354253;border-radius:8px";
+  saveTools.appendChild(el("strong","Scénario réel : sauvegarde locale"));
+  const saveInput=el("input");saveInput.type="file";saveInput.accept=".json,application/json";saveInput.setAttribute("aria-label","Importer une sauvegarde du jeu");
+  saveInput.style.cssText="width:100%;max-width:100%;font-size:11px";saveTools.appendChild(saveInput);
+  const resetSave=el("button","Revenir aux données fictives");resetSave.type="button";resetSave.style.fontSize="11px";saveTools.appendChild(resetSave);
+  const saveStatus=el("p","Le fichier reste dans le navigateur, aucune donnée envoyée.","muted");saveStatus.style.cssText="font-size:11px;margin:2px 0";saveTools.appendChild(saveStatus);
+  mount.appendChild(saveTools);
   const subtitle=el("p",configs.economy.description,"muted");mount.appendChild(subtitle);
   const changeLabel=el("label","Caractéristique ou événement à modifier");changeLabel.style.cssText="display:grid;gap:5px;margin:12px 0 8px;font-size:12px";mount.appendChild(changeLabel);
   const changeSelect=el("select");changeSelect.className="wide";changeLabel.appendChild(changeSelect);
@@ -253,6 +260,22 @@
       for(const source of compared.after.source)notes.appendChild(el("p",source,"muted"));
     }catch(error){results.appendChild(el("p","Simulation impossible : "+error.message,"muted"))}
   }
+  saveInput.addEventListener("change",async()=>{
+    const file=saveInput.files?.[0];
+    if(!file)return;
+    if(file.size>10*1024*1024){saveStatus.textContent="Sauvegarde trop volumineuse (limite : 10 Mo).";return}
+    try{
+      const parsed=window.MercenairesDesignSaveImport.parse(await file.text());
+      scenarios.economy=parsed.economy;
+      modeSelect.value="economy";field="captain";selectMode("economy");
+      saveStatus.textContent=parsed.companyName+" : "+parsed.rosterCount+" membre(s). Renommée calculée sur tout l'effectif.";
+    }catch(error){saveStatus.textContent="Import impossible : "+error.message}
+  });
+  resetSave.addEventListener("click",()=>{
+    delete scenarios.economy;saveInput.value="";
+    modeSelect.value="economy";field="courage";selectMode("economy");
+    saveStatus.textContent="Scénario fictif rétabli. Aucune donnée sauvegardée.";
+  });
   modeSelect.addEventListener("change",()=>selectMode(modeSelect.value));
   changeSelect.addEventListener("change",()=>setAfterControl(true));
   allCheckbox.addEventListener("change",calculate);

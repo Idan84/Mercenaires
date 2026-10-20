@@ -1330,6 +1330,8 @@ body[data-screen="creation"] .intro-scene { visibility: hidden; }
 }
 @media (max-width: 620px) {
   .wizard { padding: 14px; }
+  /* La croix de sortie est en haut à droite : réserver sa hauteur avant le titre. */
+  .wizard-head { padding-top: 48px; }
   .wizard-frame { gap: 12px; }
   .wizard-progress { width: 94%; margin-top: 10px; }
   .wizard-option-grid { grid-template-columns: 1fr; }

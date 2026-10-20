@@ -21,6 +21,7 @@ const REFERENCE_FILES = {
   startingEquipmentGeneration: "starting-equipment-generation.json",
   binaryAptitudeGrants: "binary-aptitude-grants.json",
   alignmentGeneration: "alignment-generation.json",
+  peopleAffinity: "people-affinity.json",
   biographies: "biographies.json",
   captainCreationCopy: "captain-creation-copy.json"
 };

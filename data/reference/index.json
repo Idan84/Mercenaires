@@ -334,7 +334,7 @@
     {
       "name": "formula-constants",
       "file": "formula-constants.json",
-      "rows": 109,
+      "rows": 112,
       "columns": [
         "nom",
         "code",
@@ -390,6 +390,15 @@
         "bonuses_pp",
         "armor",
         "reason"
+      ]
+    },
+    {
+      "name": "people-affinity",
+      "file": "people-affinity.json",
+      "rows": 10,
+      "columns": [
+        "peoples",
+        "matrix"
       ]
     },
     {

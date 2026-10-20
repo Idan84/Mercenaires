@@ -190,3 +190,38 @@ Le bonus est appliqué même si le peuple ou la culture du candidat ont un align
 ### Exception culturelle — Elfes noirs
 
 La culture **Elfes noirs** remplace l'alignement principal du peuple Elfe par **Chaotique mauvais** avant application de la distribution 40/45/15.
+
+## Affinité capitaine ↔ mercenaire (phase 1)
+
+Décision Idan du 2026-10-20 (PR #114, code de Chatty). L'affinité mesure de **−100 à +100** comment un mercenaire perçoit son capitaine. C'est un score numérique, sans libellé qualitatif pour l'instant.
+
+Affinité brute = **peuple** + **culture** + **alignement** :
+
+- **Peuple** : matrice d'Idan, de −3 à +3, lue avec la ligne du peuple du mercenaire et la colonne du peuple du capitaine. Elle est volontairement asymétrique.
+- **Culture** : +2 si le capitaine et le mercenaire ont la même culture, sinon 0.
+- **Alignement** : `4 − 2 × distance`, où la distance compte les pas (sans diagonale) entre les deux alignements sur la grille 3×3 ci-dessus. 0 à 4 pas donnent +4, +2, 0, −2, −4.
+
+L'affinité brute va de −7 à +9. Elle est normalisée sur deux branches, puis arrondie : négatif × 100 / 7, positif × 100 / 9. Par exemple, un brut de +5 donne +56 et un brut de −3 donne −43.
+
+Score total = affinité initiale + affinité acquise, borné à −100 / +100. L'**affinité acquise** (champ `affinityAcquired`, 0 par défaut) est réservée à la phase 2. La part initiale n'est pas figée : elle suivra un futur changement d'alignement du capitaine.
+
+| Mercenaire ↓ / Capitaine → | Humain | Nain | Elfe | Halfling | Gnome | Reptilien | Orc | Gobelin | Ogre | Homme-bête |
+|---|---|---|---|---|---|---|---|---|---|---|
+| **Humain** | +3 | +2 | +2 | +3 | +1 | +1 | −1 | −1 | −2 | −2 |
+| **Nain** | +2 | +3 | +1 | +3 | +1 | +1 | −3 | −2 | −2 | −2 |
+| **Elfe** | +2 | +1 | +3 | +3 | +1 | +1 | −1 | −1 | −2 | −2 |
+| **Halfling** | +3 | +3 | +3 | +3 | +2 | +2 | +1 | +1 | +1 | +1 |
+| **Gnome** | +2 | +2 | +2 | +3 | +3 | +2 | −1 | +1 | −2 | −2 |
+| **Reptilien** | +2 | +2 | +2 | +3 | +1 | +3 | −1 | −1 | −1 | −1 |
+| **Orc** | +1 | −1 | −1 | +1 | −3 | +1 | +3 | +1 | +3 | +2 |
+| **Gobelin** | +1 | −1 | −2 | +1 | +1 | +1 | +3 | +3 | +3 | +2 |
+| **Ogre** | +1 | +1 | +1 | +1 | +1 | +1 | +2 | +1 | +3 | +2 |
+| **Homme-bête** | −2 | −2 | −3 | −1 | −2 | +1 | +1 | −1 | +3 | +3 |
+
+Données : `data/reference/people-affinity.json` (matrice) ; constantes `affinity.*` dans `formula-constants.json` ; code `game-core/affinity.js`.
+
+État V1 :
+
+- le score s'affiche sur la fiche des membres de la compagnie, avec ses composantes ;
+- à la Taverne, l'alignement d'un candidat est caché (14 §6). L'affichage de l'affinité en recrutement attend donc la décision d'Idan ;
+- aucun effet sur les négociations de recrutement, d'équipement ou autres tant que les coefficients ne sont pas définis avec Idan.

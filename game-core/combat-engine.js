@@ -69,8 +69,18 @@
     // Combat à deux armes CAC V1 : pendant l'attaque de la main secondaire (unit.attackHand === "off"), les
     // deux mains sont permutées : l'arme secondaire devient l'arme qui frappe et toutes les règles
     // (portée, maîtrise, prise, dégâts, recharge…) s'appliquent à elle.
-    function activeWeaponItem(unit){ return itemBySlot(unit,"weapon_set_"+unit.activeSet+(unit.attackHand==="off"?"_off":"_main")); }
-    function activeOffhandItem(unit){ return itemBySlot(unit,"weapon_set_"+unit.activeSet+(unit.attackHand==="off"?"_main":"_off")); }
+    function activeWeaponItem(unit){ return unit.attackHand==="off"?offhandSlotItem(unit):itemBySlot(unit,"weapon_set_"+unit.activeSet+"_main"); }
+    function activeOffhandItem(unit){ return unit.attackHand==="off"?itemBySlot(unit,"weapon_set_"+unit.activeSet+"_main"):offhandSlotItem(unit); }
+    // Prise d'arme et mode deux mains V1 : une arme « 2 mains » exige une main secondaire vide (ni bouclier
+    // ni seconde arme). Un objet rangé en main secondaire à côté d'elle, ou une arme « 2 mains » rangée en main
+    // secondaire, n'est donc pas tenu : il ne bloque pas, ne frappe pas et ne ralentit pas.
+    function offhandSlotItem(unit){
+      const off=itemBySlot(unit,"weapon_set_"+unit.activeSet+"_off");
+      if(!off) return null;
+      const main=itemBySlot(unit,"weapon_set_"+unit.activeSet+"_main");
+      if(weaponTemplate(main)?.prise==="2 mains"||weaponTemplate(off)?.prise==="2 mains") return null;
+      return off;
+    }
     function armorItem(unit){ return itemBySlot(unit,"armor"); }
     function weaponTemplate(item){ return item?weaponByName.get(item.name)||null:null; }
 
@@ -109,8 +119,8 @@
     // Combat à deux armes CAC V1 : une arme (pas un bouclier) dans chaque main du set actif.
     function isDualWielding(unit){
       const main=weaponTemplate(itemBySlot(unit,"weapon_set_"+unit.activeSet+"_main"));
-      const off=weaponTemplate(itemBySlot(unit,"weapon_set_"+unit.activeSet+"_off"));
-      return Boolean(main&&off&&!isShield(off));
+      const off=weaponTemplate(offhandSlotItem(unit));
+      return Boolean(main&&off&&!isShield(main)&&!isShield(off));
     }
     // Dextérité effective = Dextérité, ou Dextérité / (2 − maîtrise Combat à deux armes / 100) à deux armes.
     function effectiveDexterity(unit){

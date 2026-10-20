@@ -13,7 +13,7 @@ const avatars=[
   {id:"elfe-f",people:"Elfe",full:"f_full.webp",portrait:"f_portrait.webp",sex:"femme",tags:{}},
   {id:"elfe-u",people:"Elfe",full:"u_full.webp",portrait:"u_portrait.webp",sex:"",tags:{}}
 ];
-const ui=new Function("game","esc","mercenaryAvatarUrl","renderAvatar",js+\nreturn {choiceLabel,renderProgress,renderAvatarChoice,renderChoiceStep,renderCompanyNameStep,avatarSexGroup,wizard,WIZARD_STEPS};")(
+const ui=new Function("game","esc","mercenaryAvatarUrl","renderAvatar",js+"\\nreturn {choiceLabel,renderProgress,renderAvatarChoice,renderChoiceStep,renderCompanyNameStep,avatarSexGroup,wizard,WIZARD_STEPS};")(
     {referenceData:{avatars:{rows:avatars}}},
     esc,
     (mercenary)=>"assets/"+mercenary.avatar.portrait,

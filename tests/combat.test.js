@@ -545,4 +545,21 @@ assert.deepEqual(combat.counterchargeTriggers(cc.reactor,cc.charger,cc.charge),[
 const followUp=combat.resolveAttack(unit(withDual(a,"Épée courte","Dague"),0,0),unit(b,1,0),{mode:"melee",distance:1,hand:"off",chargeDistance:3,chargeFollowUp:true});
 assert.deepEqual([followUp.chargeFall,followUp.hit,followUp.weapon,followUp.chargePower>0],[undefined,true,"Dague",true]);
 
+// Prise d'arme et mode deux mains V1 (revue Chatty du 2026-10-20) : une arme « 2 mains » exige une main
+// secondaire vide ; ce qui y est rangé n'est pas tenu : pas de paire, pas de blocage, pas de malus de vitesse.
+const greatAxeDagger=unit(withDual(a,"Hache double","Dague"),0,0);
+assert.equal(combat.isDualWielding(greatAxeDagger),false,"Hache double + Dague : pas de combat à deux armes");
+assert.deepEqual(combat.usableHands(greatAxeDagger,1).map(h=>h.hand),["main"]);
+assert.equal(combat.activeOffhandItem(greatAxeDagger),null);
+const greatAxeShield=unit(withShield(withMainWeapon(a,"Hache double"),"Écu"),0,0);
+assert.equal(combat.blockChance(greatAxeShield),null,"Hache double + Écu : le bouclier ne bloque pas");
+const axeOnly=unit({...withMainWeapon(a,"Hache double"),stats:{...a.stats,Vitesse:100}},0,0);
+const axeShieldFast=unit(withShield(withMainWeapon(a,"Hache double"),"Écu","standard",{Vitesse:100}),0,0);
+near(combat.effectiveSpeed(axeShieldFast),combat.effectiveSpeed(axeOnly),"l'écu rangé ne ralentit pas");
+assert.equal(combat.isDualWielding(unit(withDual(a,"Épée courte","Arc"),0,0)),false,"Arc (2 mains) en main secondaire : pas tenu");
+assert.equal(combat.isDualWielding(unit(withDual(a,"Écu","Dague"),0,0)),false,"un bouclier en main principale n'est pas une arme");
+// Le cas normal ne change pas : arme « Au choix » ou « 1 main » avec bouclier ou seconde arme.
+assert.ok(combat.blockChance(unit(withShield(withMainWeapon(a,"Épée longue"),"Écu"),1,0))>0);
+assert.equal(combat.isDualWielding(unit(withDual(a,"Épée longue","Dague"),0,0)),true);
+
 console.log(JSON.stringify({ok:true},null,2));

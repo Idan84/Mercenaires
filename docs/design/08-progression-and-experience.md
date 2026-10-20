@@ -141,7 +141,7 @@ Chaque caractéristique pourra recevoir d'autres sources plus tard : leurs XP s'
 - Même courbe que les caractéristiques ; **plafond à 100** (`valeur_maximale` de la compétence). Des bonus temporaires ou magiques pourront le dépasser plus tard. Les valeurs générées au-delà de 100 ne sont pas touchées : elles ne montent plus, mais peuvent redescendre.
 - Les valeurs générées ont des décimales : une compétence est un **niveau continu**, 30,6 = niveau 30, à 60 % de la tranche vers 31. Le bilan arrondit au point entier.
 - **Arme et catégorie** : chaque attaque portée avec une arme : `+10 XP` à l'arme précise et à sa catégorie ; `+5` de plus si elle touche réellement (non bloquée), `+5` si elle blesse. La chute de charge et le projectile perdu (même tir) ne comptent pas.
-- **Styles** : Combat à deux mains `+10 XP` par attaque de mêlée à deux mains ; Combat à deux armes `+10 XP` par séquence à deux armes ; Boucliers et le bouclier précis `+10 XP` chacun par blocage.
+- **Styles** : Combat à deux mains `+10 XP` par attaque de mêlée à deux mains ; Combat à deux armes `+10 XP` par séquence où **les deux armes ont réellement frappé** (une seconde arme déchargée ou hors de portée ne donne rien, revue Chatty du 2026-10-20) ; Boucliers et le bouclier précis `+10 XP` chacun par blocage.
 - **Intimidation** : chaque adversaire qui rate son test de Courage face au mercenaire : `+50 XP`.
 - **On progresse au détriment des autres** : chaque gain fait perdre, au total, **la moitié de ce gain**, à parts égales, aux compétences que le mercenaire possède (valeur > 0) :
   - un gain d'arme : les **armes des autres catégories** (l'épée longue fait reculer haches, marteaux… mais pas les autres lames longues) ;

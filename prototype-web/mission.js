@@ -479,7 +479,7 @@ function performMissionAttack(attacker,target,mode,distance,charge=null){
       if(result.fumble||result.woundFumble) break;
     }
     if(!results.length){ if(n===1) return first; break; }
-    if(dual) MercenairesProgression.recordDualSequence(attacker);
+    if(dual) MercenairesProgression.recordDualSequence(attacker,results);
     if(charge||m.over||!handsAt(e.axialDistance(attacker,target)).length) break;
     const chain=dual?e.rollPairChain(attacker,target,results,n+1):e.rollChain(attacker,target,results[0],n+1,mode);
     if(!chain) break;

@@ -90,6 +90,7 @@ Les règles validées de maniement et cadence sont centralisées ici :
 
 Choix d'implémentation V1 du combat à deux armes, validés par Idan (2026-10-08 et 2026-10-20) :
 - on combat à deux armes quand chaque main du set actif tient une **arme** (un bouclier n'en est pas une) ;
+- [Prise d'arme et mode deux mains V1](/design/#doc=formulas/prise-d-arme-et-mode-deux-mains-v1.md) : une arme `2 mains` exige une main secondaire vide. Ce qui serait rangé à côté d'elle (bouclier ou seconde arme), comme une arme `2 mains` rangée en main secondaire, n'est pas tenu : pas de paire, pas de blocage, pas de malus de vitesse (correction après la revue Chatty du 2026-10-20) ;
 - la **Dextérité effective** `Dextérité / (2 − Combat à deux armes / 100)` remplace la Dextérité au Toucher (CAC et distance) et dans les enchaînements ;
 - à chaque séquence, chaque arme **utilisable** frappe une fois, principale puis secondaire, chacune avec son mode : épée + pistolet = la lame au contact, le pistolet au contact comme à distance ; une arme déchargée ou hors portée est sautée ;
 - attaque d'opportunité : un coup avec chaque arme de mêlée, puis un seul test de Courage ; la zone de menace couvre la portée de chaque arme de mêlée tenue ;

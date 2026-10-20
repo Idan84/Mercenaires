@@ -76,7 +76,14 @@ assert.deepEqual(rules.gains(null),{stats:{},resistances:{},skills:{}});
 assert.deepEqual(rules.gains({chains:2,woundsTaken:3,heavyArmorHexes:10,courageHeld:2,recoveries:1,worstChoices:1}).stats,
   {"Dextérité":2*50,Esquive:3*10,Endurance:10*2,"Volonté":2*20+1*20,Intelligence:1*30});
 const ev={team:"player"},foeEv={team:"enemy"};
-P.recordChain(ev);P.recordDualSequence(ev);P.recordCourageHeld(ev);P.recordRecovery(ev);
+P.recordChain(ev);P.recordDualSequence(ev,[{ok:true},{ok:true,hand:"off"}]);P.recordCourageHeld(ev);P.recordRecovery(ev);
+// Revue Chatty (2026-10-20) : l'XP de Combat à deux armes exige que les DEUX armes aient frappé dans la séquence.
+const lone={};
+P.recordDualSequence(lone,[{ok:true}]);
+P.recordDualSequence(lone,[{ok:true},{ok:false,hand:"off",reason:"Pistolet est déchargé"}]);
+P.recordDualSequence(lone,[{ok:true,hand:"off"}]);
+P.recordDualSequence(lone,[]);
+assert.equal(lone.progress?.dualSequences||0,0,"une seule arme a frappé (l'autre déchargée ou hors de portée) : rien");
 P.recordIntimidation(ev,foeEv);P.recordIntimidation(ev,{team:"player"});
 assert.deepEqual([ev.progress.chains,ev.progress.dualSequences,ev.progress.courageHeld,ev.progress.recoveries,ev.progress.intimidations],[1,1,1,1,1],"un allié qui fuit ne compte pas pour l'Intimidation");
 // recordAttack : pratique des armes, touchers réels, blessures, deux mains, blocages, pire choix ; Esquive sur blessure reçue.

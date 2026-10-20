@@ -52,6 +52,7 @@ Des chiffres mesurés, rien n'est décidé. Le détail est dans le [doc 92](/des
 - **Courage** : 41 % des tests échouent (E1).
 - **Fuite** : les fuyards sortent de la carte dans 71 % des combats (E2).
 - **Mort sous 0 PV** : 76 % des mercenaires tombés meurent (E7).
+- **Étoiles** : l'échelle (réputation 100 → 2 000, renommée × 4) est une première proposition ; 5 étoiles d'or doit rester rare ([doc 09](/design/#doc=09-reputation-renown-and-salaries.md)).
 
 ## 4 — Ménage technique
 

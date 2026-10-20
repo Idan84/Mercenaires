@@ -136,7 +136,7 @@ $$
 - Le joueur voit un **récapitulatif** dans le bilan de fin de mission : XP gagnée ou perdue par caractéristique, et valeurs qui ont changé.
 - Toutes les valeurs de cette section sont des **constantes d'équilibrage** (`data/reference/formula-constants.json`, codes `progression.*`).
 - Branché dans le prototype : Résistances, Courage, Vitesse, Charisme, Perception, Force, Chance. En attente : **Constitution** (pas encore de soins en combat).
-- Chance (choix d'implémentation à confirmer en relecture) : chaque critique positif, au Toucher comme à Blesser, compte comme un CC ; chaque échec critique confirmé, au Toucher (Au Sol) comme à Blesser (contrecoup), compte comme un EC. Le contrecoup d'un échec critique de blessure compte comme une blessure physique subie pour les Résistances.
+- Chance (choix d'implémentation validés par Idan le 2026-10-20) : chaque critique positif, au Toucher comme à Blesser, compte comme un CC ; chaque échec critique confirmé, au Toucher (Au Sol) comme à Blesser (contrecoup), compte comme un EC. Le contrecoup d'un échec critique de blessure compte comme une blessure physique subie pour les Résistances.
 
 ## 3 — XP choisie : formation au camp
 

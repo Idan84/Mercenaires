@@ -72,7 +72,7 @@ Les registres complets de formules, termes et constantes sont rangés dans **05 
 - **Blesser naturel 96–100** : échec du test de Chance → [Échec critique de blessure CAC V1](/design/#doc=formulas/echec-critique-de-blessure-cac-v1.md) inflige à l'attaquant les dégâts minimum de son propre coup.
 - La V1 distance réutilise ce même principe de critiques ; les exceptions propres à des armes ou sorts seront ajoutées séparément si nécessaire.
 
-Choix d'implémentation V1, à confirmer en relecture :
+Choix d'implémentation V1, validés par Idan le 2026-10-20 :
 - un seul jet de critique par étape : au Toucher (armure ignorée), puis à Blesser (dégâts maximum), avec la même probabilité Chance / 10 ;
 - en charge, la blessure critique et le contrecoup gardent le multiplicateur de charge : seuls le jet de dégâts et la variation de Résistance physique sont imposés ;
 - au tir, les quatre critiques s'appliquent avec la formule de dégâts à distance (sans la Force) : un échec critique au Toucher met le tireur Au Sol, un échec critique à Blesser lui inflige le contrecoup ;
@@ -88,7 +88,7 @@ Les règles validées de maniement et cadence sont centralisées ici :
 - [Prise d'arme et mode deux mains V1](/design/#doc=formulas/prise-d-arme-et-mode-deux-mains-v1.md) : prises `1 main`, `2 mains`, `Au choix`.
 - [Combat à deux armes CAC V1](/design/#doc=formulas/combat-a-deux-armes-cac-v1.md) : combat à deux armes.
 
-Choix d'implémentation V1 du combat à deux armes, à confirmer en relecture :
+Choix d'implémentation V1 du combat à deux armes, validés par Idan (2026-10-08 et 2026-10-20) :
 - on combat à deux armes quand chaque main du set actif tient une **arme** (un bouclier n'en est pas une) ;
 - la **Dextérité effective** `Dextérité / (2 − Combat à deux armes / 100)` remplace la Dextérité au Toucher (CAC et distance) et dans les enchaînements ;
 - à chaque séquence, chaque arme **utilisable** frappe une fois, principale puis secondaire, chacune avec son mode : épée + pistolet = la lame au contact, le pistolet au contact comme à distance ; une arme déchargée ou hors portée est sautée ;
@@ -99,7 +99,7 @@ Choix d'implémentation V1 du combat à deux armes, à confirmer en relecture :
 
 Choix d'implémentation V1 des enchaînements (attaques CAC et tirs `Répétable`) :
 - validés par Idan le 2026-10-08 : la **charge** reste une seule attaque (« arrivée suivie d'une attaque », Charge CAC V1), sans enchaînement ; au tir, les attaques d'opportunité des ennemis au contact sont résolues **une fois**, avant la séquence de tirs, pas avant chaque tir ;
-- à confirmer en relecture : la chaîne vise toujours la même cible et s'arrête si elle n'est plus à portée (par exemple après avoir fui) ;
+- validés par Idan le 2026-10-20 : la chaîne vise toujours la même cible et s'arrête si elle n'est plus à portée (par exemple après avoir fui) ;
 - Courage : un seul test en fin de séquence ([Courage post-attaque CAC V1](/design/#doc=formulas/courage-post-attaque-cac-v1.md), [Courage post-tir V1](/design/#doc=formulas/courage-post-tir-v1.md)) ; une cible en sous-nombre teste après chaque blessure reçue et ne reteste pas en fin de séquence.
 
 ## Bouclier physique V1
@@ -108,7 +108,7 @@ La même règle de blocage s'applique au **CAC et aux projectiles physiques**, s
 
 Un bouclier intervient **après un Toucher réussi et avant le critique positif de Toucher** via [Blocage bouclier physique V1](/design/#doc=formulas/blocage-bouclier-physique-v1.md).
 
-Choix d'implémentation V1, à confirmer en relecture :
+Choix d'implémentation V1, validés par Idan le 2026-10-20 :
 - le bouclier compte s'il est tenu en main secondaire du **set actif** ;
 - son `Bonus blocage base` est lu dans `skills.json` (ligne du bouclier : Rondache 5, Écu 10, Pavois 20), `weapons.json` n'ayant pas cette colonne ;
 - son malus de vitesse s'ajoute à celui de l'arme ([Vitesse combat effective CAC V1](/design/#doc=formulas/vitesse-combat-effective-cac-v1.md)), et une arme `Au choix` tenue avec lui passe en mode une main ;
@@ -153,7 +153,7 @@ Le tir est construit comme un combat physique à distance, sans créer un second
 
 Choix d'implémentation V1 de la recharge :
 - validés par Idan le 2026-10-08 : toutes les armes à feu sont **chargées au début de la mission** ; l'état chargé ne dure que la mission ;
-- à confirmer en relecture : les armes à recharge sont celles marquées `recharge_action_rapide` dans `skills.json` (Pistolet, Arquebuse / Mousquet, Tromblon, Canon à main) ;
+- validés par Idan le 2026-10-20 : les armes à recharge sont celles marquées `recharge_action_rapide` dans `skills.json` (Pistolet, Arquebuse / Mousquet, Tromblon, Canon à main) ;
 - l'arme se décharge dès que le coup part, qu'il touche ou non ;
 - l'IA recharge avec son Action rapide quand son arme est déchargée (après un éventuel changement d'arme, qui consomme aussi l'Action rapide).
 
@@ -186,7 +186,7 @@ Si la contre-charge **blesse** le chargeur, son attaque est annulée et il teste
 
 Mi-course sur une course impaire `2N+1` : la réaction part à la case **N+1** (5 cases → 3e case) — décision Idan du 2026-10-08.
 
-Choix d'implémentation V1, à confirmer en relecture :
+Choix d'implémentation V1, validés par Idan le 2026-10-20 :
 - la contre-charge est **automatique** dès que l'arme active de la cible le permet ; une arme à feu doit être chargée et se décharge en tirant ; un personnage En Fuite ne contre-charge pas ;
 - c'est une seule attaque normale (Toucher, blocage, critiques, Blesser), sans enchaînement ; si elle ne blesse pas, personne ne teste son Courage et la charge continue ;
 - le test du chargeur blessé est le test normal face à la cible, sans malus de sous-nombre ;

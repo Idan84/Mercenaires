@@ -222,6 +222,21 @@
       const compared=engine.compare(mode,base,next);
       const labels=configs[mode].metrics;
       const changed=compared.rows.filter(x=>x.changed);
+      const metricNodes={
+        economy:{renown:"renommee",renownCaptain:"renommee",renownOthers:"renommee",renownLegacy:"heritage",bonus:"prime",resistance:"negociation",departure:"taverne",pAccept:"negociation",pQuit:"negociation",offerSalary:"negociation",offerBonus:"negociation"},
+        combat:{hit:"toucher",wound:"blesser",crit:"critique",speed:"vitesse",dodge:"esquive",initiative:"vitesse",movement:"vitesse",chain:"toucher",armorMatchup:"blesser"},
+        progression:{reputationGain:"repcarriere",intimidationXP:"xp"},
+        affinity:{affinityInitial:"affinite",affinityAcquired:"affacquise",affinityTotal:"affinite",people:"affinite",culture:"affinite",alignment:"affinite",distance:"affinite"}
+      };
+      const impacts={};
+      for(const row of changed){
+        const target=(metricNodes[mode]||{})[row.key]||(row.key.startsWith("stat.")?"caracs":row.key.startsWith("xp.")?"xp":row.key.startsWith("resist.")?"resistances":null);
+        if(!target||row.delta===null)continue;
+        const magnitude=Math.abs(row.delta)/Math.max(1,Math.abs(row.before||0));
+        impacts[target]=Math.max(impacts[target]||0,magnitude);
+      }
+      const source=configs[mode].fields.find(x=>x[0]===field)?.[3]||null;
+      window.DesignGraphExplorer?.showObserved?.({source,impacts});
       const heading=el("h3",changed.length+" résultat(s) modifié(s)");heading.style.marginBottom="10px";results.appendChild(heading);
       const rows=allCheckbox.checked?compared.rows:changed;
       if(!rows.length)results.appendChild(el("p","Aucune variation chiffrée pour ce scénario. La formule peut être plafonnée ou la modification trop faible.","muted"));

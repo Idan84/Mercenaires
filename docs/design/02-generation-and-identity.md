@@ -223,5 +223,5 @@ Données : `data/reference/people-affinity.json` (matrice) ; constantes `affinit
 État V1 :
 
 - le score s'affiche sur la fiche des membres de la compagnie, avec ses composantes ;
-- à la Taverne, l'alignement d'un candidat est caché (14 §6). L'affichage de l'affinité en recrutement attend donc la décision d'Idan ;
+- à la Taverne, le score seul s'affiche sur la carte du candidat et dans l'entretien (décision Idan du 2026-10-20). L'alignement du candidat reste caché (14 §6), même si le score en laisse deviner une partie ;
 - aucun effet sur les négociations de recrutement, d'équipement ou autres tant que les coefficients ne sont pas définis avec Idan.

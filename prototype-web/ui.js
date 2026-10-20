@@ -186,19 +186,29 @@ function affinityRules() {
   return game.affinityRules || (game.affinityRules = MercenairesAffinity.createAffinityRules({ reference: game.referenceData }));
 }
 
-// Affinité envers le capitaine (02, phase 1) : score numérique et ses composantes, pour les membres de la
-// compagnie seulement. L'alignement d'un candidat reste caché à la Taverne (14 §6).
-function renderCaptainAffinity(c) {
+// Affinité envers le capitaine de la compagnie (02, phase 1) : membre ou candidat de la Taverne ; null pour
+// le capitaine lui-même, hors campagne ou si elle n'est pas calculable.
+function captainAffinity(c) {
   const company = game.campaign?.company;
-  if (!company || c.id === company.captainId || !company.roster.includes(c)) return "";
+  if (!company || c.id === company.captainId) return null;
   const captain = company.roster.find(m => m.id === company.captainId);
   const a = captain && affinityRules().memberAffinity(captain, c);
-  if (!a?.ok) return "";
-  const signed = n => (n > 0 ? "+" : "") + n;
+  return a?.ok ? a : null;
+}
+
+function signedScore(n) {
+  return (n > 0 ? "+" : "") + n;
+}
+
+// Fiche d'un membre de la compagnie : le score et ses composantes.
+function renderCaptainAffinity(c) {
+  if (!game.campaign?.company.roster.includes(c)) return "";
+  const a = captainAffinity(c);
+  if (!a) return "";
   const k = a.components;
-  const parts = [`peuple ${signed(k.people)}`, `culture ${signed(k.culture)}`, `alignement ${signed(k.alignment)}`];
-  if (a.acquired) parts.push(`acquise ${signed(Math.round(a.acquired))}`);
-  return `<div><small>Affinité avec le capitaine</small><strong>${signed(a.total)}</strong><span class="player-identity-note">${parts.join(" · ")}</span></div>`;
+  const parts = [`peuple ${signedScore(k.people)}`, `culture ${signedScore(k.culture)}`, `alignement ${signedScore(k.alignment)}`];
+  if (a.acquired) parts.push(`acquise ${signedScore(Math.round(a.acquired))}`);
+  return `<div><small>Affinité avec le capitaine</small><strong>${signedScore(a.total)}</strong><span class="player-identity-note">${parts.join(" · ")}</span></div>`;
 }
 
 // Réputation personnelle = part calculée (initiale) + delta de carrière (09 §1) : détail dès qu'il y a un gain.

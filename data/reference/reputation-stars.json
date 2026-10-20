@@ -1,0 +1,135 @@
+{
+  "schema_version": 1,
+  "name": "reputation-stars",
+  "description": "Affichage de la réputation personnelle et de la renommée de compagnie en 15 niveaux : 1 à 5 étoiles de bronze, puis d'argent, puis d'or (décision Idan du 2026-10-20). Un niveau est atteint dès que la valeur atteint son seuil minimal. Échelle géométrique (×1,25 environ par niveau) ; renommée = 4 × réputation. 5 étoiles d'or : maximum difficilement atteignable.",
+  "columns": [
+    {
+      "source": "Niveau",
+      "key": "niveau"
+    },
+    {
+      "source": "Métal",
+      "key": "metal"
+    },
+    {
+      "source": "Étoiles",
+      "key": "etoiles"
+    },
+    {
+      "source": "Réputation minimale",
+      "key": "reputation_min"
+    },
+    {
+      "source": "Renommée minimale",
+      "key": "renommee_min"
+    }
+  ],
+  "row_count": 15,
+  "rows": [
+    {
+      "niveau": 1,
+      "metal": "Bronze",
+      "etoiles": 1,
+      "reputation_min": 0,
+      "renommee_min": 0
+    },
+    {
+      "niveau": 2,
+      "metal": "Bronze",
+      "etoiles": 2,
+      "reputation_min": 100,
+      "renommee_min": 400
+    },
+    {
+      "niveau": 3,
+      "metal": "Bronze",
+      "etoiles": 3,
+      "reputation_min": 125,
+      "renommee_min": 500
+    },
+    {
+      "niveau": 4,
+      "metal": "Bronze",
+      "etoiles": 4,
+      "reputation_min": 160,
+      "renommee_min": 640
+    },
+    {
+      "niveau": 5,
+      "metal": "Bronze",
+      "etoiles": 5,
+      "reputation_min": 200,
+      "renommee_min": 800
+    },
+    {
+      "niveau": 6,
+      "metal": "Argent",
+      "etoiles": 1,
+      "reputation_min": 250,
+      "renommee_min": 1000
+    },
+    {
+      "niveau": 7,
+      "metal": "Argent",
+      "etoiles": 2,
+      "reputation_min": 320,
+      "renommee_min": 1280
+    },
+    {
+      "niveau": 8,
+      "metal": "Argent",
+      "etoiles": 3,
+      "reputation_min": 400,
+      "renommee_min": 1600
+    },
+    {
+      "niveau": 9,
+      "metal": "Argent",
+      "etoiles": 4,
+      "reputation_min": 500,
+      "renommee_min": 2000
+    },
+    {
+      "niveau": 10,
+      "metal": "Argent",
+      "etoiles": 5,
+      "reputation_min": 640,
+      "renommee_min": 2560
+    },
+    {
+      "niveau": 11,
+      "metal": "Or",
+      "etoiles": 1,
+      "reputation_min": 800,
+      "renommee_min": 3200
+    },
+    {
+      "niveau": 12,
+      "metal": "Or",
+      "etoiles": 2,
+      "reputation_min": 1000,
+      "renommee_min": 4000
+    },
+    {
+      "niveau": 13,
+      "metal": "Or",
+      "etoiles": 3,
+      "reputation_min": 1250,
+      "renommee_min": 5000
+    },
+    {
+      "niveau": 14,
+      "metal": "Or",
+      "etoiles": 4,
+      "reputation_min": 1600,
+      "renommee_min": 6400
+    },
+    {
+      "niveau": 15,
+      "metal": "Or",
+      "etoiles": 5,
+      "reputation_min": 2000,
+      "renommee_min": 8000
+    }
+  ]
+}

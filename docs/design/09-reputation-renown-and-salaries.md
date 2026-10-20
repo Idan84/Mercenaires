@@ -100,6 +100,24 @@ Mise en œuvre V1 (choix d'implémentation, relecture Chatty) :
 - Constantes : `reputation.career.*` dans `data/reference/formula-constants.json`.
 - Pas encore branché : le recalcul de `ReputationCalculee` après progression (étape suivante) ; le contrat et le salaire ne changent pas avec la réputation ; les soins ne rapportent pas de réputation (absents du barème).
 
+### Affichage en étoiles
+
+Décision Idan du 2026-10-20 : dans le jeu, la réputation personnelle et la renommée de compagnie ne s'affichent plus en chiffres mais en **15 niveaux** : 1 à 5 étoiles de **bronze**, puis d'**argent**, puis d'**or**. 5 étoiles d'or est un maximum difficilement atteignable. La valeur chiffrée reste dans le moteur (salaires, renommée, prétendants) et apparaît au survol des étoiles, pour les tests du prototype.
+
+Échelle V1 (`data/reference/reputation-stars.json`) : géométrique, environ ×1,25 par niveau ; la renommée utilise les mêmes seuils × 4.
+
+| Niveau | Étoiles | Réputation dès | Renommée dès |
+|---|---|---|---|
+| 1 à 5 | 1 à 5 bronze | 0 · 100 · 125 · 160 · 200 | 0 · 400 · 500 · 640 · 800 |
+| 6 à 10 | 1 à 5 argent | 250 · 320 · 400 · 500 · 640 | 1 000 · 1 280 · 1 600 · 2 000 · 2 560 |
+| 11 à 15 | 1 à 5 or | 800 · 1 000 · 1 250 · 1 600 · 2 000 | 3 200 · 4 000 · 5 000 · 6 400 · 8 000 |
+
+Repères mesurés :
+
+- recrues générées (réputation 87 à 260, médiane 137) : surtout 2 à 4 étoiles de bronze ; 5 étoiles de bronze ou 1 d'argent pour les profils exceptionnels ;
+- un vétéran revenu d'environ 25 missions (≈ 550) : 4 étoiles d'argent ; l'or commence à 800 ; 5 étoiles d'or (2 000) demandent une très longue carrière ;
+- une compagnie démarre entre 410 et 590 de renommée (2 ou 3 étoiles de bronze) ; environ 1 000 après 25 missions (1 étoile d'argent) ; 5 étoiles d'or (8 000) suppose une compagnie entière de légendes et un long héritage.
+
 ## 2 — Renommée de la compagnie
 
 La réputation générale de la compagnie correspond à sa **renommée / célébrité**, pas à sa moralité.

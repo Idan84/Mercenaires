@@ -22,6 +22,7 @@ const REFERENCE_FILES = {
   binaryAptitudeGrants: "binary-aptitude-grants.json",
   alignmentGeneration: "alignment-generation.json",
   peopleAffinity: "people-affinity.json",
+  reputationStars: "reputation-stars.json",
   biographies: "biographies.json",
   captainCreationCopy: "captain-creation-copy.json"
 };

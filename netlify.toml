@@ -1,9 +1,0 @@
-[build]
-  command = "rm -rf .netlify-dist && mkdir -p .netlify-dist && cp -R prototype-web/. .netlify-dist/ && mkdir -p .netlify-dist/data .netlify-dist/docs .netlify-dist/core && cp -R data/reference/. .netlify-dist/data/ && cp -R docs/design/. .netlify-dist/docs/ && cp -R game-core/. .netlify-dist/core/"
-  publish = ".netlify-dist"
-
-[[headers]]
-  for = "/*"
-  [headers.values]
-    X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"

@@ -72,7 +72,7 @@ Les registres complets de formules, termes et constantes sont rangés dans **05 
 - **Blesser naturel 96–100** : échec du test de Chance → [Échec critique de blessure CAC V1](/design/#doc=formulas/echec-critique-de-blessure-cac-v1.md) inflige à l'attaquant les dégâts minimum de son propre coup.
 - La V1 distance réutilise ce même principe de critiques ; les exceptions propres à des armes ou sorts seront ajoutées séparément si nécessaire.
 
-Choix d'implémentation V1, à confirmer en relecture :
+Choix d'implémentation V1, validés par Idan le 2026-10-20 :
 - un seul jet de critique par étape : au Toucher (armure ignorée), puis à Blesser (dégâts maximum), avec la même probabilité Chance / 10 ;
 - en charge, la blessure critique et le contrecoup gardent le multiplicateur de charge : seuls le jet de dégâts et la variation de Résistance physique sont imposés ;
 - au tir, les quatre critiques s'appliquent avec la formule de dégâts à distance (sans la Force) : un échec critique au Toucher met le tireur Au Sol, un échec critique à Blesser lui inflige le contrecoup ;
@@ -88,10 +88,18 @@ Les règles validées de maniement et cadence sont centralisées ici :
 - [Prise d'arme et mode deux mains V1](/design/#doc=formulas/prise-d-arme-et-mode-deux-mains-v1.md) : prises `1 main`, `2 mains`, `Au choix`.
 - [Combat à deux armes CAC V1](/design/#doc=formulas/combat-a-deux-armes-cac-v1.md) : combat à deux armes.
 
+Choix d'implémentation V1 du combat à deux armes, validés par Idan (2026-10-08 et 2026-10-20) :
+- on combat à deux armes quand chaque main du set actif tient une **arme** (un bouclier n'en est pas une) ;
+- la **Dextérité effective** `Dextérité / (2 − Combat à deux armes / 100)` remplace la Dextérité au Toucher (CAC et distance) et dans les enchaînements ;
+- à chaque séquence, chaque arme **utilisable** frappe une fois, principale puis secondaire, chacune avec son mode : épée + pistolet = la lame au contact, le pistolet au contact comme à distance ; une arme déchargée ou hors portée est sautée ;
+- attaque d'opportunité : un coup avec chaque arme de mêlée, puis un seul test de Courage ; la zone de menace couvre la portée de chaque arme de mêlée tenue ;
+- décision Idan du 2026-10-08 : la **charge** et la **contre-charge** se font avec **les deux armes**. À l'arrivée de la charge, chaque arme utilisable frappe une fois, sans séquence suivante (la charge reste une seule attaque) ; chaque arme de mêlée reçoit le bonus de charge selon son propre `Bonus charge base` ; la chute de charge n'est tirée qu'une fois ; un échec critique coupe la seconde arme. En contre-charge, chaque arme qui le permet riposte une fois, à son propre moment (pistolet à mi-course, arme d'hast à l'entrée dans sa portée) ; la première riposte qui blesse brise la charge ;
+- deux pistolets : la paire de base seulement, sans séquence suivante (la séquence est une règle CAC) ;
+- aucun mercenaire n'a encore de seconde arme à la création : elle viendra avec le système de changement d'équipement (négociation avec le mercenaire, Idan, 2026-10-08).
+
 Choix d'implémentation V1 des enchaînements (attaques CAC et tirs `Répétable`) :
 - validés par Idan le 2026-10-08 : la **charge** reste une seule attaque (« arrivée suivie d'une attaque », Charge CAC V1), sans enchaînement ; au tir, les attaques d'opportunité des ennemis au contact sont résolues **une fois**, avant la séquence de tirs, pas avant chaque tir ;
-- à confirmer en relecture : la chaîne vise toujours la même cible et s'arrête si elle n'est plus à portée (par exemple après avoir fui) ;
-- Dextérité effective = Dextérité tant que le combat à deux armes n'est pas branché ;
+- validés par Idan le 2026-10-20 : la chaîne vise toujours la même cible et s'arrête si elle n'est plus à portée (par exemple après avoir fui) ;
 - Courage : un seul test en fin de séquence ([Courage post-attaque CAC V1](/design/#doc=formulas/courage-post-attaque-cac-v1.md), [Courage post-tir V1](/design/#doc=formulas/courage-post-tir-v1.md)) ; une cible en sous-nombre teste après chaque blessure reçue et ne reteste pas en fin de séquence.
 
 ## Bouclier physique V1
@@ -100,7 +108,7 @@ La même règle de blocage s'applique au **CAC et aux projectiles physiques**, s
 
 Un bouclier intervient **après un Toucher réussi et avant le critique positif de Toucher** via [Blocage bouclier physique V1](/design/#doc=formulas/blocage-bouclier-physique-v1.md).
 
-Choix d'implémentation V1, à confirmer en relecture :
+Choix d'implémentation V1, validés par Idan le 2026-10-20 :
 - le bouclier compte s'il est tenu en main secondaire du **set actif** ;
 - son `Bonus blocage base` est lu dans `skills.json` (ligne du bouclier : Rondache 5, Écu 10, Pavois 20), `weapons.json` n'ayant pas cette colonne ;
 - son malus de vitesse s'ajoute à celui de l'arme ([Vitesse combat effective CAC V1](/design/#doc=formulas/vitesse-combat-effective-cac-v1.md)), et une arme `Au choix` tenue avec lui passe en mode une main ;
@@ -145,7 +153,7 @@ Le tir est construit comme un combat physique à distance, sans créer un second
 
 Choix d'implémentation V1 de la recharge :
 - validés par Idan le 2026-10-08 : toutes les armes à feu sont **chargées au début de la mission** ; l'état chargé ne dure que la mission ;
-- à confirmer en relecture : les armes à recharge sont celles marquées `recharge_action_rapide` dans `skills.json` (Pistolet, Arquebuse / Mousquet, Tromblon, Canon à main) ;
+- validés par Idan le 2026-10-20 : les armes à recharge sont celles marquées `recharge_action_rapide` dans `skills.json` (Pistolet, Arquebuse / Mousquet, Tromblon, Canon à main) ;
 - l'arme se décharge dès que le coup part, qu'il touche ou non ;
 - l'IA recharge avec son Action rapide quand son arme est déchargée (après un éventuel changement d'arme, qui consomme aussi l'Action rapide).
 
@@ -178,7 +186,7 @@ Si la contre-charge **blesse** le chargeur, son attaque est annulée et il teste
 
 Mi-course sur une course impaire `2N+1` : la réaction part à la case **N+1** (5 cases → 3e case) — décision Idan du 2026-10-08.
 
-Choix d'implémentation V1, à confirmer en relecture :
+Choix d'implémentation V1, validés par Idan le 2026-10-20 :
 - la contre-charge est **automatique** dès que l'arme active de la cible le permet ; une arme à feu doit être chargée et se décharge en tirant ; un personnage En Fuite ne contre-charge pas ;
 - c'est une seule attaque normale (Toucher, blocage, critiques, Blesser), sans enchaînement ; si elle ne blesse pas, personne ne teste son Courage et la charge continue ;
 - le test du chargeur blessé est le test normal face à la cible, sans malus de sous-nombre ;
@@ -218,7 +226,7 @@ Le moteur tactique est isolé dans `game-core/combat-engine.js`. La carte web n'
 
 ### Simplifications volontaires du premier test
 
-Le noyau utilise déjà les formules validées de portée, vitesse/esquive effectives, MouvementBase, Toucher, Blesser, résistances d'armure, qualité d'item, dégâts PV, charge, attaques d'opportunité, Frappe dans le dos, encerclement, Courage et Fuite. Les critiques, échecs critiques, le blocage au bouclier, les enchaînements d'attaques et de tirs, la recharge des armes à feu, la contre-charge et l'approximation des projectiles sont branchés. En revanche, ce premier écran ne branche pas encore les autres systèmes secondaires : combat à deux armes et couverture/obstacles.
+Le noyau utilise déjà les formules validées de portée, vitesse/esquive effectives, MouvementBase, Toucher, Blesser, résistances d'armure, qualité d'item, dégâts PV, charge, attaques d'opportunité, Frappe dans le dos, encerclement, Courage et Fuite. Les critiques, échecs critiques, le blocage au bouclier, les enchaînements d'attaques et de tirs, la recharge des armes à feu, la contre-charge, l'approximation des projectiles et le combat à deux armes sont branchés. En revanche, ce premier écran ne branche pas encore la couverture et les obstacles.
 
 Choix d'implémentation V1, confirmés en relecture par Chatty (PR #7) : aucune limite au nombre d'attaques d'opportunité par adversaire et par tour ; un personnage Au Sol réagit normalement et compte pour l'encerclement ; plusieurs réactions simultanées sont résolues dans l'ordre d'initiative de l'équipe qui réagit ; une charge ne peut pas traverser une case occupée ; sortir de la carte coûte un hexagone de mouvement depuis une case du bord ; la Mission Test n'ayant aucun abri total, « Cachons-nous » file vers la sortie de carte sans jamais entrer dans une case adjacente à un ennemi (sans trajet sûr vers une sortie, il s'éloigne au mieux par les cases sûres, sinon il reste sur place) ; « Feu à volonté » tire à la cadence de l'arme (Enchaînement de tirs distance V1) et ne recharge pas une arme déchargée.
 

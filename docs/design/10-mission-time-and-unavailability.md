@@ -191,6 +191,6 @@ En complément des données déjà prévues dans l’architecture :
   - la prime de mission (§8) est payée à chaque survivant sous contrat ; l’or peut alors passer sous 0 ;
   - la mort du capitaine met fin à la partie : **la sauvegarde est effacée**.
 - Outil de test, pas une règle : un bouton « +1 000 (test) » ajoute de l’or à la compagnie.
-- Choix d’implémentation à confirmer, en attendant les règles du §10 : la chaîne s’applique après une victoire comme après une défaite ; un mercenaire sorti de la carte en fuite la passe comme tout survivant, avec ses PV restants ; les ennemis ne la passent pas.
+- Choix d’implémentation validés par Idan le 2026-10-20, en attendant les règles du §10 : la chaîne s’applique après une victoire comme après une défaite ; un mercenaire sorti de la carte en fuite la passe comme tout survivant, avec ses PV restants ; les ennemis ne la passent pas.
 - On ne quitte la Mission Test qu’une fois le combat résolu : le bouton de retour reste désactivé pendant le combat (review Chatty, PR #20). Une vraie retraite ou un abandon auront plus tard leur propre résolution.
 - Encore ouvert : recharger la page pendant un combat revient à l’état d’avant le combat, car un combat en cours n’est pas sauvegardé ; le capitaine n’a pas de contrat, donc pas de prime ; un trésor négatif n’a encore aucune conséquence. L’escouade initiale est sous contrat et les salaires sont versés chaque jour (`09-reputation-renown-and-salaries.md` §6).

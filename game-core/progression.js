@@ -38,7 +38,8 @@
   // Après chaque attaque résolue par le moteur de combat (crochet onAttack de createCombatEngine).
   function recordAttack(attacker,defender,options,result){
     if(!result?.ok) return;
-    if(Number(options?.chargeDistance)>0) recordChargeAttempt(attacker);
+    // Une charge à deux armes reste une seule charge tentée : la seconde arme (chargeFollowUp) ne compte pas.
+    if(Number(options?.chargeDistance)>0&&!options.chargeFollowUp) recordChargeAttempt(attacker);
     if(result.wound){
       // Moteur V1 : une attaque blesse avec une seule composante, physique (result.matchup.type).
       recordWound(defender,result.matchup?.type);

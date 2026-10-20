@@ -1095,9 +1095,13 @@
       };
 
       const base = generateBaseCharacteristics(trace);
+      const generatedIdentity = createOptions.name ? null : nameGenerator(people, createOptions.id);
+      const fullName = createOptions.name || (typeof generatedIdentity === "string" ? generatedIdentity : generatedIdentity?.name) || people;
       const character = {
         id: createOptions.id ?? null,
-        name: createOptions.name || nameGenerator(people, createOptions.id),
+        name: fullName,
+        firstName: createOptions.firstName || (generatedIdentity && typeof generatedIdentity === "object" ? generatedIdentity.firstName : null) || null,
+        familyName: createOptions.familyName || (generatedIdentity && typeof generatedIdentity === "object" ? generatedIdentity.familyName : null) || null,
         role: createOptions.role || "Mercenaire",
         people,
         culture,

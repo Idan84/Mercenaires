@@ -50,6 +50,7 @@
       coneAngle:constant("combat.ranged.stray.cone_angle",30),
       startRatio:constant("combat.ranged.stray.corridor_start_ratio",0.5)
     };
+    const DUAL={dexterityBase:constant("combat.dual_wield.dexterity_denominator_base",2)};
     const BLOCK={
       min:constant("combat.shield.block.min_probability",5),
       max:constant("combat.shield.block.max_probability",80)
@@ -65,8 +66,11 @@
       return id?(unit.character.items||[]).find(x=>x.id===id)||null:null;
     }
 
-    function activeWeaponItem(unit){ return itemBySlot(unit,"weapon_set_"+unit.activeSet+"_main"); }
-    function activeOffhandItem(unit){ return itemBySlot(unit,"weapon_set_"+unit.activeSet+"_off"); }
+    // Combat à deux armes CAC V1 : pendant l'attaque de la main secondaire (unit.attackHand === "off"), les
+    // deux mains sont permutées : l'arme secondaire devient l'arme qui frappe et toutes les règles
+    // (portée, maîtrise, prise, dégâts, recharge…) s'appliquent à elle.
+    function activeWeaponItem(unit){ return itemBySlot(unit,"weapon_set_"+unit.activeSet+(unit.attackHand==="off"?"_off":"_main")); }
+    function activeOffhandItem(unit){ return itemBySlot(unit,"weapon_set_"+unit.activeSet+(unit.attackHand==="off"?"_main":"_off")); }
     function armorItem(unit){ return itemBySlot(unit,"armor"); }
     function weaponTemplate(item){ return item?weaponByName.get(item.name)||null:null; }
 
@@ -100,6 +104,34 @@
 
     function isShield(weapon){
       return /Boucliers/.test(String(weapon?.domaine||""));
+    }
+
+    // Combat à deux armes CAC V1 : une arme (pas un bouclier) dans chaque main du set actif.
+    function isDualWielding(unit){
+      const main=weaponTemplate(itemBySlot(unit,"weapon_set_"+unit.activeSet+"_main"));
+      const off=weaponTemplate(itemBySlot(unit,"weapon_set_"+unit.activeSet+"_off"));
+      return Boolean(main&&off&&!isShield(off));
+    }
+    // Dextérité effective = Dextérité, ou Dextérité / (2 − maîtrise Combat à deux armes / 100) à deux armes.
+    function effectiveDexterity(unit){
+      const dexterity=Number(unit.character.stats?.["Dextérité"])||0;
+      if(!isDualWielding(unit)) return dexterity;
+      const skill=clamp(Number(unit.character.skills?.martial?.["Combat à deux armes"])||0,0,100);
+      return dexterity/(DUAL.dexterityBase-skill/100);
+    }
+    // Les mains qui peuvent frapper cette cible à cette distance, chacune avec son mode (arme principale d'abord).
+    function usableHands(unit,distance){
+      const hands=isDualWielding(unit)?["main","off"]:["main"];
+      return hands.map(hand=>withHand(unit,hand,()=>{
+        const weapon=weaponTemplate(activeWeaponItem(unit));
+        const mode=isRangedWeapon(weapon)?"ranged":"melee";
+        return canAttackAtDistance(unit,distance,mode)?{hand,mode,weapon:weapon.nom}:null;
+      })).filter(Boolean);
+    }
+    function withHand(unit,hand,fn){
+      const before=unit.attackHand;
+      unit.attackHand=hand==="off"?"off":undefined;
+      try{ return fn(); }finally{ if(before===undefined) delete unit.attackHand; else unit.attackHand=before; }
     }
 
     function isRangedWeapon(weapon){
@@ -259,7 +291,7 @@
       const a=attacker.character.stats||{},d=defender.character.stats||{};
       const defensivePerception=context.opportunity||context.backstab?0:(Number(d.Perception)||0);
       const dodgeFactor=context.opportunity?0.5:1;
-      let delta=(Number(a["Dextérité"])||0)
+      let delta=effectiveDexterity(attacker)
         +0.2*(m.categoryScore+m.weaponScore+(Number(a.Perception)||0)+effectiveSpeed(attacker))
         -dodgeFactor*effectiveDodge(defender)
         -0.2*(defensivePerception+effectiveSpeed(defender));
@@ -371,9 +403,8 @@
       return skillByName.get(weapon?.nom)?.cadence_tir==="Répétable";
     }
     function chainChance(attacker,n,mode){
-      const dexterity=Number(attacker.character.stats?.["Dextérité"])||0;
       const divisor=mode==="ranged"?CHAIN.rangedDivisor*n:n;
-      return Math.min(CHAIN.max,(dexterity+effectiveSpeed(attacker))/divisor);
+      return Math.min(CHAIN.max,(effectiveDexterity(attacker)+effectiveSpeed(attacker))/divisor);
     }
     // L'attaque précédente doit avoir réellement touché (pas bloquée), sans échec critique, contre une cible
     // encore vivante. Un critique positif n'arrête pas la chaîne.
@@ -394,25 +425,46 @@
     // Renvoie {at, mode} (at = cases parcourues par le chargeur avant la réaction), ou null :
     // - arme à distance : à mi-course, arrondie au-dessus pour une course impaire (2N+1 → N+1, Idan 2026-10-08) ;
     // - mêlée / arme d'hast : première case du trajet dans la portée de contact de l'arme.
-    function counterchargeTrigger(reactor,charger,charge){
-      if(!reactor?.alive||reactor.fleeing) return null;
-      const item=activeWeaponItem(reactor),weapon=weaponTemplate(item);
-      if(!weapon?.contre_charge||!isLoaded(reactor,item)) return null;
-      const mode=isRangedWeapon(weapon)?"ranged":"melee";
+    // À deux armes (décision Idan, 2026-10-08), chaque arme qui le permet riposte une fois, à son propre moment :
+    // counterchargeTriggers renvoie ces réactions, dans l'ordre de la course ({at, mode, hand}).
+    function counterchargeTriggers(reactor,charger,charge){
+      if(!reactor?.alive||reactor.fleeing) return [];
       const path=charge?.path||[];
-      const inReach=at=>at>=1&&at<=path.length&&canAttackAtDistance(reactor,axialDistance(reactor,path[at-1]),mode);
-      if(mode==="ranged"){
-        const at=Math.ceil(path.length/2);
-        return inReach(at)?{at,mode}:null;
-      }
-      for(let at=1;at<=path.length;at++) if(inReach(at)) return {at,mode};
-      return null;
+      const hands=isDualWielding(reactor)?["main","off"]:["main"];
+      return hands.map(hand=>withHand(reactor,hand,()=>{
+        const item=activeWeaponItem(reactor),weapon=weaponTemplate(item);
+        if(!weapon?.contre_charge||!isLoaded(reactor,item)) return null;
+        const mode=isRangedWeapon(weapon)?"ranged":"melee";
+        const inReach=at=>at>=1&&at<=path.length&&canAttackAtDistance(reactor,axialDistance(reactor,path[at-1]),mode);
+        if(mode==="ranged"){
+          const at=Math.ceil(path.length/2);
+          return inReach(at)?{at,mode,hand}:null;
+        }
+        for(let at=1;at<=path.length;at++) if(inReach(at)) return {at,mode,hand};
+        return null;
+      })).filter(Boolean).sort((x,y)=>x.at-y.at);
+    }
+    function counterchargeTrigger(reactor,charger,charge){
+      return counterchargeTriggers(reactor,charger,charge)[0]||null;
+    }
+
+    // Combat à deux armes CAC V1 : la séquence n s'ouvre si au moins une attaque de la séquence précédente a
+    // réellement touché, sans échec critique, contre une cible encore vivante ; P_n = min(100, (Dextérité
+    // effective + Vitesse combat effective) / n). Une paire sans arme de mêlée s'arrête à sa paire de base.
+    function rollPairChain(attacker,defender,results,n){
+      if(!results.length||results.some(r=>r.fumble||r.woundFumble)) return null;
+      if(!results.some(r=>r.ok&&r.hit&&!r.blocked)||!results.some(r=>r.mode==="melee")) return null;
+      if(!attacker.alive||!defender.alive) return null;
+      const p=chainChance(attacker,n,"melee"),roll=d100();
+      return {n,p,roll,continues:roll<=p};
     }
 
     // Chaque attaque résolue est signalée au crochet options.onAttack(attaquant, défenseur, options,
     // résultat), par exemple pour le journal de progression (game-core/progression.js).
+    // attackOptions.hand = "off" : attaque avec l'arme de la main secondaire (combat à deux armes).
     function resolveAttack(attacker,defender,attackOptions={}){
-      const result=resolveAttackRolls(attacker,defender,attackOptions);
+      const result=withHand(attacker,attackOptions.hand,()=>resolveAttackRolls(attacker,defender,attackOptions));
+      if(attackOptions.hand==="off") result.hand="off";
       if(typeof options.onAttack==="function"){
         options.onAttack(attacker,defender,attackOptions,result);
         if(result.stray?.unit) options.onAttack(attacker,result.stray.unit,attackOptions,result.stray.result);
@@ -439,9 +491,11 @@
       // Le coup part : une arme à recharge est désormais déchargée, qu'il touche ou non.
       if(needsLoading(weapon)) attacker.unloaded=[...(attacker.unloaded||[]),item.id];
 
+      // options.chargeFollowUp : seconde arme d'une charge à deux armes (décision Idan, 2026-10-08) ; la chute
+      // de charge n'est tirée qu'une fois, pour la première arme.
       let chargePower=0;
       if(Number(options.chargeDistance)>0){
-        const fallRoll=d100();
+        const fallRoll=options.chargeFollowUp?100:d100();
         if(fallRoll<=2){
           attacker.prone=true;
           return {ok:true,mode,weapon:weapon.nom,charge:true,chargeFall:true,fallRoll,hit:false,wound:false,damage:0};
@@ -555,10 +609,10 @@
 
     // Attaque d'opportunité CAC V1 : un combattant menace les hexagones atteignables par son arme de mêlée active.
     // Un personnage En Fuite ne menace personne : il ne fait pas d'attaque d'opportunité (décision Idan, Issue #8).
+    // À deux armes, chaque arme de mêlée tenue menace sa propre portée.
     function threatens(unit,hex){
       if(!unit?.alive||unit.fleeing) return false;
-      if(!isMeleeWeapon(weaponTemplate(activeWeaponItem(unit)))) return false;
-      return canAttackAtDistance(unit,axialDistance(unit,hex),"melee");
+      return usableHands(unit,axialDistance(unit,hex)).some(h=>h.mode==="melee");
     }
 
     // Sortir de la zone menacée déclenche la réaction ; s'y déplacer ne déclenche rien.
@@ -680,6 +734,7 @@
     return {
       axialDistance,
       activeWeaponItem,
+      activeOffhandItem,
       weaponTemplate,
       armorItem,
       armorTemplate,
@@ -697,6 +752,9 @@
       selectDamageMatchup,
       woundProbability,
       criticalChance,
+      isDualWielding,
+      effectiveDexterity,
+      usableHands,
       blockChance,
       isRepeatable,
       needsLoading,
@@ -705,11 +763,13 @@
       reload,
       chainChance,
       rollChain,
+      rollPairChain,
       resolveAttack,
       canSwitchWeaponSet,
       switchWeaponSet,
       chargeData,
       counterchargeTrigger,
+      counterchargeTriggers,
       inFiringCorridor,
       strayCandidates,
       threatens,

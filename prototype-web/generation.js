@@ -4,7 +4,7 @@ async function initializeGenerator() {
   const reference = await loadReferenceData();
   game.referenceData = reference;
   game.generator = MercenairesCore.createGenerator(reference, {
-    nameGenerator: (people, id) => provisionalName(people, id)
+    nameGenerator: (people, id, culture) => provisionalName(people, culture)
   });
   game.audit = game.generator.auditReferenceData();
   return game.generator;

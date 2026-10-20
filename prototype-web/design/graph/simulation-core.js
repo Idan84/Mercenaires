@@ -24,15 +24,31 @@
     const relations = affinity?.createAffinityRules ? affinity.createAffinityRules({reference}) : null;
 
     function economy(v) {
-      const state = {company:{
-        captainId:"captain",
-        roster:[
-          {id:"captain",name:"Capitaine",reputation:atLeast(v.captain)},
-          {id:"first",name:"Mercenaire A",reputation:atLeast(v.first)},
-          {id:"second",name:"Mercenaire B",reputation:atLeast(v.second)}
-        ],
-        renownHeritage:[{heritage:atLeast(v.heritage)}]
-      }};
+      const imported=v.companySnapshot;
+      const state=imported?.roster?.length
+        ? {company:{
+            captainId:imported.captainId,
+            roster:imported.roster.map(m=>({id:m.id,name:m.name,reputation:num(m.reputation)})),
+            renownHeritage:[{heritage:atLeast(v.heritage)}]
+          }}
+        : {company:{
+            captainId:"captain",
+            roster:[
+              {id:"captain",name:"Capitaine",reputation:atLeast(v.captain)},
+              {id:"first",name:"Mercenaire A",reputation:atLeast(v.first)},
+              {id:"second",name:"Mercenaire B",reputation:atLeast(v.second)}
+            ],
+            renownHeritage:[{heritage:atLeast(v.heritage)}]
+          }};
+      if(imported?.roster?.length){
+        const roster=state.company.roster;
+        const assignments=[[imported.captainId,v.captain],[imported.firstId,v.first],[imported.secondId,v.second]];
+        for(const [id,reputation] of assignments){
+          if(id===undefined||id===null)continue;
+          const member=roster.find(m=>String(m.id)===String(id));
+          if(member)member.reputation=atLeast(reputation);
+        }
+      }
       const renown = company.companyRenown(state);
       const mercenary = {
         reputation:atLeast(v.reputation),
@@ -66,7 +82,8 @@
         notes:[
           "Salaire demandé saisi : il n'est pas recalculé automatiquement quand la réputation change.",
           "Probabilités et contre-offres issues du moteur, avec RNG fixe (aucun jet ne décide du résultat).",
-          "La réputation de compagnie n'affecte pas encore les offres de mission ou les candidats."
+          "La réputation de compagnie n'affecte pas encore les offres de mission ou les candidats.",
+          imported?.roster?.length?"Réputation calculée à partir de tous les membres de la sauvegarde importée.":"Réputation calculée avec trois membres fictifs."
         ],
         source:["game-core/campaign.js","game-core/tavern.js"]
       };

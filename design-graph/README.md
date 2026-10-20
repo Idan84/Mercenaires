@@ -20,3 +20,7 @@ Ce graphe est une **cartographie manuelle initiale**. Il n'analyse pas automatiq
 5. Tester la carte contre les formules et la mettre à jour à chaque PR de gameplay.
 
 Ne pas exposer les coefficients des systèmes futurs comme s'ils étaient déjà implémentés.
+
+## Intégration et simulation (deuxième étape)
+
+Le graphe est également accessible depuis `prototype-web/design/graph/` et un lien a été ajouté à `prototype-web/design/index.html` (chemin web `/design/graph/`). Le panneau de simulation utilise **les vraies fonctions** `MercenairesCampaign.createCampaignRules(...).companyRenown(state)` et `MercenairesTavern.createTavernRules().missionBonusDemand(m)`. Modifier une entrée et un delta pour comparer avant/après sans muter de sauvegarde. Les valeurs saisies sont des scénarios fictifs ; le moteur réel calcule les résultats. Les autres fonctions ne sont pas encore simulées. Vérifier en navigateur après déploiement de la branche de travail.

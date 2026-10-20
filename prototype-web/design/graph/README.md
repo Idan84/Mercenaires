@@ -1,6 +1,6 @@
 # Design Graph — prototype de cartographie des dépendances
 
-Ouvrir `design-graph/index.html` dans un navigateur. Aucun build, CDN ou serveur requis.
+Page servie dans le Design Lab : `/design/graph/` (source : `prototype-web/design/graph/index.html`, page autonome sans build ni CDN). C'est le seul exemplaire : la copie `design-graph/` à la racine a été retirée pour éviter qu'elles divergent.
 
 ## Périmètre
 - 60+ nœuds : identité, caractéristiques, compétences, combat, équipement, progression, réputation, affinité, économie, recrutement, missions et camp.
@@ -10,7 +10,7 @@ Ouvrir `design-graph/index.html` dans un navigateur. Aucun build, CDN ou serveur
 - Chaque lien contient une référence de module ou de document et parfois une explication.
 
 ## Limites importantes
-Ce graphe est une **cartographie manuelle initiale**. Il n'analyse pas automatiquement les fonctions JS, ne mesure pas les variations chiffrées et n'injecte aucune modification dans les sauvegardes. Certains liens du moteur de combat restent à vérifier avec JC3. Le module d'affinité est sur la PR #114, pas encore dans `test`. Les effets de réputation de compagnie sur les marchands, missions et recrues ne sont pas codés. Les influences qualitatives ne doivent pas être prises pour des coefficients validés.
+Ce graphe est une **cartographie manuelle initiale**. Il n'analyse pas automatiquement les fonctions JS, ne mesure pas les variations chiffrées et n'injecte aucune modification dans les sauvegardes. Les liens du combat ont été revus par JC3 le 2026-10-20 d'après `game-core/combat-engine.js` (Toucher, défense, Blesser, critiques, enchaînements, PV, morts, moral). L'affinité (#118) et la renommée de compagnie (#115) sont codées ; leurs effets sur les négociations, les marchands, les missions, les recrues et les places de Taverne ne le sont pas. Les influences qualitatives ne doivent pas être prises pour des coefficients validés.
 
 ## Prochaines étapes
 1. Revue JC3 sur les liens combat/XP/blessures ; revue Chatty sur UI et navigation.

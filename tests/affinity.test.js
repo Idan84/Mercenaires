@@ -16,7 +16,7 @@ assert.equal(affinity(human,orc).components.distance,4);
 assert.equal(affinity(human,human).components.culture,2);
 assert.equal(affinity(human,{...human,culture:"Culture B"}).components.culture,0);
 assert.equal(affinity(person("Nain","Loyal bon"),person("Nain","Loyal bon")).total,100);
-assert.equal(affinity(person("Nain","Loyal bon"),person("Orc","Chaotique mauvais")).total,-100);
+assert.equal(affinity(person("Gnome","Loyal bon","A"),person("Orc","Chaotique mauvais","B")).total,-100);
 assert.equal(affinity(human,human,200).total,100);
 assert.equal(affinity(human,human,-200).total,-100);
 assert.equal(affinity(human,person("Inconnu","Neutre")).ok,false);

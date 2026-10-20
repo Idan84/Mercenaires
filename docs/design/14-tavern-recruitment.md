@@ -118,7 +118,8 @@ Le joueur voit directement :
   - Magie → école de magie de prédilection ;
 - Réputation personnelle ;
 - Salaire journalier demandé ;
-- Prime de mission demandée.
+- Prime de mission demandée ;
+- Affinité avec le capitaine : le score seul, de −100 à +100 (doc 02 ; décision Idan du 2026-10-20). L'alignement du candidat reste caché, même si le score en laisse deviner une partie ; le détail peuple / culture / alignement ne s'affiche que sur la fiche après l'embauche.
 
 Le générateur possède déjà un profil technique `equipment.profile.type` avec les valeurs `melee / ranged / magic` ainsi que les meilleures prédilections. La Taverne doit réutiliser ce calcul plutôt que créer un second classement.
 

@@ -60,6 +60,16 @@ function renderCompanyMeta(){
   $("company-renown-meta").title="Capitaine "+fmt(renown.parts.captain)+" + mercenaires "+fmt(renown.parts.members)+" + héritage des morts "+fmt(renown.parts.heritage);
 }
 
+// Affinité avec le capitaine (02 ; Idan, 2026-10-20) : visible à la Taverne, score seul. Les composantes
+// (dont l'alignement, caché avant l'embauche) ne sont détaillées que sur la fiche d'un membre.
+function renderTavernAffinity(mercenary,variant){
+  const a=captainAffinity(mercenary);
+  if(!a) return "";
+  return variant==="card"
+    ?`<div><dt>Affinité</dt><dd>${signedScore(a.total)}</dd></div>`
+    :`<div class="metric"><small>Affinité</small><strong>${signedScore(a.total)}</strong></div>`;
+}
+
 function profileText(shown){
   const label=PROFILE_LABELS[shown.profile]||"—";
   return shown.predilection?label+" · "+shown.predilection:label;
@@ -79,6 +89,7 @@ function renderTavernCard(candidate){
       <div><dt>Réputation</dt><dd>${fmt(shown.reputation)}</dd></div>
       <div><dt>Salaire demandé</dt><dd>${fmt(shown.salary)} PO/j</dd></div>
       <div><dt>Prime de mission</dt><dd>${fmt(shown.missionBonus)} PO</dd></div>
+      ${renderTavernAffinity(candidate.mercenary,"card")}
     </dl>
     <p class="muted">Arrivé le jour ${candidate.arrivedDay} · questions ${candidate.interview.questionsLeft}/${tavernRules().QUESTIONS_PER_CANDIDATE}${agreed?" · <strong>accord conclu</strong>":""}</p>
     <button class="secondary" data-tavern-open="${candidate.mercenary.id}">Entretien</button>
@@ -182,6 +193,7 @@ function renderInterview(){
       <div class="metric"><small>Culture</small><strong>${esc(shown.culture)}</strong></div>
       <div class="metric"><small>Profil</small><strong>${esc(profileText(shown))}</strong></div>
       <div class="metric"><small>Réputation</small><strong>${fmt(shown.reputation)}</strong></div>
+      ${renderTavernAffinity(candidate.mercenary,"metric")}
     </div>
       </div>
     </section>

@@ -65,6 +65,7 @@ Avant de toucher au cœur d'une zone qui appartient à quelqu'un d'autre, on le 
 2. Lire les Issues ouvertes à son nom et les PR en attente de relecture.
 3. Travailler.
 4. Mettre à jour sa ligne dans « Chantiers en cours ».
+5. Après une décision d'Idan, ou quand un sujet est reporté : mettre à jour `docs/design/93-pending-and-parked.md`.
 
 Aucun agent ne travaille spontanément : il faut qu'une session soit lancée. GitHub conserve et transmet le travail d'une session à l'autre.
 
@@ -140,11 +141,7 @@ Aucun agent ne travaille spontanément : il faut qu'une session soit lancée. Gi
 
 ## En attente de décision
 
-- **Camp V1 : arbre de prérequis et prix** (Chatty propose, Idan tranche ; Issue #23) : règles A à E décidées le 2026-10-04 ; l'arbre des bâtiments reste à proposer, et les prix viendront avec le calibrage de l'économie (or de départ, salaires, revenus des missions).
-- **Combat interrompu** (Idan + Chatty) : recharger la page en plein combat revient à l'état d'avant le combat. À trancher avec les vraies missions : retraite, défaite ou combat sauvegardé.
-- **Trésor négatif** (Idan + Chatty) : salaires et primes peuvent faire passer l'or sous 0, sans conséquence pour l'instant (Idan, 2026-10-04). Dette, impayés et départs restent à concevoir.
-- **Bios évolutives** (Idan, doc 15) : plus tard, ajouter une ligne après un exploit, une blessure, une trahison ?
-- **Sélection du type de dégâts, cas « moyen »** (Idan + Chatty) : la formule dit `AVERAGE(matchups)`, le moteur choisit le type le plus proche de cette moyenne. Faut-il une moyenne numérique, ou le type le plus proche ?
+Tout est rassemblé, pour Idan, dans [`docs/design/93-pending-and-parked.md`](design/93-pending-and-parked.md) (Design Lab, bouton « À décider ») : décisions attendues, sujets reportés, équilibrage à surveiller, ménage technique.
 
 ## Dépendances
 

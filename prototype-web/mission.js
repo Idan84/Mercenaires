@@ -228,7 +228,7 @@ function resolveMissionAftermath(){
   const report=m.companyReport=campaignRules().applyMissionAftermath(game.campaign,m.aftermath);
   if(report.bonusPaid) missionLog("Primes de mission versées : "+report.bonusPaid+" PO ("+report.bonuses.map(b=>b.mercenary.name+" "+b.bonus).join(", ")+").","gear");
   for(const {mercenary,changes} of report.progression||[]){
-    for(const c of changes.filter(c=>c.after!==c.before)) missionLog(mercenary.name+" : "+c.name+" "+c.before+" → "+c.after+".",c.after>c.before?"gear":"bad");
+    for(const c of visibleProgressionChanges(changes)) missionLog(mercenary.name+" : "+c.name+" "+c.shownBefore+" → "+c.shownAfter+".",c.shownAfter>c.shownBefore?"gear":"bad");
   }
   if(report.gameOver){
     missionLog("Le capitaine est mort : la partie est terminée.","death");
@@ -280,15 +280,29 @@ function renderMissionAftermath(m){
 // survivant et caractéristiques qui ont changé.
 const PROGRESSION_LABELS={"Résistance physique":"Rés. physique","Résistance au feu":"Rés. feu","Résistance au froid":"Rés. froid","Résistance à la foudre":"Rés. foudre","Résistance au poison":"Rés. poison"};
 function progressionLabel(name){ return PROGRESSION_LABELS[name]||name; }
-function signed(n){ return (n>0?"+":"−")+Math.abs(n); }
+function signed(n){ n=Math.round(n); return (n>0?"+":"−")+Math.abs(n); }
+
+// Les compétences ont un niveau continu (30,6) : le bilan montre les points entiers qui changent à l'arrondi.
+function visibleProgressionChanges(changes){
+  return changes.map(c=>{
+    const shown=v=>c.family==="skills"?Math.round(v):v;
+    return {...c,shownBefore:shown(c.before),shownAfter:shown(c.after)};
+  }).filter(c=>c.shownAfter!==c.shownBefore);
+}
 
 function renderMissionProgression(entries){
   if(!entries.length) return "";
   const rows=entries.map(({mercenary,xp,changes})=>{
-    const gained=[...Object.entries(xp.stats||{}),...Object.entries(xp.resistances||{})]
-      .map(([name,n])=>`<span class="${n<0?"xp-loss":"xp-gain"}">${esc(progressionLabel(name))} ${signed(n)}</span>`).join(" ");
-    const moved=changes.filter(c=>c.after!==c.before)
-      .map(c=>`<strong class="${c.after>c.before?"stat-up":"stat-down"}">${esc(progressionLabel(c.name))} ${c.before} → ${c.after} ${c.after>c.before?"▲":"▼"}</strong>`).join(" ");
+    const skills=Object.values(xp.skills||{}).flatMap(group=>Object.entries(group));
+    // Compétences : les gains de pratique un à un ; la régression des autres armes et styles en un total.
+    const regression=skills.filter(([,n])=>n<0).reduce((sum,[,n])=>sum+n,0);
+    const gained=[...Object.entries(xp.stats||{}),...Object.entries(xp.resistances||{}),...skills.filter(([,n])=>n>0)]
+      .filter(([,n])=>Math.round(n))
+      .map(([name,n])=>`<span class="${n<0?"xp-loss":"xp-gain"}">${esc(progressionLabel(name))} ${signed(n)}</span>`)
+      .concat(Math.round(regression)?[`<span class="xp-loss" title="Les autres armes et styles reculent quand on en pratique un">Autres armes ${signed(regression)}</span>`]:[])
+      .join(" ");
+    const moved=visibleProgressionChanges(changes)
+      .map(c=>`<strong class="${c.shownAfter>c.shownBefore?"stat-up":"stat-down"}">${esc(progressionLabel(c.name))} ${c.shownBefore} → ${c.shownAfter} ${c.shownAfter>c.shownBefore?"▲":"▼"}</strong>`).join(" ");
     return `<tr><td>${esc(mercenary.name)}</td><td>${gained||'<span class="muted">Aucune</span>'}</td><td>${moved||'<span class="muted">—</span>'}</td></tr>`;
   }).join("");
   return `<div class="mission-progression">
@@ -379,6 +393,7 @@ function moveMissionUnitAlongPath(unit,path){
     }
     unit.q=step.q;unit.r=step.r;moved++;
     if(wasFleeing) MercenairesProgression.recordFleeHex(unit);
+    game.mission.progression.recordStep(unit);
     unit.movementRemaining=Math.max(0,(unit.movementRemaining||0)-1);
   }
   return moved;
@@ -464,6 +479,7 @@ function performMissionAttack(attacker,target,mode,distance,charge=null){
       if(result.fumble||result.woundFumble) break;
     }
     if(!results.length){ if(n===1) return first; break; }
+    if(dual) MercenairesProgression.recordDualSequence(attacker);
     if(charge||m.over||!handsAt(e.axialDistance(attacker,target)).length) break;
     const chain=dual?e.rollPairChain(attacker,target,results,n+1):e.rollChain(attacker,target,results[0],n+1,mode);
     if(!chain) break;
@@ -471,6 +487,7 @@ function performMissionAttack(attacker,target,mode,distance,charge=null){
     const detail=" ("+label+" n°"+chain.n+" : "+missionPercent(chain.p)+", jet "+chain.roll+")";
     if(!chain.continues){ missionLog(attacker.character.name+" ne parvient pas à enchaîner"+detail+".","info"); break; }
     missionLog(attacker.character.name+" enchaîne"+detail+" !","info");
+    MercenairesProgression.recordChain(attacker);
   }
   const courageMode=dual?(melee?"melee":"ranged"):mode;
   if(!testedPerWound) resolveMissionCourage(attacker,target,{ok:true,mode:courageMode,wound:wounded},{defenderSurplus:0});
@@ -503,8 +520,9 @@ function resolveMissionCourage(attacker,defender,result,override={}){
   const c=e.resolveCourage(attacker,defender,result,context);
   if(!c) return;
   const detail=" (Courage "+Math.round(c.pHold)+" %"+(c.rule==="outnumbered"?", en sous-nombre":"")+", jet "+c.roll+")";
-  if(!c.flees){ missionLog(c.subject.character.name+" tient bon"+detail+".","info"); return; }
+  if(!c.flees){ missionLog(c.subject.character.name+" tient bon"+detail+".","info"); MercenairesProgression.recordCourageHeld(c.subject); return; }
   missionLog(c.subject.character.name+" panique et prend la fuite"+detail+" !","bad");
+  MercenairesProgression.recordIntimidation(c.source,c.subject);
   applyMissionFlee(c.subject,c.source);
 }
 
@@ -658,6 +676,7 @@ function resolveMissionFleeingActivation(unit){
   if(recovery.recovered){
     unit.fleeing=false;unit.fleeTurn=0;
     missionLog(unit.character.name+" reprend ses esprits"+detail+".","turn");
+    MercenairesProgression.recordRecovery(unit);
     return false;
   }
   const budget=2*e.movementBase(unit),behavior=e.rollFleeBehavior();
@@ -871,8 +890,9 @@ function resolveMissionCounterchargeCourage(reactor,charger,result,charge,remain
   const c=e.resolveCourage(reactor,charger,result,{defenderSurplus:0});
   if(!c) return;
   const detail=" (Courage "+Math.round(c.pHold)+" %, jet "+c.roll+")";
-  if(!c.flees){ missionLog(charger.character.name+" tient bon"+detail+".","info"); return; }
+  if(!c.flees){ missionLog(charger.character.name+" tient bon"+detail+".","info"); MercenairesProgression.recordCourageHeld(charger); return; }
   missionLog(charger.character.name+" panique et prend la fuite"+detail+" !","bad");
+  MercenairesProgression.recordIntimidation(reactor,charger);
   charger.fleeing=true;charger.fleeTurn=0;
   const occupied=occupiedMissionKeys(charger),path=[];
   let at={q:charger.q,r:charger.r};

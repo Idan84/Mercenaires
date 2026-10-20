@@ -1095,7 +1095,7 @@
       };
 
       const base = generateBaseCharacteristics(trace);
-      const generatedIdentity = createOptions.name ? null : nameGenerator(people, createOptions.id);
+      const generatedIdentity = createOptions.name ? null : nameGenerator(people, createOptions.id, culture);
       const fullName = createOptions.name || (typeof generatedIdentity === "string" ? generatedIdentity : generatedIdentity?.name) || people;
       const character = {
         id: createOptions.id ?? null,

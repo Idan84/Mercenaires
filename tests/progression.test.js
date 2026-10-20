@@ -275,4 +275,53 @@ const again=campaign.applyMissionAftermath(restored.state,endRules.resolveMissio
 assert.equal(again.progression[0].changes.find(c=>c.name==="Charisme").xpBefore,xpSaved);
 assert.equal(m1Restored.xp.stats.Charisme,xpSaved+50);
 
-console.log(JSON.stringify({ok:true,charisme:[charismaBefore,m1.stats.Charisme]},null,2));
+// Réputation de carrière (09 §1, Exploits et carrière ; barème confirmé par Idan le 2026-10-20).
+assert.deepEqual(rules.reputationConstants,{
+  criticalSuccess:1,criticalFailure:-1,enemyWoundShare:0.01,enemyKnockoutShare:0.1,returnWounded:10,returnUnhurt:20
+});
+const renowned={id:"player-1",team:"player",character:{reputation:137}};
+const ally={id:"player-2",team:"player",character:{reputation:120}};
+const grunt={id:"enemy-1",team:"enemy",character:{reputation:80}};
+const dragon={id:"enemy-2",team:"enemy",reputation:1000};
+P.recordAttack(renowned,grunt,{},{ok:true,hit:true,wound:true,damage:4});
+P.recordAttack(renowned,grunt,{},{ok:true,hit:true,wound:true,damage:6,targetDown:true});
+P.recordAttack(renowned,dragon,{},{ok:true,hit:true,wound:true,damage:0});
+P.recordAttack(renowned,ally,{},{ok:true,hit:true,wound:true,damage:5,targetDown:true,accidental:true});
+assert.deepEqual(renowned.progress.enemyWounds,{"enemy-1":80},"un ennemi blessé compte une fois ; sans dégâts ni allié, rien");
+assert.deepEqual(renowned.progress.enemyKnockouts,{"enemy-1":80},"le coup de grâce garde la réputation de l'ennemi");
+P.recordAttack(renowned,dragon,{},{ok:true,hit:true,wound:true,damage:30,targetDown:true,criticalWound:true});
+const heroGain=rules.reputationGains(renowned.progress);
+assert.equal(heroGain.sources.criticalSuccesses,1);
+assert.ok(Math.abs(heroGain.sources.enemyWounds-0.01*(80+1000))<1e-9,"1 % de la réputation de chaque ennemi blessé");
+assert.ok(Math.abs(heroGain.sources.enemyKnockouts-0.1*(80+1000))<1e-9,"10 % de la réputation de chaque ennemi mis hors combat");
+assert.equal(heroGain.sources.missionReturn,20,"retour indemne par défaut");
+assert.ok(Math.abs(heroGain.total-(1+10.8+108+20))<1e-9);
+// Un gobelin rapporte peu, un dragon beaucoup, une armée de troufions s'additionne (Idan, 2026-10-20).
+const army={};
+for(let i=0;i<30;i++) P.recordAttack(army,{id:"g"+i,team:"enemy",reputation:60},{},{ok:true,wound:true,damage:9,targetDown:true});
+assert.ok(rules.reputationGains(army.progress).sources.enemyKnockouts>rules.reputationGains(renowned.progress).sources.enemyKnockouts);
+// Échecs critiques, retour blessé (exclusif du retour indemne) et mission sans combat.
+const clumsy={...P.emptyLog(),criticalFailures:2};
+assert.deepEqual(rules.reputationGains(clumsy,{wounded:true}),{
+  sources:{criticalSuccesses:0,criticalFailures:-2,enemyWounds:0,enemyKnockouts:0,missionReturn:10},total:8
+});
+assert.equal(rules.reputationGains(null).total,20,"mission sans combat : seulement le retour indemne");
+
+// Campagne : le gain s'ajoute au delta de carrière et à la réputation totale ; un bilan rejoué ne recrédite rien.
+const veteran=restored.state.company.roster.find(m=>m.id===m1.id);
+const repBefore=veteran.reputation,deltaBefore=Number(veteran.reputationCareerDelta)||0,charismaXp=veteran.xp.stats.Charisme;
+const heroAftermath={results:[{id:veteran.id,dead:false,wounded:true,woundDays:10,progress:renowned.progress}],captainDead:false};
+const repReport=campaign.applyMissionAftermath(restored.state,heroAftermath);
+const repLine=repReport.progression[0].reputation;
+assert.equal(repLine.sources.missionReturn,10,"issue « Blessé » : +10");
+assert.equal(repLine.before,repBefore);
+assert.ok(Math.abs(veteran.reputation-(repBefore+repLine.total))<1e-9);
+assert.ok(Math.abs(veteran.reputationCareerDelta-(deltaBefore+repLine.total))<1e-9);
+assert.equal(veteran.reputationBreakdown.careerDelta,veteran.reputationCareerDelta);
+assert.equal(campaign.applyMissionAftermath(restored.state,heroAftermath),repReport,"bilan rejoué : même rapport");
+assert.ok(Math.abs(veteran.reputation-(repBefore+repLine.total))<1e-9,"bilan rejoué : pas de double crédit");
+assert.equal(veteran.xp.stats.Charisme,charismaXp+2*50,"bilan rejoué : l'XP n'est pas recréditée non plus");
+const reloaded=restoreCampaign(serializeCampaign(restored.state));
+assert.equal(reloaded.state.company.roster.find(m=>m.id===m1.id).reputationCareerDelta,veteran.reputationCareerDelta,"le delta de carrière est sauvegardé");
+
+console.log(JSON.stringify({ok:true,charisme:[charismaBefore,m1.stats.Charisme],reputation:[repBefore,veteran.reputation]},null,2));

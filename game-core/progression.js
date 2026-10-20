@@ -39,10 +39,15 @@
       activations:0,loadRatios:[],chargeAttempts:0,knockouts:0,fleeHexes:0,backstabWounds:0,wounds:{},hpHealed:0,
       criticalSuccesses:0,criticalFailures:0,
       chains:0,woundsTaken:0,heavyArmorHexes:0,courageHeld:0,recoveries:0,worstChoices:0,
-      weaponUses:{},twoHandedAttacks:0,dualSequences:0,blocks:{},intimidations:0
+      weaponUses:{},twoHandedAttacks:0,dualSequences:0,blocks:{},intimidations:0,
+      enemyWounds:{},enemyKnockouts:{}
     };
   }
   function logOf(unit){ return unit.progress||(unit.progress=emptyLog()); }
+  // Réputation personnelle d'un combattant (unité de mission ou personnage). Les gains de carrière ne sont
+  // appliqués qu'en fin de mission : la valeur lue en cours de mission est celle du début de la mission.
+  function reputationOf(unit){ return Number(unit?.reputation??unit?.character?.reputation)||0; }
+  function unitKey(unit){ return String(unit?.id??unit?.character?.id??unit?.name); }
 
   // Après chaque attaque résolue par le moteur de combat (crochet onAttack de createCombatEngine).
   function recordAttack(attacker,defender,options,result){
@@ -73,8 +78,16 @@
     }
     // Intelligence : apprendre de ses erreurs quand il choisit le pire type de dégâts (Idan, 2026-10-20).
     if(result.matchup?.choice==="pire"&&!result.accidental) logOf(attacker).worstChoices++;
+    const adversary=!(attacker.team&&attacker.team===defender.team);
+    // Réputation (09 §1, Exploits et carrière) : participation à la blessure d'un adversaire, une seule fois
+    // par ennemi, dès que le coup lui inflige des dégâts ; on garde sa réputation pour le bilan.
+    if(result.wound&&Number(result.damage)>0&&adversary) logOf(attacker).enemyWounds[unitKey(defender)]=reputationOf(defender);
     // Charisme : adversaire mis hors combat par ce coup (Idan, 2026-10-06) ; pas un allié touché par accident.
-    if(result.targetDown&&!(attacker.team&&attacker.team===defender.team)) logOf(attacker).knockouts++;
+    // Réputation : le même coup est le coup de grâce.
+    if(result.targetDown&&adversary){
+      logOf(attacker).knockouts++;
+      logOf(attacker).enemyKnockouts[unitKey(defender)]=reputationOf(defender);
+    }
     // Chance : chaque critique (Toucher ou Blesser) et chaque échec critique confirmé.
     if(result.criticalHit) recordCritical(attacker,"success");
     if(result.criticalWound) recordCritical(attacker,"success");
@@ -160,6 +173,15 @@
       skillShieldBlock:k("progression.skill.shield_block_xp",10),
       skillIntimidation:k("progression.skill.intimidation_xp",50),
       skillRegressionRatio:k("progression.skill.regression_ratio",0.5)
+    };
+    // Réputation de carrière (09-reputation-renown-and-salaries.md §1, Exploits et carrière ; Idan, 2026-10-20).
+    const R={
+      criticalSuccess:k("reputation.career.critical_success",1),
+      criticalFailure:k("reputation.career.critical_failure",-1),
+      enemyWoundShare:k("reputation.career.enemy_wound_share",0.01),
+      enemyKnockoutShare:k("reputation.career.enemy_knockout_share",0.1),
+      returnWounded:k("reputation.career.return_wounded",10),
+      returnUnhurt:k("reputation.career.return_unhurt",20)
     };
     const minimum=new Map((reference?.characteristics?.rows||[]).map(r=>[r.nom,Number(r.minimum)]));
     const weaponPenalty=new Map((reference?.weapons?.rows||[]).map(w=>[w.nom,Number(w.malus_vitesse_arme_base)||0]));
@@ -344,9 +366,36 @@
       if(wearsHeavyArmor(unit.character)) logOf(unit).heavyArmorHexes++;
     }
 
+    // Journal → gains de réputation d'un survivant. wounded = issue « Blessé » de fin de mission
+    // (10-mission-time §7) ; la fatigue seule n'est pas une blessure : retour indemne. Les deux bonus de
+    // retour sont exclusifs. Les parts de la réputation des ennemis gardent leurs décimales.
+    function reputationGains(log,{wounded=false}={}){
+      const l={...emptyLog(),...(log||{})};
+      const total=values=>Object.values(values||{}).reduce((sum,v)=>sum+(Number(v)||0),0);
+      const sources={
+        criticalSuccesses:l.criticalSuccesses*R.criticalSuccess,
+        criticalFailures:l.criticalFailures*R.criticalFailure,
+        enemyWounds:total(l.enemyWounds)*R.enemyWoundShare,
+        enemyKnockouts:total(l.enemyKnockouts)*R.enemyKnockoutShare,
+        missionReturn:wounded?R.returnWounded:R.returnUnhurt
+      };
+      return {sources,total:total(sources)};
+    }
+
+    // ReputationPerso = ReputationCalculee + ReputationCareerDelta : le gain s'ajoute au delta persistant
+    // et à la réputation totale ; la part calculée n'est pas touchée ici.
+    function applyReputation(mercenary,gain){
+      const before=Number(mercenary.reputation)||0;
+      const delta=Number(gain?.total)||0;
+      mercenary.reputationCareerDelta=(Number(mercenary.reputationCareerDelta)||0)+delta;
+      mercenary.reputation=before+delta;
+      if(mercenary.reputationBreakdown) mercenary.reputationBreakdown.careerDelta=mercenary.reputationCareerDelta;
+      return {before,after:mercenary.reputation};
+    }
+
     return {
-      constants:C,xpForLevel,levelForXp,startingXp,continuousLevel,xpForContinuous,loadOf,wearsHeavyArmor,
-      gains,apply,recordActivation:recordUnitActivation,recordStep
+      constants:C,reputationConstants:R,xpForLevel,levelForXp,startingXp,continuousLevel,xpForContinuous,loadOf,wearsHeavyArmor,
+      gains,apply,reputationGains,applyReputation,recordActivation:recordUnitActivation,recordStep
     };
   }
 

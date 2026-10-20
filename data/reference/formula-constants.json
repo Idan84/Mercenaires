@@ -841,6 +841,54 @@
       "formule": "Progression naturelle V1",
       "valeur": 0.5,
       "version": "V1"
+    },
+    {
+      "nom": "Réputation — coup critique",
+      "code": "reputation.career.critical_success",
+      "description": "Réputation de carrière par coup critique confirmé, au Toucher ou au Blesser (09 §1, Exploits et carrière ; barème confirmé par Idan le 2026-10-20).",
+      "formule": "Réputation de carrière V1",
+      "valeur": 1,
+      "version": "V1"
+    },
+    {
+      "nom": "Réputation — échec critique",
+      "code": "reputation.career.critical_failure",
+      "description": "Réputation de carrière par échec critique confirmé, au Toucher ou au Blesser (09 §1, Exploits et carrière ; barème confirmé par Idan le 2026-10-20).",
+      "formule": "Réputation de carrière V1",
+      "valeur": -1,
+      "version": "V1"
+    },
+    {
+      "nom": "Réputation — participation à la blessure d'un ennemi",
+      "code": "reputation.career.enemy_wound_share",
+      "description": "Part de la réputation d'un ennemi gagnée la première fois que le mercenaire lui inflige des dégâts, une seule fois par ennemi (09 §1, Exploits et carrière ; barème confirmé par Idan le 2026-10-20).",
+      "formule": "Réputation de carrière V1",
+      "valeur": 0.01,
+      "version": "V1"
+    },
+    {
+      "nom": "Réputation — ennemi mis hors combat",
+      "code": "reputation.career.enemy_knockout_share",
+      "description": "Part supplémentaire de la réputation de l'ennemi gagnée par le mercenaire qui le met hors combat (coup de grâce) (09 §1, Exploits et carrière ; barème confirmé par Idan le 2026-10-20).",
+      "formule": "Réputation de carrière V1",
+      "valeur": 0.1,
+      "version": "V1"
+    },
+    {
+      "nom": "Réputation — retour de mission blessé",
+      "code": "reputation.career.return_wounded",
+      "description": "Réputation de carrière d'un mercenaire qui revient vivant avec l'issue « Blessé » de fin de mission (09 §1, Exploits et carrière ; barème confirmé par Idan le 2026-10-20).",
+      "formule": "Réputation de carrière V1",
+      "valeur": 10,
+      "version": "V1"
+    },
+    {
+      "nom": "Réputation — retour de mission indemne",
+      "code": "reputation.career.return_unhurt",
+      "description": "Réputation de carrière d'un mercenaire qui revient vivant sans blessure (la fatigue seule n'est pas une blessure) ; exclusif du bonus « blessé » (09 §1, Exploits et carrière ; barème confirmé par Idan le 2026-10-20).",
+      "formule": "Réputation de carrière V1",
+      "valeur": 20,
+      "version": "V1"
     }
   ]
 }

@@ -1606,6 +1606,7 @@ body[data-screen="camp"] .camp-scene>.panel .muted{color:#c2b29e}
 .player-identity-grid>div,.player-vitals>div,.player-stat{background:#382a22;border:1px solid #71583e;border-radius:8px;padding:11px;min-width:0}
 .player-identity-grid small,.player-vitals small{display:block;color:#bb9a6e;font-size:11px;margin-bottom:6px}
 .player-identity-grid strong,.player-vitals strong{font-size:15px;color:#f4e1c2}
+.player-identity-note{display:block;margin-top:4px;color:#bb9a6e;font-size:11px}
 .player-stat-section{margin-bottom:22px}
 .player-stat-section h3{font:normal 22px Georgia,serif;color:#e8ca96;margin:4px 0 12px}
 .player-stat-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}

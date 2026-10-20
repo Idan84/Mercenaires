@@ -86,6 +86,20 @@ $$
 
 `ReputationCalculee` continue d’être entièrement recalculée à partir du pool après progression ; `ReputationCareerDelta` conserve la mémoire des événements de carrière qui modifient directement la réputation : CC / EC, participation aux blessures d’ennemis, coups de grâce et retours de mission.
 
+**Barème confirmé par Idan le 2026-10-20**, de préférence au barème proposé dans l'issue #110. Pour la mise hors combat, Idan a donné l'intention : « un mec qui massacre à lui tout seul une armée de troufions doit gagner en réputation ; un mec qui terrasse un dragon également ; un mec qui tue un gobelin sans intérêt, il gagne pas grand-chose ». La part de la réputation de l'ennemi, additionnée ennemi par ennemi, donne déjà ce résultat : elle est conservée telle quelle.
+
+Mise en œuvre V1 (choix d'implémentation, relecture Chatty) :
+
+- **CC / EC confirmés** : les mêmes événements que l'XP de Chance (doc 08) — chaque critique au Toucher et chaque critique au Blesser (+1 chacun) ; l'échec critique au Toucher (chute Au Sol) et l'échec critique au Blesser (contrecoup), −1 chacun.
+- **Participation** : le premier coup qui inflige des dégâts (> 0) à un ennemi, une seule fois par ennemi ; un allié touché par accident ne compte pas ; un projectile perdu qui blesse un ennemi compte.
+- **Coup de grâce** : le coup qui met l'ennemi hors combat (ennemi « tué » au sens V1).
+- **Réputation de l'ennemi** : sa réputation pendant la mission ; elle ne bouge pas avant le bilan, puisque les gains sont appliqués en fin de mission. Ennemis générés : leur réputation de génération.
+- **Retour de mission** : l'issue de fin de mission (10-mission-time §7). « Blessé » donne `+10` ; « Fatigué » donne `+20`, même si le mercenaire a perdu des PV ou a fui la carte. Un mort ne gagne rien.
+- Le delta garde ses décimales ; la fiche et le bilan l'affichent arrondi. La fiche montre la réputation totale, puis « initiale » (part calculée) et « carrière » (delta) dès qu'il y a un gain.
+- Un bilan déjà appliqué n'est pas crédité une seconde fois.
+- Constantes : `reputation.career.*` dans `data/reference/formula-constants.json`.
+- Pas encore branché : le recalcul de `ReputationCalculee` après progression (étape suivante) ; le contrat et le salaire ne changent pas avec la réputation ; les soins ne rapportent pas de réputation (absents du barème).
+
 ## 2 — Renommée de la compagnie
 
 La réputation générale de la compagnie correspond à sa **renommée / célébrité**, pas à sa moralité.

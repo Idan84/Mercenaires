@@ -148,6 +148,12 @@ P.recordAttack(ownTeam,ally2,{},{ok:true,hit:true,wound:true,matchup:{type:"perf
 P.recordAttack(ownTeam,foe3,{},{ok:true,hit:true,wound:true,matchup:{type:"perforant"},targetDown:true});
 assert.equal(ownTeam.progress.knockouts,1);
 
+// Charge à deux armes : la seconde arme (chargeFollowUp) ne compte pas une seconde charge tentée.
+const twoBlades={};
+P.recordAttack(twoBlades,{},{chargeDistance:3},{ok:true,hit:false});
+P.recordAttack(twoBlades,{},{chargeDistance:3,chargeFollowUp:true},{ok:true,hit:false});
+assert.equal(twoBlades.progress.chargeAttempts,1);
+
 // Charge brisée avant son attaque (contre-charge, attaque d'opportunité) : toujours une charge tentée.
 const brokenCharge={};P.recordChargeAttempt(brokenCharge);
 assert.equal(rules.gains(brokenCharge.progress).stats.Courage,50);

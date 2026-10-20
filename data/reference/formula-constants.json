@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 87,
+  "row_count": 101,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -728,6 +728,118 @@
       "description": "Coefficient de la formule de Force : XP par activation en mission = coefficient × max(0, Charge / Force − seuil) (Idan, 2026-10-07).",
       "formule": "Progression naturelle V1",
       "valeur": 20,
+      "version": "V1"
+    },
+    {
+      "nom": "XP — Dextérité par enchaînement",
+      "code": "progression.dexterity.chain_xp",
+      "description": "XP de Dextérité à chaque enchaînement réussi : attaque, tir ou séquence à deux armes supplémentaire (décision Idan du 2026-10-20).",
+      "formule": "Progression naturelle V1",
+      "valeur": 50,
+      "version": "V1"
+    },
+    {
+      "nom": "XP — Esquive par blessure encaissée",
+      "code": "progression.dodge.wound_taken_xp",
+      "description": "XP d'Esquive à chaque coup reçu qui blesse (décision Idan du 2026-10-20).",
+      "formule": "Progression naturelle V1",
+      "valeur": 10,
+      "version": "V1"
+    },
+    {
+      "nom": "XP — Endurance par case en armure lourde",
+      "code": "progression.endurance.heavy_armor_hex_xp",
+      "description": "XP d'Endurance par case parcourue en armure lourde (plates, écailles) (décision Idan du 2026-10-20).",
+      "formule": "Progression naturelle V1",
+      "valeur": 2,
+      "version": "V1"
+    },
+    {
+      "nom": "XP — Volonté par test de Courage tenu",
+      "code": "progression.will.courage_held_xp",
+      "description": "XP de Volonté à chaque test de Courage réussi (décision Idan du 2026-10-20).",
+      "formule": "Progression naturelle V1",
+      "valeur": 20,
+      "version": "V1"
+    },
+    {
+      "nom": "XP — Volonté par reprise de contrôle",
+      "code": "progression.will.recovery_xp",
+      "description": "XP de Volonté à chaque reprise de contrôle réussie en fuite (décision Idan du 2026-10-20).",
+      "formule": "Progression naturelle V1",
+      "valeur": 20,
+      "version": "V1"
+    },
+    {
+      "nom": "XP — Intelligence par pire choix",
+      "code": "progression.intelligence.worst_choice_xp",
+      "description": "XP d'Intelligence quand il choisit le pire type de dégâts : il apprend de ses erreurs (décision Idan du 2026-10-20).",
+      "formule": "Progression naturelle V1",
+      "valeur": 30,
+      "version": "V1"
+    },
+    {
+      "nom": "XP — arme par attaque",
+      "code": "progression.skill.weapon_attack_xp",
+      "description": "XP de l'arme précise et de sa catégorie à chaque attaque portée avec elle (décision Idan du 2026-10-20).",
+      "formule": "Progression naturelle V1",
+      "valeur": 10,
+      "version": "V1"
+    },
+    {
+      "nom": "XP — arme par toucher réel",
+      "code": "progression.skill.weapon_hit_xp",
+      "description": "XP en plus, pour l'arme et sa catégorie, quand l'attaque touche réellement (non bloquée) (décision Idan du 2026-10-20).",
+      "formule": "Progression naturelle V1",
+      "valeur": 5,
+      "version": "V1"
+    },
+    {
+      "nom": "XP — arme par blessure",
+      "code": "progression.skill.weapon_wound_xp",
+      "description": "XP en plus, pour l'arme et sa catégorie, quand l'attaque blesse (décision Idan du 2026-10-20).",
+      "formule": "Progression naturelle V1",
+      "valeur": 5,
+      "version": "V1"
+    },
+    {
+      "nom": "XP — Combat à deux mains par attaque",
+      "code": "progression.skill.two_handed_attack_xp",
+      "description": "XP de Combat à deux mains à chaque attaque de mêlée avec une arme tenue à deux mains (décision Idan du 2026-10-20).",
+      "formule": "Progression naturelle V1",
+      "valeur": 10,
+      "version": "V1"
+    },
+    {
+      "nom": "XP — Combat à deux armes par séquence",
+      "code": "progression.skill.dual_sequence_xp",
+      "description": "XP de Combat à deux armes à chaque séquence menée avec les deux armes (décision Idan du 2026-10-20).",
+      "formule": "Progression naturelle V1",
+      "valeur": 10,
+      "version": "V1"
+    },
+    {
+      "nom": "XP — Boucliers par blocage",
+      "code": "progression.skill.shield_block_xp",
+      "description": "XP de Boucliers et du bouclier précis à chaque blocage (décision Idan du 2026-10-20).",
+      "formule": "Progression naturelle V1",
+      "valeur": 10,
+      "version": "V1"
+    },
+    {
+      "nom": "XP — Intimidation par adversaire en fuite",
+      "code": "progression.skill.intimidation_xp",
+      "description": "XP d'Intimidation à chaque adversaire qui rate son test de Courage face au mercenaire (décision Idan du 2026-10-20).",
+      "formule": "Progression naturelle V1",
+      "valeur": 50,
+      "version": "V1"
+    },
+    {
+      "nom": "XP — régression des autres compétences",
+      "code": "progression.skill.regression_ratio",
+      "description": "Part d'un gain de compétence perdue, au total et à parts égales, par les armes des autres catégories, les autres catégories ou les autres styles possédés (décision Idan du 2026-10-20 : on progresse au détriment des autres).",
+      "formule": "Progression naturelle V1",
+      "valeur": 0.5,
       "version": "V1"
     }
   ]

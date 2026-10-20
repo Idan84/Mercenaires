@@ -126,6 +126,28 @@ $$
 - Un équipement léger pour le mercenaire (charge sous le quart de sa Force) ne rapporte rien ; plus il est lourd pour lui, plus il progresse. Le rendement baisse de lui-même quand la Force monte : le mercenaire tend à devenir « aussi fort que ce qu'il porte ».
 - Repères (≈ 5 activations par mission) : hache double + plates (charge 52) à Force 55 → ≈ 70 XP par mission ; épée longue + écu + mailles (28) → ≈ 25 XP ; dague + arc + cuir (14) → 0.
 
+### Dextérité, Esquive, Endurance, Volonté, Intelligence (décisions Idan du 2026-10-20)
+
+Chaque caractéristique pourra recevoir d'autres sources plus tard : leurs XP s'additionnent.
+
+- **Dextérité** : chaque **enchaînement réussi** (attaque, tir ou séquence à deux armes supplémentaire) : `+50 XP`.
+- **Esquive** : chaque **coup encaissé qui blesse** : `+10 XP`. Le contrecoup de sa propre arme n'en est pas un.
+- **Endurance** : chaque **case parcourue en armure lourde** (plates, écailles) : `+2 XP`.
+- **Volonté** : chaque **test de Courage réussi** : `+20 XP` ; chaque **reprise de contrôle** réussie en fuite : `+20 XP`.
+- **Intelligence** : il apprend de ses erreurs : chaque fois qu'il choisit le **pire type de dégâts** : `+30 XP`. Ce mauvais choix n'arrive qu'aux mercenaires sous 50 d'Intelligence.
+
+### Compétences (décisions Idan du 2026-10-20)
+
+- Même courbe que les caractéristiques ; **plafond à 100** (`valeur_maximale` de la compétence). Des bonus temporaires ou magiques pourront le dépasser plus tard. Les valeurs générées au-delà de 100 ne sont pas touchées : elles ne montent plus, mais peuvent redescendre.
+- Les valeurs générées ont des décimales : une compétence est un **niveau continu**, 30,6 = niveau 30, à 60 % de la tranche vers 31. Le bilan arrondit au point entier.
+- **Arme et catégorie** : chaque attaque portée avec une arme : `+10 XP` à l'arme précise et à sa catégorie ; `+5` de plus si elle touche réellement (non bloquée), `+5` si elle blesse. La chute de charge et le projectile perdu (même tir) ne comptent pas.
+- **Styles** : Combat à deux mains `+10 XP` par attaque de mêlée à deux mains ; Combat à deux armes `+10 XP` par séquence à deux armes ; Boucliers et le bouclier précis `+10 XP` chacun par blocage.
+- **Intimidation** : chaque adversaire qui rate son test de Courage face au mercenaire : `+50 XP`.
+- **On progresse au détriment des autres** : chaque gain fait perdre, au total, **la moitié de ce gain**, à parts égales, aux compétences que le mercenaire possède (valeur > 0) :
+  - un gain d'arme : les **armes des autres catégories** (l'épée longue fait reculer haches, marteaux… mais pas les autres lames longues) ;
+  - un gain de catégorie : les autres catégories d'armes ;
+  - un gain de style : les deux autres styles (deux mains, deux armes, boucliers).
+
 ### Application en fin de mission (V1 — décisions Idan du 2026-10-06)
 
 - La **valeur** d'une caractéristique ou d'une résistance **est son niveau** : une valeur de 50 correspond à 25 000 XP cumulés.
@@ -135,7 +157,7 @@ $$
 - Résistances : chaque composante de dégâts qui blesse effectivement compte séparément. **Limite V1** : le moteur de combat ne produit encore qu'une composante, physique, par attaque ; les dégâts mixtes (physique + feu), les dégâts sur la durée et les coups multiples s'inscriront composante par composante quand ils existeront.
 - Le joueur voit un **récapitulatif** dans le bilan de fin de mission : XP gagnée ou perdue par caractéristique, et valeurs qui ont changé.
 - Toutes les valeurs de cette section sont des **constantes d'équilibrage** (`data/reference/formula-constants.json`, codes `progression.*`).
-- Branché dans le prototype : Résistances, Courage, Vitesse, Charisme, Perception, Force, Chance. En attente : **Constitution** (pas encore de soins en combat).
+- Branché dans le prototype : Résistances, Courage, Vitesse, Charisme, Perception, Force, Chance, Dextérité, Esquive, Endurance, Volonté, Intelligence, et les compétences de combat (armes, catégories, styles, Intimidation). En attente : **Constitution** (pas encore de soins en combat), **Puissance magique** et **Réserve de mana** (pas encore de magie en mission), les autres compétences.
 - Chance (choix d'implémentation validés par Idan le 2026-10-20) : chaque critique positif, au Toucher comme à Blesser, compte comme un CC ; chaque échec critique confirmé, au Toucher (Au Sol) comme à Blesser (contrecoup), compte comme un EC. Le contrecoup d'un échec critique de blessure compte comme une blessure physique subie pour les Résistances.
 
 ## 3 — XP choisie : formation au camp

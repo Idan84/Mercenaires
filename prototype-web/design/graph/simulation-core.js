@@ -177,14 +177,18 @@
       const earned=growth.gains(log,mercenary);
       const changes=growth.apply(mercenary,earned);
       const rep=growth.reputationGains(log,{wounded:Boolean(num(v.returnWounded))});
-      const metrics={reputationGain:rep.total};
+      const metrics={reputationGain:rep.total,reputationTotal:mercenary.reputation+rep.total};
       for(const name of statNames){
         const key="stat."+name;
         metrics[key]=mercenary.stats[name];
         metrics["xp."+name]=earned.stats[name]||0;
       }
-      for(const name of resistNames) metrics["resist."+name]=mercenary.resistances[name];
+      for(const name of resistNames){
+        metrics["resist."+name]=mercenary.resistances[name];
+        metrics["resistXP."+name]=earned.resistances[name]||0;
+      }
       metrics.intimidationXP=earned.skills.social?.Intimidation||0;
+      metrics.intimidationLevel=mercenary.skills.social.Intimidation;
       return {
         metrics,
         notes:[

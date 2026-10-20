@@ -26,6 +26,7 @@ Archive historique : ../../archive/notion-export/
 - [90-mechanics-backlog.md](./90-mechanics-backlog.md)
 - [91-combat-ideas.md](./91-combat-ideas.md)
 - [92-balance-questions.md](./92-balance-questions.md)
+- [93-pending-and-parked.md](./93-pending-and-parked.md) — en attente et mis de côté
 
 ## Formules détaillées
 

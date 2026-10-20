@@ -88,7 +88,7 @@ Les règles validées de maniement et cadence sont centralisées ici :
 - [Prise d'arme et mode deux mains V1](/design/#doc=formulas/prise-d-arme-et-mode-deux-mains-v1.md) : prises `1 main`, `2 mains`, `Au choix`.
 - [Combat à deux armes CAC V1](/design/#doc=formulas/combat-a-deux-armes-cac-v1.md) : combat à deux armes.
 
-Choix d'implémentation V1 du combat à deux armes, validés par Idan (2026-10-08 et 2026-10-20) :
+Choix d'implémentation V1 du combat à deux armes, à confirmer en relecture :
 - on combat à deux armes quand chaque main du set actif tient une **arme** (un bouclier n'en est pas une) ;
 - la **Dextérité effective** `Dextérité / (2 − Combat à deux armes / 100)` remplace la Dextérité au Toucher (CAC et distance) et dans les enchaînements ;
 - à chaque séquence, chaque arme **utilisable** frappe une fois, principale puis secondaire, chacune avec son mode : épée + pistolet = la lame au contact, le pistolet au contact comme à distance ; une arme déchargée ou hors portée est sautée ;

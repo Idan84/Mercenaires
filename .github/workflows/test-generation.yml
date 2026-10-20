@@ -20,6 +20,7 @@ jobs:
       - run: node tests/progression.test.js
       - run: node tests/renown.test.js
       - run: node tests/affinity.test.js
+      - run: node tests/stars.test.js
       - run: node tests/wizard-ui-refinements.test.js
       - run: node tests/design-graph-simulation.test.js
       - run: node tests/design-graph-integrity.test.js

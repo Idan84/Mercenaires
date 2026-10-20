@@ -393,6 +393,18 @@
       ]
     },
     {
+      "name": "reputation-stars",
+      "file": "reputation-stars.json",
+      "rows": 15,
+      "columns": [
+        "niveau",
+        "metal",
+        "etoiles",
+        "reputation_min",
+        "renommee_min"
+      ]
+    },
+    {
       "name": "people-affinity",
       "file": "people-affinity.json",
       "rows": 10,

@@ -1611,6 +1611,12 @@ body[data-screen="camp"] .camp-scene>.panel .muted{color:#c2b29e}
 .player-identity-grid small,.player-vitals small{display:block;color:#bb9a6e;font-size:11px;margin-bottom:6px}
 .player-identity-grid strong,.player-vitals strong{font-size:15px;color:#f4e1c2}
 .player-identity-note{display:block;margin-top:4px;color:#bb9a6e;font-size:11px}
+/* Réputation et renommée en étoiles : bronze, argent, or (data/reference/reputation-stars.json). */
+.rep-stars{display:inline-block;white-space:nowrap;font-size:1.2em;letter-spacing:.06em;line-height:1;text-shadow:0 0 1px rgba(0,0,0,.65)}
+.rep-stars-empty{opacity:.22}
+.rep-stars--bronze{color:#c07a3c}
+.rep-stars--silver{color:#a2abb5}
+.rep-stars--gold{color:#e3b23c}
 .player-stat-section{margin-bottom:22px}
 .player-stat-section h3{font:normal 22px Georgia,serif;color:#e8ca96;margin:4px 0 12px}
 .player-stat-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}

@@ -226,12 +226,15 @@ function resolveMissionAftermath(){
   for(const r of m.aftermath.results) missionLog(r.name+" — "+missionAftermathText(r),r.dead?"death":r.wounded?"bad":"info");
   if(!game.campaign) return;
   const report=m.companyReport=campaignRules().applyMissionAftermath(game.campaign,m.aftermath);
-  for(const h of report.heritage||[]) missionLog(h.name+" entre dans la mémoire de la compagnie : héritage +"+Math.round(h.heritage)+" de renommée.","death");
-  if(report.renown&&Math.round(report.renown.after)!==Math.round(report.renown.before)) missionLog("Renommée de la compagnie : "+Math.round(report.renown.before)+" → "+Math.round(report.renown.after)+".",report.renown.after>report.renown.before?"gear":"bad");
+  for(const h of report.heritage||[]) missionLog(h.name+" entre dans la mémoire de la compagnie.","death");
+  // Réputation et renommée en étoiles : une ligne seulement quand le niveau change.
+  const renownStars=report.renown&&starChange(starRules().company(report.renown.before),starRules().company(report.renown.after));
+  if(renownStars) missionLog("Renommée de la compagnie : "+renownStars.text+".",renownStars.up?"gear":"bad");
   if(report.bonusPaid) missionLog("Primes de mission versées : "+report.bonusPaid+" PO ("+report.bonuses.map(b=>b.mercenary.name+" "+b.bonus).join(", ")+").","gear");
   for(const {mercenary,changes,reputation} of report.progression||[]){
     for(const c of visibleProgressionChanges(changes)) missionLog(mercenary.name+" : "+c.name+" "+c.shownBefore+" → "+c.shownAfter+".",c.shownAfter>c.shownBefore?"gear":"bad");
-    if(reputation&&Math.round(reputation.after)!==Math.round(reputation.before)) missionLog(mercenary.name+" : Réputation "+Math.round(reputation.before)+" → "+Math.round(reputation.after)+".",reputation.after>reputation.before?"gear":"bad");
+    const repStars=reputation&&starChange(starRules().personal(reputation.before),starRules().personal(reputation.after));
+    if(repStars) missionLog(mercenary.name+" : réputation "+repStars.text+".",repStars.up?"gear":"bad");
   }
   if(report.gameOver){
     missionLog("Le capitaine est mort : la partie est terminée.","death");
@@ -279,11 +282,19 @@ function renderMissionAftermath(m){
     ${report&&!report.gameOver?renderMissionProgression(report.progression||[]):""}`;
 }
 
-// Renommée de la compagnie (09 §2) : avant → après, et l'héritage laissé par chaque mort.
+// Changement de niveau d'étoiles, ou null si le niveau ne bouge pas.
+function starChange(before,after){
+  if(!before||!after||before.level===after.level) return null;
+  return {up:after.level>before.level,text:before.label+" → "+after.label};
+}
+
+// Renommée de la compagnie (09 §2) en étoiles, et les morts qui entrent dans sa mémoire.
 function missionRenownNote(report){
   if(!report.renown) return "";
-  const heritage=(report.heritage||[]).map(h=>h.name+" +"+Math.round(h.heritage)).join(", ");
-  return " Renommée de la compagnie : "+Math.round(report.renown.before)+" → "+Math.round(report.renown.after)+(heritage?" (héritage : "+heritage+")":"")+".";
+  const before=starRules().company(report.renown.before),after=starRules().company(report.renown.after);
+  const change=starChange(before,after);
+  const memory=(report.heritage||[]).map(h=>h.name).join(", ");
+  return " Renommée de la compagnie : "+(change?change.text:after.label)+"."+(memory?" Mémoire de la compagnie : "+memory+".":"");
 }
 
 // Récapitulatif de progression (08-progression-and-experience.md §2) : XP naturelle gagnée par chaque
@@ -300,16 +311,19 @@ function visibleProgressionChanges(changes){
   }).filter(c=>c.shownAfter!==c.shownBefore);
 }
 
-// Réputation de carrière (09 §1) : chaque source de la mission, puis la réputation totale avant → après.
+// Réputation de carrière (09 §1) : les sources de la mission (sans chiffres, valeur au survol), puis les
+// étoiles avant → après quand le niveau change.
 const REPUTATION_SOURCES={missionReturn:"Retour de mission",criticalSuccesses:"Critiques",criticalFailures:"Échecs critiques",enemyWounds:"Ennemis blessés",enemyKnockouts:"Ennemis hors combat"};
 function renderMissionReputation(reputation){
   if(!reputation) return '<span class="muted">—</span>';
   const parts=Object.entries(REPUTATION_SOURCES)
     .filter(([key])=>Math.round(reputation.sources[key]))
-    .map(([key,label])=>`<span class="${reputation.sources[key]<0?"xp-loss":"xp-gain"}">${esc(label)} ${signed(reputation.sources[key])}</span>`);
-  const before=Math.round(reputation.before),after=Math.round(reputation.after);
-  if(after!==before) parts.push(`<strong class="${after>before?"stat-up":"stat-down"}">${before} → ${after} ${after>before?"▲":"▼"}</strong>`);
-  return parts.join(" ")||'<span class="muted">—</span>';
+    .map(([key,label])=>`<span class="${reputation.sources[key]<0?"xp-loss":"xp-gain"}" title="${esc(signed(reputation.sources[key]))}">${esc(label)} ${reputation.sources[key]<0?"▼":"▲"}</span>`);
+  const before=starRules().personal(reputation.before),after=starRules().personal(reputation.after);
+  const detail=v=>starDetail("Réputation",v,starRules().personal(v));
+  if(starChange(before,after)) parts.push(`<strong class="${after.level>before.level?"stat-up":"stat-down"}">${renderStarLevel(before,detail(reputation.before))} → ${renderStarLevel(after,detail(reputation.after))}</strong>`);
+  else parts.push(renderStarLevel(after,detail(reputation.after)));
+  return parts.join(" ");
 }
 
 function renderMissionProgression(entries){

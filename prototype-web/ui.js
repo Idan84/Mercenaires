@@ -16,7 +16,7 @@ function characterRow(c,hero=false){
       <strong>${esc(c.firstName || c.name)}</strong>
       ${c.familyName ? `<span class="roster-surname"><small>Nom de famille</small><b>${esc(c.familyName)}</b></span>` : ""}
       <span>${esc(c.people)} · ${esc(c.culture||"")}</span>
-      <span class="roster-card-details">PV ${fmt(c.pvMax)} · Réputation ${fmt(c.reputation)} · ${fmt(salary)} PO/j</span>
+      <span class="roster-card-details">PV ${fmt(c.pvMax)} · Réputation ${renderReputationStars(c)} · ${fmt(salary)} PO/j</span>
       <em>${esc(status)}</em>
     </span>
   </button>`;
@@ -182,6 +182,36 @@ function fmtDecimal(n, digits = 1) {
   return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(digits);
 }
 
+// Réputation et renommée en étoiles (décision Idan du 2026-10-20) : 15 niveaux, 1 à 5 étoiles de bronze,
+// d'argent puis d'or (data/reference/reputation-stars.json). La valeur chiffrée reste au survol, pour les tests.
+function starRules() {
+  return game.starRules || (game.starRules = MercenairesStars.createStarRules({ reference: game.referenceData }));
+}
+
+function renderStarLevel(info, detail = "") {
+  if (!info) return "—";
+  const tip = info.label + (detail ? " — " + detail : "");
+  return `<span class="rep-stars rep-stars--${info.metalKey}" title="${esc(tip)}" aria-label="${esc(info.label)}">`
+    + "★".repeat(info.stars) + `<span class="rep-stars-empty">${"★".repeat(5 - info.stars)}</span></span>`;
+}
+
+function starDetail(name, value, info) {
+  return name + " " + fmt(value) + (info?.nextAt != null ? " · niveau suivant à " + fmt(info.nextAt) : " · niveau maximal");
+}
+
+function renderReputationStars(c) {
+  const info = starRules().personal(c.reputation);
+  const career = Number(c.reputationCareerDelta) || 0;
+  const detail = starDetail("Réputation", c.reputation, info) + (Math.round(career) ? " · initiale " + fmt(c.reputation - career) + ", carrière " + fmtDelta(career) : "");
+  return renderStarLevel(info, detail);
+}
+
+function renderRenownStars(renown) {
+  const info = starRules().company(renown.total);
+  const parts = renown.parts ? " · capitaine " + fmt(renown.parts.captain) + " + mercenaires " + fmt(renown.parts.members) + " + héritage " + fmt(renown.parts.heritage) : "";
+  return renderStarLevel(info, starDetail("Renommée", renown.total, info) + parts);
+}
+
 function affinityRules() {
   return game.affinityRules || (game.affinityRules = MercenairesAffinity.createAffinityRules({ reference: game.referenceData }));
 }
@@ -209,13 +239,6 @@ function renderCaptainAffinity(c) {
   const parts = [`peuple ${signedScore(k.people)}`, `culture ${signedScore(k.culture)}`, `alignement ${signedScore(k.alignment)}`];
   if (a.acquired) parts.push(`acquise ${signedScore(Math.round(a.acquired))}`);
   return `<div><small>Affinité avec le capitaine</small><strong>${signedScore(a.total)}</strong><span class="player-identity-note">${parts.join(" · ")}</span></div>`;
-}
-
-// Réputation personnelle = part calculée (initiale) + delta de carrière (09 §1) : détail dès qu'il y a un gain.
-function renderReputationCareer(c) {
-  const career = Number(c.reputationCareerDelta) || 0;
-  if (!Math.round(career)) return "";
-  return `<span class="player-identity-note">initiale ${fmt(c.reputation - career)} · carrière ${fmtDelta(career)}</span>`;
 }
 
 function fmtDelta(n) {
@@ -583,7 +606,7 @@ function renderProfileTab(c){
         <div><small>Origine</small><strong>${esc(c.origin||"—")}</strong></div>
         <div><small>Ascendance</small><strong>${esc(c.ascendance||"Aucune")}</strong></div>
         <div><small>Alignement</small><strong>${esc(c.alignment||"—")}</strong></div>
-        <div><small>Réputation</small><strong>${fmt(c.reputation)}</strong>${renderReputationCareer(c)}</div>
+        <div><small>Réputation</small><strong>${renderReputationStars(c)}</strong></div>
         ${renderCaptainAffinity(c)}
       </div>
       <div class="player-vitals">

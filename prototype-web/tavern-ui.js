@@ -54,10 +54,8 @@ function renderCompanyMeta(){
   $("company-day").textContent=c.day;
   $("company-dorm").textContent=c.company.roster.length+" / "+c.company.camp.dormitoryCapacity;
   $("company-payroll").textContent=fmt(campaignRules().payroll(c));
-  // Renommée (09 §2) : total, et le détail au survol.
-  const renown=campaignRules().companyRenown(c);
-  $("company-renown").textContent=fmt(renown.total);
-  $("company-renown-meta").title="Capitaine "+fmt(renown.parts.captain)+" + mercenaires "+fmt(renown.parts.members)+" + héritage des morts "+fmt(renown.parts.heritage);
+  // Renommée (09 §2) en étoiles ; la valeur et son détail au survol.
+  $("company-renown").innerHTML=renderRenownStars(campaignRules().companyRenown(c));
 }
 
 // Affinité avec le capitaine (02 ; Idan, 2026-10-20) : visible à la Taverne, score seul. Les composantes
@@ -86,7 +84,7 @@ function renderTavernCard(candidate){
     </header>
     <dl>
       <div><dt>Profil</dt><dd>${esc(profileText(shown))}</dd></div>
-      <div><dt>Réputation</dt><dd>${fmt(shown.reputation)}</dd></div>
+      <div><dt>Réputation</dt><dd>${renderReputationStars(candidate.mercenary)}</dd></div>
       <div><dt>Salaire demandé</dt><dd>${fmt(shown.salary)} PO/j</dd></div>
       <div><dt>Prime de mission</dt><dd>${fmt(shown.missionBonus)} PO</dd></div>
       ${renderTavernAffinity(candidate.mercenary,"card")}
@@ -121,7 +119,7 @@ function renderTavern(){
   renderIntendantSelect();
   // Renommée → qualité des recrues (14 §5) : le tavernier présente le plus réputé de N prétendants.
   const suitors=campaignRules().suitorCount(c);
-  $("tavern-suitors").textContent="Renommée "+fmt(campaignRules().companyRenown(c).total)+" : le tavernier vous présente "
+  $("tavern-suitors").innerHTML="Renommée "+renderRenownStars(campaignRules().companyRenown(c))+" : le tavernier vous présente "
     +(suitors>1?"le meilleur de "+suitors+" prétendants pour chaque place.":"les prétendants comme ils viennent.");
   $("tavern-candidates").innerHTML=c.tavern.candidates.length
     ?c.tavern.candidates.map(renderTavernCard).join("")
@@ -196,7 +194,7 @@ function renderInterview(){
       <div class="metric"><small>Peuple</small><strong>${renderPicto("people",shown.people,{size:"md"})}${esc(shown.people)}</strong></div>
       <div class="metric"><small>Culture</small><strong>${esc(shown.culture)}</strong></div>
       <div class="metric"><small>Profil</small><strong>${esc(profileText(shown))}</strong></div>
-      <div class="metric"><small>Réputation</small><strong>${fmt(shown.reputation)}</strong></div>
+      <div class="metric"><small>Réputation</small><strong>${renderReputationStars(candidate.mercenary)}</strong></div>
       ${renderTavernAffinity(candidate.mercenary,"metric")}
     </div>
       </div>

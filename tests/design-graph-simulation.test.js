@@ -78,3 +78,38 @@ assert.ok(s.run("affinity",{...base,mercenaryAlignment:all[8]}).metrics.affinity
 assert.ok(s.run("affinity",{...base,acquired:-200}).metrics.affinityTotal>=-100);
 assert.equal(s.run("affinity",base).metrics.distance,0);
 console.log("Design Graph simulation: all tests passed");
+
+
+const saveImport=require("../prototype-web/design/graph/save-import.js");
+const save={
+  format:"mercenaires-save",version:1,
+  state:{
+    company:{
+      name:"La Compagnie de test",captainId:10,
+      roster:[
+        {id:10,name:"Capitaine",reputation:180},
+        {id:20,name:"Héros",reputation:300},
+        {id:30,name:"Soldat",reputation:200},
+        {id:40,name:"Archer",reputation:50}
+      ],
+      renownHeritage:[{heritage:15},{heritage:5}]
+    },
+    tavern:{candidates:[{mercenary:{id:99,reputation:80,salary:17,salaryPretension:35,stats:{Courage:55,Intelligence:60,"Volonté":70}}}]}
+  }
+};
+const loaded=saveImport.parse(JSON.stringify(save));
+assert.equal(loaded.rosterCount,4);
+assert.equal(loaded.economy.companySnapshot.roster.length,4);
+assert.equal(loaded.economy.heritage,20);
+assert.equal(loaded.economy.salary,17);
+const expectedCompany=require("../game-core/campaign.js").createCampaignRules({generator:{},tavern:{},reference})
+  .companyRenown(save.state);
+const importedCompany=s.run("economy",loaded.economy);
+assert.ok(Math.abs(importedCompany.metrics.renown-expectedCompany.total)<1e-8);
+const modified=s.compare("economy",loaded.economy,{...loaded.economy,first:500});
+assert.ok(modified.after.metrics.renown>modified.before.metrics.renown);
+assert.equal(save.state.company.roster[1].reputation,300,"Aucune mutation de la sauvegarde source");
+assert.throws(()=>saveImport.parse("{bad json"));
+assert.throws(()=>saveImport.parse({format:"unrelated",state:save.state}));
+assert.throws(()=>saveImport.parse({state:{company:{captainId:999,roster:save.state.company.roster}}}));
+console.log("Design Graph save import: all tests passed");

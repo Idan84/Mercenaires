@@ -67,7 +67,7 @@
         ["returnWounded","Retour blessé",0,"blessures","boolean"]
       ],
       metrics:{
-        reputationGain:"Réputation de carrière gagnée",intimidationXP:"XP d'Intimidation"
+        reputationGain:"Réputation de carrière gagnée",reputationTotal:"Réputation personnelle après mission",intimidationXP:"XP d'Intimidation",intimidationLevel:"Niveau d'Intimidation"
       }
     },
     affinity:{
@@ -91,7 +91,8 @@
     configs.progression.metrics["xp."+name]="XP de "+name;
   }
   for(const name of ["Résistance physique","Résistance au feu","Résistance au froid","Résistance à la foudre","Résistance au poison"])
-    configs.progression.metrics["resist."+name]="Niveau "+name;
+    {configs.progression.metrics["resist."+name]="Niveau "+name;
+    configs.progression.metrics["resistXP."+name]="XP "+name;}
 
   mount.replaceChildren();
   mount.appendChild(el("h3","Simulateur avant / après"));
@@ -232,12 +233,12 @@
       const metricNodes={
         economy:{renown:"renommee",renownCaptain:"renommee",renownOthers:"renommee",renownLegacy:"heritage",bonus:"prime",resistance:"negociation",departure:"taverne",pAccept:"negociation",pQuit:"negociation",offerSalary:"negociation",offerBonus:"negociation"},
         combat:{hit:"toucher",wound:"blesser",crit:"critique",speed:"vitesse",dodge:"esquive",initiative:"vitesse",movement:"vitesse",chain:"toucher",armorMatchup:"blesser"},
-        progression:{reputationGain:"repcarriere",intimidationXP:"xp"},
+        progression:{reputationGain:"repcarriere",reputationTotal:"rep",intimidationXP:"xp",intimidationLevel:"skills"},
         affinity:{affinityInitial:"affinite",affinityAcquired:"affacquise",affinityTotal:"affinite",people:"affinite",culture:"affinite",alignment:"affinite",distance:"affinite"}
       };
       const impacts={};
       for(const row of changed){
-        const target=(metricNodes[mode]||{})[row.key]||(row.key.startsWith("stat.")?"caracs":row.key.startsWith("xp.")?"xp":row.key.startsWith("resist.")?"resistances":null);
+        const target=(metricNodes[mode]||{})[row.key]||(row.key.startsWith("stat.")?"caracs":row.key.startsWith("xp.")?"xp":row.key.startsWith("resist.")||row.key.startsWith("resistXP.")?"resistances":null);
         if(!target||row.delta===null)continue;
         const magnitude=Math.abs(row.delta)/Math.max(1,Math.abs(row.before||0));
         impacts[target]=Math.max(impacts[target]||0,magnitude);

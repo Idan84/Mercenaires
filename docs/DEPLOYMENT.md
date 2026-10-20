@@ -77,4 +77,4 @@ Pour savoir quoi produire : l'onglet **Avatars** du Design Lab (https://bloodand
 
 ## Netlify (abandonné)
 
-Netlify a hébergé le prototype jusqu'au 2026-10-05 et a été abandonné faute de crédits (décision d'Idan, voir `docs/TEAM.md`). `netlify.toml` reste dans le dépôt tant que le projet Netlify n'est pas supprimé, pour qu'une reprise automatique des builds ne publie pas la racine du dépôt.
+Netlify a hébergé le prototype jusqu'au 2026-10-05 et a été abandonné faute de crédits (décision d'Idan, voir `docs/TEAM.md`). `netlify.toml` a été retiré le 2026-10-20 à la demande d'Idan. Tant que le projet Netlify `mercenaires-s708` n'est pas supprimé ([issue #64](https://github.com/Idan84/Mercenaires/issues/64)), une reprise de ses builds publierait la racine du dépôt (public de toute façon) sur l'ancienne adresse Netlify ; Hostinger n'est pas concerné.

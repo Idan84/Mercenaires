@@ -55,7 +55,7 @@ Des chiffres mesurés, rien n'est décidé. Le détail est dans le [doc 92](/des
 
 Rien à décider : c'est pour l'équipe.
 
-- **Netlify** : supprimer le projet (Chatty, [issue #64](https://github.com/Idan84/Mercenaires/issues/64)), puis retirer `netlify.toml` (JC3).
+- **Netlify** : supprimer le projet `mercenaires-s708` ([issue #64](https://github.com/Idan84/Mercenaires/issues/64)). `netlify.toml` est déjà retiré (2026-10-20).
 - **Migration Hostinger** : faite, l'[issue #60](https://github.com/Idan84/Mercenaires/issues/60) est à fermer.
 - **Sorts des 9 écoles** : catalogue en données (Chatty, [issue #28](https://github.com/Idan84/Mercenaires/issues/28)), après ta décision sur la PR #32.
 

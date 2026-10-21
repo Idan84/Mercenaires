@@ -75,7 +75,7 @@ const render = new Function("game","document","campaignCalendarDate",
 );
 render();
 assert.equal(nodes["camp-calendar-day"].textContent,"Jour 31");
-assert.equal(nodes["camp-calendar-date"].textContent,"Martel, 31 Brumecendre");
+assert.equal(nodes["camp-calendar-date"].textContent,"Druiden, 31 Brumecendre");
 assert.equal(nodes["camp-calendar-year"].textContent,"An 842 — Âge des Couronnes Brisées");
 assert.match(nodes["camp-calendar-quote"].textContent,/^« .+ »$/);
 fakeGame.campaign.day=32;

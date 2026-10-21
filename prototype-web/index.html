@@ -13,6 +13,13 @@
       <path d="M14 9V5m8 14v-5m4-8V3m8 3V3M7 19h34M17 41V30a7 7 0 0 1 14 0v11M22 23h4"/>
     </svg>
   </button>
+  <!-- Taverne : on parle au tavernier par cette bulle posée sur lui (visible sur l'accueil de la taverne). -->
+  <button id="tavern-talk-btn" class="tavern-talk-btn" type="button" aria-label="Parler au tavernier" title="Parler au tavernier">
+    <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M4.5 5.5h15a1.5 1.5 0 0 1 1.5 1.5v8.5a1.5 1.5 0 0 1-1.5 1.5H11l-4.5 3.5V17h-2A1.5 1.5 0 0 1 3 15.5V7a1.5 1.5 0 0 1 1.5-1.5z"/>
+      <path d="M8 11.3h.01M12 11.3h.01M16 11.3h.01" stroke-width="2.6"/>
+    </svg>
+  </button>
   <aside id="game-hud" class="game-hud hidden" aria-label="Interface de jeu">
     <div class="game-bottom-bar">
       <div class="hud-side hud-side--left">
@@ -215,12 +222,11 @@
 
       <section class="camp-scene hidden" data-camp-scene-panel="tavern" aria-label="Taverne">
         <div class="camp-scene-nav"><button class="secondary camp-scene-back" data-camp-back>← Retour au camp</button></div>
-        <div id="tavern-home" class="tavern-home-menu">
-          <button class="menu-btn camp-hub-btn" data-tavern-view="missions">Les missions disponibles</button>
-          <button class="menu-btn camp-hub-btn" data-tavern-view="recruits">Les mercenaires disponibles</button>
-          <button class="menu-btn camp-hub-btn" data-tavern-drink="beer">Boire une bière <small>−1 PO</small></button>
-          <button class="menu-btn camp-hub-btn" data-tavern-drink="round">Payer sa tournée ! <small>−1 PO par membre de la compagnie</small></button>
-          <p id="tavern-action-feedback" class="tavern-action-feedback" role="status" aria-live="polite"></p>
+        <div id="tavern-home" class="camp-hub tavern-hub">
+          <nav class="camp-hub-menu" aria-label="Taverne">
+            <button class="menu-btn camp-hub-btn" data-tavern-view="missions"><span>Trouver une mission</span><i class="menu-btn-line"></i></button>
+            <button class="menu-btn camp-hub-btn" data-tavern-view="recruits"><span>Recruter</span><i class="menu-btn-line"></i></button>
+          </nav>
         </div>
         <section id="tavern-missions-view" class="panel tavern-panel hidden">
           <button class="secondary" data-tavern-view="home">← Retour à la taverne</button>
@@ -332,6 +338,19 @@
         <button id="cancel-mission-select-btn" class="secondary">Annuler</button>
       </div>
     </div>
+  </dialog>
+  <dialog id="tavern-talk-dialog" class="talk-dialog" aria-labelledby="tavern-talk-name">
+    <header class="talk-head">
+      <span class="talk-portrait" aria-hidden="true"></span>
+      <div><p class="eyebrow">The Black Anvil</p><h2 id="tavern-talk-name">Le tavernier</h2></div>
+    </header>
+    <p id="tavern-talk-line" class="talk-line"></p>
+    <ol class="talk-options">
+      <li><button type="button" data-talk="beer">Boire une bière (1 PO)</button></li>
+      <li><button type="button" data-talk="round">Payer sa tournée !</button></li>
+      <li><button type="button" data-talk="advice" disabled title="Bientôt">Demander des conseils</button></li>
+      <li><button type="button" data-talk="leave">Partir</button></li>
+    </ol>
   </dialog>
   <dialog id="tavern-dialog">
     <div class="dialog-head">

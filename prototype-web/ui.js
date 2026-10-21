@@ -113,7 +113,7 @@ function renderGame() {
   $("game-panel").classList.remove("hidden");
   $("company-title").textContent = game.campaign?.company.name || `Compagnie de ${game.captain.name}`;
   $("captain-summary").innerHTML = characterRow(game.captain, true);
-  renderCampCalendar();
+  renderGameHud();
   renderMercenaryRoster();
   renderGenerated();
   renderTavern();

@@ -1433,100 +1433,6 @@ body[data-screen="camp"][data-camp-scene="home"] .menu-back {
   border-color: rgba(218,172,82,.62);
 }
 
-/* Almanach du camp : texte et contraste, sans aucun asset supplémentaire. */
-.camp-calendar {
-  width: min(420px,90vw);
-  margin-top: 18px;
-  padding: 16px 18px 17px;
-  border: 1px solid rgba(191,148,88,.8);
-  border-radius: 13px;
-  background: linear-gradient(145deg,rgba(48,35,27,.96),rgba(24,17,14,.97));
-  color: #f0ddbc;
-  box-shadow: 0 15px 38px rgba(0,0,0,.44),inset 0 1px rgba(255,225,167,.1);
-  text-align: center;
-}
-.camp-calendar-topline {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 8px;
-  color: #c4a47b;
-  font: 700 10px Georgia,serif;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-}
-.camp-calendar-topline strong {
-  padding: 4px 8px;
-  border: 1px solid rgba(198,162,103,.46);
-  border-radius: 999px;
-  color: #f6ddae;
-  font: 700 11px Georgia,serif;
-  letter-spacing: .02em;
-  white-space: nowrap;
-  text-transform: none;
-}
-.camp-calendar h3 {
-  margin: 13px 0 4px;
-  color: #ffe1ac;
-  font: normal clamp(21px,2vw,27px)/1.22 Georgia,serif;
-}
-.camp-calendar-year {margin: 0;color:#c0ac91;font-size: 12px}
-.camp-calendar-quote {
-  min-height: 39px;
-  margin: 13px 0 15px;
-  padding: 12px 4px 0;
-  border-top: 1px solid rgba(207,167,107,.25);
-  color: #e1ceb1;
-  font: italic 13px/1.4 Georgia,serif;
-}
-.camp-next-day-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  width: 100%;
-  min-height: 44px;
-  padding: 9px 16px;
-  border: 1px solid #b99462;
-  border-radius: 8px;
-  background: linear-gradient(180deg,#795436,#422b1e);
-  color: #ffe7b9;
-  font: 700 14px Georgia,serif;
-  cursor: pointer;
-  transition: filter .15s,transform .15s;
-}
-.camp-next-day-btn:hover,.camp-next-day-btn:focus-visible {
-  filter: brightness(1.18);
-  outline: 2px solid rgba(238,197,123,.6);
-  outline-offset: 2px;
-}
-.camp-next-day-btn:active {transform:translateY(1px)}
-@media (max-width:700px) {
-  .camp-calendar {width:min(88vw,420px);margin-top:14px;padding:13px 15px}
-  .camp-calendar h3 {font-size:22px}
-  .camp-calendar-quote {margin:10px 0 12px;padding-top:9px}
-}
-/* « Jour suivant » doit rester cliquable : sur l'accueil du camp, le journal passe à gauche ; sur les
-   écrans peu hauts, le menu et l'almanach se resserrent au-dessus de la barre du bas. */
-@media (min-width:701px) {
-  body[data-screen="camp"][data-camp-scene="home"] .game-action-console {right:auto;left:22px}
-}
-@media (max-height:900px) and (min-width:701px) {
-  .camp-hub {justify-content:flex-start;padding-top:0;padding-bottom:0}
-  .camp-hub-menu {gap:8px}
-  .camp-hub-btn {min-height:48px}
-  .camp-calendar {margin-top:11px;padding:11px 15px}
-  .camp-calendar h3 {margin-top:8px}
-  .camp-calendar-quote {min-height:0;margin:8px 0 10px;padding-top:8px}
-}
-@media (max-height:760px) and (min-width:701px) {
-  .camp-hub-heading {margin-bottom:8px}
-  .camp-hub-btn {min-height:44px}
-  .camp-calendar h3 {font-size:21px}
-}
-@media (prefers-reduced-motion:reduce) {.camp-next-day-btn {transition:none}}
-
 .camp-scene {
   max-width: 1200px;
   margin: 0 auto;
@@ -1656,22 +1562,86 @@ body[data-screen="camp"]:not([data-camp-scene="home"]) .app-shell{padding-top:32
 @media(prefers-reduced-motion:reduce){.camp-home-icon-btn{transition:none}}
 
 
-/* HUD desktop : barre inférieure réservée aux futures commandes + console d'actions. */
-body[data-screen="camp"] .app-shell,body[data-screen="mission"] .app-shell{padding-bottom:106px}
+/* Barre du bas (Idan, 2026-10-21) : infos principales à gauche, date et gros bouton « Jour suivant » au
+   centre, journal intégré à droite. Univers heroic fantasy : bois sombre, liserés dorés, médaillon central.
+   Aucun nouvel asset visuel (icônes SVG au trait dans screen-ui.js). */
+body[data-screen="camp"] .app-shell,body[data-screen="mission"] .app-shell{padding-bottom:112px}
 .game-hud{position:fixed;inset:auto 0 0;z-index:90;pointer-events:none;color:#e9d9b9;font-family:Georgia,serif}
-.game-bottom-bar{position:absolute;bottom:0;left:0;right:0;min-height:62px;padding:12px 32px;display:flex;align-items:center;gap:22px;background:linear-gradient(180deg,#3b2b20f4,#17110eff);border-top:1px solid #b58c53;box-shadow:0 -8px 32px #0007;pointer-events:auto}
-#hud-company{font-size:1.12rem;color:#ffe3ab;max-width:32vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-#hud-resources{font-size:.92rem;flex:1}
-#hud-pause-btn{border:1px solid #ab8959;border-radius:8px;padding:8px 12px;background:#241a15;color:#f2d7a6;font-size:16px}
+.game-hud .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.game-bottom-bar{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:18px;min-height:66px;padding:8px 22px;
+  background:linear-gradient(180deg,rgba(255,214,150,.08),transparent 45%),repeating-linear-gradient(90deg,rgba(0,0,0,.06) 0 2px,transparent 2px 9px),linear-gradient(180deg,#3d2c20f7,#1b130ef9 70%,#110b08);
+  border-top:1px solid #b58c53;box-shadow:0 -10px 34px #0008,inset 0 1px #ffe4a826;pointer-events:auto}
+.game-bottom-bar::before{content:"";position:absolute;left:0;right:0;top:4px;height:1px;background:linear-gradient(90deg,transparent,#c9a15f73 18%,#c9a15f73 82%,transparent);pointer-events:none}
+.hud-side{display:flex;align-items:center;gap:14px;min-width:0}
+.hud-side--right{justify-content:flex-end;align-self:stretch}
+.hud-company{display:flex;flex:0 1 auto;flex-direction:column;min-width:96px;max-width:210px;line-height:1.15}
+#hud-company{font-size:1.02rem;color:#ffe3ab;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-shadow:0 1px 6px #000}
+.hud-renown{font-size:12px;letter-spacing:1px}
+.hud-stats{display:flex;align-items:center;gap:6px;margin:0}
+.hud-stat{position:relative;display:flex;align-items:center;gap:6px;padding:4px 10px 4px 7px;border:1px solid #ab89594d;border-radius:999px;background:#0e0a0899;box-shadow:inset 0 1px 3px #000a;cursor:default}
+.hud-stat dt{display:flex;color:#d8b77d}
+.hud-stat dd{margin:0;font-size:.9rem;color:#f3e2c0;white-space:nowrap;font-variant-numeric:tabular-nums}
+.hud-stat--gold dt{color:#f0c050;filter:drop-shadow(0 0 4px #f0c05066)}
+.hud-stat--gold dd{color:#ffd77a;font-weight:700}
+.hud-stat--debt dd{color:#ff8a6e}
+.hud-svg{display:block;width:18px;height:18px}
+.hud-delta{position:absolute;left:50%;bottom:100%;font:700 13px Georgia,serif;white-space:nowrap;pointer-events:none;text-shadow:0 1px 4px #000;animation:hud-float 1.8s ease-out forwards}
+.hud-delta--loss{color:#ff8a6e}
+.hud-delta--gain{color:#9be08a}
+@keyframes hud-float{0%{opacity:0;transform:translate(-50%,6px)}15%{opacity:1}100%{opacity:0;transform:translate(-50%,-24px)}}
+.hud-calendar{display:flex;flex-direction:column;align-items:flex-end;margin-left:auto;min-width:0;line-height:1.2;text-align:right;cursor:help}
+#hud-date{font:normal 1rem Georgia,serif;color:#ffe1ac;white-space:nowrap;text-shadow:0 1px 6px #000}
+#hud-date.is-new{animation:hud-page .6s ease-out}
+@keyframes hud-page{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+#hud-day{font-size:11px;color:#c0ac91;letter-spacing:.04em;white-space:nowrap}
+.hud-center{position:relative;width:86px;height:50px}
+.hud-play{position:absolute;left:50%;bottom:-8px;display:grid;place-items:center;width:82px;height:82px;padding:0;border:2px solid #d9b26b;border-radius:50%;
+  background:radial-gradient(circle at 50% 32%,#93613a,#4c2d1b 58%,#22140c);color:#ffe7b0;cursor:pointer;transform:translateX(-50%);
+  box-shadow:0 0 0 5px #1b120d,0 0 0 6px #b58c5399,0 10px 24px #000b,inset 0 2px 6px #ffd9a040,inset 0 -7px 12px #0008;transition:transform .15s,filter .15s}
+.hud-play::after{content:"";position:absolute;inset:-10px;border-radius:50%;box-shadow:0 0 20px 3px #f0c05055;opacity:.3;pointer-events:none;animation:hud-breathe 3.2s ease-in-out infinite}
+@keyframes hud-breathe{50%{opacity:1}}
+.hud-play .hud-svg{width:40px;height:40px;margin-left:5px;filter:drop-shadow(0 2px 3px #000a)}
+.hud-play:hover,.hud-play:focus-visible{filter:brightness(1.22);outline:none}
+.hud-play:focus-visible::after{opacity:1;box-shadow:0 0 0 2px #f0c050,0 0 24px 4px #f0c05088}
+.hud-play:active{transform:translateX(-50%) scale(.93)}
+body[data-screen="mission"] .hud-center{visibility:hidden}
+.hud-journal{position:relative;display:flex;align-items:center;align-self:stretch;flex:1;min-width:0;max-width:440px}
+.hud-journal-head{display:flex;align-items:center;gap:10px;width:100%;padding:7px 12px;border:1px solid #ab895966;border-radius:9px;background:#0e0a0899;color:#e9d9b9;font:13px Georgia,serif;text-align:left;cursor:pointer;box-shadow:inset 0 1px 3px #000a}
+.hud-journal-head:hover,.hud-journal-head:focus-visible{border-color:#e3bd76;outline:none}
+.hud-journal-label{display:flex;align-items:center;gap:6px;flex:none;color:#d8b77d;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.hud-journal-last{flex:1;min-width:0;overflow:hidden;color:#f0dfbf;text-overflow:ellipsis;white-space:nowrap}
+.hud-journal-last.is-fresh{animation:hud-fresh 1.6s ease-out}
+@keyframes hud-fresh{0%{color:#ffe08a;text-shadow:0 0 10px #f0c050aa}100%{color:#f0dfbf;text-shadow:none}}
+.hud-journal-chevron{flex:none;color:#d8b77d;transition:transform .2s}
+.hud-journal.is-open .hud-journal-chevron{transform:rotate(180deg)}
+.hud-journal-lines{display:none;position:absolute;left:0;right:0;bottom:calc(100% + 9px);max-height:240px;margin:0;padding:10px 14px 10px 30px;overflow-y:auto;
+  border:1px solid #95744d;border-bottom:0;border-radius:12px 12px 0 0;background:linear-gradient(180deg,#2e2119f8,#1b130ef9);box-shadow:0 -10px 28px #0009;font:12px/1.55 Georgia,serif}
+.hud-journal.is-open .hud-journal-lines{display:block}
+#hud-pause-btn{flex:none;border:1px solid #ab8959;border-radius:8px;padding:8px 12px;background:#241a15;color:#f2d7a6;font-size:16px}
 #hud-pause-btn span{font-size:11px;opacity:.8}
-.game-action-console{position:absolute;bottom:72px;right:22px;width:345px;max-height:220px;overflow:hidden;background:#1a1412ea;border:1px solid #95744d;border-radius:12px;box-shadow:0 12px 32px #0009;pointer-events:auto}
-.game-console-title{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:#423024;color:#f0d8ac;font:700 12px Georgia,serif;letter-spacing:.04em}
-.game-console-title button{border:0;background:transparent;color:#f4daa5;font-size:20px;line-height:1}
-#game-action-lines{margin:0;padding:8px 12px 10px 27px;max-height:168px;overflow-y:auto;font:12px/1.55 Georgia,serif}
 #game-action-lines li{padding:3px 0;border-bottom:1px solid #ffffff12}
 #game-action-lines small{color:#c6a576;margin-right:6px}
-.game-hud.console-collapsed .game-action-console{max-height:39px}
-.game-hud.console-collapsed #game-action-lines{display:none}
+@media (max-width:1300px){.hud-stat:nth-child(3){display:none}}
+@media (max-width:1180px){
+  .game-bottom-bar{gap:12px;padding:8px 14px}
+  .hud-company{max-width:150px}
+}
+@media (max-width:900px){
+  .hud-company,.hud-journal-last{display:none}
+  .hud-journal{flex:none}
+}
+@media (max-width:700px){
+  .game-bottom-bar{gap:8px;padding:6px 10px}
+  .hud-stat:nth-child(2),#hud-date{display:none}
+  .hud-side--left{flex-wrap:wrap;gap:3px 8px}
+  .hud-calendar{align-items:flex-start;margin-left:0;text-align:left}
+  .hud-center{width:66px}
+  .hud-play{width:64px;height:64px}
+  .hud-play .hud-svg{width:30px;height:30px}
+  .hud-journal-label{font-size:0;gap:0}
+  #hud-pause-btn span{display:none}
+}
+@media (prefers-reduced-motion:reduce){.hud-play::after,.hud-delta,#hud-date.is-new,.hud-journal-last.is-fresh{animation:none}}
 .game-pause{position:fixed;inset:0;z-index:200;display:grid;place-items:center;background:#0e0c0be6;backdrop-filter:blur(7px)}
 .game-pause.hidden{display:none!important}
 .game-pause-panel{width:min(440px,90vw);padding:32px;border:1px solid #ae8654;border-radius:15px;background:linear-gradient(145deg,#403023,#17120f);box-shadow:0 20px 70px #000b;text-align:center}
@@ -1772,7 +1742,6 @@ body[data-screen="camp"] .camp-scene>.panel .muted{color:#c2b29e}
 .player-stat span{font-size:12px;color:#dfd0bb}.player-stat strong{color:#f7da9c}
 #character-dialog .character-bio{background:#2d231c;color:#e5d1b1;border-color:#72583d}
 #character-dialog .metric,#character-dialog .skill-group{background:#342820;color:#e5d4bc;border-color:#6e533a}
-#hud-resources{font-size:.88rem;white-space:nowrap}
 
 
 

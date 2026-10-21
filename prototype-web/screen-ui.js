@@ -61,15 +61,62 @@ function gameAction(message){
   gameActionMessages.length=Math.min(gameActionMessages.length,35);
   renderGameHud();
 }
+// Barre du bas (Idan, 2026-10-21) : infos principales à gauche, date et « Jour suivant » au centre,
+// journal à droite. Icônes au trait, dans le style de rosterMetricIcon : aucun nouvel asset visuel.
+const HUD_ICONS={
+  gold:'<ellipse cx="12" cy="6.3" rx="7.5" ry="3.3"/><path d="M4.5 6.3v5.1c0 1.8 3.4 3.3 7.5 3.3s7.5-1.5 7.5-3.3V6.3M4.5 11.4v5.1c0 1.8 3.4 3.3 7.5 3.3s7.5-1.5 7.5-3.3v-5.1"/>',
+  upkeep:'<path d="M4 8.5h16"/><path d="M5.6 8.5c-.4 4.2 2.4 7 6.4 7s6.8-2.8 6.4-7"/><path d="M4 8.5 2.8 7M20 8.5 21.2 7"/><path d="M8.2 21c-.9-1.3.6-2 .3-3.4M12 21c-1-1.5.8-2.3.3-3.9M15.8 21c-.9-1.3.6-2 .3-3.4"/><path d="M10.3 5.6c0-1 .8-1.3.8-2.3M13.7 5.6c0-1 .8-1.3.8-2.3"/>',
+  roster:'<path d="M4 4l11 11M20 4 9 15"/><path d="m12.6 17.4 4.8-4.8M6.6 12.6l4.8 4.8"/><path d="m16.3 16.3 3.2 3.2M7.7 16.3l-3.2 3.2"/>',
+  journal:'<path d="M7 4.5h10.5a2 2 0 0 1 2 2v0a2 2 0 0 1-2 2H16v9.5a2 2 0 0 1-2 2H6.5a2 2 0 0 1-2-2v0a2 2 0 0 1 2-2H8"/><path d="M7 4.5a2 2 0 0 0-2 2v9.5M10 9h3M10 12.5h3"/>',
+  play:'<path d="M9 5.8v12.4l9.6-6.2z" fill="currentColor" stroke="none"/>'
+};
+function hudIcon(kind){
+  return '<svg class="hud-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">'+(HUD_ICONS[kind]||"")+'</svg>';
+}
+let hudGoldShown=null;
+// Le trésor bouge : un petit chiffre monte au-dessus de l'or (rouge si l'on paie, vert si l'on gagne).
+function hudGoldDelta(gold){
+  const before=hudGoldShown;
+  hudGoldShown=gold;
+  if(before===null||before===gold) return;
+  const delta=document.createElement("span");
+  delta.className="hud-delta "+(gold<before?"hud-delta--loss":"hud-delta--gain");
+  delta.textContent=(gold<before?"−":"+")+fmt(Math.abs(gold-before));
+  delta.addEventListener("animationend",()=>delta.remove());
+  $("hud-gold-stat").appendChild(delta);
+}
 function renderGameHud(){
   const hud=$("game-hud");
   const active=Boolean(game.campaign)&&["camp","mission"].includes(currentScreen());
   hud.classList.toggle("hidden",!active);
-  if(!active){$("game-pause").classList.add("hidden");return;}
-  $("hud-company").textContent=game.campaign.company.name;
-  const upkeep=typeof campaignRules==="function"?campaignRules().payroll(game.campaign):0;
-  $("hud-resources").textContent="Jour "+game.campaign.day+"  ·  "+Math.round(game.campaign.company.gold)+" PO  ·  Entretien de la compagnie : "+Math.round(upkeep)+" PO / jour";
-  $("game-action-lines").innerHTML=gameActionMessages.slice(0,8).map(x=>'<li><small>J'+(x.day||"—")+'</small> '+esc(x.message)+'</li>').join("");
+  if(!active){$("game-pause").classList.add("hidden");hudGoldShown=null;return;}
+  const company=game.campaign.company;
+  const rules=typeof campaignRules==="function"?campaignRules():null;
+  $("hud-company").textContent=company.name;
+  $("hud-renown").innerHTML=rules?renderRenownStars(rules.companyRenown(game.campaign)):"";
+  const gold=Math.round(company.gold);
+  $("hud-gold").textContent=fmt(gold);
+  $("hud-gold-stat").title="Trésor de la compagnie : "+fmt(gold)+" PO";
+  $("hud-gold-stat").classList.toggle("hud-stat--debt",gold<0);
+  hudGoldDelta(gold);
+  $("hud-upkeep").textContent=fmt(Math.round(rules?rules.payroll(game.campaign):0))+" PO/j";
+  $("hud-roster").textContent=company.roster.length+" / "+(company.camp?.dormitoryCapacity??"—");
+  renderCampCalendar();
+  const lines=gameActionMessages.slice(0,8);
+  const last=$("hud-journal-last");
+  const latest=lines[0]?lines[0].message:"Aucune nouvelle.";
+  if(last.textContent!==latest){
+    last.textContent=latest;
+    last.title=latest;
+    last.classList.remove("is-fresh");
+    void last.offsetWidth;
+    if(lines.length) last.classList.add("is-fresh");
+  }
+  $("game-action-lines").innerHTML=lines.map(x=>'<li><small>J'+(x.day||"—")+'</small> '+esc(x.message)+'</li>').join("");
+}
+function toggleHudJournal(open=!$("hud-journal").classList.contains("is-open")){
+  $("hud-journal").classList.toggle("is-open",open);
+  $("hud-console-toggle").setAttribute("aria-expanded",String(open));
 }
 function setPauseOpen(open){
   if(!game.campaign||!["camp","mission"].includes(currentScreen())) return;
@@ -120,7 +167,8 @@ function initializeScreenUi(){
   }
   $("camp-home-icon-btn").addEventListener("click",()=>{openCampScene("home");gameAction("Retour au château.");});
   $("hud-pause-btn").addEventListener("click",()=>setPauseOpen(true));
-  $("hud-console-toggle").addEventListener("click",()=>{$("game-hud").classList.toggle("console-collapsed");});
+  $("hud-console-toggle").addEventListener("click",()=>toggleHudJournal());
+  for(const slot of document.querySelectorAll("#game-hud [data-hud-icon]")) slot.innerHTML=hudIcon(slot.dataset.hudIcon);
   $("game-pause").addEventListener("click",event=>{
     const button=event.target.closest("[data-pause-action]");
     if(button&&!button.disabled)handlePauseAction(button.dataset.pauseAction);

@@ -1718,46 +1718,59 @@ body[data-screen="camp"] .camp-scene>.panel .muted{color:#c2b29e}
 #character-dialog .icon-btn{display:grid;place-items:center;background:#2a1e17;color:#f3d5a0;border:1px solid #a9814f;font-size:1.5rem;line-height:1;cursor:pointer;transition:background .15s,border-color .15s}
 #character-dialog .icon-btn:hover,#character-dialog .icon-btn:focus-visible{background:#4a3424;border-color:#f0c77f;outline:none}
 .player-stat{background:#382a22;border:1px solid #71583e;border-radius:8px;padding:11px;min-width:0}
-/* Onglet Profil (Idan, 2026-10-21) : portrait et état, origines, bio, trois colonnes, solde. */
+/* Onglet Profil (Idan, 2026-10-21) : portrait et état ; origines en tête ; trois colonnes de largeurs
+   différentes : la roue d'alignement sur toute la hauteur, puis réputation, affinité, bio et solde. */
 .sheet-profile{display:grid;grid-template-columns:250px minmax(0,1fr);gap:28px}
 .sheet-portrait{display:grid;gap:8px;align-content:start}
 .sheet-portrait .avatar-frame{max-width:250px;margin:0}
 .sheet-portrait .roster-status{font-size:13px;padding:6px}
-.sheet-profile-main{display:grid;gap:16px;align-content:start;min-width:0}
-.sheet-origins{display:flex;align-items:center;gap:16px}
+.sheet-profile-main{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(0,1fr);
+  grid-template-areas:"origins origins origins" "align rep aff" "align bio bio" "align salary bonus";gap:12px;align-content:start;min-width:0}
+.sheet-origins{grid-area:origins;display:flex;align-items:center;gap:16px;margin-bottom:4px}
 .sheet-pictos{display:flex;gap:8px;flex:none}
 .sheet-pictos .picto{width:54px;height:54px;margin:0;padding:4px;border:1px solid #8c6b45;border-radius:50%;background:#2c211a}
 .sheet-origin-text p{margin:0;color:#f1dfbf;font:17px/1.45 Georgia,serif}
 .sheet-origin-text p+p{margin-top:3px;color:#d9be92;font-size:15px;font-style:italic}
-#character-dialog .sheet-profile .character-bio{margin:0;padding:14px 18px;border:1px solid #5d4632}
-.sheet-profile-columns{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .sheet-column{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:0;padding:12px;border:1px solid #71583e;border-radius:10px;background:#2e231c;text-align:center}
+.sheet-column--alignment{grid-area:align;justify-content:center}
+.sheet-column--reputation{grid-area:rep}
+.sheet-column--affinity{grid-area:aff}
 .sheet-column small{align-self:stretch;color:#bb9a6e;font:700 11px Georgia,serif;letter-spacing:.08em;text-transform:uppercase}
-.sheet-column>strong{color:#f4e1c2;font-size:15px}
+.sheet-column>strong{color:#f4e1c2;font-size:17px}
 .sheet-column p{margin:0;color:#ead9bd;font-size:14px;line-height:1.4}
 .sheet-column .rep-stars{font-size:26px;letter-spacing:2px}
 .sheet-column .player-affinity{display:flex;flex-direction:column;align-items:center;gap:8px;width:100%}
-.sheet-column .alignment-wheel-wrap{width:min(100%,260px);margin:0 auto;padding:18px}
+.sheet-column .alignment-wheel-wrap{width:min(100%,320px);margin:0 auto;padding:20px}
 .alignment-wheel-wrap--static .alignment-sector{cursor:default}
-.alignment-wheel-wrap--static .alignment-sector text{font-size:15px}
-.alignment-wheel-wrap--static .alignment-center text{font-size:18px}
-.alignment-wheel-wrap--static .alignment-axis{font-size:9px}
-/* Titre en haut, contenu centré dans la hauteur restante. */
-.sheet-column>small,.sheet-column .player-affinity>small{margin-bottom:auto}
-.sheet-column>:last-child,.sheet-column .player-affinity>:last-child{margin-bottom:auto}
-.sheet-column--affinity .player-affinity{flex:1}
+.alignment-wheel-wrap--static .alignment-sector text{font-size:14px}
+.alignment-wheel-wrap--static .alignment-center text{font-size:17px}
+.alignment-wheel-wrap--static .alignment-axis{font-size:10px}
+.sheet-column--alignment>small{margin-bottom:auto}
+.sheet-column--alignment>strong{margin-bottom:auto}
+.sheet-bio{grid-area:bio;min-width:0}
+#character-dialog .sheet-bio .character-bio,#character-dialog .sheet-bio .character-bio-placeholder{height:100%;margin:0;padding:14px 18px;border:1px solid #5d4632}
 /* Affinité : dix cœurs (rouges ou vides), puis une appréciation sans score numérique. */
 .player-affinity-hearts{display:flex;align-items:center;gap:0;white-space:nowrap;font-size:21px;letter-spacing:2px;line-height:1.2}
 .player-affinity-hearts .is-full{color:#e35c63;text-shadow:0 1px 4px rgba(100,10,20,.35)}
 .player-affinity-hearts .is-empty{color:#a88a86}
 .player-affinity-phrase{display:block;font-size:14px;line-height:1.4;font-weight:600;white-space:normal}
-.sheet-pay{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.sheet-pay>div{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:12px 16px;border:1px solid #9a7a4f;border-radius:10px;background:linear-gradient(180deg,#3a2b21,#2a1f18)}
+.sheet-pay{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:0;padding:12px 16px;border:1px solid #9a7a4f;border-radius:10px;background:linear-gradient(180deg,#3a2b21,#2a1f18)}
+.sheet-pay--salary{grid-area:salary}
+.sheet-pay--bonus{grid-area:bonus}
+.sheet-pay--captain{grid-column:2/-1;grid-row:4;color:#cdb38c;font-style:italic}
 .sheet-pay small{color:#d4b27e;font:700 12px Georgia,serif;letter-spacing:.06em;text-transform:uppercase}
-.sheet-pay strong{color:#ffd77a;font:700 20px Georgia,serif}
-.sheet-pay p{grid-column:1/-1;margin:0;color:#cdb38c;font-style:italic}
-@media(max-width:860px){.sheet-profile{grid-template-columns:1fr}.sheet-portrait{width:min(250px,100%);margin:0 auto}.sheet-profile-columns{grid-template-columns:1fr}}
-@media(max-width:500px){.sheet-pay{grid-template-columns:1fr}.sheet-origins{flex-direction:column;align-items:flex-start}.player-affinity-hearts{font-size:18px;letter-spacing:1px}}
+.sheet-pay strong{color:#ffd77a;font:700 20px Georgia,serif;white-space:nowrap}
+@media(max-width:1100px){
+  .sheet-profile-main{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:"origins origins" "align rep" "align aff" "bio bio" "salary bonus"}
+  .sheet-pay--captain{grid-column:1/-1;grid-row:5}
+}
+@media(max-width:860px){.sheet-profile{grid-template-columns:1fr}.sheet-portrait{width:min(250px,100%);margin:0 auto}}
+@media(max-width:600px){
+  .sheet-profile-main{grid-template-columns:1fr;grid-template-areas:"origins" "align" "rep" "aff" "bio" "salary" "bonus"}
+  .sheet-pay--captain{grid-row:auto}
+  .sheet-origins{flex-direction:column;align-items:flex-start}
+  .player-affinity-hearts{font-size:18px;letter-spacing:1px}
+}
 
 /* Réputation et renommée en étoiles : bronze, argent, or (data/reference/reputation-stars.json). */
 .rep-stars{display:inline-block;white-space:nowrap;font-size:1.2em;letter-spacing:.06em;line-height:1;text-shadow:0 0 1px rgba(0,0,0,.65)}

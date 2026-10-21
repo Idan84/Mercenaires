@@ -9,6 +9,7 @@ Noyau de logique indépendant de l'interface, préparé pour un futur portage Un
 | `progression.js` | Progression naturelle : journal par combattant pendant la mission, XP → niveau, application en fin de mission | `08-progression-and-experience.md` |
 | `mission-end.js` | Fin de mission : jet de mort, blessure, fatigue, durées d'indisponibilité | `10-mission-time-and-unavailability.md` |
 | `tavern.js` | Taverne : candidats, entretien, négociation | `14-tavern-recruitment.md` |
+| `recruit-dialogue.js` | Taverne : salutation selon l'affinité, réponses sincères du candidat, répliques de la négociation (textes dans `tavern-dialogue.json`) | `14-tavern-recruitment.md` §6 bis |
 | `biography.js` | Biographies : choix d'un pack de texte tagué compatible avec le mercenaire, sans réutilisation | `15-biographies-and-narrative-tags.md` (proposition) |
 | `avatars.js` | Avatars : choix du visage le plus proche du mercenaire, unicité, sexe donné par l'image | décisions d'Idan du 2026-10-04 (`docs/TEAM.md`) |
 | `avatar-catalog.js` | Catalogue des avatars depuis les images et leurs mots-clés Bridge (Git ou Hostinger) | `docs/DEPLOYMENT.md` |

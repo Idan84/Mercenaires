@@ -87,11 +87,11 @@ assert.match(nodes["hud-date"].textContent,/1 Corbenaël$/);
 
 // Le bouton du camp réutilise exactement le moteur AdvanceTime : salaires,
 // soins, mouvements à la Taverne, sauvegarde et réaffichage. Aucune double horloge.
-let advanced=0,saved=0,redrawn=0,interviewed=0;
+let advanced=0,saved=0,redrawn=0;
 const logged=[];
 let screen="camp";
-const advance = new Function("game","campaignRules","tavernLog","fmt","saveGame","renderGame","renderInterview","currentScreen",
-  extract(tavernUI,"function advanceCampDay()","// Valeurs qu'une question")+
+const advance = new Function("game","campaignRules","tavernLog","fmt","saveGame","renderGame","currentScreen",
+  extract(tavernUI,"function advanceCampDay()","// Dialogue de recrutement")+
   "\nreturn advanceCampDay;"
 )(
   fakeGame,()=>({advanceTime:(state,days)=>{
@@ -103,14 +103,13 @@ const advance = new Function("game","campaignRules","tavernLog","fmt","saveGame"
       tavern:{departures:[],arrivals:[{mercenary:{name:"Erik"}}]}}];
   }}),
   (message)=>logged.push(message),String,
-  ()=>saved++,()=>{redrawn++;render();},()=>interviewed++,()=>screen
+  ()=>saved++,()=>{redrawn++;render();},()=>screen
 );
 advance();
 assert.equal(fakeGame.campaign.day,33);
 assert.equal(advanced,1);
 assert.equal(saved,1);
 assert.equal(redrawn,1);
-assert.equal(interviewed,0);
 assert.ok(logged.some(m=>m.includes("guéri")));
 assert.ok(logged.some(m=>m.includes("Salaires versés : 35")));
 assert.ok(logged.some(m=>m.includes("Nouveaux candidats : Erik")));

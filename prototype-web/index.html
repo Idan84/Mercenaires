@@ -235,22 +235,8 @@
           <button id="tavern-mission-test-btn" class="primary">Mission Test</button>
         </section>
         <section id="tavern-recruits-view" class="hidden">
-          <button class="secondary" data-tavern-view="home">← Retour à la taverne</button>
-        <section class="panel tavern-panel">
-          <div class="section-title-row">
-            <div>
-              <p class="eyebrow">Taverne — recrutement V1</p>
-              <h2>Candidats du jour</h2>
-              <p class="muted">Chaque matin, certains candidats sont engagés ailleurs et de nouveaux arrivent sur les places libres.</p>
-              <p id="tavern-suitors" class="muted"></p>
-            </div>
-            <div class="tavern-actions">
-              <label class="tavern-intendant">Intendant <select id="tavern-intendant"></select></label>
-            </div>
-          </div>
-          <div id="tavern-candidates" class="tavern-grid"></div>
-          <div id="tavern-log" class="tavern-log"></div>
-        </section>
+          <button class="tavern-back" data-tavern-view="home">← Retour à la taverne</button>
+          <div id="tavern-candidates" class="recruit-grid"></div>
         </section>
       </section>
 
@@ -352,15 +338,13 @@
       <li><button type="button" data-talk="leave">Partir</button></li>
     </ol>
   </dialog>
-  <dialog id="tavern-dialog">
-    <div class="dialog-head">
-      <div>
-        <p class="eyebrow">Entretien à la Taverne</p>
-        <h2 id="tavern-dialog-name"></h2>
-      </div>
-      <button id="close-tavern-dialog" class="icon-btn" aria-label="Fermer">×</button>
-    </div>
-    <div id="tavern-dialog-content"></div>
+  <dialog id="recruit-talk-dialog" class="talk-dialog talk-dialog--recruit" aria-labelledby="recruit-talk-name">
+    <header class="talk-head">
+      <div id="recruit-talk-portrait" class="talk-face"></div>
+      <div><p id="recruit-talk-origin" class="eyebrow"></p><h2 id="recruit-talk-name"></h2></div>
+    </header>
+    <div id="recruit-talk-log" class="talk-log" aria-live="polite"></div>
+    <div id="recruit-talk-choices"></div>
   </dialog>
   <dialog id="character-dialog">
     <div class="dialog-head">
@@ -388,6 +372,7 @@
   <script src="/core/stars.js"></script>
   <script src="/core/names.js"></script>
   <script src="/core/creation.js"></script>
+  <script src="/core/recruit-dialogue.js"></script>
   <script src="reference-data.js"></script>
   <script src="core-data.js"></script>
   <script src="generation.js"></script>

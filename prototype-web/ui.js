@@ -230,15 +230,36 @@ function signedScore(n) {
   return (n > 0 ? "+" : "") + n;
 }
 
-// Fiche d'un membre de la compagnie : le score et ses composantes.
+// Présentation exclusivement UI : 10 descriptions d'affinité approuvées par Idan.
+// Le score réel reste disponible pour les mécaniques de jeu, jamais affiché dans la fiche.
+function affinityPresentation(score) {
+  const value = Math.max(-100, Math.min(100, Number(score) || 0));
+  const phrases = [
+    "Rêve en permanence de vous arracher les organes.",
+    "Envisage sérieusement d'empoisonner votre prochain repas.",
+    "Vous méprise avec une constance presque admirable.",
+    "Préférerait recevoir ses ordres d'un gobelin ivre.",
+    "Vous supporte, essentiellement pour votre argent.",
+    "Vous trouve moins insupportable que prévu.",
+    "Éprouve pour vous un respect prudent, mais sincère.",
+    "Vous suivrait au combat, même sans prime exceptionnelle.",
+    "Donnerait sa vie pour vous. Enfin, probablement.",
+    "Fantasme toutes les nuits en pensant à vous."
+  ];
+  const thresholds = [-80, -60, -40, -20, 0, 20, 40, 60, 79, 100];
+  const level = thresholds.findIndex(max => value <= max);
+  // 0 à 10 cœurs pleins, de -100 à +100 ; cœurs vides pour le reste.
+  const filled = Math.floor((value + 100) / 20);
+  return { phrase: phrases[level], filled };
+}
+
 function renderCaptainAffinity(c) {
   if (!game.campaign?.company.roster.includes(c)) return "";
   const a = captainAffinity(c);
   if (!a) return "";
-  const k = a.components;
-  const parts = [`peuple ${signedScore(k.people)}`, `culture ${signedScore(k.culture)}`, `alignement ${signedScore(k.alignment)}`];
-  if (a.acquired) parts.push(`acquise ${signedScore(Math.round(a.acquired))}`);
-  return `<div><small>Affinité avec le capitaine</small><strong>${signedScore(a.total)}</strong><span class="player-identity-note">${parts.join(" · ")}</span></div>`;
+  const { phrase, filled } = affinityPresentation(a.total);
+  const hearts = `<span class="player-affinity-hearts" aria-hidden="true"><span class="is-full">${"♥".repeat(filled)}</span><span class="is-empty">${"♡".repeat(10 - filled)}</span></span>`;
+  return `<div class="player-affinity"><small>Affinité avec le capitaine</small>${hearts}<strong class="player-affinity-phrase">${esc(phrase)}</strong></div>`;
 }
 
 function fmtDelta(n) {

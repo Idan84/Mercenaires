@@ -1708,6 +1708,8 @@ body[data-screen="camp"] .camp-scene>.panel .muted{color:#c2b29e}
 @media(max-width:720px){#initial-squad{grid-template-columns:1fr}.roster-card{grid-template-columns:86px minmax(0,1fr)}.roster-card .avatar-frame{width:86px}.roster-count{width:100%}.roster-count-capacity{border-left:0;padding-left:0}.roster-toolbar{justify-content:flex-start}}
 @media(max-width:480px){.roster-card{padding:11px;gap:11px}.roster-card-info .roster-name{font-size:17px}.roster-people-picto{width:26px;height:26px}.roster-people-picto .picto{width:25px;height:25px}.roster-affinity-hearts{font-size:14px}.roster-toolbar label{flex-basis:100%}}
 #character-dialog{background:#201916;color:#eadbc4;border:1px solid #987750;border-radius:15px;box-shadow:0 26px 80px #000c}
+/* Même taille pour tous les onglets (Idan, 2026-10-21) : la fenêtre ne se redimensionne plus. */
+#character-dialog{height:min(800px,92vh)}
 #character-dialog .dialog-head{background:#34251d;border-bottom:1px solid #97724b;padding-bottom:10px}
 #character-dialog .dialog-head h2{font:normal 34px Georgia,serif;color:#f3d5a0}
 #character-dialog .sheet-tab{color:#cbb99e;border-radius:4px;background:transparent}
@@ -1749,6 +1751,50 @@ body[data-screen="camp"] .camp-scene>.panel .muted{color:#c2b29e}
 .sheet-column--alignment>strong{margin-bottom:auto}
 .sheet-bio{grid-area:bio;min-width:0}
 #character-dialog .sheet-bio .character-bio,#character-dialog .sheet-bio .character-bio-placeholder{height:100%;margin:0;padding:14px 18px;border:1px solid #5d4632}
+/* Onglet Caractéristiques (Idan, 2026-10-21) : portrait, puis Physique, Mental et Résistances. */
+.sheet-stats{display:grid;grid-template-columns:250px repeat(3,minmax(0,1fr));gap:18px;align-items:start}
+.sheet-stat-group{display:flex;flex-direction:column;gap:7px;min-width:0}
+.sheet-stat-group h4{margin:0 0 4px;color:#bb9a6e;font:700 12px Georgia,serif;letter-spacing:.1em;text-transform:uppercase}
+.sheet-stat{display:flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid #71583e;border-radius:8px;background:#2e231c}
+.sheet-stat-icon{flex:none;width:20px;height:20px;color:#d8b77d}
+.sheet-stat--resistance-au-feu .sheet-stat-icon{color:#f08a4b}
+.sheet-stat--resistance-au-froid .sheet-stat-icon{color:#8fd0f0}
+.sheet-stat--resistance-a-la-foudre .sheet-stat-icon{color:#f2d65c}
+.sheet-stat--resistance-au-poison .sheet-stat-icon{color:#9bd27a}
+.sheet-stat--points-de-vie .sheet-stat-icon{color:#e35c63}
+.sheet-stat-name{position:relative;flex:1;min-width:0;color:#ead9bd;font-size:14px;cursor:help;outline:none}
+.sheet-stat-value{position:relative;color:#ffe1ac;font:700 18px Georgia,serif;font-variant-numeric:tabular-nums;cursor:pointer;outline:none;border-bottom:1px dotted #b08a5766}
+.sheet-stat-tip,.sheet-stat-pop{display:none;position:absolute;z-index:20;bottom:calc(100% + 8px);padding:10px 12px;border:1px solid #a9814f;border-radius:10px;background:#1b130e;box-shadow:0 12px 30px #000b;font:13px/1.4 system-ui,sans-serif;color:#ead9bd;text-align:left;cursor:default}
+.sheet-stat-tip{left:-34px;width:270px}
+.sheet-stat-tip strong{display:block;color:#ffe1ac;font:700 14px Georgia,serif;margin-bottom:3px}
+.sheet-stat-tip span{display:block;color:#cdb38c;margin-bottom:4px}
+.sheet-stat-tip em{display:block;font-style:normal}
+.sheet-stat-pop{right:-12px;width:290px}
+.sheet-stat-name:hover .sheet-stat-tip,.sheet-stat-name:focus .sheet-stat-tip{display:block}
+.sheet-stat-value:hover .sheet-stat-pop,.sheet-stat-value:focus-within .sheet-stat-pop{display:block}
+.sheet-stat-value:hover,.sheet-stat-value:focus-within{border-bottom-color:#f0c77f}
+/* Pont invisible entre la valeur et la bulle, pour pouvoir y cliquer. */
+.sheet-stat-pop::after{content:"";position:absolute;left:0;right:0;top:100%;height:10px}
+.sheet-stat-pop-title{display:block;margin-bottom:6px;color:#bb9a6e;font:700 11px Georgia,serif;letter-spacing:.08em;text-transform:uppercase}
+.sheet-stat-pop .compare-track{display:block;margin:6px 8px 10px}
+.sheet-stat-pop .compare-line{background:#7a6146}
+.sheet-stat-pop .compare-dot{border-color:#1b130e;box-shadow:0 0 0 1px #a9814f}
+.sheet-stat-pop .compare-dot.current{background:#ffd77a;box-shadow:0 0 0 1px #ffd77a}
+.sheet-stat-pop-mid{display:flex;justify-content:space-between;gap:10px;margin-bottom:8px;font-size:12px;color:#cdb38c}
+.sheet-stat-pop-mid i.compare-dot{position:static;display:inline-block;transform:none;margin-right:5px;vertical-align:middle}
+.sheet-stat-pop-mid b{color:#ffe1ac;font-family:Georgia,serif}
+.sheet-stat-pop-ends{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sheet-stat-who{display:flex;align-items:center;gap:8px;min-width:0;padding:5px;border:1px solid #71583e;border-radius:8px;background:#2e231c;color:#ead9bd;text-align:left;cursor:pointer}
+.sheet-stat-who:hover,.sheet-stat-who:focus-visible{border-color:#f0c77f;background:#4a3424;outline:none}
+.sheet-stat-who.is-self{border-color:#ffd77a}
+.sheet-stat-who img,.sheet-stat-face{flex:none;width:40px;height:40px;border-radius:6px;object-fit:cover;background:#3a2b21}
+.sheet-stat-face{display:grid;place-items:center;color:#d8b77d;font:700 14px Georgia,serif}
+.sheet-stat-who>span{display:grid;min-width:0;line-height:1.2}
+.sheet-stat-who small{color:#bb9a6e;font-size:10px;text-transform:uppercase;letter-spacing:.06em}
+.sheet-stat-who b{color:#ffe1ac;font-family:Georgia,serif}
+.sheet-stat-who em{overflow:hidden;font-style:normal;font-size:11px;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:1100px){.sheet-stats{grid-template-columns:200px repeat(3,minmax(0,1fr))}.sheet-stat-tip{width:220px}}
+@media(max-width:860px){.sheet-stats{grid-template-columns:1fr}.sheet-stats .sheet-portrait{width:min(250px,100%);margin:0 auto}}
 /* Affinité : dix cœurs (rouges ou vides), puis une appréciation sans score numérique. */
 .player-affinity-hearts{display:flex;align-items:center;gap:0;white-space:nowrap;font-size:21px;letter-spacing:2px;line-height:1.2}
 .player-affinity-hearts .is-full{color:#e35c63;text-shadow:0 1px 4px rgba(100,10,20,.35)}

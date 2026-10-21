@@ -35,6 +35,6 @@ Git est la source de vérité. Les JSON ci-dessous sont les référentiels struc
 
 | biographies.json | 30 | id, short, rumor, motto, tags, gender, weight, statut |
 
-| avatars.json | 47 | id, people, sex, tags, full, portrait, source (généré par `scripts/build-avatars.js` depuis les tags Bridge de `assets-src/avatars/` : ne pas modifier à la main). Le jeu y ajoute les avatars déposés sur Hostinger (`media/avatars/`, voir `docs/DEPLOYMENT.md`) |
+| avatars.json | 0 | id, people, sex, tags, full, portrait, source (vide depuis le 2026-10-21 : tous les avatars sont sur Hostinger, `media/avatars/`, voir `docs/DEPLOYMENT.md` ; régénéré par `scripts/build-avatars.js`) |
 
 | captain-creation-copy.json | 69 | peoples, cultures, origins, ancestries, alignments : nom, description, force, faiblesse (textes de Chatty pour la création du capitaine) |

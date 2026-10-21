@@ -4,8 +4,8 @@
 // Utilisé par le jeu (index lu sur Hostinger : api/avatars.php) et par scripts/build-avatars.js.
 //
 // - Un avatar = un plein pied (image haute) + un portrait (image carrée) portant le même peuple et le
-//   même numéro dans le nom : « Ogre_12_….jpg » et « Ogre_12_Square_….jpg ». Le portrait est reconnu
-//   à sa forme carrée, pas à son nom.
+//   même numéro dans le nom : « Ogre_12_….jpg » et « Ogre_12_Square_….jpg », ou sans tiret bas,
+//   « Halfling001.jpg » et « Halfling001_square.jpg ». Le portrait est reconnu à sa forme carrée, pas à son nom.
 // - Les mots-clés des deux images s'additionnent : taguer le plein pied suffit.
 // - Chaque mot-clé est rangé dans sa famille (peuple, sexe, culture, origine, alignement, ascendance,
 //   profil, magie, arme) d'après les référentiels ; un mot-clé inconnu est signalé.
@@ -68,7 +68,8 @@
     for(const file of sorted){
       const parts=file.path.split("/");
       const name=parts[parts.length-1];
-      const match=name.match(/^(.+?)_(\d+)(?:_|\.|$)/);
+      // « Peuple_12… » ou « Peuple012… » (dépôt Hostinger du 2026-10-21 : Halflings et Reptiliens).
+      const match=name.match(/^(.+?)_?(\d+)(?:_|\.|$)/);
       if(!match){ warnings.push(`${file.path} : nom sans « Peuple_Numéro », ignoré`); continue; }
       const folder=parts.length>1?parts[0]:"";
       const fromName=classify(match[1]), fromFolder=folder?classify(folder):null;

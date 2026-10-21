@@ -524,19 +524,16 @@ function renderMartialGroup(c) {
 }
 
 // Silhouette d'équipement : peuple et sexe proviennent du mercenaire (sexe hérité de l'avatar).
-// Les fichiers sont livrés séparément par Idan/JC3 dans assets/silhouettes.
-// On conserve le mannequin neutre quand le sexe n'est pas connu ou si le fichier manque.
+// Les images sont celles qu'Idan dépose sur Hostinger dans media/Avatars_Equipements
+// (game.referenceData.equipmentSilhouettes, api/silhouettes.php).
+// On conserve le mannequin neutre quand le sexe n'est pas connu ou si l'image manque.
 function equipmentSilhouetteSrc(c) {
-  const peoples={
-    "Humain":"humain","Elfe":"elfe","Nain":"nain","Orc":"orc",
-    "Gobelin":"gobelin","Halfling":"halfling","Gnome":"gnome",
-    "Ogre":"ogre","Reptilien":"reptilien","Homme-bête":"homme-bete"
-  };
-  const people=peoples[c?.people];
   const sex=String(c?.sex||"").trim().toLowerCase();
   const gender=sex.startsWith("f")?"femme"
     :(sex.startsWith("h")||sex.startsWith("m"))?"homme":null;
-  return people&&gender?`assets/silhouettes/${people}-${gender}.webp`:null;
+  if(!c?.people||!gender) return null;
+  const row=(game.referenceData?.equipmentSilhouettes?.rows||[]).find(r=>r.people===c.people&&r.sex===gender);
+  return row?.url||null;
 }
 
 function renderEquipment(c) {

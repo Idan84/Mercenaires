@@ -36,8 +36,24 @@ async function loadReferenceData(base = "/data/") {
     return [key, await response.json()];
   }));
   const data = Object.fromEntries(entries);
-  data.avatars = await loadAvatarCatalog(data, base);
+  [data.avatars, data.equipmentSilhouettes] = await Promise.all([loadAvatarCatalog(data, base), loadSilhouetteCatalog(data)]);
   return data;
+}
+
+// Silhouettes d'équipement (Idan, 2026-10-21) : déposées sur Hostinger dans media/Avatars_Equipements,
+// indexées par api/silhouettes.php. Sans index (serveur local sans PHP), la fiche garde son mannequin.
+async function loadSilhouetteCatalog(reference) {
+  const catalog = globalThis.MercenairesAvatarCatalog;
+  try {
+    const response = await fetch("/api/silhouettes.php", { cache: "no-cache" });
+    if (!response.ok || !/json/i.test(response.headers.get("content-type") || "")) return { rows: [], warnings: [] };
+    const hosted = await response.json();
+    const built = catalog.buildSilhouetteCatalog(hosted.files || [], reference, { baseUrl: catalog.fileUrl("/", hosted.base || "media/Avatars_Equipements") });
+    if (built.warnings.length) console.warn("Silhouettes Hostinger :", built.warnings);
+    return built;
+  } catch {
+    return { rows: [], warnings: [] };
+  }
 }
 
 // Avatars : ceux de Git (data/avatars.json) et ceux qu'Idan dépose sur Hostinger (media/avatars/,

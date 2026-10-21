@@ -121,6 +121,37 @@
     return {rows,warnings};
   }
 
+  // Silhouettes d'équipement (Idan, 2026-10-21) : une image par peuple et par sexe, déposée sur Hostinger
+  // dans media/Avatars_Equipements (index : api/silhouettes.php). Le peuple et le sexe se lisent dans le
+  // nom du fichier, ses dossiers ou ses mots-clés Bridge (« Orc_Femme.jpg », « Homme-bete_H.jpg »…).
+  // Renvoie une ligne par couple peuple + sexe, et les remarques (image ambiguë, doublon).
+  function buildSilhouetteCatalog(files,reference,{baseUrl="/media/Avatars_Equipements/"}={}){
+    const classify=classifier(vocabulary(reference));
+    const rows=[],warnings=[],seen=new Map();
+    const sorted=[...(files||[])].filter(f=>f&&f.path).sort((a,b)=>a.path<b.path?-1:a.path>b.path?1:0);
+    for(const file of sorted){
+      const words=file.path.replace(/\.[a-z0-9]+$/i,"").split(/[\/_\s.-]+/).filter(Boolean);
+      let people=null,sex=null;
+      const found=c=>{
+        if(c?.family==="people"&&!people) people=c.value;
+        else if(c?.family==="sex"&&!sex) sex=c.value;
+      };
+      // Un peuple en deux mots (« Homme-bête ») passe avant le sexe « Homme ».
+      for(let i=0;i<words.length;i++){
+        const pair=i+1<words.length?classify(words[i]+"-"+words[i+1]):null;
+        if(pair?.family==="people"){ found(pair); i++; continue; }
+        found(classify(words[i]));
+      }
+      for(const k of file.keywords||[]) found(classify(k));
+      if(!people||!sex){ warnings.push(`${file.path} : ${people?"sexe":"peuple"} introuvable, ignorée`); continue; }
+      const key=people+"|"+sex;
+      if(seen.has(key)){ warnings.push(`${file.path} : ${people} ${sex} déjà fourni par ${seen.get(key)}, ignorée`); continue; }
+      seen.set(key,file.path);
+      rows.push({people,sex,url:fileUrl(baseUrl,file.path),source:file.path});
+    }
+    return {rows,warnings};
+  }
+
   // Deux catalogues réunis ; à identifiant égal, le second (Hostinger) remplace le premier (Git).
   function mergeCatalogs(base,override){
     const byId=new Map((base||[]).map(a=>[a.id,a]));
@@ -128,5 +159,5 @@
     return [...byId.values()].sort((a,b)=>a.id.localeCompare(b.id));
   }
 
-  return {PROFILES,SEXES,norm,slug,vocabulary,classifier,groupAvatarFiles,buildAvatarCatalog,mergeCatalogs,fileUrl};
+  return {PROFILES,SEXES,norm,slug,vocabulary,classifier,groupAvatarFiles,buildAvatarCatalog,buildSilhouetteCatalog,mergeCatalogs,fileUrl};
 });

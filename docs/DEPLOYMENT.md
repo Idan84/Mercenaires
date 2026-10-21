@@ -90,7 +90,7 @@ Pour vérifier un dépôt : https://bloodandwages.idanwizen.com/api/silhouettes.
 
 ### Musique de la Taverne : `assets/audio/tavern.mp3`
 
-Déposée par Idan le 2026-10-21 directement dans `public_html/bloodandwages/assets/audio/`, à côté des musiques suivies par Git. La mise en ligne automatique (`mirror --reverse`, sans `--delete`) ajoute et remplace des fichiers mais n'efface jamais ceux qui n'existent que sur Hostinger : ce fichier ne risque donc rien. Le jeu la joue en boucle à la Taverne (`prototype-web/tavern-ui.js`) ; sans fichier, la Taverne reste silencieuse.
+Déposée par Idan le 2026-10-21 directement dans `public_html/bloodandwages/assets/audio/`, à côté des musiques suivies par Git. La mise en ligne automatique (`mirror --reverse`, sans `--delete`) ajoute et remplace des fichiers mais n'efface jamais ceux qui n'existent que sur Hostinger : ce fichier ne risque donc rien. Le jeu la joue en boucle à la Taverne (`prototype-web/music-ui.js`, qui gère aussi la musique du menu et le thème du camp) ; sans fichier, la Taverne reste silencieuse.
 
 ## Netlify (abandonné)
 

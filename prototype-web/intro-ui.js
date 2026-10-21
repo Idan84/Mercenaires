@@ -7,10 +7,9 @@
 // la génération reste celle du moteur (createCaptainFromForm).
 // Textes de description, force et faiblesse : data/reference/captain-creation-copy.json (Chatty).
 // Sans texte, force et faiblesse affichent les modificateurs de la matrice de génération.
-// Après la création, le thème « Blood & Wages » accompagne l'arrivée au camp (Idan).
+// Après la création, le thème « Blood & Wages » accompagne l'arrivée au camp (Idan) : music-ui.js.
 
 const INTRO_VOICE_SRC="assets/audio/intro-voix.mp3";
-const THEME_SRC="assets/audio/blood-and-wages-theme.mp3";
 const INTRO_FALLBACK_SECONDS=56;
 
 const WIZARD_STEPS=[
@@ -26,7 +25,7 @@ const WIZARD_STEPS=[
 ];
 const RECAP_ROWS=[["Nom","name"],["Peuple","people"],["Culture","culture"],["Origine sociale","origin"],["Ascendance","ascendance"],["Alignement","alignment"],["Compagnie","companyName"]];
 
-const wizard={step:0,choice:{},voice:null,timers:[],theme:null};
+const wizard={step:0,choice:{},voice:null,timers:[]};
 
 // --- Introduction -----------------------------------------------------------------------------
 
@@ -81,20 +80,6 @@ function openIntro(){
 
 function creationCopy(section,name){
   return (game.referenceData?.captainCreationCopy?.[section]||[]).find(r=>r.nom===name)||null;
-}
-
-// Thème « Blood & Wages » : une fois, à l'arrivée au camp après la création ; coupé au retour au
-// menu, en mission ou en fin de partie (screen-ui.js).
-function playTheme(){
-  stopTheme();
-  const theme=new Audio(THEME_SRC);
-  theme.volume=0.7;
-  wizard.theme=theme;
-  theme.play().catch(()=>{});
-}
-
-function stopTheme(){
-  if(wizard.theme){ wizard.theme.pause(); wizard.theme=null; }
 }
 
 // Libellés courts de l'origine : les valeurs canoniques restent inchangées pour le générateur,
@@ -416,7 +401,6 @@ function finishWizard(){
   stopIntroVoice();
   $("creation-wizard").classList.add("hidden");
   $("intro-panel").classList.add("hidden");
-  playTheme();
 }
 
 function initializeIntroUi(){

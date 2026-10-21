@@ -1,0 +1,126 @@
+{
+  "title": "Calendrier du Royaume",
+  "year_start": 842,
+  "era": "Âge des Couronnes Brisées",
+  "days_per_year": 365,
+  "weekday_names": [
+    "Lunbrume",
+    "Martel",
+    "Druiden",
+    "Sermentel",
+    "Soldren",
+    "Bastor",
+    "Dimcairn"
+  ],
+  "months": [
+    {
+      "name": "Brumecendre",
+      "days": 31,
+      "quotes": [
+        "Le froid tue les pauvres. Les riches restent au chaud.",
+        "Le gel conserve les provisions. Et les cadavres.",
+        "Qui n'a pas de manteau fera un excellent épouvantail."
+      ]
+    },
+    {
+      "name": "Corbenaël",
+      "days": 28,
+      "quotes": [
+        "Les corbeaux mangent mieux que les soldats.",
+        "Un corbeau sur le toit : quelqu'un a oublié de payer le fossoyeur.",
+        "L'hiver se termine. Les plaintes, jamais."
+      ]
+    },
+    {
+      "name": "Bourbevent",
+      "days": 31,
+      "quotes": [
+        "La saison où l'on perd davantage de bottes que d'hommes.",
+        "La boue ne choisit pas son camp. Elle avale les deux.",
+        "Un bon chemin est celui qui rend vos deux bottes."
+      ]
+    },
+    {
+      "name": "Florémort",
+      "days": 30,
+      "quotes": [
+        "Les fleurs repoussent. Les mercenaires, rarement.",
+        "Les oiseaux chantent. Les créanciers aussi.",
+        "Le printemps embellit même les champs de bataille. De loin."
+      ]
+    },
+    {
+      "name": "Beltefeu",
+      "days": 31,
+      "quotes": [
+        "Les amoureux s'embrassent, les villages brûlent.",
+        "Au feu de joie, vérifiez d'abord qui tient la torche.",
+        "L'amour dure une nuit. L'incendie jusqu'à l'aube."
+      ]
+    },
+    {
+      "name": "Soldehaut",
+      "days": 30,
+      "quotes": [
+        "Les journées s'allongent. Les prétentions salariales aussi.",
+        "Le soleil brille pour tous. Pas les primes.",
+        "L'été réchauffe les cœurs et vide les gourdes."
+      ]
+    },
+    {
+      "name": "Fauchefer",
+      "days": 31,
+      "quotes": [
+        "On récolte le blé, les impôts et les cadavres.",
+        "Une bonne moisson nourrit les soldats. Une mauvaise les recrute.",
+        "La faux n'est qu'une épée de paysan mal payée."
+      ]
+    },
+    {
+      "name": "Lughraille",
+      "days": 31,
+      "quotes": [
+        "Les tavernes prospèrent, les compagnies font faillite.",
+        "Les chansons sont gratuites. Pas les chopes.",
+        "On sait quand commence la fête. Jamais quand finit l'addition."
+      ]
+    },
+    {
+      "name": "Brandebruyne",
+      "days": 30,
+      "quotes": [
+        "Les récoltes finissent. Les pillages commencent.",
+        "La pluie lave les traces. Pas les réputations.",
+        "Quand les greniers se vident, les brigands se remplissent les poches."
+      ]
+    },
+    {
+      "name": "Cerfombre",
+      "days": 31,
+      "quotes": [
+        "Les nobles chassent le cerf. Les autres chassent les nobles.",
+        "Le meilleur gibier porte parfois une couronne.",
+        "En forêt, le bruit des pièces attire plus que celui des cors."
+      ]
+    },
+    {
+      "name": "Samhargne",
+      "days": 30,
+      "quotes": [
+        "Les morts reviennent. Certains réclament leur salaire.",
+        "Les fantômes sont fidèles : ils reviennent sans qu'on les paye.",
+        "À Samhargne, même les tombes ont des arriérés."
+      ]
+    },
+    {
+      "name": "Neigedette",
+      "days": 31,
+      "quotes": [
+        "L'année s'achève. Les dettes, jamais.",
+        "Les comptes se ferment. Les bourses restent vides.",
+        "Le meilleur vœu pour l'an prochain ? Être encore vivant."
+      ]
+    }
+  ],
+  "notes": "Affichage narratif uniquement. Jour de campagne 1 = Lunbrume 1 Brumecendre, an 842. Aucun jour intercalaire ni année bissextile. Les citations tournent chaque jour parmi les trois citations de son mois."
+}

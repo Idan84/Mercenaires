@@ -1417,6 +1417,100 @@ body[data-screen="camp"][data-camp-scene="home"] .menu-back {
   border-color: rgba(218,172,82,.62);
 }
 
+/* Almanach du camp : texte et contraste, sans aucun asset supplémentaire. */
+.camp-calendar {
+  width: min(420px,90vw);
+  margin-top: 18px;
+  padding: 16px 18px 17px;
+  border: 1px solid rgba(191,148,88,.8);
+  border-radius: 13px;
+  background: linear-gradient(145deg,rgba(48,35,27,.96),rgba(24,17,14,.97));
+  color: #f0ddbc;
+  box-shadow: 0 15px 38px rgba(0,0,0,.44),inset 0 1px rgba(255,225,167,.1);
+  text-align: center;
+}
+.camp-calendar-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  color: #c4a47b;
+  font: 700 10px Georgia,serif;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.camp-calendar-topline strong {
+  padding: 4px 8px;
+  border: 1px solid rgba(198,162,103,.46);
+  border-radius: 999px;
+  color: #f6ddae;
+  font: 700 11px Georgia,serif;
+  letter-spacing: .02em;
+  white-space: nowrap;
+  text-transform: none;
+}
+.camp-calendar h3 {
+  margin: 13px 0 4px;
+  color: #ffe1ac;
+  font: normal clamp(21px,2vw,27px)/1.22 Georgia,serif;
+}
+.camp-calendar-year {margin: 0;color:#c0ac91;font-size: 12px}
+.camp-calendar-quote {
+  min-height: 39px;
+  margin: 13px 0 15px;
+  padding: 12px 4px 0;
+  border-top: 1px solid rgba(207,167,107,.25);
+  color: #e1ceb1;
+  font: italic 13px/1.4 Georgia,serif;
+}
+.camp-next-day-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 44px;
+  padding: 9px 16px;
+  border: 1px solid #b99462;
+  border-radius: 8px;
+  background: linear-gradient(180deg,#795436,#422b1e);
+  color: #ffe7b9;
+  font: 700 14px Georgia,serif;
+  cursor: pointer;
+  transition: filter .15s,transform .15s;
+}
+.camp-next-day-btn:hover,.camp-next-day-btn:focus-visible {
+  filter: brightness(1.18);
+  outline: 2px solid rgba(238,197,123,.6);
+  outline-offset: 2px;
+}
+.camp-next-day-btn:active {transform:translateY(1px)}
+@media (max-width:700px) {
+  .camp-calendar {width:min(88vw,420px);margin-top:14px;padding:13px 15px}
+  .camp-calendar h3 {font-size:22px}
+  .camp-calendar-quote {margin:10px 0 12px;padding-top:9px}
+}
+/* « Jour suivant » doit rester cliquable : sur l'accueil du camp, le journal passe à gauche ; sur les
+   écrans peu hauts, le menu et l'almanach se resserrent au-dessus de la barre du bas. */
+@media (min-width:701px) {
+  body[data-screen="camp"][data-camp-scene="home"] .game-action-console {right:auto;left:22px}
+}
+@media (max-height:900px) and (min-width:701px) {
+  .camp-hub {justify-content:flex-start;padding-top:0;padding-bottom:0}
+  .camp-hub-menu {gap:8px}
+  .camp-hub-btn {min-height:48px}
+  .camp-calendar {margin-top:11px;padding:11px 15px}
+  .camp-calendar h3 {margin-top:8px}
+  .camp-calendar-quote {min-height:0;margin:8px 0 10px;padding-top:8px}
+}
+@media (max-height:760px) and (min-width:701px) {
+  .camp-hub-heading {margin-bottom:8px}
+  .camp-hub-btn {min-height:44px}
+  .camp-calendar h3 {font-size:21px}
+}
+@media (prefers-reduced-motion:reduce) {.camp-next-day-btn {transition:none}}
+
 .camp-scene {
   max-width: 1200px;
   margin: 0 auto;

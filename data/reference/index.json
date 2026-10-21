@@ -421,6 +421,16 @@
       ]
     },
     {
+      "name": "equipment-silhouettes",
+      "file": "equipment-silhouettes.json",
+      "rows": 20,
+      "columns": [
+        "fichier",
+        "peuple",
+        "sexe"
+      ]
+    },
+    {
       "name": "people-affinity",
       "file": "people-affinity.json",
       "rows": 10,

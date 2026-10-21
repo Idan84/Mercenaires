@@ -26,6 +26,15 @@ assert.deepEqual(odd.rows.map(r=>r.people+" "+r.sex),["Homme-bête femme","Nain 
 assert.equal(odd.rows.find(r=>r.people==="Nain").url,"/media/Avatars_Equipements/Nains/Silhouette%20M.png");
 assert.equal(odd.warnings.length,2,"sexe introuvable et doublon signalés");
 
+// Dépôt réel d'Idan (2026-10-21) : noms générés, peuple et sexe dans equipment-silhouettes.json.
+const table=read("equipment-silhouettes.json");
+assert.equal(table.rows.length,table.row_count);
+const real=buildSilhouetteCatalog(table.rows.map(r=>({path:r.fichier})),{...reference,equipmentSilhouetteFiles:table});
+assert.deepEqual(real.warnings,[]);
+assert.equal(real.rows.length,20,"10 peuples × 2 sexes, sans doublon");
+for(const p of names) for(const sex of ["femme","homme"]) assert.ok(real.rows.some(r=>r.people===p&&r.sex===sex),"silhouette "+p+" "+sex);
+assert.equal(real.rows.find(r=>r.people==="Homme-bête"&&r.sex==="femme").source,"Female_Beastman_character_silhou…_20261021140741.jpg");
+
 // Fiche : la silhouette du peuple et du sexe du mercenaire, sinon le mannequin.
 assert.match(loader,/api\/silhouettes\.php/);
 const a=js.indexOf("function equipmentSilhouetteSrc(c) {");

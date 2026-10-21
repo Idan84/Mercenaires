@@ -123,10 +123,12 @@
 
   // Silhouettes d'équipement (Idan, 2026-10-21) : une image par peuple et par sexe, déposée sur Hostinger
   // dans media/Avatars_Equipements (index : api/silhouettes.php). Le peuple et le sexe se lisent dans le
-  // nom du fichier, ses dossiers ou ses mots-clés Bridge (« Orc_Femme.jpg », « Homme-bete_H.jpg »…).
+  // nom du fichier, ses dossiers ou ses mots-clés Bridge (« Orc_Femme.jpg », « Homme-bete_H.jpg »…), ou
+  // dans data/reference/equipment-silhouettes.json quand le nom ne les donne pas (images générées).
   // Renvoie une ligne par couple peuple + sexe, et les remarques (image ambiguë, doublon).
   function buildSilhouetteCatalog(files,reference,{baseUrl="/media/Avatars_Equipements/"}={}){
     const classify=classifier(vocabulary(reference));
+    const known=new Map(rowsOf(reference.equipmentSilhouetteFiles).map(r=>[r.fichier,r]));
     const rows=[],warnings=[],seen=new Map();
     const sorted=[...(files||[])].filter(f=>f&&f.path).sort((a,b)=>a.path<b.path?-1:a.path>b.path?1:0);
     for(const file of sorted){
@@ -143,6 +145,8 @@
         found(classify(words[i]));
       }
       for(const k of file.keywords||[]) found(classify(k));
+      const entry=known.get(file.path);
+      if(entry){ people=classify(entry.peuple)?.family==="people"?entry.peuple:people; sex=classify(entry.sexe)?.family==="sex"?classify(entry.sexe).value:sex; }
       if(!people||!sex){ warnings.push(`${file.path} : ${people?"sexe":"peuple"} introuvable, ignorée`); continue; }
       const key=people+"|"+sex;
       if(seen.has(key)){ warnings.push(`${file.path} : ${people} ${sex} déjà fourni par ${seen.get(key)}, ignorée`); continue; }

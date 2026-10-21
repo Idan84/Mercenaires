@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "name": "equipment-silhouettes",
+  "description": "Silhouettes d'équipement déposées par Idan sur Hostinger (media/Avatars_Equipements, 2026-10-21) : peuple et sexe de chaque fichier, quand son nom ne les donne pas. Attribution faite par JC3 en regardant les images (paires Gnome et Gobelin à confirmer par Idan). Un fichier absent de cette table est rangé d'après son nom ou ses mots-clés Bridge (« Orc_Femme.jpg »).",
+  "columns": [
+    {
+      "source": "Fichier (chemin dans media/Avatars_Equipements)",
+      "key": "fichier"
+    },
+    {
+      "source": "Peuple",
+      "key": "peuple"
+    },
+    {
+      "source": "Sexe",
+      "key": "sexe"
+    }
+  ],
+  "row_count": 20,
+  "rows": [
+    {
+      "fichier": "Beastman_character_silhouette_20261021140741.jpg",
+      "peuple": "Homme-bête",
+      "sexe": "homme"
+    },
+    {
+      "fichier": "Dark_Elf_character_silhouette_pose_20261021140741.jpg",
+      "peuple": "Elfe",
+      "sexe": "homme"
+    },
+    {
+      "fichier": "Dark_Elf_silhouette_standing_pose_20261021140741.jpg",
+      "peuple": "Elfe",
+      "sexe": "femme"
+    },
+    {
+      "fichier": "Dwarf_character_silhouette_sketch_20261021140741.jpg",
+      "peuple": "Nain",
+      "sexe": "homme"
+    },
+    {
+      "fichier": "Female_Beastman_character_silhou…_20261021140741.jpg",
+      "peuple": "Homme-bête",
+      "sexe": "femme"
+    },
+    {
+      "fichier": "Female_dwarf_silhouette_standing_20261021140741.jpg",
+      "peuple": "Nain",
+      "sexe": "femme"
+    },
+    {
+      "fichier": "Female_orc_silhouette_standing_pose_20261021140741.jpg",
+      "peuple": "Orc",
+      "sexe": "femme"
+    },
+    {
+      "fichier": "Female_silhouette_standing_sketch_20261021140741.jpg",
+      "peuple": "Humain",
+      "sexe": "femme"
+    },
+    {
+      "fichier": "Gnome_character_silhouette_for_RPG_20261021140741.jpg",
+      "peuple": "Gnome",
+      "sexe": "femme"
+    },
+    {
+      "fichier": "Gnome_character_standing_silhouette_20261021140741.jpg",
+      "peuple": "Gnome",
+      "sexe": "homme"
+    },
+    {
+      "fichier": "Goblin_character_silhouette_sketch_20261021140741.jpg",
+      "peuple": "Gobelin",
+      "sexe": "femme"
+    },
+    {
+      "fichier": "Goblin_character_sketch_20261021140741.jpg",
+      "peuple": "Gobelin",
+      "sexe": "homme"
+    },
+    {
+      "fichier": "Halfling_character_silhouette_fo…_20261021140741.jpg",
+      "peuple": "Halfling",
+      "sexe": "homme"
+    },
+    {
+      "fichier": "Halfling_character_silhouette_st…_20261021140741.jpg",
+      "peuple": "Halfling",
+      "sexe": "femme"
+    },
+    {
+      "fichier": "Male_character_silhouette_standing_20261021140741.jpg",
+      "peuple": "Humain",
+      "sexe": "homme"
+    },
+    {
+      "fichier": "Muscular_orc_silhouette_sketch_20261021140741.jpg",
+      "peuple": "Orc",
+      "sexe": "homme"
+    },
+    {
+      "fichier": "Ogre_character_silhouette_sketch_20261021140741.jpg",
+      "peuple": "Ogre",
+      "sexe": "femme"
+    },
+    {
+      "fichier": "Ogre_character_sketch_20261021140741.jpg",
+      "peuple": "Ogre",
+      "sexe": "homme"
+    },
+    {
+      "fichier": "Reptilian_character_sketch_silho…_20261021140741.jpg",
+      "peuple": "Reptilien",
+      "sexe": "homme"
+    },
+    {
+      "fichier": "Reptilian_character_sketch_silho…_20261021140741_2.jpg",
+      "peuple": "Reptilien",
+      "sexe": "femme"
+    }
+  ]
+}

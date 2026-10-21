@@ -27,6 +27,7 @@
         metal:found.metal,
         metalKey:METAL_KEYS[found.metal]||"bronze",
         label:found.etoiles+" étoile"+(found.etoiles>1?"s":"")+" "+(METAL_LABELS[found.metal]||found.metal),
+        phrase:found.phrase||null,
         max:!next,
         value:v,
         nextAt:next?Number(next[scale]):null

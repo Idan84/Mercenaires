@@ -217,7 +217,9 @@ function renderDetail(step,value){
 }
 
 
-function renderAlignmentWheel(values,selected){
+// interactive:false : roue en lecture seule (fiche du mercenaire), sans boutons ni focus.
+function renderAlignmentWheel(values,selected,{interactive=true}={}){
+  const act=(value)=>interactive?` data-wizard-choice="${esc(value)}" tabindex="0" role="button" aria-label="${esc(value)}" aria-pressed="${selected===value}"`:"";
   // Axes : Bien (nord), Mal (sud), Chaotique (ouest), Loyal (est).
   const sectors=[
     ["Neutre bon",270],["Loyal bon",315],["Loyal neutre",0],["Loyal mauvais",45],
@@ -232,13 +234,14 @@ function renderAlignmentWheel(values,selected){
     const p=`M ${coords(start)} L ${coords(farStart)} A ${outer} ${outer} 0 0 1 ${coords(farEnd)} L ${coords(end)} A ${inner} ${inner} 0 0 0 ${coords(start)} Z`;
     const label=point(113,angle);
     const words=value.split(" ");
-    return `<g class="alignment-sector ${selected===value?"is-selected":""}" data-wizard-choice="${esc(value)}" tabindex="0" role="button" aria-label="${esc(value)}" aria-pressed="${selected===value}">
+    return `<g class="alignment-sector ${selected===value?"is-selected":""}"${act(value)}>
       <path d="${p}"></path><text x="${label[0]}" y="${label[1]-6}" text-anchor="middle"><tspan x="${label[0]}" dy="0">${esc(words[0])}</tspan><tspan x="${label[0]}" dy="15">${esc(words.slice(1).join(" "))}</tspan></text>
     </g>`;
   }).join("");
-  const neutral=values.includes("Neutre")?`<g class="alignment-sector alignment-center ${selected==="Neutre"?"is-selected":""}" data-wizard-choice="Neutre" role="button" tabindex="0" aria-label="Neutre" aria-pressed="${selected==="Neutre"}"><circle cx="180" cy="180" r="51"></circle><text x="180" y="184" text-anchor="middle">Neutre</text></g>`:"";
-  return `<div class="alignment-wheel-wrap"><div class="alignment-axis alignment-axis-top">BON</div><div class="alignment-axis alignment-axis-left">CHAOTIQUE</div>
-  <svg class="alignment-wheel" viewBox="0 0 360 360" aria-label="Roue interactive des alignements" role="group">${items}${neutral}</svg>
+  const neutral=values.includes("Neutre")?`<g class="alignment-sector alignment-center ${selected==="Neutre"?"is-selected":""}"${act("Neutre")}><circle cx="180" cy="180" r="51"></circle><text x="180" y="184" text-anchor="middle">Neutre</text></g>`:"";
+  const svgLabel=interactive?'aria-label="Roue interactive des alignements" role="group"':`aria-label="Alignement : ${esc(selected||"inconnu")}" role="img"`;
+  return `<div class="alignment-wheel-wrap${interactive?"":" alignment-wheel-wrap--static"}"><div class="alignment-axis alignment-axis-top">BON</div><div class="alignment-axis alignment-axis-left">CHAOTIQUE</div>
+  <svg class="alignment-wheel" viewBox="0 0 360 360" ${svgLabel}>${items}${neutral}</svg>
   <div class="alignment-axis alignment-axis-right">LOYAL</div><div class="alignment-axis alignment-axis-bottom">MAUVAIS</div></div>`;
 }
 

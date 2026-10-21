@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "reputation-stars",
-  "description": "Affichage de la réputation personnelle et de la renommée de compagnie en 15 niveaux : 1 à 5 étoiles de bronze, puis d'argent, puis d'or (décision Idan du 2026-10-20). Un niveau est atteint dès que la valeur atteint son seuil minimal. Échelle géométrique (×1,25 environ par niveau) ; renommée = 4 × réputation. 5 étoiles d'or : maximum difficilement atteignable.",
+  "description": "Affichage de la réputation personnelle et de la renommée de compagnie en 15 niveaux : 1 à 5 étoiles de bronze, puis d'argent, puis d'or (décision Idan du 2026-10-20). Un niveau est atteint dès que la valeur atteint son seuil minimal. Échelle géométrique (×1,25 environ par niveau) ; renommée = 4 × réputation. 5 étoiles d'or : maximum difficilement atteignable. Chaque niveau porte une phrase qui explique la réputation d'un mercenaire, de « Même sa mère ne sait pas qui c'est. » à « Les enfants apprennent son nom avant le leur. » (Idan, 2026-10-21).",
   "columns": [
     {
       "source": "Niveau",
@@ -22,6 +22,10 @@
     {
       "source": "Renommée minimale",
       "key": "renommee_min"
+    },
+    {
+      "source": "Phrase de réputation (fiche du mercenaire)",
+      "key": "phrase"
     }
   ],
   "row_count": 15,
@@ -31,105 +35,120 @@
       "metal": "Bronze",
       "etoiles": 1,
       "reputation_min": 0,
-      "renommee_min": 0
+      "renommee_min": 0,
+      "phrase": "Même sa mère ne sait pas qui c’est."
     },
     {
       "niveau": 2,
       "metal": "Bronze",
       "etoiles": 2,
       "reputation_min": 100,
-      "renommee_min": 400
+      "renommee_min": 400,
+      "phrase": "Son nom ne dit rien à personne, pas même à l’aubergiste."
     },
     {
       "niveau": 3,
       "metal": "Bronze",
       "etoiles": 3,
       "reputation_min": 125,
-      "renommee_min": 500
+      "renommee_min": 500,
+      "phrase": "Quelques piliers de taverne se souviennent vaguement de sa tête."
     },
     {
       "niveau": 4,
       "metal": "Bronze",
       "etoiles": 4,
       "reputation_min": 160,
-      "renommee_min": 640
+      "renommee_min": 640,
+      "phrase": "Les sergents recruteurs commencent à retenir son nom."
     },
     {
       "niveau": 5,
       "metal": "Bronze",
       "etoiles": 5,
       "reputation_min": 200,
-      "renommee_min": 800
+      "renommee_min": 800,
+      "phrase": "Dans les tavernes du coin, on lui paie parfois une chope pour entendre ses histoires."
     },
     {
       "niveau": 6,
       "metal": "Argent",
       "etoiles": 1,
       "reputation_min": 250,
-      "renommee_min": 1000
+      "renommee_min": 1000,
+      "phrase": "Les marchands prudents changent de trottoir à son approche."
     },
     {
       "niveau": 7,
       "metal": "Argent",
       "etoiles": 2,
       "reputation_min": 320,
-      "renommee_min": 1280
+      "renommee_min": 1280,
+      "phrase": "Son nom circule de caserne en caserne."
     },
     {
       "niveau": 8,
       "metal": "Argent",
       "etoiles": 3,
       "reputation_min": 400,
-      "renommee_min": 1600
+      "renommee_min": 1600,
+      "phrase": "Les bardes ont écrit une chanson sur ses exploits. Elle est mauvaise, mais tout le monde la connaît."
     },
     {
       "niveau": 9,
       "metal": "Argent",
       "etoiles": 4,
       "reputation_min": 500,
-      "renommee_min": 2000
+      "renommee_min": 2000,
+      "phrase": "Les seigneurs du pays connaissent son nom, et le prononcent avec prudence."
     },
     {
       "niveau": 10,
       "metal": "Argent",
       "etoiles": 5,
       "reputation_min": 640,
-      "renommee_min": 2560
+      "renommee_min": 2560,
+      "phrase": "On raconte ses faits d’armes jusque dans les cours étrangères."
     },
     {
       "niveau": 11,
       "metal": "Or",
       "etoiles": 1,
       "reputation_min": 800,
-      "renommee_min": 3200
+      "renommee_min": 3200,
+      "phrase": "Des villages entiers l’acclament ou se barricadent, selon son humeur."
     },
     {
       "niveau": 12,
       "metal": "Or",
       "etoiles": 2,
       "reputation_min": 1000,
-      "renommee_min": 4000
+      "renommee_min": 4000,
+      "phrase": "Les rois négocient ses services en personne."
     },
     {
       "niveau": 13,
       "metal": "Or",
       "etoiles": 3,
       "reputation_min": 1250,
-      "renommee_min": 5000
+      "renommee_min": 5000,
+      "phrase": "Ses ennemis regardent sous leur lit avant de dormir."
     },
     {
       "niveau": 14,
       "metal": "Or",
       "etoiles": 4,
       "reputation_min": 1600,
-      "renommee_min": 6400
+      "renommee_min": 6400,
+      "phrase": "Son nom est gravé dans les chroniques, et sur un bon nombre de pierres tombales."
     },
     {
       "niveau": 15,
       "metal": "Or",
       "etoiles": 5,
       "reputation_min": 2000,
-      "renommee_min": 8000
+      "renommee_min": 8000,
+      "phrase": "Les enfants apprennent son nom avant le leur."
     }
   ]
 }

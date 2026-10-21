@@ -145,6 +145,16 @@
           <button class="menu-btn camp-hub-btn" data-open-camp-scene="tavern"><span>Taverne</span><i class="menu-btn-line"></i></button>
           <button class="menu-btn camp-hub-btn" data-open-camp-scene="quartermaster"><span>Intendance</span><i class="menu-btn-line"></i></button>
         </nav>
+        <section class="camp-calendar" aria-label="Calendrier du Royaume">
+          <div class="camp-calendar-topline">
+            <span>Calendrier du Royaume</span>
+            <strong id="camp-calendar-day">Jour 1</strong>
+          </div>
+          <h3 id="camp-calendar-date">Lunbrume, 1 Brumecendre</h3>
+          <p id="camp-calendar-year" class="camp-calendar-year">An 842 — Âge des Couronnes Brisées</p>
+          <p id="camp-calendar-quote" class="camp-calendar-quote">« Le froid tue les pauvres. Les riches restent au chaud. »</p>
+          <button id="camp-next-day-btn" type="button" class="camp-next-day-btn">Jour suivant <span aria-hidden="true">→</span></button>
+        </section>
       </section>
 
       <section class="camp-scene hidden" data-camp-scene-panel="company" aria-label="Ma Compagnie">
@@ -221,7 +231,6 @@
             </div>
             <div class="tavern-actions">
               <label class="tavern-intendant">Intendant <select id="tavern-intendant"></select></label>
-              <button id="tavern-next-day-btn" class="primary">Jour suivant</button>
             </div>
           </div>
           <div id="tavern-candidates" class="tavern-grid"></div>
@@ -358,6 +367,7 @@
   <script src="mission.js"></script>
   <script src="avatar-ui.js"></script>
   <script src="picto-ui.js"></script>
+  <script src="camp-calendar.js"></script>
   <script src="tavern-ui.js"></script>
   <script src="save-ui.js"></script>
   <script src="screen-ui.js"></script>

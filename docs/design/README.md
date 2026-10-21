@@ -23,6 +23,7 @@ Archive historique : ../../archive/notion-export/
 - [13-fleeing.md](./13-fleeing.md)
 - [14-tavern-recruitment.md](./14-tavern-recruitment.md)
 - [15-biographies-and-narrative-tags.md](./15-biographies-and-narrative-tags.md)
+- [16-camp-calendar.md](./16-camp-calendar.md) — mois, jours, citations et passage du temps au camp
 - [90-mechanics-backlog.md](./90-mechanics-backlog.md)
 - [91-combat-ideas.md](./91-combat-ideas.md)
 - [92-balance-questions.md](./92-balance-questions.md)

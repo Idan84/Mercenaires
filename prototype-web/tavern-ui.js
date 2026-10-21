@@ -138,7 +138,8 @@ function addTestGold(){
   renderTavern();
 }
 
-function advanceTavernDay(){
+// Commande globale du camp : l'horloge existante reste la seule source de vérité.
+function advanceCampDay(){
   if(!game.campaign) return;
   const [report]=campaignRules().advanceTime(game.campaign,1);
   for(const r of report.recovered) tavernLog(r.mercenary.name+(r.kind==="wounded"?" est guéri de ses blessures.":" est reposé."),"turn");
@@ -326,7 +327,7 @@ function initializeTavernUi(){
   }
   $("tavern-mission-test-btn").addEventListener("click",openMissionSelection);
 
-  $("tavern-next-day-btn").addEventListener("click",advanceTavernDay);
+  $("camp-next-day-btn").addEventListener("click",advanceCampDay);
   $("test-gold-btn").addEventListener("click",addTestGold);
   $("tavern-intendant").addEventListener("change",assignTavernIntendant);
   $("close-tavern-dialog").addEventListener("click",()=>{ game.tavernSelected=null; $("tavern-dialog").close(); });

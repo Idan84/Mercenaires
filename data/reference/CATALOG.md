@@ -30,7 +30,8 @@ Git est la source de vérité. Les JSON ci-dessous sont les référentiels struc
 | binary-aptitude-grants.json | 6 | aptitude, domaine, mode, automatic, bonuses_pp, armor, reason |
 
 | camp-calendar.json | 12 mois, 7 jours, 3 citations par mois | year_start, era, days_per_year, weekday_names, months (name, days, quotes) : calendrier narratif du camp |
-| reputation-stars.json | 15 | niveau, metal, etoiles, reputation_min, renommee_min (affichage en étoiles de la réputation et de la renommée) |
+| reputation-stars.json | 15 | niveau, metal, etoiles, reputation_min, renommee_min, phrase (affichage en étoiles de la réputation et de la renommée ; phrase de réputation de la fiche) |
+| character-sheet-copy.json | 11 + 7 | ancestries (nom, famille, parent), origins (nom, homme, femme) : phrases de l'onglet Profil de la fiche |
 | character-names.json | 46 | id, peuple, culture, consonance, poids, prenoms_femme, prenoms_homme, noms, noms_femme (noms des personnages générés : genre et consonance des cultures humaines) |
 | equipment-silhouettes.json | 20 | fichier, peuple, sexe (silhouettes d'équipement de media/Avatars_Equipements dont le nom ne donne pas le peuple et le sexe) |
 | people-affinity.json | 10 | peoples, matrix (ligne : peuple du mercenaire ; colonne : peuple du capitaine) |

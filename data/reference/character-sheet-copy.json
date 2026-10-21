@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "name": "character-sheet-copy",
+  "purpose": "Textes de l’onglet Profil de la fiche mercenaire (Idan, 2026-10-21) : phrases composées sur l’origine et l’ascendance. Aucun chiffre d’équilibrage. Phrases : « Issu(e) des [culture], il/elle était [origine] avant de rejoindre votre compagnie. » ; ascendance niveau 1 (Lointain ancêtre) « [Prénom] a du [sang …]. », niveau 2 (Lignée proche) « [Prénom] vient d’une famille [famille]. », niveau 3 (Bâtard) « [Prénom] est l’enfant [parent]. »",
+  "ancestries": [
+    {
+      "nom": "Sang divin",
+      "famille": "de demi-dieux",
+      "parent": "d’un dieu"
+    },
+    {
+      "nom": "Sang de dragon",
+      "famille": "de dragons",
+      "parent": "d’un dragon"
+    },
+    {
+      "nom": "Sang de djinn",
+      "famille": "de djinns",
+      "parent": "d’un djinn"
+    },
+    {
+      "nom": "Sang d’elfe",
+      "famille": "d’elfes",
+      "parent": "d’un elfe"
+    },
+    {
+      "nom": "Sang de sirène",
+      "famille": "de sirènes",
+      "parent": "d’une sirène"
+    },
+    {
+      "nom": "Sang de troll",
+      "famille": "de trolls",
+      "parent": "d’un troll"
+    },
+    {
+      "nom": "Sang féerique",
+      "famille": "de fées",
+      "parent": "d’une fée"
+    },
+    {
+      "nom": "Sang de démon",
+      "famille": "de démons",
+      "parent": "d’un démon"
+    },
+    {
+      "nom": "Sang d’humain",
+      "famille": "d’humains",
+      "parent": "d’un humain"
+    },
+    {
+      "nom": "Sang d’orc",
+      "famille": "d’orcs",
+      "parent": "d’un orc"
+    },
+    {
+      "nom": "Sang de dryade",
+      "famille": "de dryades",
+      "parent": "d’une dryade"
+    }
+  ],
+  "origins": [
+    {
+      "nom": "Érudit",
+      "homme": "érudit",
+      "femme": "érudite"
+    },
+    {
+      "nom": "Paysan / Ouvrier",
+      "homme": "paysan ou ouvrier",
+      "femme": "paysanne ou ouvrière"
+    },
+    {
+      "nom": "Soldat / Guerrier / Combattant",
+      "homme": "guerrier",
+      "femme": "guerrière"
+    },
+    {
+      "nom": "Esclave",
+      "homme": "esclave",
+      "femme": "esclave"
+    },
+    {
+      "nom": "Commerçant",
+      "homme": "commerçant",
+      "femme": "commerçante"
+    },
+    {
+      "nom": "Hors-la-loi",
+      "homme": "hors-la-loi",
+      "femme": "hors-la-loi"
+    },
+    {
+      "nom": "Noble",
+      "homme": "noble",
+      "femme": "noble"
+    }
+  ]
+}

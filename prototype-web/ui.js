@@ -533,9 +533,9 @@ function equipmentSilhouetteSrc(c) {
     "Ogre":"ogre","Reptilien":"reptilien","Homme-bête":"homme-bete"
   };
   const people=peoples[c?.people];
-  const sex=String(c?.sex||"").normalize("NFD").replace(/[\\u0300-\\u036f]/g,"").trim().toLowerCase();
-  const gender=["homme","masculin","male","m"].includes(sex)?"homme"
-    :["femme","feminin","female","f"].includes(sex)?"femme":null;
+  const sex=String(c?.sex||"").trim().toLowerCase();
+  const gender=sex.startsWith("f")?"femme"
+    :(sex.startsWith("h")||sex.startsWith("m"))?"homme":null;
   return people&&gender?`assets/silhouettes/${people}-${gender}.webp`:null;
 }
 

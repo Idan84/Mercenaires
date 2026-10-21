@@ -16,12 +16,21 @@ assert.deepEqual([...home.matchAll(/data-tavern-view="(\w+)"><span>([^<]+)<\/spa
 assert.ok(!/data-tavern-drink/.test(html),"la bière et la tournée passent dans le dialogue");
 
 const talk=html.slice(html.indexOf('<dialog id="tavern-talk-dialog"'),html.indexOf('<dialog id="recruit-talk-dialog"'));
-assert.deepEqual([...talk.matchAll(/data-talk="(\w+)"( disabled)?[^>]*>([^<]+)</g)].map(m=>[m[1],Boolean(m[2]),m[3]]),[
-  ["beer",false,"Boire une bière (1 PO)"],
-  ["round",false,"Payer sa tournée !"],
-  ["advice",true,"Demander des conseils"],
-  ["leave",false,"Partir"]
-]);
+assert.match(talk,/<ol id="tavern-talk-options" class="talk-options"><\/ol>/,"réponses écrites par tavern-ui.js");
+// Menu du tavernier (données) : bière, tournée, conseils (ouverts depuis le 2026-10-21), partir ; puis qui ?
+// quoi ? quelle caractéristique ? avec un retour à chaque étape.
+const keeper=JSON.parse(fs.readFileSync(path.join(root,"data/reference/tavern-dialogue.json"),"utf8")).tavernkeeper;
+assert.deepEqual(keeper.options,{beer:"Boire une bière (1 PO)",round:"Payer sa tournée !",advice:"Demander des conseils",leave:"Partir",back:"Retour"});
+const menu=new Function("recruitDialogue","game","MercenairesRecruitDialogue",
+  js.slice(js.indexOf("function adviceStats(group){"),js.indexOf("function tavernTalkLine(t){"))+"return tavernTalkOptions;")(
+  ()=>({keeper}),
+  {campaign:{tavern:{candidates:[{mercenary:{id:7,name:"Inga Longueforge"}}]}},referenceData:{characterSheetCopy:{stats:[{nom:"Force",groupe:"physique"},{nom:"Courage",groupe:"mental"}]}}},
+  {firstName:m=>m.name.split(" ")[0]});
+const labels=view=>menu(view).map(o=>o.label);
+assert.deepEqual(labels({view:"main"}),["Boire une bière (1 PO)","Payer sa tournée !","Demander des conseils","Partir"]);
+assert.deepEqual(labels({view:"who"}),["Inga","Retour"]);
+assert.deepEqual(labels({view:"what"}),[...keeper.groups.map(g=>g.label),"Retour"]);
+assert.deepEqual(labels({view:"stats",group:"physique"}),["Force","Retour"]);
 assert.match(css,/\[data-tavern-view="home"\] \.tavern-talk-btn\{display:grid\}/,"bulle visible sur l'accueil seulement");
 
 // Logique : bière 1 PO, tournée 1 PO par membre, refus sans assez d'or ; tout va au journal.

@@ -380,6 +380,18 @@
       return tavern.askQuestion(candidate,key,intendantOf(state));
     }
 
+    // Conseils du tavernier : chaque question coûte de l'or (tavern.advice.cost), même déjà posée.
+    function askTavernkeeper(state,mercenaryId,key,value){
+      const candidate=tavern.findCandidate(state.tavern,mercenaryId);
+      if(!candidate) return {ok:false,reason:"Candidat introuvable."};
+      const cost=referenceConstant(reference,"tavern.advice.cost",1);
+      if(state.company.gold<cost) return {ok:false,reason:"gold",cost};
+      const result=tavern.rumor(candidate,key,value);
+      if(!result) return {ok:false,reason:"Valeur inconnue : "+key};
+      state.company.gold-=cost;
+      return {ok:true,cost,...result};
+    }
+
     return {
       STARTING_GOLD,
       STARTING_DORMITORY_CAPACITY,
@@ -388,6 +400,7 @@
       dormitoryFree,
       signCandidate,
       offerToCandidate,
+      askTavernkeeper,
       intendantOf,
       assignIntendant,
       askCandidate,

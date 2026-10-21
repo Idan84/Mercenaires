@@ -1506,7 +1506,7 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 .talk-dialog{width:min(560px,92vw);padding:0;border:1px solid #b58c53;border-radius:14px;background:linear-gradient(180deg,#3a2a1e,#1b130e);color:#ead9bd;box-shadow:0 20px 60px #000c,inset 0 1px #ffe4a826;font-family:Georgia,serif}
 .talk-dialog::backdrop{background:rgba(10,6,4,.35)}
 .talk-head{display:flex;align-items:center;gap:14px;padding:16px 20px 12px;border-bottom:1px solid #71583e}
-.talk-portrait{flex:none;width:72px;height:72px;border:2px solid #c9a15f;border-radius:50%;background:#2a1d15 url("/media/background/tavern.jpg") no-repeat -378px -62px / 523px auto;box-shadow:0 4px 14px #000a}
+.talk-portrait{flex:none;width:72px;height:72px;border:2px solid #c9a15f;border-radius:50%;background:#2a1d15 url("/media/background/tavern.jpg") no-repeat -376px -76px / 523px auto;box-shadow:0 4px 14px #000a}
 .talk-head .eyebrow{margin:0;color:#bb9a6e;font:700 11px Georgia,serif;letter-spacing:.12em;text-transform:uppercase}
 .talk-head h2{margin:2px 0 0;color:#ffe1ac;font:600 22px Georgia,serif}
 .talk-line{margin:0;padding:18px 22px 10px;color:#f3e3c3;font:italic 19px/1.5 Georgia,serif}

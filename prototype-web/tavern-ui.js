@@ -277,19 +277,76 @@ function buyTavernDrink(kind){
   renderTavern();
 }
 
-// Dialogue avec le tavernier (Idan, 2026-10-21) ; la phrase d'accueil deviendra variable plus tard.
+// Dialogue avec le tavernier (Idan, 2026-10-21) : boire, payer sa tournée, ou acheter des conseils sur un
+// candidat — qui ? quoi ? quelle caractéristique ? —, 1 PO la question, autant qu'on veut. Textes dans
+// tavern-dialogue.json (tavernkeeper) ; la phrase d'accueil deviendra variable plus tard.
 function captainFirstName(){
   const c=game.campaign;
   const captain=c?.company.roster.find(m=>m.id===c.company.captainId)||game.captain;
   return captain?.firstName||String(captain?.name||"").trim().split(/\s+/)[0]||"Capitaine";
 }
+function adviceCost(){
+  const row=(game.referenceData?.formulaConstants?.rows||[]).find(r=>r.code==="tavern.advice.cost");
+  return Number.isFinite(Number(row?.valeur))?Number(row.valeur):1;
+}
+// Caractéristiques d'un groupe de la fiche (physique, mental, resistance, magie).
+function adviceStats(group){
+  return (game.referenceData?.characterSheetCopy?.stats||[]).filter(r=>r.groupe===group).map(r=>r.nom);
+}
+function tavernTalkOptions(t){
+  const keeper=recruitDialogue().keeper,o=keeper.options||{};
+  const back={key:"back",label:o.back};
+  if(t.view==="who") return [...(game.campaign?.tavern.candidates||[]).map(c=>({key:"who",arg:c.mercenary.id,label:MercenairesRecruitDialogue.firstName(c.mercenary)})),back];
+  if(t.view==="what") return [...(keeper.groups||[]).map(g=>({key:"group",arg:g.groupe,label:g.label})),back];
+  if(t.view==="stats") return [...adviceStats(t.group).map(name=>({key:"stat",arg:name,label:name})),back];
+  return ["beer","round","advice","leave"].map(key=>({key,label:o[key]}));
+}
+function tavernTalkLine(t){
+  const d=recruitDialogue(),m=tavernCandidate(t.candidateId)?.mercenary;
+  if(t.view==="who") return d.keeperLine(game.campaign?.tavern.candidates.length?"ask_who":"nobody");
+  if(t.view==="what"||t.view==="stats") return d.keeperLine("ask_what",{cout:adviceCost()},m);
+  return d.keeperLine("greeting",{capitaine:captainFirstName()});
+}
+function renderTavernTalk(){
+  const t=game.tavernTalk;
+  if(!t) return;
+  $("tavern-talk-line").textContent=`«\u00a0${t.line}\u00a0»`;
+  $("tavern-talk-options").innerHTML=tavernTalkOptions(t).map(o=>
+    `<li><button type="button" data-talk="${o.key}"${o.arg!=null?` data-arg="${esc(String(o.arg))}"`:""}>${esc(o.label)}</button></li>`).join("");
+}
 function openTavernTalk(){
-  $("tavern-talk-line").textContent=`« Salut ${captainFirstName()} ! Comment vont les affaires ? »`;
+  game.tavernTalk={view:"main",candidateId:null,group:null};
+  game.tavernTalk.line=tavernTalkLine(game.tavernTalk);
+  renderTavernTalk();
   $("tavern-talk-dialog").showModal();
 }
-function tavernTalk(choice){
-  if(choice==="beer"||choice==="round") buyTavernDrink(choice);
-  if(choice==="leave") $("tavern-talk-dialog").close();
+function tavernTalk(choice,arg){
+  const t=game.tavernTalk;
+  if(!t) return;
+  if(choice==="leave"){ $("tavern-talk-dialog").close(); return; }
+  if(choice==="beer"||choice==="round"){ buyTavernDrink(choice); return; }
+  if(choice==="stat"){ askTavernAdvice(arg); renderTavernTalk(); return; }
+  if(choice==="advice") t.view="who";
+  if(choice==="who"){ t.candidateId=Number(arg); t.view="what"; }
+  if(choice==="group"){ t.group=arg; t.view="stats"; }
+  if(choice==="back") t.view={stats:"what",what:"who",who:"main"}[t.view]||"main";
+  t.line=tavernTalkLine(t);
+  renderTavernTalk();
+}
+// La réponse rapporte ce que le candidat dit de lui-même (il se survend), situé parmi les vraies valeurs de la
+// compagnie ; la rumeur reste la même si l'on repose la question, mais chaque question se paie.
+function askTavernAdvice(statName){
+  const t=game.tavernTalk,d=recruitDialogue();
+  const candidate=tavernCandidate(t.candidateId);
+  if(!candidate){ t.view="who"; t.line=tavernTalkLine(t); return; }
+  const m=candidate.mercenary;
+  const result=campaignRules().askTavernkeeper(game.campaign,m.id,statName,sheetStatValue(m,statName));
+  if(!result.ok){ t.line=result.reason==="gold"?d.keeperLine("no_gold"):result.reason; return; }
+  const members=campaignRoster().map(x=>({name:x.name,firstName:x.firstName,value:sheetStatValue(x,statName)}));
+  t.line=d.advice(m,statName,result.estimate,members);
+  tavernLog("Conseil du tavernier sur "+m.name+" ("+statName+") : "+fmt(result.cost)+" PO.","gear");
+  saveGame();
+  renderTavern();
 }
 
 function initializeTavernUi(){
@@ -301,13 +358,9 @@ function initializeTavernUi(){
   const talk=$("tavern-talk-dialog");
   talk.addEventListener("click",event=>{
     const option=event.target.closest("[data-talk]");
-    if(option&&!option.disabled) tavernTalk(option.dataset.talk);
+    if(option&&!option.disabled) tavernTalk(option.dataset.talk,option.dataset.arg);
   });
-  // Comme dans un jeu de rôle : les touches 1 à 4 choisissent la réponse.
-  talk.addEventListener("keydown",event=>{
-    const option=talk.querySelectorAll("[data-talk]")[Number(event.key)-1];
-    if(option&&!option.disabled){event.preventDefault();tavernTalk(option.dataset.talk);}
-  });
+  talk.addEventListener("close",()=>{ game.tavernTalk=null; });
   for(const id of ["tavern-missions-view","tavern-recruits-view"]){
     $(id).addEventListener("click",event=>{
       const btn=event.target.closest("[data-tavern-view]");
@@ -331,10 +384,18 @@ function initializeTavernUi(){
     event.preventDefault();
     submitRecruitOffer();
   });
-  recruit.addEventListener("keydown",event=>{
-    if(event.target.matches("input")) return;
-    const option=recruit.querySelectorAll(".talk-options [data-talk]")[Number(event.key)-1];
-    if(option){event.preventDefault();recruitTalkChoice(option.dataset.talk);}
+  // Comme dans un jeu de rôle : les touches 1 à 9 choisissent la réponse. Écouté sur le document, car la
+  // liste est réécrite à chaque réponse et le bouton cliqué emporte le focus avec lui.
+  document.addEventListener("keydown",event=>{
+    if(event.target.matches?.("input,select,textarea")||event.ctrlKey||event.metaKey||event.altKey) return;
+    const index=Number(event.key)-1;
+    if(!(index>=0)) return;
+    const open=talk.open?talk:recruit.open?recruit:null;
+    const option=open?.querySelectorAll(".talk-options [data-talk]")[index];
+    if(!option||option.disabled) return;
+    event.preventDefault();
+    if(open===talk) tavernTalk(option.dataset.talk,option.dataset.arg);
+    else recruitTalkChoice(option.dataset.talk);
   });
   recruit.addEventListener("close",()=>{
     clearTimeout(game.recruitTalk?.closeTimer);

@@ -51,6 +51,8 @@
     const sheet=reference?.characterSheetCopy||{};
     const styles=sheet.skills_layout?.styles_de_combat||[];
     const weaponForms=new Map((copy.weapons||[]).map(r=>[r.nom,r.avec_article]));
+    const keeper=copy.tavernkeeper||{};
+    const adjectives=new Map((keeper.adjectives||[]).map(r=>[r.nom,r]));
 
     function say(list,m,seed,vars={}){
       const options=Array.isArray(list)?list:[];
@@ -123,7 +125,41 @@
       return say(copy.lines?.[kind],m,kind+"|"+seed,vars);
     }
 
+    // Conseils du tavernier (Idan, 2026-10-21) : ce que le candidat dit de lui-même (estimate), situé parmi les
+    // vraies valeurs de la compagnie (members : [{name, firstName?, value}]). Seuils de présentation seulement.
+    function adviceTier(estimate,members){
+      const values=(members||[]).filter(x=>Number.isFinite(x.value)).sort((a,b)=>a.value-b.value);
+      if(!values.length||!Number.isFinite(estimate)) return null;
+      // Rang moyen : une égalité compte pour moitié (au niveau de la médiane, on est dans la moyenne).
+      const share=(values.filter(x=>x.value<estimate).length+values.filter(x=>x.value===estimate).length/2)/values.length;
+      const tier=estimate>values.at(-1).value?"top"
+        :share>=0.75?"well_above"
+        :share>0.55?"above"
+        :share>=0.45?"average"
+        :share>=0.25?"below"
+        :estimate>=values[0].value?"well_below":"bottom";
+      return {tier,max:values.at(-1),min:values[0],median:values[Math.floor((values.length-1)/2)]};
+    }
+
+    function advice(m,statName,estimate,members){
+      const place=adviceTier(estimate,members);
+      if(!place) return "";
+      const row=adjectives.get(statName),female=isFemale(m);
+      const adj=row?(female?row.femme:row.homme):(female?"douée":"doué")+" en "+String(statName).toLocaleLowerCase("fr");
+      return say(keeper.tiers?.[place.tier],m,"advice|"+statName,
+        {adj,nom_max:firstName(place.max),nom_min:firstName(place.min),nom_median:firstName(place.median)});
+    }
+
+    // Répliques du tavernier : greeting, ask_who, nobody, ask_what, no_gold (m : candidat dont on parle).
+    function keeperLine(key,vars={},m=null){
+      return fill(keeper[key],{...(m?{prenom:firstName(m)}:{}),...vars},isFemale(m));
+    }
+
     return {
+      keeper,
+      keeperLine,
+      adviceTier,
+      advice,
       questions:copy.questions||{},
       infoQuestions:INFO_QUESTIONS.slice(),
       greeting,

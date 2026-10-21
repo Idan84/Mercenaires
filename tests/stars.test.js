@@ -20,7 +20,10 @@ for(let i=1;i<15;i++){
 }
 
 // Réputation personnelle.
-assert.deepEqual(stars.personal(0),{level:1,stars:1,metal:"Bronze",metalKey:"bronze",label:"1 étoile de bronze",max:false,value:0,nextAt:100});
+assert.deepEqual(stars.personal(0),{level:1,stars:1,metal:"Bronze",metalKey:"bronze",label:"1 étoile de bronze",phrase:"Même sa mère ne sait pas qui c’est.",max:false,value:0,nextAt:100});
+// Une phrase par niveau pour la fiche (Idan, 2026-10-21), toutes différentes.
+assert.equal(new Set(table.rows.map(r=>r.phrase)).size,15);
+assert.equal(stars.personal(5000).phrase,"Les enfants apprennent son nom avant le leur.");
 assert.equal(stars.personal(99).level,1);
 assert.equal(stars.personal(100).level,2,"le seuil est atteint dès qu'on l'égale");
 assert.equal(stars.personal(137).label,"3 étoiles de bronze","recrue médiane");

@@ -701,28 +701,65 @@ function renderSituation(c) {
   </section>`;
 }
 
+// Onglet Profil (Idan, 2026-10-21) : portrait et état ; pictos et phrases d'origine et d'ascendance ;
+// biographie ; alignement, réputation et affinité en trois colonnes ; salaire et prime de mission.
+// Textes : data/reference/character-sheet-copy.json et reputation-stars.json (phrases de réputation).
+function sheetCopy(section,name){
+  return (game.referenceData?.characterSheetCopy?.[section]||[]).find(r=>r.nom===name)||null;
+}
+function isFemale(c){
+  return String(c?.sex||"").trim().toLowerCase().startsWith("f");
+}
+function profileOriginLine(c,captain){
+  const female=isFemale(c);
+  const origin=sheetCopy("origins",c.origin);
+  const job=origin?(female?origin.femme:origin.homme):String(c.origin||"").toLocaleLowerCase("fr");
+  const after=captain?"avant de prendre la tête de la compagnie":"avant de rejoindre votre compagnie";
+  const was=job?`${female?"elle":"il"} était ${job} ${after}`:`${female?"elle":"il"} a ${captain?"pris la tête de la compagnie":"rejoint votre compagnie"}`;
+  if(!c.culture) return was.charAt(0).toUpperCase()+was.slice(1)+".";
+  return `${female?"Issue":"Issu"} des ${c.culture}, ${was}.`;
+}
+// Niveau d'ascendance : 1 Lointain ancêtre, 2 Lignée proche, 3 Bâtard (ancestry-levels.json).
+function profileAncestryLine(c){
+  if(!c.ascendance) return "";
+  const who=c.firstName||c.name;
+  const copy=sheetCopy("ancestries",c.ascendance);
+  const level=Number(c.ascendanceLevel)||1;
+  if(copy&&level>=3) return `${who} est l’enfant ${copy.parent}.`;
+  if(copy&&level===2) return `${who} vient d’une famille ${copy.famille}.`;
+  return `${who} a du ${String(c.ascendance).toLocaleLowerCase("fr")}.`;
+}
 function renderProfileTab(c){
   const captain=game.campaign?.company.captainId===c.id;
-  return `<section class="player-profile">
-    ${renderAvatar(c,{variant:"detail",kind:"full"})}
-    <div class="player-profile-details">
-      <div class="player-profile-tag">${captain?"Capitaine de la compagnie":"Mercenaire"}</div>
-      <div class="player-identity-grid">
-        <div><small>Peuple</small><strong>${esc(c.people)}</strong></div>
-        <div><small>Culture</small><strong>${esc(c.culture||"—")}</strong></div>
-        <div><small>Origine</small><strong>${esc(c.origin||"—")}</strong></div>
-        <div><small>Ascendance</small><strong>${esc(c.ascendance||"Aucune")}</strong></div>
-        <div><small>Alignement</small><strong>${esc(c.alignment||"—")}</strong></div>
-        <div><small>Réputation</small><strong>${renderReputationStars(c)}</strong></div>
-        ${renderCaptainAffinity(c)}
-      </div>
-      <div class="player-vitals">
-        <div><small>Points de vie</small><strong>${fmt(c.pvMax)}</strong></div>
-        <div><small>Mana</small><strong>${fmt(c.mana||0)}</strong></div>
-        <div><small>État</small><strong>${c.recovery?esc(recoveryLabel(c)):"Disponible"}</strong></div>
-        <div><small>Salaire quotidien</small><strong>${fmt(c.contract?.dailySalary??c.salary??0)} PO</strong></div>
+  const status=rosterStatus(c);
+  const pictos=renderPicto("people",c.people,{size:"md"})+(c.ascendance?renderPicto("ascendance",c.ascendance,{size:"md"}):"");
+  const stars=starRules().personal(c.reputation);
+  const alignments=typeof alignmentNames==="function"?alignmentNames():[];
+  const affinity=renderCaptainAffinity(c);
+  const salary=c.contract?.dailySalary??c.salary??0;
+  const bonus=c.contract?.missionBonus??tavernRules().missionBonusDemand(c);
+  return `<section class="sheet-profile">
+    <aside class="sheet-portrait">
+      ${renderAvatar(c,{variant:"detail",kind:"full"})}
+      <em class="roster-status roster-status--${status.kind}">${esc(status.label)}</em>
+    </aside>
+    <div class="sheet-profile-main">
+      <div class="sheet-origins">
+        <div class="sheet-pictos" aria-label="${esc([c.people,c.ascendance].filter(Boolean).join(", "))}">${pictos}</div>
+        <div class="sheet-origin-text">
+          <p>${esc(profileOriginLine(c,captain))}</p>
+          ${c.ascendance?`<p>${esc(profileAncestryLine(c))}</p>`:""}
+        </div>
       </div>
       ${renderBiography(c)}
+      <div class="sheet-profile-columns">
+        <section class="sheet-column sheet-column--alignment"><small>Alignement</small>${alignments.length?renderAlignmentWheel(alignments,c.alignment,{interactive:false}):""}<strong>${esc(c.alignment||"—")}</strong></section>
+        <section class="sheet-column sheet-column--reputation"><small>Réputation</small>${renderReputationStars(c)}<p>${esc(stars?.phrase||"")}</p></section>
+        <section class="sheet-column sheet-column--affinity">${affinity||`<small>Affinité</small><p>${captain?"Capitaine de la compagnie.":"Hors de la compagnie."}</p>`}</section>
+      </div>
+      <div class="sheet-pay">${captain
+        ?`<p>Le capitaine ne touche ni salaire ni prime : la compagnie, c’est la sienne.</p>`
+        :`<div><small>Salaire journalier</small><strong>${fmt(salary)} PO</strong></div><div><small>Prime de mission</small><strong>${fmt(bonus)} PO</strong></div>`}</div>
     </div>
   </section>`;
 }
@@ -739,7 +776,6 @@ function renderBiography(c) {
     return `<p class="character-bio-placeholder"><strong>Biographie</strong><span>Pas encore de biographie : la banque n’en contient que ${biographyRules().packs.length} pour l’instant, et une bio ne sert qu’une fois par partie.</span></p>`;
   }
   return `<section class="character-bio">
-    <strong>Biographie</strong>
     <p>${esc(bio.short)}</p>
     ${bio.rumor ? `<p class="bio-rumor">${esc(bio.rumor)}</p>` : ""}
     ${bio.motto ? `<p class="bio-motto">« ${esc(bio.motto)} »</p>` : ""}
@@ -823,7 +859,6 @@ function renderSheet() {
 }
 
 function showCharacter(c) {
-  $("dialog-role").textContent = c.role;
   $("dialog-name").textContent = c.name;
   game.sheetCharacter = c;
   renderSheet();

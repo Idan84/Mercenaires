@@ -1710,28 +1710,54 @@ body[data-screen="camp"] .camp-scene>.panel .muted{color:#c2b29e}
 #character-dialog{background:#201916;color:#eadbc4;border:1px solid #987750;border-radius:15px;box-shadow:0 26px 80px #000c}
 #character-dialog .dialog-head{background:#34251d;border-bottom:1px solid #97724b;padding-bottom:10px}
 #character-dialog .dialog-head h2{font:normal 34px Georgia,serif;color:#f3d5a0}
-#character-dialog #dialog-role{color:#cca477}
 #character-dialog .sheet-tab{color:#cbb99e;border-radius:4px;background:transparent}
 #character-dialog .sheet-tab:hover{background:#473529;color:#ffdfaf}
 #character-dialog .sheet-tab.active{color:#ffdfad;border-color:#dbac6e}
 #character-dialog #dialog-content{padding:24px}
-.player-profile{display:grid;grid-template-columns:250px minmax(0,1fr);gap:28px}
-.player-profile>.avatar-frame{max-width:250px;margin:0}
-.player-profile-details{min-width:0}
-.player-profile-tag{color:#cfaa73;font:700 12px Georgia,serif;letter-spacing:.1em;text-transform:uppercase;margin-bottom:18px}
-.player-identity-grid,.player-vitals{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:18px}
-.player-vitals{grid-template-columns:repeat(4,minmax(0,1fr))}
-.player-identity-grid>div,.player-vitals>div,.player-stat{background:#382a22;border:1px solid #71583e;border-radius:8px;padding:11px;min-width:0}
-.player-identity-grid small,.player-vitals small{display:block;color:#bb9a6e;font-size:11px;margin-bottom:6px}
-.player-identity-grid strong,.player-vitals strong{font-size:15px;color:#f4e1c2}
-.player-identity-note{display:block;margin-top:4px;color:#bb9a6e;font-size:11px}
+/* Croix de fermeture dans la charte de la fiche (plus de rond blanc). */
+#character-dialog .icon-btn{display:grid;place-items:center;background:#2a1e17;color:#f3d5a0;border:1px solid #a9814f;font-size:1.5rem;line-height:1;cursor:pointer;transition:background .15s,border-color .15s}
+#character-dialog .icon-btn:hover,#character-dialog .icon-btn:focus-visible{background:#4a3424;border-color:#f0c77f;outline:none}
+.player-stat{background:#382a22;border:1px solid #71583e;border-radius:8px;padding:11px;min-width:0}
+/* Onglet Profil (Idan, 2026-10-21) : portrait et état, origines, bio, trois colonnes, solde. */
+.sheet-profile{display:grid;grid-template-columns:250px minmax(0,1fr);gap:28px}
+.sheet-portrait{display:grid;gap:8px;align-content:start}
+.sheet-portrait .avatar-frame{max-width:250px;margin:0}
+.sheet-portrait .roster-status{font-size:13px;padding:6px}
+.sheet-profile-main{display:grid;gap:16px;align-content:start;min-width:0}
+.sheet-origins{display:flex;align-items:center;gap:16px}
+.sheet-pictos{display:flex;gap:8px;flex:none}
+.sheet-pictos .picto{width:54px;height:54px;margin:0;padding:4px;border:1px solid #8c6b45;border-radius:50%;background:#2c211a}
+.sheet-origin-text p{margin:0;color:#f1dfbf;font:17px/1.45 Georgia,serif}
+.sheet-origin-text p+p{margin-top:3px;color:#d9be92;font-size:15px;font-style:italic}
+#character-dialog .sheet-profile .character-bio{margin:0;padding:14px 18px;border:1px solid #5d4632}
+.sheet-profile-columns{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.sheet-column{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:0;padding:12px;border:1px solid #71583e;border-radius:10px;background:#2e231c;text-align:center}
+.sheet-column small{align-self:stretch;color:#bb9a6e;font:700 11px Georgia,serif;letter-spacing:.08em;text-transform:uppercase}
+.sheet-column>strong{color:#f4e1c2;font-size:15px}
+.sheet-column p{margin:0;color:#ead9bd;font-size:14px;line-height:1.4}
+.sheet-column .rep-stars{font-size:26px;letter-spacing:2px}
+.sheet-column .player-affinity{display:flex;flex-direction:column;align-items:center;gap:8px;width:100%}
+.sheet-column .alignment-wheel-wrap{width:min(100%,260px);margin:0 auto;padding:18px}
+.alignment-wheel-wrap--static .alignment-sector{cursor:default}
+.alignment-wheel-wrap--static .alignment-sector text{font-size:15px}
+.alignment-wheel-wrap--static .alignment-center text{font-size:18px}
+.alignment-wheel-wrap--static .alignment-axis{font-size:9px}
+/* Titre en haut, contenu centré dans la hauteur restante. */
+.sheet-column>small,.sheet-column .player-affinity>small{margin-bottom:auto}
+.sheet-column>:last-child,.sheet-column .player-affinity>:last-child{margin-bottom:auto}
+.sheet-column--affinity .player-affinity{flex:1}
 /* Affinité : dix cœurs (rouges ou vides), puis une appréciation sans score numérique. */
-.player-identity-grid>div.player-affinity{grid-column:span 2}
 .player-affinity-hearts{display:flex;align-items:center;gap:0;white-space:nowrap;font-size:21px;letter-spacing:2px;line-height:1.2}
 .player-affinity-hearts .is-full{color:#e35c63;text-shadow:0 1px 4px rgba(100,10,20,.35)}
 .player-affinity-hearts .is-empty{color:#a88a86}
-.player-identity-grid .player-affinity-phrase{display:block;margin-top:7px;font-size:14px;line-height:1.4;font-weight:600;white-space:normal}
-@media(max-width:500px){.player-identity-grid>div.player-affinity{grid-column:1/-1}.player-affinity-hearts{font-size:18px;letter-spacing:1px}}
+.player-affinity-phrase{display:block;font-size:14px;line-height:1.4;font-weight:600;white-space:normal}
+.sheet-pay{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.sheet-pay>div{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:12px 16px;border:1px solid #9a7a4f;border-radius:10px;background:linear-gradient(180deg,#3a2b21,#2a1f18)}
+.sheet-pay small{color:#d4b27e;font:700 12px Georgia,serif;letter-spacing:.06em;text-transform:uppercase}
+.sheet-pay strong{color:#ffd77a;font:700 20px Georgia,serif}
+.sheet-pay p{grid-column:1/-1;margin:0;color:#cdb38c;font-style:italic}
+@media(max-width:860px){.sheet-profile{grid-template-columns:1fr}.sheet-portrait{width:min(250px,100%);margin:0 auto}.sheet-profile-columns{grid-template-columns:1fr}}
+@media(max-width:500px){.sheet-pay{grid-template-columns:1fr}.sheet-origins{flex-direction:column;align-items:flex-start}.player-affinity-hearts{font-size:18px;letter-spacing:1px}}
 
 /* Réputation et renommée en étoiles : bronze, argent, or (data/reference/reputation-stars.json). */
 .rep-stars{display:inline-block;white-space:nowrap;font-size:1.2em;letter-spacing:.06em;line-height:1;text-shadow:0 0 1px rgba(0,0,0,.65)}

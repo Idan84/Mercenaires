@@ -401,7 +401,8 @@
         "metal",
         "etoiles",
         "reputation_min",
-        "renommee_min"
+        "renommee_min",
+        "phrase"
       ]
     },
     {

@@ -27,7 +27,8 @@ const REFERENCE_FILES = {
   equipmentSilhouetteFiles: "equipment-silhouettes.json",
   characterNames: "character-names.json",
   biographies: "biographies.json",
-  captainCreationCopy: "captain-creation-copy.json"
+  captainCreationCopy: "captain-creation-copy.json",
+  characterSheetCopy: "character-sheet-copy.json"
 };
 
 async function loadReferenceData(base = "/data/") {

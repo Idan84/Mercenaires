@@ -64,5 +64,5 @@ assert.match(high, /♥{10}/);
 assert.match(high, /Fantasme toutes les nuits/);
 assert.doesNotMatch(high, /\+100/);
 assert.equal(render({ id: "not-recruited" }), "", "pas de bloc hors effectif");
-assert.match(css, /\.player-identity-grid>div\.player-affinity\{grid-column:span 2\}/);
+assert.match(css, /\.sheet-column \.player-affinity\{/, "l'affinité occupe sa colonne de la fiche");
 console.log("Affinité fiche : seuils, cœurs et absence de score — OK");

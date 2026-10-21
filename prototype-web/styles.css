@@ -261,12 +261,14 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
 .equipment-mannequin-image {
   display:block;
   position:absolute;
-  inset:0;
+  /* Images carrées d'Idan : pleine hauteur, les marges blanches débordent sans se voir en multiply. */
+  top:0;
+  left:50%;
   z-index:1;
-  width:100%;
+  width:auto;
+  max-width:none;
   height:100%;
-  object-fit:contain;
-  object-position:center center;
+  transform:translateX(-50%);
   mix-blend-mode:multiply;
   opacity:.8;
   filter:grayscale(1) sepia(.13) contrast(1.04);

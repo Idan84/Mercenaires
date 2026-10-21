@@ -82,7 +82,7 @@ Pour savoir quoi produire : l'onglet **Avatars** du Design Lab (https://bloodand
 Décision d'Idan du 2026-10-21. Il s'agit d'une silhouette par peuple et par sexe, soit 20 images. Elle remplace le mannequin de l'onglet Équipement de la fiche et s'affiche en multiply : le blanc disparaît sur le fond beige, sans détourage.
 
 - Majuscules indifférentes, comme pour les avatars.
-- Le peuple et le sexe se lisent dans le nom du fichier, un sous-dossier ou les mots-clés Bridge. Exemples : `Orc_Femme.jpg`, `Homme-bete_H.jpg`, `Nains/Nain_M.png`. Sexe : `F`, `Femme`, `H`, `M` ou `Homme`.
+- Le peuple et le sexe se lisent dans le nom du fichier, un sous-dossier ou les mots-clés Bridge. Pour les images générées dont le nom ne les donne pas (« Gnome_character_sketch_….jpg »), ils sont dans `data/reference/equipment-silhouettes.json`. Exemples : `Orc_Femme.jpg`, `Homme-bete_H.jpg`, `Nains/Nain_M.png`. Sexe : `F`, `Femme`, `H`, `M` ou `Homme`.
 - `api/silhouettes.php` liste le dossier, et `game-core/avatar-catalog.js` (`buildSilhouetteCatalog`) range chaque image.
 - Une image dont le peuple ou le sexe manque est ignorée et signalée dans la console du navigateur. Un mercenaire sans sexe connu, ou dont la silhouette manque, garde l'ancien mannequin.
 

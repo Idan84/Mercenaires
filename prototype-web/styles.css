@@ -1583,8 +1583,9 @@ body[data-screen="camp"] .camp-scene>.panel .eyebrow{color:#d3ac76}
 body[data-screen="camp"] .camp-scene>.panel .muted{color:#c2b29e}
 #captain-summary{max-width:750px;margin:22px auto}
 .character-list{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
-.roster-card{display:grid;grid-template-columns:94px minmax(0,1fr);gap:14px;align-items:start;min-height:164px;padding:14px;border:1px solid #9c7952;border-radius:13px;background:linear-gradient(130deg,#443126,#201916);text-align:left;color:#e9d9c0;box-shadow:0 10px 25px #0005;min-width:0;transition:border-color .16s,transform .16s}
+.roster-card{display:grid;grid-template-columns:94px minmax(0,1fr);gap:14px;align-items:start;padding:14px;border:1px solid #9c7952;border-radius:13px;background:linear-gradient(130deg,#443126,#201916);text-align:left;color:#e9d9c0;box-shadow:0 10px 25px #0005;min-width:0;transition:border-color .16s,transform .16s}
 .roster-card:hover,.roster-card:focus-visible{border-color:#eed098;transform:translateY(-2px);outline:none}
+.roster-card-visual{display:flex;flex-direction:column;gap:6px;min-width:0}
 .roster-card .avatar-frame{width:94px;aspect-ratio:1;flex:none;margin:0}
 .roster-card .avatar-fallback small{display:none}
 .roster-card-info{display:flex;flex-direction:column;gap:6px;min-width:0;width:100%}
@@ -1602,7 +1603,12 @@ body[data-screen="camp"] .camp-scene>.panel .muted{color:#c2b29e}
 .roster-affinity-hearts .is-full{color:#e35c63}
 .roster-affinity-hearts .is-empty{color:#a88a86}
 .roster-affinity-phrase{color:#d4bfa7;font-size:11px;line-height:1.3;overflow-wrap:break-word}
-.roster-card-info .roster-status{font-style:normal;font-size:11px;color:#bcd39a}
+/* Cartel d'état sous le portrait : vert Disponible, jaune En mission, orange Fatigué, rouge Blessé. */
+.roster-status{display:block;font-style:normal;font-size:11px;font-weight:700;line-height:1.25;text-align:center;padding:3px 4px;border-radius:6px;border:1px solid;white-space:normal}
+.roster-status--available{background:rgba(92,170,96,.20);border-color:rgba(122,196,118,.55);color:#cfeec5}
+.roster-status--mission{background:rgba(222,190,70,.20);border-color:rgba(232,204,96,.6);color:#f6e7a8}
+.roster-status--fatigued{background:rgba(226,138,52,.22);border-color:rgba(236,156,78,.6);color:#ffd6aa}
+.roster-status--wounded{background:rgba(206,64,58,.24);border-color:rgba(226,96,88,.6);color:#ffc4bd}
 .roster-captain{max-width:570px}
 
 /* Compteur et tri de l'écran des mercenaires, contrastés sur le panneau sombre. */
@@ -1610,7 +1616,7 @@ body[data-screen="camp"] .camp-scene>.panel .muted{color:#c2b29e}
 .roster-count-number{font-weight:750}
 .roster-count-capacity{color:#dbb983;border-left:1px solid #816246;padding-left:12px}
 .roster-toolbar{display:flex;align-items:center;justify-content:flex-end;gap:9px;margin:-3px 0 17px;flex-wrap:wrap}
-.roster-toolbar label{display:inline;color:#dfc39e;font-size:12px;font-weight:700}
+.roster-toolbar label{display:inline-flex;align-items:center;padding:8px 10px;background:#34281f;border:1px solid #906f4b;border-radius:8px;color:#f4ddbb;font-size:13px;font-weight:700}
 .roster-toolbar select{width:auto;min-width:173px;padding:8px 28px 8px 10px;background:#34281f;border:1px solid #906f4b;border-radius:8px;color:#f4ddbb;font-size:13px}
 .roster-sort-direction{padding:8px 11px;border:1px solid #906f4b;border-radius:8px;background:#34281f;color:#f4ddbb;font-size:13px;white-space:nowrap}
 .roster-sort-direction:hover,.roster-sort-direction:focus-visible,.roster-toolbar select:focus-visible{border-color:#ebc17d;outline:2px solid #ebc17d55}

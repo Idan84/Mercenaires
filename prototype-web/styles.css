@@ -1824,11 +1824,12 @@ body[data-screen="camp"] .camp-scene>.panel .muted{color:#c2b29e}
 .sheet-armor .sheet-stat-icon{width:18px;height:18px;color:inherit}
 .sheet-armor.is-yes{background:rgba(92,170,96,.18);border-color:rgba(122,196,118,.6);color:#cfeec5}
 .sheet-armor.is-no{background:rgba(206,64,58,.18);border-color:rgba(226,96,88,.6);color:#ffc4bd}
-.sheet-animal{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:8px 12px;align-items:start}
+.sheet-skills-bottom{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:start}
+.sheet-animal{grid-column:span 2;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px;align-items:start}
 .sheet-animal h4{grid-column:1/-1}
 @media(max-width:1100px){.sheet-skills{grid-template-columns:200px minmax(0,1fr)}}
 @media(max-width:860px){.sheet-skills{grid-template-columns:1fr}.sheet-skills .sheet-portrait{width:min(250px,100%);margin:0 auto}}
-@media(max-width:700px){.sheet-predilections,.sheet-skill-columns,.sheet-animal{grid-template-columns:1fr}}
+@media(max-width:700px){.sheet-predilections,.sheet-skill-columns,.sheet-skills-bottom,.sheet-animal{grid-template-columns:1fr}.sheet-animal{grid-column:auto}}
 /* Affinité : dix cœurs (rouges ou vides), puis une appréciation sans score numérique. */
 .player-affinity-hearts{display:flex;align-items:center;gap:0;white-space:nowrap;font-size:21px;letter-spacing:2px;line-height:1.2}
 .player-affinity-hearts .is-full{color:#e35c63;text-shadow:0 1px 4px rgba(100,10,20,.35)}

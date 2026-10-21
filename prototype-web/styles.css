@@ -1795,6 +1795,40 @@ body[data-screen="camp"] .camp-scene>.panel .muted{color:#c2b29e}
 .sheet-stat-who em{overflow:hidden;font-style:normal;font-size:11px;text-overflow:ellipsis;white-space:nowrap}
 @media(max-width:1100px){.sheet-stats{grid-template-columns:200px repeat(3,minmax(0,1fr))}.sheet-stat-tip{width:220px}}
 @media(max-width:860px){.sheet-stats{grid-template-columns:1fr}.sheet-stats .sheet-portrait{width:min(250px,100%);margin:0 auto}}
+/* Onglet Compétences (Idan, 2026-10-21) : prédilections, trois colonnes dépliables, armures, animal. */
+.sheet-skills{display:grid;grid-template-columns:250px minmax(0,1fr);gap:18px;align-items:start}
+.sheet-skills-main{display:grid;gap:12px;min-width:0}
+.sheet-predilections{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.sheet-predilection{display:grid;gap:2px;align-content:start;padding:10px 14px;border:1px solid #9a7a4f;border-radius:10px;background:linear-gradient(180deg,#3a2b21,#2a1f18)}
+.sheet-predilection small{color:#d4b27e;font:700 11px Georgia,serif;letter-spacing:.06em;text-transform:uppercase}
+.sheet-predilection strong{color:#ffe1ac;font:700 19px Georgia,serif}
+.sheet-predilection span{color:#cdb38c;font-size:12px}
+.sheet-skill-columns{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:start}
+.sheet-skill-column{display:flex;flex-direction:column;gap:6px;min-width:0}
+.sheet-skill-column h4,.sheet-animal h4{margin:0 0 2px;color:#bb9a6e;font:700 12px Georgia,serif;letter-spacing:.1em;text-transform:uppercase}
+.sheet-skill{display:flex;align-items:center;gap:8px;padding:7px 11px;border:1px solid #71583e;border-radius:8px;background:#2e231c}
+.sheet-skill .sheet-stat-value{font-size:16px}
+.sheet-skill-group>summary{list-style:none;cursor:pointer}
+.sheet-skill-group>summary::-webkit-details-marker{display:none}
+.sheet-skill-group>summary:hover,.sheet-skill-group>summary:focus-visible{border-color:#b08a57;outline:none}
+.sheet-skill-chevron{flex:none;color:#d8b77d;font-size:11px;transition:transform .15s}
+.sheet-skill-group[open] .sheet-skill-chevron{transform:rotate(90deg)}
+.sheet-skill-group[open]>summary{border-color:#b08a57;background:#382a22}
+.sheet-skill-children{display:flex;flex-direction:column;gap:4px;margin:4px 0 2px 12px;padding-left:8px;border-left:1px solid #71583e}
+.sheet-skill--child{padding:5px 10px;background:#271d17}
+.sheet-skill--child .sheet-stat-name{font-size:13px}
+.sheet-armors{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:9px 12px;border:1px solid #71583e;border-radius:10px;background:#2e231c}
+.sheet-armors small{margin-right:2px;color:#bb9a6e;font:700 11px Georgia,serif;letter-spacing:.08em;text-transform:uppercase}
+.sheet-armors small:not(:first-child){margin-left:12px}
+.sheet-armor{display:inline-flex;align-items:center;gap:6px;padding:4px 11px 4px 7px;border:1px solid;border-radius:999px;font-size:13px}
+.sheet-armor .sheet-stat-icon{width:18px;height:18px;color:inherit}
+.sheet-armor.is-yes{background:rgba(92,170,96,.18);border-color:rgba(122,196,118,.6);color:#cfeec5}
+.sheet-armor.is-no{background:rgba(206,64,58,.18);border-color:rgba(226,96,88,.6);color:#ffc4bd}
+.sheet-animal{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:8px 12px;align-items:start}
+.sheet-animal h4{grid-column:1/-1}
+@media(max-width:1100px){.sheet-skills{grid-template-columns:200px minmax(0,1fr)}}
+@media(max-width:860px){.sheet-skills{grid-template-columns:1fr}.sheet-skills .sheet-portrait{width:min(250px,100%);margin:0 auto}}
+@media(max-width:700px){.sheet-predilections,.sheet-skill-columns,.sheet-animal{grid-template-columns:1fr}}
 /* Affinité : dix cœurs (rouges ou vides), puis une appréciation sans score numérique. */
 .player-affinity-hearts{display:flex;align-items:center;gap:0;white-space:nowrap;font-size:21px;letter-spacing:2px;line-height:1.2}
 .player-affinity-hearts .is-full{color:#e35c63;text-shadow:0 1px 4px rgba(100,10,20,.35)}

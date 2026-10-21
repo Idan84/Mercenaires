@@ -806,7 +806,12 @@ const STAT_ICONS={
   "Résistance au feu":'<path d="M12 3c1 3 5.5 5.2 5.5 10.2a5.5 5.5 0 0 1-11 0c0-3 2-4.2 2-6.4 1.6 1 2.2 2.2 2.2 3.3 0-3 1.3-5.1 1.3-7.1z"/>',
   "Résistance au froid":'<path d="M12 2.5v19M3.8 7.2l16.4 9.6M20.2 7.2 3.8 16.8M9.2 4l2.8 2 2.8-2M9.2 20l2.8-2 2.8 2"/>',
   "Résistance à la foudre":'<path d="M13.5 2.5 5 13.5h6l-1 8 8.5-11h-6z"/>',
-  "Résistance au poison":'<path d="M12 3s6 6.4 6 11a6 6 0 0 1-12 0c0-4.6 6-11 6-11z"/><path d="M9.8 14.2h.01M14.2 14.2h.01" stroke-width="2.6"/>'
+  "Résistance au poison":'<path d="M12 3s6 6.4 6 11a6 6 0 0 1-12 0c0-4.6 6-11 6-11z"/><path d="M9.8 14.2h.01M14.2 14.2h.01" stroke-width="2.6"/>',
+  "Régénération":'<path d="M12 8v8M8 12h8"/><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3M19.5 4v3.2h-3.2"/>',
+  "Intimidation":'<path d="M5 10.5a7 7 0 0 1 14 0v3l-2 2V19H7v-3.5l-2-2z"/><path d="M9.3 11.5h.01M14.7 11.5h.01" stroke-width="2.8"/><path d="M10.5 19v-2M13.5 19v-2"/>',
+  "Port d’armure légère":'<path d="M8.5 3.5h7l3.5 4-2.5 2V20.5h-9V9.5L5 7.5z"/>',
+  "Port d’armure intermédiaire":'<path d="M8.5 3.5h7l3.5 4-2.5 2V20.5h-9V9.5L5 7.5z"/><path d="M9.5 11h5M9.5 14h5M9.5 17h5"/>',
+  "Port d’armure lourde":'<path d="M6 4h12l1 6c0 5.8-3 9-7 11-4-2-7-5.2-7-11z"/><path d="M12 4v17M7.5 10h9"/>'
 };
 function statIcon(name){
   return `<svg class="sheet-stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${STAT_ICONS[name]||""}</svg>`;
@@ -819,10 +824,13 @@ function sheetStatValue(m,name){
   if(name==="Points de vie") return Number(m?.pvMax);
   if(name==="Initiative") return m?.stats ? Math.round(combatEngine().initiative({character:m})) : NaN;
   if(m?.resistances && name in m.resistances) return Number(m.resistances[name]);
+  // Régénération (physiologie) et Intimidation (social) : rangées dans les caractéristiques (Idan, 2026-10-21).
+  for(const group of ["physiology","social"]) if(m?.skills?.[group] && name in m.skills[group]) return Number(m.skills[group][name]);
   return Number(m?.stats?.[name]);
 }
 function statTip(row){
-  const reference=(game.referenceData?.characteristics?.rows||[]).find(r=>r.nom===row.nom);
+  const reference=(game.referenceData?.characteristics?.rows||[]).find(r=>r.nom===row.nom)
+    ||(game.referenceData?.skills?.rows||[]).find(r=>r.nom===row.nom);
   const first=row.description_referentiel?String(reference?.description||"").split(/(?<=\.)\s/)[0]:"";
   return `<span class="sheet-stat-tip" role="tooltip"><strong>${esc(row.nom)}</strong>${first?`<span>${esc(first)}</span>`:""}<em>${esc(row.usage)}</em></span>`;
 }
@@ -834,7 +842,10 @@ function statPortraitButton(member,label,value,current){
     ${face}<span><small>${label}</small><b>${fmt(value)}</b><em>${esc(member.name)}</em></span></button>`;
 }
 function statPopover(c,name,value){
-  const data=comparisonData(value,m=>sheetStatValue(m,name));
+  return comparePopover(c,value,m=>sheetStatValue(m,name));
+}
+function comparePopover(c,value,accessor){
+  const data=comparisonData(value,accessor);
   if(!data) return "";
   const p=data.positions;
   const dot=(key,pos,title)=>`<i class="compare-dot ${key}" style="left:${pos}%" title="${esc(title)}"></i>`;
@@ -865,12 +876,92 @@ function renderStatsTab(c){
     ${group("physique","Physique")}${group("mental","Mental")}${group("resistance","Résistances")}
   </section>`;
 }
+// Onglet Compétences (Idan, 2026-10-21) : en tête, l'arme de prédilection, le style de combat et l'arme de
+// tir ; puis trois colonnes (corps à corps, style de combat, tir) où chaque catégorie se déplie sur ses
+// armes ; les armures portables ; la monture ou le compagnon. Au survol d'une valeur : sa place dans la
+// compagnie. Régénération et Intimidation sont dans les caractéristiques ; Camp et Artisanat iront dans
+// un autre onglet. Rangement : character-sheet-copy.json, skills_layout.
+function skillValue(m,group,name){
+  return Number(m?.skills?.[group]?.[name]);
+}
+function skillChildren(parent){
+  return (game.referenceData?.skills?.rows||[]).filter(r=>r.parent===parent).map(r=>r.nom);
+}
+function skillDescription(name){
+  return (game.referenceData?.skills?.rows||[]).find(r=>r.nom===name)?.description||"";
+}
+function skillValueCell(c,group,name){
+  const value=skillValue(c,group,name);
+  return `<span class="sheet-stat-value" tabindex="0">${fmt(value)}${comparePopover(c,value,m=>skillValue(m,group,name))}</span>`;
+}
+function skillName(name){
+  const description=skillDescription(name);
+  return `<span class="sheet-stat-name"${description?' tabindex="0"':""}>${esc(name)}${description?`<span class="sheet-stat-tip" role="tooltip"><strong>${esc(name)}</strong><em>${esc(description)}</em></span>`:""}</span>`;
+}
+// Une compétence ; une catégorie qui a des armes se déplie (meilleures valeurs d'abord).
+function skillLine(c,group,name){
+  const children=skillChildren(name).map(n=>({n,v:skillValue(c,group,n)})).filter(x=>Number.isFinite(x.v)).sort((a,b)=>b.v-a.v);
+  if(!children.length) return `<div class="sheet-skill">${skillName(name)}${skillValueCell(c,group,name)}</div>`;
+  return `<details class="sheet-skill-group">
+    <summary class="sheet-skill"><span class="sheet-skill-chevron" aria-hidden="true">▸</span>${skillName(name)}${skillValueCell(c,group,name)}</summary>
+    <div class="sheet-skill-children">${children.map(x=>`<div class="sheet-skill sheet-skill--child">${skillName(x.n)}${skillValueCell(c,group,x.n)}</div>`).join("")}</div>
+  </details>`;
+}
+function skillColumn(c,title,names){
+  const rows=names.filter(n=>Number.isFinite(skillValue(c,"martial",n)))
+    .sort((a,b)=>skillValue(c,"martial",b)-skillValue(c,"martial",a));
+  return `<section class="sheet-skill-column"><h4>${title}</h4>${rows.map(n=>skillLine(c,"martial",n)).join("")}</section>`;
+}
+// Meilleure arme d'un ensemble de catégories : score = catégorie + arme précise (comme à la génération).
+function bestWeapon(c,categories){
+  let best=null;
+  for(const category of categories){
+    const base=skillValue(c,"martial",category);
+    for(const weapon of skillChildren(category)){
+      const score=base+skillValue(c,"martial",weapon);
+      if(Number.isFinite(score)&&(!best||score>best.score)) best={weapon,category,score};
+    }
+  }
+  return best;
+}
+function predilectionCard(title,value,detail){
+  return `<div class="sheet-predilection"><small>${title}</small><strong>${esc(value||"—")}</strong>${detail?`<span>${esc(detail)}</span>`:""}</div>`;
+}
 function renderSkillsTab(c){
-  return `<div class="player-skills">${Object.entries(c.skills||{}).filter(([group])=>group!=="magic").map(([group,values])=>{
-    const entries=Object.entries(values||{}).filter(([,value])=>typeof value==="number").sort((a,b)=>b[1]-a[1]);
-    if(!entries.length)return "";
-    return `<section class="player-stat-section"><h3>${esc(skillLabel(group))}</h3><div class="player-stat-grid">${entries.map(([name,value])=>`<div class="player-stat"><span>${esc(name)}</span><strong>${fmt(value)}</strong></div>`).join("")}</div></section>`;
-  }).join("")}</div>`;
+  const layout=game.referenceData?.characterSheetCopy?.skills_layout;
+  if(!layout) return "";
+  const status=rosterStatus(c);
+  const melee=bestWeapon(c,layout.corps_a_corps);
+  const ranged=bestWeapon(c,layout.tir);
+  const style=layout.styles_de_combat.map(n=>({n,v:skillValue(c,"martial",n)})).filter(x=>Number.isFinite(x.v)).sort((a,b)=>b.v-a.v)[0];
+  const animals=skillChildren(layout.animal).map(n=>({n,v:skillValue(c,"animal",n)})).filter(x=>Number.isFinite(x.v)).sort((a,b)=>b.v-a.v);
+  const yes=name=>c.skills?.martial?.[name]===true||c.skills?.physiology?.[name]===true;
+  const armors=layout.armures.map(a=>`<span class="sheet-armor ${yes(a.nom)?"is-yes":"is-no"}" title="${esc(a.nom)} : ${yes(a.nom)?"oui":"non"}">${statIcon(a.nom)}${esc(a.label)}</span>`).join("");
+  const aptitudes=layout.aptitudes.filter(yes).map(n=>`<span class="sheet-armor is-yes">${esc(n)}</span>`).join("");
+  return `<section class="sheet-skills">
+    <aside class="sheet-portrait">
+      ${renderAvatar(c,{variant:"detail",kind:"full"})}
+      <em class="roster-status roster-status--${status.kind}">${esc(status.label)}</em>
+    </aside>
+    <div class="sheet-skills-main">
+      <div class="sheet-predilections">
+        ${predilectionCard("Arme de prédilection",melee?.weapon,melee?.category)}
+        ${predilectionCard("Style de combat",style?.n,style?fmt(style.v):"")}
+        ${predilectionCard("Arme de tir",ranged?.weapon,ranged?.category)}
+      </div>
+      <div class="sheet-skill-columns">
+        ${skillColumn(c,"Corps à corps",layout.corps_a_corps)}
+        ${skillColumn(c,"Style de combat",layout.style)}
+        ${skillColumn(c,"Tir",layout.tir)}
+      </div>
+      <div class="sheet-armors"><small>Armures</small>${armors}${aptitudes?`<small>Aptitudes</small>${aptitudes}`:""}</div>
+      <section class="sheet-animal">
+        <h4>Monture ou compagnon</h4>
+        ${predilectionCard("Animal de prédilection",animals[0]?.n,animals[0]?fmt(animals[0].v):"")}
+        <div class="sheet-animal-skill">${skillLine(c,"animal",layout.animal)}</div>
+      </section>
+    </div>
+  </section>`;
 }
 
 // Grimoire (Chatty, PR #29) : accepte déjà mercenary.spells = [{name, school, mastery}], sans l'exiger.

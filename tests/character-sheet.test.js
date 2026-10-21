@@ -26,4 +26,18 @@ for(const n of generated){
 }
 for(const n of characteristics.filter(r=>r.famille==="Résistance").map(r=>r.nom)) assert.equal(copy.stats.find(r=>r.nom===n)?.groupe,"resistance",n);
 assert.deepEqual(copy.stats.filter(r=>r.groupe==="physique").slice(0,2).map(r=>r.nom),["Points de vie","Initiative"]);
-console.log("Fiche : textes d'origine, d'ascendance et des caractéristiques — OK");
+// Régénération et Intimidation passent dans les caractéristiques (Idan, 2026-10-21).
+assert.equal(copy.stats.find(r=>r.nom==="Régénération")?.groupe,"physique");
+assert.equal(copy.stats.find(r=>r.nom==="Intimidation")?.groupe,"mental");
+
+// Onglet Compétences : chaque catégorie martiale est dans une seule colonne ; les armures sont les aptitudes.
+const skills=read("skills.json").rows;
+const layout=copy.skills_layout;
+const placed=[...layout.corps_a_corps,...layout.style,...layout.tir];
+assert.equal(new Set(placed).size,placed.length,"une catégorie dans une seule colonne");
+assert.deepEqual(placed.sort(),skills.filter(r=>r.domaine==="Martial"&&r.niveau==="Catégorie").map(r=>r.nom).sort());
+assert.ok(layout.styles_de_combat.every(n=>layout.style.includes(n)));
+for(const a of layout.armures) assert.equal(skills.find(r=>r.nom===a.nom)?.type_de_valeur,"Binaire",a.nom);
+for(const n of layout.aptitudes) assert.equal(skills.find(r=>r.nom===n)?.type_de_valeur,"Binaire",n);
+assert.ok(skills.some(r=>r.parent===layout.animal),"l'animal se déplie sur ses espèces");
+console.log("Fiche : textes d'origine, d'ascendance, des caractéristiques et des compétences — OK");

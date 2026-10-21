@@ -33,10 +33,12 @@ assert.equal(copy.stats.find(r=>r.nom==="Intimidation")?.groupe,"mental");
 // Onglet Compétences : chaque catégorie martiale est dans une seule colonne ; les armures sont les aptitudes.
 const skills=read("skills.json").rows;
 const layout=copy.skills_layout;
-const placed=[...layout.corps_a_corps,...layout.style,...layout.tir];
+const placed=[...layout.corps_a_corps,...layout.style,...layout.tir,...layout.discretion_et_pieges];
 assert.equal(new Set(placed).size,placed.length,"une catégorie dans une seule colonne");
 assert.deepEqual(placed.sort(),skills.filter(r=>r.domaine==="Martial"&&r.niveau==="Catégorie").map(r=>r.nom).sort());
 assert.ok(layout.styles_de_combat.every(n=>layout.style.includes(n)));
+assert.deepEqual(layout.discretion_et_pieges,["Discrétion","Pièges"],"pas des styles de combat (Idan, 2026-10-21)");
+assert.ok(!layout.style.includes("Discrétion")&&!layout.style.includes("Pièges"));
 for(const a of layout.armures) assert.equal(skills.find(r=>r.nom===a.nom)?.type_de_valeur,"Binaire",a.nom);
 for(const n of layout.aptitudes) assert.equal(skills.find(r=>r.nom===n)?.type_de_valeur,"Binaire",n);
 assert.ok(skills.some(r=>r.parent===layout.animal),"l'animal se déplie sur ses espèces");

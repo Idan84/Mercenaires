@@ -878,7 +878,7 @@ function renderStatsTab(c){
 }
 // Onglet Compétences (Idan, 2026-10-21) : en tête, l'arme de prédilection, le style de combat et l'arme de
 // tir ; puis trois colonnes (corps à corps, style de combat, tir) où chaque catégorie se déplie sur ses
-// armes ; les armures portables ; la monture ou le compagnon. Au survol d'une valeur : sa place dans la
+// armes ; les armures portables ; la monture ou le compagnon et, à côté, discrétion et pièges. Au survol d'une valeur : sa place dans la
 // compagnie. Régénération et Intimidation sont dans les caractéristiques ; Camp et Artisanat iront dans
 // un autre onglet. Rangement : character-sheet-copy.json, skills_layout.
 function skillValue(m,group,name){
@@ -955,11 +955,14 @@ function renderSkillsTab(c){
         ${skillColumn(c,"Tir",layout.tir)}
       </div>
       <div class="sheet-armors"><small>Armures</small>${armors}${aptitudes?`<small>Aptitudes</small>${aptitudes}`:""}</div>
-      <section class="sheet-animal">
-        <h4>Monture ou compagnon</h4>
-        ${predilectionCard("Animal de prédilection",animals[0]?.n,animals[0]?fmt(animals[0].v):"")}
-        <div class="sheet-animal-skill">${skillLine(c,"animal",layout.animal)}</div>
-      </section>
+      <div class="sheet-skills-bottom">
+        <section class="sheet-animal">
+          <h4>Monture ou compagnon</h4>
+          ${predilectionCard("Animal de prédilection",animals[0]?.n,animals[0]?fmt(animals[0].v):"")}
+          <div class="sheet-animal-skill">${skillLine(c,"animal",layout.animal)}</div>
+        </section>
+        ${skillColumn(c,"Discrétion et pièges",layout.discretion_et_pieges)}
+      </div>
     </div>
   </section>`;
 }

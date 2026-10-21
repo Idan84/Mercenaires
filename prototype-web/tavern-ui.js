@@ -138,9 +138,10 @@ function addTestGold(){
   renderTavern();
 }
 
-// Commande globale du camp : l'horloge existante reste la seule source de vérité.
+// Commande globale du camp (bouton play de la barre du bas) : l'horloge existante reste la seule source
+// de vérité. Jamais pendant une mission.
 function advanceCampDay(){
-  if(!game.campaign) return;
+  if(!game.campaign||currentScreen()!=="camp") return;
   const [report]=campaignRules().advanceTime(game.campaign,1);
   for(const r of report.recovered) tavernLog(r.mercenary.name+(r.kind==="wounded"?" est guéri de ses blessures.":" est reposé."),"turn");
   if(report.salaries.total) tavernLog("Salaires versés : "+fmt(report.salaries.total)+" PO ("+report.salaries.count+" mercenaires sous contrat).","gear");
@@ -327,7 +328,7 @@ function initializeTavernUi(){
   }
   $("tavern-mission-test-btn").addEventListener("click",openMissionSelection);
 
-  $("camp-next-day-btn").addEventListener("click",advanceCampDay);
+  $("hud-next-day-btn").addEventListener("click",advanceCampDay);
   $("test-gold-btn").addEventListener("click",addTestGold);
   $("tavern-intendant").addEventListener("change",assignTavernIntendant);
   $("close-tavern-dialog").addEventListener("click",()=>{ game.tavernSelected=null; $("tavern-dialog").close(); });

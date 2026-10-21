@@ -51,7 +51,7 @@
   // avatars (facultatif) : createAvatarRules(...) de game-core/avatars.js.
   // progression (facultatif) : createProgressionRules(...) de game-core/progression.js.
   // affinity (facultatif) : createAffinityRules(...) de game-core/affinity.js (négociation à la Taverne).
-  function createCampaignRules({generator,tavern,reference,biographies=null,avatars=null,progression=null,affinity=null}){
+  function createCampaignRules({generator,tavern,reference,biographies=null,avatars=null,progression=null,affinity=null,names=null}){
     const STARTING_GOLD=referenceConstant(reference,"company.gold.initial",10000);
     const STARTING_DORMITORY_CAPACITY=referenceConstant(reference,"camp.dormitory.initial_capacity",40);
     const RENOWN_RANK_EXPONENT=referenceConstant(reference,"company.renown.rank_exponent",1.5);
@@ -111,9 +111,11 @@
       return new Set([...present.map(m=>m.avatar?.id).filter(Boolean),...(state.avatarsRetired||[])]);
     }
 
+    // Le nom généré suit le sexe donné par l'avatar (Idan, 2026-10-21 ; game-core/names.js).
     function assignAvatar(state,mercenary){
-      if(!avatars) return mercenary.avatar||null;
-      return avatars.assign(mercenary,avatarsInUse(state));
+      const avatar=avatars?avatars.assign(mercenary,avatarsInUse(state)):(mercenary.avatar||null);
+      names?.fitSex(mercenary);
+      return avatar;
     }
 
     // Parties sauvegardées avant les avatars, nouveaux avatars ajoutés au catalogue, avatar retiré du

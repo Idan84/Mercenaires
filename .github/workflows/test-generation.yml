@@ -22,6 +22,7 @@ jobs:
       - run: node tests/affinity.test.js
       - run: node tests/roster-ui.test.js
       - run: node tests/stars.test.js
+      - run: node tests/names.test.js
       - run: node tests/design-lab-tags.test.js
       - run: node tests/affinity-display.test.js
       - run: node tests/wizard-ui-refinements.test.js

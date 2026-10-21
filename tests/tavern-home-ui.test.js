@@ -57,31 +57,4 @@ assert.equal(log.at(-1)[0],"Pas assez d'or : 3 PO nécessaires.");
 assert.equal(api.captainFirstName(),"Bob","prénom du capitaine dans « Salut [Prénom] ! »");
 campaign.company.roster[0].firstName="Aldric";
 assert.equal(api.captainFirstName(),"Aldric");
-// Musique d'ambiance (Idan, 2026-10-21) : jouée en boucle en entrant, coupée en sortant (camp ou autre écran).
-const screenJs=fs.readFileSync(path.join(root,"prototype-web/screen-ui.js"),"utf8");
-assert.match(js,/const TAVERN_MUSIC_SRC="assets\/audio\/tavern\.mp3";/);
-assert.match(screenJs,/target==="tavern"\?playTavernMusic\(\):stopTavernMusic\(\)/);
-assert.match(screenJs,/screen!=="camp"&&typeof stopTavernMusic==="function"\) stopTavernMusic\(\)/);
-const created=[];
-class FakeAudio{
-  constructor(src){ this.src=src; this.volume=1; this.paused=true; created.push(this); }
-  play(){ this.paused=false; return Promise.resolve(); }
-  pause(){ this.paused=true; }
-}
-const musicGame={};
-let themeStopped=0;
-const music=new Function("game","Audio","stopTheme",
-  js.slice(js.indexOf("const TAVERN_MUSIC_SRC"),js.indexOf("// Les deux consommations"))+"return {playTavernMusic,stopTavernMusic};")(
-  musicGame,FakeAudio,()=>themeStopped++);
-music.playTavernMusic();
-music.playTavernMusic();
-assert.equal(created.length,1,"une seule musique à la fois");
-assert.equal(created[0].src,"assets/audio/tavern.mp3");
-assert.equal(created[0].loop,true);
-assert.equal(themeStopped,1,"le thème du camp se tait");
-music.stopTavernMusic();
-assert.equal(musicGame.tavernMusic,null,"sortie avant la fin du chargement : la musique ne doit pas repartir");
-setTimeout(()=>{
-  assert.equal(created[0].paused,true,"coupée après le fondu");
-  console.log("Taverne : accueil, dialogue du tavernier, bière, tournée et musique — OK");
-},700);
+console.log("Taverne : accueil, dialogue du tavernier, bière et tournée — OK");

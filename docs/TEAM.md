@@ -124,6 +124,8 @@ Aucun agent ne travaille spontanément : il faut qu'une session soit lancée. Gi
 - **2026-10-04** — Titre du jeu : **Blood & Wages**, accroche **« Manage your HR. Send them to die. »** (Idan, après vote de l'équipe). Le dépôt garde son nom de code « Mercenaires ».
 - **2026-10-03** — Fin de mission : on tue assez, on ne blesse pas assez. La zone du jet de blessure passe de 0–20 % à **0–50 % des PV** ; les morts ne changent pas (Idan).
 
+- **2026-10-21** — Génération (doc 03) : Combat à mains nues, Pièges et Discrétion, tirés des caractéristiques, sont multipliés par 0,5 pour revenir à l'échelle des armes (1D20 / 2D20) ; seuls les nouveaux mercenaires sont concernés (Idan).
+- **2026-10-21** — Magie (doc 12) : deux écoles opposées peuvent coexister chez un mercenaire ; mais progresser dans une école fait baisser ses opposées, ampleur à définir (Idan).
 - **2026-10-21** — Fiche mercenaire, onglet Magie (provisoire) : puissance magique et réserve de mana en tête ; trois écoles de prédilection avec pictos ; roue des neuf écoles où chaque école fait face à ses deux opposées (`skills.json`) et dont la surface montre les points ; « Grimoire » à venir (Idan).
 - **2026-10-21** — Barre du bas (doc 16) : petit calendrier et gros bouton play « Jour suivant » au centre ; or, entretien et effectif avec pictos à gauche ; journal de la compagnie intégré à droite ; plus d'almanach sur l'accueil du camp (Idan).
 - **2026-10-21** — Noms (doc 02) : le prénom respecte le sexe donné par l'avatar ; les humains portent des noms de la consonance de leur culture : Soleil Levant japonais, Tribus de la jungle africain, Cités libres Europe de l'Ouest, Montagnes du Nord scandinave ou russe, Steppes désertiques indien (Idan).

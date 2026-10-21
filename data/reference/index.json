@@ -405,6 +405,22 @@
       ]
     },
     {
+      "name": "character-names",
+      "file": "character-names.json",
+      "rows": 46,
+      "columns": [
+        "id",
+        "peuple",
+        "culture",
+        "consonance",
+        "poids",
+        "prenoms_femme",
+        "prenoms_homme",
+        "noms",
+        "noms_femme"
+      ]
+    },
+    {
       "name": "people-affinity",
       "file": "people-affinity.json",
       "rows": 10,

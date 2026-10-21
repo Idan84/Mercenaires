@@ -24,6 +24,7 @@ const REFERENCE_FILES = {
   peopleAffinity: "people-affinity.json",
   reputationStars: "reputation-stars.json",
   campCalendar: "camp-calendar.json",
+  characterNames: "character-names.json",
   biographies: "biographies.json",
   captainCreationCopy: "captain-creation-copy.json"
 };

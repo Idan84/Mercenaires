@@ -30,6 +30,7 @@ Git est la source de vérité. Les JSON ci-dessous sont les référentiels struc
 | binary-aptitude-grants.json | 6 | aptitude, domaine, mode, automatic, bonuses_pp, armor, reason |
 
 | reputation-stars.json | 15 | niveau, metal, etoiles, reputation_min, renommee_min (affichage en étoiles de la réputation et de la renommée) |
+| character-names.json | 46 | id, peuple, culture, consonance, poids, prenoms_femme, prenoms_homme, noms, noms_femme (noms des personnages générés : genre et consonance des cultures humaines) |
 | people-affinity.json | 10 | peoples, matrix (ligne : peuple du mercenaire ; colonne : peuple du capitaine) |
 | alignment-generation.json | 1 | distribution, neighborhood, grid, notes |
 

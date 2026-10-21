@@ -47,6 +47,26 @@ Le pipeline ci-dessous décrit la génération statistique commune. Son point d�
 
 </aside>
 
+## Noms des personnages
+
+Décision d'Idan du 2026-10-21. Les données sont dans `data/reference/character-names.json`, la logique dans `game-core/names.js`.
+
+- **Le prénom respecte le sexe.** Le sexe vient de l'avatar, attribué après la génération : le nom est tiré, puis le prénom est réaccordé dès que le portrait est posé. Les noms de famille qui s'accordent suivent aussi (russes : Volkov, Volkova).
+- **Humains : la consonance suit la culture.** Le prénom et le nom de famille viennent toujours de la même consonance.
+
+| Culture | Consonance |
+|---|---|
+| Royaumes du Soleil Levant | japonaise |
+| Tribus de la jungle | africaine : ouest-africaine ou bantoue |
+| Cités libres | Europe de l'Ouest : française, anglaise, germanique ou italienne |
+| Montagnes du Nord | scandinave ou russe |
+| Steppes désertiques | indienne |
+
+- **Autres peuples** : prénoms propres au peuple, pour les femmes et pour les hommes ; noms de famille propres à la culture.
+- **Capitaine** : son nom est saisi par le joueur et ne change jamais.
+- **Anciennes sauvegardes** : les personnages déjà créés gardent leur nom.
+- **Sans avatar sexué** (choix technique de JC3, à valider) : le sexe tiré pour le nom devient celui du personnage, et le portrait attribué plus tard le respecte.
+
 ## Génération brute des compétences — règles en cours
 
 ### Compétences martiales

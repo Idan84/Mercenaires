@@ -1112,6 +1112,8 @@
         name: fullName,
         firstName: createOptions.firstName || (generatedIdentity && typeof generatedIdentity === "object" ? generatedIdentity.firstName : null) || null,
         familyName: createOptions.familyName || (generatedIdentity && typeof generatedIdentity === "object" ? generatedIdentity.familyName : null) || null,
+        // Réservoir et sexe du nom tiré, pour le réaccorder au sexe de l'avatar (game-core/names.js).
+        naming: (generatedIdentity && typeof generatedIdentity === "object" ? generatedIdentity.naming : null) || null,
         role: createOptions.role || "Mercenaire",
         people,
         culture,

@@ -311,14 +311,24 @@ assert.ok(dague.contributions.some(x => x.name === "Gobelins des cavernes"));
 assert.ok(dague.contributions.some(x => x.name === "Hors-la-loi"));
 
 for (const [skill, formula] of [
-  ["Pièges", "Moyenne(Intelligence, Perception) × Rand(0,8 ; 1,2)"],
-  ["Discrétion", "Moyenne(Dextérité, Perception, Esquive) × Rand(0,8 ; 1,2)"],
+  ["Pièges", "Moyenne(Intelligence, Perception) × Rand(0,8 ; 1,2) × 0,5"],
+  ["Discrétion", "Moyenne(Dextérité, Perception, Esquive) × Rand(0,8 ; 1,2) × 0,5"],
   ["Combat à deux armes", "Max(armes de mêlée 1 main) × Rand(0,8 ; 1,2)"],
-  ["Combat à mains nues", "Moyenne(Force, Dextérité) × Rand(0,8 ; 1,2)"],
+  ["Combat à mains nues", "Moyenne(Force, Dextérité) × Rand(0,8 ; 1,2) × 0,5"],
   ["Combat à deux mains", "Max(armes de mêlée 2 mains) × Rand(0,8 ; 1,2)"]
 ]) {
   assert.equal(goblin.generationTrace.skills[skill].rawFormula, formula);
   assert.ok(Number.isFinite(goblin.skills.martial[skill]));
+}
+// Mains nues, Pièges, Discrétion : tirés des caractéristiques puis ramenés à l'échelle des armes (× 0,5, Idan 2026-10-21).
+for (const [skill, stats] of [
+  ["Pièges", ["Intelligence", "Perception"]],
+  ["Discrétion", ["Dextérité", "Perception", "Esquive"]],
+  ["Combat à mains nues", ["Force", "Dextérité"]]
+]) {
+  const mean = stats.reduce((sum, name) => sum + goblin.stats[name], 0) / stats.length;
+  const raw = goblin.generationTrace.skills[skill].raw;
+  assert.ok(raw >= mean * 0.8 * 0.5 - 1e-9 && raw <= mean * 1.2 * 0.5 + 1e-9, `${skill} : ${raw} hors de [${mean * 0.4} ; ${mean * 0.6}]`);
 }
 assert.equal(goblin.generationTrace.skills["Armes naturelles"].rawFormula, "0");
 assert.ok(Number.isFinite(goblin.skills.martial["Armes naturelles"]));

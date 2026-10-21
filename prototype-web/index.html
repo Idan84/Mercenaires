@@ -179,7 +179,16 @@
               <p class="eyebrow">Effectifs</p>
               <h2>Mes mercenaires</h2>
             </div>
-            <span id="initial-count" class="badge"></span>
+            <span id="initial-count" class="roster-count" aria-live="polite"></span>
+          </div>
+          <div class="roster-toolbar">
+            <label for="roster-sort">Trier par</label>
+            <select id="roster-sort" aria-label="Critère de tri des mercenaires">
+              <option value="reputation">Réputation</option>
+              <option value="salary">Salaire quotidien</option>
+              <option value="affinity">Affinité</option>
+            </select>
+            <button type="button" id="roster-sort-direction" class="roster-sort-direction" aria-label="Trier par ordre croissant">↓ Décroissant</button>
           </div>
           <div id="initial-squad" class="character-list"></div>
         </section>

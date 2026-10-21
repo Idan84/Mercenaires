@@ -330,4 +330,30 @@ for(const c of arrivals){
 }
 assert.equal(sF.nextId,idBefore+arrivals.length,"un identifiant par candidat, pas par prétendant");
 
+// Conseils du tavernier (Idan, 2026-10-21) : 1 PO la question, sans limite ; il rapporte la vantardise du
+// candidat (×1,10 à ×3,00) ; une rumeur reste figée, mais chaque question se paie.
+const keeperRules=campaignOf(always(0.5));
+const sK=keeperRules.createCampaign({captain,squad});
+const talked=sK.tavern.candidates[0];
+const goldK=sK.company.gold;
+const force=talked.mercenary.stats.Force;
+const r1=keeperRules.askTavernkeeper(sK,talked.mercenary.id,"Force",force);
+assert.equal(r1.ok,true);
+assert.equal(r1.cost,1);
+assert.equal(r1.estimate,Math.round(force*2.05),"×(1,10 + 0,5 × 1,90)");
+assert.equal(sK.company.gold,goldK-1);
+const r2=keeperRules.askTavernkeeper(sK,talked.mercenary.id,"Force",force);
+assert.equal(r2.repeated,true);
+assert.equal(r2.estimate,r1.estimate,"même rumeur");
+assert.equal(sK.company.gold,goldK-2,"chaque question se paie");
+for(let i=0;i<5;i++) assert.equal(keeperRules.askTavernkeeper(sK,talked.mercenary.id,"Courage "+i,10).ok,true,"pas de limite de questions");
+assert.equal(talked.interview.questionsLeft,3,"le budget de l'entretien n'est pas touché");
+sK.company.gold=0;
+assert.deepEqual(keeperRules.askTavernkeeper(sK,talked.mercenary.id,"Chance",talked.mercenary.stats.Chance),{ok:false,reason:"gold",cost:1});
+for(const [low,high] of [[0,1.1],[0.999,3]]){
+  const sB=campaignOf(always(low)).createCampaign({captain,squad});
+  const b=sB.tavern.candidates[0];
+  assert.equal(campaignOf(always(low)).askTavernkeeper(sB,b.mercenary.id,"Force",100).estimate,Math.round(100*(1.1+low*1.9)));
+}
+
 console.log(JSON.stringify({ok:true},null,2));

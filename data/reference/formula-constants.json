@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 118,
+  "row_count": 119,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -976,6 +976,14 @@
       "description": "Ramène Combat à mains nues, Pièges et Discrétion, tirés des caractéristiques, à l’échelle des armes (1D20 / 2D20) : valeur brute × ce facteur.",
       "formule": "Génération martiale V1",
       "valeur": 0.5,
+      "version": "V1"
+    },
+    {
+      "nom": "Taverne — prix d’un conseil du tavernier",
+      "code": "tavern.advice.cost",
+      "description": "Or payé au tavernier pour chaque question sur un candidat (rien n’est gratuit dans ce bas monde). Pas de limite de questions.",
+      "formule": "Taverne V1",
+      "valeur": 1,
       "version": "V1"
     }
   ]

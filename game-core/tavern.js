@@ -9,6 +9,8 @@
   root.MercenairesTavern=api;
 })(typeof globalThis!=="undefined"?globalThis:this,function(){
   const QUESTIONS_PER_CANDIDATE=3;
+  // §7 sans Intendant : le candidat se survend (PLAYTEST).
+  const BOAST_MIN=1.10,BOAST_MAX=3.00;
 
   function clamp(v,min,max){ return Math.max(min,Math.min(max,v)); }
 
@@ -119,13 +121,26 @@
         estimate=Math.round(value*uniform(1-maxError,1+maxError));
         source={type:"intendant",id:intendant.id,name:intendant.name,maxError};
       }else{
-        estimate=Math.round(value*uniform(1.10,3.00));
+        estimate=Math.round(value*uniform(BOAST_MIN,BOAST_MAX));
         source={type:"candidate"};
       }
       const answer={key,estimate,source};
       candidate.interview.answers.push(answer);
       candidate.interview.questionsLeft-=1;
       return {ok:true,answer,repeated:false};
+    }
+
+    // Conseils du tavernier (Idan, 2026-10-21) : il répète ce que le candidat dit de lui-même, donc la même
+    // vantardise qu'au §7 sans Intendant (×1,10 à ×3,00). Pas de limite de questions ; une rumeur reste figée.
+    // value : valeur réelle, calculée par l'appelant (caractéristique, résistance, points de vie…).
+    function rumor(candidate,key,value){
+      candidate.rumors=candidate.rumors||{};
+      if(Number.isFinite(candidate.rumors[key])) return {estimate:candidate.rumors[key],repeated:true};
+      const real=Number(value);
+      if(!Number.isFinite(real)) return null;
+      const estimate=Math.round(real*uniform(BOAST_MIN,BOAST_MAX));
+      candidate.rumors[key]=estimate;
+      return {estimate,repeated:false};
     }
 
     function negotiationState(candidate){
@@ -208,6 +223,7 @@
       tavernMorning,
       findCandidate,
       askQuestion,
+      rumor,
       negotiationState,
       negotiationResistance,
       makeOffer,

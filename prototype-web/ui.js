@@ -6,18 +6,44 @@ function statSummary(c) {
     .join(" · ");
 }
 
+// Icônes sobres et autonomes : aucun nouvel asset visuel requis.
+function rosterMetricIcon(kind) {
+  const common='class="roster-metric-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"';
+  const drawing=kind==="reputation"
+    ? '<circle cx="12" cy="9" r="6.5"/><path d="m9.5 14.8-1.2 7 3.7-2.2 3.7 2.2-1.2-7"/><path d="m12 5.5 1 2.1 2.3.3-1.65 1.6.4 2.3L12 10.7l-2.05 1.1.4-2.3L8.7 7.9l2.3-.3z"/>'
+    : '<ellipse cx="12" cy="6.3" rx="7.5" ry="3.3"/><path d="M4.5 6.3v5.1c0 1.8 3.4 3.3 7.5 3.3s7.5-1.5 7.5-3.3V6.3M4.5 11.4v5.1c0 1.8 3.4 3.3 7.5 3.3s7.5-1.5 7.5-3.3v-5.1"/>';
+  return `<svg ${common}>${drawing}</svg>`;
+}
+
+function renderRosterAffinity(c) {
+  const affinity=captainAffinity(c);
+  if(!affinity) return "";
+  const {filled,phrase}=affinityPresentation(affinity.total);
+  return `<span class="roster-affinity">
+    <span class="roster-affinity-hearts" aria-label="Affinité : ${filled} cœurs sur 10"><span class="is-full">${"♥".repeat(filled)}</span><span class="is-empty">${"♡".repeat(10-filled)}</span></span>
+    <span class="roster-affinity-phrase">${esc(phrase)}</span>
+  </span>`;
+}
+
 function characterRow(c,hero=false){
   const captain=game.campaign&&game.campaign.company.captainId===c.id;
   const status=c.recovery?recoveryLabel(c):"Disponible";
   const salary=Number(c.contract?.dailySalary??c.salary)||0;
-  return `<button type="button" class="roster-card ${captain?"roster-captain":""}" data-character-id="${c.id}">
+  const fullName=[c.firstName,c.familyName].filter(Boolean).join(" ")||c.name||"Mercenaire";
+  return `<button type="button" class="roster-card ${captain?"roster-captain":""}" data-character-id="${esc(c.id)}" aria-label="Voir la fiche de ${esc(fullName)}">
     ${renderAvatar(c,{variant:"card",kind:"portrait"})}
-    <span class="roster-card-info"><small>${captain?"CAPITAINE":esc(c.role||"MERCENAIRE")}</small>
-      <strong>${esc(c.firstName || c.name)}</strong>
-      ${c.familyName ? `<span class="roster-surname"><small>Nom de famille</small><b>${esc(c.familyName)}</b></span>` : ""}
-      <span>${esc(c.people)} · ${esc(c.culture||"")}</span>
-      <span class="roster-card-details">PV ${fmt(c.pvMax)} · Réputation ${renderReputationStars(c)} · ${fmt(salary)} PO/j</span>
-      <em>${esc(status)}</em>
+    <span class="roster-card-info">
+      <span class="roster-card-heading">
+        <strong class="roster-name" title="${esc(fullName)}">${esc(fullName)}</strong>
+        <span class="roster-people-picto" title="${esc(c.people||"")}">${renderPicto("people",c.people,{size:"sm"})}</span>
+      </span>
+      ${c.culture?`<span class="roster-culture">${esc(c.culture)}</span>`:""}
+      <span class="roster-metrics">
+        <span class="roster-metric" title="Réputation">${rosterMetricIcon("reputation")}${renderReputationStars(c)}</span>
+        <span class="roster-metric" title="Salaire quotidien">${rosterMetricIcon("salary")}<span>${fmt(salary)} PO</span></span>
+      </span>
+      ${renderRosterAffinity(c)}
+      <em class="roster-status">${esc(status)}</em>
     </span>
   </button>`;
 }
@@ -77,11 +103,46 @@ function renderGame() {
   $("game-panel").classList.remove("hidden");
   $("company-title").textContent = game.campaign?.company.name || `Compagnie de ${game.captain.name}`;
   $("captain-summary").innerHTML = characterRow(game.captain, true);
-  const squad = teamCharacters().filter(c => c !== game.captain);
-  $("initial-count").textContent = `${squad.length} mercenaire${squad.length>1?"s":""}`;
-  $("initial-squad").innerHTML = squad.map(c => characterRow(c)).join("");
+  renderMercenaryRoster();
   renderGenerated();
   renderTavern();
+}
+
+// Tri exclusivement visuel : aucune modification de l'ordre sauvegardé ni des règles.
+let rosterSortKey="reputation";
+let rosterSortDescending=true;
+
+function rosterSortValue(c,key) {
+  if(key==="salary") return Number(c.contract?.dailySalary??c.salary)||0;
+  if(key==="affinity") return captainAffinity(c)?.total??null;
+  return Number(c.reputation)||0;
+}
+
+function sortMercenaryRoster(members,key=rosterSortKey,descending=rosterSortDescending) {
+  const scores=new Map(members.map(c=>[c,rosterSortValue(c,key)]));
+  return [...members].sort((a,b)=>{
+    const av=scores.get(a),bv=scores.get(b);
+    if(av===null) return bv===null ? 0 : 1; // Affinité non calculable en dernier
+    if(bv===null) return -1;
+    const delta=descending ? bv-av : av-bv;
+    return delta||String(a.name||"").localeCompare(String(b.name||""),"fr");
+  });
+}
+
+function renderMercenaryRoster() {
+  const squad=teamCharacters().filter(c=>c!==game.captain);
+  const company=game.campaign?.company;
+  const occupied=company?.roster.length??(squad.length+(game.captain?1:0));
+  const capacity=company?.camp?.dormitoryCapacity;
+  const count=$("initial-count");
+  count.innerHTML=`<span class="roster-count-number">${squad.length} mercenaire${squad.length!==1?"s":""}</span><span class="roster-count-capacity">Dortoir : ${occupied} / ${Number.isFinite(capacity)?capacity:"—"}</span>`;
+  count.title="La capacité du dortoir comprend également le capitaine.";
+  $("roster-sort").value=rosterSortKey;
+  const direction=$("roster-sort-direction");
+  direction.textContent=rosterSortDescending?"↓ Décroissant":"↑ Croissant";
+  direction.setAttribute("aria-label",rosterSortDescending?"Trier par ordre croissant":"Trier par ordre décroissant");
+  direction.title=direction.getAttribute("aria-label");
+  $("initial-squad").innerHTML=sortMercenaryRoster(squad).map(c=>characterRow(c)).join("");
 }
 
 function renderGenerated() {
@@ -819,6 +880,17 @@ async function init() {
       const c = createCharacter({captain: game.captain, role: "Candidat"});
       game.generated.unshift(c);
       renderGenerated();
+    });
+
+    $("roster-sort").addEventListener("change",event=>{
+      if(["reputation","salary","affinity"].includes(event.target.value)){
+        rosterSortKey=event.target.value;
+        renderMercenaryRoster();
+      }
+    });
+    $("roster-sort-direction").addEventListener("click",()=>{
+      rosterSortDescending=!rosterSortDescending;
+      renderMercenaryRoster();
     });
 
     document.addEventListener("click", (e) => {

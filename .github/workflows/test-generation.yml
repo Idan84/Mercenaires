@@ -20,6 +20,7 @@ jobs:
       - run: node tests/progression.test.js
       - run: node tests/renown.test.js
       - run: node tests/affinity.test.js
+      - run: node tests/roster-ui.test.js
       - run: node tests/stars.test.js
       - run: node tests/design-lab-tags.test.js
       - run: node tests/affinity-display.test.js

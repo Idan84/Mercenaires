@@ -523,6 +523,22 @@ function renderMartialGroup(c) {
   </details>`;
 }
 
+// Silhouette d'équipement : peuple et sexe proviennent du mercenaire (sexe hérité de l'avatar).
+// Les fichiers sont livrés séparément par Idan/JC3 dans assets/silhouettes.
+// On conserve le mannequin neutre quand le sexe n'est pas connu ou si le fichier manque.
+function equipmentSilhouetteSrc(c) {
+  const peoples={
+    "Humain":"humain","Elfe":"elfe","Nain":"nain","Orc":"orc",
+    "Gobelin":"gobelin","Halfling":"halfling","Gnome":"gnome",
+    "Ogre":"ogre","Reptilien":"reptilien","Homme-bête":"homme-bete"
+  };
+  const people=peoples[c?.people];
+  const sex=String(c?.sex||"").normalize("NFD").replace(/[\\u0300-\\u036f]/g,"").trim().toLowerCase();
+  const gender=["homme","masculin","male","m"].includes(sex)?"homme"
+    :["femme","feminin","female","f"].includes(sex)?"femme":null;
+  return people&&gender?`assets/silhouettes/${people}-${gender}.webp`:null;
+}
+
 function renderEquipment(c) {
   const slotRows = game.referenceData?.equipmentSlots?.rows || [];
   const items = new Map((c.items || []).map(item => [item.id,item]));
@@ -561,6 +577,7 @@ function renderEquipment(c) {
     <div class="equipment-board">
       <div class="equipment-column equipment-body-slots">${group("body")}</div>
       <div class="equipment-mannequin" aria-label="Silhouette du mercenaire">
+        ${equipmentSilhouetteSrc(c)?`<img class="equipment-mannequin-image" src="${esc(equipmentSilhouetteSrc(c))}" alt="" loading="lazy" decoding="async" onload="this.parentElement.classList.add('equipment-mannequin--loaded')" onerror="this.remove()">`:""}
         <span class="mannequin-head"></span>
         <span class="mannequin-body"></span>
         <span class="mannequin-arm left"></span><span class="mannequin-arm right"></span>

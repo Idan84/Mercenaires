@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 101,
+  "row_count": 118,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -968,6 +968,14 @@
       "description": "Nombre maximal de prétendants dont le tavernier présente le plus réputé (14 §5 ; décision Idan du 2026-10-20).",
       "formule": "Taverne V1",
       "valeur": 5,
+      "version": "V1"
+    },
+    {
+      "nom": "Compétences martiales issues des caractéristiques — facteur",
+      "code": "generation.martial.stat_skill_factor",
+      "description": "Ramène Combat à mains nues, Pièges et Discrétion, tirés des caractéristiques, à l’échelle des armes (1D20 / 2D20) : valeur brute × ce facteur.",
+      "formule": "Génération martiale V1",
+      "valeur": 0.5,
       "version": "V1"
     }
   ]

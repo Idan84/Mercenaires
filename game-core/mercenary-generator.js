@@ -544,19 +544,24 @@
         "Armes naturelles"
       ]);
 
+      // Pièges, Discrétion et Combat à mains nues partent des caractéristiques (≈ 60) ; le facteur les ramène
+      // à l'échelle des armes, tirées au 1D20 / 2D20 (Idan, 2026-10-21).
+      const statSkillFactor = constant("generation.martial.stat_skill_factor", 0.5);
+      const factorText = String(statSkillFactor).replace(".", ",");
+
       if (skillByName.has("Pièges")) {
         setRawSkill(
           skills, trace, "martial", "Pièges",
-          ((character.stats.Intelligence + character.stats.Perception) / 2) * randomBetween(0.8, 1.2),
-          {rawFormula: "Moyenne(Intelligence, Perception) × Rand(0,8 ; 1,2)"}
+          ((character.stats.Intelligence + character.stats.Perception) / 2) * randomBetween(0.8, 1.2) * statSkillFactor,
+          {rawFormula: `Moyenne(Intelligence, Perception) × Rand(0,8 ; 1,2) × ${factorText}`}
         );
       }
 
       if (skillByName.has("Discrétion")) {
         setRawSkill(
           skills, trace, "martial", "Discrétion",
-          ((character.stats.Dextérité + character.stats.Perception + character.stats.Esquive) / 3) * randomBetween(0.8, 1.2),
-          {rawFormula: "Moyenne(Dextérité, Perception, Esquive) × Rand(0,8 ; 1,2)"}
+          ((character.stats.Dextérité + character.stats.Perception + character.stats.Esquive) / 3) * randomBetween(0.8, 1.2) * statSkillFactor,
+          {rawFormula: `Moyenne(Dextérité, Perception, Esquive) × Rand(0,8 ; 1,2) × ${factorText}`}
         );
       }
 
@@ -571,8 +576,8 @@
       if (skillByName.has("Combat à mains nues")) {
         setRawSkill(
           skills, trace, "martial", "Combat à mains nues",
-          ((character.stats.Force + character.stats.Dextérité) / 2) * randomBetween(0.8, 1.2),
-          {rawFormula: "Moyenne(Force, Dextérité) × Rand(0,8 ; 1,2)"}
+          ((character.stats.Force + character.stats.Dextérité) / 2) * randomBetween(0.8, 1.2) * statSkillFactor,
+          {rawFormula: `Moyenne(Force, Dextérité) × Rand(0,8 ; 1,2) × ${factorText}`}
         );
       }
 
@@ -1228,10 +1233,10 @@
       if (skill.domaine === "Magie" && skill.niveau === "Catégorie") return {status:"generated", rule:"École de magie"};
       if (skill.domaine === "Camp" && skill.niveau === "Catégorie") return {status:"generated", rule:"Camp 6D6 pondéré"};
       if (skill.parent === "Artisanat") return {status:"generated", rule:"Artisanat 6D6 pondéré"};
-      if (skill.nom === "Pièges") return {status:"derived", rule:"Moyenne(Intelligence, Perception) × Rand(0,8 ; 1,2)"};
-      if (skill.nom === "Discrétion") return {status:"derived", rule:"Moyenne(Dextérité, Perception, Esquive) × Rand(0,8 ; 1,2)"};
+      if (skill.nom === "Pièges") return {status:"derived", rule:`Moyenne(Intelligence, Perception) × Rand(0,8 ; 1,2) × ${String(constant("generation.martial.stat_skill_factor", 0.5)).replace(".", ",")}`};
+      if (skill.nom === "Discrétion") return {status:"derived", rule:`Moyenne(Dextérité, Perception, Esquive) × Rand(0,8 ; 1,2) × ${String(constant("generation.martial.stat_skill_factor", 0.5)).replace(".", ",")}`};
       if (skill.nom === "Combat à deux armes") return {status:"derived", rule:"Max arme de mêlée 1 main × Rand(0,8 ; 1,2)"};
-      if (skill.nom === "Combat à mains nues") return {status:"derived", rule:"Moyenne(Force, Dextérité) × Rand(0,8 ; 1,2)"};
+      if (skill.nom === "Combat à mains nues") return {status:"derived", rule:`Moyenne(Force, Dextérité) × Rand(0,8 ; 1,2) × ${String(constant("generation.martial.stat_skill_factor", 0.5)).replace(".", ",")}`};
       if (skill.nom === "Combat à deux mains") return {status:"derived", rule:"Max arme de mêlée 2 mains × Rand(0,8 ; 1,2)"};
       if (skill.nom === "Armes naturelles") return {status:"generated", rule:"0 puis modificateurs"};
       if (skill.nom === "Régénération") return {status:"generated", rule:"0 puis modificateurs"};

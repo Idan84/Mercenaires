@@ -51,12 +51,14 @@ Les sous-compétences d’Artisanat (Forge, Alchimie, Couture, etc.) conservent 
 
 Dans les formules ci-dessous, le terme **Agilité** du design correspond à la caractéristique mécanique **Dextérité**.
 
-- **Pièges** = `Moyenne(Intelligence, Perception) × Rand(0,8 ; 1,2)`
-- **Discrétion** = `Moyenne(Dextérité, Perception, Esquive) × Rand(0,8 ; 1,2)`
+- **Pièges** = `Moyenne(Intelligence, Perception) × Rand(0,8 ; 1,2) × 0,5`
+- **Discrétion** = `Moyenne(Dextérité, Perception, Esquive) × Rand(0,8 ; 1,2) × 0,5`
 - **Combat à deux armes** = `Max(arme de mêlée utilisable à 1 main) × Rand(0,8 ; 1,2)`
-- **Combat à mains nues** = `Moyenne(Force, Dextérité) × Rand(0,8 ; 1,2)`
+- **Combat à mains nues** = `Moyenne(Force, Dextérité) × Rand(0,8 ; 1,2) × 0,5`
 - **Combat à deux mains** = `Max(arme de mêlée utilisable à 2 mains) × Rand(0,8 ; 1,2)`
 - **Armes naturelles** = `0` avant application des modificateurs de la Matrice de génération.
+
+Le facteur **× 0,5** (constante `generation.martial.stat_skill_factor`) ramène Pièges, Discrétion et Combat à mains nues, tirés des caractéristiques (≈ 60 en moyenne), à l’échelle des armes tirées au 1D20 / 2D20 : sans lui, 78 % des mercenaires étaient meilleurs à mains nues qu’avec leur meilleure arme (Idan, 2026-10-21).
 
 Pour les styles à une/deux mains, les armes à distance et les boucliers sont exclus. Une arme dont la prise est **Au choix** peut servir dans les deux calculs.
 

@@ -40,7 +40,7 @@ function showGameOver(){
   game.initialSquad=[];
   game.mission=null;
   game.tavernLog=[];
-  game.tavernSelected=null;
+  game.recruitTalk=null;
   $("game-panel").classList.add("hidden");
   $("game-over-text").textContent=`${name} est mort${day?" au jour "+day:""}. La compagnie est dissoute et la sauvegarde a été effacée.`;
   $("game-over-panel").classList.remove("hidden");
@@ -60,7 +60,7 @@ function continueSavedGame(){
   game.generated=[];
   game.mission=null;
   game.tavernLog=save.extra.tavernLog||[];
-  game.tavernSelected=null;
+  game.recruitTalk=null;
   // Bios ajoutées à une ancienne partie : on les sauvegarde tout de suite pour qu'elles ne changent plus.
   if(migrated) saveGame();
   $("game-over-panel").classList.add("hidden");

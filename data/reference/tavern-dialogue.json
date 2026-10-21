@@ -1,0 +1,375 @@
+{
+  "schema_version": 1,
+  "name": "tavern-dialogue",
+  "purpose": "Dialogue de recrutement à la Taverne (Idan, 2026-10-21 ; textes rédigés par JC, à retoucher librement). Le candidat salue selon son affinité avec le capitaine (20 tranches de 10 points, de −100 à +100), répond sincèrement aux questions (arme, style, tir, magie, origine, prétentions salariales), puis négocie. Gabarits : {arme} / {Arme} (avec article, colonne weapons), {origine}, {salaire}, {prime}, {prenom}, {compagnie} ; {masculin|féminin} selon le sexe du mercenaire. Plusieurs variantes par réplique : le jeu en choisit une, toujours la même pour un mercenaire donné.",
+  "questions": {
+    "weapon": "Quelle est votre arme de prédilection ?",
+    "style": "Quel est votre style de combat préféré ?",
+    "ranged": "Quelle est votre arme de tir de prédilection ?",
+    "magic": "Quelle est votre magie de prédilection ?",
+    "origin": "Que faisiez-vous avant d’être mercenaire ?",
+    "salary": "Quelles sont vos prétentions salariales ?",
+    "negotiate": "Négocier",
+    "sign": "Signer",
+    "leave": "Partir"
+  },
+  "greetings": [
+    {
+      "min": -100,
+      "max": -91,
+      "texte": "Vous ? Dégagez de ma table avant que je vous cloue la main dessus."
+    },
+    {
+      "min": -90,
+      "max": -81,
+      "texte": "Encore vous… J’ai bu avec des rats d’égout plus fréquentables."
+    },
+    {
+      "min": -80,
+      "max": -71,
+      "texte": "Qu’est-ce que vous voulez ? Faites vite, votre tête me coupe l’appétit."
+    },
+    {
+      "min": -70,
+      "max": -61,
+      "texte": "Tiens, le chef de bande qui se prend pour un seigneur. Parlez, et vite."
+    },
+    {
+      "min": -60,
+      "max": -51,
+      "texte": "Je n’aime pas votre tête. Mais l’or n’a pas d’odeur… Qu’est-ce que vous voulez ?"
+    },
+    {
+      "min": -50,
+      "max": -41,
+      "texte": "Hmpf. Si c’est pour du travail, asseyez-vous. Sinon, passez votre chemin."
+    },
+    {
+      "min": -40,
+      "max": -31,
+      "texte": "Vous avez une drôle de façon de regarder les gens. Bon. J’écoute."
+    },
+    {
+      "min": -30,
+      "max": -21,
+      "texte": "Mouais. On m’a parlé de vous. Pas que du bien."
+    },
+    {
+      "min": -20,
+      "max": -11,
+      "texte": "Bonjour. Enfin… si on veut. Vous cherchez quelqu’un ?"
+    },
+    {
+      "min": -10,
+      "max": -1,
+      "texte": "Salut. Il paraît que vous recrutez ?"
+    },
+    {
+      "min": 0,
+      "max": 9,
+      "texte": "Bonjour, capitaine. Vous avez besoin d’une lame ?"
+    },
+    {
+      "min": 10,
+      "max": 19,
+      "texte": "Ah, capitaine ! Prenez une chaise, on peut parler."
+    },
+    {
+      "min": 20,
+      "max": 29,
+      "texte": "Bonjour ! Votre compagnie fait parler d’elle, vous savez."
+    },
+    {
+      "min": 30,
+      "max": 39,
+      "texte": "Capitaine ! J’espérais justement vous croiser."
+    },
+    {
+      "min": 40,
+      "max": 49,
+      "texte": "Quel plaisir de vous voir, capitaine. Je vous offre un verre ?"
+    },
+    {
+      "min": 50,
+      "max": 59,
+      "texte": "Capitaine ! On ne dit que du bien de vous, ici."
+    },
+    {
+      "min": 60,
+      "max": 69,
+      "texte": "C’est un honneur de vous rencontrer, capitaine. Vraiment."
+    },
+    {
+      "min": 70,
+      "max": 79,
+      "texte": "Capitaine ! Asseyez-vous, je vous en prie. On m’a tant parlé de vous."
+    },
+    {
+      "min": 80,
+      "max": 89,
+      "texte": "Par tous les dieux, c’est vous ! Ce serait une fierté de servir sous vos ordres."
+    },
+    {
+      "min": 90,
+      "max": 100,
+      "texte": "Capitaine… Je vous suivrais jusqu’en enfer et je dirais merci. À votre service, si vous voulez de moi."
+    }
+  ],
+  "answers": {
+    "weapon": [
+      "Je manie parfaitement {arme}.",
+      "{Arme}. Mettez-moi ça entre les mains et regardez.",
+      "Avec {arme}, je ne crains personne."
+    ],
+    "no_weapon": [
+      "Je me débrouille avec ce qui me tombe sous la main."
+    ],
+    "style": {
+      "Combat à mains nues": [
+        "Mes poings. Pas besoin d’arme pour casser des dents.",
+        "À mains nues. Rien ne vaut le contact."
+      ],
+      "Combat à deux armes": [
+        "Une arme dans chaque main. Deux fois plus de chances de toucher.",
+        "Deux lames : deux fois plus de soucis pour l’ennemi."
+      ],
+      "Combat à deux mains": [
+        "Une arme lourde, tenue à deux mains. Un seul coup suffit.",
+        "À deux mains, de toutes mes forces. Ça règle vite les discussions."
+      ],
+      "Boucliers": [
+        "Le bouclier d’abord. Je tiens la ligne, les autres frappent.",
+        "Derrière mon bouclier, rien ne passe."
+      ]
+    },
+    "ranged": [
+      "Au tir, je ne jure que par {arme}.",
+      "De loin ? {Arme}, et je rate rarement."
+    ],
+    "no_ranged": [
+      "Le tir, ce n’est pas pour moi. Je préfère voir le blanc de leurs yeux."
+    ],
+    "magic": {
+      "Eau": [
+        "L’Eau. Elle coule, elle gèle, elle noie. Patiente, comme moi."
+      ],
+      "Feu": [
+        "Le Feu, évidemment. Rien ne réchauffe comme un ennemi qui brûle."
+      ],
+      "Foudre": [
+        "La Foudre. Rapide, bruyante, et on ne l’oublie jamais."
+      ],
+      "Vie": [
+        "La magie de Vie. Il faut bien que quelqu’un recouse les autres."
+      ],
+      "Nécromancie": [
+        "La Nécromancie… Les morts obéissent mieux que les vivants."
+      ],
+      "Illusion": [
+        "L’Illusion. Ce que vous croyez voir n’est jamais tout à fait là."
+      ],
+      "Invocation": [
+        "L’Invocation. Pourquoi se battre quand on peut appeler de l’aide ?"
+      ],
+      "Transmutation": [
+        "La Transmutation. Tout peut devenir autre chose, avec un peu de volonté."
+      ],
+      "Télékinésie": [
+        "La Télékinésie. Je n’ai pas besoin de toucher les choses pour les déplacer."
+      ]
+    },
+    "no_magic": [
+      "La magie ? Très peu pour moi. Je fais confiance à l’acier."
+    ],
+    "origin": [
+      "Avant ? J’étais {origine}. Puis j’ai compris que l’épée payait mieux.",
+      "J’étais {origine}. Une autre vie, déjà."
+    ]
+  },
+  "lines": {
+    "salary": [
+      "Pour devenir {votre combattant|votre combattante}, je demande {salaire} PO par jour et {prime} PO par mission."
+    ],
+    "offer": [
+      "Je vous propose {salaire} PO par jour et {prime} PO par mission."
+    ],
+    "sign": [
+      "Marché conclu : {salaire} PO par jour et {prime} PO par mission."
+    ],
+    "counter": [
+      "Disons {salaire} et {prime}, non ?",
+      "{salaire} par jour et {prime} par mission. On se rapproche…",
+      "Pas si vite. {salaire} et {prime}, et on n’en parle plus."
+    ],
+    "left": [
+      "{prenom} renverse la table et dit : « Je préfère partir que perdre mon temps ! »",
+      "{prenom} se lève, crache par terre et sort : « Gardez votre or ! »"
+    ],
+    "accepted": [
+      "Parfait. {Ravi|Ravie} de faire partie de {compagnie}."
+    ],
+    "floor": [
+      "Vous m’offriez déjà {salaire} et {prime} tout à l’heure. Vous me prenez pour {un idiot|une idiote} ?"
+    ],
+    "dorm_full": [
+      "Revenez quand vous aurez un lit pour moi."
+    ],
+    "dorm_full_note": [
+      "Le dortoir est plein : impossible de signer pour l’instant."
+    ]
+  },
+  "weapons": [
+    {
+      "nom": "Arbalète",
+      "avec_article": "l’arbalète"
+    },
+    {
+      "nom": "Arc",
+      "avec_article": "l’arc"
+    },
+    {
+      "nom": "Arme d’hast double",
+      "avec_article": "l’arme d’hast double"
+    },
+    {
+      "nom": "Arquebuse / Mousquet",
+      "avec_article": "l’arquebuse ou le mousquet"
+    },
+    {
+      "nom": "Bardiche",
+      "avec_article": "la bardiche"
+    },
+    {
+      "nom": "Bâton court",
+      "avec_article": "le bâton court"
+    },
+    {
+      "nom": "Bâton long",
+      "avec_article": "le bâton long"
+    },
+    {
+      "nom": "Canon à main",
+      "avec_article": "le canon à main"
+    },
+    {
+      "nom": "Dague",
+      "avec_article": "la dague"
+    },
+    {
+      "nom": "Estoc",
+      "avec_article": "l’estoc"
+    },
+    {
+      "nom": "Fléau d’armes",
+      "avec_article": "le fléau d’armes"
+    },
+    {
+      "nom": "Fouet",
+      "avec_article": "le fouet"
+    },
+    {
+      "nom": "Fronde",
+      "avec_article": "la fronde"
+    },
+    {
+      "nom": "Grande épée",
+      "avec_article": "la grande épée"
+    },
+    {
+      "nom": "Hache de guerre",
+      "avec_article": "la hache de guerre"
+    },
+    {
+      "nom": "Hache double",
+      "avec_article": "la hache double"
+    },
+    {
+      "nom": "Hachette",
+      "avec_article": "la hachette"
+    },
+    {
+      "nom": "Hallebarde",
+      "avec_article": "la hallebarde"
+    },
+    {
+      "nom": "Katana",
+      "avec_article": "le katana"
+    },
+    {
+      "nom": "Kukri",
+      "avec_article": "le kukri"
+    },
+    {
+      "nom": "Lance",
+      "avec_article": "la lance"
+    },
+    {
+      "nom": "Marteau de guerre",
+      "avec_article": "le marteau de guerre"
+    },
+    {
+      "nom": "Masse d’armes",
+      "avec_article": "la masse d’armes"
+    },
+    {
+      "nom": "Massue / Gourdin",
+      "avec_article": "la massue ou le gourdin"
+    },
+    {
+      "nom": "Nunchaku",
+      "avec_article": "le nunchaku"
+    },
+    {
+      "nom": "Pavois",
+      "avec_article": "le pavois"
+    },
+    {
+      "nom": "Pic de guerre",
+      "avec_article": "le pic de guerre"
+    },
+    {
+      "nom": "Pistolet",
+      "avec_article": "le pistolet"
+    },
+    {
+      "nom": "Rondache",
+      "avec_article": "la rondache"
+    },
+    {
+      "nom": "Sabre",
+      "avec_article": "le sabre"
+    },
+    {
+      "nom": "Sai",
+      "avec_article": "le sai"
+    },
+    {
+      "nom": "Sarbacane",
+      "avec_article": "la sarbacane"
+    },
+    {
+      "nom": "Trident",
+      "avec_article": "le trident"
+    },
+    {
+      "nom": "Tromblon",
+      "avec_article": "le tromblon"
+    },
+    {
+      "nom": "Écu",
+      "avec_article": "l’écu"
+    },
+    {
+      "nom": "Épée courte",
+      "avec_article": "l’épée courte"
+    },
+    {
+      "nom": "Épée double",
+      "avec_article": "l’épée double"
+    },
+    {
+      "nom": "Épée longue",
+      "avec_article": "l’épée longue"
+    }
+  ]
+}

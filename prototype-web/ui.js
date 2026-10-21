@@ -702,7 +702,8 @@ function renderSituation(c) {
 }
 
 // Onglet Profil (Idan, 2026-10-21) : portrait et état ; pictos et phrases d'origine et d'ascendance ;
-// biographie ; alignement, réputation et affinité en trois colonnes ; salaire et prime de mission.
+// puis trois colonnes de largeurs différentes : la roue d'alignement sur toute la hauteur, et à côté
+// réputation et affinité, la biographie, le salaire journalier et la prime de mission.
 // Textes : data/reference/character-sheet-copy.json et reputation-stars.json (phrases de réputation).
 function sheetCopy(section,name){
   return (game.referenceData?.characterSheetCopy?.[section]||[]).find(r=>r.nom===name)||null;
@@ -751,15 +752,13 @@ function renderProfileTab(c){
           ${c.ascendance?`<p>${esc(profileAncestryLine(c))}</p>`:""}
         </div>
       </div>
-      ${renderBiography(c)}
-      <div class="sheet-profile-columns">
-        <section class="sheet-column sheet-column--alignment"><small>Alignement</small>${alignments.length?renderAlignmentWheel(alignments,c.alignment,{interactive:false}):""}<strong>${esc(c.alignment||"—")}</strong></section>
-        <section class="sheet-column sheet-column--reputation"><small>Réputation</small>${renderReputationStars(c)}<p>${esc(stars?.phrase||"")}</p></section>
-        <section class="sheet-column sheet-column--affinity">${affinity||`<small>Affinité</small><p>${captain?"Capitaine de la compagnie.":"Hors de la compagnie."}</p>`}</section>
-      </div>
-      <div class="sheet-pay">${captain
-        ?`<p>Le capitaine ne touche ni salaire ni prime : la compagnie, c’est la sienne.</p>`
-        :`<div><small>Salaire journalier</small><strong>${fmt(salary)} PO</strong></div><div><small>Prime de mission</small><strong>${fmt(bonus)} PO</strong></div>`}</div>
+      <section class="sheet-column sheet-column--alignment"><small>Alignement</small>${alignments.length?renderAlignmentWheel(alignments,c.alignment,{interactive:false}):""}<strong>${esc(c.alignment||"—")}</strong></section>
+      <section class="sheet-column sheet-column--reputation"><small>Réputation</small>${renderReputationStars(c)}<p>${esc(stars?.phrase||"")}</p></section>
+      <section class="sheet-column sheet-column--affinity">${affinity||`<small>Affinité</small><p>${captain?"Capitaine de la compagnie.":"Hors de la compagnie."}</p>`}</section>
+      <div class="sheet-bio">${renderBiography(c)}</div>
+      ${captain
+        ?`<p class="sheet-pay sheet-pay--captain">Le capitaine ne touche ni salaire ni prime : la compagnie, c’est la sienne.</p>`
+        :`<div class="sheet-pay sheet-pay--salary"><small>Salaire journalier</small><strong>${fmt(salary)} PO</strong></div><div class="sheet-pay sheet-pay--bonus"><small>Prime de mission</small><strong>${fmt(bonus)} PO</strong></div>`}
     </div>
   </section>`;
 }

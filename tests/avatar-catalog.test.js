@@ -60,6 +60,17 @@ assert.equal(warnings.length,expected.length,warnings.join("\n"));
 assert.ok(groupAvatarFiles([{path:"Ogres/Ogre_1.jpg",...FULL},{path:"Ogres/Ogre_1_b.jpg",...FULL}],reference).warnings[0].includes("deux images « full »"));
 assert.deepEqual(buildAvatarCatalog([],reference),{rows:[],warnings:[]});
 
+// Noms sans tiret bas avant le numéro (dépôt Hostinger du 2026-10-21) : même identifiant qu'avec.
+const compact=buildAvatarCatalog([
+  {path:"Halflings/Halfling001.jpg",...FULL,keywords:["F"]},
+  {path:"Halflings/Halfling001_square.jpg",...SQUARE,keywords:[]},
+  {path:"Reptiliens/Reptilien014.jpg",...FULL,keywords:["H"]},
+  {path:"Reptiliens/Reptilien014_square.jpg",...SQUARE,keywords:[]}
+],reference);
+assert.deepEqual(compact.warnings,[]);
+assert.deepEqual(compact.rows.map(r=>[r.id,r.sex]),[["halfling-001","femme"],["reptilien-014","homme"]]);
+assert.equal(compact.rows[0].portrait,"/media/avatars/Halflings/Halfling001_square.jpg");
+
 // Git + Hostinger : à identifiant égal, Hostinger l'emporte.
 const git=[{id:"ogre-012",full:"ogre-012_full.webp",portrait:"ogre-012_portrait.webp"},{id:"ogre-001",full:"a",portrait:"b"}];
 const merged=mergeCatalogs(git,rows);

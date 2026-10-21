@@ -61,14 +61,14 @@ Idan dépose ses médias directement sur Hostinger (gestionnaire de fichiers de 
 
 - Majuscules indifférentes : `Media/Avatars/` convient aussi. S'il existe plusieurs variantes, celle qui contient des images l'emporte ; `api/avatars.php` indique dans `base` le dossier retenu.
 - Un sous-dossier par peuple, au choix (`Ogres/`, `Halflings/`…).
-- Un avatar = deux images de même peuple et même numéro : le plein pied `Ogre_12_….jpg` et le portrait carré `Ogre_12_Square_….jpg`. JPG, PNG ou WEBP.
+- Un avatar = deux images de même peuple et même numéro : le plein pied `Ogre_12_….jpg` et le portrait carré `Ogre_12_Square_….jpg`. Le tiret bas avant le numéro est facultatif : `Halfling001.jpg` et `Halfling001_square.jpg` conviennent aussi. JPG, PNG ou WEBP.
 - Les tags sont les mots-clés Bridge (IPTC / XMP), avec le vocabulaire de `assets-src/avatars/mots-cles-bridge.txt`. Les mots-clés des deux images s'additionnent : **taguer le plein pied suffit**.
 - Attention aux exports (Photoshop « Exporter sous », « Enregistrer pour le web »…) : ils peuvent retirer les mots-clés. Vérifier dans Bridge que l'image exportée les a gardés.
 
 Comment le jeu les trouve :
 
 1. `api/avatars.php` liste `media/avatars/` et lit les dimensions et les mots-clés de chaque image. Un cache (`api/.cache/`) évite de relire les images inchangées. Il ne modifie aucun fichier.
-2. Le jeu en tire son catalogue avec `game-core/avatar-catalog.js` (même logique que `scripts/build-avatars.js`) et le réunit avec `data/reference/avatars.json` : à identifiant égal (`ogre-012`), l'avatar de Hostinger l'emporte.
+2. Le jeu en tire son catalogue avec `game-core/avatar-catalog.js` (même logique que `scripts/build-avatars.js`). Depuis le 2026-10-21, `media/avatars/` est le **seul emplacement des avatars** (décision d'Idan) : les anciens avatars de Git ont été retirés et `data/reference/avatars.json` est vide. Le jeu sait toujours le réunir avec le catalogue de Hostinger ; à identifiant égal (`ogre-012`), Hostinger l'emporte.
 3. Une image ajoutée, retaguée ou supprimée est prise en compte au prochain chargement du jeu. Une partie sauvegardée garde ses visages ; leurs fichiers suivent le catalogue.
 
 Pour vérifier un dépôt : https://bloodandwages.idanwizen.com/api/avatars.php montre chaque image vue par le serveur, avec ses mots-clés.

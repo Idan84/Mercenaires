@@ -49,7 +49,8 @@ function renderNav(){
   const items=state.mode==="docs"
     ? [...state.docs.documents,...state.docs.formulas].map(x=>({id:x.file,label:docTitle(x.file),sub:x.file.startsWith("formulas/")?"Formule":"Document"}))
     : state.mode==="avatars"
-    ? (state.coverage?.results||[]).map(r=>({id:AvatarsLab.anchor(r.people),label:r.people,sub:r.avatars+" / "+r.need+" avatars"}))
+    ? (state.coverage?[{id:"cov-tags",label:"Affiner les tags",sub:AvatarsLab.tagTodoCount(state.coverage)+" à faire"}]:[])
+      .concat((state.coverage?.results||[]).map(r=>({id:AvatarsLab.anchor(r.people),label:r.people,sub:r.avatars+" / "+r.need+" avatars"})))
     : state.tables.tables.map(x=>({id:x.file,label:labelTable(x.name),sub:x.rows+" lignes"}));
   $("nav-list").innerHTML=items.filter(x=>(x.label+" "+x.id).toLowerCase().includes(q)).map(x=>
     `<button class="nav-item ${state.current===x.id?"active":""}" data-id="${esc(x.id)}">${esc(x.label)}<small>${esc(x.sub)}</small></button>`
@@ -72,6 +73,7 @@ async function openAvatars(){
     $("content-meta").textContent=AvatarsLab.meta(data);
     $("viewer").innerHTML=AvatarsLab.render(data);
     $("viewer").querySelectorAll("[data-cov]").forEach(a=>a.onclick=e=>{e.preventDefault();scrollToPeople(a.dataset.cov)});
+    AvatarsLab.bind($("viewer"),data,renderNav);
     renderNav();
     if(location.hash.startsWith("#cov-")) scrollToPeople(location.hash.slice(1));
   }catch(e){showError(e)}

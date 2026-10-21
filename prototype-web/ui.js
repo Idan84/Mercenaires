@@ -25,13 +25,24 @@ function renderRosterAffinity(c) {
   </span>`;
 }
 
+// État sous le portrait, dans un cartel coloré (Idan, 2026-10-21) : vert Disponible, orange Fatigué,
+// rouge Blessé ; jaune réservé à « En mission » quand cet état existera.
+function rosterStatus(c){
+  if(c.recovery?.kind==="wounded") return {kind:"wounded",label:recoveryLabel(c)};
+  if(c.recovery) return {kind:"fatigued",label:recoveryLabel(c)};
+  return {kind:"available",label:"Disponible"};
+}
+
 function characterRow(c,hero=false){
   const captain=game.campaign&&game.campaign.company.captainId===c.id;
-  const status=c.recovery?recoveryLabel(c):"Disponible";
+  const status=rosterStatus(c);
   const salary=Number(c.contract?.dailySalary??c.salary)||0;
   const fullName=[c.firstName,c.familyName].filter(Boolean).join(" ")||c.name||"Mercenaire";
   return `<button type="button" class="roster-card ${captain?"roster-captain":""}" data-character-id="${esc(c.id)}" aria-label="Voir la fiche de ${esc(fullName)}">
-    ${renderAvatar(c,{variant:"card",kind:"portrait"})}
+    <span class="roster-card-visual">
+      ${renderAvatar(c,{variant:"card",kind:"portrait"})}
+      <em class="roster-status roster-status--${status.kind}">${esc(status.label)}</em>
+    </span>
     <span class="roster-card-info">
       <span class="roster-card-heading">
         <strong class="roster-name" title="${esc(fullName)}">${esc(fullName)}</strong>
@@ -43,7 +54,6 @@ function characterRow(c,hero=false){
         <span class="roster-metric" title="Salaire quotidien">${rosterMetricIcon("salary")}<span>${fmt(salary)} PO</span></span>
       </span>
       ${renderRosterAffinity(c)}
-      <em class="roster-status">${esc(status)}</em>
     </span>
   </button>`;
 }

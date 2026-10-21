@@ -34,6 +34,13 @@ Une fois le sort lancé, sa **Puissance magique** détermine principalement son 
 
 Schéma : `SpellEffect = f(spell.base_effect, PuissanceMagique, spell_mastery?)`.
 
+## Écoles opposées
+
+Chaque école a deux écoles opposées (`skills.json`, colonne `ecoles_opposees`) ; les oppositions forment une seule boucle de neuf écoles, que la fiche mercenaire dessine en roue.
+
+- Un mercenaire **peut être bon dans deux écoles opposées** : elles coexistent, la génération ne les exclut pas (Idan, 2026-10-21).
+- En revanche, **quand il progresse dans une école, il baisse dans ses opposées** (Idan, 2026-10-21), dans l'esprit de « on progresse au détriment des autres » des armes (doc 08). Ampleur de la baisse à définir.
+
 ## Premier catalogue de sorts — idées mono-école
 
 ### Feu

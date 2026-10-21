@@ -828,7 +828,8 @@ function statTip(row){
 }
 function statPortraitButton(member,label,value,current){
   const url=typeof mercenaryAvatarUrl==="function"?mercenaryAvatarUrl(member,"portrait"):null;
-  const face=url?`<img src="${esc(url)}" alt="" loading="lazy">`:`<span class="sheet-stat-face">${esc(avatarInitials(member))}</span>`;
+  // Pas de chargement différé : la bulle est cachée jusqu'au survol, le portrait doit y être déjà.
+  const face=url?`<img src="${esc(url)}" alt="">`:`<span class="sheet-stat-face">${esc(avatarInitials(member))}</span>`;
   return `<button type="button" class="sheet-stat-who${member===current?" is-self":""}" data-sheet-open="${esc(member.id)}" title="Ouvrir la fiche de ${esc(member.name)}">
     ${face}<span><small>${label}</small><b>${fmt(value)}</b><em>${esc(member.name)}</em></span></button>`;
 }

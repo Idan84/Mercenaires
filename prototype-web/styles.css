@@ -1611,6 +1611,14 @@ body[data-screen="camp"] .camp-scene>.panel .muted{color:#c2b29e}
 .player-identity-grid small,.player-vitals small{display:block;color:#bb9a6e;font-size:11px;margin-bottom:6px}
 .player-identity-grid strong,.player-vitals strong{font-size:15px;color:#f4e1c2}
 .player-identity-note{display:block;margin-top:4px;color:#bb9a6e;font-size:11px}
+/* Affinité : dix cœurs (rouges ou vides), puis une appréciation sans score numérique. */
+.player-identity-grid>div.player-affinity{grid-column:span 2}
+.player-affinity-hearts{display:flex;align-items:center;gap:0;white-space:nowrap;font-size:21px;letter-spacing:2px;line-height:1.2}
+.player-affinity-hearts .is-full{color:#e35c63;text-shadow:0 1px 4px rgba(100,10,20,.35)}
+.player-affinity-hearts .is-empty{color:#a88a86}
+.player-identity-grid .player-affinity-phrase{display:block;margin-top:7px;font-size:14px;line-height:1.4;font-weight:600;white-space:normal}
+@media(max-width:500px){.player-identity-grid>div.player-affinity{grid-column:1/-1}.player-affinity-hearts{font-size:18px;letter-spacing:1px}}
+
 /* Réputation et renommée en étoiles : bronze, argent, or (data/reference/reputation-stars.json). */
 .rep-stars{display:inline-block;white-space:nowrap;font-size:1.2em;letter-spacing:.06em;line-height:1;text-shadow:0 0 1px rgba(0,0,0,.65)}
 .rep-stars-empty{opacity:.22}

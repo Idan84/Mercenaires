@@ -41,6 +41,61 @@ const AvatarsLab=(()=>{
     return cache;
   }
 
+  // « Affiner les tags » (demande d'Idan, 2026-10-21) : avatars dont les tags gênent l'attribution des visages.
+  // Une ligne disparaît d'elle-même quand l'avatar retagué est redéposé ; « Fait » la masque tout de suite,
+  // dans ce navigateur, tant que ses problèmes restent les mêmes.
+  const TAG_CHECKS=[
+    {key:"tags",label:"aucun tag (profil, culture, arme…)",test:a=>!Object.keys(a.tags||{}).length},
+    {key:"sex",label:"sexe manquant (F ou H)",test:a=>!a.sex},
+    {key:"profile",label:"profil manquant (Corps à corps, Distance ou Magie)",test:a=>Object.keys(a.tags||{}).length&&!a.tags.profile},
+    {key:"weapon",label:"arme manquante pour un profil Corps à corps ou Distance",test:a=>(a.tags?.profile||[]).some(p=>p==="melee"||p==="ranged")&&!a.tags.weapon},
+    {key:"magic",label:"école de magie manquante",test:a=>(a.tags?.profile||[]).includes("magic")&&!a.tags.magic}
+  ];
+  const DONE_KEY="mercenaires.designlab.tagsDone";
+  function readDone(){ try{ return JSON.parse(localStorage.getItem(DONE_KEY)||"{}")||{}; }catch(e){ return {}; } }
+  function writeDone(done){ try{ localStorage.setItem(DONE_KEY,JSON.stringify(done)); }catch(e){} }
+  function tagTodos(avatars){
+    return (avatars.rows||[]).map(a=>({avatar:a,problems:TAG_CHECKS.filter(c=>c.test(a))}))
+      .filter(t=>t.problems.length)
+      .map(t=>({...t,signature:t.problems.map(p=>p.key).join(",")}))
+      .sort((a,b)=>a.avatar.id.localeCompare(b.avatar.id));
+  }
+  function visibleTodos(avatars){
+    const done=readDone();
+    const all=tagTodos(avatars);
+    return {all,shown:all.filter(t=>done[t.avatar.id]!==t.signature)};
+  }
+  const imageUrl=f=>String(f||"").includes("/")?f:"/assets/avatars/"+f;
+  function renderTagTodos(avatars){
+    const {all,shown}=visibleTodos(avatars);
+    const hidden=all.length-shown.length;
+    const items=shown.map(t=>`<li>
+        <img src="${html(imageUrl(t.avatar.portrait))}" alt="" loading="lazy">
+        <div><strong>${html(t.avatar.id)}</strong><code>media/avatars/${html(t.avatar.source||"")}</code>
+          <span>${t.problems.map(p=>html(p.label)).join(" · ")}</span></div>
+        <button type="button" data-tag-done="${html(t.avatar.id)}" data-signature="${html(t.signature)}">Fait</button>
+      </li>`).join("");
+    return `<h3>Affiner les tags <span class="badge ${shown.length?"under":"ok"}">${shown.length}</span></h3>
+      <p class="cov-note">Retaguer dans Bridge, puis redéposer l'image dans <code>media/avatars/</code> : la ligne disparaît d'elle-même au prochain chargement. « Fait » la masque tout de suite, dans ce navigateur.</p>
+      ${shown.length?`<ul class="tag-todo">${items}</ul>`:'<p class="muted">Rien à affiner.</p>'}
+      ${hidden?`<p><button type="button" class="link-button" data-tag-reset>Réafficher ${hidden} ligne${hidden>1?"s":""} masquée${hidden>1?"s":""}</button></p>`:""}`;
+  }
+  // Boutons « Fait » et « Réafficher » : la section se redessine sur place.
+  function bind(container,data,onChange){
+    const section=container.querySelector("#cov-tags");
+    if(!section) return;
+    section.addEventListener("click",e=>{
+      const done=e.target.closest("[data-tag-done]"), reset=e.target.closest("[data-tag-reset]");
+      if(!done&&!reset) return;
+      const saved=reset?{}:readDone();
+      if(done) saved[done.dataset.tagDone]=done.dataset.signature;
+      writeDone(saved);
+      section.innerHTML=renderTagTodos(data.avatars);
+      if(onChange) onChange();
+    });
+  }
+  const tagTodoCount=data=>visibleTodos(data.avatars).shown.length;
+
   const badge=status=>`<span class="badge ${STATUS[status].cls}">${STATUS[status].label}</span>`;
   const sexes=r=>`${r.femmes} F · ${r.hommes} H`+(r.sansSexe?` · ${r.sansSexe} ?`:"");
 
@@ -82,6 +137,7 @@ const AvatarsLab=(()=>{
       <div class="table-wrap cov-summary"><table>
         <thead><tr><th>Peuple</th><th>Avatars</th><th>Sexe</th><th>Besoin</th><th>Statut</th><th>Sans tags</th></tr></thead>
         <tbody>${summary}</tbody></table></div>
+      <section class="cov-tags" id="cov-tags">${renderTagTodos(avatars)}</section>
       ${results.map(peopleSection).join("")}
       ${warnings.length?`<div class="cov-warnings"><h3>Remarques sur les avatars de Hostinger</h3><ul>${warnings.map(w=>`<li>${html(w)}</li>`).join("")}</ul></div>`:""}`;
   }
@@ -91,5 +147,5 @@ const AvatarsLab=(()=>{
     return `${data.avatars.rows.length} avatars · Git ${s.git??"?"} · Hostinger ${s.hostinger??"?"}`;
   }
 
-  return {compute,render,meta,anchor};
+  return {compute,render,meta,anchor,bind,tagTodoCount,tagTodos};
 })();

@@ -73,6 +73,8 @@ Comment le jeu les trouve :
 
 Pour vérifier un dépôt : https://bloodandwages.idanwizen.com/api/avatars.php montre chaque image vue par le serveur, avec ses mots-clés.
 
+Pour savoir quoi retaguer : en haut du même onglet, la liste **« Affiner les tags »** donne la référence et le fichier de chaque avatar dont les tags gênent l'attribution (aucun tag, sexe, profil, arme ou école de magie manquants). Une ligne disparaît d'elle-même quand l'image retaguée est redéposée ; le bouton « Fait » la masque tout de suite, dans ce navigateur.
+
 Pour savoir quoi produire : l'onglet **Avatars** du Design Lab (https://bloodandwages.idanwizen.com/design/#avatars) compare, pour chaque peuple, les avatars aux mercenaires que le jeu génère (`game-core/avatar-coverage.js`) : besoin, cultures, profils, armes, magie et ascendances sous-représentés, avatars sans tags. Les remarques (mot-clé inconnu, portrait manquant…) s'affichent dans la console du navigateur au chargement du jeu.
 
 ## Netlify (abandonné)

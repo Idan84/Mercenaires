@@ -1487,8 +1487,19 @@ body[data-screen="camp"] > .app-shell { position: relative; z-index: 1; }
 /* Taverne (Idan, 2026-10-21) : deux boutons à gauche, de la taille de ceux du camp ; une bulle posée sur le
    tavernier ouvre le dialogue. Le décor est en « cover » centré (1600 × 893) : la bulle suit le même calcul
    pour rester sur son tablier, quelle que soit la taille de l'écran. */
-/* En miroir du camp : la scène est centrée sur 1200 px, le menu en sort pour se caler sur le bord gauche de l'écran. */
-.tavern-hub{align-items:flex-start;margin:0 calc(50% - 50vw);padding-left:calc(clamp(18px,3vw,48px) + clamp(4px,2vw,26px))}
+.tavern-hub{align-items:flex-start}
+/* Accueils du camp et de la Taverne : ils tiennent exactement dans l'écran, sans barre de défilement (Idan,
+   2026-10-21). La hauteur vient d'une colonne flexible, plus d'un min-height calculé à la main qui oubliait le
+   logo et les marges. La Taverne prend toute la largeur avec la marge du camp : ses boutons sont en miroir de
+   ceux du camp, sans 100vw (qui compte la barre de défilement et faisait apparaître la barre horizontale). */
+body[data-screen="camp"][data-camp-scene="home"] .app-shell,
+body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .app-shell{display:flex;flex-direction:column;min-height:100dvh}
+body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .app-shell{max-width:none;padding-left:clamp(18px,3vw,48px);padding-right:clamp(18px,3vw,48px)}
+body[data-screen="camp"][data-camp-scene="home"] #game-panel,
+body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] #game-panel,
+body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] [data-camp-scene-panel="tavern"]{flex:1;display:flex;flex-direction:column;width:100%;max-width:none;margin:0}
+body[data-screen="camp"][data-camp-scene="home"] .camp-hub,
+body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tavern-hub{flex:1;min-height:0}
 .tavern-talk-btn{
   --bg-scale:max(calc(100vw / 1600),calc(100vh / 893));
   display:none;position:fixed;z-index:60;left:calc(50vw + 535 * var(--bg-scale));top:calc(50vh + 45 * var(--bg-scale));
@@ -1546,7 +1557,7 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 .tavern-back:hover,.tavern-back:focus-visible{border-color:#ffe1a5;color:#ffe1ac;outline:none}
 /* Une seule rangée tant que l'écran le permet : colonnes souples, cartes plafonnées à 220 px de large. */
 .recruit-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));justify-items:center;gap:12px}
-.recruit-card{display:flex;flex-direction:column;width:100%;max-width:220px;overflow:hidden;border:1px solid #9a7a4f;border-radius:12px;background:linear-gradient(180deg,#3a2b21f5,#1b130ef5);box-shadow:0 12px 30px #000a;color:#ead9bd}
+.recruit-card{display:flex;flex-direction:column;width:100%;max-width:min(220px,calc((100dvh - 400px) * 9 / 16));overflow:hidden;border:1px solid #9a7a4f;border-radius:12px;background:linear-gradient(180deg,#3a2b21f5,#1b130ef5);box-shadow:0 12px 30px #000a;color:#ead9bd}
 .avatar-frame--recruit{width:100%;aspect-ratio:9 / 16;margin:0;border:0;border-bottom:1px solid #71583e;border-radius:0;box-shadow:none}
 .avatar-frame--recruit .avatar-fallback span{font-size:3rem}
 .recruit-card-body{display:flex;flex:1;flex-direction:column;gap:5px;padding:10px 12px 12px}

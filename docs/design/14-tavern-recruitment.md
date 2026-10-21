@@ -118,6 +118,8 @@ sera traité séparément après validation de la boucle V1.
 
 ## 6 — Informations visibles avant entretien
 
+> **Interface du 2026-10-21 (Idan).** L'écran Recruter ne montre plus que le portrait en pied, le nom, le peuple, la culture, la réputation et le nombre de jours de présence à l'auberge. Le reste se découvre en parlant au candidat (§6 bis) : salaire et prime par la question sur ses prétentions, l'affinité par le ton de sa salutation, le profil et les prédilections par ses réponses.
+
 Le joueur voit directement :
 
 - Peuple ;
@@ -136,7 +138,21 @@ Le générateur possède déjà un profil technique `equipment.profile.type` ave
 
 Les autres caractéristiques et compétences ne sont pas affichées librement pendant l'entretien.
 
+## 6 bis — Dialogue de recrutement (interface du 2026-10-21, Idan)
+
+« Aller lui parler » ouvre une fenêtre de dialogue avec le portrait carré du candidat.
+
+1. **Salutation** selon l'affinité avec le capitaine : 20 phrases, de franchement hostile (−100) à admirative et respectueuse (+100), une par tranche de 10 points.
+2. **Questions**, auxquelles le candidat répond **sincèrement**, par une petite phrase : arme de prédilection (la meilleure des préférences « une main » et « deux mains », doc 03), style de combat préféré, arme de tir de prédilection, magie de prédilection (aucune si toutes ses écoles sont au plancher, 1), métier avant d'être mercenaire (origine sociale).
+3. **Prétentions salariales** : « Pour devenir votre combattant, je demande X par jour et Y par mission. » Ensuite seulement apparaissent **Négocier** et **Signer**.
+4. **Négocier** : le joueur saisit un salaire et une prime ; les règles du §9 s'appliquent sans changement et la réponse est dialoguée — contre-proposition (« Disons X et Y, non ? »), refus d'une offre plus basse qu'une offre déjà refusée, ou départ : le candidat renverse la table et la fenêtre se ferme.
+5. **Signer** accepte les conditions sur la table (demande initiale ou dernière contre-proposition) ; l'acceptation est alors garantie (§9) et le candidat rejoint la compagnie : « Parfait. Ravi de faire partie de la compagnie… ». Dortoir plein : il accepte, mais la signature attend une place (§10).
+
+On peut partir à tout moment. Textes : `data/reference/tavern-dialogue.json` ; code : `game-core/recruit-dialogue.js`.
+
 ## 7 — Entretien : trois questions
+
+> **Interface du 2026-10-21.** Le dialogue de recrutement ne propose plus ces trois questions chiffrées ; l'Intendant n'a donc plus d'usage à la Taverne pour l'instant. La règle reste dans `game-core/tavern.js`, en attendant qu'Idan décide de la rebrancher ou de la retirer.
 
 Le joueur peut poser **3 questions** par candidat.
 

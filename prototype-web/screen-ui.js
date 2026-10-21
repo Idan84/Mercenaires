@@ -152,7 +152,7 @@ function backToMenu(){
   game.campaign=null;
   game.captain=null;
   game.initialSquad=[];
-  game.tavernSelected=null;
+  game.recruitTalk=null;
   if(typeof stopIntroVoice==="function") stopIntroVoice();
   for(const id of ["setup-panel","game-panel","game-over-panel","intro-panel","creation-wizard"]) $(id).classList.add("hidden");
   renderSaveStatus();

@@ -359,26 +359,6 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
 @media(max-width:760px){.mission-aftermath li{grid-template-columns:1fr auto}.mission-aftermath li small{grid-column:1/-1}}
 @media(max-width:1100px){.mission-layout{grid-template-columns:160px minmax(560px,1fr)}.mission-console-wrap{grid-column:1/-1}.mission-console{height:220px}}
 @media(max-width:760px){.company-actions{align-items:flex-start;flex-direction:column}.mission-layout{grid-template-columns:1fr}.mission-side{display:grid;grid-template-columns:1fr 1fr;gap:8px}.mission-center{overflow:hidden}.mission-map-scroll{min-height:420px}.mission-console{height:220px}}
-.tavern-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
-.tavern-card{display:flex;flex-direction:column;gap:8px;border:1px solid #dfd8ce;border-radius:12px;background:#f8f5f0;padding:12px}
-.tavern-card header{display:flex;flex-direction:column}
-.tavern-card header small{color:#6d655c}
-.tavern-card dl{display:grid;grid-template-columns:1fr 1fr;gap:6px 10px;margin:0}
-.tavern-card dt{font-size:.7rem;text-transform:uppercase;letter-spacing:.04em;color:#6d655c}
-.tavern-card dd{margin:0;font-weight:600}
-.tavern-card p{margin:0;font-size:.8rem}
-.tavern-card button{margin-top:auto}
-.tavern-log{display:grid;gap:6px;margin-top:12px;max-height:180px;overflow:auto}
-.tavern-log small{color:#6d655c;margin-right:6px}
-.tavern-section{margin-top:18px}
-.tavern-section h3{margin:0 0 6px}
-.tavern-question,.tavern-offer{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
-.tavern-offer label{display:flex;flex-direction:column;font-size:.8rem;gap:4px}
-.tavern-offer input{width:120px}
-.tavern-answers{margin:10px 0 0;padding-left:18px;display:grid;gap:4px}
-.tavern-result{min-height:1.2em;font-weight:600}
-.tavern-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:flex-end}
-.tavern-intendant{display:flex;align-items:center;gap:6px;font-size:.85rem}
 .save-status{font-size:.75rem;color:#6d655c}
 .company-meta strong.negative{color:#b53025}
 .test-tool{margin-left:4px;padding:2px 7px;border:1px dashed #b9ad9c;border-radius:6px;background:transparent;color:#6d655c;font-size:.7rem;cursor:pointer}
@@ -458,7 +438,6 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
   text-transform:uppercase;
 }
 .avatar-frame--detail{width:min(280px,100%);}
-.avatar-frame--interview{width:min(185px,100%);border-radius:13px;}
 .avatar-frame--card{width:100%;aspect-ratio:1 / 1;border-radius:10px;box-shadow:0 8px 20px rgba(20,17,14,.14);}
 .avatar-frame--card .avatar-fallback{padding:11px;}
 .avatar-frame--card .avatar-fallback span{font-size:2.6rem;}
@@ -481,22 +460,10 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
 .character-overview-copy{min-width:0;}
 .character-overview-copy .identity-grid,
 .character-overview-copy .metric-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
-.tavern-interview-overview{
-  display:grid;
-  grid-template-columns:185px minmax(0,1fr);
-  gap:18px;
-  align-items:start;
-  margin-bottom:18px;
-}
-.tavern-interview-overview .identity-grid{
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  margin-bottom:0;
-}
 
 @media(max-width:720px){
-  .character-overview,.tavern-interview-overview{grid-template-columns:1fr;}
+  .character-overview{grid-template-columns:1fr;}
   .avatar-frame--detail{width:min(240px,72vw);margin-inline:auto;}
-  .avatar-frame--interview{width:min(200px,62vw);margin-inline:auto;}
 }
 
 /* Fiche : biographie et grimoire (styles de Chatty, PR #29) */
@@ -1536,8 +1503,8 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 @keyframes tavern-talk-pulse{0%,100%{box-shadow:0 6px 20px #000b,0 0 0 4px #f2c87926}50%{box-shadow:0 6px 20px #000b,0 0 0 9px #f2c87912}}
 @media(prefers-reduced-motion:reduce){.tavern-talk-btn{animation:none}}
 /* Dialogue façon jeu de rôle : portrait du tavernier (pris dans le décor), sa phrase, réponses numérotées. */
-#tavern-talk-dialog{width:min(560px,92vw);padding:0;border:1px solid #b58c53;border-radius:14px;background:linear-gradient(180deg,#3a2a1e,#1b130e);color:#ead9bd;box-shadow:0 20px 60px #000c,inset 0 1px #ffe4a826;font-family:Georgia,serif}
-#tavern-talk-dialog::backdrop{background:rgba(10,6,4,.35)}
+.talk-dialog{width:min(560px,92vw);padding:0;border:1px solid #b58c53;border-radius:14px;background:linear-gradient(180deg,#3a2a1e,#1b130e);color:#ead9bd;box-shadow:0 20px 60px #000c,inset 0 1px #ffe4a826;font-family:Georgia,serif}
+.talk-dialog::backdrop{background:rgba(10,6,4,.35)}
 .talk-head{display:flex;align-items:center;gap:14px;padding:16px 20px 12px;border-bottom:1px solid #71583e}
 .talk-portrait{flex:none;width:72px;height:72px;border:2px solid #c9a15f;border-radius:50%;background:#2a1d15 url("/media/background/tavern.jpg") no-repeat -378px -62px / 523px auto;box-shadow:0 4px 14px #000a}
 .talk-head .eyebrow{margin:0;color:#bb9a6e;font:700 11px Georgia,serif;letter-spacing:.12em;text-transform:uppercase}
@@ -1550,7 +1517,46 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 .talk-options button:hover,.talk-options button:focus-visible{background:#4a3424;color:#ffe1ac;outline:none}
 .talk-options button:disabled{background:transparent;color:#7d6b58;cursor:not-allowed}
 .talk-options button:disabled::before{color:#6b5a48}
+.talk-dialog--recruit{width:min(640px,94vw)}
+.talk-face{flex:none}
+.avatar-frame--talk{width:96px;aspect-ratio:1;margin:0;border:2px solid #c9a15f;border-radius:10px;box-shadow:0 4px 14px #000a}
+.avatar-frame--talk .avatar-fallback{padding:6px}
+.avatar-frame--talk .avatar-fallback span{font-size:1.8rem}
+.avatar-frame--talk .avatar-fallback small{display:none}
+.talk-head .eyebrow .picto{vertical-align:-3px;margin-right:4px}
+.talk-log{display:grid;gap:10px;max-height:min(46vh,380px);overflow-y:auto;padding:16px 22px 8px;scrollbar-color:#71583e transparent}
+.talk-say{display:grid;gap:2px;margin:0}
+.talk-say b{color:#bb9a6e;font:700 11px Georgia,serif;letter-spacing:.1em;text-transform:uppercase}
+.talk-say span{font:italic 17px/1.45 Georgia,serif}
+.talk-say--merc span{color:#f3e3c3}
+.talk-say--you{justify-items:end;text-align:right}
+.talk-say--you span{color:#d8c3a0}
+.talk-note{margin:0;color:#e9b98a;font:italic 16px/1.45 Georgia,serif;text-align:center}
+.talk-offer{display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px;padding:8px 22px 18px}
+.talk-offer label{display:grid;gap:4px;color:#bb9a6e;font:700 11px Georgia,serif;letter-spacing:.08em;text-transform:uppercase}
+.talk-offer label span{display:flex;align-items:center;gap:6px;color:#ead9bd;font:15px Georgia,serif;letter-spacing:0;text-transform:none}
+.talk-offer input{width:96px;padding:7px 8px;border:1px solid #9a7a4f;border-radius:8px;background:#1b130e;color:#ffe1ac;font:700 16px Georgia,serif}
+.talk-offer-btn,.talk-offer-back{padding:9px 14px;border:1px solid #c9a15f;border-radius:9px;font:700 14px Georgia,serif;cursor:pointer}
+.talk-offer-btn{background:linear-gradient(180deg,#6a4a2f,#3a2819);color:#ffe1ac}
+.talk-offer-back{border-color:#71583e;background:transparent;color:#cdb38c}
+.talk-offer-btn:hover,.talk-offer-btn:focus-visible,.talk-offer-back:hover,.talk-offer-back:focus-visible{border-color:#ffe1a5;outline:none}
 #tavern-missions-view,#tavern-recruits-view{margin-top:24px}
+/* Écran Recruter (Idan, 2026-10-21) : portraits en pied (9:16), nom, peuple, culture, réputation, présence. */
+.tavern-back{margin-bottom:16px;padding:8px 14px;border:1px solid #b58c53;border-radius:10px;background:linear-gradient(180deg,#3a2a1ef2,#1b130ef2);color:#f1d49b;font:600 14px Georgia,serif;box-shadow:0 6px 18px #0009;cursor:pointer}
+.tavern-back:hover,.tavern-back:focus-visible{border-color:#ffe1a5;color:#ffe1ac;outline:none}
+/* Une seule rangée tant que l'écran le permet : colonnes souples, cartes plafonnées à 220 px de large. */
+.recruit-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));justify-items:center;gap:12px}
+.recruit-card{display:flex;flex-direction:column;width:100%;max-width:220px;overflow:hidden;border:1px solid #9a7a4f;border-radius:12px;background:linear-gradient(180deg,#3a2b21f5,#1b130ef5);box-shadow:0 12px 30px #000a;color:#ead9bd}
+.avatar-frame--recruit{width:100%;aspect-ratio:9 / 16;margin:0;border:0;border-bottom:1px solid #71583e;border-radius:0;box-shadow:none}
+.avatar-frame--recruit .avatar-fallback span{font-size:3rem}
+.recruit-card-body{display:flex;flex:1;flex-direction:column;gap:5px;padding:10px 12px 12px}
+.recruit-name{color:#ffe1ac;font:700 17px/1.2 Georgia,serif}
+.recruit-origin{display:flex;align-items:center;gap:6px;color:#cdb38c;font-size:13px;line-height:1.3}
+.recruit-card .rep-stars{font-size:17px}
+.recruit-days{color:#bb9a6e;font-size:12px}
+.recruit-talk-btn{margin-top:auto;padding:9px 10px;border:1px solid #c9a15f;border-radius:9px;background:linear-gradient(180deg,#6a4a2f,#3a2819);color:#ffe1ac;font:700 14px Georgia,serif;letter-spacing:.03em;cursor:pointer}
+.recruit-talk-btn:hover,.recruit-talk-btn:focus-visible{border-color:#ffe1a5;background:linear-gradient(180deg,#80592f,#4a321f);outline:none}
+.recruit-empty{color:#f1e5cd;text-align:center;text-shadow:0 2px 8px #000}
 #tavern-missions-view h2{margin:20px 0 12px}
 
 

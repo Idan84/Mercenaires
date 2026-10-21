@@ -1,9 +1,7 @@
 "use strict";
 
-// Écran Taverne V1 : affichage et saisie seulement. Les règles sont dans game-core/tavern.js
-// et game-core/campaign.js ; l'état de partie vit dans game.campaign.
-
-const PROFILE_LABELS={melee:"Corps à corps",ranged:"Distance",magic:"Magie"};
+// Écran Taverne : affichage et saisie seulement. Les règles sont dans game-core/tavern.js,
+// game-core/campaign.js et game-core/recruit-dialogue.js ; l'état de partie vit dans game.campaign.
 
 function tavernRules(){
   if(!game.tavernRules) game.tavernRules=MercenairesTavern.createTavernRules({reference:game.referenceData});
@@ -30,7 +28,7 @@ function campaignRules(){
 function startCampaign(captain,squad){
   game.campaign=campaignRules().createCampaign({captain,squad});
   game.tavernLog=[];
-  game.tavernSelected=null;
+  game.recruitTalk=null;
 }
 
 function campaignRoster(){
@@ -58,57 +56,27 @@ function renderCompanyMeta(){
   $("company-renown").innerHTML=renderRenownStars(campaignRules().companyRenown(c));
 }
 
-// Affinité avec le capitaine (02 ; Idan, 2026-10-20) : visible à la Taverne, score seul. Les composantes
-// (dont l'alignement, caché avant l'embauche) ne sont détaillées que sur la fiche d'un membre.
-function renderTavernAffinity(mercenary,variant){
-  const a=captainAffinity(mercenary);
-  if(!a) return "";
-  return variant==="card"
-    ?`<div><dt>Affinité</dt><dd>${signedScore(a.total)}</dd></div>`
-    :`<div class="metric"><small>Affinité</small><strong>${signedScore(a.total)}</strong></div>`;
-}
-
-function profileText(shown){
-  const label=PROFILE_LABELS[shown.profile]||"—";
-  return shown.predilection?label+" · "+shown.predilection:label;
+// Écran Recruter (Idan, 2026-10-21) : portrait en pied, nom, peuple, culture, réputation et jours de présence ;
+// le reste (salaire, prime, affinité) se découvre en parlant au candidat.
+function presenceText(candidate){
+  const days=Math.max(0,(Number(game.campaign?.day)||0)-(Number(candidate.arrivedDay)||0));
+  const female=isFemale(candidate.mercenary);
+  if(!days) return (female?"Arrivée":"Arrivé")+" aujourd’hui à l’auberge";
+  return (female?"Présente":"Présent")+" à l’auberge depuis "+days+" jour"+(days>1?"s":"");
 }
 
 function renderTavernCard(candidate){
-  const shown=tavernRules().visibleProfile(candidate.mercenary);
-  const agreed=candidate.negotiation?.agreed;
-  return `<article class="tavern-card">
-    ${renderAvatar(candidate.mercenary,{variant:"card"})}
-    <header>
-      <strong>${esc(shown.name)}</strong>
-      <small>${renderPicto("people",shown.people,{size:"xs"})}${esc(shown.people)} · ${esc(shown.culture)}</small>
-    </header>
-    <dl>
-      <div><dt>Profil</dt><dd>${esc(profileText(shown))}</dd></div>
-      <div><dt>Réputation</dt><dd>${renderReputationStars(candidate.mercenary)}</dd></div>
-      <div><dt>Salaire demandé</dt><dd>${fmt(shown.salary)} PO/j</dd></div>
-      <div><dt>Prime de mission</dt><dd>${fmt(shown.missionBonus)} PO</dd></div>
-      ${renderTavernAffinity(candidate.mercenary,"card")}
-    </dl>
-    <p class="muted">Arrivé le jour ${candidate.arrivedDay} · questions ${candidate.interview.questionsLeft}/${tavernRules().QUESTIONS_PER_CANDIDATE}${agreed?" · <strong>accord conclu</strong>":""}</p>
-    <button class="secondary" data-tavern-open="${candidate.mercenary.id}">Entretien</button>
+  const m=candidate.mercenary;
+  return `<article class="recruit-card">
+    ${renderAvatar(m,{variant:"recruit",kind:"full"})}
+    <div class="recruit-card-body">
+      <strong class="recruit-name">${esc(m.name)}</strong>
+      <span class="recruit-origin">${renderPicto("people",m.people,{size:"xs"})}${esc(m.people)} · ${esc(m.culture)}</span>
+      ${renderReputationStars(m)}
+      <small class="recruit-days">${presenceText(candidate)}</small>
+      <button type="button" class="recruit-talk-btn" data-tavern-open="${m.id}">Aller lui parler</button>
+    </div>
   </article>`;
-}
-
-// L'Intendant est un rôle assigné à un membre de la compagnie ; « Aucun » par défaut.
-function renderIntendantSelect(){
-  const current=game.campaign.company.intendantId;
-  const options=[...campaignRoster()].sort((a,b)=>(Number(b.skills?.camp?.Intendance)||0)-(Number(a.skills?.camp?.Intendance)||0));
-  $("tavern-intendant").innerHTML=`<option value="">Aucun</option>`+options.map(m=>
-    `<option value="${m.id}" ${m.id===current?"selected":""}>${esc(m.name)} — Intendance ${fmt(m.skills?.camp?.Intendance||0)}</option>`
-  ).join("");
-}
-
-function assignTavernIntendant(){
-  const value=$("tavern-intendant").value;
-  const result=campaignRules().assignIntendant(game.campaign,value?Number(value):null);
-  if(result.ok) tavernLog(result.intendant?result.intendant.name+" devient l’Intendant de la compagnie.":"La compagnie n’a plus d’Intendant.","turn");
-  saveGame();
-  renderTavern();
 }
 
 function renderTavern(){
@@ -116,15 +84,9 @@ function renderTavern(){
   if(!c) return;
   renderCompanyMeta();
   if(typeof renderGameHud==="function") renderGameHud();
-  renderIntendantSelect();
-  // Renommée → qualité des recrues (14 §5) : le tavernier présente le plus réputé de N prétendants.
-  const suitors=campaignRules().suitorCount(c);
-  $("tavern-suitors").innerHTML="Renommée "+renderRenownStars(campaignRules().companyRenown(c))+" : le tavernier vous présente "
-    +(suitors>1?"le meilleur de "+suitors+" prétendants pour chaque place.":"les prétendants comme ils viennent.");
   $("tavern-candidates").innerHTML=c.tavern.candidates.length
     ?c.tavern.candidates.map(renderTavernCard).join("")
-    :`<p class="muted">La Taverne est vide. De nouveaux candidats arriveront demain matin.</p>`;
-  $("tavern-log").innerHTML=(game.tavernLog||[]).map(x=>`<div class="combat-log ${x.kind}"><small>Jour ${x.day}</small> ${esc(x.message)}</div>`).join("");
+    :`<p class="recruit-empty">La taverne est vide. De nouveaux candidats arriveront demain matin.</p>`;
 }
 
 // Outil de test (pas une règle du jeu) : ajoute de l'or pour tester les paiements (demande d'Idan).
@@ -151,142 +113,144 @@ function advanceCampDay(){
   if(arrived.length) tavernLog("Nouveaux candidats : "+arrived.join(", ")+".","turn");
   saveGame();
   renderGame();
-  if(game.tavernSelected) renderInterview();
 }
 
-// Valeurs qu'une question peut viser : caractéristiques, résistances et compétence de prédilection.
-function interviewTargets(candidate){
-  const m=candidate.mercenary,shown=tavernRules().visibleProfile(m);
-  const targets=Object.keys(m.stats||{}).map(k=>({key:"stats."+k,label:k}));
-  targets.push(...Object.keys(m.resistances||{}).map(k=>({key:"resistances."+k,label:k})));
-  if(shown.predilection){
-    const group=shown.profile==="magic"?"magic":"martial";
-    if(Number.isFinite(Number(m.skills?.[group]?.[shown.predilection]))){
-      targets.push({key:"skills."+group+"."+shown.predilection,label:"Compétence : "+shown.predilection});
-    }
-  }
-  return targets;
+// Dialogue de recrutement (Idan, 2026-10-21) : salutation selon l'affinité, réponses sincères, prétentions,
+// puis Négocier / Signer. Les règles de négociation restent celles de tavern.js (doc 14 §9).
+function recruitDialogue(){
+  return game.recruitDialogue||(game.recruitDialogue=MercenairesRecruitDialogue.createRecruitDialogue({reference:game.referenceData}));
 }
 
-function answerText(answer,targets){
-  const label=targets.find(t=>t.key===answer.key)?.label||answer.key;
-  if(answer.source.type==="intendant"){
-    return `${label} : environ <strong>${fmt(answer.estimate)}</strong> <small>(estimation de l’Intendant ${esc(answer.source.name)}, à ±${Math.round(answer.source.maxError*100)} % près)</small>`;
-  }
-  return `${label} : « <strong>${fmt(answer.estimate)}</strong> » <small>(selon le candidat lui-même)</small>`;
+function companyPhrase(){
+  const name=String(game.campaign?.company.name||`Compagnie de ${game.captain?.name||"Bob"}`).trim();
+  return /^compagnie\b/i.test(name)?"la "+name:"la compagnie "+name;
 }
 
-function renderInterview(){
-  const candidate=tavernCandidate(game.tavernSelected);
-  if(!candidate){ $("tavern-dialog").close(); game.tavernSelected=null; return; }
-  const rules=tavernRules(),c=game.campaign;
-  const shown=rules.visibleProfile(candidate.mercenary);
-  const n=rules.negotiationState(candidate);
-  const targets=interviewTargets(candidate);
-  const asked=new Set(candidate.interview.answers.map(a=>a.key));
-  const intendant=campaignRules().intendantOf(c);
-  const dormFree=campaignRules().dormitoryFree(c);
-
-  $("tavern-dialog-name").textContent=shown.name;
-  $("tavern-dialog-content").innerHTML=`
-    <section class="tavern-interview-overview">
-      ${renderAvatar(candidate.mercenary,{variant:"interview"})}
-      <div>
-    <div class="identity-grid">
-      <div class="metric"><small>Peuple</small><strong>${renderPicto("people",shown.people,{size:"md"})}${esc(shown.people)}</strong></div>
-      <div class="metric"><small>Culture</small><strong>${esc(shown.culture)}</strong></div>
-      <div class="metric"><small>Profil</small><strong>${esc(profileText(shown))}</strong></div>
-      <div class="metric"><small>Réputation</small><strong>${renderReputationStars(candidate.mercenary)}</strong></div>
-      ${renderTavernAffinity(candidate.mercenary,"metric")}
-    </div>
-      </div>
-    </section>
-
-    <section class="tavern-section">
-      <h3>Questions (${candidate.interview.questionsLeft} restantes)</h3>
-      <p class="muted">${intendant
-        ?`Votre Intendant, ${esc(intendant.name)} (Intendance ${fmt(intendant.skills.camp.Intendance)}), estime les réponses.`
-        :"Vous n’avez pas d’Intendant : le candidat répond lui-même… et se vante. Assignez un Intendant depuis la Taverne."}</p>
-      <div class="tavern-question">
-        <select id="tavern-question-target" ${candidate.interview.questionsLeft?"":"disabled"}>
-          ${targets.filter(t=>!asked.has(t.key)).map(t=>`<option value="${esc(t.key)}">${esc(t.label)}</option>`).join("")}
-        </select>
-        <button id="tavern-ask-btn" class="secondary" ${candidate.interview.questionsLeft?"":"disabled"}>Poser la question</button>
-      </div>
-      <ul class="tavern-answers">${candidate.interview.answers.map(a=>`<li>${answerText(a,targets)}</li>`).join("")||`<li class="muted">Aucune question posée.</li>`}</ul>
-    </section>
-
-    <section class="tavern-section">
-      <h3>Contrat</h3>
-      ${n.agreed?`
-        <p>Accord conclu : <strong>${fmt(n.agreed.salary)} PO/j</strong> et <strong>${fmt(n.agreed.bonus)} PO</strong> de prime de mission.</p>
-        <button id="tavern-sign-btn" class="primary" ${dormFree>0?"":"disabled"}>Signer le contrat</button>
-        ${dormFree>0?"":`<p class="mission-error">Dortoir plein : impossible de finaliser le recrutement.</p>`}
-      `:`
-        <p>Demande actuelle : <strong>${fmt(n.salary)} PO/j</strong> et <strong>${fmt(n.bonus)} PO</strong> de prime de mission.${n.refused?` <small>Offre déjà refusée : ${fmt(n.refused.salary)} PO/j et ${fmt(n.refused.bonus)} PO ; impossible de proposer moins.</small>`:""}</p>
-        <div class="tavern-offer">
-          <label>Salaire journalier<input id="tavern-offer-salary" type="number" min="0" value="${n.salary}"></label>
-          <label>Prime de mission<input id="tavern-offer-bonus" type="number" min="0" value="${n.bonus}"></label>
-          <button id="tavern-offer-btn" class="primary">Proposer</button>
-        </div>
-      `}
-      <p id="tavern-offer-result" class="tavern-result">${esc(game.tavernOfferMessage||"")}</p>
-    </section>
-  `;
-}
-
-function openInterview(id){
-  game.tavernSelected=id;
-  game.tavernOfferMessage="";
-  renderInterview();
-  $("tavern-dialog").showModal();
-}
-
-function askTavernQuestion(){
-  const key=$("tavern-question-target")?.value;
-  if(!key) return;
-  const result=campaignRules().askCandidate(game.campaign,game.tavernSelected,key);
-  if(!result.ok) game.tavernOfferMessage=result.reason;
-  saveGame();
-  renderInterview();
-  renderTavern();
-}
-
-function makeTavernOffer(){
-  const id=game.tavernSelected,candidate=tavernCandidate(id);
+function openRecruitTalk(id){
+  const candidate=tavernCandidate(id);
   if(!candidate) return;
-  const name=candidate.mercenary.name;
-  const offer={salary:Number($("tavern-offer-salary").value),bonus:Number($("tavern-offer-bonus").value)};
-  const result=campaignRules().offerToCandidate(game.campaign,id,offer);
-  if(result.outcome==="invalid"){
-    game.tavernOfferMessage=result.reason;
-  }else if(result.outcome==="accepted"){
-    game.tavernOfferMessage=name+" accepte.";
-    tavernLog(name+" accepte "+fmt(result.agreed.salary)+" PO/j et "+fmt(result.agreed.bonus)+" PO de prime.","turn");
-  }else if(result.outcome==="counter"){
-    game.tavernOfferMessage=name+" refuse et contre-propose "+fmt(result.counter.salary)+" PO/j et "+fmt(result.counter.bonus)+" PO.";
-  }else if(result.outcome==="left"){
-    tavernLog(name+" se vexe et quitte la Taverne.","bad");
-    saveGame();
-    game.tavernSelected=null;
-    $("tavern-dialog").close();
-    renderTavern();
+  const m=candidate.mercenary;
+  const n=tavernRules().negotiationState(candidate);
+  game.recruitTalk={id,mercenary:m,lines:[{who:"merc",text:recruitDialogue().greeting(m,captainAffinity(m)?.total)}],
+    asked:[],salaryKnown:Boolean(n.agreed),mode:"choices",round:0,closeTimer:null};
+  renderRecruitTalk();
+  $("recruit-talk-dialog").showModal();
+}
+
+function recruitChoices(t){
+  const d=recruitDialogue(),q=d.questions;
+  if(t.mode==="left") return [];
+  if(t.mode==="ended") return [{key:"leave",label:q.leave}];
+  const list=d.infoQuestions.filter(key=>!t.asked.includes(key)).map(key=>({key,label:q[key]}));
+  if(t.salaryKnown) list.push({key:"negotiate",label:q.negotiate},{key:"sign",label:q.sign});
+  else list.push({key:"salary",label:q.salary});
+  list.push({key:"leave",label:q.leave});
+  return list;
+}
+
+function renderRecruitTalk(){
+  const t=game.recruitTalk;
+  if(!t) return;
+  const m=t.mercenary,first=MercenairesRecruitDialogue.firstName(m);
+  $("recruit-talk-portrait").innerHTML=renderAvatar(m,{variant:"talk",kind:"portrait"});
+  $("recruit-talk-name").textContent=m.name;
+  $("recruit-talk-origin").innerHTML=`${renderPicto("people",m.people,{size:"xs"})}${esc(m.people)} · ${esc(m.culture)}`;
+  const log=$("recruit-talk-log");
+  log.innerHTML=t.lines.map(line=>line.who==="note"
+    ?`<p class="talk-note">${esc(line.text)}</p>`
+    :`<p class="talk-say talk-say--${line.who}"><b>${line.who==="you"?"Vous":esc(first)}</b><span>«\u00a0${esc(line.text)}\u00a0»</span></p>`).join("");
+  log.scrollTop=log.scrollHeight;
+  const candidate=tavernCandidate(t.id);
+  if(t.mode==="negotiate"&&candidate){
+    const n=tavernRules().negotiationState(candidate);
+    $("recruit-talk-choices").innerHTML=`<form id="recruit-offer" class="talk-offer">
+      <label>Salaire journalier<span><input id="recruit-offer-salary" type="number" min="0" value="${n.salary}"> PO</span></label>
+      <label>Prime de mission<span><input id="recruit-offer-bonus" type="number" min="0" value="${n.bonus}"> PO</span></label>
+      <button type="submit" class="talk-offer-btn">Proposer</button>
+      <button type="button" class="talk-offer-back" data-talk="back">Retour</button>
+    </form>`;
     return;
   }
-  saveGame();
-  renderInterview();
-  renderTavern();
+  $("recruit-talk-choices").innerHTML=`<ol class="talk-options">${recruitChoices(t).map(choice=>
+    `<li><button type="button" data-talk="${choice.key}">${esc(choice.label)}</button></li>`).join("")}</ol>`;
 }
 
-function signTavernCandidate(){
-  const result=campaignRules().signCandidate(game.campaign,game.tavernSelected);
-  if(!result.ok){ game.tavernOfferMessage=result.reason; renderInterview(); return; }
-  result.mercenary.role="Recrue";
-  tavernLog(result.mercenary.name+" signe et rejoint la compagnie.","turn");
+function recruitTalkChoice(key){
+  const t=game.recruitTalk;
+  if(!t) return;
+  if(key==="leave"){ $("recruit-talk-dialog").close(); return; }
+  if(key==="back"){ t.mode="choices"; renderRecruitTalk(); return; }
+  if(key==="negotiate"){ t.mode="negotiate"; renderRecruitTalk(); $("recruit-offer-salary")?.focus(); return; }
+  const candidate=tavernCandidate(t.id);
+  if(!candidate) return;
+  const d=recruitDialogue(),m=t.mercenary;
+  const n=tavernRules().negotiationState(candidate);
+  if(d.infoQuestions.includes(key)){
+    t.lines.push({who:"you",text:d.questions[key]},{who:"merc",text:d.answer(key,m)});
+    t.asked.push(key);
+  }else if(key==="salary"){
+    t.lines.push({who:"you",text:d.questions.salary},{who:"merc",text:d.line("salary",m,{salaire:fmt(n.salary),prime:fmt(n.bonus)})});
+    t.salaryKnown=true;
+  }else if(key==="sign"){
+    // Signer, c'est accepter les conditions sur la table : acceptation garantie (doc 14 §9).
+    const terms=n.agreed||{salary:n.salary,bonus:n.bonus};
+    t.lines.push({who:"you",text:d.line("sign",m,{salaire:fmt(terms.salary),prime:fmt(terms.bonus)})});
+    if(!n.agreed) campaignRules().offerToCandidate(game.campaign,t.id,terms);
+    finishRecruitment();
+    return;
+  }
+  renderRecruitTalk();
+}
+
+function submitRecruitOffer(){
+  const t=game.recruitTalk;
+  if(!t) return;
+  const d=recruitDialogue(),m=t.mercenary;
+  const offer={salary:Number($("recruit-offer-salary").value),bonus:Number($("recruit-offer-bonus").value)};
+  t.lines.push({who:"you",text:d.line("offer",m,{salaire:fmt(offer.salary),prime:fmt(offer.bonus)})});
+  const result=campaignRules().offerToCandidate(game.campaign,t.id,offer);
+  t.round+=1;
+  t.mode="choices";
+  if(result.outcome==="accepted"){
+    finishRecruitment();
+    return;
+  }
+  if(result.outcome==="invalid"){
+    t.lines.push(result.floor
+      ?{who:"merc",text:d.line("floor",m,{salaire:fmt(result.floor.salary),prime:fmt(result.floor.bonus)})}
+      :{who:"note",text:result.reason});
+  }else if(result.outcome==="counter"){
+    t.lines.push({who:"merc",text:d.line("counter",m,{salaire:fmt(result.counter.salary),prime:fmt(result.counter.bonus)},t.round)});
+  }else if(result.outcome==="left"){
+    // Il renverse la table : la fenêtre se ferme d'elle-même (Idan, 2026-10-21).
+    t.lines.push({who:"note",text:d.line("left",m)});
+    t.mode="left";
+    tavernLog(m.name+" renverse la table et quitte la taverne.","bad");
+    t.closeTimer=setTimeout(()=>$("recruit-talk-dialog").close(),2600);
+    renderTavern();
+  }
   saveGame();
-  game.tavernSelected=null;
-  $("tavern-dialog").close();
-  renderGame();
+  renderRecruitTalk();
+}
+
+function finishRecruitment(){
+  const t=game.recruitTalk,d=recruitDialogue(),m=t.mercenary;
+  const result=campaignRules().signCandidate(game.campaign,t.id);
+  if(result.ok){
+    result.mercenary.role="Recrue";
+    t.lines.push({who:"merc",text:d.line("accepted",m,{compagnie:companyPhrase()})});
+    t.mode="ended";
+    tavernLog(m.name+" signe et rejoint la compagnie.","turn");
+    saveGame();
+    renderGame();
+  }else{
+    const full=campaignRules().dormitoryFree(game.campaign)<=0;
+    if(full) t.lines.push({who:"merc",text:d.line("dorm_full",m)},{who:"note",text:d.line("dorm_full_note",m)});
+    else t.lines.push({who:"note",text:result.reason});
+    t.mode="choices";
+    saveGame();
+  }
+  renderRecruitTalk();
 }
 
 // Les deux consommations sont pour l'instant des dépenses sans effet de gameplay.
@@ -354,15 +318,27 @@ function initializeTavernUi(){
 
   $("hud-next-day-btn").addEventListener("click",advanceCampDay);
   $("test-gold-btn").addEventListener("click",addTestGold);
-  $("tavern-intendant").addEventListener("change",assignTavernIntendant);
-  $("close-tavern-dialog").addEventListener("click",()=>{ game.tavernSelected=null; $("tavern-dialog").close(); });
   $("tavern-candidates").addEventListener("click",e=>{
     const btn=e.target.closest("[data-tavern-open]");
-    if(btn) openInterview(Number(btn.dataset.tavernOpen));
+    if(btn) openRecruitTalk(Number(btn.dataset.tavernOpen));
   });
-  $("tavern-dialog-content").addEventListener("click",e=>{
-    if(e.target.id==="tavern-ask-btn") askTavernQuestion();
-    if(e.target.id==="tavern-offer-btn") makeTavernOffer();
-    if(e.target.id==="tavern-sign-btn") signTavernCandidate();
+  const recruit=$("recruit-talk-dialog");
+  recruit.addEventListener("click",event=>{
+    const option=event.target.closest("[data-talk]");
+    if(option&&!option.disabled) recruitTalkChoice(option.dataset.talk);
+  });
+  recruit.addEventListener("submit",event=>{
+    event.preventDefault();
+    submitRecruitOffer();
+  });
+  recruit.addEventListener("keydown",event=>{
+    if(event.target.matches("input")) return;
+    const option=recruit.querySelectorAll(".talk-options [data-talk]")[Number(event.key)-1];
+    if(option){event.preventDefault();recruitTalkChoice(option.dataset.talk);}
+  });
+  recruit.addEventListener("close",()=>{
+    clearTimeout(game.recruitTalk?.closeTimer);
+    game.recruitTalk=null;
+    renderTavern();
   });
 }

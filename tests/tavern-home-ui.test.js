@@ -15,7 +15,7 @@ assert.deepEqual([...home.matchAll(/data-tavern-view="(\w+)"><span>([^<]+)<\/spa
   [["missions","Trouver une mission"],["recruits","Recruter"]]);
 assert.ok(!/data-tavern-drink/.test(html),"la bière et la tournée passent dans le dialogue");
 
-const talk=html.slice(html.indexOf('<dialog id="tavern-talk-dialog"'),html.indexOf('<dialog id="tavern-dialog"'));
+const talk=html.slice(html.indexOf('<dialog id="tavern-talk-dialog"'),html.indexOf('<dialog id="recruit-talk-dialog"'));
 assert.deepEqual([...talk.matchAll(/data-talk="(\w+)"( disabled)?[^>]*>([^<]+)</g)].map(m=>[m[1],Boolean(m[2]),m[3]]),[
   ["beer",false,"Boire une bière (1 PO)"],
   ["round",false,"Payer sa tournée !"],

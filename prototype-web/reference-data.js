@@ -28,7 +28,8 @@ const REFERENCE_FILES = {
   characterNames: "character-names.json",
   biographies: "biographies.json",
   captainCreationCopy: "captain-creation-copy.json",
-  characterSheetCopy: "character-sheet-copy.json"
+  characterSheetCopy: "character-sheet-copy.json",
+  tavernDialogue: "tavern-dialogue.json"
 };
 
 async function loadReferenceData(base = "/data/") {

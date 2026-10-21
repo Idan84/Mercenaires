@@ -24,7 +24,7 @@ function openCampScene(scene="home"){
   }
   document.body.dataset.campScene=target;
   updateCampHomeIcon();
-  if(typeof playTavernMusic==="function") target==="tavern"?playTavernMusic():stopTavernMusic();
+  if(typeof refreshMusic==="function") refreshMusic();
   if(target==="tavern"&&typeof showTavernView==="function") showTavernView("home");
 
   const visible=target==="home"?home:panels.find(panel=>panel.dataset.campScenePanel===target);
@@ -142,8 +142,7 @@ function updateScreen(){
   updateCampHomeIcon();
   renderGameHud();
   if(screen==="camp"&&previous!=="camp") openCampScene("home");
-  if(["home","mission","gameover"].includes(screen)&&typeof stopTheme==="function") stopTheme();
-  if(screen!=="camp"&&typeof stopTavernMusic==="function") stopTavernMusic();
+  if(typeof refreshMusic==="function") refreshMusic();
 }
 
 // Retour au menu depuis la création, le camp ou la fin de partie. La partie est sauvegardée :

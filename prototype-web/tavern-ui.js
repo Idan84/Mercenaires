@@ -253,41 +253,6 @@ function finishRecruitment(){
   renderRecruitTalk();
 }
 
-// Ambiance de la Taverne (Idan, 2026-10-21) : assets/audio/tavern.mp3, déposé par Idan sur Hostinger (le
-// déploiement n'efface pas les fichiers distants). Elle tourne en boucle tant qu'on est à la Taverne et
-// s'arrête, en fondu, dès qu'on en sort ; le thème du camp se tait pendant ce temps. Sans fichier : silence.
-const TAVERN_MUSIC_SRC="assets/audio/tavern.mp3";
-const TAVERN_MUSIC_VOLUME=0.6;
-
-function fadeAudio(audio,target,ms,done){
-  clearInterval(audio.fadeTimer);
-  const start=audio.volume,steps=Math.max(1,Math.round(ms/50));
-  let step=0;
-  audio.fadeTimer=setInterval(()=>{
-    step+=1;
-    audio.volume=Math.min(1,Math.max(0,start+(target-start)*step/steps));
-    if(step>=steps){ clearInterval(audio.fadeTimer); if(done) done(); }
-  },50);
-}
-
-function playTavernMusic(){
-  if(game.tavernMusic) return;
-  if(typeof stopTheme==="function") stopTheme();
-  const music=new Audio(TAVERN_MUSIC_SRC);
-  music.loop=true;
-  music.volume=0;
-  game.tavernMusic=music;
-  // Si l'on est déjà ressorti pendant le chargement, la musique ne repart pas.
-  music.play().then(()=>{ if(game.tavernMusic===music) fadeAudio(music,TAVERN_MUSIC_VOLUME,800); else music.pause(); }).catch(()=>{});
-}
-
-function stopTavernMusic(){
-  const music=game.tavernMusic;
-  if(!music) return;
-  game.tavernMusic=null;
-  fadeAudio(music,0,500,()=>music.pause());
-}
-
 // Les deux consommations sont pour l'instant des dépenses sans effet de gameplay.
 function showTavernView(view="home"){
   for(const [name,id] of [["home","tavern-home"],["missions","tavern-missions-view"],["recruits","tavern-recruits-view"]]){

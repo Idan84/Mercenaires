@@ -77,6 +77,17 @@ Pour savoir quoi retaguer : en haut du même onglet, la liste **« Affiner les t
 
 Pour savoir quoi produire : l'onglet **Avatars** du Design Lab (https://bloodandwages.idanwizen.com/design/#avatars) compare, pour chaque peuple, les avatars aux mercenaires que le jeu génère (`game-core/avatar-coverage.js`) : besoin, cultures, profils, armes, magie et ascendances sous-représentés, avatars sans tags. Les remarques (mot-clé inconnu, portrait manquant…) s'affichent dans la console du navigateur au chargement du jeu.
 
+### Silhouettes d'équipement : `media/Avatars_Equipements/`
+
+Décision d'Idan du 2026-10-21. Il s'agit d'une silhouette par peuple et par sexe, soit 20 images. Elle remplace le mannequin de l'onglet Équipement de la fiche et s'affiche en multiply : le blanc disparaît sur le fond beige, sans détourage.
+
+- Majuscules indifférentes, comme pour les avatars.
+- Le peuple et le sexe se lisent dans le nom du fichier, un sous-dossier ou les mots-clés Bridge. Exemples : `Orc_Femme.jpg`, `Homme-bete_H.jpg`, `Nains/Nain_M.png`. Sexe : `F`, `Femme`, `H`, `M` ou `Homme`.
+- `api/silhouettes.php` liste le dossier, et `game-core/avatar-catalog.js` (`buildSilhouetteCatalog`) range chaque image.
+- Une image dont le peuple ou le sexe manque est ignorée et signalée dans la console du navigateur. Un mercenaire sans sexe connu, ou dont la silhouette manque, garde l'ancien mannequin.
+
+Pour vérifier un dépôt : https://bloodandwages.idanwizen.com/api/silhouettes.php
+
 ## Netlify (abandonné)
 
 Netlify a hébergé le prototype jusqu'au 2026-10-05 et a été abandonné faute de crédits (décision d'Idan, voir `docs/TEAM.md`). `netlify.toml` a été retiré le 2026-10-20 à la demande d'Idan. Tant que le projet Netlify `mercenaires-s708` n'est pas supprimé ([issue #64](https://github.com/Idan84/Mercenaires/issues/64)), une reprise de ses builds publierait la racine du dépôt (public de toute façon) sur l'ancienne adresse Netlify ; Hostinger n'est pas concerné.

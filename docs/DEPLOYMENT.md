@@ -88,6 +88,10 @@ Décision d'Idan du 2026-10-21. Il s'agit d'une silhouette par peuple et par sex
 
 Pour vérifier un dépôt : https://bloodandwages.idanwizen.com/api/silhouettes.php
 
+### Musique de la Taverne : `assets/audio/tavern.mp3`
+
+Déposée par Idan le 2026-10-21 directement dans `public_html/bloodandwages/assets/audio/`, à côté des musiques suivies par Git. La mise en ligne automatique (`mirror --reverse`, sans `--delete`) ajoute et remplace des fichiers mais n'efface jamais ceux qui n'existent que sur Hostinger : ce fichier ne risque donc rien. Le jeu la joue en boucle à la Taverne (`prototype-web/tavern-ui.js`) ; sans fichier, la Taverne reste silencieuse.
+
 ## Netlify (abandonné)
 
 Netlify a hébergé le prototype jusqu'au 2026-10-05 et a été abandonné faute de crédits (décision d'Idan, voir `docs/TEAM.md`). `netlify.toml` a été retiré le 2026-10-20 à la demande d'Idan. Tant que le projet Netlify `mercenaires-s708` n'est pas supprimé ([issue #64](https://github.com/Idan84/Mercenaires/issues/64)), une reprise de ses builds publierait la racine du dépôt (public de toute façon) sur l'ancienne adresse Netlify ; Hostinger n'est pas concerné.

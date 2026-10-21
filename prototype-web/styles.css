@@ -1583,16 +1583,40 @@ body[data-screen="camp"] .camp-scene>.panel .eyebrow{color:#d3ac76}
 body[data-screen="camp"] .camp-scene>.panel .muted{color:#c2b29e}
 #captain-summary{max-width:750px;margin:22px auto}
 .character-list{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
-.roster-card{display:flex;gap:14px;min-height:134px;padding:14px;border:1px solid #9c7952;border-radius:13px;background:linear-gradient(130deg,#443126,#201916);text-align:left;color:#e9d9c0;box-shadow:0 10px 25px #0005;min-width:0;transition:border-color .16s,transform .16s}
+.roster-card{display:grid;grid-template-columns:94px minmax(0,1fr);gap:14px;align-items:start;min-height:164px;padding:14px;border:1px solid #9c7952;border-radius:13px;background:linear-gradient(130deg,#443126,#201916);text-align:left;color:#e9d9c0;box-shadow:0 10px 25px #0005;min-width:0;transition:border-color .16s,transform .16s}
 .roster-card:hover,.roster-card:focus-visible{border-color:#eed098;transform:translateY(-2px);outline:none}
-.roster-card .avatar-frame{width:94px;aspect-ratio:1;flex:0 0 94px;margin:0}
-.roster-card-info{display:flex;flex-direction:column;gap:6px;min-width:0}
-.roster-card-info small{font:700 10px Georgia,serif;color:#cca56c;letter-spacing:.12em}
-.roster-card-info strong{font:normal 21px Georgia,serif;color:#ffdfad}
-.roster-card-info>span{font-size:12px;color:#d6c6b0}
-.roster-card-info em{font-style:normal;font-size:12px;color:#bcd39a}
-.roster-card-details{line-height:1.5}
+.roster-card .avatar-frame{width:94px;aspect-ratio:1;flex:none;margin:0}
+.roster-card .avatar-fallback small{display:none}
+.roster-card-info{display:flex;flex-direction:column;gap:6px;min-width:0;width:100%}
+.roster-card-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0}
+.roster-card-info .roster-name{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#ffdfad;font:normal 19px/1.25 Georgia,serif}
+.roster-people-picto{display:inline-flex;align-items:center;justify-content:center;flex:none;width:30px;height:30px}
+.roster-people-picto .picto{width:29px;height:29px;margin:0}
+.roster-card-info .roster-culture{font-size:12px;line-height:1.25;color:#d6c6b0;min-width:0}
+.roster-metrics{display:flex;flex-wrap:wrap;gap:5px 14px;align-items:center;min-width:0}
+.roster-metric{display:inline-flex;align-items:center;gap:5px;color:#e1cbaa;font-size:12px;white-space:nowrap}
+.roster-metric-icon{height:17px;width:17px;flex:none;color:#d4ac74}
+.roster-metric .rep-stars{font-size:1.13em}
+.roster-affinity{display:flex;flex-direction:column;gap:3px;min-width:0}
+.roster-affinity-hearts{display:inline-flex;white-space:nowrap;letter-spacing:1px;font-size:15px;line-height:1.15}
+.roster-affinity-hearts .is-full{color:#e35c63}
+.roster-affinity-hearts .is-empty{color:#a88a86}
+.roster-affinity-phrase{color:#d4bfa7;font-size:11px;line-height:1.3;overflow-wrap:break-word}
+.roster-card-info .roster-status{font-style:normal;font-size:11px;color:#bcd39a}
 .roster-captain{max-width:570px}
+
+/* Compteur et tri de l'écran des mercenaires, contrastés sur le panneau sombre. */
+.roster-count{display:inline-flex;align-items:center;flex-wrap:wrap;gap:6px 12px;border:1px solid #8d6d4a;border-radius:11px;background:#35291f;padding:9px 13px;color:#f2dbb8;font-size:13px;line-height:1.35;white-space:normal}
+.roster-count-number{font-weight:750}
+.roster-count-capacity{color:#dbb983;border-left:1px solid #816246;padding-left:12px}
+.roster-toolbar{display:flex;align-items:center;justify-content:flex-end;gap:9px;margin:-3px 0 17px;flex-wrap:wrap}
+.roster-toolbar label{display:inline;color:#dfc39e;font-size:12px;font-weight:700}
+.roster-toolbar select{width:auto;min-width:173px;padding:8px 28px 8px 10px;background:#34281f;border:1px solid #906f4b;border-radius:8px;color:#f4ddbb;font-size:13px}
+.roster-sort-direction{padding:8px 11px;border:1px solid #906f4b;border-radius:8px;background:#34281f;color:#f4ddbb;font-size:13px;white-space:nowrap}
+.roster-sort-direction:hover,.roster-sort-direction:focus-visible,.roster-toolbar select:focus-visible{border-color:#ebc17d;outline:2px solid #ebc17d55}
+@media(max-width:1080px){#initial-squad{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:720px){#initial-squad{grid-template-columns:1fr}.roster-card{grid-template-columns:86px minmax(0,1fr)}.roster-card .avatar-frame{width:86px}.roster-count{width:100%}.roster-count-capacity{border-left:0;padding-left:0}.roster-toolbar{justify-content:flex-start}}
+@media(max-width:480px){.roster-card{padding:11px;gap:11px}.roster-card-info .roster-name{font-size:17px}.roster-people-picto{width:26px;height:26px}.roster-people-picto .picto{width:25px;height:25px}.roster-affinity-hearts{font-size:14px}.roster-toolbar label{flex-basis:100%}}
 #character-dialog{background:#201916;color:#eadbc4;border:1px solid #987750;border-radius:15px;box-shadow:0 26px 80px #000c}
 #character-dialog .dialog-head{background:#34251d;border-bottom:1px solid #97724b;padding-bottom:10px}
 #character-dialog .dialog-head h2{font:normal 34px Georgia,serif;color:#f3d5a0}
@@ -1635,7 +1659,4 @@ body[data-screen="camp"] .camp-scene>.panel .muted{color:#c2b29e}
 #hud-resources{font-size:.88rem;white-space:nowrap}
 
 
-/* Identité des mercenaires : le patronyme dispose de sa propre colonne visuelle. */
-.roster-surname{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin:1px 0 3px}
-.roster-card-info .roster-surname small{font-size:10px;letter-spacing:.02em;color:#be9c72;text-transform:none}
-.roster-surname b{font:600 14px Georgia,serif;color:#e8d2ad}
+

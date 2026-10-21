@@ -669,36 +669,6 @@ function renderWeaponPreferences(c) {
   </section>`;
 }
 
-function renderMagicPreferences(c) {
-  const top = Object.entries(c.skills.magic || {})
-    .filter(([,value]) => Number.isFinite(value))
-    .sort((a,b)=>b[1]-a[1])
-    .slice(0,3);
-
-  return `<section class="magic-preferences">
-    <div class="section-title-row compact">
-      <div>
-        <p class="eyebrow">Affinités magiques</p>
-        <h3>Magies de prédilection</h3>
-      </div>
-      <span class="muted">Top 3 des écoles</span>
-    </div>
-    <div class="preference-grid magic-grid">
-      ${[0,1,2].map(index => {
-        const entry = top[index];
-        if (!entry) return `<div class="preference-card magic-card"><small>#${index+1}</small><strong>—</strong></div>`;
-        const [name,value] = entry;
-        return `<div class="preference-card magic-card">
-          <small>#${index+1}</small>
-          <strong>${esc(name)}</strong>
-          <span>Maîtrise de l'école</span>
-          <b>${fmt(value)}</b>
-        </div>`;
-      }).join("")}
-    </div>
-  </section>`;
-}
-
 function renderPending(c) {
   const pending = c.generationTrace?.pending || [];
   const cosmetics = (c.generationTrace?.cosmetics || []).filter(x => x.status === "deferred");
@@ -855,6 +825,8 @@ const STAT_ICONS={
   "Résistance à la foudre":'<path d="M13.5 2.5 5 13.5h6l-1 8 8.5-11h-6z"/>',
   "Résistance au poison":'<path d="M12 3s6 6.4 6 11a6 6 0 0 1-12 0c0-4.6 6-11 6-11z"/><path d="M9.8 14.2h.01M14.2 14.2h.01" stroke-width="2.6"/>',
   "Régénération":'<path d="M12 8v8M8 12h8"/><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3M19.5 4v3.2h-3.2"/>',
+  "Puissance magique":'<path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M5.6 18.4l2.8-2.8M15.6 8.4l2.8-2.8"/><circle cx="12" cy="12" r="2.2"/>',
+  "Réserve de mana":'<path d="M9.5 3h5M10.5 3v5.2L6 15.5a4 4 0 0 0 3.4 5.5h5.2a4 4 0 0 0 3.4-5.5l-4.5-7.3V3"/><path d="M7.5 15h9"/>',
   "Intimidation":'<path d="M5 10.5a7 7 0 0 1 14 0v3l-2 2V19H7v-3.5l-2-2z"/><path d="M9.3 11.5h.01M14.7 11.5h.01" stroke-width="2.8"/><path d="M10.5 19v-2M13.5 19v-2"/>',
   "Port d’armure légère":'<path d="M8.5 3.5h7l3.5 4-2.5 2V20.5h-9V9.5L5 7.5z"/>',
   "Port d’armure intermédiaire":'<path d="M8.5 3.5h7l3.5 4-2.5 2V20.5h-9V9.5L5 7.5z"/><path d="M9.5 11h5M9.5 14h5M9.5 17h5"/>',
@@ -1014,49 +986,105 @@ function renderSkillsTab(c){
   </section>`;
 }
 
-// Grimoire (Chatty, PR #29) : accepte déjà mercenary.spells = [{name, school, mastery}], sans l'exiger.
-function renderCharacterSpellbook(c) {
-  const spells = Array.isArray(c.spells) ? c.spells : [];
-  if (!spells.length) {
-    return `<section class="spellbook-section">
-      <div class="section-title-row compact">
-        <div><p class="eyebrow">Grimoire personnel</p><h3>Sorts connus</h3></div>
-        <span class="muted">Catalogue en préparation (Issue #28)</span>
-      </div>
-      <div class="spellbook-empty">
-        <strong>Aucun sort enregistré dans le prototype.</strong>
-        <span>Les écoles existent déjà ; cet espace accueillera les sorts appris, leur maîtrise et leur école.</span>
-      </div>
-    </section>`;
+// Onglet Magie (Idan, 2026-10-21, provisoire) : puissance magique et réserve de mana ; les trois écoles de
+// prédilection ; la roue des neuf écoles, dont la surface montre les points du mercenaire et dont l'étoile
+// relie chaque école à ses deux opposées (skills.json, ecoles_opposees) ; le grimoire viendra plus tard.
+const SCHOOL_ICONS={
+  "Feu":'<path d="M12 3c1 3 5.5 5.2 5.5 10.2a5.5 5.5 0 0 1-11 0c0-3 2-4.2 2-6.4 1.6 1 2.2 2.2 2.2 3.3 0-3 1.3-5.1 1.3-7.1z"/>',
+  "Eau":'<path d="M3 9.5c2-2 4-2 6 0s4 2 6 0 4-2 6 0M3 15c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/>',
+  "Foudre":'<path d="M13.5 2.5 5 13.5h6l-1 8 8.5-11h-6z"/>',
+  "Vie":'<path d="M5 19c0-8 5-14 14-14 0 9-6 14-14 14z"/><path d="m5 19 8-8"/>',
+  "Nécromancie":'<path d="M5 10.5a7 7 0 0 1 14 0v3l-2 2V19H7v-3.5l-2-2z"/><path d="M9.3 11.5h.01M14.7 11.5h.01" stroke-width="2.8"/><path d="M10.5 19v-2M13.5 19v-2"/>',
+  "Illusion":'<path d="M12 4a8 8 0 1 0 8 8 5 5 0 1 0-5 5 2.6 2.6 0 1 0-2.6-2.6"/>',
+  "Invocation":'<circle cx="12" cy="12" r="8.5"/><path d="M12 4.5 16.4 17 5.5 9.2h13L7.6 17z"/>',
+  "Transmutation":'<path d="M12 4 20 18H4z"/><path d="M8 13h8"/>',
+  "Télékinésie":'<circle cx="12" cy="9.5" r="3.2"/><path d="M5 20c1.6-3 4-4.5 7-4.5s5.4 1.5 7 4.5M6.5 6 4.5 4.5M17.5 6l2-1.5M12 3V1.5"/>'
+};
+function schoolIcon(name){
+  return `<svg class="school-icon school-icon--${esc(pictoSlug(name))}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${SCHOOL_ICONS[name]||""}</svg>`;
+}
+function magicSchools(){
+  return (game.referenceData?.skills?.rows||[]).filter(r=>r.domaine==="Magie"&&r.niveau==="Catégorie");
+}
+function schoolOpposites(row){
+  return String(row?.ecoles_opposees||"").split(",").map(x=>x.trim()).filter(Boolean);
+}
+// Les oppositions forment une boucle (chaque école en a deux) : on la parcourt, puis on pose chaque école
+// (n − 1) / 2 crans après la précédente ; ses deux opposées se retrouvent alors en face d'elle.
+function magicWheelOrder(rows){
+  const names=rows.map(r=>r.nom), n=names.length;
+  const opposites=new Map(rows.map(r=>[r.nom,schoolOpposites(r)]));
+  const cycle=[names[0]];
+  while(cycle.length<n){
+    const next=(opposites.get(cycle[cycle.length-1])||[]).find(x=>names.includes(x)&&!cycle.includes(x));
+    if(!next) return names;
+    cycle.push(next);
   }
-  return `<section class="spellbook-section">
-    <div class="section-title-row compact">
-      <div><p class="eyebrow">Grimoire personnel</p><h3>Sorts connus</h3></div>
-      <span class="muted">${spells.length} sort${spells.length > 1 ? "s" : ""}</span>
-    </div>
-    <div class="spellbook-grid">
-      ${spells.map(spell => `<article class="spell-card">
-        <small>${esc(spell.school || spell.parent || "Magie")}</small>
-        <strong>${esc(spell.name || spell.nom || "Sort")}</strong>
-        <span>Maîtrise ${fmt(Number(spell.mastery))}</span>
-      </article>`).join("")}
+  const step=Math.floor(n/2);
+  const gcd=(a,b)=>b?gcd(b,a%b):a;
+  if(n%2===0||gcd(step,n)!==1||!(opposites.get(cycle[n-1])||[]).includes(cycle[0])) return names;
+  const order=new Array(n);
+  cycle.forEach((name,k)=>{order[(k*step)%n]=name;});
+  return order;
+}
+function renderMagicWheel(c){
+  const rows=magicSchools();
+  const order=magicWheelOrder(rows);
+  const n=order.length;
+  if(!n) return "";
+  const cx=210,cy=200,R=130;
+  const angle=i=>-Math.PI/2+2*Math.PI*i/n;
+  const pt=(i,r)=>[cx+r*Math.cos(angle(i)),cy+r*Math.sin(angle(i))];
+  const poly=pts=>pts.map(p=>p.map(v=>v.toFixed(1)).join(",")).join(" ");
+  const value=name=>Math.max(0,Math.min(100,Number(c.skills?.magic?.[name])||0));
+  const index=new Map(order.map((name,i)=>[name,i]));
+  const rings=[25,50,75,100].map(v=>`<polygon class="magic-ring${v===100?" magic-ring--outer":""}" points="${poly(order.map((_,i)=>pt(i,R*v/100)))}"/>`).join("");
+  const axes=order.map((_,i)=>{const [x,y]=pt(i,R);return `<line class="magic-axis" x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}"/>`;}).join("");
+  const seen=new Set();
+  const star=rows.flatMap(r=>schoolOpposites(r).map(o=>[r.nom,o])).filter(([a,b])=>index.has(a)&&index.has(b)&&!seen.has([a,b].sort().join("|"))&&seen.add([a,b].sort().join("|")))
+    .map(([a,b])=>{const [x1,y1]=pt(index.get(a),R),[x2,y2]=pt(index.get(b),R);return `<line class="magic-opposition" x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}"/>`;}).join("");
+  const area=`<polygon class="magic-area" points="${poly(order.map((name,i)=>pt(i,R*value(name)/100)))}"/>`;
+  const dots=order.map((name,i)=>{const [x,y]=pt(i,R*value(name)/100);return `<circle class="magic-dot school--${esc(pictoSlug(name))}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4"/>`;}).join("");
+  const labels=order.map((name,i)=>{
+    const [x,y]=pt(i,R+38);
+    const row=rows.find(r=>r.nom===name);
+    const tip=`${name} : ${fmt(Number(c.skills?.magic?.[name]))}. Opposée à ${schoolOpposites(row).join(" et ")}.`;
+    return `<g class="magic-label school--${esc(pictoSlug(name))}" transform="translate(${x.toFixed(1)},${y.toFixed(1)})"><title>${esc(tip)}</title>
+      <g class="magic-label-icon" transform="translate(-11,-28) scale(.92)" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${SCHOOL_ICONS[name]||""}</g>
+      <text y="9" text-anchor="middle">${esc(name)}</text><text class="magic-label-value" y="24" text-anchor="middle">${fmt(Number(c.skills?.magic?.[name]))}</text></g>`;
+  }).join("");
+  return `<svg class="magic-wheel" viewBox="0 0 420 410" role="img" aria-label="Écoles de magie : points et oppositions">${rings}${axes}${star}${area}${dots}${labels}</svg>`;
+}
+function renderMagicTab(c) {
+  const status=rosterStatus(c);
+  const top=magicSchools().map(r=>({name:r.nom,value:Number(c.skills?.magic?.[r.nom])})).filter(x=>Number.isFinite(x.value)).sort((a,b)=>b.value-a.value).slice(0,3);
+  const stat=name=>{
+    const row=(game.referenceData?.characterSheetCopy?.stats||[]).find(r=>r.nom===name)||{nom:name,usage:""};
+    const value=sheetStatValue(c,name);
+    return `<div class="sheet-stat magic-stat">${statIcon(name)}<span class="sheet-stat-name" tabindex="0">${esc(name)}${statTip(row)}</span><span class="sheet-stat-value" tabindex="0">${fmt(value)}${statPopover(c,name,value)}</span></div>`;
+  };
+  return `<section class="sheet-magic">
+    <aside class="sheet-portrait">
+      ${renderAvatar(c,{variant:"detail",kind:"full"})}
+      <em class="roster-status roster-status--${status.kind}">${esc(status.label)}</em>
+    </aside>
+    <div class="sheet-magic-main">
+      <div class="magic-stats">${stat("Puissance magique")}${stat("Réserve de mana")}</div>
+      <div class="magic-favorites">${top.map((x,i)=>`<div class="magic-favorite school--${esc(pictoSlug(x.name))}">${schoolIcon(x.name)}<span class="magic-favorite-name"><small>École n° ${i+1}</small><strong>${esc(x.name)}</strong></span><span class="sheet-stat-value" tabindex="0">${fmt(x.value)}${comparePopover(c,x.value,m=>Number(m?.skills?.magic?.[x.name]))}</span></div>`).join("")}</div>
+      <div class="magic-bottom">
+        <section class="magic-wheel-card"><h4>Écoles de magie</h4>${renderMagicWheel(c)}<p>Chaque école s’oppose aux deux écoles d’en face.</p></section>
+        ${renderCharacterSpellbook(c)}
+      </div>
     </div>
   </section>`;
 }
 
-// Toutes les écoles du mercenaire, puis son grimoire.
-function renderMagicTab(c) {
-  const schools = Object.entries(c.skills.magic || {})
-    .filter(([,value]) => Number.isFinite(value))
-    .sort((a,b) => b[1]-a[1]);
-  return `${renderMagicPreferences(c)}
-    <section class="sheet-section">
-      <h3>Toutes les écoles</h3>
-      ${schools.length ? `<div class="school-list">${schools.map(([name,value]) => `
-        <div class="school-row"><span>${esc(name)}</span><i style="width:${Math.max(0,Math.min(100,value))}%"></i><b>${fmt(value)}</b></div>`).join("")}</div>`
-        : `<p class="muted">Aucune école de magie.</p>`}
-    </section>
-    ${renderCharacterSpellbook(c)}`;
+// Grimoire : les sorts arriveront plus tard (Idan, 2026-10-21) ; mercenary.spells = [{name, school, mastery}].
+function renderCharacterSpellbook(c) {
+  const spells = Array.isArray(c.spells) ? c.spells : [];
+  return `<section class="magic-grimoire"><h4>Grimoire</h4>${spells.length
+    ? `<div class="magic-spells">${spells.map(spell => `<div class="sheet-skill"><span class="sheet-stat-name">${esc(spell.name || spell.nom || "Sort")}<small>${esc(spell.school || "")}</small></span><span class="sheet-stat-value">${fmt(Number(spell.mastery))}</span></div>`).join("")}</div>`
+    : `<p>À venir.</p>`}</section>`;
 }
 
 function renderSheetTab(c, tab) {

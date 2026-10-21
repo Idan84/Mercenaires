@@ -224,9 +224,6 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
 .martial-aptitudes { padding: 0 12px 12px; }
 .martial-aptitudes h4 { margin: 8px 0 7px; }
 
-/* Magic preferences */
-.magic-preferences { margin-top: 14px; padding-top: 14px; border-top: 1px solid #e6dfd5; }
-.magic-card strong { color: #4c356b; }
 
 @media (max-width: 980px) {
   .martial-category-head { grid-template-columns: 1fr 70px; }
@@ -506,15 +503,6 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
 .character-bio-placeholder{display:grid;gap:6px;margin:0 0 16px;padding:14px 15px;border-radius:12px;background:#211e1b;color:#f4eee6;line-height:1.45}
 .character-bio-placeholder strong{font-family:Georgia,"Times New Roman",serif;font-size:1.05rem}
 .character-bio-placeholder span{color:#bdb3a8;font-size:.8rem}
-.spellbook-section{padding-top:18px;margin-top:18px;border-top:1px solid #e6dfd5}
-.spellbook-empty{display:grid;gap:5px;padding:18px;border:1px dashed #cfc2d8;border-radius:12px;background:#f8f3fb}
-.spellbook-empty strong{color:#4c356b}
-.spellbook-empty span{color:#766c7d;font-size:.8rem;line-height:1.4}
-.spellbook-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
-.spell-card{display:grid;gap:5px;padding:13px;border:1px solid #d7cbe0;border-radius:11px;background:#faf7fc}
-.spell-card small{color:#7b668b;font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em}
-.spell-card strong{font-size:1rem;color:#4c356b}
-.spell-card span{font-size:.75rem;color:#766c7d}
 .character-bio{display:grid;gap:6px;margin:0 0 16px;padding:16px 18px;border-radius:12px;background:#211e1b;color:#f4eee6;line-height:1.5}
 .character-bio strong{font-family:Georgia,"Times New Roman",serif;font-size:1.05rem;color:#c9aa7d}
 .character-bio p{margin:0;font-size:.95rem}
@@ -1823,6 +1811,50 @@ body[data-screen="camp"] .camp-scene>.panel .muted{color:#c2b29e}
 @media(max-width:1100px){.sheet-skills{grid-template-columns:200px minmax(0,1fr)}}
 @media(max-width:860px){.sheet-skills{grid-template-columns:1fr}.sheet-skills .sheet-portrait{width:min(250px,100%);margin:0 auto}}
 @media(max-width:700px){.sheet-predilections,.sheet-skill-columns,.sheet-skills-bottom,.sheet-animal{grid-template-columns:1fr}.sheet-animal{grid-column:auto}}
+/* Onglet Magie (Idan, 2026-10-21, provisoire) : puissance et mana, trois écoles de prédilection, roue des écoles
+   (surface = points ; étoile en pointillés = oppositions), grimoire à venir. */
+.sheet-magic{display:grid;grid-template-columns:250px minmax(0,1fr);gap:18px;align-items:start}
+.sheet-magic-main{display:grid;gap:12px;min-width:0}
+.magic-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.magic-stat{padding:10px 14px}
+.magic-stat .sheet-stat-icon{width:24px;height:24px;color:#b9a3f0}
+.magic-stat .sheet-stat-name{font:700 15px Georgia,serif}
+.magic-stat .sheet-stat-value{font-size:22px}
+.magic-favorites{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.magic-favorite{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;padding:10px 14px;border:1px solid #9a7a4f;border-radius:10px;background:linear-gradient(180deg,#3a2b21,#2a1f18)}
+.magic-favorite-name{display:grid;gap:1px;min-width:0}
+.magic-favorite-name small{color:#d4b27e;font:700 11px Georgia,serif;letter-spacing:.06em;text-transform:uppercase}
+.magic-favorite-name strong{color:#ffe1ac;font:700 19px Georgia,serif}
+.magic-favorite .sheet-stat-value{font-size:20px}
+.school-icon{flex:none;width:34px;height:34px;padding:5px;border:1px solid currentColor;border-radius:50%;background:#1b130e}
+.school--feu,.school-icon--feu{color:#f08a4b}
+.school--eau,.school-icon--eau{color:#6fb6f0}
+.school--foudre,.school-icon--foudre{color:#f2d65c}
+.school--vie,.school-icon--vie{color:#8fd27a}
+.school--necromancie,.school-icon--necromancie{color:#a99bb5}
+.school--illusion,.school-icon--illusion{color:#c592f0}
+.school--invocation,.school-icon--invocation{color:#e2655f}
+.school--transmutation,.school-icon--transmutation{color:#5fd0bd}
+.school--telekinesie,.school-icon--telekinesie{color:#e8b4dc}
+.magic-bottom{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:12px;align-items:start}
+.magic-wheel-card,.magic-grimoire{padding:10px 14px;border:1px solid #71583e;border-radius:10px;background:#2e231c}
+.magic-wheel-card h4,.magic-grimoire h4{margin:0 0 4px;color:#bb9a6e;font:700 12px Georgia,serif;letter-spacing:.1em;text-transform:uppercase}
+.magic-wheel-card p,.magic-grimoire p{margin:0;color:#cdb38c;font-size:12px}
+.magic-wheel{display:block;width:100%;max-width:400px;height:auto;margin:0 auto}
+.magic-ring{fill:none;stroke:#71583e;stroke-width:1}
+.magic-ring--outer{stroke:#9a7a4f}
+.magic-axis{stroke:#5b4632;stroke-width:1}
+.magic-opposition{stroke:#c94f4f;stroke-width:1;stroke-dasharray:3 4;opacity:.45}
+.magic-area{fill:rgba(240,199,127,.28);stroke:#f0c77f;stroke-width:2;stroke-linejoin:round}
+.magic-dot{fill:currentColor;stroke:#1b130e;stroke-width:1.5}
+.magic-label{cursor:help}
+.magic-label text{fill:#ead9bd;font:600 12px Georgia,serif}
+.magic-label .magic-label-value{fill:#ffe1ac;font:700 14px Georgia,serif}
+.magic-grimoire{min-height:120px}
+.magic-spells{display:grid;gap:6px}
+@media(max-width:1100px){.sheet-magic{grid-template-columns:200px minmax(0,1fr)}}
+@media(max-width:860px){.sheet-magic{grid-template-columns:1fr}.sheet-magic .sheet-portrait{width:min(250px,100%);margin:0 auto}.magic-bottom{grid-template-columns:1fr}}
+@media(max-width:700px){.magic-stats,.magic-favorites{grid-template-columns:1fr}}
 /* Affinité : dix cœurs (rouges ou vides), puis une appréciation sans score numérique. */
 .player-affinity-hearts{display:flex;align-items:center;gap:0;white-space:nowrap;font-size:21px;letter-spacing:2px;line-height:1.2}
 .player-affinity-hearts .is-full{color:#e35c63;text-shadow:0 1px 4px rgba(100,10,20,.35)}

@@ -82,7 +82,8 @@ for(const a of catalog.rows){
     for(const v of values) assert.ok(known[k].has(norm(v)),a.id+" : tag inconnu "+k+":"+v);
   }
 }
-const files=fs.readdirSync(dir).sort();
+// Depuis le 2026-10-21, tous les avatars sont sur Hostinger (media/avatars/) : le catalogue Git peut être vide.
+const files=fs.existsSync(dir)?fs.readdirSync(dir).sort():[];
 assert.deepEqual(files,catalog.rows.flatMap(a=>[a.full,a.portrait]).sort(),"images web en trop ou manquantes");
 
 // Campagne : avatars à la création et dès la Taverne, uniques, libérés au départ, jamais redonnés après la mort.

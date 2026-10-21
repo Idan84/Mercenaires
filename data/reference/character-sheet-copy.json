@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "character-sheet-copy",
-  "purpose": "Textes de l’onglet Profil de la fiche mercenaire (Idan, 2026-10-21) : phrases composées sur l’origine et l’ascendance. Aucun chiffre d’équilibrage. Phrases : « Issu(e) des [culture], il/elle était [origine] avant de rejoindre votre compagnie. » ; ascendance niveau 1 (Lointain ancêtre) « [Prénom] a du [sang …]. », niveau 2 (Lignée proche) « [Prénom] vient d’une famille [famille]. », niveau 3 (Bâtard) « [Prénom] est l’enfant [parent]. » Onglet Caractéristiques : stats (nom, groupe d’affichage physique / mental / resistance, usage = à quoi sert la valeur dans le jeu aujourd’hui, d’après les formules et le moteur ; description_referentiel = afficher aussi la première phrase de characteristics.json).",
+  "purpose": "Textes de l’onglet Profil de la fiche mercenaire (Idan, 2026-10-21) : phrases composées sur l’origine et l’ascendance. Aucun chiffre d’équilibrage. Phrases : « Issu(e) des [culture], il/elle était [origine] avant de rejoindre votre compagnie. » ; ascendance niveau 1 (Lointain ancêtre) « [Prénom] a du [sang …]. », niveau 2 (Lignée proche) « [Prénom] vient d’une famille [famille]. », niveau 3 (Bâtard) « [Prénom] est l’enfant [parent]. » Onglet Caractéristiques : stats (nom, groupe d’affichage physique / mental / resistance, usage = à quoi sert la valeur dans le jeu aujourd’hui, d’après les formules et le moteur ; description_referentiel = afficher aussi la première phrase de characteristics.json). Onglet Compétences : skills_layout range les compétences martiales en trois colonnes (corps à corps, style, tir), puis les armures, les autres aptitudes et l’animal ; Camp et Artisanat iront dans un autre onglet.",
   "ancestries": [
     {
       "nom": "Sang divin",
@@ -146,6 +146,12 @@
       "description_referentiel": true
     },
     {
+      "nom": "Régénération",
+      "groupe": "physique",
+      "usage": "Pas encore utilisée au combat.",
+      "description_referentiel": true
+    },
+    {
       "nom": "Intelligence",
       "groupe": "mental",
       "usage": "Choisir le meilleur type de dégâts contre l’armure adverse, initiative. À la Taverne : salaire demandé et résistance à la négociation.",
@@ -182,6 +188,12 @@
       "description_referentiel": true
     },
     {
+      "nom": "Intimidation",
+      "groupe": "mental",
+      "usage": "Fait vaciller les adversaires : leurs tests de courage sont plus durs face à lui. Progresse quand un ennemi rate son test de courage face à lui.",
+      "description_referentiel": true
+    },
+    {
       "nom": "Résistance physique",
       "groupe": "resistance",
       "usage": "Réduit les dégâts physiques reçus.",
@@ -211,5 +223,55 @@
       "usage": "Pas encore utilisée au combat.",
       "description_referentiel": true
     }
-  ]
+  ],
+  "skills_layout": {
+    "corps_a_corps": [
+      "Lames longues",
+      "Lames courtes",
+      "Armes d’hast",
+      "Armes naturelles",
+      "Armes flexibles ou articulées",
+      "Haches",
+      "Bâtons",
+      "Armes contondantes"
+    ],
+    "style": [
+      "Combat à mains nues",
+      "Combat à deux armes",
+      "Combat à deux mains",
+      "Boucliers",
+      "Discrétion",
+      "Pièges"
+    ],
+    "styles_de_combat": [
+      "Combat à mains nues",
+      "Combat à deux armes",
+      "Combat à deux mains",
+      "Boucliers"
+    ],
+    "tir": [
+      "Armes de tir",
+      "Armes à feu"
+    ],
+    "armures": [
+      {
+        "nom": "Port d’armure légère",
+        "label": "Légère"
+      },
+      {
+        "nom": "Port d’armure intermédiaire",
+        "label": "Intermédiaire"
+      },
+      {
+        "nom": "Port d’armure lourde",
+        "label": "Lourde"
+      }
+    ],
+    "aptitudes": [
+      "Empoisonnement des armes",
+      "Vision nocturne",
+      "Vol"
+    ],
+    "animal": "Compagnon animal"
+  }
 }

@@ -1491,13 +1491,23 @@ body[data-screen="camp"][data-camp-scene="home"] .menu-back {
   .camp-calendar h3 {font-size:22px}
   .camp-calendar-quote {margin:10px 0 12px;padding-top:9px}
 }
-@media (max-height:720px) and (min-width:701px) {
-  .camp-hub {padding-top:0;padding-bottom:2dvh}
+/* « Jour suivant » doit rester cliquable : sur l'accueil du camp, le journal passe à gauche ; sur les
+   écrans peu hauts, le menu et l'almanach se resserrent au-dessus de la barre du bas. */
+@media (min-width:701px) {
+  body[data-screen="camp"][data-camp-scene="home"] .game-action-console {right:auto;left:22px}
+}
+@media (max-height:900px) and (min-width:701px) {
+  .camp-hub {justify-content:flex-start;padding-top:0;padding-bottom:0}
   .camp-hub-menu {gap:8px}
   .camp-hub-btn {min-height:48px}
   .camp-calendar {margin-top:11px;padding:11px 15px}
   .camp-calendar h3 {margin-top:8px}
-  .camp-calendar-quote {margin:8px 0 10px;padding-top:8px}
+  .camp-calendar-quote {min-height:0;margin:8px 0 10px;padding-top:8px}
+}
+@media (max-height:760px) and (min-width:701px) {
+  .camp-hub-heading {margin-bottom:8px}
+  .camp-hub-btn {min-height:44px}
+  .camp-calendar h3 {font-size:21px}
 }
 @media (prefers-reduced-motion:reduce) {.camp-next-day-btn {transition:none}}
 

@@ -538,58 +538,105 @@ function equipmentSilhouetteSrc(c) {
   return row?.url||null;
 }
 
+// Onglet Équipement (Idan, 2026-10-21) : la silhouette de Jean-Mimi sur un parchemin, les objets posés sur le
+// corps (casque, amulette, cape, armure, ceinturon, bottes ; armes du set 1 dans les mains) ; à côté, le set
+// de rechange, les bagues, la ceinture et la monture. Survol d'un objet : son détail.
+const GEAR_ICONS={
+  head:'<path d="M5 14a7 7 0 0 1 14 0v3H5z"/><path d="M12 7v5M4.5 17h15"/>',
+  amulet:'<path d="M7 3c0 5 2.5 8 5 9 2.5-1 5-4 5-9"/><path d="m12 12-3 4 3 5 3-5z"/>',
+  armor:'<path d="M6 4h12l1 6c0 5.8-3 9-7 11-4-2-7-5.2-7-11z"/><path d="M12 4v17M7.5 10h9"/>',
+  cape:'<path d="M8 3h8l2.5 4-1.5 13.5-5-2-5 2L5.5 7z"/><path d="M8 3c1.5 2 6.5 2 8 0"/>',
+  belt:'<rect x="3" y="9" width="18" height="6" rx="1.5"/><rect x="9.5" y="8" width="5" height="8" rx="1"/>',
+  boots:'<path d="M8 3h5v10l6 3v4H6v-4l2-2z"/><path d="M6 17h13"/>',
+  melee:'<path d="M19.5 4.5 9 15M19.5 4.5h-4M19.5 4.5v4"/><path d="m6.5 12.5 5 5M9 15l-4.5 4.5M3.5 18.5l2 2"/>',
+  ranged:'<path d="M7 3c7 4 7 14 0 18"/><path d="M7 3v18M4 12h12M13 9l3 3-3 3"/>',
+  shield:'<path d="M12 3 5 6v5c0 4.6 3 8.2 7 10 4-1.8 7-5.4 7-10V6z"/>',
+  ring:'<circle cx="12" cy="14.5" r="5.5"/><path d="m10 6 2-3 2 3-2 2.5z"/>',
+  pouch:'<path d="M10 3h4M10 3v5L6.5 14A5 5 0 1 0 17.5 14L14 8V3"/><path d="M7.5 15h9"/>',
+  mount:'<path d="M7 21v-5l-3-3 2-6 5-3 1-2 2 3c3 1 5 4 5 8v8"/><path d="M10 9h.01" stroke-width="2.6"/>'
+};
+// Position des emplacements sur la silhouette, en % de l'image carrée (silhouette centrée, debout).
+const GEAR_ON_BODY={head:[50,10],amulet:[50,21],cape:[66,25],armor:[50,35],belt:[50,49],weapon_set_1_main:[31,50],weapon_set_1_off:[69,50],boots:[50,90]};
+function gearIcon(kind){
+  return `<svg class="gear-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${GEAR_ICONS[kind]||GEAR_ICONS.pouch}</svg>`;
+}
+function gearKind(slot,item){
+  if(item?.itemType==="weapon") return /Boucliers/.test(String(item.category||""))?"shield":item.combatFamily==="ranged"?"ranged":"melee";
+  if(item?.itemType==="armor") return "armor";
+  if(/^ring_/.test(slot.id)) return "ring";
+  if(/^belt_item_/.test(slot.id)) return "pouch";
+  if(/_off$/.test(slot.id)) return "shield";
+  if(/^weapon_/.test(slot.id)) return "melee";
+  return GEAR_ICONS[slot.id]?slot.id:"pouch";
+}
+function gearTooltip(item){
+  return `<span class="item-tooltip" role="tooltip">
+    <strong>${esc(item.name)}</strong>
+    <span>T${item.tier} — ${esc(item.qualityName||"")}</span>
+    <span>${esc(item.category||item.itemType||"")}</span>
+    ${item.grip?`<span>Prise : ${esc(item.grip)}</span>`:""}
+    ${item.description?`<small>${esc(item.description)}</small>`:""}
+  </span>`;
+}
+// Une case d'objet : picto de l'emplacement, contour selon la qualité, détail au survol.
+function gearTile(slot,item,{extraClass=""}={}){
+  const quality=item?.qualityCode?` gear-tile--${esc(item.qualityCode)}`:"";
+  const title=item?"":` title="${esc(slot.label)} : vide"`;
+  return `<span class="gear-tile ${item?"is-filled":"is-empty"}${quality}${extraClass?" "+extraClass:""}" tabindex="${item?0:-1}"${title}>
+    ${gearIcon(gearKind(slot,item))}${item?gearTooltip(item):""}
+  </span>`;
+}
 function renderEquipment(c) {
   const slotRows = game.referenceData?.equipmentSlots?.rows || [];
   const items = new Map((c.items || []).map(item => [item.id,item]));
   const slots = c.equipment?.slots || {};
-  const profile = c.equipment?.profile || {};
+  const itemIn = slot => slots[slot.id] ? items.get(slots[slot.id]) || null : null;
+  const slotById = id => slotRows.find(s => s.id === id);
+  const group = name => slotRows.filter(slot => slot.group === name).sort((a,b)=>a.order-b.order);
+  const silhouette = equipmentSilhouetteSrc(c);
 
-  const renderSlot = slot => {
-    const itemId = slots[slot.id];
-    const item = itemId ? items.get(itemId) : null;
-    const icon = item?.itemType === "weapon" ? "⚔" : item?.itemType === "armor" ? "◈" : "·";
-    const detail = item ? `
-      <div class="item-tooltip">
-        <strong>${esc(item.name)}</strong>
-        <span>T${item.tier} — ${esc(item.qualityName || "")}</span>
-        <span>${esc(item.category || item.itemType)}</span>
-        ${item.grip ? `<span>Prise : ${esc(item.grip)}</span>` : ""}
-        <span>Propriétaire : ${esc(c.name)}</span>
-        ${item.description ? `<small>${esc(item.description)}</small>` : ""}
-      </div>` : "";
-    return `<div class="equipment-slot ${item ? "filled" : "empty"}" data-slot="${esc(slot.id)}">
-      <span class="slot-icon">${icon}</span>
-      <span class="slot-copy"><small>${esc(slot.label)}</small><strong>${item ? esc(item.name) : "Vide"}</strong>${item ? `<em>T${item.tier}</em>` : ""}</span>
-      ${detail}
-    </div>`;
+  // Sur le corps : emplacements du corps et armes du set en main (set 1).
+  const onBody = Object.entries(GEAR_ON_BODY).map(([id,[x,y]]) => {
+    const slot = slotById(id);
+    if (!slot) return "";
+    let item = itemIn(slot), extra = "";
+    // Arme à deux mains : la main secondaire la tient aussi.
+    if (!item && id === "weapon_set_1_off") {
+      const main = itemIn(slotById("weapon_set_1_main"));
+      if (main?.grip === "2 mains") { item = main; extra = "gear-tile--both-hands"; }
+    }
+    // Emplacement vide : une petite marque discrète, pour ne pas cacher le dessin.
+    return `<span class="gear-spot gear-spot--${esc(id)}${item?"":" gear-spot--empty"}" style="left:${x}%;top:${y}%">${gearTile(slot,item,{extraClass:extra})}${item&&!extra?`<em class="gear-caption">${esc(item.name)}</em>`:""}</span>`;
+  }).join("");
+
+  const weaponRow = slot => {
+    const item = itemIn(slot);
+    return `<div class="gear-row">${gearTile(slot,item)}<span class="gear-row-text"><small>${/_off$/.test(slot.id)?"Main secondaire":"Arme principale"}</small><strong>${item?esc(item.name):"—"}</strong>${item?`<em>T${item.tier} · ${esc(item.qualityName||"")}</em>`:""}</span></div>`;
   };
+  const spare = group("weapons").filter(s => /^weapon_set_2_/.test(s.id));
+  const tiles = name => group(name).map(slot => gearTile(slot,itemIn(slot))).join("");
+  const mount = group("mount")[0];
+  const mountItem = mount ? itemIn(mount) : null;
 
-  const group = name => slotRows.filter(slot => slot.group === name).sort((a,b)=>a.order-b.order).map(renderSlot).join("");
-  const profileLabel = ({melee:"CAC",ranged:"Distance",magic:"Magie"})[profile.type] || "—";
-  const scores = profile.scores || {};
-
-  return `<section class="equipment-section">
-    <div class="section-title-row compact">
-      <div><p class="eyebrow">Matériel personnel</p><h3>Équipement</h3></div>
-      <span class="equipment-profile">Profil ${esc(profileLabel)} · CAC ${fmt(scores.melee)} · Distance ${fmt(scores.ranged)} · Magie ${fmt(scores.magic)}</span>
+  return `<section class="gear">
+    <div class="gear-side">
+      <section class="gear-card"><h4>Set de rechange</h4>${spare.map(weaponRow).join("")}</section>
+      <section class="gear-card"><h4>Monture</h4>${mount?`<div class="gear-row">${gearTile(mount,mountItem)}<span class="gear-row-text"><strong>${mountItem?esc(mountItem.name):"Aucune"}</strong></span></div>`:""}</section>
     </div>
-    <div class="equipment-board">
-      <div class="equipment-column equipment-body-slots">${group("body")}</div>
-      <div class="equipment-mannequin" aria-label="Silhouette du mercenaire">
-        ${equipmentSilhouetteSrc(c)?`<img class="equipment-mannequin-image" src="${esc(equipmentSilhouetteSrc(c))}" alt="" loading="lazy" decoding="async" onload="this.parentElement.classList.add('equipment-mannequin--loaded')" onerror="this.remove()">`:""}
+    <div class="equipment-mannequin gear-doll" aria-label="Silhouette du mercenaire et son équipement">
+      ${silhouette?`<img class="equipment-mannequin-image" src="${esc(silhouette)}" alt="" decoding="async" onload="this.parentElement.classList.add('equipment-mannequin--loaded')" onerror="this.remove()">`:""}
+      <span class="equipment-mannequin-fallback" aria-hidden="true">
         <span class="mannequin-head"></span>
         <span class="mannequin-body"></span>
         <span class="mannequin-arm left"></span><span class="mannequin-arm right"></span>
         <span class="mannequin-leg left"></span><span class="mannequin-leg right"></span>
-      </div>
-      <div class="equipment-column equipment-ring-slots"><h4>Bagues</h4>${group("rings")}</div>
+      </span>
+      ${onBody}
     </div>
-    <div class="equipment-subgrid">
-      <div><h4>Sets d’armes</h4><div class="equipment-grid weapons-grid">${group("weapons")}</div></div>
-      <div><h4>Équipements de ceinture</h4><div class="equipment-grid belt-grid">${group("belt-items")}</div></div>
-      <div><h4>Monture / compagnon</h4><div class="equipment-grid mount-grid">${group("mount")}</div></div>
+    <div class="gear-side">
+      <section class="gear-card"><h4>Bagues</h4><div class="gear-tiles gear-tiles--rings">${tiles("rings")}</div></section>
+      <section class="gear-card"><h4>Ceinture</h4><div class="gear-tiles">${tiles("belt-items")}</div></section>
     </div>
-    <p class="equipment-note">Matériel personnel : pas de drag & drop. Les changements passeront plus tard par négociation, échange ou <code>change_item</code>.</p>
   </section>`;
 }
 function renderWeaponPreferences(c) {

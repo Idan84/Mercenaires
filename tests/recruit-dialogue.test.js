@@ -61,4 +61,23 @@ const female={id:1,name:"Inga Longueforge",sex:"femme",origin:"Soldat / Guerrier
 assert.equal(dialogue.line("accepted",female,{compagnie:"la Compagnie de Bob"}),"Parfait. Ravie de faire partie de la Compagnie de Bob.");
 assert.match(dialogue.answer("origin",female),/J’étais guerrière\./);
 assert.match(dialogue.line("left",female),/^Inga /);
-console.log("Taverne : dialogue de recrutement (salutations, réponses sincères, négociation) — OK");
+
+// Conseils du tavernier : un adjectif pour chaque caractéristique de la fiche, une phrase par rang dans la
+// compagnie ; une égalité avec la médiane se lit « dans la moyenne ».
+const keeper=copy.tavernkeeper;
+assert.deepEqual(keeper.adjectives.map(r=>r.nom).sort(),sheet.stats.map(r=>r.nom).sort());
+assert.deepEqual(keeper.groups.map(g=>g.groupe).sort(),[...new Set(sheet.stats.map(r=>r.groupe))].sort());
+const crew=[["Brakka Os",80],["Thabo Kip",60],["Lia Vent",50],["Orm Roc",40],["Bob",30]].map(([name,value])=>({name,value}));
+assert.deepEqual([95,80,61,50,41,35,20].map(e=>dialogue.adviceTier(e,crew).tier),
+  ["top","well_above","well_above","average","below","well_below","bottom"]);
+assert.equal(dialogue.advice(female,"Force",95,crew),"Inga ? D’après elle, elle serait plus forte que n’importe qui chez toi. Même Brakka ne lui arrive pas à la cheville !");
+assert.equal(dialogue.advice(female,"Force",61,crew),"Inga ? D’après elle, elle serait bien plus forte que Lia.");
+assert.equal(dialogue.advice(female,"Force",20,crew),"Inga ? Même d’après elle, elle serait la moins forte de tous. Bob ferait mieux.");
+for(const tier of Object.keys(keeper.tiers)) for(const stat of keeper.adjectives.map(r=>r.nom)){
+  const estimate={top:99,well_above:79,above:56,average:50,below:44,well_below:31,bottom:1}[tier];
+  const text=dialogue.advice({id:2,name:"Aldo Fer",sex:"homme"},stat,estimate,[...crew,{name:"Zed",value:55},{name:"Ula",value:45}]);
+  assert.ok(text&&!/[{}]/.test(text),`${tier} / ${stat} : « ${text} »`);
+}
+assert.equal(dialogue.keeperLine("greeting",{capitaine:"Idan"}),"Salut Idan ! Comment vont les affaires ?");
+assert.equal(dialogue.keeperLine("ask_what",{cout:1},female),"Tu veux savoir quoi sur Inga ? C’est 1 PO la question.");
+console.log("Taverne : dialogue de recrutement (salutations, réponses sincères, négociation) et conseils du tavernier — OK");

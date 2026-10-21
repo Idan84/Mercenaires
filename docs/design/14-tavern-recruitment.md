@@ -152,7 +152,7 @@ On peut partir à tout moment. Textes : `data/reference/tavern-dialogue.json` ; 
 
 ## 7 — Entretien : trois questions
 
-> **Interface du 2026-10-21.** Le dialogue de recrutement ne propose plus ces trois questions chiffrées ; l'Intendant n'a donc plus d'usage à la Taverne pour l'instant. La règle reste dans `game-core/tavern.js`, en attendant qu'Idan décide de la rebrancher ou de la retirer.
+> **Interface du 2026-10-21 (Idan).** Ces questions passent désormais par le **tavernier** : « Demander des conseils » → quel candidat → physique, mental, résistances ou magie → quelle caractéristique. Chaque question coûte **1 PO** (`tavern.advice.cost` ; rien n'est gratuit dans ce bas monde), **sans limite** de nombre. Le tavernier rapporte ce que le candidat dit de lui-même : la même vantardise que sans Intendant ci-dessous (×1,10 à ×3,00), dite en phrase et située dans la compagnie (« bien plus fort que [Prénom] », « plus fort que la moitié de ta compagnie », « dans la moyenne », « plus fort que n'importe qui chez toi »…). Une rumeur reste figée : reposer la question redonne la même réponse, mais se paie. Le budget de trois questions et l'Intendant ne servent plus à la Taverne ; leur règle reste dans `game-core/tavern.js`, en attendant qu'Idan décide de la rebrancher ou de la retirer.
 
 Le joueur peut poser **3 questions** par candidat.
 

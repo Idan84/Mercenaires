@@ -16,12 +16,21 @@ assert.deepEqual([...home.matchAll(/data-tavern-view="(\w+)"><span>([^<]+)<\/spa
 assert.ok(!/data-tavern-drink/.test(html),"la bière et la tournée passent dans le dialogue");
 
 const talk=html.slice(html.indexOf('<dialog id="tavern-talk-dialog"'),html.indexOf('<dialog id="recruit-talk-dialog"'));
-assert.deepEqual([...talk.matchAll(/data-talk="(\w+)"( disabled)?[^>]*>([^<]+)</g)].map(m=>[m[1],Boolean(m[2]),m[3]]),[
-  ["beer",false,"Boire une bière (1 PO)"],
-  ["round",false,"Payer sa tournée !"],
-  ["advice",true,"Demander des conseils"],
-  ["leave",false,"Partir"]
-]);
+assert.match(talk,/<ol id="tavern-talk-options" class="talk-options"><\/ol>/,"réponses écrites par tavern-ui.js");
+// Menu du tavernier (données) : bière, tournée, conseils (ouverts depuis le 2026-10-21), partir ; puis qui ?
+// quoi ? quelle caractéristique ? avec un retour à chaque étape.
+const keeper=JSON.parse(fs.readFileSync(path.join(root,"data/reference/tavern-dialogue.json"),"utf8")).tavernkeeper;
+assert.deepEqual(keeper.options,{beer:"Boire une bière (1 PO)",round:"Payer sa tournée !",advice:"Demander des conseils",leave:"Partir",back:"Retour"});
+const menu=new Function("recruitDialogue","game","MercenairesRecruitDialogue",
+  js.slice(js.indexOf("function adviceStats(group){"),js.indexOf("function tavernTalkLine(t){"))+"return tavernTalkOptions;")(
+  ()=>({keeper}),
+  {campaign:{tavern:{candidates:[{mercenary:{id:7,name:"Inga Longueforge"}}]}},referenceData:{characterSheetCopy:{stats:[{nom:"Force",groupe:"physique"},{nom:"Courage",groupe:"mental"}]}}},
+  {firstName:m=>m.name.split(" ")[0]});
+const labels=view=>menu(view).map(o=>o.label);
+assert.deepEqual(labels({view:"main"}),["Boire une bière (1 PO)","Payer sa tournée !","Demander des conseils","Partir"]);
+assert.deepEqual(labels({view:"who"}),["Inga","Retour"]);
+assert.deepEqual(labels({view:"what"}),[...keeper.groups.map(g=>g.label),"Retour"]);
+assert.deepEqual(labels({view:"stats",group:"physique"}),["Force","Retour"]);
 assert.match(css,/\[data-tavern-view="home"\] \.tavern-talk-btn\{display:grid\}/,"bulle visible sur l'accueil seulement");
 
 // Logique : bière 1 PO, tournée 1 PO par membre, refus sans assez d'or ; tout va au journal.
@@ -48,4 +57,31 @@ assert.equal(log.at(-1)[0],"Pas assez d'or : 3 PO nécessaires.");
 assert.equal(api.captainFirstName(),"Bob","prénom du capitaine dans « Salut [Prénom] ! »");
 campaign.company.roster[0].firstName="Aldric";
 assert.equal(api.captainFirstName(),"Aldric");
-console.log("Taverne : accueil, dialogue du tavernier, bière et tournée — OK");
+// Musique d'ambiance (Idan, 2026-10-21) : jouée en boucle en entrant, coupée en sortant (camp ou autre écran).
+const screenJs=fs.readFileSync(path.join(root,"prototype-web/screen-ui.js"),"utf8");
+assert.match(js,/const TAVERN_MUSIC_SRC="assets\/audio\/tavern\.mp3";/);
+assert.match(screenJs,/target==="tavern"\?playTavernMusic\(\):stopTavernMusic\(\)/);
+assert.match(screenJs,/screen!=="camp"&&typeof stopTavernMusic==="function"\) stopTavernMusic\(\)/);
+const created=[];
+class FakeAudio{
+  constructor(src){ this.src=src; this.volume=1; this.paused=true; created.push(this); }
+  play(){ this.paused=false; return Promise.resolve(); }
+  pause(){ this.paused=true; }
+}
+const musicGame={};
+let themeStopped=0;
+const music=new Function("game","Audio","stopTheme",
+  js.slice(js.indexOf("const TAVERN_MUSIC_SRC"),js.indexOf("// Les deux consommations"))+"return {playTavernMusic,stopTavernMusic};")(
+  musicGame,FakeAudio,()=>themeStopped++);
+music.playTavernMusic();
+music.playTavernMusic();
+assert.equal(created.length,1,"une seule musique à la fois");
+assert.equal(created[0].src,"assets/audio/tavern.mp3");
+assert.equal(created[0].loop,true);
+assert.equal(themeStopped,1,"le thème du camp se tait");
+music.stopTavernMusic();
+assert.equal(musicGame.tavernMusic,null,"sortie avant la fin du chargement : la musique ne doit pas repartir");
+setTimeout(()=>{
+  assert.equal(created[0].paused,true,"coupée après le fondu");
+  console.log("Taverne : accueil, dialogue du tavernier, bière, tournée et musique — OK");
+},700);

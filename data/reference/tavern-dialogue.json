@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "tavern-dialogue",
-  "purpose": "Dialogue de recrutement à la Taverne (Idan, 2026-10-21 ; textes rédigés par JC, à retoucher librement). Le candidat salue selon son affinité avec le capitaine (20 tranches de 10 points, de −100 à +100), répond sincèrement aux questions (arme, style, tir, magie, origine, prétentions salariales), puis négocie. Gabarits : {arme} / {Arme} (avec article, colonne weapons), {origine}, {salaire}, {prime}, {prenom}, {compagnie} ; {masculin|féminin} selon le sexe du mercenaire. Plusieurs variantes par réplique : le jeu en choisit une, toujours la même pour un mercenaire donné.",
+  "purpose": "Dialogue de recrutement à la Taverne (Idan, 2026-10-21 ; textes rédigés par JC, à retoucher librement). Le candidat salue selon son affinité avec le capitaine (20 tranches de 10 points, de −100 à +100), répond sincèrement aux questions (arme, style, tir, magie, origine, prétentions salariales), puis négocie. Gabarits : {arme} / {Arme} (avec article, colonne weapons), {origine}, {salaire}, {prime}, {prenom}, {compagnie} ; {masculin|féminin} selon le sexe du mercenaire. Plusieurs variantes par réplique : le jeu en choisit une, toujours la même pour un mercenaire donné. Tavernier (tavernkeeper) : accueil, options, conseils payants sur un candidat ; la réponse rapporte ce que le candidat dit de lui-même, situé dans la compagnie (tiers : top, well_above, above, average, below, well_below, bottom), avec un adjectif par caractéristique (adjectives : nom, homme, femme).",
   "questions": {
     "weapon": "Quelle est votre arme de prédilection ?",
     "style": "Quel est votre style de combat préféré ?",
@@ -371,5 +371,177 @@
       "nom": "Épée longue",
       "avec_article": "l’épée longue"
     }
-  ]
+  ],
+  "tavernkeeper": {
+    "greeting": "Salut {capitaine} ! Comment vont les affaires ?",
+    "options": {
+      "beer": "Boire une bière (1 PO)",
+      "round": "Payer sa tournée !",
+      "advice": "Demander des conseils",
+      "leave": "Partir",
+      "back": "Retour"
+    },
+    "ask_who": "Des infos sur qui ?",
+    "nobody": "Personne d’intéressant ce soir. Reviens demain.",
+    "ask_what": "Tu veux savoir quoi sur {prenom} ? C’est {cout} PO la question.",
+    "no_gold": "Pas d’or, pas d’infos. Rien n’est gratuit dans ce bas monde.",
+    "groups": [
+      {
+        "groupe": "physique",
+        "label": "Ses caractéristiques physiques"
+      },
+      {
+        "groupe": "mental",
+        "label": "Ses caractéristiques mentales"
+      },
+      {
+        "groupe": "resistance",
+        "label": "Ses résistances"
+      },
+      {
+        "groupe": "magie",
+        "label": "Sa magie"
+      }
+    ],
+    "tiers": {
+      "top": [
+        "{prenom} ? D’après {lui|elle}, {il|elle} serait plus {adj} que n’importe qui chez toi. Même {nom_max} ne lui arrive pas à la cheville !"
+      ],
+      "well_above": [
+        "{prenom} ? D’après {lui|elle}, {il|elle} serait bien plus {adj} que {nom_median}."
+      ],
+      "above": [
+        "{prenom} ? D’après {lui|elle}, {il|elle} serait plus {adj} que la moitié de ta compagnie."
+      ],
+      "average": [
+        "{prenom} ? D’après {lui|elle}, {il|elle} serait dans la moyenne de ta compagnie."
+      ],
+      "below": [
+        "{prenom} ? D’après {lui|elle}, {il|elle} serait moins {adj} que la moitié de ta compagnie."
+      ],
+      "well_below": [
+        "{prenom} ? Même d’après {lui|elle}, {il|elle} serait bien moins {adj} que {nom_median}."
+      ],
+      "bottom": [
+        "{prenom} ? Même d’après {lui|elle}, {il|elle} serait {le moins|la moins} {adj} de tous. {nom_min} ferait mieux."
+      ]
+    },
+    "adjectives": [
+      {
+        "nom": "Points de vie",
+        "homme": "coriace",
+        "femme": "coriace"
+      },
+      {
+        "nom": "Initiative",
+        "homme": "prompt à frapper",
+        "femme": "prompte à frapper"
+      },
+      {
+        "nom": "Force",
+        "homme": "fort",
+        "femme": "forte"
+      },
+      {
+        "nom": "Constitution",
+        "homme": "robuste",
+        "femme": "robuste"
+      },
+      {
+        "nom": "Dextérité",
+        "homme": "adroit",
+        "femme": "adroite"
+      },
+      {
+        "nom": "Vitesse",
+        "homme": "rapide",
+        "femme": "rapide"
+      },
+      {
+        "nom": "Endurance",
+        "homme": "endurant",
+        "femme": "endurante"
+      },
+      {
+        "nom": "Esquive",
+        "homme": "insaisissable",
+        "femme": "insaisissable"
+      },
+      {
+        "nom": "Régénération",
+        "homme": "prompt à guérir",
+        "femme": "prompte à guérir"
+      },
+      {
+        "nom": "Intelligence",
+        "homme": "intelligent",
+        "femme": "intelligente"
+      },
+      {
+        "nom": "Volonté",
+        "homme": "déterminé",
+        "femme": "déterminée"
+      },
+      {
+        "nom": "Courage",
+        "homme": "courageux",
+        "femme": "courageuse"
+      },
+      {
+        "nom": "Charisme",
+        "homme": "charismatique",
+        "femme": "charismatique"
+      },
+      {
+        "nom": "Perception",
+        "homme": "observateur",
+        "femme": "observatrice"
+      },
+      {
+        "nom": "Chance",
+        "homme": "chanceux",
+        "femme": "chanceuse"
+      },
+      {
+        "nom": "Intimidation",
+        "homme": "intimidant",
+        "femme": "intimidante"
+      },
+      {
+        "nom": "Résistance physique",
+        "homme": "dur au mal",
+        "femme": "dure au mal"
+      },
+      {
+        "nom": "Résistance au feu",
+        "homme": "résistant au feu",
+        "femme": "résistante au feu"
+      },
+      {
+        "nom": "Résistance au froid",
+        "homme": "résistant au froid",
+        "femme": "résistante au froid"
+      },
+      {
+        "nom": "Résistance à la foudre",
+        "homme": "résistant à la foudre",
+        "femme": "résistante à la foudre"
+      },
+      {
+        "nom": "Résistance au poison",
+        "homme": "résistant au poison",
+        "femme": "résistante au poison"
+      },
+      {
+        "nom": "Puissance magique",
+        "homme": "puissant en magie",
+        "femme": "puissante en magie"
+      },
+      {
+        "nom": "Réserve de mana",
+        "homme": "riche en mana",
+        "femme": "riche en mana"
+      }
+    ]
+  }
 }

@@ -222,6 +222,18 @@
       "groupe": "resistance",
       "usage": "Pas encore utilisée au combat.",
       "description_referentiel": true
+    },
+    {
+      "nom": "Puissance magique",
+      "groupe": "magie",
+      "usage": "Avec l’Intelligence et la Réserve de mana, fixe le niveau de départ des écoles de magie à la création. Pas encore utilisée au combat.",
+      "description_referentiel": true
+    },
+    {
+      "nom": "Réserve de mana",
+      "groupe": "magie",
+      "usage": "Avec l’Intelligence et la Puissance magique, fixe le niveau de départ des écoles de magie à la création. Pas encore utilisée au combat.",
+      "description_referentiel": true
     }
   ],
   "skills_layout": {

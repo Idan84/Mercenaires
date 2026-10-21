@@ -14,15 +14,18 @@ assert.ok(copy.origins.every(r=>r.homme&&r.femme));
 assert.deepEqual(copy.ancestries.map(r=>r.nom).sort(),names("ancestries.json"));
 assert.ok(copy.ancestries.every(r=>/^d/.test(r.famille)&&/^d’un/.test(r.parent)),"« famille de… », « enfant d’un… »");
 
-// Onglet Caractéristiques : Physique, Mental, Résistances ; la magie va dans son onglet.
+// Onglet Caractéristiques : Physique, Mental, Résistances ; Puissance magique et Réserve de mana vont
+// dans l'onglet Magie (groupe « magie »).
 const characteristics=read("characteristics.json").rows;
 const shown=copy.stats.map(r=>r.nom);
 assert.equal(new Set(shown).size,shown.length);
-assert.ok(copy.stats.every(r=>["physique","mental","resistance"].includes(r.groupe)&&r.usage));
+assert.ok(copy.stats.every(r=>["physique","mental","resistance","magie"].includes(r.groupe)&&r.usage));
 const generated=characteristics.filter(r=>r.famille==="Caractéristique").map(r=>r.nom);
 for(const n of generated){
-  if(["Puissance magique","Réserve de mana"].includes(n)) assert.ok(!shown.includes(n),n+" va dans l'onglet Magie");
-  else assert.ok(shown.includes(n),"caractéristique absente de la fiche : "+n);
+  const group=copy.stats.find(r=>r.nom===n)?.groupe;
+  assert.ok(group,"caractéristique absente de la fiche : "+n);
+  if(["Puissance magique","Réserve de mana"].includes(n)) assert.equal(group,"magie",n+" va dans l'onglet Magie");
+  else assert.notEqual(group,"magie",n);
 }
 for(const n of characteristics.filter(r=>r.famille==="Résistance").map(r=>r.nom)) assert.equal(copy.stats.find(r=>r.nom===n)?.groupe,"resistance",n);
 assert.deepEqual(copy.stats.filter(r=>r.groupe==="physique").slice(0,2).map(r=>r.nom),["Points de vie","Initiative"]);
@@ -42,4 +45,20 @@ assert.ok(!layout.style.includes("Discrétion")&&!layout.style.includes("Pièges
 for(const a of layout.armures) assert.equal(skills.find(r=>r.nom===a.nom)?.type_de_valeur,"Binaire",a.nom);
 for(const n of layout.aptitudes) assert.equal(skills.find(r=>r.nom===n)?.type_de_valeur,"Binaire",n);
 assert.ok(skills.some(r=>r.parent===layout.animal),"l'animal se déplie sur ses espèces");
-console.log("Fiche : textes d'origine, d'ascendance, des caractéristiques et des compétences — OK");
+
+// Onglet Magie : chaque école a deux opposées, réciproques, et les oppositions forment une seule boucle ;
+// la roue peut donc poser chaque école en face de ses deux opposées.
+const schools=skills.filter(r=>r.domaine==="Magie"&&r.niveau==="Catégorie");
+const opposites=new Map(schools.map(r=>[r.nom,String(r.ecoles_opposees||"").split(",").map(x=>x.trim()).filter(Boolean)]));
+for(const [name,list] of opposites){
+  assert.equal(list.length,2,name);
+  for(const o of list) assert.ok(opposites.get(o)?.includes(name),`${name} ↔ ${o}`);
+}
+const cycle=[schools[0].nom];
+while(cycle.length<schools.length){
+  const next=opposites.get(cycle.at(-1)).find(x=>!cycle.includes(x));
+  assert.ok(next,"oppositions en une seule boucle");
+  cycle.push(next);
+}
+assert.ok(opposites.get(cycle.at(-1)).includes(cycle[0]));
+console.log("Fiche : textes d'origine, d'ascendance, des caractéristiques, des compétences et de la magie — OK");

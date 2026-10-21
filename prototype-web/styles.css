@@ -1517,11 +1517,39 @@ body[data-screen="camp"] > .app-shell { position: relative; z-index: 1; }
 .wizard-detail-panel:has(.avatar-frame--detail) .avatar-frame{margin:18px auto 0;max-height:380px}
 
 
-/* Taverne V1 — quatre actions, sans superposer les panneaux au décor. */
-.tavern-home-menu{display:grid;grid-template-columns:repeat(2,minmax(250px,1fr));gap:18px;max-width:850px;margin:10vh auto 0}
-.tavern-home-menu .camp-hub-btn{min-height:86px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:8px;text-align:center;color:#f7e8c8}
-.tavern-home-menu .camp-hub-btn small{font-size:.72rem;font-weight:500;color:#d5b882}
-.tavern-action-feedback{grid-column:1/-1;min-height:1.5em;color:#f8d897;text-align:center;text-shadow:0 1px 5px #090603}
+/* Taverne (Idan, 2026-10-21) : deux boutons à gauche, de la taille de ceux du camp ; une bulle posée sur le
+   tavernier ouvre le dialogue. Le décor est en « cover » centré (1600 × 893) : la bulle suit le même calcul
+   pour rester sur son tablier, quelle que soit la taille de l'écran. */
+/* En miroir du camp : la scène est centrée sur 1200 px, le menu en sort pour se caler sur le bord gauche de l'écran. */
+.tavern-hub{align-items:flex-start;margin:0 calc(50% - 50vw);padding-left:calc(clamp(18px,3vw,48px) + clamp(4px,2vw,26px))}
+.tavern-talk-btn{
+  --bg-scale:max(calc(100vw / 1600),calc(100vh / 893));
+  display:none;position:fixed;z-index:60;left:calc(50vw + 535 * var(--bg-scale));top:calc(50vh + 45 * var(--bg-scale));
+  place-items:center;width:54px;height:54px;padding:0;border:1px solid #d9b46f;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#5a3f2b,#1f1610 75%);color:#ffe1ac;
+  box-shadow:0 6px 20px #000b,0 0 0 4px #f2c87926;cursor:pointer;transform:translate(-50%,-50%);
+  animation:tavern-talk-in .45s ease-out both,tavern-talk-pulse 2.6s ease-in-out .6s infinite;
+}
+.tavern-talk-btn:hover,.tavern-talk-btn:focus-visible{border-color:#ffe1a5;box-shadow:0 8px 24px #000c,0 0 0 5px #f2c87966;outline:none}
+body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tavern-talk-btn{display:grid}
+@keyframes tavern-talk-in{from{opacity:0;transform:translate(-50%,-20%) scale(.6)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+@keyframes tavern-talk-pulse{0%,100%{box-shadow:0 6px 20px #000b,0 0 0 4px #f2c87926}50%{box-shadow:0 6px 20px #000b,0 0 0 9px #f2c87912}}
+@media(prefers-reduced-motion:reduce){.tavern-talk-btn{animation:none}}
+/* Dialogue façon jeu de rôle : portrait du tavernier (pris dans le décor), sa phrase, réponses numérotées. */
+#tavern-talk-dialog{width:min(560px,92vw);padding:0;border:1px solid #b58c53;border-radius:14px;background:linear-gradient(180deg,#3a2a1e,#1b130e);color:#ead9bd;box-shadow:0 20px 60px #000c,inset 0 1px #ffe4a826;font-family:Georgia,serif}
+#tavern-talk-dialog::backdrop{background:rgba(10,6,4,.35)}
+.talk-head{display:flex;align-items:center;gap:14px;padding:16px 20px 12px;border-bottom:1px solid #71583e}
+.talk-portrait{flex:none;width:72px;height:72px;border:2px solid #c9a15f;border-radius:50%;background:#2a1d15 url("/media/background/tavern.jpg") no-repeat -378px -62px / 523px auto;box-shadow:0 4px 14px #000a}
+.talk-head .eyebrow{margin:0;color:#bb9a6e;font:700 11px Georgia,serif;letter-spacing:.12em;text-transform:uppercase}
+.talk-head h2{margin:2px 0 0;color:#ffe1ac;font:600 22px Georgia,serif}
+.talk-line{margin:0;padding:18px 22px 10px;color:#f3e3c3;font:italic 19px/1.5 Georgia,serif}
+.talk-options{margin:0;padding:4px 14px 16px;list-style:none;counter-reset:talk}
+.talk-options li{counter-increment:talk}
+.talk-options button{display:flex;gap:10px;width:100%;padding:9px 10px;border:0;border-radius:8px;background:transparent;color:#ead9bd;font:16px Georgia,serif;text-align:left;cursor:pointer;box-shadow:none}
+.talk-options button::before{content:counter(talk) ".";min-width:1.4em;color:#d8b77d;font-weight:700}
+.talk-options button:hover,.talk-options button:focus-visible{background:#4a3424;color:#ffe1ac;outline:none}
+.talk-options button:disabled{background:transparent;color:#7d6b58;cursor:not-allowed}
+.talk-options button:disabled::before{color:#6b5a48}
 #tavern-missions-view,#tavern-recruits-view{margin-top:24px}
 #tavern-missions-view h2{margin:20px 0 12px}
 

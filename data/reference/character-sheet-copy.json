@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "character-sheet-copy",
-  "purpose": "Textes de l’onglet Profil de la fiche mercenaire (Idan, 2026-10-21) : phrases composées sur l’origine et l’ascendance. Aucun chiffre d’équilibrage. Phrases : « Issu(e) des [culture], il/elle était [origine] avant de rejoindre votre compagnie. » ; ascendance niveau 1 (Lointain ancêtre) « [Prénom] a du [sang …]. », niveau 2 (Lignée proche) « [Prénom] vient d’une famille [famille]. », niveau 3 (Bâtard) « [Prénom] est l’enfant [parent]. »",
+  "purpose": "Textes de l’onglet Profil de la fiche mercenaire (Idan, 2026-10-21) : phrases composées sur l’origine et l’ascendance. Aucun chiffre d’équilibrage. Phrases : « Issu(e) des [culture], il/elle était [origine] avant de rejoindre votre compagnie. » ; ascendance niveau 1 (Lointain ancêtre) « [Prénom] a du [sang …]. », niveau 2 (Lignée proche) « [Prénom] vient d’une famille [famille]. », niveau 3 (Bâtard) « [Prénom] est l’enfant [parent]. » Onglet Caractéristiques : stats (nom, groupe d’affichage physique / mental / resistance, usage = à quoi sert la valeur dans le jeu aujourd’hui, d’après les formules et le moteur ; description_referentiel = afficher aussi la première phrase de characteristics.json).",
   "ancestries": [
     {
       "nom": "Sang divin",
@@ -94,6 +94,122 @@
       "nom": "Noble",
       "homme": "noble",
       "femme": "noble"
+    }
+  ],
+  "stats": [
+    {
+      "nom": "Points de vie",
+      "groupe": "physique",
+      "usage": "Encaisser les coups : à 0, le mercenaire tombe et risque la mort. Calculés depuis la Constitution, l’Endurance et la Volonté.",
+      "description_referentiel": false
+    },
+    {
+      "nom": "Initiative",
+      "groupe": "physique",
+      "usage": "Ordre d’action dans l’équipe au combat : la Vitesse effective (armure et armes comprises), plus un peu d’Intelligence, de Courage et de Volonté.",
+      "description_referentiel": false
+    },
+    {
+      "nom": "Force",
+      "groupe": "physique",
+      "usage": "Blesser au contact, dégâts physiques et charge.",
+      "description_referentiel": true
+    },
+    {
+      "nom": "Constitution",
+      "groupe": "physique",
+      "usage": "Points de vie maximum.",
+      "description_referentiel": true
+    },
+    {
+      "nom": "Dextérité",
+      "groupe": "physique",
+      "usage": "Toucher au contact et à distance, combat à deux armes, enchaînements, blocage au bouclier. À la création, aussi l’artisanat.",
+      "description_referentiel": true
+    },
+    {
+      "nom": "Vitesse",
+      "groupe": "physique",
+      "usage": "Toucher, déplacement, initiative et enchaînements. L’armure et les armes lourdes la réduisent.",
+      "description_referentiel": true
+    },
+    {
+      "nom": "Endurance",
+      "groupe": "physique",
+      "usage": "Encaisser les blessures, points de vie maximum, déplacement. En fin de mission : moins de blessures, et plus courtes.",
+      "description_referentiel": true
+    },
+    {
+      "nom": "Esquive",
+      "groupe": "physique",
+      "usage": "Éviter les coups au contact et à distance. L’armure la réduit.",
+      "description_referentiel": true
+    },
+    {
+      "nom": "Intelligence",
+      "groupe": "mental",
+      "usage": "Choisir le meilleur type de dégâts contre l’armure adverse, initiative. À la Taverne : salaire demandé et résistance à la négociation.",
+      "description_referentiel": true
+    },
+    {
+      "nom": "Volonté",
+      "groupe": "mental",
+      "usage": "Points de vie maximum, tests de courage, reprise en main d’un fuyard, initiative, déplacement. En fin de mission : résister à la mort. À la Taverne : résistance à la négociation.",
+      "description_referentiel": true
+    },
+    {
+      "nom": "Courage",
+      "groupe": "mental",
+      "usage": "Tenir sous la pression : tests de courage, sous-nombre, fuite, contre-charge, initiative. À la Taverne, un candidat courageux se fait moins vite engager ailleurs.",
+      "description_referentiel": true
+    },
+    {
+      "nom": "Charisme",
+      "groupe": "mental",
+      "usage": "À la création : réputation de départ et compétences de camp. Pas encore utilisé au combat.",
+      "description_referentiel": true
+    },
+    {
+      "nom": "Perception",
+      "groupe": "mental",
+      "usage": "Toucher au contact et à distance, blesser à distance, frappe dans le dos.",
+      "description_referentiel": true
+    },
+    {
+      "nom": "Chance",
+      "groupe": "mental",
+      "usage": "Coups critiques et échecs critiques.",
+      "description_referentiel": true
+    },
+    {
+      "nom": "Résistance physique",
+      "groupe": "resistance",
+      "usage": "Réduit les dégâts physiques reçus.",
+      "description_referentiel": true
+    },
+    {
+      "nom": "Résistance au feu",
+      "groupe": "resistance",
+      "usage": "Pas encore utilisée au combat.",
+      "description_referentiel": true
+    },
+    {
+      "nom": "Résistance au froid",
+      "groupe": "resistance",
+      "usage": "Pas encore utilisée au combat.",
+      "description_referentiel": true
+    },
+    {
+      "nom": "Résistance à la foudre",
+      "groupe": "resistance",
+      "usage": "Pas encore utilisée au combat.",
+      "description_referentiel": true
+    },
+    {
+      "nom": "Résistance au poison",
+      "groupe": "resistance",
+      "usage": "Pas encore utilisée au combat.",
+      "description_referentiel": true
     }
   ]
 }

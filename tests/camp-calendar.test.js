@@ -10,6 +10,7 @@ const index = fs.readFileSync(path.join(root,"prototype-web/index.html"),"utf8")
 const tavernUI = fs.readFileSync(path.join(root,"prototype-web/tavern-ui.js"),"utf8");
 const ui = fs.readFileSync(path.join(root,"prototype-web/ui.js"),"utf8");
 const calendarUI = fs.readFileSync(path.join(root,"prototype-web/camp-calendar.js"),"utf8");
+const screenUI = fs.readFileSync(path.join(root,"prototype-web/screen-ui.js"),"utf8");
 const loader = fs.readFileSync(path.join(root,"prototype-web/reference-data.js"),"utf8");
 const css = fs.readFileSync(path.join(root,"prototype-web/styles.css"),"utf8");
 
@@ -48,24 +49,27 @@ for(let day=1;day<=365*3;day++){
 }
 
 assert.match(loader,/campCalendar:\s*"camp-calendar.json"/);
-assert.match(index,/id="camp-calendar-day"/);
-assert.match(index,/id="camp-calendar-date"/);
-assert.match(index,/id="camp-calendar-year"/);
-assert.match(index,/id="camp-calendar-quote"/);
-assert.match(index,/id="camp-next-day-btn"/);
+// Barre du bas (Idan, 2026-10-21) : petit calendrier et gros bouton play au centre ; plus d'almanach au camp.
+assert.match(index,/id="hud-calendar"/);
+assert.match(index,/id="hud-date"/);
+assert.match(index,/id="hud-day"/);
+assert.match(index,/id="hud-next-day-btn"/);
 assert.match(index,/src="camp-calendar.js"/);
-assert.doesNotMatch(index,/id="tavern-next-day-btn"/);
-assert.match(tavernUI,/\$\("camp-next-day-btn"\)\.addEventListener\("click",advanceCampDay\)/);
-assert.doesNotMatch(tavernUI,/tavern-next-day-btn|advanceTavernDay/);
-assert.match(ui,/renderCampCalendar\(\);/);
-assert.match(css,/\.camp-calendar \{/);
+assert.doesNotMatch(index,/id="tavern-next-day-btn"|id="camp-next-day-btn"|class="camp-calendar"/);
+assert.match(tavernUI,/\$\("hud-next-day-btn"\)\.addEventListener\("click",advanceCampDay\)/);
+assert.doesNotMatch(tavernUI,/tavern-next-day-btn|camp-next-day-btn|advanceTavernDay/);
+assert.match(ui,/renderGameHud\(\);/);
+assert.match(screenUI,/renderCampCalendar\(\);/);
+assert.match(css,/\.hud-play\{/);
+assert.doesNotMatch(css,/\.camp-calendar/);
 
 const extract=(source,begin,end)=>{
   const a=source.indexOf(begin),b=source.indexOf(end,a+begin.length);
   assert.ok(a>=0 && b>a,begin+" → "+end);
   return source.slice(a,b);
 };
-const nodes=Object.fromEntries(["day","date","year","quote"].map(k=>["camp-calendar-"+k,{textContent:""}]));
+const node=()=>({textContent:"",title:"",offsetWidth:0,classList:{add(){},remove(){}}});
+const nodes=Object.fromEntries(["hud-calendar","hud-date","hud-day"].map(id=>[id,node()]));
 const fakeGame={campaign:{day:31,company:{}},referenceData:reference,tavernSelected:null};
 const render = new Function("game","document","campaignCalendarDate",
   extract(calendarUI,"function renderCampCalendar()","if (typeof module")+
@@ -74,19 +78,19 @@ const render = new Function("game","document","campaignCalendarDate",
   fakeGame,{getElementById:id=>nodes[id]},calendar.campaignCalendarDate
 );
 render();
-assert.equal(nodes["camp-calendar-day"].textContent,"Jour 31");
-assert.equal(nodes["camp-calendar-date"].textContent,"Druiden, 31 Brumecendre");
-assert.equal(nodes["camp-calendar-year"].textContent,"An 842 — Âge des Couronnes Brisées");
-assert.match(nodes["camp-calendar-quote"].textContent,/^« .+ »$/);
+assert.equal(nodes["hud-date"].textContent,"Druiden 31 Brumecendre");
+assert.equal(nodes["hud-day"].textContent,"Jour 31 · An 842");
+assert.match(nodes["hud-calendar"].title,/^An 842 — Âge des Couronnes Brisées\n« .+ »$/);
 fakeGame.campaign.day=32;
 render();
-assert.match(nodes["camp-calendar-date"].textContent,/1 Corbenaël$/);
+assert.match(nodes["hud-date"].textContent,/1 Corbenaël$/);
 
 // Le bouton du camp réutilise exactement le moteur AdvanceTime : salaires,
 // soins, mouvements à la Taverne, sauvegarde et réaffichage. Aucune double horloge.
 let advanced=0,saved=0,redrawn=0,interviewed=0;
 const logged=[];
-const advance = new Function("game","campaignRules","tavernLog","fmt","saveGame","renderGame","renderInterview",
+let screen="camp";
+const advance = new Function("game","campaignRules","tavernLog","fmt","saveGame","renderGame","renderInterview","currentScreen",
   extract(tavernUI,"function advanceCampDay()","// Valeurs qu'une question")+
   "\nreturn advanceCampDay;"
 )(
@@ -99,7 +103,7 @@ const advance = new Function("game","campaignRules","tavernLog","fmt","saveGame"
       tavern:{departures:[],arrivals:[{mercenary:{name:"Erik"}}]}}];
   }}),
   (message)=>logged.push(message),String,
-  ()=>saved++,()=>{redrawn++;render();},()=>interviewed++
+  ()=>saved++,()=>{redrawn++;render();},()=>interviewed++,()=>screen
 );
 advance();
 assert.equal(fakeGame.campaign.day,33);
@@ -110,5 +114,10 @@ assert.equal(interviewed,0);
 assert.ok(logged.some(m=>m.includes("guéri")));
 assert.ok(logged.some(m=>m.includes("Salaires versés : 35")));
 assert.ok(logged.some(m=>m.includes("Nouveaux candidats : Erik")));
-assert.equal(nodes["camp-calendar-day"].textContent,"Jour 33");
+assert.equal(nodes["hud-day"].textContent,"Jour 33 · An 842");
+// Jamais pendant une mission.
+screen="mission";
+advance();
+assert.equal(fakeGame.campaign.day,33);
+assert.equal(advanced,1);
 console.log("Calendrier camp : mois, semaines, citations et horloge unique — OK");

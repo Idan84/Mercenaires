@@ -35,13 +35,21 @@ function campaignCalendarDate(day, reference) {
   };
 }
 
+// Petit calendrier de la barre du bas (Idan, 2026-10-21) : la date, le jour et l'an ; l'ère et la citation
+// du jour s'affichent au survol.
 function renderCampCalendar() {
   if (!game.campaign || !game.referenceData?.campCalendar) return;
   const date = campaignCalendarDate(game.campaign.day, game.referenceData);
-  document.getElementById("camp-calendar-day").textContent = `Jour ${date.campaignDay}`;
-  document.getElementById("camp-calendar-date").textContent = date.dateLabel;
-  document.getElementById("camp-calendar-year").textContent = `An ${date.year} — ${date.era}`;
-  document.getElementById("camp-calendar-quote").textContent = `« ${date.quote} »`;
+  const label = `${date.weekday} ${date.dayOfMonth} ${date.month}`;
+  const node = document.getElementById("hud-date");
+  if (node.textContent !== label) {
+    node.textContent = label;
+    node.classList.remove("is-new");
+    void node.offsetWidth;
+    node.classList.add("is-new");
+  }
+  document.getElementById("hud-day").textContent = `Jour ${date.campaignDay} · An ${date.year}`;
+  document.getElementById("hud-calendar").title = `An ${date.year} — ${date.era}\n« ${date.quote} »`;
 }
 
 if (typeof module !== "undefined" && module.exports) {

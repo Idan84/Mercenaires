@@ -66,5 +66,7 @@ assert.match(noSex,/class="mannequin-head"/);
 game.referenceData.equipmentSilhouettes={rows:[]};
 assert.doesNotMatch(ctx.renderEquipment(empty),/equipment-mannequin-image/,"sans index Hostinger : mannequin");
 assert.match(css,/mix-blend-mode:\s*multiply/);
-assert.match(css,/equipment-mannequin--loaded > span/);
+assert.match(css,/\.equipment-mannequin--loaded \.equipment-mannequin-fallback\{display:none\}/);
+// Pas de transform ni d'isolation sur le conteneur : ils couperaient le multiply du parchemin.
+assert.doesNotMatch(css,/\.equipment-mannequin(?:\.gear-doll)?\{[^}]*(?:isolation|transform)/);
 console.log("Équipement : silhouettes Hostinger par peuple et sexe, multiply et repli — OK");

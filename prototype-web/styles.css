@@ -237,64 +237,57 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
 .compare-legend .legend-current b { color:#7a2d23; }
 .compare-legend .legend-current small { color:#7a2d23; font-weight:800; }
 
-/* Persistent mercenary equipment */
-.equipment-section { margin-top:20px; padding-top:18px; border-top:1px solid #e6dfd5; }
-.equipment-profile { color:#6f675f; font-size:.78rem; }
-.equipment-board { display:grid; grid-template-columns:minmax(210px,1fr) 190px minmax(210px,1fr); gap:16px; align-items:center; padding:14px; border:1px solid #ded7cd; border-radius:14px; background:#f8f5f0; }
-.equipment-column { display:grid; gap:7px; }
-.equipment-column h4,.equipment-subgrid h4 { margin:0 0 7px; font-size:.8rem; text-transform:uppercase; letter-spacing:.06em; color:#756c62; }
-.equipment-slot { position:relative; min-height:48px; display:flex; align-items:center; gap:9px; padding:8px 9px; border:1px solid #dcd5cb; border-radius:9px; background:#fff; }
-.equipment-slot.empty { background:#f2eee8; border-style:dashed; color:#9a9187; }
-.equipment-slot.filled { border-color:#c3b6a8; box-shadow:0 3px 10px rgba(70,55,38,.05); }
-.slot-icon { width:28px; height:28px; flex:0 0 28px; display:grid; place-items:center; border-radius:7px; background:#ebe5dd; font-size:1.05rem; }
-.equipment-slot.filled .slot-icon { background:#e4d8cb; color:#712b22; }
-.slot-copy { min-width:0; flex:1; }
-.slot-copy small { display:block; font-size:.58rem; text-transform:uppercase; letter-spacing:.05em; color:#877e74; }
-.slot-copy strong { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:.78rem; }
-.slot-copy em { display:inline-block; margin-top:2px; font-style:normal; font-size:.62rem; font-weight:850; color:#792d23; }
-.item-tooltip { display:none; position:absolute; z-index:20; left:50%; bottom:calc(100% + 8px); width:230px; transform:translateX(-50%); padding:10px 11px; border-radius:10px; background:#201d1a; color:#f8f3ec; box-shadow:0 12px 35px rgba(0,0,0,.28); pointer-events:none; }
-.equipment-slot.filled:hover .item-tooltip { display:grid; gap:3px; }
-.item-tooltip strong { color:#fff; font-size:.88rem; }
-.item-tooltip span { font-size:.7rem; color:#d8cec3; }
-.item-tooltip small { margin-top:4px; font-size:.65rem; line-height:1.35; color:#afa398; }
-.equipment-mannequin { position:relative; height:300px; min-width:150px; }
-.equipment-mannequin-image {
-  display:block;
-  position:absolute;
-  /* Images carrées d'Idan : pleine hauteur, les marges blanches débordent sans se voir en multiply. */
-  top:0;
-  left:50%;
-  z-index:1;
-  width:auto;
-  max-width:none;
-  height:100%;
-  transform:translateX(-50%);
-  mix-blend-mode:multiply;
-  opacity:.8;
-  filter:grayscale(1) sepia(.13) contrast(1.04);
-  pointer-events:none;
-  user-select:none;
-}
-.equipment-mannequin--loaded > span {display:none !important;}
-/* Pas de transform sur le conteneur d'une silhouette : il isolerait le multiply du fond beige. */
-.equipment-mannequin.equipment-mannequin--loaded {transform:none;}
-.equipment-mannequin span { position:absolute; display:block; background:#c9c0b5; }
-.mannequin-head { width:58px; height:58px; border-radius:50%; top:10px; left:66px; }
-.mannequin-body { width:86px; height:112px; border-radius:36px 36px 22px 22px; top:75px; left:52px; }
-.mannequin-arm { width:25px; height:112px; border-radius:16px; top:86px; transform-origin:top center; }
-.mannequin-arm.left { left:30px; transform:rotate(11deg); }
-.mannequin-arm.right { right:30px; transform:rotate(-11deg); }
-.mannequin-leg { width:31px; height:104px; border-radius:15px; top:180px; }
-.mannequin-leg.left { left:58px; transform:rotate(4deg); }
-.mannequin-leg.right { right:58px; transform:rotate(-4deg); }
-.equipment-subgrid { display:grid; grid-template-columns:1.25fr 1fr .8fr; gap:14px; margin-top:12px; }
-.equipment-subgrid > div { padding:11px; border:1px solid #e1dad1; border-radius:11px; background:#faf8f4; }
-.equipment-grid { display:grid; gap:7px; }
-.weapons-grid,.belt-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
-.mount-grid { grid-template-columns:1fr; }
-.equipment-note { margin:10px 2px 0; font-size:.72rem; color:#81786e; }
-@media (max-width:850px){ .equipment-board{grid-template-columns:1fr 150px 1fr}.equipment-mannequin{transform:scale(.85)}.equipment-subgrid{grid-template-columns:1fr} }
-@media (max-width:620px){ .equipment-board{grid-template-columns:1fr}.equipment-mannequin{height:230px; transform:scale(.72); transform-origin:center top}.equipment-subgrid{grid-template-columns:1fr}.weapons-grid,.belt-grid{grid-template-columns:1fr 1fr} }
+/* Onglet Équipement (Idan, 2026-10-21) : silhouette sur un parchemin, objets posés sur le corps. */
+.gear{display:grid;grid-template-columns:minmax(0,1fr) min(520px,46vw) minmax(0,1fr);gap:18px;align-items:start}
+.gear-side{display:grid;gap:12px;min-width:0}
+.gear-card{display:grid;gap:10px;padding:12px;border:1px solid #71583e;border-radius:10px;background:#2e231c}
+.gear-card h4{margin:0;color:#bb9a6e;font:700 12px Georgia,serif;letter-spacing:.1em;text-transform:uppercase}
+.gear-row{display:flex;align-items:center;gap:10px;min-width:0}
+.gear-row-text{display:grid;min-width:0;line-height:1.25}
+.gear-row-text small{color:#bb9a6e;font-size:11px}
+.gear-row-text strong{overflow:hidden;color:#f4e1c2;font:15px Georgia,serif;text-overflow:ellipsis;white-space:nowrap}
+.gear-row-text em{color:#cdb38c;font-size:12px;font-style:normal}
+.gear-tiles{display:grid;grid-template-columns:repeat(4,48px);gap:8px}
+.gear-tiles--rings{grid-template-columns:repeat(3,48px)}
+/* Parchemin clair : la silhouette en multiply y garde son trait (pas de transform ni d'isolation ici). */
+.equipment-mannequin.gear-doll{position:relative;width:100%;height:auto;aspect-ratio:1;min-width:0;border:1px solid #9a7a4f;border-radius:14px;
+  background:radial-gradient(ellipse at 50% 45%,#f6ecd6,#e6d5b1 68%,#cfb68b);box-shadow:inset 0 0 46px rgba(90,60,25,.38),0 10px 30px #0008}
+.equipment-mannequin-image{display:block;position:absolute;top:0;left:50%;z-index:1;width:auto;max-width:none;height:100%;transform:translateX(-50%);
+  mix-blend-mode:multiply;opacity:.85;filter:grayscale(1) sepia(.15) contrast(1.05);pointer-events:none;user-select:none}
+.equipment-mannequin-fallback{position:absolute;left:50%;top:50%;width:190px;height:300px;transform:translate(-50%,-50%)}
+.equipment-mannequin--loaded .equipment-mannequin-fallback{display:none}
+.equipment-mannequin-fallback span{position:absolute;display:block;background:rgba(90,60,25,.22)}
+.mannequin-head{width:58px;height:58px;border-radius:50%;top:10px;left:66px}
+.mannequin-body{width:86px;height:112px;border-radius:36px 36px 22px 22px;top:75px;left:52px}
+.mannequin-arm{width:25px;height:112px;border-radius:16px;top:86px;transform-origin:top center}
+.mannequin-arm.left{left:30px;transform:rotate(11deg)}
+.mannequin-arm.right{right:30px;transform:rotate(-11deg)}
+.mannequin-leg{width:31px;height:104px;border-radius:15px;top:180px}
+.mannequin-leg.left{left:58px;transform:rotate(4deg)}
+.mannequin-leg.right{right:58px;transform:rotate(-4deg)}
+.gear-spot{position:absolute;z-index:2;display:grid;justify-items:center;gap:3px;transform:translate(-50%,-24px)}
+.gear-spot:hover,.gear-spot:focus-within{z-index:5}
+.gear-spot--empty{transform:translate(-50%,-50%)}
+.gear-spot--empty .gear-tile{width:28px;height:28px;border-radius:50%;border:1px dashed rgba(90,60,25,.5);background:rgba(246,236,214,.35);color:rgba(90,60,25,.5)}
+.gear-spot--empty .gear-icon{width:15px;height:15px}
+.gear-tile{position:relative;display:grid;place-items:center;width:48px;height:48px;border:1px solid #8c6b45;border-radius:12px;background:rgba(27,19,14,.88);color:#d8b77d;box-shadow:0 4px 12px rgba(0,0,0,.35);outline:none}
+.gear-tile .gear-icon{width:26px;height:26px}
+.gear-tile.is-empty{border-style:dashed;border-color:rgba(140,107,69,.75);background:rgba(27,19,14,.28);color:rgba(90,60,25,.55);box-shadow:none}
+.gear-side .gear-tile.is-empty{background:#241a14;color:rgba(216,183,125,.4)}
+.gear-tile.is-filled{border-width:2px;color:#ffe1ac;cursor:help}
+.gear-tile.is-filled:focus-visible{outline:2px solid #f0c77f;outline-offset:2px}
+.gear-tile--worn{border-color:#8f8a84}
+.gear-tile--standard{border-color:#c08a4e}
+.gear-tile--luxury{border-color:#f0c050;box-shadow:0 0 12px rgba(240,192,80,.5),0 4px 12px rgba(0,0,0,.35)}
+.gear-tile--both-hands{opacity:.5}
+.gear-caption{max-width:140px;overflow:hidden;padding:1px 7px;border-radius:6px;background:rgba(246,236,214,.88);color:#3a2616;font:700 11px/1.3 Georgia,serif;font-style:normal;text-align:center;text-overflow:ellipsis;white-space:nowrap}
+.item-tooltip{display:none;position:absolute;z-index:20;left:50%;bottom:calc(100% + 8px);width:220px;transform:translateX(-50%);padding:10px 11px;border:1px solid #a9814f;border-radius:10px;background:#1b130e;color:#ead9bd;box-shadow:0 12px 30px #000b;text-align:left;pointer-events:none}
+.gear-tile.is-filled:hover .item-tooltip,.gear-tile.is-filled:focus .item-tooltip{display:grid;gap:3px}
+.item-tooltip strong{color:#ffe1ac;font:700 14px Georgia,serif}
+.item-tooltip span{color:#cdb38c;font-size:12px}
+.item-tooltip small{margin-top:4px;color:#b5a184;font-size:11px;line-height:1.35}
+@media(max-width:1100px){.gear{grid-template-columns:repeat(2,minmax(0,1fr))}.equipment-mannequin.gear-doll{grid-column:1/-1;order:-1;max-width:520px;justify-self:center}}
+@media(max-width:600px){.gear{grid-template-columns:1fr}}
 
 /* Mission Test */
 .company-actions{display:flex;align-items:center;gap:14px}

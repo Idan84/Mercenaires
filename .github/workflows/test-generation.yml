@@ -25,6 +25,7 @@ jobs:
       - run: node tests/equipment-silhouettes-ui.test.js
       - run: node tests/stars.test.js
       - run: node tests/names.test.js
+      - run: node tests/character-sheet.test.js
       - run: node tests/design-lab-tags.test.js
       - run: node tests/affinity-display.test.js
       - run: node tests/wizard-ui-refinements.test.js

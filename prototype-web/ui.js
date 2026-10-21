@@ -201,6 +201,8 @@ function comparisonData(currentValue, accessor) {
     min,max,avg,median:med,current:currentValue,
     minName:minItem.member.name,
     maxName:maxItem.member.name,
+    minMember:minItem.member,
+    maxMember:maxItem.member,
     positions:{
       min:pos(min),
       max:pos(max),
@@ -781,9 +783,86 @@ function renderBiography(c) {
   </section>`;
 }
 
+// Onglet Caractéristiques (Idan, 2026-10-21) : portrait à gauche, puis Physique, Mental et Résistances.
+// Au survol du nom : à quoi sert la valeur dans le jeu (character-sheet-copy.json). Au survol de la valeur :
+// sa place dans la compagnie (min, médiane, moyenne, max) et les portraits du min et du max, cliquables.
+// Puissance magique et réserve de mana iront dans l'onglet Magie.
+const STAT_ICONS={
+  "Points de vie":'<path d="M12 20s-7.5-4.6-7.5-10.2A4.2 4.2 0 0 1 12 7.2a4.2 4.2 0 0 1 7.5 2.6C19.5 15.4 12 20 12 20z"/>',
+  "Initiative":'<path d="m5 6 6.5 6L5 18M12.5 6l6.5 6-6.5 6"/>',
+  "Force":'<path d="M6.5 7.5v9M17.5 7.5v9M3.5 10v4M20.5 10v4M6.5 12h11"/>',
+  "Constitution":'<path d="M3 12h4l2.2-5 3.6 10 2.2-5H21"/>',
+  "Dextérité":'<circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.4"/><path d="M12 2.5v4M12 17.5v4M2.5 12h4M17.5 12h4"/>',
+  "Vitesse":'<path d="M3 8.5h10.5a3 3 0 1 0-3-3M3 12.5h14.5a3 3 0 1 1-3 3M3 16.5h7"/>',
+  "Endurance":'<path d="M7 3.5h10M7 20.5h10M8 3.5c0 5 8 5.5 8 8.5s-8 3.5-8 8.5M16 3.5c0 5-8 5.5-8 8.5s8 3.5 8 8.5"/>',
+  "Esquive":'<path d="M4 19c4.5-1 6.5-4 7.5-8s3.5-6 8.5-6"/><path d="m16 3.5 3.8 1.5-1.4 3.8"/>',
+  "Intelligence":'<path d="M12 6.5C10 5 7 4.5 4 5v13c3-.5 6 0 8 1.5 2-1.5 5-2 8-1.5V5c-3-.5-6 0-8 1.5zM12 6.5v13"/>',
+  "Volonté":'<circle cx="12" cy="5" r="2"/><path d="M12 7v14M5 13.5a7 7 0 0 0 14 0M8.5 10.5h7"/>',
+  "Courage":'<path d="m12 2.5-1.6 2.2V15h3.2V4.7zM8 15h8M12 15v4.5M10 20.5h4"/>',
+  "Charisme":'<path d="M4 17h16l-1.5-9.5-4.5 4.5-2-6.5-2 6.5-4.5-4.5zM4 20h16"/>',
+  "Perception":'<path d="M2.5 12S6 6 12 6s9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6z"/><circle cx="12" cy="12" r="3"/>',
+  "Chance":'<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 9h.01M15 9h.01M9 15h.01M15 15h.01M12 12h.01" stroke-width="2.6"/>',
+  "Résistance physique":'<path d="M12 3 5 6v5c0 4.6 3 8.2 7 10 4-1.8 7-5.4 7-10V6z"/>',
+  "Résistance au feu":'<path d="M12 3c1 3 5.5 5.2 5.5 10.2a5.5 5.5 0 0 1-11 0c0-3 2-4.2 2-6.4 1.6 1 2.2 2.2 2.2 3.3 0-3 1.3-5.1 1.3-7.1z"/>',
+  "Résistance au froid":'<path d="M12 2.5v19M3.8 7.2l16.4 9.6M20.2 7.2 3.8 16.8M9.2 4l2.8 2 2.8-2M9.2 20l2.8-2 2.8 2"/>',
+  "Résistance à la foudre":'<path d="M13.5 2.5 5 13.5h6l-1 8 8.5-11h-6z"/>',
+  "Résistance au poison":'<path d="M12 3s6 6.4 6 11a6 6 0 0 1-12 0c0-4.6 6-11 6-11z"/><path d="M9.8 14.2h.01M14.2 14.2h.01" stroke-width="2.6"/>'
+};
+function statIcon(name){
+  return `<svg class="sheet-stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${STAT_ICONS[name]||""}</svg>`;
+}
+function combatEngine(){
+  return game.combatEngine || (game.combatEngine = MercenairesCombat.createCombatEngine(game.referenceData));
+}
+// Valeur affichée d'une ligne de l'onglet, pour un mercenaire quelconque (comparaison avec la compagnie).
+function sheetStatValue(m,name){
+  if(name==="Points de vie") return Number(m?.pvMax);
+  if(name==="Initiative") return m?.stats ? Math.round(combatEngine().initiative({character:m})) : NaN;
+  if(m?.resistances && name in m.resistances) return Number(m.resistances[name]);
+  return Number(m?.stats?.[name]);
+}
+function statTip(row){
+  const reference=(game.referenceData?.characteristics?.rows||[]).find(r=>r.nom===row.nom);
+  const first=row.description_referentiel?String(reference?.description||"").split(/(?<=\.)\s/)[0]:"";
+  return `<span class="sheet-stat-tip" role="tooltip"><strong>${esc(row.nom)}</strong>${first?`<span>${esc(first)}</span>`:""}<em>${esc(row.usage)}</em></span>`;
+}
+function statPortraitButton(member,label,value,current){
+  const url=typeof mercenaryAvatarUrl==="function"?mercenaryAvatarUrl(member,"portrait"):null;
+  const face=url?`<img src="${esc(url)}" alt="" loading="lazy">`:`<span class="sheet-stat-face">${esc(avatarInitials(member))}</span>`;
+  return `<button type="button" class="sheet-stat-who${member===current?" is-self":""}" data-sheet-open="${esc(member.id)}" title="Ouvrir la fiche de ${esc(member.name)}">
+    ${face}<span><small>${label}</small><b>${fmt(value)}</b><em>${esc(member.name)}</em></span></button>`;
+}
+function statPopover(c,name,value){
+  const data=comparisonData(value,m=>sheetStatValue(m,name));
+  if(!data) return "";
+  const p=data.positions;
+  const dot=(key,pos,title)=>`<i class="compare-dot ${key}" style="left:${pos}%" title="${esc(title)}"></i>`;
+  return `<span class="sheet-stat-pop" role="tooltip">
+    <span class="sheet-stat-pop-title">Dans la compagnie</span>
+    <span class="compare-track"><span class="compare-line"></span>${dot("min",p.min,"Min "+fmt(data.min))}${dot("median",p.median,"Médiane "+fmt(data.median))}${dot("avg",p.avg,"Moyenne "+fmt(data.avg))}${dot("max",p.max,"Max "+fmt(data.max))}${dot("current",p.current,esc(c.name)+" "+fmt(value))}</span>
+    <span class="sheet-stat-pop-mid"><span><i class="compare-dot median"></i>Médiane <b>${fmt(data.median)}</b></span><span><i class="compare-dot avg"></i>Moyenne <b>${fmt(data.avg)}</b></span></span>
+    <span class="sheet-stat-pop-ends">${statPortraitButton(data.minMember,"Min",data.min,c)}${statPortraitButton(data.maxMember,"Max",data.max,c)}</span>
+  </span>`;
+}
 function renderStatsTab(c){
-  const section=(title,data)=>`<section class="player-stat-section"><h3>${title}</h3><div class="player-stat-grid">${Object.entries(data||{}).map(([key,value])=>`<div class="player-stat"><span>${esc(key)}</span><strong>${fmt(value)}</strong></div>`).join("")}</div></section>`;
-  return section("Caractéristiques",c.stats)+section("Résistances",c.resistances);
+  const rows=game.referenceData?.characterSheetCopy?.stats||[];
+  const status=rosterStatus(c);
+  const group=(key,title)=>`<section class="sheet-stat-group sheet-stat-group--${key}"><h4>${title}</h4>${rows.filter(r=>r.groupe===key).map(row=>{
+    const value=sheetStatValue(c,row.nom);
+    if(!Number.isFinite(value)) return "";
+    return `<div class="sheet-stat sheet-stat--${esc(pictoSlug(row.nom))}">
+      ${statIcon(row.nom)}
+      <span class="sheet-stat-name" tabindex="0">${esc(row.nom.replace(/^Résistance (au |à la |aux )?/,"").replace(/^./,ch=>ch.toUpperCase()))}${statTip(row)}</span>
+      <span class="sheet-stat-value" tabindex="0">${fmt(value)}${statPopover(c,row.nom,value)}</span>
+    </div>`;
+  }).join("")}</section>`;
+  return `<section class="sheet-stats">
+    <aside class="sheet-portrait">
+      ${renderAvatar(c,{variant:"detail",kind:"full"})}
+      <em class="roster-status roster-status--${status.kind}">${esc(status.label)}</em>
+    </aside>
+    ${group("physique","Physique")}${group("mental","Mental")}${group("resistance","Résistances")}
+  </section>`;
 }
 function renderSkillsTab(c){
   return `<div class="player-skills">${Object.entries(c.skills||{}).filter(([group])=>group!=="magic").map(([group,values])=>{
@@ -861,7 +940,8 @@ function showCharacter(c) {
   $("dialog-name").textContent = c.name;
   game.sheetCharacter = c;
   renderSheet();
-  $("character-dialog").showModal();
+  // Changer de fiche depuis la fiche (portraits du min et du max) : la fenêtre est déjà ouverte.
+  if (!$("character-dialog").open) $("character-dialog").showModal();
 }
 
 function fillSelect(select, values, includeNone=false) {
@@ -966,6 +1046,13 @@ async function init() {
       game.sheetTab = btn.dataset.sheetTab;
       renderSheet();
       $("character-dialog").scrollTop = 0;
+    });
+    // Portrait du min ou du max d'une caractéristique : on passe à sa fiche, sur le même onglet.
+    $("dialog-content").addEventListener("click", event => {
+      const btn = event.target.closest("[data-sheet-open]");
+      if (!btn) return;
+      const member = teamCharacters().find(m => String(m.id) === btn.dataset.sheetOpen);
+      if (member && member !== game.sheetCharacter) showCharacter(member);
     });
     // Le jeu démarre sur le menu principal (accueil) ; « Nouvelle partie » ouvre la création.
   } catch (error) {

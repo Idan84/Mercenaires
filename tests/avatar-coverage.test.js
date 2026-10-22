@@ -29,16 +29,15 @@ const catalog=[
 ];
 const coverage=createCoverage({
   reference,catalog,samples:200,
-  generator:createGenerator(reference,{random:seeded(),nameGenerator:names}),
-  maxGenerator:createGenerator(reference,{random:()=>0.9999999,nameGenerator:names})
+  generator:createGenerator(reference,{random:seeded(),nameGenerator:names})
 });
-assert.equal(coverage.tavernSlots,5,"places de la Taverne : tavern.slots.initial");
+assert.equal(coverage.need,100,"avatars visés par peuple : avatars.coverage.need (Idan, 2026-10-22)");
 assert.deepEqual(coverage.peoples,read("peoples.json").rows.map(r=>r.nom));
 
-// Besoin = compagnie de départ maximale (règle du générateur) + Taverne.
+// Besoin : le même pour tous les peuples.
 const orc=coverage.forPeople("Orc");
-assert.equal(orc.need,3*6+4+5,"Orc : 3D6+4 sans ascendance, + 5 candidats");
-assert.equal(coverage.forPeople("Ogre").need,3+1+5,"Ogre : 1D3+1, + 5 candidats");
+assert.equal(orc.need,100);
+assert.equal(coverage.forPeople("Ogre").need,100);
 assert.equal(orc.avatars,3);
 assert.deepEqual([orc.femmes,orc.hommes,orc.sansSexe,orc.sansTags],[1,2,0,0]);
 assert.deepEqual(orc.sources,{git:1,hostinger:2});

@@ -15,7 +15,7 @@ const INTRO_FALLBACK_SECONDS=56;
 const WIZARD_STEPS=[
   {key:"name",nav:"Nom",title:"Quel est votre nom ?"},
   {key:"people",nav:"Peuple",title:"De quel peuple venez-vous ?",copy:"peoples",picto:"people",options:()=>peopleNames()},
-  {key:"culture",nav:"Culture",title:"Quelle est votre culture ?",copy:"cultures",options:()=>culturesForPeople(wizard.choice.people)},
+  {key:"culture",nav:"Culture",title:"Quelle est votre culture ?",copy:"cultures",picto:"culture",options:()=>culturesForPeople(wizard.choice.people)},
   {key:"avatar",nav:"Portrait",title:"Quel visage portera votre capitaine ?"},
   {key:"origin",nav:"Origine",title:"Quelle est votre origine sociale ?",copy:"origins",options:()=>originsForCulture(wizard.choice.culture)},
   {key:"ascendance",nav:"Ascendance",title:"Quelle est votre ascendance ?",copy:"ancestries",picto:"ascendance",options:()=>["",...compatibleAscendances(wizard.choice.people)]},
@@ -324,7 +324,7 @@ function renderCompanyNameStep(){
 
 function renderRecap(){
   const c=wizard.choice;
-  const icon=(key,v)=>key==="people"?renderPicto("people",v,{size:"wizard"}):key==="ascendance"&&v?renderPicto("ascendance",v,{size:"wizard"}):"";
+  const icon=(key,v)=>["people","culture"].includes(key)&&v?renderPicto(key,v,{size:"wizard"}):key==="ascendance"&&v?renderPicto("ascendance",v,{size:"wizard"}):"";
   return `<div class="wizard-recap-shell">
     <div class="wizard-recap-title">
       <span class="wizard-recap-mark" aria-hidden="true">✦</span>

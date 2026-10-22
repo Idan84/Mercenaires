@@ -79,7 +79,7 @@ Pour savoir quoi produire : l'onglet **Avatars** du Design Lab (https://bloodand
 
 ### Pictos : `media/pictos/`
 
-Idan y dépose ses masters de pictos sur fond blanc, rangés par famille : `media/pictos/Culture/` (une image par culture, 2026-10-22). `api/pictos.php` liste le dossier et ses sous-dossiers (même bibliothèque que les avatars) : https://bloodandwages.idanwizen.com/api/pictos.php. Les masters sont ensuite détourés par `scripts/build-pictos.sh`, comme ceux des peuples et des ascendances, et les versions web vont dans `prototype-web/assets/pictos/`.
+Idan y dépose ses masters de pictos sur fond blanc, rangés par famille : `media/pictos/Culture/` (une image par culture, 2026-10-22). `api/pictos.php` liste le dossier et ses sous-dossiers (même bibliothèque que les avatars) : https://bloodandwages.idanwizen.com/api/pictos.php. Les masters sont ensuite copiés dans `assets-src/Picto/Culture/` sous le nom de leur culture (le fichier d'origine est noté dans le `README.md` du dossier), détourés par `scripts/build-pictos.sh`, comme ceux des peuples et des ascendances, et les versions web vont dans `prototype-web/assets/pictos/culture-<culture>.webp`. Le dossier Hostinger n'est lu que pour cette étape : le jeu n'en dépend pas.
 
 ### Silhouettes d'équipement : `media/Avatars_Equipements/`
 

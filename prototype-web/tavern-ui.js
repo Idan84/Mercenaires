@@ -71,7 +71,8 @@ function renderTavernCard(candidate){
     ${renderAvatar(m,{variant:"recruit",kind:"full"})}
     <div class="recruit-card-body">
       <strong class="recruit-name">${esc(m.name)}</strong>
-      <span class="recruit-origin">${renderPicto("people",m.people,{size:"xs"})}${esc(m.people)} · ${esc(m.culture)}</span>
+      <span class="recruit-origin">${renderPicto("people",m.people,{size:"xs"})}${esc(m.people)}</span>
+      <span class="recruit-origin">${renderPicto("culture",m.culture,{size:"xs"})}${esc(m.culture)}</span>
       ${renderReputationStars(m)}
       <small class="recruit-days">${presenceText(candidate)}</small>
       <button type="button" class="recruit-talk-btn" data-tavern-open="${m.id}">Aller lui parler</button>
@@ -154,7 +155,7 @@ function renderRecruitTalk(){
   const m=t.mercenary,first=MercenairesRecruitDialogue.firstName(m);
   $("recruit-talk-portrait").innerHTML=renderAvatar(m,{variant:"talk",kind:"portrait"});
   $("recruit-talk-name").textContent=m.name;
-  $("recruit-talk-origin").innerHTML=`${renderPicto("people",m.people,{size:"xs"})}${esc(m.people)} · ${esc(m.culture)}`;
+  $("recruit-talk-origin").innerHTML=`${renderPicto("people",m.people,{size:"xs"})}${esc(m.people)} · ${renderPicto("culture",m.culture,{size:"xs"})}${esc(m.culture)}`;
   const log=$("recruit-talk-log");
   log.innerHTML=t.lines.map(line=>line.who==="note"
     ?`<p class="talk-note">${esc(line.text)}</p>`

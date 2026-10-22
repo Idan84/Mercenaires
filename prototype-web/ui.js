@@ -48,7 +48,7 @@ function characterRow(c,hero=false){
         <strong class="roster-name" title="${esc(fullName)}">${esc(fullName)}</strong>
         <span class="roster-people-picto" title="${esc(c.people||"")}">${renderPicto("people",c.people,{size:"sm"})}</span>
       </span>
-      ${c.culture?`<span class="roster-culture">${esc(c.culture)}</span>`:""}
+      ${c.culture?`<span class="roster-culture">${renderPicto("culture",c.culture,{size:"xs"})}${esc(c.culture)}</span>`:""}
       <span class="roster-metrics">
         <span class="roster-metric" title="Réputation">${rosterMetricIcon("reputation")}${renderReputationStars(c)}</span>
         <span class="roster-metric" title="Salaire quotidien">${rosterMetricIcon("salary")}<span>${fmt(salary)} PO</span></span>
@@ -752,7 +752,7 @@ function profileAncestryLine(c){
 function renderProfileTab(c){
   const captain=game.campaign?.company.captainId===c.id;
   const status=rosterStatus(c);
-  const pictos=renderPicto("people",c.people,{size:"md"})+(c.ascendance?renderPicto("ascendance",c.ascendance,{size:"md"}):"");
+  const pictos=renderPicto("people",c.people,{size:"md"})+(c.culture?renderPicto("culture",c.culture,{size:"md"}):"")+(c.ascendance?renderPicto("ascendance",c.ascendance,{size:"md"}):"");
   const stars=starRules().personal(c.reputation);
   const alignments=typeof alignmentNames==="function"?alignmentNames():[];
   const affinity=renderCaptainAffinity(c);
@@ -765,7 +765,7 @@ function renderProfileTab(c){
     </aside>
     <div class="sheet-profile-main">
       <div class="sheet-origins">
-        <div class="sheet-pictos" aria-label="${esc([c.people,c.ascendance].filter(Boolean).join(", "))}">${pictos}</div>
+        <div class="sheet-pictos" aria-label="${esc([c.people,c.culture,c.ascendance].filter(Boolean).join(", "))}">${pictos}</div>
         <div class="sheet-origin-text">
           <p>${esc(profileOriginLine(c,captain))}</p>
           ${c.ascendance?`<p>${esc(profileAncestryLine(c))}</p>`:""}

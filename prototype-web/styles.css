@@ -1703,7 +1703,7 @@ body[data-screen="camp"] .camp-scene>.panel .muted{color:#c2b29e}
 .roster-card-info .roster-name{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#ffdfad;font:normal 19px/1.25 Georgia,serif}
 .roster-people-picto{display:inline-flex;align-items:center;justify-content:center;flex:none;width:30px;height:30px}
 .roster-people-picto .picto{width:29px;height:29px;margin:0}
-.roster-card-info .roster-culture{font-size:12px;line-height:1.25;color:#d6c6b0;min-width:0}
+.roster-card-info .roster-culture{display:flex;align-items:center;font-size:12px;line-height:1.25;color:#d6c6b0;min-width:0}
 .roster-metrics{display:flex;flex-wrap:wrap;gap:5px 14px;align-items:center;min-width:0}
 .roster-metric{display:inline-flex;align-items:center;gap:5px;color:#e1cbaa;font-size:12px;white-space:nowrap}
 .roster-metric-icon{height:17px;width:17px;flex:none;color:#d4ac74}

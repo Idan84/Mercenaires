@@ -17,9 +17,12 @@ assert.equal(pictoPath("ascendance",null),null,"pas d'ascendance : pas de picto"
 assert.equal(renderPicto("ascendance",""),"");
 assert.match(renderPicto("people","Nain",{size:"md"}),/class="picto picto-md" src="assets\/pictos\/peuple-nain\.webp"/);
 
-// Chaque peuple et chaque ascendance du référentiel a son picto, et aucun picto n'est orphelin.
+// Chaque peuple, chaque culture (Idan, 2026-10-22) et chaque ascendance du référentiel a son picto, et aucun
+// picto n'est orphelin.
+assert.equal(pictoPath("culture","Nains réduits en esclavage dans les colonies"),"assets/pictos/culture-nains-reduits-en-esclavage-dans-les-colonies.webp");
 const expected=[
   ...names("peoples.json").map(n=>pictoPath("people",n)),
+  ...names("cultures.json").map(n=>pictoPath("culture",n)),
   ...names("ancestries.json").map(n=>pictoPath("ascendance",n))
 ];
 const dir=path.join(ROOT,"prototype-web","assets","pictos");

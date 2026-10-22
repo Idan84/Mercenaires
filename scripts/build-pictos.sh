@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Pictos des peuples et des ascendances : masters d'Idan (assets-src/Picto/, 1024×1024 sur fond blanc)
+# Pictos des peuples, des cultures et des ascendances : masters d'Idan (assets-src/Picto/, 1024×1024 sur fond blanc)
 # → versions web détourées (prototype-web/assets/pictos/, WebP 128×128 transparent).
 # Le nom de sortie est le « slug » du nom de référence (peoples.json, ancestries.json),
 # calculé de la même façon par prototype-web/picto-ui.js. Nécessite ImageMagick.
@@ -34,14 +34,25 @@ MAP=(
   "Ascendance/Asc_Dryade.jpg:ascendance-sang-de-dryade"
 )
 
+# Cultures (Idan, 2026-10-22) : un master par culture, déjà nommé d'après le slug de cultures.json
+# (assets-src/Picto/Culture/README.md donne le fichier déposé sur Hostinger d'origine).
+for src in "$SRC"/Culture/*.jpg; do
+  MAP+=("Culture/$(basename "$src"):culture-$(basename "$src" .jpg)")
+done
+
 for entry in "${MAP[@]}"; do
   src="$SRC/${entry%%:*}"; out="$OUT/${entry##*:}.webp"
   size=$(identify -format "%w %h" "$src"); w=${size% *}; h=${size#* }
+  # Les emblèmes de culture enferment des poches de fond blanc (dans un cœur, un croissant…) que le
+  # remplissage depuis les coins n'atteint pas : on retire aussi le blanc pur (6 %), sans toucher aux os
+  # ni aux parchemins, qui sont crème.
+  pockets=()
+  [[ $entry == Culture/* ]] && pockets=(-fuzz 6% -transparent white)
   # Fond blanc retiré depuis les quatre coins, puis recadrage, carré centré, 128 px.
   convert "$src" -alpha set -fuzz 14% -fill none \
     -draw "color 0,0 floodfill" -draw "color $((w-1)),0 floodfill" \
     -draw "color 0,$((h-1)) floodfill" -draw "color $((w-1)),$((h-1)) floodfill" \
-    -trim +repage -resize 128x128 -gravity center -background none -extent 128x128 \
+    "${pockets[@]}" -trim +repage -resize 128x128 -gravity center -background none -extent 128x128 \
     -quality 90 "$out"
   echo "$out"
 done

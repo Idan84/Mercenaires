@@ -1,9 +1,9 @@
 "use strict";
 
-// Pictos des peuples et des ascendances (masters d'Idan, assets-src/Picto/, détourés par
+// Pictos des peuples, des cultures et des ascendances (masters d'Idan, assets-src/Picto/, détourés par
 // scripts/build-pictos.sh). Le fichier porte le « slug » du nom de référence :
 // « Sang d’elfe » → assets/pictos/ascendance-sang-d-elfe.webp. Purement visuel.
-const PICTO_KINDS={people:"peuple",ascendance:"ascendance"};
+const PICTO_KINDS={people:"peuple",culture:"culture",ascendance:"ascendance"};
 
 function pictoSlug(name){
   return String(name??"").normalize("NFD").replace(/[̀-ͯ]/g,"")

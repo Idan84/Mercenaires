@@ -43,6 +43,7 @@ jobs:
       - run: php tests/avatar-index.test.php
       - run: php -l prototype-web/api/avatars.php
       - run: php -l prototype-web/api/silhouettes.php
+      - run: php -l prototype-web/api/pictos.php
       - run: php -l prototype-web/api/lib/avatar-index.php
       - name: Assemblage du site (numéros de version)
         run: bash scripts/build-site.sh site && grep -q 'src="ui.js?v=' site/index.html

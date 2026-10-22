@@ -77,6 +77,10 @@ Pour savoir quoi retaguer : en haut du même onglet, la liste **« Affiner les t
 
 Pour savoir quoi produire : l'onglet **Avatars** du Design Lab (https://bloodandwages.idanwizen.com/design/#avatars) compare, pour chaque peuple, les avatars aux mercenaires que le jeu génère (`game-core/avatar-coverage.js`) : besoin (100 avatars visés par peuple, constante `avatars.coverage.need` ; Idan, 2026-10-22), cultures, profils, armes, magie et ascendances sous-représentés, avatars sans tags. Les remarques (mot-clé inconnu, portrait manquant…) s'affichent dans la console du navigateur au chargement du jeu.
 
+### Pictos : `media/pictos/`
+
+Idan y dépose ses masters de pictos sur fond blanc, rangés par famille : `media/pictos/Culture/` (une image par culture, 2026-10-22). `api/pictos.php` liste le dossier et ses sous-dossiers (même bibliothèque que les avatars) : https://bloodandwages.idanwizen.com/api/pictos.php. Les masters sont ensuite détourés par `scripts/build-pictos.sh`, comme ceux des peuples et des ascendances, et les versions web vont dans `prototype-web/assets/pictos/`.
+
 ### Silhouettes d'équipement : `media/Avatars_Equipements/`
 
 Décision d'Idan du 2026-10-21. Il s'agit d'une silhouette par peuple et par sexe, soit 20 images. Elle remplace le mannequin de l'onglet Équipement de la fiche et s'affiche en multiply : le blanc disparaît sur le fond beige, sans détourage.

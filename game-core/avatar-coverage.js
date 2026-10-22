@@ -4,8 +4,8 @@
 // au regard de ce que le jeu génère vraiment. Outil de production pour Idan et Jean-Mimi (Design Lab),
 // sans effet sur le jeu.
 //
-// - Besoin d'un peuple = taille maximale de la compagnie de départ (règle du générateur) + places de la
-//   Taverne (tavern.slots.initial) : de quoi donner un visage à chacun en début de partie.
+// - Besoin d'un peuple = nombre d'avatars visé, le même pour tous les peuples (avatars.coverage.need, 100 :
+//   Idan, 2026-10-22). Il remplace « compagnie de départ maximale + Taverne » (35 au plus), trop court.
 // - Pour chaque famille de tags (culture, profil, catégorie d'arme, magie principale, ascendance) :
 //   part des mercenaires générés qui portent la valeur, cible = part × besoin, avatars tagués.
 (function(root,factory){
@@ -57,9 +57,8 @@
     };
   }
 
-  // generator : générateur du jeu (createMercenary, rollInitialSquadSize) ; maxGenerator : le même, dont
-  // le hasard tire toujours le maximum, pour la taille maximale de la compagnie de départ.
-  function createCoverage({reference,catalog:rows=[],generator,maxGenerator,samples=300}){
+  // generator : générateur du jeu (createMercenary).
+  function createCoverage({reference,catalog:rows=[],generator,samples=300}){
     const weapons=reference?.weapons?.rows||[];
     const categoryOf=new Map();
     const labels=new Set();
@@ -71,12 +70,11 @@
       labels.add(norm(category));
     }
     const magicNames=new Map((reference?.skills?.rows||[]).filter(r=>r.domaine==="Magie").map(r=>[norm(r.nom),r.nom]));
-    const tavernSlots=constant(reference,"tavern.slots.initial",5);
+    const need=constant(reference,"avatars.coverage.need",100);
     const peoples=(reference?.peoples?.rows||[]).map(r=>r.nom);
 
     function forPeople(people){
       const own=rows.filter(a=>norm(a.people)===norm(people));
-      const need=maxGenerator.rollInitialSquadSize({people,ascendance:null})+tavernSlots;
       const demand=Object.fromEntries(FAMILIES.map(f=>[f,new Map()]));
       for(let i=0;i<samples;i++){
         const values=mercenaryValues(generator.createMercenary({id:i+1,forcedPeople:people}),categoryOf,magicNames);
@@ -104,7 +102,7 @@
       };
     }
 
-    return {peoples,tavernSlots,forPeople};
+    return {peoples,need,forPeople};
   }
 
   return {createCoverage,status,FAMILIES,PROFILE_LABELS};

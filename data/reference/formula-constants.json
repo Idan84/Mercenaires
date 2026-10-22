@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 119,
+  "row_count": 120,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -984,6 +984,14 @@
       "description": "Or payé au tavernier pour chaque question sur un candidat (rien n’est gratuit dans ce bas monde). Pas de limite de questions.",
       "formule": "Taverne V1",
       "valeur": 1,
+      "version": "V1"
+    },
+    {
+      "nom": "Design Lab — avatars visés par peuple",
+      "code": "avatars.coverage.need",
+      "description": "Nombre d’avatars visé pour chaque peuple dans l’onglet Avatars du Design Lab : cible d’une valeur = part des mercenaires générés × ce nombre. Outil de production, sans effet sur le jeu.",
+      "formule": "Couverture des avatars",
+      "valeur": 100,
       "version": "V1"
     }
   ]

@@ -27,7 +27,6 @@ const AvatarsLab=(()=>{
       reference,
       catalog:reference.avatars.rows,
       generator:MercenairesCore.createGenerator(reference,{random:seeded(20261006),nameGenerator:names}),
-      maxGenerator:MercenairesCore.createGenerator(reference,{random:()=>0.9999999,nameGenerator:names}),
       samples:SAMPLES
     });
     const results=[];
@@ -37,7 +36,7 @@ const AvatarsLab=(()=>{
       results.push(coverage.forPeople(people));
     }
     results.sort((a,b)=>STATUS[a.status].order-STATUS[b.status].order||(b.need-b.avatars)-(a.need-a.avatars));
-    cache={results,avatars:reference.avatars,tavernSlots:coverage.tavernSlots};
+    cache={results,avatars:reference.avatars,need:coverage.need};
     return cache;
   }
 
@@ -122,14 +121,14 @@ const AvatarsLab=(()=>{
   }
 
   function render(data){
-    const {results,avatars,tavernSlots}=data;
+    const {results,avatars,need}=data;
     const summary=results.map(r=>`<tr>
       <td><a href="#${anchor(r.people)}" data-cov="${anchor(r.people)}">${html(r.people)}</a></td>
       <td class="num">${r.avatars}</td><td>${sexes(r)}</td><td class="num">${r.need}</td>
       <td>${badge(r.status)}</td><td class="num">${r.sansTags||""}</td></tr>`).join("");
     const warnings=avatars.warnings||[];
-    return `<p class="cov-intro">Pour chaque peuple, le <strong>besoin</strong> est le nombre de visages qu'il faut en début de partie :
-      la compagnie de départ la plus grande permise par le générateur, plus les ${tavernSlots} candidats de la Taverne.
+    return `<p class="cov-intro">Pour chaque peuple, le <strong>besoin</strong> est le nombre d'avatars visé : ${need}, le même pour tous
+      les peuples (constante <code>avatars.coverage.need</code>, dans les données).
       Les tableaux comparent les avatars aux mercenaires que le jeu génère vraiment (${SAMPLES} par peuple) :
       la <strong>part</strong> est la proportion de mercenaires qui ont cette valeur, la <strong>cible</strong> vaut part × besoin,
       le <strong>manque</strong> est la cible moins les avatars tagués. Un mercenaire sans avatar correspondant garde un visage

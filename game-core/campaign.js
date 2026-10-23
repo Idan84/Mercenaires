@@ -12,6 +12,8 @@
   // n'est pas sauvegardée : un mercenaire passe d'environ 36 Ko à 5 Ko.
   const SAVE_FORMAT="mercenaires-save";
   const SAVE_VERSION=1;
+  // Anciens noms de culture → noms actuels (voir ensureCultureNames).
+  const RENAMED_CULTURES=new Map([["Nains des plaines","Nains du chaos"]]);
 
   function withoutGenerationTrace(key,value){
     return key==="generationTrace"?undefined:value;
@@ -142,6 +144,18 @@
       }
       for(const m of rosterOf(state)) assignBiography(state,m);
       return JSON.stringify(state.biographiesUsed)!==before;
+    }
+
+    // Cultures renommées (Idan, 2026-10-23 : « Nains des plaines » devient « Nains du chaos »). Dans une partie
+    // sauvegardée avant, l'ancien nom est remplacé partout où il figure. Renvoie true si l'état a changé,
+    // pour que l'interface sauvegarde.
+    function ensureCultureNames(value){
+      let changed=false;
+      for(const [key,item] of Object.entries(value||{})){
+        if(typeof item==="string"&&RENAMED_CULTURES.has(item)){ value[key]=RENAMED_CULTURES.get(item); changed=true; }
+        else if(item&&typeof item==="object"&&ensureCultureNames(item)) changed=true;
+      }
+      return changed;
     }
 
     // Un candidat de la Taverne est généré avec les biais du capitaine, comme tout nouveau mercenaire.
@@ -412,6 +426,7 @@
       ensureBiographies,
       ensureInitialContracts,
       ensureAvatars,
+      ensureCultureNames,
       payroll
     };
   }

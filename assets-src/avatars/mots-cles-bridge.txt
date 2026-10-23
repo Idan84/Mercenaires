@@ -104,7 +104,7 @@
 	Ogres des montagnes
 	Gnomes des cavernes
 	Elfes sylvains
-	Nains des plaines
+	Nains du chaos
 	Reptiliens des cités-temples
 	Nains réduits en esclavage dans les colonies
 	Gnomes des villes

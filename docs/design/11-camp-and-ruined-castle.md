@@ -186,6 +186,18 @@ Fonctions validées :
 
 Le matériel attribué à un mercenaire ne doit donc pas être considéré comme automatiquement récupérable sans interaction.
 
+### Stock d'armes de départ (Idan, 2026-10-23)
+
+À sa création, la compagnie reçoit un stock d'armes de rechange, sans propriétaire, listé à l'Intendance :
+
+- **nombre** : **2D20** armes (2 à 40) ;
+- **choix de chaque arme** : tirage pondéré parmi toutes les armes du référentiel, **boucliers compris**, doublons possibles :
+  - `Poids = max(0,25 ; 1 + 2 × A)` ;
+  - `A` additionne les intensités de la matrice de génération du **peuple** et de la **culture** du capitaine, sur l'arme et sur sa catégorie. Exemple pour un Nain du chaos : Arquebuse 2 + 2 + 1 + 1 = 6, poids 13 ; Hache de guerre 2 + 1 = 3, poids 7 ; Fouet 0, poids 1 ;
+- **tier de chaque arme** : table de l'équipement de départ des mercenaires (doc 05), lue à la réputation du capitaine. À la création (≈ 110 à 165), cela donne environ 77 % T1, 20 % T2, 3 % T3.
+
+Constantes : `company.starting_stock.dice_count` (2), `company.starting_stock.dice_sides` (20), `company.starting_stock.affinity_weight` (2), `company.starting_stock.min_weight` (0,25). Une partie sauvegardée avant cette règle reçoit son stock au chargement. La capacité limitée de l'armurerie reste à définir.
+
 ## 17 — Laboratoire d’alchimie
 
 Fonctions :

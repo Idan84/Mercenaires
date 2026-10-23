@@ -146,6 +146,15 @@
       return JSON.stringify(state.biographiesUsed)!==before;
     }
 
+    // Parties sauvegardées avant le stock d'armes de départ (Idan, 2026-10-23) : la compagnie reçoit le sien,
+    // tiré pour son capitaine. Renvoie true si l'état a changé, pour que l'interface sauvegarde.
+    function ensureStartingStock(state){
+      if(Array.isArray(state.company.stock)) return false;
+      const captain=rosterOf(state).find(m=>m.id===state.company.captainId);
+      state.company.stock=captain?generator.createStartingStock(captain):[];
+      return true;
+    }
+
     // Cultures renommées (Idan, 2026-10-23 : « Nains des plaines » devient « Nains du chaos »). Dans une partie
     // sauvegardée avant, l'ancien nom est remplacé partout où il figure. Renvoie true si l'état a changé,
     // pour que l'interface sauvegarde.
@@ -224,7 +233,9 @@
           roster:[captain,...squad],
           intendantId:null,
           camp:{dormitoryCapacity:STARTING_DORMITORY_CAPACITY},
-          renownHeritage:[]
+          renownHeritage:[],
+          // Armes de rechange de la compagnie, sans propriétaire, listées à l'Intendance (Idan, 2026-10-23).
+          stock:generator.createStartingStock(captain)
         },
         tavern:tavern.createTavernState(),
         biographiesUsed:[],
@@ -427,6 +438,7 @@
       ensureInitialContracts,
       ensureAvatars,
       ensureCultureNames,
+      ensureStartingStock,
       payroll
     };
   }

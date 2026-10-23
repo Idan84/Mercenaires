@@ -115,6 +115,7 @@ function renderGame() {
   renderMercenaryRoster();
   renderGenerated();
   renderTavern();
+  renderQuartermaster();
 }
 
 // Tri exclusivement visuel : aucune modification de l'ordre sauvegardé ni des règles.

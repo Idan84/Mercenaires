@@ -900,6 +900,33 @@
       });
     }
 
+    // Stock d'armes de la compagnie à sa création (Idan, 2026-10-23) : 2D20 armes tirées parmi toutes celles du
+    // référentiel (boucliers compris), doublons possibles. Poids d'une arme = 1 + 2 × A, au moins 0,25 ; A additionne
+    // les intensités de la matrice de génération du peuple et de la culture du capitaine, sur l'arme et sur sa
+    // catégorie. Tier de chaque arme : table de l'équipement de départ, à la réputation du capitaine.
+    // Les armes du stock n'ont pas de propriétaire : elles attendent à l'Intendance.
+    function captainWeaponAffinity(weapon, captain) {
+      const targets = [weapon.nom, skillByName.get(weapon.nom)?.parent].filter(Boolean);
+      const sources = [captain.people, captain.culture].filter(Boolean).map(normalizeKey);
+      return sum(targets.flatMap(target => sources.map(key => Number(matrixByTarget.get(target)?.[key]) || 0)));
+    }
+
+    function startingStockWeight(weapon, captain) {
+      const k = constant("company.starting_stock.affinity_weight", 2);
+      const floor = constant("company.starting_stock.min_weight", 0.25);
+      return Math.max(floor, 1 + k * captainWeaponAffinity(weapon, captain));
+    }
+
+    function createStartingStock(captain) {
+      const count = rollDice(constant("company.starting_stock.dice_count", 2), constant("company.starting_stock.dice_sides", 20));
+      const entries = weaponRows.map(weapon => ({value:weapon, weight:startingStockWeight(weapon, captain)}));
+      return Array.from({length:count}, () => {
+        const weapon = weightedChoice(entries);
+        const item = weaponItem(captain, {weapon:weapon.nom, category:skillByName.get(weapon.nom)?.parent || null}, null);
+        return {...item, owner:null};
+      });
+    }
+
     function generateStartingEquipment(character) {
       const profile = computeEquipmentProfile(character);
       const slots = Object.fromEntries(equipmentSlotRows.map(slot => [slot.id, null]));
@@ -1379,6 +1406,8 @@
       alignmentDistributionForPeople,
       adjacentAlignments,
       equipmentTierDistribution,
+      startingStockWeight,
+      createStartingStock,
       people: () => peopleRows.map(r => r.nom),
       alignments: () => alignmentRows.map(r => r.nom),
       ancestries: () => ancestryRows.map(r => r.nom),

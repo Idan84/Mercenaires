@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 120,
+  "row_count": 124,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -992,6 +992,38 @@
       "description": "Nombre d’avatars visé pour chaque peuple dans l’onglet Avatars du Design Lab : cible d’une valeur = part des mercenaires générés × ce nombre. Outil de production, sans effet sur le jeu.",
       "formule": "Couverture des avatars",
       "valeur": 100,
+      "version": "V1"
+    },
+    {
+      "nom": "Stock de départ — nombre de dés",
+      "code": "company.starting_stock.dice_count",
+      "description": "La compagnie démarre avec un stock d’armes de rechange de (nombre de dés)D(faces) armes : 2D20, soit 2 à 40 armes (Idan, 2026-10-23).",
+      "formule": "Stock d’armes de départ",
+      "valeur": 2,
+      "version": "V1"
+    },
+    {
+      "nom": "Stock de départ — faces des dés",
+      "code": "company.starting_stock.dice_sides",
+      "description": "Faces des dés du nombre d’armes du stock de départ (2D20).",
+      "formule": "Stock d’armes de départ",
+      "valeur": 20,
+      "version": "V1"
+    },
+    {
+      "nom": "Stock de départ — poids de l’affinité",
+      "code": "company.starting_stock.affinity_weight",
+      "description": "Poids d’une arme au tirage = 1 + ce facteur × A, où A additionne les intensités de la matrice de génération du peuple et de la culture du capitaine, sur l’arme et sur sa catégorie. Plus il est grand, plus le stock ressemble au capitaine.",
+      "formule": "Stock d’armes de départ",
+      "valeur": 2,
+      "version": "V1"
+    },
+    {
+      "nom": "Stock de départ — poids minimum",
+      "code": "company.starting_stock.min_weight",
+      "description": "Poids plancher d’une arme au tirage du stock de départ, pour qu’une arme mal vue du peuple ou de la culture reste possible.",
+      "formule": "Stock d’armes de départ",
+      "valeur": 0.25,
       "version": "V1"
     }
   ]

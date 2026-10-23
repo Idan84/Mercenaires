@@ -368,6 +368,38 @@ assert.equal(captain.ascendanceLevel, 3);
 assert.equal(captain.ascendanceLevelName, "Bâtard");
 assert.equal(captain.alignment, "Neutre"); // forced captain choice must bypass people distribution
 
+// Stock d'armes de départ (Idan, 2026-10-23) : 2D20 armes, poids 1 + 2 × A (peuple et culture, arme et catégorie),
+// au moins 0,25 ; tier selon la réputation du capitaine ; sans propriétaire.
+const chaosDwarf = {people:"Nain", culture:"Nains du chaos", reputation:130, id:7};
+const weaponByName = name => reference.weapons.rows.find(w => w.nom === name);
+assert.equal(generator.startingStockWeight(weaponByName("Arquebuse / Mousquet"), chaosDwarf), 13, "A = 2 + 2 + 1 + 1");
+assert.equal(generator.startingStockWeight(weaponByName("Hache de guerre"), chaosDwarf), 7, "A = 2 + 1");
+assert.equal(generator.startingStockWeight(weaponByName("Fouet"), chaosDwarf), 1, "aucune affinité");
+assert.equal(generator.startingStockWeight(weaponByName("Arc"), {people:"Nain", culture:"Nains des montagnes"}), 1, "Arc −1, Armes de tir +1");
+assert.equal(generator.startingStockWeight(weaponByName("Arc"), {people:"Orc", culture:"Nains des montagnes"}), 0.25, "plancher");
+const stockGenerator = createGenerator(reference, {random: mulberry32(23), nameGenerator: (people,id) => `${people} ${id}`});
+const counts = [], firearms = [], tiers = {1:0, 2:0, 3:0};
+let shields = 0;
+for (let i = 0; i < 400; i++) {
+  const stock = stockGenerator.createStartingStock(chaosDwarf);
+  counts.push(stock.length);
+  for (const item of stock) {
+    assert.equal(item.owner, null);
+    assert.equal(item.itemType, "weapon");
+    assert.ok(weaponByName(item.name), item.name);
+    assert.ok(item.category);
+    tiers[item.tier] += 1;
+    if (item.category === "Armes à feu") firearms.push(item);
+    if (item.category === "Boucliers") shields += 1;
+  }
+}
+const total = counts.reduce((a,b) => a + b, 0);
+assert.ok(Math.min(...counts) >= 2 && Math.max(...counts) <= 40, "2D20");
+assert.ok(Math.abs(total / counts.length - 21) < 1.5, "moyenne de 2D20 ≈ 21");
+assert.ok(firearms.length / total > 0.25, "un Nain du chaos a beaucoup d'armes à feu");
+assert.ok(shields > 0, "boucliers compris");
+assert.ok(tiers[1] > tiers[2] && tiers[2] > tiers[3] && tiers[3] > 0, "T1 > T2 > T3, T3 possible");
+
 console.log(JSON.stringify({
   ok:true,
   generated:1000,

@@ -334,7 +334,7 @@
     {
       "name": "formula-constants",
       "file": "formula-constants.json",
-      "rows": 120,
+      "rows": 124,
       "columns": [
         "nom",
         "code",

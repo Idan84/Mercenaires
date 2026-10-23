@@ -24,8 +24,9 @@
       "Chaotique mauvais"
     ]
   ],
-  "notes": "Une case proche touche la case principale par un côté ou un coin. Les 45 % proches sont répartis uniformément entre ces cases. Les 15 % restants sont répartis uniformément entre les autres cases. Pour un alignement central, les 8 autres cases sont toutes proches et se partagent donc les 60 % restants. La culture Elfes noirs remplace l'alignement principal du peuple par Chaotique mauvais avant application de la distribution.",
+  "notes": "Une case proche touche la case principale par un côté ou un coin. Les 45 % proches sont répartis uniformément entre ces cases. Les 15 % restants sont répartis uniformément entre les autres cases. Pour un alignement central, les 8 autres cases sont toutes proches et se partagent donc les 60 % restants. Les cultures de culture_overrides remplacent l'alignement principal du peuple avant application de la distribution : Elfes noirs → Chaotique mauvais, Nains du chaos → Chaotique neutre.",
   "culture_overrides": {
-    "Elfes noirs": "Chaotique mauvais"
+    "Elfes noirs": "Chaotique mauvais",
+    "Nains du chaos": "Chaotique neutre"
   }
 }

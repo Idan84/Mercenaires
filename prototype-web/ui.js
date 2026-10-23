@@ -44,10 +44,7 @@ function characterRow(c,hero=false){
       <em class="roster-status roster-status--${status.kind}">${esc(status.label)}</em>
     </span>
     <span class="roster-card-info">
-      <span class="roster-card-heading">
-        <strong class="roster-name" title="${esc(fullName)}">${esc(fullName)}</strong>
-        <span class="roster-pictos">${["people","culture","ascendance"].map(kind=>renderPicto(kind,c[kind],{size:"sm"})).join("")}</span>
-      </span>
+      <strong class="roster-name" title="${esc(fullName)}">${esc(fullName)}</strong>
       ${c.culture?`<span class="roster-culture">${esc([c.culture,c.ascendance].filter(Boolean).join(" · "))}</span>`:""}
       <span class="roster-metrics">
         <span class="roster-metric" title="Réputation">${rosterMetricIcon("reputation")}${renderReputationStars(c)}</span>
@@ -55,6 +52,7 @@ function characterRow(c,hero=false){
       </span>
       ${renderRosterAffinity(c)}
     </span>
+    <span class="roster-pictos">${["people","culture","ascendance"].map(kind=>renderPicto(kind,c[kind],{size:"sm"})).join("")}</span>
   </button>`;
 }
 

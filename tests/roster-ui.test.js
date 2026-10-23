@@ -33,7 +33,7 @@ const renderCard=new Function("game","renderAvatar","renderPicto","renderReputat
 const card=renderCard(squad[0]);
 assert.match(card,/Florine Orangefeuillu/);
 assert.match(card,/class="roster-name"/);
-// Pictos peuple, culture puis ascendance à droite ; « Sang de … » à côté de la culture (Idan, 2026-10-23).
+// Pictos peuple, culture puis ascendance, en colonne au bord droit ; « Sang de … » à côté de la culture (Idan, 2026-10-23).
 assert.match(card,/class="roster-pictos"><img class="picto" alt="" title="Humain"><img class="picto" alt="" title="Tribus de la jungle"><\/span>/);
 assert.match(card,/class="roster-culture">Tribus de la jungle<\/span>/,"sans ascendance : la culture seule");
 const blooded=renderCard({...squad[1],ascendance:"Sang de dragon"});

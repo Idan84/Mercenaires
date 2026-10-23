@@ -1690,17 +1690,16 @@ body[data-screen="camp"] .camp-scene>.panel .eyebrow{color:#d3ac76}
 body[data-screen="camp"] .camp-scene>.panel .muted{color:#c2b29e}
 #captain-summary{max-width:750px;margin:22px auto}
 .character-list{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
-.roster-card{display:grid;grid-template-columns:94px minmax(0,1fr);gap:14px;align-items:start;padding:14px;border:1px solid #9c7952;border-radius:13px;background:linear-gradient(130deg,#443126,#201916);text-align:left;color:#e9d9c0;box-shadow:0 10px 25px #0005;min-width:0;transition:border-color .16s,transform .16s}
+.roster-card{display:grid;grid-template-columns:94px minmax(0,1fr) auto;gap:14px;align-items:start;padding:14px;border:1px solid #9c7952;border-radius:13px;background:linear-gradient(130deg,#443126,#201916);text-align:left;color:#e9d9c0;box-shadow:0 10px 25px #0005;min-width:0;transition:border-color .16s,transform .16s}
 .roster-card:hover,.roster-card:focus-visible{border-color:#eed098;transform:translateY(-2px);outline:none}
 .roster-card-visual{display:flex;flex-direction:column;gap:6px;min-width:0}
 .roster-card .avatar-frame{width:94px;aspect-ratio:1;flex:none;margin:0}
 .roster-card .avatar-fallback small{display:none}
 .roster-card-info{display:flex;flex-direction:column;gap:6px;min-width:0;width:100%}
-.roster-card-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;min-width:0}
-/* Un nom long passe à la ligne plutôt que d'être coupé par les trois pictos. */
+/* Un nom long passe à la ligne plutôt que d'être coupé. */
 .roster-card-info .roster-name{display:block;min-width:0;overflow-wrap:break-word;color:#ffdfad;font:normal 19px/1.25 Georgia,serif}
-/* Peuple, culture et ascendance (à droite), sans cercle (Idan, 2026-10-23). */
-.roster-pictos{display:inline-flex;align-items:center;gap:3px;flex:none}
+/* Peuple, culture et ascendance en colonne au bord droit, sans cercle (Idan, 2026-10-23). */
+.roster-pictos{display:flex;flex-direction:column;align-items:center;gap:4px}
 .roster-pictos .picto{width:32px;height:32px;margin:0;filter:drop-shadow(0 2px 3px rgba(0,0,0,.5))}
 .roster-card-info .roster-culture{display:flex;align-items:center;font-size:12px;line-height:1.25;color:#d6c6b0;min-width:0}
 .roster-metrics{display:flex;flex-wrap:wrap;gap:5px 14px;align-items:center;min-width:0}
@@ -1730,7 +1729,7 @@ body[data-screen="camp"] .camp-scene>.panel .muted{color:#c2b29e}
 .roster-sort-direction{padding:8px 11px;border:1px solid #906f4b;border-radius:8px;background:#34281f;color:#f4ddbb;font-size:13px;white-space:nowrap}
 .roster-sort-direction:hover,.roster-sort-direction:focus-visible,.roster-toolbar select:focus-visible{border-color:#ebc17d;outline:2px solid #ebc17d55}
 @media(max-width:1080px){#initial-squad{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:720px){#initial-squad{grid-template-columns:1fr}.roster-card{grid-template-columns:86px minmax(0,1fr)}.roster-card .avatar-frame{width:86px}.roster-count{width:100%}.roster-count-capacity{border-left:0;padding-left:0}.roster-toolbar{justify-content:flex-start}}
+@media(max-width:720px){#initial-squad{grid-template-columns:1fr}.roster-card{grid-template-columns:86px minmax(0,1fr) auto}.roster-card .avatar-frame{width:86px}.roster-count{width:100%}.roster-count-capacity{border-left:0;padding-left:0}.roster-toolbar{justify-content:flex-start}}
 @media(max-width:480px){.roster-card{padding:11px;gap:11px}.roster-card-info .roster-name{font-size:17px}.roster-pictos .picto{width:27px;height:27px}.roster-affinity-hearts{font-size:14px}.roster-toolbar label{flex-basis:100%}}
 #character-dialog{background:#201916;color:#eadbc4;border:1px solid #987750;border-radius:15px;box-shadow:0 26px 80px #000c}
 /* Même taille pour tous les onglets (Idan, 2026-10-21) : la fenêtre ne se redimensionne plus. */

@@ -282,6 +282,15 @@ for(const m of old9.company.roster) delete m.contract;
 assert.equal(stable.ensureInitialContracts(old9),true);
 assert.equal(old9.company.roster.filter(m=>m.contract).length,crew.length);
 assert.equal(stable.ensureInitialContracts(old9),false);
+// Ancienne sauvegarde avec « Nains des plaines » (Idan, 2026-10-23 : devenus « Nains du chaos ») : renommés partout.
+assert.equal(stable.ensureCultureNames(old9),false,"aucun ancien nom : rien à sauvegarder");
+old9.company.roster[0].culture="Nains des plaines";
+old9.tavern.candidates.push({mercenary:{culture:"Nains des plaines",notes:["Nains des plaines"]}});
+assert.equal(stable.ensureCultureNames(old9),true);
+assert.equal(old9.company.roster[0].culture,"Nains du chaos");
+assert.deepEqual(old9.tavern.candidates.at(-1).mercenary,{culture:"Nains du chaos",notes:["Nains du chaos"]});
+assert.equal(stable.ensureCultureNames(old9),false);
+old9.tavern.candidates.pop();
 
 // Affinité → négociation (14 §9 ; Idan, 2026-10-20) : résistance − 0,25 × affinité, bornée de 0 à 100.
 assert.equal(tavern.negotiationResistance(merc()),42.5);

@@ -242,10 +242,16 @@
 
       <section class="camp-scene hidden" data-camp-scene-panel="quartermaster" aria-label="Intendance">
         <div class="camp-scene-nav"><button class="secondary camp-scene-back" data-camp-back>← Retour au camp</button></div>
-        <section class="panel camp-placeholder-panel">
-          <p class="eyebrow">Intendance</p>
-          <h2>Stock &amp; équipement</h2>
-          <p class="muted">Cette scène accueillera le stock de la compagnie, les échanges d’équipement et les retours de mission.</p>
+        <section class="panel quartermaster-panel">
+          <div class="section-title-row">
+            <div>
+              <p class="eyebrow">Intendance</p>
+              <h2>Stock &amp; équipement</h2>
+            </div>
+            <span id="quartermaster-count" class="roster-count"></span>
+          </div>
+          <p class="muted">Armes de rechange de la compagnie, sans propriétaire. Les échanges d’équipement et les retours de mission viendront ici.</p>
+          <div id="quartermaster-stock" class="stock-groups"></div>
         </section>
       </section>
 
@@ -375,6 +381,7 @@
   <script src="picto-ui.js"></script>
   <script src="camp-calendar.js"></script>
   <script src="tavern-ui.js"></script>
+  <script src="quartermaster-ui.js"></script>
   <script src="save-ui.js"></script>
   <script src="screen-ui.js"></script>
   <script src="intro-ui.js"></script>

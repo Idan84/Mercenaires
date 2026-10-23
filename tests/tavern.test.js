@@ -291,6 +291,14 @@ assert.equal(old9.company.roster[0].culture,"Nains du chaos");
 assert.deepEqual(old9.tavern.candidates.at(-1).mercenary,{culture:"Nains du chaos",notes:["Nains du chaos"]});
 assert.equal(stable.ensureCultureNames(old9),false);
 old9.tavern.candidates.pop();
+// Stock d'armes de départ (Idan, 2026-10-23) : à la création, et pour une ancienne sauvegarde qui n'en a pas.
+assert.ok(Array.isArray(s9.company.stock)&&s9.company.stock.length>=2&&s9.company.stock.length<=40,"2D20 armes");
+assert.ok(s9.company.stock.every(item=>item.owner===null&&item.itemType==="weapon"));
+assert.equal(stable.ensureStartingStock(old9),false,"stock déjà là : rien à faire");
+delete old9.company.stock;
+assert.equal(stable.ensureStartingStock(old9),true);
+assert.ok(old9.company.stock.length>=2);
+assert.equal(stable.ensureStartingStock(old9),false);
 
 // Affinité → négociation (14 §9 ; Idan, 2026-10-20) : résistance − 0,25 × affinité, bornée de 0 à 100.
 assert.equal(tavern.negotiationResistance(merc()),42.5);

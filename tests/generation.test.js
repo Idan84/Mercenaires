@@ -82,6 +82,14 @@ assert.equal(darkElfAlignment["Chaotique mauvais"].probability, 0.4);
 for (const name of ["Chaotique neutre","Neutre","Neutre mauvais"]) {
   assert.ok(Math.abs(darkElfAlignment[name].probability - 0.15) < 1e-12);
 }
+// Nains du chaos (Idan, 2026-10-23) : Chaotique neutre, comme les Elfes noirs ont Chaotique mauvais.
+const chaosDwarfAlignment = Object.fromEntries(
+  generator.alignmentDistributionForPeople("Nain","Nains du chaos").map(x => [x.name,x])
+);
+assert.equal(chaosDwarfAlignment["Chaotique neutre"].probability, 0.4);
+for (const name of ["Chaotique bon","Neutre bon","Neutre","Neutre mauvais","Chaotique mauvais"]) {
+  assert.ok(Math.abs(chaosDwarfAlignment[name].probability - 0.09) < 1e-12);
+}
 
 const humanAlignment = distributionMap("Humain");
 assert.equal(humanAlignment.Neutre.probability, 0.4);

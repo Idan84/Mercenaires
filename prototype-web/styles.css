@@ -1010,11 +1010,14 @@ body[data-screen="creation"] .intro-scene { visibility: hidden; }
   color: #fff1c9;
   box-shadow: inset 3px 0 0 #c89448, 0 8px 18px rgba(0,0,0,.13);
 }
+/* Pictos sans cercle (Idan, 2026-10-23) : seul le monogramme d'un choix sans picto garde son médaillon. */
 .wizard-option-art {
   display: grid;
   place-items: center;
   width: 54px;
   height: 54px;
+}
+.wizard-option-art--monogram {
   overflow: hidden;
   border: 1px solid rgba(202,166,98,.18);
   border-radius: 50%;
@@ -1049,14 +1052,14 @@ body[data-screen="creation"] .intro-scene { visibility: hidden; }
 }
 
 .picto-wizard {
-  width: 46px;
-  height: 46px;
+  width: 54px;
+  height: 54px;
   object-fit: contain;
   filter: drop-shadow(0 2px 4px rgba(0,0,0,.50));
 }
 .picto-hero {
-  width: 96px;
-  height: 96px;
+  width: 112px;
+  height: 112px;
   object-fit: contain;
   filter: drop-shadow(0 5px 8px rgba(0,0,0,.55));
 }
@@ -1099,12 +1102,6 @@ body[data-screen="creation"] .intro-scene { visibility: hidden; }
   flex: 0 0 112px;
   width: 112px;
   height: 112px;
-  overflow: hidden;
-  border: 1px solid rgba(208,171,99,.22);
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at 50% 42%, rgba(112,75,38,.24), rgba(10,8,6,.68) 69%);
-  box-shadow: inset 0 0 28px rgba(0,0,0,.35);
 }
 .wizard-detail-kicker {
   margin: 0 0 5px;
@@ -1264,8 +1261,8 @@ body[data-screen="creation"] .intro-scene { visibility: hidden; }
   font-size: 1rem;
 }
 .wizard-recap .picto-wizard {
-  width: 34px;
-  height: 34px;
+  width: 40px;
+  height: 40px;
 }
 
 .wizard-nav {
@@ -1305,10 +1302,10 @@ body[data-screen="creation"] .intro-scene { visibility: hidden; }
   .wizard-detail-panel { padding: 13px; }
   .wizard-option-card { min-height: 62px; grid-template-columns: 50px minmax(0,1fr) 22px; }
   .wizard-option-art { width: 46px; height: 46px; }
-  .picto-wizard { width: 40px; height: 40px; }
+  .picto-wizard { width: 46px; height: 46px; }
   .wizard-detail-head { min-height: auto; }
   .wizard-sigil { flex-basis: 86px; width: 86px; height: 86px; }
-  .picto-hero { width: 74px; height: 74px; }
+  .picto-hero { width: 86px; height: 86px; }
   .wizard-recap { grid-template-columns: 1fr; }
   .wizard-nav { gap: 8px; }
   .wizard-btn { min-width: 0; flex: 1; padding-inline: 14px; font-size: .76rem; }
@@ -1699,10 +1696,12 @@ body[data-screen="camp"] .camp-scene>.panel .muted{color:#c2b29e}
 .roster-card .avatar-frame{width:94px;aspect-ratio:1;flex:none;margin:0}
 .roster-card .avatar-fallback small{display:none}
 .roster-card-info{display:flex;flex-direction:column;gap:6px;min-width:0;width:100%}
-.roster-card-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0}
-.roster-card-info .roster-name{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#ffdfad;font:normal 19px/1.25 Georgia,serif}
-.roster-people-picto{display:inline-flex;align-items:center;justify-content:center;flex:none;width:30px;height:30px}
-.roster-people-picto .picto{width:29px;height:29px;margin:0}
+.roster-card-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;min-width:0}
+/* Un nom long passe à la ligne plutôt que d'être coupé par les trois pictos. */
+.roster-card-info .roster-name{display:block;min-width:0;overflow-wrap:break-word;color:#ffdfad;font:normal 19px/1.25 Georgia,serif}
+/* Peuple, culture et ascendance (à droite), sans cercle (Idan, 2026-10-23). */
+.roster-pictos{display:inline-flex;align-items:center;gap:3px;flex:none}
+.roster-pictos .picto{width:32px;height:32px;margin:0;filter:drop-shadow(0 2px 3px rgba(0,0,0,.5))}
 .roster-card-info .roster-culture{display:flex;align-items:center;font-size:12px;line-height:1.25;color:#d6c6b0;min-width:0}
 .roster-metrics{display:flex;flex-wrap:wrap;gap:5px 14px;align-items:center;min-width:0}
 .roster-metric{display:inline-flex;align-items:center;gap:5px;color:#e1cbaa;font-size:12px;white-space:nowrap}
@@ -1732,7 +1731,7 @@ body[data-screen="camp"] .camp-scene>.panel .muted{color:#c2b29e}
 .roster-sort-direction:hover,.roster-sort-direction:focus-visible,.roster-toolbar select:focus-visible{border-color:#ebc17d;outline:2px solid #ebc17d55}
 @media(max-width:1080px){#initial-squad{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:720px){#initial-squad{grid-template-columns:1fr}.roster-card{grid-template-columns:86px minmax(0,1fr)}.roster-card .avatar-frame{width:86px}.roster-count{width:100%}.roster-count-capacity{border-left:0;padding-left:0}.roster-toolbar{justify-content:flex-start}}
-@media(max-width:480px){.roster-card{padding:11px;gap:11px}.roster-card-info .roster-name{font-size:17px}.roster-people-picto{width:26px;height:26px}.roster-people-picto .picto{width:25px;height:25px}.roster-affinity-hearts{font-size:14px}.roster-toolbar label{flex-basis:100%}}
+@media(max-width:480px){.roster-card{padding:11px;gap:11px}.roster-card-info .roster-name{font-size:17px}.roster-pictos .picto{width:27px;height:27px}.roster-affinity-hearts{font-size:14px}.roster-toolbar label{flex-basis:100%}}
 #character-dialog{background:#201916;color:#eadbc4;border:1px solid #987750;border-radius:15px;box-shadow:0 26px 80px #000c}
 /* Même taille pour tous les onglets (Idan, 2026-10-21) : la fenêtre ne se redimensionne plus. */
 #character-dialog{height:min(800px,92vh)}
@@ -1756,7 +1755,7 @@ body[data-screen="camp"] .camp-scene>.panel .muted{color:#c2b29e}
   grid-template-areas:"origins origins origins" "align rep aff" "align bio bio" "align salary bonus";gap:12px;align-content:start;min-width:0}
 .sheet-origins{grid-area:origins;display:flex;align-items:center;gap:16px;margin-bottom:4px}
 .sheet-pictos{display:flex;gap:8px;flex:none}
-.sheet-pictos .picto{width:54px;height:54px;margin:0;padding:4px;border:1px solid #8c6b45;border-radius:50%;background:#2c211a}
+.sheet-pictos .picto{width:66px;height:66px;margin:0;filter:drop-shadow(0 3px 5px rgba(0,0,0,.55))}
 .sheet-origin-text p{margin:0;color:#f1dfbf;font:17px/1.45 Georgia,serif}
 .sheet-origin-text p+p{margin-top:3px;color:#d9be92;font-size:15px;font-style:italic}
 .sheet-column{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:0;padding:12px;border:1px solid #71583e;border-radius:10px;background:#2e231c;text-align:center}

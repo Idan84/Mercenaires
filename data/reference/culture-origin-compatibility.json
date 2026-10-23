@@ -1025,15 +1025,15 @@
       "possible": true
     },
     {
-      "association": "Nains des plaines — Érudit",
-      "culture": "Nains des plaines",
+      "association": "Nains du chaos — Érudit",
+      "culture": "Nains du chaos",
       "note": null,
       "origine_sociale": "Érudit",
       "possible": true
     },
     {
-      "association": "Nains des plaines — Hors-la-loi",
-      "culture": "Nains des plaines",
+      "association": "Nains du chaos — Hors-la-loi",
+      "culture": "Nains du chaos",
       "note": null,
       "origine_sociale": "Hors-la-loi",
       "possible": true
@@ -1053,8 +1053,8 @@
       "possible": true
     },
     {
-      "association": "Nains des plaines — Noble",
-      "culture": "Nains des plaines",
+      "association": "Nains du chaos — Noble",
+      "culture": "Nains du chaos",
       "note": null,
       "origine_sociale": "Noble",
       "possible": true
@@ -1074,8 +1074,8 @@
       "possible": true
     },
     {
-      "association": "Nains des plaines — Esclave",
-      "culture": "Nains des plaines",
+      "association": "Nains du chaos — Esclave",
+      "culture": "Nains du chaos",
       "note": null,
       "origine_sociale": "Esclave",
       "possible": true
@@ -1088,15 +1088,15 @@
       "possible": true
     },
     {
-      "association": "Nains des plaines — Soldat / Guerrier / Combattant",
-      "culture": "Nains des plaines",
+      "association": "Nains du chaos — Soldat / Guerrier / Combattant",
+      "culture": "Nains du chaos",
       "note": null,
       "origine_sociale": "Soldat / Guerrier / Combattant",
       "possible": true
     },
     {
-      "association": "Nains des plaines — Paysan / Ouvrier",
-      "culture": "Nains des plaines",
+      "association": "Nains du chaos — Paysan / Ouvrier",
+      "culture": "Nains du chaos",
       "note": null,
       "origine_sociale": "Paysan / Ouvrier",
       "possible": true
@@ -1242,8 +1242,8 @@
       "possible": true
     },
     {
-      "association": "Nains des plaines — Commerçant",
-      "culture": "Nains des plaines",
+      "association": "Nains du chaos — Commerçant",
+      "culture": "Nains du chaos",
       "note": null,
       "origine_sociale": "Commerçant",
       "possible": true

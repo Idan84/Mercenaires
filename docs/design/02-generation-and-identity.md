@@ -207,9 +207,12 @@ Après calcul de la distribution peuple/culture, `Create_Mercenary()` applique l
 
 Le bonus est appliqué même si le peuple ou la culture du candidat ont un alignement principal très différent : le capitaine **attire** davantage de profils de sa propre orientation, sans créer d’exclusion.
 
-### Exception culturelle — Elfes noirs
+### Exceptions culturelles — Elfes noirs, Nains du chaos
 
-La culture **Elfes noirs** remplace l'alignement principal du peuple Elfe par **Chaotique mauvais** avant application de la distribution 40/45/15.
+Avant application de la distribution 40/45/15, certaines cultures remplacent l'alignement principal de leur peuple (`culture_overrides` dans `alignment-generation.json`) :
+
+- **Elfes noirs** : **Chaotique mauvais** au lieu de l'alignement principal du peuple Elfe ;
+- **Nains du chaos** (Idan, 2026-10-23) : **Chaotique neutre** au lieu de l'alignement principal du peuple Nain.
 
 ## Affinité capitaine ↔ mercenaire (phase 1)
 

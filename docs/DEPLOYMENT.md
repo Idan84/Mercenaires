@@ -81,6 +81,10 @@ Pour savoir quoi produire : l'onglet **Avatars** du Design Lab (https://bloodand
 
 Idan y dépose ses masters de pictos sur fond blanc, rangés par famille : `media/pictos/Culture/` (une image par culture, 2026-10-22). `api/pictos.php` liste le dossier et ses sous-dossiers (même bibliothèque que les avatars) : https://bloodandwages.idanwizen.com/api/pictos.php. Les masters sont ensuite copiés dans `assets-src/Picto/Culture/` sous le nom de leur culture (le fichier d'origine est noté dans le `README.md` du dossier), détourés par `scripts/build-pictos.sh`, comme ceux des peuples et des ascendances, et les versions web vont dans `prototype-web/assets/pictos/culture-<culture>.webp`. Le dossier Hostinger n'est lu que pour cette étape : le jeu n'en dépend pas.
 
+### Images d'équipement : `media/equipements/`
+
+Idan y dépose les images des objets (2026-10-23) : `media/equipements/armures/` (une image par armure et par tier, T1 à T4 ; le T4 n'est pas encore en jeu) et `media/equipements/Frames/` (les cadres posés autour d'un objet selon son tier). Le dossier n'est pas listable de l'extérieur (403) : `api/equipment.php` le liste, sous-dossiers compris, avec la même bibliothèque que les avatars : https://bloodandwages.idanwizen.com/api/equipment.php.
+
 ### Silhouettes d'équipement : `media/Avatars_Equipements/`
 
 Décision d'Idan du 2026-10-21. Il s'agit d'une silhouette par peuple et par sexe, soit 20 images. Elle remplace le mannequin de l'onglet Équipement de la fiche et s'affiche en multiply : le blanc disparaît sur le fond beige, sans détourage.

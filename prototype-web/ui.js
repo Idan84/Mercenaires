@@ -577,12 +577,23 @@ function gearTooltip(item){
     ${item.description?`<small>${esc(item.description)}</small>`:""}
   </span>`;
 }
-// Une case d'objet : picto de l'emplacement, contour selon la qualité, détail au survol.
+// Image d'un objet selon son tier (Idan, 2026-10-23 : masters dans assets-src/Equipements/, versions du jeu
+// par scripts/build-equipment.js), ou null tant qu'il n'en a pas : la case garde alors son picto.
+const EQUIPMENT_ART_DIRS={armor:"armures",weapon:"armes"};
+function equipmentArt(item){
+  const dir=EQUIPMENT_ART_DIRS[item?.itemType];
+  const key=dir?`${dir}/${pictoSlug(item.name)}-${item.tier}`:null;
+  return key&&typeof EQUIPMENT_ART!=="undefined"&&EQUIPMENT_ART.has(key)?`assets/equipment/${key}.webp`:null;
+}
+// Une case d'objet : image dans son cadre de tier (ou picto de l'emplacement et contour selon la qualité),
+// détail au survol.
 function gearTile(slot,item,{extraClass=""}={}){
+  const art=equipmentArt(item);
   const quality=item?.qualityCode?` gear-tile--${esc(item.qualityCode)}`:"";
+  const framed=art?` gear-tile--art gear-tile--t${Number(item.tier)||1}`:"";
   const title=item?"":` title="${esc(slot.label)} : vide"`;
-  return `<span class="gear-tile ${item?"is-filled":"is-empty"}${quality}${extraClass?" "+extraClass:""}" tabindex="${item?0:-1}"${title}>
-    ${gearIcon(gearKind(slot,item))}${item?gearTooltip(item):""}
+  return `<span class="gear-tile ${item?"is-filled":"is-empty"}${quality}${framed}${extraClass?" "+extraClass:""}" tabindex="${item?0:-1}"${title}>
+    ${art?`<img class="gear-art" src="${art}" alt="" loading="lazy">`:gearIcon(gearKind(slot,item))}${item?gearTooltip(item):""}
   </span>`;
 }
 function renderEquipment(c) {

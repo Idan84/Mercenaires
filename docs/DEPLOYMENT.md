@@ -83,7 +83,7 @@ Idan y dépose ses masters de pictos sur fond blanc, rangés par famille : `medi
 
 ### Images d'équipement : `media/equipements/`
 
-Idan y dépose les images des objets (2026-10-23) : `media/equipements/armures/` (une image par armure et par tier, T1 à T4 ; le T4 n'est pas encore en jeu) et `media/equipements/Frames/` (les cadres posés autour d'un objet selon son tier). Le dossier n'est pas listable de l'extérieur (403) : `api/equipment.php` le liste, sous-dossiers compris, avec la même bibliothèque que les avatars : https://bloodandwages.idanwizen.com/api/equipment.php.
+Premier dépôt des images des objets (2026-10-23) : `media/equipements/armures/` (une image par armure et par tier, T1 à T4 ; le T4 n'est pas encore en jeu) et `media/equipements/Frames/` (les cadres de tier). Le dossier n'est pas listable de l'extérieur (403) : `api/equipment.php` le liste, sous-dossiers compris, avec la même bibliothèque que les avatars : https://bloodandwages.idanwizen.com/api/equipment.php. **Le jeu ne lit pas ce dossier** : depuis le même jour, les masters sont dans Git (`assets-src/Equipements/`, plus simple pour Idan comme pour JC3) et les versions du jeu sont tirées par `scripts/build-equipment.js`.
 
 ### Silhouettes d'équipement : `media/Avatars_Equipements/`
 

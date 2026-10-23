@@ -8,6 +8,7 @@ Dépôt des fichiers **bruts** (masters) d'Idan et de Jean-Mimi. Ce dossier n'es
 | `logo/` | Logo Blood & Wages : master sur fond blanc, variantes |
 | `avatars/` | Vocabulaire des mots-clés Bridge des avatars (`avatars/mots-cles-bridge.txt`). **Les avatars eux-mêmes sont sur Hostinger, dans `media/avatars/`** (voir `docs/DEPLOYMENT.md`) : depuis le 2026-10-21, c'est leur seul emplacement (décision d'Idan) ; les anciens avatars de Git ont été retirés. |
 | `Picto/Peuple/`, `Picto/Ascendance/` | Pictos des peuples et des ascendances. Après un ajout ou une retouche, `scripts/build-pictos.sh` régénère les versions du jeu (`prototype-web/assets/pictos/`) |
+| `Equipements/Armures/`, `Equipements/Armes/`, `Equipements/Frames/` | Images des objets par tier (T1 à T4, fond noir) et cadres de tier. Noms : `<Nom>_<tier>.jpg` (voir `Equipements/README.md`). Après un ajout, `node scripts/build-equipment.js` régénère les versions du jeu (`prototype-web/assets/equipment/`) |
 | `audio/` | Musiques, ambiances, bruitages |
 | `divers/` | Tout le reste, ou en cas de doute |
 

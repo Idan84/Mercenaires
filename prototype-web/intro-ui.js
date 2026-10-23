@@ -237,7 +237,7 @@ function renderChoiceStep(step){
     const label=choiceLabel(step.key,v);
     const picto=step.picto&&v?renderPicto(step.picto,v,{size:"wizard"}):"";
     return `<button class="wizard-option-card ${v===selected?"is-selected":""}" data-wizard-choice="${esc(v)}" aria-pressed="${v===selected?"true":"false"}">
-      <span class="wizard-option-art">${picto||`<span class="wizard-option-monogram">${esc(label).charAt(0)}</span>`}</span>
+      <span class="wizard-option-art${picto?"":" wizard-option-art--monogram"}">${picto||`<span class="wizard-option-monogram">${esc(label).charAt(0)}</span>`}</span>
       <span class="wizard-option-label">${esc(label)}</span>
       <span class="wizard-option-check" aria-hidden="true">✓</span>
     </button>`;

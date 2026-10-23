@@ -25,7 +25,7 @@ const captainAffinity=c=>c.affinity==null?null:{total:c.affinity};
 const affinityPresentation=score=>({filled:Math.floor((score+100)/20),phrase:"Affinité test"});
 const renderCard=new Function("game","renderAvatar","renderPicto","renderReputationStars","captainAffinity","affinityPresentation","recoveryLabel","fmt","esc",extract("function rosterMetricIcon(", "\nfunction renderAudit()")+"\nreturn characterRow;")(
   game, () => "<figure class='avatar-frame'>portrait</figure>",
-  (_,people)=>'<img class="picto" alt="" title="'+people+'">',
+  (_,name)=>name?'<img class="picto" alt="" title="'+name+'">':"",
   c=>'<span class="rep-stars">★★★</span>',
   captainAffinity,affinityPresentation,()=> "Blessé",
   String,escapeHTML
@@ -33,7 +33,12 @@ const renderCard=new Function("game","renderAvatar","renderPicto","renderReputat
 const card=renderCard(squad[0]);
 assert.match(card,/Florine Orangefeuillu/);
 assert.match(card,/class="roster-name"/);
-assert.match(card,/roster-people-picto/);
+// Pictos peuple, culture puis ascendance à droite ; « Sang de … » à côté de la culture (Idan, 2026-10-23).
+assert.match(card,/class="roster-pictos"><img class="picto" alt="" title="Humain"><img class="picto" alt="" title="Tribus de la jungle"><\/span>/);
+assert.match(card,/class="roster-culture">Tribus de la jungle<\/span>/,"sans ascendance : la culture seule");
+const blooded=renderCard({...squad[1],ascendance:"Sang de dragon"});
+assert.match(blooded,/title="Nain"><img class="picto" alt="" title="Montagnards"><img class="picto" alt="" title="Sang de dragon"><\/span>/);
+assert.match(blooded,/class="roster-culture">Montagnards · Sang de dragon<\/span>/);
 assert.match(card,/class="roster-metric-icon"/);
 assert.match(card,/37 PO/);
 assert.match(card,/roster-affinity-hearts/);

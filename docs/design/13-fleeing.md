@@ -27,7 +27,9 @@ S'il ne reste aucun mouvement disponible, le personnage ne bouge pas mais demeur
 
 ## Aura du capitaine (Idan, 2026-10-24)
 
-Tant que le capitaine est sur le champ de bataille (vivant, sur la carte), ses alliés à **10 cases ou moins** ont **+30 en Courage** pour leurs tests de Courage et leurs reprises de contrôle ; lui-même n'en profite pas. Sur la fiche du capitaine, cette aura remplace la mention du salaire. But : inciter le joueur à emmener son capitaine au combat (il y gagne aussi de l'expérience). Simulation (3 contre 3) : de 51 à 59 % de victoires, et de 73 à 52 % d'alliés qui fuient au moins une fois.
+Tant que le capitaine est sur le champ de bataille (vivant, sur la carte), ses alliés à **10 cases ou moins** gagnent en Courage, pour leurs tests de Courage et leurs reprises de contrôle, **35 % de son Courage + 25 % de son Charisme**, équipement compris, arrondi ; lui-même n'en profite pas. Sur la fiche du capitaine, cette aura (sa valeur) remplace la mention du salaire. But : inciter le joueur à emmener son capitaine au combat (il y gagne aussi de l'expérience) et à bien le choisir et l'équiper.
+
+V1 : +30 pour tous les capitaines. Simulation (3 contre 3) : de 51 à 59 % de victoires, et de 73 à 52 % d'alliés qui fuient au moins une fois. V2 (Idan, 2026-10-24, « 35 + 25 », « l'équipement compte ») : même moyenne au départ (3 000 capitaines générés : médiane +30, de +21 à +40 pour 90 % d'entre eux), puis l'aura grandit avec le capitaine.
 
 ## Tours suivants — reprise de contrôle
 

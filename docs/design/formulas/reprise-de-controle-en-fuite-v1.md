@@ -27,7 +27,7 @@ $$
 P_{recuperation}=min(95,max(5,ScoreRecuperation))
 $$
 
-`AuraCapitaine` : +30 si le capitaine allié est sur la carte à 10 cases ou moins ([aura du capitaine](/design/#doc=formulas/courage-post-attaque-cac-v1.md), Idan, 2026-10-24).
+`AuraCapitaine` : 35 % du Courage + 25 % du Charisme du capitaine, équipement compris, s'il est sur la carte à 10 cases ou moins ([aura du capitaine](/design/#doc=formulas/courage-post-attaque-cac-v1.md), Idan, 2026-10-24).
 
 `TourFuite = 1` au premier tour complet commencé dans l'état **En Fuite**, puis augmente de 1 à chaque nouveau tour tant que l'état persiste.
 

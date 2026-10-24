@@ -238,24 +238,37 @@ assert.equal(combat.resolveCourage(brute,{...hero,fleeing:true},woundMelee),null
 assert.equal(combat.resolveCourage(brute,{...hero,alive:false},woundMelee),null);
 assert.equal(combat.resolveCourage(brute,hero,{ok:true,chargeFall:true}),null);
 
-// Aura du capitaine (Idan, 2026-10-24) : +30 Courage aux alliés à 10 cases ou moins, tant qu'il est sur la carte ;
-// pas pour lui-même ni pour l'ennemi. Elle compte aussi pour la reprise de contrôle.
+// Aura du capitaine (Idan, 2026-10-24) : 35 % de son Courage + 25 % de son Charisme, équipement compris, arrondi, aux
+// alliés à 10 cases ou moins, tant qu'il est sur la carte ; pas pour lui-même ni pour l'ennemi. Elle compte aussi pour la
+// reprise de contrôle.
 const captain={...teamUnit(a,"player",3,5),isCaptain:true};
 const units=[hero,brute,captain];
-assert.equal(combat.captainAura(hero,units),30);
+const aura=Math.round(0.35*a.stats.Courage+0.25*a.stats.Charisme);
+assert.ok(aura>0);
+assert.equal(combat.captainAuraBonus(captain),aura);
+assert.equal(combat.captainAura(hero,units),aura);
 assert.equal(combat.captainAura(captain,units),0,"pas pour le capitaine lui-même");
 assert.equal(combat.captainAura(brute,units),0,"pas pour l'ennemi");
 assert.equal(combat.captainAura(hero,[hero,{...captain,q:3+11}]),0,"hors de portée (11 cases)");
-assert.equal(combat.captainAura(hero,[hero,{...captain,q:3+10,r:3}]),30,"10 cases : à portée");
+assert.equal(combat.captainAura(hero,[hero,{...captain,q:3+10,r:3}]),aura,"10 cases : à portée");
 assert.equal(combat.captainAura(hero,[hero,{...captain,alive:false}]),0,"capitaine tombé");
 assert.equal(combat.captainAura(hero,[hero,{...captain,alive:false,offMap:true}]),0,"capitaine sorti de la carte");
 c=combat.resolveCourage(brute,hero,woundMelee,{units});
-assert.equal(c.aura,30);
-near(c.pHold,Math.min(95,Math.max(5,heroScore+30)),"cible blessée avec l'aura");
+assert.equal(c.aura,aura);
+near(c.pHold,Math.min(95,Math.max(5,heroScore+aura)),"cible blessée avec l'aura");
 c=combat.resolveCourage(brute,hero,missMelee,{units});
 assert.equal(c.aura,0,"l'attaquant ennemi n'a pas d'aura");
-near(combat.recoveryChance(hero,brute,1,units),Math.min(95,Math.max(5,heroScore+10+30)),"reprise de contrôle avec l'aura");
-assert.equal(combat.rollRecovery(hero,brute,1,units).aura,30);
+near(combat.recoveryChance(hero,brute,1,units),Math.min(95,Math.max(5,heroScore+10+aura)),"reprise de contrôle avec l'aura");
+assert.equal(combat.rollRecovery(hero,brute,1,units).aura,aura);
+{
+  // L'équipement compte : Bague du courage T4 (+20 % de Courage) et String du Charisme T4 (+20 % de Charisme).
+  const geared=createCombatEngine({...reference,...Object.fromEntries(["rings","pants"].map(k=>[k,
+    JSON.parse(fs.readFileSync(path.join(ROOT,"data","reference",k+".json"),"utf8"))]))},{random:()=>0});
+  const chief={id:50,stats:{Courage:60,Charisme:40},items:[{id:"r",itemType:"ring",name:"Bague du courage",tier:4},
+    {id:"p",itemType:"pants",name:"String du Charisme",tier:4}],equipment:{slots:{ring_1:"r",pants:"p"}}};
+  assert.equal(geared.captainAuraBonus({character:{...chief,items:[],equipment:{slots:{}}}}),31,"0,35 × 60 + 0,25 × 40");
+  assert.equal(geared.captainAuraBonus({character:chief}),37,"0,35 × 72 + 0,25 × 48 = 37,2");
+}
 
 // Reprise de contrôle : +10 par tour commencé En Fuite, borné à 5–95.
 near(combat.recoveryChance(hero,brute,1),Math.min(95,Math.max(5,heroScore+10)),"reprise tour 1");

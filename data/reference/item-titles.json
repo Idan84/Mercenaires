@@ -5,11 +5,11 @@
   "columns": [
     {
       "key": "nom",
-      "source": "Nom de l’arme (weapons.json), de l’armure (base-armors.json), des bottes (boots.json), de la ceinture (belts.json), de l’amulette (amulets.json) ou de la cape (capes.json)"
+      "source": "Nom de l’arme (weapons.json), de l’armure (base-armors.json), des bottes (boots.json), de la ceinture (belts.json), de l’amulette (amulets.json), de la cape (capes.json) ou des gants (gloves.json)"
     },
     {
       "key": "famille",
-      "source": "arme, armure, bottes, ceinture, amulette ou cape"
+      "source": "arme, armure, bottes, ceinture, amulette, cape ou gants"
     },
     {
       "key": "t1",
@@ -28,7 +28,7 @@
       "source": "Titre T4"
     }
   ],
-  "row_count": 58,
+  "row_count": 61,
   "rows": [
     {
       "nom": "Arbalète",
@@ -493,6 +493,30 @@
       "t2": "Cape du rôdeur",
       "t3": "Mante de l’ombre",
       "t4": "Le Manteau du Sans-Visage"
+    },
+    {
+      "nom": "Gants de pièges",
+      "famille": "gants",
+      "t1": "Mitaines rapiécées",
+      "t2": "Gants du crocheteur",
+      "t3": "Gants du poseur de pièges",
+      "t4": "Les Doigts de l’Ombre"
+    },
+    {
+      "nom": "Gants de dextérité",
+      "famille": "gants",
+      "t1": "Gants de toile",
+      "t2": "Gants d’escrimeur",
+      "t3": "Gantelets du virtuose",
+      "t4": "Les Mains du Prestidigitateur"
+    },
+    {
+      "nom": "Gants de force",
+      "famille": "gants",
+      "t1": "Gants de bûcheron",
+      "t2": "Gants de forgeron",
+      "t3": "Gantelets du briseur",
+      "t4": "Les Poings du Titan"
     }
   ]
 }

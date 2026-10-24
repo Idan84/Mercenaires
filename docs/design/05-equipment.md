@@ -61,7 +61,7 @@ La vue **Boucliers — équilibrage** expose `Bonus blocage base`, `Malus vitess
 
 ### Slots canoniques
 
-- Casque / Chapeau ; Amulette ; Armure ; Gants ; Ceinturon ; Culotte ; Bottes ; Cape (Gants et Culotte : Idan, 2026-10-24, objets à venir) ;
+- Casque / Chapeau ; Amulette ; Armure ; Gants ; Ceinturon ; Culotte ; Bottes ; Cape (Gants et Culotte : Idan, 2026-10-24 ; culottes à venir) ;
 - **6 bagues** ;
 - **2 sets d’armes**, chacun avec arme principale + main secondaire ;
 - **4 équipements de ceinture** (potions / consommables / petits objets actifs) ;
@@ -145,6 +145,14 @@ Trois types de capes (`data/reference/capes.json`), portées dans l’emplacemen
 - Au combat (`statWithGear`) : Esquive pour le Toucher ; Résistance physique pour la réduction des dégâts physiques (et le contrecoup d’un échec critique de blessure). La Discrétion servira quand elle aura une règle de jeu.
 - Sur la fiche, Résistance physique (Caractéristiques), Esquive et Discrétion (Compétences) montrent la valeur bonifiée, avec la ligne de la cape.
 - **5 %** de chance d’en avoir une à la création (`cape_chance`), d’un type tiré au hasard ; **1D6** capes dans le stock de départ (doc 11 §16).
+
+### Gants (Idan, 2026-10-24)
+
+Mêmes règles que les bottes : trois types de gants (`data/reference/gloves.json`), portés dans l’emplacement **Gants** : **Gants de pièges** (Pièges), **Gants de dextérité** (Dextérité), **Gants de force** (Force). Bonus de **+5 / 10 / 15 / 20 %** de la valeur de base selon le tier ; la qualité ne le change pas.
+
+- Au combat (`statWithGear`) : Force pour les dégâts et l’étape Blesser au corps à corps ; Dextérité pour le Toucher et le blocage au bouclier (le combat à deux armes la divise ensuite). Les Pièges serviront quand ils auront une règle de jeu. L’XP de Force (charge portée) reste calculée sur la Force du mercenaire, sans les gants.
+- Sur la fiche, Force et Dextérité (Caractéristiques) et Pièges (Compétences) montrent la valeur bonifiée, avec la ligne des gants ; la case des dégâts compte la Force bonifiée.
+- **5 %** de chance d’en avoir une paire à la création (`gloves_chance`), d’un type tiré au hasard ; **1D6** paires dans le stock de départ (doc 11 §16).
 
 ### Échanges d’équipement : Donner, Retirer, Troquer (Idan, 2026-10-24)
 

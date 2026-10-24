@@ -15,6 +15,7 @@ const boots = JSON.parse(fs.readFileSync(path.join(root, "data/reference/boots.j
 const belts = JSON.parse(fs.readFileSync(path.join(root, "data/reference/belts.json"), "utf8")).rows;
 const amulets = JSON.parse(fs.readFileSync(path.join(root, "data/reference/amulets.json"), "utf8")).rows;
 const capes = JSON.parse(fs.readFileSync(path.join(root, "data/reference/capes.json"), "utf8")).rows;
+const gloves = JSON.parse(fs.readFileSync(path.join(root, "data/reference/gloves.json"), "utf8")).rows;
 
 for (const key of EQUIPMENT_ART) {
   assert.ok(fs.existsSync(path.join(web, "assets/equipment", key + ".webp")), key);
@@ -40,6 +41,10 @@ for (const amulet of amulets) {
 // Capes (Idan, 2026-10-24) : 3 types × 4 tiers.
 for (const cape of capes) {
   for (const tier of [1,2,3,4]) assert.ok(EQUIPMENT_ART.has(`capes/${pictoSlug(cape.nom)}-${tier}`), `${cape.nom} T${tier}`);
+}
+// Gants (Idan, 2026-10-24) : 3 types × 4 tiers.
+for (const pair of gloves) {
+  for (const tier of [1,2,3,4]) assert.ok(EQUIPMENT_ART.has(`gants/${pictoSlug(pair.nom)}-${tier}`), `${pair.nom} T${tier}`);
 }
 for (const tier of [1,2,3,4]) assert.ok(EQUIPMENT_ART.has(`frames/frame-${tier}`), `cadre T${tier}`);
 

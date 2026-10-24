@@ -10,7 +10,7 @@ const {createEquipmentEffects} = require("../game-core/equipment-effects.js");
 
 const ROOT = path.resolve(__dirname, "..");
 const read = file => JSON.parse(fs.readFileSync(path.join(ROOT, "data", "reference", file), "utf8"));
-const reference = {weapons:read("weapons.json"), baseArmors:read("base-armors.json"), boots:read("boots.json"), belts:read("belts.json"), amulets:read("amulets.json"), capes:read("capes.json"),
+const reference = {weapons:read("weapons.json"), baseArmors:read("base-armors.json"), boots:read("boots.json"), belts:read("belts.json"), amulets:read("amulets.json"), capes:read("capes.json"), gloves:read("gloves.json"),
   itemQualities:read("item-qualities.json"),
   skills:read("skills.json"), formulaConstants:read("formula-constants.json")};
 const engine = createCombatEngine(reference);
@@ -126,10 +126,28 @@ const shadow = caped("Cape de discrétion", 4);
 near(shadow.e["Discrétion"].value, 36, "Discrétion 30 + 20 %");
 assert.equal(shadow.e["Résistance physique"].lines.length, 0, "une cape de discrétion ne touche pas la Résistance physique");
 
+// Gants (Idan, 2026-10-24) : Force (dégâts et blessure au CAC), Dextérité (toucher, blocage), Pièges.
+const gloved = (name, tier, more = {}) => {
+  const c = {...knight, stats:{...stats, Force:60, ...more}, skills:{...knight.skills, martial:{...(knight.skills?.martial||{}), "Pièges":30}},
+    items:[...knight.items, {id:"g", itemType:"gloves", name, tier, qualityName:"Correcte"}], equipment:{slots:{...knight.equipment.slots, gloves:"g"}}};
+  return {c, e:effects(c), unit:{character:c, activeSet:1}, bare:{character:{...c, equipment:{slots:{...knight.equipment.slots}}}, activeSet:1}};
+};
+const strong = gloved("Gants de force", 4);
+near(strong.e.Force.value, 72, "Force 60 + 20 %");
+assert.deepEqual(strong.e.Force.lines, [{label:"Gants de force (Correcte)", delta:12, reason:"gear", percent:20}]);
+near(engine.statWithGear(strong.unit, "Force"), 72, "le combat lit la même Force");
+const deft = gloved("Gants de dextérité", 2);
+near(deft.e["Dextérité"].value, 62 * 1.10, "Dextérité 62 + 10 %");
+assert.equal(deft.e["Dextérité"].lines[0].reason, "gear");
+near(engine.effectiveDexterity(deft.unit), engine.effectiveDexterity(deft.bare) * 1.10, "toucher : la Dextérité avec les gants");
+const trapper = gloved("Gants de pièges", 3);
+near(trapper.e["Pièges"].value, 34.5, "Pièges 30 + 15 %");
+assert.equal(strong.e["Pièges"].lines.length, 0, "des gants de force ne touchent pas les Pièges");
+
 // Sans équipement : rien ne change.
 const bare = effects({stats, skills:{}, items:[], equipment:{slots:{}}});
 for (const name of ["Vitesse","Esquive","Perception","Endurance","Courage","Réserve de mana","Puissance magique","Volonté","Chance",
-  "Résistance physique","Discrétion","Initiative","Dextérité"]) near(bare[name].value, bare[name].base);
+  "Résistance physique","Discrétion","Force","Pièges","Initiative","Dextérité"]) near(bare[name].value, bare[name].base);
 // Dégâts par set (Idan, 2026-10-24) : jet minimum et maximum du combat contre une cible sans résistance.
 const {attacks} = createEquipmentEffects({engine});
 const fighter = {stats:{Force:60},

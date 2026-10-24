@@ -6,7 +6,7 @@
 // - Armures/<Nom>_<tier>[_horodatage].jpg et Armes/<Nom>_<tier>[...].jpg : le nom est reconnu sans accents,
 //   majuscules ni petits mots (« Armure_cuir » = « Armure de cuir »), dans n'importe quel ordre
 //   (« Double_arme_hast » = « Arme d'hast double »), et abrégé s'il reste sans ambiguïté
-//   (« Fleau » = « Fléau d'armes », « Massue » = « Massue / Gourdin ») ;
+//   (« Fleau » = « Fléau d'armes ») ;
 //   sortie <dossier>/<slug du nom de référence>-<tier>.webp, le slug étant celui de picto-ui.js ;
 // - Frames/frame_<tier>.jpg : cadre de tier, recadré sur le cadre lui-même → frames/frame-<tier>.webp.
 // Écrit aussi prototype-web/equipment-art.js, la liste des images disponibles (pas de requête vers une image

@@ -19,14 +19,14 @@ const weapon = (name, category, tier) => ({
   qualityCode:{1:"worn",2:"standard",3:"luxury"}[tier], qualityName:{1:"Usée",2:"Correcte",3:"Grand Luxe"}[tier]
 });
 game.campaign.company.stock = [
-  weapon("Tromblon","Armes à feu",1), weapon("Écu","Boucliers",2), weapon("Arquebuse / Mousquet","Armes à feu",1),
+  weapon("Tromblon","Armes à feu",1), weapon("Écu","Boucliers",2), weapon("Arquebuse","Armes à feu",1),
   weapon("Tromblon","Armes à feu",1), weapon("Tromblon","Armes à feu",3)
 ];
 
 const groups = ui.stockGroups(game.campaign.company.stock);
 assert.deepEqual(groups.map(g => [g.category, g.count]), [["Armes à feu",4],["Boucliers",1]], "catégories triées");
 assert.deepEqual(groups[0].rows.map(r => [r.item.name, r.item.tier, r.count]),
-  [["Arquebuse / Mousquet",1,1],["Tromblon",1,2],["Tromblon",3,1]], "même arme et même tier : une ligne × 2");
+  [["Arquebuse",1,1],["Tromblon",1,2],["Tromblon",3,1]], "même arme et même tier : une ligne × 2");
 
 ui.renderQuartermaster();
 assert.equal(elements["quartermaster-count"].textContent, "5 armes");

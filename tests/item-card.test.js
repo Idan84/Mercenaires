@@ -45,8 +45,8 @@ near(ecu.weight, 12);
 assert.deepEqual(ecu.range, {min:1, max:1});
 
 // Traits des armes de tir et à feu.
-assert.equal(cards.card(item("weapon","Arquebuse / Mousquet",2,"standard")).reload, true);
-assert.equal(cards.card(item("weapon","Arquebuse / Mousquet",2,"standard")).chainShots, false);
+assert.equal(cards.card(item("weapon","Arquebuse",2,"standard")).reload, true);
+assert.equal(cards.card(item("weapon","Arquebuse",2,"standard")).chainShots, false);
 assert.equal(cards.card(item("weapon","Arc",2,"standard")).chainShots, true);
 assert.equal(cards.card(item("weapon","Tromblon",2,"standard")).area, true);
 

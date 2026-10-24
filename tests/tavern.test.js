@@ -18,7 +18,8 @@ const files={
   characteristics:"characteristics.json",formulaConstants:"formula-constants.json",
   weapons:"weapons.json",baseArmors:"base-armors.json",itemQualities:"item-qualities.json",
   equipmentSlots:"equipment-slots.json",startingEquipmentGeneration:"starting-equipment-generation.json",
-  binaryAptitudeGrants:"binary-aptitude-grants.json",alignmentGeneration:"alignment-generation.json"
+  binaryAptitudeGrants:"binary-aptitude-grants.json",alignmentGeneration:"alignment-generation.json",
+  renamedNames:"renamed-names.json"
 };
 const reference=Object.fromEntries(Object.entries(files).map(([key,file])=>[
   key,JSON.parse(fs.readFileSync(path.join(ROOT,"data","reference",file),"utf8"))
@@ -282,14 +283,20 @@ for(const m of old9.company.roster) delete m.contract;
 assert.equal(stable.ensureInitialContracts(old9),true);
 assert.equal(old9.company.roster.filter(m=>m.contract).length,crew.length);
 assert.equal(stable.ensureInitialContracts(old9),false);
-// Ancienne sauvegarde avec « Nains des plaines » (Idan, 2026-10-23 : devenus « Nains du chaos ») : renommés partout.
-assert.equal(stable.ensureCultureNames(old9),false,"aucun ancien nom : rien à sauvegarder");
+// Anciens noms (renamed-names.json) : « Nains des plaines » → « Nains du chaos » (2026-10-23),
+// « Massue / Gourdin » → « Massue », « Arquebuse / Mousquet » → « Arquebuse » (2026-10-24) ; renommés partout,
+// en valeur comme en clé (compétences), avec l'identifiant de modèle de l'arme.
+assert.equal(stable.ensureRenamedNames(old9),false,"aucun ancien nom : rien à sauvegarder");
 old9.company.roster[0].culture="Nains des plaines";
-old9.tavern.candidates.push({mercenary:{culture:"Nains des plaines",notes:["Nains des plaines"]}});
-assert.equal(stable.ensureCultureNames(old9),true);
+old9.tavern.candidates.push({mercenary:{culture:"Nains des plaines",notes:["Nains des plaines"],
+  skills:{martial:{"Massue / Gourdin":12,"Arquebuse / Mousquet":7}},
+  items:[{name:"Massue / Gourdin",templateId:"weapon:massue_gourdin"}],weaponPreferences:{ranged:{weapon:"Arquebuse / Mousquet"}}}});
+assert.equal(stable.ensureRenamedNames(old9),true);
 assert.equal(old9.company.roster[0].culture,"Nains du chaos");
-assert.deepEqual(old9.tavern.candidates.at(-1).mercenary,{culture:"Nains du chaos",notes:["Nains du chaos"]});
-assert.equal(stable.ensureCultureNames(old9),false);
+assert.deepEqual(old9.tavern.candidates.at(-1).mercenary,{culture:"Nains du chaos",notes:["Nains du chaos"],
+  skills:{martial:{"Massue":12,"Arquebuse":7}},
+  items:[{name:"Massue",templateId:"weapon:massue"}],weaponPreferences:{ranged:{weapon:"Arquebuse"}}});
+assert.equal(stable.ensureRenamedNames(old9),false);
 old9.tavern.candidates.pop();
 // Stock d'armes de départ (Idan, 2026-10-23) : à la création, et pour une ancienne sauvegarde qui n'en a pas.
 assert.ok(Array.isArray(s9.company.stock)&&s9.company.stock.length>=2&&s9.company.stock.length<=40,"2D20 armes");

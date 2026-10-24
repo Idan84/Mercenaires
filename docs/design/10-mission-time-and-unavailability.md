@@ -178,7 +178,7 @@ En complément des données déjà prévues dans l’architecture :
 - coefficients PLAYTEST des formules de blessure, de fatigue et de durée, à ajuster en jeu ;
 - influence précise des bâtiments médicaux ;
 - séquelles permanentes (reportées, décision Idan) ;
-- sort exact des mercenaires ayant fui hors de la carte, capturés ou disparus, abandon et extraction des personnages laissés sur place.
+- sort exact des mercenaires ayant fui hors de la carte, capturés ou disparus, abandon et extraction des personnages laissés sur place (défaite d'une mission « Faire le ménage » : jet de mort à probabilité doublée, doc 17 §8).
 
 ## 11 — Implémentation (prototype)
 

@@ -40,6 +40,7 @@ Chaque école a deux écoles opposées (`skills.json`, colonne `ecoles_opposees`
 
 - Un mercenaire **peut être bon dans deux écoles opposées** : elles coexistent, la génération ne les exclut pas (Idan, 2026-10-21).
 - En revanche, **quand il progresse dans une école, il baisse dans ses opposées** (Idan, 2026-10-21), dans l'esprit de « on progresse au détriment des autres » des armes (doc 08). Ampleur de la baisse à définir.
+- **Bagues de magie** (Idan, 2026-10-24) : une par école ; +10 à +25 % de la maîtrise de base de l'école, −15 à 0 % de celle des deux écoles opposées selon le tier (doc 05 « Bagues »).
 
 ## Premier catalogue de sorts — idées mono-école
 

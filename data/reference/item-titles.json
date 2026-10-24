@@ -5,11 +5,11 @@
   "columns": [
     {
       "key": "nom",
-      "source": "Nom de l’arme (weapons.json), de l’armure (base-armors.json), des bottes (boots.json), de la ceinture (belts.json), de l’amulette (amulets.json), de la cape (capes.json), des gants (gloves.json) ou de la culotte (pants.json)"
+      "source": "Nom de l’arme (weapons.json), de l’armure (base-armors.json), des bottes (boots.json), de la ceinture (belts.json), de l’amulette (amulets.json), de la cape (capes.json), des gants (gloves.json), de la culotte (pants.json) ou de la bague (rings.json)"
     },
     {
       "key": "famille",
-      "source": "arme, armure, bottes, ceinture, amulette, cape, gants ou culotte"
+      "source": "arme, armure, bottes, ceinture, amulette, cape, gants, culotte ou bague"
     },
     {
       "key": "t1",
@@ -28,7 +28,7 @@
       "source": "Titre T4"
     }
   ],
-  "row_count": 64,
+  "row_count": 75,
   "rows": [
     {
       "nom": "Arbalète",
@@ -541,6 +541,94 @@
       "t2": "Slip du compagnon",
       "t3": "Slip du frère d’armes",
       "t4": "Le Slip de la Fraternité Éternelle"
+    },
+    {
+      "nom": "Bague de la chance",
+      "famille": "bague",
+      "t1": "Anneau du joueur",
+      "t2": "Bague du veinard",
+      "t3": "Bague du trèfle d’or",
+      "t4": "L’Anneau de Dame Fortune"
+    },
+    {
+      "nom": "Bague du courage",
+      "famille": "bague",
+      "t1": "Anneau du conscrit",
+      "t2": "Bague du brave",
+      "t3": "Bague du cœur de lion",
+      "t4": "L’Anneau de l’Indomptable"
+    },
+    {
+      "nom": "Bague de Feu",
+      "famille": "bague",
+      "t1": "Anneau de braise",
+      "t2": "Bague de la flammèche",
+      "t3": "Bague du brasier",
+      "t4": "L’Anneau du Cœur Ardent"
+    },
+    {
+      "nom": "Bague de l’Eau",
+      "famille": "bague",
+      "t1": "Anneau de rosée",
+      "t2": "Bague de la source",
+      "t3": "Bague des marées",
+      "t4": "L’Anneau des Abysses"
+    },
+    {
+      "nom": "Bague de la Foudre",
+      "famille": "bague",
+      "t1": "Anneau d’étincelle",
+      "t2": "Bague de l’orage",
+      "t3": "Bague du tonnerre",
+      "t4": "L’Anneau de la Colère du Ciel"
+    },
+    {
+      "nom": "Bague de l’invocation",
+      "famille": "bague",
+      "t1": "Anneau de l’appel",
+      "t2": "Bague du conjurateur",
+      "t3": "Bague du cercle scellé",
+      "t4": "L’Anneau des Mille Portes"
+    },
+    {
+      "nom": "Bague de la transmutation",
+      "famille": "bague",
+      "t1": "Anneau de l’apprenti alchimiste",
+      "t2": "Bague de l’alchimiste",
+      "t3": "Bague du grand œuvre",
+      "t4": "L’Anneau de la Pierre Philosophale"
+    },
+    {
+      "nom": "Bague du nécromancien",
+      "famille": "bague",
+      "t1": "Anneau d’os",
+      "t2": "Bague du fossoyeur",
+      "t3": "Bague du nécromant",
+      "t4": "L’Anneau du Roi-Liche"
+    },
+    {
+      "nom": "Bague du soigneur",
+      "famille": "bague",
+      "t1": "Anneau du rebouteux",
+      "t2": "Bague du guérisseur",
+      "t3": "Bague du thaumaturge",
+      "t4": "L’Anneau de la Vie Éternelle"
+    },
+    {
+      "nom": "Bague de l’illusionniste",
+      "famille": "bague",
+      "t1": "Anneau du bonimenteur",
+      "t2": "Bague du prestidigitateur",
+      "t3": "Bague du mirage",
+      "t4": "L’Anneau aux Mille Visages"
+    },
+    {
+      "nom": "Bague de la télékinésie",
+      "famille": "bague",
+      "t1": "Anneau rouillé de l’esprit",
+      "t2": "Bague de l’esprit d’acier",
+      "t3": "Bague de la main invisible",
+      "t4": "L’Anneau du Maître des Esprits"
     }
   ]
 }

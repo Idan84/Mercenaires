@@ -22,6 +22,7 @@ const REFERENCE_FILES = {
   capes: "capes.json",
   gloves: "gloves.json",
   pants: "pants.json",
+  rings: "rings.json",
   itemQualities: "item-qualities.json",
   equipmentSlots: "equipment-slots.json",
   startingEquipmentGeneration: "starting-equipment-generation.json",

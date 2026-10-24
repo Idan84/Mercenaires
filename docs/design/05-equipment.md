@@ -163,6 +163,17 @@ Trois types de culottes (`data/reference/pants.json`), portées dans l’emplace
 - Sur la fiche, Charisme et Intimidation (Caractéristiques) montrent la valeur bonifiée, avec la ligne de la culotte ; sous les cœurs d’affinité, « Avec son Slip d’Affinité » (pas de score affiché).
 - **5 %** de chance d’en avoir une à la création (`pants_chance`), d’un type tiré au hasard ; **1D6** culottes dans le stock de départ (doc 11 §16).
 
+### Bagues (Idan, 2026-10-24)
+
+Onze bagues (`data/reference/rings.json`), portées dans les **six emplacements Bague**. **Plusieurs bagues identiques se cumulent** : chacune ajoute sa ligne.
+
+- **Bague de la chance** (Chance) et **Bague du courage** (Courage) : **+5 / 10 / 15 / 20 %** de la valeur de base selon le tier, comme les bottes.
+- **Bagues de magie**, une par école : Bague de Feu, de l’Eau, de la Foudre, de l’invocation, de la transmutation, du nécromancien (Nécromancie), du soigneur (Vie), de l’illusionniste (Illusion), de la télékinésie. **+10 / 15 / 20 / 25 %** de la maîtrise de base de leur école, et **−15 / 10 / 5 / 0 %** de la maîtrise de base des **deux écoles opposées** (doc 12, `ecoles_opposees`).
+- Au combat (`statWithGear`) : la Chance (critiques et échecs critiques) et le Courage (tests de Courage, reprises de contrôle). Les écoles de magie serviront avec la magie en combat.
+- Sur la fiche : Chance et Courage (Caractéristiques) ; dans l’onglet Magie, la roue et les écoles de prédilection montrent la maîtrise avec les bagues, en vert ou en rouge, et leur détail au survol.
+- **5 %** de chance d’en avoir une à la création (`ring_chance`), dans le premier emplacement ; **1D6** bagues dans le stock de départ (doc 11 §16).
+- Images : la Bague de la télékinésie T1 et T2 sont arrivées sans tier dans leur nom ; T1 = l’anneau rouillé, T2 = l’anneau d’acier noir (choix de JC, à corriger si besoin).
+
 ### Échanges d’équipement : Donner, Retirer, Troquer (Idan, 2026-10-24)
 
 Depuis l’onglet Équipement de la fiche ou l’Intendance, le capitaine peut **Donner** un objet du stock (emplacement vide), **Retirer** un objet au mercenaire (il part au stock) ou **Troquer** (les deux à la fois). Le mercenaire répond dans une boîte de dialogue, positivement ou négativement ; seule réponse possible pour l’instant : **Partir** (plus tard : convaincre, intimider, défier en combat singulier).

@@ -218,6 +218,8 @@ Le capitaine **propose** à un mercenaire de devenir intendant ; il peut refuser
 
 Constantes `steward.*` et `equipment_deal.steward_*` ; code `game-core/steward.js` et `game-core/equipment-deals.js`.
 
+**Interface** (`prototype-web/steward-ui.js` ; textes `data/reference/steward-dialogue.json`, 4 variantes par réponse, écrites par JC) : en tête de l'Intendance, sans intendant, « Proposer le poste à… » liste les mercenaires (grisés s'ils ont déjà été sollicités ce jour-là) ; la réponse s'affiche dans la boîte de dialogue des échanges (proposition, réplique acceptée / flattée / vexée / neutre, issue, Partir). Avec un intendant : son portrait (qui ouvre sa fiche), son Intendance, depuis quand il est en poste, et « Lui parler » — évaluer un candidat de la Taverne (candidat → catégorie → caractéristique) ou lui proposer de revenir sur le terrain. Sa carte passe dans Ma Compagnie, avec le cartouche « Intendant » ; il n'apparaît plus dans Mes mercenaires ni dans la sélection de mission. Dans un échange d'équipement qu'il appuie, la boîte de dialogue le dit (« Isolde, votre intendante, appuie votre proposition. »).
+
 ## 17 — Laboratoire d’alchimie
 
 Fonctions :

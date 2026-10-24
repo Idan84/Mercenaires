@@ -108,5 +108,6 @@
     "already": "Vous lui avez déjà parlé d’équipement aujourd’hui.",
     "empty": "Aucun objet de l’Intendance ne va ici.",
     "captain": "Le capitaine s’équipe librement."
-  }
+  },
+  "steward": "{intendant}, {votre intendant|votre intendante}, appuie votre proposition."
 }

@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "name": "steward-dialogue",
+  "description": "Intendant (Idan, 2026-10-24) : proposer le poste, proposer de revenir sur le terrain, parler à l’intendant (évaluer un candidat de la Taverne). Humeur d’un refus : flattered (le malin, flatté), vexed (le brave, vexé), neutral. {prenom} ; {masculin|féminin} selon celui qui parle ou dont on parle ; {candidat}, {carac}, {valeur}. Textes de JC, à retoucher librement.",
+  "offer": {
+    "proposal": "J’ai besoin de quelqu’un pour tenir l’Intendance. Ça vous dirait ?",
+    "accepted": [
+      "L’Intendance ? Enfin un peu de repos pour mes vieux os. J’accepte.",
+      "Compter les lances plutôt que de les recevoir dans le ventre ? Marché conclu.",
+      "J’ai assez saigné pour cette compagnie. Je prends le poste.",
+      "Vous ne le regretterez pas, capitaine. Rien ne sortira de l’armurerie sans que je le sache."
+    ],
+    "flattered": [
+      "C’est un honneur, capitaine… mais ma place est encore au front.",
+      "Vous me faites confiance pour ça ? J’en suis {touché|touchée}. Mais pas encore.",
+      "Je saurais le faire, sans doute. Mais pas tant que mes bras tiennent une arme.",
+      "Flatteur. Redemandez-moi quand j’aurai quelques cicatrices de plus."
+    ],
+    "vexed": [
+      "Me mettre au placard ? Je me bats mieux que la moitié de vos gars !",
+      "Compter des chaussettes ? Vous me prenez pour qui ?",
+      "Gardez votre comptoir. Moi, je veux du sang.",
+      "Vous voulez m’écarter du combat ? Je m’en souviendrai."
+    ],
+    "neutral": [
+      "Non merci, capitaine. Pas pour l’instant.",
+      "Très peu pour moi.",
+      "Demandez à quelqu’un d’autre.",
+      "Je préfère rester où je suis."
+    ],
+    "outcome_accepted": "{prenom} devient {l’intendant|l’intendante} de la compagnie.",
+    "outcome_refused": "{prenom} reste sur le terrain."
+  },
+  "recall": {
+    "proposal": "La compagnie a besoin de vous sur le terrain. Vous reprenez les armes ?",
+    "accepted": [
+      "Enfin ! Le goût du sang me manquait.",
+      "Les registres me rendaient {fou|folle}. Je reprends ma lame.",
+      "Je pensais que vous ne demanderiez jamais. J’y retourne.",
+      "Assez compté de flèches. Allons en tirer."
+    ],
+    "flattered": [
+      "Vous avez besoin de moi au front ? Touchant. Mais l’Intendance aussi.",
+      "Qui tiendrait les comptes, sans moi ? Pas encore, capitaine.",
+      "C’est gentil de penser à moi. Mais je reste ici.",
+      "Plus tard, peut-être. L’armurerie ne se range pas toute seule."
+    ],
+    "vexed": [
+      "Vous me trouvez inutile ici ? Charmant.",
+      "Je fais du bon travail, et vous voulez me renvoyer me faire tuer ?",
+      "Non. Et ne me reposez pas la question.",
+      "On ne me bouscule pas comme ça, capitaine."
+    ],
+    "neutral": [
+      "Non, je suis bien ici.",
+      "Pas tout de suite, capitaine.",
+      "Mes jambes ne sont pas encore prêtes.",
+      "Laissez-moi encore un peu de temps."
+    ],
+    "outcome_accepted": "{prenom} retourne sur le terrain : la compagnie n’a plus d’intendant.",
+    "outcome_refused": "{prenom} reste {l’intendant|l’intendante} de la compagnie."
+  },
+  "talk": {
+    "greetings": [
+      "Capitaine. Les comptes sont tenus, l’armurerie est en ordre. Que puis-je pour vous ?",
+      "Ah, capitaine ! Vous tombez bien, je viens de recompter les lances.",
+      "Capitaine. Encore un candidat à jauger ?",
+      "Rien n’a disparu depuis hier. Enfin, presque rien. Vous vouliez ?"
+    ],
+    "options": {
+      "evaluate": "Que pensez-vous des candidats de la Taverne ?",
+      "recall": "Le terrain ne vous manque pas ?",
+      "back": "Revenir",
+      "leave": "Partir"
+    },
+    "ask_who": "Lequel ?",
+    "nobody": "Personne à la Taverne en ce moment.",
+    "ask_what": "Sur quoi voulez-vous mon avis ?",
+    "answers": [
+      "{candidat} ? Je dirais {valeur} en {carac}.",
+      "{carac} ? À vue de nez, {valeur}.",
+      "J’ai observé {candidat}. {carac} : environ {valeur}.",
+      "Pour {carac}, je dirais autour de {valeur}."
+    ],
+    "repeated": "Comme je vous l’ai dit : {valeur} en {carac}.",
+    "already": "Vous m’en avez déjà parlé aujourd’hui, capitaine."
+  },
+  "panel": {
+    "none_title": "Pas d’intendant",
+    "none_text": "Personne ne tient l’Intendance. Proposez le poste à un mercenaire : il peut refuser.",
+    "offer": "Proposer le poste à…",
+    "asked_today": "déjà sollicité aujourd’hui",
+    "steward_title": "{L’intendant|L’intendante}",
+    "since": "En poste depuis {jours}",
+    "talk": "Lui parler",
+    "since_today": "{Nommé|Nommée} aujourd’hui"
+  }
+}

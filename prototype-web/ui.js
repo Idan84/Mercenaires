@@ -30,6 +30,8 @@ function renderRosterAffinity(c) {
 function rosterStatus(c){
   if(c.recovery?.kind==="wounded") return {kind:"wounded",label:recoveryLabel(c)};
   if(c.recovery) return {kind:"fatigued",label:recoveryLabel(c)};
+  // L'intendant reste au camp (Idan, 2026-10-24).
+  if(game.campaign&&c.id===game.campaign.company.intendantId) return {kind:"steward",label:String(c.sex||"").toLowerCase().startsWith("f")?"Intendante":"Intendant"};
   return {kind:"available",label:"Disponible"};
 }
 
@@ -110,7 +112,9 @@ function renderGame() {
   $("setup-panel").classList.add("hidden");
   $("game-panel").classList.remove("hidden");
   $("company-title").textContent = game.campaign?.company.name || `Compagnie de ${game.captain.name}`;
-  $("captain-summary").innerHTML = characterRow(game.captain, true);
+  // Ma Compagnie : le capitaine et l'intendant (Idan, 2026-10-24).
+  const steward = game.campaign?.company.roster.find(m => m.id === game.campaign.company.intendantId);
+  $("captain-summary").innerHTML = characterRow(game.captain, true) + (steward ? characterRow(steward) : "");
   renderGameHud();
   renderMercenaryRoster();
   renderGenerated();
@@ -140,7 +144,8 @@ function sortMercenaryRoster(members,key=rosterSortKey,descending=rosterSortDesc
 }
 
 function renderMercenaryRoster() {
-  const squad=teamCharacters().filter(c=>c!==game.captain);
+  // L'intendant passe dans Ma Compagnie (Idan, 2026-10-24).
+  const squad=teamCharacters().filter(c=>c!==game.captain&&c.id!==game.campaign?.company.intendantId);
   const company=game.campaign?.company;
   const occupied=company?.roster.length??(squad.length+(game.captain?1:0));
   const capacity=company?.camp?.dormitoryCapacity;
@@ -1096,6 +1101,8 @@ function historyEntryText(c,entry){
     const back=entry.knockouts?fill(copy.mission_knockouts,{n:historyPlural(entry.knockouts,"adversaire","adversaires")}):fill(copy.mission);
     return entry.wounded?`${back} ${fill(copy.mission_wounded,{jours:historyPlural(entry.days,"jour","jours")})}`:back;
   }
+  if(entry.kind==="steward") return fill(copy.steward?.[entry.accepted?"accord":"refus"]);
+  if(entry.kind==="recall") return fill(copy.recall?.[entry.accepted?"accord":"refus"],{jours:historyPlural(entry.days||0,"jour","jours")});
   if(entry.kind==="deal"){
     const vars={recu:historyItemLabel(entry.received),cede:historyItemLabel(entry.given)};
     const text=entry.free?copy.deal?.libre?.[entry.action]:copy.deal?.[entry.action]?.[entry.accepted?"accord":"refus"];
@@ -1110,8 +1117,9 @@ function historyDate(day){
 function renderHistoryTab(c){
   const copy=game.referenceData?.characterSheetCopy?.history||{};
   const history=c.history||{};
-  const values={...history,days:MercenairesHistory.daysInCompany(c,game.campaign?.day)};
-  const counters=(copy.counters||[]).map(k=>`<div class="sheet-history-counter"><strong>${fmt(Number(values[k.key])||0)}</strong><small>${esc(k.label)}</small></div>`).join("");
+  const values={...history,days:MercenairesHistory.daysInCompany(c,game.campaign?.day),
+    stewardDays:typeof stewardRules==="function"&&game.campaign?stewardRules().totalStewardDays(game.campaign,c):Number(history.stewardDays)||0};
+  const counters=(copy.counters||[]).filter(k=>!k.hideZero||Number(values[k.key])>0).map(k=>`<div class="sheet-history-counter"><strong>${fmt(Number(values[k.key])||0)}</strong><small>${esc(k.label)}</small></div>`).join("");
   const entries=[...(history.log||[])].map((entry,index)=>({entry,index})).sort((a,b)=>b.entry.day-a.entry.day||b.index-a.index)
     .map(({entry})=>({entry,text:historyEntryText(c,entry)})).filter(x=>x.text);
   return `<section class="sheet-history">

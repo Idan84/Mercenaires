@@ -100,6 +100,12 @@ assert.deepEqual(texts, [
 ], "du plus récent au plus ancien, accordé au féminin");
 assert.match(tab, /<time>Jour 9 · [^<]+<\/time>/, "date du calendrier du camp");
 assert.match(render.renderHistoryTab({history:{log:[]}}), /Rien à raconter pour l’instant\./);
+// Intendant (Idan, 2026-10-24) : nomination, refus, retour sur le terrain ; jours d'intendance montrés s'il y en a.
+assert.equal(render.historyEntryText({sex:"femme"}, {kind:"steward", accepted:true}), "Devient l’intendante de la compagnie.");
+assert.equal(render.historyEntryText({}, {kind:"steward", accepted:false}), "Refuse le poste d’intendant.");
+assert.equal(render.historyEntryText({}, {kind:"recall", accepted:true, days:12}), "Quitte l’Intendance et retourne sur le terrain après 12 jours.");
+assert.doesNotMatch(tab, /Jours d’intendance/, "pas de case à zéro");
+assert.match(render.renderHistoryTab({history:{stewardDays:12, log:[]}}), /<strong>12<\/strong><small>Jours d’intendance<\/small>/);
 assert.equal(render.historyEntryText({}, {kind:"deal", action:"donner", free:true, received:{name:"Lance", tier:2}}),
   "Prend Lance basique (T2) à l’Intendance.", "le capitaine s'équipe lui-même");
 console.log("Historique : compteurs, journal (création, recrutement, mission, échanges), migration, onglet — OK");

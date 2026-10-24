@@ -87,6 +87,10 @@ assert.match(giveLines.proposal, /^Voici pour vous : .+ \(T2\)\.$/);
 assert.match(giveLines.outcome, /^.+ \(T2\) rejoint l’équipement de Borin\.$/);
 assert.match(ui.dealLines({...borin, firstName:"Enzo"}, {action:"donner", accepted:true, mood:"pleased", given:null, received:sabre}).outcome,
   /rejoint l’équipement d’Enzo\.$/, "élision devant une voyelle");
+// L'intendant appuie la proposition (Idan, 2026-10-24).
+assert.equal(ui.dealLines(borin, {action:"donner", accepted:true, mood:"pleased", given:null, received:sabre,
+  steward:{firstName:"Isolde", sex:"femme"}}).support, "Isolde, votre intendante, appuie votre proposition.");
+assert.equal(giveLines.support, "", "sans intendant, pas d'appui");
 const takeLines = ui.dealLines(borin, {action:"retirer", accepted:true, mood:"displeased", given:hachette, received:null});
 assert.match(takeLines.outcome, /\(T1\) retourne à l’Intendance\.$/);
 console.log("Échanges d'équipement, interface : menus de la fiche et de l'Intendance, répliques — OK");

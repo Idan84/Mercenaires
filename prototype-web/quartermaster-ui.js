@@ -54,6 +54,7 @@ function renderQuartermaster(){
   const list=$("quartermaster-stock");
   if(!list||!game.campaign) return;
   const items=game.campaign.company.stock||[];
+  if(typeof renderStewardPanel==="function") renderStewardPanel();
   $("quartermaster-count").textContent=stockCount(items);
   const kindOf=item=>STOCK_KINDS.includes(item.itemType)?item.itemType:"weapon";
   const tabs=$("quartermaster-tabs");

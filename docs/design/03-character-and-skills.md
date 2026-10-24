@@ -173,3 +173,10 @@ La probabilité finale est plafonnée à 100 %.
 - Port d’armure intermédiaire ⇒ Port d’armure légère
 
 Les trois jets peuvent être calculés, puis la hiérarchie est appliquée au résultat final.
+
+## Fiche : onglets Camp et Historique (Idan, 2026-10-24)
+
+- **Camp** : les compétences de camp — Transmission du savoir, Intendance, Médecine — et l’Artisanat avec ses huit métiers, du meilleur au moins bon ; en tête, le point fort au camp et le meilleur métier.
+- **Historique** : « tout ce qui concerne le mercenaire, aussi bien en journal qu’en stats accumulées ». Compteurs : jours dans la compagnie, missions, adversaires abattus (mis hors de combat par ses coups), retours de mission blessé, coups encaissés, coups critiques. Journal daté (jour de campagne et date du calendrier du camp), du plus récent au plus ancien : arrivée (fondation, escouade de départ, contrat signé), retours de mission (adversaires abattus, blessure et convalescence), échanges d’équipement (acceptés ou refusés).
+
+Données : `mercenary.history` (`game-core/history.js`) — `since` (jour d’arrivée), les compteurs et `log` (faits datés, sans texte ; l’interface les raconte avec `character-sheet-copy.json`, `history`). Une partie sauvegardée avant reçoit un historique à partir du jour de contrat, sans ses missions passées, qui n’avaient pas été comptées.

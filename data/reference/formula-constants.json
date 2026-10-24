@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 128,
+  "row_count": 133,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -1056,6 +1056,46 @@
       "description": "Faces des dés du nombre de paires de bottes du stock de départ (1D6).",
       "formule": "Stock d’armes de départ",
       "valeur": 6,
+      "version": "V1"
+    },
+    {
+      "nom": "Échange d’équipement — attache à un objet possédé",
+      "code": "equipment_deal.owned_value",
+      "description": "Valeur perçue d’un objet que le mercenaire possède = tier × Int/100 + cette valeur × (1 − Int/100) : plus il est bête, plus il tient à ce qu’il a, même cassé (Idan, 2026-10-24).",
+      "formule": "Échange d’équipement",
+      "valeur": 3.5,
+      "version": "V1"
+    },
+    {
+      "nom": "Échange d’équipement — valeur floue d’un objet proposé",
+      "code": "equipment_deal.offered_value",
+      "description": "Valeur perçue d’un objet qu’on lui propose = tier × Int/100 + cette valeur × (1 − Int/100) : plus il est bête, moins il voit la différence entre un T1 et un T4.",
+      "formule": "Échange d’équipement",
+      "valeur": 2.5,
+      "version": "V1"
+    },
+    {
+      "nom": "Échange d’équipement — poids de la valeur",
+      "code": "equipment_deal.value_weight",
+      "description": "Δ = ce poids × (valeur perçue reçue − valeur perçue cédée) + poids de l’affinité × Affinité ; chance d’accord = 10 + 80 / (1 + e^(−Δ/20)).",
+      "formule": "Échange d’équipement",
+      "valeur": 20,
+      "version": "V1"
+    },
+    {
+      "nom": "Échange d’équipement — poids de l’affinité",
+      "code": "equipment_deal.affinity_weight",
+      "description": "Part de l’affinité avec le capitaine dans Δ (de −50 à +50).",
+      "formule": "Échange d’équipement",
+      "valeur": 0.5,
+      "version": "V1"
+    },
+    {
+      "nom": "Échange d’équipement — affinité par point de valeur",
+      "code": "equipment_deal.affinity_per_value",
+      "description": "Accord ou refus, l’affinité acquise change de ce nombre × (valeur perçue reçue − valeur perçue cédée), arrondi : un cadeau la fait monter, un équipement rétrogradé la fait baisser (formule de JC, Idan 2026-10-24).",
+      "formule": "Échange d’équipement",
+      "valeur": 2,
       "version": "V1"
     }
   ]

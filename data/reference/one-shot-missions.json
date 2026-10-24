@@ -1,0 +1,196 @@
+{
+  "schema_version": 1,
+  "name": "one-shot-missions",
+  "description": "Missions one shot (doc 17). V1 : « Faire le ménage », un camp gobelin ☠, la seule mission proposée à la Taverne, en boucle (Idan, 2026-10-24). Les montants (récompense, coffre, renommée) sont des valeurs de départ, à ajuster en jouant.",
+  "missions": [
+    {
+      "code": "cleanup",
+      "nom": "Faire le ménage",
+      "description": "Attaquer un camp ennemi : tous les ennemis tués ou mis en déroute (sortis de la carte).",
+      "faction": "Gobelins",
+      "nom_camp": "Camp gobelin",
+      "difficulte": 1,
+      "camp": {
+        "novices_base": 3,
+        "novices_faces": 4,
+        "chance_un_normal": 0.2,
+        "chance_deux_normaux": 0.05,
+        "lignes": [
+          {
+            "ligne": "Frondeur",
+            "poids": 35
+          },
+          {
+            "ligne": "Lancier",
+            "poids": 20
+          },
+          {
+            "ligne": "Archer",
+            "poids": 15
+          },
+          {
+            "ligne": "Guerrier",
+            "poids": 15
+          },
+          {
+            "ligne": "Assassin",
+            "poids": 15
+          }
+        ],
+        "chef": "goblin_chief_1"
+      },
+      "distance_faces": 3,
+      "validite_jours": [
+        3,
+        6
+      ],
+      "carte": {
+        "colonnes": 20,
+        "lignes": 12
+      },
+      "recompense": {
+        "base": 1000,
+        "par_jour": 600,
+        "par_ennemi": 150
+      },
+      "coffre": {
+        "or_des": 2,
+        "or_faces": 6,
+        "or_unite": 50,
+        "objets": 1
+      },
+      "echec": {
+        "renommee": -30
+      },
+      "defaite": {
+        "multiplicateur_mort": 2
+      }
+    }
+  ],
+  "ordres": [
+    {
+      "code": "village",
+      "mission": "cleanup",
+      "faction": "Gobelins",
+      "commanditaire": "Chef de village",
+      "titre": "Un chef de village",
+      "texte": [
+        "À toute compagnie de mercenaires qui voudra bien venir,",
+        "Je m'appelle {commanditaire}, chef de {lieu}, à {jours} de marche de votre camp. On m'a dit que vous tuiez des gens pour de l'argent. Ça tombe bien : nous avons de l'argent, un peu, et des gens à tuer, beaucoup.",
+        "Depuis la fonte des neiges, des gobelins se sont installés dans la vieille carrière, au-dessus du village. Au début, ils volaient les poules. Puis les chèvres. La semaine dernière, ils ont volé la cloche du temple, et personne ne sait ce qu'un gobelin peut bien faire d'une cloche. On les entend la sonner la nuit.",
+        "Combien sont-ils ? Le berger dit {estimation}. Le berger boit.",
+        "Le village a réuni {récompense} pièces d'or. C'est tout ce que nous avons, à part la cloche, que vous nous rendrez si elle est encore entière. Ce que vous trouverez dans leur camp sera à vous.",
+        "Le premier qui nous débarrasse d'eux touche la somme. Les autres auront fait le chemin pour rien.",
+        "Venez vite. Il ne reste plus beaucoup de poules."
+      ],
+      "signature": "{commanditaire}, chef de {lieu}, le {date}",
+      "noms_commanditaire": "chefs_de_village"
+    },
+    {
+      "code": "goblin_rival",
+      "mission": "cleanup",
+      "faction": "Gobelins",
+      "commanditaire": "Chef gobelin rival",
+      "titre": "Un chef gobelin rival",
+      "texte": [
+        "OYÉ LES MERCENAIRES !!!",
+        "Moi c'est {commanditaire}, grand chef des {tribu} (le plus grand des chefs, les autres ils sont plus petits). Les {tribu_cible} ils ont pris MA grotte à {lieu}. C'est à {jours} de chez vous si on marche vite, plus si on marche comme un humain.",
+        "Eux c'est des voleurs, des menteurs et ils puent. Nous aussi un peu, mais pas pareil.",
+        "Vous allez là-bas, vous tapez tout le monde. Ils sont {estimation}, j'ai compté avec les doigts de mon cousin. Leur chef c'est {boss}, il est gros et bête. Tapez-le en premier ou en dernier, je m'en fiche, mais tapez-le.",
+        "Pour vous : {récompense} pièces d'or. Du vrai or, pas des cailloux peints comme la dernière fois. Tout ce qu'il y a dans la grotte, vous prenez. Sauf le trône. Le trône il est à moi.",
+        "Le premier qui vient, il gagne. Les autres, ils ont perdu.",
+        "C'est pas un piège. Promis sur la tête de mon cousin."
+      ],
+      "signature": "Signé : {commanditaire} (une empreinte de pouce, un peu grasse)",
+      "noms_commanditaire": "chefs_gobelins"
+    },
+    {
+      "code": "emperor",
+      "mission": "cleanup",
+      "faction": "Gobelins",
+      "commanditaire": "Ordre de l'Empereur",
+      "titre": "Par ordre de Sa Majesté Impériale",
+      "texte": [
+        "PAR ORDRE DE SA MAJESTÉ IMPÉRIALE — Chancellerie des Marches, Bureau des Nuisances et Engeances",
+        "À toute compagnie franche dûment patentée,",
+        "Attendu qu'une engeance gobeline a établi un campement illicite à {lieu}, à {jours} de marche de votre cantonnement ; attendu que ladite engeance entrave la circulation des marchandises, le recouvrement de l'impôt et le moral des percepteurs ; attendu que la garnison impériale la plus proche se trouve, à son grand regret, fort occupée ailleurs ;",
+        "Il est ordonné à la compagnie qui s'en chargera de procéder au nettoyage complet dudit campement, par tout moyen qu'elle jugera utile, dans le respect approximatif des usages de la guerre.",
+        "La Couronne versera {récompense} pièces d'or à l'exécution du présent ordre. Le butin pris sur l'ennemi reste acquis à la compagnie, Sa Majesté étant d'humeur généreuse.",
+        "Le présent ordre expire le {date_expiration}, ou dès qu'une compagnie s'en sera chargée."
+      ],
+      "signature": "Donné le {date}, an {an} de l'Âge des Couronnes Brisées. Pour l'Empereur et par délégation, {signataire}, sous-secrétaire adjoint aux Marches.",
+      "noms_commanditaire": null
+    }
+  ],
+  "noms": {
+    "lieux": [
+      "Valombre",
+      "Gué-Moussu",
+      "Pierrebise",
+      "Brumefonds",
+      "Saint-Grelot",
+      "Cailloubec",
+      "Mornecombe",
+      "Les Trois-Fosses"
+    ],
+    "chefs_de_village": [
+      "Aldric Mangepain",
+      "Berthe Coupefoin",
+      "Gaspard Lamotte",
+      "Hugon le Bègue",
+      "Mathilde Sauvebœuf",
+      "Oswin Patebrune",
+      "Ysolde Grosmollet"
+    ],
+    "chefs_gobelins": [
+      "Grizzik",
+      "Snagg",
+      "Morbolk",
+      "Gnashrat",
+      "Zorgut",
+      "Krivvik"
+    ],
+    "tribus": [
+      "Dents-Pourries",
+      "Oreilles-Fendues",
+      "Nez-Crochus",
+      "Crache-Boue",
+      "Ronge-Racines",
+      "Pieds-Noirs",
+      "Mange-Rats",
+      "Gratte-Croûtes"
+    ],
+    "caids": [
+      "Garm le Balafré",
+      "Skrag Bouche-d'Égout",
+      "Nubbz le Gras",
+      "Vrook Trois-Orteils",
+      "Ghazz le Puant",
+      "Brakka Mâche-Fer"
+    ],
+    "signataires": [
+      "Messire Anselme de Paperasse",
+      "Dame Clothilde Tamponnière",
+      "Sire Eudes Contreseing",
+      "Maître Fulbert Grattepapier"
+    ],
+    "estimations": [
+      {
+        "max": 4,
+        "texte": "une poignée"
+      },
+      {
+        "max": 6,
+        "texte": "une demi-douzaine"
+      },
+      {
+        "max": 9,
+        "texte": "une petite dizaine"
+      },
+      {
+        "max": 99,
+        "texte": "une bonne dizaine"
+      }
+    ]
+  }
+}

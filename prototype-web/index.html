@@ -230,9 +230,8 @@
         </div>
         <section id="tavern-missions-view" class="panel tavern-panel hidden">
           <button class="secondary" data-tavern-view="home">← Retour à la taverne</button>
-          <h2>Missions disponibles</h2>
-          <p>Une seule mission est proposée pour l'instant.</p>
-          <button id="tavern-mission-test-btn" class="primary">Mission Test</button>
+          <h2>Contrats</h2>
+          <div id="tavern-contracts" class="contract-board"></div>
         </section>
         <section id="tavern-recruits-view" class="hidden">
           <button class="tavern-back" data-tavern-view="home">← Retour à la taverne</button>
@@ -320,11 +319,12 @@
 
   <dialog id="mission-select-dialog">
     <div class="dialog-head">
-      <div><p class="eyebrow">Mission Test</p><h2>Choisir 3 mercenaires</h2></div>
+      <div><p class="eyebrow" id="mission-select-eyebrow">Mission Test</p><h2 id="mission-select-title">Choisir 3 mercenaires</h2></div>
       <span id="mission-select-count" class="badge">0/3</span>
     </div>
     <div class="mission-select-content">
       <p class="muted">Les morts sont définitives, les blessés et les fatigués deviennent indisponibles quelques jours. Les PV restants ne sont pas conservés d’un combat à l’autre.</p>
+      <p id="mission-select-cost" class="mission-select-cost"></p>
       <div id="mission-select-list" class="mission-select-list"></div>
       <p id="mission-select-error" class="mission-error"></p>
       <div class="actions-row">
@@ -398,6 +398,7 @@
   <script src="/core/item-card.js"></script>
   <script src="/core/equipment-effects.js"></script>
   <script src="/core/equipment-deals.js"></script>
+  <script src="/core/missions.js"></script>
   <script src="reference-data.js"></script>
   <script src="core-data.js"></script>
   <script src="generation.js"></script>
@@ -408,6 +409,7 @@
   <script src="item-card-ui.js"></script>
   <script src="camp-calendar.js"></script>
   <script src="tavern-ui.js"></script>
+  <script src="contract-ui.js"></script>
   <script src="quartermaster-ui.js"></script>
   <script src="deal-ui.js"></script>
   <script src="steward-ui.js"></script>

@@ -61,7 +61,7 @@ La vue **Boucliers — équilibrage** expose `Bonus blocage base`, `Malus vitess
 
 ### Slots canoniques
 
-- Casque / Chapeau ; Amulette ; Armure ; Bottes ; Ceinturon ; Cape ;
+- Casque / Chapeau ; Amulette ; Armure ; Gants ; Ceinturon ; Culotte ; Bottes ; Cape (Gants et Culotte : Idan, 2026-10-24, objets à venir) ;
 - **6 bagues** ;
 - **2 sets d’armes**, chacun avec arme principale + main secondaire ;
 - **4 équipements de ceinture** (potions / consommables / petits objets actifs) ;

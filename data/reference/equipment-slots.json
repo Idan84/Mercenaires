@@ -20,7 +20,7 @@
       "key": "order"
     }
   ],
-  "row_count": 21,
+  "row_count": 23,
   "rows": [
     {
       "id": "head",
@@ -47,16 +47,28 @@
       "order": 4
     },
     {
+      "id": "gloves",
+      "label": "Gants",
+      "group": "body",
+      "order": 5
+    },
+    {
       "id": "belt",
       "label": "Ceinturon",
       "group": "body",
-      "order": 5
+      "order": 6
+    },
+    {
+      "id": "pants",
+      "label": "Culotte",
+      "group": "body",
+      "order": 7
     },
     {
       "id": "boots",
       "label": "Bottes",
       "group": "body",
-      "order": 6
+      "order": 8
     },
     {
       "id": "ring_1",

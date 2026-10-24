@@ -54,6 +54,10 @@
     {
       "source": "Puissance contondante base",
       "key": "puissance_contondante_base"
+    },
+    {
+      "source": "Prix de base (PO)",
+      "key": "prix_base"
     }
   ],
   "row_count": 38,
@@ -70,7 +74,8 @@
       "degats_pv_base": "1D10",
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 65,
-      "puissance_contondante_base": 0
+      "puissance_contondante_base": 0,
+      "prix_base": 140
     },
     {
       "nom": "Arc",
@@ -84,7 +89,8 @@
       "degats_pv_base": "1D6",
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 45,
-      "puissance_contondante_base": 0
+      "puissance_contondante_base": 0,
+      "prix_base": 100
     },
     {
       "nom": "Arme d’hast double",
@@ -98,7 +104,8 @@
       "degats_pv_base": "2D6",
       "puissance_tranchante_base": 55,
       "puissance_perforante_base": 45,
-      "puissance_contondante_base": 0
+      "puissance_contondante_base": 0,
+      "prix_base": 160
     },
     {
       "nom": "Arquebuse",
@@ -112,7 +119,8 @@
       "degats_pv_base": "1D12",
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 80,
-      "puissance_contondante_base": 0
+      "puissance_contondante_base": 0,
+      "prix_base": 240
     },
     {
       "nom": "Bardiche",
@@ -126,7 +134,8 @@
       "degats_pv_base": "2D8",
       "puissance_tranchante_base": 75,
       "puissance_perforante_base": 0,
-      "puissance_contondante_base": 0
+      "puissance_contondante_base": 0,
+      "prix_base": 200
     },
     {
       "nom": "Bâton court",
@@ -140,7 +149,8 @@
       "degats_pv_base": "1D4",
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 0,
-      "puissance_contondante_base": 20
+      "puissance_contondante_base": 20,
+      "prix_base": 80
     },
     {
       "nom": "Bâton long",
@@ -154,7 +164,8 @@
       "degats_pv_base": "1D8",
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 0,
-      "puissance_contondante_base": 30
+      "puissance_contondante_base": 30,
+      "prix_base": 120
     },
     {
       "nom": "Canon à main",
@@ -168,7 +179,8 @@
       "degats_pv_base": "2D6",
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 95,
-      "puissance_contondante_base": 0
+      "puissance_contondante_base": 0,
+      "prix_base": 240
     },
     {
       "nom": "Dague",
@@ -182,7 +194,8 @@
       "degats_pv_base": "1D4",
       "puissance_tranchante_base": 25,
       "puissance_perforante_base": 35,
-      "puissance_contondante_base": 0
+      "puissance_contondante_base": 0,
+      "prix_base": 80
     },
     {
       "nom": "Écu",
@@ -196,7 +209,8 @@
       "degats_pv_base": "1D4",
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 0,
-      "puissance_contondante_base": 25
+      "puissance_contondante_base": 25,
+      "prix_base": 80
     },
     {
       "nom": "Épée courte",
@@ -210,7 +224,8 @@
       "degats_pv_base": "1D6",
       "puissance_tranchante_base": 35,
       "puissance_perforante_base": 35,
-      "puissance_contondante_base": 0
+      "puissance_contondante_base": 0,
+      "prix_base": 100
     },
     {
       "nom": "Épée double",
@@ -224,7 +239,8 @@
       "degats_pv_base": "2D6",
       "puissance_tranchante_base": 50,
       "puissance_perforante_base": 35,
-      "puissance_contondante_base": 0
+      "puissance_contondante_base": 0,
+      "prix_base": 160
     },
     {
       "nom": "Épée longue",
@@ -238,7 +254,8 @@
       "degats_pv_base": "1D8",
       "puissance_tranchante_base": 50,
       "puissance_perforante_base": 40,
-      "puissance_contondante_base": 0
+      "puissance_contondante_base": 0,
+      "prix_base": 120
     },
     {
       "nom": "Estoc",
@@ -252,7 +269,8 @@
       "degats_pv_base": "1D6",
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 55,
-      "puissance_contondante_base": 0
+      "puissance_contondante_base": 0,
+      "prix_base": 100
     },
     {
       "nom": "Fléau d’armes",
@@ -266,7 +284,8 @@
       "degats_pv_base": "1D8",
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 0,
-      "puissance_contondante_base": 55
+      "puissance_contondante_base": 55,
+      "prix_base": 120
     },
     {
       "nom": "Fouet",
@@ -280,7 +299,8 @@
       "degats_pv_base": "1D4",
       "puissance_tranchante_base": 20,
       "puissance_perforante_base": 0,
-      "puissance_contondante_base": 0
+      "puissance_contondante_base": 0,
+      "prix_base": 80
     },
     {
       "nom": "Fronde",
@@ -294,7 +314,8 @@
       "degats_pv_base": "1D4",
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 0,
-      "puissance_contondante_base": 25
+      "puissance_contondante_base": 25,
+      "prix_base": 80
     },
     {
       "nom": "Grande épée",
@@ -308,7 +329,8 @@
       "degats_pv_base": "2D8",
       "puissance_tranchante_base": 70,
       "puissance_perforante_base": 50,
-      "puissance_contondante_base": 0
+      "puissance_contondante_base": 0,
+      "prix_base": 200
     },
     {
       "nom": "Hache de guerre",
@@ -322,7 +344,8 @@
       "degats_pv_base": "1D10",
       "puissance_tranchante_base": 65,
       "puissance_perforante_base": 0,
-      "puissance_contondante_base": 0
+      "puissance_contondante_base": 0,
+      "prix_base": 140
     },
     {
       "nom": "Hache double",
@@ -336,7 +359,8 @@
       "degats_pv_base": "2D8",
       "puissance_tranchante_base": 80,
       "puissance_perforante_base": 0,
-      "puissance_contondante_base": 0
+      "puissance_contondante_base": 0,
+      "prix_base": 200
     },
     {
       "nom": "Hachette",
@@ -350,7 +374,8 @@
       "degats_pv_base": "1D6",
       "puissance_tranchante_base": 40,
       "puissance_perforante_base": 0,
-      "puissance_contondante_base": 0
+      "puissance_contondante_base": 0,
+      "prix_base": 100
     },
     {
       "nom": "Hallebarde",
@@ -364,7 +389,8 @@
       "degats_pv_base": "2D6",
       "puissance_tranchante_base": 70,
       "puissance_perforante_base": 65,
-      "puissance_contondante_base": 0
+      "puissance_contondante_base": 0,
+      "prix_base": 160
     },
     {
       "nom": "Katana",
@@ -378,7 +404,8 @@
       "degats_pv_base": "1D10",
       "puissance_tranchante_base": 60,
       "puissance_perforante_base": 0,
-      "puissance_contondante_base": 0
+      "puissance_contondante_base": 0,
+      "prix_base": 140
     },
     {
       "nom": "Kukri",
@@ -392,7 +419,8 @@
       "degats_pv_base": "1D6",
       "puissance_tranchante_base": 45,
       "puissance_perforante_base": 0,
-      "puissance_contondante_base": 0
+      "puissance_contondante_base": 0,
+      "prix_base": 100
     },
     {
       "nom": "Lance",
@@ -406,7 +434,8 @@
       "degats_pv_base": "1D8",
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 55,
-      "puissance_contondante_base": 0
+      "puissance_contondante_base": 0,
+      "prix_base": 120
     },
     {
       "nom": "Marteau de guerre",
@@ -420,7 +449,8 @@
       "degats_pv_base": "2D8",
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 0,
-      "puissance_contondante_base": 70
+      "puissance_contondante_base": 70,
+      "prix_base": 200
     },
     {
       "nom": "Masse d’armes",
@@ -434,7 +464,8 @@
       "degats_pv_base": "1D8",
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 0,
-      "puissance_contondante_base": 55
+      "puissance_contondante_base": 55,
+      "prix_base": 120
     },
     {
       "nom": "Massue",
@@ -448,7 +479,8 @@
       "degats_pv_base": "1D6",
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 0,
-      "puissance_contondante_base": 35
+      "puissance_contondante_base": 35,
+      "prix_base": 100
     },
     {
       "nom": "Nunchaku",
@@ -462,7 +494,8 @@
       "degats_pv_base": "1D6",
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 0,
-      "puissance_contondante_base": 35
+      "puissance_contondante_base": 35,
+      "prix_base": 100
     },
     {
       "nom": "Pavois",
@@ -476,7 +509,8 @@
       "degats_pv_base": "1D6",
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 0,
-      "puissance_contondante_base": 30
+      "puissance_contondante_base": 30,
+      "prix_base": 100
     },
     {
       "nom": "Pic de guerre",
@@ -490,7 +524,8 @@
       "degats_pv_base": "1D8",
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 70,
-      "puissance_contondante_base": 0
+      "puissance_contondante_base": 0,
+      "prix_base": 120
     },
     {
       "nom": "Pistolet",
@@ -504,7 +539,8 @@
       "degats_pv_base": "1D8",
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 65,
-      "puissance_contondante_base": 0
+      "puissance_contondante_base": 0,
+      "prix_base": 180
     },
     {
       "nom": "Rondache",
@@ -518,7 +554,8 @@
       "degats_pv_base": "1D4",
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 0,
-      "puissance_contondante_base": 20
+      "puissance_contondante_base": 20,
+      "prix_base": 80
     },
     {
       "nom": "Sabre",
@@ -532,7 +569,8 @@
       "degats_pv_base": "1D8",
       "puissance_tranchante_base": 50,
       "puissance_perforante_base": 0,
-      "puissance_contondante_base": 0
+      "puissance_contondante_base": 0,
+      "prix_base": 120
     },
     {
       "nom": "Sai",
@@ -546,7 +584,8 @@
       "degats_pv_base": "1D4",
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 30,
-      "puissance_contondante_base": 0
+      "puissance_contondante_base": 0,
+      "prix_base": 80
     },
     {
       "nom": "Sarbacane",
@@ -560,7 +599,8 @@
       "degats_pv_base": "1D4",
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 10,
-      "puissance_contondante_base": 0
+      "puissance_contondante_base": 0,
+      "prix_base": 80
     },
     {
       "nom": "Trident",
@@ -574,7 +614,8 @@
       "degats_pv_base": "1D8",
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 50,
-      "puissance_contondante_base": 0
+      "puissance_contondante_base": 0,
+      "prix_base": 120
     },
     {
       "nom": "Tromblon",
@@ -588,7 +629,8 @@
       "degats_pv_base": "1D10",
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 55,
-      "puissance_contondante_base": 0
+      "puissance_contondante_base": 0,
+      "prix_base": 210
     }
   ]
 }

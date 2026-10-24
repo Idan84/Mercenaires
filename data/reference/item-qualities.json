@@ -26,6 +26,10 @@
     {
       "source": "Multiplicateur qualité",
       "key": "multiplicateur_qualite"
+    },
+    {
+      "source": "Multiplicateur prix",
+      "key": "multiplicateur_prix"
     }
   ],
   "row_count": 3,
@@ -35,21 +39,24 @@
       "code": "standard",
       "description": "Qualité de référence d’un objet.",
       "multiplicateur_malus": 1,
-      "multiplicateur_qualite": 1
+      "multiplicateur_qualite": 1,
+      "multiplicateur_prix": 1
     },
     {
       "nom": "Usée",
       "code": "worn",
       "description": "Objet usé, abîmé ou mal entretenu. Ses valeurs bénéfiques sont réduites et ses éventuels malus augmentés.",
       "multiplicateur_malus": 1.2,
-      "multiplicateur_qualite": 0.8
+      "multiplicateur_qualite": 0.8,
+      "multiplicateur_prix": 0.6
     },
     {
       "nom": "Grand Luxe",
       "code": "luxury",
       "description": "Objet de fabrication supérieure : ses valeurs bénéfiques sont augmentées et ses éventuels malus réduits.",
       "multiplicateur_malus": 0.8,
-      "multiplicateur_qualite": 1.2
+      "multiplicateur_qualite": 1.2,
+      "multiplicateur_prix": 1.5
     }
   ]
 }

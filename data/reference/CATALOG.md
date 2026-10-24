@@ -19,20 +19,20 @@ Git est la source de vérité. Les JSON ci-dessous sont les référentiels struc
 | skills.json | 94 | nom, acquisition_possible, alteration_magique_base, attaque_de_zone, bonus_blocage_base, bonus_charge_base, cadence_tir, contre_charge, description, domaine, degats_pv_base, exemples, malus_vitesse_arme_base, mode, niveau, ordre, parent, portee_max_hex, portee_min_hex, prise, puissance_contondante_base, puissance_perforante_base, puissance_tranchante_base, recharge_action_rapide, type_de_valeur, types_de_degats, valeur_maximale, ecoles_d_influence, ecoles_opposees |
 | damage-types.json | 7 | nom, code, description, famille |
 | states.json | 2 | nom, categorie, code, effet_mecanique, utilise_l_esquive_en_defense |
-| base-armors.json | 8 | nom, alteration_magique_base, code, description, malus_esquive_base, malus_vitesse_base, resistance_brulant, resistance_contondant, resistance_corrosif, resistance_foudroyant, resistance_glacant, resistance_perforant, resistance_tranchant, type_armure |
-| boots.json | 3 | nom, code, caracteristique, bonus_t1, bonus_t2, bonus_t3, bonus_t4 (bottes : bonus en % de la caractéristique de base selon le tier) |
-| belts.json | 3 | nom, code, caracteristique, bonus_t1, bonus_t2, bonus_t3, bonus_t4 (ceintures : bonus en % de la caractéristique de base selon le tier, comme les bottes) |
-| amulets.json | 3 | nom, code, caracteristique, bonus_t1, bonus_t2, bonus_t3, bonus_t4 (amulettes : bonus en % de la caractéristique de base selon le tier, comme les bottes et les ceintures) |
-| capes.json | 3 | nom, code, caracteristique, type_bonus, bonus_t1, bonus_t2, bonus_t3, bonus_t4 (capes : bonus selon le tier, en % de la valeur de base ou en points pour la Résistance physique) |
-| gloves.json | 3 | nom, code, caracteristique, type_bonus, bonus_t1, bonus_t2, bonus_t3, bonus_t4 (gants : bonus en % de la valeur de base selon le tier, comme les bottes) |
+| base-armors.json | 8 | nom, alteration_magique_base, code, description, malus_esquive_base, malus_vitesse_base, resistance_brulant, resistance_contondant, resistance_corrosif, resistance_foudroyant, resistance_glacant, resistance_perforant, resistance_tranchant, type_armure, prix_base (prix de base en pièces d’or, doc 05 « Valeur d’un objet ») |
+| boots.json | 3 | nom, code, caracteristique, bonus_t1, bonus_t2, bonus_t3, bonus_t4, prix_base (bottes : bonus en % de la caractéristique de base selon le tier) |
+| belts.json | 3 | nom, code, caracteristique, bonus_t1, bonus_t2, bonus_t3, bonus_t4, prix_base (ceintures : bonus en % de la caractéristique de base selon le tier, comme les bottes) |
+| amulets.json | 3 | nom, code, caracteristique, bonus_t1, bonus_t2, bonus_t3, bonus_t4, prix_base (amulettes : bonus en % de la caractéristique de base selon le tier, comme les bottes et les ceintures) |
+| capes.json | 3 | nom, code, caracteristique, type_bonus, bonus_t1, bonus_t2, bonus_t3, bonus_t4, prix_base (capes : bonus selon le tier, en % de la valeur de base ou en points pour la Résistance physique) |
+| gloves.json | 3 | nom, code, caracteristique, type_bonus, bonus_t1, bonus_t2, bonus_t3, bonus_t4, prix_base (gants : bonus en % de la valeur de base selon le tier, comme les bottes) |
 | enemy-archetypes.json | 24 | nom, code, faction, peuple, culture, ligne, niveau, centile, caracteristiques, resistances, pv, competences_martiales, intimidation, port_d_armure, armes, armure, tier, qualite, menace (archétypes d’ennemis fixes, doc 17 §10 ; ennemis de la mission « Faire le ménage ») |
 | one-shot-missions.json | 1 | missions (camp, distance, carte, récompense, coffre, échec, défaite), ordres (trois ordres de mission validés), noms (lieux, commanditaires, tribus, caïds, signataires, estimations) — missions one shot, doc 17 |
-| rings.json | 11 | nom, code, caracteristique, type_bonus, bonus_t1, bonus_t2, bonus_t3, bonus_t4, malus_opposees_t1, malus_opposees_t2, malus_opposees_t3, malus_opposees_t4 (bagues : Chance et Courage en %, une bague par école de magie avec malus sur les deux écoles opposées ; cumulables) |
-| pants.json | 3 | nom, code, caracteristique, type_bonus, bonus_t1, bonus_t2, bonus_t3, bonus_t4 (culottes : Charisme et Intimidation en % de la valeur de base, Affinité avec le capitaine en points) |
-| item-qualities.json | 3 | nom, code, description, multiplicateur_malus, multiplicateur_qualite |
+| rings.json | 11 | nom, code, caracteristique, type_bonus, bonus_t1, bonus_t2, bonus_t3, bonus_t4, malus_opposees_t1, malus_opposees_t2, malus_opposees_t3, malus_opposees_t4, prix_base (bagues : Chance et Courage en %, une bague par école de magie avec malus sur les deux écoles opposées ; cumulables) |
+| pants.json | 3 | nom, code, caracteristique, type_bonus, bonus_t1, bonus_t2, bonus_t3, bonus_t4, prix_base (culottes : Charisme et Intimidation en % de la valeur de base, Affinité avec le capitaine en points) |
+| item-qualities.json | 3 | nom, code, description, multiplicateur_malus, multiplicateur_qualite, multiplicateur_prix |
 | ranged-weapons.json | 8 | nom, domaine, portee_min_hex, portee_max_hex, cadence_tir, recharge_action_rapide, contre_charge, attaque_de_zone, degats_pv_base, puissance_perforante_base, prise, malus_vitesse_arme_base |
-| weapons.json | 38 | nom, domaine, prise, malus_vitesse_arme_base, portee_min_hex, portee_max_hex, bonus_charge_base, contre_charge, degats_pv_base, puissance_tranchante_base, puissance_perforante_base, puissance_contondante_base |
-| formula-constants.json | 159 | nom, code, description, formule, valeur, version |
+| weapons.json | 38 | nom, domaine, prise, malus_vitesse_arme_base, portee_min_hex, portee_max_hex, bonus_charge_base, contre_charge, degats_pv_base, puissance_tranchante_base, puissance_perforante_base, puissance_contondante_base, prix_base (prix de base en pièces d’or, doc 05 « Valeur d’un objet ») |
+| formula-constants.json | 163 | nom, code, description, formule, valeur, version |
 | game-formulas.json | 43 | nom, code, domaine, expression, maximum, minimum, notes, statut, type_attaque, version, etape |
 | formula-terms.json | 13 | nom, caracteristique, code_variable, coefficient, cote, description, formule, ordre, source |
 

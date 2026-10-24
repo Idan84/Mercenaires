@@ -62,6 +62,10 @@
     {
       "source": "Type armure",
       "key": "type_armure"
+    },
+    {
+      "source": "Prix de base (PO)",
+      "key": "prix_base"
     }
   ],
   "row_count": 8,
@@ -80,7 +84,8 @@
       "resistance_glacant": -25,
       "resistance_perforant": 70,
       "resistance_tranchant": 90,
-      "type_armure": "Lourde"
+      "type_armure": "Lourde",
+      "prix_base": 600
     },
     {
       "nom": "Vêtements",
@@ -96,7 +101,8 @@
       "resistance_glacant": 8,
       "resistance_perforant": 3,
       "resistance_tranchant": 5,
-      "type_armure": "Vêtement"
+      "type_armure": "Vêtement",
+      "prix_base": 20
     },
     {
       "nom": "Gambison",
@@ -112,7 +118,8 @@
       "resistance_glacant": 35,
       "resistance_perforant": 10,
       "resistance_tranchant": 18,
-      "type_armure": "Légère"
+      "type_armure": "Légère",
+      "prix_base": 60
     },
     {
       "nom": "Armure d'écailles",
@@ -128,7 +135,8 @@
       "resistance_glacant": 35,
       "resistance_perforant": 55,
       "resistance_tranchant": 70,
-      "type_armure": "Lourde"
+      "type_armure": "Lourde",
+      "prix_base": 380
     },
     {
       "nom": "Cotte de mailles",
@@ -144,7 +152,8 @@
       "resistance_glacant": -15,
       "resistance_perforant": 35,
       "resistance_tranchant": 65,
-      "type_armure": "Intermédiaire"
+      "type_armure": "Intermédiaire",
+      "prix_base": 260
     },
     {
       "nom": "Brigandine",
@@ -160,7 +169,8 @@
       "resistance_glacant": -8,
       "resistance_perforant": 50,
       "resistance_tranchant": 58,
-      "type_armure": "Intermédiaire"
+      "type_armure": "Intermédiaire",
+      "prix_base": 220
     },
     {
       "nom": "Armure de cuir",
@@ -176,7 +186,8 @@
       "resistance_glacant": 22,
       "resistance_perforant": 18,
       "resistance_tranchant": 30,
-      "type_armure": "Légère"
+      "type_armure": "Légère",
+      "prix_base": 90
     },
     {
       "nom": "Cuir renforcé",
@@ -192,7 +203,8 @@
       "resistance_glacant": 28,
       "resistance_perforant": 32,
       "resistance_tranchant": 40,
-      "type_armure": "Intermédiaire"
+      "type_armure": "Intermédiaire",
+      "prix_base": 160
     }
   ]
 }

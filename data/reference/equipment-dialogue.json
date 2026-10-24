@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "equipment-dialogue",
-  "description": "Échanges d’équipement (Idan, 2026-10-24) : ce que dit le capitaine en proposant le marché, la réponse du mercenaire selon l’action, l’accord ou le refus et son humeur (content si l’objet reçu lui semble valoir plus que l’objet cédé, mécontent sinon), et ce qui change. {recu} : objet proposé ; {cede} : objet du mercenaire ; {prenom} ; {masculin|féminin}. Textes de JC, à retoucher librement.",
+  "description": "Échanges d’équipement (Idan, 2026-10-24) : ce que dit le capitaine en proposant le marché, la réponse du mercenaire selon l’action, l’accord ou le refus et son humeur (content si l’objet reçu lui semble valoir plus que l’objet cédé, mécontent sinon), et ce qui change. {recu} : objet proposé ; {cede} : objet du mercenaire ; {prenom} ; {de_prenom} (« de Borin », « d’Enzo ») ; {masculin|féminin}. Textes de JC, à retoucher librement.",
   "proposals": {
     "donner": "Voici pour vous : {recu}.",
     "retirer": "J’ai besoin de reprendre ceci : {cede}.",
@@ -98,9 +98,9 @@
     }
   ],
   "outcomes": {
-    "donner": "{recu} rejoint l’équipement de {prenom}.",
+    "donner": "{recu} rejoint l’équipement {de_prenom}.",
     "retirer": "{cede} retourne à l’Intendance.",
-    "troquer": "{recu} rejoint l’équipement de {prenom} ; {cede} retourne à l’Intendance.",
+    "troquer": "{recu} rejoint l’équipement {de_prenom} ; {cede} retourne à l’Intendance.",
     "refus_donner": "{recu} reste à l’Intendance.",
     "refus": "{prenom} garde son équipement."
   },

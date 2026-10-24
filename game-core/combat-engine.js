@@ -46,6 +46,11 @@
       luckDivisor:constant("combat.melee.crit.luck_divisor",10),
       fumbleThreshold:constant("combat.melee.fumble.threshold",96)
     };
+    // Aura du capitaine (Idan, 2026-10-24) : +courage de Courage aux alliés du capitaine à range cases ou moins.
+    const AURA={
+      courage:constant("captain.aura.courage_bonus",30),
+      range:constant("captain.aura.range_hex",10)
+    };
     const CHAIN={
       max:constant("combat.melee.chain.max_probability",100),
       rangedDivisor:constant("combat.ranged.chain.divisor",1.5)
@@ -679,9 +684,17 @@
       return Number(unit?.character?.skills?.social?.Intimidation)||0;
     }
 
-    // Courage post-attaque CAC V1 / Courage post-tir V1, avec le malus de Courage en sous-nombre V1.
-    function courageHold(subject,opponent,surplus=0){
-      return clamp(statWithGear(subject,"Courage")+0.25*statWithGear(subject,"Volonté")-0.25*intimidation(opponent)-10*surplus,5,95);
+    // Aura du capitaine (Idan, 2026-10-24) : tant qu'il est sur le champ de bataille (vivant, sur la carte), le capitaine
+    // (unit.isCaptain) donne +AURA.courage de Courage à ses alliés situés à AURA.range cases ou moins, pour leurs tests
+    // de Courage et leurs reprises de contrôle. Lui-même n'en profite pas. units : tous les combattants de la mission.
+    function captainAura(unit,units=[]){
+      const captain=(units||[]).find(u=>u.isCaptain&&u!==unit&&u.team===unit.team&&u.alive&&!u.offMap);
+      return captain&&axialDistance(captain,unit)<=AURA.range?AURA.courage:0;
+    }
+
+    // Courage post-attaque CAC V1 / Courage post-tir V1, avec le malus de Courage en sous-nombre V1 et l'aura du capitaine.
+    function courageHold(subject,opponent,surplus=0,aura=0){
+      return clamp(statWithGear(subject,"Courage")+aura+0.25*statWithGear(subject,"Volonté")-0.25*intimidation(opponent)-10*surplus,5,95);
     }
 
     // Courage en sous-nombre V1 : mêlée locale = groupe connecté de combattants liés par leurs zones de menace CAC.
@@ -699,36 +712,39 @@
     }
 
     // Qui teste son Courage après une attaque, et avec quelle probabilité de tenir.
-    // context : { defenderSurplus, attackerEncircles }.
+    // context : { defenderSurplus, attackerEncircles, units } (units : pour l'aura du capitaine).
     function resolveCourage(attacker,defender,result,context={}){
       if(!result?.ok||result.chargeFall) return null;
-      let subject,source,pHold,rule;
+      let subject,source,pHold,rule,aura;
       if(result.wound){
         // Une cible déjà En Fuite ne reteste pas (décision Idan, Issue #8).
         if(!defender.alive||defender.fleeing) return null;
         const surplus=result.mode==="melee"?Math.max(0,Number(context.defenderSurplus)||0):0;
         subject=defender;source=attacker;
-        pHold=courageHold(defender,attacker,surplus);
+        aura=captainAura(defender,context.units);
+        pHold=courageHold(defender,attacker,surplus,aura);
         rule=surplus>0?"outnumbered":"wounded";
       }else{
         // Tir : le tireur ne teste jamais. CAC : un attaquant qui participe à un encerclement ne teste pas.
         if(result.mode!=="melee"||!attacker.alive||attacker.fleeing||context.attackerEncircles) return null;
         subject=attacker;source=defender;
-        pHold=100-(100-courageHold(attacker,defender))/2;
+        aura=captainAura(attacker,context.units);
+        pHold=100-(100-courageHold(attacker,defender,0,aura))/2;
         rule="no-wound";
       }
       const roll=d100();
-      return {subject,source,pHold,roll,flees:roll>pHold,rule};
+      return {subject,source,pHold,roll,flees:roll>pHold,rule,aura};
     }
 
-    // Reprise de contrôle — En Fuite V1 ; ennemi de référence = ennemi actif le plus proche (vivant, pas En Fuite).
-    function recoveryChance(unit,referenceEnemy,fleeTurn){
-      return clamp(statWithGear(unit,"Courage")+0.25*statWithGear(unit,"Volonté")-0.25*intimidation(referenceEnemy)+10*fleeTurn,5,95);
+    // Reprise de contrôle — En Fuite V1 ; ennemi de référence = ennemi actif le plus proche (vivant, pas En Fuite) ;
+    // aura du capitaine si units est donné.
+    function recoveryChance(unit,referenceEnemy,fleeTurn,units=[]){
+      return clamp(statWithGear(unit,"Courage")+captainAura(unit,units)+0.25*statWithGear(unit,"Volonté")-0.25*intimidation(referenceEnemy)+10*fleeTurn,5,95);
     }
 
-    function rollRecovery(unit,referenceEnemy,fleeTurn){
-      const p=recoveryChance(unit,referenceEnemy,fleeTurn),roll=d100();
-      return {p,roll,recovered:roll<=p};
+    function rollRecovery(unit,referenceEnemy,fleeTurn,units=[]){
+      const p=recoveryChance(unit,referenceEnemy,fleeTurn,units),roll=d100();
+      return {p,roll,recovered:roll<=p,aura:captainAura(unit,units)};
     }
 
     // Comportement automatique — En Fuite V1 : 1 Course effrénée, 2 Cachons-nous, 3 Feu à volonté.
@@ -823,6 +839,7 @@
       threatens,
       isEncircled,
       intimidation,
+      captainAura,
       courageHold,
       localMelee,
       resolveCourage,

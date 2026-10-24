@@ -2008,7 +2008,8 @@ body[data-screen="camp"] .camp-scene>.panel .muted{color:#c2b29e}
 .sheet-pay{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:0;padding:12px 16px;border:1px solid #9a7a4f;border-radius:10px;background:linear-gradient(180deg,#3a2b21,#2a1f18)}
 .sheet-pay--salary{grid-area:salary}
 .sheet-pay--bonus{grid-area:bonus}
-.sheet-pay--captain{grid-column:2/-1;grid-row:4;color:#cdb38c;font-style:italic}
+.sheet-pay--captain{grid-column:2/-1;grid-row:4;align-items:center}
+.sheet-pay--captain em{display:block;margin-top:4px;color:#cdb38c;font:italic 14px/1.35 Georgia,serif}
 .sheet-pay small{color:#d4b27e;font:700 12px Georgia,serif;letter-spacing:.06em;text-transform:uppercase}
 .sheet-pay strong{color:#ffd77a;font:700 20px Georgia,serif;white-space:nowrap}
 @media(max-width:1100px){

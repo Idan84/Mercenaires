@@ -63,9 +63,11 @@ function missionHexPixel(q,r){
 function makeMissionUnit(character,team,index){
   const col=team==="player"?MISSION_MAP.spawnInset:MISSION_MAP.cols-1-MISSION_MAP.spawnInset;
   const spawn=missionAxial(col,MISSION_MAP.spawnRows[index]);
+  // Aura du capitaine (Idan, 2026-10-24) : le capitaine de la compagnie, s'il part en mission.
+  const captainId=game.campaign?game.campaign.company.captainId:game.captain?.id;
   return {
     id:team+"-"+character.id+"-"+index,
-    character,team,q:spawn.q,r:spawn.r,
+    character,team,q:spawn.q,r:spawn.r,isCaptain:team==="player"&&captainId!=null&&character.id===captainId,
     hp:character.pvMax,alive:true,activeSet:1,prone:false,
     acted:false,movementRemaining:0,attackAvailable:true,quickAvailable:true,
     fleeing:false,fleeTurn:0,offMap:false,damageTaken:0
@@ -548,6 +550,9 @@ function logMissionStray(attacker,result){
 }
 
 // Courage post-attaque CAC V1 / post-tir V1 / en sous-nombre V1 : un échec applique En Fuite.
+// Journal : le bonus de l'aura du capitaine, quand il compte dans le test.
+function missionAuraNote(aura){ return aura?", aura du capitaine +"+Math.round(aura):""; }
+
 function resolveMissionCourage(attacker,defender,result,override={}){
   const m=game.mission;
   if(!m||m.over||!result?.ok) return;
@@ -555,11 +560,12 @@ function resolveMissionCourage(attacker,defender,result,override={}){
   const context={
     defenderSurplus:e.localMelee(defender,missionUnits()).surplus,
     attackerEncircles:e.axialDistance(attacker,defender)===1&&e.threatens(attacker,defender)&&missionEncircled(defender),
+    units:missionUnits(),
     ...override
   };
   const c=e.resolveCourage(attacker,defender,result,context);
   if(!c) return;
-  const detail=" (Courage "+Math.round(c.pHold)+" %"+(c.rule==="outnumbered"?", en sous-nombre":"")+", jet "+c.roll+")";
+  const detail=" (Courage "+Math.round(c.pHold)+" %"+(c.rule==="outnumbered"?", en sous-nombre":"")+missionAuraNote(c.aura)+", jet "+c.roll+")";
   if(!c.flees){ missionLog(c.subject.character.name+" tient bon"+detail+".","info"); MercenairesProgression.recordCourageHeld(c.subject); return; }
   missionLog(c.subject.character.name+" panique et prend la fuite"+detail+" !","bad");
   MercenairesProgression.recordIntimidation(c.source,c.subject);
@@ -711,8 +717,8 @@ function missionPanicFire(unit){
 function resolveMissionFleeingActivation(unit){
   const e=game.mission.engine;
   unit.fleeTurn=(unit.fleeTurn||0)+1;
-  const recovery=e.rollRecovery(unit,nearestActiveMissionEnemy(unit),unit.fleeTurn);
-  const detail=" (reprise "+Math.round(recovery.p)+" %, jet "+recovery.roll+")";
+  const recovery=e.rollRecovery(unit,nearestActiveMissionEnemy(unit),unit.fleeTurn,missionUnits());
+  const detail=" (reprise "+Math.round(recovery.p)+" %"+missionAuraNote(recovery.aura)+", jet "+recovery.roll+")";
   if(recovery.recovered){
     unit.fleeing=false;unit.fleeTurn=0;
     missionLog(unit.character.name+" reprend ses esprits"+detail+".","turn");
@@ -927,9 +933,9 @@ function performMissionCharge(unit,target,charge){
 // de charge restant dans la direction opposée ; sans mouvement restant (ou sans case libre), il reste sur place.
 function resolveMissionCounterchargeCourage(reactor,charger,result,charge,remaining){
   const e=game.mission.engine;
-  const c=e.resolveCourage(reactor,charger,result,{defenderSurplus:0});
+  const c=e.resolveCourage(reactor,charger,result,{defenderSurplus:0,units:missionUnits()});
   if(!c) return;
-  const detail=" (Courage "+Math.round(c.pHold)+" %, jet "+c.roll+")";
+  const detail=" (Courage "+Math.round(c.pHold)+" %"+missionAuraNote(c.aura)+", jet "+c.roll+")";
   if(!c.flees){ missionLog(charger.character.name+" tient bon"+detail+".","info"); MercenairesProgression.recordCourageHeld(charger); return; }
   missionLog(charger.character.name+" panique et prend la fuite"+detail+" !","bad");
   MercenairesProgression.recordIntimidation(reactor,charger);

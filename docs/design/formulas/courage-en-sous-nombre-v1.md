@@ -4,7 +4,7 @@
 
 Code: combat.melee.courage_outnumbered
 Domaine: Combat
-Expression: enemy_surplus=max(0,local_enemy_count-local_ally_count_including_subject); penalty=10enemy_surplus; hold=min(95,max(5,courage+0.25will-0.25*opponent_intimidation-penalty)); when outnumbered, test immediately after each wound received; on fail apply fleeing and interrupt remaining sequence if target moved
+Expression: enemy_surplus=max(0,local_enemy_count-local_ally_count_including_subject); penalty=10enemy_surplus; hold=min(95,max(5,courage+captain_aura+0.25will-0.25*opponent_intimidation-penalty)); when outnumbered, test immediately after each wound received; on fail apply fleeing and interrupt remaining sequence if target moved
 Maximum: 95
 Minimum: 5
 Notes: Mêlée locale = groupe connecté de combattants liés par leurs zones de menace CAC. Le coefficient -10 par ennemi de surplus est la valeur V1 retenue à surveiller en playtest.
@@ -28,7 +28,7 @@ $$
 ## Courage
 
 $$
-Score=Courage+0.25\times Volonte-0.25\times IntimidationAdverse-MalusSurnombre
+Score=Courage+AuraCapitaine+0.25\times Volonte-0.25\times IntimidationAdverse-MalusSurnombre
 $$
 
 $$

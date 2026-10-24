@@ -6,7 +6,7 @@
 //   Chance d'accepter = Envie, bornée de 2 à 95 % : au début de la partie, on a du mal à trouver un intendant.
 // - Revenir sur le terrain : 60 − Envie + 1 par jour passé à l'intendance (le goût du sang lui manque), 2 à 95 %.
 // - Une proposition par mercenaire et par jour ; un seul intendant ; jamais le capitaine.
-// - Refus (avis de JC, demandé par Idan) : l'affinité bouge de (Intelligence − Courage) / 10, arrondi. Le malin se
+// - Refus (proposé par JC, validé par Idan) : l'affinité bouge de (Intelligence − Courage) / 10, arrondi. Le malin se
 //   sent flatté qu'on lui confie la compagnie (une seule fois), le brave se vexe qu'on veuille l'écarter du combat
 //   (à chaque fois). Un accord ne change pas l'affinité : il a eu ce qu'il voulait.
 // - Évaluer un candidat de la Taverne : estimation à ±20 % × (1 − Intendance/100) (14 §7), figée par candidat et

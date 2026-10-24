@@ -1165,7 +1165,7 @@
     {
       "nom": "Intendant — affinité au refus",
       "code": "steward.refusal.affinity_divisor",
-      "description": "Refus : l’affinité change de (Intelligence − Courage) / ce diviseur, arrondi ; flatté (positif) une seule fois, vexé (négatif) à chaque fois (avis de JC, 2026-10-24).",
+      "description": "Refus : l’affinité change de (Intelligence − Courage) / ce diviseur, arrondi ; flatté (positif) une seule fois, vexé (négatif) à chaque fois (proposé par JC, validé par Idan le 2026-10-24).",
       "formule": "Intendant",
       "valeur": 10,
       "version": "V1"

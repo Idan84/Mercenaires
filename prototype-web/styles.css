@@ -1460,7 +1460,20 @@ body[data-screen="camp"][data-camp-scene="home"] .menu-back {
 .quartermaster-panel .roster-count{flex:none}
 .stock-groups{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px;margin-top:16px;align-items:start}
 .stock-group{border:1px solid #6f5539;border-radius:12px;background:rgba(32,24,19,.72);padding:12px 14px}
-.stock-group h3{display:flex;align-items:baseline;justify-content:space-between;margin:0 0 9px;font:normal 18px Georgia,serif;color:#f4d9a6}
+/* Onglets par grande catégorie, catégories en accordéon fermées par défaut (Idan, 2026-10-24). */
+.stock-tabs{display:flex;gap:6px;margin-top:16px;border-bottom:1px solid #6f5539;overflow-x:auto}
+.stock-tab{display:flex;align-items:baseline;gap:7px;padding:9px 16px;border:0;border-bottom:3px solid transparent;border-radius:6px 6px 0 0;background:transparent;color:#cbb99e;font:normal 17px Georgia,serif;white-space:nowrap;cursor:pointer}
+.stock-tab small{font:700 12px system-ui,sans-serif;color:#a98d66}
+.stock-tab:hover,.stock-tab:focus-visible{background:#3a2b21;color:#ffdfaf;outline:none}
+.stock-tab.active{color:#ffdfad;border-bottom-color:#dbac6e}
+.stock-group summary{display:flex;align-items:center;gap:10px;list-style:none;cursor:pointer}
+.stock-group summary::-webkit-details-marker{display:none}
+.stock-group summary::after{content:"";flex:none;width:8px;height:8px;margin-right:4px;border-right:2px solid #c8a97c;border-bottom:2px solid #c8a97c;transform:rotate(45deg) translateY(-3px);transition:transform .15s}
+.stock-group[open] summary::after{transform:rotate(225deg) translate(-2px,-2px)}
+.stock-group summary:hover h3,.stock-group summary:focus-visible h3{color:#ffe7bd}
+.stock-group summary:focus-visible{outline:1px solid #dbac6e;outline-offset:4px;border-radius:4px}
+.stock-group h3{flex:1;display:flex;align-items:baseline;justify-content:space-between;margin:0;font:normal 18px Georgia,serif;color:#f4d9a6}
+.stock-group[open] summary{margin-bottom:10px}
 .stock-group h3 small{font:700 12px system-ui,sans-serif;color:#c8a97c}
 .stock-group ul{list-style:none;margin:0;padding:0;display:grid;gap:7px}
 .stock-row{display:grid;grid-template-columns:48px minmax(0,1fr) auto auto;align-items:center;gap:10px;color:#ecdcc2;font-size:14px}

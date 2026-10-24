@@ -198,7 +198,11 @@ Le matériel attribué à un mercenaire ne doit donc pas être considéré comme
 
 **Armures (Idan, 2026-10-24)** : le stock compte aussi quelques armures de base, **1D6 par type d'armure** (Vêtement, Légère, Intermédiaire, Lourde), chacune tirée au hasard parmi les armures de son type ; même table de tier, à la réputation du capitaine (le T3 reste rare, environ 3 %). L'Intendance les range après les armes, de la plus légère à la plus lourde.
 
-Constantes : `company.starting_stock.dice_count` (2), `company.starting_stock.dice_sides` (20), `company.starting_stock.affinity_weight` (2), `company.starting_stock.min_weight` (0,25), `company.starting_stock.armor_dice_count` (1), `company.starting_stock.armor_dice_sides` (6). Une partie sauvegardée avant ces règles reçoit au chargement ce qui lui manque (le stock d'armes, puis les armures, une seule fois). La capacité limitée de l'armurerie reste à définir.
+**Bottes (Idan, 2026-10-24)** : le stock compte aussi **1D6 paires de bottes**, chacune d'un type tiré au hasard (vitesse, esquive, perception ; doc 05), même table de tier. L'Intendance les range après les armures.
+
+**Affichage de l'Intendance (Idan, 2026-10-24)** : un onglet par grande catégorie (Armes, Armures, Bottes, avec leur nombre) ; dans chaque onglet, les catégories sont en accordéon, fermées par défaut. L'onglet choisi et les catégories ouvertes restent tels quels quand l'écran se redessine.
+
+Constantes : `company.starting_stock.dice_count` (2), `company.starting_stock.dice_sides` (20), `company.starting_stock.affinity_weight` (2), `company.starting_stock.min_weight` (0,25), `company.starting_stock.armor_dice_count` (1), `company.starting_stock.armor_dice_sides` (6), `company.starting_stock.boots_dice_count` (1), `company.starting_stock.boots_dice_sides` (6). Une partie sauvegardée avant ces règles reçoit au chargement ce qui lui manque (le stock d'armes, puis les armures et les bottes, une seule fois chacun). La capacité limitée de l'armurerie reste à définir.
 
 ## 17 — Laboratoire d’alchimie
 

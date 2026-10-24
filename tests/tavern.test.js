@@ -16,7 +16,7 @@ const files={
   ancestryLevels:"ancestry-levels.json",d6Scale:"d6-generation-scale.json",
   generationMatrix:"generation-matrix.json",skills:"skills.json",
   characteristics:"characteristics.json",formulaConstants:"formula-constants.json",
-  weapons:"weapons.json",baseArmors:"base-armors.json",itemQualities:"item-qualities.json",
+  weapons:"weapons.json",baseArmors:"base-armors.json",boots:"boots.json",itemQualities:"item-qualities.json",
   equipmentSlots:"equipment-slots.json",startingEquipmentGeneration:"starting-equipment-generation.json",
   binaryAptitudeGrants:"binary-aptitude-grants.json",alignmentGeneration:"alignment-generation.json",
   renamedNames:"renamed-names.json"
@@ -303,7 +303,10 @@ old9.tavern.candidates.pop();
 const stockOf=(state,type)=>state.company.stock.filter(item=>item.itemType===type);
 assert.ok(stockOf(s9,"weapon").length>=2&&stockOf(s9,"weapon").length<=40,"2D20 armes");
 assert.ok(stockOf(s9,"armor").length>=4&&stockOf(s9,"armor").length<=24,"1D6 armures par type");
-assert.equal(stockOf(s9,"weapon").length+stockOf(s9,"armor").length,s9.company.stock.length);
+// Bottes (Idan, 2026-10-24) : 1D6 paires, données une fois elles aussi.
+assert.ok(stockOf(s9,"boots").length>=1&&stockOf(s9,"boots").length<=6,"1D6 paires de bottes");
+assert.equal(stockOf(s9,"weapon").length+stockOf(s9,"armor").length+stockOf(s9,"boots").length,s9.company.stock.length);
+assert.equal(s9.company.startingBoots,true);
 assert.ok(s9.company.stock.every(item=>item.owner===null));
 assert.equal(s9.company.startingArmors,true);
 assert.equal(stable.ensureStartingStock(old9),false,"stock déjà là : rien à faire");
@@ -314,10 +317,16 @@ assert.equal(stable.ensureStartingStock(old9),true,"partie d'avant les armures :
 assert.equal(stockOf(old9,"weapon").length,weaponsBefore,"les armes restent");
 assert.ok(stockOf(old9,"armor").length>=4);
 assert.equal(stable.ensureStartingStock(old9),false,"une seule fois");
+delete old9.company.startingBoots;
+old9.company.stock=old9.company.stock.filter(item=>item.itemType!=="boots");
+assert.equal(stable.ensureStartingStock(old9),true,"partie d'avant les bottes : elles arrivent");
+assert.ok(stockOf(old9,"boots").length>=1);
+assert.equal(stable.ensureStartingStock(old9),false);
 delete old9.company.stock;
 delete old9.company.startingArmors;
+delete old9.company.startingBoots;
 assert.equal(stable.ensureStartingStock(old9),true);
-assert.ok(stockOf(old9,"weapon").length>=2&&stockOf(old9,"armor").length>=4);
+assert.ok(stockOf(old9,"weapon").length>=2&&stockOf(old9,"armor").length>=4&&stockOf(old9,"boots").length>=1);
 assert.equal(stable.ensureStartingStock(old9),false);
 
 // Affinité → négociation (14 §9 ; Idan, 2026-10-20) : résistance − 0,25 × affinité, bornée de 0 à 100.

@@ -146,7 +146,7 @@
 
     // Parties sauvegardées avant le stock d'armes de départ (Idan, 2026-10-23) : la compagnie reçoit le sien,
     // tiré pour son capitaine. Renvoie true si l'état a changé, pour que l'interface sauvegarde.
-    // Armures du stock (Idan, 2026-10-24) : données une seule fois, même à une partie commencée avant.
+    // Armures et bottes du stock (Idan, 2026-10-24) : données une seule fois, même à une partie commencée avant.
     function ensureStartingStock(state){
       const company=state.company;
       const captain=rosterOf(state).find(m=>m.id===company.captainId);
@@ -158,6 +158,11 @@
       if(!company.startingArmors){
         if(captain) company.stock.push(...generator.createStartingArmorStock(captain));
         company.startingArmors=true;
+        changed=true;
+      }
+      if(!company.startingBoots){
+        if(captain) company.stock.push(...generator.createStartingBootsStock(captain));
+        company.startingBoots=true;
         changed=true;
       }
       return changed;
@@ -258,8 +263,10 @@
           renownHeritage:[],
           // Armes et armures de rechange de la compagnie, sans propriétaire, listées à l'Intendance (Idan, 2026-10-23
           // et 2026-10-24).
-          stock:[...generator.createStartingStock(captain),...generator.createStartingArmorStock(captain)],
-          startingArmors:true
+          stock:[...generator.createStartingStock(captain),...generator.createStartingArmorStock(captain),
+            ...generator.createStartingBootsStock(captain)],
+          startingArmors:true,
+          startingBoots:true
         },
         tavern:tavern.createTavernState(),
         biographiesUsed:[],

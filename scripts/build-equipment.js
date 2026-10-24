@@ -3,7 +3,7 @@
 
 // Images d'équipement (Idan, 2026-10-23) : masters dans assets-src/Equipements/ (1024 px, fond noir)
 // → versions du jeu dans prototype-web/assets/equipment/ (WebP 256 px).
-// - Armures/<Nom>_<tier>[_horodatage].jpg et Armes/<Nom>_<tier>[...].jpg : le nom est reconnu sans accents,
+// - Armures/, Armes/ et Bottes/<Nom>_<tier>[_horodatage].jpg : le nom est reconnu sans accents,
 //   majuscules ni petits mots (« Armure_cuir » = « Armure de cuir »), dans n'importe quel ordre
 //   (« Double_arme_hast » = « Arme d'hast double »), et abrégé s'il reste sans ambiguïté
 //   (« Fleau » = « Fléau d'armes ») ;
@@ -52,7 +52,8 @@ function convert(args){
 
 const families=[
   {dir:"Armures",out:"armures",names:rows("base-armors.json").map(r=>r.nom)},
-  {dir:"Armes",out:"armes",names:rows("weapons.json").map(r=>r.nom)}
+  {dir:"Armes",out:"armes",names:rows("weapons.json").map(r=>r.nom)},
+  {dir:"Bottes",out:"bottes",names:rows("boots.json").map(r=>r.nom)}
 ];
 const available=[];
 const problems=[];

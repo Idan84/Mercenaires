@@ -108,5 +108,5 @@ assert.match(elements["deal-talk-log"].innerHTML, /Isolde retourne sur le terrai
 const ui2 = fs.readFileSync(path.join(ROOT, "prototype-web/ui.js"), "utf8");
 assert.match(ui2, /\$\("captain-summary"\)\.innerHTML = characterRow\(game\.captain, true\) \+ \(steward \? characterRow\(steward\) : ""\)/);
 assert.match(ui2, /filter\(c=>c!==game\.captain&&c\.id!==game\.campaign\?\.company\.intendantId\)/);
-assert.match(fs.readFileSync(path.join(ROOT, "prototype-web/mission.js"), "utf8"), /allCharacters\(\)\.filter\(c=>!game\.campaign\|\|c\.id!==game\.campaign\.company\.intendantId\)/);
+assert.match(fs.readFileSync(path.join(ROOT, "prototype-web/mission.js"), "utf8"), /allCharacters\(\)\.filter\(c=>\(!game\.campaign\|\|c\.id!==game\.campaign\.company\.intendantId\)&&!away\(c\)\)/);
 console.log("Intendant, interface : panneau, proposer, répondre, évaluer, revenir, Ma Compagnie, missions — OK");

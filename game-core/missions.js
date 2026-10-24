@@ -2,7 +2,8 @@
 
 // Missions one shot (doc 17). V1 (Idan, 2026-10-24) : « Faire le ménage », un camp gobelin ☠, seule mission proposée
 // à la Taverne, en boucle. Module pur : l'offre du tableau et son ordre de mission, les ennemis fabriqués à partir de
-// leurs fiches figées, le butin et la récompense. L'interface lance le trajet et le combat.
+// leurs fiches figées, le butin et la récompense. La campagne gère l'expédition
+// (campaign.js), l'interface le combat.
 // Données : one-shot-missions.json, enemy-archetypes.json, weapons.json, base-armors.json, skills.json,
 // item-qualities.json.
 (function(root,factory){
@@ -158,22 +159,12 @@
       return {victory:true,reward:offer.reward,chestGold,chestItems:chestItems.map(it=>({...it,owner:null})),loot,renown:0};
     }
 
-    // Applique l'issue à la compagnie : or, stock de l'Intendance, renommée de missions.
-    function applyOutcome(state,result){
-      const company=state.company;
-      company.gold+=result.reward+result.chestGold;
-      if(!Array.isArray(company.stock)) company.stock=[];
-      company.stock.push(...result.loot,...result.chestItems);
-      if(result.renown) company.missionRenown=(Number(company.missionRenown)||0)+result.renown;
-      return result;
-    }
-
     function deathMultiplier(offer,victory){ return victory?1:Number(definition(offer.code)?.defaite?.multiplicateur_mort)||1; }
     function chestItemCount(offer){ return Number(definition(offer.code)?.coffre?.objets)||0; }
     function mapSize(offer){ const map=definition(offer.code)?.carte||{}; return {cols:map.colonnes||13,rows:map.lignes||9}; }
 
     return {definition,archetype,rollCamp,estimation,contractReward,createOffer,orderText,applyArchetype,buildEnemies,
-      outcome,applyOutcome,deathMultiplier,chestItemCount,mapSize};
+      outcome,deathMultiplier,chestItemCount,mapSize};
   }
 
   return {createMissionRules};

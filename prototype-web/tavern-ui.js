@@ -110,6 +110,9 @@ function advanceCampDay(){
   logDayReport(report);
   saveGame();
   renderGame();
+  if(typeof renderContractBoard==="function"&&!$("tavern-missions-view").classList.contains("hidden")) renderContractBoard();
+  // Une escouade arrivée attend vos ordres (doc 17).
+  if(game.pendingExpeditionDialog){ openExpeditionDialog(game.pendingExpeditionDialog); game.pendingExpeditionDialog=null; }
 }
 
 // Journal d'une journée passée : guérisons, salaires, Taverne, contrat pris par une autre compagnie (doc 17).
@@ -121,6 +124,7 @@ function logDayReport(report){
   tavernLog(gone.length?"Engagés ailleurs pendant la nuit : "+gone.join(", ")+".":"Personne n’a été engagé ailleurs cette nuit.",gone.length?"bad":"info");
   if(arrived.length) tavernLog("Nouveaux candidats : "+arrived.join(", ")+".","turn");
   if(report.missionTaken) tavernLog("Le contrat de "+report.missionTaken.fields.lieu+" a été pris par une autre compagnie ; un nouveau est affiché.","bad");
+  if(typeof logExpeditionReport==="function") logExpeditionReport(report.expeditions);
 }
 
 // Dialogue de recrutement (Idan, 2026-10-21) : salutation selon l'affinité, réponses sincères, prétentions,

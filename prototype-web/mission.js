@@ -112,8 +112,9 @@ function openMissionSelection(contract=null){
   const {min,max}=game.missionSelect;
   $("mission-select-eyebrow").textContent=game.missionSelect.contract?"Contrat · "+game.missionSelect.contract.name:"Mission Test";
   $("mission-select-title").textContent=game.missionSelect.contract?"Choisir l’escouade ("+min+" à "+max+")":"Choisir 3 mercenaires";
-  // L'intendant ne part plus en mission (Idan, 2026-10-24).
-  const eligible=allCharacters().filter(c=>!game.campaign||c.id!==game.campaign.company.intendantId);
+  // L'intendant ne part plus en mission (Idan, 2026-10-24) ; un mercenaire déjà en expédition non plus (doc 17).
+  const away=c=>game.campaign&&campaignRules().expeditionOf(game.campaign,c.id);
+  const eligible=allCharacters().filter(c=>(!game.campaign||c.id!==game.campaign.company.intendantId)&&!away(c));
   const available=eligible.filter(c=>!c.recovery);
   const preselected=new Set(game.missionSelect.contract?[]:available.slice(0,3));
   $("mission-select-list").innerHTML=eligible.map(c=>`
@@ -142,7 +143,7 @@ function updateMissionSelectionCount(){
   // Primes de mission versées au retour (doc 09 §6) : le joueur pèse ce que coûte une grosse escouade.
   const bonus=ids.map(id=>allCharacters().find(c=>c.id===id)).reduce((sum,c)=>sum+(Number(c?.contract?.missionBonus)||0),0);
   $("mission-select-cost").textContent=contract
-    ?"Primes si tous reviennent : "+fmt(bonus)+" PO · marche : "+2*contract.distance+" jours aller-retour, salaires compris."
+    ?"Primes si tous reviennent : "+fmt(bonus)+" PO, versées au retour · marche : "+contract.distance+" jour"+(contract.distance>1?"s":"")+" à l’aller, autant au retour ; le camp continue pendant ce temps."
     :"";
 }
 
@@ -152,7 +153,7 @@ function startMissionFromSelection(){
   if(ids.length<min||ids.length>max) return;
   const chosen=ids.map(id=>allCharacters().find(c=>c.id===id)).filter(Boolean);
   if(chosen.length!==ids.length) return;
-  if(contract) return startContractMission(chosen,contract);
+  if(contract) return departContractSquad(chosen);
   setMissionMapSize();
 
   const enemyChars=Array.from({length:3},()=>createCharacter({role:"Ennemi test"}));
@@ -177,12 +178,27 @@ function startMissionFromSelection(){
   selectNextMissionPlayer();
 }
 
-// Contrat « Faire le ménage » (doc 17) : le trajet aller, puis le camp gobelin sur une carte plus grande ; votre équipe a
-// l'initiative (elle joue la première).
-function startContractMission(chosen,offer){
+// Contrat « Faire le ménage » (doc 17, Idan 2026-10-24) : l'escouade part, le joueur continue de gérer son camp. À son
+// arrivée (au bout des jours de marche), le combat attend : « Commencer le combat ».
+function departContractSquad(chosen){
+  const result=campaignRules().departExpedition(game.campaign,chosen.map(c=>c.id));
+  if(!result.ok){ $("mission-select-error").textContent=result.reason; return; }
   $("mission-select-dialog").close();
-  campaignRules().signMissionOffer(game.campaign);
-  contractTravel(offer.distance,"aller");
+  const e=result.expedition,days=e.offer.distance;
+  tavernLog("L’escouade de "+chosen.length+" mercenaire"+(chosen.length>1?"s":"")+" part pour le "+e.offer.campName.toLocaleLowerCase("fr")+" de "+e.offer.fields.lieu+" : arrivée dans "+days+" jour"+(days>1?"s":"")+".","turn");
+  saveGame();
+  renderGame();
+  if(typeof renderContractBoard==="function") renderContractBoard();
+}
+
+// Le combat de l'expédition, à son arrivée : le camp gobelin sur une carte plus grande ; votre équipe a l'initiative (elle
+// joue la première).
+function startExpeditionCombat(expeditionId){
+  const e=(game.campaign?.expeditions||[]).find(x=>x.id===expeditionId);
+  if(!e||e.status!=="arrived") return;
+  const chosen=e.memberIds.map(id=>game.campaign.company.roster.find(m=>m.id===id)).filter(Boolean);
+  if(!chosen.length) return;
+  const offer=e.offer;
   setMissionMapSize(missionRules().mapSize(offer));
   const enemyChars=missionRules().buildEnemies(offer,arch=>createCharacter({forcedPeople:arch.peuple,forcedCulture:arch.culture,role:arch.nom}));
   const engine=MercenairesCombat.createCombatEngine(game.referenceData,{onAttack:MercenairesProgression.recordAttack});
@@ -191,15 +207,15 @@ function startContractMission(chosen,offer){
   const players=placeMissionArmy(chosen.map((c,i)=>makeMissionUnit(c,"player",i%3)),"player");
   const enemies=placeMissionArmy(enemyChars.map((c,i)=>makeMissionUnit(c,"enemy",i%3)),"enemy");
   game.mission={
-    engine,endRules,progression,players,enemies,contract:offer,
+    engine,endRules,progression,players,enemies,contract:offer,expeditionId:e.id,
     playerOrder:sortMissionInitiative(players,engine),
     enemyOrder:sortMissionInitiative(enemies,engine),
     activeUnit:null,phase:"player",turn:1,mode:null,log:[],over:false,winner:null,aftermath:null
   };
-  saveGame();
+  $("expedition-dialog")?.close?.();
   $("game-panel").classList.add("hidden");
   $("mission-panel").classList.remove("hidden");
-  missionLog(offer.name+" : le camp gobelin de "+offer.fields.lieu+". Votre équipe a l’initiative.","turn");
+  missionLog(offer.name+" : le "+offer.campName.toLocaleLowerCase("fr")+" de "+offer.fields.lieu+". Votre équipe a l’initiative.","turn");
   missionLog("Dans le camp : "+enemies.map(u=>u.character.name).join(", ")+".");
   selectNextMissionPlayer();
 }
@@ -294,7 +310,8 @@ function resolveMissionAftermath(){
   missionLog("Fin de mission : bilan de votre équipe.","turn");
   for(const r of m.aftermath.results) missionLog(r.name+" — "+missionAftermathText(r),r.dead?"death":r.wounded?"bad":"info");
   if(!game.campaign) return;
-  const report=m.companyReport=campaignRules().applyMissionAftermath(game.campaign,m.aftermath);
+  // Expédition : les primes sont versées au retour de l'escouade (doc 17).
+  const report=m.companyReport=campaignRules().applyMissionAftermath(game.campaign,m.aftermath,{deferBonuses:Boolean(m.expeditionId)});
   for(const h of report.heritage||[]) missionLog(h.name+" entre dans la mémoire de la compagnie.","death");
   // Réputation et renommée en étoiles : une ligne seulement quand le niveau change.
   const renownStars=report.renown&&starChange(starRules().company(report.renown.before),starRules().company(report.renown.after));
@@ -315,33 +332,27 @@ function resolveMissionAftermath(){
 }
 
 // Contrat (doc 17 §8) : victoire, la récompense, le coffre et l'équipement des morts des deux camps ; défaite, rien et la
-// renommée baisse. Puis le trajet de retour (il compte comme du repos, doc 10 §9) et un nouveau contrat à la Taverne.
+// renommée baisse. Les survivants rentrent en autant de jours qu'à l'aller (le trajet compte comme du repos, doc 10 §9) ;
+// l'or, les objets et les primes arrivent avec eux.
 function resolveContractOutcome(m,report,victory){
   const offer=m.contract,rules=missionRules(),company=game.campaign.company;
   const captain=company.roster.find(x=>x.id===company.captainId);
   const chestItems=victory&&captain?Array.from({length:rules.chestItemCount(offer)},()=>game.generator.createLootItem(captain)).filter(Boolean):[];
   const deadEnemies=m.enemies.filter(u=>!u.alive&&!u.offMap).map(u=>u.character);
-  const result=m.contractResult=rules.applyOutcome(game.campaign,rules.outcome(offer,{victory,deadEnemies,deadMercenaries:report.deaths,chestItems}));
-  for(const line of contractResultLines(result)){ missionLog(line.text,line.kind); tavernLog(line.text,line.kind); }
-  contractTravel(offer.distance,"retour");
-  campaignRules().renewMissionOffer(game.campaign);
-  tavernLog("Un nouveau contrat est affiché à la Taverne.","turn");
+  const result=m.contractResult=rules.outcome(offer,{victory,deadEnemies,deadMercenaries:report.deaths,chestItems});
+  const back=campaignRules().completeExpeditionCombat(game.campaign,m.expeditionId,{result,bonuses:report.bonusesDue});
+  m.contractReturn=back?.expedition?{days:offer.distance,bonuses:report.bonusesDue.reduce((sum,b)=>sum+b.bonus,0)}:null;
+  for(const line of contractResultLines(result,m.contractReturn)){ missionLog(line.text,line.kind); tavernLog(line.text,line.kind); }
 }
-function contractResultLines(result){
-  if(!result.victory) return [{text:"Contrat échoué : rien n’est payé et la renommée de la compagnie baisse ("+result.renown+").",kind:"bad"}];
+function contractResultLines(result,trip=null){
+  const home=trip?{text:"Retour au camp dans "+trip.days+" jour"+(trip.days>1?"s":"")+(trip.bonuses?" ; primes dues à l’arrivée : "+fmt(trip.bonuses)+" PO.":"."),kind:"turn"}:null;
+  if(!result.victory) return [{text:"Contrat échoué : rien n’est payé et la renommée de la compagnie baisse ("+result.renown+").",kind:"bad"},home].filter(Boolean);
   const lines=[{text:"Contrat rempli : "+fmt(result.reward)+" PO de récompense et "+fmt(result.chestGold)+" PO dans le coffre.",kind:"gear"}];
   if(result.chestItems.length) lines.push({text:"Dans le coffre : "+result.chestItems.map(i=>i.name+" (T"+i.tier+")").join(", ")+".",kind:"gear"});
-  lines.push({text:"Butin des morts : "+result.loot.length+" objet"+(result.loot.length>1?"s":"")+" rejoigne"+(result.loot.length>1?"nt":"")+" l’Intendance.",kind:"gear"});
+  lines.push({text:"Butin des morts : "+result.loot.length+" objet"+(result.loot.length>1?"s":"")+", rapporté"+(result.loot.length>1?"s":"")+" à l’Intendance par l’escouade.",kind:"gear"});
+  if(home) lines.push(home);
   return lines;
 }
-// Trajet (doc 10 §1) : V1, sans escouades en parallèle, toute la compagnie avance jour par jour (salaires, Taverne,
-// convalescences).
-function contractTravel(days,leg){
-  if(!days||!game.campaign) return;
-  for(const report of campaignRules().advanceTime(game.campaign,days)) logDayReport(report);
-  tavernLog(leg==="aller"?"L’escouade a marché "+days+" jour"+(days>1?"s":"")+" jusqu’au camp ennemi.":"L’escouade est rentrée au camp après "+days+" jour"+(days>1?"s":"")+" de marche.","turn");
-}
-
 function missionAftermathDetail(r){
   const pct=x=>Math.round(x)+" %";
   const parts=[];
@@ -373,8 +384,8 @@ function renderMissionAftermath(m){
     ?"Ces personnages ne font pas partie d’une compagnie : bilan non appliqué."
     :report.gameOver
       ?""
-      :"Bilan appliqué à la compagnie. Primes de mission versées : "+report.bonusPaid+" PO."+missionRenownNote(report);
-  const contract=m.contractResult?`<ul class="mission-contract-result">${contractResultLines(m.contractResult).map(l=>`<li class="is-${l.kind}">${esc(l.text)}</li>`).join("")}</ul>`:"";
+      :"Bilan appliqué à la compagnie. "+(m.expeditionId?"Primes versées au retour de l’escouade.":"Primes de mission versées : "+report.bonusPaid+" PO.")+missionRenownNote(report);
+  const contract=m.contractResult?`<ul class="mission-contract-result">${contractResultLines(m.contractResult,m.contractReturn).map(l=>`<li class="is-${l.kind}">${esc(l.text)}</li>`).join("")}</ul>`:"";
   return `${contract}<ul class="mission-aftermath">${rows}</ul>
     ${report?.gameOver?`<p class="aftermath-gameover">Le capitaine est mort : la partie est terminée et la sauvegarde est effacée.</p>`:""}
     ${note?`<p class="aftermath-note">${esc(note)}</p>`:""}

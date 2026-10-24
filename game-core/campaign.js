@@ -363,8 +363,9 @@
 
     // Indisponibilité après mission (10-mission-time §4 à §6) : un blessé ou un fatigué ne peut pas
     // partir en mission tant que son compteur de jours n'est pas écoulé.
-    function isAvailable(mercenary){
-      return !mercenary.recovery;
+    // state (facultatif) : un mercenaire parti en expédition n'est pas disponible non plus.
+    function isAvailable(mercenary,state=null){
+      return !mercenary.recovery&&!(state&&expeditionOf(state,mercenary.id));
     }
 
     function recoverOneDay(state){
@@ -388,12 +389,13 @@
       const salaries=paySalaries(state);
       const tavernReport=tavern.tavernMorning(state.tavern,state.day,candidateFactory(state));
       const missionTaken=expireMissionOffer(state);
-      return {day:state.day,recovered,salaries,tavern:tavernReport,missionTaken};
+      const expeditions=advanceExpeditions(state);
+      return {day:state.day,recovered,salaries,tavern:tavernReport,missionTaken,expeditions};
     }
 
     // Tableau des contrats (doc 17) : une offre à la fois pour l'instant, « Faire le ménage » en boucle. Une offre
-    // non signée qui dépasse sa date est prise par une autre compagnie ; une nouvelle la remplace. Une offre signée est
-    // réservée (doc 17 §1).
+    // non signée qui dépasse sa date est prise par une autre compagnie ; une nouvelle la remplace. Une offre signée part
+    // avec son escouade (expédition, ci-dessous) : elle n'est plus au tableau, une nouvelle la remplace.
     function ensureMissionOffer(state){
       if(!missions||state.missionBoard?.offer) return false;
       state.missionBoard={offer:missions.createOffer({day:state.day})};
@@ -404,16 +406,70 @@
       state.missionBoard={offer:missions.createOffer({day:state.day})};
       return state.missionBoard.offer;
     }
-    function signMissionOffer(state){
-      const offer=state.missionBoard?.offer;
-      if(offer) offer.signed=true;
-      return offer||null;
-    }
     function expireMissionOffer(state){
       const offer=state.missionBoard?.offer;
-      if(!missions||!offer||offer.signed||state.day<=offer.expiresDay) return null;
+      if(!missions||!offer||state.day<=offer.expiresDay) return null;
       renewMissionOffer(state);
       return offer;
+    }
+
+    // Expéditions (doc 17, Idan 2026-10-24) : l'escouade part et le joueur continue de gérer son camp. Au bout des jours
+    // de marche, elle arrive : le combat attend le joueur (« Commencer le combat »). Après le combat, les survivants
+    // rentrent en autant de jours ; la récompense, le coffre, le butin et les primes arrivent avec eux. Plusieurs
+    // escouades peuvent être en route en même temps.
+    function expeditionsOf(state){ return state.expeditions||(state.expeditions=[]); }
+    function expeditionOf(state,mercenaryId){ return expeditionsOf(state).find(e=>e.memberIds.includes(mercenaryId))||null; }
+    function departExpedition(state,memberIds){
+      const offer=state.missionBoard?.offer;
+      if(!offer) return {ok:false,reason:"Aucun contrat au tableau."};
+      const roster=new Set(rosterOf(state).map(m=>m.id));
+      const ids=[...new Set(memberIds)].filter(id=>roster.has(id));
+      if(!ids.length) return {ok:false,reason:"Aucun mercenaire choisi."};
+      if(ids.some(id=>expeditionOf(state,id))) return {ok:false,reason:"Un de ces mercenaires est déjà en mission."};
+      const expedition={id:offer.id,offer,memberIds:ids,departDay:state.day,arriveDay:state.day+offer.distance,status:"outbound"};
+      expeditionsOf(state).push(expedition);
+      renewMissionOffer(state);
+      return {ok:true,expedition};
+    }
+    // Fin du combat : les morts quittent l'expédition, les autres prennent le chemin du retour. La renommée perdue sur un
+    // échec compte tout de suite ; l'or, les objets et les primes attendent le retour. result : missions.outcome(...),
+    // bonuses : [{id, bonus}] dues aux survivants (applyMissionAftermath, deferBonuses).
+    function completeExpeditionCombat(state,expeditionId,{result,bonuses=[]}={}){
+      const expedition=expeditionsOf(state).find(e=>e.id===expeditionId);
+      if(!expedition||!result) return null;
+      const roster=new Set(rosterOf(state).map(m=>m.id));
+      expedition.memberIds=expedition.memberIds.filter(id=>roster.has(id));
+      if(result.renown) state.company.missionRenown=(Number(state.company.missionRenown)||0)+result.renown;
+      expedition.pending={victory:result.victory,reward:result.reward,chestGold:result.chestGold,items:[...result.loot,...result.chestItems],
+        bonuses:bonuses.map(b=>({id:b.id,bonus:b.bonus}))};
+      expedition.status="returning";
+      expedition.returnDay=state.day+expedition.offer.distance;
+      return expedition.memberIds.length?{expedition}:finishExpedition(state,expedition);
+    }
+    // Retour au camp : l'or (récompense et coffre) et les objets rejoignent la compagnie, les primes sont versées aux
+    // survivants encore dans la compagnie. Personne ne rentre : rien n'arrive.
+    function finishExpedition(state,expedition){
+      const pending=expedition.pending||{},back=expedition.memberIds.length>0,roster=new Set(rosterOf(state).map(m=>m.id));
+      const report={expedition,gold:0,items:0,bonusPaid:0};
+      if(back){
+        report.gold=(Number(pending.reward)||0)+(Number(pending.chestGold)||0);
+        state.company.gold+=report.gold;
+        if(!Array.isArray(state.company.stock)) state.company.stock=[];
+        state.company.stock.push(...(pending.items||[]));
+        report.items=(pending.items||[]).length;
+        for(const b of pending.bonuses||[]) if(roster.has(b.id)){ state.company.gold-=b.bonus; report.bonusPaid+=b.bonus; }
+      }
+      expedition.status="done";
+      state.expeditions=expeditionsOf(state).filter(e=>e!==expedition);
+      return report;
+    }
+    function advanceExpeditions(state){
+      const arrived=[],returned=[];
+      for(const expedition of [...expeditionsOf(state)]){
+        if(expedition.status==="outbound"&&state.day>=expedition.arriveDay){ expedition.status="arrived"; arrived.push(expedition); }
+        else if(expedition.status==="returning"&&state.day>=expedition.returnDay) returned.push(finishExpedition(state,expedition));
+      }
+      return {arrived,returned,waiting:expeditionsOf(state).filter(e=>e.status==="arrived")};
     }
 
     // AdvanceTime(5) = cinq résolutions successives d'une journée. Seul un nombre entier de jours ≥ 0 est accepté.
@@ -474,9 +530,11 @@
     // aftermath : résultat de MercenairesMissionEnd.resolveMissionEnd. Les participants hors compagnie sont ignorés.
     // Un bilan déjà appliqué ne crédite pas une seconde fois l'XP, la réputation ni les primes.
     const appliedAftermaths=new WeakMap();
-    function applyMissionAftermath(state,aftermath){
+    // options.deferBonuses : les primes ne sont pas versées tout de suite (report.bonusesDue) ; une expédition les verse au
+    // retour de l'escouade (doc 17).
+    function applyMissionAftermath(state,aftermath,options={}){
       if(appliedAftermaths.has(aftermath)) return appliedAftermaths.get(aftermath);
-      const report={deaths:[],wounded:[],fatigued:[],bonuses:[],bonusPaid:0,gameOver:false,progression:[],heritage:[]};
+      const report={deaths:[],wounded:[],fatigued:[],bonuses:[],bonusPaid:0,bonusesDue:[],gameOver:false,progression:[],heritage:[]};
       // Classement du début de mission : les morts d'une même mission sont pondérés sur ce même classement,
       // quel que soit l'ordre des résultats (Idan, 2026-10-20).
       const renownBefore=companyRenown(state);
@@ -524,7 +582,8 @@
         // §8 — La prime de mission individuelle n'est payée que si le mercenaire revient ; pas à celui qui a fui hors de
         // la carte (Idan, 2026-10-24, doc 17 §8).
         const bonus=result.offMap?0:Number(mercenary.contract?.missionBonus)||0;
-        if(bonus>0){
+        if(bonus>0&&options.deferBonuses) report.bonusesDue.push({id:mercenary.id,mercenary,bonus});
+        else if(bonus>0){
           state.company.gold-=bonus;
           report.bonusPaid+=bonus;
           report.bonuses.push({mercenary,bonus});
@@ -564,7 +623,9 @@
       advanceTime,
       ensureMissionOffer,
       renewMissionOffer,
-      signMissionOffer,
+      expeditionOf,
+      departExpedition,
+      completeExpeditionCombat,
       dormitoryFree,
       dormitoryUsed,
       dormitoryPlaces,

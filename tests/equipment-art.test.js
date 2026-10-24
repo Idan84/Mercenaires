@@ -12,6 +12,7 @@ const EQUIPMENT_ART = new Function(fs.readFileSync(path.join(web, "equipment-art
 const armors = JSON.parse(fs.readFileSync(path.join(root, "data/reference/base-armors.json"), "utf8")).rows;
 const weapons = JSON.parse(fs.readFileSync(path.join(root, "data/reference/weapons.json"), "utf8")).rows;
 const boots = JSON.parse(fs.readFileSync(path.join(root, "data/reference/boots.json"), "utf8")).rows;
+const belts = JSON.parse(fs.readFileSync(path.join(root, "data/reference/belts.json"), "utf8")).rows;
 
 for (const key of EQUIPMENT_ART) {
   assert.ok(fs.existsSync(path.join(web, "assets/equipment", key + ".webp")), key);
@@ -25,6 +26,10 @@ for (const weapon of weapons) {
 // Bottes (Idan, 2026-10-24) : 3 types × 4 tiers.
 for (const pair of boots) {
   for (const tier of [1,2,3,4]) assert.ok(EQUIPMENT_ART.has(`bottes/${pictoSlug(pair.nom)}-${tier}`), `${pair.nom} T${tier}`);
+}
+// Ceintures (Idan, 2026-10-24) : 3 types × 4 tiers.
+for (const belt of belts) {
+  for (const tier of [1,2,3,4]) assert.ok(EQUIPMENT_ART.has(`ceintures/${pictoSlug(belt.nom)}-${tier}`), `${belt.nom} T${tier}`);
 }
 for (const tier of [1,2,3,4]) assert.ok(EQUIPMENT_ART.has(`frames/frame-${tier}`), `cadre T${tier}`);
 

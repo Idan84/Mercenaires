@@ -7,7 +7,8 @@
 //   d'arme, gêne d'armure et altération magique × multiplicateur malus ; résistance d'armure × multiplicateur
 //   qualité si elle est positive, ÷ sinon ;
 // - puissances tranchante, perforante et contondante : la qualité ne les change pas ;
-// - bottes (boots.json) : + bonus_t<tier> % de la caractéristique de base qu'elles servent ; la qualité ne le change pas.
+// - bottes (boots.json) et ceintures (belts.json) : + bonus_t<tier> % de la caractéristique de base qu'elles servent ;
+//   la qualité ne le change pas.
 // Renvoie des valeurs, pas du texte : l'interface les met en forme.
 (function(root,factory){
   const api=factory();
@@ -24,7 +25,9 @@
     const weapons=new Map(rows(reference?.weapons).map(r=>[r.nom,r]));
     const skills=new Map(rows(reference?.skills).map(r=>[r.nom,r]));
     const armors=rows(reference?.baseArmors);
-    const boots=new Map(rows(reference?.boots).map(r=>[r.nom,r]));
+    // Équipement à bonus de caractéristique, par type d'objet : catégorie affichée et modèles.
+    const statGear={boots:{category:"Bottes",byName:new Map(rows(reference?.boots).map(r=>[r.nom,r]))},
+      belt:{category:"Ceinture",byName:new Map(rows(reference?.belts).map(r=>[r.nom,r]))}};
     const qualities=new Map(rows(reference?.itemQualities).map(r=>[r.code,r]));
     const titles=new Map(rows(reference?.itemTitles).map(r=>[r.nom,r]));
 
@@ -85,17 +88,19 @@
       };
     }
 
-    function bootsCard(item,template){
-      return {kind:"boots",category:"Bottes",stat:template.caracteristique,bonus:number(template["bonus_t"+(Number(item.tier)||1)])};
+    function statGearCard(item,template){
+      return {kind:item.itemType,category:statGear[item.itemType].category,stat:template.caracteristique,
+        bonus:number(template["bonus_t"+(Number(item.tier)||1)])};
     }
 
-    // Carte d'un objet, ou null si ce n'est ni une arme, ni une armure, ni des bottes connues.
+    // Carte d'un objet, ou null si ce n'est ni une arme, ni une armure, ni des bottes ou une ceinture connues.
     function card(item){
       if(!item) return null;
       const q=quality(item);
       const head={title:title(item),name:item.name,tier:Number(item.tier)||1,quality:q};
       if(item.itemType==="weapon"&&weapons.has(item.name)) return {...head,...weaponCard(item,weapons.get(item.name),q)};
-      if(item.itemType==="boots"&&boots.has(item.name)) return {...head,...bootsCard(item,boots.get(item.name))};
+      const gear=statGear[item.itemType]?.byName.get(item.name);
+      if(gear) return {...head,...statGearCard(item,gear)};
       const armor=item.itemType==="armor"?armorTemplate(item):null;
       return armor?{...head,...armorCard(item,armor,q)}:null;
     }

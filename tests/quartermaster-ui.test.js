@@ -65,6 +65,14 @@ assert.deepEqual(ui.stockGroups(game.campaign.company.stock).map(g => g.category
 ui.renderQuartermaster();
 assert.equal(elements["quartermaster-count"].textContent, "1 arme · 5 armures · 2 paires de bottes");
 assert.match(elements["quartermaster-stock"].innerHTML, /<h3>Bottes <small>2<\/small><\/h3>/);
+// Ceintures (Idan, 2026-10-24) : leur onglet, après les bottes.
+game.campaign.company.stock.push({...weapon("Ceinture de courage", "Ceinture", 1), itemType:"belt"});
+ui.renderQuartermaster();
+assert.equal(elements["quartermaster-count"].textContent, "1 arme · 5 armures · 2 paires de bottes · 1 ceinture");
+assert.match(elements["quartermaster-tabs"].innerHTML, /data-stock-tab="belt">Ceintures <small>1<\/small>/);
+ui.stockView.tab = "belt";
+ui.renderQuartermaster();
+assert.match(elements["quartermaster-stock"].innerHTML, /<h3>Ceinture <small>1<\/small><\/h3>/);
 ui.stockView.tab = "weapon";
 
 // Une catégorie ouverte le reste quand l'écran se redessine.

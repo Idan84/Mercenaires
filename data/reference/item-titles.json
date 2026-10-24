@@ -5,11 +5,11 @@
   "columns": [
     {
       "key": "nom",
-      "source": "Nom de l’arme (weapons.json), de l’armure (base-armors.json) ou des bottes (boots.json)"
+      "source": "Nom de l’arme (weapons.json), de l’armure (base-armors.json), des bottes (boots.json) ou de la ceinture (belts.json)"
     },
     {
       "key": "famille",
-      "source": "arme, armure ou bottes"
+      "source": "arme, armure, bottes ou ceinture"
     },
     {
       "key": "t1",
@@ -28,7 +28,7 @@
       "source": "Titre T4"
     }
   ],
-  "row_count": 49,
+  "row_count": 52,
   "rows": [
     {
       "nom": "Arbalète",
@@ -421,6 +421,30 @@
       "t2": "Bottes de pisteur",
       "t3": "Bottes du guetteur",
       "t4": "Les Semelles du Troisième Œil"
+    },
+    {
+      "nom": "Ceinture de mana",
+      "famille": "ceinture",
+      "t1": "Ceinturon élimé",
+      "t2": "Ceinture de l’apprenti",
+      "t3": "Ceinture de l’arcaniste",
+      "t4": "Le Cercle de l’Œil Pourpre"
+    },
+    {
+      "nom": "Ceinture d’endurance",
+      "famille": "ceinture",
+      "t1": "Corde de chanvre",
+      "t2": "Ceinture de marcheur",
+      "t3": "Ceinturon du revenant",
+      "t4": "La Sangle du Mort-Vivant"
+    },
+    {
+      "nom": "Ceinture de courage",
+      "famille": "ceinture",
+      "t1": "Lanière râpée",
+      "t2": "Ceinturon du lion",
+      "t3": "Ceinture du champion",
+      "t4": "Le Cœur de Lion Ardent"
     }
   ]
 }

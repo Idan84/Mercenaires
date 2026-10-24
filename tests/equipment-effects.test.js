@@ -10,7 +10,7 @@ const {createEquipmentEffects} = require("../game-core/equipment-effects.js");
 
 const ROOT = path.resolve(__dirname, "..");
 const read = file => JSON.parse(fs.readFileSync(path.join(ROOT, "data", "reference", file), "utf8"));
-const reference = {weapons:read("weapons.json"), baseArmors:read("base-armors.json"), boots:read("boots.json"), itemQualities:read("item-qualities.json"),
+const reference = {weapons:read("weapons.json"), baseArmors:read("base-armors.json"), boots:read("boots.json"), belts:read("belts.json"), itemQualities:read("item-qualities.json"),
   skills:read("skills.json"), formulaConstants:read("formula-constants.json")};
 const engine = createCombatEngine(reference);
 const {effects} = createEquipmentEffects({engine});
@@ -56,19 +56,41 @@ const shod = character => ({...knight, stats:{...stats, Perception:50}, items:[.
   equipment:{slots:{...knight.equipment.slots, boots:character.id}}});
 const swift = effects(shod({id:"b", itemType:"boots", name:"Bottes de vitesse", tier:2, qualityName:"Correcte"}));
 near(swift.Vitesse.value - e.Vitesse.value, 4.2, "Vitesse 42 + 10 %");
-assert.deepEqual(swift.Vitesse.lines[0], {label:"Bottes de vitesse (Correcte)", delta:4.2, reason:"boots", percent:10});
+assert.deepEqual(swift.Vitesse.lines[0], {label:"Bottes de vitesse (Correcte)", delta:4.2, reason:"gear", percent:10});
 near(swift.Initiative.value - e.Initiative.value, 4.2);
 assert.equal(swift.Perception.lines.length, 0, "les bottes de vitesse ne touchent pas la Perception");
 const dodger = effects(shod({id:"b", itemType:"boots", name:"Bottes d’esquive", tier:3}));
 near(dodger.Esquive.value, 31 * 1.15 - 19.2);
-assert.deepEqual(dodger.Esquive.lines.map(l => l.reason), ["boots","armor"]);
+assert.deepEqual(dodger.Esquive.lines.map(l => l.reason), ["gear","armor"]);
 const watcher = shod({id:"b", itemType:"boots", name:"Bottes de perception", tier:1});
 near(effects(watcher).Perception.value, 52.5);
-near(engine.statWithBoots({character:watcher, activeSet:1}, "Perception"), 52.5, "le combat lit la même Perception");
+near(engine.statWithGear({character:watcher, activeSet:1}, "Perception"), 52.5, "le combat lit la même Perception");
+
+// Ceintures (Idan, 2026-10-24) : mêmes règles, sur l'emplacement Ceinturon.
+const belted = (name, tier, more = {}) => {
+  const c = {...knight, stats:{...stats, Endurance:60, Courage:50, "Réserve de mana":40, ...more},
+    items:[...knight.items, {id:"c", itemType:"belt", name, tier, qualityName:"Usée"}], equipment:{slots:{...knight.equipment.slots, belt:"c"}}};
+  return {c, e:effects(c)};
+};
+const tough = belted("Ceinture d’endurance", 3);
+near(tough.e.Endurance.value, 69, "Endurance 60 + 15 %");
+assert.deepEqual(tough.e.Endurance.lines, [{label:"Ceinture d’endurance (Usée)", delta:9, reason:"gear", percent:15}]);
+const toughUnit = {character:tough.c, activeSet:1};
+near(engine.movementBase(toughUnit) >= 1 ? engine.statWithGear(toughUnit, "Endurance") : 0, 69, "le combat lit la même Endurance");
+const brave = belted("Ceinture de courage", 4);
+near(brave.e.Courage.value, 60);
+near(brave.e.Initiative.value - brave.e.Initiative.base - (brave.e.Vitesse.value - 42), 1, "Initiative : 0,1 × Courage bonifié");
+assert.deepEqual(brave.e.Initiative.lines.map(l => l.reason), ["speed","courage"]);
+near(engine.courageHold({character:brave.c, activeSet:1}, {character:{stats:{}, skills:{}}, activeSet:1}),
+  engine.courageHold({character:{...brave.c, equipment:{slots:{}}}, activeSet:1}, {character:{stats:{}, skills:{}}, activeSet:1}) + 10,
+  "tenir son Courage : +10 avec la ceinture T4");
+const mage = belted("Ceinture de mana", 1);
+near(mage.e["Réserve de mana"].value, 42);
+assert.equal(mage.e.Endurance.lines.length, 0, "une ceinture de mana ne touche pas l'Endurance");
 
 // Sans équipement : rien ne change.
 const bare = effects({stats, skills:{}, items:[], equipment:{slots:{}}});
-for (const name of ["Vitesse","Esquive","Perception","Initiative","Dextérité"]) near(bare[name].value, bare[name].base);
+for (const name of ["Vitesse","Esquive","Perception","Endurance","Courage","Réserve de mana","Initiative","Dextérité"]) near(bare[name].value, bare[name].base);
 // Dégâts par set (Idan, 2026-10-24) : jet minimum et maximum du combat contre une cible sans résistance.
 const {attacks} = createEquipmentEffects({engine});
 const fighter = {stats:{Force:60},

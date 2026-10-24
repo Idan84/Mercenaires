@@ -10,7 +10,7 @@ const {createEquipmentEffects} = require("../game-core/equipment-effects.js");
 
 const ROOT = path.resolve(__dirname, "..");
 const read = file => JSON.parse(fs.readFileSync(path.join(ROOT, "data", "reference", file), "utf8"));
-const reference = {weapons:read("weapons.json"), baseArmors:read("base-armors.json"), boots:read("boots.json"), belts:read("belts.json"), amulets:read("amulets.json"),
+const reference = {weapons:read("weapons.json"), baseArmors:read("base-armors.json"), boots:read("boots.json"), belts:read("belts.json"), amulets:read("amulets.json"), capes:read("capes.json"),
   itemQualities:read("item-qualities.json"),
   skills:read("skills.json"), formulaConstants:read("formula-constants.json")};
 const engine = createCombatEngine(reference);
@@ -109,10 +109,27 @@ const sage = amuleted("Amulette de puissance magique", 1);
 near(sage.e["Puissance magique"].value, 52.5);
 assert.equal(sage.e.Chance.lines.length, 0, "une amulette de puissance magique ne touche pas la Chance");
 
+// Capes (Idan, 2026-10-24) : Esquive et Discrétion en pourcentage ; Résistance physique en points (+5 à +20).
+const caped = (name, tier) => {
+  const c = {...knight, resistances:{"Résistance physique":5}, skills:{martial:{"Discrétion":30}},
+    items:[...knight.items, {id:"k", itemType:"cape", name, tier, qualityName:"Correcte"}], equipment:{slots:{...knight.equipment.slots, cape:"k"}}};
+  return {c, e:effects(c), unit:{character:c, activeSet:1}};
+};
+const rampart = caped("Cape de résistance physique", 3);
+near(rampart.e["Résistance physique"].value, 20, "Résistance physique 5 + 15 points");
+assert.deepEqual(rampart.e["Résistance physique"].lines, [{label:"Cape de résistance physique (Correcte)", delta:15, reason:"gear", points:15}]);
+near(engine.statWithGear(rampart.unit, "Résistance physique"), 20, "le combat lit la même Résistance physique");
+const dancer = caped("Cape d’esquive", 2);
+near(dancer.e.Esquive.value, 31 * 1.10 - 19.2, "Esquive 31 + 10 % − armure");
+assert.deepEqual(dancer.e.Esquive.lines.map(l => l.reason), ["gear","armor"]);
+const shadow = caped("Cape de discrétion", 4);
+near(shadow.e["Discrétion"].value, 36, "Discrétion 30 + 20 %");
+assert.equal(shadow.e["Résistance physique"].lines.length, 0, "une cape de discrétion ne touche pas la Résistance physique");
+
 // Sans équipement : rien ne change.
 const bare = effects({stats, skills:{}, items:[], equipment:{slots:{}}});
 for (const name of ["Vitesse","Esquive","Perception","Endurance","Courage","Réserve de mana","Puissance magique","Volonté","Chance",
-  "Initiative","Dextérité"]) near(bare[name].value, bare[name].base);
+  "Résistance physique","Discrétion","Initiative","Dextérité"]) near(bare[name].value, bare[name].base);
 // Dégâts par set (Idan, 2026-10-24) : jet minimum et maximum du combat contre une cible sans résistance.
 const {attacks} = createEquipmentEffects({engine});
 const fighter = {stats:{Force:60},

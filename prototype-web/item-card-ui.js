@@ -64,8 +64,9 @@ function armorCardBody(card){
   return {rows,traits:[],flavor:card.description};
 }
 
-// Bottes, ceintures et amulettes (Idan, 2026-10-24) : un pourcentage de la caractéristique de base du porteur.
-const STAT_GEAR_KINDS=["boots","belt","amulet"];
+// Bottes, ceintures, amulettes et capes (Idan, 2026-10-24) : un pourcentage de la valeur de base du porteur, ou des
+// points (cape de résistance physique).
+const STAT_GEAR_KINDS=["boots","belt","amulet","cape"];
 // « de l’Endurance », « du Courage », « de la Vitesse ».
 const MASCULINE_STATS=new Set(["Courage","Charisme"]);
 function statArticle(stat){
@@ -73,11 +74,14 @@ function statArticle(stat){
   return MASCULINE_STATS.has(stat)?"du ":"de la ";
 }
 function statGearCardBody(card){
+  if(card.points) return {rows:[cardRow(card.stat,`+${cardNumber(card.bonus)}`,"bonus")],
+    traits:[`Ajoute ${cardNumber(card.bonus)} points de ${card.stat} au porteur`],flavor:null};
   return {rows:[cardRow(card.stat,`+${cardNumber(card.bonus)} %`,"bonus")],
     traits:[`Ajoute ${cardNumber(card.bonus)} % ${statArticle(card.stat)}${card.stat} de base du porteur`],flavor:null};
 }
 
-// La qualité en une phrase : ce qui monte, ce qui baisse. Elle ne change pas le bonus des bottes, ceintures et amulettes.
+// La qualité en une phrase : ce qui monte, ce qui baisse. Elle ne change pas le bonus des bottes, ceintures, amulettes
+// et capes.
 function qualityLine(card){
   if(STAT_GEAR_KINDS.includes(card.kind)) return "";
   const up=Math.round((card.quality.good-1)*100),down=Math.round((card.quality.bad-1)*100);

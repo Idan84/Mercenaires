@@ -587,7 +587,7 @@ function gearTooltip(item){
 }
 // Image d'un objet selon son tier (Idan, 2026-10-23 : masters dans assets-src/Equipements/, versions du jeu
 // par scripts/build-equipment.js), ou null tant qu'il n'en a pas : la case garde alors son picto.
-const EQUIPMENT_ART_DIRS={armor:"armures",weapon:"armes",boots:"bottes",belt:"ceintures",amulet:"amulettes"};
+const EQUIPMENT_ART_DIRS={armor:"armures",weapon:"armes",boots:"bottes",belt:"ceintures",amulet:"amulettes",cape:"capes"};
 function equipmentArt(item){
   const dir=EQUIPMENT_ART_DIRS[item?.itemType];
   const key=dir?`${dir}/${pictoSlug(item.name)}-${item.tier}`:null;
@@ -899,18 +899,19 @@ function sheetEquippedValue(m,name){
   return effect?Math.round(effect.value):sheetStatValue(m,name);
 }
 // Détail au survol : valeur de base, ce que chaque objet retire ou ajoute, valeur au combat.
-function equipmentDetail(effect){
+// total : « Au combat » pour les valeurs que le combat lit, « Total » pour la magie et la Discrétion (pas encore jouées).
+function equipmentDetail(effect,total="Au combat"){
   if(!effect?.lines.length) return "";
   const note={weight:"poids, réduit par la maîtrise",armor:"handicap de l’armure",speed:"avec l’équipement",dual:"une arme dans chaque main"};
   const line=l=>{
     const delta=Math.round(l.delta);
-    return `<span class="sheet-gear-line"><span>${esc(l.label)}<small>${esc(l.reason==="gear"?`+${l.percent} % de la valeur de base`:note[l.reason]||"")}${l.twoHands?" · à deux mains ÷2":""}</small></span><b class="${delta<0?"is-malus":delta>0?"is-bonus":""}">${delta>0?"+":""}${fmt(delta)}</b></span>`;
+    return `<span class="sheet-gear-line"><span>${esc(l.label)}<small>${esc(l.reason==="gear"?(l.points!=null?`+${l.points} points`:`+${l.percent} % de la valeur de base`):note[l.reason]||"")}${l.twoHands?" · à deux mains ÷2":""}</small></span><b class="${delta<0?"is-malus":delta>0?"is-bonus":""}">${delta>0?"+":""}${fmt(delta)}</b></span>`;
   };
   return `<span class="sheet-gear-detail">
     <span class="sheet-stat-pop-title">Avec l’équipement</span>
     <span class="sheet-gear-line"><span>Valeur de base</span><b>${fmt(Math.round(effect.base))}</b></span>
     ${effect.lines.map(line).join("")}
-    <span class="sheet-gear-line sheet-gear-line--total"><span>Au combat</span><b>${fmt(Math.round(effect.value))}</b></span>
+    <span class="sheet-gear-line sheet-gear-line--total"><span>${esc(total)}</span><b>${fmt(Math.round(effect.value))}</b></span>
   </span>`;
 }
 function statTip(row){
@@ -979,7 +980,14 @@ function skillChildren(parent){
 function skillDescription(name){
   return (game.referenceData?.skills?.rows||[]).find(r=>r.nom===name)?.description||"";
 }
+// Cape de discrétion (Idan, 2026-10-24) : la Discrétion montre la valeur avec l'équipement, en vert, et son détail.
+const SKILLS_WITH_GEAR=new Set(["Discrétion"]);
 function skillValueCell(c,group,name){
+  const effect=group==="martial"&&SKILLS_WITH_GEAR.has(name)&&c.stats?equipmentEffectRules().effects(c)[name]:null;
+  if(effect){
+    const value=Math.round(effect.value),shift=Math.sign(value-Math.round(effect.base));
+    return `<span class="sheet-stat-value${shift<0?" is-malus":shift>0?" is-bonus":""}" tabindex="0">${fmt(value)}${comparePopover(c,value,m=>sheetEquippedValue(m,name),equipmentDetail(effect,"Total"))}</span>`;
+  }
   const value=skillValue(c,group,name);
   return `<span class="sheet-stat-value" tabindex="0">${fmt(value)}${comparePopover(c,value,m=>skillValue(m,group,name))}</span>`;
 }
@@ -1211,7 +1219,7 @@ function renderMagicTab(c) {
     const row=(game.referenceData?.characterSheetCopy?.stats||[]).find(r=>r.nom===name)||{nom:name,usage:""};
     const effect=effects[name],value=effect?Math.round(effect.value):sheetStatValue(c,name);
     const shift=effect?Math.sign(value-Math.round(effect.base)):0;
-    return `<div class="sheet-stat magic-stat">${statIcon(name)}<span class="sheet-stat-name" tabindex="0">${esc(name)}${statTip(row)}</span><span class="sheet-stat-value${shift<0?" is-malus":shift>0?" is-bonus":""}" tabindex="0">${fmt(value)}${statPopover(c,name,value,equipmentDetail(effect))}</span></div>`;
+    return `<div class="sheet-stat magic-stat">${statIcon(name)}<span class="sheet-stat-name" tabindex="0">${esc(name)}${statTip(row)}</span><span class="sheet-stat-value${shift<0?" is-malus":shift>0?" is-bonus":""}" tabindex="0">${fmt(value)}${statPopover(c,name,value,equipmentDetail(effect,"Total"))}</span></div>`;
   };
   return `<section class="sheet-magic">
     <aside class="sheet-portrait">

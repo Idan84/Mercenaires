@@ -597,6 +597,25 @@ function gearTile(slot,item,{extraClass=""}={}){
     ${art?`<img class="gear-art" src="${art}" alt="" loading="lazy">`:gearIcon(gearKind(slot,item))}${item?gearTooltip(item):""}
   </span>`;
 }
+// Dégâts des sets d'armes (Idan, 2026-10-24) : ceux du combat avant l'armure et la résistance de la cible,
+// pour voir d'un coup d'œil si le mercenaire fait mal. Moyenne en gros, fourchette, types et ce qui les change.
+const DAMAGE_MODES = {melee:"Mêlée", ranged:"Tir"};
+function damageFactor(value) {
+  return "×" + String(Math.round(value * 100) / 100).replace(".", ",");
+}
+function renderDamageCard(c) {
+  const sets = typeof equipmentEffectRules === "function" && c?.stats ? equipmentEffectRules().attacks(c) : [];
+  if (!sets.length) return "";
+  const strike = (set, s) => `<div class="gear-damage-strike">
+      <span class="gear-damage-head"><small>Set ${set} · ${s.hand === "off" ? "Main secondaire" : DAMAGE_MODES[s.mode]}</small><strong>${esc(s.name)}</strong></span>
+      <span class="gear-damage-value"><b>≈ ${Math.round((s.min + s.max) / 2)}</b><small>${s.min} à ${s.max} PV</small></span>
+      <span class="gear-damage-types">${s.types.map(t => `${esc(t.type)} <b>${t.power}</b>`).join(" · ") || "—"}</span>
+      <span class="gear-damage-why">${[esc(s.dice), ...s.factors.map(f => `${esc(f.label)} ${damageFactor(f.factor)}`)].join(" · ")}</span>
+    </div>`;
+  const rows = sets.map(({set, strikes}) => strikes.length ? strikes.map(s => strike(set, s)).join("")
+    : `<div class="gear-damage-strike gear-damage-strike--empty"><span class="gear-damage-head"><small>Set ${set}</small><strong>Aucune arme</strong></span></div>`);
+  return `<section class="gear-card gear-damage"><h4>Dégâts</h4>${rows.join("")}<p class="gear-damage-note">Avant l’armure et la résistance de la cible.</p></section>`;
+}
 function renderEquipment(c) {
   const slotRows = game.referenceData?.equipmentSlots?.rows || [];
   const items = new Map((c.items || []).map(item => [item.id,item]));
@@ -631,6 +650,7 @@ function renderEquipment(c) {
 
   return `<section class="gear">
     <div class="gear-side">
+      ${renderDamageCard(c)}
       <section class="gear-card"><h4>Set de rechange</h4>${spare.map(weaponRow).join("")}</section>
       <section class="gear-card"><h4>Monture</h4>${mount?`<div class="gear-row">${gearTile(mount,mountItem)}<span class="gear-row-text"><strong>${mountItem?esc(mountItem.name):"Aucune"}</strong></span></div>`:""}</section>
     </div>

@@ -33,6 +33,7 @@ const REFERENCE_FILES = {
   characterSheetCopy: "character-sheet-copy.json",
   tavernDialogue: "tavern-dialogue.json",
   equipmentDialogue: "equipment-dialogue.json",
+  stewardDialogue: "steward-dialogue.json",
   itemTitles: "item-titles.json",
   renamedNames: "renamed-names.json"
 };

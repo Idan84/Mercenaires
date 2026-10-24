@@ -102,7 +102,8 @@ function recoveryLabel(c){
 }
 
 function openMissionSelection(){
-  const eligible=allCharacters();
+  // L'intendant ne part plus en mission (Idan, 2026-10-24).
+  const eligible=allCharacters().filter(c=>!game.campaign||c.id!==game.campaign.company.intendantId);
   const available=eligible.filter(c=>!c.recovery);
   const preselected=new Set(available.slice(0,3));
   $("mission-select-list").innerHTML=eligible.map(c=>`

@@ -251,6 +251,7 @@
             <span id="quartermaster-count" class="roster-count"></span>
           </div>
           <p class="muted">Armes, armures et bottes de rechange de la compagnie, sans propriétaire. Les échanges d’équipement et les retours de mission viendront ici.</p>
+          <div id="steward-panel" class="steward-panel"></div>
           <nav id="quartermaster-tabs" class="stock-tabs" role="tablist" aria-label="Catégories du stock"></nav>
           <div id="quartermaster-stock" class="stock-groups"></div>
         </section>
@@ -360,6 +361,14 @@
     </div>
     <div id="dialog-content" role="tabpanel"></div>
   </dialog>
+  <dialog id="steward-talk-dialog" class="talk-dialog talk-dialog--recruit" aria-labelledby="steward-talk-name">
+    <header class="talk-head">
+      <div id="steward-talk-portrait" class="talk-face"></div>
+      <div><p class="eyebrow">Intendance</p><h2 id="steward-talk-name"></h2></div>
+    </header>
+    <p id="steward-talk-line" class="talk-line"></p>
+    <ol id="steward-talk-options" class="talk-options"></ol>
+  </dialog>
   <dialog id="deal-talk-dialog" class="talk-dialog talk-dialog--recruit" aria-labelledby="deal-talk-name">
     <header class="talk-head">
       <div id="deal-talk-portrait" class="talk-face"></div>
@@ -374,6 +383,7 @@
   <script src="/core/combat-engine.js"></script>
   <script src="/core/tavern.js"></script>
   <script src="/core/history.js"></script>
+  <script src="/core/steward.js"></script>
   <script src="/core/campaign.js"></script>
   <script src="/core/biography.js"></script>
   <script src="/core/avatars.js"></script>
@@ -400,6 +410,7 @@
   <script src="tavern-ui.js"></script>
   <script src="quartermaster-ui.js"></script>
   <script src="deal-ui.js"></script>
+  <script src="steward-ui.js"></script>
   <script src="save-ui.js"></script>
   <script src="screen-ui.js"></script>
   <script src="intro-ui.js"></script>

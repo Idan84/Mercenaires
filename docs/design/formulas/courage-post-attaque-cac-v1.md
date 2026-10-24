@@ -27,10 +27,10 @@ $$
 
 ## Aura du capitaine (Idan, 2026-10-24)
 
-Tant que le **capitaine** de la compagnie est sur le champ de bataille (vivant, pas sorti de la carte), ses **alliés** situés à **10 cases ou moins** ajoutent **+30** à leur Courage pour ce test (`captain.aura.courage_bonus`, `captain.aura.range_hex`). Le capitaine lui-même n'en profite pas ; l'aura disparaît s'il tombe ou s'enfuit hors de la carte. La même aura compte pour la [reprise de contrôle](/design/#doc=formulas/reprise-de-controle-en-fuite-v1.md).
+Tant que le **capitaine** de la compagnie est sur le champ de bataille (vivant, pas sorti de la carte), ses **alliés** situés à **10 cases ou moins** ajoutent à leur Courage, pour ce test, **35 % du Courage + 25 % du Charisme du capitaine**, équipement compris (bagues, ceinture, culotte…), arrondi (`captain.aura.courage_ratio`, `captain.aura.charisma_ratio`, `captain.aura.range_hex`). Le capitaine lui-même n'en profite pas ; l'aura disparaît s'il tombe ou s'enfuit hors de la carte. La même aura compte pour la [reprise de contrôle](/design/#doc=formulas/reprise-de-controle-en-fuite-v1.md).
 
 $$
-AuraCapitaine=\begin{cases}30 & \text{capitaine allié présent à 10 cases ou moins}\\0 & \text{sinon}\end{cases}
+AuraCapitaine=\begin{cases}\mathrm{arrondi}(0{,}35\times Courage_{capitaine}+0{,}25\times Charisme_{capitaine}) & \text{capitaine allié présent à 10 cases ou moins}\\0 & \text{sinon}\end{cases}
 $$
 
 ## Cas 1 — l'attaquant a blessé sa cible

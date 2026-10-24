@@ -777,14 +777,17 @@ function renderSituation(c) {
   </section>`;
 }
 
-// Capitaine (Idan, 2026-10-24) : à la place du salaire, son aura au combat (captain.aura.*, combat-engine.js).
-function captainAuraBox(){
+// Capitaine (Idan, 2026-10-24) : à la place du salaire, son aura au combat (captain.aura.*, combat-engine.js) :
+// 35 % de son Courage + 25 % de son Charisme, équipement compris.
+function captainAuraBox(c){
   const value=(code,fallback)=>{
     const v=Number((game.referenceData?.formulaConstants?.rows||[]).find(r=>r.code===code)?.valeur);
     return Number.isFinite(v)?v:fallback;
   };
-  const bonus=value("captain.aura.courage_bonus",30),range=value("captain.aura.range_hex",10);
-  return `<div class="sheet-pay sheet-pay--captain"><span><small>Aura du capitaine</small><em>Sur le champ de bataille, ses alliés à ${fmt(range)} cases ou moins gagnent du Courage.</em></span><strong>+${fmt(bonus)} Courage</strong></div>`;
+  const range=value("captain.aura.range_hex",10);
+  const courage=value("captain.aura.courage_ratio",0.35),charisma=value("captain.aura.charisma_ratio",0.25);
+  const bonus=combatEngine().captainAuraBonus({character:c,activeSet:1});
+  return `<div class="sheet-pay sheet-pay--captain"><span><small>Aura du capitaine</small><em>Sur le champ de bataille, ses alliés à ${fmt(range)} cases ou moins gagnent ${fmt(courage*100)} % de son Courage et ${fmt(charisma*100)} % de son Charisme, équipement compris.</em></span><strong>+${fmt(bonus)} Courage</strong></div>`;
 }
 
 // Onglet Profil (Idan, 2026-10-21) : portrait et état ; pictos et phrases d'origine et d'ascendance ;
@@ -843,7 +846,7 @@ function renderProfileTab(c){
       <section class="sheet-column sheet-column--affinity">${affinity||`<small>Affinité</small><p>${captain?"Capitaine de la compagnie.":"Hors de la compagnie."}</p>`}</section>
       <div class="sheet-bio">${renderBiography(c)}</div>
       ${captain
-        ?captainAuraBox()
+        ?captainAuraBox(c)
         :`<div class="sheet-pay sheet-pay--salary"><small>Salaire journalier</small><strong>${fmt(salary)} PO</strong></div><div class="sheet-pay sheet-pay--bonus"><small>Prime de mission</small><strong>${fmt(bonus)} PO</strong></div>`}
     </div>
   </section>`;

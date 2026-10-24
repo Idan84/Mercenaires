@@ -55,9 +55,11 @@
       luckDivisor:constant("combat.melee.crit.luck_divisor",10),
       fumbleThreshold:constant("combat.melee.fumble.threshold",96)
     };
-    // Aura du capitaine (Idan, 2026-10-24) : +courage de Courage aux alliés du capitaine à range cases ou moins.
+    // Aura du capitaine (Idan, 2026-10-24) : courage × son Courage + charisma × son Charisme, en Courage pour ses alliés
+    // à range cases ou moins.
     const AURA={
-      courage:constant("captain.aura.courage_bonus",30),
+      courage:constant("captain.aura.courage_ratio",0.35),
+      charisma:constant("captain.aura.charisma_ratio",0.25),
       range:constant("captain.aura.range_hex",10)
     };
     const CHAIN={
@@ -706,12 +708,18 @@
       return unit?.character?statWithGear(unit,"Intimidation"):0;
     }
 
+    // Bonus de l'aura d'un capitaine (Idan, 2026-10-24) : 35 % de son Courage + 25 % de son Charisme, équipement compris,
+    // arrondi.
+    function captainAuraBonus(captain){
+      return Math.round(AURA.courage*statWithGear(captain,"Courage")+AURA.charisma*statWithGear(captain,"Charisme"));
+    }
+
     // Aura du capitaine (Idan, 2026-10-24) : tant qu'il est sur le champ de bataille (vivant, sur la carte), le capitaine
-    // (unit.isCaptain) donne +AURA.courage de Courage à ses alliés situés à AURA.range cases ou moins, pour leurs tests
+    // (unit.isCaptain) donne captainAuraBonus en Courage à ses alliés situés à AURA.range cases ou moins, pour leurs tests
     // de Courage et leurs reprises de contrôle. Lui-même n'en profite pas. units : tous les combattants de la mission.
     function captainAura(unit,units=[]){
       const captain=(units||[]).find(u=>u.isCaptain&&u!==unit&&u.team===unit.team&&u.alive&&!u.offMap);
-      return captain&&axialDistance(captain,unit)<=AURA.range?AURA.courage:0;
+      return captain&&axialDistance(captain,unit)<=AURA.range?captainAuraBonus(captain):0;
     }
 
     // Courage post-attaque CAC V1 / Courage post-tir V1, avec le malus de Courage en sous-nombre V1 et l'aura du capitaine.
@@ -863,6 +871,7 @@
       isEncircled,
       intimidation,
       captainAura,
+      captainAuraBonus,
       courageHold,
       localMelee,
       resolveCourage,

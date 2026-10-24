@@ -63,16 +63,23 @@ while(cycle.length<schools.length){
   cycle.push(next);
 }
 assert.ok(opposites.get(cycle.at(-1)).includes(cycle[0]));
-// Aura du capitaine (Idan, 2026-10-24) : sur sa fiche, à la place du salaire, avec les valeurs des constantes.
+// Aura du capitaine (Idan, 2026-10-24) : sur sa fiche, à la place du salaire ; 35 % de son Courage + 25 % de son
+// Charisme, équipement compris (le moteur fait le calcul).
 {
   const ui=fs.readFileSync(path.join(__dirname,"..","prototype-web","ui.js"),"utf8");
   const from=ui.indexOf("function captainAuraBox"),to=ui.indexOf("\n}\n",from)+3;
-  const constants={rows:[{code:"captain.aura.courage_bonus",valeur:30},{code:"captain.aura.range_hex",valeur:10}]};
-  const box=new Function("game","fmt",ui.slice(from,to)+"\nreturn captainAuraBox();")({referenceData:{formulaConstants:constants}},v=>String(v));
+  const constants={rows:[{code:"captain.aura.courage_ratio",valeur:0.35},{code:"captain.aura.charisma_ratio",valeur:0.25},
+    {code:"captain.aura.range_hex",valeur:10}]};
+  let asked=null;
+  const engine={captainAuraBonus:unit=>{ asked=unit; return 31; }};
+  const chief={id:1,stats:{Courage:50,Charisme:54}};
+  const box=new Function("game","fmt","combatEngine",ui.slice(from,to)+"\nreturn captainAuraBox;")(
+    {referenceData:{formulaConstants:constants}},v=>String(Math.round(v)),()=>engine)(chief);
+  assert.equal(asked.character,chief,"le moteur calcule l'aura du capitaine, avec son équipement");
   assert.match(box,/<small>Aura du capitaine<\/small>/);
-  assert.match(box,/ses alliés à 10 cases ou moins gagnent du Courage/);
-  assert.match(box,/<strong>\+30 Courage<\/strong>/);
-  assert.match(ui,/\?captainAuraBox\(\)/,"le capitaine montre son aura au lieu du salaire");
+  assert.match(box,/ses alliés à 10 cases ou moins gagnent 35 % de son Courage et 25 % de son Charisme, équipement compris/);
+  assert.match(box,/<strong>\+31 Courage<\/strong>/);
+  assert.match(ui,/\?captainAuraBox\(c\)/,"le capitaine montre son aura au lieu du salaire");
   assert.doesNotMatch(ui,/ne touche ni salaire ni prime/);
 }
 console.log("Fiche : textes d'origine, d'ascendance, des caractéristiques, des compétences et de la magie — OK");

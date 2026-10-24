@@ -26,7 +26,7 @@ Cette capacité est totalement distincte de celle du Dortoir :
 - Taverne : candidats non recrutés ;
 - Dortoir : mercenaires membres de la compagnie ;
 - Dortoir initial : **40 places** (décision Idan du 2026-10-03 ; constante `camp.dormitory.initial_capacity`).
-- Places (Idan, 2026-10-24) : un ogre en prend deux, tout autre mercenaire une ; le capitaine et l'intendant n'en prennent pas. Si le dortoir n'a plus assez de places pour le candidat, la signature est impossible (« Il me faut deux lits, capitaine » pour un ogre).
+- Places (Idan, 2026-10-24) : un ogre en prend deux ; un halfling, un gnome ou un gobelin une demi ; tout autre mercenaire une ; le capitaine et l'intendant n'en prennent pas. Si le dortoir n'a plus assez de places pour le candidat, la signature est impossible (« Il me faut deux lits, capitaine » pour un ogre).
 
 Un candidat de la Taverne n'occupe aucune place de Dortoir.
 

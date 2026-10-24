@@ -143,6 +143,11 @@ function sortMercenaryRoster(members,key=rosterSortKey,descending=rosterSortDesc
   });
 }
 
+// Places du dortoir : des demi-places pour les halflings, les gnomes et les gobelins (« 12,5 »).
+function dormitoryPlacesText(places){
+  return String(Math.round(Number(places)*2)/2).replace(".",",");
+}
+
 function renderMercenaryRoster() {
   // L'intendant passe dans Ma Compagnie (Idan, 2026-10-24).
   const squad=teamCharacters().filter(c=>c!==game.captain&&c.id!==game.campaign?.company.intendantId);
@@ -150,8 +155,8 @@ function renderMercenaryRoster() {
   const occupied=game.campaign?campaignRules().dormitoryUsed(game.campaign):squad.length;
   const capacity=company?.camp?.dormitoryCapacity;
   const count=$("initial-count");
-  count.innerHTML=`<span class="roster-count-number">${squad.length} mercenaire${squad.length!==1?"s":""}</span><span class="roster-count-capacity">Dortoir : ${occupied} / ${Number.isFinite(capacity)?capacity:"—"}</span>`;
-  count.title="Places occupées au dortoir : un ogre en prend deux ; le capitaine et l’intendant n’en prennent pas.";
+  count.innerHTML=`<span class="roster-count-number">${squad.length} mercenaire${squad.length!==1?"s":""}</span><span class="roster-count-capacity">Dortoir : ${dormitoryPlacesText(occupied)} / ${Number.isFinite(capacity)?capacity:"—"}</span>`;
+  count.title="Places occupées au dortoir : un ogre en prend deux ; un halfling, un gnome ou un gobelin une demi ; le capitaine et l’intendant n’en prennent pas.";
   $("roster-sort").value=rosterSortKey;
   const direction=$("roster-sort-direction");
   direction.textContent=rosterSortDescending?"↓ Décroissant":"↑ Croissant";

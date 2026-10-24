@@ -91,6 +91,13 @@ assert.ok(Number.isFinite(candidate.stewardEstimates.Force), "estimation figée 
 ui.stewardTalk("stat", "Force");
 assert.match(elements["steward-talk-line"].textContent, /Comme je vous l’ai dit : \d+ en Force\./);
 
+// Dortoir plein (Idan, 2026-10-24) : il ne peut pas revenir, et le dit.
+ui.setRules(createStewardRules({reference, random:() => 0, dormitory:{free:() => 0, places:() => 1}}));
+ui.stewardTalk("recall");
+assert.equal(game.campaign.company.intendantId, 3);
+assert.match(elements["steward-talk-line"].textContent, /où voulez-vous que je dorme, capitaine.+Le dortoir est plein\./);
+ui.setRules(createStewardRules({reference, random:() => 0}));
+
 // Revenir sur le terrain : accord (dé à 1), la compagnie n'a plus d'intendant.
 ui.stewardTalk("recall");
 assert.equal(game.campaign.company.intendantId, null);

@@ -177,9 +177,9 @@ assert.equal(stable.signCandidate(s4,pick.mercenary.id).ok,false,"pas d'accord")
 const n=tavern.negotiationState(pick);
 stable.offerToCandidate(s4,pick.mercenary.id,{salary:n.salary,bonus:n.bonus});
 // Dortoir (Idan, 2026-10-24) : ni le capitaine ni l'intendant ne prennent de place ; un ogre en prend deux,
-// tout autre mercenaire une (halflings, gobelins et gnomes compris).
+// un halfling, un gobelin ou un gnome une demi, tout autre mercenaire une.
 const placesOf=people=>stable.dormitoryPlaces({people});
-assert.deepEqual(["Ogre","Halfling","Gobelin","Gnome","Humain","Nain"].map(placesOf),[2,1,1,1,1,1]);
+assert.deepEqual(["Ogre","Halfling","Gobelin","Gnome","Humain","Nain","Elfe","Orc","Reptilien","Homme-bête"].map(placesOf),[2,0.5,0.5,0.5,1,1,1,1,1,1]);
 assert.equal(stable.dormitoryUsed(s4),s4.company.roster.filter(m=>m.id!==captain.id).reduce((sum,m)=>sum+stable.dormitoryPlaces(m),0));
 assert.equal(s4.company.roster.some(m=>m.id===captain.id),true,"le capitaine est bien dans l'effectif");
 s4.company.camp.dormitoryCapacity=stable.dormitoryUsed(s4);

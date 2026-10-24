@@ -50,7 +50,7 @@ function renderCompanyMeta(){
   $("company-gold").textContent=fmt(c.company.gold);
   $("company-gold").classList.toggle("negative",c.company.gold<0);
   $("company-day").textContent=c.day;
-  $("company-dorm").textContent=campaignRules().dormitoryUsed(c)+" / "+c.company.camp.dormitoryCapacity;
+  $("company-dorm").textContent=dormitoryPlacesText(campaignRules().dormitoryUsed(c))+" / "+c.company.camp.dormitoryCapacity;
   $("company-payroll").textContent=fmt(campaignRules().payroll(c));
   // Renommée (09 §2) en étoiles ; la valeur et son détail au survol.
   $("company-renown").innerHTML=renderRenownStars(campaignRules().companyRenown(c));

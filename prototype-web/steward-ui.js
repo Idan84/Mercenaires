@@ -6,7 +6,9 @@
 // Partir). Règles : game-core/steward.js ; textes : data/reference/steward-dialogue.json.
 let stewardRulesCache=null;
 function stewardRules(){
-  if(!stewardRulesCache&&game.referenceData) stewardRulesCache=MercenairesSteward.createStewardRules({reference:game.referenceData});
+  // Le dortoir de la campagne : l'intendant ne revient sur le terrain que s'il y a de la place pour lui.
+  if(!stewardRulesCache&&game.referenceData) stewardRulesCache=MercenairesSteward.createStewardRules({reference:game.referenceData,
+    dormitory:{free:state=>campaignRules().dormitoryFree(state),places:m=>campaignRules().dormitoryPlaces(m)}});
   return stewardRulesCache;
 }
 function stewardCopy(){ return game.referenceData?.stewardDialogue||{}; }
@@ -104,7 +106,7 @@ function stewardTalk(choice,arg){
   if(choice==="leave"){ $("steward-talk-dialog").close(); return; }
   if(choice==="recall"){
     const result=stewardRules().recall(game.campaign);
-    if(!result.ok){ t.line=talk.already||result.reason; renderStewardTalk(); return; }
+    if(!result.ok){ t.line=result.dormFull?talk.dorm_full:talk.already||result.reason; renderStewardTalk(); return; }
     saveGame();
     $("steward-talk-dialog").close();
     renderGame();

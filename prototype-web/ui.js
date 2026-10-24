@@ -849,14 +849,37 @@ function statIcon(name){
 function combatEngine(){
   return game.combatEngine || (game.combatEngine = MercenairesCombat.createCombatEngine(game.referenceData));
 }
-// Valeur affichée d'une ligne de l'onglet, pour un mercenaire quelconque (comparaison avec la compagnie).
+function equipmentEffectRules(){
+  return game.equipmentEffects || (game.equipmentEffects = MercenairesEquipmentEffects.createEquipmentEffects({engine:combatEngine()}));
+}
+// Valeur propre d'une ligne de l'onglet, sans l'équipement (Taverne, comparaison avec la compagnie).
 function sheetStatValue(m,name){
   if(name==="Points de vie") return Number(m?.pvMax);
-  if(name==="Initiative") return m?.stats ? Math.round(combatEngine().initiative({character:m})) : NaN;
+  if(name==="Initiative") return m?.stats ? Math.round(equipmentEffectRules().effects(m).Initiative.base) : NaN;
   if(m?.resistances && name in m.resistances) return Number(m.resistances[name]);
   // Régénération (physiologie) et Intimidation (social) : rangées dans les caractéristiques (Idan, 2026-10-21).
   for(const group of ["physiology","social"]) if(m?.skills?.[group] && name in m.skills[group]) return Number(m.skills[group][name]);
   return Number(m?.stats?.[name]);
+}
+// Valeur avec l'équipement (Idan, 2026-10-24) : Vitesse, Esquive, Initiative et Dextérité au combat.
+function sheetEquippedValue(m,name){
+  const effect=m?.stats?equipmentEffectRules().effects(m)[name]:null;
+  return effect?Math.round(effect.value):sheetStatValue(m,name);
+}
+// Détail au survol : valeur de base, ce que chaque objet retire ou ajoute, valeur au combat.
+function equipmentDetail(effect){
+  if(!effect?.lines.length) return "";
+  const note={weight:"poids, réduit par la maîtrise",armor:"handicap de l’armure",speed:"avec l’équipement",dual:"une arme dans chaque main"};
+  const line=l=>{
+    const delta=Math.round(l.delta);
+    return `<span class="sheet-gear-line"><span>${esc(l.label)}<small>${esc(note[l.reason]||"")}${l.twoHands?" · à deux mains ÷2":""}</small></span><b class="${delta<0?"is-malus":delta>0?"is-bonus":""}">${delta>0?"+":""}${fmt(delta)}</b></span>`;
+  };
+  return `<span class="sheet-gear-detail">
+    <span class="sheet-stat-pop-title">Avec l’équipement</span>
+    <span class="sheet-gear-line"><span>Valeur de base</span><b>${fmt(Math.round(effect.base))}</b></span>
+    ${effect.lines.map(line).join("")}
+    <span class="sheet-gear-line sheet-gear-line--total"><span>Au combat</span><b>${fmt(Math.round(effect.value))}</b></span>
+  </span>`;
 }
 function statTip(row){
   const reference=(game.referenceData?.characteristics?.rows||[]).find(r=>r.nom===row.nom)
@@ -871,15 +894,15 @@ function statPortraitButton(member,label,value,current){
   return `<button type="button" class="sheet-stat-who${member===current?" is-self":""}" data-sheet-open="${esc(member.id)}" title="Ouvrir la fiche de ${esc(member.name)}">
     ${face}<span><small>${label}</small><b>${fmt(value)}</b><em>${esc(member.name)}</em></span></button>`;
 }
-function statPopover(c,name,value){
-  return comparePopover(c,value,m=>sheetStatValue(m,name));
+function statPopover(c,name,value,lead=""){
+  return comparePopover(c,value,m=>lead?sheetEquippedValue(m,name):sheetStatValue(m,name),lead);
 }
-function comparePopover(c,value,accessor){
+function comparePopover(c,value,accessor,lead=""){
   const data=comparisonData(value,accessor);
   if(!data) return "";
   const p=data.positions;
   const dot=(key,pos,title)=>`<i class="compare-dot ${key}" style="left:${pos}%" title="${esc(title)}"></i>`;
-  return `<span class="sheet-stat-pop" role="tooltip">
+  return `<span class="sheet-stat-pop" role="tooltip">${lead}
     <span class="sheet-stat-pop-title">Dans la compagnie</span>
     <span class="compare-track"><span class="compare-line"></span>${dot("min",p.min,"Min "+fmt(data.min))}${dot("median",p.median,"Médiane "+fmt(data.median))}${dot("avg",p.avg,"Moyenne "+fmt(data.avg))}${dot("max",p.max,"Max "+fmt(data.max))}${dot("current",p.current,esc(c.name)+" "+fmt(value))}</span>
     <span class="sheet-stat-pop-mid"><span><i class="compare-dot median"></i>Médiane <b>${fmt(data.median)}</b></span><span><i class="compare-dot avg"></i>Moyenne <b>${fmt(data.avg)}</b></span></span>
@@ -889,13 +912,17 @@ function comparePopover(c,value,accessor){
 function renderStatsTab(c){
   const rows=game.referenceData?.characterSheetCopy?.stats||[];
   const status=rosterStatus(c);
+  const effects=c.stats?equipmentEffectRules().effects(c):{};
   const group=(key,title)=>`<section class="sheet-stat-group sheet-stat-group--${key}"><h4>${title}</h4>${rows.filter(r=>r.groupe===key).map(row=>{
-    const value=sheetStatValue(c,row.nom);
+    // L'équipement compte (Idan, 2026-10-24) : valeur au combat, en rouge si elle baisse, en vert si elle monte.
+    const effect=effects[row.nom],value=effect?Math.round(effect.value):sheetStatValue(c,row.nom);
     if(!Number.isFinite(value)) return "";
+    const shift=effect?Math.sign(value-Math.round(effect.base)):0;
+    const lead=equipmentDetail(effect);
     return `<div class="sheet-stat sheet-stat--${esc(pictoSlug(row.nom))}">
       ${statIcon(row.nom)}
       <span class="sheet-stat-name" tabindex="0">${esc(row.nom.replace(/^Résistance (au |à la |aux )?/,"").replace(/^./,ch=>ch.toUpperCase()))}${statTip(row)}</span>
-      <span class="sheet-stat-value" tabindex="0">${fmt(value)}${statPopover(c,row.nom,value)}</span>
+      <span class="sheet-stat-value${shift<0?" is-malus":shift>0?" is-bonus":""}" tabindex="0">${fmt(value)}${statPopover(c,row.nom,value,lead)}</span>
     </div>`;
   }).join("")}</section>`;
   return `<section class="sheet-stats">

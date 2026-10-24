@@ -101,7 +101,7 @@
       "puissance_contondante_base": 0
     },
     {
-      "nom": "Arquebuse / Mousquet",
+      "nom": "Arquebuse",
       "domaine": "Armes à feu, Martial",
       "prise": "2 mains",
       "malus_vitesse_arme_base": 30,
@@ -437,7 +437,7 @@
       "puissance_contondante_base": 55
     },
     {
-      "nom": "Massue / Gourdin",
+      "nom": "Massue",
       "domaine": "Armes contondantes, Martial",
       "prise": "1 main",
       "malus_vitesse_arme_base": 10,

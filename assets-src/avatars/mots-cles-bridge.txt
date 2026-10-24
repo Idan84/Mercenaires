@@ -31,7 +31,7 @@
 	Armes contondantes
 		Marteau de guerre
 		Masse d’armes
-		Massue / Gourdin
+		Massue
 		Pic de guerre
 	Armes de tir
 		Arbalète
@@ -49,7 +49,7 @@
 		Fouet
 		Nunchaku
 	Armes à feu
-		Arquebuse / Mousquet
+		Arquebuse
 		Canon à main
 		Pistolet
 		Tromblon

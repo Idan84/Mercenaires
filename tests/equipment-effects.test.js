@@ -1,6 +1,7 @@
 "use strict";
 
-// Effets de l'équipement sur la fiche (Idan, 2026-10-24) : ceux que le combat applique, avec le set 1 en main.
+// Effets de l'équipement sur la fiche (Idan, 2026-10-24) : ceux que le combat applique, avec le set 1 en main,
+// et les dégâts de chaque set avant la résistance de la cible.
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
@@ -53,4 +54,41 @@ assert.equal(d.Esquive.lines.length, 0, "sans armure : Esquive intacte");
 // Sans équipement : rien ne change.
 const bare = effects({stats, skills:{}, items:[], equipment:{slots:{}}});
 for (const name of ["Vitesse","Esquive","Initiative","Dextérité"]) near(bare[name].value, bare[name].base);
-console.log("Effets de l'équipement sur la fiche : Vitesse, Esquive, Initiative, Dextérité — OK");
+// Dégâts par set (Idan, 2026-10-24) : jet minimum et maximum du combat contre une cible sans résistance.
+const {attacks} = createEquipmentEffects({engine});
+const fighter = {stats:{Force:60},
+  items:[{id:"l", name:"Lance", qualityCode:"luxury", qualityName:"Grand Luxe"}, {id:"s", name:"Épée longue", qualityCode:"standard"},
+    {id:"d", name:"Dague", qualityCode:"worn", qualityName:"Usée"}, {id:"a", name:"Arquebuse", qualityCode:"standard"}],
+  equipment:{slots:{weapon_set_1_main:"l", weapon_set_2_main:"s", weapon_set_2_off:"d"}}};
+const [set1, set2] = attacks(fighter);
+// Lance 1D8, Grand Luxe ×1,2, à deux mains ×1,5, Force 60 ×1,2 : ⌈10 × 1 × 2,16⌉ à ⌈10 × 8 × 2,16⌉.
+assert.deepEqual(set1.strikes.map(s => [s.name, s.mode, s.dice, s.min, s.max]), [["Lance","melee","1D8",22,173]]);
+assert.deepEqual(set1.strikes[0].types, [{type:"Perforant", power:55}]);
+assert.deepEqual(set1.strikes[0].factors.map(f => [f.label, Math.round(f.factor * 100) / 100]), [["Grand Luxe",1.2],["À deux mains",1.5],["Force",1.2]]);
+// Deux armes : chaque main frappe ; la lance n'est plus à deux mains.
+assert.deepEqual(set2.strikes.map(s => [s.hand, s.name, s.min, s.max]), [["main","Épée longue",12,96],["off","Dague",10,39]]);
+assert.deepEqual(set2.strikes[0].types.map(t => t.type), ["Tranchant","Perforant"]);
+// Arme de tir : ni Force ni bonus à deux mains.
+fighter.equipment.slots = {weapon_set_1_main:"a"};
+const [shot, none] = attacks(fighter);
+assert.deepEqual(shot.strikes.map(s => [s.mode, s.min, s.max, s.factors.length]), [["ranged",10,120,0]]);
+assert.deepEqual(none.strikes, [], "set vide : pas d'attaque");
+
+// Case « Dégâts » de l'onglet Équipement (prototype-web/ui.js).
+const ui = fs.readFileSync(path.join(ROOT, "prototype-web/ui.js"), "utf8");
+const from = ui.indexOf("const DAMAGE_MODES"), to = ui.indexOf("function renderEquipment(c)");
+const esc = value => String(value ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+const {renderDamageCard} = new Function("esc","equipmentEffectRules", ui.slice(from, to) + "\nreturn {renderDamageCard};")(
+  esc, () => createEquipmentEffects({engine}));
+fighter.equipment.slots = {weapon_set_1_main:"l", weapon_set_2_main:"s", weapon_set_2_off:"d"};
+const card = renderDamageCard(fighter);
+assert.match(card, /<h4>Dégâts<\/h4>/);
+assert.match(card, /<small>Set 1 · Mêlée<\/small><strong>Lance<\/strong>/);
+assert.match(card, /<b>≈ 98<\/b><small>22 à 173 PV<\/small>/, "moyenne en gros, fourchette");
+assert.match(card, /Perforant <b>55<\/b>/);
+assert.match(card, /1D8 · Grand Luxe ×1,2 · À deux mains ×1,5 · Force ×1,2/);
+assert.match(card, /<small>Set 2 · Main secondaire<\/small><strong>Dague<\/strong>/);
+assert.match(card, /Avant l’armure et la résistance de la cible/);
+fighter.equipment.slots = {};
+assert.equal((renderDamageCard(fighter).match(/Aucune arme/g) || []).length, 2);
+console.log("Effets de l'équipement sur la fiche : Vitesse, Esquive, Initiative, Dextérité, dégâts par set — OK");

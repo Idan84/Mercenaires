@@ -19,7 +19,9 @@ assert.ok(copy.ancestries.every(r=>/^d/.test(r.famille)&&/^d’un/.test(r.parent
 const characteristics=read("characteristics.json").rows;
 const shown=copy.stats.map(r=>r.nom);
 assert.equal(new Set(shown).size,shown.length);
-assert.ok(copy.stats.every(r=>["physique","mental","resistance","magie"].includes(r.groupe)&&r.usage));
+assert.ok(copy.stats.every(r=>["physique","mental","resistance","magie"].includes(r.groupe)&&typeof r.usage==="string"));
+// Infobulles pour le joueur (Idan, 2026-10-24) : rien sur la création, les formules ni ce qui n'est pas encore en jeu.
+for(const r of copy.stats) assert.doesNotMatch(r.usage,/création|pas encore|calculé|effective/i,r.nom);
 const generated=characteristics.filter(r=>r.famille==="Caractéristique").map(r=>r.nom);
 for(const n of generated){
   const group=copy.stats.find(r=>r.nom===n)?.groupe;

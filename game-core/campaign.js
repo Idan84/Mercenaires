@@ -12,8 +12,6 @@
   // n'est pas sauvegardée : un mercenaire passe d'environ 36 Ko à 5 Ko.
   const SAVE_FORMAT="mercenaires-save";
   const SAVE_VERSION=1;
-  // Anciens noms de culture → noms actuels (voir ensureCultureNames).
-  const RENAMED_CULTURES=new Map([["Nains des plaines","Nains du chaos"]]);
 
   function withoutGenerationTrace(key,value){
     return key==="generationTrace"?undefined:value;
@@ -148,21 +146,45 @@
 
     // Parties sauvegardées avant le stock d'armes de départ (Idan, 2026-10-23) : la compagnie reçoit le sien,
     // tiré pour son capitaine. Renvoie true si l'état a changé, pour que l'interface sauvegarde.
+    // Armures du stock (Idan, 2026-10-24) : données une seule fois, même à une partie commencée avant.
     function ensureStartingStock(state){
-      if(Array.isArray(state.company.stock)) return false;
-      const captain=rosterOf(state).find(m=>m.id===state.company.captainId);
-      state.company.stock=captain?generator.createStartingStock(captain):[];
-      return true;
+      const company=state.company;
+      const captain=rosterOf(state).find(m=>m.id===company.captainId);
+      let changed=false;
+      if(!Array.isArray(company.stock)){
+        company.stock=captain?generator.createStartingStock(captain):[];
+        changed=true;
+      }
+      if(!company.startingArmors){
+        if(captain) company.stock.push(...generator.createStartingArmorStock(captain));
+        company.startingArmors=true;
+        changed=true;
+      }
+      return changed;
     }
 
-    // Cultures renommées (Idan, 2026-10-23 : « Nains des plaines » devient « Nains du chaos »). Dans une partie
-    // sauvegardée avant, l'ancien nom est remplacé partout où il figure. Renvoie true si l'état a changé,
-    // pour que l'interface sauvegarde.
-    function ensureCultureNames(value){
+    // Noms changés par Idan (data/reference/renamed-names.json : « Nains des plaines » → « Nains du chaos »,
+    // « Massue / Gourdin » → « Massue »…). Dans une partie sauvegardée avant, l'ancien nom est remplacé partout
+    // où il figure, en valeur (culture, objet, arme de prédilection) comme en clé (compétences), ainsi que
+    // l'identifiant de modèle d'une arme. Renvoie true si l'état a changé, pour que l'interface sauvegarde.
+    const RENAMES=new Map();
+    for(const row of reference?.renamedNames?.rows||[]){
+      RENAMES.set(row.ancien,row.nouveau);
+      if(row.famille==="arme"&&generator?.normalizeKey) RENAMES.set("weapon:"+generator.normalizeKey(row.ancien),"weapon:"+generator.normalizeKey(row.nouveau));
+    }
+    function ensureRenamedNames(value){
+      if(!value||typeof value!=="object") return false;
       let changed=false;
-      for(const [key,item] of Object.entries(value||{})){
-        if(typeof item==="string"&&RENAMED_CULTURES.has(item)){ value[key]=RENAMED_CULTURES.get(item); changed=true; }
-        else if(item&&typeof item==="object"&&ensureCultureNames(item)) changed=true;
+      for(const key of Object.keys(value)){
+        const item=value[key];
+        if(typeof item==="string"&&RENAMES.has(item)){ value[key]=RENAMES.get(item); changed=true; }
+        else if(item&&typeof item==="object"&&ensureRenamedNames(item)) changed=true;
+        if(!Array.isArray(value)&&RENAMES.has(key)){
+          const next=RENAMES.get(key);
+          if(!(next in value)) value[next]=value[key];
+          delete value[key];
+          changed=true;
+        }
       }
       return changed;
     }
@@ -234,8 +256,10 @@
           intendantId:null,
           camp:{dormitoryCapacity:STARTING_DORMITORY_CAPACITY},
           renownHeritage:[],
-          // Armes de rechange de la compagnie, sans propriétaire, listées à l'Intendance (Idan, 2026-10-23).
-          stock:generator.createStartingStock(captain)
+          // Armes et armures de rechange de la compagnie, sans propriétaire, listées à l'Intendance (Idan, 2026-10-23
+          // et 2026-10-24).
+          stock:[...generator.createStartingStock(captain),...generator.createStartingArmorStock(captain)],
+          startingArmors:true
         },
         tavern:tavern.createTavernState(),
         biographiesUsed:[],
@@ -437,7 +461,7 @@
       ensureBiographies,
       ensureInitialContracts,
       ensureAvatars,
-      ensureCultureNames,
+      ensureRenamedNames,
       ensureStartingStock,
       payroll
     };

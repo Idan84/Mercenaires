@@ -245,6 +245,21 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
 .gear-row-text strong{overflow:hidden;color:#f4e1c2;font:15px Georgia,serif;text-overflow:ellipsis;white-space:nowrap}
 .gear-row-text em{color:#cdb38c;font-size:12px;font-style:normal}
 .gear-tiles{display:grid;grid-template-columns:repeat(4,48px);gap:8px}
+/* Dégâts des sets d'armes : moyenne en gros, fourchette, types, ce qui les change. */
+.gear-damage{gap:8px}
+.gear-damage-strike{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;padding-top:8px;border-top:1px solid rgba(113,88,62,.55)}
+.gear-damage h4+.gear-damage-strike{padding-top:0;border-top:0}
+.gear-damage-head{display:grid;min-width:0;line-height:1.25}
+.gear-damage-head small{color:#bb9a6e;font-size:11px}
+.gear-damage-head strong{overflow:hidden;color:#f4e1c2;font:15px Georgia,serif;text-overflow:ellipsis;white-space:nowrap}
+.gear-damage-value{display:grid;justify-items:end;line-height:1.1}
+.gear-damage-value b{color:#f0c46a;font:700 22px Georgia,serif}
+.gear-damage-value small{color:#cdb38c;font-size:11px;white-space:nowrap}
+.gear-damage-types{grid-column:1/-1;color:#e6d3b3;font-size:12px}
+.gear-damage-types b{color:#f4e1c2}
+.gear-damage-why{grid-column:1/-1;color:#9f8562;font-size:11px}
+.gear-damage-strike--empty .gear-damage-head strong{color:#9f8562;font-style:italic}
+.gear-damage-note{margin:0;color:#9f8562;font-size:11px;font-style:italic}
 .gear-tiles--rings{grid-template-columns:repeat(3,48px)}
 /* Parchemin clair : la silhouette en multiply y garde son trait (pas de transform ni d'isolation ici). */
 .equipment-mannequin.gear-doll{position:relative;width:100%;height:auto;aspect-ratio:1;min-width:0;border:1px solid #9a7a4f;border-radius:14px;
@@ -1791,6 +1806,11 @@ body[data-screen="camp"] .camp-scene>.panel .muted{color:#c2b29e}
 #character-dialog{height:min(800px,92vh)}
 #character-dialog .dialog-head{background:#34251d;border-bottom:1px solid #97724b;padding-bottom:10px}
 #character-dialog .dialog-head h2{font:normal 34px Georgia,serif;color:#f3d5a0}
+/* Flèches mercenaire précédent / suivant à côté du nom (Idan, 2026-10-24). */
+#character-dialog .sheet-title{display:flex;align-items:center;gap:10px;min-width:0}
+#character-dialog .sheet-nav{display:grid;place-items:center;width:32px;height:32px;flex:none;padding:0 0 3px;border:1px solid #a9814f;border-radius:50%;background:#2a1e17;color:#f3d5a0;font:400 24px/1 Georgia,serif;cursor:pointer;transition:background .15s,border-color .15s}
+#character-dialog .sheet-nav:hover,#character-dialog .sheet-nav:focus-visible{background:#4a3424;border-color:#f0c77f;outline:none}
+#character-dialog .sheet-nav[hidden]{display:none}
 #character-dialog .sheet-tab{color:#cbb99e;border-radius:4px;background:transparent}
 #character-dialog .sheet-tab:hover{background:#473529;color:#ffdfaf}
 #character-dialog .sheet-tab.active{color:#ffdfad;border-color:#dbac6e}

@@ -19,14 +19,14 @@ const weapon = (name, category, tier) => ({
   qualityCode:{1:"worn",2:"standard",3:"luxury"}[tier], qualityName:{1:"Usée",2:"Correcte",3:"Grand Luxe"}[tier]
 });
 game.campaign.company.stock = [
-  weapon("Tromblon","Armes à feu",1), weapon("Écu","Boucliers",2), weapon("Arquebuse / Mousquet","Armes à feu",1),
+  weapon("Tromblon","Armes à feu",1), weapon("Écu","Boucliers",2), weapon("Arquebuse","Armes à feu",1),
   weapon("Tromblon","Armes à feu",1), weapon("Tromblon","Armes à feu",3)
 ];
 
 const groups = ui.stockGroups(game.campaign.company.stock);
 assert.deepEqual(groups.map(g => [g.category, g.count]), [["Armes à feu",4],["Boucliers",1]], "catégories triées");
 assert.deepEqual(groups[0].rows.map(r => [r.item.name, r.item.tier, r.count]),
-  [["Arquebuse / Mousquet",1,1],["Tromblon",1,2],["Tromblon",3,1]], "même arme et même tier : une ligne × 2");
+  [["Arquebuse",1,1],["Tromblon",1,2],["Tromblon",3,1]], "même arme et même tier : une ligne × 2");
 
 ui.renderQuartermaster();
 assert.equal(elements["quartermaster-count"].textContent, "5 armes");
@@ -36,6 +36,16 @@ assert.match(list, /Tromblon<\/span>\s*<span class="stock-tier stock-tier--worn"
 assert.match(list, /stock-tier--luxury">T3 · Grand Luxe/);
 assert.match(list, /<tile standard>/, "case d'objet de la fiche (picto, contour de qualité, détail au survol)");
 
+// Armures (Idan, 2026-10-24) : après les armes, de la plus légère à la plus lourde.
+const armor = (name, category, tier) => ({...weapon(name, null, tier), category, itemType:"armor"});
+game.campaign.company.stock = [armor("Armure de plates","Lourde",1), weapon("Écu","Boucliers",2), armor("Vêtements","Vêtement",1),
+  armor("Gambison","Légère",2), armor("Cotte de mailles","Intermédiaire",1), armor("Armure de plates","Lourde",1)];
+assert.deepEqual(ui.stockGroups(game.campaign.company.stock).map(g => [g.category, g.count]),
+  [["Boucliers",1],["Vêtements",1],["Armures légères",1],["Armures intermédiaires",1],["Armures lourdes",2]]);
+ui.renderQuartermaster();
+assert.equal(elements["quartermaster-count"].textContent, "1 arme · 5 armures");
+assert.match(elements["quartermaster-stock"].innerHTML, /<h3>Armures lourdes <small>2<\/small><\/h3>/);
+
 game.campaign.company.stock = [];
 ui.renderQuartermaster();
 assert.equal(elements["quartermaster-count"].textContent, "0 arme");
@@ -43,4 +53,4 @@ assert.match(elements["quartermaster-stock"].innerHTML, /Le stock est vide/);
 
 assert.match(html, /id="quartermaster-stock"/);
 assert.ok(html.indexOf('src="quartermaster-ui.js"') > 0 && html.indexOf('src="quartermaster-ui.js"') < html.indexOf('src="ui.js"'));
-console.log("Intendance : stock par catégorie, doublons regroupés, tiers — OK");
+console.log("Intendance : stock par catégorie, doublons regroupés, tiers, armures — OK");

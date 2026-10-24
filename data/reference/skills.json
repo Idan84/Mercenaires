@@ -716,7 +716,7 @@
       "ecoles_opposees": null
     },
     {
-      "nom": "Massue / Gourdin",
+      "nom": "Massue",
       "acquisition_possible": null,
       "alteration_magique_base": null,
       "attaque_de_zone": false,
@@ -871,7 +871,7 @@
       "ecoles_opposees": null
     },
     {
-      "nom": "Arquebuse / Mousquet",
+      "nom": "Arquebuse",
       "acquisition_possible": null,
       "alteration_magique_base": null,
       "attaque_de_zone": false,

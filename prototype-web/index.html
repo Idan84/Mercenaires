@@ -250,7 +250,7 @@
             </div>
             <span id="quartermaster-count" class="roster-count"></span>
           </div>
-          <p class="muted">Armes de rechange de la compagnie, sans propriétaire. Les échanges d’équipement et les retours de mission viendront ici.</p>
+          <p class="muted">Armes et armures de rechange de la compagnie, sans propriétaire. Les échanges d’équipement et les retours de mission viendront ici.</p>
           <div id="quartermaster-stock" class="stock-groups"></div>
         </section>
       </section>
@@ -349,8 +349,10 @@
   </dialog>
   <dialog id="character-dialog">
     <div class="dialog-head">
-      <div>
+      <div class="sheet-title">
+        <button id="sheet-prev" class="sheet-nav" type="button" aria-label="Mercenaire précédent" hidden>‹</button>
         <h2 id="dialog-name"></h2>
+        <button id="sheet-next" class="sheet-nav" type="button" aria-label="Mercenaire suivant" hidden>›</button>
       </div>
       <button id="close-dialog" class="icon-btn" aria-label="Fermer">×</button>
       <nav id="dialog-tabs" class="sheet-tabs" role="tablist" aria-label="Fiche du mercenaire"></nav>

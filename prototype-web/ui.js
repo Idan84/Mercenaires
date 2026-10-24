@@ -18,7 +18,7 @@ function rosterMetricIcon(kind) {
 function renderRosterAffinity(c) {
   const affinity=captainAffinity(c);
   if(!affinity) return "";
-  const {filled,phrase}=affinityPresentation(affinity.total);
+  const {filled,phrase}=affinityPresentation(affinity.total,c);
   return `<span class="roster-affinity">
     <span class="roster-affinity-hearts" aria-label="Affinité : ${filled} cœurs sur 10"><span class="is-full">${"♥".repeat(filled)}</span><span class="is-empty">${"♡".repeat(10-filled)}</span></span>
     <span class="roster-affinity-phrase">${esc(phrase)}</span>
@@ -303,34 +303,36 @@ function signedScore(n) {
   return (n > 0 ? "+" : "") + n;
 }
 
-// Présentation exclusivement UI : 10 descriptions d'affinité approuvées par Idan.
-// Le score réel reste disponible pour les mécaniques de jeu, jamais affiché dans la fiche.
-function affinityPresentation(score) {
+// Variantes (Idan, 2026-10-24) : quatre phrases de même sens par niveau. Le choix dépend du mercenaire et du
+// niveau : deux mercenaires du même niveau n'ont pas forcément la même phrase, et elle ne change pas d'un affichage
+// à l'autre.
+function variantPhrase(phrases, seed) {
+  const list = phrases.filter(Boolean);
+  if (!list.length) return "";
+  let hash = 2166136261;
+  for (const ch of String(seed)) hash = Math.imul(hash ^ ch.codePointAt(0), 16777619);
+  return list[(hash >>> 0) % list.length];
+}
+function phraseSeed(c, kind, level) {
+  return [c?.id ?? c?.name ?? "", kind, level].join("|");
+}
+
+// Présentation exclusivement UI : 10 niveaux d'affinité (data/reference/affinity-phrases.json), phrases approuvées
+// par Idan. Le score réel reste disponible pour les mécaniques de jeu, jamais affiché dans la fiche.
+function affinityPresentation(score, c) {
   const value = Math.max(-100, Math.min(100, Number(score) || 0));
-  const phrases = [
-    "Rêve en permanence de vous arracher les organes.",
-    "Envisage sérieusement d'empoisonner votre prochain repas.",
-    "Vous méprise avec une constance presque admirable.",
-    "Préférerait recevoir ses ordres d'un gobelin ivre.",
-    "Vous supporte, essentiellement pour votre argent.",
-    "Vous trouve moins insupportable que prévu.",
-    "Éprouve pour vous un respect prudent, mais sincère.",
-    "Vous suivrait au combat, même sans prime exceptionnelle.",
-    "Donnerait sa vie pour vous. Enfin, probablement.",
-    "Fantasme toutes les nuits en pensant à vous."
-  ];
-  const thresholds = [-80, -60, -40, -20, 0, 20, 40, 60, 79, 100];
-  const level = thresholds.findIndex(max => value <= max);
+  const rows = [...(game.referenceData?.affinityPhrases?.rows || [])].sort((a, b) => a.affinite_max - b.affinite_max);
+  const row = rows.find(r => value <= r.affinite_max) || rows[rows.length - 1];
   // 0 à 10 cœurs pleins, de -100 à +100 ; cœurs vides pour le reste.
   const filled = Math.floor((value + 100) / 20);
-  return { phrase: phrases[level], filled };
+  return { phrase: row ? variantPhrase([row.phrase, ...(row.variantes || [])], phraseSeed(c, "affinite", row.niveau)) : "", filled };
 }
 
 function renderCaptainAffinity(c) {
   if (!game.campaign?.company.roster.includes(c)) return "";
   const a = captainAffinity(c);
   if (!a) return "";
-  const { phrase, filled } = affinityPresentation(a.total);
+  const { phrase, filled } = affinityPresentation(a.total, c);
   const hearts = `<span class="player-affinity-hearts" aria-hidden="true"><span class="is-full">${"♥".repeat(filled)}</span><span class="is-empty">${"♡".repeat(10 - filled)}</span></span>`;
   return `<div class="player-affinity"><small>Affinité avec le capitaine</small>${hearts}<strong class="player-affinity-phrase">${esc(phrase)}</strong></div>`;
 }
@@ -597,6 +599,25 @@ function gearTile(slot,item,{extraClass=""}={}){
     ${art?`<img class="gear-art" src="${art}" alt="" loading="lazy">`:gearIcon(gearKind(slot,item))}${item?gearTooltip(item):""}
   </span>`;
 }
+// Dégâts des sets d'armes (Idan, 2026-10-24) : ceux du combat avant l'armure et la résistance de la cible,
+// pour voir d'un coup d'œil si le mercenaire fait mal. Moyenne en gros, fourchette, types et ce qui les change.
+const DAMAGE_MODES = {melee:"Mêlée", ranged:"Tir"};
+function damageFactor(value) {
+  return "×" + String(Math.round(value * 100) / 100).replace(".", ",");
+}
+function renderDamageCard(c) {
+  const sets = typeof equipmentEffectRules === "function" && c?.stats ? equipmentEffectRules().attacks(c) : [];
+  if (!sets.length) return "";
+  const strike = (set, s) => `<div class="gear-damage-strike">
+      <span class="gear-damage-head"><small>Set ${set} · ${s.hand === "off" ? "Main secondaire" : DAMAGE_MODES[s.mode]}</small><strong>${esc(s.name)}</strong></span>
+      <span class="gear-damage-value"><b>≈ ${Math.round((s.min + s.max) / 2)}</b><small>${s.min} à ${s.max} PV</small></span>
+      <span class="gear-damage-types">${s.types.map(t => `${esc(t.type)} <b>${t.power}</b>`).join(" · ") || "—"}</span>
+      <span class="gear-damage-why">${[esc(s.dice), ...s.factors.map(f => `${esc(f.label)} ${damageFactor(f.factor)}`)].join(" · ")}</span>
+    </div>`;
+  const rows = sets.map(({set, strikes}) => strikes.length ? strikes.map(s => strike(set, s)).join("")
+    : `<div class="gear-damage-strike gear-damage-strike--empty"><span class="gear-damage-head"><small>Set ${set}</small><strong>Aucune arme</strong></span></div>`);
+  return `<section class="gear-card gear-damage"><h4>Dégâts</h4>${rows.join("")}<p class="gear-damage-note">Avant l’armure et la résistance de la cible.</p></section>`;
+}
 function renderEquipment(c) {
   const slotRows = game.referenceData?.equipmentSlots?.rows || [];
   const items = new Map((c.items || []).map(item => [item.id,item]));
@@ -631,6 +652,7 @@ function renderEquipment(c) {
 
   return `<section class="gear">
     <div class="gear-side">
+      ${renderDamageCard(c)}
       <section class="gear-card"><h4>Set de rechange</h4>${spare.map(weaponRow).join("")}</section>
       <section class="gear-card"><h4>Monture</h4>${mount?`<div class="gear-row">${gearTile(mount,mountItem)}<span class="gear-row-text"><strong>${mountItem?esc(mountItem.name):"Aucune"}</strong></span></div>`:""}</section>
     </div>
@@ -783,7 +805,7 @@ function renderProfileTab(c){
         </div>
       </div>
       <section class="sheet-column sheet-column--alignment"><small>Alignement</small>${alignments.length?renderAlignmentWheel(alignments,c.alignment,{interactive:false}):""}<strong>${esc(c.alignment||"—")}</strong></section>
-      <section class="sheet-column sheet-column--reputation"><small>Réputation</small>${renderReputationStars(c)}<p>${esc(stars?.phrase||"")}</p></section>
+      <section class="sheet-column sheet-column--reputation"><small>Réputation</small>${renderReputationStars(c)}<p>${esc(stars?variantPhrase([stars.phrase,...stars.variants],phraseSeed(c,"reputation",stars.level)):"")}</p></section>
       <section class="sheet-column sheet-column--affinity">${affinity||`<small>Affinité</small><p>${captain?"Capitaine de la compagnie.":"Hors de la compagnie."}</p>`}</section>
       <div class="sheet-bio">${renderBiography(c)}</div>
       ${captain
@@ -885,7 +907,7 @@ function statTip(row){
   const reference=(game.referenceData?.characteristics?.rows||[]).find(r=>r.nom===row.nom)
     ||(game.referenceData?.skills?.rows||[]).find(r=>r.nom===row.nom);
   const first=row.description_referentiel?String(reference?.description||"").split(/(?<=\.)\s/)[0]:"";
-  return `<span class="sheet-stat-tip" role="tooltip"><strong>${esc(row.nom)}</strong>${first?`<span>${esc(first)}</span>`:""}<em>${esc(row.usage)}</em></span>`;
+  return `<span class="sheet-stat-tip" role="tooltip"><strong>${esc(row.nom)}</strong>${first?`<span>${esc(first)}</span>`:""}${row.usage?`<em>${esc(row.usage)}</em>`:""}</span>`;
 }
 function statPortraitButton(member,label,value,current){
   const url=typeof mercenaryAvatarUrl==="function"?mercenaryAvatarUrl(member,"portrait"):null;
@@ -1144,9 +1166,32 @@ function renderSheet() {
   $("dialog-content").setAttribute("aria-label", SHEET_TABS.find(([key]) => key === tab)[1]);
 }
 
+// Ordre de passage d'une fiche à l'autre (Idan, 2026-10-24) : le capitaine, puis les mercenaires dans l'ordre
+// de l'écran « Mes mercenaires ». Une fiche hors de la compagnie (candidat) n'a pas de flèches.
+function sheetOrder(){
+  const team=teamCharacters();
+  const captain=team.find(m=>m===game.captain||m.id===game.campaign?.company.captainId);
+  return [captain,...sortMercenaryRoster(team.filter(m=>m!==captain))].filter(Boolean);
+}
+function renderSheetNav(c){
+  const order=sheetOrder(),index=order.indexOf(c);
+  for(const [id,step] of [["sheet-prev",-1],["sheet-next",1]]){
+    const button=$(id),target=index>=0&&order.length>1?order[(index+step+order.length)%order.length]:null;
+    button.hidden=!target;
+    button.dataset.sheetStep=String(step);
+    button.title=target?(step<0?"Précédent : ":"Suivant : ")+target.name:"";
+  }
+}
+function stepSheet(step){
+  const order=sheetOrder(),index=order.indexOf(game.sheetCharacter);
+  if(index<0||order.length<2) return;
+  showCharacter(order[(index+step+order.length)%order.length]);
+}
+
 function showCharacter(c) {
   $("dialog-name").textContent = c.name;
   game.sheetCharacter = c;
+  renderSheetNav(c);
   renderSheet();
   // Changer de fiche depuis la fiche (portraits du min et du max) : la fenêtre est déjà ouverte.
   if (!$("character-dialog").open) $("character-dialog").showModal();
@@ -1248,6 +1293,13 @@ async function init() {
     });
 
     $("close-dialog").addEventListener("click", () => $("character-dialog").close());
+    for (const id of ["sheet-prev","sheet-next"]) $(id).addEventListener("click", event => stepSheet(Number(event.currentTarget.dataset.sheetStep)));
+    // Flèches du clavier : fiche précédente ou suivante, hors champ de saisie.
+    $("character-dialog").addEventListener("keydown", event => {
+      if (!["ArrowLeft","ArrowRight"].includes(event.key) || event.target.closest?.("input,select,textarea")) return;
+      event.preventDefault();
+      stepSheet(event.key === "ArrowLeft" ? -1 : 1);
+    });
     $("dialog-tabs").addEventListener("click", event => {
       const btn = event.target.closest("[data-sheet-tab]");
       if (!btn) return;

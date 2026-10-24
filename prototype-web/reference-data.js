@@ -23,6 +23,7 @@ const REFERENCE_FILES = {
   alignmentGeneration: "alignment-generation.json",
   peopleAffinity: "people-affinity.json",
   reputationStars: "reputation-stars.json",
+  affinityPhrases: "affinity-phrases.json",
   campCalendar: "camp-calendar.json",
   equipmentSilhouetteFiles: "equipment-silhouettes.json",
   characterNames: "character-names.json",
@@ -30,7 +31,8 @@ const REFERENCE_FILES = {
   captainCreationCopy: "captain-creation-copy.json",
   characterSheetCopy: "character-sheet-copy.json",
   tavernDialogue: "tavern-dialogue.json",
-  itemTitles: "item-titles.json"
+  itemTitles: "item-titles.json",
+  renamedNames: "renamed-names.json"
 };
 
 async function loadReferenceData(base = "/data/") {

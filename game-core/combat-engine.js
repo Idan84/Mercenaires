@@ -765,6 +765,7 @@
       damageMatchups,
       selectDamageMatchup,
       woundProbability,
+      physicalDamage,
       criticalChance,
       isDualWielding,
       effectiveDexterity,

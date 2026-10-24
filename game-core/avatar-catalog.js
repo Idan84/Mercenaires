@@ -41,7 +41,9 @@
       magic:rowsOf(reference.skills).filter(r=>r.domaine==="Magie").map(r=>r.nom),
       weaponCategories,
       weapon:[...weaponCategories,...weapons.map(w=>w.nom)],
-      weaponsByCategory:Object.fromEntries(weaponCategories.map(c=>[c,weapons.filter(w=>String(w.domaine).startsWith(c+",")).map(w=>w.nom)]))
+      weaponsByCategory:Object.fromEntries(weaponCategories.map(c=>[c,weapons.filter(w=>String(w.domaine).startsWith(c+",")).map(w=>w.nom)])),
+      // Noms changés (renamed-names.json) : un avatar tagué sous l'ancien nom reste reconnu sous le nouveau.
+      renamed:rowsOf(reference.renamedNames)
     };
   }
 
@@ -50,6 +52,10 @@
     const index=new Map();
     const add=(family,label,value=label)=>index.set(norm(label),{family,value});
     for(const family of ["people","culture","origin","alignment","ascendance","magic","weapon"]) for(const v of vocab[family]) add(family,v);
+    for(const row of vocab.renamed||[]){
+      const family={culture:"culture",arme:"weapon"}[row.famille];
+      if(family) add(family,row.ancien,row.nouveau);
+    }
     for(const [label,code] of Object.entries(PROFILES)) add("profile",label,code);
     for(const [sex,labels] of Object.entries(SEXES)) for(const l of labels) add("sex",l,sex);
     const singular=k=>k.split(/([ -])/).map(w=>w.length>3?w.replace(/[sx]$/,""):w).join("");

@@ -7,6 +7,7 @@
 // - Initiative : calculée avec la Vitesse au combat ;
 // - Dextérité : réduite par le combat à deux armes.
 // Chaque effet donne la valeur de base, la valeur équipée et les lignes du détail (objet ou raison, écart).
+// Dégâts de chaque set d'armes (Idan, 2026-10-24) : ceux du combat avant la résistance de la cible.
 (function(root,factory){
   const api=factory();
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
@@ -56,7 +57,38 @@
       return result;
     }
 
-    return {effects};
+    // Cible sans Résistance physique ni armure : les dégâts restent ceux d'avant la résistance.
+    const TARGET={character:{resistances:{},items:[],equipment:null}};
+    const capitalize=text=>text.charAt(0).toUpperCase()+text.slice(1);
+
+    // Un coup : jet minimum et maximum de l'arme (qualité, prise à deux mains, Force en mêlée), types et puissances.
+    function strike(character,set,hand){
+      const unit={character,activeSet:set,attackHand:hand};
+      const item=engine.activeWeaponItem(unit),weapon=engine.weaponTemplate(item);
+      if(!weapon) return null;
+      const mode=engine.isRangedWeapon(weapon)?"ranged":"melee";
+      const damage=roll=>engine.physicalDamage(unit,TARGET,mode,0,{roll,resistanceRoll:2});
+      const low=damage("min"),high=damage("max");
+      const twoHands=mode==="melee"&&weapon.prise==="Au choix"&&engine.usesTwoHands(unit,weapon);
+      const factors=[
+        low.qualityMultiplier!==1?{label:item.qualityName||"Qualité",factor:low.qualityMultiplier}:null,
+        twoHands?{label:"À deux mains",factor:1.5}:null,
+        mode==="melee"?{label:"Force",factor:2*(Number(character.stats?.Force)||0)/100}:null
+      ].filter(Boolean);
+      return {hand,name:item.name,mode,dice:low.weaponDice,min:low.damage,max:high.damage,factors,
+        types:engine.damageMatchups(TARGET,weapon).map(m=>({type:capitalize(m.type),power:m.power}))};
+    }
+
+    // [{set, strikes}] pour les sets 1 et 2 : l'arme principale, et la main secondaire au combat à deux armes.
+    function attacks(character){
+      if(!engine||!character) return [];
+      return [1,2].map(set=>{
+        const dual=engine.isDualWielding({character,activeSet:set});
+        return {set,strikes:[strike(character,set,"main"),dual?strike(character,set,"off"):null].filter(Boolean)};
+      });
+    }
+
+    return {effects,attacks};
   }
 
   return {createEquipmentEffects};

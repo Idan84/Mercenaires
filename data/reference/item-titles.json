@@ -55,7 +55,7 @@
       "t4": "Le Moulin à Viande"
     },
     {
-      "nom": "Arquebuse / Mousquet",
+      "nom": "Arquebuse",
       "famille": "arme",
       "t1": "Pétoire rafistolée",
       "t2": "Mousquet réglementaire",
@@ -247,7 +247,7 @@
       "t4": "L’Argument Définitif"
     },
     {
-      "nom": "Massue / Gourdin",
+      "nom": "Massue",
       "famille": "arme",
       "t1": "Gros bâton",
       "t2": "Gourdin de taverne",

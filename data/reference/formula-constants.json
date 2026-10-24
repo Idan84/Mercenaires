@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 124,
+  "row_count": 126,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -1024,6 +1024,22 @@
       "description": "Poids plancher d’une arme au tirage du stock de départ, pour qu’une arme mal vue du peuple ou de la culture reste possible.",
       "formule": "Stock d’armes de départ",
       "valeur": 0.25,
+      "version": "V1"
+    },
+    {
+      "nom": "Stock de départ — armures par type, nombre de dés",
+      "code": "company.starting_stock.armor_dice_count",
+      "description": "La compagnie démarre aussi avec (nombre de dés)D(faces) armures de chaque type (Vêtement, Légère, Intermédiaire, Lourde) : 1D6 par type (Idan, 2026-10-24).",
+      "formule": "Stock d’armes de départ",
+      "valeur": 1,
+      "version": "V1"
+    },
+    {
+      "nom": "Stock de départ — armures par type, faces des dés",
+      "code": "company.starting_stock.armor_dice_sides",
+      "description": "Faces des dés du nombre d’armures de chaque type du stock de départ (1D6).",
+      "formule": "Stock d’armes de départ",
+      "valeur": 6,
       "version": "V1"
     }
   ]

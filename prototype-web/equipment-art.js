@@ -237,5 +237,17 @@ const EQUIPMENT_ART=new Set([
   "frames/frame-1",
   "frames/frame-2",
   "frames/frame-3",
-  "frames/frame-4"
+  "frames/frame-4",
+  "gants/gants-de-dexterite-1",
+  "gants/gants-de-dexterite-2",
+  "gants/gants-de-dexterite-3",
+  "gants/gants-de-dexterite-4",
+  "gants/gants-de-force-1",
+  "gants/gants-de-force-2",
+  "gants/gants-de-force-3",
+  "gants/gants-de-force-4",
+  "gants/gants-de-pieges-1",
+  "gants/gants-de-pieges-2",
+  "gants/gants-de-pieges-3",
+  "gants/gants-de-pieges-4"
 ]);

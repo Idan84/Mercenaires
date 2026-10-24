@@ -917,7 +917,8 @@ function sheetEquippedValue(m,name){
   return effect?Math.round(effect.value):sheetStatValue(m,name);
 }
 // Détail au survol : valeur de base, ce que chaque objet retire ou ajoute, valeur au combat.
-// total : « Au combat » pour les valeurs que le combat lit, « Total » pour la magie et la Discrétion (pas encore jouées).
+// total : « Au combat » pour les valeurs que le combat lit, « Total » pour la magie, la Discrétion et les Pièges (pas
+// encore joués).
 function equipmentDetail(effect,total="Au combat"){
   if(!effect?.lines.length) return "";
   const note={weight:"poids, réduit par la maîtrise",armor:"handicap de l’armure",speed:"avec l’équipement",dual:"une arme dans chaque main"};
@@ -998,8 +999,9 @@ function skillChildren(parent){
 function skillDescription(name){
   return (game.referenceData?.skills?.rows||[]).find(r=>r.nom===name)?.description||"";
 }
-// Cape de discrétion (Idan, 2026-10-24) : la Discrétion montre la valeur avec l'équipement, en vert, et son détail.
-const SKILLS_WITH_GEAR=new Set(["Discrétion"]);
+// Cape de discrétion et gants de pièges (Idan, 2026-10-24) : ces compétences montrent la valeur avec l'équipement, en
+// vert, et son détail.
+const SKILLS_WITH_GEAR=new Set(["Discrétion","Pièges"]);
 function skillValueCell(c,group,name){
   const effect=group==="martial"&&SKILLS_WITH_GEAR.has(name)&&c.stats?equipmentEffectRules().effects(c)[name]:null;
   if(effect){

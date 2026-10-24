@@ -11,7 +11,7 @@ const read = file => JSON.parse(fs.readFileSync(path.join(ROOT, "data", "referen
 const reference = {
   weapons:read("weapons.json"), skills:read("skills.json"), baseArmors:read("base-armors.json"),
   itemQualities:read("item-qualities.json"), itemTitles:read("item-titles.json"), boots:read("boots.json"), belts:read("belts.json"),
-  amulets:read("amulets.json"), capes:read("capes.json")
+  amulets:read("amulets.json"), capes:read("capes.json"), gloves:read("gloves.json")
 };
 const cards = createItemCards({reference});
 const item = (itemType, name, tier, qualityCode, extra = {}) => ({itemType, name, tier, qualityCode, ...extra});
@@ -19,7 +19,7 @@ const near = (a, b) => assert.ok(Math.abs(a - b) < 1e-9, `${a} ≠ ${b}`);
 
 // Un titre pour chaque arme et chaque armure, à chaque tier.
 for (const row of [...reference.weapons.rows, ...reference.baseArmors.rows, ...reference.boots.rows, ...reference.belts.rows, ...reference.amulets.rows,
-  ...reference.capes.rows]) {
+  ...reference.capes.rows, ...reference.gloves.rows]) {
   const titles = reference.itemTitles.rows.find(r => r.nom === row.nom);
   assert.ok(titles, row.nom);
   for (const tier of [1,2,3,4]) assert.ok(String(titles["t" + tier] || "").trim(), `${row.nom} T${tier}`);
@@ -82,6 +82,9 @@ const rampart = cards.card(item("cape","Cape de résistance physique",3,"standar
 assert.deepEqual([rampart.kind, rampart.category, rampart.title, rampart.stat, rampart.bonus, rampart.points],
   ["cape","Cape","Cape du rempart","Résistance physique",15,true]);
 assert.equal(cards.card(item("cape","Cape d’esquive",1,null)).points, false);
+// Gants (Idan, 2026-10-24) : mêmes règles que les bottes.
+const titan = cards.card(item("gloves","Gants de force",4,"luxury"));
+assert.deepEqual([titan.kind, titan.category, titan.title, titan.stat, titan.bonus, titan.points], ["gloves","Gants","Les Poings du Titan","Force",20,false]);
 
 // Mise en forme pour le joueur (prototype-web/item-card-ui.js).
 const ui = fs.readFileSync(path.join(ROOT, "prototype-web/item-card-ui.js"), "utf8");
@@ -131,4 +134,7 @@ assert.match(rampartCard, /item-card-row--bonus"><dt>Résistance physique<\/dt><
 assert.match(rampartCard, /Ajoute 15 points de Résistance physique au porteur/);
 assert.match(renderItemCard(item("cape","Cape d’esquive",2,"standard")), /Ajoute 10 % de l’Esquive de base du porteur/);
 assert.match(renderItemCard(item("cape","Cape de discrétion",4,"luxury")), /Ajoute 20 % de la Discrétion de base du porteur/);
+assert.match(renderItemCard(item("gloves","Gants de force",2,"standard")), /Ajoute 10 % de la Force de base du porteur/);
+assert.match(renderItemCard(item("gloves","Gants de dextérité",1,"worn")), /Ajoute 5 % de la Dextérité de base du porteur/);
+assert.match(renderItemCard(item("gloves","Gants de pièges",3,"standard")), /Ajoute 15 % des Pièges de base du porteur/);
 console.log("Carte d'objet : titres par tier, effets avec la qualité, mise en forme — OK");

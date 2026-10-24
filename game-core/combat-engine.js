@@ -24,14 +24,16 @@
     const belts=rows.belts||[];
     const amulets=rows.amulets||[];
     const capes=rows.capes||[];
+    const gloves=rows.gloves||[];
 
     const weaponByName=new Map(weapons.map(x=>[x.nom,x]));
     const armorByCode=new Map(armors.map(x=>[x.code,x]));
     const qualityByCode=new Map(qualities.map(x=>[x.code,x]));
     const skillByName=new Map(skills.map(x=>[x.nom,x]));
-    // Équipement à bonus de caractéristique : l'emplacement et ses modèles (bottes, ceinture, amulette, cape).
+    // Équipement à bonus de caractéristique : l'emplacement et ses modèles (bottes, ceinture, amulette, cape, gants).
     const STAT_GEAR=[{slot:"boots",byName:new Map(boots.map(x=>[x.nom,x]))},{slot:"belt",byName:new Map(belts.map(x=>[x.nom,x]))},
-      {slot:"amulet",byName:new Map(amulets.map(x=>[x.nom,x]))},{slot:"cape",byName:new Map(capes.map(x=>[x.nom,x]))}];
+      {slot:"amulet",byName:new Map(amulets.map(x=>[x.nom,x]))},{slot:"cape",byName:new Map(capes.map(x=>[x.nom,x]))},
+      {slot:"gloves",byName:new Map(gloves.map(x=>[x.nom,x]))}];
 
     function die(sides){ return Math.floor(random()*sides)+1; }
     function d100(){ return die(100); }
@@ -96,9 +98,10 @@
     function armorItem(unit){ return itemBySlot(unit,"armor"); }
     // Bottes, ceinture, amulette et cape (Idan, 2026-10-24) : + bonus_t<tier> % de la valeur de base qu'elles servent
     // (Vitesse, Esquive, Perception pour les bottes ; Réserve de mana, Endurance, Courage pour la ceinture ; Puissance
-    // magique, Volonté, Chance pour l'amulette ; Esquive, Discrétion pour la cape), ou + bonus_t<tier> points quand
+    // magique, Volonté, Chance pour l'amulette ; Esquive, Discrétion pour la cape ; Pièges, Dextérité, Force pour les
+    // gants), ou + bonus_t<tier> points quand
     // type_bonus vaut « points » (cape de résistance physique : la Résistance physique est trop petite pour un pourcentage).
-    // baseValue : caractéristique, résistance ou compétence (Discrétion) ; gearBonuses : une ligne par objet qui la sert ;
+    // baseValue : caractéristique, résistance ou compétence (Discrétion, Pièges) ; gearBonuses : une ligne par objet qui la sert ;
     // statWithGear : la valeur bonifiée.
     function baseValue(unit,stat){
       const c=unit.character;
@@ -159,9 +162,9 @@
       const off=weaponTemplate(offhandSlotItem(unit));
       return Boolean(main&&off&&!isShield(main)&&!isShield(off));
     }
-    // Dextérité effective = Dextérité, ou Dextérité / (2 − maîtrise Combat à deux armes / 100) à deux armes.
+    // Dextérité effective = Dextérité (avec les gants), ou Dextérité / (2 − maîtrise Combat à deux armes / 100) à deux armes.
     function effectiveDexterity(unit){
-      const dexterity=Number(unit.character.stats?.["Dextérité"])||0;
+      const dexterity=statWithGear(unit,"Dextérité");
       if(!isDualWielding(unit)) return dexterity;
       const skill=clamp(Number(unit.character.skills?.martial?.["Combat à deux armes"])||0,0,100);
       return dexterity/(DUAL.dexterityBase-skill/100);
@@ -363,7 +366,7 @@
       if(mode==="ranged"){
         attackStat=statWithGear(attacker,"Perception");
       }else{
-        attackStat=(Number(a.Force)||0)+(Number(context.chargePower)||0);
+        attackStat=statWithGear(attacker,"Force")+(Number(context.chargePower)||0);
         if(usesTwoHands(attacker,weapon)){
           twoHands=Number(attacker.character.skills?.martial?.["Combat à deux mains"])||0;
         }
@@ -407,7 +410,7 @@
       const resistanceRoll=fixed.resistanceRoll||die(3);
       const resistanceFactor=1-(physicalResistance/100)*((resistanceRoll+8)/10);
       const strengthFactor=mode==="melee"
-        ? 2*(Number(attacker.character.stats?.Force)||0)/100
+        ? 2*statWithGear(attacker,"Force")/100
         : 1;
 
       return {
@@ -428,7 +431,7 @@
       if(!isShield(shield)) return null;
       const m=mastery(unit.character,shield);
       const bonus=(Number(skillByName.get(shield.nom)?.bonus_blocage_base)||0)*(Number(quality(item).multiplicateur_qualite)||1);
-      const dexterity=Number(unit.character.stats?.["Dextérité"])||0;
+      const dexterity=statWithGear(unit,"Dextérité");
       return clamp((dexterity+(m.categoryScore+m.weaponScore)/2)/2+bonus,BLOCK.min,BLOCK.max);
     }
 

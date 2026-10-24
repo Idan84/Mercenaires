@@ -106,12 +106,19 @@ function addTestGold(){
 // de vérité. Jamais pendant une mission.
 function advanceCampDay(){
   if(!game.campaign||currentScreen()!=="camp") return;
+  // Une escouade arrivée attend ses ordres : le combat d'abord (Idan, 2026-10-24).
+  const allowed=campaignRules().canAdvanceDay(game.campaign);
+  if(!allowed.ok){
+    tavernLog(allowed.reason,"warn");
+    if(typeof openExpeditionDialog==="function") openExpeditionDialog(allowed.expedition.id);
+    return;
+  }
   const [report]=campaignRules().advanceTime(game.campaign,1);
   logDayReport(report);
   saveGame();
   renderGame();
   if(typeof renderContractBoard==="function"&&!$("tavern-missions-view").classList.contains("hidden")) renderContractBoard();
-  // Une escouade arrivée attend vos ordres (doc 17).
+  // Une escouade vient d'arriver : la fenêtre « Commencer le combat » (doc 17).
   if(game.pendingExpeditionDialog){ openExpeditionDialog(game.pendingExpeditionDialog); game.pendingExpeditionDialog=null; }
 }
 

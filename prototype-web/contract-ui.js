@@ -80,7 +80,8 @@ function renderExpeditions(){
     </article>`).join("")}</section>`;
 }
 
-// Journal du jour et, si une escouade arrive (ou attend encore), la fenêtre « Commencer le combat ».
+// Journal du jour et, si une escouade arrive, la fenêtre « Commencer le combat ». « Plus tard » laisse finir la journée
+// au camp (équiper, recruter…), mais le jour suivant attend le combat (canAdvanceDay).
 function logExpeditionReport(report){
   if(!report) return;
   for(const e of report.arrived) tavernLog("L’escouade est arrivée au "+e.offer.campName.toLocaleLowerCase("fr")+" de "+e.offer.fields.lieu+" : le combat vous attend.","turn");
@@ -99,7 +100,7 @@ function openExpeditionDialog(id){
   if(!e||!dialog) return;
   const name=mid=>game.campaign.company.roster.find(m=>m.id===mid)?.name||"?";
   $("expedition-dialog-title").textContent=e.offer.campName+" de "+e.offer.fields.lieu;
-  $("expedition-dialog-text").textContent="Après "+e.offer.distance+" jour"+(e.offer.distance>1?"s":"")+" de marche, l’escouade est sur place : "+e.memberIds.map(name).join(", ")+". Elle attend vos ordres.";
+  $("expedition-dialog-text").textContent="Après "+e.offer.distance+" jour"+(e.offer.distance>1?"s":"")+" de marche, l’escouade est sur place : "+e.memberIds.map(name).join(", ")+". Elle attend vos ordres ; le jour suivant attendra son combat.";
   $("expedition-dialog-fight").dataset.expeditionFight=e.id;
   if(!dialog.open) dialog.showModal();
 }

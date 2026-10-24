@@ -321,8 +321,19 @@
       return state;
     }
 
+    // Dortoir (Idan, 2026-10-24) : un ogre prend deux places, tout autre mercenaire une (halflings, gobelins et gnomes
+    // compris ; peoples.json, places_dortoir) ; le capitaine et l'intendant n'en prennent pas.
+    const PEOPLE_PLACES=new Map((reference?.peoples?.rows||[]).map(p=>[p.nom,Number(p.places_dortoir)||1]));
+    function dormitoryPlaces(mercenary){
+      return PEOPLE_PLACES.get(mercenary?.people)||1;
+    }
+    function dormitoryUsed(state){
+      const company=state.company;
+      return rosterOf(state).filter(m=>m.id!==company.captainId&&m.id!==company.intendantId)
+        .reduce((sum,m)=>sum+dormitoryPlaces(m),0);
+    }
     function dormitoryFree(state){
-      return state.company.camp.dormitoryCapacity-rosterOf(state).length;
+      return state.company.camp.dormitoryCapacity-dormitoryUsed(state);
     }
 
     // Indisponibilité après mission (10-mission-time §4 à §6) : un blessé ou un fatigué ne peut pas
@@ -362,13 +373,15 @@
       return reports;
     }
 
-    // §10 — Signature : un accord conclu, et une place libre au Dortoir.
+    // §10 — Signature : un accord conclu, et assez de places libres au Dortoir (deux pour un ogre).
     function signCandidate(state,mercenaryId){
       const candidate=tavern.findCandidate(state.tavern,mercenaryId);
       if(!candidate) return {ok:false,reason:"Candidat introuvable."};
       const agreed=candidate.negotiation?.agreed;
       if(!agreed) return {ok:false,reason:"Aucun accord conclu avec ce candidat."};
-      if(dormitoryFree(state)<=0) return {ok:false,reason:"Dortoir plein : impossible de finaliser le recrutement."};
+      const places=dormitoryPlaces(candidate.mercenary);
+      if(dormitoryFree(state)<places) return {ok:false,dormFull:true,places,
+        reason:places>1?"Dortoir plein : il faut deux places pour un ogre.":"Dortoir plein : impossible de finaliser le recrutement."};
       const mercenary=candidate.mercenary;
       mercenary.contract={dailySalary:agreed.salary,missionBonus:agreed.bonus,signedDay:state.day};
       rosterOf(state).push(mercenary);
@@ -497,6 +510,8 @@
       createCampaign,
       advanceTime,
       dormitoryFree,
+      dormitoryUsed,
+      dormitoryPlaces,
       signCandidate,
       offerToCandidate,
       askTavernkeeper,

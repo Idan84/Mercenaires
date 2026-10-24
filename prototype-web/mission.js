@@ -219,8 +219,10 @@ function resolveMissionAftermath(){
   const captainId=game.campaign?game.campaign.company.captainId:game.captain?.id;
   const participants=m.players.map(u=>({
     id:u.character.id,name:u.character.name,hp:u.hp,pvMax:u.character.pvMax,
-    // Endurance avec la ceinture (Idan, 2026-10-24) : blessure et convalescence la lisent aussi.
-    damageTaken:u.damageTaken,stats:{...u.character.stats,Endurance:m.engine.statWithGear(u,"Endurance")},
+    // Endurance avec la ceinture et Volonté avec l'amulette (Idan, 2026-10-24) : blessure, mort et convalescence
+    // les lisent aussi.
+    damageTaken:u.damageTaken,stats:{...u.character.stats,Endurance:m.engine.statWithGear(u,"Endurance"),
+      "Volonté":m.engine.statWithGear(u,"Volonté")},
     isCaptain:captainId!=null&&u.character.id===captainId,offMap:u.offMap,progress:u.progress||null
   }));
   m.aftermath=m.endRules.resolveMissionEnd(participants);
@@ -385,7 +387,7 @@ function missionPercent(p){ return (Math.round((Number(p)||0)*10)/10).toLocaleSt
 // Échec critique (Toucher ou Blesser) : un naturel 96–100 impose un test de Chance (D100 > Chance = échec).
 function logMissionFumble(unit,roll,confirmed,effect){
   if(!roll) return;
-  const luck="Chance "+(Number(unit.character.stats?.Chance)||0)+", jet "+roll;
+  const luck="Chance "+Math.round(game.mission.engine.statWithGear(unit,"Chance"))+", jet "+roll;
   if(confirmed) missionLog("Échec critique ! "+unit.character.name+" "+effect+" ("+luck+").","bad");
   else missionLog(unit.character.name+" frôle l’échec critique mais se rattrape ("+luck+").","info");
 }

@@ -14,7 +14,8 @@ const files = {
   ancestryLevels:"ancestry-levels.json", d6Scale:"d6-generation-scale.json",
   generationMatrix:"generation-matrix.json", skills:"skills.json",
   characteristics:"characteristics.json", formulaConstants:"formula-constants.json",
-  weapons:"weapons.json", baseArmors:"base-armors.json", boots:"boots.json", belts:"belts.json", itemQualities:"item-qualities.json",
+  weapons:"weapons.json", baseArmors:"base-armors.json", boots:"boots.json", belts:"belts.json", amulets:"amulets.json",
+  itemQualities:"item-qualities.json",
   equipmentSlots:"equipment-slots.json", startingEquipmentGeneration:"starting-equipment-generation.json",
   binaryAptitudeGrants:"binary-aptitude-grants.json",
   alignmentGeneration:"alignment-generation.json"
@@ -129,7 +130,7 @@ for (const expected of ["Âge","Taille","Corpulence","Biographie courte"]) {
 let sawNonMageArmorBonus = false;
 let sawHighMagicArmorPenalty = false;
 let secondaryWeaponCount = 0;
-const bootsSeen = {}, beltsSeen = {};
+const bootsSeen = {}, beltsSeen = {}, amuletsSeen = {};
 const profileCounts = {melee:0, ranged:0, magic:0};
 for (let i = 0; i < 1000; i++) {
   const c = generator.createMercenary({id:i+1});
@@ -170,7 +171,7 @@ for (let i = 0; i < 1000; i++) {
   assert.ok(Number.isFinite(c.equipment.profile.scores.ranged));
   assert.ok(Number.isFinite(c.equipment.profile.scores.magic));
   assert.ok(Array.isArray(c.items));
-  assert.ok(c.items.length >= 2 && c.items.length <= 5, "armure, arme, seconde arme, bottes et ceinture possibles");
+  assert.ok(c.items.length >= 2 && c.items.length <= 6, "armure, arme, seconde arme, bottes, ceinture et amulette possibles");
   assert.ok(c.equipment.slots.armor);
   assert.ok(c.equipment.slots.weapon_set_1_main);
   const armorItem = c.items.find(item => item.id === c.equipment.slots.armor);
@@ -208,7 +209,14 @@ for (let i = 0; i < 1000; i++) {
     assert.ok(reference.belts.rows.some(row => row.nom === belt.name && "belt:" + row.code === belt.templateId), belt.name);
     beltsSeen[belt.name] = (beltsSeen[belt.name] || 0) + 1;
   }
-  for (const emptySlot of ["head","amulet","cape","ring_1","ring_2","ring_3","ring_4","ring_5","ring_6","weapon_set_1_off","weapon_set_2_off","belt_item_1","belt_item_2","belt_item_3","belt_item_4","mount"]) {
+  // Amulette (Idan, 2026-10-24) : mêmes règles.
+  if (c.equipment.slots.amulet) {
+    const amulet = c.items.find(item => item.id === c.equipment.slots.amulet);
+    assert.equal(amulet.itemType, "amulet");
+    assert.ok(reference.amulets.rows.some(row => row.nom === amulet.name && "amulet:" + row.code === amulet.templateId), amulet.name);
+    amuletsSeen[amulet.name] = (amuletsSeen[amulet.name] || 0) + 1;
+  }
+  for (const emptySlot of ["head","cape","ring_1","ring_2","ring_3","ring_4","ring_5","ring_6","weapon_set_1_off","weapon_set_2_off","belt_item_1","belt_item_2","belt_item_3","belt_item_4","mount"]) {
     assert.equal(c.equipment.slots[emptySlot], null);
   }
 
@@ -251,6 +259,9 @@ assert.equal(Object.keys(bootsSeen).length, 3, "les trois types de bottes");
 const beltsTotal = Object.values(beltsSeen).reduce((a,b) => a + b, 0);
 assert.ok(beltsTotal >= 25 && beltsTotal <= 80, `ceintures à la création ≈ 5 % : ${beltsTotal}/1000`);
 assert.equal(Object.keys(beltsSeen).length, 3, "les trois types de ceintures");
+const amuletsTotal = Object.values(amuletsSeen).reduce((a,b) => a + b, 0);
+assert.ok(amuletsTotal >= 25 && amuletsTotal <= 80, `amulettes à la création ≈ 5 % : ${amuletsTotal}/1000`);
+assert.equal(Object.keys(amuletsSeen).length, 3, "les trois types d'amulettes");
 // Issue #12 : avant correction, ~89 % des mercenaires sortaient « Magie ». Garde-fou contre un retour accidentel.
 assert.ok(profileCounts.magic < 600, `Profil Magie trop fréquent : ${JSON.stringify(profileCounts)}`);
 assert.ok(profileCounts.melee > 200 && profileCounts.ranged > 50, `Profils CAC / Distance trop rares : ${JSON.stringify(profileCounts)}`);
@@ -470,6 +481,17 @@ for (let i = 0; i < 400; i++) {
 }
 assert.ok(Math.min(...beltCounts) >= 1 && Math.max(...beltCounts) <= 6, "1D6 ceintures");
 assert.equal(beltTypes.size, 3);
+const amuletCounts = [], amuletTypes = new Set();
+for (let i = 0; i < 400; i++) {
+  const amulets = stockGenerator.createStartingAmuletStock(chaosDwarf);
+  amuletCounts.push(amulets.length);
+  for (const item of amulets) {
+    assert.deepEqual([item.itemType, item.owner, item.category], ["amulet", null, "Amulette"]);
+    amuletTypes.add(item.name);
+  }
+}
+assert.ok(Math.min(...amuletCounts) >= 1 && Math.max(...amuletCounts) <= 6, "1D6 amulettes");
+assert.equal(amuletTypes.size, 3);
 
 console.log(JSON.stringify({
   ok:true,

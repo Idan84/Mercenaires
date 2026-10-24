@@ -10,14 +10,15 @@ const ROOT = path.resolve(__dirname, "..");
 const read = file => JSON.parse(fs.readFileSync(path.join(ROOT, "data", "reference", file), "utf8"));
 const reference = {
   weapons:read("weapons.json"), skills:read("skills.json"), baseArmors:read("base-armors.json"),
-  itemQualities:read("item-qualities.json"), itemTitles:read("item-titles.json"), boots:read("boots.json"), belts:read("belts.json")
+  itemQualities:read("item-qualities.json"), itemTitles:read("item-titles.json"), boots:read("boots.json"), belts:read("belts.json"),
+  amulets:read("amulets.json")
 };
 const cards = createItemCards({reference});
 const item = (itemType, name, tier, qualityCode, extra = {}) => ({itemType, name, tier, qualityCode, ...extra});
 const near = (a, b) => assert.ok(Math.abs(a - b) < 1e-9, `${a} ≠ ${b}`);
 
 // Un titre pour chaque arme et chaque armure, à chaque tier.
-for (const row of [...reference.weapons.rows, ...reference.baseArmors.rows, ...reference.boots.rows, ...reference.belts.rows]) {
+for (const row of [...reference.weapons.rows, ...reference.baseArmors.rows, ...reference.boots.rows, ...reference.belts.rows, ...reference.amulets.rows]) {
   const titles = reference.itemTitles.rows.find(r => r.nom === row.nom);
   assert.ok(titles, row.nom);
   for (const tier of [1,2,3,4]) assert.ok(String(titles["t" + tier] || "").trim(), `${row.nom} T${tier}`);
@@ -71,6 +72,10 @@ assert.equal(cards.card(item("boots","Bottes de perception",4,null)).bonus, 20);
 const lion = cards.card(item("belt","Ceinture de courage",2,"standard"));
 assert.deepEqual([lion.kind, lion.category, lion.title, lion.stat, lion.bonus], ["belt","Ceinture","Ceinturon du lion","Courage",10]);
 assert.equal(cards.card(item("belt","Ceinture de mana",4,null)).stat, "Réserve de mana");
+// Amulettes (Idan, 2026-10-24) : mêmes règles.
+const clover = cards.card(item("amulet","Amulette de chance",2,"standard"));
+assert.deepEqual([clover.kind, clover.category, clover.title, clover.stat, clover.bonus], ["amulet","Amulette","Trèfle de cuivre","Chance",10]);
+assert.equal(cards.card(item("amulet","Amulette de puissance magique",4,null)).bonus, 20);
 
 // Mise en forme pour le joueur (prototype-web/item-card-ui.js).
 const ui = fs.readFileSync(path.join(ROOT, "prototype-web/item-card-ui.js"), "utf8");
@@ -109,4 +114,10 @@ assert.match(lionCard, /Ajoute 10 % du Courage de base du porteur/);
 assert.match(renderItemCard(item("belt","Ceinture d’endurance",1,"worn")), /Ajoute 5 % de l’Endurance de base du porteur/);
 assert.match(renderItemCard(item("belt","Ceinture de mana",3,"luxury")), /Ajoute 15 % de la Réserve de mana de base du porteur/);
 assert.doesNotMatch(lionCard, /item-card-quality/);
+const cloverCard = renderItemCard(item("amulet","Amulette de chance",2,"standard"));
+assert.match(cloverCard, /item-card-row--bonus"><dt>Chance<\/dt><dd>\+10 %<\/dd>/);
+assert.match(cloverCard, /Ajoute 10 % de la Chance de base du porteur/);
+assert.match(renderItemCard(item("amulet","Amulette de volonté",3,"luxury")), /Ajoute 15 % de la Volonté de base du porteur/);
+assert.match(renderItemCard(item("amulet","Amulette de puissance magique",1,"worn")), /Ajoute 5 % de la Puissance magique de base du porteur/);
+assert.doesNotMatch(cloverCard, /item-card-quality/);
 console.log("Carte d'objet : titres par tier, effets avec la qualité, mise en forme — OK");

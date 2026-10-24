@@ -53,6 +53,7 @@
     const baseArmorRows = rows.baseArmors || [];
     const bootsRows = rows.boots || [];
     const beltRows = rows.belts || [];
+    const amuletRows = rows.amulets || [];
     const itemQualityRows = rows.itemQualities || [];
     const equipmentSlotRows = rows.equipmentSlots || [];
     const binaryAptitudeRows = rows.binaryAptitudeGrants || [];
@@ -902,11 +903,12 @@
       });
     }
 
-    // Bottes et ceinture (Idan, 2026-10-24) : un des trois types de boots.json ou belts.json ; tier selon la
-    // réputation, comme le reste.
+    // Bottes, ceinture et amulette (Idan, 2026-10-24) : un des trois types de boots.json, belts.json ou amulets.json ;
+    // tier selon la réputation, comme le reste.
     const STAT_GEAR = {
       boots:{rows:bootsRows, slot:"boots", category:"Bottes"},
-      belt:{rows:beltRows, slot:"belt", category:"Ceinture"}
+      belt:{rows:beltRows, slot:"belt", category:"Ceinture"},
+      amulet:{rows:amuletRows, slot:"amulet", category:"Amulette"}
     };
     function statGearItem(character, itemType, template) {
       if (!template) return null;
@@ -955,7 +957,8 @@
       return types.flatMap(type => Array.from({length:count()}, () => ({...armorItem(captain, type), owner:null})));
     }
 
-    // Bottes et ceintures du stock de départ (Idan, 2026-10-24) : 1D6 de chaque, chacune d'un type tiré au hasard.
+    // Bottes, ceintures et amulettes du stock de départ (Idan, 2026-10-24) : 1D6 de chaque, chacune d'un type tiré au
+    // hasard.
     function createStartingStatGearStock(captain, itemType, prefix) {
       const gear = STAT_GEAR[itemType];
       if (!gear.rows.length) return [];
@@ -964,6 +967,7 @@
     }
     function createStartingBootsStock(captain) { return createStartingStatGearStock(captain, "boots", "boots"); }
     function createStartingBeltStock(captain) { return createStartingStatGearStock(captain, "belt", "belt"); }
+    function createStartingAmuletStock(captain) { return createStartingStatGearStock(captain, "amulet", "amulet"); }
 
     function generateStartingEquipment(character) {
       const profile = computeEquipmentProfile(character);
@@ -1003,8 +1007,8 @@
         slots.armor = armor.id;
       }
 
-      // Bottes, puis ceinture (Idan, 2026-10-24) : 5 % de chance chacune, d'un type tiré au hasard.
-      for (const [itemType, chanceKey] of [["boots","boots_chance"],["belt","belt_chance"]]) {
+      // Bottes, ceinture, puis amulette (Idan, 2026-10-24) : 5 % de chance chacune, d'un type tiré au hasard.
+      for (const [itemType, chanceKey] of [["boots","boots_chance"],["belt","belt_chance"],["amulet","amulet_chance"]]) {
         const gear = STAT_GEAR[itemType];
         const chance = Number(startingEquipmentGeneration[chanceKey]);
         if (gear.rows.length && random() < (Number.isFinite(chance) ? chance : 0.05)) {
@@ -1460,6 +1464,7 @@
       createStartingArmorStock,
       createStartingBootsStock,
       createStartingBeltStock,
+      createStartingAmuletStock,
       people: () => peopleRows.map(r => r.nom),
       alignments: () => alignmentRows.map(r => r.nom),
       ancestries: () => ancestryRows.map(r => r.nom),

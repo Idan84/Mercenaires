@@ -162,7 +162,8 @@
       return changed;
     }
 
-    // Armures, bottes et ceintures du stock (Idan, 2026-10-24) : données une seule fois, même à une partie commencée avant.
+    // Armures, bottes, ceintures et amulettes du stock (Idan, 2026-10-24) : données une seule fois, même à une partie
+    // commencée avant.
     function ensureStartingStock(state){
       const company=state.company;
       const captain=rosterOf(state).find(m=>m.id===company.captainId);
@@ -184,6 +185,11 @@
       if(!company.startingBelts){
         if(captain) company.stock.push(...generator.createStartingBeltStock(captain));
         company.startingBelts=true;
+        changed=true;
+      }
+      if(!company.startingAmulets){
+        if(captain) company.stock.push(...generator.createStartingAmuletStock(captain));
+        company.startingAmulets=true;
         changed=true;
       }
       return changed;
@@ -285,10 +291,12 @@
           // Armes et armures de rechange de la compagnie, sans propriétaire, listées à l'Intendance (Idan, 2026-10-23
           // et 2026-10-24).
           stock:[...generator.createStartingStock(captain),...generator.createStartingArmorStock(captain),
-            ...generator.createStartingBootsStock(captain),...generator.createStartingBeltStock(captain)],
+            ...generator.createStartingBootsStock(captain),...generator.createStartingBeltStock(captain),
+            ...generator.createStartingAmuletStock(captain)],
           startingArmors:true,
           startingBoots:true,
-          startingBelts:true
+          startingBelts:true,
+          startingAmulets:true
         },
         tavern:tavern.createTavernState(),
         biographiesUsed:[],

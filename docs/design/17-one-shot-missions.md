@@ -97,7 +97,7 @@ Ces missions pourraient donner un rôle à la Discrétion, aux Pièges et au Cha
 
 ## 7 — Idée notée : Charisme et Courage
 
-Idan, 2026-10-24 : « Le charisme aidera les autres à réussir leur test de courage. » Piste à tester au simulateur, sur le modèle de l'aura du capitaine ; aucune règle pour l'instant.
+Idan, 2026-10-24 : « Le charisme aidera les autres à réussir leur test de courage. » Première règle : le Charisme du capitaine compte dans son aura (25 %, doc 13, Idan 2026-10-24). Le Charisme des autres mercenaires (lieutenants…) : piste à tester plus tard.
 
 ## 8 — Première mission : « Faire le ménage » (Idan, 2026-10-24)
 

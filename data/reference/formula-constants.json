@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 163,
+  "row_count": 164,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -387,12 +387,20 @@
       "version": "V1"
     },
     {
-      "nom": "Aura du capitaine — bonus de Courage",
-      "code": "captain.aura.courage_bonus",
-      "description": "Tant qu’il est sur le champ de bataille (vivant, sur la carte), le capitaine donne ce bonus de Courage à ses alliés proches, pour leurs tests de Courage et leurs reprises de contrôle ; lui-même n’en profite pas (Idan, 2026-10-24).",
+      "nom": "Aura du capitaine — part du Courage",
+      "code": "captain.aura.courage_ratio",
+      "description": "Tant qu’il est sur le champ de bataille (vivant, sur la carte), le capitaine donne à ses alliés proches, pour leurs tests de Courage et leurs reprises de contrôle, ce coefficient × son Courage (équipement compris), plus la part de son Charisme ; arrondi. Lui-même n’en profite pas (Idan, 2026-10-24 : « 35 + 25 », « l’équipement compte »).",
       "formule": "Courage post-attaque CAC V1",
-      "valeur": 30,
-      "version": "V1"
+      "valeur": 0.35,
+      "version": "V2"
+    },
+    {
+      "nom": "Aura du capitaine — part du Charisme",
+      "code": "captain.aura.charisma_ratio",
+      "description": "Part du Charisme du capitaine (équipement compris) dans le bonus de Courage de son aura (Idan, 2026-10-24).",
+      "formule": "Courage post-attaque CAC V1",
+      "valeur": 0.25,
+      "version": "V2"
     },
     {
       "nom": "Aura du capitaine — portée",

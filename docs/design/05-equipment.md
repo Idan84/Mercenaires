@@ -175,7 +175,7 @@ Mêmes règles que les bottes : trois types de gants (`data/reference/gloves.jso
 
 Trois types de culottes (`data/reference/pants.json`), portées dans l’emplacement **Culotte** : **String du Charisme** (Charisme) et **Culotte d’Intimidation** (Intimidation), **+5 / 10 / 15 / 20 %** de la valeur de base selon le tier comme les bottes ; **Slip d’Affinité**, **+5 / 10 / 15 / 20 points** d’affinité avec le capitaine. La qualité ne change pas le bonus.
 
-- Au combat (`statWithGear`) : l’Intimidation bonifiée de l’adversaire pèse sur les tests de Courage et les reprises de contrôle (−0,25 × Intimidation). Le Charisme servira quand il aura une règle de jeu (aujourd’hui, il ne fait que gagner de l’XP).
+- Au combat (`statWithGear`) : l’Intimidation bonifiée de l’adversaire pèse sur les tests de Courage et les reprises de contrôle (−0,25 × Intimidation). Le Charisme du capitaine, String compris, compte dans son aura (25 %, doc 13).
 - Affinité (`game-core/affinity.js`, `memberAffinity`) : les points du Slip porté s’ajoutent au score total (initiale + acquise + Slip, borné à −100 / +100) ; ils comptent donc pour les cœurs, la négociation à la Taverne et les échanges d’équipement. Retirer le Slip retire ses points ; l’affinité acquise ne change pas.
 - Sur la fiche, Charisme et Intimidation (Caractéristiques) montrent la valeur bonifiée, avec la ligne de la culotte ; sous les cœurs d’affinité, « Avec son Slip d’Affinité » (pas de score affiché).
 - **5 %** de chance d’en avoir une à la création (`pants_chance`), d’un type tiré au hasard ; **1D6** culottes dans le stock de départ (doc 11 §16).

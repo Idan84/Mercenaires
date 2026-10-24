@@ -245,7 +245,7 @@ Données : `data/reference/people-affinity.json` (matrice) ; constantes `affinit
 
 État V1 :
 
-- sur la fiche des membres de la compagnie, l'affinité s'affiche en **dix cœurs** et **une phrase**, sans score (décision Idan, PR #137) : un cœur plein par tranche de 20 au-dessus de −100, et dix phrases de « Rêve en permanence de vous arracher les organes. » (−100 à −80) à « Fantasme toutes les nuits en pensant à vous. » (80 à 100) ;
+- sur la fiche des membres de la compagnie, l'affinité s'affiche en **dix cœurs** et **une phrase**, sans score (décision Idan, PR #137) : un cœur plein par tranche de 20 au-dessus de −100, et dix phrases de « Rêve en permanence de vous arracher les organes. » (−100 à −80) à « Fantasme toutes les nuits en pensant à vous. » (80 à 100), chacune avec trois variantes de même sens (Idan, 2026-10-24) ; la phrase montrée dépend du mercenaire et du niveau, et ne change pas d'un affichage à l'autre (`data/reference/affinity-phrases.json`) ;
 - à la Taverne, le score seul s'affiche sur la carte du candidat et dans l'entretien (décision Idan du 2026-10-20). L'alignement du candidat reste caché (14 §6), même si le score en laisse deviner une partie ;
 - effets décidés par Idan le 2026-10-20 : salaire demandé × (1 − 0,2 × Affinité / 100) (doc 09 §4) et résistance à la négociation − 0,25 × Affinité (doc 14 §9) ;
 - pas encore d'effet sur la négociation d'équipement ni sur d'autres interactions : coefficients à définir avec Idan.

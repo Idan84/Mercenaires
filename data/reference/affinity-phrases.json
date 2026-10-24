@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "name": "affinity-phrases",
+  "description": "Phrases d’affinité d’un mercenaire envers le capitaine, affichées avec les cœurs (fiche et carte du mercenaire), jamais le score. Dix niveaux de −100 à +100 : un niveau couvre les affinités jusqu’à son maximum (inclus), au-dessus du maximum du niveau précédent. Les dix phrases ont été approuvées par Idan ; trois variantes de même sens par niveau, pour que les mercenaires d’un même niveau n’aient pas tous la même phrase (Idan, 2026-10-24).",
+  "columns": [
+    {
+      "source": "Niveau",
+      "key": "niveau"
+    },
+    {
+      "source": "Affinité maximale (incluse)",
+      "key": "affinite_max"
+    },
+    {
+      "source": "Phrase",
+      "key": "phrase"
+    },
+    {
+      "source": "Variantes de la phrase, même sens (Idan, 2026-10-24)",
+      "key": "variantes"
+    }
+  ],
+  "row_count": 10,
+  "rows": [
+    {
+      "niveau": 1,
+      "affinite_max": -80,
+      "phrase": "Rêve en permanence de vous arracher les organes.",
+      "variantes": [
+        "Compte les jours jusqu'à pouvoir vous planter une dague dans le dos.",
+        "Imagine chaque nuit votre tête au bout d'une pique.",
+        "Affûte sa lame en vous regardant, avec un sourire inquiétant."
+      ]
+    },
+    {
+      "niveau": 2,
+      "affinite_max": -60,
+      "phrase": "Envisage sérieusement d'empoisonner votre prochain repas.",
+      "variantes": [
+        "S'intéresse un peu trop aux champignons de la forêt.",
+        "A demandé à l'apothicaire combien coûte la mort-aux-rats.",
+        "Se porte volontaire pour cuisiner. C'est mauvais signe."
+      ]
+    },
+    {
+      "niveau": 3,
+      "affinite_max": -40,
+      "phrase": "Vous méprise avec une constance presque admirable.",
+      "variantes": [
+        "Crache par terre chaque fois que vous donnez un ordre.",
+        "Ne rate jamais une occasion de vous rabaisser devant la troupe.",
+        "Vous déteste avec méthode, application et régularité."
+      ]
+    },
+    {
+      "niveau": 4,
+      "affinite_max": -20,
+      "phrase": "Préférerait recevoir ses ordres d'un gobelin ivre.",
+      "variantes": [
+        "Pense qu'un mulet ferait un meilleur capitaine que vous.",
+        "Obéit, mais lève les yeux au ciel à chaque ordre.",
+        "Soupire bruyamment dès que vous ouvrez la bouche."
+      ]
+    },
+    {
+      "niveau": 5,
+      "affinite_max": 0,
+      "phrase": "Vous supporte, essentiellement pour votre argent.",
+      "variantes": [
+        "Reste pour la solde. Uniquement pour la solde.",
+        "Vous tolère tant que la bourse reste pleine.",
+        "Vous apprécie surtout le jour de la paie."
+      ]
+    },
+    {
+      "niveau": 6,
+      "affinite_max": 20,
+      "phrase": "Vous trouve moins insupportable que prévu.",
+      "variantes": [
+        "Commence à se dire que vous n'êtes pas si terrible.",
+        "Vous accorde le bénéfice du doute. Pour l'instant.",
+        "A cessé de grommeler dans votre dos. La plupart du temps."
+      ]
+    },
+    {
+      "niveau": 7,
+      "affinite_max": 40,
+      "phrase": "Éprouve pour vous un respect prudent, mais sincère.",
+      "variantes": [
+        "Reconnaît, du bout des lèvres, que vous savez commander.",
+        "Écoute vos ordres sans discuter. Ou presque.",
+        "Vous respecte, même quand vous avez le dos tourné."
+      ]
+    },
+    {
+      "niveau": 8,
+      "affinite_max": 60,
+      "phrase": "Vous suivrait au combat, même sans prime exceptionnelle.",
+      "variantes": [
+        "Marcherait au front à vos côtés pour la solde ordinaire.",
+        "Charge sans hésiter quand c'est vous qui donnez l'ordre.",
+        "Vous défend devant les autres, parfois avec les poings."
+      ]
+    },
+    {
+      "niveau": 9,
+      "affinite_max": 79,
+      "phrase": "Donnerait sa vie pour vous. Enfin, probablement.",
+      "variantes": [
+        "Prendrait une flèche pour vous. Sans doute. Peut-être.",
+        "Se jetterait entre vous et la lame. Si elle ne va pas trop vite.",
+        "Mourrait pour vous, mais préférerait qu'on n'en arrive pas là."
+      ]
+    },
+    {
+      "niveau": 10,
+      "affinite_max": 100,
+      "phrase": "Fantasme toutes les nuits en pensant à vous.",
+      "variantes": [
+        "Murmure votre nom dans son sommeil. Toutes les nuits.",
+        "Garde une mèche de vos cheveux. Vous ne savez pas comment.",
+        "Vous voue un culte. Un petit autel est déjà en préparation."
+      ]
+    }
+  ]
+}

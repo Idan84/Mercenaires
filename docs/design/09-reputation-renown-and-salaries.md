@@ -118,6 +118,8 @@ Repères mesurés :
 - un vétéran revenu d'environ 25 missions (≈ 550) : 4 étoiles d'argent ; l'or commence à 800 ; 5 étoiles d'or (2 000) demandent une très longue carrière ;
 - une compagnie démarre entre 410 et 590 de renommée (2 ou 3 étoiles de bronze) ; environ 1 000 après 25 missions (1 étoile d'argent) ; 5 étoiles d'or (8 000) suppose une compagnie entière de légendes et un long héritage.
 
+Phrase de la fiche : chaque niveau porte une phrase qui explique la réputation du mercenaire (Idan, 2026-10-21), et trois variantes de même sens (Idan, 2026-10-24). La fiche en montre une, choisie selon le mercenaire et le niveau : deux mercenaires du même niveau n'ont pas forcément la même, et elle ne change pas d'un affichage à l'autre.
+
 ## 2 — Renommée de la compagnie
 
 La réputation générale de la compagnie correspond à sa **renommée / célébrité**, pas à sa moralité.

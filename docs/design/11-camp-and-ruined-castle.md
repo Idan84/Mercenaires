@@ -188,7 +188,7 @@ Le matériel attribué à un mercenaire ne doit donc pas être considéré comme
 
 ### Stock d'armes de départ (Idan, 2026-10-23)
 
-À sa création, la compagnie reçoit un stock d'armes de rechange, sans propriétaire, listé à l'Intendance :
+À sa création, la compagnie reçoit un stock d'armes (et d'armures) de rechange, sans propriétaire, listé à l'Intendance :
 
 - **nombre** : **2D20** armes (2 à 40) ;
 - **choix de chaque arme** : tirage pondéré parmi toutes les armes du référentiel, **boucliers compris**, doublons possibles :
@@ -196,7 +196,9 @@ Le matériel attribué à un mercenaire ne doit donc pas être considéré comme
   - `A` additionne les intensités de la matrice de génération du **peuple** et de la **culture** du capitaine, sur l'arme et sur sa catégorie. Exemple pour un Nain du chaos : Arquebuse 2 + 2 + 1 + 1 = 6, poids 13 ; Hache de guerre 2 + 1 = 3, poids 7 ; Fouet 0, poids 1 ;
 - **tier de chaque arme** : table de l'équipement de départ des mercenaires (doc 05), lue à la réputation du capitaine. À la création (≈ 110 à 165), cela donne environ 77 % T1, 20 % T2, 3 % T3.
 
-Constantes : `company.starting_stock.dice_count` (2), `company.starting_stock.dice_sides` (20), `company.starting_stock.affinity_weight` (2), `company.starting_stock.min_weight` (0,25). Une partie sauvegardée avant cette règle reçoit son stock au chargement. La capacité limitée de l'armurerie reste à définir.
+**Armures (Idan, 2026-10-24)** : le stock compte aussi quelques armures de base, **1D6 par type d'armure** (Vêtement, Légère, Intermédiaire, Lourde), chacune tirée au hasard parmi les armures de son type ; même table de tier, à la réputation du capitaine (le T3 reste rare, environ 3 %). L'Intendance les range après les armes, de la plus légère à la plus lourde.
+
+Constantes : `company.starting_stock.dice_count` (2), `company.starting_stock.dice_sides` (20), `company.starting_stock.affinity_weight` (2), `company.starting_stock.min_weight` (0,25), `company.starting_stock.armor_dice_count` (1), `company.starting_stock.armor_dice_sides` (6). Une partie sauvegardée avant ces règles reçoit au chargement ce qui lui manque (le stock d'armes, puis les armures, une seule fois). La capacité limitée de l'armurerie reste à définir.
 
 ## 17 — Laboratoire d’alchimie
 

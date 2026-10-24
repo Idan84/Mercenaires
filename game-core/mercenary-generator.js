@@ -927,6 +927,14 @@
       });
     }
 
+    // Armures du stock de départ (Idan, 2026-10-24) : 1D6 armures de chaque type (Vêtement, Légère, Intermédiaire,
+    // Lourde), chacune tirée au hasard dans son type ; tier par la même table, à la réputation du capitaine.
+    function createStartingArmorStock(captain) {
+      const count = () => rollDice(constant("company.starting_stock.armor_dice_count", 1), constant("company.starting_stock.armor_dice_sides", 6));
+      const types = [...new Set(baseArmorRows.map(row => row.type_armure).filter(Boolean))];
+      return types.flatMap(type => Array.from({length:count()}, () => ({...armorItem(captain, type), owner:null})));
+    }
+
     function generateStartingEquipment(character) {
       const profile = computeEquipmentProfile(character);
       const slots = Object.fromEntries(equipmentSlotRows.map(slot => [slot.id, null]));
@@ -1408,6 +1416,7 @@
       equipmentTierDistribution,
       startingStockWeight,
       createStartingStock,
+      createStartingArmorStock,
       people: () => peopleRows.map(r => r.nom),
       alignments: () => alignmentRows.map(r => r.nom),
       ancestries: () => ancestryRows.map(r => r.nom),

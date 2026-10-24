@@ -299,12 +299,25 @@ assert.deepEqual(old9.tavern.candidates.at(-1).mercenary,{culture:"Nains du chao
 assert.equal(stable.ensureRenamedNames(old9),false);
 old9.tavern.candidates.pop();
 // Stock d'armes de départ (Idan, 2026-10-23) : à la création, et pour une ancienne sauvegarde qui n'en a pas.
-assert.ok(Array.isArray(s9.company.stock)&&s9.company.stock.length>=2&&s9.company.stock.length<=40,"2D20 armes");
-assert.ok(s9.company.stock.every(item=>item.owner===null&&item.itemType==="weapon"));
+// Armures (Idan, 2026-10-24) : 1D6 par type, données une fois, même à une partie commencée avant.
+const stockOf=(state,type)=>state.company.stock.filter(item=>item.itemType===type);
+assert.ok(stockOf(s9,"weapon").length>=2&&stockOf(s9,"weapon").length<=40,"2D20 armes");
+assert.ok(stockOf(s9,"armor").length>=4&&stockOf(s9,"armor").length<=24,"1D6 armures par type");
+assert.equal(stockOf(s9,"weapon").length+stockOf(s9,"armor").length,s9.company.stock.length);
+assert.ok(s9.company.stock.every(item=>item.owner===null));
+assert.equal(s9.company.startingArmors,true);
 assert.equal(stable.ensureStartingStock(old9),false,"stock déjà là : rien à faire");
+delete old9.company.startingArmors;
+old9.company.stock=stockOf(old9,"weapon");
+const weaponsBefore=old9.company.stock.length;
+assert.equal(stable.ensureStartingStock(old9),true,"partie d'avant les armures : elles arrivent");
+assert.equal(stockOf(old9,"weapon").length,weaponsBefore,"les armes restent");
+assert.ok(stockOf(old9,"armor").length>=4);
+assert.equal(stable.ensureStartingStock(old9),false,"une seule fois");
 delete old9.company.stock;
+delete old9.company.startingArmors;
 assert.equal(stable.ensureStartingStock(old9),true);
-assert.ok(old9.company.stock.length>=2);
+assert.ok(stockOf(old9,"weapon").length>=2&&stockOf(old9,"armor").length>=4);
 assert.equal(stable.ensureStartingStock(old9),false);
 
 // Affinité → négociation (14 §9 ; Idan, 2026-10-20) : résistance − 0,25 × affinité, bornée de 0 à 100.

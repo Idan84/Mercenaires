@@ -18,7 +18,9 @@ function stockGroups(items){
   const byName=(a,b)=>a.localeCompare(b,"fr");
   const armorRank=category=>{ const i=STOCK_ARMOR_GROUPS.findIndex(([code])=>code===category); return i<0?STOCK_ARMOR_GROUPS.length:i; };
   const order=(a,b)=>(STOCK_KINDS.indexOf(a.kind)-STOCK_KINDS.indexOf(b.kind))||(a.armor?armorRank(a.category)-armorRank(b.category):0)||byName(a.category,b.category);
-  return [...groups.values()].sort(order).map(({armor,category,rows})=>({
+  return [...groups.values()].sort(order).map(({kind,armor,category,rows})=>({
+    kind,
+    key:kind+":"+category,
     category:armor?(STOCK_ARMOR_GROUPS.find(([code])=>code===category)?.[1]||category):category,
     count:[...rows.values()].reduce((sum,row)=>sum+row.count,0),
     rows:[...rows.values()].sort((a,b)=>byName(a.item.name,b.item.name)||a.item.tier-b.item.tier)
@@ -41,13 +43,44 @@ function renderStockRow({item,count}){
   </li>`;
 }
 
+// Onglets par grande catégorie et catégories en accordéon, fermées par défaut (Idan, 2026-10-24). L'onglet choisi
+// et les catégories ouvertes restent tels quels quand l'écran se redessine (passage d'un jour, retour au camp).
+const STOCK_TABS=[["weapon","Armes"],["armor","Armures"],["boots","Bottes"]];
+const STOCK_EMPTY={weapon:"Aucune arme en stock.",armor:"Aucune armure en stock.",boots:"Aucune paire de bottes en stock."};
+const stockView={tab:"weapon",open:new Set()};
+
 function renderQuartermaster(){
   const list=$("quartermaster-stock");
   if(!list||!game.campaign) return;
   const items=game.campaign.company.stock||[];
   $("quartermaster-count").textContent=stockCount(items);
-  list.innerHTML=items.length?stockGroups(items).map(group=>`<section class="stock-group">
-    <h3>${esc(group.category)} <small>${group.count}</small></h3>
+  const kindOf=item=>STOCK_KINDS.includes(item.itemType)?item.itemType:"weapon";
+  const tabs=$("quartermaster-tabs");
+  if(tabs) tabs.innerHTML=STOCK_TABS.map(([kind,label])=>{
+    const active=kind===stockView.tab;
+    return `<button type="button" role="tab" class="stock-tab${active?" active":""}" aria-selected="${active}" data-stock-tab="${kind}">${label} <small>${items.filter(item=>kindOf(item)===kind).length}</small></button>`;
+  }).join("");
+  if(!items.length){ list.innerHTML=`<p class="muted">Le stock est vide.</p>`; return; }
+  const groups=stockGroups(items.filter(item=>kindOf(item)===stockView.tab));
+  list.innerHTML=groups.length?groups.map(group=>`<details class="stock-group" data-stock-group="${esc(group.key)}"${stockView.open.has(group.key)?" open":""}>
+    <summary><h3>${esc(group.category)} <small>${group.count}</small></h3></summary>
     <ul>${group.rows.map(renderStockRow).join("")}</ul>
-  </section>`).join(""):`<p class="muted">Le stock est vide.</p>`;
+  </details>`).join(""):`<p class="muted">${STOCK_EMPTY[stockView.tab]}</p>`;
 }
+
+function initializeQuartermaster(){
+  document.addEventListener("click",event=>{
+    const tab=event.target.closest?.("[data-stock-tab]");
+    if(!tab) return;
+    stockView.tab=tab.dataset.stockTab;
+    renderQuartermaster();
+  });
+  // « toggle » ne remonte pas : écouté en capture.
+  document.addEventListener("toggle",event=>{
+    const key=event.target?.dataset?.stockGroup;
+    if(!key) return;
+    if(event.target.open) stockView.open.add(key); else stockView.open.delete(key);
+  },true);
+}
+
+if(typeof document!=="undefined") initializeQuartermaster();

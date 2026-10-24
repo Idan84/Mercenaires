@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 145,
+  "row_count": 147,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -1059,6 +1059,22 @@
       "version": "V1"
     },
     {
+      "nom": "Stock de départ — ceintures, nombre de dés",
+      "code": "company.starting_stock.belt_dice_count",
+      "description": "La compagnie démarre aussi avec (nombre de dés)D(faces) ceintures, chacune d’un type tiré au hasard : 1D6, comme les bottes (Idan, 2026-10-24).",
+      "formule": "Stock d’armes de départ",
+      "valeur": 1,
+      "version": "V1"
+    },
+    {
+      "nom": "Stock de départ — ceintures, faces des dés",
+      "code": "company.starting_stock.belt_dice_sides",
+      "description": "Faces des dés du nombre de ceintures du stock de départ (1D6).",
+      "formule": "Stock d’armes de départ",
+      "valeur": 6,
+      "version": "V1"
+    },
+    {
       "nom": "Échange d’équipement — attache à un objet possédé",
       "code": "equipment_deal.owned_value",
       "description": "Valeur perçue d’un objet que le mercenaire possède = tier × Int/100 + cette valeur × (1 − Int/100) : plus il est bête, plus il tient à ce qu’il a, même cassé (Idan, 2026-10-24).",
@@ -1165,7 +1181,7 @@
     {
       "nom": "Intendant — affinité au refus",
       "code": "steward.refusal.affinity_divisor",
-      "description": "Refus : l’affinité change de (Intelligence − Courage) / ce diviseur, arrondi ; flatté (positif) une seule fois, vexé (négatif) à chaque fois (avis de JC, 2026-10-24).",
+      "description": "Refus : l’affinité change de (Intelligence − Courage) / ce diviseur, arrondi ; flatté (positif) une seule fois, vexé (négatif) à chaque fois (proposé par JC, validé par Idan le 2026-10-24).",
       "formule": "Intendant",
       "valeur": 10,
       "version": "V1"

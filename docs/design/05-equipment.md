@@ -120,6 +120,14 @@ Trois types de bottes (`data/reference/boots.json`), chacun lié à une caracté
 - À la création d’un mercenaire : **5 %** de chance d’avoir une paire (`starting-equipment-generation.json`, `boots_chance`), d’un type tiré au hasard ; tier selon la réputation, comme le reste de l’équipement.
 - Stock de départ de la compagnie : **1D6** paires (doc 11 §16).
 
+### Ceintures (Idan, 2026-10-24)
+
+« Même règles que pour les bottes » : trois types de ceintures (`data/reference/belts.json`), portées dans l’emplacement **Ceinturon** (pas dans les poches de ceinture) : **Ceinture de mana** (Réserve de mana — « le mana, c’est la réserve magique »), **Ceinture d’endurance** (Endurance), **Ceinture de courage** (Courage). Bonus de **+5 / 10 / 15 / 20 %** de la caractéristique de base selon le tier (T1 à T4) ; la qualité ne le change pas.
+
+- Au combat (`statWithGear`, qui réunit bottes et ceinture) : Endurance pour le déplacement et la défense à l’étape Blesser ; Courage pour l’Initiative et les tests de Courage (tenir, se reprendre). En fin de mission, l’Endurance bonifiée compte aussi pour la blessure et la convalescence. La Réserve de mana servira à la magie.
+- Sur la fiche, Endurance, Courage et Réserve de mana montrent la valeur bonifiée, avec la ligne de la ceinture ; l’Initiative montre la part du Courage bonifié.
+- **5 %** de chance d’en avoir une à la création (`belt_chance`), d’un type tiré au hasard ; **1D6** ceintures dans le stock de départ (doc 11 §16).
+
 ### Échanges d’équipement : Donner, Retirer, Troquer (Idan, 2026-10-24)
 
 Depuis l’onglet Équipement de la fiche ou l’Intendance, le capitaine peut **Donner** un objet du stock (emplacement vide), **Retirer** un objet au mercenaire (il part au stock) ou **Troquer** (les deux à la fois). Le mercenaire répond dans une boîte de dialogue, positivement ou négativement ; seule réponse possible pour l’instant : **Partir** (plus tard : convaincre, intimider, défier en combat singulier).

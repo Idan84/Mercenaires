@@ -61,6 +61,7 @@
       if(!item) return no("Aucun objet.");
       if(slot==="armor") return item.itemType==="armor"?{ok:true}:no("Cet emplacement reçoit une armure.");
       if(slot==="boots") return item.itemType==="boots"?{ok:true}:no("Cet emplacement reçoit des bottes.");
+      if(slot==="belt") return item.itemType==="belt"?{ok:true}:no("Cet emplacement reçoit une ceinture.");
       const match=String(slot).match(WEAPON_SLOT);
       if(!match||item.itemType!=="weapon") return no("Cet objet ne va pas dans cet emplacement.");
       const weapon=weapons.get(item.name)||{};

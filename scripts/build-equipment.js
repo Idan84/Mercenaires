@@ -3,7 +3,7 @@
 
 // Images d'équipement (Idan, 2026-10-23) : masters dans assets-src/Equipements/ (1024 px, fond noir)
 // → versions du jeu dans prototype-web/assets/equipment/ (WebP 256 px).
-// - Armures/, Armes/ et Bottes/<Nom>_<tier>[_horodatage].jpg : le nom est reconnu sans accents,
+// - Armures/, Armes/, Bottes/ et Ceintures/<Nom>_[T]<tier>[_horodatage].jpg : le nom est reconnu sans accents,
 //   majuscules ni petits mots (« Armure_cuir » = « Armure de cuir »), dans n'importe quel ordre
 //   (« Double_arme_hast » = « Arme d'hast double »), et abrégé s'il reste sans ambiguïté
 //   (« Fleau » = « Fléau d'armes ») ;
@@ -53,7 +53,8 @@ function convert(args){
 const families=[
   {dir:"Armures",out:"armures",names:rows("base-armors.json").map(r=>r.nom)},
   {dir:"Armes",out:"armes",names:rows("weapons.json").map(r=>r.nom)},
-  {dir:"Bottes",out:"bottes",names:rows("boots.json").map(r=>r.nom)}
+  {dir:"Bottes",out:"bottes",names:rows("boots.json").map(r=>r.nom)},
+  {dir:"Ceintures",out:"ceintures",names:rows("belts.json").map(r=>r.nom)}
 ];
 const available=[];
 const problems=[];
@@ -61,7 +62,8 @@ const problems=[];
 for(const family of families){
   fs.mkdirSync(path.join(OUT,family.out),{recursive:true});
   for(const file of masters(family.dir)){
-    const match=path.parse(file).name.match(/^(.*?)[ _-]+(\d)(?:[ _-]+\d{6,})?$/);
+    // Tier en fin de nom, avec ou sans « T » (« Bottes_vitesse_2 », « Ceinture_de_mana_T2 »).
+    const match=path.parse(file).name.match(/^(.*?)[ _-]+T?(\d)(?:[ _-]+\d{6,})?$/i);
     const name=match&&findReference(match[1],family.names);
     if(!name){ problems.push(`${family.dir}/${file} : nom ou tier non reconnu`); continue; }
     const out=`${family.out}/${slug(name)}-${match[2]}`;

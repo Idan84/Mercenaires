@@ -52,6 +52,7 @@
     const weaponRows = rows.weapons || [];
     const baseArmorRows = rows.baseArmors || [];
     const bootsRows = rows.boots || [];
+    const beltRows = rows.belts || [];
     const itemQualityRows = rows.itemQualities || [];
     const equipmentSlotRows = rows.equipmentSlots || [];
     const binaryAptitudeRows = rows.binaryAptitudeGrants || [];
@@ -901,15 +902,21 @@
       });
     }
 
-    // Bottes (Idan, 2026-10-24) : un des trois types de boots.json ; tier selon la réputation, comme le reste.
-    function bootsItem(character, template) {
+    // Bottes et ceinture (Idan, 2026-10-24) : un des trois types de boots.json ou belts.json ; tier selon la
+    // réputation, comme le reste.
+    const STAT_GEAR = {
+      boots:{rows:bootsRows, slot:"boots", category:"Bottes"},
+      belt:{rows:beltRows, slot:"belt", category:"Ceinture"}
+    };
+    function statGearItem(character, itemType, template) {
       if (!template) return null;
+      const gear = STAT_GEAR[itemType];
       return createItemInstance(character, {
-        templateId:`boots:${template.code || normalizeKey(template.nom)}`,
+        templateId:`${itemType}:${template.code || normalizeKey(template.nom)}`,
         name:template.nom,
-        itemType:"boots",
-        slot:"boots",
-        category:"Bottes"
+        itemType,
+        slot:gear.slot,
+        category:gear.category
       });
     }
 
@@ -948,12 +955,15 @@
       return types.flatMap(type => Array.from({length:count()}, () => ({...armorItem(captain, type), owner:null})));
     }
 
-    // Bottes du stock de départ (Idan, 2026-10-24) : 1D6 paires, chacune d'un type tiré au hasard.
-    function createStartingBootsStock(captain) {
-      if (!bootsRows.length) return [];
-      const count = rollDice(constant("company.starting_stock.boots_dice_count", 1), constant("company.starting_stock.boots_dice_sides", 6));
-      return Array.from({length:count}, () => ({...bootsItem(captain, randomChoice(bootsRows)), owner:null}));
+    // Bottes et ceintures du stock de départ (Idan, 2026-10-24) : 1D6 de chaque, chacune d'un type tiré au hasard.
+    function createStartingStatGearStock(captain, itemType, prefix) {
+      const gear = STAT_GEAR[itemType];
+      if (!gear.rows.length) return [];
+      const count = rollDice(constant(`company.starting_stock.${prefix}_dice_count`, 1), constant(`company.starting_stock.${prefix}_dice_sides`, 6));
+      return Array.from({length:count}, () => ({...statGearItem(captain, itemType, randomChoice(gear.rows)), owner:null}));
     }
+    function createStartingBootsStock(captain) { return createStartingStatGearStock(captain, "boots", "boots"); }
+    function createStartingBeltStock(captain) { return createStartingStatGearStock(captain, "belt", "belt"); }
 
     function generateStartingEquipment(character) {
       const profile = computeEquipmentProfile(character);
@@ -993,12 +1003,15 @@
         slots.armor = armor.id;
       }
 
-      // Bottes (Idan, 2026-10-24) : 5 % de chance d'avoir une paire, d'un type tiré au hasard.
-      const bootsChance = Number(startingEquipmentGeneration.boots_chance);
-      if (bootsRows.length && random() < (Number.isFinite(bootsChance) ? bootsChance : 0.05)) {
-        const boots = bootsItem(character, randomChoice(bootsRows));
-        items.push(boots);
-        slots.boots = boots.id;
+      // Bottes, puis ceinture (Idan, 2026-10-24) : 5 % de chance chacune, d'un type tiré au hasard.
+      for (const [itemType, chanceKey] of [["boots","boots_chance"],["belt","belt_chance"]]) {
+        const gear = STAT_GEAR[itemType];
+        const chance = Number(startingEquipmentGeneration[chanceKey]);
+        if (gear.rows.length && random() < (Number.isFinite(chance) ? chance : 0.05)) {
+          const item = statGearItem(character, itemType, randomChoice(gear.rows));
+          items.push(item);
+          slots[gear.slot] = item.id;
+        }
       }
 
       return {
@@ -1446,6 +1459,7 @@
       createStartingStock,
       createStartingArmorStock,
       createStartingBootsStock,
+      createStartingBeltStock,
       people: () => peopleRows.map(r => r.nom),
       alignments: () => alignmentRows.map(r => r.nom),
       ancestries: () => ancestryRows.map(r => r.nom),

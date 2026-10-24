@@ -147,11 +147,11 @@ function renderMercenaryRoster() {
   // L'intendant passe dans Ma Compagnie (Idan, 2026-10-24).
   const squad=teamCharacters().filter(c=>c!==game.captain&&c.id!==game.campaign?.company.intendantId);
   const company=game.campaign?.company;
-  const occupied=company?.roster.length??(squad.length+(game.captain?1:0));
+  const occupied=game.campaign?campaignRules().dormitoryUsed(game.campaign):squad.length;
   const capacity=company?.camp?.dormitoryCapacity;
   const count=$("initial-count");
   count.innerHTML=`<span class="roster-count-number">${squad.length} mercenaire${squad.length!==1?"s":""}</span><span class="roster-count-capacity">Dortoir : ${occupied} / ${Number.isFinite(capacity)?capacity:"—"}</span>`;
-  count.title="La capacité du dortoir comprend également le capitaine.";
+  count.title="Places occupées au dortoir : un ogre en prend deux ; le capitaine et l’intendant n’en prennent pas.";
   $("roster-sort").value=rosterSortKey;
   const direction=$("roster-sort-direction");
   direction.textContent=rosterSortDescending?"↓ Décroissant":"↑ Croissant";

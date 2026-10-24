@@ -50,7 +50,7 @@ function renderCompanyMeta(){
   $("company-gold").textContent=fmt(c.company.gold);
   $("company-gold").classList.toggle("negative",c.company.gold<0);
   $("company-day").textContent=c.day;
-  $("company-dorm").textContent=c.company.roster.length+" / "+c.company.camp.dormitoryCapacity;
+  $("company-dorm").textContent=campaignRules().dormitoryUsed(c)+" / "+c.company.camp.dormitoryCapacity;
   $("company-payroll").textContent=fmt(campaignRules().payroll(c));
   // Renommée (09 §2) en étoiles ; la valeur et son détail au survol.
   $("company-renown").innerHTML=renderRenownStars(campaignRules().companyRenown(c));
@@ -245,8 +245,9 @@ function finishRecruitment(){
     saveGame();
     renderGame();
   }else{
-    const full=campaignRules().dormitoryFree(game.campaign)<=0;
-    if(full) t.lines.push({who:"merc",text:d.line("dorm_full",m)},{who:"note",text:d.line("dorm_full_note",m)});
+    // Dortoir plein (un ogre a besoin de deux places).
+    if(result.dormFull) t.lines.push({who:"merc",text:d.line(result.places>1?"dorm_full_ogre":"dorm_full",m)},
+      {who:"note",text:result.places>1?result.reason:d.line("dorm_full_note",m)});
     else t.lines.push({who:"note",text:result.reason});
     t.mode="choices";
     saveGame();

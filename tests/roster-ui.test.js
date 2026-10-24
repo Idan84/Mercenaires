@@ -1,6 +1,7 @@
 "use strict";
 
-// Tests UI du roster : affichage compact, capacité (capitaine compris), trois tris.
+// Tests UI du roster : affichage compact, places du dortoir (ni le capitaine ni l'intendant ; un ogre en prend deux,
+// Idan 2026-10-24), trois tris.
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
@@ -63,10 +64,13 @@ const elements={
   },
   "initial-squad":{innerHTML:""}
 };
-const roster=new Function("game","$","teamCharacters","characterRow","captainAffinity",
+const {createCampaignRules}=require("../game-core/campaign.js");
+const peoples=JSON.parse(fs.readFileSync(path.join(root,"data/reference/peoples.json"),"utf8"));
+const rules=createCampaignRules({generator:{},tavern:{},reference:{peoples}});
+const roster=new Function("game","$","teamCharacters","characterRow","captainAffinity","campaignRules",
   extract("let rosterSortKey=", "\nfunction renderGenerated()") +
   "\nreturn {rosterSortValue,sortMercenaryRoster,renderMercenaryRoster};"
-)(game,id=>elements[id],()=>[captain,...squad],c=>"<item>"+c.id+"</item>",captainAffinity);
+)(game,id=>elements[id],()=>[captain,...squad],c=>"<item>"+c.id+"</item>",captainAffinity,()=>rules);
 assert.deepEqual(roster.sortMercenaryRoster(squad,"reputation").map(x=>x.id),[2,1,3]);
 assert.deepEqual(roster.sortMercenaryRoster(squad,"reputation",false).map(x=>x.id),[3,1,2]);
 assert.deepEqual(roster.sortMercenaryRoster(squad,"salary").map(x=>x.id),[2,3,1]);
@@ -76,7 +80,17 @@ assert.deepEqual(roster.sortMercenaryRoster(squad,"affinity",false).map(x=>x.id)
 assert.deepEqual(squad.map(x=>x.id),[1,2,3],"ne pas muter l'ordre de l'effectif");
 roster.renderMercenaryRoster();
 assert.match(elements["initial-count"].innerHTML,/3 mercenaires/);
-assert.match(elements["initial-count"].innerHTML,/Dortoir : 4 \/ 40/);
+assert.match(elements["initial-count"].innerHTML,/Dortoir : 3 \/ 40/,"le capitaine ne prend pas de place");
+squad[2].people="Ogre";
+roster.renderMercenaryRoster();
+assert.match(elements["initial-count"].innerHTML,/Dortoir : 4 \/ 40/,"un ogre prend deux places");
+game.campaign.company.intendantId=2;
+roster.renderMercenaryRoster();
+assert.match(elements["initial-count"].innerHTML,/Dortoir : 3 \/ 40/,"l'intendant ne prend pas de place");
+assert.match(elements["initial-count"].title,/un ogre en prend deux/);
+delete game.campaign.company.intendantId;
+squad[2].people="Elfe";
+roster.renderMercenaryRoster();
 assert.equal(elements["roster-sort"].value,"reputation");
 assert.equal(elements["initial-squad"].innerHTML,"<item>2</item><item>1</item><item>3</item>");
 assert.match(html,/id="roster-sort"/);

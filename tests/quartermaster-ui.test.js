@@ -81,6 +81,14 @@ assert.match(elements["quartermaster-tabs"].innerHTML, /data-stock-tab="amulet">
 ui.stockView.tab = "amulet";
 ui.renderQuartermaster();
 assert.match(elements["quartermaster-stock"].innerHTML, /<h3>Amulette <small>1<\/small><\/h3>/);
+// Capes (Idan, 2026-10-24) : leur onglet, après les amulettes.
+game.campaign.company.stock.push({...weapon("Cape d’esquive", "Cape", 1), itemType:"cape"});
+ui.renderQuartermaster();
+assert.equal(elements["quartermaster-count"].textContent, "1 arme · 5 armures · 2 paires de bottes · 1 ceinture · 1 amulette · 1 cape");
+assert.match(elements["quartermaster-tabs"].innerHTML, /data-stock-tab="cape">Capes <small>1<\/small>/);
+ui.stockView.tab = "cape";
+ui.renderQuartermaster();
+assert.match(elements["quartermaster-stock"].innerHTML, /<h3>Cape <small>1<\/small><\/h3>/);
 ui.stockView.tab = "weapon";
 
 // Une catégorie ouverte le reste quand l'écran se redessine.

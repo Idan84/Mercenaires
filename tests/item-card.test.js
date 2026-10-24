@@ -11,14 +11,15 @@ const read = file => JSON.parse(fs.readFileSync(path.join(ROOT, "data", "referen
 const reference = {
   weapons:read("weapons.json"), skills:read("skills.json"), baseArmors:read("base-armors.json"),
   itemQualities:read("item-qualities.json"), itemTitles:read("item-titles.json"), boots:read("boots.json"), belts:read("belts.json"),
-  amulets:read("amulets.json")
+  amulets:read("amulets.json"), capes:read("capes.json")
 };
 const cards = createItemCards({reference});
 const item = (itemType, name, tier, qualityCode, extra = {}) => ({itemType, name, tier, qualityCode, ...extra});
 const near = (a, b) => assert.ok(Math.abs(a - b) < 1e-9, `${a} ≠ ${b}`);
 
 // Un titre pour chaque arme et chaque armure, à chaque tier.
-for (const row of [...reference.weapons.rows, ...reference.baseArmors.rows, ...reference.boots.rows, ...reference.belts.rows, ...reference.amulets.rows]) {
+for (const row of [...reference.weapons.rows, ...reference.baseArmors.rows, ...reference.boots.rows, ...reference.belts.rows, ...reference.amulets.rows,
+  ...reference.capes.rows]) {
   const titles = reference.itemTitles.rows.find(r => r.nom === row.nom);
   assert.ok(titles, row.nom);
   for (const tier of [1,2,3,4]) assert.ok(String(titles["t" + tier] || "").trim(), `${row.nom} T${tier}`);
@@ -76,6 +77,11 @@ assert.equal(cards.card(item("belt","Ceinture de mana",4,null)).stat, "Réserve 
 const clover = cards.card(item("amulet","Amulette de chance",2,"standard"));
 assert.deepEqual([clover.kind, clover.category, clover.title, clover.stat, clover.bonus], ["amulet","Amulette","Trèfle de cuivre","Chance",10]);
 assert.equal(cards.card(item("amulet","Amulette de puissance magique",4,null)).bonus, 20);
+// Capes (Idan, 2026-10-24) : un pourcentage, sauf la cape de résistance physique (des points).
+const rampart = cards.card(item("cape","Cape de résistance physique",3,"standard"));
+assert.deepEqual([rampart.kind, rampart.category, rampart.title, rampart.stat, rampart.bonus, rampart.points],
+  ["cape","Cape","Cape du rempart","Résistance physique",15,true]);
+assert.equal(cards.card(item("cape","Cape d’esquive",1,null)).points, false);
 
 // Mise en forme pour le joueur (prototype-web/item-card-ui.js).
 const ui = fs.readFileSync(path.join(ROOT, "prototype-web/item-card-ui.js"), "utf8");
@@ -120,4 +126,9 @@ assert.match(cloverCard, /Ajoute 10 % de la Chance de base du porteur/);
 assert.match(renderItemCard(item("amulet","Amulette de volonté",3,"luxury")), /Ajoute 15 % de la Volonté de base du porteur/);
 assert.match(renderItemCard(item("amulet","Amulette de puissance magique",1,"worn")), /Ajoute 5 % de la Puissance magique de base du porteur/);
 assert.doesNotMatch(cloverCard, /item-card-quality/);
+const rampartCard = renderItemCard(item("cape","Cape de résistance physique",3,"standard"));
+assert.match(rampartCard, /item-card-row--bonus"><dt>Résistance physique<\/dt><dd>\+15<\/dd>/);
+assert.match(rampartCard, /Ajoute 15 points de Résistance physique au porteur/);
+assert.match(renderItemCard(item("cape","Cape d’esquive",2,"standard")), /Ajoute 10 % de l’Esquive de base du porteur/);
+assert.match(renderItemCard(item("cape","Cape de discrétion",4,"luxury")), /Ajoute 20 % de la Discrétion de base du porteur/);
 console.log("Carte d'objet : titres par tier, effets avec la qualité, mise en forme — OK");

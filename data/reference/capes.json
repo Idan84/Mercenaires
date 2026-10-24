@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "name": "capes",
+  "description": "Capes (Idan, 2026-10-24) : mêmes règles que les bottes, sauf la cape de résistance physique. Trois types, chacun lié à une caractéristique, une résistance ou une compétence. La cape portée (emplacement Cape) ajoute, selon son tier, un pourcentage de la valeur de base du porteur (type_bonus « pourcentage » : +5 % T1, +10 % T2, +15 % T3, +20 % T4) ou des points (type_bonus « points » : +5 à +20 points ; Idan, pour la Résistance physique, trop petite pour un pourcentage). Images : assets-src/Equipements/Capes.",
+  "columns": [
+    {
+      "source": "Nom",
+      "key": "nom"
+    },
+    {
+      "source": "Code",
+      "key": "code"
+    },
+    {
+      "source": "Caractéristique",
+      "key": "caracteristique"
+    },
+    {
+      "source": "Type de bonus (pourcentage de la valeur de base ou points)",
+      "key": "type_bonus"
+    },
+    {
+      "source": "Bonus T1 (% ou points)",
+      "key": "bonus_t1"
+    },
+    {
+      "source": "Bonus T2 (% ou points)",
+      "key": "bonus_t2"
+    },
+    {
+      "source": "Bonus T3 (% ou points)",
+      "key": "bonus_t3"
+    },
+    {
+      "source": "Bonus T4 (% ou points)",
+      "key": "bonus_t4"
+    }
+  ],
+  "row_count": 3,
+  "rows": [
+    {
+      "nom": "Cape de résistance physique",
+      "code": "physical_resistance_cape",
+      "caracteristique": "Résistance physique",
+      "type_bonus": "points",
+      "bonus_t1": 5,
+      "bonus_t2": 10,
+      "bonus_t3": 15,
+      "bonus_t4": 20
+    },
+    {
+      "nom": "Cape d’esquive",
+      "code": "dodge_cape",
+      "caracteristique": "Esquive",
+      "type_bonus": "pourcentage",
+      "bonus_t1": 5,
+      "bonus_t2": 10,
+      "bonus_t3": 15,
+      "bonus_t4": 20
+    },
+    {
+      "nom": "Cape de discrétion",
+      "code": "stealth_cape",
+      "caracteristique": "Discrétion",
+      "type_bonus": "pourcentage",
+      "bonus_t1": 5,
+      "bonus_t2": 10,
+      "bonus_t3": 15,
+      "bonus_t4": 20
+    }
+  ]
+}

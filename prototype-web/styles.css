@@ -1962,9 +1962,9 @@ body[data-screen="camp"] .camp-scene>.panel .muted{color:#c2b29e}
 .magic-stat .sheet-stat-icon{width:24px;height:24px;color:#b9a3f0}
 .magic-stat .sheet-stat-name{font:700 15px Georgia,serif}
 .magic-stat .sheet-stat-value{font-size:22px}
-/* En haut de l'onglet : la bulle de la valeur s'ouvre vers le bas. */
-.magic-stat .sheet-stat-pop{bottom:auto;top:calc(100% + 8px)}
-.magic-stat .sheet-stat-pop::after{top:auto;bottom:100%}
+/* En haut de l'onglet (Magie, trois premières lignes des Caractéristiques) : la bulle de la valeur s'ouvre vers le bas. */
+.magic-stat .sheet-stat-pop,.sheet-stat-group .sheet-stat:nth-of-type(-n+3) .sheet-stat-pop{bottom:auto;top:calc(100% + 8px)}
+.magic-stat .sheet-stat-pop::after,.sheet-stat-group .sheet-stat:nth-of-type(-n+3) .sheet-stat-pop::after{top:auto;bottom:100%}
 .magic-favorites{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .magic-favorite{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;padding:10px 14px;border:1px solid #9a7a4f;border-radius:10px;background:linear-gradient(180deg,#3a2b21,#2a1f18)}
 .magic-favorite-name{display:grid;gap:1px;min-width:0}

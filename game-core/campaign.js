@@ -162,8 +162,8 @@
       return changed;
     }
 
-    // Armures, bottes, ceintures et amulettes du stock (Idan, 2026-10-24) : données une seule fois, même à une partie
-    // commencée avant.
+    // Armures, bottes, ceintures, amulettes et capes du stock (Idan, 2026-10-24) : données une seule fois, même à une
+    // partie commencée avant.
     function ensureStartingStock(state){
       const company=state.company;
       const captain=rosterOf(state).find(m=>m.id===company.captainId);
@@ -190,6 +190,11 @@
       if(!company.startingAmulets){
         if(captain) company.stock.push(...generator.createStartingAmuletStock(captain));
         company.startingAmulets=true;
+        changed=true;
+      }
+      if(!company.startingCapes){
+        if(captain) company.stock.push(...generator.createStartingCapeStock(captain));
+        company.startingCapes=true;
         changed=true;
       }
       return changed;
@@ -292,11 +297,12 @@
           // et 2026-10-24).
           stock:[...generator.createStartingStock(captain),...generator.createStartingArmorStock(captain),
             ...generator.createStartingBootsStock(captain),...generator.createStartingBeltStock(captain),
-            ...generator.createStartingAmuletStock(captain)],
+            ...generator.createStartingAmuletStock(captain),...generator.createStartingCapeStock(captain)],
           startingArmors:true,
           startingBoots:true,
           startingBelts:true,
-          startingAmulets:true
+          startingAmulets:true,
+          startingCapes:true
         },
         tavern:tavern.createTavernState(),
         biographiesUsed:[],

@@ -321,8 +321,8 @@
       return state;
     }
 
-    // Dortoir (Idan, 2026-10-24) : un ogre prend deux places, tout autre mercenaire une (halflings, gobelins et gnomes
-    // compris ; peoples.json, places_dortoir) ; le capitaine et l'intendant n'en prennent pas.
+    // Dortoir (Idan, 2026-10-24) : un ogre prend deux places ; un halfling, un gnome ou un gobelin une demi ; tout autre
+    // mercenaire une (peoples.json, places_dortoir) ; le capitaine et l'intendant n'en prennent pas.
     const PEOPLE_PLACES=new Map((reference?.peoples?.rows||[]).map(p=>[p.nom,Number(p.places_dortoir)||1]));
     function dormitoryPlaces(mercenary){
       return PEOPLE_PLACES.get(mercenary?.people)||1;
@@ -373,7 +373,8 @@
       return reports;
     }
 
-    // §10 — Signature : un accord conclu, et assez de places libres au Dortoir (deux pour un ogre).
+    // §10 — Signature : un accord conclu, et assez de places libres au Dortoir (deux pour un ogre, une demi pour un
+    // halfling, un gnome ou un gobelin).
     function signCandidate(state,mercenaryId){
       const candidate=tavern.findCandidate(state.tavern,mercenaryId);
       if(!candidate) return {ok:false,reason:"Candidat introuvable."};

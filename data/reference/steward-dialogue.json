@@ -83,7 +83,8 @@
       "Pour {carac}, je dirais autour de {valeur}."
     ],
     "repeated": "Comme je vous l’ai dit : {valeur} en {carac}.",
-    "already": "Vous m’en avez déjà parlé aujourd’hui, capitaine."
+    "already": "Vous m’en avez déjà parlé aujourd’hui, capitaine.",
+    "dorm_full": "Et où voulez-vous que je dorme, capitaine ? Le dortoir est plein."
   },
   "panel": {
     "none_title": "Pas d’intendant",

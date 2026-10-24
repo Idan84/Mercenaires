@@ -11,6 +11,8 @@
 //   (à chaque fois). Un accord ne change pas l'affinité : il a eu ce qu'il voulait.
 // - Évaluer un candidat de la Taverne : estimation à ±20 % × (1 − Intendance/100) (14 §7), figée par candidat et
 //   par caractéristique, gratuite.
+// - Revenir sur le terrain : il reprend sa place au dortoir ; si le dortoir n'en a plus assez, son retour est bloqué
+//   (Idan, 2026-10-24). dormitory : { free(state), places(mercenaire) }, les règles du dortoir de campaign.js.
 // L'aide de l'intendant aux échanges d'équipement est dans equipment-deals.js. Constantes : steward.*.
 (function(root,factory){
   const history=typeof module!=="undefined"&&module.exports?require("./history.js"):root.MercenairesHistory;
@@ -21,7 +23,7 @@
   const rows=data=>Array.isArray(data)?data:(data?.rows||[]);
   const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
 
-  function createStewardRules({reference,random=Math.random}={}){
+  function createStewardRules({reference,random=Math.random,dormitory=null}={}){
     const constant=(code,fallback)=>{
       const value=Number(rows(reference?.formulaConstants).find(r=>r.code===code)?.valeur);
       return Number.isFinite(value)?value:fallback;
@@ -103,6 +105,7 @@
       if(!m) return no("La compagnie n’a pas d’intendant.");
       const allowed=canOffer(state,m);
       if(!allowed.ok) return allowed;
+      if(dormitory&&dormitory.free(state)<dormitory.places(m)) return {...no("Le dortoir est plein : pas de place pour son retour."),dormFull:true};
       const chance=returnChance(state,m),dice=roll(),days=daysAsSteward(state);
       m.stewardOfferDay=state.day;
       if(dice<=chance){

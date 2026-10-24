@@ -24,7 +24,7 @@
       "key": "probabilite_d_ascendance"
     },
     {
-      "source": "Places au dortoir (Idan, 2026-10-24 : un ogre en prend deux, tous les autres une, halflings, gobelins et gnomes compris)",
+      "source": "Places au dortoir (Idan, 2026-10-24 : un ogre en prend deux ; halflings, gnomes et gobelins une demi ; les autres une)",
       "key": "places_dortoir"
     }
   ],
@@ -63,7 +63,7 @@
       "alignement_principal": "Chaotique bon",
       "probabilite_de_base": 0.07,
       "probabilite_d_ascendance": 0.2,
-      "places_dortoir": 1
+      "places_dortoir": 0.5
     },
     {
       "nom": "Elfe",
@@ -77,14 +77,14 @@
       "alignement_principal": "Chaotique mauvais",
       "probabilite_de_base": 0.08,
       "probabilite_d_ascendance": 0.2,
-      "places_dortoir": 1
+      "places_dortoir": 0.5
     },
     {
       "nom": "Gnome",
       "alignement_principal": "Chaotique neutre",
       "probabilite_de_base": 0.07,
       "probabilite_d_ascendance": 0.2,
-      "places_dortoir": 1
+      "places_dortoir": 0.5
     },
     {
       "nom": "Ogre",

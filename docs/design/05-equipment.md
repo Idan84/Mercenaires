@@ -120,6 +120,27 @@ Trois types de bottes (`data/reference/boots.json`), chacun lié à une caracté
 - À la création d’un mercenaire : **5 %** de chance d’avoir une paire (`starting-equipment-generation.json`, `boots_chance`), d’un type tiré au hasard ; tier selon la réputation, comme le reste de l’équipement.
 - Stock de départ de la compagnie : **1D6** paires (doc 11 §16).
 
+### Échanges d’équipement : Donner, Retirer, Troquer (Idan, 2026-10-24)
+
+Depuis l’onglet Équipement de la fiche ou l’Intendance, le capitaine peut **Donner** un objet du stock (emplacement vide), **Retirer** un objet au mercenaire (il part au stock) ou **Troquer** (les deux à la fois). Le mercenaire répond dans une boîte de dialogue, positivement ou négativement ; seule réponse possible pour l’instant : **Partir** (plus tard : convaincre, intimider, défier en combat singulier).
+
+**Valeur perçue** d’un objet (le tier seul pour l’instant, T1 = 1 … T4 = 4) :
+- objet que le mercenaire possède : tier × Int/100 + **3,5** × (1 − Int/100) — plus il est bête, plus il tient à ce qu’il a, même cassé ;
+- objet qu’on lui propose : tier × Int/100 + **2,5** × (1 − Int/100) — plus il est bête, moins il voit la différence entre un T1 et un T4.
+
+**Jet** : Δ = **20** × (valeur perçue reçue − valeur perçue cédée) + **0,5** × Affinité ; chance d’accord = 10 + 80 / (1 + e^(−Δ/20)), la courbe du combat (10 à 90 %) ; D100, accord si le jet ne dépasse pas la chance. La chance n’est pas montrée au joueur.
+
+| Situation (affinité 0) | Int 80 | Int 20 |
+|---|---|---|
+| Donner un T2 | 81 % | 83 % |
+| Troquer son T1 contre un T3 | 74 % | 42 % |
+| Troquer son T4 contre un T1 | 16 % | 26 % |
+| Retirer son T3 | 13 % | 13 % |
+
+**Affinité** (formule de JC, demandée par Idan) : accord ou refus, l’affinité acquise (`affinityAcquired`) change de **2 × (valeur perçue reçue − valeur perçue cédée)**, arrondi. Un cadeau la fait monter (Donner un T2 : +4 ou +5), un équipement rétrogradé ou repris la fait baisser (Retirer son T3 : −6 ou −7). Reprendre ce qu’on vient de donner coûte plus qu’on n’a gagné : pas de boucle pour gonfler l’affinité.
+
+**Règles** : une seule tentative par mercenaire et par jour ; le capitaine s’équipe librement (ni jet, ni affinité, ni limite) ; un objet donné appartient ensuite au mercenaire, un objet retiré retourne au stock sans propriétaire. Emplacements : armure, bottes, armes selon la prise (une arme à deux mains en arme principale avec la main secondaire libre, un bouclier en main secondaire). Constantes `equipment_deal.*` ; code `game-core/equipment-deals.js`.
+
 ### Dégâts des sets d’armes (Idan, 2026-10-24)
 
 L’onglet Équipement montre, pour le set 1 et le set 2, les dégâts que fait le mercenaire **avant l’armure et la résistance de la cible**, pour voir d’un coup d’œil s’il fait mal. Pour chaque arme qui frappe (l’arme principale, et la main secondaire au combat à deux armes) : le mode (mêlée ou tir), la moyenne, la fourchette du jet minimum au jet maximum, les types de dégâts avec leur puissance, et ce qui change les dégâts (dé de l’arme, qualité, prise à deux mains, Force en mêlée). C’est la formule des dégâts physiques du combat (`physicalDamage`) contre une cible sans Résistance physique (`game-core/equipment-effects.js`, `attacks`) ; la charge n’est pas comptée.

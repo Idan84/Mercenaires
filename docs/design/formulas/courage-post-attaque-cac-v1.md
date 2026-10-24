@@ -4,7 +4,7 @@
 
 Code: combat.melee.courage_resolution
 Domaine: Combat
-Expression: base_hold=min(95,max(5,subject.courage+0.25subject.will-0.25opponent.intimidation)); if defender_outnumbered && wound_received: use combat.melee.courage_outnumbered immediately per wound; else if any_wound_inflicted && target_alive: defender tests once at sequence end; else if !any_wound_inflicted && attacker_participates_in_valid_encirclement: no_courage_test; else if !any_wound_inflicted: attacker tests with flee_probability=(100-base_hold)*0.5
+Expression: base_hold=min(95,max(5,subject.courage+captain_aura+0.25subject.will-0.25opponent.intimidation)); if defender_outnumbered && wound_received: use combat.melee.courage_outnumbered immediately per wound; else if any_wound_inflicted && target_alive: defender tests once at sequence end; else if !any_wound_inflicted && attacker_participates_in_valid_encirclement: no_courage_test; else if !any_wound_inflicted: attacker tests with flee_probability=(100-base_hold)*0.5
 Maximum: 97,5
 Minimum: 5
 Notes: Règle générale de fin de séquence, avec deux exceptions V1 : un attaquant soutenu par un encerclement valide ne teste pas s'il ne blesse pas ; une cible en sous-nombre teste immédiatement après chaque blessure via combat.melee.courage_outnumbered.
@@ -18,11 +18,19 @@ Version: V1
 Le même noyau est utilisé dans les deux cas :
 
 $$
-ScoreCourage=Courage+0.25\times Volonte-0.25\times Intimidation_{adverse}
+ScoreCourage=Courage+AuraCapitaine+0.25\times Volonte-0.25\times Intimidation_{adverse}
 $$
 
 $$
 P_{tenir,base}=min(95,max(5,ScoreCourage))
+$$
+
+## Aura du capitaine (Idan, 2026-10-24)
+
+Tant que le **capitaine** de la compagnie est sur le champ de bataille (vivant, pas sorti de la carte), ses **alliés** situés à **10 cases ou moins** ajoutent **+30** à leur Courage pour ce test (`captain.aura.courage_bonus`, `captain.aura.range_hex`). Le capitaine lui-même n'en profite pas ; l'aura disparaît s'il tombe ou s'enfuit hors de la carte. La même aura compte pour la [reprise de contrôle](/design/#doc=formulas/reprise-de-controle-en-fuite-v1.md).
+
+$$
+AuraCapitaine=\begin{cases}30 & \text{capitaine allié présent à 10 cases ou moins}\\0 & \text{sinon}\end{cases}
 $$
 
 ## Cas 1 — l'attaquant a blessé sa cible

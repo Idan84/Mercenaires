@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 151,
+  "row_count": 153,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -383,6 +383,22 @@
       "code": "combat.courage.outnumbered_penalty_per_enemy",
       "description": "Malus au score de Courage pour chaque ennemi de surplus dans la mêlée locale.",
       "formule": "Courage en sous-nombre V1",
+      "valeur": 10,
+      "version": "V1"
+    },
+    {
+      "nom": "Aura du capitaine — bonus de Courage",
+      "code": "captain.aura.courage_bonus",
+      "description": "Tant qu’il est sur le champ de bataille (vivant, sur la carte), le capitaine donne ce bonus de Courage à ses alliés proches, pour leurs tests de Courage et leurs reprises de contrôle ; lui-même n’en profite pas (Idan, 2026-10-24).",
+      "formule": "Courage post-attaque CAC V1",
+      "valeur": 30,
+      "version": "V1"
+    },
+    {
+      "nom": "Aura du capitaine — portée",
+      "code": "captain.aura.range_hex",
+      "description": "Distance maximale, en cases, entre le capitaine et un allié pour que l’aura s’applique (Idan, 2026-10-24 : « à moins de 10 cases »).",
+      "formule": "Courage post-attaque CAC V1",
       "valeur": 10,
       "version": "V1"
     },

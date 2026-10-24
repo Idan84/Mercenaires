@@ -238,6 +238,25 @@ assert.equal(combat.resolveCourage(brute,{...hero,fleeing:true},woundMelee),null
 assert.equal(combat.resolveCourage(brute,{...hero,alive:false},woundMelee),null);
 assert.equal(combat.resolveCourage(brute,hero,{ok:true,chargeFall:true}),null);
 
+// Aura du capitaine (Idan, 2026-10-24) : +30 Courage aux alliés à 10 cases ou moins, tant qu'il est sur la carte ;
+// pas pour lui-même ni pour l'ennemi. Elle compte aussi pour la reprise de contrôle.
+const captain={...teamUnit(a,"player",3,5),isCaptain:true};
+const units=[hero,brute,captain];
+assert.equal(combat.captainAura(hero,units),30);
+assert.equal(combat.captainAura(captain,units),0,"pas pour le capitaine lui-même");
+assert.equal(combat.captainAura(brute,units),0,"pas pour l'ennemi");
+assert.equal(combat.captainAura(hero,[hero,{...captain,q:3+11}]),0,"hors de portée (11 cases)");
+assert.equal(combat.captainAura(hero,[hero,{...captain,q:3+10,r:3}]),30,"10 cases : à portée");
+assert.equal(combat.captainAura(hero,[hero,{...captain,alive:false}]),0,"capitaine tombé");
+assert.equal(combat.captainAura(hero,[hero,{...captain,alive:false,offMap:true}]),0,"capitaine sorti de la carte");
+c=combat.resolveCourage(brute,hero,woundMelee,{units});
+assert.equal(c.aura,30);
+near(c.pHold,Math.min(95,Math.max(5,heroScore+30)),"cible blessée avec l'aura");
+c=combat.resolveCourage(brute,hero,missMelee,{units});
+assert.equal(c.aura,0,"l'attaquant ennemi n'a pas d'aura");
+near(combat.recoveryChance(hero,brute,1,units),Math.min(95,Math.max(5,heroScore+10+30)),"reprise de contrôle avec l'aura");
+assert.equal(combat.rollRecovery(hero,brute,1,units).aura,30);
+
 // Reprise de contrôle : +10 par tour commencé En Fuite, borné à 5–95.
 near(combat.recoveryChance(hero,brute,1),Math.min(95,Math.max(5,heroScore+10)),"reprise tour 1");
 near(combat.recoveryChance(hero,brute,3),Math.min(95,Math.max(5,heroScore+30)),"reprise tour 3");

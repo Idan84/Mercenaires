@@ -2060,3 +2060,20 @@ body[data-screen="camp"] .camp-scene>.panel .muted{color:#c2b29e}
 .deal-member{display:grid;gap:4px;padding-top:6px;border-top:1px solid rgba(113,88,62,.55)}
 .deal-member>b{color:#f4d9a6;font:600 14px Georgia,serif}
 .deal-slot{font-size:14px}
+
+/* Onglet Camp (Idan, 2026-10-24) : deux colonnes, compétences de camp et Artisanat avec ses métiers. */
+.sheet-camp .sheet-predilections{grid-template-columns:repeat(2,minmax(0,1fr))}
+.sheet-camp-columns{grid-template-columns:repeat(2,minmax(0,1fr))}
+/* Onglet Historique : compteurs cumulés, puis le journal du plus récent au plus ancien. */
+.sheet-history{display:grid;gap:18px}
+.sheet-history-counters{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.sheet-history-counter{display:grid;gap:4px;padding:14px 16px;border:1px solid #71583e;border-radius:12px;background:#2e231c;text-align:center}
+.sheet-history-counter strong{color:#f0c46a;font:700 28px Georgia,serif}
+.sheet-history-counter small{color:#cdb38c;font:12px Georgia,serif}
+.sheet-history-journal{padding:14px 18px;border:1px solid #71583e;border-radius:12px;background:#2e231c}
+.sheet-history-journal h4{margin:0 0 10px;color:#bb9a6e;font:700 12px Georgia,serif;letter-spacing:.1em;text-transform:uppercase}
+.sheet-history-journal ol{display:grid;gap:0;margin:0;padding:0;list-style:none}
+.sheet-history-journal li{display:grid;grid-template-columns:minmax(150px,230px) minmax(0,1fr);gap:14px;padding:9px 0;border-top:1px solid rgba(113,88,62,.5);color:#ead9bd;font:15px Georgia,serif}
+.sheet-history-journal li:first-child{border-top:0}
+.sheet-history-journal time{color:#a98d66;font:12px system-ui,sans-serif;padding-top:2px}
+@media(max-width:700px){.sheet-history-journal li{grid-template-columns:1fr;gap:2px}}

@@ -10,12 +10,14 @@
 // - Accord ou refus, l'affinité acquise bouge selon la valeur perçue : + 2 par point gagné, − 2 par point perdu.
 // - Une seule tentative par mercenaire et par jour ; le capitaine s'équipe librement (ni jet, ni affinité).
 // - Un objet donné appartient ensuite au mercenaire ; un objet retiré retourne au stock, sans propriétaire.
+// - Chaque proposition entre dans l'historique du mercenaire (history.js).
 // Constantes : formula-constants.json (equipment_deal.*).
 (function(root,factory){
-  const api=factory();
+  const history=typeof module!=="undefined"&&module.exports?require("./history.js"):root.MercenairesHistory;
+  const api=factory(history);
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesEquipmentDeals=api;
-})(typeof globalThis!=="undefined"?globalThis:this,function(){
+})(typeof globalThis!=="undefined"?globalThis:this,function(History){
   const rows=data=>Array.isArray(data)?data:(data?.rows||[]);
   const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
   const WEAPON_SLOT=/^weapon_set_(\d+)_(main|off)$/;
@@ -152,6 +154,9 @@
         if(given) moveToStock(state,mercenary,slot);
         if(received) equipFromStock(state,mercenary,slot,received);
       }
+      // Historique (Idan, 2026-10-24) : l'échange proposé, accepté ou refusé.
+      const brief=item=>item?{name:item.name,tier:item.tier}:null;
+      History?.record(mercenary,state.day,"deal",{action:deal.action,accepted,free:deal.free,given:brief(given),received:brief(received)});
       return {ok:true,action:deal.action,free:deal.free,accepted,roll,chance:deal.chance,affinityDelta:deal.affinityDelta,
         mood:deal.mood,mercenaryId:mercenary.id,slot,given,received};
     }

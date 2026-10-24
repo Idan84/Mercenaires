@@ -3,10 +3,11 @@
 // État de partie persistant (07-architecture.md) et horloge stratégique unique AdvanceTime(days),
 // résolue jour par jour (10-mission-time-and-unavailability.md). L'état est un objet JSON pur.
 (function(root,factory){
-  const api=factory();
+  const history=typeof module!=="undefined"&&module.exports?require("./history.js"):root.MercenairesHistory;
+  const api=factory(history);
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesCampaign=api;
-})(typeof globalThis!=="undefined"?globalThis:this,function(){
+})(typeof globalThis!=="undefined"?globalThis:this,function(History){
   // Sauvegarde : l'état de partie complet, sérialisé en JSON avec un format et une version.
   // La trace de génération des mercenaires (détail de calcul pour le Design Lab, ~85 % du poids)
   // n'est pas sauvegardée : un mercenaire passe d'environ 36 Ko à 5 Ko.
@@ -146,6 +147,21 @@
 
     // Parties sauvegardées avant le stock d'armes de départ (Idan, 2026-10-23) : la compagnie reçoit le sien,
     // tiré pour son capitaine. Renvoie true si l'état a changé, pour que l'interface sauvegarde.
+    // Parties sauvegardées avant l'historique (Idan, 2026-10-24) : chaque membre reçoit le sien, à partir de son jour
+    // d'arrivée (contrat), sans les missions passées, qui n'ont pas été comptées. Renvoie true si l'état a changé.
+    function ensureHistories(state){
+      let changed=false;
+      for(const m of rosterOf(state)){
+        if(m.history) continue;
+        const since=Number(m.contract?.signedDay)||1;
+        History.historyOf(m,since);
+        if(m.id===state.company.captainId) History.record(m,since,"founded");
+        else History.record(m,since,"joined",{initial:Boolean(m.contract?.initial)});
+        changed=true;
+      }
+      return changed;
+    }
+
     // Armures et bottes du stock (Idan, 2026-10-24) : données une seule fois, même à une partie commencée avant.
     function ensureStartingStock(state){
       const company=state.company;
@@ -279,6 +295,9 @@
         assignBiography(state,m);
       }
       tavern.fillTavern(state.tavern,state.day,candidateFactory(state));
+      // Historique (Idan, 2026-10-24) : le capitaine fonde la compagnie, l'escouade de départ l'accompagne.
+      History.record(captain,state.day,"founded");
+      for(const m of squad) History.record(m,state.day,"joined",{initial:true});
       return state;
     }
 
@@ -333,6 +352,7 @@
       const mercenary=candidate.mercenary;
       mercenary.contract={dailySalary:agreed.salary,missionBonus:agreed.bonus,signedDay:state.day};
       rosterOf(state).push(mercenary);
+      History.record(mercenary,state.day,"joined",{initial:false});
       assignBiography(state,mercenary);
       tavern.removeCandidate(state.tavern,candidate);
       return {ok:true,mercenary};
@@ -413,6 +433,9 @@
           mercenary.recovery={kind:"fatigued",daysLeft:result.fatigueDays,sinceDay:state.day};
           report.fatigued.push(mercenary);
         }
+        // Historique : une mission de plus, ses adversaires abattus, ses coups encaissés, sa blessure.
+        History.recordMission(mercenary,state.day,{progress:result.progress,wounded:result.wounded,
+          days:result.wounded?result.woundDays:result.fatigueDays});
         // §8 — La prime de mission individuelle n'est payée que si le mercenaire revient.
         const bonus=Number(mercenary.contract?.missionBonus)||0;
         if(bonus>0){
@@ -470,6 +493,7 @@
       ensureAvatars,
       ensureRenamedNames,
       ensureStartingStock,
+      ensureHistories,
       payroll
     };
   }

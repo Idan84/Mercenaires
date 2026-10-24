@@ -9,8 +9,10 @@ posée sur une case noire et son cadre de tier par-dessus).
 | `Armes/` | les 38 armes de `data/reference/weapons.json`, T1 à T4 | `<Nom>_<tier>.jpg`, par ex. `Hache_guerre_2.jpg`, `Arquebuse_Mousquet_1.jpg` |
 | `Frames/` | les cadres posés autour d'un objet selon son tier | `frame_<tier>.jpg` |
 
-Le nom est reconnu sans accents, majuscules, espaces ni petits mots (de, d', des, du, la, le…) :
-`Hache_guerre`, `Hache de guerre` et `hache-de-guerre` désignent la même arme. Un horodatage final
+Le nom est reconnu sans accents, majuscules, espaces ni petits mots (de, d', des, du, la, le…), dans
+n'importe quel ordre, et peut être abrégé s'il reste sans ambiguïté : `Hache_guerre`, `Hache de guerre` et
+`hache-de-guerre` désignent la même arme ; `Double_arme_hast` est l'« Arme d'hast double », `Fleau` le
+« Fléau d'armes », `Massue` la « Massue / Gourdin ». Un horodatage final
 (`Gambison_2_20261023225327.jpg`) est ignoré. Le T4 n'est pas encore en jeu, mais il est déjà préparé.
 
 Après un ajout ou une retouche, `node scripts/build-equipment.js` régénère les versions du jeu

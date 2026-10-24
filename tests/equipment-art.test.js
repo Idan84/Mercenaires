@@ -10,12 +10,16 @@ const web = path.join(root, "prototype-web");
 const {pictoSlug} = require(path.join(web, "picto-ui.js"));
 const EQUIPMENT_ART = new Function(fs.readFileSync(path.join(web, "equipment-art.js"), "utf8") + "\nreturn EQUIPMENT_ART;")();
 const armors = JSON.parse(fs.readFileSync(path.join(root, "data/reference/base-armors.json"), "utf8")).rows;
+const weapons = JSON.parse(fs.readFileSync(path.join(root, "data/reference/weapons.json"), "utf8")).rows;
 
 for (const key of EQUIPMENT_ART) {
   assert.ok(fs.existsSync(path.join(web, "assets/equipment", key + ".webp")), key);
 }
 for (const armor of armors) {
   for (const tier of [1,2,3,4]) assert.ok(EQUIPMENT_ART.has(`armures/${pictoSlug(armor.nom)}-${tier}`), `${armor.nom} T${tier}`);
+}
+for (const weapon of weapons) {
+  for (const tier of [1,2,3,4]) assert.ok(EQUIPMENT_ART.has(`armes/${pictoSlug(weapon.nom)}-${tier}`), `${weapon.nom} T${tier}`);
 }
 for (const tier of [1,2,3,4]) assert.ok(EQUIPMENT_ART.has(`frames/frame-${tier}`), `cadre T${tier}`);
 
@@ -32,12 +36,15 @@ const armorTile = gearTile({id:"armor",label:"Armure"}, {itemType:"armor", name:
 assert.match(armorTile, /class="gear-tile is-filled gear-tile--luxury gear-tile--art gear-tile--t3"/);
 assert.match(armorTile, /<img class="gear-art" src="assets\/equipment\/armures\/armure-d-ecailles-3\.webp"/);
 assert.doesNotMatch(armorTile, /<svg/, "l'image remplace le picto");
-const weaponTile = gearTile({id:"weapon_set_1_main",label:"Arme"}, {itemType:"weapon", name:"Hache de guerre", tier:1, qualityCode:"worn"});
-assert.doesNotMatch(weaponTile, /gear-tile--art|<img/, "pas encore d'image d'arme : le picto reste");
-assert.match(weaponTile, /<svg armor>/);
+const weaponTile = gearTile({id:"weapon_set_1_main",label:"Arme"}, {itemType:"weapon", name:"Arme d'hast double", tier:1, qualityCode:"worn"});
+assert.match(weaponTile, /gear-tile--art gear-tile--t1/);
+assert.match(weaponTile, /src="assets\/equipment\/armes\/arme-d-hast-double-1\.webp"/);
+const ringTile = gearTile({id:"ring_1",label:"Bague"}, {itemType:"ring", name:"Anneau", tier:2, qualityCode:"standard"});
+assert.doesNotMatch(ringTile, /gear-tile--art|<img/, "objet sans image : le picto reste");
+assert.match(ringTile, /<svg armor>/);
 
 const css = fs.readFileSync(path.join(web, "styles.css"), "utf8");
 for (const tier of [1,2,3,4]) assert.match(css, new RegExp(`\\.gear-tile--t${tier}::after\\{background-image:url\\("assets/equipment/frames/frame-${tier}\\.webp"\\)\\}`));
 const html = fs.readFileSync(path.join(web, "index.html"), "utf8");
 assert.ok(html.indexOf('src="equipment-art.js"') > 0 && html.indexOf('src="equipment-art.js"') < html.indexOf('src="ui.js"'));
-console.log(`Équipement illustré : ${EQUIPMENT_ART.size} images, armures × 4 tiers, cadres, cases d'objet — OK`);
+console.log(`Équipement illustré : ${EQUIPMENT_ART.size} images, armures et armes × 4 tiers, cadres, cases d'objet — OK`);

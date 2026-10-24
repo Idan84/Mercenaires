@@ -43,6 +43,7 @@ jobs:
       - run: node tests/equipment-deals.test.js
       - run: node tests/deal-ui.test.js
       - run: node tests/history.test.js
+      - run: node tests/steward.test.js
       - run: node tests/avatars.test.js
       - run: node tests/creation.test.js
       - run: node tests/avatar-catalog.test.js

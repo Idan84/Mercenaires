@@ -11,6 +11,7 @@
 // - Une seule tentative par mercenaire et par jour ; le capitaine s'équipe librement (ni jet, ni affinité).
 // - Un objet donné appartient ensuite au mercenaire ; un objet retiré retourne au stock, sans propriétaire.
 // - Chaque proposition entre dans l'historique du mercenaire (history.js).
+// - L'intendant, s'il y en a un, appuie la proposition : Δ + 0,2 × Intendance + 0,25 × affinité envers lui.
 // Constantes : formula-constants.json (equipment_deal.*).
 (function(root,factory){
   const history=typeof module!=="undefined"&&module.exports?require("./history.js"):root.MercenairesHistory;
@@ -33,7 +34,9 @@
       offeredValue:constant("equipment_deal.offered_value",2.5),
       valueWeight:constant("equipment_deal.value_weight",20),
       affinityWeight:constant("equipment_deal.affinity_weight",0.5),
-      affinityPerValue:constant("equipment_deal.affinity_per_value",2)
+      affinityPerValue:constant("equipment_deal.affinity_per_value",2),
+      stewardSkill:constant("equipment_deal.steward_skill_weight",0.2),
+      stewardAffinity:constant("equipment_deal.steward_affinity_weight",0.25)
     };
 
     const rosterOf=state=>state?.company?.roster||[];
@@ -86,6 +89,18 @@
       return null;
     }
 
+    // L'intendant appuie la proposition (Idan, 2026-10-24 ; formule de JC validée) : + 0,2 × son Intendance
+    // + 0,25 × l'affinité du mercenaire envers lui (même règle qu'envers le capitaine : peuple, culture, alignement).
+    // Pas d'aide quand c'est à l'intendant lui-même qu'on parle.
+    function stewardHelp(state,mercenary){
+      const id=state?.company?.intendantId;
+      const steward=id==null?null:rosterOf(state).find(m=>m.id===id)||null;
+      if(!steward||steward===mercenary) return {steward:null,bonus:0};
+      const skill=clamp(Number(steward.skills?.camp?.Intendance)||0,0,100);
+      const affinity=Number(affinityRules?.affinity?.(steward,mercenary)?.total)||0;
+      return {steward,bonus:C.stewardSkill*skill+C.stewardAffinity*affinity};
+    }
+
     // Le marché vu par le mercenaire : valeurs perçues, chance d'accord et effet sur l'affinité. Sans jet ni mutation.
     function evaluate(state,{mercenaryId,slot,stockItemId=null}={}){
       const mercenary=rosterOf(state).find(m=>m.id===mercenaryId);
@@ -104,8 +119,9 @@
       const valueGiven=perceivedValue(given,mercenary,true),valueReceived=perceivedValue(received,mercenary,false);
       const gain=valueReceived-valueGiven;
       const affinity=Number(affinityRules?.memberAffinity(captainOf(state),mercenary)?.total)||0;
-      const delta=C.valueWeight*gain+C.affinityWeight*affinity;
-      return {...base,free:false,valueGiven,valueReceived,gain,affinity,delta,
+      const help=stewardHelp(state,mercenary);
+      const delta=C.valueWeight*gain+C.affinityWeight*affinity+help.bonus;
+      return {...base,free:false,valueGiven,valueReceived,gain,affinity,steward:help.steward,stewardBonus:help.bonus,delta,
         chance:10+80/(1+Math.exp(-delta/20)),
         affinityDelta:Math.round(C.affinityPerValue*gain),
         mood:gain>0?"pleased":gain<0?"displeased":"neutral"};
@@ -158,7 +174,7 @@
       const brief=item=>item?{name:item.name,tier:item.tier}:null;
       History?.record(mercenary,state.day,"deal",{action:deal.action,accepted,free:deal.free,given:brief(given),received:brief(received)});
       return {ok:true,action:deal.action,free:deal.free,accepted,roll,chance:deal.chance,affinityDelta:deal.affinityDelta,
-        mood:deal.mood,mercenaryId:mercenary.id,slot,given,received};
+        mood:deal.mood,mercenaryId:mercenary.id,slot,given,received,steward:deal.steward||null};
     }
 
     return {constants:C,perceivedValue,slotAccepts,compatibleSlots,evaluate,canDeal,propose};

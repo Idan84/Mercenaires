@@ -24,6 +24,7 @@ Archive historique : ../../archive/notion-export/
 - [14-tavern-recruitment.md](./14-tavern-recruitment.md)
 - [15-biographies-and-narrative-tags.md](./15-biographies-and-narrative-tags.md)
 - [16-camp-calendar.md](./16-camp-calendar.md) — mois, jours, citations et passage du temps au camp
+- [17-one-shot-missions.md](./17-one-shot-missions.md) — missions one shot (brouillon) : tableau des contrats, escouades, difficulté, échec
 - [90-mechanics-backlog.md](./90-mechanics-backlog.md)
 - [91-combat-ideas.md](./91-combat-ideas.md)
 - [92-balance-questions.md](./92-balance-questions.md)

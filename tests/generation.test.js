@@ -400,6 +400,28 @@ assert.ok(firearms.length / total > 0.25, "un Nain du chaos a beaucoup d'armes �
 assert.ok(shields > 0, "boucliers compris");
 assert.ok(tiers[1] > tiers[2] && tiers[2] > tiers[3] && tiers[3] > 0, "T1 > T2 > T3, T3 possible");
 
+// Armures du stock de départ (Idan, 2026-10-24) : 1D6 par type d'armure, tirées dans le type, T3 rare.
+const armorTypes = ["Vêtement","Légère","Intermédiaire","Lourde"];
+const armorTiers = {1:0, 2:0, 3:0};
+const perType = Object.fromEntries(armorTypes.map(type => [type, []]));
+for (let i = 0; i < 400; i++) {
+  const armors = stockGenerator.createStartingArmorStock(chaosDwarf);
+  for (const type of armorTypes) perType[type].push(armors.filter(item => item.category === type).length);
+  for (const item of armors) {
+    const template = reference.baseArmors.rows.find(row => "armor:" + row.code === item.templateId);
+    assert.ok(template && template.nom === item.name && template.type_armure === item.category, item.name);
+    assert.equal(item.owner, null);
+    assert.equal(item.itemType, "armor");
+    armorTiers[item.tier] += 1;
+  }
+}
+for (const type of armorTypes) {
+  assert.ok(Math.min(...perType[type]) >= 1 && Math.max(...perType[type]) <= 6, "1D6 " + type);
+  assert.ok(Math.abs(perType[type].reduce((a,b) => a + b, 0) / 400 - 3.5) < 0.3, "moyenne de 1D6 ≈ 3,5 " + type);
+}
+const armorTotal = armorTiers[1] + armorTiers[2] + armorTiers[3];
+assert.ok(armorTiers[3] > 0 && armorTiers[3] / armorTotal < 0.06, "T3 rare");
+
 console.log(JSON.stringify({
   ok:true,
   generated:1000,

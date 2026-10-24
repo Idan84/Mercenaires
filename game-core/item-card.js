@@ -33,7 +33,8 @@
       amulet:{category:"Amulette",byName:new Map(rows(reference?.amulets).map(r=>[r.nom,r]))},
       cape:{category:"Cape",byName:new Map(rows(reference?.capes).map(r=>[r.nom,r]))},
       gloves:{category:"Gants",byName:new Map(rows(reference?.gloves).map(r=>[r.nom,r]))},
-      pants:{category:"Culotte",byName:new Map(rows(reference?.pants).map(r=>[r.nom,r]))}};
+      pants:{category:"Culotte",byName:new Map(rows(reference?.pants).map(r=>[r.nom,r]))},
+      ring:{category:"Bague",byName:new Map(rows(reference?.rings).map(r=>[r.nom,r]))}};
     const qualities=new Map(rows(reference?.itemQualities).map(r=>[r.code,r]));
     const titles=new Map(rows(reference?.itemTitles).map(r=>[r.nom,r]));
 
@@ -94,13 +95,16 @@
       };
     }
 
+    // Bague de magie (Idan, 2026-10-24) : malus en % sur les deux écoles opposées (skills.json, ecoles_opposees).
     function statGearCard(item,template){
+      const tier=Number(item.tier)||1,malus=number(template["malus_opposees_t"+tier]);
+      const opposites=malus?String(skills.get(template.caracteristique)?.ecoles_opposees||"").split(",").map(x=>x.trim()).filter(Boolean):[];
       return {kind:item.itemType,category:statGear[item.itemType].category,stat:template.caracteristique,
-        bonus:number(template["bonus_t"+(Number(item.tier)||1)]),points:template.type_bonus==="points"};
+        bonus:number(template["bonus_t"+tier]),points:template.type_bonus==="points",malus,opposites};
     }
 
     // Carte d'un objet, ou null si ce n'est ni une arme, ni une armure, ni des bottes, une ceinture, une amulette, une
-    // cape, des gants ou une culotte connus.
+    // cape, des gants, une culotte ou une bague connus.
     function card(item){
       if(!item) return null;
       const q=quality(item);

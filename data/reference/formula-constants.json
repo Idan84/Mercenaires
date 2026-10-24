@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 157,
+  "row_count": 159,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -1150,6 +1150,22 @@
       "nom": "Stock de départ — culottes, faces des dés",
       "code": "company.starting_stock.pants_dice_sides",
       "description": "Faces des dés du nombre de culottes du stock de départ (1D6).",
+      "formule": "Stock d’armes de départ",
+      "valeur": 6,
+      "version": "V1"
+    },
+    {
+      "nom": "Stock de départ — bagues, nombre de dés",
+      "code": "company.starting_stock.ring_dice_count",
+      "description": "La compagnie démarre aussi avec (nombre de dés)D(faces) bagues, chacune d’un type tiré au hasard : 1D6, comme les bottes (Idan, 2026-10-24).",
+      "formule": "Stock d’armes de départ",
+      "valeur": 1,
+      "version": "V1"
+    },
+    {
+      "nom": "Stock de départ — bagues, faces des dés",
+      "code": "company.starting_stock.ring_dice_sides",
+      "description": "Faces des dés du nombre de bagues du stock de départ (1D6).",
       "formule": "Stock d’armes de départ",
       "valeur": 6,
       "version": "V1"

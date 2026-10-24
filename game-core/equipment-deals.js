@@ -67,6 +67,8 @@
       // Gants et culotte (Idan, 2026-10-24).
       if(slot==="gloves") return item.itemType==="gloves"?{ok:true}:no("Cet emplacement reçoit des gants.");
       if(slot==="pants") return item.itemType==="pants"?{ok:true}:no("Cet emplacement reçoit une culotte.");
+      // Six bagues (Idan, 2026-10-24).
+      if(/^ring_[1-6]$/.test(String(slot))) return item.itemType==="ring"?{ok:true}:no("Cet emplacement reçoit une bague.");
       const match=String(slot).match(WEAPON_SLOT);
       if(!match||item.itemType!=="weapon") return no("Cet objet ne va pas dans cet emplacement.");
       const weapon=weapons.get(item.name)||{};

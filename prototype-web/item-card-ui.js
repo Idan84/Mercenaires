@@ -64,11 +64,11 @@ function armorCardBody(card){
   return {rows,traits:[],flavor:card.description};
 }
 
-// Bottes, ceintures, amulettes, capes, gants et culottes (Idan, 2026-10-24) : un pourcentage de la valeur de base du
-// porteur, ou des points (cape de résistance physique, Slip d’Affinité).
-const STAT_GEAR_KINDS=["boots","belt","amulet","cape","gloves","pants"];
+// Bottes, ceintures, amulettes, capes, gants, culottes et bagues (Idan, 2026-10-24) : un pourcentage de la valeur de base
+// du porteur, ou des points (cape de résistance physique, Slip d’Affinité).
+const STAT_GEAR_KINDS=["boots","belt","amulet","cape","gloves","pants","ring"];
 // « de l’Endurance », « du Courage », « de la Vitesse ».
-const MASCULINE_STATS=new Set(["Courage","Charisme"]);
+const MASCULINE_STATS=new Set(["Courage","Charisme","Feu"]);
 // « des Pièges ».
 const PLURAL_STATS=new Set(["Pièges"]);
 function statArticle(stat){
@@ -82,12 +82,18 @@ function statGearCardBody(card){
     traits:[`Ajoute ${cardNumber(card.bonus)} points d’affinité avec le capitaine`],flavor:null};
   if(card.points) return {rows:[cardRow(card.stat,`+${cardNumber(card.bonus)}`,"bonus")],
     traits:[`Ajoute ${cardNumber(card.bonus)} points de ${card.stat} au porteur`],flavor:null};
-  return {rows:[cardRow(card.stat,`+${cardNumber(card.bonus)} %`,"bonus")],
-    traits:[`Ajoute ${cardNumber(card.bonus)} % ${statArticle(card.stat)}${card.stat} de base du porteur`],flavor:null};
+  const rows=[cardRow(card.stat,`+${cardNumber(card.bonus)} %`,"bonus")];
+  const traits=[`Ajoute ${cardNumber(card.bonus)} % ${statArticle(card.stat)}${card.stat} de base du porteur`];
+  // Bague de magie : les deux écoles opposées baissent.
+  if(card.malus&&card.opposites?.length){
+    rows.push(...card.opposites.map(o=>cardRow(o,`−${cardNumber(card.malus)} %`,"malus")));
+    traits.push(`Retire ${cardNumber(card.malus)} % ${card.opposites.map(o=>statArticle(o)+o).join(" et ")} de base du porteur`);
+  }
+  return {rows,traits,flavor:null};
 }
 
 // La qualité en une phrase : ce qui monte, ce qui baisse. Elle ne change pas le bonus des bottes, ceintures, amulettes,
-// capes, gants et culottes.
+// capes, gants, culottes et bagues.
 function qualityLine(card){
   if(STAT_GEAR_KINDS.includes(card.kind)) return "";
   const up=Math.round((card.quality.good-1)*100),down=Math.round((card.quality.bad-1)*100);

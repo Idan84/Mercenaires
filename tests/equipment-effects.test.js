@@ -10,7 +10,7 @@ const {createEquipmentEffects} = require("../game-core/equipment-effects.js");
 
 const ROOT = path.resolve(__dirname, "..");
 const read = file => JSON.parse(fs.readFileSync(path.join(ROOT, "data", "reference", file), "utf8"));
-const reference = {weapons:read("weapons.json"), baseArmors:read("base-armors.json"), boots:read("boots.json"), belts:read("belts.json"), amulets:read("amulets.json"), capes:read("capes.json"), gloves:read("gloves.json"), pants:read("pants.json"),
+const reference = {weapons:read("weapons.json"), baseArmors:read("base-armors.json"), boots:read("boots.json"), belts:read("belts.json"), amulets:read("amulets.json"), capes:read("capes.json"), gloves:read("gloves.json"), pants:read("pants.json"), rings:read("rings.json"),
   itemQualities:read("item-qualities.json"),
   skills:read("skills.json"), formulaConstants:read("formula-constants.json")};
 const engine = createCombatEngine(reference);
@@ -160,6 +160,29 @@ near(bully.e.Intimidation.value, 48, "Intimidation 40 + 20 %");
 near(engine.statWithGear(bully.unit, "Intimidation"), 48, "le combat lit la même Intimidation");
 const friend = worn("Slip d’Affinité", 4);
 for (const name of Object.keys(friend.e)) assert.equal(friend.e[name].lines.filter(l => l.reason === "gear").length, 0, name);
+
+// Bagues (Idan, 2026-10-24) : six emplacements, cumulables ; bague de magie : + son école, − les deux écoles opposées.
+const ringed = rings => {
+  const items = rings.map(([name, tier], k) => ({id:"r" + k, itemType:"ring", name, tier, qualityName:"Correcte"}));
+  const slots = Object.fromEntries(items.map((it, k) => ["ring_" + (k + 1), it.id]));
+  const c = {...knight, stats:{...stats, Chance:50}, skills:{...knight.skills, magic:{Feu:40, Eau:30, "Télékinésie":20, Vie:10}},
+    items:[...knight.items, ...items], equipment:{slots:{...knight.equipment.slots, ...slots}}};
+  return {c, e:effects(c), unit:{character:c, activeSet:1}};
+};
+const fortunate = ringed([["Bague de la chance", 3]]);
+near(fortunate.e.Chance.value, 57.5, "Chance 50 + 15 %");
+near(engine.statWithGear(fortunate.unit, "Chance"), 57.5, "le combat lit la même Chance (critiques)");
+const bold = ringed([["Bague du courage", 2], ["Bague du courage", 2]]);
+near(bold.e.Courage.value, 37 * 1.2, "deux bagues identiques se cumulent : Courage 37 + 2 × 10 %");
+const pyro = ringed([["Bague de Feu", 2], ["Bague de Feu", 1]]);
+near(pyro.e.Feu.value, 50, "Feu 40 + 15 % + 10 %");
+near(pyro.e.Eau.value, 22.5, "Eau 30 − 10 % − 15 %");
+near(pyro.e["Télékinésie"].value, 15, "Télékinésie 20 − 10 % − 15 %");
+assert.deepEqual(pyro.e.Eau.lines.map(l => l.percent), [-10, -15]);
+near(pyro.e.Vie.value, 10, "une école non opposée ne bouge pas");
+const master = ringed([["Bague de Feu", 4]]);
+near(master.e.Feu.value, 50, "T4 : + 25 %");
+assert.equal(master.e.Eau.lines.length, 0, "T4 : plus de malus");
 
 // Sans équipement : rien ne change.
 const bare = effects({stats, skills:{}, items:[], equipment:{slots:{}}});

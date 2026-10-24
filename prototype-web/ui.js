@@ -597,7 +597,7 @@ function gearTooltip(item){
 }
 // Image d'un objet selon son tier (Idan, 2026-10-23 : masters dans assets-src/Equipements/, versions du jeu
 // par scripts/build-equipment.js), ou null tant qu'il n'en a pas : la case garde alors son picto.
-const EQUIPMENT_ART_DIRS={armor:"armures",weapon:"armes",boots:"bottes",belt:"ceintures",amulet:"amulettes",cape:"capes",gloves:"gants",pants:"culottes"};
+const EQUIPMENT_ART_DIRS={armor:"armures",weapon:"armes",boots:"bottes",belt:"ceintures",amulet:"amulettes",cape:"capes",gloves:"gants",pants:"culottes",ring:"bagues"};
 function equipmentArt(item){
   const dir=EQUIPMENT_ART_DIRS[item?.itemType];
   const key=dir?`${dir}/${pictoSlug(item.name)}-${item.tier}`:null;
@@ -926,7 +926,7 @@ function equipmentDetail(effect,total="Au combat"){
   const note={weight:"poids, réduit par la maîtrise",armor:"handicap de l’armure",speed:"avec l’équipement",dual:"une arme dans chaque main"};
   const line=l=>{
     const delta=Math.round(l.delta);
-    return `<span class="sheet-gear-line"><span>${esc(l.label)}<small>${esc(l.reason==="gear"?(l.points!=null?`+${l.points} points`:`+${l.percent} % de la valeur de base`):note[l.reason]||"")}${l.twoHands?" · à deux mains ÷2":""}</small></span><b class="${delta<0?"is-malus":delta>0?"is-bonus":""}">${delta>0?"+":""}${fmt(delta)}</b></span>`;
+    return `<span class="sheet-gear-line"><span>${esc(l.label)}<small>${esc(l.reason==="gear"?(l.points!=null?`+${l.points} points`:`${l.percent<0?"−":"+"}${Math.abs(l.percent)} % de la valeur de base`):note[l.reason]||"")}${l.twoHands?" · à deux mains ÷2":""}</small></span><b class="${delta<0?"is-malus":delta>0?"is-bonus":""}">${delta>0?"+":""}${fmt(delta)}</b></span>`;
   };
   return `<span class="sheet-gear-detail">
     <span class="sheet-stat-pop-title">Avec l’équipement</span>
@@ -1203,7 +1203,8 @@ function magicWheelOrder(rows){
   cycle.forEach((name,k)=>{order[(k*step)%n]=name;});
   return order;
 }
-function renderMagicWheel(c){
+// valueOf : maîtrise d'une école, avec les bagues (Idan, 2026-10-24) ; sans elle, la maîtrise sauvegardée.
+function renderMagicWheel(c,valueOf=name=>Number(c.skills?.magic?.[name])){
   const rows=magicSchools();
   const order=magicWheelOrder(rows);
   const n=order.length;
@@ -1212,7 +1213,8 @@ function renderMagicWheel(c){
   const angle=i=>-Math.PI/2+2*Math.PI*i/n;
   const pt=(i,r)=>[cx+r*Math.cos(angle(i)),cy+r*Math.sin(angle(i))];
   const poly=pts=>pts.map(p=>p.map(v=>v.toFixed(1)).join(",")).join(" ");
-  const value=name=>Math.max(0,Math.min(100,Number(c.skills?.magic?.[name])||0));
+  const value=name=>Math.max(0,Math.min(100,Number(valueOf(name))||0));
+  const shown=name=>fmt(Math.round(Number(valueOf(name))));
   const index=new Map(order.map((name,i)=>[name,i]));
   const rings=[25,50,75,100].map(v=>`<polygon class="magic-ring${v===100?" magic-ring--outer":""}" points="${poly(order.map((_,i)=>pt(i,R*v/100)))}"/>`).join("");
   const axes=order.map((_,i)=>{const [x,y]=pt(i,R);return `<line class="magic-axis" x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}"/>`;}).join("");
@@ -1224,19 +1226,21 @@ function renderMagicWheel(c){
   const labels=order.map((name,i)=>{
     const [x,y]=pt(i,R+38);
     const row=rows.find(r=>r.nom===name);
-    const tip=`${name} : ${fmt(Number(c.skills?.magic?.[name]))}. Opposée à ${schoolOpposites(row).join(" et ")}.`;
+    const tip=`${name} : ${shown(name)}. Opposée à ${schoolOpposites(row).join(" et ")}.`;
     return `<g class="magic-label school--${esc(pictoSlug(name))}" transform="translate(${x.toFixed(1)},${y.toFixed(1)})"><title>${esc(tip)}</title>
       <g class="magic-label-icon" transform="translate(-11,-28) scale(.92)" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${SCHOOL_ICONS[name]||""}</g>
-      <text y="9" text-anchor="middle">${esc(name)}</text><text class="magic-label-value" y="24" text-anchor="middle">${fmt(Number(c.skills?.magic?.[name]))}</text></g>`;
+      <text y="9" text-anchor="middle">${esc(name)}</text><text class="magic-label-value" y="24" text-anchor="middle">${shown(name)}</text></g>`;
   }).join("");
   return `<svg class="magic-wheel" viewBox="0 0 420 410" role="img" aria-label="Écoles de magie : points et oppositions">${rings}${axes}${star}${area}${dots}${labels}</svg>`;
 }
 function renderMagicTab(c) {
   const status=rosterStatus(c);
-  const top=magicSchools().map(r=>({name:r.nom,value:Number(c.skills?.magic?.[r.nom])})).filter(x=>Number.isFinite(x.value)).sort((a,b)=>b.value-a.value).slice(0,3);
-  // Ceinture de mana et amulette de puissance magique (Idan, 2026-10-24) : valeur avec l'équipement, en vert, comme
-  // dans l'onglet Caractéristiques.
+  // Ceinture de mana, amulette de puissance magique et bagues (Idan, 2026-10-24) : valeur avec l'équipement, en vert
+  // (en rouge pour une école opposée à une bague), comme dans l'onglet Caractéristiques.
   const effects=c.stats?equipmentEffectRules().effects(c):{};
+  const schoolValue=name=>effects[name]?effects[name].value:Number(c.skills?.magic?.[name]);
+  const top=magicSchools().map(r=>({name:r.nom,value:schoolValue(r.nom)})).filter(x=>Number.isFinite(x.value)).sort((a,b)=>b.value-a.value).slice(0,3);
+  const shift=name=>{const e=effects[name];return e?Math.sign(Math.round(e.value)-Math.round(e.base)):0;};
   const stat=name=>{
     const row=(game.referenceData?.characterSheetCopy?.stats||[]).find(r=>r.nom===name)||{nom:name,usage:""};
     const effect=effects[name],value=effect?Math.round(effect.value):sheetStatValue(c,name);
@@ -1250,9 +1254,9 @@ function renderMagicTab(c) {
     </aside>
     <div class="sheet-magic-main">
       <div class="magic-stats">${stat("Puissance magique")}${stat("Réserve de mana")}</div>
-      <div class="magic-favorites">${top.map((x,i)=>`<div class="magic-favorite school--${esc(pictoSlug(x.name))}">${schoolIcon(x.name)}<span class="magic-favorite-name"><small>École n° ${i+1}</small><strong>${esc(x.name)}</strong></span><span class="sheet-stat-value" tabindex="0">${fmt(x.value)}${comparePopover(c,x.value,m=>Number(m?.skills?.magic?.[x.name]))}</span></div>`).join("")}</div>
+      <div class="magic-favorites">${top.map((x,i)=>`<div class="magic-favorite school--${esc(pictoSlug(x.name))}">${schoolIcon(x.name)}<span class="magic-favorite-name"><small>École n° ${i+1}</small><strong>${esc(x.name)}</strong></span><span class="sheet-stat-value${shift(x.name)<0?" is-malus":shift(x.name)>0?" is-bonus":""}" tabindex="0">${fmt(Math.round(x.value))}${comparePopover(c,Math.round(x.value),m=>sheetEquippedValue(m,x.name),equipmentDetail(effects[x.name],"Total"))}</span></div>`).join("")}</div>
       <div class="magic-bottom">
-        <section class="magic-wheel-card"><h4>Écoles de magie</h4>${renderMagicWheel(c)}<p>Chaque école s’oppose aux deux écoles d’en face.</p></section>
+        <section class="magic-wheel-card"><h4>Écoles de magie</h4>${renderMagicWheel(c,schoolValue)}<p>Chaque école s’oppose aux deux écoles d’en face.</p></section>
         ${renderCharacterSpellbook(c)}
       </div>
     </div>

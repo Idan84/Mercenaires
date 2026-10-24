@@ -11,6 +11,7 @@
 // - Esquive, Résistance physique, Discrétion : + cape (Idan, 2026-10-24 ; des points pour la Résistance physique) ;
 // - Force, Pièges : + gants (Idan, 2026-10-24) ;
 // - Charisme, Intimidation : + culotte (Idan, 2026-10-24) ;
+// - Chance, Courage : + bagues ; écoles de magie : + bague de l'école, − bagues des écoles opposées (Idan, 2026-10-24) ;
 // - Initiative : calculée avec la Vitesse au combat, le Courage avec la ceinture et la Volonté avec l'amulette ;
 // - Dextérité : + gants de dextérité, réduite par le combat à deux armes.
 // Chaque effet donne la valeur de base, la valeur équipée et les lignes du détail (objet ou raison, écart).
@@ -29,7 +30,7 @@
       return item.qualityName?`${item.name} (${item.qualityName})`:item.name;
     }
 
-    // Bottes, ceinture, amulette, cape, gants et culotte (Idan, 2026-10-24) : + un pourcentage de la valeur de base, ou des points.
+    // Bottes, ceinture, amulette, cape, gants, culotte et bagues (Idan, 2026-10-24) : + un pourcentage de la valeur de base, ou des points.
     function gearLines(unit,stat){
       return engine.gearBonuses(unit,stat).filter(x=>x.bonus).map(x=>({label:itemLabel(x.item),delta:x.bonus,reason:"gear",
         ...(x.points!=null?{points:x.points}:{percent:x.percent})}));
@@ -51,8 +52,8 @@
     }
 
     // { Vitesse, Esquive, Perception, Endurance, Courage, Réserve de mana, Puissance magique, Volonté, Chance, Résistance
-    // physique, Discrétion, Force, Pièges, Charisme, Intimidation, Initiative, Dextérité } : {base, value, lines} pour
-    // chaque valeur concernée.
+    // physique, Discrétion, Force, Pièges, Charisme, Intimidation, écoles de magie, Initiative, Dextérité } : {base, value,
+    // lines} pour chaque valeur concernée.
     function effects(character){
       if(!engine||!character?.stats) return {};
       const unit={character,activeSet:1},bare=bareUnit(character);
@@ -64,7 +65,7 @@
       add("Esquive",Number(character.stats.Esquive)||0,engine.effectiveDodge(unit),
         [...gearLines(unit,"Esquive"),...(armor&&dodge?[{label:itemLabel(armor),delta:-dodge,reason:"armor"}]:[])]);
       for(const stat of ["Perception","Endurance","Courage","Réserve de mana","Puissance magique","Volonté","Chance",
-        "Résistance physique","Discrétion","Force","Pièges","Charisme","Intimidation"]){
+        "Résistance physique","Discrétion","Force","Pièges","Charisme","Intimidation",...(engine.MAGIC_SCHOOLS||[])]){
         add(stat,engine.baseValue(unit,stat),engine.statWithGear(unit,stat),gearLines(unit,stat));
       }
       const speedGap=engine.effectiveSpeed(unit)-engine.effectiveSpeed(bare);

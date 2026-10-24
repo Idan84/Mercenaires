@@ -1,0 +1,402 @@
+{
+  "schema_version": 1,
+  "name": "item-titles",
+  "description": "Titres des objets selon leur tier, affichés en tête de la carte d’objet (Idan, 2026-10-24 : « Vieille lance / Lance basique / Lance de guerrier / Lance luxueuse… tu peux varier et être drôle »). T1 = Usée, T2 = Correcte, T3 = Grand Luxe ; le T4 n’est pas encore en jeu. Textes de JC, à retoucher librement.",
+  "columns": [
+    {
+      "key": "nom",
+      "source": "Nom de l’arme (weapons.json) ou de l’armure (base-armors.json)"
+    },
+    {
+      "key": "famille",
+      "source": "arme ou armure"
+    },
+    {
+      "key": "t1",
+      "source": "Titre T1"
+    },
+    {
+      "key": "t2",
+      "source": "Titre T2"
+    },
+    {
+      "key": "t3",
+      "source": "Titre T3"
+    },
+    {
+      "key": "t4",
+      "source": "Titre T4"
+    }
+  ],
+  "row_count": 46,
+  "rows": [
+    {
+      "nom": "Arbalète",
+      "famille": "arme",
+      "t1": "Arbalète grinçante",
+      "t2": "Arbalète de garnison",
+      "t3": "Arbalète d’orfèvre",
+      "t4": "L’Arbalète du Margrave"
+    },
+    {
+      "nom": "Arc",
+      "famille": "arme",
+      "t1": "Arc fendillé",
+      "t2": "Arc de chasseur",
+      "t3": "Arc de maître archer",
+      "t4": "L’Arc des Cent Hivers"
+    },
+    {
+      "nom": "Arme d’hast double",
+      "famille": "arme",
+      "t1": "Double hast bancale",
+      "t2": "Double hast de milicien",
+      "t3": "Double hast de virtuose",
+      "t4": "Le Moulin à Viande"
+    },
+    {
+      "nom": "Arquebuse / Mousquet",
+      "famille": "arme",
+      "t1": "Pétoire rafistolée",
+      "t2": "Mousquet réglementaire",
+      "t3": "Arquebuse ciselée",
+      "t4": "Le Tonnerre du Prince"
+    },
+    {
+      "nom": "Bardiche",
+      "famille": "arme",
+      "t1": "Bardiche ébréchée",
+      "t2": "Bardiche de sergent",
+      "t3": "Bardiche de garde d’honneur",
+      "t4": "La Fendeuse de Rois"
+    },
+    {
+      "nom": "Bâton court",
+      "famille": "arme",
+      "t1": "Bout de bois",
+      "t2": "Bâton de voyageur",
+      "t3": "Bâton de maître d’armes",
+      "t4": "Le Bâton du Vieux Sage"
+    },
+    {
+      "nom": "Bâton long",
+      "famille": "arme",
+      "t1": "Manche à balai",
+      "t2": "Bâton de pèlerin",
+      "t3": "Bâton ferré de champion",
+      "t4": "Le Bâton des Sept Collines"
+    },
+    {
+      "nom": "Canon à main",
+      "famille": "arme",
+      "t1": "Canon à main qui tousse",
+      "t2": "Canon à main de sapeur",
+      "t3": "Canon à main gravé",
+      "t4": "Le Petit Dragon de Bronze"
+    },
+    {
+      "nom": "Dague",
+      "famille": "arme",
+      "t1": "Couteau à beurre",
+      "t2": "Dague de soldat",
+      "t3": "Dague de spadassin",
+      "t4": "La Dernière Confidence"
+    },
+    {
+      "nom": "Écu",
+      "famille": "arme",
+      "t1": "Planche avec une poignée",
+      "t2": "Écu de fantassin",
+      "t3": "Écu armorié",
+      "t4": "L’Écu du Dernier Rempart"
+    },
+    {
+      "nom": "Épée courte",
+      "famille": "arme",
+      "t1": "Épée courte émoussée",
+      "t2": "Épée courte de soldat",
+      "t3": "Épée courte de capitaine",
+      "t4": "La Piqueuse de Barons"
+    },
+    {
+      "nom": "Épée double",
+      "famille": "arme",
+      "t1": "Épée double voilée",
+      "t2": "Épée double de gladiateur",
+      "t3": "Épée double de maître lame",
+      "t4": "Les Jumelles Écarlates"
+    },
+    {
+      "nom": "Épée longue",
+      "famille": "arme",
+      "t1": "Épée longue rouillée",
+      "t2": "Épée longue de reître",
+      "t3": "Épée longue de chevalier",
+      "t4": "La Promesse du Roi"
+    },
+    {
+      "nom": "Estoc",
+      "famille": "arme",
+      "t1": "Estoc tordu",
+      "t2": "Estoc de duelliste",
+      "t3": "Estoc de cour",
+      "t4": "L’Aiguille de la Reine"
+    },
+    {
+      "nom": "Fléau d’armes",
+      "famille": "arme",
+      "t1": "Fléau qui se coince",
+      "t2": "Fléau de garde",
+      "t3": "Fléau d’inquisiteur",
+      "t4": "Le Repentir"
+    },
+    {
+      "nom": "Fouet",
+      "famille": "arme",
+      "t1": "Lanière de charretier",
+      "t2": "Fouet de dompteur",
+      "t3": "Fouet tressé d’argent",
+      "t4": "La Langue du Diable"
+    },
+    {
+      "nom": "Fronde",
+      "famille": "arme",
+      "t1": "Chaussette et caillou",
+      "t2": "Fronde de berger",
+      "t3": "Fronde de tireur d’élite",
+      "t4": "La Fronde du Petit Roi"
+    },
+    {
+      "nom": "Grande épée",
+      "famille": "arme",
+      "t1": "Grande épée ébréchée",
+      "t2": "Grande épée de lansquenet",
+      "t3": "Grande épée de champion",
+      "t4": "La Faucheuse de Bannières"
+    },
+    {
+      "nom": "Hache de guerre",
+      "famille": "arme",
+      "t1": "Hache de bûcheron reconvertie",
+      "t2": "Hache de guerre de soudard",
+      "t3": "Hache de guerre de thane",
+      "t4": "La Fendeuse de Boucliers"
+    },
+    {
+      "nom": "Hache double",
+      "famille": "arme",
+      "t1": "Hache double branlante",
+      "t2": "Hache double de berserker",
+      "t3": "Hache double de seigneur de guerre",
+      "t4": "La Veuve Jumelle"
+    },
+    {
+      "nom": "Hachette",
+      "famille": "arme",
+      "t1": "Hachette de cuisine",
+      "t2": "Hachette de pillard",
+      "t3": "Hachette de chef de clan",
+      "t4": "La Petite Dernière"
+    },
+    {
+      "nom": "Hallebarde",
+      "famille": "arme",
+      "t1": "Hallebarde de grenier",
+      "t2": "Hallebarde de garde",
+      "t3": "Hallebarde de parade",
+      "t4": "La Gardienne des Portes"
+    },
+    {
+      "nom": "Katana",
+      "famille": "arme",
+      "t1": "Katana de contrebande",
+      "t2": "Katana de rōnin",
+      "t3": "Katana de samouraï",
+      "t4": "La Lame des Mille Pétales"
+    },
+    {
+      "nom": "Kukri",
+      "famille": "arme",
+      "t1": "Kukri de jardinier",
+      "t2": "Kukri de pisteur",
+      "t3": "Kukri de cérémonie",
+      "t4": "Le Croc du Tigre Blanc"
+    },
+    {
+      "nom": "Lance",
+      "famille": "arme",
+      "t1": "Vieille lance",
+      "t2": "Lance basique",
+      "t3": "Lance de guerrier",
+      "t4": "Lance luxueuse"
+    },
+    {
+      "nom": "Marteau de guerre",
+      "famille": "arme",
+      "t1": "Maillet de forgeron",
+      "t2": "Marteau de guerre de garnison",
+      "t3": "Marteau de guerre de thane",
+      "t4": "Le Briseur de Heaumes"
+    },
+    {
+      "nom": "Masse d’armes",
+      "famille": "arme",
+      "t1": "Masse cabossée",
+      "t2": "Masse d’armes de sergent",
+      "t3": "Masse d’armes d’évêque",
+      "t4": "L’Argument Définitif"
+    },
+    {
+      "nom": "Massue / Gourdin",
+      "famille": "arme",
+      "t1": "Gros bâton",
+      "t2": "Gourdin de taverne",
+      "t3": "Massue cloutée de chef",
+      "t4": "La Négociatrice"
+    },
+    {
+      "nom": "Nunchaku",
+      "famille": "arme",
+      "t1": "Nunchaku de foire",
+      "t2": "Nunchaku d’apprenti",
+      "t3": "Nunchaku de maître",
+      "t4": "Les Deux Dragons"
+    },
+    {
+      "nom": "Pavois",
+      "famille": "arme",
+      "t1": "Porte de grange",
+      "t2": "Pavois d’arbalétrier",
+      "t3": "Pavois aux armes du comte",
+      "t4": "La Muraille Portative"
+    },
+    {
+      "nom": "Pic de guerre",
+      "famille": "arme",
+      "t1": "Pioche de mineur",
+      "t2": "Pic de guerre de soudard",
+      "t3": "Pic de guerre ciselé",
+      "t4": "L’Ouvre-Boîte Royal"
+    },
+    {
+      "nom": "Pistolet",
+      "famille": "arme",
+      "t1": "Pistolet capricieux",
+      "t2": "Pistolet de cavalier",
+      "t3": "Pistolet d’officier",
+      "t4": "Le Dernier Mot"
+    },
+    {
+      "nom": "Rondache",
+      "famille": "arme",
+      "t1": "Couvercle de tonneau",
+      "t2": "Rondache de fantassin",
+      "t3": "Rondache de duelliste",
+      "t4": "Le Soleil d’Acier"
+    },
+    {
+      "nom": "Sabre",
+      "famille": "arme",
+      "t1": "Sabre émoussé",
+      "t2": "Sabre de cavalier",
+      "t3": "Sabre d’officier",
+      "t4": "Le Sabre du Grand Khan"
+    },
+    {
+      "nom": "Sai",
+      "famille": "arme",
+      "t1": "Sai tordus",
+      "t2": "Sai de garde",
+      "t3": "Sai de maître",
+      "t4": "Les Griffes du Lotus"
+    },
+    {
+      "nom": "Sarbacane",
+      "famille": "arme",
+      "t1": "Tuyau de cuisine",
+      "t2": "Sarbacane de chasseur",
+      "t3": "Sarbacane d’assassin",
+      "t4": "Le Souffle du Serpent"
+    },
+    {
+      "nom": "Trident",
+      "famille": "arme",
+      "t1": "Fourche améliorée",
+      "t2": "Trident de pêcheur",
+      "t3": "Trident de gladiateur",
+      "t4": "Le Trident des Abysses"
+    },
+    {
+      "nom": "Tromblon",
+      "famille": "arme",
+      "t1": "Tromblon qui crache",
+      "t2": "Tromblon de marin",
+      "t3": "Tromblon de corsaire",
+      "t4": "La Tempête de Clous"
+    },
+    {
+      "nom": "Vêtements",
+      "famille": "armure",
+      "t1": "Haillons",
+      "t2": "Vêtements de voyage",
+      "t3": "Habits de seigneur",
+      "t4": "Atours princiers"
+    },
+    {
+      "nom": "Gambison",
+      "famille": "armure",
+      "t1": "Gambison mité",
+      "t2": "Gambison de milicien",
+      "t3": "Gambison brodé",
+      "t4": "Le Gambison du Grand Écuyer"
+    },
+    {
+      "nom": "Armure de cuir",
+      "famille": "armure",
+      "t1": "Vieille armure de cuir",
+      "t2": "Armure de cuir de pisteur",
+      "t3": "Armure de cuir repoussé",
+      "t4": "La Peau du Dragon Noir"
+    },
+    {
+      "nom": "Cotte de mailles",
+      "famille": "armure",
+      "t1": "Cotte de mailles trouée",
+      "t2": "Cotte de mailles de sergent",
+      "t3": "Cotte de mailles fine",
+      "t4": "La Cotte aux Mille Anneaux"
+    },
+    {
+      "nom": "Brigandine",
+      "famille": "armure",
+      "t1": "Brigandine rapiécée",
+      "t2": "Brigandine de soudard",
+      "t3": "Brigandine de velours",
+      "t4": "La Brigandine du Margrave"
+    },
+    {
+      "nom": "Cuir renforcé",
+      "famille": "armure",
+      "t1": "Cuir renforcé de bric et de broc",
+      "t2": "Cuir renforcé de vétéran",
+      "t3": "Cuir renforcé clouté d’argent",
+      "t4": "La Seconde Peau"
+    },
+    {
+      "nom": "Armure d'écailles",
+      "famille": "armure",
+      "t1": "Écailles qui se décollent",
+      "t2": "Armure d’écailles de garde",
+      "t3": "Armure d’écailles dorées",
+      "t4": "La Peau de Wyverne"
+    },
+    {
+      "nom": "Armure de plates",
+      "famille": "armure",
+      "t1": "Plates cabossées",
+      "t2": "Armure de plates de chevalier",
+      "t3": "Armure de plates de tournoi",
+      "t4": "La Forteresse Ambulante"
+    }
+  ]
+}

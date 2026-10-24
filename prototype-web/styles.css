@@ -276,6 +276,37 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
 .gear-tile--worn{border-color:#8f8a84}
 .gear-tile--standard{border-color:#c08a4e}
 .gear-tile--luxury{border-color:#f0c050;box-shadow:0 0 12px rgba(240,192,80,.5),0 4px 12px rgba(0,0,0,.35)}
+/* Carte d'objet au survol (Idan, 2026-10-24) : une carte de jeu, couleur du cadre selon le tier. */
+#item-card-float{position:fixed;z-index:60;display:none;width:300px;pointer-events:none}
+#item-card-float.is-visible{display:block}
+.item-card{--tier:#8f8a84;display:grid;gap:9px;padding:12px 14px 13px;border:2px solid var(--tier);border-radius:12px;background:linear-gradient(170deg,#2c2019,#16100c);box-shadow:0 18px 40px #000c,inset 0 0 0 1px rgba(255,255,255,.04);color:#ead9bd;font-size:13px;line-height:1.3;text-align:left}
+.item-card--t2{--tier:#c9ccd2}
+.item-card--t3{--tier:#c9453e}
+.item-card--t4{--tier:#f0c050}
+.item-card-head{display:flex;align-items:center;gap:12px}
+.item-card-art.gear-tile{width:64px;height:64px;flex:none;box-shadow:0 4px 10px rgba(0,0,0,.6)}
+.item-card-names{display:grid;gap:2px;min-width:0}
+.item-card-title{color:#ffe1ac;font:700 18px/1.15 Georgia,serif}
+.item-card--t3 .item-card-title{color:#ffb3a3}
+.item-card--t4 .item-card-title{color:#ffd76e}
+.item-card-sub{color:#cdb38c;font-size:12px}
+.item-card-tier{color:var(--tier);font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+.item-card-stats{display:grid;gap:3px;margin:0;padding-top:8px;border-top:1px solid rgba(201,164,92,.25)}
+.item-card-row{display:flex;justify-content:space-between;gap:12px}
+.item-card-row dt{color:#bfa984}
+.item-card-row dd{margin:0;color:#f4e3c4;font-weight:700;text-align:right}
+.item-card-row--bonus dd{color:#a8dd9a}
+.item-card-row--malus dd{color:#f0a08f}
+.item-card-group{margin:4px 0 0;color:#d8b77d;font:700 11px system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase}
+.item-card-group:first-child{margin-top:0}
+.item-card-shift{font-style:normal;font-size:11px}
+.item-card-shift--up{color:#a8dd9a}
+.item-card-shift--down{color:#f0a08f}
+.item-card-traits{display:grid;gap:3px;margin:0;padding:0 0 0 16px;color:#e2cfa9}
+.item-card-traits li::marker{color:var(--tier)}
+.item-card-quality{margin:0;color:#cdb796;font-size:12px}
+.item-card-flavor{margin:0;padding-top:7px;border-top:1px solid rgba(201,164,92,.18);color:#b9a283;font:italic 12px/1.35 Georgia,serif}
+
 /* Objet illustré (Idan, 2026-10-23) : image sur fond noir, cadre de tier par-dessus en mode « screen »
    (le noir des deux images disparaît, seul le métal du cadre reste). */
 .gear-tile.gear-tile--art{border:0;border-radius:4px;background:#000;box-shadow:0 6px 16px rgba(0,0,0,.55)}
@@ -291,11 +322,6 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
 .gear-spot--weapon_set_1_main .gear-tile--art,.gear-spot--weapon_set_1_off .gear-tile--art{width:72px;height:72px}
 .gear-tile--both-hands{opacity:.5}
 .gear-caption{max-width:140px;overflow:hidden;padding:1px 7px;border-radius:6px;background:rgba(246,236,214,.88);color:#3a2616;font:700 11px/1.3 Georgia,serif;font-style:normal;text-align:center;text-overflow:ellipsis;white-space:nowrap}
-.item-tooltip{display:none;position:absolute;z-index:20;left:50%;bottom:calc(100% + 8px);width:220px;transform:translateX(-50%);padding:10px 11px;border:1px solid #a9814f;border-radius:10px;background:#1b130e;color:#ead9bd;box-shadow:0 12px 30px #000b;text-align:left;pointer-events:none}
-.gear-tile.is-filled:hover .item-tooltip,.gear-tile.is-filled:focus .item-tooltip{display:grid;gap:3px}
-.item-tooltip strong{color:#ffe1ac;font:700 14px Georgia,serif}
-.item-tooltip span{color:#cdb38c;font-size:12px}
-.item-tooltip small{margin-top:4px;color:#b5a184;font-size:11px;line-height:1.35}
 @media(max-width:1100px){.gear{grid-template-columns:repeat(2,minmax(0,1fr))}.equipment-mannequin.gear-doll{grid-column:1/-1;order:-1;max-width:520px;justify-self:center}}
 @media(max-width:600px){.gear{grid-template-columns:1fr}}
 

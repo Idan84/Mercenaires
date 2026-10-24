@@ -103,4 +103,8 @@ Chaque objet tire son tier **indépendamment** selon la réputation personnelle 
 
 Mapping actuel vers les qualités existantes : **T1 = Usée**, **T2 = Correcte**, **T3 = Grand Luxe**.
 
+### Carte d’objet (Idan, 2026-10-24)
+
+Au survol d’une arme ou d’une armure (fiche, Intendance), une carte de jeu présente l’objet : son image dans le cadre de son tier, un **titre selon le tier** (`data/reference/item-titles.json`, par ex. Vieille lance / Lance basique / Lance de guerrier / Lance luxueuse) et ses **effets réels**, qualité comprise, tels que le combat les applique : dégâts, puissances, portée, prise, lourdeur, charge, blocage, contre-charge, recharge, tirs enchaînés, attaque de zone pour une arme ; résistances et gêne (esquive, vitesse, magie) pour une armure. Aucune règle nouvelle : la carte lit les mêmes valeurs que le moteur (`game-core/item-card.js`).
+
 La fiche du mercenaire affiche tous les slots autour d’une silhouette simplifiée. Les cases remplies utilisent une icône provisoire et exposent la fiche de l’item au survol ; aucun drag & drop n’est prévu.

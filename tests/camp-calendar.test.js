@@ -87,14 +87,14 @@ assert.match(nodes["hud-date"].textContent,/1 Corbenaël$/);
 
 // Le bouton du camp réutilise exactement le moteur AdvanceTime : salaires,
 // soins, mouvements à la Taverne, sauvegarde et réaffichage. Aucune double horloge.
-let advanced=0,saved=0,redrawn=0;
+let advanced=0,saved=0,redrawn=0,blocker={ok:true};
 const logged=[];
 let screen="camp";
 const advance = new Function("game","campaignRules","tavernLog","fmt","saveGame","renderGame","currentScreen",
   extract(tavernUI,"function advanceCampDay()","// Dialogue de recrutement")+
   "\nreturn advanceCampDay;"
 )(
-  fakeGame,()=>({advanceTime:(state,days)=>{
+  fakeGame,()=>({canAdvanceDay:()=>blocker,advanceTime:(state,days)=>{
     assert.equal(days,1);
     advanced++;
     state.day+=days;
@@ -114,6 +114,13 @@ assert.ok(logged.some(m=>m.includes("guéri")));
 assert.ok(logged.some(m=>m.includes("Salaires versés : 35")));
 assert.ok(logged.some(m=>m.includes("Nouveaux candidats : Erik")));
 assert.equal(nodes["hud-day"].textContent,"Jour 33 · An 842");
+// Une escouade arrivée attend son combat (Idan, 2026-10-24) : pas de jour suivant.
+blocker={ok:false,reason:"Une escouade attend vos ordres : livrez son combat avant de passer au jour suivant.",expedition:{id:"x"}};
+advance();
+assert.equal(fakeGame.campaign.day,33);
+assert.equal(advanced,1);
+assert.ok(logged.some(m=>m.startsWith("Une escouade attend vos ordres")));
+blocker={ok:true};
 // Jamais pendant une mission.
 screen="mission";
 advance();

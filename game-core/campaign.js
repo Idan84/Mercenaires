@@ -463,6 +463,11 @@
       state.expeditions=expeditionsOf(state).filter(e=>e!==expedition);
       return report;
     }
+    // Une escouade arrivée attend ses ordres (Idan, 2026-10-24) : pas de jour suivant tant que son combat n'est pas livré.
+    function canAdvanceDay(state){
+      const waiting=expeditionsOf(state).find(e=>e.status==="arrived");
+      return waiting?{ok:false,reason:"Une escouade attend vos ordres : livrez son combat avant de passer au jour suivant.",expedition:waiting}:{ok:true};
+    }
     function advanceExpeditions(state){
       const arrived=[],returned=[];
       for(const expedition of [...expeditionsOf(state)]){
@@ -624,6 +629,7 @@
       ensureMissionOffer,
       renewMissionOffer,
       expeditionOf,
+      canAdvanceDay,
       departExpedition,
       completeExpeditionCombat,
       dormitoryFree,

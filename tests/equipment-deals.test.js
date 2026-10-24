@@ -62,6 +62,9 @@ assert.ok(!ok("belt_item_1", item("x", "Ceinture de courage", 1, "belt")), "pas 
 assert.ok(ok("amulet", item("x", "Amulette de chance", 1, "amulet")), "amulette : emplacement Amulette");
 assert.ok(!ok("amulet", item("x", "Ceinture de courage", 1, "belt")));
 assert.ok(!ok("belt", item("x", "Amulette de chance", 1, "amulet")));
+assert.ok(ok("cape", item("x", "Cape d’esquive", 1, "cape")), "cape : emplacement Cape");
+assert.ok(!ok("cape", item("x", "Amulette de chance", 1, "amulet")));
+assert.ok(!ok("armor", item("x", "Cape d’esquive", 1, "cape")));
 assert.ok(!ok("weapon_set_1_off", item("x", "Dague", 1)), "la hallebarde tient les deux mains");
 assert.ok(!ok("weapon_set_2_off", item("x", "Arc", 1)), "arme à deux mains : arme principale");
 assert.ok(!ok("weapon_set_2_main", item("x", "Écu", 1)), "bouclier : main secondaire");

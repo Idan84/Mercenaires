@@ -5,11 +5,11 @@
   "columns": [
     {
       "key": "nom",
-      "source": "Nom de l’arme (weapons.json), de l’armure (base-armors.json), des bottes (boots.json), de la ceinture (belts.json) ou de l’amulette (amulets.json)"
+      "source": "Nom de l’arme (weapons.json), de l’armure (base-armors.json), des bottes (boots.json), de la ceinture (belts.json), de l’amulette (amulets.json) ou de la cape (capes.json)"
     },
     {
       "key": "famille",
-      "source": "arme, armure, bottes, ceinture ou amulette"
+      "source": "arme, armure, bottes, ceinture, amulette ou cape"
     },
     {
       "key": "t1",
@@ -28,7 +28,7 @@
       "source": "Titre T4"
     }
   ],
-  "row_count": 55,
+  "row_count": 58,
   "rows": [
     {
       "nom": "Arbalète",
@@ -469,6 +469,30 @@
       "t2": "Trèfle de cuivre",
       "t3": "Fer à cheval du joueur",
       "t4": "Le Sourire de la Fortune"
+    },
+    {
+      "nom": "Cape de résistance physique",
+      "famille": "cape",
+      "t1": "Pèlerine rapiécée",
+      "t2": "Manteau du vétéran",
+      "t3": "Cape du rempart",
+      "t4": "Le Linceul de l’Inébranlable"
+    },
+    {
+      "nom": "Cape d’esquive",
+      "famille": "cape",
+      "t1": "Cape effilochée",
+      "t2": "Cape du duelliste",
+      "t3": "Mante du danseur de lames",
+      "t4": "Le Voile du Vent"
+    },
+    {
+      "nom": "Cape de discrétion",
+      "famille": "cape",
+      "t1": "Haillon sombre",
+      "t2": "Cape du rôdeur",
+      "t3": "Mante de l’ombre",
+      "t4": "Le Manteau du Sans-Visage"
     }
   ]
 }

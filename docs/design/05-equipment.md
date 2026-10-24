@@ -136,6 +136,16 @@ Mêmes règles que les bottes et les ceintures : trois types d’amulettes (`dat
 - Sur la fiche, Puissance magique (onglet Magie), Volonté et Chance montrent la valeur bonifiée, avec la ligne de l’amulette ; l’Initiative montre la part de la Volonté bonifiée.
 - **5 %** de chance d’en avoir une à la création (`amulet_chance`), d’un type tiré au hasard ; **1D6** amulettes dans le stock de départ (doc 11 §16).
 
+### Capes (Idan, 2026-10-24)
+
+Trois types de capes (`data/reference/capes.json`), portées dans l’emplacement **Cape** : **Cape de résistance physique** (Résistance physique), **Cape d’esquive** (Esquive), **Cape de discrétion** (Discrétion). La qualité ne change pas le bonus.
+
+- Esquive et Discrétion : mêmes règles que les bottes, **+5 / 10 / 15 / 20 %** de la valeur de base selon le tier.
+- Résistance physique : **+5 / 10 / 15 / 20 points** selon le tier (choix d’Idan : la Résistance physique, médiane 5, est trop petite pour un pourcentage ; chaque point retire environ 1 % des dégâts physiques reçus, dans la limite de 50).
+- Au combat (`statWithGear`) : Esquive pour le Toucher ; Résistance physique pour la réduction des dégâts physiques (et le contrecoup d’un échec critique de blessure). La Discrétion servira quand elle aura une règle de jeu.
+- Sur la fiche, Résistance physique (Caractéristiques), Esquive et Discrétion (Compétences) montrent la valeur bonifiée, avec la ligne de la cape.
+- **5 %** de chance d’en avoir une à la création (`cape_chance`), d’un type tiré au hasard ; **1D6** capes dans le stock de départ (doc 11 §16).
+
 ### Échanges d’équipement : Donner, Retirer, Troquer (Idan, 2026-10-24)
 
 Depuis l’onglet Équipement de la fiche ou l’Intendance, le capitaine peut **Donner** un objet du stock (emplacement vide), **Retirer** un objet au mercenaire (il part au stock) ou **Troquer** (les deux à la fois). Le mercenaire répond dans une boîte de dialogue, positivement ou négativement ; seule réponse possible pour l’instant : **Partir** (plus tard : convaincre, intimider, défier en combat singulier).

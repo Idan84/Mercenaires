@@ -10,6 +10,7 @@ posée sur une case noire et son cadre de tier par-dessus).
 | `Bottes/` | les 3 bottes de `data/reference/boots.json`, T1 à T4 | `Bottes_<type>_<tier>.jpg`, par ex. `Bottes_vitesse_1.jpg`, `Bottes_esquive_3.jpg` |
 | `Ceintures/` | les 3 ceintures de `data/reference/belts.json`, T1 à T4 | `Ceinture_de_<type>_[T]<tier>.jpg`, par ex. `Ceinture_de_mana_T1.jpg`, `Ceinture_d'endurance_T3.jpg` |
 | `Amulettes/` | les 3 amulettes de `data/reference/amulets.json`, T1 à T4 | `Amulette_de_<type>_[T]<tier>.jpg`, par ex. `Amulette_de_chance_T1.jpg`, `Amulette_de_puissance_magique_T4.jpg` |
+| `Capes/` | les 3 capes de `data/reference/capes.json`, T1 à T4 | `Cape_de_<type>_[T]<tier>.jpg`, par ex. `Cape_d'esquive_T1.jpg`, `Cape_de_résistance_physique_T4.jpg` |
 | `Frames/` | les cadres posés autour d'un objet selon son tier | `frame_<tier>.jpg` |
 
 Le nom est reconnu sans accents, majuscules, espaces ni petits mots (de, d', des, du, la, le…), dans

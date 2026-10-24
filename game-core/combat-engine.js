@@ -23,14 +23,15 @@
     const boots=rows.boots||[];
     const belts=rows.belts||[];
     const amulets=rows.amulets||[];
+    const capes=rows.capes||[];
 
     const weaponByName=new Map(weapons.map(x=>[x.nom,x]));
     const armorByCode=new Map(armors.map(x=>[x.code,x]));
     const qualityByCode=new Map(qualities.map(x=>[x.code,x]));
     const skillByName=new Map(skills.map(x=>[x.nom,x]));
-    // Équipement à bonus de caractéristique : l'emplacement et ses modèles (bottes, ceinture, amulette).
+    // Équipement à bonus de caractéristique : l'emplacement et ses modèles (bottes, ceinture, amulette, cape).
     const STAT_GEAR=[{slot:"boots",byName:new Map(boots.map(x=>[x.nom,x]))},{slot:"belt",byName:new Map(belts.map(x=>[x.nom,x]))},
-      {slot:"amulet",byName:new Map(amulets.map(x=>[x.nom,x]))}];
+      {slot:"amulet",byName:new Map(amulets.map(x=>[x.nom,x]))},{slot:"cape",byName:new Map(capes.map(x=>[x.nom,x]))}];
 
     function die(sides){ return Math.floor(random()*sides)+1; }
     function d100(){ return die(100); }
@@ -88,21 +89,30 @@
       return off;
     }
     function armorItem(unit){ return itemBySlot(unit,"armor"); }
-    // Bottes, ceinture et amulette (Idan, 2026-10-24) : + bonus_t<tier> % de la caractéristique de base qu'elles servent
+    // Bottes, ceinture, amulette et cape (Idan, 2026-10-24) : + bonus_t<tier> % de la valeur de base qu'elles servent
     // (Vitesse, Esquive, Perception pour les bottes ; Réserve de mana, Endurance, Courage pour la ceinture ; Puissance
-    // magique, Volonté, Chance pour l'amulette).
-    // gearBonuses : une ligne par objet qui sert cette caractéristique ; statWithGear : la caractéristique bonifiée.
+    // magique, Volonté, Chance pour l'amulette ; Esquive, Discrétion pour la cape), ou + bonus_t<tier> points quand
+    // type_bonus vaut « points » (cape de résistance physique : la Résistance physique est trop petite pour un pourcentage).
+    // baseValue : caractéristique, résistance ou compétence (Discrétion) ; gearBonuses : une ligne par objet qui la sert ;
+    // statWithGear : la valeur bonifiée.
+    function baseValue(unit,stat){
+      const c=unit.character;
+      if(c.stats&&stat in c.stats) return Number(c.stats[stat])||0;
+      if(c.resistances&&stat in c.resistances) return Number(c.resistances[stat])||0;
+      return Number(c.skills?.martial?.[stat])||0;
+    }
     function gearBonuses(unit,stat){
-      const base=Number(unit.character.stats?.[stat])||0;
+      const base=baseValue(unit,stat);
       return STAT_GEAR.map(({slot,byName})=>{
         const item=itemBySlot(unit,slot),template=item?byName.get(item.name):null;
         if(!template||template.caracteristique!==stat) return null;
-        const percent=Number(template["bonus_t"+item.tier])||0;
-        return {item,slot,percent,bonus:base*percent/100};
+        const value=Number(template["bonus_t"+item.tier])||0;
+        if(template.type_bonus==="points") return {item,slot,points:value,bonus:value};
+        return {item,slot,percent:value,bonus:base*value/100};
       }).filter(Boolean);
     }
     function statWithGear(unit,stat){
-      return (Number(unit.character.stats?.[stat])||0)+gearBonuses(unit,stat).reduce((sum,x)=>sum+x.bonus,0);
+      return baseValue(unit,stat)+gearBonuses(unit,stat).reduce((sum,x)=>sum+x.bonus,0);
     }
     function weaponTemplate(item){ return item?weaponByName.get(item.name)||null:null; }
 
@@ -388,7 +398,7 @@
       if(mode==="melee"&&weapon?.prise==="Au choix"&&usesTwoHands(attacker,weapon)) effective*=1.5;
       if(chargePower>0) effective*=1+chargePower/100;
 
-      const physicalResistance=clamp(Number(defender.character.resistances?.["Résistance physique"])||0,0,50);
+      const physicalResistance=clamp(statWithGear(defender,"Résistance physique"),0,50);
       const resistanceRoll=fixed.resistanceRoll||die(3);
       const resistanceFactor=1-(physicalResistance/100)*((resistanceRoll+8)/10);
       const strengthFactor=mode==="melee"
@@ -769,6 +779,7 @@
       weaponTemplate,
       armorItem,
       armorTemplate,
+      baseValue,
       gearBonuses,
       statWithGear,
       quality,

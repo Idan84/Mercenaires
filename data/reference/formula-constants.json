@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 133,
+  "row_count": 145,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -1096,6 +1096,102 @@
       "description": "Accord ou refus, l’affinité acquise change de ce nombre × (valeur perçue reçue − valeur perçue cédée), arrondi : un cadeau la fait monter, un équipement rétrogradé la fait baisser (formule de JC, Idan 2026-10-24).",
       "formule": "Échange d’équipement",
       "valeur": 2,
+      "version": "V1"
+    },
+    {
+      "nom": "Intendant — envie de base",
+      "code": "steward.appoint.base",
+      "description": "Envie d’intendance = cette base − poids du Courage × Courage + poids des missions × Missions + poids des blessures × Blessures ; chance d’accepter le poste = Envie, bornée (Idan, 2026-10-24). Au début de la partie, on a du mal à trouver un intendant.",
+      "formule": "Intendant",
+      "valeur": 40,
+      "version": "V1"
+    },
+    {
+      "nom": "Intendant — poids du Courage",
+      "code": "steward.appoint.courage_weight",
+      "description": "Plus il est courageux, moins il veut quitter le terrain.",
+      "formule": "Intendant",
+      "valeur": 0.6,
+      "version": "V1"
+    },
+    {
+      "nom": "Intendant — poids des missions",
+      "code": "steward.appoint.mission_weight",
+      "description": "Par mission effectuée (historique) : un vieux mercenaire en a marre de risquer sa vie.",
+      "formule": "Intendant",
+      "valeur": 2,
+      "version": "V1"
+    },
+    {
+      "nom": "Intendant — poids des blessures",
+      "code": "steward.appoint.wound_weight",
+      "description": "Par retour de mission blessé (historique) : après chaque blessure, il veut davantage devenir intendant.",
+      "formule": "Intendant",
+      "valeur": 8,
+      "version": "V1"
+    },
+    {
+      "nom": "Intendant — retour, base",
+      "code": "steward.return.base",
+      "description": "Chance de revenir sur le terrain = cette base − Envie d’intendance + jours d’intendance × poids par jour, bornée.",
+      "formule": "Intendant",
+      "valeur": 60,
+      "version": "V1"
+    },
+    {
+      "nom": "Intendant — retour, par jour",
+      "code": "steward.return.per_day",
+      "description": "Par jour passé à l’intendance : le goût du sang lui manque.",
+      "formule": "Intendant",
+      "valeur": 1,
+      "version": "V1"
+    },
+    {
+      "nom": "Intendant — chance minimale",
+      "code": "steward.chance.min",
+      "description": "Borne basse des chances d’accepter le poste ou de revenir sur le terrain (%).",
+      "formule": "Intendant",
+      "valeur": 2,
+      "version": "V1"
+    },
+    {
+      "nom": "Intendant — chance maximale",
+      "code": "steward.chance.max",
+      "description": "Borne haute des chances d’accepter le poste ou de revenir sur le terrain (%).",
+      "formule": "Intendant",
+      "valeur": 95,
+      "version": "V1"
+    },
+    {
+      "nom": "Intendant — affinité au refus",
+      "code": "steward.refusal.affinity_divisor",
+      "description": "Refus : l’affinité change de (Intelligence − Courage) / ce diviseur, arrondi ; flatté (positif) une seule fois, vexé (négatif) à chaque fois (avis de JC, 2026-10-24).",
+      "formule": "Intendant",
+      "valeur": 10,
+      "version": "V1"
+    },
+    {
+      "nom": "Intendant — erreur d’estimation",
+      "code": "steward.estimate.max_error",
+      "description": "Évaluer un candidat : erreur maximale = cette valeur × (1 − Intendance/100), comme au doc 14 §7.",
+      "formule": "Intendant",
+      "valeur": 0.2,
+      "version": "V1"
+    },
+    {
+      "nom": "Échange d’équipement — appui de l’intendant",
+      "code": "equipment_deal.steward_skill_weight",
+      "description": "L’intendant appuie la proposition : Δ + ce poids × son Intendance (formule de JC, validée par Idan le 2026-10-24).",
+      "formule": "Échange d’équipement",
+      "valeur": 0.2,
+      "version": "V1"
+    },
+    {
+      "nom": "Échange d’équipement — affinité envers l’intendant",
+      "code": "equipment_deal.steward_affinity_weight",
+      "description": "Δ + ce poids × affinité du mercenaire envers l’intendant (peuple, culture, alignement).",
+      "formule": "Échange d’équipement",
+      "valeur": 0.25,
       "version": "V1"
     }
   ]

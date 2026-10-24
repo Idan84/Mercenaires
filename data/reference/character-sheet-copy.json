@@ -314,6 +314,11 @@
       {
         "key": "criticals",
         "label": "Coups critiques"
+      },
+      {
+        "key": "stewardDays",
+        "label": "Jours d’intendance",
+        "hideZero": true
       }
     ],
     "events": {
@@ -341,6 +346,14 @@
           "retirer": "Range {cede} à l’Intendance.",
           "troquer": "Échange {cede} contre {recu} à l’Intendance."
         }
+      },
+      "steward": {
+        "accord": "Devient {l’intendant|l’intendante} de la compagnie.",
+        "refus": "Refuse le poste d’intendant."
+      },
+      "recall": {
+        "accord": "Quitte l’Intendance et retourne sur le terrain après {jours}.",
+        "refus": "Refuse de quitter l’Intendance."
       }
     },
     "empty": "Rien à raconter pour l’instant."

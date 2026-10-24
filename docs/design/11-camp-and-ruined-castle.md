@@ -204,6 +204,22 @@ Le matériel attribué à un mercenaire ne doit donc pas être considéré comme
 
 Constantes : `company.starting_stock.dice_count` (2), `company.starting_stock.dice_sides` (20), `company.starting_stock.affinity_weight` (2), `company.starting_stock.min_weight` (0,25), `company.starting_stock.armor_dice_count` (1), `company.starting_stock.armor_dice_sides` (6), `company.starting_stock.boots_dice_count` (1), `company.starting_stock.boots_dice_sides` (6). Une partie sauvegardée avant ces règles reçoit au chargement ce qui lui manque (le stock d'armes, puis les armures et les bottes, une seule fois chacun). La capacité limitée de l'armurerie reste à définir.
 
+### L'intendant (Idan, 2026-10-24)
+
+Le capitaine **propose** à un mercenaire de devenir intendant ; il peut refuser. Un seul intendant ; jamais le capitaine ; **une proposition par mercenaire et par jour**. L'intendant passe dans la rubrique Compagnie, ne part plus en mission, et on lui parle à l'Intendance. Cela remplace l'assignation libre du rôle (PR #11), qui n'avait pas d'interface.
+
+- **Envie d'intendance** = 40 − 0,6 × Courage + 2 × Missions + 8 × Blessures (retours de mission blessé ; historique de la fiche). Plus il est courageux, moins il veut quitter le terrain ; un vieux mercenaire souvent blessé, davantage.
+- **Accepter le poste** : chance = Envie, bornée de 2 à 95 %. Courage 31 / 49 / 62 : 21 / 11 / 3 % en début de partie ; 57 / 47 / 39 % après 10 missions et 2 blessures ; on a donc du mal à trouver un intendant au début.
+- **Revenir sur le terrain** : chance = 60 − Envie + 1 par jour passé à l'intendance (le goût du sang lui manque), bornée de 2 à 95 %. Courage 49, 10 missions, 2 blessures : 13 % le premier jour, 43 % après 30 jours, 73 % après 60 jours.
+- **Refus** (avis de JC, demandé par Idan) : l'affinité change de (Intelligence − Courage) / 10, arrondi. Le malin se sent flatté qu'on lui confie la compagnie (une seule fois, pour qu'on ne gonfle pas l'affinité en insistant) ; le brave se vexe qu'on veuille l'écarter du combat (à chaque fois). Un accord ne change pas l'affinité. Même règle quand l'intendant refuse de revenir sur le terrain.
+- **Évaluer les candidats de la Taverne** : on le questionne comme le tavernier (candidat → catégorie → caractéristique), mais il répond par un chiffre, à ±20 % × (1 − Intendance/100) près (doc 14 §7) ; c'est gratuit, et sa réponse reste la même si l'on repose la question.
+- **Appuyer les échanges d'équipement** (formule de JC, validée) : Δ + 0,2 × son Intendance + 0,25 × l'affinité du mercenaire envers lui (même règle qu'envers le capitaine : peuple, culture, alignement). Avec 50 en Intendance et une affinité de +40, « Troquer son T1 contre un T3 » (Int 20) passe de 42 à 62 %. Pas d'appui quand c'est à lui-même qu'on parle.
+- **Historique** : propositions, nomination, refus, retour sur le terrain et jours d'intendance.
+
+Constantes `steward.*` et `equipment_deal.steward_*` ; code `game-core/steward.js` et `game-core/equipment-deals.js`.
+
+**Interface** (`prototype-web/steward-ui.js` ; textes `data/reference/steward-dialogue.json`, 4 variantes par réponse, écrites par JC) : en tête de l'Intendance, sans intendant, « Proposer le poste à… » liste les mercenaires (grisés s'ils ont déjà été sollicités ce jour-là) ; la réponse s'affiche dans la boîte de dialogue des échanges (proposition, réplique acceptée / flattée / vexée / neutre, issue, Partir). Avec un intendant : son portrait (qui ouvre sa fiche), son Intendance, depuis quand il est en poste, et « Lui parler » — évaluer un candidat de la Taverne (candidat → catégorie → caractéristique) ou lui proposer de revenir sur le terrain. Sa carte passe dans Ma Compagnie, avec le cartouche « Intendant » ; il n'apparaît plus dans Mes mercenaires ni dans la sélection de mission. Dans un échange d'équipement qu'il appuie, la boîte de dialogue le dit (« Isolde, votre intendante, appuie votre proposition. »).
+
 ## 17 — Laboratoire d’alchimie
 
 Fonctions :

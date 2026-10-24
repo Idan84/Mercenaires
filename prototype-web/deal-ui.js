@@ -123,7 +123,10 @@ function dealLines(m,result){
   const vars={prenom,de_prenom:(/^[AEIOUÉÈÊÂÎÔÛ]/i.test(prenom)?"d’":"de ")+prenom,recu:dealItemLabel(result.received),cede:dealItemLabel(result.given)};
   const fill=text=>MercenairesRecruitDialogue.fill(text,vars,dealIsFemale(m));
   const outcome=result.accepted?outcomes[result.action]:result.action==="donner"?outcomes.refus_donner:outcomes.refus;
-  return {proposal:fill(copy.proposals?.[result.action]),reply:fill(dealReply(m,result)),outcome:fill(outcome)};
+  // L'intendant appuie la proposition (Idan, 2026-10-24).
+  const steward=result.steward;
+  const support=steward?MercenairesRecruitDialogue.fill(copy.steward||"",{intendant:MercenairesRecruitDialogue.firstName(steward)},dealIsFemale(steward)):"";
+  return {proposal:fill(copy.proposals?.[result.action]),support,reply:fill(dealReply(m,result)),outcome:fill(outcome)};
 }
 function openDealDialog(m,result){
   const lines=dealLines(m,result),first=MercenairesRecruitDialogue.firstName(m);
@@ -131,6 +134,7 @@ function openDealDialog(m,result){
   $("deal-talk-name").textContent=m.name;
   $("deal-talk-origin").textContent={donner:"Donner",retirer:"Retirer",troquer:"Troquer"}[result.action]||"";
   $("deal-talk-log").innerHTML=`<p class="talk-say talk-say--you"><b>Vous</b><span>« ${esc(lines.proposal)} »</span></p>
+    ${lines.support?`<p class="talk-note">${esc(lines.support)}</p>`:""}
     <p class="talk-say talk-say--merc"><b>${esc(first)}</b><span>« ${esc(lines.reply)} »</span></p>
     <p class="talk-note">${esc(lines.outcome)}</p>`;
   $("deal-talk-choices").innerHTML=`<ol class="talk-options"><li><button type="button" data-deal-leave>Partir</button></li></ol>`;

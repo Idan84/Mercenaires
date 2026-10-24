@@ -34,8 +34,9 @@ function stockCount(items){
   return [plural(weapons,"arme"),armors?plural(armors,"armure"):"",boots?plural(boots,"paire")+" de bottes":""].filter(Boolean).join(" · ");
 }
 
+// Un clic sur la ligne propose « Donner à… » (deal-ui.js).
 function renderStockRow({item,count}){
-  return `<li class="stock-row">
+  return `<li class="stock-row" data-stock-deal="${esc(item.id)}" role="button" tabindex="0" title="Donner à…">
     ${gearTile({id:"stock",label:item.name},item)}
     <span class="stock-name">${esc(item.name)}</span>
     <span class="stock-tier stock-tier--${esc(item.qualityCode||"")}">T${item.tier} · ${esc(item.qualityName||"")}</span>

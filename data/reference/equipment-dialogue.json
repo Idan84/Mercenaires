@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "name": "equipment-dialogue",
+  "description": "Échanges d’équipement (Idan, 2026-10-24) : ce que dit le capitaine en proposant le marché, la réponse du mercenaire selon l’action, l’accord ou le refus et son humeur (content si l’objet reçu lui semble valoir plus que l’objet cédé, mécontent sinon), et ce qui change. {recu} : objet proposé ; {cede} : objet du mercenaire ; {prenom} ; {masculin|féminin}. Textes de JC, à retoucher librement.",
+  "proposals": {
+    "donner": "Voici pour vous : {recu}.",
+    "retirer": "J’ai besoin de reprendre ceci : {cede}.",
+    "troquer": "Je vous propose un échange : {recu} contre {cede}."
+  },
+  "replies": [
+    {
+      "action": "donner",
+      "accord": true,
+      "humeur": "content",
+      "lignes": [
+        "Pour moi ? Voilà qui me plaît, capitaine.",
+        "Enfin un capitaine qui sait reconnaître le talent !",
+        "Je saurai en faire bon usage. Merci, capitaine.",
+        "Ça, c’est un cadeau. On en reparlera au prochain combat."
+      ]
+    },
+    {
+      "action": "donner",
+      "accord": false,
+      "humeur": "content",
+      "lignes": [
+        "C’est gentil, mais je préfère ce que je connais.",
+        "Merci, mais non. Je ne me battrai pas avec ça.",
+        "Gardez-le pour quelqu’un d’autre, capitaine.",
+        "Un cadeau ? Qu’est-ce que vous attendez de moi en échange ?"
+      ]
+    },
+    {
+      "action": "retirer",
+      "accord": true,
+      "humeur": "mecontent",
+      "lignes": [
+        "Prenez-le… mais je m’en souviendrai.",
+        "Si vous y tenez. Vous me laissez les mains vides, capitaine.",
+        "Voilà. Ne venez pas pleurer si je tombe au prochain combat.",
+        "C’est à vous, après tout. Enfin, c’était à moi."
+      ]
+    },
+    {
+      "action": "retirer",
+      "accord": false,
+      "humeur": "mecontent",
+      "lignes": [
+        "Plutôt crever. C’est à moi.",
+        "Il faudra me le prendre de force, capitaine.",
+        "Non. Ça, on n’y touche pas.",
+        "Vous plaisantez ? Je ne m’en sépare pas."
+      ]
+    },
+    {
+      "action": "troquer",
+      "accord": true,
+      "humeur": "content",
+      "lignes": [
+        "Marché conclu ! Vous perdez au change, capitaine.",
+        "Un échange pareil, je ne vais pas le refuser.",
+        "Volontiers. L’ancien avait fait son temps.",
+        "Avec ça, je vais faire des ravages."
+      ]
+    },
+    {
+      "action": "troquer",
+      "accord": false,
+      "humeur": "content",
+      "lignes": [
+        "Changer ? Pourquoi faire ? Le mien marche très bien.",
+        "Non merci, j’y suis {attaché|attachée}, au mien.",
+        "Ce vieux machin m’a sauvé la vie plus d’une fois. Je le garde.",
+        "Je ne sais pas, capitaine… Je préfère garder le mien."
+      ]
+    },
+    {
+      "action": "troquer",
+      "accord": true,
+      "humeur": "mecontent",
+      "lignes": [
+        "Si c’est un ordre… mais c’est du vol.",
+        "Vous appelez ça un échange ? Bon. Puisqu’il le faut.",
+        "D’accord. Mais je n’oublierai pas ce marché de dupes.",
+        "Je prends. Mais ne comptez pas sur un merci."
+      ]
+    },
+    {
+      "action": "troquer",
+      "accord": false,
+      "humeur": "mecontent",
+      "lignes": [
+        "Me refiler ça contre mon équipement ? Sûrement pas.",
+        "Vous me prenez pour {un idiot|une idiote}, capitaine ?",
+        "Non. Gardez votre rebut.",
+        "Bien essayé. La réponse est non."
+      ]
+    }
+  ],
+  "outcomes": {
+    "donner": "{recu} rejoint l’équipement de {prenom}.",
+    "retirer": "{cede} retourne à l’Intendance.",
+    "troquer": "{recu} rejoint l’équipement de {prenom} ; {cede} retourne à l’Intendance.",
+    "refus_donner": "{recu} reste à l’Intendance.",
+    "refus": "{prenom} garde son équipement."
+  },
+  "menu": {
+    "already": "Vous lui avez déjà parlé d’équipement aujourd’hui.",
+    "empty": "Aucun objet de l’Intendance ne va ici.",
+    "captain": "Le capitaine s’équipe librement."
+  }
+}

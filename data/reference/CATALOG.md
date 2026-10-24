@@ -24,7 +24,7 @@ Git est la source de vérité. Les JSON ci-dessous sont les référentiels struc
 | item-qualities.json | 3 | nom, code, description, multiplicateur_malus, multiplicateur_qualite |
 | ranged-weapons.json | 8 | nom, domaine, portee_min_hex, portee_max_hex, cadence_tir, recharge_action_rapide, contre_charge, attaque_de_zone, degats_pv_base, puissance_perforante_base, prise, malus_vitesse_arme_base |
 | weapons.json | 38 | nom, domaine, prise, malus_vitesse_arme_base, portee_min_hex, portee_max_hex, bonus_charge_base, contre_charge, degats_pv_base, puissance_tranchante_base, puissance_perforante_base, puissance_contondante_base |
-| formula-constants.json | 128 | nom, code, description, formule, valeur, version |
+| formula-constants.json | 133 | nom, code, description, formule, valeur, version |
 | game-formulas.json | 43 | nom, code, domaine, expression, maximum, minimum, notes, statut, type_attaque, version, etape |
 | formula-terms.json | 13 | nom, caracteristique, code_variable, coefficient, cote, description, formule, ordre, source |
 
@@ -35,6 +35,7 @@ Git est la source de vérité. Les JSON ci-dessous sont les référentiels struc
 | affinity-phrases.json | 10 | niveau, affinite_max, phrase, variantes (phrase d'affinité envers le capitaine, avec les cœurs de la fiche et de la carte du mercenaire ; trois variantes de même sens par niveau) |
 | character-sheet-copy.json | 11 + 7 | ancestries (nom, famille, parent), origins (nom, homme, femme) : phrases de l'onglet Profil de la fiche |
 | tavern-dialogue.json | 20 + 38 | greetings (min, max, texte) selon l'affinité ; questions, answers et lines du dialogue de recrutement ; weapons (nom, avec_article) : textes de la Taverne |
+| equipment-dialogue.json | 8 × 4 | proposals (par action), replies (action, accord, humeur, lignes), outcomes, menu : dialogues des échanges d’équipement Donner / Retirer / Troquer |
 | item-titles.json | 49 | nom, famille (arme, armure ou bottes), t1, t2, t3, t4 : titre de l’objet selon son tier, en tête de la carte d’objet (textes de JC, Idan 2026-10-24) |
 | renamed-names.json | 3 | ancien, nouveau, famille (culture ou arme), date : noms changés par Idan ; les sauvegardes et les mots-clés Bridge des avatars restent compatibles |
 | character-names.json | 46 | id, peuple, culture, consonance, poids, prenoms_femme, prenoms_homme, noms, noms_femme (noms des personnages générés : genre et consonance des cultures humaines) |

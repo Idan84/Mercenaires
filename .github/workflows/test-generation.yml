@@ -38,6 +38,7 @@ jobs:
       - run: node tests/biography.test.js
       - run: node tests/pictos.test.js
       - run: node tests/equipment-art.test.js
+      - run: node tests/item-card.test.js
       - run: node tests/avatars.test.js
       - run: node tests/creation.test.js
       - run: node tests/avatar-catalog.test.js
@@ -57,6 +58,7 @@ jobs:
       - run: node --check game-core/recruit-dialogue.js
       - run: node --check prototype-web/picto-ui.js
       - run: node --check prototype-web/equipment-art.js
+      - run: node --check prototype-web/item-card-ui.js
       - run: node --check prototype-web/screen-ui.js
       - run: node --check prototype-web/music-ui.js
       - run: node --check prototype-web/intro-ui.js

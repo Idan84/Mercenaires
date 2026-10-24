@@ -568,14 +568,15 @@ function gearKind(slot,item){
   if(/^weapon_/.test(slot.id)) return "melee";
   return GEAR_ICONS[slot.id]?slot.id:"pouch";
 }
+// Carte de l'objet au survol (item-card-ui.js), gardée dans un modèle caché de la case.
 function gearTooltip(item){
-  return `<span class="item-tooltip" role="tooltip">
-    <strong>${esc(item.name)}</strong>
-    <span>T${item.tier} — ${esc(item.qualityName||"")}</span>
-    <span>${esc(item.category||item.itemType||"")}</span>
-    ${item.grip?`<span>Prise : ${esc(item.grip)}</span>`:""}
-    ${item.description?`<small>${esc(item.description)}</small>`:""}
-  </span>`;
+  const card=typeof renderItemCard==="function"?renderItemCard(item):"";
+  return `<template class="item-card-template">${card||`<div class="item-card item-card--t${Number(item.tier)||1}">
+    <div class="item-card-names"><strong class="item-card-title">${esc(item.name)}</strong>
+    <span class="item-card-sub">${esc(item.category||item.itemType||"")}</span>
+    <span class="item-card-tier">T${item.tier} · ${esc(item.qualityName||"")}</span></div>
+    ${item.description?`<p class="item-card-flavor">${esc(item.description)}</p>`:""}
+  </div>`}</template>`;
 }
 // Image d'un objet selon son tier (Idan, 2026-10-23 : masters dans assets-src/Equipements/, versions du jeu
 // par scripts/build-equipment.js), ou null tant qu'il n'en a pas : la case garde alors son picto.

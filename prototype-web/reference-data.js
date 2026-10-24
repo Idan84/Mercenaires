@@ -18,6 +18,7 @@ const REFERENCE_FILES = {
   baseArmors: "base-armors.json",
   boots: "boots.json",
   belts: "belts.json",
+  amulets: "amulets.json",
   itemQualities: "item-qualities.json",
   equipmentSlots: "equipment-slots.json",
   startingEquipmentGeneration: "starting-equipment-generation.json",

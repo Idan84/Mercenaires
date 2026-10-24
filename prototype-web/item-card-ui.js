@@ -64,8 +64,8 @@ function armorCardBody(card){
   return {rows,traits:[],flavor:card.description};
 }
 
-// Bottes et ceintures (Idan, 2026-10-24) : un pourcentage de la caractéristique de base du porteur.
-const STAT_GEAR_KINDS=["boots","belt"];
+// Bottes, ceintures et amulettes (Idan, 2026-10-24) : un pourcentage de la caractéristique de base du porteur.
+const STAT_GEAR_KINDS=["boots","belt","amulet"];
 // « de l’Endurance », « du Courage », « de la Vitesse ».
 const MASCULINE_STATS=new Set(["Courage","Charisme"]);
 function statArticle(stat){
@@ -77,7 +77,7 @@ function statGearCardBody(card){
     traits:[`Ajoute ${cardNumber(card.bonus)} % ${statArticle(card.stat)}${card.stat} de base du porteur`],flavor:null};
 }
 
-// La qualité en une phrase : ce qui monte, ce qui baisse. Elle ne change pas le bonus des bottes ni des ceintures.
+// La qualité en une phrase : ce qui monte, ce qui baisse. Elle ne change pas le bonus des bottes, ceintures et amulettes.
 function qualityLine(card){
   if(STAT_GEAR_KINDS.includes(card.kind)) return "";
   const up=Math.round((card.quality.good-1)*100),down=Math.round((card.quality.bad-1)*100);

@@ -2,6 +2,18 @@
 
 // Généré par scripts/build-equipment.js : images d'équipement présentes dans assets/equipment/.
 const EQUIPMENT_ART=new Set([
+  "amulettes/amulette-de-chance-1",
+  "amulettes/amulette-de-chance-2",
+  "amulettes/amulette-de-chance-3",
+  "amulettes/amulette-de-chance-4",
+  "amulettes/amulette-de-puissance-magique-1",
+  "amulettes/amulette-de-puissance-magique-2",
+  "amulettes/amulette-de-puissance-magique-3",
+  "amulettes/amulette-de-puissance-magique-4",
+  "amulettes/amulette-de-volonte-1",
+  "amulettes/amulette-de-volonte-2",
+  "amulettes/amulette-de-volonte-3",
+  "amulettes/amulette-de-volonte-4",
   "armes/arbalete-1",
   "armes/arbalete-2",
   "armes/arbalete-3",

@@ -202,9 +202,11 @@ Le matériel attribué à un mercenaire ne doit donc pas être considéré comme
 
 **Ceintures (Idan, 2026-10-24)** : **1D6 ceintures** aussi, chacune d'un type tiré au hasard (mana, endurance, courage ; doc 05), dans leur propre onglet de l'Intendance.
 
+**Amulettes (Idan, 2026-10-24)** : **1D6 amulettes** aussi, chacune d'un type tiré au hasard (puissance magique, volonté, chance ; doc 05), dans leur propre onglet de l'Intendance.
+
 **Affichage de l'Intendance (Idan, 2026-10-24)** : un onglet par grande catégorie (Armes, Armures, Bottes, avec leur nombre) ; dans chaque onglet, les catégories sont en accordéon, fermées par défaut. L'onglet choisi et les catégories ouvertes restent tels quels quand l'écran se redessine.
 
-Constantes : `company.starting_stock.dice_count` (2), `company.starting_stock.dice_sides` (20), `company.starting_stock.affinity_weight` (2), `company.starting_stock.min_weight` (0,25), `company.starting_stock.armor_dice_count` (1), `company.starting_stock.armor_dice_sides` (6), `company.starting_stock.boots_dice_count` (1), `company.starting_stock.boots_dice_sides` (6), `company.starting_stock.belt_dice_count` (1), `company.starting_stock.belt_dice_sides` (6). Une partie sauvegardée avant ces règles reçoit au chargement ce qui lui manque (le stock d'armes, puis les armures, les bottes et les ceintures, une seule fois chacun). La capacité limitée de l'armurerie reste à définir.
+Constantes : `company.starting_stock.dice_count` (2), `company.starting_stock.dice_sides` (20), `company.starting_stock.affinity_weight` (2), `company.starting_stock.min_weight` (0,25), `company.starting_stock.armor_dice_count` (1), `company.starting_stock.armor_dice_sides` (6), `company.starting_stock.boots_dice_count` (1), `company.starting_stock.boots_dice_sides` (6), `company.starting_stock.belt_dice_count` (1), `company.starting_stock.belt_dice_sides` (6), `company.starting_stock.amulet_dice_count` (1), `company.starting_stock.amulet_dice_sides` (6). Une partie sauvegardée avant ces règles reçoit au chargement ce qui lui manque (le stock d'armes, puis les armures, les bottes, les ceintures et les amulettes, une seule fois chacun). La capacité limitée de l'armurerie reste à définir.
 
 ### L'intendant (Idan, 2026-10-24)
 

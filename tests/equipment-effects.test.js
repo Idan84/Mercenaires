@@ -10,7 +10,8 @@ const {createEquipmentEffects} = require("../game-core/equipment-effects.js");
 
 const ROOT = path.resolve(__dirname, "..");
 const read = file => JSON.parse(fs.readFileSync(path.join(ROOT, "data", "reference", file), "utf8"));
-const reference = {weapons:read("weapons.json"), baseArmors:read("base-armors.json"), boots:read("boots.json"), belts:read("belts.json"), itemQualities:read("item-qualities.json"),
+const reference = {weapons:read("weapons.json"), baseArmors:read("base-armors.json"), boots:read("boots.json"), belts:read("belts.json"), amulets:read("amulets.json"),
+  itemQualities:read("item-qualities.json"),
   skills:read("skills.json"), formulaConstants:read("formula-constants.json")};
 const engine = createCombatEngine(reference);
 const {effects} = createEquipmentEffects({engine});
@@ -88,9 +89,30 @@ const mage = belted("Ceinture de mana", 1);
 near(mage.e["Réserve de mana"].value, 42);
 assert.equal(mage.e.Endurance.lines.length, 0, "une ceinture de mana ne touche pas l'Endurance");
 
+// Amulettes (Idan, 2026-10-24) : mêmes règles, sur l'emplacement Amulette.
+const amuleted = (name, tier) => {
+  const c = {...knight, stats:{...stats, Chance:40, "Puissance magique":50},
+    items:[...knight.items, {id:"m", itemType:"amulet", name, tier, qualityName:"Correcte"}], equipment:{slots:{...knight.equipment.slots, amulet:"m"}}};
+  return {c, e:effects(c), unit:{character:c, activeSet:1}, bare:{character:{...c, equipment:{slots:{...knight.equipment.slots}}}, activeSet:1}};
+};
+const stern = amuleted("Amulette de volonté", 4);
+near(stern.e["Volonté"].value, 72, "Volonté 60 + 20 %");
+assert.deepEqual(stern.e["Volonté"].lines, [{label:"Amulette de volonté (Correcte)", delta:12, reason:"gear", percent:20}]);
+near(stern.e.Initiative.value - stern.e.Initiative.base - (stern.e.Vitesse.value - 42), 0.6, "Initiative : 0,05 × Volonté bonifiée");
+assert.deepEqual(stern.e.Initiative.lines.map(l => l.reason), ["speed","will"]);
+const nobody = {character:{stats:{}, skills:{}}, activeSet:1};
+near(engine.courageHold(stern.unit, nobody), engine.courageHold(stern.bare, nobody) + 3, "tenir son Courage : 0,25 × Volonté bonifiée");
+const lucky = amuleted("Amulette de chance", 2);
+near(lucky.e.Chance.value, 44);
+near(engine.criticalChance(lucky.unit), engine.criticalChance(lucky.bare) * 44 / 40, "critique : la Chance bonifiée");
+const sage = amuleted("Amulette de puissance magique", 1);
+near(sage.e["Puissance magique"].value, 52.5);
+assert.equal(sage.e.Chance.lines.length, 0, "une amulette de puissance magique ne touche pas la Chance");
+
 // Sans équipement : rien ne change.
 const bare = effects({stats, skills:{}, items:[], equipment:{slots:{}}});
-for (const name of ["Vitesse","Esquive","Perception","Endurance","Courage","Réserve de mana","Initiative","Dextérité"]) near(bare[name].value, bare[name].base);
+for (const name of ["Vitesse","Esquive","Perception","Endurance","Courage","Réserve de mana","Puissance magique","Volonté","Chance",
+  "Initiative","Dextérité"]) near(bare[name].value, bare[name].base);
 // Dégâts par set (Idan, 2026-10-24) : jet minimum et maximum du combat contre une cible sans résistance.
 const {attacks} = createEquipmentEffects({engine});
 const fighter = {stats:{Force:60},

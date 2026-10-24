@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "name": "amulets",
+  "description": "Amulettes (Idan, 2026-10-24) : mêmes règles que les bottes et les ceintures. Trois types, chacun lié à une caractéristique. L’amulette portée (emplacement Amulette) ajoute un pourcentage de la caractéristique de base du porteur selon son tier : +5 % (T1), +10 % (T2), +15 % (T3), +20 % (T4). Images : assets-src/Equipements/Amulettes.",
+  "columns": [
+    {
+      "source": "Nom",
+      "key": "nom"
+    },
+    {
+      "source": "Code",
+      "key": "code"
+    },
+    {
+      "source": "Caractéristique",
+      "key": "caracteristique"
+    },
+    {
+      "source": "Bonus T1 (%)",
+      "key": "bonus_t1"
+    },
+    {
+      "source": "Bonus T2 (%)",
+      "key": "bonus_t2"
+    },
+    {
+      "source": "Bonus T3 (%)",
+      "key": "bonus_t3"
+    },
+    {
+      "source": "Bonus T4 (%)",
+      "key": "bonus_t4"
+    }
+  ],
+  "row_count": 3,
+  "rows": [
+    {
+      "nom": "Amulette de puissance magique",
+      "code": "magic_power_amulet",
+      "caracteristique": "Puissance magique",
+      "bonus_t1": 5,
+      "bonus_t2": 10,
+      "bonus_t3": 15,
+      "bonus_t4": 20
+    },
+    {
+      "nom": "Amulette de volonté",
+      "code": "willpower_amulet",
+      "caracteristique": "Volonté",
+      "bonus_t1": 5,
+      "bonus_t2": 10,
+      "bonus_t3": 15,
+      "bonus_t4": 20
+    },
+    {
+      "nom": "Amulette de chance",
+      "code": "luck_amulet",
+      "caracteristique": "Chance",
+      "bonus_t1": 5,
+      "bonus_t2": 10,
+      "bonus_t3": 15,
+      "bonus_t4": 20
+    }
+  ]
+}

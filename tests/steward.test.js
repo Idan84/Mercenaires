@@ -71,6 +71,12 @@ assert.deepEqual([stay.accepted, stay.days, field.company.intendantId], [false, 
 assert.equal(rules.recall(field).reason, "Vous lui en avez déjà parlé aujourd’hui.");
 field.day = 41;
 roll = 0;
+// Dortoir plein (Idan, 2026-10-24) : pas de retour sur le terrain, et la proposition du jour n'est pas consommée.
+const dorm = {free:() => 0.5, places:() => 1};
+const blocked = createStewardRules({reference, random:() => 0, dormitory:dorm}).recall(field);
+assert.deepEqual([blocked.ok, blocked.dormFull, blocked.reason], [false, true, "Le dortoir est plein : pas de place pour son retour."]);
+assert.equal(field.company.intendantId, 4);
+assert.notEqual(veteran.stewardOfferDay, 41, "le refus faute de place ne compte pas comme la proposition du jour");
 const back = rules.recall(field);
 assert.deepEqual([back.accepted, back.days, field.company.intendantId, field.company.intendantSince], [true, 31, null, undefined]);
 assert.equal(veteran.history.stewardDays, 31);

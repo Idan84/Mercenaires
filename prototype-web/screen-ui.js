@@ -101,8 +101,9 @@ function renderGameHud(){
   $("hud-gold-stat").classList.toggle("hud-stat--debt",gold<0);
   hudGoldDelta(gold);
   $("hud-upkeep").textContent=fmt(Math.round(rules?rules.payroll(game.campaign):0))+" PO/j";
-  // Places occupées au dortoir (un ogre en prend deux ; ni le capitaine ni l'intendant).
-  $("hud-roster").textContent=(rules?rules.dormitoryUsed(game.campaign):company.roster.length)+" / "+(company.camp?.dormitoryCapacity??"—");
+  // Places occupées au dortoir (un ogre en prend deux, un halfling, un gnome ou un gobelin une demi ; ni le capitaine ni
+  // l'intendant).
+  $("hud-roster").textContent=dormitoryPlacesText(rules?rules.dormitoryUsed(game.campaign):company.roster.length)+" / "+(company.camp?.dormitoryCapacity??"—");
   renderCampCalendar();
   const lines=gameActionMessages.slice(0,8);
   const last=$("hud-journal-last");

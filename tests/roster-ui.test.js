@@ -1,7 +1,7 @@
 "use strict";
 
 // Tests UI du roster : affichage compact, places du dortoir (ni le capitaine ni l'intendant ; un ogre en prend deux,
-// Idan 2026-10-24), trois tris.
+// un halfling, un gnome ou un gobelin une demi ; Idan 2026-10-24), trois tris.
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
@@ -87,7 +87,11 @@ assert.match(elements["initial-count"].innerHTML,/Dortoir : 4 \/ 40/,"un ogre pr
 game.campaign.company.intendantId=2;
 roster.renderMercenaryRoster();
 assert.match(elements["initial-count"].innerHTML,/Dortoir : 3 \/ 40/,"l'intendant ne prend pas de place");
-assert.match(elements["initial-count"].title,/un ogre en prend deux/);
+assert.match(elements["initial-count"].title,/un ogre en prend deux ; un halfling, un gnome ou un gobelin une demi/);
+squad[0].people="Gobelin";
+roster.renderMercenaryRoster();
+assert.match(elements["initial-count"].innerHTML,/Dortoir : 2,5 \/ 40/,"un gobelin : une demi-place");
+squad[0].people="Humain";
 delete game.campaign.company.intendantId;
 squad[2].people="Elfe";
 roster.renderMercenaryRoster();

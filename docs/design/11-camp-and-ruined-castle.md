@@ -64,8 +64,8 @@ Fonctions envisagées / retenues :
 Le dortoir fixe la **capacité maximale de mercenaires** hébergés.
 
 - capacité initiale : `40` (décision Idan du 2026-10-03 ; constante `camp.dormitory.initial_capacity`) ;
-- places occupées (Idan, 2026-10-24) : un **ogre prend deux places**, tout autre mercenaire **une** (halflings, gobelins et gnomes compris ; `peoples.json`, colonne `places_dortoir`) ; le **capitaine** et l'**intendant** n'en prennent pas ;
-- dortoir plein (moins de places libres que n'en demande le candidat) : **impossible de recruter** ;
+- places occupées (Idan, 2026-10-24) : un **ogre prend deux places** ; un **halfling, un gnome ou un gobelin une demi-place** ; tout autre mercenaire **une** (`peoples.json`, colonne `places_dortoir`) ; le **capitaine** et l'**intendant** n'en prennent pas ;
+- dortoir plein (moins de places libres que n'en demande le candidat) : **impossible de recruter** ; de même, l'intendant ne peut pas **revenir sur le terrain** s'il n'y a plus de place pour lui ;
 - amélioration → plus de places ;
 - embellissement / qualité → contribution possible à la renommée / attractivité.
 

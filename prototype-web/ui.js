@@ -587,7 +587,7 @@ function gearTooltip(item){
 }
 // Image d'un objet selon son tier (Idan, 2026-10-23 : masters dans assets-src/Equipements/, versions du jeu
 // par scripts/build-equipment.js), ou null tant qu'il n'en a pas : la case garde alors son picto.
-const EQUIPMENT_ART_DIRS={armor:"armures",weapon:"armes",boots:"bottes"};
+const EQUIPMENT_ART_DIRS={armor:"armures",weapon:"armes",boots:"bottes",belt:"ceintures"};
 function equipmentArt(item){
   const dir=EQUIPMENT_ART_DIRS[item?.itemType];
   const key=dir?`${dir}/${pictoSlug(item.name)}-${item.tier}`:null;
@@ -904,7 +904,7 @@ function equipmentDetail(effect){
   const note={weight:"poids, réduit par la maîtrise",armor:"handicap de l’armure",speed:"avec l’équipement",dual:"une arme dans chaque main"};
   const line=l=>{
     const delta=Math.round(l.delta);
-    return `<span class="sheet-gear-line"><span>${esc(l.label)}<small>${esc(l.reason==="boots"?`+${l.percent} % de la valeur de base`:note[l.reason]||"")}${l.twoHands?" · à deux mains ÷2":""}</small></span><b class="${delta<0?"is-malus":delta>0?"is-bonus":""}">${delta>0?"+":""}${fmt(delta)}</b></span>`;
+    return `<span class="sheet-gear-line"><span>${esc(l.label)}<small>${esc(l.reason==="gear"?`+${l.percent} % de la valeur de base`:note[l.reason]||"")}${l.twoHands?" · à deux mains ÷2":""}</small></span><b class="${delta<0?"is-malus":delta>0?"is-bonus":""}">${delta>0?"+":""}${fmt(delta)}</b></span>`;
   };
   return `<span class="sheet-gear-detail">
     <span class="sheet-stat-pop-title">Avec l’équipement</span>

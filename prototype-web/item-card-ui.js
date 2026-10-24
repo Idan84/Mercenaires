@@ -64,15 +64,22 @@ function armorCardBody(card){
   return {rows,traits:[],flavor:card.description};
 }
 
-// Bottes (Idan, 2026-10-24) : un pourcentage de la caractéristique de base du porteur.
-function bootsCardBody(card){
+// Bottes et ceintures (Idan, 2026-10-24) : un pourcentage de la caractéristique de base du porteur.
+const STAT_GEAR_KINDS=["boots","belt"];
+// « de l’Endurance », « du Courage », « de la Vitesse ».
+const MASCULINE_STATS=new Set(["Courage","Charisme"]);
+function statArticle(stat){
+  if(/^[AEIOUÉ]/.test(stat)) return "de l’";
+  return MASCULINE_STATS.has(stat)?"du ":"de la ";
+}
+function statGearCardBody(card){
   return {rows:[cardRow(card.stat,`+${cardNumber(card.bonus)} %`,"bonus")],
-    traits:[`Ajoute ${cardNumber(card.bonus)} % ${/^[AEIOUÉ]/.test(card.stat)?"de l’":"de la "}${card.stat} de base du porteur`],flavor:null};
+    traits:[`Ajoute ${cardNumber(card.bonus)} % ${statArticle(card.stat)}${card.stat} de base du porteur`],flavor:null};
 }
 
-// La qualité en une phrase : ce qui monte, ce qui baisse. Elle ne change pas le bonus des bottes.
+// La qualité en une phrase : ce qui monte, ce qui baisse. Elle ne change pas le bonus des bottes ni des ceintures.
 function qualityLine(card){
-  if(card.kind==="boots") return "";
+  if(STAT_GEAR_KINDS.includes(card.kind)) return "";
   const up=Math.round((card.quality.good-1)*100),down=Math.round((card.quality.bad-1)*100);
   if(!up&&!down) return "";
   const effects=card.kind==="armor"?"résistances":"dégâts, charge et blocage";
@@ -84,8 +91,9 @@ function renderItemCard(item){
   const card=itemCardRules()?.card(item);
   if(!card) return "";
   const art=typeof equipmentArt==="function"?equipmentArt(item):null;
-  const body=card.kind==="armor"?armorCardBody(card):card.kind==="boots"?bootsCardBody(card):weaponCardBody(card);
-  const subtitle=card.kind==="armor"?(ARMOR_CLASSES[card.category]||card.category||"Armure"):card.kind==="boots"?card.name:[card.name,card.category].filter(Boolean).join(" · ");
+  const gear=STAT_GEAR_KINDS.includes(card.kind);
+  const body=card.kind==="armor"?armorCardBody(card):gear?statGearCardBody(card):weaponCardBody(card);
+  const subtitle=card.kind==="armor"?(ARMOR_CLASSES[card.category]||card.category||"Armure"):gear?card.name:[card.name,card.category].filter(Boolean).join(" · ");
   return `<div class="item-card item-card--t${card.tier}">
     <div class="item-card-head">
       ${art?`<span class="gear-tile gear-tile--art gear-tile--t${card.tier} item-card-art"><img class="gear-art" src="${art}" alt=""></span>`:""}

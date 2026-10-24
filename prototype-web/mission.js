@@ -219,7 +219,8 @@ function resolveMissionAftermath(){
   const captainId=game.campaign?game.campaign.company.captainId:game.captain?.id;
   const participants=m.players.map(u=>({
     id:u.character.id,name:u.character.name,hp:u.hp,pvMax:u.character.pvMax,
-    damageTaken:u.damageTaken,stats:u.character.stats,
+    // Endurance avec la ceinture (Idan, 2026-10-24) : blessure et convalescence la lisent aussi.
+    damageTaken:u.damageTaken,stats:{...u.character.stats,Endurance:m.engine.statWithGear(u,"Endurance")},
     isCaptain:captainId!=null&&u.character.id===captainId,offMap:u.offMap,progress:u.progress||null
   }));
   m.aftermath=m.endRules.resolveMissionEnd(participants);

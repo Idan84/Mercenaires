@@ -21,12 +21,14 @@
     const qualities=rows.itemQualities||[];
     const skills=rows.skills||[];
     const boots=rows.boots||[];
+    const belts=rows.belts||[];
 
     const weaponByName=new Map(weapons.map(x=>[x.nom,x]));
     const armorByCode=new Map(armors.map(x=>[x.code,x]));
     const qualityByCode=new Map(qualities.map(x=>[x.code,x]));
     const skillByName=new Map(skills.map(x=>[x.nom,x]));
-    const bootsByName=new Map(boots.map(x=>[x.nom,x]));
+    // Équipement à bonus de caractéristique : l'emplacement et ses modèles (bottes, ceinture).
+    const STAT_GEAR=[{slot:"boots",byName:new Map(boots.map(x=>[x.nom,x]))},{slot:"belt",byName:new Map(belts.map(x=>[x.nom,x]))}];
 
     function die(sides){ return Math.floor(random()*sides)+1; }
     function d100(){ return die(100); }
@@ -84,17 +86,20 @@
       return off;
     }
     function armorItem(unit){ return itemBySlot(unit,"armor"); }
-    function bootsItem(unit){ return itemBySlot(unit,"boots"); }
-
-    // Bottes (Idan, 2026-10-24) : + bonus_t<tier> % de la caractéristique de base qu'elles servent (Vitesse,
-    // Esquive ou Perception) ; 0 sans bottes ou pour une autre caractéristique.
-    function bootsBonus(unit,stat){
-      const item=bootsItem(unit),template=item?bootsByName.get(item.name):null;
-      if(!template||template.caracteristique!==stat) return 0;
-      return (Number(unit.character.stats?.[stat])||0)*(Number(template["bonus_t"+item.tier])||0)/100;
+    // Bottes et ceinture (Idan, 2026-10-24) : + bonus_t<tier> % de la caractéristique de base qu'elles servent (Vitesse,
+    // Esquive, Perception pour les bottes ; Réserve de mana, Endurance, Courage pour la ceinture).
+    // gearBonuses : une ligne par objet qui sert cette caractéristique ; statWithGear : la caractéristique bonifiée.
+    function gearBonuses(unit,stat){
+      const base=Number(unit.character.stats?.[stat])||0;
+      return STAT_GEAR.map(({slot,byName})=>{
+        const item=itemBySlot(unit,slot),template=item?byName.get(item.name):null;
+        if(!template||template.caracteristique!==stat) return null;
+        const percent=Number(template["bonus_t"+item.tier])||0;
+        return {item,slot,percent,bonus:base*percent/100};
+      }).filter(Boolean);
     }
-    function statWithBoots(unit,stat){
-      return (Number(unit.character.stats?.[stat])||0)+bootsBonus(unit,stat);
+    function statWithGear(unit,stat){
+      return (Number(unit.character.stats?.[stat])||0)+gearBonuses(unit,stat).reduce((sum,x)=>sum+x.bonus,0);
     }
     function weaponTemplate(item){ return item?weaponByName.get(item.name)||null:null; }
 
@@ -202,17 +207,17 @@
     }
 
     function effectiveSpeed(unit){
-      return Math.max(1,(statWithBoots(unit,"Vitesse")||1)-armorMobility(unit).speed-weaponSpeedPenalty(unit));
+      return Math.max(1,(statWithGear(unit,"Vitesse")||1)-armorMobility(unit).speed-weaponSpeedPenalty(unit));
     }
 
     function effectiveDodge(unit){
       if(unit.prone) return 0;
-      return Math.max(1,(statWithBoots(unit,"Esquive")||1)-armorMobility(unit).dodge);
+      return Math.max(1,(statWithGear(unit,"Esquive")||1)-armorMobility(unit).dodge);
     }
 
     function movementBase(unit){
       const score=effectiveSpeed(unit)
-        +0.25*(Number(unit.character.stats?.Endurance)||0)
+        +0.25*statWithGear(unit,"Endurance")
         +0.10*(Number(unit.character.stats?.["Volonté"])||0);
       return Math.max(1,Math.ceil(score/15));
     }
@@ -220,7 +225,7 @@
     function initiative(unit){
       return effectiveSpeed(unit)
         +0.25*(Number(unit.character.stats?.Intelligence)||0)
-        +0.10*(Number(unit.character.stats?.Courage)||0)
+        +0.10*statWithGear(unit,"Courage")
         +0.05*(Number(unit.character.stats?.["Volonté"])||0);
     }
 
@@ -313,10 +318,10 @@
       const weapon=weaponTemplate(activeWeaponItem(attacker));
       const m=mastery(attacker.character,weapon);
       const a=attacker.character.stats||{},d=defender.character.stats||{};
-      const defensivePerception=context.opportunity||context.backstab?0:statWithBoots(defender,"Perception");
+      const defensivePerception=context.opportunity||context.backstab?0:statWithGear(defender,"Perception");
       const dodgeFactor=context.opportunity?0.5:1;
       let delta=effectiveDexterity(attacker)
-        +0.2*(m.categoryScore+m.weaponScore+statWithBoots(attacker,"Perception")+effectiveSpeed(attacker))
+        +0.2*(m.categoryScore+m.weaponScore+statWithGear(attacker,"Perception")+effectiveSpeed(attacker))
         -dodgeFactor*effectiveDodge(defender)
         -0.2*(defensivePerception+effectiveSpeed(defender));
 
@@ -338,7 +343,7 @@
       let attackStat=0,twoHands=0;
 
       if(mode==="ranged"){
-        attackStat=statWithBoots(attacker,"Perception");
+        attackStat=statWithGear(attacker,"Perception");
       }else{
         attackStat=(Number(a.Force)||0)+(Number(context.chargePower)||0);
         if(usesTwoHands(attacker,weapon)){
@@ -349,7 +354,7 @@
       const delta=attackStat
         +0.2*(m.categoryScore+m.weaponScore+twoHands)
         +(Number(matchup?.matchup)||0)
-        -(Number(d.Endurance)||0);
+        -statWithGear(defender,"Endurance");
       return clamp(logistic(delta),10,90);
     }
 
@@ -664,7 +669,7 @@
     // Courage post-attaque CAC V1 / Courage post-tir V1, avec le malus de Courage en sous-nombre V1.
     function courageHold(subject,opponent,surplus=0){
       const s=subject.character.stats||{};
-      return clamp((Number(s.Courage)||0)+0.25*(Number(s["Volonté"])||0)-0.25*intimidation(opponent)-10*surplus,5,95);
+      return clamp(statWithGear(subject,"Courage")+0.25*(Number(s["Volonté"])||0)-0.25*intimidation(opponent)-10*surplus,5,95);
     }
 
     // Courage en sous-nombre V1 : mêlée locale = groupe connecté de combattants liés par leurs zones de menace CAC.
@@ -707,7 +712,7 @@
     // Reprise de contrôle — En Fuite V1 ; ennemi de référence = ennemi actif le plus proche (vivant, pas En Fuite).
     function recoveryChance(unit,referenceEnemy,fleeTurn){
       const s=unit.character.stats||{};
-      return clamp((Number(s.Courage)||0)+0.25*(Number(s["Volonté"])||0)-0.25*intimidation(referenceEnemy)+10*fleeTurn,5,95);
+      return clamp(statWithGear(unit,"Courage")+0.25*(Number(s["Volonté"])||0)-0.25*intimidation(referenceEnemy)+10*fleeTurn,5,95);
     }
 
     function rollRecovery(unit,referenceEnemy,fleeTurn){
@@ -763,9 +768,8 @@
       weaponTemplate,
       armorItem,
       armorTemplate,
-      bootsItem,
-      bootsBonus,
-      statWithBoots,
+      gearBonuses,
+      statWithGear,
       quality,
       isRangedWeapon,
       isMeleeWeapon,

@@ -3,7 +3,7 @@
 // Intendance (doc 11 §16) : le stock de la compagnie. Pour l'instant, les armes, armures et bottes de rechange reçues
 // à la création (Idan, 2026-10-23 et 2026-10-24), rangées par catégorie : les armes d'abord, puis les armures, de la
 // plus légère à la plus lourde, puis les bottes ; deux objets identiques de même tier forment une ligne « × 2 ».
-const STOCK_KINDS=["weapon","armor","boots"];
+const STOCK_KINDS=["weapon","armor","boots","belt"];
 const STOCK_ARMOR_GROUPS=[["Vêtement","Vêtements"],["Légère","Armures légères"],["Intermédiaire","Armures intermédiaires"],["Lourde","Armures lourdes"]];
 function stockGroups(items){
   const groups=new Map();
@@ -29,9 +29,9 @@ function stockGroups(items){
 
 function stockCount(items){
   const count=type=>items.filter(item=>item.itemType===type).length;
-  const armors=count("armor"),boots=count("boots"),weapons=items.length-armors-boots;
+  const armors=count("armor"),boots=count("boots"),belts=count("belt"),weapons=items.length-armors-boots-belts;
   const plural=(n,word)=>n+" "+word+(n>1?"s":"");
-  return [plural(weapons,"arme"),armors?plural(armors,"armure"):"",boots?plural(boots,"paire")+" de bottes":""].filter(Boolean).join(" · ");
+  return [plural(weapons,"arme"),armors?plural(armors,"armure"):"",boots?plural(boots,"paire")+" de bottes":"",belts?plural(belts,"ceinture"):""].filter(Boolean).join(" · ");
 }
 
 // Un clic sur la ligne propose « Donner à… » (deal-ui.js).
@@ -46,8 +46,8 @@ function renderStockRow({item,count}){
 
 // Onglets par grande catégorie et catégories en accordéon, fermées par défaut (Idan, 2026-10-24). L'onglet choisi
 // et les catégories ouvertes restent tels quels quand l'écran se redessine (passage d'un jour, retour au camp).
-const STOCK_TABS=[["weapon","Armes"],["armor","Armures"],["boots","Bottes"]];
-const STOCK_EMPTY={weapon:"Aucune arme en stock.",armor:"Aucune armure en stock.",boots:"Aucune paire de bottes en stock."};
+const STOCK_TABS=[["weapon","Armes"],["armor","Armures"],["boots","Bottes"],["belt","Ceintures"]];
+const STOCK_EMPTY={weapon:"Aucune arme en stock.",armor:"Aucune armure en stock.",boots:"Aucune paire de bottes en stock.",belt:"Aucune ceinture en stock."};
 const stockView={tab:"weapon",open:new Set()};
 
 function renderQuartermaster(){

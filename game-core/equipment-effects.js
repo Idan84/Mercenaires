@@ -6,7 +6,8 @@
 //   prise à deux mains) ;
 // - Esquive : + bottes d'esquive − handicap d'esquive de l'armure ;
 // - Perception : + bottes de perception ;
-// - Initiative : calculée avec la Vitesse au combat ;
+// - Endurance, Courage, Réserve de mana : + ceinture (Idan, 2026-10-24) ;
+// - Initiative : calculée avec la Vitesse au combat et le Courage avec la ceinture ;
 // - Dextérité : réduite par le combat à deux armes.
 // Chaque effet donne la valeur de base, la valeur équipée et les lignes du détail (objet ou raison, écart).
 // Dégâts de chaque set d'armes (Idan, 2026-10-24) : ceux du combat avant la résistance de la cible.
@@ -24,15 +25,13 @@
       return item.qualityName?`${item.name} (${item.qualityName})`:item.name;
     }
 
-    // Bottes (Idan, 2026-10-24) : + un pourcentage de la caractéristique de base.
-    function bootsLines(unit,stat){
-      const boots=engine.bootsItem(unit),bonus=engine.bootsBonus(unit,stat);
-      const base=Number(unit.character.stats?.[stat])||0;
-      return boots&&bonus?[{label:itemLabel(boots),delta:bonus,reason:"boots",percent:Math.round(100*bonus/base)}]:[];
+    // Bottes et ceinture (Idan, 2026-10-24) : + un pourcentage de la caractéristique de base.
+    function gearLines(unit,stat){
+      return engine.gearBonuses(unit,stat).filter(x=>x.bonus).map(x=>({label:itemLabel(x.item),delta:x.bonus,reason:"gear",percent:x.percent}));
     }
 
     function speedLines(unit){
-      const lines=bootsLines(unit,"Vitesse");
+      const lines=gearLines(unit,"Vitesse");
       const armor=engine.armorItem(unit),mobility=engine.armorMobility(unit);
       if(armor&&mobility.speed) lines.push({label:itemLabel(armor),delta:-mobility.speed,reason:"armor"});
       for(const item of [engine.activeWeaponItem(unit),engine.activeOffhandItem(unit)]){
@@ -46,7 +45,8 @@
       return lines;
     }
 
-    // { Vitesse, Esquive, Perception, Initiative, Dextérité } : {base, value, lines} pour chaque caractéristique concernée.
+    // { Vitesse, Esquive, Perception, Endurance, Courage, Réserve de mana, Initiative, Dextérité } : {base, value, lines}
+    // pour chaque caractéristique concernée.
     function effects(character){
       if(!engine||!character?.stats) return {};
       const unit={character,activeSet:1},bare=bareUnit(character);
@@ -56,11 +56,15 @@
       add("Vitesse",Number(character.stats.Vitesse)||0,engine.effectiveSpeed(unit),speedLines(unit));
       const armor=engine.armorItem(unit),dodge=engine.armorMobility(unit).dodge;
       add("Esquive",Number(character.stats.Esquive)||0,engine.effectiveDodge(unit),
-        [...bootsLines(unit,"Esquive"),...(armor&&dodge?[{label:itemLabel(armor),delta:-dodge,reason:"armor"}]:[])]);
-      add("Perception",Number(character.stats.Perception)||0,engine.statWithBoots(unit,"Perception"),bootsLines(unit,"Perception"));
+        [...gearLines(unit,"Esquive"),...(armor&&dodge?[{label:itemLabel(armor),delta:-dodge,reason:"armor"}]:[])]);
+      for(const stat of ["Perception","Endurance","Courage","Réserve de mana"]){
+        add(stat,Number(character.stats[stat])||0,engine.statWithGear(unit,stat),gearLines(unit,stat));
+      }
       const speedGap=engine.effectiveSpeed(unit)-engine.effectiveSpeed(bare);
-      add("Initiative",engine.initiative(bare),engine.initiative(unit),
-        speedGap?[{label:"Vitesse au combat",delta:speedGap,reason:"speed"}]:[]);
+      const courageGap=0.10*(engine.statWithGear(unit,"Courage")-engine.statWithGear(bare,"Courage"));
+      add("Initiative",engine.initiative(bare),engine.initiative(unit),[
+        ...(speedGap?[{label:"Vitesse au combat",delta:speedGap,reason:"speed"}]:[]),
+        ...(courageGap?[{label:"Courage avec l’équipement",delta:courageGap,reason:"courage"}]:[])]);
       const dexterity=Number(character.stats["Dextérité"])||0,dual=engine.effectiveDexterity(unit);
       add("Dextérité",dexterity,dual,
         engine.isDualWielding(unit)?[{label:"Combat à deux armes",delta:dual-dexterity,reason:"dual"}]:[]);

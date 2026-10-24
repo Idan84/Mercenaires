@@ -30,6 +30,10 @@
     {
       "source": "Bonus T4 (%)",
       "key": "bonus_t4"
+    },
+    {
+      "source": "Prix de base (PO)",
+      "key": "prix_base"
     }
   ],
   "row_count": 3,
@@ -41,7 +45,8 @@
       "bonus_t1": 5,
       "bonus_t2": 10,
       "bonus_t3": 15,
-      "bonus_t4": 20
+      "bonus_t4": 20,
+      "prix_base": 150
     },
     {
       "nom": "Amulette de volonté",
@@ -50,7 +55,8 @@
       "bonus_t1": 5,
       "bonus_t2": 10,
       "bonus_t3": 15,
-      "bonus_t4": 20
+      "bonus_t4": 20,
+      "prix_base": 150
     },
     {
       "nom": "Amulette de chance",
@@ -59,7 +65,8 @@
       "bonus_t1": 5,
       "bonus_t2": 10,
       "bonus_t3": 15,
-      "bonus_t4": 20
+      "bonus_t4": 20,
+      "prix_base": 150
     }
   ]
 }

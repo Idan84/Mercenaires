@@ -50,6 +50,10 @@
     {
       "source": "Malus T4 (en % de la maîtrise de base des deux écoles opposées, bagues de magie)",
       "key": "malus_opposees_t4"
+    },
+    {
+      "source": "Prix de base (PO)",
+      "key": "prix_base"
     }
   ],
   "row_count": 11,
@@ -66,7 +70,8 @@
       "malus_opposees_t1": 0,
       "malus_opposees_t2": 0,
       "malus_opposees_t3": 0,
-      "malus_opposees_t4": 0
+      "malus_opposees_t4": 0,
+      "prix_base": 150
     },
     {
       "nom": "Bague du courage",
@@ -80,7 +85,8 @@
       "malus_opposees_t1": 0,
       "malus_opposees_t2": 0,
       "malus_opposees_t3": 0,
-      "malus_opposees_t4": 0
+      "malus_opposees_t4": 0,
+      "prix_base": 150
     },
     {
       "nom": "Bague de Feu",
@@ -94,7 +100,8 @@
       "malus_opposees_t1": 15,
       "malus_opposees_t2": 10,
       "malus_opposees_t3": 5,
-      "malus_opposees_t4": 0
+      "malus_opposees_t4": 0,
+      "prix_base": 150
     },
     {
       "nom": "Bague de l’Eau",
@@ -108,7 +115,8 @@
       "malus_opposees_t1": 15,
       "malus_opposees_t2": 10,
       "malus_opposees_t3": 5,
-      "malus_opposees_t4": 0
+      "malus_opposees_t4": 0,
+      "prix_base": 150
     },
     {
       "nom": "Bague de la Foudre",
@@ -122,7 +130,8 @@
       "malus_opposees_t1": 15,
       "malus_opposees_t2": 10,
       "malus_opposees_t3": 5,
-      "malus_opposees_t4": 0
+      "malus_opposees_t4": 0,
+      "prix_base": 150
     },
     {
       "nom": "Bague de l’invocation",
@@ -136,7 +145,8 @@
       "malus_opposees_t1": 15,
       "malus_opposees_t2": 10,
       "malus_opposees_t3": 5,
-      "malus_opposees_t4": 0
+      "malus_opposees_t4": 0,
+      "prix_base": 150
     },
     {
       "nom": "Bague de la transmutation",
@@ -150,7 +160,8 @@
       "malus_opposees_t1": 15,
       "malus_opposees_t2": 10,
       "malus_opposees_t3": 5,
-      "malus_opposees_t4": 0
+      "malus_opposees_t4": 0,
+      "prix_base": 150
     },
     {
       "nom": "Bague du nécromancien",
@@ -164,7 +175,8 @@
       "malus_opposees_t1": 15,
       "malus_opposees_t2": 10,
       "malus_opposees_t3": 5,
-      "malus_opposees_t4": 0
+      "malus_opposees_t4": 0,
+      "prix_base": 150
     },
     {
       "nom": "Bague du soigneur",
@@ -178,7 +190,8 @@
       "malus_opposees_t1": 15,
       "malus_opposees_t2": 10,
       "malus_opposees_t3": 5,
-      "malus_opposees_t4": 0
+      "malus_opposees_t4": 0,
+      "prix_base": 150
     },
     {
       "nom": "Bague de l’illusionniste",
@@ -192,7 +205,8 @@
       "malus_opposees_t1": 15,
       "malus_opposees_t2": 10,
       "malus_opposees_t3": 5,
-      "malus_opposees_t4": 0
+      "malus_opposees_t4": 0,
+      "prix_base": 150
     },
     {
       "nom": "Bague de la télékinésie",
@@ -206,7 +220,8 @@
       "malus_opposees_t1": 15,
       "malus_opposees_t2": 10,
       "malus_opposees_t3": 5,
-      "malus_opposees_t4": 0
+      "malus_opposees_t4": 0,
+      "prix_base": 150
     }
   ]
 }

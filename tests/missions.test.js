@@ -91,15 +91,9 @@ assert.deepEqual([lose.reward,lose.chestGold,lose.loot.length,lose.renown],[0,0,
 assert.equal(rules.deathMultiplier(offer,false),2);
 assert.equal(rules.deathMultiplier(offer,true),1);
 assert.deepEqual(rules.mapSize(offer),{cols:20,rows:12});
-const state={company:{gold:100,stock:[],missionRenown:0}};
-rules.applyOutcome(state,win);
-assert.equal(state.company.gold,100+win.reward+win.chestGold);
-assert.equal(state.company.stock.length,win.loot.length+1);
-rules.applyOutcome(state,lose);
-assert.equal(state.company.missionRenown,-30);
 
-// Campagne : une offre au tableau dès le départ ; prise par une autre compagnie après sa date, sauf si elle est signée ;
-// la renommée de missions compte ; pas de prime pour un fuyard sorti de la carte.
+// Campagne : une offre au tableau dès le départ, prise par une autre compagnie après sa date ; l'expédition ; la renommée
+// de missions ; pas de prime pour un fuyard sorti de la carte.
 const files={peoples:"peoples.json",cultures:"cultures.json",socialOrigins:"social-origins.json",alignments:"alignments.json",ancestries:"ancestries.json",
   ancestryCompatibility:"ancestry-compatibility.json",cultureOriginCompatibility:"culture-origin-compatibility.json",ancestryLevels:"ancestry-levels.json",
   d6Scale:"d6-generation-scale.json",generationMatrix:"generation-matrix.json",skills:"skills.json",characteristics:"characteristics.json",
@@ -121,10 +115,40 @@ assert.ok(reports.every(r=>!r.missionTaken),"valable jusqu'à sa date");
 const [taken]=campaign.advanceTime(game,1);
 assert.equal(taken.missionTaken,first,"prise par une autre compagnie le lendemain");
 assert.notEqual(game.missionBoard.offer,first);
-const signed=campaign.signMissionOffer(game);
-campaign.advanceTime(game,10);
-assert.equal(game.missionBoard.offer,signed,"une offre signée est réservée");
-assert.notEqual(campaign.renewMissionOffer(game),signed);
+// Expédition (Idan, 2026-10-24) : l'escouade part, le camp continue ; elle arrive au bout de la distance, le combat
+// l'attend ; après le combat, elle rentre en autant de jours avec l'or, les objets et les primes.
+const signed=game.missionBoard.offer;
+const departure=campaign.departExpedition(game,[2,3]);
+assert.ok(departure.ok);
+const trip=departure.expedition;
+assert.deepEqual([trip.offer,trip.memberIds,trip.status,trip.arriveDay],[signed,[2,3],"outbound",game.day+signed.distance]);
+assert.notEqual(game.missionBoard.offer,signed,"une nouvelle offre au tableau : plusieurs escouades possibles");
+assert.equal(campaign.isAvailable(squad[0],game),false,"en mission");
+assert.equal(campaign.isAvailable(captain,game),true);
+assert.deepEqual(campaign.departExpedition(game,[2]),{ok:false,reason:"Un de ces mercenaires est déjà en mission."});
+const outbound=campaign.advanceTime(game,signed.distance);
+assert.ok(outbound.slice(0,-1).every(r=>!r.expeditions.arrived.length));
+assert.deepEqual(outbound[outbound.length-1].expeditions.arrived,[trip],"arrivée au bout de la distance");
+assert.equal(trip.status,"arrived");
+assert.deepEqual(campaign.advanceTime(game,1)[0].expeditions.waiting,[trip],"le combat attend le joueur");
+const won=rules.outcome(signed,{victory:true,deadEnemies:[{id:50,items:[{id:"g1",name:"Fronde",owner:50}]}],chestItems:[{id:"c2",name:"Bague du courage"}]});
+const goldBefore=game.company.gold,stockBefore=game.company.stock.length;
+campaign.completeExpeditionCombat(game,trip.id,{result:won,bonuses:[{id:2,bonus:100},{id:3,bonus:80}]});
+assert.deepEqual([trip.status,trip.returnDay,game.company.gold,game.company.stock.length],["returning",game.day+signed.distance,goldBefore,stockBefore],"rien n'arrive avant le retour");
+const back=campaign.advanceTime(game,signed.distance).map(r=>r.expeditions.returned).flat();
+assert.equal(back.length,1);
+assert.deepEqual([back[0].gold,back[0].items,back[0].bonusPaid],[won.reward+won.chestGold,2,180]);
+assert.equal(game.company.stock.length,stockBefore+2);
+assert.equal(campaign.expeditionOf(game,2),null,"de retour au camp");
+// Défaite : la renommée baisse tout de suite ; personne ne rentre, rien n'arrive.
+const lost=campaign.departExpedition(game,[3]).expedition;
+campaign.advanceTime(game,lost.offer.distance);
+const missionRenown=Number(game.company.missionRenown)||0;
+game.company.roster=game.company.roster.filter(m=>m.id!==3);
+const none=campaign.completeExpeditionCombat(game,lost.id,{result:rules.outcome(lost.offer,{victory:false})});
+assert.deepEqual([none.gold,none.items,game.company.missionRenown],[0,0,missionRenown-30]);
+assert.equal((game.expeditions||[]).length,0);
+game.company.missionRenown=0;
 const renown=campaign.companyRenown(game).total;
 game.company.missionRenown=-30;
 assert.equal(campaign.companyRenown(game).total,renown-30);
@@ -133,8 +157,12 @@ for(const m of squad) m.contract={...(m.contract||{}),missionBonus:100};
 const gold=game.company.gold;
 const report=campaign.applyMissionAftermath(game,{results:[
   {id:2,dead:false,wounded:false,fatigueDays:3,offMap:true},
-  {id:3,dead:false,wounded:false,fatigueDays:3,offMap:false}],captainDead:false});
-assert.equal(report.bonusPaid,100,"le fuyard sorti de la carte ne touche pas sa prime");
-assert.equal(game.company.gold,gold-100);
+  {id:1,dead:false,wounded:false,fatigueDays:3,offMap:false}],captainDead:false});
+assert.equal(report.bonusPaid,0,"le fuyard sorti de la carte ne touche pas sa prime ; le capitaine n'en a pas");
+assert.equal(game.company.gold,gold);
+squad[0].recovery=null;
+const deferred=campaign.applyMissionAftermath(game,{results:[{id:2,dead:false,wounded:false,fatigueDays:3,offMap:false}],captainDead:false},{deferBonuses:true});
+assert.deepEqual([deferred.bonusPaid,deferred.bonusesDue.map(b=>[b.id,b.bonus])],[0,[[2,100]]],"expédition : prime due au retour");
+assert.equal(game.company.gold,gold);
 
 console.log("Missions one shot : camp ☠, offre, ordres, ennemis, butin, renommée, tableau de la Taverne — OK");

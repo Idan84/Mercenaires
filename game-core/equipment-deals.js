@@ -138,6 +138,8 @@
     // Une tentative par mercenaire et par jour (Idan, 2026-10-24) ; le capitaine n'en a pas besoin.
     function canDeal(state,mercenary){
       if(!mercenary) return no("Mercenaire introuvable.");
+      // Parti en expédition (doc 17) : pas d'échange avant son retour.
+      if((state.expeditions||[]).some(e=>e.memberIds.includes(mercenary.id))) return no("Il est en mission.");
       if(isCaptain(state,mercenary)) return {ok:true};
       if(mercenary.equipmentDealDay===state.day) return no("Vous lui avez déjà parlé d’équipement aujourd’hui.");
       return {ok:true};

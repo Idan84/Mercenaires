@@ -108,4 +108,9 @@ assert.deepEqual([helped.steward, helped.stewardBonus, Math.round(helped.chance)
 clever.equipment = {slots:{}};
 clever.items = [];
 assert.equal(deals.evaluate(shop, {mercenaryId:2, slot:"weapon_set_1_main", stockItemId:"s"}).stewardBonus, 0, "pas d'appui pour lui-même");
+// Expédition (doc 17) : un mercenaire parti en mission n'est ni nommé intendant ni sollicité pour un échange.
+const traveler = merc(7, 50, 50);
+const away = {...company(traveler), expeditions:[{memberIds:[7]}]};
+assert.deepEqual(rules.offer(away, 7), {ok:false, reason:"Il est en mission."});
+assert.deepEqual(deals.canDeal(away, traveler), {ok:false, reason:"Il est en mission."});
 console.log("Intendant : accepter, revenir, une fois par jour, un seul, affinité au refus, évaluer, appuyer les échanges — OK");

@@ -118,7 +118,7 @@ Trois essais pour « Faire le ménage » chez les Gobelins, validés par Idan. L
 
 > À toute compagnie de mercenaires qui voudra bien venir,
 >
-> Je m'appelle {commanditaire}, chef de {lieu}, à {jours} jours de marche de votre camp. On m'a dit que vous tuiez des gens pour de l'argent. Ça tombe bien : nous avons de l'argent, un peu, et des gens à tuer, beaucoup.
+> Je m'appelle {commanditaire}, chef de {lieu}, à {jours} de marche de votre camp. On m'a dit que vous tuiez des gens pour de l'argent. Ça tombe bien : nous avons de l'argent, un peu, et des gens à tuer, beaucoup.
 >
 > Depuis la fonte des neiges, des gobelins se sont installés dans la vieille carrière, au-dessus du village. Au début, ils volaient les poules. Puis les chèvres. La semaine dernière, ils ont volé la cloche du temple, et personne ne sait ce qu'un gobelin peut bien faire d'une cloche. On les entend la sonner la nuit.
 >
@@ -136,7 +136,7 @@ Trois essais pour « Faire le ménage » chez les Gobelins, validés par Idan. L
 
 > OYÉ LES MERCENAIRES !!!
 >
-> Moi c'est {commanditaire}, grand chef des {tribu} (le plus grand des chefs, les autres ils sont plus petits). Les {tribu_cible} ils ont pris MA grotte à {lieu}. C'est à {jours} jours de chez vous si on marche vite, plus si on marche comme un humain.
+> Moi c'est {commanditaire}, grand chef des {tribu} (le plus grand des chefs, les autres ils sont plus petits). Les {tribu_cible} ils ont pris MA grotte à {lieu}. C'est à {jours} de chez vous si on marche vite, plus si on marche comme un humain.
 >
 > Eux c'est des voleurs, des menteurs et ils puent. Nous aussi un peu, mais pas pareil.
 >
@@ -157,7 +157,7 @@ Trois essais pour « Faire le ménage » chez les Gobelins, validés par Idan. L
 >
 > À toute compagnie franche dûment patentée,
 >
-> Attendu qu'une engeance gobeline a établi un campement illicite à {lieu}, à {jours} jours de marche de votre cantonnement ;
+> Attendu qu'une engeance gobeline a établi un campement illicite à {lieu}, à {jours} de marche de votre cantonnement ;
 > Attendu que ladite engeance entrave la circulation des marchandises, le recouvrement de l'impôt et le moral des percepteurs ;
 > Attendu que la garnison impériale la plus proche se trouve, à son grand regret, fort occupée ailleurs ;
 >
@@ -211,4 +211,19 @@ Le Roi des Cavernes reste presque intouchable pour une compagnie de départ : c'
 | Assassin | 4 | 7 | 15 | 23 |
 
 Le Guerrier d'élite (bouclier et Brigandine) reste tel quel : les mercenaires monteront aussi en niveau et en équipement (Idan). Limites de la mesure : groupes d'un seul archétype, petite carte de test ; les synergies d'un camp mélangé ne sont pas mesurées. L'Assassin vaudra plus quand la Discrétion aura une règle de combat. **Le Chaman** viendra avec la magie en combat.
+
+## 11 — Mise en œuvre V1 (2026-10-24)
+
+« Faire le ménage » chez les Gobelins est la seule mission proposée, en boucle, à la Taverne (« Trouver une mission »). Code : `game-core/missions.js` (règles), `prototype-web/contract-ui.js` (tableau), `prototype-web/mission.js` (trajet, combat, bilan). Données : `data/reference/one-shot-missions.json` (camp, distance, carte, récompense, coffre, échec, défaite, les trois ordres et leurs noms) et `enemy-archetypes.json`.
+
+- **Tableau** : une offre à la fois, avec son ordre de mission (un des trois, au hasard) et ses faits : commanditaire, distance, ennemis (en toutes lettres, flou), récompense, date d'expiration. Une offre non signée qui dépasse sa date (3 à 6 jours) est prise par une autre compagnie : le journal le dit, une nouvelle la remplace. Une offre signée est réservée.
+- **Camp ☠** (camp B, §10) : 1D4+3 novices (Frondeurs 35 %, Lanciers 20 %, Archers, Guerriers, Assassins 15 % chacun), un « normal » (T2) dans 20 % des camps et deux dans 5 %, et un Caïd nommé.
+- **Escouade** : de 1 à 20 mercenaires au choix du joueur ; l'écran de choix affiche le coût des primes si tous reviennent et les jours de marche.
+- **Trajet** (doc 10 §1) : distance 1D3 jours. Simplification V1, faute d'escouades en parallèle : toute la compagnie avance jour par jour à l'aller puis au retour (salaires, Taverne, convalescences ; le retour compte comme du repos).
+- **Combat** : carte de 20 × 12 cases ; l'escouade se déploie à gauche, le camp à droite, le Caïd au fond ; votre équipe a l'initiative (elle joue la première).
+- **Victoire** : tous les ennemis à terre ou sortis de la carte. **Récompense du contrat** = 1 000 + 600 par jour de marche aller-retour + 150 par ennemi (de 2 950 à 5 800 PO) ; **coffre** = 2D6 × 50 PO et un objet à bonus tiré au hasard (tier selon la réputation du capitaine) ; **butin** = l'équipement de tous les morts des deux camps, au stock de l'Intendance.
+- **Défaite** : rien n'est payé ; renommée de la compagnie −30 (points de mission, doc 09 §2) ; jet de mort doublé pour nos mercenaires à terre ; leur équipement est perdu.
+- **Primes** : versées au retour aux survivants sous contrat, sauf à ceux qui ont fui hors de la carte (règle générale).
+- Puis un nouveau contrat est affiché. Tous les montants sont des valeurs de départ (Idan : « on ajuste les récompenses et on va voir »).
+- La Mission Test reste disponible dans la rubrique Compagnie du camp, comme outil de test.
 

@@ -29,6 +29,11 @@ assert.equal(rules.deathChance(merc(5)),null);
 assert.equal(rules.deathChance(merc(-10)),98);
 assert.equal(rules.deathChance(merc(-1,{stats:{"Volonté":100}})),5);
 assert.equal(rules.deathChance(merc(-1,{stats:{"Volonté":400}})),0);
+// Défaite d'un contrat « Faire le ménage » (doc 17 §8) : probabilité doublée, bornée à 100 %.
+assert.equal(rules.deathChance(merc(-1,{stats:{"Volonté":100}}),2),10);
+assert.equal(rules.deathChance(merc(-10),2),100);
+const doubled=createMissionEndRules({reference,random:scripted([roll(15)])}).resolveMissionEnd([merc(-1,{stats:{"Volonté":100}})],{deathMultiplier:2});
+assert.deepEqual([doubled.results[0].death.p,doubled.results[0].dead],[10,false],"15 > 10 % : il fait le mort et s'échappe");
 assert.equal(rules.deathChance(merc(-50)),100);
 
 // §4 — Jet de blessure entre 0 et 50 % PV (zone portée de 20 à 50 % par Idan ; courbe Chatty, Endurance 50).

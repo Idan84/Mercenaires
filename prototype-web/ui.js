@@ -291,7 +291,8 @@ function renderReputationStars(c) {
 
 function renderRenownStars(renown) {
   const info = starRules().company(renown.total);
-  const parts = renown.parts ? " · capitaine " + fmt(renown.parts.captain) + " + mercenaires " + fmt(renown.parts.members) + " + héritage " + fmt(renown.parts.heritage) : "";
+  const missions = renown.parts?.missions ? " + missions " + fmt(renown.parts.missions) : "";
+  const parts = renown.parts ? " · capitaine " + fmt(renown.parts.captain) + " + mercenaires " + fmt(renown.parts.members) + " + héritage " + fmt(renown.parts.heritage) + missions : "";
   return renderStarLevel(info, starDetail("Renommée", renown.total, info) + parts);
 }
 

@@ -20,7 +20,8 @@ function avatarRules(){
 
 function campaignRules(){
   if(!game.campaignRules){
-    game.campaignRules=MercenairesCampaign.createCampaignRules({generator:game.generator,tavern:tavernRules(),reference:game.referenceData,biographies:biographyRules(),avatars:avatarRules(),progression:MercenairesProgression.createProgressionRules({reference:game.referenceData}),affinity:affinityRules(),names:game.nameRules});
+    game.campaignRules=MercenairesCampaign.createCampaignRules({generator:game.generator,tavern:tavernRules(),reference:game.referenceData,biographies:biographyRules(),avatars:avatarRules(),progression:MercenairesProgression.createProgressionRules({reference:game.referenceData}),affinity:affinityRules(),names:game.nameRules,
+      missions:missionRules()});
   }
   return game.campaignRules;
 }
@@ -106,14 +107,20 @@ function addTestGold(){
 function advanceCampDay(){
   if(!game.campaign||currentScreen()!=="camp") return;
   const [report]=campaignRules().advanceTime(game.campaign,1);
+  logDayReport(report);
+  saveGame();
+  renderGame();
+}
+
+// Journal d'une journée passée : guérisons, salaires, Taverne, contrat pris par une autre compagnie (doc 17).
+function logDayReport(report){
   for(const r of report.recovered) tavernLog(r.mercenary.name+(r.kind==="wounded"?" est guéri de ses blessures.":" est reposé."),"turn");
   if(report.salaries.total) tavernLog("Salaires versés : "+fmt(report.salaries.total)+" PO ("+report.salaries.count+" mercenaires sous contrat).","gear");
   const gone=report.tavern.departures.map(d=>d.candidate.mercenary.name);
   const arrived=report.tavern.arrivals.map(a=>a.mercenary.name);
   tavernLog(gone.length?"Engagés ailleurs pendant la nuit : "+gone.join(", ")+".":"Personne n’a été engagé ailleurs cette nuit.",gone.length?"bad":"info");
   if(arrived.length) tavernLog("Nouveaux candidats : "+arrived.join(", ")+".","turn");
-  saveGame();
-  renderGame();
+  if(report.missionTaken) tavernLog("Le contrat de "+report.missionTaken.fields.lieu+" a été pris par une autre compagnie ; un nouveau est affiché.","bad");
 }
 
 // Dialogue de recrutement (Idan, 2026-10-21) : salutation selon l'affinité, réponses sincères, prétentions,
@@ -260,6 +267,7 @@ function showTavernView(view="home"){
   for(const [name,id] of [["home","tavern-home"],["missions","tavern-missions-view"],["recruits","tavern-recruits-view"]]){
     $(id).classList.toggle("hidden",name!==view);
   }
+  if(view==="missions") renderContractBoard();
   // La bulle du tavernier n'apparaît que sur l'accueil de la taverne (styles.css).
   document.body.dataset.tavernView=view;
 }
@@ -369,7 +377,9 @@ function initializeTavernUi(){
       if(btn) showTavernView(btn.dataset.tavernView);
     });
   }
-  $("tavern-mission-test-btn").addEventListener("click",openMissionSelection);
+  $("tavern-contracts").addEventListener("click",event=>{
+    if(event.target.closest("[data-contract-accept]")) acceptContract();
+  });
 
   $("hud-next-day-btn").addEventListener("click",advanceCampDay);
   $("test-gold-btn").addEventListener("click",addTestGold);

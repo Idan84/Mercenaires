@@ -52,7 +52,8 @@
   // avatars (facultatif) : createAvatarRules(...) de game-core/avatars.js.
   // progression (facultatif) : createProgressionRules(...) de game-core/progression.js.
   // affinity (facultatif) : createAffinityRules(...) de game-core/affinity.js (négociation à la Taverne).
-  function createCampaignRules({generator,tavern,reference,biographies=null,avatars=null,progression=null,affinity=null,names=null}){
+  // missions (facultatif) : createMissionRules(...) de game-core/missions.js (tableau des contrats de la Taverne).
+  function createCampaignRules({generator,tavern,reference,biographies=null,avatars=null,progression=null,affinity=null,names=null,missions=null}){
     const STARTING_GOLD=referenceConstant(reference,"company.gold.initial",10000);
     const STARTING_DORMITORY_CAPACITY=referenceConstant(reference,"camp.dormitory.initial_capacity",40);
     const RENOWN_RANK_EXPONENT=referenceConstant(reference,"company.renown.rank_exponent",1.5);
@@ -86,9 +87,11 @@
       const parts={
         captain:Number(captain?.reputation)||0,
         members:ranking.reduce((sum,x)=>sum+x.contribution,0),
-        heritage:heritageEntries.reduce((sum,x)=>sum+(Number(x.heritage)||0),0)
+        heritage:heritageEntries.reduce((sum,x)=>sum+(Number(x.heritage)||0),0),
+        // Points de mission (doc 09 §2) : pour l'instant, la renommée perdue sur un contrat échoué (doc 17 §8).
+        missions:Number(state.company.missionRenown)||0
       };
-      return {total:parts.captain+parts.members+parts.heritage,parts,ranking,heritageEntries};
+      return {total:parts.captain+parts.members+parts.heritage+parts.missions,parts,ranking,heritageEntries};
     }
 
     // Biographie figée sur le mercenaire ; une bio n'est jamais réutilisée dans une même sauvegarde,
@@ -336,6 +339,7 @@
         assignBiography(state,m);
       }
       tavern.fillTavern(state.tavern,state.day,candidateFactory(state));
+      ensureMissionOffer(state);
       // Historique (Idan, 2026-10-24) : le capitaine fonde la compagnie, l'escouade de départ l'accompagne.
       History.record(captain,state.day,"founded");
       for(const m of squad) History.record(m,state.day,"joined",{initial:true});
@@ -383,7 +387,33 @@
       const recovered=recoverOneDay(state);
       const salaries=paySalaries(state);
       const tavernReport=tavern.tavernMorning(state.tavern,state.day,candidateFactory(state));
-      return {day:state.day,recovered,salaries,tavern:tavernReport};
+      const missionTaken=expireMissionOffer(state);
+      return {day:state.day,recovered,salaries,tavern:tavernReport,missionTaken};
+    }
+
+    // Tableau des contrats (doc 17) : une offre à la fois pour l'instant, « Faire le ménage » en boucle. Une offre
+    // non signée qui dépasse sa date est prise par une autre compagnie ; une nouvelle la remplace. Une offre signée est
+    // réservée (doc 17 §1).
+    function ensureMissionOffer(state){
+      if(!missions||state.missionBoard?.offer) return false;
+      state.missionBoard={offer:missions.createOffer({day:state.day})};
+      return true;
+    }
+    function renewMissionOffer(state){
+      if(!missions) return null;
+      state.missionBoard={offer:missions.createOffer({day:state.day})};
+      return state.missionBoard.offer;
+    }
+    function signMissionOffer(state){
+      const offer=state.missionBoard?.offer;
+      if(offer) offer.signed=true;
+      return offer||null;
+    }
+    function expireMissionOffer(state){
+      const offer=state.missionBoard?.offer;
+      if(!missions||!offer||offer.signed||state.day<=offer.expiresDay) return null;
+      renewMissionOffer(state);
+      return offer;
     }
 
     // AdvanceTime(5) = cinq résolutions successives d'une journée. Seul un nombre entier de jours ≥ 0 est accepté.
@@ -491,8 +521,9 @@
         // Historique : une mission de plus, ses adversaires abattus, ses coups encaissés, sa blessure.
         History.recordMission(mercenary,state.day,{progress:result.progress,wounded:result.wounded,
           days:result.wounded?result.woundDays:result.fatigueDays});
-        // §8 — La prime de mission individuelle n'est payée que si le mercenaire revient.
-        const bonus=Number(mercenary.contract?.missionBonus)||0;
+        // §8 — La prime de mission individuelle n'est payée que si le mercenaire revient ; pas à celui qui a fui hors de
+        // la carte (Idan, 2026-10-24, doc 17 §8).
+        const bonus=result.offMap?0:Number(mercenary.contract?.missionBonus)||0;
         if(bonus>0){
           state.company.gold-=bonus;
           report.bonusPaid+=bonus;
@@ -531,6 +562,9 @@
       STARTING_DORMITORY_CAPACITY,
       createCampaign,
       advanceTime,
+      ensureMissionOffer,
+      renewMissionOffer,
+      signMissionOffer,
       dormitoryFree,
       dormitoryUsed,
       dormitoryPlaces,

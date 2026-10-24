@@ -982,6 +982,15 @@
     function createStartingPantsStock(captain) { return createStartingStatGearStock(captain, "pants", "pants"); }
     function createStartingRingStock(captain) { return createStartingStatGearStock(captain, "ring", "ring"); }
 
+    // Coffre d'un camp ennemi (doc 17 §8) : un objet à bonus tiré au hasard (bottes, ceinture, amulette, cape, gants,
+    // culotte ou bague), tier selon la réputation du personnage donné, sans propriétaire.
+    function createLootItem(character) {
+      const kinds = Object.keys(STAT_GEAR).filter(kind => STAT_GEAR[kind].rows.length);
+      if (!kinds.length) return null;
+      const kind = randomChoice(kinds);
+      return {...statGearItem(character, kind, randomChoice(STAT_GEAR[kind].rows)), owner:null};
+    }
+
     function generateStartingEquipment(character) {
       const profile = computeEquipmentProfile(character);
       const slots = Object.fromEntries(equipmentSlotRows.map(slot => [slot.id, null]));
@@ -1483,6 +1492,7 @@
       createStartingGlovesStock,
       createStartingPantsStock,
       createStartingRingStock,
+      createLootItem,
       people: () => peopleRows.map(r => r.nom),
       alignments: () => alignmentRows.map(r => r.nom),
       ancestries: () => ancestryRows.map(r => r.nom),

@@ -160,6 +160,26 @@ function backToMenu(){
   renderGameHud();
 }
 
+// Fenêtres (Idan, 2026-10-24) : un clic à l'extérieur d'une fenêtre ouverte la ferme, comme Échap (même événement
+// « cancel »). Le clic doit commencer et finir dehors : une sélection tirée hors de la fenêtre ne la ferme pas.
+function outsideDialog(target,event){
+  if(!(target instanceof HTMLDialogElement)||!target.open) return false;
+  const r=target.getBoundingClientRect();
+  return event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom;
+}
+let dialogBackdropPress=null;
+function closeDialogsFromOutside(){
+  document.addEventListener("pointerdown",event=>{
+    dialogBackdropPress=outsideDialog(event.target,event)?event.target:null;
+  },true);
+  document.addEventListener("click",event=>{
+    const dialog=event.target;
+    if(dialog!==dialogBackdropPress||!outsideDialog(dialog,event)) return;
+    dialogBackdropPress=null;
+    if(dialog.dispatchEvent(new Event("cancel",{cancelable:true}))) dialog.close();
+  });
+}
+
 function initializeScreenUi(){
   const observer=new MutationObserver(updateScreen);
   for(const [,id] of SCREEN_PANELS){
@@ -171,6 +191,8 @@ function initializeScreenUi(){
   $("hud-console-toggle").addEventListener("click",()=>toggleHudJournal());
   for(const slot of document.querySelectorAll("#game-hud [data-hud-icon]")) slot.innerHTML=hudIcon(slot.dataset.hudIcon);
   $("game-pause").addEventListener("click",event=>{
+    // Un clic hors du menu de pause reprend la partie, comme Échap.
+    if(event.target===$("game-pause")){setPauseOpen(false);return;}
     const button=event.target.closest("[data-pause-action]");
     if(button&&!button.disabled)handlePauseAction(button.dataset.pauseAction);
   });
@@ -185,6 +207,7 @@ function initializeScreenUi(){
     if(open)gameAction("Destination : "+open.textContent.trim()+".");
   });
   $("game-panel")?.addEventListener("click",handleCampNavigation);
+  closeDialogsFromOutside();
   openCampScene("home");
   updateScreen();
 }

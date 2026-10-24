@@ -729,8 +729,10 @@ const SHEET_TABS = [
   ["profile", "Profil"],
   ["stats", "Caractéristiques"],
   ["skills", "Compétences"],
+  ["camp", "Camp"],
   ["equipment", "Équipement"],
-  ["magic", "Magie"]
+  ["magic", "Magie"],
+  ["history", "Historique"]
 ];
 
 // Situation dans la compagnie : rôle, contrat, indisponibilité.
@@ -1049,6 +1051,79 @@ function renderSkillsTab(c){
   </section>`;
 }
 
+// Onglet Camp (Idan, 2026-10-24) : les compétences de camp (Transmission du savoir, Intendance, Médecine) et
+// l'Artisanat avec ses métiers, du meilleur au moins bon.
+const CAMP_SKILLS=["Transmission du savoir","Intendance","Médecine"];
+function renderCampTab(c){
+  const status=rosterStatus(c);
+  const rated=(group,names)=>names.map(n=>({n,v:skillValue(c,group,n)})).filter(x=>Number.isFinite(x.v)).sort((a,b)=>b.v-a.v);
+  const camp=rated("camp",[...CAMP_SKILLS,"Artisanat"]);
+  const crafts=rated("craft",skillChildren("Artisanat"));
+  const line=(group,x,child=false)=>`<div class="sheet-skill${child?" sheet-skill--child":""}">${skillName(x.n)}${skillValueCell(c,group,x.n)}</div>`;
+  return `<section class="sheet-skills sheet-camp">
+    <aside class="sheet-portrait">
+      ${renderAvatar(c,{variant:"detail",kind:"full"})}
+      <em class="roster-status roster-status--${status.kind}">${esc(status.label)}</em>
+    </aside>
+    <div class="sheet-skills-main">
+      <div class="sheet-predilections">
+        ${predilectionCard("Point fort au camp",camp[0]?.n,camp[0]?fmt(camp[0].v):"")}
+        ${predilectionCard("Meilleur métier",crafts[0]?.n,crafts[0]?fmt(crafts[0].v):"")}
+      </div>
+      <div class="sheet-skill-columns sheet-camp-columns">
+        <section class="sheet-skill-column"><h4>Camp</h4>${rated("camp",CAMP_SKILLS).map(x=>line("camp",x)).join("")}</section>
+        <section class="sheet-skill-column"><h4>Artisanat</h4>${rated("camp",["Artisanat"]).map(x=>line("camp",x)).join("")}${crafts.map(x=>line("craft",x,true)).join("")}</section>
+      </div>
+    </div>
+  </section>`;
+}
+
+// Onglet Historique (Idan, 2026-10-24) : compteurs cumulés et journal du mercenaire, du plus récent au plus ancien
+// (game-core/history.js ; textes : character-sheet-copy.json, history).
+function historyItemLabel(item){
+  if(!item) return "";
+  const title=typeof itemCardRules==="function"?itemCardRules()?.title(item):null;
+  return `${title||item.name} (T${item.tier})`;
+}
+function historyPlural(n,one,many){ return `${fmt(n)} ${n>1?many:one}`; }
+function historyEntryText(c,entry){
+  const copy=game.referenceData?.characterSheetCopy?.history?.events||{};
+  const female=String(c?.sex||"").trim().toLowerCase().startsWith("f");
+  const fill=(text,vars={})=>MercenairesRecruitDialogue.fill(text,vars,female);
+  if(entry.kind==="founded") return fill(copy.founded);
+  if(entry.kind==="joined") return fill(entry.initial?copy.joined_initial:copy.joined);
+  if(entry.kind==="mission"){
+    const back=entry.knockouts?fill(copy.mission_knockouts,{n:historyPlural(entry.knockouts,"adversaire","adversaires")}):fill(copy.mission);
+    return entry.wounded?`${back} ${fill(copy.mission_wounded,{jours:historyPlural(entry.days,"jour","jours")})}`:back;
+  }
+  if(entry.kind==="deal"){
+    const vars={recu:historyItemLabel(entry.received),cede:historyItemLabel(entry.given)};
+    const text=entry.free?copy.deal?.libre?.[entry.action]:copy.deal?.[entry.action]?.[entry.accepted?"accord":"refus"];
+    return fill(text,vars);
+  }
+  return "";
+}
+function historyDate(day){
+  try{ return `Jour ${fmt(day)} · ${campaignCalendarDate(day,game.referenceData).dateLabel}`; }
+  catch{ return `Jour ${fmt(day)}`; }
+}
+function renderHistoryTab(c){
+  const copy=game.referenceData?.characterSheetCopy?.history||{};
+  const history=c.history||{};
+  const values={...history,days:MercenairesHistory.daysInCompany(c,game.campaign?.day)};
+  const counters=(copy.counters||[]).map(k=>`<div class="sheet-history-counter"><strong>${fmt(Number(values[k.key])||0)}</strong><small>${esc(k.label)}</small></div>`).join("");
+  const entries=[...(history.log||[])].map((entry,index)=>({entry,index})).sort((a,b)=>b.entry.day-a.entry.day||b.index-a.index)
+    .map(({entry})=>({entry,text:historyEntryText(c,entry)})).filter(x=>x.text);
+  return `<section class="sheet-history">
+    <div class="sheet-history-counters">${counters}</div>
+    <section class="sheet-history-journal">
+      <h4>Journal</h4>
+      ${entries.length?`<ol>${entries.map(({entry,text})=>`<li><time>${esc(historyDate(entry.day))}</time><span>${esc(text)}</span></li>`).join("")}</ol>`
+        :`<p class="muted">${esc(copy.empty||"")}</p>`}
+    </section>
+  </section>`;
+}
+
 // Onglet Magie (Idan, 2026-10-21, provisoire) : puissance magique et réserve de mana ; les trois écoles de
 // prédilection ; la roue des neuf écoles, dont la surface montre les points du mercenaire et dont l'étoile
 // relie chaque école à ses deux opposées (skills.json, ecoles_opposees) ; le grimoire viendra plus tard.
@@ -1153,6 +1228,8 @@ function renderCharacterSpellbook(c) {
 function renderSheetTab(c, tab) {
   if (tab === "stats") return renderStatsTab(c);
   if (tab === "skills") return renderSkillsTab(c);
+  if (tab === "camp") return renderCampTab(c);
+  if (tab === "history") return renderHistoryTab(c);
   if (tab === "equipment") return renderEquipment(c);
   if (tab === "magic") return renderMagicTab(c);
   return renderProfileTab(c);

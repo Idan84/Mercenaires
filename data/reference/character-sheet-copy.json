@@ -287,5 +287,62 @@
       "Vol"
     ],
     "animal": "Compagnon animal"
+  },
+  "history": {
+    "description": "Onglet Historique de la fiche (Idan, 2026-10-24) : compteurs cumulés et journal. {n}, {jours} : nombres ; {recu}, {cede} : objets ; {masculin|féminin}.",
+    "counters": [
+      {
+        "key": "days",
+        "label": "Jours dans la compagnie"
+      },
+      {
+        "key": "missions",
+        "label": "Missions"
+      },
+      {
+        "key": "knockouts",
+        "label": "Adversaires abattus"
+      },
+      {
+        "key": "timesWounded",
+        "label": "Retours de mission blessé"
+      },
+      {
+        "key": "woundsTaken",
+        "label": "Coups encaissés"
+      },
+      {
+        "key": "criticals",
+        "label": "Coups critiques"
+      }
+    ],
+    "events": {
+      "founded": "Prend la tête de la compagnie.",
+      "joined_initial": "Fait partie de l’escouade de départ.",
+      "joined": "Signe son contrat avec la compagnie.",
+      "mission": "Revient de mission.",
+      "mission_knockouts": "Revient de mission après avoir abattu {n}.",
+      "mission_wounded": "{Blessé|Blessée} : {jours} de convalescence.",
+      "deal": {
+        "donner": {
+          "accord": "Accepte {recu} des mains du capitaine.",
+          "refus": "Refuse {recu}."
+        },
+        "retirer": {
+          "accord": "Rend {cede} à l’Intendance.",
+          "refus": "Refuse de rendre {cede}."
+        },
+        "troquer": {
+          "accord": "Échange {cede} contre {recu}.",
+          "refus": "Refuse d’échanger {cede} contre {recu}."
+        },
+        "libre": {
+          "donner": "Prend {recu} à l’Intendance.",
+          "retirer": "Range {cede} à l’Intendance.",
+          "troquer": "Échange {cede} contre {recu} à l’Intendance."
+        }
+      }
+    },
+    "empty": "Rien à raconter pour l’instant."
   }
 }

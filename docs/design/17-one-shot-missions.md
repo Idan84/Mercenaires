@@ -62,7 +62,7 @@ Ordre : **difficulté → type → faction → budget de menace → distance →
 - **Difficulté** : tirée selon la renommée de la compagnie (doc 09 prévoit que la renommée ouvre des missions plus dures).
 - **Budget de menace** : la difficulté donne des points, dépensés en ennemis. Un ennemi coûte selon son archétype et son tier (piste : T1 = 1, T2 = 2, T3 = 4, T4 = 8), plus le boss. Le simulateur d'équilibrage calibrera les prix : 12 Gobelins battent 3 Ogres à chaque fois, un Gobelin ne peut donc pas coûter le quart d'un Ogre.
 - **Archétypes d'ennemis** (fixes, §1) : une fiche par ligne et par niveau dans un fichier de données : peuple, caractéristiques, compétences, équipement et son tier, comportement, coût en menace calibré au simulateur. Le générateur de mercenaires peut servir à ébaucher les fiches.
-- **Boss** : un chef nommé, au-dessus des niveaux d'élite (à voir).
+- **Boss** : un chef, sur quatre niveaux (§10), avec un nom propre généré (« Garm le Balafré »).
 - **Butin** : pour « Faire le ménage », voir §8.
 - **Récompense** : une base selon la difficulté, plus une indemnité par jour de trajet. Elle ne suit pas la paie réelle du joueur, ce serait exploitable. Repère : une compagnie neuve dépense environ 700 PO de salaires par jour.
 
@@ -169,4 +169,46 @@ Trois essais pour « Faire le ménage » chez les Gobelins, validés par Idan. L
 >
 > *Donné le {date}, an {an} de l'Âge des Couronnes Brisées.*
 > *Pour l'Empereur et par délégation, {signataire}, sous-secrétaire adjoint aux Marches.*
+
+## 10 — Archétypes gobelins (Idan, 2026-10-24)
+
+Données : `data/reference/enemy-archetypes.json` (24 fiches figées, pas encore utilisées par le jeu).
+
+**Niveaux par centiles.** Les Gobelins générés de faible et de forte réputation ont presque les mêmes valeurs de combat (leur réputation vient surtout du Charisme et de l'Intelligence). Chaque niveau prend donc, valeur par valeur, un centile des Gobelins générés : **novice P20, normal P50, vétéran P75, élite P90** ; résistances, compétences et Intimidation suivent le même centile. PV = 3 × (Constitution + 0,2 × Endurance + 0,1 × Volonté), comme à la génération.
+
+**Spécialisation des lignes** : trois caractéristiques un cran de centile au-dessus, deux un cran au-dessous.
+
+| Ligne | Armes | Monte | Descend |
+|---|---|---|---|
+| Lancier | Lance | Force, Constitution, Courage | Vitesse, Perception |
+| Frondeur | Fronde | Dextérité, Perception, Vitesse | Force, Constitution |
+| Archer | Arc | Perception, Dextérité, Chance | Force, Esquive |
+| Guerrier | Épée courte + Rondache | Constitution, Endurance, Dextérité | Vitesse, Perception |
+| Assassin | deux Dagues (+ Discrétion d'un cran) | Vitesse, Esquive, Dextérité | Constitution, Courage |
+| Chef | Sabre + Rondache (+ Intimidation d'un cran) | Courage, Volonté, Charisme | — |
+
+**Équipement** : le tier suit le niveau, T1 Usée, T2 Correcte, T3 Grand Luxe, T4 Grand Luxe. **Le T4 ne se trouve que sur les élites et les chefs** : un butin rare, aucun mercenaire généré n'a d'arme T4. Armures, du novice à l'élite : Lancier Vêtements, Gambison, Armure de cuir, Cuir renforcé ; Frondeur Vêtements, Vêtements, Gambison, Armure de cuir ; Archer Vêtements, Gambison, Armure de cuir, Armure de cuir ; Guerrier Gambison, Armure de cuir, Cuir renforcé, Brigandine ; Assassin Vêtements.
+
+**Chefs**, quatre niveaux (noms validés par Idan) :
+
+| Chef | Centile | Armure | Battu seul par | Menace |
+|---|---|---|---|---|
+| Caïd gobelin | P75 | Cuir renforcé T3 | ~3 mercenaires | 30 |
+| Grand Caïd gobelin | P90 | Cotte de mailles T4 | ~5,5 | 55 |
+| Chef de clan gobelin | P95 | Brigandine T4 | ~10 | 100 |
+| Roi des Cavernes | P99 | Armure d'écailles T4 | plus de 10 (84 % de victoires contre 10) | au-delà de la mesure |
+
+Le Roi des Cavernes reste presque intouchable pour une compagnie de départ : c'est voulu (Idan) ; il devra affronter des mercenaires à 4 étoiles d'or, et la magie (boule de feu) ignorera son bouclier.
+
+**Menace mesurée** (simulateur, 150 combats par effectif : nombre d'exemplaires qu'il faut pour battre 3 mercenaires générés quelconques une fois sur deux ; **un mercenaire moyen vaut 10 points** ; un Gobelin généré quelconque en vaut 10) :
+
+| | Novice | Normal | Vétéran | Élite |
+|---|---|---|---|---|
+| Lancier | 6 | 12 | 23 | 43 |
+| Frondeur | 5 | 10 | 16 | 22 |
+| Archer | 6 | 11 | 16 | 23 |
+| Guerrier | 5 | 11 | 24 | 47 |
+| Assassin | 4 | 7 | 15 | 23 |
+
+Le Guerrier d'élite (bouclier et Brigandine) reste tel quel : les mercenaires monteront aussi en niveau et en équipement (Idan). Limites de la mesure : groupes d'un seul archétype, petite carte de test ; les synergies d'un camp mélangé ne sont pas mesurées. L'Assassin vaudra plus quand la Discrétion aura une règle de combat. **Le Chaman** viendra avec la magie en combat.
 

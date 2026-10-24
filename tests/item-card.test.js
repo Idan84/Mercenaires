@@ -25,7 +25,7 @@ for (const row of [...reference.weapons.rows, ...reference.baseArmors.rows]) {
 assert.equal(cards.title(item("weapon","Lance",1,"worn")), "Vieille lance", "l'exemple d'Idan");
 assert.equal(cards.title(item("weapon","Lance",4,null)), "Lance luxueuse");
 
-// Lance Grand Luxe : dégâts et charge × 1,2, lourdeur × 0,8, puissance inchangée.
+// Lance Grand Luxe : dégâts et charge × 1,2, poids × 0,8, puissance inchangée.
 const lance = cards.card(item("weapon","Lance",3,"luxury"));
 assert.equal(lance.kind, "weapon");
 assert.equal(lance.title, "Lance de guerrier");
@@ -38,7 +38,7 @@ near(lance.charge, 2.4);
 assert.equal(lance.counterCharge, true);
 assert.equal(lance.block, null);
 
-// Écu usé : blocage × 0,8, lourdeur × 1,2, contact.
+// Écu usé : blocage × 0,8, poids × 1,2, contact.
 const ecu = cards.card(item("weapon","Écu",1,"worn"));
 near(ecu.block, 8);
 near(ecu.weight, 12);
@@ -76,11 +76,11 @@ assert.match(lanceCard, /Lance · Armes d’hast/);
 assert.match(lanceCard, /T3 · Grand Luxe/);
 assert.match(lanceCard, /<dt>Dégâts<\/dt><dd>1D8 <em class="item-card-shift item-card-shift--up">\+20 %<\/em><\/dd>/);
 assert.match(lanceCard, /<dt>Portée<\/dt><dd>1 à 2 cases<\/dd>/);
-assert.match(lanceCard, /<dt>Lourdeur<\/dt><dd>−10 Vitesse<\/dd>/, "arrondie pour le joueur");
+assert.match(lanceCard, /<dt>Poids<\/dt><dd>−10 Vitesse<\/dd>/, "arrondie pour le joueur");
 assert.match(lanceCard, /<dt>Charge<\/dt><dd>\+2,4 % dégâts \/ case<\/dd>/);
 assert.match(lanceCard, /Contre-charge/);
-assert.match(lanceCard, /À deux mains : dégâts ×1,5, lourdeur ÷2/);
-assert.match(lanceCard, /Grand Luxe : dégâts, charge et blocage \+20 %, lourdeur −20 %\./);
+assert.match(lanceCard, /À deux mains : dégâts ×1,5, poids ÷2/);
+assert.match(lanceCard, /Grand Luxe : dégâts, charge et blocage \+20 %, poids −20 %\./);
 const platesCard = renderItemCard(item("armor","Armure de plates",1,"worn",{templateId:"armor:plate_armor"}));
 assert.match(platesCard, /Armure de plates · Armure lourde/);
 assert.match(platesCard, /item-card-row--malus"><dt>Foudroyant<\/dt><dd>−56<\/dd>/);

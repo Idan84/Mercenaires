@@ -107,4 +107,8 @@ Mapping actuel vers les qualités existantes : **T1 = Usée**, **T2 = Correcte**
 
 Au survol d’une arme ou d’une armure (fiche, Intendance), une carte de jeu présente l’objet : son image dans le cadre de son tier, un **titre selon le tier** (`data/reference/item-titles.json`, par ex. Vieille lance / Lance basique / Lance de guerrier / Lance luxueuse) et ses **effets réels**, qualité comprise, tels que le combat les applique : dégâts, puissances, portée, prise, poids, charge, blocage, contre-charge, recharge, tirs enchaînés, attaque de zone pour une arme ; résistances et handicap (esquive, vitesse, magie) pour une armure. Aucune règle nouvelle : la carte lit les mêmes valeurs que le moteur (`game-core/item-card.js`).
 
+### Caractéristiques équipées (Idan, 2026-10-24)
+
+L’onglet Caractéristiques de la fiche montre les valeurs **au combat**, avec l’équipement (set d’armes 1 en main), en rouge si elles baissent et en vert si elles montent ; au survol, le détail : valeur de base, ce que retire chaque objet, valeur au combat. Ce sont les effets que le combat applique déjà (`game-core/equipment-effects.js`, à partir de `combat-engine.js`) : Vitesse (handicap de l’armure, poids des objets tenus), Esquive (handicap de l’armure), Initiative (calculée avec la Vitesse au combat) et Dextérité (combat à deux armes). Les cinq résistances du personnage ne sont pas modifiées : les résistances d’armure s’opposent à la puissance des armes, à l’étape Blesser. La caractéristique sauvegardée ne change pas ; la Taverne compare toujours les valeurs sans équipement.
+
 La fiche du mercenaire affiche tous les slots autour d’une silhouette simplifiée. Les cases remplies utilisent une icône provisoire et exposent la fiche de l’item au survol ; aucun drag & drop n’est prévu.

@@ -77,7 +77,7 @@ assert.ok(opposites.get(cycle.at(-1)).includes(cycle[0]));
     {referenceData:{formulaConstants:constants}},v=>String(Math.round(v)),()=>engine)(chief);
   assert.equal(asked.character,chief,"le moteur calcule l'aura du capitaine, avec son équipement");
   assert.match(box,/<small>Aura du capitaine<\/small>/);
-  assert.match(box,/ses alliés à 10 cases ou moins gagnent 35 % de son Courage et 25 % de son Charisme, équipement compris/);
+  assert.match(box,/ses alliés à 10 cases ou moins gagnent 35&nbsp;% de son Courage et 25&nbsp;% de son Charisme, équipement compris/);
   assert.match(box,/<strong>\+31 Courage<\/strong>/);
   assert.match(ui,/\?captainAuraBox\(c\)/,"le capitaine montre son aura au lieu du salaire");
   assert.doesNotMatch(ui,/ne touche ni salaire ni prime/);

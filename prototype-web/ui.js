@@ -787,7 +787,7 @@ function captainAuraBox(c){
   const range=value("captain.aura.range_hex",10);
   const courage=value("captain.aura.courage_ratio",0.35),charisma=value("captain.aura.charisma_ratio",0.25);
   const bonus=combatEngine().captainAuraBonus({character:c,activeSet:1});
-  return `<div class="sheet-pay sheet-pay--captain"><span><small>Aura du capitaine</small><em>Sur le champ de bataille, ses alliés à ${fmt(range)} cases ou moins gagnent ${fmt(courage*100)} % de son Courage et ${fmt(charisma*100)} % de son Charisme, équipement compris.</em></span><strong>+${fmt(bonus)} Courage</strong></div>`;
+  return `<div class="sheet-pay sheet-pay--captain"><span><small>Aura du capitaine</small><em>Sur le champ de bataille, ses alliés à ${fmt(range)} cases ou moins gagnent ${fmt(courage*100)}&nbsp;% de son Courage et ${fmt(charisma*100)}&nbsp;% de son Charisme, équipement compris.</em></span><strong>+${fmt(bonus)} Courage</strong></div>`;
 }
 
 // Onglet Profil (Idan, 2026-10-21) : portrait et état ; pictos et phrases d'origine et d'ascendance ;

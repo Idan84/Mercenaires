@@ -23,6 +23,7 @@ const REFERENCE_FILES = {
   alignmentGeneration: "alignment-generation.json",
   peopleAffinity: "people-affinity.json",
   reputationStars: "reputation-stars.json",
+  affinityPhrases: "affinity-phrases.json",
   campCalendar: "camp-calendar.json",
   equipmentSilhouetteFiles: "equipment-silhouettes.json",
   characterNames: "character-names.json",

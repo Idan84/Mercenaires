@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "reputation-stars",
-  "description": "Affichage de la réputation personnelle et de la renommée de compagnie en 15 niveaux : 1 à 5 étoiles de bronze, puis d'argent, puis d'or (décision Idan du 2026-10-20). Un niveau est atteint dès que la valeur atteint son seuil minimal. Échelle géométrique (×1,25 environ par niveau) ; renommée = 4 × réputation. 5 étoiles d'or : maximum difficilement atteignable. Chaque niveau porte une phrase qui explique la réputation d'un mercenaire, de « Même sa mère ne sait pas qui c'est. » à « Les enfants apprennent son nom avant le leur. » (Idan, 2026-10-21).",
+  "description": "Affichage de la réputation personnelle et de la renommée de compagnie en 15 niveaux : 1 à 5 étoiles de bronze, puis d'argent, puis d'or (décision Idan du 2026-10-20). Un niveau est atteint dès que la valeur atteint son seuil minimal. Échelle géométrique (×1,25 environ par niveau) ; renommée = 4 × réputation. 5 étoiles d'or : maximum difficilement atteignable. Chaque niveau porte une phrase qui explique la réputation d'un mercenaire, de « Même sa mère ne sait pas qui c'est. » à « Les enfants apprennent son nom avant le leur. » (Idan, 2026-10-21). Trois variantes de même sens par niveau, pour que les mercenaires d’un même niveau n’aient pas tous la même phrase (Idan, 2026-10-24).",
   "columns": [
     {
       "source": "Niveau",
@@ -26,6 +26,10 @@
     {
       "source": "Phrase de réputation (fiche du mercenaire)",
       "key": "phrase"
+    },
+    {
+      "source": "Variantes de la phrase, même sens (Idan, 2026-10-24)",
+      "key": "variantes"
     }
   ],
   "row_count": 15,
@@ -36,7 +40,12 @@
       "etoiles": 1,
       "reputation_min": 0,
       "renommee_min": 0,
-      "phrase": "Même sa mère ne sait pas qui c’est."
+      "phrase": "Même sa mère ne sait pas qui c’est.",
+      "variantes": [
+        "Un parfait inconnu, même pour les chiens du village.",
+        "Personne ne se retourne sur son passage. Personne.",
+        "Même son reflet a du mal à mettre un nom sur ce visage."
+      ]
     },
     {
       "niveau": 2,
@@ -44,7 +53,12 @@
       "etoiles": 2,
       "reputation_min": 100,
       "renommee_min": 400,
-      "phrase": "Son nom ne dit rien à personne, pas même à l’aubergiste."
+      "phrase": "Son nom ne dit rien à personne, pas même à l’aubergiste.",
+      "variantes": [
+        "Le crieur public n’a jamais eu l’occasion de prononcer son nom.",
+        "Son nom ? Même le registre de la caserne l’a mal écrit.",
+        "On écorche son nom chaque fois qu’on le prononce, ce qui est rare."
+      ]
     },
     {
       "niveau": 3,
@@ -52,7 +66,12 @@
       "etoiles": 3,
       "reputation_min": 125,
       "renommee_min": 500,
-      "phrase": "Quelques piliers de taverne se souviennent vaguement de sa tête."
+      "phrase": "Quelques piliers de taverne se souviennent vaguement de sa tête.",
+      "variantes": [
+        "Un ivrogne ou deux jurent avoir déjà vu cette tête quelque part.",
+        "La serveuse de la Chope fendue croit se rappeler son visage.",
+        "Au comptoir, on se souvient de sa tête, un peu moins de son nom."
+      ]
     },
     {
       "niveau": 4,
@@ -60,7 +79,12 @@
       "etoiles": 4,
       "reputation_min": 160,
       "renommee_min": 640,
-      "phrase": "Les sergents recruteurs commencent à retenir son nom."
+      "phrase": "Les sergents recruteurs commencent à retenir son nom.",
+      "variantes": [
+        "Son nom apparaît parfois sur les listes des sergents recruteurs.",
+        "Les recruteurs du coin notent son nom dans un coin de leur carnet.",
+        "Quelques capitaines ont déjà demandé son nom, et l’ont retenu."
+      ]
     },
     {
       "niveau": 5,
@@ -68,7 +92,12 @@
       "etoiles": 5,
       "reputation_min": 200,
       "renommee_min": 800,
-      "phrase": "Dans les tavernes du coin, on lui paie parfois une chope pour entendre ses histoires."
+      "phrase": "Dans les tavernes du coin, on lui paie parfois une chope pour entendre ses histoires.",
+      "variantes": [
+        "Ses histoires de bataille lui valent souvent une tournée gratuite.",
+        "Les buveurs du coin se pressent autour de sa table quand le récit commence.",
+        "Dans la région, ses récits de guerre valent bien une pinte."
+      ]
     },
     {
       "niveau": 6,
@@ -76,7 +105,12 @@
       "etoiles": 1,
       "reputation_min": 250,
       "renommee_min": 1000,
-      "phrase": "Les marchands prudents changent de trottoir à son approche."
+      "phrase": "Les marchands prudents changent de trottoir à son approche.",
+      "variantes": [
+        "Les colporteurs serrent leur bourse quand son ombre passe.",
+        "Sur le marché, les étals se vident étrangement vite à son arrivée.",
+        "Les marchands avisés lui font crédit. Par peur, surtout."
+      ]
     },
     {
       "niveau": 7,
@@ -84,7 +118,12 @@
       "etoiles": 2,
       "reputation_min": 320,
       "renommee_min": 1280,
-      "phrase": "Son nom circule de caserne en caserne."
+      "phrase": "Son nom circule de caserne en caserne.",
+      "variantes": [
+        "Dans les chambrées, on se raconte ses coups d’éclat à voix basse.",
+        "Les soldats de toute la province ont entendu parler de ses exploits.",
+        "Pas une caserne où l’on n’ait une anecdote à son sujet."
+      ]
     },
     {
       "niveau": 8,
@@ -92,7 +131,12 @@
       "etoiles": 3,
       "reputation_min": 400,
       "renommee_min": 1600,
-      "phrase": "Les bardes ont écrit une chanson sur ses exploits. Elle est mauvaise, mais tout le monde la connaît."
+      "phrase": "Les bardes ont écrit une chanson sur ses exploits. Elle est mauvaise, mais tout le monde la connaît.",
+      "variantes": [
+        "Un ménestrel a mis ses exploits en vers. Les rimes sont atroces, le refrain inoubliable.",
+        "On fredonne une ballade à sa gloire dans toutes les auberges. Faux, en général.",
+        "Sa légende a désormais sa chanson à boire, chantée trop fort et trop tard."
+      ]
     },
     {
       "niveau": 9,
@@ -100,7 +144,12 @@
       "etoiles": 4,
       "reputation_min": 500,
       "renommee_min": 2000,
-      "phrase": "Les seigneurs du pays connaissent son nom, et le prononcent avec prudence."
+      "phrase": "Les seigneurs du pays connaissent son nom, et le prononcent avec prudence.",
+      "variantes": [
+        "À la table des barons, on baisse la voix quand son nom est cité.",
+        "Les nobles du pays lui sourient poliment, et gardent leurs gardes à portée.",
+        "Dans les châteaux, son nom s’échange comme une menace polie."
+      ]
     },
     {
       "niveau": 10,
@@ -108,7 +157,12 @@
       "etoiles": 5,
       "reputation_min": 640,
       "renommee_min": 2560,
-      "phrase": "On raconte ses faits d’armes jusque dans les cours étrangères."
+      "phrase": "On raconte ses faits d’armes jusque dans les cours étrangères.",
+      "variantes": [
+        "Ses exploits ont franchi les frontières, avec quelques embellissements.",
+        "Des ambassadeurs lointains demandent si les histoires à son sujet sont vraies.",
+        "Même au-delà des mers, on connaît ses batailles."
+      ]
     },
     {
       "niveau": 11,
@@ -116,7 +170,12 @@
       "etoiles": 1,
       "reputation_min": 800,
       "renommee_min": 3200,
-      "phrase": "Des villages entiers l’acclament ou se barricadent, selon son humeur."
+      "phrase": "Des villages entiers l’acclament ou se barricadent, selon son humeur.",
+      "variantes": [
+        "Quand on l’annonce, les villages hésitent entre la fête et la fuite.",
+        "À son arrivée, les uns sortent les drapeaux, les autres les fourches.",
+        "Les bourgmestres préparent deux discours : un de bienvenue, un de reddition."
+      ]
     },
     {
       "niveau": 12,
@@ -124,7 +183,12 @@
       "etoiles": 2,
       "reputation_min": 1000,
       "renommee_min": 4000,
-      "phrase": "Les rois négocient ses services en personne."
+      "phrase": "Les rois négocient ses services en personne.",
+      "variantes": [
+        "Aucun intermédiaire : pour l’engager, il faut un trône.",
+        "Les monarques se disputent ses services à prix d’or.",
+        "Les couronnes envoient leurs chanceliers, puis finissent par venir elles-mêmes."
+      ]
     },
     {
       "niveau": 13,
@@ -132,7 +196,12 @@
       "etoiles": 3,
       "reputation_min": 1250,
       "renommee_min": 5000,
-      "phrase": "Ses ennemis regardent sous leur lit avant de dormir."
+      "phrase": "Ses ennemis regardent sous leur lit avant de dormir.",
+      "variantes": [
+        "Ses ennemis dorment avec une lampe allumée. Quand ils dorment.",
+        "Des généraux font doubler leur garde rien qu’à l’entente de son nom.",
+        "Ses adversaires sursautent au moindre craquement de plancher."
+      ]
     },
     {
       "niveau": 14,
@@ -140,7 +209,12 @@
       "etoiles": 4,
       "reputation_min": 1600,
       "renommee_min": 6400,
-      "phrase": "Son nom est gravé dans les chroniques, et sur un bon nombre de pierres tombales."
+      "phrase": "Son nom est gravé dans les chroniques, et sur un bon nombre de pierres tombales.",
+      "variantes": [
+        "Les chroniqueurs lui consacrent des chapitres ; les fossoyeurs, des journées entières.",
+        "Son nom remplit les annales autant que les cimetières.",
+        "Les historiens écrivent sa légende ; les tailleurs de pierre, les noms de ses victimes."
+      ]
     },
     {
       "niveau": 15,
@@ -148,7 +222,12 @@
       "etoiles": 5,
       "reputation_min": 2000,
       "renommee_min": 8000,
-      "phrase": "Les enfants apprennent son nom avant le leur."
+      "phrase": "Les enfants apprennent son nom avant le leur.",
+      "variantes": [
+        "Les mères menacent les enfants désobéissants de son nom.",
+        "On baptise des enfants, des chevaux et des tavernes en son honneur.",
+        "Son nom est devenu un juron, une prière et une berceuse."
+      ]
     }
   ]
 }

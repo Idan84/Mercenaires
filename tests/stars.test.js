@@ -20,9 +20,13 @@ for(let i=1;i<15;i++){
 }
 
 // Réputation personnelle.
-assert.deepEqual(stars.personal(0),{level:1,stars:1,metal:"Bronze",metalKey:"bronze",label:"1 étoile de bronze",phrase:"Même sa mère ne sait pas qui c’est.",max:false,value:0,nextAt:100});
-// Une phrase par niveau pour la fiche (Idan, 2026-10-21), toutes différentes.
+assert.deepEqual(stars.personal(0),{level:1,stars:1,metal:"Bronze",metalKey:"bronze",label:"1 étoile de bronze",phrase:"Même sa mère ne sait pas qui c’est.",
+  variants:table.rows[0].variantes,max:false,value:0,nextAt:100});
+// Une phrase par niveau pour la fiche (Idan, 2026-10-21), toutes différentes ; trois variantes de même sens par
+// niveau (Idan, 2026-10-24), elles aussi toutes différentes.
 assert.equal(new Set(table.rows.map(r=>r.phrase)).size,15);
+for(const row of table.rows) assert.equal(row.variantes.length,3,"3 variantes au niveau "+row.niveau);
+assert.equal(new Set(table.rows.flatMap(r=>[r.phrase,...r.variantes])).size,60);
 assert.equal(stars.personal(5000).phrase,"Les enfants apprennent son nom avant le leur.");
 assert.equal(stars.personal(99).level,1);
 assert.equal(stars.personal(100).level,2,"le seuil est atteint dès qu'on l'égale");

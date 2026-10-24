@@ -30,7 +30,8 @@ Git est la source de vérité. Les JSON ci-dessous sont les référentiels struc
 | binary-aptitude-grants.json | 6 | aptitude, domaine, mode, automatic, bonuses_pp, armor, reason |
 
 | camp-calendar.json | 12 mois, 7 jours, 3 citations par mois | year_start, era, days_per_year, weekday_names, months (name, days, quotes) : calendrier narratif du camp |
-| reputation-stars.json | 15 | niveau, metal, etoiles, reputation_min, renommee_min, phrase (affichage en étoiles de la réputation et de la renommée ; phrase de réputation de la fiche) |
+| reputation-stars.json | 15 | niveau, metal, etoiles, reputation_min, renommee_min, phrase, variantes (affichage en étoiles de la réputation et de la renommée ; phrase de réputation de la fiche) |
+| affinity-phrases.json | 10 | niveau, affinite_max, phrase, variantes (phrase d'affinité envers le capitaine, avec les cœurs de la fiche et de la carte du mercenaire ; trois variantes de même sens par niveau) |
 | character-sheet-copy.json | 11 + 7 | ancestries (nom, famille, parent), origins (nom, homme, femme) : phrases de l'onglet Profil de la fiche |
 | tavern-dialogue.json | 20 + 38 | greetings (min, max, texte) selon l'affinité ; questions, answers et lines du dialogue de recrutement ; weapons (nom, avec_article) : textes de la Taverne |
 | item-titles.json | 46 | nom, famille (arme ou armure), t1, t2, t3, t4 : titre de l’objet selon son tier, en tête de la carte d’objet (textes de JC, Idan 2026-10-24) |

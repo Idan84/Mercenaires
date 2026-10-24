@@ -763,9 +763,19 @@ function renderSituation(c) {
   </section>`;
 }
 
+// Capitaine (Idan, 2026-10-24) : à la place du salaire, son aura au combat (captain.aura.*, combat-engine.js).
+function captainAuraBox(){
+  const value=(code,fallback)=>{
+    const v=Number((game.referenceData?.formulaConstants?.rows||[]).find(r=>r.code===code)?.valeur);
+    return Number.isFinite(v)?v:fallback;
+  };
+  const bonus=value("captain.aura.courage_bonus",30),range=value("captain.aura.range_hex",10);
+  return `<div class="sheet-pay sheet-pay--captain"><span><small>Aura du capitaine</small><em>Sur le champ de bataille, ses alliés à ${fmt(range)} cases ou moins gagnent du Courage.</em></span><strong>+${fmt(bonus)} Courage</strong></div>`;
+}
+
 // Onglet Profil (Idan, 2026-10-21) : portrait et état ; pictos et phrases d'origine et d'ascendance ;
 // puis trois colonnes de largeurs différentes : la roue d'alignement sur toute la hauteur, et à côté
-// réputation et affinité, la biographie, le salaire journalier et la prime de mission.
+// réputation et affinité, la biographie, le salaire journalier et la prime de mission (l'aura pour le capitaine).
 // Textes : data/reference/character-sheet-copy.json et reputation-stars.json (phrases de réputation).
 function sheetCopy(section,name){
   return (game.referenceData?.characterSheetCopy?.[section]||[]).find(r=>r.nom===name)||null;
@@ -819,7 +829,7 @@ function renderProfileTab(c){
       <section class="sheet-column sheet-column--affinity">${affinity||`<small>Affinité</small><p>${captain?"Capitaine de la compagnie.":"Hors de la compagnie."}</p>`}</section>
       <div class="sheet-bio">${renderBiography(c)}</div>
       ${captain
-        ?`<p class="sheet-pay sheet-pay--captain">Le capitaine ne touche ni salaire ni prime : la compagnie, c’est la sienne.</p>`
+        ?captainAuraBox()
         :`<div class="sheet-pay sheet-pay--salary"><small>Salaire journalier</small><strong>${fmt(salary)} PO</strong></div><div class="sheet-pay sheet-pay--bonus"><small>Prime de mission</small><strong>${fmt(bonus)} PO</strong></div>`}
     </div>
   </section>`;

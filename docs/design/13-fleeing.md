@@ -25,6 +25,10 @@ S'il ne reste aucun mouvement disponible, le personnage ne bouge pas mais demeur
 - Un personnage **En Fuite** ne fait pas d'attaque d'opportunité.
 - Un ennemi **actif** est vivant et n'est pas En Fuite.
 
+## Aura du capitaine (Idan, 2026-10-24)
+
+Tant que le capitaine est sur le champ de bataille (vivant, sur la carte), ses alliés à **10 cases ou moins** ont **+30 en Courage** pour leurs tests de Courage et leurs reprises de contrôle ; lui-même n'en profite pas. Sur la fiche du capitaine, cette aura remplace la mention du salaire. But : inciter le joueur à emmener son capitaine au combat (il y gagne aussi de l'expérience). Simulation (3 contre 3) : de 51 à 59 % de victoires, et de 73 à 52 % d'alliés qui fuient au moins une fois.
+
 ## Tours suivants — reprise de contrôle
 
 Au début de chaque tour commencé **En Fuite**, résoudre [Reprise de contrôle — En Fuite V1](/design/#doc=formulas/reprise-de-controle-en-fuite-v1.md).

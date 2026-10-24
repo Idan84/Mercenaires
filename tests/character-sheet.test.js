@@ -63,4 +63,16 @@ while(cycle.length<schools.length){
   cycle.push(next);
 }
 assert.ok(opposites.get(cycle.at(-1)).includes(cycle[0]));
+// Aura du capitaine (Idan, 2026-10-24) : sur sa fiche, à la place du salaire, avec les valeurs des constantes.
+{
+  const ui=fs.readFileSync(path.join(__dirname,"..","prototype-web","ui.js"),"utf8");
+  const from=ui.indexOf("function captainAuraBox"),to=ui.indexOf("\n}\n",from)+3;
+  const constants={rows:[{code:"captain.aura.courage_bonus",valeur:30},{code:"captain.aura.range_hex",valeur:10}]};
+  const box=new Function("game","fmt",ui.slice(from,to)+"\nreturn captainAuraBox();")({referenceData:{formulaConstants:constants}},v=>String(v));
+  assert.match(box,/<small>Aura du capitaine<\/small>/);
+  assert.match(box,/ses alliés à 10 cases ou moins gagnent du Courage/);
+  assert.match(box,/<strong>\+30 Courage<\/strong>/);
+  assert.match(ui,/\?captainAuraBox\(\)/,"le capitaine montre son aura au lieu du salaire");
+  assert.doesNotMatch(ui,/ne touche ni salaire ni prime/);
+}
 console.log("Fiche : textes d'origine, d'ascendance, des caractéristiques, des compétences et de la magie — OK");

@@ -4,7 +4,7 @@
 
 Code: combat.morale.flee_recovery
 Domaine: Combat
-Expression: enemy_ref = nearest_active_enemy; base = character.courage + 0.25character.will - 0.25enemy_ref.intimidation; p_recover = min(95, max(5, base + 10*flee_turn_index)); if d100 <= p_recover: remove_state('state.fleeing'); player_control = true; else: flee_failed_turns += 1; resolve_flee_behavior_d3()
+Expression: enemy_ref = nearest_active_enemy; base = character.courage + captain_aura + 0.25character.will - 0.25enemy_ref.intimidation; p_recover = min(95, max(5, base + 10*flee_turn_index)); if d100 <= p_recover: remove_state('state.fleeing'); player_control = true; else: flee_failed_turns += 1; resolve_flee_behavior_d3()
 Maximum: 95
 Minimum: 5
 Notes: Test au début de chaque tour tant que state.fleeing est actif. flee_turn_index=1 au premier tour complet passé En Fuite, puis 2, 3... Le coefficient +10 par tour est une première valeur d'équilibrage à tester. Réussite : récupération immédiate du contrôle et activation normale complète.
@@ -20,12 +20,14 @@ Au **début de son tour**, un personnage **En Fuite** tente immédiatement de re
 L'adversaire de référence est l'**ennemi actif le plus proche** au moment du test. Un ennemi **actif** est vivant et n'est pas lui-même En Fuite (décision Idan du 2026-10-03, Issue #8).
 
 $$
-ScoreRecuperation=Courage+0.25\times Volonte-0.25\times Intimidation_{ennemi\ proche}+10\times TourFuite
+ScoreRecuperation=Courage+AuraCapitaine+0.25\times Volonte-0.25\times Intimidation_{ennemi\ proche}+10\times TourFuite
 $$
 
 $$
 P_{recuperation}=min(95,max(5,ScoreRecuperation))
 $$
+
+`AuraCapitaine` : +30 si le capitaine allié est sur la carte à 10 cases ou moins ([aura du capitaine](/design/#doc=formulas/courage-post-attaque-cac-v1.md), Idan, 2026-10-24).
 
 `TourFuite = 1` au premier tour complet commencé dans l'état **En Fuite**, puis augmente de 1 à chaque nouveau tour tant que l'état persiste.
 

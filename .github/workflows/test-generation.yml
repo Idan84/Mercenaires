@@ -40,6 +40,7 @@ jobs:
       - run: node tests/pictos.test.js
       - run: node tests/equipment-art.test.js
       - run: node tests/item-card.test.js
+      - run: node tests/item-value.test.js
       - run: node tests/equipment-effects.test.js
       - run: node tests/equipment-deals.test.js
       - run: node tests/deal-ui.test.js

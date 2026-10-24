@@ -103,6 +103,23 @@ Chaque objet tire son tier **indépendamment** selon la réputation personnelle 
 
 Mapping actuel vers les qualités existantes : **T1 = Usée**, **T2 = Correcte**, **T3 = Grand Luxe**.
 
+### Valeur d’un objet (Idan, 2026-10-24)
+
+Chaque objet a une **valeur en pièces d’or, cachée** : rien ne l’affiche au joueur. Elle servira aux marchands.
+
+**Valeur = prix de base × tier × qualité**, arrondie à la pièce (`game-core/item-value.js`).
+
+- **Prix de base** (objet T1, qualité Correcte) : colonne `prix_base` des fichiers d’équipement, modifiable à la main.
+  - Armes (`weapons.json`) : 40 + 10 × dégât maximal, × 1,5 pour les armes à feu, arrondi à 5. Par exemple Dague 80, Épée longue 120, Grande épée 200, Pistolet 180, Arquebuse 240.
+  - Armures (`base-armors.json`) : Vêtements 20, Gambison 60, Armure de cuir 90, Cuir renforcé 160, Brigandine 220, Cotte de mailles 260, Armure d’écailles 380, Armure de plates 600.
+  - Bottes, ceintures, capes, gants, culottes : 100. Amulettes et bagues : 150.
+- **Tier** : T1 × 1, T2 × 3, T3 × 8, T4 × 25 (`economy.item_value.tier_<n>_multiplier`).
+- **Qualité** : Usée × 0,6, Correcte × 1, Grand Luxe × 1,5 (`item-qualities.json`, `multiplicateur_prix`).
+
+Exemples : Épée longue T1 Usée 72 PO, T2 Correcte 360 PO, T3 Grand Luxe 1 440 PO, T4 Grand Luxe 4 500 PO. Un objet sans prix de base (casques à venir) n’a pas de valeur.
+
+Le prix d’achat et de revente chez un marchand viendra avec les marchands (il dépendra de l’intendant, entre autres).
+
 ### Carte d’objet (Idan, 2026-10-24)
 
 Au survol d’une arme ou d’une armure (fiche, Intendance), une carte de jeu présente l’objet : son image dans le cadre de son tier, un **titre selon le tier** (`data/reference/item-titles.json`, par ex. Vieille lance / Lance basique / Lance de guerrier / Lance luxueuse) et ses **effets réels**, qualité comprise, tels que le combat les applique : dégâts, puissances, portée, prise, poids, charge, blocage, contre-charge, recharge, tirs enchaînés, attaque de zone pour une arme ; résistances et handicap (esquive, vitesse, magie) pour une armure. Aucune règle nouvelle : la carte lit les mêmes valeurs que le moteur (`game-core/item-card.js`).

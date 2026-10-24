@@ -65,6 +65,11 @@ assert.ok(!ok("belt", item("x", "Amulette de chance", 1, "amulet")));
 assert.ok(ok("cape", item("x", "Cape d’esquive", 1, "cape")), "cape : emplacement Cape");
 assert.ok(!ok("cape", item("x", "Amulette de chance", 1, "amulet")));
 assert.ok(!ok("armor", item("x", "Cape d’esquive", 1, "cape")));
+// Gants et culotte (Idan, 2026-10-24) : leurs emplacements n'acceptent que leur type d'objet.
+assert.ok(ok("gloves", item("x", "Gants", 1, "gloves")));
+assert.ok(ok("pants", item("x", "Culotte", 1, "pants")));
+assert.ok(!ok("gloves", item("x", "Cape d’esquive", 1, "cape")));
+assert.ok(!ok("pants", item("x", "Gants", 1, "gloves")));
 assert.ok(!ok("weapon_set_1_off", item("x", "Dague", 1)), "la hallebarde tient les deux mains");
 assert.ok(!ok("weapon_set_2_off", item("x", "Arc", 1)), "arme à deux mains : arme principale");
 assert.ok(!ok("weapon_set_2_main", item("x", "Écu", 1)), "bouclier : main secondaire");

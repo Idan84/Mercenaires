@@ -176,8 +176,26 @@ const pick=s4.tavern.candidates[0];
 assert.equal(stable.signCandidate(s4,pick.mercenary.id).ok,false,"pas d'accord");
 const n=tavern.negotiationState(pick);
 stable.offerToCandidate(s4,pick.mercenary.id,{salary:n.salary,bonus:n.bonus});
-s4.company.camp.dormitoryCapacity=s4.company.roster.length;
-assert.equal(stable.signCandidate(s4,pick.mercenary.id).ok,false,"Dortoir plein");
+// Dortoir (Idan, 2026-10-24) : ni le capitaine ni l'intendant ne prennent de place ; un ogre en prend deux,
+// tout autre mercenaire une (halflings, gobelins et gnomes compris).
+const placesOf=people=>stable.dormitoryPlaces({people});
+assert.deepEqual(["Ogre","Halfling","Gobelin","Gnome","Humain","Nain"].map(placesOf),[2,1,1,1,1,1]);
+assert.equal(stable.dormitoryUsed(s4),s4.company.roster.filter(m=>m.id!==captain.id).reduce((sum,m)=>sum+stable.dormitoryPlaces(m),0));
+assert.equal(s4.company.roster.some(m=>m.id===captain.id),true,"le capitaine est bien dans l'effectif");
+s4.company.camp.dormitoryCapacity=stable.dormitoryUsed(s4);
+const full=stable.signCandidate(s4,pick.mercenary.id);
+assert.equal(full.ok,false,"Dortoir plein");
+assert.equal(full.dormFull,true);
+const ogrePeople=pick.mercenary.people;
+pick.mercenary.people="Ogre";
+s4.company.camp.dormitoryCapacity=stable.dormitoryUsed(s4)+1;
+const ogre=stable.signCandidate(s4,pick.mercenary.id);
+assert.deepEqual([ogre.ok,ogre.places,ogre.reason],[false,2,"Dortoir plein : il faut deux places pour un ogre."]);
+pick.mercenary.people=ogrePeople;
+const used=stable.dormitoryUsed(s4),steward=s4.company.roster.find(m=>m.id!==captain.id);
+s4.company.intendantId=steward.id;
+assert.equal(stable.dormitoryUsed(s4),used-stable.dormitoryPlaces(steward),"l'intendant libère sa place");
+s4.company.intendantId=null;
 s4.company.camp.dormitoryCapacity=40;
 const signed=stable.signCandidate(s4,pick.mercenary.id);
 assert.equal(signed.ok,true);

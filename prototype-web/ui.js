@@ -147,11 +147,11 @@ function renderMercenaryRoster() {
   // L'intendant passe dans Ma Compagnie (Idan, 2026-10-24).
   const squad=teamCharacters().filter(c=>c!==game.captain&&c.id!==game.campaign?.company.intendantId);
   const company=game.campaign?.company;
-  const occupied=company?.roster.length??(squad.length+(game.captain?1:0));
+  const occupied=game.campaign?campaignRules().dormitoryUsed(game.campaign):squad.length;
   const capacity=company?.camp?.dormitoryCapacity;
   const count=$("initial-count");
   count.innerHTML=`<span class="roster-count-number">${squad.length} mercenaire${squad.length!==1?"s":""}</span><span class="roster-count-capacity">Dortoir : ${occupied} / ${Number.isFinite(capacity)?capacity:"—"}</span>`;
-  count.title="La capacité du dortoir comprend également le capitaine.";
+  count.title="Places occupées au dortoir : un ogre en prend deux ; le capitaine et l’intendant n’en prennent pas.";
   $("roster-sort").value=rosterSortKey;
   const direction=$("roster-sort-direction");
   direction.textContent=rosterSortDescending?"↓ Décroissant":"↑ Croissant";
@@ -545,7 +545,8 @@ function equipmentSilhouetteSrc(c) {
 }
 
 // Onglet Équipement (Idan, 2026-10-21) : la silhouette de Jean-Mimi sur un parchemin, les objets posés sur le
-// corps (casque, amulette, cape, armure, ceinturon, bottes ; armes du set 1 dans les mains) ; à côté, le set
+// corps (casque, amulette, cape, armure, gants, ceinturon, culotte, bottes ; armes du set 1 dans les mains ; gants et
+// culotte ajoutés le 2026-10-24) ; à côté, le set
 // de rechange, les bagues, la ceinture et la monture. Survol d'un objet : son détail.
 const GEAR_ICONS={
   head:'<path d="M5 14a7 7 0 0 1 14 0v3H5z"/><path d="M12 7v5M4.5 17h15"/>',
@@ -554,6 +555,8 @@ const GEAR_ICONS={
   cape:'<path d="M8 3h8l2.5 4-1.5 13.5-5-2-5 2L5.5 7z"/><path d="M8 3c1.5 2 6.5 2 8 0"/>',
   belt:'<rect x="3" y="9" width="18" height="6" rx="1.5"/><rect x="9.5" y="8" width="5" height="8" rx="1"/>',
   boots:'<path d="M8 3h5v10l6 3v4H6v-4l2-2z"/><path d="M6 17h13"/>',
+  gloves:'<path d="M8 21v-5.5L5.2 11.8a1.3 1.3 0 0 1 2-1.6L9 12.4V5a1.3 1.3 0 0 1 2.6 0v5.5V3.8a1.3 1.3 0 0 1 2.6 0v6.7V5a1.3 1.3 0 0 1 2.6 0v6.5V7.4a1.3 1.3 0 0 1 2.6 0V15c0 2.6-1.4 4.6-3 6z"/><path d="M8 18h8.8"/>',
+  pants:'<path d="M6 3h12l1.5 18h-5L12 10l-2.5 11h-5z"/><path d="M6.2 6.5h11.6"/>',
   melee:'<path d="M19.5 4.5 9 15M19.5 4.5h-4M19.5 4.5v4"/><path d="m6.5 12.5 5 5M9 15l-4.5 4.5M3.5 18.5l2 2"/>',
   ranged:'<path d="M7 3c7 4 7 14 0 18"/><path d="M7 3v18M4 12h12M13 9l3 3-3 3"/>',
   shield:'<path d="M12 3 5 6v5c0 4.6 3 8.2 7 10 4-1.8 7-5.4 7-10V6z"/>',
@@ -562,7 +565,7 @@ const GEAR_ICONS={
   mount:'<path d="M7 21v-5l-3-3 2-6 5-3 1-2 2 3c3 1 5 4 5 8v8"/><path d="M10 9h.01" stroke-width="2.6"/>'
 };
 // Position des emplacements sur la silhouette, en % de l'image carrée (silhouette centrée, debout).
-const GEAR_ON_BODY={head:[50,10],amulet:[50,21],cape:[66,25],armor:[50,35],belt:[50,49],weapon_set_1_main:[31,50],weapon_set_1_off:[69,50],boots:[50,86]};
+const GEAR_ON_BODY={head:[50,10],amulet:[50,21],cape:[66,25],armor:[50,35],gloves:[21,66],belt:[50,49],pants:[50,67],weapon_set_1_main:[31,50],weapon_set_1_off:[69,50],boots:[50,86]};
 function gearIcon(kind){
   return `<svg class="gear-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${GEAR_ICONS[kind]||GEAR_ICONS.pouch}</svg>`;
 }
@@ -587,7 +590,7 @@ function gearTooltip(item){
 }
 // Image d'un objet selon son tier (Idan, 2026-10-23 : masters dans assets-src/Equipements/, versions du jeu
 // par scripts/build-equipment.js), ou null tant qu'il n'en a pas : la case garde alors son picto.
-const EQUIPMENT_ART_DIRS={armor:"armures",weapon:"armes",boots:"bottes",belt:"ceintures",amulet:"amulettes",cape:"capes"};
+const EQUIPMENT_ART_DIRS={armor:"armures",weapon:"armes",boots:"bottes",belt:"ceintures",amulet:"amulettes",cape:"capes",gloves:"gants",pants:"culottes"};
 function equipmentArt(item){
   const dir=EQUIPMENT_ART_DIRS[item?.itemType];
   const key=dir?`${dir}/${pictoSlug(item.name)}-${item.tier}`:null;

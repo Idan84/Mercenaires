@@ -64,6 +64,9 @@
       if(slot==="belt") return item.itemType==="belt"?{ok:true}:no("Cet emplacement reçoit une ceinture.");
       if(slot==="amulet") return item.itemType==="amulet"?{ok:true}:no("Cet emplacement reçoit une amulette.");
       if(slot==="cape") return item.itemType==="cape"?{ok:true}:no("Cet emplacement reçoit une cape.");
+      // Gants et culotte (Idan, 2026-10-24) : emplacements prêts, objets à venir.
+      if(slot==="gloves") return item.itemType==="gloves"?{ok:true}:no("Cet emplacement reçoit des gants.");
+      if(slot==="pants") return item.itemType==="pants"?{ok:true}:no("Cet emplacement reçoit une culotte.");
       const match=String(slot).match(WEAPON_SLOT);
       if(!match||item.itemType!=="weapon") return no("Cet objet ne va pas dans cet emplacement.");
       const weapon=weapons.get(item.name)||{};

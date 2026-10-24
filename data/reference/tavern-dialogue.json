@@ -214,6 +214,9 @@
     "dorm_full": [
       "Revenez quand vous aurez un lit pour moi."
     ],
+    "dorm_full_ogre": [
+      "Il me faut deux lits, capitaine. Revenez quand vous aurez la place."
+    ],
     "dorm_full_note": [
       "Le dortoir est plein : impossible de signer pour l’instant."
     ]

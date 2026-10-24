@@ -48,7 +48,7 @@ assert.equal(audit.counts.cultureOriginCompatibilities, 224);
 assert.equal(audit.counts.matrixRows, 106);
 assert.equal(audit.counts.skills, 94);
 assert.equal(audit.counts.baseArmors, 8);
-assert.equal(audit.counts.equipmentSlots, 21);
+assert.equal(audit.counts.equipmentSlots, 23, "dont gants et culotte (Idan, 2026-10-24)");
 assert.deepEqual(generator.equipmentTierDistribution(0), {1:0.9,2:0.09,3:0.01});
 assert.deepEqual(generator.equipmentTierDistribution(400), {1:0.25,2:0.45,3:0.30});
 assert.equal(audit.probabilities.peopleProbability, 1);
@@ -165,7 +165,7 @@ for (let i = 0; i < 1000; i++) {
   assert.equal(c.skills.physiology.Vol, false);
 
   assert.ok(c.equipment && c.equipment.profile && c.equipment.slots);
-  assert.equal(Object.keys(c.equipment.slots).length, 21);
+  assert.equal(Object.keys(c.equipment.slots).length, 23);
   assert.ok(["melee","ranged","magic"].includes(c.equipment.profile.type));
   assert.ok(Number.isFinite(c.equipment.profile.scores.melee));
   assert.ok(Number.isFinite(c.equipment.profile.scores.ranged));
@@ -223,7 +223,7 @@ for (let i = 0; i < 1000; i++) {
     assert.ok(reference.capes.rows.some(row => row.nom === cape.name && "cape:" + row.code === cape.templateId), cape.name);
     capesSeen[cape.name] = (capesSeen[cape.name] || 0) + 1;
   }
-  for (const emptySlot of ["head","ring_1","ring_2","ring_3","ring_4","ring_5","ring_6","weapon_set_1_off","weapon_set_2_off","belt_item_1","belt_item_2","belt_item_3","belt_item_4","mount"]) {
+  for (const emptySlot of ["head","gloves","pants","ring_1","ring_2","ring_3","ring_4","ring_5","ring_6","weapon_set_1_off","weapon_set_2_off","belt_item_1","belt_item_2","belt_item_3","belt_item_4","mount"]) {
     assert.equal(c.equipment.slots[emptySlot], null);
   }
 

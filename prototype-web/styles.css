@@ -2121,3 +2121,14 @@ body[data-screen="camp"] .camp-scene>.panel .muted{color:#c2b29e}
 .mission-contract-result{display:grid;gap:4px;margin:0 0 8px;padding:0;list-style:none}
 .mission-contract-result li{padding:6px 9px;border-radius:8px;background:#f4ecd9;border-left:3px solid #b08a3e}
 .mission-contract-result li.is-bad{background:#f6e0da;border-left-color:#b53025}
+/* Escouades en mission (doc 17) : en route, sur place (le combat attend), sur le retour. */
+.expedition-list{display:grid;gap:8px}
+.expedition-list h3{margin:0;color:#f3d9a4;font:600 1.1rem Georgia,serif}
+.expedition-row{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:12px;padding:10px 14px;border:1px solid #71583e;border-radius:10px;background:#2e231c;color:#f1e3c8}
+.expedition-row div{display:grid;gap:2px;min-width:0}
+.expedition-row small{color:#cdb38c}
+.expedition-row em{color:#e7d3b0;font-style:normal;font-weight:600}
+.expedition-row--arrived{border-color:#c9a15f;box-shadow:0 0 0 1px rgba(201,161,95,.4)}
+.roster-status--away{border-color:#6c86a8;background:linear-gradient(180deg,#2c3a4f,#1f2938);color:#d6e4f7}
+.expedition-dialog{padding:22px 26px;border:1px solid #9a7a4f;border-radius:12px}
+.expedition-dialog p{max-width:52ch;margin:12px 0 18px;line-height:1.5}

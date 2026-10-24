@@ -344,7 +344,9 @@ function renderCaptainAffinity(c) {
   if (!a) return "";
   const { phrase, filled } = affinityPresentation(a.total, c);
   const hearts = `<span class="player-affinity-hearts" aria-hidden="true"><span class="is-full">${"♥".repeat(filled)}</span><span class="is-empty">${"♡".repeat(10 - filled)}</span></span>`;
-  return `<div class="player-affinity"><small>Affinité avec le capitaine</small>${hearts}<strong class="player-affinity-phrase">${esc(phrase)}</strong></div>`;
+  // Slip d’Affinité porté (Idan, 2026-10-24) : ses points sont déjà dans les cœurs ; pas de score affiché.
+  const gear = a.gear ? `<small class="player-affinity-gear">Avec son ${esc(a.gearItem?.name || "Slip d’Affinité")}</small>` : "";
+  return `<div class="player-affinity"><small>Affinité avec le capitaine</small>${hearts}<strong class="player-affinity-phrase">${esc(phrase)}</strong>${gear}</div>`;
 }
 
 function fmtDelta(n) {
@@ -917,8 +919,8 @@ function sheetEquippedValue(m,name){
   return effect?Math.round(effect.value):sheetStatValue(m,name);
 }
 // Détail au survol : valeur de base, ce que chaque objet retire ou ajoute, valeur au combat.
-// total : « Au combat » pour les valeurs que le combat lit, « Total » pour la magie, la Discrétion et les Pièges (pas
-// encore joués).
+// total : « Au combat » pour les valeurs que le combat lit, « Total » pour la magie, la Discrétion, les Pièges et le
+// Charisme (pas encore joués au combat).
 function equipmentDetail(effect,total="Au combat"){
   if(!effect?.lines.length) return "";
   const note={weight:"poids, réduit par la maîtrise",armor:"handicap de l’armure",speed:"avec l’équipement",dual:"une arme dans chaque main"};
@@ -970,7 +972,7 @@ function renderStatsTab(c){
     const effect=effects[row.nom],value=effect?Math.round(effect.value):sheetStatValue(c,row.nom);
     if(!Number.isFinite(value)) return "";
     const shift=effect?Math.sign(value-Math.round(effect.base)):0;
-    const lead=equipmentDetail(effect);
+    const lead=equipmentDetail(effect,row.nom==="Charisme"?"Total":"Au combat");
     return `<div class="sheet-stat sheet-stat--${esc(pictoSlug(row.nom))}">
       ${statIcon(row.nom)}
       <span class="sheet-stat-name" tabindex="0">${esc(row.nom.replace(/^Résistance (au |à la |aux )?/,"").replace(/^./,ch=>ch.toUpperCase()))}${statTip(row)}</span>

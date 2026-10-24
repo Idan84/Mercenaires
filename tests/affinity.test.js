@@ -50,6 +50,14 @@ assert.equal(affinity(person("Humain","Loyal bon","A"),person("Orc","Chaotique m
 // Membre de la compagnie : la part acquise vient de affinityAcquired (0 par défaut, anciennes sauvegardes).
 assert.equal(memberAffinity(human,{...human}).acquired,0);
 assert.equal(memberAffinity(human,{...human,culture:"B",affinityAcquired:-30}).total,affinity(human,{...human,culture:"B"}).initial-30);
+// Slip d'Affinité (Idan, 2026-10-24) : la culotte portée ajoute ses points à l'affinité avec le capitaine.
+const withPants=createAffinityRules({reference:{...reference,pants:read("pants.json")}});
+const wearing=(name,tier)=>({...human,culture:"B",affinityAcquired:-30,items:[{id:"p",itemType:"pants",name,tier}],equipment:{slots:{pants:"p"}}});
+const briefs=withPants.memberAffinity(human,wearing("Slip d’Affinité",3));
+assert.deepEqual([briefs.gear,briefs.gearItem.name,briefs.acquired,briefs.total],[15,"Slip d’Affinité",-30,affinity(human,{...human,culture:"B"}).initial-30+15]);
+assert.equal(withPants.memberAffinity(human,wearing("String du Charisme",4)).gear,0,"les autres culottes ne touchent pas l'affinité");
+assert.equal(withPants.memberAffinity(human,{...wearing("Slip d’Affinité",4),affinityAcquired:95}).total,100,"bornée à 100");
+assert.equal(withPants.memberAffinity(human,{...human,culture:"B"}).gear,0,"sans culotte : rien");
 
 // Personnages générés : tous ont un peuple et un alignement reconnus.
 const {createGenerator}=require("../game-core/mercenary-generator.js");

@@ -11,7 +11,7 @@ const read = file => JSON.parse(fs.readFileSync(path.join(ROOT, "data", "referen
 const reference = {
   weapons:read("weapons.json"), skills:read("skills.json"), baseArmors:read("base-armors.json"),
   itemQualities:read("item-qualities.json"), itemTitles:read("item-titles.json"), boots:read("boots.json"), belts:read("belts.json"),
-  amulets:read("amulets.json"), capes:read("capes.json"), gloves:read("gloves.json")
+  amulets:read("amulets.json"), capes:read("capes.json"), gloves:read("gloves.json"), pants:read("pants.json")
 };
 const cards = createItemCards({reference});
 const item = (itemType, name, tier, qualityCode, extra = {}) => ({itemType, name, tier, qualityCode, ...extra});
@@ -19,7 +19,7 @@ const near = (a, b) => assert.ok(Math.abs(a - b) < 1e-9, `${a} ≠ ${b}`);
 
 // Un titre pour chaque arme et chaque armure, à chaque tier.
 for (const row of [...reference.weapons.rows, ...reference.baseArmors.rows, ...reference.boots.rows, ...reference.belts.rows, ...reference.amulets.rows,
-  ...reference.capes.rows, ...reference.gloves.rows]) {
+  ...reference.capes.rows, ...reference.gloves.rows, ...reference.pants.rows]) {
   const titles = reference.itemTitles.rows.find(r => r.nom === row.nom);
   assert.ok(titles, row.nom);
   for (const tier of [1,2,3,4]) assert.ok(String(titles["t" + tier] || "").trim(), `${row.nom} T${tier}`);
@@ -85,6 +85,11 @@ assert.equal(cards.card(item("cape","Cape d’esquive",1,null)).points, false);
 // Gants (Idan, 2026-10-24) : mêmes règles que les bottes.
 const titan = cards.card(item("gloves","Gants de force",4,"luxury"));
 assert.deepEqual([titan.kind, titan.category, titan.title, titan.stat, titan.bonus, titan.points], ["gloves","Gants","Les Poings du Titan","Force",20,false]);
+// Culottes (Idan, 2026-10-24) : Charisme et Intimidation en %, Affinité avec le capitaine en points.
+const terror = cards.card(item("pants","Culotte d’Intimidation",4,"standard"));
+assert.deepEqual([terror.kind, terror.category, terror.title, terror.stat, terror.bonus, terror.points], ["pants","Culotte","La Culotte de la Terreur","Intimidation",20,false]);
+const brother = cards.card(item("pants","Slip d’Affinité",3,"standard"));
+assert.deepEqual([brother.title, brother.stat, brother.bonus, brother.points], ["Slip du frère d’armes","Affinité",15,true]);
 
 // Mise en forme pour le joueur (prototype-web/item-card-ui.js).
 const ui = fs.readFileSync(path.join(ROOT, "prototype-web/item-card-ui.js"), "utf8");
@@ -137,4 +142,10 @@ assert.match(renderItemCard(item("cape","Cape de discrétion",4,"luxury")), /Ajo
 assert.match(renderItemCard(item("gloves","Gants de force",2,"standard")), /Ajoute 10 % de la Force de base du porteur/);
 assert.match(renderItemCard(item("gloves","Gants de dextérité",1,"worn")), /Ajoute 5 % de la Dextérité de base du porteur/);
 assert.match(renderItemCard(item("gloves","Gants de pièges",3,"standard")), /Ajoute 15 % des Pièges de base du porteur/);
+assert.match(renderItemCard(item("pants","String du Charisme",2,"standard")), /Ajoute 10 % du Charisme de base du porteur/);
+assert.match(renderItemCard(item("pants","Culotte d’Intimidation",1,"worn")), /Ajoute 5 % de l’Intimidation de base du porteur/);
+const briefsCard = renderItemCard(item("pants","Slip d’Affinité",4,"luxury"));
+assert.match(briefsCard, /item-card-row--bonus"><dt>Affinité avec le capitaine<\/dt><dd>\+20<\/dd>/);
+assert.match(briefsCard, /Ajoute 20 points d’affinité avec le capitaine/);
+assert.doesNotMatch(briefsCard, /item-card-quality/);
 console.log("Carte d'objet : titres par tier, effets avec la qualité, mise en forme — OK");

@@ -32,7 +32,8 @@
       belt:{category:"Ceinture",byName:new Map(rows(reference?.belts).map(r=>[r.nom,r]))},
       amulet:{category:"Amulette",byName:new Map(rows(reference?.amulets).map(r=>[r.nom,r]))},
       cape:{category:"Cape",byName:new Map(rows(reference?.capes).map(r=>[r.nom,r]))},
-      gloves:{category:"Gants",byName:new Map(rows(reference?.gloves).map(r=>[r.nom,r]))}};
+      gloves:{category:"Gants",byName:new Map(rows(reference?.gloves).map(r=>[r.nom,r]))},
+      pants:{category:"Culotte",byName:new Map(rows(reference?.pants).map(r=>[r.nom,r]))}};
     const qualities=new Map(rows(reference?.itemQualities).map(r=>[r.code,r]));
     const titles=new Map(rows(reference?.itemTitles).map(r=>[r.nom,r]));
 
@@ -99,7 +100,7 @@
     }
 
     // Carte d'un objet, ou null si ce n'est ni une arme, ni une armure, ni des bottes, une ceinture, une amulette, une
-    // cape ou des gants connus.
+    // cape, des gants ou une culotte connus.
     function card(item){
       if(!item) return null;
       const q=quality(item);

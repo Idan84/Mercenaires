@@ -2005,6 +2005,7 @@ body[data-screen="camp"] .camp-scene>.panel .muted{color:#c2b29e}
 .player-affinity-hearts .is-full{color:#e35c63;text-shadow:0 1px 4px rgba(100,10,20,.35)}
 .player-affinity-hearts .is-empty{color:#a88a86}
 .player-affinity-phrase{display:block;font-size:14px;line-height:1.4;font-weight:600;white-space:normal}
+.sheet-column .player-affinity-gear,.player-affinity-gear{display:block;font:italic 400 12px Georgia,serif;letter-spacing:0;text-transform:none;color:#c9ad83}
 .sheet-pay{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:0;padding:12px 16px;border:1px solid #9a7a4f;border-radius:10px;background:linear-gradient(180deg,#3a2b21,#2a1f18)}
 .sheet-pay--salary{grid-area:salary}
 .sheet-pay--bonus{grid-area:bonus}

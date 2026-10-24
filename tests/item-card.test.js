@@ -50,7 +50,7 @@ assert.equal(cards.card(item("weapon","Arquebuse / Mousquet",2,"standard")).chai
 assert.equal(cards.card(item("weapon","Arc",2,"standard")).chainShots, true);
 assert.equal(cards.card(item("weapon","Tromblon",2,"standard")).area, true);
 
-// Armure de plates usée : résistance × 0,8 si positive, ÷ 0,8 si négative ; gêne × 1,2.
+// Armure de plates usée : résistance × 0,8 si positive, ÷ 0,8 si négative ; handicap × 1,2.
 const plates = cards.card(item("armor","Armure de plates",1,"worn",{templateId:"armor:plate_armor"}));
 assert.equal(plates.kind, "armor");
 assert.equal(plates.title, "Plates cabossées");
@@ -85,6 +85,7 @@ const platesCard = renderItemCard(item("armor","Armure de plates",1,"worn",{temp
 assert.match(platesCard, /Armure de plates · Armure lourde/);
 assert.match(platesCard, /item-card-row--malus"><dt>Foudroyant<\/dt><dd>−56<\/dd>/);
 assert.match(platesCard, /item-card-row--bonus"><dt>Tranchant<\/dt><dd>\+72<\/dd>/);
-assert.match(platesCard, /Usée : résistances −20 %, gêne \+20 %\./);
+assert.match(platesCard, /<p class="item-card-group">Handicap<\/p>/);
+assert.match(platesCard, /Usée : résistances −20 %, handicap \+20 %\./);
 assert.equal(renderItemCard(item("ring","Anneau",2,"standard")), "");
 console.log("Carte d'objet : titres par tier, effets avec la qualité, mise en forme — OK");

@@ -60,7 +60,7 @@ function armorCardBody(card){
     card.magic>0?cardRow("Magie",cardNumber(-card.magic),"malus"):""
   ].filter(Boolean);
   const rows=[`<p class="item-card-group">Résistances</p>`,...resist,
-    hindrance.length?`<p class="item-card-group">Gêne</p>`:"",...hindrance];
+    hindrance.length?`<p class="item-card-group">Handicap</p>`:"",...hindrance];
   return {rows,traits:[],flavor:card.description};
 }
 
@@ -69,7 +69,7 @@ function qualityLine(card){
   const up=Math.round((card.quality.good-1)*100),down=Math.round((card.quality.bad-1)*100);
   if(!up&&!down) return "";
   const effects=card.kind==="armor"?"résistances":"dégâts, charge et blocage";
-  const hindrance=card.kind==="armor"?"gêne":"lourdeur";
+  const hindrance=card.kind==="armor"?"handicap":"lourdeur";
   return `<p class="item-card-quality">${esc(card.quality.name||"")} : ${effects} ${signed(up)} %, ${hindrance} ${signed(down)} %.</p>`;
 }
 

@@ -14,7 +14,7 @@ const files = {
   ancestryLevels:"ancestry-levels.json", d6Scale:"d6-generation-scale.json",
   generationMatrix:"generation-matrix.json", skills:"skills.json",
   characteristics:"characteristics.json", formulaConstants:"formula-constants.json",
-  weapons:"weapons.json", baseArmors:"base-armors.json", itemQualities:"item-qualities.json",
+  weapons:"weapons.json", baseArmors:"base-armors.json", boots:"boots.json", itemQualities:"item-qualities.json",
   equipmentSlots:"equipment-slots.json", startingEquipmentGeneration:"starting-equipment-generation.json",
   binaryAptitudeGrants:"binary-aptitude-grants.json",
   alignmentGeneration:"alignment-generation.json"
@@ -129,6 +129,7 @@ for (const expected of ["Âge","Taille","Corpulence","Biographie courte"]) {
 let sawNonMageArmorBonus = false;
 let sawHighMagicArmorPenalty = false;
 let secondaryWeaponCount = 0;
+const bootsSeen = {};
 const profileCounts = {melee:0, ranged:0, magic:0};
 for (let i = 0; i < 1000; i++) {
   const c = generator.createMercenary({id:i+1});
@@ -169,7 +170,7 @@ for (let i = 0; i < 1000; i++) {
   assert.ok(Number.isFinite(c.equipment.profile.scores.ranged));
   assert.ok(Number.isFinite(c.equipment.profile.scores.magic));
   assert.ok(Array.isArray(c.items));
-  assert.ok(c.items.length === 2 || c.items.length === 3);
+  assert.ok(c.items.length >= 2 && c.items.length <= 4, "armure, arme, seconde arme et bottes possibles");
   assert.ok(c.equipment.slots.armor);
   assert.ok(c.equipment.slots.weapon_set_1_main);
   const armorItem = c.items.find(item => item.id === c.equipment.slots.armor);
@@ -193,7 +194,14 @@ for (let i = 0; i < 1000; i++) {
     assert.equal(secondaryItem.itemType, "weapon");
     assert.notEqual(secondaryItem.combatFamily, primaryItem.combatFamily);
   }
-  for (const emptySlot of ["head","amulet","cape","belt","boots","ring_1","ring_2","ring_3","ring_4","ring_5","ring_6","weapon_set_1_off","weapon_set_2_off","belt_item_1","belt_item_2","belt_item_3","belt_item_4","mount"]) {
+  // Bottes (Idan, 2026-10-24) : 5 % de chance, type au hasard.
+  if (c.equipment.slots.boots) {
+    const boots = c.items.find(item => item.id === c.equipment.slots.boots);
+    assert.equal(boots.itemType, "boots");
+    assert.ok(reference.boots.rows.some(row => row.nom === boots.name && "boots:" + row.code === boots.templateId), boots.name);
+    bootsSeen[boots.name] = (bootsSeen[boots.name] || 0) + 1;
+  }
+  for (const emptySlot of ["head","amulet","cape","belt","ring_1","ring_2","ring_3","ring_4","ring_5","ring_6","weapon_set_1_off","weapon_set_2_off","belt_item_1","belt_item_2","belt_item_3","belt_item_4","mount"]) {
     assert.equal(c.equipment.slots[emptySlot], null);
   }
 
@@ -230,6 +238,9 @@ for (let i = 0; i < 1000; i++) {
 assert.equal(sawNonMageArmorBonus, true);
 assert.equal(sawHighMagicArmorPenalty, true);
 assert.ok(secondaryWeaponCount > 350 && secondaryWeaponCount < 650, `Unexpected secondary weapon rate: ${secondaryWeaponCount}/1000`);
+const bootsTotal = Object.values(bootsSeen).reduce((a,b) => a + b, 0);
+assert.ok(bootsTotal >= 25 && bootsTotal <= 80, `bottes à la création ≈ 5 % : ${bootsTotal}/1000`);
+assert.equal(Object.keys(bootsSeen).length, 3, "les trois types de bottes");
 // Issue #12 : avant correction, ~89 % des mercenaires sortaient « Magie ». Garde-fou contre un retour accidentel.
 assert.ok(profileCounts.magic < 600, `Profil Magie trop fréquent : ${JSON.stringify(profileCounts)}`);
 assert.ok(profileCounts.melee > 200 && profileCounts.ranged > 50, `Profils CAC / Distance trop rares : ${JSON.stringify(profileCounts)}`);
@@ -421,6 +432,23 @@ for (const type of armorTypes) {
 }
 const armorTotal = armorTiers[1] + armorTiers[2] + armorTiers[3];
 assert.ok(armorTiers[3] > 0 && armorTiers[3] / armorTotal < 0.06, "T3 rare");
+
+// Bottes du stock de départ (Idan, 2026-10-24) : 1D6 paires, type au hasard, sans propriétaire.
+const bootsCounts = [], bootsTypes = new Set();
+for (let i = 0; i < 400; i++) {
+  const boots = stockGenerator.createStartingBootsStock(chaosDwarf);
+  bootsCounts.push(boots.length);
+  for (const item of boots) {
+    assert.equal(item.itemType, "boots");
+    assert.equal(item.owner, null);
+    assert.equal(item.category, "Bottes");
+    assert.ok([1,2,3].includes(item.tier));
+    bootsTypes.add(item.name);
+  }
+}
+assert.ok(Math.min(...bootsCounts) >= 1 && Math.max(...bootsCounts) <= 6, "1D6 paires");
+assert.ok(Math.abs(bootsCounts.reduce((a,b) => a + b, 0) / 400 - 3.5) < 0.3, "moyenne de 1D6 ≈ 3,5");
+assert.equal(bootsTypes.size, 3);
 
 console.log(JSON.stringify({
   ok:true,

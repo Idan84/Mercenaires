@@ -45,6 +45,11 @@ assert.deepEqual(ui.stockGroups(game.campaign.company.stock).map(g => [g.categor
 ui.renderQuartermaster();
 assert.equal(elements["quartermaster-count"].textContent, "1 arme · 5 armures");
 assert.match(elements["quartermaster-stock"].innerHTML, /<h3>Armures lourdes <small>2<\/small><\/h3>/);
+// Bottes (Idan, 2026-10-24) : après les armures.
+game.campaign.company.stock.push({...weapon("Bottes de vitesse", "Bottes", 1), itemType:"boots"}, {...weapon("Bottes d’esquive", "Bottes", 2), itemType:"boots"});
+assert.deepEqual(ui.stockGroups(game.campaign.company.stock).map(g => g.category).slice(-2), ["Armures lourdes","Bottes"]);
+ui.renderQuartermaster();
+assert.equal(elements["quartermaster-count"].textContent, "1 arme · 5 armures · 2 paires de bottes");
 
 game.campaign.company.stock = [];
 ui.renderQuartermaster();

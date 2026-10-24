@@ -7,6 +7,7 @@ posée sur une case noire et son cadre de tier par-dessus).
 |---|---|---|
 | `Armures/` | les 8 armures de `data/reference/base-armors.json`, T1 à T4 | `<Nom>_<tier>.jpg`, par ex. `Armure_cuir_1.jpg`, `Cotte_mailles_3.jpg` |
 | `Armes/` | les 38 armes de `data/reference/weapons.json`, T1 à T4 | `<Nom>_<tier>.jpg`, par ex. `Hache_guerre_2.jpg`, `Arquebuse_1.jpg` |
+| `Bottes/` | les 3 bottes de `data/reference/boots.json`, T1 à T4 | `Bottes_<type>_<tier>.jpg`, par ex. `Bottes_vitesse_1.jpg`, `Bottes_esquive_3.jpg` |
 | `Frames/` | les cadres posés autour d'un objet selon son tier | `frame_<tier>.jpg` |
 
 Le nom est reconnu sans accents, majuscules, espaces ni petits mots (de, d', des, du, la, le…), dans

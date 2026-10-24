@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 126,
+  "row_count": 128,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -1038,6 +1038,22 @@
       "nom": "Stock de départ — armures par type, faces des dés",
       "code": "company.starting_stock.armor_dice_sides",
       "description": "Faces des dés du nombre d’armures de chaque type du stock de départ (1D6).",
+      "formule": "Stock d’armes de départ",
+      "valeur": 6,
+      "version": "V1"
+    },
+    {
+      "nom": "Stock de départ — bottes, nombre de dés",
+      "code": "company.starting_stock.boots_dice_count",
+      "description": "La compagnie démarre aussi avec (nombre de dés)D(faces) paires de bottes, chacune d’un type tiré au hasard : 1D6 (Idan, 2026-10-24).",
+      "formule": "Stock d’armes de départ",
+      "valeur": 1,
+      "version": "V1"
+    },
+    {
+      "nom": "Stock de départ — bottes, faces des dés",
+      "code": "company.starting_stock.boots_dice_sides",
+      "description": "Faces des dés du nombre de paires de bottes du stock de départ (1D6).",
       "formule": "Stock d’armes de départ",
       "valeur": 6,
       "version": "V1"

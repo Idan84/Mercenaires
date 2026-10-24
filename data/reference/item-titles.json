@@ -5,11 +5,11 @@
   "columns": [
     {
       "key": "nom",
-      "source": "Nom de l’arme (weapons.json) ou de l’armure (base-armors.json)"
+      "source": "Nom de l’arme (weapons.json), de l’armure (base-armors.json) ou des bottes (boots.json)"
     },
     {
       "key": "famille",
-      "source": "arme ou armure"
+      "source": "arme, armure ou bottes"
     },
     {
       "key": "t1",
@@ -28,7 +28,7 @@
       "source": "Titre T4"
     }
   ],
-  "row_count": 46,
+  "row_count": 49,
   "rows": [
     {
       "nom": "Arbalète",
@@ -397,6 +397,30 @@
       "t2": "Armure de plates de chevalier",
       "t3": "Armure de plates de tournoi",
       "t4": "La Forteresse Ambulante"
+    },
+    {
+      "nom": "Bottes de vitesse",
+      "famille": "bottes",
+      "t1": "Godillots troués",
+      "t2": "Bottes de coursier",
+      "t3": "Bottes du messager ailé",
+      "t4": "Les Foulées de l’Éclair"
+    },
+    {
+      "nom": "Bottes d’esquive",
+      "famille": "bottes",
+      "t1": "Savates rapiécées",
+      "t2": "Bottes de faufileur",
+      "t3": "Bottes du danseur de lames",
+      "t4": "Les Pas du Spectre"
+    },
+    {
+      "nom": "Bottes de perception",
+      "famille": "bottes",
+      "t1": "Mocassins fatigués",
+      "t2": "Bottes de pisteur",
+      "t3": "Bottes du guetteur",
+      "t4": "Les Semelles du Troisième Œil"
     }
   ]
 }

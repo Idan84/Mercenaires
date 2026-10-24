@@ -100,13 +100,13 @@
     {
       "nom": "Points de vie",
       "groupe": "physique",
-      "usage": "Encaisser les coups : à 0, le mercenaire tombe et risque la mort. Calculés depuis la Constitution, l’Endurance et la Volonté.",
+      "usage": "Encaisser les coups : à 0, le mercenaire tombe et risque la mort.",
       "description_referentiel": false
     },
     {
       "nom": "Initiative",
       "groupe": "physique",
-      "usage": "Ordre d’action dans l’équipe au combat : la Vitesse effective (armure et armes comprises), plus un peu d’Intelligence, de Courage et de Volonté.",
+      "usage": "Qui agit le premier au combat. L’armure et les armes lourdes la font baisser.",
       "description_referentiel": false
     },
     {
@@ -124,7 +124,7 @@
     {
       "nom": "Dextérité",
       "groupe": "physique",
-      "usage": "Toucher au contact et à distance, combat à deux armes, enchaînements, blocage au bouclier. À la création, aussi l’artisanat.",
+      "usage": "Toucher au contact et à distance, combat à deux armes, enchaînements, blocage au bouclier.",
       "description_referentiel": true
     },
     {
@@ -148,13 +148,13 @@
     {
       "nom": "Régénération",
       "groupe": "physique",
-      "usage": "Pas encore utilisée au combat.",
+      "usage": "",
       "description_referentiel": true
     },
     {
       "nom": "Intelligence",
       "groupe": "mental",
-      "usage": "Choisir le meilleur type de dégâts contre l’armure adverse, initiative. À la Taverne : salaire demandé et résistance à la négociation.",
+      "usage": "Choisir le meilleur type de dégâts contre l’armure adverse, initiative. À la Taverne : salaire demandé et fermeté en négociation.",
       "description_referentiel": true
     },
     {
@@ -172,7 +172,7 @@
     {
       "nom": "Charisme",
       "groupe": "mental",
-      "usage": "À la création : réputation de départ et compétences de camp. Pas encore utilisé au combat.",
+      "usage": "",
       "description_referentiel": true
     },
     {
@@ -202,37 +202,37 @@
     {
       "nom": "Résistance au feu",
       "groupe": "resistance",
-      "usage": "Pas encore utilisée au combat.",
+      "usage": "",
       "description_referentiel": true
     },
     {
       "nom": "Résistance au froid",
       "groupe": "resistance",
-      "usage": "Pas encore utilisée au combat.",
+      "usage": "",
       "description_referentiel": true
     },
     {
       "nom": "Résistance à la foudre",
       "groupe": "resistance",
-      "usage": "Pas encore utilisée au combat.",
+      "usage": "",
       "description_referentiel": true
     },
     {
       "nom": "Résistance au poison",
       "groupe": "resistance",
-      "usage": "Pas encore utilisée au combat.",
+      "usage": "",
       "description_referentiel": true
     },
     {
       "nom": "Puissance magique",
       "groupe": "magie",
-      "usage": "Avec l’Intelligence et la Réserve de mana, fixe le niveau de départ des écoles de magie à la création. Pas encore utilisée au combat.",
+      "usage": "",
       "description_referentiel": true
     },
     {
       "nom": "Réserve de mana",
       "groupe": "magie",
-      "usage": "Avec l’Intelligence et la Puissance magique, fixe le niveau de départ des écoles de magie à la création. Pas encore utilisée au combat.",
+      "usage": "",
       "description_referentiel": true
     }
   ],

@@ -49,6 +49,10 @@ assert.doesNotMatch(card,/>Humain ·/);
 assert.equal((card.match(/<svg /g)||[]).length,2,"deux icônes : réputation et salaire");
 assert.equal(renderCard(squad[2]).includes("roster-affinity-hearts"),false,"pas de score d'affinité inventé");
 
+// Flèches précédent / suivant à côté du nom dans la fiche (Idan, 2026-10-24).
+assert.match(html,/<button id="sheet-prev" class="sheet-nav"[^>]*>‹<\/button>\s*<h2 id="dialog-name"><\/h2>\s*<button id="sheet-next" class="sheet-nav"[^>]*>›<\/button>/);
+assert.match(js,/function stepSheet\(step\)/);
+
 const elements={
   "initial-count":{innerHTML:"",title:""},
   "roster-sort":{value:""},

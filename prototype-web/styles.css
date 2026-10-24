@@ -1791,6 +1791,11 @@ body[data-screen="camp"] .camp-scene>.panel .muted{color:#c2b29e}
 #character-dialog{height:min(800px,92vh)}
 #character-dialog .dialog-head{background:#34251d;border-bottom:1px solid #97724b;padding-bottom:10px}
 #character-dialog .dialog-head h2{font:normal 34px Georgia,serif;color:#f3d5a0}
+/* Flèches mercenaire précédent / suivant à côté du nom (Idan, 2026-10-24). */
+#character-dialog .sheet-title{display:flex;align-items:center;gap:10px;min-width:0}
+#character-dialog .sheet-nav{display:grid;place-items:center;width:32px;height:32px;flex:none;padding:0 0 3px;border:1px solid #a9814f;border-radius:50%;background:#2a1e17;color:#f3d5a0;font:400 24px/1 Georgia,serif;cursor:pointer;transition:background .15s,border-color .15s}
+#character-dialog .sheet-nav:hover,#character-dialog .sheet-nav:focus-visible{background:#4a3424;border-color:#f0c77f;outline:none}
+#character-dialog .sheet-nav[hidden]{display:none}
 #character-dialog .sheet-tab{color:#cbb99e;border-radius:4px;background:transparent}
 #character-dialog .sheet-tab:hover{background:#473529;color:#ffdfaf}
 #character-dialog .sheet-tab.active{color:#ffdfad;border-color:#dbac6e}

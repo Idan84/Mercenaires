@@ -118,7 +118,9 @@ function dealReply(m,result){
 }
 function dealLines(m,result){
   const copy=dealCopy(),outcomes=copy.outcomes||{};
-  const vars={prenom:MercenairesRecruitDialogue.firstName(m),recu:dealItemLabel(result.received),cede:dealItemLabel(result.given)};
+  const prenom=MercenairesRecruitDialogue.firstName(m);
+  // « de Borin », « d’Enzo » : élision devant une voyelle.
+  const vars={prenom,de_prenom:(/^[AEIOUÉÈÊÂÎÔÛ]/i.test(prenom)?"d’":"de ")+prenom,recu:dealItemLabel(result.received),cede:dealItemLabel(result.given)};
   const fill=text=>MercenairesRecruitDialogue.fill(text,vars,dealIsFemale(m));
   const outcome=result.accepted?outcomes[result.action]:result.action==="donner"?outcomes.refus_donner:outcomes.refus;
   return {proposal:fill(copy.proposals?.[result.action]),reply:fill(dealReply(m,result)),outcome:fill(outcome)};

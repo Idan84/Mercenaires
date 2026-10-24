@@ -38,12 +38,12 @@ function weaponCardBody(card){
     ...card.powers.map(p=>cardRow(p.type,cardNumber(p.value))),
     cardRow("Portée",range),
     cardRow("Prise",esc(ITEM_GRIPS[card.grip]||card.grip||"—")),
-    card.weight>0?cardRow("Lourdeur",`${cardNumber(-card.weight)} Vitesse`,"malus"):"",
+    card.weight>0?cardRow("Poids",`${cardNumber(-card.weight)} Vitesse`,"malus"):"",
     card.charge?cardRow("Charge",`+${cardNumber(card.charge,1)} % dégâts / case`):"",
     card.block?cardRow("Blocage",`+${cardNumber(card.block,1)} %`,"bonus"):""
   ];
   const traits=[
-    card.grip==="Au choix"?"À deux mains : dégâts ×1,5, lourdeur ÷2":"",
+    card.grip==="Au choix"?"À deux mains : dégâts ×1,5, poids ÷2":"",
     card.counterCharge?"Contre-charge : frappe avant celui qui le charge":"",
     card.chainShots?"Tirs enchaînés tant qu’ils font mouche":"",
     card.reload?"Une action rapide pour recharger après chaque tir":"",
@@ -69,7 +69,7 @@ function qualityLine(card){
   const up=Math.round((card.quality.good-1)*100),down=Math.round((card.quality.bad-1)*100);
   if(!up&&!down) return "";
   const effects=card.kind==="armor"?"résistances":"dégâts, charge et blocage";
-  const hindrance=card.kind==="armor"?"handicap":"lourdeur";
+  const hindrance=card.kind==="armor"?"handicap":"poids";
   return `<p class="item-card-quality">${esc(card.quality.name||"")} : ${effects} ${signed(up)} %, ${hindrance} ${signed(down)} %.</p>`;
 }
 

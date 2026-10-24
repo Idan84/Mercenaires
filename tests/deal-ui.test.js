@@ -85,6 +85,8 @@ assert.equal(swapLines.outcome, "Borin garde son équipement.");
 const giveLines = ui.dealLines(borin, {action:"donner", accepted:true, mood:"pleased", given:null, received:sabre});
 assert.match(giveLines.proposal, /^Voici pour vous : .+ \(T2\)\.$/);
 assert.match(giveLines.outcome, /^.+ \(T2\) rejoint l’équipement de Borin\.$/);
+assert.match(ui.dealLines({...borin, firstName:"Enzo"}, {action:"donner", accepted:true, mood:"pleased", given:null, received:sabre}).outcome,
+  /rejoint l’équipement d’Enzo\.$/, "élision devant une voyelle");
 const takeLines = ui.dealLines(borin, {action:"retirer", accepted:true, mood:"displeased", given:hachette, received:null});
 assert.match(takeLines.outcome, /\(T1\) retourne à l’Intendance\.$/);
 console.log("Échanges d'équipement, interface : menus de la fiche et de l'Intendance, répliques — OK");

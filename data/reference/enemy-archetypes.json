@@ -1,0 +1,1402 @@
+{
+  "schema_version": 1,
+  "name": "enemy-archetypes",
+  "description": "Archétypes d’ennemis fixes (Idan, 2026-10-24 ; doc 17 §10). Gobelins : cinq lignes sur quatre niveaux et quatre niveaux de chef. Valeurs figées à partir des centiles des Gobelins générés (novice P20, normal P50, vétéran P75, élite P90 ; chefs P75 à P99), avec la spécialisation de chaque ligne (trois caractéristiques un cran au-dessus, deux un cran au-dessous). PV = 3 × (Constitution + 0,2 × Endurance + 0,1 × Volonté). Menace : un mercenaire généré moyen vaut 10 points (simulateur, 150 combats par effectif) ; null = au-delà de la mesure. Pas encore utilisé par le jeu.",
+  "columns": [
+    {
+      "source": "Nom",
+      "key": "nom"
+    },
+    {
+      "source": "Code",
+      "key": "code"
+    },
+    {
+      "source": "Faction",
+      "key": "faction"
+    },
+    {
+      "source": "Peuple",
+      "key": "peuple"
+    },
+    {
+      "source": "Culture",
+      "key": "culture"
+    },
+    {
+      "source": "Ligne (rôle au combat)",
+      "key": "ligne"
+    },
+    {
+      "source": "Niveau (novice, normal, vétéran, d’élite ; chef 1 à 4)",
+      "key": "niveau"
+    },
+    {
+      "source": "Centile des Gobelins générés",
+      "key": "centile"
+    },
+    {
+      "source": "Caractéristiques",
+      "key": "caracteristiques"
+    },
+    {
+      "source": "Résistances",
+      "key": "resistances"
+    },
+    {
+      "source": "PV",
+      "key": "pv"
+    },
+    {
+      "source": "Compétences martiales",
+      "key": "competences_martiales"
+    },
+    {
+      "source": "Intimidation",
+      "key": "intimidation"
+    },
+    {
+      "source": "Port d’armure",
+      "key": "port_d_armure"
+    },
+    {
+      "source": "Armes (set 1 : principale, puis secondaire)",
+      "key": "armes"
+    },
+    {
+      "source": "Armure",
+      "key": "armure"
+    },
+    {
+      "source": "Tier de l’équipement",
+      "key": "tier"
+    },
+    {
+      "source": "Qualité de l’équipement",
+      "key": "qualite"
+    },
+    {
+      "source": "Menace (mercenaire moyen = 10)",
+      "key": "menace"
+    }
+  ],
+  "row_count": 24,
+  "rows": [
+    {
+      "nom": "Lancier gobelin novice",
+      "code": "goblin_spearman_novice",
+      "faction": "Gobelins",
+      "peuple": "Gobelin",
+      "culture": "Gobelins des cavernes",
+      "ligne": "Lancier",
+      "niveau": "novice",
+      "centile": "P20",
+      "caracteristiques": {
+        "Force": 50,
+        "Constitution": 45,
+        "Dextérité": 54,
+        "Vitesse": 42,
+        "Endurance": 44,
+        "Esquive": 53,
+        "Chance": 43,
+        "Charisme": 38,
+        "Courage": 34,
+        "Intelligence": 32,
+        "Volonté": 33,
+        "Perception": 43,
+        "Puissance magique": 43,
+        "Réserve de mana": 43
+      },
+      "resistances": {
+        "Résistance physique": 1,
+        "Résistance au feu": 1,
+        "Résistance au froid": 2,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 10
+      },
+      "pv": 172,
+      "competences_martiales": {
+        "Lance": 38,
+        "Armes d’hast": 40,
+        "Discrétion": 29,
+        "Pièges": 24,
+        "Combat à deux armes": 35,
+        "Combat à mains nues": 25,
+        "Combat à deux mains": 27
+      },
+      "intimidation": 31,
+      "port_d_armure": [],
+      "armes": [
+        "Lance"
+      ],
+      "armure": "Vêtements",
+      "tier": 1,
+      "qualite": "Usée",
+      "menace": 6
+    },
+    {
+      "nom": "Lancier gobelin",
+      "code": "goblin_spearman",
+      "faction": "Gobelins",
+      "peuple": "Gobelin",
+      "culture": "Gobelins des cavernes",
+      "ligne": "Lancier",
+      "niveau": "normal",
+      "centile": "P50",
+      "caracteristiques": {
+        "Force": 59,
+        "Constitution": 53,
+        "Dextérité": 65,
+        "Vitesse": 49,
+        "Endurance": 54,
+        "Esquive": 62,
+        "Chance": 52,
+        "Charisme": 48,
+        "Courage": 43,
+        "Intelligence": 43,
+        "Volonté": 43,
+        "Perception": 52,
+        "Puissance magique": 52,
+        "Réserve de mana": 52
+      },
+      "resistances": {
+        "Résistance physique": 1,
+        "Résistance au feu": 1,
+        "Résistance au froid": 4,
+        "Résistance à la foudre": 4,
+        "Résistance au poison": 15
+      },
+      "pv": 205,
+      "competences_martiales": {
+        "Lance": 43,
+        "Armes d’hast": 44,
+        "Discrétion": 36,
+        "Pièges": 31,
+        "Combat à deux armes": 41,
+        "Combat à mains nues": 30,
+        "Combat à deux mains": 32
+      },
+      "intimidation": 37,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Lance"
+      ],
+      "armure": "Gambison",
+      "tier": 2,
+      "qualite": "Correcte",
+      "menace": 12
+    },
+    {
+      "nom": "Lancier gobelin vétéran",
+      "code": "goblin_spearman_veteran",
+      "faction": "Gobelins",
+      "peuple": "Gobelin",
+      "culture": "Gobelins des cavernes",
+      "ligne": "Lancier",
+      "niveau": "vétéran",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 68,
+        "Constitution": 61,
+        "Dextérité": 73,
+        "Vitesse": 59,
+        "Endurance": 62,
+        "Esquive": 70,
+        "Chance": 61,
+        "Charisme": 56,
+        "Courage": 50,
+        "Intelligence": 51,
+        "Volonté": 51,
+        "Perception": 62,
+        "Puissance magique": 59,
+        "Réserve de mana": 59
+      },
+      "resistances": {
+        "Résistance physique": 2,
+        "Résistance au feu": 4,
+        "Résistance au froid": 6,
+        "Résistance à la foudre": 6,
+        "Résistance au poison": 19
+      },
+      "pv": 236,
+      "competences_martiales": {
+        "Lance": 47,
+        "Armes d’hast": 48,
+        "Discrétion": 42,
+        "Pièges": 36,
+        "Combat à deux armes": 47,
+        "Combat à mains nues": 36,
+        "Combat à deux mains": 37
+      },
+      "intimidation": 41,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Lance"
+      ],
+      "armure": "Armure de cuir",
+      "tier": 3,
+      "qualite": "Grand Luxe",
+      "menace": 23
+    },
+    {
+      "nom": "Lancier gobelin d’élite",
+      "code": "goblin_spearman_elite",
+      "faction": "Gobelins",
+      "peuple": "Gobelin",
+      "culture": "Gobelins des cavernes",
+      "ligne": "Lancier",
+      "niveau": "d’élite",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 74,
+        "Constitution": 66,
+        "Dextérité": 81,
+        "Vitesse": 66,
+        "Endurance": 71,
+        "Esquive": 77,
+        "Chance": 68,
+        "Charisme": 64,
+        "Courage": 55,
+        "Intelligence": 59,
+        "Volonté": 58,
+        "Perception": 70,
+        "Puissance magique": 65,
+        "Réserve de mana": 66
+      },
+      "resistances": {
+        "Résistance physique": 6,
+        "Résistance au feu": 5,
+        "Résistance au froid": 9,
+        "Résistance à la foudre": 10,
+        "Résistance au poison": 22
+      },
+      "pv": 258,
+      "competences_martiales": {
+        "Lance": 51,
+        "Armes d’hast": 52,
+        "Discrétion": 49,
+        "Pièges": 44,
+        "Combat à deux armes": 53,
+        "Combat à mains nues": 42,
+        "Combat à deux mains": 42
+      },
+      "intimidation": 46,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire"
+      ],
+      "armes": [
+        "Lance"
+      ],
+      "armure": "Cuir renforcé",
+      "tier": 4,
+      "qualite": "Grand Luxe",
+      "menace": 43
+    },
+    {
+      "nom": "Frondeur gobelin novice",
+      "code": "goblin_slinger_novice",
+      "faction": "Gobelins",
+      "peuple": "Gobelin",
+      "culture": "Gobelins des cavernes",
+      "ligne": "Frondeur",
+      "niveau": "novice",
+      "centile": "P20",
+      "caracteristiques": {
+        "Force": 30,
+        "Constitution": 26,
+        "Dextérité": 65,
+        "Vitesse": 59,
+        "Endurance": 44,
+        "Esquive": 53,
+        "Chance": 43,
+        "Charisme": 38,
+        "Courage": 24,
+        "Intelligence": 32,
+        "Volonté": 33,
+        "Perception": 62,
+        "Puissance magique": 43,
+        "Réserve de mana": 43
+      },
+      "resistances": {
+        "Résistance physique": 1,
+        "Résistance au feu": 1,
+        "Résistance au froid": 2,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 10
+      },
+      "pv": 115,
+      "competences_martiales": {
+        "Fronde": 38,
+        "Armes de tir": 40,
+        "Discrétion": 29,
+        "Pièges": 24,
+        "Combat à deux armes": 35,
+        "Combat à mains nues": 25,
+        "Combat à deux mains": 27
+      },
+      "intimidation": 31,
+      "port_d_armure": [],
+      "armes": [
+        "Fronde"
+      ],
+      "armure": "Vêtements",
+      "tier": 1,
+      "qualite": "Usée",
+      "menace": 5
+    },
+    {
+      "nom": "Frondeur gobelin",
+      "code": "goblin_slinger",
+      "faction": "Gobelins",
+      "peuple": "Gobelin",
+      "culture": "Gobelins des cavernes",
+      "ligne": "Frondeur",
+      "niveau": "normal",
+      "centile": "P50",
+      "caracteristiques": {
+        "Force": 39,
+        "Constitution": 35,
+        "Dextérité": 73,
+        "Vitesse": 66,
+        "Endurance": 54,
+        "Esquive": 62,
+        "Chance": 52,
+        "Charisme": 48,
+        "Courage": 34,
+        "Intelligence": 43,
+        "Volonté": 43,
+        "Perception": 70,
+        "Puissance magique": 52,
+        "Réserve de mana": 52
+      },
+      "resistances": {
+        "Résistance physique": 1,
+        "Résistance au feu": 1,
+        "Résistance au froid": 4,
+        "Résistance à la foudre": 4,
+        "Résistance au poison": 15
+      },
+      "pv": 151,
+      "competences_martiales": {
+        "Fronde": 43,
+        "Armes de tir": 44,
+        "Discrétion": 36,
+        "Pièges": 31,
+        "Combat à deux armes": 41,
+        "Combat à mains nues": 30,
+        "Combat à deux mains": 32
+      },
+      "intimidation": 37,
+      "port_d_armure": [],
+      "armes": [
+        "Fronde"
+      ],
+      "armure": "Vêtements",
+      "tier": 2,
+      "qualite": "Correcte",
+      "menace": 10
+    },
+    {
+      "nom": "Frondeur gobelin vétéran",
+      "code": "goblin_slinger_veteran",
+      "faction": "Gobelins",
+      "peuple": "Gobelin",
+      "culture": "Gobelins des cavernes",
+      "ligne": "Frondeur",
+      "niveau": "vétéran",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 50,
+        "Constitution": 45,
+        "Dextérité": 81,
+        "Vitesse": 72,
+        "Endurance": 62,
+        "Esquive": 70,
+        "Chance": 61,
+        "Charisme": 56,
+        "Courage": 43,
+        "Intelligence": 51,
+        "Volonté": 51,
+        "Perception": 78,
+        "Puissance magique": 59,
+        "Réserve de mana": 59
+      },
+      "resistances": {
+        "Résistance physique": 2,
+        "Résistance au feu": 4,
+        "Résistance au froid": 6,
+        "Résistance à la foudre": 6,
+        "Résistance au poison": 19
+      },
+      "pv": 188,
+      "competences_martiales": {
+        "Fronde": 47,
+        "Armes de tir": 48,
+        "Discrétion": 42,
+        "Pièges": 36,
+        "Combat à deux armes": 47,
+        "Combat à mains nues": 36,
+        "Combat à deux mains": 37
+      },
+      "intimidation": 41,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Fronde"
+      ],
+      "armure": "Gambison",
+      "tier": 3,
+      "qualite": "Grand Luxe",
+      "menace": 16
+    },
+    {
+      "nom": "Frondeur gobelin d’élite",
+      "code": "goblin_slinger_elite",
+      "faction": "Gobelins",
+      "peuple": "Gobelin",
+      "culture": "Gobelins des cavernes",
+      "ligne": "Frondeur",
+      "niveau": "d’élite",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 59,
+        "Constitution": 53,
+        "Dextérité": 85,
+        "Vitesse": 76,
+        "Endurance": 71,
+        "Esquive": 77,
+        "Chance": 68,
+        "Charisme": 64,
+        "Courage": 50,
+        "Intelligence": 59,
+        "Volonté": 58,
+        "Perception": 81,
+        "Puissance magique": 65,
+        "Réserve de mana": 66
+      },
+      "resistances": {
+        "Résistance physique": 6,
+        "Résistance au feu": 5,
+        "Résistance au froid": 9,
+        "Résistance à la foudre": 10,
+        "Résistance au poison": 22
+      },
+      "pv": 219,
+      "competences_martiales": {
+        "Fronde": 51,
+        "Armes de tir": 52,
+        "Discrétion": 49,
+        "Pièges": 44,
+        "Combat à deux armes": 53,
+        "Combat à mains nues": 42,
+        "Combat à deux mains": 42
+      },
+      "intimidation": 46,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Fronde"
+      ],
+      "armure": "Armure de cuir",
+      "tier": 4,
+      "qualite": "Grand Luxe",
+      "menace": 22
+    },
+    {
+      "nom": "Archer gobelin novice",
+      "code": "goblin_archer_novice",
+      "faction": "Gobelins",
+      "peuple": "Gobelin",
+      "culture": "Gobelins des cavernes",
+      "ligne": "Archer",
+      "niveau": "novice",
+      "centile": "P20",
+      "caracteristiques": {
+        "Force": 30,
+        "Constitution": 35,
+        "Dextérité": 65,
+        "Vitesse": 49,
+        "Endurance": 44,
+        "Esquive": 44,
+        "Chance": 52,
+        "Charisme": 38,
+        "Courage": 24,
+        "Intelligence": 32,
+        "Volonté": 33,
+        "Perception": 62,
+        "Puissance magique": 43,
+        "Réserve de mana": 43
+      },
+      "resistances": {
+        "Résistance physique": 1,
+        "Résistance au feu": 1,
+        "Résistance au froid": 2,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 10
+      },
+      "pv": 142,
+      "competences_martiales": {
+        "Arc": 38,
+        "Armes de tir": 40,
+        "Discrétion": 29,
+        "Pièges": 24,
+        "Combat à deux armes": 35,
+        "Combat à mains nues": 25,
+        "Combat à deux mains": 27
+      },
+      "intimidation": 31,
+      "port_d_armure": [],
+      "armes": [
+        "Arc"
+      ],
+      "armure": "Vêtements",
+      "tier": 1,
+      "qualite": "Usée",
+      "menace": 6
+    },
+    {
+      "nom": "Archer gobelin",
+      "code": "goblin_archer",
+      "faction": "Gobelins",
+      "peuple": "Gobelin",
+      "culture": "Gobelins des cavernes",
+      "ligne": "Archer",
+      "niveau": "normal",
+      "centile": "P50",
+      "caracteristiques": {
+        "Force": 39,
+        "Constitution": 45,
+        "Dextérité": 73,
+        "Vitesse": 59,
+        "Endurance": 54,
+        "Esquive": 53,
+        "Chance": 61,
+        "Charisme": 48,
+        "Courage": 34,
+        "Intelligence": 43,
+        "Volonté": 43,
+        "Perception": 70,
+        "Puissance magique": 52,
+        "Réserve de mana": 52
+      },
+      "resistances": {
+        "Résistance physique": 1,
+        "Résistance au feu": 1,
+        "Résistance au froid": 4,
+        "Résistance à la foudre": 4,
+        "Résistance au poison": 15
+      },
+      "pv": 181,
+      "competences_martiales": {
+        "Arc": 43,
+        "Armes de tir": 44,
+        "Discrétion": 36,
+        "Pièges": 31,
+        "Combat à deux armes": 41,
+        "Combat à mains nues": 30,
+        "Combat à deux mains": 32
+      },
+      "intimidation": 37,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Arc"
+      ],
+      "armure": "Gambison",
+      "tier": 2,
+      "qualite": "Correcte",
+      "menace": 11
+    },
+    {
+      "nom": "Archer gobelin vétéran",
+      "code": "goblin_archer_veteran",
+      "faction": "Gobelins",
+      "peuple": "Gobelin",
+      "culture": "Gobelins des cavernes",
+      "ligne": "Archer",
+      "niveau": "vétéran",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 50,
+        "Constitution": 53,
+        "Dextérité": 81,
+        "Vitesse": 66,
+        "Endurance": 62,
+        "Esquive": 62,
+        "Chance": 68,
+        "Charisme": 56,
+        "Courage": 43,
+        "Intelligence": 51,
+        "Volonté": 51,
+        "Perception": 78,
+        "Puissance magique": 59,
+        "Réserve de mana": 59
+      },
+      "resistances": {
+        "Résistance physique": 2,
+        "Résistance au feu": 4,
+        "Résistance au froid": 6,
+        "Résistance à la foudre": 6,
+        "Résistance au poison": 19
+      },
+      "pv": 212,
+      "competences_martiales": {
+        "Arc": 47,
+        "Armes de tir": 48,
+        "Discrétion": 42,
+        "Pièges": 36,
+        "Combat à deux armes": 47,
+        "Combat à mains nues": 36,
+        "Combat à deux mains": 37
+      },
+      "intimidation": 41,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Arc"
+      ],
+      "armure": "Armure de cuir",
+      "tier": 3,
+      "qualite": "Grand Luxe",
+      "menace": 16
+    },
+    {
+      "nom": "Archer gobelin d’élite",
+      "code": "goblin_archer_elite",
+      "faction": "Gobelins",
+      "peuple": "Gobelin",
+      "culture": "Gobelins des cavernes",
+      "ligne": "Archer",
+      "niveau": "d’élite",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 59,
+        "Constitution": 61,
+        "Dextérité": 85,
+        "Vitesse": 72,
+        "Endurance": 71,
+        "Esquive": 70,
+        "Chance": 73,
+        "Charisme": 64,
+        "Courage": 50,
+        "Intelligence": 59,
+        "Volonté": 58,
+        "Perception": 81,
+        "Puissance magique": 65,
+        "Réserve de mana": 66
+      },
+      "resistances": {
+        "Résistance physique": 6,
+        "Résistance au feu": 5,
+        "Résistance au froid": 9,
+        "Résistance à la foudre": 10,
+        "Résistance au poison": 22
+      },
+      "pv": 243,
+      "competences_martiales": {
+        "Arc": 51,
+        "Armes de tir": 52,
+        "Discrétion": 49,
+        "Pièges": 44,
+        "Combat à deux armes": 53,
+        "Combat à mains nues": 42,
+        "Combat à deux mains": 42
+      },
+      "intimidation": 46,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Arc"
+      ],
+      "armure": "Armure de cuir",
+      "tier": 4,
+      "qualite": "Grand Luxe",
+      "menace": 23
+    },
+    {
+      "nom": "Guerrier gobelin novice",
+      "code": "goblin_warrior_novice",
+      "faction": "Gobelins",
+      "peuple": "Gobelin",
+      "culture": "Gobelins des cavernes",
+      "ligne": "Guerrier",
+      "niveau": "novice",
+      "centile": "P20",
+      "caracteristiques": {
+        "Force": 39,
+        "Constitution": 45,
+        "Dextérité": 65,
+        "Vitesse": 42,
+        "Endurance": 54,
+        "Esquive": 53,
+        "Chance": 43,
+        "Charisme": 38,
+        "Courage": 24,
+        "Intelligence": 32,
+        "Volonté": 33,
+        "Perception": 43,
+        "Puissance magique": 43,
+        "Réserve de mana": 43
+      },
+      "resistances": {
+        "Résistance physique": 1,
+        "Résistance au feu": 1,
+        "Résistance au froid": 2,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 10
+      },
+      "pv": 178,
+      "competences_martiales": {
+        "Épée courte": 38,
+        "Lames courtes": 40,
+        "Rondache": 14,
+        "Boucliers": 13,
+        "Discrétion": 29,
+        "Pièges": 24,
+        "Combat à deux armes": 35,
+        "Combat à mains nues": 25,
+        "Combat à deux mains": 27
+      },
+      "intimidation": 31,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Épée courte",
+        "Rondache"
+      ],
+      "armure": "Gambison",
+      "tier": 1,
+      "qualite": "Usée",
+      "menace": 5
+    },
+    {
+      "nom": "Guerrier gobelin",
+      "code": "goblin_warrior",
+      "faction": "Gobelins",
+      "peuple": "Gobelin",
+      "culture": "Gobelins des cavernes",
+      "ligne": "Guerrier",
+      "niveau": "normal",
+      "centile": "P50",
+      "caracteristiques": {
+        "Force": 50,
+        "Constitution": 53,
+        "Dextérité": 73,
+        "Vitesse": 49,
+        "Endurance": 62,
+        "Esquive": 62,
+        "Chance": 52,
+        "Charisme": 48,
+        "Courage": 34,
+        "Intelligence": 43,
+        "Volonté": 43,
+        "Perception": 52,
+        "Puissance magique": 52,
+        "Réserve de mana": 52
+      },
+      "resistances": {
+        "Résistance physique": 1,
+        "Résistance au feu": 1,
+        "Résistance au froid": 4,
+        "Résistance à la foudre": 4,
+        "Résistance au poison": 15
+      },
+      "pv": 210,
+      "competences_martiales": {
+        "Épée courte": 43,
+        "Lames courtes": 44,
+        "Rondache": 18,
+        "Boucliers": 18,
+        "Discrétion": 36,
+        "Pièges": 31,
+        "Combat à deux armes": 41,
+        "Combat à mains nues": 30,
+        "Combat à deux mains": 32
+      },
+      "intimidation": 37,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Épée courte",
+        "Rondache"
+      ],
+      "armure": "Armure de cuir",
+      "tier": 2,
+      "qualite": "Correcte",
+      "menace": 11
+    },
+    {
+      "nom": "Guerrier gobelin vétéran",
+      "code": "goblin_warrior_veteran",
+      "faction": "Gobelins",
+      "peuple": "Gobelin",
+      "culture": "Gobelins des cavernes",
+      "ligne": "Guerrier",
+      "niveau": "vétéran",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 59,
+        "Constitution": 61,
+        "Dextérité": 81,
+        "Vitesse": 59,
+        "Endurance": 71,
+        "Esquive": 70,
+        "Chance": 61,
+        "Charisme": 56,
+        "Courage": 43,
+        "Intelligence": 51,
+        "Volonté": 51,
+        "Perception": 62,
+        "Puissance magique": 59,
+        "Réserve de mana": 59
+      },
+      "resistances": {
+        "Résistance physique": 2,
+        "Résistance au feu": 4,
+        "Résistance au froid": 6,
+        "Résistance à la foudre": 6,
+        "Résistance au poison": 19
+      },
+      "pv": 241,
+      "competences_martiales": {
+        "Épée courte": 47,
+        "Lames courtes": 48,
+        "Rondache": 23,
+        "Boucliers": 30,
+        "Discrétion": 42,
+        "Pièges": 36,
+        "Combat à deux armes": 47,
+        "Combat à mains nues": 36,
+        "Combat à deux mains": 37
+      },
+      "intimidation": 41,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire"
+      ],
+      "armes": [
+        "Épée courte",
+        "Rondache"
+      ],
+      "armure": "Cuir renforcé",
+      "tier": 3,
+      "qualite": "Grand Luxe",
+      "menace": 24
+    },
+    {
+      "nom": "Guerrier gobelin d’élite",
+      "code": "goblin_warrior_elite",
+      "faction": "Gobelins",
+      "peuple": "Gobelin",
+      "culture": "Gobelins des cavernes",
+      "ligne": "Guerrier",
+      "niveau": "d’élite",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 68,
+        "Constitution": 66,
+        "Dextérité": 85,
+        "Vitesse": 66,
+        "Endurance": 77,
+        "Esquive": 77,
+        "Chance": 68,
+        "Charisme": 64,
+        "Courage": 50,
+        "Intelligence": 59,
+        "Volonté": 58,
+        "Perception": 70,
+        "Puissance magique": 65,
+        "Réserve de mana": 66
+      },
+      "resistances": {
+        "Résistance physique": 6,
+        "Résistance au feu": 5,
+        "Résistance au froid": 9,
+        "Résistance à la foudre": 10,
+        "Résistance au poison": 22
+      },
+      "pv": 262,
+      "competences_martiales": {
+        "Épée courte": 51,
+        "Lames courtes": 52,
+        "Rondache": 34,
+        "Boucliers": 42,
+        "Discrétion": 49,
+        "Pièges": 44,
+        "Combat à deux armes": 53,
+        "Combat à mains nues": 42,
+        "Combat à deux mains": 42
+      },
+      "intimidation": 46,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire"
+      ],
+      "armes": [
+        "Épée courte",
+        "Rondache"
+      ],
+      "armure": "Brigandine",
+      "tier": 4,
+      "qualite": "Grand Luxe",
+      "menace": 47
+    },
+    {
+      "nom": "Assassin gobelin novice",
+      "code": "goblin_assassin_novice",
+      "faction": "Gobelins",
+      "peuple": "Gobelin",
+      "culture": "Gobelins des cavernes",
+      "ligne": "Assassin",
+      "niveau": "novice",
+      "centile": "P20",
+      "caracteristiques": {
+        "Force": 39,
+        "Constitution": 26,
+        "Dextérité": 65,
+        "Vitesse": 59,
+        "Endurance": 44,
+        "Esquive": 62,
+        "Chance": 43,
+        "Charisme": 38,
+        "Courage": 15,
+        "Intelligence": 32,
+        "Volonté": 33,
+        "Perception": 52,
+        "Puissance magique": 43,
+        "Réserve de mana": 43
+      },
+      "resistances": {
+        "Résistance physique": 1,
+        "Résistance au feu": 1,
+        "Résistance au froid": 2,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 10
+      },
+      "pv": 115,
+      "competences_martiales": {
+        "Dague": 38,
+        "Lames courtes": 40,
+        "Discrétion": 36,
+        "Pièges": 24,
+        "Combat à deux armes": 35,
+        "Combat à mains nues": 25,
+        "Combat à deux mains": 27
+      },
+      "intimidation": 31,
+      "port_d_armure": [],
+      "armes": [
+        "Dague",
+        "Dague"
+      ],
+      "armure": "Vêtements",
+      "tier": 1,
+      "qualite": "Usée",
+      "menace": 4
+    },
+    {
+      "nom": "Assassin gobelin",
+      "code": "goblin_assassin",
+      "faction": "Gobelins",
+      "peuple": "Gobelin",
+      "culture": "Gobelins des cavernes",
+      "ligne": "Assassin",
+      "niveau": "normal",
+      "centile": "P50",
+      "caracteristiques": {
+        "Force": 50,
+        "Constitution": 35,
+        "Dextérité": 73,
+        "Vitesse": 66,
+        "Endurance": 54,
+        "Esquive": 70,
+        "Chance": 52,
+        "Charisme": 48,
+        "Courage": 24,
+        "Intelligence": 43,
+        "Volonté": 43,
+        "Perception": 62,
+        "Puissance magique": 52,
+        "Réserve de mana": 52
+      },
+      "resistances": {
+        "Résistance physique": 1,
+        "Résistance au feu": 1,
+        "Résistance au froid": 4,
+        "Résistance à la foudre": 4,
+        "Résistance au poison": 15
+      },
+      "pv": 151,
+      "competences_martiales": {
+        "Dague": 43,
+        "Lames courtes": 44,
+        "Discrétion": 42,
+        "Pièges": 31,
+        "Combat à deux armes": 41,
+        "Combat à mains nues": 30,
+        "Combat à deux mains": 32
+      },
+      "intimidation": 37,
+      "port_d_armure": [],
+      "armes": [
+        "Dague",
+        "Dague"
+      ],
+      "armure": "Vêtements",
+      "tier": 2,
+      "qualite": "Correcte",
+      "menace": 7
+    },
+    {
+      "nom": "Assassin gobelin vétéran",
+      "code": "goblin_assassin_veteran",
+      "faction": "Gobelins",
+      "peuple": "Gobelin",
+      "culture": "Gobelins des cavernes",
+      "ligne": "Assassin",
+      "niveau": "vétéran",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 59,
+        "Constitution": 45,
+        "Dextérité": 81,
+        "Vitesse": 72,
+        "Endurance": 62,
+        "Esquive": 77,
+        "Chance": 61,
+        "Charisme": 56,
+        "Courage": 34,
+        "Intelligence": 51,
+        "Volonté": 51,
+        "Perception": 70,
+        "Puissance magique": 59,
+        "Réserve de mana": 59
+      },
+      "resistances": {
+        "Résistance physique": 2,
+        "Résistance au feu": 4,
+        "Résistance au froid": 6,
+        "Résistance à la foudre": 6,
+        "Résistance au poison": 19
+      },
+      "pv": 188,
+      "competences_martiales": {
+        "Dague": 47,
+        "Lames courtes": 48,
+        "Discrétion": 49,
+        "Pièges": 36,
+        "Combat à deux armes": 47,
+        "Combat à mains nues": 36,
+        "Combat à deux mains": 37
+      },
+      "intimidation": 41,
+      "port_d_armure": [],
+      "armes": [
+        "Dague",
+        "Dague"
+      ],
+      "armure": "Vêtements",
+      "tier": 3,
+      "qualite": "Grand Luxe",
+      "menace": 15
+    },
+    {
+      "nom": "Assassin gobelin d’élite",
+      "code": "goblin_assassin_elite",
+      "faction": "Gobelins",
+      "peuple": "Gobelin",
+      "culture": "Gobelins des cavernes",
+      "ligne": "Assassin",
+      "niveau": "d’élite",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 68,
+        "Constitution": 53,
+        "Dextérité": 85,
+        "Vitesse": 76,
+        "Endurance": 71,
+        "Esquive": 81,
+        "Chance": 68,
+        "Charisme": 64,
+        "Courage": 43,
+        "Intelligence": 59,
+        "Volonté": 58,
+        "Perception": 78,
+        "Puissance magique": 65,
+        "Réserve de mana": 66
+      },
+      "resistances": {
+        "Résistance physique": 6,
+        "Résistance au feu": 5,
+        "Résistance au froid": 9,
+        "Résistance à la foudre": 10,
+        "Résistance au poison": 22
+      },
+      "pv": 219,
+      "competences_martiales": {
+        "Dague": 51,
+        "Lames courtes": 52,
+        "Discrétion": 55,
+        "Pièges": 44,
+        "Combat à deux armes": 53,
+        "Combat à mains nues": 42,
+        "Combat à deux mains": 42
+      },
+      "intimidation": 46,
+      "port_d_armure": [],
+      "armes": [
+        "Dague",
+        "Dague"
+      ],
+      "armure": "Vêtements",
+      "tier": 4,
+      "qualite": "Grand Luxe",
+      "menace": 23
+    },
+    {
+      "nom": "Caïd gobelin",
+      "code": "goblin_chief_1",
+      "faction": "Gobelins",
+      "peuple": "Gobelin",
+      "culture": "Gobelins des cavernes",
+      "ligne": "Chef",
+      "niveau": "chef 1",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 59,
+        "Constitution": 53,
+        "Dextérité": 73,
+        "Vitesse": 66,
+        "Endurance": 62,
+        "Esquive": 70,
+        "Chance": 61,
+        "Charisme": 64,
+        "Courage": 50,
+        "Intelligence": 51,
+        "Volonté": 58,
+        "Perception": 70,
+        "Puissance magique": 59,
+        "Réserve de mana": 59
+      },
+      "resistances": {
+        "Résistance physique": 2,
+        "Résistance au feu": 4,
+        "Résistance au froid": 6,
+        "Résistance à la foudre": 6,
+        "Résistance au poison": 19
+      },
+      "pv": 214,
+      "competences_martiales": {
+        "Sabre": 47,
+        "Lames longues": 48,
+        "Rondache": 23,
+        "Boucliers": 30,
+        "Discrétion": 42,
+        "Pièges": 36,
+        "Combat à deux armes": 47,
+        "Combat à mains nues": 36,
+        "Combat à deux mains": 37
+      },
+      "intimidation": 46,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire"
+      ],
+      "armes": [
+        "Sabre",
+        "Rondache"
+      ],
+      "armure": "Cuir renforcé",
+      "tier": 3,
+      "qualite": "Grand Luxe",
+      "menace": 30
+    },
+    {
+      "nom": "Grand Caïd gobelin",
+      "code": "goblin_chief_2",
+      "faction": "Gobelins",
+      "peuple": "Gobelin",
+      "culture": "Gobelins des cavernes",
+      "ligne": "Chef",
+      "niveau": "chef 2",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 68,
+        "Constitution": 61,
+        "Dextérité": 81,
+        "Vitesse": 72,
+        "Endurance": 71,
+        "Esquive": 77,
+        "Chance": 68,
+        "Charisme": 69,
+        "Courage": 55,
+        "Intelligence": 59,
+        "Volonté": 62,
+        "Perception": 78,
+        "Puissance magique": 65,
+        "Réserve de mana": 66
+      },
+      "resistances": {
+        "Résistance physique": 6,
+        "Résistance au feu": 5,
+        "Résistance au froid": 9,
+        "Résistance à la foudre": 10,
+        "Résistance au poison": 22
+      },
+      "pv": 245,
+      "competences_martiales": {
+        "Sabre": 51,
+        "Lames longues": 52,
+        "Rondache": 34,
+        "Boucliers": 42,
+        "Discrétion": 49,
+        "Pièges": 44,
+        "Combat à deux armes": 53,
+        "Combat à mains nues": 42,
+        "Combat à deux mains": 42
+      },
+      "intimidation": 48,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire"
+      ],
+      "armes": [
+        "Sabre",
+        "Rondache"
+      ],
+      "armure": "Cotte de mailles",
+      "tier": 4,
+      "qualite": "Grand Luxe",
+      "menace": 55
+    },
+    {
+      "nom": "Chef de clan gobelin",
+      "code": "goblin_chief_3",
+      "faction": "Gobelins",
+      "peuple": "Gobelin",
+      "culture": "Gobelins des cavernes",
+      "ligne": "Chef",
+      "niveau": "chef 3",
+      "centile": "P95",
+      "caracteristiques": {
+        "Force": 74,
+        "Constitution": 66,
+        "Dextérité": 85,
+        "Vitesse": 76,
+        "Endurance": 77,
+        "Esquive": 81,
+        "Chance": 73,
+        "Charisme": 80,
+        "Courage": 64,
+        "Intelligence": 64,
+        "Volonté": 69,
+        "Perception": 81,
+        "Puissance magique": 69,
+        "Réserve de mana": 69
+      },
+      "resistances": {
+        "Résistance physique": 9,
+        "Résistance au feu": 6,
+        "Résistance au froid": 12,
+        "Résistance à la foudre": 13,
+        "Résistance au poison": 25
+      },
+      "pv": 265,
+      "competences_martiales": {
+        "Sabre": 54,
+        "Lames longues": 54,
+        "Rondache": 37,
+        "Boucliers": 46,
+        "Discrétion": 55,
+        "Pièges": 48,
+        "Combat à deux armes": 58,
+        "Combat à mains nues": 46,
+        "Combat à deux mains": 45
+      },
+      "intimidation": 55,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire"
+      ],
+      "armes": [
+        "Sabre",
+        "Rondache"
+      ],
+      "armure": "Brigandine",
+      "tier": 4,
+      "qualite": "Grand Luxe",
+      "menace": 100
+    },
+    {
+      "nom": "Roi des Cavernes",
+      "code": "goblin_chief_4",
+      "faction": "Gobelins",
+      "peuple": "Gobelin",
+      "culture": "Gobelins des cavernes",
+      "ligne": "Chef",
+      "niveau": "chef 4",
+      "centile": "P99",
+      "caracteristiques": {
+        "Force": 85,
+        "Constitution": 75,
+        "Dextérité": 94,
+        "Vitesse": 82,
+        "Endurance": 90,
+        "Esquive": 89,
+        "Chance": 81,
+        "Charisme": 80,
+        "Courage": 64,
+        "Intelligence": 74,
+        "Volonté": 69,
+        "Perception": 89,
+        "Puissance magique": 75,
+        "Réserve de mana": 77
+      },
+      "resistances": {
+        "Résistance physique": 16,
+        "Résistance au feu": 11,
+        "Résistance au froid": 15,
+        "Résistance à la foudre": 30,
+        "Résistance au poison": 30
+      },
+      "pv": 300,
+      "competences_martiales": {
+        "Sabre": 59,
+        "Lames longues": 59,
+        "Rondache": 43,
+        "Boucliers": 53,
+        "Discrétion": 63,
+        "Pièges": 56,
+        "Combat à deux armes": 69,
+        "Combat à mains nues": 58,
+        "Combat à deux mains": 51
+      },
+      "intimidation": 55,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire",
+        "Port d’armure lourde"
+      ],
+      "armes": [
+        "Sabre",
+        "Rondache"
+      ],
+      "armure": "Armure d'écailles",
+      "tier": 4,
+      "qualite": "Grand Luxe",
+      "menace": null
+    }
+  ]
+}

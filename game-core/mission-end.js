@@ -45,10 +45,11 @@
     function stat(p,name){ return Number(p.stats?.[name])||0; }
     function hpRatio(p){ return p.hp/p.pvMax; }
 
-    // §3 — Jet de mort, uniquement sous 0 PV.
-    function deathChance(p){
+    // §3 — Jet de mort, uniquement sous 0 PV. multiplier : défaite d'une mission « Faire le ménage », l'ennemi tient le
+    // terrain, la probabilité est doublée (doc 17 §8), toujours bornée à 100 %.
+    function deathChance(p,multiplier=1){
       if(p.hp>=0) return null;
-      return clamp(-C.deathHpCoefficient*hpRatio(p)-stat(p,"Volonté")/C.deathWillpowerDivisor,0,100);
+      return clamp((-C.deathHpCoefficient*hpRatio(p)-stat(p,"Volonté")/C.deathWillpowerDivisor)*multiplier,0,100);
     }
 
     // §4 — Jet de blessure, uniquement entre 0 et 50 % des PV max (zone portée de 20 à 50 % par Idan).
@@ -82,7 +83,7 @@
         hp:p.hp,pvMax:p.pvMax,damageTaken:Number(p.damageTaken)||0,
         death:null,wound:null,dead:false,wounded:false,severity:null,woundDays:null,fatigueDays:null
       };
-      const pDeath=deathChance(p);
+      const pDeath=deathChance(p,Number(options.deathMultiplier)||1);
       if(pDeath!==null){
         const roll=d100();
         result.death={p:pDeath,roll};

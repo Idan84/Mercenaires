@@ -1,0 +1,140 @@
+"use strict";
+
+// Missions one shot (doc 17) : « Faire le ménage », camp gobelin ☠, en boucle à la Taverne (Idan, 2026-10-24).
+const assert=require("node:assert/strict");
+const fs=require("node:fs");
+const path=require("node:path");
+const {createMissionRules}=require("../game-core/missions.js");
+const {createGenerator}=require("../game-core/mercenary-generator.js");
+const {createTavernRules}=require("../game-core/tavern.js");
+const {createCampaignRules}=require("../game-core/campaign.js");
+
+const ROOT=path.resolve(__dirname,"..");
+const read=file=>JSON.parse(fs.readFileSync(path.join(ROOT,"data","reference",file),"utf8"));
+function seeded(seed){
+  return function(){
+    seed|=0;seed=seed+0x6D2B79F5|0;
+    let t=Math.imul(seed^seed>>>15,1|seed);
+    t=t+Math.imul(t^t>>>7,61|t)^t;
+    return ((t^t>>>14)>>>0)/4294967296;
+  };
+}
+const reference={oneShotMissions:read("one-shot-missions.json"),enemyArchetypes:read("enemy-archetypes.json"),weapons:read("weapons.json"),
+  baseArmors:read("base-armors.json"),skills:read("skills.json"),itemQualities:read("item-qualities.json")};
+const rules=createMissionRules({reference,random:seeded(7)});
+
+// Camp ☠ : 1D4+3 novices, un ou deux « normaux » de temps en temps, et un Caïd.
+const counts=[],normals=[];
+for(let i=0;i<2000;i++){
+  const camp=rules.rollCamp();
+  counts.push(camp.enemies.length);
+  normals.push(camp.enemies.filter(code=>rules.archetype(code).niveau==="normal").length);
+  assert.equal(camp.chief,"goblin_chief_1");
+  assert.ok(camp.enemies.every(code=>{ const a=rules.archetype(code); return a.faction==="Gobelins"&&["novice","normal"].includes(a.niveau); }));
+}
+assert.equal(Math.min(...counts),4);
+assert.equal(Math.max(...counts),7);
+const share=k=>normals.filter(n=>n===k).length/2000;
+assert.ok(share(1)>0.15&&share(1)<0.25,"un normal dans ~20 % des camps : "+share(1));
+assert.ok(share(2)>0.02&&share(2)<0.08,"deux normaux dans ~5 % des camps : "+share(2));
+
+// Offre : distance 1 à 3 jours, récompense = 1 000 + 600 par jour aller-retour + 150 par ennemi, valable 3 à 6 jours.
+const orders=new Set();
+for(let day=1;day<=300;day++){
+  const offer=rules.createOffer({day});
+  orders.add(offer.order);
+  assert.ok(offer.distance>=1&&offer.distance<=3);
+  assert.equal(offer.enemyCount,offer.camp.enemies.length+1);
+  assert.equal(offer.reward,1000+600*2*offer.distance+150*offer.enemyCount);
+  assert.ok(offer.expiresDay-day>=3&&offer.expiresDay-day<=6);
+  const text=rules.orderText(offer,{date:"1 Brumecendre",date_expiration:"5 Brumecendre",an:842});
+  for(const line of [...text.paragraphs,text.signature]) assert.doesNotMatch(line,/\{[^}]+\}/,"tous les champs remplis : "+line);
+  assert.doesNotMatch(text.paragraphs.join(" "),/\b1 jours\b/);
+}
+assert.deepEqual([...orders].sort(),["emperor","goblin_rival","village"],"les trois ordres validés");
+
+// Ennemis : la fiche figée remplace caractéristiques, PV, compétences et équipement d'un personnage de base.
+const offer=rules.createOffer({day:4});
+const base=()=>({id:900,name:"Base",stats:{Force:1,Courage:1,Charisme:12},resistances:{"Résistance physique":0},
+  skills:{martial:{Lance:80,Arc:80,"Port d’armure lourde":true},social:{Intimidation:99},magic:{Feu:3}},
+  equipment:{slots:{armor:null,weapon_set_1_main:null,weapon_set_1_off:null,weapon_set_2_main:null,ring_1:null},profile:{type:"magic"}},
+  items:[{id:"old",name:"Hallebarde"}]});
+const enemies=rules.buildEnemies(offer,()=>base());
+assert.equal(enemies.length,offer.enemyCount);
+const chief=enemies[enemies.length-1],caid=rules.archetype("goblin_chief_1");
+assert.equal(chief.name,offer.fields.boss+" (Caïd gobelin)");
+assert.deepEqual([chief.pvMax,chief.pv,chief.stats.Force,chief.stats.Charisme],[caid.pv,caid.pv,caid.caracteristiques.Force,caid.caracteristiques.Charisme]);
+assert.equal(chief.skills.martial.Sabre,caid.competences_martiales.Sabre);
+assert.equal(chief.skills.martial.Lance,0,"les autres compétences tombent à 0");
+assert.equal(chief.skills.martial["Port d’armure lourde"],false);
+assert.equal(chief.skills.martial["Port d’armure intermédiaire"],true);
+assert.equal(chief.skills.social.Intimidation,caid.intimidation);
+assert.equal(chief.skills.magic.Feu,3,"la magie de la base reste");
+const [sabre,rondache,armor]=chief.items;
+assert.deepEqual([sabre.name,sabre.itemType,sabre.tier,sabre.qualityCode,sabre.category,sabre.combatFamily,chief.equipment.slots.weapon_set_1_main],
+  ["Sabre","weapon",3,"luxury","Lames longues","melee",sabre.id]);
+assert.deepEqual([rondache.name,chief.equipment.slots.weapon_set_1_off],["Rondache",rondache.id]);
+assert.deepEqual([armor.name,armor.templateId,armor.itemType,chief.equipment.slots.armor],["Cuir renforcé","armor:reinforced_leather","armor",armor.id]);
+assert.equal(new Set(enemies.flatMap(e=>e.items.map(i=>i.id))).size,enemies.reduce((n,e)=>n+e.items.length,0),"identifiants uniques");
+const names=enemies.slice(0,-1).map(e=>e.name);
+assert.equal(new Set(names).size,names.length,"les doublons sont numérotés");
+
+// Issue : victoire = récompense + coffre (2D6 × 50 PO) + équipement des morts des deux camps ; défaite = −30 de renommée.
+const fallen={id:1,items:[{id:"m1",name:"Épée longue",owner:1}]};
+const win=rules.outcome(offer,{victory:true,deadEnemies:enemies.slice(0,2),deadMercenaries:[fallen],chestItems:[{id:"c1",name:"Bague du courage",owner:3}]});
+assert.equal(win.reward,offer.reward);
+assert.ok(win.chestGold>=100&&win.chestGold<=600&&win.chestGold%50===0);
+assert.equal(win.loot.length,enemies[0].items.length+enemies[1].items.length+1);
+assert.ok([...win.loot,...win.chestItems].every(it=>it.owner===null));
+const lose=rules.outcome(offer,{victory:false,deadEnemies:enemies,deadMercenaries:[fallen]});
+assert.deepEqual([lose.reward,lose.chestGold,lose.loot.length,lose.renown],[0,0,0,-30]);
+assert.equal(rules.deathMultiplier(offer,false),2);
+assert.equal(rules.deathMultiplier(offer,true),1);
+assert.deepEqual(rules.mapSize(offer),{cols:20,rows:12});
+const state={company:{gold:100,stock:[],missionRenown:0}};
+rules.applyOutcome(state,win);
+assert.equal(state.company.gold,100+win.reward+win.chestGold);
+assert.equal(state.company.stock.length,win.loot.length+1);
+rules.applyOutcome(state,lose);
+assert.equal(state.company.missionRenown,-30);
+
+// Campagne : une offre au tableau dès le départ ; prise par une autre compagnie après sa date, sauf si elle est signée ;
+// la renommée de missions compte ; pas de prime pour un fuyard sorti de la carte.
+const files={peoples:"peoples.json",cultures:"cultures.json",socialOrigins:"social-origins.json",alignments:"alignments.json",ancestries:"ancestries.json",
+  ancestryCompatibility:"ancestry-compatibility.json",cultureOriginCompatibility:"culture-origin-compatibility.json",ancestryLevels:"ancestry-levels.json",
+  d6Scale:"d6-generation-scale.json",generationMatrix:"generation-matrix.json",skills:"skills.json",characteristics:"characteristics.json",
+  formulaConstants:"formula-constants.json",weapons:"weapons.json",baseArmors:"base-armors.json",itemQualities:"item-qualities.json",
+  equipmentSlots:"equipment-slots.json",startingEquipmentGeneration:"starting-equipment-generation.json",binaryAptitudeGrants:"binary-aptitude-grants.json",
+  alignmentGeneration:"alignment-generation.json",renamedNames:"renamed-names.json"};
+const full=Object.fromEntries(Object.entries(files).map(([key,file])=>[key,read(file)]));
+const generator=createGenerator(full,{random:seeded(3),nameGenerator:(people,id)=>people+" "+id});
+const tavern=createTavernRules({reference:full,random:seeded(4)});
+const campaign=createCampaignRules({generator,tavern,reference:full,missions:createMissionRules({reference,random:seeded(5)})});
+const captain=generator.createCaptain({id:1,name:"Capitaine"});
+const squad=[2,3].map(id=>generator.createMercenary({id,captain}));
+const game=campaign.createCampaign({captain,squad});
+const first=game.missionBoard.offer;
+assert.ok(first&&first.code==="cleanup");
+assert.equal(campaign.ensureMissionOffer(game),false,"déjà une offre");
+const reports=campaign.advanceTime(game,first.expiresDay-game.day);
+assert.ok(reports.every(r=>!r.missionTaken),"valable jusqu'à sa date");
+const [taken]=campaign.advanceTime(game,1);
+assert.equal(taken.missionTaken,first,"prise par une autre compagnie le lendemain");
+assert.notEqual(game.missionBoard.offer,first);
+const signed=campaign.signMissionOffer(game);
+campaign.advanceTime(game,10);
+assert.equal(game.missionBoard.offer,signed,"une offre signée est réservée");
+assert.notEqual(campaign.renewMissionOffer(game),signed);
+const renown=campaign.companyRenown(game).total;
+game.company.missionRenown=-30;
+assert.equal(campaign.companyRenown(game).total,renown-30);
+assert.equal(campaign.companyRenown(game).parts.missions,-30);
+for(const m of squad) m.contract={...(m.contract||{}),missionBonus:100};
+const gold=game.company.gold;
+const report=campaign.applyMissionAftermath(game,{results:[
+  {id:2,dead:false,wounded:false,fatigueDays:3,offMap:true},
+  {id:3,dead:false,wounded:false,fatigueDays:3,offMap:false}],captainDead:false});
+assert.equal(report.bonusPaid,100,"le fuyard sorti de la carte ne touche pas sa prime");
+assert.equal(game.company.gold,gold-100);
+
+console.log("Missions one shot : camp ☠, offre, ordres, ennemis, butin, renommée, tableau de la Taverne — OK");

@@ -885,7 +885,7 @@ function statTip(row){
   const reference=(game.referenceData?.characteristics?.rows||[]).find(r=>r.nom===row.nom)
     ||(game.referenceData?.skills?.rows||[]).find(r=>r.nom===row.nom);
   const first=row.description_referentiel?String(reference?.description||"").split(/(?<=\.)\s/)[0]:"";
-  return `<span class="sheet-stat-tip" role="tooltip"><strong>${esc(row.nom)}</strong>${first?`<span>${esc(first)}</span>`:""}<em>${esc(row.usage)}</em></span>`;
+  return `<span class="sheet-stat-tip" role="tooltip"><strong>${esc(row.nom)}</strong>${first?`<span>${esc(first)}</span>`:""}${row.usage?`<em>${esc(row.usage)}</em>`:""}</span>`;
 }
 function statPortraitButton(member,label,value,current){
   const url=typeof mercenaryAvatarUrl==="function"?mercenaryAvatarUrl(member,"portrait"):null;
@@ -1144,9 +1144,32 @@ function renderSheet() {
   $("dialog-content").setAttribute("aria-label", SHEET_TABS.find(([key]) => key === tab)[1]);
 }
 
+// Ordre de passage d'une fiche à l'autre (Idan, 2026-10-24) : le capitaine, puis les mercenaires dans l'ordre
+// de l'écran « Mes mercenaires ». Une fiche hors de la compagnie (candidat) n'a pas de flèches.
+function sheetOrder(){
+  const team=teamCharacters();
+  const captain=team.find(m=>m===game.captain||m.id===game.campaign?.company.captainId);
+  return [captain,...sortMercenaryRoster(team.filter(m=>m!==captain))].filter(Boolean);
+}
+function renderSheetNav(c){
+  const order=sheetOrder(),index=order.indexOf(c);
+  for(const [id,step] of [["sheet-prev",-1],["sheet-next",1]]){
+    const button=$(id),target=index>=0&&order.length>1?order[(index+step+order.length)%order.length]:null;
+    button.hidden=!target;
+    button.dataset.sheetStep=String(step);
+    button.title=target?(step<0?"Précédent : ":"Suivant : ")+target.name:"";
+  }
+}
+function stepSheet(step){
+  const order=sheetOrder(),index=order.indexOf(game.sheetCharacter);
+  if(index<0||order.length<2) return;
+  showCharacter(order[(index+step+order.length)%order.length]);
+}
+
 function showCharacter(c) {
   $("dialog-name").textContent = c.name;
   game.sheetCharacter = c;
+  renderSheetNav(c);
   renderSheet();
   // Changer de fiche depuis la fiche (portraits du min et du max) : la fenêtre est déjà ouverte.
   if (!$("character-dialog").open) $("character-dialog").showModal();
@@ -1248,6 +1271,13 @@ async function init() {
     });
 
     $("close-dialog").addEventListener("click", () => $("character-dialog").close());
+    for (const id of ["sheet-prev","sheet-next"]) $(id).addEventListener("click", event => stepSheet(Number(event.currentTarget.dataset.sheetStep)));
+    // Flèches du clavier : fiche précédente ou suivante, hors champ de saisie.
+    $("character-dialog").addEventListener("keydown", event => {
+      if (!["ArrowLeft","ArrowRight"].includes(event.key) || event.target.closest?.("input,select,textarea")) return;
+      event.preventDefault();
+      stepSheet(event.key === "ArrowLeft" ? -1 : 1);
+    });
     $("dialog-tabs").addEventListener("click", event => {
       const btn = event.target.closest("[data-sheet-tab]");
       if (!btn) return;

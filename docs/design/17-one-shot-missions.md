@@ -18,10 +18,24 @@ Le jeu aura deux grands types de missions :
 - **Combat automatique possible** pour les gros affrontements (20 contre 30) ; ses modalités restent à voir.
 - **L'éclaireur est dans l'escouade** (Discrétion) : il révèle les ennemis au déploiement, et donne peut-être l'initiative. Un **brouillard de guerre** est prévu ; l'éclaireur aidera aussi contre lui.
 - **Tableau des contrats : 5 offres**, chacune valable de 3 à 6 jours.
+- **Des avis ouverts à tous** : une mission ne s'adresse pas à la compagnie du joueur, elle est ouverte à qui veut la prendre, et d'autres compagnies peuvent la prendre chaque jour, comme les candidats de la Taverne (un jour peut-être d'autres joueurs, en réseau).
+- **Le tableau est à la Taverne**, « Trouver une mission », là où se trouve la Mission Test.
+- **Une mission signée est réservée** : aucune autre compagnie ne peut plus la prendre. Plus tard peut-être : une escarmouche contre une bande rivale qui a pris la même mission.
+- **Les compagnies rivales ne sont qu'un nom** pour l'instant (« Les Loups de Vargh ont pris le contrat de Valombre. »).
 - **Vocabulaire** : la **récompense du contrat** est l'or versé par le commanditaire à la compagnie ; la **prime de mission** est ce que la compagnie verse à chaque mercenaire (doc 09).
 - **Archétypes d'ennemis fixes**, pour que le joueur puisse bâtir une stratégie. Beaucoup de lignes par faction (lanciers, frondeurs, archers, guerriers à l'épée et au bouclier, assassins discrets à la dague…), chacune sur quatre niveaux : par exemple **Lancier novice, Lancier, Lancier vétéran, Lancier d'élite**.
 - **Ordres de mission** : des textes écrits à l'avance, qui collent au type de mission et à la faction ; JC3 en propose, Idan corrige.
 - **Plus tard** : sonner la retraite ; les Morts-vivants.
+
+## 1 bis — Le tableau chaque matin (proposition JC3, non validée)
+
+Sur le modèle du test « Engagé ailleurs » des candidats (doc 14 §3–4) :
+
+1. chaque offre passe un test **« Prise par une autre compagnie »** : une récompense élevée la rend plus attirante, une mission dangereuse moins ;
+2. on retire les offres prises et les offres expirées (le journal nomme la compagnie rivale) ;
+3. on remplit les places libres, jusqu'à 5 offres.
+
+Formule et constantes à définir.
 
 ## 2 — La fiche d'une mission (proposition JC3)
 
@@ -95,4 +109,64 @@ On attaque un camp ennemi.
 - **Victoire, butin** : l'équipement de tous les morts, des deux camps ; un coffre du camp (or et objets, à chiffrer), qui revient automatiquement ; la récompense du contrat.
 - **Défaite** : rien du tout, et une perte de renommée (§1). L'équipement de nos morts est perdu. Nos mercenaires restés à terre passent le jet de mort (doc 10 §3) avec une **probabilité doublée**, bornée à 100 % : on laisse sa chance à celui qui fait le mort et en profite pour s'échapper.
 - **Prime de mission** : un mort ne la touche pas ; un mercenaire sorti de la carte en fuite non plus.
+
+## 9 — Ordres de mission validés (Idan, 2026-10-24)
+
+Trois essais pour « Faire le ménage » chez les Gobelins, validés par Idan. Les accolades sont remplies par le jeu ; {estimation} est le nombre approximatif d'ennemis, flou par nature.
+
+### Le chef de village
+
+> À toute compagnie de mercenaires qui voudra bien venir,
+>
+> Je m'appelle {commanditaire}, chef de {lieu}, à {jours} jours de marche de votre camp. On m'a dit que vous tuiez des gens pour de l'argent. Ça tombe bien : nous avons de l'argent, un peu, et des gens à tuer, beaucoup.
+>
+> Depuis la fonte des neiges, des gobelins se sont installés dans la vieille carrière, au-dessus du village. Au début, ils volaient les poules. Puis les chèvres. La semaine dernière, ils ont volé la cloche du temple, et personne ne sait ce qu'un gobelin peut bien faire d'une cloche. On les entend la sonner la nuit.
+>
+> Combien sont-ils ? Le berger dit {estimation}. Le berger boit.
+>
+> Le village a réuni {récompense} pièces d'or. C'est tout ce que nous avons, à part la cloche, que vous nous rendrez si elle est encore entière. Ce que vous trouverez dans leur camp sera à vous.
+>
+> Le premier qui nous débarrasse d'eux touche la somme. Les autres auront fait le chemin pour rien.
+>
+> Venez vite. Il ne reste plus beaucoup de poules.
+>
+> *{commanditaire}, chef de {lieu}, le {date}*
+
+### Le chef gobelin rival
+
+> OYÉ LES MERCENAIRES !!!
+>
+> Moi c'est {commanditaire}, grand chef des {tribu} (le plus grand des chefs, les autres ils sont plus petits). Les {tribu_cible} ils ont pris MA grotte à {lieu}. C'est à {jours} jours de chez vous si on marche vite, plus si on marche comme un humain.
+>
+> Eux c'est des voleurs, des menteurs et ils puent. Nous aussi un peu, mais pas pareil.
+>
+> Vous allez là-bas, vous tapez tout le monde. Ils sont {estimation}, j'ai compté avec les doigts de mon cousin. Leur chef c'est {boss}, il est gros et bête. Tapez-le en premier ou en dernier, je m'en fiche, mais tapez-le.
+>
+> Pour vous : {récompense} pièces d'or. Du vrai or, pas des cailloux peints comme la dernière fois. Tout ce qu'il y a dans la grotte, vous prenez. Sauf le trône. Le trône il est à moi.
+>
+> Le premier qui vient, il gagne. Les autres, ils ont perdu.
+>
+> C'est pas un piège. Promis sur la tête de mon cousin.
+>
+> *Signé : {commanditaire} (une empreinte de pouce, un peu grasse)*
+
+### L'ordre de l'Empereur
+
+> **PAR ORDRE DE SA MAJESTÉ IMPÉRIALE**
+> *Chancellerie des Marches — Bureau des Nuisances et Engeances*
+>
+> À toute compagnie franche dûment patentée,
+>
+> Attendu qu'une engeance gobeline a établi un campement illicite à {lieu}, à {jours} jours de marche de votre cantonnement ;
+> Attendu que ladite engeance entrave la circulation des marchandises, le recouvrement de l'impôt et le moral des percepteurs ;
+> Attendu que la garnison impériale la plus proche se trouve, à son grand regret, fort occupée ailleurs ;
+>
+> Il est ordonné à la compagnie qui s'en chargera de procéder au nettoyage complet dudit campement, par tout moyen qu'elle jugera utile, dans le respect approximatif des usages de la guerre.
+>
+> La Couronne versera {récompense} pièces d'or à l'exécution du présent ordre. Le butin pris sur l'ennemi reste acquis à la compagnie, Sa Majesté étant d'humeur généreuse.
+>
+> Le présent ordre expire le {date_expiration}, ou dès qu'une compagnie s'en sera chargée.
+>
+> *Donné le {date}, an {an} de l'Âge des Couronnes Brisées.*
+> *Pour l'Empereur et par délégation, {signataire}, sous-secrétaire adjoint aux Marches.*
 

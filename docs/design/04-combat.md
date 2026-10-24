@@ -154,7 +154,7 @@ Le tir est construit comme un combat physique à distance, sans créer un second
 
 Choix d'implémentation V1 de la recharge :
 - validés par Idan le 2026-10-08 : toutes les armes à feu sont **chargées au début de la mission** ; l'état chargé ne dure que la mission ;
-- validés par Idan le 2026-10-20 : les armes à recharge sont celles marquées `recharge_action_rapide` dans `skills.json` (Pistolet, Arquebuse / Mousquet, Tromblon, Canon à main) ;
+- validés par Idan le 2026-10-20 : les armes à recharge sont celles marquées `recharge_action_rapide` dans `skills.json` (Pistolet, Arquebuse, Tromblon, Canon à main) ;
 - l'arme se décharge dès que le coup part, qu'il touche ou non ;
 - l'IA recharge avec son Action rapide quand son arme est déchargée (après un éventuel changement d'arme, qui consomme aussi l'Action rapide).
 

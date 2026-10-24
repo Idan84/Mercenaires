@@ -83,3 +83,17 @@ const rules=createAvatarRules({catalog:merged});
 assert.deepEqual(rules.assign(m,new Set()),{id:"ogre-012",full:byId["ogre-012"].full,portrait:byId["ogre-012"].portrait});
 
 console.log(JSON.stringify({ok:true,avatars:rows.length,warnings:warnings.length},null,2));
+
+// Noms changés (renamed-names.json, Idan 2026-10-23/24) : un avatar tagué sous l'ancien nom dans Bridge
+// reste reconnu sous le nouveau.
+{
+  const renamed={...reference,renamedNames:read("renamed-names.json")};
+  const old=[
+    {path:"Nains/Nain_2.jpg",...FULL,keywords:["Blood&Wages|Arme|Armes à feu|Arquebuse / Mousquet","Massue / Gourdin","Blood&Wages|Culture|Nains des plaines"]},
+    {path:"Nains/Nain_2_Square.jpg",...SQUARE,keywords:[]}
+  ];
+  const dwarf=buildAvatarCatalog(old,renamed).rows[0];
+  assert.deepEqual(dwarf.tags.weapon,["Arquebuse","Massue"]);
+  assert.deepEqual(dwarf.tags.culture,["Nains du chaos"]);
+}
+console.log("Catalogue d'avatars : anciens noms reconnus — OK");

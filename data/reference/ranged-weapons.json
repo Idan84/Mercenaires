@@ -157,7 +157,7 @@
       "malus_vitesse_arme_base": 22
     },
     {
-      "nom": "Arquebuse / Mousquet",
+      "nom": "Arquebuse",
       "domaine": "Armes à feu, Martial",
       "portee_min_hex": 2,
       "portee_max_hex": 24,

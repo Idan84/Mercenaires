@@ -372,7 +372,7 @@ assert.equal(captain.alignment, "Neutre"); // forced captain choice must bypass 
 // au moins 0,25 ; tier selon la réputation du capitaine ; sans propriétaire.
 const chaosDwarf = {people:"Nain", culture:"Nains du chaos", reputation:130, id:7};
 const weaponByName = name => reference.weapons.rows.find(w => w.nom === name);
-assert.equal(generator.startingStockWeight(weaponByName("Arquebuse / Mousquet"), chaosDwarf), 13, "A = 2 + 2 + 1 + 1");
+assert.equal(generator.startingStockWeight(weaponByName("Arquebuse"), chaosDwarf), 13, "A = 2 + 2 + 1 + 1");
 assert.equal(generator.startingStockWeight(weaponByName("Hache de guerre"), chaosDwarf), 7, "A = 2 + 1");
 assert.equal(generator.startingStockWeight(weaponByName("Fouet"), chaosDwarf), 1, "aucune affinité");
 assert.equal(generator.startingStockWeight(weaponByName("Arc"), {people:"Nain", culture:"Nains des montagnes"}), 1, "Arc −1, Armes de tir +1");

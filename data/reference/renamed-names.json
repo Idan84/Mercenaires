@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "name": "renamed-names",
+  "description": "Noms changés par Idan : les parties sauvegardées avant prennent le nouveau nom au chargement (identité, objets, compétences, stock), et les mots-clés Bridge des avatars restent reconnus sous l’ancien nom.",
+  "columns": [
+    {
+      "key": "ancien",
+      "source": "Ancien nom"
+    },
+    {
+      "key": "nouveau",
+      "source": "Nouveau nom"
+    },
+    {
+      "key": "famille",
+      "source": "culture ou arme"
+    },
+    {
+      "key": "date",
+      "source": "Date de la décision"
+    }
+  ],
+  "row_count": 3,
+  "rows": [
+    {
+      "ancien": "Nains des plaines",
+      "nouveau": "Nains du chaos",
+      "famille": "culture",
+      "date": "2026-10-23"
+    },
+    {
+      "ancien": "Massue / Gourdin",
+      "nouveau": "Massue",
+      "famille": "arme",
+      "date": "2026-10-24"
+    },
+    {
+      "ancien": "Arquebuse / Mousquet",
+      "nouveau": "Arquebuse",
+      "famille": "arme",
+      "date": "2026-10-24"
+    }
+  ]
+}

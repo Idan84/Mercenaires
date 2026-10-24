@@ -418,7 +418,7 @@ function withMainWeapon(character,name){
   const item={id:"main-"+name+"-"+character.id,name,itemType:"weapon",slot:"weapon_set_1_main",owner:character.id,qualityCode:"standard"};
   return {...character,items:[...character.items,item],equipment:{...character.equipment,slots:{...character.equipment.slots,weapon_set_1_main:item.id}}};
 }
-assert.deepEqual(["Pistolet","Arquebuse / Mousquet","Tromblon","Canon à main","Arc","Arbalète"].map(nom=>combat.needsLoading({nom})),[true,true,true,true,false,false]);
+assert.deepEqual(["Pistolet","Arquebuse","Tromblon","Canon à main","Arc","Arbalète"].map(nom=>combat.needsLoading({nom})),[true,true,true,true,false,false]);
 const gunner2=unit(withMainWeapon(a,"Pistolet"),0,0),gunTarget=unit(b,3,0);
 const pistol=combat.activeWeaponItem(gunner2);
 assert.deepEqual([combat.isLoaded(gunner2,pistol),combat.canReload(gunner2),combat.canAttackAtDistance(gunner2,3,"ranged")],[true,false,true],"chargée au début de la mission");

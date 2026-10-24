@@ -1204,10 +1204,14 @@ function renderMagicWheel(c){
 function renderMagicTab(c) {
   const status=rosterStatus(c);
   const top=magicSchools().map(r=>({name:r.nom,value:Number(c.skills?.magic?.[r.nom])})).filter(x=>Number.isFinite(x.value)).sort((a,b)=>b.value-a.value).slice(0,3);
+  // Ceinture de mana et amulette de puissance magique (Idan, 2026-10-24) : valeur avec l'équipement, en vert, comme
+  // dans l'onglet Caractéristiques.
+  const effects=c.stats?equipmentEffectRules().effects(c):{};
   const stat=name=>{
     const row=(game.referenceData?.characterSheetCopy?.stats||[]).find(r=>r.nom===name)||{nom:name,usage:""};
-    const value=sheetStatValue(c,name);
-    return `<div class="sheet-stat magic-stat">${statIcon(name)}<span class="sheet-stat-name" tabindex="0">${esc(name)}${statTip(row)}</span><span class="sheet-stat-value" tabindex="0">${fmt(value)}${statPopover(c,name,value)}</span></div>`;
+    const effect=effects[name],value=effect?Math.round(effect.value):sheetStatValue(c,name);
+    const shift=effect?Math.sign(value-Math.round(effect.base)):0;
+    return `<div class="sheet-stat magic-stat">${statIcon(name)}<span class="sheet-stat-name" tabindex="0">${esc(name)}${statTip(row)}</span><span class="sheet-stat-value${shift<0?" is-malus":shift>0?" is-bonus":""}" tabindex="0">${fmt(value)}${statPopover(c,name,value,equipmentDetail(effect))}</span></div>`;
   };
   return `<section class="sheet-magic">
     <aside class="sheet-portrait">

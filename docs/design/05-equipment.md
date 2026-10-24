@@ -125,7 +125,7 @@ Trois types de bottes (`data/reference/boots.json`), chacun lié à une caracté
 « Même règles que pour les bottes » : trois types de ceintures (`data/reference/belts.json`), portées dans l’emplacement **Ceinturon** (pas dans les poches de ceinture) : **Ceinture de mana** (Réserve de mana — « le mana, c’est la réserve magique »), **Ceinture d’endurance** (Endurance), **Ceinture de courage** (Courage). Bonus de **+5 / 10 / 15 / 20 %** de la caractéristique de base selon le tier (T1 à T4) ; la qualité ne le change pas.
 
 - Au combat (`statWithGear`, qui réunit bottes et ceinture) : Endurance pour le déplacement et la défense à l’étape Blesser ; Courage pour l’Initiative et les tests de Courage (tenir, se reprendre). En fin de mission, l’Endurance bonifiée compte aussi pour la blessure et la convalescence. La Réserve de mana servira à la magie.
-- Sur la fiche, Endurance, Courage et Réserve de mana montrent la valeur bonifiée, avec la ligne de la ceinture ; l’Initiative montre la part du Courage bonifié.
+- Sur la fiche, Endurance, Courage et Réserve de mana (onglet Magie) montrent la valeur bonifiée, avec la ligne de la ceinture ; l’Initiative montre la part du Courage bonifié.
 - **5 %** de chance d’en avoir une à la création (`belt_chance`), d’un type tiré au hasard ; **1D6** ceintures dans le stock de départ (doc 11 §16).
 
 ### Amulettes (Idan, 2026-10-24)
@@ -133,7 +133,7 @@ Trois types de bottes (`data/reference/boots.json`), chacun lié à une caracté
 Mêmes règles que les bottes et les ceintures : trois types d’amulettes (`data/reference/amulets.json`), portées dans l’emplacement **Amulette** : **Amulette de puissance magique** (Puissance magique), **Amulette de volonté** (Volonté), **Amulette de chance** (Chance). Bonus de **+5 / 10 / 15 / 20 %** de la caractéristique de base selon le tier (T1 à T4) ; la qualité ne le change pas.
 
 - Au combat (`statWithGear`) : Volonté pour le déplacement, l’Initiative et les tests de Courage (tenir, se reprendre) ; Chance pour la probabilité de critique et le test qui confirme un échec critique. En fin de mission, la Volonté bonifiée compte aussi pour le risque de mort. La Puissance magique servira à la magie.
-- Sur la fiche, Puissance magique, Volonté et Chance montrent la valeur bonifiée, avec la ligne de l’amulette ; l’Initiative montre la part de la Volonté bonifiée.
+- Sur la fiche, Puissance magique (onglet Magie), Volonté et Chance montrent la valeur bonifiée, avec la ligne de l’amulette ; l’Initiative montre la part de la Volonté bonifiée.
 - **5 %** de chance d’en avoir une à la création (`amulet_chance`), d’un type tiré au hasard ; **1D6** amulettes dans le stock de départ (doc 11 §16).
 
 ### Échanges d’équipement : Donner, Retirer, Troquer (Idan, 2026-10-24)

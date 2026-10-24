@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "name": "gloves",
+  "description": "Gants (Idan, 2026-10-24) : mêmes règles que les bottes. Trois types, chacun lié à une caractéristique ou une compétence. Les gants portés (emplacement Gants) ajoutent un pourcentage de la valeur de base du porteur selon leur tier : +5 % (T1), +10 % (T2), +15 % (T3), +20 % (T4). Images : assets-src/Equipements/Gants.",
+  "columns": [
+    {
+      "source": "Nom",
+      "key": "nom"
+    },
+    {
+      "source": "Code",
+      "key": "code"
+    },
+    {
+      "source": "Caractéristique",
+      "key": "caracteristique"
+    },
+    {
+      "source": "Type de bonus (pourcentage de la valeur de base ou points)",
+      "key": "type_bonus"
+    },
+    {
+      "source": "Bonus T1 (% ou points)",
+      "key": "bonus_t1"
+    },
+    {
+      "source": "Bonus T2 (% ou points)",
+      "key": "bonus_t2"
+    },
+    {
+      "source": "Bonus T3 (% ou points)",
+      "key": "bonus_t3"
+    },
+    {
+      "source": "Bonus T4 (% ou points)",
+      "key": "bonus_t4"
+    }
+  ],
+  "row_count": 3,
+  "rows": [
+    {
+      "nom": "Gants de pièges",
+      "code": "trap_gloves",
+      "caracteristique": "Pièges",
+      "type_bonus": "pourcentage",
+      "bonus_t1": 5,
+      "bonus_t2": 10,
+      "bonus_t3": 15,
+      "bonus_t4": 20
+    },
+    {
+      "nom": "Gants de dextérité",
+      "code": "dexterity_gloves",
+      "caracteristique": "Dextérité",
+      "type_bonus": "pourcentage",
+      "bonus_t1": 5,
+      "bonus_t2": 10,
+      "bonus_t3": 15,
+      "bonus_t4": 20
+    },
+    {
+      "nom": "Gants de force",
+      "code": "strength_gloves",
+      "caracteristique": "Force",
+      "type_bonus": "pourcentage",
+      "bonus_t1": 5,
+      "bonus_t2": 10,
+      "bonus_t3": 15,
+      "bonus_t4": 20
+    }
+  ]
+}

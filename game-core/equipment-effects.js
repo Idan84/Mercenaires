@@ -9,8 +9,9 @@
 // - Endurance, Courage, Réserve de mana : + ceinture (Idan, 2026-10-24) ;
 // - Puissance magique, Volonté, Chance : + amulette (Idan, 2026-10-24) ;
 // - Esquive, Résistance physique, Discrétion : + cape (Idan, 2026-10-24 ; des points pour la Résistance physique) ;
+// - Force, Pièges : + gants (Idan, 2026-10-24) ;
 // - Initiative : calculée avec la Vitesse au combat, le Courage avec la ceinture et la Volonté avec l'amulette ;
-// - Dextérité : réduite par le combat à deux armes.
+// - Dextérité : + gants de dextérité, réduite par le combat à deux armes.
 // Chaque effet donne la valeur de base, la valeur équipée et les lignes du détail (objet ou raison, écart).
 // Dégâts de chaque set d'armes (Idan, 2026-10-24) : ceux du combat avant la résistance de la cible.
 (function(root,factory){
@@ -49,7 +50,7 @@
     }
 
     // { Vitesse, Esquive, Perception, Endurance, Courage, Réserve de mana, Puissance magique, Volonté, Chance, Résistance
-    // physique, Discrétion, Initiative, Dextérité } : {base, value, lines} pour chaque valeur concernée.
+    // physique, Discrétion, Force, Pièges, Initiative, Dextérité } : {base, value, lines} pour chaque valeur concernée.
     function effects(character){
       if(!engine||!character?.stats) return {};
       const unit={character,activeSet:1},bare=bareUnit(character);
@@ -61,7 +62,7 @@
       add("Esquive",Number(character.stats.Esquive)||0,engine.effectiveDodge(unit),
         [...gearLines(unit,"Esquive"),...(armor&&dodge?[{label:itemLabel(armor),delta:-dodge,reason:"armor"}]:[])]);
       for(const stat of ["Perception","Endurance","Courage","Réserve de mana","Puissance magique","Volonté","Chance",
-        "Résistance physique","Discrétion"]){
+        "Résistance physique","Discrétion","Force","Pièges"]){
         add(stat,engine.baseValue(unit,stat),engine.statWithGear(unit,stat),gearLines(unit,stat));
       }
       const speedGap=engine.effectiveSpeed(unit)-engine.effectiveSpeed(bare);
@@ -72,8 +73,9 @@
         ...(courageGap?[{label:"Courage avec l’équipement",delta:courageGap,reason:"courage"}]:[]),
         ...(willGap?[{label:"Volonté avec l’équipement",delta:willGap,reason:"will"}]:[])]);
       const dexterity=Number(character.stats["Dextérité"])||0,dual=engine.effectiveDexterity(unit);
-      add("Dextérité",dexterity,dual,
-        engine.isDualWielding(unit)?[{label:"Combat à deux armes",delta:dual-dexterity,reason:"dual"}]:[]);
+      const gloved=engine.statWithGear(unit,"Dextérité");
+      add("Dextérité",dexterity,dual,[...gearLines(unit,"Dextérité"),
+        ...(engine.isDualWielding(unit)?[{label:"Combat à deux armes",delta:dual-gloved,reason:"dual"}]:[])]);
       return result;
     }
 
@@ -93,7 +95,7 @@
       const factors=[
         low.qualityMultiplier!==1?{label:item.qualityName||"Qualité",factor:low.qualityMultiplier}:null,
         twoHands?{label:"À deux mains",factor:1.5}:null,
-        mode==="melee"?{label:"Force",factor:2*(Number(character.stats?.Force)||0)/100}:null
+        mode==="melee"?{label:"Force",factor:2*engine.statWithGear(unit,"Force")/100}:null
       ].filter(Boolean);
       return {hand,name:item.name,mode,dice:low.weaponDice,min:low.damage,max:high.damage,factors,
         types:engine.damageMatchups(TARGET,weapon).map(m=>({type:capitalize(m.type),power:m.power}))};

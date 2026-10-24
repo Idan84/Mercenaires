@@ -7,7 +7,8 @@
 //   d'arme, gêne d'armure et altération magique × multiplicateur malus ; résistance d'armure × multiplicateur
 //   qualité si elle est positive, ÷ sinon ;
 // - puissances tranchante, perforante et contondante : la qualité ne les change pas ;
-// - bottes (boots.json), ceintures (belts.json), amulettes (amulets.json) et capes (capes.json) : + bonus_t<tier> % de
+// - bottes (boots.json), ceintures (belts.json), amulettes (amulets.json), capes (capes.json) et gants (gloves.json) :
+//   + bonus_t<tier> % de
 //   la valeur de base qu'elles servent, ou + bonus_t<tier> points (type_bonus « points ») ;
 //   la qualité ne le change pas.
 // Renvoie des valeurs, pas du texte : l'interface les met en forme.
@@ -30,7 +31,8 @@
     const statGear={boots:{category:"Bottes",byName:new Map(rows(reference?.boots).map(r=>[r.nom,r]))},
       belt:{category:"Ceinture",byName:new Map(rows(reference?.belts).map(r=>[r.nom,r]))},
       amulet:{category:"Amulette",byName:new Map(rows(reference?.amulets).map(r=>[r.nom,r]))},
-      cape:{category:"Cape",byName:new Map(rows(reference?.capes).map(r=>[r.nom,r]))}};
+      cape:{category:"Cape",byName:new Map(rows(reference?.capes).map(r=>[r.nom,r]))},
+      gloves:{category:"Gants",byName:new Map(rows(reference?.gloves).map(r=>[r.nom,r]))}};
     const qualities=new Map(rows(reference?.itemQualities).map(r=>[r.code,r]));
     const titles=new Map(rows(reference?.itemTitles).map(r=>[r.nom,r]));
 
@@ -96,8 +98,8 @@
         bonus:number(template["bonus_t"+(Number(item.tier)||1)]),points:template.type_bonus==="points"};
     }
 
-    // Carte d'un objet, ou null si ce n'est ni une arme, ni une armure, ni des bottes, une ceinture, une amulette ou une
-    // cape connues.
+    // Carte d'un objet, ou null si ce n'est ni une arme, ni une armure, ni des bottes, une ceinture, une amulette, une
+    // cape ou des gants connus.
     function card(item){
       if(!item) return null;
       const q=quality(item);

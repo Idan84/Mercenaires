@@ -16,7 +16,7 @@ const files={
   ancestryLevels:"ancestry-levels.json",d6Scale:"d6-generation-scale.json",
   generationMatrix:"generation-matrix.json",skills:"skills.json",
   characteristics:"characteristics.json",formulaConstants:"formula-constants.json",
-  weapons:"weapons.json",baseArmors:"base-armors.json",boots:"boots.json",belts:"belts.json",amulets:"amulets.json",capes:"capes.json",itemQualities:"item-qualities.json",
+  weapons:"weapons.json",baseArmors:"base-armors.json",boots:"boots.json",belts:"belts.json",amulets:"amulets.json",capes:"capes.json",gloves:"gloves.json",itemQualities:"item-qualities.json",
   equipmentSlots:"equipment-slots.json",startingEquipmentGeneration:"starting-equipment-generation.json",
   binaryAptitudeGrants:"binary-aptitude-grants.json",alignmentGeneration:"alignment-generation.json",
   renamedNames:"renamed-names.json"
@@ -329,11 +329,14 @@ assert.ok(stockOf(s9,"belt").length>=1&&stockOf(s9,"belt").length<=6,"1D6 ceintu
 assert.ok(stockOf(s9,"amulet").length>=1&&stockOf(s9,"amulet").length<=6,"1D6 amulettes");
 // Capes (Idan, 2026-10-24) : 1D6 aussi.
 assert.ok(stockOf(s9,"cape").length>=1&&stockOf(s9,"cape").length<=6,"1D6 capes");
-assert.equal(["weapon","armor","boots","belt","amulet","cape"].reduce((n,type)=>n+stockOf(s9,type).length,0),s9.company.stock.length);
+// Gants (Idan, 2026-10-24) : 1D6 paires aussi.
+assert.ok(stockOf(s9,"gloves").length>=1&&stockOf(s9,"gloves").length<=6,"1D6 paires de gants");
+assert.equal(["weapon","armor","boots","belt","amulet","cape","gloves"].reduce((n,type)=>n+stockOf(s9,type).length,0),s9.company.stock.length);
 assert.equal(s9.company.startingBoots,true);
 assert.equal(s9.company.startingBelts,true);
 assert.equal(s9.company.startingAmulets,true);
 assert.equal(s9.company.startingCapes,true);
+assert.equal(s9.company.startingGloves,true);
 assert.ok(s9.company.stock.every(item=>item.owner===null));
 assert.equal(s9.company.startingArmors,true);
 assert.equal(stable.ensureStartingStock(old9),false,"stock déjà là : rien à faire");
@@ -348,10 +351,11 @@ delete old9.company.startingBoots;
 delete old9.company.startingBelts;
 delete old9.company.startingAmulets;
 delete old9.company.startingCapes;
-old9.company.stock=old9.company.stock.filter(item=>!["boots","belt","amulet","cape"].includes(item.itemType));
+delete old9.company.startingGloves;
+old9.company.stock=old9.company.stock.filter(item=>!["boots","belt","amulet","cape","gloves"].includes(item.itemType));
 assert.equal(stable.ensureStartingStock(old9),true,"partie d'avant les bottes : elles arrivent");
-assert.ok(["boots","belt","amulet","cape"].every(type=>stockOf(old9,type).length>=1),
-  "partie d'avant : bottes, ceintures, amulettes et capes arrivent");
+assert.ok(["boots","belt","amulet","cape","gloves"].every(type=>stockOf(old9,type).length>=1),
+  "partie d'avant : bottes, ceintures, amulettes, capes et gants arrivent");
 assert.equal(stable.ensureStartingStock(old9),false);
 delete old9.company.stock;
 delete old9.company.startingArmors;
@@ -359,6 +363,7 @@ delete old9.company.startingBoots;
 delete old9.company.startingBelts;
 delete old9.company.startingAmulets;
 delete old9.company.startingCapes;
+delete old9.company.startingGloves;
 assert.equal(stable.ensureStartingStock(old9),true);
 assert.ok(stockOf(old9,"weapon").length>=2&&stockOf(old9,"armor").length>=4&&stockOf(old9,"boots").length>=1);
 assert.equal(stable.ensureStartingStock(old9),false);

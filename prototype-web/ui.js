@@ -590,12 +590,14 @@ function equipmentArt(item){
 }
 // Une case d'objet : image dans son cadre de tier (ou picto de l'emplacement et contour selon la qualité),
 // détail au survol.
-function gearTile(slot,item,{extraClass=""}={}){
+// data-slot / data-item : l'emplacement et l'objet visés par un échange d'équipement (deal-ui.js) ; une arme à deux
+// mains montrée aussi en main secondaire désigne l'emplacement de l'arme principale (dealSlot).
+function gearTile(slot,item,{extraClass="",dealSlot=null}={}){
   const art=equipmentArt(item);
   const quality=item?.qualityCode?` gear-tile--${esc(item.qualityCode)}`:"";
   const framed=art?` gear-tile--art gear-tile--t${Number(item.tier)||1}`:"";
   const title=item?"":` title="${esc(slot.label)} : vide"`;
-  return `<span class="gear-tile ${item?"is-filled":"is-empty"}${quality}${framed}${extraClass?" "+extraClass:""}" tabindex="${item?0:-1}"${title}>
+  return `<span class="gear-tile ${item?"is-filled":"is-empty"}${quality}${framed}${extraClass?" "+extraClass:""}" tabindex="${item?0:-1}"${title} data-slot="${esc(dealSlot||slot.id)}"${item?` data-item="${esc(item.id)}"`:""}>
     ${art?`<img class="gear-art" src="${art}" alt="" loading="lazy">`:gearIcon(gearKind(slot,item))}${item?gearTooltip(item):""}
   </span>`;
 }
@@ -631,14 +633,14 @@ function renderEquipment(c) {
   const onBody = Object.entries(GEAR_ON_BODY).map(([id,[x,y]]) => {
     const slot = slotById(id);
     if (!slot) return "";
-    let item = itemIn(slot), extra = "";
+    let item = itemIn(slot), extra = "", dealSlot = null;
     // Arme à deux mains : la main secondaire la tient aussi.
     if (!item && id === "weapon_set_1_off") {
       const main = itemIn(slotById("weapon_set_1_main"));
-      if (main?.grip === "2 mains") { item = main; extra = "gear-tile--both-hands"; }
+      if (main?.grip === "2 mains") { item = main; extra = "gear-tile--both-hands"; dealSlot = "weapon_set_1_main"; }
     }
     // Emplacement vide : une petite marque discrète, pour ne pas cacher le dessin.
-    return `<span class="gear-spot gear-spot--${esc(id)}${item?"":" gear-spot--empty"}" style="left:${x}%;top:${y}%">${gearTile(slot,item,{extraClass:extra})}${item&&!extra?`<em class="gear-caption">${esc(item.name)}</em>`:""}</span>`;
+    return `<span class="gear-spot gear-spot--${esc(id)}${item?"":" gear-spot--empty"}" style="left:${x}%;top:${y}%">${gearTile(slot,item,{extraClass:extra,dealSlot})}${item&&!extra?`<em class="gear-caption">${esc(item.name)}</em>`:""}</span>`;
   }).join("");
 
   const weaponRow = slot => {
@@ -669,6 +671,7 @@ function renderEquipment(c) {
     <div class="gear-side">
       <section class="gear-card"><h4>Bagues</h4><div class="gear-tiles gear-tiles--rings">${tiles("rings")}</div></section>
       <section class="gear-card"><h4>Ceinture</h4><div class="gear-tiles">${tiles("belt-items")}</div></section>
+      ${game.campaign?.company.roster.includes(c)?`<p class="gear-hint">Cliquez sur un emplacement pour donner, retirer ou troquer un objet.</p>`:""}
     </div>
   </section>`;
 }

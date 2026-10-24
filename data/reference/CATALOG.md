@@ -35,6 +35,7 @@ Git est la source de vérité. Les JSON ci-dessous sont les référentiels struc
 | affinity-phrases.json | 10 | niveau, affinite_max, phrase, variantes (phrase d'affinité envers le capitaine, avec les cœurs de la fiche et de la carte du mercenaire ; trois variantes de même sens par niveau) |
 | character-sheet-copy.json | 11 + 7 | ancestries (nom, famille, parent), origins (nom, homme, femme) : phrases de l'onglet Profil de la fiche |
 | tavern-dialogue.json | 20 + 38 | greetings (min, max, texte) selon l'affinité ; questions, answers et lines du dialogue de recrutement ; weapons (nom, avec_article) : textes de la Taverne |
+| equipment-dialogue.json | 8 × 4 | proposals (par action), replies (action, accord, humeur, lignes), outcomes, menu : dialogues des échanges d’équipement Donner / Retirer / Troquer |
 | item-titles.json | 49 | nom, famille (arme, armure ou bottes), t1, t2, t3, t4 : titre de l’objet selon son tier, en tête de la carte d’objet (textes de JC, Idan 2026-10-24) |
 | renamed-names.json | 3 | ancien, nouveau, famille (culture ou arme), date : noms changés par Idan ; les sauvegardes et les mots-clés Bridge des avatars restent compatibles |
 | character-names.json | 46 | id, peuple, culture, consonance, poids, prenoms_femme, prenoms_homme, noms, noms_femme (noms des personnages générés : genre et consonance des cultures humaines) |

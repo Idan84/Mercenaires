@@ -39,6 +39,7 @@ jobs:
       - run: node tests/pictos.test.js
       - run: node tests/equipment-art.test.js
       - run: node tests/item-card.test.js
+      - run: node tests/equipment-effects.test.js
       - run: node tests/avatars.test.js
       - run: node tests/creation.test.js
       - run: node tests/avatar-catalog.test.js

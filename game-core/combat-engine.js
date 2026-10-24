@@ -25,15 +25,17 @@
     const amulets=rows.amulets||[];
     const capes=rows.capes||[];
     const gloves=rows.gloves||[];
+    const pants=rows.pants||[];
 
     const weaponByName=new Map(weapons.map(x=>[x.nom,x]));
     const armorByCode=new Map(armors.map(x=>[x.code,x]));
     const qualityByCode=new Map(qualities.map(x=>[x.code,x]));
     const skillByName=new Map(skills.map(x=>[x.nom,x]));
-    // Équipement à bonus de caractéristique : l'emplacement et ses modèles (bottes, ceinture, amulette, cape, gants).
+    // Équipement à bonus de caractéristique : l'emplacement et ses modèles (bottes, ceinture, amulette, cape, gants,
+    // culotte).
     const STAT_GEAR=[{slot:"boots",byName:new Map(boots.map(x=>[x.nom,x]))},{slot:"belt",byName:new Map(belts.map(x=>[x.nom,x]))},
       {slot:"amulet",byName:new Map(amulets.map(x=>[x.nom,x]))},{slot:"cape",byName:new Map(capes.map(x=>[x.nom,x]))},
-      {slot:"gloves",byName:new Map(gloves.map(x=>[x.nom,x]))}];
+      {slot:"gloves",byName:new Map(gloves.map(x=>[x.nom,x]))},{slot:"pants",byName:new Map(pants.map(x=>[x.nom,x]))}];
 
     function die(sides){ return Math.floor(random()*sides)+1; }
     function d100(){ return die(100); }
@@ -99,15 +101,18 @@
     // Bottes, ceinture, amulette et cape (Idan, 2026-10-24) : + bonus_t<tier> % de la valeur de base qu'elles servent
     // (Vitesse, Esquive, Perception pour les bottes ; Réserve de mana, Endurance, Courage pour la ceinture ; Puissance
     // magique, Volonté, Chance pour l'amulette ; Esquive, Discrétion pour la cape ; Pièges, Dextérité, Force pour les
-    // gants), ou + bonus_t<tier> points quand
+    // gants ; Charisme, Intimidation pour la culotte), ou + bonus_t<tier> points quand
     // type_bonus vaut « points » (cape de résistance physique : la Résistance physique est trop petite pour un pourcentage).
-    // baseValue : caractéristique, résistance ou compétence (Discrétion, Pièges) ; gearBonuses : une ligne par objet qui la sert ;
+    // Le Slip d'Affinité (« Affinité », en points) ne sert aucune valeur du combat : affinity.js l'ajoute à l'affinité.
+    // baseValue : caractéristique, résistance ou compétence (Discrétion, Pièges, Intimidation) ; gearBonuses : une ligne par
+    // objet qui la sert ;
     // statWithGear : la valeur bonifiée.
     function baseValue(unit,stat){
       const c=unit.character;
       if(c.stats&&stat in c.stats) return Number(c.stats[stat])||0;
       if(c.resistances&&stat in c.resistances) return Number(c.resistances[stat])||0;
-      return Number(c.skills?.martial?.[stat])||0;
+      for(const group of ["martial","social"]) if(c.skills?.[group]&&stat in c.skills[group]) return Number(c.skills[group][stat])||0;
+      return 0;
     }
     function gearBonuses(unit,stat){
       const base=baseValue(unit,stat);
@@ -683,8 +688,9 @@
       return contact.some((a,i)=>contact.slice(i+1).some(b=>axialDistance(a,b)>1));
     }
 
+    // Intimidation de l'adversaire, avec la Culotte d'Intimidation (Idan, 2026-10-24).
     function intimidation(unit){
-      return Number(unit?.character?.skills?.social?.Intimidation)||0;
+      return unit?.character?statWithGear(unit,"Intimidation"):0;
     }
 
     // Aura du capitaine (Idan, 2026-10-24) : tant qu'il est sur le champ de bataille (vivant, sur la carte), le capitaine

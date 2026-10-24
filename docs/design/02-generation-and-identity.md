@@ -226,7 +226,7 @@ Affinité brute = **peuple** + **culture** + **alignement** :
 
 L'affinité brute va de −7 à +9. Elle est normalisée sur deux branches, puis arrondie : négatif × 100 / 7, positif × 100 / 9. Par exemple, un brut de +5 donne +56 et un brut de −3 donne −43.
 
-Score total = affinité initiale + affinité acquise, borné à −100 / +100. L'**affinité acquise** (champ `affinityAcquired`, 0 par défaut) est réservée à la phase 2. La part initiale n'est pas figée : elle suivra un futur changement d'alignement du capitaine.
+Score total = affinité initiale + affinité acquise (+ les points du Slip d'Affinité porté, doc 05 « Culottes »), borné à −100 / +100. L'**affinité acquise** (champ `affinityAcquired`, 0 par défaut) est réservée à la phase 2. La part initiale n'est pas figée : elle suivra un futur changement d'alignement du capitaine.
 
 | Mercenaire ↓ / Capitaine → | Humain | Nain | Elfe | Halfling | Gnome | Reptilien | Orc | Gobelin | Ogre | Homme-bête |
 |---|---|---|---|---|---|---|---|---|---|---|

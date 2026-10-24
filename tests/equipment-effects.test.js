@@ -10,7 +10,7 @@ const {createEquipmentEffects} = require("../game-core/equipment-effects.js");
 
 const ROOT = path.resolve(__dirname, "..");
 const read = file => JSON.parse(fs.readFileSync(path.join(ROOT, "data", "reference", file), "utf8"));
-const reference = {weapons:read("weapons.json"), baseArmors:read("base-armors.json"), boots:read("boots.json"), belts:read("belts.json"), amulets:read("amulets.json"), capes:read("capes.json"), gloves:read("gloves.json"),
+const reference = {weapons:read("weapons.json"), baseArmors:read("base-armors.json"), boots:read("boots.json"), belts:read("belts.json"), amulets:read("amulets.json"), capes:read("capes.json"), gloves:read("gloves.json"), pants:read("pants.json"),
   itemQualities:read("item-qualities.json"),
   skills:read("skills.json"), formulaConstants:read("formula-constants.json")};
 const engine = createCombatEngine(reference);
@@ -144,10 +144,27 @@ const trapper = gloved("Gants de pièges", 3);
 near(trapper.e["Pièges"].value, 34.5, "Pièges 30 + 15 %");
 assert.equal(strong.e["Pièges"].lines.length, 0, "des gants de force ne touchent pas les Pièges");
 
+// Culottes (Idan, 2026-10-24) : Charisme et Intimidation (le combat lit l'Intimidation de l'adversaire) ; le Slip
+// d'Affinité ne touche aucune valeur de la fiche.
+const worn = (name, tier) => {
+  const c = {...knight, stats:{...stats, Charisme:50}, skills:{...knight.skills, social:{Intimidation:40}},
+    items:[...knight.items, {id:"p", itemType:"pants", name, tier, qualityName:"Correcte"}], equipment:{slots:{...knight.equipment.slots, pants:"p"}}};
+  return {c, e:effects(c), unit:{character:c, activeSet:1}};
+};
+const charmer = worn("String du Charisme", 3);
+near(charmer.e.Charisme.value, 57.5, "Charisme 50 + 15 %");
+assert.deepEqual(charmer.e.Charisme.lines, [{label:"String du Charisme (Correcte)", delta:7.5, reason:"gear", percent:15}]);
+const bully = worn("Culotte d’Intimidation", 4);
+near(bully.e.Intimidation.base, 40, "l'Intimidation de base vient des compétences sociales");
+near(bully.e.Intimidation.value, 48, "Intimidation 40 + 20 %");
+near(engine.statWithGear(bully.unit, "Intimidation"), 48, "le combat lit la même Intimidation");
+const friend = worn("Slip d’Affinité", 4);
+for (const name of Object.keys(friend.e)) assert.equal(friend.e[name].lines.filter(l => l.reason === "gear").length, 0, name);
+
 // Sans équipement : rien ne change.
 const bare = effects({stats, skills:{}, items:[], equipment:{slots:{}}});
 for (const name of ["Vitesse","Esquive","Perception","Endurance","Courage","Réserve de mana","Puissance magique","Volonté","Chance",
-  "Résistance physique","Discrétion","Force","Pièges","Initiative","Dextérité"]) near(bare[name].value, bare[name].base);
+  "Résistance physique","Discrétion","Force","Pièges","Charisme","Intimidation","Initiative","Dextérité"]) near(bare[name].value, bare[name].base);
 // Dégâts par set (Idan, 2026-10-24) : jet minimum et maximum du combat contre une cible sans résistance.
 const {attacks} = createEquipmentEffects({engine});
 const fighter = {stats:{Force:60},

@@ -25,10 +25,11 @@ Git est la source de vérité. Les JSON ci-dessous sont les référentiels struc
 | amulets.json | 3 | nom, code, caracteristique, bonus_t1, bonus_t2, bonus_t3, bonus_t4 (amulettes : bonus en % de la caractéristique de base selon le tier, comme les bottes et les ceintures) |
 | capes.json | 3 | nom, code, caracteristique, type_bonus, bonus_t1, bonus_t2, bonus_t3, bonus_t4 (capes : bonus selon le tier, en % de la valeur de base ou en points pour la Résistance physique) |
 | gloves.json | 3 | nom, code, caracteristique, type_bonus, bonus_t1, bonus_t2, bonus_t3, bonus_t4 (gants : bonus en % de la valeur de base selon le tier, comme les bottes) |
+| pants.json | 3 | nom, code, caracteristique, type_bonus, bonus_t1, bonus_t2, bonus_t3, bonus_t4 (culottes : Charisme et Intimidation en % de la valeur de base, Affinité avec le capitaine en points) |
 | item-qualities.json | 3 | nom, code, description, multiplicateur_malus, multiplicateur_qualite |
 | ranged-weapons.json | 8 | nom, domaine, portee_min_hex, portee_max_hex, cadence_tir, recharge_action_rapide, contre_charge, attaque_de_zone, degats_pv_base, puissance_perforante_base, prise, malus_vitesse_arme_base |
 | weapons.json | 38 | nom, domaine, prise, malus_vitesse_arme_base, portee_min_hex, portee_max_hex, bonus_charge_base, contre_charge, degats_pv_base, puissance_tranchante_base, puissance_perforante_base, puissance_contondante_base |
-| formula-constants.json | 155 | nom, code, description, formule, valeur, version |
+| formula-constants.json | 157 | nom, code, description, formule, valeur, version |
 | game-formulas.json | 43 | nom, code, domaine, expression, maximum, minimum, notes, statut, type_attaque, version, etape |
 | formula-terms.json | 13 | nom, caracteristique, code_variable, coefficient, cote, description, formule, ordre, source |
 
@@ -41,7 +42,7 @@ Git est la source de vérité. Les JSON ci-dessous sont les référentiels struc
 | tavern-dialogue.json | 20 + 38 | greetings (min, max, texte) selon l'affinité ; questions, answers et lines du dialogue de recrutement ; weapons (nom, avec_article) : textes de la Taverne |
 | equipment-dialogue.json | 8 × 4 | proposals (par action), replies (action, accord, humeur, lignes), outcomes, menu : dialogues des échanges d’équipement Donner / Retirer / Troquer |
 | steward-dialogue.json | 2 × 16 + 8 | offer et recall (proposition, répliques accepted / flattered / vexed / neutral, issues), talk (accueil, options, évaluation des candidats), panel : dialogues de l’intendant |
-| item-titles.json | 61 | nom, famille (arme, armure, bottes, ceinture, amulette, cape ou gants), t1, t2, t3, t4 : titre de l’objet selon son tier, en tête de la carte d’objet (textes de JC, Idan 2026-10-24) |
+| item-titles.json | 64 | nom, famille (arme, armure, bottes, ceinture, amulette, cape, gants ou culotte), t1, t2, t3, t4 : titre de l’objet selon son tier, en tête de la carte d’objet (textes de JC, Idan 2026-10-24) |
 | renamed-names.json | 3 | ancien, nouveau, famille (culture ou arme), date : noms changés par Idan ; les sauvegardes et les mots-clés Bridge des avatars restent compatibles |
 | character-names.json | 46 | id, peuple, culture, consonance, poids, prenoms_femme, prenoms_homme, noms, noms_femme (noms des personnages générés : genre et consonance des cultures humaines) |
 | equipment-silhouettes.json | 20 | fichier, peuple, sexe (silhouettes d'équipement de media/Avatars_Equipements dont le nom ne donne pas le peuple et le sexe) |

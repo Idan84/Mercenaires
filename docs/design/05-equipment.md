@@ -61,7 +61,7 @@ La vue **Boucliers — équilibrage** expose `Bonus blocage base`, `Malus vitess
 
 ### Slots canoniques
 
-- Casque / Chapeau ; Amulette ; Armure ; Gants ; Ceinturon ; Culotte ; Bottes ; Cape (Gants et Culotte : Idan, 2026-10-24 ; culottes à venir) ;
+- Casque / Chapeau ; Amulette ; Armure ; Gants ; Ceinturon ; Culotte ; Bottes ; Cape (Gants et Culotte : Idan, 2026-10-24) ;
 - **6 bagues** ;
 - **2 sets d’armes**, chacun avec arme principale + main secondaire ;
 - **4 équipements de ceinture** (potions / consommables / petits objets actifs) ;
@@ -153,6 +153,15 @@ Mêmes règles que les bottes : trois types de gants (`data/reference/gloves.jso
 - Au combat (`statWithGear`) : Force pour les dégâts et l’étape Blesser au corps à corps ; Dextérité pour le Toucher et le blocage au bouclier (le combat à deux armes la divise ensuite). Les Pièges serviront quand ils auront une règle de jeu. L’XP de Force (charge portée) reste calculée sur la Force du mercenaire, sans les gants.
 - Sur la fiche, Force et Dextérité (Caractéristiques) et Pièges (Compétences) montrent la valeur bonifiée, avec la ligne des gants ; la case des dégâts compte la Force bonifiée.
 - **5 %** de chance d’en avoir une paire à la création (`gloves_chance`), d’un type tiré au hasard ; **1D6** paires dans le stock de départ (doc 11 §16).
+
+### Culottes (Idan, 2026-10-24)
+
+Trois types de culottes (`data/reference/pants.json`), portées dans l’emplacement **Culotte** : **String du Charisme** (Charisme) et **Culotte d’Intimidation** (Intimidation), **+5 / 10 / 15 / 20 %** de la valeur de base selon le tier comme les bottes ; **Slip d’Affinité**, **+5 / 10 / 15 / 20 points** d’affinité avec le capitaine. La qualité ne change pas le bonus.
+
+- Au combat (`statWithGear`) : l’Intimidation bonifiée de l’adversaire pèse sur les tests de Courage et les reprises de contrôle (−0,25 × Intimidation). Le Charisme servira quand il aura une règle de jeu (aujourd’hui, il ne fait que gagner de l’XP).
+- Affinité (`game-core/affinity.js`, `memberAffinity`) : les points du Slip porté s’ajoutent au score total (initiale + acquise + Slip, borné à −100 / +100) ; ils comptent donc pour les cœurs, la négociation à la Taverne et les échanges d’équipement. Retirer le Slip retire ses points ; l’affinité acquise ne change pas.
+- Sur la fiche, Charisme et Intimidation (Caractéristiques) montrent la valeur bonifiée, avec la ligne de la culotte ; sous les cœurs d’affinité, « Avec son Slip d’Affinité » (pas de score affiché).
+- **5 %** de chance d’en avoir une à la création (`pants_chance`), d’un type tiré au hasard ; **1D6** culottes dans le stock de départ (doc 11 §16).
 
 ### Échanges d’équipement : Donner, Retirer, Troquer (Idan, 2026-10-24)
 

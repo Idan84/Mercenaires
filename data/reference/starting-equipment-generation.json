@@ -8,6 +8,7 @@
   "amulet_chance": 0.05,
   "cape_chance": 0.05,
   "gloves_chance": 0.05,
+  "pants_chance": 0.05,
   "profile_formula": {
     "melee": "0,6 × (meilleure arme CAC / 2) + 0,4 × moyenne(Force, Dextérité, Endurance, Courage)",
     "ranged": "0,6 × (meilleure arme Distance / 2) + 0,4 × moyenne(Dextérité, Perception, Vitesse)",

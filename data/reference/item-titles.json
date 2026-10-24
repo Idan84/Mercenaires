@@ -5,11 +5,11 @@
   "columns": [
     {
       "key": "nom",
-      "source": "Nom de l’arme (weapons.json), de l’armure (base-armors.json), des bottes (boots.json), de la ceinture (belts.json), de l’amulette (amulets.json), de la cape (capes.json) ou des gants (gloves.json)"
+      "source": "Nom de l’arme (weapons.json), de l’armure (base-armors.json), des bottes (boots.json), de la ceinture (belts.json), de l’amulette (amulets.json), de la cape (capes.json), des gants (gloves.json) ou de la culotte (pants.json)"
     },
     {
       "key": "famille",
-      "source": "arme, armure, bottes, ceinture, amulette, cape ou gants"
+      "source": "arme, armure, bottes, ceinture, amulette, cape, gants ou culotte"
     },
     {
       "key": "t1",
@@ -28,7 +28,7 @@
       "source": "Titre T4"
     }
   ],
-  "row_count": 61,
+  "row_count": 64,
   "rows": [
     {
       "nom": "Arbalète",
@@ -517,6 +517,30 @@
       "t2": "Gants de forgeron",
       "t3": "Gantelets du briseur",
       "t4": "Les Poings du Titan"
+    },
+    {
+      "nom": "String du Charisme",
+      "famille": "culotte",
+      "t1": "Ficelle du séducteur",
+      "t2": "String du bellâtre",
+      "t3": "String du beau parleur",
+      "t4": "Le Fil d’Or du Charmeur"
+    },
+    {
+      "nom": "Culotte d’Intimidation",
+      "famille": "culotte",
+      "t1": "Culotte rapiécée",
+      "t2": "Culotte du cogneur",
+      "t3": "Culotte du tortionnaire",
+      "t4": "La Culotte de la Terreur"
+    },
+    {
+      "nom": "Slip d’Affinité",
+      "famille": "culotte",
+      "t1": "Slip de l’ami",
+      "t2": "Slip du compagnon",
+      "t3": "Slip du frère d’armes",
+      "t4": "Le Slip de la Fraternité Éternelle"
     }
   ]
 }

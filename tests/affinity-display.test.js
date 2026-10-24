@@ -80,5 +80,11 @@ assert.match(high, /♥{10}/);
 assert.ok(levelPhrases(9).some(p => high.includes(p)), "phrase du niveau le plus haut");
 assert.doesNotMatch(high, /\+100/);
 assert.equal(render({ id: "not-recruited" }), "", "pas de bloc hors effectif");
+assert.doesNotMatch(high, /player-affinity-gear/, "sans Slip d’Affinité : pas de mention");
+// Slip d’Affinité (Idan, 2026-10-24) : ses points sont dans les cœurs ; la fiche le mentionne, sans score.
+affinity = { total: 40, gear: 15, gearItem: { name: "Slip d’Affinité" } };
+const briefs = render(member);
+assert.match(briefs, /<small class="player-affinity-gear">Avec son Slip d’Affinité<\/small>/);
+assert.doesNotMatch(briefs, /\+15|\b40\b/);
 assert.match(css, /\.sheet-column \.player-affinity\{/, "l'affinité occupe sa colonne de la fiche");
 console.log("Affinité fiche : seuils, cœurs, variantes et absence de score — OK");

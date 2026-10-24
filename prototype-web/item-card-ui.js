@@ -64,9 +64,9 @@ function armorCardBody(card){
   return {rows,traits:[],flavor:card.description};
 }
 
-// Bottes, ceintures, amulettes, capes et gants (Idan, 2026-10-24) : un pourcentage de la valeur de base du porteur, ou
-// des points (cape de résistance physique).
-const STAT_GEAR_KINDS=["boots","belt","amulet","cape","gloves"];
+// Bottes, ceintures, amulettes, capes, gants et culottes (Idan, 2026-10-24) : un pourcentage de la valeur de base du
+// porteur, ou des points (cape de résistance physique, Slip d’Affinité).
+const STAT_GEAR_KINDS=["boots","belt","amulet","cape","gloves","pants"];
 // « de l’Endurance », « du Courage », « de la Vitesse ».
 const MASCULINE_STATS=new Set(["Courage","Charisme"]);
 // « des Pièges ».
@@ -77,6 +77,9 @@ function statArticle(stat){
   return MASCULINE_STATS.has(stat)?"du ":"de la ";
 }
 function statGearCardBody(card){
+  // Slip d’Affinité : des points d’affinité avec le capitaine, pas une caractéristique.
+  if(card.stat==="Affinité") return {rows:[cardRow("Affinité avec le capitaine",`+${cardNumber(card.bonus)}`,"bonus")],
+    traits:[`Ajoute ${cardNumber(card.bonus)} points d’affinité avec le capitaine`],flavor:null};
   if(card.points) return {rows:[cardRow(card.stat,`+${cardNumber(card.bonus)}`,"bonus")],
     traits:[`Ajoute ${cardNumber(card.bonus)} points de ${card.stat} au porteur`],flavor:null};
   return {rows:[cardRow(card.stat,`+${cardNumber(card.bonus)} %`,"bonus")],
@@ -84,7 +87,7 @@ function statGearCardBody(card){
 }
 
 // La qualité en une phrase : ce qui monte, ce qui baisse. Elle ne change pas le bonus des bottes, ceintures, amulettes,
-// capes et gants.
+// capes, gants et culottes.
 function qualityLine(card){
   if(STAT_GEAR_KINDS.includes(card.kind)) return "";
   const up=Math.round((card.quality.good-1)*100),down=Math.round((card.quality.bad-1)*100);

@@ -97,6 +97,14 @@ assert.match(elements["quartermaster-tabs"].innerHTML, /data-stock-tab="gloves">
 ui.stockView.tab = "gloves";
 ui.renderQuartermaster();
 assert.match(elements["quartermaster-stock"].innerHTML, /<h3>Gants <small>1<\/small><\/h3>/);
+// Culottes (Idan, 2026-10-24) : leur onglet, après les gants.
+game.campaign.company.stock.push({...weapon("Slip d’Affinité", "Culotte", 1), itemType:"pants"});
+ui.renderQuartermaster();
+assert.equal(elements["quartermaster-count"].textContent, "1 arme · 5 armures · 2 paires de bottes · 1 ceinture · 1 amulette · 1 cape · 1 paire de gants · 1 culotte");
+assert.match(elements["quartermaster-tabs"].innerHTML, /data-stock-tab="pants">Culottes <small>1<\/small>/);
+ui.stockView.tab = "pants";
+ui.renderQuartermaster();
+assert.match(elements["quartermaster-stock"].innerHTML, /<h3>Culotte <small>1<\/small><\/h3>/);
 ui.stockView.tab = "weapon";
 
 // Une catégorie ouverte le reste quand l'écran se redessine.

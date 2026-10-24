@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "name": "pants",
+  "description": "Culottes (Idan, 2026-10-24) : trois types portés dans l’emplacement Culotte. String du Charisme et Culotte d’Intimidation : +5 % (T1), +10 % (T2), +15 % (T3), +20 % (T4) de la valeur de base, comme les bottes ; Slip d’Affinité : +5 / 10 / 15 / 20 points d’affinité avec le capitaine. Images : assets-src/Equipements/Culottes.",
+  "columns": [
+    {
+      "source": "Nom",
+      "key": "nom"
+    },
+    {
+      "source": "Code",
+      "key": "code"
+    },
+    {
+      "source": "Caractéristique",
+      "key": "caracteristique"
+    },
+    {
+      "source": "Type de bonus (pourcentage de la valeur de base ou points)",
+      "key": "type_bonus"
+    },
+    {
+      "source": "Bonus T1 (% ou points)",
+      "key": "bonus_t1"
+    },
+    {
+      "source": "Bonus T2 (% ou points)",
+      "key": "bonus_t2"
+    },
+    {
+      "source": "Bonus T3 (% ou points)",
+      "key": "bonus_t3"
+    },
+    {
+      "source": "Bonus T4 (% ou points)",
+      "key": "bonus_t4"
+    }
+  ],
+  "row_count": 3,
+  "rows": [
+    {
+      "nom": "String du Charisme",
+      "code": "charisma_string",
+      "caracteristique": "Charisme",
+      "type_bonus": "pourcentage",
+      "bonus_t1": 5,
+      "bonus_t2": 10,
+      "bonus_t3": 15,
+      "bonus_t4": 20
+    },
+    {
+      "nom": "Culotte d’Intimidation",
+      "code": "intimidation_breeches",
+      "caracteristique": "Intimidation",
+      "type_bonus": "pourcentage",
+      "bonus_t1": 5,
+      "bonus_t2": 10,
+      "bonus_t3": 15,
+      "bonus_t4": 20
+    },
+    {
+      "nom": "Slip d’Affinité",
+      "code": "affinity_briefs",
+      "caracteristique": "Affinité",
+      "type_bonus": "points",
+      "bonus_t1": 5,
+      "bonus_t2": 10,
+      "bonus_t3": 15,
+      "bonus_t4": 20
+    }
+  ]
+}

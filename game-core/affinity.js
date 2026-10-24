@@ -69,11 +69,25 @@
       return {ok:true,initial,acquired:career,total:clamp(initial+career,-100,100),
         components:{people,culture,alignment,distance,raw,sameCulture}};
     }
-    // Affinité d'un membre de la compagnie envers son capitaine, avec sa part acquise sauvegardée.
-    function memberAffinity(captain,mercenary){
-      return affinity(captain,mercenary,Number(mercenary?.affinityAcquired)||0);
+    // Slip d'Affinité (Idan, 2026-10-24) : la culotte portée (data/reference/pants.json, caractéristique « Affinité »)
+    // ajoute bonus_t<tier> points d'affinité avec le capitaine. { item, points } ou null.
+    const AFFINITY_GEAR=new Map((reference?.pants?.rows||[]).filter(r=>r.caracteristique==="Affinité").map(r=>[r.nom,r]));
+    function gearAffinity(mercenary){
+      const id=mercenary?.equipment?.slots?.pants;
+      const item=id?(mercenary.items||[]).find(x=>x.id===id):null;
+      const template=item?AFFINITY_GEAR.get(item.name):null;
+      const points=template?Number(template["bonus_t"+item.tier])||0:0;
+      return points?{item,points}:null;
     }
-    return {constants:C,PEOPLES,PEOPLE_MATRIX,ALIGNMENT_GRID,RAW_MIN,RAW_MAX,alignmentPosition,affinity,memberAffinity};
+    // Affinité d'un membre de la compagnie envers son capitaine, avec sa part acquise sauvegardée et le Slip d'Affinité
+    // qu'il porte (gear : points de l'objet, 0 sans).
+    function memberAffinity(captain,mercenary){
+      const result=affinity(captain,mercenary,Number(mercenary?.affinityAcquired)||0);
+      if(!result.ok) return result;
+      const gear=gearAffinity(mercenary);
+      return {...result,gear:gear?.points||0,gearItem:gear?.item||null,total:clamp(result.initial+result.acquired+(gear?.points||0),-100,100)};
+    }
+    return {constants:C,PEOPLES,PEOPLE_MATRIX,ALIGNMENT_GRID,RAW_MIN,RAW_MAX,alignmentPosition,affinity,gearAffinity,memberAffinity};
   }
 
   return {createAffinityRules};

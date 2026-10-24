@@ -14,7 +14,7 @@ const files = {
   ancestryLevels:"ancestry-levels.json", d6Scale:"d6-generation-scale.json",
   generationMatrix:"generation-matrix.json", skills:"skills.json",
   characteristics:"characteristics.json", formulaConstants:"formula-constants.json",
-  weapons:"weapons.json", baseArmors:"base-armors.json", boots:"boots.json", belts:"belts.json", amulets:"amulets.json", capes:"capes.json", gloves:"gloves.json", pants:"pants.json",
+  weapons:"weapons.json", baseArmors:"base-armors.json", boots:"boots.json", belts:"belts.json", amulets:"amulets.json", capes:"capes.json", gloves:"gloves.json", pants:"pants.json", rings:"rings.json",
   itemQualities:"item-qualities.json",
   equipmentSlots:"equipment-slots.json", startingEquipmentGeneration:"starting-equipment-generation.json",
   binaryAptitudeGrants:"binary-aptitude-grants.json",
@@ -130,7 +130,7 @@ for (const expected of ["Âge","Taille","Corpulence","Biographie courte"]) {
 let sawNonMageArmorBonus = false;
 let sawHighMagicArmorPenalty = false;
 let secondaryWeaponCount = 0;
-const bootsSeen = {}, beltsSeen = {}, amuletsSeen = {}, capesSeen = {}, glovesSeen = {}, pantsSeen = {};
+const bootsSeen = {}, beltsSeen = {}, amuletsSeen = {}, capesSeen = {}, glovesSeen = {}, pantsSeen = {}, ringsSeen = {};
 const profileCounts = {melee:0, ranged:0, magic:0};
 for (let i = 0; i < 1000; i++) {
   const c = generator.createMercenary({id:i+1});
@@ -171,7 +171,7 @@ for (let i = 0; i < 1000; i++) {
   assert.ok(Number.isFinite(c.equipment.profile.scores.ranged));
   assert.ok(Number.isFinite(c.equipment.profile.scores.magic));
   assert.ok(Array.isArray(c.items));
-  assert.ok(c.items.length >= 2 && c.items.length <= 9, "armure, arme, seconde arme, bottes, ceinture, amulette, cape, gants et culotte possibles");
+  assert.ok(c.items.length >= 2 && c.items.length <= 10, "armure, arme, seconde arme, bottes, ceinture, amulette, cape, gants, culotte et bague possibles");
   assert.ok(c.equipment.slots.armor);
   assert.ok(c.equipment.slots.weapon_set_1_main);
   const armorItem = c.items.find(item => item.id === c.equipment.slots.armor);
@@ -237,7 +237,14 @@ for (let i = 0; i < 1000; i++) {
     assert.ok(reference.pants.rows.some(row => row.nom === pants.name && "pants:" + row.code === pants.templateId), pants.name);
     pantsSeen[pants.name] = (pantsSeen[pants.name] || 0) + 1;
   }
-  for (const emptySlot of ["head","ring_1","ring_2","ring_3","ring_4","ring_5","ring_6","weapon_set_1_off","weapon_set_2_off","belt_item_1","belt_item_2","belt_item_3","belt_item_4","mount"]) {
+  // Bague (Idan, 2026-10-24) : mêmes règles, dans le premier emplacement de bague.
+  if (c.equipment.slots.ring_1) {
+    const ring = c.items.find(item => item.id === c.equipment.slots.ring_1);
+    assert.equal(ring.itemType, "ring");
+    assert.ok(reference.rings.rows.some(row => row.nom === ring.name && "ring:" + row.code === ring.templateId), ring.name);
+    ringsSeen[ring.name] = (ringsSeen[ring.name] || 0) + 1;
+  }
+  for (const emptySlot of ["head","ring_2","ring_3","ring_4","ring_5","ring_6","weapon_set_1_off","weapon_set_2_off","belt_item_1","belt_item_2","belt_item_3","belt_item_4","mount"]) {
     assert.equal(c.equipment.slots[emptySlot], null);
   }
 
@@ -292,6 +299,9 @@ assert.equal(Object.keys(glovesSeen).length, 3, "les trois types de gants");
 const pantsTotal = Object.values(pantsSeen).reduce((a,b) => a + b, 0);
 assert.ok(pantsTotal >= 25 && pantsTotal <= 80, `culottes à la création ≈ 5 % : ${pantsTotal}/1000`);
 assert.equal(Object.keys(pantsSeen).length, 3, "les trois types de culottes");
+const ringsTotal = Object.values(ringsSeen).reduce((a,b) => a + b, 0);
+assert.ok(ringsTotal >= 25 && ringsTotal <= 80, `bagues à la création ≈ 5 % : ${ringsTotal}/1000`);
+assert.ok(Object.keys(ringsSeen).length >= 8, "la plupart des onze types de bagues");
 // Issue #12 : avant correction, ~89 % des mercenaires sortaient « Magie ». Garde-fou contre un retour accidentel.
 assert.ok(profileCounts.magic < 600, `Profil Magie trop fréquent : ${JSON.stringify(profileCounts)}`);
 assert.ok(profileCounts.melee > 200 && profileCounts.ranged > 50, `Profils CAC / Distance trop rares : ${JSON.stringify(profileCounts)}`);
@@ -555,6 +565,17 @@ for (let i = 0; i < 400; i++) {
 }
 assert.ok(Math.min(...pantsCounts) >= 1 && Math.max(...pantsCounts) <= 6, "1D6 culottes");
 assert.equal(pantsTypes.size, 3);
+const ringCounts = [], ringTypes = new Set();
+for (let i = 0; i < 400; i++) {
+  const stock = stockGenerator.createStartingRingStock(chaosDwarf);
+  ringCounts.push(stock.length);
+  for (const item of stock) {
+    assert.deepEqual([item.itemType, item.owner, item.category], ["ring", null, "Bague"]);
+    ringTypes.add(item.name);
+  }
+}
+assert.ok(Math.min(...ringCounts) >= 1 && Math.max(...ringCounts) <= 6, "1D6 bagues");
+assert.equal(ringTypes.size, 11);
 
 console.log(JSON.stringify({
   ok:true,

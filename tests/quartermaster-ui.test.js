@@ -105,6 +105,14 @@ assert.match(elements["quartermaster-tabs"].innerHTML, /data-stock-tab="pants">C
 ui.stockView.tab = "pants";
 ui.renderQuartermaster();
 assert.match(elements["quartermaster-stock"].innerHTML, /<h3>Culotte <small>1<\/small><\/h3>/);
+// Bagues (Idan, 2026-10-24) : leur onglet, après les culottes.
+game.campaign.company.stock.push({...weapon("Bague de Feu", "Bague", 1), itemType:"ring"});
+ui.renderQuartermaster();
+assert.equal(elements["quartermaster-count"].textContent, "1 arme · 5 armures · 2 paires de bottes · 1 ceinture · 1 amulette · 1 cape · 1 paire de gants · 1 culotte · 1 bague");
+assert.match(elements["quartermaster-tabs"].innerHTML, /data-stock-tab="ring">Bagues <small>1<\/small>/);
+ui.stockView.tab = "ring";
+ui.renderQuartermaster();
+assert.match(elements["quartermaster-stock"].innerHTML, /<h3>Bague <small>1<\/small><\/h3>/);
 ui.stockView.tab = "weapon";
 
 // Une catégorie ouverte le reste quand l'écran se redessine.

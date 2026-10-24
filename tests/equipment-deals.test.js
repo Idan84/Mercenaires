@@ -70,6 +70,9 @@ assert.ok(ok("gloves", item("x", "Gants", 1, "gloves")));
 assert.ok(ok("pants", item("x", "Culotte", 1, "pants")));
 assert.ok(!ok("gloves", item("x", "Cape d’esquive", 1, "cape")));
 assert.ok(!ok("pants", item("x", "Gants", 1, "gloves")));
+// Bagues (Idan, 2026-10-24) : six emplacements.
+assert.ok(ok("ring_1", item("x", "Bague", 1, "ring")) && ok("ring_6", item("x", "Bague", 1, "ring")));
+assert.ok(!ok("ring_2", item("x", "Culotte", 1, "pants")));
 assert.ok(!ok("weapon_set_1_off", item("x", "Dague", 1)), "la hallebarde tient les deux mains");
 assert.ok(!ok("weapon_set_2_off", item("x", "Arc", 1)), "arme à deux mains : arme principale");
 assert.ok(!ok("weapon_set_2_main", item("x", "Écu", 1)), "bouclier : main secondaire");

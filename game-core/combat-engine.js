@@ -26,16 +26,21 @@
     const capes=rows.capes||[];
     const gloves=rows.gloves||[];
     const pants=rows.pants||[];
+    const rings=rows.rings||[];
 
     const weaponByName=new Map(weapons.map(x=>[x.nom,x]));
     const armorByCode=new Map(armors.map(x=>[x.code,x]));
     const qualityByCode=new Map(qualities.map(x=>[x.code,x]));
     const skillByName=new Map(skills.map(x=>[x.nom,x]));
     // Équipement à bonus de caractéristique : l'emplacement et ses modèles (bottes, ceinture, amulette, cape, gants,
-    // culotte).
+    // culotte, et les six bagues, qui se cumulent).
     const STAT_GEAR=[{slot:"boots",byName:new Map(boots.map(x=>[x.nom,x]))},{slot:"belt",byName:new Map(belts.map(x=>[x.nom,x]))},
       {slot:"amulet",byName:new Map(amulets.map(x=>[x.nom,x]))},{slot:"cape",byName:new Map(capes.map(x=>[x.nom,x]))},
-      {slot:"gloves",byName:new Map(gloves.map(x=>[x.nom,x]))},{slot:"pants",byName:new Map(pants.map(x=>[x.nom,x]))}];
+      {slot:"gloves",byName:new Map(gloves.map(x=>[x.nom,x]))},{slot:"pants",byName:new Map(pants.map(x=>[x.nom,x]))},
+      ...[1,2,3,4,5,6].map(k=>({slot:"ring_"+k,byName:new Map(rings.map(x=>[x.nom,x]))}))];
+    // Écoles de magie (skills.json) et leurs deux écoles opposées.
+    const MAGIC_SCHOOLS=skills.filter(x=>x.domaine==="Magie"&&x.niveau==="Catégorie").map(x=>x.nom);
+    const opposites=school=>String(skillByName.get(school)?.ecoles_opposees||"").split(",").map(x=>x.trim()).filter(Boolean);
 
     function die(sides){ return Math.floor(random()*sides)+1; }
     function d100(){ return die(100); }
@@ -101,24 +106,32 @@
     // Bottes, ceinture, amulette et cape (Idan, 2026-10-24) : + bonus_t<tier> % de la valeur de base qu'elles servent
     // (Vitesse, Esquive, Perception pour les bottes ; Réserve de mana, Endurance, Courage pour la ceinture ; Puissance
     // magique, Volonté, Chance pour l'amulette ; Esquive, Discrétion pour la cape ; Pièges, Dextérité, Force pour les
-    // gants ; Charisme, Intimidation pour la culotte), ou + bonus_t<tier> points quand
+    // gants ; Charisme, Intimidation pour la culotte ; Chance, Courage ou une école de magie pour chaque bague), ou
+    // + bonus_t<tier> points quand
     // type_bonus vaut « points » (cape de résistance physique : la Résistance physique est trop petite pour un pourcentage).
     // Le Slip d'Affinité (« Affinité », en points) ne sert aucune valeur du combat : affinity.js l'ajoute à l'affinité.
-    // baseValue : caractéristique, résistance ou compétence (Discrétion, Pièges, Intimidation) ; gearBonuses : une ligne par
+    // Bague de magie (Idan, 2026-10-24) : − malus_opposees_t<tier> % de la maîtrise de base des deux écoles opposées à la
+    // sienne (percent négatif). Plusieurs bagues identiques se cumulent : une ligne par bague.
+    // baseValue : caractéristique, résistance ou compétence (Discrétion, Pièges, Intimidation, écoles de magie) ;
+    // gearBonuses : une ligne par
     // objet qui la sert ;
     // statWithGear : la valeur bonifiée.
     function baseValue(unit,stat){
       const c=unit.character;
       if(c.stats&&stat in c.stats) return Number(c.stats[stat])||0;
       if(c.resistances&&stat in c.resistances) return Number(c.resistances[stat])||0;
-      for(const group of ["martial","social"]) if(c.skills?.[group]&&stat in c.skills[group]) return Number(c.skills[group][stat])||0;
+      for(const group of ["martial","social","magic"]) if(c.skills?.[group]&&stat in c.skills[group]) return Number(c.skills[group][stat])||0;
       return 0;
     }
     function gearBonuses(unit,stat){
       const base=baseValue(unit,stat);
       return STAT_GEAR.map(({slot,byName})=>{
         const item=itemBySlot(unit,slot),template=item?byName.get(item.name):null;
-        if(!template||template.caracteristique!==stat) return null;
+        if(!template) return null;
+        if(template.caracteristique!==stat){
+          const malus=Number(template["malus_opposees_t"+item.tier])||0;
+          return malus&&opposites(template.caracteristique).includes(stat)?{item,slot,percent:-malus,bonus:-base*malus/100}:null;
+        }
         const value=Number(template["bonus_t"+item.tier])||0;
         if(template.type_bonus==="points") return {item,slot,points:value,bonus:value};
         return {item,slot,percent:value,bonus:base*value/100};
@@ -805,6 +818,7 @@
       armorItem,
       armorTemplate,
       baseValue,
+      MAGIC_SCHOOLS,
       gearBonuses,
       statWithGear,
       quality,

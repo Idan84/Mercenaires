@@ -25,6 +25,7 @@ Git est la source de vérité. Les JSON ci-dessous sont les référentiels struc
 | amulets.json | 3 | nom, code, caracteristique, bonus_t1, bonus_t2, bonus_t3, bonus_t4 (amulettes : bonus en % de la caractéristique de base selon le tier, comme les bottes et les ceintures) |
 | capes.json | 3 | nom, code, caracteristique, type_bonus, bonus_t1, bonus_t2, bonus_t3, bonus_t4 (capes : bonus selon le tier, en % de la valeur de base ou en points pour la Résistance physique) |
 | gloves.json | 3 | nom, code, caracteristique, type_bonus, bonus_t1, bonus_t2, bonus_t3, bonus_t4 (gants : bonus en % de la valeur de base selon le tier, comme les bottes) |
+| enemy-archetypes.json | 24 | nom, code, faction, peuple, culture, ligne, niveau, centile, caracteristiques, resistances, pv, competences_martiales, intimidation, port_d_armure, armes, armure, tier, qualite, menace (archétypes d’ennemis fixes, doc 17 §10 ; pas encore utilisés par le jeu) |
 | pants.json | 3 | nom, code, caracteristique, type_bonus, bonus_t1, bonus_t2, bonus_t3, bonus_t4 (culottes : Charisme et Intimidation en % de la valeur de base, Affinité avec le capitaine en points) |
 | item-qualities.json | 3 | nom, code, description, multiplicateur_malus, multiplicateur_qualite |
 | ranged-weapons.json | 8 | nom, domaine, portee_min_hex, portee_max_hex, cadence_tir, recharge_action_rapide, contre_charge, attaque_de_zone, degats_pv_base, puissance_perforante_base, prise, malus_vitesse_arme_base |

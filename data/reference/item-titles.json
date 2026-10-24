@@ -5,11 +5,11 @@
   "columns": [
     {
       "key": "nom",
-      "source": "Nom de l’arme (weapons.json), de l’armure (base-armors.json), des bottes (boots.json) ou de la ceinture (belts.json)"
+      "source": "Nom de l’arme (weapons.json), de l’armure (base-armors.json), des bottes (boots.json), de la ceinture (belts.json) ou de l’amulette (amulets.json)"
     },
     {
       "key": "famille",
-      "source": "arme, armure, bottes ou ceinture"
+      "source": "arme, armure, bottes, ceinture ou amulette"
     },
     {
       "key": "t1",
@@ -28,7 +28,7 @@
       "source": "Titre T4"
     }
   ],
-  "row_count": 52,
+  "row_count": 55,
   "rows": [
     {
       "nom": "Arbalète",
@@ -445,6 +445,30 @@
       "t2": "Ceinturon du lion",
       "t3": "Ceinture du champion",
       "t4": "Le Cœur de Lion Ardent"
+    },
+    {
+      "nom": "Amulette de puissance magique",
+      "famille": "amulette",
+      "t1": "Breloque fêlée",
+      "t2": "Pendentif de l’initié",
+      "t3": "Talisman du thaumaturge",
+      "t4": "L’Étoile des Arcanes Brisées"
+    },
+    {
+      "nom": "Amulette de volonté",
+      "famille": "amulette",
+      "t1": "Médaille ternie",
+      "t2": "Sceau du pénitent",
+      "t3": "Amulette de l’inflexible",
+      "t4": "Le Serment de Fer"
+    },
+    {
+      "nom": "Amulette de chance",
+      "famille": "amulette",
+      "t1": "Patte de lapin",
+      "t2": "Trèfle de cuivre",
+      "t3": "Fer à cheval du joueur",
+      "t4": "Le Sourire de la Fortune"
     }
   ]
 }

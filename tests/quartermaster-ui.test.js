@@ -73,6 +73,14 @@ assert.match(elements["quartermaster-tabs"].innerHTML, /data-stock-tab="belt">Ce
 ui.stockView.tab = "belt";
 ui.renderQuartermaster();
 assert.match(elements["quartermaster-stock"].innerHTML, /<h3>Ceinture <small>1<\/small><\/h3>/);
+// Amulettes (Idan, 2026-10-24) : leur onglet, après les ceintures.
+game.campaign.company.stock.push({...weapon("Amulette de chance", "Amulette", 1), itemType:"amulet"});
+ui.renderQuartermaster();
+assert.equal(elements["quartermaster-count"].textContent, "1 arme · 5 armures · 2 paires de bottes · 1 ceinture · 1 amulette");
+assert.match(elements["quartermaster-tabs"].innerHTML, /data-stock-tab="amulet">Amulettes <small>1<\/small>/);
+ui.stockView.tab = "amulet";
+ui.renderQuartermaster();
+assert.match(elements["quartermaster-stock"].innerHTML, /<h3>Amulette <small>1<\/small><\/h3>/);
 ui.stockView.tab = "weapon";
 
 // Une catégorie ouverte le reste quand l'écran se redessine.

@@ -22,13 +22,15 @@
     const skills=rows.skills||[];
     const boots=rows.boots||[];
     const belts=rows.belts||[];
+    const amulets=rows.amulets||[];
 
     const weaponByName=new Map(weapons.map(x=>[x.nom,x]));
     const armorByCode=new Map(armors.map(x=>[x.code,x]));
     const qualityByCode=new Map(qualities.map(x=>[x.code,x]));
     const skillByName=new Map(skills.map(x=>[x.nom,x]));
-    // Équipement à bonus de caractéristique : l'emplacement et ses modèles (bottes, ceinture).
-    const STAT_GEAR=[{slot:"boots",byName:new Map(boots.map(x=>[x.nom,x]))},{slot:"belt",byName:new Map(belts.map(x=>[x.nom,x]))}];
+    // Équipement à bonus de caractéristique : l'emplacement et ses modèles (bottes, ceinture, amulette).
+    const STAT_GEAR=[{slot:"boots",byName:new Map(boots.map(x=>[x.nom,x]))},{slot:"belt",byName:new Map(belts.map(x=>[x.nom,x]))},
+      {slot:"amulet",byName:new Map(amulets.map(x=>[x.nom,x]))}];
 
     function die(sides){ return Math.floor(random()*sides)+1; }
     function d100(){ return die(100); }
@@ -86,8 +88,9 @@
       return off;
     }
     function armorItem(unit){ return itemBySlot(unit,"armor"); }
-    // Bottes et ceinture (Idan, 2026-10-24) : + bonus_t<tier> % de la caractéristique de base qu'elles servent (Vitesse,
-    // Esquive, Perception pour les bottes ; Réserve de mana, Endurance, Courage pour la ceinture).
+    // Bottes, ceinture et amulette (Idan, 2026-10-24) : + bonus_t<tier> % de la caractéristique de base qu'elles servent
+    // (Vitesse, Esquive, Perception pour les bottes ; Réserve de mana, Endurance, Courage pour la ceinture ; Puissance
+    // magique, Volonté, Chance pour l'amulette).
     // gearBonuses : une ligne par objet qui sert cette caractéristique ; statWithGear : la caractéristique bonifiée.
     function gearBonuses(unit,stat){
       const base=Number(unit.character.stats?.[stat])||0;
@@ -218,7 +221,7 @@
     function movementBase(unit){
       const score=effectiveSpeed(unit)
         +0.25*statWithGear(unit,"Endurance")
-        +0.10*(Number(unit.character.stats?.["Volonté"])||0);
+        +0.10*statWithGear(unit,"Volonté");
       return Math.max(1,Math.ceil(score/15));
     }
 
@@ -226,7 +229,7 @@
       return effectiveSpeed(unit)
         +0.25*(Number(unit.character.stats?.Intelligence)||0)
         +0.10*statWithGear(unit,"Courage")
-        +0.05*(Number(unit.character.stats?.["Volonté"])||0);
+        +0.05*statWithGear(unit,"Volonté");
     }
 
     function weaponRange(unit){
@@ -417,13 +420,13 @@
     // Critique positif CAC V1 : 1 % à 25 % selon la Chance, après un Toucher puis après un Blesser réussis.
     // 04-combat « Critiques physiques V1 » : la V1 distance réutilise ce même principe.
     function criticalChance(unit){
-      return clamp((Number(unit.character.stats?.Chance)||0)/CRIT.luckDivisor,CRIT.min,CRIT.max);
+      return clamp(statWithGear(unit,"Chance")/CRIT.luckDivisor,CRIT.min,CRIT.max);
     }
     // Échec critique (Toucher ou Blesser) : naturel ≥ 96, puis D100 > Chance pour qu'il soit confirmé.
     function fumbleTest(unit,naturalRoll){
       if(naturalRoll<CRIT.fumbleThreshold) return {fumble:false};
       const fumbleRoll=d100();
-      return {fumbleRoll,fumble:fumbleRoll>(Number(unit.character.stats?.Chance)||0)};
+      return {fumbleRoll,fumble:fumbleRoll>statWithGear(unit,"Chance")};
     }
 
     // Enchaînement d'attaques CAC V1 : P_N = min(100, (Dextérité effective + Vitesse combat effective) / N).
@@ -668,8 +671,7 @@
 
     // Courage post-attaque CAC V1 / Courage post-tir V1, avec le malus de Courage en sous-nombre V1.
     function courageHold(subject,opponent,surplus=0){
-      const s=subject.character.stats||{};
-      return clamp(statWithGear(subject,"Courage")+0.25*(Number(s["Volonté"])||0)-0.25*intimidation(opponent)-10*surplus,5,95);
+      return clamp(statWithGear(subject,"Courage")+0.25*statWithGear(subject,"Volonté")-0.25*intimidation(opponent)-10*surplus,5,95);
     }
 
     // Courage en sous-nombre V1 : mêlée locale = groupe connecté de combattants liés par leurs zones de menace CAC.
@@ -711,8 +713,7 @@
 
     // Reprise de contrôle — En Fuite V1 ; ennemi de référence = ennemi actif le plus proche (vivant, pas En Fuite).
     function recoveryChance(unit,referenceEnemy,fleeTurn){
-      const s=unit.character.stats||{};
-      return clamp(statWithGear(unit,"Courage")+0.25*(Number(s["Volonté"])||0)-0.25*intimidation(referenceEnemy)+10*fleeTurn,5,95);
+      return clamp(statWithGear(unit,"Courage")+0.25*statWithGear(unit,"Volonté")-0.25*intimidation(referenceEnemy)+10*fleeTurn,5,95);
     }
 
     function rollRecovery(unit,referenceEnemy,fleeTurn){

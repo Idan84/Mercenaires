@@ -111,6 +111,15 @@ Au survol d’une arme ou d’une armure (fiche, Intendance), une carte de jeu p
 
 L’onglet Caractéristiques de la fiche montre les valeurs **au combat**, avec l’équipement (set d’armes 1 en main), en rouge si elles baissent et en vert si elles montent ; au survol, le détail : valeur de base, ce que retire chaque objet, valeur au combat. Ce sont les effets que le combat applique déjà (`game-core/equipment-effects.js`, à partir de `combat-engine.js`) : Vitesse (handicap de l’armure, poids des objets tenus), Esquive (handicap de l’armure), Initiative (calculée avec la Vitesse au combat) et Dextérité (combat à deux armes). Les cinq résistances du personnage ne sont pas modifiées : les résistances d’armure s’opposent à la puissance des armes, à l’étape Blesser. La caractéristique sauvegardée ne change pas ; la Taverne compare toujours les valeurs sans équipement.
 
+### Bottes (Idan, 2026-10-24)
+
+Trois types de bottes (`data/reference/boots.json`), chacun lié à une caractéristique : **Bottes de vitesse** (Vitesse), **Bottes d’esquive** (Esquive), **Bottes de perception** (Perception). Portées dans l’emplacement « Bottes », elles ajoutent un pourcentage de la **caractéristique de base** du porteur selon leur tier : **+5 %** (T1), **+10 %** (T2), **+15 %** (T3), **+20 %** (T4). La qualité ne change pas ce bonus.
+
+- Au combat (`combat-engine.js`, `statWithBoots`), la caractéristique bonifiée remplace la caractéristique de base : Vitesse au combat = Vitesse × (1 + bonus) − handicaps (donc l’Initiative et le déplacement en profitent), Esquive au combat = Esquive × (1 + bonus) − handicap de l’armure, Perception (Toucher, Perception défensive, Blesser à distance).
+- Sur la fiche, l’onglet Caractéristiques montre la valeur bonifiée en vert, avec la ligne des bottes dans le détail.
+- À la création d’un mercenaire : **5 %** de chance d’avoir une paire (`starting-equipment-generation.json`, `boots_chance`), d’un type tiré au hasard ; tier selon la réputation, comme le reste de l’équipement.
+- Stock de départ de la compagnie : **1D6** paires (doc 11 §16).
+
 ### Dégâts des sets d’armes (Idan, 2026-10-24)
 
 L’onglet Équipement montre, pour le set 1 et le set 2, les dégâts que fait le mercenaire **avant l’armure et la résistance de la cible**, pour voir d’un coup d’œil s’il fait mal. Pour chaque arme qui frappe (l’arme principale, et la main secondaire au combat à deux armes) : le mode (mêlée ou tir), la moyenne, la fourchette du jet minimum au jet maximum, les types de dégâts avec leur puissance, et ce qui change les dégâts (dé de l’arme, qualité, prise à deux mains, Force en mêlée). C’est la formule des dégâts physiques du combat (`physicalDamage`) contre une cible sans Résistance physique (`game-core/equipment-effects.js`, `attacks`) ; la charge n’est pas comptée.

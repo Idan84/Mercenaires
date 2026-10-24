@@ -10,14 +10,14 @@ const ROOT = path.resolve(__dirname, "..");
 const read = file => JSON.parse(fs.readFileSync(path.join(ROOT, "data", "reference", file), "utf8"));
 const reference = {
   weapons:read("weapons.json"), skills:read("skills.json"), baseArmors:read("base-armors.json"),
-  itemQualities:read("item-qualities.json"), itemTitles:read("item-titles.json")
+  itemQualities:read("item-qualities.json"), itemTitles:read("item-titles.json"), boots:read("boots.json")
 };
 const cards = createItemCards({reference});
 const item = (itemType, name, tier, qualityCode, extra = {}) => ({itemType, name, tier, qualityCode, ...extra});
 const near = (a, b) => assert.ok(Math.abs(a - b) < 1e-9, `${a} ≠ ${b}`);
 
 // Un titre pour chaque arme et chaque armure, à chaque tier.
-for (const row of [...reference.weapons.rows, ...reference.baseArmors.rows]) {
+for (const row of [...reference.weapons.rows, ...reference.baseArmors.rows, ...reference.boots.rows]) {
   const titles = reference.itemTitles.rows.find(r => r.nom === row.nom);
   assert.ok(titles, row.nom);
   for (const tier of [1,2,3,4]) assert.ok(String(titles["t" + tier] || "").trim(), `${row.nom} T${tier}`);
@@ -60,7 +60,13 @@ near(plates.resistances.find(r => r.type === "Foudroyant").value, -56.25);
 near(plates.dodge, 19.2);
 near(plates.speed, 14.4);
 near(plates.magic, 54);
-assert.equal(cards.card(item("ring","Anneau",2,"standard")), null, "ni arme ni armure : pas de carte");
+assert.equal(cards.card(item("ring","Anneau",2,"standard")), null, "ni arme, ni armure, ni bottes : pas de carte");
+
+// Bottes (Idan, 2026-10-24) : +5 / 10 / 15 / 20 % de la caractéristique de base selon le tier ; la qualité n'y change rien.
+const swift = cards.card(item("boots","Bottes de vitesse",1,"worn"));
+assert.deepEqual([swift.kind, swift.title, swift.stat, swift.bonus], ["boots","Godillots troués","Vitesse",5]);
+assert.equal(cards.card(item("boots","Bottes d’esquive",3,"luxury")).bonus, 15);
+assert.equal(cards.card(item("boots","Bottes de perception",4,null)).bonus, 20);
 
 // Mise en forme pour le joueur (prototype-web/item-card-ui.js).
 const ui = fs.readFileSync(path.join(ROOT, "prototype-web/item-card-ui.js"), "utf8");
@@ -88,4 +94,9 @@ assert.match(platesCard, /item-card-row--bonus"><dt>Tranchant<\/dt><dd>\+72<\/dd
 assert.match(platesCard, /<p class="item-card-group">Handicap<\/p>/);
 assert.match(platesCard, /Usée : résistances −20 %, handicap \+20 %\./);
 assert.equal(renderItemCard(item("ring","Anneau",2,"standard")), "");
+const dodgeCard = renderItemCard(item("boots","Bottes d’esquive",2,"standard"));
+assert.match(dodgeCard, /<strong class="item-card-title">Bottes de faufileur<\/strong>/);
+assert.match(dodgeCard, /item-card-row--bonus"><dt>Esquive<\/dt><dd>\+10 %<\/dd>/);
+assert.match(dodgeCard, /Ajoute 10 % de l’Esquive de base du porteur/);
+assert.doesNotMatch(dodgeCard, /item-card-quality/, "la qualité ne change pas le bonus des bottes");
 console.log("Carte d'objet : titres par tier, effets avec la qualité, mise en forme — OK");

@@ -20,11 +20,13 @@
     const armors=rows.baseArmors||[];
     const qualities=rows.itemQualities||[];
     const skills=rows.skills||[];
+    const boots=rows.boots||[];
 
     const weaponByName=new Map(weapons.map(x=>[x.nom,x]));
     const armorByCode=new Map(armors.map(x=>[x.code,x]));
     const qualityByCode=new Map(qualities.map(x=>[x.code,x]));
     const skillByName=new Map(skills.map(x=>[x.nom,x]));
+    const bootsByName=new Map(boots.map(x=>[x.nom,x]));
 
     function die(sides){ return Math.floor(random()*sides)+1; }
     function d100(){ return die(100); }
@@ -82,6 +84,18 @@
       return off;
     }
     function armorItem(unit){ return itemBySlot(unit,"armor"); }
+    function bootsItem(unit){ return itemBySlot(unit,"boots"); }
+
+    // Bottes (Idan, 2026-10-24) : + bonus_t<tier> % de la caractéristique de base qu'elles servent (Vitesse,
+    // Esquive ou Perception) ; 0 sans bottes ou pour une autre caractéristique.
+    function bootsBonus(unit,stat){
+      const item=bootsItem(unit),template=item?bootsByName.get(item.name):null;
+      if(!template||template.caracteristique!==stat) return 0;
+      return (Number(unit.character.stats?.[stat])||0)*(Number(template["bonus_t"+item.tier])||0)/100;
+    }
+    function statWithBoots(unit,stat){
+      return (Number(unit.character.stats?.[stat])||0)+bootsBonus(unit,stat);
+    }
     function weaponTemplate(item){ return item?weaponByName.get(item.name)||null:null; }
 
     function armorTemplate(item){
@@ -188,12 +202,12 @@
     }
 
     function effectiveSpeed(unit){
-      return Math.max(1,(Number(unit.character.stats?.Vitesse)||1)-armorMobility(unit).speed-weaponSpeedPenalty(unit));
+      return Math.max(1,(statWithBoots(unit,"Vitesse")||1)-armorMobility(unit).speed-weaponSpeedPenalty(unit));
     }
 
     function effectiveDodge(unit){
       if(unit.prone) return 0;
-      return Math.max(1,(Number(unit.character.stats?.Esquive)||1)-armorMobility(unit).dodge);
+      return Math.max(1,(statWithBoots(unit,"Esquive")||1)-armorMobility(unit).dodge);
     }
 
     function movementBase(unit){
@@ -299,10 +313,10 @@
       const weapon=weaponTemplate(activeWeaponItem(attacker));
       const m=mastery(attacker.character,weapon);
       const a=attacker.character.stats||{},d=defender.character.stats||{};
-      const defensivePerception=context.opportunity||context.backstab?0:(Number(d.Perception)||0);
+      const defensivePerception=context.opportunity||context.backstab?0:statWithBoots(defender,"Perception");
       const dodgeFactor=context.opportunity?0.5:1;
       let delta=effectiveDexterity(attacker)
-        +0.2*(m.categoryScore+m.weaponScore+(Number(a.Perception)||0)+effectiveSpeed(attacker))
+        +0.2*(m.categoryScore+m.weaponScore+statWithBoots(attacker,"Perception")+effectiveSpeed(attacker))
         -dodgeFactor*effectiveDodge(defender)
         -0.2*(defensivePerception+effectiveSpeed(defender));
 
@@ -324,7 +338,7 @@
       let attackStat=0,twoHands=0;
 
       if(mode==="ranged"){
-        attackStat=Number(a.Perception)||0;
+        attackStat=statWithBoots(attacker,"Perception");
       }else{
         attackStat=(Number(a.Force)||0)+(Number(context.chargePower)||0);
         if(usesTwoHands(attacker,weapon)){
@@ -749,6 +763,9 @@
       weaponTemplate,
       armorItem,
       armorTemplate,
+      bootsItem,
+      bootsBonus,
+      statWithBoots,
       quality,
       isRangedWeapon,
       isMeleeWeapon,

@@ -10,7 +10,7 @@ const {createEquipmentEffects} = require("../game-core/equipment-effects.js");
 
 const ROOT = path.resolve(__dirname, "..");
 const read = file => JSON.parse(fs.readFileSync(path.join(ROOT, "data", "reference", file), "utf8"));
-const reference = {weapons:read("weapons.json"), baseArmors:read("base-armors.json"), itemQualities:read("item-qualities.json"),
+const reference = {weapons:read("weapons.json"), baseArmors:read("base-armors.json"), boots:read("boots.json"), itemQualities:read("item-qualities.json"),
   skills:read("skills.json"), formulaConstants:read("formula-constants.json")};
 const engine = createCombatEngine(reference);
 const {effects} = createEquipmentEffects({engine});
@@ -51,9 +51,24 @@ near(d.Dextérité.value, 62 / 1.5);
 assert.deepEqual(d.Dextérité.lines.map(l => l.reason), ["dual"]);
 assert.equal(d.Esquive.lines.length, 0, "sans armure : Esquive intacte");
 
+// Bottes (Idan, 2026-10-24) : + 5 / 10 / 15 / 20 % de la caractéristique de base, au combat aussi.
+const shod = character => ({...knight, stats:{...stats, Perception:50}, items:[...knight.items, character],
+  equipment:{slots:{...knight.equipment.slots, boots:character.id}}});
+const swift = effects(shod({id:"b", itemType:"boots", name:"Bottes de vitesse", tier:2, qualityName:"Correcte"}));
+near(swift.Vitesse.value - e.Vitesse.value, 4.2, "Vitesse 42 + 10 %");
+assert.deepEqual(swift.Vitesse.lines[0], {label:"Bottes de vitesse (Correcte)", delta:4.2, reason:"boots", percent:10});
+near(swift.Initiative.value - e.Initiative.value, 4.2);
+assert.equal(swift.Perception.lines.length, 0, "les bottes de vitesse ne touchent pas la Perception");
+const dodger = effects(shod({id:"b", itemType:"boots", name:"Bottes d’esquive", tier:3}));
+near(dodger.Esquive.value, 31 * 1.15 - 19.2);
+assert.deepEqual(dodger.Esquive.lines.map(l => l.reason), ["boots","armor"]);
+const watcher = shod({id:"b", itemType:"boots", name:"Bottes de perception", tier:1});
+near(effects(watcher).Perception.value, 52.5);
+near(engine.statWithBoots({character:watcher, activeSet:1}, "Perception"), 52.5, "le combat lit la même Perception");
+
 // Sans équipement : rien ne change.
 const bare = effects({stats, skills:{}, items:[], equipment:{slots:{}}});
-for (const name of ["Vitesse","Esquive","Initiative","Dextérité"]) near(bare[name].value, bare[name].base);
+for (const name of ["Vitesse","Esquive","Perception","Initiative","Dextérité"]) near(bare[name].value, bare[name].base);
 // Dégâts par set (Idan, 2026-10-24) : jet minimum et maximum du combat contre une cible sans résistance.
 const {attacks} = createEquipmentEffects({engine});
 const fighter = {stats:{Force:60},
@@ -91,4 +106,4 @@ assert.match(card, /<small>Set 2 · Main secondaire<\/small><strong>Dague<\/stro
 assert.match(card, /Avant l’armure et la résistance de la cible/);
 fighter.equipment.slots = {};
 assert.equal((renderDamageCard(fighter).match(/Aucune arme/g) || []).length, 2);
-console.log("Effets de l'équipement sur la fiche : Vitesse, Esquive, Initiative, Dextérité, dégâts par set — OK");
+console.log("Effets de l'équipement sur la fiche : Vitesse, Esquive, Perception, Initiative, Dextérité, bottes, dégâts par set — OK");

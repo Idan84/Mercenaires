@@ -11,6 +11,7 @@ const {pictoSlug} = require(path.join(web, "picto-ui.js"));
 const EQUIPMENT_ART = new Function(fs.readFileSync(path.join(web, "equipment-art.js"), "utf8") + "\nreturn EQUIPMENT_ART;")();
 const armors = JSON.parse(fs.readFileSync(path.join(root, "data/reference/base-armors.json"), "utf8")).rows;
 const weapons = JSON.parse(fs.readFileSync(path.join(root, "data/reference/weapons.json"), "utf8")).rows;
+const boots = JSON.parse(fs.readFileSync(path.join(root, "data/reference/boots.json"), "utf8")).rows;
 
 for (const key of EQUIPMENT_ART) {
   assert.ok(fs.existsSync(path.join(web, "assets/equipment", key + ".webp")), key);
@@ -20,6 +21,10 @@ for (const armor of armors) {
 }
 for (const weapon of weapons) {
   for (const tier of [1,2,3,4]) assert.ok(EQUIPMENT_ART.has(`armes/${pictoSlug(weapon.nom)}-${tier}`), `${weapon.nom} T${tier}`);
+}
+// Bottes (Idan, 2026-10-24) : 3 types × 4 tiers.
+for (const pair of boots) {
+  for (const tier of [1,2,3,4]) assert.ok(EQUIPMENT_ART.has(`bottes/${pictoSlug(pair.nom)}-${tier}`), `${pair.nom} T${tier}`);
 }
 for (const tier of [1,2,3,4]) assert.ok(EQUIPMENT_ART.has(`frames/frame-${tier}`), `cadre T${tier}`);
 
@@ -36,6 +41,8 @@ const armorTile = gearTile({id:"armor",label:"Armure"}, {itemType:"armor", name:
 assert.match(armorTile, /class="gear-tile is-filled gear-tile--luxury gear-tile--art gear-tile--t3"/);
 assert.match(armorTile, /<img class="gear-art" src="assets\/equipment\/armures\/armure-d-ecailles-3\.webp"/);
 assert.doesNotMatch(armorTile, /<svg/, "l'image remplace le picto");
+assert.match(gearTile({id:"boots",label:"Bottes"}, {itemType:"boots", name:"Bottes d’esquive", tier:2, qualityCode:"standard"}),
+  /src="assets\/equipment\/bottes\/bottes-d-esquive-2\.webp"/);
 const weaponTile = gearTile({id:"weapon_set_1_main",label:"Arme"}, {itemType:"weapon", name:"Arme d'hast double", tier:1, qualityCode:"worn"});
 assert.match(weaponTile, /gear-tile--art gear-tile--t1/);
 assert.match(weaponTile, /src="assets\/equipment\/armes\/arme-d-hast-double-1\.webp"/);

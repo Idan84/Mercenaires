@@ -557,7 +557,7 @@ const GEAR_ICONS={
   mount:'<path d="M7 21v-5l-3-3 2-6 5-3 1-2 2 3c3 1 5 4 5 8v8"/><path d="M10 9h.01" stroke-width="2.6"/>'
 };
 // Position des emplacements sur la silhouette, en % de l'image carrée (silhouette centrée, debout).
-const GEAR_ON_BODY={head:[50,10],amulet:[50,21],cape:[66,25],armor:[50,35],belt:[50,49],weapon_set_1_main:[31,50],weapon_set_1_off:[69,50],boots:[50,90]};
+const GEAR_ON_BODY={head:[50,10],amulet:[50,21],cape:[66,25],armor:[50,35],belt:[50,49],weapon_set_1_main:[31,50],weapon_set_1_off:[69,50],boots:[50,86]};
 function gearIcon(kind){
   return `<svg class="gear-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${GEAR_ICONS[kind]||GEAR_ICONS.pouch}</svg>`;
 }
@@ -582,7 +582,7 @@ function gearTooltip(item){
 }
 // Image d'un objet selon son tier (Idan, 2026-10-23 : masters dans assets-src/Equipements/, versions du jeu
 // par scripts/build-equipment.js), ou null tant qu'il n'en a pas : la case garde alors son picto.
-const EQUIPMENT_ART_DIRS={armor:"armures",weapon:"armes"};
+const EQUIPMENT_ART_DIRS={armor:"armures",weapon:"armes",boots:"bottes"};
 function equipmentArt(item){
   const dir=EQUIPMENT_ART_DIRS[item?.itemType];
   const key=dir?`${dir}/${pictoSlug(item.name)}-${item.tier}`:null;
@@ -894,7 +894,7 @@ function equipmentDetail(effect){
   const note={weight:"poids, réduit par la maîtrise",armor:"handicap de l’armure",speed:"avec l’équipement",dual:"une arme dans chaque main"};
   const line=l=>{
     const delta=Math.round(l.delta);
-    return `<span class="sheet-gear-line"><span>${esc(l.label)}<small>${esc(note[l.reason]||"")}${l.twoHands?" · à deux mains ÷2":""}</small></span><b class="${delta<0?"is-malus":delta>0?"is-bonus":""}">${delta>0?"+":""}${fmt(delta)}</b></span>`;
+    return `<span class="sheet-gear-line"><span>${esc(l.label)}<small>${esc(l.reason==="boots"?`+${l.percent} % de la valeur de base`:note[l.reason]||"")}${l.twoHands?" · à deux mains ÷2":""}</small></span><b class="${delta<0?"is-malus":delta>0?"is-bonus":""}">${delta>0?"+":""}${fmt(delta)}</b></span>`;
   };
   return `<span class="sheet-gear-detail">
     <span class="sheet-stat-pop-title">Avec l’équipement</span>

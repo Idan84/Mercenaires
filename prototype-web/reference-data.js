@@ -16,6 +16,7 @@ const REFERENCE_FILES = {
   formulaConstants: "formula-constants.json",
   weapons: "weapons.json",
   baseArmors: "base-armors.json",
+  boots: "boots.json",
   itemQualities: "item-qualities.json",
   equipmentSlots: "equipment-slots.json",
   startingEquipmentGeneration: "starting-equipment-generation.json",

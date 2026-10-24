@@ -51,6 +51,7 @@
     const formulaConstantRows = rows.formulaConstants || [];
     const weaponRows = rows.weapons || [];
     const baseArmorRows = rows.baseArmors || [];
+    const bootsRows = rows.boots || [];
     const itemQualityRows = rows.itemQualities || [];
     const equipmentSlotRows = rows.equipmentSlots || [];
     const binaryAptitudeRows = rows.binaryAptitudeGrants || [];
@@ -900,6 +901,18 @@
       });
     }
 
+    // Bottes (Idan, 2026-10-24) : un des trois types de boots.json ; tier selon la réputation, comme le reste.
+    function bootsItem(character, template) {
+      if (!template) return null;
+      return createItemInstance(character, {
+        templateId:`boots:${template.code || normalizeKey(template.nom)}`,
+        name:template.nom,
+        itemType:"boots",
+        slot:"boots",
+        category:"Bottes"
+      });
+    }
+
     // Stock d'armes de la compagnie à sa création (Idan, 2026-10-23) : 2D20 armes tirées parmi toutes celles du
     // référentiel (boucliers compris), doublons possibles. Poids d'une arme = 1 + 2 × A, au moins 0,25 ; A additionne
     // les intensités de la matrice de génération du peuple et de la culture du capitaine, sur l'arme et sur sa
@@ -933,6 +946,13 @@
       const count = () => rollDice(constant("company.starting_stock.armor_dice_count", 1), constant("company.starting_stock.armor_dice_sides", 6));
       const types = [...new Set(baseArmorRows.map(row => row.type_armure).filter(Boolean))];
       return types.flatMap(type => Array.from({length:count()}, () => ({...armorItem(captain, type), owner:null})));
+    }
+
+    // Bottes du stock de départ (Idan, 2026-10-24) : 1D6 paires, chacune d'un type tiré au hasard.
+    function createStartingBootsStock(captain) {
+      if (!bootsRows.length) return [];
+      const count = rollDice(constant("company.starting_stock.boots_dice_count", 1), constant("company.starting_stock.boots_dice_sides", 6));
+      return Array.from({length:count}, () => ({...bootsItem(captain, randomChoice(bootsRows)), owner:null}));
     }
 
     function generateStartingEquipment(character) {
@@ -971,6 +991,14 @@
       if (armor) {
         items.push(armor);
         slots.armor = armor.id;
+      }
+
+      // Bottes (Idan, 2026-10-24) : 5 % de chance d'avoir une paire, d'un type tiré au hasard.
+      const bootsChance = Number(startingEquipmentGeneration.boots_chance);
+      if (bootsRows.length && random() < (Number.isFinite(bootsChance) ? bootsChance : 0.05)) {
+        const boots = bootsItem(character, randomChoice(bootsRows));
+        items.push(boots);
+        slots.boots = boots.id;
       }
 
       return {
@@ -1417,6 +1445,7 @@
       startingStockWeight,
       createStartingStock,
       createStartingArmorStock,
+      createStartingBootsStock,
       people: () => peopleRows.map(r => r.nom),
       alignments: () => alignmentRows.map(r => r.nom),
       ancestries: () => ancestryRows.map(r => r.nom),

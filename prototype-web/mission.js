@@ -1106,7 +1106,8 @@ function renderMissionSpellBar(u){
     const title=s.nom+" — "+(quick?"action rapide":"action principale")+" · "+cost+" mana · "+Math.round(p)+" % de réussite\n"
       +s.description+(reason?"\n"+reason:"");
     return `<button class="secondary mission-spell${m.mode==="spell:"+s.code?" selected":""}" data-spell="${esc(s.code)}" title="${esc(title)}"${reason?" disabled":""}>`
-      +`${esc(s.nom)}<small>${quick?"rapide":"principale"} · ${cost} mana · ${Math.round(p)} %</small></button>`;
+      +`${typeof spellIconHtml==="function"?spellIconHtml(s):""}`
+      +`<span class="mission-spell-text">${esc(s.nom)}<small>${quick?"rapide":"principale"} · ${cost} mana · ${Math.round(p)} %</small></span></button>`;
   }).join("");
 }
 

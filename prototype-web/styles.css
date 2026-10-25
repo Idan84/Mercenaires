@@ -383,8 +383,17 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
 .mission-spells{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:-3px 0 10px}
 .mission-spells:empty{display:none}
 .mission-spells .mission-mana{font-size:.74rem;font-weight:750;color:#2f6b3a;padding:0 4px}
-.mission-spells .mission-spell{display:flex;flex-direction:column;align-items:flex-start;gap:1px;padding:6px 10px;font-size:.78rem;border-color:#7fae84}
+.mission-spells .mission-spell{display:flex;align-items:center;gap:8px;padding:5px 10px 5px 5px;font-size:.78rem;border-color:#7fae84}
+.mission-spells .mission-spell-text{display:flex;flex-direction:column;align-items:flex-start;gap:1px}
 .mission-spells .mission-spell small{font-size:.66rem;opacity:.8;font-weight:500}
+.mission-spells .mission-spell:disabled .spell-icon{filter:grayscale(1)}
+/* Icône de sort : le parchemin, puis le cadre de l'école par-dessus (spells.json : icone, cadre). */
+.spell-icon{position:relative;display:inline-block;flex:none;width:40px;height:40px;border-radius:4px;overflow:hidden}
+.spell-icon img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.magic-spell{display:flex;align-items:center;gap:10px}
+.magic-spell .spell-icon{width:52px;height:52px}
+.magic-spell .sheet-stat-name{flex:1}
+.magic-spell .sheet-stat-name small{display:block;margin-top:2px;font-size:.72rem;opacity:.7}
 .mission-spells .mission-spell.selected{outline:2px solid #2f6b3a;outline-offset:1px}
 .mission-spells .mission-spell:disabled{opacity:.38;cursor:not-allowed}
 .mission-map-scroll{overflow:auto;border:1px solid #cfc7bc;border-radius:14px;background:#dfe7d9;min-height:500px}

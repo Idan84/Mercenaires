@@ -41,6 +41,7 @@ jobs:
       - run: node tests/equipment-art.test.js
       - run: node tests/item-card.test.js
       - run: node tests/item-value.test.js
+      - run: node tests/camp-buildings.test.js
       - run: node tests/equipment-effects.test.js
       - run: node tests/equipment-deals.test.js
       - run: node tests/deal-ui.test.js
@@ -63,6 +64,7 @@ jobs:
       - run: node --check prototype-web/ui.js
       - run: node --check prototype-web/camp-calendar.js
       - run: node --check prototype-web/tavern-ui.js
+      - run: node --check prototype-web/camp-buildings-ui.js
       - run: node --check game-core/recruit-dialogue.js
       - run: node --check prototype-web/picto-ui.js
       - run: node --check prototype-web/equipment-art.js

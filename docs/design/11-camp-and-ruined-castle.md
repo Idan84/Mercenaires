@@ -66,7 +66,17 @@ Le dortoir fixe la **capacité maximale de mercenaires** hébergés.
 - capacité initiale : `40` (décision Idan du 2026-10-03 ; constante `camp.dormitory.initial_capacity`) ;
 - places occupées (Idan, 2026-10-24) : un **ogre prend deux places** ; un **halfling, un gnome ou un gobelin une demi-place** ; tout autre mercenaire **une** (`peoples.json`, colonne `places_dortoir`) ; le **capitaine** et l'**intendant** n'en prennent pas ;
 - dortoir plein (moins de places libres que n'en demande le candidat) : **impossible de recruter** ; de même, l'intendant ne peut pas **revenir sur le terrain** s'il n'y a plus de place pour lui ;
-- amélioration → plus de places ;
+- **agrandissement** (Idan, 2026-10-25) : **+5 places** à chaque fois, **sans limite** ; chaque agrandissement coûte plus d'or et de jours que le précédent. Le k-ième (k = 1 pour passer de 40 à 45 places) coûte **100 × 1,2^(k−1) PO**, arrondi à 10, et dure **2 + ⌊(k−1)/3⌋ jours** (constantes `camp.dormitory.expansion_*`, formule de JC). Un chantier à la fois ; l'or est payé au lancement ; les places sont prêtes le matin du jour où le chantier se termine. Pour l'instant dans **Ma Compagnie**, panneau « Constructions » ;
+
+  | Places | Ce palier | Total depuis 40 places |
+  |---:|---|---|
+  | 45 | 100 PO, 2 jours | 100 PO, 2 jours |
+  | 60 | 170 PO, 3 jours | 530 PO, 9 jours |
+  | 80 | 360 PO, 4 jours | 1 650 PO, 23 jours |
+  | 100 | 740 PO, 5 jours | 3 960 PO, 42 jours |
+  | 150 | 4 600 PO, 9 jours | 27 090 PO, 114 jours |
+  | 200 | 28 490 PO, 12 jours | 170 400 PO, 219 jours |
+
 - embellissement / qualité → contribution possible à la renommée / attractivité.
 
 ## 5 — Salle de sport / terrain d’entraînement / cour intérieure

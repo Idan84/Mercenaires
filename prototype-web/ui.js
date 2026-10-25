@@ -1322,7 +1322,7 @@ function renderCharacterSpellbook(c) {
       const row = rows.find(s => s.code === spell.code || s.nom === (spell.name || spell.nom));
       return `<div class="sheet-skill magic-spell">${spellIconHtml(row)}<span class="sheet-stat-name">${esc(row?.nom || spell.name || spell.nom || "Sort")}<small>${esc(row?.ecole || spell.school || "")}</small></span><span class="sheet-stat-value">${fmt(Number(spell.mastery))}</span></div>`;
     }).join("")}</div>`
-    : `<p>À venir.</p>`}</section>`;
+    : `<p class="muted">Aucun sort connu.</p>`}</section>`;
 }
 
 function renderSheetTab(c, tab) {

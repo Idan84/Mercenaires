@@ -90,7 +90,7 @@ $$
 
 Mise en œuvre V1 (choix d'implémentation, relecture Chatty) :
 
-- **CC / EC confirmés** : les mêmes événements que l'XP de Chance (doc 08) — chaque critique au Toucher et chaque critique au Blesser (+1 chacun) ; l'échec critique au Toucher (chute Au Sol) et l'échec critique au Blesser (contrecoup), −1 chacun.
+- **CC / EC confirmés** : les mêmes événements que l'XP de Chance (doc 08) — chaque critique au Toucher et chaque critique au Blesser (+1 chacun) ; l'échec critique au Toucher (chute Au Sol) et l'échec critique au Blesser (contrecoup), −1 chacun. Les critiques des sorts aussi : coup critique +1, échec critique confirmé −1 (Idan, 2026-10-25).
 - **Participation** : le premier coup qui inflige des dégâts (> 0) à un ennemi, une seule fois par ennemi ; un allié touché par accident ne compte pas ; un projectile perdu qui blesse un ennemi compte.
 - **Coup de grâce** : le coup qui met l'ennemi hors combat (ennemi « tué » au sens V1).
 - **Réputation de l'ennemi** : sa réputation pendant la mission ; elle ne bouge pas avant le bilan, puisque les gains sont appliqués en fin de mission. Ennemis générés : leur réputation de génération.

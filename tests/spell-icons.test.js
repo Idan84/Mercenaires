@@ -11,7 +11,11 @@ const ROOT=path.resolve(__dirname,"..");
 const spells=JSON.parse(fs.readFileSync(path.join(ROOT,"data","reference","spells.json"),"utf8")).rows;
 const exists=file=>fs.existsSync(path.join(ROOT,file));
 
-for(const s of spells){
+// Les écoles qui ont reçu leurs images (la Vie pour l'instant) : tous leurs sorts ont une icône ; les autres n'en ont
+// pas encore (Feu : images à venir) et s'affichent sans icône.
+const illustrated=new Set(spells.filter(s=>s.icone).map(s=>s.ecole));
+assert.ok(illustrated.has("Vie"));
+for(const s of spells.filter(x=>illustrated.has(x.ecole))){
   assert.ok(s.icone&&s.cadre,s.nom+" : icône et cadre");
   assert.ok(exists("prototype-web/assets/"+s.icone),s.nom+" : "+s.icone);
   assert.ok(exists("prototype-web/assets/"+s.cadre),s.nom+" : "+s.cadre);
@@ -36,5 +40,6 @@ const spellIconHtml=new Function("esc",ui.match(/function spellIconHtml\(spell\)
 assert.equal(spellIconHtml(spells[0]),'<span class="spell-icon" aria-hidden="true"><img src="assets/spells/vie/quick_heal.webp" alt="" loading="lazy">'
   +'<img src="assets/spells/vie/cadre.webp" alt="" loading="lazy"></span>');
 assert.equal(spellIconHtml(null),"");
+assert.equal(spellIconHtml(spells.find(x=>!x.icone)),"","un sort sans image : pas d'icône");
 
 console.log("Icônes des sorts : parchemins, cadres et affichage — OK");

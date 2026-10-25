@@ -37,6 +37,10 @@ near(e.Vitesse.lines[0].delta, -14.4);
 near(e.Vitesse.lines[1].delta, -5.1);
 // Esquive : 31 − 16 × 1,2.
 near(e.Esquive.value, 31 - 19.2);
+// Résistances élémentaires (Idan, 2026-10-25) : l'armure compte ; plates −20 au feu, −25 au froid, usées (÷ 0,8).
+near(e["Résistance au feu"].value, -25);
+near(e["Résistance au froid"].value, -25 / 0.8);
+assert.deepEqual(e["Résistance au feu"].lines.map(l => [l.label, l.reason]), [["Armure de plates (Usée)", "armorElement"]]);
 // Initiative : la Vitesse au combat remplace la Vitesse.
 near(e.Initiative.value - e.Initiative.base, e.Vitesse.value - 42);
 near(e.Initiative.base, 42 + 0.25 * 67 + 0.10 * 37 + 0.05 * 60);

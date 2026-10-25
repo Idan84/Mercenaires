@@ -88,6 +88,36 @@ Même modèle que Soin rapide : **Effet = 10 × dés × (2 × Puissance magique 
 | Restitution | 48 dégâts · 14 · 31 % | 62 · 13 · 59 % | 140 · 9 · 93 % |
 | Purge | 8 mana · 57 % | 7 · 81 % | 5 · 94 % |
 
+### École du Feu (6 sorts, Idan, 2026-10-25)
+
+Même modèle que la Vie (effet, mana, difficulté par palier, CC aux dés maximum, EC : le lanceur subit le minimum de son sort). Données : `spells.json`.
+
+**Dégâts de feu** : effet × (1 − protection / 100). **Protection contre le feu** = Résistance au feu du personnage (équipement compris) **+ ou − la valeur « brûlant » de l'armure portée** (plates −20 : le métal chauffe ; mailles −10 ; brigandine −5 ; vêtements +5 ; cuir +15 ; cuir renforcé +18 ; écailles +35), bornée de **−50 à +75 %** (`combat.elemental.*`). Même règle pour le froid (« glaçant ») et la foudre (« foudroyant ») ; la fiche montre ces résistances avec l'armure (Idan : « on doit ajouter ou soustraire aux résistances l'impact de l'armure »).
+
+| Sort | Palier | Action | Effet | Portée / zone | Mana (base) |
+|---|---|---|---|---|---|
+| Trait de feu | Novice (30) | principale | 1D6 de feu sur un ennemi, **comme une flèche** | 12 + M/10 (l'arc : 18) | 10 |
+| Boule de feu | Expert (70) | principale | 2D6 de feu au centre, **dégressif** : × (1 − d / (rayon + 1)) à d cases ; rayon **3 + M/50, de 3 à 5** | centre à **6 + M/25, de 6 à 12** | 30 |
+| Anneau de feu | Novice (30) | principale | 1D6 de feu à tous ceux qui sont à 1 ou 2 cases du lanceur, lanceur épargné | autour du lanceur | 20 |
+| Arme enflammée | Novice (30) | rapide | +1D4 de feu à chaque coup qui touche (même sans blesser), pendant 2 + M/50 tours | la sienne ou celle d'un compagnon, 1 + M/50 | 12 |
+| Armure de feu | Novice (30) | rapide | +(30 + M/5) de protection contre le froid, pendant 2 + M/50 tours | allié ou soi, 2 + M/25 | 10 |
+| Flaque de magma | Adepte (50) | rapide | une case vide devient infranchissable pendant **4 + M/25 tours** (de quoi bloquer un passage) | 2 + M/25 | 8 |
+
+- **Trait de feu** suit les règles de l'arc (Idan) : après un sort réussi, jet de toucher avec la formule des tirs, la Maîtrise du sort à la place des compétences d'arme, l'Esquive de la cible, la perte avec la distance au-delà du quart de la portée (et la couverture, quand le décor existera) ; un trait raté peut toucher quelqu'un dans la ligne de tir (approximation des projectiles). Pas de jet de Blesser : seule la protection contre le feu réduit les dégâts.
+- **Boule de feu** ne s'évite pas, mais peut taper à côté : après un sort réussi, précision = 50 + Maîtrise / 2 − 5 × distance (10 à 95 %) ; si elle rate, la boule dévie de **1D3 cases** dans une direction au hasard. Elle touche tout le monde dans la zone, **alliés et lanceur compris** (Idan : « j'aime l'idée que le mage puisse se blesser lui-même »). Cette règle remplace, pour la Boule de feu, la précision d'attaque de zone du doc 04 (−10 % de toucher par case), qui reste celle du Tromblon. Sur la carte actuelle (13 × 9), un rayon de 5 couvre 91 cases sur 117.
+- **Anneau de feu** : un seul jet pour tous, alliés compris ; difficulté abaissée à 30 (Idan : « la chance de toucher me semble un peu faible »).
+- **Arme enflammée** : les tours se décomptent au début de chaque activation de celui qui porte l'arme (le tour du lancer compte) ; elle ne se cumule pas. **Armure de feu** : même décompte ; elle servira quand le froid existera (école de l'Eau).
+- **Flaque de magma** : ni passage ni arrêt sur la case (déplacements, charges, fuites) ; elle ne coupe pas la vue et ne fait pas de dégâts ; elle refroidit au début du tour indiqué.
+
+| | Débutant | Recrue moyenne | Expert |
+|---|---|---|---|
+| Trait de feu | 30 (9–52) · portée 15 · 9 mana · 57 % | 40 · portée 17 · 9 · 81 % | 89 · portée 25 · 6 · 94 % |
+| Boule de feu, au centre | 60 · rayon 3 · portée 7 · 27 mana · 17 % | 79 · rayon 4 · portée 8 · 25 · 33 % | 178 · rayon 5 · portée 11 · 17 · 87 % |
+| Anneau de feu, par cible | 30 · 18 mana · 57 % | 40 · 17 · 81 % | 89 · 12 · 94 % |
+| Arme enflammée, par coup | +22, 2 tours · 57 % | +28, 3 tours · 81 % | +63, 4 tours · 94 % |
+| Armure de feu | +36 froid, 2 tours | +41, 3 tours | +56, 4 tours |
+| Flaque de magma | 5 tours · 31 % | 6 tours · 59 % | 9 tours · 93 % |
+
 ### Mana
 
 - Le **Mana actuel** se dépense en combat et se **recharge chaque jour au camp** : **Réserve de mana × (10 + Volonté / 2) %** par jour (Volonté 52 : 36 % par jour, plein en 3 jours). Rien pendant les trajets.
@@ -132,7 +162,7 @@ Plus tard : une **école de magie** à construire au camp et des **manuels** à 
 ### Mise en place
 
 1. **Étape 1** — ces décisions, `spells.json`, les règles des sorts (`game-core/magic.js`) et leurs tests (`tests/magic.test.js`) : Soin rapide, puis les six sorts de l'école de la Vie.
-2. **Étape 2** — les sorts de Vie dans l'écran de combat actuel, **pour tester** (Idan, 2026-10-25 ; l'interface de combat sera refaite) : une barre de sorts pour le mercenaire actif (action, mana, réussite) ; les cases ciblables en vert (alliés et lanceur, ou toutes les cases à portée pour Soin de masse) ; le journal ; la Régénération au début des activations ; le mana affiché dans la liste des équipes ; un bouton **« Sorts de Vie (test) »** : toute l'escouade connaît les six sorts (niveau 1) pour ce combat, sans toucher au grimoire, le mana étant bien dépensé ; une IA simple, aussi en combat automatique : Soin profond sur l'allié le plus blessé sous 35 % de ses PV à la place de l'attaque, Soin rapide sous 60 %.
+2. **Étape 2** — les sorts dans l'écran de combat actuel, **pour tester** (Vie, puis Feu ; le bouton de test s'appelle désormais « Sorts (test) » et donne tous les sorts écrits) (Idan, 2026-10-25 ; l'interface de combat sera refaite) : une barre de sorts pour le mercenaire actif (action, mana, réussite) ; les cases ciblables en vert (alliés et lanceur, ou toutes les cases à portée pour Soin de masse) ; le journal ; la Régénération au début des activations ; le mana affiché dans la liste des équipes ; un bouton **« Sorts de Vie (test) »** : toute l'escouade connaît les six sorts (niveau 1) pour ce combat, sans toucher au grimoire, le mana étant bien dépensé ; une IA simple, aussi en combat automatique : Soin profond sur l'allié le plus blessé sous 35 % de ses PV à la place de l'attaque, Soin rapide sous 60 %.
 3. Étape 3 — **recharge du mana au camp** (faite avec l'étape 2, pour pouvoir tester d'un combat à l'autre), XP du sort et de l'école, régression des écoles opposées.
 4. Étape 4 — sorts connus à la création et compensations des nains et des ogres.
 

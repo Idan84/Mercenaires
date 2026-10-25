@@ -17,7 +17,8 @@
 // - Initiative : calculée avec la Vitesse au combat, le Courage avec la ceinture, la Volonté avec l'amulette et
 //   l'Intelligence avec le chapeau ;
 // - Points de vie : PV max calculés avec la Constitution, l'Endurance et la Volonté équipées (Idan, 2026-10-25) ;
-// - Dextérité : + gants de dextérité, réduite par le combat à deux armes.
+// - Dextérité : + gants de dextérité, réduite par le combat à deux armes ;
+// - Résistances au feu, au froid et à la foudre : + ou − la valeur de l'armure pour l'élément (Idan, 2026-10-25).
 // Chaque effet donne la valeur de base, la valeur équipée et les lignes du détail (objet ou raison, écart).
 // Dégâts de chaque set d'armes (Idan, 2026-10-24) : ceux du combat avant la résistance de la cible.
 (function(root,factory){
@@ -88,6 +89,15 @@
       const hpGap=stat=>engine.statWithGear(unit,stat)-engine.statWithGear(bare,stat);
       add("Points de vie",engine.maxHp(bare),engine.maxHp(unit),[["Constitution",3],["Endurance",0.6],["Volonté",0.3]]
         .filter(([stat])=>hpGap(stat)).map(([stat,factor])=>({label:stat+" avec l’équipement",delta:factor*hpGap(stat),reason:"hp"})));
+      // Résistances élémentaires (Idan, 2026-10-25) : + ou − la valeur de l'armure portée pour l'élément (plates −20 au feu,
+      // écailles +35…), comme les dégâts de feu les comptent ; la protection appliquée reste bornée de −50 à +75.
+      for(const [stat,element] of [["Résistance au feu","feu"],["Résistance au froid","froid"],["Résistance à la foudre","foudre"]]){
+        const protection=engine.elementalProtection?.(unit,element);
+        if(!protection) continue;
+        const armor=engine.armorItem(unit);
+        add(stat,engine.baseValue(unit,stat),protection.resistance+protection.armor,[...gearLines(unit,stat),
+          ...(armor&&protection.armor?[{label:itemLabel(armor),delta:protection.armor,reason:"armorElement"}]:[])]);
+      }
       const dexterity=Number(character.stats["Dextérité"])||0,dual=engine.effectiveDexterity(unit);
       const gloved=engine.statWithGear(unit,"Dextérité");
       add("Dextérité",dexterity,dual,[...gearLines(unit,"Dextérité"),

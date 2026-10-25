@@ -10,6 +10,12 @@
     {name:"perforant",weapon:"puissance_perforante_base",armor:"resistance_perforant"},
     {name:"contondant",weapon:"puissance_contondante_base",armor:"resistance_contondant"}
   ];
+  // Dégâts élémentaires (doc 12, Idan 2026-10-25) : la résistance du personnage et la valeur de l'armure portée.
+  const ELEMENTS={
+    feu:{resistance:"Résistance au feu",armor:"resistance_brulant"},
+    froid:{resistance:"Résistance au froid",armor:"resistance_glacant"},
+    foudre:{resistance:"Résistance à la foudre",armor:"resistance_foudroyant"}
+  };
 
   function createCombatEngine(reference,options={}){
     const random=options.random||Math.random;
@@ -70,6 +76,7 @@
       rangedDivisor:constant("combat.ranged.chain.divisor",1.5)
     };
     // Approximation projectile V1 ; couloir de tir décidé par Idan le 2026-10-08.
+    const ELEMENTAL={min:constant("combat.elemental.protection_min",-50),max:constant("combat.elemental.protection_max",75)};
     const STRAY={
       initial:constant("combat.ranged.stray.initial_factor",0.35),
       decay:constant("combat.ranged.stray.decay_factor",0.5),
@@ -345,6 +352,29 @@
       const base=Number(armor[meta.armor])||0;
       const mult=Number(quality(item).multiplicateur_qualite)||1;
       return base>=0?base*mult:base/mult;
+    }
+
+    // Protection contre un élément (feu, froid, foudre ; doc 12, Idan 2026-10-25) : Résistance du personnage (équipement
+    // compris) + valeur de l'armure portée pour cet élément (« brûlant », « glaçant », « foudroyant » ; les plates font
+    // brûler davantage) + bonus de sort en cours (unit.elementalBonus, par exemple Armure de feu contre le froid).
+    // Les dégâts élémentaires sont multipliés par (1 − protection / 100), protection bornée de −50 à +75.
+    function armorElementalResistance(unit,element){
+      const item=armorItem(unit),armor=armorTemplate(item),meta=ELEMENTS[element];
+      if(!armor||!meta) return 0;
+      const base=Number(armor[meta.armor])||0;
+      const mult=Number(quality(item).multiplicateur_qualite)||1;
+      return base>=0?base*mult:base/mult;
+    }
+    function elementalProtection(unit,element){
+      const meta=ELEMENTS[element];
+      if(!meta) return {resistance:0,armor:0,bonus:0,total:0,applied:0};
+      const resistance=statWithGear(unit,meta.resistance),armor=armorElementalResistance(unit,element);
+      const bonus=Number(unit?.elementalBonus?.[element]?.bonus)||0,total=resistance+armor+bonus;
+      return {resistance,armor,bonus,total,applied:clamp(total,ELEMENTAL.min,ELEMENTAL.max)};
+    }
+    function elementalDamage(unit,element,amount){
+      const protection=elementalProtection(unit,element);
+      return {...protection,amount,damage:Math.max(0,Math.ceil(amount*(1-protection.applied/100)-1e-9))};
     }
 
     // Frappe dans le dos V1 : la résistance au type de dégâts est divisée par deux pour l'étape Blesser.
@@ -668,9 +698,10 @@
     // Approximation projectile V1. Couloir de tir (Idan, 2026-10-08) : cône de 30° depuis le tireur, centré sur
     // l'axe tireur → cible, compté de la moitié de la distance de la cible jusqu'à la portée max de l'arme.
     function cartesian(h){ return {x:Math.sqrt(3)*(h.q+h.r/2),y:1.5*h.r}; }
-    function inFiringCorridor(shooter,target,unit){
+    // maxRange : portée du tir (celle de l'arme active par défaut ; un sort comme Trait de feu donne la sienne).
+    function inFiringCorridor(shooter,target,unit,maxRange=weaponRange(shooter).max){
       const reach=axialDistance(shooter,unit);
-      if(reach<STRAY.startRatio*axialDistance(shooter,target)||reach>weaponRange(shooter).max) return false;
+      if(reach<STRAY.startRatio*axialDistance(shooter,target)||reach>maxRange) return false;
       const s=cartesian(shooter),t=cartesian(target),u=cartesian(unit);
       const ax=t.x-s.x,ay=t.y-s.y,bx=u.x-s.x,by=u.y-s.y;
       const cos=(ax*bx+ay*by)/(Math.hypot(ax,ay)*Math.hypot(bx,by));
@@ -678,10 +709,10 @@
     }
     // Candidats : alliés et ennemis du couloir, du plus proche de la cible initiale au plus lointain ;
     // à égalité, un ennemi du tireur d'abord, puis le plus proche du tireur.
-    function strayCandidates(shooter,target,units){
+    function strayCandidates(shooter,target,units,maxRange=weaponRange(shooter).max){
       const ally=u=>Boolean(shooter.team)&&u.team===shooter.team;
       return units
-        .filter(u=>u!==shooter&&u!==target&&u.alive&&!u.offMap&&inFiringCorridor(shooter,target,u))
+        .filter(u=>u!==shooter&&u!==target&&u.alive&&!u.offMap&&inFiringCorridor(shooter,target,u,maxRange))
         .sort((a,b)=>axialDistance(a,target)-axialDistance(b,target)||ally(a)-ally(b)||axialDistance(shooter,a)-axialDistance(shooter,b));
     }
     // P_accident,i = P_toucher(candidat) × 0,35 × 0,5^(i−1) ; le premier touché devient la cible réelle
@@ -916,6 +947,9 @@
       counterchargeTriggers,
       inFiringCorridor,
       strayCandidates,
+      STRAY,
+      elementalProtection,
+      elementalDamage,
       threatens,
       isEncircled,
       intimidation,

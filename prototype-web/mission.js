@@ -26,7 +26,18 @@ function missionOpponents(unit){ return livingMissionUnits(unit.team==="player"?
 function missionEncircled(unit){ return game.mission.engine.isEncircled(unit,missionOpponents(unit)); }
 
 function occupiedMissionKeys(except=null){
-  return new Set(missionUnits().filter(u=>u.alive&&u!==except).map(u=>missionKey(u.q,u.r)));
+  const keys=new Set(missionUnits().filter(u=>u.alive&&u!==except).map(u=>missionKey(u.q,u.r)));
+  for(const t of game.mission?.terrain||[]) keys.add(missionKey(t.q,t.r));
+  return keys;
+}
+// Flaque de magma (doc 12) : une case infranchissable jusqu'au tour untilTurn (exclu).
+function missionTerrainAt(q,r){ return (game.mission?.terrain||[]).find(t=>t.q===q&&t.r===r)||null; }
+function pruneMissionTerrain(){
+  const m=game.mission;
+  if(!m?.terrain?.length) return;
+  const ended=m.terrain.filter(t=>m.turn>=t.untilTurn);
+  m.terrain=m.terrain.filter(t=>m.turn<t.untilTurn);
+  for(const t of ended) missionLog("La flaque de magma refroidit : la case est de nouveau praticable.","magic");
 }
 
 function shortestMissionPath(start,end,except=null){
@@ -103,6 +114,7 @@ function resetMissionActivation(unit){
   unit.prone=false;
   unit.secondMove=false;
   tickMissionRegeneration(unit);
+  tickMissionEnchantments(unit);
 }
 
 // Un blessé ou un fatigué de la compagnie ne peut pas partir en mission (10-mission-time §4 à §6).
@@ -560,6 +572,7 @@ function resolveOpportunityAttacks(reactors,target){
       if(m.over||!target.alive) break;
       const result=m.engine.resolveAttack(reactor,target,{mode:"melee",opportunity:true,hand:h.hand});
       logMissionAttack(reactor,target,result,"opportunity");
+      missionWeaponEnchantStrike(reactor,target,result);
       checkMissionEnd();
       if(!result.ok) continue;
       struck=true;wounded=wounded||result.wound;
@@ -655,6 +668,7 @@ function performMissionAttack(attacker,target,mode,distance,charge=null){
       logMissionAttack(attacker,target,result,charging?"charge":"attack");
       if(!result.ok) continue;
       if(result.chargeFall) break;
+      missionWeaponEnchantStrike(attacker,target,result);
       results.push(result);
       if(h.mode==="melee") melee=true;
       const stray=logMissionStray(attacker,result);
@@ -917,7 +931,7 @@ function handleMissionHexClick(q,r){
   const spellCode=missionSpellMode();
   if(spellCode){
     const spell=missionMagic()?.spell(spellCode);
-    const target=spell?.cible==="case"?{q,r}:clicked;
+    const target=spell?.cible==="case"||spell?.cible==="case_vide"?{q,r}:spell?.cible==="soi"?u:clicked;
     if(target) castPlayerMissionSpell(target);
     return;
   }
@@ -989,14 +1003,15 @@ function missionSpellMode(){
 }
 function missionSelf(unit){ return String(unit?.character?.sex||"").trim().toLowerCase().startsWith("f")?"elle-même":"lui-même"; }
 
-// Bouton de test (Idan, 2026-10-25 : « pour tester ») : toute l'escouade connaît les six sorts de Vie, au niveau 1, pour
-// ce combat seulement ; le grimoire des personnages ne change pas. Le mana, lui, est bien dépensé.
+// Bouton de test (Idan, 2026-10-25 : « pour tester ») : toute l'escouade connaît tous les sorts écrits (Vie, Feu…), au
+// niveau 1, pour ce combat seulement ; le grimoire des personnages ne change pas. Le mana, lui, est bien dépensé.
 function teachMissionTestSpells(){
   const m=game.mission,magic=missionMagic();
   if(!m||m.over||!magic||m.testSpells) return;
   m.testSpells=true;
-  for(const u of m.players) u.spells=magic.schoolSpells("Vie").map(s=>({code:s.code,name:s.nom,school:s.ecole,mastery:1}));
-  missionLog("Test : votre escouade connaît les six sorts de Vie (niveau 1) pour ce combat.","magic");
+  for(const u of m.players) u.spells=magic.spells.map(s=>({code:s.code,name:s.nom,school:s.ecole,mastery:1}));
+  const schools=[...new Set(magic.spells.map(s=>s.ecole))];
+  missionLog("Test : votre escouade connaît tous les sorts ("+schools.join(", ")+", niveau 1) pour ce combat.","magic");
   renderMission();
 }
 
@@ -1014,22 +1029,29 @@ function damageMissionUnitBySpell(unit,amount){
 
 // Lance un sort et applique son résultat (joueur et IA) : action, mana, PV, effets, journal.
 function resolveMissionSpell(caster,target,code){
-  const magic=missionMagic(),spell=magic?.spell(code);
+  const m=game.mission,magic=missionMagic(),spell=magic?.spell(code);
   if(!spell) return null;
-  const out=magic.cast(caster,target,code);
+  if(spell.cible==="soi") target=caster;
+  const out=magic.cast(caster,target,code,{units:missionUnits(),cellFree:missionCellFree(target)});
   if(!out.ok){ missionLog(out.reason,"bad"); return out; }
   if(spell.action==="rapide") caster.quickAvailable=false; else caster.attackAvailable=false;
   caster.character.mana=Math.max(0,Math.round((magic.currentMana(caster)-out.cost)*100)/100);
   const name=caster.character.name;
-  const on=spell.cible==="case"?"":target===caster?" sur "+missionSelf(caster):" sur "+target.character.name;
+  const on=["case","case_vide","soi"].includes(spell.cible)?"":target===caster?" sur "+missionSelf(caster):" sur "+target.character.name;
   const detail=" ("+Math.round(out.p)+" %"+(out.armor?", armure −"+Math.round(out.armor):"")+", jet "+out.roll+", "+out.cost+" mana)";
   if(!out.success){
     missionLog(name+" rate "+spell.nom+on+detail+".","miss");
     if(out.fumble){
-      missionLog("Échec critique ("+out.fumbleRoll+" > Chance) : "+(out.selfDamage
-        ?"le sort se retourne, "+name+" perd "+out.selfDamage+" PV."
-        :"le sort se dissipe."),"bad");
-      damageMissionUnitBySpell(caster,out.selfDamage);
+      if(out.selfDamage&&out.element){
+        const hit=m.engine.elementalDamage(caster,out.element,out.selfDamage);
+        missionLog("Échec critique ("+out.fumbleRoll+" > Chance) : le sort se retourne, "+name+" subit "+hit.damage+" PV de feu"+missionProtectionNote(hit)+".","bad");
+        damageMissionUnitBySpell(caster,hit.damage);
+      }else{
+        missionLog("Échec critique ("+out.fumbleRoll+" > Chance) : "+(out.selfDamage
+          ?"le sort se retourne, "+name+" perd "+out.selfDamage+" PV."
+          :"le sort se dissipe."),"bad");
+        damageMissionUnitBySpell(caster,out.selfDamage);
+      }
       checkMissionEnd();
     }
     return out;
@@ -1054,13 +1076,56 @@ function resolveMissionSpell(caster,target,code){
   }else if(spell.effet==="purge_poison"){
     target.poisoned=false;
     missionLog(name+" lance "+spell.nom+on+detail+" : le poison est éliminé.","magic");
+  }else if(spell.effet==="degats"&&spell.toucher==="distance"){
+    const aim=" (toucher "+Math.round(out.pHit)+" %, jet "+out.hitRoll+")";
+    if(out.hit){
+      const hit=missionElementalHit(target,out.element,out.amount);
+      missionLog(name+" lance "+spell.nom+on+detail+" : touché"+aim+", "+hit.damage+" PV de feu"+missionProtectionNote(hit)+". "
+        +target.character.name+" reste à "+Math.max(0,target.hp)+" PV."+critical,"damage");
+    }else if(out.stray){
+      missionLog(name+" lance "+spell.nom+on+detail+" : raté"+aim+" ; le trait part dans la ligne de tir et atteint "
+        +out.stray.unit.character.name+" par accident ("+Math.round(out.stray.p)+" %, jet "+out.stray.roll+") !","bad");
+      const hit=missionElementalHit(out.stray.unit,out.element,out.amount);
+      missionLog(out.stray.unit.character.name+" subit "+hit.damage+" PV de feu"+missionProtectionNote(hit)+".","damage");
+    }else{
+      missionLog(name+" lance "+spell.nom+on+detail+" : raté"+aim+".","miss");
+    }
+    checkMissionEnd();
+  }else if(spell.effet==="degats_zone"){
+    const zone=out.zone,drift=zone.precision&&!zone.precision.ok
+      ?" ; elle dévie de "+zone.precision.deviation+" case"+(zone.precision.deviation>1?"s":"")+" (précision "+Math.round(zone.precision.p)+" %, jet "+zone.precision.roll+")"
+      :zone.precision?" ; elle tombe où il faut (précision "+Math.round(zone.precision.p)+" %, jet "+zone.precision.roll+")":"";
+    const victims=magic.unitsInZone(zone.center,zone.radius,missionUnits(),zone.minDistance).filter(u=>u!==caster||spell.cible!=="soi");
+    const lines=victims.map(u=>{
+      const amount=Math.ceil(out.amount*magic.zoneFactor(zone,m.engine.axialDistance(zone.center,u))-1e-9);
+      const hit=missionElementalHit(u,out.element,amount);
+      return u.character.name+" −"+hit.damage;
+    });
+    missionLog(name+" lance "+spell.nom+" (rayon "+zone.radius+")"+detail+drift+" : "+out.amount+" PV de feu"
+      +(zone.degressive?" au centre, moins vers le bord":" pour chacun")+(lines.length?" — "+lines.join(", "):" — personne dans la zone")+"."+critical,"damage");
+    checkMissionEnd();
+  }else if(spell.effet==="arme_elementaire"){
+    target.weaponEnchant={...out.effect};
+    missionLog(name+" lance "+spell.nom+on+detail+" : chaque coup qui touche ajoute du feu, pendant "+out.effect.turns+" tours."+critical,"magic");
+  }else if(spell.effet==="protection_elementaire"){
+    target.elementalBonus={...(target.elementalBonus||{}),[out.effect.element]:{bonus:out.effect.bonus,turns:out.effect.turns}};
+    missionLog(name+" lance "+spell.nom+on+detail+" : +"+out.effect.bonus+" de protection contre le "+out.effect.element+", pendant "+out.effect.turns+" tours.","magic");
+  }else if(spell.effet==="terrain_infranchissable"){
+    m.terrain=[...(m.terrain||[]),{q:out.terrain.q,r:out.terrain.r,untilTurn:m.turn+out.terrain.turns}];
+    missionLog(name+" lance "+spell.nom+detail+" : la case devient infranchissable pendant "+out.terrain.turns+" tours.","magic");
   }
   return out;
+}
+// Case vide : ni personnage en jeu, ni flaque de magma.
+function missionCellFree(target){
+  if(!target||target.character) return true;
+  return !missionUnits().some(u=>u.alive&&!u.offMap&&u.q===target.q&&u.r===target.r)&&!missionTerrainAt(target.q,target.r);
 }
 
 function castPlayerMissionSpell(target){
   const m=game.mission,u=missionActiveUnit(),code=missionSpellMode();
   if(!u||!code) return;
+  if(missionMagic()?.spell(code)?.cible==="soi"&&target!==u) return;
   m.mode=null;
   resolveMissionSpell(u,target,code);
   if(missionActiveUnitLost()) return;
@@ -1076,6 +1141,38 @@ function tickMissionRegeneration(unit){
   if(effect.turns<=0) unit.regeneration=null;
   missionLog("Régénération : "+unit.character.name+" récupère "+healed+" PV"
     +(effect.turns>0?" (encore "+effect.turns+" tour"+(effect.turns>1?"s":"")+").":" (fin)."),"magic");
+}
+
+// Arme enflammée et Armure de feu (doc 12) : actives pendant leur nombre de tours, décomptés au début de chaque activation
+// de celui qui les porte (le tour du lancer compte).
+function tickMissionEnchantments(unit){
+  const name=unit.character.name;
+  if(unit.weaponEnchant){
+    unit.weaponEnchant.turns-=1;
+    if(unit.weaponEnchant.turns<=0){ unit.weaponEnchant=null; missionLog("Les flammes de l’arme de "+name+" s’éteignent.","magic"); }
+  }
+  for(const [element,effect] of Object.entries(unit.elementalBonus||{})){
+    effect.turns-=1;
+    if(effect.turns<=0){ delete unit.elementalBonus[element]; missionLog("L’armure de feu de "+name+" se dissipe.","magic"); }
+  }
+}
+// Dégâts élémentaires d'un sort sur une unité : protection (résistance + armure + bonus, bornée) puis PV.
+function missionElementalHit(unit,element,amount){
+  const hit=game.mission.engine.elementalDamage(unit,element,amount);
+  damageMissionUnitBySpell(unit,hit.damage);
+  return hit;
+}
+function missionProtectionNote(hit){
+  const p=Math.round(hit.applied);
+  return p?" (protection "+(p>0?p:"−"+Math.abs(p))+" %)":"";
+}
+// Arme enflammée : chaque coup qui touche (non bloqué) ajoute des dégâts de feu, même s'il ne blesse pas.
+function missionWeaponEnchantStrike(attacker,target,result){
+  const fx=attacker.weaponEnchant,magic=missionMagic();
+  if(!fx||!magic||!result?.ok||!result.hit||result.blocked||!target.alive) return;
+  const strike=magic.weaponStrike(fx),hit=missionElementalHit(target,fx.element,strike.amount);
+  missionLog("Arme enflammée : "+target.character.name+" subit "+hit.damage+" PV de feu"+missionProtectionNote(hit)+".","magic");
+  checkMissionEnd();
 }
 
 // IA des sorts (pour tester, et pour le combat automatique) : Soin profond sur l'allié le plus blessé sous 35 % de ses PV,
@@ -1209,6 +1306,7 @@ function performMissionCharge(unit,target,charge){
     if(!target.alive||target.fleeing||!e.usableHands(target,distance).some(h=>h.hand===reaction.hand&&h.mode===reaction.mode)) continue;
     const r=e.resolveAttack(target,unit,{mode:reaction.mode,distance,hand:reaction.hand,bystanders:missionUnits()});
     logMissionAttack(target,unit,r,"countercharge");
+    missionWeaponEnchantStrike(target,unit,r);
     const stray=logMissionStray(target,r);
     checkMissionEnd();
     if(stray) resolveMissionCourage(target,stray,{ok:true,mode:"ranged",wound:true});
@@ -1326,6 +1424,7 @@ function runMissionEnemyTurn(){
 
   if(m.over){ renderMission(); return; }
   m.turn+=1;
+  pruneMissionTerrain();
   for(const unit of m.players) unit.acted=false;
   missionLog("Tour "+m.turn+" — votre équipe.","turn");
   selectNextMissionPlayer();
@@ -1377,8 +1476,11 @@ function targetableMissionCells(){
   const spellCode=missionSpellMode(),magic=missionMagic();
   if(spellCode){
     if(!magic) return set;
-    if(magic.spell(spellCode)?.cible==="case"){
-      for(const c of missionCells()) if(magic.canCast(u,c,spellCode).ok) set.add(missionKey(c.q,c.r));
+    const cible=magic.spell(spellCode)?.cible;
+    if(cible==="case"||cible==="case_vide"){
+      for(const c of missionCells()) if(magic.canCast(u,c,spellCode,{cellFree:missionCellFree(c)}).ok) set.add(missionKey(c.q,c.r));
+    }else if(cible==="soi"){
+      if(magic.canCast(u,u,spellCode).ok) set.add(missionKey(u.q,u.r));
     }else{
       for(const unit of missionUnits()) if(unit.alive&&!unit.offMap&&magic.canCast(u,unit,spellCode).ok) set.add(missionKey(unit.q,unit.r));
     }
@@ -1396,7 +1498,8 @@ function targetableMissionCells(){
 function missionRosterMagic(u){
   const magic=missionMagic();
   if(!magic||!magic.knownSpells(u).length) return "";
-  return " · Mana "+Math.floor(magic.currentMana(u))+"/"+Math.round(magic.manaMax(u))+(u.regeneration?" · Régénération":"");
+  return " · Mana "+Math.floor(magic.currentMana(u))+"/"+Math.round(magic.manaMax(u))+(u.regeneration?" · Régénération":"")
+    +(u.weaponEnchant?" · Arme enflammée":"")+(u.elementalBonus?.froid?" · Armure de feu":"");
 }
 
 function renderMissionRoster(units){
@@ -1429,6 +1532,8 @@ function renderMission(){
     const p=missionHexPixel(q,r),key=missionKey(q,r),classes=["hex-cell"];
     let title="";
     if(targets.has(key)) classes.push(m.mode==="move"?"reachable":missionSpellMode()?"spell-target":"targetable");
+    const magma=missionTerrainAt(q,r);
+    if(magma){ classes.push("magma"); title=` title="Flaque de magma : infranchissable jusqu’au tour ${magma.untilTurn}"`; }
     if(targets.has(key)&&m.mode==="move"){
       const risk=missionPathOpportunityCount(u,shortestMissionPath(u,{q,r},u));
       if(risk){

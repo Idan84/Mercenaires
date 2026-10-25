@@ -946,7 +946,7 @@ function sheetEquippedValue(m,name){
 // Charisme (pas encore joués au combat).
 function equipmentDetail(effect,total="Au combat"){
   if(!effect?.lines.length) return "";
-  const note={weight:"poids, réduit par la maîtrise",armor:"handicap de l’armure",helmet:"poids du casque",speed:"avec l’équipement",dual:"une arme dans chaque main"};
+  const note={weight:"poids, réduit par la maîtrise",armor:"handicap de l’armure",armorElement:"protection de l’armure",helmet:"poids du casque",speed:"avec l’équipement",dual:"une arme dans chaque main"};
   const line=l=>{
     const delta=Math.round(l.delta);
     return `<span class="sheet-gear-line"><span>${esc(l.label)}<small>${esc(l.reason==="gear"?(l.points!=null?`+${l.points} points`:`${l.percent<0?"−":"+"}${Math.abs(l.percent)} % de la valeur de base`):note[l.reason]||"")}${l.twoHands?" · à deux mains ÷2":""}</small></span><b class="${delta<0?"is-malus":delta>0?"is-bonus":""}">${delta>0?"+":""}${fmt(delta)}</b></span>`;

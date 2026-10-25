@@ -292,7 +292,20 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
 .gear-tile--standard{border-color:#c08a4e}
 .gear-tile--luxury{border-color:#f0c050;box-shadow:0 0 12px rgba(240,192,80,.5),0 4px 12px rgba(0,0,0,.35)}
 /* Carte d'objet au survol (Idan, 2026-10-24) : une carte de jeu, couleur du cadre selon le tier. */
-#item-card-float{position:fixed;z-index:60;display:none;width:300px;pointer-events:none}
+/* Bulle des pictos (Idan, 2026-10-25) : nom et phrase d'explication du peuple, de la culture ou de l'ascendance. */
+#picto-tip{position:fixed;z-index:61;display:none;width:max-content;max-width:300px;padding:10px 13px;border:1px solid #a9814f;border-radius:10px;background:#1b130e;box-shadow:0 12px 30px #000b;color:#ead9bd;font:14px/1.4 system-ui,sans-serif;text-align:left;pointer-events:none}
+#picto-tip.is-visible{display:grid;gap:2px}
+#picto-tip small{color:#bb9a6e;font:700 11px Georgia,serif;letter-spacing:.1em;text-transform:uppercase}
+#picto-tip strong{color:#ffe1ac;font:700 16px Georgia,serif}
+#picto-tip span{color:#d9c6a2}
+.picto[data-picto-name]{cursor:help}
+#item-card-float{position:fixed;z-index:60;display:none;width:max-content;pointer-events:none}
+/* L'image de l'objet en grand, juste à côté de la carte (Idan, 2026-10-25). */
+.item-card-wrap{display:flex;align-items:center;gap:12px}
+.item-card-wrap>.item-card{width:300px}
+.item-card-showcase{--tier:#8f8a84;flex:none;width:min(400px,60vh);aspect-ratio:1;margin:0;border:3px solid var(--tier);border-radius:14px;background:#0b0806;box-shadow:0 18px 40px #000c;overflow:hidden}
+.item-card-showcase img{display:block;width:100%;height:100%;object-fit:cover}
+@media(max-width:760px){.item-card-showcase{display:none}}
 #item-card-float.is-visible{display:block}
 .item-card{--tier:#8f8a84;display:grid;gap:9px;padding:12px 14px 13px;border:2px solid var(--tier);border-radius:12px;background:linear-gradient(170deg,#2c2019,#16100c);box-shadow:0 18px 40px #000c,inset 0 0 0 1px rgba(255,255,255,.04);color:#ead9bd;font-size:13px;line-height:1.3;text-align:left}
 .item-card--t2{--tier:#c9ccd2}
@@ -336,7 +349,6 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
 .gear-spot--weapon_set_1_main:has(.gear-tile--art),.gear-spot--weapon_set_1_off:has(.gear-tile--art){transform:translate(-50%,-36px)}
 .gear-spot--weapon_set_1_main .gear-tile--art,.gear-spot--weapon_set_1_off .gear-tile--art{width:72px;height:72px}
 .gear-tile--both-hands{opacity:.5}
-.gear-caption{max-width:140px;overflow:hidden;padding:1px 7px;border-radius:6px;background:rgba(246,236,214,.88);color:#3a2616;font:700 11px/1.3 Georgia,serif;font-style:normal;text-align:center;text-overflow:ellipsis;white-space:nowrap}
 @media(max-width:1100px){.gear{grid-template-columns:repeat(2,minmax(0,1fr))}.equipment-mannequin.gear-doll{grid-column:1/-1;order:-1;max-width:520px;justify-self:center}}
 @media(max-width:600px){.gear{grid-template-columns:1fr}}
 
@@ -1559,6 +1571,12 @@ body[data-screen="camp"] > .app-shell { position: relative; z-index: 1; }
 
 /* Choix du portrait du capitaine : grille desktop compacte, aperçu plein pied à droite. */
 .captain-avatar-groups{display:grid;gap:19px;max-height:min(55vh,580px);overflow-y:auto;padding:6px;scrollbar-color:rgba(201,164,92,.35) transparent}
+/* Bascule ♂ / ♀ (Idan, 2026-10-25) : deux boutons ronds, l'actif en or. */
+.wizard-options-head .avatar-sex-toggle{display:flex;gap:10px;align-self:center;font-size:inherit;letter-spacing:0}
+.avatar-sex-btn{display:grid;place-items:center;width:46px;height:46px;padding:0;border:2px solid rgba(186,153,93,.4);border-radius:50%;background:rgba(24,19,16,.8);color:#cdb887;font:700 24px/1 system-ui,sans-serif;cursor:pointer;transition:border-color .15s,background .15s,color .15s}
+.avatar-sex-btn:hover:not([disabled]),.avatar-sex-btn:focus-visible{border-color:#edc983;color:#ffe1ac;outline:none}
+.avatar-sex-btn.is-active{border-color:#ffd582;background:linear-gradient(180deg,#80592f,#4a321f);color:#fff2d2;box-shadow:0 0 0 3px rgba(255,213,130,.18)}
+.avatar-sex-btn[disabled]{opacity:.35;cursor:not-allowed}
 .captain-avatar-group{min-width:0}
 .captain-avatar-group h4{margin:0 0 10px;padding:0 1px 7px;border-bottom:1px solid rgba(201,164,92,.18);font:650 .75rem system-ui,sans-serif;letter-spacing:.09em;text-transform:uppercase;color:#cdb887}
 .captain-avatar-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
@@ -1614,6 +1632,23 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 .talk-options button:disabled{background:transparent;color:#7d6b58;cursor:not-allowed}
 .talk-options button:disabled::before{color:#6b5a48}
 .talk-dialog--recruit{width:min(640px,94vw)}
+/* Portrait en grand, 400 px sur la gauche (Idan, 2026-10-25) : recrutement, échanges d'équipement, intendant. Le
+   bandeau du haut se fond dans la grille (display:contents) : le portrait occupe toute la colonne de gauche. */
+.talk-dialog--recruit{width:min(1000px,96vw);overflow:hidden}
+.talk-dialog--recruit[open]{display:grid;grid-template-columns:400px minmax(0,1fr);grid-template-rows:auto auto 1fr;align-items:start}
+.talk-dialog--recruit .talk-head{display:contents}
+.talk-dialog--recruit .talk-face{grid-column:1;grid-row:1/span 3;align-self:stretch;min-height:400px;border-right:1px solid #71583e;background:#140e0a}
+.talk-dialog--recruit .talk-head>div:not(.talk-face){grid-column:2;grid-row:1;padding:20px 22px 12px;border-bottom:1px solid #71583e}
+.talk-dialog--recruit>:not(.talk-head){grid-column:2}
+.talk-dialog--recruit .avatar-frame--talk{width:400px;height:100%;min-height:400px;aspect-ratio:auto;border:0;border-radius:0;box-shadow:none}
+.talk-dialog--recruit .avatar-frame--talk .avatar-fallback span{font-size:5rem}
+@media(max-width:760px){
+  .talk-dialog--recruit[open]{grid-template-columns:minmax(0,1fr);grid-template-rows:none}
+  .talk-dialog--recruit .talk-face{grid-row:auto;min-height:0;border-right:0;border-bottom:1px solid #71583e}
+  .talk-dialog--recruit .talk-head>div:not(.talk-face){grid-column:1;grid-row:auto}
+  .talk-dialog--recruit>:not(.talk-head){grid-column:1}
+  .talk-dialog--recruit .avatar-frame--talk{width:100%;height:auto;max-height:42vh;aspect-ratio:1}
+}
 .talk-face{flex:none}
 .avatar-frame--talk{width:96px;aspect-ratio:1;margin:0;border:2px solid #c9a15f;border-radius:10px;box-shadow:0 4px 14px #000a}
 .avatar-frame--talk .avatar-fallback{padding:6px}
@@ -1931,6 +1966,31 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .sheet-stat-pop .compare-dot{border-color:#1b130e;box-shadow:0 0 0 1px #a9814f}
 .sheet-stat-pop .compare-dot.current{background:#ffd77a;box-shadow:0 0 0 1px #ffd77a}
 .sheet-stat-pop-mid{display:flex;justify-content:space-between;gap:10px;margin-bottom:8px;font-size:12px;color:#cdb38c}
+/* Onglet Caractéristiques (Idan, 2026-10-25) : un grand détail lisible, sur la largeur des trois colonnes ;
+   placé par placeStatPopover (ui.js) sous la ligne survolée, ou au-dessus pour les lignes du bas. Il ne prend pas la
+   souris : on passe d'une valeur à l'autre sans le refermer. */
+.sheet-stats{position:relative}
+.sheet-stats .sheet-stat-value{position:static}
+.sheet-stats .sheet-stat-pop{right:0;bottom:auto;width:auto;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px 28px;padding:18px 22px;border-width:2px;font-size:16px;line-height:1.45;pointer-events:none}
+.sheet-stats .sheet-stat-value:hover .sheet-stat-pop,.sheet-stats .sheet-stat-value:focus-within .sheet-stat-pop{display:grid}
+.sheet-stat-pop-head{grid-column:1/-1;display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding-bottom:10px;border-bottom:1px solid rgba(169,129,79,.35)}
+.sheet-stat-pop-head strong{color:#ffe1ac;font:700 24px Georgia,serif}
+.sheet-stat-pop-head b{color:#ffd77a;font:700 32px Georgia,serif}
+.sheet-stat-compare{display:block;min-width:0}
+.sheet-stats .sheet-stat-pop .sheet-gear-detail{margin:0;padding:0;border:0}
+.sheet-stats .sheet-stat-pop .sheet-gear-detail+.sheet-stat-compare{padding-left:26px;border-left:1px solid rgba(169,129,79,.35)}
+.sheet-stats .sheet-stat-pop .sheet-stat-compare:only-of-type,.sheet-stats .sheet-stat-pop-head+.sheet-stat-compare{grid-column:1/-1}
+.sheet-stats .sheet-stat-pop-title{font-size:13px}
+.sheet-stats .sheet-stat-pop-mid{font-size:15px}
+.sheet-stats .sheet-stat-pop .compare-track{margin:10px 8px 14px}
+.sheet-stats .sheet-gear-line{font-size:15px}
+.sheet-stats .sheet-gear-line b{font-size:17px}
+.sheet-stats .sheet-gear-line small{font-size:13px}
+.sheet-stats .sheet-stat-who{padding:8px 10px}
+.sheet-stats .sheet-stat-who img,.sheet-stats .sheet-stat-who .sheet-stat-face{width:56px;height:56px}
+.sheet-stats .sheet-stat-who small{font-size:12px}
+.sheet-stats .sheet-stat-who b{font-size:20px}
+.sheet-stats .sheet-stat-who em{font-size:14px}
 .sheet-stat-pop-mid i.compare-dot{position:static;display:inline-block;transform:none;margin-right:5px;vertical-align:middle}
 .sheet-stat-pop-mid b{color:#ffe1ac;font-family:Georgia,serif}
 .sheet-stat-pop-ends{display:grid;grid-template-columns:1fr 1fr;gap:8px}

@@ -284,6 +284,17 @@ function avatarSexGroup(avatar){
   if(["homme","masculin","male"].includes(sex)) return "men";
   return "other";
 }
+// Portraits (Idan, 2026-10-25) : deux boutons ronds ♂ et ♀, en bascule, montrent les hommes ou les femmes ; les
+// portraits sans sexe renseigné apparaissent dans les deux listes. Au départ : le sexe du portrait choisi, sinon les
+// hommes s'il y en a.
+const AVATAR_SEXES=[{key:"men",symbol:"♂",label:"Hommes"},{key:"women",symbol:"♀",label:"Femmes"}];
+function avatarSexShown(avatars){
+  const has=key=>avatars.some(a=>avatarSexGroup(a)===key);
+  if(wizard.avatarSex&&has(wizard.avatarSex)) return wizard.avatarSex;
+  const chosen=avatars.find(a=>a.id===wizard.choice.avatar),group=chosen&&avatarSexGroup(chosen);
+  if(group==="men"||group==="women") return group;
+  return has("men")||!has("women")?"men":"women";
+}
 function renderAvatarChoice(){
   const avatars=captainAvatarOptions();
   if(!avatars.length) return '<div class="wizard-name-card"><h3>Aucun portrait compatible disponible.</h3><p>Votre capitaine utilisera le portrait générique jusqu’à l’arrivée de nouveaux avatars.</p></div>';
@@ -295,21 +306,15 @@ function renderAvatarChoice(){
       <img src="${esc(img)}" alt="" loading="lazy" onerror="this.hidden=true">
     </button>`;
   };
-  const groups=[
-    {key:"women",label:"Femmes"},
-    {key:"men",label:"Hommes"},
-    {key:"other",label:"Autres portraits"}
-  ].map(group=>{
-    const matching=avatars.filter(avatar=>avatarSexGroup(avatar)===group.key);
-    if(!matching.length) return "";
-    return `<section class="captain-avatar-group" aria-label="${group.label}">
-      <h4>${group.label}</h4>
-      <div class="captain-avatar-grid">${matching.map(renderCard).join("")}</div>
-    </section>`;
+  const shown=avatarSexShown(avatars);
+  const toggle=AVATAR_SEXES.map(sex=>{
+    const count=avatars.filter(a=>avatarSexGroup(a)===sex.key).length;
+    return `<button type="button" class="avatar-sex-btn${sex.key===shown?" is-active":""}" data-wizard-avatar-sex="${sex.key}" aria-pressed="${sex.key===shown}" aria-label="${sex.label}" title="${sex.label}"${count?"":" disabled"}>${sex.symbol}</button>`;
   }).join("");
+  const list=avatars.filter(a=>[shown,"other"].includes(avatarSexGroup(a)));
   return `<div class="wizard-layout"><section class="wizard-options-panel">
-    <div class="wizard-options-head"><span>Choisissez votre visage</span></div>
-    <div class="captain-avatar-groups">${groups}</div>
+    <div class="wizard-options-head"><span>Choisissez votre visage</span><span class="avatar-sex-toggle" role="group" aria-label="Hommes ou femmes">${toggle}</span></div>
+    <div class="captain-avatar-groups"><div class="captain-avatar-grid">${list.map(renderCard).join("")}</div></div>
   </section><aside class="wizard-detail-panel">
     ${chosen?renderAvatar({name:wizard.choice.name||"Capitaine",people:wizard.choice.people,avatar:chosen},{variant:"detail",kind:"full"}):"<h3>Sélectionnez un portrait</h3><p>Les portraits correspondent à votre peuple et à votre culture, lorsqu’elle est renseignée sur l’avatar.</p>"}
   </aside></div>`;
@@ -412,6 +417,8 @@ function initializeIntroUi(){
   $("wizard-prev-btn").addEventListener("click",previousWizardStep);
   $("wizard-next-btn").addEventListener("click",nextWizardStep);
   $("wizard-body").addEventListener("click",event=>{
+    const sex=event.target.closest("[data-wizard-avatar-sex]");
+    if(sex){wizard.avatarSex=sex.dataset.wizardAvatarSex;renderWizard();return;}
     const avatar=event.target.closest("[data-wizard-avatar]");
     if(avatar){setChoice("avatar",avatar.dataset.wizardAvatar);renderWizard();return;}
     const btn=event.target.closest("[data-wizard-choice]");

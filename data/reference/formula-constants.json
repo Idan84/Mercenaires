@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 164,
+  "row_count": 169,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -448,6 +448,46 @@
       "description": "Nombre de mercenaires de la compagnie, capitaine compris, que le Dortoir peut héberger en début de partie. Porté de 20 à 40 par Idan le 2026-10-03, car l'escouade initiale peut dépasser 20.",
       "formule": "Camp & château en ruines",
       "valeur": 40,
+      "version": "V1"
+    },
+    {
+      "nom": "Dortoir — places par agrandissement",
+      "code": "camp.dormitory.expansion_places",
+      "description": "Places ajoutées au dortoir par chaque agrandissement, sans limite (Idan, 2026-10-25 : « des paliers de 5 »).",
+      "formule": "Agrandissement du dortoir",
+      "valeur": 5,
+      "version": "V1"
+    },
+    {
+      "nom": "Dortoir — or du premier agrandissement",
+      "code": "camp.dormitory.expansion_gold_base",
+      "description": "Prix en pièces d’or du premier agrandissement (Idan, 2026-10-25 : « 100 or et 2 jours » au début). Le k-ième coûte ce prix × croissance^(k−1), arrondi à 10.",
+      "formule": "Agrandissement du dortoir",
+      "valeur": 100,
+      "version": "V1"
+    },
+    {
+      "nom": "Dortoir — croissance du prix",
+      "code": "camp.dormitory.expansion_gold_growth",
+      "description": "Chaque agrandissement coûte ce facteur × le prix du précédent : 100 PO pour 45 places, 740 PO pour 100 places, environ 28 500 PO pour 200 places (JC, 2026-10-25).",
+      "formule": "Agrandissement du dortoir",
+      "valeur": 1.2,
+      "version": "V1"
+    },
+    {
+      "nom": "Dortoir — jours du premier agrandissement",
+      "code": "camp.dormitory.expansion_days_base",
+      "description": "Durée en jours du premier agrandissement (Idan, 2026-10-25).",
+      "formule": "Agrandissement du dortoir",
+      "valeur": 2,
+      "version": "V1"
+    },
+    {
+      "nom": "Dortoir — un jour de plus tous les N agrandissements",
+      "code": "camp.dormitory.expansion_days_every",
+      "description": "Le k-ième agrandissement dure jours de base + ⌊(k−1) / N⌋ : 2 jours pour les trois premiers, 3 pour les trois suivants… (JC, 2026-10-25).",
+      "formule": "Agrandissement du dortoir",
+      "valeur": 3,
       "version": "V1"
     },
     {

@@ -123,6 +123,7 @@ function renderGame() {
   renderGenerated();
   renderTavern();
   renderQuartermaster();
+  renderCampBuildings();
 }
 
 // Tri exclusivement visuel : aucune modification de l'ordre sauvegardé ni des règles.
@@ -1371,6 +1372,7 @@ async function init() {
     initializeMissionUi();
     initializeTavernUi();
     initializeExpeditionUi();
+    initializeCampBuildingsUi();
     initializeSaveUi();
     initializeScreenUi();
     initializeIntroUi();

@@ -361,6 +361,45 @@
       return state.company.camp.dormitoryCapacity-dormitoryUsed(state);
     }
 
+    // Agrandir le dortoir (Idan, 2026-10-25) : +5 places à chaque agrandissement, sans limite ; chacun coûte plus d'or
+    // et de jours que le précédent. Le k-ième (k = 1 pour passer de 40 à 45 places) coûte 100 × 1,2^(k−1) PO, arrondi à
+    // 10, et dure 2 + ⌊(k−1)/3⌋ jours (camp.dormitory.expansion_*). Un chantier à la fois ; l'or est payé au lancement,
+    // les places sont prêtes le jour où le chantier se termine.
+    const DORM_EXPANSION={
+      places:referenceConstant(reference,"camp.dormitory.expansion_places",5),
+      gold:referenceConstant(reference,"camp.dormitory.expansion_gold_base",100),
+      growth:referenceConstant(reference,"camp.dormitory.expansion_gold_growth",1.2),
+      days:referenceConstant(reference,"camp.dormitory.expansion_days_base",2),
+      every:referenceConstant(reference,"camp.dormitory.expansion_days_every",3)
+    };
+    function dormitoryExpansionCost(number){
+      return {number,places:DORM_EXPANSION.places,
+        gold:Math.round(DORM_EXPANSION.gold*Math.pow(DORM_EXPANSION.growth,number-1)/10)*10,
+        days:DORM_EXPANSION.days+Math.floor((number-1)/DORM_EXPANSION.every)};
+    }
+    // Le prochain agrandissement, ou celui qui est en chantier.
+    function nextDormitoryExpansion(state){
+      return dormitoryExpansionCost((Number(state.company.camp.dormitoryExpansions)||0)+1);
+    }
+    function startDormitoryExpansion(state){
+      const camp=state.company.camp;
+      if(camp.construction) return {ok:false,reason:"Un chantier est déjà en cours au dortoir."};
+      const next=nextDormitoryExpansion(state);
+      if(state.company.gold<next.gold) return {ok:false,reason:"Pas assez d’or : il faut "+next.gold+" PO.",cost:next};
+      state.company.gold-=next.gold;
+      camp.construction={kind:"dormitory",...next,startDay:state.day,endDay:state.day+next.days};
+      return {ok:true,construction:camp.construction};
+    }
+    // Chaque matin : le chantier terminé ajoute ses places au dortoir.
+    function advanceConstruction(state){
+      const camp=state.company.camp,work=camp.construction;
+      if(!work||state.day<work.endDay) return null;
+      camp.dormitoryCapacity+=work.places;
+      camp.dormitoryExpansions=work.number;
+      camp.construction=null;
+      return {kind:work.kind,places:work.places,capacity:camp.dormitoryCapacity};
+    }
+
     // Indisponibilité après mission (10-mission-time §4 à §6) : un blessé ou un fatigué ne peut pas
     // partir en mission tant que son compteur de jours n'est pas écoulé.
     // state (facultatif) : un mercenaire parti en expédition n'est pas disponible non plus.
@@ -390,7 +429,8 @@
       const tavernReport=tavern.tavernMorning(state.tavern,state.day,candidateFactory(state));
       const missionTaken=expireMissionOffer(state);
       const expeditions=advanceExpeditions(state);
-      return {day:state.day,recovered,salaries,tavern:tavernReport,missionTaken,expeditions};
+      const built=advanceConstruction(state);
+      return {day:state.day,recovered,salaries,tavern:tavernReport,missionTaken,expeditions,built};
     }
 
     // Tableau des contrats (doc 17) : une offre à la fois pour l'instant, « Faire le ménage » en boucle. Une offre
@@ -635,6 +675,9 @@
       dormitoryFree,
       dormitoryUsed,
       dormitoryPlaces,
+      dormitoryExpansionCost,
+      nextDormitoryExpansion,
+      startDormitoryExpansion,
       signCandidate,
       offerToCandidate,
       askTavernkeeper,

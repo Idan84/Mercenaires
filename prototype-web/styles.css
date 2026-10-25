@@ -1772,6 +1772,16 @@ body[data-screen="camp"] .camp-scene>.panel h2{font:normal 32px Georgia,serif;co
 body[data-screen="camp"] .camp-scene>.panel .eyebrow{color:#d3ac76}
 body[data-screen="camp"] .camp-scene>.panel .muted{color:#c2b29e}
 #captain-summary{max-width:750px;margin:22px auto}
+/* Constructions du camp (Idan, 2026-10-25) : pour l'instant le dortoir, dans Ma Compagnie. */
+.camp-buildings{max-width:750px;margin:0 auto 8px}
+.camp-buildings h3{margin:0 0 10px;font:normal 13px/1.2 system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#d3ac76}
+.building-card{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;padding:14px 18px;border:1px solid #9c7952;border-radius:13px;background:linear-gradient(130deg,#443126,#201916);color:#e9d9c0;box-shadow:0 10px 25px #0005}
+.building-info{display:flex;flex-direction:column;gap:4px}
+.building-info strong{font:normal 21px Georgia,serif;color:#f4d9a6}
+.building-info span,.building-cost{color:#c2b29e;font-size:14px}
+.building-action{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.building-action button[disabled]{opacity:.5;cursor:not-allowed}
+.building-work{margin:0;color:#eed098;font-style:italic}
 .character-list{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
 .roster-card{display:grid;grid-template-columns:94px minmax(0,1fr) auto;gap:14px;align-items:start;padding:14px;border:1px solid #9c7952;border-radius:13px;background:linear-gradient(130deg,#443126,#201916);text-align:left;color:#e9d9c0;box-shadow:0 10px 25px #0005;min-width:0;transition:border-color .16s,transform .16s}
 .roster-card:hover,.roster-card:focus-visible{border-color:#eed098;transform:translateY(-2px);outline:none}

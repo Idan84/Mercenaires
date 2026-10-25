@@ -124,7 +124,22 @@ Même modèle que la Vie (effet, mana, difficulté par palier, CC aux dés maxim
 
 ### Écoles : progression et régression
 
-Chaque gain dans une école fait perdre **la moitié de ce gain**, partagée à parts égales entre ses **deux écoles opposées** (un quart chacune), comme les armes (doc 08). Chaque lancer donne de l'XP au sort et à son école (barème à chiffrer à l'étape 3).
+Chaque gain dans une école fait perdre **la moitié de ce gain**, partagée à parts égales entre ses **deux écoles opposées** (un quart chacune), comme les armes (doc 08).
+
+**XP de la magie** (étape 3, Idan, 2026-10-25), calquée sur les armes : le sort joue le rôle de l'arme, son école celui de la catégorie. À chaque lancer, même raté :
+
+- **+10 XP** au sort et à son école ; **+5** de plus si le sort réussit ; **+5** de plus s'il a un **vrai effet** (PV soignés, dégâts qui passent la protection, effet posé, poison purgé) ;
+- les deux écoles opposées perdent chacune **un quart** de l'XP gagnée par l'école ; une école ne descend pas sous 1 (la valeur d'un mercenaire sans l'école) ;
+- les **sorts ne régressent pas** ; même courbe que les compétences (XP = 10 × niveau², niveau continu), plafond 100 ;
+- **Puissance magique** : +20 XP par sort réussi qui a un vrai effet ; **Réserve de mana** : +2 XP par point de mana dépensé, même si le sort rate ;
+- **Chance** : les critiques des sorts comptent comme ceux des armes (coup critique −5 XP, échec critique confirmé +30 XP) ; ils ne comptent pas pour la réputation ;
+- appliquée **en fin de mission** avec le reste de l'XP naturelle, et montrée dans le bilan (« Sort Soin rapide +45 », « Écoles opposées −11 »).
+
+Les sorts prêtés par le bouton « Sorts (test) » ne sont pas dans le grimoire : leur XP s'affiche dans le bilan sans être gardée ; l'XP de leur école, elle, compte.
+
+Rythme (≈ 18 XP par lancer : 85 % de réussite, effet presque toujours réel) : un sort passe du niveau 1 au niveau 10 en ≈ 55 lancers, au niveau 20 en ≈ 220, au niveau 50 en ≈ 1 400 ; Vie 31 → 32 en ≈ 35 lancers, Vie 56 → 57 en ≈ 63 (une arme à 40 demande ≈ 48 attaques pour un point).
+
+Avec les sorts, deux règles déjà écrites (doc 08) s'appliquent enfin : **Constitution** (+1 XP par PV réellement rendu, au mercenaire soigné) et **Résistances** (chaque brûlure qui passe la protection : +8 XP en Résistance au feu, −2 aux quatre autres). Le lanceur compte aussi les adversaires qu'il blesse ou met hors combat avec un sort ou une arme enflammée, comme avec un coup d'arme (Charisme, réputation).
 
 ### Sorts connus à la création
 
@@ -163,7 +178,7 @@ Plus tard : une **école de magie** à construire au camp et des **manuels** à 
 
 1. **Étape 1** — ces décisions, `spells.json`, les règles des sorts (`game-core/magic.js`) et leurs tests (`tests/magic.test.js`) : Soin rapide, puis les six sorts de l'école de la Vie.
 2. **Étape 2** — les sorts dans l'écran de combat actuel, **pour tester** (Vie, puis Feu ; le bouton de test s'appelle désormais « Sorts (test) » et donne tous les sorts écrits) (Idan, 2026-10-25 ; l'interface de combat sera refaite) : une barre de sorts pour le mercenaire actif (action, mana, réussite) ; les cases ciblables en vert (alliés et lanceur, ou toutes les cases à portée pour Soin de masse) ; le journal ; la Régénération au début des activations ; le mana affiché dans la liste des équipes ; un bouton **« Sorts de Vie (test) »** : toute l'escouade connaît les six sorts (niveau 1) pour ce combat, sans toucher au grimoire, le mana étant bien dépensé ; une IA simple, aussi en combat automatique : Soin profond sur l'allié le plus blessé sous 35 % de ses PV à la place de l'attaque, Soin rapide sous 60 %.
-3. Étape 3 — **recharge du mana au camp** (faite avec l'étape 2, pour pouvoir tester d'un combat à l'autre), XP du sort et de l'école, régression des écoles opposées.
+3. Étape 3 — **recharge du mana au camp** (faite avec l'étape 2, pour pouvoir tester d'un combat à l'autre), **XP du sort et de l'école, régression des écoles opposées**, XP de la Puissance magique, de la Réserve de mana et de la Chance (faite, voir « Écoles : progression et régression »).
 4. Étape 4 — sorts connus à la création et compensations des nains et des ogres.
 
 ## Architecture d'un sort

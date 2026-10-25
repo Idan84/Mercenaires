@@ -42,7 +42,8 @@ const source=fs.readFileSync(path.join(ROOT,"prototype-web","mission.js"),"utf8"
 const api=new Function("game","$","esc","fmt","renderAvatar","combatEngine","MercenairesProgression","MercenairesMissionEnd","MercenairesMagic",
   source+"\nreturn {makeMissionUnit,sortMissionInitiative,selectNextMissionPlayer,teachMissionTestSpells,setMissionMode,targetableMissionCells,"
   +"handleMissionHexClick,resetMissionActivation,missionAiCast,missionActionAvailability,autoResolveMission,missionKey,renderMissionSpellBar,"
-  +"missionMagic,endMissionActivation,missionWeaponEnchantStrike,pruneMissionTerrain,occupiedMissionKeys,missionReachablePaths};")
+  +"missionMagic,endMissionActivation,missionWeaponEnchantStrike,pruneMissionTerrain,occupiedMissionKeys,missionReachablePaths,"
+  +"renderMissionProgression};")
   .call(null,game,$,v=>String(v??""),v=>String(Math.round(Number(v)||0)),()=>"",()=>engine,Progression,MissionEnd,Magic);
 
 function newMission(){
@@ -250,6 +251,27 @@ m.turn=m.terrain[0].untilTurn;
 api.pruneMissionTerrain();
 assert.equal(m.terrain.length,0);
 assert.ok(logged(/La flaque de magma refroidit/));
+
+// XP de la magie (doc 12, étape 3 ; Idan, 2026-10-25) : le journal de mission note chaque lancer, les PV rendus
+// (Constitution du soigné), les brûlures (Résistance au feu de la cible) et le mana dépensé.
+const casts=u.progress.spellCasts;
+assert.ok(casts.quick_heal.casts>=1&&casts.quick_heal.effects>=1,"Soin rapide réussi, PV rendus");
+assert.equal(casts.fire_bolt.effects,1,"Trait de feu qui brûle");
+assert.equal(casts.magma.effects,1,"Flaque de magma posée");
+assert.equal(casts.fire_bolt.school,"Feu");
+assert.ok(u.progress.manaSpent>=cost);
+assert.ok(ally.progress.hpHealed>0,"Constitution : les PV rendus comptent pour le soigné");
+assert.ok(target.progress.wounds["Résistance au feu"]>=1,"Résistance au feu : la brûlure compte pour la cible");
+assert.ok(target.id in u.progress.enemyWounds,"réputation : le lanceur a blessé un adversaire");
+const casterXp=m.progression.gains(u.progress,u.character);
+assert.ok(casterXp.skills.magic.Vie>0&&casterXp.skills.magic.Feu>0);
+assert.ok(casterXp.skills.magic["Nécromancie"]<0&&casterXp.skills.magic.Eau<0,"les écoles opposées reculent");
+assert.ok(casterXp.spells.quick_heal>=20&&casterXp.stats["Puissance magique"]>0&&casterXp.stats["Réserve de mana"]>0);
+const recap=api.renderMissionProgression([{mercenary:u.character,xp:casterXp,changes:[],reputation:null}]);
+assert.match(recap,/Sort Soin rapide \+\d+/);
+assert.match(recap,/Sort Trait de feu \+\d+/);
+assert.match(recap,/Écoles opposées −\d+/);
+assert.match(recap,/Puissance magique \+\d+/);
 
 // Combat automatique avec les sorts de test : il va jusqu'au bout.
 m=newMission();

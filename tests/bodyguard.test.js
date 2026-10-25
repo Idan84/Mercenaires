@@ -111,6 +111,7 @@ assert.equal(a.history.log.at(-1).kind,"bodyguard");
 const contract=fs.readFileSync(path.join(ROOT,"prototype-web","contract-ui.js"),"utf8");
 assert.match(contract,/data-bodyguard-accept/);
 assert.match(contract,/for\(const r of report\.bodyguards\|\|\[\]\) queueBodyguardReturn\(r\);/);
+assert.match(contract,/const state=r=>\(r\.issue==="blesse"\?"Blessé":"Fatigué"\)\+\(female\(r\.mercenary\)\?"e":""\);/,"Blessée, Fatiguée pour une mercenaire");
 const mission=fs.readFileSync(path.join(ROOT,"prototype-web","mission.js"),"utf8");
 assert.match(mission,/if\(contract&&contract\.kind==="bodyguard"\) return openBodyguardSelection\(contract\);/);
 assert.match(mission,/if\(game\.missionSelect\?\.bodyguard\) return departBodyguards\(chosen\);/);

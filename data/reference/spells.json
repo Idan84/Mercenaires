@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "spells",
-  "description": "Sorts (doc 12 « Décisions du 2026-10-25 » et « École de la Vie » ; Idan). Un sort appartient à une école ; il est appris au niveau 1 et monte quand on s'en sert (1 à 100). Maîtrise = École (équipement compris) + Niveau du sort × magic.mastery.spell_share. Effet = ceil(effet_base × effet_nb_des D effet_de × (effet_puissance_facteur × Puissance magique / 100) × (effet_maitrise_base + Maîtrise / 100)). Portée = portee_base + floor(Maîtrise / portee_pas_maitrise) cases ; durée et rayon de zone de même. Mana = ceil(mana_base × (1 − Maîtrise / mana_diviseur_maitrise)). Réussite : constantes magic.cast.* ; Δ = (Maîtrise + Intelligence) / 2 − difficulte (palier : Novice 30, Adepte 50, Expert 70). Coup critique : dés au maximum (sauf critique = false). Échec critique : le lanceur subit l'effet minimum de son sort (dés à 1). Actions : rapide, principale (l'action d'attaque du tour). Cibles : allie_ou_soi, case (centre d'une zone), mort_vivant. Icônes (Idan, 2026-10-25) : icone = parchemin du sort, cadre = cadre commun de l'école, chemins sous prototype-web/assets/ (scripts/build-spells.sh).",
+  "description": "Sorts (doc 12 « Décisions du 2026-10-25 » et « École de la Vie » ; Idan). Un sort appartient à une école ; il est appris au niveau 1 et monte quand on s'en sert (1 à 100). Maîtrise = École (équipement compris) + Niveau du sort × magic.mastery.spell_share. Effet = ceil(effet_base × effet_nb_des D effet_de × (effet_puissance_facteur × Puissance magique / 100) × (effet_maitrise_base + Maîtrise / 100)). Portée = portee_base + floor(Maîtrise / portee_pas_maitrise) cases ; durée et rayon de zone de même. Mana = ceil(mana_base × (1 − Maîtrise / mana_diviseur_maitrise)). Réussite : constantes magic.cast.* ; Δ = (Maîtrise + Intelligence) / 2 − difficulte (palier : Novice 30, Adepte 50, Expert 70). Coup critique : dés au maximum (sauf critique = false). Échec critique : le lanceur subit l'effet minimum de son sort (dés à 1). Actions : rapide, principale (l'action d'attaque du tour). Cibles : allie_ou_soi, ennemi, soi, case (centre d'une zone), case_vide, mort_vivant. Portée, rayon de zone, durée et bonus : base + floor(Maîtrise / pas), plafonnés par portee_max et zone_rayon_max. Éléments (feu, froid, foudre) : dégâts × (1 − protection / 100), protection = résistance + armure + bonus, bornée par combat.elemental.*. Icônes (Idan, 2026-10-25) : icone = parchemin du sort, cadre = cadre commun de l'école, chemins sous prototype-web/assets/ (scripts/build-spells.sh).",
   "columns": [
     {
       "source": "Nom",
@@ -100,6 +100,54 @@
       "key": "difficulte"
     },
     {
+      "source": "Élément",
+      "key": "element"
+    },
+    {
+      "source": "Jet de toucher",
+      "key": "toucher"
+    },
+    {
+      "source": "Portée — maximum",
+      "key": "portee_max"
+    },
+    {
+      "source": "Zone — rayon maximum",
+      "key": "zone_rayon_max"
+    },
+    {
+      "source": "Zone — distance minimale (anneau)",
+      "key": "zone_anneau_min"
+    },
+    {
+      "source": "Zone — dégâts dégressifs",
+      "key": "zone_degressive"
+    },
+    {
+      "source": "Précision — base",
+      "key": "precision_base"
+    },
+    {
+      "source": "Précision — part de la maîtrise",
+      "key": "precision_part_maitrise"
+    },
+    {
+      "source": "Précision — perte par case",
+      "key": "precision_par_case"
+    },
+    {
+      "source": "Déviation maximale (cases)",
+      "key": "deviation_max"
+    },
+    {
+      "source": "Bonus — base",
+      "key": "bonus_base"
+    },
+    {
+      "source": "Bonus — pas de maîtrise",
+      "key": "bonus_pas_maitrise"
+    },
+    {
       "source": "Icône",
       "key": "icone"
     },
@@ -112,7 +160,7 @@
       "key": "description"
     }
   ],
-  "row_count": 6,
+  "row_count": 12,
   "rows": [
     {
       "nom": "Soin rapide",
@@ -258,6 +306,155 @@
       "icone": "spells/vie/purge.webp",
       "cadre": "spells/vie/cadre.webp",
       "description": "Élimine tout le poison d'un allié ou du lanceur. Action rapide. Pas de coup critique : le poison part ou ne part pas. En attente du poison."
+    },
+    {
+      "nom": "Trait de feu",
+      "code": "fire_bolt",
+      "ecole": "Feu",
+      "palier": "Novice",
+      "action": "principale",
+      "cible": "ennemi",
+      "ligne_de_vue": true,
+      "effet": "degats",
+      "effet_base": 10,
+      "effet_nb_des": 1,
+      "effet_de": 6,
+      "effet_puissance_facteur": 2,
+      "effet_maitrise_base": 0.5,
+      "portee_base": 12,
+      "portee_pas_maitrise": 10,
+      "critique": true,
+      "mana_base": 10,
+      "mana_diviseur_maitrise": 300,
+      "difficulte": 30,
+      "element": "feu",
+      "toucher": "distance",
+      "description": "Un trait de feu sur une cible, comme une flèche : jet de toucher contre l'Esquive, la distance et la couverture ; un trait raté peut toucher quelqu'un dans la ligne de tir. Dégâts de feu, réduits ou augmentés par la protection contre le feu (résistance et armure). Action principale."
+    },
+    {
+      "nom": "Boule de feu",
+      "code": "fireball",
+      "ecole": "Feu",
+      "palier": "Expert",
+      "action": "principale",
+      "cible": "case",
+      "ligne_de_vue": true,
+      "effet": "degats_zone",
+      "effet_base": 10,
+      "effet_nb_des": 2,
+      "effet_de": 6,
+      "effet_puissance_facteur": 2,
+      "effet_maitrise_base": 0.5,
+      "portee_base": 6,
+      "portee_pas_maitrise": 25,
+      "zone_rayon_base": 3,
+      "zone_rayon_pas_maitrise": 50,
+      "critique": true,
+      "mana_base": 30,
+      "mana_diviseur_maitrise": 300,
+      "difficulte": 70,
+      "element": "feu",
+      "portee_max": 12,
+      "zone_rayon_max": 5,
+      "zone_degressive": true,
+      "precision_base": 50,
+      "precision_part_maitrise": 0.5,
+      "precision_par_case": 5,
+      "deviation_max": 3,
+      "description": "Explose sur une zone : ne s'évite pas, mais peut dévier jusqu'à 3 cases de la case visée. Dégâts de feu dégressifs du centre vers le bord ; touche tout le monde dans la zone, alliés et lanceur compris. Action principale."
+    },
+    {
+      "nom": "Anneau de feu",
+      "code": "fire_ring",
+      "ecole": "Feu",
+      "palier": "Novice",
+      "action": "principale",
+      "cible": "soi",
+      "ligne_de_vue": false,
+      "effet": "degats_zone",
+      "effet_base": 10,
+      "effet_nb_des": 1,
+      "effet_de": 6,
+      "effet_puissance_facteur": 2,
+      "effet_maitrise_base": 0.5,
+      "zone_rayon_base": 2,
+      "critique": true,
+      "mana_base": 20,
+      "mana_diviseur_maitrise": 300,
+      "difficulte": 30,
+      "element": "feu",
+      "zone_anneau_min": 1,
+      "description": "Projection de feu sur les deux cases autour du lanceur : tous ceux qui s'y trouvent, alliés compris, subissent les mêmes dégâts de feu ; le lanceur est épargné. Ne s'évite pas. Action principale."
+    },
+    {
+      "nom": "Arme enflammée",
+      "code": "flaming_weapon",
+      "ecole": "Feu",
+      "palier": "Novice",
+      "action": "rapide",
+      "cible": "allie_ou_soi",
+      "ligne_de_vue": true,
+      "effet": "arme_elementaire",
+      "effet_base": 10,
+      "effet_nb_des": 1,
+      "effet_de": 4,
+      "effet_puissance_facteur": 2,
+      "effet_maitrise_base": 0.5,
+      "portee_base": 1,
+      "portee_pas_maitrise": 50,
+      "duree_base": 2,
+      "duree_pas_maitrise": 50,
+      "cumulable": false,
+      "critique": true,
+      "mana_base": 12,
+      "mana_diviseur_maitrise": 300,
+      "difficulte": 30,
+      "element": "feu",
+      "description": "Enflamme l'arme du lanceur ou d'un compagnon : chaque coup qui touche ajoute des dégâts de feu, même si la lame ne blesse pas, pendant plusieurs tours. Action rapide."
+    },
+    {
+      "nom": "Armure de feu",
+      "code": "fire_armor",
+      "ecole": "Feu",
+      "palier": "Novice",
+      "action": "rapide",
+      "cible": "allie_ou_soi",
+      "ligne_de_vue": true,
+      "effet": "protection_elementaire",
+      "effet_nb_des": 0,
+      "portee_base": 2,
+      "portee_pas_maitrise": 25,
+      "duree_base": 2,
+      "duree_pas_maitrise": 50,
+      "cumulable": false,
+      "critique": false,
+      "mana_base": 10,
+      "mana_diviseur_maitrise": 300,
+      "difficulte": 30,
+      "element": "froid",
+      "bonus_base": 30,
+      "bonus_pas_maitrise": 5,
+      "description": "Augmente grandement la protection contre le froid du lanceur ou d'un allié pendant plusieurs tours. Action rapide. En attente des dégâts de froid (école de l'Eau)."
+    },
+    {
+      "nom": "Flaque de magma",
+      "code": "magma",
+      "ecole": "Feu",
+      "palier": "Adepte",
+      "action": "rapide",
+      "cible": "case_vide",
+      "ligne_de_vue": true,
+      "effet": "terrain_infranchissable",
+      "effet_nb_des": 0,
+      "portee_base": 2,
+      "portee_pas_maitrise": 25,
+      "duree_base": 4,
+      "duree_pas_maitrise": 25,
+      "critique": false,
+      "mana_base": 8,
+      "mana_diviseur_maitrise": 300,
+      "difficulte": 50,
+      "description": "Une case vide devient infranchissable pendant plusieurs tours : personne ne peut y passer ni s'y arrêter. De quoi bloquer un passage. Action rapide."
     }
   ]
 }

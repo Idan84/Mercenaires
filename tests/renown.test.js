@@ -20,7 +20,7 @@ const deaths=(...ids)=>({results:ids.map(id=>({id,dead:true})),captainDead:false
 
 // Capitaine seul : sa réputation entière, sans membre ni héritage.
 let state=company(147,[]);
-assert.deepEqual(campaign.companyRenown(state).parts,{captain:147,members:0,heritage:0,missions:0});
+assert.deepEqual(campaign.companyRenown(state).parts,{captain:147,members:0,heritage:0,missions:0,camp:0});
 assert.equal(campaign.companyRenown(state).total,147);
 
 // Classement décroissant, quel que soit l'ordre du roster : 500, 300, 100.

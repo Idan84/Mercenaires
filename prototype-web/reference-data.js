@@ -25,6 +25,7 @@ const REFERENCE_FILES = {
   rings: "rings.json",
   enemyArchetypes: "enemy-archetypes.json",
   oneShotMissions: "one-shot-missions.json",
+  dormitoryQuality: "dormitory-quality.json",
   itemQualities: "item-qualities.json",
   equipmentSlots: "equipment-slots.json",
   startingEquipmentGeneration: "starting-equipment-generation.json",

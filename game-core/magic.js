@@ -15,6 +15,12 @@
 // - Le mana est dépensé même si le sort échoue. Action rapide ou principale (l'action d'attaque du tour).
 // - CC : sort réussi, puis D100 ≤ Chance / 10 (1 à 25 %, comme les armes) : les dés font leur maximum (pas pour Purge).
 // - EC : naturel 96 à 100, puis D100 > Chance : le lanceur subit l'effet minimum de son sort (dés à 1).
+// - École du Feu (Idan, 2026-10-25) : dégâts de feu = effet × (1 − protection / 100), protection = Résistance au feu +
+//   armure portée (« brûlant ») + bonus, bornée de −50 à +75 (combat-engine.js, elementalDamage). Trait de feu suit les
+//   règles de l'arc (toucher contre l'Esquive, distance, tir raté qui peut toucher quelqu'un d'autre) ; Boule de feu ne
+//   s'évite pas mais peut dévier de 1 à 3 cases, dégâts dégressifs vers le bord, tir ami ; Anneau de feu frappe tout le
+//   monde à 1 ou 2 cases du lanceur ; Arme enflammée ajoute du feu à chaque coup qui touche ; Armure de feu protège du
+//   froid ; Flaque de magma rend une case vide infranchissable.
 (function(root,factory){
   const api=factory();
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
@@ -52,15 +58,17 @@
       const s=spell(code);
       return s?schoolLevel(unit,s.ecole)+SPELL_SHARE*spellLevel(unit,code):0;
     }
-    // base + Maîtrise / pas, arrondi bas (portée, durée, rayon de zone).
-    function stepped(unit,code,baseKey,stepKey){
+    // base + Maîtrise / pas, arrondi bas (portée, durée, rayon de zone, bonus) ; sans pas, la base seule ; plafond éventuel.
+    function stepped(unit,code,baseKey,stepKey,maxKey=null){
       const s=spell(code);
       if(!s||s[baseKey]==null) return 0;
-      return num(s[baseKey],0)+Math.floor(mastery(unit,code)/num(s[stepKey],25));
+      const step=num(s[stepKey],0),value=num(s[baseKey],0)+(step>0?Math.floor(mastery(unit,code)/step):0);
+      return maxKey&&s[maxKey]!=null?Math.min(num(s[maxKey],value),value):value;
     }
-    const range=(unit,code)=>stepped(unit,code,"portee_base","portee_pas_maitrise");
+    const range=(unit,code)=>stepped(unit,code,"portee_base","portee_pas_maitrise","portee_max");
     const duration=(unit,code)=>stepped(unit,code,"duree_base","duree_pas_maitrise");
-    const zoneRadius=(unit,code)=>stepped(unit,code,"zone_rayon_base","zone_rayon_pas_maitrise");
+    const zoneRadius=(unit,code)=>stepped(unit,code,"zone_rayon_base","zone_rayon_pas_maitrise","zone_rayon_max");
+    const bonus=(unit,code)=>stepped(unit,code,"bonus_base","bonus_pas_maitrise");
 
     function dice(code){
       const s=spell(code);
@@ -134,14 +142,42 @@
     }
     // Le poison n'existe pas encore en combat : une unité empoisonnée portera poisoned = true.
     function isPoisoned(unit){ return Boolean(unit?.poisoned); }
-    // Toutes les unités en jeu dans le cercle (alliés, ennemis, lanceur compris).
-    function unitsInZone(center,radius,units){
-      return (units||[]).filter(u=>u.alive!==false&&!u.offMap&&combat.axialDistance(center,u)<=radius);
+    // Toutes les unités en jeu dans le cercle (alliés, ennemis, lanceur compris) ; minDistance : anneau (Anneau de feu).
+    function unitsInZone(center,radius,units,minDistance=0){
+      return (units||[]).filter(u=>{
+        if(u.alive===false||u.offMap) return false;
+        const d=combat.axialDistance(center,u);
+        return d>=minDistance&&d<=radius;
+      });
     }
+    // Part de l'effet à d cases du centre : dégressif (Boule de feu) = 1 − d / (rayon + 1), sinon entière.
+    function zoneFactor(zone,distance){
+      return zone?.degressive?Math.max(0,1-distance/(zone.radius+1)):1;
+    }
+
+    // Toucher d'un sort « comme une flèche » (Trait de feu ; Idan, 2026-10-25 : « les mêmes règles que pour l'arc ») :
+    // la formule de tir, la Maîtrise du sort à la place des compétences d'arme (catégorie et arme), la portée du sort pour
+    // la perte avec la distance (au-delà du quart de la portée).
+    function hitChance(caster,target,code){
+      const reach=range(caster,code),distance=combat.axialDistance(caster,target),m=mastery(caster,code);
+      let delta=combat.effectiveDexterity(caster)
+        +0.2*(2*m+combat.statWithGear(caster,"Perception")+combat.effectiveSpeed(caster))
+        -combat.effectiveDodge(target)
+        -0.2*(combat.statWithGear(target,"Perception")+combat.effectiveSpeed(target));
+      const free=Math.ceil(reach/4);
+      if(distance>free&&reach>free) delta-=40*(distance-free)/(reach-free);
+      return clamp(10+80/(1+Math.exp(-delta/20)),10,90);
+    }
+    // Précision d'une zone (Boule de feu) : base + part × Maîtrise − perte × distance, de 10 à 95 %.
+    function precisionChance(caster,code,distance){
+      const s=spell(code);
+      return clamp(num(s?.precision_base,100)+num(s?.precision_part_maitrise,0)*mastery(caster,code)-num(s?.precision_par_case,0)*distance,10,95);
+    }
+    const HEX_DIRECTIONS=[{q:1,r:0},{q:1,r:-1},{q:0,r:-1},{q:-1,r:0},{q:-1,r:1},{q:0,r:1}];
 
     // Peut-on lancer ce sort sur cette cible (une unité, ou une case {q, r} pour une zone) ?
     // lineOfSight : fourni par la carte (aucun décor ne la coupe en V1).
-    function canCast(caster,target,code,{lineOfSight=true}={}){
+    function canCast(caster,target,code,{lineOfSight=true,cellFree=true}={}){
       const s=spell(code);
       if(!s) return {ok:false,reason:"Sort inconnu."};
       if(!knownSpell(caster,code)) return {ok:false,reason:caster.character.name+" ne connaît pas "+s.nom+"."};
@@ -150,9 +186,13 @@
       if(s.action==="principale"&&caster.attackAvailable===false) return {ok:false,reason:"L'action principale est déjà utilisée."};
       const cost=manaCost(caster,code);
       if(currentMana(caster)<cost) return {ok:false,reason:"Pas assez de mana ("+cost+" nécessaires)."};
+      if(s.cible==="soi") target=caster;
       if(!target) return {ok:false,reason:"Aucune cible."};
-      if(s.cible!=="case"&&target.alive===false) return {ok:false,reason:"Cible hors combat."};
+      const cell=s.cible==="case"||s.cible==="case_vide";
+      if(!cell&&target.alive===false) return {ok:false,reason:"Cible hors combat."};
       if(s.cible==="allie_ou_soi"&&target!==caster&&target.team!==caster.team) return {ok:false,reason:"Ce sort vise un allié ou le lanceur."};
+      if(s.cible==="ennemi"&&(target===caster||target.team===caster.team)) return {ok:false,reason:"Ce sort vise un ennemi."};
+      if(s.cible==="case_vide"&&(cellFree===false||(target.q===caster.q&&target.r===caster.r))) return {ok:false,reason:"Il faut une case vide."};
       if(s.cible==="mort_vivant"&&!isUndead(target)) return {ok:false,reason:s.nom+" ne fonctionne que sur les morts-vivants."};
       if(s.effet==="purge_poison"&&!isPoisoned(target)) return {ok:false,reason:"La cible n'est pas empoisonnée."};
       const self=target===caster||(target.q===caster.q&&target.r===caster.r);
@@ -164,6 +204,32 @@
 
     // Lance le sort : tirages et résultat, sans rien appliquer (l'écran de combat applique PV, mana, actions et effets).
     // amount : PV soignés ou dégâts ; zone : {center, radius} ; effect : la Régénération à poser sur la cible.
+    // Toucher « comme une flèche » : le trait touche la cible, ou part dans la ligne de tir et peut toucher quelqu'un
+    // d'autre (approximation des projectiles : P = toucher × 0,35, puis × 0,5 pour chaque candidat suivant).
+    function resolveSpellHit(caster,target,code,result,units){
+      const p=hitChance(caster,target,code),hitRoll=d100();
+      Object.assign(result,{pHit:p,hitRoll,hit:hitRoll<=p,victim:hitRoll<=p?target:null});
+      if(result.hit) return;
+      const tries=[];
+      let factor=combat.STRAY?.initial??0.35;
+      for(const unit of combat.strayCandidates(caster,target,units,range(caster,code))){
+        const pStray=hitChance(caster,unit,code)*factor,strayRoll=d100();
+        tries.push({unit,p:pStray,roll:strayRoll});
+        if(strayRoll<=pStray){ result.stray={unit,p:pStray,roll:strayRoll}; result.victim=unit; break; }
+        factor*=combat.STRAY?.decay??0.5;
+      }
+      result.strayTries=tries;
+    }
+
+    // Arme enflammée : les dégâts ajoutés à un coup qui touche (dés au maximum si le sort était critique).
+    function weaponStrike(effect){
+      if(!effect||effect.turns<=0) return {amount:0};
+      const {count,sides}=dice(effect.code);
+      const total=effect.critical?count*sides:rollDice(effect.code);
+      const s=spell(effect.code);
+      return {amount:Math.ceil(num(s?.effet_base,10)*total*effect.factor-1e-9),dice:total,element:effect.element};
+    }
+
     function cast(caster,target,code,options={}){
       const check=canCast(caster,target,code,options);
       if(!check.ok) return check;
@@ -172,19 +238,40 @@
       const {count,sides}=dice(code);
       const result={ok:true,spell:s.code,name:s.nom,effet:s.effet,action:s.action,cost:check.cost,p:chance.p,base:chance.base,
         armor:chance.armor,roll,success,critical:false,fumble:false,dice:0,amount:0,selfDamage:0};
+      if(s.element) result.element=s.element;
+      if(s.cible==="soi") target=caster;
       if(success){
         if(s.critique!==false){
           const critChance=combat.criticalChance(caster),critRoll=d100();
           Object.assign(result,{critChance,critRoll,critical:critRoll<=critChance});
         }
-        if(s.effet==="soin_sur_duree"){
+        if(s.effet==="soin_sur_duree"||s.effet==="arme_elementaire"){
           const factor=effectFactor(caster,code);
-          result.effect={code:s.code,factor,turns:duration(caster,code),critical:result.critical,cumulable:s.cumulable!==false};
+          result.effect={code:s.code,element:s.element||null,factor,turns:duration(caster,code),critical:result.critical,cumulable:s.cumulable!==false};
+        }else if(s.effet==="protection_elementaire"){
+          result.effect={code:s.code,element:s.element,bonus:bonus(caster,code),turns:duration(caster,code),cumulable:s.cumulable!==false};
+        }else if(s.effet==="terrain_infranchissable"){
+          result.terrain={q:target.q,r:target.r,turns:duration(caster,code)};
         }else if(count){
           result.dice=result.critical?count*sides:rollDice(code);
           result.amount=effectAmount(caster,code,result.dice);
         }
         if(s.effet==="soin_de_zone") result.zone={center:{q:target.q,r:target.r},radius:zoneRadius(caster,code)};
+        if(s.effet==="degats_zone"){
+          const radius=zoneRadius(caster,code),aimed={q:target.q,r:target.r};
+          let center=aimed,precision=null;
+          if(s.deviation_max){
+            const distance=combat.axialDistance(caster,aimed),p=precisionChance(caster,code,distance),precisionRoll=d100();
+            precision={p,roll:precisionRoll,ok:precisionRoll<=p};
+            if(!precision.ok){
+              const steps=die(num(s.deviation_max,1)),dir=HEX_DIRECTIONS[die(6)-1];
+              center={q:aimed.q+dir.q*steps,r:aimed.r+dir.r*steps};
+              precision.deviation=steps;
+            }
+          }
+          result.zone={center,aimed,radius,minDistance:num(s.zone_anneau_min,0),degressive:Boolean(s.zone_degressive),precision};
+        }
+        if(s.toucher==="distance") resolveSpellHit(caster,target,code,result,options.units||[]);
         if(s.effet==="purge_poison") result.purge=true;
       }else if(roll>=FUMBLE_THRESHOLD){
         const fumbleRoll=d100();
@@ -206,6 +293,11 @@
     return {
       spells,
       spell,
+      bonus,
+      hitChance,
+      precisionChance,
+      zoneFactor,
+      weaponStrike,
       schoolSpells,
       knownSpell,
       knownSpells,

@@ -42,14 +42,14 @@ const source=fs.readFileSync(path.join(ROOT,"prototype-web","mission.js"),"utf8"
 const api=new Function("game","$","esc","fmt","renderAvatar","combatEngine","MercenairesProgression","MercenairesMissionEnd","MercenairesMagic",
   source+"\nreturn {makeMissionUnit,sortMissionInitiative,selectNextMissionPlayer,teachMissionTestSpells,setMissionMode,targetableMissionCells,"
   +"handleMissionHexClick,resetMissionActivation,missionAiCast,missionActionAvailability,autoResolveMission,missionKey,renderMissionSpellBar,"
-  +"missionMagic,endMissionActivation};")
+  +"missionMagic,endMissionActivation,missionWeaponEnchantStrike,pruneMissionTerrain,occupiedMissionKeys,missionReachablePaths};")
   .call(null,game,$,v=>String(v??""),v=>String(Math.round(Number(v)||0)),()=>"",()=>engine,Progression,MissionEnd,Magic);
 
 function newMission(){
   const squad=[2,3,4].map(id=>generator.createMercenary({id,captain}));
   const foes=[5,6,7].map(id=>generator.createMercenary({id,captain}));
   // Sans armure et bons en Vie : la réussite ne dépend que des tirages imposés.
-  for(const c of squad){ c.equipment.slots.armor=null; c.skills.magic.Vie=60; c.stats["Réserve de mana"]=53; c.mana=53; }
+  for(const c of squad){ c.equipment.slots.armor=null; c.skills.magic.Vie=60; c.skills.magic.Feu=60; c.stats["Réserve de mana"]=53; c.mana=53; }
   const players=squad.map((c,i)=>api.makeMissionUnit(c,"player",i));
   const enemies=foes.map((c,i)=>api.makeMissionUnit(c,"enemy",i));
   game.mission={engine,endRules:MissionEnd.createMissionEndRules({reference}),progression:Progression.createProgressionRules({reference}),
@@ -68,15 +68,16 @@ const others=m.players.filter(x=>x!==u);
 assert.equal(magic.knownSpells(u).length,0);
 assert.equal(api.renderMissionSpellBar(u),"");
 assert.equal(api.missionActionAvailability().testSpells,true);
-// Bouton de test : toute l'escouade connaît les six sorts de Vie pour ce combat ; le grimoire ne change pas.
+// Bouton de test : toute l'escouade connaît tous les sorts écrits (Vie, Feu) pour ce combat ; le grimoire ne change pas.
 api.teachMissionTestSpells();
-assert.deepEqual(magic.knownSpells(u).map(s=>s.code),["quick_heal","deep_heal","regeneration","mass_heal","restitution","purge"]);
-assert.ok(m.players.every(p=>p.spells.length===6&&!(p.character.spells||[]).length));
+assert.deepEqual(magic.knownSpells(u).map(s=>s.code),["quick_heal","deep_heal","regeneration","mass_heal","restitution","purge",
+  "fire_bolt","fireball","fire_ring","flaming_weapon","fire_armor","magma"]);
+assert.ok(m.players.every(p=>p.spells.length===12&&!(p.character.spells||[]).length));
 assert.equal(api.missionActionAvailability().testSpells,false,"une seule fois par combat");
-assert.ok(logged(/connaît les six sorts de Vie/));
+assert.ok(logged(/connaît tous les sorts \(Vie, Feu, niveau 1\)/));
 const bar=api.renderMissionSpellBar(u);
 assert.match(bar,/Mana 53\/53/);
-assert.equal((bar.match(/data-spell=/g)||[]).length,6);
+assert.equal((bar.match(/data-spell=/g)||[]).length,12);
 assert.match(bar,/Soin rapide<small>rapide · \d+ mana · \d+ %<\/small>/);
 
 // Soin rapide : cases ciblables = le lanceur et les alliés à portée, jamais un ennemi lointain.
@@ -179,6 +180,77 @@ api.missionAiCast(u);
 assert.ok(ally.hp>allyHp);
 assert.equal(u.quickAvailable,false);
 
+// École du Feu dans l'écran de combat.
+const reset=()=>{ api.resetMissionActivation(u); u.character.mana=53; };
+const target=m.enemies[1];
+target.q=u.q+3;target.r=u.r;target.alive=true;target.hp=target.pvMax;
+// Trait de feu : les ennemis sont ciblables, pas les alliés ; dégâts de feu après la protection.
+reset();
+api.setMissionMode("spell:fire_bolt");
+cells=api.targetableMissionCells();
+assert.ok(cells.has(api.missionKey(target.q,target.r)));
+assert.ok(!cells.has(api.missionKey(ally.q,ally.r)),"pas un allié");
+queue.push(0,0.99,0.5,0);
+let before=target.hp;
+api.handleMissionHexClick(target.q,target.r);
+assert.ok(target.hp<before,"touché, brûlé");
+assert.ok(logged(/lance Trait de feu sur .* touché \(toucher \d+ %, jet 1\), \d+ PV de feu/));
+// Boule de feu : touche tout le monde dans la zone, alliés et lanceur compris ; plus fort au centre.
+reset();
+for(const p of m.players) p.hp=p.pvMax;
+api.setMissionMode("spell:fireball");
+queue.push(0,0.99,0.5,0.5,0);
+before=u.hp;
+const neighbourHp=ally.hp;
+api.handleMissionHexClick(u.q,u.r);
+assert.ok(u.hp<before&&ally.hp<neighbourHp,"tir ami : le lanceur et son voisin sont brûlés");
+assert.ok(logged(/Boule de feu \(rayon \d\).* elle tombe où il faut .* au centre, moins vers le bord/));
+// Anneau de feu : le voisin brûle, pas le lanceur.
+reset();
+for(const p of m.players) p.hp=p.pvMax;
+api.setMissionMode("spell:fire_ring");
+assert.deepEqual([...api.targetableMissionCells()],[api.missionKey(u.q,u.r)],"une seule case : le lanceur");
+queue.push(0,0.99,0.5);
+api.handleMissionHexClick(u.q,u.r);
+assert.equal(u.hp,u.pvMax,"le lanceur est épargné");
+assert.ok(ally.hp<ally.pvMax,"le voisin brûle");
+// Arme enflammée : chaque coup qui touche ajoute du feu ; les flammes durent 2 tours (débutant : 2 + M/50).
+reset();
+api.setMissionMode("spell:flaming_weapon");
+queue.push(0,0.99);
+api.handleMissionHexClick(u.q,u.r);
+assert.equal(u.weaponEnchant.turns,3,"maîtrise 60,5 : 2 + 1 tours");
+target.hp=target.pvMax;
+queue.push(0.5);
+api.missionWeaponEnchantStrike(u,target,{ok:true,hit:true,blocked:false});
+assert.ok(target.hp<target.pvMax);
+assert.ok(logged(/Arme enflammée : .* PV de feu/));
+const hpAfter=target.hp;
+api.missionWeaponEnchantStrike(u,target,{ok:true,hit:true,blocked:true});
+assert.equal(target.hp,hpAfter,"un coup bloqué ne brûle pas");
+api.resetMissionActivation(u);api.resetMissionActivation(u);api.resetMissionActivation(u);
+assert.equal(u.weaponEnchant,null,"les flammes s'éteignent");
+// Armure de feu : bonus contre le froid, compté par le moteur.
+reset();
+api.setMissionMode("spell:fire_armor");
+queue.push(0);
+api.handleMissionHexClick(ally.q,ally.r);
+assert.equal(engine.elementalProtection(ally,"froid").bonus,magic.bonus(u,"fire_armor"));
+// Flaque de magma : une case vide devient infranchissable, puis refroidit.
+reset();
+const spot={q:u.q,r:u.r+2};
+api.setMissionMode("spell:magma");
+assert.ok(!api.targetableMissionCells().has(api.missionKey(ally.q,ally.r)),"pas une case occupée");
+queue.push(0);
+api.handleMissionHexClick(spot.q,spot.r);
+assert.equal(m.terrain.length,1);
+assert.ok(api.occupiedMissionKeys().has(api.missionKey(spot.q,spot.r)),"personne ne peut y passer");
+assert.ok(!api.missionReachablePaths(ally,10).has(api.missionKey(spot.q,spot.r)));
+m.turn=m.terrain[0].untilTurn;
+api.pruneMissionTerrain();
+assert.equal(m.terrain.length,0);
+assert.ok(logged(/La flaque de magma refroidit/));
+
 // Combat automatique avec les sorts de test : il va jusqu'au bout.
 m=newMission();
 api.teachMissionTestSpells();
@@ -187,7 +259,7 @@ assert.equal(m.over,true);
 
 // Page : le bouton de test et la barre de sorts.
 const html=fs.readFileSync(path.join(ROOT,"prototype-web","index.html"),"utf8");
-assert.match(html,/<button id="mission-test-spells-btn" class="secondary"[^>]*>Sorts de Vie \(test\)<\/button>/);
+assert.match(html,/<button id="mission-test-spells-btn" class="secondary"[^>]*>Sorts \(test\)<\/button>/);
 assert.match(html,/<div id="mission-spells" class="mission-spells"><\/div>/);
 assert.match(source,/\$\("mission-test-spells-btn"\)\.addEventListener\("click",teachMissionTestSpells\);/);
 
@@ -211,4 +283,4 @@ assert.ok(home.mana>0,"au camp : recharge");
 assert.equal(away.mana,0,"en route : rien");
 assert.ok(report.mana.some(x=>x.id===home.id));
 
-console.log("Sorts de Vie dans l'écran de combat et recharge du mana au camp — OK");
+console.log("Sorts de Vie et du Feu dans l'écran de combat, recharge du mana au camp — OK");

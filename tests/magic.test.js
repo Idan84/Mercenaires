@@ -25,8 +25,9 @@ const magic=createMagicRules({reference,combat,random});
 function mage({pm,vie,level=1,int,chance=54,mana=53,items=[],slots={}}){
   return {
     name:"Mage",stats:{"Puissance magique":pm,Intelligence:int,Chance:chance,"Réserve de mana":mana,Constitution:50,Endurance:50,Volonté:50},
-    skills:{magic:{Vie:vie,Nécromancie:20,Illusion:20}},mana,
-    spells:["quick_heal","deep_heal","regeneration","mass_heal","restitution","purge"].map(code=>({code,school:"Vie",mastery:level})),
+    skills:{magic:{Vie:vie,Feu:vie,Nécromancie:20,Illusion:20}},mana,
+    spells:["quick_heal","deep_heal","regeneration","mass_heal","restitution","purge"].map(code=>({code,school:"Vie",mastery:level}))
+      .concat(["fire_bolt","fireball","fire_ring","flaming_weapon","fire_armor","magma"].map(code=>({code,school:"Feu",mastery:level}))),
     items,equipment:{slots}
   };
 }
@@ -193,4 +194,83 @@ queue=[0.99,0.99];
 out=magic.cast(caster,{...adjacent,poisoned:true},"purge");
 assert.deepEqual([out.success,out.fumble,out.selfDamage],[false,true,0]);
 
-console.log("Magie : école de la Vie OK");
+// École du Feu (Idan, 2026-10-25). Les mages de test ont le même niveau en Feu qu'en Vie.
+assert.deepEqual(magic.schoolSpells("Feu").map(x=>[x.code,x.palier,x.difficulte,x.action]),[
+  ["fire_bolt","Novice",30,"principale"],["fireball","Expert",70,"principale"],["fire_ring","Novice",30,"principale"],
+  ["flaming_weapon","Novice",30,"rapide"],["fire_armor","Novice",30,"rapide"],["magma","Adepte",50,"rapide"]]);
+// Portées, rayons, durées, bonus : débutant (maîtrise 31,5) et expert (134), plafonds à très haute maîtrise.
+assert.deepEqual([magic.range(beginner,"fire_bolt"),magic.range(expert,"fire_bolt")],[15,25],"Trait de feu : 12 + M/10 (l'arc : 18)");
+assert.deepEqual([magic.range(beginner,"fireball"),magic.zoneRadius(beginner,"fireball")],[7,3]);
+assert.deepEqual([magic.range(expert,"fireball"),magic.zoneRadius(expert,"fireball")],[11,5]);
+const archmage=unit(mage({pm:100,vie:300,level:100,int:100}));
+assert.deepEqual([magic.range(archmage,"fireball"),magic.zoneRadius(archmage,"fireball")],[12,5],"portée 6 à 12, rayon 3 à 5");
+assert.deepEqual([magic.zoneRadius(beginner,"fire_ring"),magic.zoneRadius(expert,"fire_ring")],[2,2],"l'anneau : toujours 2 cases");
+assert.deepEqual([magic.duration(beginner,"magma"),magic.duration(expert,"magma")],[5,9],"Flaque de magma : 4 + M/25 tours");
+assert.deepEqual([magic.duration(beginner,"flaming_weapon"),magic.duration(expert,"flaming_weapon")],[2,4]);
+assert.deepEqual([magic.bonus(beginner,"fire_armor"),magic.bonus(expert,"fire_armor")],[36,56],"Armure de feu : +30 + M/5 contre le froid");
+assert.deepEqual([magic.manaCost(beginner,"fire_bolt"),magic.manaCost(beginner,"fireball"),magic.manaCost(beginner,"fire_ring")],[9,27,18]);
+assert.equal(Math.round(magic.castChance(beginner,"fire_ring").p),57,"Anneau de feu : difficulté abaissée à 30");
+assert.equal(magic.precisionChance(beginner,"fireball",4),45.75,"50 + M/2 − 5 × distance");
+assert.equal(magic.precisionChance(expert,"fireball",2),95,"au plus 95 %");
+
+// Cibles : Trait de feu vise un ennemi ; Flaque de magma une case vide ; Anneau de feu le lanceur lui-même.
+const enemy=unit(mage({pm:50,vie:1,int:50}),{q:5,r:0,team:"enemy"});
+assert.match(magic.canCast(caster,ally,"fire_bolt").reason,/ennemi/);
+assert.equal(magic.canCast(caster,enemy,"fire_bolt").ok,true);
+assert.equal(magic.canCast(caster,{q:2,r:0},"magma").ok,true);
+assert.match(magic.canCast(caster,{q:2,r:0},"magma",{cellFree:false}).reason,/case vide/);
+assert.match(magic.canCast(caster,{q:0,r:0},"magma").reason,/case vide/);
+assert.equal(magic.canCast(caster,null,"fire_ring").ok,true,"pas de cible à choisir");
+// Toucher comme une flèche : il baisse avec la distance, monte contre une cible au sol.
+const near=unit(mage({pm:50,vie:1,int:50}),{q:2,r:0,team:"enemy"}),farFoe=unit(mage({pm:50,vie:1,int:50}),{q:14,r:0,team:"enemy"});
+assert.ok(magic.hitChance(caster,near,"fire_bolt")>magic.hitChance(caster,farFoe,"fire_bolt"));
+assert.ok(magic.hitChance(caster,{...near,prone:true},"fire_bolt")>magic.hitChance(caster,near,"fire_bolt"));
+for(const t of [near,farFoe]){ const p=magic.hitChance(caster,t,"fire_bolt"); assert.ok(p>=10&&p<=90); }
+
+// Trait de feu : réussite, pas de critique, 1D6 = 4, touché.
+queue=[0,0.99,0.5,0];
+out=magic.cast(caster,enemy,"fire_bolt",{units:[caster,enemy]});
+assert.deepEqual([out.success,out.element,out.dice,out.hit,out.victim===enemy],[true,"feu",4,true,true]);
+assert.equal(out.amount,magic.effectAmount(caster,"fire_bolt",4));
+// Raté : le trait part dans la ligne de tir et touche un personnage qui s'y trouve.
+const between=unit(mage({pm:50,vie:1,int:50}),{q:3,r:0});
+queue=[0,0.99,0.5,0.99,0];
+out=magic.cast(caster,enemy,"fire_bolt",{units:[caster,between,enemy]});
+assert.deepEqual([out.hit,out.stray?.unit===between,out.victim===between],[false,true,true]);
+// Boule de feu : précision ratée, elle dévie de 2 cases (1D3) dans la première direction ; dégâts dégressifs.
+queue=[0,0.99,0.5,0.5,0.99,0.5,0];
+out=magic.cast(caster,{q:4,r:0},"fireball");
+assert.deepEqual([out.dice,out.zone.radius,out.zone.precision.ok,out.zone.precision.deviation,out.zone.center],[8,3,false,2,{q:6,r:0}]);
+assert.deepEqual([0,1,2,3,4].map(d=>magic.zoneFactor(out.zone,d)),[1,0.75,0.5,0.25,0]);
+queue=[0,0.99,0.5,0.5,0];
+assert.deepEqual(magic.cast(caster,{q:4,r:0},"fireball").zone.center,{q:4,r:0},"précision réussie : sur la case visée");
+// Anneau de feu : autour du lanceur, de 1 à 2 cases, pas le lanceur.
+queue=[0,0.99,0.5];
+out=magic.cast(caster,null,"fire_ring");
+assert.deepEqual([out.zone.center,out.zone.radius,out.zone.minDistance,out.zone.degressive],[{q:0,r:0},2,1,false]);
+assert.deepEqual(magic.unitsInZone(out.zone.center,out.zone.radius,[caster,adjacent,twoAway,unit(mage({pm:50,vie:1,int:50}),{q:3,r:0})],1),[adjacent,twoAway]);
+// Arme enflammée, Armure de feu, Flaque de magma : effets posés par l'écran de combat.
+queue=[0,0.99];
+out=magic.cast(caster,adjacent,"flaming_weapon");
+assert.deepEqual([out.effect.element,out.effect.turns,out.amount],["feu",2,0]);
+queue=[0.5];
+assert.deepEqual(magic.weaponStrike(out.effect),{amount:magic.effectAmount(caster,"flaming_weapon",3),dice:3,element:"feu"});
+queue=[0];
+out=magic.cast(caster,ally,"fire_armor");
+assert.deepEqual(out.effect,{code:"fire_armor",element:"froid",bonus:36,turns:2,cumulable:false});
+queue=[0];
+out=magic.cast(caster,{q:2,r:0},"magma");
+assert.deepEqual(out.terrain,{q:2,r:0,turns:5});
+// Échec critique d'un sort de feu : le lanceur subit le minimum, en feu.
+queue=[0.99,0.99];
+out=magic.cast(caster,enemy,"fire_bolt",{units:[caster,enemy]});
+assert.deepEqual([out.fumble,out.element,out.selfDamage],[true,"feu",magic.effectAmount(caster,"fire_bolt",1)]);
+
+// Protection contre le feu (moteur) : Résistance au feu + armure (plates −20, écailles +35) + bonus, de −50 à +75.
+const armoredUnit=(armor,res,extra={})=>({character:{resistances:{"Résistance au feu":res,"Résistance au froid":res},stats:{},items:armor?[{id:"a",name:armor}]:[],equipment:{slots:armor?{armor:"a"}:{}}},activeSet:1,...extra});
+assert.deepEqual(combat.elementalDamage(armoredUnit("Armure de plates",4),"feu",100),{resistance:4,armor:-20,bonus:0,total:-16,applied:-16,amount:100,damage:116});
+assert.equal(combat.elementalDamage(armoredUnit("Armure d'écailles",4),"feu",100).damage,61);
+assert.equal(combat.elementalDamage(armoredUnit("Armure d'écailles",48),"feu",100).applied,75,"jamais plus de 75 %");
+assert.equal(combat.elementalDamage(armoredUnit(null,4,{elementalBonus:{froid:{bonus:36,turns:2}}}),"froid",100).damage,60,"Armure de feu contre le froid");
+
+console.log("Magie : écoles de la Vie et du Feu OK");

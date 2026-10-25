@@ -176,7 +176,7 @@ Tirer sur une cible distante alors qu'un ennemi est adjacent reste autorisé, ma
 
 `P_touche(d) = max(0, P_touche_centre − 10×d)`.
 
-La **forme et le rayon** restent propres à l'arme ou au sort. Cette règle doit servir au Tromblon, à la Boule de feu, à la Pluie de glace et aux futures zones.
+La **forme et le rayon** restent propres à l'arme ou au sort. Cette règle doit servir au Tromblon, à la Boule de feu, à la Pluie de glace et aux futures zones. **Exception (Idan, 2026-10-25)** : la Boule de feu ne s'évite pas ; elle peut dévier de 1 à 3 cases et ses dégâts diminuent du centre vers le bord (doc 12, « École du Feu »).
 
 ## Charge & contre-charge V1
 

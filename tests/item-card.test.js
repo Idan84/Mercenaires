@@ -123,6 +123,19 @@ assert.match(platesCard, /item-card-row--bonus"><dt>Tranchant<\/dt><dd>\+72<\/dd
 assert.match(platesCard, /<p class="item-card-group">Handicap<\/p>/);
 assert.match(platesCard, /Usée : résistances −20 %, handicap \+20 %\./);
 assert.equal(renderItemCard(item("ring","Anneau",2,"standard")), "");
+// L'image de l'objet en grand, à côté de la carte (Idan, 2026-10-25) : figure séparée, plus de vignette dans la carte.
+assert.match(lanceCard, /^<div class="item-card-wrap"><figure class="item-card-showcase item-card--t3"><img src="assets\/equipment\/armes\/lance-3\.webp" alt=""><\/figure><div class="item-card item-card--t3">/);
+assert.doesNotMatch(lanceCard, /item-card-art/);
+const large = new Function("game","esc","MercenairesItemCard","equipmentArt","equipmentArtLarge","document",
+  ui + "\nreturn {renderItemCard};"
+)(game, esc, {createItemCards}, () => "assets/equipment/armes/lance-3.webp", () => "assets/equipment-large/armes/lance-3.webp", undefined);
+assert.match(large.renderItemCard(item("weapon","Lance",3,"luxury")), /<figure class="item-card-showcase item-card--t3"><img src="assets\/equipment-large\/armes\/lance-3\.webp"/);
+const sheetUi = fs.readFileSync(path.join(ROOT, "prototype-web/ui.js"), "utf8");
+assert.match(sheetUi, /function equipmentArtLarge\(item\)\{\s*return equipmentArt\(item\)\?\.replace\("assets\/equipment\/","assets\/equipment-large\/"\)\|\|null;/);
+assert.doesNotMatch(sheetUi, /gear-caption/, "plus de nom d'objet sur la silhouette");
+for (const file of fs.readdirSync(path.join(ROOT, "prototype-web/assets/equipment"), {recursive:true}).filter(f => /\.webp$/.test(f) && !/^frames/.test(f))) {
+  assert.ok(fs.existsSync(path.join(ROOT, "prototype-web/assets/equipment-large", file)), "grande image manquante : " + file);
+}
 const dodgeCard = renderItemCard(item("boots","Bottes d’esquive",2,"standard"));
 assert.match(dodgeCard, /<strong class="item-card-title">Bottes de faufileur<\/strong>/);
 assert.match(dodgeCard, /item-card-row--bonus"><dt>Esquive<\/dt><dd>\+10 %<\/dd>/);

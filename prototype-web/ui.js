@@ -609,6 +609,10 @@ function equipmentArt(item){
   const key=dir?`${dir}/${pictoSlug(item.name)}-${item.tier}`:null;
   return key&&typeof EQUIPMENT_ART!=="undefined"&&EQUIPMENT_ART.has(key)?`assets/equipment/${key}.webp`:null;
 }
+// Grande image de la carte d'objet (Idan, 2026-10-25) : la même en 512 px.
+function equipmentArtLarge(item){
+  return equipmentArt(item)?.replace("assets/equipment/","assets/equipment-large/")||null;
+}
 // Une case d'objet : image dans son cadre de tier (ou picto de l'emplacement et contour selon la qualité),
 // détail au survol.
 // data-slot / data-item : l'emplacement et l'objet visés par un échange d'équipement (deal-ui.js) ; une arme à deux
@@ -661,7 +665,8 @@ function renderEquipment(c) {
       if (main?.grip === "2 mains") { item = main; extra = "gear-tile--both-hands"; dealSlot = "weapon_set_1_main"; }
     }
     // Emplacement vide : une petite marque discrète, pour ne pas cacher le dessin.
-    return `<span class="gear-spot gear-spot--${esc(id)}${item?"":" gear-spot--empty"}" style="left:${x}%;top:${y}%">${gearTile(slot,item,{extraClass:extra,dealSlot})}${item&&!extra?`<em class="gear-caption">${esc(item.name)}</em>`:""}</span>`;
+    // Pas de nom sous les objets (Idan, 2026-10-25) : la carte d'objet le donne au survol.
+    return `<span class="gear-spot gear-spot--${esc(id)}${item?"":" gear-spot--empty"}" style="left:${x}%;top:${y}%">${gearTile(slot,item,{extraClass:extra,dealSlot})}</span>`;
   }).join("");
 
   const weaponRow = slot => {
@@ -957,20 +962,35 @@ function statPortraitButton(member,label,value,current){
   return `<button type="button" class="sheet-stat-who${member===current?" is-self":""}" data-sheet-open="${esc(member.id)}" title="Ouvrir la fiche de ${esc(member.name)}">
     ${face}<span><small>${label}</small><b>${fmt(value)}</b><em>${esc(member.name)}</em></span></button>`;
 }
+// Onglet Caractéristiques (Idan, 2026-10-25) : le détail est grand et lisible, sur toute la largeur des trois colonnes,
+// avec le nom et la valeur en tête (placement : placeStatPopover).
 function statPopover(c,name,value,lead=""){
-  return comparePopover(c,value,m=>lead?sheetEquippedValue(m,name):sheetStatValue(m,name),lead);
+  const head=`<span class="sheet-stat-pop-head"><strong>${esc(name)}</strong><b>${fmt(value)}</b></span>`;
+  return comparePopover(c,value,m=>lead?sheetEquippedValue(m,name):sheetStatValue(m,name),lead,head);
 }
-function comparePopover(c,value,accessor,lead=""){
+function comparePopover(c,value,accessor,lead="",head=""){
   const data=comparisonData(value,accessor);
   if(!data) return "";
   const p=data.positions;
   const dot=(key,pos,title)=>`<i class="compare-dot ${key}" style="left:${pos}%" title="${esc(title)}"></i>`;
-  return `<span class="sheet-stat-pop" role="tooltip">${lead}
+  return `<span class="sheet-stat-pop" role="tooltip">${head}${lead}<span class="sheet-stat-compare">
     <span class="sheet-stat-pop-title">Dans la compagnie</span>
     <span class="compare-track"><span class="compare-line"></span>${dot("min",p.min,"Min "+fmt(data.min))}${dot("median",p.median,"Médiane "+fmt(data.median))}${dot("avg",p.avg,"Moyenne "+fmt(data.avg))}${dot("max",p.max,"Max "+fmt(data.max))}${dot("current",p.current,esc(c.name)+" "+fmt(value))}</span>
     <span class="sheet-stat-pop-mid"><span><i class="compare-dot median"></i>Médiane <b>${fmt(data.median)}</b></span><span><i class="compare-dot avg"></i>Moyenne <b>${fmt(data.avg)}</b></span></span>
     <span class="sheet-stat-pop-ends">${statPortraitButton(data.minMember,"Min",data.min,c)}${statPortraitButton(data.maxMember,"Max",data.max,c)}</span>
-  </span>`;
+  </span></span>`;
+}
+// Le grand détail de l'onglet Caractéristiques : sous la ligne survolée, ou au-dessus pour les lignes du bas, de la
+// première à la dernière colonne de caractéristiques.
+function placeStatPopover(value){
+  const grid=value.closest(".sheet-stats"),pop=value.querySelector(".sheet-stat-pop"),row=value.closest(".sheet-stat");
+  if(!grid||!pop||!row) return;
+  const box=grid.getBoundingClientRect(),line=row.getBoundingClientRect(),first=grid.querySelector(".sheet-stat-group")?.getBoundingClientRect();
+  pop.style.left=((first?first.left:box.left)-box.left)+"px";
+  const below=line.top-box.top<box.height/2;
+  pop.style.top=below?(line.bottom-box.top+6)+"px":"auto";
+  pop.style.bottom=below?"auto":(box.bottom-line.top+6)+"px";
+  pop.classList.toggle("is-above",!below);
 }
 function renderStatsTab(c){
   const rows=game.referenceData?.characterSheetCopy?.stats||[];
@@ -1451,6 +1471,13 @@ async function init() {
       const member = teamCharacters().find(m => String(m.id) === btn.dataset.sheetOpen);
       if (member && member !== game.sheetCharacter) showCharacter(member);
     });
+    // Onglet Caractéristiques : le grand détail se place sous ou au-dessus de la ligne survolée.
+    const placeStat = event => {
+      const value = event.target.closest(".sheet-stats .sheet-stat-value");
+      if (value && !value.contains(event.relatedTarget)) placeStatPopover(value);
+    };
+    $("dialog-content").addEventListener("mouseover", placeStat);
+    $("dialog-content").addEventListener("focusin", placeStat);
     // Le jeu démarre sur le menu principal (accueil) ; « Nouvelle partie » ouvre la création.
   } catch (error) {
     showFatal(error);

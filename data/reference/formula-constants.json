@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 181,
+  "row_count": 182,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -616,6 +616,14 @@
       "description": "Probabilité maximale (%) qu'un candidat quitte la Taverne après avoir refusé une offre. Porté de 75 à 95 à la demande d'Idan (2026-10-03).",
       "formule": "Taverne — recrutement V1",
       "valeur": 95,
+      "version": "V1"
+    },
+    {
+      "nom": "Prime de mission — multiple du salaire",
+      "code": "tavern.mission_bonus.salary_multiplier",
+      "description": "Prime de mission demandée = multiple × salaire × facteur de Courage × facteur de prétentions (doc 09 §6). 3 au départ, divisé par deux par Idan le 2026-10-25 (« les temps sont durs »).",
+      "formule": "Prime de mission demandée",
+      "valeur": 1.5,
       "version": "V1"
     },
     {

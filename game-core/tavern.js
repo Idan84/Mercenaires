@@ -26,6 +26,7 @@
     // Départ après un refus (PLAYTEST) : poids de la concession demandée et plafond de la probabilité.
     const QUIT_CONCESSION_COEFFICIENT=referenceConstant(options.reference,"tavern.negotiation.quit_concession_coefficient",0.75);
     const QUIT_MAX=referenceConstant(options.reference,"tavern.negotiation.quit_max",75);
+    const MISSION_BONUS_MULTIPLIER=referenceConstant(options.reference,"tavern.mission_bonus.salary_multiplier",1.5);
     // Affinité avec le capitaine (14 §9 ; Idan, 2026-10-20) : une bonne affinité adoucit la négociation.
     const AFFINITY_RESISTANCE=referenceConstant(options.reference,"tavern.negotiation.affinity_coefficient",0.25);
     function d100(){ return Math.floor(random()*100)+1; }
@@ -39,10 +40,12 @@
     }
 
     // §8 — Prime de mission demandée (PLAYTEST), payée seulement si le mercenaire revient de mission.
+    // Coefficient de la prime : 3, divisé par deux par Idan le 2026-10-25 (« les temps sont durs ») :
+    // tavern.mission_bonus.salary_multiplier.
     function missionBonusDemand(m){
       const courageFactor=clamp(1.5-stat(m,"Courage")/100,0.5,1.5);
       const pretensionFactor=1+((Number(m.salaryPretension)||0)-35)/200;
-      return Math.round(3*(Number(m.salary)||0)*courageFactor*pretensionFactor);
+      return Math.round(MISSION_BONUS_MULTIPLIER*(Number(m.salary)||0)*courageFactor*pretensionFactor);
     }
 
     // §6 — Informations visibles avant entretien : profil CAC / Distance / Magie et prédilection.

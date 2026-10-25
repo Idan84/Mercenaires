@@ -988,6 +988,26 @@
 
     // Coffre d'un camp ennemi (doc 17 §8) : un objet à bonus tiré au hasard (bottes, ceinture, amulette, cape, gants,
     // culotte ou bague), tier selon la réputation du personnage donné, sans propriétaire.
+    // Objet du coffre d'un camp (Idan, 2026-10-25 : « il faut pouvoir trouver de l'équipement T2 ou T3 à ce stade ») :
+    // une famille tirée au hasard (arme, armure, bottes, ceinture, amulette, cape, gants, culotte, bague, casque), puis un
+    // objet de cette famille, au tier donné et à sa qualité, sans propriétaire.
+    function createChestItem(character, tier) {
+      const families = ["weapon", "armor", ...Object.keys(STAT_GEAR).filter(kind => STAT_GEAR[kind].rows.length)];
+      const family = randomChoice(families);
+      let item;
+      if (family === "weapon") {
+        const weapon = randomChoice(weaponRows);
+        item = weaponItem(character, {weapon:weapon.nom, category:skillByName.get(weapon.nom)?.parent || null}, null);
+      } else if (family === "armor") {
+        item = armorItem(character, randomChoice([...new Set(baseArmorRows.map(row => row.type_armure).filter(Boolean))]));
+      } else {
+        item = statGearItem(character, family, randomChoice(STAT_GEAR[family].rows));
+      }
+      if (!item) return null;
+      const quality = qualityForTier(tier);
+      return {...item, tier, qualityCode:quality.code || null, qualityName:quality.nom || null, owner:null};
+    }
+
     function createLootItem(character) {
       const kinds = Object.keys(STAT_GEAR).filter(kind => STAT_GEAR[kind].rows.length);
       if (!kinds.length) return null;
@@ -1498,6 +1518,7 @@
       createStartingRingStock,
       createStartingHelmetStock,
       createLootItem,
+      createChestItem,
       people: () => peopleRows.map(r => r.nom),
       alignments: () => alignmentRows.map(r => r.nom),
       ancestries: () => ancestryRows.map(r => r.nom),

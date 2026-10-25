@@ -191,6 +191,23 @@
       return changed;
     }
 
+    // Primes de mission divisées par deux (Idan, 2026-10-25 : « les temps sont durs ») : dans une partie commencée avant,
+    // les contrats signés et les négociations en cours à la Taverne, une seule fois.
+    function ensureHalvedMissionBonuses(state){
+      if(state.company.missionBonusHalved) return false;
+      const half=value=>Math.round((Number(value)||0)/2);
+      for(const m of rosterOf(state)) if(m.contract&&m.contract.missionBonus!=null) m.contract.missionBonus=half(m.contract.missionBonus);
+      for(const candidate of state.tavern?.candidates||[]){
+        const n=candidate.negotiation;
+        if(!n) continue;
+        n.bonus=half(n.bonus);
+        if(n.refused) n.refused.bonus=half(n.refused.bonus);
+        if(n.agreed) n.agreed.bonus=half(n.agreed.bonus);
+      }
+      state.company.missionBonusHalved=true;
+      return true;
+    }
+
     function ensureStartingStock(state){
       const company=state.company;
       const captain=rosterOf(state).find(m=>m.id===company.captainId);
@@ -348,6 +365,7 @@
             ...generator.createStartingAmuletStock(captain),...generator.createStartingCapeStock(captain),
             ...generator.createStartingGlovesStock(captain),...generator.createStartingPantsStock(captain),
             ...generator.createStartingRingStock(captain),...generator.createStartingHelmetStock(captain)],
+          missionBonusHalved:true,
           startingArmors:true,
           startingBoots:true,
           startingBelts:true,
@@ -807,6 +825,7 @@
       ensureAvatars,
       ensureRenamedNames,
       ensureStartingStock,
+      ensureHalvedMissionBonuses,
       ensureTwoHandedGrips,
       ensureHistories,
       payroll

@@ -271,6 +271,15 @@
       return Math.max(1,(statWithGear(unit,"Esquive")||1)-armorMobility(unit).dodge);
     }
 
+    // PV maximum (formula pv-maximum-v1) : ceil(3 × (Constitution + 0,2 × Endurance + 0,1 × Volonté)), avec l'équipement
+    // et ce que le mercenaire a gagné en mission (Idan, 2026-10-25). Les ennemis gardent les PV de leur fiche (doc 17 §10).
+    function maxHp(unit){
+      const c=unit?.character;
+      if(c?.archetype) return Number(c.pvMax)||1;
+      const score=statWithGear(unit,"Constitution")+0.2*statWithGear(unit,"Endurance")+0.1*statWithGear(unit,"Volonté");
+      return Math.max(1,Math.ceil(3*score-1e-9));
+    }
+
     function movementBase(unit){
       const score=effectiveSpeed(unit)
         +0.25*statWithGear(unit,"Endurance")
@@ -890,6 +899,7 @@
       intimidation,
       captainAura,
       captainAuraBonus,
+      maxHp,
       courageHold,
       localMelee,
       resolveCourage,

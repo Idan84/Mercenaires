@@ -61,6 +61,23 @@ near(engine.initiative(wearer("Chapeau d’intelligence",4))-engine.initiative(b
 assert.equal(engine.baseValue(wearer("Chapeau du dresseur",2),"Compagnon animal"),30);
 near(engine.statWithGear(wearer("Chapeau du dresseur",2),"Compagnon animal"),33);
 
+// PV max (Idan, 2026-10-25) : ceil(3 × (Constitution + 0,2 × Endurance + 0,1 × Volonté)), avec l'équipement et la
+// Constitution gagnée en mission ; les ennemis gardent les PV de leur fiche.
+const sturdy=(tier,constitution=60)=>({character:{stats:{Constitution:constitution,Endurance:50,"Volonté":40},
+  items:tier?[{id:"h",itemType:"helmet",name:"Casque de constitution",tier}]:[],equipment:{slots:tier?{head:"h"}:{}}},activeSet:1});
+assert.equal(engine.maxHp(sturdy(0)),222,"3 × (60 + 10 + 4)");
+assert.equal(engine.maxHp(sturdy(1)),231,"Constitution 63 avec le casque T1");
+assert.equal(engine.maxHp(sturdy(4)),258,"Constitution 72 avec le casque T4");
+assert.equal(engine.maxHp(sturdy(0,62)),228,"+2 Constitution gagnés en mission : +6 PV");
+assert.equal(engine.maxHp({character:{archetype:"goblin_slinger_1",pvMax:41,stats:{Constitution:90}},activeSet:1}),41,
+  "un ennemi garde les PV de sa fiche");
+const hp=createEquipmentEffects({engine}).effects(sturdy(2).character)["Points de vie"];
+assert.deepEqual([hp.base,hp.value],[222,240]);
+assert.deepEqual(hp.lines.map(l=>[l.label,l.delta]),[["Constitution avec l’équipement",18]]);
+const missionUi=fs.readFileSync(path.join(ROOT,"prototype-web","mission.js"),"utf8");
+assert.match(missionUi,/const pvMax=combatEngine\(\)\.maxHp\(\{character,activeSet:1\}\);/,"PV max au départ de la mission");
+assert.doesNotMatch(missionUi,/character\.pvMax/,"la mission lit les PV max de l'unité");
+
 // La fiche : les lignes du détail.
 const {effects}=createEquipmentEffects({engine});
 const e=effects(tank.character);

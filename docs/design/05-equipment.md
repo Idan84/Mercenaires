@@ -198,7 +198,7 @@ Trois coiffes (`data/reference/helmets.json`), portées dans l’emplacement **C
 - **Casque de constitution** : **+5 / 10 / 15 / 20 %** de la Constitution de base selon le tier ; en contrepartie, **−20 / 15 / 10 / 5 %** de la Puissance magique de base et **−4 / 3 / 2 / 1 de Vitesse** (le poids du casque, compté avec l’armure et les armes tenues). La qualité ne change ni le bonus ni les malus.
 - **Chapeau d’intelligence** : **+5 / 10 / 15 / 20 %** de l’Intelligence de base.
 - **Chapeau du dresseur** : **+5 / 10 / 15 / 20 %** de la compétence animale (Compagnon animal).
-- Au combat (`statWithGear`) : la Vitesse (déplacement, Initiative) ; l’Intelligence pour l’Initiative et le choix du type de dégâts. Aujourd’hui, la Constitution ne sert qu’aux points de vie de la création, la Puissance magique et le Compagnon animal à des systèmes à venir : la fiche montre les valeurs bonifiées (Caractéristiques, Magie, Compétences) avec la ligne du casque.
+- Au combat (`statWithGear`) : la Vitesse (déplacement, Initiative) ; l’Intelligence pour l’Initiative et le choix du type de dégâts. La Constitution compte dans les **PV max** (Idan, 2026-10-25 : ils suivent la Constitution, l’Endurance et la Volonté équipées, voir `formulas/pv-maximum-v1.md`) ; la Puissance magique et le Compagnon animal servent à des systèmes à venir : la fiche montre les valeurs bonifiées (Caractéristiques, Magie, Compétences) avec la ligne du casque.
 - **5 %** de chance d’en avoir un à la création (`helmet_chance`) ; **1D6** au stock de départ (doc 11 §16) ; ils peuvent tomber du coffre d’un camp. Titres par tier : `item-titles.json` (JC). Images : `assets-src/Equipements/Casques/` (Jean-Mimi).
 
 ### Échanges d’équipement : Donner, Retirer, Troquer (Idan, 2026-10-24)

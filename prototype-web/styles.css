@@ -1828,7 +1828,7 @@ body[data-screen="camp"] .camp-scene>.panel .muted{color:#c2b29e}
 .building-info .building-work{font-size:14px}
 /* Écran Dortoir : le décor en plein écran, le panneau en bas à gauche. */
 body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="dormitory"]{display:flex;align-items:flex-end;min-height:calc(100dvh - 150px)}
-.dormitory-panel{width:min(100%,560px);padding:18px 22px 20px;border:1px solid #957652;border-radius:14px;background:rgba(22,17,13,.86);color:#f0e2ca;box-shadow:0 20px 60px #000a}
+.dormitory-panel{width:min(100%,640px);padding:18px 22px 20px;border:1px solid #957652;border-radius:14px;background:rgba(22,17,13,.86);color:#f0e2ca;box-shadow:0 20px 60px #000a}
 .dormitory-panel .eyebrow{margin:14px 0 2px;color:#d3ac76}
 .dormitory-panel h2{margin:0;font:normal 32px Georgia,serif;color:#f4d9a6}
 .dormitory-meta{margin:4px 0 16px;color:#c2b29e;font-size:14px}

@@ -14,6 +14,7 @@ Référentiels d’équipement. La **qualité est commune à tous les items** ; 
 
 - La **qualité d'item** est commune : `Multiplicateur qualité` agit sur les valeurs positives ; `Multiplicateur malus` agit sur les handicaps, y compris désormais le malus vitesse d'arme.
 - La prise et les bonus `1 main / 2 mains / Au choix` sont définis dans [Prise d'arme et mode deux mains V1](/design/#doc=formulas/prise-d-arme-et-mode-deux-mains-v1.md).
+- **La fronde se tient à deux mains** (Idan, 2026-10-25) : une main la fait tourner, l'autre tient et recharge les pierres ; pas de bouclier ni d'arme en main secondaire avec elle. Dans une partie commencée avant, l'objet tenu en main secondaire avec une arme à deux mains retourne à l'Intendance.
 - Le calcul du malus vitesse réel d'une arme est défini dans [Malus vitesse arme effectif V1](/design/#doc=formulas/malus-vitesse-arme-effectif-v1.md).
 
 <aside>

@@ -67,10 +67,12 @@ function makeMissionUnit(character,team,index){
   const spawn=missionAxial(col,MISSION_MAP.spawnRows[index]);
   // Aura du capitaine (Idan, 2026-10-24) : le capitaine de la compagnie, s'il part en mission.
   const captainId=game.campaign?game.campaign.company.captainId:game.captain?.id;
+  // PV max au départ de la mission, avec l'équipement et la Constitution gagnée (Idan, 2026-10-25).
+  const pvMax=combatEngine().maxHp({character,activeSet:1});
   return {
     id:team+"-"+character.id+"-"+index,
     character,team,q:spawn.q,r:spawn.r,isCaptain:team==="player"&&captainId!=null&&character.id===captainId,
-    hp:character.pvMax,alive:true,activeSet:1,prone:false,
+    hp:pvMax,pvMax,alive:true,activeSet:1,prone:false,
     acted:false,movementRemaining:0,attackAvailable:true,quickAvailable:true,
     fleeing:false,fleeTurn:0,offMap:false,damageTaken:0
   };
@@ -122,7 +124,7 @@ function openMissionSelection(contract=null){
       <input type="checkbox" value="${c.id}" ${preselected.has(c)?"checked":""} ${c.recovery?"disabled":""}>
       ${renderAvatar(c,{variant:"compact",kind:"portrait"})}
       <span><strong>${esc(c.name)}</strong><small>${esc(c.people)} · ${esc(c.equipment?.profile?.type||"")}${c.recovery?" · "+esc(recoveryLabel(c)):""}</small></span>
-      <em>${c.pvMax} PV</em>
+      <em>${combatEngine().maxHp({character:c,activeSet:1})} PV</em>
     </label>
   `).join("");
 
@@ -297,7 +299,7 @@ function resolveMissionAftermath(){
   const m=game.mission;
   const captainId=game.campaign?game.campaign.company.captainId:game.captain?.id;
   const participants=m.players.map(u=>({
-    id:u.character.id,name:u.character.name,hp:u.hp,pvMax:u.character.pvMax,
+    id:u.character.id,name:u.character.name,hp:u.hp,pvMax:u.pvMax,
     // Endurance avec la ceinture et Volonté avec l'amulette (Idan, 2026-10-24) : blessure, mort et convalescence
     // les lisent aussi.
     damageTaken:u.damageTaken,stats:{...u.character.stats,Endurance:m.engine.statWithGear(u,"Endurance"),
@@ -1172,7 +1174,7 @@ function renderMissionRoster(units){
       ${renderAvatar(u.character,{variant:"compact",kind:"portrait"})}
       <div class="mission-roster-copy">
         <strong>${esc(u.character.name)}</strong>
-        <span>${u.offMap?"A quitté le combat":Math.max(0,u.hp)+"/"+u.character.pvMax+" PV"+(u.hp<0?" ("+u.hp+")":"")+(u.alive&&u.fleeing?" · En fuite":"")+(u.alive&&!game.mission.engine.isLoaded(u,game.mission.engine.activeWeaponItem(u))?" · Arme déchargée":"")}</span>
+        <span>${u.offMap?"A quitté le combat":Math.max(0,u.hp)+"/"+u.pvMax+" PV"+(u.hp<0?" ("+u.hp+")":"")+(u.alive&&u.fleeing?" · En fuite":"")+(u.alive&&!game.mission.engine.isLoaded(u,game.mission.engine.activeWeaponItem(u))?" · Arme déchargée":"")}</span>
         <small>Init ${Math.round(game.mission.engine.initiative(u))} · Mvt ${game.mission.engine.movementBase(u)}</small>
       </div>
     </div>
@@ -1208,18 +1210,18 @@ function renderMission(){
 
   const tokens=missionUnits().filter(unit=>!unit.offMap).map(unit=>{
     const p=missionHexPixel(unit.q,unit.r);
-    const pct=Math.max(0,Math.round(unit.hp/unit.character.pvMax*100));
+    const pct=Math.max(0,Math.round(unit.hp/unit.pvMax*100));
     const classes=["mission-token",unit.team,unit.alive?"alive":"down"];
     if(u===unit) classes.push("active");
     const encircled=unit.alive&&missionEncircled(unit);
     if(encircled) classes.push("encircled");
     if(unit.alive&&unit.fleeing) classes.push("fleeing");
     const weapon=e.activeWeaponItem(unit);
-    return `<div class="${classes.join(" ")}" style="left:${p.x-24}px;top:${p.y-24}px" title="${esc(unit.character.name)} — ${Math.max(0,unit.hp)}/${unit.character.pvMax} PV — ${esc(weapon?.name||"Sans arme")}">
+    return `<div class="${classes.join(" ")}" style="left:${p.x-24}px;top:${p.y-24}px" title="${esc(unit.character.name)} — ${Math.max(0,unit.hp)}/${unit.pvMax} PV — ${esc(weapon?.name||"Sans arme")}">
       ${renderAvatar(unit.character,{variant:"battle",kind:"portrait"})}
       <span class="token-hp"><i style="width:${pct}%"></i></span>
       <strong>${esc(unit.character.name.split(" ")[0])}</strong>
-      <em>${unit.alive&&unit.fleeing?"En fuite":Math.max(0,unit.hp)+"/"+unit.character.pvMax+" PV"}</em>
+      <em>${unit.alive&&unit.fleeing?"En fuite":Math.max(0,unit.hp)+"/"+unit.pvMax+" PV"}</em>
     </div>`;
   }).join("");
 

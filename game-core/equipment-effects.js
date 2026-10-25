@@ -16,6 +16,7 @@
 //   constitution (Idan, 2026-10-25) ;
 // - Initiative : calculée avec la Vitesse au combat, le Courage avec la ceinture, la Volonté avec l'amulette et
 //   l'Intelligence avec le chapeau ;
+// - Points de vie : PV max calculés avec la Constitution, l'Endurance et la Volonté équipées (Idan, 2026-10-25) ;
 // - Dextérité : + gants de dextérité, réduite par le combat à deux armes.
 // Chaque effet donne la valeur de base, la valeur équipée et les lignes du détail (objet ou raison, écart).
 // Dégâts de chaque set d'armes (Idan, 2026-10-24) : ceux du combat avant la résistance de la cible.
@@ -57,7 +58,8 @@
     }
 
     // { Vitesse, Esquive, Perception, Endurance, Courage, Réserve de mana, Puissance magique, Volonté, Chance, Résistance
-    // physique, Discrétion, Force, Pièges, Charisme, Intimidation, écoles de magie, Initiative, Dextérité } : {base, value,
+    // physique, Discrétion, Force, Pièges, Charisme, Intimidation, écoles de magie, Initiative, Points de vie, Dextérité } :
+    // {base, value,
     // lines} pour chaque valeur concernée.
     function effects(character){
       if(!engine||!character?.stats) return {};
@@ -83,6 +85,9 @@
         ...(courageGap?[{label:"Courage avec l’équipement",delta:courageGap,reason:"courage"}]:[]),
         ...(willGap?[{label:"Volonté avec l’équipement",delta:willGap,reason:"will"}]:[]),
         ...(mindGap?[{label:"Intelligence avec l’équipement",delta:mindGap,reason:"intelligence"}]:[])]);
+      const hpGap=stat=>engine.statWithGear(unit,stat)-engine.statWithGear(bare,stat);
+      add("Points de vie",engine.maxHp(bare),engine.maxHp(unit),[["Constitution",3],["Endurance",0.6],["Volonté",0.3]]
+        .filter(([stat])=>hpGap(stat)).map(([stat,factor])=>({label:stat+" avec l’équipement",delta:factor*hpGap(stat),reason:"hp"})));
       const dexterity=Number(character.stats["Dextérité"])||0,dual=engine.effectiveDexterity(unit);
       const gloved=engine.statWithGear(unit,"Dextérité");
       add("Dextérité",dexterity,dual,[...gearLines(unit,"Dextérité"),

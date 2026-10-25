@@ -920,7 +920,8 @@ function equipmentEffectRules(){
 }
 // Valeur propre d'une ligne de l'onglet, sans l'équipement (Taverne, comparaison avec la compagnie).
 function sheetStatValue(m,name){
-  if(name==="Points de vie") return Number(m?.pvMax);
+  // PV max sans l'équipement, avec la Constitution gagnée en mission (Idan, 2026-10-25).
+  if(name==="Points de vie") return m?.stats ? equipmentEffectRules().effects(m)["Points de vie"].base : Number(m?.pvMax);
   if(name==="Initiative") return m?.stats ? Math.round(equipmentEffectRules().effects(m).Initiative.base) : NaN;
   if(m?.resistances && name in m.resistances) return Number(m.resistances[name]);
   // Régénération (physiologie) et Intimidation (social) : rangées dans les caractéristiques (Idan, 2026-10-21).
@@ -1001,8 +1002,8 @@ function renderStatsTab(c){
     const effect=effects[row.nom],value=effect?Math.round(effect.value):sheetStatValue(c,row.nom);
     if(!Number.isFinite(value)) return "";
     const shift=effect?Math.sign(value-Math.round(effect.base)):0;
-    // Charisme et Constitution ne jouent pas encore au combat : « Total ».
-    const lead=equipmentDetail(effect,["Charisme","Constitution"].includes(row.nom)?"Total":"Au combat");
+    // Le Charisme ne joue pas encore au combat : « Total ». La Constitution y joue par les PV max (Idan, 2026-10-25).
+    const lead=equipmentDetail(effect,row.nom==="Charisme"?"Total":"Au combat");
     return `<div class="sheet-stat sheet-stat--${esc(pictoSlug(row.nom))}">
       ${statIcon(row.nom)}
       <span class="sheet-stat-name" tabindex="0">${esc(row.nom.replace(/^Résistance (au |à la |aux )?/,"").replace(/^./,ch=>ch.toUpperCase()))}${statTip(row)}</span>

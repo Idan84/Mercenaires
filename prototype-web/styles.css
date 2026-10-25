@@ -293,13 +293,13 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
 .gear-tile--luxury{border-color:#f0c050;box-shadow:0 0 12px rgba(240,192,80,.5),0 4px 12px rgba(0,0,0,.35)}
 /* Carte d'objet au survol (Idan, 2026-10-24) : une carte de jeu, couleur du cadre selon le tier. */
 /* Bulle des pictos (Idan, 2026-10-25) : nom et phrase d'explication du peuple, de la culture ou de l'ascendance. */
-#picto-tip{position:fixed;z-index:61;display:none;width:max-content;max-width:300px;padding:10px 13px;border:1px solid #a9814f;border-radius:10px;background:#1b130e;box-shadow:0 12px 30px #000b;color:#ead9bd;font:14px/1.4 system-ui,sans-serif;text-align:left;pointer-events:none}
+#picto-tip{position:fixed;z-index:96;display:none;width:max-content;max-width:300px;padding:10px 13px;border:1px solid #a9814f;border-radius:10px;background:#1b130e;box-shadow:0 12px 30px #000b;color:#ead9bd;font:14px/1.4 system-ui,sans-serif;text-align:left;pointer-events:none}
 #picto-tip.is-visible{display:grid;gap:2px}
 #picto-tip small{color:#bb9a6e;font:700 11px Georgia,serif;letter-spacing:.1em;text-transform:uppercase}
 #picto-tip strong{color:#ffe1ac;font:700 16px Georgia,serif}
 #picto-tip span{color:#d9c6a2}
 .picto[data-picto-name]{cursor:help}
-#item-card-float{position:fixed;z-index:60;display:none;width:max-content;pointer-events:none}
+#item-card-float{position:fixed;z-index:95;display:none;width:max-content;pointer-events:none}
 /* L'image de l'objet en grand, juste à côté de la carte (Idan, 2026-10-25). */
 .item-card-wrap{display:flex;align-items:center;gap:12px}
 .item-card-wrap>.item-card{width:300px}

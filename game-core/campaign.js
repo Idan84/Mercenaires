@@ -218,6 +218,12 @@
         company.startingRings=true;
         changed=true;
       }
+      // Casques et chapeaux (Idan, 2026-10-25) : 1D6, comme les autres objets à bonus.
+      if(!company.startingHelmets){
+        if(captain&&generator.createStartingHelmetStock) company.stock.push(...generator.createStartingHelmetStock(captain));
+        company.startingHelmets=true;
+        changed=true;
+      }
       return changed;
     }
 
@@ -320,7 +326,7 @@
             ...generator.createStartingBootsStock(captain),...generator.createStartingBeltStock(captain),
             ...generator.createStartingAmuletStock(captain),...generator.createStartingCapeStock(captain),
             ...generator.createStartingGlovesStock(captain),...generator.createStartingPantsStock(captain),
-            ...generator.createStartingRingStock(captain)],
+            ...generator.createStartingRingStock(captain),...generator.createStartingHelmetStock(captain)],
           startingArmors:true,
           startingBoots:true,
           startingBelts:true,
@@ -328,7 +334,8 @@
           startingCapes:true,
           startingGloves:true,
           startingPants:true,
-          startingRings:true
+          startingRings:true,
+          startingHelmets:true
         },
         tavern:tavern.createTavernState(),
         biographiesUsed:[],

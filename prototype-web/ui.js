@@ -603,7 +603,7 @@ function gearTooltip(item){
 }
 // Image d'un objet selon son tier (Idan, 2026-10-23 : masters dans assets-src/Equipements/, versions du jeu
 // par scripts/build-equipment.js), ou null tant qu'il n'en a pas : la case garde alors son picto.
-const EQUIPMENT_ART_DIRS={armor:"armures",weapon:"armes",boots:"bottes",belt:"ceintures",amulet:"amulettes",cape:"capes",gloves:"gants",pants:"culottes",ring:"bagues"};
+const EQUIPMENT_ART_DIRS={helmet:"casques",armor:"armures",weapon:"armes",boots:"bottes",belt:"ceintures",amulet:"amulettes",cape:"capes",gloves:"gants",pants:"culottes",ring:"bagues"};
 function equipmentArt(item){
   const dir=EQUIPMENT_ART_DIRS[item?.itemType];
   const key=dir?`${dir}/${pictoSlug(item.name)}-${item.tier}`:null;
@@ -937,7 +937,7 @@ function sheetEquippedValue(m,name){
 // Charisme (pas encore joués au combat).
 function equipmentDetail(effect,total="Au combat"){
   if(!effect?.lines.length) return "";
-  const note={weight:"poids, réduit par la maîtrise",armor:"handicap de l’armure",speed:"avec l’équipement",dual:"une arme dans chaque main"};
+  const note={weight:"poids, réduit par la maîtrise",armor:"handicap de l’armure",helmet:"poids du casque",speed:"avec l’équipement",dual:"une arme dans chaque main"};
   const line=l=>{
     const delta=Math.round(l.delta);
     return `<span class="sheet-gear-line"><span>${esc(l.label)}<small>${esc(l.reason==="gear"?(l.points!=null?`+${l.points} points`:`${l.percent<0?"−":"+"}${Math.abs(l.percent)} % de la valeur de base`):note[l.reason]||"")}${l.twoHands?" · à deux mains ÷2":""}</small></span><b class="${delta<0?"is-malus":delta>0?"is-bonus":""}">${delta>0?"+":""}${fmt(delta)}</b></span>`;
@@ -1001,7 +1001,8 @@ function renderStatsTab(c){
     const effect=effects[row.nom],value=effect?Math.round(effect.value):sheetStatValue(c,row.nom);
     if(!Number.isFinite(value)) return "";
     const shift=effect?Math.sign(value-Math.round(effect.base)):0;
-    const lead=equipmentDetail(effect,row.nom==="Charisme"?"Total":"Au combat");
+    // Charisme et Constitution ne jouent pas encore au combat : « Total ».
+    const lead=equipmentDetail(effect,["Charisme","Constitution"].includes(row.nom)?"Total":"Au combat");
     return `<div class="sheet-stat sheet-stat--${esc(pictoSlug(row.nom))}">
       ${statIcon(row.nom)}
       <span class="sheet-stat-name" tabindex="0">${esc(row.nom.replace(/^Résistance (au |à la |aux )?/,"").replace(/^./,ch=>ch.toUpperCase()))}${statTip(row)}</span>
@@ -1032,9 +1033,10 @@ function skillDescription(name){
 }
 // Cape de discrétion et gants de pièges (Idan, 2026-10-24) : ces compétences montrent la valeur avec l'équipement, en
 // vert, et son détail.
-const SKILLS_WITH_GEAR=new Set(["Discrétion","Pièges"]);
+// Chapeau du dresseur (Idan, 2026-10-25) : de même pour le Compagnon animal.
+const SKILLS_WITH_GEAR=new Set(["Discrétion","Pièges","Compagnon animal"]);
 function skillValueCell(c,group,name){
-  const effect=group==="martial"&&SKILLS_WITH_GEAR.has(name)&&c.stats?equipmentEffectRules().effects(c)[name]:null;
+  const effect=["martial","animal"].includes(group)&&SKILLS_WITH_GEAR.has(name)&&c.stats?equipmentEffectRules().effects(c)[name]:null;
   if(effect){
     const value=Math.round(effect.value),shift=Math.sign(value-Math.round(effect.base));
     return `<span class="sheet-stat-value${shift<0?" is-malus":shift>0?" is-bonus":""}" tabindex="0">${fmt(value)}${comparePopover(c,value,m=>sheetEquippedValue(m,name),equipmentDetail(effect,"Total"))}</span>`;

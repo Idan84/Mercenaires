@@ -12,7 +12,10 @@
 // - Force, Pièges : + gants (Idan, 2026-10-24) ;
 // - Charisme, Intimidation : + culotte (Idan, 2026-10-24) ;
 // - Chance, Courage : + bagues ; écoles de magie : + bague de l'école, − bagues des écoles opposées (Idan, 2026-10-24) ;
-// - Initiative : calculée avec la Vitesse au combat, le Courage avec la ceinture et la Volonté avec l'amulette ;
+// - Constitution, Intelligence, Compagnon animal : + casque ou chapeau ; Puissance magique et Vitesse : − Casque de
+//   constitution (Idan, 2026-10-25) ;
+// - Initiative : calculée avec la Vitesse au combat, le Courage avec la ceinture, la Volonté avec l'amulette et
+//   l'Intelligence avec le chapeau ;
 // - Dextérité : + gants de dextérité, réduite par le combat à deux armes.
 // Chaque effet donne la valeur de base, la valeur équipée et les lignes du détail (objet ou raison, écart).
 // Dégâts de chaque set d'armes (Idan, 2026-10-24) : ceux du combat avant la résistance de la cible.
@@ -40,6 +43,8 @@
       const lines=gearLines(unit,"Vitesse");
       const armor=engine.armorItem(unit),mobility=engine.armorMobility(unit);
       if(armor&&mobility.speed) lines.push({label:itemLabel(armor),delta:-mobility.speed,reason:"armor"});
+      const helmet=engine.itemBySlot?.(unit,"head"),helmetWeight=engine.headgearSpeedPenalty?.(unit)||0;
+      if(helmet&&helmetWeight) lines.push({label:itemLabel(helmet),delta:-helmetWeight,reason:"helmet"});
       for(const item of [engine.activeWeaponItem(unit),engine.activeOffhandItem(unit)]){
         if(!item) continue;
         const penalty=engine.heldItemSpeedPenalty(unit,item);
@@ -65,16 +70,19 @@
       add("Esquive",Number(character.stats.Esquive)||0,engine.effectiveDodge(unit),
         [...gearLines(unit,"Esquive"),...(armor&&dodge?[{label:itemLabel(armor),delta:-dodge,reason:"armor"}]:[])]);
       for(const stat of ["Perception","Endurance","Courage","Réserve de mana","Puissance magique","Volonté","Chance",
-        "Résistance physique","Discrétion","Force","Pièges","Charisme","Intimidation",...(engine.MAGIC_SCHOOLS||[])]){
+        "Résistance physique","Discrétion","Force","Pièges","Charisme","Intimidation","Constitution","Intelligence","Compagnon animal",
+        ...(engine.MAGIC_SCHOOLS||[])]){
         add(stat,engine.baseValue(unit,stat),engine.statWithGear(unit,stat),gearLines(unit,stat));
       }
       const speedGap=engine.effectiveSpeed(unit)-engine.effectiveSpeed(bare);
       const courageGap=0.10*(engine.statWithGear(unit,"Courage")-engine.statWithGear(bare,"Courage"));
       const willGap=0.05*(engine.statWithGear(unit,"Volonté")-engine.statWithGear(bare,"Volonté"));
+      const mindGap=0.25*(engine.statWithGear(unit,"Intelligence")-engine.statWithGear(bare,"Intelligence"));
       add("Initiative",engine.initiative(bare),engine.initiative(unit),[
         ...(speedGap?[{label:"Vitesse au combat",delta:speedGap,reason:"speed"}]:[]),
         ...(courageGap?[{label:"Courage avec l’équipement",delta:courageGap,reason:"courage"}]:[]),
-        ...(willGap?[{label:"Volonté avec l’équipement",delta:willGap,reason:"will"}]:[])]);
+        ...(willGap?[{label:"Volonté avec l’équipement",delta:willGap,reason:"will"}]:[]),
+        ...(mindGap?[{label:"Intelligence avec l’équipement",delta:mindGap,reason:"intelligence"}]:[])]);
       const dexterity=Number(character.stats["Dextérité"])||0,dual=engine.effectiveDexterity(unit);
       const gloved=engine.statWithGear(unit,"Dextérité");
       add("Dextérité",dexterity,dual,[...gearLines(unit,"Dextérité"),

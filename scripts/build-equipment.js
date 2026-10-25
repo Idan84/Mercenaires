@@ -4,7 +4,7 @@
 // Images d'équipement (Idan, 2026-10-23) : masters dans assets-src/Equipements/ (1024 px, fond noir)
 // → versions du jeu dans prototype-web/assets/equipment/ (WebP 256 px) et, pour la grande image de la carte d'objet
 // (Idan, 2026-10-25), prototype-web/assets/equipment-large/ (WebP 512 px, mêmes chemins).
-// - Armures/, Armes/, Bottes/, Ceintures/, Amulettes/, Capes/, Gants/, Culottes/ et Bagues/<Nom>_[T]<tier>[_horodatage].jpg : le nom est reconnu sans accents,
+// - Armures/, Armes/, Bottes/, Ceintures/, Amulettes/, Capes/, Gants/, Culottes/, Bagues/ et Casques/<Nom>_[T]<tier>[_horodatage].jpg : le nom est reconnu sans accents,
 //   majuscules ni petits mots (« Armure_cuir » = « Armure de cuir »), dans n'importe quel ordre
 //   (« Double_arme_hast » = « Arme d'hast double »), et abrégé s'il reste sans ambiguïté
 //   (« Fleau » = « Fléau d'armes ») ;
@@ -61,7 +61,8 @@ const families=[
   {dir:"Capes",out:"capes",names:rows("capes.json").map(r=>r.nom)},
   {dir:"Gants",out:"gants",names:rows("gloves.json").map(r=>r.nom)},
   {dir:"Culottes",out:"culottes",names:rows("pants.json").map(r=>r.nom)},
-  {dir:"Bagues",out:"bagues",names:rows("rings.json").map(r=>r.nom)}
+  {dir:"Bagues",out:"bagues",names:rows("rings.json").map(r=>r.nom)},
+  {dir:"Casques",out:"casques",names:rows("helmets.json").map(r=>r.nom)}
 ];
 const available=[];
 const problems=[];

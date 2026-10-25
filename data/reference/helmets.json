@@ -1,0 +1,142 @@
+{
+  "schema_version": 1,
+  "name": "helmets",
+  "description": "Casques et chapeaux (Idan, 2026-10-25), portés dans l’emplacement Casque / Chapeau. Bonus de +5 / 10 / 15 / 20 % de la valeur de base selon le tier. Casque de constitution : − malus_t<tier> % de la Puissance magique de base et − vitesse_t<tier> points de Vitesse (le poids du casque). Chapeau du dresseur : la compétence animale (Compagnon animal). Images : assets-src/Equipements/Casques.",
+  "columns": [
+    {
+      "source": "Nom",
+      "key": "nom"
+    },
+    {
+      "source": "Code",
+      "key": "code"
+    },
+    {
+      "source": "Caractéristique",
+      "key": "caracteristique"
+    },
+    {
+      "source": "Type de bonus",
+      "key": "type_bonus"
+    },
+    {
+      "source": "Bonus T1 (%)",
+      "key": "bonus_t1"
+    },
+    {
+      "source": "Bonus T2 (%)",
+      "key": "bonus_t2"
+    },
+    {
+      "source": "Bonus T3 (%)",
+      "key": "bonus_t3"
+    },
+    {
+      "source": "Bonus T4 (%)",
+      "key": "bonus_t4"
+    },
+    {
+      "source": "Caractéristique réduite",
+      "key": "malus_caracteristique"
+    },
+    {
+      "source": "Malus T1 (%)",
+      "key": "malus_t1"
+    },
+    {
+      "source": "Malus T2 (%)",
+      "key": "malus_t2"
+    },
+    {
+      "source": "Malus T3 (%)",
+      "key": "malus_t3"
+    },
+    {
+      "source": "Malus T4 (%)",
+      "key": "malus_t4"
+    },
+    {
+      "source": "Vitesse T1 (points retirés)",
+      "key": "vitesse_t1"
+    },
+    {
+      "source": "Vitesse T2 (points retirés)",
+      "key": "vitesse_t2"
+    },
+    {
+      "source": "Vitesse T3 (points retirés)",
+      "key": "vitesse_t3"
+    },
+    {
+      "source": "Vitesse T4 (points retirés)",
+      "key": "vitesse_t4"
+    },
+    {
+      "source": "Prix de base (PO)",
+      "key": "prix_base"
+    }
+  ],
+  "row_count": 3,
+  "rows": [
+    {
+      "nom": "Casque de constitution",
+      "code": "constitution_helmet",
+      "caracteristique": "Constitution",
+      "type_bonus": "pourcentage",
+      "bonus_t1": 5,
+      "bonus_t2": 10,
+      "bonus_t3": 15,
+      "bonus_t4": 20,
+      "malus_caracteristique": "Puissance magique",
+      "malus_t1": 20,
+      "malus_t2": 15,
+      "malus_t3": 10,
+      "malus_t4": 5,
+      "vitesse_t1": 4,
+      "vitesse_t2": 3,
+      "vitesse_t3": 2,
+      "vitesse_t4": 1,
+      "prix_base": 100
+    },
+    {
+      "nom": "Chapeau d’intelligence",
+      "code": "intelligence_hat",
+      "caracteristique": "Intelligence",
+      "type_bonus": "pourcentage",
+      "bonus_t1": 5,
+      "bonus_t2": 10,
+      "bonus_t3": 15,
+      "bonus_t4": 20,
+      "malus_caracteristique": null,
+      "malus_t1": 0,
+      "malus_t2": 0,
+      "malus_t3": 0,
+      "malus_t4": 0,
+      "vitesse_t1": 0,
+      "vitesse_t2": 0,
+      "vitesse_t3": 0,
+      "vitesse_t4": 0,
+      "prix_base": 100
+    },
+    {
+      "nom": "Chapeau du dresseur",
+      "code": "tamer_hat",
+      "caracteristique": "Compagnon animal",
+      "type_bonus": "pourcentage",
+      "bonus_t1": 5,
+      "bonus_t2": 10,
+      "bonus_t3": 15,
+      "bonus_t4": 20,
+      "malus_caracteristique": null,
+      "malus_t1": 0,
+      "malus_t2": 0,
+      "malus_t3": 0,
+      "malus_t4": 0,
+      "vitesse_t1": 0,
+      "vitesse_t2": 0,
+      "vitesse_t3": 0,
+      "vitesse_t4": 0,
+      "prix_base": 100
+    }
+  ]
+}

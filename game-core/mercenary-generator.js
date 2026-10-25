@@ -58,6 +58,7 @@
     const gloveRows = rows.gloves || [];
     const pantsRows = rows.pants || [];
     const ringRows = rows.rings || [];
+    const helmetRows = rows.helmets || [];
     const itemQualityRows = rows.itemQualities || [];
     const equipmentSlotRows = rows.equipmentSlots || [];
     const binaryAptitudeRows = rows.binaryAptitudeGrants || [];
@@ -916,7 +917,9 @@
       cape:{rows:capeRows, slot:"cape", category:"Cape"},
       gloves:{rows:gloveRows, slot:"gloves", category:"Gants"},
       pants:{rows:pantsRows, slot:"pants", category:"Culotte"},
-      ring:{rows:ringRows, slot:"ring_1", category:"Bague"}
+      ring:{rows:ringRows, slot:"ring_1", category:"Bague"},
+      // Casques et chapeaux (Idan, 2026-10-25).
+      helmet:{rows:helmetRows, slot:"head", category:"Casque"}
     };
     function statGearItem(character, itemType, template) {
       if (!template) return null;
@@ -981,6 +984,7 @@
     function createStartingGlovesStock(captain) { return createStartingStatGearStock(captain, "gloves", "gloves"); }
     function createStartingPantsStock(captain) { return createStartingStatGearStock(captain, "pants", "pants"); }
     function createStartingRingStock(captain) { return createStartingStatGearStock(captain, "ring", "ring"); }
+    function createStartingHelmetStock(captain) { return createStartingStatGearStock(captain, "helmet", "helmet"); }
 
     // Coffre d'un camp ennemi (doc 17 §8) : un objet à bonus tiré au hasard (bottes, ceinture, amulette, cape, gants,
     // culotte ou bague), tier selon la réputation du personnage donné, sans propriétaire.
@@ -1031,7 +1035,7 @@
 
       // Bottes, ceinture, amulette, cape, gants, culotte, puis bague (Idan, 2026-10-24) : 5 % de chance chacun, d'un type
       // tiré au hasard ; la bague va dans le premier emplacement de bague.
-      for (const [itemType, chanceKey] of [["boots","boots_chance"],["belt","belt_chance"],["amulet","amulet_chance"],["cape","cape_chance"],["gloves","gloves_chance"],["pants","pants_chance"],["ring","ring_chance"]]) {
+      for (const [itemType, chanceKey] of [["boots","boots_chance"],["belt","belt_chance"],["amulet","amulet_chance"],["cape","cape_chance"],["gloves","gloves_chance"],["pants","pants_chance"],["ring","ring_chance"],["helmet","helmet_chance"]]) {
         const gear = STAT_GEAR[itemType];
         const chance = Number(startingEquipmentGeneration[chanceKey]);
         if (gear.rows.length && random() < (Number.isFinite(chance) ? chance : 0.05)) {
@@ -1492,6 +1496,7 @@
       createStartingGlovesStock,
       createStartingPantsStock,
       createStartingRingStock,
+      createStartingHelmetStock,
       createLootItem,
       people: () => peopleRows.map(r => r.nom),
       alignments: () => alignmentRows.map(r => r.nom),

@@ -29,6 +29,7 @@ Git est la source de vérité. Les JSON ci-dessous sont les référentiels struc
 | one-shot-missions.json | 1 | missions (camp, distance, carte, récompense, coffre, échec, défaite), ordres (trois ordres de mission validés), noms (lieux, commanditaires, tribus, caïds, signataires, estimations) — missions one shot, doc 17 |
 | dormitory-quality.json | 11 | niveau, nom, prix, jours, renommee, affinite, image (qualité du dortoir, doc 11 §4 : niveaux 0 à 10, prix et durée du chantier, Renommée et affinité gagnées, fond de l'écran Dortoir) |
 | rings.json | 11 | nom, code, caracteristique, type_bonus, bonus_t1, bonus_t2, bonus_t3, bonus_t4, malus_opposees_t1, malus_opposees_t2, malus_opposees_t3, malus_opposees_t4, prix_base (bagues : Chance et Courage en %, une bague par école de magie avec malus sur les deux écoles opposées ; cumulables) |
+| helmets.json | 3 | nom, code, caracteristique, type_bonus, bonus_t1…t4, malus_caracteristique, malus_t1…t4, vitesse_t1…t4, prix_base (casques et chapeaux : Constitution, Intelligence, Compagnon animal en % ; le Casque de constitution retire de la Puissance magique et de la Vitesse) |
 | pants.json | 3 | nom, code, caracteristique, type_bonus, bonus_t1, bonus_t2, bonus_t3, bonus_t4, prix_base (culottes : Charisme et Intimidation en % de la valeur de base, Affinité avec le capitaine en points) |
 | item-qualities.json | 3 | nom, code, description, multiplicateur_malus, multiplicateur_qualite, multiplicateur_prix |
 | ranged-weapons.json | 8 | nom, domaine, portee_min_hex, portee_max_hex, cadence_tir, recharge_action_rapide, contre_charge, attaque_de_zone, degats_pv_base, puissance_perforante_base, prise, malus_vitesse_arme_base |
@@ -46,7 +47,7 @@ Git est la source de vérité. Les JSON ci-dessous sont les référentiels struc
 | tavern-dialogue.json | 20 + 38 | greetings (min, max, texte) selon l'affinité ; questions, answers et lines du dialogue de recrutement ; weapons (nom, avec_article) : textes de la Taverne |
 | equipment-dialogue.json | 8 × 4 | proposals (par action), replies (action, accord, humeur, lignes), outcomes, menu : dialogues des échanges d’équipement Donner / Retirer / Troquer |
 | steward-dialogue.json | 2 × 16 + 8 | offer et recall (proposition, répliques accepted / flattered / vexed / neutral, issues), talk (accueil, options, évaluation des candidats), panel : dialogues de l’intendant |
-| item-titles.json | 75 | nom, famille (arme, armure, bottes, ceinture, amulette, cape, gants, culotte ou bague), t1, t2, t3, t4 : titre de l’objet selon son tier, en tête de la carte d’objet (textes de JC, Idan 2026-10-24) |
+| item-titles.json | 78 | nom, famille (arme, armure, bottes, ceinture, amulette, cape, gants, culotte, bague ou casque), t1, t2, t3, t4 : titre de l’objet selon son tier, en tête de la carte d’objet (textes de JC, Idan 2026-10-24) |
 | renamed-names.json | 3 | ancien, nouveau, famille (culture ou arme), date : noms changés par Idan ; les sauvegardes et les mots-clés Bridge des avatars restent compatibles |
 | character-names.json | 46 | id, peuple, culture, consonance, poids, prenoms_femme, prenoms_homme, noms, noms_femme (noms des personnages générés : genre et consonance des cultures humaines) |
 | equipment-silhouettes.json | 20 | fichier, peuple, sexe (silhouettes d'équipement de media/Avatars_Equipements dont le nom ne donne pas le peuple et le sexe) |

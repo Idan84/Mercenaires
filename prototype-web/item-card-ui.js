@@ -66,9 +66,9 @@ function armorCardBody(card){
 
 // Bottes, ceintures, amulettes, capes, gants, culottes et bagues (Idan, 2026-10-24) : un pourcentage de la valeur de base
 // du porteur, ou des points (cape de résistance physique, Slip d’Affinité).
-const STAT_GEAR_KINDS=["boots","belt","amulet","cape","gloves","pants","ring"];
+const STAT_GEAR_KINDS=["boots","belt","amulet","cape","gloves","pants","ring","helmet"];
 // « de l’Endurance », « du Courage », « de la Vitesse ».
-const MASCULINE_STATS=new Set(["Courage","Charisme","Feu"]);
+const MASCULINE_STATS=new Set(["Courage","Charisme","Feu","Compagnon animal"]);
 // « des Pièges ».
 const PLURAL_STATS=new Set(["Pièges"]);
 function statArticle(stat){
@@ -84,10 +84,15 @@ function statGearCardBody(card){
     traits:[`Ajoute ${cardNumber(card.bonus)} points de ${card.stat} au porteur`],flavor:null};
   const rows=[cardRow(card.stat,`+${cardNumber(card.bonus)} %`,"bonus")];
   const traits=[`Ajoute ${cardNumber(card.bonus)} % ${statArticle(card.stat)}${card.stat} de base du porteur`];
-  // Bague de magie : les deux écoles opposées baissent.
+  // Bague de magie : les deux écoles opposées baissent ; Casque de constitution : la Puissance magique.
   if(card.malus&&card.opposites?.length){
     rows.push(...card.opposites.map(o=>cardRow(o,`−${cardNumber(card.malus)} %`,"malus")));
     traits.push(`Retire ${cardNumber(card.malus)} % ${card.opposites.map(o=>statArticle(o)+o).join(" et ")} de base du porteur`);
+  }
+  // Poids du casque (Idan, 2026-10-25).
+  if(card.speed){
+    rows.push(cardRow("Vitesse",`−${cardNumber(card.speed)}`,"malus"));
+    traits.push(`Pèse sur la tête : −${cardNumber(card.speed)} Vitesse`);
   }
   return {rows,traits,flavor:null};
 }

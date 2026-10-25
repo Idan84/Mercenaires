@@ -36,7 +36,27 @@ assert.equal(scoreAvatar(av("d",{sex:"femme"}),tags),0,"sexe inconnu : l'image d
 // Score souple : ce qui se voit compte le plus. Casse, accents et apostrophes ignorés.
 assert.equal(scoreAvatar(av("e",{tags:{profile:["magic"],magic:["Feu"]}}),tags),SCORE.profile+SCORE.magic);
 assert.equal(scoreAvatar(av("f",{tags:{weapon:["armes CONTONDANTES"],culture:["Ogres des cites humaines"]}}),tags),SCORE.weapon+SCORE.culture);
-assert.equal(scoreAvatar(av("g",{tags:{magic:["Glace"]}}),tags),0,"tag non retrouvé : 0, l'avatar reste candidat");
+assert.equal(scoreAvatar(av("g",{tags:{magic:["Glace"]}}),tags),-SCORE.magic,"ce qui se voit et contredit coûte son poids ; l'avatar reste candidat");
+assert.equal(scoreAvatar(av("g2",{tags:{origin:["Noble"],alignment:["Loyal bon"]}}),tags),0,"origine et alignement ne se voient pas : pas de malus");
+assert.equal(scoreAvatar(av("g3",{tags:{profile:["ranged"],weapon:["Arc"],ascendance:["Sang de dragon"],culture:["Ogres des montagnes"]}}),tags),
+  -(SCORE.profile+SCORE.weapon+SCORE.ascendance+SCORE.culture),"un archer au sang de dragon d'une autre culture contredit ce mage");
+
+// Ce qui se voit (Idan, 2026-10-25) : les armes portées plutôt que les préférences ; l'école seulement pour un mage ou
+// un mercenaire qui connaît un sort.
+const carrying=merc({items:[{id:"w1",name:"Hache double",category:"Haches"},{id:"w2",name:"Arc court",category:"Armes de tir"}],
+  equipment:{profile:{type:"melee"},slots:{weapon_set_1_main:"w1",weapon_set_2_main:"w2"}}});
+assert.deepEqual(avatarTags(carrying).weapon,["hache double","haches","arc court","armes de tir"]);
+assert.deepEqual(avatarTags(carrying).magic,[],"un guerrier dont la meilleure école est le Feu n'a pas l'air d'un mage");
+assert.deepEqual(avatarTags(merc({equipment:{profile:{type:"melee"}},spells:[{code:"fire_bolt",school:"Feu"}]})).magic,["feu"],"il connaît un sort de Feu");
+assert.deepEqual(avatarTags(merc({spells:[{code:"quick_heal",school:"Vie"}]})).magic.sort(),["feu","vie"],"mage : sa meilleure école et celles de ses sorts");
+const fighters=createAvatarRules({catalog:[
+  av("ogre-mage",{tags:{profile:["magic"],magic:["Feu"],weapon:["Bâtons"]}}),
+  av("ogre-neutre"),
+  av("ogre-hache",{tags:{profile:["melee"],weapon:["Haches"]}})
+],random:()=>0});
+assert.equal(fighters.choose(merc({equipment:{profile:{type:"melee"}}}),new Set(["ogre-hache"])).avatar.id,"ogre-neutre",
+  "à défaut d'avatar qui lui ressemble, un avatar neutre passe avant un mage");
+assert.equal(fighters.choose(carrying,new Set()).avatar.id,"ogre-hache");
 
 // Choix : le meilleur l'emporte malgré le hasard (0 à 5).
 const rules=createAvatarRules({catalog:[av("ogre-001"),av("ogre-002",{sex:"femme",tags:{profile:["magic"],magic:["Feu"]}}),av("halfling-001",{people:"Halfling"})],random:()=>0.999});

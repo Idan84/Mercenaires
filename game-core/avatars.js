@@ -5,6 +5,9 @@
 // - même peuple obligatoire ; sans avatar disponible, le mercenaire garde le portrait générique ;
 // - parmi les avatars compatibles, le plus proche du mercenaire d'après les tags Bridge d'Idan
 //   (culture, origine, magie, arme…), avec un peu de hasard ;
+// - plus précis (Idan, 2026-10-25) : on compare l'image à ce qui se voit sur le mercenaire (les armes qu'il porte,
+//   l'école d'un mage ou d'un mercenaire qui connaît un sort), et ce qu'elle montre de contraire (un arc pour un
+//   épéiste, un mage pour un guerrier, du sang de dragon pour qui n'en a pas) coûte autant qu'un tag juste rapporte ;
 // - jamais deux fois le même visage en même temps ; les avatars des morts ne reviennent pas.
 // Le catalogue réunit data/reference/avatars.json (scripts/build-avatars.js) et les avatars déposés sur
 // Hostinger (api/avatars.php → avatar-catalog.js). Purement visuel.
@@ -16,6 +19,10 @@
 })(typeof globalThis!=="undefined"?globalThis:this,function(bio){
   // Poids de départ, à régler : ce qui se voit sur l'image compte le plus.
   const SCORE={profile:10,magic:10,weapon:8,ascendance:8,culture:6,origin:4,alignment:2};
+  // Ce qui se voit sur l'image et contredit le mercenaire : − poids × part. À défaut d'avatar qui lui ressemble, un
+  // avatar neutre passe avant un avatar qui le contredit ; aucun n'est exclu pour autant.
+  const VISIBLE=["profile","magic","weapon","ascendance","culture"];
+  const MISMATCH_SHARE=1;
   const NOISE_MAX=5;
 
   function norm(value){
@@ -23,6 +30,22 @@
       .toLowerCase().replace(/\s+/g," ").trim();
   }
   const list=values=>(Array.isArray(values)?values:[]).map(norm).filter(Boolean);
+
+  // Armes visibles : celles qu'il porte (deux sets) et leurs catégories ; à défaut d'équipement, ses armes préférées.
+  const WEAPON_SLOTS=["weapon_set_1_main","weapon_set_1_off","weapon_set_2_main","weapon_set_2_off"];
+  function visibleWeapons(m,t){
+    const items=new Map((m.items||[]).map(item=>[item.id,item]));
+    const carried=WEAPON_SLOTS.map(slot=>items.get(m.equipment?.slots?.[slot])).filter(Boolean);
+    if(!carried.length) return t.weapon.map(norm);
+    return [...new Set(carried.flatMap(item=>[item.name,item.category]).map(norm).filter(Boolean))];
+  }
+  // Écoles visibles : celles des sorts qu'il connaît, et sa meilleure école s'il a le profil Magie. Un guerrier dont
+  // la meilleure école est faible n'a pas l'air d'un mage.
+  function visibleSchools(m,t){
+    const schools=new Set((m.spells||[]).map(spell=>norm(spell.school)).filter(Boolean));
+    if(t.profile==="magic") t.magic.forEach(school=>schools.add(school));
+    return [...schools];
+  }
 
   // Ce que l'on sait du mercenaire, au même format que les tags du catalogue.
   function avatarTags(m){
@@ -33,8 +56,8 @@
       culture:[t.culture],origin:[t.origin],alignment:[t.alignment],
       ascendance:m.ascendance?[norm(m.ascendance)]:[],
       profile:t.profile?[t.profile]:[],
-      magic:t.magic,
-      weapon:t.weapon.map(norm)
+      magic:visibleSchools(m,t),
+      weapon:visibleWeapons(m,t)
     };
   }
 
@@ -45,7 +68,9 @@
     let score=0;
     for(const [key,weight] of Object.entries(SCORE)){
       const wanted=list(avatar.tags?.[key]);
+      if(!wanted.length) continue;
       if(wanted.some(v=>tags[key].includes(v))) score+=weight;
+      else if(VISIBLE.includes(key)) score-=weight*MISMATCH_SHARE;
     }
     return score;
   }
@@ -88,5 +113,5 @@
     return {avatars,byId,choose,assign};
   }
 
-  return {createAvatarRules,avatarTags,scoreAvatar,SCORE};
+  return {createAvatarRules,avatarTags,scoreAvatar,SCORE,VISIBLE,MISMATCH_SHARE};
 });

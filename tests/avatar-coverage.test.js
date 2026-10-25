@@ -61,6 +61,37 @@ for(const f of Object.keys(orc.families)){
 assert.ok(Math.abs(orc.families.culture.reduce((t,x)=>t+x.share,0)-1)<1e-9,"une culture par mercenaire");
 assert.ok(orc.families.magic.every(x=>/^[A-ZÉ]/.test(x.value)),"noms de magie lisibles");
 
+// Ascendances (Idan, 2026-10-25) : toutes celles du peuple, même rares, avec leur part exacte.
+const compat=read("ancestry-compatibility.json").rows;
+const humain=coverage.forPeople("Humain");
+const possible=compat.filter(r=>r.peuple==="Humain"&&r.possible&&r.ascendance).map(r=>r.ascendance).sort();
+assert.deepEqual(humain.families.ascendance.map(x=>x.value).sort(),possible,"les "+possible.length+" ascendances possibles des humains");
+const presence=Number(read("peoples.json").rows.find(r=>r.nom==="Humain").probabilite_d_ascendance);
+assert.ok(Math.abs(humain.families.ascendance.reduce((t,x)=>t+x.share,0)-presence)<1e-9,"leurs parts font la probabilité d'ascendance");
+
+// Combinaisons (Idan, 2026-10-25 : « il faut que je croise ») : culture · profil · arme portée ou école du mage.
+const combos=orc.combinations;
+assert.ok(Math.abs(combos.reduce((t,x)=>t+x.share,0)-1)<1e-9,"une combinaison par mercenaire");
+assert.deepEqual(combos.map(x=>x.share),[...combos.map(x=>x.share)].sort((a,b)=>b-a),"les plus fréquentes d'abord");
+for(const c of combos){
+  assert.ok(c.culture&&["Corps à corps","Distance","Magie"].includes(c.profile));
+  assert.equal(c.kind,c.profile==="Magie"?"magic":"weapon");
+  assert.equal(c.target,Math.round(c.share*100));
+  assert.equal(c.gap,Math.max(0,c.target-c.avatars));
+}
+const axes=createCoverage({reference,samples:200,generator:createGenerator(reference,{random:seeded(),nameGenerator:names}),catalog:[
+  av("orc-a","Orc",{tags:{culture:["Orcs noirs"],profile:["melee"],weapon:["Hache double"]}}),
+  av("orc-b","Orc",{tags:{culture:["Orcs noirs"],profile:["melee"],weapon:["Haches"]}}),
+  av("orc-c","Orc",{tags:{culture:["Orcs des villes"],profile:["melee"],weapon:["Haches"]}}),
+  av("orc-d","Orc",{tags:{culture:["Orcs noirs"],profile:["ranged"],weapon:["Haches"]}})
+]}).forPeople("Orc").combinations.find(x=>x.culture==="Orcs noirs"&&x.profile==="Corps à corps"&&x.value==="Haches");
+assert.ok(axes,"des guerriers orcs noirs à la hache");
+assert.equal(axes.avatars,2,"il faut la culture, le profil et l'arme (une hache précise compte dans sa catégorie)");
+for(const c of orc.cultureProfiles){
+  assert.ok(Math.abs(Object.values(c.profiles).reduce((t,x)=>t+x,0)-1)<1e-9,c.culture+" : profils");
+}
+assert.ok(Math.abs(orc.cultureProfiles.reduce((t,x)=>t+x.share,0)-1)<1e-9);
+
 // Peuple sans avatar, avatar sans tag.
 const nain=coverage.forPeople("Nain");
 assert.equal(nain.sansTags,1);

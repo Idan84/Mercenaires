@@ -69,6 +69,15 @@ Décision d'Idan du 2026-10-21. Les données sont dans `data/reference/character
 - **Anciennes sauvegardes** : les personnages déjà créés gardent leur nom.
 - **Sans avatar sexué** (choix technique de JC3, à valider) : le sexe tiré pour le nom devient celui du personnage, et le portrait attribué plus tard le respecte.
 
+## Avatars — attribution
+
+Code : `game-core/avatars.js` ; outil de production : Design Lab, onglet Avatars (`game-core/avatar-coverage.js`).
+
+- Même peuple obligatoire, et même sexe s'il est déjà connu ; sinon, l'avatar qui ressemble le plus au mercenaire d'après les tags Bridge d'Idan : profil 10, magie 10, arme 8, ascendance 8, culture 6, origine 4, alignement 2, plus un peu de hasard (0 à 5).
+- **Plus précis** (Idan, 2026-10-25 : « regarde si le sélecteur d'avatar peut être plus précis ») : on compare l'image à **ce qui se voit** sur le mercenaire, les **armes qu'il porte** (et leurs catégories) plutôt que ses préférences, et une **école de magie** seulement pour un mage ou un mercenaire qui connaît un sort de cette école. Ce que l'image montre de **contraire** (profil, magie, arme, ascendance, culture) coûte autant qu'un tag juste rapporte : un avatar neutre passe avant un avatar qui contredit le mercenaire, sans qu'aucun ne soit exclu.
+- Mesure (3 000 mercenaires, 464 avatars en ligne) : profil contredit 6,8 % → 1,1 % ; arme 41 % → 21 % ; magie 34 % → 2,4 % ; ascendance 22 % → 6,5 % ; culture 29 % → 20 %. Le reste vient surtout des avatars qui manquent (voir les combinaisons du Design Lab).
+- Design Lab : toutes les ascendances possibles du peuple, avec leur part exacte ; les **combinaisons à produire** (culture · profil · arme portée ou école du mage) ; les **profils par culture**.
+
 ## Génération brute des compétences — règles en cours
 
 ### Compétences martiales

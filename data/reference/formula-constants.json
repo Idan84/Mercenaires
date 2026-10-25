@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 177,
+  "row_count": 181,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -552,6 +552,38 @@
       "description": "Aura du lieutenant = part × (35 % de son Courage + 25 % de son Charisme), équipement compris, arrondie ; même portée que le capitaine. Les auras ne s’additionnent pas : un allié prend la plus forte à portée (Idan, 2026-10-25).",
       "formule": "Lieutenant",
       "valeur": 0.5,
+      "version": "V1"
+    },
+    {
+      "nom": "Lieutenant — jours entre deux demandes",
+      "code": "lieutenant.request.cooldown_days",
+      "description": "Une demande au lieutenant (courage ou respect) pour un même mercenaire, une fois tous les N jours, par type de demande (Idan, 2026-10-25).",
+      "formule": "Lieutenant",
+      "valeur": 30,
+      "version": "V1"
+    },
+    {
+      "nom": "Lieutenant — part de l’écart gagnée",
+      "code": "lieutenant.request.gain_ratio",
+      "description": "Demande réussie : gain = ratio × (valeur du lieutenant − valeur du mercenaire), Courage ou affinité avec le capitaine, arrondi (formule de JC validée par Idan, 2026-10-25).",
+      "formule": "Lieutenant",
+      "valeur": 0.2,
+      "version": "V1"
+    },
+    {
+      "nom": "Lieutenant — gain minimal",
+      "code": "lieutenant.request.gain_min",
+      "description": "Gain minimal d’une demande réussie (formule de JC validée par Idan, 2026-10-25).",
+      "formule": "Lieutenant",
+      "valeur": 1,
+      "version": "V1"
+    },
+    {
+      "nom": "Lieutenant — gain maximal",
+      "code": "lieutenant.request.gain_max",
+      "description": "Gain maximal d’une demande réussie (formule de JC validée par Idan, 2026-10-25).",
+      "formule": "Lieutenant",
+      "valeur": 10,
       "version": "V1"
     },
     {

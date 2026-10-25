@@ -53,7 +53,8 @@
   // progression (facultatif) : createProgressionRules(...) de game-core/progression.js.
   // affinity (facultatif) : createAffinityRules(...) de game-core/affinity.js (négociation à la Taverne).
   // missions (facultatif) : createMissionRules(...) de game-core/missions.js (tableau des contrats de la Taverne).
-  function createCampaignRules({generator,tavern,reference,biographies=null,avatars=null,progression=null,affinity=null,names=null,missions=null}){
+  // lieutenants : règles des lieutenants (lieutenants.js) ; leurs demandes de la veille sont jouées chaque matin.
+  function createCampaignRules({generator,tavern,reference,biographies=null,avatars=null,progression=null,affinity=null,names=null,missions=null,lieutenants=null}){
     const STARTING_GOLD=referenceConstant(reference,"company.gold.initial",10000);
     const STARTING_DORMITORY_CAPACITY=referenceConstant(reference,"camp.dormitory.initial_capacity",40);
     const RENOWN_RANK_EXPONENT=referenceConstant(reference,"company.renown.rank_exponent",1.5);
@@ -533,7 +534,9 @@
       const missionTaken=expireMissionOffer(state);
       const expeditions=advanceExpeditions(state);
       const built=advanceConstruction(state);
-      return {day:state.day,recovered,salaries,tavern:tavernReport,missionTaken,expeditions,built};
+      // Demandes au lieutenant (Idan, 2026-10-25) : le résultat tombe le lendemain matin.
+      const lieutenantReports=lieutenants?lieutenants.resolveRequests(state):[];
+      return {day:state.day,recovered,salaries,tavern:tavernReport,missionTaken,expeditions,built,lieutenants:lieutenantReports};
     }
 
     // Tableau des contrats (doc 17) : une offre à la fois pour l'instant, « Faire le ménage » en boucle. Une offre

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "dormitory-quality",
-  "description": "Qualité du dortoir (Idan, 2026-10-25) : dix niveaux au-dessus du niveau 0. Atteindre le niveau n coûte prix PO et jours de chantier (formule de JC, validée : 500 × n² PO et 3 × n jours) ; il donne renommee points de Renommée à la compagnie, pour de bon, et affinite points d'affinité avec le capitaine à chaque membre de la compagnie le jour où le chantier se termine. Noms des niveaux proposés par JC, validés par Idan. Valeurs modifiables niveau par niveau.",
+  "description": "Qualité du dortoir (Idan, 2026-10-25) : dix niveaux au-dessus du niveau 0. Atteindre le niveau n coûte prix PO et jours de chantier (formule de JC, validée : 500 × n² PO et 3 × n jours) ; il donne renommee points de Renommée à la compagnie, pour de bon, et affinite points d'affinité avec le capitaine à chaque membre de la compagnie le jour où le chantier se termine. Noms des niveaux proposés par JC, validés par Idan. Valeurs modifiables niveau par niveau. Image de fond de l'écran Dortoir (Jean-Mimi, 2026-10-25) : prototype-web/assets/dormitory/<image> ; dix images pour onze niveaux, le niveau 0 reprend la première.",
   "columns": [
     {
       "source": "Niveau",
@@ -26,6 +26,10 @@
     {
       "source": "Affinité gagnée",
       "key": "affinite"
+    },
+    {
+      "source": "Image de fond",
+      "key": "image"
     }
   ],
   "row_count": 11,
@@ -36,7 +40,8 @@
       "prix": 0,
       "jours": 0,
       "renommee": 0,
-      "affinite": 0
+      "affinite": 0,
+      "image": "dortoir-1.jpg"
     },
     {
       "niveau": 1,
@@ -44,7 +49,8 @@
       "prix": 500,
       "jours": 3,
       "renommee": 50,
-      "affinite": 5
+      "affinite": 5,
+      "image": "dortoir-1.jpg"
     },
     {
       "niveau": 2,
@@ -52,7 +58,8 @@
       "prix": 2000,
       "jours": 6,
       "renommee": 50,
-      "affinite": 5
+      "affinite": 5,
+      "image": "dortoir-2.jpg"
     },
     {
       "niveau": 3,
@@ -60,7 +67,8 @@
       "prix": 4500,
       "jours": 9,
       "renommee": 50,
-      "affinite": 5
+      "affinite": 5,
+      "image": "dortoir-3.jpg"
     },
     {
       "niveau": 4,
@@ -68,7 +76,8 @@
       "prix": 8000,
       "jours": 12,
       "renommee": 50,
-      "affinite": 5
+      "affinite": 5,
+      "image": "dortoir-4.jpg"
     },
     {
       "niveau": 5,
@@ -76,7 +85,8 @@
       "prix": 12500,
       "jours": 15,
       "renommee": 50,
-      "affinite": 5
+      "affinite": 5,
+      "image": "dortoir-5.jpg"
     },
     {
       "niveau": 6,
@@ -84,7 +94,8 @@
       "prix": 18000,
       "jours": 18,
       "renommee": 50,
-      "affinite": 5
+      "affinite": 5,
+      "image": "dortoir-6.jpg"
     },
     {
       "niveau": 7,
@@ -92,7 +103,8 @@
       "prix": 24500,
       "jours": 21,
       "renommee": 50,
-      "affinite": 5
+      "affinite": 5,
+      "image": "dortoir-7.jpg"
     },
     {
       "niveau": 8,
@@ -100,7 +112,8 @@
       "prix": 32000,
       "jours": 24,
       "renommee": 50,
-      "affinite": 5
+      "affinite": 5,
+      "image": "dortoir-8.jpg"
     },
     {
       "niveau": 9,
@@ -108,7 +121,8 @@
       "prix": 40500,
       "jours": 27,
       "renommee": 50,
-      "affinite": 5
+      "affinite": 5,
+      "image": "dortoir-9.jpg"
     },
     {
       "niveau": 10,
@@ -116,7 +130,8 @@
       "prix": 50000,
       "jours": 30,
       "renommee": 50,
-      "affinite": 5
+      "affinite": 5,
+      "image": "dortoir-10.jpg"
     }
   ]
 }

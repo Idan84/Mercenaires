@@ -1,44 +1,74 @@
 "use strict";
 
-// Constructions du camp (Idan, 2026-10-25) : pour l'instant dans Ma Compagnie, le dortoir. Agrandir (+5 places) ou
-// améliorer sa qualité (dix niveaux : Renommée et affinité). Les règles (prix, durée, un chantier à la fois au dortoir)
-// sont dans game-core/campaign.js.
+// Constructions du camp (Idan, 2026-10-25). Ma Compagnie montre le dortoir (places, qualité, chantier) et un bouton pour
+// y aller ; l'écran Dortoir, sur le fond de son niveau de qualité (images de Jean-Mimi, dormitory-quality.json, image),
+// propose de l'agrandir (+5 places) ou d'améliorer sa qualité (dix niveaux : Renommée et affinité). Les règles (prix,
+// durée, un chantier à la fois au dortoir) sont dans game-core/campaign.js.
+const DORMITORY_ART_DIR="assets/dormitory/";
+
+function campDays(n){ return fmt(n)+" jour"+(n>1?"s":""); }
+
+function campWorkText(work,day){
+  const left=campDays(work.endDay-day);
+  return work.kind==="dormitory_quality"
+    ?`Chantier en cours : ${esc(work.name)} (niveau ${fmt(work.level)}), prêt dans ${left}.`
+    :`Chantier en cours : +${fmt(work.places)} places, prêtes dans ${left}.`;
+}
+
+function dormitoryPlacesLine(c){
+  const rules=campaignRules();
+  return `${dormitoryPlacesText(rules.dormitoryUsed(c))} / ${fmt(c.company.camp.dormitoryCapacity)} places occupées`;
+}
+
+// Ma Compagnie : le dortoir et le bouton pour y aller.
 function renderCampBuildings(){
   const box=$("camp-buildings"),c=game.campaign;
   if(!box) return;
   if(!c){ box.innerHTML=""; return; }
-  const rules=campaignRules(),camp=c.company.camp,work=camp.construction,quality=rules.dormitoryQuality(c);
-  const days=n=>fmt(n)+" jour"+(n>1?"s":"");
+  const work=c.company.camp.construction,quality=campaignRules().dormitoryQuality(c);
+  box.innerHTML=`<h3>Constructions</h3>
+    <article class="building-card building-card--link">
+      <div class="building-info"><strong>Dortoir</strong><span>${dormitoryPlacesLine(c)}</span>
+        <span>Qualité : ${esc(quality.nom)} (niveau ${fmt(quality.niveau)})</span>${work?`<span class="building-work">${campWorkText(work,c.day)}</span>`:""}</div>
+      <button type="button" class="primary" data-open-camp-scene="dormitory" data-destination="Dortoir">Aller au dortoir</button>
+    </article>`;
+  renderDormitory();
+}
+
+// Écran Dortoir : le fond de son niveau de qualité, son état, et le choix d'agrandir ou d'améliorer.
+function renderDormitory(){
+  const box=$("dormitory-view"),c=game.campaign;
+  if(!box||!c) return;
+  const rules=campaignRules(),work=c.company.camp.construction,quality=rules.dormitoryQuality(c);
+  if(quality.image&&typeof document!=="undefined"){
+    document.body.style.setProperty("--dormitory-bg",`url("${new URL(DORMITORY_ART_DIR+quality.image,document.baseURI).href}")`);
+  }
   let actions;
   if(work){
-    const left=days(work.endDay-c.day);
-    actions=work.kind==="dormitory_quality"
-      ?`<p class="building-work">Chantier en cours : ${esc(work.name)} (niveau ${fmt(work.level)}), prêt dans ${left}.</p>`
-      :`<p class="building-work">Chantier en cours : +${fmt(work.places)} places, prêtes dans ${left}.</p>`;
+    actions=`<p class="building-work">${campWorkText(work,c.day)}</p>`;
   }else{
     const gold=c.company.gold,expand=rules.nextDormitoryExpansion(c),upgrade=rules.nextDormitoryQuality(c);
     const short=cost=>gold<cost?" · pas assez d’or":"";
     actions=`<div class="building-action"><button type="button" class="primary" data-dorm-expand${gold<expand.gold?" disabled":""}>Agrandir : +${fmt(expand.places)} places</button>
-      <span class="building-cost">${fmt(expand.gold)} PO · ${days(expand.days)}${short(expand.gold)}</span></div>`
+      <span class="building-cost">${fmt(expand.gold)} PO · ${campDays(expand.days)}${short(expand.gold)}</span></div>`
       +(upgrade
         ?`<div class="building-action"><button type="button" class="primary" data-dorm-quality${gold<upgrade.gold?" disabled":""}>Améliorer : ${esc(upgrade.name)}</button>
-      <span class="building-cost">${fmt(upgrade.gold)} PO · ${days(upgrade.days)} · Renommée +${fmt(upgrade.renown)}, affinité +${fmt(upgrade.affinity)}${short(upgrade.gold)}</span></div>`
+      <span class="building-cost">${fmt(upgrade.gold)} PO · ${campDays(upgrade.days)} · Renommée +${fmt(upgrade.renown)}, affinité +${fmt(upgrade.affinity)}${short(upgrade.gold)}</span></div>`
         :`<p class="building-work">Qualité maximale.</p>`);
   }
-  box.innerHTML=`<h3>Constructions</h3>
-    <article class="building-card">
-      <div class="building-info"><strong>Dortoir</strong><span>${dormitoryPlacesText(rules.dormitoryUsed(c))} / ${fmt(camp.dormitoryCapacity)} places occupées</span>
-        <span>Qualité : ${esc(quality.nom)} (niveau ${fmt(quality.niveau)})</span></div>
-      <div class="building-actions">${actions}</div>
-    </article>`;
+  box.innerHTML=`<button type="button" class="secondary dormitory-back" data-open-camp-scene="company" data-destination="Ma Compagnie">← Ma Compagnie</button>
+    <p class="eyebrow">Dortoir</p>
+    <h2>${esc(quality.nom)}</h2>
+    <p class="dormitory-meta">Niveau ${fmt(quality.niveau)} · ${dormitoryPlacesLine(c)}</p>
+    <div class="building-actions">${actions}</div>`;
 }
 
 function startCampWork(result){
   if(!result.ok){ tavernLog(result.reason,"bad"); renderCampBuildings(); return; }
-  const w=result.construction,days=fmt(w.days)+" jour"+(w.days>1?"s":"");
+  const w=result.construction;
   tavernLog(w.kind==="dormitory_quality"
-    ?`Amélioration du dortoir lancée : ${w.name} (niveau ${fmt(w.level)}), ${fmt(w.gold)} PO, prêt dans ${days}.`
-    :`Agrandissement du dortoir lancé : ${fmt(w.gold)} PO, +${fmt(w.places)} places dans ${days}.`,"gear");
+    ?`Amélioration du dortoir lancée : ${w.name} (niveau ${fmt(w.level)}), ${fmt(w.gold)} PO, prêt dans ${campDays(w.days)}.`
+    :`Agrandissement du dortoir lancé : ${fmt(w.gold)} PO, +${fmt(w.places)} places dans ${campDays(w.days)}.`,"gear");
   saveGame();
   renderGame();
 }

@@ -71,6 +71,19 @@ assert.deepEqual(compact.warnings,[]);
 assert.deepEqual(compact.rows.map(r=>[r.id,r.sex]),[["halfling-001","femme"],["reptilien-014","homme"]]);
 assert.equal(compact.rows[0].portrait,"/media/avatars/Halflings/Halfling001_square.jpg");
 
+// « Ascendance only » (Idan, 2026-10-25) : l'avatar est réservé à son ascendance ; sans ascendance tagguée, ignoré.
+const only=buildAvatarCatalog([
+  {path:"Ogres/Ogre_30.jpg",...FULL,keywords:["Blood&Wages|Ascendance|Sang de troll","Blood&Wages|Ascendance|Ascendance only"]},
+  {path:"Ogres/Ogre_30_Square.jpg",...SQUARE,keywords:[]},
+  {path:"Ogres/Ogre_31.jpg",...FULL,keywords:["Sang de troll"]},
+  {path:"Ogres/Ogre_31_Square.jpg",...SQUARE,keywords:[]},
+  {path:"Ogres/Ogre_32.jpg",...FULL,keywords:["Ascendance seule"]},
+  {path:"Ogres/Ogre_32_Square.jpg",...SQUARE,keywords:[]}
+],reference);
+assert.deepEqual(only.rows.map(r=>[r.id,r.ascendanceOnly||false,r.tags.ascendance||[]]),
+  [["ogre-030",true,["Sang de troll"]],["ogre-031",false,["Sang de troll"]],["ogre-032",false,[]]]);
+assert.deepEqual(only.warnings,["ogre-032 : « Ascendance only » sans ascendance tagguée, ignoré"]);
+
 // Git + Hostinger : à identifiant égal, Hostinger l'emporte.
 const git=[{id:"ogre-012",full:"ogre-012_full.webp",portrait:"ogre-012_portrait.webp"},{id:"ogre-001",full:"a",portrait:"b"}];
 const merged=mergeCatalogs(git,rows);

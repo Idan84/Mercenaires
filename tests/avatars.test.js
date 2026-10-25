@@ -3,7 +3,7 @@
 const assert=require("node:assert/strict");
 const fs=require("node:fs");
 const path=require("node:path");
-const {createAvatarRules,avatarTags,scoreAvatar,SCORE}=require("../game-core/avatars.js");
+const {createAvatarRules,avatarTags,scoreAvatar,SCORE,SHARED_ASCENDANCE}=require("../game-core/avatars.js");
 
 const ROOT=path.resolve(__dirname,"..");
 const read=file=>JSON.parse(fs.readFileSync(path.join(ROOT,"data","reference",file),"utf8"));
@@ -38,11 +38,15 @@ assert.equal(scoreAvatar(av("a",{people:"Halfling"}),tags),null,"autre peuple : 
 assert.equal(scoreAvatar(av("b"),tags),0,"même peuple et même culture, sans autre tag : candidat");
 assert.equal(scoreAvatar(av("b1",{tags:{culture:["Ogres des montagnes"]}}),tags),null,"autre culture : exclu");
 assert.equal(scoreAvatar(av("b2",{tags:{culture:[]}}),tags),null,"avatar sans culture : exclu (à taguer)");
-assert.equal(scoreAvatar(av("b3",{tags:{ascendance:["Sang de dragon"]}}),tags),null,"une ascendance pour qui n'en a pas : exclu");
+// Ascendance généraliste par défaut (Idan, 2026-10-25) : l'avatar va aussi à qui n'en a pas, un peu après un avatar sans
+// ascendance ; « Ascendance only » la réserve aux mercenaires de cette ascendance.
+assert.equal(scoreAvatar(av("b3",{tags:{ascendance:["Sang de dragon"]}}),tags),-SHARED_ASCENDANCE,"ascendance généraliste : candidat, après un avatar sans ascendance");
+assert.equal(scoreAvatar(av("b3o",{ascendanceOnly:true,tags:{ascendance:["Sang de dragon"]}}),tags),null,"« Ascendance only » pour qui n'en a pas : exclu");
 const dragon=avatarTags(merc({ascendance:"Sang de dragon"}));
 assert.equal(scoreAvatar(av("b4"),dragon),null,"sans ascendance pour un sang de dragon : exclu");
 assert.equal(scoreAvatar(av("b5",{tags:{ascendance:["Sang de troll"]}}),dragon),null,"autre ascendance : exclu");
 assert.equal(scoreAvatar(av("b6",{tags:{ascendance:["Sang de dragon"]}}),dragon),0,"même ascendance : candidat");
+assert.equal(scoreAvatar(av("b7",{ascendanceOnly:true,tags:{ascendance:["Sang de dragon"]}}),dragon),0,"« Ascendance only » de la même ascendance : candidat");
 assert.equal(scoreAvatar(av("c",{sex:"femme"}),avatarTags(merc({sex:"homme"}))),null,"sexe connu et différent : exclu");
 assert.equal(scoreAvatar(av("d",{sex:"femme"}),tags),0,"sexe inconnu : l'image décide");
 

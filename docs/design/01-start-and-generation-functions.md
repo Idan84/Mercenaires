@@ -332,7 +332,7 @@ Hiérarchie retenue : **Capitaine → Lieutenants → Mercenaires**.
 - un seul Capitaine ;
 - plusieurs Lieutenants possibles ;
 - Lieutenant est un **rang / statut porté par un mercenaire**, pas un type de personnage séparé ;
-- les effets précis du grade de Lieutenant restent à définir.
+- effets du grade (Idan, 2026-10-25) : quartiers, promotion, aura et demandes au lieutenant, voir [doc 11 §4 « Le lieutenant »](/design/#doc=11-camp-and-ruined-castle.md).
 
 <aside>
 ☠️

@@ -66,7 +66,7 @@ Le dortoir fixe la **capacité maximale de mercenaires** hébergés.
 - capacité initiale : `40` (décision Idan du 2026-10-03 ; constante `camp.dormitory.initial_capacity`) ;
 - places occupées (Idan, 2026-10-24) : un **ogre prend deux places** ; un **halfling, un gnome ou un gobelin une demi-place** ; tout autre mercenaire **une** (`peoples.json`, colonne `places_dortoir`) ; le **capitaine** et l'**intendant** n'en prennent pas ;
 - dortoir plein (moins de places libres que n'en demande le candidat) : **impossible de recruter** ; de même, l'intendant ne peut pas **revenir sur le terrain** s'il n'y a plus de place pour lui ;
-- **agrandissement** (Idan, 2026-10-25) : **+5 places** à chaque fois, **sans limite** ; chaque agrandissement coûte plus d'or et de jours que le précédent. Le k-ième (k = 1 pour passer de 40 à 45 places) coûte **100 × 1,2^(k−1) PO**, arrondi à 10, et dure **2 + ⌊(k−1)/3⌋ jours** (constantes `camp.dormitory.expansion_*`, formule de JC). Un chantier à la fois au dortoir (agrandissement ou qualité) ; l'or est payé au lancement ; les places sont prêtes le matin du jour où le chantier se termine. Interface (Idan, 2026-10-25) : **Ma Compagnie** montre le dortoir (places, qualité, chantier en cours) et un bouton « Aller au dortoir » ; l'**écran Dortoir** propose d'agrandir ou d'améliorer, sur un **fond plein écran qui dépend du niveau de qualité** (dix images de Jean-Mimi, colonne `image` de `dormitory-quality.json` ; le niveau 0 reprend la première) ;
+- **agrandissement** (Idan, 2026-10-25) : **+5 places** à chaque fois, **sans limite** ; chaque agrandissement coûte plus d'or et de jours que le précédent. Le k-ième (k = 1 pour passer de 40 à 45 places) coûte **100 × 1,2^(k−1) PO**, arrondi à 10, et dure **2 + ⌊(k−1)/3⌋ jours** (constantes `camp.dormitory.expansion_*`, formule de JC). Un chantier à la fois au dortoir (agrandissement ou qualité) ; l'or est payé au lancement ; les places sont prêtes le matin du jour où le chantier se termine. Interface (Idan, 2026-10-25) : **Ma Compagnie** montre le dortoir (places, qualité, chantier en cours) et un bouton « Aller au dortoir » ; l'**écran Dortoir** propose d'agrandir ou d'améliorer, sur un **fond plein écran qui dépend du niveau de qualité** (onze images de Jean-Mimi, une par niveau, colonne `image` de `dormitory-quality.json`) ;
 
   | Places | Ce palier | Total depuis 40 places |
   |---:|---|---|
@@ -239,6 +239,8 @@ Le matériel attribué à un mercenaire ne doit donc pas être considéré comme
 **Culottes (Idan, 2026-10-24)** : **1D6 culottes** aussi, chacune d'un type tiré au hasard (charisme, intimidation, affinité ; doc 05), dans leur propre onglet de l'Intendance.
 
 **Bagues (Idan, 2026-10-24)** : **1D6 bagues** aussi, chacune d'un type tiré au hasard parmi les onze (chance, courage, une par école de magie ; doc 05), dans leur propre onglet de l'Intendance.
+
+**Casques et chapeaux (Idan, 2026-10-25)** : **1D6 casques ou chapeaux** aussi, chacun d'un type tiré au hasard (constitution, intelligence, dresseur ; doc 05), dans leur propre onglet de l'Intendance (après les armures). Une partie commencée avant les reçoit aussi.
 
 **Affichage de l'Intendance (Idan, 2026-10-24)** : un onglet par grande catégorie (Armes, Armures, Bottes, avec leur nombre) ; dans chaque onglet, les catégories sont en accordéon, fermées par défaut. L'onglet choisi et les catégories ouvertes restent tels quels quand l'écran se redessine.
 

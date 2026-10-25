@@ -135,7 +135,7 @@ assert.match(company(),/<h3>Constructions<\/h3>/);
 assert.match(company(),/<strong>Dortoir<\/strong><span>0 \/ 40 places occupées<\/span>\s*<span>Qualité : Paille humide \(niveau 0\)<\/span><\/div>/);
 assert.match(company(),/<button type="button" class="primary" data-open-camp-scene="dormitory" data-destination="Dortoir">Aller au dortoir<\/button>/);
 assert.doesNotMatch(company(),/data-dorm-expand|data-dorm-quality/,"les chantiers se lancent au dortoir");
-assert.equal(styles["--dormitory-bg"],'url("https://jeu.test/assets/dormitory/dortoir-1.jpg")',"niveau 0 : la première image");
+assert.equal(styles["--dormitory-bg"],'url("https://jeu.test/assets/dormitory/dortoir-0.jpg")',"niveau 0 : son image");
 assert.match(dormitory(),/data-open-camp-scene="company" data-destination="Ma Compagnie">← Ma Compagnie<\/button>/);
 assert.match(dormitory(),/<p class="eyebrow">Dortoir<\/p>\s*<h2>Paille humide<\/h2>\s*<p class="dormitory-meta">Niveau 0 · 0 \/ 40 places occupées<\/p>/);
 assert.match(dormitory(),/<button type="button" class="primary" data-dorm-expand>Agrandir : \+5 places<\/button>\s*<span class="building-cost">100 PO · 2 jours<\/span>/);
@@ -166,7 +166,7 @@ ui.logCampWork({kind:"dormitory_quality",level:1,name:"Paillasses",renown:50,aff
 assert.deepEqual(log.at(-1),{message:"Le dortoir passe au niveau 1 : Paillasses. Renommée +50 ; affinité +5 pour 12 mercenaires.",kind:"turn"});
 ui.logCampWork({kind:"dormitory",places:5,capacity:45});
 assert.deepEqual(log.at(-1),{message:"Le dortoir est agrandi : +5 places, 45 en tout.",kind:"turn"});
-// Le fond suit le niveau : une image par niveau (le niveau 0 reprend la première), toutes présentes.
+// Le fond suit le niveau : une image par niveau, de 0 à 10, toutes présentes.
 for(const level of [1,2,7,10]){
   game.campaign.company.camp.construction=null;
   game.campaign.company.camp.dormitoryQuality=level;
@@ -175,7 +175,7 @@ for(const level of [1,2,7,10]){
 }
 assert.match(dormitory(),/<h2>Quartiers de seigneur<\/h2>[\s\S]*Qualité maximale\./);
 for(const row of reference.dormitoryQuality.rows){
-  assert.equal(row.image,`dortoir-${Math.max(1,row.niveau)}.jpg`);
+  assert.equal(row.image,`dortoir-${row.niveau}.jpg`);
   assert.ok(fs.existsSync(path.join(ROOT,"prototype-web","assets","dormitory",row.image)),row.image);
   assert.ok(fs.existsSync(path.join(ROOT,"assets-src","fonds","Dortoirs",row.image)),"master "+row.image);
 }

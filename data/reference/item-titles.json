@@ -28,7 +28,7 @@
       "source": "Titre T4"
     }
   ],
-  "row_count": 75,
+  "row_count": 78,
   "rows": [
     {
       "nom": "Arbalète",
@@ -629,6 +629,30 @@
       "t2": "Bague de l’esprit d’acier",
       "t3": "Bague de la main invisible",
       "t4": "L’Anneau du Maître des Esprits"
+    },
+    {
+      "nom": "Casque de constitution",
+      "famille": "casque",
+      "t1": "Vieux casque cabossé",
+      "t2": "Heaume à plumet",
+      "t3": "Heaume du dragon",
+      "t4": "La Couronne ardente"
+    },
+    {
+      "nom": "Chapeau d’intelligence",
+      "famille": "casque",
+      "t1": "Chapeau rapiécé",
+      "t2": "Chapeau d’érudit",
+      "t3": "Chapeau de mage",
+      "t4": "Le Regard des astres"
+    },
+    {
+      "nom": "Chapeau du dresseur",
+      "famille": "casque",
+      "t1": "Feutre de berger",
+      "t2": "Chapeau de pisteur",
+      "t3": "Chapeau du dompteur",
+      "t4": "Le Charmeur de bêtes"
     }
   ]
 }

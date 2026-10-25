@@ -116,7 +116,7 @@ Chaque objet a une **valeur en pièces d’or, cachée** : rien ne l’affiche a
 - **Tier** : T1 × 1, T2 × 3, T3 × 8, T4 × 25 (`economy.item_value.tier_<n>_multiplier`).
 - **Qualité** : Usée × 0,6, Correcte × 1, Grand Luxe × 1,5 (`item-qualities.json`, `multiplicateur_prix`).
 
-Exemples : Épée longue T1 Usée 72 PO, T2 Correcte 360 PO, T3 Grand Luxe 1 440 PO, T4 Grand Luxe 4 500 PO. Un objet sans prix de base (casques à venir) n’a pas de valeur.
+Exemples : Épée longue T1 Usée 72 PO, T2 Correcte 360 PO, T3 Grand Luxe 1 440 PO, T4 Grand Luxe 4 500 PO. Un objet sans prix de base n’a pas de valeur. Casques et chapeaux : 100 PO de base, comme les autres objets à bonus.
 
 Le prix d’achat et de revente chez un marchand viendra avec les marchands (il dépendra de l’intendant, entre autres).
 
@@ -190,6 +190,16 @@ Onze bagues (`data/reference/rings.json`), portées dans les **six emplacements 
 - Sur la fiche : Chance et Courage (Caractéristiques) ; dans l’onglet Magie, la roue et les écoles de prédilection montrent la maîtrise avec les bagues, en vert ou en rouge, et leur détail au survol.
 - **5 %** de chance d’en avoir une à la création (`ring_chance`), dans le premier emplacement ; **1D6** bagues dans le stock de départ (doc 11 §16).
 - Images : la Bague de la télékinésie T1 et T2 sont arrivées sans tier dans leur nom ; T1 = l’anneau rouillé, T2 = l’anneau d’acier noir (choix de JC, à corriger si besoin).
+
+### Casques et chapeaux (Idan, 2026-10-25)
+
+Trois coiffes (`data/reference/helmets.json`), portées dans l’emplacement **Casque / Chapeau** :
+
+- **Casque de constitution** : **+5 / 10 / 15 / 20 %** de la Constitution de base selon le tier ; en contrepartie, **−20 / 15 / 10 / 5 %** de la Puissance magique de base et **−4 / 3 / 2 / 1 de Vitesse** (le poids du casque, compté avec l’armure et les armes tenues). La qualité ne change ni le bonus ni les malus.
+- **Chapeau d’intelligence** : **+5 / 10 / 15 / 20 %** de l’Intelligence de base.
+- **Chapeau du dresseur** : **+5 / 10 / 15 / 20 %** de la compétence animale (Compagnon animal).
+- Au combat (`statWithGear`) : la Vitesse (déplacement, Initiative) ; l’Intelligence pour l’Initiative et le choix du type de dégâts. Aujourd’hui, la Constitution ne sert qu’aux points de vie de la création, la Puissance magique et le Compagnon animal à des systèmes à venir : la fiche montre les valeurs bonifiées (Caractéristiques, Magie, Compétences) avec la ligne du casque.
+- **5 %** de chance d’en avoir un à la création (`helmet_chance`) ; **1D6** au stock de départ (doc 11 §16) ; ils peuvent tomber du coffre d’un camp. Titres par tier : `item-titles.json` (JC). Images : `assets-src/Equipements/Casques/` (Jean-Mimi).
 
 ### Échanges d’équipement : Donner, Retirer, Troquer (Idan, 2026-10-24)
 

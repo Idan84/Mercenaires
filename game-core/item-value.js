@@ -19,7 +19,8 @@
     const weapons=byName(reference?.weapons);
     const armors=rows(reference?.baseArmors);
     const statGear={boots:byName(reference?.boots),belt:byName(reference?.belts),amulet:byName(reference?.amulets),
-      cape:byName(reference?.capes),gloves:byName(reference?.gloves),pants:byName(reference?.pants),ring:byName(reference?.rings)};
+      cape:byName(reference?.capes),gloves:byName(reference?.gloves),pants:byName(reference?.pants),ring:byName(reference?.rings),
+      helmet:byName(reference?.helmets)};
     const qualities=new Map(rows(reference?.itemQualities).map(r=>[r.code,r]));
     const constants=new Map(rows(reference?.formulaConstants).map(r=>[r.code,Number(r.valeur)]));
 

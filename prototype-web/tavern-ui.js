@@ -132,7 +132,7 @@ function logDayReport(report){
   if(arrived.length) tavernLog("Nouveaux candidats : "+arrived.join(", ")+".","turn");
   if(report.missionTaken) tavernLog("Le contrat de "+report.missionTaken.fields.lieu+" a été pris par une autre compagnie ; un nouveau est affiché.","bad");
   if(typeof logExpeditionReport==="function") logExpeditionReport(report.expeditions);
-  if(report.built) tavernLog("Le dortoir est agrandi : +"+fmt(report.built.places)+" places, "+fmt(report.built.capacity)+" en tout.","turn");
+  if(typeof logCampWork==="function") logCampWork(report.built);
 }
 
 // Dialogue de recrutement (Idan, 2026-10-21) : salutation selon l'affinité, réponses sincères, prétentions,

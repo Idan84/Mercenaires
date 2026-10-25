@@ -83,10 +83,13 @@ const axes=createCoverage({reference,samples:200,generator:createGenerator(refer
   av("orc-a","Orc",{tags:{culture:["Orcs noirs"],profile:["melee"],weapon:["Hache double"]}}),
   av("orc-b","Orc",{tags:{culture:["Orcs noirs"],profile:["melee"],weapon:["Haches"]}}),
   av("orc-c","Orc",{tags:{culture:["Orcs des villes"],profile:["melee"],weapon:["Haches"]}}),
-  av("orc-d","Orc",{tags:{culture:["Orcs noirs"],profile:["ranged"],weapon:["Haches"]}})
+  av("orc-d","Orc",{tags:{culture:["Orcs noirs"],profile:["ranged"],weapon:["Haches"]}}),
+  av("orc-e","Orc",{tags:{culture:["Orcs noirs"],profile:["melee"],weapon:["Hache double","Arc"]}}),
+  av("orc-f","Orc",{tags:{culture:["Orcs noirs"],profile:["melee"],weapon:["Arc"]}})
 ]}).forPeople("Orc").combinations.find(x=>x.culture==="Orcs noirs"&&x.profile==="Corps à corps"&&x.value==="Haches");
 assert.ok(axes,"des guerriers orcs noirs à la hache");
-assert.equal(axes.avatars,2,"il faut la culture, le profil et l'arme (une hache précise compte dans sa catégorie)");
+assert.equal(axes.avatars,3,"il faut la culture, le profil et l'arme tenue en main (une hache précise compte dans sa catégorie ; "
+  +"« CAC + Hache + Arc » tient la hache, un arc seul ne compte pas pour un guerrier)");
 for(const c of orc.cultureProfiles){
   assert.ok(Math.abs(Object.values(c.profiles).reduce((t,x)=>t+x,0)-1)<1e-9,c.culture+" : profils");
 }

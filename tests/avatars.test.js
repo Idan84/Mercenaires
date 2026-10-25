@@ -20,11 +20,14 @@ const merc=(extra={})=>({
 });
 const av=(id,extra={})=>({id,people:"Ogre",sex:null,tags:{},full:id+"_full.webp",portrait:id+"_portrait.webp",...extra});
 
-// Tags du mercenaire : rien d'inventé, tout vient du générateur.
+// Tags du mercenaire : rien d'inventé, tout vient du générateur. Ce mage tient son école (Feu) ; son marteau préféré
+// compte comme une arme portée en plus.
 const tags=avatarTags(merc());
 assert.equal(tags.people,"ogre");
 assert.deepEqual(tags.profile,["magic"]);
 assert.deepEqual(tags.magic,["feu"]);
+assert.deepEqual(tags.main,["feu"]);
+assert.ok(tags.second.includes("marteau de guerre")&&tags.second.includes("armes contondantes"));
 assert.ok(tags.weapon.includes("marteau de guerre")&&tags.weapon.includes("armes contondantes"));
 
 // Contraintes dures : peuple, et sexe s'il est déjà connu.
@@ -33,18 +36,26 @@ assert.equal(scoreAvatar(av("b"),tags),0,"même peuple sans tag : candidat");
 assert.equal(scoreAvatar(av("c",{sex:"femme"}),avatarTags(merc({sex:"homme"}))),null,"sexe connu et différent : exclu");
 assert.equal(scoreAvatar(av("d",{sex:"femme"}),tags),0,"sexe inconnu : l'image décide");
 
-// Score souple : ce qui se voit compte le plus. Casse, accents et apostrophes ignorés.
-assert.equal(scoreAvatar(av("e",{tags:{profile:["magic"],magic:["Feu"]}}),tags),SCORE.profile+SCORE.magic);
-assert.equal(scoreAvatar(av("f",{tags:{weapon:["armes CONTONDANTES"],culture:["Ogres des cites humaines"]}}),tags),SCORE.weapon+SCORE.culture);
-assert.equal(scoreAvatar(av("g",{tags:{magic:["Glace"]}}),tags),-SCORE.magic,"ce qui se voit et contredit coûte son poids ; l'avatar reste candidat");
+// Priorités d'Idan (2026-10-25) : profil et culture d'abord, puis ce qu'il tient en main (arme ou école) et l'ascendance,
+// puis l'arme de dos ; chaque rang l'emporte sur tous les suivants réunis. Casse, accents et apostrophes ignorés.
+assert.ok(2*SCORE.culture>2*(SCORE.main+SCORE.ascendance+SCORE.second)+SCORE.origin+SCORE.alignment+2,"la culture passe avant le reste");
+assert.ok(2*SCORE.profile>2*SCORE.culture+2*(SCORE.main+SCORE.ascendance+SCORE.second)+SCORE.origin+SCORE.alignment+2,"le profil avant tout");
+assert.ok(2*SCORE.main>2*SCORE.second+SCORE.origin+SCORE.alignment+2,"l'arme en main avant l'arme de dos et le hasard");
+assert.ok(2*SCORE.second>SCORE.origin+SCORE.alignment+2,"l'arme de dos avant l'origine, l'alignement et le hasard");
+assert.equal(scoreAvatar(av("e",{tags:{profile:["magic"],magic:["Feu"]}}),tags),SCORE.profile+SCORE.main);
+assert.equal(scoreAvatar(av("f",{tags:{weapon:["armes CONTONDANTES"],culture:["Ogres des cites humaines"]}}),tags),SCORE.main+SCORE.culture,
+  "sans profil, l'arme de l'image est comparée à tout ce qu'il porte");
+assert.equal(scoreAvatar(av("g",{tags:{magic:["Glace"]}}),tags),-SCORE.main,"ce qui se voit et contredit coûte son poids ; l'avatar reste candidat");
 assert.equal(scoreAvatar(av("g2",{tags:{origin:["Noble"],alignment:["Loyal bon"]}}),tags),0,"origine et alignement ne se voient pas : pas de malus");
 assert.equal(scoreAvatar(av("g3",{tags:{profile:["ranged"],weapon:["Arc"],ascendance:["Sang de dragon"],culture:["Ogres des montagnes"]}}),tags),
-  -(SCORE.profile+SCORE.weapon+SCORE.ascendance+SCORE.culture),"un archer au sang de dragon d'une autre culture contredit ce mage");
+  -(SCORE.profile+SCORE.main+SCORE.ascendance+SCORE.culture),"un archer au sang de dragon d'une autre culture contredit ce mage");
 
-// Ce qui se voit (Idan, 2026-10-25) : les armes portées plutôt que les préférences ; l'école seulement pour un mage ou
-// un mercenaire qui connaît un sort.
+// Ce qui se voit : les armes portées plutôt que les préférences ; l'école seulement pour un mage ou un mercenaire qui
+// connaît un sort.
 const carrying=merc({items:[{id:"w1",name:"Hache double",category:"Haches"},{id:"w2",name:"Arc court",category:"Armes de tir"}],
   equipment:{profile:{type:"melee"},slots:{weapon_set_1_main:"w1",weapon_set_2_main:"w2"}}});
+assert.deepEqual(avatarTags(carrying).main,["hache double","haches"],"guerrier : il tient sa hache");
+assert.deepEqual(avatarTags(carrying).second,["arc court","armes de tir"],"et porte son arc");
 assert.deepEqual(avatarTags(carrying).weapon,["hache double","haches","arc court","armes de tir"]);
 assert.deepEqual(avatarTags(carrying).magic,[],"un guerrier dont la meilleure école est le Feu n'a pas l'air d'un mage");
 assert.deepEqual(avatarTags(merc({equipment:{profile:{type:"melee"}},spells:[{code:"fire_bolt",school:"Feu"}]})).magic,["feu"],"il connaît un sort de Feu");
@@ -58,7 +69,30 @@ assert.equal(fighters.choose(merc({equipment:{profile:{type:"melee"}}}),new Set(
   "à défaut d'avatar qui lui ressemble, un avatar neutre passe avant un mage");
 assert.equal(fighters.choose(carrying,new Set()).avatar.id,"ogre-hache");
 
-// Choix : le meilleur l'emporte malgré le hasard (0 à 5).
+// L'exemple d'Idan : le profil de l'avatar dit quelle arme il tient. « CAC + Hache + Arc » tient la hache et porte l'arc ;
+// « Distance + Hache + Arc » tient l'arc et porte la hache.
+const weaponRows=read("weapons.json").rows;
+const kit=(profile,main,second)=>merc({culture:"Ogres des montagnes",
+  items:[{id:"a",name:main,combatFamily:profile==="ranged"?"ranged":"melee"},{id:"b",name:second,combatFamily:profile==="ranged"?"melee":"ranged"}].filter(x=>x.name),
+  equipment:{profile:{type:profile},slots:{weapon_set_1_main:"a",weapon_set_2_main:second?"b":null}}});
+const bowAxe=av("ogre-cac-hache-arc",{tags:{profile:["melee"],culture:["Ogres des montagnes"],weapon:["Hache de guerre","Arc"]}});
+const archer=av("ogre-dist-hache-arc",{tags:{profile:["ranged"],culture:["Ogres des montagnes"],weapon:["Hache de guerre","Arc"]}});
+const look=createAvatarRules({catalog:[bowAxe,archer],weapons:weaponRows}).avatars;
+assert.equal(look.length,2);
+const fams=require("../game-core/avatars.js").weaponFamilies(weaponRows);
+const s=(a,m)=>scoreAvatar(a,avatarTags(m,fams),fams);
+assert.ok(s(bowAxe,kit("melee","Hache de guerre","Arc"))>s(bowAxe,kit("melee","Hache de guerre","Arbalète")),
+  "à la hache, celui qui porte un arc passe avant celui qui porte une arbalète");
+assert.ok(s(bowAxe,kit("melee","Hache de guerre","Arbalète"))>s(bowAxe,kit("melee","Épée longue","Arc")),
+  "la hache en main compte plus que l'arc dans le dos");
+assert.ok(s(archer,kit("ranged","Arc","Hache de guerre"))>s(archer,kit("ranged","Arc","Épée longue")));
+assert.ok(s(archer,kit("ranged","Arc","Hache de guerre"))>s(bowAxe,kit("ranged","Arc","Hache de guerre")),"un archer prend l'avatar Distance");
+assert.ok(s(bowAxe,kit("melee","Hache de guerre","Arc"))>s(archer,kit("melee","Hache de guerre","Arc")),"un guerrier prend l'avatar CAC");
+assert.ok(s(av("x",{tags:{profile:["melee"],culture:["Ogres des montagnes"],weapon:["Épée longue"]}}),kit("melee","Hache de guerre"))
+  >s(av("y",{tags:{profile:["melee"],culture:["Orcs noirs"],weapon:["Hache de guerre"]}}),kit("melee","Hache de guerre")),
+  "la culture passe avant l'arme en main");
+
+// Choix : le meilleur l'emporte malgré le hasard (0 à 2).
 const rules=createAvatarRules({catalog:[av("ogre-001"),av("ogre-002",{sex:"femme",tags:{profile:["magic"],magic:["Feu"]}}),av("halfling-001",{people:"Halfling"})],random:()=>0.999});
 const m=merc();
 assert.equal(rules.assign(m,new Set()).id,"ogre-002");

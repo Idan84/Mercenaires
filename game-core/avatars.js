@@ -8,6 +8,8 @@
 // - plus précis (Idan, 2026-10-25) : on compare l'image à ce qui se voit sur le mercenaire (les armes qu'il porte,
 //   l'école d'un mage ou d'un mercenaire qui connaît un sort), et ce qu'elle montre de contraire (un arc pour un
 //   épéiste, un mage pour un guerrier, du sang de dragon pour qui n'en a pas) coûte autant qu'un tag juste rapporte ;
+// - priorités (Idan, 2026-10-25) : profil et culture d'abord ; puis l'arme tenue en main ou l'école du mage ; puis l'arme
+//   de dos. Le profil de l'avatar dit quelle arme il tient : « CAC + Hache + Arc » tient la hache et porte l'arc ;
 // - jamais deux fois le même visage en même temps ; les avatars des morts ne reviennent pas.
 // Le catalogue réunit data/reference/avatars.json (scripts/build-avatars.js) et les avatars déposés sur
 // Hostinger (api/avatars.php → avatar-catalog.js). Purement visuel.
@@ -17,13 +19,18 @@
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesAvatars=api;
 })(typeof globalThis!=="undefined"?globalThis:this,function(bio){
-  // Poids de départ, à régler : ce qui se voit sur l'image compte le plus.
-  const SCORE={profile:10,magic:10,weapon:8,ascendance:8,culture:6,origin:4,alignment:2};
-  // Ce qui se voit sur l'image et contredit le mercenaire : − poids × part. À défaut d'avatar qui lui ressemble, un
-  // avatar neutre passe avant un avatar qui le contredit ; aucun n'est exclu pour autant.
-  const VISIBLE=["profile","magic","weapon","ascendance","culture"];
+  // Priorités d'Idan (2026-10-25) : d'abord le profil et la culture ; ensuite l'arme tenue en main (ou l'école d'un
+  // mage) départage, avec l'ascendance ; enfin l'arme de dos (ou l'école d'un non-mage) et, à peine, l'origine et
+  // l'alignement. Les poids sont étagés pour que chaque rang l'emporte sur tous les suivants réunis.
+  const SCORE={profile:64,culture:32,main:12,ascendance:12,second:4,origin:2,alignment:1};
+  // Ce qui se voit sur l'image et contredit le mercenaire coûte autant qu'un tag juste rapporte : à défaut d'avatar qui
+  // lui ressemble, un avatar neutre passe avant un avatar qui le contredit ; aucun n'est exclu pour autant. Origine et
+  // alignement ne se voient pas.
+  const VISIBLE=["profile","culture","main","ascendance","second"];
   const MISMATCH_SHARE=1;
-  const NOISE_MAX=5;
+  // Un peu de hasard entre avatars équivalents, moins que le plus petit écart visible (l'arme de dos).
+  const NOISE_MAX=2;
+  const RANGED_CATEGORIES=["armes de tir","armes a feu"];
 
   function norm(value){
     return String(value??"").normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[’‘`´]/g,"'")
@@ -31,60 +38,101 @@
   }
   const list=values=>(Array.isArray(values)?values:[]).map(norm).filter(Boolean);
 
-  // Armes visibles : celles qu'il porte (deux sets) et leurs catégories ; à défaut d'équipement, ses armes préférées.
+  // Famille d'une arme ou d'une catégorie (weapons.json) : distance pour les armes de tir et à feu, sinon corps à corps.
+  function weaponFamilies(weapons=[]){
+    const families=new Map(RANGED_CATEGORIES.map(c=>[c,"ranged"]));
+    for(const w of weapons){
+      const category=String(w.domaine||"").split(",")[0].trim();
+      const family=RANGED_CATEGORIES.includes(norm(category))?"ranged":"melee";
+      families.set(norm(w.nom),family);
+      if(category) families.set(norm(category),family);
+    }
+    return families;
+  }
+  const DEFAULT_FAMILIES=weaponFamilies();
+
+  // Le mercenaire : son profil, ce qu'il tient en main (les armes de son profil, ou ses écoles s'il est mage) et ce qu'il
+  // porte en plus (ses autres armes ; les écoles de ses sorts s'il n'est pas mage). À défaut d'équipement, ses armes
+  // préférées comptent comme tenues en main.
   const WEAPON_SLOTS=["weapon_set_1_main","weapon_set_1_off","weapon_set_2_main","weapon_set_2_off"];
-  function visibleWeapons(m,t){
+  function mercenaryLook(m,t,families){
+    const profile=t.profile||null;
+    const spellSchools=[...new Set((m.spells||[]).map(spell=>norm(spell.school)).filter(Boolean))];
     const items=new Map((m.items||[]).map(item=>[item.id,item]));
     const carried=WEAPON_SLOTS.map(slot=>items.get(m.equipment?.slots?.[slot])).filter(Boolean);
-    if(!carried.length) return t.weapon.map(norm);
-    return [...new Set(carried.flatMap(item=>[item.name,item.category]).map(norm).filter(Boolean))];
+    const names=item=>[item.name,item.category].map(norm).filter(Boolean);
+    const familyOf=item=>item.combatFamily||families.get(norm(item.name))||families.get(norm(item.category))||"melee";
+    if(profile==="magic") return {
+      main:[...new Set([...t.magic,...spellSchools])],
+      second:carried.length?[...new Set(carried.flatMap(names))]:t.weapon.map(norm)
+    };
+    if(!carried.length) return {main:t.weapon.map(norm),second:spellSchools};
+    return {
+      main:[...new Set(carried.filter(item=>familyOf(item)===profile).flatMap(names))],
+      second:[...new Set([...carried.filter(item=>familyOf(item)!==profile).flatMap(names),...spellSchools])]
+    };
   }
-  // Écoles visibles : celles des sorts qu'il connaît, et sa meilleure école s'il a le profil Magie. Un guerrier dont
-  // la meilleure école est faible n'a pas l'air d'un mage.
-  function visibleSchools(m,t){
-    const schools=new Set((m.spells||[]).map(spell=>norm(spell.school)).filter(Boolean));
-    if(t.profile==="magic") t.magic.forEach(school=>schools.add(school));
-    return [...schools];
+
+  // L'avatar : le profil dit quelle arme est en main (Idan, 2026-10-25 : « CAC + Hache + Arc » tient la hache et porte
+  // l'arc ; « Distance + Hache + Arc » tient l'arc). Un mage tient son école. Sans profil, on ne sait pas ce qu'il tient :
+  // ses armes et écoles comptent comme en main, comparées à tout ce que porte le mercenaire (anyHand).
+  function avatarLook(avatar,families){
+    const tags=avatar.tags||{};
+    const profiles=list(tags.profile),weapons=list(tags.weapon),schools=list(tags.magic);
+    if(!profiles.length) return {main:[...weapons,...schools],second:[],anyHand:true};
+    if(profiles.includes("magic")) return {main:schools,second:weapons};
+    const held=w=>{ const family=families.get(w); return !family||profiles.includes(family); };
+    return {main:weapons.filter(held),second:[...weapons.filter(w=>!held(w)),...schools]};
   }
 
   // Ce que l'on sait du mercenaire, au même format que les tags du catalogue.
-  function avatarTags(m){
+  // magic : écoles visibles (sorts connus ; meilleure école d'un mage) ; weapon : toutes les armes portées.
+  function avatarTags(m,families=DEFAULT_FAMILIES){
     const t=bio.mercenaryTags(m);
+    const look=mercenaryLook(m,t,families);
+    const schools=new Set((m.spells||[]).map(spell=>norm(spell.school)).filter(Boolean));
+    if(t.profile==="magic") t.magic.forEach(school=>schools.add(school));
     return {
       people:t.people,
       sex:m.sex?norm(m.sex):null,
       culture:[t.culture],origin:[t.origin],alignment:[t.alignment],
       ascendance:m.ascendance?[norm(m.ascendance)]:[],
       profile:t.profile?[t.profile]:[],
-      magic:visibleSchools(m,t),
-      weapon:visibleWeapons(m,t)
+      main:look.main,second:look.second,
+      magic:[...schools],
+      weapon:[...new Set([...look.main,...look.second].filter(x=>!schools.has(x)))]
     };
   }
 
   // null si une contrainte dure échoue (peuple, sexe déjà connu), sinon le score souple.
-  function scoreAvatar(avatar,tags){
+  function scoreAvatar(avatar,tags,families=DEFAULT_FAMILIES){
     if(norm(avatar.people)!==tags.people) return null;
     if(tags.sex&&avatar.sex&&norm(avatar.sex)!==tags.sex) return null;
+    const look=avatarLook(avatar,families);
+    const wanted={...Object.fromEntries(Object.keys(SCORE).map(key=>[key,list(avatar.tags?.[key])])),main:look.main,second:look.second};
+    const has={...tags,main:look.anyHand?[...(tags.main||[]),...(tags.second||[])]:tags.main};
     let score=0;
     for(const [key,weight] of Object.entries(SCORE)){
-      const wanted=list(avatar.tags?.[key]);
-      if(!wanted.length) continue;
-      if(wanted.some(v=>tags[key].includes(v))) score+=weight;
+      if(!wanted[key].length) continue;
+      if(wanted[key].some(v=>(has[key]||[]).includes(v))) score+=weight;
       else if(VISIBLE.includes(key)) score-=weight*MISMATCH_SHARE;
     }
     return score;
   }
 
-  function createAvatarRules({catalog=[],random=Math.random}={}){
+  // weapons : weapons.json (famille de chaque arme, distance ou corps à corps) ; sans lui, seules les catégories d'armes
+  // de tir et à feu sont reconnues comme armes à distance.
+  function createAvatarRules({catalog=[],random=Math.random,weapons=[]}={}){
     const avatars=catalog.filter(a=>a&&a.id&&a.people&&a.full&&a.portrait);
     const byId=new Map(avatars.map(a=>[a.id,a]));
+    const families=weapons.length?weaponFamilies(weapons):DEFAULT_FAMILIES;
 
     function choose(m,inUse=new Set()){
-      const tags=avatarTags(m);
+      const tags=avatarTags(m,families);
       let best=null;
       for(const avatar of avatars){
         if(inUse.has(avatar.id)) continue;
-        const score=scoreAvatar(avatar,tags);
+        const score=scoreAvatar(avatar,tags,families);
         if(score===null) continue;
         const value=score+random()*NOISE_MAX;
         if(!best||value>best.value) best={avatar,value,score};
@@ -113,5 +161,5 @@
     return {avatars,byId,choose,assign};
   }
 
-  return {createAvatarRules,avatarTags,scoreAvatar,SCORE,VISIBLE,MISMATCH_SHARE};
+  return {createAvatarRules,avatarTags,scoreAvatar,weaponFamilies,avatarLook,SCORE,VISIBLE,MISMATCH_SHARE,NOISE_MAX};
 });

@@ -2189,6 +2189,18 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .steward-pick small{color:#a98d66;font:italic 12px Georgia,serif}
 .steward-pick:hover:not(:disabled),.steward-pick:focus-visible{border-color:#dbac6e;background:#4a3424;color:#ffe1ac;outline:none}
 .steward-pick:disabled{opacity:.55;cursor:not-allowed}
+/* Garde du corps (Idan, 2026-10-25) : l'offre au tableau de la Taverne, la fenêtre du retour. */
+.contract-card--bodyguard{margin-top:16px}
+.contract-pitch{margin:0 0 10px;color:#e9d9c0;font:italic 16px/1.45 Georgia,serif}
+.bodyguard-return{width:min(560px,calc(100vw - 32px));padding:22px 24px;border:1px solid #b58c53;border-radius:14px;background:linear-gradient(180deg,#3a2b21,#211812);color:#ead9bd}
+.bodyguard-return::backdrop{background:#0009}
+.bodyguard-return h2{margin:0 0 4px;color:#ffd77a;font:normal 24px Georgia,serif}
+.bodyguard-return-list{display:grid;gap:10px;margin:14px 0}
+.bodyguard-return-row{display:flex;align-items:center;gap:12px}
+.bodyguard-return-row .avatar-frame{width:56px;height:56px;margin:0;border-radius:10px;flex:none}
+.bodyguard-return-row p{display:grid;gap:2px;margin:0;font:16px/1.4 Georgia,serif}
+.bodyguard-return-row small{color:#c2b29e;font:13px system-ui,sans-serif}
+.bodyguard-return-actions{display:flex;justify-content:flex-end}
 /* Lieutenants (Idan, 2026-10-25) : encart de Ma Compagnie, cadre doré dans Mes mercenaires. */
 .lieutenants-panel{display:grid;gap:10px;max-width:750px;margin:0 auto 16px}
 .lieutenants-panel h3{margin:0;font:normal 13px/1.2 system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#d3ac76}

@@ -1,7 +1,8 @@
 "use strict";
 
-// Tableau des contrats de la Taverne (doc 17, Idan 2026-10-24) : pour l'instant une seule mission, « Faire le ménage »
-// (camp gobelin ☠), proposée en boucle. L'offre et ses règles sont dans game-core/missions.js, le combat dans mission.js.
+// Tableau des contrats de la Taverne (doc 17, Idan 2026-10-24) : « Faire le ménage » (camp gobelin ☠), proposée en boucle,
+// et une offre de garde du corps (Idan, 2026-10-25). Les offres et leurs règles sont dans game-core/missions.js et
+// game-core/bodyguard.js, le combat dans mission.js.
 function missionRules(){
   return game.missionRules||(game.missionRules=MercenairesMissions.createMissionRules({reference:game.referenceData}));
 }
@@ -28,12 +29,47 @@ function contractOrder(offer){
   return missionRules().orderText(offer,{date:created.label,date_expiration:expires.label,an:created.year,récompense:fmt(offer.reward)});
 }
 
+// Garde du corps (Idan, 2026-10-25) : une offre à la fois, payée d'avance, sans combat.
+function bodyguardOffer(){
+  const c=game.campaign;
+  if(!c) return null;
+  if(campaignRules().ensureBodyguardOffer(c)) saveGame();
+  return c.bodyguardBoard?.offer||null;
+}
+function bodyguardTexts(){ return game.referenceData?.bodyguardMissions?.textes||{}; }
+// Les étoiles d'un niveau de réputation (1 à 15).
+function bodyguardStars(level){
+  const row=(game.referenceData?.reputationStars?.rows||[]).find(r=>r.niveau===level);
+  const info=row?starRules().personal(row.reputation_min):null;
+  return info?renderStarLevel(info,"Réputation minimale"):"—";
+}
+function renderBodyguardOffer(){
+  const offer=bodyguardOffer();
+  if(!offer) return "";
+  const t=bodyguardTexts(),plural=offer.count>1;
+  const text=MercenairesRecruitDialogue.fill(t.offre||"",{client:offer.client,n:offer.count,s:plural?"s":"",jours:offer.days},false);
+  return `<article class="contract-card contract-card--bodyguard">
+    <header class="contract-head">
+      <div><p class="eyebrow">${esc(t.titre||"Garde du corps")}</p><h3>${esc(offer.client)}</h3></div>
+    </header>
+    <p class="contract-pitch">${esc(text)}</p>
+    <dl class="contract-facts">
+      <div><dt>Mercenaires</dt><dd>${offer.count}</dd></div>
+      <div><dt>Réputation minimale</dt><dd>${bodyguardStars(offer.level)}</dd></div>
+      <div><dt>Durée</dt><dd>${offer.days} jours, sans combat</dd></div>
+      <div><dt>Paiement d’avance</dt><dd>${fmt(offer.payment)} PO</dd></div>
+      <div><dt>Expire le</dt><dd>${esc(contractDate(offer.expiresDay).label)}</dd></div>
+    </dl>
+    <div class="contract-actions"><button type="button" class="primary" data-bodyguard-accept>Choisir ${plural?"les gardes":"le garde"}</button></div>
+  </article>`;
+}
+
 function renderContractBoard(){
   const box=$("tavern-contracts");
   if(!box) return;
-  const offer=contractOffer(),expeditions=renderExpeditions();
+  const offer=contractOffer(),expeditions=renderExpeditions(),guard=renderBodyguardOffer();
   if(!offer){
-    box.innerHTML=expeditions+`<p class="muted">Aucun contrat pour l’instant.</p>`;
+    box.innerHTML=expeditions+`<p class="muted">Aucun contrat pour l’instant.</p>`+guard;
     return;
   }
   const order=contractOrder(offer);
@@ -52,7 +88,7 @@ function renderContractBoard(){
     </dl>
     ${order?`<div class="contract-letter">${order.paragraphs.map(p=>`<p>${esc(p)}</p>`).join("")}<p class="contract-signature">${esc(order.signature)}</p></div>`:""}
     <div class="contract-actions"><button type="button" class="primary" data-contract-accept>Accepter le contrat</button></div>
-  </article>`;
+  </article>`+guard;
 }
 
 function acceptContract(){
@@ -63,6 +99,7 @@ function acceptContract(){
 // Escouades parties en expédition (doc 17) : en route, arrivées (le combat attend le joueur) ou sur le retour.
 function expeditionLabel(e){
   const left=day=>{ const n=day-game.campaign.day; return n<=0?"aujourd’hui":"dans "+n+" jour"+(n>1?"s":""); };
+  if(e.kind==="bodyguard") return "Garde du corps · retour "+left(e.returnDay);
   if(e.status==="outbound") return "En route · arrivée "+left(e.arriveDay);
   if(e.status==="arrived") return "Arrivée sur place : le combat vous attend";
   return "Sur le retour · au camp "+left(e.returnDay);
@@ -74,7 +111,7 @@ function renderExpeditions(){
   const name=id=>game.campaign.company.roster.find(m=>m.id===id)?.name||"?";
   return `<section class="expedition-list"><h3>Escouades en mission</h3>${list.map(e=>`
     <article class="expedition-row expedition-row--${esc(e.status)}">
-      <div><strong>${esc(e.offer.campName)} de ${esc(e.offer.fields.lieu)}</strong><small>${esc(e.memberIds.map(name).join(", "))}</small></div>
+      <div><strong>${esc(e.kind==="bodyguard"?e.offer.client:e.offer.campName+" de "+e.offer.fields.lieu)}</strong><small>${esc(e.memberIds.map(name).join(", "))}</small></div>
       <em>${esc(expeditionLabel(e))}</em>
       ${e.status==="arrived"?`<button type="button" class="primary" data-expedition-fight="${esc(e.id)}">Commencer le combat</button>`:""}
     </article>`).join("")}</section>`;
@@ -92,6 +129,35 @@ function logExpeditionReport(report){
       :"Personne ne revient du "+e.offer.campName.toLocaleLowerCase("fr")+" de "+e.offer.fields.lieu+".",r.gold?"gear":"info");
   }
   if(report.waiting.length) game.pendingExpeditionDialog=report.waiting[0].id;
+  for(const r of report.bodyguards||[]) queueBodyguardReturn(r);
+}
+
+// Retour de garde du corps (Idan, 2026-10-25) : une fenêtre par mission, une ligne par mercenaire.
+function bodyguardReturnLine(r){
+  const t=bodyguardTexts(),female=String(r.mercenary?.sex||"").trim().toLowerCase().startsWith("f");
+  return MercenairesRecruitDialogue.fill(t[r.issue]||"",{prenom:MercenairesRecruitDialogue.firstName(r.mercenary)},female);
+}
+function queueBodyguardReturn(report){
+  const lines=report.results.map(r=>({id:r.mercenary.id,text:bodyguardReturnLine(r),
+    detail:[r.days?`${r.issue==="blesse"?"Blessé":"Fatigué"} ${r.days} jour${r.days>1?"s":""}`:"",r.reputation?`réputation +${fmt(r.reputation)}`:"",r.bonus?`prime ${fmt(r.bonus)} PO`:""].filter(Boolean).join(" · ")}));
+  for(const line of lines) tavernLog(line.text,"turn");
+  if(report.renown) tavernLog("Garde du corps : renommée de la compagnie +"+fmt(report.renown)+".","gear");
+  (game.bodyguardReturns||(game.bodyguardReturns=[])).push({client:report.expedition.offer.client,lines});
+  showNextBodyguardReturn();
+}
+function showNextBodyguardReturn(){
+  const dialog=$("bodyguard-return-dialog");
+  if(!dialog) return;
+  const next=game.bodyguardReturns?.shift();
+  if(!next){ if(dialog.open) dialog.close(); return; }
+  const member=id=>game.campaign?.company.roster.find(m=>m.id===id);
+  $("bodyguard-return-title").textContent=bodyguardTexts().retour_titre||"Retour de garde du corps";
+  $("bodyguard-return-client").textContent=next.client;
+  $("bodyguard-return-list").innerHTML=next.lines.map(line=>`<div class="bodyguard-return-row">
+    ${member(line.id)?renderAvatar(member(line.id),{variant:"compact",kind:"portrait"}):""}
+    <p><span>${esc(line.text)}</span>${line.detail?`<small>${esc(line.detail)}</small>`:""}</p></div>`).join("");
+  $("bodyguard-return-ok").textContent=bodyguardTexts().ok||"D’accord";
+  if(!dialog.open) dialog.showModal();
 }
 
 function openExpeditionDialog(id){
@@ -107,6 +173,8 @@ function openExpeditionDialog(id){
 
 function initializeExpeditionUi(){
   document.addEventListener("click",event=>{
+    if(event.target.closest("[data-bodyguard-accept]")){ const offer=bodyguardOffer(); if(offer) openMissionSelection(offer); return; }
+    if(event.target.closest("#bodyguard-return-ok")){ showNextBodyguardReturn(); return; }
     const fight=event.target.closest("[data-expedition-fight]");
     if(fight) startExpeditionCombat(fight.dataset.expeditionFight);
     if(event.target.closest("[data-expedition-later]")) $("expedition-dialog").close();

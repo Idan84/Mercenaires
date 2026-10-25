@@ -431,11 +431,47 @@
       return {ok:true,construction:camp.construction};
     }
 
-    // Chaque matin : le chantier terminé ajoute ses places au dortoir, ou monte sa qualité.
+    // Quartiers du lieutenant (Idan, 2026-10-25) : ils se construisent au dortoir, un par niveau pair de qualité (le
+    // premier dès le niveau 0, le deuxième au niveau 2… le sixième au niveau 10). Le k-ième coûte 1 000 × k² PO et dure
+    // 5 × k jours (camp.lieutenant_quarter.*, formule de JC). Même chantier que le dortoir : un seul à la fois. Un
+    // quartier loge un lieutenant.
+    const LIEUTENANT_QUARTER={
+      gold:referenceConstant(reference,"camp.lieutenant_quarter.gold_base",1000),
+      days:referenceConstant(reference,"camp.lieutenant_quarter.days_base",5),
+      step:referenceConstant(reference,"camp.lieutenant_quarter.quality_step",2)
+    };
+    const MAX_DORMITORY_QUALITY=QUALITY_LEVELS.length?QUALITY_LEVELS[QUALITY_LEVELS.length-1].niveau:10;
+    function lieutenantQuarters(state){ return Number(state.company.camp?.lieutenantQuarters)||0; }
+    function lieutenantQuarterCost(number){
+      return {number,gold:LIEUTENANT_QUARTER.gold*number*number,days:LIEUTENANT_QUARTER.days*number,
+        quality:LIEUTENANT_QUARTER.step*(number-1)};
+    }
+    // Le prochain quartier, avec le niveau de dortoir qu'il demande ; null quand tous sont construits.
+    function nextLieutenantQuarter(state){
+      const next=lieutenantQuarterCost(lieutenantQuarters(state)+1);
+      return next.quality<=MAX_DORMITORY_QUALITY?next:null;
+    }
+    function startLieutenantQuarter(state){
+      const camp=state.company.camp;
+      if(camp.construction) return {ok:false,reason:"Un chantier est déjà en cours au dortoir."};
+      const next=nextLieutenantQuarter(state);
+      if(!next) return {ok:false,reason:"Tous les quartiers du lieutenant sont construits."};
+      if(dormitoryQualityLevel(state)<next.quality) return {ok:false,reason:"Il faut un dortoir de niveau "+next.quality+".",cost:next};
+      if(state.company.gold<next.gold) return {ok:false,reason:"Pas assez d’or : il faut "+next.gold+" PO.",cost:next};
+      state.company.gold-=next.gold;
+      camp.construction={kind:"lieutenant_quarter",...next,startDay:state.day,endDay:state.day+next.days};
+      return {ok:true,construction:camp.construction};
+    }
+
+    // Chaque matin : le chantier terminé ajoute ses places au dortoir, monte sa qualité ou livre un quartier du lieutenant.
     function advanceConstruction(state){
       const camp=state.company.camp,work=camp.construction;
       if(!work||state.day<work.endDay) return null;
       camp.construction=null;
+      if(work.kind==="lieutenant_quarter"){
+        camp.lieutenantQuarters=work.number;
+        return {kind:work.kind,number:work.number};
+      }
       if(work.kind==="dormitory_quality"){
         camp.dormitoryQuality=work.level;
         const members=rosterOf(state).filter(m=>m.id!==state.company.captainId);
@@ -728,6 +764,10 @@
       dormitoryQuality,
       nextDormitoryQuality,
       startDormitoryQuality,
+      lieutenantQuarters,
+      lieutenantQuarterCost,
+      nextLieutenantQuarter,
+      startLieutenantQuarter,
       signCandidate,
       offerToCandidate,
       askTavernkeeper,

@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 169,
+  "row_count": 172,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -488,6 +488,30 @@
       "description": "Le k-ième agrandissement dure jours de base + ⌊(k−1) / N⌋ : 2 jours pour les trois premiers, 3 pour les trois suivants… (JC, 2026-10-25).",
       "formule": "Agrandissement du dortoir",
       "valeur": 3,
+      "version": "V1"
+    },
+    {
+      "nom": "Quartier du lieutenant — or de base",
+      "code": "camp.lieutenant_quarter.gold_base",
+      "description": "Le k-ième quartier du lieutenant coûte or de base × k² PO : 1 000, 4 000, 9 000… 36 000 PO (formule de JC validée par Idan, 2026-10-25).",
+      "formule": "Quartiers du lieutenant",
+      "valeur": 1000,
+      "version": "V1"
+    },
+    {
+      "nom": "Quartier du lieutenant — jours par quartier",
+      "code": "camp.lieutenant_quarter.days_base",
+      "description": "Le k-ième quartier du lieutenant dure jours × k : 5, 10, 15… 30 jours (formule de JC validée par Idan, 2026-10-25).",
+      "formule": "Quartiers du lieutenant",
+      "valeur": 5,
+      "version": "V1"
+    },
+    {
+      "nom": "Quartier du lieutenant — niveaux de dortoir entre deux quartiers",
+      "code": "camp.lieutenant_quarter.quality_step",
+      "description": "Un quartier par niveau pair de qualité du dortoir : le k-ième demande le niveau N × (k−1), soit 0, 2, 4, 6, 8 et 10 (Idan, 2026-10-25).",
+      "formule": "Quartiers du lieutenant",
+      "valeur": 2,
       "version": "V1"
     },
     {

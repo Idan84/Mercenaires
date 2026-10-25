@@ -94,6 +94,26 @@ Le dortoir fixe la **capacité maximale de mercenaires** hébergés.
   | 10 | Quartiers de seigneur | 50 000 | 30 | 192 500 | +500 |
 
 - piste pour plus tard (non retenue) : un prix de qualité qui dépend aussi de la taille du dortoir.
+- **quartiers du lieutenant** (Idan, 2026-10-25) : ils se construisent au dortoir, **un par niveau pair de qualité** — le premier dès le niveau 0, le deuxième au niveau 2… le sixième au niveau 10. Le k-ième coûte **1 000 × k² PO** et dure **5 × k jours** (constantes `camp.lieutenant_quarter.*`, formule de JC validée par Idan). Même chantier que le dortoir : un seul à la fois. Un quartier loge un lieutenant.
+
+  | Quartier | Dortoir requis | Prix | Jours |
+  |---:|---:|---:|---:|
+  | 1 | 0 | 1 000 | 5 |
+  | 2 | 2 | 4 000 | 10 |
+  | 3 | 4 | 9 000 | 15 |
+  | 4 | 6 | 16 000 | 20 |
+  | 5 | 8 | 25 000 | 25 |
+  | 6 | 10 | 36 000 | 30 |
+
+### Le lieutenant (Idan, 2026-10-25)
+
+Règles validées par Idan ; formules proposées par JC et validées. En jeu : les quartiers (ci-dessus). À venir, dans cet ordre : la promotion (renégociation, aura, encart, cadre), puis les demandes au lieutenant.
+
+- **Combien** : il faut **10 mercenaires par lieutenant** (20 pour le deuxième…) et **un quartier construit** par lieutenant. Le capitaine et l'intendant ne comptent pas dans les 10 ; les lieutenants, oui. Si l'effectif baisse ensuite, le lieutenant garde son grade, mais on ne peut pas en nommer d'autre. Le capitaine et l'intendant ne peuvent pas être lieutenant.
+- **Promotion** : on propose le poste à un mercenaire. Il accepte forcément, mais **renégocie son salaire** selon son Intelligence : il demande **salaire × (1 + Intelligence / 100)** (à 100 d'Intelligence, le double). **La prime de mission ne bouge pas.** On négocie comme avec une recrue (doc 14 §9, sur le salaire seul), sans pouvoir offrir moins que son salaire actuel ; il ne quitte pas la compagnie. Là où une recrue partirait, lui **refuse définitivement** de devenir lieutenant. Affinité : **+10** s'il est promu, **−10** s'il refuse.
+- **Aura** : la formule du capitaine sur ses propres caractéristiques, divisée par deux : **17,5 % de son Courage + 12,5 % de son Charisme**, équipement compris, aux alliés à 10 cases ou moins. Les auras **ne s'additionnent pas** : un allié prend la plus forte à portée (capitaine ou lieutenant).
+- **Interface** : un encart dans Ma Compagnie ; le lieutenant reste dans Mes mercenaires, avec un cadre plus classe.
+- **Demandes** (lieutenant au camp, **une demande par jour**) : « rendre tel mercenaire un peu plus courageux » ou « un peu plus respectueux ». Chance de réussite = **10 + 80 / (1 + e^(−Δ/20))**, avec Δ = moyenne (Charisme, Intelligence) du lieutenant − Volonté du mercenaire (25 % à Δ = −30, 50 % à 0, 75 % à +30). Gain = **20 % de l'écart** entre le lieutenant et le mercenaire (Courage contre Courage, ou affinité avec le capitaine contre affinité avec le capitaine), au moins +1 et au plus +10. **Si le lieutenant n'a pas plus de Courage (ou d'affinité) que le mercenaire, la demande échoue forcément.** Le lendemain, le lieutenant donne le résultat dans une pop-up : échec, il ne se passe rien ; succès, la valeur pour le courage, et pour l'affinité seulement « il vous respecte un peu plus ». **30 jours** entre deux demandes du même type pour un même mercenaire.
 
 ## 5 — Salle de sport / terrain d’entraînement / cour intérieure
 

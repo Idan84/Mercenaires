@@ -4,7 +4,7 @@ Dépôt des fichiers **bruts** (masters) d'Idan et de Jean-Mimi. Ce dossier n'es
 
 | Dossier | Contenu |
 |---|---|
-| `fonds/` | Fonds d'écran : château du camp (menu principal et home du camp), autres décors. `fonds/Dortoirs/` : un fond par niveau de qualité du dortoir (Jean-Mimi, `dortoir-1.jpg` à `dortoir-10.jpg`) ; `scripts/build-dormitory.sh` régénère les versions du jeu (`prototype-web/assets/dormitory/`) |
+| `fonds/` | Fonds d'écran : château du camp (menu principal et home du camp), autres décors. `fonds/Dortoirs/` : un fond par niveau de qualité du dortoir (Jean-Mimi, `dortoir-0.jpg` à `dortoir-10.jpg`) ; `scripts/build-dormitory.sh` régénère les versions du jeu (`prototype-web/assets/dormitory/`) |
 | `logo/` | Logo Blood & Wages : master sur fond blanc, variantes |
 | `avatars/` | Vocabulaire des mots-clés Bridge des avatars (`avatars/mots-cles-bridge.txt`). **Les avatars eux-mêmes sont sur Hostinger, dans `media/avatars/`** (voir `docs/DEPLOYMENT.md`) : depuis le 2026-10-21, c'est leur seul emplacement (décision d'Idan) ; les anciens avatars de Git ont été retirés. |
 | `Picto/Peuple/`, `Picto/Ascendance/` | Pictos des peuples et des ascendances. Après un ajout ou une retouche, `scripts/build-pictos.sh` régénère les versions du jeu (`prototype-web/assets/pictos/`) |

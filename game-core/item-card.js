@@ -34,7 +34,8 @@
       cape:{category:"Cape",byName:new Map(rows(reference?.capes).map(r=>[r.nom,r]))},
       gloves:{category:"Gants",byName:new Map(rows(reference?.gloves).map(r=>[r.nom,r]))},
       pants:{category:"Culotte",byName:new Map(rows(reference?.pants).map(r=>[r.nom,r]))},
-      ring:{category:"Bague",byName:new Map(rows(reference?.rings).map(r=>[r.nom,r]))}};
+      ring:{category:"Bague",byName:new Map(rows(reference?.rings).map(r=>[r.nom,r]))},
+      helmet:{category:"Casque",byName:new Map(rows(reference?.helmets).map(r=>[r.nom,r]))}};
     const qualities=new Map(rows(reference?.itemQualities).map(r=>[r.code,r]));
     const titles=new Map(rows(reference?.itemTitles).map(r=>[r.nom,r]));
 
@@ -96,11 +97,15 @@
     }
 
     // Bague de magie (Idan, 2026-10-24) : malus en % sur les deux écoles opposées (skills.json, ecoles_opposees).
+    // Casque de constitution (Idan, 2026-10-25) : malus en % sur une caractéristique (malus_caracteristique) et Vitesse.
     function statGearCard(item,template){
-      const tier=Number(item.tier)||1,malus=number(template["malus_opposees_t"+tier]);
-      const opposites=malus?String(skills.get(template.caracteristique)?.ecoles_opposees||"").split(",").map(x=>x.trim()).filter(Boolean):[];
+      const tier=Number(item.tier)||1;
+      const own=template.malus_caracteristique?number(template["malus_t"+tier]):0;
+      const malus=own||number(template["malus_opposees_t"+tier]);
+      const opposites=own?[template.malus_caracteristique]
+        :malus?String(skills.get(template.caracteristique)?.ecoles_opposees||"").split(",").map(x=>x.trim()).filter(Boolean):[];
       return {kind:item.itemType,category:statGear[item.itemType].category,stat:template.caracteristique,
-        bonus:number(template["bonus_t"+tier]),points:template.type_bonus==="points",malus,opposites};
+        bonus:number(template["bonus_t"+tier]),points:template.type_bonus==="points",malus,opposites,speed:number(template["vitesse_t"+tier])};
     }
 
     // Carte d'un objet, ou null si ce n'est ni une arme, ni une armure, ni des bottes, une ceinture, une amulette, une

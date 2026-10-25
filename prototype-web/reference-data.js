@@ -23,6 +23,7 @@ const REFERENCE_FILES = {
   gloves: "gloves.json",
   pants: "pants.json",
   rings: "rings.json",
+  helmets: "helmets.json",
   enemyArchetypes: "enemy-archetypes.json",
   oneShotMissions: "one-shot-missions.json",
   dormitoryQuality: "dormitory-quality.json",

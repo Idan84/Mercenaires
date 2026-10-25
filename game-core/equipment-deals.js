@@ -69,6 +69,8 @@
       if(slot==="pants") return item.itemType==="pants"?{ok:true}:no("Cet emplacement reçoit une culotte.");
       // Six bagues (Idan, 2026-10-24).
       if(/^ring_[1-6]$/.test(String(slot))) return item.itemType==="ring"?{ok:true}:no("Cet emplacement reçoit une bague.");
+      // Casques et chapeaux (Idan, 2026-10-25).
+      if(slot==="head") return item.itemType==="helmet"?{ok:true}:no("Cet emplacement reçoit un casque ou un chapeau.");
       const match=String(slot).match(WEAPON_SLOT);
       if(!match||item.itemType!=="weapon") return no("Cet objet ne va pas dans cet emplacement.");
       const weapon=weapons.get(item.name)||{};

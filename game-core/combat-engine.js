@@ -27,6 +27,8 @@
     const gloves=rows.gloves||[];
     const pants=rows.pants||[];
     const rings=rows.rings||[];
+    const helmets=rows.helmets||[];
+    const helmetByName=new Map(helmets.map(x=>[x.nom,x]));
 
     const weaponByName=new Map(weapons.map(x=>[x.nom,x]));
     const armorByCode=new Map(armors.map(x=>[x.code,x]));
@@ -37,7 +39,7 @@
     const STAT_GEAR=[{slot:"boots",byName:new Map(boots.map(x=>[x.nom,x]))},{slot:"belt",byName:new Map(belts.map(x=>[x.nom,x]))},
       {slot:"amulet",byName:new Map(amulets.map(x=>[x.nom,x]))},{slot:"cape",byName:new Map(capes.map(x=>[x.nom,x]))},
       {slot:"gloves",byName:new Map(gloves.map(x=>[x.nom,x]))},{slot:"pants",byName:new Map(pants.map(x=>[x.nom,x]))},
-      ...[1,2,3,4,5,6].map(k=>({slot:"ring_"+k,byName:new Map(rings.map(x=>[x.nom,x]))}))];
+      ...[1,2,3,4,5,6].map(k=>({slot:"ring_"+k,byName:new Map(rings.map(x=>[x.nom,x]))})),{slot:"head",byName:helmetByName}];
     // Écoles de magie (skills.json) et leurs deux écoles opposées.
     const MAGIC_SCHOOLS=skills.filter(x=>x.domaine==="Magie"&&x.niveau==="Catégorie").map(x=>x.nom);
     const opposites=school=>String(skillByName.get(school)?.ecoles_opposees||"").split(",").map(x=>x.trim()).filter(Boolean);
@@ -114,6 +116,9 @@
     // Le Slip d'Affinité (« Affinité », en points) ne sert aucune valeur du combat : affinity.js l'ajoute à l'affinité.
     // Bague de magie (Idan, 2026-10-24) : − malus_opposees_t<tier> % de la maîtrise de base des deux écoles opposées à la
     // sienne (percent négatif). Plusieurs bagues identiques se cumulent : une ligne par bague.
+    // Casques et chapeaux (Idan, 2026-10-25) : Constitution, Intelligence ou Compagnon animal ; le Casque de constitution
+    // retire aussi malus_t<tier> % de la valeur de base de malus_caracteristique (Puissance magique), et sa Vitesse
+    // (headgearSpeedPenalty).
     // baseValue : caractéristique, résistance ou compétence (Discrétion, Pièges, Intimidation, écoles de magie) ;
     // gearBonuses : une ligne par
     // objet qui la sert ;
@@ -122,7 +127,7 @@
       const c=unit.character;
       if(c.stats&&stat in c.stats) return Number(c.stats[stat])||0;
       if(c.resistances&&stat in c.resistances) return Number(c.resistances[stat])||0;
-      for(const group of ["martial","social","magic"]) if(c.skills?.[group]&&stat in c.skills[group]) return Number(c.skills[group][stat])||0;
+      for(const group of ["martial","social","magic","animal"]) if(c.skills?.[group]&&stat in c.skills[group]) return Number(c.skills[group][stat])||0;
       return 0;
     }
     function gearBonuses(unit,stat){
@@ -131,6 +136,10 @@
         const item=itemBySlot(unit,slot),template=item?byName.get(item.name):null;
         if(!template) return null;
         if(template.caracteristique!==stat){
+          if(template.malus_caracteristique===stat){
+            const malus=Number(template["malus_t"+item.tier])||0;
+            return malus?{item,slot,percent:-malus,bonus:-base*malus/100}:null;
+          }
           const malus=Number(template["malus_opposees_t"+item.tier])||0;
           return malus&&opposites(template.caracteristique).includes(stat)?{item,slot,percent:-malus,bonus:-base*malus/100}:null;
         }
@@ -247,8 +256,14 @@
       return Math.max(0,penalty);
     }
 
+    // Poids du casque (Idan, 2026-10-25) : vitesse_t<tier> points de Vitesse en moins (Casque de constitution).
+    function headgearSpeedPenalty(unit){
+      const item=itemBySlot(unit,"head"),template=item?helmetByName.get(item.name):null;
+      return template?Number(template["vitesse_t"+item.tier])||0:0;
+    }
+
     function effectiveSpeed(unit){
-      return Math.max(1,(statWithGear(unit,"Vitesse")||1)-armorMobility(unit).speed-weaponSpeedPenalty(unit));
+      return Math.max(1,(statWithGear(unit,"Vitesse")||1)-armorMobility(unit).speed-weaponSpeedPenalty(unit)-headgearSpeedPenalty(unit));
     }
 
     function effectiveDodge(unit){
@@ -263,9 +278,10 @@
       return Math.max(1,Math.ceil(score/15));
     }
 
+    // Le Chapeau d'intelligence compte (Idan, 2026-10-25).
     function initiative(unit){
       return effectiveSpeed(unit)
-        +0.25*(Number(unit.character.stats?.Intelligence)||0)
+        +0.25*statWithGear(unit,"Intelligence")
         +0.10*statWithGear(unit,"Courage")
         +0.05*statWithGear(unit,"Volonté");
     }
@@ -339,7 +355,7 @@
       if(!candidates.length) return {type:"contondant",power:0,armorResistance:0,matchup:0};
 
       const sorted=[...candidates].sort((a,b)=>a.matchup-b.matchup);
-      const intelligence=Number(attacker.character.stats?.Intelligence)||0;
+      const intelligence=statWithGear(attacker,"Intelligence");
       const roll=d100();
       if(roll<intelligence) return {...sorted[sorted.length-1],intelligenceRoll:roll,choice:"meilleur"};
       if((roll/2)>intelligence) return {...sorted[0],intelligenceRoll:roll,choice:"pire"};
@@ -824,11 +840,13 @@
       activeOffhandItem,
       weaponTemplate,
       armorItem,
+      itemBySlot,
       armorTemplate,
       baseValue,
       MAGIC_SCHOOLS,
       gearBonuses,
       statWithGear,
+      headgearSpeedPenalty,
       quality,
       isRangedWeapon,
       isMeleeWeapon,

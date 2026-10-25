@@ -28,6 +28,7 @@ Git est la source de vérité. Les JSON ci-dessous sont les référentiels struc
 | enemy-archetypes.json | 24 | nom, code, faction, peuple, culture, ligne, niveau, centile, caracteristiques, resistances, pv, competences_martiales, intimidation, port_d_armure, armes, armure, tier, qualite, menace (archétypes d’ennemis fixes, doc 17 §10 ; ennemis de la mission « Faire le ménage ») |
 | one-shot-missions.json | 1 | missions (camp, distance, carte, récompense, coffre, échec, défaite), ordres (trois ordres de mission validés), noms (lieux, commanditaires, tribus, caïds, signataires, estimations) — missions one shot, doc 17 |
 | bodyguard-missions.json | 1 | missions de garde du corps : mercenaires, durée, validité, niveaux de réputation, décalage, paiement, retour (50/25/25), réputation, renommée, clients, textes — doc 17 §12 |
+| spells.json | 1 | nom, code, ecole, action, cible, ligne_de_vue, effet, effet_base, effet_de, effet_puissance_facteur, effet_maitrise_base, portee_base, portee_pas_maitrise, mana_base, mana_diviseur_maitrise, difficulte, description (sorts, doc 12 « Décisions du 2026-10-25 » : Soin rapide) |
 | dormitory-quality.json | 11 | niveau, nom, prix, jours, renommee, affinite, image (qualité du dortoir, doc 11 §4 : niveaux 0 à 10, prix et durée du chantier, Renommée et affinité gagnées, fond de l'écran Dortoir) |
 | rings.json | 11 | nom, code, caracteristique, type_bonus, bonus_t1, bonus_t2, bonus_t3, bonus_t4, malus_opposees_t1, malus_opposees_t2, malus_opposees_t3, malus_opposees_t4, prix_base (bagues : Chance et Courage en %, une bague par école de magie avec malus sur les deux écoles opposées ; cumulables) |
 | helmets.json | 3 | nom, code, caracteristique, type_bonus, bonus_t1…t4, malus_caracteristique, malus_t1…t4, vitesse_t1…t4, prix_base (casques et chapeaux : Constitution, Intelligence, Compagnon animal en % ; le Casque de constitution retire de la Puissance magique et de la Vitesse) |
@@ -35,7 +36,7 @@ Git est la source de vérité. Les JSON ci-dessous sont les référentiels struc
 | item-qualities.json | 3 | nom, code, description, multiplicateur_malus, multiplicateur_qualite, multiplicateur_prix |
 | ranged-weapons.json | 8 | nom, domaine, portee_min_hex, portee_max_hex, cadence_tir, recharge_action_rapide, contre_charge, attaque_de_zone, degats_pv_base, puissance_perforante_base, prise, malus_vitesse_arme_base |
 | weapons.json | 38 | nom, domaine, prise, malus_vitesse_arme_base, portee_min_hex, portee_max_hex, bonus_charge_base, contre_charge, degats_pv_base, puissance_tranchante_base, puissance_perforante_base, puissance_contondante_base, prix_base (prix de base en pièces d’or, doc 05 « Valeur d’un objet ») |
-| formula-constants.json | 182 | nom, code, description, formule, valeur, version |
+| formula-constants.json | 186 | nom, code, description, formule, valeur, version |
 | game-formulas.json | 43 | nom, code, domaine, expression, maximum, minimum, notes, statut, type_attaque, version, etape |
 | formula-terms.json | 13 | nom, caracteristique, code_variable, coefficient, cote, description, formule, ordre, source |
 

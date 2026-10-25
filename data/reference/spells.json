@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "name": "spells",
+  "description": "Sorts (doc 12 « Décisions du 2026-10-25 » ; Idan). Un sort appartient à une école ; il est appris au niveau 1 et monte quand on s'en sert (1 à 100). Maîtrise = École (équipement compris) + Niveau du sort × magic.mastery.spell_share. Effet de soin = ceil(effet_base × 1D effet_de × (effet_puissance_facteur × Puissance magique / 100) × (effet_maitrise_base + Maîtrise / 100)). Portée = portee_base + floor(Maîtrise / portee_pas_maitrise) cases. Mana = ceil(mana_base × (1 − Maîtrise / mana_diviseur_maitrise)). Réussite : constantes magic.cast.* ; Δ = (Maîtrise + Intelligence) / 2 − difficulte.",
+  "columns": [
+    {"source": "Nom", "key": "nom"},
+    {"source": "Code", "key": "code"},
+    {"source": "École", "key": "ecole"},
+    {"source": "Action", "key": "action"},
+    {"source": "Cible", "key": "cible"},
+    {"source": "Ligne de vue", "key": "ligne_de_vue"},
+    {"source": "Effet", "key": "effet"},
+    {"source": "Effet — base", "key": "effet_base"},
+    {"source": "Effet — dé", "key": "effet_de"},
+    {"source": "Effet — facteur de Puissance", "key": "effet_puissance_facteur"},
+    {"source": "Effet — base de maîtrise", "key": "effet_maitrise_base"},
+    {"source": "Portée — base", "key": "portee_base"},
+    {"source": "Portée — pas de maîtrise", "key": "portee_pas_maitrise"},
+    {"source": "Mana — base", "key": "mana_base"},
+    {"source": "Mana — diviseur de maîtrise", "key": "mana_diviseur_maitrise"},
+    {"source": "Difficulté", "key": "difficulte"},
+    {"source": "Description", "key": "description"}
+  ],
+  "row_count": 1,
+  "rows": [
+    {
+      "nom": "Soin rapide",
+      "code": "quick_heal",
+      "ecole": "Vie",
+      "action": "rapide",
+      "cible": "allie_ou_soi",
+      "ligne_de_vue": true,
+      "effet": "soin",
+      "effet_base": 10,
+      "effet_de": 4,
+      "effet_puissance_facteur": 2,
+      "effet_maitrise_base": 0.5,
+      "portee_base": 2,
+      "portee_pas_maitrise": 25,
+      "mana_base": 12,
+      "mana_diviseur_maitrise": 300,
+      "difficulte": 30,
+      "description": "Restaure des PV à un allié ou au lanceur, à portée et en ligne de vue. Utilisable en action rapide. Le mana est dépensé même si le sort échoue."
+    }
+  ]
+}

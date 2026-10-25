@@ -138,8 +138,10 @@ function bodyguardReturnLine(r){
   return MercenairesRecruitDialogue.fill(t[r.issue]||"",{prenom:MercenairesRecruitDialogue.firstName(r.mercenary)},female);
 }
 function queueBodyguardReturn(report){
+  const female=m=>String(m?.sex||"").trim().toLowerCase().startsWith("f");
+  const state=r=>(r.issue==="blesse"?"Blessé":"Fatigué")+(female(r.mercenary)?"e":"");
   const lines=report.results.map(r=>({id:r.mercenary.id,text:bodyguardReturnLine(r),
-    detail:[r.days?`${r.issue==="blesse"?"Blessé":"Fatigué"} ${r.days} jour${r.days>1?"s":""}`:"",r.reputation?`réputation +${fmt(r.reputation)}`:"",r.bonus?`prime ${fmt(r.bonus)} PO`:""].filter(Boolean).join(" · ")}));
+    detail:[r.days?`${state(r)} ${r.days} jour${r.days>1?"s":""}`:"",r.reputation?`réputation +${fmt(r.reputation)}`:"",r.bonus?`prime ${fmt(r.bonus)} PO`:""].filter(Boolean).join(" · ")}));
   for(const line of lines) tavernLog(line.text,"turn");
   if(report.renown) tavernLog("Garde du corps : renommée de la compagnie +"+fmt(report.renown)+".","gear");
   (game.bodyguardReturns||(game.bodyguardReturns=[])).push({client:report.expedition.offer.client,lines});

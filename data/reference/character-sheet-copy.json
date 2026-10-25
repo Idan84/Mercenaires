@@ -354,6 +354,10 @@
       "recall": {
         "accord": "Quitte l’Intendance et retourne sur le terrain après {jours}.",
         "refus": "Refuse de quitter l’Intendance."
+      },
+      "lieutenant": {
+        "accord": "Devient {lieutenant|lieutenante} de la compagnie, pour {salaire} PO par jour.",
+        "refus": "Refuse, pour de bon, de devenir {lieutenant|lieutenante}."
       }
     },
     "empty": "Rien à raconter pour l’instant."

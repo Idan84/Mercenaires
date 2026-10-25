@@ -68,6 +68,8 @@
     function canOffer(state,m){
       if(!m) return no("Mercenaire introuvable.");
       if(m.id===state.company.captainId) return no("Le capitaine ne peut pas être intendant.");
+      // Le lieutenant reste sur le terrain (Idan, 2026-10-25).
+      if((state.company.lieutenantIds||[]).includes(m.id)) return no("Un lieutenant ne peut pas être intendant.");
       // Parti en expédition (doc 17) : on lui en parlera à son retour.
       if((state.expeditions||[]).some(e=>e.memberIds.includes(m.id))) return no("Il est en mission.");
       if(m.stewardOfferDay===state.day) return no("Vous lui en avez déjà parlé aujourd’hui.");

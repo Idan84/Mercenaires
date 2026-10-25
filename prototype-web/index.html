@@ -194,6 +194,7 @@
             </div>
           </div>
           <div id="captain-summary"></div>
+          <section id="lieutenants-panel" class="lieutenants-panel" aria-label="Lieutenants"></section>
           <section id="camp-buildings" class="camp-buildings" aria-label="Constructions du camp"></section>
         </section>
       </section>
@@ -387,6 +388,14 @@
     <p id="steward-talk-line" class="talk-line"></p>
     <ol id="steward-talk-options" class="talk-options"></ol>
   </dialog>
+  <dialog id="lieutenant-talk-dialog" class="talk-dialog talk-dialog--recruit" aria-labelledby="lieutenant-talk-name">
+    <header class="talk-head">
+      <div id="lieutenant-talk-portrait" class="talk-face"></div>
+      <div><p class="eyebrow">Lieutenant</p><h2 id="lieutenant-talk-name"></h2></div>
+    </header>
+    <div id="lieutenant-talk-log" class="talk-log" aria-live="polite"></div>
+    <div id="lieutenant-talk-choices"></div>
+  </dialog>
   <dialog id="deal-talk-dialog" class="talk-dialog talk-dialog--recruit" aria-labelledby="deal-talk-name">
     <header class="talk-head">
       <div id="deal-talk-portrait" class="talk-face"></div>
@@ -402,6 +411,7 @@
   <script src="/core/tavern.js"></script>
   <script src="/core/history.js"></script>
   <script src="/core/steward.js"></script>
+  <script src="/core/lieutenants.js"></script>
   <script src="/core/campaign.js"></script>
   <script src="/core/biography.js"></script>
   <script src="/core/avatars.js"></script>
@@ -432,6 +442,7 @@
   <script src="quartermaster-ui.js"></script>
   <script src="deal-ui.js"></script>
   <script src="steward-ui.js"></script>
+  <script src="lieutenant-ui.js"></script>
   <script src="save-ui.js"></script>
   <script src="screen-ui.js"></script>
   <script src="intro-ui.js"></script>

@@ -4,17 +4,19 @@
 // Dit à Idan et Jean-Mimi quels avatars produire ou taguer. Recalculé à chaque visite, avec les avatars
 // de Git et ceux déposés sur Hostinger (reference-data.js → loadAvatarCatalog).
 const AvatarsLab=(()=>{
-  const SAMPLES=300;
+  const SAMPLES=500;
   const MIN_SHARE=0.03;
+  const COMBINATIONS=15;
   const STATUS={
     "manquant":{cls:"missing",label:"Manquant",order:0},
     "sous-représenté":{cls:"under",label:"Sous-représenté",order:1},
     "juste":{cls:"tight",label:"Juste",order:2},
     "ok":{cls:"ok",label:"OK",order:3}
   };
-  const FAMILY_LABELS={culture:"Cultures",profile:"Profils",weapon:"Armes (catégories)",magic:"Magie principale",ascendance:"Ascendances"};
+  const FAMILY_LABELS={culture:"Cultures",profile:"Profils",weapon:"Armes portées (catégories)",magic:"Magie (mages et sorts connus)",ascendance:"Ascendances (toutes)"};
   const html=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-  const pct=x=>Math.round(x*100)+"\u00a0%";
+  // Moins de 10 % : une décimale (les ascendances rares).
+  const pct=x=>(x<0.1?String(Math.round(x*1000)/10).replace(".",","):Math.round(x*100))+"\u00a0%";
   const anchor=people=>"cov-"+MercenairesAvatarCatalog.slug(people);
   const seeded=seed=>()=>(seed=(seed*16807)%2147483647)/2147483647;
   let cache=null;
@@ -98,8 +100,9 @@ const AvatarsLab=(()=>{
   const badge=status=>`<span class="badge ${STATUS[status].cls}">${STATUS[status].label}</span>`;
   const sexes=r=>`${r.femmes} F · ${r.hommes} H`+(r.sansSexe?` · ${r.sansSexe} ?`:"");
 
-  function familyTable(rows){
-    const shown=rows.filter(x=>x.share>=MIN_SHARE);
+  // Les ascendances s'affichent toutes, même rares (Idan, 2026-10-25) ; les autres familles à partir de 3 %.
+  function familyTable(rows,family){
+    const shown=family==="ascendance"?rows:rows.filter(x=>x.share>=MIN_SHARE);
     if(!shown.length) return '<p class="muted">—</p>';
     const line=x=>{
       const cls=x.avatars>=x.target?"gap-ok":x.avatars<x.target/2?"gap-high":"gap-mid";
@@ -108,14 +111,39 @@ const AvatarsLab=(()=>{
     return `<table><thead><tr><th>Valeur</th><th>Part</th><th>Cible</th><th>Avatars</th><th>Manque</th></tr></thead><tbody>${shown.map(line).join("")}</tbody></table>`;
   }
 
+  // Croisement (Idan, 2026-10-25 : « il faut que je croise ») : culture · profil · arme portée ou école du mage. Les
+  // avatars comptés ont les trois tags.
+  function combinationsTable(r){
+    const rows=(r.combinations||[]).slice(0,COMBINATIONS);
+    if(!rows.length) return '<p class="muted">—</p>';
+    const covered=rows.reduce((t,x)=>t+x.share,0);
+    const line=x=>{
+      const cls=x.avatars>=x.target?"gap-ok":x.avatars<x.target/2?"gap-high":"gap-mid";
+      return `<tr class="${cls}"><td>${html(x.culture)}</td><td>${html(x.profile)}</td><td>${html(x.value||"—")}</td><td class="num">${pct(x.share)}</td><td class="num">${x.target}</td><td class="num">${x.avatars}</td><td class="num">${x.gap||""}</td></tr>`;
+    };
+    return `<table><thead><tr><th>Culture</th><th>Profil</th><th>Arme ou école</th><th>Part</th><th>Cible</th><th>Avatars</th><th>Manque</th></tr></thead><tbody>${rows.map(line).join("")}</tbody></table>
+      <p class="cov-note">Ces ${rows.length} combinaisons couvrent ${pct(covered)} des mercenaires (${(r.combinations||[]).length} combinaisons en tout). Un avatar compte s'il a la culture, le profil et l'arme (ou sa catégorie) ou l'école.</p>`;
+  }
+  function cultureProfilesTable(r){
+    const rows=r.cultureProfiles||[];
+    if(!rows.length) return '<p class="muted">—</p>';
+    const labels=Object.keys(rows[0].profiles);
+    return `<table><thead><tr><th>Culture</th><th>Part</th>${labels.map(l=>`<th>${html(l)}</th>`).join("")}</tr></thead><tbody>${rows.map(c=>
+      `<tr><td>${html(c.culture)}</td><td class="num">${pct(c.share)}</td>${labels.map(l=>`<td class="num">${c.profiles[l]?pct(c.profiles[l]):""}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
+  }
+
   function peopleSection(r){
     const notes=[`Git : ${r.sources.git} · Hostinger : ${r.sources.hostinger}`,sexes(r)];
     if(r.sansTags) notes.push(`<span class="todo">${r.sansTags} sans aucun tag : à taguer dans Bridge, puis à redéposer dans media/avatars/</span>`);
     else if(r.sansSexe) notes.push(`<span class="todo">${r.sansSexe} sans sexe tagué</span>`);
-    const families=Object.keys(FAMILY_LABELS).map(f=>`<div class="cov-family"><h4>${FAMILY_LABELS[f]}</h4>${familyTable(r.families[f])}</div>`).join("");
+    const families=Object.keys(FAMILY_LABELS).map(f=>`<div class="cov-family"><h4>${FAMILY_LABELS[f]}</h4>${familyTable(r.families[f],f)}</div>`).join("");
     return `<section class="cov-people" id="${anchor(r.people)}">
       <h3>${html(r.people)} ${badge(r.status)}</h3>
       <p class="cov-note"><strong>${r.avatars} / ${r.need}</strong> avatars · ${notes.join(" · ")}</p>
+      <div class="cov-grid cov-cross">
+        <div class="cov-family"><h4>Combinaisons à produire (${COMBINATIONS} plus fréquentes)</h4>${combinationsTable(r)}</div>
+        <div class="cov-family"><h4>Profils par culture</h4>${cultureProfilesTable(r)}</div>
+      </div>
       <div class="cov-grid">${families}</div>
     </section>`;
   }
@@ -133,6 +161,11 @@ const AvatarsLab=(()=>{
       la <strong>part</strong> est la proportion de mercenaires qui ont cette valeur, la <strong>cible</strong> vaut part × besoin,
       le <strong>manque</strong> est la cible moins les avatars tagués. Un mercenaire sans avatar correspondant garde un visage
       de son peuple ; sans aucun avatar libre de son peuple, il a le portrait générique.</p>
+      <p class="cov-intro">Pour croiser : <strong>Combinaisons à produire</strong> donne les mercenaires les plus fréquents
+      (culture · profil · arme qu'il porte, ou école pour un mage) et les avatars qui ont ces trois tags ;
+      <strong>Profils par culture</strong> donne, pour chaque culture, la part de corps à corps, de distance et de magie.
+      Le jeu choisit l'avatar qui ressemble le plus au mercenaire, et évite ce qui le contredit (un arc pour un épéiste, un mage
+      pour un guerrier, du sang de dragon pour qui n'en a pas) : un avatar neutre passe avant un avatar contraire.</p>
       <div class="table-wrap cov-summary"><table>
         <thead><tr><th>Peuple</th><th>Avatars</th><th>Sexe</th><th>Besoin</th><th>Statut</th><th>Sans tags</th></tr></thead>
         <tbody>${summary}</tbody></table></div>

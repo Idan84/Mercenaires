@@ -8,6 +8,11 @@
 //   Idan, 2026-10-22). Il remplace « compagnie de départ maximale + Taverne » (35 au plus), trop court.
 // - Pour chaque famille de tags (culture, profil, catégorie d'arme, magie principale, ascendance) :
 //   part des mercenaires générés qui portent la valeur, cible = part × besoin, avatars tagués.
+// - Ascendances (Idan, 2026-10-25 : « il manque des ascendances ») : toutes celles que le peuple peut avoir, même
+//   rares, avec leur part exacte (probabilité d'ascendance × poids / somme des poids), sans tirage.
+// - Combinaisons (Idan, 2026-10-25 : « il faut que je croise ») : culture · profil · catégorie de l'arme portée (ou
+//   école du mage), les plus fréquentes d'abord, avec les avatars qui ont les trois tags ; et, pour chaque culture,
+//   sa répartition par profil.
 (function(root,factory){
   const deps=typeof module!=="undefined"&&module.exports
     ?{catalog:require("./avatar-catalog.js"),avatars:require("./avatars.js")}
@@ -31,6 +36,28 @@
     if(count<need/2) return "sous-représenté";
     if(count<need) return "juste";
     return "ok";
+  }
+
+  // Ascendances possibles du peuple et part exacte de chacune.
+  function ancestryShares(reference,people){
+    const presence=Number((reference?.peoples?.rows||[]).find(r=>r.nom===people)?.probabilite_d_ascendance)||0;
+    const rows=(reference?.ancestryCompatibility?.rows||[]).filter(r=>r.peuple===people&&r.possible===true&&r.ascendance);
+    const total=rows.reduce((sum,r)=>sum+(Number(r.poids_relatif)||1),0);
+    return new Map(rows.map(r=>[r.ascendance,total?presence*(Number(r.poids_relatif)||1)/total:0]));
+  }
+
+  // Ce qui se voit d'abord : profil, et catégorie de l'arme principale portée, ou école pour un mage.
+  function lookOf(m,categoryOf,magicNames){
+    const t=avatars.avatarTags(m);
+    const profile=t.profile[0]||null;
+    if(profile==="magic"){
+      const school=Object.entries(m.skills?.magic||{}).filter(([,v])=>Number.isFinite(v)).sort((a,b)=>b[1]-a[1])[0]?.[0];
+      return {profile,kind:"magic",value:school?magicNames.get(norm(school))||school:null};
+    }
+    const items=new Map((m.items||[]).map(item=>[item.id,item]));
+    const main=items.get(m.equipment?.slots?.weapon_set_1_main);
+    const category=main?.category||categoryOf.get(norm(main?.name))||t.weapon.map(w=>categoryOf.get(w)).find(Boolean)||null;
+    return {profile,kind:"weapon",value:category};
   }
 
   // Valeurs d'un mercenaire généré, par famille (catégories d'arme plutôt qu'armes précises).
@@ -76,10 +103,22 @@
     function forPeople(people){
       const own=rows.filter(a=>norm(a.people)===norm(people));
       const demand=Object.fromEntries(FAMILIES.map(f=>[f,new Map()]));
+      const combos=new Map(),cultures=new Map();
       for(let i=0;i<samples;i++){
-        const values=mercenaryValues(generator.createMercenary({id:i+1,forcedPeople:people}),categoryOf,magicNames);
-        for(const f of FAMILIES) for(const v of values[f]) demand[f].set(v,(demand[f].get(v)||0)+1);
+        const m=generator.createMercenary({id:i+1,forcedPeople:people});
+        const values=mercenaryValues(m,categoryOf,magicNames);
+        for(const f of FAMILIES) if(f!=="ascendance") for(const v of values[f]) demand[f].set(v,(demand[f].get(v)||0)+1);
+        const look=lookOf(m,categoryOf,magicNames);
+        const profile=PROFILE_LABELS[look.profile]||look.profile;
+        const key=[m.culture,profile,look.value].join("|");
+        if(!combos.has(key)) combos.set(key,{culture:m.culture,profile,kind:look.kind,value:look.value,n:0});
+        combos.get(key).n++;
+        if(!cultures.has(m.culture)) cultures.set(m.culture,{n:0,profiles:new Map()});
+        const c=cultures.get(m.culture);
+        c.n++;
+        c.profiles.set(profile,(c.profiles.get(profile)||0)+1);
       }
+      for(const [ascendance,share] of ancestryShares(reference,people)) demand.ascendance.set(ascendance,share*samples);
       const tagged=own.map(a=>avatarValues(a,categoryOf,labels));
       const families={};
       for(const f of FAMILIES){
@@ -90,6 +129,18 @@
           return {value,share,target,avatars:count,gap:Math.max(0,target-count)};
         }).sort((a,b)=>b.gap-a.gap||b.share-a.share);
       }
+      // Combinaisons : avatars qui ont la culture, le profil et l'arme (sa catégorie) ou l'école.
+      const combinations=[...combos.values()].map(c=>{
+        const share=c.n/samples;
+        const target=Math.round(share*need);
+        const count=tagged.filter(t=>t.culture.includes(norm(c.culture))&&t.profile.includes(norm(c.profile))
+          &&c.value&&t[c.kind].includes(norm(c.value))).length;
+        return {culture:c.culture,profile:c.profile,kind:c.kind,value:c.value,share,target,avatars:count,gap:Math.max(0,target-count)};
+      }).sort((a,b)=>b.share-a.share||b.gap-a.gap);
+      const cultureProfiles=[...cultures.entries()].map(([culture,c])=>({
+        culture,share:c.n/samples,
+        profiles:Object.fromEntries(Object.values(PROFILE_LABELS).map(label=>[label,(c.profiles.get(label)||0)/c.n]))
+      })).sort((a,b)=>b.share-a.share);
       const sources={git:own.filter(a=>!String(a.full).startsWith("/")).length,hostinger:own.filter(a=>String(a.full).startsWith("/")).length};
       return {
         people,need,avatars:own.length,sources,
@@ -98,12 +149,12 @@
         sansSexe:own.filter(a=>!a.sex).length,
         sansTags:own.filter(a=>!Object.keys(a.tags||{}).length).length,
         status:status(own.length,need),
-        families
+        families,combinations,cultureProfiles
       };
     }
 
     return {peoples,need,forPeople};
   }
 
-  return {createCoverage,status,FAMILIES,PROFILE_LABELS};
+  return {createCoverage,status,ancestryShares,FAMILIES,PROFILE_LABELS};
 });

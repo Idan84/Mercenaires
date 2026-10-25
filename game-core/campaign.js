@@ -170,6 +170,26 @@
     // Armures, bottes, ceintures, amulettes, capes, gants, culottes et bagues du stock (Idan, 2026-10-24) : donnés une seule
     // fois, même à
     // une partie commencée avant.
+    // Arme à deux mains (Idan, 2026-10-25 : la fronde passe à deux mains) : dans une partie commencée avant, l'objet tenu
+    // en main secondaire avec elle retourne à l'Intendance, sans propriétaire.
+    const TWO_HANDED=new Set((reference?.weapons?.rows||[]).filter(w=>w.prise==="2 mains").map(w=>w.nom));
+    function ensureTwoHandedGrips(state){
+      let changed=false;
+      for(const m of rosterOf(state)){
+        const slots=m.equipment?.slots||{},held=id=>(m.items||[]).find(item=>item.id===id)||null;
+        for(const set of [1,2]){
+          const main=held(slots[`weapon_set_${set}_main`]),off=held(slots[`weapon_set_${set}_off`]);
+          if(!main||!off||!TWO_HANDED.has(main.name)) continue;
+          m.items=m.items.filter(item=>item!==off);
+          slots[`weapon_set_${set}_off`]=null;
+          if(!Array.isArray(state.company.stock)) state.company.stock=[];
+          state.company.stock.push({...off,owner:null,slot:null});
+          changed=true;
+        }
+      }
+      return changed;
+    }
+
     function ensureStartingStock(state){
       const company=state.company;
       const captain=rosterOf(state).find(m=>m.id===company.captainId);
@@ -784,6 +804,7 @@
       ensureAvatars,
       ensureRenamedNames,
       ensureStartingStock,
+      ensureTwoHandedGrips,
       ensureHistories,
       payroll
     };

@@ -305,7 +305,7 @@
     {
       "nom": "Fronde",
       "domaine": "Armes de tir, Martial",
-      "prise": "1 main",
+      "prise": "2 mains",
       "malus_vitesse_arme_base": 4,
       "portee_min_hex": 2,
       "portee_max_hex": 14,

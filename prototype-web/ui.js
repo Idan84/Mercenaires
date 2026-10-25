@@ -40,16 +40,19 @@ function rosterStatus(c){
 
 function characterRow(c,hero=false){
   const captain=game.campaign&&game.campaign.company.captainId===c.id;
+  // Lieutenant (Idan, 2026-10-25) : il reste dans les mercenaires, avec un cadre plus classe que les autres.
+  const lieutenant=typeof isCompanyLieutenant=="function"&&isCompanyLieutenant(c);
   const status=rosterStatus(c);
   const salary=Number(c.contract?.dailySalary??c.salary)||0;
   const fullName=[c.firstName,c.familyName].filter(Boolean).join(" ")||c.name||"Mercenaire";
-  return `<button type="button" class="roster-card ${captain?"roster-captain":""}" data-character-id="${esc(c.id)}" aria-label="Voir la fiche de ${esc(fullName)}">
+  return `<button type="button" class="roster-card ${captain?"roster-captain":""}${lieutenant?" roster-lieutenant":""}" data-character-id="${esc(c.id)}" aria-label="Voir la fiche de ${esc(fullName)}">
     <span class="roster-card-visual">
       ${renderAvatar(c,{variant:"card",kind:"portrait"})}
       <em class="roster-status roster-status--${status.kind}">${esc(status.label)}</em>
     </span>
     <span class="roster-card-info">
       <strong class="roster-name" title="${esc(fullName)}">${esc(fullName)}</strong>
+      ${lieutenant?`<span class="roster-rank">${esc(lieutenantFill("{Lieutenant|Lieutenante} · aura +",c))}${fmt(lieutenantAura(c))} Courage</span>`:""}
       ${c.culture?`<span class="roster-culture">${esc([c.culture,c.ascendance].filter(Boolean).join(" · "))}</span>`:""}
       <span class="roster-metrics">
         <span class="roster-metric" title="Réputation">${rosterMetricIcon("reputation")}${renderReputationStars(c)}</span>
@@ -124,6 +127,7 @@ function renderGame() {
   renderTavern();
   renderQuartermaster();
   renderCampBuildings();
+  renderLieutenants();
 }
 
 // Tri exclusivement visuel : aucune modification de l'ordre sauvegardé ni des règles.
@@ -1165,6 +1169,7 @@ function historyEntryText(c,entry){
   }
   if(entry.kind==="steward") return fill(copy.steward?.[entry.accepted?"accord":"refus"]);
   if(entry.kind==="recall") return fill(copy.recall?.[entry.accepted?"accord":"refus"],{jours:historyPlural(entry.days||0,"jour","jours")});
+  if(entry.kind==="lieutenant") return fill(copy.lieutenant?.[entry.accepted?"accord":"refus"],{salaire:fmt(entry.salary||0)});
   if(entry.kind==="deal"){
     const vars={recu:historyItemLabel(entry.received),cede:historyItemLabel(entry.given)};
     const text=entry.free?copy.deal?.libre?.[entry.action]:copy.deal?.[entry.action]?.[entry.accepted?"accord":"refus"];

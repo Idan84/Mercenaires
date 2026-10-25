@@ -62,7 +62,8 @@
     const AURA={
       courage:constant("captain.aura.courage_ratio",0.35),
       charisma:constant("captain.aura.charisma_ratio",0.25),
-      range:constant("captain.aura.range_hex",10)
+      range:constant("captain.aura.range_hex",10),
+      lieutenant:constant("lieutenant.aura.share",0.5)
     };
     const CHAIN={
       max:constant("combat.melee.chain.max_probability",100),
@@ -747,7 +748,27 @@
       return captain&&axialDistance(captain,unit)<=AURA.range?captainAuraBonus(captain):0;
     }
 
-    // Courage post-attaque CAC V1 / Courage post-tir V1, avec le malus de Courage en sous-nombre V1 et l'aura du capitaine.
+    // Aura d'un lieutenant (Idan, 2026-10-25) : la formule du capitaine sur ses propres caractéristiques, équipement
+    // compris, × lieutenant.aura.share (la moitié), arrondie ; même portée que le capitaine.
+    function lieutenantAuraBonus(lieutenant){
+      return Math.round(AURA.lieutenant*(AURA.courage*statWithGear(lieutenant,"Courage")+AURA.charisma*statWithGear(lieutenant,"Charisme")));
+    }
+
+    // Aura reçue (Idan, 2026-10-25 : les auras ne s'additionnent pas) : la plus forte des auras alliées à portée, celle du
+    // capitaine (unit.isCaptain) ou d'un lieutenant (unit.isLieutenant), vivants et sur la carte. Lui-même n'en profite
+    // pas. {bonus, from : "captain" | "lieutenant" | null, source : le combattant qui la donne}.
+    function allyAura(unit,units=[]){
+      let best={bonus:0,from:null,source:null};
+      for(const ally of units||[]){
+        if(ally===unit||ally.team!==unit.team||!ally.alive||ally.offMap||!(ally.isCaptain||ally.isLieutenant)) continue;
+        if(axialDistance(ally,unit)>AURA.range) continue;
+        const bonus=ally.isCaptain?captainAuraBonus(ally):lieutenantAuraBonus(ally);
+        if(bonus>best.bonus) best={bonus,from:ally.isCaptain?"captain":"lieutenant",source:ally};
+      }
+      return best;
+    }
+
+    // Courage post-attaque CAC V1 / Courage post-tir V1, avec le malus de Courage en sous-nombre V1 et l'aura (capitaine ou lieutenant).
     function courageHold(subject,opponent,surplus=0,aura=0){
       return clamp(statWithGear(subject,"Courage")+aura+0.25*statWithGear(subject,"Volonté")-0.25*intimidation(opponent)-10*surplus,5,95);
     }
@@ -767,7 +788,7 @@
     }
 
     // Qui teste son Courage après une attaque, et avec quelle probabilité de tenir.
-    // context : { defenderSurplus, attackerEncircles, units } (units : pour l'aura du capitaine).
+    // context : { defenderSurplus, attackerEncircles, units } (units : pour l'aura du capitaine ou d'un lieutenant).
     function resolveCourage(attacker,defender,result,context={}){
       if(!result?.ok||result.chargeFall) return null;
       let subject,source,pHold,rule,aura;
@@ -776,30 +797,31 @@
         if(!defender.alive||defender.fleeing) return null;
         const surplus=result.mode==="melee"?Math.max(0,Number(context.defenderSurplus)||0):0;
         subject=defender;source=attacker;
-        aura=captainAura(defender,context.units);
-        pHold=courageHold(defender,attacker,surplus,aura);
+        aura=allyAura(defender,context.units);
+        pHold=courageHold(defender,attacker,surplus,aura.bonus);
         rule=surplus>0?"outnumbered":"wounded";
       }else{
         // Tir : le tireur ne teste jamais. CAC : un attaquant qui participe à un encerclement ne teste pas.
         if(result.mode!=="melee"||!attacker.alive||attacker.fleeing||context.attackerEncircles) return null;
         subject=attacker;source=defender;
-        aura=captainAura(attacker,context.units);
-        pHold=100-(100-courageHold(attacker,defender,0,aura))/2;
+        aura=allyAura(attacker,context.units);
+        pHold=100-(100-courageHold(attacker,defender,0,aura.bonus))/2;
         rule="no-wound";
       }
       const roll=d100();
-      return {subject,source,pHold,roll,flees:roll>pHold,rule,aura};
+      return {subject,source,pHold,roll,flees:roll>pHold,rule,aura:aura.bonus,auraFrom:aura.from};
     }
 
     // Reprise de contrôle — En Fuite V1 ; ennemi de référence = ennemi actif le plus proche (vivant, pas En Fuite) ;
-    // aura du capitaine si units est donné.
+    // aura alliée (capitaine ou lieutenant) si units est donné.
     function recoveryChance(unit,referenceEnemy,fleeTurn,units=[]){
-      return clamp(statWithGear(unit,"Courage")+captainAura(unit,units)+0.25*statWithGear(unit,"Volonté")-0.25*intimidation(referenceEnemy)+10*fleeTurn,5,95);
+      return clamp(statWithGear(unit,"Courage")+allyAura(unit,units).bonus+0.25*statWithGear(unit,"Volonté")-0.25*intimidation(referenceEnemy)+10*fleeTurn,5,95);
     }
 
     function rollRecovery(unit,referenceEnemy,fleeTurn,units=[]){
       const p=recoveryChance(unit,referenceEnemy,fleeTurn,units),roll=d100();
-      return {p,roll,recovered:roll<=p,aura:captainAura(unit,units)};
+      const aura=allyAura(unit,units);
+      return {p,roll,recovered:roll<=p,aura:aura.bonus,auraFrom:aura.from};
     }
 
     // Comportement automatique — En Fuite V1 : 1 Course effrénée, 2 Cachons-nous, 3 Feu à volonté.
@@ -899,6 +921,8 @@
       intimidation,
       captainAura,
       captainAuraBonus,
+      lieutenantAuraBonus,
+      allyAura,
       maxHp,
       courageHold,
       localMelee,

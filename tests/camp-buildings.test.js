@@ -236,7 +236,7 @@ for(const row of reference.dormitoryQuality.rows){
 
 // Branchements : la page, le rendu, le journal du matin, la Renommée.
 const index=fs.readFileSync(path.join(ROOT,"prototype-web","index.html"),"utf8");
-assert.match(index,/<div id="captain-summary"><\/div>\s*<section id="camp-buildings"/);
+assert.match(index,/<div id="captain-summary"><\/div>\s*<section id="lieutenants-panel"[^>]*><\/section>\s*<section id="camp-buildings"/);
 assert.match(index,/<script src="camp-buildings-ui.js"><\/script>/);
 assert.match(index,/<section class="camp-scene hidden dormitory-scene" data-camp-scene-panel="dormitory" aria-label="Dortoir">[\s\S]*?<section id="dormitory-view" class="dormitory-panel"><\/section>/);
 const screen=fs.readFileSync(path.join(ROOT,"prototype-web","screen-ui.js"),"utf8");

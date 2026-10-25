@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 172,
+  "row_count": 177,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -512,6 +512,46 @@
       "description": "Un quartier par niveau pair de qualité du dortoir : le k-ième demande le niveau N × (k−1), soit 0, 2, 4, 6, 8 et 10 (Idan, 2026-10-25).",
       "formule": "Quartiers du lieutenant",
       "valeur": 2,
+      "version": "V1"
+    },
+    {
+      "nom": "Lieutenant — mercenaires par lieutenant",
+      "code": "lieutenant.mercenaries_per_lieutenant",
+      "description": "Il faut N mercenaires par lieutenant : 10 pour le premier, 20 pour le deuxième… Le capitaine et l’intendant ne comptent pas ; les lieutenants, oui (Idan, 2026-10-25).",
+      "formule": "Lieutenant",
+      "valeur": 10,
+      "version": "V1"
+    },
+    {
+      "nom": "Lieutenant — salaire demandé selon l’Intelligence",
+      "code": "lieutenant.salary.intelligence_ratio",
+      "description": "Promu, il demande salaire × (1 + ratio × Intelligence / 100) : à 100 d’Intelligence, le double. La prime de mission ne bouge pas (Idan, 2026-10-25).",
+      "formule": "Lieutenant",
+      "valeur": 1,
+      "version": "V1"
+    },
+    {
+      "nom": "Lieutenant — affinité s’il est promu",
+      "code": "lieutenant.affinity.promoted",
+      "description": "Affinité acquise avec le capitaine quand il devient lieutenant (Idan, 2026-10-25).",
+      "formule": "Lieutenant",
+      "valeur": 10,
+      "version": "V1"
+    },
+    {
+      "nom": "Lieutenant — affinité s’il refuse",
+      "code": "lieutenant.affinity.refused",
+      "description": "Affinité acquise avec le capitaine quand il refuse, pour de bon, de devenir lieutenant (Idan, 2026-10-25).",
+      "formule": "Lieutenant",
+      "valeur": -10,
+      "version": "V1"
+    },
+    {
+      "nom": "Lieutenant — part de l’aura du capitaine",
+      "code": "lieutenant.aura.share",
+      "description": "Aura du lieutenant = part × (35 % de son Courage + 25 % de son Charisme), équipement compris, arrondie ; même portée que le capitaine. Les auras ne s’additionnent pas : un allié prend la plus forte à portée (Idan, 2026-10-25).",
+      "formule": "Lieutenant",
+      "valeur": 0.5,
       "version": "V1"
     },
     {

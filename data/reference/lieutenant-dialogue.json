@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "name": "lieutenant-dialogue",
+  "description": "Lieutenant (Idan, 2026-10-25) : l'encart de Ma Compagnie et la promotion (il accepte le poste mais renégocie son salaire ; on négocie comme à la Taverne ; il peut refuser pour de bon). {prenom} ; {masculin|féminin} selon celui qui parle ou dont on parle ; {salaire}, {prime}, {aura}, {n}. Textes de JC, à retoucher librement.",
+  "panel": {
+    "title": "Lieutenants",
+    "aura": "Aura +{aura} Courage",
+    "free": "Poste de lieutenant libre",
+    "offer": "Proposer le poste à…",
+    "nobody": "Personne ne peut recevoir le poste pour l’instant.",
+    "asked": "Négociation en cours",
+    "refused": "A refusé",
+    "posts": "Quartiers du lieutenant : {quartiers} · Mercenaires (sans le capitaine ni l’intendant) : {n}"
+  },
+  "promote": {
+    "proposal": "Je veux faire de toi {mon lieutenant|ma lieutenante}.",
+    "demand": [
+      "{Lieutenant|Lieutenante} ? J’accepte. Mais les galons, ça se paie : {salaire} PO par jour.",
+      "Commander les autres ? Avec plaisir. Pour {salaire} PO par jour.",
+      "C’est un honneur, capitaine. Un honneur qui vaut {salaire} PO par jour.",
+      "Je veux bien porter le poids de la compagnie. Pas pour rien : {salaire} PO par jour."
+    ],
+    "resume": [
+      "On en était à {salaire} PO par jour, capitaine.",
+      "Toujours {salaire} PO par jour. Vous avez réfléchi ?"
+    ],
+    "bonus_note": "Sa prime de mission ne change pas : {prime} PO.",
+    "accept_terms": "Accepter : {salaire} PO par jour",
+    "negotiate": "Négocier son salaire",
+    "leave": "Partir",
+    "offer": "Je te propose {salaire} PO par jour.",
+    "salary_label": "Salaire journalier",
+    "submit": "Proposer",
+    "back": "Retour",
+    "accepted": [
+      "Marché conclu. Vous ne le regretterez pas.",
+      "Ça me va. Je tiendrai vos hommes.",
+      "Va pour ça. À partir d’aujourd’hui, ils m’écouteront.",
+      "D’accord. Je serai à la hauteur, capitaine."
+    ],
+    "counter": [
+      "Pas en dessous de {salaire} PO.",
+      "{salaire} PO, et je prends le poste.",
+      "Faites un effort : {salaire} PO par jour.",
+      "Je descends à {salaire} PO. Pas plus bas."
+    ],
+    "floor_below": "Plus de responsabilités pour moins d’or que maintenant ? Non : au moins {salaire} PO.",
+    "floor_refused": "Vous m’avez déjà proposé {salaire} PO. Pas moins.",
+    "refused": [
+      "Vous me prenez pour un pigeon. Gardez vos galons.",
+      "Laissez tomber. Je reste simple mercenaire, et je n’en parlerai plus.",
+      "Si c’est tout ce que je vaux à vos yeux, trouvez quelqu’un d’autre.",
+      "Non. Et ne me reposez pas la question."
+    ],
+    "outcome_accepted": "{prenom} devient {lieutenant|lieutenante} de la compagnie : {salaire} PO par jour. Affinité +{affinite}.",
+    "outcome_refused": "{prenom} refuse, pour de bon, de devenir {lieutenant|lieutenante}. Affinité {affinite}."
+  }
+}

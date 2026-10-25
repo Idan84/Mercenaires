@@ -23,7 +23,8 @@ assert.deepEqual(rules.constants,{
   forceLoadThreshold:0.25,forceLoadXp:20,
   dexterityChain:50,dodgeWoundTaken:10,enduranceHeavyArmorHex:2,willCourageHeld:20,willRecovery:20,intelligenceWorstChoice:30,
   skillWeaponAttack:10,skillWeaponHit:5,skillWeaponWound:5,skillTwoHandedAttack:10,skillDualSequence:10,skillShieldBlock:10,
-  skillIntimidation:50,skillRegressionRatio:0.5
+  skillIntimidation:50,skillRegressionRatio:0.5,
+  spellCast:10,spellSuccess:5,spellEffect:5,schoolRegressionRatio:0.5,schoolFloor:1,magicPowerSpellEffect:20,manaReserveManaSpent:2
 });
 const tuned=P.createProgressionRules({reference:{formulaConstants:{rows:[{code:"progression.charisma.knockout_xp",valeur:80}]}}});
 assert.equal(tuned.constants.charismaKnockout,80,"une constante modifiée est prise en compte");
@@ -323,5 +324,60 @@ assert.ok(Math.abs(veteran.reputation-(repBefore+repLine.total))<1e-9,"bilan rej
 assert.equal(veteran.xp.stats.Charisme,charismaXp+2*50,"bilan rejoué : l'XP n'est pas recréditée non plus");
 const reloaded=restoreCampaign(serializeCampaign(restored.state));
 assert.equal(reloaded.state.company.roster.find(m=>m.id===m1.id).reputationCareerDelta,veteran.reputationCareerDelta,"le delta de carrière est sauvegardé");
+
+// Magie (12-magic.md, étape 3 ; Idan, 2026-10-25) : par lancer, +10 au sort et à son école, +5 s'il réussit, +5 s'il a
+// un vrai effet ; les deux écoles opposées perdent la moitié du gain de l'école, un quart chacune. Puissance magique :
+// +20 par sort réussi qui a un effet ; Réserve de mana : +2 par point de mana dépensé ; Chance : critiques comme les armes.
+const mage={team:"player"};
+P.recordSpell(mage,{code:"quick_heal",school:"Vie",success:true,effect:true,mana:11});
+P.recordSpell(mage,{code:"quick_heal",school:"Vie",success:true,effect:false,mana:11});
+P.recordSpell(mage,{code:"quick_heal",school:"Vie",success:false,effect:true,mana:11,fumble:true});
+P.recordSpell(mage,{code:"fire_bolt",school:"Feu",success:true,effect:true,mana:10,critical:true});
+const magicXp=rules.gains(mage.progress);
+assert.deepEqual(magicXp.spells,{quick_heal:20+15+10,fire_bolt:20},"un sort raté donne seulement l'XP du lancer");
+assert.deepEqual(magicXp.skills.magic,{Vie:45,Feu:20,"Nécromancie":-11.25,Illusion:-11.25,"Télékinésie":-5,Eau:-5},
+  "les deux écoles opposées perdent un quart du gain chacune");
+assert.equal(magicXp.stats["Puissance magique"],2*20,"deux sorts réussis avec un vrai effet");
+assert.equal(magicXp.stats["Réserve de mana"],43*2,"le mana d'un sort raté compte aussi");
+assert.equal(magicXp.stats.Chance,30-5,"échec critique confirmé +30, coup critique −5");
+assert.equal(rules.reputationGains(mage.progress).sources.criticalSuccesses,0,"les critiques de sorts ne touchent pas la réputation");
+assert.equal(rules.gains({}).spells,undefined,"sans sort lancé, le bilan garde sa forme habituelle");
+// Pratiquer deux écoles opposées : le gain de l'une et la perte venue de l'autre s'additionnent.
+const both={};
+P.recordSpell(both,{code:"fire_bolt",school:"Feu",success:true,effect:true});
+P.recordSpell(both,{code:"water_test",school:"Eau",success:true,effect:true});
+assert.deepEqual(rules.gains(both.progress).skills.magic,{Feu:15,Eau:15,"Télékinésie":-5,Foudre:-5});
+
+const wizard={stats:{"Puissance magique":50,"Réserve de mana":40,Chance:40},resistances:{},
+  skills:{magic:{Vie:56.5,"Nécromancie":1,Illusion:20,Feu:1,"Télékinésie":1,Eau:1}},
+  spells:[{code:"quick_heal",name:"Soin rapide",school:"Vie",mastery:1}]};
+const wizardChanges=rules.apply(wizard,magicXp);
+assert.ok(Math.abs(wizard.skills.magic.Vie-(56+(31925+45-31360)/1130))<1e-6,"Vie 56,5 : +45 XP sur la tranche de 1 130");
+assert.equal(wizard.skills.magic["Nécromancie"],1,"une école ne descend pas sous 1, la valeur « sans l'école »");
+assert.ok(wizard.skills.magic.Illusion<20,"l'école opposée recule");
+assert.ok(Math.abs(wizard.skills.magic.Feu-(1+20/30))<1e-6);
+assert.equal(wizard.spells[0].mastery,2.3,"sort du grimoire : 10 + 45 XP = niveau 2, à 30 % de la tranche vers 3");
+assert.equal(wizard.xp.spells.quick_heal,55);
+assert.ok(wizardChanges.some(c=>c.family==="spells"&&c.code==="quick_heal"&&c.before===1&&c.after===2.3));
+assert.ok(!wizardChanges.some(c=>c.code==="fire_bolt"),"un sort prêté pour le combat (hors grimoire) ne change rien");
+assert.equal(wizard.stats["Puissance magique"],50);
+assert.ok(wizardChanges.some(c=>c.name==="Réserve de mana"&&c.xp===86));
+const master={stats:{},resistances:{},skills:{magic:{}},spells:[{code:"quick_heal",mastery:100},{code:"purge",mastery:99.9}]};
+rules.apply(master,{spells:{quick_heal:5000,purge:5000}});
+assert.deepEqual(master.spells.map(x=>x.mastery),[100,100],"un sort plafonne à 100");
+
+// Dégâts d'un sort : la blessure d'un élément compte pour la résistance de la cible ; le lanceur compte la blessure et
+// la mise hors combat d'un adversaire (Charisme, réputation), pas celle d'un allié touché par accident.
+const pyro={id:"pyro",team:"player"},goblin={id:"gob",team:"enemy",reputation:30},friend={id:"ami",team:"player"};
+P.recordSpellDamage(pyro,goblin,12,{element:"feu",down:true});
+P.recordSpellDamage(pyro,friend,8,{element:"feu",down:true});
+P.recordSpellDamage(pyro,goblin,0,{element:"feu"});
+P.recordSpellDamage(null,friend,5,{element:"feu"});
+assert.deepEqual(goblin.progress.wounds,{"Résistance au feu":1},"une protection totale (0 dégât) ne blesse pas");
+assert.deepEqual(friend.progress.wounds,{"Résistance au feu":2});
+assert.equal(pyro.progress.knockouts,1);
+assert.deepEqual(pyro.progress.enemyKnockouts,{gob:30});
+assert.deepEqual(pyro.progress.enemyWounds,{gob:30});
+assert.deepEqual(rules.gains(goblin.progress).resistances,{"Résistance au feu":8,"Résistance physique":-2,"Résistance au froid":-2,"Résistance à la foudre":-2,"Résistance au poison":-2});
 
 console.log(JSON.stringify({ok:true,charisme:[charismaBefore,m1.stats.Charisme],reputation:[repBefore,veteran.reputation]},null,2));

@@ -136,6 +136,16 @@ Chaque caractéristique pourra recevoir d'autres sources plus tard : leurs XP s'
 - **Volonté** : chaque **test de Courage réussi** : `+20 XP` ; chaque **reprise de contrôle** réussie en fuite : `+20 XP`.
 - **Intelligence** : il apprend de ses erreurs : chaque fois qu'il choisit le **pire type de dégâts** : `+30 XP`. Ce mauvais choix n'arrive qu'aux mercenaires sous 50 d'Intelligence.
 
+### Puissance magique, Réserve de mana, écoles et sorts (décisions Idan du 2026-10-25)
+
+Détail dans le doc 12 (« Écoles : progression et régression »).
+
+- **Puissance magique** : chaque sort réussi qui a un vrai effet : `+20 XP`.
+- **Réserve de mana** : chaque point de mana dépensé, même si le sort rate : `+2 XP`.
+- **Chance** : les critiques des sorts comptent comme ceux des armes (`−5` / `+30`), sans toucher à la réputation.
+- **Sort et école** : chaque lancer `+10 XP`, `+5` s'il réussit, `+5` s'il a un vrai effet ; les deux écoles opposées perdent chacune un quart du gain de l'école ; une école ne descend pas sous 1 ; les sorts ne régressent pas, plafond 100.
+- Les dégâts des sorts et de l'arme enflammée comptent pour les **Résistances** de la cible (brûlure : Résistance au feu) et, pour le lanceur, comme un coup d'arme (Charisme, réputation) ; les soins comptent pour la **Constitution** du soigné.
+
 ### Compétences (décisions Idan du 2026-10-20)
 
 - Même courbe que les caractéristiques ; **plafond à 100** (`valeur_maximale` de la compétence). Des bonus temporaires ou magiques pourront le dépasser plus tard. Les valeurs générées au-delà de 100 ne sont pas touchées : elles ne montent plus, mais peuvent redescendre.
@@ -157,7 +167,7 @@ Chaque caractéristique pourra recevoir d'autres sources plus tard : leurs XP s'
 - Résistances : chaque composante de dégâts qui blesse effectivement compte séparément. **Limite V1** : le moteur de combat ne produit encore qu'une composante, physique, par attaque ; les dégâts mixtes (physique + feu), les dégâts sur la durée et les coups multiples s'inscriront composante par composante quand ils existeront.
 - Le joueur voit un **récapitulatif** dans le bilan de fin de mission : XP gagnée ou perdue par caractéristique, et valeurs qui ont changé.
 - Toutes les valeurs de cette section sont des **constantes d'équilibrage** (`data/reference/formula-constants.json`, codes `progression.*`).
-- Branché dans le prototype : Résistances, Courage, Vitesse, Charisme, Perception, Force, Chance, Dextérité, Esquive, Endurance, Volonté, Intelligence, et les compétences de combat (armes, catégories, styles, Intimidation). En attente : **Constitution** (pas encore de soins en combat), **Puissance magique** et **Réserve de mana** (pas encore de magie en mission), les autres compétences.
+- Branché dans le prototype : Résistances, Courage, Vitesse, Charisme, Perception, Force, Chance, Dextérité, Esquive, Endurance, Volonté, Intelligence, Constitution, Puissance magique, Réserve de mana, les compétences de combat (armes, catégories, styles, Intimidation), les écoles de magie et les sorts. En attente : les autres compétences.
 - Chance (choix d'implémentation validés par Idan le 2026-10-20) : chaque critique positif, au Toucher comme à Blesser, compte comme un CC ; chaque échec critique confirmé, au Toucher (Au Sol) comme à Blesser (contrecoup), compte comme un EC. Le contrecoup d'un échec critique de blessure compte comme une blessure physique subie pour les Résistances.
 
 ## 3 — XP choisie : formation au camp

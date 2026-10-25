@@ -124,4 +124,42 @@ assert.match(texts.fatigue,/charmantes demoiselles/);
 assert.match(texts.blesse,/bagarre dans une taverne/);
 assert.ok(read("character-sheet-copy.json").history.events.bodyguard.blesse);
 
+// Régression UI : deux missions de garde du corps rentrent le même matin.
+// La deuxième ne doit pas remplacer la fenêtre de la première avant « D’accord ».
+const uiStart=contract.indexOf("function bodyguardReturnLine(");
+const uiEnd=contract.indexOf("\nfunction openExpeditionDialog(",uiStart);
+assert.ok(uiStart>=0&&uiEnd>uiStart,"fonctions du dialogue trouvées");
+const dialog={open:false,showModal(){this.open=true;},close(){this.open=false;}};
+const elements={
+  "bodyguard-return-dialog":dialog,
+  "bodyguard-return-title":{textContent:""},
+  "bodyguard-return-client":{textContent:""},
+  "bodyguard-return-list":{innerHTML:""},
+  "bodyguard-return-ok":{textContent:""}
+};
+const mockGame={campaign:{company:{roster:[{id:"guard-1"},{id:"guard-2"}]}},bodyguardReturns:[]};
+const ui=new Function("game","$","bodyguardTexts","MercenairesRecruitDialogue","fmt","tavernLog","renderAvatar","esc",
+  contract.slice(uiStart,uiEnd)+"\nreturn {queueBodyguardReturn,showNextBodyguardReturn};"
+)(
+  mockGame,id=>elements[id],()=>({rentre:"{prenom} est revenu",retour_titre:"Retour",ok:"D’accord"}),
+  {firstName:m=>m.name,fill:(template,vars)=>template.replace("{prenom}",vars.prenom)},
+  x=>String(x),()=>{} ,()=>"",x=>String(x)
+);
+const guardReport=(client,id)=>({
+  expedition:{offer:{client}},renown:10,
+  results:[{mercenary:{id,name:client,sex:"homme"},issue:"rentre",days:0,reputation:10,bonus:0}]
+});
+ui.queueBodyguardReturn(guardReport("Premier client","guard-1"));
+assert.equal(dialog.open,true);
+assert.equal(elements["bodyguard-return-client"].textContent,"Premier client");
+ui.queueBodyguardReturn(guardReport("Deuxième client","guard-2"));
+assert.equal(elements["bodyguard-return-client"].textContent,"Premier client","le second retour attend son tour");
+assert.equal(mockGame.bodyguardReturns.length,1,"le second retour reste en file");
+ui.showNextBodyguardReturn();
+assert.equal(elements["bodyguard-return-client"].textContent,"Deuxième client","le second retour est affiché après validation");
+assert.equal(mockGame.bodyguardReturns.length,0);
+ui.showNextBodyguardReturn();
+assert.equal(dialog.open,false,"la fenêtre se ferme après le dernier retour");
+assert.match(contract,/addEventListener\("close"/,"le dialogue fermé par Échap relance la file");
+
 console.log("Garde du corps : niveaux, paiement, offres, retour 50/25/25, départ, absence, prime, réputation, renommée, interface — OK");

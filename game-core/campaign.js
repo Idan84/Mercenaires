@@ -55,7 +55,7 @@
   // missions (facultatif) : createMissionRules(...) de game-core/missions.js (tableau des contrats de la Taverne).
   // lieutenants : règles des lieutenants (lieutenants.js) ; leurs demandes de la veille sont jouées chaque matin.
   // bodyguard : règles des missions de garde du corps (bodyguard.js).
-  function createCampaignRules({generator,tavern,reference,biographies=null,avatars=null,progression=null,affinity=null,names=null,missions=null,lieutenants=null,bodyguard=null}){
+  function createCampaignRules({generator,tavern,reference,biographies=null,avatars=null,progression=null,affinity=null,names=null,missions=null,lieutenants=null,bodyguard=null,magic=null}){
     const STARTING_GOLD=referenceConstant(reference,"company.gold.initial",10000);
     const STARTING_DORMITORY_CAPACITY=referenceConstant(reference,"camp.dormitory.initial_capacity",40);
     const RENOWN_RANK_EXPONENT=referenceConstant(reference,"company.renown.rank_exponent",1.5);
@@ -556,7 +556,16 @@
       const built=advanceConstruction(state);
       // Demandes au lieutenant (Idan, 2026-10-25) : le résultat tombe le lendemain matin.
       const lieutenantReports=lieutenants?lieutenants.resolveRequests(state):[];
-      return {day:state.day,recovered,salaries,tavern:tavernReport,missionTaken,bodyguardTaken,expeditions,built,lieutenants:lieutenantReports};
+      const mana=rechargeCampMana(state);
+      return {day:state.day,recovered,salaries,tavern:tavernReport,missionTaken,bodyguardTaken,expeditions,built,lieutenants:lieutenantReports,mana};
+    }
+
+    // Recharge du mana (doc 12 ; Idan, 2026-10-25) : chaque jour, pour les membres présents au camp, pas pour ceux qui sont
+    // en route (contrat ou garde du corps). Formule : magic.js (rechargeMana).
+    function rechargeCampMana(state){
+      if(!magic) return [];
+      return rosterOf(state).filter(m=>!expeditionOf(state,m.id))
+        .map(m=>({id:m.id,...magic.rechargeMana(m)})).filter(x=>x.gained>0);
     }
 
     // Tableau des contrats (doc 17) : une offre à la fois pour l'instant, « Faire le ménage » en boucle. Une offre

@@ -24,7 +24,9 @@ function campaignRules(){
       missions:missionRules(),
       bodyguard:MercenairesBodyguard.createBodyguardRules({reference:game.referenceData}),
       // Demandes au lieutenant, jouées chaque matin (lieutenant-ui.js, chargé après).
-      lieutenants:{resolveRequests:state=>typeof lieutenantRules==="function"?lieutenantRules().resolveRequests(state):[]}});
+      lieutenants:{resolveRequests:state=>typeof lieutenantRules==="function"?lieutenantRules().resolveRequests(state):[]},
+      // Recharge du mana au camp, chaque matin (magic.js).
+      magic:{rechargeMana:character=>magicRules().rechargeMana(character)}});
   }
   return game.campaignRules;
 }

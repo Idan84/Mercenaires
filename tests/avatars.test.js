@@ -99,6 +99,16 @@ assert.ok(s(archer,kit("ranged","Arc","Hache de guerre"))>s(bowAxe,kit("ranged",
 assert.ok(s(bowAxe,kit("melee","Hache de guerre","Arc"))>s(archer,kit("melee","Hache de guerre","Arc")),"un guerrier prend l'avatar CAC");
 assert.equal(s(av("y",{tags:{profile:["melee"],culture:["Ogres des steppes"],weapon:["Hache de guerre"]}}),kit("melee","Hache de guerre")),null,
   "une autre culture n'est pas candidate, même avec la bonne arme");
+// Deux profils (Idan, 2026-10-25) : l'avatar est regardé sous le profil du mercenaire. « CAC + Mage + Hache + Feu » tient
+// sa hache pour un guerrier, son école pour un mage ; « CAC + Distance + Hache + Arc » tient l'arme de chacun.
+const battleMage=av("z",{tags:{profile:["melee","magic"],culture:["Ogres des montagnes"],weapon:["Hache de guerre"],magic:["Feu"]}});
+const fireMage=merc({culture:"Ogres des montagnes",items:[{id:"st",name:"Bâton long",combatFamily:"melee"}],
+  equipment:{profile:{type:"magic"},slots:{weapon_set_1_main:"st"}}});
+assert.equal(s(battleMage,kit("melee","Hache de guerre")),SCORE.profile+SCORE.main-SCORE.second,"guerrier : la hache en main, le Feu ne se voit pas chez lui");
+assert.equal(s(battleMage,fireMage),SCORE.profile+SCORE.main-SCORE.second,"mage du Feu : l'école en main, la hache n'est pas son bâton");
+const hybrid=av("h",{tags:{profile:["melee","ranged"],culture:["Ogres des montagnes"],weapon:["Hache de guerre","Arc"]}});
+assert.equal(s(hybrid,kit("melee","Hache de guerre","Arc")),SCORE.profile+SCORE.main+SCORE.second);
+assert.equal(s(hybrid,kit("ranged","Arc","Hache de guerre")),SCORE.profile+SCORE.main+SCORE.second);
 
 // Choix : le meilleur l'emporte malgré le hasard (0 à 2).
 const rules=createAvatarRules({catalog:[av("ogre-001"),av("ogre-002",{sex:"femme",tags:{profile:["magic"],magic:["Feu"]}}),av("halfling-001",{people:"Halfling"})],random:()=>0.999});

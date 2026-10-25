@@ -342,7 +342,7 @@ function resolveMissionAftermath(){
 function resolveContractOutcome(m,report,victory){
   const offer=m.contract,rules=missionRules(),company=game.campaign.company;
   const captain=company.roster.find(x=>x.id===company.captainId);
-  const chestItems=victory&&captain?Array.from({length:rules.chestItemCount(offer)},()=>game.generator.createLootItem(captain)).filter(Boolean):[];
+  const chestItems=victory&&captain?Array.from({length:rules.chestItemCount(offer)},()=>game.generator.createChestItem(captain,rules.chestTier(offer))).filter(Boolean):[];
   const deadEnemies=m.enemies.filter(u=>!u.alive&&!u.offMap).map(u=>u.character);
   const result=m.contractResult=rules.outcome(offer,{victory,deadEnemies,deadMercenaries:report.deaths,chestItems});
   const back=campaignRules().completeExpeditionCombat(game.campaign,m.expeditionId,{result,bonuses:report.bonusesDue});

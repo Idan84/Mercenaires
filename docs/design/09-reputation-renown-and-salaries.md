@@ -280,12 +280,12 @@ FacteurPretentionsPrime = 1 + \frac{PretentionsSalariales - 35}{200}
 
 \[
 PrimeMissionDemandee = Arrondi(
-3 \times SalaireDemande
+1{,}5 \times SalaireDemande
 \times FacteurCouragePrime
 \times FacteurPretentionsPrime)
 \]
 
-Le coefficient \(3\) est une constante d'échelle de playtest. Le salaire demandé transmet déjà indirectement la Réputation, l'Intelligence et les Prétentions salariales à la prime.
+Le coefficient est une constante d'échelle de playtest (`tavern.mission_bonus.salary_multiplier`) : **3** au départ, **divisé par deux (1,5) par Idan le 2026-10-25** (« les temps sont durs ») ; dans une partie commencée avant, les primes des contrats signés et des négociations en cours sont divisées par deux une fois. Le salaire demandé transmet déjà indirectement la Réputation, l'Intelligence et les Prétentions salariales à la prime.
 
 **V1 : la prime de mission contractuelle est fixe**, quelle que soit la mission. Une éventuelle prime de risque liée au danger sera traitée plus tard comme un mécanisme séparé afin de ne pas ajouter une troisième couche de négociation au recrutement.
 

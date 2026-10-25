@@ -38,14 +38,15 @@ const share=k=>normals.filter(n=>n===k).length/2000;
 assert.ok(share(1)>0.15&&share(1)<0.25,"un normal dans ~20 % des camps : "+share(1));
 assert.ok(share(2)>0.02&&share(2)<0.08,"deux normaux dans ~5 % des camps : "+share(2));
 
-// Offre : distance 1 à 3 jours, récompense = 1 000 + 600 par jour aller-retour + 150 par ennemi, valable 3 à 6 jours.
+// Offre : distance 1 à 3 jours, récompense = 2 000 + 1 200 par jour aller-retour + 300 par ennemi (doublée par Idan le
+// 2026-10-25), valable 3 à 6 jours.
 const orders=new Set();
 for(let day=1;day<=300;day++){
   const offer=rules.createOffer({day});
   orders.add(offer.order);
   assert.ok(offer.distance>=1&&offer.distance<=3);
   assert.equal(offer.enemyCount,offer.camp.enemies.length+1);
-  assert.equal(offer.reward,1000+600*2*offer.distance+150*offer.enemyCount);
+  assert.equal(offer.reward,2000+1200*2*offer.distance+300*offer.enemyCount);
   assert.ok(offer.expiresDay-day>=3&&offer.expiresDay-day<=6);
   const text=rules.orderText(offer,{date:"1 Brumecendre",date_expiration:"5 Brumecendre",an:842});
   for(const line of [...text.paragraphs,text.signature]) assert.doesNotMatch(line,/\{[^}]+\}/,"tous les champs remplis : "+line);
@@ -89,6 +90,12 @@ assert.ok([...win.loot,...win.chestItems].every(it=>it.owner===null));
 const lose=rules.outcome(offer,{victory:false,deadEnemies:enemies,deadMercenaries:[fallen]});
 assert.deepEqual([lose.reward,lose.chestGold,lose.loot.length,lose.renown],[0,0,0,-30]);
 assert.equal(rules.deathMultiplier(offer,false),2);
+// Coffre (Idan, 2026-10-25) : 1D3 objets, T2 (70 %) ou T3 (30 %).
+const chestCounts=new Set(),tiers={2:0,3:0};
+for(let i=0;i<600;i++){ chestCounts.add(rules.chestItemCount(offer)); tiers[rules.chestTier(offer)]+=1; }
+assert.deepEqual([...chestCounts].sort(),[1,2,3]);
+assert.equal(tiers[2]+tiers[3],600,"jamais de T1");
+assert.ok(tiers[2]>350&&tiers[2]<480,`T2 ≈ 70 % : ${tiers[2]} / 600`);
 assert.equal(rules.deathMultiplier(offer,true),1);
 assert.deepEqual(rules.mapSize(offer),{cols:20,rows:12});
 
@@ -167,4 +174,26 @@ const deferred=campaign.applyMissionAftermath(game,{results:[{id:2,dead:false,wo
 assert.deepEqual([deferred.bonusPaid,deferred.bonusesDue.map(b=>[b.id,b.bonus])],[0,[[2,100]]],"expédition : prime due au retour");
 assert.equal(game.company.gold,gold);
 
-console.log("Missions one shot : camp ☠, offre, ordres, ennemis, butin, renommée, tableau de la Taverne — OK");
+// Objets du coffre (Idan, 2026-10-25) : toutes les familles d'équipement, au tier tiré et à sa qualité, sans propriétaire.
+const families=new Set();
+for(let i=0;i<400;i++){
+  const item=generator.createChestItem(captain,3);
+  assert.deepEqual([item.tier,item.qualityCode,item.owner],[3,"luxury",null],item.name);
+  families.add(item.itemType);
+}
+for(const family of ["weapon","armor"]) assert.ok(families.has(family),family);
+assert.equal(generator.createChestItem(captain,2).qualityCode,"standard");
+assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","mission.js"),"utf8"),/game\.generator\.createChestItem\(captain,rules\.chestTier\(offer\)\)/);
+
+// Primes de mission divisées par deux (Idan, 2026-10-25) : une partie commencée avant voit ses contrats divisés une fois.
+const halved=campaign.createCampaign({captain,squad:[generator.createMercenary({id:70,captain})]});
+assert.equal(halved.company.missionBonusHalved,true,"partie neuve : déjà au nouveau barème");
+assert.equal(campaign.ensureHalvedMissionBonuses(halved),false);
+delete halved.company.missionBonusHalved;
+const veteran=halved.company.roster.find(m=>m.id===70);
+veteran.contract.missionBonus=151;
+assert.equal(campaign.ensureHalvedMissionBonuses(halved),true);
+assert.equal(veteran.contract.missionBonus,76);
+assert.equal(campaign.ensureHalvedMissionBonuses(halved),false,"une seule fois");
+
+console.log("Missions one shot : camp ☠, offre, ordres, ennemis, butin, coffre T2/T3, renommée, tableau de la Taverne, primes ÷ 2 — OK");

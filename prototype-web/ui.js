@@ -919,6 +919,10 @@ function statIcon(name){
 function combatEngine(){
   return game.combatEngine || (game.combatEngine = MercenairesCombat.createCombatEngine(game.referenceData));
 }
+// Règles des sorts (doc 12) : maîtrise, effets, mana, réussite, recharge au camp.
+function magicRules(){
+  return game.magicRules || (game.magicRules = MercenairesMagic.createMagicRules({reference:game.referenceData,combat:combatEngine()}));
+}
 function equipmentEffectRules(){
   return game.equipmentEffects || (game.equipmentEffects = MercenairesEquipmentEffects.createEquipmentEffects({engine:combatEngine()}));
 }

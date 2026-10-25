@@ -131,8 +131,8 @@ Plus tard : une **école de magie** à construire au camp et des **manuels** à 
 ### Mise en place
 
 1. **Étape 1** — ces décisions, `spells.json`, les règles des sorts (`game-core/magic.js`) et leurs tests (`tests/magic.test.js`) : Soin rapide, puis les six sorts de l'école de la Vie.
-2. Étape 2 — les sorts de Vie dans l'écran de combat : boutons d'action rapide et principale, cible ou zone à portée, journal, IA.
-3. Étape 3 — recharge du mana au camp, XP du sort et de l'école, régression des écoles opposées.
+2. **Étape 2** — les sorts de Vie dans l'écran de combat actuel, **pour tester** (Idan, 2026-10-25 ; l'interface de combat sera refaite) : une barre de sorts pour le mercenaire actif (action, mana, réussite) ; les cases ciblables en vert (alliés et lanceur, ou toutes les cases à portée pour Soin de masse) ; le journal ; la Régénération au début des activations ; le mana affiché dans la liste des équipes ; un bouton **« Sorts de Vie (test) »** : toute l'escouade connaît les six sorts (niveau 1) pour ce combat, sans toucher au grimoire, le mana étant bien dépensé ; une IA simple, aussi en combat automatique : Soin profond sur l'allié le plus blessé sous 35 % de ses PV à la place de l'attaque, Soin rapide sous 60 %.
+3. Étape 3 — **recharge du mana au camp** (faite avec l'étape 2, pour pouvoir tester d'un combat à l'autre), XP du sort et de l'école, régression des écoles opposées.
 4. Étape 4 — sorts connus à la création et compensations des nains et des ogres.
 
 ## Architecture d'un sort

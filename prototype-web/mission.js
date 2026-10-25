@@ -469,12 +469,17 @@ function missionRenownNote(report){
 // survivant et caractéristiques qui ont changé.
 const PROGRESSION_LABELS={"Résistance physique":"Rés. physique","Résistance au feu":"Rés. feu","Résistance au froid":"Rés. froid","Résistance à la foudre":"Rés. foudre","Résistance au poison":"Rés. poison"};
 function progressionLabel(name){ return PROGRESSION_LABELS[name]||name; }
+// XP d'un sort (par code) : « Sort Soin rapide ».
+function spellProgressionLabel(code){
+  const spell=(game.referenceData?.spells?.rows||[]).find(x=>x.code===code);
+  return "Sort "+(spell?.nom||code);
+}
 function signed(n){ n=Math.round(n); return (n>0?"+":"−")+Math.abs(n); }
 
 // Les compétences ont un niveau continu (30,6) : le bilan montre les points entiers qui changent à l'arrondi.
 function visibleProgressionChanges(changes){
   return changes.map(c=>{
-    const shown=v=>c.family==="skills"?Math.round(v):v;
+    const shown=v=>c.family==="skills"||c.family==="spells"?Math.round(v):v;
     return {...c,shownBefore:shown(c.before),shownAfter:shown(c.after)};
   }).filter(c=>c.shownAfter!==c.shownBefore);
 }
@@ -497,16 +502,22 @@ function renderMissionReputation(reputation){
 function renderMissionProgression(entries){
   if(!entries.length) return "";
   const rows=entries.map(({mercenary,xp,changes,reputation})=>{
-    const skills=Object.values(xp.skills||{}).flatMap(group=>Object.entries(group));
-    // Compétences : les gains de pratique un à un ; la régression des autres armes et styles en un total.
-    const regression=skills.filter(([,n])=>n<0).reduce((sum,[,n])=>sum+n,0);
-    const gained=[...Object.entries(xp.stats||{}),...Object.entries(xp.resistances||{}),...skills.filter(([,n])=>n>0)]
+    const groups=xp.skills||{};
+    const skills=Object.values(groups).flatMap(group=>Object.entries(group));
+    // Compétences : les gains de pratique un à un ; la régression des autres armes et styles en un total, celle des
+    // écoles opposées en un autre (doc 12).
+    const loss=entries=>entries.filter(([,n])=>n<0).reduce((sum,[,n])=>sum+n,0);
+    const regression=loss(Object.entries(groups).filter(([group])=>group!=="magic").flatMap(([,group])=>Object.entries(group)));
+    const schoolLoss=loss(Object.entries(groups.magic||{}));
+    const spells=Object.entries(xp.spells||{}).map(([code,n])=>[spellProgressionLabel(code),n]);
+    const gained=[...Object.entries(xp.stats||{}),...Object.entries(xp.resistances||{}),...skills.filter(([,n])=>n>0),...spells]
       .filter(([,n])=>Math.round(n))
       .map(([name,n])=>`<span class="${n<0?"xp-loss":"xp-gain"}">${esc(progressionLabel(name))} ${signed(n)}</span>`)
       .concat(Math.round(regression)?[`<span class="xp-loss" title="Les autres armes et styles reculent quand on en pratique un">Autres armes ${signed(regression)}</span>`]:[])
+      .concat(Math.round(schoolLoss)?[`<span class="xp-loss" title="Les deux écoles opposées reculent quand on pratique une école">Écoles opposées ${signed(schoolLoss)}</span>`]:[])
       .join(" ");
     const moved=visibleProgressionChanges(changes)
-      .map(c=>`<strong class="${c.shownAfter>c.shownBefore?"stat-up":"stat-down"}">${esc(progressionLabel(c.name))} ${c.shownBefore} → ${c.shownAfter} ${c.shownAfter>c.shownBefore?"▲":"▼"}</strong>`).join(" ");
+      .map(c=>`<strong class="${c.shownAfter>c.shownBefore?"stat-up":"stat-down"}">${esc(c.family==="spells"?spellProgressionLabel(c.code):progressionLabel(c.name))} ${c.shownBefore} → ${c.shownAfter} ${c.shownAfter>c.shownBefore?"▲":"▼"}</strong>`).join(" ");
     return `<tr><td>${esc(mercenary.name)}</td><td>${gained||'<span class="muted">Aucune</span>'}</td><td>${moved||'<span class="muted">—</span>'}</td><td>${renderMissionReputation(reputation)}</td></tr>`;
   }).join("");
   return `<div class="mission-progression">
@@ -1015,16 +1026,23 @@ function teachMissionTestSpells(){
   renderMission();
 }
 
+// Constitution (doc 08) : chaque PV réellement rendu compte pour le mercenaire soigné.
 function healMissionUnit(unit,amount){
   const before=unit.hp;
   unit.hp=Math.min(unit.pvMax,unit.hp+amount);
-  return Math.max(0,unit.hp-before);
+  const healed=Math.max(0,unit.hp-before);
+  if(healed) MercenairesProgression.recordHeal(unit,healed);
+  return healed;
 }
-function damageMissionUnitBySpell(unit,amount){
+// source : le lanceur (ou le porteur de l'arme enflammée), pour la réputation et le Charisme ; element : la résistance
+// qui progresse chez la cible (doc 08).
+function damageMissionUnitBySpell(unit,amount,source=null,element=null){
   if(!amount) return;
+  const wasUp=unit.alive!==false;
   unit.hp-=amount;
   unit.damageTaken=(Number(unit.damageTaken)||0)+amount;
   if(unit.hp<=0){ unit.alive=false; missionLog(unit.character.name+" est hors combat.","death"); }
+  MercenairesProgression.recordSpellDamage(source,unit,amount,{element,down:wasUp&&!unit.alive});
 }
 
 // Lance un sort et applique son résultat (joueur et IA) : action, mana, PV, effets, journal.
@@ -1036,16 +1054,20 @@ function resolveMissionSpell(caster,target,code){
   if(!out.ok){ missionLog(out.reason,"bad"); return out; }
   if(spell.action==="rapide") caster.quickAvailable=false; else caster.attackAvailable=false;
   caster.character.mana=Math.max(0,Math.round((magic.currentMana(caster)-out.cost)*100)/100);
+  // XP du sort, de son école, de la Puissance magique, de la Réserve de mana et de la Chance (doc 12, étape 3).
+  const learn=effect=>MercenairesProgression.recordSpell(caster,{code,school:spell.ecole,success:out.success,effect,
+    mana:out.cost,critical:out.critical,fumble:out.fumble});
   const name=caster.character.name;
   const on=["case","case_vide","soi"].includes(spell.cible)?"":target===caster?" sur "+missionSelf(caster):" sur "+target.character.name;
   const detail=" ("+Math.round(out.p)+" %"+(out.armor?", armure −"+Math.round(out.armor):"")+", jet "+out.roll+", "+out.cost+" mana)";
   if(!out.success){
+    learn(false);
     missionLog(name+" rate "+spell.nom+on+detail+".","miss");
     if(out.fumble){
       if(out.selfDamage&&out.element){
         const hit=m.engine.elementalDamage(caster,out.element,out.selfDamage);
         missionLog("Échec critique ("+out.fumbleRoll+" > Chance) : le sort se retourne, "+name+" subit "+hit.damage+" PV de feu"+missionProtectionNote(hit)+".","bad");
-        damageMissionUnitBySpell(caster,hit.damage);
+        damageMissionUnitBySpell(caster,hit.damage,null,out.element);
       }else{
         missionLog("Échec critique ("+out.fumbleRoll+" > Chance) : "+(out.selfDamage
           ?"le sort se retourne, "+name+" perd "+out.selfDamage+" PV."
@@ -1057,35 +1079,41 @@ function resolveMissionSpell(caster,target,code){
     return out;
   }
   const critical=out.critical?" Coup critique : dés au maximum ("+out.critRoll+" ≤ "+missionPercent(out.critChance)+").":"";
+  // Vrai effet : PV soignés, dégâts qui passent la protection, effet posé ou poison purgé.
+  let effect=true;
   if(spell.effet==="soin"){
     const healed=healMissionUnit(target,out.amount);
+    effect=healed>0;
     missionLog(name+" lance "+spell.nom+on+detail+" : +"+healed+" PV"+(healed<out.amount?" (soin de "+out.amount+")":"")+"."+critical,"magic");
   }else if(spell.effet==="soin_sur_duree"){
     target.regeneration={...out.effect};
     missionLog(name+" lance "+spell.nom+on+detail+" : un soin au début de chacune de ses "+out.effect.turns
       +" prochaines activations."+critical,"magic");
   }else if(spell.effet==="soin_de_zone"){
-    const healed=missionMagic().unitsInZone(out.zone.center,out.zone.radius,missionUnits())
-      .map(u=>u.character.name+" +"+healMissionUnit(u,out.amount));
+    const healed=missionMagic().unitsInZone(out.zone.center,out.zone.radius,missionUnits()).map(u=>[u,healMissionUnit(u,out.amount)]);
+    effect=healed.some(([,hp])=>hp>0);
     missionLog(name+" lance "+spell.nom+" (rayon "+out.zone.radius+")"+detail+" : "+out.amount+" PV pour chacun"
-      +(healed.length?" — "+healed.join(", "):" — personne dans la zone")+"."+critical,"magic");
+      +(healed.length?" — "+healed.map(([u,hp])=>u.character.name+" +"+hp).join(", "):" — personne dans la zone")+"."+critical,"magic");
   }else if(spell.effet==="degats_sans_resistance"){
     missionLog(name+" lance "+spell.nom+on+detail+" : "+out.amount+" PV, sans aucune résistance."+critical,"damage");
-    damageMissionUnitBySpell(target,out.amount);
+    damageMissionUnitBySpell(target,out.amount,caster);
+    effect=out.amount>0;
     checkMissionEnd();
   }else if(spell.effet==="purge_poison"){
     target.poisoned=false;
     missionLog(name+" lance "+spell.nom+on+detail+" : le poison est éliminé.","magic");
   }else if(spell.effet==="degats"&&spell.toucher==="distance"){
     const aim=" (toucher "+Math.round(out.pHit)+" %, jet "+out.hitRoll+")";
+    effect=false;
     if(out.hit){
-      const hit=missionElementalHit(target,out.element,out.amount);
+      const hit=missionElementalHit(target,out.element,out.amount,caster);
+      effect=hit.damage>0;
       missionLog(name+" lance "+spell.nom+on+detail+" : touché"+aim+", "+hit.damage+" PV de feu"+missionProtectionNote(hit)+". "
         +target.character.name+" reste à "+Math.max(0,target.hp)+" PV."+critical,"damage");
     }else if(out.stray){
       missionLog(name+" lance "+spell.nom+on+detail+" : raté"+aim+" ; le trait part dans la ligne de tir et atteint "
         +out.stray.unit.character.name+" par accident ("+Math.round(out.stray.p)+" %, jet "+out.stray.roll+") !","bad");
-      const hit=missionElementalHit(out.stray.unit,out.element,out.amount);
+      const hit=missionElementalHit(out.stray.unit,out.element,out.amount,caster);
       missionLog(out.stray.unit.character.name+" subit "+hit.damage+" PV de feu"+missionProtectionNote(hit)+".","damage");
     }else{
       missionLog(name+" lance "+spell.nom+on+detail+" : raté"+aim+".","miss");
@@ -1096,9 +1124,11 @@ function resolveMissionSpell(caster,target,code){
       ?" ; elle dévie de "+zone.precision.deviation+" case"+(zone.precision.deviation>1?"s":"")+" (précision "+Math.round(zone.precision.p)+" %, jet "+zone.precision.roll+")"
       :zone.precision?" ; elle tombe où il faut (précision "+Math.round(zone.precision.p)+" %, jet "+zone.precision.roll+")":"";
     const victims=magic.unitsInZone(zone.center,zone.radius,missionUnits(),zone.minDistance).filter(u=>u!==caster||spell.cible!=="soi");
+    effect=false;
     const lines=victims.map(u=>{
       const amount=Math.ceil(out.amount*magic.zoneFactor(zone,m.engine.axialDistance(zone.center,u))-1e-9);
-      const hit=missionElementalHit(u,out.element,amount);
+      const hit=missionElementalHit(u,out.element,amount,caster);
+      if(hit.damage>0&&u!==caster) effect=true;
       return u.character.name+" −"+hit.damage;
     });
     missionLog(name+" lance "+spell.nom+" (rayon "+zone.radius+")"+detail+drift+" : "+out.amount+" PV de feu"
@@ -1114,6 +1144,7 @@ function resolveMissionSpell(caster,target,code){
     m.terrain=[...(m.terrain||[]),{q:out.terrain.q,r:out.terrain.r,untilTurn:m.turn+out.terrain.turns}];
     missionLog(name+" lance "+spell.nom+detail+" : la case devient infranchissable pendant "+out.terrain.turns+" tours.","magic");
   }
+  learn(effect);
   return out;
 }
 // Case vide : ni personnage en jeu, ni flaque de magma.
@@ -1157,9 +1188,9 @@ function tickMissionEnchantments(unit){
   }
 }
 // Dégâts élémentaires d'un sort sur une unité : protection (résistance + armure + bonus, bornée) puis PV.
-function missionElementalHit(unit,element,amount){
+function missionElementalHit(unit,element,amount,source=null){
   const hit=game.mission.engine.elementalDamage(unit,element,amount);
-  damageMissionUnitBySpell(unit,hit.damage);
+  damageMissionUnitBySpell(unit,hit.damage,source,element);
   return hit;
 }
 function missionProtectionNote(hit){
@@ -1170,7 +1201,7 @@ function missionProtectionNote(hit){
 function missionWeaponEnchantStrike(attacker,target,result){
   const fx=attacker.weaponEnchant,magic=missionMagic();
   if(!fx||!magic||!result?.ok||!result.hit||result.blocked||!target.alive) return;
-  const strike=magic.weaponStrike(fx),hit=missionElementalHit(target,fx.element,strike.amount);
+  const strike=magic.weaponStrike(fx),hit=missionElementalHit(target,fx.element,strike.amount,attacker);
   missionLog("Arme enflammée : "+target.character.name+" subit "+hit.damage+" PV de feu"+missionProtectionNote(hit)+".","magic");
   checkMissionEnd();
 }

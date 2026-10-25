@@ -12,6 +12,8 @@
 // Compétences (décisions Idan du 2026-10-20) : même courbe, plafond à la valeur maximale de la compétence
 // (100) ; les valeurs générées ayant des décimales, une compétence est un niveau continu : 30,6 = niveau 30,
 // à 60 % de la tranche vers 31. On progresse dans ce qu'on pratique au détriment des autres armes et styles.
+// Magie (12-magic.md, étape 3 ; Idan, 2026-10-25) : chaque lancer donne de l'XP au sort et à son école (comme l'arme et
+// sa catégorie) ; ses deux écoles opposées perdent la moitié du gain de l'école, un quart chacune.
 // Toutes les valeurs sont des constantes d'équilibrage (data/reference/formula-constants.json).
 (function(root,factory){
   const api=factory();
@@ -40,7 +42,8 @@
       criticalSuccesses:0,criticalFailures:0,
       chains:0,woundsTaken:0,heavyArmorHexes:0,courageHeld:0,recoveries:0,worstChoices:0,
       weaponUses:{},twoHandedAttacks:0,dualSequences:0,blocks:{},intimidations:0,
-      enemyWounds:{},enemyKnockouts:{}
+      enemyWounds:{},enemyKnockouts:{},
+      spellCasts:{},manaSpent:0,spellCriticalSuccesses:0,spellCriticalFailures:0
     };
   }
   function logOf(unit){ return unit.progress||(unit.progress=emptyLog()); }
@@ -134,8 +137,36 @@
   function recordIntimidation(unit,subject){
     if(unit&&!(unit.team&&unit.team===subject?.team)) logOf(unit).intimidations++;
   }
-  // Pour les mécaniques à venir : soins (PV réellement restaurés).
+  // Constitution : PV réellement restaurés par un soin (sort, régénération…), au mercenaire soigné.
   function recordHeal(unit,hp){ logOf(unit).hpHealed+=Math.max(0,Number(hp)||0); }
+  // Chaque sort lancé, même raté (12-magic.md, étape 3 ; Idan, 2026-10-25). school : école du sort ; success : il
+  // réussit ; effect : il a un vrai effet (PV soignés, dégâts qui passent la protection, effet posé, poison purgé) ;
+  // mana : mana dépensé, même en cas d'échec ; critical : coup critique ; fumble : échec critique confirmé.
+  function recordSpell(unit,{code,school=null,success=false,effect=false,mana=0,critical=false,fumble=false}={}){
+    if(!unit||!code) return;
+    const log=logOf(unit);
+    const casts=log.spellCasts||(log.spellCasts={});
+    const cast=casts[code]||(casts[code]={school,casts:0,successes:0,effects:0});
+    cast.casts++;
+    if(success) cast.successes++;
+    if(success&&effect) cast.effects++;
+    log.manaSpent=(Number(log.manaSpent)||0)+Math.max(0,Number(mana)||0);
+    // Chance : les critiques des sorts comptent comme ceux des armes (Idan, 2026-10-25), sans toucher à la réputation.
+    if(critical) log.spellCriticalSuccesses=(Number(log.spellCriticalSuccesses)||0)+1;
+    if(fumble) log.spellCriticalFailures=(Number(log.spellCriticalFailures)||0)+1;
+  }
+  // Dégâts d'un sort ou d'une arme enflammée : chaque blessure d'un élément compte pour sa résistance (doc 08), et pour
+  // le lanceur, comme un coup d'arme, la blessure et la mise hors combat d'un adversaire (Charisme, réputation).
+  function recordSpellDamage(source,target,damage,{element=null,down=false}={}){
+    if(!target||!(Number(damage)>0)) return;
+    if(element) recordWound(target,element);
+    if(!source||(source.team&&source.team===target.team)) return;
+    logOf(source).enemyWounds[unitKey(target)]=reputationOf(target);
+    if(down){
+      logOf(source).knockouts++;
+      logOf(source).enemyKnockouts[unitKey(target)]=reputationOf(target);
+    }
+  }
   // Critiques : success = critique positif, failure = échec critique confirmé.
   function recordCritical(unit,kind){
     if(kind==="success") logOf(unit).criticalSuccesses++;
@@ -172,7 +203,15 @@
       skillDualSequence:k("progression.skill.dual_sequence_xp",10),
       skillShieldBlock:k("progression.skill.shield_block_xp",10),
       skillIntimidation:k("progression.skill.intimidation_xp",50),
-      skillRegressionRatio:k("progression.skill.regression_ratio",0.5)
+      skillRegressionRatio:k("progression.skill.regression_ratio",0.5),
+      // Magie (Idan, 2026-10-25).
+      spellCast:k("progression.magic.spell_cast_xp",10),
+      spellSuccess:k("progression.magic.spell_success_xp",5),
+      spellEffect:k("progression.magic.spell_effect_xp",5),
+      schoolRegressionRatio:k("progression.magic.opposite_regression_ratio",0.5),
+      schoolFloor:k("progression.magic.school_floor",1),
+      magicPowerSpellEffect:k("progression.magic_power.spell_effect_xp",20),
+      manaReserveManaSpent:k("progression.mana_reserve.mana_spent_xp",2)
     };
     // Réputation de carrière (09-reputation-renown-and-salaries.md §1, Exploits et carrière ; Idan, 2026-10-20).
     const R={
@@ -194,7 +233,11 @@
     // Les trois styles de combat progressent l'un au détriment des autres ; « Boucliers » en fait partie et
     // sort donc des catégories d'armes.
     const STYLES=["Combat à deux mains","Combat à deux armes","Boucliers"];
+    // Écoles de magie : leurs deux écoles opposées (skills.json, ecoles_opposees).
+    const oppositeSchools=new Map(skillRows.filter(r=>r.ecoles_opposees)
+      .map(r=>[r.nom,String(r.ecoles_opposees).split(",").map(x=>x.trim()).filter(Boolean)]));
     const weaponCategories=new Set([...categoryOf.values()].filter(c=>!STYLES.includes(c)));
+    const SPELL_MAX=100;
     const LOAD_SLOTS=["weapon_set_1_main","weapon_set_1_off","weapon_set_2_main","weapon_set_2_off","armor"];
 
     // Charge portée (Force, décision Idan du 2026-10-07) : malus de vitesse de base de l'armure et de
@@ -281,14 +324,35 @@
       return result;
     }
 
+    // Magie : par lancer, XP au sort et à son école (lancer + réussite + vrai effet) ; chaque gain d'école fait perdre
+    // ratio × gain à ses deux écoles opposées, à parts égales (Idan, 2026-10-25). Les sorts ne régressent pas.
+    function magicGains(l){
+      const schools={},spells={};
+      for(const [code,cast] of Object.entries(l.spellCasts||{})){
+        const xp=(Number(cast.casts)||0)*C.spellCast+(Number(cast.successes)||0)*C.spellSuccess+(Number(cast.effects)||0)*C.spellEffect;
+        if(!xp) continue;
+        spells[code]=(spells[code]||0)+xp;
+        if(cast.school) schools[cast.school]=(schools[cast.school]||0)+xp;
+      }
+      const result={...schools};
+      for(const [school,xp] of Object.entries(schools)){
+        const opposites=oppositeSchools.get(school)||[];
+        for(const other of opposites) result[other]=(result[other]||0)-C.schoolRegressionRatio*xp/opposites.length;
+      }
+      for(const name of Object.keys(result)) if(!result[name]) delete result[name];
+      return {schools:result,spells};
+    }
+
     // Journal → XP par caractéristique, résistance et compétence (valeurs non nulles seulement).
     // Force : XP par activation = coefficient × max(0, Charge / Force − seuil).
     // Le mercenaire sert aux régressions de compétences (celles qu'il possède).
+    // spells : XP de chaque sort lancé (par code), appliquée aux sorts du grimoire.
     function gains(log,mercenary=null){
       const l={...emptyLog(),...(log||{})};
       const stats={},resistances={};
       const add=(target,name,xp)=>{ if(xp) target[name]=(target[name]||0)+xp; };
-      add(stats,"Chance",l.criticalFailures*C.chanceCriticalFailure+l.criticalSuccesses*C.chanceCriticalSuccess);
+      add(stats,"Chance",(l.criticalFailures+l.spellCriticalFailures)*C.chanceCriticalFailure
+        +(l.criticalSuccesses+l.spellCriticalSuccesses)*C.chanceCriticalSuccess);
       add(stats,"Constitution",l.hpHealed*C.constitutionHpHealed);
       add(stats,"Courage",l.chargeAttempts*C.courageChargeAttempt);
       add(stats,"Vitesse",l.fleeHexes*C.speedFleeHex);
@@ -300,6 +364,9 @@
       add(stats,"Endurance",l.heavyArmorHexes*C.enduranceHeavyArmorHex);
       add(stats,"Volonté",l.courageHeld*C.willCourageHeld+l.recoveries*C.willRecovery);
       add(stats,"Intelligence",l.worstChoices*C.intelligenceWorstChoice);
+      // Puissance magique : chaque sort réussi qui a un vrai effet ; Réserve de mana : chaque point de mana dépensé.
+      add(stats,"Puissance magique",Object.values(l.spellCasts||{}).reduce((sum,cast)=>sum+(Number(cast.effects)||0),0)*C.magicPowerSpellEffect);
+      add(stats,"Réserve de mana",Math.round((Number(l.manaSpent)||0)*C.manaReserveManaSpent));
       // Chaque blessure : +XP à la résistance du type, −XP à chacune des quatre autres.
       for(const [hit,count] of Object.entries(l.wounds||{})){
         for(const resistance of RESISTANCES) add(resistances,resistance,count*(resistance===hit?C.resistanceWound:C.resistanceOthers));
@@ -309,7 +376,9 @@
       const martial=martialGains(l,mercenary);
       if(Object.keys(martial).length) skills.martial=martial;
       if(l.intimidations) skills.social={Intimidation:l.intimidations*C.skillIntimidation};
-      return {stats,resistances,skills};
+      const magic=magicGains(l);
+      if(Object.keys(magic.schools).length) skills.magic=magic.schools;
+      return Object.keys(magic.spells).length?{stats,resistances,skills,spells:magic.spells}:{stats,resistances,skills};
     }
 
     // Applique l'XP au mercenaire (mercenary.xp garde l'XP de chaque valeur) ; renvoie les changements.
@@ -346,13 +415,30 @@
           const stored=store[name];
           const xpBefore=Number.isFinite(stored)&&Math.abs(continuousLevel(stored)-before)<1e-6?stored:xpForContinuous(before);
           const cap=Number.isFinite(skillMax.get(name))?skillMax.get(name):Infinity;
-          let xpAfter=Math.max(0,xpBefore+delta);
+          // Une école ne descend pas sous la valeur « sans l'école » de la génération (1).
+          const floor=group==="magic"?xpForContinuous(Math.min(before,C.schoolFloor)):0;
+          let xpAfter=Math.max(floor,xpBefore+delta);
           if(delta>0) xpAfter=before>=cap?xpBefore:Math.min(xpAfter,xpForContinuous(cap));
           const after=Math.round(continuousLevel(xpAfter)*1e6)/1e6;
           store[name]=xpAfter;
           values[name]=after;
           changes.push({family:"skills",group,name,xp:delta,before,after,xpBefore,xpAfter});
         }
+      }
+      // Sorts du grimoire (mercenary.spells : {code, name, school, mastery}) : même courbe, niveau continu de 1 à 100.
+      // Un sort prêté pour un seul combat (bouton de test) n'est pas dans le grimoire : son XP reste dans le bilan.
+      for(const [code,delta] of Object.entries(xp?.spells||{})){
+        const known=(mercenary.spells||[]).find(x=>x.code===code);
+        if(!known||!(delta>0)) continue;
+        const before=Math.max(1,Number(known.mastery)||1);
+        const store=mercenary.xp.spells||(mercenary.xp.spells={});
+        const stored=store[code];
+        const xpBefore=Number.isFinite(stored)&&Math.abs(continuousLevel(stored)-before)<1e-6?stored:xpForContinuous(before);
+        const xpAfter=before>=SPELL_MAX?xpBefore:Math.min(xpBefore+delta,xpForContinuous(SPELL_MAX));
+        const after=Math.round(continuousLevel(xpAfter)*1e6)/1e6;
+        store[code]=xpAfter;
+        known.mastery=after;
+        changes.push({family:"spells",name:known.name||code,code,xp:delta,before,after,xpBefore,xpAfter});
       }
       return changes;
     }
@@ -401,6 +487,7 @@
 
   return {
     createProgressionRules,emptyLog,recordActivation,recordAttack,recordChargeAttempt,recordWound,recordFleeHex,recordHeal,
+    recordSpell,recordSpellDamage,
     recordCritical,recordChain,recordDualSequence,recordCourageHeld,recordRecovery,recordIntimidation,RESISTANCES,RESISTANCE_BY_DAMAGE
   };
 });

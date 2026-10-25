@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 190,
+  "row_count": 197,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -1008,6 +1008,62 @@
       "description": "Part d'un gain de compétence perdue, au total et à parts égales, par les armes des autres catégories, les autres catégories ou les autres styles possédés (décision Idan du 2026-10-20 : on progresse au détriment des autres).",
       "formule": "Progression naturelle V1",
       "valeur": 0.5,
+      "version": "V1"
+    },
+    {
+      "nom": "XP — lancer d'un sort",
+      "code": "progression.magic.spell_cast_xp",
+      "description": "XP du sort et de son école à chaque lancer, même raté (décision Idan du 2026-10-25, comme une attaque d'arme).",
+      "formule": "Progression naturelle V1",
+      "valeur": 10,
+      "version": "V1"
+    },
+    {
+      "nom": "XP — sort réussi",
+      "code": "progression.magic.spell_success_xp",
+      "description": "XP supplémentaire du sort et de son école quand le sort réussit (décision Idan du 2026-10-25).",
+      "formule": "Progression naturelle V1",
+      "valeur": 5,
+      "version": "V1"
+    },
+    {
+      "nom": "XP — sort qui a un vrai effet",
+      "code": "progression.magic.spell_effect_xp",
+      "description": "XP supplémentaire du sort et de son école quand le sort réussi a un vrai effet : PV soignés, dégâts qui passent la protection, effet posé, poison purgé (décision Idan du 2026-10-25).",
+      "formule": "Progression naturelle V1",
+      "valeur": 5,
+      "version": "V1"
+    },
+    {
+      "nom": "XP — régression des écoles opposées",
+      "code": "progression.magic.opposite_regression_ratio",
+      "description": "Part d'un gain d'école perdue, au total et à parts égales, par ses deux écoles opposées (skills.json, ecoles_opposees ; décision Idan du 2026-10-25).",
+      "formule": "Progression naturelle V1",
+      "valeur": 0.5,
+      "version": "V1"
+    },
+    {
+      "nom": "XP — plancher d'une école",
+      "code": "progression.magic.school_floor",
+      "description": "Une école ne descend pas sous cette valeur, celle d'un mercenaire sans l'école à la génération.",
+      "formule": "Progression naturelle V1",
+      "valeur": 1,
+      "version": "V1"
+    },
+    {
+      "nom": "XP — Puissance magique par sort efficace",
+      "code": "progression.magic_power.spell_effect_xp",
+      "description": "XP de Puissance magique à chaque sort réussi qui a un vrai effet (décision Idan du 2026-10-25).",
+      "formule": "Progression naturelle V1",
+      "valeur": 20,
+      "version": "V1"
+    },
+    {
+      "nom": "XP — Réserve de mana par point dépensé",
+      "code": "progression.mana_reserve.mana_spent_xp",
+      "description": "XP de Réserve de mana pour chaque point de mana dépensé, même si le sort rate (décision Idan du 2026-10-25).",
+      "formule": "Progression naturelle V1",
+      "valeur": 2,
       "version": "V1"
     },
     {

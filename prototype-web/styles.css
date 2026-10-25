@@ -1529,6 +1529,11 @@ body[data-screen="camp"][data-camp-scene="quartermaster"]::before {
   background-image: url("/media/background/Quatermaster.jpg");
   opacity: 1;
 }
+/* Dortoir (Idan, 2026-10-25) : le fond du niveau de qualité (images de Jean-Mimi), posé par camp-buildings-ui.js. */
+body[data-screen="camp"][data-camp-scene="dormitory"]::before {
+  background-image: var(--dormitory-bg, url("assets/dormitory/dortoir-1.jpg"));
+  opacity: 1;
+}
 body[data-screen="camp"] > .app-shell { position: relative; z-index: 1; }
 @media (prefers-reduced-motion: reduce) {
   body[data-screen="camp"]::before { transition: none; }
@@ -1784,6 +1789,16 @@ body[data-screen="camp"] .camp-scene>.panel .muted{color:#c2b29e}
 .building-action button{width:100%}
 .building-action button[disabled]{opacity:.5;cursor:not-allowed}
 .building-work{grid-column:1/-1;margin:0;color:#eed098;font-style:italic}
+.building-card--link{grid-template-columns:minmax(0,1fr) auto;align-items:center}
+.building-info .building-work{font-size:14px}
+/* Écran Dortoir : le décor en plein écran, le panneau en bas à gauche. */
+body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="dormitory"]{display:flex;align-items:flex-end;min-height:calc(100dvh - 150px)}
+.dormitory-panel{width:min(100%,560px);padding:18px 22px 20px;border:1px solid #957652;border-radius:14px;background:rgba(22,17,13,.86);color:#f0e2ca;box-shadow:0 20px 60px #000a}
+.dormitory-panel .eyebrow{margin:14px 0 2px;color:#d3ac76}
+.dormitory-panel h2{margin:0;font:normal 32px Georgia,serif;color:#f4d9a6}
+.dormitory-meta{margin:4px 0 16px;color:#c2b29e;font-size:14px}
+.dormitory-back{padding:6px 12px;font-size:13px}
+@media(max-width:640px){.building-actions{grid-template-columns:minmax(0,1fr);gap:6px}.building-cost{margin-bottom:8px}.building-card--link{grid-template-columns:minmax(0,1fr)}}
 .character-list{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
 .roster-card{display:grid;grid-template-columns:94px minmax(0,1fr) auto;gap:14px;align-items:start;padding:14px;border:1px solid #9c7952;border-radius:13px;background:linear-gradient(130deg,#443126,#201916);text-align:left;color:#e9d9c0;box-shadow:0 10px 25px #0005;min-width:0;transition:border-color .16s,transform .16s}
 .roster-card:hover,.roster-card:focus-visible{border-color:#eed098;transform:translateY(-2px);outline:none}

@@ -8,8 +8,9 @@
 // - plus précis (Idan, 2026-10-25) : on compare l'image à ce qui se voit sur le mercenaire (les armes qu'il porte,
 //   l'école d'un mage ou d'un mercenaire qui connaît un sort), et ce qu'elle montre de contraire (un arc pour un
 //   épéiste, un mage pour un guerrier, du sang de dragon pour qui n'en a pas) coûte autant qu'un tag juste rapporte ;
-// - priorités (Idan, 2026-10-25) : profil et culture d'abord ; puis l'arme tenue en main ou l'école du mage ; puis l'arme
-//   de dos. Le profil de l'avatar dit quelle arme il tient : « CAC + Hache + Arc » tient la hache et porte l'arc ;
+// - priorités (Idan, 2026-10-25) : la culture et l'ascendance doivent correspondre, comme le peuple (sinon, portrait
+//   générique) ; puis le profil ; puis l'arme tenue en main ou l'école du mage ; puis l'arme de dos. Le profil de
+//   l'avatar dit quelle arme il tient : « CAC + Hache + Arc » tient la hache et porte l'arc ;
 // - jamais deux fois le même visage en même temps ; les avatars des morts ne reviennent pas.
 // Le catalogue réunit data/reference/avatars.json (scripts/build-avatars.js) et les avatars déposés sur
 // Hostinger (api/avatars.php → avatar-catalog.js). Purement visuel.
@@ -19,14 +20,16 @@
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesAvatars=api;
 })(typeof globalThis!=="undefined"?globalThis:this,function(bio){
-  // Priorités d'Idan (2026-10-25) : d'abord le profil et la culture ; ensuite l'arme tenue en main (ou l'école d'un
-  // mage) départage, avec l'ascendance ; enfin l'arme de dos (ou l'école d'un non-mage) et, à peine, l'origine et
-  // l'alignement. Les poids sont étagés pour que chaque rang l'emporte sur tous les suivants réunis.
-  const SCORE={profile:64,culture:32,main:12,ascendance:12,second:4,origin:2,alignment:1};
+  // Priorités d'Idan (2026-10-25) : la culture et l'ascendance sont obligatoires, comme le peuple (« culture et ascendance
+  // doivent matcher au même niveau que peuple ») : un avatar sans la culture du mercenaire, ou avec une autre ascendance
+  // (ou une ascendance quand il n'en a pas), n'est pas candidat. Ensuite le profil ; puis l'arme tenue en main (ou l'école
+  // d'un mage) ; puis l'arme de dos (ou l'école d'un non-mage) et, à peine, l'origine et l'alignement. Les poids sont
+  // étagés pour que chaque rang l'emporte sur tous les suivants réunis.
+  const SCORE={profile:20,main:12,second:4,origin:2,alignment:1};
   // Ce qui se voit sur l'image et contredit le mercenaire coûte autant qu'un tag juste rapporte : à défaut d'avatar qui
   // lui ressemble, un avatar neutre passe avant un avatar qui le contredit ; aucun n'est exclu pour autant. Origine et
   // alignement ne se voient pas.
-  const VISIBLE=["profile","culture","main","ascendance","second"];
+  const VISIBLE=["profile","main","second"];
   const MISMATCH_SHARE=1;
   // Un peu de hasard entre avatars équivalents, moins que le plus petit écart visible (l'arme de dos).
   const NOISE_MAX=2;
@@ -104,9 +107,17 @@
     };
   }
 
-  // null si une contrainte dure échoue (peuple, sexe déjà connu), sinon le score souple.
+  // Contraintes dures : même culture (l'avatar la porte dans ses tags) et même ascendance (aucune des deux, ou la même).
+  function sameCulture(avatar,tags){ return list(avatar.tags?.culture).some(c=>tags.culture.includes(c)); }
+  function sameAscendance(avatar,tags){
+    const wanted=list(avatar.tags?.ascendance);
+    return tags.ascendance.length?wanted.some(a=>tags.ascendance.includes(a)):!wanted.length;
+  }
+
+  // null si une contrainte dure échoue (peuple, culture, ascendance, sexe déjà connu), sinon le score souple.
   function scoreAvatar(avatar,tags,families=DEFAULT_FAMILIES){
     if(norm(avatar.people)!==tags.people) return null;
+    if(!sameCulture(avatar,tags)||!sameAscendance(avatar,tags)) return null;
     if(tags.sex&&avatar.sex&&norm(avatar.sex)!==tags.sex) return null;
     const look=avatarLook(avatar,families);
     const wanted={...Object.fromEntries(Object.keys(SCORE).map(key=>[key,list(avatar.tags?.[key])])),main:look.main,second:look.second};
@@ -161,5 +172,5 @@
     return {avatars,byId,choose,assign};
   }
 
-  return {createAvatarRules,avatarTags,scoreAvatar,weaponFamilies,avatarLook,SCORE,VISIBLE,MISMATCH_SHARE,NOISE_MAX};
+  return {createAvatarRules,avatarTags,scoreAvatar,weaponFamilies,avatarLook,sameCulture,sameAscendance,SCORE,VISIBLE,MISMATCH_SHARE,NOISE_MAX};
 });

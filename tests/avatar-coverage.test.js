@@ -65,9 +65,16 @@ assert.ok(orc.families.magic.every(x=>/^[A-ZÉ]/.test(x.value)),"noms de magie l
 const compat=read("ancestry-compatibility.json").rows;
 const humain=coverage.forPeople("Humain");
 const possible=compat.filter(r=>r.peuple==="Humain"&&r.possible&&r.ascendance).map(r=>r.ascendance).sort();
-assert.deepEqual(humain.families.ascendance.map(x=>x.value).sort(),possible,"les "+possible.length+" ascendances possibles des humains");
+assert.deepEqual(humain.families.ascendance.map(x=>x.value).filter(v=>v!=="Aucune").sort(),possible,"les "+possible.length+" ascendances possibles des humains");
 const presence=Number(read("peoples.json").rows.find(r=>r.nom==="Humain").probabilite_d_ascendance);
-assert.ok(Math.abs(humain.families.ascendance.reduce((t,x)=>t+x.share,0)-presence)<1e-9,"leurs parts font la probabilité d'ascendance");
+assert.ok(Math.abs(humain.families.ascendance.filter(x=>x.value!=="Aucune").reduce((t,x)=>t+x.share,0)-presence)<1e-9,"leurs parts font la probabilité d'ascendance");
+// Culture et ascendance obligatoires : « Aucune » compte les avatars sans ascendance, pour les mercenaires qui n'en ont pas ;
+// part des mercenaires sans aucun avatar possible (portrait générique).
+const none=humain.families.ascendance.find(x=>x.value==="Aucune");
+assert.ok(Math.abs(none.share-(1-presence))<1e-9);
+assert.equal(orc.families.ascendance.find(x=>x.value==="Aucune").avatars,3,"les trois orcs n'ont pas d'ascendance");
+assert.ok(orc.withoutAvatar>0&&orc.withoutAvatar<1,"seuls les orcs noirs sans ascendance ont un avatar possible");
+assert.equal(coverage.forPeople("Gobelin").withoutAvatar,1,"aucun avatar gobelin : portrait générique pour tous");
 
 // Combinaisons (Idan, 2026-10-25 : « il faut que je croise ») : culture · profil · arme portée ou école du mage.
 const combos=orc.combinations;

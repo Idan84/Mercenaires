@@ -134,6 +134,8 @@ const AvatarsLab=(()=>{
 
   function peopleSection(r){
     const notes=[`Git : ${r.sources.git} · Hostinger : ${r.sources.hostinger}`,sexes(r)];
+    // Culture et ascendance obligatoires (Idan, 2026-10-25) : sans avatar de sa culture et de son ascendance, portrait générique.
+    if(r.withoutAvatar>0) notes.push(`<span class="todo">${pct(r.withoutAvatar)} des mercenaires n'ont aucun avatar de leur culture et de leur ascendance : portrait générique</span>`);
     if(r.sansTags) notes.push(`<span class="todo">${r.sansTags} sans aucun tag : à taguer dans Bridge, puis à redéposer dans media/avatars/</span>`);
     else if(r.sansSexe) notes.push(`<span class="todo">${r.sansSexe} sans sexe tagué</span>`);
     const families=Object.keys(FAMILY_LABELS).map(f=>`<div class="cov-family"><h4>${FAMILY_LABELS[f]}</h4>${familyTable(r.families[f],f)}</div>`).join("");
@@ -164,10 +166,11 @@ const AvatarsLab=(()=>{
       <p class="cov-intro">Pour croiser : <strong>Combinaisons à produire</strong> donne les mercenaires les plus fréquents
       (culture · profil · arme qu'il porte, ou école pour un mage) et les avatars qui ont ces trois tags ;
       <strong>Profils par culture</strong> donne, pour chaque culture, la part de corps à corps, de distance et de magie.
-      Le jeu choisit l'avatar qui ressemble le plus au mercenaire : d'abord le <strong>profil</strong> et la <strong>culture</strong>,
-      puis l'<strong>arme tenue en main</strong> (ou l'école du mage) et l'ascendance, puis l'arme de dos. Le profil de l'avatar dit
-      quelle arme il tient : « Corps à corps + Hache + Arc » tient la hache et porte l'arc. Ce qui contredit le mercenaire (un arc
-      pour un épéiste, un mage pour un guerrier, du sang de dragon pour qui n'en a pas) le fait passer après un avatar neutre.</p>
+      Le jeu donne un avatar du même <strong>peuple</strong>, de la même <strong>culture</strong> et de la même <strong>ascendance</strong>
+      (aucune, ou la même) : sinon, portrait générique. Parmi ceux-là, il prend celui qui ressemble le plus au mercenaire : d'abord le
+      <strong>profil</strong>, puis l'<strong>arme tenue en main</strong> (ou l'école du mage), puis l'arme de dos. Le profil de l'avatar
+      dit quelle arme il tient : « Corps à corps + Hache + Arc » tient la hache et porte l'arc. Ce qui contredit le mercenaire (un arc
+      pour un épéiste, un mage pour un guerrier) le fait passer après un avatar neutre.</p>
       <div class="table-wrap cov-summary"><table>
         <thead><tr><th>Peuple</th><th>Avatars</th><th>Sexe</th><th>Besoin</th><th>Statut</th><th>Sans tags</th></tr></thead>
         <tbody>${summary}</tbody></table></div>

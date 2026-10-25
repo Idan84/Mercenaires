@@ -13,6 +13,9 @@
 // - Combinaisons (Idan, 2026-10-25 : « il faut que je croise ») : culture · profil · catégorie de l'arme tenue en main
 //   (ou école du mage), les plus fréquentes d'abord, avec les avatars qui ont les trois tags (l'arme de l'avatar qui
 //   correspond à son profil : « CAC + Hache + Arc » tient la hache) ; et, pour chaque culture, sa répartition par profil.
+// - Culture et ascendance obligatoires (Idan, 2026-10-25) : part des mercenaires générés qui n'ont aucun avatar possible
+//   (portrait générique), et ligne « Aucune » des ascendances (les avatars sans ascendance, pour les mercenaires qui n'en
+//   ont pas).
 (function(root,factory){
   const deps=typeof module!=="undefined"&&module.exports
     ?{catalog:require("./avatar-catalog.js"),avatars:require("./avatars.js")}
@@ -38,12 +41,13 @@
     return "ok";
   }
 
-  // Ascendances possibles du peuple et part exacte de chacune.
+  // Ascendances possibles du peuple et part exacte de chacune ; « Aucune » pour les mercenaires sans ascendance.
+  const NO_ASCENDANCE="Aucune";
   function ancestryShares(reference,people){
     const presence=Number((reference?.peoples?.rows||[]).find(r=>r.nom===people)?.probabilite_d_ascendance)||0;
     const rows=(reference?.ancestryCompatibility?.rows||[]).filter(r=>r.peuple===people&&r.possible===true&&r.ascendance);
     const total=rows.reduce((sum,r)=>sum+(Number(r.poids_relatif)||1),0);
-    return new Map(rows.map(r=>[r.ascendance,total?presence*(Number(r.poids_relatif)||1)/total:0]));
+    return new Map([[NO_ASCENDANCE,1-presence],...rows.map(r=>[r.ascendance,total?presence*(Number(r.poids_relatif)||1)/total:0])]);
   }
 
   // Ce qui se voit d'abord : profil, et catégorie de l'arme tenue en main (celle de son profil), ou école pour un mage.
@@ -104,8 +108,11 @@
       const own=rows.filter(a=>norm(a.people)===norm(people));
       const demand=Object.fromEntries(FAMILIES.map(f=>[f,new Map()]));
       const combos=new Map(),cultures=new Map();
+      let withoutAvatar=0;
       for(let i=0;i<samples;i++){
         const m=generator.createMercenary({id:i+1,forcedPeople:people});
+        const tags=avatars.avatarTags(m,weaponFamilies);
+        if(!own.some(a=>avatars.scoreAvatar(a,tags,weaponFamilies)!==null)) withoutAvatar++;
         const values=mercenaryValues(m,categoryOf,magicNames);
         for(const f of FAMILIES) if(f!=="ascendance") for(const v of values[f]) demand[f].set(v,(demand[f].get(v)||0)+1);
         const look=lookOf(m,categoryOf,magicNames,weaponFamilies);
@@ -125,7 +132,8 @@
         families[f]=[...demand[f].entries()].map(([value,n])=>{
           const share=n/samples;
           const target=Math.round(share*need);
-          const count=tagged.filter(t=>t[f].includes(norm(value))).length;
+          const count=f==="ascendance"&&value===NO_ASCENDANCE?tagged.filter(t=>!t.ascendance.length).length
+            :tagged.filter(t=>t[f].includes(norm(value))).length;
           return {value,share,target,avatars:count,gap:Math.max(0,target-count)};
         }).sort((a,b)=>b.gap-a.gap||b.share-a.share);
       }
@@ -149,6 +157,7 @@
         sansSexe:own.filter(a=>!a.sex).length,
         sansTags:own.filter(a=>!Object.keys(a.tags||{}).length).length,
         status:status(own.length,need),
+        withoutAvatar:withoutAvatar/samples,
         families,combinations,cultureProfiles
       };
     }
@@ -156,5 +165,5 @@
     return {peoples,need,forPeople};
   }
 
-  return {createCoverage,status,ancestryShares,FAMILIES,PROFILE_LABELS};
+  return {createCoverage,status,ancestryShares,FAMILIES,PROFILE_LABELS,NO_ASCENDANCE};
 });

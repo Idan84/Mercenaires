@@ -49,6 +49,7 @@ jobs:
       - run: node tests/bodyguard.test.js
       - run: node tests/magic.test.js
       - run: node tests/mission-spells.test.js
+      - run: node tests/spell-icons.test.js
       - run: node tests/equipment-effects.test.js
       - run: node tests/equipment-deals.test.js
       - run: node tests/deal-ui.test.js

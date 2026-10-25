@@ -140,6 +140,59 @@ assert.equal(engine.captainAura(hero,[hero,lt]),0,"l'aura du capitaine reste la 
 const courage=engine.resolveCourage(unit("foe",{},{team:"enemy"}),hero,{ok:true,wound:true,mode:"ranged"},{units:[hero,lt]});
 assert.deepEqual([courage.aura,courage.auraFrom],[16,"lieutenant"]);
 
+// Étape 3 : demandes au lieutenant (courage, respect), une par jour ; résultat le lendemain matin ; 30 jours par type.
+const C=rules.constants;
+assert.deepEqual([C.cooldown,C.gainRatio,C.gainMin,C.gainMax],[30,0.2,1,10]);
+const target=squad[7];
+m.stats.Courage=70;target.stats.Courage=40;
+m.stats.Charisme=60;m.stats.Intelligence=50;target.stats["Volonté"]=55;
+assert.equal(rules.requestGain(state,m,target,"courage"),6,"20 % de 30 points");
+assert.equal(Math.round(rules.requestChance(m,target)),50,"Δ = (60 + 50)/2 − 55 = 0 : 50 %");
+target.stats["Volonté"]=25;
+assert.equal(Math.round(rules.requestChance(m,target)),75,"Δ = +30 : 75 %");
+assert.equal(rules.requestGain(state,m,{stats:{Courage:70}},"courage"),0,"pas au-dessus : échec forcé");
+assert.equal(rules.requestGain(state,m,{stats:{Courage:10}},"courage"),10,"au plus +10");
+assert.equal(rules.requestGain(state,m,{stats:{Courage:68}},"courage"),1,"au moins +1");
+assert.deepEqual(rules.canRequest(state,m,"courage",captain),{ok:false,reason:"Pas le capitaine."});
+assert.deepEqual(rules.canRequest(state,m,"courage",m),{ok:false,reason:"Pas lui-même."});
+assert.deepEqual(rules.canRequest(state,squad[8],"courage",target),{ok:false,reason:"Il n’est pas lieutenant."});
+assert.equal(rules.request(state,m.id,"courage",target.id).ok,true);
+assert.deepEqual(m.lieutenantRequest,{type:"courage",targetId:target.id,day:state.day});
+assert.equal(rules.canRequest(state,m).busy,true,"une demande par jour");
+assert.equal(rules.request(state,o.id,"courage",target.id).wait,30,"30 jours avant de redemander le courage pour lui");
+assert.equal(rules.request(state,o.id,"respect",target.id).ok,true,"le respect est un autre type");
+// Le lendemain matin (campaign.js) : jet 1, réussite ; le respect échoue forcément (affinités égales, ici 0).
+rolls=[1,100];
+const affinityTarget=Number(target.affinityAcquired)||0;
+const withLieutenants=createCampaignRules({generator,tavern,reference,lieutenants:rules});
+const [morning]=withLieutenants.advanceTime(state,1);
+assert.deepEqual(morning.lieutenants.map(r=>[r.lieutenant.id,r.type,r.success,r.gain,r.forced]),
+  [[m.id,"courage",true,6,false],[o.id,"respect",false,0,true]]);
+assert.equal(target.stats.Courage,46,"Courage +6, pour de bon");
+assert.equal(Number(target.affinityAcquired)||0,affinityTarget,"échec : rien ne change");
+assert.equal(m.lieutenantRequest,undefined);
+assert.equal(target.history.log.at(-1).kind,"lieutenant_request");
+assert.deepEqual(withLieutenants.advanceTime(state,1)[0].lieutenants,[],"rien le surlendemain");
+assert.equal(rules.requestWait(state,target,"courage"),28);
+state.day+=28;
+assert.equal(rules.canRequest(state,m,"courage",target).ok,true,"au bout de 30 jours");
+// Respect réussi : l'affinité acquise monte ; échec forcé quand le lieutenant n'est pas au-dessus.
+const respectRules=createLieutenantRules({reference,tavern,random:d100,quarters:s=>campaign.lieutenantQuarters(s),
+  affinityOf:(s,x)=>x===m?40:x===target?10:0});
+rolls=[1];
+respectRules.request(state,m.id,"respect",target.id);
+state.day+=1;
+const [respect]=respectRules.resolveRequests(state);
+assert.deepEqual([respect.success,respect.gain],[true,6],"20 % de (40 − 10)");
+assert.equal(Number(target.affinityAcquired)||0,affinityTarget+6);
+target.stats.Courage=90;
+rolls=[1];
+respectRules.request(state,m.id,"courage",target.id);
+state.day+=1;
+const [forced]=respectRules.resolveRequests(state);
+assert.deepEqual([forced.success,forced.forced],[false,true],"échec forcé, même sur un jet de 1");
+assert.equal(target.stats.Courage,90);
+
 // Interface : l'encart, le dialogue, le cadre, le combat, l'historique.
 const index=fs.readFileSync(path.join(ROOT,"prototype-web","index.html"),"utf8");
 assert.match(index,/<div id="captain-summary"><\/div>\s*<section id="lieutenants-panel" class="lieutenants-panel" aria-label="Lieutenants"><\/section>/);
@@ -158,5 +211,16 @@ assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","reference-data.js")
 const copy=read("lieutenant-dialogue.json");
 for(const key of ["demand","accepted","counter","refused"]) assert.ok(copy.promote[key].length>=4,key);
 assert.ok(read("character-sheet-copy.json").history.events.lieutenant.accord);
+for(const key of ["greetings","busy","accepted"]) assert.ok(copy.talk[key].length>=2,key);
+for(const key of ["courage_success","respect_success","failure"]) assert.ok(copy.report[key].length>=4,key);
+assert.ok(copy.report.respect_success.every(t=>/vous respecte un peu plus/.test(t)),"le respect : seulement « il vous respecte un peu plus »");
+assert.ok(copy.report.courage_success.every(t=>/Courage \+\{gain\}/.test(t)),"le courage : la valeur");
+assert.ok(read("character-sheet-copy.json").history.events.lieutenant_request.courage);
+assert.match(index,/<dialog id="lieutenant-report-dialog" class="talk-dialog talk-dialog--recruit"/);
+assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","tavern-ui.js"),"utf8"),/queueLieutenantReports\(report\.lieutenants\)/);
+assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","tavern-ui.js"),"utf8"),/lieutenants:\{resolveRequests:state=>/);
+const lui=fs.readFileSync(path.join(ROOT,"prototype-web","lieutenant-ui.js"),"utf8");
+assert.match(lui,/data-lieutenant-speak="\$\{esc\(m\.id\)\}"/);
+assert.match(lui,/statOf:\(m,name\)=>combatEngine\(\)\.statWithGear/);
 
-console.log("Lieutenants : combien, qui, promotion et négociation, refus définitif, intendant, aura sans cumul, interface — OK");
+console.log("Lieutenants : combien, qui, promotion et négociation, refus définitif, intendant, aura sans cumul, demandes et rapport du matin, interface — OK");

@@ -9,6 +9,9 @@
 // - Les mots-clés des deux images s'additionnent : taguer le plein pied suffit.
 // - Chaque mot-clé est rangé dans sa famille (peuple, sexe, culture, origine, alignement, ascendance,
 //   profil, magie, arme) d'après les référentiels ; un mot-clé inconnu est signalé.
+// - « Ascendance only » (Idan, 2026-10-25) : l'avatar ne va qu'aux mercenaires de son ascendance (un humain aux écailles
+//   de dragon). Sans ce tag, une ascendance taguée est généraliste : l'avatar va aussi aux mercenaires sans ascendance
+//   (un gobelin à sang d'orc ou un gobelin très baraqué, « c'est compliqué à différencier »).
 // - L'identifiant (« ogre-012 ») ne dépend que du peuple et du numéro : retaguer ou renommer une image
 //   ne change pas l'avatar des parties sauvegardées.
 (function(root,factory){
@@ -19,6 +22,7 @@
   const PROFILES={"Corps à corps":"melee","Distance":"ranged","Magie":"magic"};
   const SEXES={femme:["F","Femme","Femelle"],homme:["M","H","Homme","Masculin","Mâle"]};
   const TAG_FAMILIES=["culture","origin","alignment","ascendance","profile","magic","weapon"];
+  const ASCENDANCE_ONLY=["Ascendance only","Ascendance seule","Ascendance exclusive","Ascendance uniquement","Uniquement ascendance"];
 
   function norm(value){
     return String(value??"").normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[’‘`´]/g,"'")
@@ -58,6 +62,7 @@
     }
     for(const [label,code] of Object.entries(PROFILES)) add("profile",label,code);
     for(const [sex,labels] of Object.entries(SEXES)) for(const l of labels) add("sex",l,sex);
+    for(const l of ASCENDANCE_ONLY) add("ascendanceOnly",l,true);
     const singular=k=>k.split(/([ -])/).map(w=>w.length>3?w.replace(/[sx]$/,""):w).join("");
     return keyword=>{
       const k=norm(String(keyword).split("|").pop());
@@ -95,17 +100,19 @@
     for(const g of [...groups.values()].sort((a,b)=>a.id.localeCompare(b.id))){
       if(!g.files.full||!g.files.portrait){ warnings.push(`${g.id} : il manque le ${g.files.full?"portrait":"plein pied"}, ignoré`); continue; }
       const tags=Object.fromEntries(TAG_FAMILIES.map(f=>[f,[]]));
-      let sex=null;
+      let sex=null,ascendanceOnly=false;
       for(const k of g.keywords){
         const c=classify(k);
         if(!c){ warnings.push(`${g.id} : mot-clé inconnu « ${k} »`); continue; }
         if(c.family==="people"){ if(c.value!==g.people) warnings.push(`${g.id} : tag peuple « ${k} » ≠ ${g.people}`); continue; }
         if(c.family==="sex"){ if(sex&&sex!==c.value) warnings.push(`${g.id} : deux sexes tagués`); sex=c.value; continue; }
+        if(c.family==="ascendanceOnly"){ ascendanceOnly=true; continue; }
         if(!tags[c.family].includes(c.value)) tags[c.family].push(c.value);
       }
       if(tags.magic.length&&!tags.profile.length) tags.profile.push("magic");
+      if(ascendanceOnly&&!tags.ascendance.length){ warnings.push(`${g.id} : « Ascendance only » sans ascendance tagguée, ignoré`); ascendanceOnly=false; }
       for(const k of Object.keys(tags)) if(!tags[k].length) delete tags[k];
-      avatars.push({id:g.id,people:g.people,sex,tags,files:{full:g.files.full,portrait:g.files.portrait}});
+      avatars.push({id:g.id,people:g.people,sex,tags,...(ascendanceOnly?{ascendanceOnly:true}:{}),files:{full:g.files.full,portrait:g.files.portrait}});
     }
     return {avatars,warnings};
   }
@@ -119,7 +126,7 @@
   function buildAvatarCatalog(files,reference,{baseUrl="/media/avatars/"}={}){
     const {avatars,warnings}=groupAvatarFiles(files,reference);
     const rows=avatars.map(a=>({
-      id:a.id,people:a.people,sex:a.sex,tags:a.tags,
+      id:a.id,people:a.people,sex:a.sex,tags:a.tags,...(a.ascendanceOnly?{ascendanceOnly:true}:{}),
       full:fileUrl(baseUrl,a.files.full.path),
       portrait:fileUrl(baseUrl,a.files.portrait.path),
       source:a.files.full.path
@@ -169,5 +176,5 @@
     return [...byId.values()].sort((a,b)=>a.id.localeCompare(b.id));
   }
 
-  return {PROFILES,SEXES,norm,slug,vocabulary,classifier,groupAvatarFiles,buildAvatarCatalog,buildSilhouetteCatalog,mergeCatalogs,fileUrl};
+  return {PROFILES,SEXES,ASCENDANCE_ONLY,norm,slug,vocabulary,classifier,groupAvatarFiles,buildAvatarCatalog,buildSilhouetteCatalog,mergeCatalogs,fileUrl};
 });

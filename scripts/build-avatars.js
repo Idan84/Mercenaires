@@ -69,7 +69,7 @@ function writeBridgeKeywords(vocab){
   for(const c of vocab.weaponCategories){ lines.push("\t"+c); for(const w of vocab.weaponsByCategory[c]) lines.push("\t\t"+w); }
   block("Culture",vocab.culture);
   block("Origine",vocab.origin);
-  block("Ascendance",vocab.ascendance);
+  block("Ascendance",[...vocab.ascendance,catalog.ASCENDANCE_ONLY[0]]);
   block("Alignement",vocab.alignment);
   fs.writeFileSync(BRIDGE_FILE,lines.join("\r\n")+"\r\n","utf8");
   console.log("Mots-clés Bridge : "+path.relative(ROOT,BRIDGE_FILE));
@@ -91,7 +91,7 @@ function main(){
     const full=`${a.id}_full.webp`, portrait=`${a.id}_portrait.webp`;
     execFileSync("convert",[a.files.full.abs,"-strip","-resize",`${FULL_WIDTH}x`,"-quality",String(QUALITY),path.join(OUT_IMG,full)]);
     execFileSync("convert",[a.files.portrait.abs,"-strip","-resize",`${PORTRAIT_SIZE}x${PORTRAIT_SIZE}^`,"-gravity","center","-extent",`${PORTRAIT_SIZE}x${PORTRAIT_SIZE}`,"-quality",String(QUALITY),path.join(OUT_IMG,portrait)]);
-    rows.push({id:a.id,people:a.people,sex:a.sex,tags:a.tags,full,portrait,source:a.files.full.path});
+    rows.push({id:a.id,people:a.people,sex:a.sex,tags:a.tags,...(a.ascendanceOnly?{ascendanceOnly:true}:{}),full,portrait,source:a.files.full.path});
   }
 
   const doc={

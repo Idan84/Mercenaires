@@ -58,6 +58,35 @@ Restaure X PV à **un allié ou au lanceur lui-même**, situé à Y cases, **en 
 
 Repères : PV max médian d'un mercenaire ≈ 214 ; un coup de dague ≈ 38 PV, une arme lourde ≈ 100. Projection en fin de partie (caracs à 100, équipement T4, Vie 100, sort 100) : soin moyen ≈ 135, soit ≈ 29 % des PV d'un allié du même stade : le sort garde tout son intérêt.
 
+### École de la Vie (6 sorts, Idan, 2026-10-25)
+
+Même modèle que Soin rapide : **Effet = 10 × dés × (2 × Puissance magique / 100) × (0,5 + Maîtrise / 100)**, **mana = base × (1 − Maîtrise / 300)** ; seuls les dés, l'action, la portée, la durée, la zone, le mana de base et la difficulté changent. **Difficulté selon le palier** : Novice 30, Adepte 50, Expert 70. **Coup critique** : dés au maximum. **Échec critique** : le lanceur subit l'effet minimum de son sort (dés à 1). Action **principale** = l'action d'attaque du tour : un mage peut cumuler, dans le même tour, une action rapide et une action principale (par exemple Purge puis Soin profond). Données : `spells.json`.
+
+| Sort | Palier | Action | Cible | Effet | Portée / zone | Mana (base) |
+|---|---|---|---|---|---|---|
+| Soin rapide | Novice | rapide | allié ou soi | soin 1D4 | 2 + M/25 | 12 |
+| Soin profond | Adepte | principale | allié ou soi | soin **2D6** | **1 + M/50** (au contact au début) | 25 |
+| Régénération | Adepte | principale | allié ou soi | soin 1D4 au début de chaque activation de la cible, pendant **2 + M/50 tours** | 2 + M/25 | 20 |
+| Soin de masse | Expert | principale | une case | soin 1D4 à **tous** dans un cercle de **rayon 1 + M/50** : alliés, ennemis, lanceur compris ; un seul jet pour tous | centre à 2 + M/25 | 30 |
+| Restitution | Adepte | principale | un mort-vivant | **1D10** de dégâts qui ignorent armure, résistances et blocage | 2 + M/25 | 15 |
+| Purge | Novice | rapide | allié ou soi | retire tout le poison ; pas de coup critique | 2 + M/25 | 8 |
+
+*M = Maîtrise ; portées, durées et rayons arrondis à l'inférieur ; toujours en ligne de vue.*
+
+- **Soin profond** soigne près de trois fois plus que Soin rapide pour deux fois plus de mana et l'action principale ; le soigneur doit aller au contact au début : c'est le prix du gros soin.
+- **Régénération** garde la Puissance et la maîtrise du lancer ; elle **ne se cumule pas** : la relancer remplace la précédente. Coup critique : dé au maximum à chaque tour.
+- **Soin de masse** : rayon 1 = 7 cases, 2 = 19, 3 = 37.
+- **Restitution** et **Purge** attendent les morts-vivants et le poison pour servir en combat.
+
+| | Débutant (Vie 31) | Recrue moyenne (Vie 56) | Expert (Vie 84, sort 100) |
+|---|---|---|---|
+| Soin rapide | 22 PV · 11 mana · 57 % | 28 · 10 · 81 % | 63 · 7 · 94 % |
+| Soin profond | 60 PV · 23 · 31 % | 79 · 21 · 59 % | 178 · 14 · 93 % |
+| Régénération | 22 × 2 tours · 18 · 31 % | 28 × 3 · 17 · 59 % | 63 × 4 · 12 · 93 % |
+| Soin de masse | 22 par cible, rayon 1 · 27 · 17 % | 28, rayon 2 · 25 · 33 % | 63, rayon 3 · 17 · 87 % |
+| Restitution | 48 dégâts · 14 · 31 % | 62 · 13 · 59 % | 140 · 9 · 93 % |
+| Purge | 8 mana · 57 % | 7 · 81 % | 5 · 94 % |
+
 ### Mana
 
 - Le **Mana actuel** se dépense en combat et se **recharge chaque jour au camp** : **Réserve de mana × (10 + Volonté / 2) %** par jour (Volonté 52 : 36 % par jour, plein en 3 jours). Rien pendant les trajets.
@@ -93,14 +122,16 @@ Chaque gain dans une école fait perdre **la moitié de ce gain**, partagée à 
 | Télékinésie | Reptiliens des villes, Halflings des cités humaines, Caravanes de ferrailleurs |
 | Aucune | Nains des montagnes, Nains réduits en esclavage dans les colonies, Ogres des cités humaines, Ogres des montagnes |
 
-Simulation (6 000 recrues, tous les sorts supposés écrits) : 48 % ne connaissent aucun sort, 36 % un, 13 % deux, 2,9 % trois (cible d'Idan : 50 / 35 / 12,5 / 2,5). Tant que seul Soin rapide existe, un tirage dans une autre école ne donne rien.
+Simulation (6 000 recrues, tous les sorts supposés écrits) : 48 % ne connaissent aucun sort, 36 % un, 13 % deux, 2,9 % trois (cible d'Idan : 50 / 35 / 12,5 / 2,5). Tant qu'une école n'a pas de sort écrit, un tirage dans cette école ne donne rien.
+
+L'école de culture n'est **pas garantie** à la création : une recrue sur deux des cultures que la génération ne pousse pas dans leur école (Cités libres, Royaumes du Soleil Levant, Steppes désertiques, Ogres des steppes, Nains du chaos, Orcs des villes, Orcs des steppes, Caravanes de ferrailleurs) n'a pas l'école, et sa chance au tirage de culture est presque nulle. Voulu : « tout le monde ne doit pas être mage » (Idan, 2026-10-25).
 
 Plus tard : une **école de magie** à construire au camp et des **manuels** à trouver pour apprendre les autres sorts.
 
 ### Mise en place
 
-1. **Étape 1** — ces décisions, `spells.json`, les règles de Soin rapide (`game-core/magic.js`) et leurs tests (`tests/magic.test.js`).
-2. Étape 2 — Soin rapide dans l'écran de combat : bouton d'action rapide, cible à portée, journal, IA.
+1. **Étape 1** — ces décisions, `spells.json`, les règles des sorts (`game-core/magic.js`) et leurs tests (`tests/magic.test.js`) : Soin rapide, puis les six sorts de l'école de la Vie.
+2. Étape 2 — les sorts de Vie dans l'écran de combat : boutons d'action rapide et principale, cible ou zone à portée, journal, IA.
 3. Étape 3 — recharge du mana au camp, XP du sort et de l'école, régression des écoles opposées.
 4. Étape 4 — sorts connus à la création et compensations des nains et des ogres.
 
@@ -175,6 +206,8 @@ Chaque école a deux écoles opposées (`skills.json`, colonne `ecoles_opposees`
 - **Nécrose** — sort offensif de CAC.
 
 ### Vie
+
+École écrite le 2026-10-25 : voir « École de la Vie » plus haut (Soin rapide remplace Premiers soins). Idées d'origine :
 
 - **Premiers soins** — soin monocible.
 - **Soins de masse** — soin de zone.

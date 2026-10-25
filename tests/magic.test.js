@@ -26,7 +26,7 @@ function mage({pm,vie,level=1,int,chance=54,mana=53,items=[],slots={}}){
   return {
     name:"Mage",stats:{"Puissance magique":pm,Intelligence:int,Chance:chance,"Réserve de mana":mana,Constitution:50,Endurance:50,Volonté:50},
     skills:{magic:{Vie:vie,Nécromancie:20,Illusion:20}},mana,
-    spells:[{code:"quick_heal",name:"Soin rapide",school:"Vie",mastery:level}],
+    spells:["quick_heal","deep_heal","regeneration","mass_heal","restitution","purge"].map(code=>({code,school:"Vie",mastery:level})),
     items,equipment:{slots}
   };
 }
@@ -97,12 +97,12 @@ assert.match(magic.canCast(caster,{...ally,alive:false},"quick_heal").reason,/ho
 // Lancer : réussite (D100 ≤ 57), dé normal ; le mana est toujours payé.
 queue=[0.0,0.99,0.5];
 let out=magic.cast(caster,ally,"quick_heal");
-assert.deepEqual([out.ok,out.success,out.critical,out.fumble,out.die,out.cost],[true,true,false,false,3,11]);
+assert.deepEqual([out.ok,out.success,out.critical,out.fumble,out.dice,out.cost],[true,true,false,false,3,11]);
 assert.equal(out.amount,magic.effectAmount(caster,"quick_heal",3));
 // Coup critique : réussite puis D100 ≤ Chance / 10 : le dé fait son maximum.
 queue=[0.0,0.0];
 out=magic.cast(caster,ally,"quick_heal");
-assert.deepEqual([out.success,out.critical,out.die,out.amount],[true,true,4,35]);
+assert.deepEqual([out.success,out.critical,out.dice,out.amount],[true,true,4,35]);
 // Échec simple : D100 > 57, sous 96 : rien ne se passe, mais le mana est payé.
 queue=[0.9];
 out=magic.cast(caster,ally,"quick_heal");
@@ -121,4 +121,76 @@ out=magic.cast(caster,far,"quick_heal");
 assert.equal(out.ok,false);
 assert.equal(out.cost,undefined);
 
-console.log("Magie : Soin rapide OK");
+// École de la Vie (Idan, 2026-10-25) : six sorts, même modèle ; seuls les dés, l'action, la portée, la durée, la zone,
+// le mana de base et la difficulté (palier : Novice 30, Adepte 50, Expert 70) changent.
+assert.deepEqual(magic.schoolSpells("Vie").map(x=>x.code),["quick_heal","deep_heal","regeneration","mass_heal","restitution","purge"]);
+assert.deepEqual(magic.schoolSpells("Vie").map(x=>[x.palier,x.difficulte]),[["Novice",30],["Adepte",50],["Adepte",50],["Expert",70],["Adepte",50],["Novice",30]]);
+assert.deepEqual(magic.schoolSpells("Vie").map(x=>x.action),["rapide","principale","principale","principale","principale","rapide"]);
+// Débutant : Soin profond 18 à 104 au contact, 23 mana, 31 % ; Régénération 2 tours, 18 mana ; Soin de masse rayon 1,
+// 27 mana, 17 % ; Restitution 9 à 87, portée 3, 14 mana ; Purge 8 mana, sans dés.
+assert.deepEqual(magic.effectRange(beginner,"deep_heal"),{min:18,max:104});
+assert.deepEqual([magic.range(beginner,"deep_heal"),magic.manaCost(beginner,"deep_heal")],[1,23]);
+assert.equal(Math.round(magic.castChance(beginner,"deep_heal").p),31);
+assert.deepEqual([magic.duration(beginner,"regeneration"),magic.manaCost(beginner,"regeneration"),magic.range(beginner,"regeneration")],[2,18,3]);
+assert.deepEqual([magic.zoneRadius(beginner,"mass_heal"),magic.manaCost(beginner,"mass_heal"),magic.range(beginner,"mass_heal")],[1,27,3]);
+assert.equal(Math.round(magic.castChance(beginner,"mass_heal").p),17);
+assert.deepEqual(magic.effectRange(beginner,"restitution"),{min:9,max:87});
+assert.deepEqual([magic.range(beginner,"restitution"),magic.manaCost(beginner,"restitution")],[3,14]);
+assert.deepEqual([magic.manaCost(beginner,"purge"),magic.effectRange(beginner,"purge").max],[8,0]);
+// Expert : portée de Soin profond 3, Régénération 4 tours, Soin de masse rayon 3 ; 14 et 17 mana.
+assert.deepEqual([magic.range(expert,"deep_heal"),magic.duration(expert,"regeneration"),magic.zoneRadius(expert,"mass_heal")],[3,4,3]);
+assert.deepEqual([magic.manaCost(expert,"deep_heal"),magic.manaCost(expert,"mass_heal")],[14,17]);
+
+// Conditions : action principale libre ; Soin profond au contact ; Restitution sur un mort-vivant seulement ;
+// Purge sur une cible empoisonnée ; Soin de masse sur une case à portée et en ligne de vue.
+const adjacent=unit(mage({pm:50,vie:1,int:50}),{q:1,r:0});
+const twoAway=unit(mage({pm:50,vie:1,int:50}),{q:2,r:0});
+assert.equal(magic.canCast(caster,adjacent,"deep_heal").ok,true);
+assert.match(magic.canCast(caster,twoAway,"deep_heal").reason,/hors de portée/);
+assert.match(magic.canCast({...caster,attackAvailable:false},adjacent,"deep_heal").reason,/action principale/);
+assert.equal(magic.canCast({...caster,attackAvailable:false},adjacent,"quick_heal").ok,true,"l'action rapide reste libre");
+const undead=unit({...mage({pm:50,vie:1,int:50}),undead:true},{q:2,r:0,team:"enemy"});
+assert.match(magic.canCast(caster,foe,"restitution").reason,/morts-vivants/);
+assert.equal(magic.canCast(caster,undead,"restitution").ok,true);
+assert.match(magic.canCast(caster,adjacent,"purge").reason,/empoisonnée/);
+assert.equal(magic.canCast(caster,{...adjacent,poisoned:true},"purge").ok,true);
+assert.equal(magic.canCast(caster,{q:3,r:0},"mass_heal").ok,true);
+assert.equal(magic.canCast(caster,{q:0,r:0},"mass_heal").ok,true,"centrée sur le lanceur");
+assert.match(magic.canCast(caster,{q:4,r:0},"mass_heal").reason,/hors de portée/);
+assert.match(magic.canCast(caster,{q:2,r:0},"mass_heal",{lineOfSight:false}).reason,/ligne de vue/);
+
+// Soin profond : 2D6 ; CC = 12 ; EC = les deux dés à 1 contre le lanceur.
+queue=[0.0,0.99,0.5,0.0];
+out=magic.cast(caster,adjacent,"deep_heal");
+assert.deepEqual([out.success,out.critical,out.dice,out.amount,out.cost],[true,false,5,44,23]);
+queue=[0.0,0.0];
+assert.deepEqual([magic.cast(caster,adjacent,"deep_heal").dice,magic.effectRange(caster,"deep_heal").max],[12,104]);
+queue=[0.99,0.99];
+assert.equal(magic.cast(caster,adjacent,"deep_heal").selfDamage,18);
+// Régénération : l'effet garde le facteur du lancer ; un tour = 1D4, au maximum si le lancer était critique.
+queue=[0.0,0.99];
+out=magic.cast(caster,ally,"regeneration");
+assert.deepEqual([out.success,out.effect.turns,out.effect.cumulable,out.amount],[true,2,false,0]);
+queue=[0.5];
+assert.deepEqual(magic.tick(out.effect),{amount:26,dice:3,turnsLeft:1});
+assert.equal(magic.tick({...out.effect,critical:true}).amount,35);
+assert.equal(magic.tick({...out.effect,turns:0}).amount,0);
+// Soin de masse : un seul jet pour tous ; tout le monde dans le cercle, ennemis et lanceur compris.
+queue=[0.0,0.99,0.5];
+out=magic.cast(caster,{q:1,r:0},"mass_heal");
+assert.deepEqual([out.success,out.amount,out.zone.radius],[true,26,1]);
+const inZone=magic.unitsInZone(out.zone.center,out.zone.radius,[caster,ally,foe,far,{...adjacent,alive:false}]);
+assert.deepEqual(inZone,[caster,foe],"le lanceur et l'ennemi adjacent ; pas l'allié à 3 cases ni un mort");
+// Restitution : 1D10 de dégâts contre un mort-vivant (aucune résistance : le combat les appliquera telles quelles).
+queue=[0.0,0.99,0.5];
+out=magic.cast(caster,undead,"restitution");
+assert.deepEqual([out.success,out.dice,out.amount],[true,6,52]);
+// Purge : pas de jet de critique ; en échec critique, simple échec (pas de dés).
+queue=[0.0];
+out=magic.cast(caster,{...adjacent,poisoned:true},"purge");
+assert.deepEqual([out.success,out.purge,out.critical,out.amount],[true,true,false,0]);
+queue=[0.99,0.99];
+out=magic.cast(caster,{...adjacent,poisoned:true},"purge");
+assert.deepEqual([out.success,out.fumble,out.selfDamage],[false,true,0]);
+
+console.log("Magie : école de la Vie OK");

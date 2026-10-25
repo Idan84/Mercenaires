@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 197,
+  "row_count": 203,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -1592,6 +1592,54 @@
       "description": "Part de la Volonté dans la recharge quotidienne du mana au camp : Volonté 52 → 10 + 26 = 36 % de la Réserve par jour (Idan, 2026-10-25).",
       "formule": "Magie — recharge du mana",
       "valeur": 0.5,
+      "version": "V1"
+    },
+    {
+      "nom": "Sorts à la création — diviseur de la chance",
+      "code": "generation.spells.chance_divisor",
+      "description": "Chance d'un tirage = École × Intelligence / diviseur, en % (Idan, 2026-10-25).",
+      "formule": "Sorts connus à la création",
+      "valeur": 150,
+      "version": "V1"
+    },
+    {
+      "nom": "Sorts à la création — chance maximale",
+      "code": "generation.spells.chance_max",
+      "description": "Chance maximale d'un tirage, en %, avant le multiplicateur du rang (Idan, 2026-10-25).",
+      "formule": "Sorts connus à la création",
+      "valeur": 75,
+      "version": "V1"
+    },
+    {
+      "nom": "Sorts à la création — multiplicateur du 2e sort",
+      "code": "generation.spells.second_spell_multiplier",
+      "description": "Chance multipliée pour le tirage qui donnerait un deuxième sort (Idan, 2026-10-25).",
+      "formule": "Sorts connus à la création",
+      "valeur": 1.1,
+      "version": "V1"
+    },
+    {
+      "nom": "Sorts à la création — multiplicateur du 3e sort",
+      "code": "generation.spells.third_spell_multiplier",
+      "description": "Chance multipliée pour le tirage qui donnerait un troisième sort (Idan, 2026-10-25).",
+      "formule": "Sorts connus à la création",
+      "valeur": 1.3,
+      "version": "V1"
+    },
+    {
+      "nom": "Sorts à la création — niveau du sort",
+      "code": "generation.spells.starting_level",
+      "description": "Niveau d'un sort connu à la création, sur 100 (Idan, 2026-10-25).",
+      "formule": "Sorts connus à la création",
+      "valeur": 1,
+      "version": "V1"
+    },
+    {
+      "nom": "Culture sans école — dés de compensation",
+      "code": "generation.spells.no_school_bonus_d6",
+      "description": "Nombre de D6 ajoutés à la caractéristique de compensation des cultures sans école de magie (cultures.json, compensation_sans_ecole ; Idan, 2026-10-25).",
+      "formule": "Sorts connus à la création",
+      "valeur": 1,
       "version": "V1"
     },
     {

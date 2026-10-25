@@ -46,10 +46,10 @@
 
     function spell(code){ return spellByCode.get(code)||null; }
     function schoolSpells(school){ return spells.filter(x=>x.ecole===school); }
-    // Le sort tel que le personnage le connaît (null s'il ne le connaît pas). unit.spells : sorts prêtés pour un seul combat
-    // (bouton de test de l'écran de combat), sans toucher au grimoire du personnage.
+    // Le sort tel que le personnage le connaît (null s'il ne le connaît pas) : son grimoire d'abord, puis unit.spells, les
+    // sorts prêtés au niveau 1 pour un seul combat (bouton de test de l'écran de combat), sans toucher au grimoire.
     function knownSpell(unit,code){
-      return [...(unit?.spells||[]),...(unit?.character?.spells||[])].find(x=>x.code===code||x.name===spell(code)?.nom)||null;
+      return [...(unit?.character?.spells||[]),...(unit?.spells||[])].find(x=>x.code===code||x.name===spell(code)?.nom)||null;
     }
     function knownSpells(unit){ return spells.filter(x=>knownSpell(unit,x.code)); }
     function spellLevel(unit,code){ return Math.max(1,Number(knownSpell(unit,code)?.mastery)||1); }

@@ -50,7 +50,9 @@ function newMission(){
   const squad=[2,3,4].map(id=>generator.createMercenary({id,captain}));
   const foes=[5,6,7].map(id=>generator.createMercenary({id,captain}));
   // Sans armure et bons en Vie : la réussite ne dépend que des tirages imposés.
-  for(const c of squad){ c.equipment.slots.armor=null; c.skills.magic.Vie=60; c.skills.magic.Feu=60; c.stats["Réserve de mana"]=53; c.mana=53; }
+  for(const c of squad){ c.equipment.slots.armor=null; c.skills.magic.Vie=60; c.skills.magic.Feu=60; c.stats["Réserve de mana"]=53; c.mana=53; c.spells=[]; }
+  // Sans sort connu à la création (doc 12) : seuls les sorts de test comptent ici.
+  for(const c of foes) c.spells=[];
   const players=squad.map((c,i)=>api.makeMissionUnit(c,"player",i));
   const enemies=foes.map((c,i)=>api.makeMissionUnit(c,"enemy",i));
   game.mission={engine,endRules:MissionEnd.createMissionEndRules({reference}),progression:Progression.createProgressionRules({reference}),

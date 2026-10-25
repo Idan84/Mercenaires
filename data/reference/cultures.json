@@ -22,6 +22,14 @@
     {
       "source": "Peuples",
       "key": "peuples"
+    },
+    {
+      "source": "École de magie",
+      "key": "ecole_magie"
+    },
+    {
+      "source": "Compensation sans école",
+      "key": "compensation_sans_ecole"
     }
   ],
   "row_count": 32,
@@ -30,193 +38,257 @@
       "nom": "Tribus nordiques",
       "idees_bonus": null,
       "idees_malus": null,
-      "peuples": "Homme-bête"
+      "peuples": "Homme-bête",
+      "ecole_magie": "Eau",
+      "compensation_sans_ecole": null
     },
     {
       "nom": "Clans des grandes steppes",
       "idees_bonus": null,
       "idees_malus": null,
-      "peuples": "Homme-bête"
+      "peuples": "Homme-bête",
+      "ecole_magie": "Feu",
+      "compensation_sans_ecole": null
     },
     {
       "nom": "Ogres des cités humaines",
       "idees_bonus": null,
       "idees_malus": null,
-      "peuples": "Ogre"
+      "peuples": "Ogre",
+      "ecole_magie": null,
+      "compensation_sans_ecole": "Force"
     },
     {
       "nom": "Reptiliens des villes",
       "idees_bonus": null,
       "idees_malus": null,
-      "peuples": "Reptilien"
+      "peuples": "Reptilien",
+      "ecole_magie": "Télékinésie",
+      "compensation_sans_ecole": null
     },
     {
       "nom": "Montagnes du Nord",
       "idees_bonus": "Résistance au froid · Armes : haches, armes à deux mains",
       "idees_malus": "Intelligence",
-      "peuples": "Humain"
+      "peuples": "Humain",
+      "ecole_magie": "Nécromancie",
+      "compensation_sans_ecole": null
     },
     {
       "nom": "Reptiliens des marécages",
       "idees_bonus": null,
       "idees_malus": null,
-      "peuples": "Reptilien"
+      "peuples": "Reptilien",
+      "ecole_magie": "Eau",
+      "compensation_sans_ecole": null
     },
     {
       "nom": "Elfes noirs",
       "idees_bonus": "Dextérité · Résistance au poison · Armes : dagues, arbalètes · Magie de l’illusion et nécromancie",
       "idees_malus": "Charisme · Magie de la vie",
-      "peuples": "Elfe"
+      "peuples": "Elfe",
+      "ecole_magie": "Foudre",
+      "compensation_sans_ecole": null
     },
     {
       "nom": "Halflings des cités humaines",
       "idees_bonus": "Charisme · Intelligence · Armes : dagues, arbalètes",
       "idees_malus": "Volonté · Courage",
-      "peuples": "Halfling"
+      "peuples": "Halfling",
+      "ecole_magie": "Télékinésie",
+      "compensation_sans_ecole": null
     },
     {
       "nom": "Tribus de la jungle",
       "idees_bonus": "Résistance au poison ×2 · Armes : lances",
       "idees_malus": "Résistance au froid",
-      "peuples": "Humain"
+      "peuples": "Humain",
+      "ecole_magie": "Transmutation",
+      "compensation_sans_ecole": null
     },
     {
       "nom": "Cités libres",
       "idees_bonus": "Charisme · Intelligence",
       "idees_malus": "Perception",
-      "peuples": "Humain"
+      "peuples": "Humain",
+      "ecole_magie": "Vie",
+      "compensation_sans_ecole": null
     },
     {
       "nom": "Caravanes de ferrailleurs",
       "idees_bonus": "Intelligence · Chance · Armes : arbalètes",
       "idees_malus": "Puissance magique · Courage",
-      "peuples": "Gobelin"
+      "peuples": "Gobelin",
+      "ecole_magie": "Télékinésie",
+      "compensation_sans_ecole": null
     },
     {
       "nom": "Gnomes des forêts",
       "idees_bonus": null,
       "idees_malus": null,
-      "peuples": "Gnome"
+      "peuples": "Gnome",
+      "ecole_magie": "Illusion",
+      "compensation_sans_ecole": null
     },
     {
       "nom": "Explorateurs",
       "idees_bonus": "Courage · Perception · Chance · Armes : arcs",
       "idees_malus": "Armures lourdes",
-      "peuples": "Halfling"
+      "peuples": "Halfling",
+      "ecole_magie": "Invocation",
+      "compensation_sans_ecole": null
     },
     {
       "nom": "Steppes désertiques",
       "idees_bonus": "Armes : arcs, sabres · Montures",
       "idees_malus": "Armures lourdes",
-      "peuples": "Humain"
+      "peuples": "Humain",
+      "ecole_magie": "Feu",
+      "compensation_sans_ecole": null
     },
     {
       "nom": "Orcs noirs",
       "idees_bonus": "Force · Armes à deux mains · Armures lourdes",
       "idees_malus": "Résistance à la foudre",
-      "peuples": "Orc"
+      "peuples": "Orc",
+      "ecole_magie": "Transmutation",
+      "compensation_sans_ecole": null
     },
     {
       "nom": "Elfes des grandes cités",
       "idees_bonus": "Réserve de mana · Armes : épées fines",
       "idees_malus": "Exigences salariales élevées",
-      "peuples": "Elfe"
+      "peuples": "Elfe",
+      "ecole_magie": "Eau",
+      "compensation_sans_ecole": null
     },
     {
       "nom": "Gobelins des cavernes",
       "idees_bonus": "Perception · Esquive · Résistance au poison · Armes : dagues",
       "idees_malus": "Résistance au feu · Intelligence",
-      "peuples": "Gobelin"
+      "peuples": "Gobelin",
+      "ecole_magie": "Invocation",
+      "compensation_sans_ecole": null
     },
     {
       "nom": "Halflings des villages isolés",
       "idees_bonus": "Magie de la vie · Puissance magique",
       "idees_malus": "Force · Endurance",
-      "peuples": "Halfling"
+      "peuples": "Halfling",
+      "ecole_magie": "Illusion",
+      "compensation_sans_ecole": null
     },
     {
       "nom": "Orcs des villes",
       "idees_bonus": "Intelligence · Charisme · Armes : épées, dagues, arbalètes",
       "idees_malus": "Courage · Armes à deux mains",
-      "peuples": "Orc"
+      "peuples": "Orc",
+      "ecole_magie": "Transmutation",
+      "compensation_sans_ecole": null
     },
     {
       "nom": "Tribus des forêts anciennes",
       "idees_bonus": null,
       "idees_malus": null,
-      "peuples": "Homme-bête"
+      "peuples": "Homme-bête",
+      "ecole_magie": "Nécromancie",
+      "compensation_sans_ecole": null
     },
     {
       "nom": "Gobelins des villes",
       "idees_bonus": "Dextérité · Armes : dagues",
       "idees_malus": "Courage · Volonté · Force",
-      "peuples": "Gobelin"
+      "peuples": "Gobelin",
+      "ecole_magie": "Illusion",
+      "compensation_sans_ecole": null
     },
     {
       "nom": "Royaumes du Soleil Levant",
       "idees_bonus": "Volonté · Armes asiatiques (à détailler)",
       "idees_malus": "Exigences salariales élevées",
-      "peuples": "Humain"
+      "peuples": "Humain",
+      "ecole_magie": "Vie",
+      "compensation_sans_ecole": null
     },
     {
       "nom": "Orcs des steppes",
       "idees_bonus": "Vitesse · Armes : lances, arcs · Montures",
       "idees_malus": "Armures lourdes",
-      "peuples": "Orc"
+      "peuples": "Orc",
+      "ecole_magie": "Transmutation",
+      "compensation_sans_ecole": null
     },
     {
       "nom": "Nains des montagnes",
       "idees_bonus": "Résistance au froid · Armes : haches, marteaux, boucliers · Armures lourdes",
       "idees_malus": "Vitesse · Esquive · Armes : arcs",
-      "peuples": "Nain"
+      "peuples": "Nain",
+      "ecole_magie": null,
+      "compensation_sans_ecole": "Courage"
     },
     {
       "nom": "Ogres des montagnes",
       "idees_bonus": null,
       "idees_malus": null,
-      "peuples": "Ogre"
+      "peuples": "Ogre",
+      "ecole_magie": null,
+      "compensation_sans_ecole": "Force"
     },
     {
       "nom": "Gnomes des cavernes",
       "idees_bonus": null,
       "idees_malus": null,
-      "peuples": "Gnome"
+      "peuples": "Gnome",
+      "ecole_magie": "Nécromancie",
+      "compensation_sans_ecole": null
     },
     {
       "nom": "Elfes sylvains",
       "idees_bonus": "Perception · Esquive · Armes : arcs",
       "idees_malus": "Armures lourdes · Nécromancie",
-      "peuples": "Elfe"
+      "peuples": "Elfe",
+      "ecole_magie": "Vie",
+      "compensation_sans_ecole": null
     },
     {
       "nom": "Nains du chaos",
       "idees_bonus": "Armes : arbalètes, armes à feu",
       "idees_malus": "Volonté · Perception",
-      "peuples": "Nain"
+      "peuples": "Nain",
+      "ecole_magie": "Foudre",
+      "compensation_sans_ecole": null
     },
     {
       "nom": "Reptiliens des cités-temples",
       "idees_bonus": null,
       "idees_malus": null,
-      "peuples": "Reptilien"
+      "peuples": "Reptilien",
+      "ecole_magie": "Invocation",
+      "compensation_sans_ecole": null
     },
     {
       "nom": "Nains réduits en esclavage dans les colonies",
       "idees_bonus": "Endurance · Volonté · Chance · Combat à mains nues",
       "idees_malus": "Charisme · Réserve de mana",
-      "peuples": "Nain"
+      "peuples": "Nain",
+      "ecole_magie": null,
+      "compensation_sans_ecole": "Courage"
     },
     {
       "nom": "Gnomes des villes",
       "idees_bonus": null,
       "idees_malus": null,
-      "peuples": "Gnome"
+      "peuples": "Gnome",
+      "ecole_magie": "Illusion",
+      "compensation_sans_ecole": null
     },
     {
       "nom": "Ogres des steppes",
       "idees_bonus": null,
       "idees_malus": null,
-      "peuples": "Ogre"
+      "peuples": "Ogre",
+      "ecole_magie": "Feu",
+      "compensation_sans_ecole": null
     }
   ]
 }

@@ -115,59 +115,80 @@ assert.equal(rules.companyRenown(q).parts.camp,500);
 assert.equal(rules.nextDormitoryQuality(q),null);
 assert.deepEqual(rules.startDormitoryQuality(q),{ok:false,reason:"Le dortoir est déjà au niveau de qualité maximal."});
 
-// Interface : le panneau « Constructions » de Ma Compagnie.
+// Interface (Idan, 2026-10-25) : Ma Compagnie montre le dortoir et un bouton pour y aller ; l'écran Dortoir, sur le fond
+// de son niveau de qualité, propose d'agrandir ou d'améliorer.
 const elements={};
 const $=id=>elements[id]||(elements[id]={innerHTML:""});
 const fmt=value=>String(Math.round(Number(value)||0)).replace(/\B(?=(\d{3})+(?!\d))/g," ");
 const esc=value=>String(value??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-const log=[];
+const log=[],styles={};
 let saved=0,rendered=0;
+const documentStub={baseURI:"https://jeu.test/",body:{style:{setProperty:(key,value)=>{ styles[key]=value; }}}};
 const game={campaign:rules.createCampaign({captain,squad:[]})};
 const js=fs.readFileSync(path.join(ROOT,"prototype-web","camp-buildings-ui.js"),"utf8");
-const ui=new Function("game","$","fmt","esc","campaignRules","dormitoryPlacesText","tavernLog","saveGame","renderGame",
-  js+"\nreturn {renderCampBuildings,expandDormitory,improveDormitory,logCampWork};")(
-  game,$,fmt,esc,()=>rules,places=>String(places),(message,kind)=>log.push({message,kind}),()=>saved++,()=>rendered++);
+const ui=new Function("game","$","fmt","esc","campaignRules","dormitoryPlacesText","tavernLog","saveGame","renderGame","document",
+  js+"\nreturn {renderCampBuildings,renderDormitory,expandDormitory,improveDormitory,logCampWork};")(
+  game,$,fmt,esc,()=>rules,places=>String(places),(message,kind)=>log.push({message,kind}),()=>saved++,()=>rendered++,documentStub);
+const company=()=>elements["camp-buildings"].innerHTML,dormitory=()=>elements["dormitory-view"].innerHTML;
 ui.renderCampBuildings();
-let html=elements["camp-buildings"].innerHTML;
-assert.match(html,/<h3>Constructions<\/h3>/);
-assert.match(html,/<strong>Dortoir<\/strong><span>0 \/ 40 places occupées<\/span>\s*<span>Qualité : Paille humide \(niveau 0\)<\/span>/);
-assert.match(html,/<button type="button" class="primary" data-dorm-expand>Agrandir : \+5 places<\/button>\s*<span class="building-cost">100 PO · 2 jours<\/span>/);
-assert.match(html,/<button type="button" class="primary" data-dorm-quality>Améliorer : Paillasses<\/button>\s*<span class="building-cost">500 PO · 3 jours · Renommée \+50, affinité \+5<\/span>/);
+assert.match(company(),/<h3>Constructions<\/h3>/);
+assert.match(company(),/<strong>Dortoir<\/strong><span>0 \/ 40 places occupées<\/span>\s*<span>Qualité : Paille humide \(niveau 0\)<\/span><\/div>/);
+assert.match(company(),/<button type="button" class="primary" data-open-camp-scene="dormitory" data-destination="Dortoir">Aller au dortoir<\/button>/);
+assert.doesNotMatch(company(),/data-dorm-expand|data-dorm-quality/,"les chantiers se lancent au dortoir");
+assert.equal(styles["--dormitory-bg"],'url("https://jeu.test/assets/dormitory/dortoir-1.jpg")',"niveau 0 : la première image");
+assert.match(dormitory(),/data-open-camp-scene="company" data-destination="Ma Compagnie">← Ma Compagnie<\/button>/);
+assert.match(dormitory(),/<p class="eyebrow">Dortoir<\/p>\s*<h2>Paille humide<\/h2>\s*<p class="dormitory-meta">Niveau 0 · 0 \/ 40 places occupées<\/p>/);
+assert.match(dormitory(),/<button type="button" class="primary" data-dorm-expand>Agrandir : \+5 places<\/button>\s*<span class="building-cost">100 PO · 2 jours<\/span>/);
+assert.match(dormitory(),/<button type="button" class="primary" data-dorm-quality>Améliorer : Paillasses<\/button>\s*<span class="building-cost">500 PO · 3 jours · Renommée \+50, affinité \+5<\/span>/);
 ui.expandDormitory();
 assert.deepEqual(log.at(-1),{message:"Agrandissement du dortoir lancé : 100 PO, +5 places dans 2 jours.",kind:"gear"});
 assert.deepEqual([saved,rendered],[1,1]);
 ui.renderCampBuildings();
-html=elements["camp-buildings"].innerHTML;
-assert.match(html,/Chantier en cours : \+5 places, prêtes dans 2 jours\./);
-assert.doesNotMatch(html,/data-dorm-expand|data-dorm-quality/,"pas de second chantier");
+assert.match(dormitory(),/<p class="building-work">Chantier en cours : \+5 places, prêtes dans 2 jours\.<\/p>/);
+assert.doesNotMatch(dormitory(),/data-dorm-expand|data-dorm-quality/,"pas de second chantier");
+assert.match(company(),/<span class="building-work">Chantier en cours : \+5 places, prêtes dans 2 jours\.<\/span>/,"le chantier se voit aussi dans Ma Compagnie");
 rules.advanceTime(game.campaign,1);
 ui.renderCampBuildings();
-assert.match(elements["camp-buildings"].innerHTML,/prêtes dans 1 jour\./);
+assert.match(dormitory(),/prêtes dans 1 jour\./);
 rules.advanceTime(game.campaign,1);
 game.campaign.company.gold=300;
 ui.renderCampBuildings();
-html=elements["camp-buildings"].innerHTML;
-assert.match(html,/0 \/ 45 places occupées/);
-assert.match(html,/data-dorm-expand>Agrandir : \+5 places<\/button>\s*<span class="building-cost">120 PO · 2 jours<\/span>/);
-assert.match(html,/data-dorm-quality disabled>Améliorer : Paillasses<\/button>\s*<span class="building-cost">500 PO · 3 jours · Renommée \+50, affinité \+5 · pas assez d’or<\/span>/);
+assert.match(company(),/0 \/ 45 places occupées/);
+assert.doesNotMatch(company(),/Chantier en cours/);
+assert.match(dormitory(),/data-dorm-expand>Agrandir : \+5 places<\/button>\s*<span class="building-cost">120 PO · 2 jours<\/span>/);
+assert.match(dormitory(),/data-dorm-quality disabled>Améliorer : Paillasses<\/button>\s*<span class="building-cost">500 PO · 3 jours · Renommée \+50, affinité \+5 · pas assez d’or<\/span>/);
 game.campaign.company.gold=5000;
 ui.improveDormitory();
 assert.deepEqual(log.at(-1),{message:"Amélioration du dortoir lancée : Paillasses (niveau 1), 500 PO, prêt dans 3 jours.",kind:"gear"});
 ui.renderCampBuildings();
-assert.match(elements["camp-buildings"].innerHTML,/Chantier en cours : Paillasses \(niveau 1\), prêt dans 3 jours\./);
+assert.match(dormitory(),/Chantier en cours : Paillasses \(niveau 1\), prêt dans 3 jours\./);
 ui.logCampWork({kind:"dormitory_quality",level:1,name:"Paillasses",renown:50,affinity:5,members:12});
 assert.deepEqual(log.at(-1),{message:"Le dortoir passe au niveau 1 : Paillasses. Renommée +50 ; affinité +5 pour 12 mercenaires.",kind:"turn"});
 ui.logCampWork({kind:"dormitory",places:5,capacity:45});
 assert.deepEqual(log.at(-1),{message:"Le dortoir est agrandi : +5 places, 45 en tout.",kind:"turn"});
-game.campaign.company.camp.construction=null;
-game.campaign.company.camp.dormitoryQuality=10;
-ui.renderCampBuildings();
-assert.match(elements["camp-buildings"].innerHTML,/Qualité : Quartiers de seigneur \(niveau 10\)[\s\S]*Qualité maximale\./);
+// Le fond suit le niveau : une image par niveau (le niveau 0 reprend la première), toutes présentes.
+for(const level of [1,2,7,10]){
+  game.campaign.company.camp.construction=null;
+  game.campaign.company.camp.dormitoryQuality=level;
+  ui.renderDormitory();
+  assert.equal(styles["--dormitory-bg"],`url("https://jeu.test/assets/dormitory/dortoir-${level}.jpg")`);
+}
+assert.match(dormitory(),/<h2>Quartiers de seigneur<\/h2>[\s\S]*Qualité maximale\./);
+for(const row of reference.dormitoryQuality.rows){
+  assert.equal(row.image,`dortoir-${Math.max(1,row.niveau)}.jpg`);
+  assert.ok(fs.existsSync(path.join(ROOT,"prototype-web","assets","dormitory",row.image)),row.image);
+  assert.ok(fs.existsSync(path.join(ROOT,"assets-src","fonds","Dortoirs",row.image)),"master "+row.image);
+}
 
 // Branchements : la page, le rendu, le journal du matin, la Renommée.
 const index=fs.readFileSync(path.join(ROOT,"prototype-web","index.html"),"utf8");
 assert.match(index,/<div id="captain-summary"><\/div>\s*<section id="camp-buildings"/);
 assert.match(index,/<script src="camp-buildings-ui.js"><\/script>/);
+assert.match(index,/<section class="camp-scene hidden dormitory-scene" data-camp-scene-panel="dormitory" aria-label="Dortoir">[\s\S]*?<section id="dormitory-view" class="dormitory-panel"><\/section>/);
+const screen=fs.readFileSync(path.join(ROOT,"prototype-web","screen-ui.js"),"utf8");
+assert.match(screen,/const CAMP_SCENES=\["company","dormitory",/);
+assert.match(screen,/open\.dataset\.destination\|\|open\.textContent\.trim\(\)/);
+assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","styles.css"),"utf8"),/\[data-camp-scene="dormitory"\]::before \{\s*background-image: var\(--dormitory-bg/);
 const main=fs.readFileSync(path.join(ROOT,"prototype-web","ui.js"),"utf8");
 assert.match(main,/renderCampBuildings\(\);/);
 assert.match(main,/initializeCampBuildingsUi\(\);/);
@@ -175,4 +196,4 @@ assert.match(main,/" \+ dortoir " \+ fmt\(renown\.parts\.camp\)/);
 assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","tavern-ui.js"),"utf8"),/logCampWork\(report\.built\)/);
 assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","reference-data.js"),"utf8"),/dormitoryQuality: "dormitory-quality\.json"/);
 
-console.log("Dortoir : agrandir, qualité (Renommée, affinité), un chantier à la fois, sauvegarde, panneau Constructions — OK");
+console.log("Dortoir : agrandir, qualité (Renommée, affinité), un chantier à la fois, sauvegarde, Ma Compagnie, écran Dortoir et ses fonds — OK");

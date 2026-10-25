@@ -82,4 +82,23 @@ assert.ok(opposites.get(cycle.at(-1)).includes(cycle[0]));
   assert.match(ui,/\?captainAuraBox\(c\)/,"le capitaine montre son aura au lieu du salaire");
   assert.doesNotMatch(ui,/ne touche ni salaire ni prime/);
 }
+// Onglet Caractéristiques (Idan, 2026-10-25) : au survol d'une valeur, un grand détail sur la largeur des trois colonnes,
+// avec le nom et la valeur en tête, placé sous ou au-dessus de la ligne survolée.
+{
+  const ui=fs.readFileSync(path.join(__dirname,"..","prototype-web","ui.js"),"utf8");
+  const css=fs.readFileSync(path.join(__dirname,"..","prototype-web","styles.css"),"utf8");
+  assert.match(ui,/const head=`<span class="sheet-stat-pop-head"><strong>\$\{esc\(name\)\}<\/strong><b>\$\{fmt\(value\)\}<\/b><\/span>`;/);
+  assert.match(ui,/function placeStatPopover\(value\)\{/);
+  assert.match(ui,/\$\("dialog-content"\)\.addEventListener\("mouseover", placeStat\);/);
+  assert.match(css,/\.sheet-stats \.sheet-stat-pop\{right:0;[^}]*font-size:16px/);
+  assert.match(css,/\.sheet-stat-pop-head b\{color:#ffd77a;font:700 32px Georgia,serif\}/);
+}
+// Dialogues (Idan, 2026-10-25) : portrait de 400 px sur la gauche (recrutement, échanges, intendant).
+{
+  const css=fs.readFileSync(path.join(__dirname,"..","prototype-web","styles.css"),"utf8");
+  assert.match(css,/\.talk-dialog--recruit\[open\]\{display:grid;grid-template-columns:400px minmax\(0,1fr\)/);
+  assert.match(css,/\.talk-dialog--recruit \.avatar-frame--talk\{width:400px;height:100%;min-height:400px/);
+  const html=fs.readFileSync(path.join(__dirname,"..","prototype-web","index.html"),"utf8");
+  for(const id of ["recruit","steward","deal"]) assert.match(html,new RegExp(`<dialog id="${id}-talk-dialog" class="talk-dialog talk-dialog--recruit"`));
+}
 console.log("Fiche : textes d'origine, d'ascendance, des caractéristiques, des compétences et de la magie — OK");

@@ -106,13 +106,13 @@ function qualityLine(card){
 function renderItemCard(item){
   const card=itemCardRules()?.card(item);
   if(!card) return "";
-  const art=typeof equipmentArt==="function"?equipmentArt(item):null;
+  // L'image de l'objet en grand, à côté de la carte (Idan, 2026-10-25).
+  const art=typeof equipmentArtLarge==="function"?equipmentArtLarge(item):typeof equipmentArt==="function"?equipmentArt(item):null;
   const gear=STAT_GEAR_KINDS.includes(card.kind);
   const body=card.kind==="armor"?armorCardBody(card):gear?statGearCardBody(card):weaponCardBody(card);
   const subtitle=card.kind==="armor"?(ARMOR_CLASSES[card.category]||card.category||"Armure"):gear?card.name:[card.name,card.category].filter(Boolean).join(" · ");
-  return `<div class="item-card item-card--t${card.tier}">
+  return `<div class="item-card-wrap">${art?`<figure class="item-card-showcase item-card--t${card.tier}"><img src="${art}" alt=""></figure>`:""}<div class="item-card item-card--t${card.tier}">
     <div class="item-card-head">
-      ${art?`<span class="gear-tile gear-tile--art gear-tile--t${card.tier} item-card-art"><img class="gear-art" src="${art}" alt=""></span>`:""}
       <div class="item-card-names">
         <strong class="item-card-title">${esc(card.title)}</strong>
         <span class="item-card-sub">${esc(card.kind==="armor"&&card.title!==card.name?card.name+" · "+subtitle:subtitle)}</span>
@@ -123,7 +123,7 @@ function renderItemCard(item){
     ${body.traits.length?`<ul class="item-card-traits">${body.traits.map(t=>`<li>${esc(t)}</li>`).join("")}</ul>`:""}
     ${qualityLine(card)}
     ${body.flavor?`<p class="item-card-flavor">${esc(body.flavor)}</p>`:""}
-  </div>`;
+  </div></div>`;
 }
 
 // Carte flottante : copie la carte de la case (modèle caché) et la place à côté, dans l'écran.

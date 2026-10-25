@@ -2,7 +2,8 @@
 "use strict";
 
 // Images d'équipement (Idan, 2026-10-23) : masters dans assets-src/Equipements/ (1024 px, fond noir)
-// → versions du jeu dans prototype-web/assets/equipment/ (WebP 256 px).
+// → versions du jeu dans prototype-web/assets/equipment/ (WebP 256 px) et, pour la grande image de la carte d'objet
+// (Idan, 2026-10-25), prototype-web/assets/equipment-large/ (WebP 512 px, mêmes chemins).
 // - Armures/, Armes/, Bottes/, Ceintures/, Amulettes/, Capes/, Gants/, Culottes/ et Bagues/<Nom>_[T]<tier>[_horodatage].jpg : le nom est reconnu sans accents,
 //   majuscules ni petits mots (« Armure_cuir » = « Armure de cuir »), dans n'importe quel ordre
 //   (« Double_arme_hast » = « Arme d'hast double »), et abrégé s'il reste sans ambiguïté
@@ -18,6 +19,7 @@ const {execFileSync}=require("child_process");
 const ROOT=path.resolve(__dirname,"..");
 const SRC=path.join(ROOT,"assets-src","Equipements");
 const OUT=path.join(ROOT,"prototype-web","assets","equipment");
+const OUT_LARGE=path.join(ROOT,"prototype-web","assets","equipment-large");
 const STOPWORDS=new Set(["de","d","des","du","la","le","l","a","et"]);
 
 function plain(name){
@@ -66,6 +68,7 @@ const problems=[];
 
 for(const family of families){
   fs.mkdirSync(path.join(OUT,family.out),{recursive:true});
+  fs.mkdirSync(path.join(OUT_LARGE,family.out),{recursive:true});
   for(const file of masters(family.dir)){
     // Tier en fin de nom, avec ou sans « T » (« Bottes_vitesse_2 », « Ceinture_de_mana_T2 »).
     const match=path.parse(file).name.match(/^(.*?)[ _-]+T?(\d)(?:[ _-]+\d{6,})?$/i);
@@ -73,6 +76,7 @@ for(const family of families){
     if(!name){ problems.push(`${family.dir}/${file} : nom ou tier non reconnu`); continue; }
     const out=`${family.out}/${slug(name)}-${match[2]}`;
     convert([path.join(SRC,family.dir,file),"-resize","256x256","-quality","82",path.join(OUT,out+".webp")]);
+    convert([path.join(SRC,family.dir,file),"-resize","512x512","-quality","80",path.join(OUT_LARGE,out+".webp")]);
     available.push(out);
     console.log(`${family.dir}/${file} → ${out}.webp`);
   }

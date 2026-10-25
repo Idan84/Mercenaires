@@ -1,8 +1,9 @@
 "use strict";
 
-// Agrandir le dortoir (Idan, 2026-10-25) : +5 places par agrandissement, sans limite ; 100 PO et 2 jours au début,
-// puis chaque agrandissement coûte plus d'or (× 1,2) et de jours (+1 tous les trois). Panneau « Constructions » de
-// Ma Compagnie (prototype-web/camp-buildings-ui.js).
+// Dortoir (Idan, 2026-10-25). Agrandir : +5 places par agrandissement, sans limite ; 100 PO et 2 jours au début, puis
+// chaque agrandissement coûte plus d'or (× 1,2) et de jours (+1 tous les trois). Qualité : dix niveaux (500 × n² PO,
+// 3 × n jours, +50 de Renommée, +5 d'affinité pour chaque membre de la compagnie). Un chantier à la fois au dortoir.
+// Panneau « Constructions » de Ma Compagnie (prototype-web/camp-buildings-ui.js).
 const assert=require("node:assert/strict");
 const fs=require("node:fs");
 const path=require("node:path");
@@ -20,7 +21,8 @@ const files={
   baseArmors:"base-armors.json",boots:"boots.json",belts:"belts.json",amulets:"amulets.json",capes:"capes.json",
   gloves:"gloves.json",pants:"pants.json",rings:"rings.json",itemQualities:"item-qualities.json",
   equipmentSlots:"equipment-slots.json",startingEquipmentGeneration:"starting-equipment-generation.json",
-  binaryAptitudeGrants:"binary-aptitude-grants.json",alignmentGeneration:"alignment-generation.json"
+  binaryAptitudeGrants:"binary-aptitude-grants.json",alignmentGeneration:"alignment-generation.json",
+  dormitoryQuality:"dormitory-quality.json"
 };
 const reference=Object.fromEntries(Object.entries(files).map(([key,file])=>[
   key,JSON.parse(fs.readFileSync(path.join(ROOT,"data","reference",file),"utf8"))]));
@@ -71,47 +73,106 @@ assert.equal(restored.company.camp.construction.endDay,state.day+2);
 rules.advanceTime(restored,2);
 assert.equal(restored.company.camp.dormitoryCapacity,50);
 
+// Qualité : dix niveaux au-dessus du niveau 0, 500 × n² PO et 3 × n jours, +50 de Renommée et +5 d'affinité.
+const levels=reference.dormitoryQuality.rows;
+assert.equal(levels.length,11);
+assert.deepEqual(levels.map(l=>l.nom),["Paille humide","Paillasses","Châlits de bois","Lits et couvertures","Chambrées",
+  "Chambrées chauffées","Matelas de laine","Bains et chambrées","Chambres de quatre","Quartiers de vétérans","Quartiers de seigneur"]);
+for(const l of levels.slice(1)) assert.deepEqual([l.prix,l.jours,l.renommee,l.affinite],[500*l.niveau**2,3*l.niveau,50,5],l.nom);
+assert.equal(levels.reduce((sum,l)=>sum+l.prix,0),192500);
+const q=rules.createCampaign({captain,squad:[4,5,6].map(id=>generator.createMercenary({id,captain}))});
+assert.deepEqual(rules.dormitoryQuality(q),levels[0],"niveau 0 au départ");
+assert.deepEqual(rules.nextDormitoryQuality(q),{level:1,name:"Paillasses",gold:500,days:3,renown:50,affinity:5});
+const renownBefore=rules.companyRenown(q).total;
+const [away,home]=q.company.roster.filter(m=>m.id!==captain.id);
+away.affinityAcquired=-10;
+q.expeditions=[{id:"x",memberIds:[away.id],status:"outbound"}];
+const goldBefore=q.company.gold;
+assert.equal(rules.startDormitoryQuality(q).ok,true);
+assert.equal(q.company.gold,goldBefore-500);
+assert.deepEqual(rules.startDormitoryExpansion(q),{ok:false,reason:"Un chantier est déjà en cours au dortoir."},"un chantier à la fois au dortoir");
+assert.deepEqual(rules.startDormitoryQuality(q),{ok:false,reason:"Un chantier est déjà en cours au dortoir."});
+const reports=rules.advanceTime(q,3);
+assert.equal(reports[1].built,null);
+assert.deepEqual(reports[2].built,{kind:"dormitory_quality",level:1,name:"Paillasses",renown:50,affinity:5,members:3});
+assert.equal(rules.dormitoryQuality(q).nom,"Paillasses");
+assert.equal(rules.companyRenown(q).parts.camp,50);
+assert.equal(Math.round(rules.companyRenown(q).total-renownBefore),50,"la Renommée gagnée reste");
+assert.equal(away.affinityAcquired,-5,"en expédition : dans la compagnie, il gagne aussi");
+assert.equal(home.affinityAcquired,5);
+assert.equal(Number(q.company.roster.find(m=>m.id===captain.id).affinityAcquired)||0,0,"pas le capitaine");
+q.expeditions=[];
+// Pas assez d'or ; puis le dernier niveau ; puis plus rien.
+q.company.gold=1999;
+assert.deepEqual(rules.startDormitoryQuality(q),{ok:false,reason:"Pas assez d’or : il faut 2000 PO.",
+  cost:{level:2,name:"Châlits de bois",gold:2000,days:6,renown:50,affinity:5}});
+q.company.camp.dormitoryQuality=9;
+q.company.gold=60000;
+rules.startDormitoryQuality(q);
+rules.advanceTime(q,30);
+assert.equal(rules.dormitoryQuality(q).nom,"Quartiers de seigneur");
+assert.equal(rules.companyRenown(q).parts.camp,500);
+assert.equal(rules.nextDormitoryQuality(q),null);
+assert.deepEqual(rules.startDormitoryQuality(q),{ok:false,reason:"Le dortoir est déjà au niveau de qualité maximal."});
+
 // Interface : le panneau « Constructions » de Ma Compagnie.
 const elements={};
 const $=id=>elements[id]||(elements[id]={innerHTML:""});
 const fmt=value=>String(Math.round(Number(value)||0)).replace(/\B(?=(\d{3})+(?!\d))/g," ");
+const esc=value=>String(value??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 const log=[];
 let saved=0,rendered=0;
 const game={campaign:rules.createCampaign({captain,squad:[]})};
 const js=fs.readFileSync(path.join(ROOT,"prototype-web","camp-buildings-ui.js"),"utf8");
-const ui=new Function("game","$","fmt","campaignRules","dormitoryPlacesText","tavernLog","saveGame","renderGame",
-  js+"\nreturn {renderCampBuildings,expandDormitory};")(
-  game,$,fmt,()=>rules,places=>String(places),(message,kind)=>log.push({message,kind}),()=>saved++,()=>rendered++);
+const ui=new Function("game","$","fmt","esc","campaignRules","dormitoryPlacesText","tavernLog","saveGame","renderGame",
+  js+"\nreturn {renderCampBuildings,expandDormitory,improveDormitory,logCampWork};")(
+  game,$,fmt,esc,()=>rules,places=>String(places),(message,kind)=>log.push({message,kind}),()=>saved++,()=>rendered++);
 ui.renderCampBuildings();
 let html=elements["camp-buildings"].innerHTML;
 assert.match(html,/<h3>Constructions<\/h3>/);
-assert.match(html,/<strong>Dortoir<\/strong><span>0 \/ 40 places occupées<\/span>/);
-assert.match(html,/<button type="button" class="primary" data-dorm-expand>Agrandir : \+5 places<\/button>/);
-assert.match(html,/<span class="building-cost">100 PO · 2 jours<\/span>/);
+assert.match(html,/<strong>Dortoir<\/strong><span>0 \/ 40 places occupées<\/span>\s*<span>Qualité : Paille humide \(niveau 0\)<\/span>/);
+assert.match(html,/<button type="button" class="primary" data-dorm-expand>Agrandir : \+5 places<\/button>\s*<span class="building-cost">100 PO · 2 jours<\/span>/);
+assert.match(html,/<button type="button" class="primary" data-dorm-quality>Améliorer : Paillasses<\/button>\s*<span class="building-cost">500 PO · 3 jours · Renommée \+50, affinité \+5<\/span>/);
 ui.expandDormitory();
 assert.deepEqual(log.at(-1),{message:"Agrandissement du dortoir lancé : 100 PO, +5 places dans 2 jours.",kind:"gear"});
 assert.deepEqual([saved,rendered],[1,1]);
 ui.renderCampBuildings();
-assert.match(elements["camp-buildings"].innerHTML,/Chantier en cours : \+5 places, prêtes dans 2 jours\./);
-assert.doesNotMatch(elements["camp-buildings"].innerHTML,/data-dorm-expand/,"pas de second chantier");
+html=elements["camp-buildings"].innerHTML;
+assert.match(html,/Chantier en cours : \+5 places, prêtes dans 2 jours\./);
+assert.doesNotMatch(html,/data-dorm-expand|data-dorm-quality/,"pas de second chantier");
 rules.advanceTime(game.campaign,1);
 ui.renderCampBuildings();
 assert.match(elements["camp-buildings"].innerHTML,/prêtes dans 1 jour\./);
 rules.advanceTime(game.campaign,1);
-game.campaign.company.gold=50;
+game.campaign.company.gold=300;
 ui.renderCampBuildings();
 html=elements["camp-buildings"].innerHTML;
 assert.match(html,/0 \/ 45 places occupées/);
-assert.match(html,/data-dorm-expand disabled>Agrandir : \+5 places<\/button>/);
-assert.match(html,/120 PO · 2 jours · pas assez d’or/);
+assert.match(html,/data-dorm-expand>Agrandir : \+5 places<\/button>\s*<span class="building-cost">120 PO · 2 jours<\/span>/);
+assert.match(html,/data-dorm-quality disabled>Améliorer : Paillasses<\/button>\s*<span class="building-cost">500 PO · 3 jours · Renommée \+50, affinité \+5 · pas assez d’or<\/span>/);
+game.campaign.company.gold=5000;
+ui.improveDormitory();
+assert.deepEqual(log.at(-1),{message:"Amélioration du dortoir lancée : Paillasses (niveau 1), 500 PO, prêt dans 3 jours.",kind:"gear"});
+ui.renderCampBuildings();
+assert.match(elements["camp-buildings"].innerHTML,/Chantier en cours : Paillasses \(niveau 1\), prêt dans 3 jours\./);
+ui.logCampWork({kind:"dormitory_quality",level:1,name:"Paillasses",renown:50,affinity:5,members:12});
+assert.deepEqual(log.at(-1),{message:"Le dortoir passe au niveau 1 : Paillasses. Renommée +50 ; affinité +5 pour 12 mercenaires.",kind:"turn"});
+ui.logCampWork({kind:"dormitory",places:5,capacity:45});
+assert.deepEqual(log.at(-1),{message:"Le dortoir est agrandi : +5 places, 45 en tout.",kind:"turn"});
+game.campaign.company.camp.construction=null;
+game.campaign.company.camp.dormitoryQuality=10;
+ui.renderCampBuildings();
+assert.match(elements["camp-buildings"].innerHTML,/Qualité : Quartiers de seigneur \(niveau 10\)[\s\S]*Qualité maximale\./);
 
-// Branchements : la page, le rendu, le journal du matin.
+// Branchements : la page, le rendu, le journal du matin, la Renommée.
 const index=fs.readFileSync(path.join(ROOT,"prototype-web","index.html"),"utf8");
 assert.match(index,/<div id="captain-summary"><\/div>\s*<section id="camp-buildings"/);
 assert.match(index,/<script src="camp-buildings-ui.js"><\/script>/);
 const main=fs.readFileSync(path.join(ROOT,"prototype-web","ui.js"),"utf8");
 assert.match(main,/renderCampBuildings\(\);/);
 assert.match(main,/initializeCampBuildingsUi\(\);/);
-assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","tavern-ui.js"),"utf8"),/Le dortoir est agrandi : \+/);
+assert.match(main,/" \+ dortoir " \+ fmt\(renown\.parts\.camp\)/);
+assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","tavern-ui.js"),"utf8"),/logCampWork\(report\.built\)/);
+assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","reference-data.js"),"utf8"),/dormitoryQuality: "dormitory-quality\.json"/);
 
-console.log("Dortoir : barème, chantier, fin du chantier, sauvegarde, panneau Constructions — OK");
+console.log("Dortoir : agrandir, qualité (Renommée, affinité), un chantier à la fois, sauvegarde, panneau Constructions — OK");

@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "name": "dormitory-quality",
+  "description": "Qualité du dortoir (Idan, 2026-10-25) : dix niveaux au-dessus du niveau 0. Atteindre le niveau n coûte prix PO et jours de chantier (formule de JC, validée : 500 × n² PO et 3 × n jours) ; il donne renommee points de Renommée à la compagnie, pour de bon, et affinite points d'affinité avec le capitaine à chaque membre de la compagnie le jour où le chantier se termine. Noms des niveaux proposés par JC, validés par Idan. Valeurs modifiables niveau par niveau.",
+  "columns": [
+    {
+      "source": "Niveau",
+      "key": "niveau"
+    },
+    {
+      "source": "Nom",
+      "key": "nom"
+    },
+    {
+      "source": "Prix (PO)",
+      "key": "prix"
+    },
+    {
+      "source": "Jours de chantier",
+      "key": "jours"
+    },
+    {
+      "source": "Renommée gagnée",
+      "key": "renommee"
+    },
+    {
+      "source": "Affinité gagnée",
+      "key": "affinite"
+    }
+  ],
+  "row_count": 11,
+  "rows": [
+    {
+      "niveau": 0,
+      "nom": "Paille humide",
+      "prix": 0,
+      "jours": 0,
+      "renommee": 0,
+      "affinite": 0
+    },
+    {
+      "niveau": 1,
+      "nom": "Paillasses",
+      "prix": 500,
+      "jours": 3,
+      "renommee": 50,
+      "affinite": 5
+    },
+    {
+      "niveau": 2,
+      "nom": "Châlits de bois",
+      "prix": 2000,
+      "jours": 6,
+      "renommee": 50,
+      "affinite": 5
+    },
+    {
+      "niveau": 3,
+      "nom": "Lits et couvertures",
+      "prix": 4500,
+      "jours": 9,
+      "renommee": 50,
+      "affinite": 5
+    },
+    {
+      "niveau": 4,
+      "nom": "Chambrées",
+      "prix": 8000,
+      "jours": 12,
+      "renommee": 50,
+      "affinite": 5
+    },
+    {
+      "niveau": 5,
+      "nom": "Chambrées chauffées",
+      "prix": 12500,
+      "jours": 15,
+      "renommee": 50,
+      "affinite": 5
+    },
+    {
+      "niveau": 6,
+      "nom": "Matelas de laine",
+      "prix": 18000,
+      "jours": 18,
+      "renommee": 50,
+      "affinite": 5
+    },
+    {
+      "niveau": 7,
+      "nom": "Bains et chambrées",
+      "prix": 24500,
+      "jours": 21,
+      "renommee": 50,
+      "affinite": 5
+    },
+    {
+      "niveau": 8,
+      "nom": "Chambres de quatre",
+      "prix": 32000,
+      "jours": 24,
+      "renommee": 50,
+      "affinite": 5
+    },
+    {
+      "niveau": 9,
+      "nom": "Quartiers de vétérans",
+      "prix": 40500,
+      "jours": 27,
+      "renommee": 50,
+      "affinite": 5
+    },
+    {
+      "niveau": 10,
+      "nom": "Quartiers de seigneur",
+      "prix": 50000,
+      "jours": 30,
+      "renommee": 50,
+      "affinite": 5
+    }
+  ]
+}

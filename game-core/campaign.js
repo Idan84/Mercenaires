@@ -89,9 +89,11 @@
         members:ranking.reduce((sum,x)=>sum+x.contribution,0),
         heritage:heritageEntries.reduce((sum,x)=>sum+(Number(x.heritage)||0),0),
         // Points de mission (doc 09 §2) : pour l'instant, la renommée perdue sur un contrat échoué (doc 17 §8).
-        missions:Number(state.company.missionRenown)||0
+        missions:Number(state.company.missionRenown)||0,
+        // Camp (Idan, 2026-10-25) : la Renommée des niveaux de qualité atteints par le dortoir.
+        camp:dormitoryQualityRenown(state)
       };
-      return {total:parts.captain+parts.members+parts.heritage+parts.missions,parts,ranking,heritageEntries};
+      return {total:parts.captain+parts.members+parts.heritage+parts.missions+parts.camp,parts,ranking,heritageEntries};
     }
 
     // Biographie figée sur le mercenaire ; une bio n'est jamais réutilisée dans une même sauvegarde,
@@ -390,13 +392,51 @@
       camp.construction={kind:"dormitory",...next,startDay:state.day,endDay:state.day+next.days};
       return {ok:true,construction:camp.construction};
     }
-    // Chaque matin : le chantier terminé ajoute ses places au dortoir.
+
+    // Qualité du dortoir (Idan, 2026-10-25) : dix niveaux au-dessus du niveau 0 (dormitory-quality.json : nom, prix,
+    // jours, Renommée, affinité). Même chantier que l'agrandissement : un seul à la fois au dortoir. À la fin du chantier,
+    // la compagnie gagne la Renommée du niveau, pour de bon, et chaque membre de la compagnie (en expédition compris ;
+    // pas le capitaine) gagne l'affinité du niveau avec le capitaine. Les recrues arrivées après n'ont rien.
+    const QUALITY_LEVELS=(reference?.dormitoryQuality?.rows||[]).slice().sort((a,b)=>a.niveau-b.niveau);
+    function dormitoryQualityLevel(state){ return Number(state.company.camp?.dormitoryQuality)||0; }
+    function dormitoryQuality(state){
+      const level=dormitoryQualityLevel(state);
+      return QUALITY_LEVELS.find(q=>q.niveau===level)||{niveau:level,nom:"Niveau "+level};
+    }
+    function dormitoryQualityRenown(state){
+      const level=dormitoryQualityLevel(state);
+      return QUALITY_LEVELS.filter(q=>q.niveau>0&&q.niveau<=level).reduce((sum,q)=>sum+(Number(q.renommee)||0),0);
+    }
+    // Le prochain niveau, ou null au niveau maximal.
+    function nextDormitoryQuality(state){
+      const row=QUALITY_LEVELS.find(q=>q.niveau===dormitoryQualityLevel(state)+1);
+      return row?{level:row.niveau,name:row.nom,gold:Number(row.prix)||0,days:Number(row.jours)||0,
+        renown:Number(row.renommee)||0,affinity:Number(row.affinite)||0}:null;
+    }
+    function startDormitoryQuality(state){
+      const camp=state.company.camp;
+      if(camp.construction) return {ok:false,reason:"Un chantier est déjà en cours au dortoir."};
+      const next=nextDormitoryQuality(state);
+      if(!next) return {ok:false,reason:"Le dortoir est déjà au niveau de qualité maximal."};
+      if(state.company.gold<next.gold) return {ok:false,reason:"Pas assez d’or : il faut "+next.gold+" PO.",cost:next};
+      state.company.gold-=next.gold;
+      camp.construction={kind:"dormitory_quality",...next,startDay:state.day,endDay:state.day+next.days};
+      return {ok:true,construction:camp.construction};
+    }
+
+    // Chaque matin : le chantier terminé ajoute ses places au dortoir, ou monte sa qualité.
     function advanceConstruction(state){
       const camp=state.company.camp,work=camp.construction;
       if(!work||state.day<work.endDay) return null;
+      camp.construction=null;
+      if(work.kind==="dormitory_quality"){
+        camp.dormitoryQuality=work.level;
+        const members=rosterOf(state).filter(m=>m.id!==state.company.captainId);
+        for(const m of members) m.affinityAcquired=(Number(m.affinityAcquired)||0)+work.affinity;
+        return {kind:work.kind,level:work.level,name:work.name,renown:work.renown,affinity:work.affinity,members:members.length};
+      }
       camp.dormitoryCapacity+=work.places;
       camp.dormitoryExpansions=work.number;
-      camp.construction=null;
       return {kind:work.kind,places:work.places,capacity:camp.dormitoryCapacity};
     }
 
@@ -678,6 +718,9 @@
       dormitoryExpansionCost,
       nextDormitoryExpansion,
       startDormitoryExpansion,
+      dormitoryQuality,
+      nextDormitoryQuality,
+      startDormitoryQuality,
       signCandidate,
       offerToCandidate,
       askTavernkeeper,

@@ -1543,7 +1543,7 @@ body[data-screen="camp"][data-camp-scene="quartermaster"]::before {
 }
 /* Dortoir (Idan, 2026-10-25) : le fond du niveau de qualité (images de Jean-Mimi), posé par camp-buildings-ui.js. */
 body[data-screen="camp"][data-camp-scene="dormitory"]::before {
-  background-image: var(--dormitory-bg, url("assets/dormitory/dortoir-1.jpg"));
+  background-image: var(--dormitory-bg, url("assets/dormitory/dortoir-0.jpg"));
   opacity: 1;
 }
 body[data-screen="camp"] > .app-shell { position: relative; z-index: 1; }

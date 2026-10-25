@@ -11,6 +11,12 @@
 //   offrir moins que son salaire actuel. Là où une recrue partirait, il refuse définitivement de devenir lieutenant.
 //   Affinité : +10 s'il est promu, −10 s'il refuse.
 // - Son aura au combat est dans combat-engine.js (lieutenant.aura.share).
+// - Demandes (étape 3) : au camp, une par jour et par lieutenant : « rendre tel mercenaire un peu plus courageux »
+//   (courage) ou « un peu plus respectueux » (respect). Chance = 10 + 80 / (1 + e^(−Δ/20)), Δ = moyenne (Charisme,
+//   Intelligence) du lieutenant − Volonté du mercenaire, équipement compris. Gain = 20 % de l'écart entre le lieutenant
+//   et le mercenaire (Courage contre Courage, ou affinité avec le capitaine contre affinité avec le capitaine), de 1 à
+//   10 ; si le lieutenant n'est pas au-dessus, la demande échoue forcément. Le résultat tombe le lendemain matin
+//   (resolveRequests, campaign.js). 30 jours entre deux demandes du même type pour un même mercenaire.
 // Constantes : lieutenant.* (formula-constants.json) ; la négociation reprend celles de la Taverne (tavern.negotiation.*).
 (function(root,factory){
   const history=typeof module!=="undefined"&&module.exports?require("./history.js"):root.MercenairesHistory;
@@ -22,8 +28,9 @@
   const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
 
   // tavern : les règles de la Taverne (négociation) ; affinityOf(state, m) : affinité du mercenaire avec le capitaine ;
-  // quarters(state) : quartiers du lieutenant construits (campaign.js).
-  function createLieutenantRules({reference,tavern=null,affinityOf=()=>0,quarters=()=>0,random=Math.random}={}){
+  // quarters(state) : quartiers du lieutenant construits (campaign.js) ; statOf(m, nom) : caractéristique avec
+  // l'équipement (combat-engine.js, statWithGear), la caractéristique de base sinon.
+  function createLieutenantRules({reference,tavern=null,affinityOf=()=>0,quarters=()=>0,statOf=null,random=Math.random}={}){
     const constant=(code,fallback)=>{
       const value=Number(rows(reference?.formulaConstants).find(r=>r.code===code)?.valeur);
       return Number.isFinite(value)?value:fallback;
@@ -34,8 +41,13 @@
       promoted:constant("lieutenant.affinity.promoted",10),
       refused:constant("lieutenant.affinity.refused",-10),
       quitConcession:constant("tavern.negotiation.quit_concession_coefficient",0.75),
-      quitMax:constant("tavern.negotiation.quit_max",75)
+      quitMax:constant("tavern.negotiation.quit_max",75),
+      cooldown:constant("lieutenant.request.cooldown_days",30),
+      gainRatio:constant("lieutenant.request.gain_ratio",0.2),
+      gainMin:constant("lieutenant.request.gain_min",1),
+      gainMax:constant("lieutenant.request.gain_max",10)
     };
+    const REQUEST_TYPES=["courage","respect"];
 
     const rosterOf=state=>state?.company?.roster||[];
     const stat=(m,name)=>Number(m?.stats?.[name])||0;
@@ -145,8 +157,72 @@
       return {outcome:"counter",counter:n.salary,pAccept,acceptRoll,pQuit,quitRoll,concession,factor,mercenary:m};
     }
 
+    // ---- Demandes au lieutenant (étape 3) ----
+    const geared=(m,name)=>statOf?Number(statOf(m,name))||0:stat(m,name);
+    const away=(state,m)=>(state.expeditions||[]).some(e=>e.memberIds.includes(m.id));
+    // Jours avant de pouvoir refaire cette demande pour ce mercenaire (0 : tout de suite).
+    function requestWait(state,target,type){
+      const last=target?.lieutenantRequests?.[type];
+      return last==null?0:Math.max(0,Number(last)+C.cooldown-state.day);
+    }
+    // Sans cible : le lieutenant peut-il recevoir une demande aujourd'hui ? Avec cible : cette demande-là.
+    function canRequest(state,lieutenant,type=null,target=null){
+      if(!isLieutenant(state,lieutenant)) return no("Il n’est pas lieutenant.");
+      if(away(state,lieutenant)) return no("Il est en mission.");
+      if(lieutenant.lieutenantRequest) return {...no("Il s’occupe déjà de quelqu’un : réponse demain matin."),busy:true};
+      if(type==null) return {ok:true};
+      if(!REQUEST_TYPES.includes(type)) return no("Demande inconnue.");
+      if(!target) return {ok:true};
+      if(target===lieutenant) return no("Pas lui-même.");
+      if(target.id===state.company.captainId) return no("Pas le capitaine.");
+      if(away(state,target)) return no("Il est en mission.");
+      const wait=requestWait(state,target,type);
+      if(wait>0) return {...no(`Pas avant ${wait} jour${wait>1?"s":""}.`),wait};
+      return {ok:true};
+    }
+    // Ce que l'on compare : le Courage, ou l'affinité avec le capitaine.
+    function compared(state,m,type){ return type==="courage"?stat(m,"Courage"):Number(affinityOf(state,m))||0; }
+    function requestChance(lieutenant,target){
+      const delta=(geared(lieutenant,"Charisme")+geared(lieutenant,"Intelligence"))/2-geared(target,"Volonté");
+      return 10+80/(1+Math.exp(-delta/20));
+    }
+    // Gain en cas de réussite ; 0 quand le lieutenant n'est pas au-dessus du mercenaire (échec forcé).
+    function requestGain(state,lieutenant,target,type){
+      const gap=compared(state,lieutenant,type)-compared(state,target,type);
+      return gap>0?clamp(Math.round(C.gainRatio*gap),C.gainMin,C.gainMax):0;
+    }
+    function request(state,lieutenantId,type,targetId){
+      const roster=rosterOf(state),lieutenant=roster.find(m=>m.id===lieutenantId),target=roster.find(m=>m.id===targetId);
+      if(!target) return no("Mercenaire introuvable.");
+      const allowed=canRequest(state,lieutenant,type,target);
+      if(!allowed.ok) return allowed;
+      lieutenant.lieutenantRequest={type,targetId:target.id,day:state.day};
+      (target.lieutenantRequests||(target.lieutenantRequests={}))[type]=state.day;
+      return {ok:true,lieutenant,target,type};
+    }
+    // Le lendemain matin : chaque demande de la veille est jouée ; le lieutenant donne le résultat.
+    function resolveRequests(state){
+      const reports=[];
+      for(const lieutenant of lieutenantsOf(state)){
+        const pending=lieutenant.lieutenantRequest;
+        if(!pending||pending.day>=state.day) continue;
+        delete lieutenant.lieutenantRequest;
+        const target=rosterOf(state).find(m=>m.id===pending.targetId);
+        if(!target) continue;
+        const gain=requestGain(state,lieutenant,target,pending.type),chance=requestChance(lieutenant,target);
+        const roll=Math.floor(random()*100)+1,forced=gain<=0,success=!forced&&roll<=chance;
+        if(success){
+          if(pending.type==="courage") target.stats.Courage=stat(target,"Courage")+gain;
+          else target.affinityAcquired=(Number(target.affinityAcquired)||0)+gain;
+          History.record(target,state.day,"lieutenant_request",{type:pending.type,gain,lieutenant:lieutenant.name});
+        }
+        reports.push({lieutenant,target,type:pending.type,success,gain:success?gain:0,chance,roll,forced});
+      }
+      return reports;
+    }
+
     return {constants:C,lieutenantsOf,isLieutenant,countedMembers,openPosts,blocker,canPromote,candidates,demand,talkOf,
-      startPromotion,offer};
+      startPromotion,offer,REQUEST_TYPES,requestWait,canRequest,requestChance,requestGain,request,resolveRequests};
   }
 
   return {createLieutenantRules};

@@ -22,6 +22,7 @@ function campaignRules(){
   if(!game.campaignRules){
     game.campaignRules=MercenairesCampaign.createCampaignRules({generator:game.generator,tavern:tavernRules(),reference:game.referenceData,biographies:biographyRules(),avatars:avatarRules(),progression:MercenairesProgression.createProgressionRules({reference:game.referenceData}),affinity:affinityRules(),names:game.nameRules,
       missions:missionRules(),
+      bodyguard:MercenairesBodyguard.createBodyguardRules({reference:game.referenceData}),
       // Demandes au lieutenant, jouées chaque matin (lieutenant-ui.js, chargé après).
       lieutenants:{resolveRequests:state=>typeof lieutenantRules==="function"?lieutenantRules().resolveRequests(state):[]}});
   }
@@ -133,6 +134,7 @@ function logDayReport(report){
   tavernLog(gone.length?"Engagés ailleurs pendant la nuit : "+gone.join(", ")+".":"Personne n’a été engagé ailleurs cette nuit.",gone.length?"bad":"info");
   if(arrived.length) tavernLog("Nouveaux candidats : "+arrived.join(", ")+".","turn");
   if(report.missionTaken) tavernLog("Le contrat de "+report.missionTaken.fields.lieu+" a été pris par une autre compagnie ; un nouveau est affiché.","bad");
+  if(report.bodyguardTaken) tavernLog("L’offre de garde du corps ("+report.bodyguardTaken.client.toLocaleLowerCase("fr")+") a trouvé preneur ailleurs ; une nouvelle est affichée.","info");
   if(typeof logExpeditionReport==="function") logExpeditionReport(report.expeditions);
   if(typeof logCampWork==="function") logCampWork(report.built);
   // Le rapport des lieutenants (Idan, 2026-10-25) : une pop-up par demande de la veille.

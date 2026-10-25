@@ -145,7 +145,8 @@ function queueBodyguardReturn(report){
   for(const line of lines) tavernLog(line.text,"turn");
   if(report.renown) tavernLog("Garde du corps : renommée de la compagnie +"+fmt(report.renown)+".","gear");
   (game.bodyguardReturns||(game.bodyguardReturns=[])).push({client:report.expedition.offer.client,lines});
-  showNextBodyguardReturn();
+  // Plusieurs missions peuvent rentrer le même matin : ne pas écraser la fenêtre déjà ouverte.
+  if(!$("bodyguard-return-dialog")?.open) showNextBodyguardReturn();
 }
 function showNextBodyguardReturn(){
   const dialog=$("bodyguard-return-dialog");
@@ -174,6 +175,10 @@ function openExpeditionDialog(id){
 }
 
 function initializeExpeditionUi(){
+  // Si la fenêtre est fermée via Échap, afficher tout de même les retours suivants.
+  $("bodyguard-return-dialog")?.addEventListener("close",()=>{
+    if(game.bodyguardReturns?.length) showNextBodyguardReturn();
+  });
   document.addEventListener("click",event=>{
     if(event.target.closest("[data-bodyguard-accept]")){ const offer=bodyguardOffer(); if(offer) openMissionSelection(offer); return; }
     if(event.target.closest("#bodyguard-return-ok")){ showNextBodyguardReturn(); return; }

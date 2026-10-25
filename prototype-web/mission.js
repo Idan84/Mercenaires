@@ -1100,6 +1100,26 @@ function enemyMissionActivation(unit){
   }
 }
 
+// Combat automatique (doc 17 ; Idan, 2026-10-25 : « un mode simu pour tester rapidement les missions ») : votre équipe
+// joue avec l'IA des ennemis (cible la plus proche, change d'arme, recharge, charge, attaque) jusqu'à la fin du combat ;
+// le bilan de fin de mission est le même. La carte n'est redessinée qu'à la fin.
+const AUTO_COMBAT_MAX_TURNS=100;
+function autoResolveMission(){
+  const m=game.mission;
+  if(!m||m.over||m.phase!=="player"||!m.activeUnit) return;
+  missionLog("Combat automatique : votre équipe joue seule jusqu’à la fin du combat.","turn");
+  m.autoRunning=true;
+  try{
+    while(!m.over&&m.activeUnit&&m.turn<=AUTO_COMBAT_MAX_TURNS){
+      enemyMissionAct(m.activeUnit);
+      if(m.over) break;
+      endMissionActivation();
+    }
+  }finally{ m.autoRunning=false; }
+  if(!m.over) missionLog("Combat automatique arrêté au tour "+m.turn+" : à vous de jouer.","bad");
+  renderMission();
+}
+
 function runMissionEnemyTurn(){
   const m=game.mission;
   if(!m||m.over) return;
@@ -1147,7 +1167,8 @@ function missionActionAvailability(){
     switch:u.quickAvailable&&e.canSwitchWeaponSet(u),
     reload:u.quickAvailable&&e.canReload(u),
     secondMove:u.attackAvailable,
-    end:true
+    end:true,
+    auto:true
   };
 }
 
@@ -1183,7 +1204,7 @@ function renderMissionRoster(units){
 
 function renderMission(){
   const m=game.mission;
-  if(!m) return;
+  if(!m||m.autoRunning) return;
   const e=m.engine,u=missionActiveUnit(),targets=targetableMissionCells();
   const width=Math.ceil(88+Math.sqrt(3)*MISSION_MAP.size*(MISSION_MAP.cols+0.5));
   const height=Math.ceil(88+1.5*MISSION_MAP.size*(MISSION_MAP.rows-1)+2*MISSION_MAP.size);
@@ -1235,7 +1256,7 @@ function renderMission(){
   const availability=missionActionAvailability();
   const buttons=[
     ["mission-move-btn","move"],["mission-attack-btn","melee"],["mission-charge-btn","charge"],
-    ["mission-switch-btn","switch"],["mission-reload-btn","reload"],["mission-ranged-btn","ranged"],["mission-second-move-btn","secondMove"],["mission-end-activation-btn","end"]
+    ["mission-switch-btn","switch"],["mission-reload-btn","reload"],["mission-ranged-btn","ranged"],["mission-second-move-btn","secondMove"],["mission-end-activation-btn","end"],["mission-auto-btn","auto"]
   ];
   for(const [id,key] of buttons){
     $(id).disabled=!availability[key];
@@ -1279,6 +1300,7 @@ function initializeMissionUi(){
   $("mission-second-move-btn").addEventListener("click",missionSecondMove);
   window.addEventListener("resize",()=>{ if(game.mission) renderMission(); });
   $("mission-end-activation-btn").addEventListener("click",endMissionActivation);
+  $("mission-auto-btn").addEventListener("click",autoResolveMission);
   $("mission-leave-btn").addEventListener("click",leaveMission);
   $("mission-result-back-btn").addEventListener("click",leaveMission);
 

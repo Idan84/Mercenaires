@@ -60,6 +60,10 @@ const gifted=unit(mage({pm:53,vie:84,level:1,int:53})),practiced=unit(mage({pm:5
 assert.equal(magic.mastery(gifted,"quick_heal"),84.5);
 assert.equal(magic.mastery(practiced,"quick_heal"),81);
 
+// Grimoire d'abord : le sort prêté au niveau 1 par le bouton de test ne remplace pas le niveau du sort déjà connu.
+assert.equal(magic.spellLevel({...practiced,spells:[{code:"quick_heal"}]},"quick_heal"),50);
+assert.equal(magic.spellLevel({...unit(mage({pm:53,vie:56,int:53})),character:{...mage({pm:53,vie:56,int:53}),spells:[]},spells:[{code:"quick_heal"}]},"quick_heal"),1);
+
 // Équipement : la Bague du soigneur monte l'école (T4 : +25 %), l'amulette la Puissance magique (T4 : +20 %).
 const ringed=unit(mage({pm:53,vie:56,int:53,items:[{id:"r",name:"Bague du soigneur",tier:4},{id:"a",name:"Amulette de puissance magique",tier:4}],
   slots:{ring_1:"r",amulet:"a"}}));

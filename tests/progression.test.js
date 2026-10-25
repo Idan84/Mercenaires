@@ -327,7 +327,8 @@ assert.equal(reloaded.state.company.roster.find(m=>m.id===m1.id).reputationCaree
 
 // Magie (12-magic.md, étape 3 ; Idan, 2026-10-25) : par lancer, +10 au sort et à son école, +5 s'il réussit, +5 s'il a
 // un vrai effet ; les deux écoles opposées perdent la moitié du gain de l'école, un quart chacune. Puissance magique :
-// +20 par sort réussi qui a un effet ; Réserve de mana : +2 par point de mana dépensé ; Chance : critiques comme les armes.
+// +20 par sort réussi qui a un effet ; Réserve de mana : +2 par point de mana dépensé ; Chance et réputation : critiques
+// comme les armes.
 const mage={team:"player"};
 P.recordSpell(mage,{code:"quick_heal",school:"Vie",success:true,effect:true,mana:11});
 P.recordSpell(mage,{code:"quick_heal",school:"Vie",success:true,effect:false,mana:11});
@@ -340,7 +341,8 @@ assert.deepEqual(magicXp.skills.magic,{Vie:45,Feu:20,"Nécromancie":-11.25,Illus
 assert.equal(magicXp.stats["Puissance magique"],2*20,"deux sorts réussis avec un vrai effet");
 assert.equal(magicXp.stats["Réserve de mana"],43*2,"le mana d'un sort raté compte aussi");
 assert.equal(magicXp.stats.Chance,30-5,"échec critique confirmé +30, coup critique −5");
-assert.equal(rules.reputationGains(mage.progress).sources.criticalSuccesses,0,"les critiques de sorts ne touchent pas la réputation");
+assert.equal(rules.reputationGains(mage.progress).sources.criticalSuccesses,1,"un coup critique de sort compte pour la réputation");
+assert.equal(rules.reputationGains(mage.progress).sources.criticalFailures,-1,"un échec critique de sort aussi");
 assert.equal(rules.gains({}).spells,undefined,"sans sort lancé, le bilan garde sa forme habituelle");
 // Pratiquer deux écoles opposées : le gain de l'une et la perte venue de l'autre s'additionnent.
 const both={};

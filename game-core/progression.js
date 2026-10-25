@@ -151,7 +151,7 @@
     if(success) cast.successes++;
     if(success&&effect) cast.effects++;
     log.manaSpent=(Number(log.manaSpent)||0)+Math.max(0,Number(mana)||0);
-    // Chance : les critiques des sorts comptent comme ceux des armes (Idan, 2026-10-25), sans toucher à la réputation.
+    // Chance et réputation : les critiques des sorts comptent comme ceux des armes (Idan, 2026-10-25).
     if(critical) log.spellCriticalSuccesses=(Number(log.spellCriticalSuccesses)||0)+1;
     if(fumble) log.spellCriticalFailures=(Number(log.spellCriticalFailures)||0)+1;
   }
@@ -459,8 +459,8 @@
       const l={...emptyLog(),...(log||{})};
       const total=values=>Object.values(values||{}).reduce((sum,v)=>sum+(Number(v)||0),0);
       const sources={
-        criticalSuccesses:l.criticalSuccesses*R.criticalSuccess,
-        criticalFailures:l.criticalFailures*R.criticalFailure,
+        criticalSuccesses:(l.criticalSuccesses+l.spellCriticalSuccesses)*R.criticalSuccess,
+        criticalFailures:(l.criticalFailures+l.spellCriticalFailures)*R.criticalFailure,
         enemyWounds:total(l.enemyWounds)*R.enemyWoundShare,
         enemyKnockouts:total(l.enemyKnockouts)*R.enemyKnockoutShare,
         missionReturn:wounded?R.returnWounded:R.returnUnhurt

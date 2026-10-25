@@ -142,7 +142,7 @@ Détail dans le doc 12 (« Écoles : progression et régression »).
 
 - **Puissance magique** : chaque sort réussi qui a un vrai effet : `+20 XP`.
 - **Réserve de mana** : chaque point de mana dépensé, même si le sort rate : `+2 XP`.
-- **Chance** : les critiques des sorts comptent comme ceux des armes (`−5` / `+30`), sans toucher à la réputation.
+- **Chance** : les critiques des sorts comptent comme ceux des armes (`−5` / `+30`), et pour la réputation aussi (doc 09).
 - **Sort et école** : chaque lancer `+10 XP`, `+5` s'il réussit, `+5` s'il a un vrai effet ; les deux écoles opposées perdent chacune un quart du gain de l'école ; une école ne descend pas sous 1 ; les sorts ne régressent pas, plafond 100.
 - Les dégâts des sorts et de l'arme enflammée comptent pour les **Résistances** de la cible (brûlure : Résistance au feu) et, pour le lanceur, comme un coup d'arme (Charisme, réputation) ; les soins comptent pour la **Constitution** du soigné.
 

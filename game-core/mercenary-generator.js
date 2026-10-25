@@ -59,6 +59,7 @@
     const pantsRows = rows.pants || [];
     const ringRows = rows.rings || [];
     const helmetRows = rows.helmets || [];
+    const spellRows = rows.spells || [];
     const itemQualityRows = rows.itemQualities || [];
     const equipmentSlotRows = rows.equipmentSlots || [];
     const binaryAptitudeRows = rows.binaryAptitudeGrants || [];
@@ -66,6 +67,8 @@
     const startingEquipmentGeneration = reference.startingEquipmentGeneration || {};
 
     const peopleByName = new Map(peopleRows.map(r => [r.nom, r]));
+    const cultureByName = new Map(cultureRows.map(r => [r.nom, r]));
+    const magicSchoolNames = skillRows.filter(r => r.domaine === "Magie" && r.niveau === "Catégorie").map(r => r.nom);
     const skillByName = new Map(skillRows.map(r => [r.nom, r]));
     const charByName = new Map(characteristicRows.map(r => [r.nom, r]));
     const matrixByTarget = new Map(matrixRows.map(r => [r.cible, r]));
@@ -343,6 +346,55 @@
       }
       for (const [name, t] of Object.entries(trace.characteristics)) t.final = character.stats[name];
       for (const [name, t] of Object.entries(trace.resistances)) t.final = character.resistances[name];
+    }
+
+    // Cultures sans école de magie (12-magic.md ; Idan, 2026-10-25) : elles n'ont que deux tirages de sorts ; en
+    // compensation, +1D6 à une caractéristique (cultures.json, compensation_sans_ecole : Courage pour les nains des
+    // montagnes et ceux réduits en esclavage dans les colonies, Force pour les ogres des cités humaines et des montagnes).
+    function applyNoSchoolCompensation(character, trace) {
+      const stat = cultureByName.get(character.culture)?.compensation_sans_ecole;
+      if (!stat || !(stat in character.stats)) return;
+      const count = constant("generation.spells.no_school_bonus_d6", 1);
+      const rolled = rollDice(count, 6);
+      character.stats[stat] += rolled;
+      const statTrace = trace.characteristics[stat];
+      if (!statTrace) return;
+      statTrace.contributions.push({name: character.culture + " (sans école de magie)", kind: "culture", intensity: 1, dice: `${count}D6`, roll: rolled, delta: rolled});
+      statTrace.final = character.stats[stat];
+    }
+
+    // Sorts connus à la création (12-magic.md ; Idan, 2026-10-25), capitaine compris : trois tirages, dans l'ordre l'école
+    // de la culture (cultures.json, ecole_magie ; pas de tirage pour une culture sans école), la meilleure école, la
+    // deuxième meilleure. Chance = min(75, École × Intelligence / 150) %, × 1,1 pour un deuxième sort, × 1,3 pour un
+    // troisième. Le sort est tiré au hasard parmi ceux de l'école qu'il ne connaît pas encore (rien si l'école n'en a pas
+    // ou plus : deux sorts d'une même école sont possibles, jamais deux fois le même) ; il démarre au niveau 1.
+    function drawStartingSpells(character) {
+      const known = [];
+      const draws = [];
+      if (!spellRows.length) return {known, draws};
+      const values = character.skills.magic || {};
+      const level = school => Number(values[school]) || 0;
+      const ranked = [...magicSchoolNames].sort((a, b) => level(b) - level(a));
+      const intelligence = Number(character.stats.Intelligence) || 0;
+      const multipliers = [1, constant("generation.spells.second_spell_multiplier", 1.1), constant("generation.spells.third_spell_multiplier", 1.3)];
+      const steps = [["culture", cultureByName.get(character.culture)?.ecole_magie || null], ["best", ranked[0]], ["second", ranked[1]]];
+      for (const [source, school] of steps) {
+        if (!school) continue;
+        const base = Math.min(constant("generation.spells.chance_max", 75), level(school) * intelligence / constant("generation.spells.chance_divisor", 150));
+        const chance = base * multipliers[Math.min(known.length, multipliers.length - 1)];
+        const available = spellRows.filter(spell => spell.ecole === school && !known.some(k => k.code === spell.code));
+        const draw = {source, school, chance, roll: null, spell: null};
+        if (available.length) {
+          draw.roll = random() * 100;
+          if (draw.roll < chance) {
+            const spell = available[Math.floor(random() * available.length)];
+            known.push({code: spell.code, name: spell.nom, school, mastery: constant("generation.spells.starting_level", 1)});
+            draw.spell = spell.code;
+          }
+        }
+        draws.push(draw);
+      }
+      return {known, draws};
     }
 
     function createSkillStore() {
@@ -1265,10 +1317,14 @@
       };
 
       applyIdentityStatModifiers(character, identity, trace);
+      applyNoSchoolCompensation(character, trace);
       character.skills = generateRawSkills(character, identity, trace);
       applySkillModifiers(character.skills, identity, trace);
       generateBinaryAptitudes(character.skills, identity, trace);
       character.weaponPreferences = computeWeaponPreferences(character.skills);
+      const startingSpells = drawStartingSpells(character);
+      character.spells = startingSpells.known;
+      trace.spells = startingSpells.draws;
 
       character.salaryPretension = rollDice(10,6);
       character.pvMax = Math.ceil(3 * (

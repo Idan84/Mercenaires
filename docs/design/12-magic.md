@@ -132,7 +132,7 @@ Chaque gain dans une école fait perdre **la moitié de ce gain**, partagée à 
 - les deux écoles opposées perdent chacune **un quart** de l'XP gagnée par l'école ; une école ne descend pas sous 1 (la valeur d'un mercenaire sans l'école) ;
 - les **sorts ne régressent pas** ; même courbe que les compétences (XP = 10 × niveau², niveau continu), plafond 100 ;
 - **Puissance magique** : +20 XP par sort réussi qui a un vrai effet ; **Réserve de mana** : +2 XP par point de mana dépensé, même si le sort rate ;
-- **Chance** : les critiques des sorts comptent comme ceux des armes (coup critique −5 XP, échec critique confirmé +30 XP) ; ils ne comptent pas pour la réputation ;
+- **Chance et réputation** : les critiques des sorts comptent comme ceux des armes (Chance : coup critique −5 XP, échec critique confirmé +30 XP ; réputation : +1 / −1) ;
 - appliquée **en fin de mission** avec le reste de l'XP naturelle, et montrée dans le bilan (« Sort Soin rapide +45 », « Écoles opposées −11 »).
 
 Les sorts prêtés par le bouton « Sorts (test) » ne sont pas dans le grimoire : leur XP s'affiche dans le bilan sans être gardée ; l'XP de leur école, elle, compte.
@@ -170,6 +170,8 @@ Avec les sorts, deux règles déjà écrites (doc 08) s'appliquent enfin : **Con
 
 Simulation (6 000 recrues, tous les sorts supposés écrits) : 48 % ne connaissent aucun sort, 36 % un, 13 % deux, 2,9 % trois (cible d'Idan : 50 / 35 / 12,5 / 2,5). Tant qu'une école n'a pas de sort écrit, un tirage dans cette école ne donne rien.
 
+**Branché** (étape 4) : le générateur fait les tirages pour chaque recrue, l'escouade de départ et le capitaine (`game-core/mercenary-generator.js`, tirages gardés dans la trace de génération ; données : `cultures.json`, colonnes `ecole_magie` et `compensation_sans_ecole` ; constantes `generation.spells.*`). La chance maximale de 75 % s'applique avant le multiplicateur du rang (au plus 97,5 % pour un troisième sort). Tests : `tests/starting-spells.test.js` (avec six sorts fictifs par école : 48 / 36 / 13 / 2,9 %). Aujourd'hui, seules la Vie et le Feu ont des sorts : **environ une recrue sur neuf** connaît un sort en arrivant. Les sorts connus apparaissent dans le grimoire et dans la barre de sorts en combat, sans bouton de test ; le bouton « Sorts (test) » prête les autres au niveau 1, sans remplacer le niveau d'un sort déjà connu.
+
 L'école de culture n'est **pas garantie** à la création : une recrue sur deux des cultures que la génération ne pousse pas dans leur école (Cités libres, Royaumes du Soleil Levant, Steppes désertiques, Ogres des steppes, Nains du chaos, Orcs des villes, Orcs des steppes, Caravanes de ferrailleurs) n'a pas l'école, et sa chance au tirage de culture est presque nulle. Voulu : « tout le monde ne doit pas être mage » (Idan, 2026-10-25).
 
 Plus tard : une **école de magie** à construire au camp et des **manuels** à trouver pour apprendre les autres sorts.
@@ -179,7 +181,7 @@ Plus tard : une **école de magie** à construire au camp et des **manuels** à 
 1. **Étape 1** — ces décisions, `spells.json`, les règles des sorts (`game-core/magic.js`) et leurs tests (`tests/magic.test.js`) : Soin rapide, puis les six sorts de l'école de la Vie.
 2. **Étape 2** — les sorts dans l'écran de combat actuel, **pour tester** (Vie, puis Feu ; le bouton de test s'appelle désormais « Sorts (test) » et donne tous les sorts écrits) (Idan, 2026-10-25 ; l'interface de combat sera refaite) : une barre de sorts pour le mercenaire actif (action, mana, réussite) ; les cases ciblables en vert (alliés et lanceur, ou toutes les cases à portée pour Soin de masse) ; le journal ; la Régénération au début des activations ; le mana affiché dans la liste des équipes ; un bouton **« Sorts de Vie (test) »** : toute l'escouade connaît les six sorts (niveau 1) pour ce combat, sans toucher au grimoire, le mana étant bien dépensé ; une IA simple, aussi en combat automatique : Soin profond sur l'allié le plus blessé sous 35 % de ses PV à la place de l'attaque, Soin rapide sous 60 %.
 3. Étape 3 — **recharge du mana au camp** (faite avec l'étape 2, pour pouvoir tester d'un combat à l'autre), **XP du sort et de l'école, régression des écoles opposées**, XP de la Puissance magique, de la Réserve de mana et de la Chance (faite, voir « Écoles : progression et régression »).
-4. Étape 4 — sorts connus à la création et compensations des nains et des ogres.
+4. Étape 4 — **sorts connus à la création** et **compensations des nains et des ogres** (faite, voir « Sorts connus à la création »).
 
 ## Architecture d'un sort
 

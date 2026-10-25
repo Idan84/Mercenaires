@@ -32,6 +32,7 @@
     const SPELL_SHARE=constant("magic.mastery.spell_share",0.5);
     const CAST={floor:constant("magic.cast.floor",10),span:constant("magic.cast.span",85),scale:constant("magic.cast.scale",15)};
     const FUMBLE_THRESHOLD=constant("combat.melee.fumble.threshold",96);
+    const RECHARGE={base:constant("magic.mana.recharge_base",10),willShare:constant("magic.mana.recharge_will_share",0.5)};
     const die=sides=>1+Math.floor(random()*sides);
     const d100=()=>die(100);
     const clamp=(value,min,max)=>Math.min(max,Math.max(min,value));
@@ -39,10 +40,12 @@
 
     function spell(code){ return spellByCode.get(code)||null; }
     function schoolSpells(school){ return spells.filter(x=>x.ecole===school); }
-    // Le sort tel que le personnage le connaît (null s'il ne le connaît pas).
+    // Le sort tel que le personnage le connaît (null s'il ne le connaît pas). unit.spells : sorts prêtés pour un seul combat
+    // (bouton de test de l'écran de combat), sans toucher au grimoire du personnage.
     function knownSpell(unit,code){
-      return (unit?.character?.spells||[]).find(x=>x.code===code||x.name===spell(code)?.nom)||null;
+      return [...(unit?.spells||[]),...(unit?.character?.spells||[])].find(x=>x.code===code||x.name===spell(code)?.nom)||null;
     }
+    function knownSpells(unit){ return spells.filter(x=>knownSpell(unit,x.code)); }
     function spellLevel(unit,code){ return Math.max(1,Number(knownSpell(unit,code)?.mastery)||1); }
     function schoolLevel(unit,school){ return combat.statWithGear(unit,school); }
     function mastery(unit,code){
@@ -91,9 +94,22 @@
       const s=spell(code);
       return s?Math.max(1,Math.ceil(num(s.mana_base,0)*(1-mastery(unit,code)/num(s.mana_diviseur_maitrise,300))-1e-9)):0;
     }
+    function manaMax(unit){ return combat.statWithGear(unit,"Réserve de mana"); }
     function currentMana(unit){
       const mana=Number(unit?.character?.mana);
-      return Number.isFinite(mana)?mana:combat.statWithGear(unit,"Réserve de mana");
+      return Number.isFinite(mana)?mana:manaMax(unit);
+    }
+    // Recharge au camp (Idan, 2026-10-25) : chaque jour, Réserve de mana × (10 + Volonté / 2) %, équipement compris,
+    // arrondi au supérieur, jusqu'à la Réserve. Rien pendant les trajets (campaign.js ne recharge que le camp).
+    function dailyRecharge(unit){
+      const percent=RECHARGE.base+RECHARGE.willShare*combat.statWithGear(unit,"Volonté");
+      return Math.ceil(manaMax(unit)*percent/100-1e-9);
+    }
+    function rechargeMana(character){
+      const unit={character,activeSet:1},max=manaMax(unit),before=currentMana(unit);
+      const after=Math.min(max,Math.max(before,before+dailyRecharge(unit)));
+      character.mana=Math.round(after*100)/100;
+      return {before,after:character.mana,gained:character.mana-before,max};
     }
 
     // Altération magique de l'armure portée, × le multiplicateur de malus de sa qualité (usée 1,2 ; Grand Luxe 0,8).
@@ -192,6 +208,7 @@
       spell,
       schoolSpells,
       knownSpell,
+      knownSpells,
       spellLevel,
       schoolLevel,
       mastery,
@@ -203,7 +220,10 @@
       effectAmount,
       effectRange,
       manaCost,
+      manaMax,
       currentMana,
+      dailyRecharge,
+      rechargeMana,
       armorPenalty,
       castChance,
       isUndead,

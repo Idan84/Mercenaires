@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 186,
+  "row_count": 188,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -1520,6 +1520,22 @@
       "description": "Échelle de la logistique de réussite d’un sort (Idan, 2026-10-25).",
       "formule": "Magie — maîtrise et réussite d’un sort",
       "valeur": 15,
+      "version": "V1"
+    },
+    {
+      "nom": "Magie — recharge du mana, base",
+      "code": "magic.mana.recharge_base",
+      "description": "Recharge du mana au camp, chaque jour : Réserve de mana × (base + part × Volonté) %, équipement compris, jusqu’à la Réserve ; rien pendant les trajets (Idan, 2026-10-25).",
+      "formule": "Magie — recharge du mana",
+      "valeur": 10,
+      "version": "V1"
+    },
+    {
+      "nom": "Magie — recharge du mana, part de Volonté",
+      "code": "magic.mana.recharge_will_share",
+      "description": "Part de la Volonté dans la recharge quotidienne du mana au camp : Volonté 52 → 10 + 26 = 36 % de la Réserve par jour (Idan, 2026-10-25).",
+      "formule": "Magie — recharge du mana",
+      "valeur": 0.5,
       "version": "V1"
     }
   ]

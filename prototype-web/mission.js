@@ -102,6 +102,7 @@ function resetMissionActivation(unit){
   unit.quickAvailable=true;
   unit.prone=false;
   unit.secondMove=false;
+  tickMissionRegeneration(unit);
 }
 
 // Un blessé ou un fatigué de la compagnie ne peut pas partir en mission (10-mission-time §4 à §6).
@@ -913,6 +914,14 @@ function handleMissionHexClick(q,r){
     return;
   }
 
+  const spellCode=missionSpellMode();
+  if(spellCode){
+    const spell=missionMagic()?.spell(spellCode);
+    const target=spell?.cible==="case"?{q,r}:clicked;
+    if(target) castPlayerMissionSpell(target);
+    return;
+  }
+
   if(!clicked||clicked.team!=="enemy") return;
   const distance=m.engine.axialDistance(u,clicked);
 
@@ -963,6 +972,142 @@ function reloadMissionWeapon(){
   u.quickAvailable=false;
   missionLog(u.character.name+" recharge son "+item.name+".","gear");
   renderMission();
+}
+
+// Magie (doc 12 ; Idan, 2026-10-25) : les sorts connus se lancent depuis la barre de sorts, en action rapide ou
+// principale ; règles et tirages dans game-core/magic.js. Le mana se dépense sur le personnage et se recharge au camp.
+function missionMagic(){
+  const m=game.mission;
+  if(!m) return null;
+  if(m.magic===undefined) m.magic=typeof MercenairesMagic!=="undefined"
+    ?MercenairesMagic.createMagicRules({reference:game.referenceData,combat:m.engine}):null;
+  return m.magic;
+}
+function missionSpellMode(){
+  const mode=String(game.mission?.mode||"");
+  return mode.startsWith("spell:")?mode.slice(6):null;
+}
+function missionSelf(unit){ return String(unit?.character?.sex||"").trim().toLowerCase().startsWith("f")?"elle-même":"lui-même"; }
+
+// Bouton de test (Idan, 2026-10-25 : « pour tester ») : toute l'escouade connaît les six sorts de Vie, au niveau 1, pour
+// ce combat seulement ; le grimoire des personnages ne change pas. Le mana, lui, est bien dépensé.
+function teachMissionTestSpells(){
+  const m=game.mission,magic=missionMagic();
+  if(!m||m.over||!magic||m.testSpells) return;
+  m.testSpells=true;
+  for(const u of m.players) u.spells=magic.schoolSpells("Vie").map(s=>({code:s.code,name:s.nom,school:s.ecole,mastery:1}));
+  missionLog("Test : votre escouade connaît les six sorts de Vie (niveau 1) pour ce combat.","magic");
+  renderMission();
+}
+
+function healMissionUnit(unit,amount){
+  const before=unit.hp;
+  unit.hp=Math.min(unit.pvMax,unit.hp+amount);
+  return Math.max(0,unit.hp-before);
+}
+function damageMissionUnitBySpell(unit,amount){
+  if(!amount) return;
+  unit.hp-=amount;
+  unit.damageTaken=(Number(unit.damageTaken)||0)+amount;
+  if(unit.hp<=0){ unit.alive=false; missionLog(unit.character.name+" est hors combat.","death"); }
+}
+
+// Lance un sort et applique son résultat (joueur et IA) : action, mana, PV, effets, journal.
+function resolveMissionSpell(caster,target,code){
+  const magic=missionMagic(),spell=magic?.spell(code);
+  if(!spell) return null;
+  const out=magic.cast(caster,target,code);
+  if(!out.ok){ missionLog(out.reason,"bad"); return out; }
+  if(spell.action==="rapide") caster.quickAvailable=false; else caster.attackAvailable=false;
+  caster.character.mana=Math.max(0,Math.round((magic.currentMana(caster)-out.cost)*100)/100);
+  const name=caster.character.name;
+  const on=spell.cible==="case"?"":target===caster?" sur "+missionSelf(caster):" sur "+target.character.name;
+  const detail=" ("+Math.round(out.p)+" %"+(out.armor?", armure −"+Math.round(out.armor):"")+", jet "+out.roll+", "+out.cost+" mana)";
+  if(!out.success){
+    missionLog(name+" rate "+spell.nom+on+detail+".","miss");
+    if(out.fumble){
+      missionLog("Échec critique ("+out.fumbleRoll+" > Chance) : "+(out.selfDamage
+        ?"le sort se retourne, "+name+" perd "+out.selfDamage+" PV."
+        :"le sort se dissipe."),"bad");
+      damageMissionUnitBySpell(caster,out.selfDamage);
+      checkMissionEnd();
+    }
+    return out;
+  }
+  const critical=out.critical?" Coup critique : dés au maximum ("+out.critRoll+" ≤ "+missionPercent(out.critChance)+").":"";
+  if(spell.effet==="soin"){
+    const healed=healMissionUnit(target,out.amount);
+    missionLog(name+" lance "+spell.nom+on+detail+" : +"+healed+" PV"+(healed<out.amount?" (soin de "+out.amount+")":"")+"."+critical,"magic");
+  }else if(spell.effet==="soin_sur_duree"){
+    target.regeneration={...out.effect};
+    missionLog(name+" lance "+spell.nom+on+detail+" : un soin au début de chacune de ses "+out.effect.turns
+      +" prochaines activations."+critical,"magic");
+  }else if(spell.effet==="soin_de_zone"){
+    const healed=missionMagic().unitsInZone(out.zone.center,out.zone.radius,missionUnits())
+      .map(u=>u.character.name+" +"+healMissionUnit(u,out.amount));
+    missionLog(name+" lance "+spell.nom+" (rayon "+out.zone.radius+")"+detail+" : "+out.amount+" PV pour chacun"
+      +(healed.length?" — "+healed.join(", "):" — personne dans la zone")+"."+critical,"magic");
+  }else if(spell.effet==="degats_sans_resistance"){
+    missionLog(name+" lance "+spell.nom+on+detail+" : "+out.amount+" PV, sans aucune résistance."+critical,"damage");
+    damageMissionUnitBySpell(target,out.amount);
+    checkMissionEnd();
+  }else if(spell.effet==="purge_poison"){
+    target.poisoned=false;
+    missionLog(name+" lance "+spell.nom+on+detail+" : le poison est éliminé.","magic");
+  }
+  return out;
+}
+
+function castPlayerMissionSpell(target){
+  const m=game.mission,u=missionActiveUnit(),code=missionSpellMode();
+  if(!u||!code) return;
+  m.mode=null;
+  resolveMissionSpell(u,target,code);
+  if(missionActiveUnitLost()) return;
+  renderMission();
+}
+
+// Régénération (doc 12) : le soin tombe au début de chaque activation de la cible, jusqu'à la fin de sa durée.
+function tickMissionRegeneration(unit){
+  const effect=unit.regeneration,magic=missionMagic();
+  if(!effect||!magic||!unit.alive) return;
+  const tick=magic.tick(effect),healed=healMissionUnit(unit,tick.amount);
+  effect.turns=tick.turnsLeft;
+  if(effect.turns<=0) unit.regeneration=null;
+  missionLog("Régénération : "+unit.character.name+" récupère "+healed+" PV"
+    +(effect.turns>0?" (encore "+effect.turns+" tour"+(effect.turns>1?"s":"")+").":" (fin)."),"magic");
+}
+
+// IA des sorts (pour tester, et pour le combat automatique) : Soin profond sur l'allié le plus blessé sous 35 % de ses PV,
+// à portée, à la place de l'attaque ; Soin rapide (action rapide) sur l'allié le plus blessé sous 60 %. Les autres sorts
+// restent au joueur.
+function missionAiCast(unit){
+  const magic=missionMagic();
+  if(!magic||!magic.knownSpells(unit).length) return;
+  const allies=livingMissionUnits(unit.team).filter(a=>!a.offMap).sort((a,b)=>a.hp/a.pvMax-b.hp/b.pvMax);
+  const pick=(code,ratio)=>allies.find(a=>a.hp/a.pvMax<ratio&&magic.canCast(unit,a,code).ok);
+  const deep=pick("deep_heal",0.35);
+  if(deep) resolveMissionSpell(unit,deep,"deep_heal");
+  if(!unit.alive||game.mission.over) return;
+  const quick=pick("quick_heal",0.6);
+  if(quick) resolveMissionSpell(unit,quick,"quick_heal");
+}
+
+function renderMissionSpellBar(u){
+  const m=game.mission,magic=missionMagic();
+  if(!u||!magic||m.phase!=="player"||m.over) return "";
+  const spells=magic.knownSpells(u);
+  if(!spells.length) return "";
+  const mana=magic.currentMana(u);
+  return `<span class="mission-mana">Mana ${Math.floor(mana)}/${Math.round(magic.manaMax(u))}</span>`+spells.map(s=>{
+    const cost=magic.manaCost(u,s.code),p=magic.castChance(u,s.code).p,quick=s.action==="rapide";
+    const used=quick?u.quickAvailable===false:u.attackAvailable===false;
+    const reason=used?(quick?"Action rapide déjà utilisée.":"Action principale déjà utilisée."):mana<cost?"Pas assez de mana.":"";
+    const title=s.nom+" — "+(quick?"action rapide":"action principale")+" · "+cost+" mana · "+Math.round(p)+" % de réussite\n"
+      +s.description+(reason?"\n"+reason:"");
+    return `<button class="secondary mission-spell${m.mode==="spell:"+s.code?" selected":""}" data-spell="${esc(s.code)}" title="${esc(title)}"${reason?" disabled":""}>`
+      +`${esc(s.nom)}<small>${quick?"rapide":"principale"} · ${cost} mana · ${Math.round(p)} %</small></button>`;
+  }).join("");
 }
 
 function nearestMissionTarget(unit){
@@ -1112,6 +1257,8 @@ function enemyMissionActivation(unit){
   resetMissionActivation(unit);
   if(unit.fleeing&&resolveMissionFleeingActivation(unit)) return;
   if(!unit.alive||game.mission.over) return;
+  missionAiCast(unit);
+  if(!unit.alive||game.mission.over||unit.attackAvailable===false) return;
   let target=nearestMissionTarget(unit);
   if(!target) return;
 
@@ -1212,7 +1359,8 @@ function missionActionAvailability(){
     reload:u.quickAvailable&&e.canReload(u),
     secondMove:u.attackAvailable,
     end:true,
-    auto:true
+    auto:true,
+    testSpells:Boolean(missionMagic())&&!m.testSpells
   };
 }
 
@@ -1225,12 +1373,29 @@ function targetableMissionCells(){
     return set;
   }
 
+  const spellCode=missionSpellMode(),magic=missionMagic();
+  if(spellCode){
+    if(!magic) return set;
+    if(magic.spell(spellCode)?.cible==="case"){
+      for(const c of missionCells()) if(magic.canCast(u,c,spellCode).ok) set.add(missionKey(c.q,c.r));
+    }else{
+      for(const unit of missionUnits()) if(unit.alive&&!unit.offMap&&magic.canCast(u,unit,spellCode).ok) set.add(missionKey(unit.q,unit.r));
+    }
+    return set;
+  }
+
   for(const enemy of livingMissionUnits("enemy")){
     const distance=m.engine.axialDistance(u,enemy);
     if((m.mode==="melee"||m.mode==="ranged")&&missionCanAttack(u,distance,m.mode)) set.add(missionKey(enemy.q,enemy.r));
     if(m.mode==="charge"&&missionChargeIfClear(u,enemy)) set.add(missionKey(enemy.q,enemy.r));
   }
   return set;
+}
+
+function missionRosterMagic(u){
+  const magic=missionMagic();
+  if(!magic||!magic.knownSpells(u).length) return "";
+  return " · Mana "+Math.floor(magic.currentMana(u))+"/"+Math.round(magic.manaMax(u))+(u.regeneration?" · Régénération":"");
 }
 
 function renderMissionRoster(units){
@@ -1240,7 +1405,7 @@ function renderMissionRoster(units){
       <div class="mission-roster-copy">
         <strong>${esc(u.character.name)}</strong>
         <span>${u.offMap?"A quitté le combat":Math.max(0,u.hp)+"/"+u.pvMax+" PV"+(u.hp<0?" ("+u.hp+")":"")+(u.alive&&u.fleeing?" · En fuite":"")+(u.alive&&!game.mission.engine.isLoaded(u,game.mission.engine.activeWeaponItem(u))?" · Arme déchargée":"")}</span>
-        <small>Init ${Math.round(game.mission.engine.initiative(u))} · Mvt ${game.mission.engine.movementBase(u)}</small>
+        <small>Init ${Math.round(game.mission.engine.initiative(u))} · Mvt ${game.mission.engine.movementBase(u)}${missionRosterMagic(u)}</small>
       </div>
     </div>
   `).join("");
@@ -1262,7 +1427,7 @@ function renderMission(){
   for(const {q,r} of missionCells()){
     const p=missionHexPixel(q,r),key=missionKey(q,r),classes=["hex-cell"];
     let title="";
-    if(targets.has(key)) classes.push(m.mode==="move"?"reachable":"targetable");
+    if(targets.has(key)) classes.push(m.mode==="move"?"reachable":missionSpellMode()?"spell-target":"targetable");
     if(targets.has(key)&&m.mode==="move"){
       const risk=missionPathOpportunityCount(u,shortestMissionPath(u,{q,r},u));
       if(risk){
@@ -1306,6 +1471,8 @@ function renderMission(){
     $(id).disabled=!availability[key];
     $(id).classList.toggle("selected",m.mode===key);
   }
+  $("mission-test-spells-btn").disabled=!availability.testSpells;
+  $("mission-spells").innerHTML=renderMissionSpellBar(u);
 
   $("mission-roster-player").innerHTML=renderMissionRoster(m.playerOrder);
   $("mission-roster-enemy").innerHTML=renderMissionRoster(m.enemyOrder);
@@ -1345,6 +1512,13 @@ function initializeMissionUi(){
   window.addEventListener("resize",()=>{ if(game.mission) renderMission(); });
   $("mission-end-activation-btn").addEventListener("click",endMissionActivation);
   $("mission-auto-btn").addEventListener("click",autoResolveMission);
+  $("mission-test-spells-btn").addEventListener("click",teachMissionTestSpells);
+  $("mission-spells").addEventListener("click",event=>{
+    const button=event.target.closest("[data-spell]");
+    if(!button||button.disabled) return;
+    const mode="spell:"+button.dataset.spell;
+    setMissionMode(game.mission?.mode===mode?null:mode);
+  });
   $("mission-leave-btn").addEventListener("click",leaveMission);
   $("mission-result-back-btn").addEventListener("click",leaveMission);
 

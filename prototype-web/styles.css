@@ -379,12 +379,21 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
 .mission-actions button{padding:8px 10px;font-size:.78rem}
 .mission-actions button.selected{outline:2px solid #792d23;outline-offset:1px}
 .mission-actions button:disabled{opacity:.38;cursor:not-allowed}
+/* Barre de sorts (doc 12) : les sorts connus du mercenaire actif, son mana. */
+.mission-spells{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:-3px 0 10px}
+.mission-spells:empty{display:none}
+.mission-spells .mission-mana{font-size:.74rem;font-weight:750;color:#2f6b3a;padding:0 4px}
+.mission-spells .mission-spell{display:flex;flex-direction:column;align-items:flex-start;gap:1px;padding:6px 10px;font-size:.78rem;border-color:#7fae84}
+.mission-spells .mission-spell small{font-size:.66rem;opacity:.8;font-weight:500}
+.mission-spells .mission-spell.selected{outline:2px solid #2f6b3a;outline-offset:1px}
+.mission-spells .mission-spell:disabled{opacity:.38;cursor:not-allowed}
 .mission-map-scroll{overflow:auto;border:1px solid #cfc7bc;border-radius:14px;background:#dfe7d9;min-height:500px}
 .mission-map{position:relative;margin:0 auto;min-height:500px;background:radial-gradient(circle at 20% 20%,rgba(255,255,255,.32),transparent 30%),linear-gradient(135deg,rgba(79,112,68,.13),rgba(128,112,75,.08))}
 .hex-cell{position:absolute;width:58.9px;height:68px;border:0;padding:0;background:#f0eadb;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);box-shadow:inset 0 0 0 2px #c7bfae;opacity:.74}
 .hex-cell:hover{opacity:1;background:#fff6df}
 .hex-cell.reachable{background:#d7ead4;opacity:.95}
 .hex-cell.targetable{background:#efc8bf;opacity:.98}
+.hex-cell.spell-target{background:#cfe9c9;opacity:.98;box-shadow:inset 0 0 0 2px #5c9a63}
 .hex-cell.reachable.provokes{background:#ecd9a8;box-shadow:inset 0 0 0 2px #c9952e}
 .mission-token{position:absolute;z-index:5;width:48px;height:48px;border-radius:10px;padding:2px;border:3px solid white;box-shadow:0 3px 12px rgba(0,0,0,.28);text-align:center;pointer-events:none;background:#191919;color:white}
 .mission-token.player{border-color:#365f7b}
@@ -406,6 +415,7 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
 .combat-log.gear{display:block;border-left-color:#92762e}
 .combat-log.miss{color:#847b71}
 .combat-log.bad{background:#f6e0da;border-left-color:#b53025}
+.combat-log.magic{border-left-color:#3f8a4a;background:#eef7ec}
 .mission-result{display:flex;flex-direction:column;gap:10px;margin-top:10px;padding:12px 14px;border-radius:11px;background:#efe4cb}
 .mission-result-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
 .mission-aftermath{display:grid;gap:6px;margin:0;padding:0;list-style:none}

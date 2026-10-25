@@ -34,7 +34,7 @@ Git est la source de vérité. Les JSON ci-dessous sont les référentiels struc
 | item-qualities.json | 3 | nom, code, description, multiplicateur_malus, multiplicateur_qualite, multiplicateur_prix |
 | ranged-weapons.json | 8 | nom, domaine, portee_min_hex, portee_max_hex, cadence_tir, recharge_action_rapide, contre_charge, attaque_de_zone, degats_pv_base, puissance_perforante_base, prise, malus_vitesse_arme_base |
 | weapons.json | 38 | nom, domaine, prise, malus_vitesse_arme_base, portee_min_hex, portee_max_hex, bonus_charge_base, contre_charge, degats_pv_base, puissance_tranchante_base, puissance_perforante_base, puissance_contondante_base, prix_base (prix de base en pièces d’or, doc 05 « Valeur d’un objet ») |
-| formula-constants.json | 172 | nom, code, description, formule, valeur, version |
+| formula-constants.json | 177 | nom, code, description, formule, valeur, version |
 | game-formulas.json | 43 | nom, code, domaine, expression, maximum, minimum, notes, statut, type_attaque, version, etape |
 | formula-terms.json | 13 | nom, caracteristique, code_variable, coefficient, cote, description, formule, ordre, source |
 
@@ -47,6 +47,7 @@ Git est la source de vérité. Les JSON ci-dessous sont les référentiels struc
 | tavern-dialogue.json | 20 + 38 | greetings (min, max, texte) selon l'affinité ; questions, answers et lines du dialogue de recrutement ; weapons (nom, avec_article) : textes de la Taverne |
 | equipment-dialogue.json | 8 × 4 | proposals (par action), replies (action, accord, humeur, lignes), outcomes, menu : dialogues des échanges d’équipement Donner / Retirer / Troquer |
 | steward-dialogue.json | 2 × 16 + 8 | offer et recall (proposition, répliques accepted / flattered / vexed / neutral, issues), talk (accueil, options, évaluation des candidats), panel : dialogues de l’intendant |
+| lieutenant-dialogue.json | 8 + 22 | panel (encart de Ma Compagnie) et promote (proposition, demande, négociation, répliques accepted / counter / refused, issues) : dialogues du lieutenant |
 | item-titles.json | 78 | nom, famille (arme, armure, bottes, ceinture, amulette, cape, gants, culotte, bague ou casque), t1, t2, t3, t4 : titre de l’objet selon son tier, en tête de la carte d’objet (textes de JC, Idan 2026-10-24) |
 | renamed-names.json | 3 | ancien, nouveau, famille (culture ou arme), date : noms changés par Idan ; les sauvegardes et les mots-clés Bridge des avatars restent compatibles |
 | character-names.json | 46 | id, peuple, culture, consonance, poids, prenoms_femme, prenoms_homme, noms, noms_femme (noms des personnages générés : genre et consonance des cultures humaines) |

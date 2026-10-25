@@ -2189,6 +2189,14 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .steward-pick small{color:#a98d66;font:italic 12px Georgia,serif}
 .steward-pick:hover:not(:disabled),.steward-pick:focus-visible{border-color:#dbac6e;background:#4a3424;color:#ffe1ac;outline:none}
 .steward-pick:disabled{opacity:.55;cursor:not-allowed}
+/* Lieutenants (Idan, 2026-10-25) : encart de Ma Compagnie, cadre doré dans Mes mercenaires. */
+.lieutenants-panel{display:grid;gap:10px;max-width:750px;margin:0 auto 16px}
+.lieutenants-panel h3{margin:0;font:normal 13px/1.2 system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#d3ac76}
+.lieutenant-card{display:flex;align-items:center;gap:14px;padding:12px 16px;border:1px solid #d9b25f;border-radius:12px;background:linear-gradient(180deg,#46331f,#2a1f18);box-shadow:inset 0 0 0 1px rgba(255,215,122,.25),0 0 18px rgba(217,178,95,.18)}
+.lieutenant-blocker,.lieutenant-posts{margin:0;color:#c2b29e;font:italic 14px/1.4 Georgia,serif}
+.lieutenant-posts{font-size:13px;color:#a98d66}
+.roster-lieutenant{border-color:#e0b85f;background:linear-gradient(130deg,#56401f,#241a14);box-shadow:inset 0 0 0 1px rgba(255,215,122,.35),0 0 22px rgba(224,184,95,.22),0 10px 25px #0005}
+.roster-rank{display:inline-block;margin:2px 0 4px;padding:1px 8px;border:1px solid #e0b85f;border-radius:999px;color:#ffd77a;font:700 11px/1.6 system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase}
 
 /* Tableau des contrats de la Taverne (doc 17, Idan 2026-10-24) : l'offre, ses faits et l'ordre de mission. */
 .contract-board{display:grid;gap:14px;margin-top:10px}

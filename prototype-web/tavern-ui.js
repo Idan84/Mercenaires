@@ -14,7 +14,7 @@ function biographyRules(){
 }
 
 function avatarRules(){
-  if(!game.avatarRules) game.avatarRules=MercenairesAvatars.createAvatarRules({catalog:game.referenceData.avatars?.rows||[]});
+  if(!game.avatarRules) game.avatarRules=MercenairesAvatars.createAvatarRules({catalog:game.referenceData.avatars?.rows||[],weapons:game.referenceData.weapons?.rows||[]});
   return game.avatarRules;
 }
 

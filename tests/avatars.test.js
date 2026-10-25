@@ -18,33 +18,53 @@ const merc=(extra={})=>({
   weaponPreferences:{twoHands:{weapon:"Marteau de guerre",category:"Armes contondantes"}},
   ...extra
 });
-const av=(id,extra={})=>({id,people:"Ogre",sex:null,tags:{},full:id+"_full.webp",portrait:id+"_portrait.webp",...extra});
+// Un avatar d'ogre de la culture du mercenaire, sans ascendance, sauf mention contraire.
+const av=(id,extra={})=>({id,people:"Ogre",sex:null,full:id+"_full.webp",portrait:id+"_portrait.webp",...extra,
+  tags:{culture:["Ogres des cités humaines"],...(extra.tags||{})}});
 
-// Tags du mercenaire : rien d'inventé, tout vient du générateur.
+// Tags du mercenaire : rien d'inventé, tout vient du générateur. Ce mage tient son école (Feu) ; son marteau préféré
+// compte comme une arme portée en plus.
 const tags=avatarTags(merc());
 assert.equal(tags.people,"ogre");
 assert.deepEqual(tags.profile,["magic"]);
 assert.deepEqual(tags.magic,["feu"]);
+assert.deepEqual(tags.main,["feu"]);
+assert.ok(tags.second.includes("marteau de guerre")&&tags.second.includes("armes contondantes"));
 assert.ok(tags.weapon.includes("marteau de guerre")&&tags.weapon.includes("armes contondantes"));
 
-// Contraintes dures : peuple, et sexe s'il est déjà connu.
+// Contraintes dures : peuple, culture et ascendance (Idan, 2026-10-25 : « culture et ascendance doivent matcher au même
+// niveau que peuple »), et sexe s'il est déjà connu.
 assert.equal(scoreAvatar(av("a",{people:"Halfling"}),tags),null,"autre peuple : exclu");
-assert.equal(scoreAvatar(av("b"),tags),0,"même peuple sans tag : candidat");
+assert.equal(scoreAvatar(av("b"),tags),0,"même peuple et même culture, sans autre tag : candidat");
+assert.equal(scoreAvatar(av("b1",{tags:{culture:["Ogres des montagnes"]}}),tags),null,"autre culture : exclu");
+assert.equal(scoreAvatar(av("b2",{tags:{culture:[]}}),tags),null,"avatar sans culture : exclu (à taguer)");
+assert.equal(scoreAvatar(av("b3",{tags:{ascendance:["Sang de dragon"]}}),tags),null,"une ascendance pour qui n'en a pas : exclu");
+const dragon=avatarTags(merc({ascendance:"Sang de dragon"}));
+assert.equal(scoreAvatar(av("b4"),dragon),null,"sans ascendance pour un sang de dragon : exclu");
+assert.equal(scoreAvatar(av("b5",{tags:{ascendance:["Sang de troll"]}}),dragon),null,"autre ascendance : exclu");
+assert.equal(scoreAvatar(av("b6",{tags:{ascendance:["Sang de dragon"]}}),dragon),0,"même ascendance : candidat");
 assert.equal(scoreAvatar(av("c",{sex:"femme"}),avatarTags(merc({sex:"homme"}))),null,"sexe connu et différent : exclu");
 assert.equal(scoreAvatar(av("d",{sex:"femme"}),tags),0,"sexe inconnu : l'image décide");
 
-// Score souple : ce qui se voit compte le plus. Casse, accents et apostrophes ignorés.
-assert.equal(scoreAvatar(av("e",{tags:{profile:["magic"],magic:["Feu"]}}),tags),SCORE.profile+SCORE.magic);
-assert.equal(scoreAvatar(av("f",{tags:{weapon:["armes CONTONDANTES"],culture:["Ogres des cites humaines"]}}),tags),SCORE.weapon+SCORE.culture);
-assert.equal(scoreAvatar(av("g",{tags:{magic:["Glace"]}}),tags),-SCORE.magic,"ce qui se voit et contredit coûte son poids ; l'avatar reste candidat");
+// Priorités d'Idan (2026-10-25) : après la culture et l'ascendance (obligatoires), le profil, puis ce qu'il tient en main
+// (arme ou école), puis l'arme de dos ; chaque rang l'emporte sur tous les suivants réunis. Casse, accents et apostrophes
+// ignorés.
+assert.ok(2*SCORE.profile>2*(SCORE.main+SCORE.second)+SCORE.origin+SCORE.alignment+2,"le profil avant le reste");
+assert.ok(2*SCORE.main>2*SCORE.second+SCORE.origin+SCORE.alignment+2,"l'arme en main avant l'arme de dos et le hasard");
+assert.ok(2*SCORE.second>SCORE.origin+SCORE.alignment+2,"l'arme de dos avant l'origine, l'alignement et le hasard");
+assert.equal(scoreAvatar(av("e",{tags:{profile:["magic"],magic:["Feu"]}}),tags),SCORE.profile+SCORE.main);
+assert.equal(scoreAvatar(av("f",{tags:{weapon:["armes CONTONDANTES"],culture:["Ogres des cites humaines"]}}),tags),SCORE.main,
+  "sans profil, l'arme de l'image est comparée à tout ce qu'il porte");
+assert.equal(scoreAvatar(av("g",{tags:{magic:["Glace"]}}),tags),-SCORE.main,"ce qui se voit et contredit coûte son poids ; l'avatar reste candidat");
 assert.equal(scoreAvatar(av("g2",{tags:{origin:["Noble"],alignment:["Loyal bon"]}}),tags),0,"origine et alignement ne se voient pas : pas de malus");
-assert.equal(scoreAvatar(av("g3",{tags:{profile:["ranged"],weapon:["Arc"],ascendance:["Sang de dragon"],culture:["Ogres des montagnes"]}}),tags),
-  -(SCORE.profile+SCORE.weapon+SCORE.ascendance+SCORE.culture),"un archer au sang de dragon d'une autre culture contredit ce mage");
+assert.equal(scoreAvatar(av("g3",{tags:{profile:["ranged"],weapon:["Arc"]}}),tags),-(SCORE.profile+SCORE.main),"un archer contredit ce mage");
 
-// Ce qui se voit (Idan, 2026-10-25) : les armes portées plutôt que les préférences ; l'école seulement pour un mage ou
-// un mercenaire qui connaît un sort.
+// Ce qui se voit : les armes portées plutôt que les préférences ; l'école seulement pour un mage ou un mercenaire qui
+// connaît un sort.
 const carrying=merc({items:[{id:"w1",name:"Hache double",category:"Haches"},{id:"w2",name:"Arc court",category:"Armes de tir"}],
   equipment:{profile:{type:"melee"},slots:{weapon_set_1_main:"w1",weapon_set_2_main:"w2"}}});
+assert.deepEqual(avatarTags(carrying).main,["hache double","haches"],"guerrier : il tient sa hache");
+assert.deepEqual(avatarTags(carrying).second,["arc court","armes de tir"],"et porte son arc");
 assert.deepEqual(avatarTags(carrying).weapon,["hache double","haches","arc court","armes de tir"]);
 assert.deepEqual(avatarTags(carrying).magic,[],"un guerrier dont la meilleure école est le Feu n'a pas l'air d'un mage");
 assert.deepEqual(avatarTags(merc({equipment:{profile:{type:"melee"}},spells:[{code:"fire_bolt",school:"Feu"}]})).magic,["feu"],"il connaît un sort de Feu");
@@ -58,7 +78,29 @@ assert.equal(fighters.choose(merc({equipment:{profile:{type:"melee"}}}),new Set(
   "à défaut d'avatar qui lui ressemble, un avatar neutre passe avant un mage");
 assert.equal(fighters.choose(carrying,new Set()).avatar.id,"ogre-hache");
 
-// Choix : le meilleur l'emporte malgré le hasard (0 à 5).
+// L'exemple d'Idan : le profil de l'avatar dit quelle arme il tient. « CAC + Hache + Arc » tient la hache et porte l'arc ;
+// « Distance + Hache + Arc » tient l'arc et porte la hache.
+const weaponRows=read("weapons.json").rows;
+const kit=(profile,main,second)=>merc({culture:"Ogres des montagnes",
+  items:[{id:"a",name:main,combatFamily:profile==="ranged"?"ranged":"melee"},{id:"b",name:second,combatFamily:profile==="ranged"?"melee":"ranged"}].filter(x=>x.name),
+  equipment:{profile:{type:profile},slots:{weapon_set_1_main:"a",weapon_set_2_main:second?"b":null}}});
+const bowAxe=av("ogre-cac-hache-arc",{tags:{profile:["melee"],culture:["Ogres des montagnes"],weapon:["Hache de guerre","Arc"]}});
+const archer=av("ogre-dist-hache-arc",{tags:{profile:["ranged"],culture:["Ogres des montagnes"],weapon:["Hache de guerre","Arc"]}});
+const look=createAvatarRules({catalog:[bowAxe,archer],weapons:weaponRows}).avatars;
+assert.equal(look.length,2);
+const fams=require("../game-core/avatars.js").weaponFamilies(weaponRows);
+const s=(a,m)=>scoreAvatar(a,avatarTags(m,fams),fams);
+assert.ok(s(bowAxe,kit("melee","Hache de guerre","Arc"))>s(bowAxe,kit("melee","Hache de guerre","Arbalète")),
+  "à la hache, celui qui porte un arc passe avant celui qui porte une arbalète");
+assert.ok(s(bowAxe,kit("melee","Hache de guerre","Arbalète"))>s(bowAxe,kit("melee","Épée longue","Arc")),
+  "la hache en main compte plus que l'arc dans le dos");
+assert.ok(s(archer,kit("ranged","Arc","Hache de guerre"))>s(archer,kit("ranged","Arc","Épée longue")));
+assert.ok(s(archer,kit("ranged","Arc","Hache de guerre"))>s(bowAxe,kit("ranged","Arc","Hache de guerre")),"un archer prend l'avatar Distance");
+assert.ok(s(bowAxe,kit("melee","Hache de guerre","Arc"))>s(archer,kit("melee","Hache de guerre","Arc")),"un guerrier prend l'avatar CAC");
+assert.equal(s(av("y",{tags:{profile:["melee"],culture:["Ogres des steppes"],weapon:["Hache de guerre"]}}),kit("melee","Hache de guerre")),null,
+  "une autre culture n'est pas candidate, même avec la bonne arme");
+
+// Choix : le meilleur l'emporte malgré le hasard (0 à 2).
 const rules=createAvatarRules({catalog:[av("ogre-001"),av("ogre-002",{sex:"femme",tags:{profile:["magic"],magic:["Feu"]}}),av("halfling-001",{people:"Halfling"})],random:()=>0.999});
 const m=merc();
 assert.equal(rules.assign(m,new Set()).id,"ogre-002");
@@ -115,8 +157,18 @@ const files2={peoples:"peoples.json",cultures:"cultures.json",socialOrigins:"soc
 const reference=Object.fromEntries(Object.entries(files2).map(([k,f])=>[k,read(f)]));
 const seeded=()=>{let s=11;return()=>{s=(s*16807)%2147483647;return s/2147483647;};};
 const generator=createGenerator(reference,{random:seeded(),nameGenerator:(p,i)=>p+" "+i});
-// Catalogue de test : 30 avatars par peuple, la moitié tagués « femme ».
-const testCatalog=[...peoples].flatMap(p=>Array.from({length:30},(_,i)=>av(p+"-"+i,{people:p,sex:i%2?"femme":null})));
+// Catalogue de test : pour chaque peuple, chaque culture (8 avatars sans ascendance, 2 par ascendance possible), la moitié
+// tagués « femme » : culture et ascendance sont obligatoires.
+const cultureRows=read("cultures.json").rows,compatRows=read("ancestry-compatibility.json").rows;
+const peopleNames=read("peoples.json").rows.map(r=>r.nom);
+const testCatalog=peopleNames.flatMap(p=>{
+  const cultures=cultureRows.filter(c=>String(c.peuples).split(",").map(x=>x.trim()).includes(p)).map(c=>c.nom);
+  const ascendances=compatRows.filter(r=>r.peuple===p&&r.possible&&r.ascendance).map(r=>r.ascendance);
+  return cultures.flatMap((culture,ci)=>[
+    ...Array.from({length:8},(_,i)=>av(p+"-"+ci+"-"+i,{people:p,sex:i%2?"femme":null,tags:{culture:[culture]}})),
+    ...ascendances.flatMap((asc,ai)=>[0,1].map(i=>av(p+"-"+ci+"-a"+ai+"-"+i,{people:p,sex:i?"femme":null,tags:{culture:[culture],ascendance:[asc]}})))
+  ]);
+});
 const avatarRules=createAvatarRules({catalog:testCatalog,random:seeded()});
 const campaign=createCampaignRules({generator,tavern:createTavernRules({reference,random:()=>0.999}),reference,biographies:createBiographyRules({catalog:read("biographies.json").rows}),avatars:avatarRules});
 const captain=generator.createCaptain({id:1});

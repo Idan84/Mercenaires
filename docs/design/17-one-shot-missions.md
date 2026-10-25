@@ -232,7 +232,7 @@ Le Guerrier d'élite (bouclier et Brigandine) reste tel quel : les mercenaires m
 
 Une mission sans combat pour gagner de l'or ; la contrepartie : on est privé des mercenaires pendant la mission. Code : `game-core/bodyguard.js` (règles), `game-core/campaign.js` (offre, départ, retour), `prototype-web/contract-ui.js` et `mission.js` (tableau, choix des gardes, fenêtre du retour). Données et textes : `data/reference/bodyguard-missions.json`.
 
-- **Offre** : une à la fois au tableau de la Taverne, sous le contrat, valable 3 à 6 jours ; un client (texte de JC), **1 à 3 mercenaires** d'un **niveau de réputation minimal**, pour **3 à 21 jours**. Niveau tiré : 1★ 10 %, 2★ 30 %, 3★ 30 %, 4★ 20 %, 5★ 10 % ; les offres montent avec la compagnie : + max(0, niveau du meilleur mercenaire − 4), jusqu'à 15★ (JC, à confirmer ; plus tard, lié à la renommée).
+- **Offre** : une à la fois au tableau de la Taverne, sous le contrat, valable 3 à 6 jours ; un client (texte de JC), **1 à 3 mercenaires** d'un **niveau de réputation minimal**, pour **3 à 21 jours**. Niveau tiré : 1★ 10 %, 2★ 30 %, 3★ 30 %, 4★ 20 %, 5★ 10 % ; les offres montent avec la compagnie : + max(0, niveau du meilleur mercenaire − 4), jusqu'à 15★ (proposé par JC, validé par Idan ; plus tard, lié à la renommée).
 - **Paiement d'avance**, par mercenaire (formule de JC, validée et relevée sur les durées courtes par Idan) : **W × (2 + jours × (1,3 + (jours − 3) / 22))**, arrondi à 10 PO, où **W = 10 × Réputation minimale du niveau suivant / 30** (le salaire d'un mercenaire en haut du niveau demandé ; au-delà de 15★, × 1,25). Plus c'est long, plus la journée paie ; un mercenaire payé nettement plus que son niveau fait perdre de l'or, surtout sur les missions courtes.
 
   | Niveau | W | 3 jours | 7 jours | 14 jours | 21 jours |
@@ -243,7 +243,7 @@ Une mission sans combat pour gagner de l'or ; la contrepartie : on est privé de
   | 10★ | 267 | 1 570 | 3 300 | 7 250 | 12 400 |
   | 15★ | 833 | 4 920 | 10 310 | 22 670 | 38 730 |
 
-- **Qui** : un mercenaire au camp, disponible (ni blessé, ni fatigué), du niveau demandé ; pas le capitaine ni l'intendant (JC, à confirmer). Exactement le nombre demandé. Les salaires courent comme d'habitude.
+- **Qui** : un mercenaire au camp, disponible (ni blessé, ni fatigué), du niveau demandé ; pas le capitaine ni l'intendant (validé par Idan). Exactement le nombre demandé. Les salaires courent comme d'habitude.
 - **Pas de combat.** Au retour, chacun tire son sort : **50 %** rentré ; **25 %** rentré fatigué (« il a trop gardé le corps de charmantes demoiselles », fatigue 1D3 jours) ; **25 %** rentré blessé (« bagarre dans une taverne », blessure 1D3 jours). Une fenêtre le dit, avec une ligne par mercenaire.
-- **Prime de mission** versée au retour. **Réputation** : +10 (rentré ou fatigué), +5 (blessé) ; **renommée de la compagnie** : +10 par mission (points de mission, doc 09 §2) — « un peu », chiffres de JC à confirmer.
+- **Prime de mission** versée au retour. **Réputation** : +10 (rentré ou fatigué), +5 (blessé) ; **renommée de la compagnie** : +10 par mission (points de mission, doc 09 §2) — « un peu », chiffres de JC validés par Idan.
 

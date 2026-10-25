@@ -4,7 +4,7 @@
 // mercenaires. Données et textes : data/reference/bodyguard-missions.json.
 // - Offre (une à la fois à la Taverne, valable 3 à 6 jours) : 1 à 3 mercenaires, d'un niveau de réputation minimal (en
 //   étoiles, 1 à 15), pour 3 à 21 jours. Le niveau est tiré (1★ 10 %, 2★ 30 %, 3★ 30 %, 4★ 20 %, 5★ 10 %) puis monte
-//   avec le meilleur mercenaire de la compagnie (décalage, JC à confirmer).
+//   avec le meilleur mercenaire de la compagnie (décalage, validé par Idan).
 // - Paiement d'avance, par mercenaire = W × (2 + jours × (1,3 + (jours − 3) / 22)), arrondi à 10 PO ; W = salaire de
 //   référence du niveau : 10 × Réputation minimale du niveau suivant / 30 (au-delà de 15 étoiles : × 1,25). Plus c'est
 //   long, plus la journée paie. Un mercenaire payé bien plus que son niveau fait perdre de l'or sur les courtes missions.

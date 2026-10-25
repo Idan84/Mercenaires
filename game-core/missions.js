@@ -160,11 +160,22 @@
     }
 
     function deathMultiplier(offer,victory){ return victory?1:Number(definition(offer.code)?.defaite?.multiplicateur_mort)||1; }
-    function chestItemCount(offer){ return Number(definition(offer.code)?.coffre?.objets)||0; }
+    // Coffre (Idan, 2026-10-25) : objets_des D objets_faces objets (1D3), chacun au tier tiré dans coffre.tiers (T2 ou T3).
+    function chestItemCount(offer){
+      const chest=definition(offer.code)?.coffre||{};
+      if(!chest.objets_faces) return Number(chest.objets)||0;
+      let count=0;
+      for(let i=0;i<(chest.objets_des||1);i++) count+=die(chest.objets_faces);
+      return count;
+    }
+    function chestTier(offer){
+      const tiers=(definition(offer.code)?.coffre?.tiers||[]).map(t=>({tier:t.tier,poids:t.poids}));
+      return tiers.length?weighted(tiers).tier:1;
+    }
     function mapSize(offer){ const map=definition(offer.code)?.carte||{}; return {cols:map.colonnes||13,rows:map.lignes||9}; }
 
     return {definition,archetype,rollCamp,estimation,contractReward,createOffer,orderText,applyArchetype,buildEnemies,
-      outcome,deathMultiplier,chestItemCount,mapSize};
+      outcome,deathMultiplier,chestItemCount,chestTier,mapSize};
   }
 
   return {createMissionRules};

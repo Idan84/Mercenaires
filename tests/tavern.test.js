@@ -54,10 +54,11 @@ assert.equal(tavern.engagedElsewhereChance(merc({reputation:300,salary:100})),22
 assert.equal(tavern.engagedElsewhereChance(merc({reputation:0,salary:200})),2,"plancher 2 %");
 assert.equal(tavern.engagedElsewhereChance(merc({reputation:900,salary:0})),35,"plafond 35 %");
 
-// §8 — Prime de mission demandée : exemples du document (salaire 50, prétentions 35).
-assert.equal(tavern.missionBonusDemand(merc({stats:{Courage:20}})),195);
-assert.equal(tavern.missionBonusDemand(merc({stats:{Courage:50}})),150);
-assert.equal(tavern.missionBonusDemand(merc({stats:{Courage:100}})),75);
+// §8 — Prime de mission demandée : exemples du document (salaire 50, prétentions 35), coefficient 1,5 depuis que
+// les primes ont été divisées par deux (Idan, 2026-10-25).
+assert.equal(tavern.missionBonusDemand(merc({stats:{Courage:20}})),98);
+assert.equal(tavern.missionBonusDemand(merc({stats:{Courage:50}})),75);
+assert.equal(tavern.missionBonusDemand(merc({stats:{Courage:100}})),38);
 
 // État de partie initial : jour 1, 10 000 PO et Dortoir 40 (décisions Idan), Taverne remplie (5 places).
 const captain=generator.createCaptain({id:1});
@@ -121,25 +122,26 @@ assert.equal(low.askQuestion(c1,"stats.Volonté").ok,false,"3 questions par cand
 // §9 — Négociation.
 function fresh(){ return {mercenary:merc(),arrivedDay:1,interview:{questionsLeft:3,answers:[]},negotiation:null}; }
 const nInit=tavern.negotiationState(fresh());
-assert.deepEqual([nInit.salary,nInit.bonus],[50,150]);
+assert.deepEqual([nInit.salary,nInit.bonus],[50,75]);
 
 // Acceptation automatique composante par composante : un excès de salaire ne compense pas une prime trop basse.
-assert.equal(always(0.999).makeOffer(fresh(),{salary:50,bonus:150}).automatic,true);
-const mixed=always(0.999).makeOffer(fresh(),{salary:80,bonus:100});
+assert.equal(always(0.999).makeOffer(fresh(),{salary:50,bonus:75}).automatic,true);
+const mixed=always(0.999).makeOffer(fresh(),{salary:80,bonus:50});
 assert.notEqual(mixed.automatic,true);
 
 // Probabilité d'accepter : 95 − 2 × Concession − 0,4 × (Résistance − 50). Résistance = 0,5×35 + 0,25×50 + 0,25×50 = 42,5.
-const r90=always(0.999).makeOffer(fresh(),{salary:45,bonus:135});
-assert.ok(Math.abs(r90.concession-10)<1e-9);
-assert.ok(Math.abs(r90.pAccept-(95-20-0.4*(42.5-50)))<1e-9);
-assert.equal(always(0).makeOffer(fresh(),{salary:45,bonus:135}).outcome,"accepted");
+// Offre 45 / 60 sur 50 / 75 : Concession = 100 × (1 − (0,65 × 0,9 + 0,35 × 0,8)) = 13,5.
+const r90=always(0.999).makeOffer(fresh(),{salary:45,bonus:60});
+assert.ok(Math.abs(r90.concession-13.5)<1e-9);
+assert.ok(Math.abs(r90.pAccept-(95-27-0.4*(42.5-50)))<1e-9);
+assert.equal(always(0).makeOffer(fresh(),{salary:45,bonus:60}).outcome,"accepted");
 
 // Refus puis contre-proposition (D100 = 100 aux deux jets) : jamais sous l'offre du joueur.
 const cc=fresh();
-const counter=always(0.999).makeOffer(cc,{salary:80,bonus:60});
+const counter=always(0.999).makeOffer(cc,{salary:80,bonus:30});
 assert.equal(counter.outcome,"counter");
 assert.ok(counter.counter.salary>=80,"composante déjà généreuse conservée");
-assert.ok(counter.counter.bonus>=60&&counter.counter.bonus<=150);
+assert.ok(counter.counter.bonus>=30&&counter.counter.bonus<=75);
 // Règle anti-spam : pas d'offre inférieure à l'offre refusée, composante par composante.
 assert.equal(always(0.999).makeOffer(cc,{salary:79,bonus:200}).outcome,"invalid");
 // Accepter la contre-proposition courante.
@@ -147,8 +149,8 @@ const deal=always(0.999).makeOffer(cc,{salary:cc.negotiation.salary,bonus:cc.neg
 assert.equal(deal.outcome,"accepted");
 
 // Départ après un refus : 5 + 1,5 × Concession + 0,10 × Prétentions + 0,10 × Volonté, borné à 5–95 (réglage Idan).
-const quitCheck=always(0.999).makeOffer(fresh(),{salary:45,bonus:135});
-assert.ok(Math.abs(quitCheck.pQuit-(5+1.5*10+3.5+5))<1e-9);
+const quitCheck=always(0.999).makeOffer(fresh(),{salary:45,bonus:60});
+assert.ok(Math.abs(quitCheck.pQuit-(5+1.5*13.5+3.5+5))<1e-9);
 assert.equal(always(0.999).makeOffer(fresh(),{salary:1,bonus:1}).pQuit,95,"plafond 95 %");
 
 // Départ après un refus : jet d'acceptation raté (100), puis jet de départ réussi (1).
@@ -381,11 +383,11 @@ assert.equal(tavern.negotiationResistance(merc()),42.5);
 assert.equal(tavern.negotiationResistance(merc(),100),17.5);
 assert.equal(tavern.negotiationResistance(merc(),-100),67.5);
 assert.equal(tavern.negotiationResistance(merc({salaryPretension:0,stats:{}}),100),0,"plancher 0");
-// Offre à 90 % : concession 10, pAccept = 95 − 20 − 0,4 × (résistance − 50).
-const warm=always(0.999).makeOffer(fresh(),{salary:45,bonus:135},{affinity:56});
-const cold=always(0.999).makeOffer(fresh(),{salary:45,bonus:135},{affinity:-71});
-const neutral=always(0.999).makeOffer(fresh(),{salary:45,bonus:135});
-assert.ok(Math.abs(warm.pAccept-(75-0.4*(42.5-14-50)))<1e-9);
+// Offre 45 / 60 : concession 13,5, pAccept = 95 − 27 − 0,4 × (résistance − 50).
+const warm=always(0.999).makeOffer(fresh(),{salary:45,bonus:60},{affinity:56});
+const cold=always(0.999).makeOffer(fresh(),{salary:45,bonus:60},{affinity:-71});
+const neutral=always(0.999).makeOffer(fresh(),{salary:45,bonus:60});
+assert.ok(Math.abs(warm.pAccept-(68-0.4*(42.5-14-50)))<1e-9);
 assert.ok(warm.pAccept>neutral.pAccept&&neutral.pAccept>cold.pAccept,"une bonne affinité facilite l'accord");
 
 // La campagne passe l'affinité du candidat avec le capitaine à la négociation.

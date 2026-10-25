@@ -77,14 +77,17 @@
   }
 
   // L'avatar : le profil dit quelle arme est en main (Idan, 2026-10-25 : « CAC + Hache + Arc » tient la hache et porte
-  // l'arc ; « Distance + Hache + Arc » tient l'arc). Un mage tient son école. Sans profil, on ne sait pas ce qu'il tient :
-  // ses armes et écoles comptent comme en main, comparées à tout ce que porte le mercenaire (anyHand).
-  function avatarLook(avatar,families){
+  // l'arc ; « Distance + Hache + Arc » tient l'arc). Un mage tient son école. Avec deux profils (« dans certains cas, il peut
+  // avoir deux profils »), on le regarde sous celui du mercenaire (stance) : « CAC + Mage + Hache + Feu » tient sa hache
+  // pour un guerrier, son école pour un mage. Sans profil, on ne sait pas ce qu'il tient : ses armes et écoles comptent
+  // comme en main, comparées à tout ce que porte le mercenaire (anyHand).
+  function avatarLook(avatar,families,stance=null){
     const tags=avatar.tags||{};
     const profiles=list(tags.profile),weapons=list(tags.weapon),schools=list(tags.magic);
     if(!profiles.length) return {main:[...weapons,...schools],second:[],anyHand:true};
-    if(profiles.includes("magic")) return {main:schools,second:weapons};
-    const held=w=>{ const family=families.get(w); return !family||profiles.includes(family); };
+    const as=stance&&profiles.includes(stance)?stance:profiles[0];
+    if(as==="magic") return {main:schools,second:weapons};
+    const held=w=>{ const family=families.get(w); return !family||family===as; };
     return {main:weapons.filter(held),second:[...weapons.filter(w=>!held(w)),...schools]};
   }
 
@@ -119,7 +122,7 @@
     if(norm(avatar.people)!==tags.people) return null;
     if(!sameCulture(avatar,tags)||!sameAscendance(avatar,tags)) return null;
     if(tags.sex&&avatar.sex&&norm(avatar.sex)!==tags.sex) return null;
-    const look=avatarLook(avatar,families);
+    const look=avatarLook(avatar,families,tags.profile[0]||null);
     const wanted={...Object.fromEntries(Object.keys(SCORE).map(key=>[key,list(avatar.tags?.[key])])),main:look.main,second:look.second};
     const has={...tags,main:look.anyHand?[...(tags.main||[]),...(tags.second||[])]:tags.main};
     let score=0;

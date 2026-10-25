@@ -73,12 +73,14 @@
     };
   }
 
-  // Valeurs d'un avatar, dans les mêmes termes ; held : catégories des armes qu'il tient en main (selon son profil).
+  // Valeurs d'un avatar, dans les mêmes termes ; held : par profil, catégories des armes qu'il tient en main (un avatar à
+  // deux profils tient l'arme de chacun).
   function avatarValues(a,categoryOf,labels,families){
     const tags=a.tags||{};
-    const look=avatars.avatarLook(a,families);
+    const held=Object.fromEntries(Object.entries(PROFILE_LABELS).map(([code,label])=>[norm(label),
+      [...new Set(avatars.avatarLook(a,families,code).main.map(w=>labels.has(norm(w))?norm(w):categoryOf.get(norm(w))).filter(Boolean))].map(norm)]));
     return {
-      held:[...new Set(look.main.map(w=>labels.has(norm(w))?norm(w):categoryOf.get(norm(w))).filter(Boolean))].map(norm),
+      held,
       culture:(tags.culture||[]).map(norm),
       profile:(tags.profile||[]).map(p=>norm(PROFILE_LABELS[p]||p)),
       weapon:[...new Set((tags.weapon||[]).map(w=>labels.has(norm(w))?norm(w):categoryOf.get(norm(w))).filter(Boolean))].map(norm),
@@ -142,7 +144,7 @@
         const share=c.n/samples;
         const target=Math.round(share*need);
         const count=tagged.filter(t=>t.culture.includes(norm(c.culture))&&t.profile.includes(norm(c.profile))
-          &&c.value&&t[c.kind==="weapon"?"held":"magic"].includes(norm(c.value))).length;
+          &&c.value&&(c.kind==="weapon"?t.held[norm(c.profile)]||[]:t.magic).includes(norm(c.value))).length;
         return {culture:c.culture,profile:c.profile,kind:c.kind,value:c.value,share,target,avatars:count,gap:Math.max(0,target-count)};
       }).sort((a,b)=>b.share-a.share||b.gap-a.gap);
       const cultureProfiles=[...cultures.entries()].map(([culture,c])=>({

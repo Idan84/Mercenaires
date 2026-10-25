@@ -129,6 +129,7 @@
 	Sang d’humain
 	Sang d’orc
 	Sang de dryade
+	Ascendance only
 [Alignement]
 	Chaotique bon
 	Neutre

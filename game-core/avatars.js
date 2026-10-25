@@ -110,12 +110,18 @@
     };
   }
 
-  // Contraintes dures : même culture (l'avatar la porte dans ses tags) et même ascendance (aucune des deux, ou la même).
+  // Contraintes dures : même culture (l'avatar la porte dans ses tags) et ascendance compatible. Un mercenaire avec une
+  // ascendance prend un avatar de cette ascendance. Un mercenaire sans ascendance prend un avatar sans ascendance, ou dont
+  // l'ascendance est généraliste (Idan, 2026-10-25 : « un gobelin à sang d'orc ou un gobelin très baraqué, c'est compliqué à
+  // différencier ») ; « Ascendance only » la lui réserve (un humain aux écailles de dragon).
   function sameCulture(avatar,tags){ return list(avatar.tags?.culture).some(c=>tags.culture.includes(c)); }
   function sameAscendance(avatar,tags){
     const wanted=list(avatar.tags?.ascendance);
-    return tags.ascendance.length?wanted.some(a=>tags.ascendance.includes(a)):!wanted.length;
+    if(tags.ascendance.length) return wanted.some(a=>tags.ascendance.includes(a));
+    return !wanted.length||!avatar.ascendanceOnly;
   }
+  // À égalité, un mercenaire sans ascendance préfère un avatar sans ascendance : ceux à ascendance restent pour qui en a une.
+  const SHARED_ASCENDANCE=4;
 
   // null si une contrainte dure échoue (peuple, culture, ascendance, sexe déjà connu), sinon le score souple.
   function scoreAvatar(avatar,tags,families=DEFAULT_FAMILIES){
@@ -125,7 +131,7 @@
     const look=avatarLook(avatar,families,tags.profile[0]||null);
     const wanted={...Object.fromEntries(Object.keys(SCORE).map(key=>[key,list(avatar.tags?.[key])])),main:look.main,second:look.second};
     const has={...tags,main:look.anyHand?[...(tags.main||[]),...(tags.second||[])]:tags.main};
-    let score=0;
+    let score=!tags.ascendance.length&&list(avatar.tags?.ascendance).length?-SHARED_ASCENDANCE:0;
     for(const [key,weight] of Object.entries(SCORE)){
       if(!wanted[key].length) continue;
       if(wanted[key].some(v=>(has[key]||[]).includes(v))) score+=weight;
@@ -175,5 +181,5 @@
     return {avatars,byId,choose,assign};
   }
 
-  return {createAvatarRules,avatarTags,scoreAvatar,weaponFamilies,avatarLook,sameCulture,sameAscendance,SCORE,VISIBLE,MISMATCH_SHARE,NOISE_MAX};
+  return {createAvatarRules,avatarTags,scoreAvatar,weaponFamilies,avatarLook,sameCulture,sameAscendance,SCORE,SHARED_ASCENDANCE,VISIBLE,MISMATCH_SHARE,NOISE_MAX};
 });

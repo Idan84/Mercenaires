@@ -80,7 +80,7 @@
     const held=Object.fromEntries(Object.entries(PROFILE_LABELS).map(([code,label])=>[norm(label),
       [...new Set(avatars.avatarLook(a,families,code).main.map(w=>labels.has(norm(w))?norm(w):categoryOf.get(norm(w))).filter(Boolean))].map(norm)]));
     return {
-      held,
+      held,ascendanceOnly:Boolean(a.ascendanceOnly),
       culture:(tags.culture||[]).map(norm),
       profile:(tags.profile||[]).map(p=>norm(PROFILE_LABELS[p]||p)),
       weapon:[...new Set((tags.weapon||[]).map(w=>labels.has(norm(w))?norm(w):categoryOf.get(norm(w))).filter(Boolean))].map(norm),
@@ -134,7 +134,7 @@
         families[f]=[...demand[f].entries()].map(([value,n])=>{
           const share=n/samples;
           const target=Math.round(share*need);
-          const count=f==="ascendance"&&value===NO_ASCENDANCE?tagged.filter(t=>!t.ascendance.length).length
+          const count=f==="ascendance"&&value===NO_ASCENDANCE?tagged.filter(t=>!t.ascendance.length||!t.ascendanceOnly).length
             :tagged.filter(t=>t[f].includes(norm(value))).length;
           return {value,share,target,avatars:count,gap:Math.max(0,target-count)};
         }).sort((a,b)=>b.gap-a.gap||b.share-a.share);

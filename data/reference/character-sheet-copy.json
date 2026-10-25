@@ -359,6 +359,11 @@
         "accord": "Devient {lieutenant|lieutenante} de la compagnie, pour {salaire} PO par jour.",
         "refus": "Refuse, pour de bon, de devenir {lieutenant|lieutenante}."
       },
+      "bodyguard": {
+        "rentre": "Garde du corps ({client}) : {rentré|rentrée} sans encombre.",
+        "fatigue": "Garde du corps ({client}) : {rentré|rentrée} {fatigué|fatiguée}.",
+        "blesse": "Garde du corps ({client}) : {rentré|rentrée} {blessé|blessée} après une bagarre."
+      },
       "lieutenant_request": {
         "courage": "Plus {courageux|courageuse} grâce à {lieutenant} : Courage +{gain}.",
         "respect": "Respecte un peu plus le capitaine, grâce à {lieutenant}."

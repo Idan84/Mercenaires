@@ -1170,6 +1170,7 @@ function historyEntryText(c,entry){
   if(entry.kind==="steward") return fill(copy.steward?.[entry.accepted?"accord":"refus"]);
   if(entry.kind==="recall") return fill(copy.recall?.[entry.accepted?"accord":"refus"],{jours:historyPlural(entry.days||0,"jour","jours")});
   if(entry.kind==="lieutenant") return fill(copy.lieutenant?.[entry.accepted?"accord":"refus"],{salaire:fmt(entry.salary||0)});
+  if(entry.kind==="bodyguard") return fill(copy.bodyguard?.[entry.issue],{client:String(entry.client||"").toLocaleLowerCase("fr")});
   if(entry.kind==="lieutenant_request") return fill(copy.lieutenant_request?.[entry.type],{lieutenant:entry.lieutenant||"",gain:fmt(entry.gain||0)});
   if(entry.kind==="deal"){
     const vars={recu:historyItemLabel(entry.received),cede:historyItemLabel(entry.given)};

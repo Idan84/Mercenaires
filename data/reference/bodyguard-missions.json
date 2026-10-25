@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "name": "bodyguard-missions",
+  "description": "Missions de garde du corps (Idan, 2026-10-25 ; formules de JC validées) : une offre à la fois à la Taverne, valable 3 à 6 jours ; 1 à 3 mercenaires d'une réputation minimale, pour 3 à 21 jours ; paiement d'avance ; pas de combat ; au retour, chacun tire 50 % rentré, 25 % fatigué (1D3 jours), 25 % blessé (1D3 jours) ; prime de mission au retour ; un peu de réputation pour chacun et pour la compagnie. Paiement par mercenaire = W × (forfait + jours × (base + (jours − 3) / diviseur)), arrondi à 10 PO, où W est le salaire de référence du niveau demandé : 10 × Réputation du niveau suivant / 30 (au-delà de 15 étoiles : × 1,25). Textes de JC, à retoucher librement : {prenom}, {client}, {n}, {jours} ; {masculin|féminin}.",
+  "mercenaires": {"min": 1, "max": 3},
+  "duree_jours": {"min": 3, "max": 21},
+  "validite_jours": [3, 6],
+  "niveaux": [
+    {"etoiles": 1, "poids": 10},
+    {"etoiles": 2, "poids": 30},
+    {"etoiles": 3, "poids": 30},
+    {"etoiles": 4, "poids": 20},
+    {"etoiles": 5, "poids": 10}
+  ],
+  "decalage_niveau": {
+    "description": "Quand la compagnie a de meilleurs mercenaires, les offres montent avec elle : niveau tiré + max(0, niveau du meilleur mercenaire − reference), plafonné à 15 étoiles (JC, à confirmer).",
+    "reference": 4
+  },
+  "paiement": {"forfait_jours": 2, "base": 1.3, "diviseur": 22, "arrondi": 10, "au_dela_15": 1.25},
+  "retour": [
+    {"issue": "rentre", "poids": 50},
+    {"issue": "fatigue", "poids": 25, "jours_faces": 3},
+    {"issue": "blesse", "poids": 25, "jours_faces": 3}
+  ],
+  "reputation": {"rentre": 10, "fatigue": 10, "blesse": 5},
+  "renommee": 10,
+  "clients": [
+    "Un marchand d’épices et sa caravane",
+    "Une veuve fortunée",
+    "Un abbé en pèlerinage",
+    "Un banquier nain",
+    "Un noble en disgrâce",
+    "Une cantatrice en tournée",
+    "Un collecteur d’impôts",
+    "Le fils d’un bourgmestre",
+    "Une alchimiste et ses fioles",
+    "Un ambassadeur elfe"
+  ],
+  "textes": {
+    "titre": "Garde du corps",
+    "offre": "{client} cherche {n} garde{s} du corps pour {jours} jours.",
+    "retour_titre": "Retour de garde du corps",
+    "rentre": "{prenom} est {rentré|rentrée}.",
+    "fatigue": "{prenom} est {rentré|rentrée} {fatigué|fatiguée} : {il|elle} a trop gardé le corps de charmantes demoiselles.",
+    "blesse": "{prenom} est {rentré|rentrée} {blessé|blessée} après une bagarre dans une taverne.",
+    "ok": "D’accord"
+  }
+}

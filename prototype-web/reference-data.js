@@ -45,6 +45,7 @@ const REFERENCE_FILES = {
   equipmentDialogue: "equipment-dialogue.json",
   stewardDialogue: "steward-dialogue.json",
   lieutenantDialogue: "lieutenant-dialogue.json",
+  bodyguardMissions: "bodyguard-missions.json",
   itemTitles: "item-titles.json",
   renamedNames: "renamed-names.json"
 };

@@ -113,6 +113,8 @@ function recoveryLabel(c){
 // Mission Test : exactement 3 personnages. Contrat de la Taverne (doc 17) : de 1 à 20 mercenaires, au choix du joueur,
 // avec le coût des primes s'ils reviennent tous.
 function openMissionSelection(contract=null){
+  // Garde du corps (Idan, 2026-10-25) : exactement le nombre demandé, du niveau de réputation demandé.
+  if(contract&&contract.kind==="bodyguard") return openBodyguardSelection(contract);
   game.missionSelect=contract&&typeof contract==="object"&&contract.camp?{contract,min:1,max:20}:{contract:null,min:3,max:3};
   const {min,max}=game.missionSelect;
   $("mission-select-eyebrow").textContent=game.missionSelect.contract?"Contrat · "+game.missionSelect.contract.name:"Mission Test";
@@ -138,8 +140,29 @@ function openMissionSelection(contract=null){
   $("mission-select-dialog").showModal();
 }
 
+function openBodyguardSelection(offer){
+  const c=game.campaign,rules=campaignRules();
+  game.missionSelect={bodyguard:offer,contract:null,min:offer.count,max:offer.count};
+  $("mission-select-eyebrow").textContent="Garde du corps · "+offer.client;
+  $("mission-select-title").textContent="Choisir "+(offer.count>1?"les "+offer.count+" gardes":"le garde");
+  const members=c.company.roster.filter(m=>m.id!==c.company.captainId&&m.id!==c.company.intendantId&&!rules.expeditionOf(c,m.id));
+  $("mission-select-list").innerHTML=members.map(m=>{
+    const allowed=rules.canGuard(c,m,offer);
+    return `<label class="mission-pick${allowed.ok?"":" unavailable"}">
+      <input type="checkbox" value="${m.id}" ${allowed.ok?"":"disabled"}>
+      ${renderAvatar(m,{variant:"compact",kind:"portrait"})}
+      <span><strong>${esc(m.name)}</strong><small>${allowed.ok?"Salaire "+fmt(Number(m.contract?.dailySalary)||0)+" PO/j · prime "+fmt(Number(m.contract?.missionBonus)||0)+" PO":esc(allowed.reason)}</small></span>
+      <em>${renderReputationStars(m)}</em>
+    </label>`;
+  }).join("");
+  const ready=members.filter(m=>rules.canGuard(c,m,offer).ok).length;
+  $("mission-select-error").textContent=ready<offer.count?"Pas assez de mercenaires disponibles de ce niveau de réputation.":"";
+  updateMissionSelectionCount();
+  $("mission-select-dialog").showModal();
+}
+
 function updateMissionSelectionCount(){
-  const {min,max,contract}=game.missionSelect||{min:3,max:3,contract:null};
+  const {min,max,contract,bodyguard}=game.missionSelect||{min:3,max:3,contract:null};
   const checked=[...document.querySelectorAll("#mission-select-list input:checked")];
   if(checked.length>max) checked[checked.length-1].checked=false;
   const ids=[...document.querySelectorAll("#mission-select-list input:checked")].map(x=>Number(x.value));
@@ -147,6 +170,10 @@ function updateMissionSelectionCount(){
   $("start-mission-btn").disabled=ids.length<min||ids.length>max;
   // Primes de mission versées au retour (doc 09 §6) : le joueur pèse ce que coûte une grosse escouade.
   const bonus=ids.map(id=>allCharacters().find(c=>c.id===id)).reduce((sum,c)=>sum+(Number(c?.contract?.missionBonus)||0),0);
+  if(bodyguard){
+    $("mission-select-cost").textContent="Paiement d’avance : "+fmt(bodyguard.payment)+" PO · primes au retour : "+fmt(bonus)+" PO · absents "+bodyguard.days+" jours ; pas de combat.";
+    return;
+  }
   $("mission-select-cost").textContent=contract
     ?"Primes si tous reviennent : "+fmt(bonus)+" PO, versées au retour · marche : "+contract.distance+" jour"+(contract.distance>1?"s":"")+" à l’aller, autant au retour ; le camp continue pendant ce temps."
     :"";
@@ -158,6 +185,7 @@ function startMissionFromSelection(){
   if(ids.length<min||ids.length>max) return;
   const chosen=ids.map(id=>allCharacters().find(c=>c.id===id)).filter(Boolean);
   if(chosen.length!==ids.length) return;
+  if(game.missionSelect?.bodyguard) return departBodyguards(chosen);
   if(contract) return departContractSquad(chosen);
   setMissionMapSize();
 
@@ -181,6 +209,18 @@ function startMissionFromSelection(){
   missionLog("Mission Test : votre équipe joue en premier.","turn");
   missionLog("Ennemis générés : "+enemies.map(u=>u.character.name).join(", ")+".");
   selectNextMissionPlayer();
+}
+
+// Garde du corps : le paiement arrive tout de suite ; les gardes reviennent au bout de la durée.
+function departBodyguards(chosen){
+  const result=campaignRules().departBodyguard(game.campaign,chosen.map(c=>c.id));
+  if(!result.ok){ $("mission-select-error").textContent=result.reason; return; }
+  $("mission-select-dialog").close();
+  const e=result.expedition;
+  tavernLog(chosen.map(c=>c.name).join(", ")+" part"+(chosen.length>1?"ent":"")+" en garde du corps ("+e.offer.client.toLocaleLowerCase("fr")+") pour "+e.offer.days+" jours : +"+fmt(result.gold)+" PO payés d’avance.","gear");
+  saveGame();
+  renderGame();
+  if(typeof renderContractBoard==="function") renderContractBoard();
 }
 
 // Contrat « Faire le ménage » (doc 17, Idan 2026-10-24) : l'escouade part, le joueur continue de gérer son camp. À son

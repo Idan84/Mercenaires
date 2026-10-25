@@ -54,7 +54,8 @@
   // affinity (facultatif) : createAffinityRules(...) de game-core/affinity.js (négociation à la Taverne).
   // missions (facultatif) : createMissionRules(...) de game-core/missions.js (tableau des contrats de la Taverne).
   // lieutenants : règles des lieutenants (lieutenants.js) ; leurs demandes de la veille sont jouées chaque matin.
-  function createCampaignRules({generator,tavern,reference,biographies=null,avatars=null,progression=null,affinity=null,names=null,missions=null,lieutenants=null}){
+  // bodyguard : règles des missions de garde du corps (bodyguard.js).
+  function createCampaignRules({generator,tavern,reference,biographies=null,avatars=null,progression=null,affinity=null,names=null,missions=null,lieutenants=null,bodyguard=null}){
     const STARTING_GOLD=referenceConstant(reference,"company.gold.initial",10000);
     const STARTING_DORMITORY_CAPACITY=referenceConstant(reference,"camp.dormitory.initial_capacity",40);
     const RENOWN_RANK_EXPONENT=referenceConstant(reference,"company.renown.rank_exponent",1.5);
@@ -550,11 +551,12 @@
       const salaries=paySalaries(state);
       const tavernReport=tavern.tavernMorning(state.tavern,state.day,candidateFactory(state));
       const missionTaken=expireMissionOffer(state);
+      const bodyguardTaken=expireBodyguardOffer(state);
       const expeditions=advanceExpeditions(state);
       const built=advanceConstruction(state);
       // Demandes au lieutenant (Idan, 2026-10-25) : le résultat tombe le lendemain matin.
       const lieutenantReports=lieutenants?lieutenants.resolveRequests(state):[];
-      return {day:state.day,recovered,salaries,tavern:tavernReport,missionTaken,expeditions,built,lieutenants:lieutenantReports};
+      return {day:state.day,recovered,salaries,tavern:tavernReport,missionTaken,bodyguardTaken,expeditions,built,lieutenants:lieutenantReports};
     }
 
     // Tableau des contrats (doc 17) : une offre à la fois pour l'instant, « Faire le ménage » en boucle. Une offre
@@ -633,12 +635,88 @@
       return waiting?{ok:false,reason:"Une escouade attend vos ordres : livrez son combat avant de passer au jour suivant.",expedition:waiting}:{ok:true};
     }
     function advanceExpeditions(state){
-      const arrived=[],returned=[];
+      const arrived=[],returned=[],bodyguards=[];
       for(const expedition of [...expeditionsOf(state)]){
+        if(expedition.kind==="bodyguard"){
+          if(state.day>=expedition.returnDay) bodyguards.push(finishBodyguard(state,expedition));
+          continue;
+        }
         if(expedition.status==="outbound"&&state.day>=expedition.arriveDay){ expedition.status="arrived"; arrived.push(expedition); }
         else if(expedition.status==="returning"&&state.day>=expedition.returnDay) returned.push(finishExpedition(state,expedition));
       }
-      return {arrived,returned,waiting:expeditionsOf(state).filter(e=>e.status==="arrived")};
+      return {arrived,returned,bodyguards,waiting:expeditionsOf(state).filter(e=>e.status==="arrived")};
+    }
+
+    // Garde du corps (Idan, 2026-10-25 ; règles : bodyguard.js) : une offre à la fois à la Taverne, comme le contrat ;
+    // une offre non signée qui dépasse sa date est remplacée. Les offres montent avec le meilleur mercenaire de la
+    // compagnie (capitaine et intendant non compris).
+    function bestMercenaryLevel(state){
+      const company=state.company;
+      return rosterOf(state).filter(m=>m.id!==company.captainId&&m.id!==company.intendantId)
+        .reduce((best,m)=>Math.max(best,bodyguard.levelOf(m.reputation)),0);
+    }
+    function ensureBodyguardOffer(state){
+      if(!bodyguard||state.bodyguardBoard?.offer) return false;
+      state.bodyguardBoard={offer:bodyguard.createOffer({day:state.day,bestLevel:bestMercenaryLevel(state)})};
+      return true;
+    }
+    function expireBodyguardOffer(state){
+      const offer=state.bodyguardBoard?.offer;
+      if(!bodyguard||!offer||state.day<=offer.expiresDay) return null;
+      state.bodyguardBoard={offer:bodyguard.createOffer({day:state.day,bestLevel:bestMercenaryLevel(state)})};
+      return offer;
+    }
+    // Qui peut partir : un mercenaire au camp, disponible (ni blessé, ni fatigué), du niveau demandé ; ni le capitaine ni
+    // l'intendant.
+    function canGuard(state,m,offer=state.bodyguardBoard?.offer){
+      if(!m||!offer) return {ok:false,reason:"Aucune offre."};
+      if(m.id===state.company.captainId) return {ok:false,reason:"Le capitaine reste à la compagnie."};
+      if(m.id===state.company.intendantId) return {ok:false,reason:"L’intendant reste au camp."};
+      if(!isAvailable(m,state)) return {ok:false,reason:m.recovery?"Il doit d’abord se remettre.":"Il est en mission."};
+      if(bodyguard.levelOf(m.reputation)<offer.level) return {ok:false,reason:"Réputation trop faible."};
+      return {ok:true};
+    }
+    // Départ : le paiement arrive d'avance ; les mercenaires sont absents jusqu'au retour.
+    function departBodyguard(state,memberIds){
+      const offer=state.bodyguardBoard?.offer;
+      if(!bodyguard||!offer) return {ok:false,reason:"Aucune offre de garde du corps."};
+      const ids=[...new Set(memberIds)];
+      if(ids.length!==offer.count) return {ok:false,reason:`Il faut ${offer.count} mercenaire${offer.count>1?"s":""}.`};
+      const members=ids.map(id=>rosterOf(state).find(m=>m.id===id));
+      for(const m of members){ const ok=canGuard(state,m,offer); if(!ok.ok) return {ok:false,reason:(m?.name?m.name+" : ":"")+ok.reason}; }
+      state.company.gold+=offer.payment;
+      const expedition={id:offer.id,kind:"bodyguard",offer,memberIds:ids,departDay:state.day,returnDay:state.day+offer.days,status:"away"};
+      expeditionsOf(state).push(expedition);
+      state.bodyguardBoard={offer:bodyguard.createOffer({day:state.day,bestLevel:bestMercenaryLevel(state)})};
+      return {ok:true,expedition,gold:offer.payment};
+    }
+    // Retour : chacun tire son sort (rentré, fatigué, blessé), gagne un peu de réputation et touche sa prime ; la
+    // compagnie gagne un peu de renommée.
+    function finishBodyguard(state,expedition){
+      const results=[];
+      let bonusPaid=0;
+      for(const id of expedition.memberIds){
+        const m=rosterOf(state).find(x=>x.id===id);
+        if(!m) continue;
+        const back=bodyguard.rollReturn();
+        if(back.issue==="fatigue") m.recovery={kind:"fatigued",daysLeft:back.days,sinceDay:state.day};
+        if(back.issue==="blesse") m.recovery={kind:"wounded",daysLeft:back.days,sinceDay:state.day};
+        const reputation=bodyguard.reputationGain(back.issue);
+        if(reputation){
+          m.reputationCareerDelta=(Number(m.reputationCareerDelta)||0)+reputation;
+          m.reputation=(Number(m.reputation)||0)+reputation;
+          if(m.reputationBreakdown) m.reputationBreakdown.careerDelta=m.reputationCareerDelta;
+        }
+        const bonus=Number(m.contract?.missionBonus)||0;
+        state.company.gold-=bonus;
+        bonusPaid+=bonus;
+        History.record(m,state.day,"bodyguard",{issue:back.issue,days:back.days,client:expedition.offer.client});
+        results.push({mercenary:m,issue:back.issue,days:back.days,reputation,bonus});
+      }
+      const renown=results.length?bodyguard.renownGain():0;
+      if(renown) state.company.missionRenown=(Number(state.company.missionRenown)||0)+renown;
+      state.expeditions=expeditionsOf(state).filter(e=>e!==expedition);
+      return {expedition,results,bonusPaid,renown};
     }
 
     // AdvanceTime(5) = cinq résolutions successives d'une journée. Seul un nombre entier de jours ≥ 0 est accepté.
@@ -790,6 +868,10 @@
       STARTING_DORMITORY_CAPACITY,
       createCampaign,
       advanceTime,
+      ensureBodyguardOffer,
+      canGuard,
+      departBodyguard,
+      bestMercenaryLevel,
       ensureMissionOffer,
       renewMissionOffer,
       expeditionOf,

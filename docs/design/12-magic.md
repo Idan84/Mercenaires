@@ -77,6 +77,7 @@ Même modèle que Soin rapide : **Effet = 10 × dés × (2 × Puissance magique 
 - **Régénération** garde la Puissance et la maîtrise du lancer ; elle **ne se cumule pas** : la relancer remplace la précédente. Coup critique : dé au maximum à chaque tour.
 - **Soin de masse** : rayon 1 = 7 cases, 2 = 19, 3 = 37.
 - **Restitution** et **Purge** attendent les morts-vivants et le poison pour servir en combat.
+- **Icônes** (Idan, 2026-10-25) : un parchemin par sort sous un **cadre commun à l'école** (vert, lianes et émeraudes pour la Vie), superposés dans le jeu : barre de sorts du combat et grimoire de la fiche. Masters : `assets-src/Sorts/Vie/` ; `scripts/build-spells.sh` détoure le centre du cadre (accord d'Idan) et produit les versions du jeu.
 
 | | Débutant (Vie 31) | Recrue moyenne (Vie 56) | Expert (Vie 84, sort 100) |
 |---|---|---|---|

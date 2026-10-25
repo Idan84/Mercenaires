@@ -1306,11 +1306,22 @@ function renderMagicTab(c) {
   </section>`;
 }
 
-// Grimoire : les sorts arriveront plus tard (Idan, 2026-10-21) ; mercenary.spells = [{name, school, mastery}].
+// Icône d'un sort (Idan, 2026-10-25) : le parchemin du sort sous le cadre de son école (spells.json : icone, cadre).
+function spellIconHtml(spell) {
+  if (!spell?.icone) return "";
+  return `<span class="spell-icon" aria-hidden="true"><img src="assets/${esc(spell.icone)}" alt="" loading="lazy">`
+    + `${spell.cadre ? `<img src="assets/${esc(spell.cadre)}" alt="" loading="lazy">` : ""}</span>`;
+}
+
+// Grimoire : mercenary.spells = [{code, name, school, mastery}] (mastery : niveau du sort, 1 à 100).
 function renderCharacterSpellbook(c) {
   const spells = Array.isArray(c.spells) ? c.spells : [];
+  const rows = game.referenceData?.spells?.rows || [];
   return `<section class="magic-grimoire"><h4>Grimoire</h4>${spells.length
-    ? `<div class="magic-spells">${spells.map(spell => `<div class="sheet-skill"><span class="sheet-stat-name">${esc(spell.name || spell.nom || "Sort")}<small>${esc(spell.school || "")}</small></span><span class="sheet-stat-value">${fmt(Number(spell.mastery))}</span></div>`).join("")}</div>`
+    ? `<div class="magic-spells">${spells.map(spell => {
+      const row = rows.find(s => s.code === spell.code || s.nom === (spell.name || spell.nom));
+      return `<div class="sheet-skill magic-spell">${spellIconHtml(row)}<span class="sheet-stat-name">${esc(row?.nom || spell.name || spell.nom || "Sort")}<small>${esc(row?.ecole || spell.school || "")}</small></span><span class="sheet-stat-value">${fmt(Number(spell.mastery))}</span></div>`;
+    }).join("")}</div>`
     : `<p>À venir.</p>`}</section>`;
 }
 

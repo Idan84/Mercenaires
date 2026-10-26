@@ -13,7 +13,8 @@ const AvatarsLab=(()=>{
     "juste":{cls:"tight",label:"Juste",order:2},
     "ok":{cls:"ok",label:"OK",order:3}
   };
-  const FAMILY_LABELS={culture:"Cultures",profile:"Profils",weapon:"Armes portées (catégories)",magic:"Magie (mages et sorts connus)",ascendance:"Ascendances (toutes)"};
+  // Les ascendances s'affichent croisées avec les cultures (Idan, 2026-10-26), dans leur propre tableau.
+  const FAMILY_LABELS={culture:"Cultures",profile:"Profils",weapon:"Armes portées (catégories)",magic:"Magie (mages et sorts connus)"};
   const html=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   // Moins de 10 % : une décimale (les ascendances rares).
   const pct=x=>(x<0.1?String(Math.round(x*1000)/10).replace(".",","):Math.round(x*100))+"\u00a0%";
@@ -124,6 +125,17 @@ const AvatarsLab=(()=>{
     return `<table><thead><tr><th>Culture</th><th>Profil</th><th>Arme ou école</th><th>Part</th><th>Cible</th><th>Avatars</th><th>Manque</th></tr></thead><tbody>${rows.map(line).join("")}</tbody></table>
       <p class="cov-note">Ces ${rows.length} combinaisons couvrent ${pct(covered)} des mercenaires (${(r.combinations||[]).length} combinaisons en tout). Un avatar compte s'il a la culture, le profil et l'arme (ou sa catégorie) ou l'école.</p>`;
   }
+  // Ascendances × cultures (Idan, 2026-10-26) : chaque case donne avatars / cible ; la couleur dit le manque.
+  function ascendanceCultureTable(r){
+    const x=r.ascendanceCultures;
+    if(!x||!x.cultures.length) return '<p class="muted">—</p>';
+    const cls=c=>c.avatars>=c.target?"gap-ok":c.avatars<c.target/2?"gap-high":"gap-mid";
+    const cell=c=>`<td class="num ${c.target||c.avatars?cls(c):""}" title="${html(pct(c.share))} des mercenaires · cible ${c.target} · ${c.avatars} avatar${c.avatars>1?"s":""}">${c.target||c.avatars?`${c.avatars}\u00a0/\u00a0${c.target}`:"—"}</td>`;
+    const head=x.cultures.map(c=>`<th>${html(c.culture)}<small>${pct(c.share)}</small></th>`).join("");
+    const rows=x.rows.map(row=>`<tr><td>${html(row.ascendance)}<small>${pct(row.share)}</small></td>${row.cells.map(cell).join("")}</tr>`).join("");
+    return `<div class="table-wrap"><table class="cov-matrix"><thead><tr><th>Ascendance</th>${head}</tr></thead><tbody>${rows}</tbody></table></div>
+      <p class="cov-note">Chaque case : avatars possibles / cible (au moins 1 : sans avatar de sa culture et de son ascendance, le mercenaire a le portrait générique). Une ascendance généraliste compte aussi pour « Aucune » ; « Ascendance only » non.</p>`;
+  }
   function cultureProfilesTable(r){
     const rows=r.cultureProfiles||[];
     if(!rows.length) return '<p class="muted">—</p>';
@@ -147,6 +159,7 @@ const AvatarsLab=(()=>{
         <div class="cov-family"><h4>Profils par culture</h4>${cultureProfilesTable(r)}</div>
       </div>
       <div class="cov-grid">${families}</div>
+      <div class="cov-family cov-asc"><h4>Ascendances × cultures</h4>${ascendanceCultureTable(r)}</div>
     </section>`;
   }
 

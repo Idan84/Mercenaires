@@ -76,6 +76,27 @@ assert.equal(orc.families.ascendance.find(x=>x.value==="Aucune").avatars,3,"les 
 assert.ok(orc.withoutAvatar>0&&orc.withoutAvatar<1,"seuls les orcs noirs sans ascendance ont un avatar possible");
 assert.equal(coverage.forPeople("Gobelin").withoutAvatar,1,"aucun avatar gobelin : portrait générique pour tous");
 
+// Ascendances × cultures (Idan, 2026-10-26) : part de la culture × part de l'ascendance ; avatars selon les règles du jeu.
+const matrix=humain.ascendanceCultures;
+assert.equal(matrix.rows[0].ascendance,"Aucune","« Aucune » d'abord");
+assert.deepEqual(matrix.cultures.map(c=>c.share),[...matrix.cultures.map(c=>c.share)].sort((a,b)=>b-a),"cultures dans l'ordre de leur part");
+assert.ok(Math.abs(matrix.rows.flatMap(r=>r.cells).reduce((t,c)=>t+c.share,0)-1)<1e-9,"toutes les cases font 100 %");
+for(const row of matrix.rows) for(const [i,c] of row.cells.entries()){
+  assert.ok(Math.abs(c.share-row.share*matrix.cultures[i].share)<1e-12);
+  assert.equal(c.target,Math.max(1,Math.round(c.share*100)),"au moins un avatar par case possible");
+  assert.equal(c.gap,Math.max(0,c.target-c.avatars));
+}
+const orcCell=(cov,asc,culture)=>{ const m=cov.ascendanceCultures; return m.rows.find(r=>r.ascendance===asc).cells[m.cultures.findIndex(c=>c.culture===culture)]; };
+assert.equal(orcCell(orc,"Aucune","Orcs noirs").avatars,1,"orc-001 : Orcs noirs, sans ascendance");
+const demons=createCoverage({reference,samples:200,generator:createGenerator(reference,{random:seeded(),nameGenerator:names}),catalog:[
+  av("orc-g","Orc",{tags:{culture:["Orcs noirs"],ascendance:["Sang de démon"]}}),
+  av("orc-o","Orc",{ascendanceOnly:true,tags:{culture:["Orcs noirs"],ascendance:["Sang de démon"]}}),
+  av("orc-n","Orc",{tags:{culture:["Orcs noirs"]}})
+]}).forPeople("Orc");
+assert.equal(orcCell(demons,"Aucune","Orcs noirs").avatars,2,"sans ascendance : l'avatar neutre et le sang de démon généraliste, pas « Ascendance only »");
+assert.equal(orcCell(demons,"Sang de démon","Orcs noirs").avatars,2,"sang de démon : les deux avatars de cette ascendance");
+assert.equal(orcCell(demons,"Sang de démon","Orcs des villes").avatars,0,"autre culture : aucun");
+
 // Combinaisons (Idan, 2026-10-25 : « il faut que je croise ») : culture · profil · arme portée ou école du mage.
 const combos=orc.combinations;
 assert.ok(Math.abs(combos.reduce((t,x)=>t+x.share,0)-1)<1e-9,"une combinaison par mercenaire");

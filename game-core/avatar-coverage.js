@@ -16,6 +16,10 @@
 // - Culture et ascendance obligatoires (Idan, 2026-10-25) : part des mercenaires générés qui n'ont aucun avatar possible
 //   (portrait générique), et ligne « Aucune » des ascendances (les avatars sans ascendance, pour les mercenaires qui n'en
 //   ont pas).
+// - Ascendances × cultures (Idan, 2026-10-26) : pour chaque ascendance (« Aucune » comprise) et chaque culture du peuple,
+//   part des mercenaires (part de la culture × part de l'ascendance, tirées indépendamment), cible et avatars possibles,
+//   selon les règles du jeu (une ascendance généraliste sert aussi « Aucune », pas « Ascendance only »). Culture et
+//   ascendance étant obligatoires, chaque case possible vise au moins un avatar : sans lui, portrait générique.
 (function(root,factory){
   const deps=typeof module!=="undefined"&&module.exports
     ?{catalog:require("./avatar-catalog.js"),avatars:require("./avatars.js")}
@@ -147,6 +151,21 @@
           &&c.value&&(c.kind==="weapon"?t.held[norm(c.profile)]||[]:t.magic).includes(norm(c.value))).length;
         return {culture:c.culture,profile:c.profile,kind:c.kind,value:c.value,share,target,avatars:count,gap:Math.max(0,target-count)};
       }).sort((a,b)=>b.share-a.share||b.gap-a.gap);
+      // Ascendances × cultures : les cultures dans l'ordre de leur part, l'ascendance « Aucune » d'abord.
+      const cultureOrder=[...cultures.entries()].sort((a,b)=>b[1].n-a[1].n).map(([culture,c])=>({culture,share:c.n/samples}));
+      const ascendanceCultures={
+        cultures:cultureOrder,
+        rows:[...ancestryShares(reference,people).entries()].map(([ascendance,share])=>({
+          ascendance,share,
+          cells:cultureOrder.map(c=>{
+            const cellShare=share*c.share;
+            const target=cellShare>0?Math.max(1,Math.round(cellShare*need)):0;
+            const count=tagged.filter(t=>t.culture.includes(norm(c.culture))&&(ascendance===NO_ASCENDANCE
+              ?!t.ascendance.length||!t.ascendanceOnly:t.ascendance.includes(norm(ascendance)))).length;
+            return {culture:c.culture,share:cellShare,target,avatars:count,gap:Math.max(0,target-count)};
+          })
+        }))
+      };
       const cultureProfiles=[...cultures.entries()].map(([culture,c])=>({
         culture,share:c.n/samples,
         profiles:Object.fromEntries(Object.values(PROFILE_LABELS).map(label=>[label,(c.profiles.get(label)||0)/c.n]))
@@ -160,7 +179,7 @@
         sansTags:own.filter(a=>!Object.keys(a.tags||{}).length).length,
         status:status(own.length,need),
         withoutAvatar:withoutAvatar/samples,
-        families,combinations,cultureProfiles
+        families,combinations,cultureProfiles,ascendanceCultures
       };
     }
 

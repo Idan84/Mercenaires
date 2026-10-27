@@ -166,9 +166,16 @@
           })
         }))
       };
+      // Profils par culture : part dans la culture, et, par case culture × profil, cible et avatars qui ont les deux tags.
       const cultureProfiles=[...cultures.entries()].map(([culture,c])=>({
         culture,share:c.n/samples,
-        profiles:Object.fromEntries(Object.values(PROFILE_LABELS).map(label=>[label,(c.profiles.get(label)||0)/c.n]))
+        profiles:Object.fromEntries(Object.values(PROFILE_LABELS).map(label=>[label,(c.profiles.get(label)||0)/c.n])),
+        cells:Object.values(PROFILE_LABELS).map(label=>{
+          const share=(c.profiles.get(label)||0)/samples;
+          const target=Math.round(share*need);
+          const count=tagged.filter(t=>t.culture.includes(norm(culture))&&t.profile.includes(norm(label))).length;
+          return {profile:label,share,target,avatars:count,gap:Math.max(0,target-count)};
+        })
       })).sort((a,b)=>b.share-a.share);
       const sources={git:own.filter(a=>!String(a.full).startsWith("/")).length,hostinger:own.filter(a=>String(a.full).startsWith("/")).length};
       return {

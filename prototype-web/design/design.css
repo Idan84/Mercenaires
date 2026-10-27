@@ -42,6 +42,7 @@ th{position:sticky;top:0;z-index:1;background:#eee8df;text-align:left;font-size:
 .cov-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:14px 18px}
 .cov-grid.cov-cross{grid-template-columns:repeat(auto-fit,minmax(min(440px,100%),1fr));margin-bottom:18px}.cov-cross .cov-note{margin:6px 0 0;font-size:.78rem}
 .cov-asc{margin-top:16px}.cov-matrix th small,.cov-matrix td small{display:block;font-weight:400;color:#857b70;font-size:.7rem}.cov-matrix th:not(:first-child){text-align:right}
+.cov-group th{background:#f1ebe2;text-align:left;font-size:.78rem}.cov-group th small{font-weight:400;color:#857b70;margin-left:6px}
 .cov-family h4{margin:6px 0 6px;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:#7b3026}
 .cov-family table{font-size:.78rem;border:1px solid #e6dfd5;border-radius:8px;overflow:hidden}.cov-family th,.cov-family td{min-width:0;max-width:none;padding:5px 7px;position:static;word-break:normal}.cov-family th{text-transform:none;letter-spacing:0;font-size:.74rem;white-space:nowrap}.cov-family td.num,.cov-family th:not(:first-child){white-space:nowrap;width:1%}
 .cov-family td.num,.cov-summary td.num{text-align:right;font-variant-numeric:tabular-nums}

@@ -5,16 +5,15 @@
 // de Git et ceux déposés sur Hostinger (reference-data.js → loadAvatarCatalog).
 const AvatarsLab=(()=>{
   const SAMPLES=500;
-  const MIN_SHARE=0.03;
-  const COMBINATIONS=15;
+  // Tout est croisé par culture (Idan, 2026-10-27 : la culture étant obligatoire, les tableaux globaux sont inutiles).
+  // Combinaisons : celles qui pèsent au moins 1 % des mercenaires du peuple, rangées par culture.
+  const COMBINATION_MIN=0.01;
   const STATUS={
     "manquant":{cls:"missing",label:"Manquant",order:0},
     "sous-représenté":{cls:"under",label:"Sous-représenté",order:1},
     "juste":{cls:"tight",label:"Juste",order:2},
     "ok":{cls:"ok",label:"OK",order:3}
   };
-  // Les ascendances s'affichent croisées avec les cultures (Idan, 2026-10-26), dans leur propre tableau.
-  const FAMILY_LABELS={culture:"Cultures",profile:"Profils",weapon:"Armes portées (catégories)",magic:"Magie (mages et sorts connus)"};
   const html=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   // Moins de 10 % : une décimale (les ascendances rares).
   const pct=x=>(x<0.1?String(Math.round(x*1000)/10).replace(".",","):Math.round(x*100))+"\u00a0%";
@@ -101,29 +100,22 @@ const AvatarsLab=(()=>{
   const badge=status=>`<span class="badge ${STATUS[status].cls}">${STATUS[status].label}</span>`;
   const sexes=r=>`${r.femmes} F · ${r.hommes} H`+(r.sansSexe?` · ${r.sansSexe} ?`:"");
 
-  // Les ascendances s'affichent toutes, même rares (Idan, 2026-10-25) ; les autres familles à partir de 3 %.
-  function familyTable(rows,family){
-    const shown=family==="ascendance"?rows:rows.filter(x=>x.share>=MIN_SHARE);
-    if(!shown.length) return '<p class="muted">—</p>';
-    const line=x=>{
-      const cls=x.avatars>=x.target?"gap-ok":x.avatars<x.target/2?"gap-high":"gap-mid";
-      return `<tr class="${cls}"><td>${html(x.value)}</td><td class="num">${pct(x.share)}</td><td class="num">${x.target}</td><td class="num">${x.avatars}</td><td class="num">${x.gap||""}</td></tr>`;
-    };
-    return `<table><thead><tr><th>Valeur</th><th>Part</th><th>Cible</th><th>Avatars</th><th>Manque</th></tr></thead><tbody>${shown.map(line).join("")}</tbody></table>`;
-  }
+  const gapClass=x=>x.avatars>=x.target?"gap-ok":x.avatars<x.target/2?"gap-high":"gap-mid";
 
-  // Croisement (Idan, 2026-10-25 : « il faut que je croise ») : culture · profil · arme portée ou école du mage. Les
-  // avatars comptés ont les trois tags.
+  // Croisement (Idan, 2026-10-25 : « il faut que je croise ») : par culture, profil · arme tenue en main ou école du mage,
+  // celles qui pèsent au moins 1 %. Les avatars comptés ont la culture, le profil et l'arme ou l'école.
   function combinationsTable(r){
-    const rows=(r.combinations||[]).slice(0,COMBINATIONS);
-    if(!rows.length) return '<p class="muted">—</p>';
-    const covered=rows.reduce((t,x)=>t+x.share,0);
-    const line=x=>{
-      const cls=x.avatars>=x.target?"gap-ok":x.avatars<x.target/2?"gap-high":"gap-mid";
-      return `<tr class="${cls}"><td>${html(x.culture)}</td><td>${html(x.profile)}</td><td>${html(x.value||"—")}</td><td class="num">${pct(x.share)}</td><td class="num">${x.target}</td><td class="num">${x.avatars}</td><td class="num">${x.gap||""}</td></tr>`;
-    };
-    return `<table><thead><tr><th>Culture</th><th>Profil</th><th>Arme ou école</th><th>Part</th><th>Cible</th><th>Avatars</th><th>Manque</th></tr></thead><tbody>${rows.map(line).join("")}</tbody></table>
-      <p class="cov-note">Ces ${rows.length} combinaisons couvrent ${pct(covered)} des mercenaires (${(r.combinations||[]).length} combinaisons en tout). Un avatar compte s'il a la culture, le profil et l'arme (ou sa catégorie) ou l'école.</p>`;
+    const all=r.combinations||[];
+    if(!all.length) return '<p class="muted">—</p>';
+    const shown=all.filter(x=>x.share>=COMBINATION_MIN);
+    const rest=all.filter(x=>x.share<COMBINATION_MIN);
+    const line=x=>`<tr class="${gapClass(x)}"><td>${html(x.profile)}</td><td>${html(x.value||"—")}</td><td class="num">${pct(x.share)}</td><td class="num">${x.target}</td><td class="num">${x.avatars}</td><td class="num">${x.gap||""}</td></tr>`;
+    const groups=(r.cultureProfiles||[]).map(c=>{
+      const rows=shown.filter(x=>x.culture===c.culture).sort((a,b)=>b.share-a.share);
+      return rows.length?`<tr class="cov-group"><th colspan="6">${html(c.culture)} <small>${pct(c.share)}</small></th></tr>${rows.map(line).join("")}`:"";
+    }).join("");
+    return `<table><thead><tr><th>Profil</th><th>Arme ou école</th><th>Part</th><th>Cible</th><th>Avatars</th><th>Manque</th></tr></thead><tbody>${groups}</tbody></table>
+      <p class="cov-note">Combinaisons d'au moins 1 % des mercenaires, rangées par culture.${rest.length?` ${rest.length} plus rares (${pct(rest.reduce((t,x)=>t+x.share,0))} des mercenaires) ne sont pas listées.`:""} Un avatar compte s'il a la culture, le profil et l'arme qu'il tient (ou sa catégorie), ou l'école du mage.</p>`;
   }
   // Ascendances × cultures (Idan, 2026-10-26) : chaque case donne avatars / cible ; la couleur dit le manque.
   function ascendanceCultureTable(r){
@@ -136,12 +128,15 @@ const AvatarsLab=(()=>{
     return `<div class="table-wrap"><table class="cov-matrix"><thead><tr><th>Ascendance</th>${head}</tr></thead><tbody>${rows}</tbody></table></div>
       <p class="cov-note">Chaque case : avatars possibles / cible (au moins 1 : sans avatar de sa culture et de son ascendance, le mercenaire a le portrait générique). Une ascendance généraliste compte aussi pour « Aucune » ; « Ascendance only » non.</p>`;
   }
+  // Profils par culture : chaque case donne avatars / cible ; la part dans la culture est au survol.
   function cultureProfilesTable(r){
     const rows=r.cultureProfiles||[];
     if(!rows.length) return '<p class="muted">—</p>';
-    const labels=Object.keys(rows[0].profiles);
-    return `<table><thead><tr><th>Culture</th><th>Part</th>${labels.map(l=>`<th>${html(l)}</th>`).join("")}</tr></thead><tbody>${rows.map(c=>
-      `<tr><td>${html(c.culture)}</td><td class="num">${pct(c.share)}</td>${labels.map(l=>`<td class="num">${c.profiles[l]?pct(c.profiles[l]):""}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
+    const labels=rows[0].cells.map(c=>c.profile);
+    const cell=(c,within)=>`<td class="num ${c.target||c.avatars?gapClass(c):""}" title="${html(pct(within))} de la culture · ${html(pct(c.share))} des mercenaires · cible ${c.target} · ${c.avatars} avatar${c.avatars>1?"s":""}">${c.target||c.avatars?`${c.avatars}\u00a0/\u00a0${c.target}`:"—"}</td>`;
+    return `<table class="cov-matrix"><thead><tr><th>Culture</th>${labels.map(l=>`<th>${html(l)}</th>`).join("")}</tr></thead><tbody>${rows.map(c=>
+      `<tr><td>${html(c.culture)}<small>${pct(c.share)}</small></td>${c.cells.map(x=>cell(x,c.profiles[x.profile])).join("")}</tr>`).join("")}</tbody></table>
+      <p class="cov-note">Chaque case : avatars de cette culture et de ce profil / cible.</p>`;
   }
 
   function peopleSection(r){
@@ -150,15 +145,13 @@ const AvatarsLab=(()=>{
     if(r.withoutAvatar>0) notes.push(`<span class="todo">${pct(r.withoutAvatar)} des mercenaires n'ont aucun avatar de leur culture et de leur ascendance : portrait générique</span>`);
     if(r.sansTags) notes.push(`<span class="todo">${r.sansTags} sans aucun tag : à taguer dans Bridge, puis à redéposer dans media/avatars/</span>`);
     else if(r.sansSexe) notes.push(`<span class="todo">${r.sansSexe} sans sexe tagué</span>`);
-    const families=Object.keys(FAMILY_LABELS).map(f=>`<div class="cov-family"><h4>${FAMILY_LABELS[f]}</h4>${familyTable(r.families[f],f)}</div>`).join("");
     return `<section class="cov-people" id="${anchor(r.people)}">
       <h3>${html(r.people)} ${badge(r.status)}</h3>
       <p class="cov-note"><strong>${r.avatars} / ${r.need}</strong> avatars · ${notes.join(" · ")}</p>
       <div class="cov-grid cov-cross">
-        <div class="cov-family"><h4>Combinaisons à produire (${COMBINATIONS} plus fréquentes)</h4>${combinationsTable(r)}</div>
+        <div class="cov-family"><h4>Combinaisons à produire, par culture</h4>${combinationsTable(r)}</div>
         <div class="cov-family"><h4>Profils par culture</h4>${cultureProfilesTable(r)}</div>
       </div>
-      <div class="cov-grid">${families}</div>
       <div class="cov-family cov-asc"><h4>Ascendances × cultures</h4>${ascendanceCultureTable(r)}</div>
     </section>`;
   }
@@ -176,9 +169,10 @@ const AvatarsLab=(()=>{
       la <strong>part</strong> est la proportion de mercenaires qui ont cette valeur, la <strong>cible</strong> vaut part × besoin,
       le <strong>manque</strong> est la cible moins les avatars tagués. Un mercenaire sans avatar correspondant garde un visage
       de son peuple ; sans aucun avatar libre de son peuple, il a le portrait générique.</p>
-      <p class="cov-intro">Pour croiser : <strong>Combinaisons à produire</strong> donne les mercenaires les plus fréquents
-      (culture · profil · arme qu'il porte, ou école pour un mage) et les avatars qui ont ces trois tags ;
-      <strong>Profils par culture</strong> donne, pour chaque culture, la part de corps à corps, de distance et de magie.
+      <p class="cov-intro">Tout est croisé par culture, puisqu'un avatar ne sert qu'aux mercenaires de sa culture.
+      <strong>Combinaisons à produire</strong> donne, culture par culture, les mercenaires fréquents (profil · arme tenue en main, ou
+      école pour un mage) et les avatars qui ont ces tags ; <strong>Profils par culture</strong> et <strong>Ascendances × cultures</strong>
+      donnent, case par case, les avatars possibles et la cible.
       Le jeu donne un avatar du même <strong>peuple</strong>, de la même <strong>culture</strong> et d'une <strong>ascendance</strong> compatible
       (la même ; ou, pour un mercenaire sans ascendance, un avatar sans ascendance ou dont l'ascendance n'est pas marquée
       « Ascendance only ») : sinon, portrait générique. Parmi ceux-là, il prend celui qui ressemble le plus au mercenaire : d'abord le

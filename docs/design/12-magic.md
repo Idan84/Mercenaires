@@ -76,7 +76,7 @@ Même modèle que Soin rapide : **Effet = 10 × dés × (2 × Puissance magique 
 - **Soin profond** soigne près de trois fois plus que Soin rapide pour deux fois plus de mana et l'action principale ; le soigneur doit aller au contact au début : c'est le prix du gros soin.
 - **Régénération** garde la Puissance et la maîtrise du lancer ; elle **ne se cumule pas** : la relancer remplace la précédente. Coup critique : dé au maximum à chaque tour.
 - **Soin de masse** : rayon 1 = 7 cases, 2 = 19, 3 = 37.
-- **Restitution** et **Purge** attendent les morts-vivants et le poison pour servir en combat.
+- **Restitution** attend les morts-vivants pour servir en combat ; **Purge** retire le poison du Crachat de venin (école de la Transmutation).
 - **Icônes** (Idan, 2026-10-25) : un parchemin par sort sous un **cadre commun à l'école** (vert, lianes et émeraudes pour la Vie), superposés dans le jeu : barre de sorts du combat et grimoire de la fiche. Masters : `assets-src/Sorts/Vie/` ; `scripts/build-spells.sh` détoure le centre du cadre (accord d'Idan) et produit les versions du jeu.
 
 | | Débutant (Vie 31) | Recrue moyenne (Vie 56) | Expert (Vie 84, sort 100) |
@@ -120,7 +120,7 @@ Même modèle que la Vie (effet, mana, difficulté par palier, CC aux dés maxim
 
 ### École de l'Eau (7 sorts, Idan, 2026-10-27)
 
-**Objectif V1 (Idan, 2026-10-27) : 10 sorts mono-école par école.** La Vie et le Feu en ont 6, l'Eau 7 ; les autres viendront.
+**Objectif V1 (Idan, 2026-10-27) : 10 sorts mono-école par école.** La Vie, le Feu et la Transmutation en ont 6, l'Eau 7 ; les autres viendront.
 
 Même modèle que la Vie et le Feu (effet, mana, difficulté par palier, CC aux dés maximum, EC : le lanceur subit le minimum de son sort). L'élément de l'école est le **froid** : dégâts × (1 − protection contre le froid / 100), avec la valeur « glaçant » de l'armure (même règle que le feu). Données : `spells.json`.
 
@@ -149,6 +149,37 @@ Même modèle que la Vie et le Feu (effet, mana, difficulté par palier, CC aux 
 | Armure de froid | +36 feu, 2 tours | +41, 3 tours | +56, 4 tours |
 | Gel | −26, 1 tour · 1 case · 31 % | −31, 1 tour · 2 cases · 59 % | −46, 2 tours · 3 cases · 93 % |
 | Arme de glace, par coup | +22, 2 tours · 57 % | +28, 3 tours · 81 % | +63, 4 tours · 94 % |
+
+### École de la Transmutation (6 sorts, Idan, 2026-10-27)
+
+Idan : « c'est un buffeur ». Tous les sorts sont des **actions rapides**, sur **un allié ou soi**, à **moyenne portée (3 + M/25)**, et durent **1 tour, 2 pour un maître (1 + M/100, au plus 2)**. Même modèle que les autres écoles pour le mana, la réussite et les critiques. Écoles opposées : Foudre et Invocation. Données : `spells.json`.
+
+| Sort | Palier | Effet | Mana (base) |
+|---|---|---|---|
+| 6e sens | Adepte (50) | **+(20 + M/5) %** de Perception et de Dextérité | 12 |
+| Force de titan | Novice (30) | **+(20 + M/5) %** de Force | 10 |
+| Vitesse du guépard | Novice (30) | **+(20 + M/5) %** de Vitesse | 10 |
+| Peau de pierre | Novice (30) | **+(10 + M/10) points** de Résistance physique | 10 |
+| Crachat de venin | Adepte (50) | la cible peut **cracher du venin par une action rapide** (voir ci-dessous) | 12 |
+| Cautérisation | Novice (30) | soin **1D3** (comme Eau guérissante) | 10 |
+
+- **Pourcentages** : de la valeur de base, comme l'équipement ; ils comptent partout où la caractéristique compte (Force : dégâts au corps à corps ; Vitesse : mouvement, initiative, toucher et esquive des tirs ; Perception et Dextérité : toucher). **Peau de pierre** donne des points, comme la cape (la Résistance physique médiane n'est que de 5) : un point retire environ 1 % des dégâts physiques, dans la limite de 50.
+- **Durée** : « 1 tour » = la prochaine activation de la cible ; si le lanceur se vise lui-même, c'est son activation en cours (Force de titan, puis frapper dans la foulée). Les sorts différents se cumulent ; le même sort relancé remplace le précédent.
+- **Crachat de venin** : pendant les 1 ou 2 **prochaines** activations de la cible (même si le lanceur se vise : l'action rapide vient d'être prise), un bouton « Cracher du venin » : action rapide, un ennemi à **2 à 10 cases** (la Sarbacane), en ligne de vue. Toucher comme le Trait de feu, avec la **Maîtrise du lanceur** à la place des compétences d'arme ; **1D4 de poison** × la Puissance du lanceur, réduits par la Résistance au poison (l'armure ne compte pas). S'il blesse, la cible est **empoisonnée**.
+
+| | Débutant | Recrue moyenne | Expert |
+|---|---|---|---|
+| 6e sens, Force de titan, Vitesse du guépard | +26 %, 1 tour · portée 4 · 57 % (6e sens : 31 %) | +31 %, 1 tour · portée 5 · 81 % (59 %) | +46 %, 2 tours · portée 8 · 94 % (93 %) |
+| Peau de pierre | +13 points, 1 tour | +15, 1 tour | +23, 2 tours |
+| Crachat de venin, par crachat | 22 (9 de poison ensuite) · 31 % | 28 (12) · 59 % | 63 (26) · 93 % |
+| Cautérisation | 17 PV · 9 mana · 57 % | 23 · 9 · 81 % | 51 · 6 · 94 % |
+
+### Poison (Idan, 2026-10-27)
+
+- Une cible **blessée** par du venin est **empoisonnée pendant 3 tours** (`combat.poison.turns`) ; un nouveau poison remplace l'ancien.
+- Au **début de chacune de ses activations**, elle fait un **jet de résistance** : **D100 ≤ Constitution / 2 + Résistance au poison** (équipement compris, de 5 à 95 % ; `combat.poison.*`) **annule l'effet** (Idan : « un jet de résistance au poison au début du tour (constitution ?) »). Raté, elle subit des **dégâts légers** : le minimum du venin (dé à 1), réduit par sa Résistance au poison. La Résistance au poison progresse avec ces dégâts (doc 08).
+- **Purge** (école de la Vie) retire le poison.
+- Plus tard (Idan) : les **fioles et potions** permettront d'enduire son arme de poison.
 
 ### Mana
 
@@ -211,7 +242,7 @@ Plus tard : une **école de magie** à construire au camp et des **manuels** à 
 ### Mise en place
 
 1. **Étape 1** — ces décisions, `spells.json`, les règles des sorts (`game-core/magic.js`) et leurs tests (`tests/magic.test.js`) : Soin rapide, puis les six sorts de l'école de la Vie.
-2. **Étape 2** — les sorts dans l'écran de combat actuel, **pour tester** (Vie, puis Feu, puis Eau ; le bouton de test s'appelle désormais « Sorts (test) » et donne tous les sorts écrits) (Idan, 2026-10-25 ; l'interface de combat sera refaite) : une barre de sorts pour le mercenaire actif (action, mana, réussite) ; les cases ciblables en vert (alliés et lanceur, ou toutes les cases à portée pour Soin de masse) ; le journal ; la Régénération au début des activations ; le mana affiché dans la liste des équipes ; un bouton **« Sorts de Vie (test) »** : toute l'escouade connaît les six sorts (niveau 1) pour ce combat, sans toucher au grimoire, le mana étant bien dépensé ; une IA simple, aussi en combat automatique : Soin profond sur l'allié le plus blessé sous 35 % de ses PV à la place de l'attaque, Soin rapide sous 60 %.
+2. **Étape 2** — les sorts dans l'écran de combat actuel, **pour tester** (Vie, puis Feu, Eau et Transmutation ; le bouton de test s'appelle désormais « Sorts (test) » et donne tous les sorts écrits) (Idan, 2026-10-25 ; l'interface de combat sera refaite) : une barre de sorts pour le mercenaire actif (action, mana, réussite) ; les cases ciblables en vert (alliés et lanceur, ou toutes les cases à portée pour Soin de masse) ; le journal ; la Régénération au début des activations ; le mana affiché dans la liste des équipes ; un bouton **« Sorts de Vie (test) »** : toute l'escouade connaît les six sorts (niveau 1) pour ce combat, sans toucher au grimoire, le mana étant bien dépensé ; une IA simple, aussi en combat automatique : Soin profond sur l'allié le plus blessé sous 35 % de ses PV à la place de l'attaque, Soin rapide sous 60 %.
 3. Étape 3 — **recharge du mana au camp** (faite avec l'étape 2, pour pouvoir tester d'un combat à l'autre), **XP du sort et de l'école, régression des écoles opposées**, XP de la Puissance magique, de la Réserve de mana et de la Chance (faite, voir « Écoles : progression et régression »).
 4. Étape 4 — **sorts connus à la création** et **compensations des nains et des ogres** (faite, voir « Sorts connus à la création »).
 
@@ -297,9 +328,7 @@ Remplacé par l'**École de l'Eau** d'Idan (2026-10-27, ci-dessus) : Brouillard,
 
 ### Transmutation
 
-- **Célérité** — bonus de Vitesse.
-- **Peau de pierre** — bonus d'Endurance.
-- **Force démoniaque** — bonus de Force.
+Remplacé par l'**École de la Transmutation** d'Idan (2026-10-27, ci-dessus) : 6e sens, Force de titan, Vitesse du guépard, Peau de pierre (Résistance physique), Crachat de venin, Cautérisation.
 
 ### Invocation
 

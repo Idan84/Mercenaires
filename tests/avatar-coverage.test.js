@@ -120,7 +120,16 @@ assert.equal(axes.avatars,3,"il faut la culture, le profil et l'arme tenue en ma
   +"« CAC + Hache + Arc » tient la hache, un arc seul ne compte pas pour un guerrier)");
 for(const c of orc.cultureProfiles){
   assert.ok(Math.abs(Object.values(c.profiles).reduce((t,x)=>t+x,0)-1)<1e-9,c.culture+" : profils");
+  // Cases culture × profil (Idan, 2026-10-27) : part des mercenaires, cible, avatars qui ont la culture et le profil.
+  assert.deepEqual(c.cells.map(x=>x.profile),["Corps à corps","Distance","Magie"]);
+  for(const x of c.cells){
+    assert.ok(Math.abs(x.share-c.profiles[x.profile]*c.share)<1e-9);
+    assert.equal(x.target,Math.round(x.share*100));
+    assert.equal(x.gap,Math.max(0,x.target-x.avatars));
+  }
 }
+const noirs=orc.cultureProfiles.find(c=>c.culture==="Orcs noirs");
+assert.deepEqual(noirs.cells.map(x=>x.avatars),[0,1,0],"orc-001 : Orcs noirs, Distance ; orc-003 n'a pas de culture");
 assert.ok(Math.abs(orc.cultureProfiles.reduce((t,x)=>t+x.share,0)-1)<1e-9);
 
 // Peuple sans avatar, avatar sans tag.

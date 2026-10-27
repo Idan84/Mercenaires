@@ -21,6 +21,10 @@
 //   s'évite pas mais peut dévier de 1 à 3 cases, dégâts dégressifs vers le bord, tir ami ; Anneau de feu frappe tout le
 //   monde à 1 ou 2 cases du lanceur ; Arme enflammée ajoute du feu à chaque coup qui touche ; Armure de feu protège du
 //   froid ; Flaque de magma rend une case vide infranchissable.
+// - École de l'Eau (Idan, 2026-10-27) : Brouillard pose un rideau de 5 cases qui coupe la ligne de vue pendant 3 tours ;
+//   Eau guérissante soigne 1D3 ; Flèche de glace est le Trait de feu en froid ; Tsunami frappe une ligne de 3 à 5 cases
+//   partie de la case voisine ; Armure de froid protège du feu ; Gel retire Vitesse et Dextérité (moins la protection
+//   contre le froid de la cible) ; Arme de glace ajoute du froid à chaque coup qui touche.
 (function(root,factory){
   const api=factory();
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
@@ -66,9 +70,14 @@
       return maxKey&&s[maxKey]!=null?Math.min(num(s[maxKey],value),value):value;
     }
     const range=(unit,code)=>stepped(unit,code,"portee_base","portee_pas_maitrise","portee_max");
-    const duration=(unit,code)=>stepped(unit,code,"duree_base","duree_pas_maitrise");
+    const duration=(unit,code)=>stepped(unit,code,"duree_base","duree_pas_maitrise","duree_max");
     const zoneRadius=(unit,code)=>stepped(unit,code,"zone_rayon_base","zone_rayon_pas_maitrise","zone_rayon_max");
     const bonus=(unit,code)=>stepped(unit,code,"bonus_base","bonus_pas_maitrise");
+    const zoneLength=(unit,code)=>stepped(unit,code,"zone_longueur_base","zone_longueur_pas_maitrise","zone_longueur_max");
+    // Caractéristiques visées par un malus (Gel : « Vitesse, Dextérité »).
+    function targetStats(code){
+      return String(spell(code)?.caracteristiques||"").split(",").map(x=>x.trim()).filter(Boolean);
+    }
 
     function dice(code){
       const s=spell(code);
@@ -174,6 +183,24 @@
       return clamp(num(s?.precision_base,100)+num(s?.precision_part_maitrise,0)*mastery(caster,code)-num(s?.precision_par_case,0)*distance,10,95);
     }
     const HEX_DIRECTIONS=[{q:1,r:0},{q:1,r:-1},{q:0,r:-1},{q:-1,r:0},{q:-1,r:1},{q:0,r:1}];
+    const cartesian=h=>({x:Math.sqrt(3)*(h.q+h.r/2),y:1.5*h.r});
+    // Ligne (Tsunami) : de la case visée, voisine du lanceur, droit devant sur length cases.
+    function lineCells(caster,target,length){
+      const dir={q:target.q-caster.q,r:target.r-caster.r};
+      return Array.from({length},(_,k)=>({q:target.q+dir.q*k,r:target.r+dir.r*k}));
+    }
+    // Mur (Brouillard) : length cases centrées sur la case visée, le long de l'axe de la grille le plus en travers de la
+    // direction du lanceur (sur sa propre case : le premier axe).
+    function wallCells(caster,center,length){
+      const a=cartesian(caster),b=cartesian(center),vx=b.x-a.x,vy=b.y-a.y,norm=Math.hypot(vx,vy)||1;
+      const across=d=>{ const c=cartesian(d); return Math.abs((c.x*vx+c.y*vy)/(Math.hypot(c.x,c.y)*norm)); };
+      const axis=HEX_DIRECTIONS.slice(0,3).reduce((best,d)=>across(d)<across(best)-1e-9?d:best);
+      const from=-Math.floor((length-1)/2);
+      return Array.from({length},(_,k)=>({q:center.q+axis.q*(from+k),r:center.r+axis.r*(from+k)}));
+    }
+    function unitsInCells(cells,units){
+      return (units||[]).filter(u=>u.alive!==false&&!u.offMap&&cells.some(c=>c.q===u.q&&c.r===u.r));
+    }
 
     // Peut-on lancer ce sort sur cette cible (une unité, ou une case {q, r} pour une zone) ?
     // lineOfSight : fourni par la carte (aucun décor ne la coupe en V1).
@@ -198,6 +225,7 @@
       const self=target===caster||(target.q===caster.q&&target.r===caster.r);
       const distance=self?0:combat.axialDistance(caster,target),reach=range(caster,code);
       if(distance>reach) return {ok:false,reason:"Cible hors de portée ("+distance+" cases, portée "+reach+")."};
+      if(s.zone_forme==="ligne"&&distance<1) return {ok:false,reason:"Choisissez une case voisine : la vague part dans sa direction."};
       if(s.ligne_de_vue&&!self&&!lineOfSight) return {ok:false,reason:"Pas de ligne de vue."};
       return {ok:true,cost,distance,range:reach};
     }
@@ -252,12 +280,22 @@
           result.effect={code:s.code,element:s.element,bonus:bonus(caster,code),turns:duration(caster,code),cumulable:s.cumulable!==false};
         }else if(s.effet==="terrain_infranchissable"){
           result.terrain={q:target.q,r:target.r,turns:duration(caster,code)};
+        }else if(s.effet==="brouillard"){
+          result.fog={cells:wallCells(caster,target,zoneLength(caster,code)),turns:duration(caster,code)};
+        }else if(s.effet==="malus_caracteristiques"){
+          // Gel : le malus baisse avec la protection de la cible contre l'élément (résistance, armure, Armure de feu).
+          const raw=bonus(caster,code),hit=combat.elementalDamage(target,s.element,raw);
+          result.effect={code:s.code,element:s.element,stats:targetStats(code),raw,malus:hit.damage,protection:hit.applied,
+            turns:duration(caster,code),cumulable:s.cumulable!==false};
         }else if(count){
           result.dice=result.critical?count*sides:rollDice(code);
           result.amount=effectAmount(caster,code,result.dice);
         }
         if(s.effet==="soin_de_zone") result.zone={center:{q:target.q,r:target.r},radius:zoneRadius(caster,code)};
-        if(s.effet==="degats_zone"){
+        if(s.effet==="degats_zone"&&s.zone_forme==="ligne"){
+          const length=zoneLength(caster,code);
+          result.zone={shape:"ligne",length,cells:lineCells(caster,target,length)};
+        }else if(s.effet==="degats_zone"){
           const radius=zoneRadius(caster,code),aimed={q:target.q,r:target.r};
           let center=aimed,precision=null;
           if(s.deviation_max){
@@ -307,6 +345,11 @@
       range,
       duration,
       zoneRadius,
+      zoneLength,
+      targetStats,
+      lineCells,
+      wallCells,
+      unitsInCells,
       dice,
       effectFactor,
       effectAmount,

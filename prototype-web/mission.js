@@ -32,12 +32,26 @@ function occupiedMissionKeys(except=null){
 }
 // Flaque de magma (doc 12) : une case infranchissable jusqu'au tour untilTurn (exclu).
 function missionTerrainAt(q,r){ return (game.mission?.terrain||[]).find(t=>t.q===q&&t.r===r)||null; }
+// Brouillard (doc 12) : des cases qui coupent la ligne de vue jusqu'au tour untilTurn (exclu) ; on y passe librement.
+function missionFogAt(q,r){ return (game.mission?.fog||[]).find(f=>f.q===q&&f.r===r)||null; }
+// Ligne de vue (doc 04 et 12) : seul le Brouillard la coupe pour l'instant, dès qu'une case de la ligne droite entre
+// les deux, extrémités comprises, est dans le brouillard. Elle compte pour les tirs et les sorts.
+function missionLineOfSight(a,b){
+  if(!game.mission?.fog?.length||!a||!b) return true;
+  return !game.mission.engine.hexLine(a,b).some(c=>missionFogAt(c.q,c.r));
+}
 function pruneMissionTerrain(){
   const m=game.mission;
-  if(!m?.terrain?.length) return;
-  const ended=m.terrain.filter(t=>m.turn>=t.untilTurn);
-  m.terrain=m.terrain.filter(t=>m.turn<t.untilTurn);
-  for(const t of ended) missionLog("La flaque de magma refroidit : la case est de nouveau praticable.","magic");
+  if(m?.terrain?.length){
+    const ended=m.terrain.filter(t=>m.turn>=t.untilTurn);
+    m.terrain=m.terrain.filter(t=>m.turn<t.untilTurn);
+    for(const t of ended) missionLog("La flaque de magma refroidit : la case est de nouveau praticable.","magic");
+  }
+  if(m?.fog?.length){
+    const before=m.fog.length;
+    m.fog=m.fog.filter(f=>m.turn<f.untilTurn);
+    if(m.fog.length<before) missionLog("Le brouillard se dissipe.","magic");
+  }
 }
 
 function shortestMissionPath(start,end,except=null){
@@ -108,6 +122,7 @@ function sortMissionInitiative(units,engine){
 }
 
 function resetMissionActivation(unit){
+  tickMissionChill(unit);
   unit.movementRemaining=game.mission.engine.movementBase(unit);
   unit.attackAvailable=true;
   unit.quickAvailable=true;
@@ -648,7 +663,8 @@ function performMissionAttack(attacker,target,mode,distance,charge=null){
   // Combat à deux armes CAC V1 : à chaque séquence, chaque arme utilisable frappe une fois (principale puis
   // secondaire), chacune avec son propre mode ; sinon, la seule arme principale.
   const dual=e.isDualWielding(attacker);
-  const handsAt=d=>dual?e.usableHands(attacker,d):(e.canAttackAtDistance(attacker,d,mode)?[{hand:"main",mode}]:[]);
+  const handsAt=d=>(dual?e.usableHands(attacker,d):(e.canAttackAtDistance(attacker,d,mode)?[{hand:"main",mode}]:[]))
+    .filter(h=>h.mode!=="ranged"||missionLineOfSight(attacker,target));
   if(handsAt(distance).some(h=>h.mode==="ranged")){
     const reactors=e.rangedOpportunityReactors(missionOpponents(attacker),attacker,target);
     if(reactors.length){
@@ -882,7 +898,7 @@ function missionPanicFire(unit){
   const e=game.mission.engine,threats=missionThreatSources(unit);
   const target=[...threats].sort((a,b)=>e.axialDistance(unit,a)-e.axialDistance(unit,b))[0];
   const distance=target?e.axialDistance(unit,target):0;
-  if(target&&e.isRangedWeapon(e.weaponTemplate(e.activeWeaponItem(unit)))&&e.canAttackAtDistance(unit,distance,"ranged")){
+  if(target&&e.isRangedWeapon(e.weaponTemplate(e.activeWeaponItem(unit)))&&e.canAttackAtDistance(unit,distance,"ranged")&&missionLineOfSight(unit,target)){
     performMissionAttack(unit,target,"ranged",distance);
     return;
   }
@@ -913,7 +929,7 @@ function resolveMissionFleeingActivation(unit){
 
 function resolvePlayerMissionAttack(a,d,mode,distance){
   const m=game.mission;
-  if(!missionCanAttack(a,distance,mode)){ missionLog("Cible hors portée ou arme incompatible.","bad"); return; }
+  if(!missionCanAttack(a,d,mode)){ missionLog("Cible hors portée ou arme incompatible.","bad"); return; }
   a.attackAvailable=false;
   m.mode=null;
   performMissionAttack(a,d,mode,distance);
@@ -1050,7 +1066,7 @@ function resolveMissionSpell(caster,target,code){
   const m=game.mission,magic=missionMagic(),spell=magic?.spell(code);
   if(!spell) return null;
   if(spell.cible==="soi") target=caster;
-  const out=magic.cast(caster,target,code,{units:missionUnits(),cellFree:missionCellFree(target)});
+  const out=magic.cast(caster,target,code,{units:missionUnits(),cellFree:missionCellFree(target),lineOfSight:missionLineOfSight(caster,target)});
   if(!out.ok){ missionLog(out.reason,"bad"); return out; }
   if(spell.action==="rapide") caster.quickAvailable=false; else caster.attackAvailable=false;
   caster.character.mana=Math.max(0,Math.round((magic.currentMana(caster)-out.cost)*100)/100);
@@ -1066,7 +1082,7 @@ function resolveMissionSpell(caster,target,code){
     if(out.fumble){
       if(out.selfDamage&&out.element){
         const hit=m.engine.elementalDamage(caster,out.element,out.selfDamage);
-        missionLog("Échec critique ("+out.fumbleRoll+" > Chance) : le sort se retourne, "+name+" subit "+hit.damage+" PV de feu"+missionProtectionNote(hit)+".","bad");
+        missionLog("Échec critique ("+out.fumbleRoll+" > Chance) : le sort se retourne, "+name+" subit "+hit.damage+" PV de "+out.element+missionProtectionNote(hit)+".","bad");
         damageMissionUnitBySpell(caster,hit.damage,null,out.element);
       }else{
         missionLog("Échec critique ("+out.fumbleRoll+" > Chance) : "+(out.selfDamage
@@ -1108,13 +1124,13 @@ function resolveMissionSpell(caster,target,code){
     if(out.hit){
       const hit=missionElementalHit(target,out.element,out.amount,caster);
       effect=hit.damage>0;
-      missionLog(name+" lance "+spell.nom+on+detail+" : touché"+aim+", "+hit.damage+" PV de feu"+missionProtectionNote(hit)+". "
+      missionLog(name+" lance "+spell.nom+on+detail+" : touché"+aim+", "+hit.damage+" PV de "+out.element+missionProtectionNote(hit)+". "
         +target.character.name+" reste à "+Math.max(0,target.hp)+" PV."+critical,"damage");
     }else if(out.stray){
-      missionLog(name+" lance "+spell.nom+on+detail+" : raté"+aim+" ; le trait part dans la ligne de tir et atteint "
+      missionLog(name+" lance "+spell.nom+on+detail+" : raté"+aim+" ; le sort part dans la ligne de tir et atteint "
         +out.stray.unit.character.name+" par accident ("+Math.round(out.stray.p)+" %, jet "+out.stray.roll+") !","bad");
       const hit=missionElementalHit(out.stray.unit,out.element,out.amount,caster);
-      missionLog(out.stray.unit.character.name+" subit "+hit.damage+" PV de feu"+missionProtectionNote(hit)+".","damage");
+      missionLog(out.stray.unit.character.name+" subit "+hit.damage+" PV de "+out.element+missionProtectionNote(hit)+".","damage");
     }else{
       missionLog(name+" lance "+spell.nom+on+detail+" : raté"+aim+".","miss");
     }
@@ -1123,26 +1139,41 @@ function resolveMissionSpell(caster,target,code){
     const zone=out.zone,drift=zone.precision&&!zone.precision.ok
       ?" ; elle dévie de "+zone.precision.deviation+" case"+(zone.precision.deviation>1?"s":"")+" (précision "+Math.round(zone.precision.p)+" %, jet "+zone.precision.roll+")"
       :zone.precision?" ; elle tombe où il faut (précision "+Math.round(zone.precision.p)+" %, jet "+zone.precision.roll+")":"";
-    const victims=magic.unitsInZone(zone.center,zone.radius,missionUnits(),zone.minDistance).filter(u=>u!==caster||spell.cible!=="soi");
+    const victims=(zone.cells?magic.unitsInCells(zone.cells,missionUnits()):magic.unitsInZone(zone.center,zone.radius,missionUnits(),zone.minDistance))
+      .filter(u=>u!==caster||spell.cible!=="soi");
     effect=false;
     const lines=victims.map(u=>{
-      const amount=Math.ceil(out.amount*magic.zoneFactor(zone,m.engine.axialDistance(zone.center,u))-1e-9);
+      const amount=zone.cells?out.amount:Math.ceil(out.amount*magic.zoneFactor(zone,m.engine.axialDistance(zone.center,u))-1e-9);
       const hit=missionElementalHit(u,out.element,amount,caster);
       if(hit.damage>0&&u!==caster) effect=true;
       return u.character.name+" −"+hit.damage;
     });
-    missionLog(name+" lance "+spell.nom+" (rayon "+zone.radius+")"+detail+drift+" : "+out.amount+" PV de feu"
+    missionLog(name+" lance "+spell.nom+(zone.cells?" (ligne de "+zone.length+" cases)":" (rayon "+zone.radius+")")+detail+drift+" : "+out.amount+" PV de "+out.element
       +(zone.degressive?" au centre, moins vers le bord":" pour chacun")+(lines.length?" — "+lines.join(", "):" — personne dans la zone")+"."+critical,"damage");
     checkMissionEnd();
   }else if(spell.effet==="arme_elementaire"){
     target.weaponEnchant={...out.effect};
-    missionLog(name+" lance "+spell.nom+on+detail+" : chaque coup qui touche ajoute du feu, pendant "+out.effect.turns+" tours."+critical,"magic");
+    missionLog(name+" lance "+spell.nom+on+detail+" : chaque coup qui touche ajoute du "+out.effect.element+", pendant "+out.effect.turns+" tours."+critical,"magic");
   }else if(spell.effet==="protection_elementaire"){
-    target.elementalBonus={...(target.elementalBonus||{}),[out.effect.element]:{bonus:out.effect.bonus,turns:out.effect.turns}};
+    target.elementalBonus={...(target.elementalBonus||{}),[out.effect.element]:{code:out.effect.code,bonus:out.effect.bonus,turns:out.effect.turns}};
     missionLog(name+" lance "+spell.nom+on+detail+" : +"+out.effect.bonus+" de protection contre le "+out.effect.element+", pendant "+out.effect.turns+" tours.","magic");
   }else if(spell.effet==="terrain_infranchissable"){
     m.terrain=[...(m.terrain||[]),{q:out.terrain.q,r:out.terrain.r,untilTurn:m.turn+out.terrain.turns}];
     missionLog(name+" lance "+spell.nom+detail+" : la case devient infranchissable pendant "+out.terrain.turns+" tours.","magic");
+  }else if(spell.effet==="brouillard"){
+    // Les cases hors de la carte sont perdues ; un nouveau brouillard remplace l'ancien sur les mêmes cases.
+    const cells=out.fog.cells.filter(c=>validMissionHex(c.q,c.r)),same=f=>cells.some(c=>c.q===f.q&&c.r===f.r);
+    m.fog=[...(m.fog||[]).filter(f=>!same(f)),...cells.map(c=>({q:c.q,r:c.r,untilTurn:m.turn+out.fog.turns}))];
+    effect=cells.length>0;
+    missionLog(name+" lance "+spell.nom+detail+" : un rideau de brouillard de "+cells.length+" cases coupe la ligne de vue pendant "
+      +out.fog.turns+" tours.","magic");
+  }else if(spell.effet==="malus_caracteristiques"){
+    const fx=out.effect;
+    target.statMalus={code:fx.code,stats:fx.stats,malus:fx.malus,turns:fx.turns};
+    effect=fx.malus>0;
+    missionLog(name+" lance "+spell.nom+on+detail+" : −"+fx.malus+" en "+fx.stats.join(" et en ")
+      +(fx.protection?" (malus de "+fx.raw+", protection contre le "+fx.element+" "+Math.round(fx.protection)+" %)":"")
+      +", pendant "+fx.turns+" tour"+(fx.turns>1?"s":"")+".","magic");
   }
   learn(effect);
   return out;
@@ -1174,18 +1205,35 @@ function tickMissionRegeneration(unit){
     +(effect.turns>0?" (encore "+effect.turns+" tour"+(effect.turns>1?"s":"")+").":" (fin)."),"magic");
 }
 
-// Arme enflammée et Armure de feu (doc 12) : actives pendant leur nombre de tours, décomptés au début de chaque activation
-// de celui qui les porte (le tour du lancer compte).
+// Arme enflammée, Arme de glace, Armure de feu et Armure de froid (doc 12) : actives pendant leur nombre de tours,
+// décomptés au début de chaque activation de celui qui les porte (le tour du lancer compte).
 function tickMissionEnchantments(unit){
   const name=unit.character.name;
   if(unit.weaponEnchant){
     unit.weaponEnchant.turns-=1;
-    if(unit.weaponEnchant.turns<=0){ unit.weaponEnchant=null; missionLog("Les flammes de l’arme de "+name+" s’éteignent.","magic"); }
+    if(unit.weaponEnchant.turns<=0){
+      const frost=unit.weaponEnchant.element==="froid";
+      unit.weaponEnchant=null;
+      missionLog((frost?"Le givre de l’arme de "+name+" fond.":"Les flammes de l’arme de "+name+" s’éteignent."),"magic");
+    }
   }
   for(const [element,effect] of Object.entries(unit.elementalBonus||{})){
     effect.turns-=1;
-    if(effect.turns<=0){ delete unit.elementalBonus[element]; missionLog("L’armure de feu de "+name+" se dissipe.","magic"); }
+    if(effect.turns<=0){
+      delete unit.elementalBonus[element];
+      const label=missionMagic()?.spell(effect.code)?.nom||"Armure de feu";
+      missionLog("L’"+label.charAt(0).toLowerCase()+label.slice(1)+" de "+name+" se dissipe.","magic");
+    }
   }
+}
+// Gel (doc 12) : le malus compte dès le lancer et couvre les turns prochaines activations de la cible ; il tombe au début
+// de l'activation suivante, avant le calcul du mouvement.
+function tickMissionChill(unit){
+  const fx=unit.statMalus;
+  if(!fx) return;
+  if(fx.turns>0){ fx.turns-=1; return; }
+  unit.statMalus=null;
+  missionLog(unit.character.name+" dégèle : "+fx.stats.join(" et ")+" reviennent.","magic");
 }
 // Dégâts élémentaires d'un sort sur une unité : protection (résistance + armure + bonus, bornée) puis PV.
 function missionElementalHit(unit,element,amount,source=null){
@@ -1197,28 +1245,31 @@ function missionProtectionNote(hit){
   const p=Math.round(hit.applied);
   return p?" (protection "+(p>0?p:"−"+Math.abs(p))+" %)":"";
 }
-// Arme enflammée : chaque coup qui touche (non bloqué) ajoute des dégâts de feu, même s'il ne blesse pas.
+// Arme enflammée ou Arme de glace : chaque coup qui touche (non bloqué) ajoute des dégâts de feu ou de froid, même s'il ne
+// blesse pas.
 function missionWeaponEnchantStrike(attacker,target,result){
   const fx=attacker.weaponEnchant,magic=missionMagic();
   if(!fx||!magic||!result?.ok||!result.hit||result.blocked||!target.alive) return;
   const strike=magic.weaponStrike(fx),hit=missionElementalHit(target,fx.element,strike.amount,attacker);
-  missionLog("Arme enflammée : "+target.character.name+" subit "+hit.damage+" PV de feu"+missionProtectionNote(hit)+".","magic");
+  missionLog((magic.spell(fx.code)?.nom||"Arme enflammée")+" : "+target.character.name+" subit "+hit.damage+" PV de "+fx.element+missionProtectionNote(hit)+".","magic");
   checkMissionEnd();
 }
 
 // IA des sorts (pour tester, et pour le combat automatique) : Soin profond sur l'allié le plus blessé sous 35 % de ses PV,
-// à portée, à la place de l'attaque ; Soin rapide (action rapide) sur l'allié le plus blessé sous 60 %. Les autres sorts
-// restent au joueur.
+// à portée, à la place de l'attaque ; Soin rapide, sinon Eau guérissante (action rapide), sur l'allié le plus blessé sous
+// 60 %. Les autres sorts restent au joueur.
 function missionAiCast(unit){
   const magic=missionMagic();
   if(!magic||!magic.knownSpells(unit).length) return;
   const allies=livingMissionUnits(unit.team).filter(a=>!a.offMap).sort((a,b)=>a.hp/a.pvMax-b.hp/b.pvMax);
-  const pick=(code,ratio)=>allies.find(a=>a.hp/a.pvMax<ratio&&magic.canCast(unit,a,code).ok);
+  const pick=(code,ratio)=>allies.find(a=>a.hp/a.pvMax<ratio&&magic.canCast(unit,a,code,{lineOfSight:missionLineOfSight(unit,a)}).ok);
   const deep=pick("deep_heal",0.35);
   if(deep) resolveMissionSpell(unit,deep,"deep_heal");
   if(!unit.alive||game.mission.over) return;
-  const quick=pick("quick_heal",0.6);
-  if(quick) resolveMissionSpell(unit,quick,"quick_heal");
+  for(const code of ["quick_heal","healing_water"]){
+    const ally=pick(code,0.6);
+    if(ally){ resolveMissionSpell(unit,ally,code); break; }
+  }
 }
 
 function renderMissionSpellBar(u){
@@ -1252,14 +1303,15 @@ function enemyTryUsefulSet(unit,target){
   const distance=e.axialDistance(unit,target);
   let weapon=e.weaponTemplate(e.activeWeaponItem(unit));
   let mode=e.isRangedWeapon(weapon)?"ranged":"melee";
-  if(e.canAttackAtDistance(unit,distance,mode)) return;
+  const usable=mode=>e.canAttackAtDistance(unit,distance,mode)&&(mode!=="ranged"||missionLineOfSight(unit,target));
+  if(usable(mode)) return;
 
   if(!unit.quickAvailable||!e.canSwitchWeaponSet(unit)) return;
   const before=unit.activeSet;
   e.switchWeaponSet(unit);
   weapon=e.weaponTemplate(e.activeWeaponItem(unit));
   mode=e.isRangedWeapon(weapon)?"ranged":"melee";
-  if(e.canAttackAtDistance(unit,distance,mode)){
+  if(usable(mode)){
     unit.quickAvailable=false;
     missionLog(unit.character.name+" change d’arme : "+e.activeWeaponItem(unit).name+".","gear");
   }else{
@@ -1334,7 +1386,7 @@ function performMissionCharge(unit,target,charge){
   for(const reaction of reactions){
     if(!advanceTo(reaction.at)){ broken(); return; }
     const distance=e.axialDistance(target,unit);
-    if(!target.alive||target.fleeing||!e.usableHands(target,distance).some(h=>h.hand===reaction.hand&&h.mode===reaction.mode)) continue;
+    if(!target.alive||target.fleeing||!missionUsableHands(target,unit).some(h=>h.hand===reaction.hand&&h.mode===reaction.mode)) continue;
     const r=e.resolveAttack(target,unit,{mode:reaction.mode,distance,hand:reaction.hand,bystanders:missionUnits()});
     logMissionAttack(target,unit,r,"countercharge");
     missionWeaponEnchantStrike(target,unit,r);
@@ -1398,7 +1450,7 @@ function enemyMissionActivation(unit){
   let mode=e.isRangedWeapon(weapon)?"ranged":"melee";
   let distance=e.axialDistance(unit,target);
 
-  if(e.usableHands(unit,distance).length){
+  if(missionUsableHands(unit,target).length){
     performMissionAttack(unit,target,mode,distance);
     return;
   }
@@ -1416,7 +1468,7 @@ function enemyMissionActivation(unit){
   mode=e.isRangedWeapon(weapon)?"ranged":"melee";
   distance=e.axialDistance(unit,target);
 
-  if(e.usableHands(unit,distance).length){
+  if(missionUsableHands(unit,target).length){
     performMissionAttack(unit,target,mode,distance);
   }
 }
@@ -1473,8 +1525,13 @@ function missionHeldModes(u){
   return modes;
 }
 
-function missionCanAttack(u,distance,mode){
-  return game.mission.engine.usableHands(u,distance).some(h=>h.mode===mode);
+// Un tir demande la ligne de vue (Brouillard).
+function missionUsableHands(u,target){
+  const e=game.mission.engine;
+  return e.usableHands(u,e.axialDistance(u,target)).filter(h=>h.mode!=="ranged"||missionLineOfSight(u,target));
+}
+function missionCanAttack(u,target,mode){
+  return missionUsableHands(u,target).some(h=>h.mode===mode);
 }
 
 function missionActionAvailability(){
@@ -1509,18 +1566,17 @@ function targetableMissionCells(){
     if(!magic) return set;
     const cible=magic.spell(spellCode)?.cible;
     if(cible==="case"||cible==="case_vide"){
-      for(const c of missionCells()) if(magic.canCast(u,c,spellCode,{cellFree:missionCellFree(c)}).ok) set.add(missionKey(c.q,c.r));
+      for(const c of missionCells()) if(magic.canCast(u,c,spellCode,{cellFree:missionCellFree(c),lineOfSight:missionLineOfSight(u,c)}).ok) set.add(missionKey(c.q,c.r));
     }else if(cible==="soi"){
       if(magic.canCast(u,u,spellCode).ok) set.add(missionKey(u.q,u.r));
     }else{
-      for(const unit of missionUnits()) if(unit.alive&&!unit.offMap&&magic.canCast(u,unit,spellCode).ok) set.add(missionKey(unit.q,unit.r));
+      for(const unit of missionUnits()) if(unit.alive&&!unit.offMap&&magic.canCast(u,unit,spellCode,{lineOfSight:missionLineOfSight(u,unit)}).ok) set.add(missionKey(unit.q,unit.r));
     }
     return set;
   }
 
   for(const enemy of livingMissionUnits("enemy")){
-    const distance=m.engine.axialDistance(u,enemy);
-    if((m.mode==="melee"||m.mode==="ranged")&&missionCanAttack(u,distance,m.mode)) set.add(missionKey(enemy.q,enemy.r));
+    if((m.mode==="melee"||m.mode==="ranged")&&missionCanAttack(u,enemy,m.mode)) set.add(missionKey(enemy.q,enemy.r));
     if(m.mode==="charge"&&missionChargeIfClear(u,enemy)) set.add(missionKey(enemy.q,enemy.r));
   }
   return set;
@@ -1565,6 +1621,8 @@ function renderMission(){
     if(targets.has(key)) classes.push(m.mode==="move"?"reachable":missionSpellMode()?"spell-target":"targetable");
     const magma=missionTerrainAt(q,r);
     if(magma){ classes.push("magma"); title=` title="Flaque de magma : infranchissable jusqu’au tour ${magma.untilTurn}"`; }
+    const fog=missionFogAt(q,r);
+    if(fog){ classes.push("fog"); title=` title="Brouillard : coupe la ligne de vue jusqu’au tour ${fog.untilTurn}"`; }
     if(targets.has(key)&&m.mode==="move"){
       const risk=missionPathOpportunityCount(u,shortestMissionPath(u,{q,r},u));
       if(risk){

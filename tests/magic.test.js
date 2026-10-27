@@ -25,9 +25,10 @@ const magic=createMagicRules({reference,combat,random});
 function mage({pm,vie,level=1,int,chance=54,mana=53,items=[],slots={}}){
   return {
     name:"Mage",stats:{"Puissance magique":pm,Intelligence:int,Chance:chance,"Réserve de mana":mana,Constitution:50,Endurance:50,Volonté:50},
-    skills:{magic:{Vie:vie,Feu:vie,Nécromancie:20,Illusion:20}},mana,
+    skills:{magic:{Vie:vie,Feu:vie,Eau:vie,Nécromancie:20,Illusion:20}},mana,
     spells:["quick_heal","deep_heal","regeneration","mass_heal","restitution","purge"].map(code=>({code,school:"Vie",mastery:level}))
-      .concat(["fire_bolt","fireball","fire_ring","flaming_weapon","fire_armor","magma"].map(code=>({code,school:"Feu",mastery:level}))),
+      .concat(["fire_bolt","fireball","fire_ring","flaming_weapon","fire_armor","magma"].map(code=>({code,school:"Feu",mastery:level})))
+      .concat(["fog","healing_water","ice_arrow","tsunami","frost_armor","freeze","ice_weapon"].map(code=>({code,school:"Eau",mastery:level}))),
     items,equipment:{slots}
   };
 }
@@ -277,4 +278,87 @@ assert.equal(combat.elementalDamage(armoredUnit("Armure d'écailles",4),"feu",10
 assert.equal(combat.elementalDamage(armoredUnit("Armure d'écailles",48),"feu",100).applied,75,"jamais plus de 75 %");
 assert.equal(combat.elementalDamage(armoredUnit(null,4,{elementalBonus:{froid:{bonus:36,turns:2}}}),"froid",100).damage,60,"Armure de feu contre le froid");
 
-console.log("Magie : écoles de la Vie et du Feu OK");
+// École de l'Eau (Idan, 2026-10-27). Les mages de test ont le même niveau en Eau qu'en Vie.
+assert.deepEqual(magic.schoolSpells("Eau").map(x=>[x.code,x.palier,x.difficulte,x.action]),[
+  ["fog","Adepte",50,"principale"],["healing_water","Novice",30,"rapide"],["ice_arrow","Novice",30,"principale"],
+  ["tsunami","Adepte",50,"principale"],["frost_armor","Novice",30,"rapide"],["freeze","Adepte",50,"rapide"],["ice_weapon","Novice",30,"rapide"]]);
+// Eau guérissante : 1D3, moins que Soin rapide (1D4) ; 10 mana de base.
+assert.deepEqual(magic.effectRange(beginner,"healing_water"),{min:9,max:26});
+assert.ok(magic.effectRange(expert,"healing_water").max<magic.effectRange(expert,"quick_heal").max);
+assert.deepEqual([magic.manaCost(beginner,"healing_water"),magic.range(beginner,"healing_water")],[9,3]);
+// Flèche de glace : le Trait de feu en froid.
+assert.deepEqual([magic.range(beginner,"ice_arrow"),magic.range(expert,"ice_arrow"),magic.manaCost(beginner,"ice_arrow")],[15,25,9]);
+assert.deepEqual(magic.effectRange(beginner,"ice_arrow"),magic.effectRange(beginner,"fire_bolt"));
+// Tsunami : la case voisine seulement ; une ligne de 3 + M/50 cases, de 3 à 5.
+assert.deepEqual([magic.range(beginner,"tsunami"),magic.range(expert,"tsunami")],[1,1]);
+assert.deepEqual([magic.zoneLength(beginner,"tsunami"),magic.zoneLength(expert,"tsunami"),magic.zoneLength(archmage,"tsunami")],[3,5,5]);
+// Brouillard : 5 cases, 3 tours fixes (Idan : « fixe »), posé jusqu'à 2 + M/25 cases.
+assert.deepEqual([magic.zoneLength(beginner,"fog"),magic.duration(beginner,"fog"),magic.duration(archmage,"fog")],[5,3,3]);
+assert.deepEqual([magic.range(beginner,"fog"),magic.range(expert,"fog")],[3,7]);
+// Gel : −(20 + M/5) en Vitesse et en Dextérité, pendant 1 + M/100 tours, à 1 + M/50 cases.
+assert.deepEqual(magic.targetStats("freeze"),["Vitesse","Dextérité"]);
+assert.deepEqual([magic.bonus(beginner,"freeze"),magic.bonus(expert,"freeze")],[26,46]);
+assert.deepEqual([magic.duration(beginner,"freeze"),magic.duration(expert,"freeze"),magic.duration(archmage,"freeze")],[1,2,2],"1 ou 2 tours (Idan)");
+assert.deepEqual([magic.range(beginner,"freeze"),magic.range(expert,"freeze")],[1,3]);
+// Armure de froid et Arme de glace : les miroirs de l'Armure de feu et de l'Arme enflammée.
+assert.deepEqual([magic.bonus(beginner,"frost_armor"),magic.bonus(expert,"frost_armor")],[36,56]);
+assert.deepEqual([magic.duration(beginner,"ice_weapon"),magic.duration(expert,"ice_weapon")],[2,4]);
+
+// Tsunami : pas sur sa propre case ; la vague part de la case voisine, droit devant, et frappe tout le monde dans la ligne.
+assert.match(magic.canCast(caster,{q:0,r:0},"tsunami").reason,/case voisine/);
+assert.match(magic.canCast(caster,{q:2,r:0},"tsunami").reason,/hors de portée/);
+assert.equal(magic.canCast(caster,{q:0,r:1},"tsunami").ok,true);
+queue=[0,0.99,0.5,0.5];
+out=magic.cast(caster,{q:1,r:0},"tsunami");
+assert.deepEqual([out.success,out.element,out.dice,out.zone.shape,out.zone.length],[true,"froid",8,"ligne",3]);
+assert.deepEqual(out.zone.cells,[{q:1,r:0},{q:2,r:0},{q:3,r:0}]);
+assert.deepEqual(magic.unitsInCells(out.zone.cells,[caster,adjacent,twoAway,ally,enemy]),[adjacent,twoAway,ally],"alliés compris");
+// Brouillard : 5 cases centrées sur la case visée, en travers de la direction du lanceur.
+queue=[0];
+out=magic.cast(caster,{q:3,r:0},"fog");
+assert.equal(out.fog.turns,3);
+assert.equal(out.fog.cells.length,5);
+assert.ok(out.fog.cells.some(c=>c.q===3&&c.r===0),"centré sur la case visée");
+assert.equal(out.fog.cells.filter(c=>c.r===0).length,1,"en travers : une seule case sur la ligne du lanceur");
+assert.deepEqual(magic.wallCells({q:0,r:0},{q:0,r:3},5),[{q:-2,r:3},{q:-1,r:3},{q:0,r:3},{q:1,r:3},{q:2,r:3}]);
+// Ligne de vue : les cases traversées, extrémités comprises.
+assert.deepEqual(combat.hexLine({q:0,r:0},{q:3,r:0}),[{q:0,r:0},{q:1,r:0},{q:2,r:0},{q:3,r:0}]);
+assert.equal(combat.hexLine({q:0,r:0},{q:2,r:1}).length,4);
+assert.deepEqual(combat.hexLine({q:2,r:2},{q:2,r:2}),[{q:2,r:2}]);
+assert.match(magic.canCast(caster,enemy,"ice_arrow",{lineOfSight:false}).reason,/ligne de vue/);
+// Gel : le malus baisse avec la protection contre le froid de la cible (Résistance au froid 20 : 26 × 0,8 → 21).
+const frozen=mage({pm:50,vie:1,int:50});
+Object.assign(frozen.stats,{Vitesse:50,Dextérité:40});
+frozen.resistances={"Résistance au froid":20};
+const chilled=unit(frozen,{q:1,r:0,team:"enemy"});
+assert.match(magic.canCast(caster,adjacent,"freeze").reason,/ennemi/);
+assert.match(magic.canCast(caster,{...chilled,q:2},"freeze").reason,/hors de portée/);
+queue=[0];
+out=magic.cast(caster,chilled,"freeze");
+assert.deepEqual(out.effect,{code:"freeze",element:"froid",stats:["Vitesse","Dextérité"],raw:26,malus:21,protection:20,turns:1,cumulable:false});
+queue=[0];
+assert.equal(magic.cast(caster,{...chilled,elementalBonus:{froid:{bonus:36,turns:2}}},"freeze").effect.malus,12,"l'Armure de feu protège du Gel");
+// Le moteur retire le malus des caractéristiques : Vitesse, Dextérité, donc mouvement, toucher et initiative.
+const slowed={...chilled,statMalus:{stats:out.effect.stats,malus:21}};
+assert.deepEqual([combat.statWithGear(chilled,"Vitesse"),combat.statWithGear(slowed,"Vitesse")],[50,29]);
+assert.deepEqual([combat.statWithGear(chilled,"Dextérité"),combat.statWithGear(slowed,"Dextérité")],[40,19]);
+assert.equal(combat.statWithGear(slowed,"Intelligence"),50,"les autres caractéristiques ne changent pas");
+assert.ok(combat.movementBase(slowed)<combat.movementBase(chilled));
+// Eau guérissante, Flèche de glace, Arme de glace, Armure de froid.
+queue=[0,0.99,0.5];
+out=magic.cast(caster,ally,"healing_water");
+assert.deepEqual([out.success,out.effet,out.dice,out.amount],[true,"soin",2,magic.effectAmount(caster,"healing_water",2)]);
+queue=[0,0.99,0.5,0];
+out=magic.cast(caster,enemy,"ice_arrow",{units:[caster,enemy]});
+assert.deepEqual([out.success,out.element,out.hit],[true,"froid",true]);
+queue=[0,0.99];
+out=magic.cast(caster,adjacent,"ice_weapon");
+assert.deepEqual([out.effect.element,out.effect.turns],["froid",2]);
+queue=[0.5];
+assert.equal(magic.weaponStrike(out.effect).element,"froid");
+queue=[0];
+out=magic.cast(caster,ally,"frost_armor");
+assert.deepEqual(out.effect,{code:"frost_armor",element:"feu",bonus:36,turns:2,cumulable:false});
+assert.equal(combat.elementalDamage(armoredUnit(null,4,{elementalBonus:{feu:{bonus:36,turns:2}}}),"feu",100).damage,60,"Armure de froid contre le feu");
+
+console.log("Magie : écoles de la Vie, du Feu et de l'Eau OK");

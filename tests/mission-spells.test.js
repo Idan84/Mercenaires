@@ -43,7 +43,7 @@ const api=new Function("game","$","esc","fmt","renderAvatar","combatEngine","Mer
   source+"\nreturn {makeMissionUnit,sortMissionInitiative,selectNextMissionPlayer,teachMissionTestSpells,setMissionMode,targetableMissionCells,"
   +"handleMissionHexClick,resetMissionActivation,missionAiCast,missionActionAvailability,autoResolveMission,missionKey,renderMissionSpellBar,"
   +"missionMagic,endMissionActivation,missionWeaponEnchantStrike,pruneMissionTerrain,occupiedMissionKeys,missionReachablePaths,"
-  +"renderMissionProgression};")
+  +"renderMissionProgression,missionLineOfSight,missionCanAttack};")
   .call(null,game,$,v=>String(v??""),v=>String(Math.round(Number(v)||0)),()=>"",()=>engine,Progression,MissionEnd,Magic);
 
 function newMission(){
@@ -71,16 +71,17 @@ const others=m.players.filter(x=>x!==u);
 assert.equal(magic.knownSpells(u).length,0);
 assert.equal(api.renderMissionSpellBar(u),"");
 assert.equal(api.missionActionAvailability().testSpells,true);
-// Bouton de test : toute l'escouade connaît tous les sorts écrits (Vie, Feu) pour ce combat ; le grimoire ne change pas.
+// Bouton de test : toute l'escouade connaît tous les sorts écrits (Vie, Feu, Eau) pour ce combat ; le grimoire ne change pas.
 api.teachMissionTestSpells();
 assert.deepEqual(magic.knownSpells(u).map(s=>s.code),["quick_heal","deep_heal","regeneration","mass_heal","restitution","purge",
-  "fire_bolt","fireball","fire_ring","flaming_weapon","fire_armor","magma"]);
-assert.ok(m.players.every(p=>p.spells.length===12&&!(p.character.spells||[]).length));
+  "fire_bolt","fireball","fire_ring","flaming_weapon","fire_armor","magma",
+  "fog","healing_water","ice_arrow","tsunami","frost_armor","freeze","ice_weapon"]);
+assert.ok(m.players.every(p=>p.spells.length===19&&!(p.character.spells||[]).length));
 assert.equal(api.missionActionAvailability().testSpells,false,"une seule fois par combat");
-assert.ok(logged(/connaît tous les sorts \(Vie, Feu, niveau 1\)/));
+assert.ok(logged(/connaît tous les sorts \(Vie, Feu, Eau, niveau 1\)/));
 const bar=api.renderMissionSpellBar(u);
 assert.match(bar,/Mana 53\/53/);
-assert.equal((bar.match(/data-spell=/g)||[]).length,12);
+assert.equal((bar.match(/data-spell=/g)||[]).length,19);
 assert.match(bar,/Soin rapide<small>rapide · \d+ mana · \d+ %<\/small>/);
 
 // Soin rapide : cases ciblables = le lanceur et les alliés à portée, jamais un ennemi lointain.
@@ -275,6 +276,115 @@ assert.match(recap,/Sort Trait de feu \+\d+/);
 assert.match(recap,/Écoles opposées −\d+/);
 assert.match(recap,/Puissance magique \+\d+/);
 
+// École de l'Eau dans l'écran de combat (Idan, 2026-10-27). Maîtrise 60,5 : Eau 60, sort 1.
+for(const p of m.players) p.character.skills.magic.Eau=60;
+const wet=m.enemies[1],distant=m.enemies[2];
+// Le reste de l'escouade et des ennemis loin de la scène, pour que les cases utilisées soient libres.
+for(const x of [...m.players,...m.enemies]) if(![u,ally,wet,distant].includes(x)){ x.q=-50;x.r=-50; }
+u.q=2;u.r=4;ally.q=2;ally.r=5;wet.q=3;wet.r=4;distant.q=6;distant.r=4;
+for(const x of [ally,wet,distant]){ x.alive=true;x.hp=x.pvMax;x.fleeing=false; }
+// Brouillard : un rideau de 5 cases en travers, devant le lanceur ; plus de ligne de vue à travers, ni tir, ni sort.
+reset();
+api.setMissionMode("spell:fog");
+assert.ok(api.targetableMissionCells().has(api.missionKey(4,4)));
+queue.push(0);
+api.handleMissionHexClick(4,4);
+assert.equal(m.fog.length,5);
+assert.ok(m.fog.some(f=>f.q===4&&f.r===4)&&m.fog.every(f=>f.untilTurn===m.turn+3),"3 tours, fixes");
+assert.ok(logged(/lance Brouillard .* un rideau de brouillard de 5 cases coupe la ligne de vue pendant 3 tours/));
+assert.equal(api.missionLineOfSight(u,distant),false,"le rideau est entre le lanceur et la cible");
+assert.equal(api.missionLineOfSight(u,wet),true,"le voisin, devant le rideau, reste visible");
+reset();
+api.setMissionMode("spell:ice_arrow");
+cells=api.targetableMissionCells();
+assert.ok(cells.has(api.missionKey(wet.q,wet.r))&&!cells.has(api.missionKey(distant.q,distant.r)),"pas de sort à travers le brouillard");
+// Un arc ne tire pas à travers non plus ; on traverse le brouillard librement.
+const bow={id:"test-bow",name:"Arc",category:"Armes de tir",tier:1,qualityCode:"correcte"};
+u.character.items.push(bow);
+const mainSlot="weapon_set_"+u.activeSet+"_main",held=u.character.equipment.slots[mainSlot],offSlot="weapon_set_"+u.activeSet+"_offhand";
+const heldOff=u.character.equipment.slots[offSlot];
+u.character.equipment.slots[mainSlot]="test-bow";u.character.equipment.slots[offSlot]=null;
+assert.equal(api.missionCanAttack(u,distant,"ranged"),false,"tir bloqué par le brouillard");
+assert.equal(engine.usableHands(u,engine.axialDistance(u,distant)).some(h=>h.mode==="ranged"),true,"à portée sans le brouillard");
+u.character.equipment.slots[mainSlot]=held;u.character.equipment.slots[offSlot]=heldOff;
+u.character.items=u.character.items.filter(x=>x!==bow);
+assert.ok(api.missionReachablePaths(ally,10).has(api.missionKey(4,4)),"on passe dans le brouillard");
+m.turn=m.fog[0].untilTurn;
+api.pruneMissionTerrain();
+assert.equal(m.fog.length,0);
+assert.ok(logged(/Le brouillard se dissipe/));
+assert.equal(api.missionLineOfSight(u,distant),true);
+// Tsunami : une ligne de 3 + 1 cases depuis la case voisine ; l'ennemi voisin et celui du bout de la ligne sont frappés.
+reset();
+distant.q=5;distant.r=4;
+api.setMissionMode("spell:tsunami");
+cells=api.targetableMissionCells();
+assert.ok(cells.has(api.missionKey(3,4))&&!cells.has(api.missionKey(2,4))&&!cells.has(api.missionKey(5,4)),"seulement les cases voisines");
+queue.push(0,0.99,0.5,0.5);
+let wetHp=wet.hp,distantHp=distant.hp;
+api.handleMissionHexClick(3,4);
+assert.ok(wet.hp<wetHp&&distant.hp<distantHp,"les deux sont dans la vague");
+assert.equal(ally.hp,ally.pvMax,"l'allié, à côté, est épargné");
+assert.ok(logged(/lance Tsunami \(ligne de 4 cases\).* PV de froid pour chacun/));
+// Gel : malus tout de suite, puis il couvre la prochaine activation de la cible et tombe à la suivante.
+reset();
+wet.hp=wet.pvMax;
+const speed=engine.statWithGear(wet,"Vitesse"),moveBase=engine.movementBase(wet);
+api.setMissionMode("spell:freeze");
+queue.push(0);
+api.handleMissionHexClick(wet.q,wet.r);
+assert.ok(wet.statMalus.malus>0);
+assert.equal(engine.statWithGear(wet,"Vitesse"),speed-wet.statMalus.malus);
+assert.ok(logged(/lance Gel sur .* −\d+ en Vitesse et en Dextérité.*pendant 1 tour\./));
+api.resetMissionActivation(wet);
+assert.ok(wet.statMalus,"la prochaine activation est gelée");
+assert.ok(wet.movementRemaining<=moveBase);
+api.resetMissionActivation(wet);
+assert.equal(wet.statMalus,null);
+assert.equal(engine.statWithGear(wet,"Vitesse"),speed);
+assert.ok(logged(/dégèle : Vitesse et Dextérité reviennent/));
+// Eau guérissante sur l'allié blessé.
+reset();
+ally.hp=Math.round(ally.pvMax/2);
+const hurt=ally.hp;
+api.setMissionMode("spell:healing_water");
+queue.push(0,0.99,0.5);
+api.handleMissionHexClick(ally.q,ally.r);
+assert.ok(ally.hp>hurt);
+assert.ok(logged(/lance Eau guérissante sur .* : \+\d+ PV/));
+// Flèche de glace : des PV de froid.
+reset();
+api.setMissionMode("spell:ice_arrow");
+queue.push(0,0.99,0.5,0);
+wetHp=wet.hp;
+api.handleMissionHexClick(wet.q,wet.r);
+assert.ok(wet.hp<wetHp);
+assert.ok(logged(/lance Flèche de glace sur .* touché .* PV de froid/));
+// Arme de glace : du froid à chaque coup qui touche ; le givre fond.
+reset();
+api.setMissionMode("spell:ice_weapon");
+queue.push(0,0.99);
+api.handleMissionHexClick(u.q,u.r);
+assert.equal(u.weaponEnchant.element,"froid");
+assert.ok(logged(/chaque coup qui touche ajoute du froid/));
+wet.hp=wet.pvMax;
+queue.push(0.5);
+api.missionWeaponEnchantStrike(u,wet,{ok:true,hit:true,blocked:false});
+assert.ok(wet.hp<wet.pvMax);
+assert.ok(logged(/Arme de glace : .* PV de froid/));
+api.resetMissionActivation(u);api.resetMissionActivation(u);api.resetMissionActivation(u);
+assert.equal(u.weaponEnchant,null);
+assert.ok(logged(/Le givre de l’arme de .* fond/));
+// Armure de froid : protection contre le feu, comptée par le moteur, puis dissipée.
+reset();
+api.setMissionMode("spell:frost_armor");
+queue.push(0);
+api.handleMissionHexClick(ally.q,ally.r);
+assert.equal(engine.elementalProtection(ally,"feu").bonus,magic.bonus(u,"frost_armor"));
+api.resetMissionActivation(ally);api.resetMissionActivation(ally);api.resetMissionActivation(ally);
+assert.equal(engine.elementalProtection(ally,"feu").bonus,0);
+assert.ok(logged(/L’armure de froid de .* se dissipe/));
+
 // Combat automatique avec les sorts de test : il va jusqu'au bout.
 m=newMission();
 api.teachMissionTestSpells();
@@ -307,4 +417,4 @@ assert.ok(home.mana>0,"au camp : recharge");
 assert.equal(away.mana,0,"en route : rien");
 assert.ok(report.mana.some(x=>x.id===home.id));
 
-console.log("Sorts de Vie et du Feu dans l'écran de combat, recharge du mana au camp — OK");
+console.log("Sorts de Vie, du Feu et de l'Eau dans l'écran de combat, recharge du mana au camp — OK");

@@ -25,11 +25,12 @@ const magic=createMagicRules({reference,combat,random});
 function mage({pm,vie,level=1,int,chance=54,mana=53,items=[],slots={}}){
   return {
     name:"Mage",stats:{"Puissance magique":pm,Intelligence:int,Chance:chance,"Réserve de mana":mana,Constitution:50,Endurance:50,Volonté:50},
-    skills:{magic:{Vie:vie,Feu:vie,Eau:vie,Transmutation:vie,Nécromancie:20,Illusion:20}},mana,
+    skills:{magic:{Vie:vie,Feu:vie,Eau:vie,Transmutation:vie,Foudre:vie,Nécromancie:20,Illusion:20}},mana,
     spells:["quick_heal","deep_heal","regeneration","mass_heal","restitution","purge"].map(code=>({code,school:"Vie",mastery:level}))
       .concat(["fire_bolt","fireball","fire_ring","flaming_weapon","fire_armor","magma"].map(code=>({code,school:"Feu",mastery:level})))
       .concat(["fog","healing_water","ice_arrow","tsunami","frost_armor","freeze","ice_weapon"].map(code=>({code,school:"Eau",mastery:level})))
-      .concat(["sixth_sense","titan_strength","cheetah_speed","stone_skin","venom_spit","cauterize"].map(code=>({code,school:"Transmutation",mastery:level}))),
+      .concat(["sixth_sense","titan_strength","cheetah_speed","stone_skin","venom_spit","cauterize"].map(code=>({code,school:"Transmutation",mastery:level})))
+      .concat(["shock","lightning_bolt","shock_weapon","chain_lightning","thunder","celerity"].map(code=>({code,school:"Foudre",mastery:level}))),
     items,equipment:{slots}
   };
 }
@@ -428,4 +429,48 @@ assert.equal(combat.elementalDamage(armoredUnit("Armure de plates",4),"poison",1
 assert.equal(combat.resolvePoison(unit(tough)),null,"pas empoisonné : rien");
 assert.equal(magic.isPoisoned(sick),true);
 
-console.log("Magie : écoles de la Vie, du Feu, de l'Eau et de la Transmutation OK");
+// École de la Foudre (Idan, 2026-10-27).
+assert.deepEqual(magic.schoolSpells("Foudre").map(x=>[x.code,x.palier,x.difficulte,x.action,x.cible]),[
+  ["shock","Adepte",50,"principale","ennemi"],["lightning_bolt","Novice",30,"principale","ennemi"],
+  ["shock_weapon","Novice",30,"rapide","allie_ou_soi"],["chain_lightning","Expert",70,"principale","ennemi"],
+  ["thunder","Adepte",50,"principale","ennemi"],["celerity","Novice",30,"rapide","soi"]]);
+// Décharge électrique : au contact, 2D8 ; portée moyenne des attaques : 6 + M/25, au plus 12 ; Éclair comme la Flèche de glace.
+assert.deepEqual([magic.range(beginner,"shock"),magic.range(expert,"shock")],[1,1]);
+assert.deepEqual(magic.dice("shock"),{count:2,sides:8});
+assert.deepEqual(magic.effectRange(beginner,"shock"),{min:18,max:139});
+assert.deepEqual([magic.range(beginner,"chain_lightning"),magic.range(expert,"chain_lightning"),magic.range(archmage,"chain_lightning")],[7,11,12]);
+assert.deepEqual([magic.range(beginner,"thunder"),magic.range(expert,"thunder"),magic.range(archmage,"thunder")],[7,11,12]);
+assert.deepEqual([magic.range(beginner,"lightning_bolt"),magic.effectRange(beginner,"lightning_bolt")],[15,magic.effectRange(beginner,"ice_arrow")]);
+assert.deepEqual([magic.duration(beginner,"shock_weapon"),magic.duration(expert,"shock_weapon")],[2,4]);
+// Célérité : sur soi seulement, 2 tours fixes, +20 + M/5 % de Vitesse.
+assert.deepEqual([magic.duration(beginner,"celerity"),magic.duration(archmage,"celerity"),magic.bonus(beginner,"celerity")],[2,2,26]);
+queue=[0];
+out=magic.cast(caster,ally,"celerity");
+assert.deepEqual(out.effect,{code:"celerity",stats:["Vitesse"],value:26,unit:"pourcentage",turns:2,cumulable:false},"la cible est toujours le lanceur");
+// Foudre : pas besoin de ligne de vue (le brouillard ne l'arrête pas) ; Décharge et Éclair, si.
+assert.equal(magic.canCast(caster,enemy,"thunder",{lineOfSight:false}).ok,true);
+assert.match(magic.canCast(caster,foe,"shock",{lineOfSight:false}).reason,/ligne de vue/);
+assert.match(magic.canCast(caster,enemy,"shock").reason,/hors de portée/);
+// Décharge : sans jet de toucher, 2D8 de foudre.
+queue=[0,0.99,0.5,0.5];
+out=magic.cast(caster,foe,"shock");
+assert.deepEqual([out.success,out.element,out.dice,out.hit,out.amount],[true,"foudre",10,undefined,magic.effectAmount(caster,"shock",10)]);
+// Boule d'éclairs : la cible, puis quatre rebonds vers le plus proche pas encore touché, à 3 cases au plus, alliés et
+// lanceur compris ; 100, 80, 60, 40, 20 %.
+const at=(q,r,team="enemy")=>unit(mage({pm:50,vie:1,int:50}),{q,r,team});
+const c0=at(5,0),c1=at(6,0),c2=at(6,1,"player"),c3=at(9,1),c4=at(11,1),loner=at(20,0);
+let chain=magic.chainTargets(caster,c0,"chain_lightning",[caster,c0,c1,c2,c3,c4,loner]);
+assert.deepEqual(chain.map(x=>x.unit),[c0,c1,c2,c3,c4],"le plus proche à chaque fois ; l'allié c2 compris ; pas l'isolé");
+assert.deepEqual(chain.map(x=>x.factor),[1,0.8,0.6,0.4,0.2]);
+// À égalité de distance, un ennemi du lanceur d'abord ; plus personne à 3 cases : la chaîne s'arrête.
+const side=at(6,-1,"player");
+chain=magic.chainTargets(caster,c0,"chain_lightning",[caster,c0,side,c1]);
+assert.deepEqual(chain.map(x=>x.unit),[c0,c1,side],"c1 (ennemi) avant side (allié), puis side");
+assert.deepEqual(magic.chainTargets(caster,loner,"chain_lightning",[caster,c0,loner]).map(x=>x.unit),[loner],"personne à 3 cases");
+const near0=at(2,0,"player");
+assert.ok(magic.chainTargets(caster,near0,"chain_lightning",[caster,near0]).some(x=>x.unit===caster),"le lanceur peut être touché");
+queue=[0,0.99,0.5,0.5];
+out=magic.cast(caster,c0,"chain_lightning",{units:[caster,c0,c1,c2,c3,c4]});
+assert.deepEqual([out.success,out.element,out.dice,out.chain.length],[true,"foudre",8,5]);
+
+console.log("Magie : écoles de la Vie, du Feu, de l'Eau, de la Transmutation et de la Foudre OK");

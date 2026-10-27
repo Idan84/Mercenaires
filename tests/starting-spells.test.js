@@ -72,7 +72,7 @@ checkDraws(captain);
 const recruits=Array.from({length:1500},(_,i)=>generator.createMercenary({id:i+2,captain}));
 recruits.forEach(checkDraws);
 const withSpell=recruits.filter(m=>m.spells.length).length;
-assert.ok(withSpell>250&&withSpell<600,"aujourd'hui (Vie, Feu, Eau et Transmutation écrits) : environ une recrue sur quatre connaît un sort ("+withSpell+")");
+assert.ok(withSpell>250&&withSpell<600,"aujourd'hui (Vie, Feu, Eau, Transmutation et Foudre écrits) : environ trois recrues sur dix connaissent un sort ("+withSpell+")");
 
 // Cultures sans école : deux tirages seulement, et +1D6 à la caractéristique de compensation.
 for(const [culture,people,stat] of [["Nains des montagnes","Nain","Courage"],["Ogres des montagnes","Ogre","Force"]]){

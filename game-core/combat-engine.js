@@ -14,7 +14,9 @@
   const ELEMENTS={
     feu:{resistance:"Résistance au feu",armor:"resistance_brulant"},
     froid:{resistance:"Résistance au froid",armor:"resistance_glacant"},
-    foudre:{resistance:"Résistance à la foudre",armor:"resistance_foudroyant"}
+    foudre:{resistance:"Résistance à la foudre",armor:"resistance_foudroyant"},
+    // Poison (Crachat de venin ; Idan, 2026-10-27) : seule la Résistance au poison protège, l'armure ne compte pas.
+    poison:{resistance:"Résistance au poison",armor:null}
   };
 
   function createCombatEngine(reference,options={}){
@@ -77,6 +79,12 @@
     };
     // Approximation projectile V1 ; couloir de tir décidé par Idan le 2026-10-08.
     const ELEMENTAL={min:constant("combat.elemental.protection_min",-50),max:constant("combat.elemental.protection_max",75)};
+    const POISON={
+      turns:constant("combat.poison.turns",3),
+      constitutionShare:constant("combat.poison.resist_constitution_share",0.5),
+      min:constant("combat.poison.resist_min",5),
+      max:constant("combat.poison.resist_max",95)
+    };
     const STRAY={
       initial:constant("combat.ranged.stray.initial_factor",0.35),
       decay:constant("combat.ranged.stray.decay_factor",0.5),
@@ -170,10 +178,20 @@
         return {item,slot,percent:value,bonus:base*value/100};
       }).filter(Boolean);
     }
-    // Avec l'équipement, et le malus d'un sort en cours (Gel : unit.statMalus = {stats, malus}, posé et retiré par l'écran
-    // de combat).
+    // Avec l'équipement, et les sorts en cours, posés et retirés par l'écran de combat : le malus du Gel
+    // (unit.statMalus = {stats, malus}) et les bonus de la Transmutation (unit.statBuffs = {code: {stats, value, unit}} :
+    // un pourcentage de la valeur de base, comme l'équipement, ou des points).
     function statWithGear(unit,stat){
-      return baseValue(unit,stat)+gearBonuses(unit,stat).reduce((sum,x)=>sum+x.bonus,0)-spellStatMalus(unit,stat);
+      return baseValue(unit,stat)+gearBonuses(unit,stat).reduce((sum,x)=>sum+x.bonus,0)+spellStatBonus(unit,stat)-spellStatMalus(unit,stat);
+    }
+    function spellStatBonus(unit,stat){
+      let total=0;
+      for(const fx of Object.values(unit?.statBuffs||{})){
+        if(!(fx.stats||[]).includes(stat)) continue;
+        const value=Number(fx.value)||0;
+        total+=fx.unit==="pourcentage"?baseValue(unit,stat)*value/100:value;
+      }
+      return total;
     }
     function spellStatMalus(unit,stat){
       const fx=unit?.statMalus;
@@ -380,7 +398,7 @@
     // Les dégâts élémentaires sont multipliés par (1 − protection / 100), protection bornée de −50 à +75.
     function armorElementalResistance(unit,element){
       const item=armorItem(unit),armor=armorTemplate(item),meta=ELEMENTS[element];
-      if(!armor||!meta) return 0;
+      if(!armor||!meta?.armor) return 0;
       const base=Number(armor[meta.armor])||0;
       const mult=Number(quality(item).multiplicateur_qualite)||1;
       return base>=0?base*mult:base/mult;
@@ -395,6 +413,20 @@
     function elementalDamage(unit,element,amount){
       const protection=elementalProtection(unit,element);
       return {...protection,amount,damage:Math.max(0,Math.ceil(amount*(1-protection.applied/100)-1e-9))};
+    }
+
+    // Poison (Idan, 2026-10-27) : au début de chaque activation de l'empoisonné (unit.poisoned = {turns, amount}), un jet
+    // de résistance, D100 ≤ part × Constitution + Résistance au poison (équipement compris, de 5 à 95 %), annule l'effet ;
+    // sinon il subit les dégâts légers du poison, réduits par sa Résistance au poison. L'écran de combat décompte les tours.
+    function poisonResistChance(unit){
+      return clamp(POISON.constitutionShare*statWithGear(unit,"Constitution")+statWithGear(unit,"Résistance au poison"),POISON.min,POISON.max);
+    }
+    function resolvePoison(unit){
+      const fx=unit?.poisoned;
+      if(!fx||typeof fx!=="object") return null;
+      const p=poisonResistChance(unit),roll=d100();
+      if(roll<=p) return {p,roll,resisted:true,damage:0};
+      return {p,roll,resisted:false,...elementalDamage(unit,"poison",Number(fx.amount)||0)};
     }
 
     // Frappe dans le dos V1 : la résistance au type de dégâts est divisée par deux pour l'étape Blesser.
@@ -919,6 +951,9 @@
     return {
       axialDistance,
       hexLine,
+      POISON,
+      poisonResistChance,
+      resolvePoison,
       activeWeaponItem,
       activeOffhandItem,
       weaponTemplate,

@@ -122,7 +122,9 @@ function sortMissionInitiative(units,engine){
 }
 
 function resetMissionActivation(unit){
+  tickMissionPoison(unit);
   tickMissionChill(unit);
+  tickMissionBuffs(unit);
   unit.movementRemaining=game.mission.engine.movementBase(unit);
   unit.attackAvailable=true;
   unit.quickAvailable=true;
@@ -317,6 +319,8 @@ function selectNextMissionPlayer(){
     const next=m.playerOrder.find(u=>u.alive&&!u.acted);
     if(!next){ runMissionEnemyTurn(); return; }
     resetMissionActivation(next);
+    // Mort du poison au début de son activation.
+    if(!next.alive){ next.acted=true; if(m.over){ renderMission(); return; } continue; }
     m.progression.recordActivation(next);
     if(next.fleeing&&resolveMissionFleeingActivation(next)){
       next.acted=true;
@@ -955,6 +959,16 @@ function handleMissionHexClick(q,r){
     return;
   }
 
+  if(m.mode==="venom"){
+    if(clicked&&clicked.team!==u.team){
+      m.mode=null;
+      spitMissionVenom(u,clicked);
+      if(missionActiveUnitLost()) return;
+      renderMission();
+    }
+    return;
+  }
+
   const spellCode=missionSpellMode();
   if(spellCode){
     const spell=missionMagic()?.spell(spellCode);
@@ -1167,6 +1181,19 @@ function resolveMissionSpell(caster,target,code){
     effect=cells.length>0;
     missionLog(name+" lance "+spell.nom+detail+" : un rideau de brouillard de "+cells.length+" cases coupe la ligne de vue pendant "
       +out.fog.turns+" tours.","magic");
+  }else if(spell.effet==="bonus_caracteristiques"){
+    // Sur soi-même, l'activation en cours compte comme la première (Force de titan, puis frapper dans la foulée).
+    const fx=out.effect,self=target===caster,turns=self?fx.turns-1:fx.turns;
+    target.statBuffs={...(target.statBuffs||{}),[fx.code]:{stats:fx.stats,value:fx.value,unit:fx.unit,turns}};
+    const amount=fx.unit==="pourcentage"?"+"+fx.value+" % de ":"+"+fx.value+" de ";
+    const when=self?(fx.turns>1?"pour cette activation et la suivante":"pour cette activation")
+      :(fx.turns>1?"pour ses "+fx.turns+" prochaines activations":"pour sa prochaine activation");
+    missionLog(name+" lance "+spell.nom+on+detail+" : "+amount+fx.stats.join(" et de ")+", "+when+".","magic");
+  }else if(spell.effet==="crachat_venin"){
+    // Le tir demande l'action rapide : il sert aux prochaines activations de la cible, même si le lanceur se vise.
+    target.venom={...out.effect};
+    missionLog(name+" lance "+spell.nom+on+detail+" : "+(target===caster?name:target.character.name)+" pourra cracher du venin (action rapide, "
+      +out.effect.min+" à "+out.effect.max+" cases) "+(out.effect.turns>1?"pendant ses "+out.effect.turns+" prochaines activations":"à sa prochaine activation")+".","magic");
   }else if(spell.effet==="malus_caracteristiques"){
     const fx=out.effect;
     target.statMalus={code:fx.code,stats:fx.stats,malus:fx.malus,turns:fx.turns};
@@ -1226,6 +1253,51 @@ function tickMissionEnchantments(unit){
     }
   }
 }
+// Transmutation (doc 12) : un bonus couvre les turns prochaines activations de la cible (l'activation en cours compte
+// déjà si le lanceur s'est visé lui-même) ; le venin de même. Ils tombent au début de l'activation suivante.
+function tickMissionBuffs(unit){
+  const magic=missionMagic(),name=unit.character.name;
+  for(const [code,fx] of Object.entries(unit.statBuffs||{})){
+    if(fx.turns>0){ fx.turns-=1; continue; }
+    delete unit.statBuffs[code];
+    missionLog((magic?.spell(code)?.nom||code)+" : l’effet prend fin pour "+name+".","magic");
+  }
+  if(unit.venom){
+    if(unit.venom.turns>0) unit.venom.turns-=1;
+    else{ unit.venom=null; missionLog(name+" ne peut plus cracher de venin.","magic"); }
+  }
+}
+// Poison (doc 12 ; Idan, 2026-10-27) : au début de chacune de ses activations, l'empoisonné tente un jet de résistance
+// qui annule l'effet ; raté, il subit les dégâts légers du poison. Il dure combat.poison.turns tours ; Purge le retire.
+function tickMissionPoison(unit){
+  const fx=unit.poisoned;
+  if(!fx||typeof fx!=="object"||unit.alive===false) return;
+  const m=game.mission,r=m.engine.resolvePoison(unit),name=unit.character.name;
+  const detail=" (résistance "+missionPercent(r.p)+", jet "+r.roll+")";
+  if(r.resisted){ unit.poisoned=false; missionLog(name+" résiste au poison"+detail+" : l’effet est annulé.","magic"); return; }
+  missionLog(name+" souffre du poison"+detail+" : −"+r.damage+" PV"+missionProtectionNote(r)+".","damage");
+  damageMissionUnitBySpell(unit,r.damage,missionUnits().find(u=>u.id===fx.sourceId)||null,"poison");
+  fx.turns-=1;
+  if(unit.alive&&fx.turns<=0){ unit.poisoned=false; missionLog("Le poison quitte "+name+".","magic"); }
+  checkMissionEnd();
+}
+// Crachat de venin (doc 12) : le tir de venin, par l'action rapide de celui qui a reçu le sort ; s'il blesse, il empoisonne.
+function spitMissionVenom(unit,target){
+  const magic=missionMagic(),out=magic.spit(unit,target,{lineOfSight:missionLineOfSight(unit,target)});
+  if(!out.ok){ missionLog(out.reason,"bad"); return out; }
+  unit.quickAvailable=false;
+  const name=unit.character.name,foe=target.character.name,aim=" (toucher "+Math.round(out.pHit)+" %, jet "+out.hitRoll+")";
+  if(!out.hit){ missionLog(name+" crache du venin sur "+foe+" : raté"+aim+".","miss"); return out; }
+  const hit=missionElementalHit(target,"poison",out.amount,unit);
+  missionLog(name+" crache du venin sur "+foe+" : touché"+aim+", "+hit.damage+" PV de poison"+missionProtectionNote(hit)+".","damage");
+  if(hit.damage>0&&target.alive){
+    const female=String(target.character.sex||"").trim().toLowerCase().startsWith("f");
+    target.poisoned={code:out.code,turns:out.poison.turns,amount:out.poison.amount,sourceId:unit.id};
+    missionLog(foe+" est empoisonné"+(female?"e":"")+" pour "+out.poison.turns+" tours.","bad");
+  }
+  checkMissionEnd();
+  return out;
+}
 // Gel (doc 12) : le malus compte dès le lancer et couvre les turns prochaines activations de la cible ; il tombe au début
 // de l'activation suivante, avant le calcul du mouvement.
 function tickMissionChill(unit){
@@ -1256,8 +1328,8 @@ function missionWeaponEnchantStrike(attacker,target,result){
 }
 
 // IA des sorts (pour tester, et pour le combat automatique) : Soin profond sur l'allié le plus blessé sous 35 % de ses PV,
-// à portée, à la place de l'attaque ; Soin rapide, sinon Eau guérissante (action rapide), sur l'allié le plus blessé sous
-// 60 %. Les autres sorts restent au joueur.
+// à portée, à la place de l'attaque ; Soin rapide, sinon Eau guérissante ou Cautérisation (action rapide), sur l'allié
+// le plus blessé sous 60 %. Les autres sorts restent au joueur.
 function missionAiCast(unit){
   const magic=missionMagic();
   if(!magic||!magic.knownSpells(unit).length) return;
@@ -1266,7 +1338,7 @@ function missionAiCast(unit){
   const deep=pick("deep_heal",0.35);
   if(deep) resolveMissionSpell(unit,deep,"deep_heal");
   if(!unit.alive||game.mission.over) return;
-  for(const code of ["quick_heal","healing_water"]){
+  for(const code of ["quick_heal","healing_water","cauterize"]){
     const ally=pick(code,0.6);
     if(ally){ resolveMissionSpell(unit,ally,code); break; }
   }
@@ -1276,7 +1348,11 @@ function renderMissionSpellBar(u){
   const m=game.mission,magic=missionMagic();
   if(!u||!magic||m.phase!=="player"||m.over) return "";
   const spells=magic.knownSpells(u);
-  if(!spells.length) return "";
+  // Crachat de venin reçu : un bouton de tir, même sans sort connu.
+  const venom=u.venom?`<button class="secondary mission-spell${m.mode==="venom"?" selected":""}" data-venom="1" title="${esc("Cracher du venin — action rapide · "
+    +u.venom.min+" à "+u.venom.max+" cases\nDégâts de poison ; la cible blessée est empoisonnée."+(u.quickAvailable===false?"\nAction rapide déjà utilisée.":""))}"`
+    +`${u.quickAvailable===false?" disabled":""}><span class="mission-spell-text">Cracher du venin<small>rapide · ${u.venom.min}–${u.venom.max} cases</small></span></button>`:"";
+  if(!spells.length) return venom;
   const mana=magic.currentMana(u);
   return `<span class="mission-mana">Mana ${Math.floor(mana)}/${Math.round(magic.manaMax(u))}</span>`+spells.map(s=>{
     const cost=magic.manaCost(u,s.code),p=magic.castChance(u,s.code).p,quick=s.action==="rapide";
@@ -1287,7 +1363,7 @@ function renderMissionSpellBar(u){
     return `<button class="secondary mission-spell${m.mode==="spell:"+s.code?" selected":""}" data-spell="${esc(s.code)}" title="${esc(title)}"${reason?" disabled":""}>`
       +`${typeof spellIconHtml==="function"?spellIconHtml(s):""}`
       +`<span class="mission-spell-text">${esc(s.nom)}<small>${quick?"rapide":"principale"} · ${cost} mana · ${Math.round(p)} %</small></span></button>`;
-  }).join("");
+  }).join("")+venom;
 }
 
 function nearestMissionTarget(unit){
@@ -1562,6 +1638,10 @@ function targetableMissionCells(){
   }
 
   const spellCode=missionSpellMode(),magic=missionMagic();
+  if(m.mode==="venom"){
+    for(const foe of missionOpponents(u)) if(!foe.offMap&&magic?.canSpit(u,foe,{lineOfSight:missionLineOfSight(u,foe)}).ok) set.add(missionKey(foe.q,foe.r));
+    return set;
+  }
   if(spellCode){
     if(!magic) return set;
     const cible=magic.spell(spellCode)?.cible;
@@ -1709,6 +1789,8 @@ function initializeMissionUi(){
   $("mission-auto-btn").addEventListener("click",autoResolveMission);
   $("mission-test-spells-btn").addEventListener("click",teachMissionTestSpells);
   $("mission-spells").addEventListener("click",event=>{
+    const venom=event.target.closest("[data-venom]");
+    if(venom){ if(!venom.disabled) setMissionMode(game.mission?.mode==="venom"?null:"venom"); return; }
     const button=event.target.closest("[data-spell]");
     if(!button||button.disabled) return;
     const mode="spell:"+button.dataset.spell;

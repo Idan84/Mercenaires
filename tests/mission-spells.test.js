@@ -71,17 +71,19 @@ const others=m.players.filter(x=>x!==u);
 assert.equal(magic.knownSpells(u).length,0);
 assert.equal(api.renderMissionSpellBar(u),"");
 assert.equal(api.missionActionAvailability().testSpells,true);
-// Bouton de test : toute l'escouade connaît tous les sorts écrits (Vie, Feu, Eau) pour ce combat ; le grimoire ne change pas.
+// Bouton de test : toute l'escouade connaît tous les sorts écrits (Vie, Feu, Eau, Transmutation) pour ce combat ; le grimoire ne
+// change pas.
 api.teachMissionTestSpells();
 assert.deepEqual(magic.knownSpells(u).map(s=>s.code),["quick_heal","deep_heal","regeneration","mass_heal","restitution","purge",
   "fire_bolt","fireball","fire_ring","flaming_weapon","fire_armor","magma",
-  "fog","healing_water","ice_arrow","tsunami","frost_armor","freeze","ice_weapon"]);
-assert.ok(m.players.every(p=>p.spells.length===19&&!(p.character.spells||[]).length));
+  "fog","healing_water","ice_arrow","tsunami","frost_armor","freeze","ice_weapon",
+  "sixth_sense","titan_strength","cheetah_speed","stone_skin","venom_spit","cauterize"]);
+assert.ok(m.players.every(p=>p.spells.length===25&&!(p.character.spells||[]).length));
 assert.equal(api.missionActionAvailability().testSpells,false,"une seule fois par combat");
-assert.ok(logged(/connaît tous les sorts \(Vie, Feu, Eau, niveau 1\)/));
+assert.ok(logged(/connaît tous les sorts \(Vie, Feu, Eau, Transmutation, niveau 1\)/));
 const bar=api.renderMissionSpellBar(u);
 assert.match(bar,/Mana 53\/53/);
-assert.equal((bar.match(/data-spell=/g)||[]).length,19);
+assert.equal((bar.match(/data-spell=/g)||[]).length,25);
 assert.match(bar,/Soin rapide<small>rapide · \d+ mana · \d+ %<\/small>/);
 
 // Soin rapide : cases ciblables = le lanceur et les alliés à portée, jamais un ennemi lointain.
@@ -385,6 +387,100 @@ api.resetMissionActivation(ally);api.resetMissionActivation(ally);api.resetMissi
 assert.equal(engine.elementalProtection(ally,"feu").bonus,0);
 assert.ok(logged(/L’armure de froid de .* se dissipe/));
 
+// École de la Transmutation dans l'écran de combat (Idan, 2026-10-27). Maîtrise 60,5 : bonus +32 %, 1 tour, portée 5.
+for(const p of m.players) p.character.skills.magic.Transmutation=60;
+for(const x of [ally,wet]){ x.alive=true;x.hp=x.pvMax;x.statBuffs=null;x.poisoned=false; }
+// Force de titan sur soi : l'activation en cours compte, l'effet tombe au début de la suivante.
+reset();
+const strength=engine.statWithGear(u,"Force");
+api.setMissionMode("spell:titan_strength");
+queue.push(0);
+api.handleMissionHexClick(u.q,u.r);
+assert.ok(engine.statWithGear(u,"Force")>strength);
+assert.ok(logged(/lance Force de titan sur (lui|elle)-même .* : \+32 % de Force, pour cette activation\./));
+api.resetMissionActivation(u);
+assert.equal(engine.statWithGear(u,"Force"),strength);
+assert.ok(logged(/Force de titan : l’effet prend fin pour/));
+// Vitesse du guépard et Peau de pierre sur un allié : sa prochaine activation, puis plus rien.
+reset();
+const speedBefore=engine.statWithGear(ally,"Vitesse"),stoneBefore=engine.statWithGear(ally,"Résistance physique");
+api.setMissionMode("spell:cheetah_speed");
+queue.push(0);
+api.handleMissionHexClick(ally.q,ally.r);
+u.quickAvailable=true;
+api.setMissionMode("spell:stone_skin");
+queue.push(0);
+api.handleMissionHexClick(ally.q,ally.r);
+assert.ok(engine.statWithGear(ally,"Vitesse")>speedBefore);
+assert.equal(engine.statWithGear(ally,"Résistance physique"),stoneBefore+16,"+10 + M/10 points");
+assert.ok(logged(/lance Peau de pierre sur .* : \+16 de Résistance physique, pour sa prochaine activation\./));
+api.resetMissionActivation(ally);
+assert.ok(engine.statWithGear(ally,"Vitesse")>speedBefore,"sa prochaine activation en profite");
+api.resetMissionActivation(ally);
+assert.deepEqual([engine.statWithGear(ally,"Vitesse"),engine.statWithGear(ally,"Résistance physique")],[speedBefore,stoneBefore]);
+// Cautérisation : un petit soin.
+reset();
+ally.hp=Math.round(ally.pvMax/2);
+const burnt=ally.hp;
+api.setMissionMode("spell:cauterize");
+queue.push(0,0.99,0.5);
+api.handleMissionHexClick(ally.q,ally.r);
+assert.ok(ally.hp>burnt);
+// Crachat de venin sur soi : le tir sert à la prochaine activation (l'action rapide vient d'être prise).
+reset();
+wet.q=u.q+3;wet.r=u.r;wet.hp=wet.pvMax;
+api.setMissionMode("spell:venom_spit");
+queue.push(0);
+api.handleMissionHexClick(u.q,u.r);
+assert.ok(u.venom&&u.venom.min===2&&u.venom.max===10);
+assert.ok(logged(/pourra cracher du venin \(action rapide, 2 à 10 cases\) à sa prochaine activation/));
+assert.match(api.renderMissionSpellBar(u),/data-venom="1"[^>]*disabled/,"action rapide déjà prise");
+reset();
+assert.ok(u.venom,"encore là pour cette activation");
+assert.doesNotMatch(api.renderMissionSpellBar(u),/data-venom="1"[^>]*disabled/);
+api.setMissionMode("venom");
+cells=api.targetableMissionCells();
+assert.ok(cells.has(api.missionKey(wet.q,wet.r))&&!cells.has(api.missionKey(ally.q,ally.r)),"un ennemi à portée, pas un allié");
+queue.push(0,0.5);
+let venomHp=wet.hp;
+api.handleMissionHexClick(wet.q,wet.r);
+assert.ok(wet.hp<venomHp);
+assert.equal(u.quickAvailable,false);
+assert.ok(logged(/crache du venin sur .* touché .* PV de poison/));
+assert.equal(wet.poisoned.turns,3);
+assert.ok(logged(/est empoisonnée? pour 3 tours/));
+// Poison : au début de l'activation, jet de résistance raté → dégâts légers ; réussi → l'effet est annulé.
+venomHp=wet.hp;
+queue.push(0.99);
+api.resetMissionActivation(wet);
+assert.equal(wet.hp,venomHp-Math.ceil(wet.poisoned.amount*(1-engine.elementalProtection(wet,"poison").applied/100)-1e-9));
+assert.equal(wet.poisoned.turns,2);
+assert.ok(logged(/souffre du poison \(résistance .* jet 100\) : −\d+ PV/));
+assert.ok(wet.progress.wounds["Résistance au poison"]>=1,"la Résistance au poison progresse");
+queue.push(0);
+api.resetMissionActivation(wet);
+assert.equal(wet.poisoned,false);
+assert.ok(logged(/résiste au poison .* l’effet est annulé/));
+// Le venin tombe au début de l'activation suivante ; Purge retire le poison d'un allié.
+api.resetMissionActivation(u);
+assert.equal(u.venom,null);
+assert.ok(logged(/ne peut plus cracher de venin/));
+reset();
+ally.poisoned={turns:3,amount:5};
+api.setMissionMode("spell:purge");
+assert.ok(api.targetableMissionCells().has(api.missionKey(ally.q,ally.r)));
+queue.push(0);
+api.handleMissionHexClick(ally.q,ally.r);
+assert.equal(ally.poisoned,false);
+// Mort du poison au début de son activation : on passe au suivant.
+m=newMission();
+const doomed=m.playerOrder.find(p=>p!==m.activeUnit);
+doomed.poisoned={turns:3,amount:99999};
+queue.push(0.99);
+api.endMissionActivation();
+assert.equal(doomed.alive,false);
+assert.notEqual(m.activeUnit,doomed);
+
 // Combat automatique avec les sorts de test : il va jusqu'au bout.
 m=newMission();
 api.teachMissionTestSpells();
@@ -417,4 +513,4 @@ assert.ok(home.mana>0,"au camp : recharge");
 assert.equal(away.mana,0,"en route : rien");
 assert.ok(report.mana.some(x=>x.id===home.id));
 
-console.log("Sorts de Vie, du Feu et de l'Eau dans l'écran de combat, recharge du mana au camp — OK");
+console.log("Sorts de Vie, du Feu, de l'Eau et de la Transmutation dans l'écran de combat, poison, recharge du mana au camp — OK");

@@ -29,6 +29,9 @@
 //   6e sens, Force de titan et Vitesse du guépard (+20 + M/5 % de la valeur de base), Peau de pierre (+10 + M/10 points de
 //   Résistance physique) ; Crachat de venin donne un tir de venin par action rapide (empoisonne : combat.poison.*) ;
 //   Cautérisation soigne 1D3.
+// - École de la Foudre (Idan, 2026-10-27) : Décharge électrique (2D8 au contact, sans jet de toucher), Éclair (comme une
+//   flèche), Arme électrique, Boule d'éclairs (2D6 puis quatre rebonds, alliés compris : 100, 80, 60, 40, 20 %), Foudre
+//   (1D8 sans ligne de vue), Célérité (Vitesse, sur soi, 2 tours). Portée moyenne des attaques : 6 + M/25, au plus 12.
 (function(root,factory){
   const api=factory();
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
@@ -203,6 +206,25 @@
       const from=-Math.floor((length-1)/2);
       return Array.from({length},(_,k)=>({q:center.q+axis.q*(from+k),r:center.r+axis.r*(from+k)}));
     }
+    // Boule d'éclairs : la cible, puis à chaque rebond le personnage en jeu le plus proche du précédent pas encore touché
+    // (à rebond_distance cases au plus ; alliés et lanceur compris ; à égalité, un ennemi du lanceur d'abord) ;
+    // le k-ième rebond fait × (1 − k × rebond_perte).
+    function chainTargets(caster,first,code,units){
+      const s=spell(code),bounces=num(s?.rebonds,0),reach=num(s?.rebond_distance,1),loss=num(s?.rebond_perte,0);
+      const foe=u=>Boolean(caster?.team)&&u.team!==caster.team;
+      const chain=[{unit:first,factor:1}],hit=new Set([first]);
+      let from=first;
+      for(let k=1;k<=bounces;k++){
+        const near=u=>combat.axialDistance(from,u);
+        const next=(units||[]).filter(u=>!hit.has(u)&&u.alive!==false&&!u.offMap&&near(u)<=reach)
+          .sort((a,b)=>near(a)-near(b)||foe(b)-foe(a))[0];
+        if(!next) break;
+        chain.push({unit:next,factor:Math.max(0,Math.round((1-loss*k)*1000)/1000)});
+        hit.add(next);
+        from=next;
+      }
+      return chain;
+    }
     function unitsInCells(cells,units){
       return (units||[]).filter(u=>u.alive!==false&&!u.offMap&&cells.some(c=>c.q===u.q&&c.r===u.r));
     }
@@ -322,6 +344,7 @@
           result.zone={center,aimed,radius,minDistance:num(s.zone_anneau_min,0),degressive:Boolean(s.zone_degressive),precision};
         }
         if(s.toucher==="distance") resolveSpellHit(caster,target,code,result,options.units||[]);
+        if(s.effet==="degats_rebonds") result.chain=chainTargets(caster,target,code,options.units||[]);
         if(s.effet==="purge_poison") result.purge=true;
       }else if(roll>=FUMBLE_THRESHOLD){
         const fumbleRoll=d100();
@@ -396,6 +419,7 @@
       lineCells,
       wallCells,
       unitsInCells,
+      chainTargets,
       dice,
       effectFactor,
       effectAmount,

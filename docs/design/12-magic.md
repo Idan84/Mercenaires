@@ -120,7 +120,7 @@ Même modèle que la Vie (effet, mana, difficulté par palier, CC aux dés maxim
 
 ### École de l'Eau (7 sorts, Idan, 2026-10-27)
 
-**Objectif V1 (Idan, 2026-10-27) : 10 sorts mono-école par école.** La Vie, le Feu et la Transmutation en ont 6, l'Eau 7 ; les autres viendront.
+**Objectif V1 (Idan, 2026-10-27) : 10 sorts mono-école par école.** La Vie, le Feu, la Transmutation et la Foudre en ont 6, l'Eau 7 ; les autres viendront.
 
 Même modèle que la Vie et le Feu (effet, mana, difficulté par palier, CC aux dés maximum, EC : le lanceur subit le minimum de son sort). L'élément de l'école est le **froid** : dégâts × (1 − protection contre le froid / 100), avec la valeur « glaçant » de l'armure (même règle que le feu). Données : `spells.json`.
 
@@ -180,6 +180,33 @@ Idan : « c'est un buffeur ». Tous les sorts sont des **actions rapides**, sur 
 - Au **début de chacune de ses activations**, elle fait un **jet de résistance** : **D100 ≤ Constitution / 2 + Résistance au poison** (équipement compris, de 5 à 95 % ; `combat.poison.*`) **annule l'effet** (Idan : « un jet de résistance au poison au début du tour (constitution ?) »). Raté, elle subit des **dégâts légers** : le minimum du venin (dé à 1), réduit par sa Résistance au poison. La Résistance au poison progresse avec ces dégâts (doc 08).
 - **Purge** (école de la Vie) retire le poison.
 - Plus tard (Idan) : les **fioles et potions** permettront d'enduire son arme de poison.
+
+### École de la Foudre (6 sorts, Idan, 2026-10-27)
+
+Même modèle que les autres écoles (effet, mana, difficulté par palier, CC aux dés maximum, EC : le lanceur subit le minimum de son sort). L'élément est la **foudre** : dégâts × (1 − protection contre la foudre / 100), avec la valeur « foudroyant » de l'armure, et le métal conduit : **plates −45**, mailles −30, brigandine −18 ; vêtements +5, gambison +15, écailles +25, cuir renforcé +28, cuir +30. **Portée moyenne des attaques** (Idan) : **6 + M/25, au plus 12**, comme la Boule de feu. Écoles opposées : Eau et Transmutation. Données : `spells.json`.
+
+| Sort | Palier | Action | Effet | Portée | Mana (base) |
+|---|---|---|---|---|---|
+| Décharge électrique | Adepte (50) | principale | **2D8 de foudre**, sans jet de toucher | au contact | 20 |
+| Éclair | Novice (30) | principale | 1D6 de foudre, **comme une flèche** (la Flèche de glace en foudre) | 12 + M/10 | 10 |
+| Arme électrique | Novice (30) | rapide | +1D4 de foudre à chaque coup qui touche, pendant 2 + M/50 tours | la sienne ou celle d'un compagnon, 1 + M/50 | 12 |
+| Boule d'éclairs | Expert (70) | principale | **2D6 de foudre** sur un ennemi, puis **4 rebonds** : 100, 80, 60, 40, 20 % | 6 + M/25, au plus 12 | 30 |
+| Foudre | Adepte (50) | principale | **1D8 de foudre**, sans jet de toucher, **sans ligne de vue** | 6 + M/25, au plus 12 | 15 |
+| Célérité | Novice (30) | rapide | **+(20 + M/5) %** de Vitesse, **sur soi seulement**, pendant **2 tours** (cette activation et la suivante) | soi | 10 |
+
+- **Décharge électrique** (Idan : « au cac, mais gros dégâts ») : la main touche, pas d'esquive ; le plus gros sort sur une cible.
+- **Boule d'éclairs** (Idan : 5 cibles, alliés compris) : ne s'évite pas ; après la cible, elle saute chaque fois sur le personnage en jeu le plus proche du précédent **pas encore touché**, à **3 cases au plus**, **alliés et lanceur compris** (à égalité, un ennemi du lanceur d'abord) ; s'il n'y a personne à 3 cases, la chaîne s'arrête. Chacun a sa propre protection contre la foudre. Les rebonds ne demandent pas la ligne de vue.
+- **Foudre** : elle tombe du ciel ; elle passe le Brouillard (et, plus tard, le décor).
+- **Célérité** : se cumule avec Vitesse du guépard (deux sorts différents) ; la relancer remplace la précédente.
+
+| | Débutant | Recrue moyenne | Expert |
+|---|---|---|---|
+| Décharge électrique | 78 · 18 mana · 31 % | 102 · 17 · 59 % | 229 · 12 · 93 % |
+| Éclair | 30 · portée 15 · 9 mana · 57 % | 40 · portée 17 · 9 · 81 % | 89 · portée 25 · 6 · 94 % |
+| Arme électrique, par coup | +22, 2 tours · 57 % | +28, 3 tours · 81 % | +63, 4 tours · 94 % |
+| Boule d'éclairs, première cible | 60 · portée 7 · 27 mana · 17 % | 79 · portée 8 · 25 · 33 % | 178 · portée 11 · 17 · 87 % |
+| Foudre | 39 · portée 7 · 14 mana · 31 % | 51 · portée 8 · 13 · 59 % | 114 · portée 11 · 9 · 93 % |
+| Célérité | +26 %, 2 tours · 57 % | +31 % · 81 % | +46 % · 94 % |
 
 ### Mana
 
@@ -242,7 +269,7 @@ Plus tard : une **école de magie** à construire au camp et des **manuels** à 
 ### Mise en place
 
 1. **Étape 1** — ces décisions, `spells.json`, les règles des sorts (`game-core/magic.js`) et leurs tests (`tests/magic.test.js`) : Soin rapide, puis les six sorts de l'école de la Vie.
-2. **Étape 2** — les sorts dans l'écran de combat actuel, **pour tester** (Vie, puis Feu, Eau et Transmutation ; le bouton de test s'appelle désormais « Sorts (test) » et donne tous les sorts écrits) (Idan, 2026-10-25 ; l'interface de combat sera refaite) : une barre de sorts pour le mercenaire actif (action, mana, réussite) ; les cases ciblables en vert (alliés et lanceur, ou toutes les cases à portée pour Soin de masse) ; le journal ; la Régénération au début des activations ; le mana affiché dans la liste des équipes ; un bouton **« Sorts de Vie (test) »** : toute l'escouade connaît les six sorts (niveau 1) pour ce combat, sans toucher au grimoire, le mana étant bien dépensé ; une IA simple, aussi en combat automatique : Soin profond sur l'allié le plus blessé sous 35 % de ses PV à la place de l'attaque, Soin rapide sous 60 %.
+2. **Étape 2** — les sorts dans l'écran de combat actuel, **pour tester** (Vie, puis Feu, Eau, Transmutation et Foudre ; le bouton de test s'appelle désormais « Sorts (test) » et donne tous les sorts écrits) (Idan, 2026-10-25 ; l'interface de combat sera refaite) : une barre de sorts pour le mercenaire actif (action, mana, réussite) ; les cases ciblables en vert (alliés et lanceur, ou toutes les cases à portée pour Soin de masse) ; le journal ; la Régénération au début des activations ; le mana affiché dans la liste des équipes ; un bouton **« Sorts de Vie (test) »** : toute l'escouade connaît les six sorts (niveau 1) pour ce combat, sans toucher au grimoire, le mana étant bien dépensé ; une IA simple, aussi en combat automatique : Soin profond sur l'allié le plus blessé sous 35 % de ses PV à la place de l'attaque, Soin rapide sous 60 %.
 3. Étape 3 — **recharge du mana au camp** (faite avec l'étape 2, pour pouvoir tester d'un combat à l'autre), **XP du sort et de l'école, régression des écoles opposées**, XP de la Puissance magique, de la Réserve de mana et de la Chance (faite, voir « Écoles : progression et régression »).
 4. Étape 4 — **sorts connus à la création** et **compensations des nains et des ogres** (faite, voir « Sorts connus à la création »).
 
@@ -297,10 +324,7 @@ Remplacé par l'**École de l'Eau** d'Idan (2026-10-27, ci-dessus) : Brouillard,
 
 ### Foudre
 
-- **Éclair** — monocible.
-- **Éclair rebondissant** — multi-cible par rebonds.
-- **Arme de foudre** — dégâts supplémentaires + composante foudre.
-- **Décharge** — monocible au CAC.
+Remplacé par l'**École de la Foudre** d'Idan (2026-10-27, ci-dessus) : Décharge électrique, Éclair, Arme électrique, Boule d'éclairs, Foudre, Célérité.
 
 ### Illusion
 

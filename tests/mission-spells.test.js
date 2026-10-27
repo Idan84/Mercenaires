@@ -71,19 +71,20 @@ const others=m.players.filter(x=>x!==u);
 assert.equal(magic.knownSpells(u).length,0);
 assert.equal(api.renderMissionSpellBar(u),"");
 assert.equal(api.missionActionAvailability().testSpells,true);
-// Bouton de test : toute l'escouade connaît tous les sorts écrits (Vie, Feu, Eau, Transmutation) pour ce combat ; le grimoire ne
-// change pas.
+// Bouton de test : toute l'escouade connaît tous les sorts écrits (Vie, Feu, Eau, Transmutation, Foudre) pour ce combat ; le
+// grimoire ne change pas.
 api.teachMissionTestSpells();
 assert.deepEqual(magic.knownSpells(u).map(s=>s.code),["quick_heal","deep_heal","regeneration","mass_heal","restitution","purge",
   "fire_bolt","fireball","fire_ring","flaming_weapon","fire_armor","magma",
   "fog","healing_water","ice_arrow","tsunami","frost_armor","freeze","ice_weapon",
-  "sixth_sense","titan_strength","cheetah_speed","stone_skin","venom_spit","cauterize"]);
-assert.ok(m.players.every(p=>p.spells.length===25&&!(p.character.spells||[]).length));
+  "sixth_sense","titan_strength","cheetah_speed","stone_skin","venom_spit","cauterize",
+  "shock","lightning_bolt","shock_weapon","chain_lightning","thunder","celerity"]);
+assert.ok(m.players.every(p=>p.spells.length===31&&!(p.character.spells||[]).length));
 assert.equal(api.missionActionAvailability().testSpells,false,"une seule fois par combat");
-assert.ok(logged(/connaît tous les sorts \(Vie, Feu, Eau, Transmutation, niveau 1\)/));
+assert.ok(logged(/connaît tous les sorts \(Vie, Feu, Eau, Transmutation, Foudre, niveau 1\)/));
 const bar=api.renderMissionSpellBar(u);
 assert.match(bar,/Mana 53\/53/);
-assert.equal((bar.match(/data-spell=/g)||[]).length,25);
+assert.equal((bar.match(/data-spell=/g)||[]).length,31);
 assert.match(bar,/Soin rapide<small>rapide · \d+ mana · \d+ %<\/small>/);
 
 // Soin rapide : cases ciblables = le lanceur et les alliés à portée, jamais un ennemi lointain.
@@ -472,6 +473,68 @@ assert.ok(api.targetableMissionCells().has(api.missionKey(ally.q,ally.r)));
 queue.push(0);
 api.handleMissionHexClick(ally.q,ally.r);
 assert.equal(ally.poisoned,false);
+// École de la Foudre dans l'écran de combat (Idan, 2026-10-27). Maîtrise 60,5.
+for(const p of m.players) p.character.skills.magic.Foudre=60;
+for(const x of [u,ally,wet,distant]){ x.alive=true;x.hp=x.pvMax;x.poisoned=false;x.statBuffs=null; }
+wet.q=u.q+1;wet.r=u.r;distant.q=u.q+4;distant.r=u.r;
+// Décharge électrique : un ennemi voisin seulement, sans jet de toucher.
+reset();
+api.setMissionMode("spell:shock");
+cells=api.targetableMissionCells();
+assert.ok(cells.has(api.missionKey(wet.q,wet.r))&&!cells.has(api.missionKey(distant.q,distant.r)),"au contact");
+queue.push(0,0.99,0.5,0.5);
+api.handleMissionHexClick(wet.q,wet.r);
+assert.ok(wet.hp<wet.pvMax);
+assert.ok(logged(/lance Décharge électrique sur .* : \d+ PV de foudre/));
+// Foudre : à travers le brouillard ; l'Éclair, lui, a besoin de voir.
+reset();
+m.fog=[{q:u.q+2,r:u.r,untilTurn:m.turn+3}];
+assert.equal(api.missionLineOfSight(u,distant),false);
+api.setMissionMode("spell:lightning_bolt");
+assert.ok(!api.targetableMissionCells().has(api.missionKey(distant.q,distant.r)),"l'Éclair a besoin de la ligne de vue");
+api.setMissionMode("spell:thunder");
+assert.ok(api.targetableMissionCells().has(api.missionKey(distant.q,distant.r)),"la Foudre tombe à travers le brouillard");
+queue.push(0,0.99,0.5);
+api.handleMissionHexClick(distant.q,distant.r);
+assert.ok(distant.hp<distant.pvMax);
+assert.ok(logged(/lance Foudre sur .* : \d+ PV de foudre/));
+m.fog=[];
+// Boule d'éclairs : la cible voisine, puis les rebonds, alliés et lanceur compris.
+reset();
+for(const x of [u,ally,wet,distant]){ x.alive=true;x.hp=x.pvMax; }
+api.setMissionMode("spell:chain_lightning");
+queue.push(0,0.99,0.5,0.5);
+api.handleMissionHexClick(wet.q,wet.r);
+assert.ok(wet.hp<wet.pvMax);
+assert.ok(u.hp<u.pvMax||ally.hp<ally.pvMax,"les rebonds touchent aussi nos personnages");
+assert.ok(logged(/lance Boule d'éclairs sur .* puis de moins en moins à chaque rebond — .*\(80 %\)/));
+// Arme électrique : de la foudre à chaque coup qui touche ; l'arme cesse de crépiter.
+reset();
+api.setMissionMode("spell:shock_weapon");
+queue.push(0,0.99);
+api.handleMissionHexClick(u.q,u.r);
+assert.equal(u.weaponEnchant.element,"foudre");
+wet.alive=true;wet.hp=wet.pvMax;
+queue.push(0.5);
+api.missionWeaponEnchantStrike(u,wet,{ok:true,hit:true,blocked:false});
+assert.ok(wet.hp<wet.pvMax);
+assert.ok(logged(/Arme électrique : .* PV de foudre/));
+api.resetMissionActivation(u);api.resetMissionActivation(u);api.resetMissionActivation(u);
+assert.ok(logged(/cesse de crépiter/));
+// Célérité : sur soi seulement, cette activation et la suivante.
+reset();
+const pace=engine.statWithGear(u,"Vitesse");
+api.setMissionMode("spell:celerity");
+assert.deepEqual([...api.targetableMissionCells()],[api.missionKey(u.q,u.r)]);
+queue.push(0);
+api.handleMissionHexClick(u.q,u.r);
+assert.ok(engine.statWithGear(u,"Vitesse")>pace);
+assert.ok(logged(/lance Célérité \(.* : \+\d+ % de Vitesse, pour cette activation et la suivante\./));
+api.resetMissionActivation(u);
+assert.ok(engine.statWithGear(u,"Vitesse")>pace,"la suivante aussi");
+api.resetMissionActivation(u);
+assert.equal(engine.statWithGear(u,"Vitesse"),pace);
+
 // Mort du poison au début de son activation : on passe au suivant.
 m=newMission();
 const doomed=m.playerOrder.find(p=>p!==m.activeUnit);
@@ -513,4 +576,4 @@ assert.ok(home.mana>0,"au camp : recharge");
 assert.equal(away.mana,0,"en route : rien");
 assert.ok(report.mana.some(x=>x.id===home.id));
 
-console.log("Sorts de Vie, du Feu, de l'Eau et de la Transmutation dans l'écran de combat, poison, recharge du mana au camp — OK");
+console.log("Sorts de Vie, du Feu, de l'Eau, de la Transmutation et de la Foudre dans l'écran de combat, poison, recharge du mana au camp — OK");

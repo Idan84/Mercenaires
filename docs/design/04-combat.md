@@ -166,7 +166,7 @@ Choix d'implémentation V1 de l'approximation, validés par Idan le 2026-10-08 :
 - le Tromblon, arme de zone dans `skills.json`, n'y est pas soumis (« ne s'applique pas aux attaques de zone ») ;
 - la Mission Test n'a ni décor ni couverture : aucun obstacle ne coupe le couloir.
 
-Une attaque à distance exige une **ligne de vue**. En V1, les éléments de décor indiquent directement leur protection : aucune, **partielle (`×0,5`)**, **forte / quasi-totale (`×0,25`)** ou **blocage total de ligne de vue** (tir impossible).
+Une attaque à distance exige une **ligne de vue**. En V1, les éléments de décor indiquent directement leur protection : aucune, **partielle (`×0,5`)**, **forte / quasi-totale (`×0,25`)** ou **blocage total de ligne de vue** (tir impossible). Le sort **Brouillard** (doc 12, école de l'Eau) coupe déjà la ligne de vue : aucun tir ni sort à travers, depuis ou vers une case de brouillard (la ligne droite entre les deux cases, extrémités comprises).
 
 Tirer sur une cible distante alors qu'un ennemi est adjacent reste autorisé, mais provoque l'[Attaque d'opportunité CAC V1](/design/#doc=formulas/attaque-d-opportunite-cac-v1.md) de cet ennemi. Tirer sur l'ennemi qui vous menace avec une arme autorisée au contact ne déclenche pas cette réaction.
 

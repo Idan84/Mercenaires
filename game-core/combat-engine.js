@@ -93,6 +93,20 @@
       const dq=a.q-b.q,dr=a.r-b.r;
       return (Math.abs(dq)+Math.abs(dr)+Math.abs(dq+dr))/2;
     }
+    // Cases traversées par une ligne droite de a à b, extrémités comprises (ligne de vue : Brouillard, doc 12). Un petit
+    // décalage fixe tranche quand la ligne passe exactement entre deux cases : toujours du même côté.
+    function hexLine(a,b){
+      const n=axialDistance(a,b),cells=[];
+      for(let i=0;i<=n;i++){
+        const t=n?i/n:0;
+        const x=a.q+(b.q-a.q)*t+1e-6,z=a.r+(b.r-a.r)*t+1e-6,y=-x-z;
+        let rx=Math.round(x),ry=Math.round(y),rz=Math.round(z);
+        const dx=Math.abs(rx-x),dy=Math.abs(ry-y),dz=Math.abs(rz-z);
+        if(dx>dy&&dx>dz) rx=-ry-rz; else if(dy<=dz) rz=-rx-ry;
+        cells.push({q:rx,r:rz});
+      }
+      return cells;
+    }
 
     function itemBySlot(unit,slot){
       const id=unit.character.equipment?.slots?.[slot];
@@ -156,8 +170,14 @@
         return {item,slot,percent:value,bonus:base*value/100};
       }).filter(Boolean);
     }
+    // Avec l'équipement, et le malus d'un sort en cours (Gel : unit.statMalus = {stats, malus}, posé et retiré par l'écran
+    // de combat).
     function statWithGear(unit,stat){
-      return baseValue(unit,stat)+gearBonuses(unit,stat).reduce((sum,x)=>sum+x.bonus,0);
+      return baseValue(unit,stat)+gearBonuses(unit,stat).reduce((sum,x)=>sum+x.bonus,0)-spellStatMalus(unit,stat);
+    }
+    function spellStatMalus(unit,stat){
+      const fx=unit?.statMalus;
+      return fx&&(fx.stats||[]).includes(stat)?Number(fx.malus)||0:0;
     }
     function weaponTemplate(item){ return item?weaponByName.get(item.name)||null:null; }
 
@@ -898,6 +918,7 @@
 
     return {
       axialDistance,
+      hexLine,
       activeWeaponItem,
       activeOffhandItem,
       weaponTemplate,

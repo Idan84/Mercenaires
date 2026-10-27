@@ -106,7 +106,7 @@ Même modèle que la Vie (effet, mana, difficulté par palier, CC aux dés maxim
 - **Trait de feu** suit les règles de l'arc (Idan) : après un sort réussi, jet de toucher avec la formule des tirs, la Maîtrise du sort à la place des compétences d'arme, l'Esquive de la cible, la perte avec la distance au-delà du quart de la portée (et la couverture, quand le décor existera) ; un trait raté peut toucher quelqu'un dans la ligne de tir (approximation des projectiles). Pas de jet de Blesser : seule la protection contre le feu réduit les dégâts.
 - **Boule de feu** ne s'évite pas, mais peut taper à côté : après un sort réussi, précision = 50 + Maîtrise / 2 − 5 × distance (10 à 95 %) ; si elle rate, la boule dévie de **1D3 cases** dans une direction au hasard. Elle touche tout le monde dans la zone, **alliés et lanceur compris** (Idan : « j'aime l'idée que le mage puisse se blesser lui-même »). Cette règle remplace, pour la Boule de feu, la précision d'attaque de zone du doc 04 (−10 % de toucher par case), qui reste celle du Tromblon. Sur la carte actuelle (13 × 9), un rayon de 5 couvre 91 cases sur 117.
 - **Anneau de feu** : un seul jet pour tous, alliés compris ; difficulté abaissée à 30 (Idan : « la chance de toucher me semble un peu faible »).
-- **Arme enflammée** : les tours se décomptent au début de chaque activation de celui qui porte l'arme (le tour du lancer compte) ; elle ne se cumule pas. **Armure de feu** : même décompte ; elle servira quand le froid existera (école de l'Eau).
+- **Arme enflammée** : les tours se décomptent au début de chaque activation de celui qui porte l'arme (le tour du lancer compte) ; elle ne se cumule pas. **Armure de feu** : même décompte ; elle protège du froid de l'école de l'Eau (Flèche de glace, Tsunami, Arme de glace) et réduit le Gel.
 - **Flaque de magma** : ni passage ni arrêt sur la case (déplacements, charges, fuites) ; elle ne coupe pas la vue et ne fait pas de dégâts ; elle refroidit au début du tour indiqué.
 
 | | Débutant | Recrue moyenne | Expert |
@@ -117,6 +117,38 @@ Même modèle que la Vie (effet, mana, difficulté par palier, CC aux dés maxim
 | Arme enflammée, par coup | +22, 2 tours · 57 % | +28, 3 tours · 81 % | +63, 4 tours · 94 % |
 | Armure de feu | +36 froid, 2 tours | +41, 3 tours | +56, 4 tours |
 | Flaque de magma | 5 tours · 31 % | 6 tours · 59 % | 9 tours · 93 % |
+
+### École de l'Eau (7 sorts, Idan, 2026-10-27)
+
+**Objectif V1 (Idan, 2026-10-27) : 10 sorts mono-école par école.** La Vie et le Feu en ont 6, l'Eau 7 ; les autres viendront.
+
+Même modèle que la Vie et le Feu (effet, mana, difficulté par palier, CC aux dés maximum, EC : le lanceur subit le minimum de son sort). L'élément de l'école est le **froid** : dégâts × (1 − protection contre le froid / 100), avec la valeur « glaçant » de l'armure (même règle que le feu). Données : `spells.json`.
+
+| Sort | Palier | Action | Effet | Portée / zone | Mana (base) |
+|---|---|---|---|---|---|
+| Brouillard | Adepte (50) | principale | un rideau de **5 cases** qui coupe la ligne de vue pendant **3 tours, fixes** | centre à 2 + M/25 | 15 |
+| Eau guérissante | Novice (30) | rapide | soin **1D3** (Soin rapide : 1D4) | allié ou soi, 2 + M/25 | 10 |
+| Flèche de glace | Novice (30) | principale | 1D6 de froid, **comme une flèche** (le Trait de feu en froid) | 12 + M/10 | 10 |
+| Tsunami | Adepte (50) | principale | **2D6 de froid** à tous ceux qui sont dans une ligne de **3 + M/50 cases, de 3 à 5**, alliés compris | part de la **case voisine** choisie | 25 |
+| Armure de froid | Novice (30) | rapide | +(30 + M/5) de protection contre le **feu**, pendant 2 + M/50 tours | allié ou soi, 2 + M/25 | 10 |
+| Gel | Adepte (50) | rapide | −(20 + M/5) en **Vitesse et en Dextérité**, pendant **1 + M/100 tours, au plus 2** (Idan : « 1 ou 2 tours ») | un ennemi à 1 + M/50 | 12 |
+| Arme de glace | Novice (30) | rapide | +1D4 de froid à chaque coup qui touche (même sans blesser), pendant 2 + M/50 tours | la sienne ou celle d'un compagnon, 1 + M/50 | 12 |
+
+- **Brouillard** (Idan : « bloque la ligne de vue et empêche de tirer ») : les 5 cases sont centrées sur la case visée, **en travers** de la direction du lanceur (le long de l'axe de la grille le plus perpendiculaire). Une case de brouillard coupe la ligne de vue comme un mur : personne ne tire ni ne lance de sort **à travers, depuis ou vers** une case de brouillard (Idan : il bloque aussi les sorts). Le corps à corps et les déplacements ne changent pas. Les cases hors de la carte sont perdues ; il se dissipe au début du tour indiqué. C'est la première chose qui coupe la ligne de vue (doc 04).
+- **Tsunami** : ne s'évite pas ; la ligne part de la case voisine choisie et file droit devant (Idan : « 3 à 5 cases selon la maîtrise », dégâts de froid).
+- **Gel** : le malus baisse avec la protection de la cible contre le froid (résistance, armure « glaçant », Armure de feu) : × (1 − protection / 100). Il compte **tout de suite** (Vitesse et Dextérité entrent dans le toucher, l'esquive des tirs, l'initiative et le mouvement : −15 en Vitesse ≈ une case de moins) et couvre les prochaines activations de la cible ; il tombe au début de l'activation suivante. Il ne se cumule pas.
+- **Armure de froid** et **Arme de glace** : les miroirs de l'Armure de feu et de l'Arme enflammée (même décompte, ne se cumulent pas ; l'Arme de glace remplace l'Arme enflammée).
+- **Eau guérissante** : l'IA du combat automatique s'en sert comme de Soin rapide, quand elle ne connaît pas ce dernier.
+
+| | Débutant | Recrue moyenne | Expert |
+|---|---|---|---|
+| Brouillard | 5 cases, 3 tours · portée 3 · 14 mana · 31 % | portée 4 · 13 · 59 % | portée 7 · 9 · 93 % |
+| Eau guérissante | 17 PV (9–26) · 9 mana · 57 % | 23 · 9 · 81 % | 51 · 6 · 94 % |
+| Flèche de glace | 30 (9–52) · portée 15 · 9 mana · 57 % | 40 · portée 17 · 9 · 81 % | 89 · portée 25 · 6 · 94 % |
+| Tsunami, par cible | 60 · 3 cases · 23 mana · 31 % | 79 · 4 cases · 21 · 59 % | 178 · 5 cases · 14 · 93 % |
+| Armure de froid | +36 feu, 2 tours | +41, 3 tours | +56, 4 tours |
+| Gel | −26, 1 tour · 1 case · 31 % | −31, 1 tour · 2 cases · 59 % | −46, 2 tours · 3 cases · 93 % |
+| Arme de glace, par coup | +22, 2 tours · 57 % | +28, 3 tours · 81 % | +63, 4 tours · 94 % |
 
 ### Mana
 
@@ -179,7 +211,7 @@ Plus tard : une **école de magie** à construire au camp et des **manuels** à 
 ### Mise en place
 
 1. **Étape 1** — ces décisions, `spells.json`, les règles des sorts (`game-core/magic.js`) et leurs tests (`tests/magic.test.js`) : Soin rapide, puis les six sorts de l'école de la Vie.
-2. **Étape 2** — les sorts dans l'écran de combat actuel, **pour tester** (Vie, puis Feu ; le bouton de test s'appelle désormais « Sorts (test) » et donne tous les sorts écrits) (Idan, 2026-10-25 ; l'interface de combat sera refaite) : une barre de sorts pour le mercenaire actif (action, mana, réussite) ; les cases ciblables en vert (alliés et lanceur, ou toutes les cases à portée pour Soin de masse) ; le journal ; la Régénération au début des activations ; le mana affiché dans la liste des équipes ; un bouton **« Sorts de Vie (test) »** : toute l'escouade connaît les six sorts (niveau 1) pour ce combat, sans toucher au grimoire, le mana étant bien dépensé ; une IA simple, aussi en combat automatique : Soin profond sur l'allié le plus blessé sous 35 % de ses PV à la place de l'attaque, Soin rapide sous 60 %.
+2. **Étape 2** — les sorts dans l'écran de combat actuel, **pour tester** (Vie, puis Feu, puis Eau ; le bouton de test s'appelle désormais « Sorts (test) » et donne tous les sorts écrits) (Idan, 2026-10-25 ; l'interface de combat sera refaite) : une barre de sorts pour le mercenaire actif (action, mana, réussite) ; les cases ciblables en vert (alliés et lanceur, ou toutes les cases à portée pour Soin de masse) ; le journal ; la Régénération au début des activations ; le mana affiché dans la liste des équipes ; un bouton **« Sorts de Vie (test) »** : toute l'escouade connaît les six sorts (niveau 1) pour ce combat, sans toucher au grimoire, le mana étant bien dépensé ; une IA simple, aussi en combat automatique : Soin profond sur l'allié le plus blessé sous 35 % de ses PV à la place de l'attaque, Soin rapide sous 60 %.
 3. Étape 3 — **recharge du mana au camp** (faite avec l'étape 2, pour pouvoir tester d'un combat à l'autre), **XP du sort et de l'école, régression des écoles opposées**, XP de la Puissance magique, de la Réserve de mana et de la Chance (faite, voir « Écoles : progression et régression »).
 4. Étape 4 — **sorts connus à la création** et **compensations des nains et des ogres** (faite, voir « Sorts connus à la création »).
 
@@ -230,11 +262,7 @@ Chaque école a deux écoles opposées (`skills.json`, colonne `ecoles_opposees`
 
 ### Eau / Glace
 
-- **Carreaux de glace** — monocible.
-- **Pluie de glace** — zone.
-- **Arme de glace** — dégâts supplémentaires + composante froid.
-- **Armure climatisée** — protection contre le feu.
-- **Bloc de glace** — crée un mur destructible servant de couverture.
+Remplacé par l'**École de l'Eau** d'Idan (2026-10-27, ci-dessus) : Brouillard, Eau guérissante, Flèche de glace, Tsunami, Armure de froid, Gel, Arme de glace.
 
 ### Foudre
 

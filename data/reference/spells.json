@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "spells",
-  "description": "Sorts (doc 12 « Décisions du 2026-10-25 » et « École de la Vie » ; Idan). Un sort appartient à une école ; il est appris au niveau 1 et monte quand on s'en sert (1 à 100). Maîtrise = École (équipement compris) + Niveau du sort × magic.mastery.spell_share. Effet = ceil(effet_base × effet_nb_des D effet_de × (effet_puissance_facteur × Puissance magique / 100) × (effet_maitrise_base + Maîtrise / 100)). Portée = portee_base + floor(Maîtrise / portee_pas_maitrise) cases ; durée et rayon de zone de même. Mana = ceil(mana_base × (1 − Maîtrise / mana_diviseur_maitrise)). Réussite : constantes magic.cast.* ; Δ = (Maîtrise + Intelligence) / 2 − difficulte (palier : Novice 30, Adepte 50, Expert 70). Coup critique : dés au maximum (sauf critique = false). Échec critique : le lanceur subit l'effet minimum de son sort (dés à 1). Actions : rapide, principale (l'action d'attaque du tour). Cibles : allie_ou_soi, ennemi, soi, case (centre d'une zone), case_vide, mort_vivant. Portée, rayon de zone, durée et bonus : base + floor(Maîtrise / pas), plafonnés par portee_max et zone_rayon_max. Éléments (feu, froid, foudre) : dégâts × (1 − protection / 100), protection = résistance + armure + bonus, bornée par combat.elemental.*. Icônes (Idan, 2026-10-25) : icone = parchemin du sort, cadre = cadre commun de l'école, chemins sous prototype-web/assets/ (scripts/build-spells.sh).",
+  "description": "Sorts (doc 12 « Décisions du 2026-10-25 », écoles de la Vie, du Feu et de l'Eau ; Idan). Un sort appartient à une école ; il est appris au niveau 1 et monte quand on s'en sert (1 à 100). Maîtrise = École (équipement compris) + Niveau du sort × magic.mastery.spell_share. Effet = ceil(effet_base × effet_nb_des D effet_de × (effet_puissance_facteur × Puissance magique / 100) × (effet_maitrise_base + Maîtrise / 100)). Portée = portee_base + floor(Maîtrise / portee_pas_maitrise) cases ; durée et rayon de zone de même. Mana = ceil(mana_base × (1 − Maîtrise / mana_diviseur_maitrise)). Réussite : constantes magic.cast.* ; Δ = (Maîtrise + Intelligence) / 2 − difficulte (palier : Novice 30, Adepte 50, Expert 70). Coup critique : dés au maximum (sauf critique = false). Échec critique : le lanceur subit l'effet minimum de son sort (dés à 1). Actions : rapide, principale (l'action d'attaque du tour). Cibles : allie_ou_soi, ennemi, soi, case (centre d'une zone, ou case voisine d'où part une ligne), case_vide, mort_vivant. Zones en ligne (zone_forme) : « ligne » part de la case visée, voisine du lanceur, et file droit devant (Tsunami) ; « mur » est centrée sur la case visée, en travers de la direction du lanceur (Brouillard) ; longueur = zone_longueur_base + floor(Maîtrise / zone_longueur_pas_maitrise), plafonnée par zone_longueur_max. Malus de caractéristiques (Gel) : bonus_base + floor(Maîtrise / bonus_pas_maitrise) points retirés aux caracteristiques de la cible, × (1 − sa protection contre l'élément / 100). Portée, rayon de zone, durée et bonus : base + floor(Maîtrise / pas), plafonnés par portee_max, zone_rayon_max et duree_max. Éléments (feu, froid, foudre) : dégâts × (1 − protection / 100), protection = résistance + armure + bonus, bornée par combat.elemental.*. Icônes (Idan, 2026-10-25) : icone = parchemin du sort, cadre = cadre commun de l'école, chemins sous prototype-web/assets/ (scripts/build-spells.sh).",
   "columns": [
     {
       "source": "Nom",
@@ -72,6 +72,10 @@
       "key": "duree_pas_maitrise"
     },
     {
+      "source": "Durée — maximum (tours)",
+      "key": "duree_max"
+    },
+    {
       "source": "Zone — rayon de base",
       "key": "zone_rayon_base"
     },
@@ -140,6 +144,26 @@
       "key": "deviation_max"
     },
     {
+      "source": "Zone — forme (ligne, mur)",
+      "key": "zone_forme"
+    },
+    {
+      "source": "Zone — longueur de base",
+      "key": "zone_longueur_base"
+    },
+    {
+      "source": "Zone — longueur, pas de maîtrise",
+      "key": "zone_longueur_pas_maitrise"
+    },
+    {
+      "source": "Zone — longueur maximale",
+      "key": "zone_longueur_max"
+    },
+    {
+      "source": "Caractéristiques visées",
+      "key": "caracteristiques"
+    },
+    {
       "source": "Bonus — base",
       "key": "bonus_base"
     },
@@ -160,7 +184,7 @@
       "key": "description"
     }
   ],
-  "row_count": 12,
+  "row_count": 19,
   "rows": [
     {
       "nom": "Soin rapide",
@@ -434,7 +458,7 @@
       "element": "froid",
       "bonus_base": 30,
       "bonus_pas_maitrise": 5,
-      "description": "Augmente grandement la protection contre le froid du lanceur ou d'un allié pendant plusieurs tours. Action rapide. En attente des dégâts de froid (école de l'Eau)."
+      "description": "Augmente grandement la protection contre le froid du lanceur ou d'un allié pendant plusieurs tours. Action rapide."
     },
     {
       "nom": "Flaque de magma",
@@ -455,6 +479,175 @@
       "mana_diviseur_maitrise": 300,
       "difficulte": 50,
       "description": "Une case vide devient infranchissable pendant plusieurs tours : personne ne peut y passer ni s'y arrêter. De quoi bloquer un passage. Action rapide."
+    },
+    {
+      "nom": "Brouillard",
+      "code": "fog",
+      "ecole": "Eau",
+      "palier": "Adepte",
+      "action": "principale",
+      "cible": "case",
+      "ligne_de_vue": true,
+      "effet": "brouillard",
+      "effet_nb_des": 0,
+      "portee_base": 2,
+      "portee_pas_maitrise": 25,
+      "duree_base": 3,
+      "critique": false,
+      "mana_base": 15,
+      "mana_diviseur_maitrise": 300,
+      "difficulte": 50,
+      "zone_forme": "mur",
+      "zone_longueur_base": 5,
+      "description": "Un rideau de brouillard de 5 cases, en travers de la direction du lanceur, pendant 3 tours : personne ne tire ni ne lance de sort à travers, depuis ou vers une case de brouillard. Le corps à corps et les déplacements ne changent pas. Action principale."
+    },
+    {
+      "nom": "Eau guérissante",
+      "code": "healing_water",
+      "ecole": "Eau",
+      "palier": "Novice",
+      "action": "rapide",
+      "cible": "allie_ou_soi",
+      "ligne_de_vue": true,
+      "effet": "soin",
+      "effet_base": 10,
+      "effet_nb_des": 1,
+      "effet_de": 3,
+      "effet_puissance_facteur": 2,
+      "effet_maitrise_base": 0.5,
+      "portee_base": 2,
+      "portee_pas_maitrise": 25,
+      "critique": true,
+      "mana_base": 10,
+      "mana_diviseur_maitrise": 300,
+      "difficulte": 30,
+      "description": "Restaure des PV à un allié ou au lanceur, à portée et en ligne de vue ; moins puissant que Soin rapide (école de la Vie). Action rapide."
+    },
+    {
+      "nom": "Flèche de glace",
+      "code": "ice_arrow",
+      "ecole": "Eau",
+      "palier": "Novice",
+      "action": "principale",
+      "cible": "ennemi",
+      "ligne_de_vue": true,
+      "effet": "degats",
+      "effet_base": 10,
+      "effet_nb_des": 1,
+      "effet_de": 6,
+      "effet_puissance_facteur": 2,
+      "effet_maitrise_base": 0.5,
+      "portee_base": 12,
+      "portee_pas_maitrise": 10,
+      "critique": true,
+      "mana_base": 10,
+      "mana_diviseur_maitrise": 300,
+      "difficulte": 30,
+      "element": "froid",
+      "toucher": "distance",
+      "description": "Une flèche de glace sur une cible, comme une flèche : jet de toucher contre l'Esquive, la distance et la couverture ; une flèche ratée peut toucher quelqu'un dans la ligne de tir. Dégâts de froid, réduits ou augmentés par la protection contre le froid (résistance et armure). Action principale."
+    },
+    {
+      "nom": "Tsunami",
+      "code": "tsunami",
+      "ecole": "Eau",
+      "palier": "Adepte",
+      "action": "principale",
+      "cible": "case",
+      "ligne_de_vue": true,
+      "effet": "degats_zone",
+      "effet_base": 10,
+      "effet_nb_des": 2,
+      "effet_de": 6,
+      "effet_puissance_facteur": 2,
+      "effet_maitrise_base": 0.5,
+      "portee_base": 1,
+      "critique": true,
+      "mana_base": 25,
+      "mana_diviseur_maitrise": 300,
+      "difficulte": 50,
+      "element": "froid",
+      "zone_forme": "ligne",
+      "zone_longueur_base": 3,
+      "zone_longueur_pas_maitrise": 50,
+      "zone_longueur_max": 5,
+      "description": "Une vague part de la case voisine choisie et file en ligne droite sur 3 à 5 cases : tous ceux qui s'y trouvent, alliés compris, subissent les mêmes dégâts de froid. Ne s'évite pas. Action principale."
+    },
+    {
+      "nom": "Armure de froid",
+      "code": "frost_armor",
+      "ecole": "Eau",
+      "palier": "Novice",
+      "action": "rapide",
+      "cible": "allie_ou_soi",
+      "ligne_de_vue": true,
+      "effet": "protection_elementaire",
+      "effet_nb_des": 0,
+      "portee_base": 2,
+      "portee_pas_maitrise": 25,
+      "duree_base": 2,
+      "duree_pas_maitrise": 50,
+      "cumulable": false,
+      "critique": false,
+      "mana_base": 10,
+      "mana_diviseur_maitrise": 300,
+      "difficulte": 30,
+      "element": "feu",
+      "bonus_base": 30,
+      "bonus_pas_maitrise": 5,
+      "description": "Augmente grandement la protection contre le feu du lanceur ou d'un allié pendant plusieurs tours. Action rapide."
+    },
+    {
+      "nom": "Gel",
+      "code": "freeze",
+      "ecole": "Eau",
+      "palier": "Adepte",
+      "action": "rapide",
+      "cible": "ennemi",
+      "ligne_de_vue": true,
+      "effet": "malus_caracteristiques",
+      "effet_nb_des": 0,
+      "portee_base": 1,
+      "portee_pas_maitrise": 50,
+      "duree_base": 1,
+      "duree_pas_maitrise": 100,
+      "duree_max": 2,
+      "cumulable": false,
+      "critique": false,
+      "mana_base": 12,
+      "mana_diviseur_maitrise": 300,
+      "difficulte": 50,
+      "element": "froid",
+      "bonus_base": 20,
+      "bonus_pas_maitrise": 5,
+      "caracteristiques": "Vitesse, Dextérité",
+      "description": "Gèle un ennemi proche : sa Vitesse et sa Dextérité baissent pendant 1 tour (2 pour un expert), d'autant moins qu'il est protégé du froid. Le malus compte tout de suite. Action rapide."
+    },
+    {
+      "nom": "Arme de glace",
+      "code": "ice_weapon",
+      "ecole": "Eau",
+      "palier": "Novice",
+      "action": "rapide",
+      "cible": "allie_ou_soi",
+      "ligne_de_vue": true,
+      "effet": "arme_elementaire",
+      "effet_base": 10,
+      "effet_nb_des": 1,
+      "effet_de": 4,
+      "effet_puissance_facteur": 2,
+      "effet_maitrise_base": 0.5,
+      "portee_base": 1,
+      "portee_pas_maitrise": 50,
+      "duree_base": 2,
+      "duree_pas_maitrise": 50,
+      "cumulable": false,
+      "critique": true,
+      "mana_base": 12,
+      "mana_diviseur_maitrise": 300,
+      "difficulte": 30,
+      "element": "froid",
+      "description": "Couvre de givre l'arme du lanceur ou d'un compagnon : chaque coup qui touche ajoute des dégâts de froid, même si la lame ne blesse pas, pendant plusieurs tours. Action rapide."
     }
   ]
 }

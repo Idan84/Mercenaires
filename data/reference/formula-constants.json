@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 203,
+  "row_count": 207,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -1656,6 +1656,38 @@
       "description": "Protection élémentaire maximale, pour qu’on ne soit jamais immunisé (Idan, 2026-10-25).",
       "formule": "Dégâts élémentaires",
       "valeur": 75,
+      "version": "V1"
+    },
+    {
+      "nom": "Poison — durée",
+      "code": "combat.poison.turns",
+      "description": "Une cible blessée par du venin (Crachat de venin) est empoisonnée pendant ce nombre de tours : au début de chacune de ses activations, un jet de résistance, sinon des dégâts légers (le minimum du venin, réduit par la Résistance au poison). Purge retire le poison (Idan, 2026-10-27).",
+      "formule": "Poison",
+      "valeur": 3,
+      "version": "V1"
+    },
+    {
+      "nom": "Poison — part de Constitution du jet de résistance",
+      "code": "combat.poison.resist_constitution_share",
+      "description": "Jet de résistance au poison, au début de chaque activation de l'empoisonné : D100 ≤ part × Constitution + Résistance au poison (équipement compris) annule l'effet (Idan, 2026-10-27 : « jet de résistance au poison au début du tour (constitution ?) »).",
+      "formule": "Poison",
+      "valeur": 0.5,
+      "version": "V1"
+    },
+    {
+      "nom": "Poison — chance minimale de résister",
+      "code": "combat.poison.resist_min",
+      "description": "Le jet de résistance au poison réussit toujours au moins à ce pourcentage.",
+      "formule": "Poison",
+      "valeur": 5,
+      "version": "V1"
+    },
+    {
+      "nom": "Poison — chance maximale de résister",
+      "code": "combat.poison.resist_max",
+      "description": "Le jet de résistance au poison échoue toujours au moins à 100 moins ce pourcentage.",
+      "formule": "Poison",
+      "valeur": 95,
       "version": "V1"
     }
   ]

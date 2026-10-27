@@ -25,10 +25,11 @@ const magic=createMagicRules({reference,combat,random});
 function mage({pm,vie,level=1,int,chance=54,mana=53,items=[],slots={}}){
   return {
     name:"Mage",stats:{"Puissance magique":pm,Intelligence:int,Chance:chance,"Réserve de mana":mana,Constitution:50,Endurance:50,Volonté:50},
-    skills:{magic:{Vie:vie,Feu:vie,Eau:vie,Nécromancie:20,Illusion:20}},mana,
+    skills:{magic:{Vie:vie,Feu:vie,Eau:vie,Transmutation:vie,Nécromancie:20,Illusion:20}},mana,
     spells:["quick_heal","deep_heal","regeneration","mass_heal","restitution","purge"].map(code=>({code,school:"Vie",mastery:level}))
       .concat(["fire_bolt","fireball","fire_ring","flaming_weapon","fire_armor","magma"].map(code=>({code,school:"Feu",mastery:level})))
-      .concat(["fog","healing_water","ice_arrow","tsunami","frost_armor","freeze","ice_weapon"].map(code=>({code,school:"Eau",mastery:level}))),
+      .concat(["fog","healing_water","ice_arrow","tsunami","frost_armor","freeze","ice_weapon"].map(code=>({code,school:"Eau",mastery:level})))
+      .concat(["sixth_sense","titan_strength","cheetah_speed","stone_skin","venom_spit","cauterize"].map(code=>({code,school:"Transmutation",mastery:level}))),
     items,equipment:{slots}
   };
 }
@@ -361,4 +362,70 @@ out=magic.cast(caster,ally,"frost_armor");
 assert.deepEqual(out.effect,{code:"frost_armor",element:"feu",bonus:36,turns:2,cumulable:false});
 assert.equal(combat.elementalDamage(armoredUnit(null,4,{elementalBonus:{feu:{bonus:36,turns:2}}}),"feu",100).damage,60,"Armure de froid contre le feu");
 
-console.log("Magie : écoles de la Vie, du Feu et de l'Eau OK");
+// École de la Transmutation (Idan, 2026-10-27) : des bonus, action rapide, portée 3 + M/25, 1 tour (2 pour un maître).
+assert.deepEqual(magic.schoolSpells("Transmutation").map(x=>[x.code,x.palier,x.difficulte,x.action,x.cible]),[
+  ["sixth_sense","Adepte",50,"rapide","allie_ou_soi"],["titan_strength","Novice",30,"rapide","allie_ou_soi"],
+  ["cheetah_speed","Novice",30,"rapide","allie_ou_soi"],["stone_skin","Novice",30,"rapide","allie_ou_soi"],
+  ["venom_spit","Adepte",50,"rapide","allie_ou_soi"],["cauterize","Novice",30,"rapide","allie_ou_soi"]]);
+assert.deepEqual([magic.range(beginner,"titan_strength"),magic.range(expert,"titan_strength")],[4,8],"portée moyenne : 3 + M/25");
+assert.deepEqual([magic.duration(beginner,"titan_strength"),magic.duration(expert,"titan_strength"),magic.duration(archmage,"titan_strength")],[1,2,2]);
+assert.deepEqual([magic.bonus(beginner,"titan_strength"),magic.bonus(expert,"titan_strength")],[26,46],"+20 + M/5 %");
+assert.deepEqual([magic.bonus(beginner,"stone_skin"),magic.bonus(expert,"stone_skin")],[13,23],"Peau de pierre : +10 + M/10 points");
+assert.deepEqual(magic.targetStats("sixth_sense"),["Perception","Dextérité"]);
+assert.deepEqual([magic.manaCost(beginner,"titan_strength"),magic.manaCost(beginner,"sixth_sense"),magic.manaCost(beginner,"venom_spit")],[9,11,11]);
+assert.deepEqual(magic.effectRange(beginner,"cauterize"),magic.effectRange(beginner,"healing_water"),"Cautérisation : 1D3, comme Eau guérissante");
+// Le bonus posé, puis compté par le moteur : un pourcentage de la valeur de base, ou des points.
+queue=[0];
+out=magic.cast(caster,ally,"titan_strength");
+assert.deepEqual(out.effect,{code:"titan_strength",stats:["Force"],value:26,unit:"pourcentage",turns:1,cumulable:false});
+queue=[0];
+assert.deepEqual(magic.cast(caster,ally,"stone_skin").effect.unit,"points");
+const brawler=mage({pm:50,vie:1,int:50});
+Object.assign(brawler.stats,{Force:50,Vitesse:40,Perception:60,Dextérité:44});
+brawler.resistances={"Résistance physique":5};
+const buffed=unit(brawler,{statBuffs:{titan_strength:{stats:["Force"],value:26,unit:"pourcentage"},stone_skin:{stats:["Résistance physique"],value:13,unit:"points"},
+  sixth_sense:{stats:["Perception","Dextérité"],value:50,unit:"pourcentage"}}});
+assert.equal(combat.statWithGear(buffed,"Force"),63);
+assert.equal(combat.statWithGear(buffed,"Résistance physique"),18);
+assert.deepEqual([combat.statWithGear(buffed,"Perception"),combat.statWithGear(buffed,"Dextérité")],[90,66]);
+assert.equal(combat.statWithGear(buffed,"Vitesse"),40,"une caractéristique sans bonus ne bouge pas");
+assert.equal(combat.statWithGear({...buffed,statMalus:{stats:["Dextérité"],malus:10}},"Dextérité"),56,"bonus et Gel s'additionnent");
+// Crachat de venin : un tir accordé, qui garde la Puissance et la Maîtrise du lanceur.
+queue=[0];
+out=magic.cast(caster,ally,"venom_spit");
+assert.deepEqual([out.effect.element,out.effect.mastery,out.effect.min,out.effect.max,out.effect.turns],["poison",31.5,2,10,1]);
+assert.equal(out.effect.factor,magic.effectFactor(caster,"venom_spit"));
+const spitter=unit(mage({pm:50,vie:1,int:50}),{venom:out.effect});
+const target5=unit(mage({pm:50,vie:1,int:50}),{q:5,r:0,team:"enemy"});
+assert.match(magic.canSpit(unit(mage({pm:50,vie:1,int:50})),target5).reason,/venin/);
+assert.match(magic.canSpit(spitter,{...target5,q:1}).reason,/hors de portée/i);
+assert.match(magic.canSpit(spitter,{...target5,q:11}).reason,/hors de portée/i);
+assert.match(magic.canSpit(spitter,ally).reason,/ennemi/);
+assert.match(magic.canSpit({...spitter,quickAvailable:false},target5).reason,/action rapide/);
+assert.match(magic.canSpit(spitter,target5,{lineOfSight:false}).reason,/ligne de vue/);
+assert.equal(magic.spitChance(spitter,target5),magic.hitChance(spitter,target5,"venom_spit",{mastery:31.5,reach:10}));
+queue=[0,0.5];
+out=magic.spit(spitter,target5);
+assert.deepEqual([out.hit,out.dice,out.element],[true,3,"poison"]);
+assert.equal(out.amount,Math.ceil(30*spitter.venom.factor-1e-9));
+assert.deepEqual(out.poison,{turns:3,amount:Math.ceil(10*spitter.venom.factor-1e-9)},"empoisonne 3 tours : le minimum du venin");
+queue=[0.99];
+assert.deepEqual([magic.spit(spitter,target5).hit,magic.spit(spitter,target5).poison],[false,undefined]);
+// Poison (moteur) : jet de résistance D100 ≤ Constitution / 2 + Résistance au poison ; l'armure ne protège pas.
+const sick=unit(mage({pm:50,vie:1,int:50}),{poisoned:{turns:3,amount:20}});
+assert.equal(combat.poisonResistChance(sick),25,"Constitution 50 / 2");
+queue=[0];
+assert.deepEqual(combat.resolvePoison(sick),{p:25,roll:1,resisted:true,damage:0});
+queue=[0.5];
+let tick=combat.resolvePoison(sick);
+assert.deepEqual([tick.resisted,tick.roll,tick.damage],[false,51,20]);
+const tough=mage({pm:50,vie:1,int:50});
+tough.resistances={"Résistance au poison":20};
+queue=[0.5];
+tick=combat.resolvePoison(unit(tough,{poisoned:{turns:3,amount:20}}));
+assert.deepEqual([tick.p,tick.resisted,tick.damage],[45,false,16],"la Résistance au poison aide au jet et réduit les dégâts");
+assert.equal(combat.elementalDamage(armoredUnit("Armure de plates",4),"poison",100).armor,0,"l'armure ne compte pas contre le poison");
+assert.equal(combat.resolvePoison(unit(tough)),null,"pas empoisonné : rien");
+assert.equal(magic.isPoisoned(sick),true);
+
+console.log("Magie : écoles de la Vie, du Feu, de l'Eau et de la Transmutation OK");

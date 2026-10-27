@@ -25,6 +25,10 @@
 //   Eau guérissante soigne 1D3 ; Flèche de glace est le Trait de feu en froid ; Tsunami frappe une ligne de 3 à 5 cases
 //   partie de la case voisine ; Armure de froid protège du feu ; Gel retire Vitesse et Dextérité (moins la protection
 //   contre le froid de la cible) ; Arme de glace ajoute du froid à chaque coup qui touche.
+// - École de la Transmutation (Idan, 2026-10-27) : des bonus pour un allié ou soi, pendant 1 tour (2 pour un maître) :
+//   6e sens, Force de titan et Vitesse du guépard (+20 + M/5 % de la valeur de base), Peau de pierre (+10 + M/10 points de
+//   Résistance physique) ; Crachat de venin donne un tir de venin par action rapide (empoisonne : combat.poison.*) ;
+//   Cautérisation soigne 1D3.
 (function(root,factory){
   const api=factory();
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
@@ -149,7 +153,7 @@
       const c=unit?.character;
       return Boolean(c?.undead)||c?.faction==="Morts-vivants";
     }
-    // Le poison n'existe pas encore en combat : une unité empoisonnée portera poisoned = true.
+    // Empoisonné : unit.poisoned = {turns, amount, …} (Crachat de venin) ; Purge le retire.
     function isPoisoned(unit){ return Boolean(unit?.poisoned); }
     // Toutes les unités en jeu dans le cercle (alliés, ennemis, lanceur compris) ; minDistance : anneau (Anneau de feu).
     function unitsInZone(center,radius,units,minDistance=0){
@@ -166,9 +170,10 @@
 
     // Toucher d'un sort « comme une flèche » (Trait de feu ; Idan, 2026-10-25 : « les mêmes règles que pour l'arc ») :
     // la formule de tir, la Maîtrise du sort à la place des compétences d'arme (catégorie et arme), la portée du sort pour
-    // la perte avec la distance (au-delà du quart de la portée).
-    function hitChance(caster,target,code){
-      const reach=range(caster,code),distance=combat.axialDistance(caster,target),m=mastery(caster,code);
+    // la perte avec la distance (au-delà du quart de la portée). over : {mastery, reach} pour un tir accordé par un sort
+    // (Crachat de venin : la Maîtrise du lanceur, la portée de la sarbacane).
+    function hitChance(caster,target,code,over={}){
+      const reach=over.reach??range(caster,code),distance=combat.axialDistance(caster,target),m=over.mastery??mastery(caster,code);
       let delta=combat.effectiveDexterity(caster)
         +0.2*(2*m+combat.statWithGear(caster,"Perception")+combat.effectiveSpeed(caster))
         -combat.effectiveDodge(target)
@@ -280,6 +285,13 @@
           result.effect={code:s.code,element:s.element,bonus:bonus(caster,code),turns:duration(caster,code),cumulable:s.cumulable!==false};
         }else if(s.effet==="terrain_infranchissable"){
           result.terrain={q:target.q,r:target.r,turns:duration(caster,code)};
+        }else if(s.effet==="bonus_caracteristiques"){
+          result.effect={code:s.code,stats:targetStats(code),value:bonus(caster,code),unit:s.bonus_unite==="pourcentage"?"pourcentage":"points",
+            turns:duration(caster,code),cumulable:s.cumulable!==false};
+        }else if(s.effet==="crachat_venin"){
+          // Le tir de venin garde la Puissance et la Maîtrise du lanceur.
+          result.effect={code:s.code,element:s.element,factor:effectFactor(caster,code),mastery:mastery(caster,code),
+            min:num(s.tir_portee_min,1),max:num(s.tir_portee_max,1),turns:duration(caster,code)};
         }else if(s.effet==="brouillard"){
           result.fog={cells:wallCells(caster,target,zoneLength(caster,code)),turns:duration(caster,code)};
         }else if(s.effet==="malus_caracteristiques"){
@@ -319,6 +331,37 @@
       return result;
     }
 
+    // Crachat de venin : unit.venom = l'effet posé par le sort. Action rapide, un ennemi à portée de sarbacane, en ligne de vue.
+    function canSpit(unit,target,{lineOfSight=true}={}){
+      const fx=unit?.venom;
+      if(!fx) return {ok:false,reason:"Pas de venin."};
+      if(unit.alive===false) return {ok:false,reason:"Hors combat."};
+      if(unit.quickAvailable===false) return {ok:false,reason:"L'action rapide est déjà utilisée."};
+      if(!target||target.alive===false||target===unit||target.team===unit.team) return {ok:false,reason:"Le venin vise un ennemi."};
+      const distance=combat.axialDistance(unit,target);
+      if(distance<fx.min||distance>fx.max) return {ok:false,reason:"Hors de portée ("+distance+" cases, de "+fx.min+" à "+fx.max+")."};
+      if(!lineOfSight) return {ok:false,reason:"Pas de ligne de vue."};
+      return {ok:true,distance};
+    }
+    function spitChance(unit,target){
+      const fx=unit.venom;
+      return hitChance(unit,target,fx.code,{mastery:fx.mastery,reach:fx.max});
+    }
+    // Le tir : toucher comme un trait ; 1D4 de poison × la Puissance du lanceur ; s'il blesse, l'écran de combat empoisonne
+    // la cible (poison : turns tours, le minimum du venin à chaque fois).
+    function spit(unit,target,options={}){
+      const check=canSpit(unit,target,options);
+      if(!check.ok) return check;
+      const fx=unit.venom,pHit=spitChance(unit,target),hitRoll=d100(),s=spell(fx.code);
+      const result={ok:true,code:fx.code,element:fx.element,distance:check.distance,pHit,hitRoll,hit:hitRoll<=pHit,dice:0,amount:0};
+      if(result.hit){
+        result.dice=rollDice(fx.code);
+        result.amount=Math.ceil(num(s?.effet_base,10)*result.dice*fx.factor-1e-9);
+        result.poison={turns:combat.POISON?.turns??3,amount:Math.ceil(num(s?.effet_base,10)*dice(fx.code).count*fx.factor-1e-9)};
+      }
+      return result;
+    }
+
     // Régénération : un tour de soin, au début de l'activation de la cible ; dé au maximum si le lancer était critique.
     function tick(effect){
       if(!effect||effect.turns<=0) return {amount:0,turnsLeft:0};
@@ -336,6 +379,9 @@
       precisionChance,
       zoneFactor,
       weaponStrike,
+      canSpit,
+      spitChance,
+      spit,
       schoolSpells,
       knownSpell,
       knownSpells,

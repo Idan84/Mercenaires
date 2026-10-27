@@ -6,8 +6,8 @@
 const AvatarsLab=(()=>{
   const SAMPLES=500;
   // Tout est croisé par culture (Idan, 2026-10-27 : la culture étant obligatoire, les tableaux globaux sont inutiles).
-  // Combinaisons : celles qui pèsent au moins 1 % des mercenaires du peuple, rangées par culture.
-  const COMBINATION_MIN=0.01;
+  // Combinaisons : celles qui pèsent au moins 0,5 % des mercenaires du peuple (Idan, 2026-10-27), rangées par culture.
+  const COMBINATION_MIN=0.005;
   const STATUS={
     "manquant":{cls:"missing",label:"Manquant",order:0},
     "sous-représenté":{cls:"under",label:"Sous-représenté",order:1},
@@ -103,7 +103,7 @@ const AvatarsLab=(()=>{
   const gapClass=x=>x.avatars>=x.target?"gap-ok":x.avatars<x.target/2?"gap-high":"gap-mid";
 
   // Croisement (Idan, 2026-10-25 : « il faut que je croise ») : par culture, profil · arme tenue en main ou école du mage,
-  // celles qui pèsent au moins 1 %. Les avatars comptés ont la culture, le profil et l'arme ou l'école.
+  // celles qui pèsent au moins COMBINATION_MIN. Les avatars comptés ont la culture, le profil et l'arme ou l'école.
   function combinationsTable(r){
     const all=r.combinations||[];
     if(!all.length) return '<p class="muted">—</p>';
@@ -115,7 +115,7 @@ const AvatarsLab=(()=>{
       return rows.length?`<tr class="cov-group"><th colspan="6">${html(c.culture)} <small>${pct(c.share)}</small></th></tr>${rows.map(line).join("")}`:"";
     }).join("");
     return `<table><thead><tr><th>Profil</th><th>Arme ou école</th><th>Part</th><th>Cible</th><th>Avatars</th><th>Manque</th></tr></thead><tbody>${groups}</tbody></table>
-      <p class="cov-note">Combinaisons d'au moins 1 % des mercenaires, rangées par culture.${rest.length?` ${rest.length} plus rares (${pct(rest.reduce((t,x)=>t+x.share,0))} des mercenaires) ne sont pas listées.`:""} Un avatar compte s'il a la culture, le profil et l'arme qu'il tient (ou sa catégorie), ou l'école du mage.</p>`;
+      <p class="cov-note">Combinaisons d'au moins ${pct(COMBINATION_MIN)} des mercenaires, rangées par culture.${rest.length?` ${rest.length} plus rares (${pct(rest.reduce((t,x)=>t+x.share,0))} des mercenaires) ne sont pas listées.`:""} Un avatar compte s'il a la culture, le profil et l'arme qu'il tient (ou sa catégorie), ou l'école du mage.</p>`;
   }
   // Ascendances × cultures (Idan, 2026-10-26) : chaque case donne avatars / cible ; la couleur dit le manque.
   function ascendanceCultureTable(r){

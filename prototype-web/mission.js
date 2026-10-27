@@ -1149,6 +1149,24 @@ function resolveMissionSpell(caster,target,code){
       missionLog(name+" lance "+spell.nom+on+detail+" : raté"+aim+".","miss");
     }
     checkMissionEnd();
+  }else if(spell.effet==="degats"){
+    // Sans jet de toucher : Décharge électrique au contact, Foudre qui tombe du ciel.
+    const hit=missionElementalHit(target,out.element,out.amount,caster);
+    effect=hit.damage>0;
+    missionLog(name+" lance "+spell.nom+on+detail+" : "+hit.damage+" PV de "+out.element+missionProtectionNote(hit)+". "
+      +target.character.name+" reste à "+Math.max(0,target.hp)+" PV."+critical,"damage");
+    checkMissionEnd();
+  }else if(spell.effet==="degats_rebonds"){
+    // Boule d'éclairs : chaque personnage de la chaîne, de moins en moins fort, avec sa propre protection.
+    effect=false;
+    const lines=out.chain.map(({unit,factor},k)=>{
+      const hit=missionElementalHit(unit,out.element,Math.ceil(out.amount*factor-1e-9),caster);
+      if(hit.damage>0&&unit!==caster) effect=true;
+      return unit.character.name+" −"+hit.damage+(k?" ("+Math.round(factor*100)+" %)":"");
+    });
+    missionLog(name+" lance "+spell.nom+on+detail+" : "+out.amount+" PV de "+out.element+(lines.length>1?", puis de moins en moins à chaque rebond":", sans rebond")
+      +" — "+lines.join(", ")+"."+critical,"damage");
+    checkMissionEnd();
   }else if(spell.effet==="degats_zone"){
     const zone=out.zone,drift=zone.precision&&!zone.precision.ok
       ?" ; elle dévie de "+zone.precision.deviation+" case"+(zone.precision.deviation>1?"s":"")+" (précision "+Math.round(zone.precision.p)+" %, jet "+zone.precision.roll+")"
@@ -1167,10 +1185,10 @@ function resolveMissionSpell(caster,target,code){
     checkMissionEnd();
   }else if(spell.effet==="arme_elementaire"){
     target.weaponEnchant={...out.effect};
-    missionLog(name+" lance "+spell.nom+on+detail+" : chaque coup qui touche ajoute du "+out.effect.element+", pendant "+out.effect.turns+" tours."+critical,"magic");
+    missionLog(name+" lance "+spell.nom+on+detail+" : chaque coup qui touche ajoute "+missionElementSome(out.effect.element)+", pendant "+out.effect.turns+" tours."+critical,"magic");
   }else if(spell.effet==="protection_elementaire"){
     target.elementalBonus={...(target.elementalBonus||{}),[out.effect.element]:{code:out.effect.code,bonus:out.effect.bonus,turns:out.effect.turns}};
-    missionLog(name+" lance "+spell.nom+on+detail+" : +"+out.effect.bonus+" de protection contre le "+out.effect.element+", pendant "+out.effect.turns+" tours.","magic");
+    missionLog(name+" lance "+spell.nom+on+detail+" : +"+out.effect.bonus+" de protection contre "+missionElementThe(out.effect.element)+", pendant "+out.effect.turns+" tours.","magic");
   }else if(spell.effet==="terrain_infranchissable"){
     m.terrain=[...(m.terrain||[]),{q:out.terrain.q,r:out.terrain.r,untilTurn:m.turn+out.terrain.turns}];
     missionLog(name+" lance "+spell.nom+detail+" : la case devient infranchissable pendant "+out.terrain.turns+" tours.","magic");
@@ -1199,7 +1217,7 @@ function resolveMissionSpell(caster,target,code){
     target.statMalus={code:fx.code,stats:fx.stats,malus:fx.malus,turns:fx.turns};
     effect=fx.malus>0;
     missionLog(name+" lance "+spell.nom+on+detail+" : −"+fx.malus+" en "+fx.stats.join(" et en ")
-      +(fx.protection?" (malus de "+fx.raw+", protection contre le "+fx.element+" "+Math.round(fx.protection)+" %)":"")
+      +(fx.protection?" (malus de "+fx.raw+", protection contre "+missionElementThe(fx.element)+" "+Math.round(fx.protection)+" %)":"")
       +", pendant "+fx.turns+" tour"+(fx.turns>1?"s":"")+".","magic");
   }
   learn(effect);
@@ -1232,16 +1250,17 @@ function tickMissionRegeneration(unit){
     +(effect.turns>0?" (encore "+effect.turns+" tour"+(effect.turns>1?"s":"")+").":" (fin)."),"magic");
 }
 
-// Arme enflammée, Arme de glace, Armure de feu et Armure de froid (doc 12) : actives pendant leur nombre de tours,
-// décomptés au début de chaque activation de celui qui les porte (le tour du lancer compte).
+// Arme enflammée, Arme de glace, Arme électrique, Armure de feu et Armure de froid (doc 12) : actives pendant leur nombre
+// de tours, décomptés au début de chaque activation de celui qui les porte (le tour du lancer compte).
 function tickMissionEnchantments(unit){
   const name=unit.character.name;
   if(unit.weaponEnchant){
     unit.weaponEnchant.turns-=1;
     if(unit.weaponEnchant.turns<=0){
-      const frost=unit.weaponEnchant.element==="froid";
+      const element=unit.weaponEnchant.element;
       unit.weaponEnchant=null;
-      missionLog((frost?"Le givre de l’arme de "+name+" fond.":"Les flammes de l’arme de "+name+" s’éteignent."),"magic");
+      missionLog(element==="froid"?"Le givre de l’arme de "+name+" fond."
+        :element==="foudre"?"L’arme de "+name+" cesse de crépiter.":"Les flammes de l’arme de "+name+" s’éteignent.","magic");
     }
   }
   for(const [element,effect] of Object.entries(unit.elementalBonus||{})){
@@ -1313,12 +1332,15 @@ function missionElementalHit(unit,element,amount,source=null){
   damageMissionUnitBySpell(unit,hit.damage,source,element);
   return hit;
 }
+// « le feu », « la foudre »… et « du feu », « de la foudre »… pour le journal.
+function missionElementThe(element){ return element==="foudre"?"la foudre":"le "+element; }
+function missionElementSome(element){ return element==="foudre"?"de la foudre":"du "+element; }
 function missionProtectionNote(hit){
   const p=Math.round(hit.applied);
   return p?" (protection "+(p>0?p:"−"+Math.abs(p))+" %)":"";
 }
-// Arme enflammée ou Arme de glace : chaque coup qui touche (non bloqué) ajoute des dégâts de feu ou de froid, même s'il ne
-// blesse pas.
+// Arme enflammée, Arme de glace ou Arme électrique : chaque coup qui touche (non bloqué) ajoute des dégâts de feu, de froid
+// ou de foudre, même s'il ne blesse pas.
 function missionWeaponEnchantStrike(attacker,target,result){
   const fx=attacker.weaponEnchant,magic=missionMagic();
   if(!fx||!magic||!result?.ok||!result.hit||result.blocked||!target.alive) return;

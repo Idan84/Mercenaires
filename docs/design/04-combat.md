@@ -170,6 +170,16 @@ Une attaque à distance exige une **ligne de vue**. En V1, les éléments de dé
 
 Tirer sur une cible distante alors qu'un ennemi est adjacent reste autorisé, mais provoque l'[Attaque d'opportunité CAC V1](/design/#doc=formulas/attaque-d-opportunite-cac-v1.md) de cet ennemi. Tirer sur l'ennemi qui vous menace avec une arme autorisée au contact ne déclenche pas cette réaction.
 
+## Discrétion et camouflage (Idan, 2026-10-28)
+
+- **Camouflé** : un personnage qu'aucun ennemi n'a encore vu est camouflé, **invisible pour l'armée ennemie**. Au début du combat, tout le monde l'est.
+- **Repérage** : au **début de chaque tour** (et au début du combat), chaque personnage fait un test de Perception pour chaque ennemi encore camouflé **dans sa ligne de vue** (le Brouillard l'empêche) : **P = 100 / (1 + e^(−Δ/15))**, **Δ = Perception − (Discrétion + couverture) + 40 − 5 × distance**, de 5 à 95 % (`combat.stealth.*` ; Idan : « le mec à 3 cases, on le voit »). Un seul succès suffit : l'ennemi est **repéré par toute l'armée, pour toute la partie** (Idan : on ne redevient jamais camouflé).
+- **Couverture** (Idan : « un bonus de discrétion important ») : **+30** de Discrétion derrière une couverture partielle, **+60** derrière une couverture totale, quand le décor existera.
+- **Invisible** : on ne peut ni l'attaquer, ni le charger, ni le viser avec un sort (les sorts de zone le touchent quand même) ; l'IA ne le choisit pas comme cible ; personne ne lui porte d'attaque d'opportunité ni de contre-charge.
+- **Il agit sans se découvrir** (Idan : on attaque, tire et lance des sorts « tout en étant et restant camouflé ») : son attaque est une **attaque non détectée**, donc une **Frappe dans le dos V1** (la cible ne se défend pas avec sa Perception ; la résistance de son armure est divisée par deux pour Blesser) ; un sort qui vole comme une flèche ignore lui aussi la Perception de la cible.
+- Exemples : un archer gobelin novice (Perception 62) repère un mercenaire de Discrétion 30 à 95 % à 3 cases, 89 % à 8 ; un lancier gobelin novice (Perception 43) à 39 % à 12 cases ; sous Avancée cachée (+52 de Discrétion), l’archer ne le repère plus qu’à 34 % à 6 cases.
+- Plus tard (Idan) : le **brouillard de guerre** (les ennemis camouflés disparaissent de la carte). En attendant, ils restent dessinés, en transparence, avec la mention « Camouflé ».
+
 ## Attaques de zone — Toucher V1
 
 [Précision d'attaque de zone V1](/design/#doc=formulas/precision-d-attaque-de-zone-v1.md) fournit le noyau commun : l'attaque vise une **case**, puis chaque cible potentielle perd **10 points de probabilité de toucher par hex d'écart** à cette case.

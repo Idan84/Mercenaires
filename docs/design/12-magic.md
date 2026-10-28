@@ -250,7 +250,7 @@ L'école du **moral** : elle joue sur le test de Courage du combat (doc 04, Cour
 
 - **Peur** : le test de Courage d'après une attaque, la **Maîtrise et la Volonté du mage** tenant le rôle de l'Intimidation de l'adversaire : tenir = Courage + aura + Volonté / 4 − (Maîtrise + Volonté du mage) / 4, de 5 à 95 %. Raté : En fuite, avec le mouvement de fuite immédiat et la reprise de contrôle habituels. Un ennemi déjà en fuite ou en frénésie ne teste pas ; les alliés de la zone ne sont pas touchés. Un ennemi avec Courage 50 et Volonté 50 tient à 42 % face à un débutant, 35 % face à une recrue, 12 % face à un expert.
 - **Soutien illusoire**, **Courage de masse** : des points de Courage, qui comptent aussi pour reprendre ses esprits en fuite. Sur le lanceur, l'activation en cours compte comme la première.
-- **Avancée cachée** : la Discrétion n'a pas encore de règle en combat (doc 05) ; le bonus est posé et servira dès qu'elle en aura une.
+- **Avancée cachée** : la Discrétion sert au camouflage (doc 04) : sous le sort, un mercenaire est bien plus dur à repérer.
 - **Choc psychique** : un projectile ; le Champ de protection peut le dévier.
 - **Frénésie** (Idan : la cible joue seule) : à chacune de ses activations, joueur ou ennemi, elle prend une arme de mêlée si l'autre set en a une, puis frappe au contact, charge, ou fonce sur l'ennemi le plus proche ; jamais de tir ni de sort. Elle ne fait plus aucun test de Courage, et une cible en fuite s'arrête de fuir. Ses 2 prochaines activations, même si le lanceur se vise lui-même.
 

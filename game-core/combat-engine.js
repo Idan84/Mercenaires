@@ -79,6 +79,15 @@
     };
     // Approximation projectile V1 ; couloir de tir décidé par Idan le 2026-10-08.
     const ELEMENTAL={min:constant("combat.elemental.protection_min",-50),max:constant("combat.elemental.protection_max",75)};
+    const STEALTH={
+      offset:constant("combat.stealth.offset",40),
+      distance:constant("combat.stealth.distance_factor",5),
+      scale:constant("combat.stealth.scale",15),
+      min:constant("combat.stealth.min",5),
+      max:constant("combat.stealth.max",95),
+      partialCover:constant("combat.stealth.cover_partial",30),
+      totalCover:constant("combat.stealth.cover_total",60)
+    };
     const POISON={
       turns:constant("combat.poison.turns",3),
       constitutionShare:constant("combat.poison.resist_constitution_share",0.5),
@@ -430,6 +439,19 @@
       return {...head,wound:true,physicalResistance,resistanceRoll,damage};
     }
 
+    // Discrétion et camouflage (doc 04 ; Idan, 2026-10-28) : un personnage que l'ennemi n'a jamais vu est camouflé
+    // (unit.camouflaged) ; au début de chaque tour, chaque personnage tente de repérer chaque ennemi encore camouflé dans sa
+    // ligne de vue : P = 100 / (1 + e^(−Δ/15)), Δ = Perception − (Discrétion + couverture) + 40 − 5 × distance, de 5 à 95 %.
+    // cover : le bonus de couverture (STEALTH.partialCover, STEALTH.totalCover), quand le décor existera.
+    function detectionChance(observer,target,distance,cover=0){
+      const delta=statWithGear(observer,"Perception")-(statWithGear(target,"Discrétion")+cover)+STEALTH.offset-STEALTH.distance*distance;
+      return clamp(100/(1+Math.exp(-delta/STEALTH.scale)),STEALTH.min,STEALTH.max);
+    }
+    function rollDetection(observer,target,distance,cover=0){
+      const p=detectionChance(observer,target,distance,cover),roll=d100();
+      return {p,roll,spotted:roll<=p};
+    }
+
     // Poison (Idan, 2026-10-27) : au début de chaque activation de l'empoisonné (unit.poisoned = {turns, amount}), un jet
     // de résistance, D100 ≤ part × Constitution + Résistance au poison (équipement compris, de 5 à 95 %), annule l'effet ;
     // sinon il subit les dégâts légers du poison, réduits par sa Résistance au poison. L'écran de combat décompte les tours.
@@ -679,7 +701,9 @@
       const opportunity=Boolean(options.opportunity);
       const encircled=mode==="melee"&&Boolean(options.encircled);
       const fleeingTarget=Boolean(defender.fleeing);
-      const backstab=opportunity||encircled||fleeingTarget||Boolean(options.backstab);
+      // Attaque depuis le camouflage (Idan, 2026-10-28) : une attaque non détectée, donc une Frappe dans le dos V1.
+      const hidden=Boolean(attacker.camouflaged)&&attacker.team!==defender.team;
+      const backstab=opportunity||encircled||fleeingTarget||hidden||Boolean(options.backstab);
       if(opportunity&&(mode!=="melee"||Number(options.chargeDistance)>0)) return {ok:false,reason:"Une attaque d'opportunité est un coup de mêlée simple."};
       // Le coup part : une arme à recharge est désormais déchargée, qu'il touche ou non.
       if(needsLoading(weapon)) attacker.unloaded=[...(attacker.unloaded||[]),item.id];
@@ -697,7 +721,7 @@
         chargePower=Number(options.chargeDistance)*bonus*(Number(quality(item).multiplicateur_qualite)||1);
       }
 
-      const tags={chargePower,opportunity,encircled,fleeingTarget,backstab};
+      const tags={chargePower,opportunity,encircled,fleeingTarget,backstab,hidden};
       // Champ de protection (Télékinésie, doc 12) : avant le Toucher, le projectile a projectileShield.chance % d'être dévié.
       if(mode==="ranged"&&defender.projectileShield){
         const pDeflect=Number(defender.projectileShield.chance)||0,deflectRoll=d100();
@@ -983,6 +1007,9 @@
       axialDistance,
       hexLine,
       POISON,
+      STEALTH,
+      detectionChance,
+      rollDetection,
       spellPhysicalHit,
       fearHold,
       resolveFear,

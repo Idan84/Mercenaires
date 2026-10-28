@@ -19,12 +19,11 @@ Restent pour plus tard :
 
 ## Détection, camouflage & attaques non détectées
 
-[Frappe dans le dos V1](/design/#doc=formulas/frappe-dans-le-dos-v1.md) sait déjà traiter une attaque **non détectée**. Il reste à définir :
+[Frappe dans le dos V1](/design/#doc=formulas/frappe-dans-le-dos-v1.md) sait déjà traiter une attaque **non détectée**. Fait (Idan, 2026-10-28, doc 04 « Discrétion et camouflage ») : camouflage au début du combat, test de repérage (Perception, Discrétion, distance, couverture), repéré pour toute la partie, attaques depuis le camouflage. Il reste à définir :
 
-- tests / seuils de détection ;
-- camouflage, invisibilité et dissimulation ;
-- rôle de Perception / Intelligence ;
-- perte et reprise de détection ;
+- le brouillard de guerre (cacher les ennemis camouflés sur la carte) ;
+- le décor et ses couvertures ;
+- rôle éventuel de l'Intelligence ;
 - compétences et sorts qui créent explicitement une attaque non détectée.
 
 ## Actions rapides — catalogue à compléter

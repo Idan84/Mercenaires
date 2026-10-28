@@ -185,10 +185,12 @@
     // (Crachat de venin : la Maîtrise du lanceur, la portée de la sarbacane).
     function hitChance(caster,target,code,over={}){
       const reach=over.reach??range(caster,code),distance=combat.axialDistance(caster,target),m=over.mastery??mastery(caster,code);
+      // Depuis le camouflage, la cible ne se défend pas avec sa Perception (Frappe dans le dos V1).
+      const defensivePerception=caster.camouflaged&&caster.team!==target.team?0:combat.statWithGear(target,"Perception");
       let delta=combat.effectiveDexterity(caster)
         +0.2*(2*m+combat.statWithGear(caster,"Perception")+combat.effectiveSpeed(caster))
         -combat.effectiveDodge(target)
-        -0.2*(combat.statWithGear(target,"Perception")+combat.effectiveSpeed(target));
+        -0.2*(defensivePerception+combat.effectiveSpeed(target));
       const free=Math.ceil(reach/4);
       if(distance>free&&reach>free) delta-=40*(distance-free)/(reach-free);
       return clamp(10+80/(1+Math.exp(-delta/20)),10,90);
@@ -267,6 +269,8 @@
       if(s.cible==="ennemi"&&(target===caster||target.team===caster.team)) return {ok:false,reason:"Ce sort vise un ennemi."};
       if(s.cible==="allie_ou_ennemi"&&(target===caster||!target.character)) return {ok:false,reason:"Ce sort vise un autre personnage."};
       if(s.cible==="personnage"&&!target.character) return {ok:false,reason:"Ce sort vise un personnage."};
+      // Un ennemi camouflé est invisible : on ne peut pas le viser (les zones le touchent quand même).
+      if(target.character&&target.team&&target.team!==caster.team&&target.camouflaged) return {ok:false,reason:"Cible invisible : elle est camouflée."};
       if(s.cible==="case_vide"&&(cellFree===false||(target.q===caster.q&&target.r===caster.r))) return {ok:false,reason:"Il faut une case vide."};
       if(s.cible==="mort_vivant"&&!isUndead(target)) return {ok:false,reason:s.nom+" ne fonctionne que sur les morts-vivants."};
       if(s.effet==="purge_poison"&&!isPoisoned(target)) return {ok:false,reason:"La cible n'est pas empoisonnée."};
@@ -440,6 +444,7 @@
       if(unit.alive===false) return {ok:false,reason:"Hors combat."};
       if(unit.quickAvailable===false) return {ok:false,reason:"L'action rapide est déjà utilisée."};
       if(!target||target.alive===false||target===unit||target.team===unit.team) return {ok:false,reason:"Le venin vise un ennemi."};
+      if(target.camouflaged) return {ok:false,reason:"Cible invisible : elle est camouflée."};
       const distance=combat.axialDistance(unit,target);
       if(distance<fx.min||distance>fx.max) return {ok:false,reason:"Hors de portée ("+distance+" cases, de "+fx.min+" à "+fx.max+")."};
       if(!lineOfSight) return {ok:false,reason:"Pas de ligne de vue."};

@@ -60,6 +60,34 @@ function pruneMissionTerrain(){
   }
 }
 
+// Discrétion (doc 04 ; Idan, 2026-10-28) : au début du combat, personne n'a vu personne, tout le monde est camouflé.
+function startMissionCamouflage(){
+  for(const u of missionUnits()) u.camouflaged=true;
+  missionLog("Personne ne s’est encore vu : tout le monde est camouflé. Au début de chaque tour, chacun cherche les ennemis qu’il a en vue.","info");
+  resolveMissionDetection();
+}
+// Au début de chaque tour, chaque personnage teste chaque ennemi encore camouflé dans sa ligne de vue ; un seul succès le
+// révèle à toute l'armée ennemie, pour toute la partie. Un camouflé n'est pas ciblable, mais il attaque, tire et lance
+// ses sorts sans se découvrir.
+function resolveMissionDetection(){
+  const m=game.mission,e=m.engine;
+  for(const observer of missionUnits()){
+    if(!observer.alive||observer.offMap) continue;
+    for(const target of missionOpponents(observer)){
+      if(!target.camouflaged||target.offMap||!missionLineOfSight(observer,target)) continue;
+      const r=e.rollDetection(observer,target,e.axialDistance(observer,target));
+      if(!r.spotted) continue;
+      target.camouflaged=false;
+      missionLog(observer.character.name+" repère "+target.character.name+" ("+missionPercent(r.p)+", jet "+r.roll+").","info");
+    }
+  }
+  const hidden=team=>livingMissionUnits(team).filter(u=>u.camouflaged).map(u=>u.character.name);
+  const ours=hidden("player"),theirs=hidden("enemy");
+  if(ours.length||theirs.length) missionLog("Toujours camouflés"+(ours.length?" — vos hommes : "+ours.join(", "):"")+(theirs.length?" — ennemis : "+theirs.join(", "):"")+".","info");
+}
+// Un ennemi camouflé est invisible pour son adversaire.
+function missionHiddenFrom(target,observer){ return Boolean(target?.camouflaged)&&target.team!==observer?.team; }
+
 function shortestMissionPath(start,end,except=null){
   const blocked=occupiedMissionKeys(except);
   const startKey=missionKey(start.q,start.r),endKey=missionKey(end.q,end.r);
@@ -244,6 +272,7 @@ function startMissionFromSelection(){
   $("mission-panel").classList.remove("hidden");
   missionLog("Mission Test : votre équipe joue en premier.","turn");
   missionLog("Ennemis générés : "+enemies.map(u=>u.character.name).join(", ")+".");
+  startMissionCamouflage();
   selectNextMissionPlayer();
 }
 
@@ -298,6 +327,7 @@ function startExpeditionCombat(expeditionId){
   $("mission-panel").classList.remove("hidden");
   missionLog(offer.name+" : le "+offer.campName.toLocaleLowerCase("fr")+" de "+offer.fields.lieu+". Votre équipe a l’initiative.","turn");
   missionLog("Dans le camp : "+enemies.map(u=>u.character.name).join(", ")+".");
+  startMissionCamouflage();
   selectNextMissionPlayer();
 }
 
@@ -639,7 +669,7 @@ function moveMissionUnitAlongPath(unit,path){
   for(const step of path){
     if(!unit.alive||game.mission.over) break;
     const from={q:unit.q,r:unit.r},wasFleeing=unit.fleeing;
-    const reactors=e.opportunityReactors(missionOpponents(unit),unit,step);
+    const reactors=unit.camouflaged?[]:e.opportunityReactors(missionOpponents(unit),unit,step);
     if(reactors.length){
       missionLog(unit.character.name+" quitte la zone de menace de "+reactors.map(x=>x.character.name).join(", ")+".","move");
       resolveOpportunityAttacks(reactors,unit);
@@ -657,7 +687,7 @@ function missionPathOpportunityCount(unit,path){
   const e=game.mission.engine,opponents=missionOpponents(unit);
   let from={q:unit.q,r:unit.r},count=0;
   for(const step of path){
-    count+=e.opportunityReactors(opponents,from,step).length;
+    if(!unit.camouflaged) count+=e.opportunityReactors(opponents,from,step).length;
     from=step;
   }
   return count;
@@ -665,6 +695,7 @@ function missionPathOpportunityCount(unit,path){
 
 // La charge suit une ligne droite : chaque case du trajet doit être libre.
 function missionChargeIfClear(unit,target){
+  if(missionHiddenFrom(target,unit)) return null;
   const charge=game.mission.engine.chargeData(unit,target);
   if(!charge.valid) return null;
   const occupied=occupiedMissionKeys(unit);
@@ -689,7 +720,7 @@ function performMissionAttack(attacker,target,mode,distance,charge=null){
   const handsAt=d=>(dual?e.usableHands(attacker,d):(e.canAttackAtDistance(attacker,d,mode)?[{hand:"main",mode}]:[]))
     .filter(h=>h.mode!=="ranged"||missionLineOfSight(attacker,target));
   if(handsAt(distance).some(h=>h.mode==="ranged")){
-    const reactors=e.rangedOpportunityReactors(missionOpponents(attacker),attacker,target);
+    const reactors=attacker.camouflaged?[]:e.rangedOpportunityReactors(missionOpponents(attacker),attacker,target);
     if(reactors.length){
       const from={q:attacker.q,r:attacker.r},wasFleeing=attacker.fleeing;
       missionLog(attacker.character.name+" tire alors qu’il est menacé par "+reactors.map(x=>x.character.name).join(", ")+".","move");
@@ -1564,7 +1595,7 @@ function renderMissionSpellBar(u){
 }
 
 function nearestMissionTarget(unit){
-  const targets=livingMissionUnits(unit.team==="player"?"enemy":"player");
+  const targets=livingMissionUnits(unit.team==="player"?"enemy":"player").filter(t=>!t.camouflaged);
   return [...targets].sort((a,b)=>{
     const da=game.mission.engine.axialDistance(unit,a),db=game.mission.engine.axialDistance(unit,b);
     return da-db||a.hp-b.hp;
@@ -1644,7 +1675,7 @@ function enemyTryCharge(unit,target){
 function performMissionCharge(unit,target,charge){
   const m=game.mission,e=m.engine;
   // À deux armes, chaque arme de contre-charge riposte à son propre moment (décision Idan, 2026-10-08).
-  const reactions=e.counterchargeTriggers(target,unit,charge);
+  const reactions=unit.camouflaged?[]:e.counterchargeTriggers(target,unit,charge);
   const stillCharging=()=>unit.alive&&!unit.fleeing&&!m.over;
   // Une charge arrêtée avant son attaque reste une charge tentée (Courage, doc 08).
   const broken=()=>{ MercenairesProgression.recordChargeAttempt(unit); };
@@ -1782,6 +1813,7 @@ function runMissionEnemyTurn(){
   if(m.over){ renderMission(); return; }
   m.turn+=1;
   pruneMissionTerrain();
+  resolveMissionDetection();
   for(const unit of m.players) unit.acted=false;
   missionLog("Tour "+m.turn+" — votre équipe.","turn");
   selectNextMissionPlayer();
@@ -1802,6 +1834,7 @@ function missionHeldModes(u){
 // Un tir demande la ligne de vue (Brouillard).
 function missionUsableHands(u,target){
   const e=game.mission.engine;
+  if(missionHiddenFrom(target,u)) return [];
   return e.usableHands(u,e.axialDistance(u,target)).filter(h=>h.mode!=="ranged"||missionLineOfSight(u,target));
 }
 function missionCanAttack(u,target,mode){
@@ -1875,7 +1908,7 @@ function renderMissionRoster(units){
       ${renderAvatar(u.character,{variant:"compact",kind:"portrait"})}
       <div class="mission-roster-copy">
         <strong>${esc(u.character.name)}</strong>
-        <span>${u.offMap?"A quitté le combat":Math.max(0,u.hp)+"/"+u.pvMax+" PV"+(u.hp<0?" ("+u.hp+")":"")+(u.alive&&u.fleeing?" · En fuite":"")+(u.alive&&!game.mission.engine.isLoaded(u,game.mission.engine.activeWeaponItem(u))?" · Arme déchargée":"")}</span>
+        <span>${u.offMap?"A quitté le combat":Math.max(0,u.hp)+"/"+u.pvMax+" PV"+(u.hp<0?" ("+u.hp+")":"")+(u.alive&&u.fleeing?" · En fuite":"")+(u.alive&&u.camouflaged?" · Camouflé":"")+(u.alive&&!game.mission.engine.isLoaded(u,game.mission.engine.activeWeaponItem(u))?" · Arme déchargée":"")}</span>
         <small>Init ${Math.round(game.mission.engine.initiative(u))} · Mvt ${game.mission.engine.movementBase(u)}${missionRosterMagic(u)}</small>
       </div>
     </div>
@@ -1922,8 +1955,9 @@ function renderMission(){
     const encircled=unit.alive&&missionEncircled(unit);
     if(encircled) classes.push("encircled");
     if(unit.alive&&unit.fleeing) classes.push("fleeing");
+    if(unit.alive&&unit.camouflaged) classes.push("camouflaged");
     const weapon=e.activeWeaponItem(unit);
-    return `<div class="${classes.join(" ")}" style="left:${p.x-24}px;top:${p.y-24}px" title="${esc(unit.character.name)} — ${Math.max(0,unit.hp)}/${unit.pvMax} PV — ${esc(weapon?.name||"Sans arme")}">
+    return `<div class="${classes.join(" ")}" style="left:${p.x-24}px;top:${p.y-24}px" title="${esc(unit.character.name)} — ${Math.max(0,unit.hp)}/${unit.pvMax} PV — ${esc(weapon?.name||"Sans arme")}${unit.alive&&unit.camouflaged?" — camouflé":""}">
       ${renderAvatar(unit.character,{variant:"battle",kind:"portrait"})}
       <span class="token-hp"><i style="width:${pct}%"></i></span>
       <strong>${esc(unit.character.name.split(" ")[0])}</strong>

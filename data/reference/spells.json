@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "spells",
-  "description": "Sorts (doc 12 « Décisions du 2026-10-25 », écoles de la Vie, du Feu, de l'Eau, de la Transmutation et de la Foudre ; Idan). Un sort appartient à une école ; il est appris au niveau 1 et monte quand on s'en sert (1 à 100). Maîtrise = École (équipement compris) + Niveau du sort × magic.mastery.spell_share. Effet = ceil(effet_base × effet_nb_des D effet_de × (effet_puissance_facteur × Puissance magique / 100) × (effet_maitrise_base + Maîtrise / 100)). Portée = portee_base + floor(Maîtrise / portee_pas_maitrise) cases ; durée et rayon de zone de même. Mana = ceil(mana_base × (1 − Maîtrise / mana_diviseur_maitrise)). Réussite : constantes magic.cast.* ; Δ = (Maîtrise + Intelligence) / 2 − difficulte (palier : Novice 30, Adepte 50, Expert 70). Coup critique : dés au maximum (sauf critique = false). Échec critique : le lanceur subit l'effet minimum de son sort (dés à 1). Actions : rapide, principale (l'action d'attaque du tour). Cibles : allie_ou_soi, ennemi, soi, case (centre d'une zone, ou case voisine d'où part une ligne), case_vide, mort_vivant. Zones en ligne (zone_forme) : « ligne » part de la case visée, voisine du lanceur, et file droit devant (Tsunami) ; « mur » est centrée sur la case visée, en travers de la direction du lanceur (Brouillard) ; longueur = zone_longueur_base + floor(Maîtrise / zone_longueur_pas_maitrise), plafonnée par zone_longueur_max. Malus de caractéristiques (Gel) : bonus_base + floor(Maîtrise / bonus_pas_maitrise) points retirés aux caracteristiques de la cible, × (1 − sa protection contre l'élément / 100). Bonus de caractéristiques (Transmutation) : bonus_base + floor(Maîtrise / bonus_pas_maitrise), en pourcentage de la valeur de base (bonus_unite « pourcentage ») ou en points. Crachat de venin : la cible peut, par une action rapide, cracher du venin à tir_portee_min à tir_portee_max cases (toucher comme un trait, avec la Maîtrise du lanceur ; dégâts de poison), et empoisonne si elle blesse (combat.poison.*). Rebonds (Boule d'éclairs) : après la cible, l'effet saute sur le personnage le plus proche pas encore touché (alliés et lanceur compris), à rebond_distance cases au plus du précédent, rebonds fois ; le k-ième rebond fait × (1 − k × rebond_perte). Portée, rayon de zone, durée et bonus : base + floor(Maîtrise / pas), plafonnés par portee_max, zone_rayon_max et duree_max. Éléments (feu, froid, foudre) : dégâts × (1 − protection / 100), protection = résistance + armure + bonus, bornée par combat.elemental.*. Icônes (Idan, 2026-10-25) : icone = parchemin du sort, cadre = cadre commun de l'école, chemins sous prototype-web/assets/ (scripts/build-spells.sh).",
+  "description": "Sorts (doc 12 « Décisions du 2026-10-25 », écoles de la Vie, du Feu, de l'Eau, de la Transmutation, de la Foudre et de la Télékinésie ; Idan). Un sort appartient à une école ; il est appris au niveau 1 et monte quand on s'en sert (1 à 100). Maîtrise = École (équipement compris) + Niveau du sort × magic.mastery.spell_share. Effet = ceil(effet_base × effet_nb_des D effet_de × (effet_puissance_facteur × Puissance magique / 100) × (effet_maitrise_base + Maîtrise / 100)). Portée = portee_base + floor(Maîtrise / portee_pas_maitrise) cases ; durée et rayon de zone de même. Mana = ceil(mana_base × (1 − Maîtrise / mana_diviseur_maitrise)). Réussite : constantes magic.cast.* ; Δ = (Maîtrise + Intelligence) / 2 − difficulte (palier : Novice 30, Adepte 50, Expert 70). Coup critique : dés au maximum (sauf critique = false). Échec critique : le lanceur subit l'effet minimum de son sort (dés à 1). Actions : rapide, principale (l'action d'attaque du tour). Cibles : allie_ou_soi, ennemi, soi, case (centre d'une zone, ou case voisine d'où part une ligne), case_vide, mort_vivant. Zones en ligne (zone_forme) : « ligne » part de la case visée, voisine du lanceur, et file droit devant (Tsunami) ; « mur » est centrée sur la case visée, en travers de la direction du lanceur (Brouillard) ; longueur = zone_longueur_base + floor(Maîtrise / zone_longueur_pas_maitrise), plafonnée par zone_longueur_max. Malus de caractéristiques (Gel) : bonus_base + floor(Maîtrise / bonus_pas_maitrise) points retirés aux caracteristiques de la cible, × (1 − sa protection contre l'élément / 100). Bonus de caractéristiques (Transmutation) : bonus_base + floor(Maîtrise / bonus_pas_maitrise), en pourcentage de la valeur de base (bonus_unite « pourcentage ») ou en points. Crachat de venin : la cible peut, par une action rapide, cracher du venin à tir_portee_min à tir_portee_max cases (toucher comme un trait, avec la Maîtrise du lanceur ; dégâts de poison), et empoisonne si elle blesse (combat.poison.*). Rebonds (Boule d'éclairs) : après la cible, l'effet saute sur le personnage le plus proche pas encore touché (alliés et lanceur compris), à rebond_distance cases au plus du précédent, rebonds fois ; le k-ième rebond fait × (1 − k × rebond_perte). Dégâts physiques (degats_type, Télékinésie : contondant) : ils passent par l'armure comme un coup d'arme, étape Blesser avec la Puissance magique du lanceur à la place de la Force, 0,2 × Maîtrise à la place des compétences d'arme et puissance (la puissance contondante du sort) face à la résistance de l'armure, puis la Résistance physique. Déplacement forcé (deplacement : attire, repousse) : deplacement_base + floor(Maîtrise / deplacement_pas_maitrise) cases, sans attaque d'opportunité ; un obstacle arrête la cible et lui inflige un choc (choc_nb_des D choc_de, contondant). portee_min : distance minimale (Lancer de pierre, comme la Fronde). Cible allie_ou_ennemi : un autre personnage que le lanceur. Portée, rayon de zone, durée et bonus : base + floor(Maîtrise / pas), plafonnés par portee_max, zone_rayon_max et duree_max. Éléments (feu, froid, foudre) : dégâts × (1 − protection / 100), protection = résistance + armure + bonus, bornée par combat.elemental.*. Icônes (Idan, 2026-10-25) : icone = parchemin du sort, cadre = cadre commun de l'école, chemins sous prototype-web/assets/ (scripts/build-spells.sh).",
   "columns": [
     {
       "source": "Nom",
@@ -196,6 +196,38 @@
       "key": "rebond_perte"
     },
     {
+      "source": "Dégâts physiques — type",
+      "key": "degats_type"
+    },
+    {
+      "source": "Dégâts physiques — puissance",
+      "key": "puissance"
+    },
+    {
+      "source": "Déplacement forcé (attire, repousse)",
+      "key": "deplacement"
+    },
+    {
+      "source": "Déplacement — cases de base",
+      "key": "deplacement_base"
+    },
+    {
+      "source": "Déplacement — pas de maîtrise",
+      "key": "deplacement_pas_maitrise"
+    },
+    {
+      "source": "Choc — nombre de dés",
+      "key": "choc_nb_des"
+    },
+    {
+      "source": "Choc — dé",
+      "key": "choc_de"
+    },
+    {
+      "source": "Portée — minimum",
+      "key": "portee_min"
+    },
+    {
       "source": "Icône",
       "key": "icone"
     },
@@ -208,7 +240,7 @@
       "key": "description"
     }
   ],
-  "row_count": 31,
+  "row_count": 37,
   "rows": [
     {
       "nom": "Soin rapide",
@@ -972,6 +1004,155 @@
       "bonus_unite": "pourcentage",
       "caracteristiques": "Vitesse",
       "description": "Le lanceur, et lui seul, gagne un pourcentage de sa Vitesse de base pendant 2 tours : cette activation et la suivante. Se cumule avec Vitesse du guépard. Action rapide."
+    },
+    {
+      "nom": "Attraction",
+      "code": "attraction",
+      "ecole": "Télékinésie",
+      "palier": "Adepte",
+      "action": "principale",
+      "cible": "ennemi",
+      "ligne_de_vue": true,
+      "effet": "degats",
+      "effet_base": 10,
+      "effet_nb_des": 1,
+      "effet_de": 6,
+      "effet_puissance_facteur": 2,
+      "effet_maitrise_base": 0.5,
+      "portee_base": 12,
+      "portee_pas_maitrise": 10,
+      "critique": true,
+      "mana_base": 15,
+      "mana_diviseur_maitrise": 300,
+      "difficulte": 50,
+      "degats_type": "contondant",
+      "puissance": 25,
+      "deplacement": "attire",
+      "deplacement_base": 2,
+      "deplacement_pas_maitrise": 50,
+      "choc_nb_des": 1,
+      "choc_de": 4,
+      "description": "Saisit un ennemi de loin et le tire vers le lanceur de quelques cases : dégâts contondants (l'armure compte), puis un choc s'il heurte quelqu'un ou quelque chose en chemin. Pas d'attaque d'opportunité. Action principale."
+    },
+    {
+      "nom": "Projection",
+      "code": "projection",
+      "ecole": "Télékinésie",
+      "palier": "Novice",
+      "action": "principale",
+      "cible": "ennemi",
+      "ligne_de_vue": true,
+      "effet": "degats",
+      "effet_base": 10,
+      "effet_nb_des": 1,
+      "effet_de": 8,
+      "effet_puissance_facteur": 2,
+      "effet_maitrise_base": 0.5,
+      "portee_base": 6,
+      "portee_pas_maitrise": 25,
+      "portee_max": 12,
+      "critique": true,
+      "mana_base": 12,
+      "mana_diviseur_maitrise": 300,
+      "difficulte": 30,
+      "degats_type": "contondant",
+      "puissance": 35,
+      "deplacement": "repousse",
+      "deplacement_base": 2,
+      "deplacement_pas_maitrise": 50,
+      "choc_nb_des": 1,
+      "choc_de": 4,
+      "description": "Repousse un ennemi de quelques cases dans l'axe du lanceur : dégâts contondants (l'armure compte), puis un choc s'il heurte quelqu'un, un obstacle ou le bord du terrain. Pas d'attaque d'opportunité. Action principale."
+    },
+    {
+      "nom": "Déplacement",
+      "code": "telekinetic_move",
+      "ecole": "Télékinésie",
+      "palier": "Novice",
+      "action": "rapide",
+      "cible": "allie_ou_ennemi",
+      "ligne_de_vue": true,
+      "effet": "deplacement_force",
+      "effet_nb_des": 0,
+      "portee_base": 6,
+      "portee_pas_maitrise": 25,
+      "portee_max": 12,
+      "critique": false,
+      "mana_base": 8,
+      "mana_diviseur_maitrise": 300,
+      "difficulte": 30,
+      "deplacement_base": 1,
+      "description": "Déplace un allié ou un ennemi d'une case, sur une case libre voisine choisie par le lanceur. Pas d'attaque d'opportunité. Action rapide."
+    },
+    {
+      "nom": "Entrechoc",
+      "code": "clash",
+      "ecole": "Télékinésie",
+      "palier": "Adepte",
+      "action": "principale",
+      "cible": "ennemi",
+      "ligne_de_vue": true,
+      "effet": "degats_paire",
+      "effet_base": 10,
+      "effet_nb_des": 2,
+      "effet_de": 8,
+      "effet_puissance_facteur": 2,
+      "effet_maitrise_base": 0.5,
+      "portee_base": 6,
+      "portee_pas_maitrise": 25,
+      "portee_max": 12,
+      "critique": true,
+      "mana_base": 20,
+      "mana_diviseur_maitrise": 300,
+      "difficulte": 50,
+      "degats_type": "contondant",
+      "puissance": 55,
+      "description": "Projette l'un contre l'autre deux ennemis côte à côte : tous les deux subissent de gros dégâts contondants (l'armure compte). Action principale."
+    },
+    {
+      "nom": "Champ de protection",
+      "code": "force_field",
+      "ecole": "Télékinésie",
+      "palier": "Adepte",
+      "action": "principale",
+      "cible": "allie_ou_soi",
+      "ligne_de_vue": true,
+      "effet": "protection_projectiles",
+      "effet_nb_des": 0,
+      "portee_base": 3,
+      "portee_pas_maitrise": 25,
+      "duree_base": 4,
+      "critique": false,
+      "mana_base": 15,
+      "mana_diviseur_maitrise": 300,
+      "difficulte": 50,
+      "bonus_base": 50,
+      "description": "Pendant 4 tours, chaque projectile tiré sur le lanceur ou un allié (flèches, carreaux, pierres, balles, et les sorts qui volent comme une flèche) a 50 % de chances d'être dévié. Action principale."
+    },
+    {
+      "nom": "Lancer de pierre",
+      "code": "stone_throw",
+      "ecole": "Télékinésie",
+      "palier": "Novice",
+      "action": "rapide",
+      "cible": "ennemi",
+      "ligne_de_vue": true,
+      "effet": "degats",
+      "effet_base": 10,
+      "effet_nb_des": 1,
+      "effet_de": 6,
+      "effet_puissance_facteur": 2,
+      "effet_maitrise_base": 0.5,
+      "portee_base": 14,
+      "portee_min": 2,
+      "critique": true,
+      "mana_base": 6,
+      "mana_diviseur_maitrise": 300,
+      "difficulte": 30,
+      "degats_type": "contondant",
+      "puissance": 25,
+      "toucher": "distance",
+      "description": "Lance une pierre comme une fronde (2 à 14 cases) : jet de toucher contre l'Esquive et la distance, puis dégâts contondants (l'armure compte). Action rapide."
     }
   ]
 }

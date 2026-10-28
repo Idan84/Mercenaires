@@ -120,7 +120,7 @@ Même modèle que la Vie (effet, mana, difficulté par palier, CC aux dés maxim
 
 ### École de l'Eau (7 sorts, Idan, 2026-10-27)
 
-**Objectif V1 (Idan, 2026-10-27) : 10 sorts mono-école par école.** La Vie, le Feu, la Transmutation et la Foudre en ont 6, l'Eau 7 ; les autres viendront.
+**Objectif V1 (Idan, 2026-10-27) : 10 sorts mono-école par école.** La Vie, le Feu, la Transmutation, la Foudre et la Télékinésie en ont 6, l'Eau 7 ; les autres viendront.
 
 Même modèle que la Vie et le Feu (effet, mana, difficulté par palier, CC aux dés maximum, EC : le lanceur subit le minimum de son sort). L'élément de l'école est le **froid** : dégâts × (1 − protection contre le froid / 100), avec la valeur « glaçant » de l'armure (même règle que le feu). Données : `spells.json`.
 
@@ -208,6 +208,33 @@ Même modèle que les autres écoles (effet, mana, difficulté par palier, CC au
 | Foudre | 39 · portée 7 · 14 mana · 31 % | 51 · portée 8 · 13 · 59 % | 114 · portée 11 · 9 · 93 % |
 | Célérité | +26 %, 2 tours · 57 % | +31 % · 81 % | +46 % · 94 % |
 
+### École de la Télékinésie (6 sorts, Idan, 2026-10-28)
+
+Une école de **contrôle** : elle déplace les gens sur la carte. Même modèle que les autres écoles pour le mana, la réussite et les critiques. Écoles opposées : Illusion et Feu. Données : `spells.json`.
+
+**Dégâts contondants, qui passent par l'armure** (Idan : « ça passe par l'armure… c'est du contondant ») : l'étape **Blesser** d'un coup d'arme (doc 04), où la **Puissance magique** du lanceur tient le rôle de la Force et **0,2 × Maîtrise** celui des compétences d'arme, face à la **résistance contondante de l'armure** et à l'**Endurance** de la cible : Δ = Puissance magique + 0,2 × Maîtrise + puissance du sort − armure (contondant) − Endurance, P = 10 + 80 / (1 + e^(−Δ/20)), de 10 à 90 %. Si le coup blesse : l'effet du sort, réduit par la **Résistance physique** (avec sa variation D3, comme une arme). Les dés ont pris un cran (Idan : « augmente un peu les dégâts si besoin ») pour compenser l'armure. Le contondant fait progresser la Résistance physique de la cible.
+
+| Sort | Palier | Action | Effet | Portée | Mana (base) |
+|---|---|---|---|---|---|
+| Attraction | Adepte (50) | principale | **1D6** contondant (puissance 25), puis la cible est **tirée de 2 + M/50 cases** vers le lanceur, jusqu'à son contact | **12 + M/10** (grande portée) | 15 |
+| Projection | Novice (30) | principale | **1D8** contondant (puissance 35), puis la cible est **repoussée de 2 + M/50 cases** dans l'axe lanceur → cible | 6 + M/25, au plus 12 | 12 |
+| Déplacement | Novice (30) | rapide | un allié ou un ennemi est **déplacé d'une case**, sur une case libre voisine choisie (deux clics : la cible, puis la case) | 6 + M/25, au plus 12 | 8 |
+| Entrechoc | Adepte (50) | principale | **deux ennemis côte à côte** (deux clics) : **2D8** contondant (puissance 55) **à chacun**, chacun avec son armure | 6 + M/25, au plus 12 | 20 |
+| Champ de protection | Adepte (50) | principale | sur soi ou un allié, pendant **4 tours** : chaque **projectile** a **50 %** de chances d'être **dévié** | 3 + M/25 | 15 |
+| Lancer de pierre | Novice (30) | rapide | un tir de **fronde** : jet de toucher comme le Trait de feu, puis **1D6** contondant (puissance 25, la Fronde) | **2 à 14** (la Fronde) | 6 |
+
+- **Déplacement forcé** (Attraction, Projection, Déplacement) : jamais d'attaque d'opportunité. La cible suit les cases jusqu'au premier **obstacle** (un personnage, une flaque de magma, le bord du terrain) ; l'obstacle l'arrête et lui inflige un **choc** (Idan : « dégâts en plus ») : **1D4** contondant, qui passe lui aussi par l'armure. L'Attraction s'arrête au contact du lanceur, sans choc. Si la cible meurt du coup, elle ne bouge pas.
+- **Champ de protection** (Idan : il dévie aussi les sorts) : avant le jet de toucher, 50 % de dévier les tirs d'armes (arcs, frondes, armes à feu, contre-charges au tir) et les sorts qui volent comme une flèche (Trait de feu, Flèche de glace, Éclair, Lancer de pierre, crachat de venin). Il dure 4 tours : jusqu'au début du 4e tour suivant le lancer. Il ne gêne ni la Foudre, ni les zones, ni la Décharge.
+- **Lancer de pierre** en action rapide : il se combine avec un sort principal dans le même tour.
+
+| | Débutant | Recrue moyenne | Expert |
+|---|---|---|---|
+| Attraction | 30 · tirée de 2 cases · portée 15 · 31 % | 40 · 3 cases · portée 17 · 59 % | 89 · 4 cases · portée 25 · 93 % |
+| Projection | 39 · repoussée de 2 cases · 57 % | 51 · 3 cases · 81 % | 114 · 4 cases · 94 % |
+| Entrechoc, à chacun | 78 · 18 mana · 31 % | 102 · 17 · 59 % | 229 · 12 · 93 % |
+| Lancer de pierre | 30 · 6 mana · 57 % | 40 · 5 · 81 % | 89 · 4 · 94 % |
+| Chance de blesser, Projection (sans armure / cuir / plates) | 82 / 78 / 56 % | 84 / 80 / 61 % | 89 / 88 / 82 % |
+
 ### Mana
 
 - Le **Mana actuel** se dépense en combat et se **recharge chaque jour au camp** : **Réserve de mana × (10 + Volonté / 2) %** par jour (Volonté 52 : 36 % par jour, plein en 3 jours). Rien pendant les trajets.
@@ -269,7 +296,7 @@ Plus tard : une **école de magie** à construire au camp et des **manuels** à 
 ### Mise en place
 
 1. **Étape 1** — ces décisions, `spells.json`, les règles des sorts (`game-core/magic.js`) et leurs tests (`tests/magic.test.js`) : Soin rapide, puis les six sorts de l'école de la Vie.
-2. **Étape 2** — les sorts dans l'écran de combat actuel, **pour tester** (Vie, puis Feu, Eau, Transmutation et Foudre ; le bouton de test s'appelle désormais « Sorts (test) » et donne tous les sorts écrits) (Idan, 2026-10-25 ; l'interface de combat sera refaite) : une barre de sorts pour le mercenaire actif (action, mana, réussite) ; les cases ciblables en vert (alliés et lanceur, ou toutes les cases à portée pour Soin de masse) ; le journal ; la Régénération au début des activations ; le mana affiché dans la liste des équipes ; un bouton **« Sorts de Vie (test) »** : toute l'escouade connaît les six sorts (niveau 1) pour ce combat, sans toucher au grimoire, le mana étant bien dépensé ; une IA simple, aussi en combat automatique : Soin profond sur l'allié le plus blessé sous 35 % de ses PV à la place de l'attaque, Soin rapide sous 60 %.
+2. **Étape 2** — les sorts dans l'écran de combat actuel, **pour tester** (Vie, puis Feu, Eau, Transmutation, Foudre et Télékinésie ; le bouton de test s'appelle désormais « Sorts (test) » et donne tous les sorts écrits) (Idan, 2026-10-25 ; l'interface de combat sera refaite) : une barre de sorts pour le mercenaire actif (action, mana, réussite) ; les cases ciblables en vert (alliés et lanceur, ou toutes les cases à portée pour Soin de masse) ; le journal ; la Régénération au début des activations ; le mana affiché dans la liste des équipes ; un bouton **« Sorts de Vie (test) »** : toute l'escouade connaît les six sorts (niveau 1) pour ce combat, sans toucher au grimoire, le mana étant bien dépensé ; une IA simple, aussi en combat automatique : Soin profond sur l'allié le plus blessé sous 35 % de ses PV à la place de l'attaque, Soin rapide sous 60 %.
 3. Étape 3 — **recharge du mana au camp** (faite avec l'étape 2, pour pouvoir tester d'un combat à l'autre), **XP du sort et de l'école, régression des écoles opposées**, XP de la Puissance magique, de la Réserve de mana et de la Chance (faite, voir « Écoles : progression et régression »).
 4. Étape 4 — **sorts connus à la création** et **compensations des nains et des ogres** (faite, voir « Sorts connus à la création »).
 
@@ -346,9 +373,7 @@ Remplacé par l'**École de la Foudre** d'Idan (2026-10-27, ci-dessus) : Déchar
 
 ### Télékinésie
 
-- **Éjection** — déplace une cible et lui inflige des dégâts.
-- **Main invisible** — déplacement sans dégâts.
-- **Lancer d'arme** — projette l'arme de CAC équipée puis la ramène au lanceur ; évite de créer une catégorie artificielle uniquement pour la hache de lancer.
+Remplacé par l'**École de la Télékinésie** d'Idan (2026-10-28, ci-dessus) : Attraction, Projection, Déplacement, Entrechoc, Champ de protection, Lancer de pierre. L'idée du **Lancer d'arme** (projeter l'arme de CAC équipée puis la ramener) reste en réserve.
 
 ### Transmutation
 

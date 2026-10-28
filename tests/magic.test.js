@@ -25,12 +25,13 @@ const magic=createMagicRules({reference,combat,random});
 function mage({pm,vie,level=1,int,chance=54,mana=53,items=[],slots={}}){
   return {
     name:"Mage",stats:{"Puissance magique":pm,Intelligence:int,Chance:chance,"Réserve de mana":mana,Constitution:50,Endurance:50,Volonté:50},
-    skills:{magic:{Vie:vie,Feu:vie,Eau:vie,Transmutation:vie,Foudre:vie,Nécromancie:20,Illusion:20}},mana,
+    skills:{magic:{Vie:vie,Feu:vie,Eau:vie,Transmutation:vie,Foudre:vie,Télékinésie:vie,Nécromancie:20,Illusion:20}},mana,
     spells:["quick_heal","deep_heal","regeneration","mass_heal","restitution","purge"].map(code=>({code,school:"Vie",mastery:level}))
       .concat(["fire_bolt","fireball","fire_ring","flaming_weapon","fire_armor","magma"].map(code=>({code,school:"Feu",mastery:level})))
       .concat(["fog","healing_water","ice_arrow","tsunami","frost_armor","freeze","ice_weapon"].map(code=>({code,school:"Eau",mastery:level})))
       .concat(["sixth_sense","titan_strength","cheetah_speed","stone_skin","venom_spit","cauterize"].map(code=>({code,school:"Transmutation",mastery:level})))
-      .concat(["shock","lightning_bolt","shock_weapon","chain_lightning","thunder","celerity"].map(code=>({code,school:"Foudre",mastery:level}))),
+      .concat(["shock","lightning_bolt","shock_weapon","chain_lightning","thunder","celerity"].map(code=>({code,school:"Foudre",mastery:level})))
+      .concat(["attraction","projection","telekinetic_move","clash","force_field","stone_throw"].map(code=>({code,school:"Télékinésie",mastery:level}))),
     items,equipment:{slots}
   };
 }
@@ -473,4 +474,82 @@ queue=[0,0.99,0.5,0.5];
 out=magic.cast(caster,c0,"chain_lightning",{units:[caster,c0,c1,c2,c3,c4]});
 assert.deepEqual([out.success,out.element,out.dice,out.chain.length],[true,"foudre",8,5]);
 
-console.log("Magie : écoles de la Vie, du Feu, de l'Eau, de la Transmutation et de la Foudre OK");
+// École de la Télékinésie (Idan, 2026-10-28) : dégâts contondants qui passent par l'armure.
+assert.deepEqual(magic.schoolSpells("Télékinésie").map(x=>[x.code,x.palier,x.difficulte,x.action,x.cible]),[
+  ["attraction","Adepte",50,"principale","ennemi"],["projection","Novice",30,"principale","ennemi"],
+  ["telekinetic_move","Novice",30,"rapide","allie_ou_ennemi"],["clash","Adepte",50,"principale","ennemi"],
+  ["force_field","Adepte",50,"principale","allie_ou_soi"],["stone_throw","Novice",30,"rapide","ennemi"]]);
+assert.deepEqual([magic.range(beginner,"attraction"),magic.range(expert,"attraction")],[15,25],"grande portée : 12 + M/10");
+assert.deepEqual([magic.range(beginner,"projection"),magic.range(expert,"projection"),magic.range(archmage,"projection")],[7,11,12]);
+assert.deepEqual([magic.forceSteps(beginner,"projection"),magic.forceSteps(expert,"projection")],[2,4],"2 + M/50 cases");
+assert.deepEqual([magic.dice("attraction"),magic.dice("projection"),magic.dice("clash"),magic.dice("stone_throw")],
+  [{count:1,sides:6},{count:1,sides:8},{count:2,sides:8},{count:1,sides:6}],"un cran de dé de plus, l'armure comptant (Idan)");
+assert.deepEqual([magic.duration(beginner,"force_field"),magic.duration(archmage,"force_field"),magic.bonus(beginner,"force_field")],[4,4,50]);
+// Lancer de pierre : la Fronde, de 2 à 14 cases.
+assert.match(magic.canCast(caster,foe,"stone_throw").reason,/Trop près/);
+assert.equal(magic.canCast(caster,enemy,"stone_throw").ok,true);
+assert.match(magic.canCast(caster,{...enemy,q:15},"stone_throw").reason,/hors de portée/);
+// Déplacement : un autre personnage, allié ou ennemi, puis une case libre voisine de lui.
+assert.match(magic.canCast(caster,caster,"telekinetic_move").reason,/autre personnage/);
+assert.equal(magic.canCast(caster,ally,"telekinetic_move").ok,true);
+queue=[0];
+assert.match(magic.cast(caster,ally,"telekinetic_move",{destination:{q:5,r:0}}).reason,/case libre voisine/);
+assert.match(magic.cast(caster,ally,"telekinetic_move",{destination:{q:4,r:0},destinationFree:false}).reason,/case libre voisine/);
+queue=[0];
+out=magic.cast(caster,ally,"telekinetic_move",{destination:{q:4,r:0}});
+assert.deepEqual([out.success,out.move],[true,{kind:"case",destination:{q:4,r:0}}]);
+// Projection : dégâts contondants (puissance 35), 2 cases droit dans l'axe, et un choc tiré d'avance (1D4).
+queue=[0,0.99,0.5,0.5];
+out=magic.cast(caster,enemy,"projection");
+assert.deepEqual(out.physical,{type:"contondant",power:35,mastery:31.5});
+assert.deepEqual([out.dice,out.move.kind,out.move.steps,out.move.cells],[5,"repousse",2,[{q:6,r:0},{q:7,r:0}]]);
+assert.equal(out.move.chocAmount,Math.ceil(10*3*magic.effectFactor(caster,"projection")-1e-9));
+assert.deepEqual(magic.pushCells({q:0,r:0},{q:0,r:2},3),[{q:0,r:3},{q:0,r:4},{q:0,r:5}],"dans l'axe, quelle que soit la direction");
+// Attraction : vers le lanceur, jusqu'à la case voisine de lui.
+assert.deepEqual(magic.pullCells({q:0,r:0},{q:5,r:0},2),[{q:4,r:0},{q:3,r:0}]);
+assert.deepEqual(magic.pullCells({q:0,r:0},{q:3,r:0},9),[{q:2,r:0},{q:1,r:0}],"jamais sur la case du lanceur");
+assert.deepEqual(magic.pullCells({q:0,r:0},{q:1,r:0},3),[],"déjà au contact");
+// Entrechoc : deux ennemis côte à côte, à portée.
+const pairA=at(3,0),pairB=at(4,0),pairFar=at(5,0);
+assert.equal(magic.canCastPair(caster,pairA,pairB,"clash").ok,true);
+assert.match(magic.canCastPair(caster,pairA,pairFar,"clash").reason,/côte à côte/);
+assert.match(magic.canCastPair(caster,pairA,ally,"clash").reason,/second ennemi/);
+assert.match(magic.canCastPair(caster,pairA,pairB,"clash",{secondLineOfSight:false}).reason,/ligne de vue/);
+queue=[0,0.99,0.5,0.5];
+out=magic.cast(caster,pairA,"clash",{second:pairB});
+assert.deepEqual([out.success,out.second===pairB,out.physical.power],[true,true,55]);
+assert.match(magic.cast(caster,pairA,"clash",{second:pairFar}).reason,/côte à côte/);
+// Champ de protection : 50 % de dévier les sorts qui volent comme une flèche (et le venin).
+queue=[0];
+out=magic.cast(caster,ally,"force_field");
+assert.deepEqual(out.effect,{code:"force_field",chance:50,turns:4});
+const shielded=unit(mage({pm:50,vie:1,int:50}),{q:5,r:0,team:"enemy",projectileShield:{chance:50}});
+queue=[0,0.99,0.5,0.4];
+out=magic.cast(caster,shielded,"lightning_bolt",{units:[caster,shielded]});
+assert.deepEqual([out.success,out.deflected,out.deflectRoll,out.hit],[true,true,41,false]);
+queue=[0,0.99,0.5,0.6,0];
+out=magic.cast(caster,shielded,"lightning_bolt",{units:[caster,shielded]});
+assert.deepEqual([out.deflected,out.hit],[undefined,true],"jet 61 > 50 : le projectile passe");
+queue=[0.3];
+assert.equal(magic.spit({...spitter,quickAvailable:true},shielded).deflected,true,"le venin aussi");
+// Moteur : l'étape Blesser d'un sort contondant (Puissance magique + 0,2 × Maîtrise + puissance − armure − Endurance).
+const blunt=unit(mage({pm:50,vie:1,int:50}));
+const plated=armoredUnit("Armure de plates",4,{});
+plated.character.stats={Endurance:50};
+const stripped=armoredUnit(null,4,{});
+stripped.character.stats={Endurance:50};
+queue=[0,0];
+let wound=combat.spellPhysicalHit(blunt,stripped,100,{type:"contondant",power:35,mastery:50});
+assert.deepEqual([wound.armorResistance,wound.matchup,wound.wound,wound.resistanceRoll],[0,35,true,1]);
+assert.equal(Math.round(wound.pWound),Math.round(10+80/(1+Math.exp(-(50+10+35-50)/20))));
+assert.equal(wound.damage,100,"Résistance physique 0");
+queue=[0.99];
+wound=combat.spellPhysicalHit(blunt,plated,100,{type:"contondant",power:35,mastery:50});
+assert.deepEqual([wound.armorResistance,wound.matchup,wound.wound,wound.damage],[38,-3,false,0],"l'armure encaisse");
+queue=[0.99];
+assert.ok(combat.spellPhysicalHit(blunt,plated,100,{type:"contondant",power:35,mastery:50}).pWound
+  <combat.spellPhysicalHit(blunt,stripped,100,{type:"contondant",power:35,mastery:50}).pWound,"l'armure fait baisser la chance de blesser");
+// Moteur : un tir d'arme sur un personnage protégé est dévié avant le Toucher.
+assert.match(fs.readFileSync(path.join(ROOT,"game-core","combat-engine.js"),"utf8"),/if\(mode==="ranged"&&defender\.projectileShield\)/);
+
+console.log("Magie : écoles de la Vie, du Feu, de l'Eau, de la Transmutation, de la Foudre et de la Télékinésie OK");

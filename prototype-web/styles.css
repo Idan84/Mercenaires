@@ -404,6 +404,7 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
 .hex-cell.reachable{background:#d7ead4;opacity:.95}
 .hex-cell.targetable{background:#efc8bf;opacity:.98}
 .hex-cell.spell-target{background:#cfe9c9;opacity:.98;box-shadow:inset 0 0 0 2px #5c9a63}
+.hex-cell.spell-chosen{background:#a9d7a1;opacity:1;box-shadow:inset 0 0 0 3px #2f6b3a}
 .hex-cell.magma{background:radial-gradient(circle at 50% 45%,#ffb347 0,#e2531f 45%,#7a1d0c 100%);opacity:1;cursor:not-allowed}
 .hex-cell.reachable.provokes{background:#ecd9a8;box-shadow:inset 0 0 0 2px #c9952e}
 .mission-token{position:absolute;z-index:5;width:48px;height:48px;border-radius:10px;padding:2px;border:3px solid white;box-shadow:0 3px 12px rgba(0,0,0,.28);text-align:center;pointer-events:none;background:#191919;color:white}

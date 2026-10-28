@@ -32,6 +32,10 @@
 // - École de la Foudre (Idan, 2026-10-27) : Décharge électrique (2D8 au contact, sans jet de toucher), Éclair (comme une
 //   flèche), Arme électrique, Boule d'éclairs (2D6 puis quatre rebonds, alliés compris : 100, 80, 60, 40, 20 %), Foudre
 //   (1D8 sans ligne de vue), Célérité (Vitesse, sur soi, 2 tours). Portée moyenne des attaques : 6 + M/25, au plus 12.
+// - École de la Télékinésie (Idan, 2026-10-28) : dégâts contondants qui passent par l'armure (combat-engine.js,
+//   spellPhysicalHit) ; Attraction et Projection déplacent la cible de 2 + M/50 cases (un obstacle l'arrête : choc) ;
+//   Déplacement pousse un personnage d'une case ; Entrechoc frappe deux ennemis côte à côte ; Champ de protection dévie la
+//   moitié des projectiles pendant 4 tours ; Lancer de pierre est un tir de fronde.
 (function(root,factory){
   const api=factory();
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
@@ -81,6 +85,7 @@
     const zoneRadius=(unit,code)=>stepped(unit,code,"zone_rayon_base","zone_rayon_pas_maitrise","zone_rayon_max");
     const bonus=(unit,code)=>stepped(unit,code,"bonus_base","bonus_pas_maitrise");
     const zoneLength=(unit,code)=>stepped(unit,code,"zone_longueur_base","zone_longueur_pas_maitrise","zone_longueur_max");
+    const forceSteps=(unit,code)=>stepped(unit,code,"deplacement_base","deplacement_pas_maitrise");
     // Caractéristiques visées par un malus (Gel : « Vitesse, Dextérité »).
     function targetStats(code){
       return String(spell(code)?.caracteristiques||"").split(",").map(x=>x.trim()).filter(Boolean);
@@ -225,6 +230,17 @@
       }
       return chain;
     }
+    // Projection : les cases que la cible traverserait, droit dans l'axe lanceur → cible (la direction de la grille la plus
+    // proche). Attraction : la ligne de la cible vers le lanceur, jusqu'à la case voisine du lanceur. L'écran de combat
+    // arrête la cible au premier obstacle.
+    function pushCells(caster,target,steps){
+      const a=cartesian(caster),b=cartesian(target),vx=b.x-a.x,vy=b.y-a.y,along=d=>{ const c=cartesian(d); return c.x*vx+c.y*vy; };
+      const dir=HEX_DIRECTIONS.reduce((best,d)=>along(d)>along(best)+1e-9?d:best);
+      return Array.from({length:steps},(_,k)=>({q:target.q+dir.q*(k+1),r:target.r+dir.r*(k+1)}));
+    }
+    function pullCells(caster,target,steps){
+      return combat.hexLine(target,caster).slice(1,-1).slice(0,steps);
+    }
     function unitsInCells(cells,units){
       return (units||[]).filter(u=>u.alive!==false&&!u.offMap&&cells.some(c=>c.q===u.q&&c.r===u.r));
     }
@@ -246,6 +262,7 @@
       if(!cell&&target.alive===false) return {ok:false,reason:"Cible hors combat."};
       if(s.cible==="allie_ou_soi"&&target!==caster&&target.team!==caster.team) return {ok:false,reason:"Ce sort vise un allié ou le lanceur."};
       if(s.cible==="ennemi"&&(target===caster||target.team===caster.team)) return {ok:false,reason:"Ce sort vise un ennemi."};
+      if(s.cible==="allie_ou_ennemi"&&(target===caster||!target.character)) return {ok:false,reason:"Ce sort vise un autre personnage."};
       if(s.cible==="case_vide"&&(cellFree===false||(target.q===caster.q&&target.r===caster.r))) return {ok:false,reason:"Il faut une case vide."};
       if(s.cible==="mort_vivant"&&!isUndead(target)) return {ok:false,reason:s.nom+" ne fonctionne que sur les morts-vivants."};
       if(s.effet==="purge_poison"&&!isPoisoned(target)) return {ok:false,reason:"La cible n'est pas empoisonnée."};
@@ -253,8 +270,28 @@
       const distance=self?0:combat.axialDistance(caster,target),reach=range(caster,code);
       if(distance>reach) return {ok:false,reason:"Cible hors de portée ("+distance+" cases, portée "+reach+")."};
       if(s.zone_forme==="ligne"&&distance<1) return {ok:false,reason:"Choisissez une case voisine : la vague part dans sa direction."};
+      if(s.portee_min!=null&&distance<num(s.portee_min,0)) return {ok:false,reason:"Trop près ("+distance+" case"+(distance>1?"s":"")+", au moins "+num(s.portee_min,0)+")."};
       if(s.ligne_de_vue&&!self&&!lineOfSight) return {ok:false,reason:"Pas de ligne de vue."};
       return {ok:true,cost,distance,range:reach};
+    }
+
+    // Entrechoc : la seconde cible, un ennemi voisin de la première, à portée et en vue elle aussi.
+    function canCastPair(caster,first,second,code,{lineOfSight=true,secondLineOfSight=true,...rest}={}){
+      const check=canCast(caster,first,code,{lineOfSight,...rest});
+      if(!check.ok) return check;
+      if(!second||second===first||second.alive===false||second===caster||second.team===caster.team) return {ok:false,reason:"Il faut un second ennemi."};
+      if(combat.axialDistance(first,second)!==1) return {ok:false,reason:"Les deux ennemis doivent être côte à côte."};
+      const distance=combat.axialDistance(caster,second);
+      if(distance>check.range) return {ok:false,reason:"Second ennemi hors de portée ("+distance+" cases, portée "+check.range+")."};
+      if(spell(code)?.ligne_de_vue&&!secondLineOfSight) return {ok:false,reason:"Pas de ligne de vue sur le second ennemi."};
+      return check;
+    }
+    // Champ de protection : un projectile (arme de tir ou sort qui vole comme une flèche) a chance % d'être dévié.
+    function deflection(target){
+      const shield=target?.projectileShield;
+      if(!shield) return null;
+      const p=num(shield.chance,0),roll=d100();
+      return {p,roll,deflected:roll<=p};
     }
 
     // Lance le sort : tirages et résultat, sans rien appliquer (l'écran de combat applique PV, mana, actions et effets).
@@ -262,6 +299,11 @@
     // Toucher « comme une flèche » : le trait touche la cible, ou part dans la ligne de tir et peut toucher quelqu'un
     // d'autre (approximation des projectiles : P = toucher × 0,35, puis × 0,5 pour chaque candidat suivant).
     function resolveSpellHit(caster,target,code,result,units){
+      const shield=deflection(target);
+      if(shield?.deflected){
+        Object.assign(result,{deflected:true,pDeflect:shield.p,deflectRoll:shield.roll,hit:false,victim:null});
+        return;
+      }
       const p=hitChance(caster,target,code),hitRoll=d100();
       Object.assign(result,{pHit:p,hitRoll,hit:hitRoll<=p,victim:hitRoll<=p?target:null});
       if(result.hit) return;
@@ -286,8 +328,14 @@
     }
 
     function cast(caster,target,code,options={}){
-      const check=canCast(caster,target,code,options);
+      const s0=spell(code);
+      const check=s0?.effet==="degats_paire"?canCastPair(caster,target,options.second,code,options):canCast(caster,target,code,options);
       if(!check.ok) return check;
+      // Déplacement : une case libre voisine de la cible, choisie par le lanceur.
+      if(s0.effet==="deplacement_force"){
+        const to=options.destination;
+        if(!to||combat.axialDistance(target,to)!==1||options.destinationFree===false) return {ok:false,reason:"Choisissez une case libre voisine de la cible."};
+      }
       const s=spell(code),chance=castChance(caster,code),roll=d100();
       const success=roll<=chance.p;
       const {count,sides}=dice(code);
@@ -314,6 +362,10 @@
           // Le tir de venin garde la Puissance et la Maîtrise du lanceur.
           result.effect={code:s.code,element:s.element,factor:effectFactor(caster,code),mastery:mastery(caster,code),
             min:num(s.tir_portee_min,1),max:num(s.tir_portee_max,1),turns:duration(caster,code)};
+        }else if(s.effet==="protection_projectiles"){
+          result.effect={code:s.code,chance:bonus(caster,code),turns:duration(caster,code)};
+        }else if(s.effet==="deplacement_force"){
+          result.move={kind:"case",destination:{q:options.destination.q,r:options.destination.r}};
         }else if(s.effet==="brouillard"){
           result.fog={cells:wallCells(caster,target,zoneLength(caster,code)),turns:duration(caster,code)};
         }else if(s.effet==="malus_caracteristiques"){
@@ -345,6 +397,17 @@
         }
         if(s.toucher==="distance") resolveSpellHit(caster,target,code,result,options.units||[]);
         if(s.effet==="degats_rebonds") result.chain=chainTargets(caster,target,code,options.units||[]);
+        if(s.effet==="degats_paire") result.second=options.second;
+        // Dégâts physiques : l'écran de combat les fait passer par l'armure (combat.spellPhysicalHit).
+        if(s.degats_type) result.physical={type:s.degats_type,power:num(s.puissance,0),mastery:mastery(caster,code)};
+        // Attraction, Projection : les cases à parcourir, et le choc si un obstacle arrête la cible.
+        if(s.deplacement){
+          const steps=forceSteps(caster,code),choc=num(s.choc_nb_des,0);
+          let chocDice=0;
+          for(let i=0;i<choc;i++) chocDice+=die(num(s.choc_de,1));
+          result.move={kind:s.deplacement,steps,cells:s.deplacement==="attire"?pullCells(caster,target,steps):pushCells(caster,target,steps),
+            chocAmount:choc?Math.ceil(num(s.effet_base,10)*chocDice*effectFactor(caster,code)-1e-9):0};
+        }
         if(s.effet==="purge_poison") result.purge=true;
       }else if(roll>=FUMBLE_THRESHOLD){
         const fumbleRoll=d100();
@@ -375,7 +438,9 @@
     function spit(unit,target,options={}){
       const check=canSpit(unit,target,options);
       if(!check.ok) return check;
-      const fx=unit.venom,pHit=spitChance(unit,target),hitRoll=d100(),s=spell(fx.code);
+      const fx=unit.venom,s=spell(fx.code),shield=deflection(target);
+      if(shield?.deflected) return {ok:true,code:fx.code,element:fx.element,distance:check.distance,deflected:true,pDeflect:shield.p,deflectRoll:shield.roll,hit:false,dice:0,amount:0};
+      const pHit=spitChance(unit,target),hitRoll=d100();
       const result={ok:true,code:fx.code,element:fx.element,distance:check.distance,pHit,hitRoll,hit:hitRoll<=pHit,dice:0,amount:0};
       if(result.hit){
         result.dice=rollDice(fx.code);
@@ -420,6 +485,10 @@
       wallCells,
       unitsInCells,
       chainTargets,
+      forceSteps,
+      pushCells,
+      pullCells,
+      canCastPair,
       dice,
       effectFactor,
       effectAmount,

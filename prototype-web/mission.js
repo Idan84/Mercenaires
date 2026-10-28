@@ -328,6 +328,14 @@ function selectNextMissionPlayer(){
     // Mort du poison au début de son activation.
     if(!next.alive){ next.acted=true; if(m.over){ renderMission(); return; } continue; }
     m.progression.recordActivation(next);
+    // Frénésie (Illusion) : il joue seul cette activation.
+    if(next.frenzy){
+      m.actingUnit=next;
+      try{ frenzyMissionActivation(next); }finally{ m.actingUnit=null; }
+      next.acted=true;
+      if(m.over){ renderMission(); return; }
+      continue;
+    }
     if(next.fleeing&&resolveMissionFleeingActivation(next)){
       next.acted=true;
       if(m.over){ renderMission(); return; }
@@ -1188,6 +1196,37 @@ function resolveMissionSpell(caster,target,code,extra={}){
     const to=out.move.destination;
     target.q=to.q;target.r=to.r;
     missionLog(name+" lance "+spell.nom+on+detail+" : "+target.character.name+" est déplacé"+(missionFeminine(target)?"e":"")+" d’une case.","magic");
+  }else if(spell.effet==="peur"){
+    // Peur : chaque ennemi de la zone teste son Courage contre la Maîtrise et la Volonté du lanceur.
+    const zone=out.zone,foes=magic.unitsInZone(zone.center,zone.radius,missionUnits()).filter(u=>u.team!==caster.team);
+    missionLog(name+" lance "+spell.nom+" (rayon "+zone.radius+")"+detail+(foes.length?" : la terreur gagne la zone.":" : personne dans la zone."),"magic");
+    effect=false;
+    for(const foe of foes){
+      const c=m.engine.resolveFear(foe,caster,out.fear.mastery,missionUnits());
+      if(!c) continue;
+      const fear=" (Courage "+Math.round(c.pHold)+" %"+missionAuraNote(c.aura,c.auraFrom)+", jet "+c.roll+")";
+      if(!c.flees){ missionLog(foe.character.name+" tient bon"+fear+".","info"); MercenairesProgression.recordCourageHeld(foe); continue; }
+      effect=true;
+      missionLog(foe.character.name+" panique et prend la fuite"+fear+" !","bad");
+      MercenairesProgression.recordIntimidation(caster,foe);
+      applyMissionFlee(foe,caster);
+    }
+  }else if(spell.effet==="bonus_zone"){
+    // Courage de masse, Avancée cachée : les alliés de la zone, lanceur compris (sur lui, l'activation en cours compte).
+    const fx=out.effect,zone=out.zone,allies=magic.unitsInZone(zone.center,zone.radius,missionUnits()).filter(u=>u.team===caster.team);
+    for(const ally of allies) ally.statBuffs={...(ally.statBuffs||{}),[fx.code]:{stats:fx.stats,value:fx.value,unit:fx.unit,turns:ally===caster?fx.turns-1:fx.turns}};
+    effect=allies.length>0;
+    missionLog(name+" lance "+spell.nom+" (rayon "+zone.radius+")"+detail+" : +"+fx.value+" de "+fx.stats.join(" et de ")+", pendant "+fx.turns+" tours"
+      +(allies.length?" — "+allies.map(a=>a.character.name).join(", "):" — aucun allié dans la zone")+".","magic");
+  }else if(spell.effet==="frenesie"){
+    // Frénésie : ses 2 prochaines activations, même si le lanceur se vise ; la peur et la fuite cessent.
+    const fx=out.effect;
+    target.frenzy={code:fx.code,turns:fx.turns};
+    target.statBuffs={...(target.statBuffs||{}),[fx.code]:{stats:fx.stats,value:fx.value,unit:fx.unit,turns:fx.turns}};
+    const calmed=target.fleeing;
+    if(calmed){ target.fleeing=false;target.fleeTurn=0; }
+    missionLog(name+" lance "+spell.nom+on+detail+" : "+target.character.name+" entre en frénésie pour ses "+fx.turns+" prochaines activations (+"+fx.value
+      +" % de Force, plus de peur"+(calmed?", fin de la fuite":"")+").","magic");
   }else if(spell.effet==="protection_projectiles"){
     target.projectileShield={code:out.effect.code,chance:out.effect.chance,untilTurn:m.turn+out.effect.turns};
     missionLog(name+" lance "+spell.nom+on+detail+" : "+out.effect.chance+" % de chances de dévier chaque projectile, pendant "+out.effect.turns+" tours.","magic");
@@ -1321,6 +1360,36 @@ function tickMissionBuffs(unit){
     if(unit.venom.turns>0) unit.venom.turns-=1;
     else{ unit.venom=null; missionLog(name+" ne peut plus cracher de venin.","magic"); }
   }
+  if(unit.frenzy){
+    if(unit.frenzy.turns>0) unit.frenzy.turns-=1;
+    else{ unit.frenzy=null; missionLog(name+" sort de sa frénésie.","magic"); }
+  }
+}
+// Frénésie (Illusion ; Idan : la cible joue seule) : joueur ou ennemi, elle prend une arme de mêlée si l'autre set en a une,
+// puis frappe au contact, charge, ou fonce sur l'ennemi le plus proche ; jamais de tir ni de sort.
+function frenzyMissionActivation(unit){
+  const e=game.mission.engine;
+  let target=nearestMissionTarget(unit);
+  if(!target) return;
+  missionLog(unit.character.name+" est en frénésie et fonce sur "+target.character.name+".","bad");
+  if(!e.isMeleeWeapon(e.weaponTemplate(e.activeWeaponItem(unit)))&&unit.quickAvailable&&e.canSwitchWeaponSet(unit)){
+    const before=unit.activeSet;
+    e.switchWeaponSet(unit);
+    if(e.isMeleeWeapon(e.weaponTemplate(e.activeWeaponItem(unit)))){
+      unit.quickAvailable=false;
+      missionLog(unit.character.name+" change d’arme : "+e.activeWeaponItem(unit).name+".","gear");
+    }else unit.activeSet=before;
+  }
+  const strike=()=>{
+    if(!missionUsableHands(unit,target).some(h=>h.mode==="melee")) return false;
+    performMissionAttack(unit,target,"melee",e.axialDistance(unit,target));
+    return true;
+  };
+  if(strike()||enemyTryCharge(unit,target)) return;
+  enemyMoveToward(unit,target);
+  if(game.mission.over||!unit.alive) return;
+  target=nearestMissionTarget(unit);
+  if(target) strike();
 }
 // Poison (doc 12 ; Idan, 2026-10-27) : au début de chacune de ses activations, l'empoisonné tente un jet de résistance
 // qui annule l'effet ; raté, il subit les dégâts légers du poison. Il dure combat.poison.turns tours ; Purge le retire.
@@ -1340,6 +1409,11 @@ function missionFeminine(unit){ return String(unit?.character?.sex||"").trim().t
 // Dégâts d'un sort sur une unité : physiques (Télékinésie : l'étape Blesser, l'armure compte) ou élémentaires.
 // label et note pour le journal : « 34 PV contondants (Blesser 72 %, jet 40) », « 30 PV de feu (protection 9 %) ».
 function missionSpellHit(unit,out,amount,caster){
+  if(out.psychic){
+    const factor=missionMagic().willFactor(caster,unit),damage=Math.ceil(amount*factor-1e-9);
+    damageMissionUnitBySpell(unit,damage,caster,null);
+    return {damage,label:damage+" PV psychiques",note:" (Volonté × "+(Math.round(factor*100)/100).toLocaleString("fr-FR")+")"};
+  }
   if(out.physical){
     const hit=game.mission.engine.spellPhysicalHit(caster,unit,amount,out.physical);
     if(hit.wound) damageMissionUnitBySpell(unit,hit.damage,caster,out.physical.type);
@@ -1638,6 +1712,7 @@ function enemyMissionActivation(unit){
   resetMissionActivation(unit);
   if(unit.fleeing&&resolveMissionFleeingActivation(unit)) return;
   if(!unit.alive||game.mission.over) return;
+  if(unit.frenzy){ frenzyMissionActivation(unit); return; }
   missionAiCast(unit);
   if(!unit.alive||game.mission.over||unit.attackAvailable===false) return;
   let target=nearestMissionTarget(unit);

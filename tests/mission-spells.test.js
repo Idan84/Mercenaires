@@ -43,7 +43,7 @@ const api=new Function("game","$","esc","fmt","renderAvatar","combatEngine","Mer
   source+"\nreturn {makeMissionUnit,sortMissionInitiative,selectNextMissionPlayer,teachMissionTestSpells,setMissionMode,targetableMissionCells,"
   +"handleMissionHexClick,resetMissionActivation,missionAiCast,missionActionAvailability,autoResolveMission,missionKey,renderMissionSpellBar,"
   +"missionMagic,endMissionActivation,missionWeaponEnchantStrike,pruneMissionTerrain,occupiedMissionKeys,missionReachablePaths,"
-  +"renderMissionProgression,missionLineOfSight,missionCanAttack};")
+  +"renderMissionProgression,missionLineOfSight,missionCanAttack,frenzyMissionActivation};")
   .call(null,game,$,v=>String(v??""),v=>String(Math.round(Number(v)||0)),()=>"",()=>engine,Progression,MissionEnd,Magic);
 
 function newMission(){
@@ -71,21 +71,22 @@ const others=m.players.filter(x=>x!==u);
 assert.equal(magic.knownSpells(u).length,0);
 assert.equal(api.renderMissionSpellBar(u),"");
 assert.equal(api.missionActionAvailability().testSpells,true);
-// Bouton de test : toute l'escouade connaît tous les sorts écrits (Vie, Feu, Eau, Transmutation, Foudre, Télékinésie) pour ce
-// combat ; le grimoire ne change pas.
+// Bouton de test : toute l'escouade connaît tous les sorts écrits (Vie, Feu, Eau, Transmutation, Foudre, Télékinésie, Illusion)
+// pour ce combat ; le grimoire ne change pas.
 api.teachMissionTestSpells();
 assert.deepEqual(magic.knownSpells(u).map(s=>s.code),["quick_heal","deep_heal","regeneration","mass_heal","restitution","purge",
   "fire_bolt","fireball","fire_ring","flaming_weapon","fire_armor","magma",
   "fog","healing_water","ice_arrow","tsunami","frost_armor","freeze","ice_weapon",
   "sixth_sense","titan_strength","cheetah_speed","stone_skin","venom_spit","cauterize",
   "shock","lightning_bolt","shock_weapon","chain_lightning","thunder","celerity",
-  "attraction","projection","telekinetic_move","clash","force_field","stone_throw"]);
-assert.ok(m.players.every(p=>p.spells.length===37&&!(p.character.spells||[]).length));
+  "attraction","projection","telekinetic_move","clash","force_field","stone_throw",
+  "fear","illusory_support","mass_courage","hidden_advance","psychic_shock","frenzy"]);
+assert.ok(m.players.every(p=>p.spells.length===43&&!(p.character.spells||[]).length));
 assert.equal(api.missionActionAvailability().testSpells,false,"une seule fois par combat");
-assert.ok(logged(/connaît tous les sorts \(Vie, Feu, Eau, Transmutation, Foudre, Télékinésie, niveau 1\)/));
+assert.ok(logged(/connaît tous les sorts \(Vie, Feu, Eau, Transmutation, Foudre, Télékinésie, Illusion, niveau 1\)/));
 const bar=api.renderMissionSpellBar(u);
 assert.match(bar,/Mana 53\/53/);
-assert.equal((bar.match(/data-spell=/g)||[]).length,37);
+assert.equal((bar.match(/data-spell=/g)||[]).length,43);
 assert.match(bar,/Soin rapide<small>rapide · \d+ mana · \d+ %<\/small>/);
 
 // Soin rapide : cases ciblables = le lanceur et les alliés à portée, jamais un ennemi lointain.
@@ -620,6 +621,70 @@ api.pruneMissionTerrain();
 assert.equal(ally.projectileShield,null);
 assert.ok(logged(/Le champ de protection de .* se dissipe/));
 
+// École de l'Illusion dans l'écran de combat (Idan, 2026-10-28). Maîtrise 60,5 : bonus + M/5 = +12, rayon et durée 3.
+for(const p of m.players) p.character.skills.magic.Illusion=60;
+for(const x of [u,ally,wet,distant]){ x.alive=true;x.hp=x.pvMax;x.fleeing=false;x.frenzy=null;x.statBuffs=null;x.projectileShield=null; }
+u.q=2;u.r=4;ally.q=2;ally.r=5;wet.q=5;wet.r=4;distant.q=6;distant.r=4;
+// Peur : chaque ennemi de la zone teste son Courage ; l'un fuit, l'autre tient.
+reset();
+api.setMissionMode("spell:fear");
+queue.push(0,0.99,0);
+api.handleMissionHexClick(5,4);
+assert.equal(wet.fleeing,true);
+assert.equal(distant.fleeing,false);
+assert.ok(logged(/lance Peur \(rayon 3\)/));
+assert.ok(logged(/panique et prend la fuite \(Courage \d+ %.*jet 100\)/));
+assert.ok(logged(/tient bon \(Courage \d+ %.*jet 1\)/));
+assert.equal(ally.fleeing,false,"les alliés de la zone ne testent pas");
+// Frénésie sur le fuyard : la fuite cesse, +10 % de Force, plus de peur ; il fonce sur l'ennemi le plus proche.
+reset();
+wet.q=4;wet.r=4;
+const strengthBefore=engine.statWithGear(wet,"Force");
+api.setMissionMode("spell:frenzy");
+queue.push(0);
+api.handleMissionHexClick(wet.q,wet.r);
+assert.equal(wet.fleeing,false);
+assert.equal(wet.frenzy.turns,2);
+assert.ok(Math.abs(engine.statWithGear(wet,"Force")-(strengthBefore+0.1*wet.character.stats.Force))<1e-9,"+10 % de la Force de base");
+assert.ok(logged(/entre en frénésie pour ses 2 prochaines activations \(\+10 % de Force, plus de peur, fin de la fuite\)/));
+assert.equal(engine.resolveCourage(u,wet,{ok:true,wound:true,mode:"melee"},{units:[...m.players,...m.enemies]}),null,"plus de test de Courage");
+api.frenzyMissionActivation(wet);
+assert.ok(logged(/est en frénésie et fonce sur /));
+api.resetMissionActivation(wet);api.resetMissionActivation(wet);api.resetMissionActivation(wet);
+assert.equal(wet.frenzy,null);
+assert.ok(logged(/sort de sa frénésie/));
+// Soutien illusoire : beaucoup de Courage pour un allié, de loin. (Le frénétique a pu blesser et faire fuir le lanceur.)
+for(const x of [u,ally]){ x.alive=true;x.hp=x.pvMax;x.fleeing=false; }
+u.q=2;u.r=4;ally.q=2;ally.r=5;wet.q=-50;wet.r=-50;
+reset();
+const braveBefore=engine.statWithGear(ally,"Courage");
+api.setMissionMode("spell:illusory_support");
+queue.push(0);
+api.handleMissionHexClick(ally.q,ally.r);
+assert.equal(engine.statWithGear(ally,"Courage"),braveBefore+42,"+30 + M/5");
+// Courage de masse et Avancée cachée : les alliés de la zone, lanceur compris.
+reset();
+const discreetBefore=[u,ally].map(x=>engine.statWithGear(x,"Discrétion"));
+const courageBefore=engine.statWithGear(u,"Courage");
+api.setMissionMode("spell:mass_courage");
+queue.push(0);
+api.handleMissionHexClick(ally.q,ally.r);
+assert.equal(engine.statWithGear(u,"Courage"),courageBefore+32,"+20 + M/5");
+assert.ok(logged(/lance Courage de masse \(rayon 3\).* : \+32 de Courage, pendant 3 tours — /));
+u.attackAvailable=true;
+api.setMissionMode("spell:hidden_advance");
+queue.push(0);
+api.handleMissionHexClick(ally.q,ally.r);
+assert.deepEqual([u,ally].map(x=>engine.statWithGear(x,"Discrétion")),discreetBefore.map(v=>v+52),"+40 + M/5 : massif");
+// Choc psychique : comme une flèche ; dégâts × Volonté du lanceur / Volonté de la cible.
+reset();
+distant.hp=distant.pvMax;
+api.setMissionMode("spell:psychic_shock");
+queue.push(0,0.99,0.5,0);
+api.handleMissionHexClick(distant.q,distant.r);
+assert.ok(distant.hp<distant.pvMax);
+assert.ok(logged(/lance Choc psychique sur .* touché .* \d+ PV psychiques \(Volonté × [\d,]+\)/));
+
 // Mort du poison au début de son activation : on passe au suivant.
 m=newMission();
 const doomed=m.playerOrder.find(p=>p!==m.activeUnit);
@@ -628,6 +693,14 @@ queue.push(0.99);
 api.endMissionActivation();
 assert.equal(doomed.alive,false);
 assert.notEqual(m.activeUnit,doomed);
+// Joueur en frénésie : il joue seul son activation, puis on passe au suivant.
+m=newMission();
+const berserk=m.playerOrder.find(p=>p!==m.activeUnit);
+berserk.frenzy={turns:1};
+api.endMissionActivation();
+assert.notEqual(m.activeUnit,berserk);
+assert.equal(berserk.acted,true);
+assert.ok(logged(new RegExp(berserk.character.name+" est en frénésie et fonce sur ")));
 
 // Combat automatique avec les sorts de test : il va jusqu'au bout.
 m=newMission();
@@ -661,4 +734,4 @@ assert.ok(home.mana>0,"au camp : recharge");
 assert.equal(away.mana,0,"en route : rien");
 assert.ok(report.mana.some(x=>x.id===home.id));
 
-console.log("Sorts de Vie, du Feu, de l'Eau, de la Transmutation, de la Foudre et de la Télékinésie dans l'écran de combat, poison, recharge du mana au camp — OK");
+console.log("Sorts de Vie, du Feu, de l'Eau, de la Transmutation, de la Foudre, de la Télékinésie et de l'Illusion dans l'écran de combat, poison, recharge du mana au camp — OK");

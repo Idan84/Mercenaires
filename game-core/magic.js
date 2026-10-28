@@ -36,6 +36,9 @@
 //   spellPhysicalHit) ; Attraction et Projection déplacent la cible de 2 + M/50 cases (un obstacle l'arrête : choc) ;
 //   Déplacement pousse un personnage d'une case ; Entrechoc frappe deux ennemis côte à côte ; Champ de protection dévie la
 //   moitié des projectiles pendant 4 tours ; Lancer de pierre est un tir de fronde.
+// - École de l'Illusion (Idan, 2026-10-28) : Peur (test de Courage des ennemis d'une zone contre la Maîtrise et la Volonté
+//   du lanceur), Soutien illusoire et Courage de masse (Courage), Avancée cachée (Discrétion), Choc psychique (dégâts ×
+//   Volonté du lanceur / Volonté de la cible), Frénésie (la cible joue seule, +10 % de Force, plus de peur).
 (function(root,factory){
   const api=factory();
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
@@ -263,6 +266,7 @@
       if(s.cible==="allie_ou_soi"&&target!==caster&&target.team!==caster.team) return {ok:false,reason:"Ce sort vise un allié ou le lanceur."};
       if(s.cible==="ennemi"&&(target===caster||target.team===caster.team)) return {ok:false,reason:"Ce sort vise un ennemi."};
       if(s.cible==="allie_ou_ennemi"&&(target===caster||!target.character)) return {ok:false,reason:"Ce sort vise un autre personnage."};
+      if(s.cible==="personnage"&&!target.character) return {ok:false,reason:"Ce sort vise un personnage."};
       if(s.cible==="case_vide"&&(cellFree===false||(target.q===caster.q&&target.r===caster.r))) return {ok:false,reason:"Il faut une case vide."};
       if(s.cible==="mort_vivant"&&!isUndead(target)) return {ok:false,reason:s.nom+" ne fonctionne que sur les morts-vivants."};
       if(s.effet==="purge_poison"&&!isPoisoned(target)) return {ok:false,reason:"La cible n'est pas empoisonnée."};
@@ -285,6 +289,10 @@
       if(distance>check.range) return {ok:false,reason:"Second ennemi hors de portée ("+distance+" cases, portée "+check.range+")."};
       if(spell(code)?.ligne_de_vue&&!secondLineOfSight) return {ok:false,reason:"Pas de ligne de vue sur le second ennemi."};
       return check;
+    }
+    // Choc psychique : × Volonté du lanceur / Volonté de la cible, de 0,5 à 2.
+    function willFactor(caster,target){
+      return clamp(combat.statWithGear(caster,"Volonté")/Math.max(1,combat.statWithGear(target,"Volonté")),0.5,2);
     }
     // Champ de protection : un projectile (arme de tir ou sort qui vole comme une flèche) a chance % d'être dévié.
     function deflection(target){
@@ -362,6 +370,13 @@
           // Le tir de venin garde la Puissance et la Maîtrise du lanceur.
           result.effect={code:s.code,element:s.element,factor:effectFactor(caster,code),mastery:mastery(caster,code),
             min:num(s.tir_portee_min,1),max:num(s.tir_portee_max,1),turns:duration(caster,code)};
+        }else if(s.effet==="peur"){
+          result.zone={center:{q:target.q,r:target.r},radius:zoneRadius(caster,code)};
+          result.fear={mastery:mastery(caster,code)};
+        }else if(s.effet==="bonus_zone"||s.effet==="frenesie"){
+          if(s.effet==="bonus_zone") result.zone={center:{q:target.q,r:target.r},radius:zoneRadius(caster,code)};
+          result.effect={code:s.code,stats:targetStats(code),value:bonus(caster,code),unit:s.bonus_unite==="pourcentage"?"pourcentage":"points",
+            turns:duration(caster,code)};
         }else if(s.effet==="protection_projectiles"){
           result.effect={code:s.code,chance:bonus(caster,code),turns:duration(caster,code)};
         }else if(s.effet==="deplacement_force"){
@@ -399,7 +414,8 @@
         if(s.effet==="degats_rebonds") result.chain=chainTargets(caster,target,code,options.units||[]);
         if(s.effet==="degats_paire") result.second=options.second;
         // Dégâts physiques : l'écran de combat les fait passer par l'armure (combat.spellPhysicalHit).
-        if(s.degats_type) result.physical={type:s.degats_type,power:num(s.puissance,0),mastery:mastery(caster,code)};
+        if(s.degats_type==="psychique") result.psychic=true;
+        else if(s.degats_type) result.physical={type:s.degats_type,power:num(s.puissance,0),mastery:mastery(caster,code)};
         // Attraction, Projection : les cases à parcourir, et le choc si un obstacle arrête la cible.
         if(s.deplacement){
           const steps=forceSteps(caster,code),choc=num(s.choc_nb_des,0);
@@ -486,6 +502,7 @@
       unitsInCells,
       chainTargets,
       forceSteps,
+      willFactor,
       pushCells,
       pullCells,
       canCastPair,

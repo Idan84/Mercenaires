@@ -415,6 +415,21 @@
       return {...protection,amount,damage:Math.max(0,Math.ceil(amount*(1-protection.applied/100)-1e-9))};
     }
 
+    // Dégâts physiques d'un sort (Télékinésie ; Idan, 2026-10-28 : « ça passe par l'armure », contondant) : l'étape
+    // Blesser d'une arme, la Puissance magique du lanceur tenant le rôle de la Force et 0,2 × la Maîtrise du sort celui des
+    // compétences d'arme ; la puissance du sort face à la résistance de l'armure au type ; puis la Résistance physique de la
+    // cible, avec sa variation D3, comme pour une arme. Ne touche pas aux PV : l'écran de combat les applique.
+    function spellPhysicalHit(caster,target,amount,{type="contondant",power=0,mastery=0}={}){
+      const armorResistance=effectiveArmorResistance(target,type),matchup=power-armorResistance;
+      const delta=statWithGear(caster,"Puissance magique")+0.2*mastery+matchup-statWithGear(target,"Endurance");
+      const pWound=clamp(logistic(delta),10,90),woundRoll=d100();
+      const head={type,power,armorResistance,matchup,pWound,woundRoll};
+      if(woundRoll>pWound) return {...head,wound:false,damage:0};
+      const physicalResistance=clamp(statWithGear(target,"Résistance physique"),0,50),resistanceRoll=die(3);
+      const damage=Math.max(0,Math.ceil(amount*(1-(physicalResistance/100)*((resistanceRoll+8)/10))-1e-9));
+      return {...head,wound:true,physicalResistance,resistanceRoll,damage};
+    }
+
     // Poison (Idan, 2026-10-27) : au début de chaque activation de l'empoisonné (unit.poisoned = {turns, amount}), un jet
     // de résistance, D100 ≤ part × Constitution + Résistance au poison (équipement compris, de 5 à 95 %), annule l'effet ;
     // sinon il subit les dégâts légers du poison, réduits par sa Résistance au poison. L'écran de combat décompte les tours.
@@ -683,6 +698,11 @@
       }
 
       const tags={chargePower,opportunity,encircled,fleeingTarget,backstab};
+      // Champ de protection (Télékinésie, doc 12) : avant le Toucher, le projectile a projectileShield.chance % d'être dévié.
+      if(mode==="ranged"&&defender.projectileShield){
+        const pDeflect=Number(defender.projectileShield.chance)||0,deflectRoll=d100();
+        if(deflectRoll<=pDeflect) return {ok:true,mode,weapon:weapon.nom,distance,deflected:true,pDeflect,deflectRoll,hit:false,wound:false,damage:0,...tags};
+      }
       const pHit=hitProbability(attacker,defender,mode,distance,{opportunity,backstab});
       const hitRoll=d100(),hit=hitRoll<=pHit;
       // twoHanded : arme tenue à deux mains (XP de la compétence Combat à deux mains).
@@ -952,6 +972,7 @@
       axialDistance,
       hexLine,
       POISON,
+      spellPhysicalHit,
       poisonResistChance,
       resolvePoison,
       activeWeaponItem,

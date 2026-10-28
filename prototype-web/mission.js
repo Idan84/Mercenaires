@@ -52,6 +52,12 @@ function pruneMissionTerrain(){
     m.fog=m.fog.filter(f=>m.turn<f.untilTurn);
     if(m.fog.length<before) missionLog("Le brouillard se dissipe.","magic");
   }
+  // Champ de protection (Télékinésie) : 4 tours, jusqu'au début du tour indiqué.
+  for(const u of m?missionUnits():[]){
+    if(!u.projectileShield||m.turn<u.projectileShield.untilTurn) continue;
+    u.projectileShield=null;
+    if(u.alive) missionLog("Le champ de protection de "+u.character.name+" se dissipe.","magic");
+  }
 }
 
 function shortestMissionPath(start,end,except=null){
@@ -349,6 +355,7 @@ function setMissionMode(mode){
   const u=missionActiveUnit();
   if(!u||game.mission.phase!=="player"||game.mission.over) return;
   game.mission.mode=mode;
+  game.mission.spellTarget=null;
   renderMission();
 }
 
@@ -553,6 +560,10 @@ function logMissionAttack(a,d,result,kind="attack"){
 
   if(result.chargeFall){
     missionLog(a.character.name+" chute pendant sa charge et perd son attaque !","bad");
+    return;
+  }
+  if(result.deflected){
+    missionLog(prefix+" : le projectile est dévié par le champ de protection de "+d.character.name+" ("+Math.round(result.pDeflect)+" %, jet "+result.deflectRoll+").","miss");
     return;
   }
   if(!result.hit){
@@ -972,6 +983,7 @@ function handleMissionHexClick(q,r){
   const spellCode=missionSpellMode();
   if(spellCode){
     const spell=missionMagic()?.spell(spellCode);
+    if(spell?.effet==="deplacement_force"||spell?.effet==="degats_paire"){ handleMissionTwoStepSpell(spell,q,r,clicked); return; }
     const target=spell?.cible==="case"||spell?.cible==="case_vide"?{q,r}:spell?.cible==="soi"?u:clicked;
     if(target) castPlayerMissionSpell(target);
     return;
@@ -1076,11 +1088,14 @@ function damageMissionUnitBySpell(unit,amount,source=null,element=null){
 }
 
 // Lance un sort et applique son résultat (joueur et IA) : action, mana, PV, effets, journal.
-function resolveMissionSpell(caster,target,code){
+// extra : {destination} (Déplacement) ou {second} (Entrechoc).
+function resolveMissionSpell(caster,target,code,extra={}){
   const m=game.mission,magic=missionMagic(),spell=magic?.spell(code);
   if(!spell) return null;
   if(spell.cible==="soi") target=caster;
-  const out=magic.cast(caster,target,code,{units:missionUnits(),cellFree:missionCellFree(target),lineOfSight:missionLineOfSight(caster,target)});
+  const out=magic.cast(caster,target,code,{units:missionUnits(),cellFree:missionCellFree(target),lineOfSight:missionLineOfSight(caster,target),
+    destination:extra.destination,destinationFree:extra.destination?missionCellFree(extra.destination):undefined,
+    second:extra.second,secondLineOfSight:extra.second?missionLineOfSight(caster,extra.second):true});
   if(!out.ok){ missionLog(out.reason,"bad"); return out; }
   if(spell.action==="rapide") caster.quickAvailable=false; else caster.attackAvailable=false;
   caster.character.mana=Math.max(0,Math.round((magic.currentMana(caster)-out.cost)*100)/100);
@@ -1135,27 +1150,47 @@ function resolveMissionSpell(caster,target,code){
   }else if(spell.effet==="degats"&&spell.toucher==="distance"){
     const aim=" (toucher "+Math.round(out.pHit)+" %, jet "+out.hitRoll+")";
     effect=false;
-    if(out.hit){
-      const hit=missionElementalHit(target,out.element,out.amount,caster);
+    if(out.deflected){
+      missionLog(name+" lance "+spell.nom+on+detail+" : le projectile est dévié par le champ de protection ("+Math.round(out.pDeflect)+" %, jet "+out.deflectRoll+").","miss");
+    }else if(out.hit){
+      const hit=missionSpellHit(target,out,out.amount,caster);
       effect=hit.damage>0;
-      missionLog(name+" lance "+spell.nom+on+detail+" : touché"+aim+", "+hit.damage+" PV de "+out.element+missionProtectionNote(hit)+". "
+      missionLog(name+" lance "+spell.nom+on+detail+" : touché"+aim+", "+hit.label+hit.note+". "
         +target.character.name+" reste à "+Math.max(0,target.hp)+" PV."+critical,"damage");
     }else if(out.stray){
       missionLog(name+" lance "+spell.nom+on+detail+" : raté"+aim+" ; le sort part dans la ligne de tir et atteint "
         +out.stray.unit.character.name+" par accident ("+Math.round(out.stray.p)+" %, jet "+out.stray.roll+") !","bad");
-      const hit=missionElementalHit(out.stray.unit,out.element,out.amount,caster);
-      missionLog(out.stray.unit.character.name+" subit "+hit.damage+" PV de "+out.element+missionProtectionNote(hit)+".","damage");
+      const hit=missionSpellHit(out.stray.unit,out,out.amount,caster);
+      missionLog(out.stray.unit.character.name+" subit "+hit.label+hit.note+".","damage");
     }else{
       missionLog(name+" lance "+spell.nom+on+detail+" : raté"+aim+".","miss");
     }
     checkMissionEnd();
   }else if(spell.effet==="degats"){
-    // Sans jet de toucher : Décharge électrique au contact, Foudre qui tombe du ciel.
-    const hit=missionElementalHit(target,out.element,out.amount,caster);
+    // Sans jet de toucher : Décharge électrique au contact, Foudre qui tombe du ciel, Attraction et Projection.
+    const hit=missionSpellHit(target,out,out.amount,caster);
     effect=hit.damage>0;
-    missionLog(name+" lance "+spell.nom+on+detail+" : "+hit.damage+" PV de "+out.element+missionProtectionNote(hit)+". "
+    missionLog(name+" lance "+spell.nom+on+detail+" : "+hit.label+hit.note+". "
       +target.character.name+" reste à "+Math.max(0,target.hp)+" PV."+critical,"damage");
+    if(out.move&&target.alive){ missionForcedMove(target,out,caster); effect=true; }
     checkMissionEnd();
+  }else if(spell.effet==="degats_paire"){
+    // Entrechoc : les deux ennemis, chacun avec sa propre armure.
+    effect=false;
+    const lines=[target,out.second].map(u=>{
+      const hit=missionSpellHit(u,out,out.amount,caster);
+      if(hit.damage>0) effect=true;
+      return u.character.name+" : "+hit.label+hit.note;
+    });
+    missionLog(name+" lance "+spell.nom+" sur "+target.character.name+" et "+out.second.character.name+detail+" — "+lines.join(" ; ")+"."+critical,"damage");
+    checkMissionEnd();
+  }else if(spell.effet==="deplacement_force"){
+    const to=out.move.destination;
+    target.q=to.q;target.r=to.r;
+    missionLog(name+" lance "+spell.nom+on+detail+" : "+target.character.name+" est déplacé"+(missionFeminine(target)?"e":"")+" d’une case.","magic");
+  }else if(spell.effet==="protection_projectiles"){
+    target.projectileShield={code:out.effect.code,chance:out.effect.chance,untilTurn:m.turn+out.effect.turns};
+    missionLog(name+" lance "+spell.nom+on+detail+" : "+out.effect.chance+" % de chances de dévier chaque projectile, pendant "+out.effect.turns+" tours.","magic");
   }else if(spell.effet==="degats_rebonds"){
     // Boule d'éclairs : chaque personnage de la chaîne, de moins en moins fort, avec sa propre protection.
     effect=false;
@@ -1229,12 +1264,13 @@ function missionCellFree(target){
   return !missionUnits().some(u=>u.alive&&!u.offMap&&u.q===target.q&&u.r===target.r)&&!missionTerrainAt(target.q,target.r);
 }
 
-function castPlayerMissionSpell(target){
+function castPlayerMissionSpell(target,extra={}){
   const m=game.mission,u=missionActiveUnit(),code=missionSpellMode();
   if(!u||!code) return;
   if(missionMagic()?.spell(code)?.cible==="soi"&&target!==u) return;
   m.mode=null;
-  resolveMissionSpell(u,target,code);
+  m.spellTarget=null;
+  resolveMissionSpell(u,target,code,extra);
   if(missionActiveUnitLost()) return;
   renderMission();
 }
@@ -1300,19 +1336,84 @@ function tickMissionPoison(unit){
   if(unit.alive&&fx.turns<=0){ unit.poisoned=false; missionLog("Le poison quitte "+name+".","magic"); }
   checkMissionEnd();
 }
+function missionFeminine(unit){ return String(unit?.character?.sex||"").trim().toLowerCase().startsWith("f"); }
+// Dégâts d'un sort sur une unité : physiques (Télékinésie : l'étape Blesser, l'armure compte) ou élémentaires.
+// label et note pour le journal : « 34 PV contondants (Blesser 72 %, jet 40) », « 30 PV de feu (protection 9 %) ».
+function missionSpellHit(unit,out,amount,caster){
+  if(out.physical){
+    const hit=game.mission.engine.spellPhysicalHit(caster,unit,amount,out.physical);
+    if(hit.wound) damageMissionUnitBySpell(unit,hit.damage,caster,out.physical.type);
+    return {...hit,label:hit.wound?hit.damage+" PV contondants":"l’armure encaisse",note:" (Blesser "+Math.round(hit.pWound)+" %, jet "+hit.woundRoll+")"};
+  }
+  const hit=missionElementalHit(unit,out.element,amount,caster);
+  return {...hit,label:hit.damage+" PV de "+out.element,note:missionProtectionNote(hit)};
+}
+// Attraction, Projection (doc 12) : la cible suit les cases jusqu'au premier obstacle (un personnage, une flaque de
+// magma, le bord du terrain), sans attaque d'opportunité ; l'obstacle l'arrête et lui inflige un choc, qui passe par
+// l'armure.
+function missionForcedMove(unit,out,caster){
+  const move=out.move,name=unit.character.name;
+  let moved=0,obstacle=null;
+  for(const c of move.cells){
+    if(!validMissionHex(c.q,c.r)){ obstacle="le bord du terrain"; break; }
+    const other=missionUnits().find(u=>u!==unit&&u.alive&&!u.offMap&&u.q===c.q&&u.r===c.r);
+    if(other){ obstacle=other.character.name; break; }
+    if(missionTerrainAt(c.q,c.r)){ obstacle="la flaque de magma"; break; }
+    unit.q=c.q;unit.r=c.r;moved++;
+  }
+  if(!moved&&!obstacle) return;
+  const verb=(move.kind==="attire"?"attiré":"repoussé")+(missionFeminine(unit)?"e":"");
+  missionLog(moved?name+" est "+verb+" de "+moved+" case"+(moved>1?"s":"")+(obstacle?" et heurte "+obstacle:"")+".":name+" heurte aussitôt "+obstacle+".","move");
+  if(obstacle&&move.chocAmount&&unit.alive){
+    const hit=missionSpellHit(unit,out,move.chocAmount,caster);
+    missionLog("Choc : "+name+", "+hit.label+hit.note+".","damage");
+  }
+}
+// Déplacement et Entrechoc (Télékinésie) : deux clics. D'abord la cible ; puis la case libre où la pousser
+// (Déplacement) ou l'ennemi voisin à frapper avec elle (Entrechoc).
+function missionTwoStepTargets(spell){
+  const m=game.mission,u=missionActiveUnit(),magic=missionMagic(),set=new Set(),first=m.spellTarget;
+  if(!u||!magic) return set;
+  if(first?.alive){
+    if(spell.effet==="deplacement_force"){
+      for(const c of missionNeighbors(first)) if(missionCellFree(c)) set.add(missionKey(c.q,c.r));
+    }else{
+      for(const foe of missionOpponents(u)) if(!foe.offMap&&magic.canCastPair(u,first,foe,spell.code,{lineOfSight:missionLineOfSight(u,first),
+        secondLineOfSight:missionLineOfSight(u,foe)}).ok) set.add(missionKey(foe.q,foe.r));
+    }
+    return set;
+  }
+  for(const unit of missionUnits()) if(unit.alive&&!unit.offMap&&magic.canCast(u,unit,spell.code,{lineOfSight:missionLineOfSight(u,unit)}).ok)
+    set.add(missionKey(unit.q,unit.r));
+  return set;
+}
+function handleMissionTwoStepSpell(spell,q,r,clicked){
+  const m=game.mission,first=m.spellTarget;
+  if(first?.alive&&missionTwoStepTargets(spell).has(missionKey(q,r))){
+    if(spell.effet==="deplacement_force"&&!clicked){ castPlayerMissionSpell(first,{destination:{q,r}}); return; }
+    if(spell.effet==="degats_paire"&&clicked){ castPlayerMissionSpell(first,{second:clicked}); return; }
+  }
+  m.spellTarget=null;
+  if(clicked&&missionTwoStepTargets(spell).has(missionKey(q,r))) m.spellTarget=clicked;
+  renderMission();
+}
 // Crachat de venin (doc 12) : le tir de venin, par l'action rapide de celui qui a reçu le sort ; s'il blesse, il empoisonne.
 function spitMissionVenom(unit,target){
   const magic=missionMagic(),out=magic.spit(unit,target,{lineOfSight:missionLineOfSight(unit,target)});
   if(!out.ok){ missionLog(out.reason,"bad"); return out; }
   unit.quickAvailable=false;
-  const name=unit.character.name,foe=target.character.name,aim=" (toucher "+Math.round(out.pHit)+" %, jet "+out.hitRoll+")";
+  const name=unit.character.name,foe=target.character.name;
+  if(out.deflected){
+    missionLog(name+" crache du venin sur "+foe+" : dévié par le champ de protection ("+Math.round(out.pDeflect)+" %, jet "+out.deflectRoll+").","miss");
+    return out;
+  }
+  const aim=" (toucher "+Math.round(out.pHit)+" %, jet "+out.hitRoll+")";
   if(!out.hit){ missionLog(name+" crache du venin sur "+foe+" : raté"+aim+".","miss"); return out; }
   const hit=missionElementalHit(target,"poison",out.amount,unit);
   missionLog(name+" crache du venin sur "+foe+" : touché"+aim+", "+hit.damage+" PV de poison"+missionProtectionNote(hit)+".","damage");
   if(hit.damage>0&&target.alive){
-    const female=String(target.character.sex||"").trim().toLowerCase().startsWith("f");
     target.poisoned={code:out.code,turns:out.poison.turns,amount:out.poison.amount,sourceId:unit.id};
-    missionLog(foe+" est empoisonné"+(female?"e":"")+" pour "+out.poison.turns+" tours.","bad");
+    missionLog(foe+" est empoisonné"+(missionFeminine(target)?"e":"")+" pour "+out.poison.turns+" tours.","bad");
   }
   checkMissionEnd();
   return out;
@@ -1666,6 +1767,8 @@ function targetableMissionCells(){
   }
   if(spellCode){
     if(!magic) return set;
+    const twoStep=magic.spell(spellCode);
+    if(twoStep?.effet==="deplacement_force"||twoStep?.effet==="degats_paire") return missionTwoStepTargets(twoStep);
     const cible=magic.spell(spellCode)?.cible;
     if(cible==="case"||cible==="case_vide"){
       for(const c of missionCells()) if(magic.canCast(u,c,spellCode,{cellFree:missionCellFree(c),lineOfSight:missionLineOfSight(u,c)}).ok) set.add(missionKey(c.q,c.r));
@@ -1723,6 +1826,7 @@ function renderMission(){
     if(targets.has(key)) classes.push(m.mode==="move"?"reachable":missionSpellMode()?"spell-target":"targetable");
     const magma=missionTerrainAt(q,r);
     if(magma){ classes.push("magma"); title=` title="Flaque de magma : infranchissable jusqu’au tour ${magma.untilTurn}"`; }
+    if(m.spellTarget&&m.spellTarget.q===q&&m.spellTarget.r===r) classes.push("spell-chosen");
     const fog=missionFogAt(q,r);
     if(fog){ classes.push("fog"); title=` title="Brouillard : coupe la ligne de vue jusqu’au tour ${fog.untilTurn}"`; }
     if(targets.has(key)&&m.mode==="move"){

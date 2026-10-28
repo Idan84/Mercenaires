@@ -71,20 +71,21 @@ const others=m.players.filter(x=>x!==u);
 assert.equal(magic.knownSpells(u).length,0);
 assert.equal(api.renderMissionSpellBar(u),"");
 assert.equal(api.missionActionAvailability().testSpells,true);
-// Bouton de test : toute l'escouade connaît tous les sorts écrits (Vie, Feu, Eau, Transmutation, Foudre) pour ce combat ; le
-// grimoire ne change pas.
+// Bouton de test : toute l'escouade connaît tous les sorts écrits (Vie, Feu, Eau, Transmutation, Foudre, Télékinésie) pour ce
+// combat ; le grimoire ne change pas.
 api.teachMissionTestSpells();
 assert.deepEqual(magic.knownSpells(u).map(s=>s.code),["quick_heal","deep_heal","regeneration","mass_heal","restitution","purge",
   "fire_bolt","fireball","fire_ring","flaming_weapon","fire_armor","magma",
   "fog","healing_water","ice_arrow","tsunami","frost_armor","freeze","ice_weapon",
   "sixth_sense","titan_strength","cheetah_speed","stone_skin","venom_spit","cauterize",
-  "shock","lightning_bolt","shock_weapon","chain_lightning","thunder","celerity"]);
-assert.ok(m.players.every(p=>p.spells.length===31&&!(p.character.spells||[]).length));
+  "shock","lightning_bolt","shock_weapon","chain_lightning","thunder","celerity",
+  "attraction","projection","telekinetic_move","clash","force_field","stone_throw"]);
+assert.ok(m.players.every(p=>p.spells.length===37&&!(p.character.spells||[]).length));
 assert.equal(api.missionActionAvailability().testSpells,false,"une seule fois par combat");
-assert.ok(logged(/connaît tous les sorts \(Vie, Feu, Eau, Transmutation, Foudre, niveau 1\)/));
+assert.ok(logged(/connaît tous les sorts \(Vie, Feu, Eau, Transmutation, Foudre, Télékinésie, niveau 1\)/));
 const bar=api.renderMissionSpellBar(u);
 assert.match(bar,/Mana 53\/53/);
-assert.equal((bar.match(/data-spell=/g)||[]).length,31);
+assert.equal((bar.match(/data-spell=/g)||[]).length,37);
 assert.match(bar,/Soin rapide<small>rapide · \d+ mana · \d+ %<\/small>/);
 
 // Soin rapide : cases ciblables = le lanceur et les alliés à portée, jamais un ennemi lointain.
@@ -535,6 +536,90 @@ assert.ok(engine.statWithGear(u,"Vitesse")>pace,"la suivante aussi");
 api.resetMissionActivation(u);
 assert.equal(engine.statWithGear(u,"Vitesse"),pace);
 
+// École de la Télékinésie dans l'écran de combat (Idan, 2026-10-28). Maîtrise 60,5 : 3 cases de déplacement forcé.
+for(const p of m.players) p.character.skills.magic["Télékinésie"]=60;
+for(const x of [u,ally,wet,distant]){ x.alive=true;x.hp=x.pvMax;x.statBuffs=null;x.statMalus=null; }
+u.q=2;u.r=4;ally.q=2;ally.r=5;wet.q=4;wet.r=4;distant.q=6;distant.r=4;
+// Projection : dégâts contondants (Blesser), puis repoussé dans l'axe ; l'ennemi derrière l'arrête : choc.
+reset();
+api.setMissionMode("spell:projection");
+queue.push(0,0.99,0.5,0.5,0,0,0,0);
+api.handleMissionHexClick(wet.q,wet.r);
+assert.deepEqual([wet.q,wet.r],[5,4],"une case, puis il heurte l'ennemi de derrière");
+assert.ok(wet.hp<wet.pvMax);
+assert.ok(logged(/lance Projection sur .* : \d+ PV contondants \(Blesser \d+ %, jet 1\)/));
+assert.ok(logged(/est repoussée? de 1 case et heurte /));
+assert.ok(logged(/^Choc : .* PV contondants/));
+assert.ok(wet.progress.wounds["Résistance physique"]>=1,"le contondant fait progresser la Résistance physique");
+// Attraction : de loin, tiré jusqu'au contact du lanceur, sans obstacle : pas de choc.
+reset();
+wet.q=-50;wet.r=-50;
+api.setMissionMode("spell:attraction");
+queue.push(0,0.99,0.5,0.5,0,0);
+api.handleMissionHexClick(distant.q,distant.r);
+assert.deepEqual([distant.q,distant.r],[3,4],"au contact du lanceur");
+assert.ok(logged(/est attirée? de 3 cases\./));
+// Déplacement : deux clics, la cible puis une case libre voisine.
+reset();
+api.setMissionMode("spell:telekinetic_move");
+cells=api.targetableMissionCells();
+assert.ok(cells.has(api.missionKey(distant.q,distant.r))&&cells.has(api.missionKey(ally.q,ally.r))&&!cells.has(api.missionKey(u.q,u.r)),"un allié ou un ennemi, pas soi");
+api.handleMissionHexClick(distant.q,distant.r);
+cells=api.targetableMissionCells();
+assert.ok(cells.has(api.missionKey(4,4))&&!cells.has(api.missionKey(u.q,u.r))&&!cells.has(api.missionKey(6,4)),"ses cases voisines libres");
+queue.push(0);
+api.handleMissionHexClick(4,4);
+assert.deepEqual([distant.q,distant.r],[4,4]);
+assert.ok(logged(/lance Déplacement sur .* est déplacée? d’une case/));
+assert.equal(u.quickAvailable,false);
+// Entrechoc : un ennemi, puis son voisin ; les deux sont frappés.
+reset();
+wet.q=5;wet.r=4;wet.hp=wet.pvMax;distant.hp=distant.pvMax;
+api.setMissionMode("spell:clash");
+api.handleMissionHexClick(distant.q,distant.r);
+cells=api.targetableMissionCells();
+assert.deepEqual([...cells],[api.missionKey(wet.q,wet.r)],"seul l'ennemi voisin");
+queue.push(0,0.99,0.5,0.5,0,0,0,0);
+api.handleMissionHexClick(wet.q,wet.r);
+assert.ok(distant.hp<distant.pvMax&&wet.hp<wet.pvMax);
+assert.ok(logged(/lance Entrechoc sur .* et .* — .* PV contondants .* ; .* PV contondants/));
+// Lancer de pierre : un tir de fronde, pas au contact.
+reset();
+wet.hp=wet.pvMax;
+api.setMissionMode("spell:stone_throw");
+cells=api.targetableMissionCells();
+assert.ok(cells.has(api.missionKey(wet.q,wet.r)),"à 3 cases : à portée de fronde");
+queue.push(0,0.99,0.5,0,0,0);
+api.handleMissionHexClick(wet.q,wet.r);
+assert.ok(wet.hp<wet.pvMax);
+assert.ok(logged(/lance Lancer de pierre sur .* touché .* PV contondants/));
+distant.q=3;distant.r=4;
+reset();
+api.setMissionMode("spell:stone_throw");
+assert.ok(!api.targetableMissionCells().has(api.missionKey(3,4)),"trop près pour une fronde");
+// Champ de protection sur un allié : la moitié des tirs déviés, 4 tours.
+reset();
+api.setMissionMode("spell:force_field");
+queue.push(0);
+api.handleMissionHexClick(ally.q,ally.r);
+assert.deepEqual([ally.projectileShield.chance,ally.projectileShield.untilTurn],[50,m.turn+4]);
+assert.ok(logged(/lance Champ de protection sur .* 50 % de chances de dévier chaque projectile, pendant 4 tours/));
+const sling={id:"test-sling",name:"Fronde",category:"Armes de tir",tier:1,qualityCode:"correcte"};
+distant.character.items.push(sling);
+const slingSlot="weapon_set_"+distant.activeSet+"_main",slingOff="weapon_set_"+distant.activeSet+"_offhand";
+distant.character.equipment.slots[slingSlot]="test-sling";distant.character.equipment.slots[slingOff]=null;
+distant.q=6;distant.r=5;
+queue.push(0.3);
+let shot=engine.resolveAttack(distant,ally,{mode:"ranged",distance:engine.axialDistance(distant,ally)});
+assert.deepEqual([shot.ok,shot.deflected,shot.hit],[true,true,false],"tir d'arme dévié (jet 31 ≤ 50)");
+queue.push(0.7);
+shot=engine.resolveAttack(distant,ally,{mode:"ranged",distance:engine.axialDistance(distant,ally)});
+assert.notEqual(shot.deflected,true,"jet 71 : le tir passe le champ");
+m.turn=ally.projectileShield.untilTurn;
+api.pruneMissionTerrain();
+assert.equal(ally.projectileShield,null);
+assert.ok(logged(/Le champ de protection de .* se dissipe/));
+
 // Mort du poison au début de son activation : on passe au suivant.
 m=newMission();
 const doomed=m.playerOrder.find(p=>p!==m.activeUnit);
@@ -576,4 +661,4 @@ assert.ok(home.mana>0,"au camp : recharge");
 assert.equal(away.mana,0,"en route : rien");
 assert.ok(report.mana.some(x=>x.id===home.id));
 
-console.log("Sorts de Vie, du Feu, de l'Eau, de la Transmutation et de la Foudre dans l'écran de combat, poison, recharge du mana au camp — OK");
+console.log("Sorts de Vie, du Feu, de l'Eau, de la Transmutation, de la Foudre et de la Télékinésie dans l'écran de combat, poison, recharge du mana au camp — OK");

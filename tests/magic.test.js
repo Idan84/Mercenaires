@@ -25,13 +25,14 @@ const magic=createMagicRules({reference,combat,random});
 function mage({pm,vie,level=1,int,chance=54,mana=53,items=[],slots={}}){
   return {
     name:"Mage",stats:{"Puissance magique":pm,Intelligence:int,Chance:chance,"Réserve de mana":mana,Constitution:50,Endurance:50,Volonté:50},
-    skills:{magic:{Vie:vie,Feu:vie,Eau:vie,Transmutation:vie,Foudre:vie,Télékinésie:vie,Nécromancie:20,Illusion:20}},mana,
+    skills:{magic:{Vie:vie,Feu:vie,Eau:vie,Transmutation:vie,Foudre:vie,Télékinésie:vie,Illusion:vie,Nécromancie:20}},mana,
     spells:["quick_heal","deep_heal","regeneration","mass_heal","restitution","purge"].map(code=>({code,school:"Vie",mastery:level}))
       .concat(["fire_bolt","fireball","fire_ring","flaming_weapon","fire_armor","magma"].map(code=>({code,school:"Feu",mastery:level})))
       .concat(["fog","healing_water","ice_arrow","tsunami","frost_armor","freeze","ice_weapon"].map(code=>({code,school:"Eau",mastery:level})))
       .concat(["sixth_sense","titan_strength","cheetah_speed","stone_skin","venom_spit","cauterize"].map(code=>({code,school:"Transmutation",mastery:level})))
       .concat(["shock","lightning_bolt","shock_weapon","chain_lightning","thunder","celerity"].map(code=>({code,school:"Foudre",mastery:level})))
-      .concat(["attraction","projection","telekinetic_move","clash","force_field","stone_throw"].map(code=>({code,school:"Télékinésie",mastery:level}))),
+      .concat(["attraction","projection","telekinetic_move","clash","force_field","stone_throw"].map(code=>({code,school:"Télékinésie",mastery:level})))
+      .concat(["fear","illusory_support","mass_courage","hidden_advance","psychic_shock","frenzy"].map(code=>({code,school:"Illusion",mastery:level}))),
     items,equipment:{slots}
   };
 }
@@ -552,4 +553,51 @@ assert.ok(combat.spellPhysicalHit(blunt,plated,100,{type:"contondant",power:35,m
 // Moteur : un tir d'arme sur un personnage protégé est dévié avant le Toucher.
 assert.match(fs.readFileSync(path.join(ROOT,"game-core","combat-engine.js"),"utf8"),/if\(mode==="ranged"&&defender\.projectileShield\)/);
 
-console.log("Magie : écoles de la Vie, du Feu, de l'Eau, de la Transmutation, de la Foudre et de la Télékinésie OK");
+// École de l'Illusion (Idan, 2026-10-28).
+assert.deepEqual(magic.schoolSpells("Illusion").map(x=>[x.code,x.palier,x.difficulte,x.action,x.cible]),[
+  ["fear","Expert",70,"principale","case"],["illusory_support","Novice",30,"rapide","allie_ou_soi"],
+  ["mass_courage","Adepte",50,"principale","case"],["hidden_advance","Adepte",50,"principale","case"],
+  ["psychic_shock","Novice",30,"principale","ennemi"],["frenzy","Adepte",50,"rapide","personnage"]]);
+assert.deepEqual([magic.range(beginner,"fear"),magic.zoneRadius(beginner,"fear"),magic.zoneRadius(archmage,"fear")],[7,2,3],"zone de 2 à 3 cases");
+assert.deepEqual([magic.range(beginner,"illusory_support"),magic.bonus(beginner,"illusory_support"),magic.bonus(expert,"illusory_support")],[15,36,56]);
+assert.deepEqual([magic.duration(beginner,"illusory_support"),magic.duration(archmage,"illusory_support")],[2,2],"2 tours");
+assert.deepEqual([magic.duration(beginner,"mass_courage"),magic.duration(expert,"mass_courage"),magic.duration(archmage,"mass_courage")],[2,3,3],"2 à 3 tours");
+assert.deepEqual([magic.bonus(beginner,"mass_courage"),magic.bonus(beginner,"hidden_advance"),magic.bonus(expert,"hidden_advance")],[26,46,66]);
+assert.deepEqual(magic.targetStats("hidden_advance"),["Discrétion"]);
+assert.deepEqual([magic.range(beginner,"frenzy"),magic.duration(expert,"frenzy"),magic.bonus(expert,"frenzy")],[3,2,10],"portée courte, 2 tours, +10 %");
+// Peur : la zone et la Maîtrise du lanceur ; Frénésie : sur n'importe qui, le lanceur compris.
+queue=[0];
+out=magic.cast(caster,{q:4,r:0},"fear");
+assert.deepEqual([out.success,out.zone,out.fear],[true,{center:{q:4,r:0},radius:2},{mastery:31.5}]);
+assert.equal(magic.canCast(caster,caster,"frenzy").ok,true);
+queue=[0];
+out=magic.cast(caster,foe,"frenzy");
+assert.deepEqual(out.effect,{code:"frenzy",stats:["Force"],value:10,unit:"pourcentage",turns:2});
+queue=[0];
+out=magic.cast(caster,{q:1,r:0},"mass_courage");
+assert.deepEqual([out.zone.radius,out.effect.stats,out.effect.value,out.effect.unit,out.effect.turns],[2,["Courage"],26,"points",2]);
+// Choc psychique : × Volonté du lanceur / Volonté de la cible, de 0,5 à 2 ; ni armure ni résistance.
+const willed=w=>unit({...mage({pm:50,vie:1,int:50}),stats:{Volonté:w}},{q:5,r:0,team:"enemy"});
+assert.deepEqual([magic.willFactor(caster,willed(25)),magic.willFactor(caster,willed(40)),magic.willFactor(caster,willed(100)),magic.willFactor(caster,willed(400))],[2,1.25,0.5,0.5]);
+queue=[0,0.99,0.5,0];
+out=magic.cast(caster,enemy,"psychic_shock",{units:[caster,enemy]});
+assert.deepEqual([out.success,out.psychic,out.physical,out.hit],[true,true,undefined,true]);
+// Moteur : la Peur, le test de Courage avec la Maîtrise et la Volonté du lanceur à la place de l'Intimidation.
+const brave=extra=>({character:{name:"Brave",stats:{Courage:50,Volonté:50},items:[],equipment:{slots:{}}},activeSet:1,team:"enemy",alive:true,...extra});
+const seer={character:{name:"Mage",stats:{Volonté:60},items:[],equipment:{slots:{}}},activeSet:1,team:"player"};
+assert.equal(combat.fearHold(brave(),seer,56.5),50+12.5-0.25*(56.5+60));
+queue=[0.99];
+let fear=combat.resolveFear(brave(),seer,56.5);
+assert.deepEqual([fear.roll,fear.flees],[100,true]);
+queue=[0];
+assert.equal(combat.resolveFear(brave(),seer,56.5).flees,false);
+assert.equal(combat.resolveFear(brave({fleeing:true}),seer,56.5),null,"déjà en fuite");
+assert.equal(combat.resolveFear(brave({frenzy:{turns:2}}),seer,56.5),null,"en frénésie : plus de peur");
+// Frénésie : plus de test de Courage après une blessure ni après un coup qui ne blesse pas.
+assert.equal(combat.resolveCourage(seer,brave({frenzy:{turns:1}}),{ok:true,wound:true,mode:"melee"},{units:[]}),null);
+assert.equal(combat.resolveCourage(brave({frenzy:{turns:1}}),seer,{ok:true,wound:false,mode:"melee"},{units:[]}),null);
+// Le bonus de Discrétion (Avancée cachée) passe par les compétences.
+assert.equal(combat.statWithGear({character:{skills:{martial:{Discrétion:30}},items:[],equipment:{slots:{}}},activeSet:1,
+  statBuffs:{hidden_advance:{stats:["Discrétion"],value:46,unit:"points"}}},"Discrétion"),76);
+
+console.log("Magie : écoles de la Vie, du Feu, de l'Eau, de la Transmutation, de la Foudre, de la Télékinésie et de l'Illusion OK");

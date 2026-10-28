@@ -23,7 +23,7 @@ Principe : le joueur reste **très libre** de faire ce qu'il veut, à lui d'êtr
 | Réserve de mana | Combien de sorts on peut lancer |
 | Intelligence | Réussite du sort ; sorts connus à la création |
 | Volonté | Recharge du mana au camp |
-| Charisme | Selon l'école (Illusion, Invocation…) ; ne joue pas sur le soin |
+| Charisme | Selon l'école (Invocation, Nécromancie : Idan, 2026-10-28 ; l'Illusion prend la Volonté) ; ne joue pas sur le soin |
 
 Toutes ces valeurs se prennent **équipement compris** (bague de l'école, amulette de puissance magique, ceinture de mana, casque de constitution…).
 
@@ -120,7 +120,7 @@ Même modèle que la Vie (effet, mana, difficulté par palier, CC aux dés maxim
 
 ### École de l'Eau (7 sorts, Idan, 2026-10-27)
 
-**Objectif V1 (Idan, 2026-10-27) : 10 sorts mono-école par école.** La Vie, le Feu, la Transmutation, la Foudre et la Télékinésie en ont 6, l'Eau 7 ; les autres viendront.
+**Objectif V1 (Idan, 2026-10-27) : 10 sorts mono-école par école.** La Vie, le Feu, la Transmutation, la Foudre, la Télékinésie et l'Illusion en ont 6, l'Eau 7 ; les autres viendront.
 
 Même modèle que la Vie et le Feu (effet, mana, difficulté par palier, CC aux dés maximum, EC : le lanceur subit le minimum de son sort). L'élément de l'école est le **froid** : dégâts × (1 − protection contre le froid / 100), avec la valeur « glaçant » de l'armure (même règle que le feu). Données : `spells.json`.
 
@@ -235,6 +235,34 @@ Une école de **contrôle** : elle déplace les gens sur la carte. Même modèle
 | Lancer de pierre | 30 · 6 mana · 57 % | 40 · 5 · 81 % | 89 · 4 · 94 % |
 | Chance de blesser, Projection (sans armure / cuir / plates) | 82 / 78 / 56 % | 84 / 80 / 61 % | 89 / 88 / 82 % |
 
+### École de l'Illusion (6 sorts, Idan, 2026-10-28)
+
+L'école du **moral** : elle joue sur le test de Courage du combat (doc 04, Courage post-attaque). La **Volonté** du mage y compte (Idan : « ici, c'est la force mentale » ; le Charisme ira à l'Invocation et à la Nécromancie). Même modèle que les autres écoles pour le mana, la réussite et les critiques. Écoles opposées : Vie et Télékinésie. Données : `spells.json`.
+
+| Sort | Palier | Action | Effet | Portée / zone | Mana (base) |
+|---|---|---|---|---|---|
+| Peur | Expert (70) | principale | chaque **ennemi** de la zone fait un **test de Courage** ; raté, il prend la **fuite** | centre à 6 + M/25 (au plus 12), rayon **2 + M/50, de 2 à 3** | 30 |
+| Soutien illusoire | Novice (30) | rapide | **+(30 + M/5) de Courage** pendant **2 tours** | un allié ou soi, **12 + M/10** (grande portée) | 10 |
+| Courage de masse | Adepte (50) | principale | **+(20 + M/5) de Courage** aux alliés de la zone, lanceur compris, pendant **2 + M/50 tours (2 à 3)** | centre à 6 + M/25, rayon 2 à 3 | 20 |
+| Avancée cachée | Adepte (50) | principale | **+(40 + M/5) de Discrétion** (massif) aux alliés de la zone, lanceur compris, pendant 2 à 3 tours | centre à 6 + M/25, rayon 2 à 3 | 20 |
+| Choc psychique | Novice (30) | principale | **1D6** × **Volonté du mage / Volonté de la cible** (de × 0,5 à × 2), **comme une flèche** ; ni armure ni résistance | 6 + M/25, au plus 12 | 10 |
+| Frénésie | Adepte (50) | rapide | pendant les **2 prochaines activations** de la cible : elle **joue seule**, **+10 % de Force**, **plus de peur** | un allié, un ennemi ou soi, 2 + M/25 | 15 |
+
+- **Peur** : le test de Courage d'après une attaque, la **Maîtrise et la Volonté du mage** tenant le rôle de l'Intimidation de l'adversaire : tenir = Courage + aura + Volonté / 4 − (Maîtrise + Volonté du mage) / 4, de 5 à 95 %. Raté : En fuite, avec le mouvement de fuite immédiat et la reprise de contrôle habituels. Un ennemi déjà en fuite ou en frénésie ne teste pas ; les alliés de la zone ne sont pas touchés. Un ennemi avec Courage 50 et Volonté 50 tient à 42 % face à un débutant, 35 % face à une recrue, 12 % face à un expert.
+- **Soutien illusoire**, **Courage de masse** : des points de Courage, qui comptent aussi pour reprendre ses esprits en fuite. Sur le lanceur, l'activation en cours compte comme la première.
+- **Avancée cachée** : la Discrétion n'a pas encore de règle en combat (doc 05) ; le bonus est posé et servira dès qu'elle en aura une.
+- **Choc psychique** : un projectile ; le Champ de protection peut le dévier.
+- **Frénésie** (Idan : la cible joue seule) : à chacune de ses activations, joueur ou ennemi, elle prend une arme de mêlée si l'autre set en a une, puis frappe au contact, charge, ou fonce sur l'ennemi le plus proche ; jamais de tir ni de sort. Elle ne fait plus aucun test de Courage, et une cible en fuite s'arrête de fuir. Ses 2 prochaines activations, même si le lanceur se vise lui-même.
+
+| | Débutant | Recrue moyenne | Expert |
+|---|---|---|---|
+| Peur | rayon 2 · portée 7 · 27 mana · 17 % | rayon 3 · portée 8 · 25 · 33 % | rayon 3 · portée 11 · 17 · 87 % |
+| Soutien illusoire | +36, 2 tours · portée 15 · 57 % | +41 · portée 17 · 81 % | +56 · portée 25 · 94 % |
+| Courage de masse | +26, 2 tours · 31 % | +31, 3 tours · 59 % | +46, 3 tours · 93 % |
+| Avancée cachée | +46 Discrétion, 2 tours | +51, 3 tours | +66, 3 tours |
+| Choc psychique, à Volonté égale | 30 · 9 mana · 57 % | 40 · 9 · 81 % | 89 · 6 · 94 % |
+| Frénésie | portée 3 · 14 mana · 31 % | portée 4 · 13 · 59 % | portée 7 · 9 · 93 % |
+
 ### Mana
 
 - Le **Mana actuel** se dépense en combat et se **recharge chaque jour au camp** : **Réserve de mana × (10 + Volonté / 2) %** par jour (Volonté 52 : 36 % par jour, plein en 3 jours). Rien pendant les trajets.
@@ -296,7 +324,7 @@ Plus tard : une **école de magie** à construire au camp et des **manuels** à 
 ### Mise en place
 
 1. **Étape 1** — ces décisions, `spells.json`, les règles des sorts (`game-core/magic.js`) et leurs tests (`tests/magic.test.js`) : Soin rapide, puis les six sorts de l'école de la Vie.
-2. **Étape 2** — les sorts dans l'écran de combat actuel, **pour tester** (Vie, puis Feu, Eau, Transmutation, Foudre et Télékinésie ; le bouton de test s'appelle désormais « Sorts (test) » et donne tous les sorts écrits) (Idan, 2026-10-25 ; l'interface de combat sera refaite) : une barre de sorts pour le mercenaire actif (action, mana, réussite) ; les cases ciblables en vert (alliés et lanceur, ou toutes les cases à portée pour Soin de masse) ; le journal ; la Régénération au début des activations ; le mana affiché dans la liste des équipes ; un bouton **« Sorts de Vie (test) »** : toute l'escouade connaît les six sorts (niveau 1) pour ce combat, sans toucher au grimoire, le mana étant bien dépensé ; une IA simple, aussi en combat automatique : Soin profond sur l'allié le plus blessé sous 35 % de ses PV à la place de l'attaque, Soin rapide sous 60 %.
+2. **Étape 2** — les sorts dans l'écran de combat actuel, **pour tester** (Vie, puis Feu, Eau, Transmutation, Foudre, Télékinésie et Illusion ; le bouton de test s'appelle désormais « Sorts (test) » et donne tous les sorts écrits) (Idan, 2026-10-25 ; l'interface de combat sera refaite) : une barre de sorts pour le mercenaire actif (action, mana, réussite) ; les cases ciblables en vert (alliés et lanceur, ou toutes les cases à portée pour Soin de masse) ; le journal ; la Régénération au début des activations ; le mana affiché dans la liste des équipes ; un bouton **« Sorts de Vie (test) »** : toute l'escouade connaît les six sorts (niveau 1) pour ce combat, sans toucher au grimoire, le mana étant bien dépensé ; une IA simple, aussi en combat automatique : Soin profond sur l'allié le plus blessé sous 35 % de ses PV à la place de l'attaque, Soin rapide sous 60 %.
 3. Étape 3 — **recharge du mana au camp** (faite avec l'étape 2, pour pouvoir tester d'un combat à l'autre), **XP du sort et de l'école, régression des écoles opposées**, XP de la Puissance magique, de la Réserve de mana et de la Chance (faite, voir « Écoles : progression et régression »).
 4. Étape 4 — **sorts connus à la création** et **compensations des nains et des ogres** (faite, voir « Sorts connus à la création »).
 
@@ -355,7 +383,7 @@ Remplacé par l'**École de la Foudre** d'Idan (2026-10-27, ci-dessus) : Déchar
 
 ### Illusion
 
-- **Création de double** — augmente la capacité à éviter les attaques selon un affrontement futur entre qualité de l'illusion et Intelligence / Perception de l'attaquant.
+Remplacé par l'**École de l'Illusion** d'Idan (2026-10-28, ci-dessus) : Peur, Soutien illusoire, Courage de masse, Avancée cachée, Choc psychique, Frénésie. L'idée de la **Création de double** reste en réserve.
 
 ### Nécromancie
 

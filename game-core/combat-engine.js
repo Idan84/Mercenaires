@@ -875,6 +875,17 @@
     function courageHold(subject,opponent,surplus=0,aura=0){
       return clamp(statWithGear(subject,"Courage")+aura+0.25*statWithGear(subject,"Volonté")-0.25*intimidation(opponent)-10*surplus,5,95);
     }
+    // Peur (Illusion ; Idan, 2026-10-28 : « la volonté du mage… ici, c'est la force mentale ») : le même test de Courage, la
+    // Maîtrise du sort et la Volonté du lanceur tenant le rôle de l'Intimidation de l'adversaire. Un personnage déjà en fuite
+    // ou en frénésie ne teste pas.
+    function fearHold(subject,caster,mastery,aura=0){
+      return clamp(statWithGear(subject,"Courage")+aura+0.25*statWithGear(subject,"Volonté")-0.25*(mastery+statWithGear(caster,"Volonté")),5,95);
+    }
+    function resolveFear(subject,caster,mastery,units=[]){
+      if(!subject||subject.alive===false||subject.fleeing||subject.frenzy) return null;
+      const aura=allyAura(subject,units),pHold=fearHold(subject,caster,mastery,aura.bonus),roll=d100();
+      return {subject,source:caster,pHold,roll,flees:roll>pHold,aura:aura.bonus,auraFrom:aura.from};
+    }
 
     // Courage en sous-nombre V1 : mêlée locale = groupe connecté de combattants liés par leurs zones de menace CAC.
     function localMelee(subject,units){
@@ -896,8 +907,8 @@
       if(!result?.ok||result.chargeFall) return null;
       let subject,source,pHold,rule,aura;
       if(result.wound){
-        // Une cible déjà En Fuite ne reteste pas (décision Idan, Issue #8).
-        if(!defender.alive||defender.fleeing) return null;
+        // Une cible déjà En Fuite ne reteste pas (décision Idan, Issue #8) ; en frénésie (Illusion), plus de peur.
+        if(!defender.alive||defender.fleeing||defender.frenzy) return null;
         const surplus=result.mode==="melee"?Math.max(0,Number(context.defenderSurplus)||0):0;
         subject=defender;source=attacker;
         aura=allyAura(defender,context.units);
@@ -905,7 +916,7 @@
         rule=surplus>0?"outnumbered":"wounded";
       }else{
         // Tir : le tireur ne teste jamais. CAC : un attaquant qui participe à un encerclement ne teste pas.
-        if(result.mode!=="melee"||!attacker.alive||attacker.fleeing||context.attackerEncircles) return null;
+        if(result.mode!=="melee"||!attacker.alive||attacker.fleeing||attacker.frenzy||context.attackerEncircles) return null;
         subject=attacker;source=defender;
         aura=allyAura(attacker,context.units);
         pHold=100-(100-courageHold(attacker,defender,0,aura.bonus))/2;
@@ -973,6 +984,8 @@
       hexLine,
       POISON,
       spellPhysicalHit,
+      fearHold,
+      resolveFear,
       poisonResistChance,
       resolvePoison,
       activeWeaponItem,

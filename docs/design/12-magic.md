@@ -263,6 +263,38 @@ L'école du **moral** : elle joue sur le test de Courage du combat (doc 04, Cour
 | Choc psychique, à Volonté égale | 30 · 9 mana · 57 % | 40 · 9 · 81 % | 89 · 6 · 94 % |
 | Frénésie | portée 3 · 14 mana · 31 % | portée 4 · 13 · 59 % | portée 7 · 9 · 93 % |
 
+### École de la Nécromancie (6 sorts, Idan, 2026-10-28)
+
+Le **Charisme** du mage y compte (Idan : l'Invocation et la Nécromancie en dépendent) : il garde ses invocations et fixe la force du zombie. Même modèle que les autres écoles pour le mana, la réussite et les critiques. Écoles opposées : Vie et Invocation. Données : `spells.json` (colonnes `entretien_mana` et `creature`), `summon-archetypes.json` (le spectre), constantes `magic.summon.*`.
+
+| Sort | Palier | Action | Effet | Portée | Mana (base) |
+|---|---|---|---|---|---|
+| Résurrection | Adepte (50) | principale | un **combattant mort**, allié ou ennemi, se relève en **zombie** de votre camp, avec **(Maîtrise + Charisme) / 2 %** (de 10 à 100 %) de ses caractéristiques, compétences et PV ; il garde son arme et son armure | 1 (le corps) | 30, puis **5 par tour** |
+| Invocation de spectre | Adepte (50) | principale | un **spectre** apparaît sur une case libre | 1 | 25, puis **5 par tour** |
+| Drain de vie | Novice (30) | rapide | sur soi, pendant **2 + M/50 tours (2 à 3)** : il récupère **50 %** des PV que ses coups d'arme au corps à corps retirent | soi | 10 |
+| Flèche de mort | Novice (30) | principale | **1D6** de dégâts **nécrotiques**, **comme une flèche** | 6 + M/25, au plus 12 | 10 |
+| Nécrose | Adepte (50) | principale | **2D8** de dégâts **nécrotiques**, sans jet de toucher | 1 (contact) | 20 |
+| Flétrissement | Novice (30) | principale | la cible ne peut plus être **soignée** ni récupérer de PV, pendant **3 + M/100 tours (3 à 4)** | 6 + M/25, au plus 12 | 15 |
+
+- **Invocations** (zombie, spectre ; l'Invocation suivra les mêmes règles, Idan) : le **joueur** les joue, avec leur propre activation dans l'ordre du tour, dès le tour suivant ; en combat automatique, l'IA. Au **début de chaque tour**, le mage les garde : **test de Charisme** = la formule de réussite d'un sort, le Charisme à la place de l'Intelligence, difficulté **30**, sans l'armure ; raté, l'invocation **disparaît** (le zombie tombe en poussière). Puis l'**entretien** : 5 × (1 − Maîtrise / 300) mana, au moins 1 ; sans assez de mana, elle disparaît aussi. Elles disparaissent aussitôt quand le mage est hors combat ou quitte la carte, et à la fin du combat : ni XP ni bilan. Comme tout le monde, une invocation arrive **camouflée** (doc 04) ; le repérage du début de tour fait le reste. Une meute (Invocation) comptera pour une seule invocation : un test, un entretien.
+- **Résurrection** : sur le corps d'un combattant mort resté sur la carte, sur lequel personne ne se tient ; un corps ne se relève qu'une fois, et une invocation ne laisse pas de corps. **Un allié relevé ne survit pas au combat** : son jet de mort de fin de mission est forcément raté (Idan : « pas toujours cool d'avoir un collègue nécromancien ! »). Le zombie est un **mort-vivant** : la Restitution le blesse, les dégâts nécrotiques ne le touchent pas, et il ne fait **aucun test de Courage**.
+- **Spectre** (archétype fixe, Idan : « à peu près les stats d'un gobelin ») : guerrier gobelin novice, **Vitesse 65** (6 cases), **Volonté 50**, **100 PV**, sans arme ni armure. **Immunisé aux dégâts physiques** : armes, tirs, sorts contondants ; la magie élémentaire, le psychique et la Restitution le touchent. **Toucher spectral** : jet de toucher au contact, puis **1D6 de dégâts psychiques** × sa Volonté / celle de la cible (de × 0,5 à × 2), sans Blesser, ni armure ni résistance (≈ 35 à Volonté égale). Mort-vivant, sans peur.
+- **Dégâts nécrotiques** (Flèche de mort, Nécrose) : ils **traversent l'armure et les résistances**, sans la Volonté ; **sans effet sur les morts-vivants** (on ne peut pas les viser ; une flèche égarée ne leur fait rien). La Flèche de mort est un projectile : le Champ de protection peut la dévier.
+- **Drain de vie** : seulement les coups d'arme au corps à corps du mage, pas les tirs ni les sorts ; les PV retirés comptent jusqu'à zéro (pas la profondeur sous zéro). Sur soi, l'activation en cours compte comme la première.
+- **Flétrissement** : aucun soin (sorts de soin, Régénération, Drain de vie, potions plus tard) pendant les 3 ou 4 prochaines activations de la cible.
+
+| | Débutant | Recrue moyenne | Expert |
+|---|---|---|---|
+| Résurrection | zombie à 33 % · 27 mana · 31 % | 55 % · 25 · 59 % | 100 % · 17 · 93 % |
+| Invocation de spectre | 23 mana · 31 % | 21 · 59 % | 14 · 93 % |
+| Garder une invocation, chaque tour | 57 % · 5 mana | 81 % · 5 | 94 % · 3 |
+| Drain de vie | 2 tours · 9 mana · 57 % | 3 tours · 9 · 81 % | 3 tours · 6 · 94 % |
+| Flèche de mort | 30 · portée 7 · 9 mana · 57 % | 40 · 8 · 9 · 81 % | 89 · 11 · 6 · 94 % |
+| Nécrose | 78 · 18 mana · 31 % | 102 · 17 · 59 % | 229 · 12 · 93 % |
+| Flétrissement | 3 tours · portée 7 · 14 mana · 57 % | 3 tours · 8 · 13 · 81 % | 4 tours · 11 · 9 · 94 % |
+
+(Charisme supposé égal à l'Intelligence : 35 / 53 / 73.)
+
 ### Mana
 
 - Le **Mana actuel** se dépense en combat et se **recharge chaque jour au camp** : **Réserve de mana × (10 + Volonté / 2) %** par jour (Volonté 52 : 36 % par jour, plein en 3 jours). Rien pendant les trajets.
@@ -324,7 +356,7 @@ Plus tard : une **école de magie** à construire au camp et des **manuels** à 
 ### Mise en place
 
 1. **Étape 1** — ces décisions, `spells.json`, les règles des sorts (`game-core/magic.js`) et leurs tests (`tests/magic.test.js`) : Soin rapide, puis les six sorts de l'école de la Vie.
-2. **Étape 2** — les sorts dans l'écran de combat actuel, **pour tester** (Vie, puis Feu, Eau, Transmutation, Foudre, Télékinésie et Illusion ; le bouton de test s'appelle désormais « Sorts (test) » et donne tous les sorts écrits) (Idan, 2026-10-25 ; l'interface de combat sera refaite) : une barre de sorts pour le mercenaire actif (action, mana, réussite) ; les cases ciblables en vert (alliés et lanceur, ou toutes les cases à portée pour Soin de masse) ; le journal ; la Régénération au début des activations ; le mana affiché dans la liste des équipes ; un bouton **« Sorts de Vie (test) »** : toute l'escouade connaît les six sorts (niveau 1) pour ce combat, sans toucher au grimoire, le mana étant bien dépensé ; une IA simple, aussi en combat automatique : Soin profond sur l'allié le plus blessé sous 35 % de ses PV à la place de l'attaque, Soin rapide sous 60 %.
+2. **Étape 2** — les sorts dans l'écran de combat actuel, **pour tester** (Vie, puis Feu, Eau, Transmutation, Foudre, Télékinésie, Illusion et Nécromancie ; le bouton de test s'appelle désormais « Sorts (test) » et donne tous les sorts écrits) (Idan, 2026-10-25 ; l'interface de combat sera refaite) : une barre de sorts pour le mercenaire actif (action, mana, réussite) ; les cases ciblables en vert (alliés et lanceur, ou toutes les cases à portée pour Soin de masse) ; le journal ; la Régénération au début des activations ; le mana affiché dans la liste des équipes ; un bouton **« Sorts de Vie (test) »** : toute l'escouade connaît les six sorts (niveau 1) pour ce combat, sans toucher au grimoire, le mana étant bien dépensé ; une IA simple, aussi en combat automatique : Soin profond sur l'allié le plus blessé sous 35 % de ses PV à la place de l'attaque, Soin rapide sous 60 %.
 3. Étape 3 — **recharge du mana au camp** (faite avec l'étape 2, pour pouvoir tester d'un combat à l'autre), **XP du sort et de l'école, régression des écoles opposées**, XP de la Puissance magique, de la Réserve de mana et de la Chance (faite, voir « Écoles : progression et régression »).
 4. Étape 4 — **sorts connus à la création** et **compensations des nains et des ogres** (faite, voir « Sorts connus à la création »).
 
@@ -387,9 +419,7 @@ Remplacé par l'**École de l'Illusion** d'Idan (2026-10-28, ci-dessus) : Peur, 
 
 ### Nécromancie
 
-- **Zombification** — transforme un mort en zombie combattant.
-- **Invocation de spectres** — invoque des spectres ; piste : immunité aux dégâts physiques ordinaires.
-- **Nécrose** — sort offensif de CAC.
+Remplacé par l'**École de la Nécromancie** d'Idan (2026-10-28, ci-dessus) : Résurrection, Invocation de spectre, Drain de vie, Flèche de mort, Nécrose, Flétrissement.
 
 ### Vie
 

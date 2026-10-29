@@ -10,8 +10,11 @@ Dépôt des fichiers **bruts** (masters) d'Idan et de Jean-Mimi. Ce dossier n'es
 | `Picto/Peuple/`, `Picto/Ascendance/` | Pictos des peuples et des ascendances. Après un ajout ou une retouche, `scripts/build-pictos.sh` régénère les versions du jeu (`prototype-web/assets/pictos/`) |
 | `Equipements/Armures/`, `Equipements/Armes/`, `Equipements/Frames/` | Images des objets par tier (T1 à T4, fond noir) et cadres de tier. Noms : `<Nom>_<tier>.jpg` (voir `Equipements/README.md`). Après un ajout, `node scripts/build-equipment.js` régénère les versions du jeu (`prototype-web/assets/equipment/`) |
 | `Sorts/<École>/` | Icônes des sorts (Idan, 2026-10-25) : un parchemin par sort, nommé par le code du sort (`quick_heal.jpg`…, voir `data/reference/spells.json`), et `cadre.jpg`, le cadre commun de l'école. `scripts/build-spells.sh` régénère les versions du jeu (`prototype-web/assets/spells/`) et détoure le centre du cadre |
+| `Ennemis/`, `Invocations/` | Portraits des ennemis types et des créatures invoquées, nommés par leur code (voir le README de chaque dossier). Pas encore affichés dans le jeu : branchés à l'arrivée des images |
 | `audio/` | Musiques, ambiances, bruitages |
 | `divers/` | Tout le reste, ou en cas de doute |
+
+Ce qui manque (hors avatars) : Design Lab, onglet **Images**.
 
 ## Déposer des fichiers depuis le site GitHub
 

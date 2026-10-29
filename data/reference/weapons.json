@@ -74,6 +74,22 @@
     {
       "source": "Parade : chance en % par arme tenue (saï : 5, 10 avec deux)",
       "key": "parade_chance"
+    },
+    {
+      "source": "Aura des alliés : caractéristique (Idan, 2026-10-29 : le fouet donne du Courage)",
+      "key": "aura_caracteristique"
+    },
+    {
+      "source": "Aura des alliés : % de la valeur de base de chaque allié",
+      "key": "aura_pourcentage"
+    },
+    {
+      "source": "Aura des alliés : portée en cases",
+      "key": "aura_portee"
+    },
+    {
+      "source": "Malus de blocage du bouclier adverse, en % de sa chance (Idan, 2026-10-29 : fléau −50 %)",
+      "key": "malus_blocage_pourcentage"
     }
   ],
   "row_count": 38,
@@ -95,7 +111,11 @@
       "bonus_caracteristique": null,
       "bonus_pourcentage": null,
       "parade_type": null,
-      "parade_chance": null
+      "parade_chance": null,
+      "aura_caracteristique": null,
+      "aura_pourcentage": null,
+      "aura_portee": null,
+      "malus_blocage_pourcentage": null
     },
     {
       "nom": "Arc",
@@ -114,7 +134,11 @@
       "bonus_caracteristique": null,
       "bonus_pourcentage": null,
       "parade_type": null,
-      "parade_chance": null
+      "parade_chance": null,
+      "aura_caracteristique": null,
+      "aura_pourcentage": null,
+      "aura_portee": null,
+      "malus_blocage_pourcentage": null
     },
     {
       "nom": "Arme d’hast double",
@@ -133,7 +157,11 @@
       "bonus_caracteristique": null,
       "bonus_pourcentage": null,
       "parade_type": null,
-      "parade_chance": null
+      "parade_chance": null,
+      "aura_caracteristique": null,
+      "aura_pourcentage": null,
+      "aura_portee": null,
+      "malus_blocage_pourcentage": null
     },
     {
       "nom": "Arquebuse",
@@ -152,7 +180,11 @@
       "bonus_caracteristique": null,
       "bonus_pourcentage": null,
       "parade_type": null,
-      "parade_chance": null
+      "parade_chance": null,
+      "aura_caracteristique": null,
+      "aura_pourcentage": null,
+      "aura_portee": null,
+      "malus_blocage_pourcentage": null
     },
     {
       "nom": "Bardiche",
@@ -171,7 +203,11 @@
       "bonus_caracteristique": null,
       "bonus_pourcentage": null,
       "parade_type": null,
-      "parade_chance": null
+      "parade_chance": null,
+      "aura_caracteristique": null,
+      "aura_pourcentage": null,
+      "aura_portee": null,
+      "malus_blocage_pourcentage": null
     },
     {
       "nom": "Bâton court",
@@ -190,7 +226,11 @@
       "bonus_caracteristique": "Réserve de mana",
       "bonus_pourcentage": 10,
       "parade_type": null,
-      "parade_chance": null
+      "parade_chance": null,
+      "aura_caracteristique": null,
+      "aura_pourcentage": null,
+      "aura_portee": null,
+      "malus_blocage_pourcentage": null
     },
     {
       "nom": "Bâton long",
@@ -209,7 +249,11 @@
       "bonus_caracteristique": "Puissance magique",
       "bonus_pourcentage": 5,
       "parade_type": null,
-      "parade_chance": null
+      "parade_chance": null,
+      "aura_caracteristique": null,
+      "aura_pourcentage": null,
+      "aura_portee": null,
+      "malus_blocage_pourcentage": null
     },
     {
       "nom": "Canon à main",
@@ -228,7 +272,11 @@
       "bonus_caracteristique": null,
       "bonus_pourcentage": null,
       "parade_type": null,
-      "parade_chance": null
+      "parade_chance": null,
+      "aura_caracteristique": null,
+      "aura_pourcentage": null,
+      "aura_portee": null,
+      "malus_blocage_pourcentage": null
     },
     {
       "nom": "Dague",
@@ -247,7 +295,11 @@
       "bonus_caracteristique": null,
       "bonus_pourcentage": null,
       "parade_type": null,
-      "parade_chance": null
+      "parade_chance": null,
+      "aura_caracteristique": null,
+      "aura_pourcentage": null,
+      "aura_portee": null,
+      "malus_blocage_pourcentage": null
     },
     {
       "nom": "Écu",
@@ -266,7 +318,11 @@
       "bonus_caracteristique": null,
       "bonus_pourcentage": null,
       "parade_type": null,
-      "parade_chance": null
+      "parade_chance": null,
+      "aura_caracteristique": null,
+      "aura_pourcentage": null,
+      "aura_portee": null,
+      "malus_blocage_pourcentage": null
     },
     {
       "nom": "Épée courte",
@@ -285,7 +341,11 @@
       "bonus_caracteristique": null,
       "bonus_pourcentage": null,
       "parade_type": null,
-      "parade_chance": null
+      "parade_chance": null,
+      "aura_caracteristique": null,
+      "aura_pourcentage": null,
+      "aura_portee": null,
+      "malus_blocage_pourcentage": null
     },
     {
       "nom": "Épée double",
@@ -304,7 +364,11 @@
       "bonus_caracteristique": null,
       "bonus_pourcentage": null,
       "parade_type": null,
-      "parade_chance": null
+      "parade_chance": null,
+      "aura_caracteristique": null,
+      "aura_pourcentage": null,
+      "aura_portee": null,
+      "malus_blocage_pourcentage": null
     },
     {
       "nom": "Épée longue",
@@ -323,7 +387,11 @@
       "bonus_caracteristique": null,
       "bonus_pourcentage": null,
       "parade_type": null,
-      "parade_chance": null
+      "parade_chance": null,
+      "aura_caracteristique": null,
+      "aura_pourcentage": null,
+      "aura_portee": null,
+      "malus_blocage_pourcentage": null
     },
     {
       "nom": "Estoc",
@@ -342,7 +410,11 @@
       "bonus_caracteristique": null,
       "bonus_pourcentage": null,
       "parade_type": null,
-      "parade_chance": null
+      "parade_chance": null,
+      "aura_caracteristique": null,
+      "aura_pourcentage": null,
+      "aura_portee": null,
+      "malus_blocage_pourcentage": null
     },
     {
       "nom": "Fléau d’armes",
@@ -361,7 +433,11 @@
       "bonus_caracteristique": null,
       "bonus_pourcentage": null,
       "parade_type": null,
-      "parade_chance": null
+      "parade_chance": null,
+      "aura_caracteristique": null,
+      "aura_pourcentage": null,
+      "aura_portee": null,
+      "malus_blocage_pourcentage": 50
     },
     {
       "nom": "Fouet",
@@ -369,7 +445,7 @@
       "prise": "1 main",
       "malus_vitesse_arme_base": 3,
       "portee_min_hex": null,
-      "portee_max_hex": null,
+      "portee_max_hex": 2,
       "bonus_charge_base": 1,
       "contre_charge": false,
       "degats_pv_base": "1D4",
@@ -377,10 +453,14 @@
       "puissance_perforante_base": 0,
       "puissance_contondante_base": 0,
       "prix_base": 80,
-      "bonus_caracteristique": null,
-      "bonus_pourcentage": null,
+      "bonus_caracteristique": "Charisme",
+      "bonus_pourcentage": 10,
       "parade_type": null,
-      "parade_chance": null
+      "parade_chance": null,
+      "aura_caracteristique": "Courage",
+      "aura_pourcentage": 10,
+      "aura_portee": 3,
+      "malus_blocage_pourcentage": null
     },
     {
       "nom": "Fronde",
@@ -399,7 +479,11 @@
       "bonus_caracteristique": null,
       "bonus_pourcentage": null,
       "parade_type": null,
-      "parade_chance": null
+      "parade_chance": null,
+      "aura_caracteristique": null,
+      "aura_pourcentage": null,
+      "aura_portee": null,
+      "malus_blocage_pourcentage": null
     },
     {
       "nom": "Grande épée",
@@ -418,7 +502,11 @@
       "bonus_caracteristique": null,
       "bonus_pourcentage": null,
       "parade_type": null,
-      "parade_chance": null
+      "parade_chance": null,
+      "aura_caracteristique": null,
+      "aura_pourcentage": null,
+      "aura_portee": null,
+      "malus_blocage_pourcentage": null
     },
     {
       "nom": "Hache de guerre",
@@ -437,7 +525,11 @@
       "bonus_caracteristique": null,
       "bonus_pourcentage": null,
       "parade_type": null,
-      "parade_chance": null
+      "parade_chance": null,
+      "aura_caracteristique": null,
+      "aura_pourcentage": null,
+      "aura_portee": null,
+      "malus_blocage_pourcentage": null
     },
     {
       "nom": "Hache double",
@@ -456,7 +548,11 @@
       "bonus_caracteristique": null,
       "bonus_pourcentage": null,
       "parade_type": null,
-      "parade_chance": null
+      "parade_chance": null,
+      "aura_caracteristique": null,
+      "aura_pourcentage": null,
+      "aura_portee": null,
+      "malus_blocage_pourcentage": null
     },
     {
       "nom": "Hachette",
@@ -475,7 +571,11 @@
       "bonus_caracteristique": null,
       "bonus_pourcentage": null,
       "parade_type": null,
-      "parade_chance": null
+      "parade_chance": null,
+      "aura_caracteristique": null,
+      "aura_pourcentage": null,
+      "aura_portee": null,
+      "malus_blocage_pourcentage": null
     },
     {
       "nom": "Hallebarde",
@@ -494,7 +594,11 @@
       "bonus_caracteristique": null,
       "bonus_pourcentage": null,
       "parade_type": null,
-      "parade_chance": null
+      "parade_chance": null,
+      "aura_caracteristique": null,
+      "aura_pourcentage": null,
+      "aura_portee": null,
+      "malus_blocage_pourcentage": null
     },
     {
       "nom": "Katana",
@@ -513,7 +617,11 @@
       "bonus_caracteristique": null,
       "bonus_pourcentage": null,
       "parade_type": null,
-      "parade_chance": null
+      "parade_chance": null,
+      "aura_caracteristique": null,
+      "aura_pourcentage": null,
+      "aura_portee": null,
+      "malus_blocage_pourcentage": null
     },
     {
       "nom": "Kukri",
@@ -532,7 +640,11 @@
       "bonus_caracteristique": null,
       "bonus_pourcentage": null,
       "parade_type": null,
-      "parade_chance": null
+      "parade_chance": null,
+      "aura_caracteristique": null,
+      "aura_pourcentage": null,
+      "aura_portee": null,
+      "malus_blocage_pourcentage": null
     },
     {
       "nom": "Lance",
@@ -551,7 +663,11 @@
       "bonus_caracteristique": null,
       "bonus_pourcentage": null,
       "parade_type": null,
-      "parade_chance": null
+      "parade_chance": null,
+      "aura_caracteristique": null,
+      "aura_pourcentage": null,
+      "aura_portee": null,
+      "malus_blocage_pourcentage": null
     },
     {
       "nom": "Marteau de guerre",
@@ -567,10 +683,14 @@
       "puissance_perforante_base": 0,
       "puissance_contondante_base": 70,
       "prix_base": 200,
-      "bonus_caracteristique": null,
-      "bonus_pourcentage": null,
+      "bonus_caracteristique": "Foudre",
+      "bonus_pourcentage": 10,
       "parade_type": null,
-      "parade_chance": null
+      "parade_chance": null,
+      "aura_caracteristique": null,
+      "aura_pourcentage": null,
+      "aura_portee": null,
+      "malus_blocage_pourcentage": null
     },
     {
       "nom": "Masse d’armes",
@@ -589,7 +709,11 @@
       "bonus_caracteristique": null,
       "bonus_pourcentage": null,
       "parade_type": null,
-      "parade_chance": null
+      "parade_chance": null,
+      "aura_caracteristique": null,
+      "aura_pourcentage": null,
+      "aura_portee": null,
+      "malus_blocage_pourcentage": null
     },
     {
       "nom": "Massue",
@@ -608,7 +732,11 @@
       "bonus_caracteristique": null,
       "bonus_pourcentage": null,
       "parade_type": null,
-      "parade_chance": null
+      "parade_chance": null,
+      "aura_caracteristique": null,
+      "aura_pourcentage": null,
+      "aura_portee": null,
+      "malus_blocage_pourcentage": null
     },
     {
       "nom": "Nunchaku",
@@ -627,7 +755,11 @@
       "bonus_caracteristique": null,
       "bonus_pourcentage": null,
       "parade_type": null,
-      "parade_chance": null
+      "parade_chance": null,
+      "aura_caracteristique": null,
+      "aura_pourcentage": null,
+      "aura_portee": null,
+      "malus_blocage_pourcentage": null
     },
     {
       "nom": "Pavois",
@@ -646,7 +778,11 @@
       "bonus_caracteristique": null,
       "bonus_pourcentage": null,
       "parade_type": null,
-      "parade_chance": null
+      "parade_chance": null,
+      "aura_caracteristique": null,
+      "aura_pourcentage": null,
+      "aura_portee": null,
+      "malus_blocage_pourcentage": null
     },
     {
       "nom": "Pic de guerre",
@@ -665,7 +801,11 @@
       "bonus_caracteristique": null,
       "bonus_pourcentage": null,
       "parade_type": null,
-      "parade_chance": null
+      "parade_chance": null,
+      "aura_caracteristique": null,
+      "aura_pourcentage": null,
+      "aura_portee": null,
+      "malus_blocage_pourcentage": null
     },
     {
       "nom": "Pistolet",
@@ -684,7 +824,11 @@
       "bonus_caracteristique": null,
       "bonus_pourcentage": null,
       "parade_type": null,
-      "parade_chance": null
+      "parade_chance": null,
+      "aura_caracteristique": null,
+      "aura_pourcentage": null,
+      "aura_portee": null,
+      "malus_blocage_pourcentage": null
     },
     {
       "nom": "Rondache",
@@ -703,7 +847,11 @@
       "bonus_caracteristique": null,
       "bonus_pourcentage": null,
       "parade_type": null,
-      "parade_chance": null
+      "parade_chance": null,
+      "aura_caracteristique": null,
+      "aura_pourcentage": null,
+      "aura_portee": null,
+      "malus_blocage_pourcentage": null
     },
     {
       "nom": "Sabre",
@@ -722,7 +870,11 @@
       "bonus_caracteristique": null,
       "bonus_pourcentage": null,
       "parade_type": null,
-      "parade_chance": null
+      "parade_chance": null,
+      "aura_caracteristique": null,
+      "aura_pourcentage": null,
+      "aura_portee": null,
+      "malus_blocage_pourcentage": null
     },
     {
       "nom": "Sai",
@@ -741,7 +893,11 @@
       "bonus_caracteristique": null,
       "bonus_pourcentage": null,
       "parade_type": "tranchant",
-      "parade_chance": 5
+      "parade_chance": 5,
+      "aura_caracteristique": null,
+      "aura_pourcentage": null,
+      "aura_portee": null,
+      "malus_blocage_pourcentage": null
     },
     {
       "nom": "Sarbacane",
@@ -760,7 +916,11 @@
       "bonus_caracteristique": null,
       "bonus_pourcentage": null,
       "parade_type": null,
-      "parade_chance": null
+      "parade_chance": null,
+      "aura_caracteristique": null,
+      "aura_pourcentage": null,
+      "aura_portee": null,
+      "malus_blocage_pourcentage": null
     },
     {
       "nom": "Trident",
@@ -776,10 +936,14 @@
       "puissance_perforante_base": 50,
       "puissance_contondante_base": 0,
       "prix_base": 120,
-      "bonus_caracteristique": null,
-      "bonus_pourcentage": null,
+      "bonus_caracteristique": "Eau",
+      "bonus_pourcentage": 20,
       "parade_type": null,
-      "parade_chance": null
+      "parade_chance": null,
+      "aura_caracteristique": null,
+      "aura_pourcentage": null,
+      "aura_portee": null,
+      "malus_blocage_pourcentage": null
     },
     {
       "nom": "Tromblon",
@@ -798,7 +962,11 @@
       "bonus_caracteristique": null,
       "bonus_pourcentage": null,
       "parade_type": null,
-      "parade_chance": null
+      "parade_chance": null,
+      "aura_caracteristique": null,
+      "aura_pourcentage": null,
+      "aura_portee": null,
+      "malus_blocage_pourcentage": null
     }
   ]
 }

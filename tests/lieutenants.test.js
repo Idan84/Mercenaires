@@ -130,7 +130,7 @@ const unit=(id,stats,extra)=>({id,team:"player",alive:true,offMap:false,q:0,r:0,
 const lt=unit("lt",{Courage:60,Charisme:40},{isLieutenant:true,q:3});
 assert.equal(engine.lieutenantAuraBonus(lt),Math.round(0.5*(0.35*60+0.25*40)),"0,5 × (21 + 10) = 15,5 → 16");
 const hero=unit("hero",{Courage:40,Charisme:40});
-assert.deepEqual(engine.allyAura(hero,[hero,lt]),{bonus:16,from:"lieutenant",source:lt});
+assert.deepEqual(engine.allyAura(hero,[hero,lt]),{bonus:16,from:"lieutenant",source:lt,whip:0});
 const cap=unit("cap",{Courage:50,Charisme:50},{isCaptain:true,q:2});
 assert.equal(engine.allyAura(hero,[hero,lt,cap]).bonus,30,"le capitaine (30) l'emporte : pas de cumul");
 assert.equal(engine.allyAura(hero,[hero,lt,{...cap,q:20}]).from,"lieutenant","capitaine hors de portée");
@@ -205,7 +205,7 @@ assert.match(ui,/class="roster-card \$\{captain\?"roster-captain":""\}\$\{lieute
 assert.match(ui,/if\(entry\.kind==="lieutenant"\)/);
 const mission=fs.readFileSync(path.join(ROOT,"prototype-web","mission.js"),"utf8");
 assert.match(mission,/isLieutenant:team==="player"&&lieutenantIds\.includes\(character\.id\),/);
-assert.match(mission,/function missionAuraNote\(aura,from="captain"\)/);
+assert.match(mission,/function missionAuraNote\(aura,from="captain",whip=0\)/);
 assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","styles.css"),"utf8"),/\.roster-lieutenant\{border-color:#e0b85f;/);
 assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","reference-data.js"),"utf8"),/lieutenantDialogue: "lieutenant-dialogue\.json"/);
 const copy=read("lieutenant-dialogue.json");

@@ -2069,15 +2069,17 @@ function resolveMissionCounterchargeCourage(reactor,charger,result,charge,remain
   missionFollowFleePath(charger,path,"fait demi-tour et s’enfuit");
 }
 
-function enemyMissionAct(unit){
+function enemyMissionAct(unit,options={}){
   game.mission.actingUnit=unit;
-  try{ enemyMissionActivation(unit); }
+  try{ enemyMissionActivation(unit,options); }
   finally{ if(game.mission) game.mission.actingUnit=null; }
 }
 
-function enemyMissionActivation(unit){
+// reset : false pour un mercenaire dont selectNextMissionPlayer vient de commencer l'activation (combat automatique) ;
+// sinon le poison, la régénération et les effets à durée compteraient deux fois.
+function enemyMissionActivation(unit,{reset=true}={}){
   if(!unit.alive||game.mission.over) return;
-  resetMissionActivation(unit);
+  if(reset) resetMissionActivation(unit);
   if(unit.fleeing&&resolveMissionFleeingActivation(unit)) return;
   if(!unit.alive||game.mission.over) return;
   if(unit.frenzy){ frenzyMissionActivation(unit); return; }
@@ -2130,7 +2132,7 @@ function autoResolveMission(){
   m.autoRunning=true;
   try{
     while(!m.over&&m.activeUnit&&m.turn<=AUTO_COMBAT_MAX_TURNS){
-      enemyMissionAct(m.activeUnit);
+      enemyMissionAct(m.activeUnit,{reset:false});
       if(m.over) break;
       endMissionActivation();
     }

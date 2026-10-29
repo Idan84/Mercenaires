@@ -58,6 +58,14 @@
     {
       "source": "Prix de base (PO)",
       "key": "prix_base"
+    },
+    {
+      "source": "Caractéristique servie par l'arme tenue (Idan, 2026-10-29 : bâtons)",
+      "key": "bonus_caracteristique"
+    },
+    {
+      "source": "Bonus en % de la valeur de base de cette caractéristique",
+      "key": "bonus_pourcentage"
     }
   ],
   "row_count": 38,
@@ -75,7 +83,9 @@
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 65,
       "puissance_contondante_base": 0,
-      "prix_base": 140
+      "prix_base": 140,
+      "bonus_caracteristique": null,
+      "bonus_pourcentage": null
     },
     {
       "nom": "Arc",
@@ -90,7 +100,9 @@
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 45,
       "puissance_contondante_base": 0,
-      "prix_base": 100
+      "prix_base": 100,
+      "bonus_caracteristique": null,
+      "bonus_pourcentage": null
     },
     {
       "nom": "Arme d’hast double",
@@ -105,7 +117,9 @@
       "puissance_tranchante_base": 55,
       "puissance_perforante_base": 45,
       "puissance_contondante_base": 0,
-      "prix_base": 160
+      "prix_base": 160,
+      "bonus_caracteristique": null,
+      "bonus_pourcentage": null
     },
     {
       "nom": "Arquebuse",
@@ -120,7 +134,9 @@
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 80,
       "puissance_contondante_base": 0,
-      "prix_base": 240
+      "prix_base": 240,
+      "bonus_caracteristique": null,
+      "bonus_pourcentage": null
     },
     {
       "nom": "Bardiche",
@@ -135,7 +151,9 @@
       "puissance_tranchante_base": 75,
       "puissance_perforante_base": 0,
       "puissance_contondante_base": 0,
-      "prix_base": 200
+      "prix_base": 200,
+      "bonus_caracteristique": null,
+      "bonus_pourcentage": null
     },
     {
       "nom": "Bâton court",
@@ -150,7 +168,9 @@
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 0,
       "puissance_contondante_base": 20,
-      "prix_base": 80
+      "prix_base": 80,
+      "bonus_caracteristique": "Réserve de mana",
+      "bonus_pourcentage": 10
     },
     {
       "nom": "Bâton long",
@@ -165,7 +185,9 @@
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 0,
       "puissance_contondante_base": 30,
-      "prix_base": 120
+      "prix_base": 120,
+      "bonus_caracteristique": "Puissance magique",
+      "bonus_pourcentage": 5
     },
     {
       "nom": "Canon à main",
@@ -180,7 +202,9 @@
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 95,
       "puissance_contondante_base": 0,
-      "prix_base": 240
+      "prix_base": 240,
+      "bonus_caracteristique": null,
+      "bonus_pourcentage": null
     },
     {
       "nom": "Dague",
@@ -195,7 +219,9 @@
       "puissance_tranchante_base": 25,
       "puissance_perforante_base": 35,
       "puissance_contondante_base": 0,
-      "prix_base": 80
+      "prix_base": 80,
+      "bonus_caracteristique": null,
+      "bonus_pourcentage": null
     },
     {
       "nom": "Écu",
@@ -210,7 +236,9 @@
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 0,
       "puissance_contondante_base": 25,
-      "prix_base": 80
+      "prix_base": 80,
+      "bonus_caracteristique": null,
+      "bonus_pourcentage": null
     },
     {
       "nom": "Épée courte",
@@ -225,7 +253,9 @@
       "puissance_tranchante_base": 35,
       "puissance_perforante_base": 35,
       "puissance_contondante_base": 0,
-      "prix_base": 100
+      "prix_base": 100,
+      "bonus_caracteristique": null,
+      "bonus_pourcentage": null
     },
     {
       "nom": "Épée double",
@@ -240,7 +270,9 @@
       "puissance_tranchante_base": 50,
       "puissance_perforante_base": 35,
       "puissance_contondante_base": 0,
-      "prix_base": 160
+      "prix_base": 160,
+      "bonus_caracteristique": null,
+      "bonus_pourcentage": null
     },
     {
       "nom": "Épée longue",
@@ -255,7 +287,9 @@
       "puissance_tranchante_base": 50,
       "puissance_perforante_base": 40,
       "puissance_contondante_base": 0,
-      "prix_base": 120
+      "prix_base": 120,
+      "bonus_caracteristique": null,
+      "bonus_pourcentage": null
     },
     {
       "nom": "Estoc",
@@ -270,7 +304,9 @@
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 55,
       "puissance_contondante_base": 0,
-      "prix_base": 100
+      "prix_base": 100,
+      "bonus_caracteristique": null,
+      "bonus_pourcentage": null
     },
     {
       "nom": "Fléau d’armes",
@@ -285,7 +321,9 @@
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 0,
       "puissance_contondante_base": 55,
-      "prix_base": 120
+      "prix_base": 120,
+      "bonus_caracteristique": null,
+      "bonus_pourcentage": null
     },
     {
       "nom": "Fouet",
@@ -300,7 +338,9 @@
       "puissance_tranchante_base": 20,
       "puissance_perforante_base": 0,
       "puissance_contondante_base": 0,
-      "prix_base": 80
+      "prix_base": 80,
+      "bonus_caracteristique": null,
+      "bonus_pourcentage": null
     },
     {
       "nom": "Fronde",
@@ -315,7 +355,9 @@
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 0,
       "puissance_contondante_base": 25,
-      "prix_base": 80
+      "prix_base": 80,
+      "bonus_caracteristique": null,
+      "bonus_pourcentage": null
     },
     {
       "nom": "Grande épée",
@@ -330,7 +372,9 @@
       "puissance_tranchante_base": 70,
       "puissance_perforante_base": 50,
       "puissance_contondante_base": 0,
-      "prix_base": 200
+      "prix_base": 200,
+      "bonus_caracteristique": null,
+      "bonus_pourcentage": null
     },
     {
       "nom": "Hache de guerre",
@@ -345,7 +389,9 @@
       "puissance_tranchante_base": 65,
       "puissance_perforante_base": 0,
       "puissance_contondante_base": 0,
-      "prix_base": 140
+      "prix_base": 140,
+      "bonus_caracteristique": null,
+      "bonus_pourcentage": null
     },
     {
       "nom": "Hache double",
@@ -360,7 +406,9 @@
       "puissance_tranchante_base": 80,
       "puissance_perforante_base": 0,
       "puissance_contondante_base": 0,
-      "prix_base": 200
+      "prix_base": 200,
+      "bonus_caracteristique": null,
+      "bonus_pourcentage": null
     },
     {
       "nom": "Hachette",
@@ -375,7 +423,9 @@
       "puissance_tranchante_base": 40,
       "puissance_perforante_base": 0,
       "puissance_contondante_base": 0,
-      "prix_base": 100
+      "prix_base": 100,
+      "bonus_caracteristique": null,
+      "bonus_pourcentage": null
     },
     {
       "nom": "Hallebarde",
@@ -390,7 +440,9 @@
       "puissance_tranchante_base": 70,
       "puissance_perforante_base": 65,
       "puissance_contondante_base": 0,
-      "prix_base": 160
+      "prix_base": 160,
+      "bonus_caracteristique": null,
+      "bonus_pourcentage": null
     },
     {
       "nom": "Katana",
@@ -405,7 +457,9 @@
       "puissance_tranchante_base": 60,
       "puissance_perforante_base": 0,
       "puissance_contondante_base": 0,
-      "prix_base": 140
+      "prix_base": 140,
+      "bonus_caracteristique": null,
+      "bonus_pourcentage": null
     },
     {
       "nom": "Kukri",
@@ -420,7 +474,9 @@
       "puissance_tranchante_base": 45,
       "puissance_perforante_base": 0,
       "puissance_contondante_base": 0,
-      "prix_base": 100
+      "prix_base": 100,
+      "bonus_caracteristique": null,
+      "bonus_pourcentage": null
     },
     {
       "nom": "Lance",
@@ -435,7 +491,9 @@
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 55,
       "puissance_contondante_base": 0,
-      "prix_base": 120
+      "prix_base": 120,
+      "bonus_caracteristique": null,
+      "bonus_pourcentage": null
     },
     {
       "nom": "Marteau de guerre",
@@ -450,7 +508,9 @@
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 0,
       "puissance_contondante_base": 70,
-      "prix_base": 200
+      "prix_base": 200,
+      "bonus_caracteristique": null,
+      "bonus_pourcentage": null
     },
     {
       "nom": "Masse d’armes",
@@ -465,7 +525,9 @@
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 0,
       "puissance_contondante_base": 55,
-      "prix_base": 120
+      "prix_base": 120,
+      "bonus_caracteristique": null,
+      "bonus_pourcentage": null
     },
     {
       "nom": "Massue",
@@ -480,7 +542,9 @@
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 0,
       "puissance_contondante_base": 35,
-      "prix_base": 100
+      "prix_base": 100,
+      "bonus_caracteristique": null,
+      "bonus_pourcentage": null
     },
     {
       "nom": "Nunchaku",
@@ -495,7 +559,9 @@
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 0,
       "puissance_contondante_base": 35,
-      "prix_base": 100
+      "prix_base": 100,
+      "bonus_caracteristique": null,
+      "bonus_pourcentage": null
     },
     {
       "nom": "Pavois",
@@ -510,7 +576,9 @@
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 0,
       "puissance_contondante_base": 30,
-      "prix_base": 100
+      "prix_base": 100,
+      "bonus_caracteristique": null,
+      "bonus_pourcentage": null
     },
     {
       "nom": "Pic de guerre",
@@ -525,7 +593,9 @@
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 70,
       "puissance_contondante_base": 0,
-      "prix_base": 120
+      "prix_base": 120,
+      "bonus_caracteristique": null,
+      "bonus_pourcentage": null
     },
     {
       "nom": "Pistolet",
@@ -540,7 +610,9 @@
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 65,
       "puissance_contondante_base": 0,
-      "prix_base": 180
+      "prix_base": 180,
+      "bonus_caracteristique": null,
+      "bonus_pourcentage": null
     },
     {
       "nom": "Rondache",
@@ -555,7 +627,9 @@
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 0,
       "puissance_contondante_base": 20,
-      "prix_base": 80
+      "prix_base": 80,
+      "bonus_caracteristique": null,
+      "bonus_pourcentage": null
     },
     {
       "nom": "Sabre",
@@ -570,7 +644,9 @@
       "puissance_tranchante_base": 50,
       "puissance_perforante_base": 0,
       "puissance_contondante_base": 0,
-      "prix_base": 120
+      "prix_base": 120,
+      "bonus_caracteristique": null,
+      "bonus_pourcentage": null
     },
     {
       "nom": "Sai",
@@ -585,7 +661,9 @@
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 30,
       "puissance_contondante_base": 0,
-      "prix_base": 80
+      "prix_base": 80,
+      "bonus_caracteristique": null,
+      "bonus_pourcentage": null
     },
     {
       "nom": "Sarbacane",
@@ -600,7 +678,9 @@
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 10,
       "puissance_contondante_base": 0,
-      "prix_base": 80
+      "prix_base": 80,
+      "bonus_caracteristique": null,
+      "bonus_pourcentage": null
     },
     {
       "nom": "Trident",
@@ -615,7 +695,9 @@
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 50,
       "puissance_contondante_base": 0,
-      "prix_base": 120
+      "prix_base": 120,
+      "bonus_caracteristique": null,
+      "bonus_pourcentage": null
     },
     {
       "nom": "Tromblon",
@@ -630,7 +712,9 @@
       "puissance_tranchante_base": 0,
       "puissance_perforante_base": 55,
       "puissance_contondante_base": 0,
-      "prix_base": 210
+      "prix_base": 210,
+      "bonus_caracteristique": null,
+      "bonus_pourcentage": null
     }
   ]
 }

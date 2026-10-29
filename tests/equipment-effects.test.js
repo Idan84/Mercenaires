@@ -113,6 +113,23 @@ const sage = amuleted("Amulette de puissance magique", 1);
 near(sage.e["Puissance magique"].value, 52.5);
 assert.equal(sage.e.Chance.lines.length, 0, "une amulette de puissance magique ne touche pas la Chance");
 
+// Bâtons (Idan, 2026-10-29) : tenus dans le set actif, Bâton long + 5 % de Puissance magique, Bâton court + 10 % de
+// Réserve de mana ; rangés dans l'autre set, rien.
+const staffed = (name, slot) => {
+  const c = {...knight, stats:{...stats, "Puissance magique":60, "Réserve de mana":50},
+    items:[...knight.items, {id:"b", itemType:"weapon", name, tier:1, qualityName:"Correcte"}], equipment:{slots:{armor:"a", [slot]:"b"}}};
+  return {c, e:effects(c), unit:{character:c, activeSet:1}};
+};
+const longStaff = staffed("Bâton long", "weapon_set_1_main");
+near(longStaff.e["Puissance magique"].value, 63);
+assert.deepEqual(longStaff.e["Puissance magique"].lines, [{label:"Bâton long (Correcte)", delta:3, reason:"gear", percent:5}]);
+near(longStaff.e["Réserve de mana"].value, 50);
+const shortStaff = staffed("Bâton court", "weapon_set_1_off");
+near(shortStaff.e["Réserve de mana"].value, 55);
+near(engine.statWithGear(shortStaff.unit, "Réserve de mana"), 55, "le combat et la magie lisent la même valeur");
+near(engine.statWithGear({...shortStaff.unit, activeSet:2}, "Réserve de mana"), 50, "set 2 en main : le bâton du set 1 ne compte pas");
+near(staffed("Bâton long", "weapon_set_2_main").e["Puissance magique"].value, 60);
+
 // Capes (Idan, 2026-10-24) : Esquive et Discrétion en pourcentage ; Résistance physique en points (+5 à +20).
 const caped = (name, tier) => {
   const c = {...knight, resistances:{"Résistance physique":5}, skills:{martial:{"Discrétion":30}},

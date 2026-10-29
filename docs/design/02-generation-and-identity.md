@@ -25,6 +25,7 @@ Le pipeline ci-dessous décrit la génération statistique commune. Son point d�
    - **Cultures sans école de magie** (doc 12 ; Idan, 2026-10-25) : +1D6 Courage (Nains des montagnes, Nains réduits en esclavage dans les colonies) ou +1D6 Force (Ogres des cités humaines, Ogres des montagnes) ; `cultures.json`, colonne `compensation_sans_ecole`.
 10. **Génération brute des compétences** selon les règles propres à chaque famille, en sachant déjà si un bonus de génération existe.
 11. **Application des modificateurs numériques de compétences** accumulés depuis la Matrice de génération.
+   - **Ajustements en D6 d’un peuple**, hors échelle de la Matrice (Idan, 2026-10-29) : **−1D6 de Discrétion aux Ogres** (« question de logique ») ; `peoples.json`, colonne `ajustements_d6`, appliquée après la Matrice, sans descendre sous 0.
    - **Sorts connus à la création** (doc 12, « Sorts connus à la création ») : trois tirages, école de la culture (`cultures.json`, colonne `ecole_magie`), meilleure et deuxième meilleure école.
 12. **Post-traitement** : valeurs dérivées initiales, réputation personnelle initiale et autres calculs dépendant du profil complet.
 

@@ -25,7 +25,7 @@ Principe : le joueur reste **très libre** de faire ce qu'il veut, à lui d'êtr
 | Volonté | Recharge du mana au camp |
 | Charisme | Selon l'école (Invocation, Nécromancie : Idan, 2026-10-28 ; l'Illusion prend la Volonté) ; ne joue pas sur le soin |
 
-Toutes ces valeurs se prennent **équipement compris** (bague de l'école, amulette de puissance magique, ceinture de mana, casque de constitution…).
+Toutes ces valeurs se prennent **équipement compris** (bague de l'école, amulette de puissance magique, ceinture de mana, casque de constitution, bâton long +5 % de Puissance magique ou bâton court +10 % de Réserve de mana tenus en main : doc 05…).
 
 ### Maîtrise d'un sort
 

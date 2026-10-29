@@ -185,7 +185,15 @@
         const value=Number(template["bonus_t"+item.tier])||0;
         if(template.type_bonus==="points") return {item,slot,points:value,bonus:value};
         return {item,slot,percent:value,bonus:base*value/100};
-      }).filter(Boolean);
+      }).concat(heldWeaponBonuses(unit,stat,base)).filter(Boolean);
+    }
+    // Armes tenues dans le set actif qui servent une caractéristique (weapons.json, bonus_caracteristique et
+    // bonus_pourcentage ; Idan, 2026-10-29) : Bâton long + 5 % de Puissance magique, Bâton court + 10 % de Réserve de mana.
+    function heldWeaponBonuses(unit,stat,base){
+      return [activeWeaponItem(unit),activeOffhandItem(unit)].map(item=>{
+        const weapon=weaponTemplate(item),value=Number(weapon?.bonus_pourcentage)||0;
+        return weapon?.bonus_caracteristique===stat&&value?{item,slot:"weapon",percent:value,bonus:base*value/100}:null;
+      });
     }
     // Avec l'équipement, et les sorts en cours, posés et retirés par l'écran de combat : le malus du Gel
     // (unit.statMalus = {stats, malus}) et les bonus de la Transmutation (unit.statBuffs = {code: {stats, value, unit}} :

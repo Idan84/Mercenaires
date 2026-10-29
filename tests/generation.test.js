@@ -375,6 +375,20 @@ assert.ok(troll.skills.physiology["Régénération"] > 0);
 assert.equal(troll.generationTrace.skills["Régénération"].raw, 0);
 assert.ok(troll.generationTrace.skills["Régénération"].contributions.some(x => x.name === "Sang de troll" && x.dice === "10D6"));
 
+// Ogres (Idan, 2026-10-29) : −1D6 de Discrétion, hors échelle de la Matrice (peoples.json, ajustements_d6).
+for (let i = 0; i < 20; i++) {
+  const ogre = generator.createMercenary({id:2100 + i, forcedPeople:"Ogre"});
+  const trace = ogre.generationTrace.skills["Discrétion"];
+  const malus = trace.contributions.filter(x => x.name === "Ogre");
+  assert.equal(malus.length, 1, "un seul malus de peuple");
+  assert.equal(malus[0].dice, "1D6");
+  assert.ok(malus[0].delta <= -1 && malus[0].delta >= -6, String(malus[0].delta));
+  assert.equal(trace.final, ogre.skills.martial["Discrétion"]);
+  assert.ok(ogre.skills.martial["Discrétion"] >= 0);
+}
+const human = generator.createMercenary({id:2150, forcedPeople:"Humain"});
+assert.ok(!human.generationTrace.skills["Discrétion"].contributions.some(x => x.kind === "people"), "les autres peuples : rien");
+
 const goblin = generator.createMercenary({
   id:2003,
   forcedPeople:"Gobelin",

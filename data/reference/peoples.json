@@ -26,6 +26,10 @@
     {
       "source": "Places au dortoir (Idan, 2026-10-24 : un ogre en prend deux ; halflings, gnomes et gobelins une demi ; les autres une)",
       "key": "places_dortoir"
+    },
+    {
+      "source": "Ajustements en D6 des compétences (Idan, 2026-10-29 : −1D6 de Discrétion aux Ogres) : nombre de D6, négatif pour un malus",
+      "key": "ajustements_d6"
     }
   ],
   "row_count": 10,
@@ -35,70 +39,82 @@
       "alignement_principal": "Chaotique mauvais",
       "probabilite_de_base": 0.15,
       "probabilite_d_ascendance": 0.2,
-      "places_dortoir": 1
+      "places_dortoir": 1,
+      "ajustements_d6": null
     },
     {
       "nom": "Homme-bête",
       "alignement_principal": "Loyal mauvais",
       "probabilite_de_base": 0.05,
       "probabilite_d_ascendance": 0.2,
-      "places_dortoir": 1
+      "places_dortoir": 1,
+      "ajustements_d6": null
     },
     {
       "nom": "Reptilien",
       "alignement_principal": "Loyal neutre",
       "probabilite_de_base": 0.05,
       "probabilite_d_ascendance": 0.2,
-      "places_dortoir": 1
+      "places_dortoir": 1,
+      "ajustements_d6": null
     },
     {
       "nom": "Humain",
       "alignement_principal": "Neutre",
       "probabilite_de_base": 0.2,
       "probabilite_d_ascendance": 0.2,
-      "places_dortoir": 1
+      "places_dortoir": 1,
+      "ajustements_d6": null
     },
     {
       "nom": "Halfling",
       "alignement_principal": "Chaotique bon",
       "probabilite_de_base": 0.07,
       "probabilite_d_ascendance": 0.2,
-      "places_dortoir": 0.5
+      "places_dortoir": 0.5,
+      "ajustements_d6": null
     },
     {
       "nom": "Elfe",
       "alignement_principal": "Loyal bon",
       "probabilite_de_base": 0.15,
       "probabilite_d_ascendance": 0.2,
-      "places_dortoir": 1
+      "places_dortoir": 1,
+      "ajustements_d6": null
     },
     {
       "nom": "Gobelin",
       "alignement_principal": "Chaotique mauvais",
       "probabilite_de_base": 0.08,
       "probabilite_d_ascendance": 0.2,
-      "places_dortoir": 0.5
+      "places_dortoir": 0.5,
+      "ajustements_d6": null
     },
     {
       "nom": "Gnome",
       "alignement_principal": "Chaotique neutre",
       "probabilite_de_base": 0.07,
       "probabilite_d_ascendance": 0.2,
-      "places_dortoir": 0.5
+      "places_dortoir": 0.5,
+      "ajustements_d6": null
     },
     {
       "nom": "Ogre",
       "alignement_principal": "Neutre mauvais",
       "probabilite_de_base": 0.03,
       "probabilite_d_ascendance": 0.2,
-      "places_dortoir": 2
+      "places_dortoir": 2,
+      "ajustements_d6": {
+        "Discrétion": -1
+      }
     },
     {
       "nom": "Nain",
       "alignement_principal": "Neutre bon",
       "probabilite_de_base": 0.15,
       "probabilite_d_ascendance": 0.2,
-      "places_dortoir": 1
+      "places_dortoir": 1,
+      "ajustements_d6": null
     }
   ]
 }

@@ -129,6 +129,16 @@ near(shortStaff.e["Réserve de mana"].value, 55);
 near(engine.statWithGear(shortStaff.unit, "Réserve de mana"), 55, "le combat et la magie lisent la même valeur");
 near(engine.statWithGear({...shortStaff.unit, activeSet:2}, "Réserve de mana"), 50, "set 2 en main : le bâton du set 1 ne compte pas");
 near(staffed("Bâton long", "weapon_set_2_main").e["Puissance magique"].value, 60);
+// Fouet + 10 % de Charisme, Trident + 20 % en Eau, Marteau de guerre + 10 % en Foudre (Idan, 2026-10-29).
+const held = name => {
+  const c = {...knight, stats:{...stats, Charisme:40}, skills:{...knight.skills, magic:{Eau:50, Foudre:30}},
+    items:[...knight.items, {id:"h", itemType:"weapon", name, tier:1, qualityName:"Correcte"}], equipment:{slots:{armor:"a", weapon_set_1_main:"h"}}};
+  return effects(c);
+};
+near(held("Fouet").Charisme.value, 44);
+near(held("Trident").Eau.value, 60);
+near(held("Marteau de guerre").Foudre.value, 33);
+near(held("Trident").Foudre.value, 30, "le trident ne touche que l'Eau");
 
 // Capes (Idan, 2026-10-24) : Esquive et Discrétion en pourcentage ; Résistance physique en points (+5 à +20).
 const caped = (name, tier) => {

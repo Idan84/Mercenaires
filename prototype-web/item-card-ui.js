@@ -42,7 +42,9 @@ function weaponCardBody(card){
     card.charge?cardRow("Charge",`+${cardNumber(card.charge,1)} % dégâts / case`):"",
     card.block?cardRow("Blocage",`+${cardNumber(card.block,1)} %`,"bonus"):"",
     card.stat?cardRow(card.stat.name,`+${cardNumber(card.stat.percent)} %`,"bonus"):"",
-    card.parry?cardRow("Parade",`${cardNumber(card.parry.chance)} % (coups ${card.parry.type}s)`,"bonus"):""
+    card.parry?cardRow("Parade",`${cardNumber(card.parry.chance)} % (coups ${card.parry.type}s)`,"bonus"):"",
+    card.aura?cardRow(`${card.aura.name} des alliés`,`+${cardNumber(card.aura.percent)} % à ${cardNumber(card.aura.range)} cases`,"bonus"):"",
+    card.blockCut?cardRow("Bouclier adverse",`blocage −${cardNumber(card.blockCut)} %`,"bonus"):""
   ];
   const traits=[
     card.grip==="Au choix"?"À deux mains : dégâts ×1,5, poids ÷2":"",

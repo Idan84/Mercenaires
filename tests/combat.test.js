@@ -429,6 +429,23 @@ const stabber=unit(wield(a,"Estoc"),0,0);
 r=scripted([1,100,1,1,100],[100]).resolveAttack(stabber,unit(wield(b,"Sai"),1,0),{mode:"melee",distance:1});
 assert.deepEqual([r.pParry,r.parried],[undefined,undefined]);
 
+// Fléau d'armes (Idan, 2026-10-29) : la chance de blocage du bouclier adverse est divisée par deux.
+const flailer=unit(wield(b,"Fléau d’armes"),0,0),blocker=unit(guardChar,1,0);
+r=scripted([1,100],[100]).resolveAttack(flailer,blocker,{mode:"melee",distance:1});
+assert.equal(r.pBlock,combat.blockChance(blocker)/2);
+// Fouet (Idan, 2026-10-29) : allonge 2 ; + 10 % du Courage de base aux autres alliés à 3 cases, en plus de l'aura du capitaine,
+// sans cumul entre fouets.
+const whipper={...unit(wield(a,"Fouet"),0,0),team:"player",alive:true};
+assert.equal(combat.canAttackAtDistance(whipper,2,"melee"),true);
+assert.equal(combat.canAttackAtDistance(whipper,3,"melee"),false);
+const whipFriend={...unit(b,2,0),team:"player",alive:true},courageBase=Number(b.stats.Courage)||0;
+let whipAura=combat.allyAura(whipFriend,[whipper,whipFriend]);
+assert.deepEqual([whipAura.whip,whipAura.bonus],[courageBase*0.1,courageBase*0.1]);
+assert.equal(combat.allyAura(whipper,[whipper,whipFriend]).whip,0,"pas sur lui-même");
+assert.equal(combat.allyAura({...whipFriend,q:4},[whipper,whipFriend]).whip,0,"au-delà de 3 cases");
+assert.equal(combat.allyAura(whipFriend,[whipper,{...whipper,id:"w2",q:1},whipFriend]).whip,courageBase*0.1,"pas de cumul");
+assert.equal(combat.allyAura({...whipFriend,team:"enemy"},[whipper,whipFriend]).whip,0,"pas les ennemis");
+
 // Vitesse combat effective CAC V1 : le malus du bouclier s'ajoute à celui de l'arme, et l'arme Au choix
 // passe en mode une main (son malus n'est plus divisé par deux).
 const penalty=(c,slot)=>{

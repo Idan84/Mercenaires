@@ -78,6 +78,10 @@
           ?{name:weapon.bonus_caracteristique,percent:number(weapon.bonus_pourcentage)}:null,
         // Parade (Idan, 2026-10-29) : le saï pare un coup tranchant sur 20 (deux saïs : 10 %).
         parry:weapon.parade_type&&number(weapon.parade_chance)>0?{type:weapon.parade_type,chance:number(weapon.parade_chance)}:null,
+        // Fouet : + aura_pourcentage % d'une caractéristique aux alliés proches ; Fléau : le bouclier adverse bloque moins.
+        aura:weapon.aura_caracteristique&&number(weapon.aura_pourcentage)>0
+          ?{name:weapon.aura_caracteristique,percent:number(weapon.aura_pourcentage),range:number(weapon.aura_portee)}:null,
+        blockCut:number(weapon.malus_blocage_pourcentage)>0?number(weapon.malus_blocage_pourcentage):null,
         counterCharge:Boolean(weapon.contre_charge),
         reload:Boolean(skill.recharge_action_rapide),
         chainShots:skill.cadence_tir==="Répétable",

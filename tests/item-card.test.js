@@ -47,6 +47,12 @@ assert.deepEqual(cards.card(item("weapon","Bâton court",4,"luxury")).stat, {nam
 // Saï (Idan, 2026-10-29) : parade de 5 % contre les coups tranchants.
 assert.deepEqual(cards.card(item("weapon","Sai",1,"standard")).parry, {type:"tranchant", chance:5});
 assert.equal(cards.card(item("weapon","Dague",1,"standard")).parry, null);
+// Traits d'armes (Idan, 2026-10-29) : fouet, fléau, trident, marteau de guerre.
+const whip = cards.card(item("weapon","Fouet",1,"standard"));
+assert.deepEqual([whip.stat, whip.aura, whip.range], [{name:"Charisme", percent:10}, {name:"Courage", percent:10, range:3}, {min:1, max:2}]);
+assert.equal(cards.card(item("weapon","Fléau d’armes",1,"standard")).blockCut, 50);
+assert.deepEqual(cards.card(item("weapon","Trident",1,"standard")).stat, {name:"Eau", percent:20});
+assert.deepEqual(cards.card(item("weapon","Marteau de guerre",1,"standard")).stat, {name:"Foudre", percent:10});
 
 // Écu usé : blocage × 0,8, poids × 1,2, contact.
 const ecu = cards.card(item("weapon","Écu",1,"worn"));

@@ -188,7 +188,8 @@
       }).concat(heldWeaponBonuses(unit,stat,base)).filter(Boolean);
     }
     // Armes tenues dans le set actif qui servent une caractéristique (weapons.json, bonus_caracteristique et
-    // bonus_pourcentage ; Idan, 2026-10-29) : Bâton long + 5 % de Puissance magique, Bâton court + 10 % de Réserve de mana.
+    // bonus_pourcentage ; Idan, 2026-10-29) : Bâton long + 5 % de Puissance magique, Bâton court + 10 % de Réserve de mana,
+    // Fouet + 10 % de Charisme, Trident + 20 % en Eau, Marteau de guerre + 10 % en Foudre.
     function heldWeaponBonuses(unit,stat,base){
       return [activeWeaponItem(unit),activeOffhandItem(unit)].map(item=>{
         const weapon=weaponTemplate(item),value=Number(weapon?.bonus_pourcentage)||0;
@@ -762,7 +763,9 @@
 
       // Blocage bouclier physique V1 : après le Toucher, avant le critique ; au CAC comme au tir, même dans
       // le dos. Un coup bloqué ne compte pas comme un toucher réel : ni critique, ni Blesser, ni dégâts.
-      const pBlock=blockChance(defender);
+      // Fléau d'armes (Idan, 2026-10-29) : la chance de blocage du bouclier adverse baisse de malus_blocage_pourcentage %.
+      const blockCut=Number(weapon?.malus_blocage_pourcentage)||0,baseBlock=blockChance(defender);
+      const pBlock=baseBlock!==null&&blockCut?baseBlock*(1-blockCut/100):baseBlock;
       const block={};
       if(pBlock!==null){
         const blockRoll=d100();
@@ -936,6 +939,23 @@
         const bonus=ally.isCaptain?captainAuraBonus(ally):lieutenantAuraBonus(ally);
         if(bonus>best.bonus) best={bonus,from:ally.isCaptain?"captain":"lieutenant",source:ally};
       }
+      // Le fouet s'ajoute à l'aura du capitaine ou du lieutenant (whip : sa part, comprise dans bonus).
+      const whip=weaponAuraBonus(unit,"Courage",units);
+      return {...best,bonus:best.bonus+whip,whip};
+    }
+    // Fouet (weapons.json, aura_caracteristique, aura_pourcentage et aura_portee ; Idan, 2026-10-29) : un allié qui le tient
+    // dans son set actif donne + aura_pourcentage % de la valeur de base aux autres alliés à aura_portee cases ou moins ;
+    // plusieurs fouets ne se cumulent pas (le plus fort compte).
+    function weaponAuraBonus(unit,stat,units=[]){
+      let best=0;
+      for(const ally of units||[]){
+        if(ally===unit||ally.team!==unit.team||!ally.alive||ally.offMap) continue;
+        for(const item of [activeWeaponItem(ally),activeOffhandItem(ally)]){
+          const weapon=weaponTemplate(item);
+          if(weapon?.aura_caracteristique!==stat||axialDistance(ally,unit)>(Number(weapon.aura_portee)||0)) continue;
+          best=Math.max(best,baseValue(unit,stat)*(Number(weapon.aura_pourcentage)||0)/100);
+        }
+      }
       return best;
     }
 
@@ -954,7 +974,7 @@
     function resolveFear(subject,caster,mastery,units=[]){
       if(!subject||subject.alive===false||subject.fleeing||fearless(subject)) return null;
       const aura=allyAura(subject,units),pHold=fearHold(subject,caster,mastery,aura.bonus),roll=d100();
-      return {subject,source:caster,pHold,roll,flees:roll>pHold,aura:aura.bonus,auraFrom:aura.from};
+      return {subject,source:caster,pHold,roll,flees:roll>pHold,aura:aura.bonus,auraFrom:aura.from,whip:aura.whip};
     }
 
     // Courage en sous-nombre V1 : mêlée locale = groupe connecté de combattants liés par leurs zones de menace CAC.
@@ -993,7 +1013,7 @@
         rule="no-wound";
       }
       const roll=d100();
-      return {subject,source,pHold,roll,flees:roll>pHold,rule,aura:aura.bonus,auraFrom:aura.from};
+      return {subject,source,pHold,roll,flees:roll>pHold,rule,aura:aura.bonus,auraFrom:aura.from,whip:aura.whip};
     }
 
     // Reprise de contrôle — En Fuite V1 ; ennemi de référence = ennemi actif le plus proche (vivant, pas En Fuite) ;
@@ -1005,7 +1025,7 @@
     function rollRecovery(unit,referenceEnemy,fleeTurn,units=[]){
       const p=recoveryChance(unit,referenceEnemy,fleeTurn,units),roll=d100();
       const aura=allyAura(unit,units);
-      return {p,roll,recovered:roll<=p,aura:aura.bonus,auraFrom:aura.from};
+      return {p,roll,recovered:roll<=p,aura:aura.bonus,auraFrom:aura.from,whip:aura.whip};
     }
 
     // Comportement automatique — En Fuite V1 : 1 Course effrénée, 2 Cachons-nous, 3 Feu à volonté.

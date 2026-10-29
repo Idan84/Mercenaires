@@ -44,7 +44,8 @@ const api=new Function("game","$","esc","fmt","renderAvatar","combatEngine","Mer
   source+"\nreturn {makeMissionUnit,sortMissionInitiative,selectNextMissionPlayer,teachMissionTestSpells,setMissionMode,targetableMissionCells,"
   +"handleMissionHexClick,resetMissionActivation,missionAiCast,missionActionAvailability,autoResolveMission,missionKey,renderMissionSpellBar,"
   +"missionMagic,endMissionActivation,missionWeaponEnchantStrike,pruneMissionTerrain,occupiedMissionKeys,missionReachablePaths,"
-  +"renderMissionProgression,missionLineOfSight,missionCanAttack,frenzyMissionActivation,maintainMissionSummons,checkMissionEnd,onMissionAttack,moveMissionUnitAlongPath};")
+  +"renderMissionProgression,missionLineOfSight,missionCanAttack,frenzyMissionActivation,maintainMissionSummons,checkMissionEnd,onMissionAttack,moveMissionUnitAlongPath,"
+  +"renderMissionConsole,missionAttackFx};")
   .call(null,game,$,v=>String(v??""),v=>String(Math.round(Number(v)||0)),()=>"",()=>engine,Progression,MissionEnd,Magic);
 
 function newMission(){
@@ -91,6 +92,13 @@ const bar=api.renderMissionSpellBar(u);
 assert.match(bar,/Mana 53\/53/);
 assert.equal((bar.match(/data-spell=/g)||[]).length,55);
 assert.match(bar,/Soin rapide<small>rapide · \d+ mana · \d+ %<\/small>/);
+// Écran de combat (2026-10-29) : au-delà de 8 sorts, un onglet par école ; une seule école affichée à la fois.
+assert.equal((bar.match(/data-spell-school=/g)||[]).length,9);
+assert.equal((bar.match(/class="mission-school"/g)||[]).length,1);
+assert.equal((bar.match(/class="mission-school hidden"/g)||[]).length,8);
+m.spellSchool="Feu";
+assert.match(api.renderMissionSpellBar(u),/class="mission-school-tab selected" type="button" data-spell-school="Feu"/);
+m.spellSchool=null;
 
 // Soin rapide : cases ciblables = le lanceur et les alliés à portée, jamais un ennemi lointain.
 api.setMissionMode("spell:quick_heal");
@@ -989,5 +997,23 @@ const [report]=campaign.advanceTime(state,1);
 assert.ok(home.mana>0,"au camp : recharge");
 assert.equal(away.mana,0,"en route : rien");
 assert.ok(report.mana.some(x=>x.id===home.id));
+
+// Écran de combat (2026-10-29) : file d'effets visuels (purement visuelle) et console allégée.
+{
+  const mission=newMission(),a=mission.players[0],d=mission.enemies[0];
+  mission.fx=[];
+  api.missionAttackFx(a,d,{ok:true,hit:false});
+  api.missionAttackFx(a,d,{ok:true,hit:true,blocked:true});
+  api.missionAttackFx(a,d,{ok:true,hit:true,wound:true,targetDown:true});
+  assert.deepEqual(mission.fx.filter(f=>f.id===d.id).map(f=>f.text),["Raté","Bloqué","Hors combat"]);
+  assert.ok(mission.fx.every(f=>f.hp!==undefined&&f.q!==undefined),"PV et case notés à l'instant de l'événement");
+  mission.autoRunning=true;
+  api.missionAttackFx(a,d,{ok:true,hit:false});
+  assert.equal(mission.fx.length,6,"rien en combat automatique");
+  mission.autoRunning=false;
+  const log=[{message:"Tour 1",kind:"turn"},...[1,2,3].map(n=>({message:"A"+n+" repère B (50 %, jet 3).",kind:"info"})),{message:"C repère D (5 %, jet 1).",kind:"info"}];
+  assert.match(api.renderMissionConsole(log),/<details class="combat-log-group"><summary>4 repérages<\/summary>/);
+  assert.doesNotMatch(api.renderMissionConsole(log.slice(0,3)),/<details/,"moins de 3 : pas de regroupement");
+}
 
 console.log("Sorts de Vie, du Feu, de l'Eau, de la Transmutation, de la Foudre, de la Télékinésie, de l'Illusion, de la Nécromancie et de l'Invocation dans l'écran de combat, poison, recharge du mana au camp — OK");

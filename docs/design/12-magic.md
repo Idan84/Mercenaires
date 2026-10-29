@@ -295,6 +295,41 @@ Le **Charisme** du mage y compte (Idan : l'Invocation et la Nécromancie en dép
 
 (Charisme supposé égal à l'Intelligence : 35 / 53 / 73.)
 
+### École de l'Invocation (6 sorts, Idan, 2026-10-28)
+
+**Mêmes règles d'invocation que la Nécromancie** (Idan) : le joueur joue ses créatures dès le tour suivant ; chaque tour, test de **Charisme** (difficulté 30) et entretien en mana, sinon elles disparaissent ; elles disparaissent aussi quand le mage tombe. Contrairement aux morts-vivants, les créatures font leurs **tests de Courage et peuvent fuir** (Idan). Une **meute** (loups, ours, crocodiles) compte pour **une seule invocation** : un test, un entretien ; raté, toute la meute disparaît ; chacun se déplace de son côté. Les créatures apparaissent sur la case choisie, voisine du mage, puis sur les cases libres les plus proches (moins de créatures s'il n'y a plus de place). Écoles opposées : Transmutation et Nécromancie. Données : `spells.json` (colonnes `invocation_nb_des`, `invocation_de`, `invocation_pas_maitrise`), `summon-archetypes.json`.
+
+| Sort | Palier | Action | Effet | Portée | Mana (base) |
+|---|---|---|---|---|---|
+| Corbeau | Novice (30) | principale | un **corbeau** | 1 | 10, puis **2 par tour** |
+| Bourbier | Novice (30) | principale | une case devient un **bourbier** pendant **2 + M/50 tours (2 à 3)** : qui s'y trouve ou y entre, allié ou ennemi, **ne peut plus se déplacer** | 6 + M/25, au plus 12 | 10 |
+| Transposition | Novice (30) | rapide | le mage **échange sa place** avec une de ses invocations | partout, sans ligne de vue | 8 |
+| Invocation de loups | Adepte (50) | principale | **1D6 loups, +1 par tranche de 50 de Maîtrise** (Idan : « le 1D6 peut évoluer ») | 1 | 25, puis **5 par tour** |
+| Invocation d'ours | Expert (70) | principale | **1D3 ours** | 1 | 30, puis **6 par tour** |
+| Invocation de crocodiles | Expert (70) | principale | **1D3 crocodiles** | 1 | 30, puis **6 par tour** |
+
+| Créature | Déplacement | PV | Attaque (dégâts moyens) | Particularités |
+|---|---|---|---|---|
+| Corbeau (Vitesse 100) | 8 cases | 25 | Bec 1D3, ≈ 6 | Discrétion 95 (Idan : « on le voit, mais personne n'y prête attention »), Perception 85, Esquive 80 |
+| Loup (Vitesse 70) | 6 cases | 60 | Morsure 1D6, ≈ 25 | Perception 70 (flair) |
+| Ours (Vitesse 20) | 3 cases | 250 | Griffes 1D8, ≈ 77 | Force 85, Résistance physique 20 |
+| Crocodile (Vitesse 10) | 2 cases | 200 | Mâchoires 2D8, ≈ 126 | Discrétion 90, Résistance physique 25 |
+
+- Les autres valeurs des créatures sont celles du guerrier gobelin novice (`summon-archetypes.json`) ; leur arme naturelle passe par les règles des armes (Toucher, Blesser, puissance contre l'armure).
+- **Corbeau** : l'éclaireur. Il fait comme tout le monde son test de repérage au début de chaque tour, avec sa Perception de 85 : un ennemi camouflé qu'il repère est vu de toute l'armée, pour toute la partie (doc 04). Il servira encore plus avec le brouillard de guerre.
+- **Bourbier** : on peut entrer dans la case (c'est la fin du chemin), pas la traverser ni en sortir ; on y attaque et on y lance des sorts. La fuite est bloquée aussi. Les déplacements forcés (Télékinésie) ne sont pas arrêtés.
+- **Transposition** : pas un déplacement : aucune attaque d'opportunité.
+- **Élémentaire** : plus tard, comme sort combiné aux éléments (Idan).
+
+| | Débutant | Recrue moyenne | Expert |
+|---|---|---|---|
+| Corbeau | 9 mana, entretien 2 · 57 % | 9, 2 · 81 % | 6, 2 · 94 % |
+| Bourbier | 2 tours · portée 7 · 9 mana · 57 % | 3 tours · 8 · 9 · 81 % | 3 tours · 11 · 6 · 94 % |
+| Transposition | 8 mana · 57 % | 7 · 81 % | 5 · 94 % |
+| Loups | 1D6 · 23 mana, entretien 5 · 31 % | 1D6 + 1 · 21, 5 · 59 % | 1D6 + 2 · 14, 3 · 93 % |
+| Ours, Crocodiles | 1D3 · 27 mana, entretien 6 · 17 % | 1D3 · 25, 5 · 33 % | 1D3 · 17, 4 · 87 % |
+| Garder une invocation, chaque tour | 57 % | 81 % | 94 % |
+
 ### Mana
 
 - Le **Mana actuel** se dépense en combat et se **recharge chaque jour au camp** : **Réserve de mana × (10 + Volonté / 2) %** par jour (Volonté 52 : 36 % par jour, plein en 3 jours). Rien pendant les trajets.
@@ -356,7 +391,7 @@ Plus tard : une **école de magie** à construire au camp et des **manuels** à 
 ### Mise en place
 
 1. **Étape 1** — ces décisions, `spells.json`, les règles des sorts (`game-core/magic.js`) et leurs tests (`tests/magic.test.js`) : Soin rapide, puis les six sorts de l'école de la Vie.
-2. **Étape 2** — les sorts dans l'écran de combat actuel, **pour tester** (Vie, puis Feu, Eau, Transmutation, Foudre, Télékinésie, Illusion et Nécromancie ; le bouton de test s'appelle désormais « Sorts (test) » et donne tous les sorts écrits) (Idan, 2026-10-25 ; l'interface de combat sera refaite) : une barre de sorts pour le mercenaire actif (action, mana, réussite) ; les cases ciblables en vert (alliés et lanceur, ou toutes les cases à portée pour Soin de masse) ; le journal ; la Régénération au début des activations ; le mana affiché dans la liste des équipes ; un bouton **« Sorts de Vie (test) »** : toute l'escouade connaît les six sorts (niveau 1) pour ce combat, sans toucher au grimoire, le mana étant bien dépensé ; une IA simple, aussi en combat automatique : Soin profond sur l'allié le plus blessé sous 35 % de ses PV à la place de l'attaque, Soin rapide sous 60 %.
+2. **Étape 2** — les sorts dans l'écran de combat actuel, **pour tester** (Vie, puis Feu, Eau, Transmutation, Foudre, Télékinésie, Illusion, Nécromancie et Invocation ; le bouton de test s'appelle désormais « Sorts (test) » et donne tous les sorts écrits) (Idan, 2026-10-25 ; l'interface de combat sera refaite) : une barre de sorts pour le mercenaire actif (action, mana, réussite) ; les cases ciblables en vert (alliés et lanceur, ou toutes les cases à portée pour Soin de masse) ; le journal ; la Régénération au début des activations ; le mana affiché dans la liste des équipes ; un bouton **« Sorts de Vie (test) »** : toute l'escouade connaît les six sorts (niveau 1) pour ce combat, sans toucher au grimoire, le mana étant bien dépensé ; une IA simple, aussi en combat automatique : Soin profond sur l'allié le plus blessé sous 35 % de ses PV à la place de l'attaque, Soin rapide sous 60 %.
 3. Étape 3 — **recharge du mana au camp** (faite avec l'étape 2, pour pouvoir tester d'un combat à l'autre), **XP du sort et de l'école, régression des écoles opposées**, XP de la Puissance magique, de la Réserve de mana et de la Chance (faite, voir « Écoles : progression et régression »).
 4. Étape 4 — **sorts connus à la création** et **compensations des nains et des ogres** (faite, voir « Sorts connus à la création »).
 
@@ -439,9 +474,7 @@ Remplacé par l'**École de la Transmutation** d'Idan (2026-10-27, ci-dessus) : 
 
 ### Invocation
 
-- **Invocation de corbeaux** — éclaireurs pour révéler la carte / lever le brouillard de guerre.
-- **Invocation d'élémentaire** — créature combattante invoquée.
-- **Bourbier** — crée une case marécageuse pour immobiliser / retenir un personnage, y compris potentiellement un allié en fuite.
+Remplacé par l'**École de l'Invocation** d'Idan (2026-10-28, ci-dessus) : Corbeau, Bourbier, Transposition, Invocation de loups, d'ours et de crocodiles. L'**Élémentaire** viendra plus tard, comme sort combiné aux éléments.
 
 ## Cas de test futurs
 

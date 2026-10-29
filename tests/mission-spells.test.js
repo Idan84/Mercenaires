@@ -44,7 +44,7 @@ const api=new Function("game","$","esc","fmt","renderAvatar","combatEngine","Mer
   source+"\nreturn {makeMissionUnit,sortMissionInitiative,selectNextMissionPlayer,teachMissionTestSpells,setMissionMode,targetableMissionCells,"
   +"handleMissionHexClick,resetMissionActivation,missionAiCast,missionActionAvailability,autoResolveMission,missionKey,renderMissionSpellBar,"
   +"missionMagic,endMissionActivation,missionWeaponEnchantStrike,pruneMissionTerrain,occupiedMissionKeys,missionReachablePaths,"
-  +"renderMissionProgression,missionLineOfSight,missionCanAttack,frenzyMissionActivation,maintainMissionSummons,checkMissionEnd,onMissionAttack};")
+  +"renderMissionProgression,missionLineOfSight,missionCanAttack,frenzyMissionActivation,maintainMissionSummons,checkMissionEnd,onMissionAttack,moveMissionUnitAlongPath};")
   .call(null,game,$,v=>String(v??""),v=>String(Math.round(Number(v)||0)),()=>"",()=>engine,Progression,MissionEnd,Magic);
 
 function newMission(){
@@ -82,13 +82,14 @@ assert.deepEqual(magic.knownSpells(u).map(s=>s.code),["quick_heal","deep_heal","
   "shock","lightning_bolt","shock_weapon","chain_lightning","thunder","celerity",
   "attraction","projection","telekinetic_move","clash","force_field","stone_throw",
   "fear","illusory_support","mass_courage","hidden_advance","psychic_shock","frenzy",
-  "raise_dead","summon_specter","life_drain","death_arrow","necrosis","wither"]);
-assert.ok(m.players.every(p=>p.spells.length===49&&!(p.character.spells||[]).length));
+  "raise_dead","summon_specter","life_drain","death_arrow","necrosis","wither",
+  "summon_raven","quagmire","transposition","summon_wolves","summon_bears","summon_crocodiles"]);
+assert.ok(m.players.every(p=>p.spells.length===55&&!(p.character.spells||[]).length));
 assert.equal(api.missionActionAvailability().testSpells,false,"une seule fois par combat");
-assert.ok(logged(/connaît tous les sorts \(Vie, Feu, Eau, Transmutation, Foudre, Télékinésie, Illusion, Nécromancie, niveau 1\)/));
+assert.ok(logged(/connaît tous les sorts \(Vie, Feu, Eau, Transmutation, Foudre, Télékinésie, Illusion, Nécromancie, Invocation, niveau 1\)/));
 const bar=api.renderMissionSpellBar(u);
 assert.match(bar,/Mana 53\/53/);
-assert.equal((bar.match(/data-spell=/g)||[]).length,49);
+assert.equal((bar.match(/data-spell=/g)||[]).length,55);
 assert.match(bar,/Soin rapide<small>rapide · \d+ mana · \d+ %<\/small>/);
 
 // Soin rapide : cases ciblables = le lanceur et les alliés à portée, jamais un ennemi lointain.
@@ -838,6 +839,103 @@ assert.deepEqual([raisedResult.dead,raisedResult.death.raised],[true,true]);
 assert.equal(m.aftermath.results.length,3,"ni zombie ni spectre au bilan");
 assert.ok(logged(/relevé en zombie par un nécromancien/));
 
+// École de l'Invocation dans l'écran de combat (Idan, 2026-10-28). Maîtrise 60,5, Charisme 50 : maintien 82 %, loups
+// 1D6 + 1, entretien 4 (loups) ou 5 (ours, crocodiles) ; Bourbier 3 tours.
+m=newMission();
+api.teachMissionTestSpells();
+const caller=m.activeUnit,[f1,f2,f3]=m.enemies,helper=m.players.find(p=>p!==caller);
+for(const p of m.players){ p.character.skills.magic.Invocation=60; p.character.stats.Charisme=50; }
+m.players.forEach((p,i)=>{ p.q=0;p.r=8-i; });
+caller.q=2;caller.r=4;helper.q=0;helper.r=4;f1.q=4;f1.r=4;f2.q=10;f2.r=4;f3.q=10;f3.r=2;
+for(const e of m.enemies) e.camouflaged=false;
+const recharge=()=>{ api.resetMissionActivation(caller); caller.character.mana=200; caller.character.stats["Réserve de mana"]=200; };
+const pick=()=>{ const [q,r]=[...api.targetableMissionCells()][0].split(",").map(Number); return {q,r}; };
+// Loups : 1D6 + 1 autour de la case ; une meute = une invocation.
+recharge();
+api.setMissionMode("spell:summon_wolves");
+queue.push(0,0.5);
+api.handleMissionHexClick(1,4);
+const wolves=m.players.filter(x=>x.character.archetype==="wolf");
+assert.equal(wolves.length,5);
+assert.equal(new Set(wolves.map(w=>w.summon.group)).size,1,"un seul groupe");
+assert.equal(new Set(wolves.map(w=>api.missionKey(w.q,w.r))).size,5,"chacun sa case");
+assert.deepEqual(wolves.map(w=>w.character.name),["Loup","Loup 2","Loup 3","Loup 4","Loup 5"]);
+assert.deepEqual([wolves[0].pvMax,engine.movementBase(wolves[0]),wolves[0].summon.upkeep],[60,6,4]);
+assert.ok(logged(/5 loups apparaissent \(1D6 : 4, \+1 pour la Maîtrise\) \(60 PV chacun\) ; entretien 4 mana par tour pour le groupe/));
+assert.notEqual(engine.resolveCourage(f1,wolves[0],{ok:true,wound:true,mode:"melee"},{units:[...m.players,...m.enemies]}),null,"un loup peut avoir peur");
+const manaBefore=caller.character.mana;
+queue.push(0);
+api.maintainMissionSummons();
+assert.equal(caller.character.mana,manaBefore-4,"un seul entretien pour la meute");
+assert.ok(logged(/garde ses 5 loups \(Charisme 82 %, jet 1\) : −4 mana/));
+queue.push(0.99);
+api.maintainMissionSummons();
+assert.ok(wolves.every(w=>!w.alive&&w.vanished));
+assert.ok(logged(/perd le contrôle de ses 5 loups \(Charisme 82 %, jet 100\) : ils disparaissent/));
+// Ours : 1D3, lents et forts ; Crocodiles : 1D3, très lents, très discrets.
+recharge();
+api.setMissionMode("spell:summon_bears");
+queue.push(0,0);
+api.handleMissionHexClick(1,4);
+const bear=m.players.find(x=>x.character.archetype==="bear");
+assert.deepEqual([bear.pvMax,engine.movementBase(bear),engine.weaponTemplate(engine.activeWeaponItem(bear)).degats_pv_base],[250,3,"1D8"]);
+assert.ok(logged(/Ours apparaît \(1D3 : 1\) \(250 PV\) ; entretien 5 mana par tour/));
+recharge();
+api.setMissionMode("spell:summon_crocodiles");
+queue.push(0,0.99);
+api.handleMissionHexClick(2,3);
+const crocs=m.players.filter(x=>x.character.archetype==="crocodile");
+assert.equal(crocs.length,3);
+assert.deepEqual([engine.movementBase(crocs[0]),engine.statWithGear(crocs[0],"Discrétion"),crocs[0].pvMax],[2,90,200]);
+// Corbeau : un éclaireur rapide, très discret, à la Perception aiguë.
+recharge();
+api.setMissionMode("spell:summon_raven");
+queue.push(0);
+api.handleMissionHexClick(pick().q,pick().r);
+const raven=m.players.find(x=>x.character.archetype==="raven");
+assert.deepEqual([engine.movementBase(raven),raven.pvMax,engine.statWithGear(raven,"Discrétion"),engine.statWithGear(raven,"Perception")],[8,25,95,85]);
+// Transposition : le lanceur et une de ses invocations échangent leurs places, sans attaque d'opportunité.
+recharge();
+api.setMissionMode("spell:transposition");
+const swapCells=api.targetableMissionCells();
+assert.ok(swapCells.has(api.missionKey(raven.q,raven.r))&&swapCells.has(api.missionKey(bear.q,bear.r)));
+assert.ok(!swapCells.has(api.missionKey(helper.q,helper.r)),"pas un allié");
+const ravenAt={q:raven.q,r:raven.r},callerAt={q:caller.q,r:caller.r};
+queue.push(0);
+api.handleMissionHexClick(raven.q,raven.r);
+assert.deepEqual([caller.q,caller.r,raven.q,raven.r],[ravenAt.q,ravenAt.r,callerAt.q,callerAt.r]);
+assert.ok(logged(/lance Transposition sur Corbeau .* : ils échangent leurs places/));
+// Bourbier : la case où se tient l'ennemi ; il ne bouge plus, et personne ne la traverse.
+recharge();
+api.setMissionMode("spell:quagmire");
+queue.push(0);
+api.handleMissionHexClick(f1.q,f1.r);
+assert.ok(logged(/lance Bourbier .* : la case devient un bourbier pendant 3 tours ; .* y est pris/));
+api.resetMissionActivation(f1);
+assert.equal(f1.movementRemaining,0);
+assert.ok(logged(/est pris dans le bourbier : pas de déplacement/));
+assert.equal(api.missionReachablePaths(f1,5).size,1,"pas même une case");
+f1.q=12;f1.r=8;
+f3.q=5;f3.r=4;f3.movementRemaining=5;
+for(const path of api.missionReachablePaths(f3,5).values())
+  assert.ok(!path.slice(0,-1).some(c=>c.q===4&&c.r===4),"on ne traverse pas le bourbier");
+api.moveMissionUnitAlongPath(f3,[{q:4,r:4},{q:3,r:4}]);
+assert.deepEqual([f3.q,f3.r,f3.movementRemaining],[4,4,0]);
+assert.ok(logged(/s’enlise dans le bourbier/));
+m.turn+=3;
+api.pruneMissionTerrain();
+assert.ok(logged(/Le bourbier sèche/));
+// L'invocateur tombe : toute la meute disparaît.
+recharge();
+caller.q=2;caller.r=4;
+api.setMissionMode("spell:summon_wolves");
+queue.push(0,0);
+api.handleMissionHexClick(pick().q,pick().r);
+caller.alive=false;
+api.checkMissionEnd();
+assert.ok(logged(/2 loups : leur invocateur est hors combat : ils disparaissent/));
+assert.ok(m.players.filter(x=>x.summon).every(x=>!x.alive),"le corbeau, l'ours et les crocodiles aussi");
+
 // Mort du poison au début de son activation : on passe au suivant.
 m=newMission();
 const doomed=m.playerOrder.find(p=>p!==m.activeUnit);
@@ -887,4 +985,4 @@ assert.ok(home.mana>0,"au camp : recharge");
 assert.equal(away.mana,0,"en route : rien");
 assert.ok(report.mana.some(x=>x.id===home.id));
 
-console.log("Sorts de Vie, du Feu, de l'Eau, de la Transmutation, de la Foudre, de la Télékinésie, de l'Illusion et de la Nécromancie dans l'écran de combat, poison, recharge du mana au camp — OK");
+console.log("Sorts de Vie, du Feu, de l'Eau, de la Transmutation, de la Foudre, de la Télékinésie, de l'Illusion, de la Nécromancie et de l'Invocation dans l'écran de combat, poison, recharge du mana au camp — OK");

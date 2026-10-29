@@ -34,6 +34,9 @@ function occupiedMissionKeys(except=null){
 function missionTerrainAt(q,r){ return (game.mission?.terrain||[]).find(t=>t.q===q&&t.r===r)||null; }
 // Brouillard (doc 12) : des cases qui coupent la ligne de vue jusqu'au tour untilTurn (exclu) ; on y passe librement.
 function missionFogAt(q,r){ return (game.mission?.fog||[]).find(f=>f.q===q&&f.r===r)||null; }
+// Bourbier (Invocation ; Idan, 2026-10-28) : qui s'y trouve ou y entre ne peut plus se déplacer, jusqu'au tour untilTurn
+// (exclu) ; on peut y entrer (c'est la fin du chemin), pas le traverser ni en sortir.
+function missionMireAt(q,r){ return (game.mission?.mire||[]).find(f=>f.q===q&&f.r===r)||null; }
 // Ligne de vue (doc 04 et 12) : seul le Brouillard la coupe pour l'instant, dès qu'une case de la ligne droite entre
 // les deux, extrémités comprises, est dans le brouillard. Elle compte pour les tirs et les sorts.
 function missionLineOfSight(a,b){
@@ -46,6 +49,11 @@ function pruneMissionTerrain(){
     const ended=m.terrain.filter(t=>m.turn>=t.untilTurn);
     m.terrain=m.terrain.filter(t=>m.turn<t.untilTurn);
     for(const t of ended) missionLog("La flaque de magma refroidit : la case est de nouveau praticable.","magic");
+  }
+  if(m?.mire?.length){
+    const before=m.mire.length;
+    m.mire=m.mire.filter(f=>m.turn<f.untilTurn);
+    if(m.mire.length<before) missionLog("Le bourbier sèche : la case est de nouveau praticable.","magic");
   }
   if(m?.fog?.length){
     const before=m.fog.length;
@@ -92,11 +100,13 @@ function shortestMissionPath(start,end,except=null){
   const blocked=occupiedMissionKeys(except);
   const startKey=missionKey(start.q,start.r),endKey=missionKey(end.q,end.r);
   if(blocked.has(endKey)) return null;
+  if(startKey!==endKey&&missionMireAt(start.q,start.r)) return null;
 
   const queue=[{q:start.q,r:start.r}],came=new Map([[startKey,null]]);
   while(queue.length){
     const cur=queue.shift(),key=missionKey(cur.q,cur.r);
     if(key===endKey) break;
+    if(key!==startKey&&missionMireAt(cur.q,cur.r)) continue;
     for(const next of missionNeighbors(cur)){
       const nk=missionKey(next.q,next.r);
       if(came.has(nk)||blocked.has(nk)) continue;
@@ -160,6 +170,10 @@ function resetMissionActivation(unit){
   tickMissionChill(unit);
   tickMissionBuffs(unit);
   unit.movementRemaining=game.mission.engine.movementBase(unit);
+  if(missionMireAt(unit.q,unit.r)&&unit.alive){
+    unit.movementRemaining=0;
+    missionLog(unit.character.name+" est pris dans le bourbier : pas de déplacement.","bad");
+  }
   unit.attackAvailable=true;
   unit.quickAvailable=true;
   unit.prone=false;
@@ -699,6 +713,11 @@ function moveMissionUnitAlongPath(unit,path){
     if(wasFleeing) MercenairesProgression.recordFleeHex(unit);
     game.mission.progression.recordStep(unit);
     unit.movementRemaining=Math.max(0,(unit.movementRemaining||0)-1);
+    if(missionMireAt(step.q,step.r)){
+      unit.movementRemaining=0;
+      missionLog(unit.character.name+" s’enlise dans le bourbier.","bad");
+      break;
+    }
   }
   return moved;
 }
@@ -874,10 +893,10 @@ function missionMinDistance(cell,units){
 function missionReachablePaths(unit,budget=Infinity,forbidden=null){
   const blocked=occupiedMissionKeys(unit),start={q:unit.q,r:unit.r};
   if(forbidden) for(const key of forbidden) blocked.add(key);
-  const paths=new Map([[missionKey(start.q,start.r),[]]]),queue=[start];
+  const paths=new Map([[missionKey(start.q,start.r),[]]]),queue=missionMireAt(start.q,start.r)?[]:[start];
   while(queue.length){
     const cur=queue.shift(),path=paths.get(missionKey(cur.q,cur.r));
-    if(path.length>=budget) continue;
+    if(path.length>=budget||(path.length&&missionMireAt(cur.q,cur.r))) continue;
     for(const next of missionNeighbors(cur)){
       const key=missionKey(next.q,next.r);
       if(paths.has(key)||blocked.has(key)) continue;
@@ -1341,6 +1360,17 @@ function resolveMissionSpell(caster,target,code,extra={}){
     target.venom={...out.effect};
     missionLog(name+" lance "+spell.nom+on+detail+" : "+(target===caster?name:target.character.name)+" pourra cracher du venin (action rapide, "
       +out.effect.min+" à "+out.effect.max+" cases) "+(out.effect.turns>1?"pendant ses "+out.effect.turns+" prochaines activations":"à sa prochaine activation")+".","magic");
+  }else if(spell.effet==="bourbier"){
+    const f=out.mire,same=x=>x.q===f.q&&x.r===f.r;
+    m.mire=[...(m.mire||[]).filter(x=>!same(x)),{q:f.q,r:f.r,untilTurn:m.turn+f.turns}];
+    const stuck=missionUnits().find(x=>x.alive&&!x.offMap&&same(x));
+    missionLog(name+" lance "+spell.nom+detail+" : la case devient un bourbier pendant "+f.turns+" tours"
+      +(stuck?" ; "+stuck.character.name+" y est pris"+(missionFeminine(stuck)?"e":""):"")+".","magic");
+  }else if(spell.effet==="transposition"){
+    // Sans attaque d'opportunité : ce n'est pas un déplacement.
+    const {from,to}=out.swap;
+    caster.q=to.q;caster.r=to.r;target.q=from.q;target.r=from.r;
+    missionLog(name+" lance "+spell.nom+on+detail+" : ils échangent leurs places.","magic");
   }else if(spell.effet==="resurrection"){
     raiseMissionDead(caster,target,out,detail);
   }else if(spell.effet==="invocation"){
@@ -1420,13 +1450,33 @@ function raiseMissionDead(caster,dead,out,detail){
     +" se relève en zombie, avec "+share+" % de ses forces ("+zombie.pvMax+" PV) ; entretien "+s.upkeep+" mana par tour.","magic");
   if(dead.team==="player") missionLog(dead.character.name+" ne survivra pas à ce combat.","death");
 }
+// Une meute (Loups, Ours, Crocodiles) : la case choisie, puis les cases libres les plus proches ; s'il n'y en a plus,
+// moins de créatures. Toutes partagent le même groupe : un seul test de Charisme et un seul entretien.
+function missionSummonCells(start,count){
+  const cells=[],seen=new Set([missionKey(start.q,start.r)]),queue=[start];
+  while(queue.length&&cells.length<count){
+    const cur=queue.shift();
+    if(missionCellFree(cur)) cells.push(cur);
+    for(const next of missionNeighbors(cur)){
+      const key=missionKey(next.q,next.r);
+      if(!seen.has(key)){ seen.add(key);queue.push(next); }
+    }
+  }
+  return cells;
+}
 function summonMissionCreature(caster,spell,out,detail){
-  const s=out.summon,arch=missionSummonArchetype(s.creature);
+  const m=game.mission,s=out.summon,arch=missionSummonArchetype(s.creature);
   if(!arch){ missionLog("Créature inconnue : "+s.creature+".","bad"); return false; }
-  const n=missionUnits().filter(u=>u.character.archetype===arch.code).length+1;
-  const unit=addMissionSummon(caster,missionCreatureCharacter(arch,n),s.cell,{casterId:caster.id,code:s.code,upkeep:s.upkeep});
-  missionLog(caster.character.name+" lance "+spell.nom+detail+" : "+unit.character.name+" apparaît ("+unit.pvMax+" PV) ; entretien "
-    +s.upkeep+" mana par tour.","magic");
+  const wanted=s.count?.count||1,cells=missionSummonCells(s.cell,wanted),group="pack-"+((m.summonSeq||0)+1);
+  const units=cells.map(cell=>{
+    const n=missionUnits().filter(u=>u.character.archetype===arch.code).length+1;
+    return addMissionSummon(caster,missionCreatureCharacter(arch,n),cell,{casterId:caster.id,code:s.code,upkeep:s.upkeep,group});
+  });
+  const roll=s.count?.dice?" ("+s.count.dice+" : "+s.count.rolled+(s.count.bonus?", +"+s.count.bonus+" pour la Maîtrise":"")+")":"";
+  const what=units.length>1?units.length+" "+arch.pluriel.toLowerCase()+" apparaissent"+roll+" ("+units[0].pvMax+" PV chacun)"
+    :units[0].character.name+" apparaît"+roll+" ("+units[0].pvMax+" PV)";
+  missionLog(caster.character.name+" lance "+spell.nom+detail+" : "+what+(cells.length<wanted?", faute de place pour "+wanted:"")
+    +" ; entretien "+s.upkeep+" mana par tour"+(units.length>1?" pour le groupe":"")+".","magic");
   return true;
 }
 function missionSummonGroups(filter){
@@ -1439,12 +1489,15 @@ function dismissMissionSummons(units,reason){
   const dust=units.every(u=>u.character.archetype==="zombie"),many=units.length>1;
   missionLog(reason+(dust?(many?" : ils tombent en poussière.":" : il tombe en poussière."):(many?" : ils disparaissent.":" : il disparaît.")),"bad");
 }
-function missionSummonLabel(units){ return units.length>1?units.length+" "+units[0].character.role+"s":units[0].character.name; }
+function missionSummonLabel(units,possessive=true){
+  if(units.length<2) return units[0].character.name;
+  return (possessive?"ses ":"")+units.length+" "+(missionSummonArchetype(units[0].character.archetype)?.pluriel||units[0].character.role).toLowerCase();
+}
 function missionSummonCaster(unit){ return missionUnits().find(u=>u.id===unit.summon?.casterId)||null; }
 // Un invocateur hors combat (ou sorti de la carte) : ses invocations disparaissent aussitôt.
 function releaseMissionSummons(){
   for(const units of missionSummonGroups(u=>!missionSummonCaster(u)?.alive))
-    dismissMissionSummons(units,missionSummonLabel(units)+" : son invocateur est hors combat");
+    dismissMissionSummons(units,missionSummonLabel(units,false)+" : "+(units.length>1?"leur":"son")+" invocateur est hors combat");
 }
 // Début de chaque tour : test de Charisme, puis entretien en mana, pour chaque invocation.
 function maintainMissionSummons(){
@@ -2083,6 +2136,8 @@ function renderMission(){
     const magma=missionTerrainAt(q,r);
     if(magma){ classes.push("magma"); title=` title="Flaque de magma : infranchissable jusqu’au tour ${magma.untilTurn}"`; }
     if(m.spellTarget&&m.spellTarget.q===q&&m.spellTarget.r===r) classes.push("spell-chosen");
+    const mire=missionMireAt(q,r);
+    if(mire){ classes.push("mire"); title=` title="Bourbier : on ne peut plus s’y déplacer jusqu’au tour ${mire.untilTurn}"`; }
     const fog=missionFogAt(q,r);
     if(fog){ classes.push("fog"); title=` title="Brouillard : coupe la ligne de vue jusqu’au tour ${fog.untilTurn}"`; }
     if(targets.has(key)&&m.mode==="move"){

@@ -25,7 +25,7 @@ const magic=createMagicRules({reference,combat,random});
 function mage({pm,vie,level=1,int,chance=54,mana=53,charisma=50,items=[],slots={}}){
   return {
     name:"Mage",stats:{"Puissance magique":pm,Intelligence:int,Chance:chance,"Réserve de mana":mana,Constitution:50,Endurance:50,Volonté:50,Charisme:charisma},
-    skills:{magic:{Vie:vie,Feu:vie,Eau:vie,Transmutation:vie,Foudre:vie,Télékinésie:vie,Illusion:vie,Nécromancie:vie}},mana,
+    skills:{magic:{Vie:vie,Feu:vie,Eau:vie,Transmutation:vie,Foudre:vie,Télékinésie:vie,Illusion:vie,Nécromancie:vie,Invocation:vie}},mana,
     spells:["quick_heal","deep_heal","regeneration","mass_heal","restitution","purge"].map(code=>({code,school:"Vie",mastery:level}))
       .concat(["fire_bolt","fireball","fire_ring","flaming_weapon","fire_armor","magma"].map(code=>({code,school:"Feu",mastery:level})))
       .concat(["fog","healing_water","ice_arrow","tsunami","frost_armor","freeze","ice_weapon"].map(code=>({code,school:"Eau",mastery:level})))
@@ -33,7 +33,8 @@ function mage({pm,vie,level=1,int,chance=54,mana=53,charisma=50,items=[],slots={
       .concat(["shock","lightning_bolt","shock_weapon","chain_lightning","thunder","celerity"].map(code=>({code,school:"Foudre",mastery:level})))
       .concat(["attraction","projection","telekinetic_move","clash","force_field","stone_throw"].map(code=>({code,school:"Télékinésie",mastery:level})))
       .concat(["fear","illusory_support","mass_courage","hidden_advance","psychic_shock","frenzy"].map(code=>({code,school:"Illusion",mastery:level})))
-      .concat(["raise_dead","summon_specter","life_drain","death_arrow","necrosis","wither"].map(code=>({code,school:"Nécromancie",mastery:level}))),
+      .concat(["raise_dead","summon_specter","life_drain","death_arrow","necrosis","wither"].map(code=>({code,school:"Nécromancie",mastery:level})))
+      .concat(["summon_raven","quagmire","transposition","summon_wolves","summon_bears","summon_crocodiles"].map(code=>({code,school:"Invocation",mastery:level}))),
     items,equipment:{slots}
   };
 }
@@ -633,7 +634,8 @@ let raised=magic.cast(recruit,corpse,"raise_dead");
 assert.deepEqual(raised.summon,{code:"raise_dead",creature:"zombie",upkeep:5,share:54.75,cell:{q:1,r:0}});
 // Invocation de spectre : une case libre voisine.
 queue=[0];
-assert.deepEqual(magic.cast(recruit,{q:0,r:1},"summon_specter").summon,{code:"summon_specter",creature:"specter",upkeep:5,share:100,cell:{q:0,r:1}});
+assert.deepEqual(magic.cast(recruit,{q:0,r:1},"summon_specter").summon,{code:"summon_specter",creature:"specter",upkeep:5,share:100,cell:{q:0,r:1},
+  count:{count:1,rolled:null,dice:null,bonus:0}});
 assert.equal(magic.canCast(recruit,{q:0,r:1},"summon_specter",{cellFree:false}).ok,false);
 // Drain de vie : 50 % ; Flétrissement : sa durée.
 queue=[0];
@@ -656,4 +658,34 @@ assert.deepEqual([novice,recruit,master].map(x=>average(x,"necrosis",9)),[78,102
 const ghoul={character:{name:"Goule",undead:true,stats:{Courage:10,Volonté:10},items:[],equipment:{slots:{}}},activeSet:1,team:"enemy",alive:true};
 assert.equal(combat.resolveFear(ghoul,seer,90),null);
 
-console.log("Magie : écoles de la Vie, du Feu, de l'Eau, de la Transmutation, de la Foudre, de la Télékinésie, de l'Illusion et de la Nécromancie OK");
+// École de l'Invocation (Idan, 2026-10-28) : les mêmes règles d'invocation que la Nécromancie.
+// Mana et réussite : Corbeau 9 / 9 / 6 (entretien 2), Loups 23 / 21 / 14 (entretien 5), Ours et Crocodiles 27 / 25 / 17
+// (entretien 6 / 5 / 4 ; Expert : 17 / 33 / 87 %).
+assert.deepEqual([novice,recruit,master].map(x=>[magic.manaCost(x,"summon_raven"),magic.upkeepCost(x,"summon_raven")]),[[9,2],[9,2],[6,2]]);
+assert.deepEqual([novice,recruit,master].map(x=>[magic.manaCost(x,"summon_wolves"),magic.upkeepCost(x,"summon_wolves")]),[[23,5],[21,5],[14,3]]);
+assert.deepEqual([novice,recruit,master].map(x=>[magic.manaCost(x,"summon_bears"),magic.upkeepCost(x,"summon_bears")]),[[27,6],[25,5],[17,4]]);
+assert.deepEqual([novice,recruit,master].map(x=>Math.round(magic.castChance(x,"summon_crocodiles").p)),[17,33,87]);
+// Loups : 1D6 + 1 par tranche de 50 de Maîtrise (débutant +0, recrue +1, expert +2) ; Ours, Crocodiles : 1D3 ; Corbeau : un seul.
+queue=[0.99];
+assert.deepEqual(magic.summonCount(recruit,"summon_wolves"),{count:7,rolled:6,dice:"1D6",bonus:1});
+queue=[0];
+assert.deepEqual(magic.summonCount(master,"summon_wolves"),{count:3,rolled:1,dice:"1D6",bonus:2});
+queue=[0.5];
+assert.equal(magic.summonCount(novice,"summon_bears").count,2);
+assert.deepEqual(magic.summonCount(master,"summon_raven"),{count:1,rolled:null,dice:null,bonus:0});
+queue=[0,0.5];
+assert.equal(magic.cast(recruit,{q:0,r:1},"summon_wolves").summon.count.count,5,"le dé est tiré au lancer");
+// Bourbier : une case, même occupée, 2 + M/50 tours (2 à 3), portée 6 + M/25.
+assert.deepEqual([novice,recruit,master].map(x=>[magic.duration(x,"quagmire"),magic.range(x,"quagmire")]),[[2,7],[3,8],[3,11]]);
+queue=[0];
+assert.deepEqual(magic.cast(recruit,{q:5,r:0},"quagmire").mire,{q:5,r:0,turns:3});
+// Transposition : une de ses invocations, n'importe où ; pas celle d'un autre, pas un allié.
+const pet=unit(mage({pm:50,vie:1,int:50}),{q:30,r:-8,summon:{casterId:"me"}});
+const owner={...recruit,id:"me"};
+assert.equal(magic.canCast(owner,pet,"transposition").ok,true,"portée illimitée, sans ligne de vue");
+assert.match(magic.canCast(owner,{...pet,summon:{casterId:"other"}},"transposition").reason,/une de vos invocations/);
+assert.match(magic.canCast(owner,{...pet,summon:null},"transposition").reason,/une de vos invocations/);
+queue=[0];
+assert.deepEqual(magic.cast(owner,pet,"transposition",{lineOfSight:false}).swap,{from:{q:0,r:0},to:{q:30,r:-8}});
+
+console.log("Magie : écoles de la Vie, du Feu, de l'Eau, de la Transmutation, de la Foudre, de la Télékinésie, de l'Illusion, de la Nécromancie et de l'Invocation OK");

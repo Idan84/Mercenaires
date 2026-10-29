@@ -54,4 +54,23 @@ assert.equal(ui.avatarSexGroup({sex:""}),"other");
 const company=ui.renderCompanyNameStep();
 assert.match(company,/Des salaires\. Des morts\./);
 assert.doesNotMatch(company,/blason|couleurs viendront/i);
-console.log("Wizard UI: 9 milestones, compact origin labels, ♂/♀ portrait toggle, clean copy — OK");
+// Portrait après l'ascendance (Idan, 2026-10-29) : seuls les portraits de l'ascendance choisie ; sans ascendance, pas de
+// portrait réservé à une ascendance. Même règle que pour les mercenaires (game-core/avatars.js).
+assert.deepEqual(ui.WIZARD_STEPS.map(s=>s.key),["name","people","culture","origin","ascendance","avatar","alignment","companyName","recap"]);
+{
+  const Avatars=require("../game-core/avatars.js");
+  const rows=[
+    {id:"orc-sang-h",people:"Orc",full:"a.webp",portrait:"a.webp",sex:"homme",tags:{ascendance:["Sang d’humain"]}},
+    {id:"orc-troll",people:"Orc",full:"b.webp",portrait:"b.webp",sex:"homme",tags:{ascendance:["Sang de troll"]},ascendanceOnly:true},
+    {id:"orc",people:"Orc",full:"c.webp",portrait:"c.webp",sex:"homme",tags:{}}
+  ];
+  const w=new Function("game","esc","mercenaryAvatarUrl","renderAvatar","MercenairesAvatars",js+"\nreturn {captainAvatarOptions,setChoice,wizard};")(
+    {referenceData:{avatars:{rows}}},esc,m=>"assets/"+m.avatar.portrait,()=>"",Avatars);
+  w.wizard.choice={people:"Orc",culture:"",ascendance:"Sang de troll",avatar:null};
+  assert.deepEqual(w.captainAvatarOptions().map(a=>a.id),["orc-troll"]);
+  w.wizard.choice.avatar="orc-troll";
+  w.setChoice("ascendance","");
+  assert.deepEqual(w.captainAvatarOptions().map(a=>a.id),["orc-sang-h","orc"],"sans ascendance : pas de portrait « Ascendance only »");
+  assert.equal(w.wizard.choice.avatar,null,"un portrait devenu incompatible est retiré");
+}
+console.log("Wizard UI: 9 milestones, compact origin labels, ♂/♀ portrait toggle, portrait after ascendance, clean copy — OK");

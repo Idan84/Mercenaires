@@ -8,8 +8,8 @@ button,input{font:inherit}.lab-shell{min-height:100vh;display:grid;grid-template
 .brand{padding:0 6px 20px}.brand h1{margin:3px 0 5px;font-size:1.8rem;letter-spacing:-.04em}
 .back{color:#cbbdaf;text-decoration:none;font-size:.8rem}.muted{color:#81796e}.sidebar .muted{color:#9c9287}
 .eyebrow{margin:0;text-transform:uppercase;letter-spacing:.13em;font-weight:850;font-size:.68rem;color:#a34434}
-.switcher{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;background:#27231f;padding:4px;border-radius:10px;margin-bottom:12px}
-.switch{border:0;border-radius:7px;padding:8px;background:transparent;color:#aaa096;font-weight:750;cursor:pointer}
+.switcher{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;background:#27231f;padding:4px;border-radius:10px;margin-bottom:12px}
+.switch{min-width:0;border:0;border-radius:7px;padding:8px 4px;background:transparent;color:#aaa096;font-size:.82rem;font-weight:750;line-height:1.2;text-align:center;cursor:pointer}
 .switch.active{background:#f4eee5;color:#2b2722}
 .search{width:100%;border:1px solid #d8d0c4;background:#fff;border-radius:9px;padding:9px 11px;color:#26221d}
 .sidebar .search{background:#27231f;border-color:#403a33;color:#f4eee5}
@@ -58,3 +58,10 @@ td.gap-high{background:#f8e3df}td.gap-mid{background:#fbf0d9}td.gap-ok{backgroun
 .tag-todo button,.link-button{border:1px solid #cfc5b8;background:#f7f2ea;border-radius:8px;padding:7px 12px;font-weight:750;cursor:pointer;color:#26221d}
 .tag-todo button:hover,.link-button:hover{background:#eee5d8}
 .cov-warnings{margin-top:30px}.cov-warnings li{font-size:.85rem;color:#6b6258}
+/* Onglet Images : images attendues par le jeu, hors avatars. */
+.img-group h4{margin:6px 0 6px;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:#7b3026}.img-group h4 small{font-weight:600;color:#857b70;letter-spacing:0}
+.img-list{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.img-list li{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;padding:5px 8px;border-radius:7px;font-size:.82rem}
+.img-list li.img-missing{background:#f8e3df}.img-list li.img-ok{background:#eaf3ea}
+.img-list code{font-size:.74rem;color:#6b6258}.img-list span{font-size:.74rem;color:#857b70}
+.img-present{margin-top:6px}.img-present summary{cursor:pointer;font-size:.8rem;color:#3f7a4a;font-weight:700}.img-present .img-list{margin-top:6px}

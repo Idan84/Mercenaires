@@ -181,5 +181,5 @@
     return {avatars,byId,choose,assign};
   }
 
-  return {createAvatarRules,avatarTags,scoreAvatar,weaponFamilies,avatarLook,sameCulture,sameAscendance,SCORE,SHARED_ASCENDANCE,VISIBLE,MISMATCH_SHARE,NOISE_MAX};
+  return {createAvatarRules,avatarTags,scoreAvatar,weaponFamilies,avatarLook,sameCulture,sameAscendance,norm,SCORE,SHARED_ASCENDANCE,VISIBLE,MISMATCH_SHARE,NOISE_MAX};
 });

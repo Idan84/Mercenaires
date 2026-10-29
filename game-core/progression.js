@@ -76,7 +76,7 @@
       const uses=logOf(attacker).weaponUses;
       const use=uses[result.weapon]||(uses[result.weapon]={attacks:0,hits:0,wounds:0});
       use.attacks++;
-      if(result.hit&&!result.blocked) use.hits++;
+      if(result.hit&&!result.blocked&&!result.parried) use.hits++;
       if(result.wound) use.wounds++;
       if(result.twoHanded&&result.mode==="melee") logOf(attacker).twoHandedAttacks++;
     }

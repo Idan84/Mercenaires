@@ -206,9 +206,21 @@ Trois coiffes (`data/reference/helmets.json`), portées dans l’emplacement **C
 
 Tenus dans le set d’armes actif, en main principale ou secondaire, les bâtons servent la magie : le **Bâton long** donne **+5 %** de la Puissance magique de base, le **Bâton court** **+10 %** de la Réserve de mana de base. Le tier et la qualité ne changent rien ; rangé dans l’autre set, le bâton ne donne rien. Le combat et la magie (effet des sorts, mana maximum) lisent la valeur bonifiée ; la fiche (onglet Magie) et la carte d’objet la montrent. Données : `weapons.json`, colonnes `bonus_caracteristique` et `bonus_pourcentage`.
 
-### Saï (Idan, 2026-10-29)
+### Traits des armes (Idan, 2026-10-29)
 
-Le saï, arme de parade, **pare 5 %** des coups tranchants de mêlée (**10 %** avec deux saïs) : doc 04, « Parade du saï ». La carte d'objet l'indique.
+Idan : chaque arme doit avoir sa raison d'être, « un choix de construction ». Un trait par arme, en données (`weapons.json`), affiché sur la carte d'objet ; il compte tant que l'arme est tenue dans le set actif. Le tier et la qualité ne le changent pas.
+
+| Arme | Trait |
+|---|---|
+| Bâton long | **+5 %** de Puissance magique |
+| Bâton court | **+10 %** de Réserve de mana |
+| Saï | **pare 5 %** des coups tranchants de mêlée, **10 %** avec deux saïs (doc 04, « Parade du saï ») |
+| Fouet | **+10 % de Charisme** ; **allonge 2** ; **+10 % du Courage** de base des autres alliés à **3 cases** ou moins (en plus de l'aura du capitaine ou du lieutenant ; plusieurs fouets ne se cumulent pas) |
+| Fléau d'armes | le bouclier adverse bloque **deux fois moins** souvent (−50 % de sa chance de blocage) |
+| Trident | **+20 %** en magie de l'**Eau** |
+| Marteau de guerre | **+10 %** en magie de la **Foudre** |
+
+Colonnes : `bonus_caracteristique` et `bonus_pourcentage` (une caractéristique ou une école de magie), `parade_type` et `parade_chance`, `aura_caracteristique`, `aura_pourcentage` et `aura_portee`, `malus_blocage_pourcentage` ; l'allonge du fouet est sa `portee_max_hex`. À venir : la sarbacane (dégâts empoisonnés).
 
 ### Échanges d’équipement : Donner, Retirer, Troquer (Idan, 2026-10-24)
 

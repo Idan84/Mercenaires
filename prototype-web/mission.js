@@ -841,7 +841,11 @@ function logMissionStray(attacker,result){
 // Courage post-attaque CAC V1 / post-tir V1 / en sous-nombre V1 : un échec applique En Fuite.
 // Journal : le bonus de l'aura du capitaine, quand il compte dans le test.
 // Aura du capitaine ou d'un lieutenant (Idan, 2026-10-25 : la plus forte à portée, sans cumul).
-function missionAuraNote(aura,from="captain"){ return aura?", aura "+(from==="lieutenant"?"du lieutenant":"du capitaine")+" +"+Math.round(aura):""; }
+// whip : la part du fouet (Idan, 2026-10-29), comprise dans aura.
+function missionAuraNote(aura,from="captain",whip=0){
+  const leader=(aura||0)-(whip||0);
+  return (leader>0?", aura "+(from==="lieutenant"?"du lieutenant":"du capitaine")+" +"+Math.round(leader):"")+(whip>0?", fouet +"+Math.round(whip):"");
+}
 
 function resolveMissionCourage(attacker,defender,result,override={}){
   const m=game.mission;
@@ -855,7 +859,7 @@ function resolveMissionCourage(attacker,defender,result,override={}){
   };
   const c=e.resolveCourage(attacker,defender,result,context);
   if(!c) return;
-  const detail=" (Courage "+Math.round(c.pHold)+" %"+(c.rule==="outnumbered"?", en sous-nombre":"")+missionAuraNote(c.aura,c.auraFrom)+", jet "+c.roll+")";
+  const detail=" (Courage "+Math.round(c.pHold)+" %"+(c.rule==="outnumbered"?", en sous-nombre":"")+missionAuraNote(c.aura,c.auraFrom,c.whip)+", jet "+c.roll+")";
   if(!c.flees){ missionLog(c.subject.character.name+" tient bon"+detail+".","info"); MercenairesProgression.recordCourageHeld(c.subject); return; }
   missionLog(c.subject.character.name+" panique et prend la fuite"+detail+" !","bad");
   MercenairesProgression.recordIntimidation(c.source,c.subject);
@@ -1008,7 +1012,7 @@ function resolveMissionFleeingActivation(unit){
   const e=game.mission.engine;
   unit.fleeTurn=(unit.fleeTurn||0)+1;
   const recovery=e.rollRecovery(unit,nearestActiveMissionEnemy(unit),unit.fleeTurn,missionUnits());
-  const detail=" (reprise "+Math.round(recovery.p)+" %"+missionAuraNote(recovery.aura,recovery.auraFrom)+", jet "+recovery.roll+")";
+  const detail=" (reprise "+Math.round(recovery.p)+" %"+missionAuraNote(recovery.aura,recovery.auraFrom,recovery.whip)+", jet "+recovery.roll+")";
   if(recovery.recovered){
     unit.fleeing=false;unit.fleeTurn=0;
     missionLog(unit.character.name+" reprend ses esprits"+detail+".","turn");
@@ -1283,7 +1287,7 @@ function resolveMissionSpell(caster,target,code,extra={}){
     for(const foe of foes){
       const c=m.engine.resolveFear(foe,caster,out.fear.mastery,missionUnits());
       if(!c) continue;
-      const fear=" (Courage "+Math.round(c.pHold)+" %"+missionAuraNote(c.aura,c.auraFrom)+", jet "+c.roll+")";
+      const fear=" (Courage "+Math.round(c.pHold)+" %"+missionAuraNote(c.aura,c.auraFrom,c.whip)+", jet "+c.roll+")";
       if(!c.flees){ missionLog(foe.character.name+" tient bon"+fear+".","info"); MercenairesProgression.recordCourageHeld(foe); continue; }
       effect=true;
       missionLog(foe.character.name+" panique et prend la fuite"+fear+" !","bad");
@@ -1917,7 +1921,7 @@ function resolveMissionCounterchargeCourage(reactor,charger,result,charge,remain
   const e=game.mission.engine;
   const c=e.resolveCourage(reactor,charger,result,{defenderSurplus:0,units:missionUnits()});
   if(!c) return;
-  const detail=" (Courage "+Math.round(c.pHold)+" %"+missionAuraNote(c.aura,c.auraFrom)+", jet "+c.roll+")";
+  const detail=" (Courage "+Math.round(c.pHold)+" %"+missionAuraNote(c.aura,c.auraFrom,c.whip)+", jet "+c.roll+")";
   if(!c.flees){ missionLog(charger.character.name+" tient bon"+detail+".","info"); MercenairesProgression.recordCourageHeld(charger); return; }
   missionLog(charger.character.name+" panique et prend la fuite"+detail+" !","bad");
   MercenairesProgression.recordIntimidation(reactor,charger);

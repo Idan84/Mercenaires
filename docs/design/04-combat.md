@@ -115,6 +115,8 @@ Choix d'implémentation V1, validés par Idan le 2026-10-20 :
 - son malus de vitesse s'ajoute à celui de l'arme ([Vitesse combat effective CAC V1](/design/#doc=formulas/vitesse-combat-effective-cac-v1.md)), et une arme `Au choix` tenue avec lui passe en mode une main ;
 - à la création, aucun mercenaire ne reçoit encore de bouclier : seules les armes principales des sets sont remplies (05-equipment). Le blocage n'apparaîtra en Mission Test qu'avec une règle d'attribution des boucliers.
 
+**Fléau d'armes** (Idan, 2026-10-29) : contre lui, la chance de blocage du bouclier est divisée par deux.
+
 Un blocage réussi signifie que l'attaque n'a pas réellement touché : pas de critique positif, pas de Blesser, pas de dégâts. Il casse l'enchaînement normal. En combat à deux armes, chaque attaque de la paire est testée séparément et la paire peut continuer si au moins une attaque touche réellement.
 
 ## Parade du saï (Idan, 2026-10-29)
@@ -242,7 +244,7 @@ Périmètre actif :
 - [Attaques d'opportunité](/design/#doc=formulas/attaque-d-opportunite-cac-v1.md) avec [Frappe dans le dos](/design/#doc=formulas/frappe-dans-le-dos-v1.md) : en quittant une zone de menace (déplacement ou charge, résolu hexagone par hexagone) et en tirant sur une autre cible que l'adversaire qui menace ; en mode déplacement, la carte signale les destinations qui en provoquent ;
 - [Encerclement](/design/#doc=formulas/encerclement-cac-v1.md) : toute attaque au CAC contre une cible encerclée est une Frappe dans le dos ; la carte entoure de pointillés les personnages encerclés ;
 - [Courage](/design/#doc=formulas/courage-post-attaque-cac-v1.md) après chaque attaque (CAC, tir, charge, attaque d'opportunité), avec le [sous-nombre](/design/#doc=formulas/courage-en-sous-nombre-v1.md) ; un échec applique [En Fuite](/design/#doc=13-fleeing.md) : fuite immédiate, puis reprise de contrôle et comportement automatique `1D3` aux activations suivantes ; un fuyard qui sort de la carte est hors combat ;
-- [aura du capitaine](/design/#doc=13-fleeing.md) : 35 % du Courage + 25 % du Charisme du capitaine présent, équipement compris, en Courage pour ses alliés à 10 cases ou moins (Idan, 2026-10-24) ;
+- [aura du capitaine](/design/#doc=13-fleeing.md) : 35 % du Courage + 25 % du Charisme du capitaine présent, équipement compris, en Courage pour ses alliés à 10 cases ou moins (Idan, 2026-10-24) ; un allié qui tient un **fouet** y ajoute **+10 % du Courage de base** des autres alliés à 3 cases ou moins (Idan, 2026-10-29 ; le journal l'indique : « fouet +5 ») ;
 - console détaillant mouvements, jets de Toucher/Blesser et dégâts ;
 - fin du test lorsque les trois membres d'une équipe sont **hors combat**.
 

@@ -90,6 +90,22 @@
     {
       "source": "Malus de blocage du bouclier adverse, en % de sa chance (Idan, 2026-10-29 : fléau −50 %)",
       "key": "malus_blocage_pourcentage"
+    },
+    {
+      "source": "Empoisonne la cible quand l'arme blesse (Idan, 2026-10-29 : sarbacane)",
+      "key": "empoisonne"
+    },
+    {
+      "source": "En attaquant avec l'arme : caractéristique augmentée (Idan, 2026-10-29 : nunchaku, Dextérité)",
+      "key": "attaque_caracteristique"
+    },
+    {
+      "source": "… d'une part de cette école ou caractéristique (nunchaku : Télékinésie)",
+      "key": "attaque_source"
+    },
+    {
+      "source": "… part ajoutée (nunchaku : 0,1)",
+      "key": "attaque_part"
     }
   ],
   "row_count": 38,
@@ -115,7 +131,11 @@
       "aura_caracteristique": null,
       "aura_pourcentage": null,
       "aura_portee": null,
-      "malus_blocage_pourcentage": null
+      "malus_blocage_pourcentage": null,
+      "empoisonne": null,
+      "attaque_caracteristique": null,
+      "attaque_source": null,
+      "attaque_part": null
     },
     {
       "nom": "Arc",
@@ -138,7 +158,11 @@
       "aura_caracteristique": null,
       "aura_pourcentage": null,
       "aura_portee": null,
-      "malus_blocage_pourcentage": null
+      "malus_blocage_pourcentage": null,
+      "empoisonne": null,
+      "attaque_caracteristique": null,
+      "attaque_source": null,
+      "attaque_part": null
     },
     {
       "nom": "Arme d’hast double",
@@ -161,7 +185,11 @@
       "aura_caracteristique": null,
       "aura_pourcentage": null,
       "aura_portee": null,
-      "malus_blocage_pourcentage": null
+      "malus_blocage_pourcentage": null,
+      "empoisonne": null,
+      "attaque_caracteristique": null,
+      "attaque_source": null,
+      "attaque_part": null
     },
     {
       "nom": "Arquebuse",
@@ -184,7 +212,11 @@
       "aura_caracteristique": null,
       "aura_pourcentage": null,
       "aura_portee": null,
-      "malus_blocage_pourcentage": null
+      "malus_blocage_pourcentage": null,
+      "empoisonne": null,
+      "attaque_caracteristique": null,
+      "attaque_source": null,
+      "attaque_part": null
     },
     {
       "nom": "Bardiche",
@@ -207,7 +239,11 @@
       "aura_caracteristique": null,
       "aura_pourcentage": null,
       "aura_portee": null,
-      "malus_blocage_pourcentage": null
+      "malus_blocage_pourcentage": null,
+      "empoisonne": null,
+      "attaque_caracteristique": null,
+      "attaque_source": null,
+      "attaque_part": null
     },
     {
       "nom": "Bâton court",
@@ -230,7 +266,11 @@
       "aura_caracteristique": null,
       "aura_pourcentage": null,
       "aura_portee": null,
-      "malus_blocage_pourcentage": null
+      "malus_blocage_pourcentage": null,
+      "empoisonne": null,
+      "attaque_caracteristique": null,
+      "attaque_source": null,
+      "attaque_part": null
     },
     {
       "nom": "Bâton long",
@@ -253,7 +293,11 @@
       "aura_caracteristique": null,
       "aura_pourcentage": null,
       "aura_portee": null,
-      "malus_blocage_pourcentage": null
+      "malus_blocage_pourcentage": null,
+      "empoisonne": null,
+      "attaque_caracteristique": null,
+      "attaque_source": null,
+      "attaque_part": null
     },
     {
       "nom": "Canon à main",
@@ -276,7 +320,11 @@
       "aura_caracteristique": null,
       "aura_pourcentage": null,
       "aura_portee": null,
-      "malus_blocage_pourcentage": null
+      "malus_blocage_pourcentage": null,
+      "empoisonne": null,
+      "attaque_caracteristique": null,
+      "attaque_source": null,
+      "attaque_part": null
     },
     {
       "nom": "Dague",
@@ -299,7 +347,11 @@
       "aura_caracteristique": null,
       "aura_pourcentage": null,
       "aura_portee": null,
-      "malus_blocage_pourcentage": null
+      "malus_blocage_pourcentage": null,
+      "empoisonne": null,
+      "attaque_caracteristique": null,
+      "attaque_source": null,
+      "attaque_part": null
     },
     {
       "nom": "Écu",
@@ -322,7 +374,11 @@
       "aura_caracteristique": null,
       "aura_pourcentage": null,
       "aura_portee": null,
-      "malus_blocage_pourcentage": null
+      "malus_blocage_pourcentage": null,
+      "empoisonne": null,
+      "attaque_caracteristique": null,
+      "attaque_source": null,
+      "attaque_part": null
     },
     {
       "nom": "Épée courte",
@@ -345,7 +401,11 @@
       "aura_caracteristique": null,
       "aura_pourcentage": null,
       "aura_portee": null,
-      "malus_blocage_pourcentage": null
+      "malus_blocage_pourcentage": null,
+      "empoisonne": null,
+      "attaque_caracteristique": null,
+      "attaque_source": null,
+      "attaque_part": null
     },
     {
       "nom": "Épée double",
@@ -368,7 +428,11 @@
       "aura_caracteristique": null,
       "aura_pourcentage": null,
       "aura_portee": null,
-      "malus_blocage_pourcentage": null
+      "malus_blocage_pourcentage": null,
+      "empoisonne": null,
+      "attaque_caracteristique": null,
+      "attaque_source": null,
+      "attaque_part": null
     },
     {
       "nom": "Épée longue",
@@ -391,7 +455,11 @@
       "aura_caracteristique": null,
       "aura_pourcentage": null,
       "aura_portee": null,
-      "malus_blocage_pourcentage": null
+      "malus_blocage_pourcentage": null,
+      "empoisonne": null,
+      "attaque_caracteristique": null,
+      "attaque_source": null,
+      "attaque_part": null
     },
     {
       "nom": "Estoc",
@@ -414,7 +482,11 @@
       "aura_caracteristique": null,
       "aura_pourcentage": null,
       "aura_portee": null,
-      "malus_blocage_pourcentage": null
+      "malus_blocage_pourcentage": null,
+      "empoisonne": null,
+      "attaque_caracteristique": null,
+      "attaque_source": null,
+      "attaque_part": null
     },
     {
       "nom": "Fléau d’armes",
@@ -437,7 +509,11 @@
       "aura_caracteristique": null,
       "aura_pourcentage": null,
       "aura_portee": null,
-      "malus_blocage_pourcentage": 50
+      "malus_blocage_pourcentage": 50,
+      "empoisonne": null,
+      "attaque_caracteristique": null,
+      "attaque_source": null,
+      "attaque_part": null
     },
     {
       "nom": "Fouet",
@@ -460,7 +536,11 @@
       "aura_caracteristique": "Courage",
       "aura_pourcentage": 10,
       "aura_portee": 3,
-      "malus_blocage_pourcentage": null
+      "malus_blocage_pourcentage": null,
+      "empoisonne": null,
+      "attaque_caracteristique": null,
+      "attaque_source": null,
+      "attaque_part": null
     },
     {
       "nom": "Fronde",
@@ -483,7 +563,11 @@
       "aura_caracteristique": null,
       "aura_pourcentage": null,
       "aura_portee": null,
-      "malus_blocage_pourcentage": null
+      "malus_blocage_pourcentage": null,
+      "empoisonne": null,
+      "attaque_caracteristique": null,
+      "attaque_source": null,
+      "attaque_part": null
     },
     {
       "nom": "Grande épée",
@@ -506,7 +590,11 @@
       "aura_caracteristique": null,
       "aura_pourcentage": null,
       "aura_portee": null,
-      "malus_blocage_pourcentage": null
+      "malus_blocage_pourcentage": null,
+      "empoisonne": null,
+      "attaque_caracteristique": null,
+      "attaque_source": null,
+      "attaque_part": null
     },
     {
       "nom": "Hache de guerre",
@@ -529,7 +617,11 @@
       "aura_caracteristique": null,
       "aura_pourcentage": null,
       "aura_portee": null,
-      "malus_blocage_pourcentage": null
+      "malus_blocage_pourcentage": null,
+      "empoisonne": null,
+      "attaque_caracteristique": null,
+      "attaque_source": null,
+      "attaque_part": null
     },
     {
       "nom": "Hache double",
@@ -552,7 +644,11 @@
       "aura_caracteristique": null,
       "aura_pourcentage": null,
       "aura_portee": null,
-      "malus_blocage_pourcentage": null
+      "malus_blocage_pourcentage": null,
+      "empoisonne": null,
+      "attaque_caracteristique": null,
+      "attaque_source": null,
+      "attaque_part": null
     },
     {
       "nom": "Hachette",
@@ -575,7 +671,11 @@
       "aura_caracteristique": null,
       "aura_pourcentage": null,
       "aura_portee": null,
-      "malus_blocage_pourcentage": null
+      "malus_blocage_pourcentage": null,
+      "empoisonne": null,
+      "attaque_caracteristique": null,
+      "attaque_source": null,
+      "attaque_part": null
     },
     {
       "nom": "Hallebarde",
@@ -598,7 +698,11 @@
       "aura_caracteristique": null,
       "aura_pourcentage": null,
       "aura_portee": null,
-      "malus_blocage_pourcentage": null
+      "malus_blocage_pourcentage": null,
+      "empoisonne": null,
+      "attaque_caracteristique": null,
+      "attaque_source": null,
+      "attaque_part": null
     },
     {
       "nom": "Katana",
@@ -621,7 +725,11 @@
       "aura_caracteristique": null,
       "aura_pourcentage": null,
       "aura_portee": null,
-      "malus_blocage_pourcentage": null
+      "malus_blocage_pourcentage": null,
+      "empoisonne": null,
+      "attaque_caracteristique": null,
+      "attaque_source": null,
+      "attaque_part": null
     },
     {
       "nom": "Kukri",
@@ -644,7 +752,11 @@
       "aura_caracteristique": null,
       "aura_pourcentage": null,
       "aura_portee": null,
-      "malus_blocage_pourcentage": null
+      "malus_blocage_pourcentage": null,
+      "empoisonne": null,
+      "attaque_caracteristique": null,
+      "attaque_source": null,
+      "attaque_part": null
     },
     {
       "nom": "Lance",
@@ -667,7 +779,11 @@
       "aura_caracteristique": null,
       "aura_pourcentage": null,
       "aura_portee": null,
-      "malus_blocage_pourcentage": null
+      "malus_blocage_pourcentage": null,
+      "empoisonne": null,
+      "attaque_caracteristique": null,
+      "attaque_source": null,
+      "attaque_part": null
     },
     {
       "nom": "Marteau de guerre",
@@ -690,7 +806,11 @@
       "aura_caracteristique": null,
       "aura_pourcentage": null,
       "aura_portee": null,
-      "malus_blocage_pourcentage": null
+      "malus_blocage_pourcentage": null,
+      "empoisonne": null,
+      "attaque_caracteristique": null,
+      "attaque_source": null,
+      "attaque_part": null
     },
     {
       "nom": "Masse d’armes",
@@ -713,7 +833,11 @@
       "aura_caracteristique": null,
       "aura_pourcentage": null,
       "aura_portee": null,
-      "malus_blocage_pourcentage": null
+      "malus_blocage_pourcentage": null,
+      "empoisonne": null,
+      "attaque_caracteristique": null,
+      "attaque_source": null,
+      "attaque_part": null
     },
     {
       "nom": "Massue",
@@ -736,7 +860,11 @@
       "aura_caracteristique": null,
       "aura_pourcentage": null,
       "aura_portee": null,
-      "malus_blocage_pourcentage": null
+      "malus_blocage_pourcentage": null,
+      "empoisonne": null,
+      "attaque_caracteristique": null,
+      "attaque_source": null,
+      "attaque_part": null
     },
     {
       "nom": "Nunchaku",
@@ -759,7 +887,11 @@
       "aura_caracteristique": null,
       "aura_pourcentage": null,
       "aura_portee": null,
-      "malus_blocage_pourcentage": null
+      "malus_blocage_pourcentage": null,
+      "empoisonne": null,
+      "attaque_caracteristique": "Dextérité",
+      "attaque_source": "Télékinésie",
+      "attaque_part": 0.1
     },
     {
       "nom": "Pavois",
@@ -782,7 +914,11 @@
       "aura_caracteristique": null,
       "aura_pourcentage": null,
       "aura_portee": null,
-      "malus_blocage_pourcentage": null
+      "malus_blocage_pourcentage": null,
+      "empoisonne": null,
+      "attaque_caracteristique": null,
+      "attaque_source": null,
+      "attaque_part": null
     },
     {
       "nom": "Pic de guerre",
@@ -805,7 +941,11 @@
       "aura_caracteristique": null,
       "aura_pourcentage": null,
       "aura_portee": null,
-      "malus_blocage_pourcentage": null
+      "malus_blocage_pourcentage": null,
+      "empoisonne": null,
+      "attaque_caracteristique": null,
+      "attaque_source": null,
+      "attaque_part": null
     },
     {
       "nom": "Pistolet",
@@ -828,7 +968,11 @@
       "aura_caracteristique": null,
       "aura_pourcentage": null,
       "aura_portee": null,
-      "malus_blocage_pourcentage": null
+      "malus_blocage_pourcentage": null,
+      "empoisonne": null,
+      "attaque_caracteristique": null,
+      "attaque_source": null,
+      "attaque_part": null
     },
     {
       "nom": "Rondache",
@@ -851,7 +995,11 @@
       "aura_caracteristique": null,
       "aura_pourcentage": null,
       "aura_portee": null,
-      "malus_blocage_pourcentage": null
+      "malus_blocage_pourcentage": null,
+      "empoisonne": null,
+      "attaque_caracteristique": null,
+      "attaque_source": null,
+      "attaque_part": null
     },
     {
       "nom": "Sabre",
@@ -874,7 +1022,11 @@
       "aura_caracteristique": null,
       "aura_pourcentage": null,
       "aura_portee": null,
-      "malus_blocage_pourcentage": null
+      "malus_blocage_pourcentage": null,
+      "empoisonne": null,
+      "attaque_caracteristique": null,
+      "attaque_source": null,
+      "attaque_part": null
     },
     {
       "nom": "Sai",
@@ -897,7 +1049,11 @@
       "aura_caracteristique": null,
       "aura_pourcentage": null,
       "aura_portee": null,
-      "malus_blocage_pourcentage": null
+      "malus_blocage_pourcentage": null,
+      "empoisonne": null,
+      "attaque_caracteristique": null,
+      "attaque_source": null,
+      "attaque_part": null
     },
     {
       "nom": "Sarbacane",
@@ -920,7 +1076,11 @@
       "aura_caracteristique": null,
       "aura_pourcentage": null,
       "aura_portee": null,
-      "malus_blocage_pourcentage": null
+      "malus_blocage_pourcentage": null,
+      "empoisonne": true,
+      "attaque_caracteristique": null,
+      "attaque_source": null,
+      "attaque_part": null
     },
     {
       "nom": "Trident",
@@ -943,7 +1103,11 @@
       "aura_caracteristique": null,
       "aura_pourcentage": null,
       "aura_portee": null,
-      "malus_blocage_pourcentage": null
+      "malus_blocage_pourcentage": null,
+      "empoisonne": null,
+      "attaque_caracteristique": null,
+      "attaque_source": null,
+      "attaque_part": null
     },
     {
       "nom": "Tromblon",
@@ -966,7 +1130,11 @@
       "aura_caracteristique": null,
       "aura_pourcentage": null,
       "aura_portee": null,
-      "malus_blocage_pourcentage": null
+      "malus_blocage_pourcentage": null,
+      "empoisonne": null,
+      "attaque_caracteristique": null,
+      "attaque_source": null,
+      "attaque_part": null
     }
   ]
 }

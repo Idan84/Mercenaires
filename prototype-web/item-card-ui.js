@@ -44,14 +44,16 @@ function weaponCardBody(card){
     card.stat?cardRow(card.stat.name,`+${cardNumber(card.stat.percent)} %`,"bonus"):"",
     card.parry?cardRow("Parade",`${cardNumber(card.parry.chance)} % (coups ${card.parry.type}s)`,"bonus"):"",
     card.aura?cardRow(`${card.aura.name} des alliés`,`+${cardNumber(card.aura.percent)} % à ${cardNumber(card.aura.range)} cases`,"bonus"):"",
-    card.blockCut?cardRow("Bouclier adverse",`blocage −${cardNumber(card.blockCut)} %`,"bonus"):""
+    card.blockCut?cardRow("Bouclier adverse",`blocage −${cardNumber(card.blockCut)} %`,"bonus"):"",
+    card.attackBonus?cardRow(`${card.attackBonus.stat} en attaque`,`+${cardNumber(card.attackBonus.percent)} % ${esc(card.attackBonus.source)}`,"bonus"):""
   ];
   const traits=[
     card.grip==="Au choix"?"À deux mains : dégâts ×1,5, poids ÷2":"",
     card.counterCharge?"Contre-charge : frappe avant celui qui le charge":"",
     card.chainShots?"Tirs enchaînés tant qu’ils font mouche":"",
     card.reload?"Une action rapide pour recharger après chaque tir":"",
-    card.area?"Attaque de zone":""
+    card.area?"Attaque de zone":"",
+    card.poison?"Une fléchette qui blesse empoisonne la cible (3 tours)":""
   ].filter(Boolean);
   return {rows,traits,flavor:card.examples};
 }

@@ -100,8 +100,10 @@
       }
       const dexterity=Number(character.stats["Dextérité"])||0,dual=engine.effectiveDexterity(unit);
       const gloved=engine.statWithGear(unit,"Dextérité");
+      const weaponDex=engine.attackStatBonus?.(unit,"Dextérité")||0,held=engine.activeWeaponItem(unit);
       add("Dextérité",dexterity,dual,[...gearLines(unit,"Dextérité"),
-        ...(engine.isDualWielding(unit)?[{label:"Combat à deux armes",delta:dual-gloved,reason:"dual"}]:[])]);
+        ...(weaponDex?[{label:itemLabel(held),delta:weaponDex,reason:"weaponAttack"}]:[]),
+        ...(engine.isDualWielding(unit)?[{label:"Combat à deux armes",delta:dual-gloved-weaponDex,reason:"dual"}]:[])]);
       return result;
     }
 

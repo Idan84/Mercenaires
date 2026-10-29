@@ -189,7 +189,7 @@
     }
     // Armes tenues dans le set actif qui servent une caractéristique (weapons.json, bonus_caracteristique et
     // bonus_pourcentage ; Idan, 2026-10-29) : Bâton long + 5 % de Puissance magique, Bâton court + 10 % de Réserve de mana,
-    // Fouet + 10 % de Charisme, Trident + 20 % en Eau, Marteau de guerre + 10 % en Foudre.
+    // Fouet + 10 % de Charisme, Trident + 20 % en Eau, Marteau de guerre + 10 % en Foudre, Grande épée + 10 % en Feu.
     function heldWeaponBonuses(unit,stat,base){
       return [activeWeaponItem(unit),activeOffhandItem(unit)].map(item=>{
         const weapon=weaponTemplate(item),value=Number(weapon?.bonus_pourcentage)||0;

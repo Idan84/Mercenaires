@@ -144,7 +144,7 @@ Soit 7 jours, plus 1 jour par point de gravité, réduits par l’Endurance, ent
 
 Ordre retenu :
 
-1. `PV < 0` → jet de mort ;
+1. `PV < 0` → jet de mort ; un mercenaire **relevé en zombie** par un nécromancien le rate forcément (Idan, 2026-10-28, doc 12) ;
 2. mort → fin du traitement du personnage ;
 3. survivant avec `PV < 0` → blessure automatique ;
 4. `0 à 50 % PV max` → jet de blessure ;

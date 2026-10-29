@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 214,
+  "row_count": 217,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -1744,6 +1744,30 @@
       "description": "Bonus de Discrétion derrière une couverture totale ; servira avec le décor.",
       "formule": "Repérage",
       "valeur": 60,
+      "version": "V1"
+    },
+    {
+      "nom": "Invocations — difficulté du test de maintien",
+      "code": "magic.summon.hold_difficulty",
+      "description": "Chaque tour, le lanceur garde chacune de ses invocations (une meute compte pour une) sur un test : chance = plancher + amplitude / (1 + e^(−Δ / échelle)), Δ = (Maîtrise du sort + Charisme) / 2 − cette difficulté, sans l'armure ; raté, l'invocation disparaît (Idan, 2026-10-28).",
+      "formule": "Magie — invocations",
+      "valeur": 30,
+      "version": "V1"
+    },
+    {
+      "nom": "Zombie — part minimale du mort",
+      "code": "magic.summon.zombie_share_min",
+      "description": "Le zombie a (Maîtrise + Charisme) / 2 % des caractéristiques, compétences et PV du mort, au moins cette part (Idan, 2026-10-28 : de 10 à 100 %).",
+      "formule": "Magie — invocations",
+      "valeur": 10,
+      "version": "V1"
+    },
+    {
+      "nom": "Zombie — part maximale du mort",
+      "code": "magic.summon.zombie_share_max",
+      "description": "Part maximale des caractéristiques, compétences et PV du mort (Idan, 2026-10-28).",
+      "formule": "Magie — invocations",
+      "valeur": 100,
       "version": "V1"
     }
   ]

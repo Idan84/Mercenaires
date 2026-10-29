@@ -415,6 +415,9 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
 .mission-token.encircled{outline:3px dashed #d9822b;outline-offset:3px}
 .mission-token.fleeing{border-style:dashed;filter:saturate(.45)}
 .mission-token.camouflaged{opacity:.5;border-style:dotted}
+/* Invocations (Nécromancie) : un liseré violet ; les morts-vivants, teinte blafarde. */
+.mission-token.summoned{box-shadow:0 0 0 2px rgba(150,110,220,.85)}
+.mission-token.undead{filter:saturate(.45) sepia(.25) hue-rotate(55deg)}
 .mission-token strong{position:absolute;top:49px;left:50%;transform:translateX(-50%);max-width:84px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.58rem;color:#302b27;background:rgba(255,255,255,.9);border-radius:4px;padding:1px 4px}
 .mission-token em{position:absolute;top:62px;width:76px;left:50%;transform:translateX(-50%);font-style:normal;font-size:.49rem;color:#5e564f;background:rgba(255,255,255,.82);border-radius:4px;padding:1px 3px}
 .token-hp{position:absolute;z-index:3;left:4px;right:4px;bottom:3px;height:4px;background:rgba(0,0,0,.55);border-radius:99px;overflow:hidden}

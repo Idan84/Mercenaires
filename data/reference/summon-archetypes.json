@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "name": "summon-archetypes",
+  "description": "Créatures invoquées en combat (doc 12 ; Idan, 2026-10-28) : un archétype fixe par créature, joué par le joueur. caracteristiques, resistances, pv et competences_martiales comme enemy-archetypes.json ; attaque = l'arme naturelle (dés de dégâts, type, puissance) ; mort_vivant : Restitution et morts-vivants ; immunite_physique : aucun dégât d'arme ni de sort physique.",
+  "columns": [
+    {
+      "source": "Nom",
+      "key": "nom"
+    },
+    {
+      "source": "Code",
+      "key": "code"
+    },
+    {
+      "source": "École",
+      "key": "ecole"
+    },
+    {
+      "source": "Mort-vivant",
+      "key": "mort_vivant"
+    },
+    {
+      "source": "Immunisé aux dégâts physiques",
+      "key": "immunite_physique"
+    },
+    {
+      "source": "Caractéristiques",
+      "key": "caracteristiques"
+    },
+    {
+      "source": "Résistances",
+      "key": "resistances"
+    },
+    {
+      "source": "PV",
+      "key": "pv"
+    },
+    {
+      "source": "Compétences martiales",
+      "key": "competences_martiales"
+    },
+    {
+      "source": "Attaque naturelle",
+      "key": "attaque"
+    },
+    {
+      "source": "Description",
+      "key": "description"
+    }
+  ],
+  "rows": [
+    {
+      "nom": "Spectre",
+      "code": "specter",
+      "ecole": "Nécromancie",
+      "mort_vivant": true,
+      "immunite_physique": true,
+      "caracteristiques": {
+        "Force": 39,
+        "Constitution": 45,
+        "Dextérité": 65,
+        "Vitesse": 65,
+        "Endurance": 54,
+        "Esquive": 53,
+        "Chance": 43,
+        "Charisme": 38,
+        "Courage": 24,
+        "Intelligence": 32,
+        "Volonté": 50,
+        "Perception": 43,
+        "Puissance magique": 43,
+        "Réserve de mana": 43
+      },
+      "resistances": {
+        "Résistance physique": 1,
+        "Résistance au feu": 1,
+        "Résistance au froid": 2,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 10
+      },
+      "pv": 100,
+      "competences_martiales": {
+        "Armes naturelles": 38,
+        "Toucher spectral": 40,
+        "Discrétion": 29
+      },
+      "attaque": {
+        "nom": "Toucher spectral",
+        "degats_pv_base": "1D6",
+        "degats_type": "psychique"
+      },
+      "description": "Base : guerrier gobelin novice (Idan, 2026-10-28) ; Vitesse 65 (6 cases), Volonté 50, 100 PV. Immunisé aux dégâts physiques ; au contact, 1D6 de dégâts psychiques × sa Volonté / celle de la cible (de × 0,5 à × 2), ni armure ni résistance."
+    }
+  ],
+  "row_count": 1
+}

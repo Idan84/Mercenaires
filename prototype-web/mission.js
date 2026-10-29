@@ -254,7 +254,7 @@ function startMissionFromSelection(){
   setMissionMapSize();
 
   const enemyChars=Array.from({length:3},()=>createCharacter({role:"Ennemi test"}));
-  const engine=MercenairesCombat.createCombatEngine(game.referenceData,{onAttack:MercenairesProgression.recordAttack});
+  const engine=MercenairesCombat.createCombatEngine(game.referenceData,{onAttack:onMissionAttack});
   const endRules=MercenairesMissionEnd.createMissionEndRules({reference:game.referenceData});
   const progression=MercenairesProgression.createProgressionRules({reference:game.referenceData});
   const players=chosen.map((c,i)=>makeMissionUnit(c,"player",i));
@@ -311,7 +311,7 @@ function startExpeditionCombat(expeditionId){
   const offer=e.offer;
   setMissionMapSize(missionRules().mapSize(offer));
   const enemyChars=missionRules().buildEnemies(offer,arch=>createCharacter({forcedPeople:arch.peuple,forcedCulture:arch.culture,role:arch.nom}));
-  const engine=MercenairesCombat.createCombatEngine(game.referenceData,{onAttack:MercenairesProgression.recordAttack});
+  const engine=MercenairesCombat.createCombatEngine(game.referenceData,{onAttack:onMissionAttack});
   const endRules=MercenairesMissionEnd.createMissionEndRules({reference:game.referenceData});
   const progression=MercenairesProgression.createProgressionRules({reference:game.referenceData});
   const players=placeMissionArmy(chosen.map((c,i)=>makeMissionUnit(c,"player",i%3)),"player");
@@ -399,6 +399,7 @@ function setMissionMode(mode){
 
 function checkMissionEnd(){
   if(!game.mission||game.mission.over) return false;
+  releaseMissionSummons();
   const p=livingMissionUnits("player"),e=livingMissionUnits("enemy");
   if(p.length&&e.length) return false;
   game.mission.over=true;
@@ -418,13 +419,13 @@ function checkMissionEnd(){
 function resolveMissionAftermath(){
   const m=game.mission;
   const captainId=game.campaign?game.campaign.company.captainId:game.captain?.id;
-  const participants=m.players.map(u=>({
+  const participants=m.players.filter(u=>!u.summon).map(u=>({
     id:u.character.id,name:u.character.name,hp:u.hp,pvMax:u.pvMax,
     // Endurance avec la ceinture et Volonté avec l'amulette (Idan, 2026-10-24) : blessure, mort et convalescence
     // les lisent aussi.
     damageTaken:u.damageTaken,stats:{...u.character.stats,Endurance:m.engine.statWithGear(u,"Endurance"),
       "Volonté":m.engine.statWithGear(u,"Volonté")},
-    isCaptain:captainId!=null&&u.character.id===captainId,offMap:u.offMap,progress:u.progress||null
+    isCaptain:captainId!=null&&u.character.id===captainId,offMap:u.offMap,progress:u.progress||null,raised:Boolean(u.raised)
   }));
   const victory=m.winner==="player";
   // Défaite d'un contrat : l'ennemi tient le terrain, le jet de mort de nos mercenaires à terre est doublé (doc 17 §8).
@@ -460,7 +461,7 @@ function resolveContractOutcome(m,report,victory){
   const offer=m.contract,rules=missionRules(),company=game.campaign.company;
   const captain=company.roster.find(x=>x.id===company.captainId);
   const chestItems=victory&&captain?Array.from({length:rules.chestItemCount(offer)},()=>game.generator.createChestItem(captain,rules.chestTier(offer))).filter(Boolean):[];
-  const deadEnemies=m.enemies.filter(u=>!u.alive&&!u.offMap).map(u=>u.character);
+  const deadEnemies=m.enemies.filter(u=>!u.alive&&!u.offMap&&!u.summon).map(u=>u.character);
   const result=m.contractResult=rules.outcome(offer,{victory,deadEnemies,deadMercenaries:report.deaths,chestItems});
   const back=campaignRules().completeExpeditionCombat(game.campaign,m.expeditionId,{result,bonuses:report.bonusesDue});
   m.contractReturn=back?.expedition?{days:offer.distance,bonuses:report.bonusesDue.reduce((sum,b)=>sum+b.bonus,0)}:null;
@@ -479,7 +480,8 @@ function missionAftermathDetail(r){
   const pct=x=>Math.round(x)+" %";
   const parts=[];
   if(r.offMap) parts.push("a fui le combat");
-  if(r.death) parts.push((r.dead?"jet de mort ":"survit au jet de mort ")+pct(r.death.p)+" ("+r.death.roll+")");
+  if(r.death?.raised) parts.push("relevé en zombie par un nécromancien");
+  else if(r.death) parts.push((r.dead?"jet de mort ":"survit au jet de mort ")+pct(r.death.p)+" ("+r.death.roll+")");
   if(r.death&&!r.dead) parts.push("blessure automatique");
   if(r.wound&&!r.wound.automatic) parts.push((r.wounded?"jet de blessure ":"évite la blessure ")+pct(r.wound.p)+" ("+r.wound.roll+")");
   if(r.wounded) parts.push("gravité "+Math.round(r.severity));
@@ -609,6 +611,10 @@ function logMissionAttack(a,d,result,kind="attack"){
     logMissionFumble(a,result.fumbleRoll,result.fumble,"perd l’équilibre et tombe au sol");
     return;
   }
+  if(result.immune){
+    missionLog(prefix+" : le coup traverse "+d.character.name+" sans lui faire de mal (immunisé aux dégâts physiques).","miss");
+    return;
+  }
   if(result.blocked){
     missionLog(prefix+" : touche, mais "+d.character.name+" bloque avec son "+result.shield+" (blocage "+Math.round(result.pBlock)+" %, jet "+result.blockRoll+").","miss");
     return;
@@ -621,8 +627,22 @@ function logMissionAttack(a,d,result,kind="attack"){
     return;
   }
   const criticalWound=result.criticalWound?" Blessure critique : dégâts maximum ("+result.criticalWoundRoll+" ≤ "+missionPercent(result.pCritical)+").":"";
-  missionLog(prefix+" : "+result.damage+" PV. "+d.character.name+" reste à "+Math.max(0,result.targetHp)+" PV"+(result.targetHp<0?" ("+result.targetHp+" sous zéro)":"")+"."+critical+criticalWound,"damage");
+  const psychic=result.psychic?" psychiques (Volonté × "+(Math.round(result.will*100)/100).toLocaleString("fr-FR")+")":"";
+  missionLog(prefix+" : "+result.damage+" PV"+psychic+". "+d.character.name+" reste à "+Math.max(0,result.targetHp)+" PV"+(result.targetHp<0?" ("+result.targetHp+" sous zéro)":"")+"."+critical+criticalWound,"damage");
   if(result.targetDown) missionLog(d.character.name+" est hors combat.","death");
+  if(result.drain) missionLog("Drain de vie : "+a.character.name+" récupère "+result.drain.healed+" PV"
+    +(result.drain.healed<result.drain.amount?" (sur "+result.drain.amount+")"+missionWitherNote(a):"")+".","magic");
+}
+
+// Crochet du moteur après chaque attaque : XP (progression.js), puis Drain de vie (Nécromancie ; Idan, 2026-10-28) : le
+// lanceur récupère percent % des PV que son coup d'arme au corps à corps a retirés (pas sous zéro).
+function onMissionAttack(attacker,defender,options,result){
+  MercenairesProgression.recordAttack(attacker,defender,options,result);
+  const fx=attacker.lifeDrain;
+  if(!fx||!result?.ok||!result.wound||result.mode!=="melee"||!(result.damage>0)||!attacker.alive) return;
+  const removed=Math.min(result.damage,Math.max(0,(Number(result.targetHp)||0)+result.damage));
+  const amount=Math.ceil(removed*fx.percent/100-1e-9);
+  if(amount>0) result.drain={amount,healed:healMissionUnit(attacker,amount)};
 }
 
 function missionPercent(p){ return (Math.round((Number(p)||0)*10)/10).toLocaleString("fr-FR")+" %"; }
@@ -1023,7 +1043,8 @@ function handleMissionHexClick(q,r){
   if(spellCode){
     const spell=missionMagic()?.spell(spellCode);
     if(spell?.effet==="deplacement_force"||spell?.effet==="degats_paire"){ handleMissionTwoStepSpell(spell,q,r,clicked); return; }
-    const target=spell?.cible==="case"||spell?.cible==="case_vide"?{q,r}:spell?.cible==="soi"?u:clicked;
+    const target=spell?.cible==="case"||spell?.cible==="case_vide"?{q,r}:spell?.cible==="soi"?u
+      :spell?.cible==="mort"?missionUnits().find(x=>missionMagic().isCorpse(x)&&x.q===q&&x.r===r):clicked;
     if(target) castPlayerMissionSpell(target);
     return;
   }
@@ -1108,13 +1129,16 @@ function teachMissionTestSpells(){
 }
 
 // Constitution (doc 08) : chaque PV réellement rendu compte pour le mercenaire soigné.
+// Flétrissement (Nécromancie) : plus aucun PV rendu tant qu'il dure.
 function healMissionUnit(unit,amount){
+  if(unit.withered) return 0;
   const before=unit.hp;
   unit.hp=Math.min(unit.pvMax,unit.hp+amount);
   const healed=Math.max(0,unit.hp-before);
   if(healed) MercenairesProgression.recordHeal(unit,healed);
   return healed;
 }
+function missionWitherNote(unit){ return unit?.withered?" — flétri"+(missionFeminine(unit)?"e":"")+", aucun soin":""; }
 // source : le lanceur (ou le porteur de l'arme enflammée), pour la réputation et le Charisme ; element : la résistance
 // qui progresse chez la cible (doc 08).
 function damageMissionUnitBySpell(unit,amount,source=null,element=null){
@@ -1132,7 +1156,7 @@ function resolveMissionSpell(caster,target,code,extra={}){
   const m=game.mission,magic=missionMagic(),spell=magic?.spell(code);
   if(!spell) return null;
   if(spell.cible==="soi") target=caster;
-  const out=magic.cast(caster,target,code,{units:missionUnits(),cellFree:missionCellFree(target),lineOfSight:missionLineOfSight(caster,target),
+  const out=magic.cast(caster,target,code,{units:missionUnits(),cellFree:missionCellFree(spell.cible==="mort"?{q:target.q,r:target.r}:target),lineOfSight:missionLineOfSight(caster,target),
     destination:extra.destination,destinationFree:extra.destination?missionCellFree(extra.destination):undefined,
     second:extra.second,secondLineOfSight:extra.second?missionLineOfSight(caster,extra.second):true});
   if(!out.ok){ missionLog(out.reason,"bad"); return out; }
@@ -1168,7 +1192,7 @@ function resolveMissionSpell(caster,target,code,extra={}){
   if(spell.effet==="soin"){
     const healed=healMissionUnit(target,out.amount);
     effect=healed>0;
-    missionLog(name+" lance "+spell.nom+on+detail+" : +"+healed+" PV"+(healed<out.amount?" (soin de "+out.amount+")":"")+"."+critical,"magic");
+    missionLog(name+" lance "+spell.nom+on+detail+" : +"+healed+" PV"+(healed<out.amount?" (soin de "+out.amount+")"+missionWitherNote(target):"")+"."+critical,"magic");
   }else if(spell.effet==="soin_sur_duree"){
     target.regeneration={...out.effect};
     missionLog(name+" lance "+spell.nom+on+detail+" : un soin au début de chacune de ses "+out.effect.turns
@@ -1317,6 +1341,21 @@ function resolveMissionSpell(caster,target,code,extra={}){
     target.venom={...out.effect};
     missionLog(name+" lance "+spell.nom+on+detail+" : "+(target===caster?name:target.character.name)+" pourra cracher du venin (action rapide, "
       +out.effect.min+" à "+out.effect.max+" cases) "+(out.effect.turns>1?"pendant ses "+out.effect.turns+" prochaines activations":"à sa prochaine activation")+".","magic");
+  }else if(spell.effet==="resurrection"){
+    raiseMissionDead(caster,target,out,detail);
+  }else if(spell.effet==="invocation"){
+    effect=summonMissionCreature(caster,spell,out,detail);
+  }else if(spell.effet==="drain_de_vie"){
+    // Sur soi : l'activation en cours compte comme la première.
+    const fx=out.effect;
+    caster.lifeDrain={code:fx.code,percent:fx.percent,turns:fx.turns-1};
+    missionLog(name+" lance "+spell.nom+detail+" : "+fx.percent+" % des PV que ses coups d’arme au corps à corps retirent lui reviennent, "
+      +(fx.turns>1?"pour cette activation et les "+(fx.turns-1)+" suivante"+(fx.turns>2?"s":""):"pour cette activation")+".","magic");
+  }else if(spell.effet==="fletrissement"){
+    const fx=out.effect;
+    target.withered={code:fx.code,turns:fx.turns};
+    missionLog(name+" lance "+spell.nom+on+detail+" : "+target.character.name+" ne peut plus être soigné"+(missionFeminine(target)?"e":"")
+      +" ni récupérer de PV pendant ses "+fx.turns+" prochaines activations.","magic");
   }else if(spell.effet==="malus_caracteristiques"){
     const fx=out.effect;
     target.statMalus={code:fx.code,stats:fx.stats,malus:fx.malus,turns:fx.turns};
@@ -1332,6 +1371,95 @@ function resolveMissionSpell(caster,target,code,extra={}){
 function missionCellFree(target){
   if(!target||target.character) return true;
   return !missionUnits().some(u=>u.alive&&!u.offMap&&u.q===target.q&&u.r===target.r)&&!missionTerrainAt(target.q,target.r);
+}
+
+// Invocations (Nécromancie ; Idan, 2026-10-28) : le joueur les joue (l'IA en combat automatique), dès le tour suivant ;
+// chaque tour, le lanceur les garde (test de Charisme) et paie leur entretien, sinon elles disparaissent ; elles
+// disparaissent aussi quand il tombe, et à la fin du combat (ni XP ni bilan). Une meute compte pour une seule invocation.
+// unit.summon = {casterId, code, upkeep, group}.
+function missionSummonArchetype(code){ return (game.referenceData?.summonArchetypes?.rows||[]).find(a=>a.code===code)||null; }
+function addMissionSummon(caster,character,cell,summon){
+  const m=game.mission;
+  m.summonSeq=(m.summonSeq||0)+1;
+  const pvMax=m.engine.maxHp({character,activeSet:1}),id="summon-"+m.summonSeq;
+  // Comme tout le monde, elle arrive camouflée : le repérage du début de tour fait le reste.
+  const unit={id,character,team:caster.team,q:cell.q,r:cell.r,isCaptain:false,isLieutenant:false,
+    hp:pvMax,pvMax,alive:true,activeSet:1,prone:false,acted:true,movementRemaining:0,attackAvailable:false,quickAvailable:false,
+    fleeing:false,fleeTurn:0,offMap:false,damageTaken:0,camouflaged:true,summon:{...summon,group:summon.group||id}};
+  const army=caster.team==="player"?"players":"enemies",order=caster.team==="player"?"playerOrder":"enemyOrder";
+  m[army].push(unit);
+  m[order]=sortMissionInitiative([...m[order],unit],m.engine);
+  return unit;
+}
+// Zombie : share % des caractéristiques, des compétences et des PV max du mort ; il garde son arme et son armure.
+function missionZombieCharacter(dead,share){
+  const src=dead.character,f=share/100;
+  const scale=values=>Object.fromEntries(Object.entries(values||{}).map(([k,v])=>[k,typeof v==="number"?Math.round(v*f):v]));
+  return {...src,id:"zombie-"+src.id,name:src.name+" (zombie)",archetype:"zombie",undead:true,spells:[],mana:0,
+    stats:scale(src.stats),skills:Object.fromEntries(Object.entries(src.skills||{}).map(([group,values])=>[group,scale(values)])),
+    pvMax:Math.max(1,Math.round(dead.pvMax*f))};
+}
+// Créature fixe (summon-archetypes.json) : son arme naturelle voyage avec son gabarit (combat-engine.js, weaponTemplate).
+function missionCreatureCharacter(arch,n){
+  const a=arch.attaque||{},id="summon-"+arch.code+"-"+n;
+  const weapon={id:id+"-weapon",itemType:"weapon",name:a.nom,natural:true,category:"Armes naturelles",
+    template:{nom:a.nom,domaine:"Armes naturelles",prise:"1 main",degats_pv_base:a.degats_pv_base,degats_type:a.degats_type||null,
+      puissance_tranchante_base:Number(a.puissance_tranchante)||0,puissance_perforante_base:Number(a.puissance_perforante)||0,
+      puissance_contondante_base:Number(a.puissance_contondante)||0,malus_vitesse_arme_base:0,bonus_charge_base:1,contre_charge:false}};
+  return {id,name:n>1?arch.nom+" "+n:arch.nom,role:arch.nom,archetype:arch.code,undead:Boolean(arch.mort_vivant),
+    immunePhysical:Boolean(arch.immunite_physique),stats:{...arch.caracteristiques},resistances:{...arch.resistances},pvMax:arch.pv,
+    skills:{martial:{...arch.competences_martiales},social:{},magic:{}},spells:[],mana:0,items:[weapon],
+    equipment:{slots:{weapon_set_1_main:weapon.id}}};
+}
+// Résurrection : le corps (allié ou ennemi) se relève dans le camp du lanceur ; un allié relevé meurt à la fin du combat.
+function raiseMissionDead(caster,dead,out,detail){
+  const s=out.summon,share=Math.round(s.share);
+  dead.raised=true;
+  const zombie=addMissionSummon(caster,missionZombieCharacter(dead,share),dead,{casterId:caster.id,code:s.code,upkeep:s.upkeep});
+  missionLog(caster.character.name+" lance Résurrection sur le corps de "+dead.character.name+detail+" : "+dead.character.name
+    +" se relève en zombie, avec "+share+" % de ses forces ("+zombie.pvMax+" PV) ; entretien "+s.upkeep+" mana par tour.","magic");
+  if(dead.team==="player") missionLog(dead.character.name+" ne survivra pas à ce combat.","death");
+}
+function summonMissionCreature(caster,spell,out,detail){
+  const s=out.summon,arch=missionSummonArchetype(s.creature);
+  if(!arch){ missionLog("Créature inconnue : "+s.creature+".","bad"); return false; }
+  const n=missionUnits().filter(u=>u.character.archetype===arch.code).length+1;
+  const unit=addMissionSummon(caster,missionCreatureCharacter(arch,n),s.cell,{casterId:caster.id,code:s.code,upkeep:s.upkeep});
+  missionLog(caster.character.name+" lance "+spell.nom+detail+" : "+unit.character.name+" apparaît ("+unit.pvMax+" PV) ; entretien "
+    +s.upkeep+" mana par tour.","magic");
+  return true;
+}
+function missionSummonGroups(filter){
+  const groups=new Map();
+  for(const u of missionUnits()) if(u.summon&&u.alive&&!u.offMap&&filter(u)) groups.set(u.summon.group,[...(groups.get(u.summon.group)||[]),u]);
+  return [...groups.values()];
+}
+function dismissMissionSummons(units,reason){
+  for(const u of units){ u.alive=false;u.offMap=true;u.vanished=true;u.movementRemaining=0; }
+  const dust=units.every(u=>u.character.archetype==="zombie"),many=units.length>1;
+  missionLog(reason+(dust?(many?" : ils tombent en poussière.":" : il tombe en poussière."):(many?" : ils disparaissent.":" : il disparaît.")),"bad");
+}
+function missionSummonLabel(units){ return units.length>1?units.length+" "+units[0].character.role+"s":units[0].character.name; }
+function missionSummonCaster(unit){ return missionUnits().find(u=>u.id===unit.summon?.casterId)||null; }
+// Un invocateur hors combat (ou sorti de la carte) : ses invocations disparaissent aussitôt.
+function releaseMissionSummons(){
+  for(const units of missionSummonGroups(u=>!missionSummonCaster(u)?.alive))
+    dismissMissionSummons(units,missionSummonLabel(units)+" : son invocateur est hors combat");
+}
+// Début de chaque tour : test de Charisme, puis entretien en mana, pour chaque invocation.
+function maintainMissionSummons(){
+  const magic=missionMagic();
+  if(!magic) return;
+  releaseMissionSummons();
+  for(const units of missionSummonGroups(()=>true)){
+    const s=units[0].summon,caster=missionSummonCaster(units[0]),what=missionSummonLabel(units);
+    const hold=magic.rollHold(caster,s.code),test=" (Charisme "+Math.round(hold.p)+" %, jet "+hold.roll+")";
+    if(!hold.held){ dismissMissionSummons(units,caster.character.name+" perd le contrôle de "+what+test); continue; }
+    const mana=magic.currentMana(caster);
+    if(mana<s.upkeep){ dismissMissionSummons(units,caster.character.name+" n’a plus assez de mana pour garder "+what+" ("+s.upkeep+" nécessaires)"); continue; }
+    caster.character.mana=Math.max(0,Math.round((mana-s.upkeep)*100)/100);
+    missionLog(caster.character.name+" garde "+what+test+" : −"+s.upkeep+" mana.","magic");
+  }
 }
 
 function castPlayerMissionSpell(target,extra={}){
@@ -1352,7 +1480,7 @@ function tickMissionRegeneration(unit){
   const tick=magic.tick(effect),healed=healMissionUnit(unit,tick.amount);
   effect.turns=tick.turnsLeft;
   if(effect.turns<=0) unit.regeneration=null;
-  missionLog("Régénération : "+unit.character.name+" récupère "+healed+" PV"
+  missionLog("Régénération : "+unit.character.name+" récupère "+healed+" PV"+missionWitherNote(unit)
     +(effect.turns>0?" (encore "+effect.turns+" tour"+(effect.turns>1?"s":"")+").":" (fin)."),"magic");
 }
 
@@ -1394,6 +1522,14 @@ function tickMissionBuffs(unit){
   if(unit.frenzy){
     if(unit.frenzy.turns>0) unit.frenzy.turns-=1;
     else{ unit.frenzy=null; missionLog(name+" sort de sa frénésie.","magic"); }
+  }
+  if(unit.lifeDrain){
+    if(unit.lifeDrain.turns>0) unit.lifeDrain.turns-=1;
+    else{ unit.lifeDrain=null; missionLog("Drain de vie : l’effet prend fin pour "+name+".","magic"); }
+  }
+  if(unit.withered){
+    if(unit.withered.turns>0) unit.withered.turns-=1;
+    else{ unit.withered=null; missionLog(name+" n’est plus flétri"+(missionFeminine(unit)?"e":"")+" : les soins agissent de nouveau.","magic"); }
   }
 }
 // Frénésie (Illusion ; Idan : la cible joue seule) : joueur ou ennemi, elle prend une arme de mêlée si l'autre set en a une,
@@ -1440,6 +1576,12 @@ function missionFeminine(unit){ return String(unit?.character?.sex||"").trim().t
 // Dégâts d'un sort sur une unité : physiques (Télékinésie : l'étape Blesser, l'armure compte) ou élémentaires.
 // label et note pour le journal : « 34 PV contondants (Blesser 72 %, jet 40) », « 30 PV de feu (protection 9 %) ».
 function missionSpellHit(unit,out,amount,caster){
+  // Nécromancie (Idan, 2026-10-28) : ni armure ni résistance ; un mort-vivant atteint par erreur n'y est pas sensible.
+  if(out.necrotic){
+    if(missionMagic().isUndead(unit)) return {damage:0,label:"aucun effet",note:" (mort-vivant)"};
+    damageMissionUnitBySpell(unit,amount,caster,null);
+    return {damage:amount,label:amount+" PV nécrotiques",note:" (ni armure ni résistance)"};
+  }
   if(out.psychic){
     const factor=missionMagic().willFactor(caster,unit),damage=Math.ceil(amount*factor-1e-9);
     damageMissionUnitBySpell(unit,damage,caster,null);
@@ -1447,6 +1589,7 @@ function missionSpellHit(unit,out,amount,caster){
   }
   if(out.physical){
     const hit=game.mission.engine.spellPhysicalHit(caster,unit,amount,out.physical);
+    if(hit.immune) return {...hit,label:"aucun effet",note:" (immunisé aux dégâts physiques)"};
     if(hit.wound) damageMissionUnitBySpell(unit,hit.damage,caster,out.physical.type);
     return {...hit,label:hit.wound?hit.damage+" PV contondants":"l’armure encaisse",note:" (Blesser "+Math.round(hit.pWound)+" %, jet "+hit.woundRoll+")"};
   }
@@ -1813,6 +1956,8 @@ function runMissionEnemyTurn(){
   if(m.over){ renderMission(); return; }
   m.turn+=1;
   pruneMissionTerrain();
+  maintainMissionSummons();
+  if(checkMissionEnd()){ renderMission(); return; }
   resolveMissionDetection();
   for(const unit of m.players) unit.acted=false;
   missionLog("Tour "+m.turn+" — votre équipe.","turn");
@@ -1882,6 +2027,9 @@ function targetableMissionCells(){
       for(const c of missionCells()) if(magic.canCast(u,c,spellCode,{cellFree:missionCellFree(c),lineOfSight:missionLineOfSight(u,c)}).ok) set.add(missionKey(c.q,c.r));
     }else if(cible==="soi"){
       if(magic.canCast(u,u,spellCode).ok) set.add(missionKey(u.q,u.r));
+    }else if(cible==="mort"){
+      for(const dead of missionUnits()) if(magic.isCorpse(dead)&&magic.canCast(u,dead,spellCode,{cellFree:missionCellFree({q:dead.q,r:dead.r}),
+        lineOfSight:missionLineOfSight(u,dead)}).ok) set.add(missionKey(dead.q,dead.r));
     }else{
       for(const unit of missionUnits()) if(unit.alive&&!unit.offMap&&magic.canCast(u,unit,spellCode,{lineOfSight:missionLineOfSight(u,unit)}).ok) set.add(missionKey(unit.q,unit.r));
     }
@@ -1903,12 +2051,12 @@ function missionRosterMagic(u){
 }
 
 function renderMissionRoster(units){
-  return units.map(u=>`
+  return units.filter(u=>!u.vanished).map(u=>`
     <div class="mission-roster-row ${u.alive?"":"down"}">
       ${renderAvatar(u.character,{variant:"compact",kind:"portrait"})}
       <div class="mission-roster-copy">
         <strong>${esc(u.character.name)}</strong>
-        <span>${u.offMap?"A quitté le combat":Math.max(0,u.hp)+"/"+u.pvMax+" PV"+(u.hp<0?" ("+u.hp+")":"")+(u.alive&&u.fleeing?" · En fuite":"")+(u.alive&&u.camouflaged?" · Camouflé":"")+(u.alive&&!game.mission.engine.isLoaded(u,game.mission.engine.activeWeaponItem(u))?" · Arme déchargée":"")}</span>
+        <span>${u.raised?"Relevé en zombie":u.offMap?"A quitté le combat":(u.summon?"Invocation · ":"")+Math.max(0,u.hp)+"/"+u.pvMax+" PV"+(u.hp<0?" ("+u.hp+")":"")+(u.alive&&u.fleeing?" · En fuite":"")+(u.alive&&u.camouflaged?" · Camouflé":"")+(u.alive&&!game.mission.engine.isLoaded(u,game.mission.engine.activeWeaponItem(u))?" · Arme déchargée":"")}</span>
         <small>Init ${Math.round(game.mission.engine.initiative(u))} · Mvt ${game.mission.engine.movementBase(u)}${missionRosterMagic(u)}</small>
       </div>
     </div>
@@ -1947,7 +2095,7 @@ function renderMission(){
     cells+=`<button class="${classes.join(" ")}" data-hex-q="${q}" data-hex-r="${r}"${title} style="left:${p.x-MISSION_MAP.size}px;top:${p.y-MISSION_MAP.size}px"></button>`;
   }
 
-  const tokens=missionUnits().filter(unit=>!unit.offMap).map(unit=>{
+  const tokens=missionUnits().filter(unit=>!unit.offMap&&!unit.raised).map(unit=>{
     const p=missionHexPixel(unit.q,unit.r);
     const pct=Math.max(0,Math.round(unit.hp/unit.pvMax*100));
     const classes=["mission-token",unit.team,unit.alive?"alive":"down"];
@@ -1956,6 +2104,8 @@ function renderMission(){
     if(encircled) classes.push("encircled");
     if(unit.alive&&unit.fleeing) classes.push("fleeing");
     if(unit.alive&&unit.camouflaged) classes.push("camouflaged");
+    if(unit.summon) classes.push("summoned");
+    if(unit.character.undead) classes.push("undead");
     const weapon=e.activeWeaponItem(unit);
     return `<div class="${classes.join(" ")}" style="left:${p.x-24}px;top:${p.y-24}px" title="${esc(unit.character.name)} — ${Math.max(0,unit.hp)}/${unit.pvMax} PV — ${esc(weapon?.name||"Sans arme")}${unit.alive&&unit.camouflaged?" — camouflé":""}">
       ${renderAvatar(unit.character,{variant:"battle",kind:"portrait"})}

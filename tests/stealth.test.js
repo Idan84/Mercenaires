@@ -132,7 +132,7 @@ force=null;
 assert.equal(b1.camouflaged,false);
 
 // Un ennemi caché derrière la ligne de front : les autres le cherchent à chaque tour.
-assert.match(source,/m\.turn\+=1;\n  pruneMissionTerrain\(\);\n  resolveMissionDetection\(\);/);
+assert.match(source,/m\.turn\+=1;\n  pruneMissionTerrain\(\);\n  maintainMissionSummons\(\);\n  if\(checkMissionEnd\(\)\)\{ renderMission\(\); return; \}\n  resolveMissionDetection\(\);/);
 assert.equal((source.match(/startMissionCamouflage\(\);\n  selectNextMissionPlayer\(\);/g)||[]).length,2,"les deux débuts de combat");
 
 console.log("Discrétion : camouflage, repérage, cibles invisibles, attaques non détectées — OK");

@@ -180,6 +180,13 @@ Tirer sur une cible distante alors qu'un ennemi est adjacent reste autorisé, ma
 - Exemples : un archer gobelin novice (Perception 62) repère un mercenaire de Discrétion 30 à 95 % à 3 cases, 89 % à 8 ; un lancier gobelin novice (Perception 43) à 39 % à 12 cases ; sous Avancée cachée (+52 de Discrétion), l’archer ne le repère plus qu’à 34 % à 6 cases.
 - Plus tard (Idan) : le **brouillard de guerre** (les ennemis camouflés disparaissent de la carte). En attendant, ils restent dessinés, en transparence, avec la mention « Camouflé ».
 
+## Invocations et morts-vivants (Idan, 2026-10-28)
+
+- Les **invocations** (zombie, spectre ; doc 12, Nécromancie) jouent dans le camp du mage, avec leur propre activation dans l'ordre d'initiative, dès le tour suivant leur arrivée. Au début de chaque tour, le mage les garde (test de Charisme, puis mana) ; elles disparaissent quand il tombe. Elles ne laissent pas de corps et ne passent pas le bilan de fin de mission.
+- Un **mort-vivant** ne fait jamais de test de Courage (comme en frénésie).
+- **Immunité aux dégâts physiques** (spectre) : un coup d'arme ou un tir qui touche le traverse sans dégâts ; un sort contondant aussi.
+- **Toucher spectral** : dégâts psychiques au contact, sans l'étape Blesser, ni armure ni résistance : 10 × 1D6 × Volonté de l'attaquant / Volonté de la cible (de × 0,5 à × 2).
+
 ## Attaques de zone — Toucher V1
 
 [Précision d'attaque de zone V1](/design/#doc=formulas/precision-d-attaque-de-zone-v1.md) fournit le noyau commun : l'attaque vise une **case**, puis chaque cible potentielle perd **10 points de probabilité de toucher par hex d'écart** à cette case.

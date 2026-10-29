@@ -1094,6 +1094,7 @@
       resolvePoison,
       activeWeaponItem,
       activeOffhandItem,
+      withHand,
       weaponTemplate,
       armorItem,
       itemBySlot,

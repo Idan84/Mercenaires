@@ -86,6 +86,7 @@ function resolveMissionDetection(){
       const r=e.rollDetection(observer,target,e.axialDistance(observer,target));
       if(!r.spotted) continue;
       target.camouflaged=false;
+      missionFx(target,"Repéré","spot");
       missionLog(observer.character.name+" repère "+target.character.name+" ("+missionPercent(r.p)+", jet "+r.roll+").","info");
     }
   }
@@ -154,6 +155,24 @@ function missionLog(message,kind="info"){
   if(!game.mission) return;
   game.mission.log.push({message,kind});
   if(game.mission.log.length>180) game.mission.log.shift();
+}
+
+// Retours visuels (écran de combat, étape 2) : chaque événement visible est mis en file avec les PV et la case du
+// combattant à cet instant ; l'écran les rejoue dans l'ordre après le rendu (chiffres, mentions, glissements).
+// Purement visuel : la file ne change rien aux règles. Un pas de déplacement : step:{q,r}.
+function missionFx(unit,text="",cls="",step=null){
+  const m=game.mission;
+  if(!m||!unit||m.autoRunning) return;
+  (m.fx||(m.fx=[])).push({id:unit.id,text,cls,hp:unit.hp,q:unit.q,r:unit.r,step});
+}
+function missionAttackFx(a,d,result){
+  if(result.chargeFall){ missionFx(a,"Chute !","miss"); return; }
+  const [text,cls]=result.deflected?["Dévié","block"]:!result.hit?["Raté","miss"]:result.immune?["Immunisé","immune"]
+    :result.parried?["Paré","block"]:result.blocked?["Bloqué","block"]:!result.wound?["Indemne","miss"]
+    :result.targetDown?["Hors combat","down"]:result.criticalHit||result.criticalWound?["Critique !","crit"]:["",""];
+  missionFx(d,text,cls);
+  // Contrecoup d'un échec critique ou Drain de vie : les PV de l'attaquant ont pu bouger.
+  missionFx(a);
 }
 
 function sortMissionInitiative(units,engine){
@@ -608,6 +627,7 @@ function renderMissionProgression(entries){
 
 function logMissionAttack(a,d,result,kind="attack"){
   if(!result.ok){ missionLog(result.reason||"Attaque impossible.","bad"); return; }
+  missionAttackFx(a,d,result);
   const verb={charge:" charge ",opportunity:" profite de l’ouverture et frappe ",countercharge:" contre-charge ",stray:" touche par accident "}[kind]||" attaque ";
   const prefix=a.character.name+verb+d.character.name+" avec "+result.weapon
     +(result.opportunity?" (attaque d’opportunité, dans le dos)":result.encircled?" (cible encerclée, dans le dos)":result.backstab?" (dans le dos)":"");
@@ -723,6 +743,7 @@ function moveMissionUnitAlongPath(unit,path){
       if(!unit.alive||unit.q!==from.q||unit.r!==from.r||unit.fleeing!==wasFleeing) break;
     }
     unit.q=step.q;unit.r=step.r;moved++;
+    missionFx(unit,"","",step);
     if(wasFleeing) MercenairesProgression.recordFleeHex(unit);
     game.mission.progression.recordStep(unit);
     unit.movementRemaining=Math.max(0,(unit.movementRemaining||0)-1);
@@ -1171,7 +1192,7 @@ function healMissionUnit(unit,amount){
   const before=unit.hp;
   unit.hp=Math.min(unit.pvMax,unit.hp+amount);
   const healed=Math.max(0,unit.hp-before);
-  if(healed) MercenairesProgression.recordHeal(unit,healed);
+  if(healed){ MercenairesProgression.recordHeal(unit,healed); missionFx(unit); }
   return healed;
 }
 function missionWitherNote(unit){ return unit?.withered?" — flétri"+(missionFeminine(unit)?"e":"")+", aucun soin":""; }
@@ -1183,6 +1204,7 @@ function damageMissionUnitBySpell(unit,amount,source=null,element=null){
   unit.hp-=amount;
   unit.damageTaken=(Number(unit.damageTaken)||0)+amount;
   if(unit.hp<=0){ unit.alive=false; missionLog(unit.character.name+" est hors combat.","death"); }
+  missionFx(unit,wasUp&&!unit.alive?"Hors combat":"",wasUp&&!unit.alive?"down":"");
   MercenairesProgression.recordSpellDamage(source,unit,amount,{element,down:wasUp&&!unit.alive});
 }
 
@@ -1207,6 +1229,7 @@ function resolveMissionSpell(caster,target,code,extra={}){
   if(!out.success){
     learn(false);
     missionLog(name+" rate "+spell.nom+on+detail+".","miss");
+    missionFx(caster,"Sort raté","miss");
     if(out.fumble){
       if(out.selfDamage&&out.element){
         const hit=m.engine.elementalDamage(caster,out.element,out.selfDamage);
@@ -1678,6 +1701,7 @@ function missionForcedMove(unit,out,caster){
     if(other){ obstacle=other.character.name; break; }
     if(missionTerrainAt(c.q,c.r)){ obstacle="la flaque de magma"; break; }
     unit.q=c.q;unit.r=c.r;moved++;
+    missionFx(unit,"","",c);
   }
   if(!moved&&!obstacle) return;
   const verb=(move.kind==="attire"?"attiré":"repoussé")+(missionFeminine(unit)?"e":"");
@@ -2299,8 +2323,7 @@ function renderMission(){
     if(unit.summon) classes.push("summoned");
     if(unit.character.undead) classes.push("undead");
     if(targets.has(missionKey(unit.q,unit.r))&&m.mode!=="move") classes.push(missionSpellMode()?"spell-aim":"target");
-    const weapon=e.activeWeaponItem(unit);
-    return `<div class="${classes.join(" ")}" data-unit-id="${esc(String(unit.id))}" data-hex-q="${unit.q}" data-hex-r="${unit.r}" style="left:${p.x-26}px;top:${p.y-26}px" title="${esc(unit.character.name)} — ${Math.max(0,unit.hp)}/${unit.pvMax} PV — ${esc(weapon?.name||"Sans arme")}${unit.alive&&unit.camouflaged?" — camouflé":""}">
+    return `<div class="${classes.join(" ")}" data-unit-id="${esc(String(unit.id))}" data-hex-q="${unit.q}" data-hex-r="${unit.r}" style="left:${p.x-26}px;top:${p.y-26}px">
       <span class="token-ring">${renderAvatar(unit.character,{variant:"battle",kind:"portrait"})}</span>
       ${unit.alive?`<span class="token-hp${missionHpClass(pct)}"><i style="width:${pct}%"></i></span>`:""}
       <strong>${esc(unit.character.name.split(" ")[0])}</strong>
@@ -2313,11 +2336,18 @@ function renderMission(){
   const map=$("mission-map");
   map.style.width=width+"px";
   map.style.height=height+"px";
-  if(missionView.mission!==m){ missionView.mission=m; missionView.activeId=null; fitMissionView(); }
+  if(missionView.mission!==m){
+    Object.assign(missionView,{mission:m,activeId:null,hp:{},pos:{},alive:{}});
+    m.fx=[];
+    fitMissionView();
+  }
   else if(missionView.fitted) fitMissionView();
   if(u&&u.id!==missionView.activeId){ missionView.activeId=u.id; if(!missionView.fitted) centerMissionView(u,true); }
   applyMissionView();
   map.innerHTML=cells+tokens;
+  missionHover.key=null;
+  $("mission-hover-card").classList.add("hidden");
+  scheduleMissionFx();
 
   const availability=missionActionAvailability();
   const buttons=[
@@ -2335,12 +2365,238 @@ function renderMission(){
 
   $("mission-roster-player").innerHTML=renderMissionRoster(m.playerOrder);
   $("mission-roster-enemy").innerHTML=renderMissionRoster(m.enemyOrder);
-  $("mission-console").innerHTML=m.log.slice().reverse().map(x=>`<div class="combat-log ${x.kind}">${esc(x.message)}</div>`).join("");
+  $("mission-console").innerHTML=renderMissionConsole(m.log);
   $("mission-result").classList.toggle("hidden",!m.over);
   $("mission-aftermath").innerHTML=m.over?renderMissionAftermath(m):"";
   $("mission-result-back-btn").textContent=m.companyReport?.gameOver?"Fin de la partie":"Retour à la compagnie";
   $("mission-leave-btn").disabled=!m.over;
   $("mission-leave-btn").title=m.over?"":"Disponible une fois le combat terminé";
+}
+
+// Console allégée : les jets de repérage qui se suivent (3 et plus) sont regroupés dans une ligne dépliable.
+function renderMissionConsole(log){
+  const line=x=>`<div class="combat-log ${x.kind}">${esc(x.message)}</div>`;
+  let html="",group=[];
+  const flush=()=>{
+    if(group.length>=3) html+=`<details class="combat-log-group"><summary>${group.length} repérages</summary>${group.map(line).join("")}</details>`;
+    else html+=group.map(line).join("");
+    group=[];
+  };
+  for(const x of log.slice().reverse()){
+    if(x.kind==="info"&&/ repère /.test(x.message)) group.push(x);
+    else{ flush(); html+=line(x); }
+  }
+  flush();
+  return html;
+}
+
+// Rejeu de la file d'effets sur la carte qui vient d'être dessinée : glissements pas à pas, chiffres (−N, +N) et
+// mentions (Raté, Bloqué…), barres de PV et mise hors combat, dans l'ordre des événements. La référence est l'état
+// du rejeu précédent ; ce qui a changé hors de la file (poison, téléportation…) est montré à la fin. Une file trop
+// longue (combat automatique) n'est pas rejouée ; au-delà de 3,6 s, tout s'accélère.
+const MISSION_FX={step:90,pop:300,bar:250,max:3600,cap:160};
+function scheduleMissionFx(){
+  const m=game.mission;
+  if(typeof requestAnimationFrame==="undefined"||typeof document==="undefined"){ if(m) m.fx=[]; return; }
+  if(missionView.fxPending) return;
+  missionView.fxPending=true;
+  requestAnimationFrame(()=>{ missionView.fxPending=false; playMissionFx(); });
+}
+function playMissionFx(){
+  const m=game.mission;
+  if(!m) return;
+  const fx=m.fx||[],units=missionUnits();
+  m.fx=[];
+  const prev={hp:missionView.hp||{},pos:missionView.pos||{},alive:missionView.alive||{}};
+  missionView.hp=Object.fromEntries(units.map(u=>[u.id,u.hp]));
+  missionView.pos=Object.fromEntries(units.map(u=>[u.id,{q:u.q,r:u.r}]));
+  missionView.alive=Object.fromEntries(units.map(u=>[u.id,u.alive]));
+  if(fx.length>MISSION_FX.cap) return;
+  const hp={...prev.hp},pos={...prev.pos},tracks=new Map(),pops=[];
+  const track=id=>{ if(!tracks.has(id)) tracks.set(id,{moves:[],bars:[],lastHit:null}); return tracks.get(id); };
+  let t=0;
+  for(const f of fx){
+    if(f.step){
+      const from=pos[f.id];
+      if(from&&(from.q!==f.step.q||from.r!==f.step.r)){ track(f.id).moves.push({at:t,dur:MISSION_FX.step,from,to:f.step}); t+=MISSION_FX.step; }
+      pos[f.id]={q:f.step.q,r:f.step.r};
+      continue;
+    }
+    const before=hp[f.id],delta=before===undefined?0:f.hp-before;
+    hp[f.id]=f.hp;
+    if(!delta&&!f.text) continue;
+    if(delta){ track(f.id).bars.push({at:t,from:before,to:f.hp}); track(f.id).lastHit=t; }
+    pops.push({at:t,q:f.q,r:f.r,delta,text:f.text,cls:f.cls});
+    t+=MISSION_FX.pop;
+  }
+  for(const u of units){
+    if(u.offMap) continue;
+    if(hp[u.id]!==undefined&&hp[u.id]!==u.hp){
+      track(u.id).bars.push({at:t,from:hp[u.id],to:u.hp});
+      track(u.id).lastHit=t;
+      pops.push({at:t,q:u.q,r:u.r,delta:u.hp-hp[u.id],text:"",cls:""});
+    }
+    const from=pos[u.id];
+    if(from&&(from.q!==u.q||from.r!==u.r)) track(u.id).moves.push({at:t,dur:300,from,to:{q:u.q,r:u.r}});
+    if(prev.alive[u.id]&&!u.alive) track(u.id).down=true;
+  }
+  const k=t>MISSION_FX.max?MISSION_FX.max/t:1,map=$("mission-map");
+  map.style.setProperty("--pop-zoom",String(Math.min(1.9,Math.max(1,1/missionView.scale))));
+  for(const [id,tr] of tracks){
+    const unit=units.find(u=>u.id===id);
+    const el=unit&&map.querySelector(`.mission-token[data-unit-id="${CSS.escape(String(id))}"]`);
+    if(!el) continue;
+    if(tr.moves.length){
+      const end=missionHexPixel(unit.q,unit.r);
+      const at=c=>{ const p=missionHexPixel(c.q,c.r); return `translate(${p.x-end.x}px,${p.y-end.y}px)`; };
+      const last=tr.moves[tr.moves.length-1],T=(last.at+last.dur)*k;
+      const frames=[{transform:at(tr.moves[0].from),offset:0}];
+      for(const mv of tr.moves) frames.push({transform:at(mv.from),offset:mv.at*k/T},{transform:at(mv.to),offset:(mv.at+mv.dur)*k/T});
+      el.animate(frames,{duration:T,easing:"linear"});
+    }
+    const bar=el.querySelector(".token-hp i");
+    if(bar&&tr.bars.length){
+      const pct=v=>Math.max(0,Math.min(100,v/unit.pvMax*100))+"%";
+      const last=tr.bars[tr.bars.length-1],T=(last.at+MISSION_FX.bar)*k;
+      const frames=[{width:pct(tr.bars[0].from),offset:0}];
+      for(const b of tr.bars) frames.push({width:pct(b.from),offset:b.at*k/T},{width:pct(b.to),offset:(b.at+MISSION_FX.bar)*k/T});
+      bar.animate(frames,{duration:T,easing:"ease-out"});
+    }
+    for(const b of tr.bars) if(b.to<b.from) el.querySelector(".token-ring")?.animate(
+      [{transform:"translateX(0)"},{transform:"translateX(-4px)"},{transform:"translateX(4px)"},{transform:"translateX(0)"}],{duration:240,delay:b.at*k});
+    if(tr.down){
+      const at=(tr.lastHit??t)*k;
+      // Sans glissement en cours, le pion rétrécit aussi (le transform est libre).
+      const shrink=tr.moves.length?{}:{transform:"none"};
+      el.animate([{opacity:1,filter:"none",...shrink,offset:0},{opacity:1,filter:"none",...shrink,offset:at/(at+450)},
+        {opacity:.5,filter:"grayscale(1)",...(tr.moves.length?{}:{transform:"scale(.8)"})}],{duration:at+450});
+    }
+  }
+  for(const p of pops){
+    const xy=missionHexPixel(p.q,p.r),pop=document.createElement("div");
+    pop.className="mission-pop"+(p.delta<0?" dmg":p.delta>0?" heal":"")+(p.cls?" "+p.cls:"");
+    pop.innerHTML=(p.delta?`<b>${p.delta>0?"+":"−"}${Math.abs(p.delta)}</b>`:"")+(p.text?`<small>${esc(p.text)}</small>`:"");
+    pop.style.left=xy.x+"px";
+    pop.style.top=(xy.y-30)+"px";
+    map.appendChild(pop);
+    pop.animate([
+      {opacity:0,transform:"translate(-50%,8px) scale(.6)"},
+      {opacity:1,transform:"translate(-50%,-4px) scale(1.15)",offset:.14},
+      {opacity:1,transform:"translate(-50%,-18px) scale(1)",offset:.7},
+      {opacity:0,transform:"translate(-50%,-30px) scale(1)"}
+    ],{duration:1300,delay:p.at*k,fill:"both",easing:"ease-out"}).finished.then(()=>pop.remove(),()=>{});
+  }
+}
+
+// Survol : fiche du combattant (PV, arme, état) ; en mode attaque, les chances de chaque arme qui frappera ;
+// en mode sort, la réussite du sort ; en mode déplacement, le chemin prévu et les attaques d'opportunité.
+// Tout est calculé par les fonctions du moteur, sans jet de dé.
+const missionHover={key:null,click:null};
+function missionUnitAt(q,r){
+  const here=missionUnits().filter(x=>!x.offMap&&!x.raised&&!x.vanished&&x.q===q&&x.r===r);
+  return here.find(x=>x.alive)||here[0]||null;
+}
+function missionAttackPreview(u,target){
+  const m=game.mission,e=m.engine;
+  if(!u||!target?.alive||target.team===u.team||!["melee","ranged","charge"].includes(m.mode)) return [];
+  const charge=m.mode==="charge"?missionChargeIfClear(u,target):null;
+  if(m.mode==="charge"&&!charge) return [];
+  const dual=e.isDualWielding(u),distance=charge?1:e.axialDistance(u,target);
+  const mode=m.mode==="charge"?"melee":m.mode;
+  const hands=dual?(charge?e.usableHands(u,1):missionUsableHands(u,target)):(charge||missionCanAttack(u,target,mode)?[{hand:"main",mode}]:[]);
+  const hidden=Boolean(u.camouflaged)&&u.team!==target.team;
+  return hands.map(h=>e.withHand(u,h.hand,()=>{
+    const item=e.activeWeaponItem(u),weapon=e.weaponTemplate(item);
+    const backstab=hidden||Boolean(target.fleeing)||(h.mode==="melee"&&missionEncircled(target));
+    const row={weapon:item?.name||weapon?.nom||"Arme",mode:h.mode,backstab,pHit:e.hitProbability(u,target,h.mode,distance,{backstab})};
+    if(h.mode==="ranged"&&target.projectileShield) row.pDeflect=Number(target.projectileShield.chance)||0;
+    if(target.character?.immunePhysical&&weapon?.degats_type!=="psychique"){ row.immune=true; return row; }
+    const block=e.blockChance(target),cut=Number(weapon?.malus_blocage_pourcentage)||0;
+    if(block!==null) row.pBlock=cut?block*(1-cut/100):block;
+    row.pCrit=e.criticalChance(u);
+    if(weapon?.degats_type==="psychique"){ row.psychic=true; return row; }
+    const chargePower=charge&&h.mode==="melee"?charge.travel*(Number(weapon?.bonus_charge_base)||1)*(Number(e.quality(item).multiplicateur_qualite)||1):0;
+    const matchups=e.damageMatchups(target,weapon,{backstab});
+    const wounds=(matchups.length?matchups:[null]).map(x=>e.woundProbability(u,target,h.mode,x,{chargePower}));
+    row.pWound=[Math.min(...wounds),Math.max(...wounds)];
+    if(h.mode==="melee"&&matchups.some(x=>x.type==="tranchant")) row.pParry=e.parryChance(target,"tranchant");
+    row.damage=[e.physicalDamage(u,target,h.mode,chargePower,{roll:"min",resistanceRoll:3}).damage,
+      e.physicalDamage(u,target,h.mode,chargePower,{roll:"max",resistanceRoll:1}).damage];
+    return row;
+  }));
+}
+function missionOdds(p){ return `<dd class="odds-${p>=65?"good":p>=35?"mid":"bad"}">${Math.round(p)} %</dd>`; }
+function renderMissionHoverCard(q,r){
+  const m=game.mission,e=m.engine,u=missionActiveUnit(),unit=missionUnitAt(q,r);
+  const key=missionKey(q,r),targets=targetableMissionCells();
+  let html="";
+  if(unit){
+    const weapon=e.activeWeaponItem(unit);
+    const up=unit.alive;
+    const tags=[unit.summon&&"Invocation",unit.character.undead&&"Mort-vivant",up&&unit.camouflaged&&"Camouflé",up&&unit.fleeing&&"En fuite",
+      up&&missionEncircled(unit)&&"Encerclé",up&&unit.poisoned&&"Empoisonné",up&&unit.prone&&"Au sol",!up&&"Hors combat"].filter(Boolean);
+    html+=`<strong>${esc(unit.character.name)}</strong><span class="hc-sub">${Math.max(0,unit.hp)} / ${unit.pvMax} PV · ${esc(weapon?.name||"Sans arme")}</span>`
+      +(tags.length?`<span class="hc-tags">${tags.join(" · ")}</span>`:"");
+    for(const row of missionAttackPreview(u,unit)){
+      html+=`<div class="hc-attack"><em>${esc(row.weapon)} · ${row.mode==="ranged"?"tir":m.mode==="charge"?"charge":"corps à corps"}${row.backstab?" · dans le dos":""}</em><dl>`
+        +(row.pDeflect?`<dt>Déviation</dt>${missionOdds(row.pDeflect)}`:"")
+        +`<dt>Toucher</dt>${missionOdds(row.pHit)}`
+        +(row.immune?`<dt>Immunisé</dt><dd class="odds-bad">dégâts physiques</dd>`:"")
+        +(row.pBlock!==undefined?`<dt>Bouclier</dt><dd>${Math.round(row.pBlock)} % de blocage</dd>`:"")
+        +(row.pParry?`<dt>Saï</dt><dd>${Math.round(row.pParry)} % de parade</dd>`:"")
+        +(row.pWound?`<dt>Blesser</dt>${row.pWound[0]===row.pWound[1]?missionOdds(row.pWound[0]):`<dd>${Math.round(row.pWound[0])}–${Math.round(row.pWound[1])} %</dd>`}`:"")
+        +(row.damage?`<dt>Dégâts</dt><dd class="hc-dmg">${row.damage[0]}–${row.damage[1]} PV</dd>`:"")
+        +(row.psychic?`<dt>Dégâts</dt><dd>psychiques</dd>`:"")
+        +(row.pCrit!==undefined?`<dt>Critique</dt><dd>${missionPercent(row.pCrit)}</dd>`:"")
+        +`</dl></div>`;
+    }
+  }
+  const spellCode=missionSpellMode(),magic=missionMagic();
+  if(u&&spellCode&&magic&&targets.has(key)){
+    const spell=magic.spell(spellCode);
+    html+=`<div class="hc-attack hc-spell"><em>${esc(spell?.nom||"Sort")}</em><dl><dt>Réussite</dt>${missionOdds(magic.castChance(u,spellCode).p)}`
+      +`<dt>Coût</dt><dd>${magic.manaCost(u,spellCode)} mana</dd></dl></div>`;
+  }
+  if(u&&m.mode==="move"&&targets.has(key)){
+    const path=shortestMissionPath(u,{q,r},u)||[],risk=missionPathOpportunityCount(u,path);
+    html+=`<div class="hc-attack"><em>Déplacement</em><dl><dt>Cases</dt><dd>${path.length} / ${u.movementRemaining}</dd>`
+      +(risk?`<dt>Danger</dt><dd class="odds-bad">${risk} attaque${risk>1?"s":""} d’opportunité</dd>`:"")
+      +(missionMireAt(q,r)?`<dt>Bourbier</dt><dd class="odds-bad">arrêt</dd>`:"")+`</dl></div>`;
+  }
+  return html;
+}
+function clearMissionPath(){
+  for(const cell of document.querySelectorAll("#mission-map .hex-cell.path")){ cell.classList.remove("path","path-end"); delete cell.dataset.step; }
+}
+function showMissionHover(q,r){
+  const m=game.mission,u=missionActiveUnit(),key=missionKey(q,r);
+  if(!m||missionHover.key===key) return;
+  missionHover.key=key;
+  clearMissionPath();
+  if(u&&m.mode==="move"&&targetableMissionCells().has(key)){
+    const path=shortestMissionPath(u,{q,r},u)||[];
+    path.forEach((c,i)=>{
+      const cell=document.querySelector(`#mission-map .hex-cell[data-hex-q="${c.q}"][data-hex-r="${c.r}"]`);
+      if(!cell) return;
+      cell.classList.add("path");
+      if(i===path.length-1){ cell.classList.add("path-end"); cell.dataset.step=String(path.length); }
+    });
+  }
+  const card=$("mission-hover-card"),html=renderMissionHoverCard(q,r);
+  card.classList.toggle("hidden",!html);
+  if(!html) return;
+  card.innerHTML=html;
+  const p=missionHexPixel(q,r),s=missionView.scale,{w,h}=missionStageSize();
+  const cw=card.offsetWidth,ch=card.offsetHeight,cx=missionView.x+p.x*s,cy=missionView.y+p.y*s;
+  let x=cx+30*s+12;
+  if(x+cw>w-8) x=cx-30*s-12-cw;
+  card.style.left=Math.max(8,x)+"px";
+  card.style.top=Math.min(Math.max(8,cy-ch/2),Math.max(8,h-ch-8))+"px";
+}
+function hideMissionHover(){
+  missionHover.key=null;
+  clearMissionPath();
+  $("mission-hover-card").classList.add("hidden");
 }
 
 // Les morts étant définitives, on ne quitte la Mission Test qu'une fois le combat résolu
@@ -2384,6 +2640,7 @@ function initializeMissionUi(){
   $("mission-result-back-btn").addEventListener("click",leaveMission);
 
   $("mission-map").addEventListener("click",event=>{
+    missionHover.click={x:event.clientX,y:event.clientY};
     const cell=event.target.closest("[data-hex-q]");
     if(cell) handleMissionHexClick(Number(cell.dataset.hexQ),Number(cell.dataset.hexR));
   });
@@ -2403,9 +2660,20 @@ function initializeMissionMapView(){
   stage.addEventListener("wheel",event=>{
     if(!game.mission) return;
     event.preventDefault();
+    hideMissionHover();
     const box=stage.getBoundingClientRect();
     zoomMissionView(event.deltaY<0?1.12:1/1.12,event.clientX-box.left,event.clientY-box.top);
   },{passive:false});
+  $("mission-map").addEventListener("mouseover",event=>{
+    if(!game.mission||missionView.drag) return;
+    // Juste après un clic, la carte redessinée ne rouvre pas la fiche tant que la souris n'a pas bougé.
+    const click=missionHover.click;
+    if(click&&Math.hypot(event.clientX-click.x,event.clientY-click.y)<4) return;
+    missionHover.click=null;
+    const cell=event.target.closest("[data-hex-q]");
+    if(cell) showMissionHover(Number(cell.dataset.hexQ),Number(cell.dataset.hexR));
+  });
+  stage.addEventListener("mouseleave",hideMissionHover);
   // Glisser pour déplacer la carte ; au-delà de 6 px, le clic qui suit ne compte pas sur une case.
   stage.addEventListener("pointerdown",event=>{
     if(event.button!==0&&event.button!==1) return;
@@ -2417,6 +2685,7 @@ function initializeMissionMapView(){
     if(!drag) return;
     const dx=event.clientX-drag.x,dy=event.clientY-drag.y;
     if(!missionView.dragged&&Math.hypot(dx,dy)<6) return;
+    if(!missionView.dragged) hideMissionHover();
     missionView.dragged=true;
     stage.classList.add("dragging");
     missionView.x=drag.vx+dx;

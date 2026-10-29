@@ -476,7 +476,7 @@ body[data-screen="mission"] .app-shell{max-width:none;padding:8px 10px 74px}
 .mission-token strong{display:none;position:absolute;z-index:6;bottom:calc(100% + 3px);left:50%;max-width:120px;overflow:hidden;padding:1px 7px;border:1px solid #8a6a40;border-radius:99px;background:#1b130ef0;color:#ffe3ab;font:600 .62rem Georgia,serif;text-overflow:ellipsis;white-space:nowrap;transform:translateX(-50%)}
 .mission-token em{display:none;position:absolute;z-index:6;top:calc(100% + 4px);left:50%;padding:0 6px;border-radius:99px;background:#000c;color:#f1dfba;font-size:.56rem;font-style:normal;white-space:nowrap;transform:translateX(-50%)}
 .mission-token:hover{z-index:8}
-.mission-token:hover strong,.mission-token:hover em,.mission-token.active strong{display:block}
+.mission-token:hover strong,.mission-token.active strong{display:block}
 .mission-token.active{z-index:7}
 .mission-token.active .token-ring{border-color:#f0c050;box-shadow:0 0 0 2px #1b130e,0 0 16px 4px #f0c050aa,0 5px 10px #000b}
 .mission-token.active::before{content:"";position:absolute;inset:-8px;border:2px solid #f0c050;border-radius:50%;pointer-events:none;animation:token-pulse 1.6s ease-out infinite}
@@ -491,6 +491,43 @@ body[data-screen="mission"] .app-shell{max-width:none;padding:8px 10px 74px}
 /* Invocations : un liseré violet ; les morts-vivants, teinte blafarde. */
 .mission-token.summoned .token-ring{box-shadow:0 0 0 2px #966edc,0 5px 10px #000b}
 .mission-token.undead .token-ring{filter:saturate(.45) sepia(.25) hue-rotate(55deg)}
+/* Chemin prévu au survol (mode déplacement) : cases éclairées, nombre de cases sur la dernière. */
+.hex-cell.reachable.path{background:#d8f1ffd9}
+.hex-cell.reachable.provokes.path{background:#ffe2a0e0}
+.hex-cell.path-end::after{content:attr(data-step);position:absolute;inset:0;display:grid;place-items:center;color:#1b3a52;font:800 1.05rem Georgia,serif}
+/* Chiffres et mentions qui sautent au-dessus des pions (rejoués dans l'ordre des événements). */
+.mission-pop{position:absolute;z-index:40;display:flex;flex-direction:column;align-items:center;gap:0;opacity:0;pointer-events:none;color:#fff;
+  font:800 calc(15px * var(--pop-zoom,1))/1.05 Georgia,serif;text-shadow:0 2px 0 #000,0 0 6px #000,0 0 2px #000;white-space:nowrap;transform:translate(-50%,0)}
+.mission-pop b{font-size:1.4em}
+.mission-pop.dmg b{color:#ff6b55}
+.mission-pop.heal b{color:#8ff08a}
+.mission-pop small{font-size:.86em;letter-spacing:.02em}
+.mission-pop.miss small{color:#e6dfd0}
+.mission-pop.block small{color:#a9d2f5}
+.mission-pop.immune small{color:#cfb2ff}
+.mission-pop.crit small{color:#ffd24a}
+.mission-pop.down small{color:#ff8a6e}
+.mission-pop.spot small{color:#ffe08a}
+/* Fiche de survol : le combattant, puis les chances de l'action choisie (calculées par le moteur). */
+.mission-hover-card{position:absolute;z-index:25;width:max-content;min-width:180px;max-width:250px;padding:8px 11px 9px;border:1px solid #8a6a40;border-radius:10px;background:#1b130ef4;color:#e9d9b9;font-size:.7rem;line-height:1.3;box-shadow:0 12px 30px #000c;pointer-events:none}
+.mission-hover-card strong{display:block;color:#ffe3ab;font:700 .84rem Georgia,serif}
+.mission-hover-card .hc-sub{display:block;color:#d1bf9f}
+.mission-hover-card .hc-tags{display:block;margin-top:2px;color:#e0a95a;font-size:.64rem}
+.hc-attack{margin-top:7px;padding-top:6px;border-top:1px solid #6e523380}
+.hc-attack em{display:block;margin-bottom:3px;color:#c99a5b;font:italic 600 .68rem Georgia,serif}
+.hc-attack dl{display:grid;grid-template-columns:auto auto;gap:2px 14px;margin:0}
+.hc-attack dt{color:#bba68a}
+.hc-attack dd{margin:0;color:#f3e2c0;font-weight:700;text-align:right}
+.hc-attack dd.odds-good{color:#9be08a}
+.hc-attack dd.odds-mid{color:#f0cd5a}
+.hc-attack dd.odds-bad{color:#ff8a6e}
+.hc-attack dd.hc-dmg{color:#ff9b85}
+.hc-spell em{color:#8fe09a}
+/* Console : jets de repérage regroupés. */
+.combat-log-group{border-left:3px solid #6e6252;border-radius:6px;background:#ffffff08;color:#bba68a;font-size:.68rem}
+.combat-log-group summary{padding:5px 8px;cursor:pointer}
+.combat-log-group[open]{padding-bottom:4px}
+.combat-log-group .combat-log{margin:3px 4px 0 8px}
 .mission-zoom{position:absolute;top:10px;right:10px;z-index:20;display:flex;flex-direction:column;gap:4px}
 .mission-zoom button{width:32px;height:32px;padding:0;border:1px solid #8a6a40;border-radius:8px;background:#1b130ee6;color:#f1dfba;font:700 1.05rem/1 Georgia,serif;box-shadow:0 3px 8px #0009}
 .mission-zoom button:hover{border-color:#e3bd76;color:#fff3d6}

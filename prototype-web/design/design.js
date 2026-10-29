@@ -20,6 +20,7 @@ async function init(){
     bind(); renderNav();
     const hash=location.hash.slice(1);
     if(hash==="avatars"||hash.startsWith("cov-")){setMode("avatars")}
+    else if(hash==="images"||hash.startsWith("img-")){setMode("images")}
     else if(hash.startsWith("table=")){setMode("tables");openTable(decodeURIComponent(hash.slice(6)))}
     else if(hash.startsWith("doc=")){openDoc(decodeURIComponent(hash.slice(4)))}
     else openDoc(state.docs.documents[0]?.file);
@@ -42,6 +43,7 @@ function setMode(mode){
   $("nav-search").value=""; renderNav();
   if(mode==="docs") openDoc(state.docs.documents[0]?.file);
   else if(mode==="avatars") openAvatars();
+  else if(mode==="images") openImages();
   else openTable(state.tables.tables[0]?.file);
 }
 function renderNav(){
@@ -51,11 +53,13 @@ function renderNav(){
     : state.mode==="avatars"
     ? (state.coverage?[{id:"cov-tags",label:"Affiner les tags",sub:AvatarsLab.tagTodoCount(state.coverage)+" à faire"}]:[])
       .concat((state.coverage?.results||[]).map(r=>({id:AvatarsLab.anchor(r.people),label:r.people,sub:r.avatars+" / "+r.need+" avatars"})))
+    : state.mode==="images"
+    ? (state.images?.summary||[]).map(s=>({id:ImagesLab.anchor(s.key),label:s.title,sub:s.missing?s.missing+" / "+s.total+" manquantes":"complet"}))
     : state.tables.tables.map(x=>({id:x.file,label:labelTable(x.name),sub:x.rows+" lignes"}));
   $("nav-list").innerHTML=items.filter(x=>(x.label+" "+x.id).toLowerCase().includes(q)).map(x=>
     `<button class="nav-item ${state.current===x.id?"active":""}" data-id="${esc(x.id)}">${esc(x.label)}<small>${esc(x.sub)}</small></button>`
   ).join("");
-  $("nav-list").querySelectorAll(".nav-item").forEach(b=>b.onclick=()=>state.mode==="docs"?openDoc(b.dataset.id):state.mode==="avatars"?scrollToPeople(b.dataset.id):openTable(b.dataset.id));
+  $("nav-list").querySelectorAll(".nav-item").forEach(b=>b.onclick=()=>state.mode==="docs"?openDoc(b.dataset.id):state.mode==="avatars"||state.mode==="images"?scrollToPeople(b.dataset.id):openTable(b.dataset.id));
 }
 // Onglet Avatars : couverture des avatars par peuple (avatars-lab.js).
 async function openAvatars(){
@@ -76,6 +80,26 @@ async function openAvatars(){
     AvatarsLab.bind($("viewer"),data,renderNav);
     renderNav();
     if(location.hash.startsWith("#cov-")) scrollToPeople(location.hash.slice(1));
+  }catch(e){showError(e)}
+}
+// Onglet Images : images attendues par le jeu, hors avatars (images-lab.js).
+async function openImages(){
+  state.mode="images";state.current=null;
+  $("table-tools").classList.add("hidden");
+  $("content-kicker").textContent="Production";
+  $("content-title").textContent="Images manquantes";
+  $("content-meta").textContent="";
+  if(!location.hash.startsWith("#img-")) location.hash="images";
+  $("viewer").innerHTML='<p class="cov-progress">Vérification des images…</p>';
+  try{
+    const data=await ImagesLab.compute((done,total)=>{ $("viewer").innerHTML=`<p class="cov-progress">Vérification des images : ${done} / ${total}…</p>`; });
+    if(state.mode!=="images") return;
+    state.images=data;
+    $("content-meta").textContent=ImagesLab.meta(data);
+    $("viewer").innerHTML=ImagesLab.render(data);
+    $("viewer").querySelectorAll("[data-img]").forEach(a=>a.onclick=e=>{e.preventDefault();scrollToPeople(a.dataset.img)});
+    renderNav();
+    if(location.hash.startsWith("#img-")) scrollToPeople(location.hash.slice(1));
   }catch(e){showError(e)}
 }
 function scrollToPeople(id){

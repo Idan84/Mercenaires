@@ -32,6 +32,7 @@ jobs:
       - run: node tests/names.test.js
       - run: node tests/character-sheet.test.js
       - run: node tests/design-lab-tags.test.js
+      - run: node tests/asset-coverage.test.js
       - run: node tests/affinity-display.test.js
       - run: node tests/wizard-ui-refinements.test.js
       - run: node tests/design-graph-simulation.test.js
@@ -88,3 +89,4 @@ jobs:
       - run: node --check prototype-web/reference-data.js
       - run: node --check prototype-web/design/design.js
       - run: node --check prototype-web/design/avatars-lab.js
+      - run: node --check prototype-web/design/images-lab.js

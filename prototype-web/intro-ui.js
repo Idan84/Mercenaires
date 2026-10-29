@@ -2,7 +2,8 @@
 
 // Introduction puis création guidée du capitaine (demande d'Idan, 2026-10-04).
 // « Nouvelle partie » → le capitaine mourant (image, texte et voix d'Idan) → « Vous n'êtes pas Bob ? »
-// → assistant : nom, peuple, culture, origine sociale, ascendance, alignement → le camp.
+// → assistant : nom, peuple, culture, origine sociale, ascendance, portrait, alignement → le camp.
+// Le portrait vient après l'ascendance (Idan, 2026-10-29) : seuls les portraits de cette ascendance sont proposés.
 // L'assistant ne fait que remplir le formulaire de création existant (#captain-*) puis le valider :
 // la génération reste celle du moteur (createCaptainFromForm).
 // Textes de description, force et faiblesse : data/reference/captain-creation-copy.json (Chatty).
@@ -16,9 +17,9 @@ const WIZARD_STEPS=[
   {key:"name",nav:"Nom",title:"Quel est votre nom ?"},
   {key:"people",nav:"Peuple",title:"De quel peuple venez-vous ?",copy:"peoples",picto:"people",options:()=>peopleNames()},
   {key:"culture",nav:"Culture",title:"Quelle est votre culture ?",copy:"cultures",picto:"culture",options:()=>culturesForPeople(wizard.choice.people)},
-  {key:"avatar",nav:"Portrait",title:"Quel visage portera votre capitaine ?"},
   {key:"origin",nav:"Origine",title:"Quelle est votre origine sociale ?",copy:"origins",options:()=>originsForCulture(wizard.choice.culture)},
   {key:"ascendance",nav:"Ascendance",title:"Quelle est votre ascendance ?",copy:"ancestries",picto:"ascendance",options:()=>["",...compatibleAscendances(wizard.choice.people)]},
+  {key:"avatar",nav:"Portrait",title:"Quel visage portera votre capitaine ?"},
   {key:"alignment",nav:"Alignement",title:"Quel est votre alignement ?",copy:"alignments",options:()=>alignmentNames()},
   {key:"companyName",nav:"Compagnie",title:"Comment s’appelle votre compagnie ?"},
   {key:"recap",nav:"Récap",title:"Prenez la chevalière"}
@@ -110,8 +111,10 @@ function setChoice(key,value){
     if(!culturesForPeople(value).includes(wizard.choice.culture)) wizard.choice.culture=null;
     if(!compatibleAscendances(value).includes(wizard.choice.ascendance)) wizard.choice.ascendance="";
   }
-  if(key==="people"||key==="culture"){
+  if(key==="people"||key==="culture"||key==="ascendance"){
     if(!captainAvatarOptions().some(a=>a.id===wizard.choice.avatar)) wizard.choice.avatar=null;
+  }
+  if(key==="people"||key==="culture"){
     if(!wizard.choice.culture||!originsForCulture(wizard.choice.culture).includes(wizard.choice.origin)) wizard.choice.origin=null;
   }
 }
@@ -273,7 +276,12 @@ function captainAvatarOptions(){
     if(!a.id||!a.full||!a.portrait||norm(a.people)!==people) return false;
     const cultures=a.tags?.culture;
     const tagged=Array.isArray(cultures)?cultures:typeof cultures==="string"?[cultures]:[];
-    return !tagged.length || tagged.some(c=>norm(c)===culture);
+    if(tagged.length&&!tagged.some(c=>norm(c)===culture)) return false;
+    // Ascendance : même règle que pour les mercenaires (game-core/avatars.js). Avec une ascendance, un portrait de
+    // cette ascendance ; sans ascendance, pas de portrait réservé à une ascendance (« Ascendance only »).
+    if(typeof MercenairesAvatars==="undefined") return true;
+    const ascendance=wizard.choice.ascendance?[MercenairesAvatars.norm(wizard.choice.ascendance)]:[];
+    return MercenairesAvatars.sameAscendance(a,{ascendance});
   });
 }
 // Le sexe d'un capitaine est déduit de l'avatar (game-core/avatars.js).
@@ -316,7 +324,7 @@ function renderAvatarChoice(){
     <div class="wizard-options-head"><span>Choisissez votre visage</span><span class="avatar-sex-toggle" role="group" aria-label="Hommes ou femmes">${toggle}</span></div>
     <div class="captain-avatar-groups"><div class="captain-avatar-grid">${list.map(renderCard).join("")}</div></div>
   </section><aside class="wizard-detail-panel">
-    ${chosen?renderAvatar({name:wizard.choice.name||"Capitaine",people:wizard.choice.people,avatar:chosen},{variant:"detail",kind:"full"}):"<h3>Sélectionnez un portrait</h3><p>Les portraits correspondent à votre peuple et à votre culture, lorsqu’elle est renseignée sur l’avatar.</p>"}
+    ${chosen?renderAvatar({name:wizard.choice.name||"Capitaine",people:wizard.choice.people,avatar:chosen},{variant:"detail",kind:"full"}):"<h3>Sélectionnez un portrait</h3><p>Les portraits correspondent à votre peuple, à votre ascendance et à votre culture, lorsqu’elle est renseignée sur l’avatar.</p>"}
   </aside></div>`;
 }
 function renderCompanyNameStep(){

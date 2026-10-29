@@ -21,6 +21,8 @@
     const statGear={boots:byName(reference?.boots),belt:byName(reference?.belts),amulet:byName(reference?.amulets),
       cape:byName(reference?.capes),gloves:byName(reference?.gloves),pants:byName(reference?.pants),ring:byName(reference?.rings),
       helmet:byName(reference?.helmets)};
+    // Potions et fioles (Idan, 2026-10-29) : sans tier ni qualité, la valeur est leur prix de base.
+    const potions=byName(reference?.potions);
     const qualities=new Map(rows(reference?.itemQualities).map(r=>[r.code,r]));
     const constants=new Map(rows(reference?.formulaConstants).map(r=>[r.code,Number(r.valeur)]));
 
@@ -30,6 +32,7 @@
         const code=String(item.templateId||"").replace(/^armor:/,"");
         return armors.find(a=>a.code===code)||armors.find(a=>a.nom===item.name)||null;
       }
+      if(item?.itemType==="potion") return potions.get(item.name)||null;
       return statGear[item?.itemType]?.get(item?.name)||null;
     }
 

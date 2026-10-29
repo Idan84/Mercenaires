@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 217,
+  "row_count": 219,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -1374,6 +1374,22 @@
       "nom": "Stock de départ — bagues, faces des dés",
       "code": "company.starting_stock.ring_dice_sides",
       "description": "Faces des dés du nombre de bagues du stock de départ (1D6).",
+      "formule": "Stock d’armes de départ",
+      "valeur": 6,
+      "version": "V1"
+    },
+    {
+      "nom": "Stock de départ — fioles, nombre de dés",
+      "code": "company.starting_stock.potion_dice_count",
+      "description": "La compagnie démarre avec (nombre de dés)D(faces) fioles de chaque sorte (potion de soins, potion de mana, fiole de poison) : 1D6, comme les autres objets (Idan, 2026-10-29).",
+      "formule": "Stock d’armes de départ",
+      "valeur": 1,
+      "version": "V1"
+    },
+    {
+      "nom": "Stock de départ — fioles, faces des dés",
+      "code": "company.starting_stock.potion_dice_sides",
+      "description": "Faces des dés du nombre de fioles de chaque sorte du stock de départ (1D6).",
       "formule": "Stock d’armes de départ",
       "valeur": 6,
       "version": "V1"

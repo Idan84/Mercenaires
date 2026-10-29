@@ -36,6 +36,7 @@
       pants:{category:"Culotte",byName:new Map(rows(reference?.pants).map(r=>[r.nom,r]))},
       ring:{category:"Bague",byName:new Map(rows(reference?.rings).map(r=>[r.nom,r]))},
       helmet:{category:"Casque",byName:new Map(rows(reference?.helmets).map(r=>[r.nom,r]))}};
+    const potions=new Map(rows(reference?.potions).map(r=>[r.nom,r]));
     const qualities=new Map(rows(reference?.itemQualities).map(r=>[r.code,r]));
     const titles=new Map(rows(reference?.itemTitles).map(r=>[r.nom,r]));
 
@@ -127,6 +128,10 @@
       if(!item) return null;
       const q=quality(item);
       const head={title:title(item),name:item.name,tier:Number(item.tier)||1,quality:q};
+      // Potions et fioles (Idan, 2026-10-29) : leur effet, sans tier ni qualité.
+      const potion=item.itemType==="potion"?potions.get(item.name):null;
+      if(potion) return {...head,kind:"potion",category:"Potion",effect:potion.effet,percent:Number(potion.pourcentage)||0,
+        turns:Number(potion.tours)||0,poison:Number(potion.degats_poison)||0,description:potion.description||null};
       if(item.itemType==="weapon"&&weapons.has(item.name)) return {...head,...weaponCard(item,weapons.get(item.name),q)};
       const gear=statGear[item.itemType]?.byName.get(item.name);
       if(gear) return {...head,...statGearCard(item,gear)};

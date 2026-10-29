@@ -71,6 +71,13 @@
         .map(c=>({name:c.nom,file:c.code+".jpg",planned:false}))}))};
   }
 
+  // Potions et fioles (Idan, 2026-10-29 : « je ferai les icônes plus tard ») : la fiole de ceinture en attendant.
+  function potionSection(reference){
+    return {key:"potions",title:"Potions et fioles",master:"assets-src/Potions/<code>.jpg",
+      note:"En attendant leurs icônes, les fioles ont le picto de poche de ceinture.",
+      groups:[{name:"Ceinture",items:rows(reference.potions).map(p=>({name:p.nom,file:p.code+".jpg",planned:false}))}]};
+  }
+
   function equipmentSection(reference){
     return {key:"equipment",title:"Équipement (objets par tier)",master:"assets-src/Equipements/<Type>/<Nom>_T<tier>.jpg",
       groups:EQUIPMENT.map(([table,dir,label])=>({name:label,items:rows(reference[table]).flatMap(item=>TIERS.map(tier=>({
@@ -91,7 +98,7 @@
   // equipmentArt : ensemble des clés présentes (prototype-web/equipment-art.js, EQUIPMENT_ART).
   function listExpected(reference,{equipmentArt=new Set()}={}){
     const sections=[...spellSections(reference),enemySection(reference),summonSection(reference),
-      equipmentSection(reference),pictoSection(reference),sceneSection()];
+      equipmentSection(reference),potionSection(reference),pictoSection(reference),sceneSection()];
     for(const item of sections.flatMap(s=>s.groups.flatMap(g=>g.items))){
       if(item.planned===false) item.present=false;
       else if(item.key) item.present=equipmentArt.has(item.key);

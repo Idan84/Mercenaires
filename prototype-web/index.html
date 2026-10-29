@@ -278,38 +278,37 @@
       </section>
     </section>
     <section id="mission-panel" class="panel mission-panel hidden">
-      <div class="section-title-row">
-        <div>
+      <!-- Écran de combat (Idan, 2026-10-29) : la carte occupe l'écran ; équipes et console en tiroirs repliables,
+           ordre d'initiative en haut, barre d'actions de jeu en bas, au-dessus de la barre de la compagnie. -->
+      <div class="section-title-row mission-topline">
+        <div class="mission-turn-block">
           <p class="eyebrow">Mission tactique V1</p>
           <h2 id="mission-turn">Tour 1</h2>
           <p id="mission-active" class="muted"></p>
         </div>
+        <ol id="mission-initiative" class="mission-initiative" aria-label="Ordre d’activation du tour"></ol>
         <button id="mission-leave-btn" class="secondary">Retour compagnie</button>
       </div>
 
       <div class="mission-layout">
-        <aside class="mission-side">
-          <h3>Votre équipe</h3>
-          <div id="mission-roster-player"></div>
-          <h3>Ennemis</h3>
-          <div id="mission-roster-enemy"></div>
+        <aside id="mission-roster-drawer" class="mission-side mission-drawer">
+          <button class="mission-drawer-toggle" type="button" data-mission-drawer="roster" aria-expanded="true" title="Afficher ou replier les équipes"><span>Équipes</span></button>
+          <div class="mission-drawer-body">
+            <h3>Votre équipe</h3>
+            <div id="mission-roster-player"></div>
+            <h3>Ennemis</h3>
+            <div id="mission-roster-enemy"></div>
+          </div>
         </aside>
 
         <div class="mission-center">
-          <div class="mission-actions">
-            <button id="mission-move-btn" class="secondary">Se déplacer</button>
-            <button id="mission-attack-btn" class="secondary">Attaquer</button>
-            <button id="mission-charge-btn" class="secondary">Charger</button>
-            <button id="mission-switch-btn" class="secondary">Changer d’arme</button>
-            <button id="mission-reload-btn" class="secondary" title="Action rapide : recharger une arme à feu">Recharger</button>
-            <button id="mission-ranged-btn" class="secondary">Attaquer à distance</button>
-            <button id="mission-second-move-btn" class="secondary" title="Renoncer à l’attaque pour un second mouvement">Second mouvement</button>
-            <button id="mission-end-activation-btn" class="primary">Fin activation</button>
-            <button id="mission-auto-btn" class="secondary" title="Votre équipe joue seule jusqu’à la fin du combat (comme les ennemis)">Combat automatique</button>
-            <button id="mission-test-spells-btn" class="secondary" title="Test : toute l’escouade connaît tous les sorts écrits (niveau 1) pour ce combat">Sorts (test)</button>
-          </div>
-          <div id="mission-spells" class="mission-spells"></div>
           <div class="mission-map-scroll"><div id="mission-map" class="mission-map"></div></div>
+          <div class="mission-zoom" role="group" aria-label="Zoom de la carte">
+            <button id="mission-zoom-in-btn" type="button" title="Zoomer (molette)">+</button>
+            <button id="mission-zoom-fit-btn" type="button" title="Voir toute la carte">⤢</button>
+            <button id="mission-zoom-out-btn" type="button" title="Dézoomer (molette)">−</button>
+          </div>
+          <p class="mission-map-hint">Molette : zoom · glisser : déplacer la carte</p>
           <div id="mission-result" class="mission-result hidden">
             <div class="mission-result-head">
               <strong>Combat terminé · bilan de fin de mission</strong>
@@ -319,10 +318,32 @@
           </div>
         </div>
 
-        <aside class="mission-console-wrap">
-          <h3>Console</h3>
-          <div id="mission-console" class="mission-console"></div>
+        <aside id="mission-console-drawer" class="mission-console-wrap mission-drawer">
+          <button class="mission-drawer-toggle" type="button" data-mission-drawer="console" aria-expanded="true" title="Afficher ou replier la console"><span>Console</span></button>
+          <div class="mission-drawer-body">
+            <h3>Console</h3>
+            <div id="mission-console" class="mission-console"></div>
+          </div>
         </aside>
+      </div>
+
+      <div class="mission-command">
+        <div id="mission-active-card" class="mission-active-card"></div>
+        <div class="mission-command-main">
+          <div class="mission-actions">
+            <button id="mission-move-btn" class="secondary">Se déplacer</button>
+            <button id="mission-attack-btn" class="secondary">Attaquer</button>
+            <button id="mission-charge-btn" class="secondary">Charger</button>
+            <button id="mission-ranged-btn" class="secondary">Attaquer à distance</button>
+            <button id="mission-switch-btn" class="secondary">Changer d’arme</button>
+            <button id="mission-reload-btn" class="secondary" title="Action rapide : recharger une arme à feu">Recharger</button>
+            <button id="mission-second-move-btn" class="secondary" title="Renoncer à l’attaque pour un second mouvement">Second mouvement</button>
+            <button id="mission-end-activation-btn" class="primary">Fin activation</button>
+            <button id="mission-auto-btn" class="secondary" title="Votre équipe joue seule jusqu’à la fin du combat (comme les ennemis)">Combat automatique</button>
+            <button id="mission-test-spells-btn" class="secondary" title="Test : toute l’escouade connaît tous les sorts écrits (niveau 1) pour ce combat">Sorts (test)</button>
+          </div>
+          <div id="mission-spells" class="mission-spells"></div>
+        </div>
       </div>
     </section>
   </main>

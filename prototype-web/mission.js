@@ -1785,6 +1785,8 @@ function missionAiCast(unit){
   }
 }
 
+// Au-delà de 8 sorts connus, la barre de sorts devient un grimoire à onglets (un par école).
+const MISSION_GRIMOIRE_MIN=9;
 function renderMissionSpellBar(u){
   const m=game.mission,magic=missionMagic();
   if(!u||!magic||m.phase!=="player"||m.over) return "";
@@ -1795,7 +1797,7 @@ function renderMissionSpellBar(u){
     +`${u.quickAvailable===false?" disabled":""}><span class="mission-spell-text">Cracher du venin<small>rapide · ${u.venom.min}–${u.venom.max} cases</small></span></button>`:"";
   if(!spells.length) return venom;
   const mana=magic.currentMana(u);
-  return `<span class="mission-mana">Mana ${Math.floor(mana)}/${Math.round(magic.manaMax(u))}</span>`+spells.map(s=>{
+  const button=s=>{
     const cost=magic.manaCost(u,s.code),p=magic.castChance(u,s.code).p,quick=s.action==="rapide";
     const used=quick?u.quickAvailable===false:u.attackAvailable===false;
     const reason=used?(quick?"Action rapide déjà utilisée.":"Action principale déjà utilisée."):mana<cost?"Pas assez de mana.":"";
@@ -1804,7 +1806,16 @@ function renderMissionSpellBar(u){
     return `<button class="secondary mission-spell${m.mode==="spell:"+s.code?" selected":""}" data-spell="${esc(s.code)}" title="${esc(title)}"${reason?" disabled":""}>`
       +`${typeof spellIconHtml==="function"?spellIconHtml(s):""}`
       +`<span class="mission-spell-text">${esc(s.nom)}<small>${quick?"rapide":"principale"} · ${cost} mana · ${Math.round(p)} %</small></span></button>`;
-  }).join("")+venom;
+  };
+  const head=`<span class="mission-mana">Mana ${Math.floor(mana)}/${Math.round(magic.manaMax(u))}</span>`;
+  if(spells.length<MISSION_GRIMOIRE_MIN) return head+spells.map(button).join("")+venom;
+  // Beaucoup de sorts : le grimoire se range par école, un onglet par école (les boutons restent tous dans la page).
+  const school=s=>s.ecole||"Autres";
+  const schools=[...new Set(spells.map(school))];
+  const open=schools.includes(m.spellSchool)?m.spellSchool:school(spells.find(s=>m.mode==="spell:"+s.code)||spells[0]);
+  return head+`<span class="mission-grimoire-tabs">`+schools.map(name=>`<button class="mission-school-tab${name===open?" selected":""}" type="button" data-spell-school="${esc(name)}">`
+      +`${esc(name)}<small>${spells.filter(s=>school(s)===name).length}</small></button>`).join("")+`</span>`
+    +schools.map(name=>`<span class="mission-school${name===open?"":" hidden"}">${spells.filter(s=>school(s)===name).map(button).join("")}</span>`).join("")+venom;
 }
 
 function nearestMissionTarget(unit){
@@ -2120,25 +2131,132 @@ function missionRosterMagic(u){
     +(u.weaponEnchant?" · Arme enflammée":"")+(u.elementalBonus?.froid?" · Armure de feu":"");
 }
 
+function missionHpClass(pct){ return pct<=30?" hp-low":pct<=60?" hp-mid":""; }
+
 function renderMissionRoster(units){
-  return units.filter(u=>!u.vanished).map(u=>`
-    <div class="mission-roster-row ${u.alive?"":"down"}">
+  return units.filter(u=>!u.vanished).map(u=>{
+    const pct=Math.max(0,Math.min(100,Math.round(u.hp/u.pvMax*100)));
+    return `
+    <div class="mission-roster-row ${u.team} ${u.alive?"":"down"}${missionActiveUnit()===u?" active":""}" data-unit-id="${esc(String(u.id))}" title="Centrer la carte sur ${esc(u.character.name)}">
       ${renderAvatar(u.character,{variant:"compact",kind:"portrait"})}
       <div class="mission-roster-copy">
         <strong>${esc(u.character.name)}</strong>
         <span>${u.raised?"Relevé en zombie":u.offMap?"A quitté le combat":(u.summon?"Invocation · ":"")+Math.max(0,u.hp)+"/"+u.pvMax+" PV"+(u.hp<0?" ("+u.hp+")":"")+(u.alive&&u.fleeing?" · En fuite":"")+(u.alive&&u.camouflaged?" · Camouflé":"")+(u.alive&&!game.mission.engine.isLoaded(u,game.mission.engine.activeWeaponItem(u))?" · Arme déchargée":"")}</span>
+        ${u.alive&&!u.offMap?`<i class="mission-roster-hp${missionHpClass(pct)}"><b style="width:${pct}%"></b></i>`:""}
         <small>Init ${Math.round(game.mission.engine.initiative(u))} · Mvt ${game.mission.engine.movementBase(u)}${missionRosterMagic(u)}</small>
       </div>
     </div>
-  `).join("");
+  `;}).join("");
+}
+
+// Ordre d'activation du tour : votre équipe dans l'ordre d'initiative (déjà joués estompés), puis les ennemis.
+function renderMissionInitiative(){
+  const m=game.mission,u=missionActiveUnit();
+  const shown=x=>x.alive&&!x.offMap&&!x.vanished&&!x.raised;
+  const chip=(x,done)=>`<li class="mission-init ${x.team}${x===u?" active":""}${done?" done":""}" data-unit-id="${esc(String(x.id))}" title="${esc(x.character.name)} — initiative ${Math.round(m.engine.initiative(x))}${done?" — a joué":""}">`
+    +`${renderAvatar(x.character,{variant:"compact",kind:"portrait"})}</li>`;
+  const players=m.playerOrder.filter(shown),enemies=m.enemyOrder.filter(shown);
+  return players.map(x=>chip(x,m.phase==="player"&&x.acted)).join("")
+    +(players.length&&enemies.length?`<li class="mission-init-sep" aria-hidden="true">⚔</li>`:"")
+    +enemies.map(x=>chip(x,false)).join("");
+}
+
+// Le mercenaire actif, à gauche de la barre d'actions : portrait, PV, mana, mouvement et actions restantes.
+function renderMissionActiveCard(u){
+  const m=game.mission;
+  if(!u) return m.over?"":`<p class="mission-active-idle">${m.phase==="enemy"?"Les ennemis jouent…":""}</p>`;
+  const e=m.engine,magic=missionMagic(),pct=Math.max(0,Math.min(100,Math.round(u.hp/u.pvMax*100)));
+  const weapon=e.activeWeaponItem(u),offhand=e.isDualWielding(u)?e.activeOffhandItem(u):null;
+  const knows=magic&&magic.knownSpells(u).length;
+  const mana=knows?magic.currentMana(u):0,manaMax=knows?Math.round(magic.manaMax(u)):0;
+  const moveMax=e.movementBase(u)*(u.secondMove?2:1);
+  return `<span class="mission-active-portrait ${u.team}">${renderAvatar(u.character,{variant:"battle",kind:"portrait"})}</span>
+    <div class="mission-active-copy">
+      <strong>${esc(u.character.name)}</strong>
+      <span class="mission-meter hp${missionHpClass(pct)}"><b style="width:${pct}%"></b><em>${Math.max(0,u.hp)} / ${u.pvMax} PV</em></span>
+      ${knows?`<span class="mission-meter mana"><b style="width:${manaMax?Math.round(Math.max(0,mana)/manaMax*100):0}%"></b><em>${Math.floor(mana)} / ${manaMax} mana</em></span>`:""}
+      <small>Mouvement ${u.movementRemaining}/${moveMax} · Set ${u.activeSet} · ${esc(weapon?.name||"Sans arme")}${offhand?" + "+esc(offhand.name):""}</small>
+      <span class="mission-pips"><i class="${u.attackAvailable?"on":""}" title="Action principale${u.attackAvailable?" disponible":" utilisée"}">Principale</i><i class="${u.quickAvailable?"on":""}" title="Action rapide${u.quickAvailable?" disponible":" utilisée"}">Rapide</i></span>
+    </div>`;
+}
+
+// Vue de la carte (zoom et déplacement) : une transformation CSS sur #mission-map, qui garde sa taille réelle.
+// Tant que le joueur n'a ni zoomé ni déplacé la carte, elle tient entière dans l'écran.
+const MISSION_ZOOM={min:0.3,max:2.4,fitMax:1.3,step:1.2};
+const missionView={mission:null,scale:1,x:0,y:0,fitted:true,activeId:null,drag:null,dragged:false};
+
+function missionMapSize(){
+  return {width:Math.ceil(88+Math.sqrt(3)*MISSION_MAP.size*(MISSION_MAP.cols+0.5)),
+    height:Math.ceil(88+1.5*MISSION_MAP.size*(MISSION_MAP.rows-1)+2*MISSION_MAP.size)};
+}
+function missionStageSize(){
+  const stage=$("mission-map").parentElement;
+  return {w:Number(stage?.clientWidth)||0,h:Number(stage?.clientHeight)||0};
+}
+function fitMissionView(){
+  const {width,height}=missionMapSize(),{w,h}=missionStageSize();
+  const scale=Math.min(MISSION_ZOOM.fitMax,w>0?(w-16)/width:1,h>0?(h-16)/height:1);
+  Object.assign(missionView,{scale,x:w>0?(w-width*scale)/2:0,y:h>0?(h-height*scale)/2:0,fitted:true});
+}
+// La carte ne sort jamais entièrement de l'écran : il en reste toujours une bande visible.
+function clampMissionView(){
+  const {width,height}=missionMapSize(),{w,h}=missionStageSize(),s=missionView.scale,keep=140;
+  if(!(w>0&&h>0)) return;
+  missionView.x=Math.min(w-keep,Math.max(keep-width*s,missionView.x));
+  missionView.y=Math.min(h-keep,Math.max(keep-height*s,missionView.y));
+}
+function applyMissionView(){
+  $("mission-map").style.transform=`translate(${Math.round(missionView.x)}px,${Math.round(missionView.y)}px) scale(${missionView.scale})`;
+}
+function zoomMissionView(factor,cx=null,cy=null){
+  const {w,h}=missionStageSize(),s0=missionView.scale;
+  const s=Math.min(MISSION_ZOOM.max,Math.max(MISSION_ZOOM.min,s0*factor));
+  if(cx===null){ cx=w/2; cy=h/2; }
+  missionView.x=cx-(cx-missionView.x)*s/s0;
+  missionView.y=cy-(cy-missionView.y)*s/s0;
+  missionView.scale=s;
+  missionView.fitted=false;
+  clampMissionView();
+  applyMissionView();
+}
+function centerMissionView(unit,onlyIfHidden=false){
+  const {w,h}=missionStageSize();
+  if(!unit||unit.offMap||!(w>0&&h>0)) return;
+  const p=missionHexPixel(unit.q,unit.r),s=missionView.scale,x=missionView.x+p.x*s,y=missionView.y+p.y*s,pad=90;
+  if(onlyIfHidden&&x>pad&&x<w-pad&&y>pad&&y<h-pad) return;
+  missionView.x=w/2-p.x*s;
+  missionView.y=h/2-p.y*s;
+  missionView.fitted=false;
+  clampMissionView();
+}
+// Tiroirs repliables (équipes à gauche, console à droite) : état retenu dans le navigateur.
+const MISSION_DRAWERS_KEY="bw-mission-drawers";
+function missionDrawerState(){
+  let saved=null;
+  try{ saved=JSON.parse(localStorage.getItem(MISSION_DRAWERS_KEY)||"null"); }catch{}
+  const wide=typeof window==="undefined"||window.innerWidth>=1500;
+  return {roster:saved?.roster??true,console:saved?.console??wide};
+}
+function setMissionDrawer(name,open){
+  const state={...missionDrawerState(),[name]:open};
+  try{ localStorage.setItem(MISSION_DRAWERS_KEY,JSON.stringify(state)); }catch{}
+  renderMission();
+}
+function renderMissionDrawers(){
+  const state=missionDrawerState();
+  for(const [name,id] of [["roster","mission-roster-drawer"],["console","mission-console-drawer"]]){
+    const drawer=$(id);
+    if(!drawer) continue;
+    drawer.classList.toggle("collapsed",!state[name]);
+    drawer.querySelector?.(".mission-drawer-toggle")?.setAttribute("aria-expanded",String(state[name]));
+  }
 }
 
 function renderMission(){
   const m=game.mission;
   if(!m||m.autoRunning) return;
   const e=m.engine,u=missionActiveUnit(),targets=targetableMissionCells();
-  const width=Math.ceil(88+Math.sqrt(3)*MISSION_MAP.size*(MISSION_MAP.cols+0.5));
-  const height=Math.ceil(88+1.5*MISSION_MAP.size*(MISSION_MAP.rows-1)+2*MISSION_MAP.size);
+  const {width,height}=missionMapSize();
 
   $("mission-turn").textContent=m.over?(m.winner==="player"?"Victoire":"Défaite"):"Tour "+m.turn+" · "+(m.phase==="player"?"Votre équipe":"Ennemi");
   $("mission-active").textContent=u
@@ -2167,9 +2285,11 @@ function renderMission(){
     cells+=`<button class="${classes.join(" ")}" data-hex-q="${q}" data-hex-r="${r}"${title} style="left:${p.x-MISSION_MAP.size}px;top:${p.y-MISSION_MAP.size}px"></button>`;
   }
 
+  // Pions : portrait rond, anneau de la couleur du camp, barre de PV ; le nom s'affiche au survol et sur l'actif.
+  // Un clic sur un pion vaut un clic sur sa case.
   const tokens=missionUnits().filter(unit=>!unit.offMap&&!unit.raised).map(unit=>{
     const p=missionHexPixel(unit.q,unit.r);
-    const pct=Math.max(0,Math.round(unit.hp/unit.pvMax*100));
+    const pct=Math.max(0,Math.min(100,Math.round(unit.hp/unit.pvMax*100)));
     const classes=["mission-token",unit.team,unit.alive?"alive":"down"];
     if(u===unit) classes.push("active");
     const encircled=unit.alive&&missionEncircled(unit);
@@ -2178,20 +2298,25 @@ function renderMission(){
     if(unit.alive&&unit.camouflaged) classes.push("camouflaged");
     if(unit.summon) classes.push("summoned");
     if(unit.character.undead) classes.push("undead");
+    if(targets.has(missionKey(unit.q,unit.r))&&m.mode!=="move") classes.push(missionSpellMode()?"spell-aim":"target");
     const weapon=e.activeWeaponItem(unit);
-    return `<div class="${classes.join(" ")}" style="left:${p.x-24}px;top:${p.y-24}px" title="${esc(unit.character.name)} — ${Math.max(0,unit.hp)}/${unit.pvMax} PV — ${esc(weapon?.name||"Sans arme")}${unit.alive&&unit.camouflaged?" — camouflé":""}">
-      ${renderAvatar(unit.character,{variant:"battle",kind:"portrait"})}
-      <span class="token-hp"><i style="width:${pct}%"></i></span>
+    return `<div class="${classes.join(" ")}" data-unit-id="${esc(String(unit.id))}" data-hex-q="${unit.q}" data-hex-r="${unit.r}" style="left:${p.x-26}px;top:${p.y-26}px" title="${esc(unit.character.name)} — ${Math.max(0,unit.hp)}/${unit.pvMax} PV — ${esc(weapon?.name||"Sans arme")}${unit.alive&&unit.camouflaged?" — camouflé":""}">
+      <span class="token-ring">${renderAvatar(unit.character,{variant:"battle",kind:"portrait"})}</span>
+      ${unit.alive?`<span class="token-hp${missionHpClass(pct)}"><i style="width:${pct}%"></i></span>`:""}
       <strong>${esc(unit.character.name.split(" ")[0])}</strong>
       <em>${unit.alive&&unit.fleeing?"En fuite":Math.max(0,unit.hp)+"/"+unit.pvMax+" PV"}</em>
     </div>`;
   }).join("");
 
-  // La carte entière tient dans la colonne centrale : réduction si la place manque.
-  const map=$("mission-map"),available=map.parentElement.clientWidth-2;
+  // Tiroirs d'abord : leur largeur fixe la place laissée à la carte.
+  renderMissionDrawers();
+  const map=$("mission-map");
   map.style.width=width+"px";
   map.style.height=height+"px";
-  map.style.zoom=available>0&&available<width?String(available/width):"";
+  if(missionView.mission!==m){ missionView.mission=m; missionView.activeId=null; fitMissionView(); }
+  else if(missionView.fitted) fitMissionView();
+  if(u&&u.id!==missionView.activeId){ missionView.activeId=u.id; if(!missionView.fitted) centerMissionView(u,true); }
+  applyMissionView();
   map.innerHTML=cells+tokens;
 
   const availability=missionActionAvailability();
@@ -2205,6 +2330,8 @@ function renderMission(){
   }
   $("mission-test-spells-btn").disabled=!availability.testSpells;
   $("mission-spells").innerHTML=renderMissionSpellBar(u);
+  $("mission-active-card").innerHTML=renderMissionActiveCard(u);
+  $("mission-initiative").innerHTML=renderMissionInitiative();
 
   $("mission-roster-player").innerHTML=renderMissionRoster(m.playerOrder);
   $("mission-roster-enemy").innerHTML=renderMissionRoster(m.enemyOrder);
@@ -2259,5 +2386,78 @@ function initializeMissionUi(){
   $("mission-map").addEventListener("click",event=>{
     const cell=event.target.closest("[data-hex-q]");
     if(cell) handleMissionHexClick(Number(cell.dataset.hexQ),Number(cell.dataset.hexR));
+  });
+  initializeMissionMapView();
+}
+
+function missionUnitById(id){ return missionUnits().find(unit=>String(unit.id)===String(id))||null; }
+
+function initializeMissionMapView(){
+  const stage=$("mission-map").parentElement;
+  // La place du plateau change (tiroirs, barre de sorts, fenêtre) : une carte encore cadrée se recadre.
+  if(typeof ResizeObserver!=="undefined") new ResizeObserver(()=>{
+    if(!game.mission||!missionView.fitted) return;
+    fitMissionView();
+    applyMissionView();
+  }).observe(stage);
+  stage.addEventListener("wheel",event=>{
+    if(!game.mission) return;
+    event.preventDefault();
+    const box=stage.getBoundingClientRect();
+    zoomMissionView(event.deltaY<0?1.12:1/1.12,event.clientX-box.left,event.clientY-box.top);
+  },{passive:false});
+  // Glisser pour déplacer la carte ; au-delà de 6 px, le clic qui suit ne compte pas sur une case.
+  stage.addEventListener("pointerdown",event=>{
+    if(event.button!==0&&event.button!==1) return;
+    missionView.drag={x:event.clientX,y:event.clientY,vx:missionView.x,vy:missionView.y};
+    missionView.dragged=false;
+  });
+  window.addEventListener("pointermove",event=>{
+    const drag=missionView.drag;
+    if(!drag) return;
+    const dx=event.clientX-drag.x,dy=event.clientY-drag.y;
+    if(!missionView.dragged&&Math.hypot(dx,dy)<6) return;
+    missionView.dragged=true;
+    stage.classList.add("dragging");
+    missionView.x=drag.vx+dx;
+    missionView.y=drag.vy+dy;
+    missionView.fitted=false;
+    clampMissionView();
+    applyMissionView();
+  });
+  const release=()=>{ if(!missionView.drag) return; missionView.drag=null; stage.classList.remove("dragging"); };
+  window.addEventListener("pointerup",release);
+  window.addEventListener("pointercancel",release);
+  stage.addEventListener("click",event=>{
+    if(!missionView.dragged) return;
+    missionView.dragged=false;
+    event.stopPropagation();
+    event.preventDefault();
+  },true);
+
+  $("mission-zoom-in-btn").addEventListener("click",()=>zoomMissionView(MISSION_ZOOM.step));
+  $("mission-zoom-out-btn").addEventListener("click",()=>zoomMissionView(1/MISSION_ZOOM.step));
+  $("mission-zoom-fit-btn").addEventListener("click",()=>{ fitMissionView(); applyMissionView(); });
+  for(const toggle of document.querySelectorAll("[data-mission-drawer]")){
+    toggle.addEventListener("click",()=>{
+      const name=toggle.dataset.missionDrawer;
+      setMissionDrawer(name,!missionDrawerState()[name]);
+    });
+  }
+  // Un portrait (équipes ou ordre d'activation) centre la carte sur ce combattant.
+  const focusUnit=event=>{
+    const row=event.target.closest("[data-unit-id]");
+    const unit=row&&game.mission?missionUnitById(row.dataset.unitId):null;
+    if(!unit||unit.offMap) return;
+    centerMissionView(unit);
+    applyMissionView();
+  };
+  $("mission-roster-drawer").addEventListener("click",focusUnit);
+  $("mission-initiative").addEventListener("click",focusUnit);
+  $("mission-spells").addEventListener("click",event=>{
+    const tab=event.target.closest("[data-spell-school]");
+    if(!tab||!game.mission) return;
+    game.mission.spellSchool=tab.dataset.spellSchool;
+    renderMission();
   });
 }

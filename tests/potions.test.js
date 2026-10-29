@@ -119,4 +119,135 @@ assert.match(renderItemCard({itemType:"potion",name:"Fiole de poison",tier:1}),/
 assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","quartermaster-ui.js"),"utf8"),/\["potion","Potions"\]/);
 assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","reference-data.js"),"utf8"),/potions: "potions\.json"/);
 
-console.log("Potions et fioles : données, génération, stock, échanges libres, valeur, carte — OK");
+// ——— Combat (étape B) : boire ou appliquer sur soi par une action rapide ; la fiole est consommée. ———
+{
+  const {createCombatEngine}=require("../game-core/combat-engine.js");
+  const Progression=require("../game-core/progression.js");
+  const MissionEnd=require("../game-core/mission-end.js");
+  const Magic=require("../game-core/magic.js");
+  const combatReference={...reference,spells:read("spells.json"),summonArchetypes:read("summon-archetypes.json")};
+  // Tirages : force (toujours la même valeur) si posé, sinon une suite fixe.
+  let fseed=7,force=null;
+  Math.random=()=>force!==null?force:((fseed=(fseed*16807)%2147483647)/2147483647);
+  const gen=createGenerator(combatReference,{random:Math.random,nameGenerator:(people,id)=>people+" "+id});
+  const chief=gen.createCaptain({id:1});
+  const element=()=>({textContent:"",innerHTML:"",disabled:false,title:"",style:{},parentElement:{clientWidth:900},
+    classList:{add(){},remove(){},toggle(){}},addEventListener(){},close(){}});
+  const elements={};
+  const $=id=>elements[id]||(elements[id]=element());
+  const game={campaign:null,captain:chief,referenceData:combatReference};
+  const engine=createCombatEngine(combatReference,{onAttack:Progression.recordAttack});
+  const source=fs.readFileSync(path.join(ROOT,"prototype-web","mission.js"),"utf8");
+  const api=new Function("game","$","esc","fmt","renderAvatar","combatEngine","MercenairesProgression","MercenairesMissionEnd","MercenairesMagic",
+    source+"\nreturn {makeMissionUnit,sortMissionInitiative,selectNextMissionPlayer,resetMissionActivation,renderMissionSpellBar,"
+    +"useMissionPotion,missionBeltPotions,missionAiPotion,missionAiCoat,missionMagic,onMissionAttack};")
+    .call(null,game,$,v=>String(v??""),v=>String(Math.round(Number(v)||0)),()=>"",()=>engine,Progression,MissionEnd,Magic);
+  const squad=[2,3].map(id=>gen.createMercenary({id,captain:chief}));
+  const foes=[5,6].map(id=>gen.createMercenary({id,captain:chief}));
+  for(const c of [...squad,...foes]){ c.spells=[]; for(const slot of ["belt_item_1","belt_item_2","belt_item_3","belt_item_4"]) c.equipment.slots[slot]=null; c.items=c.items.filter(i=>i.itemType!=="potion"); }
+  const players=squad.map((c,i)=>api.makeMissionUnit(c,"player",i)),enemies=foes.map((c,i)=>api.makeMissionUnit(c,"enemy",i));
+  game.mission={engine,endRules:MissionEnd.createMissionEndRules({reference:combatReference}),progression:Progression.createProgressionRules({reference:combatReference}),
+    players,enemies,playerOrder:api.sortMissionInitiative(players,engine),enemyOrder:api.sortMissionInitiative(enemies,engine),
+    activeUnit:null,phase:"player",turn:1,mode:null,log:[],over:false,winner:null,aftermath:null};
+  api.selectNextMissionPlayer();
+  const m=game.mission,u=m.activeUnit,c=u.character;
+  const logged=re=>m.log.some(x=>re.test(x.message));
+  const give=(name,slot)=>{ const item={...gen.potionItem(c,potions.find(p=>p.nom===name)),owner:c.id,slot}; c.items.push(item); c.equipment.slots[slot]=item.id; return item; };
+
+  // Potion de soins : +20 % des PV max (arrondi au supérieur), action rapide, consommée.
+  const heal=give("Potion de soins","belt_item_1");
+  give("Potion de soins","belt_item_3");
+  u.hp=10;
+  const bar=api.renderMissionSpellBar(u);
+  assert.match(bar,/data-potion="belt_item_1"[^>]*>.*Potion de soins ×2<small>rapide · \+20 % des PV max<\/small>/,"une ligne par sorte, avec le nombre");
+  assert.equal(api.useMissionPotion(u,"belt_item_1"),true);
+  assert.equal(u.hp,10+Math.ceil(u.pvMax*0.2));
+  assert.equal(u.quickAvailable,false);
+  assert.ok(!c.items.includes(heal)&&c.equipment.slots.belt_item_1===null,"la fiole quitte la ceinture");
+  assert.ok(logged(/boit une potion de soins : \+\d+ PV/));
+  assert.equal(api.useMissionPotion(u,"belt_item_3"),false,"une action rapide par activation");
+  assert.match(api.renderMissionSpellBar(u),/data-potion="belt_item_3"[^>]*disabled/);
+  // Flétri : aucun soin ; PV au maximum : rien à soigner.
+  u.quickAvailable=true;
+  u.withered={turns:2};
+  assert.equal(api.useMissionPotion(u,"belt_item_3"),false);
+  u.withered=null;
+  u.hp=u.pvMax;
+  assert.equal(api.useMissionPotion(u,"belt_item_3"),false);
+
+  // Potion de mana : +20 % du mana max.
+  const magic=api.missionMagic(),max=magic.manaMax(u);
+  give("Potion de mana","belt_item_2");
+  c.mana=0;
+  assert.equal(api.useMissionPotion(u,"belt_item_2"),true);
+  assert.equal(c.mana,Math.min(max,Math.ceil(max*0.2)));
+  assert.ok(logged(/boit une potion de mana : \+\d+ mana/));
+
+  // Fiole de poison : l'arme active est enduite le tour où on l'applique et les deux suivants.
+  u.quickAvailable=true;
+  give("Fiole de poison","belt_item_4");
+  const weapon=engine.activeWeaponItem(u);
+  assert.equal(api.useMissionPotion(u,"belt_item_4"),true);
+  assert.deepEqual(u.weaponPoison,{turns:2,amount:10,itemId:weapon.id,weapon:weapon.name});
+  assert.ok(logged(/enduit son arme \([^)]+\) de poison : 3 tours/));
+  // Chaque coup qui blesse empoisonne : tous les jets à 2 (touche, blesse).
+  const foe=enemies[0];
+  foe.hp=foe.pvMax;
+  force=0.01;
+  const mode=engine.isRangedWeapon(engine.weaponTemplate(weapon))?"ranged":"melee";
+  const strike=engine.resolveAttack(u,foe,{mode,distance:mode==="ranged"?2:1});
+  force=null;
+  assert.equal(strike.wound,true);
+  assert.deepEqual(strike.poison,{turns:3,amount:10,source:"poison_vial"});
+  api.onMissionAttack(u,foe,{},strike);
+  assert.deepEqual([foe.poisoned.code,foe.poisoned.amount,foe.poisoned.turns],["poison_vial",10,3]);
+  // L'autre set (ou une autre arme) n'est pas enduit.
+  const coat=u.weaponPoison;
+  u.weaponPoison={...coat,itemId:"autre"};
+  force=0.01;
+  assert.equal(engine.resolveAttack(u,foe,{mode,distance:mode==="ranged"?2:1}).poison,undefined);
+  force=null;
+  u.weaponPoison=coat;
+  // Au tir aussi (Idan : « oui ») : un archer enduit.
+  const archer=api.makeMissionUnit(gen.createMercenary({id:40,captain:chief}),"player",2);
+  const bow={...gen.potionItem(archer.character,{nom:"Arc",code:"bow"}),itemType:"weapon",name:"Arc",combatFamily:"ranged",tier:1,qualityCode:"standard"};
+  archer.character.items.push(bow);
+  archer.character.equipment.slots.weapon_set_1_main=bow.id;
+  archer.character.equipment.slots.weapon_set_1_off=null;
+  archer.weaponPoison={turns:2,amount:10,itemId:bow.id,weapon:"Arc"};
+  archer.q=foe.q-3;archer.r=foe.r;
+  force=0.01;
+  const shot=engine.resolveAttack(archer,foe,{mode:"ranged",distance:3});
+  force=null;
+  assert.equal(shot.ok,true,shot.reason);
+  assert.equal(shot.poison?.source,"poison_vial","une flèche enduite empoisonne");
+  // Fin : deux activations encore, puis le poison sèche.
+  api.resetMissionActivation(u); assert.equal(u.weaponPoison.turns,1);
+  api.resetMissionActivation(u); assert.equal(u.weaponPoison.turns,0);
+  api.resetMissionActivation(u); assert.equal(u.weaponPoison,null);
+  assert.ok(logged(/Le poison a séché sur l’arme de /));
+
+  // IA et combat automatique : potion de soins sous 30 % des PV ; potion de mana sans mana pour un sort ; fiole avant de frapper.
+  const ai=players[1],ac=ai.character;
+  const aiGive=(name,slot)=>{ const item={...gen.potionItem(ac,potions.find(p=>p.nom===name)),owner:ac.id,slot}; ac.items.push(item); ac.equipment.slots[slot]=item.id; };
+  aiGive("Potion de soins","belt_item_1");aiGive("Potion de mana","belt_item_2");aiGive("Fiole de poison","belt_item_3");
+  ai.quickAvailable=true;
+  ai.hp=Math.floor(ai.pvMax*0.5);
+  api.missionAiPotion(ai);
+  assert.equal(api.missionBeltPotions(ai).length,3,"à 50 % des PV : rien");
+  ai.hp=Math.floor(ai.pvMax*0.2);
+  api.missionAiPotion(ai);
+  assert.equal(ai.quickAvailable,false);
+  assert.ok(!api.missionBeltPotions(ai).some(p=>p.potion.effet==="soin"),"sous 30 % : la potion de soins");
+  ai.quickAvailable=true;
+  ac.spells=[{code:"quick_heal",name:"Soin rapide",school:"Vie",mastery:10}];
+  ac.mana=0;
+  api.missionAiPotion(ai);
+  assert.ok(!api.missionBeltPotions(ai).some(p=>p.potion.effet==="mana"),"plus de mana pour un sort : la potion de mana");
+  ai.quickAvailable=true;
+  api.missionAiCoat(ai);
+  assert.ok(ai.weaponPoison,"au premier contact : l'arme enduite");
+  assert.equal(api.missionBeltPotions(ai).length,0);
+}
+
+console.log("Potions et fioles : données, génération, stock, échanges libres, valeur, carte, combat (soins, mana, arme empoisonnée), IA — OK");

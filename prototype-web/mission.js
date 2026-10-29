@@ -688,7 +688,7 @@ function onMissionAttack(attacker,defender,options,result){
 // Sarbacane (Idan, 2026-10-29) : la fléchette qui blesse empoisonne la cible (doc 12, Poison).
 function poisonMissionTarget(attacker,defender,result){
   if(!result?.poison||!defender.alive) return;
-  defender.poisoned={code:"blowgun",turns:result.poison.turns,amount:result.poison.amount,sourceId:attacker.id};
+  defender.poisoned={code:result.poison.source||"blowgun",turns:result.poison.turns,amount:result.poison.amount,sourceId:attacker.id};
   result.poisonApplied=true;
 }
 
@@ -1624,6 +1624,11 @@ function tickMissionBuffs(unit){
     if(unit.withered.turns>0) unit.withered.turns-=1;
     else{ unit.withered=null; missionLog(name+" n’est plus flétri"+(missionFeminine(unit)?"e":"")+" : les soins agissent de nouveau.","magic"); }
   }
+  // Fiole de poison : l'arme reste enduite le tour où on l'applique et les deux suivants.
+  if(unit.weaponPoison){
+    if(unit.weaponPoison.turns>0) unit.weaponPoison.turns-=1;
+    else{ unit.weaponPoison=null; missionLog("Le poison a séché sur l’arme de "+name+".","magic"); }
+  }
 }
 // Frénésie (Illusion ; Idan : la cible joue seule) : joueur ou ennemi, elle prend une arme de mêlée si l'autre set en a une,
 // puis frappe au contact, charge, ou fonce sur l'ennemi le plus proche ; jamais de tir ni de sort.
@@ -1809,17 +1814,101 @@ function missionAiCast(unit){
   }
 }
 
+// Potions et fioles (Idan, 2026-10-29) : les fioles des 4 poches de ceinture, bues ou appliquées sur soi seulement par une
+// action rapide, puis consommées (elles quittent la ceinture du mercenaire). Effets : data/reference/potions.json.
+const MISSION_POCKETS=["belt_item_1","belt_item_2","belt_item_3","belt_item_4"];
+function missionPotionRow(item){
+  return item?.itemType==="potion"?(game.referenceData?.potions?.rows||[]).find(p=>p.nom===item.name)||null:null;
+}
+function missionBeltPotions(unit){
+  const c=unit?.character,slots=c?.equipment?.slots||{};
+  return MISSION_POCKETS.map(slot=>{
+    const item=(c?.items||[]).find(x=>x.id===slots[slot])||null;
+    return {slot,item,potion:missionPotionRow(item)};
+  }).filter(p=>p.potion);
+}
+function missionPotionEffect(potion){
+  return potion.effet==="soin"?"+"+potion.pourcentage+" % des PV max":potion.effet==="mana"?"+"+potion.pourcentage+" % du mana max"
+    :"arme empoisonnée "+potion.tours+" tours";
+}
+// Pourquoi la fiole ne servirait à rien maintenant (bouton grisé, l'IA s'abstient), ou "".
+function missionPotionBlock(unit,potion){
+  if(!unit?.alive||unit.quickAvailable===false) return "Action rapide déjà utilisée.";
+  if(potion.effet==="soin"&&unit.withered) return "Flétri"+(missionFeminine(unit)?"e":"")+" : aucun soin.";
+  if(potion.effet==="soin"&&unit.hp>=unit.pvMax) return "PV au maximum.";
+  const magic=missionMagic();
+  if(potion.effet==="mana"&&(!magic||magic.currentMana(unit)>=magic.manaMax(unit))) return "Mana au maximum.";
+  if(potion.effet==="poison_arme"&&!game.mission.engine.activeWeaponItem(unit)) return "Aucune arme à enduire.";
+  return "";
+}
+function useMissionPotion(unit,slot){
+  const m=game.mission,entry=missionBeltPotions(unit).find(p=>p.slot===slot);
+  if(!m||!entry||missionPotionBlock(unit,entry.potion)) return false;
+  const {item,potion}=entry,name=unit.character.name,percent=Number(potion.pourcentage)||0;
+  unit.quickAvailable=false;
+  if(potion.effet==="soin"){
+    const healed=healMissionUnit(unit,Math.ceil(unit.pvMax*percent/100-1e-9));
+    missionLog(name+" boit une "+potion.nom.toLowerCase()+" : +"+healed+" PV ("+Math.max(0,unit.hp)+" / "+unit.pvMax+").","magic");
+  }else if(potion.effet==="mana"){
+    const magic=missionMagic(),max=magic.manaMax(unit),before=magic.currentMana(unit);
+    unit.character.mana=Math.round(Math.min(max,before+Math.ceil(max*percent/100-1e-9))*100)/100;
+    const gained=Math.round(unit.character.mana-before);
+    missionLog(name+" boit une "+potion.nom.toLowerCase()+" : +"+gained+" mana ("+Math.floor(unit.character.mana)+" / "+Math.round(max)+").","magic");
+    missionFx(unit,"+"+gained+" mana","heal");
+  }else if(potion.effet==="poison_arme"){
+    const weapon=m.engine.activeWeaponItem(unit),turns=Number(potion.tours)||3;
+    unit.weaponPoison={turns:Math.max(0,turns-1),amount:Number(potion.degats_poison)||0,itemId:weapon.id,weapon:weapon.name};
+    missionLog(name+" enduit son arme ("+weapon.name+") de poison : "+turns+" tours, chaque coup qui blesse empoisonne.","magic");
+    missionFx(unit,"Arme empoisonnée","poison");
+  }
+  // La fiole est consommée : elle quitte la ceinture du mercenaire.
+  unit.character.items=(unit.character.items||[]).filter(x=>x!==item);
+  unit.character.equipment.slots[slot]=null;
+  return true;
+}
+function renderMissionPotionButtons(u){
+  const groups=new Map();
+  for(const p of missionBeltPotions(u)){
+    const group=groups.get(p.potion.code);
+    if(group) group.count+=1; else groups.set(p.potion.code,{...p,count:1});
+  }
+  return [...groups.values()].map(({slot,potion,count})=>{
+    const effect=missionPotionEffect(potion),reason=missionPotionBlock(u,potion);
+    return `<button class="secondary mission-spell mission-potion" data-potion="${esc(slot)}" title="${esc(potion.nom+" — action rapide, sur soi · "+effect+(reason?"\n"+reason:""))}"${reason?" disabled":""}>`
+      +`<span class="mission-spell-text">${esc(potion.nom)}${count>1?" ×"+count:""}<small>rapide · ${effect}</small></span></button>`;
+  }).join("");
+}
+// IA et combat automatique : une potion de soins sous 30 % des PV ; sinon une potion de mana quand le mana ne suffit plus
+// pour aucun sort connu.
+function missionAiPotion(unit){
+  const potions=missionBeltPotions(unit);
+  if(!potions.length||unit.quickAvailable===false) return;
+  const heal=potions.find(p=>p.potion.effet==="soin");
+  if(heal&&unit.hp<unit.pvMax*0.3&&useMissionPotion(unit,heal.slot)) return;
+  const magic=missionMagic(),spells=magic?magic.knownSpells(unit):[];
+  const mana=potions.find(p=>p.potion.effet==="mana");
+  if(mana&&spells.length&&magic.currentMana(unit)<Math.min(...spells.map(s=>magic.manaCost(unit,s.code)))) useMissionPotion(unit,mana.slot);
+}
+// … et la fiole de poison au premier contact, juste avant de frapper.
+function missionAiCoat(unit){
+  if(unit.weaponPoison||unit.quickAvailable===false) return;
+  const vial=missionBeltPotions(unit).find(p=>p.potion.effet==="poison_arme");
+  if(vial) useMissionPotion(unit,vial.slot);
+}
+
 // Au-delà de 8 sorts connus, la barre de sorts devient un grimoire à onglets (un par école).
 const MISSION_GRIMOIRE_MIN=9;
 function renderMissionSpellBar(u){
   const m=game.mission,magic=missionMagic();
-  if(!u||!magic||m.phase!=="player"||m.over) return "";
+  if(!u||m.phase!=="player"||m.over) return "";
+  if(!magic) return renderMissionPotionButtons(u);
   const spells=magic.knownSpells(u);
   // Crachat de venin reçu : un bouton de tir, même sans sort connu.
   const venom=u.venom?`<button class="secondary mission-spell${m.mode==="venom"?" selected":""}" data-venom="1" title="${esc("Cracher du venin — action rapide · "
     +u.venom.min+" à "+u.venom.max+" cases\nDégâts de poison ; la cible blessée est empoisonnée."+(u.quickAvailable===false?"\nAction rapide déjà utilisée.":""))}"`
     +`${u.quickAvailable===false?" disabled":""}><span class="mission-spell-text">Cracher du venin<small>rapide · ${u.venom.min}–${u.venom.max} cases</small></span></button>`:"";
-  if(!spells.length) return venom;
+  const potions=renderMissionPotionButtons(u);
+  if(!spells.length) return venom+potions;
   const mana=magic.currentMana(u);
   const button=s=>{
     const cost=magic.manaCost(u,s.code),p=magic.castChance(u,s.code).p,quick=s.action==="rapide";
@@ -1832,14 +1921,14 @@ function renderMissionSpellBar(u){
       +`<span class="mission-spell-text">${esc(s.nom)}<small>${quick?"rapide":"principale"} · ${cost} mana · ${Math.round(p)} %</small></span></button>`;
   };
   const head=`<span class="mission-mana">Mana ${Math.floor(mana)}/${Math.round(magic.manaMax(u))}</span>`;
-  if(spells.length<MISSION_GRIMOIRE_MIN) return head+spells.map(button).join("")+venom;
+  if(spells.length<MISSION_GRIMOIRE_MIN) return head+spells.map(button).join("")+venom+potions;
   // Beaucoup de sorts : le grimoire se range par école, un onglet par école (les boutons restent tous dans la page).
   const school=s=>s.ecole||"Autres";
   const schools=[...new Set(spells.map(school))];
   const open=schools.includes(m.spellSchool)?m.spellSchool:school(spells.find(s=>m.mode==="spell:"+s.code)||spells[0]);
   return head+`<span class="mission-grimoire-tabs">`+schools.map(name=>`<button class="mission-school-tab${name===open?" selected":""}" type="button" data-spell-school="${esc(name)}">`
       +`${esc(name)}<small>${spells.filter(s=>school(s)===name).length}</small></button>`).join("")+`</span>`
-    +schools.map(name=>`<span class="mission-school${name===open?"":" hidden"}">${spells.filter(s=>school(s)===name).map(button).join("")}</span>`).join("")+venom;
+    +schools.map(name=>`<span class="mission-school${name===open?"":" hidden"}">${spells.filter(s=>school(s)===name).map(button).join("")}</span>`).join("")+venom+potions;
 }
 
 function nearestMissionTarget(unit){
@@ -1992,6 +2081,7 @@ function enemyMissionActivation(unit){
   if(unit.fleeing&&resolveMissionFleeingActivation(unit)) return;
   if(!unit.alive||game.mission.over) return;
   if(unit.frenzy){ frenzyMissionActivation(unit); return; }
+  missionAiPotion(unit);
   missionAiCast(unit);
   if(!unit.alive||game.mission.over||unit.attackAvailable===false) return;
   let target=nearestMissionTarget(unit);
@@ -2004,10 +2094,12 @@ function enemyMissionActivation(unit){
   let distance=e.axialDistance(unit,target);
 
   if(missionUsableHands(unit,target).length){
+    missionAiCoat(unit);
     performMissionAttack(unit,target,mode,distance);
     return;
   }
 
+  if(mode==="melee"&&missionChargeIfClear(unit,target)) missionAiCoat(unit);
   if(mode==="melee"&&enemyTryCharge(unit,target)) return;
 
   enemyMoveToward(unit,target);
@@ -2022,6 +2114,7 @@ function enemyMissionActivation(unit){
   distance=e.axialDistance(unit,target);
 
   if(missionUsableHands(unit,target).length){
+    missionAiCoat(unit);
     performMissionAttack(unit,target,mode,distance);
   }
 }
@@ -2534,7 +2627,7 @@ function renderMissionHoverCard(q,r){
     const weapon=e.activeWeaponItem(unit);
     const up=unit.alive;
     const tags=[unit.summon&&"Invocation",unit.character.undead&&"Mort-vivant",up&&unit.camouflaged&&"Camouflé",up&&unit.fleeing&&"En fuite",
-      up&&missionEncircled(unit)&&"Encerclé",up&&unit.poisoned&&"Empoisonné",up&&unit.prone&&"Au sol",!up&&"Hors combat"].filter(Boolean);
+      up&&missionEncircled(unit)&&"Encerclé",up&&unit.poisoned&&"Empoisonné",up&&unit.weaponPoison&&"Arme empoisonnée",up&&unit.prone&&"Au sol",!up&&"Hors combat"].filter(Boolean);
     html+=`<strong>${esc(unit.character.name)}</strong><span class="hc-sub">${Math.max(0,unit.hp)} / ${unit.pvMax} PV · ${esc(weapon?.name||"Sans arme")}</span>`
       +(tags.length?`<span class="hc-tags">${tags.join(" · ")}</span>`:"");
     for(const row of missionAttackPreview(u,unit)){
@@ -2629,6 +2722,11 @@ function initializeMissionUi(){
   $("mission-auto-btn").addEventListener("click",autoResolveMission);
   $("mission-test-spells-btn").addEventListener("click",teachMissionTestSpells);
   $("mission-spells").addEventListener("click",event=>{
+    const potion=event.target.closest("[data-potion]");
+    if(potion){
+      if(!potion.disabled&&useMissionPotion(missionActiveUnit(),potion.dataset.potion)) renderMission();
+      return;
+    }
     const venom=event.target.closest("[data-venom]");
     if(venom){ if(!venom.disabled) setMissionMode(game.mission?.mode==="venom"?null:"venom"); return; }
     const button=event.target.closest("[data-spell]");

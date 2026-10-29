@@ -214,6 +214,9 @@ Trois consommables (`data/reference/potions.json`), rangés dans les **4 emplace
 - **Distribution libre** : à l’Intendance ou sur la fiche, une fiole se donne ou se reprend sans jet, sans affinité, sans limite par jour et sans entrer dans l’historique (ce sont les consommables de la compagnie). « Donner à… » la range dans la première poche libre.
 - **Génération** : **1D6 de chaque sorte** au stock de départ (doc 11 §16, « comme les autres objets ») ; **5 %** de chance qu’une recrue arrive avec une fiole d’une sorte tirée au hasard (`potion_chance`), dans la première poche.
 - **Valeur cachée** (Idan : « je te laisse faire ») : `prix_base` 25 PO (soins), 25 PO (mana), 20 PO (poison) ; sans tier ni qualité, la valeur est le prix de base.
+- **Écran de combat** : un bouton par sorte dans la barre des sorts (« Potion de soins ×2 »), grisé quand l'action rapide est prise ou que la fiole ne servirait à rien (PV ou mana au maximum, flétri). Un chiffre saute au-dessus du pion ; la fiche de survol montre « Arme empoisonnée ».
+- **Combat automatique et IA** : une potion de soins sous 30 % des PV ; une potion de mana quand le mana ne suffit plus pour aucun sort connu ; la fiole de poison au premier contact, juste avant de frapper. Les ennemis n'en ont pas pour l'instant.
+- **XP** : les PV rendus par la potion de soins comptent pour la Constitution, comme les autres soins (doc 08).
 - **Icônes** : à venir (Idan) ; en attendant, le picto de poche de ceinture. Dépôt : `assets-src/Potions/<code>.jpg`.
 
 ### Bâtons (Idan, 2026-10-29)

@@ -246,9 +246,21 @@
     {
       "source": "Créature invoquée (summon-archetypes.json, code)",
       "key": "creature"
+    },
+    {
+      "source": "Créatures invoquées : nombre de dés (1D6 loups, 1D3 ours ou crocodiles ; vide = une seule)",
+      "key": "invocation_nb_des"
+    },
+    {
+      "source": "Créatures invoquées : faces du dé",
+      "key": "invocation_de"
+    },
+    {
+      "source": "Créatures invoquées : +1 par tranche de Maîtrise (loups : 50)",
+      "key": "invocation_pas_maitrise"
     }
   ],
-  "row_count": 49,
+  "row_count": 55,
   "rows": [
     {
       "nom": "Soin rapide",
@@ -274,7 +286,10 @@
       "cadre": "spells/vie/cadre.webp",
       "description": "Restaure des PV à un allié ou au lanceur, à portée et en ligne de vue. Action rapide. Le mana est dépensé même si le sort échoue.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Soin profond",
@@ -300,7 +315,10 @@
       "cadre": "spells/vie/cadre.webp",
       "description": "Gros soin sur un allié ou le lanceur, au contact au début (la portée monte avec la maîtrise). Action principale du tour : près de trois fois Soin rapide pour deux fois plus de mana.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Régénération",
@@ -329,7 +347,10 @@
       "cadre": "spells/vie/cadre.webp",
       "description": "Soigne la cible au début de chacune de ses activations, pendant plusieurs tours. Action principale. Ne se cumule pas : la relancer remplace la précédente.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Soin de masse",
@@ -357,7 +378,10 @@
       "cadre": "spells/vie/cadre.webp",
       "description": "Soigne tout le monde dans un cercle centré sur une case à portée : alliés, ennemis et le lanceur s'il s'y trouve. Un seul jet de dé pour tous. Le rayon grandit avec la maîtrise. Action principale.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Restitution",
@@ -383,7 +407,10 @@
       "cadre": "spells/vie/cadre.webp",
       "description": "Attaque qui ne fonctionne que sur les morts-vivants : elle ignore armure, résistances et blocage. Action principale. En attente des morts-vivants.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Purge",
@@ -405,7 +432,10 @@
       "cadre": "spells/vie/cadre.webp",
       "description": "Élimine tout le poison d'un allié ou du lanceur. Action rapide. Pas de coup critique : le poison part ou ne part pas. En attente du poison.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Trait de feu",
@@ -431,7 +461,10 @@
       "toucher": "distance",
       "description": "Un trait de feu sur une cible, comme une flèche : jet de toucher contre l'Esquive, la distance et la couverture ; un trait raté peut toucher quelqu'un dans la ligne de tir. Dégâts de feu, réduits ou augmentés par la protection contre le feu (résistance et armure). Action principale.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Boule de feu",
@@ -465,7 +498,10 @@
       "deviation_max": 3,
       "description": "Explose sur une zone : ne s'évite pas, mais peut dévier jusqu'à 3 cases de la case visée. Dégâts de feu dégressifs du centre vers le bord ; touche tout le monde dans la zone, alliés et lanceur compris. Action principale.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Anneau de feu",
@@ -490,7 +526,10 @@
       "zone_anneau_min": 1,
       "description": "Projection de feu sur les deux cases autour du lanceur : tous ceux qui s'y trouvent, alliés compris, subissent les mêmes dégâts de feu ; le lanceur est épargné. Ne s'évite pas. Action principale.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Arme enflammée",
@@ -518,7 +557,10 @@
       "element": "feu",
       "description": "Enflamme l'arme du lanceur ou d'un compagnon : chaque coup qui touche ajoute des dégâts de feu, même si la lame ne blesse pas, pendant plusieurs tours. Action rapide.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Armure de feu",
@@ -544,7 +586,10 @@
       "bonus_pas_maitrise": 5,
       "description": "Augmente grandement la protection contre le froid du lanceur ou d'un allié pendant plusieurs tours. Action rapide.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Flaque de magma",
@@ -566,7 +611,10 @@
       "difficulte": 50,
       "description": "Une case vide devient infranchissable pendant plusieurs tours : personne ne peut y passer ni s'y arrêter. De quoi bloquer un passage. Action rapide.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Brouillard",
@@ -589,7 +637,10 @@
       "zone_longueur_base": 5,
       "description": "Un rideau de brouillard de 5 cases, en travers de la direction du lanceur, pendant 3 tours : personne ne tire ni ne lance de sort à travers, depuis ou vers une case de brouillard. Le corps à corps et les déplacements ne changent pas. Action principale.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Eau guérissante",
@@ -613,7 +664,10 @@
       "difficulte": 30,
       "description": "Restaure des PV à un allié ou au lanceur, à portée et en ligne de vue ; moins puissant que Soin rapide (école de la Vie). Action rapide.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Flèche de glace",
@@ -639,7 +693,10 @@
       "toucher": "distance",
       "description": "Une flèche de glace sur une cible, comme une flèche : jet de toucher contre l'Esquive, la distance et la couverture ; une flèche ratée peut toucher quelqu'un dans la ligne de tir. Dégâts de froid, réduits ou augmentés par la protection contre le froid (résistance et armure). Action principale.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Tsunami",
@@ -667,7 +724,10 @@
       "zone_longueur_max": 5,
       "description": "Une vague part de la case voisine choisie et file en ligne droite sur 3 à 5 cases : tous ceux qui s'y trouvent, alliés compris, subissent les mêmes dégâts de froid. Ne s'évite pas. Action principale.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Armure de froid",
@@ -693,7 +753,10 @@
       "bonus_pas_maitrise": 5,
       "description": "Augmente grandement la protection contre le feu du lanceur ou d'un allié pendant plusieurs tours. Action rapide.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Gel",
@@ -721,7 +784,10 @@
       "caracteristiques": "Vitesse, Dextérité",
       "description": "Gèle un ennemi proche : sa Vitesse et sa Dextérité baissent pendant 1 tour (2 pour un expert), d'autant moins qu'il est protégé du froid. Le malus compte tout de suite. Action rapide.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Arme de glace",
@@ -749,7 +815,10 @@
       "element": "froid",
       "description": "Couvre de givre l'arme du lanceur ou d'un compagnon : chaque coup qui touche ajoute des dégâts de froid, même si la lame ne blesse pas, pendant plusieurs tours. Action rapide.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "6e sens",
@@ -777,7 +846,10 @@
       "caracteristiques": "Perception, Dextérité",
       "description": "Aiguise les sens d'un allié ou du lanceur : Perception et Dextérité augmentent d'un pourcentage de leur valeur de base, pendant 1 tour (2 pour un maître). Action rapide.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Force de titan",
@@ -805,7 +877,10 @@
       "caracteristiques": "Force",
       "description": "La Force d'un allié ou du lanceur augmente d'un pourcentage de sa valeur de base, pendant 1 tour (2 pour un maître). Action rapide.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Vitesse du guépard",
@@ -833,7 +908,10 @@
       "caracteristiques": "Vitesse",
       "description": "La Vitesse d'un allié ou du lanceur augmente d'un pourcentage de sa valeur de base (mouvement, initiative, toucher), pendant 1 tour (2 pour un maître). Action rapide.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Peau de pierre",
@@ -861,7 +939,10 @@
       "caracteristiques": "Résistance physique",
       "description": "La peau d'un allié ou du lanceur durcit : des points de Résistance physique en plus (moins de dégâts physiques, dans la limite de 50), pendant 1 tour (2 pour un maître). Action rapide.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Crachat de venin",
@@ -892,7 +973,10 @@
       "tir_portee_max": 10,
       "description": "Pendant ses prochaines activations (1, ou 2 pour un maître), un allié ou le lanceur peut cracher du venin par une action rapide, comme un tir de sarbacane (2 à 10 cases) : dégâts de poison, et la cible blessée est empoisonnée pendant 3 tours. Action rapide.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Cautérisation",
@@ -916,7 +1000,10 @@
       "difficulte": 30,
       "description": "Referme les plaies d'un allié ou du lanceur, à portée et en ligne de vue ; moins puissant que Soin rapide (école de la Vie). Action rapide.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Décharge électrique",
@@ -940,7 +1027,10 @@
       "element": "foudre",
       "description": "Une décharge au contact : de gros dégâts de foudre à un ennemi voisin, sans jet de toucher. L'armure de métal conduit la foudre. Action principale.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Éclair",
@@ -966,7 +1056,10 @@
       "toucher": "distance",
       "description": "Un éclair sur une cible, comme une flèche : jet de toucher contre l'Esquive, la distance et la couverture ; un éclair raté peut toucher quelqu'un dans la ligne de tir. Dégâts de foudre, réduits ou augmentés par la protection contre la foudre (résistance et armure). Action principale.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Arme électrique",
@@ -994,7 +1087,10 @@
       "element": "foudre",
       "description": "Charge d'électricité l'arme du lanceur ou d'un compagnon : chaque coup qui touche ajoute des dégâts de foudre, même si la lame ne blesse pas, pendant plusieurs tours. Action rapide.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Boule d'éclairs",
@@ -1023,7 +1119,10 @@
       "rebond_perte": 0.2,
       "description": "Frappe un ennemi puis rebondit quatre fois sur le personnage le plus proche pas encore touché (à 3 cases au plus), alliés et lanceur compris, en faisant de moins en moins de dégâts de foudre (100, 80, 60, 40, 20 %). Ne s'évite pas. Action principale.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Foudre",
@@ -1049,7 +1148,10 @@
       "element": "foudre",
       "description": "La foudre tombe du ciel sur un ennemi à portée, même hors de vue (à travers le brouillard) : dégâts de foudre, sans jet de toucher. Action principale.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Célérité",
@@ -1073,7 +1175,10 @@
       "caracteristiques": "Vitesse",
       "description": "Le lanceur, et lui seul, gagne un pourcentage de sa Vitesse de base pendant 2 tours : cette activation et la suivante. Se cumule avec Vitesse du guépard. Action rapide.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Attraction",
@@ -1104,7 +1209,10 @@
       "choc_de": 4,
       "description": "Saisit un ennemi de loin et le tire vers le lanceur de quelques cases : dégâts contondants (l'armure compte), puis un choc s'il heurte quelqu'un ou quelque chose en chemin. Pas d'attaque d'opportunité. Action principale.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Projection",
@@ -1136,7 +1244,10 @@
       "choc_de": 4,
       "description": "Repousse un ennemi de quelques cases dans l'axe du lanceur : dégâts contondants (l'armure compte), puis un choc s'il heurte quelqu'un, un obstacle ou le bord du terrain. Pas d'attaque d'opportunité. Action principale.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Déplacement",
@@ -1158,7 +1269,10 @@
       "deplacement_base": 1,
       "description": "Déplace un allié ou un ennemi d'une case, sur une case libre voisine choisie par le lanceur. Pas d'attaque d'opportunité. Action rapide.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Entrechoc",
@@ -1185,7 +1299,10 @@
       "puissance": 55,
       "description": "Projette l'un contre l'autre deux ennemis côte à côte : tous les deux subissent de gros dégâts contondants (l'armure compte). Action principale.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Champ de protection",
@@ -1207,7 +1324,10 @@
       "bonus_base": 50,
       "description": "Pendant 4 tours, chaque projectile tiré sur le lanceur ou un allié (flèches, carreaux, pierres, balles, et les sorts qui volent comme une flèche) a 50 % de chances d'être dévié. Action principale.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Lancer de pierre",
@@ -1234,7 +1354,10 @@
       "toucher": "distance",
       "description": "Lance une pierre comme une fronde (2 à 14 cases) : jet de toucher contre l'Esquive et la distance, puis dégâts contondants (l'armure compte). Action rapide.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Peur",
@@ -1258,7 +1381,10 @@
       "difficulte": 70,
       "description": "Une vague de terreur sur une zone : chaque ennemi qui s'y trouve fait un test de Courage contre la Maîtrise et la Volonté du lanceur ; s'il le rate, il prend la fuite. Action principale.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Soutien illusoire",
@@ -1284,7 +1410,10 @@
       "caracteristiques": "Courage",
       "description": "Augmente grandement le Courage d'un allié ou du lanceur, de loin, pendant 2 tours ; aide aussi un fuyard à reprendre ses esprits. Action rapide.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Courage de masse",
@@ -1316,7 +1445,10 @@
       "caracteristiques": "Courage",
       "description": "Tous les alliés d'une zone, lanceur compris, gagnent du Courage pendant 2 à 3 tours. Action principale.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Avancée cachée",
@@ -1348,7 +1480,10 @@
       "caracteristiques": "Discrétion",
       "description": "Une illusion couvre les alliés d'une zone, lanceur compris : leur Discrétion augmente massivement pendant 2 à 3 tours. Action principale.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Choc psychique",
@@ -1375,7 +1510,10 @@
       "toucher": "distance",
       "description": "Un trait de force mentale, comme une flèche : jet de toucher, puis des dégâts multipliés par la Volonté du lanceur et divisés par celle de la cible (de × 0,5 à × 2) ; ni l'armure ni les résistances ne comptent. Action principale.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Frénésie",
@@ -1400,7 +1538,10 @@
       "caracteristiques": "Force",
       "description": "Un allié, un ennemi ou le lanceur entre en frénésie pendant ses 2 prochaines activations : il joue seul, fonce sur l'ennemi le plus proche (déplacement, charge, mêlée), gagne 10 % de Force et ne connaît plus la peur. Action rapide.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Résurrection",
@@ -1463,7 +1604,10 @@
       "cadre": null,
       "description": "Relève un combattant mort, allié ou ennemi, sur une case voisine : il devient un zombie de votre camp, avec 10 à 100 % de ses caractéristiques, compétences et PV selon la Maîtrise et le Charisme du nécromancien ; il garde son arme et son armure. Chaque tour, un test de Charisme le maintient, et il coûte du mana ; sinon, il tombe en poussière. Un allié relevé ne survit pas au combat. Action principale.",
       "entretien_mana": 5,
-      "creature": "zombie"
+      "creature": "zombie",
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Invocation de spectre",
@@ -1526,7 +1670,10 @@
       "cadre": null,
       "description": "Invoque un spectre sur une case libre voisine : rapide, immunisé aux dégâts physiques, il frappe au contact avec des dégâts psychiques. Chaque tour, un test de Charisme le maintient, et il coûte du mana ; sinon, il disparaît. Action principale.",
       "entretien_mana": 5,
-      "creature": "specter"
+      "creature": "specter",
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Drain de vie",
@@ -1589,7 +1736,10 @@
       "cadre": null,
       "description": "Le nécromancien, et lui seul, récupère en PV la moitié des PV que ses coups d'arme au corps à corps retirent, pendant 2 à 3 tours : cette activation et les suivantes. Action rapide.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Flèche de mort",
@@ -1652,7 +1802,10 @@
       "cadre": null,
       "description": "Un trait de mort, comme une flèche : jet de toucher, puis des dégâts nécrotiques qui traversent l'armure et les résistances. Sans effet sur les morts-vivants. Action principale.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Nécrose",
@@ -1715,7 +1868,10 @@
       "cadre": null,
       "description": "Au contact, sans jet de toucher : de gros dégâts nécrotiques à un ennemi voisin, qui traversent l'armure et les résistances. Sans effet sur les morts-vivants. Action principale.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
     },
     {
       "nom": "Flétrissement",
@@ -1778,7 +1934,146 @@
       "cadre": null,
       "description": "Pendant 3 à 4 tours, la cible ne peut plus être soignée ni récupérer de PV : sorts de soin, Régénération, Drain de vie. Sans jet de toucher. Action principale.",
       "entretien_mana": null,
-      "creature": null
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
+    },
+    {
+      "nom": "Corbeau",
+      "code": "summon_raven",
+      "ecole": "Invocation",
+      "palier": "Novice",
+      "action": "principale",
+      "cible": "case_vide",
+      "ligne_de_vue": true,
+      "effet": "invocation",
+      "effet_nb_des": 0,
+      "portee_base": 1,
+      "critique": false,
+      "mana_base": 10,
+      "mana_diviseur_maitrise": 300,
+      "difficulte": 30,
+      "description": "Invoque un corbeau sur une case libre voisine : un éclaireur rapide et très discret, à la Perception aiguë ; il attaque, mais il est très faible. Quand il repère un ennemi camouflé, toute l'armée le voit. Chaque tour, un test de Charisme le garde, et il coûte du mana. Action principale.",
+      "entretien_mana": 2,
+      "creature": "raven",
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
+    },
+    {
+      "nom": "Bourbier",
+      "code": "quagmire",
+      "ecole": "Invocation",
+      "palier": "Novice",
+      "action": "principale",
+      "cible": "case",
+      "ligne_de_vue": true,
+      "effet": "bourbier",
+      "effet_nb_des": 0,
+      "portee_base": 6,
+      "portee_pas_maitrise": 25,
+      "duree_base": 2,
+      "duree_pas_maitrise": 50,
+      "duree_max": 3,
+      "critique": false,
+      "mana_base": 10,
+      "mana_diviseur_maitrise": 300,
+      "difficulte": 30,
+      "portee_max": 12,
+      "description": "Une case devient un bourbier pendant 2 à 3 tours : qui s'y trouve ou y entre, allié ou ennemi, ne peut plus se déplacer ; il peut encore attaquer ou lancer un sort. Action principale.",
+      "entretien_mana": null,
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
+    },
+    {
+      "nom": "Transposition",
+      "code": "transposition",
+      "ecole": "Invocation",
+      "palier": "Novice",
+      "action": "rapide",
+      "cible": "invocation",
+      "ligne_de_vue": false,
+      "effet": "transposition",
+      "effet_nb_des": 0,
+      "critique": false,
+      "mana_base": 8,
+      "mana_diviseur_maitrise": 300,
+      "difficulte": 30,
+      "description": "Le lanceur échange sa place avec une de ses invocations, n'importe où sur la carte. Action rapide.",
+      "entretien_mana": null,
+      "creature": null,
+      "invocation_nb_des": null,
+      "invocation_de": null,
+      "invocation_pas_maitrise": null
+    },
+    {
+      "nom": "Invocation de loups",
+      "code": "summon_wolves",
+      "ecole": "Invocation",
+      "palier": "Adepte",
+      "action": "principale",
+      "cible": "case_vide",
+      "ligne_de_vue": true,
+      "effet": "invocation",
+      "effet_nb_des": 0,
+      "portee_base": 1,
+      "critique": false,
+      "mana_base": 25,
+      "mana_diviseur_maitrise": 300,
+      "difficulte": 50,
+      "description": "Invoque une meute de 1D6 loups, et un de plus par tranche de 50 de Maîtrise, autour d'une case libre voisine : rapides, pas très forts. La meute compte pour une seule invocation : un test de Charisme et un entretien chaque tour ; ratés, toute la meute disparaît. Action principale.",
+      "entretien_mana": 5,
+      "creature": "wolf",
+      "invocation_nb_des": 1,
+      "invocation_de": 6,
+      "invocation_pas_maitrise": 50
+    },
+    {
+      "nom": "Invocation d'ours",
+      "code": "summon_bears",
+      "ecole": "Invocation",
+      "palier": "Expert",
+      "action": "principale",
+      "cible": "case_vide",
+      "ligne_de_vue": true,
+      "effet": "invocation",
+      "effet_nb_des": 0,
+      "portee_base": 1,
+      "critique": false,
+      "mana_base": 30,
+      "mana_diviseur_maitrise": 300,
+      "difficulte": 70,
+      "description": "Invoque 1D3 ours autour d'une case libre voisine : lents, mais résistants et forts. Un test de Charisme et un entretien chaque tour pour le groupe. Action principale.",
+      "entretien_mana": 6,
+      "creature": "bear",
+      "invocation_nb_des": 1,
+      "invocation_de": 3,
+      "invocation_pas_maitrise": null
+    },
+    {
+      "nom": "Invocation de crocodiles",
+      "code": "summon_crocodiles",
+      "ecole": "Invocation",
+      "palier": "Expert",
+      "action": "principale",
+      "cible": "case_vide",
+      "ligne_de_vue": true,
+      "effet": "invocation",
+      "effet_nb_des": 0,
+      "portee_base": 1,
+      "critique": false,
+      "mana_base": 30,
+      "mana_diviseur_maitrise": 300,
+      "difficulte": 70,
+      "description": "Invoque 1D3 crocodiles autour d'une case libre voisine : très lents, très discrets, de très gros dégâts. Un test de Charisme et un entretien chaque tour pour le groupe. Action principale.",
+      "entretien_mana": 6,
+      "creature": "crocodile",
+      "invocation_nb_des": 1,
+      "invocation_de": 3,
+      "invocation_pas_maitrise": null
     }
   ]
 }

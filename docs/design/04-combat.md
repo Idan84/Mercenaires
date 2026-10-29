@@ -182,8 +182,9 @@ Tirer sur une cible distante alors qu'un ennemi est adjacent reste autorisé, ma
 
 ## Invocations et morts-vivants (Idan, 2026-10-28)
 
-- Les **invocations** (zombie, spectre ; doc 12, Nécromancie) jouent dans le camp du mage, avec leur propre activation dans l'ordre d'initiative, dès le tour suivant leur arrivée. Au début de chaque tour, le mage les garde (test de Charisme, puis mana) ; elles disparaissent quand il tombe. Elles ne laissent pas de corps et ne passent pas le bilan de fin de mission.
-- Un **mort-vivant** ne fait jamais de test de Courage (comme en frénésie).
+- Les **invocations** (zombie, spectre ; corbeau, loups, ours, crocodiles ; doc 12, Nécromancie et Invocation) jouent dans le camp du mage, avec leur propre activation dans l'ordre d'initiative, dès le tour suivant leur arrivée. Au début de chaque tour, le mage les garde (test de Charisme, puis mana) ; elles disparaissent quand il tombe. Elles ne laissent pas de corps et ne passent pas le bilan de fin de mission.
+- Un **mort-vivant** ne fait jamais de test de Courage (comme en frénésie) ; les créatures de l'Invocation, si : elles peuvent fuir.
+- **Bourbier** (Invocation) : une case où l'on entre mais d'où l'on ne sort plus, tant qu'il dure ; on ne la traverse pas. On y attaque et on y lance des sorts.
 - **Immunité aux dégâts physiques** (spectre) : un coup d'arme ou un tir qui touche le traverse sans dégâts ; un sort contondant aussi.
 - **Toucher spectral** : dégâts psychiques au contact, sans l'étape Blesser, ni armure ni résistance : 10 × 1D6 × Volonté de l'attaquant / Volonté de la cible (de × 0,5 à × 2).
 

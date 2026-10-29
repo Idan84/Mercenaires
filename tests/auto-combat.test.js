@@ -39,7 +39,9 @@ const engine=createCombatEngine(reference,{onAttack:Progression.recordAttack});
 const source=fs.readFileSync(path.join(ROOT,"prototype-web","mission.js"),"utf8");
 const api=new Function("game","$","esc","fmt","renderAvatar","combatEngine","MercenairesProgression","MercenairesMissionEnd",
   source+"\nlet renders=0;const draw=renderMission;renderMission=function(){ if(!game.mission?.autoRunning) renders++; return draw(); };"
-  +"\nreturn {makeMissionUnit,sortMissionInitiative,selectNextMissionPlayer,autoResolveMission,missionActionAvailability,renders:()=>renders};")
+  // Compte les débuts d'activation (poison, régénération, effets à durée) de chaque combattant.
+  +"\nconst resets=new Map();const reset=resetMissionActivation;resetMissionActivation=function(u){ resets.set(u,(resets.get(u)||0)+1); return reset(u); };"
+  +"\nreturn {makeMissionUnit,sortMissionInitiative,selectNextMissionPlayer,autoResolveMission,missionActionAvailability,renders:()=>renders,resets};")
   .call(null,game,$,v=>String(v??""),v=>String(Math.round(Number(v)||0)),()=>"",()=>engine,Progression,MissionEnd);
 
 // Trois contre trois, comme la Mission Test : votre équipe joue la première.
@@ -50,6 +52,10 @@ const enemies=foes.map((c,i)=>api.makeMissionUnit(c,"enemy",i));
 game.mission={engine,endRules:MissionEnd.createMissionEndRules({reference}),progression:Progression.createProgressionRules({reference}),
   players,enemies,playerOrder:api.sortMissionInitiative(players,engine),enemyOrder:api.sortMissionInitiative(enemies,engine),
   activeUnit:null,phase:"player",turn:1,mode:null,log:[],over:false,winner:null,aftermath:null};
+// Activations jouées, par combattant (les ennemis passent par leur tour, vos mercenaires par selectNextMissionPlayer).
+const activations=new Map();
+const record=game.mission.progression.recordActivation;
+game.mission.progression.recordActivation=u=>{ activations.set(u,(activations.get(u)||0)+1); return record(u); };
 api.selectNextMissionPlayer();
 const m=game.mission;
 assert.ok(m.activeUnit,"un de vos mercenaires est actif");
@@ -57,6 +63,9 @@ assert.equal(api.missionActionAvailability().auto,true,"le bouton est actif pend
 const before=api.renders();
 api.autoResolveMission();
 assert.equal(api.renders()-before,1,"la carte n'est redessinée qu'à la fin");
+// Un seul début d'activation par activation, en combat automatique aussi : le poison, la régénération et les effets à
+// durée ne comptent pas double pour votre équipe.
+for(const u of players) assert.equal(api.resets.get(u)||0,activations.get(u)||0,u.character.name+" : un début d'activation par activation");
 assert.equal(m.over,true,"le combat va jusqu'au bout");
 assert.ok(["player","enemy"].includes(m.winner));
 assert.ok(m.aftermath?.results?.length===3,"le bilan de fin de mission est fait pour votre équipe");

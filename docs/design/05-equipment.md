@@ -219,8 +219,10 @@ Idan : chaque arme doit avoir sa raison d'être, « un choix de construction ».
 | Fléau d'armes | le bouclier adverse bloque **deux fois moins** souvent (−50 % de sa chance de blocage) |
 | Trident | **+20 %** en magie de l'**Eau** |
 | Marteau de guerre | **+10 %** en magie de la **Foudre** |
+| Nunchaku | en attaquant avec lui, **+10 % de sa Télékinésie** en Dextérité (Toucher et enchaînements ; la fiche le montre) |
+| Sarbacane | une fléchette qui **blesse** (elle passe par l'armure, comme une flèche) **empoisonne** la cible : le poison du doc 12, 3 tours, 10 PV par tour (× la qualité), jet de résistance à chaque activation ; Idan : « peut-être un bonus plus tard » |
 
-Colonnes : `bonus_caracteristique` et `bonus_pourcentage` (une caractéristique ou une école de magie), `parade_type` et `parade_chance`, `aura_caracteristique`, `aura_pourcentage` et `aura_portee`, `malus_blocage_pourcentage` ; l'allonge du fouet est sa `portee_max_hex`. À venir : la sarbacane (dégâts empoisonnés).
+Colonnes : `bonus_caracteristique` et `bonus_pourcentage` (une caractéristique ou une école de magie), `parade_type` et `parade_chance`, `aura_caracteristique`, `aura_pourcentage` et `aura_portee`, `malus_blocage_pourcentage`, `empoisonne`, `attaque_caracteristique`, `attaque_source` et `attaque_part` ; l'allonge du fouet est sa `portee_max_hex`.
 
 ### Échanges d’équipement : Donner, Retirer, Troquer (Idan, 2026-10-24)
 

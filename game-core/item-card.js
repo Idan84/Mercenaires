@@ -82,6 +82,10 @@
         aura:weapon.aura_caracteristique&&number(weapon.aura_pourcentage)>0
           ?{name:weapon.aura_caracteristique,percent:number(weapon.aura_pourcentage),range:number(weapon.aura_portee)}:null,
         blockCut:number(weapon.malus_blocage_pourcentage)>0?number(weapon.malus_blocage_pourcentage):null,
+        // Sarbacane : la fléchette qui blesse empoisonne ; Nunchaku : + 10 % de Télékinésie en Dextérité pour attaquer.
+        poison:Boolean(weapon.empoisonne),
+        attackBonus:weapon.attaque_caracteristique&&number(weapon.attaque_part)>0
+          ?{stat:weapon.attaque_caracteristique,source:weapon.attaque_source,percent:Math.round(number(weapon.attaque_part)*100)}:null,
         counterCharge:Boolean(weapon.contre_charge),
         reload:Boolean(skill.recharge_action_rapide),
         chainShots:skill.cadence_tir==="Répétable",

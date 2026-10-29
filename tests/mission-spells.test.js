@@ -756,6 +756,11 @@ strike={ok:true,wound:true,mode:"melee",damage:40,targetHp:10};
 api.onMissionAttack(u,wet,{},strike);
 assert.deepEqual(strike.drain,{amount:20,healed:0});
 u.withered=null;u.lifeDrain=null;u.hp=u.pvMax;
+// Sarbacane (Idan, 2026-10-29) : la fléchette qui blesse empoisonne la cible, par le même crochet du moteur.
+const dart={ok:true,wound:true,mode:"ranged",damage:12,targetHp:50,poison:{turns:3,amount:10}};
+api.onMissionAttack(u,wet,{},dart);
+assert.deepEqual([wet.poisoned.turns,wet.poisoned.amount,wet.poisoned.sourceId,dart.poisonApplied],[3,10,u.id,true]);
+wet.poisoned=false;
 // Invocation de spectre : une case libre voisine ; il joue au tour suivant.
 reset();
 api.setMissionMode("spell:summon_specter");

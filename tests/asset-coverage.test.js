@@ -13,7 +13,7 @@ const reference={
   weapons:read("weapons.json"),baseArmors:read("base-armors.json"),helmets:read("helmets.json"),boots:read("boots.json"),
   belts:read("belts.json"),amulets:read("amulets.json"),capes:read("capes.json"),gloves:read("gloves.json"),
   pants:read("pants.json"),rings:read("rings.json"),peoples:read("peoples.json"),cultures:read("cultures.json"),
-  ancestries:read("ancestries.json")
+  ancestries:read("ancestries.json"),potions:read("potions.json")
 };
 // Liste des images d'équipement présentes, telle que le jeu la charge.
 const artSource=fs.readFileSync(path.join(ROOT,"prototype-web","equipment-art.js"),"utf8");
@@ -21,7 +21,10 @@ const equipmentArt=new Set([...artSource.matchAll(/^\s*"([^"]+)",?$/gm)].map(m=>
 
 const sections=Coverage.listExpected(reference,{equipmentArt});
 const byKey=Object.fromEntries(sections.map(s=>[s.key,s]));
-assert.deepEqual(sections.map(s=>s.key),["spells","frames","enemies","summons","equipment","pictos","scenes"]);
+assert.deepEqual(sections.map(s=>s.key),["spells","frames","enemies","summons","equipment","potions","pictos","scenes"]);
+// Potions et fioles (Idan, 2026-10-29) : icônes à venir.
+assert.deepEqual(byKey.potions.groups[0].items.map(i=>i.file),["healing_potion.jpg","mana_potion.jpg","poison_vial.jpg"]);
+assert.ok(byKey.potions.groups[0].items.every(i=>i.present===false&&i.planned===false));
 
 // Sorts : une icône par sort (champ icone de spells.json), un cadre par école (champ cadre).
 const spells=reference.spells.rows;

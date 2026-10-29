@@ -263,6 +263,12 @@
         company.startingHelmets=true;
         changed=true;
       }
+      // Potions et fioles (Idan, 2026-10-29) : les parties en cours les reçoivent aussi.
+      if(!company.startingPotions){
+        if(captain&&generator.createStartingPotionStock) company.stock.push(...generator.createStartingPotionStock(captain));
+        company.startingPotions=true;
+        changed=true;
+      }
       return changed;
     }
 
@@ -365,7 +371,8 @@
             ...generator.createStartingBootsStock(captain),...generator.createStartingBeltStock(captain),
             ...generator.createStartingAmuletStock(captain),...generator.createStartingCapeStock(captain),
             ...generator.createStartingGlovesStock(captain),...generator.createStartingPantsStock(captain),
-            ...generator.createStartingRingStock(captain),...generator.createStartingHelmetStock(captain)],
+            ...generator.createStartingRingStock(captain),...generator.createStartingHelmetStock(captain),
+            ...(generator.createStartingPotionStock?generator.createStartingPotionStock(captain):[])],
           missionBonusHalved:true,
           startingArmors:true,
           startingBoots:true,
@@ -375,7 +382,8 @@
           startingGloves:true,
           startingPants:true,
           startingRings:true,
-          startingHelmets:true
+          startingHelmets:true,
+          startingPotions:true
         },
         tavern:tavern.createTavernState(),
         biographiesUsed:[],

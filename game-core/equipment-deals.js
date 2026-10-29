@@ -11,6 +11,8 @@
 // - Une seule tentative par mercenaire et par jour ; le capitaine s'équipe librement (ni jet, ni affinité).
 // - Un objet donné appartient ensuite au mercenaire ; un objet retiré retourne au stock, sans propriétaire.
 // - Chaque proposition entre dans l'historique du mercenaire (history.js).
+// - Potions et fioles (Idan, 2026-10-29) : consommables de la compagnie, distribués librement dans les 4 emplacements
+//   de ceinture (ni jet, ni affinité, ni limite par jour, ni historique).
 // - L'intendant, s'il y en a un, appuie la proposition : Δ + 0,2 × Intendance + 0,25 × affinité envers lui.
 // Constantes : formula-constants.json (equipment_deal.*).
 (function(root,factory){
@@ -22,6 +24,9 @@
   const rows=data=>Array.isArray(data)?data:(data?.rows||[]);
   const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
   const WEAPON_SLOT=/^weapon_set_(\d+)_(main|off)$/;
+  const BELT_POCKET=/^belt_item_[1-4]$/;
+  // Un emplacement de ceinture : on y range une fiole sans négocier.
+  const isPocket=slot=>BELT_POCKET.test(String(slot));
 
   function createEquipmentDeals({reference,affinityRules=null,random=Math.random}={}){
     const weapons=new Map(rows(reference?.weapons).map(r=>[r.nom,r]));
@@ -71,6 +76,8 @@
       if(/^ring_[1-6]$/.test(String(slot))) return item.itemType==="ring"?{ok:true}:no("Cet emplacement reçoit une bague.");
       // Casques et chapeaux (Idan, 2026-10-25).
       if(slot==="head") return item.itemType==="helmet"?{ok:true}:no("Cet emplacement reçoit un casque ou un chapeau.");
+      // Potions et fioles (Idan, 2026-10-29) : les 4 emplacements de ceinture.
+      if(isPocket(slot)) return item.itemType==="potion"?{ok:true}:no("Cet emplacement reçoit une potion ou une fiole.");
       const match=String(slot).match(WEAPON_SLOT);
       if(!match||item.itemType!=="weapon") return no("Cet objet ne va pas dans cet emplacement.");
       const weapon=weapons.get(item.name)||{};
@@ -125,7 +132,7 @@
         if(!fit.ok) return fit;
       }
       const base={ok:true,action,mercenary,slot,given,received};
-      if(isCaptain(state,mercenary)) return {...base,free:true,chance:100,affinityDelta:0,mood:"neutral"};
+      if(isCaptain(state,mercenary)||isPocket(slot)) return {...base,free:true,chance:100,affinityDelta:0,mood:"neutral"};
       const valueGiven=perceivedValue(given,mercenary,true),valueReceived=perceivedValue(received,mercenary,false);
       const gain=valueReceived-valueGiven;
       const affinity=Number(affinityRules?.memberAffinity(captainOf(state),mercenary)?.total)||0;
@@ -137,12 +144,13 @@
         mood:gain>0?"pleased":gain<0?"displeased":"neutral"};
     }
 
-    // Une tentative par mercenaire et par jour (Idan, 2026-10-24) ; le capitaine n'en a pas besoin.
-    function canDeal(state,mercenary){
+    // Une tentative par mercenaire et par jour (Idan, 2026-10-24) ; le capitaine n'en a pas besoin, ni une fiole
+    // rangée dans une poche de ceinture (slot).
+    function canDeal(state,mercenary,slot=null){
       if(!mercenary) return no("Mercenaire introuvable.");
       // Parti en expédition (doc 17) : pas d'échange avant son retour.
       if((state.expeditions||[]).some(e=>e.memberIds.includes(mercenary.id))) return no("Il est en mission.");
-      if(isCaptain(state,mercenary)) return {ok:true};
+      if(isCaptain(state,mercenary)||isPocket(slot)) return {ok:true};
       if(mercenary.equipmentDealDay===state.day) return no("Vous lui avez déjà parlé d’équipement aujourd’hui.");
       return {ok:true};
     }
@@ -168,7 +176,7 @@
     function propose(state,request){
       const deal=evaluate(state,request);
       if(!deal.ok) return deal;
-      const allowed=canDeal(state,deal.mercenary);
+      const allowed=canDeal(state,deal.mercenary,deal.slot);
       if(!allowed.ok) return {...allowed,action:deal.action};
       const {mercenary,slot,given,received}=deal;
       let roll=null,accepted=true;
@@ -182,14 +190,14 @@
         if(given) moveToStock(state,mercenary,slot);
         if(received) equipFromStock(state,mercenary,slot,received);
       }
-      // Historique (Idan, 2026-10-24) : l'échange proposé, accepté ou refusé.
+      // Historique (Idan, 2026-10-24) : l'échange proposé, accepté ou refusé ; pas les fioles.
       const brief=item=>item?{name:item.name,tier:item.tier}:null;
-      History?.record(mercenary,state.day,"deal",{action:deal.action,accepted,free:deal.free,given:brief(given),received:brief(received)});
+      if(!isPocket(slot)) History?.record(mercenary,state.day,"deal",{action:deal.action,accepted,free:deal.free,given:brief(given),received:brief(received)});
       return {ok:true,action:deal.action,free:deal.free,accepted,roll,chance:deal.chance,affinityDelta:deal.affinityDelta,
         mood:deal.mood,mercenaryId:mercenary.id,slot,given,received,steward:deal.steward||null};
     }
 
-    return {constants:C,perceivedValue,slotAccepts,compatibleSlots,evaluate,canDeal,propose};
+    return {constants:C,perceivedValue,slotAccepts,compatibleSlots,evaluate,canDeal,propose,isPocket};
   }
 
   return {createEquipmentDeals};

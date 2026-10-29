@@ -179,7 +179,7 @@ Idan : « c'est un buffeur ». Tous les sorts sont des **actions rapides**, sur 
 - Une cible **blessée** par du venin est **empoisonnée pendant 3 tours** (`combat.poison.turns`) ; un nouveau poison remplace l'ancien.
 - Au **début de chacune de ses activations**, elle fait un **jet de résistance** : **D100 ≤ Constitution / 2 + Résistance au poison** (équipement compris, de 5 à 95 % ; `combat.poison.*`) **annule l'effet** (Idan : « un jet de résistance au poison au début du tour (constitution ?) »). Raté, elle subit des **dégâts légers** : le minimum du venin (dé à 1), réduit par sa Résistance au poison. La Résistance au poison progresse avec ces dégâts (doc 08).
 - **Purge** (école de la Vie) retire le poison.
-- Plus tard (Idan) : les **fioles et potions** permettront d'enduire son arme de poison.
+- **Fiole de poison** (Idan, 2026-10-29 ; doc 05) : action rapide, sur soi ; l'arme active est enduite pendant 3 tours, et chaque coup qui blesse, au corps à corps comme au tir, empoisonne : **10 PV par tour**, 3 tours, même jet de résistance. Avec une sarbacane enduite, le plus fort des deux poisons.
 
 ### École de la Foudre (6 sorts, Idan, 2026-10-27)
 
@@ -281,7 +281,7 @@ Le **Charisme** du mage y compte (Idan : l'Invocation et la Nécromancie en dép
 - **Spectre** (archétype fixe, Idan : « à peu près les stats d'un gobelin ») : guerrier gobelin novice, **Vitesse 65** (6 cases), **Volonté 50**, **100 PV**, sans arme ni armure. **Immunisé aux dégâts physiques** : armes, tirs, sorts contondants ; la magie élémentaire, le psychique et la Restitution le touchent. **Toucher spectral** : jet de toucher au contact, puis **1D6 de dégâts psychiques** × sa Volonté / celle de la cible (de × 0,5 à × 2), sans Blesser, ni armure ni résistance (≈ 35 à Volonté égale). Mort-vivant, sans peur.
 - **Dégâts nécrotiques** (Flèche de mort, Nécrose) : ils **traversent l'armure et les résistances**, sans la Volonté ; **sans effet sur les morts-vivants** (on ne peut pas les viser ; une flèche égarée ne leur fait rien). La Flèche de mort est un projectile : le Champ de protection peut la dévier.
 - **Drain de vie** : seulement les coups d'arme au corps à corps du mage, pas les tirs ni les sorts ; les PV retirés comptent jusqu'à zéro (pas la profondeur sous zéro). Sur soi, l'activation en cours compte comme la première.
-- **Flétrissement** : aucun soin (sorts de soin, Régénération, Drain de vie, potions plus tard) pendant les 3 ou 4 prochaines activations de la cible.
+- **Flétrissement** : aucun soin (sorts de soin, Régénération, Drain de vie, potion de soins) pendant les 3 ou 4 prochaines activations de la cible.
 
 | | Débutant | Recrue moyenne | Expert |
 |---|---|---|---|

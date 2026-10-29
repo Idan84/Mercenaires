@@ -11,6 +11,7 @@
   "pants_chance": 0.05,
   "ring_chance": 0.05,
   "helmet_chance": 0.05,
+  "potion_chance": 0.05,
   "profile_formula": {
     "melee": "0,6 × (meilleure arme CAC / 2) + 0,4 × moyenne(Force, Dextérité, Endurance, Courage)",
     "ranged": "0,6 × (meilleure arme Distance / 2) + 0,4 × moyenne(Dextérité, Perception, Vitesse)",

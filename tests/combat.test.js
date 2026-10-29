@@ -456,7 +456,7 @@ assert.equal(combat.effectiveDexterity(daggerUser),combat.statWithGear(daggerUse
 const blower=unit(wield(a,"Sarbacane"),0,0),dartTarget=unit(b,3,0);
 r=scripted([1,100,1,1,100,1,2],[100]).resolveAttack(blower,dartTarget,{mode:"ranged",distance:3});
 assert.equal(r.wound,true);
-assert.deepEqual(r.poison,{turns:3,amount:10});
+assert.deepEqual(r.poison,{turns:3,amount:10,source:"blowgun"});
 r=scripted([100,100],[100]).resolveAttack(blower,dartTarget,{mode:"ranged",distance:3});
 assert.equal(r.poison,undefined);
 

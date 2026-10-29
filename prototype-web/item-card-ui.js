@@ -103,10 +103,20 @@ function statGearCardBody(card){
   return {rows,traits,flavor:null};
 }
 
+// Potions et fioles (Idan, 2026-10-29) : usage unique, sur soi, par une action rapide en combat.
+function potionCardBody(card){
+  const rows=card.effect==="soin"?[cardRow("Soins",`+${cardNumber(card.percent)} % des PV max`,"bonus")]
+    :card.effect==="mana"?[cardRow("Mana",`+${cardNumber(card.percent)} % du mana max`,"bonus")]
+    :[cardRow("Arme empoisonnée",`${cardNumber(card.turns)} tours`,"bonus"),cardRow("Poison",`${cardNumber(card.poison)} PV par tour`)];
+  const traits=["Action rapide en combat, sur soi","Usage unique",
+    card.effect==="poison_arme"?"Chaque coup qui blesse empoisonne la cible (corps à corps et tir)":""].filter(Boolean);
+  return {rows,traits,flavor:card.description};
+}
+
 // La qualité en une phrase : ce qui monte, ce qui baisse. Elle ne change pas le bonus des bottes, ceintures, amulettes,
 // capes, gants, culottes et bagues.
 function qualityLine(card){
-  if(STAT_GEAR_KINDS.includes(card.kind)) return "";
+  if(STAT_GEAR_KINDS.includes(card.kind)||card.kind==="potion") return "";
   const up=Math.round((card.quality.good-1)*100),down=Math.round((card.quality.bad-1)*100);
   if(!up&&!down) return "";
   const effects=card.kind==="armor"?"résistances":"dégâts, charge et blocage";
@@ -120,14 +130,15 @@ function renderItemCard(item){
   // L'image de l'objet en grand, à côté de la carte (Idan, 2026-10-25).
   const art=typeof equipmentArtLarge==="function"?equipmentArtLarge(item):typeof equipmentArt==="function"?equipmentArt(item):null;
   const gear=STAT_GEAR_KINDS.includes(card.kind);
-  const body=card.kind==="armor"?armorCardBody(card):gear?statGearCardBody(card):weaponCardBody(card);
-  const subtitle=card.kind==="armor"?(ARMOR_CLASSES[card.category]||card.category||"Armure"):gear?card.name:[card.name,card.category].filter(Boolean).join(" · ");
+  const potion=card.kind==="potion";
+  const body=card.kind==="armor"?armorCardBody(card):gear?statGearCardBody(card):potion?potionCardBody(card):weaponCardBody(card);
+  const subtitle=card.kind==="armor"?(ARMOR_CLASSES[card.category]||card.category||"Armure"):gear?card.name:potion?"Potion":[card.name,card.category].filter(Boolean).join(" · ");
   return `<div class="item-card-wrap">${art?`<figure class="item-card-showcase item-card--t${card.tier}"><img src="${art}" alt=""></figure>`:""}<div class="item-card item-card--t${card.tier}">
     <div class="item-card-head">
       <div class="item-card-names">
         <strong class="item-card-title">${esc(card.title)}</strong>
         <span class="item-card-sub">${esc(card.kind==="armor"&&card.title!==card.name?card.name+" · "+subtitle:subtitle)}</span>
-        <span class="item-card-tier">T${card.tier} · ${esc(card.quality.name||"")}</span>
+        <span class="item-card-tier">${potion?"Usage unique":`T${card.tier} · ${esc(card.quality.name||"")}`}</span>
       </div>
     </div>
     <dl class="item-card-stats">${body.rows.join("")}</dl>

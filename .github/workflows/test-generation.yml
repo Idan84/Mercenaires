@@ -44,6 +44,7 @@ jobs:
       - run: node tests/item-value.test.js
       - run: node tests/camp-buildings.test.js
       - run: node tests/helmets.test.js
+      - run: node tests/potions.test.js
       - run: node tests/sling.test.js
       - run: node tests/auto-combat.test.js
       - run: node tests/lieutenants.test.js

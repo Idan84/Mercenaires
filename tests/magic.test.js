@@ -22,17 +22,18 @@ const random=()=>queue.length?queue.shift():0.5;
 const combat=createCombatEngine(reference,{random});
 const magic=createMagicRules({reference,combat,random});
 
-function mage({pm,vie,level=1,int,chance=54,mana=53,items=[],slots={}}){
+function mage({pm,vie,level=1,int,chance=54,mana=53,charisma=50,items=[],slots={}}){
   return {
-    name:"Mage",stats:{"Puissance magique":pm,Intelligence:int,Chance:chance,"Réserve de mana":mana,Constitution:50,Endurance:50,Volonté:50},
-    skills:{magic:{Vie:vie,Feu:vie,Eau:vie,Transmutation:vie,Foudre:vie,Télékinésie:vie,Illusion:vie,Nécromancie:20}},mana,
+    name:"Mage",stats:{"Puissance magique":pm,Intelligence:int,Chance:chance,"Réserve de mana":mana,Constitution:50,Endurance:50,Volonté:50,Charisme:charisma},
+    skills:{magic:{Vie:vie,Feu:vie,Eau:vie,Transmutation:vie,Foudre:vie,Télékinésie:vie,Illusion:vie,Nécromancie:vie}},mana,
     spells:["quick_heal","deep_heal","regeneration","mass_heal","restitution","purge"].map(code=>({code,school:"Vie",mastery:level}))
       .concat(["fire_bolt","fireball","fire_ring","flaming_weapon","fire_armor","magma"].map(code=>({code,school:"Feu",mastery:level})))
       .concat(["fog","healing_water","ice_arrow","tsunami","frost_armor","freeze","ice_weapon"].map(code=>({code,school:"Eau",mastery:level})))
       .concat(["sixth_sense","titan_strength","cheetah_speed","stone_skin","venom_spit","cauterize"].map(code=>({code,school:"Transmutation",mastery:level})))
       .concat(["shock","lightning_bolt","shock_weapon","chain_lightning","thunder","celerity"].map(code=>({code,school:"Foudre",mastery:level})))
       .concat(["attraction","projection","telekinetic_move","clash","force_field","stone_throw"].map(code=>({code,school:"Télékinésie",mastery:level})))
-      .concat(["fear","illusory_support","mass_courage","hidden_advance","psychic_shock","frenzy"].map(code=>({code,school:"Illusion",mastery:level}))),
+      .concat(["fear","illusory_support","mass_courage","hidden_advance","psychic_shock","frenzy"].map(code=>({code,school:"Illusion",mastery:level})))
+      .concat(["raise_dead","summon_specter","life_drain","death_arrow","necrosis","wither"].map(code=>({code,school:"Nécromancie",mastery:level}))),
     items,equipment:{slots}
   };
 }
@@ -600,4 +601,59 @@ assert.equal(combat.resolveCourage(brave({frenzy:{turns:1}}),seer,{ok:true,wound
 assert.equal(combat.statWithGear({character:{skills:{martial:{Discrétion:30}},items:[],equipment:{slots:{}}},activeSet:1,
   statBuffs:{hidden_advance:{stats:["Discrétion"],value:46,unit:"points"}}},"Discrétion"),76);
 
-console.log("Magie : écoles de la Vie, du Feu, de l'Eau, de la Transmutation, de la Foudre, de la Télékinésie et de l'Illusion OK");
+// École de la Nécromancie (Idan, 2026-10-28) : le Charisme compte ; profils débutant / recrue / expert (Charisme supposé
+// égal à l'Intelligence : 35 / 53 / 73).
+const novice=unit(mage({pm:53,vie:31,int:35,charisma:35}));
+const recruit=unit(mage({pm:53,vie:56,int:53,charisma:53}));
+const master=unit(mage({pm:69,vie:84,level:100,int:73,charisma:73}));
+// Maintien : la formule de réussite d'un sort, Charisme à la place de l'Intelligence, difficulté 30 : 57 / 81 / 94 %.
+assert.deepEqual([novice,recruit,master].map(x=>Math.round(magic.holdChance(x,"raise_dead"))),[57,81,94]);
+// Entretien 5 × (1 − M/300) : 5 / 5 / 3 ; mana des sorts : Résurrection 27 / 25 / 17, Spectre 23 / 21 / 14.
+assert.deepEqual([novice,recruit,master].map(x=>magic.upkeepCost(x,"summon_specter")),[5,5,3]);
+assert.deepEqual([novice,recruit,master].map(x=>magic.manaCost(x,"raise_dead")),[27,25,17]);
+assert.deepEqual([novice,recruit,master].map(x=>magic.manaCost(x,"summon_specter")),[23,21,14]);
+// Zombie : (M + Charisme) / 2 %, de 10 à 100 : 33 / 55 / 100.
+assert.deepEqual([novice,recruit,master].map(x=>Math.round(magic.zombieShare(x,"raise_dead"))),[33,55,100]);
+assert.equal(magic.zombieShare(unit(mage({pm:50,vie:1,int:50,charisma:5})),"raise_dead"),10,"au moins 10 %");
+// Durées : Drain de vie 2 / 3 / 3, Flétrissement 3 / 3 / 4 ; portée de la Flèche de mort 7 / 8 / 11.
+assert.deepEqual([novice,recruit,master].map(x=>magic.duration(x,"life_drain")),[2,3,3]);
+assert.deepEqual([novice,recruit,master].map(x=>magic.duration(x,"wither")),[3,3,4]);
+assert.deepEqual([novice,recruit,master].map(x=>magic.range(x,"death_arrow")),[7,8,11]);
+// Résurrection : le corps d'un combattant mort, au contact, sur lequel personne ne se tient.
+const corpse=unit(mage({pm:50,vie:1,int:50}),{q:1,r:0,team:"enemy",alive:false});
+assert.equal(magic.isCorpse(corpse),true);
+assert.equal(magic.canCast(recruit,corpse,"raise_dead").ok,true);
+assert.match(magic.canCast(recruit,{...corpse,alive:true},"raise_dead").reason,/le corps d'un combattant mort/);
+assert.match(magic.canCast(recruit,{...corpse,raised:true},"raise_dead").reason,/le corps d'un combattant mort/);
+assert.match(magic.canCast(recruit,{...corpse,summon:{}},"raise_dead").reason,/le corps d'un combattant mort/,"une invocation ne laisse pas de corps");
+assert.match(magic.canCast(recruit,corpse,"raise_dead",{cellFree:false}).reason,/Quelqu'un se tient sur le corps/);
+assert.match(magic.canCast(recruit,{...corpse,q:2},"raise_dead").reason,/hors de portée/);
+queue=[0];
+let raised=magic.cast(recruit,corpse,"raise_dead");
+assert.deepEqual(raised.summon,{code:"raise_dead",creature:"zombie",upkeep:5,share:54.75,cell:{q:1,r:0}});
+// Invocation de spectre : une case libre voisine.
+queue=[0];
+assert.deepEqual(magic.cast(recruit,{q:0,r:1},"summon_specter").summon,{code:"summon_specter",creature:"specter",upkeep:5,share:100,cell:{q:0,r:1}});
+assert.equal(magic.canCast(recruit,{q:0,r:1},"summon_specter",{cellFree:false}).ok,false);
+// Drain de vie : 50 % ; Flétrissement : sa durée.
+queue=[0];
+assert.deepEqual(magic.cast(recruit,recruit,"life_drain").effect,{code:"life_drain",percent:50,turns:3});
+const victim=unit(mage({pm:50,vie:1,int:50}),{q:5,r:0,team:"enemy"});
+queue=[0];
+assert.deepEqual(magic.cast(recruit,victim,"wither").effect,{code:"wither",turns:3});
+// Flèche de mort et Nécrose : dégâts nécrotiques ; jamais sur un mort-vivant.
+queue=[0,0.99,0.5,0];
+const arrow=magic.cast(recruit,victim,"death_arrow",{units:[recruit,victim]});
+assert.deepEqual([arrow.necrotic,arrow.physical,arrow.psychic,arrow.hit],[true,undefined,undefined,true]);
+assert.equal(arrow.amount,Math.ceil(10*4*magic.effectFactor(recruit,"death_arrow")-1e-9));
+assert.match(magic.canCast(recruit,{...victim,character:{...victim.character,undead:true}},"death_arrow").reason,/ne fonctionne que sur les vivants/);
+assert.match(magic.canCast(recruit,victim,"necrosis").reason,/hors de portée/,"au contact");
+// Dégâts moyens : Flèche de mort ≈ 30 / 40 / 89, Nécrose ≈ 78 / 102 / 229.
+const average=(x,code,mean)=>Math.round(10*mean*magic.effectFactor(x,code));
+assert.deepEqual([novice,recruit,master].map(x=>average(x,"death_arrow",3.5)),[30,40,89]);
+assert.deepEqual([novice,recruit,master].map(x=>average(x,"necrosis",9)),[78,102,229]);
+// Moteur : un mort-vivant ne teste jamais son Courage.
+const ghoul={character:{name:"Goule",undead:true,stats:{Courage:10,Volonté:10},items:[],equipment:{slots:{}}},activeSet:1,team:"enemy",alive:true};
+assert.equal(combat.resolveFear(ghoul,seer,90),null);
+
+console.log("Magie : écoles de la Vie, du Feu, de l'Eau, de la Transmutation, de la Foudre, de la Télékinésie, de l'Illusion et de la Nécromancie OK");

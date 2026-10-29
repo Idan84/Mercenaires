@@ -58,8 +58,9 @@
     // Une charge à deux armes reste une seule charge tentée : la seconde arme (chargeFollowUp) ne compte pas.
     if(Number(options?.chargeDistance)>0&&!options.chargeFollowUp) recordChargeAttempt(attacker);
     if(result.wound){
-      // Moteur V1 : une attaque blesse avec une seule composante, physique (result.matchup.type).
-      recordWound(defender,result.matchup?.type);
+      // Moteur V1 : une attaque blesse avec une seule composante, physique (result.matchup.type) ; le Toucher spectral,
+      // psychique, ne fait progresser aucune résistance.
+      if(!result.psychic) recordWound(defender,result.matchup?.type);
       if(result.backstab) logOf(defender).backstabWounds++;
       // Esquive : chaque coup encaissé qui blesse (Idan, 2026-10-20).
       logOf(defender).woundsTaken++;

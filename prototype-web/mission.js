@@ -629,6 +629,11 @@ function logMissionAttack(a,d,result,kind="attack"){
     missionLog(prefix+" : le coup traverse "+d.character.name+" sans lui faire de mal (immunisé aux dégâts physiques).","miss");
     return;
   }
+  if(result.parried){
+    missionLog(prefix+" : touche, mais "+d.character.name+" pare le coup tranchant avec son "+result.parryWeapon.replace(/^Sai$/,"saï")
+      +" (parade "+Math.round(result.pParry)+" %, jet "+result.parryRoll+").","miss");
+    return;
+  }
   if(result.blocked){
     missionLog(prefix+" : touche, mais "+d.character.name+" bloque avec son "+result.shield+" (blocage "+Math.round(result.pBlock)+" %, jet "+result.blockRoll+").","miss");
     return;
@@ -1745,7 +1750,7 @@ function missionProtectionNote(hit){
 // ou de foudre, même s'il ne blesse pas.
 function missionWeaponEnchantStrike(attacker,target,result){
   const fx=attacker.weaponEnchant,magic=missionMagic();
-  if(!fx||!magic||!result?.ok||!result.hit||result.blocked||!target.alive) return;
+  if(!fx||!magic||!result?.ok||!result.hit||result.blocked||result.parried||!target.alive) return;
   const strike=magic.weaponStrike(fx),hit=missionElementalHit(target,fx.element,strike.amount,attacker);
   missionLog((magic.spell(fx.code)?.nom||"Arme enflammée")+" : "+target.character.name+" subit "+hit.damage+" PV de "+fx.element+missionProtectionNote(hit)+".","magic");
   checkMissionEnd();

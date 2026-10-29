@@ -631,10 +631,10 @@
       const divisor=mode==="ranged"?CHAIN.rangedDivisor*n:n;
       return Math.min(CHAIN.max,(effectiveDexterity(attacker)+effectiveSpeed(attacker))/divisor);
     }
-    // L'attaque précédente doit avoir réellement touché (pas bloquée), sans échec critique, contre une cible
+    // L'attaque précédente doit avoir réellement touché (ni bloquée ni parée), sans échec critique, contre une cible
     // encore vivante. Un critique positif n'arrête pas la chaîne.
     function canChain(attacker,defender,result,mode){
-      if(!result?.ok||!result.hit||result.blocked||result.fumble||result.woundFumble) return false;
+      if(!result?.ok||!result.hit||result.blocked||result.parried||result.fumble||result.woundFumble) return false;
       if(!attacker.alive||!defender.alive) return false;
       return mode!=="ranged"||isRepeatable(weaponTemplate(activeWeaponItem(attacker)));
     }
@@ -775,6 +775,14 @@
       const crit={...block,pCritical,criticalHitRoll,criticalHit};
       if(psychic) return {...crit,...psychicStrike(attacker,defender,weapon,criticalHit)};
       const matchup=selectDamageMatchup(attacker,defender,weapon,{backstab,ignoreArmor:criticalHit});
+      // Parade du saï (Idan, 2026-10-29) : au corps à corps, un coup tranchant est paré à pParry % ; un coup paré ne compte
+      // pas comme un toucher réel : ni Blesser, ni dégâts.
+      const pParry=mode==="melee"?parryChance(defender,matchup.type):0;
+      if(pParry>0){
+        const parryRoll=d100();
+        if(parryRoll<=pParry) return {...crit,matchup,pParry,parryRoll,parried:true,parryWeapon:parryWeapon(defender,matchup.type),wound:false,damage:0};
+        Object.assign(crit,{pParry,parryRoll});
+      }
       const pWound=woundProbability(attacker,defender,mode,matchup,{chargePower});
       const woundRoll=d100(),wound=woundRoll<=pWound;
       if(!wound){
@@ -804,6 +812,16 @@
 
       return {...crit,matchup,pWound,woundRoll,wound:true,...damageData,targetHp:defender.hp,targetDown:!defender.alive};
     }
+
+    // Parade (weapons.json, parade_type et parade_chance ; Idan, 2026-10-29) : chaque arme tenue dans le set actif qui pare ce
+    // type de dégâts ajoute sa chance : un saï 5 %, deux saïs 10 %.
+    function parryItems(unit,type){
+      return [activeWeaponItem(unit),activeOffhandItem(unit)].filter(item=>weaponTemplate(item)?.parade_type===type);
+    }
+    function parryChance(unit,type){
+      return parryItems(unit,type).reduce((sum,item)=>sum+(Number(weaponTemplate(item).parade_chance)||0),0);
+    }
+    function parryWeapon(unit,type){ return parryItems(unit,type)[0]?.name||null; }
 
     // Toucher spectral (Idan, 2026-10-28) : dégâts psychiques, sans Blesser ni armure ni résistance : 10 × dés × Volonté de
     // l'attaquant / Volonté de la cible (de × 0,5 à × 2), dés au maximum sur un coup critique.
@@ -1040,6 +1058,7 @@
       rollDetection,
       spellPhysicalHit,
       fearHold,
+      parryChance,
       resolveFear,
       poisonResistChance,
       resolvePoison,

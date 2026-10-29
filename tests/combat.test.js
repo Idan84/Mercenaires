@@ -407,6 +407,28 @@ if(setFamily(guardShooter,"ranged")){
   assert.equal(combat.resolveAttack(guardShooter,unit(guardChar,d,0),{mode:"ranged",distance:d}).blocked,true);
 }
 
+// Parade du saï (Idan, 2026-10-29) : 5 % par saï tenu contre un coup tranchant de mêlée (deux saïs : 10 %).
+const wield=(character,name)=>{
+  const it={id:"wield-"+name,name,itemType:"weapon",qualityCode:"standard"};
+  return {...character,items:[...character.items,it],equipment:{...character.equipment,slots:{...character.equipment.slots,weapon_set_1_main:it.id,weapon_set_1_off:null}}};
+};
+assert.equal(combat.parryChance(unit(wield(a,"Sai"),1,0),"tranchant"),5);
+assert.equal(combat.parryChance(unit(withDual(a,"Sai","Sai"),1,0),"tranchant"),10);
+assert.equal(combat.parryChance(unit(wield(a,"Sai"),1,0),"perforant"),0,"seulement les coups tranchants");
+assert.equal(combat.parryChance(unit(wield(a,"Dague"),1,0),"tranchant"),0);
+// Hachette (tranchante) : touche (1), pas de critique (100), choix du type (1), parade (1) : ni Blesser ni dégâts.
+const parrier=unit(wield(b,"Sai"),1,0),slasher=unit(wield(a,"Hachette"),0,0),parrierHp=parrier.hp;
+r=scripted([1,100,1,1],[100]).resolveAttack(slasher,parrier,{mode:"melee",distance:1});
+assert.deepEqual([r.hit,r.parried,r.parryWeapon,r.pParry,r.wound,r.damage,parrier.hp],[true,true,"Sai",5,false,0,parrierHp]);
+assert.equal(combat.rollChain(slasher,parrier,r,2,"melee"),null,"un coup paré n’ouvre pas d’enchaînement");
+// Parade ratée (6) : le coup continue, avec le jet de parade dans le résultat.
+r=scripted([1,100,1,6,1,100],[100]).resolveAttack(slasher,parrier,{mode:"melee",distance:1});
+assert.deepEqual([r.parried,r.pParry,r.parryRoll,r.wound],[undefined,5,6,true]);
+// Un estoc (perforant) n'est pas paré : pas de jet de parade.
+const stabber=unit(wield(a,"Estoc"),0,0);
+r=scripted([1,100,1,1,100],[100]).resolveAttack(stabber,unit(wield(b,"Sai"),1,0),{mode:"melee",distance:1});
+assert.deepEqual([r.pParry,r.parried],[undefined,undefined]);
+
 // Vitesse combat effective CAC V1 : le malus du bouclier s'ajoute à celui de l'arme, et l'arme Au choix
 // passe en mode une main (son malus n'est plus divisé par deux).
 const penalty=(c,slot)=>{

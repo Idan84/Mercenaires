@@ -117,6 +117,10 @@ Choix d'implémentation V1, validés par Idan le 2026-10-20 :
 
 Un blocage réussi signifie que l'attaque n'a pas réellement touché : pas de critique positif, pas de Blesser, pas de dégâts. Il casse l'enchaînement normal. En combat à deux armes, chaque attaque de la paire est testée séparément et la paire peut continuer si au moins une attaque touche réellement.
 
+## Parade du saï (Idan, 2026-10-29)
+
+Un **saï** tenu dans le set actif pare **5 %** des coups **tranchants** de mêlée, **10 %** avec deux saïs (un par main). Le jet a lieu après le Toucher, le blocage éventuel du bouclier et le critique au Toucher, une fois le type de dégâts du coup choisi : un coup perforant ou contondant n'est jamais paré. Comme un blocage, un coup paré n'a pas réellement touché : ni Blesser, ni dégâts, ni enchaînement, ni arme enchantée. La qualité ne change pas la chance. Données : `weapons.json`, colonnes `parade_type` et `parade_chance`.
+
 ## Courage post-attaque CAC V1
 
 <aside>

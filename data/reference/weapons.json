@@ -66,6 +66,14 @@
     {
       "source": "Bonus en % de la valeur de base de cette caractéristique",
       "key": "bonus_pourcentage"
+    },
+    {
+      "source": "Parade : type de dégâts paré (Idan, 2026-10-29 : le saï pare les coups tranchants)",
+      "key": "parade_type"
+    },
+    {
+      "source": "Parade : chance en % par arme tenue (saï : 5, 10 avec deux)",
+      "key": "parade_chance"
     }
   ],
   "row_count": 38,
@@ -85,7 +93,9 @@
       "puissance_contondante_base": 0,
       "prix_base": 140,
       "bonus_caracteristique": null,
-      "bonus_pourcentage": null
+      "bonus_pourcentage": null,
+      "parade_type": null,
+      "parade_chance": null
     },
     {
       "nom": "Arc",
@@ -102,7 +112,9 @@
       "puissance_contondante_base": 0,
       "prix_base": 100,
       "bonus_caracteristique": null,
-      "bonus_pourcentage": null
+      "bonus_pourcentage": null,
+      "parade_type": null,
+      "parade_chance": null
     },
     {
       "nom": "Arme d’hast double",
@@ -119,7 +131,9 @@
       "puissance_contondante_base": 0,
       "prix_base": 160,
       "bonus_caracteristique": null,
-      "bonus_pourcentage": null
+      "bonus_pourcentage": null,
+      "parade_type": null,
+      "parade_chance": null
     },
     {
       "nom": "Arquebuse",
@@ -136,7 +150,9 @@
       "puissance_contondante_base": 0,
       "prix_base": 240,
       "bonus_caracteristique": null,
-      "bonus_pourcentage": null
+      "bonus_pourcentage": null,
+      "parade_type": null,
+      "parade_chance": null
     },
     {
       "nom": "Bardiche",
@@ -153,7 +169,9 @@
       "puissance_contondante_base": 0,
       "prix_base": 200,
       "bonus_caracteristique": null,
-      "bonus_pourcentage": null
+      "bonus_pourcentage": null,
+      "parade_type": null,
+      "parade_chance": null
     },
     {
       "nom": "Bâton court",
@@ -170,7 +188,9 @@
       "puissance_contondante_base": 20,
       "prix_base": 80,
       "bonus_caracteristique": "Réserve de mana",
-      "bonus_pourcentage": 10
+      "bonus_pourcentage": 10,
+      "parade_type": null,
+      "parade_chance": null
     },
     {
       "nom": "Bâton long",
@@ -187,7 +207,9 @@
       "puissance_contondante_base": 30,
       "prix_base": 120,
       "bonus_caracteristique": "Puissance magique",
-      "bonus_pourcentage": 5
+      "bonus_pourcentage": 5,
+      "parade_type": null,
+      "parade_chance": null
     },
     {
       "nom": "Canon à main",
@@ -204,7 +226,9 @@
       "puissance_contondante_base": 0,
       "prix_base": 240,
       "bonus_caracteristique": null,
-      "bonus_pourcentage": null
+      "bonus_pourcentage": null,
+      "parade_type": null,
+      "parade_chance": null
     },
     {
       "nom": "Dague",
@@ -221,7 +245,9 @@
       "puissance_contondante_base": 0,
       "prix_base": 80,
       "bonus_caracteristique": null,
-      "bonus_pourcentage": null
+      "bonus_pourcentage": null,
+      "parade_type": null,
+      "parade_chance": null
     },
     {
       "nom": "Écu",
@@ -238,7 +264,9 @@
       "puissance_contondante_base": 25,
       "prix_base": 80,
       "bonus_caracteristique": null,
-      "bonus_pourcentage": null
+      "bonus_pourcentage": null,
+      "parade_type": null,
+      "parade_chance": null
     },
     {
       "nom": "Épée courte",
@@ -255,7 +283,9 @@
       "puissance_contondante_base": 0,
       "prix_base": 100,
       "bonus_caracteristique": null,
-      "bonus_pourcentage": null
+      "bonus_pourcentage": null,
+      "parade_type": null,
+      "parade_chance": null
     },
     {
       "nom": "Épée double",
@@ -272,7 +302,9 @@
       "puissance_contondante_base": 0,
       "prix_base": 160,
       "bonus_caracteristique": null,
-      "bonus_pourcentage": null
+      "bonus_pourcentage": null,
+      "parade_type": null,
+      "parade_chance": null
     },
     {
       "nom": "Épée longue",
@@ -289,7 +321,9 @@
       "puissance_contondante_base": 0,
       "prix_base": 120,
       "bonus_caracteristique": null,
-      "bonus_pourcentage": null
+      "bonus_pourcentage": null,
+      "parade_type": null,
+      "parade_chance": null
     },
     {
       "nom": "Estoc",
@@ -306,7 +340,9 @@
       "puissance_contondante_base": 0,
       "prix_base": 100,
       "bonus_caracteristique": null,
-      "bonus_pourcentage": null
+      "bonus_pourcentage": null,
+      "parade_type": null,
+      "parade_chance": null
     },
     {
       "nom": "Fléau d’armes",
@@ -323,7 +359,9 @@
       "puissance_contondante_base": 55,
       "prix_base": 120,
       "bonus_caracteristique": null,
-      "bonus_pourcentage": null
+      "bonus_pourcentage": null,
+      "parade_type": null,
+      "parade_chance": null
     },
     {
       "nom": "Fouet",
@@ -340,7 +378,9 @@
       "puissance_contondante_base": 0,
       "prix_base": 80,
       "bonus_caracteristique": null,
-      "bonus_pourcentage": null
+      "bonus_pourcentage": null,
+      "parade_type": null,
+      "parade_chance": null
     },
     {
       "nom": "Fronde",
@@ -357,7 +397,9 @@
       "puissance_contondante_base": 25,
       "prix_base": 80,
       "bonus_caracteristique": null,
-      "bonus_pourcentage": null
+      "bonus_pourcentage": null,
+      "parade_type": null,
+      "parade_chance": null
     },
     {
       "nom": "Grande épée",
@@ -374,7 +416,9 @@
       "puissance_contondante_base": 0,
       "prix_base": 200,
       "bonus_caracteristique": null,
-      "bonus_pourcentage": null
+      "bonus_pourcentage": null,
+      "parade_type": null,
+      "parade_chance": null
     },
     {
       "nom": "Hache de guerre",
@@ -391,7 +435,9 @@
       "puissance_contondante_base": 0,
       "prix_base": 140,
       "bonus_caracteristique": null,
-      "bonus_pourcentage": null
+      "bonus_pourcentage": null,
+      "parade_type": null,
+      "parade_chance": null
     },
     {
       "nom": "Hache double",
@@ -408,7 +454,9 @@
       "puissance_contondante_base": 0,
       "prix_base": 200,
       "bonus_caracteristique": null,
-      "bonus_pourcentage": null
+      "bonus_pourcentage": null,
+      "parade_type": null,
+      "parade_chance": null
     },
     {
       "nom": "Hachette",
@@ -425,7 +473,9 @@
       "puissance_contondante_base": 0,
       "prix_base": 100,
       "bonus_caracteristique": null,
-      "bonus_pourcentage": null
+      "bonus_pourcentage": null,
+      "parade_type": null,
+      "parade_chance": null
     },
     {
       "nom": "Hallebarde",
@@ -442,7 +492,9 @@
       "puissance_contondante_base": 0,
       "prix_base": 160,
       "bonus_caracteristique": null,
-      "bonus_pourcentage": null
+      "bonus_pourcentage": null,
+      "parade_type": null,
+      "parade_chance": null
     },
     {
       "nom": "Katana",
@@ -459,7 +511,9 @@
       "puissance_contondante_base": 0,
       "prix_base": 140,
       "bonus_caracteristique": null,
-      "bonus_pourcentage": null
+      "bonus_pourcentage": null,
+      "parade_type": null,
+      "parade_chance": null
     },
     {
       "nom": "Kukri",
@@ -476,7 +530,9 @@
       "puissance_contondante_base": 0,
       "prix_base": 100,
       "bonus_caracteristique": null,
-      "bonus_pourcentage": null
+      "bonus_pourcentage": null,
+      "parade_type": null,
+      "parade_chance": null
     },
     {
       "nom": "Lance",
@@ -493,7 +549,9 @@
       "puissance_contondante_base": 0,
       "prix_base": 120,
       "bonus_caracteristique": null,
-      "bonus_pourcentage": null
+      "bonus_pourcentage": null,
+      "parade_type": null,
+      "parade_chance": null
     },
     {
       "nom": "Marteau de guerre",
@@ -510,7 +568,9 @@
       "puissance_contondante_base": 70,
       "prix_base": 200,
       "bonus_caracteristique": null,
-      "bonus_pourcentage": null
+      "bonus_pourcentage": null,
+      "parade_type": null,
+      "parade_chance": null
     },
     {
       "nom": "Masse d’armes",
@@ -527,7 +587,9 @@
       "puissance_contondante_base": 55,
       "prix_base": 120,
       "bonus_caracteristique": null,
-      "bonus_pourcentage": null
+      "bonus_pourcentage": null,
+      "parade_type": null,
+      "parade_chance": null
     },
     {
       "nom": "Massue",
@@ -544,7 +606,9 @@
       "puissance_contondante_base": 35,
       "prix_base": 100,
       "bonus_caracteristique": null,
-      "bonus_pourcentage": null
+      "bonus_pourcentage": null,
+      "parade_type": null,
+      "parade_chance": null
     },
     {
       "nom": "Nunchaku",
@@ -561,7 +625,9 @@
       "puissance_contondante_base": 35,
       "prix_base": 100,
       "bonus_caracteristique": null,
-      "bonus_pourcentage": null
+      "bonus_pourcentage": null,
+      "parade_type": null,
+      "parade_chance": null
     },
     {
       "nom": "Pavois",
@@ -578,7 +644,9 @@
       "puissance_contondante_base": 30,
       "prix_base": 100,
       "bonus_caracteristique": null,
-      "bonus_pourcentage": null
+      "bonus_pourcentage": null,
+      "parade_type": null,
+      "parade_chance": null
     },
     {
       "nom": "Pic de guerre",
@@ -595,7 +663,9 @@
       "puissance_contondante_base": 0,
       "prix_base": 120,
       "bonus_caracteristique": null,
-      "bonus_pourcentage": null
+      "bonus_pourcentage": null,
+      "parade_type": null,
+      "parade_chance": null
     },
     {
       "nom": "Pistolet",
@@ -612,7 +682,9 @@
       "puissance_contondante_base": 0,
       "prix_base": 180,
       "bonus_caracteristique": null,
-      "bonus_pourcentage": null
+      "bonus_pourcentage": null,
+      "parade_type": null,
+      "parade_chance": null
     },
     {
       "nom": "Rondache",
@@ -629,7 +701,9 @@
       "puissance_contondante_base": 20,
       "prix_base": 80,
       "bonus_caracteristique": null,
-      "bonus_pourcentage": null
+      "bonus_pourcentage": null,
+      "parade_type": null,
+      "parade_chance": null
     },
     {
       "nom": "Sabre",
@@ -646,7 +720,9 @@
       "puissance_contondante_base": 0,
       "prix_base": 120,
       "bonus_caracteristique": null,
-      "bonus_pourcentage": null
+      "bonus_pourcentage": null,
+      "parade_type": null,
+      "parade_chance": null
     },
     {
       "nom": "Sai",
@@ -663,7 +739,9 @@
       "puissance_contondante_base": 0,
       "prix_base": 80,
       "bonus_caracteristique": null,
-      "bonus_pourcentage": null
+      "bonus_pourcentage": null,
+      "parade_type": "tranchant",
+      "parade_chance": 5
     },
     {
       "nom": "Sarbacane",
@@ -680,7 +758,9 @@
       "puissance_contondante_base": 0,
       "prix_base": 80,
       "bonus_caracteristique": null,
-      "bonus_pourcentage": null
+      "bonus_pourcentage": null,
+      "parade_type": null,
+      "parade_chance": null
     },
     {
       "nom": "Trident",
@@ -697,7 +777,9 @@
       "puissance_contondante_base": 0,
       "prix_base": 120,
       "bonus_caracteristique": null,
-      "bonus_pourcentage": null
+      "bonus_pourcentage": null,
+      "parade_type": null,
+      "parade_chance": null
     },
     {
       "nom": "Tromblon",
@@ -714,7 +796,9 @@
       "puissance_contondante_base": 0,
       "prix_base": 210,
       "bonus_caracteristique": null,
-      "bonus_pourcentage": null
+      "bonus_pourcentage": null,
+      "parade_type": null,
+      "parade_chance": null
     }
   ]
 }

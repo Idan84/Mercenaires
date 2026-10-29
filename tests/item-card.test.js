@@ -44,6 +44,9 @@ assert.equal(lance.stat, null);
 // Bâtons (Idan, 2026-10-29) : + 5 % de Puissance magique ou + 10 % de Réserve de mana, quelle que soit la qualité.
 assert.deepEqual(cards.card(item("weapon","Bâton long",1,"worn")).stat, {name:"Puissance magique", percent:5});
 assert.deepEqual(cards.card(item("weapon","Bâton court",4,"luxury")).stat, {name:"Réserve de mana", percent:10});
+// Saï (Idan, 2026-10-29) : parade de 5 % contre les coups tranchants.
+assert.deepEqual(cards.card(item("weapon","Sai",1,"standard")).parry, {type:"tranchant", chance:5});
+assert.equal(cards.card(item("weapon","Dague",1,"standard")).parry, null);
 
 // Écu usé : blocage × 0,8, poids × 1,2, contact.
 const ecu = cards.card(item("weapon","Écu",1,"worn"));

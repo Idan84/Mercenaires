@@ -8,6 +8,10 @@
       "key": "nom"
     },
     {
+      "source": "Pluriel",
+      "key": "pluriel"
+    },
+    {
       "source": "Code",
       "key": "code"
     },
@@ -89,8 +93,181 @@
         "degats_pv_base": "1D6",
         "degats_type": "psychique"
       },
-      "description": "Base : guerrier gobelin novice (Idan, 2026-10-28) ; Vitesse 65 (6 cases), Volonté 50, 100 PV. Immunisé aux dégâts physiques ; au contact, 1D6 de dégâts psychiques × sa Volonté / celle de la cible (de × 0,5 à × 2), ni armure ni résistance."
+      "description": "Base : guerrier gobelin novice (Idan, 2026-10-28) ; Vitesse 65 (6 cases), Volonté 50, 100 PV. Immunisé aux dégâts physiques ; au contact, 1D6 de dégâts psychiques × sa Volonté / celle de la cible (de × 0,5 à × 2), ni armure ni résistance.",
+      "pluriel": "Spectres"
+    },
+    {
+      "nom": "Corbeau",
+      "pluriel": "Corbeaux",
+      "code": "raven",
+      "ecole": "Invocation",
+      "mort_vivant": false,
+      "immunite_physique": false,
+      "caracteristiques": {
+        "Force": 15,
+        "Constitution": 45,
+        "Dextérité": 65,
+        "Vitesse": 100,
+        "Endurance": 30,
+        "Esquive": 80,
+        "Chance": 43,
+        "Charisme": 38,
+        "Courage": 24,
+        "Intelligence": 32,
+        "Volonté": 30,
+        "Perception": 85,
+        "Puissance magique": 43,
+        "Réserve de mana": 43
+      },
+      "resistances": {
+        "Résistance physique": 1,
+        "Résistance au feu": 1,
+        "Résistance au froid": 2,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 10
+      },
+      "pv": 25,
+      "competences_martiales": {
+        "Armes naturelles": 25,
+        "Bec": 25,
+        "Discrétion": 95
+      },
+      "attaque": {
+        "nom": "Bec",
+        "degats_pv_base": "1D3",
+        "puissance_perforante": 10
+      },
+      "description": "Éclaireur (Idan, 2026-10-28) : 8 cases, 25 PV, très faible (Bec ≈ 6) ; Discrétion 95 (« on le voit, mais personne n'y prête attention »), Perception 85."
+    },
+    {
+      "nom": "Loup",
+      "pluriel": "Loups",
+      "code": "wolf",
+      "ecole": "Invocation",
+      "mort_vivant": false,
+      "immunite_physique": false,
+      "caracteristiques": {
+        "Force": 35,
+        "Constitution": 45,
+        "Dextérité": 65,
+        "Vitesse": 70,
+        "Endurance": 50,
+        "Esquive": 55,
+        "Chance": 43,
+        "Charisme": 38,
+        "Courage": 24,
+        "Intelligence": 32,
+        "Volonté": 30,
+        "Perception": 70,
+        "Puissance magique": 43,
+        "Réserve de mana": 43
+      },
+      "resistances": {
+        "Résistance physique": 1,
+        "Résistance au feu": 1,
+        "Résistance au froid": 2,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 10
+      },
+      "pv": 60,
+      "competences_martiales": {
+        "Armes naturelles": 40,
+        "Morsure": 40,
+        "Discrétion": 30
+      },
+      "attaque": {
+        "nom": "Morsure",
+        "degats_pv_base": "1D6",
+        "puissance_perforante": 30
+      },
+      "description": "Rapide, pas extrêmement fort (Idan, 2026-10-28) : 6 cases, 60 PV, Morsure ≈ 25 ; Perception 70 (flair)."
+    },
+    {
+      "nom": "Ours",
+      "pluriel": "Ours",
+      "code": "bear",
+      "ecole": "Invocation",
+      "mort_vivant": false,
+      "immunite_physique": false,
+      "caracteristiques": {
+        "Force": 85,
+        "Constitution": 85,
+        "Dextérité": 65,
+        "Vitesse": 20,
+        "Endurance": 70,
+        "Esquive": 30,
+        "Chance": 43,
+        "Charisme": 38,
+        "Courage": 24,
+        "Intelligence": 32,
+        "Volonté": 40,
+        "Perception": 40,
+        "Puissance magique": 43,
+        "Réserve de mana": 43
+      },
+      "resistances": {
+        "Résistance physique": 20,
+        "Résistance au feu": 1,
+        "Résistance au froid": 2,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 10
+      },
+      "pv": 250,
+      "competences_martiales": {
+        "Armes naturelles": 50,
+        "Griffes": 50,
+        "Discrétion": 15
+      },
+      "attaque": {
+        "nom": "Griffes",
+        "degats_pv_base": "1D8",
+        "puissance_tranchante": 45
+      },
+      "description": "Lent, résistant et fort (Idan, 2026-10-28) : 3 cases, 250 PV, Griffes ≈ 77, Résistance physique 20."
+    },
+    {
+      "nom": "Crocodile",
+      "pluriel": "Crocodiles",
+      "code": "crocodile",
+      "ecole": "Invocation",
+      "mort_vivant": false,
+      "immunite_physique": false,
+      "caracteristiques": {
+        "Force": 70,
+        "Constitution": 45,
+        "Dextérité": 65,
+        "Vitesse": 10,
+        "Endurance": 50,
+        "Esquive": 20,
+        "Chance": 43,
+        "Charisme": 38,
+        "Courage": 24,
+        "Intelligence": 32,
+        "Volonté": 20,
+        "Perception": 40,
+        "Puissance magique": 43,
+        "Réserve de mana": 43
+      },
+      "resistances": {
+        "Résistance physique": 25,
+        "Résistance au feu": 1,
+        "Résistance au froid": 2,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 10
+      },
+      "pv": 200,
+      "competences_martiales": {
+        "Armes naturelles": 55,
+        "Mâchoires": 55,
+        "Discrétion": 90
+      },
+      "attaque": {
+        "nom": "Mâchoires",
+        "degats_pv_base": "2D8",
+        "puissance_perforante": 60
+      },
+      "description": "Très lent, très discret, très gros dégâts (Idan, 2026-10-28) : 2 cases, 200 PV, Mâchoires ≈ 126, Discrétion 90, Résistance physique 25."
     }
   ],
-  "row_count": 1
+  "row_count": 5
 }

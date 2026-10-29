@@ -43,6 +43,9 @@
 //   zombie de 10 à 100 % de ses valeurs) et Invocation de spectre : test de Charisme et mana chaque tour pour les garder ;
 //   Drain de vie (la moitié des PV retirés au corps à corps, sur soi) ; Flèche de mort et Nécrose (dégâts nécrotiques :
 //   ni armure ni résistance, sans effet sur les morts-vivants) ; Flétrissement (plus aucun soin, 3 à 4 tours).
+// - École de l'Invocation (Idan, 2026-10-28) : mêmes règles d'invocation (Charisme, entretien). Corbeau (éclaireur très
+//   discret), Loups (1D6 + M/50, une meute = une invocation), Ours et Crocodiles (1D3) ; Bourbier (une case où l'on ne
+//   peut plus bouger, 2 à 3 tours) ; Transposition (le lanceur échange sa place avec une de ses invocations).
 (function(root,factory){
   const api=factory();
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
@@ -181,6 +184,15 @@
       const p=holdChance(unit,code),roll=d100();
       return {p,roll,held:roll<=p};
     }
+    // Nombre de créatures (Invocation ; Idan, 2026-10-28) : invocation_nb_des D invocation_de (1D6 loups, 1D3 ours ou
+    // crocodiles), + 1 par tranche de invocation_pas_maitrise de Maîtrise (loups : 50) ; une seule sans dés.
+    function summonCount(unit,code){
+      const s=spell(code),count=num(s?.invocation_nb_des,0),sides=num(s?.invocation_de,0),step=num(s?.invocation_pas_maitrise,0);
+      let rolled=0;
+      for(let i=0;i<count;i++) rolled+=die(sides);
+      const bonus=step>0?Math.floor(mastery(unit,code)/step):0;
+      return {count:count&&sides?rolled+bonus:1,rolled:count&&sides?rolled:null,dice:count&&sides?count+"D"+sides:null,bonus};
+    }
     function zombieShare(unit,code){
       return clamp((mastery(unit,code)+combat.statWithGear(unit,"Charisme"))/2,SUMMON.zombieMin,SUMMON.zombieMax);
     }
@@ -296,6 +308,8 @@
       const cell=s.cible==="case"||s.cible==="case_vide";
       if(s.cible==="mort"&&!isCorpse(target)) return {ok:false,reason:"Il faut le corps d'un combattant mort."};
       if(s.cible==="mort"&&cellFree===false) return {ok:false,reason:"Quelqu'un se tient sur le corps."};
+      // Transposition : une de ses propres invocations, n'importe où sur la carte.
+      if(s.cible==="invocation"&&!(target.summon&&target.summon.casterId===caster.id)) return {ok:false,reason:"Ce sort vise une de vos invocations."};
       if(!cell&&s.cible!=="mort"&&target.alive===false) return {ok:false,reason:"Cible hors combat."};
       if(s.cible==="allie_ou_soi"&&target!==caster&&target.team!==caster.team) return {ok:false,reason:"Ce sort vise un allié ou le lanceur."};
       if(s.cible==="ennemi"&&(target===caster||target.team===caster.team)) return {ok:false,reason:"Ce sort vise un ennemi."};
@@ -309,7 +323,7 @@
       if(s.effet==="purge_poison"&&!isPoisoned(target)) return {ok:false,reason:"La cible n'est pas empoisonnée."};
       const self=target===caster||(target.q===caster.q&&target.r===caster.r);
       const distance=self?0:combat.axialDistance(caster,target),reach=range(caster,code);
-      if(distance>reach) return {ok:false,reason:"Cible hors de portée ("+distance+" cases, portée "+reach+")."};
+      if(s.cible!=="invocation"&&distance>reach) return {ok:false,reason:"Cible hors de portée ("+distance+" cases, portée "+reach+")."};
       if(s.zone_forme==="ligne"&&distance<1) return {ok:false,reason:"Choisissez une case voisine : la vague part dans sa direction."};
       if(s.portee_min!=null&&distance<num(s.portee_min,0)) return {ok:false,reason:"Trop près ("+distance+" case"+(distance>1?"s":"")+", au moins "+num(s.portee_min,0)+")."};
       if(s.ligne_de_vue&&!self&&!lineOfSight) return {ok:false,reason:"Pas de ligne de vue."};
@@ -422,7 +436,12 @@
           result.fog={cells:wallCells(caster,target,zoneLength(caster,code)),turns:duration(caster,code)};
         }else if(s.effet==="resurrection"||s.effet==="invocation"){
           result.summon={code:s.code,creature:s.creature||null,upkeep:upkeepCost(caster,code),
-            share:s.effet==="resurrection"?zombieShare(caster,code):100,cell:{q:target.q,r:target.r}};
+            share:s.effet==="resurrection"?zombieShare(caster,code):100,cell:{q:target.q,r:target.r},
+            ...(s.effet==="invocation"?{count:summonCount(caster,code)}:{})};
+        }else if(s.effet==="bourbier"){
+          result.mire={q:target.q,r:target.r,turns:duration(caster,code)};
+        }else if(s.effet==="transposition"){
+          result.swap={from:{q:caster.q,r:caster.r},to:{q:target.q,r:target.r}};
         }else if(s.effet==="drain_de_vie"){
           result.effect={code:s.code,percent:bonus(caster,code),turns:duration(caster,code)};
         }else if(s.effet==="fletrissement"){
@@ -553,6 +572,7 @@
       holdChance,
       rollHold,
       zombieShare,
+      summonCount,
       isCorpse,
       pushCells,
       pullCells,

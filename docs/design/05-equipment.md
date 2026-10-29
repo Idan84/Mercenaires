@@ -206,6 +206,10 @@ Trois coiffes (`data/reference/helmets.json`), portées dans l’emplacement **C
 
 Tenus dans le set d’armes actif, en main principale ou secondaire, les bâtons servent la magie : le **Bâton long** donne **+5 %** de la Puissance magique de base, le **Bâton court** **+10 %** de la Réserve de mana de base. Le tier et la qualité ne changent rien ; rangé dans l’autre set, le bâton ne donne rien. Le combat et la magie (effet des sorts, mana maximum) lisent la valeur bonifiée ; la fiche (onglet Magie) et la carte d’objet la montrent. Données : `weapons.json`, colonnes `bonus_caracteristique` et `bonus_pourcentage`.
 
+### Saï (Idan, 2026-10-29)
+
+Le saï, arme de parade, **pare 5 %** des coups tranchants de mêlée (**10 %** avec deux saïs) : doc 04, « Parade du saï ». La carte d'objet l'indique.
+
 ### Échanges d’équipement : Donner, Retirer, Troquer (Idan, 2026-10-24)
 
 Depuis l’onglet Équipement de la fiche ou l’Intendance, le capitaine peut **Donner** un objet du stock (emplacement vide), **Retirer** un objet au mercenaire (il part au stock) ou **Troquer** (les deux à la fois). Le mercenaire répond dans une boîte de dialogue, positivement ou négativement ; seule réponse possible pour l’instant : **Partir** (plus tard : convaincre, intimider, défier en combat singulier).

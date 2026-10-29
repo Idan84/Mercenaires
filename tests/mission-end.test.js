@@ -101,6 +101,12 @@ assert.equal(r.offMap,true);
 assert.equal(r.death,null);
 assert.equal(r.wound,null);
 
+// Relevé en zombie par un nécromancien (Idan, 2026-10-28) : le jet de mort est forcément raté, sans tirage.
+draws=0;
+r=counting.resolveParticipant(merc(-3,{raised:true}));
+assert.equal(draws,0);
+assert.deepEqual([r.dead,r.outcome,r.death],[true,"dead",{p:100,roll:null,raised:true}]);
+
 // Mort du capitaine signalée (Game Over en campagne).
 const team=[merc(-5,{id:1,isCaptain:true}),merc(50,{id:2})];
 assert.equal(chain([roll(1)]).resolveMissionEnd(team).captainDead,true);

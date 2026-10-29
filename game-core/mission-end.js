@@ -83,6 +83,8 @@
         hp:p.hp,pvMax:p.pvMax,damageTaken:Number(p.damageTaken)||0,
         death:null,wound:null,dead:false,wounded:false,severity:null,woundDays:null,fatigueDays:null
       };
+      // Relevé en zombie par un nécromancien (Idan, 2026-10-28) : son jet de mort est forcément raté.
+      if(p.raised){ result.death={p:100,roll:null,raised:true}; result.dead=true; result.outcome="dead"; return result; }
       const pDeath=deathChance(p,Number(options.deathMultiplier)||1);
       if(pDeath!==null){
         const roll=d100();

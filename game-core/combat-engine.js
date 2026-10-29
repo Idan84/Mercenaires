@@ -214,7 +214,8 @@
       const fx=unit?.statMalus;
       return fx&&(fx.stats||[]).includes(stat)?Number(fx.malus)||0:0;
     }
-    function weaponTemplate(item){ return item?weaponByName.get(item.name)||null:null; }
+    // Arme naturelle d'une créature invoquée (summon-archetypes.json, attaque) : son gabarit voyage avec l'objet.
+    function weaponTemplate(item){ return item?item.template||weaponByName.get(item.name)||null:null; }
 
     function armorTemplate(item){
       if(!item) return null;
@@ -437,6 +438,7 @@
     // compétences d'arme ; la puissance du sort face à la résistance de l'armure au type ; puis la Résistance physique de la
     // cible, avec sa variation D3, comme pour une arme. Ne touche pas aux PV : l'écran de combat les applique.
     function spellPhysicalHit(caster,target,amount,{type="contondant",power=0,mastery=0}={}){
+      if(target.character?.immunePhysical) return {type,power,immune:true,wound:false,damage:0};
       const armorResistance=effectiveArmorResistance(target,type),matchup=power-armorResistance;
       const delta=statWithGear(caster,"Puissance magique")+0.2*mastery+matchup-statWithGear(target,"Endurance");
       const pWound=clamp(logistic(delta),10,90),woundRoll=d100();
@@ -754,6 +756,9 @@
     // Suite d'un Toucher réussi : blocage, critique au Toucher, Blesser, critique de blessure, dégâts.
     function resolveHit(attacker,defender,mode,{chargePower=0,backstab=false}={}){
       const weapon=weaponTemplate(activeWeaponItem(attacker));
+      const psychic=weapon?.degats_type==="psychique";
+      // Spectre (Idan, 2026-10-28) : immunisé aux dégâts physiques, le coup le traverse.
+      if(defender.character?.immunePhysical&&!psychic) return {immune:true,wound:false,damage:0};
 
       // Blocage bouclier physique V1 : après le Toucher, avant le critique ; au CAC comme au tir, même dans
       // le dos. Un coup bloqué ne compte pas comme un toucher réel : ni critique, ni Blesser, ni dégâts.
@@ -768,6 +773,7 @@
       const pCritical=criticalChance(attacker);
       const criticalHitRoll=d100(),criticalHit=criticalHitRoll<=pCritical;
       const crit={...block,pCritical,criticalHitRoll,criticalHit};
+      if(psychic) return {...crit,...psychicStrike(attacker,defender,weapon,criticalHit)};
       const matchup=selectDamageMatchup(attacker,defender,weapon,{backstab,ignoreArmor:criticalHit});
       const pWound=woundProbability(attacker,defender,mode,matchup,{chargePower});
       const woundRoll=d100(),wound=woundRoll<=pWound;
@@ -797,6 +803,18 @@
       if(defender.hp<=0) defender.alive=false;
 
       return {...crit,matchup,pWound,woundRoll,wound:true,...damageData,targetHp:defender.hp,targetDown:!defender.alive};
+    }
+
+    // Toucher spectral (Idan, 2026-10-28) : dégâts psychiques, sans Blesser ni armure ni résistance : 10 × dés × Volonté de
+    // l'attaquant / Volonté de la cible (de × 0,5 à × 2), dés au maximum sur un coup critique.
+    function psychicStrike(attacker,defender,weapon,critical=false){
+      const rolled=rollWeaponDamage(weapon,critical?"max":null);
+      const will=clamp(statWithGear(attacker,"Volonté")/Math.max(1,statWithGear(defender,"Volonté")),0.5,2);
+      const damage=Math.max(0,Math.ceil(10*rolled.total*will-1e-9));
+      defender.hp-=damage;
+      defender.damageTaken=(Number(defender.damageTaken)||0)+damage;
+      if(defender.hp<=0) defender.alive=false;
+      return {psychic:true,will,weaponRoll:rolled.total,weaponDice:rolled.dice,wound:true,damage,targetHp:defender.hp,targetDown:!defender.alive};
     }
 
     // Approximation projectile V1. Couloir de tir (Idan, 2026-10-08) : cône de 30° depuis le tireur, centré sur
@@ -913,8 +931,10 @@
     function fearHold(subject,caster,mastery,aura=0){
       return clamp(statWithGear(subject,"Courage")+aura+0.25*statWithGear(subject,"Volonté")-0.25*(mastery+statWithGear(caster,"Volonté")),5,95);
     }
+    // Sans peur : en frénésie (Illusion) ou mort-vivant (zombie, spectre : Idan, 2026-10-28) ; jamais de test de Courage.
+    function fearless(unit){ return Boolean(unit?.frenzy||unit?.character?.undead); }
     function resolveFear(subject,caster,mastery,units=[]){
-      if(!subject||subject.alive===false||subject.fleeing||subject.frenzy) return null;
+      if(!subject||subject.alive===false||subject.fleeing||fearless(subject)) return null;
       const aura=allyAura(subject,units),pHold=fearHold(subject,caster,mastery,aura.bonus),roll=d100();
       return {subject,source:caster,pHold,roll,flees:roll>pHold,aura:aura.bonus,auraFrom:aura.from};
     }
@@ -940,7 +960,7 @@
       let subject,source,pHold,rule,aura;
       if(result.wound){
         // Une cible déjà En Fuite ne reteste pas (décision Idan, Issue #8) ; en frénésie (Illusion), plus de peur.
-        if(!defender.alive||defender.fleeing||defender.frenzy) return null;
+        if(!defender.alive||defender.fleeing||fearless(defender)) return null;
         const surplus=result.mode==="melee"?Math.max(0,Number(context.defenderSurplus)||0):0;
         subject=defender;source=attacker;
         aura=allyAura(defender,context.units);
@@ -948,7 +968,7 @@
         rule=surplus>0?"outnumbered":"wounded";
       }else{
         // Tir : le tireur ne teste jamais. CAC : un attaquant qui participe à un encerclement ne teste pas.
-        if(result.mode!=="melee"||!attacker.alive||attacker.fleeing||attacker.frenzy||context.attackerEncircles) return null;
+        if(result.mode!=="melee"||!attacker.alive||attacker.fleeing||fearless(attacker)||context.attackerEncircles) return null;
         subject=attacker;source=defender;
         aura=allyAura(attacker,context.units);
         pHold=100-(100-courageHold(attacker,defender,0,aura.bonus))/2;

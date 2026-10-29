@@ -22,7 +22,8 @@ const files={
   characteristics:"characteristics.json",formulaConstants:"formula-constants.json",weapons:"weapons.json",
   baseArmors:"base-armors.json",itemQualities:"item-qualities.json",equipmentSlots:"equipment-slots.json",
   startingEquipmentGeneration:"starting-equipment-generation.json",binaryAptitudeGrants:"binary-aptitude-grants.json",
-  alignmentGeneration:"alignment-generation.json",spells:"spells.json",belts:"belts.json",amulets:"amulets.json"
+  alignmentGeneration:"alignment-generation.json",spells:"spells.json",belts:"belts.json",amulets:"amulets.json",
+  summonArchetypes:"summon-archetypes.json"
 };
 const reference=Object.fromEntries(Object.entries(files).map(([key,file])=>[key,read(file)]));
 // Tirages : la file d'abord (tirages imposés), sinon une suite fixe.
@@ -43,7 +44,7 @@ const api=new Function("game","$","esc","fmt","renderAvatar","combatEngine","Mer
   source+"\nreturn {makeMissionUnit,sortMissionInitiative,selectNextMissionPlayer,teachMissionTestSpells,setMissionMode,targetableMissionCells,"
   +"handleMissionHexClick,resetMissionActivation,missionAiCast,missionActionAvailability,autoResolveMission,missionKey,renderMissionSpellBar,"
   +"missionMagic,endMissionActivation,missionWeaponEnchantStrike,pruneMissionTerrain,occupiedMissionKeys,missionReachablePaths,"
-  +"renderMissionProgression,missionLineOfSight,missionCanAttack,frenzyMissionActivation};")
+  +"renderMissionProgression,missionLineOfSight,missionCanAttack,frenzyMissionActivation,maintainMissionSummons,checkMissionEnd,onMissionAttack};")
   .call(null,game,$,v=>String(v??""),v=>String(Math.round(Number(v)||0)),()=>"",()=>engine,Progression,MissionEnd,Magic);
 
 function newMission(){
@@ -80,13 +81,14 @@ assert.deepEqual(magic.knownSpells(u).map(s=>s.code),["quick_heal","deep_heal","
   "sixth_sense","titan_strength","cheetah_speed","stone_skin","venom_spit","cauterize",
   "shock","lightning_bolt","shock_weapon","chain_lightning","thunder","celerity",
   "attraction","projection","telekinetic_move","clash","force_field","stone_throw",
-  "fear","illusory_support","mass_courage","hidden_advance","psychic_shock","frenzy"]);
-assert.ok(m.players.every(p=>p.spells.length===43&&!(p.character.spells||[]).length));
+  "fear","illusory_support","mass_courage","hidden_advance","psychic_shock","frenzy",
+  "raise_dead","summon_specter","life_drain","death_arrow","necrosis","wither"]);
+assert.ok(m.players.every(p=>p.spells.length===49&&!(p.character.spells||[]).length));
 assert.equal(api.missionActionAvailability().testSpells,false,"une seule fois par combat");
-assert.ok(logged(/connaît tous les sorts \(Vie, Feu, Eau, Transmutation, Foudre, Télékinésie, Illusion, niveau 1\)/));
+assert.ok(logged(/connaît tous les sorts \(Vie, Feu, Eau, Transmutation, Foudre, Télékinésie, Illusion, Nécromancie, niveau 1\)/));
 const bar=api.renderMissionSpellBar(u);
 assert.match(bar,/Mana 53\/53/);
-assert.equal((bar.match(/data-spell=/g)||[]).length,43);
+assert.equal((bar.match(/data-spell=/g)||[]).length,49);
 assert.match(bar,/Soin rapide<small>rapide · \d+ mana · \d+ %<\/small>/);
 
 // Soin rapide : cases ciblables = le lanceur et les alliés à portée, jamais un ennemi lointain.
@@ -685,6 +687,157 @@ api.handleMissionHexClick(distant.q,distant.r);
 assert.ok(distant.hp<distant.pvMax);
 assert.ok(logged(/lance Choc psychique sur .* touché .* \d+ PV psychiques \(Volonté × [\d,]+\)/));
 
+// École de la Nécromancie dans l'écran de combat (Idan, 2026-10-28). Maîtrise 60,5 et Charisme 50 : zombie à 55 %,
+// maintien 82 %, entretien 4 mana ; Flétrissement 3 activations ; Drain de vie : cette activation et les 2 suivantes.
+for(const p of m.players){ p.character.skills.magic["Nécromancie"]=60; p.character.stats.Charisme=50; }
+for(const x of [u,ally,wet,distant]){ x.alive=true;x.hp=x.pvMax;x.fleeing=false;x.frenzy=null;x.statBuffs=null;x.regeneration=null; }
+u.q=2;u.r=4;ally.q=2;ally.r=5;wet.q=3;wet.r=4;distant.q=6;distant.r=4;
+assert.equal(magic.holdChance(u,"summon_specter").toFixed(1),"81.7");
+assert.equal(magic.upkeepCost(u,"summon_specter"),4);
+assert.equal(magic.zombieShare(u,"raise_dead"),55.25);
+// Flétrissement : plus aucun soin pendant ses 3 prochaines activations, même la Régénération.
+reset();
+api.setMissionMode("spell:wither");
+queue.push(0);
+api.handleMissionHexClick(distant.q,distant.r);
+assert.equal(distant.withered.turns,3);
+assert.ok(logged(/ne peut plus être soignée? ni récupérer de PV pendant ses 3 prochaines activations/));
+distant.hp=distant.pvMax-50;
+distant.regeneration={code:"regeneration",factor:1,turns:1,critical:true};
+api.resetMissionActivation(distant);
+assert.equal(distant.hp,distant.pvMax-50);
+assert.ok(logged(/Régénération : .* récupère 0 PV — flétrie?, aucun soin/));
+api.resetMissionActivation(distant);api.resetMissionActivation(distant);
+assert.ok(distant.withered,"encore flétri pendant sa 3e activation");
+api.resetMissionActivation(distant);
+assert.equal(distant.withered,null);
+assert.ok(logged(/n’est plus flétrie? : les soins agissent de nouveau/));
+// Flèche de mort : comme une flèche ; ni armure ni résistance.
+reset();
+let hpBefore=distant.hp;
+api.setMissionMode("spell:death_arrow");
+queue.push(0,0.99,0.5,0);
+api.handleMissionHexClick(distant.q,distant.r);
+assert.equal(distant.hp,hpBefore-magic.effectAmount(u,"death_arrow",4));
+assert.ok(logged(/lance Flèche de mort sur .* touché .* \d+ PV nécrotiques \(ni armure ni résistance\)/));
+// Nécrose : au contact, 2D8, sans jet de toucher.
+reset();
+hpBefore=wet.hp;
+api.setMissionMode("spell:necrosis");
+assert.deepEqual([...api.targetableMissionCells()],[api.missionKey(wet.q,wet.r)],"au contact seulement");
+queue.push(0,0.99,0.5,0.5);
+api.handleMissionHexClick(wet.q,wet.r);
+assert.equal(wet.hp,hpBefore-magic.effectAmount(u,"necrosis",10));
+// Les dégâts nécrotiques ne touchent pas les morts-vivants.
+reset();
+wet.character.undead=true;
+assert.match(magic.canCast(u,wet,"necrosis").reason,/ne fonctionne que sur les vivants/);
+wet.character.undead=false;
+// Drain de vie : sur soi, la moitié des PV retirés au corps à corps, pas sous zéro ; flétri, rien.
+reset();
+api.setMissionMode("spell:life_drain");
+queue.push(0);
+api.handleMissionHexClick(u.q,u.r);
+assert.deepEqual(u.lifeDrain,{code:"life_drain",percent:50,turns:2});
+assert.ok(logged(/lance Drain de vie .* : 50 % des PV .* pour cette activation et les 2 suivantes/));
+u.hp=u.pvMax-60;
+let strike={ok:true,wound:true,mode:"melee",damage:40,targetHp:10};
+api.onMissionAttack(u,wet,{},strike);
+assert.deepEqual(strike.drain,{amount:20,healed:20});
+strike={ok:true,wound:true,mode:"melee",damage:40,targetHp:-30};
+api.onMissionAttack(u,wet,{},strike);
+assert.equal(strike.drain.amount,5,"seuls les 10 PV qui restaient comptent");
+strike={ok:true,wound:true,mode:"ranged",damage:40,targetHp:10};
+api.onMissionAttack(u,wet,{},strike);
+assert.equal(strike.drain,undefined,"pas au tir");
+u.withered={turns:1};
+strike={ok:true,wound:true,mode:"melee",damage:40,targetHp:10};
+api.onMissionAttack(u,wet,{},strike);
+assert.deepEqual(strike.drain,{amount:20,healed:0});
+u.withered=null;u.lifeDrain=null;u.hp=u.pvMax;
+// Invocation de spectre : une case libre voisine ; il joue au tour suivant.
+reset();
+api.setMissionMode("spell:summon_specter");
+assert.ok(!api.targetableMissionCells().has(api.missionKey(wet.q,wet.r)),"une case libre");
+queue.push(0);
+api.handleMissionHexClick(1,4);
+const specter=m.players.find(x=>x.character.archetype==="specter");
+assert.ok(specter&&specter.summon.casterId===u.id&&specter.summon.upkeep===4);
+assert.deepEqual([specter.q,specter.r,specter.hp,specter.acted,specter.camouflaged],[1,4,100,true,true]);
+assert.equal(u.character.mana,53-20);
+assert.ok(m.playerOrder.includes(specter));
+assert.equal(engine.movementBase(specter),6,"rapide");
+assert.ok(logged(/lance Invocation de spectre .* : Spectre apparaît \(100 PV\) ; entretien 4 mana par tour/));
+// Immunisé aux dégâts physiques (armes et sorts) ; sans peur ; son Toucher spectral est psychique.
+assert.equal(engine.spellPhysicalHit(u,specter,50,{type:"contondant",power:30,mastery:60}).immune,true);
+const brute={id:"brute",team:"enemy",q:0,r:4,alive:true,hp:100,pvMax:100,activeSet:1,
+  character:{name:"Brute",stats:{"Dextérité":60,Force:60,Perception:40,Esquive:30},skills:{martial:{"Lames courtes":50,Dague:50}},
+    items:[{id:"d",name:"Dague",itemType:"weapon"}],equipment:{slots:{weapon_set_1_main:"d"}}}};
+queue.push(0);
+const pass=engine.resolveAttack(brute,specter,{mode:"melee",distance:1});
+assert.deepEqual([pass.hit,pass.immune,pass.damage,specter.hp],[true,true,0,100]);
+assert.equal(engine.resolveCourage(brute,specter,{ok:true,wound:true,mode:"melee"},{units:[]}),null,"un mort-vivant n'a pas peur");
+queue.push(0,0.99,0.5);
+const touch=engine.resolveAttack(specter,brute,{mode:"melee",distance:1});
+const will=Math.min(2,Math.max(0.5,50/engine.statWithGear(brute,"Volonté")));
+assert.deepEqual([touch.psychic,touch.weapon,touch.damage],[true,"Toucher spectral",Math.ceil(10*4*will-1e-9)]);
+// Chaque tour : test de Charisme, puis entretien ; raté, le spectre disparaît.
+queue.push(0);
+api.maintainMissionSummons();
+assert.equal(u.character.mana,33-4);
+assert.ok(logged(/garde Spectre \(Charisme 82 %, jet 1\) : −4 mana/));
+queue.push(0.99);
+api.maintainMissionSummons();
+assert.deepEqual([specter.alive,specter.vanished],[false,true]);
+assert.ok(logged(/perd le contrôle de Spectre \(Charisme 82 %, jet 100\) : il disparaît/));
+// Plus assez de mana : il disparaît aussi.
+reset();
+api.setMissionMode("spell:summon_specter");
+queue.push(0);
+api.handleMissionHexClick(1,4);
+const specter2=m.players.find(x=>x.character.archetype==="specter"&&x.alive);
+assert.equal(specter2.character.name,"Spectre 2");
+u.character.mana=2;
+queue.push(0);
+api.maintainMissionSummons();
+assert.equal(specter2.alive,false);
+assert.ok(logged(/n’a plus assez de mana pour garder Spectre 2 \(4 nécessaires\) : il disparaît/));
+// Résurrection : un ennemi mort, au contact, se relève en zombie de notre camp, à 55 %.
+reset();
+wet.alive=false;wet.hp=-5;
+api.setMissionMode("spell:raise_dead");
+assert.ok(api.targetableMissionCells().has(api.missionKey(wet.q,wet.r)));
+queue.push(0);
+api.handleMissionHexClick(wet.q,wet.r);
+const zombie=m.players.find(x=>x.character.archetype==="zombie");
+assert.ok(zombie&&wet.raised);
+assert.deepEqual([zombie.team,zombie.q,zombie.r,zombie.character.undead],["player",wet.q,wet.r,true]);
+assert.equal(zombie.character.stats.Force,Math.round(wet.character.stats.Force*0.55));
+assert.equal(zombie.pvMax,Math.round(wet.pvMax*0.55));
+assert.equal(zombie.character.items,wet.character.items,"il garde son arme et son armure");
+assert.ok(logged(/se relève en zombie, avec 55 % de ses forces/));
+assert.equal(magic.isCorpse(wet),false,"un corps ne se relève qu'une fois");
+// L'invocateur tombe : le zombie retombe en poussière.
+u.alive=false;
+api.checkMissionEnd();
+assert.equal(zombie.alive,false);
+assert.ok(logged(/ \(zombie\) : son invocateur est hors combat : il tombe en poussière/));
+u.alive=true;u.hp=u.pvMax;
+// Un allié relevé : il ne survivra pas au combat (jet de mort forcément raté au bilan).
+reset();
+ally.q=2;ally.r=5;ally.alive=false;ally.hp=-3;
+api.setMissionMode("spell:raise_dead");
+queue.push(0);
+api.handleMissionHexClick(ally.q,ally.r);
+assert.ok(logged(/ne survivra pas à ce combat/));
+for(const e of m.enemies) e.alive=false;
+api.checkMissionEnd();
+assert.equal(m.over,true);
+const raisedResult=m.aftermath.results.find(r=>r.id===ally.character.id);
+assert.deepEqual([raisedResult.dead,raisedResult.death.raised],[true,true]);
+assert.equal(m.aftermath.results.length,3,"ni zombie ni spectre au bilan");
+assert.ok(logged(/relevé en zombie par un nécromancien/));
+
 // Mort du poison au début de son activation : on passe au suivant.
 m=newMission();
 const doomed=m.playerOrder.find(p=>p!==m.activeUnit);
@@ -734,4 +887,4 @@ assert.ok(home.mana>0,"au camp : recharge");
 assert.equal(away.mana,0,"en route : rien");
 assert.ok(report.mana.some(x=>x.id===home.id));
 
-console.log("Sorts de Vie, du Feu, de l'Eau, de la Transmutation, de la Foudre, de la Télékinésie et de l'Illusion dans l'écran de combat, poison, recharge du mana au camp — OK");
+console.log("Sorts de Vie, du Feu, de l'Eau, de la Transmutation, de la Foudre, de la Télékinésie, de l'Illusion et de la Nécromancie dans l'écran de combat, poison, recharge du mana au camp — OK");

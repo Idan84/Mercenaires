@@ -39,6 +39,10 @@
 // - École de l'Illusion (Idan, 2026-10-28) : Peur (test de Courage des ennemis d'une zone contre la Maîtrise et la Volonté
 //   du lanceur), Soutien illusoire et Courage de masse (Courage), Avancée cachée (Discrétion), Choc psychique (dégâts ×
 //   Volonté du lanceur / Volonté de la cible), Frénésie (la cible joue seule, +10 % de Force, plus de peur).
+// - École de la Nécromancie (Idan, 2026-10-28) : le Charisme compte. Résurrection (un mort, allié ou ennemi, devient un
+//   zombie de 10 à 100 % de ses valeurs) et Invocation de spectre : test de Charisme et mana chaque tour pour les garder ;
+//   Drain de vie (la moitié des PV retirés au corps à corps, sur soi) ; Flèche de mort et Nécrose (dégâts nécrotiques :
+//   ni armure ni résistance, sans effet sur les morts-vivants) ; Flétrissement (plus aucun soin, 3 à 4 tours).
 (function(root,factory){
   const api=factory();
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
@@ -57,6 +61,8 @@
     const CAST={floor:constant("magic.cast.floor",10),span:constant("magic.cast.span",85),scale:constant("magic.cast.scale",15)};
     const FUMBLE_THRESHOLD=constant("combat.melee.fumble.threshold",96);
     const RECHARGE={base:constant("magic.mana.recharge_base",10),willShare:constant("magic.mana.recharge_will_share",0.5)};
+    const SUMMON={hold:constant("magic.summon.hold_difficulty",30),zombieMin:constant("magic.summon.zombie_share_min",10),
+      zombieMax:constant("magic.summon.zombie_share_max",100)};
     const die=sides=>1+Math.floor(random()*sides);
     const d100=()=>die(100);
     const clamp=(value,min,max)=>Math.min(max,Math.max(min,value));
@@ -159,7 +165,31 @@
       return {delta,base,armor,p:clamp(base-armor,0,100)};
     }
 
-    // Les morts-vivants n'existent pas encore (doc 17) : ils porteront undead = true ou la faction « Morts-vivants ».
+    // Invocations (Nécromancie ; Idan, 2026-10-28). Entretien : entretien_mana × (1 − Maîtrise / 300) mana par tour, au
+    // moins 1. Maintien : chaque tour, la formule de réussite d'un sort, avec le Charisme à la place de l'Intelligence et
+    // une difficulté de 30, sans l'armure ; raté, l'invocation disparaît. Zombie : (Maîtrise + Charisme) / 2 % du mort,
+    // de 10 à 100 %.
+    function upkeepCost(unit,code){
+      const s=spell(code);
+      return s?.entretien_mana?Math.max(1,Math.ceil(num(s.entretien_mana,0)*(1-mastery(unit,code)/num(s.mana_diviseur_maitrise,300))-1e-9)):0;
+    }
+    function holdChance(unit,code){
+      const delta=(mastery(unit,code)+combat.statWithGear(unit,"Charisme"))/2-SUMMON.hold;
+      return clamp(CAST.floor+CAST.span/(1+Math.exp(-delta/CAST.scale)),0,100);
+    }
+    function rollHold(unit,code){
+      const p=holdChance(unit,code),roll=d100();
+      return {p,roll,held:roll<=p};
+    }
+    function zombieShare(unit,code){
+      return clamp((mastery(unit,code)+combat.statWithGear(unit,"Charisme"))/2,SUMMON.zombieMin,SUMMON.zombieMax);
+    }
+    // Un corps qu'on peut relever : un combattant hors combat resté sur la carte, ni déjà relevé, ni une invocation.
+    function isCorpse(unit){
+      return Boolean(unit?.character)&&unit.alive===false&&!unit.offMap&&!unit.raised&&!unit.summon;
+    }
+
+    // Morts-vivants : undead = true (zombie, spectre) ou la faction « Morts-vivants ».
     function isUndead(unit){
       const c=unit?.character;
       return Boolean(c?.undead)||c?.faction==="Morts-vivants";
@@ -264,7 +294,9 @@
       if(s.cible==="soi") target=caster;
       if(!target) return {ok:false,reason:"Aucune cible."};
       const cell=s.cible==="case"||s.cible==="case_vide";
-      if(!cell&&target.alive===false) return {ok:false,reason:"Cible hors combat."};
+      if(s.cible==="mort"&&!isCorpse(target)) return {ok:false,reason:"Il faut le corps d'un combattant mort."};
+      if(s.cible==="mort"&&cellFree===false) return {ok:false,reason:"Quelqu'un se tient sur le corps."};
+      if(!cell&&s.cible!=="mort"&&target.alive===false) return {ok:false,reason:"Cible hors combat."};
       if(s.cible==="allie_ou_soi"&&target!==caster&&target.team!==caster.team) return {ok:false,reason:"Ce sort vise un allié ou le lanceur."};
       if(s.cible==="ennemi"&&(target===caster||target.team===caster.team)) return {ok:false,reason:"Ce sort vise un ennemi."};
       if(s.cible==="allie_ou_ennemi"&&(target===caster||!target.character)) return {ok:false,reason:"Ce sort vise un autre personnage."};
@@ -273,6 +305,7 @@
       if(target.character&&target.team&&target.team!==caster.team&&target.camouflaged) return {ok:false,reason:"Cible invisible : elle est camouflée."};
       if(s.cible==="case_vide"&&(cellFree===false||(target.q===caster.q&&target.r===caster.r))) return {ok:false,reason:"Il faut une case vide."};
       if(s.cible==="mort_vivant"&&!isUndead(target)) return {ok:false,reason:s.nom+" ne fonctionne que sur les morts-vivants."};
+      if(s.degats_type==="necrotique"&&isUndead(target)) return {ok:false,reason:s.nom+" ne fonctionne que sur les vivants."};
       if(s.effet==="purge_poison"&&!isPoisoned(target)) return {ok:false,reason:"La cible n'est pas empoisonnée."};
       const self=target===caster||(target.q===caster.q&&target.r===caster.r);
       const distance=self?0:combat.axialDistance(caster,target),reach=range(caster,code);
@@ -387,6 +420,13 @@
           result.move={kind:"case",destination:{q:options.destination.q,r:options.destination.r}};
         }else if(s.effet==="brouillard"){
           result.fog={cells:wallCells(caster,target,zoneLength(caster,code)),turns:duration(caster,code)};
+        }else if(s.effet==="resurrection"||s.effet==="invocation"){
+          result.summon={code:s.code,creature:s.creature||null,upkeep:upkeepCost(caster,code),
+            share:s.effet==="resurrection"?zombieShare(caster,code):100,cell:{q:target.q,r:target.r}};
+        }else if(s.effet==="drain_de_vie"){
+          result.effect={code:s.code,percent:bonus(caster,code),turns:duration(caster,code)};
+        }else if(s.effet==="fletrissement"){
+          result.effect={code:s.code,turns:duration(caster,code)};
         }else if(s.effet==="malus_caracteristiques"){
           // Gel : le malus baisse avec la protection de la cible contre l'élément (résistance, armure, Armure de feu).
           const raw=bonus(caster,code),hit=combat.elementalDamage(target,s.element,raw);
@@ -419,6 +459,7 @@
         if(s.effet==="degats_paire") result.second=options.second;
         // Dégâts physiques : l'écran de combat les fait passer par l'armure (combat.spellPhysicalHit).
         if(s.degats_type==="psychique") result.psychic=true;
+        else if(s.degats_type==="necrotique") result.necrotic=true;
         else if(s.degats_type) result.physical={type:s.degats_type,power:num(s.puissance,0),mastery:mastery(caster,code)};
         // Attraction, Projection : les cases à parcourir, et le choc si un obstacle arrête la cible.
         if(s.deplacement){
@@ -508,6 +549,11 @@
       chainTargets,
       forceSteps,
       willFactor,
+      upkeepCost,
+      holdChance,
+      rollHold,
+      zombieShare,
+      isCorpse,
       pushCells,
       pullCells,
       canCastPair,

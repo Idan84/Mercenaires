@@ -762,6 +762,16 @@
         trace.skills[row.cible].contributions.push(...contributions);
         trace.skills[row.cible].final = final;
       }
+      // Ajustements en D6 d'un peuple, hors échelle de la Matrice (peoples.json, ajustements_d6 ; Idan, 2026-10-29 :
+      // −1D6 de Discrétion aux Ogres).
+      for (const [target, count] of Object.entries(peopleByName.get(identity.people)?.ajustements_d6 || {})) {
+        const location = findSkillLocation(skills, target);
+        if (!count || !location || !Number.isFinite(location.values[target])) continue;
+        const rolled = rollDice(Math.abs(count), 6);
+        const delta = Math.sign(count) * rolled;
+        location.values[target] = Math.max(0, location.values[target] + delta);
+        trace.skills[target]?.contributions.push({name: identity.people, kind: "people", intensity: Math.sign(count), dice: `${Math.abs(count)}D6`, roll: rolled, delta});
+      }
       for (const [name, entry] of Object.entries(trace.skills)) {
         const location = findSkillLocation(skills, name);
         if (location && Number.isFinite(location.values[name])) entry.final = location.values[name];

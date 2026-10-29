@@ -73,6 +73,9 @@
         weight:number(weapon.malus_vitesse_arme_base)*q.bad,
         charge:charge>0?charge*q.good:null,
         block:block>0?block*q.good:null,
+        // Bâtons (Idan, 2026-10-29) : + un pourcentage d'une caractéristique, tant qu'ils sont tenus.
+        stat:weapon.bonus_caracteristique&&number(weapon.bonus_pourcentage)>0
+          ?{name:weapon.bonus_caracteristique,percent:number(weapon.bonus_pourcentage)}:null,
         counterCharge:Boolean(weapon.contre_charge),
         reload:Boolean(skill.recharge_action_rapide),
         chainShots:skill.cadence_tir==="Répétable",

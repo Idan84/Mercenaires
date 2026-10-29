@@ -257,8 +257,14 @@
       return Boolean(main&&off&&!isShield(main)&&!isShield(off));
     }
     // Dextérité effective = Dextérité (avec les gants), ou Dextérité / (2 − maîtrise Combat à deux armes / 100) à deux armes.
+    // Nunchaku (weapons.json, attaque_caracteristique, attaque_source et attaque_part ; Idan, 2026-10-29) : en attaquant
+    // avec lui, + 10 % de sa Télékinésie en Dextérité.
+    function attackStatBonus(unit,stat){
+      const weapon=weaponTemplate(activeWeaponItem(unit));
+      return weapon?.attaque_caracteristique===stat?(Number(weapon.attaque_part)||0)*statWithGear(unit,weapon.attaque_source):0;
+    }
     function effectiveDexterity(unit){
-      const dexterity=statWithGear(unit,"Dextérité");
+      const dexterity=statWithGear(unit,"Dextérité")+attackStatBonus(unit,"Dextérité");
       if(!isDualWielding(unit)) return dexterity;
       const skill=clamp(Number(unit.character.skills?.martial?.["Combat à deux armes"])||0,0,100);
       return dexterity/(DUAL.dexterityBase-skill/100);
@@ -813,7 +819,10 @@
       defender.damageTaken=(Number(defender.damageTaken)||0)+damageData.damage;
       if(defender.hp<=0) defender.alive=false;
 
-      return {...crit,matchup,pWound,woundRoll,wound:true,...damageData,targetHp:defender.hp,targetDown:!defender.alive};
+      // Sarbacane (Idan, 2026-10-29) : une fléchette qui blesse empoisonne (poison : POISON.turns tours, 10 × dés × qualité).
+      const poison=weapon?.empoisonne&&damageData.damage>0&&defender.alive
+        ?{turns:POISON.turns,amount:Math.ceil(10*parseDice(weapon.degats_pv_base).count*(Number(quality(activeWeaponItem(attacker)).multiplicateur_qualite)||1)-1e-9)}:null;
+      return {...crit,matchup,pWound,woundRoll,wound:true,...damageData,targetHp:defender.hp,targetDown:!defender.alive,...(poison?{poison}:{})};
     }
 
     // Parade (weapons.json, parade_type et parade_chance ; Idan, 2026-10-29) : chaque arme tenue dans le set actif qui pare ce
@@ -1079,6 +1088,7 @@
       spellPhysicalHit,
       fearHold,
       parryChance,
+      attackStatBonus,
       resolveFear,
       poisonResistChance,
       resolvePoison,

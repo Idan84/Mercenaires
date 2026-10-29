@@ -446,6 +446,20 @@ assert.equal(combat.allyAura({...whipFriend,q:4},[whipper,whipFriend]).whip,0,"a
 assert.equal(combat.allyAura(whipFriend,[whipper,{...whipper,id:"w2",q:1},whipFriend]).whip,courageBase*0.1,"pas de cumul");
 assert.equal(combat.allyAura({...whipFriend,team:"enemy"},[whipper,whipFriend]).whip,0,"pas les ennemis");
 
+// Nunchaku (Idan, 2026-10-29) : en attaquant avec lui, + 10 % de sa Télékinésie en Dextérité ; pas avec une autre arme.
+const kinetic=c=>({...c,skills:{...c.skills,magic:{...(c.skills.magic||{}),"Télékinésie":60}}});
+const nunchakuUser=unit(wield(kinetic(a),"Nunchaku"),0,0),daggerUser=unit(wield(kinetic(a),"Dague"),0,0);
+assert.equal(combat.attackStatBonus(nunchakuUser,"Dextérité"),6);
+assert.equal(combat.effectiveDexterity(nunchakuUser),combat.statWithGear(nunchakuUser,"Dextérité")+6);
+assert.equal(combat.effectiveDexterity(daggerUser),combat.statWithGear(daggerUser,"Dextérité"));
+// Sarbacane (Idan, 2026-10-29) : une fléchette qui blesse empoisonne (3 tours, 10 PV par tour) ; ratée, rien.
+const blower=unit(wield(a,"Sarbacane"),0,0),dartTarget=unit(b,3,0);
+r=scripted([1,100,1,1,100,1,2],[100]).resolveAttack(blower,dartTarget,{mode:"ranged",distance:3});
+assert.equal(r.wound,true);
+assert.deepEqual(r.poison,{turns:3,amount:10});
+r=scripted([100,100],[100]).resolveAttack(blower,dartTarget,{mode:"ranged",distance:3});
+assert.equal(r.poison,undefined);
+
 // Vitesse combat effective CAC V1 : le malus du bouclier s'ajoute à celui de l'arme, et l'arme Au choix
 // passe en mode une main (son malus n'est plus divisé par deux).
 const penalty=(c,slot)=>{

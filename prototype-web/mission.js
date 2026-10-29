@@ -649,6 +649,7 @@ function logMissionAttack(a,d,result,kind="attack"){
   const psychic=result.psychic?" psychiques (Volonté × "+(Math.round(result.will*100)/100).toLocaleString("fr-FR")+")":"";
   missionLog(prefix+" : "+result.damage+" PV"+psychic+". "+d.character.name+" reste à "+Math.max(0,result.targetHp)+" PV"+(result.targetHp<0?" ("+result.targetHp+" sous zéro)":"")+"."+critical+criticalWound,"damage");
   if(result.targetDown) missionLog(d.character.name+" est hors combat.","death");
+  if(result.poisonApplied) missionLog(d.character.name+" est empoisonné"+(missionFeminine(d)?"e":"")+" pour "+result.poison.turns+" tours ("+result.poison.amount+" PV par tour).","bad");
   if(result.drain) missionLog("Drain de vie : "+a.character.name+" récupère "+result.drain.healed+" PV"
     +(result.drain.healed<result.drain.amount?" (sur "+result.drain.amount+")"+missionWitherNote(a):"")+".","magic");
 }
@@ -657,11 +658,18 @@ function logMissionAttack(a,d,result,kind="attack"){
 // lanceur récupère percent % des PV que son coup d'arme au corps à corps a retirés (pas sous zéro).
 function onMissionAttack(attacker,defender,options,result){
   MercenairesProgression.recordAttack(attacker,defender,options,result);
+  poisonMissionTarget(attacker,defender,result);
   const fx=attacker.lifeDrain;
   if(!fx||!result?.ok||!result.wound||result.mode!=="melee"||!(result.damage>0)||!attacker.alive) return;
   const removed=Math.min(result.damage,Math.max(0,(Number(result.targetHp)||0)+result.damage));
   const amount=Math.ceil(removed*fx.percent/100-1e-9);
   if(amount>0) result.drain={amount,healed:healMissionUnit(attacker,amount)};
+}
+// Sarbacane (Idan, 2026-10-29) : la fléchette qui blesse empoisonne la cible (doc 12, Poison).
+function poisonMissionTarget(attacker,defender,result){
+  if(!result?.poison||!defender.alive) return;
+  defender.poisoned={code:"blowgun",turns:result.poison.turns,amount:result.poison.amount,sourceId:attacker.id};
+  result.poisonApplied=true;
 }
 
 function missionPercent(p){ return (Math.round((Number(p)||0)*10)/10).toLocaleString("fr-FR")+" %"; }

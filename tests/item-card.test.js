@@ -53,6 +53,8 @@ assert.deepEqual([whip.stat, whip.aura, whip.range], [{name:"Charisme", percent:
 assert.equal(cards.card(item("weapon","Fléau d’armes",1,"standard")).blockCut, 50);
 assert.deepEqual(cards.card(item("weapon","Trident",1,"standard")).stat, {name:"Eau", percent:20});
 assert.deepEqual(cards.card(item("weapon","Marteau de guerre",1,"standard")).stat, {name:"Foudre", percent:10});
+assert.equal(cards.card(item("weapon","Sarbacane",1,"standard")).poison, true);
+assert.deepEqual(cards.card(item("weapon","Nunchaku",1,"standard")).attackBonus, {stat:"Dextérité", source:"Télékinésie", percent:10});
 
 // Écu usé : blocage × 0,8, poids × 1,2, contact.
 const ecu = cards.card(item("weapon","Écu",1,"worn"));

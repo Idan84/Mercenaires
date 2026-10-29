@@ -820,8 +820,13 @@
       if(defender.hp<=0) defender.alive=false;
 
       // Sarbacane (Idan, 2026-10-29) : une fléchette qui blesse empoisonne (poison : POISON.turns tours, 10 × dés × qualité).
-      const poison=weapon?.empoisonne&&damageData.damage>0&&defender.alive
-        ?{turns:POISON.turns,amount:Math.ceil(10*parseDice(weapon.degats_pv_base).count*(Number(quality(activeWeaponItem(attacker)).multiplicateur_qualite)||1)-1e-9)}:null;
+      // Fiole de poison (Idan, 2026-10-29) : l'arme enduite (attacker.weaponPoison, l'objet tenu) empoisonne aussi, au
+      // corps à corps comme au tir, de amount PV par tour. Les deux à la fois : le plus fort.
+      const coated=attacker.weaponPoison&&attacker.weaponPoison.itemId!=null&&attacker.weaponPoison.itemId===activeWeaponItem(attacker)?.id;
+      const blowgun=weapon?.empoisonne?Math.ceil(10*parseDice(weapon.degats_pv_base).count*(Number(quality(activeWeaponItem(attacker)).multiplicateur_qualite)||1)-1e-9):0;
+      const vial=coated?Number(attacker.weaponPoison.amount)||0:0;
+      const poison=(blowgun||vial)&&damageData.damage>0&&defender.alive
+        ?{turns:POISON.turns,amount:Math.max(blowgun,vial),source:vial>blowgun?"poison_vial":"blowgun"}:null;
       return {...crit,matchup,pWound,woundRoll,wound:true,...damageData,targetHp:defender.hp,targetDown:!defender.alive,...(poison?{poison}:{})};
     }
 

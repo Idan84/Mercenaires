@@ -487,6 +487,21 @@
         "weight",
         "statut"
       ]
+    },
+    {
+      "name": "potions",
+      "file": "potions.json",
+      "rows": 3,
+      "columns": [
+        "nom",
+        "code",
+        "effet",
+        "pourcentage",
+        "tours",
+        "degats_poison",
+        "prix_base",
+        "description"
+      ]
     }
   ]
 }

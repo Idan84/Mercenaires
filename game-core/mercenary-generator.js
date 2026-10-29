@@ -59,6 +59,7 @@
     const pantsRows = rows.pants || [];
     const ringRows = rows.rings || [];
     const helmetRows = rows.helmets || [];
+    const potionRows = rows.potions || [];
     const spellRows = rows.spells || [];
     const itemQualityRows = rows.itemQualities || [];
     const equipmentSlotRows = rows.equipmentSlots || [];
@@ -1048,6 +1049,32 @@
     function createStartingRingStock(captain) { return createStartingStatGearStock(captain, "ring", "ring"); }
     function createStartingHelmetStock(captain) { return createStartingStatGearStock(captain, "helmet", "helmet"); }
 
+    // Potions et fioles (Idan, 2026-10-29) : objets de ceinture à usage unique (potions.json), sans tier ni qualité
+    // pour l'instant ; elles vont dans les emplacements belt_item_1 à belt_item_4.
+    function potionItem(character, template) {
+      if (!template) return null;
+      return {
+        id: makeItemId(character, "belt_item"),
+        templateId: `potion:${template.code || normalizeKey(template.nom)}`,
+        name: template.nom,
+        itemType: "potion",
+        slot: null,
+        owner: character.id ?? null,
+        tier: 1,
+        qualityCode: null,
+        qualityName: null,
+        category: "Potion",
+        combatFamily: null,
+        grip: null,
+        description: template.description || null
+      };
+    }
+    // Stock de départ : 1D6 fioles de chaque sorte, comme les autres objets (Idan, 2026-10-29).
+    function createStartingPotionStock(captain) {
+      const count = () => rollDice(constant("company.starting_stock.potion_dice_count", 1), constant("company.starting_stock.potion_dice_sides", 6));
+      return potionRows.flatMap(template => Array.from({length:count()}, () => ({...potionItem(captain, template), owner:null})));
+    }
+
     // Coffre d'un camp ennemi (doc 17 §8) : un objet à bonus tiré au hasard (bottes, ceinture, amulette, cape, gants,
     // culotte ou bague), tier selon la réputation du personnage donné, sans propriétaire.
     // Objet du coffre d'un camp (Idan, 2026-10-25 : « il faut pouvoir trouver de l'équipement T2 ou T3 à ce stade ») :
@@ -1125,6 +1152,13 @@
           items.push(item);
           slots[gear.slot] = item.id;
         }
+      }
+      // Une fiole (Idan, 2026-10-29) : 5 % de chance, d'une sorte tirée au hasard, dans le premier emplacement de ceinture.
+      const potionChance = Number(startingEquipmentGeneration.potion_chance);
+      if (potionRows.length && random() < (Number.isFinite(potionChance) ? potionChance : 0.05)) {
+        const potion = {...potionItem(character, randomChoice(potionRows)), slot:"belt_item_1"};
+        items.push(potion);
+        slots.belt_item_1 = potion.id;
       }
 
       return {
@@ -1583,6 +1617,8 @@
       createStartingPantsStock,
       createStartingRingStock,
       createStartingHelmetStock,
+      createStartingPotionStock,
+      potionItem,
       createLootItem,
       createChestItem,
       people: () => peopleRows.map(r => r.nom),

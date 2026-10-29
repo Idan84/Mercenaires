@@ -18,6 +18,7 @@ function dealSlotLabel(slot){
 }
 function dealItemLabel(item){
   if(!item) return "";
+  if(item.itemType==="potion") return item.name;
   const title=typeof itemCardRules==="function"?itemCardRules()?.title(item):null;
   return `${title||item.name} (T${item.tier})`;
 }
@@ -35,14 +36,14 @@ function dealOffers(m,slot){
 }
 function dealOfferButton(item,attrs){
   return `<button type="button" class="deal-offer" ${attrs}>${gearTile({id:"stock",label:item.name},item).replace('tabindex="0"','tabindex="-1"')}
-    <span><b>${esc(dealItemLabel(item))}</b><small>${esc(item.name)} · ${esc(item.qualityName||"")}</small></span></button>`;
+    <span><b>${esc(dealItemLabel(item))}</b><small>${esc(item.itemType==="potion"?"Potion · usage unique":item.name+" · "+(item.qualityName||""))}</small></span></button>`;
 }
 
 // Menu de la fiche : l'emplacement, ce qu'il contient, et ce qu'on peut faire.
 function sheetDealMenu(m,slot){
   const copy=dealCopy().menu||{},current=dealItemIn(m,slot);
   const captain=m.id===game.campaign.company.captainId;
-  const allowed=dealRules().canDeal(game.campaign,m);
+  const allowed=dealRules().canDeal(game.campaign,m,slot);
   const head=`<p class="deal-menu-title">${esc(dealSlotLabel(slot))}</p>${current?`<p class="deal-menu-current">${esc(dealItemLabel(current))}</p>`:""}`;
   if(!allowed.ok) return head+`<p class="deal-menu-note">${esc(allowed.reason)}</p>`;
   const offers=dealOffers(m,slot);
@@ -60,10 +61,13 @@ function stockDealMenu(itemId){
   if(!item) return "";
   const company=game.campaign.company;
   const members=[...company.roster].sort((a,b)=>(b.id===company.captainId)-(a.id===company.captainId));
+  // Une fiole (Idan, 2026-10-29) : la première poche de ceinture libre ; ceinture pleine, rien à proposer.
+  const potion=item.itemType==="potion";
   const rows=members.map(m=>{
-    const slots=dealRules().compatibleSlots(m,item);
-    if(!slots.length) return "";
-    const allowed=dealRules().canDeal(game.campaign,m);
+    let slots=dealRules().compatibleSlots(m,item);
+    if(potion) slots=slots.filter(({current})=>!current).slice(0,1);
+    if(!slots.length) return potion?`<div class="deal-member"><b>${esc(m.name)}</b><small class="deal-menu-note">Ceinture pleine (4 fioles).</small></div>`:"";
+    const allowed=dealRules().canDeal(game.campaign,m,slots[0].slot);
     const choices=allowed.ok?slots.map(({slot,current})=>`<button type="button" class="deal-slot" data-deal-member="${esc(m.id)}" data-deal-slot="${esc(slot)}" data-deal-stock="${esc(item.id)}">
         ${esc(dealSlotLabel(slot))}<small>${current?`contre ${esc(dealItemLabel(current))}`:"libre"}</small></button>`).join("")
       :`<small class="deal-menu-note">${esc(allowed.reason)}</small>`;

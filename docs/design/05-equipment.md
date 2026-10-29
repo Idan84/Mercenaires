@@ -202,6 +202,23 @@ Trois coiffes (`data/reference/helmets.json`), portées dans l’emplacement **C
 - Au combat (`statWithGear`) : la Vitesse (déplacement, Initiative) ; l’Intelligence pour l’Initiative et le choix du type de dégâts. La Constitution compte dans les **PV max** (Idan, 2026-10-25 : ils suivent la Constitution, l’Endurance et la Volonté équipées, voir `formulas/pv-maximum-v1.md`) ; la Puissance magique et le Compagnon animal servent à des systèmes à venir : la fiche montre les valeurs bonifiées (Caractéristiques, Magie, Compétences) avec la ligne du casque.
 - **5 %** de chance d’en avoir un à la création (`helmet_chance`) ; **1D6** au stock de départ (doc 11 §16) ; ils peuvent tomber du coffre d’un camp. Titres par tier : `item-titles.json` (JC). Images : `assets-src/Equipements/Casques/` (Jean-Mimi).
 
+### Potions et fioles (Idan, 2026-10-29)
+
+Trois consommables (`data/reference/potions.json`), rangés dans les **4 emplacements de ceinture** (`belt_item_1` à `belt_item_4`) :
+
+- **Potion de soins** : rend **20 %** des PV max (arrondi au supérieur, sans dépasser le maximum) ; un mercenaire flétri (Flétrissement, doc 12) n’en profite pas.
+- **Potion de mana** : rend **20 %** du mana max.
+- **Fiole de poison** : enduit l’**arme active** pendant **3 tours** ; chaque coup qui **blesse**, au corps à corps comme au tir (Idan : « oui » pour les armes à distance), **empoisonne** la cible : le poison du doc 12, **10 PV par tour** pendant 3 tours, jet de résistance à chaque activation.
+- **Usage** : en combat, **action rapide**, **sur soi seulement** (Idan, 2026-10-29) ; la fiole est **consommée**. Celles qui restent dans la ceinture repartent avec le mercenaire.
+- **Pas de tier ni de qualité** pour l’instant : l’effet est fixe.
+- **Distribution libre** : à l’Intendance ou sur la fiche, une fiole se donne ou se reprend sans jet, sans affinité, sans limite par jour et sans entrer dans l’historique (ce sont les consommables de la compagnie). « Donner à… » la range dans la première poche libre.
+- **Génération** : **1D6 de chaque sorte** au stock de départ (doc 11 §16, « comme les autres objets ») ; **5 %** de chance qu’une recrue arrive avec une fiole d’une sorte tirée au hasard (`potion_chance`), dans la première poche.
+- **Valeur cachée** (Idan : « je te laisse faire ») : `prix_base` 25 PO (soins), 25 PO (mana), 20 PO (poison) ; sans tier ni qualité, la valeur est le prix de base.
+- **Écran de combat** : un bouton par sorte dans la barre des sorts (« Potion de soins ×2 »), grisé quand l'action rapide est prise ou que la fiole ne servirait à rien (PV ou mana au maximum, flétri). Un chiffre saute au-dessus du pion ; la fiche de survol montre « Arme empoisonnée ».
+- **Combat automatique et IA** : une potion de soins sous 30 % des PV ; une potion de mana quand le mana ne suffit plus pour aucun sort connu ; la fiole de poison au premier contact, juste avant de frapper. Les ennemis n'en ont pas pour l'instant.
+- **XP** : les PV rendus par la potion de soins comptent pour la Constitution, comme les autres soins (doc 08).
+- **Icônes** : à venir (Idan) ; en attendant, le picto de poche de ceinture. Dépôt : `assets-src/Potions/<code>.jpg`.
+
 ### Bâtons (Idan, 2026-10-29)
 
 Tenus dans le set d’armes actif, en main principale ou secondaire, les bâtons servent la magie : le **Bâton long** donne **+5 %** de la Puissance magique de base, le **Bâton court** **+10 %** de la Réserve de mana de base. Le tier et la qualité ne changent rien ; rangé dans l’autre set, le bâton ne donne rien. Le combat et la magie (effet des sorts, mana maximum) lisent la valeur bonifiée ; la fiche (onglet Magie) et la carte d’objet la montrent. Données : `weapons.json`, colonnes `bonus_caracteristique` et `bonus_pourcentage`.

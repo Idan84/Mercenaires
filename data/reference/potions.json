@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "name": "potions",
+  "description": "Potions et fioles (Idan, 2026-10-29) : objets de ceinture (4 emplacements) à usage unique, utilisés en combat par une action rapide, sur soi seulement. Pas de tier ni de qualité pour l'instant. pourcentage : part des PV max (soin) ou du mana max (mana) rendue ; tours : durée de l'arme enduite (poison_arme) ; degats_poison : PV par tour du poison posé par l'arme enduite (poison du doc 12, combat.poison.turns tours, jet de résistance) ; prix_base : valeur cachée en pièces d'or (JC3, à la demande d'Idan).",
+  "columns": [
+    {
+      "source": "Nom",
+      "key": "nom"
+    },
+    {
+      "source": "Code",
+      "key": "code"
+    },
+    {
+      "source": "Effet",
+      "key": "effet"
+    },
+    {
+      "source": "Pourcentage",
+      "key": "pourcentage"
+    },
+    {
+      "source": "Tours",
+      "key": "tours"
+    },
+    {
+      "source": "Dégâts du poison",
+      "key": "degats_poison"
+    },
+    {
+      "source": "Prix de base",
+      "key": "prix_base"
+    },
+    {
+      "source": "Description",
+      "key": "description"
+    }
+  ],
+  "rows": [
+    {
+      "nom": "Potion de soins",
+      "code": "healing_potion",
+      "effet": "soin",
+      "pourcentage": 20,
+      "tours": null,
+      "degats_poison": null,
+      "prix_base": 25,
+      "description": "Une gorgée amère qui referme les plaies : rend 20 % des PV max."
+    },
+    {
+      "nom": "Potion de mana",
+      "code": "mana_potion",
+      "effet": "mana",
+      "pourcentage": 20,
+      "tours": null,
+      "degats_poison": null,
+      "prix_base": 25,
+      "description": "Un liquide bleuté qui pétille sur la langue : rend 20 % du mana max."
+    },
+    {
+      "nom": "Fiole de poison",
+      "code": "poison_vial",
+      "effet": "poison_arme",
+      "pourcentage": null,
+      "tours": 3,
+      "degats_poison": 10,
+      "prix_base": 20,
+      "description": "De quoi enduire une lame ou des pointes de flèche : pendant 3 tours, l'arme empoisonne ceux qu'elle blesse."
+    }
+  ],
+  "row_count": 3
+}

@@ -166,9 +166,11 @@ function renderMercenaryRoster() {
   const count=$("initial-count");
   count.innerHTML=`<span class="roster-count-number">${squad.length} mercenaire${squad.length!==1?"s":""}</span><span class="roster-count-capacity">Dortoir : ${dormitoryPlacesText(occupied)} / ${Number.isFinite(capacity)?capacity:"—"}</span>`;
   count.title="Places occupées au dortoir : un ogre en prend deux ; un halfling, un gnome ou un gobelin une demi ; le capitaine et l’intendant n’en prennent pas.";
+  const link=$("roster-company-link");
+  if(link) link.textContent=typeof companyPhrase==="function"?companyPhrase():(company?.name||"la compagnie");
   $("roster-sort").value=rosterSortKey;
   const direction=$("roster-sort-direction");
-  direction.textContent=rosterSortDescending?"↓ Décroissant":"↑ Croissant";
+  direction.textContent=rosterSortDescending?"↓":"↑";
   direction.setAttribute("aria-label",rosterSortDescending?"Trier par ordre croissant":"Trier par ordre décroissant");
   direction.title=direction.getAttribute("aria-label");
   $("initial-squad").innerHTML=sortMercenaryRoster(squad).map(c=>characterRow(c)).join("");

@@ -6,10 +6,22 @@
 const SCREEN_PANELS=[["mission","mission-panel"],["gameover","game-over-panel"],["creation","creation-wizard"],["intro","intro-panel"],["camp","game-panel"],["setup","setup-panel"]];
 const CAMP_SCENES=["company","dormitory","mercenaries","tavern","quartermaster","merchant"];
 
+// Scènes sans bouton retour (Idan, 2026-10-30) : un clic hors du cadre ramène au camp.
+const CAMP_SCENES_CLOSED_FROM_OUTSIDE=["mercenaries"];
+
 function updateCampHomeIcon(){
   const button=document.getElementById("camp-home-icon-btn");
   if(!button) return;
-  button.classList.toggle("hidden",document.body.dataset.screen!=="camp"||document.body.dataset.campScene==="home");
+  const scene=document.body.dataset.campScene;
+  button.classList.toggle("hidden",document.body.dataset.screen!=="camp"||scene==="home"||CAMP_SCENES_CLOSED_FROM_OUTSIDE.includes(scene));
+}
+
+function closeCampSceneFromOutside(event){
+  const scene=document.body.dataset.campScene;
+  if(document.body.dataset.screen!=="camp"||!CAMP_SCENES_CLOSED_FROM_OUTSIDE.includes(scene)) return;
+  if(document.querySelector("dialog[open]")||!(event.target instanceof Element)) return;
+  if(event.target.closest(`[data-camp-scene-panel="${scene}"] .panel, [data-open-camp-scene], #camp-home, #game-hud, #game-pause, dialog, #item-card-float`)) return;
+  openCampScene("home");
 }
 
 function openCampScene(scene="home"){
@@ -209,6 +221,7 @@ function initializeScreenUi(){
     if(open)gameAction("Destination : "+(open.dataset.destination||open.textContent.trim())+".");
   });
   $("game-panel")?.addEventListener("click",handleCampNavigation);
+  document.addEventListener("click",closeCampSceneFromOutside);
   closeDialogsFromOutside();
   openCampScene("home");
   updateScreen();

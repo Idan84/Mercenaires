@@ -2064,13 +2064,12 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .roster-count-number{font-weight:750}
 .roster-count-capacity{color:#dbb983;border-left:1px solid #816246;padding-left:12px}
 .roster-toolbar{display:flex;align-items:center;justify-content:flex-end;gap:9px;margin:-3px 0 17px;flex-wrap:wrap}
-.roster-toolbar label{display:inline-flex;align-items:center;padding:8px 10px;background:#34281f;border:1px solid #906f4b;border-radius:8px;color:#f4ddbb;font-size:13px;font-weight:700}
 .roster-toolbar select{width:auto;min-width:173px;padding:8px 28px 8px 10px;background:#34281f;border:1px solid #906f4b;border-radius:8px;color:#f4ddbb;font-size:13px}
-.roster-sort-direction{padding:8px 11px;border:1px solid #906f4b;border-radius:8px;background:#34281f;color:#f4ddbb;font-size:13px;white-space:nowrap}
+.roster-sort-direction{min-width:42px;padding:3px 11px;border:1px solid #906f4b;border-radius:8px;background:#34281f;color:#f4ddbb;font-size:22px;line-height:1.2;white-space:nowrap}
 .roster-sort-direction:hover,.roster-sort-direction:focus-visible,.roster-toolbar select:focus-visible{border-color:#ebc17d;outline:2px solid #ebc17d55}
 @media(max-width:1080px){#initial-squad{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:720px){#initial-squad{grid-template-columns:1fr}.roster-card{grid-template-columns:86px minmax(0,1fr) auto}.roster-card .avatar-frame{width:86px}.roster-count{width:100%}.roster-count-capacity{border-left:0;padding-left:0}.roster-toolbar{justify-content:flex-start}}
-@media(max-width:480px){.roster-card{padding:11px;gap:11px}.roster-card-info .roster-name{font-size:17px}.roster-pictos .picto{width:27px;height:27px}.roster-affinity-hearts{font-size:14px}.roster-toolbar label{flex-basis:100%}}
+@media(max-width:480px){.roster-card{padding:11px;gap:11px}.roster-card-info .roster-name{font-size:17px}.roster-pictos .picto{width:27px;height:27px}.roster-affinity-hearts{font-size:14px}.roster-toolbar select{flex:1}}
 #character-dialog{background:#201916;color:#eadbc4;border:1px solid #987750;border-radius:15px;box-shadow:0 26px 80px #000c}
 /* Même taille pour tous les onglets (Idan, 2026-10-21) : la fenêtre ne se redimensionne plus. */
 #character-dialog{height:min(800px,92vh)}
@@ -2445,3 +2444,7 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .day-news-list .day-news--bad{color:#f0a48f}
 .day-news-list .day-news--gear{color:#ffd77a}
 .day-news-list .day-news--warn{color:#f0c27a}
+/* Mes mercenaires (Idan, 2026-10-30) : « Les mercenaires de » + la compagnie, cliquable vers Ma Compagnie. */
+.roster-title{margin:0}
+.roster-company-link{padding:0;border:0;background:none;color:inherit;font:inherit;letter-spacing:inherit;text-decoration:underline;text-decoration-color:#b58c5366;text-underline-offset:5px;cursor:pointer}
+.roster-company-link:hover,.roster-company-link:focus-visible{color:#ffd77a;text-decoration-color:#ffd77a;outline:none}

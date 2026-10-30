@@ -161,10 +161,6 @@
 
     <section id="game-panel" class="camp-shell hidden">
       <section id="camp-home" class="camp-hub" aria-label="Accueil du camp">
-        <div class="camp-hub-heading">
-          <p class="eyebrow">Quartier général</p>
-          <h2>Le camp</h2>
-        </div>
         <nav class="camp-hub-menu" aria-label="Lieux du camp">
           <button class="menu-btn camp-hub-btn" data-open-camp-scene="company"><span>Ma Compagnie</span><i class="menu-btn-line"></i></button>
           <button class="menu-btn camp-hub-btn" data-open-camp-scene="mercenaries"><span>Mes mercenaires</span><i class="menu-btn-line"></i></button>
@@ -209,20 +205,17 @@
         <div class="camp-scene-nav"><button class="secondary camp-scene-back" data-camp-back>← Retour au camp</button></div>
         <section class="panel">
           <div class="section-title-row">
-            <div>
-              <p class="eyebrow">Effectifs</p>
-              <h2>Mes mercenaires</h2>
-            </div>
+            <!-- Idan, 2026-10-30 : « Les mercenaires de » + le nom de la compagnie, qui ouvre Ma Compagnie. -->
+            <h2 class="roster-title">Les mercenaires de <button type="button" id="roster-company-link" class="roster-company-link" data-open-camp-scene="company" data-destination="Ma Compagnie"></button></h2>
             <span id="initial-count" class="roster-count" aria-live="polite"></span>
           </div>
           <div class="roster-toolbar">
-            <label for="roster-sort">Trier par</label>
-            <select id="roster-sort" aria-label="Critère de tri des mercenaires">
+            <select id="roster-sort" aria-label="Trier les mercenaires">
               <option value="reputation">Réputation</option>
               <option value="salary">Salaire quotidien</option>
               <option value="affinity">Affinité</option>
             </select>
-            <button type="button" id="roster-sort-direction" class="roster-sort-direction" aria-label="Trier par ordre croissant">↓ Décroissant</button>
+            <button type="button" id="roster-sort-direction" class="roster-sort-direction" aria-label="Trier par ordre croissant">↓</button>
           </div>
           <div id="initial-squad" class="character-list"></div>
         </section>

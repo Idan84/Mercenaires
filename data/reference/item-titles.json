@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "item-titles",
-  "description": "Titres des objets selon leur tier, affichés en tête de la carte d’objet (Idan, 2026-10-24 : « Vieille lance / Lance basique / Lance de guerrier / Lance luxueuse… tu peux varier et être drôle »). T1 = Usée, T2 = Correcte, T3 = Grand Luxe ; le T4 n’est pas encore en jeu. Textes de JC, à retoucher librement.",
+  "description": "Nom public des objets selon leur tier, le seul que voit le joueur (Idan, 2026-10-30 : jamais de T1, T2… dans le jeu ; un nom qui reflète le niveau de façon subtile, drôle et décalée). Affiché sur la carte d’objet, à l’Intendance, chez le marchand, sur la fiche, dans les échanges, l’historique et le coffre (Idan, 2026-10-24 : « Vieille lance / Lance basique / Lance de guerrier / Lance luxueuse… tu peux varier et être drôle »). T1 = Usée, T2 = Correcte, T3 = Grand Luxe ; le T4 n’est pas encore en jeu. Textes de JC, à retoucher librement.",
   "columns": [
     {
       "key": "nom",

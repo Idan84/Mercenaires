@@ -125,7 +125,7 @@ const lanceCard = renderItemCard(item("weapon","Lance",3,"luxury"));
 assert.match(lanceCard, /class="item-card item-card--t3"/);
 assert.match(lanceCard, /<strong class="item-card-title">Lance de guerrier<\/strong>/);
 assert.match(lanceCard, /Lance · Armes d’hast/);
-assert.match(lanceCard, /T3 · Grand Luxe/);
+assert.doesNotMatch(lanceCard, /\bT[1-6]\b/, "jamais le tier sur la carte (Idan, 2026-10-30)");
 assert.match(lanceCard, /<dt>Dégâts<\/dt><dd>1D8 <em class="item-card-shift item-card-shift--up">\+20 %<\/em><\/dd>/);
 assert.match(lanceCard, /<dt>Portée<\/dt><dd>1 à 2 cases<\/dd>/);
 assert.match(lanceCard, /<dt>Poids<\/dt><dd>−10 Vitesse<\/dd>/, "arrondie pour le joueur");

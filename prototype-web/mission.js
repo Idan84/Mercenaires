@@ -504,7 +504,7 @@ function contractResultLines(result,trip=null){
   const home=trip?{text:"Retour au camp dans "+trip.days+" jour"+(trip.days>1?"s":"")+(trip.bonuses?" ; primes dues à l’arrivée : "+fmt(trip.bonuses)+" PO.":"."),kind:"turn"}:null;
   if(!result.victory) return [{text:"Contrat échoué : rien n’est payé et la renommée de la compagnie baisse ("+result.renown+").",kind:"bad"},home].filter(Boolean);
   const lines=[{text:"Contrat rempli : "+fmt(result.reward)+" PO de récompense et "+fmt(result.chestGold)+" PO dans le coffre.",kind:"gear"}];
-  if(result.chestItems.length) lines.push({text:"Dans le coffre : "+result.chestItems.map(i=>i.name+" (T"+i.tier+")").join(", ")+".",kind:"gear"});
+  if(result.chestItems.length) lines.push({text:"Dans le coffre : "+result.chestItems.map(i=>itemPublicName(i)).join(", ")+".",kind:"gear"});
   lines.push({text:"Butin des morts : "+result.loot.length+" objet"+(result.loot.length>1?"s":"")+", rapporté"+(result.loot.length>1?"s":"")+" à l’Intendance par l’escouade.",kind:"gear"});
   if(home) lines.push(home);
   return lines;

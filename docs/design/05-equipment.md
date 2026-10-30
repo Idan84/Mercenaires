@@ -104,6 +104,10 @@ Chaque objet tire son tier **indépendamment** selon la réputation personnelle 
 
 Mapping actuel vers les qualités existantes : **T1 = Usée**, **T2 = Correcte**, **T3 = Grand Luxe**.
 
+**Ce que voit le joueur (Idan, 2026-10-30)** : jamais le tier. Les T1, T2, T3… servent à l'équipe, pas au joueur : ils n'apparaissent nulle part dans le jeu. Le **cadre de couleur** dit la qualité, et chaque objet porte un **nom public** qui reflète son niveau de façon subtile, drôle et décalée (`item-titles.json`, par ex. « Pétoire rafistolée » pour une arquebuse T1). Le nom de base de l'objet (« Arquebuse ») s'affiche en petit quand il diffère.
+
+**Vision (Idan, 2026-10-30, en réflexion)** : les tiers iront **au moins jusqu'au T6**, et tous les objets auront un **système de cristaux** qui ajoutent des caractéristiques, proche des matérias de Final Fantasy VII. Rien n'est encore décidé.
+
 ### Valeur d’un objet (Idan, 2026-10-24)
 
 Chaque objet a une **valeur en pièces d’or, cachée** : rien ne l’affiche au joueur. Elle servira aux marchands.

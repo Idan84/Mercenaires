@@ -688,4 +688,22 @@ assert.match(magic.canCast(owner,{...pet,summon:null},"transposition").reason,/u
 queue=[0];
 assert.deepEqual(magic.cast(owner,pet,"transposition",{lineOfSight:false}).swap,{from:{q:0,r:0},to:{q:30,r:-8}});
 
+// Infobulle d'un sort du grimoire (Idan, 2026-10-30 : à qui il sert, combien de mana…) : la description, puis les
+// chiffres de ce mercenaire, les mêmes que ceux du combat (prototype-web/ui.js, spellTip).
+{
+  const ui=fs.readFileSync(path.join(ROOT,"prototype-web","ui.js"),"utf8");
+  const code=ui.slice(ui.indexOf("const SPELL_EFFECT_LABELS"),ui.indexOf("// Grimoire : mercenary.spells"));
+  const esc=v=>String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  const spellTip=new Function("esc","magicRules",code+"\nreturn spellTip;")(esc,()=>magic);
+  const tip=spellTip(beginner.character,magic.spell("quick_heal"));
+  assert.match(tip,/<strong>Soin rapide<\/strong><span>Vie<\/span><em>Restaure des PV à un allié ou au lanceur[^<]*<\/em>/);
+  assert.match(tip,/<dt>Mana<\/dt><dd>11<\/dd>/);
+  assert.match(tip,/<dt>Réussite<\/dt><dd>57 %<\/dd>/);
+  assert.match(tip,/<dt>Portée<\/dt><dd>3 cases<\/dd>/);
+  assert.match(tip,/<dt>Soins<\/dt><dd>9 à 35 PV<\/dd>/);
+  assert.doesNotMatch(tip,/action rapide/,"l'action est déjà dans la description");
+  assert.match(spellTip(beginner.character,magic.spell("titan_strength")),/<dt>Bonus<\/dt><dd>\+\d+ %<\/dd>[^]*<dt>Durée<\/dt><dd>\d+ tours?<\/dd>/);
+  assert.equal(spellTip(beginner.character,null),"");
+}
+
 console.log("Magie : écoles de la Vie, du Feu, de l'Eau, de la Transmutation, de la Foudre, de la Télékinésie, de l'Illusion, de la Nécromancie et de l'Invocation OK");

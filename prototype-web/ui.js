@@ -637,15 +637,38 @@ function gearTile(slot,item,{extraClass="",dealSlot=null}={}){
 // Dégâts des sets d'armes (Idan, 2026-10-30) : un seul chiffre, les PV d'un coup en moyenne (entre le plus petit et le
 // plus grand jet, Force et qualité comprises, avant l'armure de la cible) ; ce que l'arme oppose à l'armure ; rien de la
 // recette (dés, multiplicateurs) ; rien pour un set vide.
+// Case Dégâts (Idan, 2026-10-30) : quatre chiffres pour comparer les mercenaires, des scores et non des chances —
+// Précision, Puissance, Dégâts (du plus petit au plus grand coup, avant la Résistance physique de la cible, et leur
+// type) et Pénétration d'armure — en tableau, une colonne par arme qui frappe (set 1, set 2, main secondaire) ;
+// l'infobulle du libellé dit à quoi sert le chiffre et son écart (character-sheet-copy.json, attack_usage).
 function renderDamageCard(c) {
   const sets = typeof equipmentEffectRules === "function" && c?.stats ? equipmentEffectRules().attacks(c) : [];
-  const strike = (set, s) => `<div class="gear-damage-strike">
-      <span class="gear-damage-head"><small>Set ${set}${s.hand === "off" ? " · main secondaire" : ""}</small><strong>${esc(s.name)}</strong></span>
-      <span class="gear-damage-value"><b>${Math.round((s.min + s.max) / 2)}</b><small>PV par coup</small></span>
-      ${s.types.length ? `<span class="gear-damage-types">Contre l’armure : ${s.types.map(t => `${esc(t.type)} <b>${t.power}</b>`).join(" · ")}</span>` : ""}
-    </div>`;
-  const rows = sets.flatMap(({set, strikes}) => strikes.map(s => strike(set, s)));
-  return rows.length ? `<section class="gear-card gear-damage"><h4>Dégâts</h4>${rows.join("")}</section>` : "";
+  const strikes = sets.flatMap(({set, strikes}) => strikes.map(s => ({...s, set})));
+  if (!strikes.length) return "";
+  const type = t => esc(t.type.toLowerCase());
+  const row = (name, cell, span) => `<tr><th scope="row">${attackTip(name, span)}</th>${strikes.map(s => `<td>${cell(s)}</td>`).join("")}</tr>`;
+  return `<section class="gear-card gear-damage"><h4>Dégâts</h4><table class="gear-damage-table">
+    <thead><tr><td></td>${strikes.map(s => `<th scope="col"><small>Set ${s.set}${s.hand === "off" ? " · main secondaire" : ""}</small><strong>${esc(s.name)}</strong></th>`).join("")}</tr></thead>
+    <tbody>
+      ${row("Précision", s => `<b>${Math.round(s.precision)}</b>`)}
+      ${row("Puissance", s => `<b>${Math.round(s.power)}</b>`)}
+      ${row("Dégâts", s => `<b>${s.min} à ${s.max}</b> PV${s.types.length ? `<small>en ${s.types.map(type).join(" ou ")}</small>` : ""}`)}
+      ${strikes.some(s => s.types.length) ? row("Pénétration d’armure", s => s.types.length === 1 ? `<b>${s.types[0].power}</b>`
+        : s.types.map(t => `<span><b>${t.power}</b> ${type(t)}</span>`).join(""), penetrationSpan()) : ""}
+    </tbody>
+  </table></section>`;
+}
+function attackTip(name, span = "") {
+  const row = game.referenceData?.characterSheetCopy?.attack_usage?.[name];
+  if (!row?.usage) return esc(name);
+  const bounds = row.recrues ? `Nouvelles recrues : de ${row.recrues[0]} à ${row.recrues[1]}.` : span;
+  return `<span class="sheet-stat-name" tabindex="0">${esc(name)}<span class="sheet-stat-tip" role="tooltip"><strong>${esc(name)}</strong><em>${esc(row.usage)}</em>${bounds ? `<span>${esc(bounds)}</span>` : ""}</span></span>`;
+}
+// De la plus faible à la plus forte pénétration des armes (weapons.json).
+function penetrationSpan() {
+  const values = (game.referenceData?.weapons?.rows || []).flatMap(w =>
+    ["puissance_tranchante_base", "puissance_perforante_base", "puissance_contondante_base"].map(k => Number(w[k]) || 0)).filter(v => v > 0);
+  return values.length ? `Selon l’arme : de ${Math.min(...values)} à ${Math.max(...values)}.` : "";
 }
 function renderEquipment(c) {
   const slotRows = game.referenceData?.equipmentSlots?.rows || [];
@@ -1342,6 +1365,32 @@ function spellIconHtml(spell) {
     + `${spell.cadre ? `<img src="assets/${esc(spell.cadre)}" alt="" loading="lazy">` : ""}</span>`;
 }
 
+// Infobulle d'un sort du grimoire (Idan, 2026-10-30 : « on doit savoir à qui il sert, combien de mana il utilise ») :
+// ce qu'il fait (spells.json, description : la cible et l'action y sont), puis ses chiffres pour ce mercenaire, avec sa maîtrise et son équipement :
+// mana, réussite, portée, effet, durée, zone — les mêmes que l'écran de combat (game-core/magic.js).
+const SPELL_EFFECT_LABELS = {soin:"Soins", soin_de_zone:"Soins", soin_sur_duree:"Soins par tour", degats:"Dégâts", degats_zone:"Dégâts",
+  degats_rebonds:"Dégâts", degats_paire:"Dégâts", degats_sans_resistance:"Dégâts", arme_elementaire:"Dégâts par coup"};
+function spellTip(c, row) {
+  if (!row?.code) return "";
+  const magic = typeof magicRules === "function" ? magicRules() : null;
+  const unit = {character:c, activeSet:1};
+  const line = (label, value) => `<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`;
+  const lines = [];
+  if (magic) {
+    const range = magic.range(unit, row.code), duration = magic.duration(unit, row.code), radius = magic.zoneRadius(unit, row.code);
+    const amount = SPELL_EFFECT_LABELS[row.effet] && magic.dice(row.code).count ? magic.effectRange(unit, row.code) : null;
+    const bonus = row.bonus_unite ? magic.bonus(unit, row.code) : 0;
+    lines.push(line("Mana", magic.manaCost(unit, row.code)), line("Réussite", `${Math.round(magic.castChance(unit, row.code).p)} %`));
+    if (range > 0) lines.push(line("Portée", `${range} case${range > 1 ? "s" : ""}`));
+    if (amount) lines.push(line(SPELL_EFFECT_LABELS[row.effet], `${amount.min} à ${amount.max} PV`));
+    if (bonus > 0) lines.push(line("Bonus", row.bonus_unite === "pourcentage" ? `+${bonus} %` : `+${bonus}`));
+    if (duration > 0) lines.push(line("Durée", `${duration} tour${duration > 1 ? "s" : ""}`));
+    if (radius > 0) lines.push(line("Zone", `${radius} case${radius > 1 ? "s" : ""} autour`));
+  }
+  return `<span class="sheet-stat-tip spell-tip" role="tooltip"><strong>${esc(row.nom)}</strong><span>${esc(row.ecole)}</span>`
+    + `<em>${esc(row.description || "")}</em>${lines.length ? `<dl>${lines.join("")}</dl>` : ""}</span>`;
+}
+
 // Grimoire : mercenary.spells = [{code, name, school, mastery}] (mastery : niveau du sort, 1 à 100).
 function renderCharacterSpellbook(c) {
   const spells = Array.isArray(c.spells) ? c.spells : [];
@@ -1349,7 +1398,7 @@ function renderCharacterSpellbook(c) {
   return `<section class="magic-grimoire"><h4>Grimoire</h4>${spells.length
     ? `<div class="magic-spells">${spells.map(spell => {
       const row = rows.find(s => s.code === spell.code || s.nom === (spell.name || spell.nom));
-      return `<div class="sheet-skill magic-spell">${spellIconHtml(row)}<span class="sheet-stat-name">${esc(row?.nom || spell.name || spell.nom || "Sort")}<small>${esc(row?.ecole || spell.school || "")}</small></span><span class="sheet-stat-value">${fmt(Number(spell.mastery))}</span></div>`;
+      return `<div class="sheet-skill magic-spell">${spellIconHtml(row)}<span class="sheet-stat-name"${row ? ' tabindex="0"' : ""}>${esc(row?.nom || spell.name || spell.nom || "Sort")}<small>${esc(row?.ecole || spell.school || "")}</small>${spellTip(c, row)}</span><span class="sheet-stat-value">${fmt(Number(spell.mastery))}</span></div>`;
     }).join("")}</div>`
     : `<p class="muted">Aucun sort connu.</p>`}</section>`;
 }

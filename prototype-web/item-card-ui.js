@@ -53,7 +53,7 @@ function weaponCardBody(card){
   const ranged=RANGED_CATEGORIES.has(card.category);
   const rows=[
     cardRow("Dégâts",damageRange(card.damage.dice,card.damage.factor)),
-    card.powers.length?`<p class="item-card-group">Contre l’armure</p>`:"",
+    card.powers.length?`<p class="item-card-group">Pénétration d’armure</p>`:"",
     ...card.powers.map(p=>cardRow(p.type,cardNumber(p.value))),
     `<p class="item-card-group">Maniement</p>`,
     cardRow("Portée",range),
@@ -86,7 +86,9 @@ function armorCardBody(card){
     card.speed>0?cardRow("Vitesse",cardNumber(-card.speed),"malus"):"",
     card.magic>0?cardRow("Magie",cardNumber(-card.magic),"malus"):""
   ].filter(Boolean);
-  const rows=[`<p class="item-card-group">Résistances</p>`,...resist,
+  // « Protection » (Idan, 2026-10-30) : ce que l'armure oppose à la Pénétration d'armure, pour ne pas la confondre
+  // avec la Résistance physique du porteur.
+  const rows=[`<p class="item-card-group">Protection</p>`,...resist,
     hindrance.length?`<p class="item-card-group">Handicap</p>`:"",...hindrance];
   return {rows,traits:[],flavor:card.description};
 }
@@ -94,34 +96,17 @@ function armorCardBody(card){
 // Bottes, ceintures, amulettes, capes, gants, culottes et bagues (Idan, 2026-10-24) : un pourcentage de la valeur de base
 // du porteur, ou des points (cape de résistance physique, Slip d’Affinité).
 const STAT_GEAR_KINDS=["boots","belt","amulet","cape","gloves","pants","ring","helmet"];
-// « de l’Endurance », « du Courage », « de la Vitesse ».
-const MASCULINE_STATS=new Set(["Courage","Charisme","Feu","Compagnon animal"]);
-// « des Pièges ».
-const PLURAL_STATS=new Set(["Pièges"]);
-function statArticle(stat){
-  if(PLURAL_STATS.has(stat)) return "des ";
-  if(/^[AEIOUÉ]/.test(stat)) return "de l’";
-  return MASCULINE_STATS.has(stat)?"du ":"de la ";
-}
+// Les lignes disent tout (Idan, 2026-10-30 : « ça sert à rien de répéter deux fois la même chose ») : pas de phrases dessous.
 function statGearCardBody(card){
   // Slip d’Affinité : des points d’affinité avec le capitaine, pas une caractéristique.
-  if(card.stat==="Affinité") return {rows:[cardRow("Affinité avec le capitaine",`+${cardNumber(card.bonus)}`,"bonus")],
-    traits:[`Ajoute ${cardNumber(card.bonus)} points d’affinité avec le capitaine`],flavor:null};
-  if(card.points) return {rows:[cardRow(card.stat,`+${cardNumber(card.bonus)}`,"bonus")],
-    traits:[`Ajoute ${cardNumber(card.bonus)} points de ${card.stat} au porteur`],flavor:null};
+  if(card.stat==="Affinité") return {rows:[cardRow("Affinité avec le capitaine",`+${cardNumber(card.bonus)}`,"bonus")],traits:[],flavor:null};
+  if(card.points) return {rows:[cardRow(card.stat,`+${cardNumber(card.bonus)}`,"bonus")],traits:[],flavor:null};
   const rows=[cardRow(card.stat,`+${cardNumber(card.bonus)} %`,"bonus")];
-  const traits=[`Ajoute ${cardNumber(card.bonus)} % ${statArticle(card.stat)}${card.stat} de base du porteur`];
   // Bague de magie : les deux écoles opposées baissent ; Casque de constitution : la Puissance magique.
-  if(card.malus&&card.opposites?.length){
-    rows.push(...card.opposites.map(o=>cardRow(o,`−${cardNumber(card.malus)} %`,"malus")));
-    traits.push(`Retire ${cardNumber(card.malus)} % ${card.opposites.map(o=>statArticle(o)+o).join(" et ")} de base du porteur`);
-  }
+  if(card.malus&&card.opposites?.length) rows.push(...card.opposites.map(o=>cardRow(o,`−${cardNumber(card.malus)} %`,"malus")));
   // Poids du casque (Idan, 2026-10-25).
-  if(card.speed){
-    rows.push(cardRow("Vitesse",`−${cardNumber(card.speed)}`,"malus"));
-    traits.push(`Pèse sur la tête : −${cardNumber(card.speed)} Vitesse`);
-  }
-  return {rows,traits,flavor:null};
+  if(card.speed) rows.push(cardRow("Vitesse",`−${cardNumber(card.speed)}`,"malus"));
+  return {rows,traits:[],flavor:null};
 }
 
 // Potions et fioles (Idan, 2026-10-29) : usage unique, sur soi, par une action rapide en combat.
@@ -129,7 +114,7 @@ function potionCardBody(card){
   const rows=card.effect==="soin"?[cardRow("Soins",`+${cardNumber(card.percent)} % des PV max`,"bonus")]
     :card.effect==="mana"?[cardRow("Mana",`+${cardNumber(card.percent)} % du mana max`,"bonus")]
     :[cardRow("Arme empoisonnée",`${cardNumber(card.turns)} tours`,"bonus"),cardRow("Poison",`${cardNumber(card.poison)} PV par tour`)];
-  const traits=["Action rapide en combat, sur soi","Usage unique",
+  const traits=["Action rapide en combat, sur soi",
     card.effect==="poison_arme"?"Chaque coup qui blesse empoisonne la cible (corps à corps et tir)":""].filter(Boolean);
   return {rows,traits,flavor:card.description};
 }

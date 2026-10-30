@@ -196,7 +196,7 @@
     {
       "nom": "Résistance physique",
       "groupe": "resistance",
-      "usage": "Réduit les dégâts des coups et des projectiles.",
+      "usage": "Réduit les PV perdus quand un coup ou un projectile blesse.",
       "description_referentiel": false
     },
     {
@@ -386,5 +386,22 @@
     "Combat à deux mains": "Avec une arme tenue à deux mains, blesse plus souvent.",
     "Discrétion": "Rester caché au début du combat, puis frapper sans être vu.",
     "Intendance": "Pour l’intendant : estimer la valeur des recrues de la Taverne, et appuyer les échanges d’équipement."
+  },
+  "attack_usage": {
+    "description": "Case Dégâts de l’onglet Équipement (Idan, 2026-10-30) : quatre chiffres pour comparer les mercenaires, des scores et non des chances. usage : l’infobulle ; recrues : le plus bas et le plus haut mesurés sur 3 000 recrues générées avec l’arme de leur set 1 (2026-10-30), arrondis à 5 ; les vétérans peuvent dépasser. La Pénétration d’armure va de la plus faible à la plus forte des armes (weapons.json).",
+    "Précision": {
+      "usage": "Les chances de toucher, face à l’Esquive de la cible.",
+      "recrues": [50, 145]
+    },
+    "Puissance": {
+      "usage": "Les chances de blesser quand le coup touche, face à l’Endurance de la cible.",
+      "recrues": [25, 160]
+    },
+    "Dégâts": {
+      "usage": "Les PV que perd la cible quand le coup blesse. Sa Résistance physique en retire une partie."
+    },
+    "Pénétration d’armure": {
+      "usage": "S’ajoute à la Puissance, moins la Protection de l’armure de la cible."
+    }
   }
 }

@@ -99,10 +99,12 @@ const esc=v=>String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>
 const {renderItemCard}=new Function("game","esc","MercenairesItemCard","equipmentArt","document",ui+"\nreturn {renderItemCard};")(
   {referenceData:reference},esc,{createItemCards},()=>null,undefined);
 const html=renderItemCard({itemType:"helmet",name:"Casque de constitution",tier:2,qualityCode:"standard"});
-assert.match(html,/Ajoute 10 % de la Constitution de base du porteur/);
-assert.match(html,/Retire 15 % de la Puissance magique de base du porteur/);
-assert.match(html,/Pèse sur la tête : −3 Vitesse/);
-assert.match(renderItemCard({itemType:"helmet",name:"Chapeau du dresseur",tier:4,qualityCode:"luxury"}),/Ajoute 20 % du Compagnon animal de base du porteur/);
+// Les lignes seules, sans phrase qui les répète (Idan, 2026-10-30).
+assert.match(html,/item-card-row--bonus"><dt>Constitution<\/dt><dd>\+10 %<\/dd>/);
+assert.match(html,/item-card-row--malus"><dt>Puissance magique<\/dt><dd>−15 %<\/dd>/);
+assert.match(html,/item-card-row--malus"><dt>Vitesse<\/dt><dd>−3<\/dd>/);
+assert.doesNotMatch(html,/item-card-traits|Ajoute|Retire|Pèse/);
+assert.match(renderItemCard({itemType:"helmet",name:"Chapeau du dresseur",tier:4,qualityCode:"luxury"}),/<dt>Compagnon animal<\/dt><dd>\+20 %<\/dd>/);
 for(const h of helmets){
   const titles=reference.itemTitles.rows.find(r=>r.nom===h.nom);
   assert.ok(titles&&titles.famille==="casque",h.nom);

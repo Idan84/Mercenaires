@@ -99,6 +99,7 @@ function acceptContract(){
 // Escouades parties en expédition (doc 17) : en route, arrivées (le combat attend le joueur) ou sur le retour.
 function expeditionLabel(e){
   const left=day=>{ const n=day-game.campaign.day; return n<=0?"aujourd’hui":"dans "+n+" jour"+(n>1?"s":""); };
+  if(e.status==="scheduled") return (e.kind==="bodyguard"?"Garde du corps · ":"")+"Départ demain matin";
   if(e.kind==="bodyguard") return "Garde du corps · retour "+left(e.returnDay);
   if(e.status==="outbound") return "En route · arrivée "+left(e.arriveDay);
   if(e.status==="arrived") return "Arrivée sur place : le combat vous attend";
@@ -121,6 +122,12 @@ function renderExpeditions(){
 // au camp (équiper, recruter…), mais le jour suivant attend le combat (canAdvanceDay).
 function logExpeditionReport(report){
   if(!report) return;
+  // Missions programmées la veille : départ ce matin.
+  const name=id=>game.campaign?.company.roster.find(m=>m.id===id)?.name||"?";
+  for(const e of report.departed||[]){
+    if(e.kind==="bodyguard") tavernLog(e.memberIds.map(name).join(", ")+" part"+(e.memberIds.length>1?"ent":"")+" en garde du corps ("+e.offer.client.toLocaleLowerCase("fr")+") : retour dans "+e.offer.days+" jours.","turn");
+    else tavernLog("L’escouade part pour le "+e.offer.campName.toLocaleLowerCase("fr")+" de "+e.offer.fields.lieu+" : arrivée dans "+e.offer.distance+" jour"+(e.offer.distance>1?"s":"")+".","turn");
+  }
   for(const e of report.arrived) tavernLog("L’escouade est arrivée au "+e.offer.campName.toLocaleLowerCase("fr")+" de "+e.offer.fields.lieu+" : le combat vous attend.","turn");
   for(const r of report.returned){
     const e=r.expedition;

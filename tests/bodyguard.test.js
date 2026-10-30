@@ -9,6 +9,7 @@ const {createBodyguardRules}=require("../game-core/bodyguard.js");
 const {createGenerator}=require("../game-core/mercenary-generator.js");
 const {createTavernRules}=require("../game-core/tavern.js");
 const {createCampaignRules}=require("../game-core/campaign.js");
+const {createEquipmentDeals}=require("../game-core/equipment-deals.js");
 
 const ROOT=path.resolve(__dirname,"..");
 const read=file=>JSON.parse(fs.readFileSync(path.join(ROOT,"data","reference",file),"utf8"));
@@ -84,13 +85,23 @@ const left=campaign.departBodyguard(state,[a.id,b.id]);
 assert.equal(left.ok,true);
 assert.equal(state.company.gold,gold+1000,"payé d'avance");
 assert.notEqual(state.bodyguardBoard.offer.id,offerId,"une nouvelle offre au tableau");
-assert.equal(campaign.isAvailable(a,state),false,"absent pendant la mission");
+assert.equal(campaign.isAvailable(a,state),false,"pris par la mission");
 assert.ok(campaign.expeditionOf(state,b.id));
+// Mission programmée (Idan, 2026-10-30) : départ le lendemain matin ; d'ici là, au camp, on lui parle et on l'équipe.
+assert.equal(left.expedition.status,"scheduled");
+assert.equal(campaign.awayOf(state,a.id),null,"encore au camp");
+assert.deepEqual(campaign.canGuard(state,a),{ok:false,reason:"Il part déjà en mission demain."});
+const deals=createEquipmentDeals({reference:{weapons:{rows:[]},equipmentSlots:{rows:[]}}});
+assert.equal(deals.canDeal(state,a).ok,true,"on peut encore l'équiper");
 a.contract.missionBonus=40;b.contract.missionBonus=30;
 state.bodyguardBoard.offer.expiresDay=99;
 const repA=a.reputation,renown=Number(state.company.missionRenown)||0;
+const [leave]=campaign.advanceTime(state,1);
+assert.deepEqual(leave.expeditions.departed,[left.expedition],"départ le lendemain matin");
+assert.equal(left.expedition.status,"away");
+assert.equal(deals.canDeal(state,a).reason,"Il est en mission.");
 const days4=campaign.advanceTime(state,4);
-assert.ok(days4.every(r=>r.expeditions.bodyguards.length===0),"pas avant 5 jours");
+assert.ok(days4.every(r=>r.expeditions.bodyguards.length===0),"pas avant 5 jours d'absence");
 // Le cinquième jour : a rentre (jet 0,1), b blessé (jet 0,9 puis 1D3 = 2) ; l'offre au tableau n'expire pas (jour 99).
 scripted.push(0.1,0.9,0.4);
 const goldBefore=state.company.gold;

@@ -148,8 +148,9 @@
     // rangée dans une poche de ceinture (slot).
     function canDeal(state,mercenary,slot=null){
       if(!mercenary) return no("Mercenaire introuvable.");
-      // Parti en expédition (doc 17) : pas d'échange avant son retour.
-      if((state.expeditions||[]).some(e=>e.memberIds.includes(mercenary.id))) return no("Il est en mission.");
+      // Parti en expédition (doc 17) : pas d'échange avant son retour. Mission programmée (Idan, 2026-10-30) : il est
+      // encore au camp jusqu'au lendemain matin, on peut l'équiper.
+      if((state.expeditions||[]).some(e=>e.memberIds.includes(mercenary.id)&&e.status!=="scheduled")) return no("Il est en mission.");
       if(isCaptain(state,mercenary)||isPocket(slot)) return {ok:true};
       if(mercenary.equipmentDealDay===state.day) return no("Vous lui avez déjà parlé d’équipement aujourd’hui.");
       return {ok:true};

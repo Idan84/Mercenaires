@@ -28,8 +28,10 @@ function renderRosterAffinity(c) {
 // État sous le portrait, dans un cartel coloré (Idan, 2026-10-21) : vert Disponible, orange Fatigué,
 // rouge Blessé ; jaune réservé à « En mission » quand cet état existera.
 function rosterStatus(c){
-  // Parti en expédition (doc 17) : en route, sur place ou sur le chemin du retour.
+  // Parti en expédition (doc 17) : en route, sur place ou sur le chemin du retour. Mission programmée (Idan, 2026-10-30) :
+  // il part demain matin ; d'ici là il est au camp, on lui parle et on l'équipe.
   const expedition=game.campaign&&typeof campaignRules==="function"?campaignRules().expeditionOf(game.campaign,c.id):null;
+  if(expedition?.status==="scheduled") return {kind:"scheduled",label:"Mission programmée"};
   if(expedition) return {kind:"away",label:expedition.status==="returning"?"Sur le retour":"En mission"};
   if(c.recovery?.kind==="wounded") return {kind:"wounded",label:recoveryLabel(c)};
   if(c.recovery) return {kind:"fatigued",label:recoveryLabel(c)};

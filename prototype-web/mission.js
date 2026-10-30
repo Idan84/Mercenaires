@@ -268,11 +268,11 @@ function updateMissionSelectionCount(){
   // Primes de mission versées au retour (doc 09 §6) : le joueur pèse ce que coûte une grosse escouade.
   const bonus=ids.map(id=>allCharacters().find(c=>c.id===id)).reduce((sum,c)=>sum+(Number(c?.contract?.missionBonus)||0),0);
   if(bodyguard){
-    $("mission-select-cost").textContent="Paiement d’avance : "+fmt(bodyguard.payment)+" PO · primes au retour : "+fmt(bonus)+" PO · absents "+bodyguard.days+" jours ; pas de combat.";
+    $("mission-select-cost").textContent="Paiement d’avance : "+fmt(bodyguard.payment)+" PO · primes au retour : "+fmt(bonus)+" PO · départ demain matin, absents "+bodyguard.days+" jours ; pas de combat.";
     return;
   }
   $("mission-select-cost").textContent=contract
-    ?"Primes si tous reviennent : "+fmt(bonus)+" PO, versées au retour · marche : "+contract.distance+" jour"+(contract.distance>1?"s":"")+" à l’aller, autant au retour ; le camp continue pendant ce temps."
+    ?"Primes si tous reviennent : "+fmt(bonus)+" PO, versées au retour · départ demain matin, puis "+contract.distance+" jour"+(contract.distance>1?"s":"")+" de marche à l’aller, autant au retour ; le camp continue pendant ce temps."
     :"";
 }
 
@@ -309,26 +309,28 @@ function startMissionFromSelection(){
   selectNextMissionPlayer();
 }
 
-// Garde du corps : le paiement arrive tout de suite ; les gardes reviennent au bout de la durée.
+// Garde du corps : le paiement arrive tout de suite ; les gardes partent le lendemain matin et reviennent au bout de la
+// durée.
 function departBodyguards(chosen){
   const result=campaignRules().departBodyguard(game.campaign,chosen.map(c=>c.id));
   if(!result.ok){ $("mission-select-error").textContent=result.reason; return; }
   $("mission-select-dialog").close();
   const e=result.expedition;
-  tavernLog(chosen.map(c=>c.name).join(", ")+" part"+(chosen.length>1?"ent":"")+" en garde du corps ("+e.offer.client.toLocaleLowerCase("fr")+") pour "+e.offer.days+" jours : +"+fmt(result.gold)+" PO payés d’avance.","gear");
+  tavernLog(chosen.map(c=>c.name).join(", ")+" partir"+(chosen.length>1?"ont":"a")+" demain matin en garde du corps ("+e.offer.client.toLocaleLowerCase("fr")+") pour "+e.offer.days+" jours : +"+fmt(result.gold)+" PO payés d’avance.","gear");
   saveGame();
   renderGame();
   if(typeof renderContractBoard==="function") renderContractBoard();
 }
 
-// Contrat « Faire le ménage » (doc 17, Idan 2026-10-24) : l'escouade part, le joueur continue de gérer son camp. À son
-// arrivée (au bout des jours de marche), le combat attend : « Commencer le combat ».
+// Contrat « Faire le ménage » (doc 17, Idan 2026-10-24) : l'escouade part le lendemain matin (mission programmée ; Idan,
+// 2026-10-30 : d'ici là on lui parle et on l'équipe), le joueur continue de gérer son camp. À son arrivée (au bout des
+// jours de marche), le combat attend : « Commencer le combat ».
 function departContractSquad(chosen){
   const result=campaignRules().departExpedition(game.campaign,chosen.map(c=>c.id));
   if(!result.ok){ $("mission-select-error").textContent=result.reason; return; }
   $("mission-select-dialog").close();
   const e=result.expedition,days=e.offer.distance;
-  tavernLog("L’escouade de "+chosen.length+" mercenaire"+(chosen.length>1?"s":"")+" part pour le "+e.offer.campName.toLocaleLowerCase("fr")+" de "+e.offer.fields.lieu+" : arrivée dans "+days+" jour"+(days>1?"s":"")+".","turn");
+  tavernLog("L’escouade de "+chosen.length+" mercenaire"+(chosen.length>1?"s":"")+" partira demain matin pour le "+e.offer.campName.toLocaleLowerCase("fr")+" de "+e.offer.fields.lieu+", à "+days+" jour"+(days>1?"s":"")+" de marche. D’ici là, vous pouvez encore l’équiper.","turn");
   saveGame();
   renderGame();
   if(typeof renderContractBoard==="function") renderContractBoard();

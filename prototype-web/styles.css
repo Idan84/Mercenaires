@@ -2422,6 +2422,7 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .expedition-row em{color:#e7d3b0;font-style:normal;font-weight:600}
 .expedition-row--arrived{border-color:#c9a15f;box-shadow:0 0 0 1px rgba(201,161,95,.4)}
 .roster-status--away{border-color:#6c86a8;background:linear-gradient(180deg,#2c3a4f,#1f2938);color:#d6e4f7}
+.roster-status--scheduled{border-color:#a08a4c;background:linear-gradient(180deg,#4a4122,#332c17);color:#f3e2a8}
 .expedition-dialog{padding:22px 26px;border:1px solid #9a7a4f;border-radius:12px}
 .expedition-dialog p{max-width:52ch;margin:12px 0 18px;line-height:1.5}
 /* Marchand du jour (doc 18 ; Idan, 2026-10-30) : écran fonctionnel, avant fond et portraits. */

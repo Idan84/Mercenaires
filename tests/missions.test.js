@@ -128,11 +128,18 @@ const signed=game.missionBoard.offer;
 const departure=campaign.departExpedition(game,[2,3]);
 assert.ok(departure.ok);
 const trip=departure.expedition;
-assert.deepEqual([trip.offer,trip.memberIds,trip.status,trip.arriveDay],[signed,[2,3],"outbound",game.day+signed.distance]);
+// Mission programmée (Idan, 2026-10-30) : départ le lendemain matin, puis les jours de marche ; d'ici là, l'escouade est
+// au camp (on lui parle, on l'équipe, elle recharge son mana) mais ne part sur aucune autre mission.
+assert.deepEqual([trip.offer,trip.memberIds,trip.status,trip.departDay,trip.arriveDay],[signed,[2,3],"scheduled",game.day+1,game.day+1+signed.distance]);
 assert.notEqual(game.missionBoard.offer,signed,"une nouvelle offre au tableau : plusieurs escouades possibles");
-assert.equal(campaign.isAvailable(squad[0],game),false,"en mission");
+assert.equal(campaign.isAvailable(squad[0],game),false,"pris par la mission");
+assert.equal(campaign.awayOf(game,2),null,"encore au camp");
 assert.equal(campaign.isAvailable(captain,game),true);
 assert.deepEqual(campaign.departExpedition(game,[2]),{ok:false,reason:"Un de ces mercenaires est déjà en mission."});
+const [leave]=campaign.advanceTime(game,1);
+assert.deepEqual(leave.expeditions.departed,[trip],"départ le lendemain matin");
+assert.equal(trip.status,"outbound");
+assert.equal(campaign.awayOf(game,2),trip);
 const outbound=campaign.advanceTime(game,signed.distance);
 assert.ok(outbound.slice(0,-1).every(r=>!r.expeditions.arrived.length));
 assert.deepEqual(outbound[outbound.length-1].expeditions.arrived,[trip],"arrivée au bout de la distance");
@@ -151,7 +158,7 @@ assert.equal(game.company.stock.length,stockBefore+2);
 assert.equal(campaign.expeditionOf(game,2),null,"de retour au camp");
 // Défaite : la renommée baisse tout de suite ; personne ne rentre, rien n'arrive.
 const lost=campaign.departExpedition(game,[3]).expedition;
-campaign.advanceTime(game,lost.offer.distance);
+campaign.advanceTime(game,1+lost.offer.distance);
 const missionRenown=Number(game.company.missionRenown)||0;
 game.company.roster=game.company.roster.filter(m=>m.id!==3);
 const none=campaign.completeExpeditionCombat(game,lost.id,{result:rules.outcome(lost.offer,{victory:false})});

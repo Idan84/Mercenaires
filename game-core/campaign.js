@@ -534,7 +534,8 @@
 
     // Indisponibilité après mission (10-mission-time §4 à §6) : un blessé ou un fatigué ne peut pas
     // partir en mission tant que son compteur de jours n'est pas écoulé.
-    // state (facultatif) : un mercenaire parti en expédition n'est pas disponible non plus.
+    // state (facultatif) : un mercenaire parti en expédition, ou dont la mission est programmée, n'est pas disponible non
+    // plus.
     function isAvailable(mercenary,state=null){
       return !mercenary.recovery&&!(state&&expeditionOf(state,mercenary.id));
     }
@@ -566,6 +567,8 @@
       // Demandes au lieutenant (Idan, 2026-10-25) : le résultat tombe le lendemain matin.
       const lieutenantReports=lieutenants?lieutenants.resolveRequests(state):[];
       const mana=rechargeCampMana(state);
+      // Missions programmées la veille : l'escouade a dormi au camp (mana rechargé), elle part ce matin.
+      expeditions.departed=departScheduled(state);
       // Le marchand de la veille repart ; un autre passe peut-être (doc 18 ; Idan, 2026-10-30).
       const merchant=merchants?merchants.morning(state,{renown:companyRenown(state).total}):null;
       return {day:state.day,recovered,salaries,tavern:tavernReport,missionTaken,bodyguardTaken,expeditions,built,lieutenants:lieutenantReports,mana,merchant};
@@ -575,7 +578,7 @@
     // en route (contrat ou garde du corps). Formule : magic.js (rechargeMana).
     function rechargeCampMana(state){
       if(!magic) return [];
-      return rosterOf(state).filter(m=>!expeditionOf(state,m.id))
+      return rosterOf(state).filter(m=>!awayOf(state,m.id))
         .map(m=>({id:m.id,...magic.rechargeMana(m)})).filter(x=>x.gained>0);
     }
 
@@ -603,8 +606,26 @@
     // de marche, elle arrive : le combat attend le joueur (« Commencer le combat »). Après le combat, les survivants
     // rentrent en autant de jours ; la récompense, le coffre, le butin et les primes arrivent avec eux. Plusieurs
     // escouades peuvent être en route en même temps.
+    // Mission programmée (Idan, 2026-10-30 : « les soldats partent en mission le lendemain matin… on doit pouvoir encore
+    // leur parler et les équiper. C'est fondamental. ») : signée, l'expédition attend au camp (status « scheduled »)
+    // jusqu'au matin suivant ; ses membres ne partent pas sur une autre mission, mais on leur parle et on les équipe.
+    // expeditionOf : la mission d'un mercenaire, programmée ou partie ; awayOf : seulement s'il a quitté le camp.
     function expeditionsOf(state){ return state.expeditions||(state.expeditions=[]); }
     function expeditionOf(state,mercenaryId){ return expeditionsOf(state).find(e=>e.memberIds.includes(mercenaryId))||null; }
+    function awayOf(state,mercenaryId){ const e=expeditionOf(state,mercenaryId); return e&&e.status!=="scheduled"?e:null; }
+    function busyReason(state,mercenaryId){
+      return expeditionOf(state,mercenaryId)?.status==="scheduled"?"Il part déjà en mission demain.":"Il est en mission.";
+    }
+    // Le matin du départ : contrat en route (« outbound »), garde du corps absent (« away »).
+    function departScheduled(state){
+      const departed=[];
+      for(const expedition of expeditionsOf(state)){
+        if(expedition.status!=="scheduled"||state.day<expedition.departDay) continue;
+        expedition.status=expedition.kind==="bodyguard"?"away":"outbound";
+        departed.push(expedition);
+      }
+      return departed;
+    }
     function departExpedition(state,memberIds){
       const offer=state.missionBoard?.offer;
       if(!offer) return {ok:false,reason:"Aucun contrat au tableau."};
@@ -612,7 +633,8 @@
       const ids=[...new Set(memberIds)].filter(id=>roster.has(id));
       if(!ids.length) return {ok:false,reason:"Aucun mercenaire choisi."};
       if(ids.some(id=>expeditionOf(state,id))) return {ok:false,reason:"Un de ces mercenaires est déjà en mission."};
-      const expedition={id:offer.id,offer,memberIds:ids,departDay:state.day,arriveDay:state.day+offer.distance,status:"outbound"};
+      // Départ le lendemain matin, puis les jours de marche.
+      const expedition={id:offer.id,offer,memberIds:ids,signedDay:state.day,departDay:state.day+1,arriveDay:state.day+1+offer.distance,status:"scheduled"};
       expeditionsOf(state).push(expedition);
       renewMissionOffer(state);
       return {ok:true,expedition};
@@ -657,6 +679,7 @@
     function advanceExpeditions(state){
       const arrived=[],returned=[],bodyguards=[];
       for(const expedition of [...expeditionsOf(state)]){
+        if(expedition.status==="scheduled") continue;
         if(expedition.kind==="bodyguard"){
           if(state.day>=expedition.returnDay) bodyguards.push(finishBodyguard(state,expedition));
           continue;
@@ -692,11 +715,12 @@
       if(!m||!offer) return {ok:false,reason:"Aucune offre."};
       if(m.id===state.company.captainId) return {ok:false,reason:"Le capitaine reste à la compagnie."};
       if(m.id===state.company.intendantId) return {ok:false,reason:"L’intendant reste au camp."};
-      if(!isAvailable(m,state)) return {ok:false,reason:m.recovery?"Il doit d’abord se remettre.":"Il est en mission."};
+      if(!isAvailable(m,state)) return {ok:false,reason:m.recovery?"Il doit d’abord se remettre.":busyReason(state,m.id)};
       if(bodyguard.levelOf(m.reputation)<offer.level) return {ok:false,reason:"Réputation trop faible."};
       return {ok:true};
     }
-    // Départ : le paiement arrive d'avance ; les mercenaires sont absents jusqu'au retour.
+    // Signature : le paiement arrive d'avance ; les gardes partent le lendemain matin (mission programmée) et sont absents
+    // jusqu'au retour.
     function departBodyguard(state,memberIds){
       const offer=state.bodyguardBoard?.offer;
       if(!bodyguard||!offer) return {ok:false,reason:"Aucune offre de garde du corps."};
@@ -705,7 +729,7 @@
       const members=ids.map(id=>rosterOf(state).find(m=>m.id===id));
       for(const m of members){ const ok=canGuard(state,m,offer); if(!ok.ok) return {ok:false,reason:(m?.name?m.name+" : ":"")+ok.reason}; }
       state.company.gold+=offer.payment;
-      const expedition={id:offer.id,kind:"bodyguard",offer,memberIds:ids,departDay:state.day,returnDay:state.day+offer.days,status:"away"};
+      const expedition={id:offer.id,kind:"bodyguard",offer,memberIds:ids,signedDay:state.day,departDay:state.day+1,returnDay:state.day+1+offer.days,status:"scheduled"};
       expeditionsOf(state).push(expedition);
       state.bodyguardBoard={offer:bodyguard.createOffer({day:state.day,bestLevel:bestMercenaryLevel(state)})};
       return {ok:true,expedition,gold:offer.payment};
@@ -895,6 +919,9 @@
       ensureMissionOffer,
       renewMissionOffer,
       expeditionOf,
+      awayOf,
+      busyReason,
+      departScheduled,
       canAdvanceDay,
       departExpedition,
       completeExpeditionCombat,

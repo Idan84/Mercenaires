@@ -52,7 +52,8 @@ function renderNav(){
     ? [...state.docs.documents,...state.docs.formulas].map(x=>({id:x.file,label:docTitle(x.file),sub:x.file.startsWith("formulas/")?"Formule":"Document"}))
     : state.mode==="avatars"
     ? (state.coverage?[{id:"cov-tags",label:"Affiner les tags",sub:AvatarsLab.tagTodoCount(state.coverage)+" à faire"}]:[])
-      .concat((state.coverage?.results||[]).map(r=>({id:AvatarsLab.anchor(r.people),label:r.people,sub:r.avatars+" / "+r.need+" avatars"})))
+      .concat((state.coverage?.results||[]).map(r=>({id:AvatarsLab.anchor(r.culture),label:r.culture,
+        sub:r.people+" · "+(r.summary.missingPrecise?r.summary.missingPrecise+" à produire":"tout vert")})))
     : state.mode==="images"
     ? (state.images?.summary||[]).map(s=>({id:ImagesLab.anchor(s.key),label:s.title,sub:s.missing?s.missing+" / "+s.total+" manquantes":"complet"}))
     : state.tables.tables.map(x=>({id:x.file,label:labelTable(x.name),sub:x.rows+" lignes"}));
@@ -61,17 +62,17 @@ function renderNav(){
   ).join("");
   $("nav-list").querySelectorAll(".nav-item").forEach(b=>b.onclick=()=>state.mode==="docs"?openDoc(b.dataset.id):state.mode==="avatars"||state.mode==="images"?scrollToPeople(b.dataset.id):openTable(b.dataset.id));
 }
-// Onglet Avatars : couverture des avatars par peuple (avatars-lab.js).
+// Onglet Avatars : besoin en avatars par culture (avatars-lab.js).
 async function openAvatars(){
   state.mode="avatars";state.current=null;
   $("table-tools").classList.add("hidden");
   $("content-kicker").textContent="Production";
-  $("content-title").textContent="Couverture des avatars";
+  $("content-title").textContent="Besoin en avatars";
   $("content-meta").textContent="";
   if(!location.hash.startsWith("#cov-")) location.hash="avatars";
   $("viewer").innerHTML='<p class="cov-progress">Calcul…</p>';
   try{
-    const data=await AvatarsLab.compute((i,n,people)=>{ $("viewer").innerHTML=`<p class="cov-progress">Calcul : ${esc(people)} (${i+1} / ${n})…</p>`; });
+    const data=await AvatarsLab.compute((i,n,culture)=>{ $("viewer").innerHTML=`<p class="cov-progress">Calcul : ${esc(culture)} (${i+1} / ${n})…</p>`; });
     if(state.mode!=="avatars") return;
     state.coverage=data;
     $("content-meta").textContent=AvatarsLab.meta(data);

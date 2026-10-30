@@ -64,6 +64,8 @@ jobs:
       - run: node tests/creation.test.js
       - run: node tests/avatar-catalog.test.js
       - run: node tests/avatar-coverage.test.js
+      - run: node tests/avatar-demand.test.js
+      - run: node --check scripts/build-avatar-demand.js
       - run: php tests/avatar-index.test.php
       - run: php -l prototype-web/api/avatars.php
       - run: php -l prototype-web/api/silhouettes.php

@@ -637,15 +637,38 @@ function gearTile(slot,item,{extraClass="",dealSlot=null}={}){
 // Dégâts des sets d'armes (Idan, 2026-10-30) : un seul chiffre, les PV d'un coup en moyenne (entre le plus petit et le
 // plus grand jet, Force et qualité comprises, avant l'armure de la cible) ; ce que l'arme oppose à l'armure ; rien de la
 // recette (dés, multiplicateurs) ; rien pour un set vide.
+// Case Dégâts (Idan, 2026-10-30) : quatre chiffres pour comparer les mercenaires, des scores et non des chances —
+// Précision, Puissance, Dégâts (du plus petit au plus grand coup, avant la Résistance physique de la cible, et leur
+// type) et Pénétration d'armure — en tableau, une colonne par arme qui frappe (set 1, set 2, main secondaire) ;
+// l'infobulle du libellé dit à quoi sert le chiffre et son écart (character-sheet-copy.json, attack_usage).
 function renderDamageCard(c) {
   const sets = typeof equipmentEffectRules === "function" && c?.stats ? equipmentEffectRules().attacks(c) : [];
-  const strike = (set, s) => `<div class="gear-damage-strike">
-      <span class="gear-damage-head"><small>Set ${set}${s.hand === "off" ? " · main secondaire" : ""}</small><strong>${esc(s.name)}</strong></span>
-      <span class="gear-damage-value"><b>${Math.round((s.min + s.max) / 2)}</b><small>PV par coup</small></span>
-      ${s.types.length ? `<span class="gear-damage-types">Contre l’armure : ${s.types.map(t => `${esc(t.type)} <b>${t.power}</b>`).join(" · ")}</span>` : ""}
-    </div>`;
-  const rows = sets.flatMap(({set, strikes}) => strikes.map(s => strike(set, s)));
-  return rows.length ? `<section class="gear-card gear-damage"><h4>Dégâts</h4>${rows.join("")}</section>` : "";
+  const strikes = sets.flatMap(({set, strikes}) => strikes.map(s => ({...s, set})));
+  if (!strikes.length) return "";
+  const type = t => esc(t.type.toLowerCase());
+  const row = (name, cell, span) => `<tr><th scope="row">${attackTip(name, span)}</th>${strikes.map(s => `<td>${cell(s)}</td>`).join("")}</tr>`;
+  return `<section class="gear-card gear-damage"><h4>Dégâts</h4><table class="gear-damage-table">
+    <thead><tr><td></td>${strikes.map(s => `<th scope="col"><small>Set ${s.set}${s.hand === "off" ? " · main secondaire" : ""}</small><strong>${esc(s.name)}</strong></th>`).join("")}</tr></thead>
+    <tbody>
+      ${row("Précision", s => `<b>${Math.round(s.precision)}</b>`)}
+      ${row("Puissance", s => `<b>${Math.round(s.power)}</b>`)}
+      ${row("Dégâts", s => `<b>${s.min} à ${s.max}</b> PV${s.types.length ? `<small>en ${s.types.map(type).join(" ou ")}</small>` : ""}`)}
+      ${strikes.some(s => s.types.length) ? row("Pénétration d’armure", s => s.types.length === 1 ? `<b>${s.types[0].power}</b>`
+        : s.types.map(t => `<span><b>${t.power}</b> ${type(t)}</span>`).join(""), penetrationSpan()) : ""}
+    </tbody>
+  </table></section>`;
+}
+function attackTip(name, span = "") {
+  const row = game.referenceData?.characterSheetCopy?.attack_usage?.[name];
+  if (!row?.usage) return esc(name);
+  const bounds = row.recrues ? `Nouvelles recrues : de ${row.recrues[0]} à ${row.recrues[1]}.` : span;
+  return `<span class="sheet-stat-name" tabindex="0">${esc(name)}<span class="sheet-stat-tip" role="tooltip"><strong>${esc(name)}</strong><em>${esc(row.usage)}</em>${bounds ? `<span>${esc(bounds)}</span>` : ""}</span></span>`;
+}
+// De la plus faible à la plus forte pénétration des armes (weapons.json).
+function penetrationSpan() {
+  const values = (game.referenceData?.weapons?.rows || []).flatMap(w =>
+    ["puissance_tranchante_base", "puissance_perforante_base", "puissance_contondante_base"].map(k => Number(w[k]) || 0)).filter(v => v > 0);
+  return values.length ? `Selon l’arme : de ${Math.min(...values)} à ${Math.max(...values)}.` : "";
 }
 function renderEquipment(c) {
   const slotRows = game.referenceData?.equipmentSlots?.rows || [];

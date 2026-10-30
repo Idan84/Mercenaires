@@ -1211,14 +1211,6 @@
       "version": "V1"
     },
     {
-      "nom": "Design Lab — avatars visés par peuple",
-      "code": "avatars.coverage.need",
-      "description": "Nombre d’avatars visé pour chaque peuple dans l’onglet Avatars du Design Lab : cible d’une valeur = part des mercenaires générés × ce nombre. Outil de production, sans effet sur le jeu.",
-      "formule": "Couverture des avatars",
-      "valeur": 100,
-      "version": "V1"
-    },
-    {
       "nom": "Besoin en avatars — mercenaires d’une culture par partie",
       "code": "avatars.demand.mercenaries",
       "description": "Nombre de mercenaires d’une même culture qu’un joueur voit passer dans une partie (escouade de départ, embauches, Taverne) : base du besoin en avatars de chaque culture (Idan, 2026-10-30). Outil de production, sans effet sur le jeu.",

@@ -180,6 +180,16 @@ squad[0].recovery=null;
 const deferred=campaign.applyMissionAftermath(game,{results:[{id:2,dead:false,wounded:false,fatigueDays:3,offMap:false}],captainDead:false},{deferBonuses:true});
 assert.deepEqual([deferred.bonusPaid,deferred.bonusesDue.map(b=>[b.id,b.bonus])],[0,[[2,100]]],"expédition : prime due au retour");
 assert.equal(game.company.gold,gold);
+// Inventaire (Idan, 2026-10-30) : un mort en mission rend à l'Intendance ce qu'il gardait au dortoir ; ce qu'il portait
+// reste avec lui (butin d'une victoire).
+const dead=squad[0],deadWorn=Object.values(dead.equipment.slots).filter(Boolean);
+dead.items.push({id:"bag1",name:"Dague",tier:1,itemType:"weapon",owner:dead.id,slot:null});
+const stockBeforeDeath=game.company.stock.length;
+const death=campaign.applyMissionAftermath(game,{results:[{id:dead.id,dead:true}],captainDead:false});
+assert.deepEqual(death.inventoryReturned.map(x=>x.id),["bag1"]);
+assert.equal(game.company.stock.length,stockBeforeDeath+1);
+assert.deepEqual([game.company.stock.at(-1).id,game.company.stock.at(-1).owner],["bag1",null]);
+assert.deepEqual(dead.items.map(x=>x.id).sort(),[...deadWorn].sort(),"il garde ce qu'il portait");
 
 // Objets du coffre (Idan, 2026-10-25) : toutes les familles d'équipement, au tier tiré et à sa qualité, sans propriétaire.
 const families=new Set();

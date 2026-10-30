@@ -138,4 +138,62 @@ assert.equal(self.company.stock.length, 0);
 // Requêtes invalides.
 assert.equal(deals.propose(self, {mercenaryId:99, slot:"armor"}).ok, false);
 assert.equal(deals.propose(world(50), {mercenaryId:2, slot:"armor"}).reason, "Rien à échanger.");
+// Inventaire et réaménagement libre (Idan, 2026-10-30) : Donner met l'objet dans son inventaire (même jet) ; entre ses
+// propres objets, tout est libre (ni jet, ni affinité, ni limite par jour) tant qu'il est au camp ; Retirer reprend
+// aussi un objet de l'inventaire (jet).
+{
+  const camp = world(50, {mine:item("sab", "Sabre", 1), stock:[item("bow", "Arc", 2), item("gs", "Grande épée", 2), item("dg", "Dague", 1),
+    item("ps", "Potion de soin", 1, "potion")]});
+  const kid = camp.company.roster[1];
+  roll = 0;
+  const bag = deals.propose(camp, {mercenaryId:2, slot:deals.INVENTORY, stockItemId:"bow"});
+  assert.deepEqual([bag.action, bag.free, bag.accepted], ["donner", false, true], "Donner dans l'inventaire : le même jet");
+  assert.deepEqual(deals.inventoryOf(kid).map(x => [x.name, x.owner, x.slot]), [["Arc", 2, null]]);
+  assert.equal(kid.equipment.slots.weapon_set_1_main, "sab", "rien ne change sur lui");
+  assert.equal(deals.evaluate(camp, {mercenaryId:2, slot:deals.INVENTORY, stockItemId:"ps"}).reason, "Une fiole se range dans une poche de ceinture.");
+  // Le jour même, une seconde proposition est refusée, mais le réaménagement reste libre.
+  assert.equal(deals.canDeal(camp, kid, deals.INVENTORY).ok, false);
+  const affinityBefore = kid.affinityAcquired;
+  const equip = deals.rearrange(camp, {mercenaryId:2, itemId:"bow", slot:"weapon_set_1_main"});
+  assert.equal(equip.ok, true);
+  assert.equal(kid.equipment.slots.weapon_set_1_main, "bow");
+  assert.deepEqual(deals.inventoryOf(kid).map(x => x.id), ["sab"], "le sabre déplacé part dans l'inventaire");
+  assert.equal(kid.affinityAcquired, affinityBefore, "ni jet ni affinité");
+  assert.deepEqual(deals.placeOptions(kid, kid.items.find(x => x.id === "sab")).map(o => o.slot),
+    ["weapon_set_1_main", "weapon_set_2_main", "weapon_set_2_off"], "pas en main secondaire derrière un arc (deux mains)");
+  assert.equal(deals.rearrange(camp, {mercenaryId:2, itemId:"sab", slot:"weapon_set_2_main"}).ok, true);
+  // Échange des sets : l'arc passe au set 2, le sabre au set 1.
+  assert.equal(deals.swapSets(camp, {mercenaryId:2}).ok, true);
+  assert.deepEqual([kid.equipment.slots.weapon_set_1_main, kid.equipment.slots.weapon_set_2_main], ["sab", "bow"]);
+  assert.equal(kid.items.find(x => x.id === "bow").slot, "weapon_set_2_main");
+  // Déplacer d'un set à l'autre : l'arme qui occupe la place prend celle qui se libère.
+  assert.equal(deals.rearrange(camp, {mercenaryId:2, itemId:"bow", slot:"weapon_set_1_main"}).ok, true);
+  assert.deepEqual([kid.equipment.slots.weapon_set_1_main, kid.equipment.slots.weapon_set_2_main], ["bow", "sab"]);
+  // Une arme à deux mains en arme principale libère la main secondaire (vers l'inventaire).
+  camp.day = 5;
+  deals.propose(camp, {mercenaryId:2, slot:"weapon_set_2_off", stockItemId:"dg"});
+  camp.day = 6;
+  deals.propose(camp, {mercenaryId:2, slot:deals.INVENTORY, stockItemId:"gs"});
+  assert.equal(deals.rearrange(camp, {mercenaryId:2, itemId:"gs", slot:"weapon_set_2_main"}).ok, true);
+  assert.deepEqual([kid.equipment.slots.weapon_set_2_main, kid.equipment.slots.weapon_set_2_off], ["gs", null]);
+  assert.deepEqual(deals.inventoryOf(kid).map(x => x.id).sort(), ["dg", "sab"]);
+  assert.equal(deals.rearrange(camp, {mercenaryId:2, itemId:"dg", slot:"weapon_set_2_off"}).reason, "L’arme principale se tient déjà à deux mains.");
+  assert.equal(kid.equipment.slots.weapon_set_2_main, "gs", "un refus ne change rien");
+  assert.equal(deals.rearrange(camp, {mercenaryId:2, itemId:"gs", slot:deals.INVENTORY}).ok, true, "ranger dans l'inventaire");
+  assert.equal(deals.rearrange(camp, {mercenaryId:2, itemId:"gs", slot:deals.INVENTORY}).reason, "Il est déjà dans son inventaire.");
+  // Retirer un objet de l'inventaire : le jet, puis l'objet retourne à l'Intendance.
+  camp.day = 7;
+  roll = 0;
+  const back = deals.propose(camp, {mercenaryId:2, slot:deals.INVENTORY, itemId:"dg", stockItemId:null});
+  assert.deepEqual([back.action, back.accepted], ["retirer", true]);
+  assert.ok(camp.company.stock.some(x => x.id === "dg" && x.owner === null));
+  assert.ok(!kid.items.some(x => x.id === "dg"));
+  // Mission programmée : encore au camp, on réaménage ; partie : plus rien.
+  camp.expeditions = [{memberIds:[2], status:"scheduled"}];
+  assert.equal(deals.swapSets(camp, {mercenaryId:2}).ok, true);
+  camp.expeditions[0].status = "outbound";
+  assert.equal(deals.swapSets(camp, {mercenaryId:2}).reason, "Il est en mission.");
+  roll = 0;
+}
+
 console.log("Échanges d'équipement : valeur perçue, chance, affinité, une tentative par jour, capitaine libre — OK");

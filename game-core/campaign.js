@@ -847,6 +847,16 @@
           }
           roster.splice(roster.indexOf(mercenary),1);
           if(state.company.intendantId===mercenary.id) state.company.intendantId=null;
+          // Son inventaire, gardé au dortoir, retourne à l'Intendance (Idan, 2026-10-30) ; ce qu'il portait reste avec
+          // lui (butin d'une victoire, perdu sur une défaite).
+          const worn=new Set(Object.values(mercenary.equipment?.slots||{}).filter(Boolean));
+          const kept=(mercenary.items||[]).filter(item=>!worn.has(item.id));
+          if(kept.length){
+            if(!Array.isArray(state.company.stock)) state.company.stock=[];
+            state.company.stock.push(...kept.map(item=>({...item,owner:null,slot:null})));
+            mercenary.items=mercenary.items.filter(item=>worn.has(item.id));
+            report.inventoryReturned=(report.inventoryReturned||[]).concat(kept);
+          }
           if(mercenary.avatar?.id) (state.avatarsRetired=state.avatarsRetired||[]).push(mercenary.avatar.id);
           report.deaths.push(mercenary);
           continue;

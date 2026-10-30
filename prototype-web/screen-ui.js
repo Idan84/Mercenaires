@@ -4,7 +4,7 @@
 // Il se déduit des panneaux visibles, sans toucher aux modules qui les affichent ; styles.css
 // en tire la mise en page (accueil = logo + menu sur le château). Purement visuel.
 const SCREEN_PANELS=[["mission","mission-panel"],["gameover","game-over-panel"],["creation","creation-wizard"],["intro","intro-panel"],["camp","game-panel"],["setup","setup-panel"]];
-const CAMP_SCENES=["company","dormitory","mercenaries","tavern","quartermaster"];
+const CAMP_SCENES=["company","dormitory","mercenaries","tavern","quartermaster","merchant"];
 
 function updateCampHomeIcon(){
   const button=document.getElementById("camp-home-icon-btn");

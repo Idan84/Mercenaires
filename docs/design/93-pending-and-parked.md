@@ -21,7 +21,7 @@ Rien de ce bloc n'est codé : JC3 attend ton choix avant d'y toucher.
 - **Trésor négatif** : l'or peut passer sous 0 sans conséquence. Dette, impayés, départs ?
 - **Type de dégâts, cas « moyen »** : la formule dit `AVERAGE(matchups)` ; le moteur choisit le type le plus proche de cette moyenne. Moyenne numérique ou type le plus proche ?
 - **Missions one shot** : récompense, renommée, factions, cartes, abandon, combat automatique (brouillon du 2026-10-24). → [doc 17 §6](/design/#doc=17-one-shot-missions.md)
-- **Marchands** : prix d'achat et de revente (intendant, renommée…) ; la valeur cachée des objets est en place. → [doc 05 « Valeur d'un objet »](/design/#doc=05-equipment.md)
+- **Marchands** : étape 1 en place le 2026-10-30 (passage du jour, achat) avec un marchand test qui ne vend que des épées longues T1. Idan répartit les biens entre les marchands ; pas encore définis : la liste des marchands, ce que chacun vend, le stock, l'aide de l'intendant ; à venir : revente, baisse par quantité, négociation, affinité acquise. → [doc 18](/design/#doc=18-merchants.md)
 - **Loyauté** : formules de loyauté, de départ et d'attractivité. → [doc 09](/design/#doc=09-reputation-renown-and-salaries.md)
 
 ## 2 — Reporté volontairement

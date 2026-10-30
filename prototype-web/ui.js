@@ -128,6 +128,7 @@ function renderGame() {
   renderQuartermaster();
   renderCampBuildings();
   renderLieutenants();
+  if (typeof renderMerchant === "function") renderMerchant();
 }
 
 // Tri exclusivement visuel : aucune modification de l'ordre sauvegardé ni des règles.

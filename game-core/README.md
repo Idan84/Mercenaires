@@ -14,7 +14,7 @@ Noyau de logique indépendant de l'interface, préparé pour un futur portage Un
 | `avatars.js` | Avatars : choix du visage le plus proche du mercenaire, unicité, sexe donné par l'image | décisions d'Idan du 2026-10-04 (`docs/TEAM.md`) |
 | `avatar-catalog.js` | Catalogue des avatars depuis les images et leurs mots-clés Bridge (Git ou Hostinger) | `docs/DEPLOYMENT.md` |
 | `avatar-demand.js` | Besoin en avatars par culture : cases culture × ascendance × arme ou école, besoin binomial, un avatar par case, repli sur le profil (onglet Avatars du Design Lab, sans effet sur le jeu ; mesures `data/reference/avatar-demand.json`) | `02-generation-and-identity.md` |
-| `merchants.js` | Marchands : passage du jour selon la renommée, marchand fixe de la partie, affinité avec le capitaine, prix, achat (stock : `createMerchantStock` du générateur) | `18-merchants.md` |
+| `merchants.js` | Marchands : passage du jour selon la renommée, marchands et lignes de stock lus dans `merchants.json`, prix (valeur, affinité), achat | `18-merchants.md` |
 | `campaign.js` | État de partie, horloge `AdvanceTime(days)`, signature, Intendant, sauvegarde | `07-architecture.md`, `10-mission-time-and-unavailability.md` |
 
 Les tests sont dans `tests/`.

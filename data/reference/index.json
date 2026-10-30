@@ -516,11 +516,15 @@
     {
       "name": "merchants",
       "file": "merchants.json",
-      "rows": 32,
+      "rows": 1,
       "columns": [
         "id",
+        "nom",
+        "peuple",
         "culture",
-        "poids"
+        "alignement",
+        "poids",
+        "stock"
       ]
     }
   ]

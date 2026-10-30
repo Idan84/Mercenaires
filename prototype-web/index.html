@@ -170,6 +170,7 @@
           <button class="menu-btn camp-hub-btn" data-open-camp-scene="mercenaries"><span>Mes mercenaires</span><i class="menu-btn-line"></i></button>
           <button class="menu-btn camp-hub-btn" data-open-camp-scene="tavern"><span>Taverne</span><i class="menu-btn-line"></i></button>
           <button class="menu-btn camp-hub-btn" data-open-camp-scene="quartermaster"><span>Intendance</span><i class="menu-btn-line"></i></button>
+          <button id="camp-merchant-btn" class="menu-btn camp-hub-btn" data-open-camp-scene="merchant" data-destination="Marchand" disabled><span>Marchand</span><small id="camp-merchant-note"></small><i class="menu-btn-line"></i></button>
         </nav>
       </section>
 
@@ -243,6 +244,21 @@
         <section id="tavern-recruits-view" class="hidden">
           <button class="tavern-back" data-tavern-view="home">← Retour à la taverne</button>
           <div id="tavern-candidates" class="recruit-grid"></div>
+        </section>
+      </section>
+
+      <!-- Marchand du jour (doc 18 ; Idan, 2026-10-30) : écran fonctionnel, en attendant fond, emplacements et portraits. -->
+      <section class="camp-scene hidden" data-camp-scene-panel="merchant" aria-label="Marchand">
+        <div class="camp-scene-nav"><button class="secondary camp-scene-back" data-camp-back>← Retour au camp</button></div>
+        <section class="panel merchant-panel">
+          <div class="section-title-row">
+            <div>
+              <p class="eyebrow">Marchand</p>
+              <h2 id="merchant-title">Pas de marchand aujourd’hui</h2>
+            </div>
+            <span id="merchant-gold" class="roster-count"></span>
+          </div>
+          <div id="merchant-content"></div>
         </section>
       </section>
 
@@ -426,6 +442,13 @@
     <div id="bodyguard-return-list" class="bodyguard-return-list"></div>
     <div class="bodyguard-return-actions"><button type="button" class="primary" id="bodyguard-return-ok">D’accord</button></div>
   </dialog>
+  <!-- Nouvelles du jour (Idan, 2026-10-30) : tout ce que le passage d'une journée annonce, marchand compris. -->
+  <dialog id="day-news-dialog" class="bodyguard-return day-news" aria-labelledby="day-news-title">
+    <p class="eyebrow">Nouvelles du jour</p>
+    <h2 id="day-news-title"></h2>
+    <ul id="day-news-list" class="day-news-list"></ul>
+    <div class="bodyguard-return-actions"><button type="button" class="primary" id="day-news-ok">D’accord</button></div>
+  </dialog>
   <dialog id="lieutenant-report-dialog" class="talk-dialog talk-dialog--recruit" aria-labelledby="lieutenant-report-name">
     <header class="talk-head">
       <div id="lieutenant-report-portrait" class="talk-face"></div>
@@ -467,6 +490,8 @@
   <script src="/core/equipment-effects.js"></script>
   <script src="/core/equipment-deals.js"></script>
   <script src="/core/missions.js"></script>
+  <script src="/core/item-value.js"></script>
+  <script src="/core/merchants.js"></script>
   <script src="reference-data.js"></script>
   <script src="core-data.js"></script>
   <script src="generation.js"></script>
@@ -483,6 +508,7 @@
   <script src="deal-ui.js"></script>
   <script src="steward-ui.js"></script>
   <script src="lieutenant-ui.js"></script>
+  <script src="merchant-ui.js"></script>
   <script src="save-ui.js"></script>
   <script src="screen-ui.js"></script>
   <script src="intro-ui.js"></script>

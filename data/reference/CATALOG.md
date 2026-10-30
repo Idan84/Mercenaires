@@ -38,7 +38,7 @@ Git est la source de vérité. Les JSON ci-dessous sont les référentiels struc
 | item-qualities.json | 3 | nom, code, description, multiplicateur_malus, multiplicateur_qualite, multiplicateur_prix |
 | ranged-weapons.json | 8 | nom, domaine, portee_min_hex, portee_max_hex, cadence_tir, recharge_action_rapide, contre_charge, attaque_de_zone, degats_pv_base, puissance_perforante_base, prise, malus_vitesse_arme_base |
 | weapons.json | 38 | nom, domaine, prise, malus_vitesse_arme_base, portee_min_hex, portee_max_hex, bonus_charge_base, contre_charge, degats_pv_base, puissance_tranchante_base, puissance_perforante_base, puissance_contondante_base, prix_base (prix de base en pièces d’or, doc 05 « Valeur d’un objet »), bonus_caracteristique et bonus_pourcentage (arme tenue : Bâton long +5 % de Puissance magique, Bâton court +10 % de Réserve de mana, Fouet +10 % de Charisme, Trident +20 % en Eau, Marteau de guerre +10 % en Foudre, Grande épée +10 % en Feu), parade_type et parade_chance (saï : 5 % des coups tranchants, doc 04), aura_caracteristique, aura_pourcentage et aura_portee (fouet : +10 % de Courage aux alliés à 3 cases), malus_blocage_pourcentage (fléau : −50 % de blocage), empoisonne (sarbacane), attaque_caracteristique, attaque_source et attaque_part (nunchaku : +10 % de Télékinésie en Dextérité pour attaquer) ; traits d'armes : doc 05 |
-| formula-constants.json | 222 | nom, code, description, formule, valeur, version |
+| formula-constants.json | 230 | nom, code, description, formule, valeur, version |
 | game-formulas.json | 43 | nom, code, domaine, expression, maximum, minimum, notes, statut, type_attaque, version, etape |
 | formula-terms.json | 13 | nom, caracteristique, code_variable, coefficient, cote, description, formule, ordre, source |
 
@@ -63,5 +63,6 @@ Git est la source de vérité. Les JSON ci-dessous sont les référentiels struc
 
 | avatars.json | 0 | id, people, sex, tags, full, portrait, source (vide depuis le 2026-10-21 : tous les avatars sont sur Hostinger, `media/avatars/`, voir `docs/DEPLOYMENT.md` ; régénéré par `scripts/build-avatars.js`) |
 | avatar-demand.json | 32 | people, culture, ascendances (ascendance, draws, looks : profile, value, count) : ce que tiennent en main les mercenaires de chaque culture et ascendance, mesuré sur le générateur ; besoin en avatars du Design Lab (`game-core/avatar-demand.js`, Idan 2026-10-30). Généré par `scripts/build-avatar-demand.js`, à relancer quand la génération change |
+| merchants.json | 32 | id, culture, poids : marchands qui passent au camp (Idan, 2026-10-30 ; liste provisoire, un par culture, en attendant la liste plus fine d’Idan). Peuple, alignement principal et spécialités (armes de la matrice de génération) viennent de la culture ; nom tiré à la première visite — doc 18 |
 
 | captain-creation-copy.json | 69 | peoples, cultures, origins, ancestries, alignments : nom, description, force, faiblesse (textes de Chatty pour la création du capitaine) |

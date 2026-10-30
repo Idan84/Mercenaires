@@ -49,6 +49,7 @@ jobs:
       - run: node tests/auto-combat.test.js
       - run: node tests/lieutenants.test.js
       - run: node tests/bodyguard.test.js
+      - run: node tests/merchants.test.js
       - run: node tests/magic.test.js
       - run: node tests/mission-spells.test.js
       - run: node tests/stealth.test.js
@@ -88,6 +89,7 @@ jobs:
       - run: node --check prototype-web/save-ui.js
       - run: node --check prototype-web/quartermaster-ui.js
       - run: node --check prototype-web/contract-ui.js
+      - run: node --check prototype-web/merchant-ui.js
       - run: node --check prototype-web/reference-data.js
       - run: node --check prototype-web/design/design.js
       - run: node --check prototype-web/design/avatars-lab.js

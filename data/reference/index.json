@@ -512,6 +512,16 @@
         "culture",
         "ascendances"
       ]
+    },
+    {
+      "name": "merchants",
+      "file": "merchants.json",
+      "rows": 32,
+      "columns": [
+        "id",
+        "culture",
+        "poids"
+      ]
     }
   ]
 }

@@ -90,7 +90,8 @@ assert.match(nodes["hud-date"].textContent,/1 Corbenaël$/);
 let advanced=0,saved=0,redrawn=0,blocker={ok:true};
 const logged=[];
 let screen="camp";
-const advance = new Function("game","campaignRules","tavernLog","fmt","saveGame","renderGame","currentScreen",
+const shownNews=[];
+const advance = new Function("game","campaignRules","tavernLog","fmt","saveGame","renderGame","currentScreen","showDayNews",
   extract(tavernUI,"function advanceCampDay()","// Dialogue de recrutement")+
   "\nreturn advanceCampDay;"
 )(
@@ -103,10 +104,13 @@ const advance = new Function("game","campaignRules","tavernLog","fmt","saveGame"
       tavern:{departures:[],arrivals:[{mercenary:{name:"Erik"}}]}}];
   }}),
   (message)=>logged.push(message),String,
-  ()=>saved++,()=>{redrawn++;render();},()=>screen
+  ()=>saved++,()=>{redrawn++;render();},()=>screen,(day,news)=>shownNews.push({day,news})
 );
 advance();
 assert.equal(fakeGame.campaign.day,33);
+// Nouvelles du jour (Idan, 2026-10-30) : une pop-up à chaque passage de journée.
+assert.deepEqual(shownNews.map(n=>n.day),[33]);
+assert.equal(fakeGame.dayNews,null,"la collecte s'arrête après la journée");
 assert.equal(advanced,1);
 assert.equal(saved,1);
 assert.equal(redrawn,1);

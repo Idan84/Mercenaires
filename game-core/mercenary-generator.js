@@ -1097,6 +1097,31 @@
       return {...item, tier, qualityCode:quality.code || null, qualityName:quality.nom || null, owner:null};
     }
 
+    // Stock d'un marchand (Idan, 2026-10-30 ; provisoire, à affiner) : count objets sans propriétaire. Une part weaponShare
+    // d'armes, tirées comme le stock de départ de la compagnie (poids 1 + 2 × A, A = intensités de la matrice pour le
+    // peuple et la culture du marchand : ses spécialités culturelles) ; le reste, une famille au hasard parmi les
+    // armures, les objets à bonus et les potions. Tier : table de l'équipement de départ, à seller.reputation.
+    function createMerchantStock(seller, {count = 0, weaponShare = 2 / 3} = {}) {
+      const weapons = weaponRows.map(weapon => ({value:weapon, weight:startingStockWeight(weapon, seller)}));
+      const armorTypes = [...new Set(baseArmorRows.map(row => row.type_armure).filter(Boolean))];
+      const others = [
+        ...(armorTypes.length ? [() => armorItem(seller, randomChoice(armorTypes))] : []),
+        ...Object.keys(STAT_GEAR).filter(kind => STAT_GEAR[kind].rows.length)
+          .map(kind => () => statGearItem(seller, kind, randomChoice(STAT_GEAR[kind].rows))),
+        ...(potionRows.length ? [() => potionItem(seller, randomChoice(potionRows))] : [])
+      ];
+      return Array.from({length:count}, () => {
+        let item;
+        if (!others.length || random() < weaponShare) {
+          const weapon = weightedChoice(weapons);
+          item = weaponItem(seller, {weapon:weapon.nom, category:skillByName.get(weapon.nom)?.parent || null}, null);
+        } else {
+          item = randomChoice(others)();
+        }
+        return item ? {...item, owner:null} : null;
+      }).filter(Boolean);
+    }
+
     function createLootItem(character) {
       const kinds = Object.keys(STAT_GEAR).filter(kind => STAT_GEAR[kind].rows.length);
       if (!kinds.length) return null;
@@ -1621,6 +1646,7 @@
       createStartingHelmetStock,
       createStartingPotionStock,
       potionItem,
+      createMerchantStock,
       createLootItem,
       createChestItem,
       people: () => peopleRows.map(r => r.nom),

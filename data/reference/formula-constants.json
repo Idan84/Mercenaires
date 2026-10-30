@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 219,
+  "row_count": 230,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -1808,6 +1808,70 @@
       "description": "Part maximale des caractéristiques, compétences et PV du mort (Idan, 2026-10-28).",
       "formule": "Magie — invocations",
       "valeur": 100,
+      "version": "V1"
+    },
+    {
+      "nom": "Marchand — chance de passage de base",
+      "code": "merchants.arrival.base",
+      "description": "Chaque matin, un marchand passe au camp avec une probabilité de base + (par étoile) × niveau d’étoiles de la renommée (1 à 15) : 30 % + 4 % par étoile (Idan, 2026-10-30 : « on vient voir plus souvent une grande compagnie »).",
+      "formule": "Marchands",
+      "valeur": 0.3,
+      "version": "V1"
+    },
+    {
+      "nom": "Marchand — chance de passage par étoile",
+      "code": "merchants.arrival.per_star",
+      "description": "Chance de passage ajoutée par niveau d’étoiles de la renommée de la compagnie (Idan, 2026-10-30).",
+      "formule": "Marchands",
+      "valeur": 0.04,
+      "version": "V1"
+    },
+    {
+      "nom": "Marchand — stock de base",
+      "code": "merchants.stock.base",
+      "description": "Nombre d’objets du marchand : base + 1D(faces), 6 + 1D6 (provisoire, à affiner).",
+      "formule": "Marchands",
+      "valeur": 6,
+      "version": "V1"
+    },
+    {
+      "nom": "Marchand — faces du dé du stock",
+      "code": "merchants.stock.dice_sides",
+      "description": "Faces du dé ajouté au stock de base du marchand (provisoire).",
+      "formule": "Marchands",
+      "valeur": 6,
+      "version": "V1"
+    },
+    {
+      "nom": "Marchand — part des armes",
+      "code": "merchants.stock.weapon_share",
+      "description": "Part des armes dans le stock, tirées selon les spécialités du peuple et de la culture du marchand ; le reste en armures, objets à bonus et potions (provisoire).",
+      "formule": "Marchands",
+      "valeur": 0.6667,
+      "version": "V1"
+    },
+    {
+      "nom": "Marchand — diviseur de la renommée",
+      "code": "merchants.stock.renown_divisor",
+      "description": "Le tier des objets du marchand suit la table de l’équipement de départ, à la renommée de la compagnie ÷ ce diviseur (rapport entre les échelles de renommée et de réputation ; provisoire).",
+      "formule": "Marchands",
+      "valeur": 4,
+      "version": "V1"
+    },
+    {
+      "nom": "Marchand — marge à la vente",
+      "code": "merchants.price.sell_margin",
+      "description": "Prix demandé par le marchand = valeur cachée de l’objet × cette marge × (1 − facteur × Affinité / 100) (Idan, 2026-10-30).",
+      "formule": "Marchands",
+      "valeur": 1.5,
+      "version": "V1"
+    },
+    {
+      "nom": "Marchand — poids de l’affinité",
+      "code": "merchants.price.affinity_factor",
+      "description": "Effet de l’affinité marchand ↔ capitaine sur le prix : ×(1 − facteur × Affinité / 100), soit ±20 % (Idan, 2026-10-30).",
+      "formule": "Marchands",
+      "valeur": 0.2,
       "version": "V1"
     }
   ]

@@ -1,0 +1,182 @@
+{
+  "schema_version": 1,
+  "name": "merchants",
+  "description": "Marchands qui passent au camp (Idan, 2026-10-30). Liste provisoire : un marchand par culture, en attendant la liste plus fine d’Idan. Peuple et alignement viennent de la culture (alignement principal) ; le nom est tiré dans les noms de la culture à sa première visite, puis le marchand reste le même toute la partie. Ses spécialités : les armes de son peuple et de sa culture (matrice de génération). poids : fréquence de passage relative.",
+  "columns": [
+    {
+      "source": "Id",
+      "key": "id"
+    },
+    {
+      "source": "Culture",
+      "key": "culture"
+    },
+    {
+      "source": "Poids",
+      "key": "poids"
+    }
+  ],
+  "row_count": 32,
+  "rows": [
+    {
+      "id": "marchand-tribus-nordiques",
+      "culture": "Tribus nordiques",
+      "poids": 1
+    },
+    {
+      "id": "marchand-clans-des-grandes-steppes",
+      "culture": "Clans des grandes steppes",
+      "poids": 1
+    },
+    {
+      "id": "marchand-ogres-des-cites-humaines",
+      "culture": "Ogres des cités humaines",
+      "poids": 1
+    },
+    {
+      "id": "marchand-reptiliens-des-villes",
+      "culture": "Reptiliens des villes",
+      "poids": 1
+    },
+    {
+      "id": "marchand-montagnes-du-nord",
+      "culture": "Montagnes du Nord",
+      "poids": 1
+    },
+    {
+      "id": "marchand-reptiliens-des-marecages",
+      "culture": "Reptiliens des marécages",
+      "poids": 1
+    },
+    {
+      "id": "marchand-elfes-noirs",
+      "culture": "Elfes noirs",
+      "poids": 1
+    },
+    {
+      "id": "marchand-halflings-des-cites-humaines",
+      "culture": "Halflings des cités humaines",
+      "poids": 1
+    },
+    {
+      "id": "marchand-tribus-de-la-jungle",
+      "culture": "Tribus de la jungle",
+      "poids": 1
+    },
+    {
+      "id": "marchand-cites-libres",
+      "culture": "Cités libres",
+      "poids": 1
+    },
+    {
+      "id": "marchand-caravanes-de-ferrailleurs",
+      "culture": "Caravanes de ferrailleurs",
+      "poids": 1
+    },
+    {
+      "id": "marchand-gnomes-des-forets",
+      "culture": "Gnomes des forêts",
+      "poids": 1
+    },
+    {
+      "id": "marchand-explorateurs",
+      "culture": "Explorateurs",
+      "poids": 1
+    },
+    {
+      "id": "marchand-steppes-desertiques",
+      "culture": "Steppes désertiques",
+      "poids": 1
+    },
+    {
+      "id": "marchand-orcs-noirs",
+      "culture": "Orcs noirs",
+      "poids": 1
+    },
+    {
+      "id": "marchand-elfes-des-grandes-cites",
+      "culture": "Elfes des grandes cités",
+      "poids": 1
+    },
+    {
+      "id": "marchand-gobelins-des-cavernes",
+      "culture": "Gobelins des cavernes",
+      "poids": 1
+    },
+    {
+      "id": "marchand-halflings-des-villages-isoles",
+      "culture": "Halflings des villages isolés",
+      "poids": 1
+    },
+    {
+      "id": "marchand-orcs-des-villes",
+      "culture": "Orcs des villes",
+      "poids": 1
+    },
+    {
+      "id": "marchand-tribus-des-forets-anciennes",
+      "culture": "Tribus des forêts anciennes",
+      "poids": 1
+    },
+    {
+      "id": "marchand-gobelins-des-villes",
+      "culture": "Gobelins des villes",
+      "poids": 1
+    },
+    {
+      "id": "marchand-royaumes-du-soleil-levant",
+      "culture": "Royaumes du Soleil Levant",
+      "poids": 1
+    },
+    {
+      "id": "marchand-orcs-des-steppes",
+      "culture": "Orcs des steppes",
+      "poids": 1
+    },
+    {
+      "id": "marchand-nains-des-montagnes",
+      "culture": "Nains des montagnes",
+      "poids": 1
+    },
+    {
+      "id": "marchand-ogres-des-montagnes",
+      "culture": "Ogres des montagnes",
+      "poids": 1
+    },
+    {
+      "id": "marchand-gnomes-des-cavernes",
+      "culture": "Gnomes des cavernes",
+      "poids": 1
+    },
+    {
+      "id": "marchand-elfes-sylvains",
+      "culture": "Elfes sylvains",
+      "poids": 1
+    },
+    {
+      "id": "marchand-nains-du-chaos",
+      "culture": "Nains du chaos",
+      "poids": 1
+    },
+    {
+      "id": "marchand-reptiliens-des-cites-temples",
+      "culture": "Reptiliens des cités-temples",
+      "poids": 1
+    },
+    {
+      "id": "marchand-nains-reduits-en-esclavage-dans-les-colonies",
+      "culture": "Nains réduits en esclavage dans les colonies",
+      "poids": 1
+    },
+    {
+      "id": "marchand-gnomes-des-villes",
+      "culture": "Gnomes des villes",
+      "poids": 1
+    },
+    {
+      "id": "marchand-ogres-des-steppes",
+      "culture": "Ogres des steppes",
+      "poids": 1
+    }
+  ]
+}

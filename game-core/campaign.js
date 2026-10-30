@@ -55,7 +55,8 @@
   // missions (facultatif) : createMissionRules(...) de game-core/missions.js (tableau des contrats de la Taverne).
   // lieutenants : règles des lieutenants (lieutenants.js) ; leurs demandes de la veille sont jouées chaque matin.
   // bodyguard : règles des missions de garde du corps (bodyguard.js).
-  function createCampaignRules({generator,tavern,reference,biographies=null,avatars=null,progression=null,affinity=null,names=null,missions=null,lieutenants=null,bodyguard=null,magic=null}){
+  // merchants (facultatif) : createMerchantRules(...) de game-core/merchants.js (le marchand du jour, doc 18).
+  function createCampaignRules({generator,tavern,reference,biographies=null,avatars=null,progression=null,affinity=null,names=null,missions=null,lieutenants=null,bodyguard=null,magic=null,merchants=null}){
     const STARTING_GOLD=referenceConstant(reference,"company.gold.initial",10000);
     const STARTING_DORMITORY_CAPACITY=referenceConstant(reference,"camp.dormitory.initial_capacity",40);
     const RENOWN_RANK_EXPONENT=referenceConstant(reference,"company.renown.rank_exponent",1.5);
@@ -565,7 +566,9 @@
       // Demandes au lieutenant (Idan, 2026-10-25) : le résultat tombe le lendemain matin.
       const lieutenantReports=lieutenants?lieutenants.resolveRequests(state):[];
       const mana=rechargeCampMana(state);
-      return {day:state.day,recovered,salaries,tavern:tavernReport,missionTaken,bodyguardTaken,expeditions,built,lieutenants:lieutenantReports,mana};
+      // Le marchand de la veille repart ; un autre passe peut-être (doc 18 ; Idan, 2026-10-30).
+      const merchant=merchants?merchants.morning(state,{renown:companyRenown(state).total}):null;
+      return {day:state.day,recovered,salaries,tavern:tavernReport,missionTaken,bodyguardTaken,expeditions,built,lieutenants:lieutenantReports,mana,merchant};
     }
 
     // Recharge du mana (doc 12 ; Idan, 2026-10-25) : chaque jour, pour les membres présents au camp, pas pour ceux qui sont

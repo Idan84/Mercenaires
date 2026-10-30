@@ -58,6 +58,22 @@ td.gap-high{background:#f8e3df}td.gap-mid{background:#fbf0d9}td.gap-ok{backgroun
 .tag-todo button,.link-button{border:1px solid #cfc5b8;background:#f7f2ea;border-radius:8px;padding:7px 12px;font-weight:750;cursor:pointer;color:#26221d}
 .tag-todo button:hover,.link-button:hover{background:#eee5d8}
 .cov-warnings{margin-top:30px}.cov-warnings li{font-size:.85rem;color:#6b6258}
+/* Besoin en avatars par culture (Idan, 2026-10-30) : bilan, à produire, cases précises, repli. */
+.cov-alert{margin:0 0 16px;padding:12px 16px;border:1px solid #d9a79f;background:#faece9;border-radius:10px;color:#7d2d24;font-weight:650}
+.cov-summary td.v{color:#3f7a4a;font-weight:750}.cov-summary td.o{color:#b46a12;font-weight:750}.cov-summary td.r{color:#7d2d24;font-weight:750}
+.cov-total td{background:#f1ebe2;font-weight:800}
+.dem-culture{margin:18px 0 0;padding-top:16px;border-top:1px solid #e6dfd5}
+.dem-culture h4{margin:0 0 10px;font-size:1.08rem;letter-spacing:-.01em}
+.dem-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-bottom:10px}
+.dem-tiles div{border:1px solid #e6dfd5;border-radius:9px;padding:8px 10px;background:#fbf8f3}
+.dem-tiles b{display:block;font-size:1.35rem;font-variant-numeric:tabular-nums}.dem-tiles span{font-size:.76rem;color:#6b6258}
+.dem-tiles .vert b{color:#3f7a4a}.dem-tiles .orange b{color:#b46a12}.dem-tiles .rouge b{color:#7d2d24}
+.cov-family h5{margin:10px 0 6px;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:#7b3026}
+details.cov-family{margin-top:10px}details.cov-family summary{cursor:pointer;font-size:.84rem;font-weight:750;color:#7b3026}details.cov-family table{margin-top:8px}
+.dem-todo{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:5px}
+.dem-todo li{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:8px;align-items:center;padding:5px 8px;border-radius:7px;font-size:.82rem}
+.dem-todo li.rouge{background:#f8e3df}.dem-todo li.orange{background:#fbf0d9}
+.dem-todo b{font-size:1rem;text-align:right;font-variant-numeric:tabular-nums}.dem-todo small{color:#6b6258;font-variant-numeric:tabular-nums;white-space:nowrap}
 /* Onglet Images : images attendues par le jeu, hors avatars. */
 .img-group h4{margin:6px 0 6px;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:#7b3026}.img-group h4 small{font-weight:600;color:#857b70;letter-spacing:0}
 .img-list{list-style:none;margin:0;padding:0;display:grid;gap:4px}

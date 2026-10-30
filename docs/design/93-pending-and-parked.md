@@ -43,6 +43,8 @@ On en a parlé, et on a choisi d'attendre.
 - **Vol** ([doc 03](/design/#doc=03-character-and-skills.md)), **siège du château** ([doc 11](/design/#doc=11-camp-and-ruined-castle.md)).
 - **Terrain, hauteur, détection, camouflage, actions rapides** ([doc 90](/design/#doc=90-mechanics-backlog.md)).
 - **Équilibrage** en général : reporté par Idan le 2026-10-03 (section 3).
+- **Cristaux des objets** (proches des matérias de Final Fantasy VII) et **tiers jusqu'au T6 au moins** : en réflexion chez Idan (2026-10-30). → [doc 05](/design/#doc=05-equipment.md)
+- **Passe sur le texte de l'interface** : retirer tout ce qui est évident, pour l'immersion (Idan, 2026-10-30 : « on va virer du texte un peu partout »).
 
 ## 3 — À surveiller en jouant
 

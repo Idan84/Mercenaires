@@ -49,10 +49,12 @@ assert.match(boots, /<p class="deal-menu-title">Bottes<\/p>/);
 assert.doesNotMatch(boots, /Retirer/);
 assert.match(boots, /<p class="deal-menu-label">Donner<\/p>/);
 assert.deepEqual([...boots.matchAll(/data-deal-stock="([^"]+)"/g)].map(m => m[1]), ["b3","b1"], "doublon regroupé, T3 d'abord");
-assert.match(boots, /Bottes du messager ailé \(T3\)/, "titre de l'objet selon son tier");
+assert.match(boots, /<b>Bottes du messager ailé<\/b><small>Bottes de vitesse<\/small>/, "nom public, nom de base en petit, jamais le tier");
+assert.doesNotMatch(boots, /\bT[1-6]\b/);
 // Case remplie → Retirer et Troquer contre.
 const hand = ui.sheetDealMenu(borin, "weapon_set_1_main");
-assert.match(hand, /<p class="deal-menu-current">Hachette émoussée \(T1\)|<p class="deal-menu-current">[^<]+\(T1\)<\/p>/);
+assert.match(hand, /<p class="deal-menu-current">[^<(]+<\/p>/);
+assert.doesNotMatch(hand, /\bT[1-6]\b/);
 assert.match(hand, /data-deal-member="2" data-deal-slot="weapon_set_1_main" data-deal-stock="">Retirer/);
 assert.match(hand, /<p class="deal-menu-label">Troquer contre<\/p>/);
 assert.match(hand, /data-deal-stock="w1"/);
@@ -63,7 +65,7 @@ assert.match(ui.sheetDealMenu(captain, "armor"), /Le capitaine s’équipe libre
 const give = ui.stockDealMenu("w1");
 assert.match(give, /<p class="deal-menu-title">Donner à…<\/p>/);
 assert.ok(give.indexOf("Edda Brasfort · capitaine") < give.indexOf("Borin Cendremarteau"));
-assert.match(give, /data-deal-member="2" data-deal-slot="weapon_set_1_main" data-deal-stock="w1">\s*Set 1 — arme principale<small>contre [^<]+\(T1\)<\/small>/);
+assert.match(give, /data-deal-member="2" data-deal-slot="weapon_set_1_main" data-deal-stock="w1">\s*Set 1 — arme principale<small>contre [^<(]+<\/small>/);
 assert.match(give, /data-deal-member="2" data-deal-slot="weapon_set_2_main" data-deal-stock="w1">\s*Set 2 — arme principale<small>libre<\/small>/);
 assert.match(ui.stockDealMenu("s1"), /Personne ne peut le porter\./);
 
@@ -78,13 +80,13 @@ delete borin.equipmentDealDay;
 // Répliques : proposition du capitaine, réponse selon l'action, l'accord et l'humeur, ce qui change.
 const sabre = game.campaign.company.stock.find(x => x.id === "w1"), hachette = borin.items[0];
 const swapLines = ui.dealLines(borin, {action:"troquer", accepted:false, mood:"pleased", given:hachette, received:sabre});
-assert.match(swapLines.proposal, /^Je vous propose un échange : [^(]+\(T2\) contre [^(]+\(T1\)\.$/);
+assert.match(swapLines.proposal, /^Je vous propose un échange : [^(]+ contre [^(]+\.$/);
 assert.ok(copy.replies.find(r => r.action === "troquer" && !r.accord && r.humeur === "content").lignes
   .map(l => recruit.fill(l, {}, false)).includes(swapLines.reply), "refus d'un bon échange : il tient au sien");
 assert.equal(swapLines.outcome, "Borin garde son équipement.");
 const giveLines = ui.dealLines(borin, {action:"donner", accepted:true, mood:"pleased", given:null, received:sabre});
-assert.match(giveLines.proposal, /^Voici pour vous : .+ \(T2\)\.$/);
-assert.match(giveLines.outcome, /^.+ \(T2\) rejoint l’équipement de Borin\.$/);
+assert.match(giveLines.proposal, /^Voici pour vous : [^(]+\.$/);
+assert.match(giveLines.outcome, /^[^(]+ rejoint l’équipement de Borin\.$/);
 assert.match(ui.dealLines({...borin, firstName:"Enzo"}, {action:"donner", accepted:true, mood:"pleased", given:null, received:sabre}).outcome,
   /rejoint l’équipement d’Enzo\.$/, "élision devant une voyelle");
 // L'intendant appuie la proposition (Idan, 2026-10-24).
@@ -92,5 +94,5 @@ assert.equal(ui.dealLines(borin, {action:"donner", accepted:true, mood:"pleased"
   steward:{firstName:"Isolde", sex:"femme"}}).support, "Isolde, votre intendante, appuie votre proposition.");
 assert.equal(giveLines.support, "", "sans intendant, pas d'appui");
 const takeLines = ui.dealLines(borin, {action:"retirer", accepted:true, mood:"displeased", given:hachette, received:null});
-assert.match(takeLines.outcome, /\(T1\) retourne à l’Intendance\.$/);
+assert.match(takeLines.outcome, /^[^(]+ retourne à l’Intendance\.$/);
 console.log("Échanges d'équipement, interface : menus de la fiche et de l'Intendance, répliques — OK");

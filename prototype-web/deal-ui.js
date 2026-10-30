@@ -16,11 +16,11 @@ function dealMember(id){ return game.campaign?.company.roster.find(m=>String(m.i
 function dealSlotLabel(slot){
   return (game.referenceData?.equipmentSlots?.rows||[]).find(row=>row.id===slot)?.label||slot;
 }
+// Nom public de l'objet (titre selon le tier, item-titles.json) : jamais le tier lui-même (Idan, 2026-10-30).
 function dealItemLabel(item){
   if(!item) return "";
   if(item.itemType==="potion") return item.name;
-  const title=typeof itemCardRules==="function"?itemCardRules()?.title(item):null;
-  return `${title||item.name} (T${item.tier})`;
+  return (typeof itemCardRules==="function"?itemCardRules()?.title(item):null)||item.name;
 }
 function dealItemIn(m,slot){
   const id=m?.equipment?.slots?.[slot];
@@ -36,7 +36,7 @@ function dealOffers(m,slot){
 }
 function dealOfferButton(item,attrs){
   return `<button type="button" class="deal-offer" ${attrs}>${gearTile({id:"stock",label:item.name},item).replace('tabindex="0"','tabindex="-1"')}
-    <span><b>${esc(dealItemLabel(item))}</b><small>${esc(item.itemType==="potion"?"Potion · usage unique":item.name+" · "+(item.qualityName||""))}</small></span></button>`;
+    <span><b>${esc(dealItemLabel(item))}</b><small>${esc(item.itemType==="potion"?"Potion · usage unique":item.name)}</small></span></button>`;
 }
 
 // Menu de la fiche : l'emplacement, ce qu'il contient, et ce qu'on peut faire.

@@ -9,6 +9,20 @@ function itemCardRules(){
   return itemCards;
 }
 
+// Nom public d'un objet (Idan, 2026-10-30 : « T1, T2, T3… ça ne doit apparaître nulle part ») : son titre selon le
+// tier (item-titles.json). Le tier se lit au cadre de couleur. Les potions gardent leur nom.
+function itemPublicName(item){
+  if(!item) return "";
+  if(item.itemType==="potion") return item.name;
+  return itemCardRules()?.title(item)||item.name;
+}
+// Nom de base, en petit sous le nom public quand il en diffère (« Épée longue » sous « Lame ébréchée »).
+function itemBaseName(item){
+  if(!item) return "";
+  if(item.itemType==="potion") return "Usage unique";
+  return itemPublicName(item)!==item.name?item.name:"";
+}
+
 function cardNumber(value,decimals=0){
   const factor=10**decimals;
   return String(Math.round(value*factor)/factor).replace(".",",").replace("-","−");
@@ -138,7 +152,7 @@ function renderItemCard(item){
       <div class="item-card-names">
         <strong class="item-card-title">${esc(card.title)}</strong>
         <span class="item-card-sub">${esc(card.kind==="armor"&&card.title!==card.name?card.name+" · "+subtitle:subtitle)}</span>
-        <span class="item-card-tier">${potion?"Usage unique":`T${card.tier} · ${esc(card.quality.name||"")}`}</span>
+        ${potion?`<span class="item-card-tier">Usage unique</span>`:""}
       </div>
     </div>
     <dl class="item-card-stats">${body.rows.join("")}</dl>

@@ -43,8 +43,8 @@ function stockCount(items){
 function renderStockRow({item,count}){
   return `<li class="stock-row" data-stock-deal="${esc(item.id)}" role="button" tabindex="0" title="Donner à…">
     ${gearTile({id:"stock",label:item.name},item)}
-    <span class="stock-name">${esc(item.name)}</span>
-    <span class="stock-tier stock-tier--${esc(item.qualityCode||"")}">${item.itemType==="potion"?"Usage unique":`T${item.tier} · ${esc(item.qualityName||"")}`}</span>
+    <span class="stock-name">${esc(itemPublicName(item))}</span>
+    <span class="stock-tier">${esc(itemBaseName(item))}</span>
     <span class="stock-count">× ${count}</span>
   </li>`;
 }

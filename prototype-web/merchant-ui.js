@@ -26,8 +26,8 @@ function merchantRow({index,item,price}){
   const short=priced&&gold<price;
   return `<li class="stock-row merchant-row">
     ${gearTile({id:"merchant",label:item.name},item)}
-    <span class="stock-name">${esc(item.name)}</span>
-    <span class="stock-tier stock-tier--${esc(item.qualityCode||"")}">${item.itemType==="potion"?"Usage unique":`T${item.tier} · ${esc(item.qualityName||"")}`}</span>
+    <span class="stock-name">${esc(itemPublicName(item))}</span>
+    <span class="stock-tier">${esc(itemBaseName(item))}</span>
     <span class="merchant-price">${priced?fmt(price)+" PO":"—"}</span>
     <button type="button" class="primary merchant-buy" data-merchant-buy="${index}"${!priced||short?" disabled":""}${short?` title="Pas assez d’or"`:""}>Acheter</button>
   </li>`;
@@ -39,16 +39,16 @@ function renderMerchant(){
   if(!c||!button) return;
   const visit=merchantRules().visitOf(c);
   button.disabled=!visit;
-  $("camp-merchant-note").textContent=visit?visit.merchant.name:"Personne aujourd’hui";
+  $("camp-merchant-note").textContent=visit?visit.merchant.name:"";
   $("merchant-gold").textContent="Or : "+fmt(c.company.gold)+" PO";
   if(!visit){
     $("merchant-title").textContent="Pas de marchand aujourd’hui";
-    $("merchant-content").innerHTML=`<p class="muted">Aucun marchand au camp. Il en passe plus souvent quand la compagnie est renommée.</p>`;
+    $("merchant-content").innerHTML="";
     return;
   }
   const m=visit.merchant;
   $("merchant-title").textContent=m.name;
-  $("merchant-content").innerHTML=`<p class="muted">${merchantIsWoman(m)?"Elle":"Il"} repart demain matin. Ce qui est acheté rejoint l’Intendance.</p>
+  $("merchant-content").innerHTML=`<p class="muted">${merchantIsWoman(m)?"Elle":"Il"} repart demain matin.</p>
     ${visit.offers.length?`<ul class="merchant-stock">${visit.offers.map(merchantRow).join("")}</ul>`:`<p class="muted">Rien à vendre.</p>`}`;
 }
 
@@ -56,7 +56,7 @@ function buyFromMerchant(index){
   const result=merchantRules().buy(game.campaign,index);
   if(!result.ok){ tavernLog(result.reason,"warn"); renderMerchant(); return; }
   const item=result.item;
-  tavernLog(`Acheté à ${result.merchant.name} : ${item.name}${item.itemType==="potion"?"":" (T"+item.tier+")"} pour ${fmt(result.price)} PO.`,"gear");
+  tavernLog(`Acheté à ${result.merchant.name} : ${itemPublicName(item)} pour ${fmt(result.price)} PO.`,"gear");
   saveGame();
   renderGame();
 }

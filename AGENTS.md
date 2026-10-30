@@ -34,5 +34,6 @@ Avant toute modification de logique métier :
 - Une formule modifiée doit mettre à jour la documentation et les données concernées.
 - Une valeur de table utilisée par le code doit provenir de `data/reference/` ou d'une donnée dérivée documentée.
 - Le HTML/CSS ne doit pas contenir de règle de gameplay.
+- Interface joueur (Idan, 2026-10-30) : jamais de tier (T1, T2…) ; un objet s'affiche sous son nom public (`item-titles.json`) et son cadre de couleur dit la qualité. Peu de texte : ce qui est évident ne s'écrit pas.
 - Éviter les dépendances externes inutiles.
 - Ne jamais réimporter automatiquement Notion par-dessus Git.

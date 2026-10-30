@@ -10,9 +10,12 @@ const html = fs.readFileSync(path.join(root, "prototype-web/index.html"), "utf8"
 const esc = value => String(value ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 const elements = {"quartermaster-stock":{innerHTML:""},"quartermaster-count":{textContent:""},"quartermaster-tabs":{innerHTML:""}};
 const game = {campaign:{company:{stock:[]}}};
-const ui = new Function("game","$","esc","gearTile",
+// Nom public selon le tier (item-titles.json), nom de base en petit (item-card-ui.js) ; jamais le tier (Idan, 2026-10-30).
+const publicName = item => ({"Tromblon|1":"Tromblon qui crache","Tromblon|3":"Tromblon damasquiné"})[item.name+"|"+item.tier] || item.name;
+const baseName = item => publicName(item) !== item.name ? item.name : "";
+const ui = new Function("game","$","esc","gearTile","itemPublicName","itemBaseName",
   js + "\nreturn {stockGroups,renderQuartermaster,stockView};"
-)(game, id => elements[id], esc, (slot,item) => `<tile ${item.qualityCode}>`);
+)(game, id => elements[id], esc, (slot,item) => `<tile ${item.qualityCode}>`, publicName, baseName);
 
 const weapon = (name, category, tier) => ({
   name, category, tier, itemType:"weapon", owner:null,
@@ -34,8 +37,9 @@ const list = elements["quartermaster-stock"].innerHTML;
 assert.match(list, /<details class="stock-group" data-stock-group="weapon:Armes à feu">\s*<summary><h3>Armes à feu <small>4<\/small><\/h3><\/summary>/,
   "catégorie en accordéon, fermée par défaut");
 assert.doesNotMatch(list, / open>/);
-assert.match(list, /Tromblon<\/span>\s*<span class="stock-tier stock-tier--worn">T1 · Usée<\/span>\s*<span class="stock-count">× 2<\/span>/);
-assert.match(list, /stock-tier--luxury">T3 · Grand Luxe/);
+assert.match(list, /Tromblon qui crache<\/span>\s*<span class="stock-tier">Tromblon<\/span>\s*<span class="stock-count">× 2<\/span>/);
+assert.match(list, /Tromblon damasquiné<\/span>/);
+assert.doesNotMatch(list, /\bT[1-6]\b|Usée|Grand Luxe/, "jamais le tier ni la qualité en toutes lettres");
 assert.match(list, /<tile standard>/, "case d'objet de la fiche (picto, contour de qualité, détail au survol)");
 
 // Armures (Idan, 2026-10-24) : après les armes, de la plus légère à la plus lourde.

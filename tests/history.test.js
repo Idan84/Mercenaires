@@ -93,7 +93,7 @@ assert.match(tab, /<strong>5<\/strong><small>Adversaires abattus<\/small>/);
 assert.match(tab, /<strong>1<\/strong><small>Retours de mission blessé<\/small>/);
 const texts = [...tab.matchAll(/<span>([^<]+)<\/span><\/li>/g)].map(m => m[1]);
 assert.deepEqual(texts, [
-  "Refuse d’échanger Vieille lance (T1) contre Lance de guerrier (T3).",
+  "Refuse d’échanger Vieille lance contre Lance de guerrier.",
   "Revient de mission. Blessée : 6 jours de convalescence.",
   "Revient de mission après avoir abattu 1 adversaire.",
   "Signe son contrat avec la compagnie."
@@ -107,5 +107,5 @@ assert.equal(render.historyEntryText({}, {kind:"recall", accepted:true, days:12}
 assert.doesNotMatch(tab, /Jours d’intendance/, "pas de case à zéro");
 assert.match(render.renderHistoryTab({history:{stewardDays:12, log:[]}}), /<strong>12<\/strong><small>Jours d’intendance<\/small>/);
 assert.equal(render.historyEntryText({}, {kind:"deal", action:"donner", free:true, received:{name:"Lance", tier:2}}),
-  "Prend Lance basique (T2) à l’Intendance.", "le capitaine s'équipe lui-même");
+  "Prend Lance basique à l’Intendance.", "le capitaine s'équipe lui-même");
 console.log("Historique : compteurs, journal (création, recrutement, mission, échanges), migration, onglet — OK");

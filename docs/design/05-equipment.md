@@ -127,7 +127,7 @@ Le prix d’achat et de revente chez un marchand viendra avec les marchands (il 
 
 ### Carte d’objet (Idan, 2026-10-24)
 
-Au survol d’une arme ou d’une armure (fiche, Intendance), une carte de jeu présente l’objet : son image dans le cadre de son tier, un **titre selon le tier** (`data/reference/item-titles.json`, par ex. Vieille lance / Lance basique / Lance de guerrier / Lance luxueuse) et ses **effets réels**, qualité comprise, tels que le combat les applique : dégâts, puissances, portée, prise, poids, charge, blocage, contre-charge, recharge, tirs enchaînés, attaque de zone pour une arme ; résistances et handicap (esquive, vitesse, magie) pour une armure. Aucune règle nouvelle : la carte lit les mêmes valeurs que le moteur (`game-core/item-card.js`).
+Au survol d’une arme ou d’une armure (fiche, Intendance), une carte de jeu présente l’objet : son image dans le cadre de son tier, un **titre selon le tier** (`data/reference/item-titles.json`, par ex. Vieille lance / Lance basique / Lance de guerrier / Lance luxueuse) et ses **effets réels**, qualité comprise, tels que le combat les applique : dégâts, puissances, portée, prise, poids, charge, blocage, contre-charge, recharge, tirs enchaînés, attaque de zone pour une arme ; protection et handicap (esquive, vitesse, magie) pour une armure ; les autres objets montrent leurs lignes de bonus et de malus, sans phrase qui les répète (Idan, 2026-10-30). Aucune règle nouvelle : la carte lit les mêmes valeurs que le moteur (`game-core/item-card.js`).
 
 ### Caractéristiques équipées (Idan, 2026-10-24)
 
@@ -271,6 +271,15 @@ Depuis l’onglet Équipement de la fiche ou l’Intendance, le capitaine peut *
 
 ### Dégâts des sets d’armes (Idan, 2026-10-24)
 
-L’onglet Équipement montre, pour le set 1 et le set 2, les dégâts que fait le mercenaire **avant l’armure et la résistance de la cible**, pour voir d’un coup d’œil s’il fait mal. Pour chaque arme qui frappe (l’arme principale, et la main secondaire au combat à deux armes) : le mode (mêlée ou tir), la moyenne, la fourchette du jet minimum au jet maximum, les types de dégâts avec leur puissance, et ce qui change les dégâts (dé de l’arme, qualité, prise à deux mains, Force en mêlée). C’est la formule des dégâts physiques du combat (`physicalDamage`) contre une cible sans Résistance physique (`game-core/equipment-effects.js`, `attacks`) ; la charge n’est pas comptée.
+L’onglet Équipement montre, pour le set 1 et le set 2, **quatre chiffres pour comparer les mercenaires** (Idan, 2026-10-30 : des scores, pas des chances, qui dépendraient de l’adversaire). Pour chaque arme qui frappe (l’arme principale, et la main secondaire au combat à deux armes) :
+
+- **Précision** : la part de l’attaquant dans le Toucher — Dextérité effective + 0,2 × (maîtrises de catégorie et d’arme + Perception + Vitesse au combat). Elle fait face à l’Esquive de la cible.
+- **Puissance** : la part de l’attaquant dans Blesser — Force (Perception au tir) + 0,2 × (maîtrises de catégorie et d’arme + Combat à deux mains si l’arme est réellement maniée à deux mains au corps à corps). Elle fait face à l’Endurance de la cible.
+- **Dégâts** : du plus petit au plus grand coup, en PV, avec le type (« en perforant », « en tranchant ou perforant ») ; avant la Résistance physique de la cible. Formule des dégâts physiques du combat (`physicalDamage`) ; la charge n’est pas comptée.
+- **Pénétration d’armure** : la puissance de l’arme par type, qui s’ajoute à la Puissance moins la **Protection** de l’armure de la cible.
+
+Chaque libellé a une infobulle : à quoi il sert et son écart (Précision et Puissance : le plus bas et le plus haut de 3 000 recrues générées ; Pénétration : la plus faible et la plus forte des armes). Textes : `data/reference/character-sheet-copy.json` (`attack_usage`). Code : `attackPrecision` et `attackPower` (`game-core/combat-engine.js`, utilisés aussi par le Toucher et Blesser), `attacks` (`game-core/equipment-effects.js`).
+
+Sur les armures, les valeurs par type s’appellent **Protection** (Idan, 2026-10-30), pour ne pas les confondre avec la Résistance physique du porteur, qui réduit les PV perdus.
 
 La fiche du mercenaire affiche tous les slots autour d’une silhouette simplifiée. Les cases remplies utilisent une icône provisoire et exposent la fiche de l’item au survol ; aucun drag & drop n’est prévu.

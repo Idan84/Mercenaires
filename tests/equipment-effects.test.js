@@ -244,18 +244,29 @@ assert.deepEqual(none.strikes, [], "set vide : pas d'attaque");
 const ui = fs.readFileSync(path.join(ROOT, "prototype-web/ui.js"), "utf8");
 const from = ui.indexOf("function renderDamageCard"), to = ui.indexOf("function renderEquipment(c)");
 const esc = value => String(value ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
-const {renderDamageCard} = new Function("esc","equipmentEffectRules", ui.slice(from, to) + "\nreturn {renderDamageCard};")(
-  esc, () => createEquipmentEffects({engine}));
+const sheetCopy = JSON.parse(fs.readFileSync(path.join(ROOT, "data/reference/character-sheet-copy.json"), "utf8"));
+const weapons = JSON.parse(fs.readFileSync(path.join(ROOT, "data/reference/weapons.json"), "utf8"));
+const {renderDamageCard} = new Function("esc","equipmentEffectRules","game", ui.slice(from, to) + "\nreturn {renderDamageCard};")(
+  esc, () => createEquipmentEffects({engine}), {referenceData:{characterSheetCopy:sheetCopy, weapons}});
 fighter.equipment.slots = {weapon_set_1_main:"l", weapon_set_2_main:"s", weapon_set_2_off:"d"};
 const card = renderDamageCard(fighter);
 assert.match(card, /<h4>Dégâts<\/h4>/);
-// Idan (2026-10-30) : pas de « Mêlée » ni « Tir », un seul chiffre (la moyenne d'un coup), ce que l'arme oppose à
-// l'armure, rien de la recette (dés, multiplicateurs), rien pour un set vide.
-assert.match(card, /<small>Set 1<\/small><strong>Lance<\/strong>/);
-assert.match(card, /<b>98<\/b><small>PV par coup<\/small>/, "un seul chiffre : la moyenne d'un coup");
-assert.match(card, /Contre l’armure : Perforant <b>55<\/b>/);
-assert.doesNotMatch(card, /1D8|×1,2|Mêlée|Tir<|≈|Avant l’armure/);
-assert.match(card, /<small>Set 2 · main secondaire<\/small><strong>Dague<\/strong>/);
+// Idan (2026-10-30) : quatre chiffres pour comparer, des scores et non des chances — Précision, Puissance, Dégâts
+// (fourchette et type), Pénétration d'armure — rien de la recette (dés, multiplicateurs), rien pour un set vide.
+assert.match(card, /<th scope="col"><small>Set 1<\/small><strong>Lance<\/strong><\/th><th scope="col"><small>Set 2<\/small><strong>Épée longue<\/strong><\/th><th scope="col"><small>Set 2 · main secondaire<\/small><strong>Dague<\/strong><\/th>/,
+  "une colonne par arme qui frappe");
+const lanceUnit = {character:fighter, activeSet:1};
+const cells = name => card.match(new RegExp(`<tr><th scope="row"><span class="sheet-stat-name" tabindex="0">${name}[^]*?</tr>`))[0].match(/<td>[^]*?<\/td>/g);
+assert.equal(cells("Précision")[0], `<td><b>${Math.round(engine.attackPrecision(lanceUnit))}</b></td>`);
+assert.equal(cells("Puissance")[0], `<td><b>${Math.round(engine.attackPower(lanceUnit, "melee"))}</b></td>`);
+assert.deepEqual(cells("Dégâts"), ["<td><b>22 à 173</b> PV<small>en perforant</small></td>",
+  "<td><b>12 à 96</b> PV<small>en tranchant ou perforant</small></td>", "<td><b>10 à 39</b> PV<small>en tranchant ou perforant</small></td>"],
+  "du plus petit au plus grand coup, et son type");
+assert.deepEqual(cells("Pénétration d’armure").slice(0, 2), ["<td><b>55</b></td>",
+  "<td><span><b>50</b> tranchant</span><span><b>40</b> perforant</span></td>"], "une pénétration par type");
+assert.match(card, /<strong>Précision<\/strong><em>Les chances de toucher[^<]*<\/em><span>Nouvelles recrues : de 50 à 145\.<\/span>/);
+assert.match(card, /<span>Selon l’arme : de 10 à 95\.<\/span>/);
+assert.doesNotMatch(card, /1D8|×1,2|Mêlée|Tir<|≈|Avant l’armure|PV par coup|%/);
 fighter.equipment.slots = {weapon_set_1_main:"l"};
 assert.doesNotMatch(renderDamageCard(fighter), /Set 2|Aucune arme/, "set 2 vide : rien");
 fighter.equipment.slots = {};

@@ -111,7 +111,8 @@
     const TARGET={character:{resistances:{},items:[],equipment:null}};
     const capitalize=text=>text.charAt(0).toUpperCase()+text.slice(1);
 
-    // Un coup : jet minimum et maximum de l'arme (qualité, prise à deux mains, Force en mêlée), types et puissances.
+    // Un coup : jet minimum et maximum de l'arme (qualité, prise à deux mains, Force en mêlée), Précision et Puissance
+    // de l'attaquant, types et pénétrations d'armure.
     function strike(character,set,hand){
       const unit={character,activeSet:set,attackHand:hand};
       const item=engine.activeWeaponItem(unit),weapon=engine.weaponTemplate(item);
@@ -126,6 +127,7 @@
         mode==="melee"?{label:"Force",factor:2*engine.statWithGear(unit,"Force")/100}:null
       ].filter(Boolean);
       return {hand,name:item.name,mode,dice:low.weaponDice,min:low.damage,max:high.damage,factors,
+        precision:engine.attackPrecision(unit),power:engine.attackPower(unit,mode),
         types:engine.damageMatchups(TARGET,weapon).map(m=>({type:capitalize(m.type),power:m.power}))};
     }
 

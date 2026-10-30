@@ -47,7 +47,7 @@ Git est la source de vérité. Les JSON ci-dessous sont les référentiels struc
 | camp-calendar.json | 12 mois, 7 jours, 3 citations par mois | year_start, era, days_per_year, weekday_names, months (name, days, quotes) : calendrier narratif du camp |
 | reputation-stars.json | 15 | niveau, metal, etoiles, reputation_min, renommee_min, phrase, variantes (affichage en étoiles de la réputation et de la renommée ; phrase de réputation de la fiche) |
 | affinity-phrases.json | 10 | niveau, affinite_max, phrase, variantes (phrase d'affinité envers le capitaine, avec les cœurs de la fiche et de la carte du mercenaire ; trois variantes de même sens par niveau) |
-| character-sheet-copy.json | 11 + 7 | ancestries (nom, famille, parent), origins (nom, homme, femme) : phrases de l'onglet Profil de la fiche |
+| character-sheet-copy.json | 11 + 7 | ancestries (nom, famille, parent), origins (nom, homme, femme) : phrases de l'onglet Profil de la fiche ; attack_usage : infobulles de la case Dégâts (Précision, Puissance, Dégâts, Pénétration d'armure ; écart des recrues) |
 | tavern-dialogue.json | 20 + 38 | greetings (min, max, texte) selon l'affinité ; questions, answers et lines du dialogue de recrutement ; weapons (nom, avec_article) : textes de la Taverne |
 | equipment-dialogue.json | 8 × 4 | proposals (par action), replies (action, accord, humeur, lignes), outcomes, menu : dialogues des échanges d’équipement Donner / Retirer / Troquer |
 | steward-dialogue.json | 2 × 16 + 8 | offer et recall (proposition, répliques accepted / flattered / vexed / neutral, issues), talk (accueil, options, évaluation des candidats), panel : dialogues de l’intendant |

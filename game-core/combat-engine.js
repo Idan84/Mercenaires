@@ -517,14 +517,28 @@
 
     // Attaque d'opportunité V1 : Esquive ×0,5 et Perception défensive annulée.
     // Frappe dans le dos V1 : Perception défensive annulée.
-    function hitProbability(attacker,defender,mode,distance,context={}){
+    // Précision et Puissance (Idan, 2026-10-30 : la case des dégâts de la fiche les montre en scores) : la part de
+    // l'attaquant dans le delta du Toucher et dans celui de Blesser, sans la cible, la distance ni la charge.
+    // Précision = Dextérité effective + 0,2 × (maîtrises de catégorie et d'arme + Perception + Vitesse au combat) ;
+    // Puissance = Force (Perception au tir) + 0,2 × (maîtrises de catégorie et d'arme + Combat à deux mains si l'arme
+    // est réellement maniée à deux mains au corps à corps).
+    function attackPrecision(attacker){
+      const m=mastery(attacker.character,weaponTemplate(activeWeaponItem(attacker)));
+      return effectiveDexterity(attacker)
+        +0.2*(m.categoryScore+m.weaponScore+statWithGear(attacker,"Perception")+effectiveSpeed(attacker));
+    }
+    function attackPower(attacker,mode){
       const weapon=weaponTemplate(activeWeaponItem(attacker));
       const m=mastery(attacker.character,weapon);
-      const a=attacker.character.stats||{},d=defender.character.stats||{};
+      if(mode==="ranged") return statWithGear(attacker,"Perception")+0.2*(m.categoryScore+m.weaponScore);
+      const twoHands=usesTwoHands(attacker,weapon)?Number(attacker.character.skills?.martial?.["Combat à deux mains"])||0:0;
+      return statWithGear(attacker,"Force")+0.2*(m.categoryScore+m.weaponScore+twoHands);
+    }
+
+    function hitProbability(attacker,defender,mode,distance,context={}){
       const defensivePerception=context.opportunity||context.backstab?0:statWithGear(defender,"Perception");
       const dodgeFactor=context.opportunity?0.5:1;
-      let delta=effectiveDexterity(attacker)
-        +0.2*(m.categoryScore+m.weaponScore+statWithGear(attacker,"Perception")+effectiveSpeed(attacker))
+      let delta=attackPrecision(attacker)
         -dodgeFactor*effectiveDodge(defender)
         -0.2*(defensivePerception+effectiveSpeed(defender));
 
@@ -540,22 +554,8 @@
 
     // Charge CAC V1 : ForceEffectiveCharge = Force + PuissanceCharge pour Blesser.
     function woundProbability(attacker,defender,mode,matchup,context={}){
-      const weapon=weaponTemplate(activeWeaponItem(attacker));
-      const m=mastery(attacker.character,weapon);
-      const a=attacker.character.stats||{},d=defender.character.stats||{};
-      let attackStat=0,twoHands=0;
-
-      if(mode==="ranged"){
-        attackStat=statWithGear(attacker,"Perception");
-      }else{
-        attackStat=statWithGear(attacker,"Force")+(Number(context.chargePower)||0);
-        if(usesTwoHands(attacker,weapon)){
-          twoHands=Number(attacker.character.skills?.martial?.["Combat à deux mains"])||0;
-        }
-      }
-
-      const delta=attackStat
-        +0.2*(m.categoryScore+m.weaponScore+twoHands)
+      const delta=attackPower(attacker,mode)
+        +(mode==="ranged"?0:Number(context.chargePower)||0)
         +(Number(matchup?.matchup)||0)
         -statWithGear(defender,"Endurance");
       return clamp(logistic(delta),10,90);
@@ -1121,6 +1121,8 @@
       initiative,
       weaponRange,
       canAttackAtDistance,
+      attackPrecision,
+      attackPower,
       hitProbability,
       damageMatchups,
       selectDamageMatchup,

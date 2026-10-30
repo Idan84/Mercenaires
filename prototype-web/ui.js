@@ -960,11 +960,10 @@ function equipmentDetail(effect,total="Au combat"){
     <span class="sheet-gear-line sheet-gear-line--total"><span>${esc(total)}</span><b>${fmt(Math.round(effect.value))}</b></span>
   </span>`;
 }
+// Infobulle d'une caractéristique (Idan, 2026-10-30) : à quoi elle sert en jeu, pas sa définition ; rien sans texte.
 function statTip(row){
-  const reference=(game.referenceData?.characteristics?.rows||[]).find(r=>r.nom===row.nom)
-    ||(game.referenceData?.skills?.rows||[]).find(r=>r.nom===row.nom);
-  const first=row.description_referentiel?String(reference?.description||"").split(/(?<=\.)\s/)[0]:"";
-  return `<span class="sheet-stat-tip" role="tooltip"><strong>${esc(row.nom)}</strong>${first?`<span>${esc(first)}</span>`:""}${row.usage?`<em>${esc(row.usage)}</em>`:""}</span>`;
+  if(!row?.usage) return "";
+  return `<span class="sheet-stat-tip" role="tooltip"><strong>${esc(row.nom)}</strong><em>${esc(row.usage)}</em></span>`;
 }
 function statPortraitButton(member,label,value,current){
   const url=typeof mercenaryAvatarUrl==="function"?mercenaryAvatarUrl(member,"portrait"):null;
@@ -1010,7 +1009,8 @@ function renderStatsTab(c){
   const group=(key,title)=>`<section class="sheet-stat-group sheet-stat-group--${key}"><h4>${title}</h4>${rows.filter(r=>r.groupe===key).map(row=>{
     // L'équipement compte (Idan, 2026-10-24) : valeur au combat, en rouge si elle baisse, en vert si elle monte.
     const effect=effects[row.nom],value=effect?Math.round(effect.value):sheetStatValue(c,row.nom);
-    if(!Number.isFinite(value)) return "";
+    // Une caractéristique sans effet en jeu (pas de texte d'usage, comme la Régénération) ne s'affiche pas.
+    if(!Number.isFinite(value)||!row.usage) return "";
     const shift=effect?Math.sign(value-Math.round(effect.base)):0;
     // Le Charisme ne joue pas encore au combat : « Total ». La Constitution y joue par les PV max (Idan, 2026-10-25).
     const lead=equipmentDetail(effect,row.nom==="Charisme"?"Total":"Au combat");

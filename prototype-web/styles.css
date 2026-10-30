@@ -2122,7 +2122,7 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 /* Onglet Caractéristiques (Idan, 2026-10-21) : portrait, puis Physique, Mental et Résistances. */
 .sheet-stats{display:grid;grid-template-columns:250px repeat(3,minmax(0,1fr));gap:18px;align-items:start}
 .sheet-stat-group{display:flex;flex-direction:column;gap:7px;min-width:0}
-.sheet-stat-group h4{margin:0 0 4px;color:#bb9a6e;font:700 12px Georgia,serif;letter-spacing:.1em;text-transform:uppercase}
+.sheet-stat-group h4{margin:0 0 8px;color:#d9b47a;font:700 17px Georgia,serif;letter-spacing:.08em;text-transform:uppercase}
 .sheet-stat{display:flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid #71583e;border-radius:8px;background:#2e231c}
 .sheet-stat-icon{flex:none;width:20px;height:20px;color:#d8b77d}
 .sheet-stat--resistance-au-feu .sheet-stat-icon{color:#f08a4b}
@@ -2165,7 +2165,7 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
    souris : on passe d'une valeur à l'autre sans le refermer. */
 .sheet-stats{position:relative}
 .sheet-stats .sheet-stat-value{position:static}
-.sheet-stats .sheet-stat-pop{right:0;bottom:auto;width:auto;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px 28px;padding:18px 22px;border-width:2px;font-size:16px;line-height:1.45;pointer-events:none}
+.sheet-stats .sheet-stat-pop{right:0;bottom:auto;width:auto;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px 28px;padding:18px 22px;border-width:2px;font-size:16px;line-height:1.45}
 .sheet-stats .sheet-stat-value:hover .sheet-stat-pop,.sheet-stats .sheet-stat-value:focus-within .sheet-stat-pop{display:grid}
 .sheet-stat-pop-head{grid-column:1/-1;display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding-bottom:10px;border-bottom:1px solid rgba(169,129,79,.35)}
 .sheet-stat-pop-head strong{color:#ffe1ac;font:700 24px Georgia,serif}

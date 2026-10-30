@@ -1,7 +1,8 @@
 "use strict";
 
 // Échanges d'équipement (Idan, 2026-10-24) : un clic sur une case de l'onglet Équipement ouvre un petit menu (Retirer,
-// Troquer contre…, Donner…), un clic sur une ligne de l'Intendance propose « Donner à… ». Le mercenaire répond dans une
+// Troquer contre…, Donner…), un clic sur une ligne de l'Intendance propose « Donner à… ». Inventaire et réaménagement
+// libre (Idan, 2026-10-30) : ranger, prendre dans l'inventaire, passer d'un set à l'autre, échanger les sets (⇄). Le mercenaire répond dans une
 // boîte de dialogue (portrait, sa réplique, ce qui change) ; seule réponse : Partir. Le capitaine s'équipe sans
 // dialogue. Règles : game-core/equipment-deals.js ; textes : data/reference/equipment-dialogue.json.
 let equipmentDeals=null;
@@ -39,12 +40,30 @@ function dealOfferButton(item,attrs){
     <span><b>${esc(dealItemLabel(item))}</b><small>${esc(item.itemType==="potion"?"Potion · usage unique":item.name)}</small></span></button>`;
 }
 
+// Réaménagement libre (Idan, 2026-10-30) : entre ses propres objets — emplacements, set 1, set 2, inventaire —, sans
+// jet ni limite ; seul ce qui passe par l'Intendance (Donner, Retirer, Troquer) garde le jet.
+function ownMove(m,item,slot){ return `data-own-member="${esc(m.id)}" data-own-item="${esc(item.id)}" data-own-slot="${esc(slot)}"`; }
+function ownMoves(m,slot,current){
+  if(!dealRules().canRearrange(game.campaign,m).ok||dealRules().isPocket(slot)) return "";
+  const rules=dealRules(),html=[];
+  if(current) html.push(`<button type="button" class="deal-action" ${ownMove(m,current,rules.INVENTORY)}>Ranger dans l’inventaire</button>`);
+  const set=String(slot).match(/^weapon_set_([12])_(main|off)$/);
+  if(current&&set){
+    const other=`weapon_set_${set[1]==="1"?2:1}_${set[2]}`;
+    if(rules.placeOptions(m,current).some(o=>o.slot===other)) html.push(`<button type="button" class="deal-action" ${ownMove(m,current,other)}>Passer au set ${set[1]==="1"?2:1}</button>`);
+  }
+  const fits=rules.inventoryOf(m).filter(item=>rules.placeOptions(m,item).some(o=>o.slot===slot));
+  if(fits.length) html.push(`<p class="deal-menu-label">Prendre dans son inventaire</p><div class="deal-offers">${fits.map(item=>dealOfferButton(item,ownMove(m,item,slot))).join("")}</div>`);
+  return html.join("");
+}
+
 // Menu de la fiche : l'emplacement, ce qu'il contient, et ce qu'on peut faire.
 function sheetDealMenu(m,slot){
   const copy=dealCopy().menu||{},current=dealItemIn(m,slot);
   const captain=m.id===game.campaign.company.captainId;
   const allowed=dealRules().canDeal(game.campaign,m,slot);
-  const head=`<p class="deal-menu-title">${esc(dealSlotLabel(slot))}</p>${current?`<p class="deal-menu-current">${esc(dealItemLabel(current))}</p>`:""}`;
+  const head=`<p class="deal-menu-title">${esc(dealSlotLabel(slot))}</p>${current?`<p class="deal-menu-current">${esc(dealItemLabel(current))}</p>`:""}`
+    +ownMoves(m,slot,current);
   if(!allowed.ok) return head+`<p class="deal-menu-note">${esc(allowed.reason)}</p>`;
   const offers=dealOffers(m,slot);
   const target=`data-deal-member="${esc(m.id)}" data-deal-slot="${esc(slot)}"`;
@@ -53,6 +72,29 @@ function sheetDealMenu(m,slot){
     +(offers.length?`<p class="deal-menu-label">${current?"Troquer contre":"Donner"}</p><div class="deal-offers">${offers.map(item=>dealOfferButton(item,`${target} data-deal-stock="${esc(item.id)}"`)).join("")}</div>`
       :`<p class="deal-menu-note">${esc(copy.empty||"")}</p>`)
     +(captain?`<p class="deal-menu-note">${esc(copy.captain||"")}</p>`:"");
+}
+
+// Inventaire (Idan, 2026-10-30) : un objet de l'inventaire — l'équiper (libre) ou le rendre à l'Intendance (jet) ;
+// la case « + » — lui donner un objet de l'Intendance (jet), qui rejoint son inventaire.
+function inventoryDealMenu(m,itemId){
+  const rules=dealRules(),INV=rules.INVENTORY;
+  const item=rules.inventoryOf(m).find(x=>String(x.id)===String(itemId));
+  if(!item) return "";
+  const places=rules.canRearrange(game.campaign,m).ok?rules.placeOptions(m,item):[];
+  const allowed=rules.canDeal(game.campaign,m,INV);
+  return `<p class="deal-menu-title">Inventaire</p><p class="deal-menu-current">${esc(dealItemLabel(item))}</p>`
+    +(places.length?`<p class="deal-menu-label">Équiper</p>`+places.map(({slot,current})=>`<button type="button" class="deal-slot" ${ownMove(m,item,slot)}>${esc(dealSlotLabel(slot))}<small>${current?`à la place de ${esc(dealItemLabel(current))}`:"libre"}</small></button>`).join(""):"")
+    +(allowed.ok?`<button type="button" class="deal-action" data-deal-member="${esc(m.id)}" data-deal-slot="${INV}" data-deal-item="${esc(item.id)}" data-deal-stock="">Retirer<small>rendre à l’Intendance</small></button>`
+      :`<p class="deal-menu-note">${esc(allowed.reason)}</p>`);
+}
+function inventoryGiveMenu(m){
+  const rules=dealRules(),INV=rules.INVENTORY,copy=dealCopy().menu||{};
+  const allowed=rules.canDeal(game.campaign,m,INV);
+  const head=`<p class="deal-menu-title">Donner</p>`;
+  if(!allowed.ok) return head+`<p class="deal-menu-note">${esc(allowed.reason)}</p>`;
+  const offers=dealOffers(m,INV);
+  return head+(offers.length?`<div class="deal-offers">${offers.map(item=>dealOfferButton(item,`data-deal-member="${esc(m.id)}" data-deal-slot="${INV}" data-deal-stock="${esc(item.id)}"`)).join("")}</div>`
+    :`<p class="deal-menu-note">${esc(copy.empty||"")}</p>`);
 }
 
 // Menu de l'Intendance : les membres qui peuvent recevoir l'objet, emplacement par emplacement.
@@ -68,7 +110,9 @@ function stockDealMenu(itemId){
     if(potion) slots=slots.filter(({current})=>!current).slice(0,1);
     if(!slots.length) return potion?`<div class="deal-member"><b>${esc(m.name)}</b><small class="deal-menu-note">Ceinture pleine (4 fioles).</small></div>`:"";
     const allowed=dealRules().canDeal(game.campaign,m,slots[0].slot);
-    const choices=allowed.ok?slots.map(({slot,current})=>`<button type="button" class="deal-slot" data-deal-member="${esc(m.id)}" data-deal-slot="${esc(slot)}" data-deal-stock="${esc(item.id)}">
+    // Donner (Idan, 2026-10-30) : dans son inventaire d'abord ; ou directement dans un emplacement.
+    const bag=potion?"":`<button type="button" class="deal-slot" data-deal-member="${esc(m.id)}" data-deal-slot="${dealRules().INVENTORY}" data-deal-stock="${esc(item.id)}">Inventaire<small>il l’équipera quand vous voudrez</small></button>`;
+    const choices=allowed.ok?bag+slots.map(({slot,current})=>`<button type="button" class="deal-slot" data-deal-member="${esc(m.id)}" data-deal-slot="${esc(slot)}" data-deal-stock="${esc(item.id)}">
         ${esc(dealSlotLabel(slot))}<small>${current?`contre ${esc(dealItemLabel(current))}`:"libre"}</small></button>`).join("")
       :`<small class="deal-menu-note">${esc(allowed.reason)}</small>`;
     return `<div class="deal-member"><b>${esc(m.name)}${m.id===company.captainId?" · capitaine":""}</b>${choices}</div>`;
@@ -145,11 +189,11 @@ function openDealDialog(m,result){
   $("deal-talk-dialog").showModal();
 }
 
-function runDeal({member,slot,stock}){
+function runDeal({member,slot,stock,item}){
   closeDealMenu();
   const m=dealMember(member);
   if(!m) return;
-  const result=dealRules().propose(game.campaign,{mercenaryId:m.id,slot,stockItemId:stock||null});
+  const result=dealRules().propose(game.campaign,{mercenaryId:m.id,slot,stockItemId:stock||null,itemId:item||null});
   if(!result.ok) return;
   saveGame();
   renderGame();
@@ -157,12 +201,34 @@ function runDeal({member,slot,stock}){
   if(!result.free) openDealDialog(m,result);
 }
 
+// Réaménagement libre : pas de dialogue, la fiche se redessine.
+function runOwnMove(action){
+  closeDealMenu();
+  const m=dealMember(action?.member);
+  if(!m) return;
+  const result=action.swap?dealRules().swapSets(game.campaign,{mercenaryId:m.id})
+    :dealRules().rearrange(game.campaign,{mercenaryId:m.id,itemId:action.item,slot:action.slot});
+  if(!result.ok) return;
+  saveGame();
+  renderGame();
+  if($("character-dialog").open&&game.sheetCharacter) renderSheet();
+}
+
 function initializeDeals(){
   document.addEventListener("click",event=>{
     const menu=document.getElementById("deal-menu");
     const action=event.target.closest?.("[data-deal-member]");
     if(action&&menu?.contains(action)){
-      runDeal({member:action.dataset.dealMember,slot:action.dataset.dealSlot,stock:action.dataset.dealStock});
+      runDeal({member:action.dataset.dealMember,slot:action.dataset.dealSlot,stock:action.dataset.dealStock,item:action.dataset.dealItem});
+      return;
+    }
+    const own=event.target.closest?.("[data-own-member]");
+    if(own&&menu?.contains(own)){
+      runOwnMove({member:own.dataset.ownMember,item:own.dataset.ownItem,slot:own.dataset.ownSlot});
+      return;
+    }
+    if(event.target.closest?.("#dialog-content [data-swap-sets]")&&game.sheetCharacter){
+      runOwnMove({member:game.sheetCharacter.id,swap:true});
       return;
     }
     if(event.target.closest?.("[data-deal-leave]")){ $("deal-talk-dialog").close(); return; }
@@ -170,7 +236,8 @@ function initializeDeals(){
     const tile=event.target.closest?.("#dialog-content .gear-tile[data-slot]");
     const m=game.sheetCharacter;
     if(tile&&game.sheetTab==="equipment"&&m&&game.campaign?.company.roster.includes(m)){
-      openDealMenu(tile,sheetDealMenu(m,tile.dataset.slot));
+      const slot=tile.dataset.slot;
+      openDealMenu(tile,slot!==dealRules().INVENTORY?sheetDealMenu(m,slot):tile.dataset.item?inventoryDealMenu(m,tile.dataset.item):inventoryGiveMenu(m));
       return;
     }
     // Intendance : une ligne du stock.

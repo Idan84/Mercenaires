@@ -259,6 +259,13 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
 .gear-damage-table .sheet-stat-name{display:inline-block;color:#cdb38c;font-size:12px}
 .gear-damage .sheet-stat-tip{left:0;top:calc(100% + 6px);bottom:auto;width:250px;pointer-events:none}
 .gear-tiles--rings{grid-template-columns:repeat(3,48px)}
+/* Inventaire (Idan, 2026-10-30) : sans limite ; au-delà de trois rangées, la case défile, pas la fiche. */
+.gear-tiles--inventory{max-height:168px;overflow-y:auto;padding-right:2px}
+.gear-tile--give{display:grid;place-items:center;color:#d8b77d;font:700 22px Georgia,serif;cursor:pointer}
+.gear-tile--give:hover,.gear-tile--give:focus{border-color:#d8b77d;color:#ffe1ac}
+.gear-card h4:has(.gear-swap){display:flex;align-items:center;justify-content:space-between}
+.gear-swap{padding:0 8px;border:1px solid #71583e;border-radius:6px;background:#241a14;color:#d8b77d;font:700 15px Georgia,serif;line-height:22px;cursor:pointer}
+.gear-swap:hover,.gear-swap:focus{border-color:#d8b77d;color:#ffe1ac}
 /* Parchemin clair : la silhouette en multiply y garde son trait (pas de transform ni d'isolation ici). */
 .equipment-mannequin.gear-doll{position:relative;width:100%;height:auto;aspect-ratio:1;min-width:0;border:1px solid #9a7a4f;border-radius:14px;
   background:radial-gradient(ellipse at 50% 45%,#f6ecd6,#e6d5b1 68%,#cfb68b);box-shadow:inset 0 0 46px rgba(90,60,25,.38),0 10px 30px #0008}

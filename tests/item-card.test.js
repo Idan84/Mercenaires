@@ -126,27 +126,28 @@ assert.match(lanceCard, /class="item-card item-card--t3"/);
 assert.match(lanceCard, /<strong class="item-card-title">Lance de guerrier<\/strong>/);
 assert.match(lanceCard, /Lance · Armes d’hast/);
 assert.doesNotMatch(lanceCard, /\bT[1-6]\b/, "jamais le tier sur la carte (Idan, 2026-10-30)");
-assert.match(lanceCard, /<dt>Dégâts<\/dt><dd>1D8 <em class="item-card-shift item-card-shift--up">\+20 %<\/em><\/dd>/);
+assert.match(lanceCard, /<dt>Dégâts<\/dt><dd>12 à 96 PV<\/dd>/, "en PV, qualité comprise, sans dés (Idan, 2026-10-30)");
+assert.match(lanceCard, /<p class="item-card-group">Contre l’armure<\/p><div class="item-card-row"><dt>Perforant<\/dt>/);
 assert.match(lanceCard, /<dt>Portée<\/dt><dd>1 à 2 cases<\/dd>/);
 assert.match(lanceCard, /<dt>Poids<\/dt><dd>−10 Vitesse<\/dd>/, "arrondie pour le joueur");
-assert.match(lanceCard, /<dt>Charge<\/dt><dd>\+2,4 % dégâts \/ case<\/dd>/);
+assert.match(lanceCard, /<dt>Charge<\/dt><dd>\+2,4 % de dégâts par case d’élan<\/dd>/);
 assert.match(lanceCard, /Contre-charge/);
 assert.match(lanceCard, /À deux mains : dégâts ×1,5, poids ÷2/);
-assert.match(lanceCard, /Grand Luxe : dégâts, charge et blocage \+20 %, poids −20 %\./);
+assert.doesNotMatch(lanceCard, /Grand Luxe|item-card-quality/, "la qualité est déjà dans les valeurs (Idan, 2026-10-30)");
 const platesCard = renderItemCard(item("armor","Armure de plates",1,"worn",{templateId:"armor:plate_armor"}));
 assert.match(platesCard, /Armure de plates · Armure lourde/);
 assert.match(platesCard, /item-card-row--malus"><dt>Foudroyant<\/dt><dd>−56<\/dd>/);
 assert.match(platesCard, /item-card-row--bonus"><dt>Tranchant<\/dt><dd>\+72<\/dd>/);
 assert.match(platesCard, /<p class="item-card-group">Handicap<\/p>/);
-assert.match(platesCard, /Usée : résistances −20 %, handicap \+20 %\./);
+assert.doesNotMatch(platesCard, /Usée/);
 assert.equal(renderItemCard(item("ring","Anneau",2,"standard")), "");
-// L'image de l'objet en grand, à côté de la carte (Idan, 2026-10-25) : figure séparée, plus de vignette dans la carte.
-assert.match(lanceCard, /^<div class="item-card-wrap"><figure class="item-card-showcase item-card--t3"><img src="assets\/equipment\/armes\/lance-3\.webp" alt=""><\/figure><div class="item-card item-card--t3">/);
-assert.doesNotMatch(lanceCard, /item-card-art/);
+// L'image de l'objet dans le cadre de la carte (Idan, 2026-10-30).
+assert.match(lanceCard, /^<div class="item-card-wrap"><div class="item-card item-card--t3">\s*<figure class="item-card-art"><img src="assets\/equipment\/armes\/lance-3\.webp" alt=""><\/figure>/);
+assert.doesNotMatch(lanceCard, /item-card-showcase/);
 const large = new Function("game","esc","MercenairesItemCard","equipmentArt","equipmentArtLarge","document",
   ui + "\nreturn {renderItemCard};"
 )(game, esc, {createItemCards}, () => "assets/equipment/armes/lance-3.webp", () => "assets/equipment-large/armes/lance-3.webp", undefined);
-assert.match(large.renderItemCard(item("weapon","Lance",3,"luxury")), /<figure class="item-card-showcase item-card--t3"><img src="assets\/equipment-large\/armes\/lance-3\.webp"/);
+assert.match(large.renderItemCard(item("weapon","Lance",3,"luxury")), /<figure class="item-card-art"><img src="assets\/equipment-large\/armes\/lance-3\.webp"/);
 const sheetUi = fs.readFileSync(path.join(ROOT, "prototype-web/ui.js"), "utf8");
 assert.match(sheetUi, /function equipmentArtLarge\(item\)\{\s*return equipmentArt\(item\)\?\.replace\("assets\/equipment\/","assets\/equipment-large\/"\)\|\|null;/);
 assert.doesNotMatch(sheetUi, /gear-caption/, "plus de nom d'objet sur la silhouette");

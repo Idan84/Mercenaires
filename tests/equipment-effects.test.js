@@ -242,19 +242,22 @@ assert.deepEqual(none.strikes, [], "set vide : pas d'attaque");
 
 // Case « Dégâts » de l'onglet Équipement (prototype-web/ui.js).
 const ui = fs.readFileSync(path.join(ROOT, "prototype-web/ui.js"), "utf8");
-const from = ui.indexOf("const DAMAGE_MODES"), to = ui.indexOf("function renderEquipment(c)");
+const from = ui.indexOf("function renderDamageCard"), to = ui.indexOf("function renderEquipment(c)");
 const esc = value => String(value ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 const {renderDamageCard} = new Function("esc","equipmentEffectRules", ui.slice(from, to) + "\nreturn {renderDamageCard};")(
   esc, () => createEquipmentEffects({engine}));
 fighter.equipment.slots = {weapon_set_1_main:"l", weapon_set_2_main:"s", weapon_set_2_off:"d"};
 const card = renderDamageCard(fighter);
 assert.match(card, /<h4>Dégâts<\/h4>/);
-assert.match(card, /<small>Set 1 · Mêlée<\/small><strong>Lance<\/strong>/);
-assert.match(card, /<b>≈ 98<\/b><small>22 à 173 PV<\/small>/, "moyenne en gros, fourchette");
-assert.match(card, /Perforant <b>55<\/b>/);
-assert.match(card, /1D8 · Grand Luxe ×1,2 · À deux mains ×1,5 · Force ×1,2/);
-assert.match(card, /<small>Set 2 · Main secondaire<\/small><strong>Dague<\/strong>/);
-assert.match(card, /Avant l’armure et la résistance de la cible/);
+// Idan (2026-10-30) : pas de « Mêlée » ni « Tir », un seul chiffre (la moyenne d'un coup), ce que l'arme oppose à
+// l'armure, rien de la recette (dés, multiplicateurs), rien pour un set vide.
+assert.match(card, /<small>Set 1<\/small><strong>Lance<\/strong>/);
+assert.match(card, /<b>98<\/b><small>PV par coup<\/small>/, "un seul chiffre : la moyenne d'un coup");
+assert.match(card, /Contre l’armure : Perforant <b>55<\/b>/);
+assert.doesNotMatch(card, /1D8|×1,2|Mêlée|Tir<|≈|Avant l’armure/);
+assert.match(card, /<small>Set 2 · main secondaire<\/small><strong>Dague<\/strong>/);
+fighter.equipment.slots = {weapon_set_1_main:"l"};
+assert.doesNotMatch(renderDamageCard(fighter), /Set 2|Aucune arme/, "set 2 vide : rien");
 fighter.equipment.slots = {};
-assert.equal((renderDamageCard(fighter).match(/Aucune arme/g) || []).length, 2);
+assert.equal(renderDamageCard(fighter), "", "aucune arme : pas de case Dégâts");
 console.log("Effets de l'équipement sur la fiche : Vitesse, Esquive, Perception, Initiative, Dextérité, bottes, dégâts par set — OK");

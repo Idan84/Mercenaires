@@ -634,22 +634,18 @@ function gearTile(slot,item,{extraClass="",dealSlot=null}={}){
 }
 // Dégâts des sets d'armes (Idan, 2026-10-24) : ceux du combat avant l'armure et la résistance de la cible,
 // pour voir d'un coup d'œil si le mercenaire fait mal. Moyenne en gros, fourchette, types et ce qui les change.
-const DAMAGE_MODES = {melee:"Mêlée", ranged:"Tir"};
-function damageFactor(value) {
-  return "×" + String(Math.round(value * 100) / 100).replace(".", ",");
-}
+// Dégâts des sets d'armes (Idan, 2026-10-30) : un seul chiffre, les PV d'un coup en moyenne (entre le plus petit et le
+// plus grand jet, Force et qualité comprises, avant l'armure de la cible) ; ce que l'arme oppose à l'armure ; rien de la
+// recette (dés, multiplicateurs) ; rien pour un set vide.
 function renderDamageCard(c) {
   const sets = typeof equipmentEffectRules === "function" && c?.stats ? equipmentEffectRules().attacks(c) : [];
-  if (!sets.length) return "";
   const strike = (set, s) => `<div class="gear-damage-strike">
-      <span class="gear-damage-head"><small>Set ${set} · ${s.hand === "off" ? "Main secondaire" : DAMAGE_MODES[s.mode]}</small><strong>${esc(s.name)}</strong></span>
-      <span class="gear-damage-value"><b>≈ ${Math.round((s.min + s.max) / 2)}</b><small>${s.min} à ${s.max} PV</small></span>
-      <span class="gear-damage-types">${s.types.map(t => `${esc(t.type)} <b>${t.power}</b>`).join(" · ") || "—"}</span>
-      <span class="gear-damage-why">${[esc(s.dice), ...s.factors.map(f => `${esc(f.label)} ${damageFactor(f.factor)}`)].join(" · ")}</span>
+      <span class="gear-damage-head"><small>Set ${set}${s.hand === "off" ? " · main secondaire" : ""}</small><strong>${esc(s.name)}</strong></span>
+      <span class="gear-damage-value"><b>${Math.round((s.min + s.max) / 2)}</b><small>PV par coup</small></span>
+      ${s.types.length ? `<span class="gear-damage-types">Contre l’armure : ${s.types.map(t => `${esc(t.type)} <b>${t.power}</b>`).join(" · ")}</span>` : ""}
     </div>`;
-  const rows = sets.map(({set, strikes}) => strikes.length ? strikes.map(s => strike(set, s)).join("")
-    : `<div class="gear-damage-strike gear-damage-strike--empty"><span class="gear-damage-head"><small>Set ${set}</small><strong>Aucune arme</strong></span></div>`);
-  return `<section class="gear-card gear-damage"><h4>Dégâts</h4>${rows.join("")}<p class="gear-damage-note">Avant l’armure et la résistance de la cible.</p></section>`;
+  const rows = sets.flatMap(({set, strikes}) => strikes.map(s => strike(set, s)));
+  return rows.length ? `<section class="gear-card gear-damage"><h4>Dégâts</h4>${rows.join("")}</section>` : "";
 }
 function renderEquipment(c) {
   const slotRows = game.referenceData?.equipmentSlots?.rows || [];
@@ -703,7 +699,6 @@ function renderEquipment(c) {
     <div class="gear-side">
       <section class="gear-card"><h4>Bagues</h4><div class="gear-tiles gear-tiles--rings">${tiles("rings")}</div></section>
       <section class="gear-card"><h4>Ceinture</h4><div class="gear-tiles">${tiles("belt-items")}</div></section>
-      ${game.campaign?.company.roster.includes(c)?`<p class="gear-hint">Cliquez sur un emplacement pour donner, retirer ou troquer un objet.</p>`:""}
     </div>
   </section>`;
 }
@@ -1274,7 +1269,13 @@ function magicWheelOrder(rows){
   return order;
 }
 // valueOf : maîtrise d'une école, avec les bagues (Idan, 2026-10-24) ; sans elle, la maîtrise sauvegardée.
+// Écoles où le mercenaire connaît au moins un sort (Idan, 2026-10-30 : les autres sont grisées, sinon c'est trompeur).
+function knownSchools(c){
+  const rows=game.referenceData?.spells?.rows||[];
+  return new Set((Array.isArray(c?.spells)?c.spells:[]).map(s=>rows.find(r=>r.code===s.code||r.nom===(s.name||s.nom))?.ecole||s.school).filter(Boolean));
+}
 function renderMagicWheel(c,valueOf=name=>Number(c.skills?.magic?.[name])){
+  const known=knownSchools(c);
   const rows=magicSchools();
   const order=magicWheelOrder(rows);
   const n=order.length;
@@ -1292,12 +1293,12 @@ function renderMagicWheel(c,valueOf=name=>Number(c.skills?.magic?.[name])){
   const star=rows.flatMap(r=>schoolOpposites(r).map(o=>[r.nom,o])).filter(([a,b])=>index.has(a)&&index.has(b)&&!seen.has([a,b].sort().join("|"))&&seen.add([a,b].sort().join("|")))
     .map(([a,b])=>{const [x1,y1]=pt(index.get(a),R),[x2,y2]=pt(index.get(b),R);return `<line class="magic-opposition" x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}"/>`;}).join("");
   const area=`<polygon class="magic-area" points="${poly(order.map((name,i)=>pt(i,R*value(name)/100)))}"/>`;
-  const dots=order.map((name,i)=>{const [x,y]=pt(i,R*value(name)/100);return `<circle class="magic-dot school--${esc(pictoSlug(name))}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4"/>`;}).join("");
+  const dots=order.map((name,i)=>{const [x,y]=pt(i,R*value(name)/100);return `<circle class="magic-dot school--${esc(pictoSlug(name))}${known.has(name)?"":" is-unknown"}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4"/>`;}).join("");
   const labels=order.map((name,i)=>{
     const [x,y]=pt(i,R+38);
     const row=rows.find(r=>r.nom===name);
     const tip=`${name} : ${shown(name)}. Opposée à ${schoolOpposites(row).join(" et ")}.`;
-    return `<g class="magic-label school--${esc(pictoSlug(name))}" transform="translate(${x.toFixed(1)},${y.toFixed(1)})"><title>${esc(tip)}</title>
+    return `<g class="magic-label school--${esc(pictoSlug(name))}${known.has(name)?"":" is-unknown"}" transform="translate(${x.toFixed(1)},${y.toFixed(1)})"><title>${esc(tip)}</title>
       <g class="magic-label-icon" transform="translate(-11,-28) scale(.92)" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${SCHOOL_ICONS[name]||""}</g>
       <text y="9" text-anchor="middle">${esc(name)}</text><text class="magic-label-value" y="24" text-anchor="middle">${shown(name)}</text></g>`;
   }).join("");
@@ -1311,6 +1312,7 @@ function renderMagicTab(c) {
   const schoolValue=name=>effects[name]?effects[name].value:Number(c.skills?.magic?.[name]);
   const top=magicSchools().map(r=>({name:r.nom,value:schoolValue(r.nom)})).filter(x=>Number.isFinite(x.value)).sort((a,b)=>b.value-a.value).slice(0,3);
   const shift=name=>{const e=effects[name];return e?Math.sign(Math.round(e.value)-Math.round(e.base)):0;};
+  const known=knownSchools(c);
   const stat=name=>{
     const row=(game.referenceData?.characterSheetCopy?.stats||[]).find(r=>r.nom===name)||{nom:name,usage:""};
     const effect=effects[name],value=effect?Math.round(effect.value):sheetStatValue(c,name);
@@ -1324,7 +1326,7 @@ function renderMagicTab(c) {
     </aside>
     <div class="sheet-magic-main">
       <div class="magic-stats">${stat("Puissance magique")}${stat("Réserve de mana")}</div>
-      <div class="magic-favorites">${top.map((x,i)=>`<div class="magic-favorite school--${esc(pictoSlug(x.name))}">${schoolIcon(x.name)}<span class="magic-favorite-name"><small>École n° ${i+1}</small><strong>${esc(x.name)}</strong></span><span class="sheet-stat-value${shift(x.name)<0?" is-malus":shift(x.name)>0?" is-bonus":""}" tabindex="0">${fmt(Math.round(x.value))}${comparePopover(c,Math.round(x.value),m=>sheetEquippedValue(m,x.name),equipmentDetail(effects[x.name],"Total"))}</span></div>`).join("")}</div>
+      <div class="magic-favorites">${top.map((x,i)=>`<div class="magic-favorite school--${esc(pictoSlug(x.name))}${known.has(x.name)?"":" is-unknown"}">${schoolIcon(x.name)}<span class="magic-favorite-name"><small>École n° ${i+1}</small><strong>${esc(x.name)}</strong></span><span class="sheet-stat-value${shift(x.name)<0?" is-malus":shift(x.name)>0?" is-bonus":""}" tabindex="0">${fmt(Math.round(x.value))}${comparePopover(c,Math.round(x.value),m=>sheetEquippedValue(m,x.name),equipmentDetail(effects[x.name],"Total"))}</span></div>`).join("")}</div>
       <div class="magic-bottom">
         <section class="magic-wheel-card"><h4>Écoles de magie</h4>${renderMagicWheel(c,schoolValue)}<p>Chaque école s’oppose aux deux écoles d’en face.</p></section>
         ${renderCharacterSpellbook(c)}

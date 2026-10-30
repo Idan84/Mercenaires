@@ -38,22 +38,29 @@ function cardRow(label,value,tone=""){
   return `<div class="item-card-row${tone?" item-card-row--"+tone:""}"><dt>${esc(label)}</dt><dd>${value}</dd></div>`;
 }
 
-// Effet de la qualité sur les dégâts : « +20 % » en vert, « −20 % » en rouge.
-function qualityShift(factor){
-  if(!factor||factor===1) return "";
-  const percent=Math.round((factor-1)*100);
-  return ` <em class="item-card-shift item-card-shift--${percent>0?"up":"down"}">${signed(percent)} %</em>`;
+// Dégâts d'une arme en PV, qualité comprise, avant la Force du porteur et l'armure de la cible (Idan, 2026-10-30 :
+// pas de dés ni de recette de calcul, ce que l'arme fait) : 10 × le dé, du plus petit au plus grand jet.
+function damageRange(dice,factor=1){
+  const m=String(dice||"").match(/^(\d*)D(\d+)$/i);
+  if(!m) return "—";
+  const count=Number(m[1]||1),sides=Number(m[2]);
+  return `${Math.ceil(10*count*factor)} à ${Math.ceil(10*count*sides*factor)} PV`;
 }
+const RANGED_CATEGORIES=new Set(["Armes de tir","Armes à feu"]);
 
 function weaponCardBody(card){
   const range=card.range.max<=1?"Contact":card.range.min===card.range.max?`${card.range.max} cases`:`${card.range.min} à ${card.range.max} cases`;
+  const ranged=RANGED_CATEGORIES.has(card.category);
   const rows=[
-    cardRow("Dégâts",`${esc(card.damage.dice||"—")}${qualityShift(card.damage.factor)}`),
+    cardRow("Dégâts",damageRange(card.damage.dice,card.damage.factor)),
+    card.powers.length?`<p class="item-card-group">Contre l’armure</p>`:"",
     ...card.powers.map(p=>cardRow(p.type,cardNumber(p.value))),
+    `<p class="item-card-group">Maniement</p>`,
     cardRow("Portée",range),
     cardRow("Prise",esc(ITEM_GRIPS[card.grip]||card.grip||"—")),
     card.weight>0?cardRow("Poids",`${cardNumber(-card.weight)} Vitesse`,"malus"):"",
-    card.charge?cardRow("Charge",`+${cardNumber(card.charge,1)} % dégâts / case`):"",
+    // La charge est un assaut au corps à corps : rien à dire pour un arc ou une arquebuse.
+    card.charge&&!ranged?cardRow("Charge",`+${cardNumber(card.charge,1)} % de dégâts par case d’élan`):"",
     card.block?cardRow("Blocage",`+${cardNumber(card.block,1)} %`,"bonus"):"",
     card.stat?cardRow(card.stat.name,`+${cardNumber(card.stat.percent)} %`,"bonus"):"",
     card.parry?cardRow("Parade",`${cardNumber(card.parry.chance)} % (coups ${card.parry.type}s)`,"bonus"):"",
@@ -127,37 +134,29 @@ function potionCardBody(card){
   return {rows,traits,flavor:card.description};
 }
 
-// La qualité en une phrase : ce qui monte, ce qui baisse. Elle ne change pas le bonus des bottes, ceintures, amulettes,
-// capes, gants, culottes et bagues.
-function qualityLine(card){
-  if(STAT_GEAR_KINDS.includes(card.kind)||card.kind==="potion") return "";
-  const up=Math.round((card.quality.good-1)*100),down=Math.round((card.quality.bad-1)*100);
-  if(!up&&!down) return "";
-  const effects=card.kind==="armor"?"résistances":"dégâts, charge et blocage";
-  const hindrance=card.kind==="armor"?"handicap":"poids";
-  return `<p class="item-card-quality">${esc(card.quality.name||"")} : ${effects} ${signed(up)} %, ${hindrance} ${signed(down)} %.</p>`;
-}
-
 function renderItemCard(item){
   const card=itemCardRules()?.card(item);
   if(!card) return "";
-  // L'image de l'objet en grand, à côté de la carte (Idan, 2026-10-25).
+  // L'image de l'objet dans le cadre de la carte (Idan, 2026-10-30 : « pas juste posée en extérieur »).
   const art=typeof equipmentArtLarge==="function"?equipmentArtLarge(item):typeof equipmentArt==="function"?equipmentArt(item):null;
   const gear=STAT_GEAR_KINDS.includes(card.kind);
   const potion=card.kind==="potion";
   const body=card.kind==="armor"?armorCardBody(card):gear?statGearCardBody(card):potion?potionCardBody(card):weaponCardBody(card);
-  const subtitle=card.kind==="armor"?(ARMOR_CLASSES[card.category]||card.category||"Armure"):gear?card.name:potion?"Potion":[card.name,card.category].filter(Boolean).join(" · ");
-  return `<div class="item-card-wrap">${art?`<figure class="item-card-showcase item-card--t${card.tier}"><img src="${art}" alt=""></figure>`:""}<div class="item-card item-card--t${card.tier}">
+  // Sous-titre sans doublon (« Vêtements », pas « Vêtements · Vêtement »).
+  const armorClass=ARMOR_CLASSES[card.category]||card.category||"Armure";
+  const armorSub=card.title!==card.name&&!String(card.name).toLowerCase().startsWith(String(armorClass).toLowerCase())?card.name+" · "+armorClass:card.title!==card.name?card.name:armorClass;
+  const subtitle=card.kind==="armor"?armorSub:gear?card.name:potion?"Potion":[card.name,card.category].filter(Boolean).join(" · ");
+  return `<div class="item-card-wrap"><div class="item-card item-card--t${card.tier}">
+    ${art?`<figure class="item-card-art"><img src="${art}" alt=""></figure>`:""}
     <div class="item-card-head">
       <div class="item-card-names">
         <strong class="item-card-title">${esc(card.title)}</strong>
-        <span class="item-card-sub">${esc(card.kind==="armor"&&card.title!==card.name?card.name+" · "+subtitle:subtitle)}</span>
+        <span class="item-card-sub">${esc(subtitle)}</span>
         ${potion?`<span class="item-card-tier">Usage unique</span>`:""}
       </div>
     </div>
     <dl class="item-card-stats">${body.rows.join("")}</dl>
     ${body.traits.length?`<ul class="item-card-traits">${body.traits.map(t=>`<li>${esc(t)}</li>`).join("")}</ul>`:""}
-    ${qualityLine(card)}
     ${body.flavor?`<p class="item-card-flavor">${esc(body.flavor)}</p>`:""}
   </div></div>`;
 }

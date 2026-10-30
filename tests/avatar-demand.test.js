@@ -88,7 +88,9 @@ for(const [p,n,s] of [[0.32,50,0.1],[0.036,50,0.2],[0.004,50,0.1]]){
 const measures={fingerprint:demand.fingerprint(reference),generated_on:"2026-10-30",rows:[{people:"Nain",culture:"Nains du chaos",ascendances:[
   {ascendance:null,draws:1000,looks:[{profile:"ranged",value:"Arquebuse",count:500},{profile:"melee",value:"Hache de guerre",count:300},
     {profile:"magic",value:"Feu",count:198},{profile:"magic",value:"Vie",count:2}]},
-  {ascendance:"Sang de dragon",draws:100,looks:[{profile:"melee",value:"Hache de guerre",count:100}]}
+  // Distance chez les dragons : quatre cases trop rares, mais leur groupe de repli a besoin d'un avatar.
+  {ascendance:"Sang de dragon",draws:100,looks:[{profile:"melee",value:"Hache de guerre",count:64},{profile:"ranged",value:"Arquebuse",count:9},
+    {profile:"ranged",value:"Arbalète",count:9},{profile:"ranged",value:"Fronde",count:9},{profile:"ranged",value:"Tromblon",count:9}]}
 ]}]};
 const av=(id,tags,extra={})=>({id,people:"Nain",full:id+".jpg",portrait:id+"_p.jpg",tags:{culture:["Nains du chaos"],...tags},...extra});
 const catalog=[
@@ -114,7 +116,7 @@ const arquebuse=cell(null,"Arquebuse");
 assert.ok(Math.abs(arquebuse.p-0.4)<1e-12,"80 % sans ascendance × 50 %");
 assert.equal(arquebuse.need,demand.binomialNeed(0.4,50,0.1));
 const dragonShare=new Map(demand.ascendanceShares(reference,"Nain")).get("Sang de dragon");
-assert.equal(cell("Sang de dragon","Hache de guerre").need,demand.binomialNeed(dragonShare,50,0.2));
+assert.equal(cell("Sang de dragon","Hache de guerre").need,demand.binomialNeed(dragonShare*0.64,50,0.2));
 assert.equal(cell(null,"Vie"),undefined,"case trop rare : pas de besoin précis");
 assert.ok(chaos.rare>0);
 // Chaque avatar ne sert qu'une fois, précis ou repli.
@@ -136,8 +138,20 @@ assert.deepEqual(dragonGroup.avatars.sort(),["dragon-epee-1","dragon-epee-2"].sl
 assert.equal(dragon.color,dragonGroup.ok?"orange":"rouge");
 assert.equal(dragonGroup.ok,dragonGroup.risk<=0.4+1e-12,"repli à 2 × 20 %");
 assert.equal(chaos.summary.cells,chaos.cells.length);
-assert.equal(chaos.summary.green+chaos.summary.orange+chaos.summary.red,chaos.cells.length);
+// Groupe de repli en manque sans case rouge (cases trop rares) : compté comme une case rouge, à produire « toute arme ».
+const dragonRanged=chaos.groups.find(g=>g.ascendance==="Sang de dragon"&&g.profile==="ranged");
+assert.ok(!chaos.cells.some(c=>c.ascendance==="Sang de dragon"&&c.profile==="ranged"),"cases trop rares");
+assert.equal(dragonRanged.need,1);
+assert.equal(dragonRanged.assigned,0);
+assert.equal(dragonRanged.ok,false);
+assert.equal(dragonRanged.alone,true);
+for(const g of chaos.groups) assert.equal(g.alone,!g.ok&&!chaos.cells.some(c=>c.ascendance===g.ascendance&&c.profile===g.profile&&c.color==="rouge"));
+assert.equal(chaos.summary.redGroups,chaos.groups.filter(g=>g.alone).length);
+assert.equal(chaos.summary.green+chaos.summary.orange+chaos.summary.red,chaos.cells.length+chaos.summary.redGroups);
 assert.equal(chaos.summary.missingPrecise,chaos.cells.reduce((s,c)=>s+Math.max(0,c.need-c.assigned),0));
+assert.equal(chaos.summary.missingAlone,chaos.groups.filter(g=>g.alone).reduce((s,g)=>s+g.need-g.assigned,0));
+assert.equal(chaos.summary.toProduce,chaos.summary.missingPrecise+chaos.summary.missingAlone);
+assert.ok(chaos.summary.missingAlone>=1);
 assert.deepEqual(chaos.unmeasured.sort(),["Sang de djinn","Sang de démon","Sang divin","Sang d’humain"].sort(),"ascendances sans mesure signalées");
 assert.equal(demand.createDemand({reference,measures:{...measures,fingerprint:"00000000"},catalog}).stale,true);
 
@@ -158,4 +172,4 @@ for(const culture of ["Nains des montagnes","Nains du chaos","Nains réduits en 
   assert.ok(need>=70&&need<=105,culture+" : "+need);
 }
 
-console.log("Besoin en avatars : binomiale, mesures figées, un avatar par case, repli sur le profil, couleurs — OK");
+console.log("Besoin en avatars : binomiale, mesures figées, un avatar par case, repli sur le profil, couleurs, groupes de repli sans case — OK");

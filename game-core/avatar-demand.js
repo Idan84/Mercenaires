@@ -17,7 +17,8 @@
 // - Repli PL = culture × ascendance × profil (corps à corps, distance, magie) : les mercenaires qui débordent des cases
 //   précises, ou qui tombent dans une case trop rare pour en avoir une, prennent un avatar resté libre de leur groupe.
 // - Couleur d'une case : vert, assez d'avatars précis ; orange, pas assez, mais avec le repli le risque de manquer reste
-//   sous 2 × S (avatars.demand.fallback_factor) ; rouge, même avec le repli, ça ne suffit pas.
+//   sous 2 × S (avatars.demand.fallback_factor) ; rouge, même avec le repli, ça ne suffit pas. Un groupe de repli en manque
+//   dont aucune case n'est rouge (cases trop rares ou déjà vertes) compte lui aussi comme une case rouge.
 // - Culture et ascendance suivent les règles du jeu (avatars.js) : un mercenaire sans ascendance peut prendre un avatar
 //   d'ascendance généraliste, pas « Ascendance only ». Un avatar tagué d'une catégorie d'arme (« Armes de tir ») ne compte
 //   pas pour une arme précise, seulement pour le repli.
@@ -269,19 +270,26 @@
         c.risk=riskAbove(c.p,n,c.assigned);
         c.color=c.need===0?null:c.assigned>=c.need?"vert":g.ok?"orange":"rouge";
       }
+      // Groupe de repli en manque sans aucune case rouge (ses cases sont trop rares ou déjà vertes) : il compte comme une
+      // case rouge, à combler par un avatar de profil, toute arme ou toute école (Idan, 2026-10-30).
+      for(const g of list) g.alone=!g.ok&&!g.cells.some(c=>c.color==="rouge");
 
       const counted=cells.filter(c=>c.need>0);
+      const alone=list.filter(g=>g.alone);
       const sum=(xs,f)=>xs.reduce((s,x)=>s+f(x),0);
       return {
         people:row.people,culture,settings,avatars:own.length,unmeasured,
         cells:counted.map(({ascendance,profile,value,p,need,assigned,avatars:ids,risk,color})=>({ascendance,profile,value,p,need,assigned,avatars:ids,risk,color})),
-        groups:list.map(({ascendance,profile,p,need,assigned,avatars:ids,risk,ok})=>({ascendance,profile,p,need,assigned,avatars:ids,risk,ok})),
+        groups:list.map(({ascendance,profile,p,need,assigned,avatars:ids,risk,ok,alone})=>({ascendance,profile,p,need,assigned,avatars:ids,risk,ok,alone})),
         rare:sum(cells.filter(c=>c.need===0),c=>c.p),
         summary:{
           cells:counted.length,need:sum(counted,c=>c.need),covered:sum(counted,c=>Math.min(c.need,c.assigned)),
           green:counted.filter(c=>c.color==="vert").length,orange:counted.filter(c=>c.color==="orange").length,
-          red:counted.filter(c=>c.color==="rouge").length,
+          red:counted.filter(c=>c.color==="rouge").length+alone.length,
+          redGroups:alone.length,
           missingPrecise:sum(counted,c=>Math.max(0,c.need-c.assigned)),
+          missingAlone:sum(alone,g=>g.need-g.assigned),
+          toProduce:sum(counted,c=>Math.max(0,c.need-c.assigned))+sum(alone,g=>g.need-g.assigned),
           missingFallback:sum(list,g=>Math.max(0,g.need-g.assigned))
         }
       };

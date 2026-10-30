@@ -267,6 +267,16 @@ Depuis l’onglet Équipement de la fiche ou l’Intendance, le capitaine peut *
 
 **Règles** : une seule tentative par mercenaire et par jour ; le capitaine s’équipe librement (ni jet, ni affinité, ni limite) ; un objet donné appartient ensuite au mercenaire, un objet retiré retourne au stock sans propriétaire. Emplacements : armure, bottes, armes selon la prise (une arme à deux mains en arme principale avec la main secondaire libre, un bouclier en main secondaire). Constantes `equipment_deal.*` ; code `game-core/equipment-deals.js`.
 
+**Inventaire et réaménagement libre** (Idan, 2026-10-30) :
+- chaque mercenaire a un **inventaire** : les objets qu’il possède sans les porter, gardés au dortoir, **sans limite** ;
+- **Donner** met l’objet dans son inventaire (même jet, même affinité qu’avant ; plus besoin d’emplacement vide). Depuis la fiche, Donner sur un emplacement reste possible (l’objet est donné puis équipé) ; à l’Intendance, « Donner à… » propose l’inventaire en premier ;
+- entre ses propres objets — emplacements portés, **set 1, set 2**, inventaire — tout est **libre** : ni jet, ni affinité, ni limite par jour (ranger dans l’inventaire, prendre dans l’inventaire, passer une arme d’un set à l’autre, bouton ⇄ pour échanger les deux sets). L’objet qui occupait la place prend celle qui se libère s’il y va, sinon il part dans l’inventaire ; une arme à deux mains en arme principale libère la main secondaire ;
+- **Retirer** peut aussi reprendre un objet de l’inventaire (même jet) ; les fioles restent dans les poches de ceinture ;
+- possible au camp, mission programmée comprise ; pas pendant une mission ;
+- s’il **meurt en mission**, son inventaire retourne à l’Intendance ; ce qu’il portait reste avec lui (butin d’une victoire, perdu sur une défaite).
+
+Code : `inventoryOf`, `rearrange`, `placeOptions`, `swapSets` (`game-core/equipment-deals.js`) ; retour au stock : `applyMissionAftermath` (`game-core/campaign.js`) ; interface : `prototype-web/deal-ui.js`, case Inventaire de l’onglet Équipement.
+
 **Interface** (`prototype-web/deal-ui.js`) : dans l’onglet Équipement de la fiche d’un membre de la compagnie, un clic sur une case ouvre un menu — **Retirer** (case remplie), **Troquer contre** ou **Donner** (objets de l’Intendance qui vont dans cet emplacement, un exemplaire par objet et par tier, du meilleur tier au moins bon). À l’Intendance, un clic sur une ligne du stock propose **Donner à…** : chaque membre qui peut porter l’objet, emplacement par emplacement, avec ce qu’il remplacerait. Le mercenaire répond dans une boîte de dialogue : la proposition du capitaine, sa réplique (selon l’action, l’accord ou le refus et son humeur : content si l’objet reçu lui semble valoir plus que l’objet cédé), puis ce qui change ; seule réponse : **Partir**. Le capitaine s’équipe sans dialogue. Textes : `data/reference/equipment-dialogue.json` (4 variantes par cas, écrites par JC).
 
 ### Dégâts des sets d’armes (Idan, 2026-10-24)

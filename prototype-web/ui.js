@@ -634,11 +634,6 @@ function gearTile(slot,item,{extraClass="",dealSlot=null}={}){
     ${art?`<img class="gear-art" src="${art}" alt="" loading="lazy">`:gearIcon(gearKind(slot,item))}${item?gearTooltip(item):""}
   </span>`;
 }
-// Dégâts des sets d'armes (Idan, 2026-10-24) : ceux du combat avant l'armure et la résistance de la cible,
-// pour voir d'un coup d'œil si le mercenaire fait mal. Moyenne en gros, fourchette, types et ce qui les change.
-// Dégâts des sets d'armes (Idan, 2026-10-30) : un seul chiffre, les PV d'un coup en moyenne (entre le plus petit et le
-// plus grand jet, Force et qualité comprises, avant l'armure de la cible) ; ce que l'arme oppose à l'armure ; rien de la
-// recette (dés, multiplicateurs) ; rien pour un set vide.
 // Case Dégâts (Idan, 2026-10-30) : quatre chiffres pour comparer les mercenaires, des scores et non des chances —
 // Précision, Puissance, Dégâts (du plus petit au plus grand coup, avant la Résistance physique de la cible, et leur
 // type) et Pénétration d'armure — en tableau, une colonne par arme qui frappe (set 1, set 2, main secondaire) ;
@@ -704,11 +699,17 @@ function renderEquipment(c) {
   const tiles = name => group(name).map(slot => gearTile(slot,itemIn(slot))).join("");
   const mount = group("mount")[0];
   const mountItem = mount ? itemIn(mount) : null;
+  // Inventaire (Idan, 2026-10-30) : ce qu'il possède sans le porter, gardé au dortoir ; « + » pour lui donner un objet
+  // de l'Intendance. Échange des sets et réaménagement libres : deal-ui.js.
+  const member = Boolean(game.campaign?.company.roster.includes(c));
+  const worn = new Set(Object.values(slots).filter(Boolean));
+  const inventory = (c.items || []).filter(item => !worn.has(item.id));
+  const inventorySlot = {id:"inventory",label:"Inventaire"};
 
   return `<section class="gear">
     <div class="gear-side">
       ${renderDamageCard(c)}
-      <section class="gear-card"><h4>Set de rechange</h4>${spare.map(weaponRow).join("")}</section>
+      <section class="gear-card"><h4>Set de rechange${member?`<button type="button" class="gear-swap" data-swap-sets title="Échanger avec le set 1" aria-label="Échanger avec le set 1">⇄</button>`:""}</h4>${spare.map(weaponRow).join("")}</section>
       <section class="gear-card"><h4>Monture</h4>${mount?`<div class="gear-row">${gearTile(mount,mountItem)}<span class="gear-row-text"><strong>${mountItem?esc(mountItem.name):"Aucune"}</strong></span></div>`:""}</section>
     </div>
     <div class="equipment-mannequin gear-doll" aria-label="Silhouette du mercenaire et son équipement">
@@ -724,6 +725,7 @@ function renderEquipment(c) {
     <div class="gear-side">
       <section class="gear-card"><h4>Bagues</h4><div class="gear-tiles gear-tiles--rings">${tiles("rings")}</div></section>
       <section class="gear-card"><h4>Ceinture</h4><div class="gear-tiles">${tiles("belt-items")}</div></section>
+      ${member?`<section class="gear-card gear-inventory"><h4>Inventaire</h4><div class="gear-tiles gear-tiles--inventory">${inventory.map(item => gearTile(inventorySlot,item)).join("")}<span class="gear-tile is-empty gear-tile--give" tabindex="0" data-slot="inventory" title="Donner un objet de l’Intendance">+</span></div></section>`:""}
     </div>
   </section>`;
 }
@@ -776,14 +778,15 @@ function renderPending(c) {
   </div>`;
 }
 
-// Fiche mercenaire en onglets. L'onglet choisi est conservé d'une fiche à l'autre.
+// Fiche mercenaire en onglets. L'onglet choisi est conservé d'une fiche à l'autre. Ordre (Idan, 2026-10-30) :
+// l'Équipement après les Caractéristiques, le Camp après la Magie.
 const SHEET_TABS = [
   ["profile", "Profil"],
   ["stats", "Caractéristiques"],
-  ["skills", "Compétences"],
-  ["camp", "Camp"],
   ["equipment", "Équipement"],
+  ["skills", "Compétences"],
   ["magic", "Magie"],
+  ["camp", "Camp"],
   ["history", "Historique"]
 ];
 

@@ -14,6 +14,10 @@
 // - Potions et fioles (Idan, 2026-10-29) : consommables de la compagnie, distribués librement dans les 4 emplacements
 //   de ceinture (ni jet, ni affinité, ni limite par jour, ni historique).
 // - L'intendant, s'il y en a un, appuie la proposition : Δ + 0,2 × Intendance + 0,25 × affinité envers lui.
+// - Inventaire (Idan, 2026-10-30) : les objets du mercenaire qu'il ne porte pas, gardés au dortoir, sans limite.
+//   Donner les y met (même jet) ; Retirer peut aussi les reprendre (même jet). Entre ses propres objets — emplacements
+//   portés, set 1, set 2, inventaire — tout est libre : ni jet, ni affinité, ni limite par jour (rearrange, swapSets),
+//   tant qu'il est au camp. S'il meurt en mission, l'inventaire retourne à l'Intendance (campaign.js).
 // Constantes : formula-constants.json (equipment_deal.*).
 (function(root,factory){
   const history=typeof module!=="undefined"&&module.exports?require("./history.js"):root.MercenairesHistory;
@@ -25,6 +29,8 @@
   const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
   const WEAPON_SLOT=/^weapon_set_(\d+)_(main|off)$/;
   const BELT_POCKET=/^belt_item_[1-4]$/;
+  // L'inventaire, comme « emplacement » d'un échange.
+  const INVENTORY="inventory";
   // Un emplacement de ceinture : on y range une fiole sans négocier.
   const isPocket=slot=>BELT_POCKET.test(String(slot));
 
@@ -52,6 +58,11 @@
       const id=mercenary?.equipment?.slots?.[slot];
       return id?(mercenary.items||[]).find(item=>item.id===id)||null:null;
     }
+    // Ce qu'il possède sans le porter.
+    function inventoryOf(mercenary){
+      const worn=new Set(Object.values(mercenary?.equipment?.slots||{}).filter(Boolean));
+      return (mercenary?.items||[]).filter(item=>!worn.has(item.id));
+    }
 
     // Valeur perçue d'un objet par le mercenaire : le tier pour l'instant (Idan, 2026-10-24), brouillé par la bêtise.
     function perceivedValue(item,mercenary,owned){
@@ -64,6 +75,8 @@
     // L'objet peut-il aller dans cet emplacement ? Armure, bottes, ou arme selon la main et la prise de l'autre main.
     function slotAccepts(mercenary,slot,item){
       if(!item) return no("Aucun objet.");
+      // Les fioles vont dans les poches de ceinture, pas dans l'inventaire.
+      if(slot===INVENTORY) return item.itemType==="potion"?no("Une fiole se range dans une poche de ceinture."):{ok:true};
       if(slot==="armor") return item.itemType==="armor"?{ok:true}:no("Cet emplacement reçoit une armure.");
       if(slot==="boots") return item.itemType==="boots"?{ok:true}:no("Cet emplacement reçoit des bottes.");
       if(slot==="belt") return item.itemType==="belt"?{ok:true}:no("Cet emplacement reçoit une ceinture.");
@@ -119,10 +132,12 @@
     }
 
     // Le marché vu par le mercenaire : valeurs perçues, chance d'accord et effet sur l'affinité. Sans jet ni mutation.
-    function evaluate(state,{mercenaryId,slot,stockItemId=null}={}){
+    // slot : un emplacement, ou INVENTORY (itemId : l'objet de l'inventaire à reprendre).
+    function evaluate(state,{mercenaryId,slot,stockItemId=null,itemId=null}={}){
       const mercenary=rosterOf(state).find(m=>m.id===mercenaryId);
       if(!mercenary) return no("Mercenaire introuvable.");
-      const given=itemIn(mercenary,slot);
+      const given=slot===INVENTORY?(itemId==null?null:inventoryOf(mercenary).find(item=>String(item.id)===String(itemId))||null):itemIn(mercenary,slot);
+      if(slot===INVENTORY&&itemId!=null&&!given) return no("Objet introuvable dans son inventaire.");
       const received=stockItemId==null?null:stockOf(state).find(item=>item.id===stockItemId)||null;
       if(stockItemId!=null&&!received) return no("Objet introuvable à l’Intendance.");
       const action=actionFor(given,received);
@@ -156,21 +171,92 @@
       return {ok:true};
     }
 
-    function moveToStock(state,mercenary,slot){
-      const item=itemIn(mercenary,slot);
+    function moveToStock(state,mercenary,item){
       if(!item) return null;
       mercenary.items=mercenary.items.filter(x=>x!==item);
-      mercenary.equipment.slots[slot]=null;
+      const slots=mercenary.equipment?.slots||{};
+      for(const key of Object.keys(slots)) if(slots[key]===item.id) slots[key]=null;
       const stored={...item,owner:null,slot:null};
       stockOf(state).push(stored);
       return stored;
     }
     function equipFromStock(state,mercenary,slot,item){
       state.company.stock=stockOf(state).filter(x=>x!==item);
-      const owned={...item,owner:mercenary.id,slot};
+      const owned={...item,owner:mercenary.id,slot:slot===INVENTORY?null:slot};
       (mercenary.items||(mercenary.items=[])).push(owned);
-      mercenary.equipment.slots[slot]=owned.id;
+      if(slot!==INVENTORY) mercenary.equipment.slots[slot]=owned.id;
       return owned;
+    }
+
+    // Réaménagement libre (Idan, 2026-10-30) : ses propres objets, d'un emplacement à l'autre ou vers l'inventaire.
+    function canRearrange(state,mercenary){
+      if(!mercenary) return no("Mercenaire introuvable.");
+      if((state.expeditions||[]).some(e=>e.memberIds.includes(mercenary.id)&&e.status!=="scheduled")) return no("Il est en mission.");
+      return {ok:true};
+    }
+    // Met l'objet itemId (à lui) dans slot, ou dans l'inventaire. L'objet qui occupait slot prend la place libérée s'il y
+    // va, sinon il part dans l'inventaire ; une arme à deux mains en arme principale libère la main secondaire.
+    function rearrange(state,{mercenaryId,itemId,slot}={}){
+      const mercenary=rosterOf(state).find(m=>m.id===mercenaryId);
+      const allowed=canRearrange(state,mercenary);
+      if(!allowed.ok) return allowed;
+      const item=(mercenary.items||[]).find(x=>String(x.id)===String(itemId));
+      if(!item) return no("Objet introuvable.");
+      const slots=mercenary.equipment.slots;
+      const from=Object.keys(slots).find(key=>slots[key]===item.id)||null;
+      if(item.itemType==="potion"||isPocket(slot)) return no("Les fioles se rangent depuis l’Intendance.");
+      if(slot===INVENTORY){
+        if(!from) return no("Il est déjà dans son inventaire.");
+        slots[from]=null;
+        item.slot=null;
+        return {ok:true,item,from,slot,displaced:null,freed:null};
+      }
+      if(!(slot in slots)) return no("Emplacement inconnu.");
+      if(from===slot) return no("Il le porte déjà là.");
+      const before={...slots};
+      if(from) slots[from]=null;
+      const displaced=itemIn(mercenary,slot);
+      slots[slot]=null;
+      let freed=null;
+      const match=String(slot).match(WEAPON_SLOT);
+      if(match&&match[2]==="main"&&weapons.get(item.name)?.prise==="2 mains"){
+        const off=`weapon_set_${match[1]}_off`;
+        freed=itemIn(mercenary,off);
+        if(freed) slots[off]=null;
+      }
+      const fit=slotAccepts(mercenary,slot,item);
+      if(!fit.ok){ Object.assign(slots,before); return fit; }
+      slots[slot]=item.id;
+      item.slot=slot;
+      if(displaced){
+        if(from&&slotAccepts(mercenary,from,displaced).ok){ slots[from]=displaced.id; displaced.slot=from; }
+        else displaced.slot=null;
+      }
+      if(freed) freed.slot=null;
+      return {ok:true,item,from,slot,displaced,freed};
+    }
+    // Où cet objet (à lui) peut aller : chaque emplacement où rearrange réussirait, avec ce qu'il y remplacerait. Essai sur
+    // une copie du mercenaire, rien ne bouge.
+    function placeOptions(mercenary,item){
+      if(!mercenary||!item) return [];
+      return Object.keys(mercenary.equipment?.slots||{}).filter(slot=>!isPocket(slot)).map(slot=>{
+        const copy={...mercenary,equipment:{...mercenary.equipment,slots:{...mercenary.equipment.slots}},items:(mercenary.items||[]).map(x=>({...x}))};
+        const trial=rearrange({company:{roster:[copy]},expeditions:[]},{mercenaryId:copy.id,itemId:item.id,slot});
+        return trial.ok?{slot,current:itemIn(mercenary,slot)}:null;
+      }).filter(Boolean);
+    }
+    // Échange le set 1 et le set 2, main par main.
+    function swapSets(state,{mercenaryId}={}){
+      const mercenary=rosterOf(state).find(m=>m.id===mercenaryId);
+      const allowed=canRearrange(state,mercenary);
+      if(!allowed.ok) return allowed;
+      const slots=mercenary.equipment.slots;
+      for(const hand of ["main","off"]){
+        const a=`weapon_set_1_${hand}`,b=`weapon_set_2_${hand}`;
+        [slots[a],slots[b]]=[slots[b]??null,slots[a]??null];
+        for(const key of [a,b]){ const item=itemIn(mercenary,key); if(item) item.slot=key; }
+      }
+      return {ok:true};
     }
 
     // Propose le marché : jet, affinité, puis échange si le mercenaire accepte.
@@ -188,7 +274,7 @@
         mercenary.equipmentDealDay=state.day;
       }
       if(accepted){
-        if(given) moveToStock(state,mercenary,slot);
+        if(given) moveToStock(state,mercenary,given);
         if(received) equipFromStock(state,mercenary,slot,received);
       }
       // Historique (Idan, 2026-10-24) : l'échange proposé, accepté ou refusé ; pas les fioles.
@@ -198,7 +284,8 @@
         mood:deal.mood,mercenaryId:mercenary.id,slot,given,received,steward:deal.steward||null};
     }
 
-    return {constants:C,perceivedValue,slotAccepts,compatibleSlots,evaluate,canDeal,propose,isPocket};
+    return {constants:C,perceivedValue,slotAccepts,compatibleSlots,evaluate,canDeal,propose,isPocket,INVENTORY,inventoryOf,
+      canRearrange,rearrange,placeOptions,swapSets};
   }
 
   return {createEquipmentDeals};

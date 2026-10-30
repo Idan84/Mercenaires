@@ -110,16 +110,21 @@ const AvatarsLab=(()=>{
       <div><b>${r.avatars}</b><span>avatars de la culture</span></div>
       <div class="vert"><b>${s.green}</b><span>vertes</span></div>
       <div class="orange"><b>${s.orange}</b><span>orange</span></div>
-      <div class="rouge"><b>${s.red}</b><span>rouges</span></div>
+      <div class="rouge"><b>${s.red}</b><span>rouges${s.redGroups?` (dont ${s.redGroups} en repli)`:""}</span></div>
     </div>`;
   }
 
-  // À produire : cases sans assez d'avatars précis, les rouges d'abord, puis les plus gros manques.
+  // À produire : cases sans assez d'avatars précis, et groupes de repli en manque sans case rouge (toute arme ou toute
+  // école) ; les rouges d'abord, puis les plus gros manques.
   function todoList(r){
-    const todo=r.cells.filter(c=>c.assigned<c.need)
-      .sort((a,b)=>COLORS[a.color].order-COLORS[b.color].order||(b.need-b.assigned)-(a.need-a.assigned)||b.p-a.p);
+    const anyLook=g=>g.profile==="magic"?"toute école":"toute arme";
+    const todo=[
+      ...r.cells.filter(c=>c.assigned<c.need).map(c=>({color:c.color,gap:c.need-c.assigned,p:c.p,name:cellName(c),of:`${c.assigned} / ${c.need}`})),
+      ...r.groups.filter(g=>g.alone).map(g=>({color:"rouge",gap:g.need-g.assigned,p:g.p,of:`${g.assigned} / ${g.need}`,
+        name:`${html(ascendanceLabel(g.ascendance))} · ${html(profileLabel(g.profile))} · <strong>${anyLook(g)}</strong> <em>(repli)</em>`}))
+    ].sort((a,b)=>COLORS[a.color].order-COLORS[b.color].order||b.gap-a.gap||b.p-a.p);
     if(!todo.length) return '<p class="muted">Rien à produire : toutes les cases sont vertes.</p>';
-    return `<ul class="dem-todo">${todo.map(c=>`<li class="${c.color}"><b>${c.need-c.assigned}</b><span>${cellName(c)}</span><small>${c.assigned} / ${c.need}</small></li>`).join("")}</ul>`;
+    return `<ul class="dem-todo">${todo.map(t=>`<li class="${t.color}"><b>${t.gap}</b><span>${t.name}</span><small>${t.of}</small></li>`).join("")}</ul>`;
   }
 
   function cellsTable(r){
@@ -147,8 +152,8 @@ const AvatarsLab=(()=>{
     return `<div class="dem-culture" id="${anchor(r.culture)}">
       <h4>${html(r.culture)}</h4>
       ${tiles(r)}
-      <p class="cov-note">${s.covered} besoins sur ${s.need} couverts par un avatar précis. Pour tout passer au vert : <strong>${s.missingPrecise}</strong>
-        avatar${s.missingPrecise>1?"s":""} précis à produire ; pour qu'il n'y ait plus de rouge : <strong>${s.missingFallback}</strong> avatar${s.missingFallback>1?"s":""} de profil.
+      <p class="cov-note">${s.covered} besoins sur ${s.need} couverts par un avatar précis. Pour tout passer au vert : <strong>${s.toProduce}</strong>
+        avatar${s.toProduce>1?"s":""} à produire${s.missingAlone?` (${s.missingPrecise} précis, ${s.missingAlone} de profil)`:" précis"} ; pour qu'il n'y ait plus de rouge : <strong>${s.missingFallback}</strong> avatar${s.missingFallback>1?"s":""} de profil.
         ${pct(r.rare)} des mercenaires tombent dans une case trop rare pour un avatar précis : ils passent directement au repli.</p>
       ${warn}
       <div class="cov-family"><h5>À produire</h5>${todoList(r)}</div>
@@ -175,13 +180,13 @@ const AvatarsLab=(()=>{
       <td><a href="#${anchor(r.culture)}" data-cov="${anchor(r.culture)}">${html(r.culture)}</a></td><td>${html(r.people)}</td>
       <td class="num">${r.avatars}</td><td class="num">${r.summary.need}</td><td class="num">${r.summary.covered}</td>
       <td class="num v">${r.summary.green}</td><td class="num o">${r.summary.orange}</td><td class="num r">${r.summary.red}</td>
-      <td class="num"><strong>${r.summary.missingPrecise}</strong></td></tr>`)).join("");
+      <td class="num"><strong>${r.summary.toProduce}</strong></td></tr>`)).join("");
     const sum=f=>data.results.reduce((t,r)=>t+f(r),0);
     return `<div class="table-wrap cov-summary"><table>
       <thead><tr><th>Culture</th><th>Peuple</th><th>Avatars</th><th>Besoin</th><th>Couverts</th><th>Vertes</th><th>Orange</th><th>Rouges</th><th>À produire</th></tr></thead>
       <tbody>${rows}<tr class="cov-total"><td>Total</td><td></td><td></td><td class="num">${sum(r=>r.summary.need)}</td><td class="num">${sum(r=>r.summary.covered)}</td>
       <td class="num v">${sum(r=>r.summary.green)}</td><td class="num o">${sum(r=>r.summary.orange)}</td><td class="num r">${sum(r=>r.summary.red)}</td>
-      <td class="num"><strong>${sum(r=>r.summary.missingPrecise)}</strong></td></tr></tbody></table></div>`;
+      <td class="num"><strong>${sum(r=>r.summary.toProduce)}</strong></td></tr></tbody></table></div>`;
   }
 
   function render(data){

@@ -53,7 +53,7 @@ function renderNav(){
     : state.mode==="avatars"
     ? (state.coverage?[{id:"cov-tags",label:"Affiner les tags",sub:AvatarsLab.tagTodoCount(state.coverage)+" à faire"}]:[])
       .concat((state.coverage?.results||[]).map(r=>({id:AvatarsLab.anchor(r.culture),label:r.culture,
-        sub:r.people+" · "+(r.summary.missingPrecise?r.summary.missingPrecise+" à produire":"tout vert")})))
+        sub:r.people+" · "+(r.summary.toProduce?r.summary.toProduce+" à produire":"tout vert")})))
     : state.mode==="images"
     ? (state.images?.summary||[]).map(s=>({id:ImagesLab.anchor(s.key),label:s.title,sub:s.missing?s.missing+" / "+s.total+" manquantes":"complet"}))
     : state.tables.tables.map(x=>({id:x.file,label:labelTable(x.name),sub:x.rows+" lignes"}));

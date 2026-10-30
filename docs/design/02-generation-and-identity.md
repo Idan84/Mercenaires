@@ -89,9 +89,9 @@ Code : `game-core/avatars.js` ; outil de production : Design Lab, onglet Avatars
   - **besoin d'une case** = nombre d'avatars pour que le risque d'en manquer sur 50 tirages reste sous **S = 10 %** pour les mercenaires sans ascendance, **20 %** avec (`avatars.demand.threshold`, `avatars.demand.threshold_ascendance` ; loi binomiale, calcul exact). Une case trop rare n'a pas de besoin précis : ses mercenaires passent au repli ;
   - **un avatar ne sert qu'une fois** (jamais deux fois le même visage ; ceux des morts ne reviennent pas) : chaque avatar va dans une seule case, de façon à couvrir le plus de besoins. Un avatar tagué d'une catégorie d'arme (« Armes de tir ») ne vaut pas une arme précise ;
   - **repli (PL)** = culture × ascendance × profil (corps à corps, distance, magie), avec les avatars restés libres ;
-  - **couleurs** : vert, assez d'avatars précis ; orange, pas assez, mais avec le repli le risque de manquer reste sous **2 × S** (`avatars.demand.fallback_factor`) ; rouge, même avec le repli, ça ne suffit pas.
+  - **couleurs** : vert, assez d'avatars précis ; orange, pas assez, mais avec le repli le risque de manquer reste sous **2 × S** (`avatars.demand.fallback_factor`) ; rouge, même avec le repli, ça ne suffit pas. Un **groupe de repli en manque dont aucune case n'est rouge** (ses cases sont trop rares ou déjà vertes) compte lui aussi comme une case rouge : à combler par un avatar de profil, toute arme ou toute école (Idan, 2026-10-30).
   - Ordre de grandeur (le 2026-10-30) : environ 85 avatars précis par culture naine, 263 pour les trois ; 2 773 pour les 32 cultures.
-  - Onglet Avatars du Design Lab : bilan par culture (vertes, orange, rouges, à produire), puis pour chaque culture la liste **à produire** (rouges d'abord, plus gros manques en tête), les cases précises et le repli ; alerte si la génération a changé depuis les mesures.
+  - Onglet Avatars du Design Lab : bilan par culture (vertes, orange, rouges, à produire), puis pour chaque culture la liste **à produire** (rouges d'abord, plus gros manques en tête ; les groupes de repli en manque y figurent en « toute arme » ou « toute école »), les cases précises et le repli ; alerte si la génération a changé depuis les mesures.
 
 ## Génération brute des compétences — règles en cours
 

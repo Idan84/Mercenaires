@@ -1286,7 +1286,9 @@
 
       if (Object.prototype.hasOwnProperty.call(createOptions, "forcedAscendance")) {
         const forced = createOptions.forcedAscendance || null;
-        ancestry = forced ? {
+        // « draw » : niveau tiré comme pour une ascendance naturelle (mesures du besoin en avatars).
+        const drawn = forced && createOptions.forcedAscendanceLevel === "draw" ? rollAncestryLevel() : null;
+        ancestry = drawn ? {name: forced, level: drawn.level, levelName: drawn.name} : forced ? {
           name: forced,
           level: Number(createOptions.forcedAscendanceLevel) || 3,
           levelName: ancestryLevels.find(x => x.level === (Number(createOptions.forcedAscendanceLevel) || 3))?.nom || null

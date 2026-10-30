@@ -1219,6 +1219,38 @@
       "version": "V1"
     },
     {
+      "nom": "Besoin en avatars — mercenaires d’une culture par partie",
+      "code": "avatars.demand.mercenaries",
+      "description": "Nombre de mercenaires d’une même culture qu’un joueur voit passer dans une partie (escouade de départ, embauches, Taverne) : base du besoin en avatars de chaque culture (Idan, 2026-10-30). Outil de production, sans effet sur le jeu.",
+      "formule": "Besoin en avatars",
+      "valeur": 50,
+      "version": "V1"
+    },
+    {
+      "nom": "Besoin en avatars — seuil sans ascendance",
+      "code": "avatars.demand.threshold",
+      "description": "Risque accepté de manquer d’avatar précis (culture × arme tenue en main ou école) pour un mercenaire sans ascendance (Idan, 2026-10-30).",
+      "formule": "Besoin en avatars",
+      "valeur": 0.1,
+      "version": "V1"
+    },
+    {
+      "nom": "Besoin en avatars — seuil avec ascendance",
+      "code": "avatars.demand.threshold_ascendance",
+      "description": "Risque accepté de manquer d’avatar précis (culture × ascendance × arme tenue en main ou école) pour un mercenaire avec une ascendance (Idan, 2026-10-30).",
+      "formule": "Besoin en avatars",
+      "valeur": 0.2,
+      "version": "V1"
+    },
+    {
+      "nom": "Besoin en avatars — repli sur le profil",
+      "code": "avatars.demand.fallback_factor",
+      "description": "Case orange : pas assez d’avatars précis, mais avec les avatars du même profil (culture × ascendance × corps à corps, distance ou magie) le risque de manquer reste sous ce multiple du seuil ; rouge au-delà (Idan, 2026-10-30 : « à 2 × S »).",
+      "formule": "Besoin en avatars",
+      "valeur": 2,
+      "version": "V1"
+    },
+    {
       "nom": "Stock de départ — nombre de dés",
       "code": "company.starting_stock.dice_count",
       "description": "La compagnie démarre avec un stock d’armes de rechange de (nombre de dés)D(faces) armes : 2D20, soit 2 à 40 armes (Idan, 2026-10-23).",

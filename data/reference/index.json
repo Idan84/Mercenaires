@@ -502,6 +502,16 @@
         "prix_base",
         "description"
       ]
+    },
+    {
+      "name": "avatar-demand",
+      "file": "avatar-demand.json",
+      "rows": 32,
+      "columns": [
+        "people",
+        "culture",
+        "ascendances"
+      ]
     }
   ]
 }

@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "name": "merchants",
+  "description": "Marchands qui passent au camp (doc 18 ; Idan, 2026-10-30). Pour l’instant un seul marchand test, qui ne vend que des épées longues T1 : Idan répartit les biens entre les marchands. stock : lignes à vendre (type d’objet, nom, tier), sans limite de quantité pour l’instant. peuple, culture, alignement : facultatifs ; sans eux, l’affinité avec le capitaine est nulle. poids : fréquence de passage relative.",
+  "columns": [
+    {
+      "source": "Id",
+      "key": "id"
+    },
+    {
+      "source": "Nom",
+      "key": "nom"
+    },
+    {
+      "source": "Peuple",
+      "key": "peuple"
+    },
+    {
+      "source": "Culture",
+      "key": "culture"
+    },
+    {
+      "source": "Alignement",
+      "key": "alignement"
+    },
+    {
+      "source": "Poids",
+      "key": "poids"
+    },
+    {
+      "source": "Stock",
+      "key": "stock"
+    }
+  ],
+  "row_count": 1,
+  "rows": [
+    {
+      "id": "marchand-test",
+      "nom": "Marchand test",
+      "peuple": null,
+      "culture": null,
+      "alignement": null,
+      "poids": 1,
+      "stock": [
+        {
+          "type": "weapon",
+          "objet": "Épée longue",
+          "tier": 1
+        }
+      ]
+    }
+  ]
+}

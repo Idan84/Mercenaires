@@ -1097,6 +1097,29 @@
       return {...item, tier, qualityCode:quality.code || null, qualityName:quality.nom || null, owner:null};
     }
 
+    // Un objet précis, désigné par son type et son nom, à un tier donné et à sa qualité, sans propriétaire (marchands,
+    // Idan 2026-10-30). itemType : weapon, armor, potion ou un objet à bonus (boots, belt, amulet…). null s'il est inconnu.
+    function createItemByName(itemType, name, tier = 1) {
+      const holder = {id:"shop", reputation:0};
+      let item = null;
+      if (itemType === "weapon") {
+        item = weaponItem(holder, {weapon:name, category:skillByName.get(name)?.parent || null}, null);
+      } else if (itemType === "armor") {
+        const row = baseArmorRows.find(r => r.nom === name);
+        item = row ? createItemInstance(holder, {templateId:`armor:${row.code || normalizeKey(row.nom)}`, name:row.nom,
+          itemType:"armor", slot:"armor", category:row.type_armure, description:row.description}) : null;
+      } else if (itemType === "potion") {
+        const row = potionRows.find(r => r.nom === name);
+        return row ? {...potionItem(holder, row), owner:null} : null;
+      } else if (STAT_GEAR[itemType]) {
+        const row = STAT_GEAR[itemType].rows.find(r => r.nom === name);
+        item = row ? statGearItem(holder, itemType, row) : null;
+      }
+      if (!item) return null;
+      const quality = qualityForTier(tier);
+      return {...item, tier, qualityCode:quality.code || null, qualityName:quality.nom || null, owner:null};
+    }
+
     function createLootItem(character) {
       const kinds = Object.keys(STAT_GEAR).filter(kind => STAT_GEAR[kind].rows.length);
       if (!kinds.length) return null;
@@ -1621,6 +1644,7 @@
       createStartingHelmetStock,
       createStartingPotionStock,
       potionItem,
+      createItemByName,
       createLootItem,
       createChestItem,
       people: () => peopleRows.map(r => r.nom),

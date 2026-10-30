@@ -600,9 +600,8 @@ function gearKind(slot,item){
 function gearTooltip(item){
   const card=typeof renderItemCard==="function"?renderItemCard(item):"";
   return `<template class="item-card-template">${card||`<div class="item-card item-card--t${Number(item.tier)||1}">
-    <div class="item-card-names"><strong class="item-card-title">${esc(item.name)}</strong>
-    <span class="item-card-sub">${esc(item.category||item.itemType||"")}</span>
-    <span class="item-card-tier">T${item.tier} · ${esc(item.qualityName||"")}</span></div>
+    <div class="item-card-names"><strong class="item-card-title">${esc(itemPublicName(item))}</strong>
+    <span class="item-card-sub">${esc(item.category||item.itemType||"")}</span></div>
     ${item.description?`<p class="item-card-flavor">${esc(item.description)}</p>`:""}
   </div>`}</template>`;
 }
@@ -676,7 +675,7 @@ function renderEquipment(c) {
 
   const weaponRow = slot => {
     const item = itemIn(slot);
-    return `<div class="gear-row">${gearTile(slot,item)}<span class="gear-row-text"><small>${/_off$/.test(slot.id)?"Main secondaire":"Arme principale"}</small><strong>${item?esc(item.name):"—"}</strong>${item?`<em>T${item.tier} · ${esc(item.qualityName||"")}</em>`:""}</span></div>`;
+    return `<div class="gear-row">${gearTile(slot,item)}<span class="gear-row-text"><small>${/_off$/.test(slot.id)?"Main secondaire":"Arme principale"}</small><strong>${item?esc(itemPublicName(item)):"—"}</strong>${item&&itemBaseName(item)?`<em>${esc(itemBaseName(item))}</em>`:""}</span></div>`;
   };
   const spare = group("weapons").filter(s => /^weapon_set_2_/.test(s.id));
   const tiles = name => group(name).map(slot => gearTile(slot,itemIn(slot))).join("");
@@ -1156,10 +1155,10 @@ function renderCampTab(c){
 
 // Onglet Historique (Idan, 2026-10-24) : compteurs cumulés et journal du mercenaire, du plus récent au plus ancien
 // (game-core/history.js ; textes : character-sheet-copy.json, history).
+// Nom public de l'objet, jamais le tier (Idan, 2026-10-30).
 function historyItemLabel(item){
   if(!item) return "";
-  const title=typeof itemCardRules==="function"?itemCardRules()?.title(item):null;
-  return `${title||item.name} (T${item.tier})`;
+  return (typeof itemCardRules==="function"?itemCardRules()?.title(item):null)||item.name;
 }
 function historyPlural(n,one,many){ return `${fmt(n)} ${n>1?many:one}`; }
 function historyEntryText(c,entry){

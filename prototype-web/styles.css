@@ -2133,6 +2133,13 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .sheet-stat-tip em{display:block;font-style:normal}
 .sheet-stat-pop{right:-12px;width:290px}
 .sheet-stat-name:hover .sheet-stat-tip,.sheet-stat-name:focus .sheet-stat-tip{display:block}
+/* Infobulle d'un sort du grimoire : ce qu'il fait, puis ses chiffres pour ce mercenaire ; elle s'ouvre vers la gauche
+   (le grimoire est la colonne de droite) et laisse passer la souris. */
+.spell-tip{left:auto;right:0;width:300px;pointer-events:none}
+.spell-tip dl{display:grid;gap:2px;margin:8px 0 0;padding-top:6px;border-top:1px solid rgba(169,129,79,.4)}
+.spell-tip dl div{display:flex;justify-content:space-between;gap:12px}
+.spell-tip dt{color:#cdb38c}
+.spell-tip dd{margin:0;color:#f0c46a;font-weight:700}
 .sheet-stat-value:hover .sheet-stat-pop,.sheet-stat-value:focus-within .sheet-stat-pop{display:block}
 .sheet-stat-value:hover,.sheet-stat-value:focus-within{border-bottom-color:#f0c77f}
 /* Pont invisible entre la valeur et la bulle, pour pouvoir y cliquer. */

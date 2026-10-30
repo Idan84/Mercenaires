@@ -1365,6 +1365,32 @@ function spellIconHtml(spell) {
     + `${spell.cadre ? `<img src="assets/${esc(spell.cadre)}" alt="" loading="lazy">` : ""}</span>`;
 }
 
+// Infobulle d'un sort du grimoire (Idan, 2026-10-30 : « on doit savoir à qui il sert, combien de mana il utilise ») :
+// ce qu'il fait (spells.json, description : la cible et l'action y sont), puis ses chiffres pour ce mercenaire, avec sa maîtrise et son équipement :
+// mana, réussite, portée, effet, durée, zone — les mêmes que l'écran de combat (game-core/magic.js).
+const SPELL_EFFECT_LABELS = {soin:"Soins", soin_de_zone:"Soins", soin_sur_duree:"Soins par tour", degats:"Dégâts", degats_zone:"Dégâts",
+  degats_rebonds:"Dégâts", degats_paire:"Dégâts", degats_sans_resistance:"Dégâts", arme_elementaire:"Dégâts par coup"};
+function spellTip(c, row) {
+  if (!row?.code) return "";
+  const magic = typeof magicRules === "function" ? magicRules() : null;
+  const unit = {character:c, activeSet:1};
+  const line = (label, value) => `<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`;
+  const lines = [];
+  if (magic) {
+    const range = magic.range(unit, row.code), duration = magic.duration(unit, row.code), radius = magic.zoneRadius(unit, row.code);
+    const amount = SPELL_EFFECT_LABELS[row.effet] && magic.dice(row.code).count ? magic.effectRange(unit, row.code) : null;
+    const bonus = row.bonus_unite ? magic.bonus(unit, row.code) : 0;
+    lines.push(line("Mana", magic.manaCost(unit, row.code)), line("Réussite", `${Math.round(magic.castChance(unit, row.code).p)} %`));
+    if (range > 0) lines.push(line("Portée", `${range} case${range > 1 ? "s" : ""}`));
+    if (amount) lines.push(line(SPELL_EFFECT_LABELS[row.effet], `${amount.min} à ${amount.max} PV`));
+    if (bonus > 0) lines.push(line("Bonus", row.bonus_unite === "pourcentage" ? `+${bonus} %` : `+${bonus}`));
+    if (duration > 0) lines.push(line("Durée", `${duration} tour${duration > 1 ? "s" : ""}`));
+    if (radius > 0) lines.push(line("Zone", `${radius} case${radius > 1 ? "s" : ""} autour`));
+  }
+  return `<span class="sheet-stat-tip spell-tip" role="tooltip"><strong>${esc(row.nom)}</strong><span>${esc(row.ecole)}</span>`
+    + `<em>${esc(row.description || "")}</em>${lines.length ? `<dl>${lines.join("")}</dl>` : ""}</span>`;
+}
+
 // Grimoire : mercenary.spells = [{code, name, school, mastery}] (mastery : niveau du sort, 1 à 100).
 function renderCharacterSpellbook(c) {
   const spells = Array.isArray(c.spells) ? c.spells : [];
@@ -1372,7 +1398,7 @@ function renderCharacterSpellbook(c) {
   return `<section class="magic-grimoire"><h4>Grimoire</h4>${spells.length
     ? `<div class="magic-spells">${spells.map(spell => {
       const row = rows.find(s => s.code === spell.code || s.nom === (spell.name || spell.nom));
-      return `<div class="sheet-skill magic-spell">${spellIconHtml(row)}<span class="sheet-stat-name">${esc(row?.nom || spell.name || spell.nom || "Sort")}<small>${esc(row?.ecole || spell.school || "")}</small></span><span class="sheet-stat-value">${fmt(Number(spell.mastery))}</span></div>`;
+      return `<div class="sheet-skill magic-spell">${spellIconHtml(row)}<span class="sheet-stat-name"${row ? ' tabindex="0"' : ""}>${esc(row?.nom || spell.name || spell.nom || "Sort")}<small>${esc(row?.ecole || spell.school || "")}</small>${spellTip(c, row)}</span><span class="sheet-stat-value">${fmt(Number(spell.mastery))}</span></div>`;
     }).join("")}</div>`
     : `<p class="muted">Aucun sort connu.</p>`}</section>`;
 }

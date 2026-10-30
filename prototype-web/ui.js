@@ -1039,9 +1039,6 @@ function skillValue(m,group,name){
 function skillChildren(parent){
   return (game.referenceData?.skills?.rows||[]).filter(r=>r.parent===parent).map(r=>r.nom);
 }
-function skillDescription(name){
-  return (game.referenceData?.skills?.rows||[]).find(r=>r.nom===name)?.description||"";
-}
 // Cape de discrétion et gants de pièges (Idan, 2026-10-24) : ces compétences montrent la valeur avec l'équipement, en
 // vert, et son détail.
 // Chapeau du dresseur (Idan, 2026-10-25) : de même pour le Compagnon animal.
@@ -1055,23 +1052,49 @@ function skillValueCell(c,group,name){
   const value=skillValue(c,group,name);
   return `<span class="sheet-stat-value" tabindex="0">${fmt(value)}${comparePopover(c,value,m=>skillValue(m,group,name))}</span>`;
 }
-function skillName(name){
-  const description=skillDescription(name);
-  return `<span class="sheet-stat-name"${description?' tabindex="0"':""}>${esc(name)}${description?`<span class="sheet-stat-tip" role="tooltip"><strong>${esc(name)}</strong><em>${esc(description)}</em></span>`:""}</span>`;
+// Infobulle d'une compétence (Idan, 2026-10-30) : à quoi elle sert en jeu (character-sheet-copy.json, skills_usage),
+// jamais sa définition ; une compétence qui ne joue pas encore n'en a pas.
+function skillUsage(name){
+  return game.referenceData?.characterSheetCopy?.skills_usage?.[name]||"";
 }
-// Une compétence ; une catégorie qui a des armes se déplie (meilleures valeurs d'abord).
+function skillName(name){
+  const usage=skillUsage(name);
+  return `<span class="sheet-stat-name"${usage?' tabindex="0"':""}>${esc(name)}${usage?`<span class="sheet-stat-tip" role="tooltip"><strong>${esc(name)}</strong><em>${esc(usage)}</em></span>`:""}</span>`;
+}
+// Le niveau d'une compétence en fond de sa ligne, pour lire la fiche d'un coup d'œil (0 à 100).
+function skillLevelStyle(value){
+  const v=Math.max(0,Math.min(100,Number(value)||0));
+  return ` style="--skill-level:${v}%"`;
+}
+function skillChildRows(c,group,name){
+  return skillChildren(name).map(n=>({n,v:skillValue(c,group,n)})).filter(x=>Number.isFinite(x.v)).sort((a,b)=>b.v-a.v);
+}
+// Une compétence ; une catégorie qui a des armes (ou des animaux) ouvre sa fenêtre par-dessus l'onglet (Idan,
+// 2026-10-30 : plus d'accordéon, jamais de barre de défilement).
 function skillLine(c,group,name){
-  const children=skillChildren(name).map(n=>({n,v:skillValue(c,group,n)})).filter(x=>Number.isFinite(x.v)).sort((a,b)=>b.v-a.v);
-  if(!children.length) return `<div class="sheet-skill">${skillName(name)}${skillValueCell(c,group,name)}</div>`;
-  return `<details class="sheet-skill-group">
-    <summary class="sheet-skill"><span class="sheet-skill-chevron" aria-hidden="true">▸</span>${skillName(name)}${skillValueCell(c,group,name)}</summary>
-    <div class="sheet-skill-children">${children.map(x=>`<div class="sheet-skill sheet-skill--child">${skillName(x.n)}${skillValueCell(c,group,x.n)}</div>`).join("")}</div>
-  </details>`;
+  const value=skillValue(c,group,name);
+  if(!skillChildRows(c,group,name).length) return `<div class="sheet-skill"${skillLevelStyle(value)}>${skillName(name)}${skillValueCell(c,group,name)}</div>`;
+  return `<div class="sheet-skill sheet-skill--open" role="button" tabindex="0" data-skill-open="${esc(name)}" data-skill-group="${esc(group)}"${skillLevelStyle(value)}>
+    ${skillName(name)}<span class="sheet-skill-more" aria-hidden="true">›</span>${skillValueCell(c,group,name)}</div>`;
+}
+// La fenêtre d'une catégorie : sa valeur, à quoi elle sert, puis ses armes (ou animaux), les meilleures d'abord.
+function skillOverlay(c,group,name){
+  const rows=skillChildRows(c,group,name);
+  const usage=skillUsage(name);
+  return `<div class="sheet-skill-overlay">
+    <section class="sheet-skill-window" role="dialog" aria-label="${esc(name)}">
+      <header><h4>${esc(name)}</h4><b>${fmt(skillValue(c,group,name))}</b><button type="button" class="sheet-skill-close" aria-label="Fermer">×</button></header>
+      ${usage?`<p>${esc(usage)}</p>`:""}
+      <div class="sheet-skill-window-list">${rows.map(x=>`<div class="sheet-skill"${skillLevelStyle(x.v)}>${skillName(x.n)}${skillValueCell(c,group,x.n)}</div>`).join("")}</div>
+    </section>
+  </div>`;
+}
+function skillRows(c,names,group="martial"){
+  return names.filter(n=>Number.isFinite(skillValue(c,group,n)))
+    .sort((a,b)=>skillValue(c,group,b)-skillValue(c,group,a)).map(n=>skillLine(c,group,n)).join("");
 }
 function skillColumn(c,title,names){
-  const rows=names.filter(n=>Number.isFinite(skillValue(c,"martial",n)))
-    .sort((a,b)=>skillValue(c,"martial",b)-skillValue(c,"martial",a));
-  return `<section class="sheet-skill-column"><h4>${title}</h4>${rows.map(n=>skillLine(c,"martial",n)).join("")}</section>`;
+  return `<section class="sheet-skill-column"><h4>${title}</h4>${skillRows(c,names)}</section>`;
 }
 // Meilleure arme d'un ensemble de catégories : score = catégorie + arme précise (comme à la génération).
 function bestWeapon(c,categories){
@@ -1095,7 +1118,6 @@ function renderSkillsTab(c){
   const melee=bestWeapon(c,layout.corps_a_corps);
   const ranged=bestWeapon(c,layout.tir);
   const style=layout.styles_de_combat.map(n=>({n,v:skillValue(c,"martial",n)})).filter(x=>Number.isFinite(x.v)).sort((a,b)=>b.v-a.v)[0];
-  const animals=skillChildren(layout.animal).map(n=>({n,v:skillValue(c,"animal",n)})).filter(x=>Number.isFinite(x.v)).sort((a,b)=>b.v-a.v);
   const yes=name=>c.skills?.martial?.[name]===true||c.skills?.physiology?.[name]===true;
   const armors=layout.armures.map(a=>`<span class="sheet-armor ${yes(a.nom)?"is-yes":"is-no"}" title="${esc(a.nom)} : ${yes(a.nom)?"oui":"non"}">${statIcon(a.nom)}${esc(a.label)}</span>`).join("");
   const aptitudes=layout.aptitudes.filter(yes).map(n=>`<span class="sheet-armor is-yes">${esc(n)}</span>`).join("");
@@ -1110,20 +1132,18 @@ function renderSkillsTab(c){
         ${predilectionCard("Style de combat",style?.n,style?fmt(style.v):"")}
         ${predilectionCard("Arme de tir",ranged?.weapon,ranged?.category)}
       </div>
+      <!-- Trois colonnes, sans rien en dessous (Idan, 2026-10-30) : Discrétion sous le style de combat, monture et
+           armures sous le tir. -->
       <div class="sheet-skill-columns">
         ${skillColumn(c,"Corps à corps",layout.corps_a_corps)}
-        ${skillColumn(c,"Style de combat",layout.style)}
-        ${skillColumn(c,"Tir",layout.tir)}
+        <section class="sheet-skill-column"><h4>Style de combat</h4>${skillRows(c,layout.style)}
+          <h4>Discrétion et pièges</h4>${skillRows(c,layout.discretion_et_pieges)}</section>
+        <section class="sheet-skill-column"><h4>Tir</h4>${skillRows(c,layout.tir)}
+          <h4>Monture ou compagnon</h4>${skillLine(c,"animal",layout.animal)}
+          <h4>Armures</h4><div class="sheet-armors">${armors}</div>
+          ${aptitudes?`<h4>Aptitudes</h4><div class="sheet-armors">${aptitudes}</div>`:""}</section>
       </div>
-      <div class="sheet-armors"><small>Armures</small>${armors}${aptitudes?`<small>Aptitudes</small>${aptitudes}`:""}</div>
-      <div class="sheet-skills-bottom">
-        <section class="sheet-animal">
-          <h4>Monture ou compagnon</h4>
-          ${predilectionCard("Animal de prédilection",animals[0]?.n,animals[0]?fmt(animals[0].v):"")}
-          <div class="sheet-animal-skill">${skillLine(c,"animal",layout.animal)}</div>
-        </section>
-        ${skillColumn(c,"Discrétion et pièges",layout.discretion_et_pieges)}
-      </div>
+      <div class="sheet-skill-overlay-host" id="sheet-skill-overlay-host"></div>
     </div>
   </section>`;
 }
@@ -1136,7 +1156,8 @@ function renderCampTab(c){
   const rated=(group,names)=>names.map(n=>({n,v:skillValue(c,group,n)})).filter(x=>Number.isFinite(x.v)).sort((a,b)=>b.v-a.v);
   const camp=rated("camp",[...CAMP_SKILLS,"Artisanat"]);
   const crafts=rated("craft",skillChildren("Artisanat"));
-  const line=(group,x,child=false)=>`<div class="sheet-skill${child?" sheet-skill--child":""}">${skillName(x.n)}${skillValueCell(c,group,x.n)}</div>`;
+  const line=(group,x,child=false)=>`<div class="sheet-skill${child?" sheet-skill--child":""}"${skillLevelStyle(x.v)}>${skillName(x.n)}${skillValueCell(c,group,x.n)}</div>`;
+  const craft=rated("camp",["Artisanat"])[0];
   return `<section class="sheet-skills sheet-camp">
     <aside class="sheet-portrait">
       ${renderAvatar(c,{variant:"detail",kind:"full"})}
@@ -1149,7 +1170,11 @@ function renderCampTab(c){
       </div>
       <div class="sheet-skill-columns sheet-camp-columns">
         <section class="sheet-skill-column"><h4>Camp</h4>${rated("camp",CAMP_SKILLS).map(x=>line("camp",x)).join("")}</section>
-        <section class="sheet-skill-column"><h4>Artisanat</h4>${rated("camp",["Artisanat"]).map(x=>line("camp",x)).join("")}${crafts.map(x=>line("craft",x,true)).join("")}</section>
+        <!-- Artisanat (Idan, 2026-10-30) : la valeur globale en tête, ses métiers en dessous, comme des spécialités. -->
+        <section class="sheet-skill-column sheet-craft">
+          <h4>Artisanat${craft?`<b>${fmt(craft.v)}</b>`:""}</h4>
+          <div class="sheet-craft-list"><small>Métiers</small>${crafts.map(x=>line("craft",x,true)).join("")}</div>
+        </section>
       </div>
     </div>
   </section>`;
@@ -1490,6 +1515,20 @@ async function init() {
       game.sheetTab = btn.dataset.sheetTab;
       renderSheet();
       $("character-dialog").scrollTop = 0;
+    });
+    // Fenêtre d'une catégorie de compétences (Idan, 2026-10-30) : par-dessus l'onglet ; un clic à côté ou × la ferme.
+    $("dialog-content").addEventListener("click", event => {
+      const host = $("sheet-skill-overlay-host");
+      if (!host) return;
+      const open = event.target.closest("[data-skill-open]");
+      if (open && game.sheetCharacter) { host.innerHTML = skillOverlay(game.sheetCharacter, open.dataset.skillGroup, open.dataset.skillOpen); return; }
+      // × ou un clic n'importe où hors de la fenêtre la ferme.
+      if (host.innerHTML && (event.target.closest(".sheet-skill-close") || !event.target.closest(".sheet-skill-window"))) host.innerHTML = "";
+    });
+    $("dialog-content").addEventListener("keydown", event => {
+      if (!["Enter"," "].includes(event.key)) return;
+      const open = event.target.closest?.("[data-skill-open]");
+      if (open) { event.preventDefault(); open.click(); }
     });
     // Portrait du min ou du max d'une caractéristique : on passe à sa fiche, sur le même onglet.
     $("dialog-content").addEventListener("click", event => {

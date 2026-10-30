@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "character-sheet-copy",
-  "purpose": "Textes de l’onglet Profil de la fiche mercenaire (Idan, 2026-10-21) : phrases composées sur l’origine et l’ascendance. Aucun chiffre d’équilibrage. Phrases : « Issu(e) des [culture], il/elle était [origine] avant de rejoindre votre compagnie. » ; ascendance niveau 1 (Lointain ancêtre) « [Prénom] a du [sang …]. », niveau 2 (Lignée proche) « [Prénom] vient d’une famille [famille]. », niveau 3 (Bâtard) « [Prénom] est l’enfant [parent]. » Onglet Caractéristiques : stats (nom, groupe d’affichage physique / mental / resistance, usage = à quoi sert la valeur dans le jeu aujourd’hui, d’après les formules et le moteur ; description_referentiel = afficher aussi la première phrase de characteristics.json). Onglet Compétences : skills_layout range les compétences martiales en trois colonnes (corps à corps, style, tir), puis les armures, les autres aptitudes, l’animal et, à côté, discrétion et pièges ; Camp et Artisanat iront dans un autre onglet.",
+  "purpose": "Textes de l’onglet Profil de la fiche mercenaire (Idan, 2026-10-21) : phrases composées sur l’origine et l’ascendance. Aucun chiffre d’équilibrage. Phrases : « Issu(e) des [culture], il/elle était [origine] avant de rejoindre votre compagnie. » ; ascendance niveau 1 (Lointain ancêtre) « [Prénom] a du [sang …]. », niveau 2 (Lignée proche) « [Prénom] vient d’une famille [famille]. », niveau 3 (Bâtard) « [Prénom] est l’enfant [parent]. » Onglet Caractéristiques : stats (nom, groupe d’affichage physique / mental / resistance, usage = à quoi sert la valeur dans le jeu aujourd’hui, d’après les formules et le moteur ; description_referentiel = afficher aussi la première phrase de characteristics.json). Onglet Compétences : skills_layout range les compétences martiales en trois colonnes (corps à corps, style, tir), puis les armures, les autres aptitudes, l’animal et, à côté, discrétion et pièges ; Camp et Artisanat iront dans un autre onglet. Onglets Compétences et Camp : skills_usage, à quoi sert la compétence en jeu (Idan, 2026-10-30 : pas de définition) ; une compétence qui ne joue pas encore n’a pas d’infobulle.",
   "ancestries": [
     {
       "nom": "Sang divin",
@@ -370,5 +370,21 @@
       }
     },
     "empty": "Rien à raconter pour l’instant."
+  },
+  "skills_usage": {
+    "Lames longues": "Toucher et blesser avec ces armes, et les manier plus vite. S’ajoute à la maîtrise de chaque arme.",
+    "Lames courtes": "Toucher et blesser avec ces armes, et les manier plus vite. S’ajoute à la maîtrise de chaque arme.",
+    "Armes d’hast": "Toucher et blesser avec ces armes, et les manier plus vite. S’ajoute à la maîtrise de chaque arme.",
+    "Armes flexibles ou articulées": "Toucher et blesser avec ces armes, et les manier plus vite. S’ajoute à la maîtrise de chaque arme.",
+    "Haches": "Toucher et blesser avec ces armes, et les manier plus vite. S’ajoute à la maîtrise de chaque arme.",
+    "Bâtons": "Toucher et blesser avec ces armes, et les manier plus vite. S’ajoute à la maîtrise de chaque arme.",
+    "Armes contondantes": "Toucher et blesser avec ces armes, et les manier plus vite. S’ajoute à la maîtrise de chaque arme.",
+    "Armes de tir": "Toucher et blesser au tir avec ces armes. S’ajoute à la maîtrise de chaque arme.",
+    "Armes à feu": "Toucher et blesser au tir avec ces armes. S’ajoute à la maîtrise de chaque arme.",
+    "Boucliers": "Bloquer les coups avec un bouclier. Se combine avec la maîtrise du bouclier tenu.",
+    "Combat à deux armes": "Se battre avec une arme dans chaque main sans perdre en précision.",
+    "Combat à deux mains": "Avec une arme tenue à deux mains, blesse plus souvent.",
+    "Discrétion": "Rester caché au début du combat, puis frapper sans être vu.",
+    "Intendance": "Pour l’intendant : estimer la valeur des recrues de la Taverne, et appuyer les échanges d’équipement."
   }
 }

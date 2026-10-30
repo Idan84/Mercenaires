@@ -78,6 +78,7 @@ Même modèle que Soin rapide : **Effet = 10 × dés × (2 × Puissance magique 
 - **Soin de masse** : rayon 1 = 7 cases, 2 = 19, 3 = 37.
 - **Restitution** attend les morts-vivants pour servir en combat ; **Purge** retire le poison du Crachat de venin (école de la Transmutation).
 - **Icônes** (Idan, 2026-10-25) : un parchemin par sort sous un **cadre commun à l'école** (vert, lianes et émeraudes pour la Vie), superposés dans le jeu : barre de sorts du combat et grimoire de la fiche. Masters : `assets-src/Sorts/Vie/` ; `scripts/build-spells.sh` détoure le centre du cadre (accord d'Idan) et produit les versions du jeu.
+- **Infobulle du grimoire** (Idan, 2026-10-30 : « on doit savoir à qui il sert, combien de mana il utilise ») : au survol d'un sort de la fiche, sa description (la cible et l'action y sont), puis ses chiffres pour ce mercenaire, maîtrise et équipement compris, les mêmes qu'en combat : mana, réussite, portée, soins ou dégâts, bonus, durée, zone (`prototype-web/ui.js`, `spellTip` ; test : `tests/magic.test.js`).
 
 | | Débutant (Vie 31) | Recrue moyenne (Vie 56) | Expert (Vie 84, sort 100) |
 |---|---|---|---|

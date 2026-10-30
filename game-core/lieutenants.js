@@ -86,7 +86,8 @@
       if(m.id===state.company.intendantId) return no("L’intendant ne peut pas être lieutenant.");
       if(isLieutenant(state,m)) return no("Il est déjà lieutenant.");
       if(m.lieutenantRefused) return no("Il a refusé de devenir lieutenant, pour de bon.");
-      if((state.expeditions||[]).some(e=>e.memberIds.includes(m.id))) return no("Il est en mission.");
+      // Mission programmée (Idan, 2026-10-30) : encore au camp jusqu'au lendemain matin, on peut lui parler.
+      if((state.expeditions||[]).some(e=>e.memberIds.includes(m.id)&&e.status!=="scheduled")) return no("Il est en mission.");
       const block=blocker(state);
       return block?no(block.reason):{ok:true};
     }
@@ -159,7 +160,7 @@
 
     // ---- Demandes au lieutenant (étape 3) ----
     const geared=(m,name)=>statOf?Number(statOf(m,name))||0:stat(m,name);
-    const away=(state,m)=>(state.expeditions||[]).some(e=>e.memberIds.includes(m.id));
+    const away=(state,m)=>(state.expeditions||[]).some(e=>e.memberIds.includes(m.id)&&e.status!=="scheduled");
     // Jours avant de pouvoir refaire cette demande pour ce mercenaire (0 : tout de suite).
     function requestWait(state,target,type){
       const last=target?.lieutenantRequests?.[type];

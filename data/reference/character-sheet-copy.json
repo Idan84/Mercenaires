@@ -154,13 +154,13 @@
     {
       "nom": "Intelligence",
       "groupe": "mental",
-      "usage": "Au combat, aide à viser le point faible de l’armure adverse. Ajoute un peu d’initiative. À la Taverne, rend plus exigeant sur le salaire.",
+      "usage": "Réussir ses sorts. Au combat, aide aussi à viser le point faible de l’armure adverse et ajoute un peu d’initiative.",
       "description_referentiel": false
     },
     {
       "nom": "Volonté",
       "groupe": "mental",
-      "usage": "Tenir le moral : réussir ses tests de courage, reprendre un fuyard en main. Recharge le mana plus vite au camp. Ajoute un peu de points de vie. En fin de mission, aide à échapper à la mort.",
+      "usage": "Tenir le moral : réussir ses tests de courage, reprendre un fuyard en main. Recharge le mana plus vite au camp ; rend plus forts les coups qui frappent l’esprit, et en protège. Ajoute un peu de points de vie. En fin de mission, aide à échapper à la mort.",
       "description_referentiel": false
     },
     {
@@ -178,7 +178,7 @@
     {
       "nom": "Perception",
       "groupe": "mental",
-      "usage": "Aide à toucher, au corps à corps comme au tir, et à repérer les ennemis cachés. Au tir, c’est elle qui fait blesser. Inutile pour qui est frappé dans le dos.",
+      "usage": "Aide à toucher, au corps à corps, au tir et avec les sorts lancés comme une flèche, et à repérer les ennemis cachés. Au tir, c’est elle qui fait blesser. Inutile pour qui est frappé dans le dos.",
       "description_referentiel": false
     },
     {

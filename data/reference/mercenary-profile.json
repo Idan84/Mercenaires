@@ -451,8 +451,12 @@
       ]
     }
   ],
+  "sans_role": {
+    "description": "Sorts qui ne font pas un rôle : Purge (contre le poison seulement), Célérité (sur soi seulement). Tout sort de spells.json doit être rangé dans sorts, passer par sa créature (creatures) ou être ici : un sort nouveau oblige à choisir (tests/mercenary-profile.test.js).",
+    "sorts": ["purge", "celerity"]
+  },
   "sorts": {
-    "description": "Sous-catégorie de chaque sort (code de spells.json), une seule. Purge (contre le poison seulement) et Célérité (sur soi seulement) n'en ont pas. Les invocations et Résurrection passent par leur créature (creatures).",
+    "description": "Sous-catégorie de chaque sort (code de spells.json), une seule. Les invocations et Résurrection passent par leur créature (creatures).",
     "quick_heal": "healer.urgentiste",
     "deep_heal": "healer.urgentiste",
     "healing_water": "healer.urgentiste",

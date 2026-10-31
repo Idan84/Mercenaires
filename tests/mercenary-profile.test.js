@@ -33,6 +33,16 @@ for (const [code, key] of Object.entries(data.sorts)) {
   assert.ok(subKeys.has(key), code + " → " + key);
 }
 for (const [creature, key] of Object.entries(data.creatures)) if (creature !== "description") assert.ok(subKeys.has(key), creature + " → " + key);
+// Garde-fou (Idan, 2026-10-31) : chaque sort a un rôle (sorts, ou sa créature) ou est déclaré sans rôle ; chaque créature
+// invocable a le sien. Un sort ou une créature ajoutés sans ce choix bloquent la publication.
+const summonEffects = new Set(["invocation", "resurrection"]);
+for (const s of spells) {
+  const mapped = summonEffects.has(s.effet) ? Boolean(data.creatures[s.creature]) : Boolean(data.sorts[s.code]);
+  assert.ok(mapped || data.sans_role.sorts.includes(s.code),
+    "sort sans rôle : " + s.code + " (" + s.nom + ") — le ranger dans mercenary-profile.json (sorts, creatures) ou sans_role");
+}
+const creatures = reference.summonArchetypes.rows || reference.summonArchetypes;
+for (const c of creatures) assert.ok(data.creatures[c.code], "créature sans rôle : " + c.code + " — la ranger dans mercenary-profile.json (creatures)");
 const increasing = (key, steps) => {
   assert.equal(steps?.length, 14, key + " : 14 seuils");
   for (let i = 1; i < steps.length; i++) assert.ok(steps[i] > steps[i - 1], key + " : seuils croissants");

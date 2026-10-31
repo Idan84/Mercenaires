@@ -116,7 +116,7 @@ assert.doesNotMatch(html,/T1 ·/);
 assert.match(renderItemCard({itemType:"potion",name:"Fiole de poison",tier:1}),/corps à corps et tir/);
 
 // Écrans : l'onglet Potions de l'Intendance, la table chargée par le jeu.
-assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","quartermaster-ui.js"),"utf8"),/\["potion","Potions"\]/);
+assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","quartermaster-ui.js"),"utf8"),/\["potion","Potions","flask"\]/);
 assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","reference-data.js"),"utf8"),/potions: "potions\.json"/);
 
 // ——— Combat (étape B) : boire ou appliquer sur soi par une action rapide ; la fiole est consommée. ———

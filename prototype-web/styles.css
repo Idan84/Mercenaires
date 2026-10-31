@@ -1665,33 +1665,32 @@ body[data-screen="camp"][data-camp-scene="home"] .menu-back {
 .camp-placeholder-panel h2 { margin-bottom: 10px; }
 
 /* Intendance : stock de la compagnie par catégorie (Idan, 2026-10-23). */
-.quartermaster-panel .roster-count{flex:none}
-.stock-groups{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px;margin-top:16px;align-items:start}
-.stock-group{border:1px solid #6f5539;border-radius:12px;background:rgba(32,24,19,.72);padding:12px 14px}
-/* Onglets par grande catégorie, catégories en accordéon fermées par défaut (Idan, 2026-10-24). */
-.stock-tabs{display:flex;gap:6px;margin-top:16px;border-bottom:1px solid #6f5539;overflow-x:auto}
-.stock-tab{display:flex;align-items:baseline;gap:7px;padding:9px 16px;border:0;border-bottom:3px solid transparent;border-radius:6px 6px 0 0;background:transparent;color:#cbb99e;font:normal 17px Georgia,serif;white-space:nowrap;cursor:pointer}
+/* Intendance (Idan, 2026-10-31) : des icônes, pas du texte ; le nom et le détail au survol. */
+.quartermaster-head{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.quartermaster-head h2{margin:0}
+.stock-tabs{display:flex;gap:4px;margin-top:14px;border-bottom:1px solid #6f5539;overflow-x:auto}
+.stock-tab{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:54px;padding:8px 10px 6px;border:0;border-bottom:3px solid transparent;border-radius:8px 8px 0 0;background:transparent;color:#cbb99e;cursor:pointer}
+.stock-tab .gear-icon{width:26px;height:26px}
 .stock-tab small{font:700 12px system-ui,sans-serif;color:#a98d66}
-.stock-tab:hover,.stock-tab:focus-visible{background:#3a2b21;color:#ffdfaf;outline:none}
+.stock-tab:hover:not(:disabled),.stock-tab:focus-visible{background:#3a2b21;color:#ffdfaf;outline:none}
 .stock-tab.active{color:#ffdfad;border-bottom-color:#dbac6e}
-.stock-group summary{display:flex;align-items:center;gap:10px;list-style:none;cursor:pointer}
-.stock-group summary::-webkit-details-marker{display:none}
-.stock-group summary::after{content:"";flex:none;width:8px;height:8px;margin-right:4px;border-right:2px solid #c8a97c;border-bottom:2px solid #c8a97c;transform:rotate(45deg) translateY(-3px);transition:transform .15s}
-.stock-group[open] summary::after{transform:rotate(225deg) translate(-2px,-2px)}
-.stock-group summary:hover h3,.stock-group summary:focus-visible h3{color:#ffe7bd}
-.stock-group summary:focus-visible{outline:1px solid #dbac6e;outline-offset:4px;border-radius:4px}
-.stock-group h3{flex:1;display:flex;align-items:baseline;justify-content:space-between;margin:0;font:normal 18px Georgia,serif;color:#f4d9a6}
-.stock-group[open] summary{margin-bottom:10px}
-.stock-group h3 small{font:700 12px system-ui,sans-serif;color:#c8a97c}
-.stock-group ul{list-style:none;margin:0;padding:0;display:grid;gap:7px}
-.stock-row{display:grid;grid-template-columns:48px minmax(0,1fr) auto auto;align-items:center;gap:10px;color:#ecdcc2;font-size:14px}
-.stock-row .gear-tile{width:48px;height:48px;border-radius:10px}
-.stock-row .gear-icon{width:21px;height:21px}
-.stock-name{min-width:0;overflow-wrap:break-word}
-.stock-tier{font-size:12px;color:#bfa984;white-space:nowrap}
-.stock-tier--standard{color:#e0b47a}
-.stock-tier--luxury{color:#f6cd62;font-weight:700}
-.stock-count{min-width:34px;text-align:right;font-weight:700;color:#f2dbb8;white-space:nowrap}
+.stock-tab.active small{color:#ffdfad}
+.stock-tab:disabled{opacity:.3;cursor:default}
+.stock-groups{display:flex;flex-wrap:wrap;align-items:flex-start;gap:18px 34px;margin-top:16px}
+.stock-group h3{margin:0 0 8px;color:#c8a97c;font:700 12px Georgia,serif;letter-spacing:.1em;text-transform:uppercase}
+.stock-grid{display:flex;flex-wrap:wrap;gap:10px;margin:0;padding:0;list-style:none}
+.stock-tile{position:relative;border-radius:12px;cursor:pointer}
+.stock-tile .gear-tile{width:76px;height:76px;border-radius:12px}
+.stock-tile .gear-icon{width:30px;height:30px}
+.stock-tile:hover .gear-tile,.stock-tile:focus-visible .gear-tile{box-shadow:0 0 0 2px #dbac6e}
+.stock-tile:focus-visible{outline:none}
+.stock-count{position:absolute;right:-6px;bottom:-6px;min-width:24px;padding:2px 6px;border:1px solid #c9a15f;border-radius:999px;background:#2a1e17;color:#ffe1ac;font:700 12px system-ui,sans-serif;text-align:center;pointer-events:none}
+.stock-empty{margin:24px 0;color:#a98d66;font:italic 16px Georgia,serif;text-align:center}
+/* Fioles : la couleur dit le contenu. */
+.gear-tile--potion .gear-icon{width:60%;height:60%}
+.gear-tile.gear-tile--healing_potion{color:#e0695b;border-color:#a8473c}
+.gear-tile.gear-tile--mana_potion{color:#6c9ce6;border-color:#46679b}
+.gear-tile.gear-tile--poison_vial{color:#7dbf5f;border-color:#4f7d3a}
 
 .camp-view-enter {
   animation: camp-view-enter .26s ease-out both;
@@ -2329,8 +2328,6 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 #dialog-content .gear-tile[data-slot]{cursor:pointer}
 #dialog-content .gear-tile[data-slot]:hover,#dialog-content .gear-tile[data-slot]:focus-visible{border-color:#f0c77f;box-shadow:0 0 0 2px #f0c77f66,0 4px 12px rgba(0,0,0,.35)}
 .gear-hint{margin:0;color:#9f8562;font:italic 12px Georgia,serif}
-.stock-row[data-stock-deal]{margin:0 -6px;padding:3px 6px;border-radius:9px;cursor:pointer;transition:background .15s}
-.stock-row[data-stock-deal]:hover,.stock-row[data-stock-deal]:focus-visible{background:#3a2b21;outline:none}
 .deal-menu{position:fixed;z-index:1000;display:none;width:320px;max-height:min(70vh,560px);overflow-y:auto;padding:12px;border:1px solid #b58c53;border-radius:12px;
   background:linear-gradient(180deg,#3a2a1e,#1b130e);box-shadow:0 18px 44px #000c;color:#ead9bd;font:14px Georgia,serif;scrollbar-color:#71583e transparent}
 .deal-menu.is-open{display:grid;gap:8px}
@@ -2385,6 +2382,16 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .steward-pick small{color:#a98d66;font:italic 12px Georgia,serif}
 .steward-pick:hover:not(:disabled),.steward-pick:focus-visible{border-color:#dbac6e;background:#4a3424;color:#ffe1ac;outline:none}
 .steward-pick:disabled{opacity:.55;cursor:not-allowed}
+/* En haut de l'Intendance (Idan, 2026-10-31) : l'intendant compact, la liste des candidats en menu déroulant. */
+.quartermaster-head .steward-panel{position:relative;margin:0}
+.quartermaster-head .steward-card{gap:10px;padding:6px 8px 6px 6px}
+.quartermaster-head .steward-face .avatar-frame{width:46px;height:46px}
+.quartermaster-head .steward-info strong{font-size:17px}
+.quartermaster-head .steward-offer{padding:0;border:0;background:none}
+.quartermaster-head .steward-offer summary{list-style:none}
+.quartermaster-head .steward-offer summary::-webkit-details-marker{display:none}
+.quartermaster-head .steward-picks{position:absolute;right:0;top:calc(100% + 6px);z-index:30;width:min(560px,80vw);max-height:60vh;overflow:auto;margin:0;padding:10px;border:1px solid #9a7a4f;border-radius:12px;background:#21170f;box-shadow:0 12px 30px #000a}
+.steward-pick b{min-width:0;font-weight:normal;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 /* Garde du corps (Idan, 2026-10-25) : l'offre au tableau de la Taverne, la fenêtre du retour. */
 .contract-card--bodyguard{margin-top:16px}
 .contract-pitch{margin:0 0 10px;color:#e9d9c0;font:italic 16px/1.45 Georgia,serif}

@@ -520,11 +520,13 @@
       "columns": [
         "id",
         "nom",
+        "sexe",
+        "portrait",
         "peuple",
         "culture",
         "alignement",
         "poids",
-        "stock"
+        "vend"
       ]
     },
     {

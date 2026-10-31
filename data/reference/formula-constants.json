@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 226,
+  "row_count": 245,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -1840,6 +1840,158 @@
       "description": "Effet de l’affinité marchand ↔ capitaine sur le prix : ×(1 − facteur × Affinité / 100), soit ±20 % (Idan, 2026-10-30).",
       "formule": "Marchands",
       "valeur": 0.2,
+      "version": "V1"
+    },
+    {
+      "nom": "Marchand — articles par passage",
+      "code": "merchants.stock.size",
+      "description": "Nombre d’articles sur l’étal à chaque passage, pour tous les marchands, chacun tiré au hasard dans la liste du marchand (Idan, 2026-10-31).",
+      "formule": "Marchands",
+      "valeur": 10,
+      "version": "V1"
+    },
+    {
+      "nom": "Marchand — poids du T2 (base)",
+      "code": "merchants.stock.tier_2_base",
+      "description": "Poids d’un tier sur l’étal = base + par niveau × niveau d’étoiles de la renommée (1 à 15) ; T2 : 70 − 4 × niveau (Idan, 2026-10-31).",
+      "formule": "Marchands",
+      "valeur": 70,
+      "version": "V1"
+    },
+    {
+      "nom": "Marchand — poids du T2 (par niveau)",
+      "code": "merchants.stock.tier_2_per_level",
+      "description": "Poids du T2 retiré par niveau d’étoiles de la renommée (Idan, 2026-10-31).",
+      "formule": "Marchands",
+      "valeur": -4,
+      "version": "V1"
+    },
+    {
+      "nom": "Marchand — poids du T3 (base)",
+      "code": "merchants.stock.tier_3_base",
+      "description": "T3 : 25 + 2 × niveau d’étoiles de la renommée (Idan, 2026-10-31).",
+      "formule": "Marchands",
+      "valeur": 25,
+      "version": "V1"
+    },
+    {
+      "nom": "Marchand — poids du T3 (par niveau)",
+      "code": "merchants.stock.tier_3_per_level",
+      "description": "Poids du T3 ajouté par niveau d’étoiles de la renommée (Idan, 2026-10-31).",
+      "formule": "Marchands",
+      "valeur": 2,
+      "version": "V1"
+    },
+    {
+      "nom": "Marchand — poids du T4 (base)",
+      "code": "merchants.stock.tier_4_base",
+      "description": "T4 : 5 + 2 × niveau d’étoiles de la renommée ; à 2 étoiles de bronze : T2 62 %, T3 29 %, T4 9 % (Idan, 2026-10-31).",
+      "formule": "Marchands",
+      "valeur": 5,
+      "version": "V1"
+    },
+    {
+      "nom": "Marchand — poids du T4 (par niveau)",
+      "code": "merchants.stock.tier_4_per_level",
+      "description": "Poids du T4 ajouté par niveau d’étoiles de la renommée (Idan, 2026-10-31).",
+      "formule": "Marchands",
+      "valeur": 2,
+      "version": "V1"
+    },
+    {
+      "nom": "Marchand — rachat de base",
+      "code": "merchants.buyback.base",
+      "description": "Prix de rachat (vous vendez) = valeur cachée × cette base × (1 + facteur × Affinité / 100) × (1 + bonus de l’intendant) × modificateurs (Idan, 2026-10-31).",
+      "formule": "Marchands",
+      "valeur": 0.8,
+      "version": "V1"
+    },
+    {
+      "nom": "Marchand — rachat, poids de l’affinité",
+      "code": "merchants.buyback.affinity_factor",
+      "description": "Effet de l’affinité sur le rachat : × (1 + facteur × Affinité / 100), soit ±20 % (Idan, 2026-10-31).",
+      "formule": "Marchands",
+      "valeur": 0.2,
+      "version": "V1"
+    },
+    {
+      "nom": "Marchand — rachat hors de sa liste",
+      "code": "merchants.buyback.off_specialty",
+      "description": "Un objet qu’il ne vend pas : rachat × cette valeur (« beaucoup moins cher ») (Idan, 2026-10-31).",
+      "formule": "Marchands",
+      "valeur": 0.4,
+      "version": "V1"
+    },
+    {
+      "nom": "Marchand — rachat par quantité",
+      "code": "merchants.buyback.quantity_decay",
+      "description": "Chaque exemplaire du même objet au même tier vendu pendant le même passage rapporte × cette valeur par exemplaire déjà vendu (Idan, 2026-10-31).",
+      "formule": "Marchands",
+      "valeur": 0.85,
+      "version": "V1"
+    },
+    {
+      "nom": "Marchand — rareté T3",
+      "code": "merchants.buyback.rarity_tier_3",
+      "description": "Bonus de rachat d’un T3 de sa liste pour une compagnie à 1 étoile de bronze ; il diminue jusqu’à 0 à 5 étoiles d’or (Idan, 2026-10-31).",
+      "formule": "Marchands",
+      "valeur": 0.2,
+      "version": "V1"
+    },
+    {
+      "nom": "Marchand — rareté T4",
+      "code": "merchants.buyback.rarity_tier_4",
+      "description": "Bonus de rachat d’un T4 de sa liste pour une compagnie à 1 étoile de bronze ; il diminue jusqu’à 0 à 5 étoiles d’or (Idan, 2026-10-31).",
+      "formule": "Marchands",
+      "valeur": 0.4,
+      "version": "V1"
+    },
+    {
+      "nom": "Marchand — plafond du rachat",
+      "code": "merchants.buyback.cap",
+      "description": "Il ne rachète jamais plus que cette part du prix qu’il demanderait lui-même : pas d’aller-retour gagnant chez le même marchand (Idan, 2026-10-31).",
+      "formule": "Marchands",
+      "valeur": 0.9,
+      "version": "V1"
+    },
+    {
+      "nom": "Marchand — affinité par achat",
+      "code": "merchants.affinity.per_purchase",
+      "description": "Affinité acquise avec le marchand par article acheté (Idan, 2026-10-31).",
+      "formule": "Marchands",
+      "valeur": 2,
+      "version": "V1"
+    },
+    {
+      "nom": "Marchand — affinité, passage sans affaire",
+      "code": "merchants.affinity.idle_visit",
+      "description": "Affinité acquise quand il repart sans avoir rien vendu ni acheté (Idan, 2026-10-31).",
+      "formule": "Marchands",
+      "valeur": -3,
+      "version": "V1"
+    },
+    {
+      "nom": "Marchand — intendant, affinité minimale",
+      "code": "merchants.steward.min_affinity",
+      "description": "L’intendant aide si l’affinité du marchand avec lui est d’au moins cette valeur (Idan, 2026-10-31).",
+      "formule": "Marchands",
+      "valeur": 20,
+      "version": "V1"
+    },
+    {
+      "nom": "Marchand — intendant, tranche d’Intendance",
+      "code": "merchants.steward.skill_step",
+      "description": "Bonus de l’intendant : par tranche de cette valeur de sa compétence Intendance (Idan, 2026-10-31).",
+      "formule": "Marchands",
+      "valeur": 10,
+      "version": "V1"
+    },
+    {
+      "nom": "Marchand — intendant, bonus par tranche",
+      "code": "merchants.steward.per_step",
+      "description": "Bonus de l’intendant par tranche : −1 % sur vos achats, +1 % sur vos ventes, donc jusqu’à 10 % (Idan, 2026-10-31).",
+      "formule": "Marchands",
+      "valeur": 0.01,
       "version": "V1"
     }
   ]

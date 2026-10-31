@@ -49,6 +49,7 @@ const REFERENCE_FILES = {
   lieutenantDialogue: "lieutenant-dialogue.json",
   bodyguardMissions: "bodyguard-missions.json",
   merchants: "merchants.json",
+  mercenaryProfile: "mercenary-profile.json",
   spells: "spells.json",
   itemTitles: "item-titles.json",
   renamedNames: "renamed-names.json"

@@ -35,8 +35,16 @@
       };
     }
 
+    // Un niveau donné (1 à 15), pour les étoiles qui ne viennent pas d'une valeur de réputation (évaluation du
+    // mercenaire, mercenary-profile.js).
+    function byLevel(level){
+      const row=rows.find(r=>r.niveau===level);
+      return row?levelFor(row.reputation_min,"reputation_min"):null;
+    }
+
     return {
       rows,
+      byLevel,
       personal:reputation=>levelFor(reputation,"reputation_min"),
       company:renown=>levelFor(renown,"renommee_min")
     };

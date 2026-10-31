@@ -2479,7 +2479,25 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .magic-favorite.is-unknown{opacity:.45;filter:grayscale(1)}
 /* Écrans bas (720 px) : la fiche tient sans barre de défilement (Idan, 2026-10-30). */
 @media(max-height:760px) and (min-width:861px){.sheet-portrait .avatar-frame{max-width:200px}}
+/* 1280 × 720 : la colonne de droite du capitaine (carte de son aura) tient aussi sans défiler. */
+@media(max-height:760px) and (min-width:861px){.sheet-profile-main{gap:8px}.sheet-origins{margin-bottom:0}}
 /* La silhouette est carrée : sa largeur suit la hauteur disponible (width:auto l'écrasait à 0, rien ne la remplit). */
 @media(max-height:760px) and (min-width:1101px){.equipment-mannequin.gear-doll{width:min(100%,calc(92vh - 190px));justify-self:center}}
 /* Petits écrans (1280 × 720) : la colonne Dégâts, Set de rechange et Monture tient sans défiler. */
 @media(max-height:760px) and (min-width:861px){.gear-side{gap:8px}.gear-card{gap:6px;padding:9px 12px}.gear-damage-table td,.gear-damage-table tbody th{padding-top:2px;padding-bottom:2px}}
+/* Évaluation du mercenaire (Idan, 2026-10-31) : titre et étoiles au-dessus du portrait. */
+.sheet-evaluation{display:grid;gap:6px;margin:0;padding:9px 10px;border:1px solid #71583e;border-radius:10px;background:#2e231c}
+.sheet-eval-title{margin:0;color:#ffe1ac;font:700 16px/1.2 Georgia,serif}
+.sheet-eval-list{display:grid;gap:3px;margin:0;padding:0;list-style:none}
+.sheet-eval-row{display:flex;align-items:center;justify-content:space-between;gap:8px;color:#e6d3b3;font-size:12px;line-height:1.3}
+.sheet-eval-row span:first-child{min-width:0}
+.sheet-eval-row--weak span:first-child{color:#e8a08f}
+.sheet-eval-row--hindrance span:first-child{color:#e3b866}
+.sheet-eval-row .rep-stars{flex:none;font-size:12px;white-space:nowrap}
+.sheet-eval-row small{display:block;color:#bb9a6e;font-size:11px}
+/* Avec l'évaluation au-dessus, la colonne a la hauteur de la fiche (celle de la boîte moins son en-tête et ses marges) :
+   le portrait prend ce qui reste, en gardant ses proportions ; la fiche tient sans défiler. */
+@media(min-width:861px){
+  .sheet-portrait:has(.sheet-evaluation){grid-template-rows:auto minmax(0,1fr) auto;height:calc(min(800px,90vh) - 176px)}
+  .sheet-portrait:has(.sheet-evaluation) .avatar-frame{width:auto;height:100%;max-width:none;max-height:445px;justify-self:start}
+}

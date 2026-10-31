@@ -2477,7 +2477,7 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .day-news-money .day-news-svg{color:#e7c06a}
 .day-news-money b{color:#ffe1ac}
 .day-news-money b.is-negative{color:#ff9d86}
-.day-news-list[hidden]{display:none}
+.day-news-calm{padding:6px 0;color:#cdb38c;font:italic 16px Georgia,serif;text-align:center}
 /* Mes mercenaires (Idan, 2026-10-30) : « Les mercenaires de » + la compagnie, cliquable vers Ma Compagnie. */
 .roster-title{margin:0}
 .roster-company-link{padding:0;border:0;background:none;color:inherit;font:inherit;letter-spacing:inherit;text-decoration:underline;text-decoration-color:#b58c5366;text-underline-offset:5px;cursor:pointer}

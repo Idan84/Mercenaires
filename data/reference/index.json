@@ -530,15 +530,26 @@
     {
       "name": "mercenary-profile",
       "file": "mercenary-profile.json",
-      "rows": 17,
+      "rows": 10,
       "columns": [
         "etalon",
-        "facettes",
-        "groupes",
         "selection",
-        "titres",
-        "mesure",
-        "seuils"
+        "sources",
+        "categories",
+        "sans_role",
+        "sorts",
+        "creatures",
+        "seuils",
+        "mesure"
+      ]
+    },
+    {
+      "name": "day-news",
+      "file": "day-news.json",
+      "rows": 2,
+      "columns": [
+        "calme",
+        "taverne"
       ]
     }
   ]

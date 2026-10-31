@@ -2,7 +2,8 @@
 
 // Notification du jour (Idan, 2026-10-31 : « l'essentiel, et joliment ») : à chaque nouvelle journée, ce qui compte,
 // de l'urgent au reste — escouade arrivée, contrat perdu, caisse dans le rouge ; retours et départs ; guérisons ;
-// Taverne ; marchand ; travaux du camp ; l'argent en pied. Une ligne n'apparaît que si la chose a eu lieu. Construite à
+// note du tavernier ; marchand ; travaux du camp ; l'argent en pied. Une ligne n'apparaît que si la chose a eu lieu ; un
+// jour sans rien : « Rien à signaler aujourd'hui ». Phrases : data/reference/day-news.json. Construite à
 // partir du rapport de la journée (game-core/campaign.js, advanceTime) ; le journal de la barre du bas garde le détail.
 const DAY_ICONS={
   alert:'<path d="M12 3.5 2.8 19.5h18.4z"/><path d="M12 10v4.2M12 16.8h.01" stroke-width="2.4"/>',
@@ -17,6 +18,11 @@ const DAY_ICONS={
 };
 function dayIcon(kind){
   return `<svg class="day-news-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${DAY_ICONS[kind]||""}</svg>`;
+}
+// Une phrase de day-news.json, la même pour une journée donnée ; ses variantes s'ajoutent dans les données.
+function dayPhrase(key,day){
+  const lines=game.referenceData?.dayNews?.[key]||[];
+  return typeof variantPhrase==="function"?variantPhrase(lines,key+"|"+day):lines[0]||"";
 }
 const dayFemale=m=>String(m?.sex||"").trim().toLowerCase().startsWith("f");
 const dayPlural=(n,one,many)=>n>1?many:one;
@@ -50,11 +56,9 @@ function dayDigest(report){
   const rested=(report.recovered||[]).filter(r=>r.kind!=="wounded").map(r=>r.mercenary);
   if(healed.length) entries.push({tone:"good",icon:"heal",text:healed.length>1?"Guéris":dayFemale(healed[0])?"Guérie":"Guéri",faces:healed});
   if(rested.length) entries.push({icon:"heal",text:rested.length>1?"Reposés":dayFemale(rested[0])?"Reposée":"Reposé",faces:rested});
-  // La Taverne et le marchand.
-  const arrivals=(report.tavern?.arrivals||[]).map(a=>a.mercenary);
-  if(arrivals.length) entries.push({icon:"tavern",text:arrivals.length>1?"Nouveaux candidats à la Taverne":"Nouveau candidat à la Taverne",faces:arrivals,go:"tavern"});
-  const gone=(report.tavern?.departures||[]).map(d=>d.candidate.mercenary);
-  if(gone.length) entries.push({tone:"muted",icon:"tavern",text:"Engagés ailleurs",faces:gone});
+  // La Taverne (Idan, 2026-10-31) : une note du tavernier quand de nouvelles têtes arrivent ; les départs ne comptent pas.
+  if((report.tavern?.arrivals||[]).length) entries.push({icon:"tavern",text:dayPhrase("taverne",c.day),go:"tavern"});
+  // Le marchand.
   const merchant=report.merchant?.arrived;
   if(merchant) entries.push({icon:"merchant",text:(dayFemale(merchant)?"Marchande":"Marchand")+" au camp : "+merchant.name,detail:"Jusqu’à demain matin",go:"merchant"});
   // Les travaux du camp.
@@ -84,8 +88,8 @@ function showDayNews(day,report){
   $("day-news-title").textContent=date?`${date.weekday} ${date.dayOfMonth} ${date.month}`:"Jour "+day;
   $("day-news-sub").textContent=date?`Jour ${day} · An ${date.year}`:"";
   const entries=dayDigest(report);
-  $("day-news-list").innerHTML=entries.map(renderDayEntry).join("");
-  $("day-news-list").hidden=!entries.length;
+  // Un jour calme (Idan, 2026-10-31) : la fenêtre s'ouvre quand même, « Rien à signaler aujourd'hui ».
+  $("day-news-list").innerHTML=entries.length?entries.map(renderDayEntry).join(""):`<li class="day-news-calm">${esc(dayPhrase("calme",day))}</li>`;
   const salaries=report?.salaries?.total||0,gold=Math.round(game.campaign.company.gold);
   $("day-news-money").innerHTML=`${dayIcon("gold")}<span>${salaries?`Salaires <b>−${fmt(salaries)} PO</b> · `:""}Caisse <b${gold<0?' class="is-negative"':""}>${fmt(gold)} PO</b></span>`;
   if(dialog.open) dialog.close();

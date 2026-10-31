@@ -12,7 +12,8 @@ const esc = value => String(value ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt
 const nodes = {};
 const node = id => nodes[id] || (nodes[id] = {innerHTML:"", textContent:"", hidden:false, open:false, showModal(){ this.open = true; }, close(){ this.open = false; }});
 const brakka = {id:2, name:"Brakka Os"}, lia = {id:3, name:"Lia Vent", sex:"Femme"};
-const game = {campaign:{day:4, company:{gold:850, roster:[brakka, lia]}}, referenceData:null};
+const phrases = JSON.parse(fs.readFileSync(path.join(root, "data/reference/day-news.json"), "utf8"));
+const game = {campaign:{day:4, company:{gold:850, roster:[brakka, lia]}}, referenceData:{dayNews:phrases}};
 const ui = new Function("game","$","esc","fmt","renderAvatar","campaignCalendarDate","openCampScene",
   js + "\nreturn {dayDigest,showDayNews};")(game, node, esc, String, m => `<avatar ${m.id}>`, null, null);
 
@@ -26,8 +27,11 @@ const report = {
   missionTaken:null, built:null
 };
 const entries = ui.dayDigest(report);
-assert.deepEqual(entries.map(e => e.text), ["Escouade arrivée au camp gobelin de Brumecendre", "Guérie", "Nouveau candidat à la Taverne"],
-  "l'urgent d'abord ; rien pour le marchand absent ni les départs de la Taverne");
+assert.deepEqual(entries.map(e => e.text), ["Escouade arrivée au camp gobelin de Brumecendre", "Guérie",
+  "Le tavernier vous fait parvenir une note : de nouvelles têtes sont en train de boire une bière."],
+  "l'urgent d'abord ; la note du tavernier (Idan) ; rien pour le marchand absent");
+assert.equal(ui.dayDigest({...report, tavern:{arrivals:[], departures:[{candidate:{mercenary:{id:8, name:"Sven"}}}]}}).some(e => e.icon === "tavern"), false,
+  "les départs de la Taverne ne font pas de ligne");
 assert.equal(entries[0].tone, "alert");
 assert.equal(entries[2].go, "tavern", "« Voir » mène à la Taverne");
 
@@ -47,9 +51,10 @@ assert.match(list, /<avatar 2>/);
 assert.match(list, /data-day-news-go="tavern">Voir</);
 assert.match(node("day-news-money").innerHTML, /Salaires <b>−70 PO<\/b> · Caisse <b>850 PO<\/b>/);
 assert.equal(node("day-news-dialog").open, true);
-// Une journée sans rien : pas de liste vide, seulement la date et l'argent.
+// Une journée sans rien (Idan, 2026-10-31) : la fenêtre s'ouvre quand même, « Rien à signaler aujourd'hui ».
 ui.showDayNews(5, {salaries:{total:0}, tavern:{arrivals:[], departures:[]}, recovered:[], expeditions:{}});
-assert.equal(node("day-news-list").hidden, true);
+assert.match(node("day-news-list").innerHTML, /<li class="day-news-calm">Rien à signaler aujourd’hui\.<\/li>/);
+assert.ok(phrases.calme.length >= 1 && phrases.taverne.length >= 1, "les variantes vivent dans day-news.json");
 
 assert.match(html, /<script src="day-news-ui\.js"><\/script>/);
 assert.doesNotMatch(html, /Aucune nouvelle\./);

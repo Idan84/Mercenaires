@@ -387,7 +387,22 @@ Simulation (6 000 recrues, tous les sorts supposés écrits) : 48 % ne connaisse
 
 L'école de culture n'est **pas garantie** à la création : une recrue sur deux des cultures que la génération ne pousse pas dans leur école (Cités libres, Royaumes du Soleil Levant, Steppes désertiques, Ogres des steppes, Nains du chaos, Orcs des villes, Orcs des steppes, Caravanes de ferrailleurs) n'a pas l'école, et sa chance au tirage de culture est presque nulle. Voulu : « tout le monde ne doit pas être mage » (Idan, 2026-10-25).
 
-Plus tard : une **école de magie** à construire au camp et des **manuels** à trouver pour apprendre les autres sorts.
+**Manuels de sorts** (Idan, 2026-10-31 : « les manuels des sorts doivent être en vente ; c'est ce qui permettra de les
+apprendre » ; modalités de JC3) :
+
+- **Un manuel par sort** de `spells.json` : les sorts à venir ont leur manuel sans rien ajouter. Objet « Manuel : <sort> »,
+  rangé à l'Intendance dans l'onglet **Manuels**, par école ; sa case montre le parchemin du sort, sa carte son école et sa
+  description. Pas de tier ni de qualité.
+- **Valeur** selon le palier du sort : Novice 300 PO, Adepte 600, Expert 1 200 (`economy.manual_value.*`) ; le marchand en
+  demande × 1,5 selon l'affinité, comme pour un objet (doc 18).
+- **En vente** chez les marchands des cultures de l'école (doc 18) : une ligne « manuels de l'école » ; chaque article est un
+  manuel tiré dans l'école.
+- **Apprendre** : à l'Intendance, « Apprendre à… » ; un membre de la compagnie présent au camp lit le manuel et connaît le
+  sort **au niveau 1**, comme un sort de création ; le manuel est consommé. Pas de prérequis d'école (ci-dessus) ; on
+  n'apprend pas un sort déjà connu ; pas pendant une mission (une mission programmée laisse encore la soirée).
+- Code : `game-core/spell-manuals.js` ; tests : `tests/spell-manuals.test.js`.
+
+Plus tard : une **école de magie** à construire au camp.
 
 ### Mise en place
 

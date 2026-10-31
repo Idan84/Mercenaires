@@ -23,6 +23,11 @@
       helmet:byName(reference?.helmets)};
     // Potions et fioles (Idan, 2026-10-29) : sans tier ni qualité, la valeur est leur prix de base.
     const potions=byName(reference?.potions);
+    // Manuels de sorts (Idan, 2026-10-31 ; spell-manuals.js) : la valeur dépend du palier du sort
+    // (economy.manual_value.<palier>), sans tier ni qualité.
+    const spells=rows(reference?.spells);
+    const paliers=new Map(spells.map(s=>[s.code,s.palier]));
+    const slug=x=>String(x||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"_");
     const qualities=new Map(rows(reference?.itemQualities).map(r=>[r.code,r]));
     const constants=new Map(rows(reference?.formulaConstants).map(r=>[r.code,Number(r.valeur)]));
 
@@ -46,14 +51,22 @@
       return Number.isFinite(value)&&value>0?value:1;
     }
 
+    function manualValue(item){
+      const palier=paliers.get(item?.spellCode)||spells.find(s=>"Manuel : "+s.nom===item?.name)?.palier;
+      const value=constants.get(`economy.manual_value.${slug(palier)}`);
+      return Number.isFinite(value)?value:null;
+    }
+
     // Prix de base de l'objet, ou null s'il n'a pas de modèle connu (casques à venir, objets de quête…).
     function basePrice(item){
+      if(item?.itemType==="manual") return manualValue(item);
       const price=Number(template(item)?.prix_base);
       return Number.isFinite(price)?price:null;
     }
 
     // Valeur en pièces d'or, ou null si l'objet n'a pas de prix de base.
     function value(item){
+      if(item?.itemType==="manual") return manualValue(item);
       const base=basePrice(item);
       return base===null?null:Math.round(base*tierMultiplier(item.tier)*qualityMultiplier(item));
     }

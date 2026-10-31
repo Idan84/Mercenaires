@@ -1111,6 +1111,12 @@
       } else if (itemType === "potion") {
         const row = potionRows.find(r => r.nom === name);
         return row ? {...potionItem(holder, row), owner:null} : null;
+      } else if (itemType === "manual") {
+        // Manuel de sort (Idan, 2026-10-31 ; spell-manuals.js) : sans tier ni qualité, sa catégorie est son école.
+        const spell = spellRows.find(r => r.code === name || r.nom === name || "Manuel : " + r.nom === name);
+        return spell ? {id:makeItemId(holder, "manual"), templateId:`manual:${spell.code}`, name:`Manuel : ${spell.nom}`,
+          itemType:"manual", slot:null, category:spell.ecole, spellCode:spell.code, school:spell.ecole, palier:spell.palier,
+          description:spell.description || null, owner:null} : null;
       } else if (STAT_GEAR[itemType]) {
         const row = STAT_GEAR[itemType].rows.find(r => r.nom === name);
         item = row ? statGearItem(holder, itemType, row) : null;

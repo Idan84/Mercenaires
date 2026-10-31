@@ -44,7 +44,7 @@
       "key": "repliques"
     }
   ],
-  "row_count": 5,
+  "row_count": 32,
   "rows": [
     {
       "id": "thorval-poudredefeu",
@@ -71,6 +71,18 @@
         {
           "type": "weapon",
           "objet": "Arquebuse"
+        },
+        {
+          "type": "weapon",
+          "objet": "Arbalète"
+        },
+        {
+          "type": "ring",
+          "objet": "Bague de la Foudre"
+        },
+        {
+          "type": "manual",
+          "ecole": "Foudre"
         }
       ],
       "repliques": {
@@ -194,6 +206,10 @@
         {
           "type": "pants",
           "objet": "String du Charisme"
+        },
+        {
+          "type": "manual",
+          "ecole": "Vie"
         }
       ],
       "repliques": {
@@ -235,11 +251,1222 @@
         {
           "type": "boots",
           "objet": "Bottes de perception"
+        },
+        {
+          "type": "manual",
+          "ecole": "Vie"
         }
       ],
       "repliques": {
         "rien_que_pour_toi": [
           "Capitaine… on m’a laissé ceci : {objet}. Rien de ce qui pousse en forêt : je n’en connais pas la valeur. Rien que pour toi : {prix} PO."
+        ]
+      }
+    },
+    {
+      "id": "hroska-crocs-de-neige",
+      "nom": "Hroska Crocs-de-Neige",
+      "sexe": "Femme",
+      "portrait": "",
+      "peuple": "Homme-bête",
+      "culture": "Tribus nordiques",
+      "alignement": "Loyal mauvais",
+      "poids": 1,
+      "vend": [
+        {
+          "type": "weapon",
+          "objet": "Hache double"
+        },
+        {
+          "type": "weapon",
+          "objet": "Écu"
+        },
+        {
+          "type": "weapon",
+          "objet": "Trident"
+        },
+        {
+          "type": "cape",
+          "objet": "Cape de résistance physique"
+        },
+        {
+          "type": "belt",
+          "objet": "Ceinture d’endurance"
+        },
+        {
+          "type": "ring",
+          "objet": "Bague de l’Eau"
+        },
+        {
+          "type": "manual",
+          "ecole": "Eau"
+        }
+      ],
+      "repliques": {
+        "rien_que_pour_toi": [
+          "Hé, capitaine. Les glaces m’ont rendu ça : {objet}. Je ne sais pas le priser. Pour toi : {prix} PO, et on trinque."
+        ]
+      }
+    },
+    {
+      "id": "drusk-sabot-de-poussiere",
+      "nom": "Drusk Sabot-de-Poussière",
+      "sexe": "Homme",
+      "portrait": "",
+      "peuple": "Homme-bête",
+      "culture": "Clans des grandes steppes",
+      "alignement": "Loyal mauvais",
+      "poids": 1,
+      "vend": [
+        {
+          "type": "weapon",
+          "objet": "Arc"
+        },
+        {
+          "type": "weapon",
+          "objet": "Lance"
+        },
+        {
+          "type": "weapon",
+          "objet": "Sabre"
+        },
+        {
+          "type": "boots",
+          "objet": "Bottes de vitesse"
+        },
+        {
+          "type": "ring",
+          "objet": "Bague du courage"
+        },
+        {
+          "type": "belt",
+          "objet": "Ceinture de courage"
+        },
+        {
+          "type": "manual",
+          "ecole": "Feu"
+        }
+      ],
+      "repliques": {
+        "rien_que_pour_toi": [
+          "Capitaine ! Trouvé ça au bord d’une piste : {objet}. Un cheval ne le porterait pas, moi non plus. Pour toi : {prix} PO."
+        ]
+      }
+    },
+    {
+      "id": "gorma-porte-tonneau",
+      "nom": "Gorma Porte-Tonneau",
+      "sexe": "Femme",
+      "portrait": "",
+      "peuple": "Ogre",
+      "culture": "Ogres des cités humaines",
+      "alignement": "Neutre mauvais",
+      "poids": 1,
+      "vend": [
+        {
+          "type": "weapon",
+          "objet": "Hallebarde"
+        },
+        {
+          "type": "weapon",
+          "objet": "Masse d’armes"
+        },
+        {
+          "type": "armor",
+          "objet": "Brigandine"
+        },
+        {
+          "type": "gloves",
+          "objet": "Gants de force"
+        },
+        {
+          "type": "pants",
+          "objet": "Culotte d’Intimidation"
+        },
+        {
+          "type": "potion",
+          "objet": "Potion de soins"
+        }
+      ],
+      "repliques": {
+        "rien_que_pour_toi": [
+          "Toi, capitaine, Gorma t’aime bien. Gorma a ça : {objet}. Gorma sait pas combien ça vaut. Pour toi : {prix} PO."
+        ]
+      }
+    },
+    {
+      "id": "rasz-tzel-varr",
+      "nom": "Rasz Tzel'Varr",
+      "sexe": "Homme",
+      "portrait": "",
+      "peuple": "Reptilien",
+      "culture": "Reptiliens des villes",
+      "alignement": "Loyal neutre",
+      "poids": 1,
+      "vend": [
+        {
+          "type": "weapon",
+          "objet": "Estoc"
+        },
+        {
+          "type": "weapon",
+          "objet": "Sarbacane"
+        },
+        {
+          "type": "armor",
+          "objet": "Cuir renforcé"
+        },
+        {
+          "type": "helmet",
+          "objet": "Chapeau d’intelligence"
+        },
+        {
+          "type": "ring",
+          "objet": "Bague de la télékinésie"
+        },
+        {
+          "type": "amulet",
+          "objet": "Amulette de puissance magique"
+        },
+        {
+          "type": "manual",
+          "ecole": "Télékinésie"
+        }
+      ],
+      "repliques": {
+        "rien_que_pour_toi": [
+          "Capitaine… sss… une affaire entre amis : {objet}. Mes livres de comptes ne savent pas l’estimer. Pour toi : {prix} PO."
+        ]
+      }
+    },
+    {
+      "id": "gudrun-isfjell",
+      "nom": "Gudrun Isfjell",
+      "sexe": "Femme",
+      "portrait": "",
+      "peuple": "Humain",
+      "culture": "Montagnes du Nord",
+      "alignement": "Neutre",
+      "poids": 1,
+      "vend": [
+        {
+          "type": "weapon",
+          "objet": "Hache double"
+        },
+        {
+          "type": "weapon",
+          "objet": "Grande épée"
+        },
+        {
+          "type": "weapon",
+          "objet": "Hache de guerre"
+        },
+        {
+          "type": "armor",
+          "objet": "Cotte de mailles"
+        },
+        {
+          "type": "cape",
+          "objet": "Cape de résistance physique"
+        },
+        {
+          "type": "ring",
+          "objet": "Bague du nécromancien"
+        },
+        {
+          "type": "manual",
+          "ecole": "Nécromancie"
+        }
+      ],
+      "repliques": {
+        "rien_que_pour_toi": [
+          "Capitaine. Un mort n’en a plus besoin : {objet}. Je ne sais pas ce que ça vaut. À toi pour {prix} PO."
+        ]
+      }
+    },
+    {
+      "id": "isska-ssul-varek",
+      "nom": "Isska Ssul'Varek",
+      "sexe": "Femme",
+      "portrait": "",
+      "peuple": "Reptilien",
+      "culture": "Reptiliens des marécages",
+      "alignement": "Loyal neutre",
+      "poids": 1,
+      "vend": [
+        {
+          "type": "weapon",
+          "objet": "Trident"
+        },
+        {
+          "type": "weapon",
+          "objet": "Sarbacane"
+        },
+        {
+          "type": "armor",
+          "objet": "Armure d'écailles"
+        },
+        {
+          "type": "potion",
+          "objet": "Fiole de poison"
+        },
+        {
+          "type": "ring",
+          "objet": "Bague de l’Eau"
+        },
+        {
+          "type": "potion",
+          "objet": "Potion de soins"
+        },
+        {
+          "type": "manual",
+          "ecole": "Eau"
+        }
+      ],
+      "repliques": {
+        "rien_que_pour_toi": [
+          "Sss… capitaine. Le marais m’a rendu ceci : {objet}. Je n’en connais pas le prix. Pour toi : {prix} PO."
+        ]
+      }
+    },
+    {
+      "id": "calaena-ombrevenin",
+      "nom": "Calaena Ombrevenin",
+      "sexe": "Femme",
+      "portrait": "",
+      "peuple": "Elfe",
+      "culture": "Elfes noirs",
+      "alignement": "Chaotique mauvais",
+      "poids": 1,
+      "vend": [
+        {
+          "type": "weapon",
+          "objet": "Dague"
+        },
+        {
+          "type": "weapon",
+          "objet": "Arbalète"
+        },
+        {
+          "type": "weapon",
+          "objet": "Fouet"
+        },
+        {
+          "type": "cape",
+          "objet": "Cape de discrétion"
+        },
+        {
+          "type": "potion",
+          "objet": "Fiole de poison"
+        },
+        {
+          "type": "ring",
+          "objet": "Bague de la Foudre"
+        },
+        {
+          "type": "manual",
+          "ecole": "Foudre"
+        }
+      ],
+      "repliques": {
+        "rien_que_pour_toi": [
+          "Capitaine… je ne fais jamais de cadeaux. Sauf à toi : {objet}. Je n’ai aucune idée de sa valeur. {prix} PO, et oublie d’où ça vient."
+        ]
+      }
+    },
+    {
+      "id": "jasper-bonnebourse",
+      "nom": "Jasper Bonnebourse",
+      "sexe": "Homme",
+      "portrait": "",
+      "peuple": "Halfling",
+      "culture": "Halflings des cités humaines",
+      "alignement": "Chaotique bon",
+      "poids": 1,
+      "vend": [
+        {
+          "type": "weapon",
+          "objet": "Dague"
+        },
+        {
+          "type": "weapon",
+          "objet": "Fronde"
+        },
+        {
+          "type": "weapon",
+          "objet": "Rondache"
+        },
+        {
+          "type": "pants",
+          "objet": "String du Charisme"
+        },
+        {
+          "type": "gloves",
+          "objet": "Gants de dextérité"
+        },
+        {
+          "type": "ring",
+          "objet": "Bague de la télékinésie"
+        },
+        {
+          "type": "manual",
+          "ecole": "Télékinésie"
+        }
+      ],
+      "repliques": {
+        "rien_que_pour_toi": [
+          "Capitaine ! Entre bons amis : {objet}. Je n’ai pas su l’estimer, ça m’arrive rarement. Pour toi : {prix} PO."
+        ]
+      }
+    },
+    {
+      "id": "malaika-ilunga",
+      "nom": "Malaika Ilunga",
+      "sexe": "Femme",
+      "portrait": "",
+      "peuple": "Humain",
+      "culture": "Tribus de la jungle",
+      "alignement": "Neutre",
+      "poids": 1,
+      "vend": [
+        {
+          "type": "weapon",
+          "objet": "Lance"
+        },
+        {
+          "type": "weapon",
+          "objet": "Sarbacane"
+        },
+        {
+          "type": "weapon",
+          "objet": "Kukri"
+        },
+        {
+          "type": "armor",
+          "objet": "Armure de cuir"
+        },
+        {
+          "type": "potion",
+          "objet": "Fiole de poison"
+        },
+        {
+          "type": "ring",
+          "objet": "Bague de la transmutation"
+        },
+        {
+          "type": "manual",
+          "ecole": "Transmutation"
+        }
+      ],
+      "repliques": {
+        "rien_que_pour_toi": [
+          "Capitaine, la jungle m’a donné ceci : {objet}. Je ne sais pas ce que ça vaut chez vous. Pour toi : {prix} PO."
+        ]
+      }
+    },
+    {
+      "id": "aymeric-belcomptoir",
+      "nom": "Aymeric Belcomptoir",
+      "sexe": "Homme",
+      "portrait": "",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "alignement": "Neutre",
+      "poids": 1,
+      "vend": [
+        {
+          "type": "weapon",
+          "objet": "Épée longue"
+        },
+        {
+          "type": "weapon",
+          "objet": "Écu"
+        },
+        {
+          "type": "weapon",
+          "objet": "Rondache"
+        },
+        {
+          "type": "armor",
+          "objet": "Cotte de mailles"
+        },
+        {
+          "type": "armor",
+          "objet": "Brigandine"
+        },
+        {
+          "type": "ring",
+          "objet": "Bague du soigneur"
+        },
+        {
+          "type": "manual",
+          "ecole": "Vie"
+        }
+      ],
+      "repliques": {
+        "rien_que_pour_toi": [
+          "Capitaine, une occasion hors catalogue : {objet}. Ma guilde ne sait pas le coter. Pour toi : {prix} PO, et motus."
+        ]
+      }
+    },
+    {
+      "id": "flek-visseclou",
+      "nom": "Flek Visseclou",
+      "sexe": "Homme",
+      "portrait": "",
+      "peuple": "Gobelin",
+      "culture": "Caravanes de ferrailleurs",
+      "alignement": "Chaotique mauvais",
+      "poids": 1,
+      "vend": [
+        {
+          "type": "amulet",
+          "objet": "Amulette de chance"
+        },
+        {
+          "type": "weapon",
+          "objet": "Tromblon"
+        },
+        {
+          "type": "weapon",
+          "objet": "Canon à main"
+        },
+        {
+          "type": "weapon",
+          "objet": "Fléau d’armes"
+        },
+        {
+          "type": "gloves",
+          "objet": "Gants de pièges"
+        },
+        {
+          "type": "ring",
+          "objet": "Bague de la chance"
+        },
+        {
+          "type": "manual",
+          "ecole": "Télékinésie"
+        }
+      ],
+      "repliques": {
+        "rien_que_pour_toi": [
+          "Psst, capitaine ! Ramassé ça dans la ferraille : {objet}. Aucune idée du prix. Pour toi : {prix} PO, pas un sou de moins… enfin, si tu veux."
+        ]
+      }
+    },
+    {
+      "id": "lirri-feuillecoque",
+      "nom": "Lirri Feuillecoque",
+      "sexe": "Femme",
+      "portrait": "",
+      "peuple": "Gnome",
+      "culture": "Gnomes des forêts",
+      "alignement": "Chaotique neutre",
+      "poids": 1,
+      "vend": [
+        {
+          "type": "weapon",
+          "objet": "Fronde"
+        },
+        {
+          "type": "weapon",
+          "objet": "Bâton court"
+        },
+        {
+          "type": "cape",
+          "objet": "Cape d’esquive"
+        },
+        {
+          "type": "gloves",
+          "objet": "Gants de dextérité"
+        },
+        {
+          "type": "boots",
+          "objet": "Bottes d’esquive"
+        },
+        {
+          "type": "ring",
+          "objet": "Bague de l’illusionniste"
+        },
+        {
+          "type": "manual",
+          "ecole": "Illusion"
+        }
+      ],
+      "repliques": {
+        "rien_que_pour_toi": [
+          "Capitaine ! Un écureuil l’a laissé tomber, je crois : {objet}. Je ne sais pas ce que ça vaut. Pour toi : {prix} PO."
+        ]
+      }
+    },
+    {
+      "id": "callie-loincompas",
+      "nom": "Callie Loincompas",
+      "sexe": "Femme",
+      "portrait": "",
+      "peuple": "Halfling",
+      "culture": "Explorateurs",
+      "alignement": "Chaotique bon",
+      "poids": 1,
+      "vend": [
+        {
+          "type": "weapon",
+          "objet": "Katana"
+        },
+        {
+          "type": "weapon",
+          "objet": "Sai"
+        },
+        {
+          "type": "weapon",
+          "objet": "Nunchaku"
+        },
+        {
+          "type": "boots",
+          "objet": "Bottes de perception"
+        },
+        {
+          "type": "helmet",
+          "objet": "Chapeau du dresseur"
+        },
+        {
+          "type": "amulet",
+          "objet": "Amulette de chance"
+        },
+        {
+          "type": "manual",
+          "ecole": "Invocation"
+        }
+      ],
+      "repliques": {
+        "rien_que_pour_toi": [
+          "Capitaine, regarde ce que j’ai rapporté de l’autre bout du monde : {objet}. Personne ici ne sait l’estimer. Pour toi : {prix} PO."
+        ]
+      }
+    },
+    {
+      "id": "amar-rathore",
+      "nom": "Amar Rathore",
+      "sexe": "Homme",
+      "portrait": "",
+      "peuple": "Humain",
+      "culture": "Steppes désertiques",
+      "alignement": "Neutre",
+      "poids": 1,
+      "vend": [
+        {
+          "type": "weapon",
+          "objet": "Sabre"
+        },
+        {
+          "type": "weapon",
+          "objet": "Arc"
+        },
+        {
+          "type": "weapon",
+          "objet": "Lance"
+        },
+        {
+          "type": "armor",
+          "objet": "Cuir renforcé"
+        },
+        {
+          "type": "armor",
+          "objet": "Gambison"
+        },
+        {
+          "type": "ring",
+          "objet": "Bague de Feu"
+        },
+        {
+          "type": "manual",
+          "ecole": "Feu"
+        }
+      ],
+      "repliques": {
+        "rien_que_pour_toi": [
+          "Capitaine, une rareté des caravanes : {objet}. Le désert ne m’a pas appris son prix. Pour toi : {prix} PO."
+        ]
+      }
+    },
+    {
+      "id": "karg-brisenclume",
+      "nom": "Karg Brisenclume",
+      "sexe": "Homme",
+      "portrait": "",
+      "peuple": "Orc",
+      "culture": "Orcs noirs",
+      "alignement": "Chaotique mauvais",
+      "poids": 1,
+      "vend": [
+        {
+          "type": "weapon",
+          "objet": "Grande épée"
+        },
+        {
+          "type": "weapon",
+          "objet": "Hache double"
+        },
+        {
+          "type": "weapon",
+          "objet": "Bardiche"
+        },
+        {
+          "type": "armor",
+          "objet": "Armure de plates"
+        },
+        {
+          "type": "armor",
+          "objet": "Armure d'écailles"
+        },
+        {
+          "type": "gloves",
+          "objet": "Gants de force"
+        },
+        {
+          "type": "manual",
+          "ecole": "Transmutation"
+        }
+      ],
+      "repliques": {
+        "rien_que_pour_toi": [
+          "Capitaine. Pris sur un cadavre : {objet}. Karg sait pas ce que ça vaut. Pour toi : {prix} PO. Pas de marchandage."
+        ]
+      }
+    },
+    {
+      "id": "ilyra-hauteverriere",
+      "nom": "Ilyra Hauteverrière",
+      "sexe": "Femme",
+      "portrait": "",
+      "peuple": "Elfe",
+      "culture": "Elfes des grandes cités",
+      "alignement": "Loyal bon",
+      "poids": 1,
+      "vend": [
+        {
+          "type": "weapon",
+          "objet": "Estoc"
+        },
+        {
+          "type": "weapon",
+          "objet": "Épée longue"
+        },
+        {
+          "type": "weapon",
+          "objet": "Bâton long"
+        },
+        {
+          "type": "belt",
+          "objet": "Ceinture de mana"
+        },
+        {
+          "type": "amulet",
+          "objet": "Amulette de puissance magique"
+        },
+        {
+          "type": "armor",
+          "objet": "Vêtements"
+        },
+        {
+          "type": "manual",
+          "ecole": "Eau"
+        }
+      ],
+      "repliques": {
+        "rien_que_pour_toi": [
+          "Capitaine, ceci n’a rien à faire dans ma boutique : {objet}. Je ne saurais l’estimer. Pour toi : {prix} PO."
+        ]
+      }
+    },
+    {
+      "id": "crik-fouillecrane",
+      "nom": "Crik Fouillecrâne",
+      "sexe": "Homme",
+      "portrait": "",
+      "peuple": "Gobelin",
+      "culture": "Gobelins des cavernes",
+      "alignement": "Chaotique mauvais",
+      "poids": 1,
+      "vend": [
+        {
+          "type": "weapon",
+          "objet": "Dague"
+        },
+        {
+          "type": "weapon",
+          "objet": "Kukri"
+        },
+        {
+          "type": "weapon",
+          "objet": "Fronde"
+        },
+        {
+          "type": "boots",
+          "objet": "Bottes d’esquive"
+        },
+        {
+          "type": "gloves",
+          "objet": "Gants de pièges"
+        },
+        {
+          "type": "ring",
+          "objet": "Bague de l’invocation"
+        },
+        {
+          "type": "manual",
+          "ecole": "Invocation"
+        }
+      ],
+      "repliques": {
+        "rien_que_pour_toi": [
+          "Hé hé, capitaine… trouvé dans le noir : {objet}. Crik sait pas le prix. Pour toi : {prix} PO, vite, avant que je change d’avis !"
+        ]
+      }
+    },
+    {
+      "id": "dottie-mielbruyere",
+      "nom": "Dottie Mielbruyère",
+      "sexe": "Femme",
+      "portrait": "",
+      "peuple": "Halfling",
+      "culture": "Halflings des villages isolés",
+      "alignement": "Chaotique bon",
+      "poids": 1,
+      "vend": [
+        {
+          "type": "weapon",
+          "objet": "Bâton court"
+        },
+        {
+          "type": "potion",
+          "objet": "Potion de soins"
+        },
+        {
+          "type": "potion",
+          "objet": "Potion de mana"
+        },
+        {
+          "type": "pants",
+          "objet": "Slip d’Affinité"
+        },
+        {
+          "type": "ring",
+          "objet": "Bague du soigneur"
+        },
+        {
+          "type": "armor",
+          "objet": "Vêtements"
+        },
+        {
+          "type": "manual",
+          "ecole": "Illusion"
+        }
+      ],
+      "repliques": {
+        "rien_que_pour_toi": [
+          "Capitaine, entre voisins : {objet}. Je ne sais pas ce que ça vaut, et je m’en moque. Pour toi : {prix} PO, avec une part de tarte."
+        ]
+      }
+    },
+    {
+      "id": "gasha-poing-de-marche",
+      "nom": "Gasha Poing-de-Marché",
+      "sexe": "Femme",
+      "portrait": "",
+      "peuple": "Orc",
+      "culture": "Orcs des villes",
+      "alignement": "Chaotique mauvais",
+      "poids": 1,
+      "vend": [
+        {
+          "type": "weapon",
+          "objet": "Épée courte"
+        },
+        {
+          "type": "weapon",
+          "objet": "Arbalète"
+        },
+        {
+          "type": "weapon",
+          "objet": "Épée double"
+        },
+        {
+          "type": "weapon",
+          "objet": "Pavois"
+        },
+        {
+          "type": "pants",
+          "objet": "Culotte d’Intimidation"
+        },
+        {
+          "type": "belt",
+          "objet": "Ceinture de courage"
+        },
+        {
+          "type": "manual",
+          "ecole": "Transmutation"
+        }
+      ],
+      "repliques": {
+        "rien_que_pour_toi": [
+          "Capitaine, un lot tombé du chariot : {objet}. Je sais pas le coter. Pour toi : {prix} PO, et on se serre la patte."
+        ]
+      }
+    },
+    {
+      "id": "cairn-racinesombre",
+      "nom": "Cairn Racinesombre",
+      "sexe": "Homme",
+      "portrait": "",
+      "peuple": "Homme-bête",
+      "culture": "Tribus des forêts anciennes",
+      "alignement": "Loyal mauvais",
+      "poids": 1,
+      "vend": [
+        {
+          "type": "weapon",
+          "objet": "Lance"
+        },
+        {
+          "type": "weapon",
+          "objet": "Massue"
+        },
+        {
+          "type": "weapon",
+          "objet": "Arme d’hast double"
+        },
+        {
+          "type": "armor",
+          "objet": "Armure de cuir"
+        },
+        {
+          "type": "helmet",
+          "objet": "Chapeau du dresseur"
+        },
+        {
+          "type": "ring",
+          "objet": "Bague du nécromancien"
+        },
+        {
+          "type": "manual",
+          "ecole": "Nécromancie"
+        }
+      ],
+      "repliques": {
+        "rien_que_pour_toi": [
+          "Capitaine… les vieux arbres m’ont confié ceci : {objet}. J’ignore sa valeur. Pour toi : {prix} PO."
+        ]
+      }
+    },
+    {
+      "id": "fizzi-doigts-legers",
+      "nom": "Fizzi Doigts-Légers",
+      "sexe": "Femme",
+      "portrait": "",
+      "peuple": "Gobelin",
+      "culture": "Gobelins des villes",
+      "alignement": "Chaotique mauvais",
+      "poids": 1,
+      "vend": [
+        {
+          "type": "weapon",
+          "objet": "Dague"
+        },
+        {
+          "type": "weapon",
+          "objet": "Épée courte"
+        },
+        {
+          "type": "cape",
+          "objet": "Cape de discrétion"
+        },
+        {
+          "type": "gloves",
+          "objet": "Gants de dextérité"
+        },
+        {
+          "type": "pants",
+          "objet": "Slip d’Affinité"
+        },
+        {
+          "type": "ring",
+          "objet": "Bague de l’illusionniste"
+        },
+        {
+          "type": "manual",
+          "ecole": "Illusion"
+        }
+      ],
+      "repliques": {
+        "rien_que_pour_toi": [
+          "Pssst, capitaine ! Ça vient d’une poche… euh, d’un ami : {objet}. Fizzi sait pas le prix. Pour toi : {prix} PO."
+        ]
+      }
+    },
+    {
+      "id": "draz-crinsauvage",
+      "nom": "Draz Crinsauvage",
+      "sexe": "Homme",
+      "portrait": "",
+      "peuple": "Orc",
+      "culture": "Orcs des steppes",
+      "alignement": "Chaotique mauvais",
+      "poids": 1,
+      "vend": [
+        {
+          "type": "weapon",
+          "objet": "Lance"
+        },
+        {
+          "type": "ring",
+          "objet": "Bague de la transmutation"
+        },
+        {
+          "type": "weapon",
+          "objet": "Hachette"
+        },
+        {
+          "type": "boots",
+          "objet": "Bottes de vitesse"
+        },
+        {
+          "type": "armor",
+          "objet": "Cuir renforcé"
+        },
+        {
+          "type": "belt",
+          "objet": "Ceinture d’endurance"
+        },
+        {
+          "type": "manual",
+          "ecole": "Transmutation"
+        }
+      ],
+      "repliques": {
+        "rien_que_pour_toi": [
+          "Capitaine ! Butin de razzia : {objet}. Draz sait pas ce que ça vaut. Pour toi : {prix} PO."
+        ]
+      }
+    },
+    {
+      "id": "bruga-roc-fendu",
+      "nom": "Bruga Roc-Fendu",
+      "sexe": "Femme",
+      "portrait": "",
+      "peuple": "Ogre",
+      "culture": "Ogres des montagnes",
+      "alignement": "Neutre mauvais",
+      "poids": 1,
+      "vend": [
+        {
+          "type": "weapon",
+          "objet": "Massue"
+        },
+        {
+          "type": "weapon",
+          "objet": "Marteau de guerre"
+        },
+        {
+          "type": "weapon",
+          "objet": "Pavois"
+        },
+        {
+          "type": "armor",
+          "objet": "Armure d'écailles"
+        },
+        {
+          "type": "helmet",
+          "objet": "Casque de constitution"
+        },
+        {
+          "type": "belt",
+          "objet": "Ceinture d’endurance"
+        }
+      ],
+      "repliques": {
+        "rien_que_pour_toi": [
+          "Capitaine. Bruga a trouvé ça sous un rocher : {objet}. Bruga sait pas compter si gros. Pour toi : {prix} PO."
+        ]
+      }
+    },
+    {
+      "id": "bimble-lampeterne",
+      "nom": "Bimble Lampeterne",
+      "sexe": "Homme",
+      "portrait": "",
+      "peuple": "Gnome",
+      "culture": "Gnomes des cavernes",
+      "alignement": "Chaotique neutre",
+      "poids": 1,
+      "vend": [
+        {
+          "type": "weapon",
+          "objet": "Pic de guerre"
+        },
+        {
+          "type": "weapon",
+          "objet": "Fronde"
+        },
+        {
+          "type": "gloves",
+          "objet": "Gants de pièges"
+        },
+        {
+          "type": "helmet",
+          "objet": "Chapeau d’intelligence"
+        },
+        {
+          "type": "potion",
+          "objet": "Potion de mana"
+        },
+        {
+          "type": "ring",
+          "objet": "Bague du nécromancien"
+        },
+        {
+          "type": "manual",
+          "ecole": "Nécromancie"
+        }
+      ],
+      "repliques": {
+        "rien_que_pour_toi": [
+          "Capitaine ! Déterré au fond d’une galerie : {objet}. Mes calculs ne savent pas l’estimer. Pour toi : {prix} PO."
+        ]
+      }
+    },
+    {
+      "id": "azhiss-kaal-thesh",
+      "nom": "Azhiss Kaal'Thesh",
+      "sexe": "Femme",
+      "portrait": "",
+      "peuple": "Reptilien",
+      "culture": "Reptiliens des cités-temples",
+      "alignement": "Loyal neutre",
+      "poids": 1,
+      "vend": [
+        {
+          "type": "weapon",
+          "objet": "Trident"
+        },
+        {
+          "type": "weapon",
+          "objet": "Bâton long"
+        },
+        {
+          "type": "armor",
+          "objet": "Gambison"
+        },
+        {
+          "type": "amulet",
+          "objet": "Amulette de puissance magique"
+        },
+        {
+          "type": "belt",
+          "objet": "Ceinture de mana"
+        },
+        {
+          "type": "ring",
+          "objet": "Bague de l’invocation"
+        },
+        {
+          "type": "manual",
+          "ecole": "Invocation"
+        }
+      ],
+      "repliques": {
+        "rien_que_pour_toi": [
+          "Capitaine, une offrande dont le temple n’a pas voulu : {objet}. Je n’en connais pas la valeur. Pour toi : {prix} PO."
+        ]
+      }
+    },
+    {
+      "id": "kippa-ressortdor",
+      "nom": "Kippa Ressortdor",
+      "sexe": "Femme",
+      "portrait": "",
+      "peuple": "Gnome",
+      "culture": "Gnomes des villes",
+      "alignement": "Chaotique neutre",
+      "poids": 1,
+      "vend": [
+        {
+          "type": "weapon",
+          "objet": "Pistolet"
+        },
+        {
+          "type": "weapon",
+          "objet": "Arquebuse"
+        },
+        {
+          "type": "weapon",
+          "objet": "Épée double"
+        },
+        {
+          "type": "helmet",
+          "objet": "Chapeau d’intelligence"
+        },
+        {
+          "type": "potion",
+          "objet": "Potion de mana"
+        },
+        {
+          "type": "ring",
+          "objet": "Bague de l’illusionniste"
+        },
+        {
+          "type": "manual",
+          "ecole": "Illusion"
+        }
+      ],
+      "repliques": {
+        "rien_que_pour_toi": [
+          "Capitaine ! Ce n’est pas une de mes mécaniques : {objet}. Impossible de l’estimer. Pour toi : {prix} PO."
+        ]
+      }
+    },
+    {
+      "id": "krosh-grand-galop",
+      "nom": "Krosh Grand-Galop",
+      "sexe": "Homme",
+      "portrait": "",
+      "peuple": "Ogre",
+      "culture": "Ogres des steppes",
+      "alignement": "Neutre mauvais",
+      "poids": 1,
+      "vend": [
+        {
+          "type": "weapon",
+          "objet": "Masse d’armes"
+        },
+        {
+          "type": "weapon",
+          "objet": "Fléau d’armes"
+        },
+        {
+          "type": "weapon",
+          "objet": "Arme d’hast double"
+        },
+        {
+          "type": "weapon",
+          "objet": "Hallebarde"
+        },
+        {
+          "type": "weapon",
+          "objet": "Bardiche"
+        },
+        {
+          "type": "ring",
+          "objet": "Bague de Feu"
+        },
+        {
+          "type": "manual",
+          "ecole": "Feu"
+        }
+      ],
+      "repliques": {
+        "rien_que_pour_toi": [
+          "Capitaine ! Krosh a écrasé un marchand… non, trouvé ça : {objet}. Krosh sait pas le prix. Pour toi : {prix} PO."
         ]
       }
     }

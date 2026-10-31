@@ -97,10 +97,37 @@ function inventoryGiveMenu(m){
     :`<p class="deal-menu-note">${esc(copy.empty||"")}</p>`);
 }
 
+// Manuels de sorts (Idan, 2026-10-31 ; game-core/spell-manuals.js) : « Apprendre à… », le sort au niveau 1, le manuel
+// consommé.
+function manualRules(){
+  return game.manualRules||(game.manualRules=MercenairesSpellManuals.createManualRules({reference:game.referenceData}));
+}
+function manualLearnMenu(item){
+  const company=game.campaign.company,rules=manualRules(),spell=rules.spellOf(item);
+  const members=[...company.roster].sort((a,b)=>(b.id===company.captainId)-(a.id===company.captainId));
+  const rows=members.map(m=>{
+    const check=rules.canLearn(game.campaign,m,item);
+    return `<div class="deal-member"><b>${esc(m.name)}${m.id===company.captainId?" · capitaine":""}</b>${check.ok
+      ?`<button type="button" class="deal-slot" data-manual-learn="${esc(m.id)}" data-manual-item="${esc(item.id)}">Lire le manuel<small>il connaîtra le sort</small></button>`
+      :`<small class="deal-menu-note">${esc(check.reason)}</small>`}</div>`;
+  }).join("");
+  return `<p class="deal-menu-title">Apprendre à…</p><p class="deal-menu-current">${esc(spell?.nom||item.name)} · ${esc(spell?.ecole||"")}</p>${rows}`;
+}
+function learnFromManual(memberId,itemId){
+  closeDealMenu();
+  const member=game.campaign.company.roster.find(m=>String(m.id)===String(memberId));
+  const result=manualRules().learn(game.campaign,member?.id,itemId);
+  if(!result.ok){ tavernLog(result.reason,"warn"); return; }
+  tavernLog(`${result.mercenary.name} apprend ${result.spell.nom} (${result.spell.ecole}).`,"gear");
+  saveGame();
+  renderGame();
+}
+
 // Menu de l'Intendance : les membres qui peuvent recevoir l'objet, emplacement par emplacement.
 function stockDealMenu(itemId){
   const item=(game.campaign.company.stock||[]).find(x=>String(x.id)===String(itemId));
   if(!item) return "";
+  if(item.itemType==="manual") return manualLearnMenu(item);
   const company=game.campaign.company;
   const members=[...company.roster].sort((a,b)=>(b.id===company.captainId)-(a.id===company.captainId));
   // Une fiole (Idan, 2026-10-29) : la première poche de ceinture libre ; ceinture pleine, rien à proposer.
@@ -232,6 +259,8 @@ function initializeDeals(){
       return;
     }
     if(event.target.closest?.("[data-deal-leave]")){ $("deal-talk-dialog").close(); return; }
+    const learn=event.target.closest?.("[data-manual-learn]");
+    if(learn&&menu?.contains(learn)){ learnFromManual(learn.dataset.manualLearn,learn.dataset.manualItem); return; }
     // Fiche : une case de l'onglet Équipement d'un membre de la compagnie.
     const tile=event.target.closest?.("#dialog-content .gear-tile[data-slot]");
     const m=game.sheetCharacter;

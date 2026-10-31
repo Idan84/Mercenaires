@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 248,
+  "row_count": 251,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -1584,6 +1584,30 @@
       "description": "Valeur cachée d’un objet en pièces d’or = prix de base (T1, Correcte) × ce multiplicateur pour un objet T4 × multiplicateur prix de sa qualité (Idan, 2026-10-24).",
       "formule": "Valeur d’un objet",
       "valeur": 25,
+      "version": "V1"
+    },
+    {
+      "nom": "Valeur d’un manuel de sort (Novice)",
+      "code": "economy.manual_value.novice",
+      "description": "Valeur cachée en pièces d’or d’un manuel de sort de ce palier (spells.json, palier), sans tier ni qualité ; le marchand en demande × 1,5 selon l’affinité (Idan, 2026-10-31 : les manuels de sorts sont en vente ; chiffres de JC3).",
+      "formule": "Valeur d’un objet",
+      "valeur": 300,
+      "version": "V1"
+    },
+    {
+      "nom": "Valeur d’un manuel de sort (Adepte)",
+      "code": "economy.manual_value.adepte",
+      "description": "Valeur cachée en pièces d’or d’un manuel de sort de ce palier (spells.json, palier), sans tier ni qualité ; le marchand en demande × 1,5 selon l’affinité (Idan, 2026-10-31 : les manuels de sorts sont en vente ; chiffres de JC3).",
+      "formule": "Valeur d’un objet",
+      "valeur": 600,
+      "version": "V1"
+    },
+    {
+      "nom": "Valeur d’un manuel de sort (Expert)",
+      "code": "economy.manual_value.expert",
+      "description": "Valeur cachée en pièces d’or d’un manuel de sort de ce palier (spells.json, palier), sans tier ni qualité ; le marchand en demande × 1,5 selon l’affinité (Idan, 2026-10-31 : les manuels de sorts sont en vente ; chiffres de JC3).",
+      "formule": "Valeur d’un objet",
+      "valeur": 1200,
       "version": "V1"
     },
     {

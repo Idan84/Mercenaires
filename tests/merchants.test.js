@@ -30,7 +30,10 @@ const generator=createGenerator(reference,{random,nameGenerator:(people,id)=>peo
 const affinity=createAffinityRules({reference});
 const values=createItemValues({reference});
 // Le parcours de Thorval se teste avec lui seul ; les deux marchands ensemble, plus bas.
-const thorvalOnly={...reference,merchants:{...reference.merchants,rows:reference.merchants.rows.filter(m=>m.id==="thorval-poudredefeu")}};
+// (avec ses quatre armes à feu d'origine : l'arbalète, la bague de la Foudre et les manuels de Foudre viennent après).
+const FIREARM_NAMES=["Pistolet","Tromblon","Canon à main","Arquebuse"];
+const thorvalOnly={...reference,merchants:{...reference.merchants,rows:reference.merchants.rows.filter(m=>m.id==="thorval-poudredefeu")
+  .map(m=>({...m,vend:m.vend.filter(v=>FIREARM_NAMES.includes(v.objet))}))}};
 const rules=createMerchantRules({reference:thorvalOnly,generator,affinity,random:scriptedRandom});
 const near=(a,b,eps=1e-9)=>Math.abs(a-b)<eps;
 const levels=[...reference.reputationStars.rows].sort((a,b)=>a.niveau-b.niveau);
@@ -45,7 +48,8 @@ assert.equal(thorval.peuple,"Nain");
 assert.equal(thorval.culture,"Nains du chaos");
 assert.equal(thorval.alignement,reference.alignmentGeneration.culture_overrides["Nains du chaos"]);
 assert.equal(thorval.portrait,"","le portrait viendra : son image, faite pour lui seul");
-assert.deepEqual(thorval.vend,FIREARMS.map(objet=>({type:"weapon",objet})));
+assert.deepEqual(thorval.vend,[...FIREARMS.map(objet=>({type:"weapon",objet})),{type:"weapon",objet:"Arbalète"},{type:"ring",objet:"Bague de la Foudre"},{type:"manual",ecole:"Foudre"}],
+  "ses armes à feu, puis l'arbalète, la bague de la Foudre et les manuels de Foudre (JC3, 2026-10-31)");
 for(const name of FIREARMS) for(const tier of [2,3,4]){
   const item=generator.createItemByName("weapon",name,tier);
   assert.equal(item?.name,name);
@@ -324,16 +328,31 @@ assert.match(durgan.repliques.rien_que_pour_toi[0],/\{objet\}[\s\S]*\{prix\}/);
 // Tous les marchands (Idan, 2026-10-31) : leur alignement est celui de leur culture (ou, à défaut, de leur peuple),
 // chaque objet de leur liste existe en T2 à T4 et a une valeur, chacun a sa réplique « rien que pour toi ».
 const merchantRows=reference.merchants.rows;
-assert.deepEqual(merchantRows.map(m=>m.id),["thorval-poudredefeu","durgan-battefer","orvald-sans-collier","jiraya-senin","ysolwen-chanteseve"]);
+// 32 marchands dont 16 marchandes (Idan, 2026-10-31) : un par culture.
+assert.equal(merchantRows.length,32);
+assert.equal(merchantRows.filter(m=>m.sexe==="Femme").length,16);
+assert.deepEqual(new Set(merchantRows.map(m=>m.culture)),new Set(reference.cultures.rows.map(c=>c.nom)),"une culture chacun");
+assert.equal(new Set(merchantRows.map(m=>m.id)).size,32);
+for(const id of ["thorval-poudredefeu","durgan-battefer","orvald-sans-collier","jiraya-senin","ysolwen-chanteseve"]) assert.ok(merchantRows.some(m=>m.id===id),id);
 const defaultAlignment=m=>reference.alignmentGeneration.culture_overrides[m.culture]||reference.peoples.rows.find(p=>p.nom===m.peuple).alignement_principal;
 for(const m of merchantRows){
   assert.ok(reference.cultures.rows.some(c=>c.nom===m.culture&&String(c.peuples).includes(m.peuple)),m.nom+" : culture de son peuple");
   assert.equal(m.alignement,defaultAlignment(m),m.nom+" : alignement par défaut de sa culture");
-  assert.ok(m.vend.length>=4,m.nom);
-  for(const v of m.vend) for(const tier of [2,3,4]){
-    const it=generator.createItemByName(v.type,v.objet,tier);
-    assert.equal(it?.name,v.objet,m.nom+" : "+v.objet);
-    assert.ok(values.value(it)>0,v.objet+" T"+tier+" a une valeur");
+  assert.ok(m.vend.length>=6&&m.vend.length<=7,m.nom+" : autant d'objets que les autres");
+  for(const v of m.vend){
+    // Une ligne de manuels : tous les sorts de l'école de sa culture (Idan, 2026-10-31).
+    if(v.type==="manual"){
+      assert.equal(v.ecole,reference.cultures.rows.find(c=>c.nom===m.culture).ecole_magie,m.nom+" : manuels de l'école de sa culture");
+      const school=reference.spells.rows.filter(s=>s.ecole===v.ecole);
+      assert.ok(school.length>0,v.ecole);
+      for(const spell of school) assert.ok(values.value(generator.createItemByName("manual",spell.nom))>0,spell.nom);
+      continue;
+    }
+    for(const tier of [2,3,4]){
+      const it=generator.createItemByName(v.type,v.objet,tier);
+      assert.equal(it?.name,v.objet,m.nom+" : "+v.objet);
+      assert.ok(values.value(it)>0,v.objet+" T"+tier+" a une valeur");
+    }
   }
   assert.match(m.repliques.rien_que_pour_toi[0],/\{objet\}[\s\S]*\{prix\}/,m.nom);
 }
@@ -347,11 +366,16 @@ for(let i=0;i<2500;i++){
   const m=both.morning(twoProbe,{renown:renownAt(2)});
   if(!m.arrived) continue;
   seen[m.arrived.id]=(seen[m.arrived.id]||0)+1;
-  const sells=new Set(merchantRows.find(r=>r.id===m.arrived.id).vend.map(v=>v.type+"|"+v.objet));
-  for(const a of twoProbe.market.visit.stock) assert.ok(sells.has(a.item.itemType+"|"+a.item.name),m.arrived.id+" : "+a.item.name);
+  const sells=new Set(merchantRows.find(r=>r.id===m.arrived.id).vend.map(v=>v.type==="manual"?"manual|"+v.ecole:v.type+"|"+v.objet));
+  for(const a of twoProbe.market.visit.stock) assert.ok(sells.has(a.item.itemType==="manual"?"manual|"+a.item.school:a.item.itemType+"|"+a.item.name),m.arrived.id+" : "+a.item.name);
 }
 const passes=Object.values(seen).reduce((a,b)=>a+b,0);
-for(const m of merchantRows) assert.ok(Math.abs((seen[m.id]||0)/passes-1/merchantRows.length)<0.04,"autant de passages : "+JSON.stringify(seen));
+for(const m of merchantRows) assert.ok(Math.abs((seen[m.id]||0)/passes-1/merchantRows.length)<0.02,"autant de passages : "+JSON.stringify(seen));
+// Qui vend quoi (Idan, 2026-10-31) : chaque objet et chaque école de manuels chez au moins deux marchands.
+const {coverage}=require("../scripts/merchant-coverage.js");
+const cover=coverage();
+assert.deepEqual(cover.unknown,[]);
+assert.deepEqual(cover.items.filter(i=>i.sellers.length<2).map(i=>i.name),[],"chaque objet chez au moins deux marchands");
 // Ses plates sont « ses armes » à la revente ; il hait les nains du chaos et en est haï (doc 02).
 const plates=generator.createItemByName("armor","Armure de plates",3);
 twoProbe.market.visit={merchantId:"durgan-battefer",day:twoProbe.day,stock:[],sold:{},traded:false};
@@ -359,4 +383,4 @@ assert.equal(both.visitOf(twoProbe,{renown}).buyback(plates).specialty,true);
 assert.equal(both.visitOf(twoProbe,{renown}).buyback(item("Pistolet",3)).specialty,false);
 assert.equal(affinity.affinity({people:"Nain",culture:"Nains du chaos",alignment:"Chaotique neutre"},{people:"Nain",culture:"Nains des montagnes",alignment:"Neutre bon"}).components.cultureRule,"cousins");
 
-console.log("Marchands : Thorval Poudredefeu (4 armes à feu, 10 articles T2–T4), affinité, achat, rachat, intendant, rien que pour toi ; Durgan, Orvald, Jiraya, Ysolwen — OK");
+console.log("Marchands : Thorval Poudredefeu (4 armes à feu, 10 articles T2–T4), affinité, achat, rachat, intendant, rien que pour toi ; 32 marchands, chaque objet chez deux d'entre eux — OK");

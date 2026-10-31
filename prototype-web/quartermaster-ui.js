@@ -2,8 +2,8 @@
 
 // Intendance (doc 11 §16) : le stock de la compagnie, sans propriétaire, rangé par catégorie : les armes d'abord, puis les
 // armures, de la plus légère à la plus lourde, puis les casques, bottes, ceintures, amulettes, capes, gants, culottes,
-// bagues et potions ; deux objets identiques de même tier forment une case « × 2 ».
-const STOCK_KINDS=["weapon","armor","helmet","boots","belt","amulet","cape","gloves","pants","ring","potion"];
+// bagues, potions et manuels de sorts (rangés par école) ; deux objets identiques de même tier forment une case « × 2 ».
+const STOCK_KINDS=["weapon","armor","helmet","boots","belt","amulet","cape","gloves","pants","ring","potion","manual"];
 const STOCK_ARMOR_GROUPS=[["Vêtement","Vêtements"],["Légère","Armures légères"],["Intermédiaire","Armures intermédiaires"],["Lourde","Armures lourdes"]];
 function stockGroups(items){
   const groups=new Map();
@@ -39,7 +39,8 @@ function renderStockTile({item,count}){
 // Armures légères…) en petits intitulés au-dessus de leur grille. L'onglet choisi reste tel quel quand l'écran se
 // redessine (passage d'un jour, retour au camp).
 const STOCK_TABS=[["weapon","Armes","melee"],["armor","Armures","armor"],["helmet","Casques","head"],["boots","Bottes","boots"],["belt","Ceintures","belt"],
-  ["amulet","Amulettes","amulet"],["cape","Capes","cape"],["gloves","Gants","gloves"],["pants","Culottes","pants"],["ring","Bagues","ring"],["potion","Potions","flask"]];
+  ["amulet","Amulettes","amulet"],["cape","Capes","cape"],["gloves","Gants","gloves"],["pants","Culottes","pants"],["ring","Bagues","ring"],["potion","Potions","flask"],
+  ["manual","Manuels","book"]];
 const stockView={tab:"weapon"};
 
 function renderQuartermaster(){

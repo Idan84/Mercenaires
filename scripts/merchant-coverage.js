@@ -1,7 +1,7 @@
 "use strict";
 
 // Qui vend quoi (Idan, 2026-10-31) : chaque objet doit être vendu par au moins deux marchands, et chaque marchand vendre à
-// peu près le même nombre d'objets (les sorts et les cristaux viendront ensuite). Ce script dresse la liste à partir de
+// peu près le même nombre d'objets ; les manuels de sorts aussi, école par école (les cristaux viendront ensuite). Ce script dresse la liste à partir de
 // data/reference/merchants.json et des référentiels d'objets, et l'écrit dans docs/design/18-merchants.md, entre les
 // marqueurs « couverture:debut » et « couverture:fin ».
 //   node scripts/merchant-coverage.js           réécrit la liste et affiche le bilan
@@ -30,12 +30,18 @@ function coverage(){
   const firstName=m=>String(m.nom||m.id).split(/\s+/)[0];
   const items=FAMILIES.flatMap(([type,label,file])=>rows(read(file)).map(r=>({type,label,name:r.nom}))
     .sort((a,b)=>a.name.localeCompare(b.name,"fr")));
-  const known=new Set(items.map(i=>i.type+"|"+i.name));
-  const unknown=merchants.flatMap(m=>(m.vend||[]).filter(v=>!known.has(v.type+"|"+v.objet)).map(v=>`${m.nom} : ${v.objet}`));
-  for(const item of items) item.sellers=merchants.filter(m=>(m.vend||[]).some(v=>v.type===item.type&&v.objet===item.name)).map(firstName);
+  // Manuels de sorts (Idan, 2026-10-31) : une ligne par école ; ses futurs sorts y entrent d'eux-mêmes.
+  const of=school=>/^[AEIOUÉÈÊ]/i.test(school)?"d’"+school:"de "+school;
+  const schools=[...new Set(rows(read("spells.json")).map(s=>s.ecole).filter(Boolean))];
+  items.push(...schools.map(school=>({type:"manual",label:"Manuels",name:"Manuels "+of(school),school})));
+  const key=v=>v.type==="manual"?"manual|"+v.ecole:v.type+"|"+v.objet;
+  const known=new Set(items.map(i=>i.type==="manual"?"manual|"+i.school:i.type+"|"+i.name));
+  const unknown=merchants.flatMap(m=>(m.vend||[]).filter(v=>!known.has(key(v))).map(v=>`${m.nom} : ${v.objet||v.ecole}`));
+  for(const item of items) item.sellers=merchants.filter(m=>(m.vend||[]).some(v=>key(v)===(item.type==="manual"?"manual|"+item.school:item.type+"|"+item.name))).map(firstName);
   const count=n=>items.filter(i=>n(i.sellers.length)).length;
   return {
-    merchants:merchants.map(m=>({name:m.nom,culture:m.culture,count:(m.vend||[]).length})),
+    merchants:merchants.map(m=>({name:m.nom,culture:m.culture,sex:m.sexe,count:(m.vend||[]).length,
+      sells:(m.vend||[]).map(v=>v.type==="manual"?"Manuels "+of(v.ecole):v.objet)})),
     items,unknown,
     summary:{total:items.length,covered:count(n=>n>=TARGET),once:count(n=>n===1),none:count(n=>n===0)}
   };
@@ -45,8 +51,9 @@ function markdown(c){
   const s=c.summary;
   const lines=[START,"",
     `**Bilan** : ${s.total} objets ; **${s.covered}** vendus par au moins ${TARGET} marchands, **${s.once}** par un seul, **${s.none}** par aucun.`,"",
-    "| Marchand | Culture | Objets |","|---|---|---|",
-    ...c.merchants.map(m=>`| ${m.name} | ${m.culture||"—"} | ${m.count} |`),"",
+    `**${c.merchants.length} marchands**, dont ${c.merchants.filter(m=>m.sex==="Femme").length} marchandes.`,"",
+    "| Marchand | Culture | Vend | Lignes |","|---|---|---|---|",
+    ...c.merchants.map(m=>`| ${m.name} | ${m.culture||"—"} | ${m.sells.join(", ")} | ${m.count} |`),"",
     "| Famille | Objet | Marchands | Nombre |","|---|---|---|---|",
     ...c.items.map(i=>`| ${i.label} | ${i.name} | ${i.sellers.join(", ")||"—"} | ${i.sellers.length>=TARGET?i.sellers.length:i.sellers.length+" ⚠"} |`),
     "",END];

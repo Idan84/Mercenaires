@@ -14,6 +14,7 @@ Noyau de logique indépendant de l'interface, préparé pour un futur portage Un
 | `avatars.js` | Avatars : choix du visage le plus proche du mercenaire, unicité, sexe donné par l'image | décisions d'Idan du 2026-10-04 (`docs/TEAM.md`) |
 | `avatar-catalog.js` | Catalogue des avatars depuis les images et leurs mots-clés Bridge (Git ou Hostinger) | `docs/DEPLOYMENT.md` |
 | `avatar-demand.js` | Besoin en avatars par culture : cases culture × ascendance × arme ou école, besoin binomial, un avatar par case, repli sur le profil (onglet Avatars du Design Lab, sans effet sur le jeu ; mesures `data/reference/avatar-demand.json`) | `02-generation-and-identity.md` |
+| `spell-manuals.js` | Manuels de sorts : un par sort, apprendre à l'Intendance (sort au niveau 1, manuel consommé) | `12-magic.md` |
 | `merchants.js` | Marchands : passage du jour selon la renommée, étal de 10 articles (liste du marchand, tier selon la renommée), affinité acquise, prix d'achat et de rachat (quantité, rareté, plafond), aide de l'intendant, achat et vente | `18-merchants.md` |
 | `mercenary-profile.js` | Titres des mercenaires : sous-catégories mesurées avec le combat et l'équipement, notes des 10 catégories sur l'échelle de la réputation (seuils dans `mercenary-profile.json`), 1 à 3 titres ou « Chair à canon », spécificité | `19-mercenary-profile.md` |
 | `campaign.js` | État de partie, horloge `AdvanceTime(days)`, signature, Intendant, sauvegarde | `07-architecture.md`, `10-mission-time-and-unavailability.md` |

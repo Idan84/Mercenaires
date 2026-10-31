@@ -1,0 +1,9 @@
+{
+  "description": "Notification du jour (Idan, 2026-10-31) : phrases de la fenêtre qui s'ouvre à chaque nouvelle journée (prototype-web/day-news-ui.js). Une phrase est tirée parmi les variantes de chaque liste, la même pour une journée donnée ; ajouter des variantes ici suffit.",
+  "calme": [
+    "Rien à signaler aujourd’hui."
+  ],
+  "taverne": [
+    "Le tavernier vous fait parvenir une note : de nouvelles têtes sont en train de boire une bière."
+  ]
+}

@@ -182,7 +182,7 @@ Idan : « c'est un buffeur ». Tous les sorts sont des **actions rapides**, sur 
 - **Purge** (école de la Vie) retire le poison.
 - **Fiole de poison** (Idan, 2026-10-29 ; doc 05) : action rapide, sur soi ; l'arme active est enduite pendant 3 tours, et chaque coup qui blesse, au corps à corps comme au tir, empoisonne : **10 PV par tour**, 3 tours, même jet de résistance. Avec une sarbacane enduite, le plus fort des deux poisons.
 
-### École de la Foudre (6 sorts, Idan, 2026-10-27)
+### École de la Foudre (10 sorts, Idan, 2026-10-27 et 2026-10-31)
 
 Même modèle que les autres écoles (effet, mana, difficulté par palier, CC aux dés maximum, EC : le lanceur subit le minimum de son sort). L'élément est la **foudre** : dégâts × (1 − protection contre la foudre / 100), avec la valeur « foudroyant » de l'armure, et le métal conduit : **plates −45**, mailles −30, brigandine −18 ; vêtements +5, gambison +15, écailles +25, cuir renforcé +28, cuir +30. **Portée moyenne des attaques** (Idan) : **6 + M/25, au plus 12**, comme la Boule de feu. Écoles opposées : Eau et Transmutation. Données : `spells.json`.
 
@@ -194,11 +194,20 @@ Même modèle que les autres écoles (effet, mana, difficulté par palier, CC au
 | Boule d'éclairs | Expert (70) | principale | **2D6 de foudre** sur un ennemi, puis **4 rebonds** : 100, 80, 60, 40, 20 % | 6 + M/25, au plus 12 | 30 |
 | Foudre | Adepte (50) | principale | **1D8 de foudre**, sans jet de toucher, **sans ligne de vue** | 6 + M/25, au plus 12 | 15 |
 | Célérité | Novice (30) | rapide | **+(20 + M/5) %** de Vitesse, **sur soi seulement**, pendant **2 tours** (cette activation et la suivante) | soi | 10 |
+| Étincelle | Novice (30) | rapide | **1D4 de foudre** sur un ennemi, sans jet de toucher | **1 + M/50** (au contact au début) | 8 |
+| Arc électrique | Adepte (50) | principale | **2D6 de foudre** à tous ceux d'une **ligne de 4 + M/25 cases (au plus 8)** partie de la case voisine choisie, alliés compris ; ne s'évite pas | la ligne | 25 |
+| Paralysie | Adepte (50) | principale | l'ennemi **perd sa prochaine activation**, sauf s'il résiste ; pas de coup critique | 6 + M/25, au plus 12 | 25 |
+| Tempête | Expert (70) | principale | pendant **3 tours**, dès le lancer puis à chaque nouveau tour, **1D3 personnages au hasard** dans un cercle de **rayon 2 + M/50 (au plus 4)**, alliés et lanceur compris, prennent **1D8 de foudre** chacun ; **sans ligne de vue** | centre à 6 + M/25, au plus 12 | 35 |
 
 - **Décharge électrique** (Idan : « au cac, mais gros dégâts ») : la main touche, pas d'esquive ; le plus gros sort sur une cible.
 - **Boule d'éclairs** (Idan : 5 cibles, alliés compris) : ne s'évite pas ; après la cible, elle saute chaque fois sur le personnage en jeu le plus proche du précédent **pas encore touché**, à **3 cases au plus**, **alliés et lanceur compris** (à égalité, un ennemi du lanceur d'abord) ; s'il n'y a personne à 3 cases, la chaîne s'arrête. Chacun a sa propre protection contre la foudre. Les rebonds ne demandent pas la ligne de vue.
 - **Foudre** : elle tombe du ciel ; elle passe le Brouillard (et, plus tard, le décor).
 - **Célérité** : se cumule avec Vitesse du guépard (deux sorts différents) ; la relancer remplace la précédente.
+- **Les quatre sorts du 2026-10-31** (validés par Idan, chiffrés par JC3) amènent l'école à 10 sorts.
+- **Étincelle** : la petite Décharge électrique, en action rapide ; le premier sort de foudre d'un débutant.
+- **Arc électrique** : le Tsunami de la foudre, en plus long ; le métal le conduit comme les autres sorts de foudre.
+- **Paralysie** : la cible résiste si **D100 ≤ Constitution + protection contre la foudre − 0,5 × Maîtrise du lanceur**, borné de 5 à 95 % (`resistance_caracteristique`, `resistance_maitrise_facteur`). Le métal conduit : en plates, la résistance tombe presque toujours à 5 %. Paralysée, la cible saute sa prochaine activation (joueur comme ennemi), puis l'effet tombe. Les jets de la résistance et du résultat sont dans le journal.
+- **Tempête** : la zone reste marquée sur la carte tant qu'il lui reste des vagues ; à chaque vague, 1D3 personnages différents de la zone (moins s'il y en a moins) sont frappés, chacun avec ses propres dés et sa protection contre la foudre ; la Maîtrise et la Puissance sont figées au lancer ; le coup critique ne vaut que pour la première vague (`frappes_de` = 3).
 
 | | Débutant | Recrue moyenne | Expert |
 |---|---|---|---|
@@ -208,6 +217,10 @@ Même modèle que les autres écoles (effet, mana, difficulté par palier, CC au
 | Boule d'éclairs, première cible | 60 · portée 7 · 27 mana · 17 % | 79 · portée 8 · 25 · 33 % | 178 · portée 11 · 17 · 87 % |
 | Foudre | 39 · portée 7 · 14 mana · 31 % | 51 · portée 8 · 13 · 59 % | 114 · portée 11 · 9 · 93 % |
 | Célérité | +26 %, 2 tours · 57 % | +31 % · 81 % | +46 % · 94 % |
+| Étincelle | 22 · portée 1 · 8 mana · 57 % | 28 · portée 2 · 7 · 81 % | 63 · portée 3 · 5 · 94 % |
+| Arc électrique, par cible | 60 · ligne de 5 · 23 mana · 31 % | 79 · ligne de 6 · 21 · 59 % | 178 · ligne de 8 · 14 · 93 % |
+| Paralysie (cible : Constitution 55, la médiane d'une recrue, en cuir) | résiste à 69 % · portée 7 · 23 mana · 31 % | 57 % · portée 8 · 21 · 59 % | 18 % · portée 11 · 14 · 93 % |
+| Tempête, par frappe (1D3 frappes × 3 tours) | 39 · rayon 2 · portée 7 · 32 mana · 17 % | 51 · rayon 3 · portée 8 · 29 · 33 % | 114 · rayon 4 · portée 11 · 20 · 87 % |
 
 ### École de la Télékinésie (6 sorts, Idan, 2026-10-28)
 
@@ -462,7 +475,7 @@ Remplacé par l'**École de l'Eau** d'Idan (2026-10-27, ci-dessus) : Brouillard,
 
 ### Foudre
 
-Remplacé par l'**École de la Foudre** d'Idan (2026-10-27, ci-dessus) : Décharge électrique, Éclair, Arme électrique, Boule d'éclairs, Foudre, Célérité.
+Remplacé par l'**École de la Foudre** d'Idan (2026-10-27 et 2026-10-31, ci-dessus) : Décharge électrique, Éclair, Arme électrique, Boule d'éclairs, Foudre, Célérité, Étincelle, Arc électrique, Paralysie, Tempête.
 
 ### Illusion
 

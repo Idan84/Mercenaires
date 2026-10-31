@@ -28,6 +28,7 @@ jobs:
       - run: node tests/roster-ui.test.js
       - run: node tests/quartermaster-ui.test.js
       - run: node tests/day-news-ui.test.js
+      - run: node tests/contract-ui.test.js
       - run: node tests/equipment-silhouettes-ui.test.js
       - run: node tests/stars.test.js
       - run: node tests/names.test.js

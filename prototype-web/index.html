@@ -240,16 +240,12 @@
         </section>
       </section>
 
-      <!-- Marchand du jour (doc 18 ; Idan, 2026-10-30) : écran fonctionnel, en attendant fond, emplacements et portraits. -->
+      <!-- Marchand du jour (doc 18 ; Idan, 2026-10-30 et 2026-10-31) : portrait et nom, onglets Acheter et Vendre. -->
       <section class="camp-scene hidden" data-camp-scene-panel="merchant" aria-label="Marchand">
         <div class="camp-scene-nav"><button class="secondary camp-scene-back" data-camp-back>← Retour au camp</button></div>
         <section class="panel merchant-panel">
-          <div class="section-title-row">
-            <div>
-              <p class="eyebrow">Marchand</p>
-              <h2 id="merchant-title">Pas de marchand aujourd’hui</h2>
-            </div>
-          </div>
+          <div id="merchant-head" class="merchant-head"></div>
+          <div id="merchant-tabs" class="merchant-tabs" role="tablist" aria-label="Acheter ou vendre"></div>
           <div id="merchant-content"></div>
         </section>
       </section>

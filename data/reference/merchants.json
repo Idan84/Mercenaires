@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "merchants",
-  "description": "Marchands qui passent au camp (doc 18 ; Idan, 2026-10-30). Pour l’instant un seul marchand test, qui ne vend que des épées longues T1 : Idan répartit les biens entre les marchands. stock : lignes à vendre (type d’objet, nom, tier), sans limite de quantité pour l’instant. peuple, culture, alignement : facultatifs ; sans eux, l’affinité avec le capitaine est nulle. poids : fréquence de passage relative.",
+  "description": "Marchands qui passent au camp (doc 18 ; Idan, 2026-10-30 et 2026-10-31). Chaque marchand a un nom fixe, un portrait fait pour lui seul (portrait : chemin de l’image, vide en attendant), une culture (peuple et alignement par défaut de sa culture, pour l’affinité avec le capitaine) et la liste des objets qu’il vend (vend : type d’objet et nom) : on ne trouve jamais autre chose chez lui. À chaque passage, 10 articles tirés au hasard dans cette liste, le tier selon la renommée (constantes merchants.*). poids : fréquence de passage relative.",
   "columns": [
     {
       "source": "Id",
@@ -10,6 +10,14 @@
     {
       "source": "Nom",
       "key": "nom"
+    },
+    {
+      "source": "Sexe",
+      "key": "sexe"
+    },
+    {
+      "source": "Portrait",
+      "key": "portrait"
     },
     {
       "source": "Peuple",
@@ -28,24 +36,37 @@
       "key": "poids"
     },
     {
-      "source": "Stock",
-      "key": "stock"
+      "source": "Vend",
+      "key": "vend"
     }
   ],
   "row_count": 1,
   "rows": [
     {
-      "id": "marchand-test",
-      "nom": "Marchand test",
-      "peuple": null,
-      "culture": null,
-      "alignement": null,
+      "id": "thorval-poudredefeu",
+      "nom": "Thorval Poudredefeu",
+      "sexe": "Homme",
+      "portrait": "",
+      "peuple": "Nain",
+      "culture": "Nains du chaos",
+      "alignement": "Chaotique neutre",
       "poids": 1,
-      "stock": [
+      "vend": [
         {
           "type": "weapon",
-          "objet": "Épée longue",
-          "tier": 1
+          "objet": "Pistolet"
+        },
+        {
+          "type": "weapon",
+          "objet": "Tromblon"
+        },
+        {
+          "type": "weapon",
+          "objet": "Canon à main"
+        },
+        {
+          "type": "weapon",
+          "objet": "Arquebuse"
         }
       ]
     }

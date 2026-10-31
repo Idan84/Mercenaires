@@ -247,3 +247,18 @@ Une mission sans combat pour gagner de l'or ; la contrepartie : on est privé de
 - **Pas de combat.** Au retour, chacun tire son sort : **50 %** rentré ; **25 %** rentré fatigué (« il a trop gardé le corps de charmantes demoiselles », fatigue 1D3 jours) ; **25 %** rentré blessé (« bagarre dans une taverne », blessure 1D3 jours). Une fenêtre le dit, avec une ligne par mercenaire.
 - **Prime de mission** versée au retour. **Réputation** : +10 (rentré ou fatigué), +5 (blessé) ; **renommée de la compagnie** : +10 par mission (points de mission, doc 09 §2) — « un peu », chiffres de JC validés par Idan.
 
+
+## 13 — Tableau des missions (Idan, 2026-10-31)
+
+À la Taverne, « Trouver une mission » montre une **carte par mission**, toutes au même gabarit
+(`prototype-web/contract-ui.js`, `missionCards`) : illustration, type (« Faire le ménage », « Garde du corps »),
+titre, description, difficulté en étoiles (la réputation minimale pour une garde du corps), récompense, durée. Au clic,
+le **détail** : grande illustration, titre et étoiles, description, faits avec leurs icônes (commanditaire, distance,
+ennemis, récompense, expiration…), la lettre du commanditaire s'il y en a une, et l'action (« Accepter le contrat »,
+« Choisir les gardes »).
+
+- **Illustration** : le champ `illustration` de la mission (`one-shot-missions.json`, `missions[]`) ou des gardes du corps
+  (`bodyguard-missions.json`), chemin d'une image du site ; vide, un emblème de la mission en attendant l'image.
+- **Difficulté** : la difficulté de la mission (`difficulte`) en étoiles de réputation (1 = 1 étoile de bronze), à
+  caler avec Idan quand les missions plus dures arriveront.
+- Un nouveau type de mission ajoute son gabarit dans `missionCards`.

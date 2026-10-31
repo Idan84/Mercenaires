@@ -28,6 +28,11 @@
   pour toi » (§9).
 - **Thorval Poudredefeu** : Nain, Nains du chaos, Chaotique neutre. Il vend **Pistolet, Tromblon, Canon à main,
   Arquebuse**. Son portrait est à venir (`portrait` vide : l'écran montre ses initiales en attendant).
+- **Durgan Battefer** (Idan, 2026-10-31 ; nom de JC3) : Nain, Nains des montagnes, Neutre bon (l'alignement principal
+  des nains). Il vend **Armure de plates, Casque de constitution, Amulette de volonté, Bague du courage, Marteau de
+  guerre, Hache de guerre**. Portrait à venir. Il hait les nains du chaos, et c'est réciproque (doc 02, « Cultures à
+  part »).
+- Les deux marchands ont le même `poids` : quand un marchand passe, c'est l'un ou l'autre, une fois sur deux.
 
 ## 4 — L'étal
 

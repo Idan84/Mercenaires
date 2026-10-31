@@ -17,6 +17,9 @@
 //   × 0,4 hors de sa liste × 0,85 par exemplaire du même objet au même tier déjà vendu pendant le passage
 //   × (1 + rareté) sur sa liste : +20 % pour un T3, +40 % pour un T4 à 1 étoile de bronze, jusqu'à 0 à 5 étoiles d'or.
 //   Jamais plus de 90 % du prix qu'il en demanderait. Ce qu'il rachète disparaît.
+// - « Rien que pour toi, capitaine » (Idan, 2026-10-31) : à +100 d'affinité, pendant son passage, il propose une fois un
+//   objet hors de sa liste (une famille d'équipement au hasard, puis un objet ; T3 ou T4, mêmes chances que l'étal) à
+//   50 % de son prix normal (merchants.special.*). Sa réplique : merchants.json, repliques.rien_que_pour_toi.
 // Constantes : merchants.* (formula-constants.json).
 (function(root,factory){
   const deps=typeof module!=="undefined"&&module.exports
@@ -49,8 +52,14 @@
       idleVisit:constant("merchants.affinity.idle_visit",-3),
       stewardMinAffinity:constant("merchants.steward.min_affinity",20),
       stewardStep:constant("merchants.steward.skill_step",10),
-      stewardPerStep:constant("merchants.steward.per_step",0.01)
+      stewardPerStep:constant("merchants.steward.per_step",0.01),
+      specialAffinity:constant("merchants.special.min_affinity",100),
+      specialPrice:constant("merchants.special.price_factor",0.5),
+      specialMinTier:constant("merchants.special.min_tier",3)
     };
+    // Les familles d'équipement où il pioche l'objet « rien que pour toi » (pas les fioles) : type d'objet et référentiel.
+    const FAMILIES=[["weapon","weapons"],["armor","baseArmors"],["helmet","helmets"],["boots","boots"],["belt","belts"],
+      ["amulet","amulets"],["cape","capes"],["gloves","gloves"],["pants","pants"],["ring","rings"]];
     // Poids des tiers de l'étal : merchants.stock.tier_<n>_base et _per_level ; un tier sans constante n'est jamais tiré.
     const TIERS=[];
     for(let tier=1;tier<=10;tier++){
@@ -73,7 +82,7 @@
     const merchantById=id=>list.find(m=>m.id===id)||null;
     // Ce que le reste du jeu voit d'un marchand.
     const view=m=>m?{id:m.id,name:m.nom||m.id,sex:m.sexe||null,people:m.peuple||null,culture:m.culture||null,alignment:m.alignement||null,
-      portrait:m.portrait||null,sells:(m.vend||[]).map(v=>({type:v.type,name:v.objet}))}:null;
+      portrait:m.portrait||null,sells:(m.vend||[]).map(v=>({type:v.type,name:v.objet})),lines:m.repliques||{}}:null;
     const levelOf=renown=>clamp(Number(starRules.company(renown)?.level)||1,1,maxLevel);
 
     // Chance qu'un marchand passe ce matin : 30 % + 4 % par niveau d'étoiles de la renommée (1 à 15), au plus 100 %.
@@ -102,6 +111,24 @@
         if(item) stock.push({id:stock.length,item});
       }
       return stock;
+    }
+
+    // « Rien que pour toi » : un objet hors de sa liste, d'une famille tirée au hasard, en T3 ou T4 (chances de l'étal
+    // ramenées à ces tiers) ; null si rien ne convient.
+    function rollSpecial(row,renown){
+      const sells=new Set((row?.vend||[]).map(v=>v.type+"|"+v.objet));
+      const families=FAMILIES.map(([type,key])=>({type,names:rows(reference?.[key]).map(r=>r.nom).filter(n=>n&&!sells.has(type+"|"+n))}))
+        .filter(f=>f.names.length);
+      if(!families.length) return null;
+      const high=tierChances(renown).filter(t=>t.tier>=C.specialMinTier&&t.chance>0);
+      const chances=high.length?high:[{tier:C.specialMinTier,chance:1}];
+      for(let i=0;i<20;i++){
+        const family=families[Math.floor(random()*families.length)]||families[0];
+        const name=family.names[Math.floor(random()*family.names.length)]||family.names[0];
+        const item=generator.createItemByName(family.type,name,weighted(chances,t=>t.chance).tier);
+        if(item&&values.value(item)!==null) return item;
+      }
+      return null;
     }
 
     function marketOf(state){
@@ -165,6 +192,16 @@
       return Math.max(1,Math.round(Math.min(price,C.cap*ask)));
     }
 
+    // À +100 d'affinité, une fois par passage : il met de côté l'objet « rien que pour toi » (visit.special).
+    function ensureSpecial(state,{renown=0}={}){
+      const visit=state.market?.visit,row=merchantById(visit?.merchantId);
+      if(!visit||!row||visit.special) return visit?.special||null;
+      if(affinityWith(state,view(row))<C.specialAffinity) return null;
+      const item=rollSpecial(row,renown);
+      visit.special=item?{item,taken:false}:{item:null,taken:true};
+      return visit.special;
+    }
+
     // Le matin (campaign.js, advanceOneDay) : le marchand de la veille repart (−3 d'affinité s'il n'a rien vendu ni
     // acheté) ; un autre passe peut-être. renown : renommée totale de la compagnie. Renvoie {chance, left, arrived}.
     function morning(state,{renown=0}={}){
@@ -176,11 +213,13 @@
       if(!list.length||random()>=chance) return {chance,left,arrived:null};
       const row=weighted(list,m=>Number(m.poids)||0);
       market.visit={merchantId:row.id,day:state.day,stock:rollStock(row,renown),sold:{},traded:false};
+      ensureSpecial(state,{renown});
       return {chance,left,arrived:view(row)};
     }
 
     // Le marchand présent aujourd'hui, son étal et ses prix ; null s'il n'y en a pas.
-    // {merchant, affinity, steward, level, offers:[{id, item, price}], buyback(item) → {price, specialty}}
+    // {merchant, affinity, steward, level, offers:[{id, item, price}], special:{item, price} (rien que pour toi, ou null),
+    //  buyback(item) → {price, specialty}}
     function visitOf(state,{renown=0}={}){
       const visit=state.market?.visit;
       if(!visit||visit.day!==state.day) return null;
@@ -192,7 +231,10 @@
         const specialty=specialtyOf(merchant,item);
         return {specialty,price:buybackPrice(item,{affinity:score,steward:help.bonus,specialty,level,sold:visit.sold?.[quantityKey(item)]||0})};
       };
-      return {merchant,affinity:score,steward:help.steward,stewardBonus:help.bonus,level,offers,buyback};
+      const kept=visit.special?.item&&!visit.special.taken?visit.special.item:null;
+      const askedFor=kept?sellPrice(kept,score,help.bonus):null;
+      const special=kept&&askedFor!==null?{item:kept,price:Math.max(1,Math.round(askedFor*C.specialPrice))}:null;
+      return {merchant,affinity:score,steward:help.steward,stewardBonus:help.bonus,level,offers,special,buyback};
     }
 
     // Achat de l'article id de l'étal : l'or doit suffire ; l'objet rejoint l'Intendance ; +2 d'affinité.
@@ -210,7 +252,25 @@
       market.visit.stock=market.visit.stock.filter(a=>a.id!==offer.id);
       market.visit.traded=true;
       changeAffinity(state,visit.merchant,C.perPurchase);
-      return {ok:true,item:offer.item,price:offer.price,merchant:visit.merchant};
+      // L'achat qui le porte à +100 : il sort aussitôt l'objet « rien que pour toi ».
+      const special=ensureSpecial(state,options);
+      return {ok:true,item:offer.item,price:offer.price,merchant:visit.merchant,special:Boolean(special?.item&&!special.taken)};
+    }
+
+    // Achat de l'objet « rien que pour toi » : une fois par passage, l'or doit suffire ; il rejoint l'Intendance.
+    function buySpecial(state,options={}){
+      const visit=visitOf(state,options);
+      if(!visit) return {ok:false,reason:"Aucun marchand au camp aujourd'hui."};
+      if(!visit.special) return {ok:false,reason:"Il n'a rien de côté pour vous."};
+      const {item,price}=visit.special;
+      if(state.company.gold<price) return {ok:false,reason:"Pas assez d'or.",price};
+      state.company.gold-=price;
+      if(!Array.isArray(state.company.stock)) state.company.stock=[];
+      state.company.stock.push(item);
+      state.market.visit.special.taken=true;
+      state.market.visit.traded=true;
+      changeAffinity(state,visit.merchant,C.perPurchase);
+      return {ok:true,item,price,merchant:visit.merchant,special:true};
     }
 
     // Vente d'un objet de l'Intendance : il disparaît, la compagnie touche le prix de rachat.
@@ -230,7 +290,7 @@
       return {ok:true,item,price,specialty,merchant:visit.merchant};
     }
 
-    return {constants:C,arrivalChance,tierChances,affinityWith,stewardHelp,sellPrice,buybackPrice,morning,visitOf,buy,sell};
+    return {constants:C,arrivalChance,tierChances,affinityWith,stewardHelp,sellPrice,buybackPrice,morning,visitOf,buy,buySpecial,sell,ensureSpecial};
   }
 
   return {createMerchantRules};

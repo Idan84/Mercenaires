@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 245,
+  "row_count": 248,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -1992,6 +1992,30 @@
       "description": "Bonus de l’intendant par tranche : −1 % sur vos achats, +1 % sur vos ventes, donc jusqu’à 10 % (Idan, 2026-10-31).",
       "formule": "Marchands",
       "valeur": 0.01,
+      "version": "V1"
+    },
+    {
+      "nom": "Marchand — rien que pour toi, affinité",
+      "code": "merchants.special.min_affinity",
+      "description": "« Rien que pour toi, capitaine » : à cette affinité avec le capitaine, le marchand propose une fois par passage un objet hors de sa liste (Idan, 2026-10-31).",
+      "formule": "Marchands",
+      "valeur": 100,
+      "version": "V1"
+    },
+    {
+      "nom": "Marchand — rien que pour toi, prix",
+      "code": "merchants.special.price_factor",
+      "description": "Prix de l’objet « rien que pour toi » = cette part du prix qu’il en demanderait normalement (Idan, 2026-10-31).",
+      "formule": "Marchands",
+      "valeur": 0.5,
+      "version": "V1"
+    },
+    {
+      "nom": "Marchand — rien que pour toi, tier minimal",
+      "code": "merchants.special.min_tier",
+      "description": "Tier minimal de l’objet « rien que pour toi » ; les chances des tiers sont celles de l’étal, ramenées aux tiers autorisés (Idan, 2026-10-31).",
+      "formule": "Marchands",
+      "valeur": 3,
       "version": "V1"
     }
   ]

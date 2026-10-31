@@ -2505,6 +2505,16 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .merchant-tile .gear-icon{width:30px;height:30px}
 .merchant-price{font-weight:700;color:#ffd77a;white-space:nowrap}
 .merchant-action{width:100%;padding:5px 8px}
+/* « Rien que pour toi » : le bouton Parler s'allume ; le dialogue montre la réplique, l'objet et son prix. */
+.merchant-talk-btn{animation:merchant-glow 1.8s ease-in-out infinite}
+@keyframes merchant-glow{0%,100%{box-shadow:0 0 0 0 rgba(255,215,122,0)}50%{box-shadow:0 0 14px 3px rgba(255,215,122,.55)}}
+@media (prefers-reduced-motion:reduce){.merchant-talk-btn{animation:none;box-shadow:0 0 10px 2px rgba(255,215,122,.5)}}
+.merchant-talk .talk-face .merchant-portrait{width:72px;height:72px}
+.merchant-talk .talk-face .merchant-initials{font-size:24px}
+.merchant-talk-item{display:flex;align-items:center;gap:14px;margin:4px 22px 10px;padding:10px 12px;border:1px solid #c9a15f;border-radius:12px;background:#261c15}
+.merchant-talk-what{display:grid;gap:2px}
+.merchant-talk-what b{color:#ffe1ac;font:600 17px Georgia,serif}
+.merchant-talk-what small{color:#c8a97c}
 /* Nouvelles du jour (Idan, 2026-10-30). */
 /* Notification du jour (Idan, 2026-10-31) : la date en grand, une ligne par chose qui compte (icône, phrase courte,
    visages, « Voir »), l'argent en pied. */

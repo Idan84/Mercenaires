@@ -3,7 +3,8 @@
 // Marchand du jour (doc 18 ; Idan, 2026-10-30 et 2026-10-31) : son portrait et son nom ; deux onglets, « Acheter » (son
 // étal de 10 articles) et « Vendre » (le stock de l'Intendance, ses armes d'abord). Une case par objet, la carte d'objet
 // au survol, le prix dessous. L'affinité et les chiffres de l'intendant ne sont pas affichés : seul son visage dit qu'il
-// négocie. Règles : game-core/merchants.js.
+// négocie. « Rien que pour toi, capitaine » : à +100 d'affinité, le bouton « Parler » s'allume ; sa réplique, l'objet,
+// « Je prends » ou « Pas aujourd'hui ». Règles : game-core/merchants.js.
 function merchantRules(){
   return game.merchantRules||(game.merchantRules=MercenairesMerchants.createMerchantRules({reference:game.referenceData,
     generator:game.generator,affinity:affinityRules()}));
@@ -32,6 +33,7 @@ function renderMerchantHead(visit){
   const m=visit.merchant,gold=Math.round(game.campaign.company.gold),steward=visit.steward;
   return `${renderMerchantPortrait(m)}
     <div class="merchant-name"><h2>${esc(m.name)}</h2><small>${esc(m.culture||m.people||"")}</small></div>
+    ${visit.special?`<button type="button" class="talk-offer-btn merchant-talk-btn" data-merchant-talk title="${esc(m.name)} a quelque chose pour vous">Parler</button>`:""}
     ${steward?`<span class="merchant-steward" title="${esc(steward.name)} négocie pour vous">${renderAvatar(steward,{variant:"compact",kind:"portrait"})}</span>`:""}
     <span class="merchant-gold" title="Caisse de la compagnie"><b${gold<0?' class="is-negative"':""}>${fmt(gold)}</b> PO</span>`;
 }
@@ -113,12 +115,32 @@ function renderMerchant(){
   content.innerHTML=merchantView.tab==="sell"?renderMerchantSell(visit):renderMerchantBuy(visit);
 }
 
+// « Rien que pour toi, capitaine » : sa réplique (merchants.json, repliques.rien_que_pour_toi), l'objet et son prix.
+function openMerchantTalk(){
+  const visit=merchantVisit(),special=visit?.special;
+  if(!special) return;
+  const m=visit.merchant,lines=m.lines?.rien_que_pour_toi||[];
+  const line=typeof variantPhrase==="function"?variantPhrase(lines,m.id+"|"+game.campaign.day):lines[0]||"";
+  const vars={objet:itemPublicName(special.item),prix:fmt(special.price)};
+  const short=game.campaign.company.gold<special.price;
+  $("merchant-talk-portrait").innerHTML=renderMerchantPortrait(m);
+  $("merchant-talk-name").textContent=m.name;
+  $("merchant-talk-line").textContent="« "+String(line).replace(/\{(\w+)\}/g,(all,key)=>key in vars?vars[key]:all)+" »";
+  $("merchant-talk-item").innerHTML=`<span class="merchant-tile">${gearTile({id:"merchant",label:special.item.name},special.item)}</span>
+    <span class="merchant-talk-what"><b>${esc(itemPublicName(special.item))}</b><small>${esc(typeof itemBaseName==="function"?itemBaseName(special.item):special.item.name)}</small></span>`;
+  // Le premier choix prend le focus (sinon la case de l'objet le prendrait et sa carte couvrirait la réplique).
+  $("merchant-talk-options").innerHTML=`<li><button type="button" data-merchant-special${short?` disabled title="Pas assez d’or"`:" autofocus"}>Je prends (${fmt(special.price)} PO)</button></li>
+    <li><button type="button" data-merchant-talk-close${short?" autofocus":""}>Pas aujourd’hui</button></li>`;
+  const dialog=$("merchant-talk-dialog");
+  if(!dialog.open) dialog.showModal();
+}
+
 function merchantTrade(kind,id){
   const rules=merchantRules(),options={renown:merchantRenown()};
-  const result=kind==="buy"?rules.buy(game.campaign,id,options):rules.sell(game.campaign,id,options);
+  const result=kind==="buy"?rules.buy(game.campaign,id,options):kind==="special"?rules.buySpecial(game.campaign,options):rules.sell(game.campaign,id,options);
   if(!result.ok){ tavernLog(result.reason,"warn"); renderMerchant(); return; }
   const name=itemPublicName(result.item);
-  tavernLog(kind==="buy"?`Acheté à ${result.merchant.name} : ${name} pour ${fmt(result.price)} PO.`:`Vendu à ${result.merchant.name} : ${name} pour ${fmt(result.price)} PO.`,"gear");
+  tavernLog(kind==="sell"?`Vendu à ${result.merchant.name} : ${name} pour ${fmt(result.price)} PO.`:`Acheté à ${result.merchant.name} : ${name} pour ${fmt(result.price)} PO.`,"gear");
   saveGame();
   renderGame();
 }
@@ -127,6 +149,10 @@ function initializeMerchantUi(){
   document.addEventListener("click",event=>{
     const tab=event.target.closest?.("[data-merchant-tab]");
     if(tab){ merchantView.tab=tab.dataset.merchantTab; renderMerchant(); return; }
+    if(event.target.closest?.("[data-merchant-talk]")){ openMerchantTalk(); return; }
+    if(event.target.closest?.("[data-merchant-talk-close]")){ $("merchant-talk-dialog").close(); return; }
+    const special=event.target.closest?.("[data-merchant-special]");
+    if(special&&!special.disabled){ $("merchant-talk-dialog").close(); merchantTrade("special"); return; }
     const kind=event.target.closest?.("[data-merchant-kind]");
     if(kind){ merchantView.kind=kind.dataset.merchantKind; renderMerchant(); return; }
     const buy=event.target.closest?.("[data-merchant-buy]");

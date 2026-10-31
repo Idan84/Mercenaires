@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "merchants",
-  "description": "Marchands qui passent au camp (doc 18 ; Idan, 2026-10-30 et 2026-10-31). Chaque marchand a un nom fixe, un portrait fait pour lui seul (portrait : chemin de l’image, vide en attendant), une culture (peuple et alignement par défaut de sa culture, pour l’affinité avec le capitaine) et la liste des objets qu’il vend (vend : type d’objet et nom) : on ne trouve jamais autre chose chez lui. À chaque passage, 10 articles tirés au hasard dans cette liste, le tier selon la renommée (constantes merchants.*). poids : fréquence de passage relative.",
+  "description": "Marchands qui passent au camp (doc 18 ; Idan, 2026-10-30 et 2026-10-31). Chaque marchand a un nom fixe, un portrait fait pour lui seul (portrait : chemin de l’image, vide en attendant), une culture (peuple et alignement par défaut de sa culture, pour l’affinité avec le capitaine) et la liste des objets qu’il vend (vend : type d’objet et nom) : on ne trouve jamais autre chose chez lui. À chaque passage, 10 articles tirés au hasard dans cette liste, le tier selon la renommée (constantes merchants.*). poids : fréquence de passage relative. repliques.rien_que_pour_toi : ce qu’il dit quand il propose, à +100 d’affinité, un objet hors de sa liste à moitié prix ({objet}, {prix}) ; une phrase est tirée au hasard, on peut en ajouter.",
   "columns": [
     {
       "source": "Id",
@@ -38,6 +38,10 @@
     {
       "source": "Vend",
       "key": "vend"
+    },
+    {
+      "source": "Répliques",
+      "key": "repliques"
     }
   ],
   "row_count": 1,
@@ -68,7 +72,12 @@
           "type": "weapon",
           "objet": "Arquebuse"
         }
-      ]
+      ],
+      "repliques": {
+        "rien_que_pour_toi": [
+          "Approche, capitaine… J’ai récupéré ça : {objet}. Je sais pas quoi en faire, et je saurais même pas dire ce que ça vaut. Rien que pour toi : {prix} PO, et on n’en parle plus."
+        ]
+      }
     }
   ]
 }

@@ -304,7 +304,7 @@ input, select { width: 100%; border: 1px solid #d0c8bc; background: white; borde
 #picto-tip strong{color:#ffe1ac;font:700 16px Georgia,serif}
 #picto-tip span{color:#d9c6a2}
 .picto[data-picto-name]{cursor:help}
-#item-card-float{position:fixed;z-index:95;display:none;width:max-content;pointer-events:none}
+#item-card-float{position:fixed;z-index:1100;display:none;width:max-content;pointer-events:none}
 /* L'image de l'objet en grand, juste à côté de la carte (Idan, 2026-10-25). */
 .item-card-wrap{display:flex;align-items:center}
 .item-card-wrap>.item-card{width:320px}

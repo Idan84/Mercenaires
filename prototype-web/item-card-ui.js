@@ -165,11 +165,13 @@ function showItemCard(tile){
   const float=itemCardFloat();
   float.innerHTML=template.innerHTML;
   float.classList.add("is-visible");
-  const box=tile.getBoundingClientRect(),card=float.getBoundingClientRect(),gap=12,margin=8;
+  // Dans un menu (Donner, Troquer…), la carte se met à côté du menu, pas sur ses options.
+  const menu=tile.closest(".deal-menu");
+  const box=(menu||tile).getBoundingClientRect(),row=tile.getBoundingClientRect(),card=float.getBoundingClientRect(),gap=12,margin=8;
   let left=box.right+gap;
   if(left+card.width>innerWidth-margin) left=box.left-gap-card.width;
   left=Math.max(margin,Math.min(left,innerWidth-margin-card.width));
-  const top=Math.max(margin,Math.min(box.top+box.height/2-card.height/2,innerHeight-margin-card.height));
+  const top=Math.max(margin,Math.min(row.top+row.height/2-card.height/2,innerHeight-margin-card.height));
   float.style.left=left+"px";
   float.style.top=top+"px";
 }

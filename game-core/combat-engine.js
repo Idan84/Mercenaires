@@ -1125,6 +1125,7 @@
       attackPower,
       hitProbability,
       damageMatchups,
+      effectiveArmorResistance,
       selectDamageMatchup,
       woundProbability,
       physicalDamage,

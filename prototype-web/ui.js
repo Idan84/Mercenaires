@@ -948,6 +948,9 @@ const STAT_ICONS={
   "Charisme":'<path d="M4 17h16l-1.5-9.5-4.5 4.5-2-6.5-2 6.5-4.5-4.5zM4 20h16"/>',
   "Perception":'<path d="M2.5 12S6 6 12 6s9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6z"/><circle cx="12" cy="12" r="3"/>',
   "Chance":'<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 9h.01M15 9h.01M9 15h.01M15 15h.01M12 12h.01" stroke-width="2.6"/>',
+  "Protection contre le tranchant":'<path d="M5 19 18 6M15 5l4 4M5 19l1-4 3 3z"/>',
+  "Protection contre le perforant":'<path d="M4 20 19 5M14 4h6v6M4 20l1.5-4.5 3 3z"/>',
+  "Protection contre le contondant":'<path d="M13 4l7 7-3 3-7-7zM11.5 9.5 4 17l3 3 7.5-7.5"/>',
   "Résistance physique":'<path d="M12 3 5 6v5c0 4.6 3 8.2 7 10 4-1.8 7-5.4 7-10V6z"/>',
   "Résistance au feu":'<path d="M12 3c1 3 5.5 5.2 5.5 10.2a5.5 5.5 0 0 1-11 0c0-3 2-4.2 2-6.4 1.6 1 2.2 2.2 2.2 3.3 0-3 1.3-5.1 1.3-7.1z"/>',
   "Résistance au froid":'<path d="M12 2.5v19M3.8 7.2l16.4 9.6M20.2 7.2 3.8 16.8M9.2 4l2.8 2 2.8-2M9.2 20l2.8-2 2.8 2"/>',
@@ -1048,30 +1051,51 @@ function placeStatPopover(value){
   pop.style.bottom=below?"auto":(box.bottom-line.top+6)+"px";
   pop.classList.toggle("is-above",!below);
 }
+// Onglet Caractéristiques rangé par fonction (Idan, 2026-10-31) : Attaque et Défense ; Vitesse, Magie, Moral et
+// commandement ; Protection de l'armure et Résistances (character-sheet-copy.json, stats_layout). Chaque valeur compte
+// l'équipement porté, en vert si elle monte, en rouge si elle baisse.
+const ARMOR_PROTECTIONS={"Protection contre le tranchant":"tranchant","Protection contre le perforant":"perforant","Protection contre le contondant":"contondant"};
+function armorProtection(m,stat){
+  return Math.round(combatEngine().effectiveArmorResistance({character:m,activeSet:1},ARMOR_PROTECTIONS[stat]));
+}
 function renderStatsTab(c){
-  const rows=game.referenceData?.characterSheetCopy?.stats||[];
+  const copy=game.referenceData?.characterSheetCopy||{};
+  const rows=[...(copy.stats||[]),...(copy.protections||[])];
+  const layout=copy.stats_layout?.colonnes||[];
   const status=rosterStatus(c);
   const effects=c.stats?equipmentEffectRules().effects(c):{};
-  const group=(key,title)=>`<section class="sheet-stat-group sheet-stat-group--${key}"><h4>${title}</h4>${rows.filter(r=>r.groupe===key).map(row=>{
-    // L'équipement compte (Idan, 2026-10-24) : valeur au combat, en rouge si elle baisse, en vert si elle monte.
-    const effect=effects[row.nom],value=effect?Math.round(effect.value):sheetStatValue(c,row.nom);
-    // Une caractéristique sans effet en jeu (pas de texte d'usage, comme la Régénération) ne s'affiche pas.
-    if(!Number.isFinite(value)||!row.usage) return "";
+  const label=(name,code)=>code==="resistance"?name.replace(/^Résistance (au |à la |aux )?/,"").replace(/^./,ch=>ch.toUpperCase())
+    :code==="protection"?name.replace(/^Protection contre le /,"").replace(/^./,ch=>ch.toUpperCase()):name;
+  const line=(name,code)=>{
+    const row=rows.find(r=>r.nom===name);
+    // Une caractéristique sans effet en jeu (pas de texte d'usage) ne s'affiche pas.
+    if(!row?.usage) return "";
+    if(ARMOR_PROTECTIONS[name]){
+      const value=armorProtection(c,name);
+      return `<div class="sheet-stat sheet-stat--${esc(pictoSlug(name))}">
+      ${statIcon(name)}
+      <span class="sheet-stat-name" tabindex="0">${esc(label(name,code))}${statTip(row)}</span>
+      <span class="sheet-stat-value${value<0?" is-malus":""}" tabindex="0">${fmt(value)}${comparePopover(c,value,m=>armorProtection(m,name))}</span>
+    </div>`;
+    }
+    const effect=effects[name],value=effect?Math.round(effect.value):sheetStatValue(c,name);
+    if(!Number.isFinite(value)) return "";
     const shift=effect?Math.sign(value-Math.round(effect.base)):0;
     // Le Charisme ne joue pas encore au combat : « Total ». La Constitution y joue par les PV max (Idan, 2026-10-25).
-    const lead=equipmentDetail(effect,row.nom==="Charisme"?"Total":"Au combat");
-    return `<div class="sheet-stat sheet-stat--${esc(pictoSlug(row.nom))}">
-      ${statIcon(row.nom)}
-      <span class="sheet-stat-name" tabindex="0">${esc(row.nom.replace(/^Résistance (au |à la |aux )?/,"").replace(/^./,ch=>ch.toUpperCase()))}${statTip(row)}</span>
-      <span class="sheet-stat-value${shift<0?" is-malus":shift>0?" is-bonus":""}" tabindex="0">${fmt(value)}${statPopover(c,row.nom,value,lead)}</span>
+    const lead=equipmentDetail(effect,name==="Charisme"?"Total":"Au combat");
+    return `<div class="sheet-stat sheet-stat--${esc(pictoSlug(name))}">
+      ${statIcon(name)}
+      <span class="sheet-stat-name" tabindex="0">${esc(label(name,code))}${statTip(row)}</span>
+      <span class="sheet-stat-value${shift<0?" is-malus":shift>0?" is-bonus":""}" tabindex="0">${fmt(value)}${statPopover(c,name,value,lead)}</span>
     </div>`;
-  }).join("")}</section>`;
+  };
+  const group=g=>`<section class="sheet-stat-group sheet-stat-group--${esc(g.code)}"><h4>${esc(g.titre)}</h4>${g.stats.map(name=>line(name,g.code)).join("")}</section>`;
   return `<section class="sheet-stats">
     <aside class="sheet-portrait">
       ${renderEvaluation(c)}${renderAvatar(c,{variant:"detail",kind:"full"})}
       <em class="roster-status roster-status--${status.kind}">${esc(status.label)}</em>
     </aside>
-    ${group("physique","Physique")}${group("mental","Mental")}${group("resistance","Résistances")}
+    ${layout.map(column=>`<div class="sheet-stat-column">${column.map(group).join("")}</div>`).join("")}
   </section>`;
 }
 // Onglet Compétences (Idan, 2026-10-21) : en tête, l'arme de prédilection, le style de combat et l'arme de

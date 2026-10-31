@@ -10,6 +10,7 @@
       "faction": "Gobelins",
       "nom_camp": "Camp gobelin",
       "difficulte": 1,
+      "illustration": "",
       "camp": {
         "novices_base": 3,
         "novices_faces": 4,

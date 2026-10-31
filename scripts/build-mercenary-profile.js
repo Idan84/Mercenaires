@@ -11,7 +11,7 @@
 // Écrit etalon.caracteristiques, seuils et mesure dans data/reference/mercenary-profile.json (le reste est écrit à la main).
 // À relancer quand la génération, le combat, les sorts ou les sous-catégories changent.
 //
-// Usage : node scripts/build-mercenary-profile.js [--recruits 4000]
+// Usage : node scripts/build-mercenary-profile.js [--recruits 4000] [--check]
 
 const fs=require("node:fs");
 const path=require("node:path");
@@ -127,6 +127,26 @@ data.mesure={
   meilleure_categorie_par_reputation:Object.fromEntries(Object.entries(bestByRep).map(([rep,list])=>[rep,Math.round(100*list.reduce((s,v)=>s+v,0)/list.length)/100])),
   echantillons:samples
 };
+
+// --check (garde-fou de la publication) : l'étalonnage du fichier doit être celui que donnent les règles d'aujourd'hui ; un
+// rééquilibrage du combat, des sorts ou de la génération oblige à relancer ce script.
+if(argv.includes("--check")){
+  const saved=JSON.parse(fs.readFileSync(OUT,"utf8"));
+  const close=(a,b)=>typeof a==="number"&&typeof b==="number"?Math.abs(a-b)<=Math.max(0.0011,1e-4*Math.abs(a)):JSON.stringify(a)===JSON.stringify(b);
+  const diff=[];
+  for(const [key,steps] of Object.entries(data.seuils)){
+    const old=saved.seuils?.[key];
+    if(!old||old.length!==steps.length||steps.some((v,i)=>!close(v,old[i]))) diff.push(key);
+  }
+  for(const key of Object.keys(saved.seuils||{})) if(!data.seuils[key]) diff.push(key);
+  for(const [stat,value] of Object.entries(data.etalon.caracteristiques)) if(!close(value,saved.etalon?.caracteristiques?.[stat])) diff.push("etalon."+stat);
+  if(diff.length){
+    console.error("Étalonnage des titres périmé ("+diff.slice(0,8).join(", ")+(diff.length>8?"…":"")+") : relancer node scripts/build-mercenary-profile.js");
+    process.exit(1);
+  }
+  console.log("Étalonnage des titres à jour.");
+  process.exit(0);
+}
 
 // Écriture : tableaux de seuils sur une ligne.
 let json=JSON.stringify(data,null,2)+"\n";

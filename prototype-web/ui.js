@@ -19,9 +19,9 @@ function renderRosterAffinity(c) {
   const affinity=captainAffinity(c);
   if(!affinity) return "";
   const {filled,phrase}=affinityPresentation(affinity.total,c);
-  return `<span class="roster-affinity">
+  // La phrase au survol (Idan, 2026-10-31 : le texte arrive en infobulle) ; elle reste écrite sur l'onglet Profil.
+  return `<span class="roster-affinity" title="${esc(phrase)}">
     <span class="roster-affinity-hearts" aria-label="Affinité : ${filled} cœurs sur 10"><span class="is-full">${"♥".repeat(filled)}</span><span class="is-empty">${"♡".repeat(10-filled)}</span></span>
-    <span class="roster-affinity-phrase">${esc(phrase)}</span>
   </span>`;
 }
 
@@ -584,6 +584,7 @@ const GEAR_ICONS={
   shield:'<path d="M12 3 5 6v5c0 4.6 3 8.2 7 10 4-1.8 7-5.4 7-10V6z"/>',
   ring:'<circle cx="12" cy="14.5" r="5.5"/><path d="m10 6 2-3 2 3-2 2.5z"/>',
   pouch:'<path d="M10 3h4M10 3v5L6.5 14A5 5 0 1 0 17.5 14L14 8V3"/><path d="M7.5 15h9"/>',
+  flask:'<path d="M9.5 3h5M10.5 3v5.2L5.6 17a2.6 2.6 0 0 0 2.3 4h8.2a2.6 2.6 0 0 0 2.3-4l-4.9-8.8V3"/><path d="M7.4 14.5h9.2"/>',
   mount:'<path d="M7 21v-5l-3-3 2-6 5-3 1-2 2 3c3 1 5 4 5 8v8"/><path d="M10 9h.01" stroke-width="2.6"/>'
 };
 // Position des emplacements sur la silhouette, en % de l'image carrée (silhouette centrée, debout).
@@ -592,6 +593,7 @@ function gearIcon(kind){
   return `<svg class="gear-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${GEAR_ICONS[kind]||GEAR_ICONS.pouch}</svg>`;
 }
 function gearKind(slot,item){
+  if(item?.itemType==="potion") return "flask";
   if(item?.itemType==="weapon") return /Boucliers/.test(String(item.category||""))?"shield":item.combatFamily==="ranged"?"ranged":"melee";
   if(item?.itemType==="armor") return "armor";
   if(/^ring_/.test(slot.id)) return "ring";
@@ -628,9 +630,11 @@ function equipmentArtLarge(item){
 function gearTile(slot,item,{extraClass="",dealSlot=null}={}){
   const art=equipmentArt(item);
   const quality=item?.qualityCode?` gear-tile--${esc(item.qualityCode)}`:"";
+  // Fiole sans image : sa couleur dit ce qu'elle contient (soins, mana, poison).
+  const potion=item?.itemType==="potion"?` gear-tile--potion gear-tile--${esc(String(item.templateId||"").replace(/^potion:/,""))}`:"";
   const framed=art?` gear-tile--art gear-tile--t${Number(item.tier)||1}`:"";
   const title=item?"":` title="${esc(slot.label)} : vide"`;
-  return `<span class="gear-tile ${item?"is-filled":"is-empty"}${quality}${framed}${extraClass?" "+extraClass:""}" tabindex="${item?0:-1}"${title} data-slot="${esc(dealSlot||slot.id)}"${item?` data-item="${esc(item.id)}"`:""}>
+  return `<span class="gear-tile ${item?"is-filled":"is-empty"}${quality}${potion}${framed}${extraClass?" "+extraClass:""}" tabindex="${item?0:-1}"${title} data-slot="${esc(dealSlot||slot.id)}"${item?` data-item="${esc(item.id)}"`:""}>
     ${art?`<img class="gear-art" src="${art}" alt="" loading="lazy">`:gearIcon(gearKind(slot,item))}${item?gearTooltip(item):""}
   </span>`;
 }

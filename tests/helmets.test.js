@@ -153,7 +153,7 @@ for(const h of helmets) for(const t of [1,2,3,4]){
   assert.ok(fs.existsSync(path.join(ROOT,"prototype-web","assets","equipment-large",key+".webp")),"grande image "+key);
 }
 assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","ui.js"),"utf8"),/const EQUIPMENT_ART_DIRS=\{helmet:"casques",/);
-assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","quartermaster-ui.js"),"utf8"),/\["helmet","Casques"\]/);
+assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","quartermaster-ui.js"),"utf8"),/\["helmet","Casques","head"\]/);
 assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","reference-data.js"),"utf8"),/helmets: "helmets\.json"/);
 
 console.log("Casques : données, moteur, fiche, carte, valeur, échanges, génération, stock, images — OK");

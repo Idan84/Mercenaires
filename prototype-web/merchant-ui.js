@@ -10,7 +10,7 @@ function merchantRules(){
 
 const merchantIsWoman=m=>String(m?.sex||"").toLowerCase().startsWith("f");
 
-// Les nouvelles du matin (Nouvelles du jour) : le marchand arrivé, ou personne.
+// Le journal du matin : le marchand arrivé (rien quand il n'en vient pas : Idan, 2026-10-31).
 function logMerchantMorning(morning){
   if(!morning) return;
   const m=morning.arrived;
@@ -18,7 +18,6 @@ function logMerchantMorning(morning){
     const she=merchantIsWoman(m),origin=[m.people,m.culture].filter(Boolean).join(", ");
     tavernLog(`${she?"Une marchande":"Un marchand"} s’installe au camp : ${m.name}${origin?" ("+origin+")":""}. ${she?"Elle":"Il"} repart demain matin.`,"gear");
   }
-  else tavernLog((morning.left?`${morning.left.name} a remballé son étal. `:"")+"Pas de marchand au camp aujourd’hui.","info");
 }
 
 function merchantRow({index,item,price}){
@@ -40,7 +39,6 @@ function renderMerchant(){
   const visit=merchantRules().visitOf(c);
   button.disabled=!visit;
   $("camp-merchant-note").textContent=visit?visit.merchant.name:"";
-  $("merchant-gold").textContent="Or : "+fmt(c.company.gold)+" PO";
   if(!visit){
     $("merchant-title").textContent="Pas de marchand aujourd’hui";
     $("merchant-content").innerHTML="";

@@ -19,19 +19,19 @@ function stewardFill(text,m,vars={}){
 }
 function stewardDays(n){ return `${fmt(n)} jour${n>1?"s":""}`; }
 
+// En haut de l'Intendance, compact (Idan, 2026-10-31 : l'essentiel au premier coup d'œil, le reste au survol) : son
+// portrait, son nom et « Lui parler » ; sa compétence et son ancienneté au survol. Sans intendant : « Nommer un
+// intendant » ouvre la liste des mercenaires ; un mercenaire déjà sollicité aujourd'hui est grisé.
 function renderStewardPanel(){
   const panel=$("steward-panel");
   if(!panel||!game.campaign) return;
   const copy=stewardCopy().panel||{},steward=currentSteward();
   if(steward){
     const skill=Math.round(Number(steward.skills?.camp?.Intendance)||0),days=stewardRules().daysAsSteward(game.campaign);
-    panel.innerHTML=`<div class="steward-card">
+    const detail=`Intendance ${fmt(skill)} · ${stewardFill(days?copy.since:copy.since_today,steward,{jours:stewardDays(days)})}`;
+    panel.innerHTML=`<div class="steward-card" title="${esc(detail)}">
       <button type="button" class="steward-face" data-character-id="${esc(steward.id)}" aria-label="Voir la fiche de ${esc(steward.name)}">${renderAvatar(steward,{variant:"compact",kind:"portrait"})}</button>
-      <div class="steward-info">
-        <small>${esc(stewardFill(copy.steward_title,steward))}</small>
-        <strong>${esc(steward.name)}</strong>
-        <span>Intendance ${fmt(skill)} · ${esc(stewardFill(days?copy.since:copy.since_today,steward,{jours:stewardDays(days)}))}</span>
-      </div>
+      <div class="steward-info"><small>${esc(stewardFill(copy.steward_title,steward))}</small><strong>${esc(steward.name)}</strong></div>
       <button type="button" class="talk-offer-btn" data-steward-talk>${esc(copy.talk||"")}</button>
     </div>`;
     return;
@@ -39,13 +39,10 @@ function renderStewardPanel(){
   const company=game.campaign.company;
   const picks=company.roster.filter(m=>m.id!==company.captainId&&!(company.lieutenantIds||[]).includes(m.id)).map(m=>{
     const asked=m.stewardOfferDay===game.campaign.day;
-    return `<button type="button" class="steward-pick" data-steward-offer="${esc(m.id)}"${asked?" disabled":""}>
-      ${renderAvatar(m,{variant:"compact",kind:"portrait"})}<span><b>${esc(m.name)}</b>${asked?`<small>${esc(copy.asked_today||"")}</small>`:""}</span></button>`;
+    return `<button type="button" class="steward-pick" data-steward-offer="${esc(m.id)}"${asked?` disabled title="${esc(copy.asked_today||"")}"`:""}>
+      ${renderAvatar(m,{variant:"compact",kind:"portrait"})}<b>${esc(m.name)}</b></button>`;
   }).join("");
-  panel.innerHTML=`<div class="steward-card steward-card--none">
-      <div class="steward-info"><small>${esc(copy.none_title||"")}</small><span>${esc(copy.none_text||"")}</span></div>
-    </div>
-    ${picks?`<details class="steward-offer"><summary>${esc(copy.offer||"")}</summary><div class="steward-picks">${picks}</div></details>`:""}`;
+  panel.innerHTML=picks?`<details class="steward-offer"><summary class="talk-offer-btn" title="${esc(copy.appoint_tip||"")}">${esc(copy.appoint||"")}</summary><div class="steward-picks">${picks}</div></details>`:"";
 }
 
 // Réponse à une proposition (poste ou retour sur le terrain), dans la boîte de dialogue des échanges.

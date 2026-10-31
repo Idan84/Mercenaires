@@ -108,14 +108,14 @@ const advance = new Function("game","campaignRules","tavernLog","fmt","saveGame"
 );
 advance();
 assert.equal(fakeGame.campaign.day,33);
-// Nouvelles du jour (Idan, 2026-10-30) : une pop-up à chaque passage de journée.
+// Notification du jour (Idan, 2026-10-30 et 2026-10-31) : à chaque passage de journée, à partir du rapport du jour.
 assert.deepEqual(shownNews.map(n=>n.day),[33]);
-assert.equal(fakeGame.dayNews,null,"la collecte s'arrête après la journée");
+assert.equal(shownNews[0].news.salaries.total,35,"le rapport de la journée");
 assert.equal(advanced,1);
 assert.equal(saved,1);
 assert.equal(redrawn,1);
 assert.ok(logged.some(m=>m.includes("guéri")));
-assert.ok(logged.some(m=>m.includes("Salaires versés : 35")));
+assert.ok(logged.some(m=>m.includes("Salaires : −35 PO")));
 assert.ok(logged.some(m=>m.includes("Nouveaux candidats : Erik")));
 assert.equal(nodes["hud-day"].textContent,"Jour 33 · An 842");
 // Une escouade arrivée attend son combat (Idan, 2026-10-24) : pas de jour suivant.

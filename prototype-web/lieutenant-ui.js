@@ -47,8 +47,9 @@ function renderLieutenants(){
       +(picks?`<details class="steward-offer"><summary>${esc(copy.offer||"")}</summary><div class="steward-picks">${picks}</div></details>`
         :`<p class="lieutenant-blocker">${esc(copy.nobody||"")}</p>`);
   }
-  box.innerHTML=`<h3>${esc(copy.title||"Lieutenants")}</h3>${cards}${open}
-    <p class="lieutenant-posts">${esc(MercenairesRecruitDialogue.fill(copy.posts||"",{quartiers:fmt(campaignRules().lieutenantQuarters(c)),n:fmt(rules.countedMembers(c))},false))}</p>`;
+  // Le décompte (quartiers, mercenaires comptés) au survol du titre (Idan, 2026-10-31).
+  const posts=MercenairesRecruitDialogue.fill(copy.posts||"",{quartiers:fmt(campaignRules().lieutenantQuarters(c)),n:fmt(rules.countedMembers(c))},false);
+  box.innerHTML=`<h3 title="${esc(posts)}">${esc(copy.title||"Lieutenants")}</h3>${cards}${open}`;
 }
 
 // La promotion : il accepte le poste, puis on parle salaire.

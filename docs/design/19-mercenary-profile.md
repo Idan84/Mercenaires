@@ -72,4 +72,8 @@ au masculin et au féminin.
   main) ; étalon, seuils et mesure (par le script).
 - `scripts/build-mercenary-profile.js` : étalonnage sur 4 000 recrues ; à relancer quand la génération, le combat, les
   sorts ou les sous-catégories changent.
+- **Garde-fous** (Idan, 2026-10-31) : la publication bloque si un sort ou une créature n'a pas de rôle (`sorts`,
+  `creatures`, ou `sans_role` pour Purge et Célérité), et si l'étalonnage n'est plus celui que donnent les règles
+  (`node scripts/build-mercenary-profile.js --check`). L'équipement et la progression, eux, suivent tout seuls : les
+  mesures passent par les règles du combat.
 - `prototype-web/ui.js` (`renderEvaluation`) ; test : `tests/mercenary-profile.test.js`.

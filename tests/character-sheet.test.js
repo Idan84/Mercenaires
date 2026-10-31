@@ -20,6 +20,14 @@ const characteristics=read("characteristics.json").rows;
 const shown=copy.stats.map(r=>r.nom);
 assert.equal(new Set(shown).size,shown.length);
 assert.ok(copy.stats.every(r=>["physique","mental","resistance","magie"].includes(r.groupe)&&typeof r.usage==="string"));
+// Rangées par fonction (Idan, 2026-10-31) : chaque caractéristique utile une seule fois, plus les trois protections de
+// l'armure ; rien d'inconnu.
+const layoutNames=copy.stats_layout.colonnes.flat().flatMap(g=>g.stats);
+assert.equal(copy.stats_layout.colonnes.length,3);
+assert.equal(new Set(layoutNames).size,layoutNames.length,"une seule fois chacune");
+for(const n of layoutNames) assert.ok(copy.stats.some(r=>r.nom===n&&r.usage)||copy.protections.some(r=>r.nom===n&&r.usage),"inconnue ou sans usage : "+n);
+for(const r of copy.stats) if(r.usage&&r.groupe!=="magie") assert.ok(layoutNames.includes(r.nom),"absente de l'onglet : "+r.nom);
+assert.equal(copy.protections.filter(r=>layoutNames.includes(r.nom)).length,3,"les trois protections de l'armure");
 // Infobulles pour le joueur (Idan, 2026-10-24) : rien sur la création, les formules ni ce qui n'est pas encore en jeu.
 for(const r of copy.stats) assert.doesNotMatch(r.usage,/création|pas encore|calculé|effective/i,r.nom);
 const generated=characteristics.filter(r=>r.famille==="Caractéristique").map(r=>r.nom);

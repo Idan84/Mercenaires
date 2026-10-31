@@ -2123,6 +2123,10 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 /* Onglet Caractéristiques (Idan, 2026-10-21) : portrait, puis Physique, Mental et Résistances. */
 .sheet-stats{display:grid;grid-template-columns:250px repeat(3,minmax(0,1fr));gap:18px;align-items:start}
 .sheet-stat-group{display:flex;flex-direction:column;gap:7px;min-width:0}
+/* Caractéristiques par fonction (Idan, 2026-10-31) : plusieurs groupes par colonne. */
+.sheet-stat-column{display:flex;flex-direction:column;gap:16px;min-width:0}
+@media(max-height:900px) and (min-width:861px){.sheet-stat-column{gap:10px}.sheet-stats .sheet-stat-group{gap:5px}.sheet-stats .sheet-stat-group h4{margin-bottom:3px}.sheet-stats .sheet-stat{padding:6px 12px}}
+@media(max-height:760px) and (min-width:861px){.sheet-stat-column{gap:8px}.sheet-stats .sheet-stat-group{gap:4px}.sheet-stats .sheet-stat-group h4{margin-bottom:2px;font-size:15px}.sheet-stats .sheet-stat{padding:4px 12px}}
 .sheet-stat-group h4{margin:0 0 8px;color:#d9b47a;font:700 17px Georgia,serif;letter-spacing:.08em;text-transform:uppercase}
 .sheet-stat{display:flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid #71583e;border-radius:8px;background:#2e231c}
 .sheet-stat-icon{flex:none;width:20px;height:20px;color:#d8b77d}
@@ -2482,9 +2486,9 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 /* 1280 × 720 : la colonne de droite du capitaine (carte de son aura) tient aussi sans défiler. */
 @media(max-height:760px) and (min-width:861px){.sheet-profile-main{gap:8px}.sheet-origins{margin-bottom:0}}
 /* La silhouette est carrée : sa largeur suit la hauteur disponible (width:auto l'écrasait à 0, rien ne la remplit). */
-@media(max-height:760px) and (min-width:1101px){.equipment-mannequin.gear-doll{width:min(100%,calc(92vh - 190px));justify-self:center}}
-/* Petits écrans (1280 × 720) : la colonne Dégâts, Set de rechange et Monture tient sans défiler. */
-@media(max-height:760px) and (min-width:861px){.gear-side{gap:8px}.gear-card{gap:6px;padding:9px 12px}.gear-damage-table td,.gear-damage-table tbody th{padding-top:2px;padding-bottom:2px}}
+@media(max-height:800px) and (min-width:1101px){.equipment-mannequin.gear-doll{width:min(100%,calc(92vh - 190px));justify-self:center}}
+/* Écrans jusqu'à 900 px de haut (1280 × 720, 1366 × 768) : la colonne Dégâts, Set de rechange et Monture tient sans défiler. */
+@media(max-height:900px) and (min-width:861px){.gear-side{gap:7px}.gear-card{gap:5px;padding:8px 12px}.gear-damage-table td,.gear-damage-table tbody th{padding-top:2px;padding-bottom:2px}}
 /* Évaluation du mercenaire (Idan, 2026-10-31) : titre et étoiles au-dessus du portrait. */
 .sheet-evaluation{display:grid;gap:6px;margin:0;padding:9px 10px;border:1px solid #71583e;border-radius:10px;background:#2e231c}
 .sheet-eval-title{margin:0;color:#ffe1ac;font:700 16px/1.2 Georgia,serif}

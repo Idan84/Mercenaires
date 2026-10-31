@@ -170,8 +170,10 @@
     }
   ],
   "selection": {
-    "description": "Ce qui s'affiche (Idan, 2026-10-31). Une facette d'attaque ne compte que s'il s'en sert (arme, sort) ; défense et moral comptent toujours ; sans arme de contact, c'est un point faible. Deux facettes d'un groupe fusionnent si elles ont au plus ecart_groupe niveaux d'écart. Point fort : au moins fort_ecart niveau au-dessus de sa moyenne (le barycentre des facettes qui comptent) ; sans point fort, son meilleur trait s'il dépasse sa moyenne (un mercenaire moyen partout garde son meilleur trait) ; point faible : au moins faible_ecart niveau en dessous, ou le niveau 1. Titre au contact et au tir : dégâts contre une armure lourde / contre une armure légère d'au moins perce_ratio (il garde ses dégâts face aux plates : marteau, masse, hache double, arquebuse, canon à main…) ou d'au plus leger_ratio (il ne vaut que contre les armures légères : dague, sabre, fouet, sarbacane…). Facettes secondaires : seulement à secondaire_ecart de sa moyenne. Gêne d'équipement : sans son armure, une facette d'attaque, de magie ou l'initiative gagnerait au moins gene_niveaux niveau et vaudrait au moins gene_ratio fois plus (la plus forte est montrée).",
+    "description": "Ce qui s'affiche (Idan, 2026-10-31). Une facette d'attaque ne compte que s'il s'en sert (arme, sort) ; défense et moral comptent toujours ; sans arme de contact, c'est un point faible. Deux facettes d'un groupe fusionnent si elles ont au plus ecart_groupe niveaux d'écart. Ce qu'il fait mène : sa meilleure façon d'agir (arme, sorts), même dans sa moyenne, ouvre la liste et donne le titre ; un autre point fort ne la remplace que s'il la dépasse d'au moins mene_ecart niveaux ; à niveau égal, l'arme du set 1 passe devant celle du set 2 ; ses autres façons d'agir à ecart_usage niveau près suivent, sauf si ce sont des points faibles. Point fort : au moins fort_ecart niveau au-dessus de sa moyenne (le barycentre des facettes qui comptent) ; point faible : au moins faible_ecart niveau en dessous, ou le niveau 1. Titre au contact et au tir : dégâts contre une armure lourde / contre une armure légère d'au moins perce_ratio (il garde ses dégâts face aux plates : marteau, masse, hache double, arquebuse, canon à main…) ou d'au plus leger_ratio (il ne vaut que contre les armures légères : dague, sabre, fouet, sarbacane…). Facettes secondaires : seulement à secondaire_ecart de sa moyenne. Gêne d'équipement : sans son armure, une facette d'attaque, de magie ou l'initiative gagnerait au moins gene_niveaux niveau et vaudrait au moins gene_ratio fois plus (la plus forte est montrée).",
     "ecart_groupe": 1,
+    "mene_ecart": 2,
+    "ecart_usage": 1,
     "fort_ecart": 0.5,
     "faible_ecart": 1,
     "secondaire_ecart": 2,
@@ -184,7 +186,7 @@
     "gene_ratio": 1.5
   },
   "titres": {
-    "description": "Le titre dit à quoi il sert vraiment (Idan, 2026-10-31 : « Destructeur de boîtes de conserve à distance », « Médecin chef pour les masses », « Médecin d'élite pour les grands blessés »). Principal : son premier point fort (contact et tir nuancés par le rapport de leurs dégâts contre une armure lourde et une armure légère ; contact + encaisser : pilier) ; sans point fort : « de rang ». Complément : son point fort suivant, d'une autre famille. m : masculin, f : féminin.",
+    "description": "Le titre dit à quoi il sert vraiment (Idan, 2026-10-31 : « Destructeur de boîtes de conserve à distance », « Médecin chef pour les masses », « Médecin d'élite pour les grands blessés »). Principal : sa première ligne forte, le plus souvent ce qu'il fait (contact et tir nuancés par le rapport de leurs dégâts contre une armure lourde et une armure légère ; contact + encaisser : pilier) ; « de rang » : rien à mesurer. Complément : son point fort suivant, d'une autre famille. m : masculin, f : féminin.",
     "principal": {
       "contact_perce": {
         "m": "Briseur d'armures",
@@ -312,56 +314,54 @@
     },
     "barycentre": {
       "ecart_moyen": 0.06,
-      "ecart_absolu_moyen": 0.58,
-      "a_un_niveau_pres": 85.9
+      "ecart_absolu_moyen": 0.57,
+      "a_un_niveau_pres": 87.6
     },
     "titres": {
-      "contact": 15.8,
-      "bouclier": 13.8,
-      "tir": 11.7,
-      "contact_perce": 11.6,
-      "moral": 10.1,
-      "rang": 9.7,
-      "tir_perce": 8.9,
-      "soutien": 3.5,
-      "magie_attaque": 3.1,
-      "contact_pilier": 2.4,
-      "contact_leger": 2.1,
-      "eclaireur": 1.6,
-      "invocation": 1.4,
-      "controle": 1.2,
-      "initiative": 1.1,
-      "soin": 0.9,
-      "magie_zone": 0.6,
-      "tir_leger": 0.5,
-      "soin_masse": 0.1
+      "contact_perce": 17.8,
+      "contact": 16.9,
+      "tir": 16.7,
+      "tir_perce": 12.7,
+      "soutien": 7.4,
+      "magie_attaque": 5,
+      "contact_pilier": 4.5,
+      "controle": 3.7,
+      "invocation": 3.4,
+      "contact_leger": 2.8,
+      "moral": 2,
+      "bouclier": 1.8,
+      "soin": 1.7,
+      "tir_leger": 1.1,
+      "magie_zone": 0.9,
+      "eclaireur": 0.7,
+      "initiative": 0.7,
+      "soin_masse": 0.4
     },
     "points_forts": {
-      "0": 9.7,
-      "1": 66.3,
-      "2": 21.2,
-      "3": 2.7
+      "1": 19.8,
+      "2": 36.7,
+      "3": 43.5
     },
     "points_faibles": {
-      "0": 55.1,
-      "1": 37,
-      "2": 7.9
+      "0": 55.7,
+      "1": 36.9,
+      "2": 7.4
     }
   },
   "seuils": {
-    "contact_leger": [4.18, 20.743, 54.201, 88.843, 137.089, 171.361, 214.201, 267.751, 334.689, 418.361, 522.951, 653.689, 817.111, 1021.389],
-    "contact_lourd": [2.093, 14.523, 50.172, 95.036, 141.867, 177.334, 221.668, 277.085, 346.356, 432.945, 541.181, 676.476, 845.595, 1056.994],
-    "tir_leger": [5.177, 13.022, 25.32, 37.346, 45.894, 57.368, 71.71, 89.637, 112.046, 140.058, 175.073, 218.841, 273.551, 341.939],
-    "tir_lourd": [2.322, 9.859, 24.403, 38.254, 50.809, 63.511, 79.389, 99.236, 124.045, 155.056, 193.82, 242.275, 302.844, 378.555],
+    "contact_leger": [5.937, 29.812, 77.912, 131.796, 200.826, 251.033, 313.791, 392.239, 490.299, 612.874, 766.093, 957.616, 1197.02, 1496.275],
+    "contact_lourd": [3.315, 21.691, 71.87, 140.273, 214.913, 268.641, 335.801, 419.751, 524.689, 655.861, 819.826, 1024.783, 1280.979, 1601.224],
+    "tir_leger": [6.061, 14.922, 27.191, 38.34, 45.894, 57.368, 71.71, 89.637, 112.046, 140.058, 175.073, 218.841, 273.551, 341.939],
+    "tir_lourd": [2.994, 12.333, 25.18, 38.359, 50.809, 63.511, 79.389, 99.236, 124.045, 155.056, 193.82, 242.275, 302.844, 378.555],
     "magie_attaque": [8.77, 38.382, 91.878, 203.955, 248.472, 310.59, 388.237, 485.296, 606.62, 758.275, 947.844, 1184.805, 1481.006, 1851.258],
     "magie_zone": [3.349, 32.131, 85.816, 169.876, 199.21, 249.013, 311.266, 389.083, 486.354, 607.943, 759.929, 949.911, 1187.389, 1484.236],
     "soin": [6.001, 27.521, 94.072, 218.124, 643.889, 804.861, 1006.076, 1257.595, 1571.994, 1964.992, 2456.24, 3070.3, 3837.875, 4797.344],
     "soin_masse": [0, 7.547, 30.51, 66.579, 66.586, 83.233, 104.041, 130.051, 162.564, 203.205, 254.006, 317.508, 396.885, 496.106],
-    "soutien": [0.24, 0.769, 0.922, 0.942, 0.947, 1.184, 1.48, 1.85, 2.313, 2.891, 3.614, 4.518, 5.648, 7.06],
-    "invocation": [0.039, 0.481, 0.904, 0.941, 0.942, 1.178, 1.473, 1.841, 2.301, 2.876, 3.595, 4.494, 5.618, 7.023],
-    "controle": [0.081, 0.703, 0.91, 0.941, 0.945, 1.181, 1.476, 1.845, 2.306, 2.883, 3.604, 4.505, 5.631, 7.039],
-    "encaisser_coups": [2.958, 4.899, 7.982, 17.052, 51.911, 64.889, 81.111, 101.389, 126.736, 158.42, 198.025, 247.531, 309.414, 386.768],
-    "encaisser_fleches": [6.415, 10.585, 17.043, 31.99, 94.844, 118.555, 148.194, 185.242, 231.552, 289.44, 361.8, 452.25, 565.313, 706.641],
+    "soutien": [0.115, 0.516, 0.895, 1.192, 1.321, 1.651, 2.064, 2.58, 3.225, 4.031, 5.039, 6.299, 7.874, 9.843],
+    "invocation": [0.028, 0.355, 0.83, 1.087, 1.242, 1.553, 1.941, 2.426, 3.033, 3.791, 4.739, 5.924, 7.405, 9.256],
+    "controle": [0.043, 0.485, 0.875, 1.157, 1.272, 1.59, 1.988, 2.485, 3.106, 3.883, 4.854, 6.068, 7.585, 9.481],
+    "encaisser_coups": [1.995, 3.328, 5.65, 11.352, 31.973, 39.966, 49.958, 62.448, 78.06, 97.575, 121.969, 152.461, 190.576, 238.22],
+    "encaisser_fleches": [5.037, 8.394, 13.918, 26.81, 70.48, 88.1, 110.125, 137.656, 172.07, 215.087, 268.859, 336.074, 420.093, 525.116],
     "moral": [30.25, 56.25, 77.75, 94.5, 109.25, 136.563, 170.704, 213.38, 266.725, 333.406, 416.758, 520.948, 651.185, 813.981],
     "initiative": [20.798, 50.89, 77.45, 95.334, 116.814, 146.017, 182.521, 228.151, 285.189, 356.486, 445.607, 557.009, 696.261, 870.326],
     "discretion": [18.191, 27.173, 43.226, 61.124, 72.237, 90.296, 112.87, 141.088, 176.36, 220.45, 275.563, 344.454, 430.568, 538.21],

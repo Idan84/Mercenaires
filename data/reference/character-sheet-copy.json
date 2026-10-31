@@ -403,5 +403,97 @@
     "Pénétration d’armure": {
       "usage": "S’ajoute à la Puissance, moins la Protection de l’armure de la cible."
     }
+  },
+  "protections": [
+    {
+      "nom": "Protection contre le tranchant",
+      "usage": "Ce que son armure oppose aux épées, haches et autres lames : la Pénétration d’armure de l’attaquant doit la dépasser pour bien blesser."
+    },
+    {
+      "nom": "Protection contre le perforant",
+      "usage": "Ce que son armure oppose aux lances, flèches, carreaux et balles : la Pénétration d’armure de l’attaquant doit la dépasser pour bien blesser."
+    },
+    {
+      "nom": "Protection contre le contondant",
+      "usage": "Ce que son armure oppose aux masses, marteaux et pierres : la Pénétration d’armure de l’attaquant doit la dépasser pour bien blesser."
+    }
+  ],
+  "stats_layout": {
+    "description": "Onglet Caractéristiques rangé par fonction (Idan, 2026-10-31) : trois colonnes, des groupes dans chacune. Une caractéristique qui sert à plusieurs choses va dans sa fonction principale ; son infobulle cite les autres.",
+    "colonnes": [
+      [
+        {
+          "code": "attaque",
+          "titre": "Attaque",
+          "stats": [
+            "Force",
+            "Dextérité",
+            "Perception",
+            "Chance"
+          ]
+        },
+        {
+          "code": "defense",
+          "titre": "Défense",
+          "stats": [
+            "Points de vie",
+            "Constitution",
+            "Endurance",
+            "Esquive",
+            "Résistance physique"
+          ]
+        }
+      ],
+      [
+        {
+          "code": "vitesse",
+          "titre": "Vitesse",
+          "stats": [
+            "Vitesse",
+            "Initiative"
+          ]
+        },
+        {
+          "code": "magie",
+          "titre": "Magie",
+          "stats": [
+            "Puissance magique",
+            "Réserve de mana",
+            "Intelligence"
+          ]
+        },
+        {
+          "code": "moral",
+          "titre": "Moral et commandement",
+          "stats": [
+            "Courage",
+            "Volonté",
+            "Charisme",
+            "Intimidation"
+          ]
+        }
+      ],
+      [
+        {
+          "code": "protection",
+          "titre": "Protection de l’armure",
+          "stats": [
+            "Protection contre le tranchant",
+            "Protection contre le perforant",
+            "Protection contre le contondant"
+          ]
+        },
+        {
+          "code": "resistance",
+          "titre": "Résistances",
+          "stats": [
+            "Résistance au feu",
+            "Résistance au froid",
+            "Résistance à la foudre",
+            "Résistance au poison"
+          ]
+        }
+      ]
+    ]
   }
 }

@@ -1,8 +1,9 @@
 # Évaluation d'un mercenaire
 
 > Décisions d'Idan du 2026-10-31. Étape 1 codée : facettes, étoiles, points forts et faibles, gêne d'équipement, titre,
-> au-dessus du portrait de la fiche. À venir : l'onglet **Conseils** (l'intendant, façon adjoint de Football Manager,
-> avec des erreurs volontaires ; fiabilité, rapport valeur / salaire), puis les **Caractéristiques rangées par fonction**.
+> au-dessus du portrait de la fiche ; Caractéristiques rangées par fonction, avec les protections de l'armure. À venir :
+> l'onglet **Conseils** (l'intendant, façon adjoint de Football Manager, avec des erreurs volontaires ; fiabilité,
+> rapport valeur / salaire).
 
 ## 1 — Ce que voit le joueur
 
@@ -27,11 +28,11 @@ en armure de plates (armure lourde).
 
 | Facette | Mesure |
 |---|---|
-| Au contact, contre une armure légère / lourde | dégâts attendus par tour (toucher × blesser × dégâts, les deux mains au combat à deux armes), meilleur des deux sets |
-| Au tir, contre une armure légère / lourde | dégâts attendus par tir à mi-portée de l'arme, meilleur des deux sets |
+| Au contact, contre une armure légère / lourde | dégâts attendus par tour (toucher × blesser × dégâts, les deux mains au combat à deux armes, enchaînements compris), meilleur des deux sets |
+| Au tir, contre une armure légère / lourde | dégâts attendus par tour à mi-portée de l'arme, tirs enchaînés compris (arc, fronde, sarbacane), meilleur des deux sets |
 | Sorts d'attaque, de zone, soins, soins de groupe | meilleur sort de la famille : réussite × effet moyen × mana (assez pour 3 lancers ?) |
-| Sorts de soutien, invocations, contrôle | meilleur sort de la famille : réussite × mana |
-| Encaisser les coups / les flèches | PV / dégâts attendus d'un coup d'épée / d'une flèche de l'étalon |
+| Sorts de soutien, invocations, contrôle | meilleur sort de la famille : réussite × mana × maîtrise du sort (durée, bonus, portée en dépendent) |
+| Encaisser les coups / les flèches | PV / dégâts attendus par tour de l'étalon à l'épée / à l'arc |
 | Moral | Courage + 0,25 × Volonté |
 | Initiative, discrétion, repérage (secondaires) | initiative au combat, Discrétion, Perception |
 
@@ -47,12 +48,18 @@ fois, `data/reference/mercenary-profile.json`) : un mercenaire qui progresse, ou
 l'or.
 
 Vérification sur 4 000 recrues : la moyenne de ses facettes tombe en moyenne à 0,06 niveau de sa réputation, à un
-niveau près pour 86 % d'entre elles.
+niveau près pour 88 % d'entre elles.
 
 ## 4 — Ce qui ressort
 
-- **Point fort** : au moins un demi-niveau au-dessus de sa moyenne (le barycentre des facettes qui comptent) ; un
-  mercenaire moyen partout garde son meilleur trait. Au plus 3.
+- **Ce qu'il fait mène** (Idan, 2026-10-31 : un mage qui connaît un soin et un sort d'attaque doit le montrer ; un
+  archer n'est pas un « pilier de la mêlée » ; jamais de titre sans étoile) : sa meilleure façon d'agir (arme, sorts),
+  même dans sa moyenne, ouvre la liste et donne le titre. Un autre point fort (encaisser, moral…) ne la remplace que
+  s'il la dépasse d'au moins deux niveaux ; elle le suit alors. À niveau égal, l'arme du set 1 passe devant celle du
+  set 2 ; sinon, la mieux placée dans son niveau. Ses autres façons d'agir à un niveau près suivent (l'archer qui
+  soigne aussi montre ses soins), sauf si ce sont des points faibles.
+- **Point fort** : au moins un demi-niveau au-dessus de sa moyenne (le barycentre des facettes qui comptent). Au plus 3
+  lignes fortes en tout.
 - **Point faible** : au moins un niveau en dessous, ou le niveau 1 ; **aucune arme de contact** en est un. Au plus 2.
 - **Facettes secondaires** (initiative, discrétion, repérage) : seulement à deux niveaux de sa moyenne.
 - **Groupes** : « Au contact », « Au tir », « Encaisser » fusionnent leurs deux facettes si elles ont au plus un niveau
@@ -62,13 +69,13 @@ niveau près pour 86 % d'entre elles.
 
 ## 5 — Le titre
 
-- **Principal** : son premier point fort. Au contact et au tir, le rapport de ses dégâts contre une armure lourde et
+- **Principal** : la première ligne forte (ce qu'il fait, le plus souvent). Au contact et au tir, le rapport de ses dégâts contre une armure lourde et
   contre une armure légère le nuance : au moins 1 (il garde ses dégâts face aux plates : marteau, masse, hache double,
   arquebuse, canon à main) → « Briseur d'armures », « Destructeur de boîtes de conserve à distance » ; au plus 0,5 (dague,
   sabre, fouet, sarbacane) → « Faucheur de piétaille », « Harceleur à distance ». Contact et encaisser → « Pilier de la
-  mêlée ». Sans point fort : « Homme de rang ».
+  mêlée ». « Homme de rang » ne reste que pour celui qui n'a rien à mesurer.
 - **Complément** : son point fort suivant, d'une autre famille (« , dur au mal », « qui manie aussi la magie »,
-  « , inébranlable »…).
+  « , inébranlable »…) : un vrai point fort, ou la magie (« qui manie aussi la magie » est un fait).
 - Les mots, au masculin et au féminin : `mercenary-profile.json` (`titres`), à corriger par Idan.
 
 ## 6 — Code et données

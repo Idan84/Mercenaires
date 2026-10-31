@@ -27,6 +27,7 @@ jobs:
       - run: node tests/affinity.test.js
       - run: node tests/roster-ui.test.js
       - run: node tests/quartermaster-ui.test.js
+      - run: node tests/day-news-ui.test.js
       - run: node tests/equipment-silhouettes-ui.test.js
       - run: node tests/stars.test.js
       - run: node tests/names.test.js
@@ -92,6 +93,7 @@ jobs:
       - run: node --check prototype-web/quartermaster-ui.js
       - run: node --check prototype-web/contract-ui.js
       - run: node --check prototype-web/merchant-ui.js
+      - run: node --check prototype-web/day-news-ui.js
       - run: node --check prototype-web/reference-data.js
       - run: node --check prototype-web/design/design.js
       - run: node --check prototype-web/design/avatars-lab.js

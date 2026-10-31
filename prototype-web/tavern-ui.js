@@ -49,8 +49,6 @@ function tavernCandidate(id){
 
 function tavernLog(message,kind="info"){
   game.tavernLog=[{message,kind,day:game.campaign.day},...(game.tavernLog||[])].slice(0,40);
-  // Pendant le passage d'une journée, chaque ligne va aussi dans les Nouvelles du jour.
-  if(game.dayNews) game.dayNews.push({message,kind});
   if(typeof gameAction==="function") gameAction(message);
 }
 
@@ -97,7 +95,7 @@ function renderTavern(){
   if(typeof renderGameHud==="function") renderGameHud();
   $("tavern-candidates").innerHTML=c.tavern.candidates.length
     ?c.tavern.candidates.map(renderTavernCard).join("")
-    :`<p class="recruit-empty">La taverne est vide. De nouveaux candidats arriveront demain matin.</p>`;
+    :`<p class="recruit-empty">Personne à l’auberge.</p>`;
 }
 
 // Outil de test (pas une règle du jeu) : ajoute de l'or pour tester les paiements (demande d'Idan).
@@ -109,16 +107,6 @@ function addTestGold(){
   tavernLog("Outil de test : +"+TEST_GOLD+" PO.","gear");
   saveGame();
   renderTavern();
-}
-
-// Nouvelles du jour (Idan, 2026-10-30) : une pop-up à chaque passage de journée, avec tout ce que le journal annonce.
-function showDayNews(day,news){
-  const dialog=$("day-news-dialog");
-  if(!dialog) return;
-  $("day-news-title").textContent="Jour "+day;
-  $("day-news-list").innerHTML=news.length?news.map(n=>`<li class="day-news--${esc(n.kind)}">${esc(n.message)}</li>`).join(""):`<li>Rien de neuf au camp.</li>`;
-  if(dialog.open) dialog.close();
-  dialog.showModal();
 }
 
 // Commande globale du camp (bouton play de la barre du bas) : l'horloge existante reste la seule source
@@ -133,27 +121,24 @@ function advanceCampDay(){
     return;
   }
   const [report]=campaignRules().advanceTime(game.campaign,1);
-  game.dayNews=[];
   logDayReport(report);
-  const news=game.dayNews;
-  game.dayNews=null;
   saveGame();
   renderGame();
   if(typeof renderContractBoard==="function"&&!$("tavern-missions-view").classList.contains("hidden")) renderContractBoard();
   // Une escouade vient d'arriver : la fenêtre « Commencer le combat » (doc 17).
   if(game.pendingExpeditionDialog){ openExpeditionDialog(game.pendingExpeditionDialog); game.pendingExpeditionDialog=null; }
-  // Les Nouvelles du jour par-dessus (Idan, 2026-10-30) ; les rapports des lieutenants et l'arrivée d'une escouade
-  // attendent dessous.
-  if(typeof showDayNews==="function") showDayNews(game.campaign.day,news);
+  // La notification du jour par-dessus (Idan, 2026-10-30 et 2026-10-31 : day-news-ui.js) ; les rapports des
+  // lieutenants et l'arrivée d'une escouade attendent dessous.
+  if(typeof showDayNews==="function") showDayNews(game.campaign.day,report);
 }
 
 // Journal d'une journée passée : guérisons, salaires, Taverne, contrat pris par une autre compagnie (doc 17).
 function logDayReport(report){
   for(const r of report.recovered) tavernLog(r.mercenary.name+(r.kind==="wounded"?" est guéri de ses blessures.":" est reposé."),"turn");
-  if(report.salaries.total) tavernLog("Salaires versés : "+fmt(report.salaries.total)+" PO ("+report.salaries.count+" mercenaires sous contrat).","gear");
+  if(report.salaries.total) tavernLog("Salaires : −"+fmt(report.salaries.total)+" PO.","gear");
   const gone=report.tavern.departures.map(d=>d.candidate.mercenary.name);
   const arrived=report.tavern.arrivals.map(a=>a.mercenary.name);
-  tavernLog(gone.length?"Engagés ailleurs pendant la nuit : "+gone.join(", ")+".":"Personne n’a été engagé ailleurs cette nuit.",gone.length?"bad":"info");
+  if(gone.length) tavernLog("Engagés ailleurs pendant la nuit : "+gone.join(", ")+".","bad");
   if(arrived.length) tavernLog("Nouveaux candidats : "+arrived.join(", ")+".","turn");
   if(report.missionTaken) tavernLog("Le contrat de "+report.missionTaken.fields.lieu+" a été pris par une autre compagnie ; un nouveau est affiché.","bad");
   if(report.bodyguardTaken) tavernLog("L’offre de garde du corps ("+report.bodyguardTaken.client.toLocaleLowerCase("fr")+") a trouvé preneur ailleurs ; une nouvelle est affichée.","info");
@@ -424,7 +409,6 @@ function initializeTavernUi(){
   });
 
   $("hud-next-day-btn").addEventListener("click",advanceCampDay);
-  $("day-news-ok").addEventListener("click",()=>$("day-news-dialog").close());
   $("test-gold-btn").addEventListener("click",addTestGold);
   $("tavern-candidates").addEventListener("click",e=>{
     const btn=e.target.closest("[data-tavern-open]");

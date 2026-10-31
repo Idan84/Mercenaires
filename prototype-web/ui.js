@@ -19,9 +19,9 @@ function renderRosterAffinity(c) {
   const affinity=captainAffinity(c);
   if(!affinity) return "";
   const {filled,phrase}=affinityPresentation(affinity.total,c);
-  return `<span class="roster-affinity">
+  // La phrase au survol (Idan, 2026-10-31 : le texte arrive en infobulle) ; elle reste écrite sur l'onglet Profil.
+  return `<span class="roster-affinity" title="${esc(phrase)}">
     <span class="roster-affinity-hearts" aria-label="Affinité : ${filled} cœurs sur 10"><span class="is-full">${"♥".repeat(filled)}</span><span class="is-empty">${"♡".repeat(10-filled)}</span></span>
-    <span class="roster-affinity-phrase">${esc(phrase)}</span>
   </span>`;
 }
 

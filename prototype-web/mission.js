@@ -1270,6 +1270,14 @@ function resolveMissionSpell(caster,target,code,extra={}){
     effect=healed.some(([,hp])=>hp>0);
     missionLog(name+" lance "+spell.nom+" (rayon "+out.zone.radius+")"+detail+" : "+out.amount+" PV pour chacun"
       +(healed.length?" — "+healed.map(([u,hp])=>u.character.name+" +"+hp).join(", "):" — personne dans la zone")+"."+critical,"magic");
+  }else if(spell.effet==="degats_sans_resistance"&&out.zone){
+    // Lumière sacrée (Vie ; Idan, 2026-10-31) : la Restitution en cercle, sur chaque mort-vivant de la zone, les nôtres compris.
+    const undead=magic.unitsInZone(out.zone.center,out.zone.radius,missionUnits()).filter(u=>magic.isUndead(u));
+    missionLog(name+" lance "+spell.nom+" (rayon "+out.zone.radius+")"+detail+" : "+out.amount+" PV à chaque mort-vivant, sans aucune résistance"
+      +(undead.length?" — "+undead.map(u=>u.character.name).join(", "):" — aucun mort-vivant dans la zone")+"."+critical,"damage");
+    for(const u of undead) damageMissionUnitBySpell(u,out.amount,caster);
+    effect=undead.length>0&&out.amount>0;
+    checkMissionEnd();
   }else if(spell.effet==="degats_sans_resistance"){
     missionLog(name+" lance "+spell.nom+on+detail+" : "+out.amount+" PV, sans aucune résistance."+critical,"damage");
     damageMissionUnitBySpell(target,out.amount,caster);
@@ -1278,6 +1286,29 @@ function resolveMissionSpell(caster,target,code,extra={}){
   }else if(spell.effet==="purge_poison"){
     target.poisoned=false;
     missionLog(name+" lance "+spell.nom+on+detail+" : le poison est éliminé.","magic");
+  }else if(spell.effet==="transfert_pv"){
+    // Lien de vie (Vie ; Idan, 2026-10-31) : le lanceur donne ce qu'il faut (au plus les dés, en gardant 1 PV), l'allié reçoit × 1,5.
+    const link=target.withered?{given:0,received:0}:magic.lifeLink(caster,target,out.amount,out.transfer.factor);
+    caster.hp-=link.given;
+    if(link.given) missionFx(caster,"−"+link.given,"damage");
+    const healed=healMissionUnit(target,link.received);
+    effect=healed>0;
+    missionLog(name+" lance "+spell.nom+on+detail+" : "+name+" donne "+link.given+" PV, "+target.character.name+" en reçoit +"+healed
+      +(link.given<out.amount?" (don de "+out.amount+" au plus)":"")+missionWitherNote(target)+"."+critical,"magic");
+  }else if(spell.effet==="delivrance"){
+    // Délivrance (Vie ; Idan, 2026-10-31) : fin de la peur (la fuite), de la paralysie, du gel et de la frénésie.
+    const removed=out.delivrance||[];
+    if(removed.includes("fuite")){ target.fleeing=false;target.fleeTurn=0; }
+    if(removed.includes("paralysie")) target.paralyzed=null;
+    if(removed.includes("gel")) target.statMalus=null;
+    if(removed.includes("frenesie")){
+      const buffs={...(target.statBuffs||{})};
+      delete buffs[target.frenzy?.code];
+      target.statBuffs=buffs;target.frenzy=null;
+    }
+    const LABELS={fuite:"de la peur",paralysie:"de la paralysie",gel:"du gel",frenesie:"de la frénésie"};
+    effect=removed.length>0;
+    missionLog(name+" lance "+spell.nom+on+detail+" : fin "+removed.map(x=>LABELS[x]).join(", ")+".","magic");
   }else if(spell.effet==="degats"&&spell.toucher==="distance"){
     const aim=" (toucher "+Math.round(out.pHit)+" %, jet "+out.hitRoll+")";
     effect=false;

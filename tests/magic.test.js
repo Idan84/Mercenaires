@@ -26,7 +26,7 @@ function mage({pm,vie,level=1,int,chance=54,mana=53,charisma=50,items=[],slots={
   return {
     name:"Mage",stats:{"Puissance magique":pm,Intelligence:int,Chance:chance,"Réserve de mana":mana,Constitution:50,Endurance:50,Volonté:50,Charisme:charisma},
     skills:{magic:{Vie:vie,Feu:vie,Eau:vie,Transmutation:vie,Foudre:vie,Télékinésie:vie,Illusion:vie,Nécromancie:vie,Invocation:vie}},mana,
-    spells:["quick_heal","deep_heal","regeneration","mass_heal","restitution","purge"].map(code=>({code,school:"Vie",mastery:level}))
+    spells:["quick_heal","deep_heal","regeneration","mass_heal","restitution","purge","blessing","life_link","deliverance","holy_light"].map(code=>({code,school:"Vie",mastery:level}))
       .concat(["fire_bolt","fireball","fire_ring","flaming_weapon","fire_armor","magma"].map(code=>({code,school:"Feu",mastery:level})))
       .concat(["fog","healing_water","ice_arrow","tsunami","frost_armor","freeze","ice_weapon"].map(code=>({code,school:"Eau",mastery:level})))
       .concat(["sixth_sense","titan_strength","cheetah_speed","stone_skin","venom_spit","cauterize"].map(code=>({code,school:"Transmutation",mastery:level})))
@@ -135,9 +135,13 @@ assert.equal(out.cost,undefined);
 
 // École de la Vie (Idan, 2026-10-25) : six sorts, même modèle ; seuls les dés, l'action, la portée, la durée, la zone,
 // le mana de base et la difficulté (palier : Novice 30, Adepte 50, Expert 70) changent.
-assert.deepEqual(magic.schoolSpells("Vie").map(x=>x.code),["quick_heal","deep_heal","regeneration","mass_heal","restitution","purge"]);
-assert.deepEqual(magic.schoolSpells("Vie").map(x=>[x.palier,x.difficulte]),[["Novice",30],["Adepte",50],["Adepte",50],["Expert",70],["Adepte",50],["Novice",30]]);
-assert.deepEqual(magic.schoolSpells("Vie").map(x=>x.action),["rapide","principale","principale","principale","principale","rapide"]);
+// Idan, 2026-10-31 : la Vie passe à 10 sorts (Bénédiction, Lien de vie, Délivrance, Lumière sacrée) : 4 Novices, 4 Adeptes, 2 Experts.
+assert.deepEqual(magic.schoolSpells("Vie").map(x=>x.code),["quick_heal","deep_heal","regeneration","mass_heal","restitution","purge",
+  "blessing","life_link","deliverance","holy_light"]);
+assert.deepEqual(magic.schoolSpells("Vie").map(x=>[x.palier,x.difficulte]),[["Novice",30],["Adepte",50],["Adepte",50],["Expert",70],["Adepte",50],["Novice",30],
+  ["Novice",30],["Adepte",50],["Novice",30],["Expert",70]]);
+assert.deepEqual(magic.schoolSpells("Vie").map(x=>x.action),["rapide","principale","principale","principale","principale","rapide",
+  "rapide","principale","rapide","principale"]);
 // Débutant : Soin profond 18 à 104 au contact, 23 mana, 31 % ; Régénération 2 tours, 18 mana ; Soin de masse rayon 1,
 // 27 mana, 17 % ; Restitution 9 à 87, portée 3, 14 mana ; Purge 8 mana, sans dés.
 assert.deepEqual(magic.effectRange(beginner,"deep_heal"),{min:18,max:104});
@@ -204,6 +208,41 @@ assert.deepEqual([out.success,out.purge,out.critical,out.amount],[true,true,fals
 queue=[0.99,0.99];
 out=magic.cast(caster,{...adjacent,poisoned:true},"purge");
 assert.deepEqual([out.success,out.fumble,out.selfDamage],[false,true,0]);
+
+// Bénédiction (Idan, 2026-10-31 ; chiffres de JC3) : +30 de Chance, + 1 par 2 de maîtrise, 2 tours ; pas de coup critique.
+assert.deepEqual([magic.bonus(beginner,"blessing"),magic.bonus(expert,"blessing"),magic.duration(beginner,"blessing")],[45,97,2]);
+assert.deepEqual([magic.manaCost(beginner,"blessing"),magic.range(beginner,"blessing")],[9,3]);
+queue=[0];
+out=magic.cast(caster,ally,"blessing");
+assert.deepEqual(out.effect,{code:"blessing",stats:["Chance"],value:45,unit:"points",turns:2,cumulable:false});
+const blessed={...ally,statBuffs:{blessing:{stats:["Chance"],value:45,unit:"points",turns:2}}};
+assert.equal(combat.criticalChance(blessed),combat.criticalChance(ally)+4.5,"plus de coups critiques");
+// Lien de vie : sur un autre allié seulement ; 2D6 donnés au plus, × 1,5 reçus ; le lanceur ne donne que ce qu'il faut et
+// garde 1 PV.
+assert.match(magic.canCast(caster,caster,"life_link").reason,/pas le lanceur/);
+assert.match(magic.canCast(caster,foe,"life_link").reason,/allié/);
+assert.equal(magic.canCast(caster,ally,"life_link").ok,true);
+assert.match(magic.canCast({...caster,hp:1},ally,"life_link").reason,/plus de PV/);
+assert.deepEqual(magic.lifeLink({hp:100},{hp:50,pvMax:200},60),{given:60,received:90});
+assert.deepEqual(magic.lifeLink({hp:100},{hp:180,pvMax:200},60),{given:14,received:20},"juste ce qu'il faut");
+assert.deepEqual(magic.lifeLink({hp:10},{hp:50,pvMax:200},60),{given:9,received:14},"il garde 1 PV");
+queue=[0,0.99,0.5,0.5];
+out=magic.cast(caster,ally,"life_link");
+assert.deepEqual([out.success,out.dice,out.amount,out.transfer],[true,8,magic.effectAmount(caster,"life_link",8),{factor:1.5}]);
+// Délivrance : seulement s'il y a quelque chose à retirer (peur, paralysie, gel, frénésie).
+assert.match(magic.canCast(caster,ally,"deliverance").reason,/Rien à retirer/);
+assert.deepEqual(magic.afflictions({...ally,fleeing:true,statMalus:{code:"freeze"}},"deliverance"),["fuite","gel"]);
+assert.deepEqual(magic.afflictions({...ally,statMalus:{code:"autre"}},"deliverance"),[],"un autre malus que le Gel reste");
+queue=[0];
+out=magic.cast(caster,{...ally,paralyzed:{turns:1},frenzy:{code:"frenzy",turns:2}},"deliverance");
+assert.deepEqual([out.success,out.critical,out.delivrance],[true,false,["paralysie","frenesie"]]);
+// Lumière sacrée : la Restitution (1D10) en cercle de rayon 1 + M/50 (au plus 3), centre à 2 + M/25 ; 30 mana, Expert.
+assert.deepEqual([magic.zoneRadius(beginner,"holy_light"),magic.zoneRadius(expert,"holy_light"),magic.spell("holy_light").zone_rayon_max],[1,3,3]);
+assert.deepEqual([magic.range(beginner,"holy_light"),magic.manaCost(beginner,"holy_light")],[3,27]);
+assert.deepEqual(magic.effectRange(beginner,"holy_light"),magic.effectRange(beginner,"restitution"));
+queue=[0,0.99,0.5];
+out=magic.cast(caster,{q:2,r:0},"holy_light");
+assert.deepEqual([out.success,out.zone.radius,out.amount],[true,1,52]);
 
 // École du Feu (Idan, 2026-10-25). Les mages de test ont le même niveau en Feu qu'en Vie.
 assert.deepEqual(magic.schoolSpells("Feu").map(x=>[x.code,x.palier,x.difficulte,x.action]),[

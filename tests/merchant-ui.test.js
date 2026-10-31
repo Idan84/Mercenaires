@@ -10,7 +10,7 @@ const js = fs.readFileSync(path.join(root, "prototype-web/merchant-ui.js"), "utf
 const html = fs.readFileSync(path.join(root, "prototype-web/index.html"), "utf8");
 const esc = value => String(value ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 const nodes = {};
-const node = id => nodes[id] || (nodes[id] = {innerHTML:"", textContent:"", disabled:false});
+const node = id => nodes[id] || (nodes[id] = {innerHTML:"", textContent:"", disabled:false, open:false, showModal(){ this.open = true; }, close(){ this.open = false; }});
 const item = (id, name, tier) => ({id, name, tier, itemType:"weapon"});
 const stock = [item("s1","Lance",1), item("s2","Lance",1), item("s3","Pistolet",3), {...item("s4","Gambison",2), itemType:"armor"}];
 const game = {campaign:{day:3, company:{gold:800, stock, roster:[]}}};
@@ -21,7 +21,7 @@ const STOCK_KINDS = ["weapon","armor","potion"];
 const STOCK_TABS = [["weapon","Armes","melee"],["armor","Armures","armor"],["potion","Potions","flask"]];
 const ui = new Function("game","$","esc","fmt","gearTile","gearIcon","renderAvatar","itemPublicName","tavernLog","saveGame","renderGame",
   "campaignRules","affinityRules","MercenairesMerchants","STOCK_KINDS","STOCK_TABS",
-  js + "\nreturn {renderMerchant,merchantView,logMerchantMorning};")(
+  js + "\nreturn {renderMerchant,merchantView,logMerchantMorning,openMerchantTalk};")(
   game, node, esc, String, (slot, it) => `<tile ${it.id}>`, icon => `<icon ${icon}>`, m => `<avatar ${m.name}>`, it => it.name, () => {}, () => {}, () => {},
   () => ({companyRenown:() => ({total:400})}), () => null, {}, STOCK_KINDS, STOCK_TABS);
 
@@ -76,6 +76,24 @@ ui.renderMerchant();
 assert.match(node("merchant-head").innerHTML, /<img src="assets\/merchants\/thorval-poudredefeu\.png" alt="">/);
 assert.match(node("merchant-head").innerHTML, /title="Brunhild négocie pour vous"><avatar Brunhild>/);
 
+assert.doesNotMatch(node("merchant-head").innerHTML, /data-merchant-talk/, "rien de côté : pas de bouton Parler");
+
+// « Rien que pour toi, capitaine » : le bouton Parler s'allume ; sa réplique, l'objet, « Je prends » ou « Pas aujourd'hui ».
+visit.merchant.lines = {rien_que_pour_toi:["Approche, capitaine… J’ai récupéré ça : {objet}. Rien que pour toi : {prix} PO."]};
+visit.special = {item:item("x1","Arc",3), price:720};
+ui.renderMerchant();
+assert.match(node("merchant-head").innerHTML, /class="talk-offer-btn merchant-talk-btn" data-merchant-talk title="Thorval Poudredefeu a quelque chose pour vous">Parler<\/button>/);
+ui.openMerchantTalk();
+assert.equal(node("merchant-talk-dialog").open, true);
+assert.equal(node("merchant-talk-line").textContent, "« Approche, capitaine… J’ai récupéré ça : Arc. Rien que pour toi : 720 PO. »");
+assert.match(node("merchant-talk-item").innerHTML, /<tile x1>/);
+assert.match(node("merchant-talk-options").innerHTML, /<button type="button" data-merchant-special autofocus>Je prends \(720 PO\)<\/button>/);
+assert.match(node("merchant-talk-options").innerHTML, /data-merchant-talk-close>Pas aujourd’hui</);
+game.campaign.company.gold = 100;
+ui.openMerchantTalk();
+assert.match(node("merchant-talk-options").innerHTML, /data-merchant-special disabled title="Pas assez d’or">[\s\S]*data-merchant-talk-close autofocus>/);
+
+assert.match(html, /<dialog id="merchant-talk-dialog" class="talk-dialog merchant-talk"/);
 assert.match(html, /<div id="merchant-head" class="merchant-head"><\/div>/);
 assert.match(html, /<div id="merchant-tabs" class="merchant-tabs" role="tablist"/);
-console.log("Écran du marchand : portrait, onglets Acheter / Vendre, cases et prix, ses armes d'abord — OK");
+console.log("Écran du marchand : portrait, onglets Acheter / Vendre, cases et prix, ses armes d'abord, rien que pour toi — OK");

@@ -32,7 +32,16 @@
   des nains). Il vend **Armure de plates, Casque de constitution, Amulette de volonté, Bague du courage, Marteau de
   guerre, Hache de guerre**. Portrait à venir. Il hait les nains du chaos, et c'est réciproque (doc 02, « Cultures à
   part »).
-- Les deux marchands ont le même `poids` : quand un marchand passe, c'est l'un ou l'autre, une fois sur deux.
+- **Orvald Sans-Collier** (Idan, 2026-10-31 ; nom de JC3) : Nain, Nains réduits en esclavage dans les colonies, Neutre
+  bon, ancien esclave. Il vend **Pic de guerre, Hachette, Fouet, Ceinture de courage, Amulette de volonté, Bague de la
+  chance**.
+- **Jiraya Senin** (Idan, 2026-10-31) : Humain, Royaumes du Soleil Levant, Neutre. Il vend **Katana, Nunchaku, Sai,
+  Bottes d'esquive, Cape de discrétion, String du Charisme**.
+- **Ysolwen Chantesève** (Idan, 2026-10-31 ; nom de JC3) : Elfe, Elfes sylvains, Loyal bon. Elle vend **Arc, Bâton court,
+  Bâton long, Slip d'Affinité, Cape d'esquive, Bottes de perception**.
+- Tous ont le même `poids` : quand un marchand passe, chacun a la même chance d'être celui-là. Portraits à venir.
+- **Objectifs** (Idan, 2026-10-31) : chaque objet vendu par **au moins deux marchands**, et chaque marchand vend **à peu
+  près le même nombre d'objets** ; les sorts et les cristaux viendront ensuite. La liste est tenue au §12.
 
 ## 4 — L'étal
 
@@ -121,7 +130,110 @@ la carte d'objet au survol, le prix dessous.
   `state.market.merchants` (affinité acquise).
 - Tests : `tests/merchants.test.js`, `tests/merchant-ui.test.js`.
 
-## 12 — Étapes suivantes
+## 12 — Qui vend quoi (couverture)
+
+Liste tenue par `scripts/merchant-coverage.js` à partir de `merchants.json` et des référentiels d'objets ; la publication
+bloque si elle n'est plus à jour (`node scripts/merchant-coverage.js --check`). ⚠ : moins de deux marchands.
+
+<!-- couverture:debut (généré par node scripts/merchant-coverage.js : ne pas modifier à la main) -->
+
+**Bilan** : 81 objets ; **1** vendus par au moins 2 marchands, **26** par un seul, **54** par aucun.
+
+| Marchand | Culture | Objets |
+|---|---|---|
+| Thorval Poudredefeu | Nains du chaos | 4 |
+| Durgan Battefer | Nains des montagnes | 6 |
+| Orvald Sans-Collier | Nains réduits en esclavage dans les colonies | 6 |
+| Jiraya Senin | Royaumes du Soleil Levant | 6 |
+| Ysolwen Chantesève | Elfes sylvains | 6 |
+
+| Famille | Objet | Marchands | Nombre |
+|---|---|---|---|
+| Armes | Arbalète | — | 0 ⚠ |
+| Armes | Arc | Ysolwen | 1 ⚠ |
+| Armes | Arme d’hast double | — | 0 ⚠ |
+| Armes | Arquebuse | Thorval | 1 ⚠ |
+| Armes | Bardiche | — | 0 ⚠ |
+| Armes | Bâton court | Ysolwen | 1 ⚠ |
+| Armes | Bâton long | Ysolwen | 1 ⚠ |
+| Armes | Canon à main | Thorval | 1 ⚠ |
+| Armes | Dague | — | 0 ⚠ |
+| Armes | Écu | — | 0 ⚠ |
+| Armes | Épée courte | — | 0 ⚠ |
+| Armes | Épée double | — | 0 ⚠ |
+| Armes | Épée longue | — | 0 ⚠ |
+| Armes | Estoc | — | 0 ⚠ |
+| Armes | Fléau d’armes | — | 0 ⚠ |
+| Armes | Fouet | Orvald | 1 ⚠ |
+| Armes | Fronde | — | 0 ⚠ |
+| Armes | Grande épée | — | 0 ⚠ |
+| Armes | Hache de guerre | Durgan | 1 ⚠ |
+| Armes | Hache double | — | 0 ⚠ |
+| Armes | Hachette | Orvald | 1 ⚠ |
+| Armes | Hallebarde | — | 0 ⚠ |
+| Armes | Katana | Jiraya | 1 ⚠ |
+| Armes | Kukri | — | 0 ⚠ |
+| Armes | Lance | — | 0 ⚠ |
+| Armes | Marteau de guerre | Durgan | 1 ⚠ |
+| Armes | Masse d’armes | — | 0 ⚠ |
+| Armes | Massue | — | 0 ⚠ |
+| Armes | Nunchaku | Jiraya | 1 ⚠ |
+| Armes | Pavois | — | 0 ⚠ |
+| Armes | Pic de guerre | Orvald | 1 ⚠ |
+| Armes | Pistolet | Thorval | 1 ⚠ |
+| Armes | Rondache | — | 0 ⚠ |
+| Armes | Sabre | — | 0 ⚠ |
+| Armes | Sai | Jiraya | 1 ⚠ |
+| Armes | Sarbacane | — | 0 ⚠ |
+| Armes | Trident | — | 0 ⚠ |
+| Armes | Tromblon | Thorval | 1 ⚠ |
+| Armures | Armure d'écailles | — | 0 ⚠ |
+| Armures | Armure de cuir | — | 0 ⚠ |
+| Armures | Armure de plates | Durgan | 1 ⚠ |
+| Armures | Brigandine | — | 0 ⚠ |
+| Armures | Cotte de mailles | — | 0 ⚠ |
+| Armures | Cuir renforcé | — | 0 ⚠ |
+| Armures | Gambison | — | 0 ⚠ |
+| Armures | Vêtements | — | 0 ⚠ |
+| Casques | Casque de constitution | Durgan | 1 ⚠ |
+| Casques | Chapeau d’intelligence | — | 0 ⚠ |
+| Casques | Chapeau du dresseur | — | 0 ⚠ |
+| Bottes | Bottes d’esquive | Jiraya | 1 ⚠ |
+| Bottes | Bottes de perception | Ysolwen | 1 ⚠ |
+| Bottes | Bottes de vitesse | — | 0 ⚠ |
+| Ceintures | Ceinture d’endurance | — | 0 ⚠ |
+| Ceintures | Ceinture de courage | Orvald | 1 ⚠ |
+| Ceintures | Ceinture de mana | — | 0 ⚠ |
+| Amulettes | Amulette de chance | — | 0 ⚠ |
+| Amulettes | Amulette de puissance magique | — | 0 ⚠ |
+| Amulettes | Amulette de volonté | Durgan, Orvald | 2 |
+| Capes | Cape d’esquive | Ysolwen | 1 ⚠ |
+| Capes | Cape de discrétion | Jiraya | 1 ⚠ |
+| Capes | Cape de résistance physique | — | 0 ⚠ |
+| Gants | Gants de dextérité | — | 0 ⚠ |
+| Gants | Gants de force | — | 0 ⚠ |
+| Gants | Gants de pièges | — | 0 ⚠ |
+| Culottes | Culotte d’Intimidation | — | 0 ⚠ |
+| Culottes | Slip d’Affinité | Ysolwen | 1 ⚠ |
+| Culottes | String du Charisme | Jiraya | 1 ⚠ |
+| Bagues | Bague de Feu | — | 0 ⚠ |
+| Bagues | Bague de l’Eau | — | 0 ⚠ |
+| Bagues | Bague de l’illusionniste | — | 0 ⚠ |
+| Bagues | Bague de l’invocation | — | 0 ⚠ |
+| Bagues | Bague de la chance | Orvald | 1 ⚠ |
+| Bagues | Bague de la Foudre | — | 0 ⚠ |
+| Bagues | Bague de la télékinésie | — | 0 ⚠ |
+| Bagues | Bague de la transmutation | — | 0 ⚠ |
+| Bagues | Bague du courage | Durgan | 1 ⚠ |
+| Bagues | Bague du nécromancien | — | 0 ⚠ |
+| Bagues | Bague du soigneur | — | 0 ⚠ |
+| Fioles | Fiole de poison | — | 0 ⚠ |
+| Fioles | Potion de mana | — | 0 ⚠ |
+| Fioles | Potion de soins | — | 0 ⚠ |
+
+<!-- couverture:fin -->
+
+## 13 — Étapes suivantes
 
 1. Les autres marchands (Idan prépare leurs personae).
 2. **Négociation**, sur le modèle de celle de la Taverne (doc 14 §9).

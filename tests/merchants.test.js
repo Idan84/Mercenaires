@@ -38,7 +38,7 @@ const renownAt=level=>levels.find(r=>r.niveau===level).renommee_min;
 
 // Données : Thorval Poudredefeu, nain du chaos (l'alignement par défaut des Nains du chaos), quatre armes à feu.
 const FIREARMS=["Pistolet","Tromblon","Canon à main","Arquebuse"];
-assert.deepEqual(reference.merchants.rows.map(m=>m.id),["thorval-poudredefeu","durgan-battefer"],"le marchand test est remplacé");
+assert.ok(!reference.merchants.rows.some(m=>m.id==="marchand-test"),"le marchand test est remplacé");
 const thorval=reference.merchants.rows[0];
 assert.equal(thorval.nom,"Thorval Poudredefeu");
 assert.equal(thorval.peuple,"Nain");
@@ -321,20 +321,37 @@ for(const [type,name] of DURGAN) for(const tier of [2,3,4]){
   assert.ok(values.value(it)>0,name+" T"+tier+" a une valeur");
 }
 assert.match(durgan.repliques.rien_que_pour_toi[0],/\{objet\}[\s\S]*\{prix\}/);
-// Les deux marchands : chacun passe à son tour (même poids), avec son étal à lui seul.
+// Tous les marchands (Idan, 2026-10-31) : leur alignement est celui de leur culture (ou, à défaut, de leur peuple),
+// chaque objet de leur liste existe en T2 à T4 et a une valeur, chacun a sa réplique « rien que pour toi ».
+const merchantRows=reference.merchants.rows;
+assert.deepEqual(merchantRows.map(m=>m.id),["thorval-poudredefeu","durgan-battefer","orvald-sans-collier","jiraya-senin","ysolwen-chanteseve"]);
+const defaultAlignment=m=>reference.alignmentGeneration.culture_overrides[m.culture]||reference.peoples.rows.find(p=>p.nom===m.peuple).alignement_principal;
+for(const m of merchantRows){
+  assert.ok(reference.cultures.rows.some(c=>c.nom===m.culture&&String(c.peuples).includes(m.peuple)),m.nom+" : culture de son peuple");
+  assert.equal(m.alignement,defaultAlignment(m),m.nom+" : alignement par défaut de sa culture");
+  assert.ok(m.vend.length>=4,m.nom);
+  for(const v of m.vend) for(const tier of [2,3,4]){
+    const it=generator.createItemByName(v.type,v.objet,tier);
+    assert.equal(it?.name,v.objet,m.nom+" : "+v.objet);
+    assert.ok(values.value(it)>0,v.objet+" T"+tier+" a une valeur");
+  }
+  assert.match(m.repliques.rien_que_pour_toi[0],/\{objet\}[\s\S]*\{prix\}/,m.nom);
+}
+assert.equal(merchantRows.find(m=>m.id==="ysolwen-chanteseve").sexe,"Femme");
+// Chacun passe à son tour (même poids), avec son étal à lui seul.
 const both=createMerchantRules({reference,generator,affinity,random});
 const twoProbe={day:1,company:{roster:[captain],captainId:captain.id,stock:[]}};
 const seen={};
-for(let i=0;i<400;i++){
+for(let i=0;i<2500;i++){
   twoProbe.day+=1;
   const m=both.morning(twoProbe,{renown:renownAt(2)});
   if(!m.arrived) continue;
   seen[m.arrived.id]=(seen[m.arrived.id]||0)+1;
-  const sells=new Set(reference.merchants.rows.find(r=>r.id===m.arrived.id).vend.map(v=>v.type+"|"+v.objet));
+  const sells=new Set(merchantRows.find(r=>r.id===m.arrived.id).vend.map(v=>v.type+"|"+v.objet));
   for(const a of twoProbe.market.visit.stock) assert.ok(sells.has(a.item.itemType+"|"+a.item.name),m.arrived.id+" : "+a.item.name);
 }
-const passes=(seen["thorval-poudredefeu"]||0)+(seen["durgan-battefer"]||0);
-assert.ok(Math.abs(seen["durgan-battefer"]/passes-0.5)<0.12,"autant de passages : "+JSON.stringify(seen));
+const passes=Object.values(seen).reduce((a,b)=>a+b,0);
+for(const m of merchantRows) assert.ok(Math.abs((seen[m.id]||0)/passes-1/merchantRows.length)<0.04,"autant de passages : "+JSON.stringify(seen));
 // Ses plates sont « ses armes » à la revente ; il hait les nains du chaos et en est haï (doc 02).
 const plates=generator.createItemByName("armor","Armure de plates",3);
 twoProbe.market.visit={merchantId:"durgan-battefer",day:twoProbe.day,stock:[],sold:{},traded:false};
@@ -342,4 +359,4 @@ assert.equal(both.visitOf(twoProbe,{renown}).buyback(plates).specialty,true);
 assert.equal(both.visitOf(twoProbe,{renown}).buyback(item("Pistolet",3)).specialty,false);
 assert.equal(affinity.affinity({people:"Nain",culture:"Nains du chaos",alignment:"Chaotique neutre"},{people:"Nain",culture:"Nains des montagnes",alignment:"Neutre bon"}).components.cultureRule,"cousins");
 
-console.log("Marchands : Thorval Poudredefeu (4 armes à feu, 10 articles T2–T4), affinité, achat, rachat, intendant, rien que pour toi ; Durgan Battefer — OK");
+console.log("Marchands : Thorval Poudredefeu (4 armes à feu, 10 articles T2–T4), affinité, achat, rachat, intendant, rien que pour toi ; Durgan, Orvald, Jiraya, Ysolwen — OK");

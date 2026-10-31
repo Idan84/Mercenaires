@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "merchants",
-  "description": "Marchands qui passent au camp (doc 18 ; Idan, 2026-10-30 et 2026-10-31) : Thorval Poudredefeu (Nains du chaos, armes à feu) et Durgan Battefer (Nains des montagnes, plates, casques, amulettes, bagues, marteaux et haches de guerre). Chaque marchand a un nom fixe, un portrait fait pour lui seul (portrait : chemin de l’image, vide en attendant), une culture (peuple et alignement par défaut de sa culture, pour l’affinité avec le capitaine) et la liste des objets qu’il vend (vend : type d’objet et nom) : on ne trouve jamais autre chose chez lui. À chaque passage, 10 articles tirés au hasard dans cette liste, le tier selon la renommée (constantes merchants.*). poids : fréquence de passage relative. repliques.rien_que_pour_toi : ce qu’il dit quand il propose, à +100 d’affinité, un objet hors de sa liste à moitié prix ({objet}, {prix}) ; une phrase est tirée au hasard, on peut en ajouter.",
+  "description": "Marchands qui passent au camp (doc 18 ; Idan, 2026-10-30 et 2026-10-31). Qui vend quoi : doc 18, « Couverture » (scripts/merchant-coverage.js). Chaque marchand a un nom fixe, un portrait fait pour lui seul (portrait : chemin de l’image, vide en attendant), une culture (peuple et alignement par défaut de sa culture, pour l’affinité avec le capitaine) et la liste des objets qu’il vend (vend : type d’objet et nom) : on ne trouve jamais autre chose chez lui. À chaque passage, 10 articles tirés au hasard dans cette liste, le tier selon la renommée (constantes merchants.*). poids : fréquence de passage relative. repliques.rien_que_pour_toi : ce qu’il dit quand il propose, à +100 d’affinité, un objet hors de sa liste à moitié prix ({objet}, {prix}) ; une phrase est tirée au hasard, on peut en ajouter.",
   "columns": [
     {
       "source": "Id",
@@ -44,7 +44,7 @@
       "key": "repliques"
     }
   ],
-  "row_count": 2,
+  "row_count": 5,
   "rows": [
     {
       "id": "thorval-poudredefeu",
@@ -117,6 +117,129 @@
       "repliques": {
         "rien_que_pour_toi": [
           "Capitaine… entre nous, j’ai ça au fond de la charrette : {objet}. C’est pas du bel ouvrage nain, j’saurais pas en tirer un juste prix. Pour toi : {prix} PO, et pas un mot aux autres."
+        ]
+      }
+    },
+    {
+      "id": "orvald-sans-collier",
+      "nom": "Orvald Sans-Collier",
+      "sexe": "Homme",
+      "portrait": "",
+      "peuple": "Nain",
+      "culture": "Nains réduits en esclavage dans les colonies",
+      "alignement": "Neutre bon",
+      "poids": 1,
+      "vend": [
+        {
+          "type": "weapon",
+          "objet": "Pic de guerre"
+        },
+        {
+          "type": "weapon",
+          "objet": "Hachette"
+        },
+        {
+          "type": "weapon",
+          "objet": "Fouet"
+        },
+        {
+          "type": "belt",
+          "objet": "Ceinture de courage"
+        },
+        {
+          "type": "amulet",
+          "objet": "Amulette de volonté"
+        },
+        {
+          "type": "ring",
+          "objet": "Bague de la chance"
+        }
+      ],
+      "repliques": {
+        "rien_que_pour_toi": [
+          "Capitaine. J’ai trimé assez longtemps sous le fouet pour reconnaître un ami. Tiens : {objet}. Je sais pas ce que ça vaut, et je m’en fiche. Pour toi : {prix} PO."
+        ]
+      }
+    },
+    {
+      "id": "jiraya-senin",
+      "nom": "Jiraya Senin",
+      "sexe": "Homme",
+      "portrait": "",
+      "peuple": "Humain",
+      "culture": "Royaumes du Soleil Levant",
+      "alignement": "Neutre",
+      "poids": 1,
+      "vend": [
+        {
+          "type": "weapon",
+          "objet": "Katana"
+        },
+        {
+          "type": "weapon",
+          "objet": "Nunchaku"
+        },
+        {
+          "type": "weapon",
+          "objet": "Sai"
+        },
+        {
+          "type": "boots",
+          "objet": "Bottes d’esquive"
+        },
+        {
+          "type": "cape",
+          "objet": "Cape de discrétion"
+        },
+        {
+          "type": "pants",
+          "objet": "String du Charisme"
+        }
+      ],
+      "repliques": {
+        "rien_que_pour_toi": [
+          "Capitaine, le vent m’a confié ceci : {objet}. Un objet sans maître cherche un maître digne. Rien que pour toi : {prix} PO."
+        ]
+      }
+    },
+    {
+      "id": "ysolwen-chanteseve",
+      "nom": "Ysolwen Chantesève",
+      "sexe": "Femme",
+      "portrait": "",
+      "peuple": "Elfe",
+      "culture": "Elfes sylvains",
+      "alignement": "Loyal bon",
+      "poids": 1,
+      "vend": [
+        {
+          "type": "weapon",
+          "objet": "Arc"
+        },
+        {
+          "type": "weapon",
+          "objet": "Bâton court"
+        },
+        {
+          "type": "weapon",
+          "objet": "Bâton long"
+        },
+        {
+          "type": "pants",
+          "objet": "Slip d’Affinité"
+        },
+        {
+          "type": "cape",
+          "objet": "Cape d’esquive"
+        },
+        {
+          "type": "boots",
+          "objet": "Bottes de perception"
+        }
+      ],
+      "repliques": {
+        "rien_que_pour_toi": [
+          "Capitaine… on m’a laissé ceci : {objet}. Rien de ce qui pousse en forêt : je n’en connais pas la valeur. Rien que pour toi : {prix} PO."
         ]
       }
     }

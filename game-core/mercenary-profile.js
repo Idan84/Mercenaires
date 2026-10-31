@@ -12,6 +12,7 @@
 })(typeof globalThis!=="undefined"?globalThis:this,function(){
   const rows=data=>Array.isArray(data)?data:(data?.rows||[]);
   const ATTACK_FAMILIES=new Set(["contact","tir","magie"]);
+  const WEAPON_FAMILIES=new Set(["contact","tir"]);
   // Effets des sorts (spells.json, effet) par facette de magie.
   const SPELL_FACETS={
     degats:"magie_attaque",degats_rebonds:"magie_attaque",degats_paire:"magie_attaque",
@@ -54,8 +55,8 @@
     const refs=()=>etalons||(etalons={leger:etalonUnit("leger"),lourd:etalonUnit("lourd"),archer:etalonUnit("archer")});
 
     // ---- Mesures ----
-    // Dégâts attendus d'un coup : toucher × blesser (meilleur type contre l'armure) × dégâts moyens (avant le D3 de la
-    // Résistance physique, pris au milieu).
+    // Un coup : chance de toucher, et dégâts attendus = toucher × blesser (meilleur type contre l'armure) × dégâts moyens
+    // (avant le D3 de la Résistance physique, pris au milieu).
     function strike(attacker,defender,mode,distance){
       const weapon=engine.weaponTemplate(engine.activeWeaponItem(attacker));
       const matchups=engine.damageMatchups(defender,weapon).sort((a,b)=>b.matchup-a.matchup);
@@ -63,23 +64,40 @@
       const pWound=engine.woundProbability(attacker,defender,mode,matchups[0]||{matchup:0})/100;
       const low=engine.physicalDamage(attacker,defender,mode,0,{roll:"min",resistanceRoll:2}).damage;
       const high=engine.physicalDamage(attacker,defender,mode,0,{roll:"max",resistanceRoll:2}).damage;
-      return pHit*pWound*(low+high)/2;
+      return {pHit,damage:pHit*pWound*(low+high)/2};
     }
-    // Un set : la main principale, et la main secondaire au combat à deux armes si elle frappe de la même façon.
+    // Nombre moyen d'attaques (ou de paires) par tour avec les enchaînements : l'attaque n s'ouvre si la précédente a
+    // touché, avec la chance d'enchaînement du moteur (au contact toujours ; au tir, armes « Répétable » seulement).
+    function chainFactor(unit,mode,pHit){
+      if(mode==="ranged"&&!engine.isRepeatable(engine.weaponTemplate(engine.activeWeaponItem(unit)))) return 1;
+      let total=1,open=1;
+      for(let n=2;n<=12&&open>1e-3;n++){
+        open*=pHit*Math.min(100,engine.chainChance(unit,n,mode))/100;
+        total+=open;
+      }
+      return total;
+    }
+    // Dégâts attendus par tour d'un attaquant contre un défenseur, enchaînements compris.
+    function perTurn(attacker,defender,mode,distance){
+      const hit=strike(attacker,defender,mode,distance);
+      return hit.damage*chainFactor(attacker,mode,hit.pHit);
+    }
+    // Un set : la main principale, et la main secondaire au combat à deux armes si elle frappe de la même façon ; la paire
+    // s'enchaîne si l'une des deux touche, et seulement au contact.
     function setDamage(character,set,ranged,defender){
       const unit={character,activeSet:set};
       const weapon=engine.weaponTemplate(engine.activeWeaponItem(unit));
       if(!weapon||engine.isRangedWeapon(weapon)!==ranged||!(ranged||engine.isMeleeWeapon(weapon))) return null;
       const mode=ranged?"ranged":"melee";
       const distance=ranged?Math.max(1,Math.round((Number(engine.weaponRange(unit).max)||2)/2)):1;
-      let total=strike(unit,defender,mode,distance);
-      if(engine.isDualWielding(unit)){
-        total+=engine.withHand(unit,"off",()=>{
-          const off=engine.weaponTemplate(engine.activeWeaponItem(unit));
-          return off&&engine.isRangedWeapon(off)===ranged?strike(unit,defender,mode,distance):0;
-        });
-      }
-      return total;
+      const main=strike(unit,defender,mode,distance);
+      const off=engine.isDualWielding(unit)?engine.withHand(unit,"off",()=>{
+        const item=engine.weaponTemplate(engine.activeWeaponItem(unit));
+        return item&&engine.isRangedWeapon(item)===ranged?strike(unit,defender,mode,distance):null;
+      }):null;
+      if(!off) return main.damage*chainFactor(unit,mode,main.pHit);
+      const pAny=1-(1-main.pHit)*(1-off.pHit);
+      return (main.damage+off.damage)*(ranged?1:chainFactor(unit,"melee",pAny));
     }
     function bestSet(character,ranged,defender){
       const values=[1,2].map(set=>setDamage(character,set,ranged,defender)).filter(v=>v!=null);
@@ -97,8 +115,11 @@
         const cost=magic.manaCost(unit,known.code);
         const sustain=cost>0?Math.min(1,manaMax/(3*cost)):1;
         const success=magic.castChance(unit,known.code).p/100;
+        // Sans effet chiffré (soutien, contrôle, invocation), la maîtrise du sort fait sa force (durée, bonus, portée,
+        // nombre d'invocations en dépendent).
         let value=success*sustain;
-        if(AMOUNT_FACETS.has(facet)&&magic.dice(known.code).count){
+        if(!AMOUNT_FACETS.has(facet)) value*=magic.mastery(unit,known.code)/100;
+        else if(magic.dice(known.code).count){
           const range=magic.effectRange(unit,known.code);
           const turns=spell.effet==="soin_sur_duree"?Math.max(1,magic.duration(unit,known.code)):1;
           value*=(range.min+range.max)/2*turns;
@@ -111,7 +132,7 @@
     function measure(character){
       const unit={character,activeSet:1},{leger,lourd,archer}=refs();
       const hp=engine.maxHp(unit);
-      const taken=(attacker,mode,distance)=>Math.max(0.1,strike(attacker,unit,mode,distance));
+      const taken=(attacker,mode,distance)=>Math.max(0.1,perTurn(attacker,unit,mode,distance));
       return {
         contact_leger:bestSet(character,false,leger),
         contact_lourd:bestSet(character,false,lourd),
@@ -136,34 +157,47 @@
       for(const min of steps) if(value>=min) lvl++;
       return Math.min(15,lvl);
     }
+    // Le niveau avec sa place dans la tranche (3,8 : haut du niveau 3) ; départage deux lignes de même niveau.
+    function fineLevel(code,value){
+      const lvl=level(code,value);
+      if(lvl==null) return null;
+      const steps=data.seuils?.[code]||[];
+      const low=lvl>1?steps[lvl-2]:0,high=steps[lvl-1];
+      return high>low?lvl+Math.min(0.999,Math.max(0,(value-low)/(high-low))):lvl;
+    }
 
     // ---- Lecture : ce qui ressort ----
     // Les lignes affichables : un groupe fusionné (« Au contact ») si ses deux facettes sont proches, sinon chacune.
-    function entries(levels){
+    function entries(levels,fines){
       const out=[],done=new Set();
       for(const def of facetDefs){
         if(done.has(def.code)) continue;
         const group=groupOf.get(def.code);
         if(group){
           group.facettes.forEach(code=>done.add(code));
-          const parts=group.facettes.map(code=>({code,level:levels[code]})).filter(p=>p.level!=null);
+          const parts=group.facettes.map(code=>({code,level:levels[code],fine:fines[code]})).filter(p=>p.level!=null);
           if(!parts.length) continue;
           const spread=Math.max(...parts.map(p=>p.level))-Math.min(...parts.map(p=>p.level));
           if(parts.length>1&&spread>(S.ecart_groupe??1)){
-            for(const p of parts) out.push({code:p.code,name:facetByCode.get(p.code).nom,family:def.famille,level:p.level,secondary:false});
+            for(const p of parts) out.push({code:p.code,name:facetByCode.get(p.code).nom,family:def.famille,level:p.level,fine:p.fine,secondary:false});
           }else{
             out.push({code:group.code,name:group.nom,family:def.famille,group:true,
-              level:Math.round(parts.reduce((s,p)=>s+p.level,0)/parts.length),secondary:false});
+              level:Math.round(parts.reduce((s,p)=>s+p.level,0)/parts.length),fine:parts.reduce((s,p)=>s+p.fine,0)/parts.length,secondary:false});
           }
           continue;
         }
         done.add(def.code);
         if(levels[def.code]==null) continue;
-        out.push({code:def.code,name:def.nom,family:def.famille,level:levels[def.code],secondary:Boolean(def.secondaire)});
+        out.push({code:def.code,name:def.nom,family:def.famille,level:levels[def.code],fine:fines[def.code],secondary:Boolean(def.secondaire)});
       }
       return out;
     }
 
+    // Famille de l'arme principale d'un set : « contact », « tir », ou null.
+    function setFamily(character,set){
+      const weapon=engine.weaponTemplate(engine.activeWeaponItem({character,activeSet:set}));
+      return !weapon?null:engine.isRangedWeapon(weapon)?"tir":engine.isMeleeWeapon(weapon)?"contact":null;
+    }
     function hasMeleeWeapon(character){
       return [1,2].some(set=>{
         const weapon=engine.weaponTemplate(engine.activeWeaponItem({character,activeSet:set}));
@@ -212,18 +246,33 @@
       if(!engine||!character?.stats) return null;
       const values=measure(character);
       const levels=Object.fromEntries(Object.entries(values).map(([code,value])=>[code,level(code,value)]));
-      const list=entries(levels);
+      const fines=Object.fromEntries(Object.entries(values).map(([code,value])=>[code,fineLevel(code,value)]));
+      const list=entries(levels,fines);
       const main=list.filter(e=>!e.secondary);
       const mean=main.length?main.reduce((s,e)=>s+e.level,0)/main.length:0;
-      const strengths=list.filter(e=>e.secondary?e.level>=mean+(S.secondaire_ecart??2):e.level>=mean+(S.fort_ecart??1))
-        .sort((a,b)=>(b.level-mean)-(a.level-mean)||ATTACK_FAMILIES.has(b.family)-ATTACK_FAMILIES.has(a.family))
-        .slice(0,S.max_forts??3);
-      // Un mercenaire moyen partout garde son meilleur trait, s'il dépasse sa moyenne.
-      if(!strengths.length){
-        const top=[...main].sort((a,b)=>b.level-a.level||ATTACK_FAMILIES.has(b.family)-ATTACK_FAMILIES.has(a.family))[0];
-        if(top&&top.level>mean) strengths.push(top);
+      const byLevel=(a,b)=>b.level-a.level||b.fine-a.fine;
+      const relative=list.filter(e=>e.secondary?e.level>=mean+(S.secondaire_ecart??2):e.level>=mean+(S.fort_ecart??1));
+      // Ce qu'il fait (ses armes, ses sorts) mène : sa meilleure façon d'agir, même moyenne, ouvre la liste et donne le
+      // titre ; un autre point fort ne la remplace que s'il la dépasse d'au moins mene_ecart niveaux (le mage maladroit
+      // en armure de plates est d'abord un bouclier). Ses autres façons d'agir à ecart_usage niveau près suivent, si elles
+      // ne sont pas des points faibles.
+      const usages=main.filter(e=>ATTACK_FAMILIES.has(e.family)).sort(byLevel);
+      const otherTop=relative.filter(e=>!ATTACK_FAMILIES.has(e.family)).sort(byLevel)[0];
+      let lead=usages[0]||null;
+      // À niveau égal, l'arme du set 1 (celle qu'il a en main en entrant au combat) passe devant celle du set 2.
+      const first=setFamily(character,1);
+      if(lead&&first&&lead.family!==first&&WEAPON_FAMILIES.has(lead.family)) lead=usages.find(e=>e.family===first&&e.level===lead.level)||lead;
+      if(!lead||(otherTop&&otherTop.level>=lead.level+(S.mene_ecart??2))) lead=otherTop||lead||[...main].sort(byLevel)[0]||null;
+      const strengths=lead?[lead]:[];
+      // Mené par autre chose (moral, encaisser…), il garde sa meilleure façon d'agir juste après.
+      if(lead&&usages[0]&&!usages.includes(lead)) strengths.push(usages[0]);
+      const isWeak=e=>e.level<=mean-(S.faible_ecart??1)||e.level===1;
+      const near=usages.filter(u=>lead&&u.level>=lead.level-(S.ecart_usage??1)&&!isWeak(u));
+      for(const e of [...relative,...near].sort(byLevel)){
+        if(strengths.length>=(S.max_forts??3)) break;
+        if(!strengths.includes(e)) strengths.push(e);
       }
-      const weak=list.filter(e=>e.secondary?e.level<=Math.min(1,mean-(S.secondaire_ecart??2)):e.level<=mean-(S.faible_ecart??1)||e.level===1)
+      const weak=list.filter(e=>!strengths.includes(e)).filter(e=>e.secondary?e.level<=Math.min(1,mean-(S.secondaire_ecart??2)):e.level<=mean-(S.faible_ecart??1)||e.level===1)
         .sort((a,b)=>(a.level-mean)-(b.level-mean));
       const weaknesses=[];
       if(!hasMeleeWeapon(character)) weaknesses.push({code:"sans_contact",name:"Aucune arme de contact",family:"contact",level:null});
@@ -242,10 +291,12 @@
           if(gain>=(S.gene_niveaux??1)&&ratio>=(S.gene_ratio??1.5)&&(!hindrance||ratio>hindrance.ratio)) hindrance={code,name:def.nom,level:levels[code],gain,ratio,cause:"armor"};
         }
       }
-      return {values,levels,entries:list,mean,strengths,weaknesses,hindrance,title:title(character,values,strengths)};
+      // Le complément du titre vient d'un vrai point fort, ou de la magie (« qui manie aussi la magie » est un fait).
+      const remarkable=strengths.filter((e,i)=>i===0||relative.includes(e)||e.family==="magie");
+      return {values,levels,entries:list,mean,strengths,weaknesses,hindrance,title:title(character,values,remarkable)};
     }
 
-    return {measure,level,evaluate,facets:facetDefs};
+    return {measure,level,evaluate,strike,perTurn,facets:facetDefs};
   }
 
   return {createProfileRules,SPELL_FACETS};

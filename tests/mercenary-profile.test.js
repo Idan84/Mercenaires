@@ -52,14 +52,52 @@ assert.ok(gaps.filter(g => Math.abs(g) <= 1).length / gaps.length > 0.75, "à un
 // Les recrues restent en bronze, comme leur réputation.
 assert.ok(results.every(r => r.entries.every(e => e.level >= 1 && e.level <= 6)));
 
-// Lecture : au plus 3 points forts et 2 points faibles ; un point fort dépasse sa moyenne, un point faible est en dessous.
+// Lecture : au plus 3 lignes fortes et 2 faibles, jamais la même ; toujours au moins une ligne d'étoiles. Ce qu'il fait
+// (armes, sorts) mène, sauf si un autre point fort le dépasse d'au moins mene_ecart niveaux ; les autres lignes fortes
+// dépassent sa moyenne d'au moins fort_ecart, ou sont une façon d'agir de son meilleur niveau.
+const ATTACK = new Set(["contact", "tir", "magie"]);
 for (const r of results) {
-  assert.ok(r.strengths.length <= 3 && r.weaknesses.length <= 2);
-  for (const s of r.strengths) assert.ok(s.level > r.mean, "point fort au-dessus de sa moyenne");
+  assert.ok(r.strengths.length >= 1 && r.strengths.length <= 3 && r.weaknesses.length <= 2);
+  assert.ok(r.strengths.every(s => !r.weaknesses.includes(s)), "jamais fort et faible à la fois");
+  const usages = r.entries.filter(e => !e.secondary && ATTACK.has(e.family));
+  const best = Math.max(...usages.map(e => e.level));
+  const lead = r.strengths[0];
+  if (usages.length) {
+    if (!ATTACK.has(lead.family)) {
+      assert.ok(lead.level >= best + data.selection.mene_ecart, "un autre point fort ne mène que de loin");
+      assert.ok(ATTACK.has(r.strengths[1]?.family), "sa meilleure façon d'agir suit");
+    } else assert.equal(lead.level, best, "il est mené par sa meilleure façon d'agir");
+  }
+  for (const s of r.strengths.slice(1)) {
+    assert.ok(s.level >= r.mean + data.selection.fort_ecart || (ATTACK.has(s.family) && (s.level >= lead.level - data.selection.ecart_usage || s === r.strengths[1])),
+      "ligne forte : au-dessus de sa moyenne ou façon d'agir de son niveau");
+  }
   for (const w of r.weaknesses) if (w.level != null) assert.ok(w.level < r.mean || w.level === 1, "point faible sous sa moyenne");
   assert.ok(r.title.text.length > 3);
+  assert.notEqual(r.title.key, "rang", "un titre qui dit à quoi il sert");
 }
-assert.ok(results.filter(r => r.strengths.length).length / results.length > 0.8, "presque toujours un point fort");
+
+// À niveau égal, l'arme du set 1 mène : un archer (arc en set 1, arme de contact en set 2) est un tireur.
+for (const [i, r] of results.entries()) {
+  const first = engine.weaponTemplate(engine.activeWeaponItem({character:recruits[i], activeSet:1}));
+  if (!first || !engine.isRangedWeapon(first)) continue;
+  const tir = r.entries.find(e => e.family === "tir" && !e.secondary), contact = r.entries.find(e => e.family === "contact");
+  if (tir && contact && tir.level >= contact.level && ["contact", "tir"].includes(r.strengths[0].family)) {
+    assert.equal(r.strengths[0].family, "tir", "arc en set 1, tir au niveau du contact : tireur");
+  }
+}
+
+// Les tirs enchaînés comptent : l'arc (« Répétable ») vaut plus qu'un seul tir, l'arbalète non.
+const bowUser = recruits.find(m => engine.weaponTemplate(engine.activeWeaponItem({character:m, activeSet:1}))?.nom === "Arc");
+assert.ok(bowUser, "un archer dans l'échantillon");
+assert.ok(engine.isRepeatable(engine.weaponTemplate(engine.activeWeaponItem({character:bowUser, activeSet:1}))));
+const target = {character:recruits[0], activeSet:1};
+const bowUnit = {character:bowUser, activeSet:1};
+assert.ok(profile.perTurn(bowUnit, target, "ranged", 4) > profile.strike(bowUnit, target, "ranged", 4).damage, "l'arc enchaîne ses tirs");
+const crossbowUser = recruits.find(m => engine.weaponTemplate(engine.activeWeaponItem({character:m, activeSet:1}))?.nom === "Arbalète");
+assert.ok(crossbowUser, "un arbalétrier dans l'échantillon");
+const crossbowUnit = {character:crossbowUser, activeSet:1};
+assert.equal(profile.perTurn(crossbowUnit, target, "ranged", 4), profile.strike(crossbowUnit, target, "ranged", 4).damage, "l'arbalète tire une fois");
 
 // Sans arme de contact : c'est un point faible.
 const bowOnly = recruits.findIndex(m => [1, 2].every(set => {

@@ -77,6 +77,7 @@ assert.equal(api.missionActionAvailability().testSpells,true);
 // pour ce combat ; le grimoire ne change pas.
 api.teachMissionTestSpells();
 assert.deepEqual(magic.knownSpells(u).map(s=>s.code),["quick_heal","deep_heal","regeneration","mass_heal","restitution","purge",
+  "blessing","life_link","deliverance","holy_light",
   "fire_bolt","fireball","fire_ring","flaming_weapon","fire_armor","magma",
   "fog","healing_water","ice_arrow","tsunami","frost_armor","freeze","ice_weapon",
   "sixth_sense","titan_strength","cheetah_speed","stone_skin","venom_spit","cauterize",
@@ -85,12 +86,12 @@ assert.deepEqual(magic.knownSpells(u).map(s=>s.code),["quick_heal","deep_heal","
   "fear","illusory_support","mass_courage","hidden_advance","psychic_shock","frenzy",
   "raise_dead","summon_specter","life_drain","death_arrow","necrosis","wither",
   "summon_raven","quagmire","transposition","summon_wolves","summon_bears","summon_crocodiles"]);
-assert.ok(m.players.every(p=>p.spells.length===59&&!(p.character.spells||[]).length));
+assert.ok(m.players.every(p=>p.spells.length===63&&!(p.character.spells||[]).length));
 assert.equal(api.missionActionAvailability().testSpells,false,"une seule fois par combat");
 assert.ok(logged(/connaît tous les sorts \(Vie, Feu, Eau, Transmutation, Foudre, Télékinésie, Illusion, Nécromancie, Invocation, niveau 1\)/));
 const bar=api.renderMissionSpellBar(u);
 assert.match(bar,/Mana 53\/53/);
-assert.equal((bar.match(/data-spell=/g)||[]).length,59);
+assert.equal((bar.match(/data-spell=/g)||[]).length,63);
 assert.match(bar,/Soin rapide<small>rapide · \d+ mana · \d+ %<\/small>/);
 // Écran de combat (2026-10-29) : au-delà de 8 sorts, un onglet par école ; une seule école affichée à la fois.
 assert.equal((bar.match(/data-spell-school=/g)||[]).length,9);
@@ -199,6 +200,52 @@ queue.push(0,0.99,0.5);
 api.missionAiCast(u);
 assert.ok(ally.hp>allyHp);
 assert.equal(u.quickAvailable,false);
+
+// Les quatre sorts de Vie validés par Idan le 2026-10-31. Maîtrise 60,5.
+// Bénédiction : +30 + M/2 de Chance pour les 2 prochaines activations de l'allié.
+api.resetMissionActivation(u);
+u.character.mana=53;
+api.setMissionMode("spell:blessing");
+queue.push(0);
+api.handleMissionHexClick(ally.q,ally.r);
+assert.deepEqual(ally.statBuffs.blessing,{stats:["Chance"],value:60,unit:"points",turns:2});
+assert.ok(logged(/lance Bénédiction sur .* : \+60 de Chance, pour ses 2 prochaines activations/));
+ally.statBuffs=null;
+// Lien de vie : le lanceur donne ses PV, l'allié en reçoit une fois et demie plus.
+api.resetMissionActivation(u);
+u.character.mana=53;
+u.hp=u.pvMax;ally.hp=10;
+api.setMissionMode("spell:life_link");
+assert.ok(!api.targetableMissionCells().has(api.missionKey(u.q,u.r)),"pas sur soi");
+queue.push(0,0.99,0.5,0.5);
+api.handleMissionHexClick(ally.q,ally.r);
+const given=u.pvMax-u.hp;
+assert.ok(given>0);
+assert.equal(ally.hp,10+Math.ceil(given*1.5));
+assert.ok(logged(/lance Lien de vie sur .* donne \d+ PV, .* en reçoit \+\d+/));
+// Délivrance : rien à retirer, pas de cible ; un allié en fuite et paralysé est libéré des deux.
+api.resetMissionActivation(u);
+u.character.mana=53;
+api.setMissionMode("spell:deliverance");
+assert.ok(!api.targetableMissionCells().has(api.missionKey(ally.q,ally.r)),"rien à retirer");
+ally.fleeing=true;ally.paralyzed={turns:1};
+assert.ok(api.targetableMissionCells().has(api.missionKey(ally.q,ally.r)));
+queue.push(0);
+api.handleMissionHexClick(ally.q,ally.r);
+assert.deepEqual([ally.fleeing,ally.paralyzed],[false,null]);
+assert.ok(logged(/lance Délivrance sur .* : fin de la peur, de la paralysie\./));
+// Lumière sacrée : seuls les morts-vivants du cercle sont frappés, sans résistance ; les vivants n'ont rien.
+api.resetMissionActivation(u);
+u.character.mana=53;
+foe.alive=true;foe.hp=foe.pvMax;foe.character.undead=true;
+const livingHp=[u.hp,ally.hp];
+api.setMissionMode("spell:holy_light");
+queue.push(0,0.99,0.5);
+api.handleMissionHexClick(foe.q,foe.r);
+assert.ok(foe.hp<foe.pvMax,"le mort-vivant brûle");
+assert.deepEqual([u.hp,ally.hp],livingHp,"les vivants du cercle n'ont rien");
+assert.ok(logged(/lance Lumière sacrée \(rayon 2\).* PV à chaque mort-vivant, sans aucune résistance — /));
+foe.character.undead=false;foe.hp=foe.pvMax;
 
 // École du Feu dans l'écran de combat.
 const reset=()=>{ api.resetMissionActivation(u); u.character.mana=53; };

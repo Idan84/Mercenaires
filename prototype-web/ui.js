@@ -1426,7 +1426,8 @@ function spellIconHtml(spell) {
 // ce qu'il fait (spells.json, description : la cible et l'action y sont), puis ses chiffres pour ce mercenaire, avec sa maîtrise et son équipement :
 // mana, réussite, portée, effet, durée, zone — les mêmes que l'écran de combat (game-core/magic.js).
 const SPELL_EFFECT_LABELS = {soin:"Soins", soin_de_zone:"Soins", soin_sur_duree:"Soins par tour", degats:"Dégâts", degats_zone:"Dégâts",
-  degats_rebonds:"Dégâts", degats_paire:"Dégâts", degats_sans_resistance:"Dégâts", arme_elementaire:"Dégâts par coup", tempete:"Dégâts par frappe"};
+  degats_rebonds:"Dégâts", degats_paire:"Dégâts", degats_sans_resistance:"Dégâts", arme_elementaire:"Dégâts par coup", tempete:"Dégâts par frappe",
+  transfert_pv:"PV donnés"};
 function spellTip(c, row) {
   if (!row?.code) return "";
   const magic = typeof magicRules === "function" ? magicRules() : null;

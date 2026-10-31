@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "spells",
-  "description": "Sorts (doc 12 « Décisions du 2026-10-25 », écoles de la Vie, du Feu, de l'Eau, de la Transmutation, de la Foudre, de la Télékinésie et de l'Illusion ; Idan). Un sort appartient à une école ; il est appris au niveau 1 et monte quand on s'en sert (1 à 100). Maîtrise = École (équipement compris) + Niveau du sort × magic.mastery.spell_share. Effet = ceil(effet_base × effet_nb_des D effet_de × (effet_puissance_facteur × Puissance magique / 100) × (effet_maitrise_base + Maîtrise / 100)). Portée = portee_base + floor(Maîtrise / portee_pas_maitrise) cases ; durée et rayon de zone de même. Mana = ceil(mana_base × (1 − Maîtrise / mana_diviseur_maitrise)). Réussite : constantes magic.cast.* ; Δ = (Maîtrise + Intelligence) / 2 − difficulte (palier : Novice 30, Adepte 50, Expert 70). Coup critique : dés au maximum (sauf critique = false). Échec critique : le lanceur subit l'effet minimum de son sort (dés à 1). Actions : rapide, principale (l'action d'attaque du tour). Cibles : allie_ou_soi, ennemi, soi, case (centre d'une zone, ou case voisine d'où part une ligne), case_vide, mort_vivant. Zones en ligne (zone_forme) : « ligne » part de la case visée, voisine du lanceur, et file droit devant (Tsunami) ; « mur » est centrée sur la case visée, en travers de la direction du lanceur (Brouillard) ; longueur = zone_longueur_base + floor(Maîtrise / zone_longueur_pas_maitrise), plafonnée par zone_longueur_max. Malus de caractéristiques (Gel) : bonus_base + floor(Maîtrise / bonus_pas_maitrise) points retirés aux caracteristiques de la cible, × (1 − sa protection contre l'élément / 100). Bonus de caractéristiques (Transmutation) : bonus_base + floor(Maîtrise / bonus_pas_maitrise), en pourcentage de la valeur de base (bonus_unite « pourcentage ») ou en points. Crachat de venin : la cible peut, par une action rapide, cracher du venin à tir_portee_min à tir_portee_max cases (toucher comme un trait, avec la Maîtrise du lanceur ; dégâts de poison), et empoisonne si elle blesse (combat.poison.*). Rebonds (Boule d'éclairs) : après la cible, l'effet saute sur le personnage le plus proche pas encore touché (alliés et lanceur compris), à rebond_distance cases au plus du précédent, rebonds fois ; le k-ième rebond fait × (1 − k × rebond_perte). Dégâts physiques (degats_type, Télékinésie : contondant) : ils passent par l'armure comme un coup d'arme, étape Blesser avec la Puissance magique du lanceur à la place de la Force, 0,2 × Maîtrise à la place des compétences d'arme et puissance (la puissance contondante du sort) face à la résistance de l'armure, puis la Résistance physique. Déplacement forcé (deplacement : attire, repousse) : deplacement_base + floor(Maîtrise / deplacement_pas_maitrise) cases, sans attaque d'opportunité ; un obstacle arrête la cible et lui inflige un choc (choc_nb_des D choc_de, contondant). portee_min : distance minimale (Lancer de pierre, comme la Fronde). Cible allie_ou_ennemi : un autre personnage que le lanceur ; personnage : n'importe qui, le lanceur compris. Dégâts psychiques (degats_type psychique) : × Volonté du lanceur / Volonté de la cible (de 0,5 à 2), sans armure ni résistance. Bonus de zone (bonus_zone) : les alliés du lanceur dans la zone, lanceur compris. Peur : chaque ennemi de la zone fait un test de Courage, la Maîtrise et la Volonté du lanceur tenant le rôle de l'Intimidation. Frénésie : la cible joue seule (mêlée, charge, l'ennemi le plus proche), gagne bonus_base % de Force et ne fait plus de test de Courage. Portée, rayon de zone, durée et bonus : base + floor(Maîtrise / pas), plafonnés par portee_max, zone_rayon_max et duree_max. Éléments (feu, froid, foudre) : dégâts × (1 − protection / 100), protection = résistance + armure + bonus, bornée par combat.elemental.*. Icônes (Idan, 2026-10-25) : icone = parchemin du sort, cadre = cadre commun de l'école, chemins sous prototype-web/assets/ (scripts/build-spells.sh).",
+  "description": "Sorts (doc 12 « Décisions du 2026-10-25 », écoles de la Vie, du Feu, de l'Eau, de la Transmutation, de la Foudre, de la Télékinésie et de l'Illusion ; Idan). Un sort appartient à une école ; il est appris au niveau 1 et monte quand on s'en sert (1 à 100). Maîtrise = École (équipement compris) + Niveau du sort × magic.mastery.spell_share. Effet = ceil(effet_base × effet_nb_des D effet_de × (effet_puissance_facteur × Puissance magique / 100) × (effet_maitrise_base + Maîtrise / 100)). Portée = portee_base + floor(Maîtrise / portee_pas_maitrise) cases ; durée et rayon de zone de même. Mana = ceil(mana_base × (1 − Maîtrise / mana_diviseur_maitrise)). Réussite : constantes magic.cast.* ; Δ = (Maîtrise + Intelligence) / 2 − difficulte (palier : Novice 30, Adepte 50, Expert 70). Coup critique : dés au maximum (sauf critique = false). Échec critique : le lanceur subit l'effet minimum de son sort (dés à 1). Actions : rapide, principale (l'action d'attaque du tour). Cibles : allie_ou_soi, allie (un autre que le lanceur), ennemi, soi, case (centre d'une zone, ou case voisine d'où part une ligne), case_vide, mort_vivant. Zones en ligne (zone_forme) : « ligne » part de la case visée, voisine du lanceur, et file droit devant (Tsunami) ; « mur » est centrée sur la case visée, en travers de la direction du lanceur (Brouillard) ; longueur = zone_longueur_base + floor(Maîtrise / zone_longueur_pas_maitrise), plafonnée par zone_longueur_max. Malus de caractéristiques (Gel) : bonus_base + floor(Maîtrise / bonus_pas_maitrise) points retirés aux caracteristiques de la cible, × (1 − sa protection contre l'élément / 100). Bonus de caractéristiques (Transmutation) : bonus_base + floor(Maîtrise / bonus_pas_maitrise), en pourcentage de la valeur de base (bonus_unite « pourcentage ») ou en points. Crachat de venin : la cible peut, par une action rapide, cracher du venin à tir_portee_min à tir_portee_max cases (toucher comme un trait, avec la Maîtrise du lanceur ; dégâts de poison), et empoisonne si elle blesse (combat.poison.*). Rebonds (Boule d'éclairs) : après la cible, l'effet saute sur le personnage le plus proche pas encore touché (alliés et lanceur compris), à rebond_distance cases au plus du précédent, rebonds fois ; le k-ième rebond fait × (1 − k × rebond_perte). Dégâts physiques (degats_type, Télékinésie : contondant) : ils passent par l'armure comme un coup d'arme, étape Blesser avec la Puissance magique du lanceur à la place de la Force, 0,2 × Maîtrise à la place des compétences d'arme et puissance (la puissance contondante du sort) face à la résistance de l'armure, puis la Résistance physique. Déplacement forcé (deplacement : attire, repousse) : deplacement_base + floor(Maîtrise / deplacement_pas_maitrise) cases, sans attaque d'opportunité ; un obstacle arrête la cible et lui inflige un choc (choc_nb_des D choc_de, contondant). portee_min : distance minimale (Lancer de pierre, comme la Fronde). Cible allie_ou_ennemi : un autre personnage que le lanceur ; personnage : n'importe qui, le lanceur compris. Dégâts psychiques (degats_type psychique) : × Volonté du lanceur / Volonté de la cible (de 0,5 à 2), sans armure ni résistance. Bonus de zone (bonus_zone) : les alliés du lanceur dans la zone, lanceur compris. Peur : chaque ennemi de la zone fait un test de Courage, la Maîtrise et la Volonté du lanceur tenant le rôle de l'Intimidation. Frénésie : la cible joue seule (mêlée, charge, l'ennemi le plus proche), gagne bonus_base % de Force et ne fait plus de test de Courage. Portée, rayon de zone, durée et bonus : base + floor(Maîtrise / pas), plafonnés par portee_max, zone_rayon_max et duree_max. Éléments (feu, froid, foudre) : dégâts × (1 − protection / 100), protection = résistance + armure + bonus, bornée par combat.elemental.*. Icônes (Idan, 2026-10-25) : icone = parchemin du sort, cadre = cadre commun de l'école, chemins sous prototype-web/assets/ (scripts/build-spells.sh).",
   "columns": [
     {
       "source": "Nom",
@@ -270,9 +270,17 @@
     {
       "source": "Dé du nombre de frappes par tour (Tempête)",
       "key": "frappes_de"
+    },
+    {
+      "source": "Multiplicateur des PV reçus par l’allié (Lien de vie)",
+      "key": "transfert_facteur"
+    },
+    {
+      "source": "États retirés (Délivrance) : fuite, paralysie, gel, frenesie",
+      "key": "retire"
     }
   ],
-  "row_count": 59,
+  "row_count": 63,
   "rows": [
     {
       "nom": "Soin rapide",
@@ -448,6 +456,97 @@
       "invocation_nb_des": null,
       "invocation_de": null,
       "invocation_pas_maitrise": null
+    },
+    {
+      "nom": "Bénédiction",
+      "code": "blessing",
+      "ecole": "Vie",
+      "palier": "Novice",
+      "action": "rapide",
+      "cible": "allie_ou_soi",
+      "ligne_de_vue": true,
+      "effet": "bonus_caracteristiques",
+      "effet_nb_des": 0,
+      "portee_base": 2,
+      "portee_pas_maitrise": 25,
+      "duree_base": 2,
+      "cumulable": false,
+      "critique": false,
+      "mana_base": 10,
+      "mana_diviseur_maitrise": 300,
+      "difficulte": 30,
+      "bonus_base": 30,
+      "bonus_pas_maitrise": 2,
+      "bonus_unite": "points",
+      "caracteristiques": "Chance",
+      "description": "La chance sourit à un allié ou au lanceur : sa Chance augmente pendant 2 tours (plus de coups critiques, moins d’échecs critiques). Action rapide."
+    },
+    {
+      "nom": "Lien de vie",
+      "code": "life_link",
+      "ecole": "Vie",
+      "palier": "Adepte",
+      "action": "principale",
+      "cible": "allie",
+      "ligne_de_vue": true,
+      "effet": "transfert_pv",
+      "effet_base": 10,
+      "effet_nb_des": 2,
+      "effet_de": 6,
+      "effet_puissance_facteur": 2,
+      "effet_maitrise_base": 0.5,
+      "portee_base": 2,
+      "portee_pas_maitrise": 25,
+      "critique": true,
+      "mana_base": 15,
+      "mana_diviseur_maitrise": 300,
+      "difficulte": 50,
+      "transfert_facteur": 1.5,
+      "description": "Le lanceur donne ses propres PV à un allié : il en perd, l’allié en gagne une fois et demie plus. Il ne donne que ce qu’il faut et garde toujours 1 PV. Action principale."
+    },
+    {
+      "nom": "Délivrance",
+      "code": "deliverance",
+      "ecole": "Vie",
+      "palier": "Novice",
+      "action": "rapide",
+      "cible": "allie_ou_soi",
+      "ligne_de_vue": true,
+      "effet": "delivrance",
+      "effet_nb_des": 0,
+      "portee_base": 2,
+      "portee_pas_maitrise": 25,
+      "critique": false,
+      "mana_base": 10,
+      "mana_diviseur_maitrise": 300,
+      "difficulte": 30,
+      "retire": "fuite,paralysie,gel,frenesie",
+      "description": "Libère un allié ou le lanceur de la peur (il cesse de fuir), de la paralysie, du gel et de la frénésie. Pas de coup critique. Action rapide."
+    },
+    {
+      "nom": "Lumière sacrée",
+      "code": "holy_light",
+      "ecole": "Vie",
+      "palier": "Expert",
+      "action": "principale",
+      "cible": "case",
+      "ligne_de_vue": true,
+      "effet": "degats_sans_resistance",
+      "effet_base": 10,
+      "effet_nb_des": 1,
+      "effet_de": 10,
+      "effet_puissance_facteur": 2,
+      "effet_maitrise_base": 0.5,
+      "portee_base": 2,
+      "portee_pas_maitrise": 25,
+      "zone_rayon_base": 1,
+      "zone_rayon_pas_maitrise": 50,
+      "zone_rayon_max": 3,
+      "critique": true,
+      "mana_base": 30,
+      "mana_diviseur_maitrise": 300,
+      "difficulte": 70,
+      "description": "Une lumière éclatante dans un cercle : chaque mort-vivant qui s’y trouve, les nôtres compris, subit des dégâts qui ignorent armure, résistances et blocage. Sans effet sur les vivants. Action principale."
     },
     {
       "nom": "Trait de feu",

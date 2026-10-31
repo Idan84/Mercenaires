@@ -20,12 +20,13 @@
     soin:"soin",soin_sur_duree:"soin",
     soin_de_zone:"soin_masse",
     bonus_caracteristiques:"soutien",bonus_zone:"soutien",arme_elementaire:"soutien",protection_elementaire:"soutien",
-    protection_projectiles:"soutien",crachat_venin:"soutien",drain_de_vie:"soutien",purge_poison:"soutien",
+    protection_projectiles:"soutien",crachat_venin:"soutien",drain_de_vie:"soutien",
     invocation:"invocation",resurrection:"invocation",transposition:"invocation",
     peur:"controle",bourbier:"controle",terrain_infranchissable:"controle",brouillard:"controle",
     malus_caracteristiques:"controle",deplacement_force:"controle",fletrissement:"controle",frenesie:"controle"
   };
-  // Sorts chiffrés (soins ou dégâts) : leur effet moyen compte ; les autres, la réussite et le mana seulement.
+  // Purge (purge_poison) n'a pas de facette : elle sert contre le poison seulement, elle ne dit pas à quoi il sert.
+  // Sorts chiffrés (soins ou dégâts) : leur effet moyen compte ; les autres, la réussite, le mana et la maîtrise.
   const AMOUNT_FACETS=new Set(["magie_attaque","magie_zone","soin","soin_masse"]);
 
   function createProfileRules({reference,engine,magic=null}={}){
@@ -259,7 +260,10 @@
       const usages=main.filter(e=>ATTACK_FAMILIES.has(e.family)).sort(byLevel);
       const otherTop=relative.filter(e=>!ATTACK_FAMILIES.has(e.family)).sort(byLevel)[0];
       let lead=usages[0]||null;
-      // À niveau égal, l'arme du set 1 (celle qu'il a en main en entrant au combat) passe devant celle du set 2.
+      // À niveau égal, une arme ou un sort chiffré (dégâts, soins) passe devant un sort de soutien, de contrôle ou
+      // d'invocation ; et l'arme du set 1 (celle qu'il a en main en entrant au combat) devant celle du set 2.
+      const concrete=e=>WEAPON_FAMILIES.has(e.family)||AMOUNT_FACETS.has(e.code);
+      if(lead&&!concrete(lead)) lead=usages.find(e=>concrete(e)&&e.level===lead.level)||lead;
       const first=setFamily(character,1);
       if(lead&&first&&lead.family!==first&&WEAPON_FAMILIES.has(lead.family)) lead=usages.find(e=>e.family===first&&e.level===lead.level)||lead;
       if(!lead||(otherTop&&otherTop.level>=lead.level+(S.mene_ecart??2))) lead=otherTop||lead||[...main].sort(byLevel)[0]||null;

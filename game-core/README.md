@@ -15,7 +15,7 @@ Noyau de logique indépendant de l'interface, préparé pour un futur portage Un
 | `avatar-catalog.js` | Catalogue des avatars depuis les images et leurs mots-clés Bridge (Git ou Hostinger) | `docs/DEPLOYMENT.md` |
 | `avatar-demand.js` | Besoin en avatars par culture : cases culture × ascendance × arme ou école, besoin binomial, un avatar par case, repli sur le profil (onglet Avatars du Design Lab, sans effet sur le jeu ; mesures `data/reference/avatar-demand.json`) | `02-generation-and-identity.md` |
 | `merchants.js` | Marchands : passage du jour selon la renommée, marchands et lignes de stock lus dans `merchants.json`, prix (valeur, affinité), achat | `18-merchants.md` |
-| `mercenary-profile.js` | Évaluation d'un mercenaire : facettes mesurées avec le combat et l'équipement, niveaux de réputation (seuils dans `mercenary-profile.json`), points forts et faibles, gêne d'armure, titre | `19-mercenary-profile.md` |
+| `mercenary-profile.js` | Titres des mercenaires : sous-catégories mesurées avec le combat et l'équipement, notes des 10 catégories sur l'échelle de la réputation (seuils dans `mercenary-profile.json`), 1 à 3 titres ou « Chair à canon », spécificité | `19-mercenary-profile.md` |
 | `campaign.js` | État de partie, horloge `AdvanceTime(days)`, signature, Intendant, sauvegarde | `07-architecture.md`, `10-mission-time-and-unavailability.md` |
 
 Les tests sont dans `tests/`.

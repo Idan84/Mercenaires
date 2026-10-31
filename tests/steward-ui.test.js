@@ -43,11 +43,10 @@ const ui = new Function("game","$","esc","fmt","renderAvatar","variantPhrase","M
 // Sans intendant : proposer le poste, sauf au capitaine ; un mercenaire déjà sollicité aujourd'hui est grisé.
 ui.renderStewardPanel();
 const none = elements["steward-panel"].innerHTML;
-assert.match(none, /<small>Pas d’intendant<\/small>/);
-assert.match(none, /<summary>Proposer le poste à…<\/summary>/);
+assert.match(none, /<summary class="talk-offer-btn" title="Le mercenaire choisi peut refuser le poste\.">Nommer un intendant<\/summary>/);
 assert.doesNotMatch(none, /data-steward-offer="1"/, "jamais le capitaine");
 assert.match(none, /data-steward-offer="2">/);
-assert.match(none, /data-steward-offer="3" disabled>[\s\S]*déjà sollicité aujourd’hui/);
+assert.match(none, /data-steward-offer="3" disabled title="déjà sollicité aujourd’hui">/);
 assert.doesNotMatch(none, /data-character-id/, "proposer n'ouvre pas la fiche");
 
 // Refus (dé à 100) : la réponse s'affiche, rien ne change de poste.
@@ -70,7 +69,7 @@ ui.renderStewardPanel();
 const panel = elements["steward-panel"].innerHTML;
 assert.match(panel, /<small>L’intendante<\/small>/);
 assert.match(panel, /<strong>Isolde Marlowe<\/strong>/);
-assert.match(panel, /Intendance 62 · Nommée aujourd’hui/);
+assert.match(panel, /title="Intendance 62 · Nommée aujourd’hui"/, "compétence et ancienneté au survol");
 assert.match(panel, /data-character-id="3"/, "son portrait ouvre sa fiche");
 game.campaign.day = 8;
 ui.renderStewardPanel();

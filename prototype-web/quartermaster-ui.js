@@ -1,9 +1,8 @@
 "use strict";
 
-// Intendance (doc 11 §16) : le stock de la compagnie. Pour l'instant, les armes, armures, bottes, ceintures, amulettes,
-// capes et gants de rechange reçus à la création (Idan, 2026-10-23 et 2026-10-24), rangés par catégorie : les armes
-// d'abord, puis les armures, de la plus légère à la plus lourde, puis les bottes, les ceintures, les amulettes, les
-// capes et les gants ; deux objets identiques de même tier forment une ligne « × 2 ».
+// Intendance (doc 11 §16) : le stock de la compagnie, sans propriétaire, rangé par catégorie : les armes d'abord, puis les
+// armures, de la plus légère à la plus lourde, puis les casques, bottes, ceintures, amulettes, capes, gants, culottes,
+// bagues et potions ; deux objets identiques de même tier forment une case « × 2 ».
 const STOCK_KINDS=["weapon","armor","helmet","boots","belt","amulet","cape","gloves","pants","ring","potion"];
 const STOCK_ARMOR_GROUPS=[["Vêtement","Vêtements"],["Légère","Armures légères"],["Intermédiaire","Armures intermédiaires"],["Lourde","Armures lourdes"]];
 function stockGroups(items){
@@ -28,53 +27,40 @@ function stockGroups(items){
   }));
 }
 
-function stockCount(items){
-  const count=type=>items.filter(item=>item.itemType===type).length;
-  const armors=count("armor"),boots=count("boots"),belts=count("belt"),amulets=count("amulet"),capes=count("cape");
-  const gloves=count("gloves"),pants=count("pants"),rings=count("ring"),helmets=count("helmet"),potions=count("potion");
-  const weapons=items.length-armors-boots-belts-amulets-capes-gloves-pants-rings-helmets-potions;
-  const plural=(n,word)=>n+" "+word+(n>1?"s":"");
-  return [plural(weapons,"arme"),armors?plural(armors,"armure"):"",helmets?plural(helmets,"casque")+" ou chapeau"+(helmets>1?"x":""):"",boots?plural(boots,"paire")+" de bottes":"",belts?plural(belts,"ceinture"):"",
-    amulets?plural(amulets,"amulette"):"",capes?plural(capes,"cape"):"",gloves?plural(gloves,"paire")+" de gants":"",
-    pants?plural(pants,"culotte"):"",rings?plural(rings,"bague"):"",potions?plural(potions,"fiole"):""].filter(Boolean).join(" · ");
-}
-
-// Un clic sur la ligne propose « Donner à… » (deal-ui.js).
-function renderStockRow({item,count}){
-  return `<li class="stock-row" data-stock-deal="${esc(item.id)}" role="button" tabindex="0" title="Donner à…">
-    ${gearTile({id:"stock",label:item.name},item)}
-    <span class="stock-name">${esc(itemPublicName(item))}</span>
-    <span class="stock-tier">${esc(itemBaseName(item))}</span>
-    <span class="stock-count">× ${count}</span>
+// Une case par objet (Idan, 2026-10-31 : des icônes, pas du texte) : son image dans son cadre de tier, le nombre en
+// pastille ; le nom et le détail au survol (carte d'objet). Un clic propose « Donner à… » (deal-ui.js).
+function renderStockTile({item,count}){
+  return `<li class="stock-tile" data-stock-deal="${esc(item.id)}" role="button" tabindex="0" aria-label="${esc(itemPublicName(item))}${count>1?" × "+count:""}">
+    ${gearTile({id:"stock",label:item.name},item)}${count>1?`<span class="stock-count">${count}</span>`:""}
   </li>`;
 }
 
-// Onglets par grande catégorie et catégories en accordéon, fermées par défaut (Idan, 2026-10-24). L'onglet choisi
-// et les catégories ouvertes restent tels quels quand l'écran se redessine (passage d'un jour, retour au camp).
-const STOCK_TABS=[["weapon","Armes"],["armor","Armures"],["helmet","Casques"],["boots","Bottes"],["belt","Ceintures"],["amulet","Amulettes"],["cape","Capes"],["gloves","Gants"],["pants","Culottes"],["ring","Bagues"],["potion","Potions"]];
-const STOCK_EMPTY={weapon:"Aucune arme en stock.",armor:"Aucune armure en stock.",helmet:"Aucun casque ni chapeau en stock.",boots:"Aucune paire de bottes en stock.",belt:"Aucune ceinture en stock.",
-  amulet:"Aucune amulette en stock.",cape:"Aucune cape en stock.",
-  gloves:"Aucune paire de gants en stock.",pants:"Aucune culotte en stock.",ring:"Aucune bague en stock.",potion:"Aucune potion ni fiole en stock."};
-const stockView={tab:"weapon",open:new Set()};
+// Onglets en icônes, le nombre dessous, le nom au survol ; un onglet vide est grisé. Les catégories (Armes de tir,
+// Armures légères…) en petits intitulés au-dessus de leur grille. L'onglet choisi reste tel quel quand l'écran se
+// redessine (passage d'un jour, retour au camp).
+const STOCK_TABS=[["weapon","Armes","melee"],["armor","Armures","armor"],["helmet","Casques","head"],["boots","Bottes","boots"],["belt","Ceintures","belt"],
+  ["amulet","Amulettes","amulet"],["cape","Capes","cape"],["gloves","Gants","gloves"],["pants","Culottes","pants"],["ring","Bagues","ring"],["potion","Potions","flask"]];
+const stockView={tab:"weapon"};
 
 function renderQuartermaster(){
   const list=$("quartermaster-stock");
   if(!list||!game.campaign) return;
   const items=game.campaign.company.stock||[];
   if(typeof renderStewardPanel==="function") renderStewardPanel();
-  $("quartermaster-count").textContent=stockCount(items);
   const kindOf=item=>STOCK_KINDS.includes(item.itemType)?item.itemType:"weapon";
+  const count=kind=>items.filter(item=>kindOf(item)===kind).length;
+  if(!count(stockView.tab)) stockView.tab=STOCK_TABS.find(([kind])=>count(kind))?.[0]||stockView.tab;
   const tabs=$("quartermaster-tabs");
-  if(tabs) tabs.innerHTML=STOCK_TABS.map(([kind,label])=>{
-    const active=kind===stockView.tab;
-    return `<button type="button" role="tab" class="stock-tab${active?" active":""}" aria-selected="${active}" data-stock-tab="${kind}">${label} <small>${items.filter(item=>kindOf(item)===kind).length}</small></button>`;
+  if(tabs) tabs.innerHTML=STOCK_TABS.map(([kind,label,icon])=>{
+    const active=kind===stockView.tab,n=count(kind);
+    return `<button type="button" role="tab" class="stock-tab${active?" active":""}" aria-selected="${active}" data-stock-tab="${kind}" title="${label}" aria-label="${label} : ${n}"${n?"":" disabled"}>${gearIcon(icon)}<small>${n}</small></button>`;
   }).join("");
-  if(!items.length){ list.innerHTML=`<p class="muted">Le stock est vide.</p>`; return; }
+  if(!items.length){ list.innerHTML=`<p class="stock-empty">Stock vide</p>`; return; }
   const groups=stockGroups(items.filter(item=>kindOf(item)===stockView.tab));
-  list.innerHTML=groups.length?groups.map(group=>`<details class="stock-group" data-stock-group="${esc(group.key)}"${stockView.open.has(group.key)?" open":""}>
-    <summary><h3>${esc(group.category)} <small>${group.count}</small></h3></summary>
-    <ul>${group.rows.map(renderStockRow).join("")}</ul>
-  </details>`).join(""):`<p class="muted">${STOCK_EMPTY[stockView.tab]}</p>`;
+  list.innerHTML=groups.map(group=>`<section class="stock-group" data-stock-group="${esc(group.key)}">
+    <h3>${esc(group.category)}</h3>
+    <ul class="stock-grid">${group.rows.map(renderStockTile).join("")}</ul>
+  </section>`).join("");
 }
 
 function initializeQuartermaster(){
@@ -84,12 +70,6 @@ function initializeQuartermaster(){
     stockView.tab=tab.dataset.stockTab;
     renderQuartermaster();
   });
-  // « toggle » ne remonte pas : écouté en capture.
-  document.addEventListener("toggle",event=>{
-    const key=event.target?.dataset?.stockGroup;
-    if(!key) return;
-    if(event.target.open) stockView.open.add(key); else stockView.open.delete(key);
-  },true);
 }
 
 if(typeof document!=="undefined") initializeQuartermaster();

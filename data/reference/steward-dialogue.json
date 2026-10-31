@@ -87,9 +87,8 @@
     "dorm_full": "Et où voulez-vous que je dorme, capitaine ? Le dortoir est plein."
   },
   "panel": {
-    "none_title": "Pas d’intendant",
-    "none_text": "Personne ne tient l’Intendance. Proposez le poste à un mercenaire : il peut refuser.",
-    "offer": "Proposer le poste à…",
+    "appoint": "Nommer un intendant",
+    "appoint_tip": "Le mercenaire choisi peut refuser le poste.",
     "asked_today": "déjà sollicité aujourd’hui",
     "steward_title": "{L’intendant|L’intendante}",
     "since": "En poste depuis {jours}",

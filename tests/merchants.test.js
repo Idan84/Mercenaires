@@ -205,6 +205,72 @@ steward.skills.camp.Intendance=9;
 assert.deepEqual(rules.stewardHelp(state,merchant),{steward:null,bonus:0},"moins de 10 en Intendance");
 state.company.intendantId=null;
 
+// « Rien que pour toi, capitaine » (Idan, 2026-10-31) : à +100 d'affinité, une fois par passage, un objet hors de sa
+// liste, T3 ou T4, à 50 % de son prix normal.
+const SELLS=new Set(FIREARMS.map(n=>"weapon|"+n));
+state.day+=1;
+scripted.push(0);
+rules.morning(state,{renown});
+assert.equal(rules.affinityWith(state,merchant),44);
+assert.equal(rules.visitOf(state,{renown}).special,null,"pas à +44");
+assert.equal(rules.buySpecial(state,{renown}).ok,false);
+assert.match(thorval.repliques.rien_que_pour_toi[0],/\{prix\}/);
+// L'achat qui le porte à +100 : il sort aussitôt l'objet.
+state.market.merchants[thorval.id].acquired=54;
+const visitBefore=rules.visitOf(state,{renown});
+assert.equal(visitBefore.affinity,98);
+state.company.gold=100000;
+const reaching=rules.buy(state,visitBefore.offers[0].id,{renown});
+assert.equal(reaching.special,true,"+100 : l'objet rien que pour toi");
+visit=rules.visitOf(state,{renown});
+assert.equal(visit.affinity,100);
+const gift=visit.special;
+assert.ok(gift&&gift.item,"il a un objet de côté");
+assert.ok(!SELLS.has(gift.item.itemType+"|"+gift.item.name),"jamais dans sa liste");
+assert.ok([3,4].includes(gift.item.tier),"T3 ou T4");
+assert.equal(gift.item.owner,null);
+assert.equal(gift.price,Math.round(rules.sellPrice(gift.item,100)*0.5),"moitié de son prix normal");
+assert.equal(rules.visitOf(state,{renown}).special.item,gift.item,"le même pendant tout le passage");
+// L'exemple de la proposition : un arc T3 à 720 PO, un arc T4 à 1 500 PO.
+assert.equal(Math.round(rules.sellPrice(item("Arc",3),100)*0.5),720);
+assert.equal(Math.round(rules.sellPrice(item("Arc",4),100)*0.5),1500);
+// L'acheter : une seule fois ; il rejoint l'Intendance.
+state.company.gold=gift.price-1;
+assert.equal(rules.buySpecial(state,{renown}).reason,"Pas assez d'or.");
+state.company.gold=100000;
+const took=rules.buySpecial(state,{renown});
+assert.equal(took.ok,true);
+assert.equal(took.price,gift.price);
+assert.equal(state.company.gold,100000-gift.price);
+assert.equal(state.company.stock.at(-1),gift.item);
+assert.equal(rules.visitOf(state,{renown}).special,null);
+assert.equal(rules.buySpecial(state,{renown}).ok,false,"une fois par passage");
+// Revendu à Thorval, il ne rapporte rien de plus : hors de sa liste.
+assert.equal(rules.visitOf(state,{renown}).buyback(gift.item).specialty,false);
+// Au passage suivant, toujours à +100 : un autre objet, dès son arrivée.
+state.day+=1;
+scripted.push(0);
+rules.morning(state,{renown});
+assert.equal(rules.affinityWith(state,merchant),100,"une affaire a eu lieu : pas de perte");
+assert.ok(rules.visitOf(state,{renown}).special,"dès son arrivée");
+// Sur de nombreux passages : familles variées, jamais sa liste, T3 et T4 selon l'étal (76 % / 24 % pour une compagnie neuve).
+const specialProbe={day:1,company:{roster:[captain],captainId:captain.id,stock:[]},market:{visit:null,merchants:{[thorval.id]:{acquired:56}}}};
+const giftTiers={3:0,4:0},families=new Set();
+for(let i=0;i<600;i++){
+  specialProbe.day+=1;
+  scripted.push(0);
+  rules.morning(specialProbe,{renown});
+  const g=specialProbe.market.visit.special.item;
+  assert.ok(!SELLS.has(g.itemType+"|"+g.name));
+  giftTiers[g.tier]+=1;
+  families.add(g.itemType);
+  specialProbe.market.visit.traded=true;
+}
+assert.ok(Math.abs(giftTiers[3]/600-29/38)<0.06,"T3 : "+giftTiers[3]/600);
+assert.equal(families.size,10,"les dix familles d'équipement : "+[...families].join(", "));
+assert.ok(!families.has("potion"));
+state.market.merchants[thorval.id].acquired=0;
+
 // Campagne : le tirage a lieu chaque matin ; la sauvegarde garde la visite, l'étal et l'affinité acquise.
 state.day+=1;
 scripted.push(0);
@@ -237,4 +303,4 @@ scripted.push(0.999);
 assert.equal(rules.morning(state,{renown}).arrived,null);
 assert.deepEqual(state.market,{visit:null,merchants:{}});
 
-console.log("Marchands : Thorval Poudredefeu (4 armes à feu, 10 articles T2–T4), affinité, achat, rachat, intendant — OK");
+console.log("Marchands : Thorval Poudredefeu (4 armes à feu, 10 articles T2–T4), affinité, achat, rachat, intendant, rien que pour toi — OK");

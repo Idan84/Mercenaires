@@ -166,7 +166,7 @@ const ui=new Function("game","$","fmt","esc","campaignRules","dormitoryPlacesTex
 const company=()=>elements["camp-buildings"].innerHTML,dormitory=()=>elements["dormitory-view"].innerHTML;
 ui.renderCampBuildings();
 assert.match(company(),/<h3>Constructions<\/h3>/);
-assert.match(company(),/<strong>Dortoir<\/strong><span>0 \/ 40 places occupées<\/span>\s*<span>Qualité : Paille humide \(niveau 0\)<\/span><span>Quartiers du lieutenant : aucun<\/span><\/div>/);
+assert.match(company(),/<strong>Dortoir<\/strong><span>0 \/ 40 places occupées · Paille humide<\/span><\/div>/);
 assert.match(company(),/<button type="button" class="primary" data-open-camp-scene="dormitory" data-destination="Dortoir">Aller au dortoir<\/button>/);
 assert.doesNotMatch(company(),/data-dorm-expand|data-dorm-quality/,"les chantiers se lancent au dortoir");
 assert.equal(styles["--dormitory-bg"],'url("https://jeu.test/assets/dormitory/dortoir-0.jpg")',"niveau 0 : son image");
@@ -207,7 +207,7 @@ assert.deepEqual(log.at(-1),{message:"Le dortoir est agrandi : +5 places, 45 en 
 Object.assign(game.campaign.company.camp,{construction:null,dormitoryQuality:1,lieutenantQuarters:1});
 game.campaign.company.gold=10000;
 ui.renderCampBuildings();
-assert.match(company(),/<span>Quartiers du lieutenant : 1<\/span>/);
+assert.match(dormitory(),/Quartiers du lieutenant : 1/);
 assert.match(dormitory(),/data-dorm-quarter disabled>Construire : quartier du lieutenant n° 2<\/button>\s*<span class="building-cost">4 000 PO · 10 jours · dortoir de niveau 2 requis<\/span>/);
 game.campaign.company.camp.dormitoryQuality=2;
 ui.renderDormitory();

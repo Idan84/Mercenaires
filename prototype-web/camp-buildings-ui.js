@@ -35,8 +35,7 @@ function renderCampBuildings(){
   const work=c.company.camp.construction,quality=campaignRules().dormitoryQuality(c);
   box.innerHTML=`<h3>Constructions</h3>
     <article class="building-card building-card--link">
-      <div class="building-info"><strong>Dortoir</strong><span>${dormitoryPlacesLine(c)}</span>
-        <span>Qualité : ${esc(quality.nom)} (niveau ${fmt(quality.niveau)})</span><span>${lieutenantQuartersLine(c)}</span>${work?`<span class="building-work">${campWorkText(work,c.day)}</span>`:""}</div>
+      <div class="building-info"><strong>Dortoir</strong><span>${dormitoryPlacesLine(c)} · ${esc(quality.nom)}</span>${work?`<span class="building-work">${campWorkText(work,c.day)}</span>`:""}</div>
       <button type="button" class="primary" data-open-camp-scene="dormitory" data-destination="Dortoir">Aller au dortoir</button>
     </article>`;
   renderDormitory();

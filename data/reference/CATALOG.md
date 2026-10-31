@@ -56,7 +56,7 @@ Git est la source de vérité. Les JSON ci-dessous sont les référentiels struc
 | renamed-names.json | 3 | ancien, nouveau, famille (culture ou arme), date : noms changés par Idan ; les sauvegardes et les mots-clés Bridge des avatars restent compatibles |
 | character-names.json | 46 | id, peuple, culture, consonance, poids, prenoms_femme, prenoms_homme, noms, noms_femme (noms des personnages générés : genre et consonance des cultures humaines) |
 | equipment-silhouettes.json | 20 | fichier, peuple, sexe (silhouettes d'équipement de media/Avatars_Equipements dont le nom ne donne pas le peuple et le sexe) |
-| people-affinity.json | 10 | peoples, matrix (ligne : peuple du mercenaire ; colonne : peuple du capitaine) |
+| people-affinity.json | 10 | peoples, matrix (ligne : peuple du mercenaire ; colonne : peuple du capitaine), cultures (cultures à part : Nains du chaos et Elfes noirs, cousins haïs, alliés, les autres ; Idan, 2026-10-31) |
 | alignment-generation.json | 1 | distribution, neighborhood, grid, notes |
 
 | biographies.json | 30 | id, short, rumor, motto, tags, gender, weight, statut |

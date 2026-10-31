@@ -11,18 +11,21 @@ const ROOT=path.resolve(__dirname,"..");
 const spells=JSON.parse(fs.readFileSync(path.join(ROOT,"data","reference","spells.json"),"utf8")).rows;
 const exists=file=>fs.existsSync(path.join(ROOT,file));
 
-// Les écoles qui ont reçu leurs images (la Vie pour l'instant) : tous leurs sorts ont une icône ; les autres n'en ont
-// pas encore (Feu : images à venir) et s'affichent sans icône.
+// Les écoles qui ont reçu leurs images (la Vie pour l'instant) : chaque sort illustré a son parchemin, son cadre et leurs
+// masters ; les autres écoles n'en ont pas encore (Feu : images à venir) et s'affichent sans icône. Les sorts ajoutés
+// après coup (Vie, 2026-10-31) attendent leurs images : sans icône, et comptés manquants dans la page Images du Design Lab.
 const illustrated=new Set(spells.filter(s=>s.icone).map(s=>s.ecole));
 assert.ok(illustrated.has("Vie"));
-for(const s of spells.filter(x=>illustrated.has(x.ecole))){
+assert.deepEqual(spells.filter(x=>illustrated.has(x.ecole)&&!x.icone).map(x=>x.code),["blessing","life_link","deliverance","holy_light"],
+  "images à venir");
+for(const s of spells.filter(x=>x.icone)){
   assert.ok(s.icone&&s.cadre,s.nom+" : icône et cadre");
   assert.ok(exists("prototype-web/assets/"+s.icone),s.nom+" : "+s.icone);
   assert.ok(exists("prototype-web/assets/"+s.cadre),s.nom+" : "+s.cadre);
   assert.ok(exists("assets-src/Sorts/"+s.ecole+"/"+s.code+".jpg"),s.nom+" : master du parchemin");
   assert.ok(exists("assets-src/Sorts/"+s.ecole+"/cadre.jpg"),s.ecole+" : master du cadre");
 }
-assert.equal(new Set(spells.filter(s=>s.ecole==="Vie").map(s=>s.cadre)).size,1,"un seul cadre pour toute l'école de la Vie");
+assert.equal(new Set(spells.filter(s=>s.ecole==="Vie"&&s.cadre).map(s=>s.cadre)).size,1,"un seul cadre pour toute l'école de la Vie");
 
 // Le cadre du jeu est un WebP avec transparence (centre détouré).
 const frame=fs.readFileSync(path.join(ROOT,"prototype-web","assets","spells","vie","cadre.webp"));

@@ -58,7 +58,7 @@ Restaure X PV à **un allié ou au lanceur lui-même**, situé à Y cases, **en 
 
 Repères : PV max médian d'un mercenaire ≈ 214 ; un coup de dague ≈ 38 PV, une arme lourde ≈ 100. Projection en fin de partie (caracs à 100, équipement T4, Vie 100, sort 100) : soin moyen ≈ 135, soit ≈ 29 % des PV d'un allié du même stade : le sort garde tout son intérêt.
 
-### École de la Vie (6 sorts, Idan, 2026-10-25)
+### École de la Vie (10 sorts, Idan, 2026-10-25 et 2026-10-31)
 
 Même modèle que Soin rapide : **Effet = 10 × dés × (2 × Puissance magique / 100) × (0,5 + Maîtrise / 100)**, **mana = base × (1 − Maîtrise / 300)** ; seuls les dés, l'action, la portée, la durée, la zone, le mana de base et la difficulté changent. **Difficulté selon le palier** : Novice 30, Adepte 50, Expert 70. **Coup critique** : dés au maximum. **Échec critique** : le lanceur subit l'effet minimum de son sort (dés à 1). Action **principale** = l'action d'attaque du tour : un mage peut cumuler, dans le même tour, une action rapide et une action principale (par exemple Purge puis Soin profond). Données : `spells.json`.
 
@@ -70,6 +70,10 @@ Même modèle que Soin rapide : **Effet = 10 × dés × (2 × Puissance magique 
 | Soin de masse | Expert | principale | une case | soin 1D4 à **tous** dans un cercle de **rayon 1 + M/50** : alliés, ennemis, lanceur compris ; un seul jet pour tous | centre à 2 + M/25 | 30 |
 | Restitution | Adepte | principale | un mort-vivant | **1D10** de dégâts qui ignorent armure, résistances et blocage | 2 + M/25 | 15 |
 | Purge | Novice | rapide | allié ou soi | retire tout le poison ; pas de coup critique | 2 + M/25 | 8 |
+| Bénédiction | Novice | rapide | allié ou soi | **+30 + M/2 de Chance** pendant **2 tours** ; pas de coup critique | 2 + M/25 | 10 |
+| Lien de vie | Adepte | principale | **un autre allié** | le lanceur donne **jusqu'à 2D6** de ses PV, l'allié en reçoit **× 1,5** | 2 + M/25 | 15 |
+| Délivrance | Novice | rapide | allié ou soi | retire **la peur (fin de la fuite), la paralysie, le gel et la frénésie** ; pas de coup critique | 2 + M/25 | 10 |
+| Lumière sacrée | Expert | principale | une case | **1D10** à **chaque mort-vivant** d'un cercle de **rayon 1 + M/50 (au plus 3)**, les nôtres compris ; ignore armure, résistances et blocage | centre à 2 + M/25 | 30 |
 
 *M = Maîtrise ; portées, durées et rayons arrondis à l'inférieur ; toujours en ligne de vue.*
 
@@ -78,6 +82,11 @@ Même modèle que Soin rapide : **Effet = 10 × dés × (2 × Puissance magique 
 - **Soin de masse** : rayon 1 = 7 cases, 2 = 19, 3 = 37.
 - **Restitution** attend les morts-vivants pour servir en combat ; **Purge** retire le poison du Crachat de venin (école de la Transmutation).
 - **Icônes** (Idan, 2026-10-25) : un parchemin par sort sous un **cadre commun à l'école** (vert, lianes et émeraudes pour la Vie), superposés dans le jeu : barre de sorts du combat et grimoire de la fiche. Masters : `assets-src/Sorts/Vie/` ; `scripts/build-spells.sh` détoure le centre du cadre (accord d'Idan) et produit les versions du jeu.
+- **Les quatre sorts du 2026-10-31** (validés par Idan, chiffrés par JC3) amènent l'école à 10 sorts : 4 Novices, 4 Adeptes, 2 Experts.
+- **Bénédiction** : la Chance fait les coups critiques (Chance / 10 %) et confirme moins d'échecs critiques ; en points plutôt qu'en pourcentage, sinon le bonus serait trop faible (Chance médiane d'une recrue : 55, soit 5,5 % de critiques ; bénie par une recrue moyenne : 11 %). Ne se cumule pas ; sur soi, l'activation en cours compte comme la première.
+- **Lien de vie** : le lanceur ne donne **que ce qu'il faut** pour remonter l'allié (au plus le résultat des dés) et **garde toujours 1 PV** ; sur un allié flétri, il ne donne rien (`magic.lifeLink`). Ce n'est pas une blessure : pas de résistance.
+- **Délivrance** : sans cible s'il n'y a rien à retirer (comme Purge sans poison) ; la frénésie emporte son bonus de Force. Liste dans `spells.json` (`retire`) : on pourra y ajouter les états à venir (Sommeil, Désespoir…) au fil des écoles.
+- **Lumière sacrée** : les vivants du cercle n'ont rien ; nos zombies et squelettes y passent aussi.
 - **Infobulle du grimoire** (Idan, 2026-10-30 : « on doit savoir à qui il sert, combien de mana il utilise ») : au survol d'un sort de la fiche, sa description (la cible et l'action y sont), puis ses chiffres pour ce mercenaire, maîtrise et équipement compris, les mêmes qu'en combat : mana, réussite, portée, soins ou dégâts, bonus, durée, zone (`prototype-web/ui.js`, `spellTip` ; test : `tests/magic.test.js`).
 
 | | Débutant (Vie 31) | Recrue moyenne (Vie 56) | Expert (Vie 84, sort 100) |
@@ -88,6 +97,10 @@ Même modèle que Soin rapide : **Effet = 10 × dés × (2 × Puissance magique 
 | Soin de masse | 22 par cible, rayon 1 · 27 · 17 % | 28, rayon 2 · 25 · 33 % | 63, rayon 3 · 17 · 87 % |
 | Restitution | 48 dégâts · 14 · 31 % | 62 · 13 · 59 % | 140 · 9 · 93 % |
 | Purge | 8 mana · 57 % | 7 · 81 % | 5 · 94 % |
+| Bénédiction | +45 de Chance, 2 tours · 9 mana · 57 % | +58 · 9 · 81 % | +97 · 6 · 94 % |
+| Lien de vie (donnés → reçus) | 60 → 90 · 14 mana · 31 % | 79 → 119 · 13 · 59 % | 178 → 267 · 9 · 93 % |
+| Délivrance | 9 mana · 57 % | 9 · 81 % | 6 · 94 % |
+| Lumière sacrée, par mort-vivant | 48, rayon 1 · 27 mana · 17 % | 62, rayon 2 · 25 · 33 % | 140, rayon 3 · 17 · 87 % |
 
 ### École du Feu (6 sorts, Idan, 2026-10-25)
 
@@ -343,6 +356,52 @@ Le **Charisme** du mage y compte (Idan : l'Invocation et la Nécromancie en dép
 | Loups | 1D6 · 23 mana, entretien 5 · 31 % | 1D6 + 1 · 21, 5 · 59 % | 1D6 + 2 · 14, 3 · 93 % |
 | Ours, Crocodiles | 1D3 · 27 mana, entretien 6 · 17 % | 1D3 · 25, 5 · 33 % | 1D3 · 17, 4 · 87 % |
 | Garder une invocation, chaque tour | 57 % | 81 % | 94 % |
+
+### Catalogue validé, en cours d'intégration (Idan, 2026-10-31)
+
+Idan a validé **90 sorts mono-école** (10 par école) et **49 sorts bi-école**. JC3 les chiffre et les intègre **une école par PR** ; chaque école intégrée a sa section plus haut, avec ses chiffres. Restent à intégrer :
+
+**Mono-école (27)**
+
+- **Feu** : **Embrasement** (la cible brûle au début de chacune de ses activations, 2 à 3 tours, non cumulable) ; **Mur de flammes** (une ligne de feu pendant 3 tours : qui la traverse ou s'y arrête brûle) ; **Souffle ardent** (un cône de 3 cases devant le lanceur, alliés compris) ; **Torche vivante** (sur un allié : pendant quelques tours, les ennemis à son contact brûlent).
+- **Eau** : **Prison de glace** (la cible est figée 1 tour, 2 pour un maître : elle ne bouge ni n'agit, mais ne subit que la moitié des dégâts ; sa protection contre le froid aide à résister) ; **Blizzard** (3 tours : petits dégâts de froid, Vitesse réduite, tirs gênés comme dans le Brouillard) ; **Source vive** (rend du mana à un allié).
+- **Transmutation** : **Robustesse de l'ours** (Constitution, donc PV max, 1 tour, 2 pour un maître) ; **Peau d'écailles** (protection contre le feu, le froid et la foudre) ; **Sagesse du hibou** (Intelligence : des sorts qui réussissent plus souvent) ; **Agilité du chat** (Esquive).
+- **Télékinésie** : **Lancer d'arme** (projette l'arme de corps à corps tenue, avec ses dégâts, puis la ramène) ; **Onde de choc** (repousse tous ceux à 2 cases du lanceur, avec un choc s'ils heurtent quelque chose) ; **Bond** (rapide : le lanceur se propulse de quelques cases sans attaque d'opportunité) ; **Écrasement** (dégâts contondants ; la cible ne peut pas se déplacer à son prochain tour).
+- **Illusion** : **Désespoir** (le Courage de la cible baisse pendant 2 tours) ; **Brouillage mental** (ses sorts ratent plus souvent, 2 tours, selon la Volonté du lanceur) ; **Création de double** (un leurre que les ennemis prennent pour une vraie cible ; il disparaît au premier coup reçu) ; **Sommeil** (la cible dort jusqu'à ce qu'on la frappe, ou pendant quelques tours).
+- **Nécromancie** : **Malédiction** (dégâts nécrotiques au début de chaque activation pendant 3 tours, armure et résistances ignorées ; sans effet sur les morts-vivants) ; **Armée d'os** (1D4 squelettes, plus un par 50 de maîtrise : faibles, lents, nombreux, sans peur) ; **Siphon d'âme** (vole le mana de la cible **au profit du lanceur seulement**) ; **Pacte de sang** (le lanceur sacrifie des PV pour regagner du mana).
+- **Invocation** : **Nuée d'insectes** (2 tours : Perception et Précision en baisse dans la zone) ; **Invocation de sangliers** (1D4 sangliers rapides qui chargent fort mais tiennent mal) ; **Invocation d'araignées géantes** (1D2 araignées : morsure empoisonnée, toile qui immobilise 1 tour) ; **Bannissement** (renvoie une invocation ennemie).
+
+Refusés (à ne pas reproposer tels quels) : Bouclier de vie, Retour à la vie, Météore, Verglas, Forme bestiale, Corps d'acier, Désarmement, Lévitation, Hallucination, Explosion de cadavre, Esprit gardien, Marque de mort.
+
+**Bi-école (49)** — deux écoles **non opposées**. Ils ne sont **pas appris par les recrues** de la Taverne (pas de sort bi-école à la création). Maîtrise, puissance et apprentissage : en discussion (Idan : « prendre la moyenne ou la somme des deux écoles pour calculer la puissance »).
+
+- **Vie × Feu** : **Flamme sacrée** (dégâts de feu ; la moitié des PV infligés soigne le lanceur) ; **Brasier de guérison** (un cercle de feu 2 tours : il soigne les alliés et brûle les ennemis qui y sont) ; **Cœur ardent** (soigne un allié et le rend insensible à la peur 2 tours).
+- **Vie × Eau** : **Source de jouvence** (soigne un allié et lui rend du mana).
+- **Vie × Transmutation** : **Chair neuve** (soigne et retire tous les malus de caractéristiques) ; **Métabolisme** (soins reçus +50 % et pas de poison, plus longtemps que 3 tours) ; **Sursaut vital** (soin + bonus de Force et de Vitesse).
+- **Vie × Foudre** : **Éclair de vie** (rebondit comme la Boule d'éclairs : soigne les alliés, blesse les ennemis).
+- **Vie × Télékinésie** : **Main secourable** (attire un allié blessé près du lanceur et le soigne) ; **Repousse-mal** (repousse les ennemis au contact d'un allié et le soigne).
+- **Vie × Invocation** : **Dryade** (soigne chaque tour l'allié le plus blessé à portée) ; **Soin de la meute** (soigne toutes nos invocations).
+- **Feu × Transmutation** : **Torche humaine** (un allié file de 5 cases en ligne droite, dans la direction de son choix, et brûle tout sur son passage).
+- **Feu × Foudre** : **Déflagration** (explosion de feu et de foudre autour du lanceur, alliés compris) ; **Arme d'orage** (l'arme d'un allié ajoute feu et foudre à chaque coup) ; **Éclair de feu** (sans ligne de vue : la cible brûle et est électrisée).
+- **Feu × Nécromancie** : **Feu noir** (feu et nécrotique ; tant que la cible brûle, on ne peut plus la soigner) ; **Squelette ardent** (relève un mort en squelette enflammé dont les coups brûlent).
+- **Feu × Invocation** : **Élémentaire de feu** ; **Molosses de braise** (une meute de chiens de feu).
+- **Eau × Transmutation** : **Corps éthéré** (un allié est insensible aux coups physiques pendant 1 tour).
+- **Eau × Illusion** : **Brume des songes** (un brouillard où les ennemis s'endorment s'ils ratent un test) ; **Chant de sirène** (les ennemis de la zone sont attirés vers le lanceur et ne l'attaquent pas pendant 1 tour) ; **Miroir d'eau** (renvoie un sort de dégâts sur son lanceur).
+- **Eau × Nécromancie** : **Peste des marais** (une maladie : des PV perdus à chaque tour, qui se transmet aux voisins) ; **Eaux mortes** (une zone : les ennemis qui y meurent se relèvent en zombies de notre camp).
+- **Eau × Invocation** : **Élémentaire d'eau** ; **Ondine** (rend du mana et des PV à un allié voisin à chaque tour).
+- **Transmutation × Télékinésie** : **Pesanteur** (un ennemi perd de la Vitesse et de l'Esquive) ; **Pierre animée** (un golem de pierre lent et très solide).
+- **Transmutation × Illusion** : **Aspect terrifiant** (les ennemis au contact du lanceur testent leur Courage à chaque tour) ; **Peau de caméléon** (un allié devient camouflé et le reste même après une attaque).
+- **Transmutation × Nécromancie** : **Putréfaction** (la cible perd de la Constitution, donc des PV max, jusqu'à la fin du combat) ; **Abomination** (fusionne deux cadavres en une créature puissante) ; **Chair recousue** (nos morts-vivants récupèrent des PV et gagnent de la Force).
+- **Foudre × Télékinésie** : **Canon magnétique** (une pierre ou une arme lancée à une vitesse foudroyante traverse tout sur une ligne) ; **Répulsion** (renvoie les projectiles de métal vers leur tireur).
+- **Foudre × Illusion** : **Éblouissement** (les ennemis de la zone perdent Précision et Perception 1 tour) ; **Coup de tonnerre** (test de Courage pour tous les ennemis de la carte).
+- **Foudre × Nécromancie** : **Foudre noire** (des rebonds qui volent des PV au profit du lanceur) ; **Arrêt du cœur** (une cible sous **10 %** de ses PV tombe hors combat).
+- **Foudre × Invocation** : **Élémentaire de foudre** ; **Oiseau-tonnerre** (rapide, volant ; frappe de foudre sans voir sa cible).
+- **Télékinésie × Nécromancie** : **Faux spectrale** (fauche les ennemis en arc devant le lanceur, dégâts nécrotiques) ; **Chaînes d'âme** (relie deux ennemis : chaque blessure de l'un frappe aussi l'autre).
+- **Télékinésie × Invocation** : **Rappel** (ramène nos invocations autour du lanceur, sans attaque d'opportunité) ; **Téléportation** (téléporte une invocation sur la case choisie, hors du brouillard).
+- **Illusion × Nécromancie** : **La mort vous va si bien** (test de Courage pour tous les ennemis de la carte).
+- **Illusion × Invocation** : **Djinn** (une invocation très rapide, qui ignore le terrain qui ralentit et ne craint ni les coups physiques ni la foudre).
+
+**Écoles opposées** (Idan) : des sorts bi-école entre deux écoles opposées sont intéressants, à condition d'être **très forts** ; JC3 doit les proposer.
 
 ### Mana
 

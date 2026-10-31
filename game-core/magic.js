@@ -208,6 +208,18 @@
     }
     // Empoisonné : unit.poisoned = {turns, amount, …} (Crachat de venin) ; Purge le retire.
     function isPoisoned(unit){ return Boolean(unit?.poisoned); }
+    // Délivrance (Vie ; Idan, 2026-10-31) : les états qu'elle retire (spells.json, retire) et que la cible porte.
+    // fuite : unit.fleeing (la peur) ; paralysie : unit.paralyzed ; gel : unit.statMalus posé par Gel ; frenesie : unit.frenzy.
+    const AFFLICTIONS={
+      fuite:u=>Boolean(u?.fleeing),
+      paralysie:u=>Boolean(u?.paralyzed),
+      gel:u=>u?.statMalus?.code==="freeze",
+      frenesie:u=>Boolean(u?.frenzy)
+    };
+    function afflictions(unit,code){
+      const list=String(spell(code)?.retire||"").split(",").map(x=>x.trim()).filter(Boolean);
+      return list.filter(name=>AFFLICTIONS[name]?.(unit));
+    }
     // Toutes les unités en jeu dans le cercle (alliés, ennemis, lanceur compris) ; minDistance : anneau (Anneau de feu).
     function unitsInZone(center,radius,units,minDistance=0){
       return (units||[]).filter(u=>{
@@ -312,6 +324,7 @@
       if(s.cible==="invocation"&&!(target.summon&&target.summon.casterId===caster.id)) return {ok:false,reason:"Ce sort vise une de vos invocations."};
       if(!cell&&s.cible!=="mort"&&target.alive===false) return {ok:false,reason:"Cible hors combat."};
       if(s.cible==="allie_ou_soi"&&target!==caster&&target.team!==caster.team) return {ok:false,reason:"Ce sort vise un allié ou le lanceur."};
+      if(s.cible==="allie"&&(target===caster||target.team!==caster.team)) return {ok:false,reason:"Ce sort vise un allié, pas le lanceur."};
       if(s.cible==="ennemi"&&(target===caster||target.team===caster.team)) return {ok:false,reason:"Ce sort vise un ennemi."};
       if(s.cible==="allie_ou_ennemi"&&(target===caster||!target.character)) return {ok:false,reason:"Ce sort vise un autre personnage."};
       if(s.cible==="personnage"&&!target.character) return {ok:false,reason:"Ce sort vise un personnage."};
@@ -321,6 +334,9 @@
       if(s.cible==="mort_vivant"&&!isUndead(target)) return {ok:false,reason:s.nom+" ne fonctionne que sur les morts-vivants."};
       if(s.degats_type==="necrotique"&&isUndead(target)) return {ok:false,reason:s.nom+" ne fonctionne que sur les vivants."};
       if(s.effet==="purge_poison"&&!isPoisoned(target)) return {ok:false,reason:"La cible n'est pas empoisonnée."};
+      if(s.effet==="delivrance"&&!afflictions(target,code).length) return {ok:false,reason:"Rien à retirer : ni peur, ni paralysie, ni gel, ni frénésie."};
+      // Lien de vie : le lanceur garde toujours 1 PV.
+      if(s.effet==="transfert_pv"&&num(caster.hp,0)<=1) return {ok:false,reason:"Le lanceur n'a plus de PV à donner."};
       const self=target===caster||(target.q===caster.q&&target.r===caster.r);
       const distance=self?0:combat.axialDistance(caster,target),reach=range(caster,code);
       if(s.cible!=="invocation"&&distance>reach) return {ok:false,reason:"Cible hors de portée ("+distance+" cases, portée "+reach+")."};
@@ -462,6 +478,10 @@
           result.amount=effectAmount(caster,code,result.dice);
         }
         if(s.effet==="soin_de_zone") result.zone={center:{q:target.q,r:target.r},radius:zoneRadius(caster,code)};
+        // Lumière sacrée : la Restitution en cercle ; l'écran de combat ne frappe que les morts-vivants.
+        if(s.effet==="degats_sans_resistance"&&s.cible==="case") result.zone={center:{q:target.q,r:target.r},radius:zoneRadius(caster,code)};
+        // Lien de vie : le lanceur perd au plus amount PV (en gardant 1 PV) ; l'allié en reçoit × transfert_facteur.
+        if(s.effet==="transfert_pv") result.transfer={factor:num(s.transfert_facteur,1.5)};
         if(s.effet==="degats_zone"&&s.zone_forme==="ligne"){
           const length=zoneLength(caster,code);
           result.zone={shape:"ligne",length,cells:lineCells(caster,target,length)};
@@ -495,6 +515,7 @@
             chocAmount:choc?Math.ceil(num(s.effet_base,10)*chocDice*effectFactor(caster,code)-1e-9):0};
         }
         if(s.effet==="purge_poison") result.purge=true;
+        if(s.effet==="delivrance") result.delivrance=afflictions(target,code);
       }else if(roll>=FUMBLE_THRESHOLD){
         const fumbleRoll=d100();
         Object.assign(result,{fumbleRoll,fumble:fumbleRoll>combat.statWithGear(caster,"Chance")});
@@ -546,6 +567,13 @@
       const protection=combat.elementalProtection?combat.elementalProtection(target,s?.element||"foudre").applied:0;
       return clamp(stat+protection-num(s?.resistance_maitrise_facteur,0.5)*mastery(caster,code),5,95);
     }
+    // Lien de vie (Vie ; Idan, 2026-10-31, chiffres de JC3) : le lanceur ne donne que ce qu'il faut pour remonter l'allié
+    // (ses PV manquants / facteur), au plus le résultat des dés, et garde toujours 1 PV ; l'allié reçoit le don × facteur.
+    function lifeLink(caster,target,amount,factor=1.5){
+      const missing=Math.max(0,num(target.pvMax,0)-num(target.hp,0)),room=Math.max(0,num(caster.hp,0)-1);
+      const given=Math.max(0,Math.min(amount,Math.ceil(missing/factor),room));
+      return {given,received:Math.min(missing,Math.ceil(given*factor-1e-9))};
+    }
     // Tempête (Foudre) : une frappe = les dés du sort × le facteur figé au lancer ; le nombre de frappes par tour : 1D3.
     function stormStrike(effect){
       const {count,sides}=dice(effect.code);
@@ -572,6 +600,8 @@
       zoneFactor,
       weaponStrike,
       paralysisResistance,
+      afflictions,
+      lifeLink,
       stormStrike,
       stormStrikes,
       canSpit,

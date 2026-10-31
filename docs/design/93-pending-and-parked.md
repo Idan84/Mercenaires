@@ -22,6 +22,7 @@ Rien de ce bloc n'est codé : JC3 attend ton choix avant d'y toucher.
 - **Type de dégâts, cas « moyen »** : la formule dit `AVERAGE(matchups)` ; le moteur choisit le type le plus proche de cette moyenne. Moyenne numérique ou type le plus proche ?
 - **Missions one shot** : récompense, renommée, factions, cartes, abandon, combat automatique (brouillon du 2026-10-24). → [doc 17 §6](/design/#doc=17-one-shot-missions.md)
 - **Marchands** : étape 2 en place le 2026-10-31 avec Thorval Poudredefeu (armes à feu) : étal de 10 articles, affinité acquise, achat, revente, aide de l'intendant. « Rien que pour toi, capitaine » à +100 d'affinité. À venir : les autres marchands (personae d'Idan), la négociation. → [doc 18](/design/#doc=18-merchants.md)
+- **Sorts bi-école** : 49 validés le 2026-10-31 ; reste à décider la maîtrise (moyenne ou somme des deux écoles), l'apprentissage, et les sorts très forts des écoles opposées. → [doc 12, « Catalogue validé »](/design/#doc=12-magic.md)
 - **Loyauté** : formules de loyauté, de départ et d'attractivité. → [doc 09](/design/#doc=09-reputation-renown-and-salaries.md)
 
 ## 2 — Reporté volontairement

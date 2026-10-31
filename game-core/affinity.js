@@ -4,6 +4,10 @@
 // Module pur : aucune mutation du mercenaire, aucun effet automatique sur les négociations.
 // Données : data/reference/people-affinity.json (matrice des peuples), alignment-generation.json (grille 3×3),
 // formula-constants.json (affinity.*).
+// Cultures à part (Idan, 2026-10-31 ; people-affinity.json, cultures) : les Nains du chaos et les Elfes noirs haïssent
+// leurs cousins (les autres nains, les autres elfes) et en sont haïs (−6 au lieu de la matrice), s'aiment bien entre eux
+// (+2), et n'aiment pas grand monde d'autre (−2 sur la matrice, sans descendre sous son minimum). Entre membres d'une
+// même culture, rien ne change.
 (function(root,factory){
   const api=factory();
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
@@ -37,11 +41,30 @@
     const maxDistance=ALIGNMENT_GRID.length&&ALIGNMENT_GRID[0].length?ALIGNMENT_GRID.length+ALIGNMENT_GRID[0].length-2:0;
     const RAW_MIN=Math.min(...matrixValues)+C.sameAlignment-C.alignmentStep*maxDistance;
     const RAW_MAX=Math.max(...matrixValues)+C.sameCulture+C.sameAlignment;
+    const MATRIX_MIN=Math.min(...matrixValues);
+    const CULTURE_RULES=(reference?.peopleAffinity?.cultures?.regles||[]).map(r=>({
+      culture:normalize(r.culture),cousins:r.cousins,hatred:Number(r.haine_cousins)||0,
+      allies:(r.allies||[]).map(normalize),alliesPoints:Number(r.allies_points)||0,others:Number(r.autres)||0
+    }));
 
     function peopleIndex(value){
       const key=normalize(value);
       const canonical=aliases[key]||PEOPLES.find(x=>normalize(x)===key);
       return PEOPLES.indexOf(canonical);
+    }
+    const cultureRule=value=>CULTURE_RULES.find(r=>r.culture===normalize(value))||null;
+    // Part « peuple » de l'affinité : la matrice, sauf pour les cultures à part (cousins haïs, alliés, les autres).
+    // feel : celui qui ressent (le mercenaire, le marchand) ; toward : celui qu'il juge (le capitaine).
+    function peoplePoints(feel,toward,base,sameCulture){
+      if(sameCulture) return {points:base,rule:null};
+      const own=cultureRule(feel?.culture),other=cultureRule(toward?.culture);
+      const isPeople=(person,people)=>peopleIndex(person?.people)>=0&&peopleIndex(person?.people)===peopleIndex(people);
+      if(own&&isPeople(toward,own.cousins)) return {points:own.hatred,rule:"cousins"};
+      if(other&&isPeople(feel,other.cousins)) return {points:other.hatred,rule:"cousins"};
+      if(own&&own.allies.includes(normalize(toward?.culture))) return {points:own.alliesPoints,rule:"allies"};
+      if(other&&other.allies.includes(normalize(feel?.culture))) return {points:other.alliesPoints,rule:"allies"};
+      if(own) return {points:Math.max(MATRIX_MIN,base+own.others),rule:"others"};
+      return {points:base,rule:null};
     }
     function alignmentPosition(value){
       const key=normalize(value);
@@ -58,16 +81,18 @@
       const mercenaryAlignment=alignmentPosition(mercenary?.alignment);
       if(captainPeople<0||mercenaryPeople<0||!captainAlignment||!mercenaryAlignment)
         return {ok:false,reason:"Peuple ou alignement inconnu : affinité non calculable."};
-      const people=PEOPLE_MATRIX[mercenaryPeople][captainPeople];
       const sameCulture=Boolean(captain?.culture&&mercenary?.culture&&normalize(captain.culture)===normalize(mercenary.culture));
+      const special=peoplePoints(mercenary,captain,PEOPLE_MATRIX[mercenaryPeople][captainPeople],sameCulture);
+      const people=special.points;
       const culture=sameCulture?C.sameCulture:0;
       const distance=Math.abs(captainAlignment.row-mercenaryAlignment.row)+Math.abs(captainAlignment.col-mercenaryAlignment.col);
       const alignment=C.sameAlignment-C.alignmentStep*distance; // 0 à 4 cases : +4, +2, 0, -2, -4
       const raw=people+culture+alignment;
-      const initial=Math.round(raw<0?raw*100/Math.abs(RAW_MIN):raw*100/RAW_MAX);
+      // La haine des cousins peut dépasser le minimum de la matrice : la part initiale reste bornée à −100.
+      const initial=clamp(Math.round(raw<0?raw*100/Math.abs(RAW_MIN):raw*100/RAW_MAX),-100,100);
       const career=Number.isFinite(Number(acquired))?Number(acquired):0;
       return {ok:true,initial,acquired:career,total:clamp(initial+career,-100,100),
-        components:{people,culture,alignment,distance,raw,sameCulture}};
+        components:{people,culture,alignment,distance,raw,sameCulture,cultureRule:special.rule}};
     }
     // Slip d'Affinité (Idan, 2026-10-24) : la culotte portée (data/reference/pants.json, caractéristique « Affinité »)
     // ajoute bonus_t<tier> points d'affinité avec le capitaine. { item, points } ou null.

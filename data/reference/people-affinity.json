@@ -25,5 +25,30 @@
     [1, -1, -2, 1, 1, 1, 3, 3, 3, 2],
     [1, 1, 1, 1, 1, 1, 2, 1, 3, 2],
     [-2, -2, -3, -1, -2, 1, 1, -1, 3, 3]
-  ]
+  ],
+  "cultures": {
+    "description": "Cultures à part (Idan, 2026-10-31) : elles remplacent la part « peuple » de la matrice quand celui qui ressent ou celui qu’il juge en fait partie, sauf entre membres de la même culture. haine_cousins : points envers les autres membres du peuple « cousins », et de leur part (dans les deux sens) ; allies_points : points envers les cultures alliées (dans les deux sens) ; autres : points ajoutés à la matrice envers tous les autres peuples, dans leur sens seulement, sans descendre sous le minimum de la matrice.",
+    "regles": [
+      {
+        "culture": "Nains du chaos",
+        "cousins": "Nain",
+        "haine_cousins": -6,
+        "allies": [
+          "Elfes noirs"
+        ],
+        "allies_points": 2,
+        "autres": -2
+      },
+      {
+        "culture": "Elfes noirs",
+        "cousins": "Elfe",
+        "haine_cousins": -6,
+        "allies": [
+          "Nains du chaos"
+        ],
+        "allies_points": 2,
+        "autres": -2
+      }
+    ]
+  }
 }

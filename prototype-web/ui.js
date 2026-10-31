@@ -585,6 +585,7 @@ const GEAR_ICONS={
   ring:'<circle cx="12" cy="14.5" r="5.5"/><path d="m10 6 2-3 2 3-2 2.5z"/>',
   pouch:'<path d="M10 3h4M10 3v5L6.5 14A5 5 0 1 0 17.5 14L14 8V3"/><path d="M7.5 15h9"/>',
   flask:'<path d="M9.5 3h5M10.5 3v5.2L5.6 17a2.6 2.6 0 0 0 2.3 4h8.2a2.6 2.6 0 0 0 2.3-4l-4.9-8.8V3"/><path d="M7.4 14.5h9.2"/>',
+  book:'<path d="M5 5.5A2.5 2.5 0 0 1 7.5 3H19v15H7.5A2.5 2.5 0 0 0 5 20.5z"/><path d="M5 20.5A2.5 2.5 0 0 1 7.5 18H19v3H7.5M9 7.5h6M9 10.5h4"/>',
   mount:'<path d="M7 21v-5l-3-3 2-6 5-3 1-2 2 3c3 1 5 4 5 8v8"/><path d="M10 9h.01" stroke-width="2.6"/>'
 };
 // Position des emplacements sur la silhouette, en % de l'image carrée (silhouette centrée, debout).
@@ -594,6 +595,7 @@ function gearIcon(kind){
 }
 function gearKind(slot,item){
   if(item?.itemType==="potion") return "flask";
+  if(item?.itemType==="manual") return "book";
   if(item?.itemType==="weapon") return /Boucliers/.test(String(item.category||""))?"shield":item.combatFamily==="ranged"?"ranged":"melee";
   if(item?.itemType==="armor") return "armor";
   if(/^ring_/.test(slot.id)) return "ring";
@@ -615,6 +617,11 @@ function gearTooltip(item){
 // par scripts/build-equipment.js), ou null tant qu'il n'en a pas : la case garde alors son picto.
 const EQUIPMENT_ART_DIRS={helmet:"casques",armor:"armures",weapon:"armes",boots:"bottes",belt:"ceintures",amulet:"amulettes",cape:"capes",gloves:"gants",pants:"culottes",ring:"bagues"};
 function equipmentArt(item){
+  // Manuel de sort (Idan, 2026-10-31) : le parchemin du sort (spells.json, icone).
+  if(item?.itemType==="manual"){
+    const spell=(game?.referenceData?.spells?.rows||[]).find(s=>s.code===item.spellCode);
+    return spell?.icone?`assets/${spell.icone}`:null;
+  }
   const dir=EQUIPMENT_ART_DIRS[item?.itemType];
   const key=dir?`${dir}/${pictoSlug(item.name)}-${item.tier}`:null;
   return key&&typeof EQUIPMENT_ART!=="undefined"&&EQUIPMENT_ART.has(key)?`assets/equipment/${key}.webp`:null;

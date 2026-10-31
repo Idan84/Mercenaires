@@ -516,7 +516,7 @@
     {
       "name": "merchants",
       "file": "merchants.json",
-      "rows": 5,
+      "rows": 32,
       "columns": [
         "id",
         "nom",

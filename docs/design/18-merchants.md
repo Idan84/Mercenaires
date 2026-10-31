@@ -32,16 +32,17 @@
   des nains). Il vend **Armure de plates, Casque de constitution, Amulette de volonté, Bague du courage, Marteau de
   guerre, Hache de guerre**. Portrait à venir. Il hait les nains du chaos, et c'est réciproque (doc 02, « Cultures à
   part »).
-- **Orvald Sans-Collier** (Idan, 2026-10-31 ; nom de JC3) : Nain, Nains réduits en esclavage dans les colonies, Neutre
-  bon, ancien esclave. Il vend **Pic de guerre, Hachette, Fouet, Ceinture de courage, Amulette de volonté, Bague de la
-  chance**.
-- **Jiraya Senin** (Idan, 2026-10-31) : Humain, Royaumes du Soleil Levant, Neutre. Il vend **Katana, Nunchaku, Sai,
-  Bottes d'esquive, Cape de discrétion, String du Charisme**.
-- **Ysolwen Chantesève** (Idan, 2026-10-31 ; nom de JC3) : Elfe, Elfes sylvains, Loyal bon. Elle vend **Arc, Bâton court,
-  Bâton long, Slip d'Affinité, Cape d'esquive, Bottes de perception**.
-- Tous ont le même `poids` : quand un marchand passe, chacun a la même chance d'être celui-là. Portraits à venir.
+- **Orvald Sans-Collier**, **Jiraya Senin** et **Ysolwen Chantesève** (Idan, 2026-10-31 ; noms d'Orvald et d'Ysolwen par
+  JC3) : leurs listes au §12.
+- **32 marchands, dont 16 marchandes : un par culture** (Idan, 2026-10-31 : « je te laisse faire ») ; les 27 derniers
+  (noms, listes, répliques) sont de JC3, assortis à leur culture (`idees_bonus` de `cultures.json`, armes et armures du
+  peuple). Chacun a l'alignement par défaut de sa culture et le même `poids`. Thorval reçoit en plus l'arbalète et la
+  bague de la Foudre (Nains du chaos : arbalètes, Foudre).
+- **Manuels de sorts** (doc 12) : chaque marchand d'une culture qui a une école de magie vend aussi **les manuels de cette
+  école** (une ligne de sa liste) ; les sorts à venir de l'école y entrent d'eux-mêmes.
 - **Objectifs** (Idan, 2026-10-31) : chaque objet vendu par **au moins deux marchands**, et chaque marchand vend **à peu
-  près le même nombre d'objets** ; les sorts et les cristaux viendront ensuite. La liste est tenue au §12.
+  près le même nombre d'objets** (6 ou 7 lignes) ; les cristaux viendront ensuite. La liste est tenue au §12 ; les tests
+  bloquent si un objet ou une école de manuels a moins de deux marchands. Portraits à venir.
 
 ## 4 — L'étal
 
@@ -137,99 +138,137 @@ bloque si elle n'est plus à jour (`node scripts/merchant-coverage.js --check`).
 
 <!-- couverture:debut (généré par node scripts/merchant-coverage.js : ne pas modifier à la main) -->
 
-**Bilan** : 81 objets ; **1** vendus par au moins 2 marchands, **26** par un seul, **54** par aucun.
+**Bilan** : 90 objets ; **90** vendus par au moins 2 marchands, **0** par un seul, **0** par aucun.
 
-| Marchand | Culture | Objets |
-|---|---|---|
-| Thorval Poudredefeu | Nains du chaos | 4 |
-| Durgan Battefer | Nains des montagnes | 6 |
-| Orvald Sans-Collier | Nains réduits en esclavage dans les colonies | 6 |
-| Jiraya Senin | Royaumes du Soleil Levant | 6 |
-| Ysolwen Chantesève | Elfes sylvains | 6 |
+**32 marchands**, dont 16 marchandes.
+
+| Marchand | Culture | Vend | Lignes |
+|---|---|---|---|
+| Thorval Poudredefeu | Nains du chaos | Pistolet, Tromblon, Canon à main, Arquebuse, Arbalète, Bague de la Foudre, Manuels de Foudre | 7 |
+| Durgan Battefer | Nains des montagnes | Armure de plates, Casque de constitution, Amulette de volonté, Bague du courage, Marteau de guerre, Hache de guerre | 6 |
+| Orvald Sans-Collier | Nains réduits en esclavage dans les colonies | Pic de guerre, Hachette, Fouet, Ceinture de courage, Amulette de volonté, Bague de la chance | 6 |
+| Jiraya Senin | Royaumes du Soleil Levant | Katana, Nunchaku, Sai, Bottes d’esquive, Cape de discrétion, String du Charisme, Manuels de Vie | 7 |
+| Ysolwen Chantesève | Elfes sylvains | Arc, Bâton court, Bâton long, Slip d’Affinité, Cape d’esquive, Bottes de perception, Manuels de Vie | 7 |
+| Hroska Crocs-de-Neige | Tribus nordiques | Hache double, Écu, Trident, Cape de résistance physique, Ceinture d’endurance, Bague de l’Eau, Manuels d’Eau | 7 |
+| Drusk Sabot-de-Poussière | Clans des grandes steppes | Arc, Lance, Sabre, Bottes de vitesse, Bague du courage, Ceinture de courage, Manuels de Feu | 7 |
+| Gorma Porte-Tonneau | Ogres des cités humaines | Hallebarde, Masse d’armes, Brigandine, Gants de force, Culotte d’Intimidation, Potion de soins | 6 |
+| Rasz Tzel'Varr | Reptiliens des villes | Estoc, Sarbacane, Cuir renforcé, Chapeau d’intelligence, Bague de la télékinésie, Amulette de puissance magique, Manuels de Télékinésie | 7 |
+| Gudrun Isfjell | Montagnes du Nord | Hache double, Grande épée, Hache de guerre, Cotte de mailles, Cape de résistance physique, Bague du nécromancien, Manuels de Nécromancie | 7 |
+| Isska Ssul'Varek | Reptiliens des marécages | Trident, Sarbacane, Armure d'écailles, Fiole de poison, Bague de l’Eau, Potion de soins, Manuels d’Eau | 7 |
+| Calaena Ombrevenin | Elfes noirs | Dague, Arbalète, Fouet, Cape de discrétion, Fiole de poison, Bague de la Foudre, Manuels de Foudre | 7 |
+| Jasper Bonnebourse | Halflings des cités humaines | Dague, Fronde, Rondache, String du Charisme, Gants de dextérité, Bague de la télékinésie, Manuels de Télékinésie | 7 |
+| Malaika Ilunga | Tribus de la jungle | Lance, Sarbacane, Kukri, Armure de cuir, Fiole de poison, Bague de la transmutation, Manuels de Transmutation | 7 |
+| Aymeric Belcomptoir | Cités libres | Épée longue, Écu, Rondache, Cotte de mailles, Brigandine, Bague du soigneur, Manuels de Vie | 7 |
+| Flek Visseclou | Caravanes de ferrailleurs | Amulette de chance, Tromblon, Canon à main, Fléau d’armes, Gants de pièges, Bague de la chance, Manuels de Télékinésie | 7 |
+| Lirri Feuillecoque | Gnomes des forêts | Fronde, Bâton court, Cape d’esquive, Gants de dextérité, Bottes d’esquive, Bague de l’illusionniste, Manuels d’Illusion | 7 |
+| Callie Loincompas | Explorateurs | Katana, Sai, Nunchaku, Bottes de perception, Chapeau du dresseur, Amulette de chance, Manuels d’Invocation | 7 |
+| Amar Rathore | Steppes désertiques | Sabre, Arc, Lance, Cuir renforcé, Gambison, Bague de Feu, Manuels de Feu | 7 |
+| Karg Brisenclume | Orcs noirs | Grande épée, Hache double, Bardiche, Armure de plates, Armure d'écailles, Gants de force, Manuels de Transmutation | 7 |
+| Ilyra Hauteverrière | Elfes des grandes cités | Estoc, Épée longue, Bâton long, Ceinture de mana, Amulette de puissance magique, Vêtements, Manuels d’Eau | 7 |
+| Crik Fouillecrâne | Gobelins des cavernes | Dague, Kukri, Fronde, Bottes d’esquive, Gants de pièges, Bague de l’invocation, Manuels d’Invocation | 7 |
+| Dottie Mielbruyère | Halflings des villages isolés | Bâton court, Potion de soins, Potion de mana, Slip d’Affinité, Bague du soigneur, Vêtements, Manuels d’Illusion | 7 |
+| Gasha Poing-de-Marché | Orcs des villes | Épée courte, Arbalète, Épée double, Pavois, Culotte d’Intimidation, Ceinture de courage, Manuels de Transmutation | 7 |
+| Cairn Racinesombre | Tribus des forêts anciennes | Lance, Massue, Arme d’hast double, Armure de cuir, Chapeau du dresseur, Bague du nécromancien, Manuels de Nécromancie | 7 |
+| Fizzi Doigts-Légers | Gobelins des villes | Dague, Épée courte, Cape de discrétion, Gants de dextérité, Slip d’Affinité, Bague de l’illusionniste, Manuels d’Illusion | 7 |
+| Draz Crinsauvage | Orcs des steppes | Lance, Bague de la transmutation, Hachette, Bottes de vitesse, Cuir renforcé, Ceinture d’endurance, Manuels de Transmutation | 7 |
+| Bruga Roc-Fendu | Ogres des montagnes | Massue, Marteau de guerre, Pavois, Armure d'écailles, Casque de constitution, Ceinture d’endurance | 6 |
+| Bimble Lampeterne | Gnomes des cavernes | Pic de guerre, Fronde, Gants de pièges, Chapeau d’intelligence, Potion de mana, Bague du nécromancien, Manuels de Nécromancie | 7 |
+| Azhiss Kaal'Thesh | Reptiliens des cités-temples | Trident, Bâton long, Gambison, Amulette de puissance magique, Ceinture de mana, Bague de l’invocation, Manuels d’Invocation | 7 |
+| Kippa Ressortdor | Gnomes des villes | Pistolet, Arquebuse, Épée double, Chapeau d’intelligence, Potion de mana, Bague de l’illusionniste, Manuels d’Illusion | 7 |
+| Krosh Grand-Galop | Ogres des steppes | Masse d’armes, Fléau d’armes, Arme d’hast double, Hallebarde, Bardiche, Bague de Feu, Manuels de Feu | 7 |
 
 | Famille | Objet | Marchands | Nombre |
 |---|---|---|---|
-| Armes | Arbalète | — | 0 ⚠ |
-| Armes | Arc | Ysolwen | 1 ⚠ |
-| Armes | Arme d’hast double | — | 0 ⚠ |
-| Armes | Arquebuse | Thorval | 1 ⚠ |
-| Armes | Bardiche | — | 0 ⚠ |
-| Armes | Bâton court | Ysolwen | 1 ⚠ |
-| Armes | Bâton long | Ysolwen | 1 ⚠ |
-| Armes | Canon à main | Thorval | 1 ⚠ |
-| Armes | Dague | — | 0 ⚠ |
-| Armes | Écu | — | 0 ⚠ |
-| Armes | Épée courte | — | 0 ⚠ |
-| Armes | Épée double | — | 0 ⚠ |
-| Armes | Épée longue | — | 0 ⚠ |
-| Armes | Estoc | — | 0 ⚠ |
-| Armes | Fléau d’armes | — | 0 ⚠ |
-| Armes | Fouet | Orvald | 1 ⚠ |
-| Armes | Fronde | — | 0 ⚠ |
-| Armes | Grande épée | — | 0 ⚠ |
-| Armes | Hache de guerre | Durgan | 1 ⚠ |
-| Armes | Hache double | — | 0 ⚠ |
-| Armes | Hachette | Orvald | 1 ⚠ |
-| Armes | Hallebarde | — | 0 ⚠ |
-| Armes | Katana | Jiraya | 1 ⚠ |
-| Armes | Kukri | — | 0 ⚠ |
-| Armes | Lance | — | 0 ⚠ |
-| Armes | Marteau de guerre | Durgan | 1 ⚠ |
-| Armes | Masse d’armes | — | 0 ⚠ |
-| Armes | Massue | — | 0 ⚠ |
-| Armes | Nunchaku | Jiraya | 1 ⚠ |
-| Armes | Pavois | — | 0 ⚠ |
-| Armes | Pic de guerre | Orvald | 1 ⚠ |
-| Armes | Pistolet | Thorval | 1 ⚠ |
-| Armes | Rondache | — | 0 ⚠ |
-| Armes | Sabre | — | 0 ⚠ |
-| Armes | Sai | Jiraya | 1 ⚠ |
-| Armes | Sarbacane | — | 0 ⚠ |
-| Armes | Trident | — | 0 ⚠ |
-| Armes | Tromblon | Thorval | 1 ⚠ |
-| Armures | Armure d'écailles | — | 0 ⚠ |
-| Armures | Armure de cuir | — | 0 ⚠ |
-| Armures | Armure de plates | Durgan | 1 ⚠ |
-| Armures | Brigandine | — | 0 ⚠ |
-| Armures | Cotte de mailles | — | 0 ⚠ |
-| Armures | Cuir renforcé | — | 0 ⚠ |
-| Armures | Gambison | — | 0 ⚠ |
-| Armures | Vêtements | — | 0 ⚠ |
-| Casques | Casque de constitution | Durgan | 1 ⚠ |
-| Casques | Chapeau d’intelligence | — | 0 ⚠ |
-| Casques | Chapeau du dresseur | — | 0 ⚠ |
-| Bottes | Bottes d’esquive | Jiraya | 1 ⚠ |
-| Bottes | Bottes de perception | Ysolwen | 1 ⚠ |
-| Bottes | Bottes de vitesse | — | 0 ⚠ |
-| Ceintures | Ceinture d’endurance | — | 0 ⚠ |
-| Ceintures | Ceinture de courage | Orvald | 1 ⚠ |
-| Ceintures | Ceinture de mana | — | 0 ⚠ |
-| Amulettes | Amulette de chance | — | 0 ⚠ |
-| Amulettes | Amulette de puissance magique | — | 0 ⚠ |
+| Armes | Arbalète | Thorval, Calaena, Gasha | 3 |
+| Armes | Arc | Ysolwen, Drusk, Amar | 3 |
+| Armes | Arme d’hast double | Cairn, Krosh | 2 |
+| Armes | Arquebuse | Thorval, Kippa | 2 |
+| Armes | Bardiche | Karg, Krosh | 2 |
+| Armes | Bâton court | Ysolwen, Lirri, Dottie | 3 |
+| Armes | Bâton long | Ysolwen, Ilyra, Azhiss | 3 |
+| Armes | Canon à main | Thorval, Flek | 2 |
+| Armes | Dague | Calaena, Jasper, Crik, Fizzi | 4 |
+| Armes | Écu | Hroska, Aymeric | 2 |
+| Armes | Épée courte | Gasha, Fizzi | 2 |
+| Armes | Épée double | Gasha, Kippa | 2 |
+| Armes | Épée longue | Aymeric, Ilyra | 2 |
+| Armes | Estoc | Rasz, Ilyra | 2 |
+| Armes | Fléau d’armes | Flek, Krosh | 2 |
+| Armes | Fouet | Orvald, Calaena | 2 |
+| Armes | Fronde | Jasper, Lirri, Crik, Bimble | 4 |
+| Armes | Grande épée | Gudrun, Karg | 2 |
+| Armes | Hache de guerre | Durgan, Gudrun | 2 |
+| Armes | Hache double | Hroska, Gudrun, Karg | 3 |
+| Armes | Hachette | Orvald, Draz | 2 |
+| Armes | Hallebarde | Gorma, Krosh | 2 |
+| Armes | Katana | Jiraya, Callie | 2 |
+| Armes | Kukri | Malaika, Crik | 2 |
+| Armes | Lance | Drusk, Malaika, Amar, Cairn, Draz | 5 |
+| Armes | Marteau de guerre | Durgan, Bruga | 2 |
+| Armes | Masse d’armes | Gorma, Krosh | 2 |
+| Armes | Massue | Cairn, Bruga | 2 |
+| Armes | Nunchaku | Jiraya, Callie | 2 |
+| Armes | Pavois | Gasha, Bruga | 2 |
+| Armes | Pic de guerre | Orvald, Bimble | 2 |
+| Armes | Pistolet | Thorval, Kippa | 2 |
+| Armes | Rondache | Jasper, Aymeric | 2 |
+| Armes | Sabre | Drusk, Amar | 2 |
+| Armes | Sai | Jiraya, Callie | 2 |
+| Armes | Sarbacane | Rasz, Isska, Malaika | 3 |
+| Armes | Trident | Hroska, Isska, Azhiss | 3 |
+| Armes | Tromblon | Thorval, Flek | 2 |
+| Armures | Armure d'écailles | Isska, Karg, Bruga | 3 |
+| Armures | Armure de cuir | Malaika, Cairn | 2 |
+| Armures | Armure de plates | Durgan, Karg | 2 |
+| Armures | Brigandine | Gorma, Aymeric | 2 |
+| Armures | Cotte de mailles | Gudrun, Aymeric | 2 |
+| Armures | Cuir renforcé | Rasz, Amar, Draz | 3 |
+| Armures | Gambison | Amar, Azhiss | 2 |
+| Armures | Vêtements | Ilyra, Dottie | 2 |
+| Casques | Casque de constitution | Durgan, Bruga | 2 |
+| Casques | Chapeau d’intelligence | Rasz, Bimble, Kippa | 3 |
+| Casques | Chapeau du dresseur | Callie, Cairn | 2 |
+| Bottes | Bottes d’esquive | Jiraya, Lirri, Crik | 3 |
+| Bottes | Bottes de perception | Ysolwen, Callie | 2 |
+| Bottes | Bottes de vitesse | Drusk, Draz | 2 |
+| Ceintures | Ceinture d’endurance | Hroska, Draz, Bruga | 3 |
+| Ceintures | Ceinture de courage | Orvald, Drusk, Gasha | 3 |
+| Ceintures | Ceinture de mana | Ilyra, Azhiss | 2 |
+| Amulettes | Amulette de chance | Flek, Callie | 2 |
+| Amulettes | Amulette de puissance magique | Rasz, Ilyra, Azhiss | 3 |
 | Amulettes | Amulette de volonté | Durgan, Orvald | 2 |
-| Capes | Cape d’esquive | Ysolwen | 1 ⚠ |
-| Capes | Cape de discrétion | Jiraya | 1 ⚠ |
-| Capes | Cape de résistance physique | — | 0 ⚠ |
-| Gants | Gants de dextérité | — | 0 ⚠ |
-| Gants | Gants de force | — | 0 ⚠ |
-| Gants | Gants de pièges | — | 0 ⚠ |
-| Culottes | Culotte d’Intimidation | — | 0 ⚠ |
-| Culottes | Slip d’Affinité | Ysolwen | 1 ⚠ |
-| Culottes | String du Charisme | Jiraya | 1 ⚠ |
-| Bagues | Bague de Feu | — | 0 ⚠ |
-| Bagues | Bague de l’Eau | — | 0 ⚠ |
-| Bagues | Bague de l’illusionniste | — | 0 ⚠ |
-| Bagues | Bague de l’invocation | — | 0 ⚠ |
-| Bagues | Bague de la chance | Orvald | 1 ⚠ |
-| Bagues | Bague de la Foudre | — | 0 ⚠ |
-| Bagues | Bague de la télékinésie | — | 0 ⚠ |
-| Bagues | Bague de la transmutation | — | 0 ⚠ |
-| Bagues | Bague du courage | Durgan | 1 ⚠ |
-| Bagues | Bague du nécromancien | — | 0 ⚠ |
-| Bagues | Bague du soigneur | — | 0 ⚠ |
-| Fioles | Fiole de poison | — | 0 ⚠ |
-| Fioles | Potion de mana | — | 0 ⚠ |
-| Fioles | Potion de soins | — | 0 ⚠ |
+| Capes | Cape d’esquive | Ysolwen, Lirri | 2 |
+| Capes | Cape de discrétion | Jiraya, Calaena, Fizzi | 3 |
+| Capes | Cape de résistance physique | Hroska, Gudrun | 2 |
+| Gants | Gants de dextérité | Jasper, Lirri, Fizzi | 3 |
+| Gants | Gants de force | Gorma, Karg | 2 |
+| Gants | Gants de pièges | Flek, Crik, Bimble | 3 |
+| Culottes | Culotte d’Intimidation | Gorma, Gasha | 2 |
+| Culottes | Slip d’Affinité | Ysolwen, Dottie, Fizzi | 3 |
+| Culottes | String du Charisme | Jiraya, Jasper | 2 |
+| Bagues | Bague de Feu | Amar, Krosh | 2 |
+| Bagues | Bague de l’Eau | Hroska, Isska | 2 |
+| Bagues | Bague de l’illusionniste | Lirri, Fizzi, Kippa | 3 |
+| Bagues | Bague de l’invocation | Crik, Azhiss | 2 |
+| Bagues | Bague de la chance | Orvald, Flek | 2 |
+| Bagues | Bague de la Foudre | Thorval, Calaena | 2 |
+| Bagues | Bague de la télékinésie | Rasz, Jasper | 2 |
+| Bagues | Bague de la transmutation | Malaika, Draz | 2 |
+| Bagues | Bague du courage | Durgan, Drusk | 2 |
+| Bagues | Bague du nécromancien | Gudrun, Cairn, Bimble | 3 |
+| Bagues | Bague du soigneur | Aymeric, Dottie | 2 |
+| Fioles | Fiole de poison | Isska, Calaena, Malaika | 3 |
+| Fioles | Potion de mana | Dottie, Bimble, Kippa | 3 |
+| Fioles | Potion de soins | Gorma, Isska, Dottie | 3 |
+| Manuels | Manuels de Vie | Jiraya, Ysolwen, Aymeric | 3 |
+| Manuels | Manuels de Feu | Drusk, Amar, Krosh | 3 |
+| Manuels | Manuels d’Eau | Hroska, Isska, Ilyra | 3 |
+| Manuels | Manuels de Transmutation | Malaika, Karg, Gasha, Draz | 4 |
+| Manuels | Manuels de Foudre | Thorval, Calaena | 2 |
+| Manuels | Manuels de Télékinésie | Rasz, Jasper, Flek | 3 |
+| Manuels | Manuels d’Illusion | Lirri, Dottie, Fizzi, Kippa | 4 |
+| Manuels | Manuels de Nécromancie | Gudrun, Cairn, Bimble | 3 |
+| Manuels | Manuels d’Invocation | Callie, Crik, Azhiss | 3 |
 
 <!-- couverture:fin -->
 

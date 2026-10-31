@@ -20,6 +20,8 @@
 // - « Rien que pour toi, capitaine » (Idan, 2026-10-31) : à +100 d'affinité, pendant son passage, il propose une fois un
 //   objet hors de sa liste (une famille d'équipement au hasard, puis un objet ; T3 ou T4, mêmes chances que l'étal) à
 //   50 % de son prix normal (merchants.special.*). Sa réplique : merchants.json, repliques.rien_que_pour_toi.
+// - Manuels de sorts (Idan, 2026-10-31 ; spell-manuals.js) : une ligne {type:"manual", ecole} de sa liste vend les
+//   manuels de toute l'école ; chaque article de cette ligne est un manuel tiré dans l'école (sans tier).
 // Constantes : merchants.* (formula-constants.json).
 (function(root,factory){
   const deps=typeof module!=="undefined"&&module.exports
@@ -69,6 +71,7 @@
     if(!TIERS.length) TIERS.push({tier:1,base:1,perLevel:0});
     const rarity=tier=>constant(`merchants.buyback.rarity_tier_${Number(tier)||1}`,0);
     const list=rows(reference?.merchants);
+    const spells=rows(reference?.spells);
     const values=itemValue.createItemValues({reference});
     const starRules=stars.createStarRules({reference});
     const maxLevel=Math.max(2,starRules.rows.length);
@@ -82,7 +85,7 @@
     const merchantById=id=>list.find(m=>m.id===id)||null;
     // Ce que le reste du jeu voit d'un marchand.
     const view=m=>m?{id:m.id,name:m.nom||m.id,sex:m.sexe||null,people:m.peuple||null,culture:m.culture||null,alignment:m.alignement||null,
-      portrait:m.portrait||null,sells:(m.vend||[]).map(v=>({type:v.type,name:v.objet})),lines:m.repliques||{}}:null;
+      portrait:m.portrait||null,sells:(m.vend||[]).map(v=>({type:v.type,name:v.objet||null,school:v.ecole||null})),lines:m.repliques||{}}:null;
     const levelOf=renown=>clamp(Number(starRules.company(renown)?.level)||1,1,maxLevel);
 
     // Chance qu'un marchand passe ce matin : 30 % + 4 % par niveau d'étoiles de la renommée (1 à 15), au plus 100 %.
@@ -107,7 +110,10 @@
       for(let i=0;stock.length<C.stockSize&&i<C.stockSize*3;i++){
         const line=sells[Math.floor(random()*sells.length)]||sells[0];
         const tier=weighted(chances,t=>t.chance).tier;
-        const item=generator.createItemByName(line.type,line.objet,tier);
+        // Une ligne de manuels : un sort tiré dans l'école.
+        const school=line.type==="manual"?spells.filter(s=>s.ecole===line.ecole):null;
+        const name=school?school[Math.floor(random()*school.length)]?.nom:line.objet;
+        const item=name?generator.createItemByName(line.type,name,tier):null;
         if(item) stock.push({id:stock.length,item});
       }
       return stock;
@@ -178,7 +184,7 @@
       return Math.max(1,Math.round(value*C.margin*(1-C.affinityFactor*(Number(affinityScore)||0)/100)*(1-(Number(stewardBonus)||0))));
     }
 
-    const specialtyOf=(merchant,item)=>(merchant?.sells||[]).some(s=>s.type===item?.itemType&&s.name===item?.name);
+    const specialtyOf=(merchant,item)=>(merchant?.sells||[]).some(s=>s.type===item?.itemType&&(s.school?s.school===item?.school:s.name===item?.name));
     const quantityKey=item=>`${item?.itemType}|${item?.name}|${Number(item?.tier)||1}`;
 
     // Prix de rachat (vous vendez), ou null si l'objet n'a pas de valeur. options : affinity, steward (bonus), specialty,

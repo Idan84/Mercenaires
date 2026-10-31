@@ -36,7 +36,7 @@
       </div>
       <div class="hud-side hud-side--right">
         <section id="hud-journal" class="hud-journal" aria-label="Journal de la compagnie">
-          <button id="hud-console-toggle" class="hud-journal-head" type="button" aria-expanded="false" aria-controls="game-action-lines" title="Afficher ou réduire le journal"><span class="hud-journal-label"><span class="hud-icon" data-hud-icon="journal"></span>Journal</span><span id="hud-journal-last" class="hud-journal-last">Aucune nouvelle.</span><span class="hud-journal-chevron" aria-hidden="true">▴</span></button>
+          <button id="hud-console-toggle" class="hud-journal-head" type="button" aria-expanded="false" aria-controls="game-action-lines" title="Afficher ou réduire le journal"><span class="hud-journal-label"><span class="hud-icon" data-hud-icon="journal"></span>Journal</span><span id="hud-journal-last" class="hud-journal-last"></span><span class="hud-journal-chevron" aria-hidden="true">▴</span></button>
           <ol id="game-action-lines" class="hud-journal-lines" aria-live="polite" aria-relevant="additions"></ol>
         </section>
         <button id="hud-pause-btn" type="button" aria-label="Ouvrir le menu de pause">☰ <span>Échap</span></button>
@@ -249,7 +249,6 @@
               <p class="eyebrow">Marchand</p>
               <h2 id="merchant-title">Pas de marchand aujourd’hui</h2>
             </div>
-            <span id="merchant-gold" class="roster-count"></span>
           </div>
           <div id="merchant-content"></div>
         </section>
@@ -370,7 +369,6 @@
       <span id="mission-select-count" class="badge">0/3</span>
     </div>
     <div class="mission-select-content">
-      <p class="muted">Les morts sont définitives, les blessés et les fatigués deviennent indisponibles quelques jours. Les PV restants ne sont pas conservés d’un combat à l’autre.</p>
       <p id="mission-select-cost" class="mission-select-cost"></p>
       <div id="mission-select-list" class="mission-select-list"></div>
       <p id="mission-select-error" class="mission-error"></p>
@@ -430,12 +428,11 @@
     <div id="bodyguard-return-list" class="bodyguard-return-list"></div>
     <div class="bodyguard-return-actions"><button type="button" class="primary" id="bodyguard-return-ok">D’accord</button></div>
   </dialog>
-  <!-- Nouvelles du jour (Idan, 2026-10-30) : tout ce que le passage d'une journée annonce, marchand compris. -->
-  <dialog id="day-news-dialog" class="bodyguard-return day-news" aria-labelledby="day-news-title">
-    <p class="eyebrow">Nouvelles du jour</p>
-    <h2 id="day-news-title"></h2>
+  <!-- Notification du jour (Idan, 2026-10-31) : l'essentiel de la journée, de l'urgent au reste (day-news-ui.js). -->
+  <dialog id="day-news-dialog" class="day-news" aria-labelledby="day-news-title">
+    <header class="day-news-head"><h2 id="day-news-title"></h2><small id="day-news-sub"></small></header>
     <ul id="day-news-list" class="day-news-list"></ul>
-    <div class="bodyguard-return-actions"><button type="button" class="primary" id="day-news-ok">D’accord</button></div>
+    <footer class="day-news-foot"><span id="day-news-money" class="day-news-money"></span><button type="button" class="primary" id="day-news-ok">Continuer</button></footer>
   </dialog>
   <dialog id="lieutenant-report-dialog" class="talk-dialog talk-dialog--recruit" aria-labelledby="lieutenant-report-name">
     <header class="talk-head">
@@ -491,6 +488,7 @@
   <script src="item-card-ui.js"></script>
   <script src="camp-calendar.js"></script>
   <script src="tavern-ui.js"></script>
+  <script src="day-news-ui.js"></script>
   <script src="contract-ui.js"></script>
   <script src="camp-buildings-ui.js"></script>
   <script src="quartermaster-ui.js"></script>

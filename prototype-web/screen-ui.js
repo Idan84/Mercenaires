@@ -119,7 +119,7 @@ function renderGameHud(){
   renderCampCalendar();
   const lines=gameActionMessages.slice(0,8);
   const last=$("hud-journal-last");
-  const latest=lines[0]?lines[0].message:"Aucune nouvelle.";
+  const latest=lines[0]?lines[0].message:"";
   if(last.textContent!==latest){
     last.textContent=latest;
     last.title=latest;

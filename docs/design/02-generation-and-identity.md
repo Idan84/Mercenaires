@@ -267,7 +267,27 @@ Score total = affinité initiale + affinité acquise (+ les points du Slip d'Aff
 | **Ogre** | +1 | +1 | +1 | +1 | +1 | +1 | +2 | +1 | +3 | +2 |
 | **Homme-bête** | −2 | −2 | −3 | −1 | −2 | +1 | +1 | −1 | +3 | +3 |
 
-Données : `data/reference/people-affinity.json` (matrice) ; constantes `affinity.*` dans `formula-constants.json` ; code `game-core/affinity.js`.
+**Cultures à part** (Idan, 2026-10-31) : les **Nains du chaos** et les **Elfes noirs** ne suivent pas leur peuple. Leur part
+« peuple » est remplacée, sauf entre membres de la même culture (rien ne change entre eux) :
+
+- **Cousins haïs**, dans les deux sens : nain du chaos ↔ tout autre nain, elfe noir ↔ tout autre elfe : **−6** (deux fois le
+  pire de la matrice ; la part initiale reste bornée à −100). Même avec le même alignement, ils restent en froid (−29).
+- **Alliés**, dans les deux sens : nain du chaos ↔ elfe noir : **+2**.
+- **Les autres** : envers tous les autres peuples, un nain du chaos ou un elfe noir a **2 points de moins** que la matrice
+  (sans descendre sous −3). Dans leur sens seulement : les autres ne les détestent pas pour autant.
+
+| Qui ressent → envers qui | Avant | Avec la règle |
+|---|---|---|
+| Nain du chaos chaotique neutre → nain des montagnes loyal bon | +11 | −100 |
+| Nain du chaos chaotique neutre → nain des montagnes chaotique neutre | +78 | −29 |
+| Elfe sylvain neutre bon → elfe noir chaotique mauvais | +11 | −100 |
+| Nain du chaos chaotique neutre → elfe noir chaotique mauvais | +33 | +44 |
+| Nain du chaos chaotique neutre → humain neutre | +44 | +22 |
+| Elfe noir chaotique mauvais → humain neutre | +22 | 0 |
+| Humain neutre → elfe noir chaotique mauvais | +22 | +22 |
+
+Données : `data/reference/people-affinity.json` (matrice ; `cultures` : cultures à part, `haine_cousins`, `allies_points`,
+`autres`) ; constantes `affinity.*` dans `formula-constants.json` ; code `game-core/affinity.js`.
 
 État V1 :
 

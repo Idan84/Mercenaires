@@ -66,9 +66,10 @@ for(const row of levels){
 assert.deepEqual(rules.tierChances(renownAt(2)).map(c=>Math.round(c.chance*100)),[62,29,9],"compagnie neuve");
 assert.deepEqual(rules.tierChances(renownAt(15)).map(c=>Math.round(c.chance*100)),[10,55,35],"5 étoiles d'or");
 
-// Une campagne avec un capitaine humain neutre : affinité initiale +44 avec Thorval.
+// Une campagne avec un capitaine humain chaotique neutre : affinité initiale +44 avec Thorval (un nain du chaos n'aime
+// pas grand monde : 0 pour le peuple, +4 pour le même alignement).
 const captain=generator.createCaptain({id:1});
-Object.assign(captain,{people:"Humain",culture:"Impériaux",alignment:"Neutre"});
+Object.assign(captain,{people:"Humain",culture:"Impériaux",alignment:"Chaotique neutre"});
 const squad=Array.from({length:4},(_,i)=>generator.createMercenary({id:i+2,captain}));
 const campaign=createCampaignRules({generator,tavern:createTavernRules({random:()=>0.999,reference}),reference,affinity,merchants:rules});
 const state=campaign.createCampaign({captain,squad});
@@ -99,7 +100,7 @@ for(const o of visit.offers){
   assert.equal(o.price,Math.round(values.value(o.item)*1.5*(1-0.2*44/100)));
 }
 assert.equal(new Set(visit.offers.map(o=>o.item.id)).size,10,"dix objets distincts");
-// Les exemples de la proposition (Idan, 2026-10-31) : capitaine humain neutre, compagnie neuve, sans intendant.
+// Les exemples de la proposition (Idan, 2026-10-31) : affinité +44, compagnie neuve, sans intendant.
 const item=(name,tier)=>generator.createItemByName("weapon",name,tier);
 assert.equal(rules.sellPrice(item("Pistolet",2),44),739);
 assert.equal(rules.sellPrice(item("Tromblon",4),44),7182);

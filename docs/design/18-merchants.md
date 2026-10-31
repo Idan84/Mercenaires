@@ -45,7 +45,8 @@
 ## 5 — L'affinité avec le marchand
 
 - **Initiale** : comme celle d'un mercenaire avec le capitaine (doc 02 : peuple, culture, alignement). Exemples avec
-  Thorval : capitaine humain neutre +44, nain chaotique neutre +78, orc loyal bon −71.
+  Thorval : capitaine nain du chaos +100, humain chaotique neutre +44, humain neutre +22, orc loyal bon −71, nain des
+  montagnes chaotique neutre −29 (les Nains du chaos haïssent les autres nains : doc 02, « Cultures à part »).
 - **Acquise** : **+2 par article acheté** ; **−3 à chaque passage sans aucun achat ni aucune vente** (quand il repart).
 - Bornée de −100 à +100. **Elle n'est pas affichée.** Sauvegarde : `state.market.merchants[id].acquired`.
 
@@ -76,15 +77,15 @@ Prix = valeur × **0,8** × (1 + **0,2** × Affinité / 100) × (1 + bonus de l'
 Ainsi, on gagne un peu en achetant un T3 ou un T4 là où l'affinité est bonne, pour le revendre à un autre marchand qui a
 cette arme dans sa liste, tant que la compagnie est jeune.
 
-**Exemples** (compagnie neuve, capitaine humain neutre : affinité +44, sans intendant) : Pistolet T2 739 PO à l'achat,
+**Exemples** (compagnie neuve, capitaine humain chaotique neutre : affinité +44, sans intendant) : Pistolet T2 739 PO à l'achat,
 470 PO à la vente ; Tromblon T4 7 182 PO à l'achat, 6 267 PO à la vente (5 092 PO pour une compagnie à 1 étoile d'or) ;
 10 épées longues T1 : environ 133 PO en tout (25 PO la première).
 
 ## 9 — « Rien que pour toi, capitaine » (Idan, 2026-10-31)
 
 - **Quand** : son affinité avec le capitaine est à **+100**, vérifiée pendant tout son passage (donc aussi juste après
-  l'achat qui l'y porte). Avec Thorval, il faut 11 achats à un capitaine nain chaotique neutre (+78), 28 à un humain
-  neutre (+44). S'il repart sans affaire (97), l'offre ne revient qu'une fois remonté à +100.
+  l'achat qui l'y porte). Avec Thorval, un capitaine nain du chaos y est d'emblée (+100) ; il faut 28 achats à un humain
+  chaotique neutre (+44), 39 à un humain neutre (+22). S'il repart sans affaire (97), l'offre ne revient qu'une fois remonté à +100.
 - **Une offre par passage**, qui reste jusqu'à son départ si on ne la prend pas tout de suite.
 - **L'objet** : jamais dans sa liste ; une famille d'équipement au hasard (arme, armure, casque, bottes, ceinture,
   amulette, cape, gants, culotte, bague ; pas de fiole), puis un objet de cette famille ; **T3 ou T4**, avec les chances

@@ -47,6 +47,38 @@ for(const a of ALIGNMENT_GRID.flat())for(const b of ALIGNMENT_GRID.flat()){
 assert.equal(affinity(person("Humain","Neutre","A"),person("Humain","Neutre bon","B")).initial,Math.round(5*100/9));
 assert.equal(affinity(person("Humain","Loyal bon","A"),person("Orc","Chaotique mauvais","B")).initial,Math.round(-3*100/7));
 
+// Cultures à part (Idan, 2026-10-31) : les Nains du chaos et les Elfes noirs haïssent leurs cousins et en sont haïs
+// (−6), s'aiment bien entre eux (+2), n'aiment pas grand monde d'autre (−2 sur la matrice, plancher −3).
+const chaosDwarf=person("Nain","Chaotique neutre","Nains du chaos"),darkElf=person("Elfe","Chaotique mauvais","Elfes noirs");
+const feels=(who,toward)=>affinity(toward,who);
+const rule=(who,toward)=>feels(who,toward).components;
+assert.deepEqual([rule(chaosDwarf,person("Nain","Loyal bon","Nains des montagnes")).people,rule(chaosDwarf,person("Nain","Loyal bon","Nains des montagnes")).cultureRule],[-6,"cousins"]);
+assert.equal(rule(person("Nain","Loyal bon","Nains des montagnes"),chaosDwarf).people,-6,"réciproque");
+assert.equal(rule(darkElf,person("Elfe","Neutre bon","Elfes sylvains")).people,-6);
+assert.equal(rule(person("Elfe","Neutre bon","Elfes sylvains"),darkElf).people,-6,"réciproque");
+assert.deepEqual([rule(chaosDwarf,darkElf).people,rule(chaosDwarf,darkElf).cultureRule],[2,"allies"]);
+assert.equal(rule(darkElf,chaosDwarf).people,2);
+assert.deepEqual([rule(chaosDwarf,person("Humain","Neutre")).people,rule(chaosDwarf,person("Humain","Neutre")).cultureRule],[0,"others"],"2 − 2");
+assert.equal(rule(chaosDwarf,person("Orc","Loyal bon")).people,-3,"plancher de la matrice");
+assert.equal(rule(darkElf,person("Halfling","Neutre")).people,1,"3 − 2");
+assert.equal(rule(person("Humain","Neutre"),darkElf).people,2,"les autres ne les détestent pas pour autant");
+assert.deepEqual([rule(chaosDwarf,chaosDwarf).people,rule(chaosDwarf,chaosDwarf).cultureRule],[3,null],"entre eux : rien ne change");
+// Les exemples de la proposition (affinité finale).
+const examples=[
+  [chaosDwarf,person("Nain","Loyal bon","Nains des montagnes"),-100],
+  [chaosDwarf,person("Nain","Chaotique neutre","Nains des montagnes"),-29],
+  [person("Nain","Loyal bon","Nains des montagnes"),chaosDwarf,-100],
+  [person("Elfe","Neutre bon","Elfes sylvains"),darkElf,-100],
+  [chaosDwarf,darkElf,44],
+  [chaosDwarf,person("Humain","Neutre"),22],
+  [chaosDwarf,person("Halfling","Neutre"),33],
+  [darkElf,person("Humain","Neutre"),0],
+  [person("Humain","Neutre"),darkElf,22],
+  [chaosDwarf,chaosDwarf,100]
+];
+for(const [who,toward,total] of examples) assert.equal(feels(who,toward).total,total,`${who.culture} → ${toward.culture}`);
+assert.ok(feels(chaosDwarf,person("Nain","Loyal bon","Nains des montagnes")).initial>=-100,"la part initiale reste bornée");
+
 // Membre de la compagnie : la part acquise vient de affinityAcquired (0 par défaut, anciennes sauvegardes).
 assert.equal(memberAffinity(human,{...human}).acquired,0);
 assert.equal(memberAffinity(human,{...human,culture:"B",affinityAcquired:-30}).total,affinity(human,{...human,culture:"B"}).initial-30);

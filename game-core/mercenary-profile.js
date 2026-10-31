@@ -1,43 +1,33 @@
 "use strict";
 
-// Évaluation d'un mercenaire (Idan, 2026-10-31) : des facettes mesurées avec les formules du combat et l'équipement
-// porté (game-core/combat-engine.js, game-core/magic.js), notées sur les 15 niveaux de la réputation, puis ce qui ressort
-// (points forts, points faibles, gêne d'équipement) et un titre qui dit à quoi il sert. Tout se recalcule quand
-// l'équipement change. Données : data/reference/mercenary-profile.json (facettes, seuils, sélection, titres) ; les seuils
-// sont mesurés sur les recrues par scripts/build-mercenary-profile.js.
+// Titres des mercenaires (Idan, 2026-10-31, version 2) : chaque mercenaire est noté dans 10 catégories de rôle (Healer,
+// Summoner, Buffer, Contrôleur, DPS au CAC, DPS à distance, DPS magiques, Tank, Éclaireur, Meneur). Une catégorie est
+// faite de sous-catégories mesurées avec les formules du combat (game-core/combat-engine.js, game-core/magic.js) et
+// l'équipement porté, notées sur les 15 niveaux de la réputation. Il reçoit 1 à 3 titres, ou « Chair à canon » ; un titre
+// prend sa sous-catégorie quand elle se détache. Tout se recalcule quand l'équipement change.
+// Données : data/reference/mercenary-profile.json (catégories, sorts et créatures par sous-catégorie, sélection, seuils) ;
+// les seuils sont mesurés sur les recrues par scripts/build-mercenary-profile.js.
 (function(root,factory){
   const api=factory();
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesProfile=api;
 })(typeof globalThis!=="undefined"?globalThis:this,function(){
   const rows=data=>Array.isArray(data)?data:(data?.rows||[]);
-  const ATTACK_FAMILIES=new Set(["contact","tir","magie"]);
-  const WEAPON_FAMILIES=new Set(["contact","tir"]);
-  // Effets des sorts (spells.json, effet) par facette de magie.
-  const SPELL_FACETS={
-    degats:"magie_attaque",degats_rebonds:"magie_attaque",degats_paire:"magie_attaque",
-    degats_zone:"magie_zone",
-    soin:"soin",soin_sur_duree:"soin",
-    soin_de_zone:"soin_masse",
-    bonus_caracteristiques:"soutien",bonus_zone:"soutien",arme_elementaire:"soutien",protection_elementaire:"soutien",
-    protection_projectiles:"soutien",crachat_venin:"soutien",drain_de_vie:"soutien",
-    invocation:"invocation",resurrection:"invocation",transposition:"invocation",
-    peur:"controle",bourbier:"controle",terrain_infranchissable:"controle",brouillard:"controle",
-    malus_caracteristiques:"controle",deplacement_force:"controle",fletrissement:"controle",frenesie:"controle"
-  };
-  // Purge (purge_poison) n'a pas de facette : elle sert contre le poison seulement, elle ne dit pas à quoi il sert.
-  // Sorts chiffrés (soins ou dégâts) : leur effet moyen compte ; les autres, la réussite, le mana et la maîtrise.
-  const AMOUNT_FACETS=new Set(["magie_attaque","magie_zone","soin","soin_masse"]);
+  // Effets qui passent par une créature (creatures) plutôt que par le code du sort (sorts).
+  const SUMMON_EFFECTS=new Set(["invocation","resurrection"]);
 
   function createProfileRules({reference,engine,magic=null}={}){
     const data=reference?.mercenaryProfile||{};
-    const facetDefs=data.facettes||[];
-    const facetByCode=new Map(facetDefs.map(f=>[f.code,f]));
-    const groups=data.groupes||[];
-    const groupOf=new Map(groups.flatMap(g=>g.facettes.map(code=>[code,g])));
     const S=data.selection||{};
-    const titles=data.titres||{};
-    const weaponRows=rows(reference?.weapons);
+    const categories=(data.categories||[]).map(cat=>({...cat,sous:(cat.sous||[]).map(sub=>({...sub,key:cat.code+"."+sub.code}))}));
+    const subByKey=new Map(categories.flatMap(cat=>cat.sous.map(sub=>[sub.key,sub])));
+    const spellRoles=data.sorts||{},creatureRoles=data.creatures||{};
+    const weaponRows=rows(reference?.weapons),potionRows=rows(reference?.potions);
+    const constant=(code,fallback)=>{
+      const value=Number(rows(reference?.formulaConstants).find(r=>r.code===code)?.valeur);
+      return Number.isFinite(value)?value:fallback;
+    };
+    const AURA={courage:constant("captain.aura.courage_ratio",0.35),charisma:constant("captain.aura.charisma_ratio",0.25)};
 
     // ---- L'étalon : adversaire de mesure, jamais montré ----
     const etalon=data.etalon||{};
@@ -55,17 +45,19 @@
     let etalons=null;
     const refs=()=>etalons||(etalons={leger:etalonUnit("leger"),lourd:etalonUnit("lourd"),archer:etalonUnit("archer")});
 
-    // ---- Mesures ----
-    // Un coup : chance de toucher, et dégâts attendus = toucher × blesser (meilleur type contre l'armure) × dégâts moyens
-    // (avant le D3 de la Résistance physique, pris au milieu).
-    function strike(attacker,defender,mode,distance){
+    // ---- Coups ----
+    // Un coup : chance de toucher, chance de blesser, et dégâts attendus = toucher × blesser (meilleur type contre
+    // l'armure) × dégâts moyens (avant le D3 de la Résistance physique, pris au milieu). context : backstab, chargePower.
+    function strike(attacker,defender,mode,distance,context={}){
       const weapon=engine.weaponTemplate(engine.activeWeaponItem(attacker));
-      const matchups=engine.damageMatchups(defender,weapon).sort((a,b)=>b.matchup-a.matchup);
-      const pHit=engine.hitProbability(attacker,defender,mode,distance)/100;
-      const pWound=engine.woundProbability(attacker,defender,mode,matchups[0]||{matchup:0})/100;
-      const low=engine.physicalDamage(attacker,defender,mode,0,{roll:"min",resistanceRoll:2}).damage;
-      const high=engine.physicalDamage(attacker,defender,mode,0,{roll:"max",resistanceRoll:2}).damage;
-      return {pHit,damage:pHit*pWound*(low+high)/2};
+      const matchups=engine.damageMatchups(defender,weapon,{backstab:context.backstab}).sort((a,b)=>b.matchup-a.matchup);
+      const pHit=engine.hitProbability(attacker,defender,mode,distance,{backstab:context.backstab})/100;
+      const pWound=engine.woundProbability(attacker,defender,mode,matchups[0]||{matchup:0},{chargePower:context.chargePower})/100;
+      const charge=context.chargePower||0;
+      const low=engine.physicalDamage(attacker,defender,mode,charge,{roll:"min",resistanceRoll:2}).damage;
+      const high=engine.physicalDamage(attacker,defender,mode,charge,{roll:"max",resistanceRoll:2}).damage;
+      const hit=pWound*(low+high)/2;
+      return {pHit,pWound,hit,damage:pHit*hit};
     }
     // Nombre moyen d'attaques (ou de paires) par tour avec les enchaînements : l'attaque n s'ouvre si la précédente a
     // touché, avec la chance d'enchaînement du moteur (au contact toujours ; au tir, armes « Répétable » seulement).
@@ -83,14 +75,21 @@
       const hit=strike(attacker,defender,mode,distance);
       return hit.damage*chainFactor(attacker,mode,hit.pHit);
     }
-    // Un set : la main principale, et la main secondaire au combat à deux armes si elle frappe de la même façon ; la paire
-    // s'enchaîne si l'une des deux touche, et seulement au contact.
-    function setDamage(character,set,ranged,defender){
+    // L'arme principale d'un set, si elle frappe de cette façon (au contact ou au tir).
+    function setWeapon(character,set,ranged){
       const unit={character,activeSet:set};
-      const weapon=engine.weaponTemplate(engine.activeWeaponItem(unit));
+      const item=engine.activeWeaponItem(unit),weapon=engine.weaponTemplate(item);
       if(!weapon||engine.isRangedWeapon(weapon)!==ranged||!(ranged||engine.isMeleeWeapon(weapon))) return null;
-      const mode=ranged?"ranged":"melee";
-      const distance=ranged?Math.max(1,Math.round((Number(engine.weaponRange(unit).max)||2)/2)):1;
+      return {unit,weapon,item};
+    }
+    const midRange=unit=>Math.max(1,Math.round((Number(engine.weaponRange(unit).max)||2)/2));
+    // Un set : la main principale, et la main secondaire au combat à deux armes si elle frappe de la même façon ; la paire
+    // s'enchaîne si l'une des deux touche, et seulement au contact. reach : "mid" (mi-portée) ou "max" (bout de portée).
+    function setDamage(character,set,ranged,defender,reach="mid"){
+      const held=setWeapon(character,set,ranged);
+      if(!held) return null;
+      const {unit}=held,mode=ranged?"ranged":"melee";
+      const distance=!ranged?1:reach==="max"?Math.max(1,Number(engine.weaponRange(unit).max)||1):midRange(unit);
       const main=strike(unit,defender,mode,distance);
       const off=engine.isDualWielding(unit)?engine.withHand(unit,"off",()=>{
         const item=engine.weaponTemplate(engine.activeWeaponItem(unit));
@@ -100,208 +99,202 @@
       const pAny=1-(1-main.pHit)*(1-off.pHit);
       return (main.damage+off.damage)*(ranged?1:chainFactor(unit,"melee",pAny));
     }
-    function bestSet(character,ranged,defender){
-      const values=[1,2].map(set=>setDamage(character,set,ranged,defender)).filter(v=>v!=null);
-      return values.length?Math.max(...values):null;
+    const best=values=>{ const v=values.filter(x=>x!=null&&Number.isFinite(x)); return v.length?Math.max(...v):null; };
+    const bestSet=(character,ranged,defender,reach)=>best([1,2].map(set=>setDamage(character,set,ranged,defender,reach)));
+    const stat=(character,name)=>engine.statWithGear({character,activeSet:1},name);
+
+    // Objets à la ceinture (belt_item_1 à 4) : potions et fioles.
+    function beltPotions(character){
+      const slots=character.equipment?.slots||{};
+      const ids=new Set(Object.entries(slots).filter(([slot,id])=>/^belt_item/.test(slot)&&id).map(([,id])=>id));
+      return (character.items||[]).filter(item=>item.itemType==="potion"&&ids.has(item.id))
+        .map(item=>potionRows.find(r=>r.nom===item.name||"potion:"+r.code===item.templateId)).filter(Boolean);
     }
-    function spellFacets(character){
+    // Poison : dégâts × tours × chance qu'un coup blesse × chance que l'étalon ne résiste pas.
+    function poisonValue(character,ranged){
+      const vial=beltPotions(character).find(p=>p.effet==="poison_arme");
+      const defender=refs().leger;
+      const resisted=engine.poisonResistChance(defender)/100;
+      const turns=Number(engine.POISON?.turns)||3;
+      return best([1,2].map(set=>{
+        const held=setWeapon(character,set,ranged);
+        if(!held) return null;
+        const quality=Number(engine.quality(held.item)?.multiplicateur_qualite)||1;
+        const dice=Number(String(held.weapon.degats_pv_base||"").match(/^(\d+)/)?.[1])||1;
+        const blowgun=held.weapon.empoisonne?Math.ceil(10*dice*quality-1e-9):0;
+        const amount=Math.max(blowgun,vial?Number(vial.degats_poison)||0:0);
+        if(!amount) return null;
+        const hit=strike(held.unit,defender,ranged?"ranged":"melee",ranged?midRange(held.unit):1);
+        return amount*turns*hit.pHit*hit.pWound*(1-resisted);
+      }));
+    }
+
+    // ---- Sources (data/reference/mercenary-profile.json, sources) ----
+    const SOURCES={
+      contact_lourd:c=>bestSet(c,false,refs().lourd),
+      contact_leger:c=>bestSet(c,false,refs().leger),
+      tir_lourd:c=>bestSet(c,true,refs().lourd),
+      tir_leger:c=>bestSet(c,true,refs().leger),
+      tir_loin:c=>bestSet(c,true,refs().leger,"max"),
+      assassin:c=>best([1,2].map(set=>{
+        const held=setWeapon(c,set,false);
+        if(!held) return null;
+        const hidden=1-engine.detectionChance(refs().leger,held.unit,3)/100;
+        return strike(held.unit,refs().leger,"melee",1,{backstab:true}).damage*hidden;
+      })),
+      charge:c=>best([1,2].map(set=>{
+        const held=setWeapon(c,set,false);
+        if(!held) return null;
+        const travel=Math.round(1.5*engine.movementBase(held.unit));
+        const quality=Number(engine.quality(held.item)?.multiplicateur_qualite)||1;
+        const chargePower=travel*(Number(held.weapon.bonus_charge_base)||1)*quality;
+        return strike(held.unit,refs().leger,"melee",1,{chargePower}).damage;
+      })),
+      poison_contact:c=>poisonValue(c,false),
+      poison_tir:c=>poisonValue(c,true),
+      // Toutes les armes de tir contre-chargent : seule l'arme d'hast en fait une spécialité de contact.
+      contre_charge:c=>best([1,2].map(set=>{
+        const held=setWeapon(c,set,false);
+        return held?.weapon.contre_charge?strike(held.unit,refs().leger,"melee",1).damage:null;
+      })),
+      encaisser:c=>{
+        const unit={character:c,activeSet:1};
+        const block=(Number(engine.blockChance(unit))||0)/100;
+        const taken=(strike(refs().leger,unit,"melee",1).hit+strike(refs().archer,unit,"ranged",6).hit)/2;
+        return engine.maxHp(unit)/Math.max(0.1,(1-block)*taken);
+      },
+      esquive:c=>{
+        const unit={character:c,activeSet:1};
+        const parry=Math.min(100,Number(engine.parryChance(unit,"melee"))||0)/100;
+        const melee=strike(refs().leger,unit,"melee",1).pHit*(1-parry),ranged=strike(refs().archer,unit,"ranged",6).pHit;
+        return 1-(melee+ranged)/2;
+      },
+      potions_soin:c=>{
+        const heal=beltPotions(c).filter(p=>p.effet==="soin").reduce((sum,p)=>sum+(Number(p.pourcentage)||0),0);
+        return heal?heal/100*engine.maxHp({character:c,activeSet:1}):null;
+      },
+      perception:c=>stat(c,"Perception"),
+      discretion:c=>stat(c,"Discrétion"),
+      pieges:c=>stat(c,"Pièges"),
+      intimidation:c=>stat(c,"Intimidation"),
+      aura:c=>AURA.courage*stat(c,"Courage")+AURA.charisma*stat(c,"Charisme")
+    };
+
+    // Sous-catégorie d'un sort : par sa créature pour les invocations, sinon par son code.
+    function spellRole(spell){
+      if(!spell) return null;
+      return SUMMON_EFFECTS.has(spell.effet)?creatureRoles[spell.creature]||null:spellRoles[spell.code]||null;
+    }
+    // Valeur d'un sort selon la mesure de sa sous-catégorie (montant, maitrise, invocation).
+    function spellValue(unit,known,spell,kind){
+      const manaMax=magic.manaMax(unit),cost=magic.manaCost(unit,known.code);
+      const sustain=cost>0?Math.min(1,manaMax/(3*cost)):1;
+      const base=magic.castChance(unit,known.code).p/100*sustain;
+      if(kind==="montant"){
+        if(!magic.dice(known.code).count) return null;
+        const range=magic.effectRange(unit,known.code);
+        const turns=spell.effet==="soin_sur_duree"?Math.max(1,magic.duration(unit,known.code)):1;
+        return base*(range.min+range.max)/2*turns;
+      }
+      if(kind==="invocation"){
+        if(spell.effet==="resurrection") return base*magic.zombieShare(unit,known.code)/100;
+        const count=Number(spell.invocation_nb_des)||0,sides=Number(spell.invocation_de)||0,step=Number(spell.invocation_pas_maitrise)||0;
+        const expected=count&&sides?count*(sides+1)/2+(step>0?Math.floor(magic.mastery(unit,known.code)/step):0):1;
+        return base*expected*magic.holdChance(unit,known.code)/100;
+      }
+      return base*magic.mastery(unit,known.code)/100;
+    }
+    // Ses sorts, rangés par sous-catégorie : le meilleur de chacune.
+    function spellSources(character){
       const out={};
       if(!magic) return out;
       const unit={character,activeSet:1};
-      const manaMax=magic.manaMax(unit);
       for(const known of character.spells||[]){
-        const spell=magic.spell(known.code);
-        const facet=spell&&SPELL_FACETS[spell.effet];
-        if(!facet) continue;
-        const cost=magic.manaCost(unit,known.code);
-        const sustain=cost>0?Math.min(1,manaMax/(3*cost)):1;
-        const success=magic.castChance(unit,known.code).p/100;
-        // Sans effet chiffré (soutien, contrôle, invocation), la maîtrise du sort fait sa force (durée, bonus, portée,
-        // nombre d'invocations en dépendent).
-        let value=success*sustain;
-        if(!AMOUNT_FACETS.has(facet)) value*=magic.mastery(unit,known.code)/100;
-        else if(magic.dice(known.code).count){
-          const range=magic.effectRange(unit,known.code);
-          const turns=spell.effet==="soin_sur_duree"?Math.max(1,magic.duration(unit,known.code)):1;
-          value*=(range.min+range.max)/2*turns;
-        }
-        out[facet]=Math.max(out[facet]??0,value);
+        const spell=magic.spell(known.code),key=spellRole(spell),sub=key&&subByKey.get(key);
+        if(!sub||!sub.sources.includes("sorts")) continue;
+        const value=spellValue(unit,known,spell,sub.sorts);
+        if(value!=null&&Number.isFinite(value)) out["sorts:"+key]=Math.max(out["sorts:"+key]??0,value);
       }
       return out;
     }
-    // Valeur brute de chaque facette ; null : elle ne le concerne pas (pas d'arme de ce genre, pas de sort de ce genre).
+    // Toutes les mesures brutes : clé de source → valeur ; absente, il ne sait pas le faire.
     function measure(character){
-      const unit={character,activeSet:1},{leger,lourd,archer}=refs();
-      const hp=engine.maxHp(unit);
-      const taken=(attacker,mode,distance)=>Math.max(0.1,perTurn(attacker,unit,mode,distance));
-      return {
-        contact_leger:bestSet(character,false,leger),
-        contact_lourd:bestSet(character,false,lourd),
-        tir_leger:bestSet(character,true,leger),
-        tir_lourd:bestSet(character,true,lourd),
-        magie_attaque:null,magie_zone:null,soin:null,soin_masse:null,soutien:null,invocation:null,controle:null,
-        ...spellFacets(character),
-        encaisser_coups:hp/taken(leger,"melee",1),
-        encaisser_fleches:hp/taken(archer,"ranged",6),
-        moral:engine.statWithGear(unit,"Courage")+0.25*engine.statWithGear(unit,"Volonté"),
-        initiative:engine.initiative(unit),
-        discretion:engine.statWithGear(unit,"Discrétion"),
-        reperage:engine.statWithGear(unit,"Perception")
-      };
+      const out={};
+      const needed=new Set(categories.flatMap(cat=>cat.sous.flatMap(sub=>sub.sources.filter(s=>s!=="sorts"))));
+      for(const key of needed){
+        const value=SOURCES[key]?.(character);
+        if(value!=null&&Number.isFinite(value)) out[key]=value;
+      }
+      return {...out,...spellSources(character)};
     }
 
-    // Niveau 1 à 15 : seuils[code] = valeur minimale des niveaux 2 à 15.
-    function level(code,value){
+    // ---- Niveaux ----
+    // Seuils d'une source (ou d'une catégorie : categorie:code) ; une source de sorts trop rare chez les recrues prend
+    // ceux de sa famille.
+    function steps(key){
+      const own=data.seuils?.[key];
+      if(own) return own;
+      const sub=key.startsWith("sorts:")&&subByKey.get(key.slice(6));
+      return sub?data.seuils?.["sorts_"+sub.sorts]||[]:[];
+    }
+    // Niveau 1 à 15, avec sa place dans la tranche (3,8 : haut du niveau 3) pour départager deux égalités.
+    function level(key,value){
       if(value==null||!Number.isFinite(value)) return null;
-      const steps=data.seuils?.[code]||[];
+      const list=steps(key);
       let lvl=1;
-      for(const min of steps) if(value>=min) lvl++;
-      return Math.min(15,lvl);
+      for(const min of list) if(value>=min) lvl++;
+      lvl=Math.min(15,lvl);
+      const low=lvl>1?list[lvl-2]:0,high=list[lvl-1];
+      const fine=high>low?lvl+Math.min(0.999,Math.max(0,(value-low)/(high-low))):lvl;
+      return {level:lvl,fine};
     }
-    // Le niveau avec sa place dans la tranche (3,8 : haut du niveau 3) ; départage deux lignes de même niveau.
-    function fineLevel(code,value){
-      const lvl=level(code,value);
-      if(lvl==null) return null;
-      const steps=data.seuils?.[code]||[];
-      const low=lvl>1?steps[lvl-2]:0,high=steps[lvl-1];
-      return high>low?lvl+Math.min(0.999,Math.max(0,(value-low)/(high-low))):lvl;
-    }
+    const byLevel=(a,b)=>b.level-a.level||b.fine-a.fine;
 
-    // ---- Lecture : ce qui ressort ----
-    // Les lignes affichables : un groupe fusionné (« Au contact ») si ses deux facettes sont proches, sinon chacune.
-    function entries(levels,fines){
-      const out=[],done=new Set();
-      for(const def of facetDefs){
-        if(done.has(def.code)) continue;
-        const group=groupOf.get(def.code);
-        if(group){
-          group.facettes.forEach(code=>done.add(code));
-          const parts=group.facettes.map(code=>({code,level:levels[code],fine:fines[code]})).filter(p=>p.level!=null);
-          if(!parts.length) continue;
-          const spread=Math.max(...parts.map(p=>p.level))-Math.min(...parts.map(p=>p.level));
-          if(parts.length>1&&spread>(S.ecart_groupe??1)){
-            for(const p of parts) out.push({code:p.code,name:facetByCode.get(p.code).nom,family:def.famille,level:p.level,fine:p.fine,secondary:false});
-          }else{
-            out.push({code:group.code,name:group.nom,family:def.famille,group:true,
-              level:Math.round(parts.reduce((s,p)=>s+p.level,0)/parts.length),fine:parts.reduce((s,p)=>s+p.fine,0)/parts.length,secondary:false});
-          }
-          continue;
-        }
-        done.add(def.code);
-        if(levels[def.code]==null) continue;
-        out.push({code:def.code,name:def.nom,family:def.famille,level:levels[def.code],fine:fines[def.code],secondary:Boolean(def.secondaire)});
-      }
-      return out;
-    }
-
-    // Famille de l'arme principale d'un set : « contact », « tir », ou null.
-    function setFamily(character,set){
-      const weapon=engine.weaponTemplate(engine.activeWeaponItem({character,activeSet:set}));
-      return !weapon?null:engine.isRangedWeapon(weapon)?"tir":engine.isMeleeWeapon(weapon)?"contact":null;
-    }
-    function hasMeleeWeapon(character){
-      return [1,2].some(set=>{
-        const weapon=engine.weaponTemplate(engine.activeWeaponItem({character,activeSet:set}));
-        return weapon&&engine.isMeleeWeapon(weapon);
-      });
-    }
-    function withoutArmor(character){
-      const slots={...(character.equipment?.slots||{})};
-      if(!slots.armor) return null;
-      slots.armor=null;
-      return {...character,equipment:{...character.equipment,slots}};
-    }
-    const female=character=>String(character?.sex||"").trim().toLowerCase().startsWith("f");
-    const word=(entry,character)=>entry?(female(character)?entry.f:entry.m)||entry.m||"":"";
-
-    // Le titre : son premier point fort dit à quoi il sert ; au contact et au tir, le rapport de ses dégâts contre une
-    // armure lourde et contre une armure légère le nuance (au moins perce_ratio : il perce les plates ; au plus
-    // leger_ratio : il ne sert que contre les armures légères) ; le contact qui encaisse aussi fait un pilier. Le
-    // complément vient de son point fort suivant, d'une autre famille.
-    const LEAD_KEYS={defense:"bouclier",discretion:"eclaireur",moral:"moral",vitesse:"initiative"};
-    const COMPLEMENT_KEYS={defense:"encaisser",vitesse:"initiative"};
-    function title(character,values,strengths){
-      const principal=titles.principal||{},complement=titles.complement||{};
-      const lead=strengths[0]||null;
-      let key="rang";
-      const used=new Set();
-      if(lead){
-        used.add(lead.family);
-        if(lead.family==="contact"||lead.family==="tir"){
-          const light=values[lead.family+"_leger"],heavy=values[lead.family+"_lourd"];
-          const ratio=light>0?heavy/light:1;
-          if(ratio>=(S.perce_ratio??1)) key=lead.family+"_perce";
-          else if(ratio<=(S.leger_ratio??0.5)) key=lead.family+"_leger";
-          else if(lead.family==="contact"&&strengths.some(s=>s.family==="defense")){ key="contact_pilier"; used.add("defense"); }
-          else key=lead.family;
-        }else if(lead.family==="defense"&&strengths.some(s=>s.family==="contact")){ key="contact_pilier"; used.add("contact"); }
-        else key=lead.family==="magie"?lead.code:LEAD_KEYS[lead.family]||"rang";
-        if(lead.family==="discretion") used.add("discretion");
-      }
-      const second=strengths.find(s=>!used.has(s.family));
-      const complementKey=second?(COMPLEMENT_KEYS[second.family]||(second.family==="discretion"?second.code:second.family)):null;
-      return {key,complementKey,text:word(principal[key],character)+word(complement[complementKey],character)};
-    }
-
+    // ---- Lecture ----
     function evaluate(character){
       if(!engine||!character?.stats) return null;
       const values=measure(character);
-      const levels=Object.fromEntries(Object.entries(values).map(([code,value])=>[code,level(code,value)]));
-      const fines=Object.fromEntries(Object.entries(values).map(([code,value])=>[code,fineLevel(code,value)]));
-      const list=entries(levels,fines);
-      const main=list.filter(e=>!e.secondary);
-      const mean=main.length?main.reduce((s,e)=>s+e.level,0)/main.length:0;
-      const byLevel=(a,b)=>b.level-a.level||b.fine-a.fine;
-      const relative=list.filter(e=>e.secondary?e.level>=mean+(S.secondaire_ecart??2):e.level>=mean+(S.fort_ecart??1));
-      // Ce qu'il fait (ses armes, ses sorts) mène : sa meilleure façon d'agir, même moyenne, ouvre la liste et donne le
-      // titre ; un autre point fort ne la remplace que s'il la dépasse d'au moins mene_ecart niveaux (le mage maladroit
-      // en armure de plates est d'abord un bouclier). Ses autres façons d'agir à ecart_usage niveau près suivent, si elles
-      // ne sont pas des points faibles.
-      const usages=main.filter(e=>ATTACK_FAMILIES.has(e.family)).sort(byLevel);
-      const otherTop=relative.filter(e=>!ATTACK_FAMILIES.has(e.family)).sort(byLevel)[0];
-      let lead=usages[0]||null;
-      // À niveau égal, une arme ou un sort chiffré (dégâts, soins) passe devant un sort de soutien, de contrôle ou
-      // d'invocation ; et l'arme du set 1 (celle qu'il a en main en entrant au combat) devant celle du set 2.
-      const concrete=e=>WEAPON_FAMILIES.has(e.family)||AMOUNT_FACETS.has(e.code);
-      if(lead&&!concrete(lead)) lead=usages.find(e=>concrete(e)&&e.level===lead.level)||lead;
-      const first=setFamily(character,1);
-      if(lead&&first&&lead.family!==first&&WEAPON_FAMILIES.has(lead.family)) lead=usages.find(e=>e.family===first&&e.level===lead.level)||lead;
-      if(!lead||(otherTop&&otherTop.level>=lead.level+(S.mene_ecart??2))) lead=otherTop||lead||[...main].sort(byLevel)[0]||null;
-      const strengths=lead?[lead]:[];
-      // Mené par autre chose (moral, encaisser…), il garde sa meilleure façon d'agir juste après.
-      if(lead&&usages[0]&&!usages.includes(lead)) strengths.push(usages[0]);
-      const isWeak=e=>e.level<=mean-(S.faible_ecart??1)||e.level===1;
-      const near=usages.filter(u=>lead&&u.level>=lead.level-(S.ecart_usage??1)&&!isWeak(u));
-      for(const e of [...relative,...near].sort(byLevel)){
-        if(strengths.length>=(S.max_forts??3)) break;
-        if(!strengths.includes(e)) strengths.push(e);
-      }
-      const weak=list.filter(e=>!strengths.includes(e)).filter(e=>e.secondary?e.level<=Math.min(1,mean-(S.secondaire_ecart??2)):e.level<=mean-(S.faible_ecart??1)||e.level===1)
-        .sort((a,b)=>(a.level-mean)-(b.level-mean));
-      const weaknesses=[];
-      if(!hasMeleeWeapon(character)) weaknesses.push({code:"sans_contact",name:"Aucune arme de contact",family:"contact",level:null});
-      weaknesses.push(...weak.slice(0,Math.max(0,(S.max_faibles??2)-weaknesses.length)));
-      // Gêne d'équipement : sans son armure, une facette d'attaque, de magie ou l'initiative gagnerait au moins gene_niveaux
-      // niveau et vaudrait au moins gene_ratio fois plus ; la plus forte est retenue.
-      let hindrance=null;
-      const bare=withoutArmor(character);
-      if(bare){
-        const freed=measure(bare);
-        for(const code of Object.keys(values)){
-          const def=facetByCode.get(code);
-          if(!def||!(ATTACK_FAMILIES.has(def.famille)||code==="initiative")||levels[code]==null) continue;
-          const gain=level(code,freed[code])-levels[code];
-          const ratio=freed[code]/Math.max(1e-9,values[code]);
-          if(gain>=(S.gene_niveaux??1)&&ratio>=(S.gene_ratio??1.5)&&(!hindrance||ratio>hindrance.ratio)) hindrance={code,name:def.nom,level:levels[code],gain,ratio,cause:"armor"};
+      const scored=categories.map(cat=>{
+        const subs=cat.sous.map(sub=>{
+          if(sub.a_venir) return null;
+          const levels=sub.sources.map(source=>{
+            const key=source==="sorts"?"sorts:"+sub.key:source;
+            return level(key,values[key]);
+          }).filter(Boolean).sort(byLevel);
+          return levels[0]?{...levels[0],code:sub.code,key:sub.key,nom:sub.nom}:null;
+        }).filter(Boolean).sort(byLevel);
+        if(!subs.length) return null;
+        // La catégorie suit sa meilleure sous-catégorie, étalonnée à son tour sur la réputation des recrues : une catégorie
+        // mesurée chez tous (Tank, Meneur, Éclaireur) ne sort pas plus souvent qu'une autre parce qu'elle a plus de sources.
+        const own=level("categorie:"+cat.code,subs[0].fine);
+        return {code:cat.code,nom:cat.nom,raw:subs[0].fine,...(data.seuils?.["categorie:"+cat.code]?own:{level:subs[0].level,fine:subs[0].fine}),subs};
+      }).filter(Boolean).sort(byLevel);
+
+      // Titre 1 : sa meilleure catégorie, à titre_min étoiles au moins ; titres 2 et 3 : la suivante, au moins aussi
+      // haut que titre_min et à ecart_titre près de la précédente.
+      const min=S.titre_min??4,max=S.max_titres??3;
+      const titles=[];
+      if(scored[0]&&scored[0].level>=min){
+        titles.push(scored[0]);
+        for(const next of scored.slice(1)){
+          const previous=titles[titles.length-1];
+          if(titles.length>=max||next.level<min||previous.level-next.level>(S.ecart_titre??1)) break;
+          titles.push(next);
         }
       }
-      // Le complément du titre vient d'un vrai point fort, ou de la magie (« qui manie aussi la magie » est un fait).
-      const remarkable=strengths.filter((e,i)=>i===0||relative.includes(e)||e.family==="magie");
-      return {values,levels,entries:list,mean,strengths,weaknesses,hindrance,title:title(character,values,remarkable)};
+      // Spécificité : la meilleure sous-catégorie, si elle se détache d'au moins ecart_specificite, ou s'il ne sait faire
+      // qu'elle (au moins specificite_min) ; sinon le titre reste générique.
+      const result=titles.map(cat=>{
+        const [top,second]=cat.subs;
+        const specific=second?top.level-second.level>=(S.ecart_specificite??2):top.level>=(S.specificite_min??3);
+        const sub=specific?{code:top.code,nom:top.nom}:null;
+        return {category:cat.code,categoryName:cat.nom,sub,level:cat.level,label:sub?cat.nom+" · "+sub.nom:cat.nom};
+      });
+      return {values,categories:scored,titles:result,cannonFodder:!result.length};
     }
 
-    return {measure,level,evaluate,strike,perTurn,facets:facetDefs};
+    return {measure,level,evaluate,strike,perTurn,categories,spellRole};
   }
 
-  return {createProfileRules,SPELL_FACETS};
+  return {createProfileRules};
 });

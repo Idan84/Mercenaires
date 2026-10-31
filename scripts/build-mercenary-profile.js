@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 "use strict";
 
-// Étalonnage de l'évaluation des mercenaires (game-core/mercenary-profile.js ; Idan, 2026-10-31 : « la réputation doit
-// être en gros au barycentre de nos résultats »). Génère des recrues avec le vrai générateur et leur équipement de
-// départ, puis :
+// Étalonnage des titres des mercenaires (game-core/mercenary-profile.js ; Idan, 2026-10-31). Génère des recrues avec le
+// vrai générateur et leur équipement de départ, puis :
 // - l'étalon (adversaire de mesure) prend leurs caractéristiques médianes ;
-// - pour chaque facette, les recrues se répartissent dans les niveaux comme leur réputation (même part au niveau 1, 2, 3…) ;
-//   au-delà du niveau de la meilleure recrue, chaque niveau demande × progression (1,25, comme la réputation) ;
-// - vérifie que la moyenne de leurs facettes tombe sur leur niveau de réputation.
+// - pour chaque source de mesure, les recrues se répartissent dans les niveaux comme leur réputation (même part au
+//   niveau 1, 2, 3…) ; au-delà du niveau de la meilleure recrue, chaque niveau demande × progression (1,25, comme la
+//   réputation) ; une source de sorts mesurée chez trop peu de recrues prend les seuils de sa famille ;
+// - compte les titres obtenus (Chair à canon, 1 à 3 titres, catégories, sous-catégories).
 // Écrit etalon.caracteristiques, seuils et mesure dans data/reference/mercenary-profile.json (le reste est écrit à la main).
-// À relancer quand la génération, le combat ou les facettes changent.
+// À relancer quand la génération, le combat, les sorts ou les sous-catégories changent.
 //
 // Usage : node scripts/build-mercenary-profile.js [--recruits 4000]
 
@@ -65,41 +65,67 @@ const measures=recruits.map(m=>profile.measure(m));
 
 // Seuils : niveau k atteint à la part de recrues dont la réputation est sous k ; puis × progression par niveau.
 const progression=Number(data.selection?.progression)||1.25;
-for(const facet of data.facettes){
-  const values=measures.map(v=>v[facet.code]).filter(v=>v!=null&&Number.isFinite(v)).sort((a,b)=>a-b);
-  if(!values.length) throw new Error("Aucune recrue ne mesure la facette "+facet.code);
+const minSample=Number(data.selection?.echantillon_min)||30;
+function thresholds(values){
+  values=values.filter(v=>v!=null&&Number.isFinite(v)).sort((a,b)=>a-b);
   const quantile=p=>values[Math.min(values.length-1,Math.max(0,Math.floor(p*values.length)))];
   const steps=[];
   for(let level=2;level<=15;level++){
     let min=level<=maxRecruitLevel?quantile(share(level-1)):steps[steps.length-1]*progression;
-    if(steps.length&&min<=steps[steps.length-1]) min=steps[steps.length-1]*1.0001+1e-6;
-    steps.push(Math.round(min*1000)/1000);
+    // Arrondi au millième, toujours croissant (un petit échantillon peut donner deux fois la même valeur).
+    let step=Math.round(min*1000)/1000;
+    if(steps.length&&step<=steps[steps.length-1]) step=Math.round((steps[steps.length-1]+0.001)*1000)/1000;
+    steps.push(step);
   }
-  data.seuils[facet.code]=steps;
+  return steps;
 }
+const keys=[...new Set(measures.flatMap(m=>Object.keys(m)))].sort();
+const kindOf=key=>profile.categories.flatMap(c=>c.sous).find(sub=>"sorts:"+sub.key===key)?.sorts;
+const pools={};
+const samples={};
+for(const key of keys){
+  const values=measures.map(m=>m[key]).filter(v=>v!=null);
+  samples[key]=values.length;
+  if(key.startsWith("sorts:")) (pools["sorts_"+kindOf(key)]||=[]).push(...values);
+  if(values.length>=minSample) data.seuils[key]=thresholds(values);
+}
+for(const [key,values] of Object.entries(pools)) data.seuils[key]=thresholds(values);
 
-// Vérification : moyenne des facettes de chaque recrue contre son niveau de réputation.
+// Catégories : leur meilleure sous-catégorie, étalonnée à son tour, pour que chacune sorte aussi souvent chez ceux qui la
+// pratiquent, quel que soit son nombre de sources.
 profile=createProfileRules({reference,engine,magic});
-let gap=0,absGap=0,within1=0;
-const titles={},forts={},faibles={};
+const raws={};
+for(const m of recruits) for(const cat of profile.evaluate(m).categories) (raws[cat.code]||=[]).push(cat.raw);
+for(const [code,values] of Object.entries(raws)) data.seuils["categorie:"+code]=thresholds(values);
+
+// Vérification : titres des recrues.
+profile=createProfileRules({reference,engine,magic});
+const pct=n=>Math.round(1000*n/count)/10;
+const counts={},byCategory={},bySub={},bestByRep={};
+let specific=0,titled=0;
 recruits.forEach((m,i)=>{
   const result=profile.evaluate(m);
-  const d=result.mean-repLevels[i];
-  gap+=d; absGap+=Math.abs(d); if(Math.abs(d)<=1) within1++;
-  titles[result.title.key]=(titles[result.title.key]||0)+1;
-  forts[result.strengths.length]=(forts[result.strengths.length]||0)+1;
-  faibles[result.weaknesses.length]=(faibles[result.weaknesses.length]||0)+1;
+  counts[result.titles.length]=(counts[result.titles.length]||0)+1;
+  for(const t of result.titles){
+    titled++;
+    byCategory[t.categoryName]=(byCategory[t.categoryName]||0)+1;
+    if(t.sub){ specific++; bySub[t.label]=(bySub[t.label]||0)+1; }
+  }
+  const rep=repLevels[i];
+  (bestByRep[rep]||=[]).push(result.categories[0]?.level||0);
 });
-const pct=n=>Math.round(1000*n/count)/10;
+const sorted=obj=>Object.fromEntries(Object.entries(obj).sort((a,b)=>b[1]-a[1]).map(([k,n])=>[k,pct(n)]));
 data.mesure={
   date:new Date().toISOString().slice(0,10),
   recrues:count,
   graine:SEED,
   reputation:Object.fromEntries([...new Set(repLevels)].sort((a,b)=>a-b).map(l=>[l,pct(repLevels.filter(x=>x===l).length)])),
-  barycentre:{ecart_moyen:Math.round(100*gap/count)/100,ecart_absolu_moyen:Math.round(100*absGap/count)/100,a_un_niveau_pres:pct(within1)},
-  titres:Object.fromEntries(Object.entries(titles).sort((a,b)=>b[1]-a[1]).map(([k,n])=>[k,pct(n)])),
-  points_forts:Object.fromEntries(Object.entries(forts).map(([k,n])=>[k,pct(n)])),
-  points_faibles:Object.fromEntries(Object.entries(faibles).map(([k,n])=>[k,pct(n)]))
+  titres:{chair_a_canon:pct(counts[0]||0),un:pct(counts[1]||0),deux:pct(counts[2]||0),trois:pct(counts[3]||0)},
+  categories_des_titres:sorted(byCategory),
+  titres_specifiques:Math.round(1000*specific/Math.max(1,titled))/10,
+  sous_categories:sorted(bySub),
+  meilleure_categorie_par_reputation:Object.fromEntries(Object.entries(bestByRep).map(([rep,list])=>[rep,Math.round(100*list.reduce((s,v)=>s+v,0)/list.length)/100])),
+  echantillons:samples
 };
 
 // Écriture : tableaux de seuils sur une ligne.
@@ -107,6 +133,8 @@ let json=JSON.stringify(data,null,2)+"\n";
 json=json.replace(/\[\n\s+([-\d.,\s]+?)\n\s+\]/g,(match,inner)=>"["+inner.split(/,\s*/).join(", ")+"]");
 fs.writeFileSync(OUT,json);
 console.log("Recrues :",count,"· réputation (%) :",JSON.stringify(data.mesure.reputation));
-console.log("Barycentre : écart moyen",data.mesure.barycentre.ecart_moyen,"· écart absolu",data.mesure.barycentre.ecart_absolu_moyen,"· à un niveau près",data.mesure.barycentre.a_un_niveau_pres+" %");
 console.log("Titres (%) :",JSON.stringify(data.mesure.titres));
-console.log("Points forts (%) :",JSON.stringify(data.mesure.points_forts),"· points faibles (%) :",JSON.stringify(data.mesure.points_faibles));
+console.log("Catégories des titres (%) :",JSON.stringify(data.mesure.categories_des_titres));
+console.log("Titres spécifiques (%) :",data.mesure.titres_specifiques,"·",JSON.stringify(data.mesure.sous_categories));
+console.log("Meilleure catégorie par réputation :",JSON.stringify(data.mesure.meilleure_categorie_par_reputation));
+console.log("Échantillons :",JSON.stringify(samples));

@@ -37,7 +37,7 @@ en armure de plates (armure lourde).
 | Initiative, discrétion, repérage (secondaires) | initiative au combat, Discrétion, Perception |
 
 Une facette d'attaque ne compte que s'il s'en sert (arme du genre, sort de la famille). Défense et moral comptent
-toujours.
+toujours. Purge n'a pas de facette : elle ne sert que contre le poison et ne dit pas à quoi il sert.
 
 ## 3 — L'échelle : celle de la réputation
 
@@ -55,8 +55,9 @@ niveau près pour 88 % d'entre elles.
 - **Ce qu'il fait mène** (Idan, 2026-10-31 : un mage qui connaît un soin et un sort d'attaque doit le montrer ; un
   archer n'est pas un « pilier de la mêlée » ; jamais de titre sans étoile) : sa meilleure façon d'agir (arme, sorts),
   même dans sa moyenne, ouvre la liste et donne le titre. Un autre point fort (encaisser, moral…) ne la remplace que
-  s'il la dépasse d'au moins deux niveaux ; elle le suit alors. À niveau égal, l'arme du set 1 passe devant celle du
-  set 2 ; sinon, la mieux placée dans son niveau. Ses autres façons d'agir à un niveau près suivent (l'archer qui
+  s'il la dépasse d'au moins deux niveaux ; elle le suit alors. À niveau égal, une arme ou un sort chiffré (dégâts,
+  soins) passe devant un sort de soutien, de contrôle ou d'invocation, et l'arme du set 1 devant celle du set 2 ; sinon,
+  la mieux placée dans son niveau. Ses autres façons d'agir à un niveau près suivent (l'archer qui
   soigne aussi montre ses soins), sauf si ce sont des points faibles.
 - **Point fort** : au moins un demi-niveau au-dessus de sa moyenne (le barycentre des facettes qui comptent). Au plus 3
   lignes fortes en tout.

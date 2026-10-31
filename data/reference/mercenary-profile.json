@@ -170,7 +170,7 @@
     }
   ],
   "selection": {
-    "description": "Ce qui s'affiche (Idan, 2026-10-31). Une facette d'attaque ne compte que s'il s'en sert (arme, sort) ; défense et moral comptent toujours ; sans arme de contact, c'est un point faible. Deux facettes d'un groupe fusionnent si elles ont au plus ecart_groupe niveaux d'écart. Ce qu'il fait mène : sa meilleure façon d'agir (arme, sorts), même dans sa moyenne, ouvre la liste et donne le titre ; un autre point fort ne la remplace que s'il la dépasse d'au moins mene_ecart niveaux ; à niveau égal, l'arme du set 1 passe devant celle du set 2 ; ses autres façons d'agir à ecart_usage niveau près suivent, sauf si ce sont des points faibles. Point fort : au moins fort_ecart niveau au-dessus de sa moyenne (le barycentre des facettes qui comptent) ; point faible : au moins faible_ecart niveau en dessous, ou le niveau 1. Titre au contact et au tir : dégâts contre une armure lourde / contre une armure légère d'au moins perce_ratio (il garde ses dégâts face aux plates : marteau, masse, hache double, arquebuse, canon à main…) ou d'au plus leger_ratio (il ne vaut que contre les armures légères : dague, sabre, fouet, sarbacane…). Facettes secondaires : seulement à secondaire_ecart de sa moyenne. Gêne d'équipement : sans son armure, une facette d'attaque, de magie ou l'initiative gagnerait au moins gene_niveaux niveau et vaudrait au moins gene_ratio fois plus (la plus forte est montrée).",
+    "description": "Ce qui s'affiche (Idan, 2026-10-31). Une facette d'attaque ne compte que s'il s'en sert (arme, sort) ; défense et moral comptent toujours ; sans arme de contact, c'est un point faible. Deux facettes d'un groupe fusionnent si elles ont au plus ecart_groupe niveaux d'écart. Ce qu'il fait mène : sa meilleure façon d'agir (arme, sorts), même dans sa moyenne, ouvre la liste et donne le titre ; un autre point fort ne la remplace que s'il la dépasse d'au moins mene_ecart niveaux ; à niveau égal, une arme ou un sort chiffré (dégâts, soins) passe devant un sort de soutien, de contrôle ou d'invocation, et l'arme du set 1 devant celle du set 2 ; ses autres façons d'agir à ecart_usage niveau près suivent, sauf si ce sont des points faibles. Point fort : au moins fort_ecart niveau au-dessus de sa moyenne (le barycentre des facettes qui comptent) ; point faible : au moins faible_ecart niveau en dessous, ou le niveau 1. Titre au contact et au tir : dégâts contre une armure lourde / contre une armure légère d'au moins perce_ratio (il garde ses dégâts face aux plates : marteau, masse, hache double, arquebuse, canon à main…) ou d'au plus leger_ratio (il ne vaut que contre les armures légères : dague, sabre, fouet, sarbacane…). Facettes secondaires : seulement à secondaire_ecart de sa moyenne. Gêne d'équipement : sans son armure, une facette d'attaque, de magie ou l'initiative gagnerait au moins gene_niveaux niveau et vaudrait au moins gene_ratio fois plus (la plus forte est montrée).",
     "ecart_groupe": 1,
     "mene_ecart": 2,
     "ecart_usage": 1,
@@ -318,33 +318,33 @@
       "a_un_niveau_pres": 87.6
     },
     "titres": {
-      "contact_perce": 17.8,
-      "contact": 16.9,
-      "tir": 16.7,
-      "tir_perce": 12.7,
-      "soutien": 7.4,
-      "magie_attaque": 5,
-      "contact_pilier": 4.5,
-      "controle": 3.7,
-      "invocation": 3.4,
-      "contact_leger": 2.8,
+      "contact_perce": 19,
+      "tir": 18.2,
+      "contact": 18.1,
+      "tir_perce": 14.1,
+      "magie_attaque": 5.9,
+      "contact_pilier": 4.8,
+      "contact_leger": 3.5,
+      "soutien": 3.3,
       "moral": 2,
+      "soin": 1.9,
       "bouclier": 1.8,
-      "soin": 1.7,
-      "tir_leger": 1.1,
-      "magie_zone": 0.9,
+      "controle": 1.8,
+      "invocation": 1.6,
+      "tir_leger": 1.3,
+      "magie_zone": 1.1,
       "eclaireur": 0.7,
       "initiative": 0.7,
       "soin_masse": 0.4
     },
     "points_forts": {
-      "1": 19.8,
-      "2": 36.7,
-      "3": 43.5
+      "1": 20,
+      "2": 37,
+      "3": 43.1
     },
     "points_faibles": {
       "0": 55.7,
-      "1": 36.9,
+      "1": 37,
       "2": 7.4
     }
   },
@@ -357,7 +357,7 @@
     "magie_zone": [3.349, 32.131, 85.816, 169.876, 199.21, 249.013, 311.266, 389.083, 486.354, 607.943, 759.929, 949.911, 1187.389, 1484.236],
     "soin": [6.001, 27.521, 94.072, 218.124, 643.889, 804.861, 1006.076, 1257.595, 1571.994, 1964.992, 2456.24, 3070.3, 3837.875, 4797.344],
     "soin_masse": [0, 7.547, 30.51, 66.579, 66.586, 83.233, 104.041, 130.051, 162.564, 203.205, 254.006, 317.508, 396.885, 496.106],
-    "soutien": [0.115, 0.516, 0.895, 1.192, 1.321, 1.651, 2.064, 2.58, 3.225, 4.031, 5.039, 6.299, 7.874, 9.843],
+    "soutien": [0.115, 0.515, 0.894, 1.197, 1.321, 1.651, 2.064, 2.58, 3.225, 4.031, 5.039, 6.299, 7.874, 9.843],
     "invocation": [0.028, 0.355, 0.83, 1.087, 1.242, 1.553, 1.941, 2.426, 3.033, 3.791, 4.739, 5.924, 7.405, 9.256],
     "controle": [0.043, 0.485, 0.875, 1.157, 1.272, 1.59, 1.988, 2.485, 3.106, 3.883, 4.854, 6.068, 7.585, 9.481],
     "encaisser_coups": [1.995, 3.328, 5.65, 11.352, 31.973, 39.966, 49.958, 62.448, 78.06, 97.575, 121.969, 152.461, 190.576, 238.22],

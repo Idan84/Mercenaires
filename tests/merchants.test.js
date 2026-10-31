@@ -1,7 +1,9 @@
 "use strict";
 
-// Marchands, étape 1 (doc 18 ; Idan, 2026-10-30) : passage du jour (30 % + 4 % par étoile de renommée), un marchand
-// test qui ne vend que des épées longues T1, prix (valeur × 1,5, affinité), achat, départ le lendemain.
+// Marchands (doc 18 ; Idan, 2026-10-30 et 2026-10-31) : passage du jour (30 % + 4 % par étoile de renommée) ; Thorval
+// Poudredefeu, nain du chaos, qui ne vend que quatre armes à feu ; 10 articles par passage, T2 à T4 selon la renommée ;
+// affinité (initiale + acquise : +2 par achat, −3 par passage sans affaire) ; prix d'achat et de rachat (hors de sa liste,
+// quantité, rareté, plafond) ; aide de l'intendant.
 const assert=require("node:assert/strict");
 const fs=require("node:fs");
 const path=require("node:path");
@@ -28,99 +30,211 @@ const generator=createGenerator(reference,{random,nameGenerator:(people,id)=>peo
 const affinity=createAffinityRules({reference});
 const values=createItemValues({reference});
 const rules=createMerchantRules({reference,generator,affinity,random:scriptedRandom});
+const near=(a,b,eps=1e-9)=>Math.abs(a-b)<eps;
+const levels=[...reference.reputationStars.rows].sort((a,b)=>a.niveau-b.niveau);
+const renownAt=level=>levels.find(r=>r.niveau===level).renommee_min;
 
-// Données : un seul marchand test, qui ne vend que des épées longues T1.
-assert.deepEqual(reference.merchants.rows.map(m=>m.id),["marchand-test"]);
-assert.deepEqual(reference.merchants.rows[0].stock,[{type:"weapon",objet:"Épée longue",tier:1}]);
-
-// Un objet précis à un tier donné (générateur).
-const sword=generator.createItemByName("weapon","Épée longue",1);
-assert.equal(sword.name,"Épée longue");
-assert.equal(sword.itemType,"weapon");
-assert.equal(sword.tier,1);
-assert.equal(sword.qualityCode,"worn","T1 = Usée");
-assert.equal(sword.owner,null);
-assert.equal(generator.createItemByName("weapon","Épée inconnue",1),null);
-assert.equal(generator.createItemByName("armor","Cotte de mailles",3).tier,3);
-assert.equal(generator.createItemByName("armor","Cotte de mailles",3).qualityCode,"luxury");
+// Données : Thorval Poudredefeu, nain du chaos (l'alignement par défaut des Nains du chaos), quatre armes à feu.
+const FIREARMS=["Pistolet","Tromblon","Canon à main","Arquebuse"];
+assert.deepEqual(reference.merchants.rows.map(m=>m.id),["thorval-poudredefeu"],"le marchand test est remplacé");
+const thorval=reference.merchants.rows[0];
+assert.equal(thorval.nom,"Thorval Poudredefeu");
+assert.equal(thorval.peuple,"Nain");
+assert.equal(thorval.culture,"Nains du chaos");
+assert.equal(thorval.alignement,reference.alignmentGeneration.culture_overrides["Nains du chaos"]);
+assert.equal(thorval.portrait,"","le portrait viendra : son image, faite pour lui seul");
+assert.deepEqual(thorval.vend,FIREARMS.map(objet=>({type:"weapon",objet})));
+for(const name of FIREARMS) for(const tier of [2,3,4]){
+  const item=generator.createItemByName("weapon",name,tier);
+  assert.equal(item?.name,name);
+  assert.equal(item.tier,tier);
+  assert.ok(values.value(item)>0,name+" T"+tier+" a une valeur");
+}
+assert.equal(rules.constants.stockSize,10);
 
 // Chance de passage : 30 % + 4 % par niveau d'étoiles de la renommée.
-const levels=[...reference.reputationStars.rows].sort((a,b)=>a.niveau-b.niveau);
-for(const row of levels) assert.ok(Math.abs(rules.arrivalChance(row.renommee_min)-(0.3+0.04*row.niveau))<1e-9,"niveau "+row.niveau);
+for(const row of levels) assert.ok(near(rules.arrivalChance(row.renommee_min),0.3+0.04*row.niveau),"niveau "+row.niveau);
 assert.ok(rules.arrivalChance(1e9)<=1);
 
+// Tiers de l'étal : T2 70 − 4 × niveau, T3 25 + 2 × niveau, T4 5 + 2 × niveau ; rien d'autre.
+for(const row of levels){
+  const chances=rules.tierChances(row.renommee_min),L=row.niveau;
+  assert.deepEqual(chances.map(c=>c.tier),[2,3,4]);
+  assert.ok(near(chances.reduce((s,c)=>s+c.chance,0),1));
+  assert.ok(near(chances[0].chance,(70-4*L)/100)&&near(chances[1].chance,(25+2*L)/100)&&near(chances[2].chance,(5+2*L)/100),"niveau "+L);
+}
+assert.deepEqual(rules.tierChances(renownAt(2)).map(c=>Math.round(c.chance*100)),[62,29,9],"compagnie neuve");
+assert.deepEqual(rules.tierChances(renownAt(15)).map(c=>Math.round(c.chance*100)),[10,55,35],"5 étoiles d'or");
+
+// Une campagne avec un capitaine humain neutre : affinité initiale +44 avec Thorval.
 const captain=generator.createCaptain({id:1});
+Object.assign(captain,{people:"Humain",culture:"Impériaux",alignment:"Neutre"});
 const squad=Array.from({length:4},(_,i)=>generator.createMercenary({id:i+2,captain}));
 const campaign=createCampaignRules({generator,tavern:createTavernRules({random:()=>0.999,reference}),reference,affinity,merchants:rules});
 const state=campaign.createCampaign({captain,squad});
-const renown=campaign.companyRenown(state).total;
+const renown=renownAt(2);
+const merchant={id:thorval.id,people:"Nain",culture:"Nains du chaos",alignment:"Chaotique neutre"};
+assert.equal(rules.affinityWith(state,merchant),44);
 
 // Pas de marchand : le tirage dépasse la chance.
 scripted.push(0.999);
 let morning=rules.morning(state,{renown});
 assert.equal(morning.arrived,null);
-assert.equal(rules.visitOf(state),null);
-assert.ok(Math.abs(morning.chance-rules.arrivalChance(renown))<1e-12);
+assert.equal(rules.visitOf(state,{renown}),null);
+assert.deepEqual(state.market,{visit:null,merchants:{}});
 
-// Le marchand test passe.
-scripted.push(0,0);
+// Thorval passe : 10 articles de sa liste, T2 à T4, sans propriétaire, au prix valeur × 1,5 × (1 − 0,2 × 44 / 100).
+scripted.push(0);
 morning=rules.morning(state,{renown});
-assert.equal(morning.arrived.id,"marchand-test");
-assert.equal(morning.arrived.name,"Marchand test");
-let visit=rules.visitOf(state);
-assert.equal(visit.offers.length,1);
-assert.equal(visit.offers[0].item.name,"Épée longue");
-assert.equal(visit.offers[0].item.tier,1);
-// Sans peuple ni alignement, l'affinité est nulle : prix = valeur × 1,5.
-assert.equal(visit.affinity,0);
-const value=values.value(visit.offers[0].item);
-assert.equal(value,72,"Épée longue T1 Usée : 120 × 1 × 0,6");
-assert.equal(visit.offers[0].price,108);
-// Prix et affinité : × (1 − 0,2 × Affinité / 100).
-assert.equal(rules.sellPrice(visit.offers[0].item,0),108);
-assert.equal(rules.sellPrice(visit.offers[0].item,50),Math.round(72*1.5*0.9));
-assert.equal(rules.sellPrice(visit.offers[0].item,-50),Math.round(72*1.5*1.1));
-// Un marchand qui a un peuple et un alignement : la même affinité qu'un mercenaire.
-const someone={people:captain.people,culture:captain.culture,alignment:captain.alignment};
-assert.equal(rules.affinityWith(state,someone),affinity.affinity(state.company.roster[0],someone).total);
+assert.equal(morning.arrived.id,"thorval-poudredefeu");
+assert.equal(morning.arrived.name,"Thorval Poudredefeu");
+let visit=rules.visitOf(state,{renown});
+assert.equal(visit.offers.length,10);
+assert.equal(visit.affinity,44);
+assert.equal(visit.steward,null,"pas d'intendant");
+for(const o of visit.offers){
+  assert.ok(FIREARMS.includes(o.item.name)&&o.item.itemType==="weapon",o.item.name);
+  assert.ok([2,3,4].includes(o.item.tier));
+  assert.equal(o.item.owner,null);
+  assert.equal(o.price,Math.round(values.value(o.item)*1.5*(1-0.2*44/100)));
+}
+assert.equal(new Set(visit.offers.map(o=>o.item.id)).size,10,"dix objets distincts");
+// Les exemples de la proposition (Idan, 2026-10-31) : capitaine humain neutre, compagnie neuve, sans intendant.
+const item=(name,tier)=>generator.createItemByName("weapon",name,tier);
+assert.equal(rules.sellPrice(item("Pistolet",2),44),739);
+assert.equal(rules.sellPrice(item("Tromblon",4),44),7182);
+assert.equal(rules.buybackPrice(item("Pistolet",2),{affinity:44,specialty:true,level:2}),470);
+assert.equal(rules.buybackPrice(item("Tromblon",4),{affinity:44,specialty:true,level:2}),6267);
+assert.equal(rules.buybackPrice(item("Tromblon",4),{affinity:44,specialty:true,level:11}),5092);
+assert.equal(rules.buybackPrice(item("Épée longue",1),{affinity:44,level:2}),25);
 
-// Achat : pas assez d'or, puis deux achats ; chaque épée rejoint l'Intendance, sans limite de quantité.
-state.company.gold=107;
-assert.equal(rules.buy(state,0).ok,false);
-assert.equal(state.company.gold,107,"rien n'est payé");
-state.company.gold=1000;
+// Achat : pas assez d'or, puis un achat ; l'article quitte l'étal et rejoint l'Intendance ; +2 d'affinité.
+const offer=visit.offers[0];
+state.company.gold=offer.price-1;
+assert.equal(rules.buy(state,offer.id,{renown}).ok,false);
+assert.equal(state.company.gold,offer.price-1,"rien n'est payé");
+state.company.gold=100000;
 const stockBefore=state.company.stock.length;
-const first=rules.buy(state,0),second=rules.buy(state,0);
-assert.equal(first.ok,true);
-assert.equal(second.ok,true);
-assert.equal(first.price,108);
-assert.equal(state.company.gold,1000-216);
-assert.equal(state.company.stock.length,stockBefore+2);
-assert.notEqual(first.item.id,second.item.id,"deux épées distinctes");
-assert.ok(state.company.stock.slice(-2).every(i=>i.name==="Épée longue"&&i.tier===1&&i.owner===null));
-assert.equal(rules.buy(state,5).ok,false,"pas de ligne 5");
+const bought=rules.buy(state,offer.id,{renown});
+assert.equal(bought.ok,true);
+assert.equal(bought.price,offer.price);
+assert.equal(state.company.gold,100000-offer.price);
+assert.equal(state.company.stock.length,stockBefore+1);
+assert.equal(state.company.stock.at(-1),offer.item);
+assert.equal(rules.buy(state,offer.id,{renown}).ok,false,"chaque article ne se vend qu'une fois");
+visit=rules.visitOf(state,{renown});
+assert.equal(visit.offers.length,9);
+assert.equal(visit.affinity,46,"+2 par article acheté");
+assert.equal(state.market.visit.traded,true);
 
-// Le lendemain : il repart.
+// Le lendemain : il repart, sans perte d'affinité (il y a eu une affaire).
 state.day+=1;
 scripted.push(0.999);
 morning=rules.morning(state,{renown});
-assert.equal(morning.left.id,"marchand-test");
-assert.equal(morning.arrived,null);
-assert.equal(rules.visitOf(state),null);
-assert.equal(rules.buy(state,0).ok,false);
+assert.equal(morning.left.id,"thorval-poudredefeu");
+assert.equal(rules.affinityWith(state,merchant),46);
+assert.equal(rules.buy(state,1,{renown}).ok,false,"plus de marchand");
+// Un passage sans achat ni vente : −3 quand il repart.
+scripted.push(0);
+rules.morning(state,{renown});
+state.day+=1;
+scripted.push(0.999);
+rules.morning(state,{renown});
+assert.equal(rules.affinityWith(state,merchant),43,"−3 pour un passage sans affaire");
+// L'affinité totale reste entre −100 et +100 ; l'acquise ne s'accumule pas au-delà.
+state.market.merchants[thorval.id].acquired=56;
+assert.equal(rules.affinityWith(state,merchant),100);
+state.day+=1;
+scripted.push(0);
+rules.morning(state,{renown});
+const top=rules.visitOf(state,{renown}).offers[0];
+rules.buy(state,top.id,{renown});
+assert.equal(state.market.merchants[thorval.id].acquired,56,"déjà au maximum");
+state.market.merchants[thorval.id].acquired=0;
 
-// Campagne : le tirage a lieu chaque matin ; la sauvegarde garde la visite.
-scripted.push(0,0);
+// Vendre : ses armes au prix de rachat (avec la rareté), le reste × 0,4, de moins en moins cher par exemplaire.
+state.company.stock=[item("Tromblon",4),item("Épée longue",1),item("Épée longue",1),item("Épée longue",1),item("Épée longue",2)];
+visit=rules.visitOf(state,{renown});
+const tromblon=state.company.stock[0];
+assert.deepEqual(visit.buyback(tromblon),{specialty:true,price:6267});
+assert.equal(visit.buyback(state.company.stock[1]).specialty,false);
+const goldBefore=state.company.gold;
+const sold=rules.sell(state,tromblon.id,{renown});
+assert.equal(sold.ok,true);
+assert.equal(sold.price,6267);
+assert.equal(state.company.gold,goldBefore+6267);
+assert.ok(!state.company.stock.includes(tromblon),"il l'emporte");
+const swords=state.company.stock.filter(i=>i.tier===1).map(i=>rules.sell(state,i.id,{renown}).price);
+const base=72*0.8*(1+0.2*44/100)*0.4;
+assert.deepEqual(swords,[0,1,2].map(n=>Math.round(base*0.85**n)),"0,85 par exemplaire déjà vendu");
+assert.equal(rules.sell(state,state.company.stock[0].id,{renown}).price,Math.round(360*0.8*(1+0.2*44/100)*0.4),"un autre tier : pas de baisse");
+assert.equal(state.company.stock.length,0);
+assert.deepEqual(state.market.visit.sold,{"weapon|Tromblon|4":1,"weapon|Épée longue|1":3,"weapon|Épée longue|2":1});
+assert.equal(rules.sell(state,"inconnu",{renown}).ok,false);
+state.company.stock=[{id:"x",itemType:"weapon",name:"Objet de quête",tier:1}];
+assert.equal(rules.sell(state,"x",{renown}).reason,"Il n’en veut pas.");
+state.company.stock=[];
+
+// La rareté baisse avec la renommée : rien à 5 étoiles d'or ; rien sur un T2 ; rien hors de sa liste.
+const t4=item("Canon à main",4),v4=values.value(t4);
+assert.equal(rules.buybackPrice(t4,{specialty:true,level:15}),Math.round(v4*0.8));
+assert.equal(rules.buybackPrice(t4,{specialty:true,level:1}),Math.round(v4*0.8*1.4));
+assert.equal(rules.buybackPrice(item("Canon à main",3),{specialty:true,level:1}),Math.round(values.value(item("Canon à main",3))*0.8*1.2));
+assert.equal(rules.buybackPrice(item("Canon à main",2),{specialty:true,level:1}),Math.round(values.value(item("Canon à main",2))*0.8));
+// Plafond : jamais plus de 90 % de ce qu'il en demanderait.
+const ask=rules.sellPrice(t4,100,0.1);
+assert.equal(rules.buybackPrice(t4,{affinity:100,steward:0.1,specialty:true,level:1}),Math.round(0.9*ask));
+for(const level of [1,5,15]) for(const score of [-100,0,100]) for(const steward of [0,0.1]){
+  assert.ok(rules.buybackPrice(t4,{affinity:score,steward,specialty:true,level})<rules.sellPrice(t4,score,steward),"jamais d'aller-retour gagnant");
+}
+
+// L'intendant : 1 % par tranche de 10 points d'Intendance si l'affinité du marchand avec lui est d'au moins +20.
+const steward=state.company.roster.find(m=>m.id!==state.company.captainId);
+Object.assign(steward,{people:"Nain",culture:"Nains du chaos",alignment:"Chaotique neutre"});
+steward.skills.camp.Intendance=57;
+state.company.intendantId=steward.id;
+visit=rules.visitOf(state,{renown});
+assert.equal(visit.steward,steward);
+assert.ok(near(visit.stewardBonus,0.05));
+for(const o of visit.offers) assert.equal(o.price,rules.sellPrice(o.item,44,0.05));
+assert.equal(visit.buyback(item("Pistolet",2)).price,Math.round(540*0.8*(1+0.2*44/100)*1.05));
+Object.assign(steward,{people:"Orc",culture:"Orcs",alignment:"Loyal bon"});
+assert.deepEqual(rules.stewardHelp(state,merchant),{steward:null,bonus:0},"il ne l'aime pas : pas d'aide");
+Object.assign(steward,{people:"Nain",culture:"Nains du chaos",alignment:"Chaotique neutre"});
+steward.skills.camp.Intendance=9;
+assert.deepEqual(rules.stewardHelp(state,merchant),{steward:null,bonus:0},"moins de 10 en Intendance");
+state.company.intendantId=null;
+
+// Campagne : le tirage a lieu chaque matin ; la sauvegarde garde la visite, l'étal et l'affinité acquise.
+state.day+=1;
+scripted.push(0);
 const [report]=campaign.advanceTime(state,1);
-assert.equal(report.merchant.arrived.id,"marchand-test");
-assert.equal(rules.visitOf(state).merchant.id,"marchand-test");
+assert.equal(report.merchant.arrived.id,"thorval-poudredefeu");
+assert.equal(rules.visitOf(state,{renown}).offers.length,10);
 const restored=restoreCampaign(serializeCampaign(state));
 assert.equal(restored.ok,true);
-assert.deepEqual(restored.state.market,{visit:{merchantId:"marchand-test",day:state.day}});
-// Une partie sans marché (ancienne sauvegarde) : il se crée au premier matin.
+assert.deepEqual(restored.state.market,JSON.parse(JSON.stringify(state.market)));
+// Les tiers tirés suivent la renommée.
+const counts={2:0,3:0,4:0};
+const probe={day:1,company:{roster:[captain],captainId:captain.id,stock:[]}};
+for(let i=0;i<400;i++){
+  probe.day+=1;
+  scripted.push(0);
+  rules.morning(probe,{renown});
+  for(const a of probe.market.visit.stock) counts[a.item.tier]+=1;
+}
+const total=counts[2]+counts[3]+counts[4];
+assert.equal(total,4000);
+for(const [tier,expected] of [[2,0.62],[3,0.29],[4,0.09]]) assert.ok(Math.abs(counts[tier]/total-expected)<0.03,"T"+tier+" : "+counts[tier]/total);
+// Une ancienne sauvegarde (marchand test disparu, ou pas de marché) : rien ne casse.
+state.market={visit:{merchantId:"marchand-test",day:state.day}};
+assert.equal(rules.visitOf(state,{renown}),null);
+scripted.push(0.999);
+assert.equal(rules.morning(state,{renown}).left,null);
+assert.deepEqual(state.market,{visit:null,merchants:{}});
 delete state.market;
 scripted.push(0.999);
 assert.equal(rules.morning(state,{renown}).arrived,null);
-assert.deepEqual(state.market,{visit:null});
+assert.deepEqual(state.market,{visit:null,merchants:{}});
 
-console.log("Marchands : passage du jour, marchand test (épées longues T1), prix, achat, départ — OK");
+console.log("Marchands : Thorval Poudredefeu (4 armes à feu, 10 articles T2–T4), affinité, achat, rachat, intendant — OK");

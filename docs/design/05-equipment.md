@@ -123,7 +123,7 @@ Chaque objet a une **valeur en pièces d’or, cachée** : rien ne l’affiche a
 
 Exemples : Épée longue T1 Usée 72 PO, T2 Correcte 360 PO, T3 Grand Luxe 1 440 PO, T4 Grand Luxe 4 500 PO. Un objet sans prix de base n’a pas de valeur. Casques et chapeaux : 100 PO de base, comme les autres objets à bonus.
 
-Le prix d’achat et de revente chez un marchand viendra avec les marchands (il dépendra de l’intendant, entre autres).
+Le prix d’achat et de revente chez un marchand en découle (doc 18 : affinité, intendant, quantité, rareté).
 
 ### Carte d’objet (Idan, 2026-10-24)
 

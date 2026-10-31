@@ -869,9 +869,13 @@ function renderEvaluation(c){
   const row=(entry,kind,note="")=>`<li class="sheet-eval-row sheet-eval-row--${kind}"><span>${esc(entry.name)}${note?`<small>${esc(note)}</small>`:""}</span>${entry.level?renderStarLevel(starRules().byLevel(entry.level)):""}</li>`;
   const hindrance=result.hindrance;
   const female=String(c.sex||"").trim().toLowerCase().startsWith("f");
+  const gene=female?"gênée par son armure":"gêné par son armure";
+  // La facette gênée déjà affichée (point fort ou faible) porte la mention sur sa ligne, sans seconde ligne.
+  const shown=[...result.strengths,...result.weaknesses].some(e=>e.code===hindrance?.code);
+  const note=e=>hindrance&&e.code===hindrance.code?gene:"";
   return `<section class="sheet-evaluation" aria-label="Évaluation">
     <h3 class="sheet-eval-title">${esc(result.title.text)}</h3>
-    <ul class="sheet-eval-list">${result.strengths.map(e=>row(e,"strong")).join("")}${result.weaknesses.map(e=>row(e,"weak")).join("")}${hindrance?row(hindrance,"hindrance",female?"gênée par son armure":"gêné par son armure"):""}</ul>
+    <ul class="sheet-eval-list">${result.strengths.map(e=>row(e,"strong",note(e))).join("")}${result.weaknesses.map(e=>row(e,"weak",note(e))).join("")}${hindrance&&!shown?row(hindrance,"hindrance",gene):""}</ul>
   </section>`;
 }
 function renderProfileTab(c){

@@ -30,7 +30,7 @@ function mage({pm,vie,level=1,int,chance=54,mana=53,charisma=50,items=[],slots={
       .concat(["fire_bolt","fireball","fire_ring","flaming_weapon","fire_armor","magma"].map(code=>({code,school:"Feu",mastery:level})))
       .concat(["fog","healing_water","ice_arrow","tsunami","frost_armor","freeze","ice_weapon"].map(code=>({code,school:"Eau",mastery:level})))
       .concat(["sixth_sense","titan_strength","cheetah_speed","stone_skin","venom_spit","cauterize"].map(code=>({code,school:"Transmutation",mastery:level})))
-      .concat(["shock","lightning_bolt","shock_weapon","chain_lightning","thunder","celerity"].map(code=>({code,school:"Foudre",mastery:level})))
+      .concat(["shock","lightning_bolt","shock_weapon","chain_lightning","thunder","celerity","spark","electric_arc","paralysis","storm"].map(code=>({code,school:"Foudre",mastery:level})))
       .concat(["attraction","projection","telekinetic_move","clash","force_field","stone_throw"].map(code=>({code,school:"Télékinésie",mastery:level})))
       .concat(["fear","illusory_support","mass_courage","hidden_advance","psychic_shock","frenzy"].map(code=>({code,school:"Illusion",mastery:level})))
       .concat(["raise_dead","summon_specter","life_drain","death_arrow","necrosis","wither"].map(code=>({code,school:"Nécromancie",mastery:level})))
@@ -437,7 +437,10 @@ assert.equal(magic.isPoisoned(sick),true);
 assert.deepEqual(magic.schoolSpells("Foudre").map(x=>[x.code,x.palier,x.difficulte,x.action,x.cible]),[
   ["shock","Adepte",50,"principale","ennemi"],["lightning_bolt","Novice",30,"principale","ennemi"],
   ["shock_weapon","Novice",30,"rapide","allie_ou_soi"],["chain_lightning","Expert",70,"principale","ennemi"],
-  ["thunder","Adepte",50,"principale","ennemi"],["celerity","Novice",30,"rapide","soi"]]);
+  ["thunder","Adepte",50,"principale","ennemi"],["celerity","Novice",30,"rapide","soi"],
+  // Idan, 2026-10-31 : la Foudre passe à 10 sorts.
+  ["spark","Novice",30,"rapide","ennemi"],["electric_arc","Adepte",50,"principale","case"],
+  ["paralysis","Adepte",50,"principale","ennemi"],["storm","Expert",70,"principale","case"]]);
 // Décharge électrique : au contact, 2D8 ; portée moyenne des attaques : 6 + M/25, au plus 12 ; Éclair comme la Flèche de glace.
 assert.deepEqual([magic.range(beginner,"shock"),magic.range(expert,"shock")],[1,1]);
 assert.deepEqual(magic.dice("shock"),{count:2,sides:8});
@@ -476,6 +479,51 @@ assert.ok(magic.chainTargets(caster,near0,"chain_lightning",[caster,near0]).some
 queue=[0,0.99,0.5,0.5];
 out=magic.cast(caster,c0,"chain_lightning",{units:[caster,c0,c1,c2,c3,c4]});
 assert.deepEqual([out.success,out.element,out.dice,out.chain.length],[true,"foudre",8,5]);
+
+// Étincelle (Idan, 2026-10-31 ; chiffres de JC3) : la petite Décharge en action rapide, 1D4, sans jet de toucher ; au
+// contact au début, 1 case de plus par 50 de maîtrise.
+assert.deepEqual([magic.range(beginner,"spark"),magic.range(expert,"spark")],[1,3]);
+assert.deepEqual(magic.dice("spark"),{count:1,sides:4});
+assert.deepEqual([magic.manaCost(beginner,"spark"),magic.spell("spark").element],[8,"foudre"]);
+queue=[0,0.99,0.5];
+out=magic.cast(caster,foe,"spark");
+assert.deepEqual([out.success,out.action,out.element,out.hit],[true,"rapide","foudre",undefined]);
+// Arc électrique : une ligne de 4 cases + 1 par 25 de maîtrise, au plus 8 ; 2D6 de foudre, comme le Tsunami pour le froid.
+assert.deepEqual([magic.zoneLength(beginner,"electric_arc"),magic.zoneLength(expert,"electric_arc")],[5,8]);
+queue=[0,0.99,0.5,0.5];
+out=magic.cast(caster,{q:1,r:0},"electric_arc");
+assert.deepEqual([out.success,out.element,out.zone.shape,out.zone.length,out.zone.cells.length],[true,"foudre","ligne",5,5]);
+// Paralysie : résiste si D100 ≤ Constitution + protection contre la foudre − Maîtrise / 2, de 5 à 95 % ; ratée, la cible
+// perd sa prochaine activation. Le métal conduit : en plates, on résiste beaucoup moins.
+const tense=unit(mage({pm:50,vie:1,int:50}),{q:3,r:0,team:"enemy"});
+const resist=magic.paralysisResistance(caster,tense,"paralysis");
+assert.equal(resist,50-31.5*0.5);
+const platedFoe=armoredUnit("Armure de plates",0,{q:3,r:0,team:"enemy"});
+platedFoe.character.stats.Constitution=50;
+assert.equal(magic.paralysisResistance(caster,platedFoe,"paralysis"),5,"le métal conduit la foudre (plates −45) : au moins 5 %");
+const leather=armoredUnit("Armure de cuir",0,{q:3,r:0,team:"enemy"});
+leather.character.stats.Constitution=50;
+assert.ok(magic.paralysisResistance(caster,leather,"paralysis")>resist,"le cuir protège de la foudre (+30)");
+queue=[0,0.99];
+out=magic.cast(caster,tense,"paralysis");
+assert.deepEqual(out.paralysis,{resist,roll:100,resisted:false,turns:1});
+queue=[0,0];
+assert.equal(magic.cast(caster,tense,"paralysis").paralysis.resisted,true);
+assert.equal(magic.spell("paralysis").critique,false);
+// Tempête : une zone de rayon 2 + M/50 (au plus 4) à portée 6 + M/25, sans ligne de vue, 3 tours ; chaque vague : 1D3
+// frappes de 1D8 de foudre au hasard dans la zone (l'écran de combat les tire).
+assert.deepEqual([magic.zoneRadius(beginner,"storm"),magic.zoneRadius(expert,"storm"),magic.zoneRadius(archmage,"storm")],[2,4,4]);
+assert.deepEqual([magic.range(beginner,"storm"),magic.duration(beginner,"storm")],[7,3]);
+assert.equal(magic.canCast(caster,{q:4,r:0},"storm",{lineOfSight:false}).ok,true,"la foudre tombe du ciel");
+queue=[0,0.99];
+out=magic.cast(caster,{q:4,r:0},"storm");
+assert.deepEqual([out.success,out.zone.radius,out.storm.turns,out.storm.element,out.storm.critical],[true,2,3,"foudre",false]);
+assert.equal(out.amount,0,"les dégâts tombent vague par vague");
+queue=[0.99];
+assert.equal(magic.stormStrikes(out.storm),3);
+queue=[0.5];
+assert.equal(magic.stormStrike(out.storm).amount,magic.effectAmount(caster,"storm",5,out.storm.factor));
+assert.deepEqual(magic.stormStrike({...out.storm,critical:true}).dice,8,"coup critique : dés au maximum");
 
 // École de la Télékinésie (Idan, 2026-10-28) : dégâts contondants qui passent par l'armure.
 assert.deepEqual(magic.schoolSpells("Télékinésie").map(x=>[x.code,x.palier,x.difficulte,x.action,x.cible]),[

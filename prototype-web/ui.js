@@ -855,6 +855,25 @@ function profileAncestryLine(c){
   if(copy&&level===2) return `${who} vient d’une famille ${copy.famille}.`;
   return `${who} a du ${String(c.ascendance).toLocaleLowerCase("fr")}.`;
 }
+// Évaluation (Idan, 2026-10-31) : au-dessus du portrait, un titre qui dit à quoi il sert, puis ce qui ressort en étoiles
+// de réputation — ses points forts, ses points faibles, une gêne d'équipement. Recalculée avec l'équipement porté
+// (game-core/mercenary-profile.js).
+function profileRules(){
+  if(typeof MercenairesProfile==="undefined"||!game.referenceData?.mercenaryProfile) return null;
+  return game.profileRules||(game.profileRules=MercenairesProfile.createProfileRules({reference:game.referenceData,engine:combatEngine(),
+    magic:typeof magicRules==="function"?magicRules():null}));
+}
+function renderEvaluation(c){
+  const result=profileRules()?.evaluate(c);
+  if(!result) return "";
+  const row=(entry,kind,note="")=>`<li class="sheet-eval-row sheet-eval-row--${kind}"><span>${esc(entry.name)}${note?`<small>${esc(note)}</small>`:""}</span>${entry.level?renderStarLevel(starRules().byLevel(entry.level)):""}</li>`;
+  const hindrance=result.hindrance;
+  const female=String(c.sex||"").trim().toLowerCase().startsWith("f");
+  return `<section class="sheet-evaluation" aria-label="Évaluation">
+    <h3 class="sheet-eval-title">${esc(result.title.text)}</h3>
+    <ul class="sheet-eval-list">${result.strengths.map(e=>row(e,"strong")).join("")}${result.weaknesses.map(e=>row(e,"weak")).join("")}${hindrance?row(hindrance,"hindrance",female?"gênée par son armure":"gêné par son armure"):""}</ul>
+  </section>`;
+}
 function renderProfileTab(c){
   const captain=game.campaign?.company.captainId===c.id;
   const status=rosterStatus(c);
@@ -866,7 +885,7 @@ function renderProfileTab(c){
   const bonus=c.contract?.missionBonus??tavernRules().missionBonusDemand(c);
   return `<section class="sheet-profile">
     <aside class="sheet-portrait">
-      ${renderAvatar(c,{variant:"detail",kind:"full"})}
+      ${renderEvaluation(c)}${renderAvatar(c,{variant:"detail",kind:"full"})}
       <em class="roster-status roster-status--${status.kind}">${esc(status.label)}</em>
     </aside>
     <div class="sheet-profile-main">
@@ -1045,7 +1064,7 @@ function renderStatsTab(c){
   }).join("")}</section>`;
   return `<section class="sheet-stats">
     <aside class="sheet-portrait">
-      ${renderAvatar(c,{variant:"detail",kind:"full"})}
+      ${renderEvaluation(c)}${renderAvatar(c,{variant:"detail",kind:"full"})}
       <em class="roster-status roster-status--${status.kind}">${esc(status.label)}</em>
     </aside>
     ${group("physique","Physique")}${group("mental","Mental")}${group("resistance","Résistances")}
@@ -1146,7 +1165,7 @@ function renderSkillsTab(c){
   const aptitudes=layout.aptitudes.filter(yes).map(n=>`<span class="sheet-armor is-yes">${esc(n)}</span>`).join("");
   return `<section class="sheet-skills">
     <aside class="sheet-portrait">
-      ${renderAvatar(c,{variant:"detail",kind:"full"})}
+      ${renderEvaluation(c)}${renderAvatar(c,{variant:"detail",kind:"full"})}
       <em class="roster-status roster-status--${status.kind}">${esc(status.label)}</em>
     </aside>
     <div class="sheet-skills-main">
@@ -1183,7 +1202,7 @@ function renderCampTab(c){
   const craft=rated("camp",["Artisanat"])[0];
   return `<section class="sheet-skills sheet-camp">
     <aside class="sheet-portrait">
-      ${renderAvatar(c,{variant:"detail",kind:"full"})}
+      ${renderEvaluation(c)}${renderAvatar(c,{variant:"detail",kind:"full"})}
       <em class="roster-status roster-status--${status.kind}">${esc(status.label)}</em>
     </aside>
     <div class="sheet-skills-main">
@@ -1349,7 +1368,7 @@ function renderMagicTab(c) {
   };
   return `<section class="sheet-magic">
     <aside class="sheet-portrait">
-      ${renderAvatar(c,{variant:"detail",kind:"full"})}
+      ${renderEvaluation(c)}${renderAvatar(c,{variant:"detail",kind:"full"})}
       <em class="roster-status roster-status--${status.kind}">${esc(status.label)}</em>
     </aside>
     <div class="sheet-magic-main">

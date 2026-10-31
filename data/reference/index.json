@@ -526,6 +526,20 @@
         "poids",
         "stock"
       ]
+    },
+    {
+      "name": "mercenary-profile",
+      "file": "mercenary-profile.json",
+      "rows": 17,
+      "columns": [
+        "etalon",
+        "facettes",
+        "groupes",
+        "selection",
+        "titres",
+        "mesure",
+        "seuils"
+      ]
     }
   ]
 }

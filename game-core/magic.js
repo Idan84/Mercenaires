@@ -446,6 +446,12 @@
           result.effect={code:s.code,percent:bonus(caster,code),turns:duration(caster,code)};
         }else if(s.effet==="fletrissement"){
           result.effect={code:s.code,turns:duration(caster,code)};
+        }else if(s.effet==="paralysie"){
+          const resist=paralysisResistance(caster,target,code),resistRoll=d100();
+          result.paralysis={resist,roll:resistRoll,resisted:resistRoll<=resist,turns:Math.max(1,duration(caster,code))};
+        }else if(s.effet==="tempete"){
+          result.zone={center:{q:target.q,r:target.r},radius:zoneRadius(caster,code)};
+          result.storm={code:s.code,element:s.element,factor:effectFactor(caster,code),critical:result.critical,turns:Math.max(1,duration(caster,code))};
         }else if(s.effet==="malus_caracteristiques"){
           // Gel : le malus baisse avec la protection de la cible contre l'élément (résistance, armure, Armure de feu).
           const raw=bonus(caster,code),hit=combat.elementalDamage(target,s.element,raw);
@@ -532,6 +538,23 @@
     }
 
     // Régénération : un tour de soin, au début de l'activation de la cible ; dé au maximum si le lancer était critique.
+    // Paralysie (Foudre ; Idan, 2026-10-31, chiffres de JC3) : la cible résiste si D100 ≤ sa Constitution + sa protection
+    // contre la foudre (armure comprise : le métal la conduit) − 0,5 × la Maîtrise du lanceur, borné de 5 à 95 %.
+    function paralysisResistance(caster,target,code){
+      const s=spell(code);
+      const stat=combat.statWithGear(target,s?.resistance_caracteristique||"Constitution");
+      const protection=combat.elementalProtection?combat.elementalProtection(target,s?.element||"foudre").applied:0;
+      return clamp(stat+protection-num(s?.resistance_maitrise_facteur,0.5)*mastery(caster,code),5,95);
+    }
+    // Tempête (Foudre) : une frappe = les dés du sort × le facteur figé au lancer ; le nombre de frappes par tour : 1D3.
+    function stormStrike(effect){
+      const {count,sides}=dice(effect.code);
+      const total=effect.critical?count*sides:rollDice(effect.code);
+      const s=spell(effect.code);
+      return {amount:Math.ceil(num(s?.effet_base,10)*total*effect.factor-1e-9),dice:total};
+    }
+    function stormStrikes(effect){ return die(num(spell(effect.code)?.frappes_de,3)); }
+
     function tick(effect){
       if(!effect||effect.turns<=0) return {amount:0,turnsLeft:0};
       const {count,sides}=dice(effect.code);
@@ -548,6 +571,9 @@
       precisionChance,
       zoneFactor,
       weaponStrike,
+      paralysisResistance,
+      stormStrike,
+      stormStrikes,
       canSpit,
       spitChance,
       spit,

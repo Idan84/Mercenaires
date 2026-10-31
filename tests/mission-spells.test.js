@@ -45,7 +45,7 @@ const api=new Function("game","$","esc","fmt","renderAvatar","combatEngine","Mer
   +"handleMissionHexClick,resetMissionActivation,missionAiCast,missionActionAvailability,autoResolveMission,missionKey,renderMissionSpellBar,"
   +"missionMagic,endMissionActivation,missionWeaponEnchantStrike,pruneMissionTerrain,occupiedMissionKeys,missionReachablePaths,"
   +"renderMissionProgression,missionLineOfSight,missionCanAttack,frenzyMissionActivation,maintainMissionSummons,checkMissionEnd,onMissionAttack,moveMissionUnitAlongPath,"
-  +"renderMissionConsole,missionAttackFx};")
+  +"renderMissionConsole,missionAttackFx,tickMissionStorms,missionParalyzedSkip,missionStormAt};")
   .call(null,game,$,v=>String(v??""),v=>String(Math.round(Number(v)||0)),()=>"",()=>engine,Progression,MissionEnd,Magic);
 
 function newMission(){
@@ -80,17 +80,17 @@ assert.deepEqual(magic.knownSpells(u).map(s=>s.code),["quick_heal","deep_heal","
   "fire_bolt","fireball","fire_ring","flaming_weapon","fire_armor","magma",
   "fog","healing_water","ice_arrow","tsunami","frost_armor","freeze","ice_weapon",
   "sixth_sense","titan_strength","cheetah_speed","stone_skin","venom_spit","cauterize",
-  "shock","lightning_bolt","shock_weapon","chain_lightning","thunder","celerity",
+  "shock","lightning_bolt","shock_weapon","chain_lightning","thunder","celerity","spark","electric_arc","paralysis","storm",
   "attraction","projection","telekinetic_move","clash","force_field","stone_throw",
   "fear","illusory_support","mass_courage","hidden_advance","psychic_shock","frenzy",
   "raise_dead","summon_specter","life_drain","death_arrow","necrosis","wither",
   "summon_raven","quagmire","transposition","summon_wolves","summon_bears","summon_crocodiles"]);
-assert.ok(m.players.every(p=>p.spells.length===55&&!(p.character.spells||[]).length));
+assert.ok(m.players.every(p=>p.spells.length===59&&!(p.character.spells||[]).length));
 assert.equal(api.missionActionAvailability().testSpells,false,"une seule fois par combat");
 assert.ok(logged(/connaît tous les sorts \(Vie, Feu, Eau, Transmutation, Foudre, Télékinésie, Illusion, Nécromancie, Invocation, niveau 1\)/));
 const bar=api.renderMissionSpellBar(u);
 assert.match(bar,/Mana 53\/53/);
-assert.equal((bar.match(/data-spell=/g)||[]).length,55);
+assert.equal((bar.match(/data-spell=/g)||[]).length,59);
 assert.match(bar,/Soin rapide<small>rapide · \d+ mana · \d+ %<\/small>/);
 // Écran de combat (2026-10-29) : au-delà de 8 sorts, un onglet par école ; une seule école affichée à la fois.
 assert.equal((bar.match(/data-spell-school=/g)||[]).length,9);
@@ -547,6 +547,70 @@ api.resetMissionActivation(u);
 assert.ok(engine.statWithGear(u,"Vitesse")>pace,"la suivante aussi");
 api.resetMissionActivation(u);
 assert.equal(engine.statWithGear(u,"Vitesse"),pace);
+
+// Les quatre sorts validés par Idan le 2026-10-31 (Foudre à 10). Maîtrise 60,5.
+for(const x of [u,ally,wet,distant]){ x.alive=true;x.hp=x.pvMax;x.statBuffs=null;x.paralyzed=null; }
+u.q=2;u.r=4;ally.q=2;ally.r=5;wet.q=3;wet.r=4;distant.q=6;distant.r=4;
+// Étincelle : action rapide, portée 1 + 1 (Maîtrise / 50) : l'ennemi voisin, pas celui à 4 cases ; sans jet de toucher.
+reset();
+api.setMissionMode("spell:spark");
+cells=api.targetableMissionCells();
+assert.ok(cells.has(api.missionKey(wet.q,wet.r))&&!cells.has(api.missionKey(distant.q,distant.r)));
+queue.push(0,0.99,0.5);
+api.handleMissionHexClick(wet.q,wet.r);
+assert.ok(wet.hp<wet.pvMax);
+assert.equal(u.quickAvailable,false,"action rapide");
+assert.ok(logged(/lance Étincelle sur .* : \d+ PV de foudre/));
+// Arc électrique : une ligne de 4 + 2 cases depuis la case voisine ; les deux ennemis de la ligne, pas l'allié à côté.
+reset();
+for(const x of [wet,distant]) x.hp=x.pvMax;
+api.setMissionMode("spell:electric_arc");
+cells=api.targetableMissionCells();
+assert.ok(cells.has(api.missionKey(3,4))&&!cells.has(api.missionKey(4,4)),"seulement les cases voisines");
+queue.push(0,0.99,0.5,0.5);
+api.handleMissionHexClick(3,4);
+assert.ok(wet.hp<wet.pvMax&&distant.hp<distant.pvMax,"les deux sont sur l'arc");
+assert.equal(ally.hp,ally.pvMax,"l'allié, à côté, est épargné");
+assert.ok(logged(/lance Arc électrique \(ligne de 6 cases\).* PV de foudre pour chacun/));
+// Paralysie : la cible perd sa prochaine activation, sauf si D100 ≤ sa résistance (Constitution + protection − 30).
+reset();
+api.setMissionMode("spell:paralysis");
+assert.ok(api.targetableMissionCells().has(api.missionKey(distant.q,distant.r)),"portée 6 + 2");
+queue.push(0,0.99);
+api.handleMissionHexClick(distant.q,distant.r);
+assert.deepEqual(distant.paralyzed,{turns:1});
+assert.ok(logged(/lance Paralysie sur .* est paralysée? \(résistance \d+ %, jet 100\) et perdra sa prochaine activation/));
+assert.equal(api.missionParalyzedSkip(distant),true,"l'activation est perdue");
+assert.equal(distant.paralyzed,null);
+assert.equal(api.missionParalyzedSkip(distant),false,"une seule");
+assert.ok(logged(/est paralysée? : (il|elle) perd son activation/));
+reset();
+api.setMissionMode("spell:paralysis");
+queue.push(0,0);
+api.handleMissionHexClick(distant.q,distant.r);
+assert.equal(distant.paralyzed??null,null);
+assert.ok(logged(/lance Paralysie sur .* résiste \(résistance \d+ %, jet 1\)/));
+// Tempête : rayon 2 + 1, 3 tours, à travers le brouillard ; une vague au lancer, puis une à chaque tour, puis elle se dissipe.
+reset();
+for(const x of [u,ally,wet,distant]) x.hp=x.pvMax;
+m.fog=[{q:4,r:4,untilTurn:m.turn+3}];
+api.setMissionMode("spell:storm");
+assert.ok(api.targetableMissionCells().has(api.missionKey(distant.q,distant.r)),"sans ligne de vue");
+queue.push(0,0.99,0.99,0.5,0.5,0.5,0.5,0.5,0.5);
+api.handleMissionHexClick(distant.q,distant.r);
+m.fog=[];
+assert.equal(m.storms.length,1);
+assert.equal(m.storms[0].radius,3);
+assert.equal(m.storms[0].turnsLeft,2);
+assert.ok(api.missionStormAt(distant.q,distant.r)&&!api.missionStormAt(u.q-2,u.r));
+assert.ok(logged(/lance Tempête \(rayon 3, 3 tours\).* le ciel se charge/));
+assert.ok(logged(/La tempête frappe : .* −\d+ PV/));
+api.tickMissionStorms();
+assert.equal(m.storms[0].turnsLeft,1);
+api.tickMissionStorms();
+assert.equal(m.storms.length,0);
+assert.ok(logged(/La tempête se dissipe/));
+for(const x of [u,ally,wet,distant]){ x.alive=true;x.hp=x.pvMax; }
 
 // École de la Télékinésie dans l'écran de combat (Idan, 2026-10-28). Maîtrise 60,5 : 3 cases de déplacement forcé.
 for(const p of m.players) p.character.skills.magic["Télékinésie"]=60;

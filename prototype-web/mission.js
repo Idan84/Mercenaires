@@ -37,6 +37,11 @@ function missionFogAt(q,r){ return (game.mission?.fog||[]).find(f=>f.q===q&&f.r=
 // Bourbier (Invocation ; Idan, 2026-10-28) : qui s'y trouve ou y entre ne peut plus se déplacer, jusqu'au tour untilTurn
 // (exclu) ; on peut y entrer (c'est la fin du chemin), pas le traverser ni en sortir.
 function missionMireAt(q,r){ return (game.mission?.mire||[]).find(f=>f.q===q&&f.r===r)||null; }
+// Tempête (Foudre ; Idan, 2026-10-31) : la zone au-dessus de laquelle la foudre tombe, tant qu'il lui reste des vagues.
+function missionStormAt(q,r){
+  const e=game.mission?.engine;
+  return (game.mission?.storms||[]).find(s=>e&&e.axialDistance(s.center,{q,r})<=s.radius)||null;
+}
 // Ligne de vue (doc 04 et 12) : seul le Brouillard la coupe pour l'instant, dès qu'une case de la ligne droite entre
 // les deux, extrémités comprises, est dans le brouillard. Elle compte pour les tirs et les sorts.
 function missionLineOfSight(a,b){
@@ -392,6 +397,8 @@ function selectNextMissionPlayer(){
     resetMissionActivation(next);
     // Mort du poison au début de son activation.
     if(!next.alive){ next.acted=true; if(m.over){ renderMission(); return; } continue; }
+    // Paralysie (Foudre) : il perd cette activation.
+    if(missionParalyzedSkip(next)){ next.acted=true; continue; }
     m.progression.recordActivation(next);
     // Frénésie (Illusion) : il joue seul cette activation.
     if(next.frenzy){
@@ -1312,6 +1319,28 @@ function resolveMissionSpell(caster,target,code,extra={}){
     const to=out.move.destination;
     target.q=to.q;target.r=to.r;
     missionLog(name+" lance "+spell.nom+on+detail+" : "+target.character.name+" est déplacé"+(missionFeminine(target)?"e":"")+" d’une case.","magic");
+  }else if(spell.effet==="paralysie"){
+    // Paralysie (Foudre ; Idan, 2026-10-31) : la cible résiste (Constitution + protection contre la foudre − Maîtrise / 2)
+    // ou perd sa prochaine activation.
+    const p=out.paralysis,test=" (résistance "+Math.round(p.resist)+" %, jet "+p.roll+")";
+    if(p.resisted){
+      effect=false;
+      missionLog(name+" lance "+spell.nom+on+detail+" : "+target.character.name+" résiste"+test+".","miss");
+      missionFx(target,"Résiste","miss");
+    }else{
+      target.paralyzed={turns:p.turns};
+      missionLog(name+" lance "+spell.nom+on+detail+" : "+target.character.name+" est paralysé"+(missionFeminine(target)?"e":"")
+        +test+" et perdra sa prochaine activation.","magic");
+      missionFx(target,"Paralysé"+(missionFeminine(target)?"e":""),"miss");
+    }
+  }else if(spell.effet==="tempete"){
+    // Tempête (Foudre ; Idan, 2026-10-31) : une première vague tout de suite, puis une à chaque nouveau tour.
+    const storm={casterId:caster.id,code:spell.code,center:out.zone.center,radius:out.zone.radius,element:out.storm.element,
+      factor:out.storm.factor,critical:out.storm.critical,turnsLeft:out.storm.turns};
+    game.mission.storms=[...(game.mission.storms||[]),storm];
+    missionLog(name+" lance "+spell.nom+" (rayon "+storm.radius+", "+storm.turnsLeft+" tours)"+detail+" : le ciel se charge au-dessus de la zone."+critical,"magic");
+    effect=missionStormWave(storm)>0;
+    checkMissionEnd();
   }else if(spell.effet==="peur"){
     // Peur : chaque ennemi de la zone teste son Courage contre la Maîtrise et la Volonté du lanceur.
     const zone=out.zone,foes=magic.unitsInZone(zone.center,zone.radius,missionUnits()).filter(u=>u.team!==caster.team);
@@ -1566,6 +1595,49 @@ function castPlayerMissionSpell(target,extra={}){
   resolveMissionSpell(u,target,code,extra);
   if(missionActiveUnitLost()) return;
   renderMission();
+}
+
+// Paralysie (Foudre) : au début de son activation, le paralysé la perd (true) ; l'effet tombe ensuite.
+function missionParalyzedSkip(unit){
+  if(!unit?.paralyzed) return false;
+  unit.paralyzed.turns-=1;
+  if(unit.paralyzed.turns<=0) unit.paralyzed=null;
+  missionLog(unit.character.name+" est paralysé"+(missionFeminine(unit)?"e : elle":" : il")+" perd son activation.","bad");
+  missionFx(unit,"Paralysé"+(missionFeminine(unit)?"e":""),"miss");
+  return true;
+}
+// Tempête : une vague = 1D3 personnages au hasard dans la zone (alliés et lanceur compris), chacun frappé par les dés du
+// sort, moins sa protection contre la foudre. Renvoie le total des dégâts. Le coup critique ne vaut que pour la première.
+function missionStormWave(storm){
+  const m=game.mission,magic=missionMagic();
+  if(!m||!magic) return 0;
+  const pool=magic.unitsInZone(storm.center,storm.radius,missionUnits());
+  const count=Math.min(pool.length,magic.stormStrikes(storm));
+  const struck=[];
+  while(struck.length<count){
+    const u=pool[Math.floor(Math.random()*pool.length)];
+    if(!struck.includes(u)) struck.push(u);
+  }
+  const source=missionUnits().find(u=>u.id===storm.casterId)||null;
+  let total=0;
+  const lines=struck.map(u=>{
+    const strike=magic.stormStrike(storm),hit=m.engine.elementalDamage(u,storm.element,strike.amount);
+    total+=hit.damage;
+    damageMissionUnitBySpell(u,hit.damage,source,storm.element);
+    return u.character.name+" −"+hit.damage+" PV"+missionProtectionNote(hit);
+  });
+  storm.critical=false;
+  storm.turnsLeft-=1;
+  missionLog(lines.length?"La tempête frappe : "+lines.join(" ; ")+".":"La tempête gronde : personne dans la zone.","damage");
+  return total;
+}
+function tickMissionStorms(){
+  const m=game.mission;
+  if(!m?.storms?.length) return;
+  for(const storm of m.storms) if(storm.turnsLeft>0) missionStormWave(storm);
+  const before=m.storms.length;
+  m.storms=m.storms.filter(s=>s.turnsLeft>0);
+  if(m.storms.length<before) missionLog("La tempête se dissipe.","magic");
 }
 
 // Régénération (doc 12) : le soin tombe au début de chaque activation de la cible, jusqu'à la fin de sa durée.
@@ -2082,6 +2154,7 @@ function enemyMissionAct(unit,options={}){
 function enemyMissionActivation(unit,{reset=true}={}){
   if(!unit.alive||game.mission.over) return;
   if(reset) resetMissionActivation(unit);
+  if(unit.alive&&missionParalyzedSkip(unit)) return;
   if(unit.fleeing&&resolveMissionFleeingActivation(unit)) return;
   if(!unit.alive||game.mission.over) return;
   if(unit.frenzy){ frenzyMissionActivation(unit); return; }
@@ -2158,6 +2231,7 @@ function runMissionEnemyTurn(){
   if(m.over){ renderMission(); return; }
   m.turn+=1;
   pruneMissionTerrain();
+  tickMissionStorms();
   maintainMissionSummons();
   if(checkMissionEnd()){ renderMission(); return; }
   resolveMissionDetection();
@@ -2396,6 +2470,8 @@ function renderMission(){
     if(mire){ classes.push("mire"); title=` title="Bourbier : on ne peut plus s’y déplacer jusqu’au tour ${mire.untilTurn}"`; }
     const fog=missionFogAt(q,r);
     if(fog){ classes.push("fog"); title=` title="Brouillard : coupe la ligne de vue jusqu’au tour ${fog.untilTurn}"`; }
+    const storm=missionStormAt(q,r);
+    if(storm){ classes.push("storm"); title=` title="Tempête : la foudre frappe au hasard dans la zone (encore ${storm.turnsLeft} tour${storm.turnsLeft>1?"s":""})"`; }
     if(targets.has(key)&&m.mode==="move"){
       const risk=missionPathOpportunityCount(u,shortestMissionPath(u,{q,r},u));
       if(risk){

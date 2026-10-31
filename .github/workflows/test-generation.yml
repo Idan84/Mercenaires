@@ -53,6 +53,7 @@ jobs:
       - run: node tests/bodyguard.test.js
       - run: node tests/merchants.test.js
       - run: node tests/merchant-ui.test.js
+      - run: node scripts/merchant-coverage.js --check
       - run: node tests/mercenary-profile.test.js
       - run: node scripts/build-mercenary-profile.js --check
       - run: node tests/magic.test.js

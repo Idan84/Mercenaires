@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "name": "domains",
+  "description": "Domaine du mercenaire (Idan, 2026-11-01) : après les tirages, son grand domaine, fixé à vie ; il est accentué par des déplacements de points (somme nulle). Le titre montre ensuite son évolution. Constantes : formula-constants.json, generation.domain.*. Code : game-core/mercenary-generator.js (chooseDomain, accentuateDomain).",
+  "columns": [
+    {
+      "key": "code",
+      "source": "Code (le profil de l'équipement et de l'avatar : melee, ranged, magic)"
+    },
+    {
+      "key": "nom",
+      "source": "Nom affiché"
+    },
+    {
+      "key": "plus",
+      "source": "Caractéristiques qui montent"
+    },
+    {
+      "key": "moins",
+      "source": "Caractéristiques qui baissent"
+    },
+    {
+      "key": "description",
+      "source": "Infobulle du picto"
+    }
+  ],
+  "rows": [
+    {
+      "code": "melee",
+      "nom": "Corps à corps",
+      "plus": [
+        "Force",
+        "Endurance"
+      ],
+      "moins": [
+        "Puissance magique",
+        "Intelligence"
+      ],
+      "description": "Formé pour la mêlée : plus fort et plus endurant, avec son arme de corps à corps ; moins doué pour la magie et le tir."
+    },
+    {
+      "code": "ranged",
+      "nom": "Distance",
+      "plus": [
+        "Perception",
+        "Dextérité"
+      ],
+      "moins": [
+        "Force",
+        "Puissance magique"
+      ],
+      "description": "Formé pour le tir : l'œil et la main plus sûrs, avec son arme de tir ; moins doué pour la mêlée et la magie."
+    },
+    {
+      "code": "magic",
+      "nom": "Mage",
+      "plus": [
+        "Puissance magique",
+        "Intelligence"
+      ],
+      "moins": [
+        "Force",
+        "Dextérité"
+      ],
+      "description": "Formé à la magie : plus puissant et plus savant dans son école ; moins doué avec les armes."
+    }
+  ],
+  "row_count": 3
+}

@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 256,
+  "row_count": 260,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -1704,6 +1704,38 @@
       "description": "Chance d'un tirage = École × Intelligence / diviseur, en % (Idan, 2026-10-25).",
       "formule": "Sorts connus à la création",
       "valeur": 150,
+      "version": "V1"
+    },
+    {
+      "nom": "Domaine — dés des caractéristiques",
+      "code": "generation.domain.stat_dice",
+      "description": "Nombre de D6 déplacés sur chaque caractéristique du domaine (en plus sur deux, en moins sur deux autres ; Idan, 2026-11-01 : dosage B).",
+      "formule": "Domaine du mercenaire",
+      "valeur": 2,
+      "version": "V1"
+    },
+    {
+      "nom": "Domaine — dés des compétences",
+      "code": "generation.domain.skill_dice",
+      "description": "Nombre de D10 déplacés sur l'arme réellement utilisée et sa catégorie (en plus), sur l'arme et la catégorie de l'autre famille (en moins) ; l'école d'un mage gagne le double (Idan, 2026-11-01 : dosage B).",
+      "formule": "Domaine du mercenaire",
+      "valeur": 2,
+      "version": "V1"
+    },
+    {
+      "nom": "Domaine — multiplicateur de l'école",
+      "code": "generation.domain.school_factor",
+      "description": "L'école d'un mage gagne ce multiple des dés de compétence : les écoles vont jusqu'à 100, les armes vers 50.",
+      "formule": "Domaine du mercenaire",
+      "valeur": 2,
+      "version": "V1"
+    },
+    {
+      "nom": "Domaine — coup de pouce d'un sort",
+      "code": "generation.domain.spell_margin",
+      "description": "Un mercenaire qui a tiré un sort devient Mage si son score de magie est à ce nombre de points ou moins du meilleur (Idan, 2026-11-01 : « il a tiré un sort de l'eau, on pousse vers ça »).",
+      "formule": "Domaine du mercenaire",
+      "valeur": 5,
       "version": "V1"
     },
     {

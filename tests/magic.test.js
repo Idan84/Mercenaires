@@ -29,7 +29,7 @@ function mage({pm,vie,level=1,int,chance=54,mana=53,charisma=50,items=[],slots={
     spells:["quick_heal","deep_heal","regeneration","mass_heal","restitution","purge","blessing","life_link","deliverance","holy_light"].map(code=>({code,school:"Vie",mastery:level}))
       .concat(["fire_bolt","fireball","fire_ring","flaming_weapon","fire_armor","magma","ignite","flame_wall","fiery_breath","living_torch"].map(code=>({code,school:"Feu",mastery:level})))
       .concat(["fog","healing_water","ice_arrow","tsunami","frost_armor","freeze","ice_weapon","ice_prison","blizzard","living_spring"].map(code=>({code,school:"Eau",mastery:level})))
-      .concat(["sixth_sense","titan_strength","cheetah_speed","stone_skin","venom_spit","cauterize"].map(code=>({code,school:"Transmutation",mastery:level})))
+      .concat(["sixth_sense","titan_strength","cheetah_speed","stone_skin","venom_spit","cauterize","bear_endurance","scale_skin","owl_wisdom","cat_agility"].map(code=>({code,school:"Transmutation",mastery:level})))
       .concat(["shock","lightning_bolt","shock_weapon","chain_lightning","thunder","celerity","spark","electric_arc","paralysis","storm"].map(code=>({code,school:"Foudre",mastery:level})))
       .concat(["attraction","projection","telekinetic_move","clash","force_field","stone_throw"].map(code=>({code,school:"Télékinésie",mastery:level})))
       .concat(["fear","illusory_support","mass_courage","hidden_advance","psychic_shock","frenzy"].map(code=>({code,school:"Illusion",mastery:level})))
@@ -310,7 +310,7 @@ queue=[0.5];
 assert.deepEqual(magic.weaponStrike(out.effect),{amount:magic.effectAmount(caster,"flaming_weapon",3),dice:3,element:"feu"});
 queue=[0];
 out=magic.cast(caster,ally,"fire_armor");
-assert.deepEqual(out.effect,{code:"fire_armor",element:"froid",bonus:36,turns:2,cumulable:false});
+assert.deepEqual(out.effect,{code:"fire_armor",element:"froid",elements:["froid"],bonus:36,turns:2,cumulable:false});
 queue=[0];
 out=magic.cast(caster,{q:2,r:0},"magma");
 assert.deepEqual(out.terrain,{q:2,r:0,turns:5});
@@ -437,7 +437,7 @@ queue=[0.5];
 assert.equal(magic.weaponStrike(out.effect).element,"froid");
 queue=[0];
 out=magic.cast(caster,ally,"frost_armor");
-assert.deepEqual(out.effect,{code:"frost_armor",element:"feu",bonus:36,turns:2,cumulable:false});
+assert.deepEqual(out.effect,{code:"frost_armor",element:"feu",elements:["feu"],bonus:36,turns:2,cumulable:false});
 assert.equal(combat.elementalDamage(armoredUnit(null,4,{elementalBonus:{feu:{bonus:36,turns:2}}}),"feu",100).damage,60,"Armure de froid contre le feu");
 
 // Prison de glace (chiffres de JC3) : résistance = Constitution + protection contre le froid − Maîtrise / 2 (5 à 95 %) ;
@@ -472,7 +472,9 @@ assert.deepEqual([out.success,out.dice,out.amount],[true,4,Math.ceil(3*4*(2*53/1
 assert.deepEqual(magic.schoolSpells("Transmutation").map(x=>[x.code,x.action,x.cible]),[
   ["sixth_sense","rapide","allie_ou_soi"],["titan_strength","rapide","allie_ou_soi"],
   ["cheetah_speed","rapide","allie_ou_soi"],["stone_skin","rapide","allie_ou_soi"],
-  ["venom_spit","rapide","allie_ou_soi"],["cauterize","rapide","allie_ou_soi"]]);
+  ["venom_spit","rapide","allie_ou_soi"],["cauterize","rapide","allie_ou_soi"],
+  // Idan, 2026-10-31 : la Transmutation passe à 10 sorts.
+  ["bear_endurance","rapide","allie_ou_soi"],["scale_skin","rapide","allie_ou_soi"],["owl_wisdom","rapide","allie_ou_soi"],["cat_agility","rapide","allie_ou_soi"]]);
 assert.deepEqual([magic.range(beginner,"titan_strength"),magic.range(expert,"titan_strength")],[4,8],"portée moyenne : 3 + M/25");
 assert.deepEqual([magic.duration(beginner,"titan_strength"),magic.duration(expert,"titan_strength"),magic.duration(archmage,"titan_strength")],[1,2,2]);
 assert.deepEqual([magic.bonus(beginner,"titan_strength"),magic.bonus(expert,"titan_strength")],[26,46],"+20 + M/5 %");
@@ -533,6 +535,27 @@ assert.deepEqual([tick.p,tick.resisted,tick.damage],[45,false,16],"la Résistanc
 assert.equal(combat.elementalDamage(armoredUnit("Armure de plates",4),"poison",100).armor,0,"l'armure ne compte pas contre le poison");
 assert.equal(combat.resolvePoison(unit(tough)),null,"pas empoisonné : rien");
 assert.equal(magic.isPoisoned(sick),true);
+
+// Robustesse de l'ours, Sagesse du hibou, Agilité du chat (chiffres de JC3) : +(20 + M/5) % de Constitution, d'Intelligence,
+// d'Esquive, 1 tour (2 pour un maître). Peau d'écailles : +(20 + M/5) de protection contre le feu, le froid et la foudre.
+for(const code of ["bear_endurance","owl_wisdom","cat_agility","scale_skin"]){
+  assert.deepEqual([magic.bonus(beginner,code),magic.bonus(expert,code),magic.duration(beginner,code),magic.duration(expert,code)],[26,46,1,2],code);
+}
+queue=[0];
+assert.deepEqual(magic.cast(caster,ally,"bear_endurance").effect.stats,["Constitution"]);
+queue=[0];
+assert.deepEqual(magic.cast(caster,ally,"owl_wisdom").effect.stats,["Intelligence"]);
+queue=[0];
+assert.deepEqual(magic.cast(caster,ally,"cat_agility").effect.stats,["Esquive"]);
+queue=[0];
+out=magic.cast(caster,ally,"scale_skin");
+assert.deepEqual([out.effect.elements,out.effect.bonus,out.effect.turns],[["feu","froid","foudre"],26,1]);
+// La Sagesse du hibou fait réussir plus souvent : +26 % d'Intelligence.
+const wise={...caster,statBuffs:{owl_wisdom:{stats:["Intelligence"],value:26,unit:"pourcentage",turns:1}}};
+assert.ok(magic.castChance(wise,"quick_heal").p>magic.castChance(caster,"quick_heal").p);
+// Robustesse de l'ours : plus de Constitution, donc plus de PV max.
+const sturdy={...caster,statBuffs:{bear_endurance:{stats:["Constitution"],value:26,unit:"pourcentage",turns:1}}};
+assert.ok(combat.maxHp(sturdy)>combat.maxHp(caster));
 
 // École de la Foudre (Idan, 2026-10-27).
 assert.deepEqual(magic.schoolSpells("Foudre").map(x=>[x.code,x.action,x.cible]),[

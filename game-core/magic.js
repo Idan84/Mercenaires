@@ -443,7 +443,9 @@
           const factor=effectFactor(caster,code);
           result.effect={code:s.code,element:s.element||null,factor,turns:duration(caster,code),critical:result.critical,cumulable:s.cumulable!==false};
         }else if(s.effet==="protection_elementaire"){
-          result.effect={code:s.code,element:s.element,bonus:bonus(caster,code),turns:duration(caster,code),cumulable:s.cumulable!==false};
+          // Peau d'écailles (Transmutation) : plusieurs éléments à la fois (spells.json, elements).
+          const elements=String(s.elements||s.element||"").split(",").map(x=>x.trim()).filter(Boolean);
+          result.effect={code:s.code,element:elements[0]||null,elements,bonus:bonus(caster,code),turns:duration(caster,code),cumulable:s.cumulable!==false};
         }else if(s.effet==="mur_de_flammes"){
           // Mur de flammes : les cases du mur et, pour chaque brûlure, les dés du sort × le facteur figé au lancer.
           result.wall={cells:wallCells(caster,target,zoneLength(caster,code)),turns:duration(caster,code),

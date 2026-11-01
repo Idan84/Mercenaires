@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 260,
+  "row_count": 261,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -1736,6 +1736,14 @@
       "description": "Un mercenaire qui a tiré un sort devient Mage si son score de magie est à ce nombre de points ou moins du meilleur (Idan, 2026-11-01 : « il a tiré un sort de l'eau, on pousse vers ça »).",
       "formule": "Domaine du mercenaire",
       "valeur": 5,
+      "version": "V1"
+    },
+    {
+      "nom": "Escouade initiale — tirages par domaine manquant",
+      "code": "generation.initial_squad.domain_attempts",
+      "description": "Garde-fou de l'escouade initiale (Idan, 2026-11-01 : « Il faut 1 mage / 1 distance et 1 CAC ») : pour chaque domaine absent, un mercenaire de plus, tiré normalement jusqu'à ce nombre de fois ; si aucun tirage ne tombe dans le domaine, le dernier est tiré avec ce domaine imposé.",
+      "formule": "Domaine du mercenaire",
+      "valeur": 30,
       "version": "V1"
     },
     {

@@ -65,6 +65,8 @@
     const equipmentSlotRows = rows.equipmentSlots || [];
     const binaryAptitudeRows = rows.binaryAptitudeGrants || [];
     const domainRows = rows.domains || [];
+    // Les trois domaines du mercenaire (doc 02), dans l'ordre de domains.json et du profil d'équipement.
+    const DOMAIN_CODES = ["melee", "ranged", "magic"];
     const alignmentGeneration = reference.alignmentGeneration || {};
     const startingEquipmentGeneration = reference.startingEquipmentGeneration || {};
 
@@ -1138,8 +1140,10 @@
     // accentuer celui-ci ») : Corps à corps, Distance ou Mage, fixé à vie. C'est le profil déjà calculé pour l'équipement de
     // départ et l'avatar (computeEquipmentProfile) ; un sort tiré le fait passer Mage si sa magie est à
     // generation.domain.spell_margin points ou moins du meilleur score (« il a tiré un sort de l'eau, on pousse vers ça »).
-    function chooseDomain(character) {
+    // forced : domaine imposé par le garde-fou de l'escouade initiale (createInitialSquad), après l'échec des tirages normaux.
+    function chooseDomain(character, forced = null) {
       const profile = computeEquipmentProfile(character);
+      if (DOMAIN_CODES.includes(forced)) return {code: forced, profile, tipped: false, forced: true};
       const best = Math.max(profile.scores.melee, profile.scores.ranged);
       const tipped = profile.type !== "magic" && (character.spells || []).length > 0
         && profile.scores.magic >= best - constant("generation.domain.spell_margin", 5);
@@ -1465,10 +1469,10 @@
       character.spells = startingSpells.known;
       trace.spells = startingSpells.draws;
       // Domaine (Idan, 2026-11-01) : choisi d'après les tirages, puis accentué ; les préférences d'armes suivent.
-      const domainChoice = chooseDomain(character);
+      const domainChoice = chooseDomain(character, createOptions.forcedDomain);
       character.domain = domainChoice.code;
       const domainMoves = accentuateDomain(character, domainChoice, trace);
-      trace.domain = {code: domainChoice.code, scores: domainChoice.profile.scores, tippedBySpell: domainChoice.tipped, moves: domainMoves};
+      trace.domain = {code: domainChoice.code, scores: domainChoice.profile.scores, tippedBySpell: domainChoice.tipped, forced: Boolean(domainChoice.forced), moves: domainMoves};
       if (domainMoves.length) character.weaponPreferences = computeWeaponPreferences(character.skills);
 
       character.salaryPretension = rollDice(10,6);
@@ -1541,16 +1545,40 @@
       }
     }
 
+    // Garde-fou de l'escouade initiale (Idan, 2026-11-01 : « Il faut 1 mage / 1 distance et 1 CAC sur une escouade. On peut
+    // forcer la génération d'un ou deux mercenaires en plus si la chance n'a pas souri ») : pour chaque domaine absent de
+    // l'escouade (le capitaine ne compte pas), un mercenaire de plus, du même peuple et de la même culture. On le tire
+    // normalement jusqu'à generation.initial_squad.domain_attempts fois ; si aucun tirage ne tombe dans le domaine, le
+    // dernier est tiré avec ce domaine imposé (et accentué vers lui). L'escouade compte toujours au moins 1 mercenaire :
+    // au plus 2 en plus. Chaque place en plus ne prend qu'un identifiant, quel que soit le nombre de tirages.
     function createInitialSquad(captain, createOptions = {}) {
       const count = rollInitialSquadSize(captain);
-      return Array.from({length: count}, (_, index) => createMercenary({
+      const nextId = index => typeof createOptions.nextId === "function" ? createOptions.nextId(index) : null;
+      const draw = (id, extra = {}) => createMercenary({
         ...createOptions,
         captain,
         forcedPeople: captain.people,
         forcedCulture: captain.culture,
         role: createOptions.role || "Mercenaire initial",
-        id: typeof createOptions.nextId === "function" ? createOptions.nextId(index) : null
-      }));
+        id,
+        ...extra
+      });
+      const squad = Array.from({length: count}, (_, index) => draw(nextId(index)));
+      const missing = DOMAIN_CODES.filter(code => !squad.some(m => m.domain === code));
+      const attempts = Math.max(1, constant("generation.initial_squad.domain_attempts", 30));
+      for (const code of missing) {
+        const id = nextId(squad.length);
+        let recruit = null, tries = 0;
+        while (!recruit && tries < attempts) {
+          tries++;
+          const candidate = draw(id);
+          if (candidate.domain === code) recruit = candidate;
+        }
+        if (!recruit) { tries++; recruit = draw(id, {forcedDomain: code}); }
+        recruit.generationTrace.squadGuard = {domain: code, attempts: tries, forced: recruit.generationTrace.domain.forced};
+        squad.push(recruit);
+      }
+      return squad;
     }
 
     function classifySkill(skill) {

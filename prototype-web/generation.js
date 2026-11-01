@@ -38,14 +38,9 @@ function createCaptainFromForm() {
   });
 }
 
+// Le générateur tire l'escouade et applique le garde-fou des domaines (1 Mage, 1 Distance, 1 CAC ; doc 02).
 function createInitialSquad(captain) {
-  const count = ensureGenerator().rollInitialSquadSize(captain);
-  return Array.from({length: count}, () => createCharacter({
-    captain,
-    forcedPeople: captain.people,
-    forcedCulture: captain.culture,
-    role: "Mercenaire initial"
-  }));
+  return ensureGenerator().createInitialSquad(captain, {role: "Mercenaire initial", nextId: () => nextCharacterId()});
 }
 
 function compatibleAscendances(people) {

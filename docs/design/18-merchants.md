@@ -93,7 +93,7 @@ Ainsi, on gagne un peu en achetant un T3 ou un T4 là où l'affinité est bonne,
 cette arme dans sa liste, tant que la compagnie est jeune.
 
 **Exemples** (compagnie neuve, capitaine humain chaotique neutre : affinité +44, sans intendant) : Pistolet T2 739 PO à l'achat,
-470 PO à la vente ; Tromblon T4 7 182 PO à l'achat, 6 267 PO à la vente (5 092 PO pour une compagnie à 1 étoile d'or) ;
+470 PO à la vente ; Tromblon T4 17 955 PO à l'achat, 15 667 PO à la vente (12 730 PO pour une compagnie à 1 étoile d'or ; qualité De luxe, × 2,5, depuis le 2026-11-01) ;
 10 épées longues T1 : environ 133 PO en tout (25 PO la première).
 
 ## 9 — « Rien que pour toi, capitaine » (Idan, 2026-10-31)

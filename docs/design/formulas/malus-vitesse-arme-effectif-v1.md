@@ -38,6 +38,6 @@ Si l'autre main est vide, une arme `Au choix` est utilisée à deux mains et son
 <aside>
 ⚙️
 
-La qualité utilise le **Multiplicateur malus** déjà commun aux items : Usée augmente le handicap, Grand Luxe le réduit.
+La qualité utilise le **Multiplicateur malus** déjà commun aux items : Usée augmente le handicap, De bonne facture et De luxe le réduisent.
 
 </aside>

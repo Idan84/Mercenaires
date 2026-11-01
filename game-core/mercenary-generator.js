@@ -929,7 +929,7 @@
     }
 
     function qualityForTier(tier) {
-      const qualityCode = startingEquipmentGeneration.quality_by_tier?.[String(tier)] || ({1:"worn",2:"standard",3:"luxury"})[tier];
+      const qualityCode = startingEquipmentGeneration.quality_by_tier?.[String(tier)] || ({1:"worn",2:"standard",3:"luxury",4:"deluxe"})[tier];
       return itemQualityByCode.get(qualityCode) || {code:qualityCode,nom:`T${tier}`};
     }
 

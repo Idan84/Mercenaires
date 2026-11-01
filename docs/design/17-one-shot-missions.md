@@ -188,16 +188,16 @@ Données : `data/reference/enemy-archetypes.json` (24 fiches gobelines ; les orc
 | Assassin | deux Dagues (+ Discrétion d'un cran) | Vitesse, Esquive, Dextérité | Constitution, Courage |
 | Chef | Sabre + Rondache (+ Intimidation d'un cran) | Courage, Volonté, Charisme | — |
 
-**Équipement** : le tier suit le niveau, T1 Usée, T2 Correcte, T3 Grand Luxe, T4 Grand Luxe. **Le T4 ne se trouve que sur les élites et les chefs** : un butin rare, aucun mercenaire généré n'a d'arme T4. Armures, du novice à l'élite : Lancier Vêtements, Gambison, Armure de cuir, Cuir renforcé ; Frondeur Vêtements, Vêtements, Gambison, Armure de cuir ; Archer Vêtements, Gambison, Armure de cuir, Armure de cuir ; Guerrier Gambison, Armure de cuir, Cuir renforcé, Brigandine ; Assassin Vêtements.
+**Équipement** : le tier suit le niveau, T1 Usée, T2 Correcte, T3 De bonne facture, T4 De luxe (qualités renommées le 2026-11-01 ; T3 et T4 étaient « Grand Luxe »). **Le T4 ne se trouve que sur les élites et les chefs** : un butin rare, aucun mercenaire généré n'a d'arme T4. Armures, du novice à l'élite : Lancier Vêtements, Gambison, Armure de cuir, Cuir renforcé ; Frondeur Vêtements, Vêtements, Gambison, Armure de cuir ; Archer Vêtements, Gambison, Armure de cuir, Armure de cuir ; Guerrier Gambison, Armure de cuir, Cuir renforcé, Brigandine ; Assassin Vêtements.
 
 **Chefs**, quatre niveaux (noms validés par Idan) :
 
 | Chef | Centile | Armure | Battu seul par | Menace |
 |---|---|---|---|---|
 | Caïd gobelin | P75 | Cuir renforcé T3 | ~3 mercenaires | 30 |
-| Grand Caïd gobelin | P90 | Cotte de mailles T4 | ~5,5 | 55 |
-| Chef de clan gobelin | P95 | Brigandine T4 | ~10 | 100 |
-| Roi des Cavernes | P99 | Armure d'écailles T4 | ~17 (mesuré le 2026-11-01, §15) | 167 |
+| Grand Caïd gobelin | P90 | Cotte de mailles T4 | ~5,5 | 58 |
+| Chef de clan gobelin | P95 | Brigandine T4 | ~10 | 102 |
+| Roi des Cavernes | P99 | Armure d'écailles T4 | ~20 (remesuré au §17) | 201 |
 
 Le Roi des Cavernes reste presque intouchable pour une compagnie de départ : c'est voulu (Idan) ; il devra affronter des mercenaires à 4 étoiles d'or, et la magie (boule de feu) ignorera son bouclier.
 
@@ -205,11 +205,11 @@ Le Roi des Cavernes reste presque intouchable pour une compagnie de départ : c'
 
 | | Novice | Normal | Vétéran | Élite |
 |---|---|---|---|---|
-| Lancier | 6 | 12 | 23 | 43 |
-| Frondeur | 5 | 10 | 16 | 22 |
-| Archer | 6 | 11 | 16 | 23 |
-| Guerrier | 5 | 11 | 24 | 47 |
-| Assassin | 4 | 7 | 15 | 23 |
+| Lancier | 6 | 12 | 23 | 37 |
+| Frondeur | 5 | 10 | 16 | 23 |
+| Archer | 6 | 11 | 16 | 27 |
+| Guerrier | 5 | 11 | 24 | 60 |
+| Assassin | 4 | 7 | 15 | 28 |
 
 Le Guerrier d'élite (bouclier et Brigandine) reste tel quel : les mercenaires monteront aussi en niveau et en équipement (Idan). Limites de la mesure : groupes d'un seul archétype, petite carte de test ; les synergies d'un camp mélangé ne sont pas mesurées. L'Assassin vaudra plus quand la Discrétion aura une règle de combat. **Le Chaman** viendra avec la magie en combat.
 
@@ -281,13 +281,13 @@ Même méthode que les gobelins (§10), sur les centiles des Orcs générés (Or
 
 | Points de combat | Novice | Normal | Vétéran | Élite |
 |---|---|---|---|---|
-| Lancier | 7 | 15 | 26 | 43 |
-| Frondeur | 6 | 9 | 15 | 22 |
-| Archer | 6 | 11 | 17 | 23 |
-| Guerrier | 6 | 15 | 32 | 51 |
-| Assassin | 5 | 10 | 18 | 33 |
+| Lancier | 7 | 15 | 26 | 50 |
+| Frondeur | 6 | 9 | 15 | 24 |
+| Archer | 6 | 11 | 17 | 29 |
+| Guerrier | 6 | 15 | 32 | 79 |
+| Assassin | 5 | 10 | 18 | 34 |
 
-Chefs (noms validés par Idan) : **Chef de bande orc** (P75, 38 points), **Chef de guerre orc** (P90, 72), **Seigneur de guerre orc** (P95, 111), **Khan des Steppes** (P99, 221 ; mesurés le 2026-11-01, §15). Pour comparer : Caïd gobelin 30, Grand Caïd 55, Chef de clan 100.
+Chefs (noms validés par Idan) : **Chef de bande orc** (P75, 38 points), **Chef de guerre orc** (P90, 77), **Seigneur de guerre orc** (P95, 135), **Khan des Steppes** (P99, 261 ; T4 De luxe, §17). Pour comparer : Caïd gobelin 30, Grand Caïd 58, Chef de clan 102.
 
 Ordres orcs (Idan : « au pire, c'est un texte à changer ») : le chef de village (le vieux fort, le forgeron rendu avec une liste de commandes), le chef orc rival (« Un orc ne ment pas. Presque jamais. ») et l'ordre de l'Empereur (« une horde orque »). Texte complet dans `one-shot-missions.json` (`village_orcs`, `orc_rival`, `emperor_orcs`).
 
@@ -297,33 +297,33 @@ Même méthode, sur les centiles des personnages générés de chaque peuple (to
 
 | Hommes-bêtes | Armes | Novice | Normal | Vétéran | Élite |
 |---|---|---|---|---|---|
-| Guerrier (30) | Hache de guerre + Rondache | 7 | 17 | 37 | 49 |
-| Brute (20) | Hache double | 6 | 12 | 24 | 42 |
-| Arbalétrier (20) | Arbalète | 7 | 12 | 19 | 24 |
-| Traqueur (15) | deux Hachettes (+ Discrétion d'un cran) | 5 | 10 | 19 | 30 |
-| Archer (15) | Arc | 6 | 10 | 16 | 25 |
+| Guerrier (30) | Hache de guerre + Rondache | 7 | 17 | 37 | 79 |
+| Brute (20) | Hache double | 6 | 12 | 24 | 48 |
+| Arbalétrier (20) | Arbalète | 7 | 12 | 19 | 30 |
+| Traqueur (15) | deux Hachettes (+ Discrétion d'un cran) | 5 | 10 | 19 | 34 |
+| Archer (15) | Arc | 6 | 10 | 16 | 27 |
 
-Chefs (Hache de guerre + Rondache) : **Chef de harde** (41), **Grand Chef de harde** (64), **Seigneur des Bêtes** (115), **Roi-Totem** (193).
+Chefs (Hache de guerre + Rondache) : **Chef de harde** (41), **Grand Chef de harde** (82), **Seigneur des Bêtes** (133), **Roi-Totem** (237).
 
 | Voleurs | Armes | Novice | Normal | Vétéran | Élite |
 |---|---|---|---|---|---|
-| Coupe-jarret (25) | deux Dagues (+ Discrétion d'un cran) | 5 | 10 | 18 | 35 |
-| Spadassin (20) | Estoc + Rondache | 8 | 18 | 48 | 58 |
-| Arbalétrier (20) | Arbalète | 8 | 13 | 20 | 25 |
-| Archer (20) | Arc | 7 | 11 | 20 | 24 |
-| Bandit (15) | Lance | 8 | 16 | 25 | 50 |
+| Coupe-jarret (25) | deux Dagues (+ Discrétion d'un cran) | 5 | 10 | 18 | 34 |
+| Spadassin (20) | Estoc + Rondache | 8 | 18 | 48 | 88 |
+| Arbalétrier (20) | Arbalète | 8 | 13 | 20 | 31 |
+| Archer (20) | Arc | 7 | 11 | 20 | 31 |
+| Bandit (15) | Lance | 8 | 16 | 25 | 48 |
 
-Chefs (Sabre + Rondache) : **Chef de brigands** (40), **Capitaine des brigands** (68), **Maître de la Guilde** (108), **Prince des Voleurs** (211).
+Chefs (Sabre + Rondache) : **Chef de brigands** (40), **Capitaine des brigands** (81), **Maître de la Guilde** (132), **Prince des Voleurs** (255).
 
 | Ogres | Armes | Novice | Normal | Vétéran | Élite |
 |---|---|---|---|---|---|
-| Cogneur (30) | Massue | 9 | 17 | 34 | 48 |
-| Écraseur (20) | Marteau de guerre | 9 | 19 | 44 | 54 |
-| Tromblonnier (20) | Tromblon | 7 | 13 | 22 | 28 |
-| Perceur (15) | Pic de guerre | 9 | 19 | 35 | 54 |
-| Canonnier (15) | Canon à main | 8 | 13 | 22 | 29 |
+| Cogneur (30) | Massue | 9 | 17 | 34 | 56 |
+| Écraseur (20) | Marteau de guerre | 9 | 19 | 44 | 83 |
+| Tromblonnier (20) | Tromblon | 7 | 13 | 22 | 35 |
+| Perceur (15) | Pic de guerre | 9 | 19 | 35 | 57 |
+| Canonnier (15) | Canon à main | 8 | 13 | 22 | 34 |
 
-Chefs (Marteau de guerre) : **Patron ogre** (42), **Grand Patron ogre** (58), **Tyran ogre** (79), **Ventre-Roi** (116).
+Chefs (Marteau de guerre) : **Patron ogre** (42), **Grand Patron ogre** (67), **Tyran ogre** (98), **Ventre-Roi** (136).
 
 Ordres (trois par peuple, textes de JC, à changer si besoin) : chef de village (les totems dans la forêt ; le droit de respirer du moulin ; les ogres qui « repasseront »), rival (corne-maîtresse d'une harde, maître voleur d'une confrérie, chef ogre qui veut récupérer sa marmite) et ordre de l'Empereur. Codes : `village_hommes_betes`, `beastman_rival`, `emperor_hommes_betes`, `village_voleurs`, `thief_rival`, `emperor_voleurs`, `village_ogres`, `ogre_rival`, `emperor_ogres`.
 
@@ -333,15 +333,15 @@ Ordres (trois par peuple, textes de JC, à changer si besoin) : chef de village 
 
 - **Niveau de mission minimum** (`enemy-archetypes.json`, `niveau_mission_min`) : de 1 à 15, comme les étoiles (1 à 5 de bronze, puis d'argent, puis d'or : « 2★ argent » = 7). Une créature ne sort que dans une mission de ce niveau ou plus : au tirage du camp, les lignes dont la fiche n'est pas permise sont écartées. **Toutes les fiches sont à 1 pour l'instant** (rien ne change en jeu) ; les niveaux se régleront avec le budget par étoile.
 - **Butin par créature** (`butin`) : `equipement` = chance (%) de récupérer chaque objet porté par un ennemi mort (100 = la règle d'avant, §11) ; `objets` = objets en plus, chacun `{type, nom, tier, chance}` (type : `weapon`, `armor`, `potion`, `manual` ou un objet à bonus comme `ring`), tirés à la mort de la créature. **Toutes les fiches : 100 % de l'équipement, rien en plus** pour l'instant. L'équipement de nos morts revient toujours en entier.
-- **Chefs mesurés** : les neuf chefs restés « au-delà de la mesure » sont mesurés sur leurs fiches figées, telles que le jeu les applique, contre 1 à 27 mercenaires générés (200 combats par effectif ; points = 10 × le nombre de mercenaires qui les battent une fois sur deux). Contrôle : le Grand Caïd (55) et le Tyran ogre (79) retombent à 51 et 81 avec la même méthode.
+- **Chefs mesurés** : les neuf chefs restés « au-delà de la mesure » sont mesurés sur leurs fiches figées, telles que le jeu les applique, contre 1 à 27 mercenaires générés (200 combats par effectif ; points = 10 × le nombre de mercenaires qui les battent une fois sur deux). Contrôle : le Grand Caïd (55) et le Tyran ogre (79) retombent à 51 et 81 avec la même méthode. Le tableau donne les points à jour (fiches T4 remesurées au §17).
 
 | Peuple | Chef 1 | Chef 2 | Chef 3 | Chef 4 |
 |---|---|---|---|---|
-| Gobelins | Caïd 30 | Grand Caïd 55 | Chef de clan 100 | **Roi des Cavernes 167** |
-| Orcs | Chef de bande 38 | Chef de guerre 72 | **Seigneur de guerre 111** | **Khan des Steppes 221** |
-| Hommes-bêtes | Chef de harde 41 | Grand Chef de harde 64 | **Seigneur des Bêtes 115** | **Roi-Totem 193** |
-| Voleurs | Chef de brigands 40 | Capitaine des brigands 68 | **Maître de la Guilde 108** | **Prince des Voleurs 211** |
-| Ogres | Patron 42 | Grand Patron 58 | Tyran 79 | **Ventre-Roi 116** |
+| Gobelins | Caïd 30 | Grand Caïd 58 | Chef de clan 102 | Roi des Cavernes 201 |
+| Orcs | Chef de bande 38 | Chef de guerre 77 | Seigneur de guerre 135 | Khan des Steppes 261 |
+| Hommes-bêtes | Chef de harde 41 | Grand Chef de harde 82 | Seigneur des Bêtes 133 | Roi-Totem 237 |
+| Voleurs | Chef de brigands 40 | Capitaine des brigands 81 | Maître de la Guilde 132 | Prince des Voleurs 255 |
+| Ogres | Patron 42 | Grand Patron 67 | Tyran 98 | Ventre-Roi 136 |
 
 - **Design Lab, Bestiaire** : colonnes « Dès » (niveau de mission minimum) et « Butin » (chance par objet porté, et les objets en plus au survol).
 
@@ -379,3 +379,9 @@ Ordres de grandeur (moyennes) :
 | 5★ or | 2 250 | ~70 | 1,19 M | 850 000 | 52 / 30 / 10,5 / 8,5 | 13,5 |
 
 Mesuré au simulateur (compagnie de départ complète, une quinzaine de mercenaires, 64 combats par budget, ennemis à 50 % novices et 50 % normaux, chef 1) : budget 50 : 100 % de victoires ; 100 : 88 % (capitaine mort 19 %) ; 150 : 64 % (34 %) ; 250 : 31 % (53 %). En jeu : 42 ennemis en 3★ argent, 88 en 5★ or, sans souci de calcul.
+
+## 17 — Qualités par tier, fiches T4 remesurées (Idan, 2026-11-01)
+
+> « Usé / Correcte / De bonne facture / De luxe. On aura du T5 et du T6 qui vont venir et des cristaux sur les armes. »
+
+Une qualité par tier (`item-qualities.json`, doc 05) : T1 Usée, T2 Correcte, T3 **De bonne facture** (l'ancien « Grand Luxe », mêmes valeurs : +20 % / −20 % / prix × 1,5), T4 **De luxe** (valeurs bénéfiques +40 %, malus −40 %, prix × 2,5). Les 40 fiches équipées en T4 (élites et chefs 2 à 4) passent de +20 % à +40 % : leurs points sont remesurés (même méthode qu'au §15, 200 combats par effectif) et reportés dans les tableaux ci-dessus. Les élites de mêlée prennent le plus (Guerrier orc 51 → 79, Spadassin 58 → 88, Écraseur ogre 54 → 83) ; les tireurs peu. Chefs 4 : Roi des Cavernes 201, Khan des Steppes 261, Roi-Totem 237, Prince des Voleurs 255, Ventre-Roi 136.

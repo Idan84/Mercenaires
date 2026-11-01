@@ -157,7 +157,7 @@
       return {before,after:character.mana,gained:character.mana-before,max};
     }
 
-    // Altération magique de l'armure portée, × le multiplicateur de malus de sa qualité (usée 1,2 ; Grand Luxe 0,8).
+    // Altération magique de l'armure portée, × le multiplicateur de malus de sa qualité (Usée 1,2 ; De bonne facture 0,8 ; De luxe 0,6).
     function armorPenalty(unit){
       const item=combat.armorItem(unit),template=combat.armorTemplate(item);
       if(!template) return 0;

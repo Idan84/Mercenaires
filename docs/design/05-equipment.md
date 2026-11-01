@@ -102,7 +102,7 @@ Chaque objet tire son tier **indépendamment** selon la réputation personnelle 
 | 300 | 45 % | 40 % | 15 % |
 | 400+ | 25 % | 45 % | 30 % |
 
-Mapping actuel vers les qualités existantes : **T1 = Usée**, **T2 = Correcte**, **T3 = Grand Luxe**.
+Une qualité par tier (Idan, 2026-11-01 : « Usée, Correcte, De bonne facture, De luxe ») : **T1 = Usée**, **T2 = Correcte**, **T3 = De bonne facture** (ex-« Grand Luxe »), **T4 = De luxe** (valeurs bénéfiques +40 %, malus −40 %, prix × 2,5). T5, T6 et les cristaux sur les armes viendront.
 
 **Ce que voit le joueur (Idan, 2026-10-30)** : jamais le tier. Les T1, T2, T3… servent à l'équipe, pas au joueur : ils n'apparaissent nulle part dans le jeu. Le **cadre de couleur** dit la qualité, et chaque objet porte un **nom public** qui reflète son niveau de façon subtile, drôle et décalée (`item-titles.json`, par ex. « Pétoire rafistolée » pour une arquebuse T1). Le nom de base de l'objet (« Arquebuse ») s'affiche en petit quand il diffère.
 
@@ -119,9 +119,9 @@ Chaque objet a une **valeur en pièces d’or, cachée** : rien ne l’affiche a
   - Armures (`base-armors.json`) : Vêtements 20, Gambison 60, Armure de cuir 90, Cuir renforcé 160, Brigandine 220, Cotte de mailles 260, Armure d’écailles 380, Armure de plates 600.
   - Bottes, ceintures, capes, gants, culottes : 100. Amulettes et bagues : 150.
 - **Tier** : T1 × 1, T2 × 3, T3 × 8, T4 × 25 (`economy.item_value.tier_<n>_multiplier`).
-- **Qualité** : Usée × 0,6, Correcte × 1, Grand Luxe × 1,5 (`item-qualities.json`, `multiplicateur_prix`).
+- **Qualité** : Usée × 0,6, Correcte × 1, De bonne facture × 1,5, De luxe × 2,5 (`item-qualities.json`, `multiplicateur_prix`).
 
-Exemples : Épée longue T1 Usée 72 PO, T2 Correcte 360 PO, T3 Grand Luxe 1 440 PO, T4 Grand Luxe 4 500 PO. Un objet sans prix de base n’a pas de valeur. Casques et chapeaux : 100 PO de base, comme les autres objets à bonus.
+Exemples : Épée longue T1 Usée 72 PO, T2 Correcte 360 PO, T3 De bonne facture 1 440 PO, T4 De luxe 7 500 PO. Un objet sans prix de base n’a pas de valeur. Casques et chapeaux : 100 PO de base, comme les autres objets à bonus.
 
 Le prix d’achat et de revente chez un marchand en découle (doc 18 : affinité, intendant, quantité, rareté).
 

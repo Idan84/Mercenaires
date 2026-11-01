@@ -67,6 +67,19 @@
       const factor=state?woundCareFactor(state):1;
       return factor<1&&base>0?Math.max(1,Math.ceil(base*factor-1e-9)):base;
     };
+    // Médecin (Idan, 2026-11-01 ; nomination : medic.js) : en poste, il raccourcit les blessures de Médecine / 250, en
+    // plus du Dispensaire ; il apporte sa Médecine en Renommée ; il gagne 10 XP de Médecine par jour de blessure guéri.
+    const MEDIC={divisor:referenceConstant(reference,"medic.wound.skill_divisor",250),renown:referenceConstant(reference,"medic.renown.skill_share",1),
+      xpPerDay:referenceConstant(reference,"medic.xp.per_wound_day",10)};
+    function medicOf(state){
+      const id=state?.company?.medicId;
+      return id==null?null:(state.company.roster||[]).find(m=>m.id===id)||null;
+    }
+    const medicSkill=state=>Math.max(0,Number(medicOf(state)?.skills?.camp?.["Médecine"])||0);
+    function medicCareFactor(state){ return medicOf(state)?Math.max(0,1-medicSkill(state)/MEDIC.divisor):1; }
+    function medicRenown(state){ return medicOf(state)?Math.round(MEDIC.renown*medicSkill(state)):0; }
+    // Hors mission, comme l'intendant : ni dortoir, ni mission, ni garde du corps.
+    const offField=(state,m)=>m.id===state.company.intendantId||(state.company.medicId!=null&&m.id===state.company.medicId);
     // Bains chauds (Idan, 2026-11-01) : un jour de fatigue de moins par niveau, au moins 1 jour.
     const fatigueDaysFor=(days,state)=>Math.max(1,(Number(days)||0)-fatigueRelief(state));
     const STARTING_DORMITORY_CAPACITY=referenceConstant(reference,"camp.dormitory.initial_capacity",25);
@@ -105,9 +118,11 @@
         // Points de mission (doc 09 §2) : pour l'instant, la renommée perdue sur un contrat échoué (doc 17 §8).
         missions:Number(state.company.missionRenown)||0,
         // Camp (Idan, 2026-10-25) : la Renommée des niveaux de qualité atteints par le dortoir.
-        camp:dormitoryQualityRenown(state)
+        camp:dormitoryQualityRenown(state),
+        // Médecin (Idan, 2026-11-01) : sa Médecine, tant qu'il est en poste.
+        medic:medicRenown(state)
       };
-      return {total:parts.captain+parts.members+parts.heritage+parts.missions+parts.camp,parts,ranking,heritageEntries};
+      return {total:parts.captain+parts.members+parts.heritage+parts.missions+parts.camp+parts.medic,parts,ranking,heritageEntries};
     }
 
     // Biographie figée sur le mercenaire ; une bio n'est jamais réutilisée dans une même sauvegarde,
@@ -375,6 +390,7 @@
           captainId:captain.id,
           roster:[captain,...squad],
           intendantId:null,
+          medicId:null,
           camp:{dormitoryCapacity:STARTING_DORMITORY_CAPACITY},
           renownHeritage:[],
           // Armes et armures de rechange de la compagnie, sans propriétaire, listées à l'Intendance (Idan, 2026-10-23
@@ -423,7 +439,7 @@
     }
     function dormitoryUsed(state){
       const company=state.company;
-      return rosterOf(state).filter(m=>m.id!==company.captainId&&m.id!==company.intendantId)
+      return rosterOf(state).filter(m=>m.id!==company.captainId&&!offField(state,m))
         .reduce((sum,m)=>sum+dormitoryPlaces(m),0);
     }
     function dormitoryFree(state){
@@ -586,7 +602,7 @@
       return done;
     }
     function woundCareFactor(state){
-      return Math.max(0,1-(Number(CAMP_BUILDINGS.get("dispensary")?.soins_par_niveau)||0)*buildingLevel(state,"dispensary"));
+      return Math.max(0,1-(Number(CAMP_BUILDINGS.get("dispensary")?.soins_par_niveau)||0)*buildingLevel(state,"dispensary"))*medicCareFactor(state);
     }
     function fatigueRelief(state){
       return (Number(CAMP_BUILDINGS.get("baths")?.fatigue_jours_par_niveau)||0)*buildingLevel(state,"baths");
@@ -595,7 +611,7 @@
       return (Number(CAMP_BUILDINGS.get("baths")?.mana_par_niveau)||0)*buildingLevel(state,"baths");
     }
     function campBuildingEffects(state){
-      return {woundFactor:woundCareFactor(state),fatigueRelief:fatigueRelief(state),manaBonus:manaBonusPercent(state)};
+      return {woundFactor:woundCareFactor(state),medicFactor:medicCareFactor(state),fatigueRelief:fatigueRelief(state),manaBonus:manaBonusPercent(state)};
     }
 
     // Indisponibilité après mission (10-mission-time §4 à §6) : un blessé ou un fatigué ne peut pas
@@ -608,11 +624,19 @@
 
     function recoverOneDay(state){
       const recovered=[];
+      const medic=medicOf(state);
       for(const mercenary of rosterOf(state)){
         if(!mercenary.recovery) continue;
         mercenary.recovery.daysLeft-=1;
         if(mercenary.recovery.daysLeft<=0){
-          recovered.push({mercenary,kind:mercenary.recovery.kind});
+          const entry={mercenary,kind:mercenary.recovery.kind};
+          // Médecin : XP de Médecine à chaque blessé guéri, selon les jours que la blessure a duré.
+          if(medic&&medic!==mercenary&&entry.kind==="wounded"){
+            const days=Math.max(1,state.day-(Number(mercenary.recovery.sinceDay)||state.day));
+            entry.medicXp=MEDIC.xpPerDay*days;
+            if(progression) progression.apply(medic,{skills:{camp:{"Médecine":entry.medicXp}}});
+          }
+          recovered.push(entry);
           delete mercenary.recovery;
         }
       }
@@ -700,6 +724,7 @@
       const ids=[...new Set(memberIds)].filter(id=>roster.has(id));
       if(!ids.length) return {ok:false,reason:"Aucun mercenaire choisi."};
       if(ids.some(id=>expeditionOf(state,id))) return {ok:false,reason:"Un de ces mercenaires est déjà en mission."};
+      if(state.company.medicId!=null&&ids.includes(state.company.medicId)) return {ok:false,reason:"Le médecin reste au camp."};
       // Départ le lendemain matin, puis les jours de marche.
       const expedition={id:offer.id,offer,memberIds:ids,signedDay:state.day,departDay:state.day+1,arriveDay:state.day+1+offer.distance,status:"scheduled"};
       expeditionsOf(state).push(expedition);
@@ -762,7 +787,7 @@
     // compagnie (capitaine et intendant non compris).
     function bestMercenaryLevel(state){
       const company=state.company;
-      return rosterOf(state).filter(m=>m.id!==company.captainId&&m.id!==company.intendantId)
+      return rosterOf(state).filter(m=>m.id!==company.captainId&&!offField(state,m))
         .reduce((best,m)=>Math.max(best,bodyguard.levelOf(m.reputation)),0);
     }
     function ensureBodyguardOffer(state){
@@ -782,6 +807,7 @@
       if(!m||!offer) return {ok:false,reason:"Aucune offre."};
       if(m.id===state.company.captainId) return {ok:false,reason:"Le capitaine reste à la compagnie."};
       if(m.id===state.company.intendantId) return {ok:false,reason:"L’intendant reste au camp."};
+      if(state.company.medicId!=null&&m.id===state.company.medicId) return {ok:false,reason:"Le médecin reste au camp."};
       if(!isAvailable(m,state)) return {ok:false,reason:m.recovery?"Il doit d’abord se remettre.":busyReason(state,m.id)};
       if(bodyguard.levelOf(m.reputation)<offer.level) return {ok:false,reason:"Réputation trop faible."};
       return {ok:true};
@@ -915,6 +941,7 @@
           }
           roster.splice(roster.indexOf(mercenary),1);
           if(state.company.intendantId===mercenary.id) state.company.intendantId=null;
+          if(state.company.medicId===mercenary.id) state.company.medicId=null;
           // Son inventaire, gardé au dortoir, retourne à l'Intendance (Idan, 2026-10-30) ; ce qu'il portait reste avec
           // lui (butin d'une victoire, perdu sur une défaite).
           const worn=new Set(Object.values(mercenary.equipment?.slots||{}).filter(Boolean));
@@ -1023,6 +1050,7 @@
       askTavernkeeper,
       intendantOf,
       assignIntendant,
+      medicOf,medicCareFactor,medicRenown,
       askCandidate,
       isAvailable,
       applyMissionAftermath,

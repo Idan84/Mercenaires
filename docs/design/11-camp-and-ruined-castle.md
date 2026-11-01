@@ -184,6 +184,26 @@ Les bâtiments médicaux améliorent :
   36 % → 61 % par jour au niveau 5) ;
 - pas d'écran à part ni d'image pour l'instant ; le nom de chaque bâtiment donne son rôle en infobulle.
 
+**Médecin** (Idan, 2026-11-01 ; règles `game-core/medic.js`, effets `game-core/campaign.js`, panneau `prototype-web/medic-ui.js`) :
+
+- on peut nommer un médecin **une fois le Dispensaire construit** ; un seul médecin ; ni le capitaine, ni un lieutenant, ni
+  l'intendant ;
+- **il peut refuser, même règle que l'intendant** (doc 14) : même envie (40 − 0,6 × Courage + 2 × Missions + 8 × Blessures,
+  de 2 à 95 %), même retour sur le terrain (60 − envie + 1 par jour en poste), même effet d'un refus sur l'affinité
+  (± (Intelligence − Courage) / 10, flatté une seule fois), une proposition par jour ;
+- c'est un **mercenaire hors mission, comme l'intendant** (Idan : « il devient un mercenaire hors mission, comme
+  l'intendant ») : il reste au camp, vit au Dispensaire (pas de place au dortoir), ne part ni en mission ni en garde du
+  corps, ne devient pas lieutenant ; il passe dans Ma Compagnie, à côté de l'intendant ;
+- **blessures** : leur durée est multipliée par **1 − Médecine / 250**, en plus du Dispensaire (au moins 1 jour), pour les
+  blessures reçues pendant qu'il est en poste. Médecine 46 (une recrue moyenne) : −18 % ; 63 : −25 % ; 100 : −40 %.
+  Dispensaire 1 et médecin à 50 : 10 jours → 8 ;
+- **Renommée de la compagnie** : + sa Médecine, tant qu'il est en poste (+46 pour un médecin moyen) ;
+- **expérience** : chaque fois qu'un blessé guérit pendant qu'il est en poste, il gagne **10 XP de Médecine par jour** que la
+  blessure a duré ;
+- **interface** (Idan : « on déplace sa fiche à côté de l'intendant ») : en haut de l'Intendance, à côté de l'intendant ;
+  « Nommer un médecin » (la Médecine de chaque candidat), puis sa fiche compacte avec ses effets au survol et « Le renvoyer
+  sur le terrain ». Textes : `medic-dialogue.json`. Constantes : `medic.*`.
+
 ### Mémorial
 
 Le mémorial a une **capacité illimitée** et conserve la mémoire des mercenaires morts.

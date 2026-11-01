@@ -58,10 +58,15 @@ const MissionsLab=(()=>{
       const orders=(data.ordres||[]).filter(o=>o.mission===def.code);
       return {kind:"camp",code:def.code,def,orders,
         camps:camps.map(c=>{
-          const totalLine=(c.lignes||[]).reduce((s,l)=>s+(Number(l.poids)||0),0),chief=archetypes.get(c.chef);
+          const totalLine=(c.lignes||[]).reduce((s,l)=>s+(Number(l.poids)||0),0);
+          // Chefs par métal (budgets[].chefs) : la fiche « Chef » de ce peuple au niveau demandé.
+          const chiefs=(Array.isArray(def.budgets)?def.budgets:[]).map(b=>({metal:b.metal,list:(b.chefs||[]).map(ch=>{
+            const a=[...archetypes.values()].find(x=>x.faction===c.faction&&x.ligne==="Chef"&&x.niveau===ch.niveau);
+            return {name:a?.nom||ch.niveau,points:a?.points??null};
+          })}));
           return {faction:c.faction,name:c.nom_camp||c.faction,chance:pct(Number(c.poids)||1,totalCamp),
             lines:(c.lignes||[]).map(l=>({name:l.ligne,share:pct(Number(l.poids)||0,totalLine)})),
-            chief:chief?{name:chief.nom,points:chief.points}:{name:c.chef,points:null},names:c.noms||{},
+            chiefs,names:c.noms||{},
             orders:orders.filter(o=>o.faction===c.faction)};
         }),
         variables:variablesOf(orders.map(o=>[o.titre,o.texte,o.signature]))};
@@ -78,18 +83,30 @@ const MissionsLab=(()=>{
   }
   const rule=(label,value)=>`<tr><th>${html(label)}</th><td>${value}</td></tr>`;
 
+  // Règles du contrat (doc 17 §16) : niveau, budget par métal, génération, distance, carte, récompense, coffre, échec.
+  const range=pair=>Array.isArray(pair)?pair.map(num).join("–"):"—";
   function campRules(def){
-    const budgets=Object.entries(def.budgets||{}).map(([level,b])=>`difficulté ${html(level)} : ${b.min} à ${b.max} points, « normal » ${Math.round((b.chance_normal||0)*100)} % (sinon novice)`).join("<br>");
-    const r=def.recompense||{},chest=def.coffre||{},tiers=(chest.tiers||[]).map(t=>`tier ${t.tier} : ${t.poids} %`).join(", ");
+    const [low,high]=def.niveau?.ecart||[-3,2],sign=n=>(n>0?"+":n<0?"−":"")+Math.abs(n);
+    const budgets=(Array.isArray(def.budgets)?def.budgets:[]).map(b=>{
+      const monsters=b.monstres||[],total=monsters.reduce((t,m)=>t+(Number(m.poids)||0),0),chiefTotal=(b.chefs||[]).reduce((t,c)=>t+(Number(c.poids)||0),0);
+      const factor=Number(b.puissance)===2?`niveau² × ${range(b.facteur)}`:`${range(b.facteur)} × niveau`;
+      return `<b>${html(b.metal)}</b> (niveaux ${html(b.niveaux.join(" à "))}) : ${factor} points · ${monsters.map(m=>html(m.niveau)+" "+pct(Number(m.poids)||0,total)).join(", ")} · ${(b.chefs||[]).map(c=>html(c.niveau)+((b.chefs||[]).length>1?" "+pct(Number(c.poids)||0,chiefTotal):"")).join(", ")}`;
+    }).join("<br>");
+    const r=def.recompense||{},chest=def.coffre||{},gold=chest.or||{};
+    const objects=(chest.objets||[]).map(o=>{
+      const dice=`${Number(o.des)||1}D${html(o.faces)} × niveau`+(Number(o.diviseur)>1?` ÷ ${html(o.diviseur)}`:"");
+      return `T${html(o.tier)} ${Number(o.diviseur)>1?"⌈"+dice+"⌉":dice}${Number(o.moins)?" − "+html(o.moins):""}`;
+    }).join(", ");
     const [minDays,maxDays]=def.validite_jours||[];
     return `<table class="mis-rules"><tbody>
       ${rule("Objectif",html(def.description))}
+      ${rule("Niveau",`niveau de Renommée de la compagnie (1 à 15) ${sign(low)} à ${sign(high)}, chaque écart avec la même chance`)}
       ${rule("Budget de points",budgets||"—")}
-      ${rule("Génération","Le chef d’abord, puis des ennemis (lignes selon leur poids) tant que le total plus la moitié du suivant reste dans le budget.")}
-      ${rule("Distance",`1D${html(def.distance_faces)} jours de marche · offre valable ${html(minDays)} à ${html(maxDays)} jours`)}
+      ${rule("Génération",`Le chef d’abord, puis des ennemis (niveau selon le métal, ligne selon son poids) tant que le total plus la moitié du suivant reste dans le budget ; au plus ${html(def.max_ennemis||100)} ennemis.`)}
+      ${rule("Distance",`1 à niveau jours de marche · offre valable ${html(minDays)} à ${html(maxDays)} jours`)}
       ${rule("Carte",def.carte?`${html(def.carte.colonnes)} × ${html(def.carte.lignes)} cases`:"—")}
-      ${rule("Récompense",`${num(r.base)} + ${num(r.par_jour)} × 2 × jours + ${html(r.par_point)} × points (PO)`)}
-      ${rule("Coffre",`${html(chest.or_des)}D${html(chest.or_faces)} × ${html(chest.or_unite)} PO · ${html(chest.objets_des)}D${html(chest.objets_faces)} objets (${html(tiers)})`)}
+      ${rule("Récompense",`${num(r.base||0)} + ${range(r.facteur)} × budget × niveau (PO)`)}
+      ${rule("Coffre",`or : ${range(gold.facteur)} × budget × niveau${Number(gold.diviseur)>1?" ÷ "+html(gold.diviseur):""} · objets : ${objects} (famille au hasard) · chaque sort d’une seule école : ${html(chest.manuels?.chance_par_niveau||0)} % × niveau`)}
       ${rule("Échec",`Renommée ${html(String(def.echec?.renommee??"—").replace("-","−"))} · en cas de défaite, risque de mort × ${html(def.defaite?.multiplicateur_mort)}`)}
     </tbody></table>`;
   }
@@ -98,11 +115,11 @@ const MissionsLab=(()=>{
     const listOf=key=>names[key]||[];
     const body=type.camps.map(c=>`<tr><td><b>${html(c.faction)}</b><small>${html(c.name)}</small></td><td class="num">${html(c.chance)}</td>
       <td>${c.lines.map(l=>`${html(l.name)} <small class="inline">${html(l.share)}</small>`).join("<br>")}</td>
-      <td>${html(c.chief.name)}<small>${c.chief.points==null?"points non mesurés":html(c.chief.points)+" points"}</small></td>
+      <td>${c.chiefs.map(m=>`<small class="inline">${html(m.metal)}</small> ${m.list.map(ch=>html(ch.name)+" "+(ch.points==null?"—":html(ch.points))).join(" / ")}`).join("<br>")}</td>
       <td title="${html(listOf(c.names.chefs).join(", "))}">${html(listOf(c.names.chefs).length)} chefs<small>${html(c.names.chefs||"")}</small></td>
       <td title="${html(listOf(c.names.tribus).join(", "))}">${html(listOf(c.names.tribus).length)} tribus<small>${html(c.names.tribus||"")}</small></td>
       <td class="num">${c.orders.length}</td></tr>`).join("");
-    return `<div class="table-wrap mis-camps"><table><thead><tr><th>Peuple</th><th title="Chance que le camp soit de ce peuple">Chance</th><th>Lignes (part des tirages)</th><th>Chef</th><th>Noms de chefs</th><th>Noms de tribus</th><th>Ordres</th></tr></thead>
+    return `<div class="table-wrap mis-camps"><table><thead><tr><th>Peuple</th><th title="Chance que le camp soit de ce peuple">Chance</th><th>Lignes (part des tirages)</th><th title="Chef selon le métal de la mission, avec ses points">Chef</th><th>Noms de chefs</th><th>Noms de tribus</th><th>Ordres</th></tr></thead>
       <tbody>${body}</tbody></table></div>`;
   }
 

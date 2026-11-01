@@ -67,7 +67,7 @@ const stable=campaignOf(always(0.999));
 const state=stable.createCampaign({captain,squad});
 assert.equal(state.day,1);
 assert.equal(state.company.gold,10000);
-assert.equal(state.company.camp.dormitoryCapacity,20);
+assert.equal(state.company.camp.dormitoryCapacity,25);
 assert.equal(state.company.roster.length,3);
 assert.equal(state.tavern.slots,5);
 assert.equal(state.tavern.candidates.length,5);

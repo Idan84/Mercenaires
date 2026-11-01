@@ -27,7 +27,7 @@ function mage({pm,vie,level=1,int,chance=54,mana=53,charisma=50,items=[],slots={
     name:"Mage",stats:{"Puissance magique":pm,Intelligence:int,Chance:chance,"Réserve de mana":mana,Constitution:50,Endurance:50,Volonté:50,Charisme:charisma},
     skills:{magic:{Vie:vie,Feu:vie,Eau:vie,Transmutation:vie,Foudre:vie,Télékinésie:vie,Illusion:vie,Nécromancie:vie,Invocation:vie}},mana,
     spells:["quick_heal","deep_heal","regeneration","mass_heal","restitution","purge","blessing","life_link","deliverance","holy_light"].map(code=>({code,school:"Vie",mastery:level}))
-      .concat(["fire_bolt","fireball","fire_ring","flaming_weapon","fire_armor","magma"].map(code=>({code,school:"Feu",mastery:level})))
+      .concat(["fire_bolt","fireball","fire_ring","flaming_weapon","fire_armor","magma","ignite","flame_wall","fiery_breath","living_torch"].map(code=>({code,school:"Feu",mastery:level})))
       .concat(["fog","healing_water","ice_arrow","tsunami","frost_armor","freeze","ice_weapon"].map(code=>({code,school:"Eau",mastery:level})))
       .concat(["sixth_sense","titan_strength","cheetah_speed","stone_skin","venom_spit","cauterize"].map(code=>({code,school:"Transmutation",mastery:level})))
       .concat(["shock","lightning_bolt","shock_weapon","chain_lightning","thunder","celerity","spark","electric_arc","paralysis","storm"].map(code=>({code,school:"Foudre",mastery:level})))
@@ -248,7 +248,9 @@ assert.deepEqual([out.success,out.zone.radius,out.amount],[true,1,52]);
 // École du Feu (Idan, 2026-10-25). Les mages de test ont le même niveau en Feu qu'en Vie.
 assert.deepEqual(magic.schoolSpells("Feu").map(x=>[x.code,x.action]),[
   ["fire_bolt","principale"],["fireball","principale"],["fire_ring","principale"],
-  ["flaming_weapon","rapide"],["fire_armor","rapide"],["magma","rapide"]]);
+  ["flaming_weapon","rapide"],["fire_armor","rapide"],["magma","rapide"],
+  // Idan, 2026-10-31 : le Feu passe à 10 sorts.
+  ["ignite","principale"],["flame_wall","principale"],["fiery_breath","principale"],["living_torch","rapide"]]);
 // Portées, rayons, durées, bonus : débutant (maîtrise 31,5) et expert (134), plafonds à très haute maîtrise.
 assert.deepEqual([magic.range(beginner,"fire_bolt"),magic.range(expert,"fire_bolt")],[15,25],"Trait de feu : 12 + M/10 (l'arc : 18)");
 assert.deepEqual([magic.range(beginner,"fireball"),magic.zoneRadius(beginner,"fireball")],[7,3]);
@@ -323,6 +325,35 @@ assert.deepEqual(combat.elementalDamage(armoredUnit("Armure de plates",4),"feu",
 assert.equal(combat.elementalDamage(armoredUnit("Armure d'écailles",4),"feu",100).damage,61);
 assert.equal(combat.elementalDamage(armoredUnit("Armure d'écailles",48),"feu",100).applied,75,"jamais plus de 75 %");
 assert.equal(combat.elementalDamage(armoredUnit(null,4,{elementalBonus:{froid:{bonus:36,turns:2}}}),"froid",100).damage,60,"Armure de feu contre le froid");
+
+// Embrasement (chiffres de JC3) : 1D6 de feu au début de chacune des activations de la cible, 2 tours (3 à 100 de maîtrise).
+assert.deepEqual([magic.duration(beginner,"ignite"),magic.duration(expert,"ignite"),magic.range(beginner,"ignite")],[2,3,7]);
+queue=[0,0.99];
+out=magic.cast(caster,foe,"ignite");
+assert.deepEqual([out.success,out.effect.element,out.effect.turns,out.effect.cumulable,out.amount],[true,"feu",2,false,0]);
+queue=[0.5];
+assert.deepEqual(magic.tick(out.effect),{amount:magic.effectAmount(caster,"ignite",4),dice:4,turnsLeft:1});
+// Mur de flammes : un mur de 3 + M/50 cases (au plus 5) en travers, 3 tours ; chaque brûlure : 1D6 × le facteur du lancer.
+assert.deepEqual([magic.zoneLength(beginner,"flame_wall"),magic.zoneLength(expert,"flame_wall"),magic.duration(beginner,"flame_wall")],[3,5,3]);
+queue=[0];
+out=magic.cast(caster,{q:2,r:0},"flame_wall");
+assert.deepEqual([out.success,out.wall.cells.length,out.wall.turns,out.wall.effect.element],[true,3,3,"feu"]);
+assert.ok(out.wall.cells.some(c=>c.q===2&&c.r===0),"centré sur la case visée");
+// Souffle ardent : un cône de 3 cases de profondeur depuis le lanceur (1, puis 3, puis 3 cases), 2D6 de feu, alliés compris.
+const cone=magic.coneCells({q:0,r:0},{q:1,r:0},3);
+assert.equal(cone.length,7);
+assert.deepEqual(cone.slice(0,1),[{q:1,r:0}]);
+assert.ok(cone.every(c=>Math.max(Math.abs(c.q),Math.abs(c.r),Math.abs(c.q+c.r))<=3&&c.q>0),"devant le lanceur");
+assert.match(magic.canCast(caster,{q:0,r:0},"fiery_breath").reason,/case voisine/);
+assert.match(magic.canCast(caster,{q:2,r:0},"fiery_breath").reason,/hors de portée/);
+queue=[0,0.99,0.5,0.5];
+out=magic.cast(caster,{q:1,r:0},"fiery_breath");
+assert.deepEqual([out.success,out.zone.shape,out.zone.length,out.zone.cells.length,out.element],[true,"cone",3,7,"feu"]);
+// Torche vivante : sur un allié ou soi, 2 + M/50 tours ; 1D4 aux ennemis à son contact à chacune de ses activations.
+assert.deepEqual([magic.duration(beginner,"living_torch"),magic.duration(expert,"living_torch"),magic.range(beginner,"living_torch")],[2,4,1]);
+queue=[0,0.99];
+out=magic.cast(caster,caster,"living_torch");
+assert.deepEqual([out.success,out.action,out.effect.element,out.effect.turns],[true,"rapide","feu",2]);
 
 // École de l'Eau (Idan, 2026-10-27). Les mages de test ont le même niveau en Eau qu'en Vie.
 assert.deepEqual(magic.schoolSpells("Eau").map(x=>[x.code,x.action]),[

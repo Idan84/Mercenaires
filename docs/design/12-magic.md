@@ -103,7 +103,7 @@ Même modèle que Soin rapide : **Effet = 10 × dés × (2 × Puissance magique 
 | Délivrance | 9 mana | 9 | 6 |
 | Lumière sacrée, par mort-vivant | 48, rayon 1 · 27 mana | 62, rayon 2 · 25 | 140, rayon 3 · 17 |
 
-### École du Feu (6 sorts, Idan, 2026-10-25)
+### École du Feu (10 sorts, Idan, 2026-10-25 et 2026-10-31)
 
 Même modèle que la Vie (effet, mana, CC aux dés maximum, EC : le lanceur subit le minimum de son sort). Données : `spells.json`.
 
@@ -117,12 +117,21 @@ Même modèle que la Vie (effet, mana, CC aux dés maximum, EC : le lanceur subi
 | Arme enflammée | rapide | +1D4 de feu à chaque coup qui touche (même sans blesser), pendant 2 + M/50 tours | la sienne ou celle d'un compagnon, 1 + M/50 | 12 |
 | Armure de feu | rapide | +(30 + M/5) de protection contre le froid, pendant 2 + M/50 tours | allié ou soi, 2 + M/25 | 10 |
 | Flaque de magma | rapide | une case vide devient infranchissable pendant **4 + M/25 tours** (de quoi bloquer un passage) | 2 + M/25 | 8 |
+| Embrasement | principale | l'ennemi brûle : **1D6 de feu au début de chacune de ses activations**, pendant **2 tours (3 à 100 de maîtrise)** ; ne se cumule pas | 6 + M/25, au plus 12 | 20 |
+| Mur de flammes | principale | un mur de **3 + M/50 cases (au plus 5)** en travers, pendant **3 tours** : qui y entre, ou y commence son activation, prend **1D6 de feu** à chaque fois | centre à 2 + M/25 | 25 |
+| Souffle ardent | principale | **2D6 de feu** à tous ceux d'un **cône de 3 cases** devant le lanceur (1, puis 3, puis 3 cases), alliés compris ; ne s'évite pas | vers une case voisine | 25 |
+| Torche vivante | rapide | pendant **2 + M/50 tours**, au début de chacune de ses activations, **1D4 de feu** à chaque ennemi au contact du porteur ; lui ne brûle pas | allié ou soi, 1 + M/50 | 15 |
 
 - **Trait de feu** suit les règles de l'arc (Idan) : après un sort réussi, jet de toucher avec la formule des tirs, la Maîtrise du sort à la place des compétences d'arme, l'Esquive de la cible, la perte avec la distance au-delà du quart de la portée (et la couverture, quand le décor existera) ; un trait raté peut toucher quelqu'un dans la ligne de tir (approximation des projectiles). Pas de jet de Blesser : seule la protection contre le feu réduit les dégâts.
 - **Boule de feu** ne s'évite pas, mais peut taper à côté : après un sort réussi, précision = 50 + Maîtrise / 2 − 5 × distance (10 à 95 %) ; si elle rate, la boule dévie de **1D3 cases** dans une direction au hasard. Elle touche tout le monde dans la zone, **alliés et lanceur compris** (Idan : « j'aime l'idée que le mage puisse se blesser lui-même »). Cette règle remplace, pour la Boule de feu, la précision d'attaque de zone du doc 04 (−10 % de toucher par case), qui reste celle du Tromblon. Sur la carte actuelle (13 × 9), un rayon de 5 couvre 91 cases sur 117.
 - **Anneau de feu** : un seul jet pour tous, alliés compris ; difficulté abaissée à 30 (Idan : « la chance de toucher me semble un peu faible ») ; depuis le 2026-11-01, c'est celle de tous les sorts.
 - **Arme enflammée** : les tours se décomptent au début de chaque activation de celui qui porte l'arme (le tour du lancer compte) ; elle ne se cumule pas. **Armure de feu** : même décompte ; elle protège du froid de l'école de l'Eau (Flèche de glace, Tsunami, Arme de glace) et réduit le Gel.
 - **Flaque de magma** : ni passage ni arrêt sur la case (déplacements, charges, fuites) ; elle ne coupe pas la vue et ne fait pas de dégâts ; elle refroidit au début du tour indiqué.
+- **Les quatre sorts du 2026-10-31** (validés par Idan, chiffrés par JC3) amènent l'école à 10 sorts.
+- **Embrasement** : la Puissance et la maîtrise sont figées au lancer, comme pour la Régénération ; coup critique : dé au maximum à chaque tour. Chaque brûlure compte pour la Résistance au feu de la cible et bloque la régénération d'un sang de troll.
+- **Mur de flammes** : posé comme le Brouillard (centré sur la case visée, en travers de la direction du lanceur), il ne bloque ni le passage ni la vue : il brûle. On brûle une fois par case de mur où l'on entre, et au début de son activation si l'on s'y tient. Pas de coup critique. Il s'éteint au début du tour indiqué ; la carte le montre en orange.
+- **Souffle ardent** : un seul jet pour tous, chacun avec sa protection contre le feu ; le lanceur choisit une case voisine, le cône part dans sa direction.
+- **Torche vivante** : un seul jet pour tous les voisins ennemis ; ne se cumule pas.
 
 | | Débutant | Recrue moyenne | Expert |
 |---|---|---|---|
@@ -132,6 +141,10 @@ Même modèle que la Vie (effet, mana, CC aux dés maximum, EC : le lanceur subi
 | Arme enflammée, par coup | +22, 2 tours | +28, 3 tours | +63, 4 tours |
 | Armure de feu | +36 froid, 2 tours | +41, 3 tours | +56, 4 tours |
 | Flaque de magma | 5 tours | 6 tours | 9 tours |
+| Embrasement, par tour | 30 × 2 tours · portée 7 · 18 mana | 40 × 2 · portée 8 · 17 | 89 × 3 · portée 11 · 12 |
+| Mur de flammes, par brûlure | 30 · 3 cases · 23 mana | 40 · 4 cases · 21 | 89 · 5 cases · 14 |
+| Souffle ardent, par cible | 60 · 23 mana | 79 · 21 | 178 · 14 |
+| Torche vivante, par voisin et par tour | 22 × 2 tours · 14 mana | 28 × 3 · 13 | 63 × 4 · 9 |
 
 ### École de l'Eau (7 sorts, Idan, 2026-10-27)
 
@@ -362,9 +375,8 @@ Le **Charisme** du mage y compte (Idan : l'Invocation et la Nécromancie en dép
 
 Idan a validé **90 sorts mono-école** (10 par école) et **49 sorts bi-école**. JC3 les chiffre et les intègre **une école par PR** ; chaque école intégrée a sa section plus haut, avec ses chiffres. Restent à intégrer :
 
-**Mono-école (27)**
+**Mono-école (23)**
 
-- **Feu** : **Embrasement** (la cible brûle au début de chacune de ses activations, 2 à 3 tours, non cumulable) ; **Mur de flammes** (une ligne de feu pendant 3 tours : qui la traverse ou s'y arrête brûle) ; **Souffle ardent** (un cône de 3 cases devant le lanceur, alliés compris) ; **Torche vivante** (sur un allié : pendant quelques tours, les ennemis à son contact brûlent).
 - **Eau** : **Prison de glace** (la cible est figée 1 tour, 2 pour un maître : elle ne bouge ni n'agit, mais ne subit que la moitié des dégâts ; sa protection contre le froid aide à résister) ; **Blizzard** (3 tours : petits dégâts de froid, Vitesse réduite, tirs gênés comme dans le Brouillard) ; **Source vive** (rend du mana à un allié).
 - **Transmutation** : **Robustesse de l'ours** (Constitution, donc PV max, 1 tour, 2 pour un maître) ; **Peau d'écailles** (protection contre le feu, le froid et la foudre) ; **Sagesse du hibou** (Intelligence : des sorts qui réussissent plus souvent) ; **Agilité du chat** (Esquive).
 - **Télékinésie** : **Lancer d'arme** (projette l'arme de corps à corps tenue, avec ses dégâts, puis la ramène) ; **Onde de choc** (repousse tous ceux à 2 cases du lanceur, avec un choc s'ils heurtent quelque chose) ; **Bond** (rapide : le lanceur se propulse de quelques cases sans attaque d'opportunité) ; **Écrasement** (dégâts contondants ; la cible ne peut pas se déplacer à son prochain tour).

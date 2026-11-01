@@ -264,6 +264,17 @@
       const dir={q:target.q-caster.q,r:target.r-caster.r};
       return Array.from({length},(_,k)=>({q:target.q+dir.q*k,r:target.r+dir.r*k}));
     }
+    // Cône (Souffle ardent ; Idan, 2026-10-31, chiffres de JC3) : du lanceur vers la case voisine visée, toutes les cases à
+    // length cases au plus dont la direction s'écarte de 30° au plus de l'axe : 1 case, puis 3, puis 3.
+    function coneCells(caster,target,length){
+      const a=cartesian(caster),b=cartesian(target),vx=b.x-a.x,vy=b.y-a.y,norm=Math.hypot(vx,vy)||1,cells=[];
+      for(let dq=-length;dq<=length;dq++) for(let dr=Math.max(-length,-dq-length);dr<=Math.min(length,-dq+length);dr++){
+        if(!dq&&!dr) continue;
+        const c=cartesian({q:dq,r:dr}),cos=(c.x*vx+c.y*vy)/(Math.hypot(c.x,c.y)*norm);
+        if(cos>=Math.cos(Math.PI/6)-1e-9) cells.push({q:caster.q+dq,r:caster.r+dr});
+      }
+      return cells.sort((x,y)=>combat.axialDistance(caster,x)-combat.axialDistance(caster,y));
+    }
     // Mur (Brouillard) : length cases centrées sur la case visée, le long de l'axe de la grille le plus en travers de la
     // direction du lanceur (sur sa propre case : le premier axe).
     function wallCells(caster,center,length){
@@ -343,7 +354,7 @@
       const self=target===caster||(target.q===caster.q&&target.r===caster.r);
       const distance=self?0:combat.axialDistance(caster,target),reach=range(caster,code);
       if(s.cible!=="invocation"&&distance>reach) return {ok:false,reason:"Cible hors de portée ("+distance+" cases, portée "+reach+")."};
-      if(s.zone_forme==="ligne"&&distance<1) return {ok:false,reason:"Choisissez une case voisine : la vague part dans sa direction."};
+      if((s.zone_forme==="ligne"||s.zone_forme==="cone")&&distance<1) return {ok:false,reason:"Choisissez une case voisine : le sort part dans sa direction."};
       if(s.portee_min!=null&&distance<num(s.portee_min,0)) return {ok:false,reason:"Trop près ("+distance+" case"+(distance>1?"s":"")+", au moins "+num(s.portee_min,0)+")."};
       if(s.ligne_de_vue&&!self&&!lineOfSight) return {ok:false,reason:"Pas de ligne de vue."};
       return {ok:true,cost,distance,range:reach};
@@ -426,11 +437,15 @@
           const critChance=combat.criticalChance(caster),critRoll=d100();
           Object.assign(result,{critChance,critRoll,critical:critRoll<=critChance});
         }
-        if(s.effet==="soin_sur_duree"||s.effet==="arme_elementaire"){
+        if(s.effet==="soin_sur_duree"||s.effet==="arme_elementaire"||s.effet==="degats_sur_duree"||s.effet==="aura_de_feu"){
           const factor=effectFactor(caster,code);
           result.effect={code:s.code,element:s.element||null,factor,turns:duration(caster,code),critical:result.critical,cumulable:s.cumulable!==false};
         }else if(s.effet==="protection_elementaire"){
           result.effect={code:s.code,element:s.element,bonus:bonus(caster,code),turns:duration(caster,code),cumulable:s.cumulable!==false};
+        }else if(s.effet==="mur_de_flammes"){
+          // Mur de flammes : les cases du mur et, pour chaque brûlure, les dés du sort × le facteur figé au lancer.
+          result.wall={cells:wallCells(caster,target,zoneLength(caster,code)),turns:duration(caster,code),
+            effect:{code:s.code,element:s.element,factor:effectFactor(caster,code),critical:false,turns:1}};
         }else if(s.effet==="terrain_infranchissable"){
           result.terrain={q:target.q,r:target.r,turns:duration(caster,code)};
         }else if(s.effet==="bonus_caracteristiques"){
@@ -485,7 +500,10 @@
         if(s.effet==="degats_sans_resistance"&&s.cible==="case") result.zone={center:{q:target.q,r:target.r},radius:zoneRadius(caster,code)};
         // Lien de vie : le lanceur perd au plus amount PV (en gardant 1 PV) ; l'allié en reçoit × transfert_facteur.
         if(s.effet==="transfert_pv") result.transfer={factor:num(s.transfert_facteur,1.5)};
-        if(s.effet==="degats_zone"&&s.zone_forme==="ligne"){
+        if(s.effet==="degats_zone"&&s.zone_forme==="cone"){
+          const length=zoneLength(caster,code);
+          result.zone={shape:"cone",length,cells:coneCells(caster,target,length)};
+        }else if(s.effet==="degats_zone"&&s.zone_forme==="ligne"){
           const length=zoneLength(caster,code);
           result.zone={shape:"ligne",length,cells:lineCells(caster,target,length)};
         }else if(s.effet==="degats_zone"){
@@ -622,6 +640,7 @@
       zoneLength,
       targetStats,
       lineCells,
+      coneCells,
       wallCells,
       unitsInCells,
       chainTargets,

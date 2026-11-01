@@ -25,8 +25,10 @@ const BestiaryLab=(()=>{
       const camps=mission.camps||[],totalCamp=camps.reduce((s,c)=>s+(Number(c.poids)||1),0);
       for(const camp of camps){
         const totalLine=(camp.lignes||[]).reduce((s,l)=>s+(Number(l.poids)||0),0);
+        // Chefs selon le métal de la mission (budgets[].chefs, doc 17 §16).
+        const chiefs=(Array.isArray(mission.budgets)?mission.budgets:[]).flatMap(b=>(b.chefs||[]).map(c=>({niveau:c.niveau,metal:b.metal})));
         (usage[camp.faction]=usage[camp.faction]||[]).push({mission:mission.nom,camp:camp.nom_camp||camp.faction,
-          chance:pct(Number(camp.poids)||1,totalCamp),chief:camp.chef||null,
+          chance:pct(Number(camp.poids)||1,totalCamp),chiefs,
           lines:Object.fromEntries((camp.lignes||[]).map(l=>[l.ligne,pct(Number(l.poids)||0,totalLine)]))});
       }
     }
@@ -98,7 +100,7 @@ const BestiaryLab=(()=>{
 
   function lineBlock(f,line){
     const camps=f.camps.map(c=>line.name==="Chef"
-      ? (line.rows.some(e=>e.code===c.chief)?c.camp+" : "+(line.rows.find(e=>e.code===c.chief)?.niveau||""):"")
+      ? (c.chiefs.length?c.camp+" : "+c.chiefs.map(x=>x.niveau+" ("+x.metal.toLowerCase()+")").join(", "):"")
       : (c.lines[line.name]?c.camp+" "+c.lines[line.name]:"")).filter(Boolean);
     const files=line.rows.map(e=>"assets-src/Ennemis/"+e.code+".jpg").join("\n");
     return `<div class="best-line" id="${anchor(f.name+"-"+line.name)}">

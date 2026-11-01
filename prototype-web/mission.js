@@ -6,7 +6,7 @@ const HEX_DIRS=[
 ];
 // Carte rectangulaire en coordonnées « offset » (lignes impaires décalées) ; la logique reste en axial (q, r).
 const MISSION_MAP={cols:13,rows:9,size:34,spawnRows:[3,4,5],spawnInset:2};
-// Taille de la carte : 13 × 9 pour la Mission Test, plus grande pour un contrat (doc 17, « Faire le ménage » : 20 × 12).
+// Taille de la carte : 13 × 9 pour la Mission Test, plus grande pour un contrat (doc 17, « Faire le ménage » : 30 × 15).
 function setMissionMapSize({cols=13,rows=9}={}){ MISSION_MAP.cols=cols; MISSION_MAP.rows=rows; }
 function missionColumn(q,r){ return q+((r-(r&1))>>1); }
 function missionAxial(col,r){ return {q:col-((r-(r&1))>>1),r}; }
@@ -581,7 +581,10 @@ function resolveMissionAftermath(){
 function resolveContractOutcome(m,report,victory){
   const offer=m.contract,rules=missionRules(),company=game.campaign.company;
   const captain=company.roster.find(x=>x.id===company.captainId);
-  const chestItems=victory&&captain?Array.from({length:rules.chestItemCount(offer)},()=>game.generator.createChestItem(captain,rules.chestTier(offer))).filter(Boolean):[];
+  // Coffre (doc 17 §16) : objets par tier, famille tirée au hasard, et manuels de sorts.
+  const plan=victory&&captain?rules.chestPlan(offer):{tiers:[],manuals:[]};
+  const chestItems=[...plan.tiers.map(tier=>game.generator.createChestItem(captain,tier)),
+    ...plan.manuals.map(code=>game.generator.createItemByName("manual",code))].filter(Boolean);
   const deadEnemies=m.enemies.filter(u=>!u.alive&&!u.offMap&&!u.summon).map(u=>u.character);
   const result=m.contractResult=rules.outcome(offer,{victory,deadEnemies,deadMercenaries:report.deaths,chestItems,
     makeItem:(type,name,tier)=>game.generator.createItemByName(type,name,tier)});

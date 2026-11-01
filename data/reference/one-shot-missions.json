@@ -1,21 +1,41 @@
 {
   "schema_version": 1,
   "name": "one-shot-missions",
-  "description": "Missions one shot (doc 17). « Faire le ménage » : la mission de la Taverne, en boucle (Idan, 2026-10-24) ; le camp est tiré au hasard parmi les peuples de camps (Idan, 2026-11-01 : Gobelins, Orcs, Hommes-bêtes, Voleurs, Ogres), chacun avec ses lignes, son chef, ses ordres et ses noms. Points de combat (Idan, 2026-11-01) : chaque ennemi vaut ses points (enemy-archetypes.json) ; un camp remplit le budget de sa difficulté (budgets) ; la récompense compte 35 PO par point. Les montants (récompense, coffre, renommée) sont des valeurs de départ, à ajuster en jouant. Idan, 2026-10-25 : coffre de 1D3 objets T2 (70 %) ou T3 (30 %), de toutes les familles d’équipement.",
+  "description": "Missions one shot (doc 17). « Faire le ménage » : la mission de la Taverne, en boucle (Idan, 2026-10-24) ; le camp est tiré au hasard parmi les peuples de camps (Idan, 2026-11-01 : Gobelins, Orcs, Hommes-bêtes, Voleurs, Ogres), chacun avec ses lignes, ses ordres et ses noms. Niveau de la mission, budget, récompense et coffre (Idan, 2026-11-01 ; doc 17 §16) : niveau = niveau de Renommée de la compagnie (1 à 15) + écart de −3 à +2 ; budget en points de combat par métal (budgets : Bronze tirage 40–60 × niveau, Argent 60–80 × niveau, Or niveau² × tirage 8–12), avec les niveaux de monstres et le chef de chaque métal ; au plus 100 ennemis ; jours de marche : tirage 1 à niveau ; récompense = 5 000 + tirage 30–40 × budget × niveau ; coffre : or = tirage 1–100 × budget × niveau ÷ 2, objets T1 à T4 selon le niveau, chaque sort d’une seule école à niveau % ; carte de 30 × 15 cases.",
   "missions": [
     {
       "code": "cleanup",
       "nom": "Faire le ménage",
       "description": "Attaquer un camp ennemi : tous les ennemis tués ou mis en déroute (sortis de la carte).",
-      "difficulte": 1,
       "illustration": "",
-      "budgets": {
-        "1": {
-          "min": 55,
-          "max": 75,
-          "chance_normal": 0.05
+      "niveau": {"ecart": [-3, 2]},
+      "max_ennemis": 100,
+      "budgets": [
+        {
+          "metal": "Bronze",
+          "niveaux": [1, 5],
+          "facteur": [40, 60],
+          "puissance": 1,
+          "monstres": [{"niveau": "novice", "poids": 50}, {"niveau": "normal", "poids": 50}],
+          "chefs": [{"niveau": "chef 1", "poids": 100}]
+        },
+        {
+          "metal": "Argent",
+          "niveaux": [6, 10],
+          "facteur": [60, 80],
+          "puissance": 1,
+          "monstres": [{"niveau": "novice", "poids": 25}, {"niveau": "normal", "poids": 50}, {"niveau": "vétéran", "poids": 25}],
+          "chefs": [{"niveau": "chef 2", "poids": 100}]
+        },
+        {
+          "metal": "Or",
+          "niveaux": [11, 15],
+          "facteur": [8, 12],
+          "puissance": 2,
+          "monstres": [{"niveau": "vétéran", "poids": 50}, {"niveau": "d’élite", "poids": 50}],
+          "chefs": [{"niveau": "chef 3", "poids": 50}, {"niveau": "chef 4", "poids": 50}]
         }
-      },
+      ],
       "camps": [
         {
           "faction": "Gobelins",
@@ -43,7 +63,6 @@
               "poids": 15
             }
           ],
-          "chef": "goblin_chief_1",
           "noms": {
             "tribus": "tribus",
             "chefs": "caids"
@@ -75,7 +94,6 @@
               "poids": 15
             }
           ],
-          "chef": "orc_chief_1",
           "noms": {
             "tribus": "tribus_orcs",
             "chefs": "chefs_de_camp_orcs"
@@ -107,7 +125,6 @@
               "poids": 15
             }
           ],
-          "chef": "beastman_chief_1",
           "noms": {
             "tribus": "tribus_hommes_betes",
             "chefs": "chefs_de_camp_hommes_betes"
@@ -139,7 +156,6 @@
               "poids": 15
             }
           ],
-          "chef": "thief_chief_1",
           "noms": {
             "tribus": "confreries_voleurs",
             "chefs": "chefs_de_camp_voleurs"
@@ -171,37 +187,33 @@
               "poids": 15
             }
           ],
-          "chef": "ogre_chief_1",
           "noms": {
             "tribus": "clans_ogres",
             "chefs": "chefs_de_camp_ogres"
           }
         }
       ],
-      "distance_faces": 3,
       "validite_jours": [
         3,
         6
       ],
       "carte": {
-        "colonnes": 20,
-        "lignes": 12
+        "colonnes": 30,
+        "lignes": 15
       },
       "recompense": {
-        "base": 2000,
-        "par_jour": 1200,
-        "par_point": 35
+        "base": 5000,
+        "facteur": [30, 40]
       },
       "coffre": {
-        "or_des": 2,
-        "or_faces": 6,
-        "or_unite": 50,
-        "objets_des": 1,
-        "objets_faces": 3,
-        "tiers": [
-          {"tier": 2, "poids": 70},
-          {"tier": 3, "poids": 30}
-        ]
+        "or": {"facteur": [1, 100], "diviseur": 2},
+        "objets": [
+          {"tier": 1, "des": 1, "faces": 6, "diviseur": 1, "moins": 0},
+          {"tier": 2, "des": 1, "faces": 3, "diviseur": 1, "moins": 0},
+          {"tier": 3, "des": 1, "faces": 6, "diviseur": 5, "moins": 0},
+          {"tier": 4, "des": 1, "faces": 6, "diviseur": 5, "moins": 2}
+        ],
+        "manuels": {"chance_par_niveau": 1}
       },
       "echec": {
         "renommee": -30
@@ -540,8 +552,24 @@
         "texte": "une petite dizaine"
       },
       {
-        "max": 99,
+        "max": 14,
         "texte": "une bonne dizaine"
+      },
+      {
+        "max": 25,
+        "texte": "une vingtaine"
+      },
+      {
+        "max": 40,
+        "texte": "une trentaine"
+      },
+      {
+        "max": 60,
+        "texte": "une cinquantaine"
+      },
+      {
+        "max": 999,
+        "texte": "une véritable armée"
       }
     ],
     "chefs_orcs": [

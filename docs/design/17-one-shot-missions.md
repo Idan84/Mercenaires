@@ -221,7 +221,7 @@ Le Guerrier d'élite (bouclier et Brigandine) reste tel quel : les mercenaires m
 - **Camp ☠** : gobelin ou orc, tiré au hasard, composé par les points de combat (§14). Frondeurs 35 %, Lanciers 20 %, Archers, Guerriers, Assassins 15 % chacun ; un « normal » (T2) dans 5 % des tirages ; un chef nommé (Caïd gobelin, Chef de bande orc). Historique : 1D4+3 novices au départ, 1D4+4 le 2026-11-01 (« un tout petit peu » plus fort), puis le budget de points, qui garde la même taille moyenne.
 - **Escouade** : de 1 à 20 mercenaires au choix du joueur ; l'écran de choix affiche le coût des primes si tous reviennent et les jours de marche.
 - **Expédition** (Idan, 2026-10-24 : « le joueur doit pouvoir continuer à gérer son camp pendant la mission ») : l'escouade part (statut « En mission » ; ni intendance, ni échange, ni autre mission) ; distance 1D3 jours. **Mission programmée** (Idan, 2026-10-30 : « les soldats partent en mission le lendemain matin… on doit pouvoir encore leur parler et les équiper. C'est fondamental. ») : signée, l'escouade reste au camp jusqu'au lendemain matin (statut « Mission programmée ») ; on peut encore l'équiper et lui parler (échanges d'équipement, lieutenant), elle recharge son mana la nuit, mais elle ne part sur aucune autre mission et ne devient pas intendant. Elle part le matin suivant, puis marche ses jours de distance : l'arrivée vient donc un jour après la signature plus la distance. Même règle pour la garde du corps (départ le lendemain, retour au bout de sa durée). Le joueur fait passer les jours au camp comme d'habitude. À l'arrivée, une fenêtre propose **Commencer le combat** ; « Plus tard » laisse finir la journée au camp (équiper, recruter…), mais **le jour suivant est bloqué tant que le combat n'est pas livré** (Idan) : le bouton du jour rouvre la fenêtre, et « Commencer le combat » reste aussi au tableau des contrats. Après le combat, les survivants rentrent en autant de jours (le retour compte comme du repos, doc 10 §9) ; la récompense, le coffre, le butin et les primes arrivent avec eux.
-- **Combat** : carte de 20 × 12 cases ; l'escouade se déploie à gauche, le camp à droite, le Caïd au fond ; votre équipe a l'initiative (elle joue la première).
+- **Combat** : carte de 30 × 15 cases (20 × 12 avant le §16) ; l'escouade se déploie à gauche, le camp à droite, le chef au fond ; votre équipe a l'initiative (elle joue la première).
 - **Victoire** : tous les ennemis à terre ou sortis de la carte. **Récompense du contrat** = 2 000 + 1 200 par jour de marche aller-retour + **35 PO par point de combat** du camp (Idan, 2026-11-01 ; 300 par ennemi avant ; doublée par Idan le 2026-10-25), soit environ 6 100 à 12 000 PO (9 100 en moyenne, gobelins comme orcs) ; **coffre** = 2D6 × 50 PO et **1D3 objets** (Idan, 2026-10-25 : « il faut pouvoir trouver de l'équipement T2 ou T3 à ce stade »), chacun d'une famille tirée au hasard (arme, armure, bottes, ceinture, amulette, cape, gants, culotte, bague, casque), **T2 (70 %) ou T3 (30 %)**, à la qualité de son tier ; **butin** = l'équipement de tous les morts des deux camps, au stock de l'Intendance.
 - **Défaite** : rien n'est payé ; renommée de la compagnie −30 (points de mission, doc 09 §2) ; jet de mort doublé pour nos mercenaires à terre ; leur équipement est perdu.
 - **Primes** : versées au retour de l'escouade aux survivants sous contrat, sauf à ceux qui ont fui hors de la carte (règle générale). La renommée perdue sur un échec compte dès la fin du combat.
@@ -273,7 +273,7 @@ ennemis, récompense, expiration…), la lettre du commanditaire s'il y en a une
 - **Lignes des nouveaux peuples** : cinq rôles comme chez les gobelins (un front, un garde à bouclier ou arme lourde, un rapide, deux tireurs), avec les armes que ce peuple porte vraiment à la génération (mesuré sur 3 000 personnages générés). Mêmes armures par rôle et même spécialisation que les lignes gobelines correspondantes. Une ligne de chaque peuple, ses armes et ses poids peuvent changer sans toucher au reste : seuls ses points comptent pour le budget.
 - **Récompense** : 35 PO par point de combat (même moyenne que 300 PO par ennemi pour les gobelins) : un camp plus dangereux paie plus, quel que soit le nombre d'ennemis.
 - **Vérifié en campagne simulée** (avant le budget) : 1D4+2 orcs et leur Chef de bande (67 points) se jouent comme 1D4+4 gobelins et leur Caïd (65 points) : 94 % / 97 % de victoires en escouade complète, 48 % / 50 % avec 300 PO de primes.
-- **Plus tard** : la réputation donnera la difficulté, donc le budget ; un plus gros budget amènera aussi des vétérans et des élites, et plusieurs offres par jour.
+- **Depuis le §16** : la Renommée donne le niveau de la mission, donc le budget, les niveaux des monstres, la récompense et le coffre.
 
 ### Archétypes orcs (2026-11-01)
 
@@ -344,3 +344,38 @@ Ordres (trois par peuple, textes de JC, à changer si besoin) : chef de village 
 | Ogres | Patron 42 | Grand Patron 58 | Tyran 79 | **Ventre-Roi 116** |
 
 - **Design Lab, Bestiaire** : colonnes « Dès » (niveau de mission minimum) et « Butin » (chance par objet porté, et les objets en plus au survol).
+
+## 16 — Niveau de mission, budget par métal, récompense, coffre (Idan, 2026-11-01)
+
+> « Le joueur doit se prendre une branlée de temps à autre, sinon, c'est pas intéressant ! » « Les récompenses ne montent pas assez. » « Le coffre : ici, il faut des fourchettes très larges. C'est la partie loterie du butin. » « Je veux une ambiance à la X-com. »
+
+Le niveau d'une mission va de 1 à 15, comme les étoiles : 1 à 5 étoiles de bronze (niveaux 1 à 5), d'argent (6 à 10), d'or (11 à 15). Dans les formules, « niveau » est ce nombre.
+
+- **Niveau de la mission** = niveau de Renommée de la compagnie + un écart tiré entre −3 et +2, chaque écart avec la même chance, borné de 1 à 15 (`one-shot-missions.json`, `niveau.ecart`). Une compagnie de départ est à 2 ou 3 étoiles de bronze.
+- **Budget en points de combat** (`budgets`, un par métal) :
+  - Bronze : tirage 40–60 × niveau ; monstres novice / normal (50 % / 50 %) ; chef 1.
+  - Argent : tirage 60–80 × niveau ; novice / normal / vétéran (25 % / 50 % / 25 %) ; chef 2.
+  - Or : niveau² × tirage 8–12 ; vétéran / élite (50 % / 50 %) ; chef 3 ou chef 4 (50 % / 50 %). Le niveau 5 de monstre viendra plus tard.
+  - Le chef compte dans le budget. Puis des ennemis (niveau selon le métal, ligne selon son poids dans le camp) tant que le total plus la moitié du suivant reste dans le budget ; **au plus 100 ennemis** (`max_ennemis`).
+- **Jours de marche** : tirage de 1 au niveau (jusqu'à 15 jours en 5 étoiles d'or).
+- **Récompense** = 5 000 + tirage 30–40 × budget × niveau (`recompense`). Plus de part par jour de marche ni par point.
+- **Butin des morts** : l'équipement peut se casser au combat ; chance de récupérer chaque objet porté = 100 % − 10 % par tier (T1 90 %, T2 80 %, T3 70 %, T4 60 % ; `enemy-archetypes.json`, `butin.equipement`). L'équipement de nos morts revient toujours en entier.
+- **Coffre** (`coffre`) : la loterie.
+  - Or = tirage 1–100 × budget × niveau ÷ 2.
+  - Objets : T1 1D6 × niveau ; T2 1D3 × niveau ; T3 ⌈1D6 × niveau ÷ 5⌉ ; T4 ⌈1D6 × niveau ÷ 5⌉ − 2 (au moins 0). La famille de chaque objet est tirée au hasard (arme, armure, objets à bonus). Le T4 se trouve dès 3★ bronze, une fois sur deux : c'est voulu (Idan : « l'idée, c'est qu'on porte du T4 ») ; la destruction d'objets par l'artisanat et les propriétés magiques viendront.
+  - Manuels : chaque sort d'une seule école a niveau % de chance d'y être (90 sorts : 0,9 manuel en moyenne en 1★ bronze, 13,5 en 5★ or). Détruire un manuel pour gagner de l'XP de sort viendra.
+- **Carte** : 30 × 15 cases (`carte`). Obstacles, défenses et remparts autour du camp : plus tard.
+
+Ordres de grandeur (moyennes) :
+
+| Mission | Budget | Ennemis (+ chef) | Récompense | Or du coffre | Objets T1 / T2 / T3 / T4 | Manuels |
+|---|---|---|---|---|---|---|
+| 1★ bronze | 50 | 1 à 2 | 6 750 | 1 260 | 3,5 / 2 / 1,2 / 0 | 0,9 |
+| 3★ bronze | 150 | ~12 | 20 750 | 11 400 | 10,5 / 6 / 2,5 / 0,7 | 2,7 |
+| 5★ bronze | 250 | ~22 | 48 750 | 31 600 | 17,5 / 10 / 3,5 / 1,7 | 4,5 |
+| 1★ argent | 420 | ~25 | 93 000 | 63 600 | 21 / 12 / 4,5 / 2,5 | 5,4 |
+| 5★ argent | 700 | ~45 | 250 000 | 177 000 | 35 / 20 / 7 / 5 | 9 |
+| 1★ or | 1 210 | ~35 | 471 000 | 336 000 | 38 / 22 / 7,5 / 5,7 | 10 |
+| 5★ or | 2 250 | ~70 | 1,19 M | 850 000 | 52 / 30 / 10,5 / 8,5 | 13,5 |
+
+Mesuré au simulateur (compagnie de départ complète, une quinzaine de mercenaires, 64 combats par budget, ennemis à 50 % novices et 50 % normaux, chef 1) : budget 50 : 100 % de victoires ; 100 : 88 % (capitaine mort 19 %) ; 150 : 64 % (34 %) ; 250 : 31 % (53 %). En jeu : 42 ennemis en 3★ argent, 88 en 5★ or, sans souci de calcul.

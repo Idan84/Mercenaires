@@ -49,12 +49,15 @@ assert.deepEqual(missions.types.map(t=>t.code),["cleanup","bodyguard"]);
 const cleanup=missions.types[0];
 assert.deepEqual(cleanup.camps.map(c=>c.faction),reference.oneShotMissions.missions[0].camps.map(c=>c.faction));
 assert.equal(cleanup.camps.reduce((s,c)=>s+c.orders.length,0),reference.oneShotMissions.ordres.length,"chaque ordre sous son peuple");
-assert.deepEqual(cleanup.camps.find(c=>c.faction==="Orcs").chief,{name:"Chef de bande orc",points:38});
+assert.deepEqual(cleanup.camps.find(c=>c.faction==="Orcs").chiefs,[{metal:"Bronze",list:[{name:"Chef de bande orc",points:38}]},
+  {metal:"Argent",list:[{name:"Chef de guerre orc",points:72}]},{metal:"Or",list:[{name:"Seigneur de guerre orc",points:111},{name:"Khan des Steppes",points:221}]}],"chef selon le métal");
 // Toute variable écrite dans un texte est expliquée dans le Lab.
 for(const t of missions.types) for(const v of t.variables) assert.ok(MissionsLab.VARIABLES[v],"variable sans explication : {"+v+"}");
 const page=MissionsLab.render(builtMissions);
 assert.match(page,/<mark class="mis-var" title="Village tiré dans « lieux »">\{lieu\}<\/mark>/);
-assert.match(page,/2\s000 \+ 1\s200 × 2 × jours \+ 35 × points/);
+assert.match(page,/5\s000 \+ 30–40 × budget × niveau \(PO\)/);
+assert.match(page,/<b>Or<\/b> \(niveaux 11 à 15\) : niveau² × 8–12 points · vétéran 50 %, d’élite 50 % · chef 3 50 %, chef 4 50 %/);
+assert.match(page,/T4 ⌈1D6 × niveau ÷ 5⌉ − 2/);
 assert.match(page,/<span class="mis-gender" title="Accord selon le genre">\{rentré\|rentrée\}<\/span>/);
 
 // Page du Lab : deux boutons, deux scripts.

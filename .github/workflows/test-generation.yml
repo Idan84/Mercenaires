@@ -34,6 +34,7 @@ jobs:
       - run: node tests/names.test.js
       - run: node tests/character-sheet.test.js
       - run: node tests/design-lab-tags.test.js
+      - run: node tests/design-lab-bestiary.test.js
       - run: node tests/asset-coverage.test.js
       - run: node tests/affinity-display.test.js
       - run: node tests/wizard-ui-refinements.test.js
@@ -109,3 +110,5 @@ jobs:
       - run: node --check prototype-web/design/design.js
       - run: node --check prototype-web/design/avatars-lab.js
       - run: node --check prototype-web/design/images-lab.js
+      - run: node --check prototype-web/design/bestiary-lab.js
+      - run: node --check prototype-web/design/missions-lab.js

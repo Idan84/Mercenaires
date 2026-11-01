@@ -81,3 +81,21 @@ details.cov-family{margin-top:10px}details.cov-family summary{cursor:pointer;fon
 .img-list li.img-missing{background:#f8e3df}.img-list li.img-ok{background:#eaf3ea}
 .img-list code{font-size:.74rem;color:#6b6258}.img-list span{font-size:.74rem;color:#857b70}
 .img-present{margin-top:6px}.img-present summary{cursor:pointer;font-size:.8rem;color:#3f7a4a;font-weight:700}.img-present .img-list{margin-top:6px}
+/* Onglets Bestiaire et Missions (Idan, 2026-11-01) : lecture seule des ennemis et des types de mission. */
+.best-line{margin-top:14px}.best-line-head{display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap}
+.best-line-head h4{margin:0;font-size:.9rem;text-transform:uppercase;letter-spacing:.06em;color:#7b3026}.best-line-head small{color:#857b70;font-size:.76rem}
+.best-face{width:34px;height:34px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:#e6dfd5;color:#6b6258;font-weight:800;font-size:.74rem;border:1px dashed #b9ad9e;cursor:help}
+.best-table{max-height:none}.best-table table,.mis-camps table,.mis-texts,.mis-names table{font-size:.78rem}
+.best-table th,.best-table td,.mis-camps th,.mis-camps td,.mis-rules th,.mis-rules td,.mis-texts th,.mis-texts td,.mis-names th,.mis-names td{min-width:0;max-width:none;padding:5px 7px;position:static;word-break:normal}
+.best-table th{text-transform:none;letter-spacing:0;font-size:.72rem;white-space:nowrap}.best-table td.num,.mis-camps td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.best-table tbody tr{cursor:help}.best-table tbody tr:hover td{background:#fbf6ee}
+.mis-rules{border:1px solid #e6dfd5;border-radius:9px;overflow:hidden;margin:8px 0 4px}.mis-rules th{width:150px;background:#f6f1e9;text-transform:none;letter-spacing:0;font-size:.76rem;white-space:nowrap}.mis-rules td{font-size:.84rem}
+.mis-h{margin:22px 0 4px;font-size:.84rem;text-transform:uppercase;letter-spacing:.06em;color:#7b3026}
+.mis-camps td small,.mis-camps td small{display:block;color:#857b70;font-size:.7rem}.mis-camps small.inline{display:inline}
+.mis-var{background:#f3e3b5;color:#5a4410;border-radius:4px;padding:0 3px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.9em;cursor:help}
+.mis-gender{color:#857b70;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.9em}
+.mis-vars{list-style:none;margin:6px 0 12px;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:4px 14px;font-size:.8rem}.mis-vars span{color:#6b6258}
+.mis-orders h5{margin:12px 0 4px;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:#6b6258}
+.mis-order{border:1px solid #e6dfd5;border-radius:8px;margin:4px 0;background:#fbf8f3}.mis-order summary{cursor:pointer;padding:7px 10px;font-size:.84rem}.mis-order summary small{color:#857b70;margin-left:6px}
+.mis-letter{padding:4px 16px 10px;font-family:Georgia,"Times New Roman",serif;font-size:.9rem;line-height:1.55;color:#3d362e}.mis-letter p{margin:6px 0}.mis-sign{text-align:right;font-style:italic}
+.mis-names{margin-top:16px}.mis-names summary{cursor:pointer;font-size:.84rem;font-weight:750;color:#7b3026}.mis-names .table-wrap{margin-top:8px;max-height:none}.mis-names th,.mis-texts th{width:200px;text-transform:none;letter-spacing:0}

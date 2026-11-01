@@ -564,9 +564,9 @@
     ],
     "chefs_de_camp_orcs": [
       "Thrak le Fendeur",
-      "Murza Grosse-Hache",
+      "Murzag Grosse-Hache",
       "Dorg Mâchefer",
-      "Vargha la Borgne",
+      "Vargh le Borgne",
       "Kruul Tête-de-Pioche",
       "Ghorn Brise-Bouclier"
     ],
@@ -590,11 +590,11 @@
     ],
     "chefs_de_camp_hommes_betes": [
       "Gharr Corne-Brisée",
-      "Mokka la Hurleuse",
+      "Mokk le Hurleur",
       "Thurn Sabot-de-Fer",
       "Vresh Mâche-Écorce",
       "Orrok Grand-Bois",
-      "Dreka Croc-Pâle"
+      "Drek Croc-Pâle"
     ],
     "chefs_voleurs": [
       "Maître Anselin Doigts-d'Or",
@@ -639,10 +639,10 @@
     "chefs_de_camp_ogres": [
       "Gorgo la Panse",
       "Brokk Mange-Tout",
-      "Ulga Trois-Mentons",
+      "Ulg Trois-Mentons",
       "Dorm le Gras",
       "Hurgh Casse-Marmite",
-      "Magra Gueule-de-Four"
+      "Morg Gueule-de-Four"
     ]
   }
 }

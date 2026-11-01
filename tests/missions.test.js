@@ -233,29 +233,34 @@ const campaign=createCampaignRules({generator,tavern,reference:full,missions:cre
 const captain=generator.createCaptain({id:1,name:"Capitaine"});
 const squad=[2,3].map(id=>generator.createMercenary({id,captain}));
 const game=campaign.createCampaign({captain,squad});
-const first=game.missionBoard.offer;
-assert.ok(first&&first.code==="cleanup");
-assert.equal(campaign.ensureMissionOffer(game),false,"déjà une offre");
+// Taverne à 5 missions (Idan, 2026-11-01) : 5 cases, ici toutes des contrats (pas de garde du corps dans cette campagne).
+const offers=()=>campaign.boardOffers(game);
+assert.equal(campaign.tavernSlots(game).length,5);
+assert.ok(offers().length===5&&offers().every(o=>o.code==="cleanup"),"5 contrats au tableau");
+assert.equal(campaign.fillTavernBoard(game),false,"tableau plein");
+const first=offers().reduce((a,b)=>a.expiresDay<=b.expiresDay?a:b);
 const reports=campaign.advanceTime(game,first.expiresDay-game.day);
-assert.ok(reports.every(r=>!r.missionTaken),"valable jusqu'à sa date");
+assert.ok(reports.every(r=>!r.offersLost.includes(first)),"valable jusqu'à sa date");
 const [taken]=campaign.advanceTime(game,1);
-assert.equal(taken.missionTaken,first,"prise par une autre compagnie le lendemain");
-assert.notEqual(game.missionBoard.offer,first);
+assert.ok(taken.offersLost.includes(first),"prise par une autre compagnie le lendemain");
+assert.ok(!offers().includes(first)&&offers().length===5,"aussitôt remplacée");
 // Expédition (Idan, 2026-10-24) : l'escouade part, le camp continue ; elle arrive au bout de la distance, le combat
 // l'attend ; après le combat, elle rentre en autant de jours avec l'or, les objets et les primes.
-const signed=game.missionBoard.offer;
-const departure=campaign.departExpedition(game,[2,3]);
+const signed=offers()[2],signedSlot=campaign.tavernSlots(game)[2];
+assert.deepEqual(campaign.departExpedition(game,[2,3],"inconnu"),{ok:false,reason:"Ce contrat n’est plus au tableau."});
+const departure=campaign.departExpedition(game,[2,3],signed.id);
 assert.ok(departure.ok);
 const trip=departure.expedition;
 // Mission programmée (Idan, 2026-10-30) : départ le lendemain matin, puis les jours de marche ; d'ici là, l'escouade est
 // au camp (on lui parle, on l'équipe, elle recharge son mana) mais ne part sur aucune autre mission.
 assert.deepEqual([trip.offer,trip.memberIds,trip.status,trip.departDay,trip.arriveDay],[signed,[2,3],"scheduled",game.day+1,game.day+1+signed.distance]);
-assert.notEqual(game.missionBoard.offer,signed,"une nouvelle offre au tableau : plusieurs escouades possibles");
+assert.deepEqual([signedSlot.offer,signedSlot.emptyUntil,offers().length],[null,game.day+1,4],"case prise : vide jusqu'au lendemain ; les autres restent (plusieurs escouades possibles)");
 assert.equal(campaign.isAvailable(squad[0],game),false,"pris par la mission");
 assert.equal(campaign.awayOf(game,2),null,"encore au camp");
 assert.equal(campaign.isAvailable(captain,game),true);
 assert.deepEqual(campaign.departExpedition(game,[2]),{ok:false,reason:"Un de ces mercenaires est déjà en mission."});
 const [leave]=campaign.advanceTime(game,1);
+assert.ok(signedSlot.offer&&signedSlot.offer!==signed&&signedSlot.emptyUntil===null,"24 heures après : une nouvelle mission dans la case");
 assert.deepEqual(leave.expeditions.departed,[trip],"départ le lendemain matin");
 assert.equal(trip.status,"outbound");
 assert.equal(campaign.awayOf(game,2),trip);

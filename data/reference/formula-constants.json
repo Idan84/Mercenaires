@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 264,
+  "row_count": 266,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -1192,6 +1192,22 @@
       "description": "Nombre maximal de prétendants dont le tavernier présente le plus réputé (14 §5 ; décision Idan du 2026-10-20).",
       "formule": "Taverne V1",
       "valeur": 5,
+      "version": "V1"
+    },
+    {
+      "nom": "Taverne — cases de missions",
+      "code": "tavern.missions.slots",
+      "description": "Taverne à 5 missions (Idan, 2026-11-01) : nombre de cases du tableau des missions ; chaque case tire un type de mission au hasard (contrat « Faire le ménage » ou garde du corps).",
+      "formule": "Taverne à 5 missions",
+      "valeur": 5,
+      "version": "V1"
+    },
+    {
+      "nom": "Taverne — jours de case vide",
+      "code": "tavern.missions.empty_days",
+      "description": "Taverne à 5 missions (Idan, 2026-11-01) : une case dont la mission vient d’être prise reste vide ce nombre de jours (24 heures) avant qu’une nouvelle mission arrive.",
+      "formule": "Taverne à 5 missions",
+      "valeur": 1,
       "version": "V1"
     },
     {

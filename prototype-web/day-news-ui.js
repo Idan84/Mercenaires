@@ -36,8 +36,9 @@ function dayDigest(report){
   const ex=report.expeditions||{};
   // L'urgent.
   for(const e of ex.arrived||[]) entries.push({tone:"alert",icon:"swords",text:"Escouade arrivée au "+place(e),detail:"Le combat vous attend",faces:e.memberIds.map(member)});
-  if(report.missionTaken) entries.push({tone:"bad",icon:"alert",text:"Contrat perdu : "+report.missionTaken.fields.lieu,detail:"Pris par une autre compagnie"});
-  if(report.bodyguardTaken) entries.push({tone:"bad",icon:"alert",text:"Garde du corps perdue : "+report.bodyguardTaken.client});
+  // Taverne à 5 missions : une offre prise ailleurs est aussitôt remplacée ; une seule ligne, pas d'alerte.
+  const lost=(report.offersLost||[]).length;
+  if(lost) entries.push({tone:"",icon:"alert",text:lost>1?lost+" offres prises ailleurs":"Une offre prise ailleurs",detail:"Remplacée"+(lost>1?"s":"")+" à la Taverne"});
   if(c.company.gold<0) entries.push({tone:"alert",icon:"gold",text:"Caisse dans le rouge",detail:fmt(Math.round(c.company.gold))+" PO"});
   // Retours et départs.
   for(const r of ex.returned||[]){

@@ -67,6 +67,7 @@ const usedWith=rules.dormitoryUsed(state);
 state.company.medicId=null;
 assert.equal(rules.dormitoryUsed(state),usedWith+rules.dormitoryPlaces(doc),"il vit au Dispensaire : pas de place au dortoir");
 state.company.medicId=doc.id;
+// Ancienne sauvegarde (une offre de contrat) : elle passe dans la première case de la Taverne à 5 missions.
 state.missionBoard={offer:{id:"contrat",code:"cleanup",distance:1}};
 assert.deepEqual(rules.departExpedition(state,[doc.id,other.id]),{ok:false,reason:"Le médecin reste au camp."});
 state.missionBoard=null;

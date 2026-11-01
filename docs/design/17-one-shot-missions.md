@@ -173,7 +173,7 @@ Trois essais pour « Faire le ménage » chez les Gobelins, validés par Idan. L
 
 ## 10 — Archétypes gobelins (Idan, 2026-10-24)
 
-Données : `data/reference/enemy-archetypes.json` (24 fiches figées, pas encore utilisées par le jeu).
+Données : `data/reference/enemy-archetypes.json` (24 fiches gobelines ; les orcs au §14).
 
 **Niveaux par centiles.** Les Gobelins générés de faible et de forte réputation ont presque les mêmes valeurs de combat (leur réputation vient surtout du Charisme et de l'Intelligence). Chaque niveau prend donc, valeur par valeur, un centile des Gobelins générés : **novice P20, normal P50, vétéran P75, élite P90** ; résistances, compétences et Intimidation suivent le même centile. PV = 3 × (Constitution + 0,2 × Endurance + 0,1 × Volonté), comme à la génération.
 
@@ -218,11 +218,11 @@ Le Guerrier d'élite (bouclier et Brigandine) reste tel quel : les mercenaires m
 « Faire le ménage » chez les Gobelins est la seule mission proposée, en boucle, à la Taverne (« Trouver une mission »). Code : `game-core/missions.js` (règles), `prototype-web/contract-ui.js` (tableau), `prototype-web/mission.js` (trajet, combat, bilan). Données : `data/reference/one-shot-missions.json` (camp, distance, carte, récompense, coffre, échec, défaite, les trois ordres et leurs noms) et `enemy-archetypes.json`.
 
 - **Tableau** : une offre à la fois, avec son ordre de mission (un des trois, au hasard) et ses faits : commanditaire, distance, ennemis (en toutes lettres, flou), récompense, date d'expiration. Une offre non signée qui dépasse sa date (3 à 6 jours) est prise par une autre compagnie : le journal le dit, une nouvelle la remplace. Une offre signée part avec son escouade et une nouvelle est affichée : plusieurs escouades peuvent être en route en même temps.
-- **Camp ☠** (camp B, §10) : 1D4+4 novices (Idan, 2026-11-01 : « un tout petit peu » plus fort ; 1D4+3 avant) (Frondeurs 35 %, Lanciers 20 %, Archers, Guerriers, Assassins 15 % chacun), un « normal » (T2) dans 20 % des camps et deux dans 5 %, et un Caïd nommé.
+- **Camp ☠** : gobelin ou orc, tiré au hasard, composé par les points de combat (§14). Frondeurs 35 %, Lanciers 20 %, Archers, Guerriers, Assassins 15 % chacun ; un « normal » (T2) dans 5 % des tirages ; un chef nommé (Caïd gobelin, Chef de bande orc). Historique : 1D4+3 novices au départ, 1D4+4 le 2026-11-01 (« un tout petit peu » plus fort), puis le budget de points, qui garde la même taille moyenne.
 - **Escouade** : de 1 à 20 mercenaires au choix du joueur ; l'écran de choix affiche le coût des primes si tous reviennent et les jours de marche.
 - **Expédition** (Idan, 2026-10-24 : « le joueur doit pouvoir continuer à gérer son camp pendant la mission ») : l'escouade part (statut « En mission » ; ni intendance, ni échange, ni autre mission) ; distance 1D3 jours. **Mission programmée** (Idan, 2026-10-30 : « les soldats partent en mission le lendemain matin… on doit pouvoir encore leur parler et les équiper. C'est fondamental. ») : signée, l'escouade reste au camp jusqu'au lendemain matin (statut « Mission programmée ») ; on peut encore l'équiper et lui parler (échanges d'équipement, lieutenant), elle recharge son mana la nuit, mais elle ne part sur aucune autre mission et ne devient pas intendant. Elle part le matin suivant, puis marche ses jours de distance : l'arrivée vient donc un jour après la signature plus la distance. Même règle pour la garde du corps (départ le lendemain, retour au bout de sa durée). Le joueur fait passer les jours au camp comme d'habitude. À l'arrivée, une fenêtre propose **Commencer le combat** ; « Plus tard » laisse finir la journée au camp (équiper, recruter…), mais **le jour suivant est bloqué tant que le combat n'est pas livré** (Idan) : le bouton du jour rouvre la fenêtre, et « Commencer le combat » reste aussi au tableau des contrats. Après le combat, les survivants rentrent en autant de jours (le retour compte comme du repos, doc 10 §9) ; la récompense, le coffre, le butin et les primes arrivent avec eux.
 - **Combat** : carte de 20 × 12 cases ; l'escouade se déploie à gauche, le camp à droite, le Caïd au fond ; votre équipe a l'initiative (elle joue la première).
-- **Victoire** : tous les ennemis à terre ou sortis de la carte. **Récompense du contrat** = 2 000 + 1 200 par jour de marche aller-retour + 300 par ennemi (de 6 200 à 11 900 PO avec le camp à 1D4+4 ; doublée par Idan le 2026-10-25) ; **coffre** = 2D6 × 50 PO et **1D3 objets** (Idan, 2026-10-25 : « il faut pouvoir trouver de l'équipement T2 ou T3 à ce stade »), chacun d'une famille tirée au hasard (arme, armure, bottes, ceinture, amulette, cape, gants, culotte, bague, casque), **T2 (70 %) ou T3 (30 %)**, à la qualité de son tier ; **butin** = l'équipement de tous les morts des deux camps, au stock de l'Intendance.
+- **Victoire** : tous les ennemis à terre ou sortis de la carte. **Récompense du contrat** = 2 000 + 1 200 par jour de marche aller-retour + **35 PO par point de combat** du camp (Idan, 2026-11-01 ; 300 par ennemi avant ; doublée par Idan le 2026-10-25), soit environ 6 100 à 12 000 PO (9 100 en moyenne, gobelins comme orcs) ; **coffre** = 2D6 × 50 PO et **1D3 objets** (Idan, 2026-10-25 : « il faut pouvoir trouver de l'équipement T2 ou T3 à ce stade »), chacun d'une famille tirée au hasard (arme, armure, bottes, ceinture, amulette, cape, gants, culotte, bague, casque), **T2 (70 %) ou T3 (30 %)**, à la qualité de son tier ; **butin** = l'équipement de tous les morts des deux camps, au stock de l'Intendance.
 - **Défaite** : rien n'est payé ; renommée de la compagnie −30 (points de mission, doc 09 §2) ; jet de mort doublé pour nos mercenaires à terre ; leur équipement est perdu.
 - **Primes** : versées au retour de l'escouade aux survivants sous contrat, sauf à ceux qui ont fui hors de la carte (règle générale). La renommée perdue sur un échec compte dès la fin du combat.
 - Tous les montants sont des valeurs de départ (Idan : « on ajuste les récompenses et on va voir »).
@@ -262,3 +262,31 @@ ennemis, récompense, expiration…), la lettre du commanditaire s'il y en a une
 - **Difficulté** : la difficulté de la mission (`difficulte`) en étoiles de réputation (1 = 1 étoile de bronze), à
   caler avec Idan quand les missions plus dures arriveront.
 - Un nouveau type de mission ajoute son gabarit dans `missionCards`.
+
+## 14 — Points de combat et camps par peuple (Idan, 2026-11-01)
+
+> « Le peuple est aléatoire, la difficulté dépend de la réputation et on équilibre la difficulté grâce aux nombre d'ennemis qu'on ajoute. » « Chaque ennemi devrait avoir un équivalent en point de combat […] et on monte des escouades grâce à cela. » « Oui, vas-y pour les points et 35 PO par point. »
+
+- **Une seule carte « Faire le ménage »** au tableau ; son camp est tiré au hasard parmi les peuples de camps (`one-shot-missions.json`, `camps[]`, même poids) : **Gobelins** et **Orcs** aujourd'hui ; Hommes-bêtes, voleurs (Humains) et Ogres à venir. Chaque peuple a ses lignes, son chef, ses trois ordres de mission et ses noms (tribus, chefs).
+- **Points de combat** : chaque fiche (`enemy-archetypes.json`, `points`) vaut ce qu'elle pèse au combat, sur l'échelle d'un mercenaire généré moyen = 10 (simulateur : nombre d'exemplaires qu'il faut contre 3 mercenaires pour gagner une fois sur deux ; chefs : 10 × le nombre de mercenaires qui le battent une fois sur deux ; null = au-delà de la mesure).
+- **Budget** : une mission a le budget de sa difficulté (`budgets`) ; difficulté 1 : tiré entre **55 et 75 points**. Le camp prend son chef, puis tire des ennemis (lignes selon leurs poids ; « normal » dans 5 % des tirages, sinon novice) **tant que le total se rapproche du budget**. Résultat : 65 points en moyenne ; 5 à 8 gobelins (6,5 en moyenne, comme l'ancien camp à 1D4+4) ou 3 à 6 orcs (4,3).
+- **Récompense** : 35 PO par point de combat (même moyenne que 300 PO par ennemi pour les gobelins) : un camp plus dangereux paie plus, quel que soit le nombre d'ennemis.
+- **Vérifié en campagne simulée** (avant le budget) : 1D4+2 orcs et leur Chef de bande (67 points) se jouent comme 1D4+4 gobelins et leur Caïd (65 points) : 94 % / 97 % de victoires en escouade complète, 48 % / 50 % avec 300 PO de primes.
+- **Plus tard** : la réputation donnera la difficulté, donc le budget ; un plus gros budget amènera aussi des vétérans et des élites, et plusieurs offres par jour.
+
+### Archétypes orcs (2026-11-01)
+
+Même méthode que les gobelins (§10), sur les centiles des Orcs générés (Orcs noirs, des villes, des steppes) : mêmes lignes, armes et armures ; base des personnages : Orcs des steppes. À niveau égal, un orc a environ 50 PV, 20 de Force et 11 points d'arme de plus qu'un gobelin, mais moins de Dextérité, d'Esquive, de Vitesse et de Perception.
+
+| Points de combat | Novice | Normal | Vétéran | Élite |
+|---|---|---|---|---|
+| Lancier | 7 | 15 | 26 | 43 |
+| Frondeur | 6 | 9 | 15 | 22 |
+| Archer | 6 | 11 | 17 | 23 |
+| Guerrier | 6 | 15 | 32 | 51 |
+| Assassin | 5 | 10 | 18 | 33 |
+
+Chefs (noms validés par Idan) : **Chef de bande orc** (P75, 38 points), **Chef de guerre orc** (P90, 72), **Seigneur de guerre orc** (P95, au-delà de la mesure), **Khan des Steppes** (P99, au-delà). Pour comparer : Caïd gobelin 30, Grand Caïd 55, Chef de clan 100.
+
+Ordres orcs (Idan : « au pire, c'est un texte à changer ») : le chef de village (le vieux fort, le forgeron rendu avec une liste de commandes), le chef orc rival (« Un orc ne ment pas. Presque jamais. ») et l'ordre de l'Empereur (« une horde orque »). Texte complet dans `one-shot-missions.json` (`village_orcs`, `orc_rival`, `emperor_orcs`).
+

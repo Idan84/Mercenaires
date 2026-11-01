@@ -17,13 +17,18 @@ const guard = {id:"g1", kind:"bodyguard", client:"Une veuve fortunée", count:2,
 const game = {campaign:{day:1, missionBoard:{offer:contract}, bodyguardBoard:{offer:guard}, expeditions:[], company:{roster:[]}},
   referenceData:{oneShotMissions:{missions:[{code:"cleanup", description:"Attaquer un camp ennemi.", illustration:""}]},
     bodyguardMissions:{illustration:"assets/missions/garde.webp", textes:{titre:"Garde du corps", offre:"{client} cherche {n} garde{s} du corps pour {jours} jours."}}}};
+const listeners = {}, selections = [];
+const fakeDocument = {addEventListener:(type, fn) => { listeners[type] = fn; }};
 const ui = new Function("game","$","esc","fmt","saveGame","campaignRules","starRules","renderStarLevel","campaignCalendarDate",
-  "MercenairesMissions","MercenairesRecruitDialogue","openMissionSelection","renderAvatar",
-  js + "\nreturn {missionCards,renderContractBoard,openMissionDetail};")(
+  "MercenairesMissions","MercenairesRecruitDialogue","openMissionSelection","renderAvatar","document","startExpeditionCombat",
+  js + "\nreturn {missionCards,renderContractBoard,openMissionDetail,initializeExpeditionUi};")(
   game, node, esc, String, () => {}, () => ({ensureMissionOffer:() => false, ensureBodyguardOffer:() => false}),
   () => ({byLevel:level => ({level})}), info => `<stars ${info.level}>`, day => ({dayOfMonth:day, month:"Brumecendre", year:842}),
   {createMissionRules:() => ({orderText:() => ({from:"Chef de village", paragraphs:["À toute compagnie…"], signature:"Hugon"})})},
-  {fill:(text, vars) => text.replace(/\{(\w+)\}/g, (all, key) => key in vars ? vars[key] : all)}, () => {}, () => "");
+  {fill:(text, vars) => text.replace(/\{(\w+)\}/g, (all, key) => key in vars ? vars[key] : all)}, offer => selections.push(offer), () => "",
+  fakeDocument, () => {});
+// Un clic sur un élément qui porte ce sélecteur (closest ne répond qu'à lui).
+const clickOn = attr => listeners.click({target:{closest:selector => selector.split(",").includes(attr) ? {dataset:{}} : null}});
 
 const cards = ui.missionCards();
 assert.deepEqual(cards.map(c => [c.kind, c.type, c.title]),
@@ -48,9 +53,19 @@ assert.match(detail, /<h2 id="mission-detail-title">Camp gobelin de Brumecendre<
 assert.match(detail, /Commanditaire<\/dt><dd>Chef de village/);
 assert.match(detail, /class="contract-letter"><p>À toute compagnie…<\/p>/);
 assert.match(detail, /data-contract-accept>Accepter le contrat<\/button>/);
+// « Accepter le contrat » (Idan, 2026-11-01 : le lancement du camp gobelin ne marchait plus) : le bouton est dans la
+// fenêtre de détail, hors du tableau ; le clic la ferme et ouvre le choix de l'escouade.
+ui.initializeExpeditionUi();
+clickOn("[data-contract-accept]");
+assert.equal(node("mission-detail").open, false, "le détail se ferme");
+assert.deepEqual(selections, [contract], "le choix de l'escouade s'ouvre, avec le contrat");
+const tavern = fs.readFileSync(path.join(root, "prototype-web/tavern-ui.js"), "utf8");
+assert.doesNotMatch(tavern, /\$\("tavern-contracts"\)\.addEventListener/, "plus d'écoute sur l'ancien tableau (sinon deux ouvertures)");
 ui.openMissionDetail("bodyguard:g1");
 assert.match(node("mission-detail-body").innerHTML, /data-bodyguard-accept>Choisir les gardes<\/button>/);
 assert.doesNotMatch(node("mission-detail-body").innerHTML, /contract-letter/);
+clickOn("[data-bodyguard-accept]");
+assert.deepEqual(selections, [contract, guard], "et la garde du corps, pareil");
 
 game.campaign.missionBoard.offer = null;
 game.campaign.bodyguardBoard.offer = null;

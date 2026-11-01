@@ -404,9 +404,7 @@ function initializeTavernUi(){
       if(btn) showTavernView(btn.dataset.tavernView);
     });
   }
-  $("tavern-contracts").addEventListener("click",event=>{
-    if(event.target.closest("[data-contract-accept]")) acceptContract();
-  });
+  // « Accepter le contrat » : contract-ui.js (initializeExpeditionUi), le bouton est dans la fenêtre de détail.
 
   $("hud-next-day-btn").addEventListener("click",advanceCampDay);
   $("test-gold-btn").addEventListener("click",addTestGold);

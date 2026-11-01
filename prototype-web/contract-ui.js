@@ -234,6 +234,8 @@ function initializeExpeditionUi(){
     if(event.target.closest("[data-mission-close]")){ $("mission-detail").close(); return; }
     // Accepter depuis le détail : la fenêtre se ferme, le choix de l'escouade s'ouvre.
     if(event.target.closest("[data-contract-accept],[data-bodyguard-accept]")&&$("mission-detail")?.open) $("mission-detail").close();
+    // Le bouton est dans la fenêtre de détail (hors du tableau) : on l'écoute ici, pour le contrat comme pour la garde.
+    if(event.target.closest("[data-contract-accept]")){ acceptContract(); return; }
     if(event.target.closest("[data-bodyguard-accept]")){ const offer=bodyguardOffer(); if(offer) openMissionSelection(offer); return; }
     if(event.target.closest("#bodyguard-return-ok")){ showNextBodyguardReturn(); return; }
     const fight=event.target.closest("[data-expedition-fight]");

@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 251,
+  "row_count": 250,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -1587,27 +1587,11 @@
       "version": "V1"
     },
     {
-      "nom": "Valeur d’un manuel de sort (Novice)",
-      "code": "economy.manual_value.novice",
-      "description": "Valeur cachée en pièces d’or d’un manuel de sort de ce palier (spells.json, palier), sans tier ni qualité ; le marchand en demande × 1,5 selon l’affinité (Idan, 2026-10-31 : les manuels de sorts sont en vente ; chiffres de JC3).",
+      "nom": "Valeur d’un manuel de sort",
+      "code": "economy.manual_value",
+      "description": "Valeur en pièces d’or d’un manuel de sort, la même pour tous les sorts, sans tier ni qualité ; le marchand en demande × 1,5 selon l’affinité (Idan, 2026-11-01 : « Un sort, on le fixe à 3000 PO »).",
       "formule": "Valeur d’un objet",
-      "valeur": 300,
-      "version": "V1"
-    },
-    {
-      "nom": "Valeur d’un manuel de sort (Adepte)",
-      "code": "economy.manual_value.adepte",
-      "description": "Valeur cachée en pièces d’or d’un manuel de sort de ce palier (spells.json, palier), sans tier ni qualité ; le marchand en demande × 1,5 selon l’affinité (Idan, 2026-10-31 : les manuels de sorts sont en vente ; chiffres de JC3).",
-      "formule": "Valeur d’un objet",
-      "valeur": 600,
-      "version": "V1"
-    },
-    {
-      "nom": "Valeur d’un manuel de sort (Expert)",
-      "code": "economy.manual_value.expert",
-      "description": "Valeur cachée en pièces d’or d’un manuel de sort de ce palier (spells.json, palier), sans tier ni qualité ; le marchand en demande × 1,5 selon l’affinité (Idan, 2026-10-31 : les manuels de sorts sont en vente ; chiffres de JC3).",
-      "formule": "Valeur d’un objet",
-      "valeur": 1200,
+      "valeur": 3000,
       "version": "V1"
     },
     {
@@ -1621,7 +1605,7 @@
     {
       "nom": "Magie — réussite minimale de la courbe",
       "code": "magic.cast.floor",
-      "description": "Réussite d’un sort = plancher + amplitude / (1 + e^(−Δ / échelle)), Δ = (Maîtrise + Intelligence) / 2 − difficulté du sort ; puis l’Altération magique de l’armure portée se retire en points (Idan, 2026-10-25).",
+      "description": "Réussite d’un sort = plancher + amplitude / (1 + e^(−Δ / échelle)), Δ = (Maîtrise + Intelligence) / 2 − difficulté des sorts (magic.cast.difficulty) ; puis l’Altération magique de l’armure portée se retire en points (Idan, 2026-10-25).",
       "formule": "Magie — maîtrise et réussite d’un sort",
       "valeur": 10,
       "version": "V1"
@@ -1640,6 +1624,14 @@
       "description": "Échelle de la logistique de réussite d’un sort (Idan, 2026-10-25).",
       "formule": "Magie — maîtrise et réussite d’un sort",
       "valeur": 15,
+      "version": "V1"
+    },
+    {
+      "nom": "Magie — difficulté des sorts",
+      "code": "magic.cast.difficulty",
+      "description": "Difficulté de tous les sorts dans la réussite : Δ = (Maîtrise + Intelligence) / 2 − difficulté. La même pour tous (Idan, 2026-11-01 : pas de paliers de sorts) ; un gros sort ne se distingue que par son effet et son mana.",
+      "formule": "Magie — maîtrise et réussite d’un sort",
+      "valeur": 30,
       "version": "V1"
     },
     {

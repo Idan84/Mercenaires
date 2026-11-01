@@ -9,9 +9,9 @@
 // - Effet = ceil(10 × dés × (2 × Puissance magique / 100) × (0,5 + Maîtrise / 100)) ; seuls les dés changent d'un sort
 //   à l'autre (Soin rapide 1D4, Soin profond 2D6, Restitution 1D10…). Portée, durée et rayon : base + Maîtrise / pas
 //   (arrondi bas) ; mana = ceil(base × (1 − Maîtrise / 300)).
-// - Réussite = 10 + 85 / (1 + e^(−Δ / 15)), Δ = (Maîtrise + Intelligence) / 2 − difficulté (palier : Novice 30,
-//   Adepte 50, Expert 70), moins l'Altération magique de l'armure portée (× le multiplicateur de malus de sa qualité),
-//   en points, jamais sous 0.
+// - Réussite = 10 + 85 / (1 + e^(−Δ / 15)), Δ = (Maîtrise + Intelligence) / 2 − 30 (la même difficulté pour tous les
+//   sorts : Idan, 2026-11-01), moins l'Altération magique de l'armure portée (× le multiplicateur de malus de sa
+//   qualité), en points, jamais sous 0.
 // - Le mana est dépensé même si le sort échoue. Action rapide ou principale (l'action d'attaque du tour).
 // - CC : sort réussi, puis D100 ≤ Chance / 10 (1 à 25 %, comme les armes) : les dés font leur maximum (pas pour Purge).
 // - EC : naturel 96 à 100, puis D100 > Chance : le lanceur subit l'effet minimum de son sort (dés à 1).
@@ -61,7 +61,10 @@
       return Number.isFinite(value)?value:fallback;
     }
     const SPELL_SHARE=constant("magic.mastery.spell_share",0.5);
-    const CAST={floor:constant("magic.cast.floor",10),span:constant("magic.cast.span",85),scale:constant("magic.cast.scale",15)};
+    // Une seule difficulté pour tous les sorts (Idan, 2026-11-01 : pas de paliers ; un gros sort se distingue par son effet
+    // et son mana, qui montent avec la maîtrise et la Puissance magique).
+    const CAST={floor:constant("magic.cast.floor",10),span:constant("magic.cast.span",85),scale:constant("magic.cast.scale",15),
+      difficulty:constant("magic.cast.difficulty",30)};
     const FUMBLE_THRESHOLD=constant("combat.melee.fumble.threshold",96);
     const RECHARGE={base:constant("magic.mana.recharge_base",10),willShare:constant("magic.mana.recharge_will_share",0.5)};
     const SUMMON={hold:constant("magic.summon.hold_difficulty",30),zombieMin:constant("magic.summon.zombie_share_min",10),
@@ -162,7 +165,7 @@
     function castChance(unit,code){
       const s=spell(code);
       if(!s) return {base:0,armor:0,p:0};
-      const delta=(mastery(unit,code)+combat.statWithGear(unit,"Intelligence"))/2-num(s.difficulte,0);
+      const delta=(mastery(unit,code)+combat.statWithGear(unit,"Intelligence"))/2-CAST.difficulty;
       const base=CAST.floor+CAST.span/(1+Math.exp(-delta/CAST.scale));
       const armor=armorPenalty(unit);
       return {delta,base,armor,p:clamp(base-armor,0,100)};

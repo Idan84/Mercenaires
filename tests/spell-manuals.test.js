@@ -1,6 +1,6 @@
 "use strict";
 
-// Manuels de sorts (Idan, 2026-10-31) : un manuel par sort, valeur selon le palier, vendus par école chez les marchands,
+// Manuels de sorts (Idan, 2026-10-31) : un manuel par sort, 3 000 PO chacun (Idan, 2026-11-01), vendus par école chez les marchands,
 // lus à l'Intendance pour apprendre le sort au niveau 1 (manuel consommé, pas de prérequis, pas de doublon, pas en
 // mission).
 const assert=require("node:assert/strict");
@@ -25,8 +25,7 @@ const values=createItemValues({reference});
 const manuals=createManualRules({reference});
 const spells=reference.spells.rows;
 
-// Un manuel par sort, sans tier ni qualité ; sa catégorie est son école ; sa valeur suit le palier.
-const PRICES={Novice:300,Adepte:600,Expert:1200};
+// Un manuel par sort, sans tier ni qualité ; sa catégorie est son école ; la même valeur pour tous : 3 000 PO.
 assert.deepEqual(manuals.schools,[...new Set(spells.map(s=>s.ecole))]);
 for(const spell of spells){
   const byName=generator.createItemByName("manual",spell.nom,3),byCode=generator.createItemByName("manual",spell.code);
@@ -36,7 +35,7 @@ for(const spell of spells){
   assert.equal(byName.category,spell.ecole);
   assert.equal(byName.tier,undefined,"sans tier");
   assert.equal(byName.owner,null);
-  assert.equal(values.value(byName),PRICES[spell.palier],spell.nom+" ("+spell.palier+")");
+  assert.equal(values.value(byName),3000,spell.nom);
   assert.equal(manuals.spellOf(byName),spell);
 }
 assert.equal(generator.createItemByName("manual","Sort inconnu"),null);
@@ -98,4 +97,4 @@ assert.match(deal,/Apprendre à…/);
 assert.match(deal,/data-manual-learn/);
 assert.match(html,/<script src="\/core\/spell-manuals\.js"><\/script>/);
 
-console.log("Manuels de sorts : un par sort, valeur par palier, vente par école, apprentissage au niveau 1 — OK");
+console.log("Manuels de sorts : un par sort, 3 000 PO, vente par école, apprentissage au niveau 1 — OK");

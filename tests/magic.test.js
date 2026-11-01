@@ -31,7 +31,7 @@ function mage({pm,vie,level=1,int,chance=54,mana=53,charisma=50,items=[],slots={
       .concat(["fog","healing_water","ice_arrow","tsunami","frost_armor","freeze","ice_weapon","ice_prison","blizzard","living_spring"].map(code=>({code,school:"Eau",mastery:level})))
       .concat(["sixth_sense","titan_strength","cheetah_speed","stone_skin","venom_spit","cauterize","bear_endurance","scale_skin","owl_wisdom","cat_agility"].map(code=>({code,school:"Transmutation",mastery:level})))
       .concat(["shock","lightning_bolt","shock_weapon","chain_lightning","thunder","celerity","spark","electric_arc","paralysis","storm"].map(code=>({code,school:"Foudre",mastery:level})))
-      .concat(["attraction","projection","telekinetic_move","clash","force_field","stone_throw"].map(code=>({code,school:"Télékinésie",mastery:level})))
+      .concat(["attraction","projection","telekinetic_move","clash","force_field","stone_throw","weapon_throw","shockwave","leap","crush"].map(code=>({code,school:"Télékinésie",mastery:level})))
       .concat(["fear","illusory_support","mass_courage","hidden_advance","psychic_shock","frenzy"].map(code=>({code,school:"Illusion",mastery:level})))
       .concat(["raise_dead","summon_specter","life_drain","death_arrow","necrosis","wither"].map(code=>({code,school:"Nécromancie",mastery:level})))
       .concat(["summon_raven","quagmire","transposition","summon_wolves","summon_bears","summon_crocodiles"].map(code=>({code,school:"Invocation",mastery:level}))),
@@ -653,7 +653,9 @@ assert.deepEqual(magic.stormStrike({...out.storm,critical:true}).dice,8,"coup cr
 assert.deepEqual(magic.schoolSpells("Télékinésie").map(x=>[x.code,x.action,x.cible]),[
   ["attraction","principale","ennemi"],["projection","principale","ennemi"],
   ["telekinetic_move","rapide","allie_ou_ennemi"],["clash","principale","ennemi"],
-  ["force_field","principale","allie_ou_soi"],["stone_throw","rapide","ennemi"]]);
+  ["force_field","principale","allie_ou_soi"],["stone_throw","rapide","ennemi"],
+  // Idan, 2026-10-31 : la Télékinésie passe à 10 sorts.
+  ["weapon_throw","principale","ennemi"],["shockwave","principale","soi"],["leap","rapide","case_vide"],["crush","principale","ennemi"]]);
 assert.deepEqual([magic.range(beginner,"attraction"),magic.range(expert,"attraction")],[15,25],"grande portée : 12 + M/10");
 assert.deepEqual([magic.range(beginner,"projection"),magic.range(expert,"projection"),magic.range(archmage,"projection")],[7,11,12]);
 assert.deepEqual([magic.forceSteps(beginner,"projection"),magic.forceSteps(expert,"projection")],[2,4],"2 + M/50 cases");
@@ -726,6 +728,34 @@ assert.ok(combat.spellPhysicalHit(blunt,plated,100,{type:"contondant",power:35,m
   <combat.spellPhysicalHit(blunt,stripped,100,{type:"contondant",power:35,mastery:50}).pWound,"l'armure fait baisser la chance de blesser");
 // Moteur : un tir d'arme sur un personnage protégé est dévié avant le Toucher.
 assert.match(fs.readFileSync(path.join(ROOT,"game-core","combat-engine.js"),"utf8"),/if\(mode==="ranged"&&defender\.projectileShield\)/);
+
+// Lancer d'arme (chiffres de JC3) : l'arme de corps à corps tenue ; portée 4 + M/25 (au plus 10).
+assert.match(magic.canCast(caster,foe,"weapon_throw").reason,/arme de corps à corps/);
+const swordsman=unit(mage({pm:53,vie:31,int:35,items:[{id:"w",name:"Épée longue"}],slots:{weapon_set_1_main:"w"}}));
+assert.equal(magic.canCast(swordsman,foe,"weapon_throw").ok,true);
+assert.deepEqual([magic.range(beginner,"weapon_throw"),magic.range(expert,"weapon_throw"),magic.range(archmage,"weapon_throw")],[5,9,10]);
+queue=[0,0.99,0.5];
+out=magic.cast(swordsman,foe,"weapon_throw");
+assert.equal(out.throw.weapon,"Épée longue");
+assert.equal(out.throw.amount,Math.ceil(10*5*1*(2*53/100)*(0.5+31.5/100)-1e-9),"1D8 = 5, la Puissance magique au lieu de la Force");
+// Onde de choc : tous ceux à 2 cases ou moins, repoussés de 2 + M/50 cases dans l'axe ; choc 1D4.
+const waveNear=unit(mage({pm:50,vie:1,int:50}),{q:1,r:0,team:"enemy"}),waveFar=unit(mage({pm:50,vie:1,int:50}),{q:3,r:0});
+queue=[0,0.5];
+out=magic.cast(caster,caster,"shockwave",{units:[caster,waveNear,waveFar]});
+assert.deepEqual(out.waves.map(w=>w.unit),[waveNear],"à 3 cases : hors de l'onde");
+assert.deepEqual(out.waves[0].cells,[{q:2,r:0},{q:3,r:0}]);
+assert.ok(out.move.chocAmount>0);
+assert.deepEqual(out.physical,{type:"contondant",power:35,mastery:31.5});
+// Bond : une case libre à 2 + M/50 cases (au plus 4).
+assert.deepEqual([magic.range(beginner,"leap"),magic.range(expert,"leap"),magic.range(archmage,"leap")],[2,4,4]);
+assert.equal(magic.canCast(caster,{q:2,r:0},"leap").ok,true);
+assert.match(magic.canCast(caster,{q:2,r:0},"leap",{cellFree:false}).reason,/case vide/);
+queue=[0];
+assert.deepEqual(magic.cast(caster,{q:2,r:0},"leap").leap,{from:{q:0,r:0},to:{q:2,r:0},distance:2});
+// Écrasement : 2D6 contondants (puissance 45) ; la cible ne peut pas se déplacer à sa prochaine activation.
+queue=[0,0.99,0.5,0.5];
+out=magic.cast(caster,foe,"crush");
+assert.deepEqual([out.success,out.physical.type,out.physical.power,out.immobilise],[true,"contondant",45,1]);
 
 // École de l'Illusion (Idan, 2026-10-28).
 assert.deepEqual(magic.schoolSpells("Illusion").map(x=>[x.code,x.action,x.cible]),[

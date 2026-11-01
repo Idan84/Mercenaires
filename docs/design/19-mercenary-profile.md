@@ -30,7 +30,7 @@ Une action ne qualifie qu'une seule sous-catégorie (Idan) : protéger par la ma
 Tank Garde du corps ; le moral, ami ou ennemi → Meneur ; se soigner soi-même → Tank Auto-soigneur ; voir par la magie (le
 corbeau) → Éclaireur magique ; arrêter les charges → Tank Gardien de ligne (armes d'hast : toutes les armes de tir
 contre-chargent, ce n'est pas une spécialité). Ressusciteur, Source de mana, Anti-mage, Garde du corps, Stratège,
-Summoner de support attend que le jeu le permette : il n'est jamais noté. DPS magiques dans la durée est noté depuis l'Embrasement (Feu, 2026-11-01).
+Summoner de support attend que le jeu le permette : il n'est jamais noté. DPS magiques dans la durée est noté depuis l'Embrasement (Feu), Source de mana depuis la Source vive (Eau ; 2026-11-01).
 
 ## 3 — Les notes
 

@@ -437,7 +437,13 @@
     }
     function elementalDamage(unit,element,amount){
       const protection=elementalProtection(unit,element);
-      return {...protection,amount,damage:Math.max(0,Math.ceil(amount*(1-protection.applied/100)-1e-9))};
+      return {...protection,amount,damage:iced(unit,Math.max(0,Math.ceil(amount*(1-protection.applied/100)-1e-9)))};
+    }
+    // Prison de glace (Eau ; Idan, 2026-10-31) : figé dans la glace, on ne subit que unit.frozen.factor des dégâts (0,5) :
+    // coups d'armes, toucher spectral, dégâts physiques et élémentaires des sorts. Les dégâts « sans aucune résistance »
+    // (Restitution, Nécrose…) passent entiers.
+    function iced(unit,damage){
+      return unit?.frozen?Math.max(0,Math.ceil(damage*(Number(unit.frozen.factor)||0.5)-1e-9)):damage;
     }
 
     // Dégâts physiques d'un sort (Télékinésie ; Idan, 2026-10-28 : « ça passe par l'armure », contondant) : l'étape
@@ -452,7 +458,7 @@
       const head={type,power,armorResistance,matchup,pWound,woundRoll};
       if(woundRoll>pWound) return {...head,wound:false,damage:0};
       const physicalResistance=clamp(statWithGear(target,"Résistance physique"),0,50),resistanceRoll=die(3);
-      const damage=Math.max(0,Math.ceil(amount*(1-(physicalResistance/100)*((resistanceRoll+8)/10))-1e-9));
+      const damage=iced(target,Math.max(0,Math.ceil(amount*(1-(physicalResistance/100)*((resistanceRoll+8)/10))-1e-9)));
       return {...head,wound:true,physicalResistance,resistanceRoll,damage};
     }
 
@@ -596,7 +602,7 @@
         : 1;
 
       return {
-        damage:Math.max(0,Math.ceil(10*effective*strengthFactor*resistanceFactor)),
+        damage:iced(defender,Math.max(0,Math.ceil(10*effective*strengthFactor*resistanceFactor))),
         weaponRoll:rolled.total,
         weaponDice:rolled.dice,
         resistanceRoll,
@@ -845,7 +851,7 @@
     function psychicStrike(attacker,defender,weapon,critical=false){
       const rolled=rollWeaponDamage(weapon,critical?"max":null);
       const will=clamp(statWithGear(attacker,"Volonté")/Math.max(1,statWithGear(defender,"Volonté")),0.5,2);
-      const damage=Math.max(0,Math.ceil(10*rolled.total*will-1e-9));
+      const damage=iced(defender,Math.max(0,Math.ceil(10*rolled.total*will-1e-9)));
       defender.hp-=damage;
       defender.damageTaken=(Number(defender.damageTaken)||0)+damage;
       if(defender.hp<=0) defender.alive=false;
@@ -902,12 +908,13 @@
 
     // Sortir de la zone menacée déclenche la réaction ; s'y déplacer ne déclenche rien.
     function opportunityReactors(opponents,from,to){
-      return opponents.filter(o=>threatens(o,from)&&!threatens(o,to));
+      // Figé dans la glace (Prison de glace) : il ne réagit pas.
+      return opponents.filter(o=>!o.frozen&&threatens(o,from)&&!threatens(o,to));
     }
 
     // Tirer sur une autre cible que l'adversaire qui menace déclenche sa réaction.
     function rangedOpportunityReactors(opponents,shooter,target){
-      return opponents.filter(o=>o!==target&&threatens(o,shooter));
+      return opponents.filter(o=>o!==target&&!o.frozen&&threatens(o,shooter));
     }
 
     // Encerclement CAC V1 : au moins deux adversaires au contact, armés pour le CAC,

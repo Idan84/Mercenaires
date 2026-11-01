@@ -270,9 +270,17 @@
     {
       "source": "États retirés (Délivrance) : fuite, paralysie, gel, frenesie",
       "key": "retire"
+    },
+    {
+      "source": "Part des dégâts subis (Prison de glace)",
+      "key": "degats_subis_facteur"
+    },
+    {
+      "source": "Part du déplacement (Blizzard)",
+      "key": "deplacement_facteur"
     }
   ],
-  "row_count": 67,
+  "row_count": 70,
   "rows": [
     {
       "nom": "Soin rapide",
@@ -974,6 +982,77 @@
       "invocation_nb_des": null,
       "invocation_de": null,
       "invocation_pas_maitrise": null
+    },
+    {
+      "nom": "Prison de glace",
+      "code": "ice_prison",
+      "ecole": "Eau",
+      "action": "principale",
+      "cible": "ennemi",
+      "ligne_de_vue": true,
+      "effet": "prison_de_glace",
+      "effet_nb_des": 0,
+      "portee_base": 6,
+      "portee_pas_maitrise": 25,
+      "portee_max": 12,
+      "duree_base": 1,
+      "duree_pas_maitrise": 100,
+      "duree_max": 2,
+      "critique": false,
+      "mana_base": 30,
+      "mana_diviseur_maitrise": 300,
+      "element": "froid",
+      "resistance_caracteristique": "Constitution",
+      "resistance_maitrise_facteur": 0.5,
+      "degats_subis_facteur": 0.5,
+      "description": "La cible est figée dans la glace 1 tour (2 pour un maître) : elle ne bouge ni n’agit, mais ne subit que la moitié des dégâts. Elle résiste avec sa Constitution et sa protection contre le froid. Action principale."
+    },
+    {
+      "nom": "Blizzard",
+      "code": "blizzard",
+      "ecole": "Eau",
+      "action": "principale",
+      "cible": "case",
+      "ligne_de_vue": false,
+      "effet": "blizzard",
+      "effet_base": 10,
+      "effet_puissance_facteur": 2,
+      "effet_maitrise_base": 0.5,
+      "effet_nb_des": 1,
+      "effet_de": 4,
+      "portee_base": 6,
+      "portee_pas_maitrise": 25,
+      "portee_max": 12,
+      "zone_rayon_base": 2,
+      "zone_rayon_pas_maitrise": 50,
+      "zone_rayon_max": 4,
+      "duree_base": 3,
+      "critique": false,
+      "mana_base": 35,
+      "mana_diviseur_maitrise": 300,
+      "element": "froid",
+      "deplacement_facteur": 0.5,
+      "description": "Une tempête de neige sur une zone pendant 3 tours : à chaque tour, dès le lancer, tous ceux qui s’y trouvent, alliés compris, prennent de petits dégâts de froid ; on n’y voit rien à travers, comme dans le Brouillard ; qui y commence son activation n’a que la moitié de son déplacement. Action principale."
+    },
+    {
+      "nom": "Source vive",
+      "code": "living_spring",
+      "ecole": "Eau",
+      "action": "principale",
+      "cible": "allie",
+      "ligne_de_vue": true,
+      "effet": "rend_mana",
+      "effet_base": 3,
+      "effet_puissance_facteur": 2,
+      "effet_maitrise_base": 0.5,
+      "effet_nb_des": 1,
+      "effet_de": 6,
+      "portee_base": 2,
+      "portee_pas_maitrise": 25,
+      "critique": true,
+      "mana_base": 10,
+      "mana_diviseur_maitrise": 300,
+      "description": "Le lanceur rend du mana à un autre allié, sans dépasser sa réserve. Action principale."
     },
     {
       "nom": "6e sens",

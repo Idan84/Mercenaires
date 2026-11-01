@@ -37,7 +37,7 @@
     function archetype(code){ return byCode.get(code)||null; }
     function archetypeOf(faction,line,level){ return archetypes.find(a=>a.faction===faction&&a.ligne===line&&a.niveau===level)||null; }
 
-    // Camp ☠ (Idan, 2026-10-24) : 1D4+3 novices dont un « normal » (T2) dans 20 % des camps et deux dans 5 %, lignes
+    // Camp ☠ (Idan, 2026-10-24 ; 1D4+4 depuis le 2026-11-01) : 1D4+4 novices dont un « normal » (T2) dans 20 % des camps et deux dans 5 %, lignes
     // tirées selon leurs poids, plus un Caïd. Codes d'archétypes.
     function rollCamp(def=definition()){
       const camp=def.camp,count=camp.novices_base+die(camp.novices_faces);

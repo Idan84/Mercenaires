@@ -23,7 +23,7 @@ const reference={oneShotMissions:read("one-shot-missions.json"),enemyArchetypes:
   baseArmors:read("base-armors.json"),skills:read("skills.json"),itemQualities:read("item-qualities.json")};
 const rules=createMissionRules({reference,random:seeded(7)});
 
-// Camp ☠ : 1D4+3 novices, un ou deux « normaux » de temps en temps, et un Caïd.
+// Camp ☠ : 1D4+4 novices (Idan, 2026-11-01 : « un tout petit peu » plus fort), un ou deux « normaux » de temps en temps, et un Caïd.
 const counts=[],normals=[];
 for(let i=0;i<2000;i++){
   const camp=rules.rollCamp();
@@ -32,8 +32,8 @@ for(let i=0;i<2000;i++){
   assert.equal(camp.chief,"goblin_chief_1");
   assert.ok(camp.enemies.every(code=>{ const a=rules.archetype(code); return a.faction==="Gobelins"&&["novice","normal"].includes(a.niveau); }));
 }
-assert.equal(Math.min(...counts),4);
-assert.equal(Math.max(...counts),7);
+assert.equal(Math.min(...counts),5);
+assert.equal(Math.max(...counts),8);
 const share=k=>normals.filter(n=>n===k).length/2000;
 assert.ok(share(1)>0.15&&share(1)<0.25,"un normal dans ~20 % des camps : "+share(1));
 assert.ok(share(2)>0.02&&share(2)<0.08,"deux normaux dans ~5 % des camps : "+share(2));

@@ -13,11 +13,12 @@ const avatars=[
   {id:"elfe-f",people:"Elfe",full:"f_full.webp",portrait:"f_portrait.webp",sex:"femme",tags:{}},
   {id:"elfe-u",people:"Elfe",full:"u_full.webp",portrait:"u_portrait.webp",sex:"",tags:{}}
 ];
-const ui=new Function("game","esc","mercenaryAvatarUrl","renderAvatar",js+"\nreturn {choiceLabel,renderProgress,renderAvatarChoice,renderChoiceStep,renderCompanyNameStep,avatarSexGroup,wizard,WIZARD_STEPS};")(
+const ui=new Function("game","esc","mercenaryAvatarUrl","renderAvatar","MercenairesAvatars",js+"\nreturn {choiceLabel,renderProgress,renderAvatarChoice,renderChoiceStep,renderCompanyNameStep,avatarSexGroup,wizard,WIZARD_STEPS};")(
     {referenceData:{avatars:{rows:avatars}}},
     esc,
     (mercenary)=>"assets/"+mercenary.avatar.portrait,
-    ()=>"<figure>Full portrait preview</figure>"
+    ()=>"<figure>Full portrait preview</figure>",
+    require("../game-core/avatars.js")
   );
 ui.wizard.choice={people:"Elfe",culture:"Elfes noirs",name:"Capitaine",avatar:"elfe-h",companyName:""};
 assert.equal(ui.WIZARD_STEPS.length,9);
@@ -66,11 +67,27 @@ assert.deepEqual(ui.WIZARD_STEPS.map(s=>s.key),["name","people","culture","origi
   ];
   const w=new Function("game","esc","mercenaryAvatarUrl","renderAvatar","MercenairesAvatars",js+"\nreturn {captainAvatarOptions,setChoice,wizard};")(
     {referenceData:{avatars:{rows}}},esc,m=>"assets/"+m.avatar.portrait,()=>"",Avatars);
+  // Au moins 3 choix par culture × ascendance × genre (Idan, 2026-11-01) : moins de 3 portraits de l'ascendance, on
+  // complète avec ceux d'un capitaine sans ascendance, après ceux de l'ascendance.
   w.wizard.choice={people:"Orc",culture:"",ascendance:"Sang de troll",avatar:null};
-  assert.deepEqual(w.captainAvatarOptions().map(a=>a.id),["orc-troll"]);
+  assert.deepEqual(w.captainAvatarOptions().map(a=>a.id),["orc-troll","orc-sang-h","orc"]);
+  assert.deepEqual(w.captainAvatarOptions("femme").map(a=>a.id),[],"pas de portrait de femme : rien à compléter");
   w.wizard.choice.avatar="orc-troll";
   w.setChoice("ascendance","");
   assert.deepEqual(w.captainAvatarOptions().map(a=>a.id),["orc-sang-h","orc"],"sans ascendance : pas de portrait « Ascendance only »");
   assert.equal(w.wizard.choice.avatar,null,"un portrait devenu incompatible est retiré");
+  // Trois portraits de l'ascendance pour ce genre : pas de complément.
+  const trolls=[1,2,3].map(k=>({id:"troll-"+k,people:"Orc",full:"t.webp",portrait:"t.webp",sex:"homme",tags:{ascendance:["Sang de troll"]},ascendanceOnly:true}));
+  const all=[...rows,...trolls,{id:"orc-f",people:"Orc",full:"f.webp",portrait:"f.webp",sex:"femme",tags:{culture:["Orcs noirs"]}},
+    {id:"orc-f2",people:"Orc",full:"g.webp",portrait:"g.webp",sex:"femme",tags:{culture:["Orcs des villes"]}}];
+  const choose=(ascendance,sex)=>Avatars.captainPortraits(all,{people:"Orc",culture:"Orcs noirs",ascendance,sex});
+  const trollMen=choose("Sang de troll","homme");
+  assert.deepEqual([trollMen.portraits.map(a=>a.id),trollMen.own,trollMen.added],[["orc-troll","troll-1","troll-2","troll-3"],4,0]);
+  assert.deepEqual(choose("Sang de troll","femme").portraits.map(a=>a.id),["orc-f"],"complément de la même culture et du même genre");
+  assert.equal(choose("Sang de troll","femme").added,1);
+  // Contrôle du Lab : ascendance × genre, portraits de l'ascendance seulement (sans le complément).
+  assert.deepEqual(Avatars.captainCoverage(all,{people:"Orc",culture:"Orcs noirs",ascendances:[null,"Sang de troll"]}),[
+    {ascendance:null,sex:"homme",count:2,missing:1},{ascendance:null,sex:"femme",count:1,missing:2},
+    {ascendance:"Sang de troll",sex:"homme",count:4,missing:0},{ascendance:"Sang de troll",sex:"femme",count:0,missing:3}]);
 }
 console.log("Wizard UI: 9 milestones, compact origin labels, ♂/♀ portrait toggle, portrait after ascendance, clean copy — OK");

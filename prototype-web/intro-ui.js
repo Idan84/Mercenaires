@@ -269,20 +269,15 @@ function renderNameStep(){
 }
 
 
-function captainAvatarOptions(){
-  const norm=s=>String(s||"").trim().toLocaleLowerCase("fr");
-  const people=norm(wizard.choice.people),culture=norm(wizard.choice.culture);
-  return (game.referenceData?.avatars?.rows||[]).filter(a=>{
-    if(!a.id||!a.full||!a.portrait||norm(a.people)!==people) return false;
-    const cultures=a.tags?.culture;
-    const tagged=Array.isArray(cultures)?cultures:typeof cultures==="string"?[cultures]:[];
-    if(tagged.length&&!tagged.some(c=>norm(c)===culture)) return false;
-    // Ascendance : même règle que pour les mercenaires (game-core/avatars.js). Avec une ascendance, un portrait de
-    // cette ascendance ; sans ascendance, pas de portrait réservé à une ascendance (« Ascendance only »).
-    if(typeof MercenairesAvatars==="undefined") return true;
-    const ascendance=wizard.choice.ascendance?[MercenairesAvatars.norm(wizard.choice.ascendance)]:[];
-    return MercenairesAvatars.sameAscendance(a,{ascendance});
-  });
+// Portraits du capitaine (game-core/avatars.js, captainPortraits) : peuple, culture et ascendance, comme pour un
+// mercenaire ; moins de 3 pour un genre (Idan, 2026-11-01), complétés par ceux d'un capitaine sans ascendance.
+// sex : "homme" ou "femme" ; sans sexe, les deux listes réunies.
+function captainAvatarOptions(sex=null){
+  const c=wizard.choice,catalog=game.referenceData?.avatars?.rows||[];
+  const of=s=>MercenairesAvatars.captainPortraits(catalog,{people:c.people,culture:c.culture,ascendance:c.ascendance||null,sex:s}).portraits;
+  if(sex) return of(sex);
+  const seen=new Set();
+  return [...of("homme"),...of("femme")].filter(a=>!seen.has(a.id)&&seen.add(a.id));
 }
 // Le sexe d'un capitaine est déduit de l'avatar (game-core/avatars.js).
 // Le classement ici est uniquement visuel : il n'élimine aucun portrait compatible.
@@ -295,7 +290,7 @@ function avatarSexGroup(avatar){
 // Portraits (Idan, 2026-10-25) : deux boutons ronds ♂ et ♀, en bascule, montrent les hommes ou les femmes ; les
 // portraits sans sexe renseigné apparaissent dans les deux listes. Au départ : le sexe du portrait choisi, sinon les
 // hommes s'il y en a.
-const AVATAR_SEXES=[{key:"men",symbol:"♂",label:"Hommes"},{key:"women",symbol:"♀",label:"Femmes"}];
+const AVATAR_SEXES=[{key:"men",sex:"homme",symbol:"♂",label:"Hommes"},{key:"women",sex:"femme",symbol:"♀",label:"Femmes"}];
 function avatarSexShown(avatars){
   const has=key=>avatars.some(a=>avatarSexGroup(a)===key);
   if(wizard.avatarSex&&has(wizard.avatarSex)) return wizard.avatarSex;
@@ -319,7 +314,8 @@ function renderAvatarChoice(){
     const count=avatars.filter(a=>avatarSexGroup(a)===sex.key).length;
     return `<button type="button" class="avatar-sex-btn${sex.key===shown?" is-active":""}" data-wizard-avatar-sex="${sex.key}" aria-pressed="${sex.key===shown}" aria-label="${sex.label}" title="${sex.label}"${count?"":" disabled"}>${sex.symbol}</button>`;
   }).join("");
-  const list=avatars.filter(a=>[shown,"other"].includes(avatarSexGroup(a)));
+  // Ceux de l'ascendance d'abord, puis le complément s'il y en a moins de 3.
+  const list=captainAvatarOptions(AVATAR_SEXES.find(s=>s.key===shown)?.sex||"homme");
   return `<div class="wizard-layout"><section class="wizard-options-panel">
     <div class="wizard-options-head"><span>Choisissez votre visage</span><span class="avatar-sex-toggle" role="group" aria-label="Hommes ou femmes">${toggle}</span></div>
     <div class="captain-avatar-groups"><div class="captain-avatar-grid">${list.map(renderCard).join("")}</div></div>

@@ -33,6 +33,9 @@ const AvatarsLab=(()=>{
       results.push(model.forCulture(culture));
     }
     const norm=MercenairesAvatars.norm;
+    // Capitaine (Idan, 2026-11-01) : 3 portraits au moins par ascendance possible du peuple × genre, sans type ni école.
+    const ascendancesOf=people=>(reference.ancestryCompatibility?.rows||[]).filter(r=>r.peuple===people&&r.possible===true&&r.ascendance).map(r=>r.ascendance);
+    for(const r of results) r.captain=MercenairesAvatars.captainCoverage(reference.avatars.rows,{people:r.people,culture:r.culture,ascendances:[null,...ascendancesOf(r.people)]});
     const measured=new Set(results.map(r=>r.culture));
     const peoples=(reference.peoples?.rows||[]).map(r=>r.nom).map(people=>({
       people,
@@ -146,6 +149,21 @@ const AvatarsLab=(()=>{
       de la même ascendance et du même profil, quelle que soit son arme.</p>`;
   }
 
+  // Capitaine : portraits de chaque ascendance (sans le complément de l'écran de création), par genre.
+  function captainCheck(r){
+    const rows=r.captain||[];
+    const missing=rows.reduce((n,c)=>n+c.missing,0);
+    const cell=c=>`<td class="num">${c.count}</td><td>${c.missing?`<span class="badge missing">Manque ${c.missing}</span>`:'<span class="badge ok">OK</span>'}</td>`;
+    const lines=[...new Set(rows.map(c=>c.ascendance))].map(a=>{
+      const of=sex=>rows.find(c=>c.ascendance===a&&c.sex===sex);
+      return `<tr class="${of("homme").missing||of("femme").missing?"gap-high":"gap-ok"}"><td>${html(ascendanceLabel(a))}</td>${cell(of("homme"))}${cell(of("femme"))}</tr>`;
+    }).join("");
+    return `<details class="cov-family cov-captain"${missing?" open":""}><summary>Capitaine : ${missing?`<strong>${missing}</strong> portrait${missing>1?"s":""} à produire`:"3 portraits ou plus partout"}</summary>
+      <table><thead><tr><th>Ascendance</th><th colspan="2">Hommes</th><th colspan="2">Femmes</th></tr></thead><tbody>${lines}</tbody></table>
+      <p class="cov-note">À la création, le joueur doit avoir au moins ${MercenairesAvatars.CAPTAIN_MINIMUM} portraits pour sa culture, son ascendance et son genre.
+      En attendant, l'écran complète avec les portraits sans ascendance.</p></details>`;
+  }
+
   function cultureBlock(r){
     const s=r.summary;
     const warn=r.unmeasured.length?`<p class="cov-note"><span class="todo">Ascendances sans mesure : ${r.unmeasured.map(html).join(", ")}. Refaire les mesures.</span></p>`:"";
@@ -156,6 +174,7 @@ const AvatarsLab=(()=>{
         avatar${s.toProduce>1?"s":""} à produire${s.missingAlone?` (${s.missingPrecise} précis, ${s.missingAlone} de profil)`:" précis"} ; pour qu'il n'y ait plus de rouge : <strong>${s.missingFallback}</strong> avatar${s.missingFallback>1?"s":""} de profil.
         ${pct(r.rare)} des mercenaires tombent dans une case trop rare pour un avatar précis : ils passent directement au repli.</p>
       ${warn}
+      ${captainCheck(r)}
       <div class="cov-family"><h5>À produire</h5>${todoList(r)}</div>
       <details class="cov-family"><summary>Les ${s.cells} cases précises</summary>${cellsTable(r)}</details>
       <details class="cov-family"><summary>Repli sur le profil</summary>${fallbackTable(r)}</details>

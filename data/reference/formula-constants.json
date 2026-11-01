@@ -445,9 +445,9 @@
     {
       "nom": "Dortoir — capacité initiale",
       "code": "camp.dormitory.initial_capacity",
-      "description": "Places du Dortoir en début de partie (le capitaine et l'intendant n'en prennent pas). Porté de 20 à 40 par Idan le 2026-10-03, ramené à 20 le 2026-11-01 : l'escouade initiale dépasse 20 places dans 1 à 2 % des parties (humains, nains, orcs) ; on ne peut alors pas recruter avant d'agrandir.",
+      "description": "Places du Dortoir en début de partie (le capitaine et l'intendant n'en prennent pas). Porté de 20 à 40 par Idan le 2026-10-03, ramené à 25 le 2026-11-01 : l'escouade initiale tient toujours (22 places au plus, garde-fou des domaines compris).",
       "formule": "Camp & château en ruines",
-      "valeur": 20,
+      "valeur": 25,
       "version": "V1"
     },
     {

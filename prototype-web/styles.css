@@ -2622,3 +2622,6 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
   .sheet-portrait:has(.sheet-evaluation){grid-template-rows:auto minmax(0,1fr) auto;height:calc(min(800px,90vh) - 176px)}
   .sheet-portrait:has(.sheet-evaluation) .avatar-frame{width:auto;height:100%;max-width:none;max-height:445px;justify-self:start}
 }
+/* Taverne à 5 missions (Idan, 2026-11-01) : une case prise reste vide jusqu'au lendemain. */
+.mission-card--empty{display:flex;align-items:center;justify-content:center;min-height:180px;border-style:dashed;opacity:.6;cursor:default}
+.mission-card--empty p{margin:0;color:#a98d66;font:italic 15px Georgia,serif}

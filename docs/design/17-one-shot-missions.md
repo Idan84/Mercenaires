@@ -385,3 +385,15 @@ Mesuré au simulateur (compagnie de départ complète, une quinzaine de mercenai
 > « Usé / Correcte / De bonne facture / De luxe. On aura du T5 et du T6 qui vont venir et des cristaux sur les armes. »
 
 Une qualité par tier (`item-qualities.json`, doc 05) : T1 Usée, T2 Correcte, T3 **De bonne facture** (l'ancien « Grand Luxe », mêmes valeurs : +20 % / −20 % / prix × 1,5), T4 **De luxe** (valeurs bénéfiques +40 %, malus −40 %, prix × 2,5). Les 40 fiches équipées en T4 (élites et chefs 2 à 4) passent de +20 % à +40 % : leurs points sont remesurés (même méthode qu'au §15, 200 combats par effectif) et reportés dans les tableaux ci-dessus. Les élites de mêlée prennent le plus (Guerrier orc 51 → 79, Spadassin 58 → 88, Écraseur ogre 54 → 83) ; les tireurs peu. Chefs 4 : Roi des Cavernes 201, Khan des Steppes 261, Roi-Totem 237, Prince des Voleurs 255, Ventre-Roi 136.
+
+## 18 — Taverne à 5 missions (Idan, 2026-11-01)
+
+> « La taverne a 5 missions. On génère aléatoirement une mission. Une fois la mission prise, on laisse 24 h une case vide et on régénère une mission. » « Totalement aléatoire sur le type de missions. On va en avoir une dizaine de types à terme. Le niveau de référence, c'est la réputation de la compagnie. »
+
+- **5 cases** au tableau des missions de la Taverne (`formula-constants.json`, `tavern.missions.slots`). Chaque case tire un type de mission au hasard, chacun avec la même chance : aujourd'hui « Faire le ménage » ou garde du corps. Un nouveau type de mission s'ajoute à ce tirage.
+- **Niveau** : le contrat suit la Renommée de la compagnie (§16) ; la garde du corps garde sa règle (le meilleur mercenaire, §12).
+- **Case prise** : une offre signée laisse sa case vide jusqu'au lendemain (`tavern.missions.empty_days`, 1 jour), puis une nouvelle mission arrive. Plusieurs escouades peuvent partir en même temps.
+- **Offre perdue** : une offre non signée qui dépasse sa date est prise par une autre compagnie et remplacée aussitôt. Le journal le dit ; la notification du jour n'en fait plus une alerte (une seule ligne).
+- **Anciennes sauvegardes** : l'offre de contrat et l'offre de garde du corps passent dans les deux premières cases.
+- Code : `game-core/campaign.js` (`tavernBoard`, `fillTavernBoard`, `boardOffers`, `boardOffer`) ; interface `prototype-web/contract-ui.js` (une carte par case, « Nouvelle mission demain » pour une case vide).
+

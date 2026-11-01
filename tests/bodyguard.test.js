@@ -71,20 +71,22 @@ const scriptedRandom=()=>scripted.length?scripted.shift():random();
 const campaign=createCampaignRules({generator,tavern:createTavernRules({random:()=>0.999,reference}),reference,
   bodyguard:createBodyguardRules({reference,random:scriptedRandom})});
 const state=campaign.createCampaign({captain,squad});
-assert.equal(campaign.ensureBodyguardOffer(state),true);
-assert.equal(campaign.ensureBodyguardOffer(state),false,"une offre à la fois");
-state.bodyguardBoard.offer={...state.bodyguardBoard.offer,level:2,count:2,days:5,payment:1000};
+// Taverne à 5 missions (Idan, 2026-11-01) : sans contrat de ménage dans cette campagne, 5 gardes du corps.
+assert.ok(campaign.boardOffers(state).length===5&&campaign.boardOffers(state).every(o=>o.kind==="bodyguard"));
+assert.equal(campaign.fillTavernBoard(state),false,"tableau plein");
+const slot=campaign.tavernSlots(state)[0];
+slot.offer={...slot.offer,level:2,count:2,days:5,payment:1000};
 const [a,b,c]=squad;
 a.reputation=120;b.reputation=110;c.reputation=50;
 assert.deepEqual(campaign.canGuard(state,captain),{ok:false,reason:"Le capitaine reste à la compagnie."});
 assert.deepEqual(campaign.canGuard(state,c),{ok:false,reason:"Réputation trop faible."});
 assert.equal(campaign.departBodyguard(state,[a.id]).ok,false,"exactement le nombre demandé");
 const gold=state.company.gold;
-const offerId=state.bodyguardBoard.offer.id;
-const left=campaign.departBodyguard(state,[a.id,b.id]);
+const offerId=slot.offer.id;
+const left=campaign.departBodyguard(state,[a.id,b.id],offerId);
 assert.equal(left.ok,true);
 assert.equal(state.company.gold,gold+1000,"payé d'avance");
-assert.notEqual(state.bodyguardBoard.offer.id,offerId,"une nouvelle offre au tableau");
+assert.deepEqual([slot.offer,slot.emptyUntil],[null,state.day+1],"case prise : vide jusqu'au lendemain");
 assert.equal(campaign.isAvailable(a,state),false,"pris par la mission");
 assert.ok(campaign.expeditionOf(state,b.id));
 // Mission programmée (Idan, 2026-10-30) : départ le lendemain matin ; d'ici là, au camp, on lui parle et on l'équipe.
@@ -94,7 +96,7 @@ assert.deepEqual(campaign.canGuard(state,a),{ok:false,reason:"Il part déjà en 
 const deals=createEquipmentDeals({reference:{weapons:{rows:[]},equipmentSlots:{rows:[]}}});
 assert.equal(deals.canDeal(state,a).ok,true,"on peut encore l'équiper");
 a.contract.missionBonus=40;b.contract.missionBonus=30;
-state.bodyguardBoard.offer.expiresDay=99;
+for(const o of campaign.boardOffers(state)) o.expiresDay=99;
 const repA=a.reputation,renown=Number(state.company.missionRenown)||0;
 const [leave]=campaign.advanceTime(state,1);
 assert.deepEqual(leave.expeditions.departed,[left.expedition],"départ le lendemain matin");
@@ -102,7 +104,9 @@ assert.equal(left.expedition.status,"away");
 assert.equal(deals.canDeal(state,a).reason,"Il est en mission.");
 const days4=campaign.advanceTime(state,4);
 assert.ok(days4.every(r=>r.expeditions.bodyguards.length===0),"pas avant 5 jours d'absence");
-// Le cinquième jour : a rentre (jet 0,1), b blessé (jet 0,9 puis 1D3 = 2) ; l'offre au tableau n'expire pas (jour 99).
+// Le cinquième jour : a rentre (jet 0,1), b blessé (jet 0,9 puis 1D3 = 2) ; les offres au tableau n'expirent pas (jour 99).
+assert.ok(slot.offer&&slot.offer.id!==offerId,"le lendemain, une nouvelle mission dans la case");
+for(const o of campaign.boardOffers(state)) o.expiresDay=99;
 scripted.push(0.1,0.9,0.4);
 const goldBefore=state.company.gold;
 const [day5]=campaign.advanceTime(state,1);

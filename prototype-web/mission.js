@@ -394,7 +394,7 @@ function startMissionFromSelection(){
 // Garde du corps : le paiement arrive tout de suite ; les gardes partent le lendemain matin et reviennent au bout de la
 // durée.
 function departBodyguards(chosen){
-  const result=campaignRules().departBodyguard(game.campaign,chosen.map(c=>c.id));
+  const result=campaignRules().departBodyguard(game.campaign,chosen.map(c=>c.id),game.missionSelect?.bodyguard?.id);
   if(!result.ok){ $("mission-select-error").textContent=result.reason; return; }
   $("mission-select-dialog").close();
   const e=result.expedition;
@@ -408,7 +408,7 @@ function departBodyguards(chosen){
 // 2026-10-30 : d'ici là on lui parle et on l'équipe), le joueur continue de gérer son camp. À son arrivée (au bout des
 // jours de marche), le combat attend : « Commencer le combat ».
 function departContractSquad(chosen){
-  const result=campaignRules().departExpedition(game.campaign,chosen.map(c=>c.id));
+  const result=campaignRules().departExpedition(game.campaign,chosen.map(c=>c.id),game.missionSelect?.contract?.id);
   if(!result.ok){ $("mission-select-error").textContent=result.reason; return; }
   $("mission-select-dialog").close();
   const e=result.expedition,days=e.offer.distance;

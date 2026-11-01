@@ -163,6 +163,27 @@ Les bâtiments médicaux améliorent :
 - récupération de fatigue ;
 - capacités soignantes utilisées dans la durée des blessures.
 
+**Dispensaire et Bains chauds** (Idan, 2026-11-01 ; données `camp-buildings.json`, code `game-core/campaign.js`, encarts dans
+**Ma Compagnie**) :
+
+- **à construire, puis 5 niveaux** ; le niveau n coûte **1 000 × n² PO** et **4 × n jours** ; **un chantier par bâtiment**,
+  en parallèle de celui du dortoir ; l'or est payé au lancement, le niveau est atteint le matin du dernier jour ;
+
+  | Niveau | Prix | Jours | Total |
+  |---:|---:|---:|---:|
+  | 1 | 1 000 | 4 | 1 000 |
+  | 2 | 4 000 | 8 | 5 000 |
+  | 3 | 9 000 | 12 | 14 000 |
+  | 4 | 16 000 | 16 | 30 000 |
+  | 5 | 25 000 | 20 | 55 000 |
+
+- **Dispensaire** : la durée d'une blessure (doc 10 §6), déjà bornée de 7 à 60 jours, est multipliée par **1 − 0,1 × niveau**
+  (au moins 1 jour), pour les blessures reçues après la construction. Au niveau 5 : 7 → 4 jours, 27 → 14, 48 → 24, 60 → 30 ;
+- **Bains chauds** : la fatigue (doc 10 §5) dure **1 jour de moins par niveau**, au moins 1 jour (5 à 7 jours → 1 à 2 jours
+  au niveau 5) ; la recharge du mana au camp (doc 12) gagne **+5 % de la Réserve par jour et par niveau** (Volonté 52 :
+  36 % → 61 % par jour au niveau 5) ;
+- pas d'écran à part ni d'image pour l'instant ; le nom de chaque bâtiment donne son rôle en infobulle.
+
 ### Mémorial
 
 Le mémorial a une **capacité illimitée** et conserve la mémoire des mercenaires morts.

@@ -1,7 +1,7 @@
 "use strict";
 
 // Constructions du camp (Idan, 2026-10-25). Ma Compagnie montre le dortoir (places, qualité, chantier) et un bouton pour
-// y aller ; l'écran Dortoir, sur le fond de son niveau de qualité (images de Jean-Mimi, dormitory-quality.json, image),
+// y aller, puis les bâtiments de soins (Dispensaire, Bains chauds ; 2026-11-01) ; l'écran Dortoir, sur le fond de son niveau de qualité (images de Jean-Mimi, dormitory-quality.json, image),
 // propose de l'agrandir (+5 places), d'améliorer sa qualité (dix niveaux : Renommée et affinité) ou d'y construire un
 // quartier du lieutenant (un par niveau pair de qualité). Les règles (prix, durée, un chantier à la fois au dortoir) sont
 // dans game-core/campaign.js.
@@ -27,17 +27,42 @@ function dormitoryPlacesLine(c){
   return `${dormitoryPlacesText(rules.dormitoryUsed(c))} / ${fmt(c.company.camp.dormitoryCapacity)} places occupées`;
 }
 
-// Ma Compagnie : le dortoir et le bouton pour y aller.
+// Bâtiments de soins (Idan, 2026-11-01) : ce que fait le niveau atteint, en quelques mots.
+function campBuildingEffectText(code,effects){
+  if(code==="dispensary") return `blessures −${fmt(Math.round((1-effects.woundFactor)*100))} %`;
+  if(code==="baths") return `fatigue −${campDays(effects.fatigueRelief)}, mana +${fmt(effects.manaBonus)} % par jour`;
+  return "";
+}
+// Ma Compagnie : un encart par bâtiment de soins (à construire, puis cinq niveaux ; un chantier par bâtiment).
+function campBuildingCard(c,code){
+  const rules=campaignRules(),row=rules.campBuildingRow(code);
+  if(!row) return "";
+  const level=rules.buildingLevel(c,code),work=rules.buildingWork(c,code),next=rules.nextBuildingLevel(c,code);
+  let action;
+  if(work) action=`<span class="building-work">Chantier en cours : niveau ${fmt(work.level)}, prêt dans ${campDays(work.endDay-c.day)}.</span>`;
+  else if(next){
+    const short=c.company.gold<next.gold;
+    action=`<div class="building-action"><button type="button" class="primary" data-camp-build="${esc(code)}"${short?" disabled":""}>${level?"Améliorer : niveau "+fmt(next.level):"Construire"}</button>
+      <span class="building-cost">${fmt(next.gold)} PO · ${campDays(next.days)}${short?" · pas assez d’or":""}</span></div>`;
+  }else action=`<span class="building-work">Niveau maximal.</span>`;
+  const state=level?`Niveau ${fmt(level)} · ${campBuildingEffectText(code,rules.campBuildingEffects(c))}`:"À construire";
+  return `<article class="building-card building-card--care building-card--${esc(code)}">
+      <div class="building-info"><strong title="${esc(row.description)}">${esc(row.nom)}</strong><span>${state}</span></div>
+      ${action}
+    </article>`;
+}
+
+// Ma Compagnie : le dortoir et le bouton pour y aller, puis les bâtiments de soins.
 function renderCampBuildings(){
   const box=$("camp-buildings"),c=game.campaign;
   if(!box) return;
   if(!c){ box.innerHTML=""; return; }
-  const work=c.company.camp.construction,quality=campaignRules().dormitoryQuality(c);
+  const rules=campaignRules(),work=c.company.camp.construction,quality=rules.dormitoryQuality(c);
   box.innerHTML=`<h3>Constructions</h3>
     <article class="building-card building-card--link">
       <div class="building-info"><strong>Dortoir</strong><span>${dormitoryPlacesLine(c)} · ${esc(quality.nom)}</span>${work?`<span class="building-work">${campWorkText(work,c.day)}</span>`:""}</div>
       <button type="button" class="primary" data-open-camp-scene="dormitory" data-destination="Dortoir">Aller au dortoir</button>
-    </article>`;
+    </article>`+(rules.campBuildingCodes?rules.campBuildingCodes().map(code=>campBuildingCard(c,code)).join(""):"");
   renderDormitory();
 }
 
@@ -78,6 +103,12 @@ function renderDormitory(){
 function startCampWork(result){
   if(!result.ok){ tavernLog(result.reason,"bad"); renderCampBuildings(); return; }
   const w=result.construction;
+  if(w.kind==="building"){
+    tavernLog(`Construction lancée : ${w.name} (niveau ${fmt(w.level)}), ${fmt(w.gold)} PO, prêt dans ${campDays(w.days)}.`,"gear");
+    saveGame();
+    renderGame();
+    return;
+  }
   tavernLog(w.kind==="lieutenant_quarter"
     ?`Construction lancée : quartier du lieutenant n° ${fmt(w.number)}, ${fmt(w.gold)} PO, prêt dans ${campDays(w.days)}.`
     :w.kind==="dormitory_quality"
@@ -89,6 +120,15 @@ function startCampWork(result){
 function expandDormitory(){ startCampWork(campaignRules().startDormitoryExpansion(game.campaign)); }
 function improveDormitory(){ startCampWork(campaignRules().startDormitoryQuality(game.campaign)); }
 function buildLieutenantQuarter(){ startCampWork(campaignRules().startLieutenantQuarter(game.campaign)); }
+function buildCampBuilding(code){ startCampWork(campaignRules().startBuilding(game.campaign,code)); }
+
+// Journal du matin : les bâtiments de soins qui montent d'un niveau.
+function logCampBuildings(list){
+  for(const b of list||[]){
+    const effect=campBuildingEffectText(b.code,campaignRules().campBuildingEffects(game.campaign));
+    tavernLog(`${b.name} : niveau ${fmt(b.level)} terminé${effect?" ("+effect+")":""}.`,"turn");
+  }
+}
 
 // Journal du matin : le chantier terminé.
 function logCampWork(built){
@@ -107,5 +147,6 @@ function initializeCampBuildingsUi(){
     if(event.target.closest("[data-dorm-expand]")) expandDormitory();
     else if(event.target.closest("[data-dorm-quality]")) improveDormitory();
     else if(event.target.closest("[data-dorm-quarter]")) buildLieutenantQuarter();
+    else if(event.target.closest("[data-camp-build]")) buildCampBuilding(event.target.closest("[data-camp-build]").dataset.campBuild);
   });
 }

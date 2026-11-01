@@ -1,0 +1,1045 @@
+{
+  "schema_version": 1,
+  "name": "mercenary-titles",
+  "description": "Titres écrits des mercenaires (Idan, 2026-11-01) : le mot du rôle, toujours le même (Soigneur), suivi d'un mot décalé selon le palier d'étoiles ; un titre spécialisé ajoute une petite ligne « spécialité : … » ; l'infobulle donne deux lignes qui décrivent le rôle ou la spécialité, avec humour, sans dire au joueur quoi faire. Masculin et féminin écrits à la main. Les catégories et sous-catégories viennent de mercenary-profile.json ; code : game-core/mercenary-profile.js (titleCopy), affichage : prototype-web/ui.js (renderEvaluation).",
+  "paliers": [
+    4,
+    6,
+    9,
+    11,
+    15
+  ],
+  "paliers_description": "Étoiles minimales de chaque palier : 4–5★, 6–8★, 9–10★, 11–14★, 15★.",
+  "chair_a_canon": {
+    "titre": {
+      "m": "Chair à canon",
+      "f": "Chair à canon"
+    },
+    "infobulle": {
+      "m": [
+        "Deux bras, deux jambes, et pas encore de spécialité.",
+        "Les champs de bataille sont pleins de héros qui ont commencé comme ça."
+      ],
+      "f": [
+        "Deux bras, deux jambes, et pas encore de spécialité.",
+        "Les champs de bataille sont pleins de héros qui ont commencé comme ça."
+      ]
+    }
+  },
+  "rows": [
+    {
+      "code": "healer",
+      "mot": {
+        "m": "Soigneur",
+        "f": "Soigneuse"
+      },
+      "paliers": {
+        "m": [
+          "en herbe",
+          "de garde",
+          "aux doigts de fée",
+          "qui recoud tout",
+          "miraculeux"
+        ],
+        "f": [
+          "en herbe",
+          "de garde",
+          "aux doigts de fée",
+          "qui recoud tout",
+          "miraculeuse"
+        ]
+      },
+      "infobulle": {
+        "m": [
+          "Ferme les plaies, recolle les doigts et rend leurs couleurs aux mourants.",
+          "Ses compagnons l'adorent, surtout quand ils saignent."
+        ],
+        "f": [
+          "Ferme les plaies, recolle les doigts et rend leurs couleurs aux mourants.",
+          "Ses compagnons l'adorent, surtout quand ils saignent."
+        ]
+      },
+      "specialites": [
+        {
+          "code": "urgentiste",
+          "etiquette": {
+            "m": "urgences",
+            "f": "urgences"
+          },
+          "infobulle": {
+            "m": [
+              "Ses soins arrivent d'un coup, et en gros : de quoi relever un mourant.",
+              "Il travaille mieux quand tout le monde hurle."
+            ],
+            "f": [
+              "Ses soins arrivent d'un coup, et en gros : de quoi relever un mourant.",
+              "Elle travaille mieux quand tout le monde hurle."
+            ]
+          }
+        },
+        {
+          "code": "masse",
+          "etiquette": {
+            "m": "soins de groupe",
+            "f": "soins de groupe"
+          },
+          "infobulle": {
+            "m": [
+              "Soigne plusieurs compagnons à la fois.",
+              "Il ne fait pas de jaloux : tout le monde a droit à sa part."
+            ],
+            "f": [
+              "Soigne plusieurs compagnons à la fois.",
+              "Elle ne fait pas de jaloux : tout le monde a droit à sa part."
+            ]
+          }
+        },
+        {
+          "code": "duree",
+          "etiquette": {
+            "m": "soins au long cours",
+            "f": "soins au long cours"
+          },
+          "infobulle": {
+            "m": [
+              "Ses soins agissent lentement, mais longtemps.",
+              "Ses patients guérissent sans même s'en rendre compte."
+            ],
+            "f": [
+              "Ses soins agissent lentement, mais longtemps.",
+              "Ses patients guérissent sans même s'en rendre compte."
+            ]
+          }
+        },
+        {
+          "code": "protecteur",
+          "etiquette": {
+            "m": "boucliers magiques",
+            "f": "boucliers magiques"
+          },
+          "infobulle": {
+            "m": [
+              "Pose sur ses alliés des protections qui prennent les coups à leur place.",
+              "Le meilleur soin, c'est la blessure qu'on n'a pas eue."
+            ],
+            "f": [
+              "Pose sur ses alliés des protections qui prennent les coups à leur place.",
+              "Le meilleur soin, c'est la blessure qu'on n'a pas eue."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "code": "summoner",
+      "mot": {
+        "m": "Invocateur",
+        "f": "Invocatrice"
+      },
+      "paliers": {
+        "m": [
+          "en herbe",
+          "de basse-cour",
+          "de ménagerie",
+          "des hordes",
+          "intarissable"
+        ],
+        "f": [
+          "en herbe",
+          "de basse-cour",
+          "de ménagerie",
+          "des hordes",
+          "intarissable"
+        ]
+      },
+      "infobulle": {
+        "m": [
+          "Ne se bat jamais seul : il fait surgir des créatures qui se battent à sa place.",
+          "Sa ménagerie mange peu, obéit bien et meurt sans se plaindre."
+        ],
+        "f": [
+          "Ne se bat jamais seule : elle fait surgir des créatures qui se battent à sa place.",
+          "Sa ménagerie mange peu, obéit bien et meurt sans se plaindre."
+        ]
+      },
+      "specialites": [
+        {
+          "code": "masse",
+          "etiquette": {
+            "m": "nuées",
+            "f": "nuées"
+          },
+          "infobulle": {
+            "m": [
+              "Fait surgir des essaims et des meutes entières.",
+              "Aucune bestiole n'est bien méchante ; ce sont les cent autres qui posent problème."
+            ],
+            "f": [
+              "Fait surgir des essaims et des meutes entières.",
+              "Aucune bestiole n'est bien méchante ; ce sont les cent autres qui posent problème."
+            ]
+          }
+        },
+        {
+          "code": "dps",
+          "etiquette": {
+            "m": "bêtes de combat",
+            "f": "bêtes de combat"
+          },
+          "infobulle": {
+            "m": [
+              "Ses créatures sont faites pour mordre, griffer et déchiqueter.",
+              "Il les nourrit bien ; on préfère ne pas savoir avec quoi."
+            ],
+            "f": [
+              "Ses créatures sont faites pour mordre, griffer et déchiqueter.",
+              "Elle les nourrit bien ; on préfère ne pas savoir avec quoi."
+            ]
+          }
+        },
+        {
+          "code": "gardien",
+          "etiquette": {
+            "m": "gardiens",
+            "f": "gardiens"
+          },
+          "infobulle": {
+            "m": [
+              "Ses créatures s'interposent pour protéger leur maître et ses alliés.",
+              "Pour l'atteindre, il faut d'abord traverser ses bestioles."
+            ],
+            "f": [
+              "Ses créatures s'interposent pour protéger leur maîtresse et ses alliés.",
+              "Pour l'atteindre, il faut d'abord traverser ses bestioles."
+            ]
+          }
+        },
+        {
+          "code": "necromancien",
+          "etiquette": {
+            "m": "morts-vivants",
+            "f": "morts-vivants"
+          },
+          "infobulle": {
+            "m": [
+              "Relève les morts et les envoie se battre.",
+              "Ses soldats ne mangent pas, ne dorment pas et ne réclament jamais leur solde."
+            ],
+            "f": [
+              "Relève les morts et les envoie se battre.",
+              "Ses soldats ne mangent pas, ne dorment pas et ne réclament jamais leur solde."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "code": "buffer",
+      "mot": {
+        "m": "Renforceur",
+        "f": "Renforceuse"
+      },
+      "paliers": {
+        "m": [
+          "en herbe",
+          "vitaminé",
+          "gonflé à bloc",
+          "électrisant",
+          "survolté"
+        ],
+        "f": [
+          "en herbe",
+          "vitaminée",
+          "gonflée à bloc",
+          "électrisante",
+          "survoltée"
+        ]
+      },
+      "infobulle": {
+        "m": [
+          "Sa magie rend les autres plus forts, plus vifs et plus durs à abattre.",
+          "Seul, il ne fait peur à personne. Avec lui, tout le monde fait peur."
+        ],
+        "f": [
+          "Sa magie rend les autres plus forts, plus vifs et plus durs à abattre.",
+          "Seule, elle ne fait peur à personne. Avec elle, tout le monde fait peur."
+        ]
+      },
+      "specialites": [
+        {
+          "code": "masse",
+          "etiquette": {
+            "m": "toute la troupe",
+            "f": "toute la troupe"
+          },
+          "infobulle": {
+            "m": [
+              "Ses bénédictions touchent plusieurs alliés à la fois.",
+              "Quand il chante, c'est toute la compagnie qui se redresse."
+            ],
+            "f": [
+              "Ses bénédictions touchent plusieurs alliés à la fois.",
+              "Quand elle chante, c'est toute la compagnie qui se redresse."
+            ]
+          }
+        },
+        {
+          "code": "dps",
+          "etiquette": {
+            "m": "coups plus forts",
+            "f": "coups plus forts"
+          },
+          "infobulle": {
+            "m": [
+              "Sa magie fait frapper ses alliés plus fort.",
+              "Il ne touche personne, mais il est un peu dans chaque coup."
+            ],
+            "f": [
+              "Sa magie fait frapper ses alliés plus fort.",
+              "Elle ne touche personne, mais elle est un peu dans chaque coup."
+            ]
+          }
+        },
+        {
+          "code": "accelerateur",
+          "etiquette": {
+            "m": "vitesse",
+            "f": "vitesse"
+          },
+          "infobulle": {
+            "m": [
+              "Rend ses alliés plus rapides : ils bougent et agissent plus vite.",
+              "Avec lui, même les nains arrivent à l'heure."
+            ],
+            "f": [
+              "Rend ses alliés plus rapides : ils bougent et agissent plus vite.",
+              "Avec elle, même les nains arrivent à l'heure."
+            ]
+          }
+        },
+        {
+          "code": "source_mana",
+          "etiquette": {
+            "m": "mana des autres",
+            "f": "mana des autres"
+          },
+          "infobulle": {
+            "m": [
+              "Rend du mana aux mages de la compagnie.",
+              "Les sorciers l'appellent « la gourde », et c'est un compliment."
+            ],
+            "f": [
+              "Rend du mana aux mages de la compagnie.",
+              "Les sorciers l'appellent « la gourde », et c'est un compliment."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "code": "controleur",
+      "mot": {
+        "m": "Entraveur",
+        "f": "Entraveuse"
+      },
+      "paliers": {
+        "m": [
+          "en herbe",
+          "agaçant",
+          "exaspérant",
+          "tyrannique",
+          "implacable"
+        ],
+        "f": [
+          "en herbe",
+          "agaçante",
+          "exaspérante",
+          "tyrannique",
+          "implacable"
+        ]
+      },
+      "infobulle": {
+        "m": [
+          "Ralentit, fige, déplace, endort : l'ennemi ne fait jamais ce qu'il avait prévu.",
+          "Il tue rarement, mais il gâche la journée de tout le monde."
+        ],
+        "f": [
+          "Ralentit, fige, déplace, endort : l'ennemi ne fait jamais ce qu'il avait prévu.",
+          "Elle tue rarement, mais elle gâche la journée de tout le monde."
+        ]
+      },
+      "specialites": [
+        {
+          "code": "foules",
+          "etiquette": {
+            "m": "foules",
+            "f": "foules"
+          },
+          "infobulle": {
+            "m": [
+              "Entrave plusieurs ennemis d'un seul sort.",
+              "Une armée entière qui ne bouge plus, c'est son idée d'un beau tableau."
+            ],
+            "f": [
+              "Entrave plusieurs ennemis d'un seul sort.",
+              "Une armée entière qui ne bouge plus, c'est son idée d'un beau tableau."
+            ]
+          }
+        },
+        {
+          "code": "boss",
+          "etiquette": {
+            "m": "gros morceaux",
+            "f": "gros morceaux"
+          },
+          "infobulle": {
+            "m": [
+              "S'attaque aux ennemis les plus coriaces pour les clouer sur place.",
+              "Plus c'est gros, plus il aime le voir planté là."
+            ],
+            "f": [
+              "S'attaque aux ennemis les plus coriaces pour les clouer sur place.",
+              "Plus c'est gros, plus elle aime le voir planté là."
+            ]
+          }
+        },
+        {
+          "code": "placeur",
+          "etiquette": {
+            "m": "déplacements",
+            "f": "déplacements"
+          },
+          "infobulle": {
+            "m": [
+              "Pousse, tire et déplace les ennemis où ça l'arrange.",
+              "Sur un champ de bataille, il range les ennemis comme des meubles."
+            ],
+            "f": [
+              "Pousse, tire et déplace les ennemis où ça l'arrange.",
+              "Sur un champ de bataille, elle range les ennemis comme des meubles."
+            ]
+          }
+        },
+        {
+          "code": "anti_mage",
+          "etiquette": {
+            "m": "anti-magie",
+            "f": "anti-magie"
+          },
+          "infobulle": {
+            "m": [
+              "Coupe la magie des mages ennemis.",
+              "Les sorciers d'en face le détestent ; c'est réciproque."
+            ],
+            "f": [
+              "Coupe la magie des mages ennemis.",
+              "Les sorciers d'en face la détestent ; c'est réciproque."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "code": "dps_cac",
+      "mot": {
+        "m": "Cogneur",
+        "f": "Cogneuse"
+      },
+      "paliers": {
+        "m": [
+          "en herbe",
+          "de taverne",
+          "qu'on évite",
+          "dévastateur",
+          "apocalyptique"
+        ],
+        "f": [
+          "en herbe",
+          "de taverne",
+          "qu'on évite",
+          "dévastatrice",
+          "apocalyptique"
+        ]
+      },
+      "infobulle": {
+        "m": [
+          "Au contact, il frappe fort et il frappe souvent.",
+          "Il règle les problèmes un crâne à la fois."
+        ],
+        "f": [
+          "Au contact, elle frappe fort et elle frappe souvent.",
+          "Elle règle les problèmes un crâne à la fois."
+        ]
+      },
+      "specialites": [
+        {
+          "code": "perce_armure",
+          "etiquette": {
+            "m": "perce-armure",
+            "f": "perce-armure"
+          },
+          "infobulle": {
+            "m": [
+              "Ses coups lourds traversent le métal.",
+              "Pour lui, un chevalier n'est qu'une boîte de conserve à ouvrir."
+            ],
+            "f": [
+              "Ses coups lourds traversent le métal.",
+              "Pour elle, un chevalier n'est qu'une boîte de conserve à ouvrir."
+            ]
+          }
+        },
+        {
+          "code": "foules",
+          "etiquette": {
+            "m": "coups en rafale",
+            "f": "coups en rafale"
+          },
+          "infobulle": {
+            "m": [
+              "Arme légère, bras rapide : il frappe plus souvent que les autres.",
+              "Ses ennemis comptent les coups ; lui a arrêté depuis longtemps."
+            ],
+            "f": [
+              "Arme légère, bras rapide : elle frappe plus souvent que les autres.",
+              "Ses ennemis comptent les coups ; elle a arrêté depuis longtemps."
+            ]
+          }
+        },
+        {
+          "code": "assassin",
+          "etiquette": {
+            "m": "coups en traître",
+            "f": "coups en traître"
+          },
+          "infobulle": {
+            "m": [
+              "Sort de l'ombre, frappe une fois, et c'est souvent assez.",
+              "Il n'a jamais perdu un duel : il n'en a jamais livré."
+            ],
+            "f": [
+              "Sort de l'ombre, frappe une fois, et c'est souvent assez.",
+              "Elle n'a jamais perdu un duel : elle n'en a jamais livré."
+            ]
+          }
+        },
+        {
+          "code": "duree",
+          "etiquette": {
+            "m": "lames empoisonnées",
+            "f": "lames empoisonnées"
+          },
+          "infobulle": {
+            "m": [
+              "Ses coups font mal, et le poison continue le travail.",
+              "Ses victimes ont le temps de regretter de l'avoir croisé."
+            ],
+            "f": [
+              "Ses coups font mal, et le poison continue le travail.",
+              "Ses victimes ont le temps de regretter de l'avoir croisée."
+            ]
+          }
+        },
+        {
+          "code": "chargeur",
+          "etiquette": {
+            "m": "charges",
+            "f": "charges"
+          },
+          "infobulle": {
+            "m": [
+              "Arrive en courant et frappe de tout son poids.",
+              "Les portes, les boucliers et les nez lui cèdent pareil."
+            ],
+            "f": [
+              "Arrive en courant et frappe de tout son poids.",
+              "Les portes, les boucliers et les nez lui cèdent pareil."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "code": "dps_distance",
+      "mot": {
+        "m": "Tireur",
+        "f": "Tireuse"
+      },
+      "paliers": {
+        "m": [
+          "en herbe",
+          "de foire",
+          "à l'œil de lynx",
+          "qui décoiffe",
+          "infaillible"
+        ],
+        "f": [
+          "en herbe",
+          "de foire",
+          "à l'œil de lynx",
+          "qui décoiffe",
+          "infaillible"
+        ]
+      },
+      "infobulle": {
+        "m": [
+          "Arc, arbalète ou poudre : il fait mal de loin.",
+          "Il préfère que ses ennuis meurent avant d'arriver jusqu'à lui."
+        ],
+        "f": [
+          "Arc, arbalète ou poudre : elle fait mal de loin.",
+          "Elle préfère que ses ennuis meurent avant d'arriver jusqu'à elle."
+        ]
+      },
+      "specialites": [
+        {
+          "code": "perce_armure",
+          "etiquette": {
+            "m": "perce-armure",
+            "f": "perce-armure"
+          },
+          "infobulle": {
+            "m": [
+              "Ses tirs lourds passent à travers les armures.",
+              "Les forgerons du coin le détestent."
+            ],
+            "f": [
+              "Ses tirs lourds passent à travers les armures.",
+              "Les forgerons du coin la détestent."
+            ]
+          }
+        },
+        {
+          "code": "foules",
+          "etiquette": {
+            "m": "tirs en rafale",
+            "f": "tirs en rafale"
+          },
+          "infobulle": {
+            "m": [
+              "Tire vite et souvent : il arrose plus qu'il ne vise.",
+              "Sur la quantité, il y en a toujours un qui touche."
+            ],
+            "f": [
+              "Tire vite et souvent : elle arrose plus qu'elle ne vise.",
+              "Sur la quantité, il y en a toujours un qui touche."
+            ]
+          }
+        },
+        {
+          "code": "elite",
+          "etiquette": {
+            "m": "tir de loin",
+            "f": "tir de loin"
+          },
+          "infobulle": {
+            "m": [
+              "Touche ce que les autres voient à peine.",
+              "Il ne rate pas souvent ; il ne tire pas souvent deux fois."
+            ],
+            "f": [
+              "Touche ce que les autres voient à peine.",
+              "Elle ne rate pas souvent ; elle ne tire pas souvent deux fois."
+            ]
+          }
+        },
+        {
+          "code": "duree",
+          "etiquette": {
+            "m": "traits empoisonnés",
+            "f": "traits empoisonnés"
+          },
+          "infobulle": {
+            "m": [
+              "Ses flèches et ses carreaux laissent du poison dans la plaie.",
+              "Une égratignure de lui, et la soirée est gâchée."
+            ],
+            "f": [
+              "Ses flèches et ses carreaux laissent du poison dans la plaie.",
+              "Une égratignure d'elle, et la soirée est gâchée."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "code": "dps_magie",
+      "mot": {
+        "m": "Mage de guerre",
+        "f": "Mage de guerre"
+      },
+      "paliers": {
+        "m": [
+          "en herbe",
+          "pétaradant",
+          "explosif",
+          "ravageur",
+          "cataclysmique"
+        ],
+        "f": [
+          "en herbe",
+          "pétaradante",
+          "explosive",
+          "ravageuse",
+          "cataclysmique"
+        ]
+      },
+      "infobulle": {
+        "m": [
+          "Ses sorts font de gros dégâts : feu, foudre, glace ou pire.",
+          "Il ne sait pas tenir une épée, mais il n'en a jamais eu besoin."
+        ],
+        "f": [
+          "Ses sorts font de gros dégâts : feu, foudre, glace ou pire.",
+          "Elle ne sait pas tenir une épée, mais elle n'en a jamais eu besoin."
+        ]
+      },
+      "specialites": [
+        {
+          "code": "foules",
+          "etiquette": {
+            "m": "sorts de zone",
+            "f": "sorts de zone"
+          },
+          "infobulle": {
+            "m": [
+              "Ses sorts frappent tout un groupe d'un coup.",
+              "Il ne vise pas vraiment : il choisit un quartier."
+            ],
+            "f": [
+              "Ses sorts frappent tout un groupe d'un coup.",
+              "Elle ne vise pas vraiment : elle choisit un quartier."
+            ]
+          }
+        },
+        {
+          "code": "tueur",
+          "etiquette": {
+            "m": "une cible à la fois",
+            "f": "une cible à la fois"
+          },
+          "infobulle": {
+            "m": [
+              "Concentre toute sa magie sur un seul ennemi.",
+              "Ce n'est pas personnel. Enfin, si, un peu."
+            ],
+            "f": [
+              "Concentre toute sa magie sur un seul ennemi.",
+              "Ce n'est pas personnel. Enfin, si, un peu."
+            ]
+          }
+        },
+        {
+          "code": "duree",
+          "etiquette": {
+            "m": "brûlures et maléfices",
+            "f": "brûlures et maléfices"
+          },
+          "infobulle": {
+            "m": [
+              "Ses sorts continuent de faire mal tour après tour.",
+              "Il lance, il attend, il regarde."
+            ],
+            "f": [
+              "Ses sorts continuent de faire mal tour après tour.",
+              "Elle lance, elle attend, elle regarde."
+            ]
+          }
+        },
+        {
+          "code": "perce_resistances",
+          "etiquette": {
+            "m": "perce-résistances",
+            "f": "perce-résistances"
+          },
+          "infobulle": {
+            "m": [
+              "Ses sorts passent à travers les protections et les résistances magiques.",
+              "Les amulettes de ses ennemis ne servent plus qu'à faire joli."
+            ],
+            "f": [
+              "Ses sorts passent à travers les protections et les résistances magiques.",
+              "Les amulettes de ses ennemis ne servent plus qu'à faire joli."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "code": "tank",
+      "mot": {
+        "m": "Encaisseur",
+        "f": "Encaisseuse"
+      },
+      "paliers": {
+        "m": [
+          "en herbe",
+          "rembourré",
+          "blindé",
+          "inébranlable",
+          "indestructible"
+        ],
+        "f": [
+          "en herbe",
+          "rembourrée",
+          "blindée",
+          "inébranlable",
+          "indestructible"
+        ]
+      },
+      "infobulle": {
+        "m": [
+          "Prend les coups que personne n'a envie de prendre, et tient la ligne.",
+          "Il ne gagne pas les combats : il les fait durer jusqu'à ce que les autres les gagnent."
+        ],
+        "f": [
+          "Prend les coups que personne n'a envie de prendre, et tient la ligne.",
+          "Elle ne gagne pas les combats : elle les fait durer jusqu'à ce que les autres les gagnent."
+        ]
+      },
+      "specialites": [
+        {
+          "code": "inblessable",
+          "etiquette": {
+            "m": "carapace",
+            "f": "carapace"
+          },
+          "infobulle": {
+            "m": [
+              "Les coups glissent sur lui ou s'écrasent sur son armure.",
+              "On le frappe, il soupire."
+            ],
+            "f": [
+              "Les coups glissent sur elle ou s'écrasent sur son armure.",
+              "On la frappe, elle soupire."
+            ]
+          }
+        },
+        {
+          "code": "esquiveur",
+          "etiquette": {
+            "m": "esquive",
+            "f": "esquive"
+          },
+          "infobulle": {
+            "m": [
+              "Ne se fait presque jamais toucher.",
+              "On ne sait pas s'il est rapide ou si c'est de la chance ; lui non plus."
+            ],
+            "f": [
+              "Ne se fait presque jamais toucher.",
+              "On ne sait pas si elle est rapide ou si c'est de la chance ; elle non plus."
+            ]
+          }
+        },
+        {
+          "code": "auto_soigneur",
+          "etiquette": {
+            "m": "se soigne tout seul",
+            "f": "se soigne toute seule"
+          },
+          "infobulle": {
+            "m": [
+              "Referme ses propres blessures en plein combat.",
+              "Il ne demande jamais de soigneur ; il ne veut pas faire la queue."
+            ],
+            "f": [
+              "Referme ses propres blessures en plein combat.",
+              "Elle ne demande jamais de soigneur ; elle ne veut pas faire la queue."
+            ]
+          }
+        },
+        {
+          "code": "gardien_ligne",
+          "etiquette": {
+            "m": "contre-charges",
+            "f": "contre-charges"
+          },
+          "infobulle": {
+            "m": [
+              "Arrête net ceux qui lui foncent dessus.",
+              "Charger sur lui, c'est courir dans un mur hérissé de piques."
+            ],
+            "f": [
+              "Arrête net ceux qui lui foncent dessus.",
+              "Charger sur elle, c'est courir dans un mur hérissé de piques."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "code": "eclaireur",
+      "mot": {
+        "m": "Éclaireur",
+        "f": "Éclaireuse"
+      },
+      "paliers": {
+        "m": [
+          "en herbe",
+          "fouineur",
+          "qui voit tout",
+          "fantôme",
+          "invisible"
+        ],
+        "f": [
+          "en herbe",
+          "fouineuse",
+          "qui voit tout",
+          "fantôme",
+          "invisible"
+        ]
+      },
+      "infobulle": {
+        "m": [
+          "Voit l'ennemi avant d'être vu : il repère, se faufile et pose des pièges.",
+          "Quand on commence à le chercher, il est déjà revenu."
+        ],
+        "f": [
+          "Voit l'ennemi avant d'être vue : elle repère, se faufile et pose des pièges.",
+          "Quand on commence à la chercher, elle est déjà revenue."
+        ]
+      },
+      "specialites": [
+        {
+          "code": "vigie",
+          "etiquette": {
+            "m": "guet",
+            "f": "guet"
+          },
+          "infobulle": {
+            "m": [
+              "Repère tout, de loin et avant tout le monde.",
+              "Il a vu l'embuscade ; il a même compté les flèches."
+            ],
+            "f": [
+              "Repère tout, de loin et avant tout le monde.",
+              "Elle a vu l'embuscade ; elle a même compté les flèches."
+            ]
+          }
+        },
+        {
+          "code": "infiltrateur",
+          "etiquette": {
+            "m": "infiltration",
+            "f": "infiltration"
+          },
+          "infobulle": {
+            "m": [
+              "Se cache et se faufile là où personne ne passe.",
+              "On ne le voit pas arriver. On ne le voit pas partir non plus."
+            ],
+            "f": [
+              "Se cache et se faufile là où personne ne passe.",
+              "On ne la voit pas arriver. On ne la voit pas partir non plus."
+            ]
+          }
+        },
+        {
+          "code": "magique",
+          "etiquette": {
+            "m": "yeux magiques",
+            "f": "yeux magiques"
+          },
+          "infobulle": {
+            "m": [
+              "Voit par les yeux des créatures qu'il invoque.",
+              "Son corbeau sait tout ; c'est lui qui le raconte mal."
+            ],
+            "f": [
+              "Voit par les yeux des créatures qu'elle invoque.",
+              "Son corbeau sait tout ; c'est elle qui le raconte mal."
+            ]
+          }
+        },
+        {
+          "code": "pieges",
+          "etiquette": {
+            "m": "pièges",
+            "f": "pièges"
+          },
+          "infobulle": {
+            "m": [
+              "Pose des pièges là où l'ennemi va marcher.",
+              "Il se souvient de chaque collet qu'il a tendu. Presque chaque."
+            ],
+            "f": [
+              "Pose des pièges là où l'ennemi va marcher.",
+              "Elle se souvient de chaque collet qu'elle a tendu. Presque chaque."
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "code": "meneur",
+      "mot": {
+        "m": "Meneur",
+        "f": "Meneuse"
+      },
+      "paliers": {
+        "m": [
+          "en herbe",
+          "à la grosse voix",
+          "qu'on écoute",
+          "qu'on acclame",
+          "qu'on suivrait en enfer"
+        ],
+        "f": [
+          "en herbe",
+          "à la grosse voix",
+          "qu'on écoute",
+          "qu'on acclame",
+          "qu'on suivrait en enfer"
+        ]
+      },
+      "infobulle": {
+        "m": [
+          "Tient le moral de ses troupes et fait trembler celui de l'ennemi.",
+          "Tant qu'il crie, personne ne recule."
+        ],
+        "f": [
+          "Tient le moral de ses troupes et fait trembler celui de l'ennemi.",
+          "Tant qu'elle crie, personne ne recule."
+        ]
+      },
+      "specialites": [
+        {
+          "code": "soutien",
+          "etiquette": {
+            "m": "moral des troupes",
+            "f": "moral des troupes"
+          },
+          "infobulle": {
+            "m": [
+              "Ses paroles et sa présence redonnent du courage à ses alliés.",
+              "Grâce à lui, personne ne s'enfuit ; enfin, personne ne s'enfuit en premier."
+            ],
+            "f": [
+              "Ses paroles et sa présence redonnent du courage à ses alliés.",
+              "Grâce à elle, personne ne s'enfuit ; enfin, personne ne s'enfuit en premier."
+            ]
+          }
+        },
+        {
+          "code": "demoralisateur",
+          "etiquette": {
+            "m": "terreur",
+            "f": "terreur"
+          },
+          "infobulle": {
+            "m": [
+              "Fait perdre courage à l'ennemi.",
+              "Un regard, un cri, et ceux d'en face se souviennent d'un rendez-vous ailleurs."
+            ],
+            "f": [
+              "Fait perdre courage à l'ennemi.",
+              "Un regard, un cri, et ceux d'en face se souviennent d'un rendez-vous ailleurs."
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "row_count": 10
+}

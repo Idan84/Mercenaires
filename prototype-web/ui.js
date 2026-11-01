@@ -874,13 +874,22 @@ function profileRules(){
   return game.profileRules||(game.profileRules=MercenairesProfile.createProfileRules({reference:game.referenceData,engine:combatEngine(),
     magic:typeof magicRules==="function"?magicRules():null}));
 }
-// Titres (Idan, 2026-10-31) : 1 à 3 titres, chacun avec ses étoiles en dessous, ou « Chair à canon ». Pour l'instant,
-// le nom brut de la catégorie et de sa sous-catégorie (« DPS au CAC · Perce-armure ») : les vrais titres viendront après.
+// Titres (Idan, 2026-10-31 et 2026-11-01) : 1 à 3 titres, chacun avec ses étoiles en dessous, ou « Chair à canon ».
+// Titre écrit (« Soigneur de garde »), petite ligne « spécialité : … » s'il est spécialisé, et une infobulle de deux
+// lignes sur le rôle (mercenary-titles.json). Sans les données, le nom brut (« DPS au CAC · Perce-armure »).
 function renderEvaluation(c){
-  const result=profileRules()?.evaluate(c);
+  const rules=profileRules();
+  const result=rules?.evaluate(c);
   if(!result) return "";
-  const items=result.cannonFodder?[`<div class="sheet-eval-item"><h3 class="sheet-eval-title">Chair à canon</h3></div>`]
-    :result.titles.map(t=>`<div class="sheet-eval-item"><h3 class="sheet-eval-title">${esc(t.label)}</h3>${renderStarLevel(starRules().byLevel(t.level))}</div>`);
+  const female=isFemale(c);
+  const item=(copy,fallback,stars)=>{
+    if(!copy) return `<div class="sheet-eval-item"><h3 class="sheet-eval-title">${esc(fallback)}</h3>${stars}</div>`;
+    return `<div class="sheet-eval-item" tabindex="0"><h3 class="sheet-eval-title">${esc(copy.name)}</h3>`
+      +(copy.specialty?`<small class="sheet-eval-spec">spécialité : ${esc(copy.specialty)}</small>`:"")+stars
+      +`<span class="sheet-stat-tip" role="tooltip">${copy.lines.map(line=>`<em>${esc(line)}</em>`).join("")}</span></div>`;
+  };
+  const items=result.cannonFodder?[item(rules.titleCopy?.(null,{female}),"Chair à canon","")]
+    :result.titles.map(t=>item(rules.titleCopy?.(t,{female}),t.label,renderStarLevel(starRules().byLevel(t.level))));
   return `<section class="sheet-evaluation" aria-label="Titres">${items.join("")}</section>`;
 }
 function renderProfileTab(c){

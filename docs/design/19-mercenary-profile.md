@@ -1,8 +1,7 @@
 # Titres des mercenaires
 
 > Décisions d'Idan du 2026-10-31 (version 2, qui remplace les facettes, points forts et points faibles). Étape codée :
-> notes des catégories et sous-catégories, attribution des titres, affichage brut (« DPS au CAC · Perce-armure » et ses
-> étoiles). À venir : les vrais titres, drôles et simples, pour chaque palier d'étoiles ; l'onglet **Conseils**
+> notes des catégories et sous-catégories, attribution des titres, titres écrits (section 5 ; 2026-11-01). À venir : l'onglet **Conseils**
 > (l'intendant, façon adjoint de Football Manager, avec des erreurs volontaires).
 
 ## 1 — Ce que voit le joueur
@@ -59,11 +58,47 @@ Sur 4 000 recrues : 50 % de Chair à canon, 33 % un titre, 12 % deux, 5 % trois 
 (surtout Tank et Meneur : leurs sous-catégories varient indépendamment ; celles des DPS viennent de la même arme et se
 détachent rarement chez les recrues).
 
-## 5 — Les titres écrits (à venir)
+## 5 — Les titres écrits
 
-Un titre drôle et simple par rôle (catégorie générique et chaque sous-catégorie) et par palier : **4–5★** (bronze),
-**6–8★** (argent 1 à 3), **9–10★** (argent 4–5), **11–14★** (or 1 à 4), **15★** (pour la gloire) ; environ 265 titres,
-au masculin et au féminin.
+Décisions d'Idan du 2026-11-01. Données : `data/reference/mercenary-titles.json` ; code : `titleCopy`
+(`game-core/mercenary-profile.js`) ; affichage : `renderEvaluation` (`prototype-web/ui.js`).
+
+- **Explicite d'abord** : le rôle est toujours dit par le même mot (Healer → **Soigneur**).
+- **Le décalage est dans le niveau** : un mot par palier d'étoiles, propre au rôle — 4–5★, 6–8★, 9–10★, 11–14★, 15★.
+- **Spécialisation** (format A) : le titre reste celui de la catégorie ; une petite ligne « spécialité : … » s'ajoute dessous.
+- **Les titres sont séparés** : 1 à 3 lignes, comme avant, chacune avec ses étoiles.
+- **Infobulle** : deux lignes qui décrivent le rôle (ou la spécialité), avec humour ; elle ne dit pas au joueur quoi faire. Le titre brut n'est plus montré.
+- Tout est écrit à la main, au masculin et au féminin.
+
+| Catégorie | Mot | 4–5★ | 6–8★ | 9–10★ | 11–14★ | 15★ |
+|---|---|---|---|---|---|---|
+| Healer | Soigneur / Soigneuse | en herbe | de garde | aux doigts de fée | qui recoud tout | miraculeux |
+| Summoner | Invocateur / Invocatrice | en herbe | de basse-cour | de ménagerie | des hordes | intarissable |
+| Buffer | Renforceur / Renforceuse | en herbe | vitaminé | gonflé à bloc | électrisant | survolté |
+| Contrôleur | Entraveur / Entraveuse | en herbe | agaçant | exaspérant | tyrannique | implacable |
+| DPS au CAC | Cogneur / Cogneuse | en herbe | de taverne | qu'on évite | dévastateur | apocalyptique |
+| DPS à distance | Tireur / Tireuse | en herbe | de foire | à l'œil de lynx | qui décoiffe | infaillible |
+| DPS magiques | Mage de guerre / Mage de guerre | en herbe | pétaradant | explosif | ravageur | cataclysmique |
+| Tank | Encaisseur / Encaisseuse | en herbe | rembourré | blindé | inébranlable | indestructible |
+| Éclaireur | Éclaireur / Éclaireuse | en herbe | fouineur | qui voit tout | fantôme | invisible |
+| Meneur | Meneur / Meneuse | en herbe | à la grosse voix | qu'on écoute | qu'on acclame | qu'on suivrait en enfer |
+
+Chair à canon ne change pas.
+
+| Catégorie | Spécialités (sous-catégorie → étiquette) |
+|---|---|
+| Healer | Urgentiste → urgences ; De masse → soins de groupe ; Dans la durée → soins au long cours ; Protecteur → boucliers magiques |
+| Summoner | De masse → nuées ; De DPS → bêtes de combat ; Gardien → gardiens ; Nécromancien → morts-vivants |
+| Buffer | De masse → toute la troupe ; De DPS → coups plus forts ; Accélérateur → vitesse ; Source de mana → mana des autres |
+| Contrôleur | Des foules → foules ; Des boss → gros morceaux ; Placeur → déplacements ; Anti-mage → anti-magie |
+| DPS au CAC | Perce-armure → perce-armure ; De foules → coups en rafale ; Assassin → coups en traître ; Dans la durée → lames empoisonnées ; Chargeur → charges |
+| DPS à distance | Perce-armure → perce-armure ; De foules → tirs en rafale ; Tireur d'élite → tir de loin ; Dans la durée → traits empoisonnés |
+| DPS magiques | De foules → sorts de zone ; Tueur de cible → une cible à la fois ; Dans la durée → brûlures et maléfices ; Perce-résistances → perce-résistances |
+| Tank | Inblessable → carapace ; Esquiveur → esquive ; Auto-soigneur → se soigne tout seul ; Gardien de ligne → contre-charges |
+| Éclaireur | Vigie → guet ; Infiltrateur → infiltration ; Éclaireur magique → yeux magiques ; Poseur de pièges → pièges |
+| Meneur | Soutien de ses troupes → moral des troupes ; Démoralisateur → terreur |
+
+Les infobulles (deux lignes par rôle et par spécialité) sont dans les données.
 
 ## 6 — Code et données
 
@@ -76,4 +111,5 @@ au masculin et au féminin.
   `creatures`, ou `sans_role` pour Purge et Célérité), et si l'étalonnage n'est plus celui que donnent les règles
   (`node scripts/build-mercenary-profile.js --check`). L'équipement et la progression, eux, suivent tout seuls : les
   mesures passent par les règles du combat.
-- `prototype-web/ui.js` (`renderEvaluation`) ; test : `tests/mercenary-profile.test.js`.
+- `data/reference/mercenary-titles.json` : titres écrits (section 5).
+- `prototype-web/ui.js` (`renderEvaluation`) ; tests : `tests/mercenary-profile.test.js`, `tests/mercenary-titles.test.js`.

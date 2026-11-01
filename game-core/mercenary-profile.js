@@ -293,7 +293,32 @@
       return {values,categories:scored,titles:result,cannonFodder:!result.length};
     }
 
-    return {measure,level,evaluate,strike,perTurn,categories,spellRole};
+    // ---- Titres écrits (Idan, 2026-11-01 ; mercenary-titles.json) ----
+    // Le mot du rôle, toujours le même (« Soigneur »), puis un mot décalé selon le palier d'étoiles (« de garde ») ; un
+    // titre spécialisé garde ce titre et ajoute sa spécialité (« urgences »). L'infobulle : deux lignes sur le rôle, ou
+    // sur la spécialité. Sans les données (anciens tests), rien : la fiche garde le nom brut.
+    const titleData=reference?.mercenaryTitles||null;
+    const titleRows=new Map(rows(titleData).map(row=>[row.code,row]));
+    function tierIndex(stars){
+      const mins=titleData?.paliers||[];
+      let index=0;
+      mins.forEach((min,i)=>{ if(stars>=min) index=i; });
+      return index;
+    }
+    function titleCopy(title,{female=false}={}){
+      if(!titleData) return null;
+      const g=female?"f":"m";
+      if(!title){
+        const fodder=titleData.chair_a_canon;
+        return fodder?{name:fodder.titre[g],specialty:null,lines:fodder.infobulle[g]}:null;
+      }
+      const row=titleRows.get(title.category);
+      if(!row) return null;
+      const spec=title.sub?(row.specialites||[]).find(s=>s.code===title.sub.code)||null:null;
+      return {name:row.mot[g]+" "+row.paliers[g][tierIndex(title.level)],specialty:spec?spec.etiquette[g]:null,lines:(spec||row).infobulle[g]};
+    }
+
+    return {measure,level,evaluate,strike,perTurn,categories,spellRole,titleCopy,tierIndex};
   }
 
   return {createProfileRules};

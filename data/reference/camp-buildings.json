@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "camp-buildings",
-  "description": "Bâtiments de soins du camp (Idan, 2026-11-01) : à construire, puis à améliorer niveau par niveau. Le niveau n coûte prix_base × n² PO et jours_base × n jours ; un chantier par bâtiment, en parallèle de celui du dortoir ; l'or est payé au lancement, le niveau est atteint le matin du dernier jour. Dispensaire : la durée des blessures × (1 − soins_par_niveau × niveau), après le minimum de 7 jours, pour les blessures reçues après la construction. Bains chauds : fatigue − fatigue_jours_par_niveau × niveau jours (au moins 1 jour), et recharge du mana au camp + mana_par_niveau × niveau % de la Réserve par jour. Code : game-core/campaign.js (bâtiments de soins), affichage : prototype-web/camp-buildings-ui.js (Ma Compagnie). Doc 11 §9.",
+  "description": "Bâtiments du camp (Idan, 2026-11-01) : à construire, puis à améliorer niveau par niveau. Le niveau n coûte prix_base × n² PO et jours_base × n jours ; un chantier par bâtiment (chaque salle de l'École de magie a le sien), en parallèle de celui du dortoir ; l'or est payé au lancement, le niveau est atteint le matin du dernier jour. Dispensaire : la durée des blessures × (1 − soins_par_niveau × niveau), après le minimum de 7 jours, pour les blessures reçues après la construction. Bains chauds : fatigue − fatigue_jours_par_niveau × niveau jours (au moins 1 jour), et recharge du mana au camp + mana_par_niveau × niveau % de la Réserve par jour. École de magie : 10 niveaux ; une salle par école de magie, 10 niveaux, au plus au niveau atteint par l'École (colonne requiert) ; pas encore d'effet. Code : game-core/campaign.js (bâtiments du camp), affichage : prototype-web/camp-buildings-ui.js (Ma Compagnie). Doc 11 §7 et §9.",
   "columns": [
     {
       "key": "code",
@@ -38,6 +38,14 @@
     {
       "key": "mana_par_niveau",
       "source": "Bains chauds : % de la Réserve de mana en plus par jour et par niveau"
+    },
+    {
+      "key": "requiert",
+      "source": "Salle : bâtiment dont le niveau atteint borne le sien (vide pour un bâtiment)"
+    },
+    {
+      "key": "ecole",
+      "source": "Salle de l'École de magie : son école de magie"
     }
   ],
   "rows": [
@@ -50,7 +58,9 @@
       "jours_base": 4,
       "soins_par_niveau": 0.1,
       "fatigue_jours_par_niveau": 0,
-      "mana_par_niveau": 0
+      "mana_par_niveau": 0,
+      "requiert": null,
+      "ecole": null
     },
     {
       "code": "baths",
@@ -61,8 +71,140 @@
       "jours_base": 4,
       "soins_par_niveau": 0,
       "fatigue_jours_par_niveau": 1,
-      "mana_par_niveau": 5
+      "mana_par_niveau": 5,
+      "requiert": null,
+      "ecole": null
+    },
+    {
+      "code": "magic_school",
+      "nom": "École de magie",
+      "description": "Grimoires, chandelles et odeur de soufre. Chaque niveau de l’École permet de monter ses salles jusqu’à ce niveau.",
+      "niveaux": 10,
+      "prix_base": 1000,
+      "jours_base": 4,
+      "soins_par_niveau": 0,
+      "fatigue_jours_par_niveau": 0,
+      "mana_par_niveau": 0,
+      "requiert": null,
+      "ecole": null
+    },
+    {
+      "code": "magic_room_fire",
+      "nom": "Salle du Feu",
+      "description": "Elle monte au plus jusqu’au niveau de l’École de magie.",
+      "niveaux": 10,
+      "prix_base": 1000,
+      "jours_base": 4,
+      "soins_par_niveau": 0,
+      "fatigue_jours_par_niveau": 0,
+      "mana_par_niveau": 0,
+      "requiert": "magic_school",
+      "ecole": "Feu"
+    },
+    {
+      "code": "magic_room_water",
+      "nom": "Salle de l’Eau",
+      "description": "Elle monte au plus jusqu’au niveau de l’École de magie.",
+      "niveaux": 10,
+      "prix_base": 1000,
+      "jours_base": 4,
+      "soins_par_niveau": 0,
+      "fatigue_jours_par_niveau": 0,
+      "mana_par_niveau": 0,
+      "requiert": "magic_school",
+      "ecole": "Eau"
+    },
+    {
+      "code": "magic_room_lightning",
+      "nom": "Salle de la Foudre",
+      "description": "Elle monte au plus jusqu’au niveau de l’École de magie.",
+      "niveaux": 10,
+      "prix_base": 1000,
+      "jours_base": 4,
+      "soins_par_niveau": 0,
+      "fatigue_jours_par_niveau": 0,
+      "mana_par_niveau": 0,
+      "requiert": "magic_school",
+      "ecole": "Foudre"
+    },
+    {
+      "code": "magic_room_life",
+      "nom": "Salle de la Vie",
+      "description": "Elle monte au plus jusqu’au niveau de l’École de magie.",
+      "niveaux": 10,
+      "prix_base": 1000,
+      "jours_base": 4,
+      "soins_par_niveau": 0,
+      "fatigue_jours_par_niveau": 0,
+      "mana_par_niveau": 0,
+      "requiert": "magic_school",
+      "ecole": "Vie"
+    },
+    {
+      "code": "magic_room_necromancy",
+      "nom": "Salle de la Nécromancie",
+      "description": "Elle monte au plus jusqu’au niveau de l’École de magie.",
+      "niveaux": 10,
+      "prix_base": 1000,
+      "jours_base": 4,
+      "soins_par_niveau": 0,
+      "fatigue_jours_par_niveau": 0,
+      "mana_par_niveau": 0,
+      "requiert": "magic_school",
+      "ecole": "Nécromancie"
+    },
+    {
+      "code": "magic_room_illusion",
+      "nom": "Salle de l’Illusion",
+      "description": "Elle monte au plus jusqu’au niveau de l’École de magie.",
+      "niveaux": 10,
+      "prix_base": 1000,
+      "jours_base": 4,
+      "soins_par_niveau": 0,
+      "fatigue_jours_par_niveau": 0,
+      "mana_par_niveau": 0,
+      "requiert": "magic_school",
+      "ecole": "Illusion"
+    },
+    {
+      "code": "magic_room_summoning",
+      "nom": "Salle de l’Invocation",
+      "description": "Elle monte au plus jusqu’au niveau de l’École de magie.",
+      "niveaux": 10,
+      "prix_base": 1000,
+      "jours_base": 4,
+      "soins_par_niveau": 0,
+      "fatigue_jours_par_niveau": 0,
+      "mana_par_niveau": 0,
+      "requiert": "magic_school",
+      "ecole": "Invocation"
+    },
+    {
+      "code": "magic_room_transmutation",
+      "nom": "Salle de la Transmutation",
+      "description": "Elle monte au plus jusqu’au niveau de l’École de magie.",
+      "niveaux": 10,
+      "prix_base": 1000,
+      "jours_base": 4,
+      "soins_par_niveau": 0,
+      "fatigue_jours_par_niveau": 0,
+      "mana_par_niveau": 0,
+      "requiert": "magic_school",
+      "ecole": "Transmutation"
+    },
+    {
+      "code": "magic_room_telekinesis",
+      "nom": "Salle de la Télékinésie",
+      "description": "Elle monte au plus jusqu’au niveau de l’École de magie.",
+      "niveaux": 10,
+      "prix_base": 1000,
+      "jours_base": 4,
+      "soins_par_niveau": 0,
+      "fatigue_jours_par_niveau": 0,
+      "mana_par_niveau": 0,
+      "requiert": "magic_school",
+      "ecole": "Télékinésie"
     }
   ],
-  "row_count": 2
+  "row_count": 12
 }

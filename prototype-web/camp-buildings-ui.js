@@ -1,7 +1,7 @@
 "use strict";
 
 // Constructions du camp (Idan, 2026-10-25). Ma Compagnie montre le dortoir (places, qualité, chantier) et un bouton pour
-// y aller, puis les bâtiments de soins (Dispensaire, Bains chauds ; 2026-11-01) ; l'écran Dortoir, sur le fond de son niveau de qualité (images de Jean-Mimi, dormitory-quality.json, image),
+// y aller, puis les bâtiments de soins (Dispensaire, Bains chauds ; 2026-11-01) et l'École de magie avec ses salles ; l'écran Dortoir, sur le fond de son niveau de qualité (images de Jean-Mimi, dormitory-quality.json, image),
 // propose de l'agrandir (+5 places), d'améliorer sa qualité (dix niveaux : Renommée et affinité) ou d'y construire un
 // quartier du lieutenant (un par niveau pair de qualité). Les règles (prix, durée, un chantier à la fois au dortoir) sont
 // dans game-core/campaign.js.
@@ -27,32 +27,55 @@ function dormitoryPlacesLine(c){
   return `${dormitoryPlacesText(rules.dormitoryUsed(c))} / ${fmt(c.company.camp.dormitoryCapacity)} places occupées`;
 }
 
-// Bâtiments de soins (Idan, 2026-11-01) : ce que fait le niveau atteint, en quelques mots.
+// Bâtiments de soins (Idan, 2026-11-01) : ce que fait le niveau atteint, en quelques mots (rien encore pour l'École de
+// magie et ses salles).
 function campBuildingEffectText(code,effects){
   if(code==="dispensary") return `blessures −${fmt(Math.round((1-effects.woundFactor)*100))} %`;
   if(code==="baths") return `fatigue −${campDays(effects.fatigueRelief)}, mana +${fmt(effects.manaBonus)} % par jour`;
   return "";
 }
-// Ma Compagnie : un encart par bâtiment de soins (à construire, puis cinq niveaux ; un chantier par bâtiment).
+// Le chantier en cours, ou le bouton du prochain niveau avec son prix (grisé s'il manque de l'or ou, pour une salle de
+// l'École de magie, si l'École n'a pas encore ce niveau).
+function campBuildingAction(c,code,level){
+  const rules=campaignRules(),work=rules.buildingWork(c,code),next=rules.nextBuildingLevel(c,code);
+  if(work) return `<span class="building-work">Chantier en cours : niveau ${fmt(work.level)}, prêt dans ${campDays(work.endDay-c.day)}.</span>`;
+  if(!next) return `<span class="building-work">Niveau maximal.</span>`;
+  const short=c.company.gold<next.gold;
+  const why=next.locked?` · ${esc(next.requires.name)} niveau ${fmt(next.level)} requise`:short?" · pas assez d’or":"";
+  return `<div class="building-action"><button type="button" class="primary" data-camp-build="${esc(code)}"${short||next.locked?" disabled":""}>${level?"Améliorer : niveau "+fmt(next.level):"Construire"}</button>
+      <span class="building-cost">${fmt(next.gold)} PO · ${campDays(next.days)}${why}</span></div>`;
+}
+function campBuildingState(c,code,level){
+  if(!level) return "À construire";
+  const effect=campBuildingEffectText(code,campaignRules().campBuildingEffects(c));
+  return `Niveau ${fmt(level)}${effect?" · "+effect:""}`;
+}
+// École de magie (Idan, 2026-11-01) : une ligne par salle, une fois l'École construite.
+function campRoomsList(c,code){
+  const rules=campaignRules(),rooms=rules.campRoomCodes?rules.campRoomCodes(code):[];
+  if(!rooms.length||!rules.buildingLevel(c,code)) return "";
+  return `<div class="building-rooms">${rooms.map(room=>{
+    const row=rules.campBuildingRow(room),level=rules.buildingLevel(c,room);
+    return `<div class="building-room building-room--${esc(room)}">
+        <div class="building-info"><strong title="${esc(row.description)}">${esc(row.nom)}</strong><span>${campBuildingState(c,room,level)}</span></div>
+        ${campBuildingAction(c,room,level)}
+      </div>`;
+  }).join("")}</div>`;
+}
+// Ma Compagnie : un encart par bâtiment (à construire, puis ses niveaux ; un chantier par bâtiment), les salles de
+// l'École de magie dans le sien.
 function campBuildingCard(c,code){
   const rules=campaignRules(),row=rules.campBuildingRow(code);
-  if(!row) return "";
-  const level=rules.buildingLevel(c,code),work=rules.buildingWork(c,code),next=rules.nextBuildingLevel(c,code);
-  let action;
-  if(work) action=`<span class="building-work">Chantier en cours : niveau ${fmt(work.level)}, prêt dans ${campDays(work.endDay-c.day)}.</span>`;
-  else if(next){
-    const short=c.company.gold<next.gold;
-    action=`<div class="building-action"><button type="button" class="primary" data-camp-build="${esc(code)}"${short?" disabled":""}>${level?"Améliorer : niveau "+fmt(next.level):"Construire"}</button>
-      <span class="building-cost">${fmt(next.gold)} PO · ${campDays(next.days)}${short?" · pas assez d’or":""}</span></div>`;
-  }else action=`<span class="building-work">Niveau maximal.</span>`;
-  const state=level?`Niveau ${fmt(level)} · ${campBuildingEffectText(code,rules.campBuildingEffects(c))}`:"À construire";
+  if(!row||row.requiert) return "";
+  const level=rules.buildingLevel(c,code);
   return `<article class="building-card building-card--care building-card--${esc(code)}">
-      <div class="building-info"><strong title="${esc(row.description)}">${esc(row.nom)}</strong><span>${state}</span></div>
-      ${action}
+      <div class="building-info"><strong title="${esc(row.description)}">${esc(row.nom)}</strong><span>${campBuildingState(c,code,level)}</span></div>
+      ${campBuildingAction(c,code,level)}
+      ${campRoomsList(c,code)}
     </article>`;
 }
 
-// Ma Compagnie : le dortoir et le bouton pour y aller, puis les bâtiments de soins.
+// Ma Compagnie : le dortoir et le bouton pour y aller, puis les autres bâtiments.
 function renderCampBuildings(){
   const box=$("camp-buildings"),c=game.campaign;
   if(!box) return;
@@ -122,7 +145,7 @@ function improveDormitory(){ startCampWork(campaignRules().startDormitoryQuality
 function buildLieutenantQuarter(){ startCampWork(campaignRules().startLieutenantQuarter(game.campaign)); }
 function buildCampBuilding(code){ startCampWork(campaignRules().startBuilding(game.campaign,code)); }
 
-// Journal du matin : les bâtiments de soins qui montent d'un niveau.
+// Journal du matin : les bâtiments (et les salles) qui montent d'un niveau.
 function logCampBuildings(list){
   for(const b of list||[]){
     const effect=campBuildingEffectText(b.code,campaignRules().campBuildingEffects(game.campaign));

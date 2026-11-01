@@ -2029,6 +2029,12 @@ body[data-screen="camp"] .camp-scene>.panel .muted{color:#c2b29e}
 .building-card--care .building-action{display:grid;gap:4px;justify-items:end;text-align:right}
 .building-card--care .building-action button{width:auto}
 .building-info .building-work{font-size:14px}
+.building-rooms{grid-column:1/-1;display:grid;gap:0;border-top:1px solid #9c795266}
+.building-room{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid #9c795233}
+.building-room:last-child{border-bottom:0;padding-bottom:0}
+.building-room .building-info strong{font-size:17px;cursor:help}
+.building-room .building-action{display:grid;gap:4px;justify-items:end;text-align:right}
+.building-room .building-action button{width:auto;padding:6px 12px;font-size:14px}
 /* Écran Dortoir : le décor en plein écran, le panneau en bas à gauche. */
 body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="dormitory"]{display:flex;align-items:flex-end;min-height:calc(100dvh - 150px)}
 .dormitory-panel{width:min(100%,640px);padding:18px 22px 20px;border:1px solid #957652;border-radius:14px;background:rgba(22,17,13,.86);color:#f0e2ca;box-shadow:0 20px 60px #000a}

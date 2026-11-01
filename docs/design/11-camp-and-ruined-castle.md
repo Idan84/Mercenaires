@@ -142,6 +142,24 @@ Fonctions :
 - entraînement des écoles de magie ;
 - développement des capacités magiques.
 
+**École de magie et ses salles** (Idan, 2026-11-01 : « on commence simple et sans graphisme » ; données
+`camp-buildings.json`, code `game-core/campaign.js`, encart dans **Ma Compagnie**) :
+
+- **un seul bâtiment, l'École de magie**, à construire puis **10 niveaux** ;
+- **une salle par école de magie** (Feu, Eau, Foudre, Vie, Nécromancie, Illusion, Invocation, Transmutation,
+  Télékinésie), chacune avec ses **10 niveaux**, et **au plus au niveau atteint par l'École** : une École de niveau 3
+  permet des salles jusqu'au niveau 3 ; le niveau de l'École encore en chantier ne compte pas ;
+- même barème que les autres bâtiments du camp (JC3, en attendant les prix d'Idan) : le niveau n coûte **1 000 × n² PO**
+  et **4 × n jours** (niveau 10 : 100 000 PO et 40 jours ; 385 000 PO pour les dix niveaux) ; **un chantier par bâtiment
+  et par salle**, en parallèle les uns des autres et du dortoir ; l'or est payé au lancement, le niveau est atteint le
+  matin du dernier jour ;
+- **pas encore d'effet** : l'apprentissage des sorts, l'entraînement (Puissance magique, Réserve de mana, sorts,
+  écoles), le professeur et le rôle des niveaux sont en discussion. Déjà retenu par Idan : chaque niveau de l'École
+  réduira le temps d'apprentissage (par exemple −10 %) et accueillera un élève de plus ;
+- interface : l'encart de l'École (niveau, bouton du prochain niveau avec son prix) ; une fois l'École construite, ses
+  neuf salles dedans, une ligne chacune ; le bouton d'une salle est grisé tant que l'École n'a pas le niveau voulu
+  (« École de magie niveau 3 requise »). Pas d'écran à part ni d'image pour l'instant.
+
 ## 8 — Bâtiments pour animaux et montures
 
 Le château peut accueillir des structures spécialisées selon les espèces :

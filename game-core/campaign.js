@@ -559,21 +559,32 @@
       return {kind:work.kind,places:work.places,capacity:camp.dormitoryCapacity};
     }
 
-    // Bâtiments de soins (Idan, 2026-11-01 ; camp-buildings.json, doc 11 §9) : le Dispensaire raccourcit les blessures,
-    // les Bains chauds la fatigue et rechargent plus de mana. À construire, puis 5 niveaux ; le niveau n coûte
-    // prix_base × n² PO et jours_base × n jours. Un chantier par bâtiment, en parallèle de celui du dortoir ; l'or est payé
-    // au lancement, le niveau est atteint le matin du dernier jour.
+    // Bâtiments du camp (Idan, 2026-11-01 ; camp-buildings.json, doc 11 §7 et §9) : le Dispensaire raccourcit les
+    // blessures, les Bains chauds la fatigue et rechargent plus de mana ; l'École de magie (10 niveaux) et ses salles, une
+    // par école de magie, n'ont pas encore d'effet. Le niveau n coûte prix_base × n² PO et jours_base × n jours. Un
+    // chantier par bâtiment (chaque salle a le sien), en parallèle de celui du dortoir ; l'or est payé au lancement, le
+    // niveau est atteint le matin du dernier jour. Une salle (colonne requiert) monte au plus jusqu'au niveau atteint par
+    // son bâtiment : le niveau en chantier ne compte pas.
     const CAMP_BUILDINGS=new Map((reference?.campBuildings?.rows||[]).map(row=>[row.code,row]));
     function campBuildingRow(code){ return CAMP_BUILDINGS.get(code)||null; }
     function campBuildingCodes(){ return [...CAMP_BUILDINGS.keys()]; }
+    // Les salles d'un bâtiment (École de magie : une par école), dans l'ordre des données.
+    function campRoomCodes(parent){ return [...CAMP_BUILDINGS.values()].filter(row=>row.requiert===parent).map(row=>row.code); }
     function buildingLevel(state,code){ return Number(state?.company?.camp?.buildings?.[code]?.level)||0; }
     function buildingWork(state,code){ return state?.company?.camp?.buildings?.[code]?.construction||null; }
+    // Le prochain niveau ; pour une salle, requires dit le niveau du bâtiment qu'il faut d'abord atteindre (locked).
     function nextBuildingLevel(state,code){
       const row=CAMP_BUILDINGS.get(code);
       if(!row) return null;
       const level=buildingLevel(state,code)+1;
       if(level>(Number(row.niveaux)||0)) return null;
-      return {code,name:row.nom,level,gold:(Number(row.prix_base)||0)*level*level,days:(Number(row.jours_base)||0)*level};
+      const next={code,name:row.nom,level,gold:(Number(row.prix_base)||0)*level*level,days:(Number(row.jours_base)||0)*level};
+      const parent=row.requiert?CAMP_BUILDINGS.get(row.requiert):null;
+      if(parent){
+        next.requires={code:parent.code,name:parent.nom,level};
+        next.locked=buildingLevel(state,parent.code)<level;
+      }
+      return next;
     }
     function startBuilding(state,code){
       const row=CAMP_BUILDINGS.get(code);
@@ -584,9 +595,11 @@
       if(building.construction) return {ok:false,reason:"Un chantier est déjà en cours : "+row.nom+"."};
       const next=nextBuildingLevel(state,code);
       if(!next) return {ok:false,reason:row.nom+" : niveau maximal."};
+      if(next.locked) return {ok:false,reason:row.nom+" : il faut d’abord "+next.requires.name+" au niveau "+next.level+".",cost:next};
       if(state.company.gold<next.gold) return {ok:false,reason:"Pas assez d’or : il faut "+next.gold+" PO.",cost:next};
       state.company.gold-=next.gold;
-      building.construction={kind:"building",...next,startDay:state.day,endDay:state.day+next.days};
+      const {requires,locked,...work}=next;
+      building.construction={kind:"building",...work,startDay:state.day,endDay:state.day+next.days};
       return {ok:true,construction:building.construction};
     }
     // Chaque matin : les chantiers terminés montent leur bâtiment d'un niveau.
@@ -1056,7 +1069,7 @@
       completeExpeditionCombat,
       dormitoryFree,
       dormitoryUsed,
-      campBuildingRow,campBuildingCodes,buildingLevel,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
+      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
       woundDaysFor,fatigueDaysFor,
       dormitoryPlaces,
       dormitoryExpansionCost,

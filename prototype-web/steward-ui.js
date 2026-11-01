@@ -37,7 +37,7 @@ function renderStewardPanel(){
     return;
   }
   const company=game.campaign.company;
-  const picks=company.roster.filter(m=>m.id!==company.captainId&&!(company.lieutenantIds||[]).includes(m.id)).map(m=>{
+  const picks=company.roster.filter(m=>m.id!==company.captainId&&!(company.lieutenantIds||[]).includes(m.id)&&m.id!==company.medicId&&m.id!==company.directorId).map(m=>{
     const asked=m.stewardOfferDay===game.campaign.day;
     return `<button type="button" class="steward-pick" data-steward-offer="${esc(m.id)}"${asked?` disabled title="${esc(copy.asked_today||"")}"`:""}>
       ${renderAvatar(m,{variant:"compact",kind:"portrait"})}<b>${esc(m.name)}</b></button>`;

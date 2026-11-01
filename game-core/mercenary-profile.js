@@ -193,7 +193,7 @@
       if(kind==="montant"){
         if(!magic.dice(known.code).count) return null;
         const range=magic.effectRange(unit,known.code);
-        const turns=spell.effet==="soin_sur_duree"?Math.max(1,magic.duration(unit,known.code)):1;
+        const turns=["soin_sur_duree","degats_sur_duree","aura_de_feu"].includes(spell.effet)?Math.max(1,magic.duration(unit,known.code)):1;
         return base*(range.min+range.max)/2*turns;
       }
       if(kind==="invocation"){

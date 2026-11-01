@@ -146,7 +146,7 @@ Même modèle que la Vie (effet, mana, CC aux dés maximum, EC : le lanceur subi
 | Souffle ardent, par cible | 60 · 23 mana | 79 · 21 | 178 · 14 |
 | Torche vivante, par voisin et par tour | 22 × 2 tours · 14 mana | 28 × 3 · 13 | 63 × 4 · 9 |
 
-### École de l'Eau (7 sorts, Idan, 2026-10-27)
+### École de l'Eau (10 sorts, Idan, 2026-10-27 et 2026-10-31)
 
 **Objectif V1 (Idan, 2026-10-27) : 10 sorts mono-école par école.** La Vie, le Feu, la Transmutation, la Foudre, la Télékinésie et l'Illusion en ont 6, l'Eau 7 ; les autres viendront.
 
@@ -161,9 +161,16 @@ Même modèle que la Vie et le Feu (effet, mana, CC aux dés maximum, EC : le la
 | Armure de froid | rapide | +(30 + M/5) de protection contre le **feu**, pendant 2 + M/50 tours | allié ou soi, 2 + M/25 | 10 |
 | Gel | rapide | −(20 + M/5) en **Vitesse et en Dextérité**, pendant **1 + M/100 tours, au plus 2** (Idan : « 1 ou 2 tours ») | un ennemi à 1 + M/50 | 12 |
 | Arme de glace | rapide | +1D4 de froid à chaque coup qui touche (même sans blesser), pendant 2 + M/50 tours | la sienne ou celle d'un compagnon, 1 + M/50 | 12 |
+| Prison de glace | principale | l'ennemi est **figé** : il perd ses activations pendant **1 tour (2 à 100 de maîtrise)** et ne subit que **la moitié des dégâts** ; il résiste si D100 ≤ Constitution + protection contre le froid − M/2 (5 à 95 %) ; pas de coup critique | 6 + M/25, au plus 12 | 30 |
+| Blizzard | principale | une tempête de neige de **rayon 2 + M/50 (au plus 4)** pendant **3 tours** : **1D4 de froid** à tous ceux de la zone à chaque tour, dès le lancer (un jet pour tous, alliés compris) ; on n'y voit pas à travers ; qui y commence son activation n'a que **la moitié de son déplacement** ; sans ligne de vue | centre à 6 + M/25, au plus 12 | 35 |
+| Source vive | principale | rend **3 × 1D6** (× Puissance et maîtrise) de **mana** à un autre allié, sans dépasser sa réserve | 2 + M/25 | 10 |
 
 - **Brouillard** (Idan : « bloque la ligne de vue et empêche de tirer ») : les 5 cases sont centrées sur la case visée, **en travers** de la direction du lanceur (le long de l'axe de la grille le plus perpendiculaire). Une case de brouillard coupe la ligne de vue comme un mur : personne ne tire ni ne lance de sort **à travers, depuis ou vers** une case de brouillard (Idan : il bloque aussi les sorts). Le corps à corps et les déplacements ne changent pas. Les cases hors de la carte sont perdues ; il se dissipe au début du tour indiqué. C'est la première chose qui coupe la ligne de vue (doc 04).
 - **Tsunami** : ne s'évite pas ; la ligne part de la case voisine choisie et file droit devant (Idan : « 3 à 5 cases selon la maîtrise », dégâts de froid).
+- **Les trois sorts du 2026-10-31** (validés par Idan, chiffrés par JC3) amènent l'école à 10 sorts.
+- **Prison de glace** : figé, il ne bouge ni n'agit, ne fait pas d'attaque d'opportunité et ne réagit pas aux tirs ; il ne subit que la moitié des coups d'armes, du toucher spectral et des dégâts physiques et élémentaires des sorts (les dégâts « sans aucune résistance » passent entiers). La glace se brise après sa dernière activation perdue. Délivrance la retire (avec le gel).
+- **Blizzard** : posé comme la Tempête de la Foudre (une zone, sans ligne de vue), il coupe la ligne de vue comme le Brouillard ; il retombe au début du tour indiqué ; la carte le montre en blanc.
+- **Source vive** : le premier sort qui rend du mana ; bon marché à haute maîtrise (un expert rend ≈ 27 mana pour 6).
 - **Gel** : le malus baisse avec la protection de la cible contre le froid (résistance, armure « glaçant », Armure de feu) : × (1 − protection / 100). Il compte **tout de suite** (Vitesse et Dextérité entrent dans le toucher, l'esquive des tirs, l'initiative et le mouvement : −15 en Vitesse ≈ une case de moins) et couvre les prochaines activations de la cible ; il tombe au début de l'activation suivante. Il ne se cumule pas.
 - **Armure de froid** et **Arme de glace** : les miroirs de l'Armure de feu et de l'Arme enflammée (même décompte, ne se cumulent pas ; l'Arme de glace remplace l'Arme enflammée).
 - **Eau guérissante** : l'IA du combat automatique s'en sert comme de Soin rapide, quand elle ne connaît pas ce dernier.
@@ -177,6 +184,9 @@ Même modèle que la Vie et le Feu (effet, mana, CC aux dés maximum, EC : le la
 | Armure de froid | +36 feu, 2 tours | +41, 3 tours | +56, 4 tours |
 | Gel | −26, 1 tour · 1 case | −31, 1 tour · 2 cases | −46, 2 tours · 3 cases |
 | Arme de glace, par coup | +22, 2 tours | +28, 3 tours | +63, 4 tours |
+| Prison de glace | 1 tour · portée 7 · 27 mana | 1 tour · portée 8 · 25 | 2 tours · portée 11 · 17 |
+| Blizzard, par vague | 22 · rayon 2 · portée 7 · 32 mana | 28 · rayon 3 · portée 8 · 29 | 63 · rayon 4 · portée 11 · 20 |
+| Source vive | +9 mana · 9 mana | +12 · 9 | +27 · 6 |
 
 ### École de la Transmutation (6 sorts, Idan, 2026-10-27)
 
@@ -375,9 +385,8 @@ Le **Charisme** du mage y compte (Idan : l'Invocation et la Nécromancie en dép
 
 Idan a validé **90 sorts mono-école** (10 par école) et **49 sorts bi-école**. JC3 les chiffre et les intègre **une école par PR** ; chaque école intégrée a sa section plus haut, avec ses chiffres. Restent à intégrer :
 
-**Mono-école (23)**
+**Mono-école (20)**
 
-- **Eau** : **Prison de glace** (la cible est figée 1 tour, 2 pour un maître : elle ne bouge ni n'agit, mais ne subit que la moitié des dégâts ; sa protection contre le froid aide à résister) ; **Blizzard** (3 tours : petits dégâts de froid, Vitesse réduite, tirs gênés comme dans le Brouillard) ; **Source vive** (rend du mana à un allié).
 - **Transmutation** : **Robustesse de l'ours** (Constitution, donc PV max, 1 tour, 2 pour un maître) ; **Peau d'écailles** (protection contre le feu, le froid et la foudre) ; **Sagesse du hibou** (Intelligence : des sorts qui réussissent plus souvent) ; **Agilité du chat** (Esquive).
 - **Télékinésie** : **Lancer d'arme** (projette l'arme de corps à corps tenue, avec ses dégâts, puis la ramène) ; **Onde de choc** (repousse tous ceux à 2 cases du lanceur, avec un choc s'ils heurtent quelque chose) ; **Bond** (rapide : le lanceur se propulse de quelques cases sans attaque d'opportunité) ; **Écrasement** (dégâts contondants ; la cible ne peut pas se déplacer à son prochain tour).
 - **Illusion** : **Désespoir** (le Courage de la cible baisse pendant 2 tours) ; **Brouillage mental** (ses sorts ratent plus souvent, 2 tours, selon la Volonté du lanceur) ; **Création de double** (un leurre que les ennemis prennent pour une vraie cible ; il disparaît au premier coup reçu) ; **Sommeil** (la cible dort jusqu'à ce qu'on la frappe, ou pendant quelques tours).

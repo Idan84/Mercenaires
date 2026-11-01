@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "enemy-archetypes",
-  "description": "Archétypes d’ennemis fixes (Idan, 2026-10-24 ; doc 17 §10 et §14). Gobelins et Orcs (2026-11-01) : cinq lignes sur quatre niveaux et quatre niveaux de chef chacun. Valeurs figées à partir des centiles des personnages générés du même peuple (novice P20, normal P50, vétéran P75, élite P90 ; chefs P75 à P99), avec la spécialisation de chaque ligne (trois caractéristiques un cran au-dessus, deux un cran au-dessous). PV = 3 × (Constitution + 0,2 × Endurance + 0,1 × Volonté). Points de combat (Idan, 2026-11-01) : un mercenaire généré moyen vaut 10 points (simulateur, 150 combats par effectif ; chefs : 10 × le nombre de mercenaires qui le battent une fois sur deux) ; null = au-delà de la mesure. Ils composent les camps de « Faire le ménage » (one-shot-missions.json, budgets).",
+  "description": "Archétypes d’ennemis fixes (Idan, 2026-10-24 ; doc 17 §10 et §14). Gobelins, Orcs, Hommes-bêtes, Voleurs (Humains) et Ogres (2026-11-01) : cinq lignes sur quatre niveaux et quatre niveaux de chef chacun. Valeurs figées à partir des centiles des personnages générés du même peuple (novice P20, normal P50, vétéran P75, élite P90 ; chefs P75 à P99), avec la spécialisation de chaque ligne (trois caractéristiques un cran au-dessus, deux un cran au-dessous). PV = 3 × (Constitution + 0,2 × Endurance + 0,1 × Volonté). Points de combat (Idan, 2026-11-01) : un mercenaire généré moyen vaut 10 points (simulateur, 150 combats par effectif ; chefs : 10 × le nombre de mercenaires qui le battent une fois sur deux) ; null = au-delà de la mesure. Ils composent les camps de « Faire le ménage » (one-shot-missions.json, budgets).",
   "columns": [
     {
       "source": "Nom",
@@ -80,7 +80,7 @@
       "key": "points"
     }
   ],
-  "row_count": 48,
+  "row_count": 120,
   "rows": [
     {
       "nom": "Lancier gobelin novice",
@@ -2708,6 +2708,3933 @@
       "armes": [
         "Sabre",
         "Rondache"
+      ],
+      "armure": "Armure d'écailles",
+      "tier": 4,
+      "qualite": "Grand Luxe",
+      "points": null
+    },
+    {
+      "nom": "Brute homme-bête novice",
+      "code": "beastman_brute_novice",
+      "faction": "Hommes-bêtes",
+      "peuple": "Homme-bête",
+      "culture": "Tribus des forêts anciennes",
+      "ligne": "Brute",
+      "niveau": "novice",
+      "centile": "P20",
+      "caracteristiques": {
+        "Force": 75,
+        "Constitution": 62,
+        "Dextérité": 43,
+        "Vitesse": 41,
+        "Endurance": 61,
+        "Esquive": 45,
+        "Chance": 42,
+        "Charisme": 45,
+        "Courage": 37,
+        "Intelligence": 23,
+        "Volonté": 30,
+        "Perception": 33,
+        "Puissance magique": 39,
+        "Réserve de mana": 45
+      },
+      "resistances": {
+        "Résistance physique": 10,
+        "Résistance au feu": 2,
+        "Résistance au froid": 9,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 2
+      },
+      "pv": 232,
+      "competences_martiales": {
+        "Hache double": 41,
+        "Haches": 44,
+        "Discrétion": 24,
+        "Pièges": 20,
+        "Combat à deux armes": 26,
+        "Combat à mains nues": 34,
+        "Combat à deux mains": 38
+      },
+      "intimidation": 33,
+      "port_d_armure": [],
+      "armes": [
+        "Hache double"
+      ],
+      "armure": "Vêtements",
+      "tier": 1,
+      "qualite": "Usée",
+      "points": 6
+    },
+    {
+      "nom": "Brute homme-bête",
+      "code": "beastman_brute",
+      "faction": "Hommes-bêtes",
+      "peuple": "Homme-bête",
+      "culture": "Tribus des forêts anciennes",
+      "ligne": "Brute",
+      "niveau": "normal",
+      "centile": "P50",
+      "caracteristiques": {
+        "Force": 86,
+        "Constitution": 70,
+        "Dextérité": 53,
+        "Vitesse": 49,
+        "Endurance": 73,
+        "Esquive": 54,
+        "Chance": 52,
+        "Charisme": 55,
+        "Courage": 45,
+        "Intelligence": 34,
+        "Volonté": 39,
+        "Perception": 42,
+        "Puissance magique": 50,
+        "Réserve de mana": 54
+      },
+      "resistances": {
+        "Résistance physique": 14,
+        "Résistance au feu": 5,
+        "Résistance au froid": 14,
+        "Résistance à la foudre": 4,
+        "Résistance au poison": 4
+      },
+      "pv": 266,
+      "competences_martiales": {
+        "Hache double": 51,
+        "Haches": 53,
+        "Discrétion": 29,
+        "Pièges": 26,
+        "Combat à deux armes": 32,
+        "Combat à mains nues": 40,
+        "Combat à deux mains": 45
+      },
+      "intimidation": 40,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Hache double"
+      ],
+      "armure": "Gambison",
+      "tier": 2,
+      "qualite": "Correcte",
+      "points": 12
+    },
+    {
+      "nom": "Brute homme-bête vétéran",
+      "code": "beastman_brute_veteran",
+      "faction": "Hommes-bêtes",
+      "peuple": "Homme-bête",
+      "culture": "Tribus des forêts anciennes",
+      "ligne": "Brute",
+      "niveau": "vétéran",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 97,
+        "Constitution": 78,
+        "Dextérité": 61,
+        "Vitesse": 58,
+        "Endurance": 82,
+        "Esquive": 62,
+        "Chance": 60,
+        "Charisme": 63,
+        "Courage": 52,
+        "Intelligence": 46,
+        "Volonté": 47,
+        "Perception": 52,
+        "Puissance magique": 60,
+        "Réserve de mana": 62
+      },
+      "resistances": {
+        "Résistance physique": 19,
+        "Résistance au feu": 16,
+        "Résistance au froid": 22,
+        "Résistance à la foudre": 6,
+        "Résistance au poison": 6
+      },
+      "pv": 298,
+      "competences_martiales": {
+        "Hache double": 58,
+        "Haches": 60,
+        "Discrétion": 36,
+        "Pièges": 32,
+        "Combat à deux armes": 39,
+        "Combat à mains nues": 47,
+        "Combat à deux mains": 51
+      },
+      "intimidation": 45,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Hache double"
+      ],
+      "armure": "Armure de cuir",
+      "tier": 3,
+      "qualite": "Grand Luxe",
+      "points": 24
+    },
+    {
+      "nom": "Brute homme-bête d’élite",
+      "code": "beastman_brute_elite",
+      "faction": "Hommes-bêtes",
+      "peuple": "Homme-bête",
+      "culture": "Tribus des forêts anciennes",
+      "ligne": "Brute",
+      "niveau": "d’élite",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 104,
+        "Constitution": 83,
+        "Dextérité": 69,
+        "Vitesse": 66,
+        "Endurance": 91,
+        "Esquive": 69,
+        "Chance": 68,
+        "Charisme": 70,
+        "Courage": 56,
+        "Intelligence": 58,
+        "Volonté": 54,
+        "Perception": 59,
+        "Puissance magique": 70,
+        "Réserve de mana": 69
+      },
+      "resistances": {
+        "Résistance physique": 23,
+        "Résistance au feu": 20,
+        "Résistance au froid": 28,
+        "Résistance à la foudre": 11,
+        "Résistance au poison": 9
+      },
+      "pv": 320,
+      "competences_martiales": {
+        "Hache double": 64,
+        "Haches": 66,
+        "Discrétion": 43,
+        "Pièges": 38,
+        "Combat à deux armes": 46,
+        "Combat à mains nues": 55,
+        "Combat à deux mains": 56
+      },
+      "intimidation": 51,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire"
+      ],
+      "armes": [
+        "Hache double"
+      ],
+      "armure": "Cuir renforcé",
+      "tier": 4,
+      "qualite": "Grand Luxe",
+      "points": 42
+    },
+    {
+      "nom": "Guerrier homme-bête novice",
+      "code": "beastman_warrior_novice",
+      "faction": "Hommes-bêtes",
+      "peuple": "Homme-bête",
+      "culture": "Tribus des forêts anciennes",
+      "ligne": "Guerrier",
+      "niveau": "novice",
+      "centile": "P20",
+      "caracteristiques": {
+        "Force": 60,
+        "Constitution": 62,
+        "Dextérité": 53,
+        "Vitesse": 41,
+        "Endurance": 73,
+        "Esquive": 45,
+        "Chance": 42,
+        "Charisme": 45,
+        "Courage": 28,
+        "Intelligence": 23,
+        "Volonté": 30,
+        "Perception": 33,
+        "Puissance magique": 39,
+        "Réserve de mana": 45
+      },
+      "resistances": {
+        "Résistance physique": 10,
+        "Résistance au feu": 2,
+        "Résistance au froid": 9,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 2
+      },
+      "pv": 239,
+      "competences_martiales": {
+        "Hache de guerre": 41,
+        "Haches": 44,
+        "Rondache": 13,
+        "Boucliers": 13,
+        "Discrétion": 24,
+        "Pièges": 20,
+        "Combat à deux armes": 26,
+        "Combat à mains nues": 34,
+        "Combat à deux mains": 38
+      },
+      "intimidation": 33,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Hache de guerre",
+        "Rondache"
+      ],
+      "armure": "Gambison",
+      "tier": 1,
+      "qualite": "Usée",
+      "points": 7
+    },
+    {
+      "nom": "Guerrier homme-bête",
+      "code": "beastman_warrior",
+      "faction": "Hommes-bêtes",
+      "peuple": "Homme-bête",
+      "culture": "Tribus des forêts anciennes",
+      "ligne": "Guerrier",
+      "niveau": "normal",
+      "centile": "P50",
+      "caracteristiques": {
+        "Force": 75,
+        "Constitution": 70,
+        "Dextérité": 61,
+        "Vitesse": 49,
+        "Endurance": 82,
+        "Esquive": 54,
+        "Chance": 52,
+        "Charisme": 55,
+        "Courage": 37,
+        "Intelligence": 34,
+        "Volonté": 39,
+        "Perception": 42,
+        "Puissance magique": 50,
+        "Réserve de mana": 54
+      },
+      "resistances": {
+        "Résistance physique": 14,
+        "Résistance au feu": 5,
+        "Résistance au froid": 14,
+        "Résistance à la foudre": 4,
+        "Résistance au poison": 4
+      },
+      "pv": 271,
+      "competences_martiales": {
+        "Hache de guerre": 51,
+        "Haches": 53,
+        "Rondache": 18,
+        "Boucliers": 18,
+        "Discrétion": 29,
+        "Pièges": 26,
+        "Combat à deux armes": 32,
+        "Combat à mains nues": 40,
+        "Combat à deux mains": 45
+      },
+      "intimidation": 40,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Hache de guerre",
+        "Rondache"
+      ],
+      "armure": "Armure de cuir",
+      "tier": 2,
+      "qualite": "Correcte",
+      "points": 17
+    },
+    {
+      "nom": "Guerrier homme-bête vétéran",
+      "code": "beastman_warrior_veteran",
+      "faction": "Hommes-bêtes",
+      "peuple": "Homme-bête",
+      "culture": "Tribus des forêts anciennes",
+      "ligne": "Guerrier",
+      "niveau": "vétéran",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 86,
+        "Constitution": 78,
+        "Dextérité": 69,
+        "Vitesse": 58,
+        "Endurance": 91,
+        "Esquive": 62,
+        "Chance": 60,
+        "Charisme": 63,
+        "Courage": 45,
+        "Intelligence": 46,
+        "Volonté": 47,
+        "Perception": 52,
+        "Puissance magique": 60,
+        "Réserve de mana": 62
+      },
+      "resistances": {
+        "Résistance physique": 19,
+        "Résistance au feu": 16,
+        "Résistance au froid": 22,
+        "Résistance à la foudre": 6,
+        "Résistance au poison": 6
+      },
+      "pv": 303,
+      "competences_martiales": {
+        "Hache de guerre": 58,
+        "Haches": 60,
+        "Rondache": 23,
+        "Boucliers": 29,
+        "Discrétion": 36,
+        "Pièges": 32,
+        "Combat à deux armes": 39,
+        "Combat à mains nues": 47,
+        "Combat à deux mains": 51
+      },
+      "intimidation": 45,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire"
+      ],
+      "armes": [
+        "Hache de guerre",
+        "Rondache"
+      ],
+      "armure": "Cuir renforcé",
+      "tier": 3,
+      "qualite": "Grand Luxe",
+      "points": 37
+    },
+    {
+      "nom": "Guerrier homme-bête d’élite",
+      "code": "beastman_warrior_elite",
+      "faction": "Hommes-bêtes",
+      "peuple": "Homme-bête",
+      "culture": "Tribus des forêts anciennes",
+      "ligne": "Guerrier",
+      "niveau": "d’élite",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 97,
+        "Constitution": 83,
+        "Dextérité": 73,
+        "Vitesse": 66,
+        "Endurance": 97,
+        "Esquive": 69,
+        "Chance": 68,
+        "Charisme": 70,
+        "Courage": 52,
+        "Intelligence": 58,
+        "Volonté": 54,
+        "Perception": 59,
+        "Puissance magique": 70,
+        "Réserve de mana": 69
+      },
+      "resistances": {
+        "Résistance physique": 23,
+        "Résistance au feu": 20,
+        "Résistance au froid": 28,
+        "Résistance à la foudre": 11,
+        "Résistance au poison": 9
+      },
+      "pv": 324,
+      "competences_martiales": {
+        "Hache de guerre": 64,
+        "Haches": 66,
+        "Rondache": 33,
+        "Boucliers": 42,
+        "Discrétion": 43,
+        "Pièges": 38,
+        "Combat à deux armes": 46,
+        "Combat à mains nues": 55,
+        "Combat à deux mains": 56
+      },
+      "intimidation": 51,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire"
+      ],
+      "armes": [
+        "Hache de guerre",
+        "Rondache"
+      ],
+      "armure": "Brigandine",
+      "tier": 4,
+      "qualite": "Grand Luxe",
+      "points": 49
+    },
+    {
+      "nom": "Traqueur homme-bête novice",
+      "code": "beastman_tracker_novice",
+      "faction": "Hommes-bêtes",
+      "peuple": "Homme-bête",
+      "culture": "Tribus des forêts anciennes",
+      "ligne": "Traqueur",
+      "niveau": "novice",
+      "centile": "P20",
+      "caracteristiques": {
+        "Force": 60,
+        "Constitution": 42,
+        "Dextérité": 53,
+        "Vitesse": 58,
+        "Endurance": 61,
+        "Esquive": 54,
+        "Chance": 42,
+        "Charisme": 45,
+        "Courage": 19,
+        "Intelligence": 23,
+        "Volonté": 30,
+        "Perception": 42,
+        "Puissance magique": 39,
+        "Réserve de mana": 45
+      },
+      "resistances": {
+        "Résistance physique": 10,
+        "Résistance au feu": 2,
+        "Résistance au froid": 9,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 2
+      },
+      "pv": 172,
+      "competences_martiales": {
+        "Hachette": 41,
+        "Haches": 44,
+        "Discrétion": 29,
+        "Pièges": 20,
+        "Combat à deux armes": 26,
+        "Combat à mains nues": 34,
+        "Combat à deux mains": 38
+      },
+      "intimidation": 33,
+      "port_d_armure": [],
+      "armes": [
+        "Hachette",
+        "Hachette"
+      ],
+      "armure": "Vêtements",
+      "tier": 1,
+      "qualite": "Usée",
+      "points": 5
+    },
+    {
+      "nom": "Traqueur homme-bête",
+      "code": "beastman_tracker",
+      "faction": "Hommes-bêtes",
+      "peuple": "Homme-bête",
+      "culture": "Tribus des forêts anciennes",
+      "ligne": "Traqueur",
+      "niveau": "normal",
+      "centile": "P50",
+      "caracteristiques": {
+        "Force": 75,
+        "Constitution": 51,
+        "Dextérité": 61,
+        "Vitesse": 66,
+        "Endurance": 73,
+        "Esquive": 62,
+        "Chance": 52,
+        "Charisme": 55,
+        "Courage": 28,
+        "Intelligence": 34,
+        "Volonté": 39,
+        "Perception": 52,
+        "Puissance magique": 50,
+        "Réserve de mana": 54
+      },
+      "resistances": {
+        "Résistance physique": 14,
+        "Résistance au feu": 5,
+        "Résistance au froid": 14,
+        "Résistance à la foudre": 4,
+        "Résistance au poison": 4
+      },
+      "pv": 209,
+      "competences_martiales": {
+        "Hachette": 51,
+        "Haches": 53,
+        "Discrétion": 36,
+        "Pièges": 26,
+        "Combat à deux armes": 32,
+        "Combat à mains nues": 40,
+        "Combat à deux mains": 45
+      },
+      "intimidation": 40,
+      "port_d_armure": [],
+      "armes": [
+        "Hachette",
+        "Hachette"
+      ],
+      "armure": "Vêtements",
+      "tier": 2,
+      "qualite": "Correcte",
+      "points": 10
+    },
+    {
+      "nom": "Traqueur homme-bête vétéran",
+      "code": "beastman_tracker_veteran",
+      "faction": "Hommes-bêtes",
+      "peuple": "Homme-bête",
+      "culture": "Tribus des forêts anciennes",
+      "ligne": "Traqueur",
+      "niveau": "vétéran",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 86,
+        "Constitution": 62,
+        "Dextérité": 69,
+        "Vitesse": 72,
+        "Endurance": 82,
+        "Esquive": 69,
+        "Chance": 60,
+        "Charisme": 63,
+        "Courage": 37,
+        "Intelligence": 46,
+        "Volonté": 47,
+        "Perception": 59,
+        "Puissance magique": 60,
+        "Réserve de mana": 62
+      },
+      "resistances": {
+        "Résistance physique": 19,
+        "Résistance au feu": 16,
+        "Résistance au froid": 22,
+        "Résistance à la foudre": 6,
+        "Résistance au poison": 6
+      },
+      "pv": 250,
+      "competences_martiales": {
+        "Hachette": 58,
+        "Haches": 60,
+        "Discrétion": 43,
+        "Pièges": 32,
+        "Combat à deux armes": 39,
+        "Combat à mains nues": 47,
+        "Combat à deux mains": 51
+      },
+      "intimidation": 45,
+      "port_d_armure": [],
+      "armes": [
+        "Hachette",
+        "Hachette"
+      ],
+      "armure": "Vêtements",
+      "tier": 3,
+      "qualite": "Grand Luxe",
+      "points": 19
+    },
+    {
+      "nom": "Traqueur homme-bête d’élite",
+      "code": "beastman_tracker_elite",
+      "faction": "Hommes-bêtes",
+      "peuple": "Homme-bête",
+      "culture": "Tribus des forêts anciennes",
+      "ligne": "Traqueur",
+      "niveau": "d’élite",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 97,
+        "Constitution": 70,
+        "Dextérité": 73,
+        "Vitesse": 75,
+        "Endurance": 91,
+        "Esquive": 72,
+        "Chance": 68,
+        "Charisme": 70,
+        "Courage": 45,
+        "Intelligence": 58,
+        "Volonté": 54,
+        "Perception": 66,
+        "Puissance magique": 70,
+        "Réserve de mana": 69
+      },
+      "resistances": {
+        "Résistance physique": 23,
+        "Résistance au feu": 20,
+        "Résistance au froid": 28,
+        "Résistance à la foudre": 11,
+        "Résistance au poison": 9
+      },
+      "pv": 281,
+      "competences_martiales": {
+        "Hachette": 64,
+        "Haches": 66,
+        "Discrétion": 48,
+        "Pièges": 38,
+        "Combat à deux armes": 46,
+        "Combat à mains nues": 55,
+        "Combat à deux mains": 56
+      },
+      "intimidation": 51,
+      "port_d_armure": [],
+      "armes": [
+        "Hachette",
+        "Hachette"
+      ],
+      "armure": "Vêtements",
+      "tier": 4,
+      "qualite": "Grand Luxe",
+      "points": 30
+    },
+    {
+      "nom": "Arbalétrier homme-bête novice",
+      "code": "beastman_crossbowman_novice",
+      "faction": "Hommes-bêtes",
+      "peuple": "Homme-bête",
+      "culture": "Tribus des forêts anciennes",
+      "ligne": "Arbalétrier",
+      "niveau": "novice",
+      "centile": "P20",
+      "caracteristiques": {
+        "Force": 48,
+        "Constitution": 42,
+        "Dextérité": 53,
+        "Vitesse": 58,
+        "Endurance": 61,
+        "Esquive": 45,
+        "Chance": 42,
+        "Charisme": 45,
+        "Courage": 28,
+        "Intelligence": 23,
+        "Volonté": 30,
+        "Perception": 52,
+        "Puissance magique": 39,
+        "Réserve de mana": 45
+      },
+      "resistances": {
+        "Résistance physique": 10,
+        "Résistance au feu": 2,
+        "Résistance au froid": 9,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 2
+      },
+      "pv": 172,
+      "competences_martiales": {
+        "Arbalète": 41,
+        "Armes de tir": 44,
+        "Discrétion": 24,
+        "Pièges": 20,
+        "Combat à deux armes": 26,
+        "Combat à mains nues": 34,
+        "Combat à deux mains": 38
+      },
+      "intimidation": 33,
+      "port_d_armure": [],
+      "armes": [
+        "Arbalète"
+      ],
+      "armure": "Vêtements",
+      "tier": 1,
+      "qualite": "Usée",
+      "points": 7
+    },
+    {
+      "nom": "Arbalétrier homme-bête",
+      "code": "beastman_crossbowman",
+      "faction": "Hommes-bêtes",
+      "peuple": "Homme-bête",
+      "culture": "Tribus des forêts anciennes",
+      "ligne": "Arbalétrier",
+      "niveau": "normal",
+      "centile": "P50",
+      "caracteristiques": {
+        "Force": 60,
+        "Constitution": 51,
+        "Dextérité": 61,
+        "Vitesse": 66,
+        "Endurance": 73,
+        "Esquive": 54,
+        "Chance": 52,
+        "Charisme": 55,
+        "Courage": 37,
+        "Intelligence": 34,
+        "Volonté": 39,
+        "Perception": 59,
+        "Puissance magique": 50,
+        "Réserve de mana": 54
+      },
+      "resistances": {
+        "Résistance physique": 14,
+        "Résistance au feu": 5,
+        "Résistance au froid": 14,
+        "Résistance à la foudre": 4,
+        "Résistance au poison": 4
+      },
+      "pv": 209,
+      "competences_martiales": {
+        "Arbalète": 51,
+        "Armes de tir": 53,
+        "Discrétion": 29,
+        "Pièges": 26,
+        "Combat à deux armes": 32,
+        "Combat à mains nues": 40,
+        "Combat à deux mains": 45
+      },
+      "intimidation": 40,
+      "port_d_armure": [],
+      "armes": [
+        "Arbalète"
+      ],
+      "armure": "Vêtements",
+      "tier": 2,
+      "qualite": "Correcte",
+      "points": 12
+    },
+    {
+      "nom": "Arbalétrier homme-bête vétéran",
+      "code": "beastman_crossbowman_veteran",
+      "faction": "Hommes-bêtes",
+      "peuple": "Homme-bête",
+      "culture": "Tribus des forêts anciennes",
+      "ligne": "Arbalétrier",
+      "niveau": "vétéran",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 75,
+        "Constitution": 62,
+        "Dextérité": 69,
+        "Vitesse": 72,
+        "Endurance": 82,
+        "Esquive": 62,
+        "Chance": 60,
+        "Charisme": 63,
+        "Courage": 45,
+        "Intelligence": 46,
+        "Volonté": 47,
+        "Perception": 66,
+        "Puissance magique": 60,
+        "Réserve de mana": 62
+      },
+      "resistances": {
+        "Résistance physique": 19,
+        "Résistance au feu": 16,
+        "Résistance au froid": 22,
+        "Résistance à la foudre": 6,
+        "Résistance au poison": 6
+      },
+      "pv": 250,
+      "competences_martiales": {
+        "Arbalète": 58,
+        "Armes de tir": 60,
+        "Discrétion": 36,
+        "Pièges": 32,
+        "Combat à deux armes": 39,
+        "Combat à mains nues": 47,
+        "Combat à deux mains": 51
+      },
+      "intimidation": 45,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Arbalète"
+      ],
+      "armure": "Gambison",
+      "tier": 3,
+      "qualite": "Grand Luxe",
+      "points": 19
+    },
+    {
+      "nom": "Arbalétrier homme-bête d’élite",
+      "code": "beastman_crossbowman_elite",
+      "faction": "Hommes-bêtes",
+      "peuple": "Homme-bête",
+      "culture": "Tribus des forêts anciennes",
+      "ligne": "Arbalétrier",
+      "niveau": "d’élite",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 86,
+        "Constitution": 70,
+        "Dextérité": 73,
+        "Vitesse": 75,
+        "Endurance": 91,
+        "Esquive": 69,
+        "Chance": 68,
+        "Charisme": 70,
+        "Courage": 52,
+        "Intelligence": 58,
+        "Volonté": 54,
+        "Perception": 70,
+        "Puissance magique": 70,
+        "Réserve de mana": 69
+      },
+      "resistances": {
+        "Résistance physique": 23,
+        "Résistance au feu": 20,
+        "Résistance au froid": 28,
+        "Résistance à la foudre": 11,
+        "Résistance au poison": 9
+      },
+      "pv": 281,
+      "competences_martiales": {
+        "Arbalète": 64,
+        "Armes de tir": 66,
+        "Discrétion": 43,
+        "Pièges": 38,
+        "Combat à deux armes": 46,
+        "Combat à mains nues": 55,
+        "Combat à deux mains": 56
+      },
+      "intimidation": 51,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Arbalète"
+      ],
+      "armure": "Armure de cuir",
+      "tier": 4,
+      "qualite": "Grand Luxe",
+      "points": 24
+    },
+    {
+      "nom": "Archer homme-bête novice",
+      "code": "beastman_archer_novice",
+      "faction": "Hommes-bêtes",
+      "peuple": "Homme-bête",
+      "culture": "Tribus des forêts anciennes",
+      "ligne": "Archer",
+      "niveau": "novice",
+      "centile": "P20",
+      "caracteristiques": {
+        "Force": 48,
+        "Constitution": 51,
+        "Dextérité": 53,
+        "Vitesse": 49,
+        "Endurance": 61,
+        "Esquive": 37,
+        "Chance": 52,
+        "Charisme": 45,
+        "Courage": 28,
+        "Intelligence": 23,
+        "Volonté": 30,
+        "Perception": 52,
+        "Puissance magique": 39,
+        "Réserve de mana": 45
+      },
+      "resistances": {
+        "Résistance physique": 10,
+        "Résistance au feu": 2,
+        "Résistance au froid": 9,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 2
+      },
+      "pv": 199,
+      "competences_martiales": {
+        "Arc": 41,
+        "Armes de tir": 44,
+        "Discrétion": 24,
+        "Pièges": 20,
+        "Combat à deux armes": 26,
+        "Combat à mains nues": 34,
+        "Combat à deux mains": 38
+      },
+      "intimidation": 33,
+      "port_d_armure": [],
+      "armes": [
+        "Arc"
+      ],
+      "armure": "Vêtements",
+      "tier": 1,
+      "qualite": "Usée",
+      "points": 6
+    },
+    {
+      "nom": "Archer homme-bête",
+      "code": "beastman_archer",
+      "faction": "Hommes-bêtes",
+      "peuple": "Homme-bête",
+      "culture": "Tribus des forêts anciennes",
+      "ligne": "Archer",
+      "niveau": "normal",
+      "centile": "P50",
+      "caracteristiques": {
+        "Force": 60,
+        "Constitution": 62,
+        "Dextérité": 61,
+        "Vitesse": 58,
+        "Endurance": 73,
+        "Esquive": 45,
+        "Chance": 60,
+        "Charisme": 55,
+        "Courage": 37,
+        "Intelligence": 34,
+        "Volonté": 39,
+        "Perception": 59,
+        "Puissance magique": 50,
+        "Réserve de mana": 54
+      },
+      "resistances": {
+        "Résistance physique": 14,
+        "Résistance au feu": 5,
+        "Résistance au froid": 14,
+        "Résistance à la foudre": 4,
+        "Résistance au poison": 4
+      },
+      "pv": 242,
+      "competences_martiales": {
+        "Arc": 51,
+        "Armes de tir": 53,
+        "Discrétion": 29,
+        "Pièges": 26,
+        "Combat à deux armes": 32,
+        "Combat à mains nues": 40,
+        "Combat à deux mains": 45
+      },
+      "intimidation": 40,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Arc"
+      ],
+      "armure": "Gambison",
+      "tier": 2,
+      "qualite": "Correcte",
+      "points": 10
+    },
+    {
+      "nom": "Archer homme-bête vétéran",
+      "code": "beastman_archer_veteran",
+      "faction": "Hommes-bêtes",
+      "peuple": "Homme-bête",
+      "culture": "Tribus des forêts anciennes",
+      "ligne": "Archer",
+      "niveau": "vétéran",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 75,
+        "Constitution": 70,
+        "Dextérité": 69,
+        "Vitesse": 66,
+        "Endurance": 82,
+        "Esquive": 54,
+        "Chance": 68,
+        "Charisme": 63,
+        "Courage": 45,
+        "Intelligence": 46,
+        "Volonté": 47,
+        "Perception": 66,
+        "Puissance magique": 60,
+        "Réserve de mana": 62
+      },
+      "resistances": {
+        "Résistance physique": 19,
+        "Résistance au feu": 16,
+        "Résistance au froid": 22,
+        "Résistance à la foudre": 6,
+        "Résistance au poison": 6
+      },
+      "pv": 274,
+      "competences_martiales": {
+        "Arc": 58,
+        "Armes de tir": 60,
+        "Discrétion": 36,
+        "Pièges": 32,
+        "Combat à deux armes": 39,
+        "Combat à mains nues": 47,
+        "Combat à deux mains": 51
+      },
+      "intimidation": 45,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Arc"
+      ],
+      "armure": "Armure de cuir",
+      "tier": 3,
+      "qualite": "Grand Luxe",
+      "points": 16
+    },
+    {
+      "nom": "Archer homme-bête d’élite",
+      "code": "beastman_archer_elite",
+      "faction": "Hommes-bêtes",
+      "peuple": "Homme-bête",
+      "culture": "Tribus des forêts anciennes",
+      "ligne": "Archer",
+      "niveau": "d’élite",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 86,
+        "Constitution": 78,
+        "Dextérité": 73,
+        "Vitesse": 72,
+        "Endurance": 91,
+        "Esquive": 62,
+        "Chance": 72,
+        "Charisme": 70,
+        "Courage": 52,
+        "Intelligence": 58,
+        "Volonté": 54,
+        "Perception": 70,
+        "Puissance magique": 70,
+        "Réserve de mana": 69
+      },
+      "resistances": {
+        "Résistance physique": 23,
+        "Résistance au feu": 20,
+        "Résistance au froid": 28,
+        "Résistance à la foudre": 11,
+        "Résistance au poison": 9
+      },
+      "pv": 305,
+      "competences_martiales": {
+        "Arc": 64,
+        "Armes de tir": 66,
+        "Discrétion": 43,
+        "Pièges": 38,
+        "Combat à deux armes": 46,
+        "Combat à mains nues": 55,
+        "Combat à deux mains": 56
+      },
+      "intimidation": 51,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Arc"
+      ],
+      "armure": "Armure de cuir",
+      "tier": 4,
+      "qualite": "Grand Luxe",
+      "points": 25
+    },
+    {
+      "nom": "Chef de harde",
+      "code": "beastman_chief_1",
+      "faction": "Hommes-bêtes",
+      "peuple": "Homme-bête",
+      "culture": "Tribus des forêts anciennes",
+      "ligne": "Chef",
+      "niveau": "chef 1",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 86,
+        "Constitution": 70,
+        "Dextérité": 61,
+        "Vitesse": 66,
+        "Endurance": 82,
+        "Esquive": 62,
+        "Chance": 60,
+        "Charisme": 70,
+        "Courage": 52,
+        "Intelligence": 46,
+        "Volonté": 54,
+        "Perception": 59,
+        "Puissance magique": 60,
+        "Réserve de mana": 62
+      },
+      "resistances": {
+        "Résistance physique": 19,
+        "Résistance au feu": 16,
+        "Résistance au froid": 22,
+        "Résistance à la foudre": 6,
+        "Résistance au poison": 6
+      },
+      "pv": 276,
+      "competences_martiales": {
+        "Hache de guerre": 58,
+        "Haches": 60,
+        "Rondache": 23,
+        "Boucliers": 29,
+        "Discrétion": 36,
+        "Pièges": 32,
+        "Combat à deux armes": 39,
+        "Combat à mains nues": 47,
+        "Combat à deux mains": 51
+      },
+      "intimidation": 51,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire"
+      ],
+      "armes": [
+        "Hache de guerre",
+        "Rondache"
+      ],
+      "armure": "Cuir renforcé",
+      "tier": 3,
+      "qualite": "Grand Luxe",
+      "points": 41
+    },
+    {
+      "nom": "Grand Chef de harde",
+      "code": "beastman_chief_2",
+      "faction": "Hommes-bêtes",
+      "peuple": "Homme-bête",
+      "culture": "Tribus des forêts anciennes",
+      "ligne": "Chef",
+      "niveau": "chef 2",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 97,
+        "Constitution": 78,
+        "Dextérité": 69,
+        "Vitesse": 72,
+        "Endurance": 91,
+        "Esquive": 69,
+        "Chance": 68,
+        "Charisme": 74,
+        "Courage": 56,
+        "Intelligence": 58,
+        "Volonté": 58,
+        "Perception": 66,
+        "Puissance magique": 70,
+        "Réserve de mana": 69
+      },
+      "resistances": {
+        "Résistance physique": 23,
+        "Résistance au feu": 20,
+        "Résistance au froid": 28,
+        "Résistance à la foudre": 11,
+        "Résistance au poison": 9
+      },
+      "pv": 306,
+      "competences_martiales": {
+        "Hache de guerre": 64,
+        "Haches": 66,
+        "Rondache": 33,
+        "Boucliers": 42,
+        "Discrétion": 43,
+        "Pièges": 38,
+        "Combat à deux armes": 46,
+        "Combat à mains nues": 55,
+        "Combat à deux mains": 56
+      },
+      "intimidation": 54,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire"
+      ],
+      "armes": [
+        "Hache de guerre",
+        "Rondache"
+      ],
+      "armure": "Cotte de mailles",
+      "tier": 4,
+      "qualite": "Grand Luxe",
+      "points": 64
+    },
+    {
+      "nom": "Seigneur des Bêtes",
+      "code": "beastman_chief_3",
+      "faction": "Hommes-bêtes",
+      "peuple": "Homme-bête",
+      "culture": "Tribus des forêts anciennes",
+      "ligne": "Chef",
+      "niveau": "chef 3",
+      "centile": "P95",
+      "caracteristiques": {
+        "Force": 104,
+        "Constitution": 83,
+        "Dextérité": 73,
+        "Vitesse": 75,
+        "Endurance": 97,
+        "Esquive": 72,
+        "Chance": 72,
+        "Charisme": 81,
+        "Courage": 63,
+        "Intelligence": 64,
+        "Volonté": 65,
+        "Perception": 70,
+        "Puissance magique": 75,
+        "Réserve de mana": 74
+      },
+      "resistances": {
+        "Résistance physique": 26,
+        "Résistance au feu": 23,
+        "Résistance au froid": 31,
+        "Résistance à la foudre": 14,
+        "Résistance au poison": 11
+      },
+      "pv": 327,
+      "competences_martiales": {
+        "Hache de guerre": 68,
+        "Haches": 69,
+        "Rondache": 37,
+        "Boucliers": 46,
+        "Discrétion": 48,
+        "Pièges": 43,
+        "Combat à deux armes": 52,
+        "Combat à mains nues": 63,
+        "Combat à deux mains": 60
+      },
+      "intimidation": 63,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire"
+      ],
+      "armes": [
+        "Hache de guerre",
+        "Rondache"
+      ],
+      "armure": "Brigandine",
+      "tier": 4,
+      "qualite": "Grand Luxe",
+      "points": null
+    },
+    {
+      "nom": "Roi-Totem",
+      "code": "beastman_chief_4",
+      "faction": "Hommes-bêtes",
+      "peuple": "Homme-bête",
+      "culture": "Tribus des forêts anciennes",
+      "ligne": "Chef",
+      "niveau": "chef 4",
+      "centile": "P99",
+      "caracteristiques": {
+        "Force": 118,
+        "Constitution": 92,
+        "Dextérité": 83,
+        "Vitesse": 81,
+        "Endurance": 109,
+        "Esquive": 80,
+        "Chance": 80,
+        "Charisme": 81,
+        "Courage": 63,
+        "Intelligence": 75,
+        "Volonté": 65,
+        "Perception": 78,
+        "Puissance magique": 85,
+        "Réserve de mana": 87
+      },
+      "resistances": {
+        "Résistance physique": 33,
+        "Résistance au feu": 31,
+        "Résistance au froid": 36,
+        "Résistance à la foudre": 36,
+        "Résistance au poison": 15
+      },
+      "pv": 361,
+      "competences_martiales": {
+        "Hache de guerre": 78,
+        "Haches": 76,
+        "Rondache": 42,
+        "Boucliers": 53,
+        "Discrétion": 57,
+        "Pièges": 51,
+        "Combat à deux armes": 65,
+        "Combat à mains nues": 83,
+        "Combat à deux mains": 69
+      },
+      "intimidation": 63,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire",
+        "Port d’armure lourde"
+      ],
+      "armes": [
+        "Hache de guerre",
+        "Rondache"
+      ],
+      "armure": "Armure d'écailles",
+      "tier": 4,
+      "qualite": "Grand Luxe",
+      "points": null
+    },
+    {
+      "nom": "Coupe-jarret novice",
+      "code": "thief_cutthroat_novice",
+      "faction": "Voleurs",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Coupe-jarret",
+      "niveau": "novice",
+      "centile": "P20",
+      "caracteristiques": {
+        "Force": 41,
+        "Constitution": 35,
+        "Dextérité": 55,
+        "Vitesse": 53,
+        "Endurance": 46,
+        "Esquive": 54,
+        "Chance": 44,
+        "Charisme": 45,
+        "Courage": 34,
+        "Intelligence": 38,
+        "Volonté": 45,
+        "Perception": 42,
+        "Puissance magique": 38,
+        "Réserve de mana": 43
+      },
+      "resistances": {
+        "Résistance physique": 2,
+        "Résistance au feu": 2,
+        "Résistance au froid": 1,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 2
+      },
+      "pv": 147,
+      "competences_martiales": {
+        "Dague": 42,
+        "Lames courtes": 46,
+        "Discrétion": 28,
+        "Pièges": 23,
+        "Combat à deux armes": 39,
+        "Combat à mains nues": 24,
+        "Combat à deux mains": 30
+      },
+      "intimidation": 32,
+      "port_d_armure": [],
+      "armes": [
+        "Dague",
+        "Dague"
+      ],
+      "armure": "Vêtements",
+      "tier": 1,
+      "qualite": "Usée",
+      "points": 5
+    },
+    {
+      "nom": "Coupe-jarret",
+      "code": "thief_cutthroat",
+      "faction": "Voleurs",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Coupe-jarret",
+      "niveau": "normal",
+      "centile": "P50",
+      "caracteristiques": {
+        "Force": 55,
+        "Constitution": 44,
+        "Dextérité": 64,
+        "Vitesse": 60,
+        "Endurance": 58,
+        "Esquive": 61,
+        "Chance": 54,
+        "Charisme": 56,
+        "Courage": 43,
+        "Intelligence": 52,
+        "Volonté": 55,
+        "Perception": 52,
+        "Puissance magique": 49,
+        "Réserve de mana": 52
+      },
+      "resistances": {
+        "Résistance physique": 5,
+        "Résistance au feu": 4,
+        "Résistance au froid": 4,
+        "Résistance à la foudre": 4,
+        "Résistance au poison": 5
+      },
+      "pv": 184,
+      "competences_martiales": {
+        "Dague": 50,
+        "Lames courtes": 54,
+        "Discrétion": 35,
+        "Pièges": 28,
+        "Combat à deux armes": 46,
+        "Combat à mains nues": 31,
+        "Combat à deux mains": 37
+      },
+      "intimidation": 37,
+      "port_d_armure": [],
+      "armes": [
+        "Dague",
+        "Dague"
+      ],
+      "armure": "Vêtements",
+      "tier": 2,
+      "qualite": "Correcte",
+      "points": 10
+    },
+    {
+      "nom": "Coupe-jarret vétéran",
+      "code": "thief_cutthroat_veteran",
+      "faction": "Voleurs",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Coupe-jarret",
+      "niveau": "vétéran",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 67,
+        "Constitution": 54,
+        "Dextérité": 73,
+        "Vitesse": 67,
+        "Endurance": 67,
+        "Esquive": 68,
+        "Chance": 63,
+        "Charisme": 64,
+        "Courage": 53,
+        "Intelligence": 65,
+        "Volonté": 62,
+        "Perception": 61,
+        "Puissance magique": 60,
+        "Réserve de mana": 60
+      },
+      "resistances": {
+        "Résistance physique": 8,
+        "Résistance au feu": 6,
+        "Résistance au froid": 11,
+        "Résistance à la foudre": 6,
+        "Résistance au poison": 11
+      },
+      "pv": 221,
+      "competences_martiales": {
+        "Dague": 57,
+        "Lames courtes": 60,
+        "Discrétion": 43,
+        "Pièges": 35,
+        "Combat à deux armes": 53,
+        "Combat à mains nues": 40,
+        "Combat à deux mains": 43
+      },
+      "intimidation": 41,
+      "port_d_armure": [],
+      "armes": [
+        "Dague",
+        "Dague"
+      ],
+      "armure": "Vêtements",
+      "tier": 3,
+      "qualite": "Grand Luxe",
+      "points": 18
+    },
+    {
+      "nom": "Coupe-jarret d’élite",
+      "code": "thief_cutthroat_elite",
+      "faction": "Voleurs",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Coupe-jarret",
+      "niveau": "d’élite",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 77,
+        "Constitution": 62,
+        "Dextérité": 79,
+        "Vitesse": 71,
+        "Endurance": 76,
+        "Esquive": 73,
+        "Chance": 72,
+        "Charisme": 71,
+        "Courage": 61,
+        "Intelligence": 77,
+        "Volonté": 69,
+        "Perception": 69,
+        "Puissance magique": 70,
+        "Réserve de mana": 67
+      },
+      "resistances": {
+        "Résistance physique": 12,
+        "Résistance au feu": 12,
+        "Résistance au froid": 19,
+        "Résistance à la foudre": 10,
+        "Résistance au poison": 19
+      },
+      "pv": 253,
+      "competences_martiales": {
+        "Dague": 63,
+        "Lames courtes": 66,
+        "Discrétion": 48,
+        "Pièges": 42,
+        "Combat à deux armes": 61,
+        "Combat à mains nues": 48,
+        "Combat à deux mains": 50
+      },
+      "intimidation": 46,
+      "port_d_armure": [],
+      "armes": [
+        "Dague",
+        "Dague"
+      ],
+      "armure": "Vêtements",
+      "tier": 4,
+      "qualite": "Grand Luxe",
+      "points": 35
+    },
+    {
+      "nom": "Spadassin novice",
+      "code": "thief_swordsman_novice",
+      "faction": "Voleurs",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Spadassin",
+      "niveau": "novice",
+      "centile": "P20",
+      "caracteristiques": {
+        "Force": 41,
+        "Constitution": 54,
+        "Dextérité": 55,
+        "Vitesse": 36,
+        "Endurance": 58,
+        "Esquive": 45,
+        "Chance": 44,
+        "Charisme": 45,
+        "Courage": 43,
+        "Intelligence": 38,
+        "Volonté": 45,
+        "Perception": 32,
+        "Puissance magique": 38,
+        "Réserve de mana": 43
+      },
+      "resistances": {
+        "Résistance physique": 2,
+        "Résistance au feu": 2,
+        "Résistance au froid": 1,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 2
+      },
+      "pv": 211,
+      "competences_martiales": {
+        "Estoc": 42,
+        "Lames longues": 46,
+        "Rondache": 28,
+        "Boucliers": 30,
+        "Discrétion": 23,
+        "Pièges": 23,
+        "Combat à deux armes": 39,
+        "Combat à mains nues": 24,
+        "Combat à deux mains": 30
+      },
+      "intimidation": 32,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Estoc",
+        "Rondache"
+      ],
+      "armure": "Gambison",
+      "tier": 1,
+      "qualite": "Usée",
+      "points": 8
+    },
+    {
+      "nom": "Spadassin",
+      "code": "thief_swordsman",
+      "faction": "Voleurs",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Spadassin",
+      "niveau": "normal",
+      "centile": "P50",
+      "caracteristiques": {
+        "Force": 55,
+        "Constitution": 62,
+        "Dextérité": 64,
+        "Vitesse": 44,
+        "Endurance": 67,
+        "Esquive": 54,
+        "Chance": 54,
+        "Charisme": 56,
+        "Courage": 53,
+        "Intelligence": 52,
+        "Volonté": 55,
+        "Perception": 42,
+        "Puissance magique": 49,
+        "Réserve de mana": 52
+      },
+      "resistances": {
+        "Résistance physique": 5,
+        "Résistance au feu": 4,
+        "Résistance au froid": 4,
+        "Résistance à la foudre": 4,
+        "Résistance au poison": 5
+      },
+      "pv": 243,
+      "competences_martiales": {
+        "Estoc": 50,
+        "Lames longues": 54,
+        "Rondache": 34,
+        "Boucliers": 38,
+        "Discrétion": 28,
+        "Pièges": 28,
+        "Combat à deux armes": 46,
+        "Combat à mains nues": 31,
+        "Combat à deux mains": 37
+      },
+      "intimidation": 37,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Estoc",
+        "Rondache"
+      ],
+      "armure": "Armure de cuir",
+      "tier": 2,
+      "qualite": "Correcte",
+      "points": 18
+    },
+    {
+      "nom": "Spadassin vétéran",
+      "code": "thief_swordsman_veteran",
+      "faction": "Voleurs",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Spadassin",
+      "niveau": "vétéran",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 67,
+        "Constitution": 70,
+        "Dextérité": 73,
+        "Vitesse": 53,
+        "Endurance": 76,
+        "Esquive": 61,
+        "Chance": 63,
+        "Charisme": 64,
+        "Courage": 61,
+        "Intelligence": 65,
+        "Volonté": 62,
+        "Perception": 52,
+        "Puissance magique": 60,
+        "Réserve de mana": 60
+      },
+      "resistances": {
+        "Résistance physique": 8,
+        "Résistance au feu": 6,
+        "Résistance au froid": 11,
+        "Résistance à la foudre": 6,
+        "Résistance au poison": 11
+      },
+      "pv": 275,
+      "competences_martiales": {
+        "Estoc": 57,
+        "Lames longues": 60,
+        "Rondache": 39,
+        "Boucliers": 44,
+        "Discrétion": 35,
+        "Pièges": 35,
+        "Combat à deux armes": 53,
+        "Combat à mains nues": 40,
+        "Combat à deux mains": 43
+      },
+      "intimidation": 41,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire"
+      ],
+      "armes": [
+        "Estoc",
+        "Rondache"
+      ],
+      "armure": "Cuir renforcé",
+      "tier": 3,
+      "qualite": "Grand Luxe",
+      "points": 48
+    },
+    {
+      "nom": "Spadassin d’élite",
+      "code": "thief_swordsman_elite",
+      "faction": "Voleurs",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Spadassin",
+      "niveau": "d’élite",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 77,
+        "Constitution": 75,
+        "Dextérité": 79,
+        "Vitesse": 60,
+        "Endurance": 82,
+        "Esquive": 68,
+        "Chance": 72,
+        "Charisme": 71,
+        "Courage": 67,
+        "Intelligence": 77,
+        "Volonté": 69,
+        "Perception": 61,
+        "Puissance magique": 70,
+        "Réserve de mana": 67
+      },
+      "resistances": {
+        "Résistance physique": 12,
+        "Résistance au feu": 12,
+        "Résistance au froid": 19,
+        "Résistance à la foudre": 10,
+        "Résistance au poison": 19
+      },
+      "pv": 295,
+      "competences_martiales": {
+        "Estoc": 63,
+        "Lames longues": 66,
+        "Rondache": 43,
+        "Boucliers": 51,
+        "Discrétion": 43,
+        "Pièges": 42,
+        "Combat à deux armes": 61,
+        "Combat à mains nues": 48,
+        "Combat à deux mains": 50
+      },
+      "intimidation": 46,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire"
+      ],
+      "armes": [
+        "Estoc",
+        "Rondache"
+      ],
+      "armure": "Brigandine",
+      "tier": 4,
+      "qualite": "Grand Luxe",
+      "points": 58
+    },
+    {
+      "nom": "Bandit novice",
+      "code": "thief_bandit_novice",
+      "faction": "Voleurs",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Bandit",
+      "niveau": "novice",
+      "centile": "P20",
+      "caracteristiques": {
+        "Force": 55,
+        "Constitution": 54,
+        "Dextérité": 44,
+        "Vitesse": 36,
+        "Endurance": 46,
+        "Esquive": 45,
+        "Chance": 44,
+        "Charisme": 45,
+        "Courage": 53,
+        "Intelligence": 38,
+        "Volonté": 45,
+        "Perception": 32,
+        "Puissance magique": 38,
+        "Réserve de mana": 43
+      },
+      "resistances": {
+        "Résistance physique": 2,
+        "Résistance au feu": 2,
+        "Résistance au froid": 1,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 2
+      },
+      "pv": 204,
+      "competences_martiales": {
+        "Lance": 42,
+        "Armes d’hast": 46,
+        "Discrétion": 23,
+        "Pièges": 23,
+        "Combat à deux armes": 39,
+        "Combat à mains nues": 24,
+        "Combat à deux mains": 30
+      },
+      "intimidation": 32,
+      "port_d_armure": [],
+      "armes": [
+        "Lance"
+      ],
+      "armure": "Vêtements",
+      "tier": 1,
+      "qualite": "Usée",
+      "points": 8
+    },
+    {
+      "nom": "Bandit",
+      "code": "thief_bandit",
+      "faction": "Voleurs",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Bandit",
+      "niveau": "normal",
+      "centile": "P50",
+      "caracteristiques": {
+        "Force": 67,
+        "Constitution": 62,
+        "Dextérité": 55,
+        "Vitesse": 44,
+        "Endurance": 58,
+        "Esquive": 54,
+        "Chance": 54,
+        "Charisme": 56,
+        "Courage": 61,
+        "Intelligence": 52,
+        "Volonté": 55,
+        "Perception": 42,
+        "Puissance magique": 49,
+        "Réserve de mana": 52
+      },
+      "resistances": {
+        "Résistance physique": 5,
+        "Résistance au feu": 4,
+        "Résistance au froid": 4,
+        "Résistance à la foudre": 4,
+        "Résistance au poison": 5
+      },
+      "pv": 238,
+      "competences_martiales": {
+        "Lance": 50,
+        "Armes d’hast": 54,
+        "Discrétion": 28,
+        "Pièges": 28,
+        "Combat à deux armes": 46,
+        "Combat à mains nues": 31,
+        "Combat à deux mains": 37
+      },
+      "intimidation": 37,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Lance"
+      ],
+      "armure": "Gambison",
+      "tier": 2,
+      "qualite": "Correcte",
+      "points": 16
+    },
+    {
+      "nom": "Bandit vétéran",
+      "code": "thief_bandit_veteran",
+      "faction": "Voleurs",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Bandit",
+      "niveau": "vétéran",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 77,
+        "Constitution": 70,
+        "Dextérité": 64,
+        "Vitesse": 53,
+        "Endurance": 67,
+        "Esquive": 61,
+        "Chance": 63,
+        "Charisme": 64,
+        "Courage": 67,
+        "Intelligence": 65,
+        "Volonté": 62,
+        "Perception": 52,
+        "Puissance magique": 60,
+        "Réserve de mana": 60
+      },
+      "resistances": {
+        "Résistance physique": 8,
+        "Résistance au feu": 6,
+        "Résistance au froid": 11,
+        "Résistance à la foudre": 6,
+        "Résistance au poison": 11
+      },
+      "pv": 269,
+      "competences_martiales": {
+        "Lance": 57,
+        "Armes d’hast": 60,
+        "Discrétion": 35,
+        "Pièges": 35,
+        "Combat à deux armes": 53,
+        "Combat à mains nues": 40,
+        "Combat à deux mains": 43
+      },
+      "intimidation": 41,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Lance"
+      ],
+      "armure": "Armure de cuir",
+      "tier": 3,
+      "qualite": "Grand Luxe",
+      "points": 25
+    },
+    {
+      "nom": "Bandit d’élite",
+      "code": "thief_bandit_elite",
+      "faction": "Voleurs",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Bandit",
+      "niveau": "d’élite",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 84,
+        "Constitution": 75,
+        "Dextérité": 73,
+        "Vitesse": 60,
+        "Endurance": 76,
+        "Esquive": 68,
+        "Chance": 72,
+        "Charisme": 71,
+        "Courage": 71,
+        "Intelligence": 77,
+        "Volonté": 69,
+        "Perception": 61,
+        "Puissance magique": 70,
+        "Réserve de mana": 67
+      },
+      "resistances": {
+        "Résistance physique": 12,
+        "Résistance au feu": 12,
+        "Résistance au froid": 19,
+        "Résistance à la foudre": 10,
+        "Résistance au poison": 19
+      },
+      "pv": 292,
+      "competences_martiales": {
+        "Lance": 63,
+        "Armes d’hast": 66,
+        "Discrétion": 43,
+        "Pièges": 42,
+        "Combat à deux armes": 61,
+        "Combat à mains nues": 48,
+        "Combat à deux mains": 50
+      },
+      "intimidation": 46,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire"
+      ],
+      "armes": [
+        "Lance"
+      ],
+      "armure": "Cuir renforcé",
+      "tier": 4,
+      "qualite": "Grand Luxe",
+      "points": 50
+    },
+    {
+      "nom": "Arbalétrier novice",
+      "code": "thief_crossbowman_novice",
+      "faction": "Voleurs",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Arbalétrier",
+      "niveau": "novice",
+      "centile": "P20",
+      "caracteristiques": {
+        "Force": 30,
+        "Constitution": 35,
+        "Dextérité": 55,
+        "Vitesse": 53,
+        "Endurance": 46,
+        "Esquive": 45,
+        "Chance": 44,
+        "Charisme": 45,
+        "Courage": 43,
+        "Intelligence": 38,
+        "Volonté": 45,
+        "Perception": 52,
+        "Puissance magique": 38,
+        "Réserve de mana": 43
+      },
+      "resistances": {
+        "Résistance physique": 2,
+        "Résistance au feu": 2,
+        "Résistance au froid": 1,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 2
+      },
+      "pv": 147,
+      "competences_martiales": {
+        "Arbalète": 42,
+        "Armes de tir": 46,
+        "Discrétion": 23,
+        "Pièges": 23,
+        "Combat à deux armes": 39,
+        "Combat à mains nues": 24,
+        "Combat à deux mains": 30
+      },
+      "intimidation": 32,
+      "port_d_armure": [],
+      "armes": [
+        "Arbalète"
+      ],
+      "armure": "Vêtements",
+      "tier": 1,
+      "qualite": "Usée",
+      "points": 8
+    },
+    {
+      "nom": "Arbalétrier",
+      "code": "thief_crossbowman",
+      "faction": "Voleurs",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Arbalétrier",
+      "niveau": "normal",
+      "centile": "P50",
+      "caracteristiques": {
+        "Force": 41,
+        "Constitution": 44,
+        "Dextérité": 64,
+        "Vitesse": 60,
+        "Endurance": 58,
+        "Esquive": 54,
+        "Chance": 54,
+        "Charisme": 56,
+        "Courage": 53,
+        "Intelligence": 52,
+        "Volonté": 55,
+        "Perception": 61,
+        "Puissance magique": 49,
+        "Réserve de mana": 52
+      },
+      "resistances": {
+        "Résistance physique": 5,
+        "Résistance au feu": 4,
+        "Résistance au froid": 4,
+        "Résistance à la foudre": 4,
+        "Résistance au poison": 5
+      },
+      "pv": 184,
+      "competences_martiales": {
+        "Arbalète": 50,
+        "Armes de tir": 54,
+        "Discrétion": 28,
+        "Pièges": 28,
+        "Combat à deux armes": 46,
+        "Combat à mains nues": 31,
+        "Combat à deux mains": 37
+      },
+      "intimidation": 37,
+      "port_d_armure": [],
+      "armes": [
+        "Arbalète"
+      ],
+      "armure": "Vêtements",
+      "tier": 2,
+      "qualite": "Correcte",
+      "points": 13
+    },
+    {
+      "nom": "Arbalétrier vétéran",
+      "code": "thief_crossbowman_veteran",
+      "faction": "Voleurs",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Arbalétrier",
+      "niveau": "vétéran",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 55,
+        "Constitution": 54,
+        "Dextérité": 73,
+        "Vitesse": 67,
+        "Endurance": 67,
+        "Esquive": 61,
+        "Chance": 63,
+        "Charisme": 64,
+        "Courage": 61,
+        "Intelligence": 65,
+        "Volonté": 62,
+        "Perception": 69,
+        "Puissance magique": 60,
+        "Réserve de mana": 60
+      },
+      "resistances": {
+        "Résistance physique": 8,
+        "Résistance au feu": 6,
+        "Résistance au froid": 11,
+        "Résistance à la foudre": 6,
+        "Résistance au poison": 11
+      },
+      "pv": 221,
+      "competences_martiales": {
+        "Arbalète": 57,
+        "Armes de tir": 60,
+        "Discrétion": 35,
+        "Pièges": 35,
+        "Combat à deux armes": 53,
+        "Combat à mains nues": 40,
+        "Combat à deux mains": 43
+      },
+      "intimidation": 41,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Arbalète"
+      ],
+      "armure": "Gambison",
+      "tier": 3,
+      "qualite": "Grand Luxe",
+      "points": 20
+    },
+    {
+      "nom": "Arbalétrier d’élite",
+      "code": "thief_crossbowman_elite",
+      "faction": "Voleurs",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Arbalétrier",
+      "niveau": "d’élite",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 67,
+        "Constitution": 62,
+        "Dextérité": 79,
+        "Vitesse": 71,
+        "Endurance": 76,
+        "Esquive": 68,
+        "Chance": 72,
+        "Charisme": 71,
+        "Courage": 67,
+        "Intelligence": 77,
+        "Volonté": 69,
+        "Perception": 74,
+        "Puissance magique": 70,
+        "Réserve de mana": 67
+      },
+      "resistances": {
+        "Résistance physique": 12,
+        "Résistance au feu": 12,
+        "Résistance au froid": 19,
+        "Résistance à la foudre": 10,
+        "Résistance au poison": 19
+      },
+      "pv": 253,
+      "competences_martiales": {
+        "Arbalète": 63,
+        "Armes de tir": 66,
+        "Discrétion": 43,
+        "Pièges": 42,
+        "Combat à deux armes": 61,
+        "Combat à mains nues": 48,
+        "Combat à deux mains": 50
+      },
+      "intimidation": 46,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Arbalète"
+      ],
+      "armure": "Armure de cuir",
+      "tier": 4,
+      "qualite": "Grand Luxe",
+      "points": 25
+    },
+    {
+      "nom": "Archer novice",
+      "code": "thief_archer_novice",
+      "faction": "Voleurs",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Archer",
+      "niveau": "novice",
+      "centile": "P20",
+      "caracteristiques": {
+        "Force": 30,
+        "Constitution": 44,
+        "Dextérité": 55,
+        "Vitesse": 44,
+        "Endurance": 46,
+        "Esquive": 36,
+        "Chance": 54,
+        "Charisme": 45,
+        "Courage": 43,
+        "Intelligence": 38,
+        "Volonté": 45,
+        "Perception": 52,
+        "Puissance magique": 38,
+        "Réserve de mana": 43
+      },
+      "resistances": {
+        "Résistance physique": 2,
+        "Résistance au feu": 2,
+        "Résistance au froid": 1,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 2
+      },
+      "pv": 174,
+      "competences_martiales": {
+        "Arc": 42,
+        "Armes de tir": 46,
+        "Discrétion": 23,
+        "Pièges": 23,
+        "Combat à deux armes": 39,
+        "Combat à mains nues": 24,
+        "Combat à deux mains": 30
+      },
+      "intimidation": 32,
+      "port_d_armure": [],
+      "armes": [
+        "Arc"
+      ],
+      "armure": "Vêtements",
+      "tier": 1,
+      "qualite": "Usée",
+      "points": 7
+    },
+    {
+      "nom": "Archer",
+      "code": "thief_archer",
+      "faction": "Voleurs",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Archer",
+      "niveau": "normal",
+      "centile": "P50",
+      "caracteristiques": {
+        "Force": 41,
+        "Constitution": 54,
+        "Dextérité": 64,
+        "Vitesse": 53,
+        "Endurance": 58,
+        "Esquive": 45,
+        "Chance": 63,
+        "Charisme": 56,
+        "Courage": 53,
+        "Intelligence": 52,
+        "Volonté": 55,
+        "Perception": 61,
+        "Puissance magique": 49,
+        "Réserve de mana": 52
+      },
+      "resistances": {
+        "Résistance physique": 5,
+        "Résistance au feu": 4,
+        "Résistance au froid": 4,
+        "Résistance à la foudre": 4,
+        "Résistance au poison": 5
+      },
+      "pv": 214,
+      "competences_martiales": {
+        "Arc": 50,
+        "Armes de tir": 54,
+        "Discrétion": 28,
+        "Pièges": 28,
+        "Combat à deux armes": 46,
+        "Combat à mains nues": 31,
+        "Combat à deux mains": 37
+      },
+      "intimidation": 37,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Arc"
+      ],
+      "armure": "Gambison",
+      "tier": 2,
+      "qualite": "Correcte",
+      "points": 11
+    },
+    {
+      "nom": "Archer vétéran",
+      "code": "thief_archer_veteran",
+      "faction": "Voleurs",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Archer",
+      "niveau": "vétéran",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 55,
+        "Constitution": 62,
+        "Dextérité": 73,
+        "Vitesse": 60,
+        "Endurance": 67,
+        "Esquive": 54,
+        "Chance": 72,
+        "Charisme": 64,
+        "Courage": 61,
+        "Intelligence": 65,
+        "Volonté": 62,
+        "Perception": 69,
+        "Puissance magique": 60,
+        "Réserve de mana": 60
+      },
+      "resistances": {
+        "Résistance physique": 8,
+        "Résistance au feu": 6,
+        "Résistance au froid": 11,
+        "Résistance à la foudre": 6,
+        "Résistance au poison": 11
+      },
+      "pv": 245,
+      "competences_martiales": {
+        "Arc": 57,
+        "Armes de tir": 60,
+        "Discrétion": 35,
+        "Pièges": 35,
+        "Combat à deux armes": 53,
+        "Combat à mains nues": 40,
+        "Combat à deux mains": 43
+      },
+      "intimidation": 41,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Arc"
+      ],
+      "armure": "Armure de cuir",
+      "tier": 3,
+      "qualite": "Grand Luxe",
+      "points": 20
+    },
+    {
+      "nom": "Archer d’élite",
+      "code": "thief_archer_elite",
+      "faction": "Voleurs",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Archer",
+      "niveau": "d’élite",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 67,
+        "Constitution": 70,
+        "Dextérité": 79,
+        "Vitesse": 67,
+        "Endurance": 76,
+        "Esquive": 61,
+        "Chance": 77,
+        "Charisme": 71,
+        "Courage": 67,
+        "Intelligence": 77,
+        "Volonté": 69,
+        "Perception": 74,
+        "Puissance magique": 70,
+        "Réserve de mana": 67
+      },
+      "resistances": {
+        "Résistance physique": 12,
+        "Résistance au feu": 12,
+        "Résistance au froid": 19,
+        "Résistance à la foudre": 10,
+        "Résistance au poison": 19
+      },
+      "pv": 277,
+      "competences_martiales": {
+        "Arc": 63,
+        "Armes de tir": 66,
+        "Discrétion": 43,
+        "Pièges": 42,
+        "Combat à deux armes": 61,
+        "Combat à mains nues": 48,
+        "Combat à deux mains": 50
+      },
+      "intimidation": 46,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Arc"
+      ],
+      "armure": "Armure de cuir",
+      "tier": 4,
+      "qualite": "Grand Luxe",
+      "points": 24
+    },
+    {
+      "nom": "Chef de brigands",
+      "code": "thief_chief_1",
+      "faction": "Voleurs",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Chef",
+      "niveau": "chef 1",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 67,
+        "Constitution": 62,
+        "Dextérité": 64,
+        "Vitesse": 60,
+        "Endurance": 67,
+        "Esquive": 61,
+        "Chance": 63,
+        "Charisme": 71,
+        "Courage": 67,
+        "Intelligence": 65,
+        "Volonté": 69,
+        "Perception": 61,
+        "Puissance magique": 60,
+        "Réserve de mana": 60
+      },
+      "resistances": {
+        "Résistance physique": 8,
+        "Résistance au feu": 6,
+        "Résistance au froid": 11,
+        "Résistance à la foudre": 6,
+        "Résistance au poison": 11
+      },
+      "pv": 247,
+      "competences_martiales": {
+        "Sabre": 57,
+        "Lames longues": 60,
+        "Rondache": 39,
+        "Boucliers": 44,
+        "Discrétion": 35,
+        "Pièges": 35,
+        "Combat à deux armes": 53,
+        "Combat à mains nues": 40,
+        "Combat à deux mains": 43
+      },
+      "intimidation": 46,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire"
+      ],
+      "armes": [
+        "Sabre",
+        "Rondache"
+      ],
+      "armure": "Cuir renforcé",
+      "tier": 3,
+      "qualite": "Grand Luxe",
+      "points": 40
+    },
+    {
+      "nom": "Capitaine des brigands",
+      "code": "thief_chief_2",
+      "faction": "Voleurs",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Chef",
+      "niveau": "chef 2",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 77,
+        "Constitution": 70,
+        "Dextérité": 73,
+        "Vitesse": 67,
+        "Endurance": 76,
+        "Esquive": 68,
+        "Chance": 72,
+        "Charisme": 77,
+        "Courage": 71,
+        "Intelligence": 77,
+        "Volonté": 73,
+        "Perception": 69,
+        "Puissance magique": 70,
+        "Réserve de mana": 67
+      },
+      "resistances": {
+        "Résistance physique": 12,
+        "Résistance au feu": 12,
+        "Résistance au froid": 19,
+        "Résistance à la foudre": 10,
+        "Résistance au poison": 19
+      },
+      "pv": 278,
+      "competences_martiales": {
+        "Sabre": 63,
+        "Lames longues": 66,
+        "Rondache": 43,
+        "Boucliers": 51,
+        "Discrétion": 43,
+        "Pièges": 42,
+        "Combat à deux armes": 61,
+        "Combat à mains nues": 48,
+        "Combat à deux mains": 50
+      },
+      "intimidation": 49,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire"
+      ],
+      "armes": [
+        "Sabre",
+        "Rondache"
+      ],
+      "armure": "Cotte de mailles",
+      "tier": 4,
+      "qualite": "Grand Luxe",
+      "points": 68
+    },
+    {
+      "nom": "Maître de la Guilde",
+      "code": "thief_chief_3",
+      "faction": "Voleurs",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Chef",
+      "niveau": "chef 3",
+      "centile": "P95",
+      "caracteristiques": {
+        "Force": 84,
+        "Constitution": 75,
+        "Dextérité": 79,
+        "Vitesse": 71,
+        "Endurance": 82,
+        "Esquive": 73,
+        "Chance": 77,
+        "Charisme": 86,
+        "Courage": 79,
+        "Intelligence": 83,
+        "Volonté": 80,
+        "Perception": 74,
+        "Puissance magique": 76,
+        "Réserve de mana": 71
+      },
+      "resistances": {
+        "Résistance physique": 14,
+        "Résistance au feu": 14,
+        "Résistance au froid": 22,
+        "Résistance à la foudre": 12,
+        "Résistance au poison": 22
+      },
+      "pv": 299,
+      "competences_martiales": {
+        "Sabre": 66,
+        "Lames longues": 69,
+        "Rondache": 46,
+        "Boucliers": 55,
+        "Discrétion": 48,
+        "Pièges": 46,
+        "Combat à deux armes": 66,
+        "Combat à mains nues": 54,
+        "Combat à deux mains": 55
+      },
+      "intimidation": 55,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire"
+      ],
+      "armes": [
+        "Sabre",
+        "Rondache"
+      ],
+      "armure": "Brigandine",
+      "tier": 4,
+      "qualite": "Grand Luxe",
+      "points": null
+    },
+    {
+      "nom": "Prince des Voleurs",
+      "code": "thief_chief_4",
+      "faction": "Voleurs",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Chef",
+      "niveau": "chef 4",
+      "centile": "P99",
+      "caracteristiques": {
+        "Force": 96,
+        "Constitution": 85,
+        "Dextérité": 90,
+        "Vitesse": 78,
+        "Endurance": 92,
+        "Esquive": 81,
+        "Chance": 90,
+        "Charisme": 86,
+        "Courage": 79,
+        "Intelligence": 94,
+        "Volonté": 80,
+        "Perception": 82,
+        "Puissance magique": 86,
+        "Réserve de mana": 84
+      },
+      "resistances": {
+        "Résistance physique": 18,
+        "Résistance au feu": 31,
+        "Résistance au froid": 31,
+        "Résistance à la foudre": 26,
+        "Résistance au poison": 30
+      },
+      "pv": 335,
+      "competences_martiales": {
+        "Sabre": 73,
+        "Lames longues": 79,
+        "Rondache": 50,
+        "Boucliers": 63,
+        "Discrétion": 56,
+        "Pièges": 54,
+        "Combat à deux armes": 77,
+        "Combat à mains nues": 83,
+        "Combat à deux mains": 63
+      },
+      "intimidation": 55,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire",
+        "Port d’armure lourde"
+      ],
+      "armes": [
+        "Sabre",
+        "Rondache"
+      ],
+      "armure": "Armure d'écailles",
+      "tier": 4,
+      "qualite": "Grand Luxe",
+      "points": null
+    },
+    {
+      "nom": "Cogneur ogre novice",
+      "code": "ogre_basher_novice",
+      "faction": "Ogres",
+      "peuple": "Ogre",
+      "culture": "Ogres des montagnes",
+      "ligne": "Cogneur",
+      "niveau": "novice",
+      "centile": "P20",
+      "caracteristiques": {
+        "Force": 84,
+        "Constitution": 70,
+        "Dextérité": 45,
+        "Vitesse": 35,
+        "Endurance": 70,
+        "Esquive": 43,
+        "Chance": 42,
+        "Charisme": 45,
+        "Courage": 58,
+        "Intelligence": 24,
+        "Volonté": 44,
+        "Perception": 34,
+        "Puissance magique": 30,
+        "Réserve de mana": 28
+      },
+      "resistances": {
+        "Résistance physique": 9,
+        "Résistance au feu": 3,
+        "Résistance au froid": 3,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 3
+      },
+      "pv": 266,
+      "competences_martiales": {
+        "Massue": 42,
+        "Armes contondantes": 44,
+        "Discrétion": 19,
+        "Pièges": 19,
+        "Combat à deux armes": 26,
+        "Combat à mains nues": 29,
+        "Combat à deux mains": 28
+      },
+      "intimidation": 36,
+      "port_d_armure": [],
+      "armes": [
+        "Massue"
+      ],
+      "armure": "Vêtements",
+      "tier": 1,
+      "qualite": "Usée",
+      "points": 9
+    },
+    {
+      "nom": "Cogneur ogre",
+      "code": "ogre_basher",
+      "faction": "Ogres",
+      "peuple": "Ogre",
+      "culture": "Ogres des montagnes",
+      "ligne": "Cogneur",
+      "niveau": "normal",
+      "centile": "P50",
+      "caracteristiques": {
+        "Force": 96,
+        "Constitution": 79,
+        "Dextérité": 55,
+        "Vitesse": 43,
+        "Endurance": 81,
+        "Esquive": 52,
+        "Chance": 52,
+        "Charisme": 54,
+        "Courage": 66,
+        "Intelligence": 36,
+        "Volonté": 53,
+        "Perception": 43,
+        "Puissance magique": 40,
+        "Réserve de mana": 37
+      },
+      "resistances": {
+        "Résistance physique": 12,
+        "Résistance au feu": 6,
+        "Résistance au froid": 6,
+        "Résistance à la foudre": 4,
+        "Résistance au poison": 6
+      },
+      "pv": 302,
+      "competences_martiales": {
+        "Massue": 48,
+        "Armes contondantes": 51,
+        "Discrétion": 23,
+        "Pièges": 24,
+        "Combat à deux armes": 32,
+        "Combat à mains nues": 36,
+        "Combat à deux mains": 36
+      },
+      "intimidation": 42,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Massue"
+      ],
+      "armure": "Gambison",
+      "tier": 2,
+      "qualite": "Correcte",
+      "points": 17
+    },
+    {
+      "nom": "Cogneur ogre vétéran",
+      "code": "ogre_basher_veteran",
+      "faction": "Ogres",
+      "peuple": "Ogre",
+      "culture": "Ogres des montagnes",
+      "ligne": "Cogneur",
+      "niveau": "vétéran",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 109,
+        "Constitution": 88,
+        "Dextérité": 63,
+        "Vitesse": 52,
+        "Endurance": 90,
+        "Esquive": 59,
+        "Chance": 60,
+        "Charisme": 62,
+        "Courage": 73,
+        "Intelligence": 46,
+        "Volonté": 61,
+        "Perception": 52,
+        "Puissance magique": 49,
+        "Réserve de mana": 45
+      },
+      "resistances": {
+        "Résistance physique": 15,
+        "Résistance au feu": 18,
+        "Résistance au froid": 16,
+        "Résistance à la foudre": 6,
+        "Résistance au poison": 15
+      },
+      "pv": 337,
+      "competences_martiales": {
+        "Massue": 55,
+        "Armes contondantes": 57,
+        "Discrétion": 28,
+        "Pièges": 29,
+        "Combat à deux armes": 38,
+        "Combat à mains nues": 47,
+        "Combat à deux mains": 42
+      },
+      "intimidation": 48,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Massue"
+      ],
+      "armure": "Armure de cuir",
+      "tier": 3,
+      "qualite": "Grand Luxe",
+      "points": 34
+    },
+    {
+      "nom": "Cogneur ogre d’élite",
+      "code": "ogre_basher_elite",
+      "faction": "Ogres",
+      "peuple": "Ogre",
+      "culture": "Ogres des montagnes",
+      "ligne": "Cogneur",
+      "niveau": "d’élite",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 117,
+        "Constitution": 94,
+        "Dextérité": 71,
+        "Vitesse": 59,
+        "Endurance": 99,
+        "Esquive": 65,
+        "Chance": 68,
+        "Charisme": 70,
+        "Courage": 77,
+        "Intelligence": 56,
+        "Volonté": 67,
+        "Perception": 61,
+        "Puissance magique": 59,
+        "Réserve de mana": 52
+      },
+      "resistances": {
+        "Résistance physique": 19,
+        "Résistance au feu": 26,
+        "Résistance au froid": 21,
+        "Résistance à la foudre": 9,
+        "Résistance au poison": 20
+      },
+      "pv": 362,
+      "competences_martiales": {
+        "Massue": 61,
+        "Armes contondantes": 62,
+        "Discrétion": 36,
+        "Pièges": 36,
+        "Combat à deux armes": 44,
+        "Combat à mains nues": 70,
+        "Combat à deux mains": 49
+      },
+      "intimidation": 54,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire"
+      ],
+      "armes": [
+        "Massue"
+      ],
+      "armure": "Cuir renforcé",
+      "tier": 4,
+      "qualite": "Grand Luxe",
+      "points": 48
+    },
+    {
+      "nom": "Écraseur ogre novice",
+      "code": "ogre_crusher_novice",
+      "faction": "Ogres",
+      "peuple": "Ogre",
+      "culture": "Ogres des montagnes",
+      "ligne": "Écraseur",
+      "niveau": "novice",
+      "centile": "P20",
+      "caracteristiques": {
+        "Force": 69,
+        "Constitution": 70,
+        "Dextérité": 55,
+        "Vitesse": 35,
+        "Endurance": 81,
+        "Esquive": 43,
+        "Chance": 42,
+        "Charisme": 45,
+        "Courage": 49,
+        "Intelligence": 24,
+        "Volonté": 44,
+        "Perception": 34,
+        "Puissance magique": 30,
+        "Réserve de mana": 28
+      },
+      "resistances": {
+        "Résistance physique": 9,
+        "Résistance au feu": 3,
+        "Résistance au froid": 3,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 3
+      },
+      "pv": 272,
+      "competences_martiales": {
+        "Marteau de guerre": 42,
+        "Armes contondantes": 44,
+        "Discrétion": 19,
+        "Pièges": 19,
+        "Combat à deux armes": 26,
+        "Combat à mains nues": 29,
+        "Combat à deux mains": 28
+      },
+      "intimidation": 36,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Marteau de guerre"
+      ],
+      "armure": "Gambison",
+      "tier": 1,
+      "qualite": "Usée",
+      "points": 9
+    },
+    {
+      "nom": "Écraseur ogre",
+      "code": "ogre_crusher",
+      "faction": "Ogres",
+      "peuple": "Ogre",
+      "culture": "Ogres des montagnes",
+      "ligne": "Écraseur",
+      "niveau": "normal",
+      "centile": "P50",
+      "caracteristiques": {
+        "Force": 84,
+        "Constitution": 79,
+        "Dextérité": 63,
+        "Vitesse": 43,
+        "Endurance": 90,
+        "Esquive": 52,
+        "Chance": 52,
+        "Charisme": 54,
+        "Courage": 58,
+        "Intelligence": 36,
+        "Volonté": 53,
+        "Perception": 43,
+        "Puissance magique": 40,
+        "Réserve de mana": 37
+      },
+      "resistances": {
+        "Résistance physique": 12,
+        "Résistance au feu": 6,
+        "Résistance au froid": 6,
+        "Résistance à la foudre": 4,
+        "Résistance au poison": 6
+      },
+      "pv": 307,
+      "competences_martiales": {
+        "Marteau de guerre": 48,
+        "Armes contondantes": 51,
+        "Discrétion": 23,
+        "Pièges": 24,
+        "Combat à deux armes": 32,
+        "Combat à mains nues": 36,
+        "Combat à deux mains": 36
+      },
+      "intimidation": 42,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Marteau de guerre"
+      ],
+      "armure": "Armure de cuir",
+      "tier": 2,
+      "qualite": "Correcte",
+      "points": 19
+    },
+    {
+      "nom": "Écraseur ogre vétéran",
+      "code": "ogre_crusher_veteran",
+      "faction": "Ogres",
+      "peuple": "Ogre",
+      "culture": "Ogres des montagnes",
+      "ligne": "Écraseur",
+      "niveau": "vétéran",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 96,
+        "Constitution": 88,
+        "Dextérité": 71,
+        "Vitesse": 52,
+        "Endurance": 99,
+        "Esquive": 59,
+        "Chance": 60,
+        "Charisme": 62,
+        "Courage": 66,
+        "Intelligence": 46,
+        "Volonté": 61,
+        "Perception": 52,
+        "Puissance magique": 49,
+        "Réserve de mana": 45
+      },
+      "resistances": {
+        "Résistance physique": 15,
+        "Résistance au feu": 18,
+        "Résistance au froid": 16,
+        "Résistance à la foudre": 6,
+        "Résistance au poison": 15
+      },
+      "pv": 342,
+      "competences_martiales": {
+        "Marteau de guerre": 55,
+        "Armes contondantes": 57,
+        "Discrétion": 28,
+        "Pièges": 29,
+        "Combat à deux armes": 38,
+        "Combat à mains nues": 47,
+        "Combat à deux mains": 42
+      },
+      "intimidation": 48,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire"
+      ],
+      "armes": [
+        "Marteau de guerre"
+      ],
+      "armure": "Cuir renforcé",
+      "tier": 3,
+      "qualite": "Grand Luxe",
+      "points": 44
+    },
+    {
+      "nom": "Écraseur ogre d’élite",
+      "code": "ogre_crusher_elite",
+      "faction": "Ogres",
+      "peuple": "Ogre",
+      "culture": "Ogres des montagnes",
+      "ligne": "Écraseur",
+      "niveau": "d’élite",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 109,
+        "Constitution": 94,
+        "Dextérité": 76,
+        "Vitesse": 59,
+        "Endurance": 104,
+        "Esquive": 65,
+        "Chance": 68,
+        "Charisme": 70,
+        "Courage": 73,
+        "Intelligence": 56,
+        "Volonté": 67,
+        "Perception": 61,
+        "Puissance magique": 59,
+        "Réserve de mana": 52
+      },
+      "resistances": {
+        "Résistance physique": 19,
+        "Résistance au feu": 26,
+        "Résistance au froid": 21,
+        "Résistance à la foudre": 9,
+        "Résistance au poison": 20
+      },
+      "pv": 365,
+      "competences_martiales": {
+        "Marteau de guerre": 61,
+        "Armes contondantes": 62,
+        "Discrétion": 36,
+        "Pièges": 36,
+        "Combat à deux armes": 44,
+        "Combat à mains nues": 70,
+        "Combat à deux mains": 49
+      },
+      "intimidation": 54,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire"
+      ],
+      "armes": [
+        "Marteau de guerre"
+      ],
+      "armure": "Brigandine",
+      "tier": 4,
+      "qualite": "Grand Luxe",
+      "points": 54
+    },
+    {
+      "nom": "Perceur ogre novice",
+      "code": "ogre_piercer_novice",
+      "faction": "Ogres",
+      "peuple": "Ogre",
+      "culture": "Ogres des montagnes",
+      "ligne": "Perceur",
+      "niveau": "novice",
+      "centile": "P20",
+      "caracteristiques": {
+        "Force": 84,
+        "Constitution": 70,
+        "Dextérité": 45,
+        "Vitesse": 35,
+        "Endurance": 70,
+        "Esquive": 43,
+        "Chance": 42,
+        "Charisme": 45,
+        "Courage": 58,
+        "Intelligence": 24,
+        "Volonté": 44,
+        "Perception": 34,
+        "Puissance magique": 30,
+        "Réserve de mana": 28
+      },
+      "resistances": {
+        "Résistance physique": 9,
+        "Résistance au feu": 3,
+        "Résistance au froid": 3,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 3
+      },
+      "pv": 266,
+      "competences_martiales": {
+        "Pic de guerre": 42,
+        "Armes contondantes": 44,
+        "Discrétion": 19,
+        "Pièges": 19,
+        "Combat à deux armes": 26,
+        "Combat à mains nues": 29,
+        "Combat à deux mains": 28
+      },
+      "intimidation": 36,
+      "port_d_armure": [],
+      "armes": [
+        "Pic de guerre"
+      ],
+      "armure": "Vêtements",
+      "tier": 1,
+      "qualite": "Usée",
+      "points": 9
+    },
+    {
+      "nom": "Perceur ogre",
+      "code": "ogre_piercer",
+      "faction": "Ogres",
+      "peuple": "Ogre",
+      "culture": "Ogres des montagnes",
+      "ligne": "Perceur",
+      "niveau": "normal",
+      "centile": "P50",
+      "caracteristiques": {
+        "Force": 96,
+        "Constitution": 79,
+        "Dextérité": 55,
+        "Vitesse": 43,
+        "Endurance": 81,
+        "Esquive": 52,
+        "Chance": 52,
+        "Charisme": 54,
+        "Courage": 66,
+        "Intelligence": 36,
+        "Volonté": 53,
+        "Perception": 43,
+        "Puissance magique": 40,
+        "Réserve de mana": 37
+      },
+      "resistances": {
+        "Résistance physique": 12,
+        "Résistance au feu": 6,
+        "Résistance au froid": 6,
+        "Résistance à la foudre": 4,
+        "Résistance au poison": 6
+      },
+      "pv": 302,
+      "competences_martiales": {
+        "Pic de guerre": 48,
+        "Armes contondantes": 51,
+        "Discrétion": 23,
+        "Pièges": 24,
+        "Combat à deux armes": 32,
+        "Combat à mains nues": 36,
+        "Combat à deux mains": 36
+      },
+      "intimidation": 42,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Pic de guerre"
+      ],
+      "armure": "Gambison",
+      "tier": 2,
+      "qualite": "Correcte",
+      "points": 19
+    },
+    {
+      "nom": "Perceur ogre vétéran",
+      "code": "ogre_piercer_veteran",
+      "faction": "Ogres",
+      "peuple": "Ogre",
+      "culture": "Ogres des montagnes",
+      "ligne": "Perceur",
+      "niveau": "vétéran",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 109,
+        "Constitution": 88,
+        "Dextérité": 63,
+        "Vitesse": 52,
+        "Endurance": 90,
+        "Esquive": 59,
+        "Chance": 60,
+        "Charisme": 62,
+        "Courage": 73,
+        "Intelligence": 46,
+        "Volonté": 61,
+        "Perception": 52,
+        "Puissance magique": 49,
+        "Réserve de mana": 45
+      },
+      "resistances": {
+        "Résistance physique": 15,
+        "Résistance au feu": 18,
+        "Résistance au froid": 16,
+        "Résistance à la foudre": 6,
+        "Résistance au poison": 15
+      },
+      "pv": 337,
+      "competences_martiales": {
+        "Pic de guerre": 55,
+        "Armes contondantes": 57,
+        "Discrétion": 28,
+        "Pièges": 29,
+        "Combat à deux armes": 38,
+        "Combat à mains nues": 47,
+        "Combat à deux mains": 42
+      },
+      "intimidation": 48,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Pic de guerre"
+      ],
+      "armure": "Armure de cuir",
+      "tier": 3,
+      "qualite": "Grand Luxe",
+      "points": 35
+    },
+    {
+      "nom": "Perceur ogre d’élite",
+      "code": "ogre_piercer_elite",
+      "faction": "Ogres",
+      "peuple": "Ogre",
+      "culture": "Ogres des montagnes",
+      "ligne": "Perceur",
+      "niveau": "d’élite",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 117,
+        "Constitution": 94,
+        "Dextérité": 71,
+        "Vitesse": 59,
+        "Endurance": 99,
+        "Esquive": 65,
+        "Chance": 68,
+        "Charisme": 70,
+        "Courage": 77,
+        "Intelligence": 56,
+        "Volonté": 67,
+        "Perception": 61,
+        "Puissance magique": 59,
+        "Réserve de mana": 52
+      },
+      "resistances": {
+        "Résistance physique": 19,
+        "Résistance au feu": 26,
+        "Résistance au froid": 21,
+        "Résistance à la foudre": 9,
+        "Résistance au poison": 20
+      },
+      "pv": 362,
+      "competences_martiales": {
+        "Pic de guerre": 61,
+        "Armes contondantes": 62,
+        "Discrétion": 36,
+        "Pièges": 36,
+        "Combat à deux armes": 44,
+        "Combat à mains nues": 70,
+        "Combat à deux mains": 49
+      },
+      "intimidation": 54,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire"
+      ],
+      "armes": [
+        "Pic de guerre"
+      ],
+      "armure": "Cuir renforcé",
+      "tier": 4,
+      "qualite": "Grand Luxe",
+      "points": 54
+    },
+    {
+      "nom": "Tromblonnier ogre novice",
+      "code": "ogre_blunderbuss_novice",
+      "faction": "Ogres",
+      "peuple": "Ogre",
+      "culture": "Ogres des montagnes",
+      "ligne": "Tromblonnier",
+      "niveau": "novice",
+      "centile": "P20",
+      "caracteristiques": {
+        "Force": 55,
+        "Constitution": 49,
+        "Dextérité": 55,
+        "Vitesse": 52,
+        "Endurance": 70,
+        "Esquive": 43,
+        "Chance": 42,
+        "Charisme": 45,
+        "Courage": 49,
+        "Intelligence": 24,
+        "Volonté": 44,
+        "Perception": 52,
+        "Puissance magique": 30,
+        "Réserve de mana": 28
+      },
+      "resistances": {
+        "Résistance physique": 9,
+        "Résistance au feu": 3,
+        "Résistance au froid": 3,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 3
+      },
+      "pv": 203,
+      "competences_martiales": {
+        "Tromblon": 42,
+        "Armes à feu": 44,
+        "Discrétion": 19,
+        "Pièges": 19,
+        "Combat à deux armes": 26,
+        "Combat à mains nues": 29,
+        "Combat à deux mains": 28
+      },
+      "intimidation": 36,
+      "port_d_armure": [],
+      "armes": [
+        "Tromblon"
+      ],
+      "armure": "Vêtements",
+      "tier": 1,
+      "qualite": "Usée",
+      "points": 7
+    },
+    {
+      "nom": "Tromblonnier ogre",
+      "code": "ogre_blunderbuss",
+      "faction": "Ogres",
+      "peuple": "Ogre",
+      "culture": "Ogres des montagnes",
+      "ligne": "Tromblonnier",
+      "niveau": "normal",
+      "centile": "P50",
+      "caracteristiques": {
+        "Force": 69,
+        "Constitution": 59,
+        "Dextérité": 63,
+        "Vitesse": 59,
+        "Endurance": 81,
+        "Esquive": 52,
+        "Chance": 52,
+        "Charisme": 54,
+        "Courage": 58,
+        "Intelligence": 36,
+        "Volonté": 53,
+        "Perception": 61,
+        "Puissance magique": 40,
+        "Réserve de mana": 37
+      },
+      "resistances": {
+        "Résistance physique": 12,
+        "Résistance au feu": 6,
+        "Résistance au froid": 6,
+        "Résistance à la foudre": 4,
+        "Résistance au poison": 6
+      },
+      "pv": 242,
+      "competences_martiales": {
+        "Tromblon": 48,
+        "Armes à feu": 51,
+        "Discrétion": 23,
+        "Pièges": 24,
+        "Combat à deux armes": 32,
+        "Combat à mains nues": 36,
+        "Combat à deux mains": 36
+      },
+      "intimidation": 42,
+      "port_d_armure": [],
+      "armes": [
+        "Tromblon"
+      ],
+      "armure": "Vêtements",
+      "tier": 2,
+      "qualite": "Correcte",
+      "points": 13
+    },
+    {
+      "nom": "Tromblonnier ogre vétéran",
+      "code": "ogre_blunderbuss_veteran",
+      "faction": "Ogres",
+      "peuple": "Ogre",
+      "culture": "Ogres des montagnes",
+      "ligne": "Tromblonnier",
+      "niveau": "vétéran",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 84,
+        "Constitution": 70,
+        "Dextérité": 71,
+        "Vitesse": 65,
+        "Endurance": 90,
+        "Esquive": 59,
+        "Chance": 60,
+        "Charisme": 62,
+        "Courage": 66,
+        "Intelligence": 46,
+        "Volonté": 61,
+        "Perception": 68,
+        "Puissance magique": 49,
+        "Réserve de mana": 45
+      },
+      "resistances": {
+        "Résistance physique": 15,
+        "Résistance au feu": 18,
+        "Résistance au froid": 16,
+        "Résistance à la foudre": 6,
+        "Résistance au poison": 15
+      },
+      "pv": 283,
+      "competences_martiales": {
+        "Tromblon": 55,
+        "Armes à feu": 57,
+        "Discrétion": 28,
+        "Pièges": 29,
+        "Combat à deux armes": 38,
+        "Combat à mains nues": 47,
+        "Combat à deux mains": 42
+      },
+      "intimidation": 48,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Tromblon"
+      ],
+      "armure": "Gambison",
+      "tier": 3,
+      "qualite": "Grand Luxe",
+      "points": 22
+    },
+    {
+      "nom": "Tromblonnier ogre d’élite",
+      "code": "ogre_blunderbuss_elite",
+      "faction": "Ogres",
+      "peuple": "Ogre",
+      "culture": "Ogres des montagnes",
+      "ligne": "Tromblonnier",
+      "niveau": "d’élite",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 96,
+        "Constitution": 79,
+        "Dextérité": 76,
+        "Vitesse": 68,
+        "Endurance": 99,
+        "Esquive": 65,
+        "Chance": 68,
+        "Charisme": 70,
+        "Courage": 73,
+        "Intelligence": 56,
+        "Volonté": 67,
+        "Perception": 72,
+        "Puissance magique": 59,
+        "Réserve de mana": 52
+      },
+      "resistances": {
+        "Résistance physique": 19,
+        "Résistance au feu": 26,
+        "Résistance au froid": 21,
+        "Résistance à la foudre": 9,
+        "Résistance au poison": 20
+      },
+      "pv": 317,
+      "competences_martiales": {
+        "Tromblon": 61,
+        "Armes à feu": 62,
+        "Discrétion": 36,
+        "Pièges": 36,
+        "Combat à deux armes": 44,
+        "Combat à mains nues": 70,
+        "Combat à deux mains": 49
+      },
+      "intimidation": 54,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Tromblon"
+      ],
+      "armure": "Armure de cuir",
+      "tier": 4,
+      "qualite": "Grand Luxe",
+      "points": 28
+    },
+    {
+      "nom": "Canonnier ogre novice",
+      "code": "ogre_cannoneer_novice",
+      "faction": "Ogres",
+      "peuple": "Ogre",
+      "culture": "Ogres des montagnes",
+      "ligne": "Canonnier",
+      "niveau": "novice",
+      "centile": "P20",
+      "caracteristiques": {
+        "Force": 55,
+        "Constitution": 59,
+        "Dextérité": 55,
+        "Vitesse": 43,
+        "Endurance": 70,
+        "Esquive": 35,
+        "Chance": 52,
+        "Charisme": 45,
+        "Courage": 49,
+        "Intelligence": 24,
+        "Volonté": 44,
+        "Perception": 52,
+        "Puissance magique": 30,
+        "Réserve de mana": 28
+      },
+      "resistances": {
+        "Résistance physique": 9,
+        "Résistance au feu": 3,
+        "Résistance au froid": 3,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 3
+      },
+      "pv": 233,
+      "competences_martiales": {
+        "Canon à main": 42,
+        "Armes à feu": 44,
+        "Discrétion": 19,
+        "Pièges": 19,
+        "Combat à deux armes": 26,
+        "Combat à mains nues": 29,
+        "Combat à deux mains": 28
+      },
+      "intimidation": 36,
+      "port_d_armure": [],
+      "armes": [
+        "Canon à main"
+      ],
+      "armure": "Vêtements",
+      "tier": 1,
+      "qualite": "Usée",
+      "points": 8
+    },
+    {
+      "nom": "Canonnier ogre",
+      "code": "ogre_cannoneer",
+      "faction": "Ogres",
+      "peuple": "Ogre",
+      "culture": "Ogres des montagnes",
+      "ligne": "Canonnier",
+      "niveau": "normal",
+      "centile": "P50",
+      "caracteristiques": {
+        "Force": 69,
+        "Constitution": 70,
+        "Dextérité": 63,
+        "Vitesse": 52,
+        "Endurance": 81,
+        "Esquive": 43,
+        "Chance": 60,
+        "Charisme": 54,
+        "Courage": 58,
+        "Intelligence": 36,
+        "Volonté": 53,
+        "Perception": 61,
+        "Puissance magique": 40,
+        "Réserve de mana": 37
+      },
+      "resistances": {
+        "Résistance physique": 12,
+        "Résistance au feu": 6,
+        "Résistance au froid": 6,
+        "Résistance à la foudre": 4,
+        "Résistance au poison": 6
+      },
+      "pv": 275,
+      "competences_martiales": {
+        "Canon à main": 48,
+        "Armes à feu": 51,
+        "Discrétion": 23,
+        "Pièges": 24,
+        "Combat à deux armes": 32,
+        "Combat à mains nues": 36,
+        "Combat à deux mains": 36
+      },
+      "intimidation": 42,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Canon à main"
+      ],
+      "armure": "Gambison",
+      "tier": 2,
+      "qualite": "Correcte",
+      "points": 13
+    },
+    {
+      "nom": "Canonnier ogre vétéran",
+      "code": "ogre_cannoneer_veteran",
+      "faction": "Ogres",
+      "peuple": "Ogre",
+      "culture": "Ogres des montagnes",
+      "ligne": "Canonnier",
+      "niveau": "vétéran",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 84,
+        "Constitution": 79,
+        "Dextérité": 71,
+        "Vitesse": 59,
+        "Endurance": 90,
+        "Esquive": 52,
+        "Chance": 68,
+        "Charisme": 62,
+        "Courage": 66,
+        "Intelligence": 46,
+        "Volonté": 61,
+        "Perception": 68,
+        "Puissance magique": 49,
+        "Réserve de mana": 45
+      },
+      "resistances": {
+        "Résistance physique": 15,
+        "Résistance au feu": 18,
+        "Résistance au froid": 16,
+        "Résistance à la foudre": 6,
+        "Résistance au poison": 15
+      },
+      "pv": 310,
+      "competences_martiales": {
+        "Canon à main": 55,
+        "Armes à feu": 57,
+        "Discrétion": 28,
+        "Pièges": 29,
+        "Combat à deux armes": 38,
+        "Combat à mains nues": 47,
+        "Combat à deux mains": 42
+      },
+      "intimidation": 48,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Canon à main"
+      ],
+      "armure": "Armure de cuir",
+      "tier": 3,
+      "qualite": "Grand Luxe",
+      "points": 22
+    },
+    {
+      "nom": "Canonnier ogre d’élite",
+      "code": "ogre_cannoneer_elite",
+      "faction": "Ogres",
+      "peuple": "Ogre",
+      "culture": "Ogres des montagnes",
+      "ligne": "Canonnier",
+      "niveau": "d’élite",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 96,
+        "Constitution": 88,
+        "Dextérité": 76,
+        "Vitesse": 65,
+        "Endurance": 99,
+        "Esquive": 59,
+        "Chance": 72,
+        "Charisme": 70,
+        "Courage": 73,
+        "Intelligence": 56,
+        "Volonté": 67,
+        "Perception": 72,
+        "Puissance magique": 59,
+        "Réserve de mana": 52
+      },
+      "resistances": {
+        "Résistance physique": 19,
+        "Résistance au feu": 26,
+        "Résistance au froid": 21,
+        "Résistance à la foudre": 9,
+        "Résistance au poison": 20
+      },
+      "pv": 344,
+      "competences_martiales": {
+        "Canon à main": 61,
+        "Armes à feu": 62,
+        "Discrétion": 36,
+        "Pièges": 36,
+        "Combat à deux armes": 44,
+        "Combat à mains nues": 70,
+        "Combat à deux mains": 49
+      },
+      "intimidation": 54,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Canon à main"
+      ],
+      "armure": "Armure de cuir",
+      "tier": 4,
+      "qualite": "Grand Luxe",
+      "points": 29
+    },
+    {
+      "nom": "Patron ogre",
+      "code": "ogre_chief_1",
+      "faction": "Ogres",
+      "peuple": "Ogre",
+      "culture": "Ogres des montagnes",
+      "ligne": "Chef",
+      "niveau": "chef 1",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 96,
+        "Constitution": 79,
+        "Dextérité": 63,
+        "Vitesse": 59,
+        "Endurance": 90,
+        "Esquive": 59,
+        "Chance": 60,
+        "Charisme": 70,
+        "Courage": 73,
+        "Intelligence": 46,
+        "Volonté": 67,
+        "Perception": 61,
+        "Puissance magique": 49,
+        "Réserve de mana": 45
+      },
+      "resistances": {
+        "Résistance physique": 15,
+        "Résistance au feu": 18,
+        "Résistance au froid": 16,
+        "Résistance à la foudre": 6,
+        "Résistance au poison": 15
+      },
+      "pv": 312,
+      "competences_martiales": {
+        "Marteau de guerre": 55,
+        "Armes contondantes": 57,
+        "Discrétion": 28,
+        "Pièges": 29,
+        "Combat à deux armes": 38,
+        "Combat à mains nues": 47,
+        "Combat à deux mains": 42
+      },
+      "intimidation": 54,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire"
+      ],
+      "armes": [
+        "Marteau de guerre"
+      ],
+      "armure": "Cuir renforcé",
+      "tier": 3,
+      "qualite": "Grand Luxe",
+      "points": 42
+    },
+    {
+      "nom": "Grand Patron ogre",
+      "code": "ogre_chief_2",
+      "faction": "Ogres",
+      "peuple": "Ogre",
+      "culture": "Ogres des montagnes",
+      "ligne": "Chef",
+      "niveau": "chef 2",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 109,
+        "Constitution": 88,
+        "Dextérité": 71,
+        "Vitesse": 65,
+        "Endurance": 99,
+        "Esquive": 65,
+        "Chance": 68,
+        "Charisme": 74,
+        "Courage": 77,
+        "Intelligence": 56,
+        "Volonté": 71,
+        "Perception": 68,
+        "Puissance magique": 59,
+        "Réserve de mana": 52
+      },
+      "resistances": {
+        "Résistance physique": 19,
+        "Résistance au feu": 26,
+        "Résistance au froid": 21,
+        "Résistance à la foudre": 9,
+        "Résistance au poison": 20
+      },
+      "pv": 345,
+      "competences_martiales": {
+        "Marteau de guerre": 61,
+        "Armes contondantes": 62,
+        "Discrétion": 36,
+        "Pièges": 36,
+        "Combat à deux armes": 44,
+        "Combat à mains nues": 70,
+        "Combat à deux mains": 49
+      },
+      "intimidation": 58,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire"
+      ],
+      "armes": [
+        "Marteau de guerre"
+      ],
+      "armure": "Cotte de mailles",
+      "tier": 4,
+      "qualite": "Grand Luxe",
+      "points": 58
+    },
+    {
+      "nom": "Tyran ogre",
+      "code": "ogre_chief_3",
+      "faction": "Ogres",
+      "peuple": "Ogre",
+      "culture": "Ogres des montagnes",
+      "ligne": "Chef",
+      "niveau": "chef 3",
+      "centile": "P95",
+      "caracteristiques": {
+        "Force": 117,
+        "Constitution": 94,
+        "Dextérité": 76,
+        "Vitesse": 68,
+        "Endurance": 104,
+        "Esquive": 68,
+        "Chance": 72,
+        "Charisme": 83,
+        "Courage": 83,
+        "Intelligence": 63,
+        "Volonté": 77,
+        "Perception": 72,
+        "Puissance magique": 65,
+        "Réserve de mana": 55
+      },
+      "resistances": {
+        "Résistance physique": 21,
+        "Résistance au feu": 35,
+        "Résistance au froid": 23,
+        "Résistance à la foudre": 12,
+        "Résistance au poison": 23
+      },
+      "pv": 368,
+      "competences_martiales": {
+        "Marteau de guerre": 65,
+        "Armes contondantes": 64,
+        "Discrétion": 42,
+        "Pièges": 40,
+        "Combat à deux armes": 48,
+        "Combat à mains nues": 83,
+        "Combat à deux mains": 53
+      },
+      "intimidation": 67,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire"
+      ],
+      "armes": [
+        "Marteau de guerre"
+      ],
+      "armure": "Brigandine",
+      "tier": 4,
+      "qualite": "Grand Luxe",
+      "points": 79
+    },
+    {
+      "nom": "Ventre-Roi",
+      "code": "ogre_chief_4",
+      "faction": "Ogres",
+      "peuple": "Ogre",
+      "culture": "Ogres des montagnes",
+      "ligne": "Chef",
+      "niveau": "chef 4",
+      "centile": "P99",
+      "caracteristiques": {
+        "Force": 132,
+        "Constitution": 104,
+        "Dextérité": 85,
+        "Vitesse": 74,
+        "Endurance": 114,
+        "Esquive": 74,
+        "Chance": 81,
+        "Charisme": 83,
+        "Courage": 83,
+        "Intelligence": 76,
+        "Volonté": 77,
+        "Perception": 80,
+        "Puissance magique": 77,
+        "Réserve de mana": 62
+      },
+      "resistances": {
+        "Résistance physique": 25,
+        "Résistance au feu": 48,
+        "Résistance au froid": 29,
+        "Résistance à la foudre": 15,
+        "Résistance au poison": 28
+      },
+      "pv": 404,
+      "competences_martiales": {
+        "Marteau de guerre": 73,
+        "Armes contondantes": 69,
+        "Discrétion": 48,
+        "Pièges": 48,
+        "Combat à deux armes": 56,
+        "Combat à mains nues": 99,
+        "Combat à deux mains": 63
+      },
+      "intimidation": 67,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire",
+        "Port d’armure lourde"
+      ],
+      "armes": [
+        "Marteau de guerre"
       ],
       "armure": "Armure d'écailles",
       "tier": 4,

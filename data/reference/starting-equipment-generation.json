@@ -20,7 +20,8 @@
   "quality_by_tier": {
     "1": "worn",
     "2": "standard",
-    "3": "luxury"
+    "3": "luxury",
+    "4": "deluxe"
   },
   "columns": [
     {

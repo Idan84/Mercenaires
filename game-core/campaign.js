@@ -62,7 +62,7 @@
     // Régénération (sang de troll ; Idan, 2026-11-01) : une blessure guérit plus vite au camp (regeneration.js).
     const regeneration=Regeneration?Regeneration.createRegenerationRules({reference}):null;
     const woundDaysFor=(mercenary,days)=>regeneration?regeneration.campDays(mercenary,days):days;
-    const STARTING_DORMITORY_CAPACITY=referenceConstant(reference,"camp.dormitory.initial_capacity",40);
+    const STARTING_DORMITORY_CAPACITY=referenceConstant(reference,"camp.dormitory.initial_capacity",20);
     const RENOWN_RANK_EXPONENT=referenceConstant(reference,"company.renown.rank_exponent",1.5);
     const RENOWN_HERITAGE_SHARE=referenceConstant(reference,"company.renown.heritage_share",0.2);
     // Qualité des recrues (14 §5 ; Idan, 2026-10-20) : le tavernier présente le meilleur de N prétendants,
@@ -424,7 +424,7 @@
     }
 
     // Agrandir le dortoir (Idan, 2026-10-25) : +5 places à chaque agrandissement, sans limite ; chacun coûte plus d'or
-    // et de jours que le précédent. Le k-ième (k = 1 pour passer de 40 à 45 places) coûte 100 × 1,2^(k−1) PO, arrondi à
+    // et de jours que le précédent. Le k-ième (k = 1 pour passer de 20 à 25 places) coûte 100 × 1,2^(k−1) PO, arrondi à
     // 10, et dure 2 + ⌊(k−1)/3⌋ jours (camp.dormitory.expansion_*). Un chantier à la fois ; l'or est payé au lancement,
     // les places sont prêtes le jour où le chantier se termine.
     const DORM_EXPANSION={

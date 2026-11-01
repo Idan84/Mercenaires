@@ -462,6 +462,19 @@
       return {...head,wound:true,physicalResistance,resistanceRoll,damage};
     }
 
+    // Lancer d'arme (Télékinésie ; Idan, 2026-10-31, chiffres de JC3) : l'arme de corps à corps tenue, lancée par l'esprit
+    // puis ramenée : ses dés × sa qualité × (2 × Puissance magique / 100) × (0,5 + Maîtrise / 100), puis l'étape Blesser d'un
+    // sort physique (spellPhysicalHit) avec le meilleur type de dégâts de l'arme contre l'armure de la cible. null sans arme.
+    function weaponThrow(caster,target,{mastery=0,critical=false}={}){
+      const item=activeWeaponItem(caster),weapon=weaponTemplate(item);
+      if(!weapon||!isMeleeWeapon(weapon)) return null;
+      const rolled=rollWeaponDamage(weapon,critical?"max":null);
+      const amount=Math.ceil(10*rolled.total*(Number(quality(item).multiplicateur_qualite)||1)
+        *(2*statWithGear(caster,"Puissance magique")/100)*(0.5+mastery/100)-1e-9);
+      const best=[...damageMatchups(target,weapon)].sort((a,b)=>b.matchup-a.matchup)[0]||{type:"contondant",power:0};
+      return {weapon:item.name,weaponRoll:rolled.total,amount,...spellPhysicalHit(caster,target,amount,{type:best.type,power:best.power,mastery})};
+    }
+
     // Discrétion et camouflage (doc 04 ; Idan, 2026-10-28) : un personnage que l'ennemi n'a jamais vu est camouflé
     // (unit.camouflaged) ; au début de chaque tour, chaque personnage tente de repérer chaque ennemi encore camouflé dans sa
     // ligne de vue : P = 100 / (1 + e^(−Δ/15)), Δ = Perception − (Discrétion + couverture) + 40 − 5 × distance, de 5 à 95 %.
@@ -1098,6 +1111,7 @@
       detectionChance,
       rollDetection,
       spellPhysicalHit,
+      weaponThrow,
       fearHold,
       parryChance,
       attackStatBonus,

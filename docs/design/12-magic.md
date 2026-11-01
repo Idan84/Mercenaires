@@ -188,7 +188,7 @@ Même modèle que la Vie et le Feu (effet, mana, CC aux dés maximum, EC : le la
 | Blizzard, par vague | 22 · rayon 2 · portée 7 · 32 mana | 28 · rayon 3 · portée 8 · 29 | 63 · rayon 4 · portée 11 · 20 |
 | Source vive | +9 mana · 9 mana | +12 · 9 | +27 · 6 |
 
-### École de la Transmutation (6 sorts, Idan, 2026-10-27)
+### École de la Transmutation (10 sorts, Idan, 2026-10-27 et 2026-10-31)
 
 Idan : « c'est un buffeur ». Tous les sorts sont des **actions rapides**, sur **un allié ou soi**, à **moyenne portée (3 + M/25)**, et durent **1 tour, 2 pour un maître (1 + M/100, au plus 2)**. Même modèle que les autres écoles pour le mana, la réussite et les critiques. Écoles opposées : Foudre et Invocation. Données : `spells.json`.
 
@@ -200,14 +200,22 @@ Idan : « c'est un buffeur ». Tous les sorts sont des **actions rapides**, sur 
 | Peau de pierre | **+(10 + M/10) points** de Résistance physique | 10 |
 | Crachat de venin | la cible peut **cracher du venin par une action rapide** (voir ci-dessous) | 12 |
 | Cautérisation | soin **1D3** (comme Eau guérissante) | 10 |
+| Robustesse de l'ours | **+(20 + M/5) %** de Constitution, donc de PV max (et autant de PV) | 10 |
+| Peau d'écailles | **+(20 + M/5)** de protection contre **le feu, le froid et la foudre** | 12 |
+| Sagesse du hibou | **+(20 + M/5) %** d'Intelligence : des sorts qui réussissent plus souvent | 10 |
+| Agilité du chat | **+(20 + M/5) %** d'Esquive | 10 |
 
 - **Pourcentages** : de la valeur de base, comme l'équipement ; ils comptent partout où la caractéristique compte (Force : dégâts au corps à corps ; Vitesse : mouvement, initiative, toucher et esquive des tirs ; Perception et Dextérité : toucher). **Peau de pierre** donne des points, comme la cape (la Résistance physique médiane n'est que de 5) : un point retire environ 1 % des dégâts physiques, dans la limite de 50.
 - **Durée** : « 1 tour » = la prochaine activation de la cible ; si le lanceur se vise lui-même, c'est son activation en cours (Force de titan, puis frapper dans la foulée). Les sorts différents se cumulent ; le même sort relancé remplace le précédent.
+- **Les quatre sorts du 2026-10-31** (validés par Idan, chiffrés par JC3) amènent l'école à 10 sorts, sur le même modèle.
+- **Robustesse de l'ours** : les PV max suivent la Constitution en combat ; quand l'effet prend fin, ils redescendent et les PV avec eux s'ils dépassent (les ennemis gardent les PV de leur fiche).
+- **Peau d'écailles** : un bonus de protection sur les trois éléments à la fois, comme l'Armure de feu sur un seul ; il réduit aussi le Gel.
 - **Crachat de venin** : pendant les 1 ou 2 **prochaines** activations de la cible (même si le lanceur se vise : l'action rapide vient d'être prise), un bouton « Cracher du venin » : action rapide, un ennemi à **2 à 10 cases** (la Sarbacane), en ligne de vue. Toucher comme le Trait de feu, avec la **Maîtrise du lanceur** à la place des compétences d'arme ; **1D4 de poison** × la Puissance du lanceur, réduits par la Résistance au poison (l'armure ne compte pas). S'il blesse, la cible est **empoisonnée**.
 
 | | Débutant | Recrue moyenne | Expert |
 |---|---|---|---|
-| 6e sens, Force de titan, Vitesse du guépard | +26 %, 1 tour · portée 4 · 57 % (6e sens : 31 %) | +31 %, 1 tour · portée 5 · 81 % (59 %) | +46 %, 2 tours · portée 8 · 94 % (93 %) |
+| 6e sens, Force de titan, Vitesse du guépard, Robustesse de l'ours, Sagesse du hibou, Agilité du chat | +26 %, 1 tour · portée 4 | +31 %, 1 tour · portée 5 | +46 %, 2 tours · portée 8 |
+| Peau d'écailles | +26 feu, froid et foudre, 1 tour · 11 mana | +31, 1 tour · 10 | +46, 2 tours · 7 |
 | Peau de pierre | +13 points, 1 tour | +15, 1 tour | +23, 2 tours |
 | Crachat de venin, par crachat | 22 (9 de poison ensuite) | 28 (12) | 63 (26) |
 | Cautérisation | 17 PV · 9 mana | 23 · 9 | 51 · 6 |
@@ -259,7 +267,7 @@ Même modèle que les autres écoles (effet, mana, CC aux dés maximum, EC : le 
 | Paralysie (cible : Constitution 55, la médiane d'une recrue, en cuir) | résiste à 69 % · portée 7 · 23 mana | 57 % · portée 8 · 21 | 18 % · portée 11 · 14 |
 | Tempête, par frappe (1D3 frappes × 3 tours) | 39 · rayon 2 · portée 7 · 32 mana | 51 · rayon 3 · portée 8 · 29 | 114 · rayon 4 · portée 11 · 20 |
 
-### École de la Télékinésie (6 sorts, Idan, 2026-10-28)
+### École de la Télékinésie (10 sorts, Idan, 2026-10-28 et 2026-10-31)
 
 Une école de **contrôle** : elle déplace les gens sur la carte. Même modèle que les autres écoles pour le mana, la réussite et les critiques. Écoles opposées : Illusion et Feu. Données : `spells.json`.
 
@@ -273,10 +281,19 @@ Une école de **contrôle** : elle déplace les gens sur la carte. Même modèle
 | Entrechoc | principale | **deux ennemis côte à côte** (deux clics) : **2D8** contondant (puissance 55) **à chacun**, chacun avec son armure | 6 + M/25, au plus 12 | 20 |
 | Champ de protection | principale | sur soi ou un allié, pendant **4 tours** : chaque **projectile** a **50 %** de chances d'être **dévié** | 3 + M/25 | 15 |
 | Lancer de pierre | rapide | un tir de **fronde** : jet de toucher comme le Trait de feu, puis **1D6** contondant (puissance 25, la Fronde) | **2 à 14** (la Fronde) | 6 |
+| Lancer d'arme | principale | l'**arme de corps à corps tenue** part et revient : ses **dés** × sa **qualité**, avec la **Puissance magique** au lieu de la Force, puis **Blesser** avec le meilleur type de l'arme (tranchant, perforant ou contondant) | 4 + M/25, au plus 10 | 15 |
+| Onde de choc | principale | **tous ceux à 2 cases ou moins** du lanceur, **alliés compris**, sont **repoussés de 2 + M/50 cases** ; **choc 1D4** contondant (puissance 35) s'ils heurtent quelque chose | soi | 25 |
+| Bond | rapide | le lanceur se propulse sur une **case libre**, par-dessus tout, **sans attaque d'opportunité** ; ce n'est pas un déplacement (il garde son mouvement) | 2 + M/50, au plus 4 | 10 |
+| Écrasement | principale | **2D6** contondant (puissance 45), et la cible **ne peut pas se déplacer** à sa prochaine activation | 6 + M/25, au plus 12 | 20 |
 
 - **Déplacement forcé** (Attraction, Projection, Déplacement) : jamais d'attaque d'opportunité. La cible suit les cases jusqu'au premier **obstacle** (un personnage, une flaque de magma, le bord du terrain) ; l'obstacle l'arrête et lui inflige un **choc** (Idan : « dégâts en plus ») : **1D4** contondant, qui passe lui aussi par l'armure. L'Attraction s'arrête au contact du lanceur, sans choc. Si la cible meurt du coup, elle ne bouge pas.
 - **Champ de protection** (Idan : il dévie aussi les sorts) : avant le jet de toucher, 50 % de dévier les tirs d'armes (arcs, frondes, armes à feu, contre-charges au tir) et les sorts qui volent comme une flèche (Trait de feu, Flèche de glace, Éclair, Lancer de pierre, crachat de venin). Il dure 4 tours : jusqu'au début du 4e tour suivant le lancer. Il ne gêne ni la Foudre, ni les zones, ni la Décharge.
 - **Lancer de pierre** en action rapide : il se combine avec un sort principal dans le même tour.
+- **Les quatre sorts du 2026-10-31** (validés par Idan, chiffrés par JC3) amènent l'école à 10 sorts, sur le même modèle.
+- **Lancer d'arme** : il faut une arme de corps à corps en main (pas d'arc, pas de mains nues). La qualité de l'arme compte, comme à la frappe ; une critique prend les dés au maximum. L'arme revient aussitôt : rien à ramasser.
+- **Onde de choc** : les plus éloignés sont repoussés d'abord, dans l'axe lanceur → eux, pour ne pas se gêner ; pas de dégâts sans obstacle. Pas de critique.
+- **Bond** : action rapide, il se combine avec un sort principal ou une attaque dans le même tour.
+- **Écrasement** : « immobilisé » = plus de déplacement à sa prochaine activation ; il peut encore frapper, tirer ou lancer un sort.
 
 | | Débutant | Recrue moyenne | Expert |
 |---|---|---|---|
@@ -285,6 +302,10 @@ Une école de **contrôle** : elle déplace les gens sur la carte. Même modèle
 | Entrechoc, à chacun | 78 · 18 mana | 102 · 17 | 229 · 12 |
 | Lancer de pierre | 30 · 6 mana | 40 · 5 | 89 · 4 |
 | Chance de blesser, Projection (sans armure / cuir / plates) | 82 / 78 / 56 % | 84 / 80 / 61 % | 89 / 88 / 82 % |
+| Lancer d'arme (épée longue 1D8, qualité normale) | 39 · portée 5 · 14 mana | 51 · portée 6 · 13 | 114 · portée 9 · 9 |
+| Onde de choc | repoussés de 2 cases · choc 22 · 23 mana | 3 cases · choc 28 · 21 | 4 cases · choc 63 · 14 |
+| Bond | portée 2 · 9 mana | portée 3 · 9 | portée 4 · 6 |
+| Écrasement | 60 · portée 7 · 18 mana | 79 · portée 8 · 17 | 178 · portée 11 · 12 |
 
 ### École de l'Illusion (6 sorts, Idan, 2026-10-28)
 
@@ -385,10 +406,8 @@ Le **Charisme** du mage y compte (Idan : l'Invocation et la Nécromancie en dép
 
 Idan a validé **90 sorts mono-école** (10 par école) et **49 sorts bi-école**. JC3 les chiffre et les intègre **une école par PR** ; chaque école intégrée a sa section plus haut, avec ses chiffres. Restent à intégrer :
 
-**Mono-école (20)**
+**Mono-école (12)**
 
-- **Transmutation** : **Robustesse de l'ours** (Constitution, donc PV max, 1 tour, 2 pour un maître) ; **Peau d'écailles** (protection contre le feu, le froid et la foudre) ; **Sagesse du hibou** (Intelligence : des sorts qui réussissent plus souvent) ; **Agilité du chat** (Esquive).
-- **Télékinésie** : **Lancer d'arme** (projette l'arme de corps à corps tenue, avec ses dégâts, puis la ramène) ; **Onde de choc** (repousse tous ceux à 2 cases du lanceur, avec un choc s'ils heurtent quelque chose) ; **Bond** (rapide : le lanceur se propulse de quelques cases sans attaque d'opportunité) ; **Écrasement** (dégâts contondants ; la cible ne peut pas se déplacer à son prochain tour).
 - **Illusion** : **Désespoir** (le Courage de la cible baisse pendant 2 tours) ; **Brouillage mental** (ses sorts ratent plus souvent, 2 tours, selon la Volonté du lanceur) ; **Création de double** (un leurre que les ennemis prennent pour une vraie cible ; il disparaît au premier coup reçu) ; **Sommeil** (la cible dort jusqu'à ce qu'on la frappe, ou pendant quelques tours).
 - **Nécromancie** : **Malédiction** (dégâts nécrotiques au début de chaque activation pendant 3 tours, armure et résistances ignorées ; sans effet sur les morts-vivants) ; **Armée d'os** (1D4 squelettes, plus un par 50 de maîtrise : faibles, lents, nombreux, sans peur) ; **Siphon d'âme** (vole le mana de la cible **au profit du lanceur seulement**) ; **Pacte de sang** (le lanceur sacrifie des PV pour regagner du mana).
 - **Invocation** : **Nuée d'insectes** (2 tours : Perception et Précision en baisse dans la zone) ; **Invocation de sangliers** (1D4 sangliers rapides qui chargent fort mais tiennent mal) ; **Invocation d'araignées géantes** (1D2 araignées : morsure empoisonnée, toile qui immobilise 1 tour) ; **Bannissement** (renvoie une invocation ennemie).

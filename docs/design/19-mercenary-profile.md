@@ -14,9 +14,9 @@ On ne montre ni points faibles ni valeur de combat globale.
 
 | Catégorie | Sous-catégories |
 |---|---|
-| Healer | Urgentiste, De masse, Dans la durée, Protecteur, Ressusciteur |
+| Healer | Urgentiste, De masse, Dans la durée, Ressusciteur |
 | Summoner | De masse, De DPS, De support, Gardien, Nécromancien |
-| Buffer | De masse, De DPS, Accélérateur, Source de mana |
+| Buffer | De masse, De DPS, Accélérateur, Source de mana, Protecteur |
 | Contrôleur | Des foules, Des boss, Placeur, Anti-mage |
 | DPS au CAC | Perce-armure, De foules, Assassin, Dans la durée, Chargeur |
 | DPS à distance | Perce-armure, De foules, Tireur d'élite, Dans la durée |
@@ -25,11 +25,11 @@ On ne montre ni points faibles ni valeur de combat globale.
 | Éclaireur | Vigie, Infiltrateur, Éclaireur magique, Poseur de pièges |
 | Meneur | Soutien de ses troupes, Démoralisateur, Stratège |
 
-Une action ne qualifie qu'une seule sous-catégorie (Idan) : protéger par la magie → Healer Protecteur, par son corps →
+Une action ne qualifie qu'une seule sous-catégorie (Idan) : protéger par la magie → Buffer Protecteur (déplacé du Healer le 2026-11-01 : un Soigneur doit soigner), par son corps →
 Tank Garde du corps ; le moral, ami ou ennemi → Meneur ; se soigner soi-même → Tank Auto-soigneur ; voir par la magie (le
 corbeau) → Éclaireur magique ; arrêter les charges → Tank Gardien de ligne (armes d'hast : toutes les armes de tir
 contre-chargent, ce n'est pas une spécialité). Ressusciteur, Garde du corps, Stratège,
-Summoner de support attend que le jeu le permette : il n'est jamais noté. DPS magiques dans la durée est noté depuis l'Embrasement (Feu), Source de mana depuis la Source vive (Eau ; 2026-11-01), Anti-mage depuis le Brouillage mental (Illusion ; 2026-11-01).
+Summoner de support et Poseur de pièges (les pièges n'existent pas encore en combat ; 2026-11-01) attendent que le jeu le permette : ils ne sont jamais notés. DPS magiques dans la durée est noté depuis l'Embrasement (Feu), Source de mana depuis la Source vive (Eau ; 2026-11-01), Anti-mage depuis le Brouillage mental (Illusion ; 2026-11-01).
 
 ## 3 — Les notes
 
@@ -54,9 +54,35 @@ Summoner de support attend que le jeu le permette : il n'est jamais noté. DPS m
 4. **Spécificité** : un titre prend sa meilleure sous-catégorie si elle a **au moins 2★ de plus** que toutes les autres
    (6★ contre 5★ : générique), ou s'il ne sait faire qu'elle (au moins 3★). Sinon il reste générique.
 
-Sur 4 000 recrues : 50 % de Chair à canon, 33 % un titre, 12 % deux, 5 % trois ; un titre sur trois est précisé
+Mesure d'origine (2026-10-31, 4 000 recrues) : 50 % de Chair à canon, 33 % un titre, 12 % deux, 5 % trois ; un titre sur trois est précisé
 (surtout Tank et Meneur : leurs sous-catégories varient indépendamment ; celles des DPS viennent de la même arme et se
 détachent rarement chez les recrues).
+
+### Seulement ce qui agit, et le calage (Idan, 2026-11-01)
+
+« On peut pas dire que quelqu'un est un DPS magique s'il n'a aucun sort de dégâts » ; « un intimidateur en meneur, pourquoi
+pas, mais on doit vraiment sentir que c'est son rôle » ; « certains trucs sont trop surestimés ce qui fait qu'ils ont trois
+titres au début ».
+
+- **Un titre seulement pour ce qui agit** :
+  - **Soigneur** : un sort qui soigne vraiment (PV ou états : Délivrance) ; les protections (armures de feu et de froid,
+    Peau de pierre, Peau d'écailles, Champ de protection, Robustesse de l'ours, Agilité du chat) passent au
+    **Renforceur · Protecteur** (« boucliers magiques ») ;
+  - **Meneur · Soutien de ses troupes** : l'aura compte seulement pour le **capitaine**, un **lieutenant** (la moitié) ou
+    celui qui tient un **fouet** ; une recrue n'en a pas. Les sorts de moral comptent toujours ;
+  - **Meneur · Démoralisateur** : l'Intimidation agit en combat (−0,25 × Intimidation au Courage de l'ennemi) ; il reste ;
+  - **Poseur de pièges** : plus noté tant que les pièges n'existent pas.
+- **Calage** : les niveaux suivent une **répartition fixe** (`selection.repartition` : 2 / 31 / 53 / 13 / 1 % des
+  praticiens aux niveaux 1 à 5, la réputation des recrues avant le domaine), et non plus la réputation du moment, qui a
+  monté avec l'accentuation du domaine. Les **rôles que tout le monde pratique** (Tank, Éclaireur, Meneur : plus de 90 %
+  des recrues les pratiquent) ont une répartition plus exigeante (`selection.repartition_tous` : 4★ pour les 5 % du
+  haut).
+- **Domaine** : une catégorie hors du domaine du mercenaire demande **une étoile de plus** (`selection.domaines`,
+  `ecart_hors_domaine`) : un mage n'est « DPS au CAC » qu'à 5★.
+- **Mesure** (4000 recrues) : Chair à canon 65.8 %, un titre 28.4 %, deux 5.1 %, trois 0.7 %
+  (avant : 27 / 37 / 24 / 12 %). Titres par catégorie : DPS au CAC 9.2 %, DPS à distance 8.2 %, Tank 5 %, Éclaireur 4.9 %, Meneur 4.6 %, Contrôleur 2.6 %, DPS magiques 2.5 %, Buffer 2 %, Summoner 1.2 %, Healer 0.7 %.
+  Titre principal hors du domaine : 2 sur 655 (avant : 7 %). Capitaines : Meneur pour 11 % (aura nettement au-dessus de
+  la moyenne).
 
 ## 5 — Les titres écrits
 
@@ -87,9 +113,9 @@ Chair à canon ne change pas.
 
 | Catégorie | Spécialités (sous-catégorie → étiquette) |
 |---|---|
-| Healer | Urgentiste → urgences ; De masse → soins de groupe ; Dans la durée → soins au long cours ; Protecteur → boucliers magiques |
+| Healer | Urgentiste → urgences ; De masse → soins de groupe ; Dans la durée → soins au long cours |
 | Summoner | De masse → nuées ; De DPS → bêtes de combat ; Gardien → gardiens ; Nécromancien → morts-vivants |
-| Buffer | De masse → toute la troupe ; De DPS → coups plus forts ; Accélérateur → vitesse ; Source de mana → mana des autres |
+| Buffer | De masse → toute la troupe ; De DPS → coups plus forts ; Accélérateur → vitesse ; Source de mana → mana des autres ; Protecteur → boucliers magiques |
 | Contrôleur | Des foules → foules ; Des boss → gros morceaux ; Placeur → déplacements ; Anti-mage → anti-magie |
 | DPS au CAC | Perce-armure → perce-armure ; De foules → coups en rafale ; Assassin → coups en traître ; Dans la durée → lames empoisonnées ; Chargeur → charges |
 | DPS à distance | Perce-armure → perce-armure ; De foules → tirs en rafale ; Tireur d'élite → tir de loin ; Dans la durée → traits empoisonnés |

@@ -49,8 +49,16 @@ const recruits=Array.from({length:count},(_,i)=>generator.createMercenary({id:i+
 // Réputation des recrues : part à chaque niveau.
 const stars=createStarRules({reference});
 const repLevels=recruits.map(m=>stars.personal(m.reputation).level);
-const maxRecruitLevel=Math.max(...repLevels);
-const share=level=>repLevels.filter(l=>l<=level).length/repLevels.length;
+// Répartition des niveaux (Idan, 2026-11-01) : fixe (selection.repartition) si elle est donnée, sinon celle de la
+// réputation des recrues.
+const fixed=reference.mercenaryProfile.selection?.repartition;
+const maxRecruitLevel=fixed?Math.max(...Object.keys(fixed).map(Number)):Math.max(...repLevels);
+const cumulative=(dist,level)=>Object.entries(dist).filter(([l])=>Number(l)<=level).reduce((sum,[,p])=>sum+Number(p),0);
+const share=level=>fixed?cumulative(fixed,level):repLevels.filter(l=>l<=level).length/repLevels.length;
+// Rôles que tout le monde pratique (Tank, Éclaireur, Meneur par l'Intimidation…) : une répartition plus exigeante
+// (selection.repartition_tous), pour que le titre ne sorte que chez ceux dont c'est vraiment le rôle.
+const everyone=reference.mercenaryProfile.selection?.repartition_tous;
+const everyoneShare=Number(reference.mercenaryProfile.selection?.part_tous)||0.9;
 
 // L'étalon : caractéristiques médianes.
 const median=values=>{ const a=[...values].sort((x,y)=>x-y); return a[a.length>>1]; };
@@ -61,17 +69,21 @@ data.seuils={};
 const engine=createCombatEngine(reference,{});
 const magic=createMagicRules({reference,combat:engine});
 let profile=createProfileRules({reference,engine,magic});
-const measures=recruits.map(m=>profile.measure(m));
+// L'aura se mesure chez tous, comme s'ils étaient capitaines, pour poser ses seuils ; elle ne compte ensuite que pour le
+// capitaine, les lieutenants et le fouet.
+const measures=recruits.map(m=>profile.measure(m,{calibrate:true}));
 
 // Seuils : niveau k atteint à la part de recrues dont la réputation est sous k ; puis × progression par niveau.
 const progression=Number(data.selection?.progression)||1.25;
 const minSample=Number(data.selection?.echantillon_min)||30;
-function thresholds(values){
+function thresholds(values,dist=null){
   values=values.filter(v=>v!=null&&Number.isFinite(v)).sort((a,b)=>a-b);
   const quantile=p=>values[Math.min(values.length-1,Math.max(0,Math.floor(p*values.length)))];
+  const part=level=>dist?cumulative(dist,level):share(level);
+  const top=dist?Math.max(...Object.keys(dist).map(Number)):maxRecruitLevel;
   const steps=[];
   for(let level=2;level<=15;level++){
-    let min=level<=maxRecruitLevel?quantile(share(level-1)):steps[steps.length-1]*progression;
+    let min=level<=top?quantile(part(level-1)):steps[steps.length-1]*progression;
     // Arrondi au millième, toujours croissant (un petit échantillon peut donner deux fois la même valeur).
     let step=Math.round(min*1000)/1000;
     if(steps.length&&step<=steps[steps.length-1]) step=Math.round((steps[steps.length-1]+0.001)*1000)/1000;
@@ -96,7 +108,7 @@ for(const [key,values] of Object.entries(pools)) data.seuils[key]=thresholds(val
 profile=createProfileRules({reference,engine,magic});
 const raws={};
 for(const m of recruits) for(const cat of profile.evaluate(m).categories) (raws[cat.code]||=[]).push(cat.raw);
-for(const [code,values] of Object.entries(raws)) data.seuils["categorie:"+code]=thresholds(values);
+for(const [code,values] of Object.entries(raws)) data.seuils["categorie:"+code]=thresholds(values,everyone&&values.length>=everyoneShare*count?everyone:null);
 
 // Vérification : titres des recrues.
 profile=createProfileRules({reference,engine,magic});

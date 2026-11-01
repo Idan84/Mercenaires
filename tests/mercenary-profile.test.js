@@ -49,7 +49,7 @@ const increasing = (key, steps) => {
 };
 for (const c of data.categories) {
   increasing("categorie:" + c.code, data.seuils["categorie:" + c.code]);
-  for (const sub of c.sous) for (const src of sub.sources) {
+  for (const sub of c.sous.filter(sub => !sub.a_venir)) for (const src of sub.sources) {
     if (src === "sorts") increasing("sorts_" + sub.sorts, data.seuils["sorts:" + c.code + "." + sub.code] || data.seuils["sorts_" + sub.sorts]);
     else increasing(src, data.seuils[src]);
   }
@@ -68,34 +68,63 @@ const captain = generator.createCaptain({id:1});
 const recruits = Array.from({length:600}, (_, i) => generator.createMercenary({id:i + 2, captain}));
 const results = recruits.map(m => profile.evaluate(m));
 
-// Attribution (Idan) : Chair à canon sous titre_min étoiles ; titre 1 = meilleure catégorie ; titres 2 et 3 à titre_min
-// au moins et à ecart_titre près de la précédente ; spécificité à ecart_specificite d'écart, ou seule sous-catégorie.
-for (const r of results) {
-  const top = r.categories[0];
-  assert.equal(r.cannonFodder, !top || top.level < S.titre_min);
+// Attribution (Idan ; affinée le 2026-11-01) : une catégorie hors du domaine du mercenaire demande ecart_hors_domaine
+// étoile de plus ; titre 1 = meilleure catégorie éligible ; titres 2 et 3 éligibles et à ecart_titre près de la
+// précédente ; spécificité à ecart_specificite d'écart, ou seule sous-catégorie.
+const inDomain = (m, code) => S.domaines[m.domain].includes(code);
+const minFor = (m, cat) => S.titre_min + (inDomain(m, cat.code) ? 0 : S.ecart_hors_domaine);
+for (const [index, r] of results.entries()) {
+  const m = recruits[index];
+  const eligible = r.categories.filter(cat => cat.level >= minFor(m, cat));
+  assert.equal(r.cannonFodder, !eligible.length);
   assert.ok(r.titles.length <= S.max_titres);
   r.titles.forEach((t, i) => {
-    assert.ok(t.level >= S.titre_min, "un titre a au moins " + S.titre_min + " étoiles");
-    assert.equal(t.category, r.categories[i].code, "dans l'ordre des catégories");
+    assert.ok(t.level >= minFor(m, {code:t.category}), "un titre a au moins " + S.titre_min + " étoiles (une de plus hors du domaine)");
+    assert.equal(t.category, eligible[i].code, "dans l'ordre des catégories éligibles");
     if (i) assert.ok(r.titles[i - 1].level - t.level <= S.ecart_titre, "à ecart_titre près de la précédente");
-    const subs = r.categories[i].subs;
+    const subs = eligible[i].subs;
     const expected = subs.length === 1 ? subs[0].level >= S.specificite_min : subs[0].level - subs[1].level >= S.ecart_specificite;
     assert.equal(Boolean(t.sub), expected, "spécificité : " + JSON.stringify(subs.map(s => s.level)));
     assert.equal(t.label, t.sub ? t.categoryName + " · " + t.sub.nom : t.categoryName);
   });
-  const next = r.categories[r.titles.length];
+  const next = eligible[r.titles.length];
   if (r.titles.length && r.titles.length < S.max_titres && next) {
-    assert.ok(next.level < S.titre_min || r.titles[r.titles.length - 1].level - next.level > S.ecart_titre, "le titre suivant manquait");
+    assert.ok(r.titles[r.titles.length - 1].level - next.level > S.ecart_titre, "le titre suivant manquait");
   }
 }
-// Au début, beaucoup sont de la chair à canon (≈ 30 % depuis le domaine du mercenaire, Idan 2026-11-01 : des recrues moins
-// généralistes ont plus souvent un titre ; ≈ 50 % avant) ; les autres ont surtout un seul titre.
+// Calage (Idan, 2026-11-01 : « certains trucs sont trop surestimés ce qui fait qu'ils ont trois titres au début ») : les
+// niveaux suivent une répartition fixe ; les rôles que tout le monde pratique (Tank, Éclaireur, Meneur) sont plus
+// exigeants. Au début, environ deux recrues sur trois sont de la chair à canon ; trois titres restent rares.
 const fodder = results.filter(r => r.cannonFodder).length / results.length;
-assert.ok(fodder > 0.2 && fodder < 0.7, "Chair à canon : " + fodder);
-assert.ok(results.filter(r => r.titles.length === 1).length > results.filter(r => r.titles.length === 3).length);
-// Aucune catégorie mesurée chez tous ne domine les titres.
+assert.ok(fodder > 0.5 && fodder < 0.8, "Chair à canon : " + fodder);
+assert.ok(results.filter(r => r.titles.length === 3).length / results.length < 0.03, "trois titres : rare au début");
+assert.ok(results.filter(r => r.titles.length === 1).length > 3 * results.filter(r => r.titles.length >= 2).length);
 const share = code => results.filter(r => r.titles.some(t => t.category === code)).length / results.length;
-for (const code of ["tank", "meneur", "eclaireur", "dps_cac"]) assert.ok(share(code) < 0.3, code + " : " + share(code));
+for (const code of ["tank", "meneur", "eclaireur"]) assert.ok(share(code) < 0.1, code + " : " + share(code));
+for (const code of ["dps_cac", "dps_distance"]) assert.ok(share(code) < 0.2, code + " : " + share(code));
+// Le titre principal suit le domaine (hors domaine : seulement à une étoile de plus).
+const offDomain = results.filter((r, i) => r.titles[0] && !inDomain(recruits[i], r.titles[0].category)).length;
+assert.ok(offDomain / Math.max(1, results.filter(r => r.titles.length).length) < 0.05, "titre principal hors du domaine : " + offDomain);
+
+// Seulement ce qui agit (Idan, 2026-11-01). Soigneur : un sort qui soigne vraiment ; les protections sont au Renforceur.
+const HEALS = new Set(["soin", "soin_de_zone", "soin_sur_duree", "transfert_pv", "delivrance"]);
+for (const [i, r] of results.entries()) {
+  if (r.titles.some(t => t.category === "healer")) assert.ok(recruits[i].spells.some(k => HEALS.has(magic.spell(k.code)?.effet)), "Soigneur sans sort de soin");
+}
+for (const code of ["fire_armor", "frost_armor", "force_field", "stone_skin", "bear_endurance", "scale_skin", "cat_agility"]) assert.equal(data.sorts[code], "buffer.protecteur", code);
+assert.equal(data.sorts.deliverance, "healer.urgentiste");
+assert.ok(!data.categories.find(c => c.code === "healer").sous.some(s => s.code === "protecteur"));
+// Aura : seulement le capitaine, un lieutenant (la moitié) ou un fouet ; une recrue n'en a pas.
+const whip = m => ["weapon_set_1_main", "weapon_set_1_off", "weapon_set_2_main", "weapon_set_2_off"].some(slot => {
+  const item = (m.items || []).find(x => x.id === m.equipment?.slots?.[slot]);
+  return item && reference.weapons.rows.find(w => w.nom === item.name)?.aura_caracteristique === "Courage";
+});
+for (const [i, r] of results.entries()) assert.equal(r.values.aura != null, whip(recruits[i]), "aura d'une recrue : seulement avec un fouet");
+const asCaptain = profile.evaluate(captain, {captain:true}).values.aura, asLieutenant = profile.evaluate(captain, {lieutenant:true}).values.aura;
+assert.ok(asCaptain > 0 && Math.abs(asLieutenant - asCaptain / 2) < 1e-9, "le lieutenant a la moitié de l'aura du capitaine");
+// Les pièges n'existent pas encore en combat : Poseur de pièges n'est pas noté.
+assert.equal(data.categories.find(c => c.code === "eclaireur").sous.find(s => s.code === "pieges").a_venir, true);
+assert.ok(results.every(r => r.values.pieges === undefined));
 
 // Ce qu'il ne sait pas faire n'est pas noté : sans sort, pas de Healer ; sans arme de tir, pas de DPS à distance.
 for (const [i, r] of results.entries()) {

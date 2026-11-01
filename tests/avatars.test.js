@@ -200,7 +200,8 @@ state.tavern.candidates=state.tavern.candidates.slice(1);
 const onlyFreed=createAvatarRules({catalog:[testCatalog.find(a=>a.id===freed)]});
 const inUseAfterLeave=new Set([...present().map(x=>x.avatar.id),...state.avatarsRetired]);
 assert.ok(!inUseAfterLeave.has(freed),"visage libéré au départ du candidat");
-assert.equal(onlyFreed.assign(generator.createMercenary({id:99,forcedPeople:leaving.mercenary.people}),inUseAfterLeave)?.id,freed);
+// Même peuple, même culture, même ascendance que celui qui repart : le seul visage libre lui va.
+assert.equal(onlyFreed.assign(generator.createMercenary({id:99,forcedPeople:leaving.mercenary.people,forcedCulture:leaving.mercenary.culture,forcedAscendance:leaving.mercenary.ascendance||null}),inUseAfterLeave)?.id,freed);
 
 // Un mort garde son visage : il n'est plus jamais attribué.
 const fallen=state.company.roster.find(x=>x.id!==state.company.captainId);

@@ -401,6 +401,22 @@
       return {known, draws};
     }
 
+    // Rattrapage du mage (Idan, 2026-11-01 : « Un profil mage sans sort, c'est quand même problématique… Qu'il connaisse
+    // au moins un sort de sa meilleure école ») : un Mage qui n'a rien tiré apprend un sort au hasard dans sa meilleure
+    // école, une fois le domaine accentué.
+    function grantMageSpell(character) {
+      if (character.domain !== "magic" || (character.spells || []).length || !spellRows.length) return null;
+      const values = character.skills.magic || {};
+      const level = school => Number(values[school]) || 0;
+      const school = [...magicSchoolNames].filter(name => spellRows.some(spell => spell.ecole === name))
+        .sort((a, b) => level(b) - level(a))[0];
+      if (!school) return null;
+      const available = spellRows.filter(spell => spell.ecole === school);
+      const spell = available[Math.floor(random() * available.length)];
+      character.spells = [{code: spell.code, name: spell.nom, school, mastery: constant("generation.spells.starting_level", 1)}];
+      return {school, spell: spell.code};
+    }
+
     function createSkillStore() {
       return {
         martial: {},
@@ -1474,6 +1490,7 @@
       const domainMoves = accentuateDomain(character, domainChoice, trace);
       trace.domain = {code: domainChoice.code, scores: domainChoice.profile.scores, tippedBySpell: domainChoice.tipped, forced: Boolean(domainChoice.forced), moves: domainMoves};
       if (domainMoves.length) character.weaponPreferences = computeWeaponPreferences(character.skills);
+      trace.mageSpell = grantMageSpell(character);
 
       character.salaryPretension = rollDice(10,6);
       character.pvMax = Math.ceil(3 * (

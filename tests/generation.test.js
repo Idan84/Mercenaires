@@ -462,7 +462,7 @@ assert.equal(generator.startingStockWeight(weaponByName("Arquebuse"), chaosDwarf
 assert.equal(generator.startingStockWeight(weaponByName("Hache de guerre"), chaosDwarf), 7, "A = 2 + 1");
 assert.equal(generator.startingStockWeight(weaponByName("Fouet"), chaosDwarf), 1, "aucune affinité");
 assert.equal(generator.startingStockWeight(weaponByName("Arc"), {people:"Nain", culture:"Nains des montagnes"}), 1, "Arc −1, Armes de tir +1");
-assert.equal(generator.startingStockWeight(weaponByName("Arc"), {people:"Orc", culture:"Nains des montagnes"}), 0.25, "plancher");
+assert.equal(generator.startingStockWeight(weaponByName("Arc"), {people:"Ogre", culture:"Nains des montagnes"}), 0.25, "plancher (les orcs ont +1 à l’Arc depuis le 2026-11-01)");
 const stockGenerator = createGenerator(reference, {random: mulberry32(23), nameGenerator: (people,id) => `${people} ${id}`});
 const counts = [], firearms = [], tiers = {1:0, 2:0, 3:0};
 let shields = 0;

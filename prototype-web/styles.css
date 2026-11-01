@@ -2146,6 +2146,11 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .sheet-stat-tip em{display:block;font-style:normal}
 .sheet-stat-pop{right:-12px;width:290px}
 .sheet-stat-name:hover .sheet-stat-tip,.sheet-stat-name:focus .sheet-stat-tip{display:block}
+/* Domaine du mercenaire : picto à côté du nom sur la fiche, infobulle au survol. */
+.domain-badge{position:relative;display:inline-flex;align-items:center;justify-content:center;width:1.15em;height:1.15em;margin-right:.35em;vertical-align:-.12em;color:#e8c27e;cursor:help}
+.domain-badge .domain-icon{width:100%;height:100%}
+.domain-badge .sheet-stat-tip{left:0;top:calc(100% + 8px);bottom:auto;font-weight:400;letter-spacing:0;text-transform:none}
+.domain-badge:hover .sheet-stat-tip,.domain-badge:focus .sheet-stat-tip{display:block}
 /* Infobulle d'un sort du grimoire : ce qu'il fait, puis ses chiffres pour ce mercenaire ; elle s'ouvre vers la gauche
    (le grimoire est la colonne de droite) et laisse passer la souris. */
 .spell-tip{left:auto;right:0;width:300px;pointer-events:none}

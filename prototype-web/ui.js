@@ -1510,8 +1510,25 @@ function stepSheet(step){
   showCharacter(order[(index+step+order.length)%order.length]);
 }
 
+// Domaine du mercenaire (Idan, 2026-11-01 : « 3 pictos, pour l'instant à côté de son nom dans la fiche ») : Corps à corps,
+// Distance ou Mage, fixé à vie (domains.json). Les mercenaires d'avant le domaine prennent le profil de leur équipement de
+// départ, qui en tenait lieu.
+const DOMAIN_ICONS = {
+  melee:'<path d="M4 4h3.5l9.5 9.5-3.5 3.5L4 7.5z"/><path d="M12 19l7-7M16.5 16.5 20 20M18.5 21.5l3-3"/>',
+  ranged:'<path d="M6 3a13 13 0 0 1 0 18"/><path d="M6 3v18"/><path d="M3 12h17M17 9l3 3-3 3"/>',
+  magic:'<path d="M12 3l2.1 6.9L21 12l-6.9 2.1L12 21l-2.1-6.9L3 12l6.9-2.1z"/>'
+};
+function mercenaryDomain(c) { return c?.domain || c?.equipment?.profile?.type || null; }
+function domainBadge(c) {
+  const code = mercenaryDomain(c), row = (game.referenceData?.domains?.rows || []).find(r => r.code === code);
+  if (!row) return "";
+  return `<span class="domain-badge domain-badge--${esc(code)}" tabindex="0" aria-label="${esc(row.nom)}">`
+    + `<svg class="domain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${DOMAIN_ICONS[code] || ""}</svg>`
+    + `<span class="sheet-stat-tip" role="tooltip"><strong>${esc(row.nom)}</strong><em>${esc(row.description)}</em></span></span>`;
+}
+
 function showCharacter(c) {
-  $("dialog-name").textContent = c.name;
+  $("dialog-name").innerHTML = domainBadge(c) + esc(c.name);
   game.sheetCharacter = c;
   renderSheetNav(c);
   renderSheet();

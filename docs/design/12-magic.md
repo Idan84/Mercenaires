@@ -556,7 +556,8 @@ apprendre » ; modalités de JC3) :
   n'apprend pas un sort déjà connu ; pas pendant une mission (une mission programmée laisse encore la soirée).
 - Code : `game-core/spell-manuals.js` ; tests : `tests/spell-manuals.test.js`.
 
-Plus tard : une **école de magie** à construire au camp.
+**École de magie** (Idan, 2026-11-01) : le bâtiment et ses neuf salles se construisent au camp (doc 11 §7), sans effet
+pour l'instant ; l'apprentissage par le temps, le professeur et l'entraînement sont en discussion.
 
 ### Mise en place
 

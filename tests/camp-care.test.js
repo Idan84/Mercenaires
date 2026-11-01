@@ -29,11 +29,12 @@ const captain=generator.createCaptain({id:1});
 const state=rules.createCampaign({captain,squad:[2,3].map(id=>generator.createMercenary({id,captain}))});
 
 // Données.
-const rows=reference.campBuildings.rows;
-assert.deepEqual(rows.map(r=>[r.code,r.nom,r.niveaux,r.prix_base,r.jours_base]),[["dispensary","Dispensaire",5,1000,4],["baths","Bains chauds",5,1000,4]]);
+// (L'École de magie et ses salles suivent : tests/magic-school.test.js.)
+const rows=reference.campBuildings.rows.slice(0,2);
+assert.deepEqual(rows.map(r=>[r.code,r.nom,r.niveaux,r.prix_base,r.jours_base,r.requiert]),[["dispensary","Dispensaire",5,1000,4,null],["baths","Bains chauds",5,1000,4,null]]);
 assert.deepEqual(rows.map(r=>[r.soins_par_niveau,r.fatigue_jours_par_niveau,r.mana_par_niveau]),[[0.1,0,0],[0,1,5]]);
-assert.equal(reference.campBuildings.row_count,rows.length);
-assert.deepEqual(rules.campBuildingCodes(),["dispensary","baths"]);
+assert.equal(reference.campBuildings.row_count,reference.campBuildings.rows.length);
+assert.deepEqual(rules.campBuildingCodes().slice(0,2),["dispensary","baths"]);
 
 // Barème : niveau n = 1 000 × n² PO et 4 × n jours.
 const at=(code,level)=>{ state.company.camp.buildings={...state.company.camp.buildings,[code]:{level,construction:null}}; };

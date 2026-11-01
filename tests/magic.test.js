@@ -134,22 +134,23 @@ assert.equal(out.ok,false);
 assert.equal(out.cost,undefined);
 
 // École de la Vie (Idan, 2026-10-25) : six sorts, même modèle ; seuls les dés, l'action, la portée, la durée, la zone,
-// le mana de base et la difficulté (palier : Novice 30, Adepte 50, Expert 70) changent.
-// Idan, 2026-10-31 : la Vie passe à 10 sorts (Bénédiction, Lien de vie, Délivrance, Lumière sacrée) : 4 Novices, 4 Adeptes, 2 Experts.
+// le mana de base changent ; la difficulté est la même pour tous les sorts (Idan, 2026-11-01 : pas de paliers).
+// Idan, 2026-10-31 : la Vie passe à 10 sorts (Bénédiction, Lien de vie, Délivrance, Lumière sacrée).
 assert.deepEqual(magic.schoolSpells("Vie").map(x=>x.code),["quick_heal","deep_heal","regeneration","mass_heal","restitution","purge",
   "blessing","life_link","deliverance","holy_light"]);
-assert.deepEqual(magic.schoolSpells("Vie").map(x=>[x.palier,x.difficulte]),[["Novice",30],["Adepte",50],["Adepte",50],["Expert",70],["Adepte",50],["Novice",30],
-  ["Novice",30],["Adepte",50],["Novice",30],["Expert",70]]);
+assert.ok(magic.spells.every(x=>!("palier" in x)&&!("difficulte" in x)),"plus de paliers ni de difficulté par sort");
+// Une seule difficulté : à maîtrise et Intelligence égales, tous les sorts ont la même réussite.
+assert.equal(new Set(magic.spells.map(x=>Math.round(magic.castChance(beginner,x.code).p*1000))).size,1);
 assert.deepEqual(magic.schoolSpells("Vie").map(x=>x.action),["rapide","principale","principale","principale","principale","rapide",
   "rapide","principale","rapide","principale"]);
 // Débutant : Soin profond 18 à 104 au contact, 23 mana, 31 % ; Régénération 2 tours, 18 mana ; Soin de masse rayon 1,
 // 27 mana, 17 % ; Restitution 9 à 87, portée 3, 14 mana ; Purge 8 mana, sans dés.
 assert.deepEqual(magic.effectRange(beginner,"deep_heal"),{min:18,max:104});
 assert.deepEqual([magic.range(beginner,"deep_heal"),magic.manaCost(beginner,"deep_heal")],[1,23]);
-assert.equal(Math.round(magic.castChance(beginner,"deep_heal").p),31);
+assert.equal(Math.round(magic.castChance(beginner,"deep_heal").p),57);
 assert.deepEqual([magic.duration(beginner,"regeneration"),magic.manaCost(beginner,"regeneration"),magic.range(beginner,"regeneration")],[2,18,3]);
 assert.deepEqual([magic.zoneRadius(beginner,"mass_heal"),magic.manaCost(beginner,"mass_heal"),magic.range(beginner,"mass_heal")],[1,27,3]);
-assert.equal(Math.round(magic.castChance(beginner,"mass_heal").p),17);
+assert.equal(Math.round(magic.castChance(beginner,"mass_heal").p),57);
 assert.deepEqual(magic.effectRange(beginner,"restitution"),{min:9,max:87});
 assert.deepEqual([magic.range(beginner,"restitution"),magic.manaCost(beginner,"restitution")],[3,14]);
 assert.deepEqual([magic.manaCost(beginner,"purge"),magic.effectRange(beginner,"purge").max],[8,0]);
@@ -245,9 +246,9 @@ out=magic.cast(caster,{q:2,r:0},"holy_light");
 assert.deepEqual([out.success,out.zone.radius,out.amount],[true,1,52]);
 
 // École du Feu (Idan, 2026-10-25). Les mages de test ont le même niveau en Feu qu'en Vie.
-assert.deepEqual(magic.schoolSpells("Feu").map(x=>[x.code,x.palier,x.difficulte,x.action]),[
-  ["fire_bolt","Novice",30,"principale"],["fireball","Expert",70,"principale"],["fire_ring","Novice",30,"principale"],
-  ["flaming_weapon","Novice",30,"rapide"],["fire_armor","Novice",30,"rapide"],["magma","Adepte",50,"rapide"]]);
+assert.deepEqual(magic.schoolSpells("Feu").map(x=>[x.code,x.action]),[
+  ["fire_bolt","principale"],["fireball","principale"],["fire_ring","principale"],
+  ["flaming_weapon","rapide"],["fire_armor","rapide"],["magma","rapide"]]);
 // Portées, rayons, durées, bonus : débutant (maîtrise 31,5) et expert (134), plafonds à très haute maîtrise.
 assert.deepEqual([magic.range(beginner,"fire_bolt"),magic.range(expert,"fire_bolt")],[15,25],"Trait de feu : 12 + M/10 (l'arc : 18)");
 assert.deepEqual([magic.range(beginner,"fireball"),magic.zoneRadius(beginner,"fireball")],[7,3]);
@@ -259,7 +260,7 @@ assert.deepEqual([magic.duration(beginner,"magma"),magic.duration(expert,"magma"
 assert.deepEqual([magic.duration(beginner,"flaming_weapon"),magic.duration(expert,"flaming_weapon")],[2,4]);
 assert.deepEqual([magic.bonus(beginner,"fire_armor"),magic.bonus(expert,"fire_armor")],[36,56],"Armure de feu : +30 + M/5 contre le froid");
 assert.deepEqual([magic.manaCost(beginner,"fire_bolt"),magic.manaCost(beginner,"fireball"),magic.manaCost(beginner,"fire_ring")],[9,27,18]);
-assert.equal(Math.round(magic.castChance(beginner,"fire_ring").p),57,"Anneau de feu : difficulté abaissée à 30");
+assert.equal(Math.round(magic.castChance(beginner,"fire_ring").p),57,"la même difficulté pour tous les sorts");
 assert.equal(magic.precisionChance(beginner,"fireball",4),45.75,"50 + M/2 − 5 × distance");
 assert.equal(magic.precisionChance(expert,"fireball",2),95,"au plus 95 %");
 
@@ -324,9 +325,9 @@ assert.equal(combat.elementalDamage(armoredUnit("Armure d'écailles",48),"feu",1
 assert.equal(combat.elementalDamage(armoredUnit(null,4,{elementalBonus:{froid:{bonus:36,turns:2}}}),"froid",100).damage,60,"Armure de feu contre le froid");
 
 // École de l'Eau (Idan, 2026-10-27). Les mages de test ont le même niveau en Eau qu'en Vie.
-assert.deepEqual(magic.schoolSpells("Eau").map(x=>[x.code,x.palier,x.difficulte,x.action]),[
-  ["fog","Adepte",50,"principale"],["healing_water","Novice",30,"rapide"],["ice_arrow","Novice",30,"principale"],
-  ["tsunami","Adepte",50,"principale"],["frost_armor","Novice",30,"rapide"],["freeze","Adepte",50,"rapide"],["ice_weapon","Novice",30,"rapide"]]);
+assert.deepEqual(magic.schoolSpells("Eau").map(x=>[x.code,x.action]),[
+  ["fog","principale"],["healing_water","rapide"],["ice_arrow","principale"],
+  ["tsunami","principale"],["frost_armor","rapide"],["freeze","rapide"],["ice_weapon","rapide"]]);
 // Eau guérissante : 1D3, moins que Soin rapide (1D4) ; 10 mana de base.
 assert.deepEqual(magic.effectRange(beginner,"healing_water"),{min:9,max:26});
 assert.ok(magic.effectRange(expert,"healing_water").max<magic.effectRange(expert,"quick_heal").max);
@@ -407,10 +408,10 @@ assert.deepEqual(out.effect,{code:"frost_armor",element:"feu",bonus:36,turns:2,c
 assert.equal(combat.elementalDamage(armoredUnit(null,4,{elementalBonus:{feu:{bonus:36,turns:2}}}),"feu",100).damage,60,"Armure de froid contre le feu");
 
 // École de la Transmutation (Idan, 2026-10-27) : des bonus, action rapide, portée 3 + M/25, 1 tour (2 pour un maître).
-assert.deepEqual(magic.schoolSpells("Transmutation").map(x=>[x.code,x.palier,x.difficulte,x.action,x.cible]),[
-  ["sixth_sense","Adepte",50,"rapide","allie_ou_soi"],["titan_strength","Novice",30,"rapide","allie_ou_soi"],
-  ["cheetah_speed","Novice",30,"rapide","allie_ou_soi"],["stone_skin","Novice",30,"rapide","allie_ou_soi"],
-  ["venom_spit","Adepte",50,"rapide","allie_ou_soi"],["cauterize","Novice",30,"rapide","allie_ou_soi"]]);
+assert.deepEqual(magic.schoolSpells("Transmutation").map(x=>[x.code,x.action,x.cible]),[
+  ["sixth_sense","rapide","allie_ou_soi"],["titan_strength","rapide","allie_ou_soi"],
+  ["cheetah_speed","rapide","allie_ou_soi"],["stone_skin","rapide","allie_ou_soi"],
+  ["venom_spit","rapide","allie_ou_soi"],["cauterize","rapide","allie_ou_soi"]]);
 assert.deepEqual([magic.range(beginner,"titan_strength"),magic.range(expert,"titan_strength")],[4,8],"portée moyenne : 3 + M/25");
 assert.deepEqual([magic.duration(beginner,"titan_strength"),magic.duration(expert,"titan_strength"),magic.duration(archmage,"titan_strength")],[1,2,2]);
 assert.deepEqual([magic.bonus(beginner,"titan_strength"),magic.bonus(expert,"titan_strength")],[26,46],"+20 + M/5 %");
@@ -473,13 +474,13 @@ assert.equal(combat.resolvePoison(unit(tough)),null,"pas empoisonné : rien");
 assert.equal(magic.isPoisoned(sick),true);
 
 // École de la Foudre (Idan, 2026-10-27).
-assert.deepEqual(magic.schoolSpells("Foudre").map(x=>[x.code,x.palier,x.difficulte,x.action,x.cible]),[
-  ["shock","Adepte",50,"principale","ennemi"],["lightning_bolt","Novice",30,"principale","ennemi"],
-  ["shock_weapon","Novice",30,"rapide","allie_ou_soi"],["chain_lightning","Expert",70,"principale","ennemi"],
-  ["thunder","Adepte",50,"principale","ennemi"],["celerity","Novice",30,"rapide","soi"],
+assert.deepEqual(magic.schoolSpells("Foudre").map(x=>[x.code,x.action,x.cible]),[
+  ["shock","principale","ennemi"],["lightning_bolt","principale","ennemi"],
+  ["shock_weapon","rapide","allie_ou_soi"],["chain_lightning","principale","ennemi"],
+  ["thunder","principale","ennemi"],["celerity","rapide","soi"],
   // Idan, 2026-10-31 : la Foudre passe à 10 sorts.
-  ["spark","Novice",30,"rapide","ennemi"],["electric_arc","Adepte",50,"principale","case"],
-  ["paralysis","Adepte",50,"principale","ennemi"],["storm","Expert",70,"principale","case"]]);
+  ["spark","rapide","ennemi"],["electric_arc","principale","case"],
+  ["paralysis","principale","ennemi"],["storm","principale","case"]]);
 // Décharge électrique : au contact, 2D8 ; portée moyenne des attaques : 6 + M/25, au plus 12 ; Éclair comme la Flèche de glace.
 assert.deepEqual([magic.range(beginner,"shock"),magic.range(expert,"shock")],[1,1]);
 assert.deepEqual(magic.dice("shock"),{count:2,sides:8});
@@ -565,10 +566,10 @@ assert.equal(magic.stormStrike(out.storm).amount,magic.effectAmount(caster,"stor
 assert.deepEqual(magic.stormStrike({...out.storm,critical:true}).dice,8,"coup critique : dés au maximum");
 
 // École de la Télékinésie (Idan, 2026-10-28) : dégâts contondants qui passent par l'armure.
-assert.deepEqual(magic.schoolSpells("Télékinésie").map(x=>[x.code,x.palier,x.difficulte,x.action,x.cible]),[
-  ["attraction","Adepte",50,"principale","ennemi"],["projection","Novice",30,"principale","ennemi"],
-  ["telekinetic_move","Novice",30,"rapide","allie_ou_ennemi"],["clash","Adepte",50,"principale","ennemi"],
-  ["force_field","Adepte",50,"principale","allie_ou_soi"],["stone_throw","Novice",30,"rapide","ennemi"]]);
+assert.deepEqual(magic.schoolSpells("Télékinésie").map(x=>[x.code,x.action,x.cible]),[
+  ["attraction","principale","ennemi"],["projection","principale","ennemi"],
+  ["telekinetic_move","rapide","allie_ou_ennemi"],["clash","principale","ennemi"],
+  ["force_field","principale","allie_ou_soi"],["stone_throw","rapide","ennemi"]]);
 assert.deepEqual([magic.range(beginner,"attraction"),magic.range(expert,"attraction")],[15,25],"grande portée : 12 + M/10");
 assert.deepEqual([magic.range(beginner,"projection"),magic.range(expert,"projection"),magic.range(archmage,"projection")],[7,11,12]);
 assert.deepEqual([magic.forceSteps(beginner,"projection"),magic.forceSteps(expert,"projection")],[2,4],"2 + M/50 cases");
@@ -643,10 +644,10 @@ assert.ok(combat.spellPhysicalHit(blunt,plated,100,{type:"contondant",power:35,m
 assert.match(fs.readFileSync(path.join(ROOT,"game-core","combat-engine.js"),"utf8"),/if\(mode==="ranged"&&defender\.projectileShield\)/);
 
 // École de l'Illusion (Idan, 2026-10-28).
-assert.deepEqual(magic.schoolSpells("Illusion").map(x=>[x.code,x.palier,x.difficulte,x.action,x.cible]),[
-  ["fear","Expert",70,"principale","case"],["illusory_support","Novice",30,"rapide","allie_ou_soi"],
-  ["mass_courage","Adepte",50,"principale","case"],["hidden_advance","Adepte",50,"principale","case"],
-  ["psychic_shock","Novice",30,"principale","ennemi"],["frenzy","Adepte",50,"rapide","personnage"]]);
+assert.deepEqual(magic.schoolSpells("Illusion").map(x=>[x.code,x.action,x.cible]),[
+  ["fear","principale","case"],["illusory_support","rapide","allie_ou_soi"],
+  ["mass_courage","principale","case"],["hidden_advance","principale","case"],
+  ["psychic_shock","principale","ennemi"],["frenzy","rapide","personnage"]]);
 assert.deepEqual([magic.range(beginner,"fear"),magic.zoneRadius(beginner,"fear"),magic.zoneRadius(archmage,"fear")],[7,2,3],"zone de 2 à 3 cases");
 assert.deepEqual([magic.range(beginner,"illusory_support"),magic.bonus(beginner,"illusory_support"),magic.bonus(expert,"illusory_support")],[15,36,56]);
 assert.deepEqual([magic.duration(beginner,"illusory_support"),magic.duration(archmage,"illusory_support")],[2,2],"2 tours");
@@ -751,7 +752,7 @@ assert.equal(combat.resolveFear(ghoul,seer,90),null);
 assert.deepEqual([novice,recruit,master].map(x=>[magic.manaCost(x,"summon_raven"),magic.upkeepCost(x,"summon_raven")]),[[9,2],[9,2],[6,2]]);
 assert.deepEqual([novice,recruit,master].map(x=>[magic.manaCost(x,"summon_wolves"),magic.upkeepCost(x,"summon_wolves")]),[[23,5],[21,5],[14,3]]);
 assert.deepEqual([novice,recruit,master].map(x=>[magic.manaCost(x,"summon_bears"),magic.upkeepCost(x,"summon_bears")]),[[27,6],[25,5],[17,4]]);
-assert.deepEqual([novice,recruit,master].map(x=>Math.round(magic.castChance(x,"summon_crocodiles").p)),[17,33,87]);
+assert.deepEqual([novice,recruit,master].map(x=>Math.round(magic.castChance(x,"summon_crocodiles").p)),[57,81,94]);
 // Loups : 1D6 + 1 par tranche de 50 de Maîtrise (débutant +0, recrue +1, expert +2) ; Ours, Crocodiles : 1D3 ; Corbeau : un seul.
 queue=[0.99];
 assert.deepEqual(magic.summonCount(recruit,"summon_wolves"),{count:7,rolled:6,dice:"1D6",bonus:1});

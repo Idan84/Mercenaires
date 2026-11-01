@@ -1115,7 +1115,7 @@
         // Manuel de sort (Idan, 2026-10-31 ; spell-manuals.js) : sans tier ni qualité, sa catégorie est son école.
         const spell = spellRows.find(r => r.code === name || r.nom === name || "Manuel : " + r.nom === name);
         return spell ? {id:makeItemId(holder, "manual"), templateId:`manual:${spell.code}`, name:`Manuel : ${spell.nom}`,
-          itemType:"manual", slot:null, category:spell.ecole, spellCode:spell.code, school:spell.ecole, palier:spell.palier,
+          itemType:"manual", slot:null, category:spell.ecole, spellCode:spell.code, school:spell.ecole,
           description:spell.description || null, owner:null} : null;
       } else if (STAT_GEAR[itemType]) {
         const row = STAT_GEAR[itemType].rows.find(r => r.nom === name);

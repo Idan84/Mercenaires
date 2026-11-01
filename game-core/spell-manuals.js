@@ -4,7 +4,7 @@
 // apprendre »). Un manuel par sort de data/reference/spells.json : les sorts à venir ont leur manuel sans rien ajouter.
 // - L'objet : type « manual », nom « Manuel : <sort> », catégorie = son école ; sans tier ni qualité. Créé par
 //   createItemByName("manual", nom ou code du sort) (mercenary-generator.js).
-// - Sa valeur cachée dépend du palier du sort (economy.manual_value.<palier>) : item-value.js.
+// - Sa valeur : la même pour tous les sorts (economy.manual_value, 3 000 PO ; Idan, 2026-11-01) : item-value.js.
 // - Les marchands vendent les manuels d'une école entière (merchants.json : {type:"manual", ecole}) : un article tiré
 //   dans cette école (merchants.js).
 // - Apprendre : à l'Intendance, un membre de la compagnie présent au camp lit le manuel et connaît le sort au niveau 1,

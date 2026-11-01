@@ -216,7 +216,7 @@
     const AFFLICTIONS={
       fuite:u=>Boolean(u?.fleeing),
       paralysie:u=>Boolean(u?.paralyzed),
-      gel:u=>u?.statMalus?.code==="freeze",
+      gel:u=>u?.statMalus?.code==="freeze"||Boolean(u?.frozen),
       frenesie:u=>Boolean(u?.frenzy)
     };
     function afflictions(unit,code){
@@ -348,6 +348,8 @@
       if(s.cible==="mort_vivant"&&!isUndead(target)) return {ok:false,reason:s.nom+" ne fonctionne que sur les morts-vivants."};
       if(s.degats_type==="necrotique"&&isUndead(target)) return {ok:false,reason:s.nom+" ne fonctionne que sur les vivants."};
       if(s.effet==="purge_poison"&&!isPoisoned(target)) return {ok:false,reason:"La cible n'est pas empoisonnée."};
+      // Source vive : seulement si l'allié n'a pas déjà toute sa réserve.
+      if(s.effet==="rend_mana"&&target.character&&currentMana(target)>=manaMax(target)) return {ok:false,reason:"Sa réserve de mana est pleine."};
       if(s.effet==="delivrance"&&!afflictions(target,code).length) return {ok:false,reason:"Rien à retirer : ni peur, ni paralysie, ni gel, ni frénésie."};
       // Lien de vie : le lanceur garde toujours 1 PV.
       if(s.effet==="transfert_pv"&&num(caster.hp,0)<=1) return {ok:false,reason:"Le lanceur n'a plus de PV à donner."};
@@ -480,6 +482,15 @@
           result.effect={code:s.code,percent:bonus(caster,code),turns:duration(caster,code)};
         }else if(s.effet==="fletrissement"){
           result.effect={code:s.code,turns:duration(caster,code)};
+        }else if(s.effet==="prison_de_glace"){
+          // Prison de glace (Eau ; Idan, 2026-10-31, chiffres de JC3) : la même résistance que la Paralysie, avec le froid.
+          const resist=paralysisResistance(caster,target,code),resistRoll=d100();
+          result.frozen={resist,roll:resistRoll,resisted:resistRoll<=resist,turns:Math.max(1,duration(caster,code)),
+            factor:num(s.degats_subis_facteur,0.5)};
+        }else if(s.effet==="blizzard"){
+          result.zone={center:{q:target.q,r:target.r},radius:zoneRadius(caster,code)};
+          result.blizzard={code:s.code,element:s.element,factor:effectFactor(caster,code),critical:false,turns:Math.max(1,duration(caster,code)),
+            movement:num(s.deplacement_facteur,0.5)};
         }else if(s.effet==="paralysie"){
           const resist=paralysisResistance(caster,target,code),resistRoll=d100();
           result.paralysis={resist,roll:resistRoll,resisted:resistRoll<=resist,turns:Math.max(1,duration(caster,code))};
@@ -582,6 +593,7 @@
     // Régénération : un tour de soin, au début de l'activation de la cible ; dé au maximum si le lancer était critique.
     // Paralysie (Foudre ; Idan, 2026-10-31, chiffres de JC3) : la cible résiste si D100 ≤ sa Constitution + sa protection
     // contre la foudre (armure comprise : le métal la conduit) − 0,5 × la Maîtrise du lanceur, borné de 5 à 95 %.
+    // Prison de glace (Eau) : la même, avec la protection contre le froid (l'élément du sort).
     function paralysisResistance(caster,target,code){
       const s=spell(code);
       const stat=combat.statWithGear(target,s?.resistance_caracteristique||"Constitution");

@@ -47,8 +47,13 @@ function missionStormAt(q,r){
 // Ligne de vue (doc 04 et 12) : seul le Brouillard la coupe pour l'instant, dès qu'une case de la ligne droite entre
 // les deux, extrémités comprises, est dans le brouillard. Elle compte pour les tirs et les sorts.
 function missionLineOfSight(a,b){
-  if(!game.mission?.fog?.length||!a||!b) return true;
-  return !game.mission.engine.hexLine(a,b).some(c=>missionFogAt(c.q,c.r));
+  if((!game.mission?.fog?.length&&!game.mission?.blizzards?.length)||!a||!b) return true;
+  return !game.mission.engine.hexLine(a,b).some(c=>missionFogAt(c.q,c.r)||missionBlizzardAt(c.q,c.r));
+}
+// Blizzard (Eau ; Idan, 2026-10-31) : la zone où il neige, jusqu'au tour untilTurn (exclu) ; on n'y voit pas à travers.
+function missionBlizzardAt(q,r){
+  const e=game.mission?.engine;
+  return (game.mission?.blizzards||[]).find(b=>e&&e.axialDistance(b.center,{q,r})<=b.radius)||null;
 }
 function pruneMissionTerrain(){
   const m=game.mission;
@@ -61,6 +66,11 @@ function pruneMissionTerrain(){
     const before=m.mire.length;
     m.mire=m.mire.filter(f=>m.turn<f.untilTurn);
     if(m.mire.length<before) missionLog("Le bourbier sèche : la case est de nouveau praticable.","magic");
+  }
+  if(m?.blizzards?.length){
+    const before=m.blizzards.length;
+    m.blizzards=m.blizzards.filter(b=>m.turn<b.untilTurn);
+    if(m.blizzards.length<before) missionLog("Le blizzard retombe.","magic");
   }
   if(m?.flameWalls?.length){
     const before=m.flameWalls.length;
@@ -204,6 +214,12 @@ function resetMissionActivation(unit){
   tickMissionChill(unit);
   tickMissionBuffs(unit);
   unit.movementRemaining=game.mission.engine.movementBase(unit);
+  // Blizzard : qui y commence son activation n'a que la moitié de son déplacement.
+  const snow=unit.alive?missionBlizzardAt(unit.q,unit.r):null;
+  if(snow&&unit.movementRemaining>0){
+    unit.movementRemaining=Math.max(1,Math.floor(unit.movementRemaining*snow.movement));
+    missionLog(unit.character.name+" avance dans le blizzard : "+unit.movementRemaining+" case"+(unit.movementRemaining>1?"s":"")+" de déplacement.","bad");
+  }
   if(missionMireAt(unit.q,unit.r)&&unit.alive){
     unit.movementRemaining=0;
     missionLog(unit.character.name+" est pris dans le bourbier : pas de déplacement.","bad");
@@ -1340,7 +1356,7 @@ function resolveMissionSpell(caster,target,code,extra={}){
     const removed=out.delivrance||[];
     if(removed.includes("fuite")){ target.fleeing=false;target.fleeTurn=0; }
     if(removed.includes("paralysie")) target.paralyzed=null;
-    if(removed.includes("gel")) target.statMalus=null;
+    if(removed.includes("gel")){ if(target.statMalus?.code==="freeze") target.statMalus=null; target.frozen=null; }
     if(removed.includes("frenesie")){
       const buffs={...(target.statBuffs||{})};
       delete buffs[target.frenzy?.code];
@@ -1404,6 +1420,33 @@ function resolveMissionSpell(caster,target,code,extra={}){
         +test+" et perdra sa prochaine activation.","magic");
       missionFx(target,"Paralysé"+(missionFeminine(target)?"e":""),"miss");
     }
+  }else if(spell.effet==="prison_de_glace"){
+    // Prison de glace (Eau ; Idan, 2026-10-31) : la cible résiste (Constitution + protection contre le froid − Maîtrise / 2)
+    // ou se fige : elle perd ses activations et ne subit que la moitié des dégâts.
+    const f=out.frozen,test=" (résistance "+Math.round(f.resist)+" %, jet "+f.roll+")";
+    if(f.resisted){
+      effect=false;
+      missionLog(name+" lance "+spell.nom+on+detail+" : "+target.character.name+" résiste"+test+".","miss");
+      missionFx(target,"Résiste","miss");
+    }else{
+      target.frozen={turns:f.turns,factor:f.factor};
+      missionLog(name+" lance "+spell.nom+on+detail+" : "+target.character.name+" est figé"+(missionFeminine(target)?"e":"")+" dans la glace"+test
+        +" pour "+f.turns+" activation"+(f.turns>1?"s":"")+" ; "+(missionFeminine(target)?"elle":"il")+" ne subit que la moitié des dégâts.","magic");
+      missionFx(target,"Figé"+(missionFeminine(target)?"e":""),"miss");
+    }
+  }else if(spell.effet==="blizzard"){
+    const b={casterId:caster.id,center:out.zone.center,radius:out.zone.radius,untilTurn:m.turn+out.blizzard.turns,
+      effect:{code:out.blizzard.code,element:out.blizzard.element,factor:out.blizzard.factor,critical:false,turns:1},movement:out.blizzard.movement};
+    m.blizzards=[...(m.blizzards||[]),b];
+    missionLog(name+" lance "+spell.nom+" (rayon "+b.radius+", "+out.blizzard.turns+" tours)"+detail+" : la neige tombe, on n’y voit plus rien.","magic");
+    effect=missionBlizzardWave(b)>0;
+    checkMissionEnd();
+  }else if(spell.effet==="rend_mana"){
+    // Source vive (Eau ; Idan, 2026-10-31) : du mana pour un autre allié, sans dépasser sa réserve.
+    const before=magic.currentMana(target),given=Math.max(0,Math.min(out.amount,magic.manaMax(target)-before));
+    target.character.mana=Math.round((before+given)*100)/100;
+    effect=given>0;
+    missionLog(name+" lance "+spell.nom+on+detail+" : +"+Math.round(given)+" mana"+(given<out.amount?" (réserve pleine)":"")+"."+critical,"magic");
   }else if(spell.effet==="tempete"){
     // Tempête (Foudre ; Idan, 2026-10-31) : une première vague tout de suite, puis une à chaque nouveau tour.
     const storm={casterId:caster.id,code:spell.code,center:out.zone.center,radius:out.zone.radius,element:out.storm.element,
@@ -1683,7 +1726,17 @@ function castPlayerMissionSpell(target,extra={}){
 }
 
 // Paralysie (Foudre) : au début de son activation, le paralysé la perd (true) ; l'effet tombe ensuite.
+// Prison de glace (Eau) : de même, tant que dure la glace ; elle se brise à la fin.
 function missionParalyzedSkip(unit){
+  if(unit?.frozen){
+    unit.frozen.turns-=1;
+    const end=unit.frozen.turns<=0;
+    if(end) unit.frozen=null;
+    missionLog(unit.character.name+" est pris"+(missionFeminine(unit)?"e":"")+" dans la glace : "+(missionFeminine(unit)?"elle":"il")+" perd son activation"
+      +(end?" ; la glace se brise.":"."),"bad");
+    missionFx(unit,"Figé"+(missionFeminine(unit)?"e":""),"miss");
+    return true;
+  }
   if(!unit?.paralyzed) return false;
   unit.paralyzed.turns-=1;
   if(unit.paralyzed.turns<=0) unit.paralyzed=null;
@@ -1715,6 +1768,21 @@ function missionStormWave(storm){
   storm.turnsLeft-=1;
   missionLog(lines.length?"La tempête frappe : "+lines.join(" ; ")+".":"La tempête gronde : personne dans la zone.","damage");
   return total;
+}
+// Blizzard : une vague = un jet de dés pour tous ceux de la zone (alliés et lanceur compris), moins leur protection
+// contre le froid.
+function missionBlizzardWave(blizzard){
+  const m=game.mission,magic=missionMagic();
+  if(!m||!magic) return 0;
+  const units=magic.unitsInZone(blizzard.center,blizzard.radius,missionUnits());
+  const amount=magic.tick(blizzard.effect).amount,source=missionUnits().find(u=>u.id===blizzard.casterId)||null;
+  let total=0;
+  const lines=units.map(u=>{ const hit=missionElementalHit(u,blizzard.effect.element||"froid",amount,source); total+=hit.damage; return u.character.name+" −"+hit.damage; });
+  missionLog(lines.length?"Le blizzard gèle : "+lines.join(", ")+".":"Le blizzard souffle : personne dans la zone.","damage");
+  return total;
+}
+function tickMissionBlizzards(){
+  for(const b of game.mission?.blizzards||[]) missionBlizzardWave(b);
 }
 function tickMissionStorms(){
   const m=game.mission;
@@ -2356,6 +2424,7 @@ function runMissionEnemyTurn(){
   m.turn+=1;
   pruneMissionTerrain();
   tickMissionStorms();
+  tickMissionBlizzards();
   maintainMissionSummons();
   if(checkMissionEnd()){ renderMission(); return; }
   resolveMissionDetection();
@@ -2594,6 +2663,8 @@ function renderMission(){
     if(mire){ classes.push("mire"); title=` title="Bourbier : on ne peut plus s’y déplacer jusqu’au tour ${mire.untilTurn}"`; }
     const fog=missionFogAt(q,r);
     if(fog){ classes.push("fog"); title=` title="Brouillard : coupe la ligne de vue jusqu’au tour ${fog.untilTurn}"`; }
+    const snow=missionBlizzardAt(q,r);
+    if(snow){ classes.push("blizzard"); title=` title="Blizzard : froid à chaque tour, déplacement réduit, on n’y voit pas à travers (jusqu’au tour ${snow.untilTurn})"`; }
     const flames=missionFlameAt(q,r);
     if(flames){ classes.push("flames"); title=` title="Mur de flammes : brûle qui y entre ou s’y trouve (jusqu’au tour ${flames.untilTurn})"`; }
     const storm=missionStormAt(q,r);

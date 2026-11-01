@@ -28,7 +28,7 @@ function mage({pm,vie,level=1,int,chance=54,mana=53,charisma=50,items=[],slots={
     skills:{magic:{Vie:vie,Feu:vie,Eau:vie,Transmutation:vie,Foudre:vie,Télékinésie:vie,Illusion:vie,Nécromancie:vie,Invocation:vie}},mana,
     spells:["quick_heal","deep_heal","regeneration","mass_heal","restitution","purge","blessing","life_link","deliverance","holy_light"].map(code=>({code,school:"Vie",mastery:level}))
       .concat(["fire_bolt","fireball","fire_ring","flaming_weapon","fire_armor","magma","ignite","flame_wall","fiery_breath","living_torch"].map(code=>({code,school:"Feu",mastery:level})))
-      .concat(["fog","healing_water","ice_arrow","tsunami","frost_armor","freeze","ice_weapon"].map(code=>({code,school:"Eau",mastery:level})))
+      .concat(["fog","healing_water","ice_arrow","tsunami","frost_armor","freeze","ice_weapon","ice_prison","blizzard","living_spring"].map(code=>({code,school:"Eau",mastery:level})))
       .concat(["sixth_sense","titan_strength","cheetah_speed","stone_skin","venom_spit","cauterize"].map(code=>({code,school:"Transmutation",mastery:level})))
       .concat(["shock","lightning_bolt","shock_weapon","chain_lightning","thunder","celerity","spark","electric_arc","paralysis","storm"].map(code=>({code,school:"Foudre",mastery:level})))
       .concat(["attraction","projection","telekinetic_move","clash","force_field","stone_throw"].map(code=>({code,school:"Télékinésie",mastery:level})))
@@ -358,7 +358,9 @@ assert.deepEqual([out.success,out.action,out.effect.element,out.effect.turns],[t
 // École de l'Eau (Idan, 2026-10-27). Les mages de test ont le même niveau en Eau qu'en Vie.
 assert.deepEqual(magic.schoolSpells("Eau").map(x=>[x.code,x.action]),[
   ["fog","principale"],["healing_water","rapide"],["ice_arrow","principale"],
-  ["tsunami","principale"],["frost_armor","rapide"],["freeze","rapide"],["ice_weapon","rapide"]]);
+  ["tsunami","principale"],["frost_armor","rapide"],["freeze","rapide"],["ice_weapon","rapide"],
+  // Idan, 2026-10-31 : l'Eau passe à 10 sorts.
+  ["ice_prison","principale"],["blizzard","principale"],["living_spring","principale"]]);
 // Eau guérissante : 1D3, moins que Soin rapide (1D4) ; 10 mana de base.
 assert.deepEqual(magic.effectRange(beginner,"healing_water"),{min:9,max:26});
 assert.ok(magic.effectRange(expert,"healing_water").max<magic.effectRange(expert,"quick_heal").max);
@@ -437,6 +439,34 @@ queue=[0];
 out=magic.cast(caster,ally,"frost_armor");
 assert.deepEqual(out.effect,{code:"frost_armor",element:"feu",bonus:36,turns:2,cumulable:false});
 assert.equal(combat.elementalDamage(armoredUnit(null,4,{elementalBonus:{feu:{bonus:36,turns:2}}}),"feu",100).damage,60,"Armure de froid contre le feu");
+
+// Prison de glace (chiffres de JC3) : résistance = Constitution + protection contre le froid − Maîtrise / 2 (5 à 95 %) ;
+// figée 1 tour (2 pour un maître), elle ne subit que la moitié des dégâts. Pas de coup critique.
+assert.deepEqual([magic.duration(beginner,"ice_prison"),magic.duration(expert,"ice_prison"),magic.range(beginner,"ice_prison")],[1,2,7]);
+const iceTarget=unit(mage({pm:50,vie:1,int:50}),{q:3,r:0,team:"enemy"});
+assert.equal(magic.paralysisResistance(caster,iceTarget,"ice_prison"),50-31.5*0.5);
+queue=[0,0.99];
+out=magic.cast(caster,iceTarget,"ice_prison");
+assert.deepEqual(out.frozen,{resist:50-31.5*0.5,roll:100,resisted:false,turns:1,factor:0.5});
+queue=[0,0];
+assert.equal(magic.cast(caster,iceTarget,"ice_prison").frozen.resisted,true);
+// Figé : les dégâts d'un sort élémentaire sont divisés par deux (moteur de combat).
+const iceFree=combat.elementalDamage({...iceTarget},"feu",80).damage;
+assert.equal(combat.elementalDamage({...iceTarget,frozen:{turns:1,factor:0.5}},"feu",80).damage,Math.ceil(iceFree/2));
+// Blizzard : rayon 2 + M/50 (au plus 4), portée 6 + M/25, 3 tours, sans ligne de vue ; 1D4 de froid par vague ; déplacement ÷ 2.
+assert.deepEqual([magic.zoneRadius(beginner,"blizzard"),magic.zoneRadius(expert,"blizzard"),magic.range(beginner,"blizzard")],[2,4,7]);
+assert.equal(magic.canCast(caster,{q:4,r:0},"blizzard",{lineOfSight:false}).ok,true);
+queue=[0];
+out=magic.cast(caster,{q:4,r:0},"blizzard");
+assert.deepEqual([out.success,out.zone.radius,out.blizzard.turns,out.blizzard.element,out.blizzard.movement],[true,2,3,"froid",0.5]);
+// Source vive : sur un autre allié dont la réserve n'est pas pleine ; 3 × 1D6 × la Puissance et la maîtrise (en mana).
+const thirsty=unit({...mage({pm:50,vie:1,int:50}),mana:10},{q:2,r:0});
+assert.match(magic.canCast(caster,caster,"living_spring").reason,/pas le lanceur/);
+assert.match(magic.canCast(caster,{...thirsty,character:{...thirsty.character,mana:53}},"living_spring").reason,/pleine/);
+assert.equal(magic.canCast(caster,thirsty,"living_spring").ok,true);
+queue=[0,0.99,0.5];
+out=magic.cast(caster,thirsty,"living_spring");
+assert.deepEqual([out.success,out.dice,out.amount],[true,4,Math.ceil(3*4*(2*53/100)*(0.5+31.5/100)-1e-9)]);
 
 // École de la Transmutation (Idan, 2026-10-27) : des bonus, action rapide, portée 3 + M/25, 1 tour (2 pour un maître).
 assert.deepEqual(magic.schoolSpells("Transmutation").map(x=>[x.code,x.action,x.cible]),[

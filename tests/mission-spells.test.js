@@ -46,7 +46,7 @@ const api=new Function("game","$","esc","fmt","renderAvatar","combatEngine","Mer
   +"handleMissionHexClick,resetMissionActivation,missionAiCast,missionActionAvailability,autoResolveMission,missionKey,renderMissionSpellBar,"
   +"missionMagic,endMissionActivation,missionWeaponEnchantStrike,pruneMissionTerrain,occupiedMissionKeys,missionReachablePaths,"
   +"renderMissionProgression,missionLineOfSight,missionCanAttack,frenzyMissionActivation,maintainMissionSummons,checkMissionEnd,onMissionAttack,moveMissionUnitAlongPath,"
-  +"renderMissionConsole,missionAttackFx,tickMissionStorms,missionParalyzedSkip,missionStormAt,damageMissionUnitBySpell};")
+  +"renderMissionConsole,missionAttackFx,tickMissionStorms,missionParalyzedSkip,missionStormAt,damageMissionUnitBySpell,tickMissionBlizzards};")
   .call(null,game,$,v=>String(v??""),v=>String(Math.round(Number(v)||0)),()=>"",()=>engine,Progression,MissionEnd,Magic);
 
 function newMission(){
@@ -80,19 +80,19 @@ api.teachMissionTestSpells();
 assert.deepEqual(magic.knownSpells(u).map(s=>s.code),["quick_heal","deep_heal","regeneration","mass_heal","restitution","purge",
   "blessing","life_link","deliverance","holy_light",
   "fire_bolt","fireball","fire_ring","flaming_weapon","fire_armor","magma","ignite","flame_wall","fiery_breath","living_torch",
-  "fog","healing_water","ice_arrow","tsunami","frost_armor","freeze","ice_weapon",
+  "fog","healing_water","ice_arrow","tsunami","frost_armor","freeze","ice_weapon","ice_prison","blizzard","living_spring",
   "sixth_sense","titan_strength","cheetah_speed","stone_skin","venom_spit","cauterize",
   "shock","lightning_bolt","shock_weapon","chain_lightning","thunder","celerity","spark","electric_arc","paralysis","storm",
   "attraction","projection","telekinetic_move","clash","force_field","stone_throw",
   "fear","illusory_support","mass_courage","hidden_advance","psychic_shock","frenzy",
   "raise_dead","summon_specter","life_drain","death_arrow","necrosis","wither",
   "summon_raven","quagmire","transposition","summon_wolves","summon_bears","summon_crocodiles"]);
-assert.ok(m.players.every(p=>p.spells.length===67&&!(p.character.spells||[]).length));
+assert.ok(m.players.every(p=>p.spells.length===70&&!(p.character.spells||[]).length));
 assert.equal(api.missionActionAvailability().testSpells,false,"une seule fois par combat");
 assert.ok(logged(/connaît tous les sorts \(Vie, Feu, Eau, Transmutation, Foudre, Télékinésie, Illusion, Nécromancie, Invocation, niveau 1\)/));
 const bar=api.renderMissionSpellBar(u);
 assert.match(bar,/Mana 53\/53/);
-assert.equal((bar.match(/data-spell=/g)||[]).length,67);
+assert.equal((bar.match(/data-spell=/g)||[]).length,70);
 assert.match(bar,/Soin rapide<small>rapide · \d+ mana · \d+ %<\/small>/);
 // Écran de combat (2026-10-29) : au-delà de 8 sorts, un onglet par école ; une seule école affichée à la fois.
 assert.equal((bar.match(/data-spell-school=/g)||[]).length,9);
@@ -524,6 +524,60 @@ assert.equal(engine.elementalProtection(ally,"feu").bonus,magic.bonus(u,"frost_a
 api.resetMissionActivation(ally);api.resetMissionActivation(ally);api.resetMissionActivation(ally);
 assert.equal(engine.elementalProtection(ally,"feu").bonus,0);
 assert.ok(logged(/L’armure de froid de .* se dissipe/));
+
+// Les trois sorts de l'Eau validés par Idan le 2026-10-31. Maîtrise 60,5.
+for(const x of [u,ally,wet,distant]){ x.alive=true;x.hp=x.pvMax;x.frozen=null;x.paralyzed=null;x.camouflaged=false;x.statMalus=null; }
+// Prison de glace : figée, elle perd son activation et ne prend que la moitié des dégâts ; puis la glace se brise.
+reset();
+wet.q=u.q+2;wet.r=u.r;
+api.setMissionMode("spell:ice_prison");
+queue.push(0,0.99);
+api.handleMissionHexClick(wet.q,wet.r);
+assert.deepEqual(wet.frozen,{turns:1,factor:0.5});
+assert.ok(logged(/lance Prison de glace sur .* est figée? dans la glace \(résistance \d+ %, jet 100\) pour 1 activation/));
+const icedHit=engine.elementalDamage(wet,"feu",80).damage;
+const frozenState=wet.frozen;wet.frozen=null;
+assert.equal(icedHit,Math.ceil(engine.elementalDamage(wet,"feu",80).damage/2),"la moitié des dégâts");
+wet.frozen=frozenState;
+assert.equal(api.missionParalyzedSkip(wet),true);
+assert.equal(wet.frozen,null);
+assert.ok(logged(/dans la glace : (il|elle) perd son activation ; la glace se brise/));
+// Blizzard : rayon 2 + 1, 3 tours ; une vague au lancer puis à chaque tour ; on n'y voit pas à travers ; déplacement ÷ 2.
+reset();
+wet.q=u.q+4;wet.r=u.r;wet.hp=wet.pvMax;
+api.setMissionMode("spell:blizzard");
+queue.push(0,0.5);
+api.handleMissionHexClick(wet.q,wet.r);
+assert.equal(m.blizzards.length,1);
+assert.equal(m.blizzards[0].radius,3);
+assert.ok(wet.hp<wet.pvMax,"la première vague");
+assert.ok(logged(/lance Blizzard \(rayon 3, 3 tours\).* la neige tombe/));
+assert.ok(logged(/Le blizzard gèle : /));
+assert.equal(api.missionLineOfSight(u,wet),false,"on n'y voit rien");
+api.resetMissionActivation(wet);
+assert.equal(wet.movementRemaining,Math.max(1,Math.floor(engine.movementBase(wet)*0.5)));
+assert.ok(logged(/avance dans le blizzard/));
+const snowHp=wet.hp;
+queue.push(0.5);
+api.tickMissionBlizzards();
+assert.ok(wet.hp<snowHp,"une vague par tour");
+const snowTurn=m.turn;
+m.turn=m.blizzards[0].untilTurn;
+api.pruneMissionTerrain();
+assert.equal(m.blizzards.length,0);
+assert.ok(logged(/Le blizzard retombe/));
+m.turn=snowTurn;
+// Source vive : du mana pour un autre allié, pas pour soi.
+reset();
+ally.q=u.q+1;ally.r=u.r;ally.character.mana=5;
+api.setMissionMode("spell:living_spring");
+assert.ok(!api.targetableMissionCells().has(api.missionKey(u.q,u.r)),"pas sur soi");
+queue.push(0,0.99,0.5);
+api.handleMissionHexClick(ally.q,ally.r);
+assert.ok(ally.character.mana>5);
+assert.ok(logged(/lance Source vive sur .* : \+\d+ mana/));
+ally.q=u.q-1;ally.r=u.r;
+for(const x of [u,ally,wet,distant]){ x.alive=true;x.hp=x.pvMax; }
 
 // École de la Transmutation dans l'écran de combat (Idan, 2026-10-27). Maîtrise 60,5 : bonus +32 %, 1 tour, portée 5.
 for(const p of m.players) p.character.skills.magic.Transmutation=60;

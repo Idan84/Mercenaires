@@ -123,11 +123,15 @@ assert.ok(guarded>0&&forcedCount>0,"des renforts, dont des imposés (ogres)");
 const generationUi=fs.readFileSync(path.join(ROOT,"prototype-web","generation.js"),"utf8");
 assert.match(generationUi,/ensureGenerator\(\)\.createInitialSquad\(captain, \{role: "Mercenaire initial", nextId: \(\) => nextCharacterId\(\)\}\)/,"le jeu passe par le garde-fou");
 
-// Matrice (Idan, 2026-11-01 : rééquilibrer les cultures) : un point de plus sur ces armes et cette école.
+// Matrice (Idan, 2026-11-01 : rééquilibrer les cultures, viser 5 à 80 % par domaine ; deux séries de points, les
+// gnomes des villes laissés en exception) : valeurs attendues après les deux séries.
 const matrix=Object.fromEntries(reference.generationMatrix.rows.map(r=>[r.cible,r]));
-for(const [cible,col] of [["Arc","elfes_des_grandes_cites"],["Dague","gnome"],["Massue","halflings_des_villages_isoles"],["Arbalète","homme_bete"],
-  ["Tromblon","ogre"],["Canon à main","ogre"],["Télékinésie","ogre"],["Arc","orc"],["Arbalète","orc"],["Sarbacane","reptiliens_des_cites_temples"]])
-  assert.equal(matrix[cible][col],1,cible+" / "+col);
+for(const [cible,col,value] of [["Arc","elfes_des_grandes_cites",1],["Dague","gnome",2],["Lames courtes","gnome",2],
+  ["Massue","halflings_des_villages_isoles",2],["Arbalète","homme_bete",1],["Tromblon","ogre",2],["Canon à main","ogre",2],
+  ["Armes à feu","ogre",1],["Télékinésie","ogre",3],["Puissance magique","ogre",-1],["Arc","orc",1],["Arbalète","orc",1],
+  ["Arbalète","orcs_noirs",2],["Arc","orcs_noirs",1],["Arc","clans_des_grandes_steppes",1],["Arc","tribus_des_forets_anciennes",1],
+  ["Épée courte","elfes_sylvains",1],["Sarbacane","reptiliens_des_cites_temples",2]])
+  assert.equal(matrix[cible][col],value,cible+" / "+col);
 
 // Fiche : le picto à côté du nom ; les mercenaires d'avant le domaine prennent le profil de leur équipement.
 const ui=fs.readFileSync(path.join(ROOT,"prototype-web","ui.js"),"utf8");

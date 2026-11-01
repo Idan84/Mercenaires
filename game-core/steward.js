@@ -70,6 +70,7 @@
       if(m.id===state.company.captainId) return no("Le capitaine ne peut pas être intendant.");
       // Le lieutenant reste sur le terrain (Idan, 2026-10-25).
       if((state.company.lieutenantIds||[]).includes(m.id)) return no("Un lieutenant ne peut pas être intendant.");
+      if(state.company.medicId!=null&&m.id===state.company.medicId) return no("Le médecin ne peut pas être intendant.");
       // Parti en expédition (doc 17) : on lui en parlera à son retour. Mission programmée : l'intendant reste au camp,
       // celui qui part demain ne peut pas l'être.
       const mission=(state.expeditions||[]).find(e=>e.memberIds.includes(m.id));

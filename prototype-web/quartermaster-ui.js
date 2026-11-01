@@ -48,6 +48,7 @@ function renderQuartermaster(){
   if(!list||!game.campaign) return;
   const items=game.campaign.company.stock||[];
   if(typeof renderStewardPanel==="function") renderStewardPanel();
+  if(typeof renderMedicPanel==="function") renderMedicPanel();
   const kindOf=item=>STOCK_KINDS.includes(item.itemType)?item.itemType:"weapon";
   const count=kind=>items.filter(item=>kindOf(item)===kind).length;
   if(!count(stockView.tab)) stockView.tab=STOCK_TABS.find(([kind])=>count(kind))?.[0]||stockView.tab;

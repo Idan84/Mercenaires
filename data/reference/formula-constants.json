@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 261,
+  "row_count": 264,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -2120,6 +2120,30 @@
       "description": "Tier minimal de l’objet « rien que pour toi » ; les chances des tiers sont celles de l’étal, ramenées aux tiers autorisés (Idan, 2026-10-31).",
       "formule": "Marchands",
       "valeur": 3,
+      "version": "V1"
+    },
+    {
+      "nom": "Médecin — réduction des blessures",
+      "code": "medic.wound.skill_divisor",
+      "description": "Médecin (Idan, 2026-11-01) : durée d’une blessure × (1 − Médecine du médecin / ce diviseur), en plus du Dispensaire, au moins 1 jour. Médecine 46 : −18 % ; 100 : −40 %.",
+      "formule": "Médecin",
+      "valeur": 250,
+      "version": "V1"
+    },
+    {
+      "nom": "Médecin — renommée",
+      "code": "medic.renown.skill_share",
+      "description": "Médecin (Idan, 2026-11-01) : tant qu’il est en poste, la compagnie gagne cette part de sa Médecine en Renommée (1 : +46 pour un médecin à 46).",
+      "formule": "Médecin",
+      "valeur": 1,
+      "version": "V1"
+    },
+    {
+      "nom": "Médecin — XP par jour de blessure",
+      "code": "medic.xp.per_wound_day",
+      "description": "Médecin (Idan, 2026-11-01) : XP de Médecine du médecin à chaque blessé guéri pendant qu’il est en poste, par jour que la blessure a duré.",
+      "formule": "Médecin",
+      "valeur": 10,
       "version": "V1"
     }
   ]

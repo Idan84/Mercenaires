@@ -417,7 +417,7 @@ function departContractSquad(chosen){
   if(typeof renderContractBoard==="function") renderContractBoard();
 }
 
-// Le combat de l'expédition, à son arrivée : le camp gobelin sur une carte plus grande ; votre équipe a l'initiative (elle
+// Le combat de l'expédition, à son arrivée : le camp ennemi (gobelin ou orc) sur une carte plus grande ; votre équipe a l'initiative (elle
 // joue la première).
 function startExpeditionCombat(expeditionId){
   const e=(game.campaign?.expeditions||[]).find(x=>x.id===expeditionId);

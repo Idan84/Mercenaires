@@ -1,6 +1,7 @@
 "use strict";
 
-// Missions one shot (doc 17) : « Faire le ménage », camp gobelin ☠, en boucle à la Taverne (Idan, 2026-10-24).
+// Missions one shot (doc 17) : « Faire le ménage », camp ☠ gobelin ou orc, en boucle à la Taverne (Idan, 2026-10-24 ;
+// camps par peuple et points de combat le 2026-11-01).
 const assert=require("node:assert/strict");
 const fs=require("node:fs");
 const path=require("node:path");
@@ -23,36 +24,51 @@ const reference={oneShotMissions:read("one-shot-missions.json"),enemyArchetypes:
   baseArmors:read("base-armors.json"),skills:read("skills.json"),itemQualities:read("item-qualities.json")};
 const rules=createMissionRules({reference,random:seeded(7)});
 
-// Camp ☠ : 1D4+4 novices (Idan, 2026-11-01 : « un tout petit peu » plus fort), un ou deux « normaux » de temps en temps, et un Caïd.
-const counts=[],normals=[];
-for(let i=0;i<2000;i++){
+// Camps (Idan, 2026-11-01) : gobelin ou orc au hasard ; points de combat : le chef, puis des ennemis tant que le total se
+// rapproche du budget (55 à 75 à la difficulté 1) ; « normal » dans 5 % des tirages ; 35 PO par point.
+const counts={Gobelins:[],Orcs:[]},normals=[],totals=[];
+for(let i=0;i<4000;i++){
   const camp=rules.rollCamp();
-  counts.push(camp.enemies.length);
-  normals.push(camp.enemies.filter(code=>rules.archetype(code).niveau==="normal").length);
-  assert.equal(camp.chief,"goblin_chief_1");
-  assert.ok(camp.enemies.every(code=>{ const a=rules.archetype(code); return a.faction==="Gobelins"&&["novice","normal"].includes(a.niveau); }));
+  const sum=rules.points(camp.chief)+camp.enemies.reduce((t,code)=>t+rules.points(code),0);
+  assert.equal(camp.points,sum,"points du camp");
+  assert.ok(camp.points>=camp.budget-8&&camp.points<=camp.budget+8,`près du budget : ${camp.points} / ${camp.budget}`);
+  assert.ok(camp.budget>=55&&camp.budget<=75);
+  assert.equal(camp.chief,{Gobelins:"goblin_chief_1",Orcs:"orc_chief_1"}[camp.faction]);
+  assert.equal(camp.campName,{Gobelins:"Camp gobelin",Orcs:"Camp orc"}[camp.faction]);
+  assert.ok(camp.enemies.every(code=>{ const a=rules.archetype(code); return a.faction===camp.faction&&["novice","normal"].includes(a.niveau); }));
+  counts[camp.faction].push(camp.enemies.length);
+  normals.push(...camp.enemies.map(code=>rules.archetype(code).niveau==="normal"));
+  totals.push(camp.points);
 }
-assert.equal(Math.min(...counts),5);
-assert.equal(Math.max(...counts),8);
-const share=k=>normals.filter(n=>n===k).length/2000;
-assert.ok(share(1)>0.15&&share(1)<0.25,"un normal dans ~20 % des camps : "+share(1));
-assert.ok(share(2)>0.02&&share(2)<0.08,"deux normaux dans ~5 % des camps : "+share(2));
+const mean=list=>list.reduce((t,x)=>t+x,0)/list.length;
+assert.ok(Math.abs(counts.Gobelins.length-2000)<150,"un camp sur deux : "+counts.Gobelins.length);
+assert.ok(Math.abs(mean(counts.Gobelins)-6.5)<0.25,"6,5 gobelins en moyenne, comme l'ancien 1D4+4 : "+mean(counts.Gobelins));
+assert.ok(Math.min(...counts.Gobelins)>=3&&Math.max(...counts.Gobelins)<=10);
+assert.ok(Math.abs(mean(counts.Orcs)-4.3)<0.25,"4,3 orcs en moyenne : "+mean(counts.Orcs));
+assert.ok(Math.abs(mean(totals)-65)<1.5,"65 points en moyenne : "+mean(totals));
+assert.ok(Math.abs(mean(normals)-0.05)<0.015,"5 % de « normaux » : "+mean(normals));
+assert.equal(rules.points("goblin_chief_1"),30);
+assert.equal(rules.points("orc_chief_1"),38);
 
-// Offre : distance 1 à 3 jours, récompense = 2 000 + 1 200 par jour aller-retour + 300 par ennemi (doublée par Idan le
-// 2026-10-25), valable 3 à 6 jours.
-const orders=new Set();
-for(let day=1;day<=300;day++){
+// Offre : distance 1 à 3 jours, récompense = 2 000 + 1 200 par jour aller-retour + 35 PO par point de combat (Idan,
+// 2026-11-01), valable 3 à 6 jours ; un des trois ordres du peuple du camp.
+const orders={Gobelins:new Set(),Orcs:new Set()};
+for(let day=1;day<=400;day++){
   const offer=rules.createOffer({day});
-  orders.add(offer.order);
+  orders[offer.faction].add(offer.order);
   assert.ok(offer.distance>=1&&offer.distance<=3);
   assert.equal(offer.enemyCount,offer.camp.enemies.length+1);
-  assert.equal(offer.reward,2000+1200*2*offer.distance+300*offer.enemyCount);
+  assert.equal(offer.reward,2000+1200*2*offer.distance+Math.round(35*offer.camp.points));
+  assert.equal(offer.campName,offer.camp.campName);
   assert.ok(offer.expiresDay-day>=3&&offer.expiresDay-day<=6);
   const text=rules.orderText(offer,{date:"1 Brumecendre",date_expiration:"5 Brumecendre",an:842});
   for(const line of [...text.paragraphs,text.signature]) assert.doesNotMatch(line,/\{[^}]+\}/,"tous les champs remplis : "+line);
   assert.doesNotMatch(text.paragraphs.join(" "),/\b1 jours\b/);
+  if(offer.faction==="Orcs") assert.doesNotMatch(text.paragraphs.join(" "),/gobelin/i,"une lettre orque ne parle pas de gobelins");
+  if(offer.order==="orc_rival") assert.ok(reference.oneShotMissions.noms.chefs_de_camp_orcs.some(n=>text.paragraphs.join(" ").includes(n)),"chef de camp orc");
 }
-assert.deepEqual([...orders].sort(),["emperor","goblin_rival","village"],"les trois ordres validés");
+assert.deepEqual([...orders.Gobelins].sort(),["emperor","goblin_rival","village"],"les trois ordres gobelins");
+assert.deepEqual([...orders.Orcs].sort(),["emperor_orcs","orc_rival","village_orcs"],"les trois ordres orcs");
 
 // Ennemis : la fiche figée remplace caractéristiques, PV, compétences et équipement d'un personnage de base.
 const offer=rules.createOffer({day:4});
@@ -79,6 +95,14 @@ assert.deepEqual([armor.name,armor.templateId,armor.itemType,chief.equipment.slo
 assert.equal(new Set(enemies.flatMap(e=>e.items.map(i=>i.id))).size,enemies.reduce((n,e)=>n+e.items.length,0),"identifiants uniques");
 const names=enemies.slice(0,-1).map(e=>e.name);
 assert.equal(new Set(names).size,names.length,"les doublons sont numérotés");
+// Camp orc : des orcs, et le Chef de bande nommé.
+let orcOffer=null;
+for(let day=10;!orcOffer;day++){ const o=rules.createOffer({day}); if(o.faction==="Orcs") orcOffer=o; }
+const orcs=rules.buildEnemies(orcOffer,()=>base());
+const orcChief=orcs[orcs.length-1],bande=rules.archetype("orc_chief_1");
+assert.equal(orcChief.name,orcOffer.fields.boss+" (Chef de bande orc)");
+assert.equal(orcChief.pvMax,bande.pv);
+assert.ok(orcs.every(e=>/orc/.test(e.archetype)));
 
 // Issue : victoire = récompense + coffre (2D6 × 50 PO) + équipement des morts des deux camps ; défaite = −30 de renommée.
 const fallen={id:1,items:[{id:"m1",name:"Épée longue",owner:1}]};

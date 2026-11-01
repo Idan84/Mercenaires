@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "enemy-archetypes",
-  "description": "Archétypes d’ennemis fixes (Idan, 2026-10-24 ; doc 17 §10). Gobelins : cinq lignes sur quatre niveaux et quatre niveaux de chef. Valeurs figées à partir des centiles des Gobelins générés (novice P20, normal P50, vétéran P75, élite P90 ; chefs P75 à P99), avec la spécialisation de chaque ligne (trois caractéristiques un cran au-dessus, deux un cran au-dessous). PV = 3 × (Constitution + 0,2 × Endurance + 0,1 × Volonté). Menace : un mercenaire généré moyen vaut 10 points (simulateur, 150 combats par effectif) ; null = au-delà de la mesure. Pas encore utilisé par le jeu.",
+  "description": "Archétypes d’ennemis fixes (Idan, 2026-10-24 ; doc 17 §10 et §14). Gobelins et Orcs (2026-11-01) : cinq lignes sur quatre niveaux et quatre niveaux de chef chacun. Valeurs figées à partir des centiles des personnages générés du même peuple (novice P20, normal P50, vétéran P75, élite P90 ; chefs P75 à P99), avec la spécialisation de chaque ligne (trois caractéristiques un cran au-dessus, deux un cran au-dessous). PV = 3 × (Constitution + 0,2 × Endurance + 0,1 × Volonté). Points de combat (Idan, 2026-11-01) : un mercenaire généré moyen vaut 10 points (simulateur, 150 combats par effectif ; chefs : 10 × le nombre de mercenaires qui le battent une fois sur deux) ; null = au-delà de la mesure. Ils composent les camps de « Faire le ménage » (one-shot-missions.json, budgets).",
   "columns": [
     {
       "source": "Nom",
@@ -32,7 +32,7 @@
       "key": "niveau"
     },
     {
-      "source": "Centile des Gobelins générés",
+      "source": "Centile des personnages générés du même peuple",
       "key": "centile"
     },
     {
@@ -76,11 +76,11 @@
       "key": "qualite"
     },
     {
-      "source": "Menace (mercenaire moyen = 10)",
-      "key": "menace"
+      "source": "Points de combat (mercenaire moyen = 10)",
+      "key": "points"
     }
   ],
-  "row_count": 24,
+  "row_count": 48,
   "rows": [
     {
       "nom": "Lancier gobelin novice",
@@ -132,7 +132,7 @@
       "armure": "Vêtements",
       "tier": 1,
       "qualite": "Usée",
-      "menace": 6
+      "points": 6
     },
     {
       "nom": "Lancier gobelin",
@@ -186,7 +186,7 @@
       "armure": "Gambison",
       "tier": 2,
       "qualite": "Correcte",
-      "menace": 12
+      "points": 12
     },
     {
       "nom": "Lancier gobelin vétéran",
@@ -240,7 +240,7 @@
       "armure": "Armure de cuir",
       "tier": 3,
       "qualite": "Grand Luxe",
-      "menace": 23
+      "points": 23
     },
     {
       "nom": "Lancier gobelin d’élite",
@@ -295,7 +295,7 @@
       "armure": "Cuir renforcé",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "menace": 43
+      "points": 43
     },
     {
       "nom": "Frondeur gobelin novice",
@@ -347,7 +347,7 @@
       "armure": "Vêtements",
       "tier": 1,
       "qualite": "Usée",
-      "menace": 5
+      "points": 5
     },
     {
       "nom": "Frondeur gobelin",
@@ -399,7 +399,7 @@
       "armure": "Vêtements",
       "tier": 2,
       "qualite": "Correcte",
-      "menace": 10
+      "points": 10
     },
     {
       "nom": "Frondeur gobelin vétéran",
@@ -453,7 +453,7 @@
       "armure": "Gambison",
       "tier": 3,
       "qualite": "Grand Luxe",
-      "menace": 16
+      "points": 16
     },
     {
       "nom": "Frondeur gobelin d’élite",
@@ -507,7 +507,7 @@
       "armure": "Armure de cuir",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "menace": 22
+      "points": 22
     },
     {
       "nom": "Archer gobelin novice",
@@ -559,7 +559,7 @@
       "armure": "Vêtements",
       "tier": 1,
       "qualite": "Usée",
-      "menace": 6
+      "points": 6
     },
     {
       "nom": "Archer gobelin",
@@ -613,7 +613,7 @@
       "armure": "Gambison",
       "tier": 2,
       "qualite": "Correcte",
-      "menace": 11
+      "points": 11
     },
     {
       "nom": "Archer gobelin vétéran",
@@ -667,7 +667,7 @@
       "armure": "Armure de cuir",
       "tier": 3,
       "qualite": "Grand Luxe",
-      "menace": 16
+      "points": 16
     },
     {
       "nom": "Archer gobelin d’élite",
@@ -721,7 +721,7 @@
       "armure": "Armure de cuir",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "menace": 23
+      "points": 23
     },
     {
       "nom": "Guerrier gobelin novice",
@@ -778,7 +778,7 @@
       "armure": "Gambison",
       "tier": 1,
       "qualite": "Usée",
-      "menace": 5
+      "points": 5
     },
     {
       "nom": "Guerrier gobelin",
@@ -835,7 +835,7 @@
       "armure": "Armure de cuir",
       "tier": 2,
       "qualite": "Correcte",
-      "menace": 11
+      "points": 11
     },
     {
       "nom": "Guerrier gobelin vétéran",
@@ -893,7 +893,7 @@
       "armure": "Cuir renforcé",
       "tier": 3,
       "qualite": "Grand Luxe",
-      "menace": 24
+      "points": 24
     },
     {
       "nom": "Guerrier gobelin d’élite",
@@ -951,7 +951,7 @@
       "armure": "Brigandine",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "menace": 47
+      "points": 47
     },
     {
       "nom": "Assassin gobelin novice",
@@ -1004,7 +1004,7 @@
       "armure": "Vêtements",
       "tier": 1,
       "qualite": "Usée",
-      "menace": 4
+      "points": 4
     },
     {
       "nom": "Assassin gobelin",
@@ -1057,7 +1057,7 @@
       "armure": "Vêtements",
       "tier": 2,
       "qualite": "Correcte",
-      "menace": 7
+      "points": 7
     },
     {
       "nom": "Assassin gobelin vétéran",
@@ -1110,7 +1110,7 @@
       "armure": "Vêtements",
       "tier": 3,
       "qualite": "Grand Luxe",
-      "menace": 15
+      "points": 15
     },
     {
       "nom": "Assassin gobelin d’élite",
@@ -1163,7 +1163,7 @@
       "armure": "Vêtements",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "menace": 23
+      "points": 23
     },
     {
       "nom": "Caïd gobelin",
@@ -1221,7 +1221,7 @@
       "armure": "Cuir renforcé",
       "tier": 3,
       "qualite": "Grand Luxe",
-      "menace": 30
+      "points": 30
     },
     {
       "nom": "Grand Caïd gobelin",
@@ -1279,7 +1279,7 @@
       "armure": "Cotte de mailles",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "menace": 55
+      "points": 55
     },
     {
       "nom": "Chef de clan gobelin",
@@ -1337,7 +1337,7 @@
       "armure": "Brigandine",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "menace": 100
+      "points": 100
     },
     {
       "nom": "Roi des Cavernes",
@@ -1396,7 +1396,1323 @@
       "armure": "Armure d'écailles",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "menace": null
+      "points": null
+    },
+    {
+      "nom": "Lancier orc novice",
+      "code": "orc_spearman_novice",
+      "faction": "Orcs",
+      "peuple": "Orc",
+      "culture": "Orcs des steppes",
+      "ligne": "Lancier",
+      "niveau": "novice",
+      "centile": "P20",
+      "caracteristiques": {
+        "Force": 68,
+        "Constitution": 59,
+        "Dextérité": 42,
+        "Vitesse": 36,
+        "Endurance": 54,
+        "Esquive": 45,
+        "Chance": 42,
+        "Charisme": 47,
+        "Courage": 43,
+        "Intelligence": 32,
+        "Volonté": 37,
+        "Perception": 35,
+        "Puissance magique": 37,
+        "Réserve de mana": 43
+      },
+      "resistances": {
+        "Résistance physique": 3,
+        "Résistance au feu": 2,
+        "Résistance au froid": 2,
+        "Résistance à la foudre": 1,
+        "Résistance au poison": 8
+      },
+      "pv": 221,
+      "competences_martiales": {
+        "Lance": 44,
+        "Armes d’hast": 42,
+        "Discrétion": 23,
+        "Pièges": 21,
+        "Combat à deux armes": 35,
+        "Combat à mains nues": 28,
+        "Combat à deux mains": 38
+      },
+      "intimidation": 33,
+      "port_d_armure": [],
+      "armes": [
+        "Lance"
+      ],
+      "armure": "Vêtements",
+      "tier": 1,
+      "qualite": "Usée",
+      "points": 7
+    },
+    {
+      "nom": "Lancier orc",
+      "code": "orc_spearman",
+      "faction": "Orcs",
+      "peuple": "Orc",
+      "culture": "Orcs des steppes",
+      "ligne": "Lancier",
+      "niveau": "normal",
+      "centile": "P50",
+      "caracteristiques": {
+        "Force": 80,
+        "Constitution": 67,
+        "Dextérité": 53,
+        "Vitesse": 44,
+        "Endurance": 65,
+        "Esquive": 54,
+        "Chance": 52,
+        "Charisme": 57,
+        "Courage": 51,
+        "Intelligence": 44,
+        "Volonté": 46,
+        "Perception": 45,
+        "Puissance magique": 47,
+        "Réserve de mana": 51
+      },
+      "resistances": {
+        "Résistance physique": 7,
+        "Résistance au feu": 4,
+        "Résistance au froid": 4,
+        "Résistance à la foudre": 3,
+        "Résistance au poison": 11
+      },
+      "pv": 254,
+      "competences_martiales": {
+        "Lance": 54,
+        "Armes d’hast": 50,
+        "Discrétion": 27,
+        "Pièges": 26,
+        "Combat à deux armes": 41,
+        "Combat à mains nues": 34,
+        "Combat à deux mains": 46
+      },
+      "intimidation": 39,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Lance"
+      ],
+      "armure": "Gambison",
+      "tier": 2,
+      "qualite": "Correcte",
+      "points": 15
+    },
+    {
+      "nom": "Lancier orc vétéran",
+      "code": "orc_spearman_veteran",
+      "faction": "Orcs",
+      "peuple": "Orc",
+      "culture": "Orcs des steppes",
+      "ligne": "Lancier",
+      "niveau": "vétéran",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 91,
+        "Constitution": 75,
+        "Dextérité": 62,
+        "Vitesse": 54,
+        "Endurance": 75,
+        "Esquive": 62,
+        "Chance": 60,
+        "Charisme": 65,
+        "Courage": 58,
+        "Intelligence": 56,
+        "Volonté": 54,
+        "Perception": 54,
+        "Puissance magique": 57,
+        "Réserve de mana": 59
+      },
+      "resistances": {
+        "Résistance physique": 12,
+        "Résistance au feu": 5,
+        "Résistance au froid": 6,
+        "Résistance à la foudre": 5,
+        "Résistance au poison": 14
+      },
+      "pv": 287,
+      "competences_martiales": {
+        "Lance": 62,
+        "Armes d’hast": 56,
+        "Discrétion": 32,
+        "Pièges": 32,
+        "Combat à deux armes": 47,
+        "Combat à mains nues": 39,
+        "Combat à deux mains": 53
+      },
+      "intimidation": 44,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Lance"
+      ],
+      "armure": "Armure de cuir",
+      "tier": 3,
+      "qualite": "Grand Luxe",
+      "points": 26
+    },
+    {
+      "nom": "Lancier orc d’élite",
+      "code": "orc_spearman_elite",
+      "faction": "Orcs",
+      "peuple": "Orc",
+      "culture": "Orcs des steppes",
+      "ligne": "Lancier",
+      "niveau": "d’élite",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 97,
+        "Constitution": 80,
+        "Dextérité": 70,
+        "Vitesse": 61,
+        "Endurance": 85,
+        "Esquive": 69,
+        "Chance": 68,
+        "Charisme": 74,
+        "Courage": 63,
+        "Intelligence": 68,
+        "Volonté": 61,
+        "Perception": 63,
+        "Puissance magique": 67,
+        "Réserve de mana": 66
+      },
+      "resistances": {
+        "Résistance physique": 17,
+        "Résistance au feu": 6,
+        "Résistance au froid": 9,
+        "Résistance à la foudre": 8,
+        "Résistance au poison": 17
+      },
+      "pv": 310,
+      "competences_martiales": {
+        "Lance": 69,
+        "Armes d’hast": 62,
+        "Discrétion": 41,
+        "Pièges": 39,
+        "Combat à deux armes": 54,
+        "Combat à mains nues": 46,
+        "Combat à deux mains": 59
+      },
+      "intimidation": 50,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire"
+      ],
+      "armes": [
+        "Lance"
+      ],
+      "armure": "Cuir renforcé",
+      "tier": 4,
+      "qualite": "Grand Luxe",
+      "points": 43
+    },
+    {
+      "nom": "Frondeur orc novice",
+      "code": "orc_slinger_novice",
+      "faction": "Orcs",
+      "peuple": "Orc",
+      "culture": "Orcs des steppes",
+      "ligne": "Frondeur",
+      "niveau": "novice",
+      "centile": "P20",
+      "caracteristiques": {
+        "Force": 40,
+        "Constitution": 41,
+        "Dextérité": 53,
+        "Vitesse": 54,
+        "Endurance": 54,
+        "Esquive": 45,
+        "Chance": 42,
+        "Charisme": 47,
+        "Courage": 33,
+        "Intelligence": 32,
+        "Volonté": 37,
+        "Perception": 54,
+        "Puissance magique": 37,
+        "Réserve de mana": 43
+      },
+      "resistances": {
+        "Résistance physique": 3,
+        "Résistance au feu": 2,
+        "Résistance au froid": 2,
+        "Résistance à la foudre": 1,
+        "Résistance au poison": 8
+      },
+      "pv": 167,
+      "competences_martiales": {
+        "Fronde": 44,
+        "Armes de tir": 42,
+        "Discrétion": 23,
+        "Pièges": 21,
+        "Combat à deux armes": 35,
+        "Combat à mains nues": 28,
+        "Combat à deux mains": 38
+      },
+      "intimidation": 33,
+      "port_d_armure": [],
+      "armes": [
+        "Fronde"
+      ],
+      "armure": "Vêtements",
+      "tier": 1,
+      "qualite": "Usée",
+      "points": 6
+    },
+    {
+      "nom": "Frondeur orc",
+      "code": "orc_slinger",
+      "faction": "Orcs",
+      "peuple": "Orc",
+      "culture": "Orcs des steppes",
+      "ligne": "Frondeur",
+      "niveau": "normal",
+      "centile": "P50",
+      "caracteristiques": {
+        "Force": 52,
+        "Constitution": 49,
+        "Dextérité": 62,
+        "Vitesse": 61,
+        "Endurance": 65,
+        "Esquive": 54,
+        "Chance": 52,
+        "Charisme": 57,
+        "Courage": 43,
+        "Intelligence": 44,
+        "Volonté": 46,
+        "Perception": 63,
+        "Puissance magique": 47,
+        "Réserve de mana": 51
+      },
+      "resistances": {
+        "Résistance physique": 7,
+        "Résistance au feu": 4,
+        "Résistance au froid": 4,
+        "Résistance à la foudre": 3,
+        "Résistance au poison": 11
+      },
+      "pv": 200,
+      "competences_martiales": {
+        "Fronde": 54,
+        "Armes de tir": 50,
+        "Discrétion": 27,
+        "Pièges": 26,
+        "Combat à deux armes": 41,
+        "Combat à mains nues": 34,
+        "Combat à deux mains": 46
+      },
+      "intimidation": 39,
+      "port_d_armure": [],
+      "armes": [
+        "Fronde"
+      ],
+      "armure": "Vêtements",
+      "tier": 2,
+      "qualite": "Correcte",
+      "points": 9
+    },
+    {
+      "nom": "Frondeur orc vétéran",
+      "code": "orc_slinger_veteran",
+      "faction": "Orcs",
+      "peuple": "Orc",
+      "culture": "Orcs des steppes",
+      "ligne": "Frondeur",
+      "niveau": "vétéran",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 68,
+        "Constitution": 59,
+        "Dextérité": 70,
+        "Vitesse": 68,
+        "Endurance": 75,
+        "Esquive": 62,
+        "Chance": 60,
+        "Charisme": 65,
+        "Courage": 51,
+        "Intelligence": 56,
+        "Volonté": 54,
+        "Perception": 70,
+        "Puissance magique": 57,
+        "Réserve de mana": 59
+      },
+      "resistances": {
+        "Résistance physique": 12,
+        "Résistance au feu": 5,
+        "Résistance au froid": 6,
+        "Résistance à la foudre": 5,
+        "Résistance au poison": 14
+      },
+      "pv": 239,
+      "competences_martiales": {
+        "Fronde": 62,
+        "Armes de tir": 56,
+        "Discrétion": 32,
+        "Pièges": 32,
+        "Combat à deux armes": 47,
+        "Combat à mains nues": 39,
+        "Combat à deux mains": 53
+      },
+      "intimidation": 44,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Fronde"
+      ],
+      "armure": "Gambison",
+      "tier": 3,
+      "qualite": "Grand Luxe",
+      "points": 15
+    },
+    {
+      "nom": "Frondeur orc d’élite",
+      "code": "orc_slinger_elite",
+      "faction": "Orcs",
+      "peuple": "Orc",
+      "culture": "Orcs des steppes",
+      "ligne": "Frondeur",
+      "niveau": "d’élite",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 80,
+        "Constitution": 67,
+        "Dextérité": 75,
+        "Vitesse": 72,
+        "Endurance": 85,
+        "Esquive": 69,
+        "Chance": 68,
+        "Charisme": 74,
+        "Courage": 58,
+        "Intelligence": 68,
+        "Volonté": 61,
+        "Perception": 75,
+        "Puissance magique": 67,
+        "Réserve de mana": 66
+      },
+      "resistances": {
+        "Résistance physique": 17,
+        "Résistance au feu": 6,
+        "Résistance au froid": 9,
+        "Résistance à la foudre": 8,
+        "Résistance au poison": 17
+      },
+      "pv": 271,
+      "competences_martiales": {
+        "Fronde": 69,
+        "Armes de tir": 62,
+        "Discrétion": 41,
+        "Pièges": 39,
+        "Combat à deux armes": 54,
+        "Combat à mains nues": 46,
+        "Combat à deux mains": 59
+      },
+      "intimidation": 50,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Fronde"
+      ],
+      "armure": "Armure de cuir",
+      "tier": 4,
+      "qualite": "Grand Luxe",
+      "points": 22
+    },
+    {
+      "nom": "Archer orc novice",
+      "code": "orc_archer_novice",
+      "faction": "Orcs",
+      "peuple": "Orc",
+      "culture": "Orcs des steppes",
+      "ligne": "Archer",
+      "niveau": "novice",
+      "centile": "P20",
+      "caracteristiques": {
+        "Force": 40,
+        "Constitution": 49,
+        "Dextérité": 53,
+        "Vitesse": 44,
+        "Endurance": 54,
+        "Esquive": 36,
+        "Chance": 52,
+        "Charisme": 47,
+        "Courage": 33,
+        "Intelligence": 32,
+        "Volonté": 37,
+        "Perception": 54,
+        "Puissance magique": 37,
+        "Réserve de mana": 43
+      },
+      "resistances": {
+        "Résistance physique": 3,
+        "Résistance au feu": 2,
+        "Résistance au froid": 2,
+        "Résistance à la foudre": 1,
+        "Résistance au poison": 8
+      },
+      "pv": 191,
+      "competences_martiales": {
+        "Arc": 44,
+        "Armes de tir": 42,
+        "Discrétion": 23,
+        "Pièges": 21,
+        "Combat à deux armes": 35,
+        "Combat à mains nues": 28,
+        "Combat à deux mains": 38
+      },
+      "intimidation": 33,
+      "port_d_armure": [],
+      "armes": [
+        "Arc"
+      ],
+      "armure": "Vêtements",
+      "tier": 1,
+      "qualite": "Usée",
+      "points": 6
+    },
+    {
+      "nom": "Archer orc",
+      "code": "orc_archer",
+      "faction": "Orcs",
+      "peuple": "Orc",
+      "culture": "Orcs des steppes",
+      "ligne": "Archer",
+      "niveau": "normal",
+      "centile": "P50",
+      "caracteristiques": {
+        "Force": 52,
+        "Constitution": 59,
+        "Dextérité": 62,
+        "Vitesse": 54,
+        "Endurance": 65,
+        "Esquive": 45,
+        "Chance": 60,
+        "Charisme": 57,
+        "Courage": 43,
+        "Intelligence": 44,
+        "Volonté": 46,
+        "Perception": 63,
+        "Puissance magique": 47,
+        "Réserve de mana": 51
+      },
+      "resistances": {
+        "Résistance physique": 7,
+        "Résistance au feu": 4,
+        "Résistance au froid": 4,
+        "Résistance à la foudre": 3,
+        "Résistance au poison": 11
+      },
+      "pv": 230,
+      "competences_martiales": {
+        "Arc": 54,
+        "Armes de tir": 50,
+        "Discrétion": 27,
+        "Pièges": 26,
+        "Combat à deux armes": 41,
+        "Combat à mains nues": 34,
+        "Combat à deux mains": 46
+      },
+      "intimidation": 39,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Arc"
+      ],
+      "armure": "Gambison",
+      "tier": 2,
+      "qualite": "Correcte",
+      "points": 11
+    },
+    {
+      "nom": "Archer orc vétéran",
+      "code": "orc_archer_veteran",
+      "faction": "Orcs",
+      "peuple": "Orc",
+      "culture": "Orcs des steppes",
+      "ligne": "Archer",
+      "niveau": "vétéran",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 68,
+        "Constitution": 67,
+        "Dextérité": 70,
+        "Vitesse": 61,
+        "Endurance": 75,
+        "Esquive": 54,
+        "Chance": 68,
+        "Charisme": 65,
+        "Courage": 51,
+        "Intelligence": 56,
+        "Volonté": 54,
+        "Perception": 70,
+        "Puissance magique": 57,
+        "Réserve de mana": 59
+      },
+      "resistances": {
+        "Résistance physique": 12,
+        "Résistance au feu": 5,
+        "Résistance au froid": 6,
+        "Résistance à la foudre": 5,
+        "Résistance au poison": 14
+      },
+      "pv": 263,
+      "competences_martiales": {
+        "Arc": 62,
+        "Armes de tir": 56,
+        "Discrétion": 32,
+        "Pièges": 32,
+        "Combat à deux armes": 47,
+        "Combat à mains nues": 39,
+        "Combat à deux mains": 53
+      },
+      "intimidation": 44,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Arc"
+      ],
+      "armure": "Armure de cuir",
+      "tier": 3,
+      "qualite": "Grand Luxe",
+      "points": 17
+    },
+    {
+      "nom": "Archer orc d’élite",
+      "code": "orc_archer_elite",
+      "faction": "Orcs",
+      "peuple": "Orc",
+      "culture": "Orcs des steppes",
+      "ligne": "Archer",
+      "niveau": "d’élite",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 80,
+        "Constitution": 75,
+        "Dextérité": 75,
+        "Vitesse": 68,
+        "Endurance": 85,
+        "Esquive": 62,
+        "Chance": 72,
+        "Charisme": 74,
+        "Courage": 58,
+        "Intelligence": 68,
+        "Volonté": 61,
+        "Perception": 75,
+        "Puissance magique": 67,
+        "Réserve de mana": 66
+      },
+      "resistances": {
+        "Résistance physique": 17,
+        "Résistance au feu": 6,
+        "Résistance au froid": 9,
+        "Résistance à la foudre": 8,
+        "Résistance au poison": 17
+      },
+      "pv": 295,
+      "competences_martiales": {
+        "Arc": 69,
+        "Armes de tir": 62,
+        "Discrétion": 41,
+        "Pièges": 39,
+        "Combat à deux armes": 54,
+        "Combat à mains nues": 46,
+        "Combat à deux mains": 59
+      },
+      "intimidation": 50,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Arc"
+      ],
+      "armure": "Armure de cuir",
+      "tier": 4,
+      "qualite": "Grand Luxe",
+      "points": 23
+    },
+    {
+      "nom": "Guerrier orc novice",
+      "code": "orc_warrior_novice",
+      "faction": "Orcs",
+      "peuple": "Orc",
+      "culture": "Orcs des steppes",
+      "ligne": "Guerrier",
+      "niveau": "novice",
+      "centile": "P20",
+      "caracteristiques": {
+        "Force": 52,
+        "Constitution": 59,
+        "Dextérité": 53,
+        "Vitesse": 36,
+        "Endurance": 65,
+        "Esquive": 45,
+        "Chance": 42,
+        "Charisme": 47,
+        "Courage": 33,
+        "Intelligence": 32,
+        "Volonté": 37,
+        "Perception": 35,
+        "Puissance magique": 37,
+        "Réserve de mana": 43
+      },
+      "resistances": {
+        "Résistance physique": 3,
+        "Résistance au feu": 2,
+        "Résistance au froid": 2,
+        "Résistance à la foudre": 1,
+        "Résistance au poison": 8
+      },
+      "pv": 228,
+      "competences_martiales": {
+        "Épée courte": 44,
+        "Lames courtes": 42,
+        "Rondache": 14,
+        "Boucliers": 13,
+        "Discrétion": 23,
+        "Pièges": 21,
+        "Combat à deux armes": 35,
+        "Combat à mains nues": 28,
+        "Combat à deux mains": 38
+      },
+      "intimidation": 33,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Épée courte",
+        "Rondache"
+      ],
+      "armure": "Gambison",
+      "tier": 1,
+      "qualite": "Usée",
+      "points": 6
+    },
+    {
+      "nom": "Guerrier orc",
+      "code": "orc_warrior",
+      "faction": "Orcs",
+      "peuple": "Orc",
+      "culture": "Orcs des steppes",
+      "ligne": "Guerrier",
+      "niveau": "normal",
+      "centile": "P50",
+      "caracteristiques": {
+        "Force": 68,
+        "Constitution": 67,
+        "Dextérité": 62,
+        "Vitesse": 44,
+        "Endurance": 75,
+        "Esquive": 54,
+        "Chance": 52,
+        "Charisme": 57,
+        "Courage": 43,
+        "Intelligence": 44,
+        "Volonté": 46,
+        "Perception": 45,
+        "Puissance magique": 47,
+        "Réserve de mana": 51
+      },
+      "resistances": {
+        "Résistance physique": 7,
+        "Résistance au feu": 4,
+        "Résistance au froid": 4,
+        "Résistance à la foudre": 3,
+        "Résistance au poison": 11
+      },
+      "pv": 260,
+      "competences_martiales": {
+        "Épée courte": 54,
+        "Lames courtes": 50,
+        "Rondache": 18,
+        "Boucliers": 18,
+        "Discrétion": 27,
+        "Pièges": 26,
+        "Combat à deux armes": 41,
+        "Combat à mains nues": 34,
+        "Combat à deux mains": 46
+      },
+      "intimidation": 39,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Épée courte",
+        "Rondache"
+      ],
+      "armure": "Armure de cuir",
+      "tier": 2,
+      "qualite": "Correcte",
+      "points": 15
+    },
+    {
+      "nom": "Guerrier orc vétéran",
+      "code": "orc_warrior_veteran",
+      "faction": "Orcs",
+      "peuple": "Orc",
+      "culture": "Orcs des steppes",
+      "ligne": "Guerrier",
+      "niveau": "vétéran",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 80,
+        "Constitution": 75,
+        "Dextérité": 70,
+        "Vitesse": 54,
+        "Endurance": 85,
+        "Esquive": 62,
+        "Chance": 60,
+        "Charisme": 65,
+        "Courage": 51,
+        "Intelligence": 56,
+        "Volonté": 54,
+        "Perception": 54,
+        "Puissance magique": 57,
+        "Réserve de mana": 59
+      },
+      "resistances": {
+        "Résistance physique": 12,
+        "Résistance au feu": 5,
+        "Résistance au froid": 6,
+        "Résistance à la foudre": 5,
+        "Résistance au poison": 14
+      },
+      "pv": 293,
+      "competences_martiales": {
+        "Épée courte": 62,
+        "Lames courtes": 56,
+        "Rondache": 23,
+        "Boucliers": 29,
+        "Discrétion": 32,
+        "Pièges": 32,
+        "Combat à deux armes": 47,
+        "Combat à mains nues": 39,
+        "Combat à deux mains": 53
+      },
+      "intimidation": 44,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire"
+      ],
+      "armes": [
+        "Épée courte",
+        "Rondache"
+      ],
+      "armure": "Cuir renforcé",
+      "tier": 3,
+      "qualite": "Grand Luxe",
+      "points": 32
+    },
+    {
+      "nom": "Guerrier orc d’élite",
+      "code": "orc_warrior_elite",
+      "faction": "Orcs",
+      "peuple": "Orc",
+      "culture": "Orcs des steppes",
+      "ligne": "Guerrier",
+      "niveau": "d’élite",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 91,
+        "Constitution": 80,
+        "Dextérité": 75,
+        "Vitesse": 61,
+        "Endurance": 91,
+        "Esquive": 69,
+        "Chance": 68,
+        "Charisme": 74,
+        "Courage": 58,
+        "Intelligence": 68,
+        "Volonté": 61,
+        "Perception": 63,
+        "Puissance magique": 67,
+        "Réserve de mana": 66
+      },
+      "resistances": {
+        "Résistance physique": 17,
+        "Résistance au feu": 6,
+        "Résistance au froid": 9,
+        "Résistance à la foudre": 8,
+        "Résistance au poison": 17
+      },
+      "pv": 313,
+      "competences_martiales": {
+        "Épée courte": 69,
+        "Lames courtes": 62,
+        "Rondache": 33,
+        "Boucliers": 42,
+        "Discrétion": 41,
+        "Pièges": 39,
+        "Combat à deux armes": 54,
+        "Combat à mains nues": 46,
+        "Combat à deux mains": 59
+      },
+      "intimidation": 50,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire"
+      ],
+      "armes": [
+        "Épée courte",
+        "Rondache"
+      ],
+      "armure": "Brigandine",
+      "tier": 4,
+      "qualite": "Grand Luxe",
+      "points": 51
+    },
+    {
+      "nom": "Assassin orc novice",
+      "code": "orc_assassin_novice",
+      "faction": "Orcs",
+      "peuple": "Orc",
+      "culture": "Orcs des steppes",
+      "ligne": "Assassin",
+      "niveau": "novice",
+      "centile": "P20",
+      "caracteristiques": {
+        "Force": 52,
+        "Constitution": 41,
+        "Dextérité": 53,
+        "Vitesse": 54,
+        "Endurance": 54,
+        "Esquive": 54,
+        "Chance": 42,
+        "Charisme": 47,
+        "Courage": 23,
+        "Intelligence": 32,
+        "Volonté": 37,
+        "Perception": 45,
+        "Puissance magique": 37,
+        "Réserve de mana": 43
+      },
+      "resistances": {
+        "Résistance physique": 3,
+        "Résistance au feu": 2,
+        "Résistance au froid": 2,
+        "Résistance à la foudre": 1,
+        "Résistance au poison": 8
+      },
+      "pv": 167,
+      "competences_martiales": {
+        "Dague": 44,
+        "Lames courtes": 42,
+        "Discrétion": 27,
+        "Pièges": 21,
+        "Combat à deux armes": 35,
+        "Combat à mains nues": 28,
+        "Combat à deux mains": 38
+      },
+      "intimidation": 33,
+      "port_d_armure": [],
+      "armes": [
+        "Dague",
+        "Dague"
+      ],
+      "armure": "Vêtements",
+      "tier": 1,
+      "qualite": "Usée",
+      "points": 5
+    },
+    {
+      "nom": "Assassin orc",
+      "code": "orc_assassin",
+      "faction": "Orcs",
+      "peuple": "Orc",
+      "culture": "Orcs des steppes",
+      "ligne": "Assassin",
+      "niveau": "normal",
+      "centile": "P50",
+      "caracteristiques": {
+        "Force": 68,
+        "Constitution": 49,
+        "Dextérité": 62,
+        "Vitesse": 61,
+        "Endurance": 65,
+        "Esquive": 62,
+        "Chance": 52,
+        "Charisme": 57,
+        "Courage": 33,
+        "Intelligence": 44,
+        "Volonté": 46,
+        "Perception": 54,
+        "Puissance magique": 47,
+        "Réserve de mana": 51
+      },
+      "resistances": {
+        "Résistance physique": 7,
+        "Résistance au feu": 4,
+        "Résistance au froid": 4,
+        "Résistance à la foudre": 3,
+        "Résistance au poison": 11
+      },
+      "pv": 200,
+      "competences_martiales": {
+        "Dague": 54,
+        "Lames courtes": 50,
+        "Discrétion": 32,
+        "Pièges": 26,
+        "Combat à deux armes": 41,
+        "Combat à mains nues": 34,
+        "Combat à deux mains": 46
+      },
+      "intimidation": 39,
+      "port_d_armure": [],
+      "armes": [
+        "Dague",
+        "Dague"
+      ],
+      "armure": "Vêtements",
+      "tier": 2,
+      "qualite": "Correcte",
+      "points": 10
+    },
+    {
+      "nom": "Assassin orc vétéran",
+      "code": "orc_assassin_veteran",
+      "faction": "Orcs",
+      "peuple": "Orc",
+      "culture": "Orcs des steppes",
+      "ligne": "Assassin",
+      "niveau": "vétéran",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 80,
+        "Constitution": 59,
+        "Dextérité": 70,
+        "Vitesse": 68,
+        "Endurance": 75,
+        "Esquive": 69,
+        "Chance": 60,
+        "Charisme": 65,
+        "Courage": 43,
+        "Intelligence": 56,
+        "Volonté": 54,
+        "Perception": 63,
+        "Puissance magique": 57,
+        "Réserve de mana": 59
+      },
+      "resistances": {
+        "Résistance physique": 12,
+        "Résistance au feu": 5,
+        "Résistance au froid": 6,
+        "Résistance à la foudre": 5,
+        "Résistance au poison": 14
+      },
+      "pv": 239,
+      "competences_martiales": {
+        "Dague": 62,
+        "Lames courtes": 56,
+        "Discrétion": 41,
+        "Pièges": 32,
+        "Combat à deux armes": 47,
+        "Combat à mains nues": 39,
+        "Combat à deux mains": 53
+      },
+      "intimidation": 44,
+      "port_d_armure": [],
+      "armes": [
+        "Dague",
+        "Dague"
+      ],
+      "armure": "Vêtements",
+      "tier": 3,
+      "qualite": "Grand Luxe",
+      "points": 18
+    },
+    {
+      "nom": "Assassin orc d’élite",
+      "code": "orc_assassin_elite",
+      "faction": "Orcs",
+      "peuple": "Orc",
+      "culture": "Orcs des steppes",
+      "ligne": "Assassin",
+      "niveau": "d’élite",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 91,
+        "Constitution": 67,
+        "Dextérité": 75,
+        "Vitesse": 72,
+        "Endurance": 85,
+        "Esquive": 73,
+        "Chance": 68,
+        "Charisme": 74,
+        "Courage": 51,
+        "Intelligence": 68,
+        "Volonté": 61,
+        "Perception": 70,
+        "Puissance magique": 67,
+        "Réserve de mana": 66
+      },
+      "resistances": {
+        "Résistance physique": 17,
+        "Résistance au feu": 6,
+        "Résistance au froid": 9,
+        "Résistance à la foudre": 8,
+        "Résistance au poison": 17
+      },
+      "pv": 271,
+      "competences_martiales": {
+        "Dague": 69,
+        "Lames courtes": 62,
+        "Discrétion": 46,
+        "Pièges": 39,
+        "Combat à deux armes": 54,
+        "Combat à mains nues": 46,
+        "Combat à deux mains": 59
+      },
+      "intimidation": 50,
+      "port_d_armure": [],
+      "armes": [
+        "Dague",
+        "Dague"
+      ],
+      "armure": "Vêtements",
+      "tier": 4,
+      "qualite": "Grand Luxe",
+      "points": 33
+    },
+    {
+      "nom": "Chef de bande orc",
+      "code": "orc_chief_1",
+      "faction": "Orcs",
+      "peuple": "Orc",
+      "culture": "Orcs des steppes",
+      "ligne": "Chef",
+      "niveau": "chef 1",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 80,
+        "Constitution": 67,
+        "Dextérité": 62,
+        "Vitesse": 61,
+        "Endurance": 75,
+        "Esquive": 62,
+        "Chance": 60,
+        "Charisme": 74,
+        "Courage": 58,
+        "Intelligence": 56,
+        "Volonté": 61,
+        "Perception": 63,
+        "Puissance magique": 57,
+        "Réserve de mana": 59
+      },
+      "resistances": {
+        "Résistance physique": 12,
+        "Résistance au feu": 5,
+        "Résistance au froid": 6,
+        "Résistance à la foudre": 5,
+        "Résistance au poison": 14
+      },
+      "pv": 265,
+      "competences_martiales": {
+        "Sabre": 62,
+        "Lames longues": 56,
+        "Rondache": 23,
+        "Boucliers": 29,
+        "Discrétion": 32,
+        "Pièges": 32,
+        "Combat à deux armes": 47,
+        "Combat à mains nues": 39,
+        "Combat à deux mains": 53
+      },
+      "intimidation": 50,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire"
+      ],
+      "armes": [
+        "Sabre",
+        "Rondache"
+      ],
+      "armure": "Cuir renforcé",
+      "tier": 3,
+      "qualite": "Grand Luxe",
+      "points": 38
+    },
+    {
+      "nom": "Chef de guerre orc",
+      "code": "orc_chief_2",
+      "faction": "Orcs",
+      "peuple": "Orc",
+      "culture": "Orcs des steppes",
+      "ligne": "Chef",
+      "niveau": "chef 2",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 91,
+        "Constitution": 75,
+        "Dextérité": 70,
+        "Vitesse": 68,
+        "Endurance": 85,
+        "Esquive": 69,
+        "Chance": 68,
+        "Charisme": 79,
+        "Courage": 63,
+        "Intelligence": 68,
+        "Volonté": 64,
+        "Perception": 70,
+        "Puissance magique": 67,
+        "Réserve de mana": 66
+      },
+      "resistances": {
+        "Résistance physique": 17,
+        "Résistance au feu": 6,
+        "Résistance au froid": 9,
+        "Résistance à la foudre": 8,
+        "Résistance au poison": 17
+      },
+      "pv": 296,
+      "competences_martiales": {
+        "Sabre": 69,
+        "Lames longues": 62,
+        "Rondache": 33,
+        "Boucliers": 42,
+        "Discrétion": 41,
+        "Pièges": 39,
+        "Combat à deux armes": 54,
+        "Combat à mains nues": 46,
+        "Combat à deux mains": 59
+      },
+      "intimidation": 53,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire"
+      ],
+      "armes": [
+        "Sabre",
+        "Rondache"
+      ],
+      "armure": "Cotte de mailles",
+      "tier": 4,
+      "qualite": "Grand Luxe",
+      "points": 72
+    },
+    {
+      "nom": "Seigneur de guerre orc",
+      "code": "orc_chief_3",
+      "faction": "Orcs",
+      "peuple": "Orc",
+      "culture": "Orcs des steppes",
+      "ligne": "Chef",
+      "niveau": "chef 3",
+      "centile": "P95",
+      "caracteristiques": {
+        "Force": 97,
+        "Constitution": 80,
+        "Dextérité": 75,
+        "Vitesse": 72,
+        "Endurance": 91,
+        "Esquive": 73,
+        "Chance": 72,
+        "Charisme": 88,
+        "Courage": 74,
+        "Intelligence": 74,
+        "Volonté": 71,
+        "Perception": 75,
+        "Puissance magique": 72,
+        "Réserve de mana": 70
+      },
+      "resistances": {
+        "Résistance physique": 20,
+        "Résistance au feu": 6,
+        "Résistance au froid": 12,
+        "Résistance à la foudre": 12,
+        "Résistance au poison": 19
+      },
+      "pv": 316,
+      "competences_martiales": {
+        "Sabre": 73,
+        "Lames longues": 65,
+        "Rondache": 37,
+        "Boucliers": 46,
+        "Discrétion": 46,
+        "Pièges": 44,
+        "Combat à deux armes": 60,
+        "Combat à mains nues": 51,
+        "Combat à deux mains": 63
+      },
+      "intimidation": 61,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire"
+      ],
+      "armes": [
+        "Sabre",
+        "Rondache"
+      ],
+      "armure": "Brigandine",
+      "tier": 4,
+      "qualite": "Grand Luxe",
+      "points": null
+    },
+    {
+      "nom": "Khan des Steppes",
+      "code": "orc_chief_4",
+      "faction": "Orcs",
+      "peuple": "Orc",
+      "culture": "Orcs des steppes",
+      "ligne": "Chef",
+      "niveau": "chef 4",
+      "centile": "P99",
+      "caracteristiques": {
+        "Force": 110,
+        "Constitution": 89,
+        "Dextérité": 84,
+        "Vitesse": 78,
+        "Endurance": 106,
+        "Esquive": 79,
+        "Chance": 82,
+        "Charisme": 88,
+        "Courage": 74,
+        "Intelligence": 85,
+        "Volonté": 71,
+        "Perception": 83,
+        "Puissance magique": 80,
+        "Réserve de mana": 80
+      },
+      "resistances": {
+        "Résistance physique": 30,
+        "Résistance au feu": 18,
+        "Résistance au froid": 15,
+        "Résistance à la foudre": 29,
+        "Résistance au poison": 23
+      },
+      "pv": 352,
+      "competences_martiales": {
+        "Sabre": 81,
+        "Lames longues": 71,
+        "Rondache": 43,
+        "Boucliers": 54,
+        "Discrétion": 53,
+        "Pièges": 50,
+        "Combat à deux armes": 71,
+        "Combat à mains nues": 69,
+        "Combat à deux mains": 70
+      },
+      "intimidation": 61,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire",
+        "Port d’armure lourde"
+      ],
+      "armes": [
+        "Sabre",
+        "Rondache"
+      ],
+      "armure": "Armure d'écailles",
+      "tier": 4,
+      "qualite": "Grand Luxe",
+      "points": null
     }
   ]
 }

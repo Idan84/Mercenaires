@@ -23,11 +23,10 @@
       helmet:byName(reference?.helmets)};
     // Potions et fioles (Idan, 2026-10-29) : sans tier ni qualité, la valeur est leur prix de base.
     const potions=byName(reference?.potions);
-    // Manuels de sorts (Idan, 2026-10-31 ; spell-manuals.js) : la valeur dépend du palier du sort
-    // (economy.manual_value.<palier>), sans tier ni qualité.
+    // Manuels de sorts (Idan, 2026-10-31 ; spell-manuals.js) : la même valeur pour tous les sorts (economy.manual_value ;
+    // Idan, 2026-11-01 : « Un sort, on le fixe à 3000 PO »), sans tier ni qualité.
     const spells=rows(reference?.spells);
-    const paliers=new Map(spells.map(s=>[s.code,s.palier]));
-    const slug=x=>String(x||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"_");
+    const spellCodes=new Set(spells.map(s=>s.code));
     const qualities=new Map(rows(reference?.itemQualities).map(r=>[r.code,r]));
     const constants=new Map(rows(reference?.formulaConstants).map(r=>[r.code,Number(r.valeur)]));
 
@@ -52,9 +51,9 @@
     }
 
     function manualValue(item){
-      const palier=paliers.get(item?.spellCode)||spells.find(s=>"Manuel : "+s.nom===item?.name)?.palier;
-      const value=constants.get(`economy.manual_value.${slug(palier)}`);
-      return Number.isFinite(value)?value:null;
+      const known=spellCodes.has(item?.spellCode)||spells.some(s=>"Manuel : "+s.nom===item?.name);
+      const value=constants.get("economy.manual_value");
+      return known&&Number.isFinite(value)?value:null;
     }
 
     // Prix de base de l'objet, ou null s'il n'a pas de modèle connu (casques à venir, objets de quête…).

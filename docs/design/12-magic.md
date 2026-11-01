@@ -73,7 +73,7 @@ Même modèle que Soin rapide : **Effet = 10 × dés × (2 × Puissance magique 
 | Purge | rapide | allié ou soi | retire tout le poison ; pas de coup critique | 2 + M/25 | 8 |
 | Bénédiction | rapide | allié ou soi | **+30 + M/2 de Chance** pendant **2 tours** ; pas de coup critique | 2 + M/25 | 10 |
 | Lien de vie | principale | **un autre allié** | le lanceur donne **jusqu'à 2D6** de ses PV, l'allié en reçoit **× 1,5** | 2 + M/25 | 15 |
-| Délivrance | rapide | allié ou soi | retire **la peur (fin de la fuite), la paralysie, le gel et la frénésie** ; pas de coup critique | 2 + M/25 | 10 |
+| Délivrance | rapide | allié ou soi | retire **la peur (fin de la fuite), la paralysie, le gel et la frénésie**, et depuis l'Illusion **le sommeil, le désespoir et le brouillage mental** ; pas de coup critique | 2 + M/25 | 10 |
 | Lumière sacrée | principale | une case | **1D10** à **chaque mort-vivant** d'un cercle de **rayon 1 + M/50 (au plus 3)**, les nôtres compris ; ignore armure, résistances et blocage | centre à 2 + M/25 | 30 |
 
 *M = Maîtrise ; portées, durées et rayons arrondis à l'inférieur ; toujours en ligne de vue.*
@@ -86,7 +86,7 @@ Même modèle que Soin rapide : **Effet = 10 × dés × (2 × Puissance magique 
 - **Les quatre sorts du 2026-10-31** (validés par Idan, chiffrés par JC3) amènent l'école à 10 sorts.
 - **Bénédiction** : la Chance fait les coups critiques (Chance / 10 %) et confirme moins d'échecs critiques ; en points plutôt qu'en pourcentage, sinon le bonus serait trop faible (Chance médiane d'une recrue : 55, soit 5,5 % de critiques ; bénie par une recrue moyenne : 11 %). Ne se cumule pas ; sur soi, l'activation en cours compte comme la première.
 - **Lien de vie** : le lanceur ne donne **que ce qu'il faut** pour remonter l'allié (au plus le résultat des dés) et **garde toujours 1 PV** ; sur un allié flétri, il ne donne rien (`magic.lifeLink`). Ce n'est pas une blessure : pas de résistance.
-- **Délivrance** : sans cible s'il n'y a rien à retirer (comme Purge sans poison) ; la frénésie emporte son bonus de Force. Liste dans `spells.json` (`retire`) : on pourra y ajouter les états à venir (Sommeil, Désespoir…) au fil des écoles.
+- **Délivrance** : sans cible s'il n'y a rien à retirer (comme Purge sans poison) ; la frénésie emporte son bonus de Force. Liste dans `spells.json` (`retire`) : on y ajoute les états à venir au fil des écoles (Sommeil, Désespoir et Brouillage mental depuis l'Illusion).
 - **Lumière sacrée** : les vivants du cercle n'ont rien ; nos zombies et squelettes y passent aussi.
 - **Infobulle du grimoire** (Idan, 2026-10-30 : « on doit savoir à qui il sert, combien de mana il utilise ») : au survol d'un sort de la fiche, sa description (la cible et l'action y sont), puis ses chiffres pour ce mercenaire, maîtrise et équipement compris, les mêmes qu'en combat : mana, réussite, portée, soins ou dégâts, bonus, durée, zone (`prototype-web/ui.js`, `spellTip` ; test : `tests/magic.test.js`).
 
@@ -307,7 +307,7 @@ Une école de **contrôle** : elle déplace les gens sur la carte. Même modèle
 | Bond | portée 2 · 9 mana | portée 3 · 9 | portée 4 · 6 |
 | Écrasement | 60 · portée 7 · 18 mana | 79 · portée 8 · 17 | 178 · portée 11 · 12 |
 
-### École de l'Illusion (6 sorts, Idan, 2026-10-28)
+### École de l'Illusion (10 sorts, Idan, 2026-10-28 et 2026-10-31)
 
 L'école du **moral** : elle joue sur le test de Courage du combat (doc 04, Courage post-attaque). La **Volonté** du mage y compte (Idan : « ici, c'est la force mentale » ; le Charisme ira à l'Invocation et à la Nécromancie). Même modèle que les autres écoles pour le mana, la réussite et les critiques. Écoles opposées : Vie et Télékinésie. Données : `spells.json`.
 
@@ -319,11 +319,21 @@ L'école du **moral** : elle joue sur le test de Courage du combat (doc 04, Cour
 | Avancée cachée | principale | **+(40 + M/5) de Discrétion** (massif) aux alliés de la zone, lanceur compris, pendant 2 à 3 tours | centre à 6 + M/25, rayon 2 à 3 | 20 |
 | Choc psychique | principale | **1D6** × **Volonté du mage / Volonté de la cible** (de × 0,5 à × 2), **comme une flèche** ; ni armure ni résistance | 6 + M/25, au plus 12 | 10 |
 | Frénésie | rapide | pendant les **2 prochaines activations** de la cible : elle **joue seule**, **+10 % de Force**, **plus de peur** | un allié, un ennemi ou soi, 2 + M/25 | 15 |
+| Désespoir | rapide | **−(30 + M/5) de Courage** pendant **2 tours** | un ennemi, 6 + M/25, au plus 12 | 12 |
+| Brouillage mental | principale | pendant **2 tours**, ses sorts ont **−(20 + M/5) % de réussite**, × **Volonté du mage / Volonté de la cible** (de × 0,5 à × 2) | un ennemi, 6 + M/25, au plus 12 | 15 |
+| Création de double | principale | un **double du mage, à 1 PV**, sur une case libre : les ennemis le prennent pour lui ; il **n'agit pas** et **se dissipe** dès qu'un coup ou un sort le touche | case libre, 3 + M/25 | 20 |
+| Sommeil | principale | la cible **s'endort** et perd ses **2 + M/50 prochaines activations (2 à 4)**, sauf si elle **résiste** ; **un coup qui la blesse la réveille** | un ennemi, 6 + M/25, au plus 12 | 25 |
 
 - **Peur** : le test de Courage d'après une attaque, la **Maîtrise et la Volonté du mage** tenant le rôle de l'Intimidation de l'adversaire : tenir = Courage + aura + Volonté / 4 − (Maîtrise + Volonté du mage) / 4, de 5 à 95 %. Raté : En fuite, avec le mouvement de fuite immédiat et la reprise de contrôle habituels. Un ennemi déjà en fuite ou en frénésie ne teste pas ; les alliés de la zone ne sont pas touchés. Un ennemi avec Courage 50 et Volonté 50 tient à 42 % face à un débutant, 35 % face à une recrue, 12 % face à un expert.
 - **Soutien illusoire**, **Courage de masse** : des points de Courage, qui comptent aussi pour reprendre ses esprits en fuite. Sur le lanceur, l'activation en cours compte comme la première.
 - **Avancée cachée** : la Discrétion sert au camouflage (doc 04) : sous le sort, un mercenaire est bien plus dur à repérer.
 - **Choc psychique** : un projectile ; le Champ de protection peut le dévier.
+- **Les quatre sorts du 2026-10-31** (validés par Idan, chiffrés par JC3) amènent l'école à 10 sorts, sur le même modèle.
+- **Désespoir** : le Soutien illusoire à l'envers, sur un ennemi ; en action rapide, il se combine avec la Peur dans le même tour. Ses points de Courage en moins comptent partout : test après un coup, Peur, reprise de ses esprits en fuite.
+- **Brouillage mental** : contre les mages ennemis (ceux qui soignent) ; la chance de réussite ne descend pas sous 0. Le même rapport de Volonté que le Choc psychique.
+- **Création de double** : une copie du mage (allure, équipement), dans son camp, que l'IA vise comme les autres (le plus proche ; à distance égale, le moins de PV : 1 PV l'attire). Il ne fait ni attaque d'opportunité ni test, ne coûte ni entretien ni test de Charisme. Il se dissipe au premier coup qui le touche (même paré ou bloqué ; un coup raté ou dévié ne le touche pas), au premier sort qui le blesse, quand le mage tombe, et à la fin du combat. Un nouveau double remplace le précédent.
+- **Sommeil** : la cible résiste si D100 ≤ sa **Volonté − 0,5 × la Maîtrise** (de 5 à 95 %), comme la Paralysie, sans élément. Endormie, elle perd ses activations et ne réagit plus (ni attaque d'opportunité, ni tir de réaction) ; tout dégât la réveille aussitôt (coup, sort, poison, brûlure). Un ennemi de Volonté 50 résiste à 34 % face à un débutant, 22 % face à une recrue, 5 % face à un expert.
+- **Délivrance** (Vie) retire aussi le sommeil, le désespoir et le brouillage mental.
 - **Frénésie** (Idan : la cible joue seule) : à chacune de ses activations, joueur ou ennemi, elle prend une arme de mêlée si l'autre set en a une, puis frappe au contact, charge, ou fonce sur l'ennemi le plus proche ; jamais de tir ni de sort. Elle ne fait plus aucun test de Courage, et une cible en fuite s'arrête de fuir. Ses 2 prochaines activations, même si le lanceur se vise lui-même.
 
 | | Débutant | Recrue moyenne | Expert |
@@ -334,6 +344,10 @@ L'école du **moral** : elle joue sur le test de Courage du combat (doc 04, Cour
 | Avancée cachée | +46 Discrétion, 2 tours | +51, 3 tours | +66, 3 tours |
 | Choc psychique, à Volonté égale | 30 · 9 mana | 40 · 9 | 89 · 6 |
 | Frénésie | portée 3 · 14 mana | portée 4 · 13 | portée 7 · 9 |
+| Désespoir | −36 Courage · portée 7 · 11 mana | −41 · portée 8 · 10 | −56 · portée 11 · 7 |
+| Brouillage mental, à Volonté égale | −26 % · 14 mana | −31 % · 13 | −46 % · 9 |
+| Création de double | portée 4 · 18 mana | portée 5 · 17 | portée 8 · 12 |
+| Sommeil (Volonté 50) | 2 activations · résiste 34 % · 23 mana | 3 · 22 % · 21 | 4 · 5 % · 14 |
 
 ### École de la Nécromancie (6 sorts, Idan, 2026-10-28)
 
@@ -406,9 +420,8 @@ Le **Charisme** du mage y compte (Idan : l'Invocation et la Nécromancie en dép
 
 Idan a validé **90 sorts mono-école** (10 par école) et **49 sorts bi-école**. JC3 les chiffre et les intègre **une école par PR** ; chaque école intégrée a sa section plus haut, avec ses chiffres. Restent à intégrer :
 
-**Mono-école (12)**
+**Mono-école (8)**
 
-- **Illusion** : **Désespoir** (le Courage de la cible baisse pendant 2 tours) ; **Brouillage mental** (ses sorts ratent plus souvent, 2 tours, selon la Volonté du lanceur) ; **Création de double** (un leurre que les ennemis prennent pour une vraie cible ; il disparaît au premier coup reçu) ; **Sommeil** (la cible dort jusqu'à ce qu'on la frappe, ou pendant quelques tours).
 - **Nécromancie** : **Malédiction** (dégâts nécrotiques au début de chaque activation pendant 3 tours, armure et résistances ignorées ; sans effet sur les morts-vivants) ; **Armée d'os** (1D4 squelettes, plus un par 50 de maîtrise : faibles, lents, nombreux, sans peur) ; **Siphon d'âme** (vole le mana de la cible **au profit du lanceur seulement**) ; **Pacte de sang** (le lanceur sacrifie des PV pour regagner du mana).
 - **Invocation** : **Nuée d'insectes** (2 tours : Perception et Précision en baisse dans la zone) ; **Invocation de sangliers** (1D4 sangliers rapides qui chargent fort mais tiennent mal) ; **Invocation d'araignées géantes** (1D2 araignées : morsure empoisonnée, toile qui immobilise 1 tour) ; **Bannissement** (renvoie une invocation ennemie).
 

@@ -46,7 +46,7 @@ const api=new Function("game","$","esc","fmt","renderAvatar","combatEngine","Mer
   +"handleMissionHexClick,resetMissionActivation,missionAiCast,missionActionAvailability,autoResolveMission,missionKey,renderMissionSpellBar,"
   +"missionMagic,endMissionActivation,missionWeaponEnchantStrike,pruneMissionTerrain,occupiedMissionKeys,missionReachablePaths,"
   +"renderMissionProgression,missionLineOfSight,missionCanAttack,frenzyMissionActivation,maintainMissionSummons,checkMissionEnd,onMissionAttack,moveMissionUnitAlongPath,"
-  +"renderMissionConsole,missionAttackFx,tickMissionStorms,missionParalyzedSkip,missionStormAt,damageMissionUnitBySpell,tickMissionBlizzards};")
+  +"renderMissionConsole,missionAttackFx,tickMissionStorms,missionParalyzedSkip,missionStormAt,damageMissionUnitBySpell,tickMissionBlizzards,missionAfterStrike};")
   .call(null,game,$,v=>String(v??""),v=>String(Math.round(Number(v)||0)),()=>"",()=>engine,Progression,MissionEnd,Magic);
 
 function newMission(){
@@ -84,15 +84,15 @@ assert.deepEqual(magic.knownSpells(u).map(s=>s.code),["quick_heal","deep_heal","
   "sixth_sense","titan_strength","cheetah_speed","stone_skin","venom_spit","cauterize","bear_endurance","scale_skin","owl_wisdom","cat_agility",
   "shock","lightning_bolt","shock_weapon","chain_lightning","thunder","celerity","spark","electric_arc","paralysis","storm",
   "attraction","projection","telekinetic_move","clash","force_field","stone_throw","weapon_throw","shockwave","leap","crush",
-  "fear","illusory_support","mass_courage","hidden_advance","psychic_shock","frenzy",
+  "fear","illusory_support","mass_courage","hidden_advance","psychic_shock","frenzy","despair","mind_fog","decoy","sleep",
   "raise_dead","summon_specter","life_drain","death_arrow","necrosis","wither",
   "summon_raven","quagmire","transposition","summon_wolves","summon_bears","summon_crocodiles"]);
-assert.ok(m.players.every(p=>p.spells.length===78&&!(p.character.spells||[]).length));
+assert.ok(m.players.every(p=>p.spells.length===82&&!(p.character.spells||[]).length));
 assert.equal(api.missionActionAvailability().testSpells,false,"une seule fois par combat");
 assert.ok(logged(/connaît tous les sorts \(Vie, Feu, Eau, Transmutation, Foudre, Télékinésie, Illusion, Nécromancie, Invocation, niveau 1\)/));
 const bar=api.renderMissionSpellBar(u);
 assert.match(bar,/Mana 53\/53/);
-assert.equal((bar.match(/data-spell=/g)||[]).length,78);
+assert.equal((bar.match(/data-spell=/g)||[]).length,82);
 assert.match(bar,/Soin rapide<small>rapide · \d+ mana · \d+ %<\/small>/);
 // Écran de combat (2026-10-29) : au-delà de 8 sorts, un onglet par école ; une seule école affichée à la fois.
 assert.equal((bar.match(/data-spell-school=/g)||[]).length,9);
@@ -1030,6 +1030,95 @@ queue.push(0,0.99,0.5,0);
 api.handleMissionHexClick(distant.q,distant.r);
 assert.ok(distant.hp<distant.pvMax);
 assert.ok(logged(/lance Choc psychique sur .* touché .* \d+ PV psychiques \(Volonté × [\d,]+\)/));
+// Les quatre sorts du 2026-10-31 (validés par Idan, chiffrés par JC3).
+// Désespoir : −(30 + M/5) = −42 de Courage pendant ses 2 prochaines activations ; action rapide.
+reset();
+distant.statBuffs=null;
+const hopeBefore=engine.statWithGear(distant,"Courage");
+api.setMissionMode("spell:despair");
+queue.push(0);
+api.handleMissionHexClick(distant.q,distant.r);
+assert.equal(engine.statWithGear(distant,"Courage"),hopeBefore-42);
+assert.ok(logged(/lance Désespoir sur .* : −42 de Courage, pour ses 2 prochaines activations/));
+assert.equal(u.quickAvailable,false,"action rapide");
+// Brouillage mental : ses sorts réussissent moins souvent pendant ses 2 prochaines activations.
+reset();
+api.setMissionMode("spell:mind_fog");
+queue.push(0);
+api.handleMissionHexClick(distant.q,distant.r);
+assert.equal(distant.mindFog.turns,2);
+assert.ok(distant.mindFog.malus>=16&&distant.mindFog.malus<=64,"32 × Volonté, de × 0,5 à × 2");
+assert.ok(logged(/lance Brouillage mental sur .* : −\d+ % de réussite pour ses sorts \(Volonté × [\d,]+\), pendant ses 2 prochaines activations/));
+api.resetMissionActivation(distant);api.resetMissionActivation(distant);
+assert.ok(distant.mindFog,"encore brouillé pendant sa 2e activation");
+api.resetMissionActivation(distant);
+assert.equal(distant.mindFog,null);
+assert.ok(logged(/retrouve ses esprits/));
+// Sommeil : 2 + M/50 = 3 activations perdues, sauf résistance ; un coup qui blesse le réveille ; il ne réagit pas.
+reset();
+api.setMissionMode("spell:sleep");
+queue.push(0,0.99);
+api.handleMissionHexClick(distant.q,distant.r);
+assert.deepEqual(distant.asleep,{turns:3});
+assert.ok(logged(/lance Sommeil sur .* s’endort \(résistance \d+ %, jet 100\) et perdra ses 3 prochaines activations, sauf si on (le|la) blesse/));
+assert.equal(engine.inert(distant),true,"pas d'attaque d'opportunité");
+assert.equal(api.missionParalyzedSkip(distant),true);
+assert.ok(logged(/dort : (il|elle) perd son activation\./));
+api.damageMissionUnitBySpell(distant,3,u);
+assert.equal(distant.asleep,null);
+assert.ok(logged(/se réveille\./));
+assert.equal(api.missionParalyzedSkip(distant),false,"réveillé : il joue");
+reset();
+api.setMissionMode("spell:sleep");
+queue.push(0,0);
+api.handleMissionHexClick(distant.q,distant.r);
+assert.equal(distant.asleep??null,null);
+assert.ok(logged(/lance Sommeil sur .* résiste \(résistance \d+ %, jet 1\)/));
+// Délivrance retire aussi le sommeil, le désespoir et le brouillage mental.
+reset();
+ally.asleep={turns:2};ally.mindFog={malus:20,turns:1};ally.statBuffs={despair:{stats:["Courage"],value:-42,unit:"points",turns:1}};
+api.setMissionMode("spell:deliverance");
+queue.push(0);
+api.handleMissionHexClick(ally.q,ally.r);
+assert.deepEqual([ally.asleep,ally.mindFog,ally.statBuffs],[null,null,{}]);
+assert.ok(logged(/lance Délivrance sur .* : fin du sommeil, du désespoir, du brouillage mental\./));
+// Création de double : un leurre à 1 PV sur une case libre ; il n'agit pas, ne coûte rien, et se dissipe dès qu'on le touche.
+reset();
+api.setMissionMode("spell:decoy");
+assert.ok(api.targetableMissionCells().has(api.missionKey(2,3)),"une case libre à portée");
+queue.push(0);
+api.handleMissionHexClick(2,3);
+let decoy=m.players.find(x=>x.decoy&&x.alive);
+assert.deepEqual([decoy.q,decoy.r,decoy.hp,decoy.pvMax,decoy.camouflaged,decoy.summon.casterId],[2,3,1,1,false,u.id]);
+assert.equal(decoy.character.name,u.character.name+" (double)");
+assert.ok(logged(/lance Création de double \(.*\) : un double de .* apparaît ; les ennemis le prennent pour (lui|elle)\./));
+const holds=m.log.length;
+api.maintainMissionSummons();
+assert.ok(decoy.alive&&!m.log.slice(holds).some(x=>/garde/.test(x.message)),"ni test de Charisme ni entretien");
+api.missionAfterStrike(decoy,false);
+assert.equal(decoy.alive,true,"un coup raté ne le touche pas");
+api.damageMissionUnitBySpell(decoy,5,distant);
+assert.deepEqual([decoy.alive,decoy.vanished,decoy.offMap],[false,true,true]);
+assert.ok(logged(/\(double\) se dissipe \(touché\)/));
+assert.ok(!logged(/\(double\) est hors combat/));
+// Un nouveau double remplace le précédent ; un coup qui porte le dissipe.
+reset();
+api.setMissionMode("spell:decoy");
+queue.push(0);
+api.handleMissionHexClick(2,3);
+const firstDecoy=m.players.find(x=>x.decoy&&x.alive);
+u.attackAvailable=true;
+api.setMissionMode("spell:decoy");
+queue.push(0);
+api.handleMissionHexClick(3,3);
+assert.equal(firstDecoy.alive,false);
+assert.ok(logged(/se dissipe \(un nouveau double le remplace\)/));
+decoy=m.players.find(x=>x.decoy&&x.alive);
+api.missionAfterStrike(decoy,true);
+assert.equal(decoy.alive,false);
+// Ménage : les doubles quittent l'escouade, les états sont retirés.
+m.players=m.players.filter(x=>!x.decoy);m.playerOrder=m.playerOrder.filter(x=>!x.decoy);
+for(const x of [u,ally,wet,distant]){ x.statBuffs=null;x.mindFog=null;x.asleep=null; }
 
 // École de la Nécromancie dans l'écran de combat (Idan, 2026-10-28). Maîtrise 60,5 et Charisme 50 : zombie à 55 %,
 // maintien 82 %, entretien 4 mana ; Flétrissement 3 activations ; Drain de vie : cette activation et les 2 suivantes.

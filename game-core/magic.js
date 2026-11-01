@@ -359,8 +359,11 @@
       if(s.effet==="delivrance"&&!afflictions(target,code).length) return {ok:false,reason:"Rien à retirer : ni peur, ni paralysie, ni gel, ni frénésie, ni sommeil, ni désespoir, ni brouillage."};
       // Lancer d'arme : il faut une arme de corps à corps en main.
       if(s.effet==="lancer_arme"&&!combat.isMeleeWeapon(combat.weaponTemplate(combat.activeWeaponItem(caster)))) return {ok:false,reason:"Il faut une arme de corps à corps en main."};
-      // Lien de vie : le lanceur garde toujours 1 PV.
-      if(s.effet==="transfert_pv"&&num(caster.hp,0)<=1) return {ok:false,reason:"Le lanceur n'a plus de PV à donner."};
+      // Lien de vie, Pacte de sang : le lanceur garde toujours 1 PV.
+      if((s.effet==="transfert_pv"||s.effet==="pacte_de_sang")&&num(caster.hp,0)<=1) return {ok:false,reason:"Le lanceur n'a plus de PV à donner."};
+      // Pacte de sang : seulement s'il manque du mana ; Siphon d'âme : seulement si la cible en a.
+      if(s.effet==="pacte_de_sang"&&currentMana(caster)>=manaMax(caster)) return {ok:false,reason:"Sa réserve de mana est pleine."};
+      if(s.effet==="siphon_mana"&&target.character&&currentMana(target)<=0) return {ok:false,reason:"La cible n'a plus de mana."};
       const self=target===caster||(target.q===caster.q&&target.r===caster.r);
       const distance=self?0:combat.axialDistance(caster,target),reach=range(caster,code);
       if(s.cible!=="invocation"&&distance>reach) return {ok:false,reason:"Cible hors de portée ("+distance+" cases, portée "+reach+")."};
@@ -447,7 +450,7 @@
           const critChance=combat.criticalChance(caster),critRoll=d100();
           Object.assign(result,{critChance,critRoll,critical:critRoll<=critChance});
         }
-        if(s.effet==="soin_sur_duree"||s.effet==="arme_elementaire"||s.effet==="degats_sur_duree"||s.effet==="aura_de_feu"){
+        if(s.effet==="soin_sur_duree"||s.effet==="arme_elementaire"||s.effet==="degats_sur_duree"||s.effet==="aura_de_feu"||s.effet==="malediction"){
           const factor=effectFactor(caster,code);
           result.effect={code:s.code,element:s.element||null,factor,turns:duration(caster,code),critical:result.critical,cumulable:s.cumulable!==false};
         }else if(s.effet==="protection_elementaire"){
@@ -545,6 +548,10 @@
         if(s.effet==="degats_sans_resistance"&&s.cible==="case") result.zone={center:{q:target.q,r:target.r},radius:zoneRadius(caster,code)};
         // Lien de vie : le lanceur perd au plus amount PV (en gardant 1 PV) ; l'allié en reçoit × transfert_facteur.
         if(s.effet==="transfert_pv") result.transfer={factor:num(s.transfert_facteur,1.5)};
+        // Pacte de sang : amount = le mana regagné au plus ; transfert_facteur PV par point de mana.
+        if(s.effet==="pacte_de_sang") result.pact=bloodPact(caster,result.amount,num(s.transfert_facteur,2));
+        // Siphon d'âme : amount = le mana pris à la cible au plus ; le lanceur le récupère sans dépasser sa réserve.
+        if(s.effet==="siphon_mana") result.siphon=soulSiphon(caster,target,result.amount);
         if(s.effet==="degats_zone"&&s.zone_forme==="cone"){
           const length=zoneLength(caster,code);
           result.zone={shape:"cone",length,cells:coneCells(caster,target,length)};
@@ -645,6 +652,20 @@
       const given=Math.max(0,Math.min(amount,Math.ceil(missing/factor),room));
       return {given,received:Math.min(missing,Math.ceil(given*factor-1e-9))};
     }
+    // Pacte de sang (Nécromancie ; Idan, 2026-10-31, chiffres de JC3) : il ne prend que le mana qui manque (au plus amount),
+    // à factor PV le point, et garde toujours 1 PV.
+    function bloodPact(caster,amount,factor=2){
+      const missing=Math.max(0,manaMax(caster)-currentMana(caster)),room=Math.max(0,num(caster.hp,0)-1);
+      const mana=Math.max(0,Math.min(Math.ceil(missing-1e-9),amount,Math.floor(room/factor)));
+      return {mana,hp:Math.ceil(mana*factor-1e-9),factor};
+    }
+    // Siphon d'âme (Nécromancie) : la cible perd jusqu'à amount mana ; le lanceur récupère ce qui est pris, sans dépasser sa
+    // réserve (le reste est perdu).
+    function soulSiphon(caster,target,amount){
+      const taken=Math.max(0,Math.min(amount,currentMana(target)));
+      const gained=Math.max(0,Math.min(taken,manaMax(caster)-currentMana(caster)));
+      return {taken,gained};
+    }
     // Tempête (Foudre) : une frappe = les dés du sort × le facteur figé au lancer ; le nombre de frappes par tour : 1D3.
     function stormStrike(effect){
       const {count,sides}=dice(effect.code);
@@ -671,6 +692,8 @@
       zoneFactor,
       weaponStrike,
       paralysisResistance,
+      bloodPact,
+      soulSiphon,
       afflictions,
       lifeLink,
       stormStrike,

@@ -209,6 +209,7 @@ function sortMissionInitiative(units,engine){
 function resetMissionActivation(unit){
   tickMissionPoison(unit);
   tickMissionBurning(unit);
+  tickMissionCurse(unit);
   tickMissionFlameStart(unit);
   tickMissionTorch(unit);
   tickMissionChill(unit);
@@ -1532,6 +1533,24 @@ function resolveMissionSpell(caster,target,code,extra={}){
     target.character.mana=Math.round((before+given)*100)/100;
     effect=given>0;
     missionLog(name+" lance "+spell.nom+on+detail+" : +"+Math.round(given)+" mana"+(given<out.amount?" (réserve pleine)":"")+"."+critical,"magic");
+  }else if(spell.effet==="siphon_mana"){
+    // Siphon d'âme (Nécromancie ; Idan, 2026-10-31) : le mana de la cible, au seul profit du lanceur.
+    const s=out.siphon;
+    target.character.mana=Math.round(Math.max(0,magic.currentMana(target)-s.taken)*100)/100;
+    caster.character.mana=Math.round(Math.min(magic.manaMax(caster),magic.currentMana(caster)+s.gained)*100)/100;
+    effect=s.taken>0;
+    missionLog(name+" lance "+spell.nom+on+detail+" : "+target.character.name+" perd "+Math.round(s.taken)+" mana, "+name+" en récupère +"
+      +Math.round(s.gained)+(s.gained<s.taken?" (réserve pleine)":"")+"."+critical,"magic");
+    if(s.gained>0) missionFx(caster,"+"+Math.round(s.gained)+" mana","heal");
+  }else if(spell.effet==="pacte_de_sang"){
+    // Pacte de sang (Nécromancie) : des PV contre du mana, 1 PV gardé.
+    const p=out.pact;
+    caster.hp-=p.hp;
+    caster.character.mana=Math.round(Math.min(magic.manaMax(caster),magic.currentMana(caster)+p.mana)*100)/100;
+    effect=p.mana>0;
+    if(p.hp) missionFx(caster,"−"+p.hp,"damage");
+    missionLog(name+" lance "+spell.nom+detail+" : "+name+" sacrifie "+p.hp+" PV et regagne +"+p.mana+" mana"
+      +(p.mana<out.amount?" (au plus "+out.amount+")":"")+"."+critical,"magic");
   }else if(spell.effet==="tempete"){
     // Tempête (Foudre ; Idan, 2026-10-31) : une première vague tout de suite, puis une à chaque nouveau tour.
     const storm={casterId:caster.id,code:spell.code,center:out.zone.center,radius:out.zone.radius,element:out.storm.element,
@@ -1607,6 +1626,11 @@ function resolveMissionSpell(caster,target,code,extra={}){
     target.burning={...out.effect,casterId:caster.id};
     missionLog(name+" lance "+spell.nom+on+detail+" : "+target.character.name+" prend feu et brûlera au début de ses "+out.effect.turns
       +" prochaines activations."+critical,"magic");
+  }else if(spell.effet==="malediction"){
+    // Malédiction (Nécromancie) : ne se cumule pas, la relancer remplace la précédente.
+    target.cursed={...out.effect,casterId:caster.id};
+    missionLog(name+" lance "+spell.nom+on+detail+" : "+target.character.name+" est maudit"+(missionFeminine(target)?"e":"")
+      +" et souffrira au début de ses "+out.effect.turns+" prochaines activations."+critical,"magic");
   }else if(spell.effet==="aura_de_feu"){
     target.torch={...out.effect,casterId:caster.id};
     missionLog(name+" lance "+spell.nom+on+detail+" : "+target.character.name+" s’embrase ; ses voisins ennemis brûleront au début de ses "
@@ -1917,6 +1941,20 @@ function tickMissionBurning(unit){
   if(effect.turns<=0) unit.burning=null;
   missionLog("Embrasement : "+unit.character.name+" brûle, −"+hit.damage+" PV"+missionProtectionNote(hit)
     +(effect.turns>0?" (encore "+effect.turns+" tour"+(effect.turns>1?"s":"")+").":" ; les flammes s’éteignent."),"damage");
+  checkMissionEnd();
+}
+// Malédiction (Nécromancie ; Idan, 2026-10-31, chiffres de JC3) : au début de chacune de ses activations, des dégâts
+// nécrotiques, qui traversent l'armure et les résistances ; rien sur un mort-vivant.
+function tickMissionCurse(unit){
+  const effect=unit.cursed,magic=missionMagic();
+  if(!effect||!magic||!unit.alive) return;
+  const tick=magic.tick(effect),source=missionUnits().find(u=>u.id===effect.casterId)||null;
+  effect.turns=tick.turnsLeft;
+  if(effect.turns<=0) unit.cursed=null;
+  const amount=magic.isUndead(unit)?0:tick.amount;
+  missionLog("Malédiction : "+unit.character.name+" souffre, −"+amount+" PV nécrotiques"
+    +(effect.turns>0?" (encore "+effect.turns+" tour"+(effect.turns>1?"s":"")+").":" ; la malédiction se dissipe."),"damage");
+  damageMissionUnitBySpell(unit,amount,source,null);
   checkMissionEnd();
 }
 // Mur de flammes : une brûlure (les dés du sort × le facteur du lancer, moins la protection contre le feu).

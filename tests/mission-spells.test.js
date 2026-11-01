@@ -81,18 +81,18 @@ assert.deepEqual(magic.knownSpells(u).map(s=>s.code),["quick_heal","deep_heal","
   "blessing","life_link","deliverance","holy_light",
   "fire_bolt","fireball","fire_ring","flaming_weapon","fire_armor","magma","ignite","flame_wall","fiery_breath","living_torch",
   "fog","healing_water","ice_arrow","tsunami","frost_armor","freeze","ice_weapon","ice_prison","blizzard","living_spring",
-  "sixth_sense","titan_strength","cheetah_speed","stone_skin","venom_spit","cauterize",
+  "sixth_sense","titan_strength","cheetah_speed","stone_skin","venom_spit","cauterize","bear_endurance","scale_skin","owl_wisdom","cat_agility",
   "shock","lightning_bolt","shock_weapon","chain_lightning","thunder","celerity","spark","electric_arc","paralysis","storm",
   "attraction","projection","telekinetic_move","clash","force_field","stone_throw",
   "fear","illusory_support","mass_courage","hidden_advance","psychic_shock","frenzy",
   "raise_dead","summon_specter","life_drain","death_arrow","necrosis","wither",
   "summon_raven","quagmire","transposition","summon_wolves","summon_bears","summon_crocodiles"]);
-assert.ok(m.players.every(p=>p.spells.length===70&&!(p.character.spells||[]).length));
+assert.ok(m.players.every(p=>p.spells.length===74&&!(p.character.spells||[]).length));
 assert.equal(api.missionActionAvailability().testSpells,false,"une seule fois par combat");
 assert.ok(logged(/connaît tous les sorts \(Vie, Feu, Eau, Transmutation, Foudre, Télékinésie, Illusion, Nécromancie, Invocation, niveau 1\)/));
 const bar=api.renderMissionSpellBar(u);
 assert.match(bar,/Mana 53\/53/);
-assert.equal((bar.match(/data-spell=/g)||[]).length,70);
+assert.equal((bar.match(/data-spell=/g)||[]).length,74);
 assert.match(bar,/Soin rapide<small>rapide · \d+ mana · \d+ %<\/small>/);
 // Écran de combat (2026-10-29) : au-delà de 8 sorts, un onglet par école ; une seule école affichée à la fois.
 assert.equal((bar.match(/data-spell-school=/g)||[]).length,9);
@@ -664,6 +664,45 @@ assert.ok(api.targetableMissionCells().has(api.missionKey(ally.q,ally.r)));
 queue.push(0);
 api.handleMissionHexClick(ally.q,ally.r);
 assert.equal(ally.poisoned,false);
+// Les quatre sorts de Transmutation validés par Idan le 2026-10-31. Maîtrise 60,5 : +32 %, 1 tour.
+for(const x of [u,ally]){ x.alive=true;x.statBuffs=null;x.elementalBonus=null;x.hp=x.pvMax; }
+ally.q=u.q+1;ally.r=u.r;
+// Robustesse de l'ours : plus de Constitution, plus de PV max et autant de PV ; à la fin, les PV max redescendent.
+reset();
+const sturdyMax=ally.pvMax;
+ally.hp=ally.pvMax-50;
+api.setMissionMode("spell:bear_endurance");
+queue.push(0);
+api.handleMissionHexClick(ally.q,ally.r);
+const gained=ally.pvMax-sturdyMax;
+assert.ok(gained>0,"plus de PV max");
+assert.equal(ally.hp,sturdyMax-50+gained,"et autant de PV");
+api.resetMissionActivation(ally);
+assert.equal(ally.pvMax,sturdyMax+gained,"pour sa prochaine activation");
+api.resetMissionActivation(ally);
+assert.equal(ally.pvMax,sturdyMax,"puis l'effet prend fin");
+assert.ok(ally.hp<=ally.pvMax);
+// Peau d'écailles : protection contre le feu, le froid et la foudre.
+reset();
+api.setMissionMode("spell:scale_skin");
+queue.push(0);
+api.handleMissionHexClick(ally.q,ally.r);
+assert.deepEqual(Object.keys(ally.elementalBonus).sort(),["feu","foudre","froid"]);
+assert.ok(logged(/lance Peau d’écailles sur .* : \+32 de protection contre le feu, le froid et la foudre, pendant 1 tour\./));
+// Sagesse du hibou, Agilité du chat : Intelligence et Esquive en hausse.
+reset();
+const wit=engine.statWithGear(ally,"Intelligence"),dodge=engine.statWithGear(ally,"Esquive");
+api.setMissionMode("spell:owl_wisdom");
+queue.push(0);
+api.handleMissionHexClick(ally.q,ally.r);
+assert.ok(engine.statWithGear(ally,"Intelligence")>wit);
+reset();
+api.setMissionMode("spell:cat_agility");
+queue.push(0);
+api.handleMissionHexClick(ally.q,ally.r);
+assert.ok(engine.statWithGear(ally,"Esquive")>dodge);
+ally.statBuffs=null;ally.elementalBonus=null;ally.q=u.q-1;ally.r=u.r;ally.hp=ally.pvMax;
+
 // École de la Foudre dans l'écran de combat (Idan, 2026-10-27). Maîtrise 60,5.
 for(const p of m.players) p.character.skills.magic.Foudre=60;
 for(const x of [u,ally,wet,distant]){ x.alive=true;x.hp=x.pvMax;x.poisoned=false;x.statBuffs=null; }

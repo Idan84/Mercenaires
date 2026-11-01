@@ -188,7 +188,7 @@ Même modèle que la Vie et le Feu (effet, mana, CC aux dés maximum, EC : le la
 | Blizzard, par vague | 22 · rayon 2 · portée 7 · 32 mana | 28 · rayon 3 · portée 8 · 29 | 63 · rayon 4 · portée 11 · 20 |
 | Source vive | +9 mana · 9 mana | +12 · 9 | +27 · 6 |
 
-### École de la Transmutation (6 sorts, Idan, 2026-10-27)
+### École de la Transmutation (10 sorts, Idan, 2026-10-27 et 2026-10-31)
 
 Idan : « c'est un buffeur ». Tous les sorts sont des **actions rapides**, sur **un allié ou soi**, à **moyenne portée (3 + M/25)**, et durent **1 tour, 2 pour un maître (1 + M/100, au plus 2)**. Même modèle que les autres écoles pour le mana, la réussite et les critiques. Écoles opposées : Foudre et Invocation. Données : `spells.json`.
 
@@ -200,14 +200,22 @@ Idan : « c'est un buffeur ». Tous les sorts sont des **actions rapides**, sur 
 | Peau de pierre | **+(10 + M/10) points** de Résistance physique | 10 |
 | Crachat de venin | la cible peut **cracher du venin par une action rapide** (voir ci-dessous) | 12 |
 | Cautérisation | soin **1D3** (comme Eau guérissante) | 10 |
+| Robustesse de l'ours | **+(20 + M/5) %** de Constitution, donc de PV max (et autant de PV) | 10 |
+| Peau d'écailles | **+(20 + M/5)** de protection contre **le feu, le froid et la foudre** | 12 |
+| Sagesse du hibou | **+(20 + M/5) %** d'Intelligence : des sorts qui réussissent plus souvent | 10 |
+| Agilité du chat | **+(20 + M/5) %** d'Esquive | 10 |
 
 - **Pourcentages** : de la valeur de base, comme l'équipement ; ils comptent partout où la caractéristique compte (Force : dégâts au corps à corps ; Vitesse : mouvement, initiative, toucher et esquive des tirs ; Perception et Dextérité : toucher). **Peau de pierre** donne des points, comme la cape (la Résistance physique médiane n'est que de 5) : un point retire environ 1 % des dégâts physiques, dans la limite de 50.
 - **Durée** : « 1 tour » = la prochaine activation de la cible ; si le lanceur se vise lui-même, c'est son activation en cours (Force de titan, puis frapper dans la foulée). Les sorts différents se cumulent ; le même sort relancé remplace le précédent.
+- **Les quatre sorts du 2026-10-31** (validés par Idan, chiffrés par JC3) amènent l'école à 10 sorts, sur le même modèle.
+- **Robustesse de l'ours** : les PV max suivent la Constitution en combat ; quand l'effet prend fin, ils redescendent et les PV avec eux s'ils dépassent (les ennemis gardent les PV de leur fiche).
+- **Peau d'écailles** : un bonus de protection sur les trois éléments à la fois, comme l'Armure de feu sur un seul ; il réduit aussi le Gel.
 - **Crachat de venin** : pendant les 1 ou 2 **prochaines** activations de la cible (même si le lanceur se vise : l'action rapide vient d'être prise), un bouton « Cracher du venin » : action rapide, un ennemi à **2 à 10 cases** (la Sarbacane), en ligne de vue. Toucher comme le Trait de feu, avec la **Maîtrise du lanceur** à la place des compétences d'arme ; **1D4 de poison** × la Puissance du lanceur, réduits par la Résistance au poison (l'armure ne compte pas). S'il blesse, la cible est **empoisonnée**.
 
 | | Débutant | Recrue moyenne | Expert |
 |---|---|---|---|
-| 6e sens, Force de titan, Vitesse du guépard | +26 %, 1 tour · portée 4 · 57 % (6e sens : 31 %) | +31 %, 1 tour · portée 5 · 81 % (59 %) | +46 %, 2 tours · portée 8 · 94 % (93 %) |
+| 6e sens, Force de titan, Vitesse du guépard, Robustesse de l'ours, Sagesse du hibou, Agilité du chat | +26 %, 1 tour · portée 4 | +31 %, 1 tour · portée 5 | +46 %, 2 tours · portée 8 |
+| Peau d'écailles | +26 feu, froid et foudre, 1 tour · 11 mana | +31, 1 tour · 10 | +46, 2 tours · 7 |
 | Peau de pierre | +13 points, 1 tour | +15, 1 tour | +23, 2 tours |
 | Crachat de venin, par crachat | 22 (9 de poison ensuite) | 28 (12) | 63 (26) |
 | Cautérisation | 17 PV · 9 mana | 23 · 9 | 51 · 6 |
@@ -385,9 +393,8 @@ Le **Charisme** du mage y compte (Idan : l'Invocation et la Nécromancie en dép
 
 Idan a validé **90 sorts mono-école** (10 par école) et **49 sorts bi-école**. JC3 les chiffre et les intègre **une école par PR** ; chaque école intégrée a sa section plus haut, avec ses chiffres. Restent à intégrer :
 
-**Mono-école (20)**
+**Mono-école (16)**
 
-- **Transmutation** : **Robustesse de l'ours** (Constitution, donc PV max, 1 tour, 2 pour un maître) ; **Peau d'écailles** (protection contre le feu, le froid et la foudre) ; **Sagesse du hibou** (Intelligence : des sorts qui réussissent plus souvent) ; **Agilité du chat** (Esquive).
 - **Télékinésie** : **Lancer d'arme** (projette l'arme de corps à corps tenue, avec ses dégâts, puis la ramène) ; **Onde de choc** (repousse tous ceux à 2 cases du lanceur, avec un choc s'ils heurtent quelque chose) ; **Bond** (rapide : le lanceur se propulse de quelques cases sans attaque d'opportunité) ; **Écrasement** (dégâts contondants ; la cible ne peut pas se déplacer à son prochain tour).
 - **Illusion** : **Désespoir** (le Courage de la cible baisse pendant 2 tours) ; **Brouillage mental** (ses sorts ratent plus souvent, 2 tours, selon la Volonté du lanceur) ; **Création de double** (un leurre que les ennemis prennent pour une vraie cible ; il disparaît au premier coup reçu) ; **Sommeil** (la cible dort jusqu'à ce qu'on la frappe, ou pendant quelques tours).
 - **Nécromancie** : **Malédiction** (dégâts nécrotiques au début de chaque activation pendant 3 tours, armure et résistances ignorées ; sans effet sur les morts-vivants) ; **Armée d'os** (1D4 squelettes, plus un par 50 de maîtrise : faibles, lents, nombreux, sans peur) ; **Siphon d'âme** (vole le mana de la cible **au profit du lanceur seulement**) ; **Pacte de sang** (le lanceur sacrifie des PV pour regagner du mana).

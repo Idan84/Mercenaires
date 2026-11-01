@@ -1534,8 +1534,11 @@ function resolveMissionSpell(caster,target,code,extra={}){
     target.weaponEnchant={...out.effect};
     missionLog(name+" lance "+spell.nom+on+detail+" : chaque coup qui touche ajoute "+missionElementSome(out.effect.element)+", pendant "+out.effect.turns+" tours."+critical,"magic");
   }else if(spell.effet==="protection_elementaire"){
-    target.elementalBonus={...(target.elementalBonus||{}),[out.effect.element]:{code:out.effect.code,bonus:out.effect.bonus,turns:out.effect.turns}};
-    missionLog(name+" lance "+spell.nom+on+detail+" : +"+out.effect.bonus+" de protection contre "+missionElementThe(out.effect.element)+", pendant "+out.effect.turns+" tours.","magic");
+    const shields=Object.fromEntries((out.effect.elements||[out.effect.element]).map(el=>[el,{code:out.effect.code,bonus:out.effect.bonus,turns:out.effect.turns}]));
+    target.elementalBonus={...(target.elementalBonus||{}),...shields};
+    const names=(out.effect.elements||[out.effect.element]).map(missionElementThe);
+    const against=names.length>1?names.slice(0,-1).join(", ")+" et "+names.at(-1):names[0];
+    missionLog(name+" lance "+spell.nom+on+detail+" : +"+out.effect.bonus+" de protection contre "+against+", pendant "+out.effect.turns+" tour"+(out.effect.turns>1?"s":"")+".","magic");
   }else if(spell.effet==="terrain_infranchissable"){
     m.terrain=[...(m.terrain||[]),{q:out.terrain.q,r:out.terrain.r,untilTurn:m.turn+out.terrain.turns}];
     missionLog(name+" lance "+spell.nom+detail+" : la case devient infranchissable pendant "+out.terrain.turns+" tours.","magic");
@@ -1550,6 +1553,8 @@ function resolveMissionSpell(caster,target,code,extra={}){
     // Sur soi-même, l'activation en cours compte comme la première (Force de titan, puis frapper dans la foulée).
     const fx=out.effect,self=target===caster,turns=self?fx.turns-1:fx.turns;
     target.statBuffs={...(target.statBuffs||{}),[fx.code]:{stats:fx.stats,value:fx.value,unit:fx.unit,turns}};
+    // Robustesse de l'ours : plus de Constitution, donc plus de PV max, et autant de PV.
+    if(fx.stats.includes("Constitution")) missionRefreshMaxHp(target);
     const amount=fx.unit==="pourcentage"?"+"+fx.value+" % de ":"+"+fx.value+" de ";
     const when=self?(fx.turns>1?"pour cette activation et la suivante":"pour cette activation")
       :(fx.turns>1?"pour ses "+fx.turns+" prochaines activations":"pour sa prochaine activation");
@@ -1867,12 +1872,21 @@ function tickMissionEnchantments(unit){
 }
 // Transmutation (doc 12) : un bonus couvre les turns prochaines activations de la cible (l'activation en cours compte
 // déjà si le lanceur s'est visé lui-même) ; le venin de même. Ils tombent au début de l'activation suivante.
+// PV max qui suivent la Constitution en combat (Robustesse de l'ours) : à la hausse, les PV montent d'autant ; à la baisse,
+// ils redescendent au plus aux PV max. Les ennemis gardent les PV de leur fiche (combat-engine.js, maxHp).
+function missionRefreshMaxHp(unit){
+  const next=game.mission.engine.maxHp(unit),delta=next-unit.pvMax;
+  if(!delta) return;
+  unit.pvMax=next;
+  unit.hp=delta>0?unit.hp+delta:Math.min(unit.hp,next);
+}
 function tickMissionBuffs(unit){
   const magic=missionMagic(),name=unit.character.name;
   for(const [code,fx] of Object.entries(unit.statBuffs||{})){
     if(fx.turns>0){ fx.turns-=1; continue; }
     delete unit.statBuffs[code];
     missionLog((magic?.spell(code)?.nom||code)+" : l’effet prend fin pour "+name+".","magic");
+    if((fx.stats||[]).includes("Constitution")) missionRefreshMaxHp(unit);
   }
   if(unit.venom){
     if(unit.venom.turns>0) unit.venom.turns-=1;

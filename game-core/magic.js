@@ -145,13 +145,14 @@
     }
     // Recharge au camp (Idan, 2026-10-25) : chaque jour, Réserve de mana × (10 + Volonté / 2) %, équipement compris,
     // arrondi au supérieur, jusqu'à la Réserve. Rien pendant les trajets (campaign.js ne recharge que le camp).
-    function dailyRecharge(unit){
-      const percent=RECHARGE.base+RECHARGE.willShare*combat.statWithGear(unit,"Volonté");
+    // bonusPercent : les Bains chauds du camp (Idan, 2026-11-01), + 5 % de la Réserve par niveau.
+    function dailyRecharge(unit,bonusPercent=0){
+      const percent=RECHARGE.base+RECHARGE.willShare*combat.statWithGear(unit,"Volonté")+(Number(bonusPercent)||0);
       return Math.ceil(manaMax(unit)*percent/100-1e-9);
     }
-    function rechargeMana(character){
+    function rechargeMana(character,{bonusPercent=0}={}){
       const unit={character,activeSet:1},max=manaMax(unit),before=currentMana(unit);
-      const after=Math.min(max,Math.max(before,before+dailyRecharge(unit)));
+      const after=Math.min(max,Math.max(before,before+dailyRecharge(unit,bonusPercent)));
       character.mana=Math.round(after*100)/100;
       return {before,after:character.mana,gained:character.mana-before,max};
     }

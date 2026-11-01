@@ -116,7 +116,7 @@ $$
 JoursFatigue = Clamp\left(Ceil\left(5 + 2 \times \frac{DegatsCumulesSubis}{PV_{max}} - \frac{Endurance}{100}\right),\ 1,\ 7\right)
 $$
 
-Avec Endurance 50 : 5 jours sans dégâts, 6 jours après 0,5 × PV max encaissés, 7 jours dès 1 × PV max. Un tank soigné plusieurs fois peut revenir à pleins PV mais complètement rincé.
+Avec Endurance 50 : 5 jours sans dégâts, 6 jours après 0,5 × PV max encaissés, 7 jours dès 1 × PV max. **Bains chauds** (Idan, 2026-11-01 ; doc 11 §9) : 1 jour de moins par niveau, au moins 1 jour. Un tank soigné plusieurs fois peut revenir à pleins PV mais complètement rincé.
 
 ## 6 — Durée d’une blessure
 
@@ -138,7 +138,7 @@ $$
 JoursBlessure = Ceil\left(Clamp\left((7 + Gravite) \times \left(1 - \frac{Endurance}{300}\right) \times FacteurSoinsCamp,\ 7,\ 60\right)\right)
 $$
 
-Soit 7 jours, plus 1 jour par point de gravité, réduits par l’Endurance, entre 7 et 60 jours. En V1, `FacteurSoinsCamp = 1` ; les bâtiments médicaux le feront baisser. Avec Endurance 50 : gravité 0 → 7 jours, 25 → 27 jours, 50 → 48 jours, 75 → 60 jours.
+Soit 7 jours, plus 1 jour par point de gravité, réduits par l’Endurance, entre 7 et 60 jours. En V1, `FacteurSoinsCamp = 1` ; les bâtiments médicaux le feront baisser. **Dispensaire** (Idan, 2026-11-01 ; doc 11 §9) : la durée ainsi bornée est ensuite multipliée par 1 − 0,1 × son niveau (au moins 1 jour) : 7 → 4 jours, 60 → 30 au niveau 5. Avec Endurance 50 : gravité 0 → 7 jours, 25 → 27 jours, 50 → 48 jours, 75 → 60 jours.
 
 ## 7 — Chaîne de résolution post-mission
 

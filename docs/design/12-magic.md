@@ -485,7 +485,7 @@ Refusés (à ne pas reproposer tels quels) : Bouclier de vie, Retour à la vie, 
 
 ### Mana
 
-- Le **Mana actuel** se dépense en combat et se **recharge chaque jour au camp** : **Réserve de mana × (10 + Volonté / 2) %** par jour (Volonté 52 : 36 % par jour, plein en 3 jours). Rien pendant les trajets.
+- Le **Mana actuel** se dépense en combat et se **recharge chaque jour au camp** : **Réserve de mana × (10 + Volonté / 2) %** par jour (Volonté 52 : 36 % par jour, plein en 3 jours). Rien pendant les trajets. **Bains chauds** du camp (Idan, 2026-11-01 ; doc 11 §9) : +5 % de la Réserve par jour et par niveau.
 
 ### Écoles : progression et régression
 

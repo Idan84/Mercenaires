@@ -53,8 +53,8 @@ assert.ok(changes.some(c=>c.name==="Régénération"));
 
 // Campagne : la convalescence d'un blessé tient compte de la Régénération.
 const campaign=fs.readFileSync(path.join(ROOT,"game-core","campaign.js"),"utf8");
-assert.match(campaign,/daysLeft:woundDaysFor\(mercenary,result\.woundDays\)/);
-assert.match(campaign,/daysLeft:woundDaysFor\(m,back\.days\)/);
+assert.match(campaign,/daysLeft:woundDaysFor\(mercenary,result\.woundDays,state\)/);
+assert.match(campaign,/daysLeft:woundDaysFor\(m,back\.days,state\)/);
 // Écran de combat : au début de chaque activation ; le feu pose le drapeau « brûlé ».
 const mission=fs.readFileSync(path.join(ROOT,"prototype-web","mission.js"),"utf8");
 assert.match(mission,/tickMissionRegeneration\(unit\);\n  tickMissionNaturalRegeneration\(unit\);/);

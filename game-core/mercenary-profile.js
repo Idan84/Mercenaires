@@ -27,7 +27,8 @@
       const value=Number(rows(reference?.formulaConstants).find(r=>r.code===code)?.valeur);
       return Number.isFinite(value)?value:fallback;
     };
-    const AURA={courage:constant("captain.aura.courage_ratio",0.35),charisma:constant("captain.aura.charisma_ratio",0.25)};
+    const AURA={courage:constant("captain.aura.courage_ratio",0.35),charisma:constant("captain.aura.charisma_ratio",0.25),
+      lieutenant:constant("lieutenant.aura.share",0.5)};
 
     // ---- L'étalon : adversaire de mesure, jamais montré ----
     const etalon=data.etalon||{};
@@ -177,8 +178,26 @@
       discretion:c=>stat(c,"Discrétion"),
       pieges:c=>stat(c,"Pièges"),
       intimidation:c=>stat(c,"Intimidation"),
-      aura:c=>AURA.courage*stat(c,"Courage")+AURA.charisma*stat(c,"Charisme")
+      // Aura (Idan, 2026-11-01 : un titre seulement pour ce qui agit) : celle du capitaine, la moitié pour un lieutenant,
+      // ou celle d'un fouet tenu dans un set (sa part du Courage de l'étalon). Une recrue sans rien de cela n'en a pas.
+      // context.calibrate : l'étalonnage mesure la formule du capitaine chez tous, pour poser les seuils.
+      aura:(c,context={})=>{
+        const formula=AURA.courage*stat(c,"Courage")+AURA.charisma*stat(c,"Charisme");
+        if(context.calibrate||context.captain) return formula;
+        if(context.lieutenant) return AURA.lieutenant*formula;
+        return whipAura(c);
+      }
     };
+    // Le fouet (weapons.json, aura_caracteristique Courage) : dans la main principale ou secondaire d'un set.
+    function whipAura(character){
+      const slots=character.equipment?.slots||{};
+      const courage=Number(etalon.caracteristiques?.Courage)||0;
+      return best(["weapon_set_1_main","weapon_set_1_off","weapon_set_2_main","weapon_set_2_off"].map(slot=>{
+        const item=(character.items||[]).find(i=>i.id===slots[slot]);
+        const row=item&&weaponRows.find(w=>w.nom===item.name);
+        return row?.aura_caracteristique==="Courage"?courage*(Number(row.aura_pourcentage)||0)/100:null;
+      }));
+    }
 
     // Sous-catégorie d'un sort : par sa créature pour les invocations, sinon par son code.
     function spellRole(spell){
@@ -218,11 +237,12 @@
       return out;
     }
     // Toutes les mesures brutes : clé de source → valeur ; absente, il ne sait pas le faire.
-    function measure(character){
+    // context : captain, lieutenant (son rôle dans la compagnie) ; calibrate (étalonnage).
+    function measure(character,context={}){
       const out={};
-      const needed=new Set(categories.flatMap(cat=>cat.sous.flatMap(sub=>sub.sources.filter(s=>s!=="sorts"))));
+      const needed=new Set(categories.flatMap(cat=>cat.sous.filter(sub=>!sub.a_venir).flatMap(sub=>sub.sources.filter(s=>s!=="sorts"))));
       for(const key of needed){
-        const value=SOURCES[key]?.(character);
+        const value=SOURCES[key]?.(character,context);
         if(value!=null&&Number.isFinite(value)) out[key]=value;
       }
       return {...out,...spellSources(character)};
@@ -251,9 +271,9 @@
     const byLevel=(a,b)=>b.level-a.level||b.fine-a.fine;
 
     // ---- Lecture ----
-    function evaluate(character){
+    function evaluate(character,context={}){
       if(!engine||!character?.stats) return null;
-      const values=measure(character);
+      const values=measure(character,context);
       const scored=categories.map(cat=>{
         const subs=cat.sous.map(sub=>{
           if(sub.a_venir) return null;
@@ -272,13 +292,19 @@
 
       // Titre 1 : sa meilleure catégorie, à titre_min étoiles au moins ; titres 2 et 3 : la suivante, au moins aussi
       // haut que titre_min et à ecart_titre près de la précédente.
+      // Domaine (Idan, 2026-11-01 : « on doit vraiment sentir que c'est son rôle ») : une catégorie hors de son domaine
+      // (selection.domaines) demande ecart_hors_domaine étoile de plus ; elle ne passe pas devant les autres pour autant.
       const min=S.titre_min??4,max=S.max_titres??3;
+      const domain=character.domain||character.equipment?.profile?.type||null;
+      const inDomain=code=>!domain||!S.domaines?.[domain]||S.domaines[domain].includes(code);
+      const minFor=cat=>min+(inDomain(cat.code)?0:(S.ecart_hors_domaine??0));
+      const eligible=scored.filter(cat=>cat.level>=minFor(cat));
       const titles=[];
-      if(scored[0]&&scored[0].level>=min){
-        titles.push(scored[0]);
-        for(const next of scored.slice(1)){
+      if(eligible[0]){
+        titles.push(eligible[0]);
+        for(const next of eligible.slice(1)){
           const previous=titles[titles.length-1];
-          if(titles.length>=max||next.level<min||previous.level-next.level>(S.ecart_titre??1)) break;
+          if(titles.length>=max||previous.level-next.level>(S.ecart_titre??1)) break;
           titles.push(next);
         }
       }

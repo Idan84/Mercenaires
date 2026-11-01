@@ -110,23 +110,6 @@
               "Ses patients guérissent sans même s'en rendre compte."
             ]
           }
-        },
-        {
-          "code": "protecteur",
-          "etiquette": {
-            "m": "boucliers magiques",
-            "f": "boucliers magiques"
-          },
-          "infobulle": {
-            "m": [
-              "Pose sur ses alliés des protections qui prennent les coups à leur place.",
-              "Le meilleur soin, c'est la blessure qu'on n'a pas eue."
-            ],
-            "f": [
-              "Pose sur ses alliés des protections qui prennent les coups à leur place.",
-              "Le meilleur soin, c'est la blessure qu'on n'a pas eue."
-            ]
-          }
         }
       ]
     },
@@ -331,6 +314,23 @@
             "f": [
               "Rend du mana aux mages de la compagnie.",
               "Les sorciers l'appellent « la gourde », et c'est un compliment."
+            ]
+          }
+        },
+        {
+          "code": "protecteur",
+          "etiquette": {
+            "m": "boucliers magiques",
+            "f": "boucliers magiques"
+          },
+          "infobulle": {
+            "m": [
+              "Pose sur ses alliés des armures de feu, de glace ou de pierre.",
+              "Ses camarades se croient invincibles ; grâce à lui, ils ont presque raison."
+            ],
+            "f": [
+              "Pose sur ses alliés des armures de feu, de glace ou de pierre.",
+              "Ses camarades se croient invincibles ; grâce à elle, ils ont presque raison."
             ]
           }
         }

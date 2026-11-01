@@ -879,7 +879,9 @@ function profileRules(){
 // lignes sur le rôle (mercenary-titles.json). Sans les données, le nom brut (« DPS au CAC · Perce-armure »).
 function renderEvaluation(c){
   const rules=profileRules();
-  const result=rules?.evaluate(c);
+  // L'aura ne compte que pour le capitaine et les lieutenants (et le fouet).
+  const company=game.campaign?.company;
+  const result=rules?.evaluate(c,{captain:company?company.captainId===c.id:c.role==="Capitaine",lieutenant:Boolean(company?.lieutenantIds?.includes(c.id))});
   if(!result) return "";
   const female=isFemale(c);
   const item=(copy,fallback,stars)=>{

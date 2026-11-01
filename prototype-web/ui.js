@@ -1427,7 +1427,7 @@ function spellIconHtml(spell) {
 // mana, réussite, portée, effet, durée, zone — les mêmes que l'écran de combat (game-core/magic.js).
 const SPELL_EFFECT_LABELS = {soin:"Soins", soin_de_zone:"Soins", soin_sur_duree:"Soins par tour", degats:"Dégâts", degats_zone:"Dégâts",
   degats_rebonds:"Dégâts", degats_paire:"Dégâts", degats_sans_resistance:"Dégâts", arme_elementaire:"Dégâts par coup", tempete:"Dégâts par frappe",
-  transfert_pv:"PV donnés"};
+  transfert_pv:"PV donnés", degats_sur_duree:"Dégâts par tour", aura_de_feu:"Dégâts par tour", mur_de_flammes:"Dégâts par brûlure"};
 function spellTip(c, row) {
   if (!row?.code) return "";
   const magic = typeof magicRules === "function" ? magicRules() : null;

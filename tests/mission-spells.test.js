@@ -11,6 +11,7 @@ const {createGenerator}=require("../game-core/mercenary-generator.js");
 const Progression=require("../game-core/progression.js");
 const MissionEnd=require("../game-core/mission-end.js");
 const Magic=require("../game-core/magic.js");
+require("../game-core/regeneration.js"); // MercenairesRegeneration, lue par l'écran de combat
 
 const ROOT=path.resolve(__dirname,"..");
 const read=file=>JSON.parse(fs.readFileSync(path.join(ROOT,"data","reference",file),"utf8"));
@@ -45,7 +46,7 @@ const api=new Function("game","$","esc","fmt","renderAvatar","combatEngine","Mer
   +"handleMissionHexClick,resetMissionActivation,missionAiCast,missionActionAvailability,autoResolveMission,missionKey,renderMissionSpellBar,"
   +"missionMagic,endMissionActivation,missionWeaponEnchantStrike,pruneMissionTerrain,occupiedMissionKeys,missionReachablePaths,"
   +"renderMissionProgression,missionLineOfSight,missionCanAttack,frenzyMissionActivation,maintainMissionSummons,checkMissionEnd,onMissionAttack,moveMissionUnitAlongPath,"
-  +"renderMissionConsole,missionAttackFx,tickMissionStorms,missionParalyzedSkip,missionStormAt};")
+  +"renderMissionConsole,missionAttackFx,tickMissionStorms,missionParalyzedSkip,missionStormAt,damageMissionUnitBySpell};")
   .call(null,game,$,v=>String(v??""),v=>String(Math.round(Number(v)||0)),()=>"",()=>engine,Progression,MissionEnd,Magic);
 
 function newMission(){
@@ -78,7 +79,7 @@ assert.equal(api.missionActionAvailability().testSpells,true);
 api.teachMissionTestSpells();
 assert.deepEqual(magic.knownSpells(u).map(s=>s.code),["quick_heal","deep_heal","regeneration","mass_heal","restitution","purge",
   "blessing","life_link","deliverance","holy_light",
-  "fire_bolt","fireball","fire_ring","flaming_weapon","fire_armor","magma",
+  "fire_bolt","fireball","fire_ring","flaming_weapon","fire_armor","magma","ignite","flame_wall","fiery_breath","living_torch",
   "fog","healing_water","ice_arrow","tsunami","frost_armor","freeze","ice_weapon",
   "sixth_sense","titan_strength","cheetah_speed","stone_skin","venom_spit","cauterize",
   "shock","lightning_bolt","shock_weapon","chain_lightning","thunder","celerity","spark","electric_arc","paralysis","storm",
@@ -86,12 +87,12 @@ assert.deepEqual(magic.knownSpells(u).map(s=>s.code),["quick_heal","deep_heal","
   "fear","illusory_support","mass_courage","hidden_advance","psychic_shock","frenzy",
   "raise_dead","summon_specter","life_drain","death_arrow","necrosis","wither",
   "summon_raven","quagmire","transposition","summon_wolves","summon_bears","summon_crocodiles"]);
-assert.ok(m.players.every(p=>p.spells.length===63&&!(p.character.spells||[]).length));
+assert.ok(m.players.every(p=>p.spells.length===67&&!(p.character.spells||[]).length));
 assert.equal(api.missionActionAvailability().testSpells,false,"une seule fois par combat");
 assert.ok(logged(/connaît tous les sorts \(Vie, Feu, Eau, Transmutation, Foudre, Télékinésie, Illusion, Nécromancie, Invocation, niveau 1\)/));
 const bar=api.renderMissionSpellBar(u);
 assert.match(bar,/Mana 53\/53/);
-assert.equal((bar.match(/data-spell=/g)||[]).length,63);
+assert.equal((bar.match(/data-spell=/g)||[]).length,67);
 assert.match(bar,/Soin rapide<small>rapide · \d+ mana · \d+ %<\/small>/);
 // Écran de combat (2026-10-29) : au-delà de 8 sorts, un onglet par école ; une seule école affichée à la fois.
 assert.equal((bar.match(/data-spell-school=/g)||[]).length,9);
@@ -338,6 +339,82 @@ assert.match(recap,/Sort Soin rapide \+\d+/);
 assert.match(recap,/Sort Trait de feu \+\d+/);
 assert.match(recap,/Écoles opposées −\d+/);
 assert.match(recap,/Puissance magique \+\d+/);
+
+// Les quatre sorts du Feu validés par Idan le 2026-10-31. Maîtrise 60,5.
+for(const x of [u,ally,target,foe]){ x.alive=true;x.hp=x.pvMax;x.burning=null;x.torch=null;x.burned=false;x.camouflaged=false; }
+// Embrasement : la cible brûle au début de ses 2 prochaines activations, puis les flammes s'éteignent.
+reset();
+target.q=u.q+3;target.r=u.r;
+api.setMissionMode("spell:ignite");
+queue.push(0,0.99);
+api.handleMissionHexClick(target.q,target.r);
+assert.equal(target.burning.turns,2);
+assert.ok(logged(/lance Embrasement sur .* prend feu et brûlera au début de ses 2 prochaines activations/));
+let burnHp=target.hp;
+queue.push(0.5);
+api.resetMissionActivation(target);
+assert.ok(target.hp<burnHp);
+assert.equal(target.burning.turns,1);
+assert.ok(logged(/Embrasement : .* brûle, −\d+ PV/));
+queue.push(0.5);
+api.resetMissionActivation(target);
+assert.equal(target.burning,null);
+assert.ok(logged(/Embrasement : .* les flammes s’éteignent/));
+// Mur de flammes : 3 + 1 cases en travers ; qui y commence son activation, ou y entre, brûle ; il s'éteint au bout de 3 tours.
+reset();
+api.setMissionMode("spell:flame_wall");
+queue.push(0);
+api.handleMissionHexClick(u.q+2,u.r);
+assert.equal(m.flameWalls.length,1);
+const flameCell=m.flameWalls[0].cells[0];
+assert.equal(m.flameWalls[0].cells.length,4);
+assert.equal(m.flameWalls[0].untilTurn,m.turn+3);
+ally.q=flameCell.q;ally.r=flameCell.r;ally.hp=ally.pvMax;
+queue.push(0.5);
+api.resetMissionActivation(ally);
+assert.ok(ally.hp<ally.pvMax);
+assert.ok(logged(/est dans le mur de flammes : −\d+ PV/));
+const outside=[{q:flameCell.q-1,r:flameCell.r},{q:flameCell.q+1,r:flameCell.r}].find(c=>!m.flameWalls[0].cells.some(w=>w.q===c.q&&w.r===c.r));
+ally.q=outside.q;ally.r=outside.r;ally.hp=ally.pvMax;ally.camouflaged=true;ally.movementRemaining=3;
+queue.push(0.5);
+api.moveMissionUnitAlongPath(ally,[flameCell]);
+assert.ok(ally.hp<ally.pvMax,"il traverse le feu");
+assert.ok(logged(/traverse le mur de flammes : −\d+ PV/));
+ally.camouflaged=false;ally.hp=ally.pvMax;ally.q=u.q+1;ally.r=u.r;
+const wallTurn=m.turn;
+m.turn=m.flameWalls[0].untilTurn;
+api.pruneMissionTerrain();
+assert.equal(m.flameWalls.length,0);
+assert.ok(logged(/Le mur de flammes s’éteint/));
+m.turn=wallTurn;
+// Souffle ardent : un cône de 3 cases vers la case voisine choisie ; la cible devant brûle, l'allié derrière non.
+reset();
+target.q=u.q+2;target.r=u.r;target.hp=target.pvMax;
+ally.q=u.q-1;ally.r=u.r;ally.hp=ally.pvMax;
+api.setMissionMode("spell:fiery_breath");
+cells=api.targetableMissionCells();
+assert.ok(cells.has(api.missionKey(u.q+1,u.r))&&!cells.has(api.missionKey(u.q+2,u.r)),"seulement les cases voisines");
+queue.push(0,0.99,0.5,0.5);
+api.handleMissionHexClick(u.q+1,u.r);
+assert.ok(target.hp<target.pvMax,"devant : dans le cône");
+assert.equal(ally.hp,ally.pvMax,"derrière : épargné");
+assert.ok(logged(/lance Souffle ardent \(cône de 3 cases\).* PV de feu pour chacun/));
+// Torche vivante : sur soi, 2 + 1 tours ; au début de chaque activation, l'ennemi au contact brûle, pas le porteur.
+reset();
+api.setMissionMode("spell:living_torch");
+queue.push(0,0.99);
+api.handleMissionHexClick(u.q,u.r);
+assert.equal(u.torch.turns,3);
+target.q=u.q+1;target.r=u.r;target.hp=target.pvMax;
+const torchHp=u.hp;
+queue.push(0.5);
+api.resetMissionActivation(u);
+assert.ok(target.hp<target.pvMax);
+assert.equal(u.hp,torchHp,"le porteur ne brûle pas");
+assert.equal(u.torch.turns,2);
+assert.ok(logged(/Torche vivante : .* brûle ses voisins — /));
+u.torch=null;
+for(const x of [u,ally,target,foe]){ x.alive=true;x.hp=x.pvMax;x.burned=false; }
 
 // École de l'Eau dans l'écran de combat (Idan, 2026-10-27). Maîtrise 60,5 : Eau 60, sort 1.
 for(const p of m.players) p.character.skills.magic.Eau=60;
@@ -1125,6 +1202,31 @@ assert.ok(report.mana.some(x=>x.id===home.id));
   const log=[{message:"Tour 1",kind:"turn"},...[1,2,3].map(n=>({message:"A"+n+" repère B (50 %, jet 3).",kind:"info"})),{message:"C repère D (5 %, jet 1).",kind:"info"}];
   assert.match(api.renderMissionConsole(log),/<details class="combat-log-group"><summary>4 repérages<\/summary>/);
   assert.doesNotMatch(api.renderMissionConsole(log.slice(0,3)),/<details/,"moins de 3 : pas de regroupement");
+}
+
+// Régénération (sang de troll ; Idan, 2026-11-01) : au début de chaque activation ; le feu la bloque une fois.
+{
+  const troll=m.players.find(p=>p.alive)||u;
+  troll.alive=true;troll.withered=false;troll.burned=false;
+  troll.character.skills.physiology={...(troll.character.skills.physiology||{}),"Régénération":27};
+  troll.hp=Math.max(1,troll.pvMax-100);
+  let before=troll.hp;
+  queue.push(0.5,0.5);
+  api.resetMissionActivation(troll);
+  assert.equal(troll.hp,before+Math.ceil(8*1.04-1e-9),"2D6 = 8 × (0,5 + 27 / 50)");
+  assert.ok(logged(/se régénère : \+9 PV/));
+  api.damageMissionUnitBySpell(troll,5,null,"feu");
+  assert.equal(troll.burned,true);
+  before=troll.hp;
+  api.resetMissionActivation(troll);
+  assert.equal(troll.hp,before,"brûlé : pas de régénération");
+  assert.ok(logged(/a été brûlée? : pas de régénération ce tour-ci/));
+  queue.push(0.5,0.5);
+  api.resetMissionActivation(troll);
+  assert.ok(troll.hp>before,"elle reprend");
+  api.damageMissionUnitBySpell(troll,5,null,"froid");
+  assert.equal(troll.burned,false,"le froid ne la bloque pas");
+  troll.character.skills.physiology["Régénération"]=0;
 }
 
 console.log("Sorts de Vie, du Feu, de l'Eau, de la Transmutation, de la Foudre, de la Télékinésie, de l'Illusion, de la Nécromancie et de l'Invocation dans l'écran de combat, poison, recharge du mana au camp — OK");

@@ -37,6 +37,8 @@ function missionFogAt(q,r){ return (game.mission?.fog||[]).find(f=>f.q===q&&f.r=
 // Bourbier (Invocation ; Idan, 2026-10-28) : qui s'y trouve ou y entre ne peut plus se déplacer, jusqu'au tour untilTurn
 // (exclu) ; on peut y entrer (c'est la fin du chemin), pas le traverser ni en sortir.
 function missionMireAt(q,r){ return (game.mission?.mire||[]).find(f=>f.q===q&&f.r===r)||null; }
+// Mur de flammes (Feu ; Idan, 2026-10-31) : qui y entre, ou y commence son activation, brûle ; jusqu'au tour untilTurn (exclu).
+function missionFlameAt(q,r){ return (game.mission?.flameWalls||[]).find(w=>w.cells.some(c=>c.q===q&&c.r===r))||null; }
 // Tempête (Foudre ; Idan, 2026-10-31) : la zone au-dessus de laquelle la foudre tombe, tant qu'il lui reste des vagues.
 function missionStormAt(q,r){
   const e=game.mission?.engine;
@@ -59,6 +61,11 @@ function pruneMissionTerrain(){
     const before=m.mire.length;
     m.mire=m.mire.filter(f=>m.turn<f.untilTurn);
     if(m.mire.length<before) missionLog("Le bourbier sèche : la case est de nouveau praticable.","magic");
+  }
+  if(m?.flameWalls?.length){
+    const before=m.flameWalls.length;
+    m.flameWalls=m.flameWalls.filter(w=>m.turn<w.untilTurn);
+    if(m.flameWalls.length<before) missionLog("Le mur de flammes s’éteint.","magic");
   }
   if(m?.fog?.length){
     const before=m.fog.length;
@@ -191,6 +198,9 @@ function sortMissionInitiative(units,engine){
 
 function resetMissionActivation(unit){
   tickMissionPoison(unit);
+  tickMissionBurning(unit);
+  tickMissionFlameStart(unit);
+  tickMissionTorch(unit);
   tickMissionChill(unit);
   tickMissionBuffs(unit);
   unit.movementRemaining=game.mission.engine.movementBase(unit);
@@ -203,7 +213,30 @@ function resetMissionActivation(unit){
   unit.prone=false;
   unit.secondMove=false;
   tickMissionRegeneration(unit);
+  tickMissionNaturalRegeneration(unit);
   tickMissionEnchantments(unit);
+}
+
+// Régénération naturelle (sang de troll ; Idan, 2026-11-01 ; game-core/regeneration.js) : au début de chacune de ses
+// activations, s'il est debout ; brûlé depuis sa dernière activation, il ne régénère pas cette fois.
+function missionRegeneration(){
+  const m=game.mission;
+  if(!m||typeof MercenairesRegeneration==="undefined") return null;
+  return m.regeneration||(m.regeneration=MercenairesRegeneration.createRegenerationRules({reference:game.referenceData}));
+}
+function tickMissionNaturalRegeneration(unit){
+  const rules=missionRegeneration();
+  if(!rules||unit.alive===false||!rules.points(unit.character)) return;
+  const name=unit.character.name;
+  if(unit.burned){
+    unit.burned=false;
+    missionLog(name+" a été brûlé"+(missionFeminine(unit)?"e":"")+" : pas de régénération ce tour-ci.","bad");
+    return;
+  }
+  if(unit.hp>=unit.pvMax) return;
+  const tick=rules.roll(unit.character);
+  const healed=healMissionUnit(unit,tick.amount);
+  if(healed) missionLog(name+" se régénère : +"+healed+" PV"+missionWitherNote(unit)+".","magic");
 }
 
 // Un blessé ou un fatigué de la compagnie ne peut pas partir en mission (10-mission-time §4 à §6).
@@ -756,6 +789,11 @@ function moveMissionUnitAlongPath(unit,path){
     if(wasFleeing) MercenairesProgression.recordFleeHex(unit);
     game.mission.progression.recordStep(unit);
     unit.movementRemaining=Math.max(0,(unit.movementRemaining||0)-1);
+    const flames=missionFlameAt(step.q,step.r);
+    if(flames){
+      missionFlameBurn(unit,flames,"traverse le mur de flammes");
+      if(!unit.alive) break;
+    }
     if(missionMireAt(step.q,step.r)){
       unit.movementRemaining=0;
       missionLog(unit.character.name+" s’enlise dans le bourbier.","bad");
@@ -1212,6 +1250,8 @@ function damageMissionUnitBySpell(unit,amount,source=null,element=null){
   const wasUp=unit.alive!==false;
   unit.hp-=amount;
   unit.damageTaken=(Number(unit.damageTaken)||0)+amount;
+  // Le feu bloque la régénération (sang de troll) à sa prochaine activation.
+  if(element==="feu"&&amount>0) unit.burned=true;
   if(unit.hp<=0){ unit.alive=false; missionLog(unit.character.name+" est hors combat.","death"); }
   missionFx(unit,wasUp&&!unit.alive?"Hors combat":"",wasUp&&!unit.alive?"down":"");
   MercenairesProgression.recordSpellDamage(source,unit,amount,{element,down:wasUp&&!unit.alive});
@@ -1430,9 +1470,23 @@ function resolveMissionSpell(caster,target,code,extra={}){
       if(hit.damage>0&&u!==caster) effect=true;
       return u.character.name+" −"+hit.damage;
     });
-    missionLog(name+" lance "+spell.nom+(zone.cells?" (ligne de "+zone.length+" cases)":" (rayon "+zone.radius+")")+detail+drift+" : "+out.amount+" PV de "+out.element
+    const shape=zone.shape==="cone"?" (cône de "+zone.length+" cases)":zone.cells?" (ligne de "+zone.length+" cases)":" (rayon "+zone.radius+")";
+    missionLog(name+" lance "+spell.nom+shape+detail+drift+" : "+out.amount+" PV de "+out.element
       +(zone.degressive?" au centre, moins vers le bord":" pour chacun")+(lines.length?" — "+lines.join(", "):" — personne dans la zone")+"."+critical,"damage");
     checkMissionEnd();
+  }else if(spell.effet==="degats_sur_duree"){
+    // Embrasement : ne se cumule pas, le relancer remplace le précédent.
+    target.burning={...out.effect,casterId:caster.id};
+    missionLog(name+" lance "+spell.nom+on+detail+" : "+target.character.name+" prend feu et brûlera au début de ses "+out.effect.turns
+      +" prochaines activations."+critical,"magic");
+  }else if(spell.effet==="aura_de_feu"){
+    target.torch={...out.effect,casterId:caster.id};
+    missionLog(name+" lance "+spell.nom+on+detail+" : "+target.character.name+" s’embrase ; ses voisins ennemis brûleront au début de ses "
+      +out.effect.turns+" prochaines activations."+critical,"magic");
+  }else if(spell.effet==="mur_de_flammes"){
+    const wall={cells:out.wall.cells,untilTurn:m.turn+out.wall.turns,effect:out.wall.effect,casterId:caster.id};
+    m.flameWalls=[...(m.flameWalls||[]),wall];
+    missionLog(name+" lance "+spell.nom+" ("+wall.cells.length+" cases)"+detail+" : un mur de feu, jusqu’au tour "+wall.untilTurn+".","magic");
   }else if(spell.effet==="arme_elementaire"){
     target.weaponEnchant={...out.effect};
     missionLog(name+" lance "+spell.nom+on+detail+" : chaque coup qui touche ajoute "+missionElementSome(out.effect.element)+", pendant "+out.effect.turns+" tours."+critical,"magic");
@@ -1669,6 +1723,45 @@ function tickMissionStorms(){
   const before=m.storms.length;
   m.storms=m.storms.filter(s=>s.turnsLeft>0);
   if(m.storms.length<before) missionLog("La tempête se dissipe.","magic");
+}
+
+// École du Feu (Idan, 2026-10-31 ; chiffres de JC3). Embrasement : la cible brûle au début de chacune de ses activations.
+function tickMissionBurning(unit){
+  const effect=unit.burning,magic=missionMagic();
+  if(!effect||!magic||!unit.alive) return;
+  const tick=magic.tick(effect),source=missionUnits().find(u=>u.id===effect.casterId)||null;
+  const hit=missionElementalHit(unit,effect.element||"feu",tick.amount,source);
+  effect.turns=tick.turnsLeft;
+  if(effect.turns<=0) unit.burning=null;
+  missionLog("Embrasement : "+unit.character.name+" brûle, −"+hit.damage+" PV"+missionProtectionNote(hit)
+    +(effect.turns>0?" (encore "+effect.turns+" tour"+(effect.turns>1?"s":"")+").":" ; les flammes s’éteignent."),"damage");
+  checkMissionEnd();
+}
+// Mur de flammes : une brûlure (les dés du sort × le facteur du lancer, moins la protection contre le feu).
+function missionFlameBurn(unit,wall,how){
+  const magic=missionMagic();
+  if(!magic||!unit.alive) return;
+  const source=missionUnits().find(u=>u.id===wall.casterId)||null;
+  const hit=missionElementalHit(unit,wall.effect.element||"feu",magic.tick(wall.effect).amount,source);
+  missionLog(unit.character.name+" "+how+" : −"+hit.damage+" PV"+missionProtectionNote(hit)+".","damage");
+  checkMissionEnd();
+}
+function tickMissionFlameStart(unit){
+  const wall=unit.alive?missionFlameAt(unit.q,unit.r):null;
+  if(wall) missionFlameBurn(unit,wall,"est dans le mur de flammes");
+}
+// Torche vivante : au début de chacune de ses activations, les ennemis à son contact brûlent (un seul jet) ; lui non.
+function tickMissionTorch(unit){
+  const effect=unit.torch,magic=missionMagic(),m=game.mission;
+  if(!effect||!magic||!unit.alive) return;
+  const tick=magic.tick(effect);
+  const foes=missionUnits().filter(u=>u.alive&&!u.offMap&&u.team!==unit.team&&m.engine.axialDistance(u,unit)===1);
+  const lines=foes.map(u=>{ const hit=missionElementalHit(u,effect.element||"feu",tick.amount,unit); return u.character.name+" −"+hit.damage; });
+  effect.turns=tick.turnsLeft;
+  if(effect.turns<=0) unit.torch=null;
+  missionLog("Torche vivante : "+unit.character.name+(lines.length?" brûle ses voisins — "+lines.join(", "):" flambe, personne à son contact")
+    +(effect.turns>0?" (encore "+effect.turns+" tour"+(effect.turns>1?"s":"")+").":" ; les flammes s’éteignent."),lines.length?"damage":"magic");
+  checkMissionEnd();
 }
 
 // Régénération (doc 12) : le soin tombe au début de chaque activation de la cible, jusqu'à la fin de sa durée.
@@ -2501,6 +2594,8 @@ function renderMission(){
     if(mire){ classes.push("mire"); title=` title="Bourbier : on ne peut plus s’y déplacer jusqu’au tour ${mire.untilTurn}"`; }
     const fog=missionFogAt(q,r);
     if(fog){ classes.push("fog"); title=` title="Brouillard : coupe la ligne de vue jusqu’au tour ${fog.untilTurn}"`; }
+    const flames=missionFlameAt(q,r);
+    if(flames){ classes.push("flames"); title=` title="Mur de flammes : brûle qui y entre ou s’y trouve (jusqu’au tour ${flames.untilTurn})"`; }
     const storm=missionStormAt(q,r);
     if(storm){ classes.push("storm"); title=` title="Tempête : la foudre frappe au hasard dans la zone (encore ${storm.turnsLeft} tour${storm.turnsLeft>1?"s":""})"`; }
     if(targets.has(key)&&m.mode==="move"){

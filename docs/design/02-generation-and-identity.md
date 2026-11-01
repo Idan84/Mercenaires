@@ -146,7 +146,12 @@ Soit, sous forme simplifiée :
 
 ### Physiologie
 
-- `Régénération = 0` au tirage brut initial.
+- `Régénération = 0` au tirage brut initial. Seul le **sang de troll** en donne (matrice, intensité 2) : 4D6 pour un lointain ancêtre (≈ 14), 8D6 pour une lignée proche (≈ 27), 10D6 pour un bâtard (≈ 35) ; environ 2 % des recrues.
+- **Ce qu'elle fait** (Idan, 2026-11-01 ; `game-core/regeneration.js`, constantes `regeneration.*`) :
+  - **en combat**, au début de chacune de ses activations, s'il est debout : **ceil(2D6 × (0,5 + Régénération / 50)) PV**, sans dépasser ses PV max. Lointain ancêtre : 2 à 10 PV par tour ; lignée proche : 3 à 13 (≈ 2D6) ; bâtard : 3 à 15 ; à 100 : 5 à 30. Le Flétrissement l'empêche, comme les soins ;
+  - **le feu la bloque** : brûlé depuis sa dernière activation, il ne régénère pas cette fois ;
+  - **au camp**, une blessure guérit en **jours / (1 + Régénération / 100)** : deux fois plus vite à 100 ;
+  - elle **monte à chaque brûlure** : +30 XP de Régénération par blessure de feu, pour qui en a déjà (`progression.regeneration.burn_xp`), jusqu'à 100.
 
 ### Social
 

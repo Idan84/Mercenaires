@@ -1,7 +1,7 @@
 "use strict";
 
-// Missions one shot (doc 17). V1 (Idan, 2026-10-24) : « Faire le ménage », un camp gobelin ☠, seule mission proposée
-// à la Taverne, en boucle. Module pur : l'offre du tableau et son ordre de mission, les ennemis fabriqués à partir de
+// Missions one shot (doc 17). V1 (Idan, 2026-10-24) : « Faire le ménage », un camp ennemi ☠ (gobelin ou orc, tiré au
+// hasard ; Idan, 2026-11-01), seule mission proposée à la Taverne, en boucle. Module pur : l'offre du tableau et son ordre de mission, les ennemis fabriqués à partir de
 // leurs fiches figées, le butin et la récompense. La campagne gère l'expédition
 // (campaign.js), l'interface le combat.
 // Données : one-shot-missions.json, enemy-archetypes.json, weapons.json, base-armors.json, skills.json,
@@ -37,14 +37,31 @@
     function archetype(code){ return byCode.get(code)||null; }
     function archetypeOf(faction,line,level){ return archetypes.find(a=>a.faction===faction&&a.ligne===line&&a.niveau===level)||null; }
 
-    // Camp ☠ (Idan, 2026-10-24 ; 1D4+4 depuis le 2026-11-01) : 1D4+4 novices dont un « normal » (T2) dans 20 % des camps et deux dans 5 %, lignes
-    // tirées selon leurs poids, plus un Caïd. Codes d'archétypes.
-    function rollCamp(def=definition()){
-      const camp=def.camp,count=camp.novices_base+die(camp.novices_faces);
-      const roll=random(),normals=roll<camp.chance_deux_normaux?2:roll<camp.chance_deux_normaux+camp.chance_un_normal?1:0;
-      const enemies=Array.from({length:count},(_,k)=>archetypeOf(def.faction,weighted(camp.lignes).ligne,k<normals?"normal":"novice")?.code)
-        .filter(Boolean);
-      return {enemies,chief:camp.chef};
+    // Camps (Idan, 2026-11-01) : le peuple du camp est tiré au hasard (camps[], poids), chacun avec ses lignes, son chef et
+    // ses noms. Points de combat : chaque fiche vaut ses points (enemy-archetypes.json, un mercenaire moyen = 10). Le camp
+    // prend son chef, puis tire des ennemis (lignes selon leurs poids, « normal » avec chance_normal, sinon novice) tant que
+    // le total se rapproche du budget de sa difficulté, tiré entre min et max : 55 à 75 à la difficulté 1, soit 5 à 8
+    // gobelins (6,5 en moyenne, comme l'ancien camp à 1D4+4) ou 3 à 6 orcs. Codes d'archétypes.
+    const MAX_ENEMIES=20;
+    function campsOf(def){ return Array.isArray(def?.camps)&&def.camps.length?def.camps:[]; }
+    function points(code){ return Number(archetype(code)?.points)||0; }
+    function budgetOf(def){
+      const budgets=def?.budgets||{};
+      return budgets[String(def?.difficulte||1)]||budgets["1"]||{min:55,max:75,chance_normal:0.05};
+    }
+    function rollCamp(def=definition(),camp=null){
+      const chosen=camp||weighted(campsOf(def).map(c=>({...c,poids:Number(c.poids)||1})));
+      const b=budgetOf(def),budget=b.min+Math.floor(random()*(b.max-b.min+1));
+      let total=points(chosen.chef);
+      const enemies=[];
+      while(enemies.length<MAX_ENEMIES){
+        const level=random()<(Number(b.chance_normal)||0)?"normal":"novice";
+        const code=archetypeOf(chosen.faction,weighted(chosen.lignes).ligne,level)?.code;
+        if(!code||total+points(code)/2>budget) break;
+        enemies.push(code);
+        total+=points(code);
+      }
+      return {faction:chosen.faction,campName:chosen.nom_camp||chosen.faction,enemies,chief:chosen.chef,points:total,budget,names:chosen.noms||{}};
     }
 
     // Nombre d'ennemis annoncé dans l'ordre : flou par nature (± 2), en toutes lettres (doc 17 §9).
@@ -54,10 +71,11 @@
       return (list.find(e=>noisy<=e.max)||list[list.length-1]||{texte:String(count)}).texte;
     }
 
-    // Récompense du contrat : base + par jour de marche aller-retour + par ennemi (valeurs de départ, à ajuster).
-    function contractReward(def,distance,enemyCount){
+    // Récompense du contrat : base + par jour de marche aller-retour + 35 PO par point de combat du camp (Idan,
+    // 2026-11-01 ; valeurs de départ, à ajuster).
+    function contractReward(def,distance,campPoints){
       const r=def.recompense;
-      return r.base+r.par_jour*2*distance+r.par_ennemi*enemyCount;
+      return r.base+r.par_jour*2*distance+Math.round(r.par_point*campPoints);
     }
 
     // Offre du tableau des contrats (doc 17 §1 et §9) : un des ordres validés pour cette mission et cette faction, tiré
@@ -66,16 +84,16 @@
       const def=definition(code);
       if(!def) return null;
       const camp=rollCamp(def),distance=die(def.distance_faces),enemyCount=camp.enemies.length+1;
-      const names=data.noms||{};
-      const order=pick((data.ordres||[]).filter(o=>o.mission===def.code&&o.faction===def.faction));
-      const tribe=pick(names.tribus||[]),target=pick((names.tribus||[]).filter(t=>t!==tribe));
+      const names=data.noms||{},tribes=names[camp.names.tribus||"tribus"]||[];
+      const order=pick((data.ordres||[]).filter(o=>o.mission===def.code&&o.faction===camp.faction));
+      const tribe=pick(tribes),target=pick(tribes.filter(t=>t!==tribe));
       const [minDays,maxDays]=def.validite_jours||[3,6];
       const fields={
         commanditaire:order.noms_commanditaire?pick(names[order.noms_commanditaire]||[]):"",
-        lieu:pick(names.lieux||[]),jours:distance+(distance>1?" jours":" jour"),estimation:estimation(enemyCount),récompense:contractReward(def,distance,enemyCount),
-        boss:pick(names.caids||[]),tribu:tribe,tribu_cible:target,signataire:pick(names.signataires||[])
+        lieu:pick(names.lieux||[]),jours:distance+(distance>1?" jours":" jour"),estimation:estimation(enemyCount),récompense:contractReward(def,distance,camp.points),
+        boss:pick(names[camp.names.chefs||"caids"]||[]),tribu:tribe,tribu_cible:target,signataire:pick(names.signataires||[])
       };
-      return {id:`${def.code}-${day}-${Math.floor(random()*1e9).toString(36)}`,code:def.code,name:def.nom,campName:def.nom_camp||def.faction,faction:def.faction,
+      return {id:`${def.code}-${day}-${Math.floor(random()*1e9).toString(36)}`,code:def.code,name:def.nom,campName:camp.campName,faction:camp.faction,
         difficulty:def.difficulte,day,expiresDay:day+minDays+Math.floor(random()*(maxDays-minDays+1)),distance,camp,enemyCount,
         reward:fields.récompense,order:order.code,fields};
     }
@@ -174,7 +192,7 @@
     }
     function mapSize(offer){ const map=definition(offer.code)?.carte||{}; return {cols:map.colonnes||13,rows:map.lignes||9}; }
 
-    return {definition,archetype,rollCamp,estimation,contractReward,createOffer,orderText,applyArchetype,buildEnemies,
+    return {definition,archetype,points,campsOf,budgetOf,rollCamp,estimation,contractReward,createOffer,orderText,applyArchetype,buildEnemies,
       outcome,deathMultiplier,chestItemCount,chestTier,mapSize};
   }
 

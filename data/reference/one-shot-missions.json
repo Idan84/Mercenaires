@@ -1,45 +1,87 @@
 {
   "schema_version": 1,
   "name": "one-shot-missions",
-  "description": "Missions one shot (doc 17). V1 : « Faire le ménage », un camp gobelin ☠, la seule mission proposée à la Taverne, en boucle (Idan, 2026-10-24). Les montants (récompense, coffre, renommée) sont des valeurs de départ, à ajuster en jouant. Idan, 2026-10-25 : récompense doublée ; coffre de 1D3 objets T2 (70 %) ou T3 (30 %), de toutes les familles d’équipement. Idan, 2026-11-01 : camp gobelin « un tout petit peu » plus fort, 1D4+4 novices au lieu de 1D4+3.",
+  "description": "Missions one shot (doc 17). « Faire le ménage » : la mission de la Taverne, en boucle (Idan, 2026-10-24) ; le camp est tiré au hasard parmi les peuples de camps (Idan, 2026-11-01 : Gobelins, Orcs), chacun avec ses lignes, son chef, ses ordres et ses noms. Points de combat (Idan, 2026-11-01) : chaque ennemi vaut ses points (enemy-archetypes.json) ; un camp remplit le budget de sa difficulté (budgets) ; la récompense compte 35 PO par point. Les montants (récompense, coffre, renommée) sont des valeurs de départ, à ajuster en jouant. Idan, 2026-10-25 : coffre de 1D3 objets T2 (70 %) ou T3 (30 %), de toutes les familles d’équipement.",
   "missions": [
     {
       "code": "cleanup",
       "nom": "Faire le ménage",
       "description": "Attaquer un camp ennemi : tous les ennemis tués ou mis en déroute (sortis de la carte).",
-      "faction": "Gobelins",
-      "nom_camp": "Camp gobelin",
       "difficulte": 1,
       "illustration": "",
-      "camp": {
-        "novices_base": 4,
-        "novices_faces": 4,
-        "chance_un_normal": 0.2,
-        "chance_deux_normaux": 0.05,
-        "lignes": [
-          {
-            "ligne": "Frondeur",
-            "poids": 35
-          },
-          {
-            "ligne": "Lancier",
-            "poids": 20
-          },
-          {
-            "ligne": "Archer",
-            "poids": 15
-          },
-          {
-            "ligne": "Guerrier",
-            "poids": 15
-          },
-          {
-            "ligne": "Assassin",
-            "poids": 15
-          }
-        ],
-        "chef": "goblin_chief_1"
+      "budgets": {
+        "1": {
+          "min": 55,
+          "max": 75,
+          "chance_normal": 0.05
+        }
       },
+      "camps": [
+        {
+          "faction": "Gobelins",
+          "nom_camp": "Camp gobelin",
+          "poids": 1,
+          "lignes": [
+            {
+              "ligne": "Frondeur",
+              "poids": 35
+            },
+            {
+              "ligne": "Lancier",
+              "poids": 20
+            },
+            {
+              "ligne": "Archer",
+              "poids": 15
+            },
+            {
+              "ligne": "Guerrier",
+              "poids": 15
+            },
+            {
+              "ligne": "Assassin",
+              "poids": 15
+            }
+          ],
+          "chef": "goblin_chief_1",
+          "noms": {
+            "tribus": "tribus",
+            "chefs": "caids"
+          }
+        },
+        {
+          "faction": "Orcs",
+          "nom_camp": "Camp orc",
+          "poids": 1,
+          "lignes": [
+            {
+              "ligne": "Frondeur",
+              "poids": 35
+            },
+            {
+              "ligne": "Lancier",
+              "poids": 20
+            },
+            {
+              "ligne": "Archer",
+              "poids": 15
+            },
+            {
+              "ligne": "Guerrier",
+              "poids": 15
+            },
+            {
+              "ligne": "Assassin",
+              "poids": 15
+            }
+          ],
+          "chef": "orc_chief_1",
+          "noms": {
+            "tribus": "tribus_orcs",
+            "chefs": "chefs_de_camp_orcs"
+          }
+        }
+      ],
       "distance_faces": 3,
       "validite_jours": [
         3,
@@ -52,7 +94,7 @@
       "recompense": {
         "base": 2000,
         "par_jour": 1200,
-        "par_ennemi": 300
+        "par_point": 35
       },
       "coffre": {
         "or_des": 2,
@@ -120,6 +162,58 @@
         "PAR ORDRE DE SA MAJESTÉ IMPÉRIALE — Chancellerie des Marches, Bureau des Nuisances et Engeances",
         "À toute compagnie franche dûment patentée,",
         "Attendu qu'une engeance gobeline a établi un campement illicite à {lieu}, à {jours} de marche de votre cantonnement ; attendu que ladite engeance entrave la circulation des marchandises, le recouvrement de l'impôt et le moral des percepteurs ; attendu que la garnison impériale la plus proche se trouve, à son grand regret, fort occupée ailleurs ;",
+        "Il est ordonné à la compagnie qui s'en chargera de procéder au nettoyage complet dudit campement, par tout moyen qu'elle jugera utile, dans le respect approximatif des usages de la guerre.",
+        "La Couronne versera {récompense} pièces d'or à l'exécution du présent ordre. Le butin pris sur l'ennemi reste acquis à la compagnie, Sa Majesté étant d'humeur généreuse.",
+        "Le présent ordre expire le {date_expiration}, ou dès qu'une compagnie s'en sera chargée."
+      ],
+      "signature": "Donné le {date}, an {an} de l'Âge des Couronnes Brisées. Pour l'Empereur et par délégation, {signataire}, sous-secrétaire adjoint aux Marches.",
+      "noms_commanditaire": null
+    },
+    {
+      "code": "village_orcs",
+      "mission": "cleanup",
+      "faction": "Orcs",
+      "commanditaire": "Chef de village",
+      "titre": "Un chef de village",
+      "texte": [
+        "À toute compagnie de mercenaires qui voudra bien venir,",
+        "Je m'appelle {commanditaire}, chef de {lieu}, à {jours} de marche de votre camp. On m'a dit que vous tuiez des gens pour de l'argent. Ça tombe bien : nous avons de l'argent, un peu, et des orcs à tuer, beaucoup trop.",
+        "Depuis la fonte des neiges, une bande d'orcs a pris le vieux fort, au-dessus du village. Au début, ils prenaient un bœuf par semaine. Puis deux. La semaine dernière, ils ont pris le forgeron. Ils nous l'ont rendu le lendemain, avec une liste de commandes.",
+        "Combien sont-ils ? Le berger dit {estimation}. Le berger ne boit plus : il les a vus de près.",
+        "Le village a réuni {récompense} pièces d'or. C'est tout ce que nous avons, à part le forgeron, qui forge maintenant pour eux jour et nuit. Ce que vous trouverez dans leur camp sera à vous.",
+        "Le premier qui nous débarrasse d'eux touche la somme. Les autres auront fait le chemin pour rien.",
+        "Venez vite. Il ne reste plus beaucoup de bœufs, et le forgeron commence à manquer de fer."
+      ],
+      "signature": "{commanditaire}, chef de {lieu}, le {date}",
+      "noms_commanditaire": "chefs_de_village"
+    },
+    {
+      "code": "orc_rival",
+      "mission": "cleanup",
+      "faction": "Orcs",
+      "commanditaire": "Chef orc rival",
+      "titre": "Un chef orc rival",
+      "texte": [
+        "MERCENAIRES.",
+        "Moi, {commanditaire}, chef de guerre des {tribu}. Les {tribu_cible} ont pris NOTRE camp, à {lieu}. C'est à {jours} de chez vous. Ils l'ont pris pendant qu'on dormait. C'est lâche. Nous, on aurait fait pareil, mais c'est lâche quand même.",
+        "Ils sont {estimation}. Leur chef, c'est {boss}. Il a une grosse hache et une petite tête. Coupez la tête. La hache, gardez-la si vous voulez.",
+        "Pour vous : {récompense} pièces d'or. Prises sur une caravane, donc du vrai or. Tout ce qu'il y a dans le camp, vous prenez. Sauf le tambour de guerre. Le tambour, il est à moi.",
+        "Le premier qui vient, il gagne. Les autres, ils rentrent chez eux. Ou ils restent pour la bagarre, on ne dira pas non.",
+        "Pas de piège. Un orc ne ment pas. Presque jamais."
+      ],
+      "signature": "Signé : {commanditaire} (une marque de hache, au bas d'une peau de chèvre)",
+      "noms_commanditaire": "chefs_orcs"
+    },
+    {
+      "code": "emperor_orcs",
+      "mission": "cleanup",
+      "faction": "Orcs",
+      "commanditaire": "Ordre de l'Empereur",
+      "titre": "Par ordre de Sa Majesté Impériale",
+      "texte": [
+        "PAR ORDRE DE SA MAJESTÉ IMPÉRIALE — Chancellerie des Marches, Bureau des Nuisances et Engeances",
+        "À toute compagnie franche dûment patentée,",
+        "Attendu qu'une horde orque a établi un campement illicite à {lieu}, à {jours} de marche de votre cantonnement ; attendu que ladite horde pille les convois, dévore le bétail de la Couronne et a fait passer à deux percepteurs l'envie de percevoir ; attendu que la garnison impériale la plus proche se trouve, à son grand regret, fort occupée ailleurs ;",
         "Il est ordonné à la compagnie qui s'en chargera de procéder au nettoyage complet dudit campement, par tout moyen qu'elle jugera utile, dans le respect approximatif des usages de la guerre.",
         "La Couronne versera {récompense} pièces d'or à l'exécution du présent ordre. Le butin pris sur l'ennemi reste acquis à la compagnie, Sa Majesté étant d'humeur généreuse.",
         "Le présent ordre expire le {date_expiration}, ou dès qu'une compagnie s'en sera chargée."
@@ -197,6 +291,32 @@
         "max": 99,
         "texte": "une bonne dizaine"
       }
+    ],
+    "chefs_orcs": [
+      "Krogar Brisecrâne",
+      "Grishka Dentrouge",
+      "Urzog Fendsang",
+      "Zarga Mainnoire",
+      "Ragash Têtebrute",
+      "Morga Œilbalafré"
+    ],
+    "tribus_orcs": [
+      "Crânes-Fendus",
+      "Dents-Noires",
+      "Haches-Rouges",
+      "Poings-de-Fer",
+      "Mâchoires-de-Loup",
+      "Sang-Brûlé",
+      "Os-Brisés",
+      "Ventres-Creux"
+    ],
+    "chefs_de_camp_orcs": [
+      "Thrak le Fendeur",
+      "Murza Grosse-Hache",
+      "Dorg Mâchefer",
+      "Vargha la Borgne",
+      "Kruul Tête-de-Pioche",
+      "Ghorn Brise-Bouclier"
     ]
   }
 }

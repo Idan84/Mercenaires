@@ -1,6 +1,6 @@
 "use strict";
 
-// Tableau des missions de la Taverne (doc 17, Idan 2026-10-24, refait le 2026-10-31) : « Faire le ménage » (camp gobelin),
+// Tableau des missions de la Taverne (doc 17, Idan 2026-10-24, refait le 2026-10-31) : « Faire le ménage » (camp gobelin ou orc),
 // proposée en boucle, et une offre de garde du corps (Idan, 2026-10-25), en cartes au même gabarit. Les offres et leurs règles sont dans game-core/missions.js et
 // game-core/bodyguard.js, le combat dans mission.js.
 function missionRules(){

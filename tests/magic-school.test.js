@@ -86,6 +86,17 @@ assert.deepEqual(rules.nextBuildingLevel(state,"magic_room_fire"),
   {code:"magic_room_fire",name:"Salle du Feu",level:2,gold:4000,days:8,requires:{code:"magic_school",name:"École de magie",level:2},locked:false});
 at("magic_school",10); at("magic_room_fire",10);
 assert.equal(rules.nextBuildingLevel(state,"magic_room_fire"),null,"niveau 10 au plus");
+// Places (Idan, 2026-11-01) : 1 place, +1 tous les 2 niveaux, pour l'École (salle généraliste) comme pour chaque salle ;
+// 60 places quand tout est au niveau 10.
+assert.deepEqual([school.places_base,school.places_pas],[1,2]);
+for(const r of rooms) assert.deepEqual([r.places_base,r.places_pas],[1,2],r.nom);
+for(const r of rows.filter(r=>!r.places_pas)) assert.ok(["dispensary","baths"].includes(r.code));
+const places=[];
+for(let n=0;n<=10;n++){ at("magic_room_water",n); places.push(rules.buildingPlaces(state,"magic_room_water")); }
+assert.deepEqual(places,[0,1,2,2,3,3,4,4,5,5,6]);
+assert.equal(rules.buildingPlaces(state,"dispensary"),0);
+for(const code of ["magic_school",...rooms.map(r=>r.code)]) at(code,10);
+assert.equal(["magic_school",...rooms.map(r=>r.code)].reduce((sum,code)=>sum+rules.buildingPlaces(state,code),0),60);
 // Pas encore d'effet : les bâtiments de soins ne bougent pas.
 assert.deepEqual(rules.campBuildingEffects(state),{woundFactor:1,medicFactor:1,fatigueRelief:0,manaBonus:0});
 
@@ -113,10 +124,10 @@ assert.deepEqual(log.at(-1),{message:"Salle du Feu : il faut d’abord École de
 game.campaign.company.camp.buildings={magic_school:{level:2,construction:null},magic_room_fire:{level:2,construction:null},
   magic_room_water:{level:1,construction:{kind:"building",code:"magic_room_water",name:"Salle de l’Eau",level:2,gold:4000,days:8,startDay:1,endDay:game.campaign.day+3}}};
 ui.renderCampBuildings();
-assert.match(company(),/École de magie<\/strong><span>Niveau 2<\/span>/);
+assert.match(company(),/École de magie<\/strong><span>Niveau 2 · 2 places<\/span>/);
 assert.equal((company().match(/class="building-room /g)||[]).length,9,"les neuf salles");
-assert.match(company(),/<strong title="Elle monte au plus jusqu’au niveau de l’École de magie\.">Salle du Feu<\/strong><span>Niveau 2<\/span><\/div>\s*<div class="building-action"><button type="button" class="primary" data-camp-build="magic_room_fire" disabled>Améliorer : niveau 3<\/button>\s*<span class="building-cost">9 000 PO · 12 jours · École de magie niveau 3 requise<\/span>/);
-assert.match(company(),/Salle de l’Eau<\/strong><span>Niveau 1<\/span><\/div>\s*<span class="building-work">Chantier en cours : niveau 2, prêt dans 3 jours\.<\/span>/);
+assert.match(company(),/<strong title="Elle monte au plus jusqu’au niveau de l’École de magie\.">Salle du Feu<\/strong><span>Niveau 2 · 2 places<\/span><\/div>\s*<div class="building-action"><button type="button" class="primary" data-camp-build="magic_room_fire" disabled>Améliorer : niveau 3<\/button>\s*<span class="building-cost">9 000 PO · 12 jours · École de magie niveau 3 requise<\/span>/);
+assert.match(company(),/Salle de l’Eau<\/strong><span>Niveau 1 · 1 place<\/span><\/div>\s*<span class="building-work">Chantier en cours : niveau 2, prêt dans 3 jours\.<\/span>/);
 assert.match(company(),/Salle de la Foudre<\/strong><span>À construire<\/span><\/div>\s*<div class="building-action"><button type="button" class="primary" data-camp-build="magic_room_lightning">Construire<\/button>\s*<span class="building-cost">1 000 PO · 4 jours<\/span>/);
 ui.buildCampBuilding("magic_room_lightning");
 assert.deepEqual(log.at(-1),{message:"Construction lancée : Salle de la Foudre (niveau 1), 1 000 PO, prêt dans 4 jours.",kind:"gear"});

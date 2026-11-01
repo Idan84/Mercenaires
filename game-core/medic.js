@@ -48,6 +48,7 @@
       if(m.id===state.company.captainId) return no("Le capitaine ne peut pas être médecin.");
       if((state.company.lieutenantIds||[]).includes(m.id)) return no("Un lieutenant ne peut pas être médecin.");
       if(m.id===state.company.intendantId) return no("L’intendant ne peut pas être médecin.");
+      if(state.company.directorId!=null&&m.id===state.company.directorId) return no("Le directeur de l’École ne peut pas être médecin.");
       const mission=(state.expeditions||[]).find(e=>e.memberIds.includes(m.id));
       if(mission) return no(mission.status==="scheduled"?"Il part en mission demain.":"Il est en mission.");
       if(m.medicOfferDay===state.day) return no("Vous lui en avez déjà parlé aujourd’hui.");

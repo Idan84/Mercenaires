@@ -40,7 +40,7 @@ function renderMedicPanel(){
     return;
   }
   const company=c.company,lieutenants=company.lieutenantIds||[];
-  const picks=company.roster.filter(m=>m.id!==company.captainId&&m.id!==company.intendantId&&!lieutenants.includes(m.id)&&!rules.expeditionOf(c,m.id))
+  const picks=company.roster.filter(m=>m.id!==company.captainId&&m.id!==company.intendantId&&m.id!==company.directorId&&!lieutenants.includes(m.id)&&!rules.expeditionOf(c,m.id))
     .sort((a,b)=>medicSkill(b)-medicSkill(a)).map(m=>{
       const asked=m.medicOfferDay===c.day;
       return `<button type="button" class="steward-pick" data-medic-offer="${esc(m.id)}"${asked?` disabled title="${esc(copy.asked_today||"")}"`:` title="Médecine ${fmt(medicSkill(m))}"`}>

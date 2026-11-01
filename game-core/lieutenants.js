@@ -61,10 +61,12 @@
       return rosterOf(state).filter(m=>ids.has(m.id));
     }
     function isLieutenant(state,m){ return Boolean(m)&&lieutenantIds(state).includes(m.id); }
-    // Les mercenaires qui comptent pour les 10 : la compagnie sans le capitaine, l'intendant ni le médecin.
+    // Les mercenaires qui comptent pour les 10 : la compagnie sans le capitaine, l'intendant, le médecin ni le directeur de
+    // l'École.
     function countedMembers(state){
       const company=state.company;
-      return rosterOf(state).filter(m=>m.id!==company.captainId&&m.id!==company.intendantId&&(company.medicId==null||m.id!==company.medicId)).length;
+      return rosterOf(state).filter(m=>m.id!==company.captainId&&m.id!==company.intendantId&&(company.medicId==null||m.id!==company.medicId)
+        &&(company.directorId==null||m.id!==company.directorId)).length;
     }
     // Postes ouverts : le plus petit des quartiers construits et des dizaines de mercenaires.
     function openPosts(state){
@@ -85,6 +87,7 @@
       if(m.id===state.company.captainId) return no("Le capitaine ne peut pas être lieutenant.");
       if(m.id===state.company.intendantId) return no("L’intendant ne peut pas être lieutenant.");
       if(state.company.medicId!=null&&m.id===state.company.medicId) return no("Le médecin ne peut pas être lieutenant.");
+      if(state.company.directorId!=null&&m.id===state.company.directorId) return no("Le directeur de l’École ne peut pas être lieutenant.");
       if(isLieutenant(state,m)) return no("Il est déjà lieutenant.");
       if(m.lieutenantRefused) return no("Il a refusé de devenir lieutenant, pour de bon.");
       // Mission programmée (Idan, 2026-10-30) : encore au camp jusqu'au lendemain matin, on peut lui parler.

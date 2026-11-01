@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "name": "school-director-dialogue",
+  "description": "Directeur de l’École de magie (Idan, 2026-11-01 : « même mécanisme pour la nomination que l’intendant ») : proposer le poste (École construite), proposer de revenir sur le terrain. Humeur d’un refus : flattered (le malin, flatté), vexed (le brave, vexé), neutral. {prenom} ; {masculin|féminin} selon celui qui parle ou dont on parle ; {ecole}, {jours}. Textes de JC, à retoucher librement.",
+  "panel": {
+    "appoint": "Nommer un directeur de l’École",
+    "appoint_tip": "Le mercenaire choisi peut refuser le poste. Il quittera le terrain pour l’École de magie.",
+    "no_school": "Construisez d’abord l’École de magie pour nommer un directeur.",
+    "asked_today": "déjà sollicité aujourd’hui",
+    "director_title": "{Le directeur|La directrice} de l’École",
+    "since": "En poste depuis {jours}",
+    "since_today": "{Nommé|Nommée} aujourd’hui",
+    "school": "Meilleure école : {ecole}",
+    "recall": "Le renvoyer sur le terrain"
+  },
+  "offer": {
+    "proposal": "L’École de magie a besoin de quelqu’un pour la tenir. Ça vous dirait ?",
+    "accepted": [
+      "Des grimoires, du calme et personne pour me lancer des haches ? J’accepte.",
+      "Quelqu’un doit bien empêcher ces apprentis de mettre le feu au camp. Je prends le poste.",
+      "J’ai toujours rêvé d’avoir mon propre bureau. Et une bibliothèque. Marché conclu.",
+      "Diriger l’École… Voilà enfin une mission à ma hauteur."
+    ],
+    "flattered": [
+      "Moi, à la tête de l’École ? C’est flatteur… mais ma place est encore au front.",
+      "Vous me faites confiance pour ça ? J’en suis {touché|touchée}. Mais pas encore.",
+      "Je saurais tenir une classe, sans doute. Mais pas tant que je tiens une arme.",
+      "Redemandez-moi quand j’aurai fini de faire mes preuves sur le terrain."
+    ],
+    "vexed": [
+      "Surveiller des apprentis qui bafouillent leurs formules ? Je me bats mieux que la moitié de vos gars !",
+      "Vous me prenez pour {un vieux maître d’école|une vieille maîtresse d’école} ? Gardez vos parchemins.",
+      "Je préfère lancer mes sorts sur l’ennemi que les expliquer à des novices.",
+      "M’enfermer dans une tour pendant que les autres se battent ? Je m’en souviendrai."
+    ],
+    "neutral": [
+      "Non merci, capitaine. Pas pour l’instant.",
+      "Très peu pour moi.",
+      "Demandez à quelqu’un qui aime la poussière des bibliothèques.",
+      "Je préfère rester où je suis."
+    ],
+    "outcome_accepted": "{prenom} prend la direction de l’École de magie.",
+    "outcome_refused": "{prenom} reste sur le terrain."
+  },
+  "recall": {
+    "proposal": "La compagnie a besoin de vous sur le terrain. Vous reprenez les armes ?",
+    "accepted": [
+      "Enfin ! La théorie, c’est bien, mais rien ne vaut un vrai champ de bataille.",
+      "Assez de cours. Mes sorts ont besoin de vraies cibles.",
+      "Je pensais que vous ne demanderiez jamais. J’y retourne.",
+      "L’École sentait trop l’encre et la cire. Allons-y."
+    ],
+    "flattered": [
+      "Vous avez besoin de moi au front ? Touchant. Mais l’École aussi.",
+      "Qui tiendrait l’École, sans moi ? Pas encore, capitaine.",
+      "C’est gentil de penser à moi. Mais je reste ici.",
+      "Plus tard, peut-être. J’ai une salle entière à remettre en ordre."
+    ],
+    "vexed": [
+      "Vous me trouvez inutile ici ? Charmant.",
+      "Je fais tenir cette École debout, et vous voulez me renvoyer me faire trouer ?",
+      "Non. Et ne me reposez pas la question.",
+      "On ne me bouscule pas comme ça, capitaine."
+    ],
+    "neutral": [
+      "Non, je suis bien ici.",
+      "Pas tout de suite, capitaine.",
+      "L’École a encore besoin de moi.",
+      "Laissez-moi encore un peu de temps."
+    ],
+    "outcome_accepted": "{prenom} retourne sur le terrain : l’École n’a plus de directeur.",
+    "outcome_refused": "{prenom} reste à l’École de magie.",
+    "dorm_full": "Le dortoir est plein : il n’y a pas de place pour son retour."
+  }
+}

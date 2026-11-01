@@ -78,8 +78,10 @@
     const medicSkill=state=>Math.max(0,Number(medicOf(state)?.skills?.camp?.["Médecine"])||0);
     function medicCareFactor(state){ return medicOf(state)?Math.max(0,1-medicSkill(state)/MEDIC.divisor):1; }
     function medicRenown(state){ return medicOf(state)?Math.round(MEDIC.renown*medicSkill(state)):0; }
-    // Hors mission, comme l'intendant : ni dortoir, ni mission, ni garde du corps.
-    const offField=(state,m)=>m.id===state.company.intendantId||(state.company.medicId!=null&&m.id===state.company.medicId);
+    // Directeur de l'École de magie (Idan, 2026-11-01 ; nomination : school-director.js) : pas encore d'effet.
+    const isDirector=(state,m)=>state.company.directorId!=null&&m.id===state.company.directorId;
+    // Hors mission, comme l'intendant : ni dortoir, ni mission, ni garde du corps (médecin et directeur de l'École).
+    const offField=(state,m)=>m.id===state.company.intendantId||(state.company.medicId!=null&&m.id===state.company.medicId)||isDirector(state,m);
     // Bains chauds (Idan, 2026-11-01) : un jour de fatigue de moins par niveau, au moins 1 jour.
     const fatigueDaysFor=(days,state)=>Math.max(1,(Number(days)||0)-fatigueRelief(state));
     const STARTING_DORMITORY_CAPACITY=referenceConstant(reference,"camp.dormitory.initial_capacity",25);
@@ -391,6 +393,7 @@
           roster:[captain,...squad],
           intendantId:null,
           medicId:null,
+          directorId:null,
           camp:{dormitoryCapacity:STARTING_DORMITORY_CAPACITY},
           renownHeritage:[],
           // Armes et armures de rechange de la compagnie, sans propriétaire, listées à l'Intendance (Idan, 2026-10-23
@@ -572,6 +575,12 @@
     function campRoomCodes(parent){ return [...CAMP_BUILDINGS.values()].filter(row=>row.requiert===parent).map(row=>row.code); }
     function buildingLevel(state,code){ return Number(state?.company?.camp?.buildings?.[code]?.level)||0; }
     function buildingWork(state,code){ return state?.company?.camp?.buildings?.[code]?.construction||null; }
+    // Places de l'École de magie et de ses salles (Idan, 2026-11-01) : 1 place, +1 tous les 2 niveaux (places_base +
+    // ⌊niveau ÷ places_pas⌋), 6 au niveau 10 ; aucune avant la construction, ni pour un bâtiment sans places.
+    function buildingPlaces(state,code){
+      const row=CAMP_BUILDINGS.get(code),level=buildingLevel(state,code),step=Number(row?.places_pas)||0;
+      return level>0&&step>0?(Number(row.places_base)||0)+Math.floor(level/step):0;
+    }
     // Le prochain niveau ; pour une salle, requires dit le niveau du bâtiment qu'il faut d'abord atteindre (locked).
     function nextBuildingLevel(state,code){
       const row=CAMP_BUILDINGS.get(code);
@@ -775,6 +784,7 @@
       if(!ids.length) return {ok:false,reason:"Aucun mercenaire choisi."};
       if(ids.some(id=>expeditionOf(state,id))) return {ok:false,reason:"Un de ces mercenaires est déjà en mission."};
       if(state.company.medicId!=null&&ids.includes(state.company.medicId)) return {ok:false,reason:"Le médecin reste au camp."};
+      if(state.company.directorId!=null&&ids.includes(state.company.directorId)) return {ok:false,reason:"Le directeur de l’École reste au camp."};
       // Départ le lendemain matin, puis les jours de marche.
       const expedition={id:offer.id,offer,memberIds:ids,signedDay:state.day,departDay:state.day+1,arriveDay:state.day+1+offer.distance,status:"scheduled"};
       expeditionsOf(state).push(expedition);
@@ -846,6 +856,7 @@
       if(m.id===state.company.captainId) return {ok:false,reason:"Le capitaine reste à la compagnie."};
       if(m.id===state.company.intendantId) return {ok:false,reason:"L’intendant reste au camp."};
       if(state.company.medicId!=null&&m.id===state.company.medicId) return {ok:false,reason:"Le médecin reste au camp."};
+      if(isDirector(state,m)) return {ok:false,reason:"Le directeur de l’École reste au camp."};
       if(!isAvailable(m,state)) return {ok:false,reason:m.recovery?"Il doit d’abord se remettre.":busyReason(state,m.id)};
       if(bodyguard.levelOf(m.reputation)<offer.level) return {ok:false,reason:"Réputation trop faible."};
       return {ok:true};
@@ -980,6 +991,7 @@
           roster.splice(roster.indexOf(mercenary),1);
           if(state.company.intendantId===mercenary.id) state.company.intendantId=null;
           if(state.company.medicId===mercenary.id) state.company.medicId=null;
+          if(state.company.directorId===mercenary.id) state.company.directorId=null;
           // Son inventaire, gardé au dortoir, retourne à l'Intendance (Idan, 2026-10-30) ; ce qu'il portait reste avec
           // lui (butin d'une victoire, perdu sur une défaite).
           const worn=new Set(Object.values(mercenary.equipment?.slots||{}).filter(Boolean));
@@ -1069,7 +1081,7 @@
       completeExpeditionCombat,
       dormitoryFree,
       dormitoryUsed,
-      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
+      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
       woundDaysFor,fatigueDaysFor,
       dormitoryPlaces,
       dormitoryExpansionCost,

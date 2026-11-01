@@ -47,8 +47,9 @@ function campBuildingAction(c,code,level){
 }
 function campBuildingState(c,code,level){
   if(!level) return "À construire";
-  const effect=campBuildingEffectText(code,campaignRules().campBuildingEffects(c));
-  return `Niveau ${fmt(level)}${effect?" · "+effect:""}`;
+  const rules=campaignRules(),effect=campBuildingEffectText(code,rules.campBuildingEffects(c));
+  const places=rules.buildingPlaces?rules.buildingPlaces(c,code):0;
+  return `Niveau ${fmt(level)}${places?` · ${fmt(places)} place${places>1?"s":""}`:""}${effect?" · "+effect:""}`;
 }
 // École de magie (Idan, 2026-11-01) : une ligne par salle, une fois l'École construite.
 function campRoomsList(c,code){

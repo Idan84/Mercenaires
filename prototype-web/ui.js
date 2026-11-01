@@ -39,6 +39,8 @@ function rosterStatus(c){
   if(game.campaign&&c.id===game.campaign.company.intendantId) return {kind:"steward",label:String(c.sex||"").toLowerCase().startsWith("f")?"Intendante":"Intendant"};
   // Le médecin reste au camp, au Dispensaire (Idan, 2026-11-01).
   if(game.campaign&&game.campaign.company.medicId!=null&&c.id===game.campaign.company.medicId) return {kind:"steward",label:"Médecin"};
+  // Le directeur de l'École de magie reste au camp, à l'École (Idan, 2026-11-01).
+  if(game.campaign&&game.campaign.company.directorId!=null&&c.id===game.campaign.company.directorId) return {kind:"steward",label:String(c.sex||"").toLowerCase().startsWith("f")?"Directrice":"Directeur"};
   return {kind:"available",label:"Disponible"};
 }
 
@@ -122,10 +124,11 @@ function renderGame() {
   $("setup-panel").classList.add("hidden");
   $("game-panel").classList.remove("hidden");
   $("company-title").textContent = game.campaign?.company.name || `Compagnie de ${game.captain.name}`;
-  // Ma Compagnie : le capitaine, l'intendant (Idan, 2026-10-24) et le médecin (Idan, 2026-11-01).
+  // Ma Compagnie : le capitaine, l'intendant (Idan, 2026-10-24), le médecin et le directeur de l'École (Idan, 2026-11-01).
   const steward = game.campaign?.company.roster.find(m => m.id === game.campaign.company.intendantId);
   const medic = game.campaign?.company.medicId != null ? game.campaign.company.roster.find(m => m.id === game.campaign.company.medicId) : null;
-  $("captain-summary").innerHTML = characterRow(game.captain, true) + (steward ? characterRow(steward) : "") + (medic ? characterRow(medic) : "");
+  const director = game.campaign?.company.directorId != null ? game.campaign.company.roster.find(m => m.id === game.campaign.company.directorId) : null;
+  $("captain-summary").innerHTML = characterRow(game.captain, true) + (steward ? characterRow(steward) : "") + (medic ? characterRow(medic) : "") + (director ? characterRow(director) : "");
   renderGameHud();
   renderMercenaryRoster();
   renderGenerated();
@@ -163,8 +166,9 @@ function dormitoryPlacesText(places){
 }
 
 function renderMercenaryRoster() {
-  // L'intendant et le médecin passent dans Ma Compagnie (Idan, 2026-10-24 et 2026-11-01).
-  const squad=teamCharacters().filter(c=>c!==game.captain&&c.id!==game.campaign?.company.intendantId&&(game.campaign?.company.medicId==null||c.id!==game.campaign.company.medicId));
+  // L'intendant, le médecin et le directeur de l'École passent dans Ma Compagnie (Idan, 2026-10-24 et 2026-11-01).
+  const squad=teamCharacters().filter(c=>c!==game.captain&&c.id!==game.campaign?.company.intendantId&&(game.campaign?.company.medicId==null||c.id!==game.campaign.company.medicId)
+    &&(game.campaign?.company.directorId==null||c.id!==game.campaign.company.directorId));
   const company=game.campaign?.company;
   const occupied=game.campaign?campaignRules().dormitoryUsed(game.campaign):squad.length;
   const capacity=company?.camp?.dormitoryCapacity;
@@ -813,6 +817,7 @@ function renderSituation(c) {
   if (company && c.id === company.captainId) roles.push("Capitaine");
   if (company && c.id === company.intendantId) roles.push("Intendant");
   if (company && company.medicId != null && c.id === company.medicId) roles.push("Médecin");
+  if (company && company.directorId != null && c.id === company.directorId) roles.push(String(c.sex || "").toLowerCase().startsWith("f") ? "Directrice de l’École" : "Directeur de l’École");
   const rows = [
     `<div class="metric"><small>Statut</small><strong>${inCompany ? (roles.join(" · ") || "Membre de la compagnie") : esc(c.role || "Hors compagnie")}</strong></div>`,
     `<div class="metric"><small>État</small><strong>${c.recovery ? esc(recoveryLabel(c)) : "Disponible"}</strong></div>`
@@ -1295,6 +1300,8 @@ function historyEntryText(c,entry){
   if(entry.kind==="recall") return fill(copy.recall?.[entry.accepted?"accord":"refus"],{jours:historyPlural(entry.days||0,"jour","jours")});
   if(entry.kind==="medic") return fill(copy.medic?.[entry.accepted?"accord":"refus"]);
   if(entry.kind==="medic_recall") return fill(copy.medic_recall?.[entry.accepted?"accord":"refus"],{jours:historyPlural(entry.days||0,"jour","jours")});
+  if(entry.kind==="director") return fill(copy.director?.[entry.accepted?"accord":"refus"]);
+  if(entry.kind==="director_recall") return fill(copy.director_recall?.[entry.accepted?"accord":"refus"],{jours:historyPlural(entry.days||0,"jour","jours")});
   if(entry.kind==="lieutenant") return fill(copy.lieutenant?.[entry.accepted?"accord":"refus"],{salaire:fmt(entry.salary||0)});
   if(entry.kind==="bodyguard") return fill(copy.bodyguard?.[entry.issue],{client:String(entry.client||"").toLocaleLowerCase("fr")});
   if(entry.kind==="lieutenant_request") return fill(copy.lieutenant_request?.[entry.type],{lieutenant:entry.lieutenant||"",gain:fmt(entry.gain||0)});
@@ -1314,7 +1321,8 @@ function renderHistoryTab(c){
   const history=c.history||{};
   const values={...history,days:MercenairesHistory.daysInCompany(c,game.campaign?.day),
     stewardDays:typeof stewardRules==="function"&&game.campaign?stewardRules().totalStewardDays(game.campaign,c):Number(history.stewardDays)||0,
-    medicDays:typeof medicRules==="function"&&game.campaign?medicRules().totalMedicDays(game.campaign,c):Number(history.medicDays)||0};
+    medicDays:typeof medicRules==="function"&&game.campaign?medicRules().totalMedicDays(game.campaign,c):Number(history.medicDays)||0,
+    directorDays:typeof schoolDirectorRules==="function"&&game.campaign?schoolDirectorRules().totalDirectorDays(game.campaign,c):Number(history.directorDays)||0};
   const counters=(copy.counters||[]).filter(k=>!k.hideZero||Number(values[k.key])>0).map(k=>`<div class="sheet-history-counter"><strong>${fmt(Number(values[k.key])||0)}</strong><small>${esc(k.label)}</small></div>`).join("");
   const entries=[...(history.log||[])].map((entry,index)=>({entry,index})).sort((a,b)=>b.entry.day-a.entry.day||b.index-a.index)
     .map(({entry})=>({entry,text:historyEntryText(c,entry)})).filter(x=>x.text);

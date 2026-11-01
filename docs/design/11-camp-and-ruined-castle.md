@@ -153,12 +153,34 @@ Fonctions :
   et **4 × n jours** (niveau 10 : 100 000 PO et 40 jours ; 385 000 PO pour les dix niveaux) ; **un chantier par bâtiment
   et par salle**, en parallèle les uns des autres et du dortoir ; l'or est payé au lancement, le niveau est atteint le
   matin du dernier jour ;
+- **places** (Idan, 2026-11-01) : **1 place, +1 tous les 2 niveaux** (1 + ⌊niveau ÷ 2⌋), pour l'École elle-même (la
+  salle généraliste : Puissance magique, Réserve de mana) comme pour chaque salle d'école ; 6 au niveau 10, **60 places**
+  quand tout est au niveau 10 (`camp-buildings.json`, colonnes `places_base` et `places_pas`). Affichées dans chaque
+  encart (« Niveau 3 · 2 places ») ; elles serviront aux mercenaires qui viennent s'y entraîner ;
 - **pas encore d'effet** : l'apprentissage des sorts, l'entraînement (Puissance magique, Réserve de mana, sorts,
-  écoles), le professeur et le rôle des niveaux sont en discussion. Déjà retenu par Idan : chaque niveau de l'École
-  réduira le temps d'apprentissage (par exemple −10 %) et accueillera un élève de plus ;
+  écoles) et le rôle des niveaux sont en discussion. Déjà retenu par Idan : chaque niveau de l'École réduira le temps
+  d'apprentissage (par exemple −10 %) ;
 - interface : l'encart de l'École (niveau, bouton du prochain niveau avec son prix) ; une fois l'École construite, ses
   neuf salles dedans, une ligne chacune ; le bouton d'une salle est grisé tant que l'École n'a pas le niveau voulu
   (« École de magie niveau 3 requise »). Pas d'écran à part ni d'image pour l'instant.
+
+**Directeur de l'École** (Idan, 2026-11-01 : « même mécanisme pour la nomination que l'intendant » ; règles
+`game-core/school-director.js`, panneau `prototype-web/school-director-ui.js`, textes `school-director-dialogue.json`) :
+
+- on peut nommer un directeur **une fois l'École construite** (le premier niveau en chantier ne suffit pas) ; un seul ;
+  ni le capitaine, ni un lieutenant, ni l'intendant, ni le médecin ;
+- **il peut refuser, même règle que l'intendant** (doc 14) : même envie (40 − 0,6 × Courage + 2 × Missions + 8 ×
+  Blessures, de 2 à 95 %), même retour sur le terrain (60 − envie + 1 par jour en poste), même effet d'un refus sur
+  l'affinité (± (Intelligence − Courage) / 10, flatté une seule fois), une proposition par jour ;
+- c'est un **mercenaire hors mission, comme l'intendant et le médecin** (Idan : « tu as tout bon ») : il reste au camp,
+  vit à l'École (pas de place au dortoir), ne part ni en mission ni en garde du corps, ne devient pas lieutenant et ne
+  compte pas pour les 10 mercenaires d'un lieutenant ; il passe dans Ma Compagnie ;
+- **pas encore d'effet** (ni Renommée ni bonus) ; il en aura avec l'entraînement (piste d'Idan : son Charisme et son
+  affinité avec l'élève aideront les mercenaires à venir s'entraîner) ;
+- **interface** : en haut de l'Intendance, à côté de l'intendant et du médecin ; « Nommer un directeur de l'École »
+  (la meilleure école de chaque candidat, les meilleurs d'abord), puis sa fiche compacte (sa meilleure école et depuis
+  quand il est en poste au survol) et « Le renvoyer sur le terrain » ; fiche du mercenaire : « Jours à la tête de
+  l'École » et son historique.
 
 ## 8 — Bâtiments pour animaux et montures
 

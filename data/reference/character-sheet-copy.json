@@ -325,6 +325,11 @@
         "key": "medicDays",
         "label": "Jours au Dispensaire",
         "hideZero": true
+      },
+      {
+        "key": "directorDays",
+        "label": "Jours à la tête de l’École",
+        "hideZero": true
       }
     ],
     "events": {
@@ -368,6 +373,14 @@
       "medic_recall": {
         "accord": "Quitte le Dispensaire et retourne sur le terrain après {jours}.",
         "refus": "Refuse de quitter le Dispensaire."
+      },
+      "director": {
+        "accord": "Prend la direction de l’École de magie.",
+        "refus": "Refuse de diriger l’École de magie."
+      },
+      "director_recall": {
+        "accord": "Quitte l’École de magie et retourne sur le terrain après {jours}.",
+        "refus": "Refuse de quitter l’École de magie."
       },
       "lieutenant": {
         "accord": "Devient {lieutenant|lieutenante} de la compagnie, pour {salaire} PO par jour.",

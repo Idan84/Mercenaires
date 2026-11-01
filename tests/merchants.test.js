@@ -109,10 +109,10 @@ assert.equal(new Set(visit.offers.map(o=>o.item.id)).size,10,"dix objets distinc
 // Les exemples de la proposition (Idan, 2026-10-31) : affinité +44, compagnie neuve, sans intendant.
 const item=(name,tier)=>generator.createItemByName("weapon",name,tier);
 assert.equal(rules.sellPrice(item("Pistolet",2),44),739);
-assert.equal(rules.sellPrice(item("Tromblon",4),44),7182);
+assert.equal(rules.sellPrice(item("Tromblon",4),44),17955,"T4 De luxe : prix × 2,5 (Idan, 2026-11-01)");
 assert.equal(rules.buybackPrice(item("Pistolet",2),{affinity:44,specialty:true,level:2}),470);
-assert.equal(rules.buybackPrice(item("Tromblon",4),{affinity:44,specialty:true,level:2}),6267);
-assert.equal(rules.buybackPrice(item("Tromblon",4),{affinity:44,specialty:true,level:11}),5092);
+assert.equal(rules.buybackPrice(item("Tromblon",4),{affinity:44,specialty:true,level:2}),15667);
+assert.equal(rules.buybackPrice(item("Tromblon",4),{affinity:44,specialty:true,level:11}),12730);
 assert.equal(rules.buybackPrice(item("Épée longue",1),{affinity:44,level:2}),25);
 
 // Achat : pas assez d'or, puis un achat ; l'article quitte l'étal et rejoint l'Intendance ; +2 d'affinité.
@@ -163,13 +163,13 @@ state.market.merchants[thorval.id].acquired=0;
 state.company.stock=[item("Tromblon",4),item("Épée longue",1),item("Épée longue",1),item("Épée longue",1),item("Épée longue",2)];
 visit=rules.visitOf(state,{renown});
 const tromblon=state.company.stock[0];
-assert.deepEqual(visit.buyback(tromblon),{specialty:true,price:6267});
+assert.deepEqual(visit.buyback(tromblon),{specialty:true,price:15667});
 assert.equal(visit.buyback(state.company.stock[1]).specialty,false);
 const goldBefore=state.company.gold;
 const sold=rules.sell(state,tromblon.id,{renown});
 assert.equal(sold.ok,true);
-assert.equal(sold.price,6267);
-assert.equal(state.company.gold,goldBefore+6267);
+assert.equal(sold.price,15667);
+assert.equal(state.company.gold,goldBefore+15667);
 assert.ok(!state.company.stock.includes(tromblon),"il l'emporte");
 const swords=state.company.stock.filter(i=>i.tier===1).map(i=>rules.sell(state,i.id,{renown}).price);
 const base=72*0.8*(1+0.2*44/100)*0.4;
@@ -238,9 +238,9 @@ assert.ok([3,4].includes(gift.item.tier),"T3 ou T4");
 assert.equal(gift.item.owner,null);
 assert.equal(gift.price,Math.round(rules.sellPrice(gift.item,100)*0.5),"moitié de son prix normal");
 assert.equal(rules.visitOf(state,{renown}).special.item,gift.item,"le même pendant tout le passage");
-// L'exemple de la proposition : un arc T3 à 720 PO, un arc T4 à 1 500 PO.
+// L'exemple de la proposition : un arc T3 à 720 PO, un arc T4 à 1 500 PO avant la qualité De luxe (× 2,5 : 3 750 PO).
 assert.equal(Math.round(rules.sellPrice(item("Arc",3),100)*0.5),720);
-assert.equal(Math.round(rules.sellPrice(item("Arc",4),100)*0.5),1500);
+assert.equal(Math.round(rules.sellPrice(item("Arc",4),100)*0.5),3750);
 // L'acheter : une seule fois ; il rejoint l'Intendance.
 state.company.gold=gift.price-1;
 assert.equal(rules.buySpecial(state,{renown}).reason,"Pas assez d'or.");

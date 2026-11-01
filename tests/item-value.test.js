@@ -29,9 +29,9 @@ for (const key of ["weapons","baseArmors","boots","belts","amulets","capes","glo
   for (const row of reference[key].rows) assert.ok(Number.isInteger(row.prix_base) && row.prix_base > 0, `${row.nom} : prix_base`);
 }
 
-// Multiplicateurs validés : T1 ×1, T2 ×3, T3 ×8, T4 ×25 ; Usée ×0,6, Correcte ×1, Grand Luxe ×1,5.
+// Multiplicateurs validés : T1 ×1, T2 ×3, T3 ×8, T4 ×25 ; Usée ×0,6, Correcte ×1, De bonne facture ×1,5, De luxe ×2,5 (Idan, 2026-11-01).
 assert.deepEqual([1,2,3,4].map(values.tierMultiplier), [1,3,8,25]);
-assert.deepEqual(["worn","standard","luxury"].map(code => values.qualityMultiplier({qualityCode:code})), [0.6,1,1.5]);
+assert.deepEqual(["worn","standard","luxury","deluxe"].map(code => values.qualityMultiplier({qualityCode:code})), [0.6,1,1.5,2.5]);
 assert.equal(values.qualityMultiplier({}), 1, "sans qualité : Correcte");
 
 // Les exemples donnés à Idan.
@@ -40,6 +40,7 @@ assert.equal(values.value(item("weapon","Épée longue",1,"worn")), 72);
 assert.equal(values.value(item("weapon","Épée longue",2,"standard")), 360);
 assert.equal(values.value(item("weapon","Épée longue",3,"luxury")), 1440);
 assert.equal(values.value(item("weapon","Épée longue",4,"luxury")), 4500);
+assert.equal(values.value(item("weapon","Épée longue",4,"deluxe")), 7500,"T4 De luxe");
 assert.equal(values.basePrice(item("weapon","Arquebuse",1)), 240, "arme à feu × 1,5");
 assert.equal(values.value(item("armor","Armure de plates",3,"luxury",{templateId:"armor:plate_armor"})), 7200);
 assert.equal(values.value(item("armor","",1,"standard",{templateId:"armor:gambeson"})), 60, "armure retrouvée par son code");

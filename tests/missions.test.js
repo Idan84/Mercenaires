@@ -41,8 +41,9 @@ for(const L of [1,3,5,6,8,10,11,13,15]) for(let i=0;i<300;i++){
   const camp=rules.rollCamp(undefined,null,{level:L}),metal=metalOf(L),[low,high,power]=BUDGET[metal],unit=Math.pow(L,power);
   assert.ok(camp.budget>=low*unit&&camp.budget<=high*unit&&camp.budget%unit===0,`budget ${metal} niveau ${L} : ${camp.budget}`);
   assert.equal(camp.points,rules.points(camp.chief)+camp.enemies.reduce((t,code)=>t+rules.points(code),0),"points du camp");
-  if(camp.enemies.length<100) assert.ok(Math.abs(camp.points-camp.budget)<=30,`près du budget : ${camp.points} / ${camp.budget}`);
-  else assert.ok(camp.points<=camp.budget+30,`plafond de 100 ennemis : ${camp.points} / ${camp.budget}`);
+  // À une demi-créature près (la plus lourde du métal : une élite De luxe pèse jusqu'à 88 points).
+  if(camp.enemies.length<100) assert.ok(Math.abs(camp.points-camp.budget)<=45,`près du budget : ${camp.points} / ${camp.budget}`);
+  else assert.ok(camp.points<=camp.budget+45,`plafond de 100 ennemis : ${camp.points} / ${camp.budget}`);
   assert.ok(camp.enemies.length<=100);
   assert.equal(rules.archetype(camp.chief).faction,camp.faction);
   assert.ok(CHIEFS[metal].includes(rules.archetype(camp.chief).niveau),`chef ${metal}`);
@@ -161,7 +162,9 @@ for(const a of reference.enemyArchetypes.rows){
   assert.deepEqual([a.niveau_mission_min,a.butin],[1,{equipement:100-10*a.tier,objets:[]}],"butin : "+a.code);
 }
 {
-  const breakRules=createMissionRules({reference,random:seeded(21)}),novice=enemies.find(e=>breakRules.archetype(e.archetype).tier===1);
+  const breakRules=createMissionRules({reference,random:seeded(21)});
+  let novice=null;
+  for(let day=50;!novice;day++) novice=rules.buildEnemies(rules.createOffer({day,level:1}),()=>base()).find(e=>breakRules.archetype(e.archetype).tier===1);
   let kept=0,carried=0;
   for(let i=0;i<500;i++){ kept+=breakRules.outcome(offer,{victory:true,deadEnemies:[novice]}).loot.length; carried+=novice.items.length; }
   assert.ok(Math.abs(kept/carried-0.9)<0.04,`T1 : 90 % récupérés (${kept} / ${carried})`);
@@ -316,7 +319,12 @@ for(let i=0;i<400;i++){
 }
 for(const family of ["weapon","armor"]) assert.ok(families.has(family),family);
 assert.equal(generator.createChestItem(captain,2).qualityCode,"standard");
-assert.equal(generator.createChestItem(captain,4).tier,4,"T4 : comme chez les marchands");
+{
+  // Qualités (Idan, 2026-11-01) : une par tier — Usée, Correcte, De bonne facture, De luxe.
+  const t4=generator.createChestItem(captain,4);
+  assert.deepEqual([t4.tier,t4.qualityCode,t4.qualityName],[4,"deluxe","De luxe"]);
+  assert.equal(generator.createChestItem(captain,3).qualityName,"De bonne facture");
+}
 const missionUi=fs.readFileSync(path.join(ROOT,"prototype-web","mission.js"),"utf8");
 assert.match(missionUi,/rules\.chestPlan\(offer\)/);
 assert.match(missionUi,/plan\.tiers\.map\(tier=>game\.generator\.createChestItem\(captain,tier\)\)/);

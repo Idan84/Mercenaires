@@ -17,7 +17,7 @@ Cette formule s’applique **uniquement après un toucher et une blessure réuss
 
 ## Jet de dégâts de l’arme
 
-L’arme fournit son dé de dégâts PV. La qualité de l’item modifie ce jet : **Usée ×0,8 · Correcte ×1 · Grand Luxe ×1,2**.
+L’arme fournit son dé de dégâts PV. La qualité de l’item modifie ce jet : **Usée ×0,8 · Correcte ×1 · De bonne facture ×1,2 · De luxe ×1,4**.
 
 Si une arme `Au choix` est réellement maniée à deux mains, elle reçoit en plus **×1,5** sur son jet de dégâts. Une arme exclusivement `2 mains` n'applique pas ce multiplicateur : ses dés de base sont déjà équilibrés comme des dégâts deux mains.
 

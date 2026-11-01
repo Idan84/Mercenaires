@@ -49,8 +49,10 @@ assert.deepEqual(missions.types.map(t=>t.code),["cleanup","bodyguard"]);
 const cleanup=missions.types[0];
 assert.deepEqual(cleanup.camps.map(c=>c.faction),reference.oneShotMissions.missions[0].camps.map(c=>c.faction));
 assert.equal(cleanup.camps.reduce((s,c)=>s+c.orders.length,0),reference.oneShotMissions.ordres.length,"chaque ordre sous son peuple");
-assert.deepEqual(cleanup.camps.find(c=>c.faction==="Orcs").chiefs,[{metal:"Bronze",list:[{name:"Chef de bande orc",points:38}]},
-  {metal:"Argent",list:[{name:"Chef de guerre orc",points:72}]},{metal:"Or",list:[{name:"Seigneur de guerre orc",points:111},{name:"Khan des Steppes",points:221}]}],"chef selon le métal");
+const orcChief=code=>{ const a=enemies.find(e=>e.code===code); return {name:a.nom,points:a.points}; };
+assert.deepEqual(cleanup.camps.find(c=>c.faction==="Orcs").chiefs,[{metal:"Bronze",list:[orcChief("orc_chief_1")]},
+  {metal:"Argent",list:[orcChief("orc_chief_2")]},{metal:"Or",list:[orcChief("orc_chief_3"),orcChief("orc_chief_4")]}],"chef selon le métal");
+assert.equal(orcChief("orc_chief_1").name,"Chef de bande orc");
 // Toute variable écrite dans un texte est expliquée dans le Lab.
 for(const t of missions.types) for(const v of t.variables) assert.ok(MissionsLab.VARIABLES[v],"variable sans explication : {"+v+"}");
 const page=MissionsLab.render(builtMissions);

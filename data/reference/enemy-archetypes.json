@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "enemy-archetypes",
-  "description": "Archétypes d’ennemis fixes (Idan, 2026-10-24 ; doc 17 §10 et §14). Gobelins, Orcs, Hommes-bêtes, Voleurs (Humains) et Ogres (2026-11-01) : cinq lignes sur quatre niveaux et quatre niveaux de chef chacun. Valeurs figées à partir des centiles des personnages générés du même peuple (novice P20, normal P50, vétéran P75, élite P90 ; chefs P75 à P99), avec la spécialisation de chaque ligne (trois caractéristiques un cran au-dessus, deux un cran au-dessous). PV = 3 × (Constitution + 0,2 × Endurance + 0,1 × Volonté). Points de combat (Idan, 2026-11-01) : un mercenaire généré moyen vaut 10 points (simulateur, 150 combats par effectif ; chefs : 10 × le nombre de mercenaires qui le battent une fois sur deux ; les plus forts mesurés jusqu’à 27 mercenaires, 200 combats par effectif). Niveau de mission minimum et butin par créature (Idan, 2026-11-01) : niveau 1 pour l’instant ; l’équipement peut se casser au combat : 100 % − 10 % par tier de chance de récupérer chaque objet porté (T1 90 %, T2 80 %, T3 70 %, T4 60 %). Ils composent les camps de « Faire le ménage » (one-shot-missions.json, budgets).",
+  "description": "Archétypes d’ennemis fixes (Idan, 2026-10-24 ; doc 17 §10 et §14). Gobelins, Orcs, Hommes-bêtes, Voleurs (Humains) et Ogres (2026-11-01) : cinq lignes sur quatre niveaux et quatre niveaux de chef chacun. Valeurs figées à partir des centiles des personnages générés du même peuple (novice P20, normal P50, vétéran P75, élite P90 ; chefs P75 à P99), avec la spécialisation de chaque ligne (trois caractéristiques un cran au-dessus, deux un cran au-dessous). PV = 3 × (Constitution + 0,2 × Endurance + 0,1 × Volonté). Points de combat (Idan, 2026-11-01) : un mercenaire généré moyen vaut 10 points (simulateur, 150 combats par effectif ; chefs : 10 × le nombre de mercenaires qui le battent une fois sur deux ; les plus forts mesurés jusqu’à 27 mercenaires, 200 combats par effectif ; fiches T4 remesurées avec la qualité De luxe, Idan 2026-11-01). Niveau de mission minimum et butin par créature (Idan, 2026-11-01) : niveau 1 pour l’instant ; l’équipement peut se casser au combat : 100 % − 10 % par tier de chance de récupérer chaque objet porté (T1 90 %, T2 80 %, T3 70 %, T4 60 %). Ils composent les camps de « Faire le ménage » (one-shot-missions.json, budgets).",
   "columns": [
     {
       "source": "Nom",
@@ -257,7 +257,7 @@
       ],
       "armure": "Armure de cuir",
       "tier": 3,
-      "qualite": "Grand Luxe",
+      "qualite": "De bonne facture",
       "points": 23,
       "niveau_mission_min": 1,
       "butin": {
@@ -317,8 +317,8 @@
       ],
       "armure": "Cuir renforcé",
       "tier": 4,
-      "qualite": "Grand Luxe",
-      "points": 43,
+      "qualite": "De luxe",
+      "points": 37,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -490,7 +490,7 @@
       ],
       "armure": "Gambison",
       "tier": 3,
-      "qualite": "Grand Luxe",
+      "qualite": "De bonne facture",
       "points": 16,
       "niveau_mission_min": 1,
       "butin": {
@@ -549,8 +549,8 @@
       ],
       "armure": "Armure de cuir",
       "tier": 4,
-      "qualite": "Grand Luxe",
-      "points": 22,
+      "qualite": "De luxe",
+      "points": 23,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -724,7 +724,7 @@
       ],
       "armure": "Armure de cuir",
       "tier": 3,
-      "qualite": "Grand Luxe",
+      "qualite": "De bonne facture",
       "points": 16,
       "niveau_mission_min": 1,
       "butin": {
@@ -783,8 +783,8 @@
       ],
       "armure": "Armure de cuir",
       "tier": 4,
-      "qualite": "Grand Luxe",
-      "points": 23,
+      "qualite": "De luxe",
+      "points": 27,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -970,7 +970,7 @@
       ],
       "armure": "Cuir renforcé",
       "tier": 3,
-      "qualite": "Grand Luxe",
+      "qualite": "De bonne facture",
       "points": 24,
       "niveau_mission_min": 1,
       "butin": {
@@ -1033,8 +1033,8 @@
       ],
       "armure": "Brigandine",
       "tier": 4,
-      "qualite": "Grand Luxe",
-      "points": 47,
+      "qualite": "De luxe",
+      "points": 60,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -1207,7 +1207,7 @@
       ],
       "armure": "Vêtements",
       "tier": 3,
-      "qualite": "Grand Luxe",
+      "qualite": "De bonne facture",
       "points": 15,
       "niveau_mission_min": 1,
       "butin": {
@@ -1265,8 +1265,8 @@
       ],
       "armure": "Vêtements",
       "tier": 4,
-      "qualite": "Grand Luxe",
-      "points": 23,
+      "qualite": "De luxe",
+      "points": 28,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -1328,7 +1328,7 @@
       ],
       "armure": "Cuir renforcé",
       "tier": 3,
-      "qualite": "Grand Luxe",
+      "qualite": "De bonne facture",
       "points": 30,
       "niveau_mission_min": 1,
       "butin": {
@@ -1391,8 +1391,8 @@
       ],
       "armure": "Cotte de mailles",
       "tier": 4,
-      "qualite": "Grand Luxe",
-      "points": 55,
+      "qualite": "De luxe",
+      "points": 58,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -1454,8 +1454,8 @@
       ],
       "armure": "Brigandine",
       "tier": 4,
-      "qualite": "Grand Luxe",
-      "points": 100,
+      "qualite": "De luxe",
+      "points": 102,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -1518,8 +1518,8 @@
       ],
       "armure": "Armure d'écailles",
       "tier": 4,
-      "qualite": "Grand Luxe",
-      "points": 167,
+      "qualite": "De luxe",
+      "points": 201,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -1693,7 +1693,7 @@
       ],
       "armure": "Armure de cuir",
       "tier": 3,
-      "qualite": "Grand Luxe",
+      "qualite": "De bonne facture",
       "points": 26,
       "niveau_mission_min": 1,
       "butin": {
@@ -1753,8 +1753,8 @@
       ],
       "armure": "Cuir renforcé",
       "tier": 4,
-      "qualite": "Grand Luxe",
-      "points": 43,
+      "qualite": "De luxe",
+      "points": 50,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -1926,7 +1926,7 @@
       ],
       "armure": "Gambison",
       "tier": 3,
-      "qualite": "Grand Luxe",
+      "qualite": "De bonne facture",
       "points": 15,
       "niveau_mission_min": 1,
       "butin": {
@@ -1985,8 +1985,8 @@
       ],
       "armure": "Armure de cuir",
       "tier": 4,
-      "qualite": "Grand Luxe",
-      "points": 22,
+      "qualite": "De luxe",
+      "points": 24,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -2160,7 +2160,7 @@
       ],
       "armure": "Armure de cuir",
       "tier": 3,
-      "qualite": "Grand Luxe",
+      "qualite": "De bonne facture",
       "points": 17,
       "niveau_mission_min": 1,
       "butin": {
@@ -2219,8 +2219,8 @@
       ],
       "armure": "Armure de cuir",
       "tier": 4,
-      "qualite": "Grand Luxe",
-      "points": 23,
+      "qualite": "De luxe",
+      "points": 29,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -2406,7 +2406,7 @@
       ],
       "armure": "Cuir renforcé",
       "tier": 3,
-      "qualite": "Grand Luxe",
+      "qualite": "De bonne facture",
       "points": 32,
       "niveau_mission_min": 1,
       "butin": {
@@ -2469,8 +2469,8 @@
       ],
       "armure": "Brigandine",
       "tier": 4,
-      "qualite": "Grand Luxe",
-      "points": 51,
+      "qualite": "De luxe",
+      "points": 79,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -2643,7 +2643,7 @@
       ],
       "armure": "Vêtements",
       "tier": 3,
-      "qualite": "Grand Luxe",
+      "qualite": "De bonne facture",
       "points": 18,
       "niveau_mission_min": 1,
       "butin": {
@@ -2701,8 +2701,8 @@
       ],
       "armure": "Vêtements",
       "tier": 4,
-      "qualite": "Grand Luxe",
-      "points": 33,
+      "qualite": "De luxe",
+      "points": 34,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -2764,7 +2764,7 @@
       ],
       "armure": "Cuir renforcé",
       "tier": 3,
-      "qualite": "Grand Luxe",
+      "qualite": "De bonne facture",
       "points": 38,
       "niveau_mission_min": 1,
       "butin": {
@@ -2827,8 +2827,8 @@
       ],
       "armure": "Cotte de mailles",
       "tier": 4,
-      "qualite": "Grand Luxe",
-      "points": 72,
+      "qualite": "De luxe",
+      "points": 77,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -2890,8 +2890,8 @@
       ],
       "armure": "Brigandine",
       "tier": 4,
-      "qualite": "Grand Luxe",
-      "points": 111,
+      "qualite": "De luxe",
+      "points": 135,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -2954,8 +2954,8 @@
       ],
       "armure": "Armure d'écailles",
       "tier": 4,
-      "qualite": "Grand Luxe",
-      "points": 221,
+      "qualite": "De luxe",
+      "points": 261,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -3129,7 +3129,7 @@
       ],
       "armure": "Armure de cuir",
       "tier": 3,
-      "qualite": "Grand Luxe",
+      "qualite": "De bonne facture",
       "points": 24,
       "niveau_mission_min": 1,
       "butin": {
@@ -3189,8 +3189,8 @@
       ],
       "armure": "Cuir renforcé",
       "tier": 4,
-      "qualite": "Grand Luxe",
-      "points": 42,
+      "qualite": "De luxe",
+      "points": 48,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -3376,7 +3376,7 @@
       ],
       "armure": "Cuir renforcé",
       "tier": 3,
-      "qualite": "Grand Luxe",
+      "qualite": "De bonne facture",
       "points": 37,
       "niveau_mission_min": 1,
       "butin": {
@@ -3439,8 +3439,8 @@
       ],
       "armure": "Brigandine",
       "tier": 4,
-      "qualite": "Grand Luxe",
-      "points": 49,
+      "qualite": "De luxe",
+      "points": 79,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -3613,7 +3613,7 @@
       ],
       "armure": "Vêtements",
       "tier": 3,
-      "qualite": "Grand Luxe",
+      "qualite": "De bonne facture",
       "points": 19,
       "niveau_mission_min": 1,
       "butin": {
@@ -3671,8 +3671,8 @@
       ],
       "armure": "Vêtements",
       "tier": 4,
-      "qualite": "Grand Luxe",
-      "points": 30,
+      "qualite": "De luxe",
+      "points": 34,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -3844,7 +3844,7 @@
       ],
       "armure": "Gambison",
       "tier": 3,
-      "qualite": "Grand Luxe",
+      "qualite": "De bonne facture",
       "points": 19,
       "niveau_mission_min": 1,
       "butin": {
@@ -3903,8 +3903,8 @@
       ],
       "armure": "Armure de cuir",
       "tier": 4,
-      "qualite": "Grand Luxe",
-      "points": 24,
+      "qualite": "De luxe",
+      "points": 30,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -4078,7 +4078,7 @@
       ],
       "armure": "Armure de cuir",
       "tier": 3,
-      "qualite": "Grand Luxe",
+      "qualite": "De bonne facture",
       "points": 16,
       "niveau_mission_min": 1,
       "butin": {
@@ -4137,8 +4137,8 @@
       ],
       "armure": "Armure de cuir",
       "tier": 4,
-      "qualite": "Grand Luxe",
-      "points": 25,
+      "qualite": "De luxe",
+      "points": 27,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -4200,7 +4200,7 @@
       ],
       "armure": "Cuir renforcé",
       "tier": 3,
-      "qualite": "Grand Luxe",
+      "qualite": "De bonne facture",
       "points": 41,
       "niveau_mission_min": 1,
       "butin": {
@@ -4263,8 +4263,8 @@
       ],
       "armure": "Cotte de mailles",
       "tier": 4,
-      "qualite": "Grand Luxe",
-      "points": 64,
+      "qualite": "De luxe",
+      "points": 82,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -4326,8 +4326,8 @@
       ],
       "armure": "Brigandine",
       "tier": 4,
-      "qualite": "Grand Luxe",
-      "points": 115,
+      "qualite": "De luxe",
+      "points": 133,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -4390,8 +4390,8 @@
       ],
       "armure": "Armure d'écailles",
       "tier": 4,
-      "qualite": "Grand Luxe",
-      "points": 193,
+      "qualite": "De luxe",
+      "points": 237,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -4564,7 +4564,7 @@
       ],
       "armure": "Vêtements",
       "tier": 3,
-      "qualite": "Grand Luxe",
+      "qualite": "De bonne facture",
       "points": 18,
       "niveau_mission_min": 1,
       "butin": {
@@ -4622,8 +4622,8 @@
       ],
       "armure": "Vêtements",
       "tier": 4,
-      "qualite": "Grand Luxe",
-      "points": 35,
+      "qualite": "De luxe",
+      "points": 34,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -4809,7 +4809,7 @@
       ],
       "armure": "Cuir renforcé",
       "tier": 3,
-      "qualite": "Grand Luxe",
+      "qualite": "De bonne facture",
       "points": 48,
       "niveau_mission_min": 1,
       "butin": {
@@ -4872,8 +4872,8 @@
       ],
       "armure": "Brigandine",
       "tier": 4,
-      "qualite": "Grand Luxe",
-      "points": 58,
+      "qualite": "De luxe",
+      "points": 88,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -5047,7 +5047,7 @@
       ],
       "armure": "Armure de cuir",
       "tier": 3,
-      "qualite": "Grand Luxe",
+      "qualite": "De bonne facture",
       "points": 25,
       "niveau_mission_min": 1,
       "butin": {
@@ -5107,8 +5107,8 @@
       ],
       "armure": "Cuir renforcé",
       "tier": 4,
-      "qualite": "Grand Luxe",
-      "points": 50,
+      "qualite": "De luxe",
+      "points": 48,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -5280,7 +5280,7 @@
       ],
       "armure": "Gambison",
       "tier": 3,
-      "qualite": "Grand Luxe",
+      "qualite": "De bonne facture",
       "points": 20,
       "niveau_mission_min": 1,
       "butin": {
@@ -5339,8 +5339,8 @@
       ],
       "armure": "Armure de cuir",
       "tier": 4,
-      "qualite": "Grand Luxe",
-      "points": 25,
+      "qualite": "De luxe",
+      "points": 31,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -5514,7 +5514,7 @@
       ],
       "armure": "Armure de cuir",
       "tier": 3,
-      "qualite": "Grand Luxe",
+      "qualite": "De bonne facture",
       "points": 20,
       "niveau_mission_min": 1,
       "butin": {
@@ -5573,8 +5573,8 @@
       ],
       "armure": "Armure de cuir",
       "tier": 4,
-      "qualite": "Grand Luxe",
-      "points": 24,
+      "qualite": "De luxe",
+      "points": 31,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -5636,7 +5636,7 @@
       ],
       "armure": "Cuir renforcé",
       "tier": 3,
-      "qualite": "Grand Luxe",
+      "qualite": "De bonne facture",
       "points": 40,
       "niveau_mission_min": 1,
       "butin": {
@@ -5699,8 +5699,8 @@
       ],
       "armure": "Cotte de mailles",
       "tier": 4,
-      "qualite": "Grand Luxe",
-      "points": 68,
+      "qualite": "De luxe",
+      "points": 81,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -5762,8 +5762,8 @@
       ],
       "armure": "Brigandine",
       "tier": 4,
-      "qualite": "Grand Luxe",
-      "points": 108,
+      "qualite": "De luxe",
+      "points": 132,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -5826,8 +5826,8 @@
       ],
       "armure": "Armure d'écailles",
       "tier": 4,
-      "qualite": "Grand Luxe",
-      "points": 211,
+      "qualite": "De luxe",
+      "points": 255,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -6001,7 +6001,7 @@
       ],
       "armure": "Armure de cuir",
       "tier": 3,
-      "qualite": "Grand Luxe",
+      "qualite": "De bonne facture",
       "points": 34,
       "niveau_mission_min": 1,
       "butin": {
@@ -6061,8 +6061,8 @@
       ],
       "armure": "Cuir renforcé",
       "tier": 4,
-      "qualite": "Grand Luxe",
-      "points": 48,
+      "qualite": "De luxe",
+      "points": 56,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -6239,7 +6239,7 @@
       ],
       "armure": "Cuir renforcé",
       "tier": 3,
-      "qualite": "Grand Luxe",
+      "qualite": "De bonne facture",
       "points": 44,
       "niveau_mission_min": 1,
       "butin": {
@@ -6299,8 +6299,8 @@
       ],
       "armure": "Brigandine",
       "tier": 4,
-      "qualite": "Grand Luxe",
-      "points": 54,
+      "qualite": "De luxe",
+      "points": 83,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -6474,7 +6474,7 @@
       ],
       "armure": "Armure de cuir",
       "tier": 3,
-      "qualite": "Grand Luxe",
+      "qualite": "De bonne facture",
       "points": 35,
       "niveau_mission_min": 1,
       "butin": {
@@ -6534,8 +6534,8 @@
       ],
       "armure": "Cuir renforcé",
       "tier": 4,
-      "qualite": "Grand Luxe",
-      "points": 54,
+      "qualite": "De luxe",
+      "points": 57,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -6707,7 +6707,7 @@
       ],
       "armure": "Gambison",
       "tier": 3,
-      "qualite": "Grand Luxe",
+      "qualite": "De bonne facture",
       "points": 22,
       "niveau_mission_min": 1,
       "butin": {
@@ -6766,8 +6766,8 @@
       ],
       "armure": "Armure de cuir",
       "tier": 4,
-      "qualite": "Grand Luxe",
-      "points": 28,
+      "qualite": "De luxe",
+      "points": 35,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -6941,7 +6941,7 @@
       ],
       "armure": "Armure de cuir",
       "tier": 3,
-      "qualite": "Grand Luxe",
+      "qualite": "De bonne facture",
       "points": 22,
       "niveau_mission_min": 1,
       "butin": {
@@ -7000,8 +7000,8 @@
       ],
       "armure": "Armure de cuir",
       "tier": 4,
-      "qualite": "Grand Luxe",
-      "points": 29,
+      "qualite": "De luxe",
+      "points": 34,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -7060,7 +7060,7 @@
       ],
       "armure": "Cuir renforcé",
       "tier": 3,
-      "qualite": "Grand Luxe",
+      "qualite": "De bonne facture",
       "points": 42,
       "niveau_mission_min": 1,
       "butin": {
@@ -7120,8 +7120,8 @@
       ],
       "armure": "Cotte de mailles",
       "tier": 4,
-      "qualite": "Grand Luxe",
-      "points": 58,
+      "qualite": "De luxe",
+      "points": 67,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -7180,8 +7180,8 @@
       ],
       "armure": "Brigandine",
       "tier": 4,
-      "qualite": "Grand Luxe",
-      "points": 79,
+      "qualite": "De luxe",
+      "points": 98,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -7241,8 +7241,8 @@
       ],
       "armure": "Armure d'écailles",
       "tier": 4,
-      "qualite": "Grand Luxe",
-      "points": 116,
+      "qualite": "De luxe",
+      "points": 136,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,

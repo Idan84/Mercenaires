@@ -140,8 +140,10 @@ function logDayReport(report){
   const arrived=report.tavern.arrivals.map(a=>a.mercenary.name);
   if(gone.length) tavernLog("Engagés ailleurs pendant la nuit : "+gone.join(", ")+".","bad");
   if(arrived.length) tavernLog("Nouveaux candidats : "+arrived.join(", ")+".","turn");
-  if(report.missionTaken) tavernLog("Le contrat de "+report.missionTaken.fields.lieu+" a été pris par une autre compagnie ; un nouveau est affiché.","bad");
-  if(report.bodyguardTaken) tavernLog("L’offre de garde du corps ("+report.bodyguardTaken.client.toLocaleLowerCase("fr")+") a trouvé preneur ailleurs ; une nouvelle est affichée.","info");
+  // Offres non signées prises ailleurs (Taverne à 5 missions) : une autre les remplace aussitôt.
+  for(const lost of report.offersLost||[]) tavernLog(lost.kind==="bodyguard"
+    ?"L’offre de garde du corps ("+lost.client.toLocaleLowerCase("fr")+") a trouvé preneur ailleurs."
+    :"Le contrat de "+lost.fields.lieu+" a été pris par une autre compagnie.",lost.kind==="bodyguard"?"info":"bad");
   if(typeof logExpeditionReport==="function") logExpeditionReport(report.expeditions);
   if(typeof logCampWork==="function") logCampWork(report.built);
   if(typeof logCampBuildings==="function") logCampBuildings(report.buildings);

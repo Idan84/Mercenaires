@@ -57,7 +57,7 @@
   // lieutenants : règles des lieutenants (lieutenants.js) ; leurs demandes de la veille sont jouées chaque matin.
   // bodyguard : règles des missions de garde du corps (bodyguard.js).
   // merchants (facultatif) : createMerchantRules(...) de game-core/merchants.js (le marchand du jour, doc 18).
-  function createCampaignRules({generator,tavern,reference,biographies=null,avatars=null,progression=null,affinity=null,names=null,missions=null,lieutenants=null,bodyguard=null,magic=null,merchants=null}){
+  function createCampaignRules({generator,tavern,reference,biographies=null,avatars=null,progression=null,affinity=null,names=null,missions=null,lieutenants=null,bodyguard=null,magic=null,merchants=null,random=Math.random}){
     const STARTING_GOLD=referenceConstant(reference,"company.gold.initial",10000);
     // Régénération (sang de troll ; Idan, 2026-11-01) : une blessure guérit plus vite au camp (regeneration.js).
     const regeneration=Regeneration?Regeneration.createRegenerationRules({reference}):null;
@@ -424,7 +424,7 @@
         assignBiography(state,m);
       }
       tavern.fillTavern(state.tavern,state.day,candidateFactory(state));
-      ensureMissionOffer(state);
+      fillTavernBoard(state);
       // Historique (Idan, 2026-10-24) : le capitaine fonde la compagnie, l'escouade de départ l'accompagne.
       History.record(captain,state.day,"founded");
       for(const m of squad) History.record(m,state.day,"joined",{initial:true});
@@ -650,8 +650,7 @@
       const recovered=recoverOneDay(state);
       const salaries=paySalaries(state);
       const tavernReport=tavern.tavernMorning(state.tavern,state.day,candidateFactory(state));
-      const missionTaken=expireMissionOffer(state);
-      const bodyguardTaken=expireBodyguardOffer(state);
+      const offersLost=expireBoardOffers(state);
       const expeditions=advanceExpeditions(state);
       const built=advanceConstruction(state);
       const buildings=advanceBuildings(state);
@@ -662,7 +661,7 @@
       expeditions.departed=departScheduled(state);
       // Le marchand de la veille repart ; un autre passe peut-être (doc 18 ; Idan, 2026-10-30).
       const merchant=merchants?merchants.morning(state,{renown:companyRenown(state).total}):null;
-      return {day:state.day,recovered,salaries,tavern:tavernReport,missionTaken,bodyguardTaken,expeditions,built,buildings,lieutenants:lieutenantReports,mana,merchant};
+      return {day:state.day,recovered,salaries,tavern:tavernReport,offersLost,expeditions,built,buildings,lieutenants:lieutenantReports,mana,merchant};
     }
 
     // Recharge du mana (doc 12 ; Idan, 2026-10-25) : chaque jour, pour les membres présents au camp, pas pour ceux qui sont
@@ -673,24 +672,62 @@
         .map(m=>({id:m.id,...magic.rechargeMana(m,{bonusPercent:manaBonusPercent(state)})})).filter(x=>x.gained>0);
     }
 
-    // Tableau des contrats (doc 17) : une offre à la fois pour l'instant, « Faire le ménage » en boucle. Une offre
-    // non signée qui dépasse sa date est prise par une autre compagnie ; une nouvelle la remplace. Une offre signée part
-    // avec son escouade (expédition, ci-dessous) : elle n'est plus au tableau, une nouvelle la remplace.
-    function ensureMissionOffer(state){
-      if(!missions||state.missionBoard?.offer) return false;
-      state.missionBoard={offer:missions.createOffer({day:state.day,renown:companyRenown(state).total})};
-      return true;
+    // Taverne à 5 missions (Idan, 2026-11-01 : « la taverne a 5 missions […] Totalement aléatoire sur le type de
+    // missions ») : 5 cases ; chaque case tire un type de mission au hasard, chacun avec la même chance (contrat « Faire le
+    // ménage » ou garde du corps). Une offre non signée qui dépasse sa date est prise par une autre compagnie : une autre
+    // la remplace aussitôt. Une offre signée laisse sa case vide 24 heures : la mission suivante arrive le lendemain.
+    // Le contrat est au niveau de la Renommée (missions.js) ; la garde du corps suit le meilleur mercenaire (bodyguard.js).
+    const TAVERN_SLOTS=referenceConstant(reference,"tavern.missions.slots",5);
+    const TAVERN_EMPTY_DAYS=referenceConstant(reference,"tavern.missions.empty_days",1);
+    const offerKind=offer=>offer?.kind==="bodyguard"?"bodyguard":"cleanup";
+    function missionKinds(){ return [missions&&"cleanup",bodyguard&&"bodyguard"].filter(Boolean); }
+    function createBoardOffer(state,kind){
+      return kind==="bodyguard"?bodyguard.createOffer({day:state.day,bestLevel:bestMercenaryLevel(state)})
+        :missions.createOffer({day:state.day,renown:companyRenown(state).total});
     }
-    function renewMissionOffer(state){
-      if(!missions) return null;
-      state.missionBoard={offer:missions.createOffer({day:state.day,renown:companyRenown(state).total})};
-      return state.missionBoard.offer;
+    // Le tableau ; une ancienne sauvegarde (une offre de contrat, une de garde du corps) passe ses offres aux premières cases.
+    function boardOf(state){
+      if(!state.tavernBoard){
+        const old=[state.missionBoard?.offer,state.bodyguardBoard?.offer].filter(Boolean);
+        state.tavernBoard={slots:Array.from({length:TAVERN_SLOTS},(_,i)=>({offer:old[i]||null,emptyUntil:null}))};
+      }
+      delete state.missionBoard;
+      delete state.bodyguardBoard;
+      while(state.tavernBoard.slots.length<TAVERN_SLOTS) state.tavernBoard.slots.push({offer:null,emptyUntil:null});
+      return state.tavernBoard;
     }
-    function expireMissionOffer(state){
-      const offer=state.missionBoard?.offer;
-      if(!missions||!offer||state.day<=offer.expiresDay) return null;
-      renewMissionOffer(state);
-      return offer;
+    // Remplit les cases libres (et celles dont les 24 heures sont passées). true si une offre est arrivée.
+    function fillTavernBoard(state){
+      const kinds=missionKinds();
+      if(!kinds.length) return false;
+      let changed=false;
+      for(const slot of boardOf(state).slots){
+        if(slot.offer||(slot.emptyUntil!=null&&state.day<slot.emptyUntil)) continue;
+        slot.offer=createBoardOffer(state,kinds[Math.min(kinds.length-1,Math.floor(random()*kinds.length))]);
+        slot.emptyUntil=null;
+        changed=true;
+      }
+      return changed;
+    }
+    function boardOffers(state){ return boardOf(state).slots.map(slot=>slot.offer).filter(Boolean); }
+    // Une offre du tableau, par son identifiant ou son type (la première venue).
+    function boardOffer(state,{id=null,kind=null}={}){
+      return boardOffers(state).find(o=>(id==null||o.id===id)&&(kind==null||offerKind(o)===kind))||null;
+    }
+    function takeBoardOffer(state,offer){
+      const slot=boardOf(state).slots.find(x=>x.offer?.id===offer.id);
+      if(slot){ slot.offer=null; slot.emptyUntil=state.day+TAVERN_EMPTY_DAYS; }
+    }
+    function expireBoardOffers(state){
+      const lost=[];
+      for(const slot of boardOf(state).slots){
+        if(!slot.offer||state.day<=slot.offer.expiresDay) continue;
+        lost.push(slot.offer);
+        slot.offer=null;
+        slot.emptyUntil=null;
+      }
+      fillTavernBoard(state);
+      return lost;
     }
 
     // Expéditions (doc 17, Idan 2026-10-24) : l'escouade part et le joueur continue de gérer son camp. Au bout des jours
@@ -717,9 +754,9 @@
       }
       return departed;
     }
-    function departExpedition(state,memberIds){
-      const offer=state.missionBoard?.offer;
-      if(!offer) return {ok:false,reason:"Aucun contrat au tableau."};
+    function departExpedition(state,memberIds,offerId=null){
+      const offer=boardOffer(state,{id:offerId,kind:"cleanup"});
+      if(!offer) return {ok:false,reason:offerId==null?"Aucun contrat au tableau.":"Ce contrat n’est plus au tableau."};
       const roster=new Set(rosterOf(state).map(m=>m.id));
       const ids=[...new Set(memberIds)].filter(id=>roster.has(id));
       if(!ids.length) return {ok:false,reason:"Aucun mercenaire choisi."};
@@ -728,7 +765,7 @@
       // Départ le lendemain matin, puis les jours de marche.
       const expedition={id:offer.id,offer,memberIds:ids,signedDay:state.day,departDay:state.day+1,arriveDay:state.day+1+offer.distance,status:"scheduled"};
       expeditionsOf(state).push(expedition);
-      renewMissionOffer(state);
+      takeBoardOffer(state,offer);
       return {ok:true,expedition};
     }
     // Fin du combat : les morts quittent l'expédition, les autres prennent le chemin du retour. La renommée perdue sur un
@@ -782,28 +819,16 @@
       return {arrived,returned,bodyguards,waiting:expeditionsOf(state).filter(e=>e.status==="arrived")};
     }
 
-    // Garde du corps (Idan, 2026-10-25 ; règles : bodyguard.js) : une offre à la fois à la Taverne, comme le contrat ;
-    // une offre non signée qui dépasse sa date est remplacée. Les offres montent avec le meilleur mercenaire de la
-    // compagnie (capitaine et intendant non compris).
+    // Garde du corps (Idan, 2026-10-25 ; règles : bodyguard.js) : une case du tableau de la Taverne, comme le contrat.
+    // Les offres montent avec le meilleur mercenaire de la compagnie (capitaine et intendant non compris).
     function bestMercenaryLevel(state){
       const company=state.company;
       return rosterOf(state).filter(m=>m.id!==company.captainId&&!offField(state,m))
         .reduce((best,m)=>Math.max(best,bodyguard.levelOf(m.reputation)),0);
     }
-    function ensureBodyguardOffer(state){
-      if(!bodyguard||state.bodyguardBoard?.offer) return false;
-      state.bodyguardBoard={offer:bodyguard.createOffer({day:state.day,bestLevel:bestMercenaryLevel(state)})};
-      return true;
-    }
-    function expireBodyguardOffer(state){
-      const offer=state.bodyguardBoard?.offer;
-      if(!bodyguard||!offer||state.day<=offer.expiresDay) return null;
-      state.bodyguardBoard={offer:bodyguard.createOffer({day:state.day,bestLevel:bestMercenaryLevel(state)})};
-      return offer;
-    }
     // Qui peut partir : un mercenaire au camp, disponible (ni blessé, ni fatigué), du niveau demandé ; ni le capitaine ni
     // l'intendant.
-    function canGuard(state,m,offer=state.bodyguardBoard?.offer){
+    function canGuard(state,m,offer=boardOffer(state,{kind:"bodyguard"})){
       if(!m||!offer) return {ok:false,reason:"Aucune offre."};
       if(m.id===state.company.captainId) return {ok:false,reason:"Le capitaine reste à la compagnie."};
       if(m.id===state.company.intendantId) return {ok:false,reason:"L’intendant reste au camp."};
@@ -814,9 +839,9 @@
     }
     // Signature : le paiement arrive d'avance ; les gardes partent le lendemain matin (mission programmée) et sont absents
     // jusqu'au retour.
-    function departBodyguard(state,memberIds){
-      const offer=state.bodyguardBoard?.offer;
-      if(!bodyguard||!offer) return {ok:false,reason:"Aucune offre de garde du corps."};
+    function departBodyguard(state,memberIds,offerId=null){
+      const offer=bodyguard?boardOffer(state,{id:offerId,kind:"bodyguard"}):null;
+      if(!offer) return {ok:false,reason:"Aucune offre de garde du corps."};
       const ids=[...new Set(memberIds)];
       if(ids.length!==offer.count) return {ok:false,reason:`Il faut ${offer.count} mercenaire${offer.count>1?"s":""}.`};
       const members=ids.map(id=>rosterOf(state).find(m=>m.id===id));
@@ -824,7 +849,7 @@
       state.company.gold+=offer.payment;
       const expedition={id:offer.id,kind:"bodyguard",offer,memberIds:ids,signedDay:state.day,departDay:state.day+1,returnDay:state.day+1+offer.days,status:"scheduled"};
       expeditionsOf(state).push(expedition);
-      state.bodyguardBoard={offer:bodyguard.createOffer({day:state.day,bestLevel:bestMercenaryLevel(state)})};
+      takeBoardOffer(state,offer);
       return {ok:true,expedition,gold:offer.payment};
     }
     // Retour : chacun tire son sort (rentré, fatigué, blessé), gagne un peu de réputation et touche sa prime ; la
@@ -1017,12 +1042,11 @@
       STARTING_DORMITORY_CAPACITY,
       createCampaign,
       advanceTime,
-      ensureBodyguardOffer,
+      fillTavernBoard,boardOffers,boardOffer,
       canGuard,
       departBodyguard,
       bestMercenaryLevel,
-      ensureMissionOffer,
-      renewMissionOffer,
+      tavernSlots:state=>boardOf(state).slots,
       expeditionOf,
       awayOf,
       busyReason,

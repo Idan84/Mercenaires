@@ -1,18 +1,21 @@
 "use strict";
 
-// Tableau des missions de la Taverne (doc 17, Idan 2026-10-24, refait le 2026-10-31) : « Faire le ménage » (camp gobelin ou orc),
-// proposée en boucle, et une offre de garde du corps (Idan, 2026-10-25), en cartes au même gabarit. Les offres et leurs règles sont dans game-core/missions.js et
+// Tableau des missions de la Taverne (doc 17, Idan 2026-10-24, refait le 2026-10-31) : 5 cases (Idan, 2026-11-01), chacune
+// un contrat « Faire le ménage » ou une garde du corps tirés au hasard, en cartes au même gabarit ; une case prise reste vide
+// jusqu'au lendemain. Les offres et leurs règles sont dans game-core/missions.js et
 // game-core/bodyguard.js, le combat dans mission.js.
 function missionRules(){
   return game.missionRules||(game.missionRules=MercenairesMissions.createMissionRules({reference:game.referenceData}));
 }
 
-function contractOffer(){
+// Les 5 cases du tableau (campaign.js) : remplies à l'ouverture si besoin.
+function tavernBoardSlots(){
   const c=game.campaign;
-  if(!c) return null;
-  if(campaignRules().ensureMissionOffer(c)) saveGame();
-  return c.missionBoard?.offer||null;
+  if(!c) return [];
+  if(campaignRules().fillTavernBoard(c)) saveGame();
+  return campaignRules().tavernSlots(c);
 }
+function boardOffer(id){ return game.campaign?campaignRules().boardOffer(game.campaign,{id}):null; }
 
 // Date du calendrier du Royaume (camp-calendar.js) : « 4 Brumecendre », et l'an.
 function contractDate(day){
@@ -29,13 +32,7 @@ function contractOrder(offer){
   return missionRules().orderText(offer,{date:created.label,date_expiration:expires.label,an:created.year,récompense:fmt(offer.reward)});
 }
 
-// Garde du corps (Idan, 2026-10-25) : une offre à la fois, payée d'avance, sans combat.
-function bodyguardOffer(){
-  const c=game.campaign;
-  if(!c) return null;
-  if(campaignRules().ensureBodyguardOffer(c)) saveGame();
-  return c.bodyguardBoard?.offer||null;
-}
+// Garde du corps (Idan, 2026-10-25) : payée d'avance, sans combat.
 function bodyguardTexts(){ return game.referenceData?.bodyguardMissions?.textes||{}; }
 // Les étoiles d'un niveau (1 à 15), comme la réputation.
 function levelStars(level,detail=""){
@@ -62,35 +59,33 @@ function missionIcon(kind){
 }
 const missionDays=n=>n+" jour"+(n>1?"s":"");
 
-// Les gabarits : une carte par offre ouverte, toutes au même format.
+// Les gabarits : une carte par case du tableau, toutes au même format ; une case vide attend le lendemain.
+function contractCard(offer){
+  const def=(game.referenceData?.oneShotMissions?.missions||[]).find(m=>m.code===offer.code)||{};
+  const order=contractOrder(offer);
+  return {id:"contract:"+offer.id,kind:"contract",type:offer.name,title:offer.campName+" de "+offer.fields.lieu,
+    illustration:def.illustration||"",description:def.description||"",
+    difficulty:{level:offer.difficulty||1,label:"Difficulté"},
+    reward:fmt(offer.reward)+" PO",rewardNote:"+ butin",duration:missionDays(offer.distance)+" de marche",
+    facts:[["client","Commanditaire",order?.from||""],["days","Distance",missionDays(offer.distance)+" de marche, "+missionDays(2*offer.distance)+" aller-retour"],
+      ["enemies","Ennemis",offer.faction+", "+offer.fields.estimation],["gold","Récompense",fmt(offer.reward)+" PO + butin"],
+      ["expires","Expire le",contractDate(offer.expiresDay).label]],
+    letter:order,action:{label:"Accepter le contrat",attr:`data-contract-accept="${esc(offer.id)}"`}};
+}
+function bodyguardCard(guard){
+  const t=bodyguardTexts(),plural=guard.count>1;
+  return {id:"bodyguard:"+guard.id,kind:"bodyguard",type:t.titre||"Garde du corps",title:guard.client,
+    illustration:game.referenceData?.bodyguardMissions?.illustration||"",
+    description:MercenairesRecruitDialogue.fill(t.offre||"",{client:guard.client,n:guard.count,s:plural?"s":"",jours:guard.days},false),
+    difficulty:{level:guard.level,label:"Réputation minimale"},
+    reward:fmt(guard.payment)+" PO",rewardNote:"d’avance",duration:missionDays(guard.days),
+    facts:[["crew","Mercenaires",String(guard.count)],["days","Durée",missionDays(guard.days)+", sans combat"],
+      ["gold","Paiement d’avance",fmt(guard.payment)+" PO"],["expires","Expire le",contractDate(guard.expiresDay).label]],
+    letter:null,action:{label:plural?"Choisir les gardes":"Choisir le garde",attr:`data-bodyguard-accept="${esc(guard.id)}"`}};
+}
 function missionCards(){
-  const cards=[];
-  const offer=contractOffer();
-  if(offer){
-    const def=(game.referenceData?.oneShotMissions?.missions||[]).find(m=>m.code===offer.code)||{};
-    const order=contractOrder(offer);
-    cards.push({id:"contract:"+offer.id,kind:"contract",type:offer.name,title:offer.campName+" de "+offer.fields.lieu,
-      illustration:def.illustration||"",description:def.description||"",
-      difficulty:{level:offer.difficulty||1,label:"Difficulté"},
-      reward:fmt(offer.reward)+" PO",rewardNote:"+ butin",duration:missionDays(offer.distance)+" de marche",
-      facts:[["client","Commanditaire",order?.from||""],["days","Distance",missionDays(offer.distance)+" de marche, "+missionDays(2*offer.distance)+" aller-retour"],
-        ["enemies","Ennemis",offer.faction+", "+offer.fields.estimation],["gold","Récompense",fmt(offer.reward)+" PO + butin"],
-        ["expires","Expire le",contractDate(offer.expiresDay).label]],
-      letter:order,action:{label:"Accepter le contrat",attr:"data-contract-accept"}});
-  }
-  const guard=bodyguardOffer();
-  if(guard){
-    const t=bodyguardTexts(),plural=guard.count>1;
-    cards.push({id:"bodyguard:"+guard.id,kind:"bodyguard",type:t.titre||"Garde du corps",title:guard.client,
-      illustration:game.referenceData?.bodyguardMissions?.illustration||"",
-      description:MercenairesRecruitDialogue.fill(t.offre||"",{client:guard.client,n:guard.count,s:plural?"s":"",jours:guard.days},false),
-      difficulty:{level:guard.level,label:"Réputation minimale"},
-      reward:fmt(guard.payment)+" PO",rewardNote:"d’avance",duration:missionDays(guard.days),
-      facts:[["crew","Mercenaires",String(guard.count)],["days","Durée",missionDays(guard.days)+", sans combat"],
-        ["gold","Paiement d’avance",fmt(guard.payment)+" PO"],["expires","Expire le",contractDate(guard.expiresDay).label]],
-      letter:null,action:{label:plural?"Choisir les gardes":"Choisir le garde",attr:"data-bodyguard-accept"}});
-  }
-  return cards;
+  return tavernBoardSlots().map((slot,i)=>!slot.offer?{id:"empty:"+i,kind:"empty"}
+    :slot.offer.kind==="bodyguard"?bodyguardCard(slot.offer):contractCard(slot.offer));
 }
 
 function renderMissionArt(card,big=false){
@@ -99,6 +94,7 @@ function renderMissionArt(card,big=false){
     :`<span class="mission-emblem">${missionIcon(card.kind)}</span>`}</div>`;
 }
 function renderMissionCard(card){
+  if(card.kind==="empty") return `<article class="mission-card mission-card--empty" aria-label="Case libre"><p>Nouvelle mission demain</p></article>`;
   return `<article class="mission-card" data-mission-open="${esc(card.id)}" role="button" tabindex="0" aria-label="${esc(card.title)}">
     ${renderMissionArt(card)}
     <div class="mission-card-body">
@@ -138,8 +134,9 @@ function renderContractBoard(){
   box.innerHTML=renderExpeditions()+(cards.length?`<div class="mission-grid">${cards.map(renderMissionCard).join("")}</div>`:`<p class="mission-empty">Aucune offre aujourd’hui.</p>`);
 }
 
-function acceptContract(){
-  const offer=contractOffer();
+// Accepter une offre (contrat ou garde du corps) : le choix de l'escouade s'ouvre.
+function acceptOffer(id){
+  const offer=boardOffer(id);
   if(offer) openMissionSelection(offer);
 }
 
@@ -235,8 +232,8 @@ function initializeExpeditionUi(){
     // Accepter depuis le détail : la fenêtre se ferme, le choix de l'escouade s'ouvre.
     if(event.target.closest("[data-contract-accept],[data-bodyguard-accept]")&&$("mission-detail")?.open) $("mission-detail").close();
     // Le bouton est dans la fenêtre de détail (hors du tableau) : on l'écoute ici, pour le contrat comme pour la garde.
-    if(event.target.closest("[data-contract-accept]")){ acceptContract(); return; }
-    if(event.target.closest("[data-bodyguard-accept]")){ const offer=bodyguardOffer(); if(offer) openMissionSelection(offer); return; }
+    const accept=event.target.closest("[data-contract-accept],[data-bodyguard-accept]");
+    if(accept){ acceptOffer(accept.dataset.contractAccept||accept.dataset.bodyguardAccept); return; }
     if(event.target.closest("#bodyguard-return-ok")){ showNextBodyguardReturn(); return; }
     const fight=event.target.closest("[data-expedition-fight]");
     if(fight) startExpeditionCombat(fight.dataset.expeditionFight);

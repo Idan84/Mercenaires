@@ -16,7 +16,7 @@ La partie commence avec le château en ruines comme future base de la compagnie.
 Éléments de départ retenus :
 
 - **Taverne** à proximité / « au coin de la rue » ;
-- **Dortoir : capacité 40** (portée de 20 à 40 par Idan le 2026-10-03, car l'escouade initiale peut dépasser 20 mercenaires) ;
+- **Dortoir : capacité 20** (portée de 20 à 40 par Idan le 2026-10-03, ramenée à 20 le 2026-11-01) ;
 - **10 000 pièces d’or** (portées de 1 000 à 10 000 par Idan le 2026-10-03, les salaires ayant été multipliés par 10 ; l’or de départ et les revenus seront recalés ensemble plus tard) ;
 - l’**Initial Squad** générée par la fonction déjà existante.
 
@@ -63,19 +63,20 @@ Fonctions envisagées / retenues :
 
 Le dortoir fixe la **capacité maximale de mercenaires** hébergés.
 
-- capacité initiale : `40` (décision Idan du 2026-10-03 ; constante `camp.dormitory.initial_capacity`) ;
+- capacité initiale : `20` (Idan, 2026-11-01 ; constante `camp.dormitory.initial_capacity`). L'escouade initiale dépasse 20 places dans 1 à 2 % des parties (humains, nains, orcs : 22 au plus, garde-fou des domaines compris) ; on ne peut alors pas recruter avant d'agrandir ;
 - places occupées (Idan, 2026-10-24) : un **ogre prend deux places** ; un **halfling, un gnome ou un gobelin une demi-place** ; tout autre mercenaire **une** (`peoples.json`, colonne `places_dortoir`) ; le **capitaine** et l'**intendant** n'en prennent pas ;
 - dortoir plein (moins de places libres que n'en demande le candidat) : **impossible de recruter** ; de même, l'intendant ne peut pas **revenir sur le terrain** s'il n'y a plus de place pour lui ;
-- **agrandissement** (Idan, 2026-10-25) : **+5 places** à chaque fois, **sans limite** ; chaque agrandissement coûte plus d'or et de jours que le précédent. Le k-ième (k = 1 pour passer de 40 à 45 places) coûte **100 × 1,2^(k−1) PO**, arrondi à 10, et dure **2 + ⌊(k−1)/3⌋ jours** (constantes `camp.dormitory.expansion_*`, formule de JC). Un chantier à la fois au dortoir (agrandissement ou qualité) ; l'or est payé au lancement ; les places sont prêtes le matin du jour où le chantier se termine. Interface (Idan, 2026-10-25) : **Ma Compagnie** montre le dortoir (places, qualité, chantier en cours) et un bouton « Aller au dortoir » ; l'**écran Dortoir** propose d'agrandir ou d'améliorer, sur un **fond plein écran qui dépend du niveau de qualité** (onze images de Jean-Mimi, une par niveau, colonne `image` de `dormitory-quality.json`) ;
+- **agrandissement** (Idan, 2026-10-25) : **+5 places** à chaque fois, **sans limite** ; chaque agrandissement coûte plus d'or et de jours que le précédent. Le k-ième (k = 1 pour passer de 20 à 25 places) coûte **100 × 1,2^(k−1) PO**, arrondi à 10, et dure **2 + ⌊(k−1)/3⌋ jours** (constantes `camp.dormitory.expansion_*`, formule de JC). Un chantier à la fois au dortoir (agrandissement ou qualité) ; l'or est payé au lancement ; les places sont prêtes le matin du jour où le chantier se termine. Interface (Idan, 2026-10-25) : **Ma Compagnie** montre le dortoir (places, qualité, chantier en cours) et un bouton « Aller au dortoir » ; l'**écran Dortoir** propose d'agrandir ou d'améliorer, sur un **fond plein écran qui dépend du niveau de qualité** (onze images de Jean-Mimi, une par niveau, colonne `image` de `dormitory-quality.json`) ;
 
-  | Places | Ce palier | Total depuis 40 places |
+  | Places | Ce palier | Total depuis 20 places |
   |---:|---|---|
-  | 45 | 100 PO, 2 jours | 100 PO, 2 jours |
-  | 60 | 170 PO, 3 jours | 530 PO, 9 jours |
-  | 80 | 360 PO, 4 jours | 1 650 PO, 23 jours |
-  | 100 | 740 PO, 5 jours | 3 960 PO, 42 jours |
-  | 150 | 4 600 PO, 9 jours | 27 090 PO, 114 jours |
-  | 200 | 28 490 PO, 12 jours | 170 400 PO, 219 jours |
+  | 25 | 100 PO, 2 jours | 100 PO, 2 jours |
+  | 40 | 170 PO, 3 jours | 530 PO, 9 jours |
+  | 60 | 360 PO, 4 jours | 1 650 PO, 23 jours |
+  | 80 | 740 PO, 5 jours | 3 960 PO, 42 jours |
+  | 100 | 1 540 PO, 7 jours | 8 740 PO, 67 jours |
+  | 150 | 9 540 PO, 10 jours | 56 720 PO, 152 jours |
+  | 200 | 59 070 PO, 13 jours | 353 890 PO, 270 jours |
 
 - **qualité** (Idan, 2026-10-25) : **dix niveaux** au-dessus du niveau 0 (`data/reference/dormitory-quality.json`, modifiable niveau par niveau). Atteindre le niveau n coûte **500 × n² PO** et **3 × n jours** (formule de JC). Chaque niveau atteint donne **+50 de Renommée** à la compagnie, pour de bon (part « dortoir » de la Renommée, doc 09 §2), et **+5 d'affinité** avec le capitaine à **chaque membre de la compagnie** ce jour-là, en expédition compris, capitaine exclu ; les recrues arrivées après n'ont rien. **Un seul chantier à la fois au dortoir** : agrandissement ou qualité. Noms des niveaux proposés par JC, validés par Idan ;
 

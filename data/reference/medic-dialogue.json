@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "name": "medic-dialogue",
+  "description": "Médecin (Idan, 2026-11-01) : proposer le poste (Dispensaire construit), proposer de revenir sur le terrain. Humeur d’un refus : flattered (le malin, flatté), vexed (le brave, vexé), neutral. {prenom} ; {masculin|féminin} selon celui qui parle ou dont on parle ; {medecine}, {jours}. Textes de JC, à retoucher librement.",
+  "panel": {
+    "appoint": "Nommer un médecin",
+    "appoint_tip": "Le mercenaire choisi peut refuser le poste. Il quittera le terrain pour le Dispensaire.",
+    "no_dispensary": "Construisez d’abord le Dispensaire pour nommer un médecin.",
+    "asked_today": "déjà sollicité aujourd’hui",
+    "medic_title": "{Le médecin|La médecin}",
+    "since": "En poste depuis {jours}",
+    "since_today": "{Nommé|Nommée} aujourd’hui",
+    "effect": "Médecine {medecine} : blessures {reduction} plus courtes, +{renommee} de Renommée",
+    "recall": "Le renvoyer sur le terrain"
+  },
+  "offer": {
+    "proposal": "Le Dispensaire a besoin de quelqu’un qui sait recoudre. Ça vous dirait ?",
+    "accepted": [
+      "Recoudre plutôt que trancher ? Pour une fois, je veux bien.",
+      "J’ai assez vu de plaies de l’intérieur. Je prends le poste.",
+      "Mes mains tremblent moins avec une aiguille qu’avec une épée. J’accepte.",
+      "Ils vont hurler, mais ils vivront. Marché conclu."
+    ],
+    "flattered": [
+      "Moi, au Dispensaire ? C’est flatteur… mais ma place est encore au front.",
+      "Vous me faites confiance pour ça ? J’en suis {touché|touchée}. Mais pas encore.",
+      "Je saurais poser un garrot, sans doute. Mais pas tant que je tiens debout.",
+      "Redemandez-moi quand j’en aurai assez de faire des trous dans les autres."
+    ],
+    "vexed": [
+      "Changer des pansements ? Je me bats mieux que la moitié de vos gars !",
+      "Vous me prenez pour une {infirmier|infirmière} ? Gardez votre seau de charpie.",
+      "Je préfère faire des plaies que les fermer.",
+      "M’écarter du combat pour éponger du sang ? Je m’en souviendrai."
+    ],
+    "neutral": [
+      "Non merci, capitaine. Pas pour l’instant.",
+      "Très peu pour moi.",
+      "Demandez à quelqu’un qui supporte la vue des tripes.",
+      "Je préfère rester où je suis."
+    ],
+    "outcome_accepted": "{prenom} devient {le médecin|la médecin} de la compagnie.",
+    "outcome_refused": "{prenom} reste sur le terrain."
+  },
+  "recall": {
+    "proposal": "La compagnie a besoin de vous sur le terrain. Vous reprenez les armes ?",
+    "accepted": [
+      "Enfin ! Le sang des autres, c’est mieux quand c’est moi qui le fais couler.",
+      "Assez de bandages. Je reprends ma lame.",
+      "Je pensais que vous ne demanderiez jamais. J’y retourne.",
+      "Le Dispensaire sentait trop le vinaigre. Allons-y."
+    ],
+    "flattered": [
+      "Vous avez besoin de moi au front ? Touchant. Mais les blessés aussi.",
+      "Qui les recoudrait, sans moi ? Pas encore, capitaine.",
+      "C’est gentil de penser à moi. Mais je reste ici.",
+      "Plus tard, peut-être. J’ai trois jambes à remettre droites."
+    ],
+    "vexed": [
+      "Vous me trouvez inutile ici ? Charmant.",
+      "Je les remets sur pied, et vous voulez me renvoyer me faire trouer ?",
+      "Non. Et ne me reposez pas la question.",
+      "On ne me bouscule pas comme ça, capitaine."
+    ],
+    "neutral": [
+      "Non, je suis bien ici.",
+      "Pas tout de suite, capitaine.",
+      "Les blessés ont encore besoin de moi.",
+      "Laissez-moi encore un peu de temps."
+    ],
+    "outcome_accepted": "{prenom} retourne sur le terrain : la compagnie n’a plus de médecin.",
+    "outcome_refused": "{prenom} reste au Dispensaire.",
+    "dorm_full": "Le dortoir est plein : il n’y a pas de place pour son retour."
+  }
+}

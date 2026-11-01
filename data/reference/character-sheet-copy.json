@@ -320,6 +320,11 @@
         "key": "stewardDays",
         "label": "Jours d’intendance",
         "hideZero": true
+      },
+      {
+        "key": "medicDays",
+        "label": "Jours au Dispensaire",
+        "hideZero": true
       }
     ],
     "events": {
@@ -355,6 +360,14 @@
       "recall": {
         "accord": "Quitte l’Intendance et retourne sur le terrain après {jours}.",
         "refus": "Refuse de quitter l’Intendance."
+      },
+      "medic": {
+        "accord": "Devient {le médecin|la médecin} de la compagnie.",
+        "refus": "Refuse le poste de médecin."
+      },
+      "medic_recall": {
+        "accord": "Quitte le Dispensaire et retourne sur le terrain après {jours}.",
+        "refus": "Refuse de quitter le Dispensaire."
       },
       "lieutenant": {
         "accord": "Devient {lieutenant|lieutenante} de la compagnie, pour {salaire} PO par jour.",

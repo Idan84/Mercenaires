@@ -55,8 +55,24 @@ function missionBlizzardAt(q,r){
   const e=game.mission?.engine;
   return (game.mission?.blizzards||[]).find(b=>e&&e.axialDistance(b.center,{q,r})<=b.radius)||null;
 }
+// Nuée d'insectes (Invocation ; Idan, 2026-10-31) : la zone, jusqu'au tour untilTurn (exclu) ; elle ne pique que les ennemis
+// de son invocateur (team).
+function missionSwarmAt(q,r,team=null){
+  const e=game.mission?.engine;
+  return (game.mission?.swarms||[]).find(s=>e&&e.axialDistance(s.center,{q,r})<=s.radius&&(team==null||s.team!==team))||null;
+}
+// Piqué : le malus vaut pour cette activation (ou, au lancer, jusqu'à la prochaine) ; il est revu à chaque activation.
+function missionSwarmSting(unit,swarm){
+  unit.statBuffs={...(unit.statBuffs||{}),[swarm.code]:{stats:swarm.stats,value:swarm.value,unit:swarm.unit,turns:0,silent:true}};
+  missionLog(unit.character.name+" est harcelé"+(missionFeminine(unit)?"e":"")+" par la nuée d’insectes : −"+Math.abs(swarm.value)+" % de "+swarm.stats.join(" et de ")+".","bad");
+}
 function pruneMissionTerrain(){
   const m=game.mission;
+  if(m?.swarms?.length){
+    const before=m.swarms.length;
+    m.swarms=m.swarms.filter(s=>m.turn<s.untilTurn);
+    if(m.swarms.length<before) missionLog("La nuée d’insectes se disperse.","magic");
+  }
   if(m?.terrain?.length){
     const ended=m.terrain.filter(t=>m.turn>=t.untilTurn);
     m.terrain=m.terrain.filter(t=>m.turn<t.untilTurn);
@@ -214,6 +230,9 @@ function resetMissionActivation(unit){
   tickMissionTorch(unit);
   tickMissionChill(unit);
   tickMissionBuffs(unit);
+  // Nuée d'insectes : qui commence son activation dans la nuée d'un ennemi est piqué.
+  const swarm=unit.alive?missionSwarmAt(unit.q,unit.r,unit.team):null;
+  if(swarm) missionSwarmSting(unit,swarm);
   unit.movementRemaining=game.mission.engine.movementBase(unit);
   // Blizzard : qui y commence son activation n'a que la moitié de son déplacement.
   const snow=unit.alive?missionBlizzardAt(unit.q,unit.r):null;
@@ -751,6 +770,7 @@ function logMissionAttackLines(a,d,result,kind){
   missionLog(prefix+" : "+result.damage+" PV"+psychic+". "+d.character.name+" reste à "+Math.max(0,result.targetHp)+" PV"+(result.targetHp<0?" ("+result.targetHp+" sous zéro)":"")+"."+critical+criticalWound,"damage");
   if(result.targetDown&&!d.decoy) missionLog(d.character.name+" est hors combat.","death");
   if(result.poisonApplied) missionLog(d.character.name+" est empoisonné"+(missionFeminine(d)?"e":"")+" pour "+result.poison.turns+" tours ("+result.poison.amount+" PV par tour).","bad");
+  if(result.webbed&&d.alive) missionLog(d.character.name+" est pris"+(missionFeminine(d)?"e":"")+" dans la toile : pas de déplacement à sa prochaine activation.","bad");
   if(result.drain) missionLog("Drain de vie : "+a.character.name+" récupère "+result.drain.healed+" PV"
     +(result.drain.healed<result.drain.amount?" (sur "+result.drain.amount+")"+missionWitherNote(a):"")+".","magic");
 }
@@ -760,11 +780,21 @@ function logMissionAttackLines(a,d,result,kind){
 function onMissionAttack(attacker,defender,options,result){
   MercenairesProgression.recordAttack(attacker,defender,options,result);
   poisonMissionTarget(attacker,defender,result);
+  webMissionTarget(attacker,defender,result);
   const fx=attacker.lifeDrain;
   if(!fx||!result?.ok||!result.wound||result.mode!=="melee"||!(result.damage>0)||!attacker.alive) return;
   const removed=Math.min(result.damage,Math.max(0,(Number(result.targetHp)||0)+result.damage));
   const amount=Math.ceil(removed*fx.percent/100-1e-9);
   if(amount>0) result.drain={amount,healed:healMissionUnit(attacker,amount)};
+}
+// Toile (araignée géante ; Idan, 2026-10-31) : un coup qui touche, ni paré ni bloqué, englue la cible : pas de déplacement à
+// sa prochaine activation (comme l'Écrasement).
+function webMissionTarget(attacker,defender,result){
+  const e=game.mission?.engine,weapon=e?.weaponTemplate(e.activeWeaponItem(attacker));
+  const turns=Number(weapon?.immobilise)||0;
+  if(!turns||!result?.ok||!result.hit||result.parried||result.blocked||result.deflected||!defender.alive) return;
+  defender.pinned={turns};
+  result.webbed=true;
 }
 // Sarbacane (Idan, 2026-10-29) : la fléchette qui blesse empoisonne la cible (doc 12, Poison).
 function poisonMissionTarget(attacker,defender,result){
@@ -1480,6 +1510,25 @@ function resolveMissionSpell(caster,target,code,extra={}){
     missionLog(name+" lance "+spell.nom+on+detail+" : −"+f.malus+" % de réussite pour ses sorts (Volonté × "
       +(Math.round(f.will*100)/100).toLocaleString("fr-FR")+"), pendant ses "+f.turns+" prochaines activations.","magic");
     missionFx(target,"Brouillé"+(missionFeminine(target)?"e":""),"miss");
+  }else if(spell.effet==="nuee"){
+    // Nuée d'insectes (Invocation) : les ennemis déjà dans la zone sont piqués tout de suite.
+    const sw=out.swarm,swarm={casterId:caster.id,team:caster.team,code:sw.code,center:out.zone.center,radius:out.zone.radius,
+      untilTurn:m.turn+sw.turns,stats:sw.stats,value:sw.value,unit:sw.unit};
+    m.swarms=[...(m.swarms||[]),swarm];
+    const stung=magic.unitsInZone(swarm.center,swarm.radius,missionUnits()).filter(x=>x.team!==caster.team);
+    missionLog(name+" lance "+spell.nom+" (rayon "+swarm.radius+", "+sw.turns+" tours)"+detail+" : −"+Math.abs(sw.value)+" % de "+sw.stats.join(" et de ")
+      +" pour les ennemis dans la nuée"+(stung.length?"":" — personne pour l’instant")+".","magic");
+    for(const x of stung) missionSwarmSting(x,swarm);
+    effect=true;
+  }else if(spell.effet==="bannissement"){
+    // Bannissement (Invocation) : l'invocation ennemie disparaît, avec tout son groupe (une meute compte pour une).
+    if(target.decoy){ dissipateMissionDecoy(target,"banni par "+name); }
+    else{
+      const group=missionUnits().filter(x=>x.summon&&x.alive&&!x.offMap&&x.summon.group===target.summon.group);
+      dismissMissionSummons(group,name+" lance "+spell.nom+on+detail+" : le sort renvoie "+missionSummonLabel(group,false));
+    }
+    effect=true;
+    checkMissionEnd();
   }else if(spell.effet==="double"){
     // Création de double (Illusion) : un nouveau double remplace le précédent.
     for(const old of missionUnits().filter(u=>u.decoy&&u.alive&&u.summon?.casterId===caster.id)) dissipateMissionDecoy(old,"un nouveau double le remplace");
@@ -1763,7 +1812,9 @@ function missionCreatureCharacter(arch,n){
   const weapon={id:id+"-weapon",itemType:"weapon",name:a.nom,natural:true,category:"Armes naturelles",
     template:{nom:a.nom,domaine:"Armes naturelles",prise:"1 main",degats_pv_base:a.degats_pv_base,degats_type:a.degats_type||null,
       puissance_tranchante_base:Number(a.puissance_tranchante)||0,puissance_perforante_base:Number(a.puissance_perforante)||0,
-      puissance_contondante_base:Number(a.puissance_contondante)||0,malus_vitesse_arme_base:0,bonus_charge_base:1,contre_charge:false}};
+      puissance_contondante_base:Number(a.puissance_contondante)||0,malus_vitesse_arme_base:0,bonus_charge_base:Number(a.bonus_charge)||1,contre_charge:false,
+      // Sangliers : charge plus forte ; araignées géantes : morsure empoisonnée (comme la sarbacane) et toile.
+      empoisonne:Boolean(a.empoisonne),immobilise:Number(a.immobilise)||0}};
   return {id,name:n>1?arch.nom+" "+n:arch.nom,role:arch.nom,archetype:arch.code,undead:Boolean(arch.mort_vivant),
     immunePhysical:Boolean(arch.immunite_physique),stats:{...arch.caracteristiques},resistances:{...arch.resistances},pvMax:arch.pv,
     skills:{martial:{...arch.competences_martiales},social:{},magic:{}},spells:[],mana:0,items:[weapon],
@@ -2032,7 +2083,7 @@ function tickMissionBuffs(unit){
   for(const [code,fx] of Object.entries(unit.statBuffs||{})){
     if(fx.turns>0){ fx.turns-=1; continue; }
     delete unit.statBuffs[code];
-    missionLog((magic?.spell(code)?.nom||code)+" : l’effet prend fin pour "+name+".","magic");
+    if(!fx.silent) missionLog((magic?.spell(code)?.nom||code)+" : l’effet prend fin pour "+name+".","magic");
     if((fx.stats||[]).includes("Constitution")) missionRefreshMaxHp(unit);
   }
   if(unit.venom){
@@ -2832,6 +2883,8 @@ function renderMission(){
     if(snow){ classes.push("blizzard"); title=` title="Blizzard : froid à chaque tour, déplacement réduit, on n’y voit pas à travers (jusqu’au tour ${snow.untilTurn})"`; }
     const flames=missionFlameAt(q,r);
     if(flames){ classes.push("flames"); title=` title="Mur de flammes : brûle qui y entre ou s’y trouve (jusqu’au tour ${flames.untilTurn})"`; }
+    const swarmCell=missionSwarmAt(q,r);
+    if(swarmCell){ classes.push("swarm"); title=` title="Nuée d’insectes : les ennemis de son invocateur y perdent Perception et Dextérité (jusqu’au tour ${swarmCell.untilTurn})"`; }
     const storm=missionStormAt(q,r);
     if(storm){ classes.push("storm"); title=` title="Tempête : la foudre frappe au hasard dans la zone (encore ${storm.turnsLeft} tour${storm.turnsLeft>1?"s":""})"`; }
     if(targets.has(key)&&m.mode==="move"){

@@ -342,6 +342,8 @@
       if(s.cible==="mort"&&cellFree===false) return {ok:false,reason:"Quelqu'un se tient sur le corps."};
       // Transposition : une de ses propres invocations, n'importe où sur la carte.
       if(s.cible==="invocation"&&!(target.summon&&target.summon.casterId===caster.id)) return {ok:false,reason:"Ce sort vise une de vos invocations."};
+      // Bannissement : une invocation du camp adverse.
+      if(s.cible==="invocation_ennemie"&&!(target.summon&&target.team!==caster.team)) return {ok:false,reason:"Ce sort vise une invocation ennemie."};
       if(!cell&&s.cible!=="mort"&&target.alive===false) return {ok:false,reason:"Cible hors combat."};
       if(s.cible==="allie_ou_soi"&&target!==caster&&target.team!==caster.team) return {ok:false,reason:"Ce sort vise un allié ou le lanceur."};
       if(s.cible==="allie"&&(target===caster||target.team!==caster.team)) return {ok:false,reason:"Ce sort vise un allié, pas le lanceur."};
@@ -472,6 +474,14 @@
           // ses sorts, × Volonté du lanceur / Volonté de la cible (de × 0,5 à × 2), comme le Choc psychique.
           const will=clamp(combat.statWithGear(caster,"Volonté")/Math.max(1,combat.statWithGear(target,"Volonté")),0.5,2);
           result.mindFog={code:s.code,base:bonus(caster,code),will,malus:Math.round(bonus(caster,code)*will),turns:duration(caster,code)};
+        }else if(s.effet==="nuee"){
+          // Nuée d'insectes (Invocation ; Idan, 2026-10-31, chiffres de JC3) : une zone qui dure ; les ennemis qui s'y trouvent
+          // perdent (bonus) % de Perception et de Dextérité, donc de Précision.
+          result.zone={center:{q:target.q,r:target.r},radius:zoneRadius(caster,code)};
+          result.swarm={code:s.code,stats:targetStats(code),value:-bonus(caster,code),unit:"pourcentage",turns:duration(caster,code)};
+        }else if(s.effet==="bannissement"){
+          // Bannissement (Invocation) : l'écran de combat renvoie l'invocation et tout son groupe.
+          result.banish=true;
         }else if(s.effet==="double"){
           // Création de double (Illusion) : un leurre sur la case visée ; l'écran de combat le crée.
           result.decoy={cell:{q:target.q,r:target.r}};

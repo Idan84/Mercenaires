@@ -41,6 +41,13 @@ for(const n of characteristics.filter(r=>r.famille==="Résistance").map(r=>r.nom
 assert.deepEqual(copy.stats.filter(r=>r.groupe==="physique").slice(0,2).map(r=>r.nom),["Points de vie","Initiative"]);
 // Régénération et Intimidation passent dans les caractéristiques (Idan, 2026-10-21).
 assert.equal(copy.stats.find(r=>r.nom==="Régénération")?.groupe,"physique");
+// Régénération sur la fiche (Idan, 2026-11-01 : « il faut ») : dans la Défense, avec son usage ; masquée à 0 (tout le
+// monde sauf le sang de troll).
+const regen=copy.stats.find(r=>r.nom==="Régénération");
+assert.match(regen.usage,/regagner des PV/);
+assert.equal(regen.masquer_si_nul,true);
+assert.ok(copy.stats_layout.colonnes.flat().find(g=>g.code==="defense").stats.includes("Régénération"));
+assert.match(fs.readFileSync(path.join(__dirname,"..","prototype-web","ui.js"),"utf8"),/if\(row\.masquer_si_nul&&!\(value>0\)\) return "";/);
 assert.equal(copy.stats.find(r=>r.nom==="Intimidation")?.groupe,"mental");
 
 // Onglet Compétences : chaque catégorie martiale est dans une seule colonne ; les armures sont les aptitudes.

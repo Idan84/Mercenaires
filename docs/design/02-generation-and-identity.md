@@ -87,55 +87,66 @@ constantes `generation.domain.*` ; code : `game-core/mercenary-generator.js` (`c
   combattants).
 - Les mesures du besoin en avatars (`avatar-demand.json`) ont été refaites : l'arme en main dépend du domaine.
 
-Rééquilibrage des cultures (Idan, 2026-11-01 : viser, pour chaque culture, entre 5 et 80 % dans chaque domaine) : un
-point de plus dans la Matrice de génération sur
+Rééquilibrage des cultures (Idan, 2026-11-01 : viser, pour chaque culture, entre 5 et 80 % dans chaque domaine), en
+deux séries de points dans la Matrice de génération. Les **gnomes des villes** restent une exception (Idan) : ils ne
+rentreraient qu'en retirant des points à leur culture ; le garde-fou de l'escouade leur donne un corps-à-corps au départ.
 
-| Arme ou école | Qui |
-|---|---|
-| Arc | Elfes des grandes cités ; Orcs (peuple) |
-| Dague | Gnomes (peuple : les trois cultures) |
-| Massue | Halflings des villages isolés |
-| Arbalète | Hommes-bêtes (peuple) ; Orcs (peuple) |
-| Tromblon, Canon à main, Télékinésie | Ogres (peuple) |
-| Sarbacane | Reptiliens des cités-temples |
+| Arme, école ou caractéristique | Qui | Série 1 | Série 2 |
+|---|---|---|---|
+| Arc | Elfes des grandes cités | +1 | |
+| Arc | Orcs (peuple) | +1 | |
+| Arc | Orcs noirs | | +1 |
+| Arc | Clans des grandes steppes ; Tribus des forêts anciennes | | +1 |
+| Arbalète | Hommes-bêtes (peuple) ; Orcs (peuple) | +1 | |
+| Arbalète | Orcs noirs | | +2 |
+| Dague | Gnomes (peuple) | +1 | +1 |
+| Lames courtes | Gnomes (peuple) | | +2 |
+| Épée courte | Elfes sylvains | | +1 |
+| Massue | Halflings des villages isolés | +1 | +1 |
+| Sarbacane | Reptiliens des cités-temples | +1 | +1 |
+| Tromblon, Canon à main | Ogres (peuple) | +1 | +1 |
+| Armes à feu (catégorie) | Ogres (peuple) | | +1 |
+| Télékinésie | Ogres (peuple) | +1 | +2 |
+| Puissance magique | Ogres (peuple : −2 → −1) | | +1 |
 
-Répartition par culture après ce rééquilibrage (simulation, 1 000 recrues par culture, 2026-11-01 ; en gras, hors de 5 à
-80 %) :
+Répartition par culture après les deux séries (simulation, 1 000 recrues par culture, 2026-11-01 ; en gras, hors de 5 à
+80 %). Elfes sylvains, gnomes des forêts et halflings des villages isolés sont à la limite : 4 à 6 % de corps à corps
+selon les tirages.
 
 | Peuple | Culture | Corps à corps | Distance | Mage |
 |---|---|---|---|---|
-| Elfe | Elfes des grandes cités | 8 % | 13 % | 79 % |
-| Elfe | Elfes noirs | 19 % | 19 % | 63 % |
+| Elfe | Elfes des grandes cités | 6 % | 14 % | 80 % |
+| Elfe | Elfes noirs | 18 % | 19 % | 63 % |
 | Elfe | Elfes sylvains | **4 %** | 49 % | 47 % |
-| Gnome | Gnomes des cavernes | **1 %** | 20 % | 79 % |
-| Gnome | Gnomes des forêts | **2 %** | 24 % | 75 % |
-| Gnome | Gnomes des villes | **1 %** | 14 % | **85 %** |
-| Gobelin | Caravanes de ferrailleurs | 18 % | 59 % | 23 % |
-| Gobelin | Gobelins des cavernes | 31 % | 51 % | 18 % |
-| Gobelin | Gobelins des villes | 26 % | 44 % | 30 % |
-| Halfling | Explorateurs | 7 % | 50 % | 43 % |
-| Halfling | Halflings des cités humaines | 6 % | 46 % | 49 % |
+| Gnome | Gnomes des cavernes | 8 % | 20 % | 71 % |
+| Gnome | Gnomes des forêts | **4 %** | 21 % | 76 % |
+| Gnome | Gnomes des villes | **2 %** | 12 % | **87 %** |
+| Gobelin | Caravanes de ferrailleurs | 17 % | 62 % | 21 % |
+| Gobelin | Gobelins des cavernes | 32 % | 50 % | 18 % |
+| Gobelin | Gobelins des villes | 26 % | 45 % | 30 % |
+| Halfling | Explorateurs | 6 % | 50 % | 44 % |
+| Halfling | Halflings des cités humaines | 5 % | 45 % | 50 % |
 | Halfling | Halflings des villages isolés | **4 %** | 34 % | 62 % |
-| Homme-bête | Clans des grandes steppes | **81 %** | 5 % | 15 % |
-| Homme-bête | Tribus des forêts anciennes | 67 % | **3 %** | 30 % |
+| Homme-bête | Clans des grandes steppes | 78 % | 8 % | 15 % |
+| Homme-bête | Tribus des forêts anciennes | 64 % | 5 % | 31 % |
 | Homme-bête | Tribus nordiques | 80 % | 5 % | 16 % |
-| Humain | Cités libres | 46 % | 12 % | 43 % |
-| Humain | Montagnes du Nord | 70 % | 9 % | 21 % |
-| Humain | Royaumes du Soleil Levant | 60 % | 10 % | 30 % |
-| Humain | Steppes désertiques | 48 % | 22 % | 30 % |
-| Humain | Tribus de la jungle | 48 % | 15 % | 37 % |
-| Nain | Nains des montagnes | 74 % | 13 % | 13 % |
-| Nain | Nains du chaos | 32 % | 51 % | 18 % |
-| Nain | Nains réduits en esclavage dans les colonies | 72 % | 19 % | 9 % |
-| Ogre | Ogres des cités humaines | **91 %** | **4 %** | 5 % |
-| Ogre | Ogres des montagnes | **94 %** | **4 %** | **2 %** |
-| Ogre | Ogres des steppes | **92 %** | **4 %** | **3 %** |
-| Orc | Orcs des steppes | 67 % | 12 % | 21 % |
-| Orc | Orcs des villes | 53 % | 15 % | 33 % |
-| Orc | Orcs noirs | **81 %** | **3 %** | 16 % |
-| Reptilien | Reptiliens des cités-temples | 12 % | 7 % | **81 %** |
-| Reptilien | Reptiliens des marécages | 18 % | 20 % | 62 % |
-| Reptilien | Reptiliens des villes | 24 % | 11 % | 66 % |
+| Humain | Cités libres | 49 % | 11 % | 41 % |
+| Humain | Montagnes du Nord | 71 % | 9 % | 21 % |
+| Humain | Royaumes du Soleil Levant | 62 % | 10 % | 28 % |
+| Humain | Steppes désertiques | 48 % | 21 % | 31 % |
+| Humain | Tribus de la jungle | 47 % | 15 % | 38 % |
+| Nain | Nains des montagnes | 74 % | 13 % | 14 % |
+| Nain | Nains du chaos | 33 % | 49 % | 19 % |
+| Nain | Nains réduits en esclavage dans les colonies | 72 % | 21 % | 8 % |
+| Ogre | Ogres des cités humaines | 75 % | 16 % | 10 % |
+| Ogre | Ogres des montagnes | 78 % | 17 % | 6 % |
+| Ogre | Ogres des steppes | 80 % | 14 % | 6 % |
+| Orc | Orcs des steppes | 67 % | 13 % | 20 % |
+| Orc | Orcs des villes | 51 % | 15 % | 33 % |
+| Orc | Orcs noirs | 74 % | 8 % | 18 % |
+| Reptilien | Reptiliens des cités-temples | 11 % | 12 % | 77 % |
+| Reptilien | Reptiliens des marécages | 18 % | 21 % | 61 % |
+| Reptilien | Reptiliens des villes | 23 % | 12 % | 65 % |
 
 ### Garde-fou de l'escouade initiale
 

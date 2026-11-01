@@ -57,7 +57,8 @@ function checkDraws(m){
     if(d.spell){ assert.ok(d.roll<d.chance); count++; }
     else if(d.roll!==null&&written&&reference.spells.rows.filter(s=>s.ecole===d.school).length>m.spells.filter(k=>k.school===d.school).length) assert.ok(d.roll>=d.chance);
   }
-  assert.equal(m.spells.length,count);
+  // Rattrapage du mage (Idan, 2026-11-01) : un Mage sans sort en apprend un dans sa meilleure école.
+  assert.equal(m.spells.length,count+(m.generationTrace.mageSpell?1:0));
   assert.equal(new Set(m.spells.map(s=>s.code)).size,m.spells.length,"jamais deux fois le même sort");
   for(const s of m.spells){
     const row=reference.spells.rows.find(r=>r.code===s.code);
@@ -71,8 +72,11 @@ assert.ok(Array.isArray(captain.spells)&&captain.generationTrace.spells.length>=
 checkDraws(captain);
 const recruits=Array.from({length:1500},(_,i)=>generator.createMercenary({id:i+2,captain}));
 recruits.forEach(checkDraws);
-const withSpell=recruits.filter(m=>m.spells.length).length;
-assert.ok(withSpell>350&&withSpell<800,"aujourd'hui (Vie, Feu, Eau, Transmutation, Foudre, Télékinésie et Illusion écrits) : environ deux recrues sur cinq connaissent un sort ("+withSpell+")");
+const withSpell=recruits.filter(m=>m.spells.length&&!m.generationTrace.mageSpell).length;
+assert.ok(withSpell>350&&withSpell<800,"aujourd'hui (Vie, Feu, Eau, Transmutation, Foudre, Télékinésie et Illusion écrits) : environ deux recrues sur cinq tirent un sort ("+withSpell+")");
+// Rattrapage : tout Mage connaît au moins un sort ; seuls les Mages sans tirage réussi en reçoivent un.
+assert.ok(recruits.filter(m=>m.domain==="magic").every(m=>m.spells.length>0),"pas de Mage sans sort");
+assert.ok(recruits.every(m=>!m.generationTrace.mageSpell||(m.domain==="magic"&&m.spells.length===1)));
 
 // Cultures sans école : deux tirages seulement, et +1D6 à la caractéristique de compensation.
 for(const [culture,people,stat] of [["Nains des montagnes","Nain","Courage"],["Ogres des montagnes","Ogre","Force"]]){
@@ -100,7 +104,7 @@ let sameSchool=0;
 const N=3000;
 for(let i=0;i<N;i++){
   const m=fullGenerator.createMercenary({id:i+2,captain:fullCaptain});
-  counts[m.spells.length]++;
+  counts[m.spells.length-(m.generationTrace.mageSpell?1:0)]++; // les tirages seuls, sans le rattrapage du mage
   if(new Set(m.spells.map(s=>s.school)).size<m.spells.length) sameSchool++;
 }
 const share=counts.map(c=>100*c/N);

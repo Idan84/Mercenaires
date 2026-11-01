@@ -66,6 +66,23 @@ const plain=createGenerator(partial,{random,nameGenerator:(people,id)=>people+" 
 assert.ok(["melee","ranged","magic"].includes(plain.domain));
 assert.deepEqual(plain.generationTrace.domain.moves,[]);
 
+// Rattrapage du mage (Idan, 2026-11-01 : « Qu'il connaisse au moins un sort de sa meilleure école ») : un Mage sans sort
+// tiré en apprend un dans sa meilleure école (après l'accentuation) ; les autres ne reçoivent rien.
+let caught=0;
+for(const m of recruits){
+  const g=m.generationTrace.mageSpell;
+  if(m.domain==="magic") assert.ok(m.spells.length>0,"un Mage connaît un sort : "+m.name);
+  if(!g) continue;
+  caught++;
+  assert.equal(m.domain,"magic");assert.equal(m.spells.length,1);assert.equal(m.spells[0].code,g.spell);
+  assert.ok(!m.generationTrace.spells.some(d=>d.spell),"seulement s'il n'a rien tiré");
+  const best=Math.max(...Object.entries(m.skills.magic).filter(([s])=>reference.spells.rows.some(r=>r.ecole===s)).map(([,v])=>v));
+  assert.equal(m.skills.magic[g.school],best,"sa meilleure école");
+  assert.equal(reference.spells.rows.find(r=>r.code===g.spell).ecole,g.school);
+}
+assert.ok(caught>0,"des mages rattrapés");
+assert.ok(recruits.filter(m=>m.domain!=="magic").every(m=>m.generationTrace.mageSpell===null));
+
 // Domaine imposé (garde-fou de l'escouade) : posé et accentué vers lui, l'équipement suit.
 const ogreCaptain=generator.createCaptain({id:2001,forcedPeople:"Ogre",forcedCulture:"Ogres des montagnes"});
 for(const code of ["melee","ranged","magic"]){
@@ -105,6 +122,12 @@ for(const [people,culture] of [["Ogre","Ogres des montagnes"],["Gnome","Gnomes d
 assert.ok(guarded>0&&forcedCount>0,"des renforts, dont des imposés (ogres)");
 const generationUi=fs.readFileSync(path.join(ROOT,"prototype-web","generation.js"),"utf8");
 assert.match(generationUi,/ensureGenerator\(\)\.createInitialSquad\(captain, \{role: "Mercenaire initial", nextId: \(\) => nextCharacterId\(\)\}\)/,"le jeu passe par le garde-fou");
+
+// Matrice (Idan, 2026-11-01 : rééquilibrer les cultures) : un point de plus sur ces armes et cette école.
+const matrix=Object.fromEntries(reference.generationMatrix.rows.map(r=>[r.cible,r]));
+for(const [cible,col] of [["Arc","elfes_des_grandes_cites"],["Dague","gnome"],["Massue","halflings_des_villages_isoles"],["Arbalète","homme_bete"],
+  ["Tromblon","ogre"],["Canon à main","ogre"],["Télékinésie","ogre"],["Arc","orc"],["Arbalète","orc"],["Sarbacane","reptiliens_des_cites_temples"]])
+  assert.equal(matrix[cible][col],1,cible+" / "+col);
 
 // Fiche : le picto à côté du nom ; les mercenaires d'avant le domaine prennent le profil de leur équipement.
 const ui=fs.readFileSync(path.join(ROOT,"prototype-web","ui.js"),"utf8");

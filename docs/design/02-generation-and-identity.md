@@ -76,6 +76,8 @@ constantes `generation.domain.*` ; code : `game-core/mercenary-generator.js` (`c
   - compétences, **sur ce qu'il utilise vraiment** : **+2D10** sur son arme (celle qu'il portera) et sa catégorie, **−2D10**
     sur la meilleure arme de l'autre famille et sa catégorie ; un mage gagne **2 × 2D10** dans l'école de son sort (sinon sa
     meilleure) et perd 2D10 sur sa meilleure arme de mêlée et sa meilleure arme de tir.
+- **Rattrapage du mage** (Idan, 2026-11-01) : un Mage qui n'a tiré aucun sort en apprend un dans sa meilleure école
+  (doc 12). Il n'y a plus de Mage sans sort.
 - **L'équipement de départ et l'avatar suivent le domaine.** Sur la fiche, un **picto** à côté du nom (épée, arc, étoile),
   avec une infobulle. Les mercenaires créés avant prennent le profil de leur équipement de départ, sans rien changer à leurs
   chiffres.
@@ -85,42 +87,55 @@ constantes `generation.domain.*` ; code : `game-core/mercenary-generator.js` (`c
   combattants).
 - Les mesures du besoin en avatars (`avatar-demand.json`) ont été refaites : l'arme en main dépend du domaine.
 
-Répartition par culture (simulation, 300 recrues par culture, 2026-11-01) :
+Rééquilibrage des cultures (Idan, 2026-11-01 : viser, pour chaque culture, entre 5 et 80 % dans chaque domaine) : un
+point de plus dans la Matrice de génération sur
+
+| Arme ou école | Qui |
+|---|---|
+| Arc | Elfes des grandes cités ; Orcs (peuple) |
+| Dague | Gnomes (peuple : les trois cultures) |
+| Massue | Halflings des villages isolés |
+| Arbalète | Hommes-bêtes (peuple) ; Orcs (peuple) |
+| Tromblon, Canon à main, Télékinésie | Ogres (peuple) |
+| Sarbacane | Reptiliens des cités-temples |
+
+Répartition par culture après ce rééquilibrage (simulation, 1 000 recrues par culture, 2026-11-01 ; en gras, hors de 5 à
+80 %) :
 
 | Peuple | Culture | Corps à corps | Distance | Mage |
 |---|---|---|---|---|
-| Elfe | Elfes des grandes cités | 8 % | 6 % | 86 % |
-| Elfe | Elfes noirs | 16 % | 20 % | 63 % |
-| Elfe | Elfes sylvains | 6 % | 49 % | 46 % |
-| Gnome | Gnomes des cavernes | 2 % | 24 % | 74 % |
-| Gnome | Gnomes des forêts | 2 % | 28 % | 70 % |
-| Gnome | Gnomes des villes | 0 % | 10 % | 89 % |
-| Gobelin | Caravanes de ferrailleurs | 19 % | 59 % | 22 % |
-| Gobelin | Gobelins des cavernes | 35 % | 43 % | 22 % |
-| Gobelin | Gobelins des villes | 26 % | 46 % | 27 % |
-| Halfling | Explorateurs | 7 % | 51 % | 42 % |
-| Halfling | Halflings des cités humaines | 6 % | 47 % | 46 % |
-| Halfling | Halflings des villages isolés | 3 % | 35 % | 62 % |
-| Homme-bête | Clans des grandes steppes | 78 % | 2 % | 20 % |
-| Homme-bête | Tribus des forêts anciennes | 66 % | 1 % | 33 % |
-| Homme-bête | Tribus nordiques | 81 % | 2 % | 17 % |
-| Humain | Cités libres | 42 % | 13 % | 45 % |
-| Humain | Montagnes du Nord | 68 % | 9 % | 23 % |
-| Humain | Royaumes du Soleil Levant | 59 % | 11 % | 30 % |
-| Humain | Steppes désertiques | 51 % | 22 % | 27 % |
-| Humain | Tribus de la jungle | 44 % | 16 % | 40 % |
-| Nain | Nains des montagnes | 75 % | 9 % | 16 % |
-| Nain | Nains du chaos | 30 % | 55 % | 15 % |
-| Nain | Nains réduits en esclavage dans les colonies | 75 % | 20 % | 5 % |
-| Ogre | Ogres des cités humaines | 96 % | 1 % | 3 % |
-| Ogre | Ogres des montagnes | 97 % | 1 % | 2 % |
-| Ogre | Ogres des steppes | 98 % | 1 % | 1 % |
-| Orc | Orcs des steppes | 72 % | 4 % | 24 % |
-| Orc | Orcs des villes | 55 % | 9 % | 36 % |
-| Orc | Orcs noirs | 83 % | 0 % | 17 % |
-| Reptilien | Reptiliens des cités-temples | 10 % | 4 % | 86 % |
-| Reptilien | Reptiliens des marécages | 17 % | 20 % | 63 % |
-| Reptilien | Reptiliens des villes | 21 % | 8 % | 71 % |
+| Elfe | Elfes des grandes cités | 8 % | 13 % | 79 % |
+| Elfe | Elfes noirs | 19 % | 19 % | 63 % |
+| Elfe | Elfes sylvains | **4 %** | 49 % | 47 % |
+| Gnome | Gnomes des cavernes | **1 %** | 20 % | 79 % |
+| Gnome | Gnomes des forêts | **2 %** | 24 % | 75 % |
+| Gnome | Gnomes des villes | **1 %** | 14 % | **85 %** |
+| Gobelin | Caravanes de ferrailleurs | 18 % | 59 % | 23 % |
+| Gobelin | Gobelins des cavernes | 31 % | 51 % | 18 % |
+| Gobelin | Gobelins des villes | 26 % | 44 % | 30 % |
+| Halfling | Explorateurs | 7 % | 50 % | 43 % |
+| Halfling | Halflings des cités humaines | 6 % | 46 % | 49 % |
+| Halfling | Halflings des villages isolés | **4 %** | 34 % | 62 % |
+| Homme-bête | Clans des grandes steppes | **81 %** | 5 % | 15 % |
+| Homme-bête | Tribus des forêts anciennes | 67 % | **3 %** | 30 % |
+| Homme-bête | Tribus nordiques | 80 % | 5 % | 16 % |
+| Humain | Cités libres | 46 % | 12 % | 43 % |
+| Humain | Montagnes du Nord | 70 % | 9 % | 21 % |
+| Humain | Royaumes du Soleil Levant | 60 % | 10 % | 30 % |
+| Humain | Steppes désertiques | 48 % | 22 % | 30 % |
+| Humain | Tribus de la jungle | 48 % | 15 % | 37 % |
+| Nain | Nains des montagnes | 74 % | 13 % | 13 % |
+| Nain | Nains du chaos | 32 % | 51 % | 18 % |
+| Nain | Nains réduits en esclavage dans les colonies | 72 % | 19 % | 9 % |
+| Ogre | Ogres des cités humaines | **91 %** | **4 %** | 5 % |
+| Ogre | Ogres des montagnes | **94 %** | **4 %** | **2 %** |
+| Ogre | Ogres des steppes | **92 %** | **4 %** | **3 %** |
+| Orc | Orcs des steppes | 67 % | 12 % | 21 % |
+| Orc | Orcs des villes | 53 % | 15 % | 33 % |
+| Orc | Orcs noirs | **81 %** | **3 %** | 16 % |
+| Reptilien | Reptiliens des cités-temples | 12 % | 7 % | **81 %** |
+| Reptilien | Reptiliens des marécages | 18 % | 20 % | 62 % |
+| Reptilien | Reptiliens des villes | 24 % | 11 % | 66 % |
 
 ### Garde-fou de l'escouade initiale
 
@@ -134,8 +149,8 @@ constante `generation.initial_squad.domain_attempts`.
   dernier est tiré avec **ce domaine imposé** (accentué vers lui, comme les autres).
 - Mesure (50 escouades par culture, 2026-11-01) : renfort dans **0 à 20 %** des escouades humaines et gobelines, **80 à
   95 %** chez les hommes-bêtes, les orcs noirs, les gnomes des villes et les elfes des grandes cités, **100 %** chez les
-  ogres (presque toujours un archer et un mage, imposés une fois sur deux ou plus). Un mage imposé chez les ogres n'a
-  souvent aucun sort (3 sur 4) ; chez les mages tirés normalement, 15 à 30 % n'en ont pas non plus.
+  ogres (presque toujours un archer et un mage, imposés une fois sur deux ou plus). Mesure faite avant le rattrapage du mage
+  et le rééquilibrage des cultures ; depuis, tout Mage connaît au moins un sort.
 
 ## Noms des personnages
 

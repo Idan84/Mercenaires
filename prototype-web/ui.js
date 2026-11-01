@@ -1428,7 +1428,8 @@ function spellIconHtml(spell) {
 const SPELL_EFFECT_LABELS = {soin:"Soins", soin_de_zone:"Soins", soin_sur_duree:"Soins par tour", degats:"Dégâts", degats_zone:"Dégâts",
   degats_rebonds:"Dégâts", degats_paire:"Dégâts", degats_sans_resistance:"Dégâts", arme_elementaire:"Dégâts par coup", tempete:"Dégâts par frappe",
   transfert_pv:"PV donnés", degats_sur_duree:"Dégâts par tour", aura_de_feu:"Dégâts par tour", mur_de_flammes:"Dégâts par brûlure",
-  blizzard:"Dégâts par tour", rend_mana:"Mana rendu"};
+  blizzard:"Dégâts par tour", rend_mana:"Mana rendu", malediction:"Dégâts par tour", siphon_mana:"Mana volé", pacte_de_sang:"Mana regagné"};
+const SPELL_MANA_EFFECTS = ["rend_mana", "siphon_mana", "pacte_de_sang"];
 function spellTip(c, row) {
   if (!row?.code) return "";
   const magic = typeof magicRules === "function" ? magicRules() : null;
@@ -1441,8 +1442,10 @@ function spellTip(c, row) {
     const bonus = row.bonus_unite ? magic.bonus(unit, row.code) : 0;
     lines.push(line("Mana", magic.manaCost(unit, row.code)), line("Réussite", `${Math.round(magic.castChance(unit, row.code).p)} %`));
     if (range > 0) lines.push(line("Portée", `${range} case${range > 1 ? "s" : ""}`));
-    if (amount) lines.push(line(SPELL_EFFECT_LABELS[row.effet], `${amount.min} à ${amount.max} ${row.effet === "rend_mana" ? "mana" : "PV"}`));
-    if (bonus > 0) lines.push(line("Bonus", row.bonus_unite === "pourcentage" ? `+${bonus} %` : `+${bonus}`));
+    if (amount) lines.push(line(SPELL_EFFECT_LABELS[row.effet], `${amount.min} à ${amount.max} ${SPELL_MANA_EFFECTS.includes(row.effet) ? "mana" : "PV"}`));
+    // Désespoir, Brouillage mental : un malus sur la cible (colonne malus) ; le Brouillage retire des % de réussite.
+    if (bonus > 0) lines.push(row.malus ? line("Malus", row.effet === "brouillage" ? `−${bonus} % de réussite` : `−${bonus}`)
+      : line("Bonus", row.bonus_unite === "pourcentage" ? `+${bonus} %` : `+${bonus}`));
     if (duration > 0) lines.push(line("Durée", `${duration} tour${duration > 1 ? "s" : ""}`));
     if (radius > 0) lines.push(line("Zone", `${radius} case${radius > 1 ? "s" : ""} autour`));
   }

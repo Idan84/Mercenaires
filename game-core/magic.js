@@ -168,7 +168,9 @@
       const delta=(mastery(unit,code)+combat.statWithGear(unit,"Intelligence"))/2-CAST.difficulty;
       const base=CAST.floor+CAST.span/(1+Math.exp(-delta/CAST.scale));
       const armor=armorPenalty(unit);
-      return {delta,base,armor,p:clamp(base-armor,0,100)};
+      // Brouillage mental (Illusion) : unit.mindFog = {malus, turns}, des points de chance en moins.
+      const fog=Math.max(0,num(unit?.mindFog?.malus,0));
+      return {delta,base,armor,fog,p:clamp(base-armor-fog,0,100)};
     }
 
     // Invocations (Nécromancie ; Idan, 2026-10-28). Entretien : entretien_mana × (1 − Maîtrise / 300) mana par tour, au
@@ -212,12 +214,16 @@
     // Empoisonné : unit.poisoned = {turns, amount, …} (Crachat de venin) ; Purge le retire.
     function isPoisoned(unit){ return Boolean(unit?.poisoned); }
     // Délivrance (Vie ; Idan, 2026-10-31) : les états qu'elle retire (spells.json, retire) et que la cible porte.
-    // fuite : unit.fleeing (la peur) ; paralysie : unit.paralyzed ; gel : unit.statMalus posé par Gel ; frenesie : unit.frenzy.
+    // fuite : unit.fleeing (la peur) ; paralysie : unit.paralyzed ; gel : unit.statMalus posé par Gel ; frenesie : unit.frenzy ;
+    // sommeil : unit.asleep ; desespoir : un malus de caractéristique d'un sort (statBuffs, colonne malus) ; brouillage : unit.mindFog.
     const AFFLICTIONS={
       fuite:u=>Boolean(u?.fleeing),
       paralysie:u=>Boolean(u?.paralyzed),
       gel:u=>u?.statMalus?.code==="freeze"||Boolean(u?.frozen),
-      frenesie:u=>Boolean(u?.frenzy)
+      frenesie:u=>Boolean(u?.frenzy),
+      sommeil:u=>Boolean(u?.asleep),
+      desespoir:u=>Object.keys(u?.statBuffs||{}).some(c=>spell(c)?.malus),
+      brouillage:u=>Boolean(u?.mindFog)
     };
     function afflictions(unit,code){
       const list=String(spell(code)?.retire||"").split(",").map(x=>x.trim()).filter(Boolean);
@@ -350,11 +356,14 @@
       if(s.effet==="purge_poison"&&!isPoisoned(target)) return {ok:false,reason:"La cible n'est pas empoisonnée."};
       // Source vive : seulement si l'allié n'a pas déjà toute sa réserve.
       if(s.effet==="rend_mana"&&target.character&&currentMana(target)>=manaMax(target)) return {ok:false,reason:"Sa réserve de mana est pleine."};
-      if(s.effet==="delivrance"&&!afflictions(target,code).length) return {ok:false,reason:"Rien à retirer : ni peur, ni paralysie, ni gel, ni frénésie."};
+      if(s.effet==="delivrance"&&!afflictions(target,code).length) return {ok:false,reason:"Rien à retirer : ni peur, ni paralysie, ni gel, ni frénésie, ni sommeil, ni désespoir, ni brouillage."};
       // Lancer d'arme : il faut une arme de corps à corps en main.
       if(s.effet==="lancer_arme"&&!combat.isMeleeWeapon(combat.weaponTemplate(combat.activeWeaponItem(caster)))) return {ok:false,reason:"Il faut une arme de corps à corps en main."};
-      // Lien de vie : le lanceur garde toujours 1 PV.
-      if(s.effet==="transfert_pv"&&num(caster.hp,0)<=1) return {ok:false,reason:"Le lanceur n'a plus de PV à donner."};
+      // Lien de vie, Pacte de sang : le lanceur garde toujours 1 PV.
+      if((s.effet==="transfert_pv"||s.effet==="pacte_de_sang")&&num(caster.hp,0)<=1) return {ok:false,reason:"Le lanceur n'a plus de PV à donner."};
+      // Pacte de sang : seulement s'il manque du mana ; Siphon d'âme : seulement si la cible en a.
+      if(s.effet==="pacte_de_sang"&&currentMana(caster)>=manaMax(caster)) return {ok:false,reason:"Sa réserve de mana est pleine."};
+      if(s.effet==="siphon_mana"&&target.character&&currentMana(target)<=0) return {ok:false,reason:"La cible n'a plus de mana."};
       const self=target===caster||(target.q===caster.q&&target.r===caster.r);
       const distance=self?0:combat.axialDistance(caster,target),reach=range(caster,code);
       if(s.cible!=="invocation"&&distance>reach) return {ok:false,reason:"Cible hors de portée ("+distance+" cases, portée "+reach+")."};
@@ -441,7 +450,7 @@
           const critChance=combat.criticalChance(caster),critRoll=d100();
           Object.assign(result,{critChance,critRoll,critical:critRoll<=critChance});
         }
-        if(s.effet==="soin_sur_duree"||s.effet==="arme_elementaire"||s.effet==="degats_sur_duree"||s.effet==="aura_de_feu"){
+        if(s.effet==="soin_sur_duree"||s.effet==="arme_elementaire"||s.effet==="degats_sur_duree"||s.effet==="aura_de_feu"||s.effet==="malediction"){
           const factor=effectFactor(caster,code);
           result.effect={code:s.code,element:s.element||null,factor,turns:duration(caster,code),critical:result.critical,cumulable:s.cumulable!==false};
         }else if(s.effet==="protection_elementaire"){
@@ -455,8 +464,21 @@
         }else if(s.effet==="terrain_infranchissable"){
           result.terrain={q:target.q,r:target.r,turns:duration(caster,code)};
         }else if(s.effet==="bonus_caracteristiques"){
-          result.effect={code:s.code,stats:targetStats(code),value:bonus(caster,code),unit:s.bonus_unite==="pourcentage"?"pourcentage":"points",
+          // Désespoir (Illusion) : un malus (colonne malus), la même mécanique en négatif.
+          result.effect={code:s.code,stats:targetStats(code),value:(s.malus?-1:1)*bonus(caster,code),unit:s.bonus_unite==="pourcentage"?"pourcentage":"points",
             turns:duration(caster,code),cumulable:s.cumulable!==false};
+        }else if(s.effet==="brouillage"){
+          // Brouillage mental (Illusion ; Idan, 2026-10-31, chiffres de JC3) : (bonus) points de chance de réussite en moins pour
+          // ses sorts, × Volonté du lanceur / Volonté de la cible (de × 0,5 à × 2), comme le Choc psychique.
+          const will=clamp(combat.statWithGear(caster,"Volonté")/Math.max(1,combat.statWithGear(target,"Volonté")),0.5,2);
+          result.mindFog={code:s.code,base:bonus(caster,code),will,malus:Math.round(bonus(caster,code)*will),turns:duration(caster,code)};
+        }else if(s.effet==="double"){
+          // Création de double (Illusion) : un leurre sur la case visée ; l'écran de combat le crée.
+          result.decoy={cell:{q:target.q,r:target.r}};
+        }else if(s.effet==="sommeil"){
+          // Sommeil (Illusion) : la même résistance que la Paralysie, avec la Volonté et sans élément.
+          const resist=paralysisResistance(caster,target,code),resistRoll=d100();
+          result.sleep={resist,roll:resistRoll,resisted:resistRoll<=resist,turns:Math.max(1,duration(caster,code))};
         }else if(s.effet==="crachat_venin"){
           // Le tir de venin garde la Puissance et la Maîtrise du lanceur.
           result.effect={code:s.code,element:s.element,factor:effectFactor(caster,code),mastery:mastery(caster,code),
@@ -526,6 +548,10 @@
         if(s.effet==="degats_sans_resistance"&&s.cible==="case") result.zone={center:{q:target.q,r:target.r},radius:zoneRadius(caster,code)};
         // Lien de vie : le lanceur perd au plus amount PV (en gardant 1 PV) ; l'allié en reçoit × transfert_facteur.
         if(s.effet==="transfert_pv") result.transfer={factor:num(s.transfert_facteur,1.5)};
+        // Pacte de sang : amount = le mana regagné au plus ; transfert_facteur PV par point de mana.
+        if(s.effet==="pacte_de_sang") result.pact=bloodPact(caster,result.amount,num(s.transfert_facteur,2));
+        // Siphon d'âme : amount = le mana pris à la cible au plus ; le lanceur le récupère sans dépasser sa réserve.
+        if(s.effet==="siphon_mana") result.siphon=soulSiphon(caster,target,result.amount);
         if(s.effet==="degats_zone"&&s.zone_forme==="cone"){
           const length=zoneLength(caster,code);
           result.zone={shape:"cone",length,cells:coneCells(caster,target,length)};
@@ -611,10 +637,12 @@
     // Paralysie (Foudre ; Idan, 2026-10-31, chiffres de JC3) : la cible résiste si D100 ≤ sa Constitution + sa protection
     // contre la foudre (armure comprise : le métal la conduit) − 0,5 × la Maîtrise du lanceur, borné de 5 à 95 %.
     // Prison de glace (Eau) : la même, avec la protection contre le froid (l'élément du sort).
+    // Sommeil (Illusion) : sa Volonté − 0,5 × la Maîtrise, sans protection.
     function paralysisResistance(caster,target,code){
       const s=spell(code);
       const stat=combat.statWithGear(target,s?.resistance_caracteristique||"Constitution");
-      const protection=combat.elementalProtection?combat.elementalProtection(target,s?.element||"foudre").applied:0;
+      // Sommeil : sans élément, la caractéristique seule.
+      const protection=s?.element&&combat.elementalProtection?combat.elementalProtection(target,s.element).applied:0;
       return clamp(stat+protection-num(s?.resistance_maitrise_facteur,0.5)*mastery(caster,code),5,95);
     }
     // Lien de vie (Vie ; Idan, 2026-10-31, chiffres de JC3) : le lanceur ne donne que ce qu'il faut pour remonter l'allié
@@ -623,6 +651,20 @@
       const missing=Math.max(0,num(target.pvMax,0)-num(target.hp,0)),room=Math.max(0,num(caster.hp,0)-1);
       const given=Math.max(0,Math.min(amount,Math.ceil(missing/factor),room));
       return {given,received:Math.min(missing,Math.ceil(given*factor-1e-9))};
+    }
+    // Pacte de sang (Nécromancie ; Idan, 2026-10-31, chiffres de JC3) : il ne prend que le mana qui manque (au plus amount),
+    // à factor PV le point, et garde toujours 1 PV.
+    function bloodPact(caster,amount,factor=2){
+      const missing=Math.max(0,manaMax(caster)-currentMana(caster)),room=Math.max(0,num(caster.hp,0)-1);
+      const mana=Math.max(0,Math.min(Math.ceil(missing-1e-9),amount,Math.floor(room/factor)));
+      return {mana,hp:Math.ceil(mana*factor-1e-9),factor};
+    }
+    // Siphon d'âme (Nécromancie) : la cible perd jusqu'à amount mana ; le lanceur récupère ce qui est pris, sans dépasser sa
+    // réserve (le reste est perdu).
+    function soulSiphon(caster,target,amount){
+      const taken=Math.max(0,Math.min(amount,currentMana(target)));
+      const gained=Math.max(0,Math.min(taken,manaMax(caster)-currentMana(caster)));
+      return {taken,gained};
     }
     // Tempête (Foudre) : une frappe = les dés du sort × le facteur figé au lancer ; le nombre de frappes par tour : 1D3.
     function stormStrike(effect){
@@ -650,6 +692,8 @@
       zoneFactor,
       weaponStrike,
       paralysisResistance,
+      bloodPact,
+      soulSiphon,
       afflictions,
       lifeLink,
       stormStrike,

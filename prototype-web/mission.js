@@ -209,6 +209,7 @@ function sortMissionInitiative(units,engine){
 function resetMissionActivation(unit){
   tickMissionPoison(unit);
   tickMissionBurning(unit);
+  tickMissionCurse(unit);
   tickMissionFlameStart(unit);
   tickMissionTorch(unit);
   tickMissionChill(unit);
@@ -450,6 +451,8 @@ function selectNextMissionPlayer(){
   for(;;){
     const next=m.playerOrder.find(u=>u.alive&&!u.acted);
     if(!next){ runMissionEnemyTurn(); return; }
+    // Création de double (Illusion) : le double n'agit pas.
+    if(next.decoy){ next.acted=true; continue; }
     resetMissionActivation(next);
     // Mort du poison au début de son activation.
     if(!next.alive){ next.acted=true; if(m.over){ renderMission(); return; } continue; }
@@ -691,6 +694,19 @@ function renderMissionProgression(entries){
 }
 
 function logMissionAttack(a,d,result,kind="attack"){
+  logMissionAttackLines(a,d,result,kind);
+  if(result.ok) missionAfterStrike(d,result.hit);
+}
+// Après un coup ou un sort : un dormeur blessé se réveille (Sommeil) ; un double touché se dissipe (Création de double).
+function missionAfterStrike(unit,touched){
+  if(!unit) return;
+  if(unit.decoy&&touched&&!unit.vanished){ dissipateMissionDecoy(unit); return; }
+  if(unit.wokeUp){
+    unit.wokeUp=false;
+    if(unit.alive) missionLog(unit.character.name+" se réveille.","bad");
+  }
+}
+function logMissionAttackLines(a,d,result,kind){
   if(!result.ok){ missionLog(result.reason||"Attaque impossible.","bad"); return; }
   missionAttackFx(a,d,result);
   const verb={charge:" charge ",opportunity:" profite de l’ouverture et frappe ",countercharge:" contre-charge ",stray:" touche par accident "}[kind]||" attaque ";
@@ -733,7 +749,7 @@ function logMissionAttack(a,d,result,kind="attack"){
   const criticalWound=result.criticalWound?" Blessure critique : dégâts maximum ("+result.criticalWoundRoll+" ≤ "+missionPercent(result.pCritical)+").":"";
   const psychic=result.psychic?" psychiques (Volonté × "+(Math.round(result.will*100)/100).toLocaleString("fr-FR")+")":"";
   missionLog(prefix+" : "+result.damage+" PV"+psychic+". "+d.character.name+" reste à "+Math.max(0,result.targetHp)+" PV"+(result.targetHp<0?" ("+result.targetHp+" sous zéro)":"")+"."+critical+criticalWound,"damage");
-  if(result.targetDown) missionLog(d.character.name+" est hors combat.","death");
+  if(result.targetDown&&!d.decoy) missionLog(d.character.name+" est hors combat.","death");
   if(result.poisonApplied) missionLog(d.character.name+" est empoisonné"+(missionFeminine(d)?"e":"")+" pour "+result.poison.turns+" tours ("+result.poison.amount+" PV par tour).","bad");
   if(result.drain) missionLog("Drain de vie : "+a.character.name+" récupère "+result.drain.healed+" PV"
     +(result.drain.healed<result.drain.amount?" (sur "+result.drain.amount+")"+missionWitherNote(a):"")+".","magic");
@@ -1272,10 +1288,13 @@ function damageMissionUnitBySpell(unit,amount,source=null,element=null){
   if(!amount) return;
   const wasUp=unit.alive!==false;
   unit.hp-=amount;
+  if(unit.decoy){ dissipateMissionDecoy(unit); return; }
   unit.damageTaken=(Number(unit.damageTaken)||0)+amount;
   // Le feu bloque la régénération (sang de troll) à sa prochaine activation.
   if(element==="feu"&&amount>0) unit.burned=true;
   if(unit.hp<=0){ unit.alive=false; missionLog(unit.character.name+" est hors combat.","death"); }
+  game.mission.engine.wake(unit,amount);
+  missionAfterStrike(unit,true);
   missionFx(unit,wasUp&&!unit.alive?"Hors combat":"",wasUp&&!unit.alive?"down":"");
   MercenairesProgression.recordSpellDamage(source,unit,amount,{element,down:wasUp&&!unit.alive});
 }
@@ -1359,7 +1378,8 @@ function resolveMissionSpell(caster,target,code,extra={}){
     missionLog(name+" lance "+spell.nom+on+detail+" : "+name+" donne "+link.given+" PV, "+target.character.name+" en reçoit +"+healed
       +(link.given<out.amount?" (don de "+out.amount+" au plus)":"")+missionWitherNote(target)+"."+critical,"magic");
   }else if(spell.effet==="delivrance"){
-    // Délivrance (Vie ; Idan, 2026-10-31) : fin de la peur (la fuite), de la paralysie, du gel et de la frénésie.
+    // Délivrance (Vie ; Idan, 2026-10-31) : fin de la peur (la fuite), de la paralysie, du gel et de la frénésie ; et des
+    // états de l'Illusion : sommeil, désespoir, brouillage mental.
     const removed=out.delivrance||[];
     if(removed.includes("fuite")){ target.fleeing=false;target.fleeTurn=0; }
     if(removed.includes("paralysie")) target.paralyzed=null;
@@ -1369,7 +1389,14 @@ function resolveMissionSpell(caster,target,code,extra={}){
       delete buffs[target.frenzy?.code];
       target.statBuffs=buffs;target.frenzy=null;
     }
-    const LABELS={fuite:"de la peur",paralysie:"de la paralysie",gel:"du gel",frenesie:"de la frénésie"};
+    if(removed.includes("sommeil")) target.asleep=null;
+    if(removed.includes("brouillage")) target.mindFog=null;
+    if(removed.includes("desespoir")){
+      const magic=missionMagic();
+      target.statBuffs=Object.fromEntries(Object.entries(target.statBuffs||{}).filter(([code])=>!magic?.spell(code)?.malus));
+    }
+    const LABELS={fuite:"de la peur",paralysie:"de la paralysie",gel:"du gel",frenesie:"de la frénésie",sommeil:"du sommeil",
+      desespoir:"du désespoir",brouillage:"du brouillage mental"};
     effect=removed.length>0;
     missionLog(name+" lance "+spell.nom+on+detail+" : fin "+removed.map(x=>LABELS[x]).join(", ")+".","magic");
   }else if(spell.effet==="degats"&&spell.toucher==="distance"){
@@ -1433,6 +1460,32 @@ function resolveMissionSpell(caster,target,code,extra={}){
         +test+" et perdra sa prochaine activation.","magic");
       missionFx(target,"Paralysé"+(missionFeminine(target)?"e":""),"miss");
     }
+  }else if(spell.effet==="sommeil"){
+    // Sommeil (Illusion ; Idan, 2026-10-31, chiffres de JC3) : la cible résiste (Volonté − Maîtrise / 2) ou s'endort.
+    const p=out.sleep,test=" (résistance "+Math.round(p.resist)+" %, jet "+p.roll+")";
+    if(p.resisted){
+      effect=false;
+      missionLog(name+" lance "+spell.nom+on+detail+" : "+target.character.name+" résiste"+test+".","miss");
+      missionFx(target,"Résiste","miss");
+    }else{
+      target.asleep={turns:p.turns};
+      missionLog(name+" lance "+spell.nom+on+detail+" : "+target.character.name+" s’endort"+test+" et perdra ses "
+        +(p.turns>1?p.turns+" prochaines activations":"prochaine activation")+", sauf si on "+(missionFeminine(target)?"la":"le")+" blesse.","magic");
+      missionFx(target,"Endormi"+(missionFeminine(target)?"e":""),"miss");
+    }
+  }else if(spell.effet==="brouillage"){
+    // Brouillage mental (Illusion) : ses sorts réussissent moins souvent pendant ses prochaines activations.
+    const f=out.mindFog;
+    target.mindFog={malus:f.malus,turns:f.turns};
+    missionLog(name+" lance "+spell.nom+on+detail+" : −"+f.malus+" % de réussite pour ses sorts (Volonté × "
+      +(Math.round(f.will*100)/100).toLocaleString("fr-FR")+"), pendant ses "+f.turns+" prochaines activations.","magic");
+    missionFx(target,"Brouillé"+(missionFeminine(target)?"e":""),"miss");
+  }else if(spell.effet==="double"){
+    // Création de double (Illusion) : un nouveau double remplace le précédent.
+    for(const old of missionUnits().filter(u=>u.decoy&&u.alive&&u.summon?.casterId===caster.id)) dissipateMissionDecoy(old,"un nouveau double le remplace");
+    addMissionDecoy(caster,out.decoy.cell);
+    missionLog(name+" lance "+spell.nom+detail+" : un double de "+name+" apparaît ; les ennemis le prennent pour "
+      +(missionFeminine(caster)?"elle":"lui")+".","magic");
   }else if(spell.effet==="lancer_arme"){
     // Lancer d'arme (Télékinésie ; Idan, 2026-10-31) : l'arme part, frappe et revient dans la main.
     const t=out.throw;
@@ -1480,6 +1533,24 @@ function resolveMissionSpell(caster,target,code,extra={}){
     target.character.mana=Math.round((before+given)*100)/100;
     effect=given>0;
     missionLog(name+" lance "+spell.nom+on+detail+" : +"+Math.round(given)+" mana"+(given<out.amount?" (réserve pleine)":"")+"."+critical,"magic");
+  }else if(spell.effet==="siphon_mana"){
+    // Siphon d'âme (Nécromancie ; Idan, 2026-10-31) : le mana de la cible, au seul profit du lanceur.
+    const s=out.siphon;
+    target.character.mana=Math.round(Math.max(0,magic.currentMana(target)-s.taken)*100)/100;
+    caster.character.mana=Math.round(Math.min(magic.manaMax(caster),magic.currentMana(caster)+s.gained)*100)/100;
+    effect=s.taken>0;
+    missionLog(name+" lance "+spell.nom+on+detail+" : "+target.character.name+" perd "+Math.round(s.taken)+" mana, "+name+" en récupère +"
+      +Math.round(s.gained)+(s.gained<s.taken?" (réserve pleine)":"")+"."+critical,"magic");
+    if(s.gained>0) missionFx(caster,"+"+Math.round(s.gained)+" mana","heal");
+  }else if(spell.effet==="pacte_de_sang"){
+    // Pacte de sang (Nécromancie) : des PV contre du mana, 1 PV gardé.
+    const p=out.pact;
+    caster.hp-=p.hp;
+    caster.character.mana=Math.round(Math.min(magic.manaMax(caster),magic.currentMana(caster)+p.mana)*100)/100;
+    effect=p.mana>0;
+    if(p.hp) missionFx(caster,"−"+p.hp,"damage");
+    missionLog(name+" lance "+spell.nom+detail+" : "+name+" sacrifie "+p.hp+" PV et regagne +"+p.mana+" mana"
+      +(p.mana<out.amount?" (au plus "+out.amount+")":"")+"."+critical,"magic");
   }else if(spell.effet==="tempete"){
     // Tempête (Foudre ; Idan, 2026-10-31) : une première vague tout de suite, puis une à chaque nouveau tour.
     const storm={casterId:caster.id,code:spell.code,center:out.zone.center,radius:out.zone.radius,element:out.storm.element,
@@ -1555,6 +1626,11 @@ function resolveMissionSpell(caster,target,code,extra={}){
     target.burning={...out.effect,casterId:caster.id};
     missionLog(name+" lance "+spell.nom+on+detail+" : "+target.character.name+" prend feu et brûlera au début de ses "+out.effect.turns
       +" prochaines activations."+critical,"magic");
+  }else if(spell.effet==="malediction"){
+    // Malédiction (Nécromancie) : ne se cumule pas, la relancer remplace la précédente.
+    target.cursed={...out.effect,casterId:caster.id};
+    missionLog(name+" lance "+spell.nom+on+detail+" : "+target.character.name+" est maudit"+(missionFeminine(target)?"e":"")
+      +" et souffrira au début de ses "+out.effect.turns+" prochaines activations."+critical,"magic");
   }else if(spell.effet==="aura_de_feu"){
     target.torch={...out.effect,casterId:caster.id};
     missionLog(name+" lance "+spell.nom+on+detail+" : "+target.character.name+" s’embrase ; ses voisins ennemis brûleront au début de ses "
@@ -1588,7 +1664,7 @@ function resolveMissionSpell(caster,target,code,extra={}){
     target.statBuffs={...(target.statBuffs||{}),[fx.code]:{stats:fx.stats,value:fx.value,unit:fx.unit,turns}};
     // Robustesse de l'ours : plus de Constitution, donc plus de PV max, et autant de PV.
     if(fx.stats.includes("Constitution")) missionRefreshMaxHp(target);
-    const amount=fx.unit==="pourcentage"?"+"+fx.value+" % de ":"+"+fx.value+" de ";
+    const sign=fx.value<0?"−":"+",amount=sign+Math.abs(fx.value)+(fx.unit==="pourcentage"?" % de ":" de ");
     const when=self?(fx.turns>1?"pour cette activation et la suivante":"pour cette activation")
       :(fx.turns>1?"pour ses "+fx.turns+" prochaines activations":"pour sa prochaine activation");
     missionLog(name+" lance "+spell.nom+on+detail+" : "+amount+fx.stats.join(" et de ")+", "+when+".","magic");
@@ -1657,6 +1733,21 @@ function addMissionSummon(caster,character,cell,summon){
   m[army].push(unit);
   m[order]=sortMissionInitiative([...m[order],unit],m.engine);
   return unit;
+}
+// Création de double (Illusion ; Idan, 2026-10-31) : une copie du mage (son allure, son équipement), à 1 PV, que les
+// ennemis prennent pour une vraie cible. Il n'agit pas, ne réagit pas, ne coûte ni entretien ni test de Charisme ; il se
+// dissipe dès qu'un coup ou un sort le touche, ou quand le mage tombe.
+function addMissionDecoy(caster,cell){
+  const src=caster.character;
+  const character={...src,id:"decoy-"+src.id,name:src.name+" (double)",spells:[],mana:0};
+  const unit=addMissionSummon(caster,character,cell,{casterId:caster.id,code:"decoy",upkeep:0});
+  Object.assign(unit,{decoy:true,hp:1,pvMax:1,camouflaged:false});
+  missionFx(unit,"Double","heal");
+  return unit;
+}
+function dissipateMissionDecoy(unit,why="touché"){
+  unit.alive=false;unit.offMap=true;unit.vanished=true;unit.movementRemaining=0;
+  missionLog(unit.character.name+" se dissipe ("+why+").","magic");
 }
 // Zombie : share % des caractéristiques, des compétences et des PV max du mort ; il garde son arme et son armure.
 function missionZombieCharacter(dead,share){
@@ -1741,7 +1832,7 @@ function maintainMissionSummons(){
   const magic=missionMagic();
   if(!magic) return;
   releaseMissionSummons();
-  for(const units of missionSummonGroups(()=>true)){
+  for(const units of missionSummonGroups(u=>!u.decoy)){
     const s=units[0].summon,caster=missionSummonCaster(units[0]),what=missionSummonLabel(units);
     const hold=magic.rollHold(caster,s.code),test=" (Charisme "+Math.round(hold.p)+" %, jet "+hold.roll+")";
     if(!hold.held){ dismissMissionSummons(units,caster.character.name+" perd le contrôle de "+what+test); continue; }
@@ -1773,6 +1864,15 @@ function missionParalyzedSkip(unit){
     missionLog(unit.character.name+" est pris"+(missionFeminine(unit)?"e":"")+" dans la glace : "+(missionFeminine(unit)?"elle":"il")+" perd son activation"
       +(end?" ; la glace se brise.":"."),"bad");
     missionFx(unit,"Figé"+(missionFeminine(unit)?"e":""),"miss");
+    return true;
+  }
+  // Sommeil (Illusion) : il dort, et perd ses activations jusqu'à la fin du sort (ou un coup qui le blesse).
+  if(unit?.asleep){
+    unit.asleep.turns-=1;
+    const end=unit.asleep.turns<=0;
+    if(end) unit.asleep=null;
+    missionLog(unit.character.name+" dort : "+(missionFeminine(unit)?"elle":"il")+" perd son activation"+(end?" ; "+(missionFeminine(unit)?"elle":"il")+" se réveille.":"."),"bad");
+    missionFx(unit,end?"Réveillé"+(missionFeminine(unit)?"e":""):"Endormi"+(missionFeminine(unit)?"e":""),"miss");
     return true;
   }
   if(!unit?.paralyzed) return false;
@@ -1841,6 +1941,20 @@ function tickMissionBurning(unit){
   if(effect.turns<=0) unit.burning=null;
   missionLog("Embrasement : "+unit.character.name+" brûle, −"+hit.damage+" PV"+missionProtectionNote(hit)
     +(effect.turns>0?" (encore "+effect.turns+" tour"+(effect.turns>1?"s":"")+").":" ; les flammes s’éteignent."),"damage");
+  checkMissionEnd();
+}
+// Malédiction (Nécromancie ; Idan, 2026-10-31, chiffres de JC3) : au début de chacune de ses activations, des dégâts
+// nécrotiques, qui traversent l'armure et les résistances ; rien sur un mort-vivant.
+function tickMissionCurse(unit){
+  const effect=unit.cursed,magic=missionMagic();
+  if(!effect||!magic||!unit.alive) return;
+  const tick=magic.tick(effect),source=missionUnits().find(u=>u.id===effect.casterId)||null;
+  effect.turns=tick.turnsLeft;
+  if(effect.turns<=0) unit.cursed=null;
+  const amount=magic.isUndead(unit)?0:tick.amount;
+  missionLog("Malédiction : "+unit.character.name+" souffre, −"+amount+" PV nécrotiques"
+    +(effect.turns>0?" (encore "+effect.turns+" tour"+(effect.turns>1?"s":"")+").":" ; la malédiction se dissipe."),"damage");
+  damageMissionUnitBySpell(unit,amount,source,null);
   checkMissionEnd();
 }
 // Mur de flammes : une brûlure (les dés du sort × le facteur du lancer, moins la protection contre le feu).
@@ -1928,6 +2042,10 @@ function tickMissionBuffs(unit){
   if(unit.frenzy){
     if(unit.frenzy.turns>0) unit.frenzy.turns-=1;
     else{ unit.frenzy=null; missionLog(name+" sort de sa frénésie.","magic"); }
+  }
+  if(unit.mindFog){
+    if(unit.mindFog.turns>0) unit.mindFog.turns-=1;
+    else{ unit.mindFog=null; missionLog(name+" retrouve ses esprits : ses sorts réussissent de nouveau normalement.","magic"); }
   }
   if(unit.lifeDrain){
     if(unit.lifeDrain.turns>0) unit.lifeDrain.turns-=1;
@@ -2391,7 +2509,7 @@ function enemyMissionAct(unit,options={}){
 // reset : false pour un mercenaire dont selectNextMissionPlayer vient de commencer l'activation (combat automatique) ;
 // sinon le poison, la régénération et les effets à durée compteraient deux fois.
 function enemyMissionActivation(unit,{reset=true}={}){
-  if(!unit.alive||game.mission.over) return;
+  if(!unit.alive||game.mission.over||unit.decoy) return;
   if(reset) resetMissionActivation(unit);
   if(unit.alive&&missionParalyzedSkip(unit)) return;
   if(unit.fleeing&&resolveMissionFleeingActivation(unit)) return;

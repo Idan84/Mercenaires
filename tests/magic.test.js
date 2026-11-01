@@ -32,8 +32,8 @@ function mage({pm,vie,level=1,int,chance=54,mana=53,charisma=50,items=[],slots={
       .concat(["sixth_sense","titan_strength","cheetah_speed","stone_skin","venom_spit","cauterize","bear_endurance","scale_skin","owl_wisdom","cat_agility"].map(code=>({code,school:"Transmutation",mastery:level})))
       .concat(["shock","lightning_bolt","shock_weapon","chain_lightning","thunder","celerity","spark","electric_arc","paralysis","storm"].map(code=>({code,school:"Foudre",mastery:level})))
       .concat(["attraction","projection","telekinetic_move","clash","force_field","stone_throw","weapon_throw","shockwave","leap","crush"].map(code=>({code,school:"Télékinésie",mastery:level})))
-      .concat(["fear","illusory_support","mass_courage","hidden_advance","psychic_shock","frenzy"].map(code=>({code,school:"Illusion",mastery:level})))
-      .concat(["raise_dead","summon_specter","life_drain","death_arrow","necrosis","wither"].map(code=>({code,school:"Nécromancie",mastery:level})))
+      .concat(["fear","illusory_support","mass_courage","hidden_advance","psychic_shock","frenzy","despair","mind_fog","decoy","sleep"].map(code=>({code,school:"Illusion",mastery:level})))
+      .concat(["raise_dead","summon_specter","life_drain","death_arrow","necrosis","wither","curse","bone_army","soul_siphon","blood_pact"].map(code=>({code,school:"Nécromancie",mastery:level})))
       .concat(["summon_raven","quagmire","transposition","summon_wolves","summon_bears","summon_crocodiles"].map(code=>({code,school:"Invocation",mastery:level}))),
     items,equipment:{slots}
   };
@@ -256,6 +256,7 @@ assert.deepEqual([magic.range(beginner,"fire_bolt"),magic.range(expert,"fire_bol
 assert.deepEqual([magic.range(beginner,"fireball"),magic.zoneRadius(beginner,"fireball")],[7,3]);
 assert.deepEqual([magic.range(expert,"fireball"),magic.zoneRadius(expert,"fireball")],[11,5]);
 const archmage=unit(mage({pm:100,vie:300,level:100,int:100}));
+const recruitSleeper=()=>unit(mage({pm:53,vie:56,int:53}));
 assert.deepEqual([magic.range(archmage,"fireball"),magic.zoneRadius(archmage,"fireball")],[12,5],"portée 6 à 12, rayon 3 à 5");
 assert.deepEqual([magic.zoneRadius(beginner,"fire_ring"),magic.zoneRadius(expert,"fire_ring")],[2,2],"l'anneau : toujours 2 cases");
 assert.deepEqual([magic.duration(beginner,"magma"),magic.duration(expert,"magma")],[5,9],"Flaque de magma : 4 + M/25 tours");
@@ -761,7 +762,8 @@ assert.deepEqual([out.success,out.physical.type,out.physical.power,out.immobilis
 assert.deepEqual(magic.schoolSpells("Illusion").map(x=>[x.code,x.action,x.cible]),[
   ["fear","principale","case"],["illusory_support","rapide","allie_ou_soi"],
   ["mass_courage","principale","case"],["hidden_advance","principale","case"],
-  ["psychic_shock","principale","ennemi"],["frenzy","rapide","personnage"]]);
+  ["psychic_shock","principale","ennemi"],["frenzy","rapide","personnage"],
+  ["despair","rapide","ennemi"],["mind_fog","principale","ennemi"],["decoy","principale","case_vide"],["sleep","principale","ennemi"]]);
 assert.deepEqual([magic.range(beginner,"fear"),magic.zoneRadius(beginner,"fear"),magic.zoneRadius(archmage,"fear")],[7,2,3],"zone de 2 à 3 cases");
 assert.deepEqual([magic.range(beginner,"illusory_support"),magic.bonus(beginner,"illusory_support"),magic.bonus(expert,"illusory_support")],[15,36,56]);
 assert.deepEqual([magic.duration(beginner,"illusory_support"),magic.duration(archmage,"illusory_support")],[2,2],"2 tours");
@@ -803,6 +805,52 @@ assert.equal(combat.resolveCourage(brave({frenzy:{turns:1}}),seer,{ok:true,wound
 // Le bonus de Discrétion (Avancée cachée) passe par les compétences.
 assert.equal(combat.statWithGear({character:{skills:{martial:{Discrétion:30}},items:[],equipment:{slots:{}}},activeSet:1,
   statBuffs:{hidden_advance:{stats:["Discrétion"],value:46,unit:"points"}}},"Discrétion"),76);
+
+// Les quatre sorts du 2026-10-31 (validés par Idan, chiffrés par JC3).
+// Désespoir : −(30 + M/5) de Courage pendant 2 tours, action rapide, portée des attaques.
+assert.deepEqual([magic.range(beginner,"despair"),magic.bonus(beginner,"despair"),magic.bonus(expert,"despair"),magic.duration(expert,"despair")],[7,36,56,2]);
+assert.match(magic.canCast(caster,ally,"despair").reason,/vise un ennemi/);
+queue=[0];
+out=magic.cast(caster,foe,"despair");
+assert.deepEqual(out.effect,{code:"despair",stats:["Courage"],value:-36,unit:"points",turns:2,cumulable:false},"un malus");
+const hopeless=brave({statBuffs:{despair:{stats:["Courage"],value:-36,unit:"points"}}});
+assert.equal(combat.statWithGear(hopeless,"Courage"),14);
+assert.ok(combat.fearHold(hopeless,seer,56.5)<combat.fearHold(brave(),seer,56.5),"il tient moins bien face à la Peur");
+// Brouillage mental : −(20 + M/5) points de réussite pour ses sorts, × Volonté du lanceur / la sienne (0,5 à 2), 2 tours.
+assert.deepEqual([magic.bonus(beginner,"mind_fog"),magic.bonus(expert,"mind_fog"),magic.duration(beginner,"mind_fog")],[26,46,2]);
+queue=[0];
+out=magic.cast(caster,willed(25),"mind_fog");
+assert.deepEqual(out.mindFog,{code:"mind_fog",base:26,will:2,malus:52,turns:2});
+queue=[0];
+assert.equal(magic.cast(caster,willed(100),"mind_fog").mindFog.malus,13,"× 0,5");
+const clear=magic.castChance(foe,"quick_heal").p,fogged=magic.castChance({...foe,mindFog:{malus:26,turns:1}},"quick_heal");
+assert.deepEqual([Math.round((clear-fogged.p)*10)/10,fogged.fog],[26,26]);
+assert.equal(magic.castChance({...foe,mindFog:{malus:500,turns:1}},"quick_heal").p,0,"jamais sous 0");
+// Création de double : une case libre à 3 + M/25 ; l'écran de combat crée le leurre.
+assert.deepEqual([magic.range(beginner,"decoy"),magic.range(expert,"decoy"),magic.manaCost(beginner,"decoy")],[4,8,18]);
+assert.equal(magic.canCast(caster,{q:2,r:0},"decoy",{cellFree:true}).ok,true);
+assert.match(magic.canCast(caster,{q:2,r:0},"decoy",{cellFree:false}).reason,/case vide/);
+queue=[0];
+assert.deepEqual(magic.cast(caster,{q:2,r:0},"decoy").decoy,{cell:{q:2,r:0}});
+// Sommeil : résiste si D100 ≤ Volonté − Maîtrise / 2 (sans élément) ; 2 + M/50 tours, au plus 4.
+assert.deepEqual([magic.duration(beginner,"sleep"),magic.duration(recruitSleeper(),"sleep"),magic.duration(expert,"sleep")],[2,3,4]);
+assert.equal(magic.paralysisResistance(caster,foe,"sleep"),50-0.5*31.5);
+queue=[0,0.2];
+out=magic.cast(caster,foe,"sleep");
+assert.deepEqual(out.sleep,{resist:34.25,roll:21,resisted:true,turns:2});
+queue=[0,0.5];
+assert.equal(magic.cast(caster,foe,"sleep").sleep.resisted,false);
+// Moteur : un dormeur blessé se réveille ; ni le dormeur, ni le figé, ni le double ne réagissent.
+const sleeper={asleep:{turns:2}};
+combat.wake(sleeper,0);
+assert.deepEqual(sleeper,{asleep:{turns:2}},"sans dégâts, il dort");
+combat.wake(sleeper,5);
+assert.deepEqual(sleeper,{asleep:null,wokeUp:true});
+assert.deepEqual([combat.inert({asleep:{turns:1}}),combat.inert({frozen:{turns:1}}),combat.inert({decoy:true}),combat.inert({})],[true,true,true,false]);
+// Délivrance retire aussi le sommeil, le désespoir et le brouillage mental (pas les bonus).
+assert.deepEqual(magic.afflictions({...ally,asleep:{turns:2},mindFog:{malus:10,turns:1},
+  statBuffs:{despair:{stats:["Courage"],value:-36},illusory_support:{stats:["Courage"],value:36}}},"deliverance"),["sommeil","desespoir","brouillage"]);
+assert.deepEqual(magic.afflictions({...ally,statBuffs:{illusory_support:{stats:["Courage"],value:36}}},"deliverance"),[]);
 
 // École de la Nécromancie (Idan, 2026-10-28) : le Charisme compte ; profils débutant / recrue / expert (Charisme supposé
 // égal à l'Intelligence : 35 / 53 / 73).
@@ -859,6 +907,41 @@ assert.deepEqual([novice,recruit,master].map(x=>average(x,"necrosis",9)),[78,102
 // Moteur : un mort-vivant ne teste jamais son Courage.
 const ghoul={character:{name:"Goule",undead:true,stats:{Courage:10,Volonté:10},items:[],equipment:{slots:{}}},activeSet:1,team:"enemy",alive:true};
 assert.equal(combat.resolveFear(ghoul,seer,90),null);
+// Les quatre sorts du 2026-10-31 (validés par Idan, chiffrés par JC3).
+// Malédiction : 1D4 nécrotiques au début de ses 3 prochaines activations ; armure et résistances traversées ; pas les morts-vivants.
+assert.deepEqual([magic.range(novice,"curse"),magic.duration(master,"curse"),magic.manaCost(novice,"curse")],[7,3,18]);
+assert.match(magic.canCast(recruit,{...victim,character:{...victim.character,undead:true}},"curse").reason,/ne fonctionne que sur les vivants/);
+assert.deepEqual([novice,recruit,master].map(x=>average(x,"curse",2.5)),[22,28,63],"par activation");
+queue=[0,0.99];
+out=magic.cast(novice,victim,"curse");
+assert.deepEqual([out.success,out.effect.turns,out.effect.element,out.effect.cumulable],[true,3,null,false]);
+queue=[0.5];
+assert.deepEqual(magic.tick(out.effect),{amount:Math.ceil(10*3*out.effect.factor-1e-9),dice:3,turnsLeft:2});
+// Armée d'os : 1D4 squelettes + 1 par 50 de Maîtrise, comme une meute ; entretien 5 × (1 − M/300).
+queue=[0.5];
+assert.deepEqual(magic.summonCount(novice,"bone_army"),{count:3,rolled:3,dice:"1D4",bonus:0});
+queue=[0.99];
+assert.deepEqual(magic.summonCount(master,"bone_army"),{count:6,rolled:4,dice:"1D4",bonus:2});
+assert.deepEqual([magic.upkeepCost(novice,"bone_army"),magic.upkeepCost(master,"bone_army"),magic.manaCost(novice,"bone_army")],[5,3,27]);
+// Siphon d'âme : 3 × 1D6 de mana pris à la cible, que le lanceur récupère sans dépasser sa réserve.
+const drained=mana=>({...victim,character:{...victim.character,mana}});
+assert.match(magic.canCast(recruit,drained(0),"soul_siphon").reason,/plus de mana/);
+assert.deepEqual(magic.soulSiphon({...recruit,character:{...recruit.character,mana:20}},drained(5),11),{taken:5,gained:5});
+assert.deepEqual(magic.soulSiphon({...recruit,character:{...recruit.character,mana:50}},drained(30),11),{taken:11,gained:3},"réserve pleine : le reste est perdu");
+queue=[0,0.99,0.5];
+out=magic.cast(novice,drained(30),"soul_siphon");
+assert.deepEqual([out.amount,out.siphon.taken],[Math.ceil(3*4*magic.effectFactor(novice,"soul_siphon")-1e-9),out.amount]);
+// Pacte de sang : 3 × 1D6 de mana au plus, 2 PV le point ; il ne prend que ce qui manque et garde 1 PV.
+const bleeding=(mana,hp)=>({...novice,hp,character:{...novice.character,mana}});
+assert.match(magic.canCast(bleeding(53,100),null,"blood_pact").reason,/réserve de mana est pleine/);
+assert.match(magic.canCast(bleeding(10,1),null,"blood_pact").reason,/plus de PV/);
+assert.deepEqual(magic.bloodPact(bleeding(40,100),11,2),{mana:11,hp:22,factor:2});
+assert.deepEqual(magic.bloodPact(bleeding(50,100),11,2),{mana:3,hp:6,factor:2},"seulement ce qui manque");
+assert.deepEqual(magic.bloodPact(bleeding(10,10),11,2),{mana:4,hp:8,factor:2},"il garde 1 PV");
+assert.equal(magic.manaCost(novice,"blood_pact"),1);
+queue=[0,0.99,0.5];
+out=magic.cast(bleeding(40,100),null,"blood_pact");
+assert.deepEqual([out.success,out.pact.mana,out.pact.hp],[true,out.amount,2*out.amount]);
 
 // École de l'Invocation (Idan, 2026-10-28) : les mêmes règles d'invocation que la Nécromancie.
 // Mana et réussite : Corbeau 9 / 9 / 6 (entretien 2), Loups 23 / 21 / 14 (entretien 5), Ours et Crocodiles 27 / 25 / 17

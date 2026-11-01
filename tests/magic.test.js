@@ -34,7 +34,7 @@ function mage({pm,vie,level=1,int,chance=54,mana=53,charisma=50,items=[],slots={
       .concat(["attraction","projection","telekinetic_move","clash","force_field","stone_throw","weapon_throw","shockwave","leap","crush"].map(code=>({code,school:"Télékinésie",mastery:level})))
       .concat(["fear","illusory_support","mass_courage","hidden_advance","psychic_shock","frenzy","despair","mind_fog","decoy","sleep"].map(code=>({code,school:"Illusion",mastery:level})))
       .concat(["raise_dead","summon_specter","life_drain","death_arrow","necrosis","wither","curse","bone_army","soul_siphon","blood_pact"].map(code=>({code,school:"Nécromancie",mastery:level})))
-      .concat(["summon_raven","quagmire","transposition","summon_wolves","summon_bears","summon_crocodiles"].map(code=>({code,school:"Invocation",mastery:level}))),
+      .concat(["summon_raven","quagmire","transposition","summon_wolves","summon_bears","summon_crocodiles","insect_swarm","summon_boars","summon_spiders","banish"].map(code=>({code,school:"Invocation",mastery:level}))),
     items,equipment:{slots}
   };
 }
@@ -972,6 +972,26 @@ assert.match(magic.canCast(owner,{...pet,summon:{casterId:"other"}},"transpositi
 assert.match(magic.canCast(owner,{...pet,summon:null},"transposition").reason,/une de vos invocations/);
 queue=[0];
 assert.deepEqual(magic.cast(owner,pet,"transposition",{lineOfSight:false}).swap,{from:{q:0,r:0},to:{q:30,r:-8}});
+// Les quatre sorts du 2026-10-31 (validés par Idan, chiffrés par JC3).
+// Nuée d'insectes : une zone (rayon 2 à 3) de 2 tours ; −(20 + M/5) % de Perception et de Dextérité aux ennemis.
+assert.deepEqual([novice,recruit,master].map(x=>[magic.range(x,"insect_swarm"),magic.zoneRadius(x,"insect_swarm"),magic.bonus(x,"insect_swarm"),magic.manaCost(x,"insect_swarm")]),
+  [[7,2,26,18],[8,3,31,17],[11,3,46,12]]);
+queue=[0];
+out=magic.cast(recruit,{q:4,r:0},"insect_swarm");
+assert.deepEqual([out.zone,out.swarm],[{center:{q:4,r:0},radius:3},{code:"insect_swarm",stats:["Perception","Dextérité"],value:-31,unit:"pourcentage",turns:2}]);
+// Sangliers 1D4, araignées géantes 1D2 (sans bonus de Maîtrise) ; entretien 5 et 6.
+queue=[0.99];
+assert.deepEqual(magic.summonCount(master,"summon_boars"),{count:4,rolled:4,dice:"1D4",bonus:0});
+queue=[0.99];
+assert.deepEqual(magic.summonCount(master,"summon_spiders"),{count:2,rolled:2,dice:"1D2",bonus:0});
+assert.deepEqual([novice,recruit,master].map(x=>[magic.upkeepCost(x,"summon_boars"),magic.upkeepCost(x,"summon_spiders")]),[[5,6],[5,5],[3,4]]);
+// Bannissement : une invocation du camp adverse seulement.
+const foeSummon=unit(mage({pm:50,vie:1,int:50}),{q:4,r:0,team:"enemy",summon:{casterId:"x",group:"g"}});
+assert.equal(magic.canCast(recruit,foeSummon,"banish").ok,true);
+assert.match(magic.canCast(recruit,{...foeSummon,summon:null},"banish").reason,/invocation ennemie/);
+assert.match(magic.canCast(recruit,{...foeSummon,team:"player"},"banish").reason,/invocation ennemie/);
+queue=[0];
+assert.equal(magic.cast(recruit,foeSummon,"banish").banish,true);
 
 // Infobulle d'un sort du grimoire (Idan, 2026-10-30 : à qui il sert, combien de mana…) : la description, puis les
 // chiffres de ce mercenaire, les mêmes que ceux du combat (prototype-web/ui.js, spellTip).

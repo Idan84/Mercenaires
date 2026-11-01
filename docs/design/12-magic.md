@@ -395,7 +395,7 @@ Le **Charisme** du mage y compte (Idan : l'Invocation et la Nécromancie en dép
 
 (Charisme supposé égal à l'Intelligence : 35 / 53 / 73.)
 
-### École de l'Invocation (6 sorts, Idan, 2026-10-28)
+### École de l'Invocation (10 sorts, Idan, 2026-10-28 et 2026-10-31)
 
 **Mêmes règles d'invocation que la Nécromancie** (Idan) : le joueur joue ses créatures dès le tour suivant ; chaque tour, test de **Charisme** (difficulté 30) et entretien en mana, sinon elles disparaissent ; elles disparaissent aussi quand le mage tombe. Contrairement aux morts-vivants, les créatures font leurs **tests de Courage et peuvent fuir** (Idan). Une **meute** (loups, ours, crocodiles) compte pour **une seule invocation** : un test, un entretien ; raté, toute la meute disparaît ; chacun se déplace de son côté. Les créatures apparaissent sur la case choisie, voisine du mage, puis sur les cases libres les plus proches (moins de créatures s'il n'y a plus de place). Écoles opposées : Transmutation et Nécromancie. Données : `spells.json` (colonnes `invocation_nb_des`, `invocation_de`, `invocation_pas_maitrise`), `summon-archetypes.json`.
 
@@ -407,6 +407,10 @@ Le **Charisme** du mage y compte (Idan : l'Invocation et la Nécromancie en dép
 | Invocation de loups | principale | **1D6 loups, +1 par tranche de 50 de Maîtrise** (Idan : « le 1D6 peut évoluer ») | 1 | 25, puis **5 par tour** |
 | Invocation d'ours | principale | **1D3 ours** | 1 | 30, puis **6 par tour** |
 | Invocation de crocodiles | principale | **1D3 crocodiles** | 1 | 30, puis **6 par tour** |
+| Nuée d'insectes | principale | une zone de rayon **2 + M/50 (2 à 3)** pendant **2 tours** : les **ennemis** qui s'y trouvent perdent **(20 + M/5) % de Perception et de Dextérité** | centre à 6 + M/25, au plus 12 | 20 |
+| Invocation de sangliers | principale | **1D4 sangliers** | 1 | 25, puis **5 par tour** |
+| Invocation d'araignées géantes | principale | **1D2 araignées géantes** | 1 | 30, puis **6 par tour** |
+| Bannissement | principale | une **invocation ennemie** disparaît, **avec tout son groupe** | 6 + M/25, au plus 12 | 15 |
 
 | Créature | Déplacement | PV | Attaque (dégâts moyens) | Particularités |
 |---|---|---|---|---|
@@ -414,12 +418,19 @@ Le **Charisme** du mage y compte (Idan : l'Invocation et la Nécromancie en dép
 | Loup (Vitesse 70) | 6 cases | 60 | Morsure 1D6, ≈ 25 | Perception 70 (flair) |
 | Ours (Vitesse 20) | 3 cases | 250 | Griffes 1D8, ≈ 77 | Force 85, Résistance physique 20 |
 | Crocodile (Vitesse 10) | 2 cases | 200 | Mâchoires 2D8, ≈ 126 | Discrétion 90, Résistance physique 25 |
+| Sanglier (Vitesse 70) | 6 cases | 45 | Défenses 1D8, ≈ 50 | **charge × 2** (≈ 100) ; « tiennent mal » : peu de PV |
+| Araignée géante (Vitesse 50) | 5 cases | 120 | Morsure venimeuse 1D6, ≈ 32 | **poison** si elle blesse (10 PV par tour, 3 tours) ; **toile** si elle touche ; Discrétion 60, Résistance au poison 60 |
 
 - Les autres valeurs des créatures sont celles du guerrier gobelin novice (`summon-archetypes.json`) ; leur arme naturelle passe par les règles des armes (Toucher, Blesser, puissance contre l'armure).
 - **Corbeau** : l'éclaireur. Il fait comme tout le monde son test de repérage au début de chaque tour, avec sa Perception de 85 : un ennemi camouflé qu'il repère est vu de toute l'armée, pour toute la partie (doc 04). Il servira encore plus avec le brouillard de guerre.
 - **Bourbier** : on peut entrer dans la case (c'est la fin du chemin), pas la traverser ni en sortir ; on y attaque et on y lance des sorts. La fuite est bloquée aussi. Les déplacements forcés (Télékinésie) ne sont pas arrêtés.
 - **Transposition** : pas un déplacement : aucune attaque d'opportunité.
 - **Élémentaire** : plus tard, comme sort combiné aux éléments (Idan).
+- **Les quatre sorts du 2026-10-31** (validés par Idan, chiffrés par JC3) amènent l'école à 10 sorts, sur le même modèle.
+- **Nuée d'insectes** (Idan : « Perception et Précision en baisse ») : la Précision (doc 05) vient de la Dextérité et de la Perception ; la nuée retire donc un pourcentage des deux, comme le 6e sens à l'envers. Elle ne pique que les ennemis du mage : ceux qui sont dans la zone au lancer, puis ceux qui y commencent leur activation (le malus vaut pour cette activation). Elle ne coupe pas la ligne de vue.
+- **Sangliers** : la charge de leurs Défenses compte double (`bonus_charge` 2, comme les armes d'hast).
+- **Araignées géantes** : la morsure empoisonne comme la sarbacane ; la **toile** colle dès que la morsure touche (ni parée, ni bloquée) : la cible ne peut pas se déplacer à sa prochaine activation, comme l'Écrasement.
+- **Bannissement** : toute invocation du camp adverse (créature, zombie, spectre, double illusoire) ; une meute compte pour une seule invocation, elle part en entier. Pas de jet de résistance : la réussite du sort suffit.
 
 | | Débutant | Recrue moyenne | Expert |
 |---|---|---|---|
@@ -429,14 +440,16 @@ Le **Charisme** du mage y compte (Idan : l'Invocation et la Nécromancie en dép
 | Loups | 1D6 · 23 mana, entretien 5 | 1D6 + 1 · 21, 5 | 1D6 + 2 · 14, 3 |
 | Ours, Crocodiles | 1D3 · 27 mana, entretien 6 | 1D3 · 25, 5 | 1D3 · 17, 4 |
 | Garder une invocation, chaque tour | 57 % | 81 % | 94 % |
+| Nuée d'insectes | rayon 2 · −26 % · portée 7 · 18 mana | rayon 3 · −31 % · 8 · 17 | rayon 3 · −46 % · 11 · 12 |
+| Sangliers | 1D4 · 23 mana, entretien 5 | 1D4 · 21, 5 | 1D4 · 14, 3 |
+| Araignées géantes | 1D2 · 27 mana, entretien 6 | 1D2 · 25, 5 | 1D2 · 17, 4 |
+| Bannissement | portée 7 · 14 mana | 8 · 13 | 11 · 9 |
 
-### Catalogue validé, en cours d'intégration (Idan, 2026-10-31)
+### Catalogue validé (Idan, 2026-10-31)
 
-Idan a validé **90 sorts mono-école** (10 par école) et **49 sorts bi-école**. JC3 les chiffre et les intègre **une école par PR** ; chaque école intégrée a sa section plus haut, avec ses chiffres. Restent à intégrer :
+Idan a validé **90 sorts mono-école** (10 par école) et **49 sorts bi-école**. JC3 les chiffre et les intègre **une école par PR** ; chaque école intégrée a sa section plus haut, avec ses chiffres.
 
-**Mono-école (4)**
-
-- **Invocation** : **Nuée d'insectes** (2 tours : Perception et Précision en baisse dans la zone) ; **Invocation de sangliers** (1D4 sangliers rapides qui chargent fort mais tiennent mal) ; **Invocation d'araignées géantes** (1D2 araignées : morsure empoisonnée, toile qui immobilise 1 tour) ; **Bannissement** (renvoie une invocation ennemie).
+**Mono-école : tous intégrés** (2026-11-01) : les 9 écoles ont leurs 10 sorts, chacun avec sa section plus haut.
 
 Refusés (à ne pas reproposer tels quels) : Bouclier de vie, Retour à la vie, Météore, Verglas, Forme bestiale, Corps d'acier, Désarmement, Lévitation, Hallucination, Explosion de cadavre, Esprit gardien, Marque de mort.
 

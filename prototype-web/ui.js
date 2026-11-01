@@ -1444,7 +1444,7 @@ function spellTip(c, row) {
     if (range > 0) lines.push(line("Portée", `${range} case${range > 1 ? "s" : ""}`));
     if (amount) lines.push(line(SPELL_EFFECT_LABELS[row.effet], `${amount.min} à ${amount.max} ${SPELL_MANA_EFFECTS.includes(row.effet) ? "mana" : "PV"}`));
     // Désespoir, Brouillage mental : un malus sur la cible (colonne malus) ; le Brouillage retire des % de réussite.
-    if (bonus > 0) lines.push(row.malus ? line("Malus", row.effet === "brouillage" ? `−${bonus} % de réussite` : `−${bonus}`)
+    if (bonus > 0) lines.push(row.malus || row.effet === "nuee" ? line("Malus", row.effet === "brouillage" ? `−${bonus} % de réussite` : row.bonus_unite === "pourcentage" ? `−${bonus} %` : `−${bonus}`)
       : line("Bonus", row.bonus_unite === "pourcentage" ? `+${bonus} %` : `+${bonus}`));
     if (duration > 0) lines.push(line("Durée", `${duration} tour${duration > 1 ? "s" : ""}`));
     if (radius > 0) lines.push(line("Zone", `${radius} case${radius > 1 ? "s" : ""} autour`));

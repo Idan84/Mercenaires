@@ -86,13 +86,13 @@ assert.deepEqual(magic.knownSpells(u).map(s=>s.code),["quick_heal","deep_heal","
   "attraction","projection","telekinetic_move","clash","force_field","stone_throw","weapon_throw","shockwave","leap","crush",
   "fear","illusory_support","mass_courage","hidden_advance","psychic_shock","frenzy","despair","mind_fog","decoy","sleep",
   "raise_dead","summon_specter","life_drain","death_arrow","necrosis","wither","curse","bone_army","soul_siphon","blood_pact",
-  "summon_raven","quagmire","transposition","summon_wolves","summon_bears","summon_crocodiles"]);
-assert.ok(m.players.every(p=>p.spells.length===86&&!(p.character.spells||[]).length));
+  "summon_raven","quagmire","transposition","summon_wolves","summon_bears","summon_crocodiles","insect_swarm","summon_boars","summon_spiders","banish"]);
+assert.ok(m.players.every(p=>p.spells.length===90&&!(p.character.spells||[]).length));
 assert.equal(api.missionActionAvailability().testSpells,false,"une seule fois par combat");
 assert.ok(logged(/connaît tous les sorts \(Vie, Feu, Eau, Transmutation, Foudre, Télékinésie, Illusion, Nécromancie, Invocation, niveau 1\)/));
 const bar=api.renderMissionSpellBar(u);
 assert.match(bar,/Mana 53\/53/);
-assert.equal((bar.match(/data-spell=/g)||[]).length,86);
+assert.equal((bar.match(/data-spell=/g)||[]).length,90);
 assert.match(bar,/Soin rapide<small>rapide · \d+ mana · \d+ %<\/small>/);
 // Écran de combat (2026-10-29) : au-delà de 8 sorts, un onglet par école ; une seule école affichée à la fois.
 assert.equal((bar.match(/data-spell-school=/g)||[]).length,9);
@@ -1415,6 +1415,67 @@ assert.ok(logged(/s’enlise dans le bourbier/));
 m.turn+=3;
 api.pruneMissionTerrain();
 assert.ok(logged(/Le bourbier sèche/));
+// Les quatre sorts du 2026-10-31 (validés par Idan, chiffrés par JC3).
+// Nuée d'insectes : rayon 3, 2 tours ; les ennemis dedans perdent 32 % de Perception et de Dextérité, pas les alliés.
+caller.q=2;caller.r=4;f3.q=4;f3.r=4;f2.q=10;f2.r=4;
+for(const x of [caller,f2,f3]) x.statBuffs=null;
+recharge();
+const sharpBefore=engine.statWithGear(f3,"Perception");
+api.setMissionMode("spell:insect_swarm");
+queue.push(0);
+api.handleMissionHexClick(5,4);
+assert.equal(f3.statBuffs.insect_swarm.value,-32);
+assert.ok(Math.abs(engine.statWithGear(f3,"Perception")-(sharpBefore-0.32*f3.character.stats.Perception))<1e-9,"−32 % de la base");
+assert.equal(f2.statBuffs?.insect_swarm,undefined,"hors de la nuée");
+assert.equal(caller.statBuffs?.insect_swarm,undefined,"pas les alliés");
+assert.ok(logged(/lance Nuée d'insectes \(rayon 3, 2 tours\).* : −32 % de Perception et de Dextérité pour les ennemis dans la nuée/));
+assert.ok(logged(/harcelée? par la nuée d’insectes : −32 % de Perception et de Dextérité/));
+api.resetMissionActivation(f3);
+assert.ok(f3.statBuffs.insect_swarm,"encore dedans : encore piqué");
+f3.q=12;f3.r=2;
+const swarmLog=m.log.length;
+api.resetMissionActivation(f3);
+assert.equal(f3.statBuffs.insect_swarm,undefined,"sorti : plus de malus");
+assert.ok(!m.log.slice(swarmLog).some(x=>/Nuée d'insectes : l’effet prend fin/.test(x.message)),"sans bruit");
+m.turn+=2;
+api.pruneMissionTerrain();
+assert.ok(logged(/La nuée d’insectes se disperse/));
+// Sangliers : 1D4, rapides, charge × 2, peu de PV.
+recharge();
+api.setMissionMode("spell:summon_boars");
+queue.push(0,0.99);
+api.handleMissionHexClick(pick().q,pick().r);
+const boars=m.players.filter(x=>x.character.archetype==="boar"&&x.alive);
+assert.equal(boars.length,4);
+assert.deepEqual([boars[0].pvMax,engine.movementBase(boars[0]),engine.weaponTemplate(engine.activeWeaponItem(boars[0])).bonus_charge_base,boars[0].summon.upkeep],[45,6,2,4]);
+assert.ok(logged(/4 sangliers apparaissent \(1D4 : 4\) \(45 PV chacun\)/));
+// Araignées géantes : 1D2 ; morsure empoisonnée ; un coup qui touche (ni paré ni bloqué) englue la cible.
+recharge();
+api.setMissionMode("spell:summon_spiders");
+queue.push(0,0.99);
+api.handleMissionHexClick(pick().q,pick().r);
+const spiders=m.players.filter(x=>x.character.archetype==="giant_spider"&&x.alive);
+assert.equal(spiders.length,2);
+const bite=engine.weaponTemplate(engine.activeWeaponItem(spiders[0]));
+assert.deepEqual([spiders[0].pvMax,bite.empoisonne,bite.immobilise,bite.degats_pv_base],[120,true,1,"1D6"]);
+f2.pinned=null;
+api.onMissionAttack(spiders[0],f2,{},{ok:true,hit:true,parried:true,mode:"melee"});
+assert.equal(f2.pinned,null,"parée : pas de toile");
+const web={ok:true,hit:true,wound:false,mode:"melee",damage:0};
+api.onMissionAttack(spiders[0],f2,{},web);
+assert.deepEqual([f2.pinned,web.webbed],[{turns:1},true]);
+api.resetMissionActivation(f2);
+assert.equal(f2.movementRemaining,0,"pas de déplacement à sa prochaine activation");
+// Bannissement : une invocation ennemie disparaît, avec tout son groupe.
+for(const s of spiders){ s.team="enemy";s.camouflaged=false; }
+recharge();
+api.setMissionMode("spell:banish");
+assert.ok(api.targetableMissionCells().has(api.missionKey(spiders[0].q,spiders[0].r)));
+assert.ok(!api.targetableMissionCells().has(api.missionKey(boars[0].q,boars[0].r)),"pas les nôtres");
+queue.push(0);
+api.handleMissionHexClick(spiders[0].q,spiders[0].r);
+assert.ok(spiders.every(s=>!s.alive&&s.vanished));
+assert.ok(logged(/lance Bannissement sur Araignée géante .* : le sort renvoie 2 araignées géantes : ils disparaissent/));
 // L'invocateur tombe : toute la meute disparaît.
 recharge();
 caller.q=2;caller.r=4;

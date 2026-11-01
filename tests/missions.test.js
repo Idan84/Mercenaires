@@ -24,27 +24,33 @@ const reference={oneShotMissions:read("one-shot-missions.json"),enemyArchetypes:
   baseArmors:read("base-armors.json"),skills:read("skills.json"),itemQualities:read("item-qualities.json")};
 const rules=createMissionRules({reference,random:seeded(7)});
 
-// Camps (Idan, 2026-11-01) : gobelin ou orc au hasard ; points de combat : le chef, puis des ennemis tant que le total se
-// rapproche du budget (55 à 75 à la difficulté 1) ; « normal » dans 5 % des tirages ; 35 PO par point.
-const counts={Gobelins:[],Orcs:[]},normals=[],totals=[];
-for(let i=0;i<4000;i++){
+// Camps (Idan, 2026-11-01) : gobelin, orc, homme-bête, voleurs ou ogre au hasard ; points de combat : le chef, puis des
+// ennemis tant que le total se rapproche du budget (55 à 75 à la difficulté 1) ; « normal » dans 5 % des tirages ; 35 PO
+// par point.
+const CAMPS=Object.fromEntries(reference.oneShotMissions.missions[0].camps.map(c=>[c.faction,c]));
+assert.deepEqual(Object.keys(CAMPS),["Gobelins","Orcs","Hommes-bêtes","Voleurs","Ogres"]);
+const counts=Object.fromEntries(Object.keys(CAMPS).map(f=>[f,[]])),normals=[],totals=[];
+for(let i=0;i<8000;i++){
   const camp=rules.rollCamp();
   const sum=rules.points(camp.chief)+camp.enemies.reduce((t,code)=>t+rules.points(code),0);
   assert.equal(camp.points,sum,"points du camp");
-  assert.ok(camp.points>=camp.budget-8&&camp.points<=camp.budget+8,`près du budget : ${camp.points} / ${camp.budget}`);
+  assert.ok(Math.abs(camp.points-camp.budget)<=10,`près du budget (au plus la moitié d’un « normal ») : ${camp.points} / ${camp.budget}`);
   assert.ok(camp.budget>=55&&camp.budget<=75);
-  assert.equal(camp.chief,{Gobelins:"goblin_chief_1",Orcs:"orc_chief_1"}[camp.faction]);
-  assert.equal(camp.campName,{Gobelins:"Camp gobelin",Orcs:"Camp orc"}[camp.faction]);
+  assert.equal(camp.chief,CAMPS[camp.faction].chef);
+  assert.equal(rules.archetype(camp.chief).niveau,"chef 1");
+  assert.equal(camp.campName,CAMPS[camp.faction].nom_camp);
   assert.ok(camp.enemies.every(code=>{ const a=rules.archetype(code); return a.faction===camp.faction&&["novice","normal"].includes(a.niveau); }));
   counts[camp.faction].push(camp.enemies.length);
   normals.push(...camp.enemies.map(code=>rules.archetype(code).niveau==="normal"));
   totals.push(camp.points);
 }
 const mean=list=>list.reduce((t,x)=>t+x,0)/list.length;
-assert.ok(Math.abs(counts.Gobelins.length-2000)<150,"un camp sur deux : "+counts.Gobelins.length);
+for(const [faction,list] of Object.entries(counts)) assert.ok(Math.abs(list.length-1600)<160,`un camp sur cinq : ${faction} ${list.length}`);
 assert.ok(Math.abs(mean(counts.Gobelins)-6.5)<0.25,"6,5 gobelins en moyenne, comme l'ancien 1D4+4 : "+mean(counts.Gobelins));
 assert.ok(Math.min(...counts.Gobelins)>=3&&Math.max(...counts.Gobelins)<=10);
 assert.ok(Math.abs(mean(counts.Orcs)-4.3)<0.25,"4,3 orcs en moyenne : "+mean(counts.Orcs));
+assert.ok(mean(counts.Ogres)<mean(counts.Voleurs)&&mean(counts.Voleurs)<mean(counts.Orcs),"moins d'ogres que de voleurs, moins de voleurs que d'orcs");
+assert.ok(counts.Ogres.every(n=>n>=1&&n<=5));
 assert.ok(Math.abs(mean(totals)-65)<1.5,"65 points en moyenne : "+mean(totals));
 assert.ok(Math.abs(mean(normals)-0.05)<0.015,"5 % de « normaux » : "+mean(normals));
 assert.equal(rules.points("goblin_chief_1"),30);
@@ -52,8 +58,8 @@ assert.equal(rules.points("orc_chief_1"),38);
 
 // Offre : distance 1 à 3 jours, récompense = 2 000 + 1 200 par jour aller-retour + 35 PO par point de combat (Idan,
 // 2026-11-01), valable 3 à 6 jours ; un des trois ordres du peuple du camp.
-const orders={Gobelins:new Set(),Orcs:new Set()};
-for(let day=1;day<=400;day++){
+const orders=Object.fromEntries(Object.keys(CAMPS).map(f=>[f,new Set()]));
+for(let day=1;day<=800;day++){
   const offer=rules.createOffer({day});
   orders[offer.faction].add(offer.order);
   assert.ok(offer.distance>=1&&offer.distance<=3);
@@ -64,14 +70,29 @@ for(let day=1;day<=400;day++){
   const text=rules.orderText(offer,{date:"1 Brumecendre",date_expiration:"5 Brumecendre",an:842});
   for(const line of [...text.paragraphs,text.signature]) assert.doesNotMatch(line,/\{[^}]+\}/,"tous les champs remplis : "+line);
   assert.doesNotMatch(text.paragraphs.join(" "),/\b1 jours\b/);
-  if(offer.faction==="Orcs") assert.doesNotMatch(text.paragraphs.join(" "),/gobelin/i,"une lettre orque ne parle pas de gobelins");
-  if(offer.order==="orc_rival") assert.ok(reference.oneShotMissions.noms.chefs_de_camp_orcs.some(n=>text.paragraphs.join(" ").includes(n)),"chef de camp orc");
+  if(offer.faction!=="Gobelins") assert.doesNotMatch(text.paragraphs.join(" "),/gobelin/i,"seule une lettre gobeline parle de gobelins");
+  const bosses=reference.oneShotMissions.noms[CAMPS[offer.faction].noms.chefs];
+  if(/rival/.test(offer.order)) assert.ok(bosses.some(n=>text.paragraphs.join(" ").includes(n)),"le chef de camp du bon peuple");
 }
 assert.deepEqual([...orders.Gobelins].sort(),["emperor","goblin_rival","village"],"les trois ordres gobelins");
 assert.deepEqual([...orders.Orcs].sort(),["emperor_orcs","orc_rival","village_orcs"],"les trois ordres orcs");
+assert.deepEqual([...orders["Hommes-bêtes"]].sort(),["beastman_rival","emperor_hommes_betes","village_hommes_betes"]);
+assert.deepEqual([...orders.Voleurs].sort(),["emperor_voleurs","thief_rival","village_voleurs"]);
+assert.deepEqual([...orders.Ogres].sort(),["emperor_ogres","ogre_rival","village_ogres"]);
+// Chaque peuple de camp : cinq lignes sur quatre niveaux et quatre chefs, avec leurs points.
+for(const [faction,camp] of Object.entries(CAMPS)){
+  const own=reference.enemyArchetypes.rows.filter(a=>a.faction===faction);
+  assert.equal(own.length,24,faction);
+  for(const l of camp.lignes) for(const level of ["novice","normal","vétéran","d’élite"]){
+    const a=own.find(x=>x.ligne===l.ligne&&x.niveau===level);
+    assert.ok(a&&a.points>0,`${faction} ${l.ligne} ${level}`);
+  }
+  assert.ok(rules.points(camp.chef)>=30&&rules.points(camp.chef)<=45,`chef 1 : ${faction}`);
+}
 
 // Ennemis : la fiche figée remplace caractéristiques, PV, compétences et équipement d'un personnage de base.
-const offer=rules.createOffer({day:4});
+let offer=null;
+for(let day=4;!offer;day++){ const o=rules.createOffer({day}); if(o.faction==="Gobelins") offer=o; }
 const base=()=>({id:900,name:"Base",stats:{Force:1,Courage:1,Charisme:12},resistances:{"Résistance physique":0},
   skills:{martial:{Lance:80,Arc:80,"Port d’armure lourde":true},social:{Intimidation:99},magic:{Feu:3}},
   equipment:{slots:{armor:null,weapon_set_1_main:null,weapon_set_1_off:null,weapon_set_2_main:null,ring_1:null},profile:{type:"magic"}},

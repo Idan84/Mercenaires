@@ -267,9 +267,10 @@ ennemis, récompense, expiration…), la lettre du commanditaire s'il y en a une
 
 > « Le peuple est aléatoire, la difficulté dépend de la réputation et on équilibre la difficulté grâce aux nombre d'ennemis qu'on ajoute. » « Chaque ennemi devrait avoir un équivalent en point de combat […] et on monte des escouades grâce à cela. » « Oui, vas-y pour les points et 35 PO par point. »
 
-- **Une seule carte « Faire le ménage »** au tableau ; son camp est tiré au hasard parmi les peuples de camps (`one-shot-missions.json`, `camps[]`, même poids) : **Gobelins** et **Orcs** aujourd'hui ; Hommes-bêtes, voleurs (Humains) et Ogres à venir. Chaque peuple a ses lignes, son chef, ses trois ordres de mission et ses noms (tribus, chefs).
+- **Une seule carte « Faire le ménage »** au tableau ; son camp est tiré au hasard parmi les peuples de camps (`one-shot-missions.json`, `camps[]`, même poids) : **Gobelins**, **Orcs**, **Hommes-bêtes**, **Voleurs** (Humains) et **Ogres** (Idan : « vas-y pour le camp orc et enchaîne avec Hommes-bêtes, voleurs et Ogres »). Chaque peuple a ses lignes, son chef, ses trois ordres de mission et ses noms (tribus, chefs).
 - **Points de combat** : chaque fiche (`enemy-archetypes.json`, `points`) vaut ce qu'elle pèse au combat, sur l'échelle d'un mercenaire généré moyen = 10 (simulateur : nombre d'exemplaires qu'il faut contre 3 mercenaires pour gagner une fois sur deux ; chefs : 10 × le nombre de mercenaires qui le battent une fois sur deux ; null = au-delà de la mesure).
-- **Budget** : une mission a le budget de sa difficulté (`budgets`) ; difficulté 1 : tiré entre **55 et 75 points**. Le camp prend son chef, puis tire des ennemis (lignes selon leurs poids ; « normal » dans 5 % des tirages, sinon novice) **tant que le total se rapproche du budget**. Résultat : 65 points en moyenne ; 5 à 8 gobelins (6,5 en moyenne, comme l'ancien camp à 1D4+4) ou 3 à 6 orcs (4,3).
+- **Budget** : une mission a le budget de sa difficulté (`budgets`) ; difficulté 1 : tiré entre **55 et 75 points**. Le camp prend son chef, puis tire des ennemis (lignes selon leurs poids ; « normal » dans 5 % des tirages, sinon novice) **tant que le total se rapproche du budget**. Résultat : 65 points en moyenne pour chaque peuple ; en plus du chef, 6,5 gobelins en moyenne (comme l'ancien camp à 1D4+4), 4,3 orcs, 3,7 hommes-bêtes, 3,5 voleurs ou 2,7 ogres. Le total s'écarte du budget d'au plus la moitié d'un « normal ».
+- **Lignes des nouveaux peuples** : cinq rôles comme chez les gobelins (un front, un garde à bouclier ou arme lourde, un rapide, deux tireurs), avec les armes que ce peuple porte vraiment à la génération (mesuré sur 3 000 personnages générés). Mêmes armures par rôle et même spécialisation que les lignes gobelines correspondantes. Une ligne de chaque peuple, ses armes et ses poids peuvent changer sans toucher au reste : seuls ses points comptent pour le budget.
 - **Récompense** : 35 PO par point de combat (même moyenne que 300 PO par ennemi pour les gobelins) : un camp plus dangereux paie plus, quel que soit le nombre d'ennemis.
 - **Vérifié en campagne simulée** (avant le budget) : 1D4+2 orcs et leur Chef de bande (67 points) se jouent comme 1D4+4 gobelins et leur Caïd (65 points) : 94 % / 97 % de victoires en escouade complète, 48 % / 50 % avec 300 PO de primes.
 - **Plus tard** : la réputation donnera la difficulté, donc le budget ; un plus gros budget amènera aussi des vétérans et des élites, et plusieurs offres par jour.
@@ -289,4 +290,40 @@ Même méthode que les gobelins (§10), sur les centiles des Orcs générés (Or
 Chefs (noms validés par Idan) : **Chef de bande orc** (P75, 38 points), **Chef de guerre orc** (P90, 72), **Seigneur de guerre orc** (P95, au-delà de la mesure), **Khan des Steppes** (P99, au-delà). Pour comparer : Caïd gobelin 30, Grand Caïd 55, Chef de clan 100.
 
 Ordres orcs (Idan : « au pire, c'est un texte à changer ») : le chef de village (le vieux fort, le forgeron rendu avec une liste de commandes), le chef orc rival (« Un orc ne ment pas. Presque jamais. ») et l'ordre de l'Empereur (« une horde orque »). Texte complet dans `one-shot-missions.json` (`village_orcs`, `orc_rival`, `emperor_orcs`).
+
+### Hommes-bêtes, Voleurs et Ogres (2026-11-01)
+
+Même méthode, sur les centiles des personnages générés de chaque peuple (toutes ses cultures). Base des personnages : Tribus des forêts anciennes, Cités libres, Ogres des montagnes. Points de combat par niveau (novice, normal, vétéran, élite) ; poids de la ligne dans le camp entre parenthèses.
+
+| Hommes-bêtes | Armes | Novice | Normal | Vétéran | Élite |
+|---|---|---|---|---|---|
+| Guerrier (30) | Hache de guerre + Rondache | 7 | 17 | 37 | 49 |
+| Brute (20) | Hache double | 6 | 12 | 24 | 42 |
+| Arbalétrier (20) | Arbalète | 7 | 12 | 19 | 24 |
+| Traqueur (15) | deux Hachettes (+ Discrétion d'un cran) | 5 | 10 | 19 | 30 |
+| Archer (15) | Arc | 6 | 10 | 16 | 25 |
+
+Chefs (Hache de guerre + Rondache) : **Chef de harde** (41), **Grand Chef de harde** (64), **Seigneur des Bêtes**, **Roi-Totem** (au-delà de la mesure).
+
+| Voleurs | Armes | Novice | Normal | Vétéran | Élite |
+|---|---|---|---|---|---|
+| Coupe-jarret (25) | deux Dagues (+ Discrétion d'un cran) | 5 | 10 | 18 | 35 |
+| Spadassin (20) | Estoc + Rondache | 8 | 18 | 48 | 58 |
+| Arbalétrier (20) | Arbalète | 8 | 13 | 20 | 25 |
+| Archer (20) | Arc | 7 | 11 | 20 | 24 |
+| Bandit (15) | Lance | 8 | 16 | 25 | 50 |
+
+Chefs (Sabre + Rondache) : **Chef de brigands** (40), **Capitaine des brigands** (68), **Maître de la Guilde**, **Prince des Voleurs** (au-delà de la mesure).
+
+| Ogres | Armes | Novice | Normal | Vétéran | Élite |
+|---|---|---|---|---|---|
+| Cogneur (30) | Massue | 9 | 17 | 34 | 48 |
+| Écraseur (20) | Marteau de guerre | 9 | 19 | 44 | 54 |
+| Tromblonnier (20) | Tromblon | 7 | 13 | 22 | 28 |
+| Perceur (15) | Pic de guerre | 9 | 19 | 35 | 54 |
+| Canonnier (15) | Canon à main | 8 | 13 | 22 | 29 |
+
+Chefs (Marteau de guerre) : **Patron ogre** (42), **Grand Patron ogre** (58), **Tyran ogre** (79), **Ventre-Roi** (au-delà de la mesure).
+
+Ordres (trois par peuple, textes de JC, à changer si besoin) : chef de village (les totems dans la forêt ; le droit de respirer du moulin ; les ogres qui « repasseront »), rival (corne-maîtresse d'une harde, maître voleur d'une confrérie, chef ogre qui veut récupérer sa marmite) et ordre de l'Empereur. Codes : `village_hommes_betes`, `beastman_rival`, `emperor_hommes_betes`, `village_voleurs`, `thief_rival`, `emperor_voleurs`, `village_ogres`, `ogre_rival`, `emperor_ogres`.
 

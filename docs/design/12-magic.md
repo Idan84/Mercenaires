@@ -349,7 +349,7 @@ L'école du **moral** : elle joue sur le test de Courage du combat (doc 04, Cour
 | Création de double | portée 4 · 18 mana | portée 5 · 17 | portée 8 · 12 |
 | Sommeil (Volonté 50) | 2 activations · résiste 34 % · 23 mana | 3 · 22 % · 21 | 4 · 5 % · 14 |
 
-### École de la Nécromancie (6 sorts, Idan, 2026-10-28)
+### École de la Nécromancie (10 sorts, Idan, 2026-10-28 et 2026-10-31)
 
 Le **Charisme** du mage y compte (Idan : l'Invocation et la Nécromancie en dépendent) : il garde ses invocations et fixe la force du zombie. Même modèle que les autres écoles pour le mana, la réussite et les critiques. Écoles opposées : Vie et Invocation. Données : `spells.json` (colonnes `entretien_mana` et `creature`), `summon-archetypes.json` (le spectre), constantes `magic.summon.*`.
 
@@ -361,6 +361,10 @@ Le **Charisme** du mage y compte (Idan : l'Invocation et la Nécromancie en dép
 | Flèche de mort | principale | **1D6** de dégâts **nécrotiques**, **comme une flèche** | 6 + M/25, au plus 12 | 10 |
 | Nécrose | principale | **2D8** de dégâts **nécrotiques**, sans jet de toucher | 1 (contact) | 20 |
 | Flétrissement | principale | la cible ne peut plus être **soignée** ni récupérer de PV, pendant **3 + M/100 tours (3 à 4)** | 6 + M/25, au plus 12 | 15 |
+| Malédiction | principale | **1D4** de dégâts **nécrotiques** au début de chacune de ses **3 prochaines activations** | 6 + M/25, au plus 12 | 20 |
+| Armée d'os | principale | **1D4 squelettes**, **+1 par tranche de 50 de Maîtrise**, autour d'une case libre | 1 | 30, puis **5 par tour** |
+| Siphon d'âme | principale | la cible perd jusqu'à **3 × 1D6** × (Puissance, Maîtrise) **mana** ; le nécromancien **seul** le récupère | 6 + M/25, au plus 12 | 10 |
+| Pacte de sang | rapide | sur soi : **3 × 1D6** × (Puissance, Maîtrise) **mana** au plus, contre **2 PV par point** | soi | 1 |
 
 - **Invocations** (zombie, spectre ; l'Invocation suivra les mêmes règles, Idan) : le **joueur** les joue, avec leur propre activation dans l'ordre du tour, dès le tour suivant ; en combat automatique, l'IA. Au **début de chaque tour**, le mage les garde : **test de Charisme** = la formule de réussite d'un sort, le Charisme à la place de l'Intelligence, difficulté **30**, sans l'armure ; raté, l'invocation **disparaît** (le zombie tombe en poussière). Puis l'**entretien** : 5 × (1 − Maîtrise / 300) mana, au moins 1 ; sans assez de mana, elle disparaît aussi. Elles disparaissent aussitôt quand le mage est hors combat ou quitte la carte, et à la fin du combat : ni XP ni bilan. Comme tout le monde, une invocation arrive **camouflée** (doc 04) ; le repérage du début de tour fait le reste. Une meute (Invocation) comptera pour une seule invocation : un test, un entretien.
 - **Résurrection** : sur le corps d'un combattant mort resté sur la carte, sur lequel personne ne se tient ; un corps ne se relève qu'une fois, et une invocation ne laisse pas de corps. **Un allié relevé ne survit pas au combat** : son jet de mort de fin de mission est forcément raté (Idan : « pas toujours cool d'avoir un collègue nécromancien ! »). Le zombie est un **mort-vivant** : la Restitution le blesse, les dégâts nécrotiques ne le touchent pas, et il ne fait **aucun test de Courage**.
@@ -368,6 +372,11 @@ Le **Charisme** du mage y compte (Idan : l'Invocation et la Nécromancie en dép
 - **Dégâts nécrotiques** (Flèche de mort, Nécrose) : ils **traversent l'armure et les résistances**, sans la Volonté ; **sans effet sur les morts-vivants** (on ne peut pas les viser ; une flèche égarée ne leur fait rien). La Flèche de mort est un projectile : le Champ de protection peut la dévier.
 - **Drain de vie** : seulement les coups d'arme au corps à corps du mage, pas les tirs ni les sorts ; les PV retirés comptent jusqu'à zéro (pas la profondeur sous zéro). Sur soi, l'activation en cours compte comme la première.
 - **Flétrissement** : aucun soin (sorts de soin, Régénération, Drain de vie, potion de soins) pendant les 3 ou 4 prochaines activations de la cible.
+- **Les quatre sorts du 2026-10-31** (validés par Idan, chiffrés par JC3) amènent l'école à 10 sorts, sur le même modèle.
+- **Malédiction** : l'Embrasement en nécrotique, sans jet de toucher : chaque coup traverse l'armure et les résistances ; sans effet sur les morts-vivants (on ne peut pas les viser). Ne se cumule pas : la relancer remplace la précédente.
+- **Armée d'os** : le **squelette** (`summon-archetypes.json`, Idan : « faibles, lents, nombreux, sans peur ») : **40 PV**, **3 cases**, **Lame rouillée 1D6** tranchante (≈ 25), mort-vivant, sans peur. Le groupe compte pour une seule invocation : un test de Charisme et un entretien, comme une meute.
+- **Siphon d'âme** (Idan : « au profit du lanceur seulement ») : seulement si la cible a encore du mana ; le nécromancien récupère ce qui est pris sans dépasser sa réserve, le reste est perdu.
+- **Pacte de sang** : seulement s'il lui manque du mana ; il ne prend que ce qui manque et **garde toujours 1 PV** (comme le Lien de vie). Coût : 1 mana, le minimum de tout sort.
 
 | | Débutant | Recrue moyenne | Expert |
 |---|---|---|---|
@@ -378,6 +387,11 @@ Le **Charisme** du mage y compte (Idan : l'Invocation et la Nécromancie en dép
 | Flèche de mort | 30 · portée 7 · 9 mana | 40 · 8 · 9 | 89 · 11 · 6 |
 | Nécrose | 78 · 18 mana | 102 · 17 | 229 · 12 |
 | Flétrissement | 3 tours · portée 7 · 14 mana | 3 tours · 8 · 13 | 4 tours · 11 · 9 |
+
+| Malédiction, par activation | 22 · portée 7 · 18 mana | 28 · 8 · 17 | 63 · 11 · 12 |
+| Armée d'os | 1D4 squelettes · 27 mana · entretien 5 | 1D4 + 1 · 25 · 5 | 1D4 + 2 · 17 · 3 |
+| Siphon d'âme | 9 mana pris · 9 mana | 12 · 9 | 27 · 6 |
+| Pacte de sang, au plus | +9 mana pour 18 PV | +12 pour 24 PV | +27 pour 54 PV |
 
 (Charisme supposé égal à l'Intelligence : 35 / 53 / 73.)
 
@@ -420,9 +434,8 @@ Le **Charisme** du mage y compte (Idan : l'Invocation et la Nécromancie en dép
 
 Idan a validé **90 sorts mono-école** (10 par école) et **49 sorts bi-école**. JC3 les chiffre et les intègre **une école par PR** ; chaque école intégrée a sa section plus haut, avec ses chiffres. Restent à intégrer :
 
-**Mono-école (8)**
+**Mono-école (4)**
 
-- **Nécromancie** : **Malédiction** (dégâts nécrotiques au début de chaque activation pendant 3 tours, armure et résistances ignorées ; sans effet sur les morts-vivants) ; **Armée d'os** (1D4 squelettes, plus un par 50 de maîtrise : faibles, lents, nombreux, sans peur) ; **Siphon d'âme** (vole le mana de la cible **au profit du lanceur seulement**) ; **Pacte de sang** (le lanceur sacrifie des PV pour regagner du mana).
 - **Invocation** : **Nuée d'insectes** (2 tours : Perception et Précision en baisse dans la zone) ; **Invocation de sangliers** (1D4 sangliers rapides qui chargent fort mais tiennent mal) ; **Invocation d'araignées géantes** (1D2 araignées : morsure empoisonnée, toile qui immobilise 1 tour) ; **Bannissement** (renvoie une invocation ennemie).
 
 Refusés (à ne pas reproposer tels quels) : Bouclier de vie, Retour à la vie, Météore, Verglas, Forme bestiale, Corps d'acier, Désarmement, Lévitation, Hallucination, Explosion de cadavre, Esprit gardien, Marque de mort.

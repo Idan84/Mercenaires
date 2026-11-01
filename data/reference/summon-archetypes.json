@@ -267,7 +267,50 @@
         "puissance_perforante": 60
       },
       "description": "Très lent, très discret, très gros dégâts (Idan, 2026-10-28) : 2 cases, 200 PV, Mâchoires ≈ 126, Discrétion 90, Résistance physique 25."
+    },
+    {
+      "nom": "Squelette",
+      "pluriel": "Squelettes",
+      "code": "skeleton",
+      "ecole": "Nécromancie",
+      "mort_vivant": true,
+      "immunite_physique": false,
+      "caracteristiques": {
+        "Force": 35,
+        "Constitution": 40,
+        "Dextérité": 50,
+        "Vitesse": 25,
+        "Endurance": 50,
+        "Esquive": 30,
+        "Chance": 43,
+        "Charisme": 20,
+        "Courage": 24,
+        "Intelligence": 10,
+        "Volonté": 30,
+        "Perception": 35,
+        "Puissance magique": 20,
+        "Réserve de mana": 20
+      },
+      "resistances": {
+        "Résistance physique": 1,
+        "Résistance au feu": 1,
+        "Résistance au froid": 2,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 10
+      },
+      "pv": 40,
+      "competences_martiales": {
+        "Armes naturelles": 35,
+        "Lame rouillée": 35,
+        "Discrétion": 20
+      },
+      "attaque": {
+        "nom": "Lame rouillée",
+        "degats_pv_base": "1D6",
+        "puissance_tranchante": 25
+      },
+      "description": "Armée d'os (Idan, 2026-10-31 : « faibles, lents, nombreux, sans peur » ; chiffres de JC3) : 3 cases, 40 PV, Lame rouillée ≈ 25 ; mort-vivant, sans peur."
     }
   ],
-  "row_count": 5
+  "row_count": 6
 }

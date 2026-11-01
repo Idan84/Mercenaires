@@ -33,7 +33,7 @@ function mage({pm,vie,level=1,int,chance=54,mana=53,charisma=50,items=[],slots={
       .concat(["shock","lightning_bolt","shock_weapon","chain_lightning","thunder","celerity","spark","electric_arc","paralysis","storm"].map(code=>({code,school:"Foudre",mastery:level})))
       .concat(["attraction","projection","telekinetic_move","clash","force_field","stone_throw","weapon_throw","shockwave","leap","crush"].map(code=>({code,school:"Télékinésie",mastery:level})))
       .concat(["fear","illusory_support","mass_courage","hidden_advance","psychic_shock","frenzy","despair","mind_fog","decoy","sleep"].map(code=>({code,school:"Illusion",mastery:level})))
-      .concat(["raise_dead","summon_specter","life_drain","death_arrow","necrosis","wither"].map(code=>({code,school:"Nécromancie",mastery:level})))
+      .concat(["raise_dead","summon_specter","life_drain","death_arrow","necrosis","wither","curse","bone_army","soul_siphon","blood_pact"].map(code=>({code,school:"Nécromancie",mastery:level})))
       .concat(["summon_raven","quagmire","transposition","summon_wolves","summon_bears","summon_crocodiles"].map(code=>({code,school:"Invocation",mastery:level}))),
     items,equipment:{slots}
   };
@@ -907,6 +907,41 @@ assert.deepEqual([novice,recruit,master].map(x=>average(x,"necrosis",9)),[78,102
 // Moteur : un mort-vivant ne teste jamais son Courage.
 const ghoul={character:{name:"Goule",undead:true,stats:{Courage:10,Volonté:10},items:[],equipment:{slots:{}}},activeSet:1,team:"enemy",alive:true};
 assert.equal(combat.resolveFear(ghoul,seer,90),null);
+// Les quatre sorts du 2026-10-31 (validés par Idan, chiffrés par JC3).
+// Malédiction : 1D4 nécrotiques au début de ses 3 prochaines activations ; armure et résistances traversées ; pas les morts-vivants.
+assert.deepEqual([magic.range(novice,"curse"),magic.duration(master,"curse"),magic.manaCost(novice,"curse")],[7,3,18]);
+assert.match(magic.canCast(recruit,{...victim,character:{...victim.character,undead:true}},"curse").reason,/ne fonctionne que sur les vivants/);
+assert.deepEqual([novice,recruit,master].map(x=>average(x,"curse",2.5)),[22,28,63],"par activation");
+queue=[0,0.99];
+out=magic.cast(novice,victim,"curse");
+assert.deepEqual([out.success,out.effect.turns,out.effect.element,out.effect.cumulable],[true,3,null,false]);
+queue=[0.5];
+assert.deepEqual(magic.tick(out.effect),{amount:Math.ceil(10*3*out.effect.factor-1e-9),dice:3,turnsLeft:2});
+// Armée d'os : 1D4 squelettes + 1 par 50 de Maîtrise, comme une meute ; entretien 5 × (1 − M/300).
+queue=[0.5];
+assert.deepEqual(magic.summonCount(novice,"bone_army"),{count:3,rolled:3,dice:"1D4",bonus:0});
+queue=[0.99];
+assert.deepEqual(magic.summonCount(master,"bone_army"),{count:6,rolled:4,dice:"1D4",bonus:2});
+assert.deepEqual([magic.upkeepCost(novice,"bone_army"),magic.upkeepCost(master,"bone_army"),magic.manaCost(novice,"bone_army")],[5,3,27]);
+// Siphon d'âme : 3 × 1D6 de mana pris à la cible, que le lanceur récupère sans dépasser sa réserve.
+const drained=mana=>({...victim,character:{...victim.character,mana}});
+assert.match(magic.canCast(recruit,drained(0),"soul_siphon").reason,/plus de mana/);
+assert.deepEqual(magic.soulSiphon({...recruit,character:{...recruit.character,mana:20}},drained(5),11),{taken:5,gained:5});
+assert.deepEqual(magic.soulSiphon({...recruit,character:{...recruit.character,mana:50}},drained(30),11),{taken:11,gained:3},"réserve pleine : le reste est perdu");
+queue=[0,0.99,0.5];
+out=magic.cast(novice,drained(30),"soul_siphon");
+assert.deepEqual([out.amount,out.siphon.taken],[Math.ceil(3*4*magic.effectFactor(novice,"soul_siphon")-1e-9),out.amount]);
+// Pacte de sang : 3 × 1D6 de mana au plus, 2 PV le point ; il ne prend que ce qui manque et garde 1 PV.
+const bleeding=(mana,hp)=>({...novice,hp,character:{...novice.character,mana}});
+assert.match(magic.canCast(bleeding(53,100),null,"blood_pact").reason,/réserve de mana est pleine/);
+assert.match(magic.canCast(bleeding(10,1),null,"blood_pact").reason,/plus de PV/);
+assert.deepEqual(magic.bloodPact(bleeding(40,100),11,2),{mana:11,hp:22,factor:2});
+assert.deepEqual(magic.bloodPact(bleeding(50,100),11,2),{mana:3,hp:6,factor:2},"seulement ce qui manque");
+assert.deepEqual(magic.bloodPact(bleeding(10,10),11,2),{mana:4,hp:8,factor:2},"il garde 1 PV");
+assert.equal(magic.manaCost(novice,"blood_pact"),1);
+queue=[0,0.99,0.5];
+out=magic.cast(bleeding(40,100),null,"blood_pact");
+assert.deepEqual([out.success,out.pact.mana,out.pact.hp],[true,out.amount,2*out.amount]);
 
 // École de l'Invocation (Idan, 2026-10-28) : les mêmes règles d'invocation que la Nécromancie.
 // Mana et réussite : Corbeau 9 / 9 / 6 (entretien 2), Loups 23 / 21 / 14 (entretien 5), Ours et Crocodiles 27 / 25 / 17

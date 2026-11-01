@@ -85,14 +85,14 @@ assert.deepEqual(magic.knownSpells(u).map(s=>s.code),["quick_heal","deep_heal","
   "shock","lightning_bolt","shock_weapon","chain_lightning","thunder","celerity","spark","electric_arc","paralysis","storm",
   "attraction","projection","telekinetic_move","clash","force_field","stone_throw","weapon_throw","shockwave","leap","crush",
   "fear","illusory_support","mass_courage","hidden_advance","psychic_shock","frenzy","despair","mind_fog","decoy","sleep",
-  "raise_dead","summon_specter","life_drain","death_arrow","necrosis","wither",
+  "raise_dead","summon_specter","life_drain","death_arrow","necrosis","wither","curse","bone_army","soul_siphon","blood_pact",
   "summon_raven","quagmire","transposition","summon_wolves","summon_bears","summon_crocodiles"]);
-assert.ok(m.players.every(p=>p.spells.length===82&&!(p.character.spells||[]).length));
+assert.ok(m.players.every(p=>p.spells.length===86&&!(p.character.spells||[]).length));
 assert.equal(api.missionActionAvailability().testSpells,false,"une seule fois par combat");
 assert.ok(logged(/connaît tous les sorts \(Vie, Feu, Eau, Transmutation, Foudre, Télékinésie, Illusion, Nécromancie, Invocation, niveau 1\)/));
 const bar=api.renderMissionSpellBar(u);
 assert.match(bar,/Mana 53\/53/);
-assert.equal((bar.match(/data-spell=/g)||[]).length,82);
+assert.equal((bar.match(/data-spell=/g)||[]).length,86);
 assert.match(bar,/Soin rapide<small>rapide · \d+ mana · \d+ %<\/small>/);
 // Écran de combat (2026-10-29) : au-delà de 8 sorts, un onglet par école ; une seule école affichée à la fois.
 assert.equal((bar.match(/data-spell-school=/g)||[]).length,9);
@@ -1240,6 +1240,59 @@ queue.push(0);
 api.maintainMissionSummons();
 assert.equal(specter2.alive,false);
 assert.ok(logged(/n’a plus assez de mana pour garder Spectre 2 \(4 nécessaires\) : il disparaît/));
+// Les quatre sorts du 2026-10-31 (validés par Idan, chiffrés par JC3).
+// Malédiction : des dégâts nécrotiques au début de ses 3 prochaines activations, puis elle se dissipe.
+reset();
+distant.withered=null;
+api.setMissionMode("spell:curse");
+queue.push(0,0.99);
+api.handleMissionHexClick(distant.q,distant.r);
+assert.equal(distant.cursed.turns,3);
+assert.ok(logged(/lance Malédiction sur .* est maudite? et souffrira au début de ses 3 prochaines activations/));
+const cursedHp=distant.hp;
+queue.push(0.5);
+api.resetMissionActivation(distant);
+assert.ok(logged(/Malédiction : .* souffre, −\d+ PV nécrotiques \(encore 2 tours\)/));
+assert.ok(distant.hp<cursedHp||distant.hp===distant.pvMax,"elle blesse (sauf régénération pleine)");
+api.resetMissionActivation(distant);api.resetMissionActivation(distant);
+assert.equal(distant.cursed,null);
+assert.ok(logged(/la malédiction se dissipe/));
+distant.hp=distant.pvMax;
+// Siphon d'âme : la cible perd du mana, le lanceur le récupère.
+reset();
+distant.character.mana=30;u.character.mana=20;
+api.setMissionMode("spell:soul_siphon");
+queue.push(0,0.99,0.5);
+api.handleMissionHexClick(distant.q,distant.r);
+const stolen=30-distant.character.mana;
+assert.ok(stolen>0);
+assert.equal(u.character.mana,20+stolen-magic.manaCost(u,"soul_siphon"),"tout ce qui est pris lui revient");
+assert.ok(logged(/lance Siphon d'âme sur .* perd \d+ mana, .* en récupère \+\d+/));
+// Pacte de sang : action rapide, 2 PV par point de mana regagné.
+reset();
+u.character.mana=10;u.hp=u.pvMax;
+api.setMissionMode("spell:blood_pact");
+queue.push(0,0.99,0.5);
+api.handleMissionHexClick(u.q,u.r);
+const pactMana=u.character.mana-(10-magic.manaCost(u,"blood_pact"));
+assert.ok(pactMana>0);
+assert.equal(u.hp,u.pvMax-2*pactMana);
+assert.equal(u.quickAvailable,false,"action rapide");
+assert.ok(logged(/lance Pacte de sang .* sacrifie \d+ PV et regagne \+\d+ mana/));
+u.hp=u.pvMax;
+// Armée d'os : 1D4 + 1 squelettes (Maîtrise 60,5), un seul groupe, morts-vivants sans peur ; entretien 4.
+reset();
+api.setMissionMode("spell:bone_army");
+queue.push(0,0.5);
+api.handleMissionHexClick(1,4);
+const skeletons=m.players.filter(x=>x.character.archetype==="skeleton"&&x.alive);
+assert.equal(skeletons.length,4,"1D4 = 3, + 1");
+assert.equal(new Set(skeletons.map(x=>x.summon.group)).size,1,"un seul groupe");
+assert.deepEqual([skeletons[0].pvMax,skeletons[0].summon.upkeep,skeletons[0].character.undead],[40,4,true]);
+assert.equal(engine.movementBase(skeletons[0]),3,"lents : 3 cases");
+assert.equal(engine.resolveCourage(brute,skeletons[0],{ok:true,wound:true,mode:"melee"},{units:[]}),null,"sans peur");
+assert.ok(logged(/lance Armée d'os .* : 4 squelettes apparaissent \(1D4 : 3, \+1 pour la Maîtrise\) \(40 PV chacun\) ; entretien 4 mana par tour pour le groupe/));
+m.players=m.players.filter(x=>x.character.archetype!=="skeleton");m.playerOrder=m.playerOrder.filter(x=>x.character.archetype!=="skeleton");
 // Résurrection : un ennemi mort, au contact, se relève en zombie de notre camp, à 55 %.
 reset();
 wet.alive=false;wet.hp=-5;

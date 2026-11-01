@@ -181,5 +181,41 @@
     return {avatars,byId,choose,assign};
   }
 
-  return {createAvatarRules,avatarTags,scoreAvatar,weaponFamilies,avatarLook,sameCulture,sameAscendance,norm,SCORE,SHARED_ASCENDANCE,VISIBLE,MISMATCH_SHARE,NOISE_MAX};
+  // Portraits proposés au capitaine (Idan, 2026-11-01 : « un minimum de 3 choix : culture × ascendance × genre »). Ceux de
+  // son peuple, de sa culture (ou sans culture) et de son ascendance, comme pour un mercenaire. Avec une ascendance, s'il y
+  // en a moins de 3 pour ce genre, on complète avec les portraits qu'aurait un capitaine sans ascendance (même culture, même
+  // genre), en attendant qu'ils soient produits. Un portrait sans genre vaut pour les deux.
+  const CAPTAIN_MINIMUM=3;
+  function sexOf(value){
+    const s=norm(value);
+    if(["femme","feminin","female","f"].includes(s)) return "femme";
+    if(["homme","masculin","male","h","m"].includes(s)) return "homme";
+    return null;
+  }
+  function captainFits(avatar,{people,culture,ascendance}){
+    if(!avatar?.id||!avatar.full||!avatar.portrait||norm(avatar.people)!==norm(people)) return false;
+    const cultures=list(avatar.tags?.culture);
+    if(cultures.length&&!cultures.includes(norm(culture))) return false;
+    return sameAscendance(avatar,{ascendance:ascendance?[norm(ascendance)]:[]});
+  }
+  function captainPortraits(catalog,{people,culture,ascendance=null,sex=null}={},{minimum=CAPTAIN_MINIMUM}={}){
+    const rows=Array.isArray(catalog)?catalog:[],wanted=sexOf(sex);
+    const fitsSex=a=>!wanted||!sexOf(a.sex)||sexOf(a.sex)===wanted;
+    const own=rows.filter(a=>captainFits(a,{people,culture,ascendance})&&fitsSex(a));
+    if(!ascendance||own.length>=minimum) return {portraits:own,own:own.length,added:0};
+    const ids=new Set(own.map(a=>a.id));
+    const extra=rows.filter(a=>!ids.has(a.id)&&captainFits(a,{people,culture,ascendance:null})&&fitsSex(a));
+    return {portraits:[...own,...extra],own:own.length,added:extra.length};
+  }
+  // Contrôle du Design Lab : pour une culture, chaque ascendance possible (null = sans ascendance) × genre, les portraits
+  // de cette ascendance (sans le complément) et ce qui manque pour en avoir 3.
+  function captainCoverage(catalog,{people,culture,ascendances=[null]}={},{minimum=CAPTAIN_MINIMUM}={}){
+    return ascendances.flatMap(ascendance=>["homme","femme"].map(sex=>{
+      const count=captainPortraits(catalog,{people,culture,ascendance,sex},{minimum:0}).own;
+      return {ascendance:ascendance||null,sex,count,missing:Math.max(0,minimum-count)};
+    }));
+  }
+
+  return {createAvatarRules,avatarTags,scoreAvatar,weaponFamilies,avatarLook,sameCulture,sameAscendance,norm,captainPortraits,captainCoverage,
+    CAPTAIN_MINIMUM,SCORE,SHARED_ASCENDANCE,VISIBLE,MISMATCH_SHARE,NOISE_MAX};
 });

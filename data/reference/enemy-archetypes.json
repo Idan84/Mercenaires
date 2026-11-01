@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "enemy-archetypes",
-  "description": "Archétypes d’ennemis fixes (Idan, 2026-10-24 ; doc 17 §10 et §14). Gobelins, Orcs, Hommes-bêtes, Voleurs (Humains) et Ogres (2026-11-01) : cinq lignes sur quatre niveaux et quatre niveaux de chef chacun. Valeurs figées à partir des centiles des personnages générés du même peuple (novice P20, normal P50, vétéran P75, élite P90 ; chefs P75 à P99), avec la spécialisation de chaque ligne (trois caractéristiques un cran au-dessus, deux un cran au-dessous). PV = 3 × (Constitution + 0,2 × Endurance + 0,1 × Volonté). Points de combat (Idan, 2026-11-01) : un mercenaire généré moyen vaut 10 points (simulateur, 150 combats par effectif ; chefs : 10 × le nombre de mercenaires qui le battent une fois sur deux) ; null = au-delà de la mesure. Ils composent les camps de « Faire le ménage » (one-shot-missions.json, budgets).",
+  "description": "Archétypes d’ennemis fixes (Idan, 2026-10-24 ; doc 17 §10 et §14). Gobelins, Orcs, Hommes-bêtes, Voleurs (Humains) et Ogres (2026-11-01) : cinq lignes sur quatre niveaux et quatre niveaux de chef chacun. Valeurs figées à partir des centiles des personnages générés du même peuple (novice P20, normal P50, vétéran P75, élite P90 ; chefs P75 à P99), avec la spécialisation de chaque ligne (trois caractéristiques un cran au-dessus, deux un cran au-dessous). PV = 3 × (Constitution + 0,2 × Endurance + 0,1 × Volonté). Points de combat (Idan, 2026-11-01) : un mercenaire généré moyen vaut 10 points (simulateur, 150 combats par effectif ; chefs : 10 × le nombre de mercenaires qui le battent une fois sur deux ; les plus forts mesurés jusqu’à 27 mercenaires, 200 combats par effectif). Niveau de mission minimum et butin par créature (Idan, 2026-11-01) : 1 et tout l’équipement porté, comme avant, tant qu’ils ne sont pas réglés. Ils composent les camps de « Faire le ménage » (one-shot-missions.json, budgets).",
   "columns": [
     {
       "source": "Nom",
@@ -78,6 +78,14 @@
     {
       "source": "Points de combat (mercenaire moyen = 10)",
       "key": "points"
+    },
+    {
+      "source": "Niveau de mission minimum (1 à 15 : 1 à 5 étoiles de bronze, puis d’argent, puis d’or)",
+      "key": "niveau_mission_min"
+    },
+    {
+      "source": "Butin : equipement = chance (%) de récupérer chaque objet porté ; objets = tirages en plus [{type, nom, tier, chance}]",
+      "key": "butin"
     }
   ],
   "row_count": 120,
@@ -132,7 +140,12 @@
       "armure": "Vêtements",
       "tier": 1,
       "qualite": "Usée",
-      "points": 6
+      "points": 6,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Lancier gobelin",
@@ -186,7 +199,12 @@
       "armure": "Gambison",
       "tier": 2,
       "qualite": "Correcte",
-      "points": 12
+      "points": 12,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Lancier gobelin vétéran",
@@ -240,7 +258,12 @@
       "armure": "Armure de cuir",
       "tier": 3,
       "qualite": "Grand Luxe",
-      "points": 23
+      "points": 23,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Lancier gobelin d’élite",
@@ -295,7 +318,12 @@
       "armure": "Cuir renforcé",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "points": 43
+      "points": 43,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Frondeur gobelin novice",
@@ -347,7 +375,12 @@
       "armure": "Vêtements",
       "tier": 1,
       "qualite": "Usée",
-      "points": 5
+      "points": 5,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Frondeur gobelin",
@@ -399,7 +432,12 @@
       "armure": "Vêtements",
       "tier": 2,
       "qualite": "Correcte",
-      "points": 10
+      "points": 10,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Frondeur gobelin vétéran",
@@ -453,7 +491,12 @@
       "armure": "Gambison",
       "tier": 3,
       "qualite": "Grand Luxe",
-      "points": 16
+      "points": 16,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Frondeur gobelin d’élite",
@@ -507,7 +550,12 @@
       "armure": "Armure de cuir",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "points": 22
+      "points": 22,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Archer gobelin novice",
@@ -559,7 +607,12 @@
       "armure": "Vêtements",
       "tier": 1,
       "qualite": "Usée",
-      "points": 6
+      "points": 6,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Archer gobelin",
@@ -613,7 +666,12 @@
       "armure": "Gambison",
       "tier": 2,
       "qualite": "Correcte",
-      "points": 11
+      "points": 11,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Archer gobelin vétéran",
@@ -667,7 +725,12 @@
       "armure": "Armure de cuir",
       "tier": 3,
       "qualite": "Grand Luxe",
-      "points": 16
+      "points": 16,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Archer gobelin d’élite",
@@ -721,7 +784,12 @@
       "armure": "Armure de cuir",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "points": 23
+      "points": 23,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Guerrier gobelin novice",
@@ -778,7 +846,12 @@
       "armure": "Gambison",
       "tier": 1,
       "qualite": "Usée",
-      "points": 5
+      "points": 5,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Guerrier gobelin",
@@ -835,7 +908,12 @@
       "armure": "Armure de cuir",
       "tier": 2,
       "qualite": "Correcte",
-      "points": 11
+      "points": 11,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Guerrier gobelin vétéran",
@@ -893,7 +971,12 @@
       "armure": "Cuir renforcé",
       "tier": 3,
       "qualite": "Grand Luxe",
-      "points": 24
+      "points": 24,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Guerrier gobelin d’élite",
@@ -951,7 +1034,12 @@
       "armure": "Brigandine",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "points": 47
+      "points": 47,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Assassin gobelin novice",
@@ -1004,7 +1092,12 @@
       "armure": "Vêtements",
       "tier": 1,
       "qualite": "Usée",
-      "points": 4
+      "points": 4,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Assassin gobelin",
@@ -1057,7 +1150,12 @@
       "armure": "Vêtements",
       "tier": 2,
       "qualite": "Correcte",
-      "points": 7
+      "points": 7,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Assassin gobelin vétéran",
@@ -1110,7 +1208,12 @@
       "armure": "Vêtements",
       "tier": 3,
       "qualite": "Grand Luxe",
-      "points": 15
+      "points": 15,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Assassin gobelin d’élite",
@@ -1163,7 +1266,12 @@
       "armure": "Vêtements",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "points": 23
+      "points": 23,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Caïd gobelin",
@@ -1221,7 +1329,12 @@
       "armure": "Cuir renforcé",
       "tier": 3,
       "qualite": "Grand Luxe",
-      "points": 30
+      "points": 30,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Grand Caïd gobelin",
@@ -1279,7 +1392,12 @@
       "armure": "Cotte de mailles",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "points": 55
+      "points": 55,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Chef de clan gobelin",
@@ -1337,7 +1455,12 @@
       "armure": "Brigandine",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "points": 100
+      "points": 100,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Roi des Cavernes",
@@ -1396,7 +1519,12 @@
       "armure": "Armure d'écailles",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "points": null
+      "points": 167,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Lancier orc novice",
@@ -1448,7 +1576,12 @@
       "armure": "Vêtements",
       "tier": 1,
       "qualite": "Usée",
-      "points": 7
+      "points": 7,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Lancier orc",
@@ -1502,7 +1635,12 @@
       "armure": "Gambison",
       "tier": 2,
       "qualite": "Correcte",
-      "points": 15
+      "points": 15,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Lancier orc vétéran",
@@ -1556,7 +1694,12 @@
       "armure": "Armure de cuir",
       "tier": 3,
       "qualite": "Grand Luxe",
-      "points": 26
+      "points": 26,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Lancier orc d’élite",
@@ -1611,7 +1754,12 @@
       "armure": "Cuir renforcé",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "points": 43
+      "points": 43,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Frondeur orc novice",
@@ -1663,7 +1811,12 @@
       "armure": "Vêtements",
       "tier": 1,
       "qualite": "Usée",
-      "points": 6
+      "points": 6,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Frondeur orc",
@@ -1715,7 +1868,12 @@
       "armure": "Vêtements",
       "tier": 2,
       "qualite": "Correcte",
-      "points": 9
+      "points": 9,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Frondeur orc vétéran",
@@ -1769,7 +1927,12 @@
       "armure": "Gambison",
       "tier": 3,
       "qualite": "Grand Luxe",
-      "points": 15
+      "points": 15,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Frondeur orc d’élite",
@@ -1823,7 +1986,12 @@
       "armure": "Armure de cuir",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "points": 22
+      "points": 22,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Archer orc novice",
@@ -1875,7 +2043,12 @@
       "armure": "Vêtements",
       "tier": 1,
       "qualite": "Usée",
-      "points": 6
+      "points": 6,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Archer orc",
@@ -1929,7 +2102,12 @@
       "armure": "Gambison",
       "tier": 2,
       "qualite": "Correcte",
-      "points": 11
+      "points": 11,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Archer orc vétéran",
@@ -1983,7 +2161,12 @@
       "armure": "Armure de cuir",
       "tier": 3,
       "qualite": "Grand Luxe",
-      "points": 17
+      "points": 17,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Archer orc d’élite",
@@ -2037,7 +2220,12 @@
       "armure": "Armure de cuir",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "points": 23
+      "points": 23,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Guerrier orc novice",
@@ -2094,7 +2282,12 @@
       "armure": "Gambison",
       "tier": 1,
       "qualite": "Usée",
-      "points": 6
+      "points": 6,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Guerrier orc",
@@ -2151,7 +2344,12 @@
       "armure": "Armure de cuir",
       "tier": 2,
       "qualite": "Correcte",
-      "points": 15
+      "points": 15,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Guerrier orc vétéran",
@@ -2209,7 +2407,12 @@
       "armure": "Cuir renforcé",
       "tier": 3,
       "qualite": "Grand Luxe",
-      "points": 32
+      "points": 32,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Guerrier orc d’élite",
@@ -2267,7 +2470,12 @@
       "armure": "Brigandine",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "points": 51
+      "points": 51,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Assassin orc novice",
@@ -2320,7 +2528,12 @@
       "armure": "Vêtements",
       "tier": 1,
       "qualite": "Usée",
-      "points": 5
+      "points": 5,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Assassin orc",
@@ -2373,7 +2586,12 @@
       "armure": "Vêtements",
       "tier": 2,
       "qualite": "Correcte",
-      "points": 10
+      "points": 10,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Assassin orc vétéran",
@@ -2426,7 +2644,12 @@
       "armure": "Vêtements",
       "tier": 3,
       "qualite": "Grand Luxe",
-      "points": 18
+      "points": 18,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Assassin orc d’élite",
@@ -2479,7 +2702,12 @@
       "armure": "Vêtements",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "points": 33
+      "points": 33,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Chef de bande orc",
@@ -2537,7 +2765,12 @@
       "armure": "Cuir renforcé",
       "tier": 3,
       "qualite": "Grand Luxe",
-      "points": 38
+      "points": 38,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Chef de guerre orc",
@@ -2595,7 +2828,12 @@
       "armure": "Cotte de mailles",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "points": 72
+      "points": 72,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Seigneur de guerre orc",
@@ -2653,7 +2891,12 @@
       "armure": "Brigandine",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "points": null
+      "points": 111,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Khan des Steppes",
@@ -2712,7 +2955,12 @@
       "armure": "Armure d'écailles",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "points": null
+      "points": 221,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Brute homme-bête novice",
@@ -2764,7 +3012,12 @@
       "armure": "Vêtements",
       "tier": 1,
       "qualite": "Usée",
-      "points": 6
+      "points": 6,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Brute homme-bête",
@@ -2818,7 +3071,12 @@
       "armure": "Gambison",
       "tier": 2,
       "qualite": "Correcte",
-      "points": 12
+      "points": 12,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Brute homme-bête vétéran",
@@ -2872,7 +3130,12 @@
       "armure": "Armure de cuir",
       "tier": 3,
       "qualite": "Grand Luxe",
-      "points": 24
+      "points": 24,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Brute homme-bête d’élite",
@@ -2927,7 +3190,12 @@
       "armure": "Cuir renforcé",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "points": 42
+      "points": 42,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Guerrier homme-bête novice",
@@ -2984,7 +3252,12 @@
       "armure": "Gambison",
       "tier": 1,
       "qualite": "Usée",
-      "points": 7
+      "points": 7,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Guerrier homme-bête",
@@ -3041,7 +3314,12 @@
       "armure": "Armure de cuir",
       "tier": 2,
       "qualite": "Correcte",
-      "points": 17
+      "points": 17,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Guerrier homme-bête vétéran",
@@ -3099,7 +3377,12 @@
       "armure": "Cuir renforcé",
       "tier": 3,
       "qualite": "Grand Luxe",
-      "points": 37
+      "points": 37,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Guerrier homme-bête d’élite",
@@ -3157,7 +3440,12 @@
       "armure": "Brigandine",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "points": 49
+      "points": 49,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Traqueur homme-bête novice",
@@ -3210,7 +3498,12 @@
       "armure": "Vêtements",
       "tier": 1,
       "qualite": "Usée",
-      "points": 5
+      "points": 5,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Traqueur homme-bête",
@@ -3263,7 +3556,12 @@
       "armure": "Vêtements",
       "tier": 2,
       "qualite": "Correcte",
-      "points": 10
+      "points": 10,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Traqueur homme-bête vétéran",
@@ -3316,7 +3614,12 @@
       "armure": "Vêtements",
       "tier": 3,
       "qualite": "Grand Luxe",
-      "points": 19
+      "points": 19,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Traqueur homme-bête d’élite",
@@ -3369,7 +3672,12 @@
       "armure": "Vêtements",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "points": 30
+      "points": 30,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Arbalétrier homme-bête novice",
@@ -3421,7 +3729,12 @@
       "armure": "Vêtements",
       "tier": 1,
       "qualite": "Usée",
-      "points": 7
+      "points": 7,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Arbalétrier homme-bête",
@@ -3473,7 +3786,12 @@
       "armure": "Vêtements",
       "tier": 2,
       "qualite": "Correcte",
-      "points": 12
+      "points": 12,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Arbalétrier homme-bête vétéran",
@@ -3527,7 +3845,12 @@
       "armure": "Gambison",
       "tier": 3,
       "qualite": "Grand Luxe",
-      "points": 19
+      "points": 19,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Arbalétrier homme-bête d’élite",
@@ -3581,7 +3904,12 @@
       "armure": "Armure de cuir",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "points": 24
+      "points": 24,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Archer homme-bête novice",
@@ -3633,7 +3961,12 @@
       "armure": "Vêtements",
       "tier": 1,
       "qualite": "Usée",
-      "points": 6
+      "points": 6,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Archer homme-bête",
@@ -3687,7 +4020,12 @@
       "armure": "Gambison",
       "tier": 2,
       "qualite": "Correcte",
-      "points": 10
+      "points": 10,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Archer homme-bête vétéran",
@@ -3741,7 +4079,12 @@
       "armure": "Armure de cuir",
       "tier": 3,
       "qualite": "Grand Luxe",
-      "points": 16
+      "points": 16,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Archer homme-bête d’élite",
@@ -3795,7 +4138,12 @@
       "armure": "Armure de cuir",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "points": 25
+      "points": 25,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Chef de harde",
@@ -3853,7 +4201,12 @@
       "armure": "Cuir renforcé",
       "tier": 3,
       "qualite": "Grand Luxe",
-      "points": 41
+      "points": 41,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Grand Chef de harde",
@@ -3911,7 +4264,12 @@
       "armure": "Cotte de mailles",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "points": 64
+      "points": 64,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Seigneur des Bêtes",
@@ -3969,7 +4327,12 @@
       "armure": "Brigandine",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "points": null
+      "points": 115,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Roi-Totem",
@@ -4028,7 +4391,12 @@
       "armure": "Armure d'écailles",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "points": null
+      "points": 193,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Coupe-jarret novice",
@@ -4081,7 +4449,12 @@
       "armure": "Vêtements",
       "tier": 1,
       "qualite": "Usée",
-      "points": 5
+      "points": 5,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Coupe-jarret",
@@ -4134,7 +4507,12 @@
       "armure": "Vêtements",
       "tier": 2,
       "qualite": "Correcte",
-      "points": 10
+      "points": 10,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Coupe-jarret vétéran",
@@ -4187,7 +4565,12 @@
       "armure": "Vêtements",
       "tier": 3,
       "qualite": "Grand Luxe",
-      "points": 18
+      "points": 18,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Coupe-jarret d’élite",
@@ -4240,7 +4623,12 @@
       "armure": "Vêtements",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "points": 35
+      "points": 35,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Spadassin novice",
@@ -4297,7 +4685,12 @@
       "armure": "Gambison",
       "tier": 1,
       "qualite": "Usée",
-      "points": 8
+      "points": 8,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Spadassin",
@@ -4354,7 +4747,12 @@
       "armure": "Armure de cuir",
       "tier": 2,
       "qualite": "Correcte",
-      "points": 18
+      "points": 18,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Spadassin vétéran",
@@ -4412,7 +4810,12 @@
       "armure": "Cuir renforcé",
       "tier": 3,
       "qualite": "Grand Luxe",
-      "points": 48
+      "points": 48,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Spadassin d’élite",
@@ -4470,7 +4873,12 @@
       "armure": "Brigandine",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "points": 58
+      "points": 58,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Bandit novice",
@@ -4522,7 +4930,12 @@
       "armure": "Vêtements",
       "tier": 1,
       "qualite": "Usée",
-      "points": 8
+      "points": 8,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Bandit",
@@ -4576,7 +4989,12 @@
       "armure": "Gambison",
       "tier": 2,
       "qualite": "Correcte",
-      "points": 16
+      "points": 16,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Bandit vétéran",
@@ -4630,7 +5048,12 @@
       "armure": "Armure de cuir",
       "tier": 3,
       "qualite": "Grand Luxe",
-      "points": 25
+      "points": 25,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Bandit d’élite",
@@ -4685,7 +5108,12 @@
       "armure": "Cuir renforcé",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "points": 50
+      "points": 50,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Arbalétrier novice",
@@ -4737,7 +5165,12 @@
       "armure": "Vêtements",
       "tier": 1,
       "qualite": "Usée",
-      "points": 8
+      "points": 8,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Arbalétrier",
@@ -4789,7 +5222,12 @@
       "armure": "Vêtements",
       "tier": 2,
       "qualite": "Correcte",
-      "points": 13
+      "points": 13,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Arbalétrier vétéran",
@@ -4843,7 +5281,12 @@
       "armure": "Gambison",
       "tier": 3,
       "qualite": "Grand Luxe",
-      "points": 20
+      "points": 20,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Arbalétrier d’élite",
@@ -4897,7 +5340,12 @@
       "armure": "Armure de cuir",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "points": 25
+      "points": 25,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Archer novice",
@@ -4949,7 +5397,12 @@
       "armure": "Vêtements",
       "tier": 1,
       "qualite": "Usée",
-      "points": 7
+      "points": 7,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Archer",
@@ -5003,7 +5456,12 @@
       "armure": "Gambison",
       "tier": 2,
       "qualite": "Correcte",
-      "points": 11
+      "points": 11,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Archer vétéran",
@@ -5057,7 +5515,12 @@
       "armure": "Armure de cuir",
       "tier": 3,
       "qualite": "Grand Luxe",
-      "points": 20
+      "points": 20,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Archer d’élite",
@@ -5111,7 +5574,12 @@
       "armure": "Armure de cuir",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "points": 24
+      "points": 24,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Chef de brigands",
@@ -5169,7 +5637,12 @@
       "armure": "Cuir renforcé",
       "tier": 3,
       "qualite": "Grand Luxe",
-      "points": 40
+      "points": 40,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Capitaine des brigands",
@@ -5227,7 +5700,12 @@
       "armure": "Cotte de mailles",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "points": 68
+      "points": 68,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Maître de la Guilde",
@@ -5285,7 +5763,12 @@
       "armure": "Brigandine",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "points": null
+      "points": 108,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Prince des Voleurs",
@@ -5344,7 +5827,12 @@
       "armure": "Armure d'écailles",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "points": null
+      "points": 211,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Cogneur ogre novice",
@@ -5396,7 +5884,12 @@
       "armure": "Vêtements",
       "tier": 1,
       "qualite": "Usée",
-      "points": 9
+      "points": 9,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Cogneur ogre",
@@ -5450,7 +5943,12 @@
       "armure": "Gambison",
       "tier": 2,
       "qualite": "Correcte",
-      "points": 17
+      "points": 17,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Cogneur ogre vétéran",
@@ -5504,7 +6002,12 @@
       "armure": "Armure de cuir",
       "tier": 3,
       "qualite": "Grand Luxe",
-      "points": 34
+      "points": 34,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Cogneur ogre d’élite",
@@ -5559,7 +6062,12 @@
       "armure": "Cuir renforcé",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "points": 48
+      "points": 48,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Écraseur ogre novice",
@@ -5613,7 +6121,12 @@
       "armure": "Gambison",
       "tier": 1,
       "qualite": "Usée",
-      "points": 9
+      "points": 9,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Écraseur ogre",
@@ -5667,7 +6180,12 @@
       "armure": "Armure de cuir",
       "tier": 2,
       "qualite": "Correcte",
-      "points": 19
+      "points": 19,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Écraseur ogre vétéran",
@@ -5722,7 +6240,12 @@
       "armure": "Cuir renforcé",
       "tier": 3,
       "qualite": "Grand Luxe",
-      "points": 44
+      "points": 44,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Écraseur ogre d’élite",
@@ -5777,7 +6300,12 @@
       "armure": "Brigandine",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "points": 54
+      "points": 54,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Perceur ogre novice",
@@ -5829,7 +6357,12 @@
       "armure": "Vêtements",
       "tier": 1,
       "qualite": "Usée",
-      "points": 9
+      "points": 9,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Perceur ogre",
@@ -5883,7 +6416,12 @@
       "armure": "Gambison",
       "tier": 2,
       "qualite": "Correcte",
-      "points": 19
+      "points": 19,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Perceur ogre vétéran",
@@ -5937,7 +6475,12 @@
       "armure": "Armure de cuir",
       "tier": 3,
       "qualite": "Grand Luxe",
-      "points": 35
+      "points": 35,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Perceur ogre d’élite",
@@ -5992,7 +6535,12 @@
       "armure": "Cuir renforcé",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "points": 54
+      "points": 54,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Tromblonnier ogre novice",
@@ -6044,7 +6592,12 @@
       "armure": "Vêtements",
       "tier": 1,
       "qualite": "Usée",
-      "points": 7
+      "points": 7,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Tromblonnier ogre",
@@ -6096,7 +6649,12 @@
       "armure": "Vêtements",
       "tier": 2,
       "qualite": "Correcte",
-      "points": 13
+      "points": 13,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Tromblonnier ogre vétéran",
@@ -6150,7 +6708,12 @@
       "armure": "Gambison",
       "tier": 3,
       "qualite": "Grand Luxe",
-      "points": 22
+      "points": 22,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Tromblonnier ogre d’élite",
@@ -6204,7 +6767,12 @@
       "armure": "Armure de cuir",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "points": 28
+      "points": 28,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Canonnier ogre novice",
@@ -6256,7 +6824,12 @@
       "armure": "Vêtements",
       "tier": 1,
       "qualite": "Usée",
-      "points": 8
+      "points": 8,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Canonnier ogre",
@@ -6310,7 +6883,12 @@
       "armure": "Gambison",
       "tier": 2,
       "qualite": "Correcte",
-      "points": 13
+      "points": 13,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Canonnier ogre vétéran",
@@ -6364,7 +6942,12 @@
       "armure": "Armure de cuir",
       "tier": 3,
       "qualite": "Grand Luxe",
-      "points": 22
+      "points": 22,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Canonnier ogre d’élite",
@@ -6418,7 +7001,12 @@
       "armure": "Armure de cuir",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "points": 29
+      "points": 29,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Patron ogre",
@@ -6473,7 +7061,12 @@
       "armure": "Cuir renforcé",
       "tier": 3,
       "qualite": "Grand Luxe",
-      "points": 42
+      "points": 42,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Grand Patron ogre",
@@ -6528,7 +7121,12 @@
       "armure": "Cotte de mailles",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "points": 58
+      "points": 58,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Tyran ogre",
@@ -6583,7 +7181,12 @@
       "armure": "Brigandine",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "points": 79
+      "points": 79,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     },
     {
       "nom": "Ventre-Roi",
@@ -6639,7 +7242,12 @@
       "armure": "Armure d'écailles",
       "tier": 4,
       "qualite": "Grand Luxe",
-      "points": null
+      "points": 116,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 100,
+        "objets": []
+      }
     }
   ]
 }

@@ -33,6 +33,15 @@ for(const e of enemies) assert.ok(html.includes("("+e.code+")"),"fiche affichée
 for(const f of bestiary.factions) assert.ok(html.includes(`id="${BestiaryLab.anchor(f.name)}"`));
 assert.ok(html.includes("Loup")&&html.includes(`id="${BestiaryLab.anchor("Invocations")}"`),"les invocations ont leur section");
 assert.equal(BestiaryLab.nav(bestiary).length,bestiary.factions.length+1);
+// Butin et niveau de mission minimum (Idan, 2026-11-01) : colonnes « Dès » et « Butin », le détail au survol.
+assert.match(html,/<th title="Niveau de mission minimum">Dès<\/th><th title="[^"]*">Butin<\/th>/);
+{
+  const tuned=JSON.parse(JSON.stringify(reference)),troll=tuned.enemyArchetypes.rows.find(e=>e.code==="orc_spearman_veteran");
+  troll.niveau_mission_min=7;troll.butin={equipement:50,objets:[{type:"potion",nom:"Potion de soins",tier:1,chance:10}]};
+  const row=BestiaryLab.render(BestiaryLab.build(tuned)).split("<tr").find(r=>r.includes("(orc_spearman_veteran)"));
+  assert.match(row,/title="Mission 2★ argent ou plus">2★ argent<\/td>/);
+  assert.match(row,/title="Équipement porté : 50 % par objet\nPotion de soins \(tier 1\) : 10 %">50 % \+1<\/td>/);
+}
 
 // Missions : « Faire le ménage » (camps, ordres, variables) et la garde du corps.
 const builtMissions=MissionsLab.build(reference),missions=plain(builtMissions);

@@ -49,14 +49,22 @@
       const budgets=def?.budgets||{};
       return budgets[String(def?.difficulte||1)]||budgets["1"]||{min:55,max:75,chance_normal:0.05};
     }
-    function rollCamp(def=definition(),camp=null){
+    // Niveau de mission minimum (Idan, 2026-11-01 : « un troll […] à partir de mission 2★ argent ») : une créature ne
+    // sort que dans une mission de son niveau ou plus (1 à 15, comme les étoiles). Sans valeur : dès le niveau 1.
+    function missionMin(arch){ return Math.max(1,Number(arch?.niveau_mission_min)||1); }
+    function allowedAt(faction,line,level,missionLevel){
+      const arch=archetypeOf(faction,line,level);
+      return arch&&missionMin(arch)<=missionLevel?arch:null;
+    }
+    function rollCamp(def=definition(),camp=null,{level:missionLevel=Number(def?.difficulte)||1}={}){
       const chosen=camp||weighted(campsOf(def).map(c=>({...c,poids:Number(c.poids)||1})));
       const b=budgetOf(def),budget=b.min+Math.floor(random()*(b.max-b.min+1));
       let total=points(chosen.chef);
       const enemies=[];
       while(enemies.length<MAX_ENEMIES){
         const level=random()<(Number(b.chance_normal)||0)?"normal":"novice";
-        const code=archetypeOf(chosen.faction,weighted(chosen.lignes).ligne,level)?.code;
+        const lines=(chosen.lignes||[]).filter(l=>allowedAt(chosen.faction,l.ligne,level,missionLevel));
+        const code=lines.length?allowedAt(chosen.faction,weighted(lines).ligne,level,missionLevel).code:null;
         if(!code||total+points(code)/2>budget) break;
         enemies.push(code);
         total+=points(code);
@@ -164,16 +172,31 @@
       }).filter(Boolean);
     }
 
-    // Issue (doc 17 §8). Victoire : récompense du contrat, coffre (or et objets) et l'équipement de tous les morts des
-    // deux camps, sans propriétaire. Défaite : rien, et la renommée baisse ; l'équipement de nos morts est perdu.
-    function outcome(offer,{victory,deadEnemies=[],deadMercenaries=[],chestItems=[]}={}){
+    // Butin par créature (Idan, 2026-11-01 ; enemy-archetypes.json, butin) : equipement = chance (%) de récupérer chaque
+    // objet porté par un ennemi mort ; objets = tirages en plus, chacun avec sa chance ({type, nom, tier, chance}),
+    // fabriqués par makeItem(type, nom, tier). Sans fiche ni valeur : tout l'équipement, rien en plus.
+    function lootOf(arch){
+      const b=arch?.butin||{};
+      return {equipement:b.equipement==null?100:Number(b.equipement)||0,objets:Array.isArray(b.objets)?b.objets:[]};
+    }
+    function enemyLoot(c,makeItem){
+      const b=lootOf(archetype(c?.archetype));
+      const kept=(c?.items||[]).filter(()=>b.equipement>=100||random()*100<b.equipement);
+      const extra=b.objets.filter(o=>random()*100<(Number(o.chance)||0)).map(o=>makeItem?makeItem(o.type,o.nom,Number(o.tier)||1):null).filter(Boolean);
+      return [...kept,...extra];
+    }
+
+    // Issue (doc 17 §8). Victoire : récompense du contrat, coffre (or et objets), le butin des ennemis morts (selon leur
+    // fiche) et l'équipement de nos morts, sans propriétaire. Défaite : rien, et la renommée baisse ; l'équipement de nos
+    // morts est perdu.
+    function outcome(offer,{victory,deadEnemies=[],deadMercenaries=[],chestItems=[],makeItem=null}={}){
       const def=definition(offer.code);
       if(!victory) return {victory:false,reward:0,chestGold:0,chestItems:[],loot:[],renown:Number(def.echec?.renommee)||0};
       const chest=def.coffre||{};
       let chestGold=0;
       for(let i=0;i<(chest.or_des||0);i++) chestGold+=die(chest.or_faces||6);
       chestGold*=chest.or_unite||1;
-      const loot=[...deadEnemies,...deadMercenaries].flatMap(c=>(c.items||[]).map(it=>({...it,owner:null})));
+      const loot=[...deadEnemies.flatMap(c=>enemyLoot(c,makeItem)),...deadMercenaries.flatMap(c=>c.items||[])].map(it=>({...it,owner:null}));
       return {victory:true,reward:offer.reward,chestGold,chestItems:chestItems.map(it=>({...it,owner:null})),loot,renown:0};
     }
 
@@ -192,7 +215,7 @@
     }
     function mapSize(offer){ const map=definition(offer.code)?.carte||{}; return {cols:map.colonnes||13,rows:map.lignes||9}; }
 
-    return {definition,archetype,points,campsOf,budgetOf,rollCamp,estimation,contractReward,createOffer,orderText,applyArchetype,buildEnemies,
+    return {definition,archetype,points,missionMin,lootOf,campsOf,budgetOf,rollCamp,estimation,contractReward,createOffer,orderText,applyArchetype,buildEnemies,
       outcome,deathMultiplier,chestItemCount,chestTier,mapSize};
   }
 

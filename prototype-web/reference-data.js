@@ -29,6 +29,7 @@ const REFERENCE_FILES = {
   potions: "potions.json",
   oneShotMissions: "one-shot-missions.json",
   dormitoryQuality: "dormitory-quality.json",
+  campBuildings: "camp-buildings.json",
   itemQualities: "item-qualities.json",
   equipmentSlots: "equipment-slots.json",
   startingEquipmentGeneration: "starting-equipment-generation.json",

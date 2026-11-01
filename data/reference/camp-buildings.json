@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "name": "camp-buildings",
+  "description": "Bâtiments de soins du camp (Idan, 2026-11-01) : à construire, puis à améliorer niveau par niveau. Le niveau n coûte prix_base × n² PO et jours_base × n jours ; un chantier par bâtiment, en parallèle de celui du dortoir ; l'or est payé au lancement, le niveau est atteint le matin du dernier jour. Dispensaire : la durée des blessures × (1 − soins_par_niveau × niveau), après le minimum de 7 jours, pour les blessures reçues après la construction. Bains chauds : fatigue − fatigue_jours_par_niveau × niveau jours (au moins 1 jour), et recharge du mana au camp + mana_par_niveau × niveau % de la Réserve par jour. Code : game-core/campaign.js (bâtiments de soins), affichage : prototype-web/camp-buildings-ui.js (Ma Compagnie). Doc 11 §9.",
+  "columns": [
+    {
+      "key": "code",
+      "source": "Code"
+    },
+    {
+      "key": "nom",
+      "source": "Nom affiché"
+    },
+    {
+      "key": "description",
+      "source": "Infobulle : à quoi il sert"
+    },
+    {
+      "key": "niveaux",
+      "source": "Nombre de niveaux"
+    },
+    {
+      "key": "prix_base",
+      "source": "PO du niveau n = prix_base × n²"
+    },
+    {
+      "key": "jours_base",
+      "source": "Jours du niveau n = jours_base × n"
+    },
+    {
+      "key": "soins_par_niveau",
+      "source": "Dispensaire : part de la durée des blessures retirée par niveau"
+    },
+    {
+      "key": "fatigue_jours_par_niveau",
+      "source": "Bains chauds : jours de fatigue retirés par niveau"
+    },
+    {
+      "key": "mana_par_niveau",
+      "source": "Bains chauds : % de la Réserve de mana en plus par jour et par niveau"
+    }
+  ],
+  "rows": [
+    {
+      "code": "dispensary",
+      "nom": "Dispensaire",
+      "description": "On y recoud, on y bande, on y jure beaucoup : les blessés s'en remettent plus vite.",
+      "niveaux": 5,
+      "prix_base": 1000,
+      "jours_base": 4,
+      "soins_par_niveau": 0.1,
+      "fatigue_jours_par_niveau": 0,
+      "mana_par_niveau": 0
+    },
+    {
+      "code": "baths",
+      "nom": "Bains chauds",
+      "description": "Vapeur, eau brûlante et silence : la fatigue fond et le mana revient plus vite.",
+      "niveaux": 5,
+      "prix_base": 1000,
+      "jours_base": 4,
+      "soins_par_niveau": 0,
+      "fatigue_jours_par_niveau": 1,
+      "mana_par_niveau": 5
+    }
+  ],
+  "row_count": 2
+}

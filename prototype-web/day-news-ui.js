@@ -65,6 +65,7 @@ function dayDigest(report){
   const built=report.built;
   if(built) entries.push({tone:"good",icon:"build",text:built.kind==="lieutenant_quarter"?"Quartier du lieutenant n° "+fmt(built.number)+" prêt"
     :built.kind==="dormitory_quality"?"Dortoir niveau "+fmt(built.level)+" : "+built.name:"Dortoir agrandi : "+fmt(built.capacity)+" places"});
+  for(const b of report.buildings||[]) entries.push({tone:"good",icon:"build",text:b.name+" niveau "+fmt(b.level)});
   return entries;
 }
 

@@ -61,7 +61,14 @@
     const STARTING_GOLD=referenceConstant(reference,"company.gold.initial",10000);
     // Régénération (sang de troll ; Idan, 2026-11-01) : une blessure guérit plus vite au camp (regeneration.js).
     const regeneration=Regeneration?Regeneration.createRegenerationRules({reference}):null;
-    const woundDaysFor=(mercenary,days)=>regeneration?regeneration.campDays(mercenary,days):days;
+    // Dispensaire (Idan, 2026-11-01) : la durée, déjà bornée de 7 à 60 jours, × (1 − 10 % par niveau), au moins 1 jour.
+    const woundDaysFor=(mercenary,days,state=null)=>{
+      const base=regeneration?regeneration.campDays(mercenary,days):days;
+      const factor=state?woundCareFactor(state):1;
+      return factor<1&&base>0?Math.max(1,Math.ceil(base*factor-1e-9)):base;
+    };
+    // Bains chauds (Idan, 2026-11-01) : un jour de fatigue de moins par niveau, au moins 1 jour.
+    const fatigueDaysFor=(days,state)=>Math.max(1,(Number(days)||0)-fatigueRelief(state));
     const STARTING_DORMITORY_CAPACITY=referenceConstant(reference,"camp.dormitory.initial_capacity",25);
     const RENOWN_RANK_EXPONENT=referenceConstant(reference,"company.renown.rank_exponent",1.5);
     const RENOWN_HERITAGE_SHARE=referenceConstant(reference,"company.renown.heritage_share",0.2);
@@ -536,6 +543,61 @@
       return {kind:work.kind,places:work.places,capacity:camp.dormitoryCapacity};
     }
 
+    // Bâtiments de soins (Idan, 2026-11-01 ; camp-buildings.json, doc 11 §9) : le Dispensaire raccourcit les blessures,
+    // les Bains chauds la fatigue et rechargent plus de mana. À construire, puis 5 niveaux ; le niveau n coûte
+    // prix_base × n² PO et jours_base × n jours. Un chantier par bâtiment, en parallèle de celui du dortoir ; l'or est payé
+    // au lancement, le niveau est atteint le matin du dernier jour.
+    const CAMP_BUILDINGS=new Map((reference?.campBuildings?.rows||[]).map(row=>[row.code,row]));
+    function campBuildingRow(code){ return CAMP_BUILDINGS.get(code)||null; }
+    function campBuildingCodes(){ return [...CAMP_BUILDINGS.keys()]; }
+    function buildingLevel(state,code){ return Number(state?.company?.camp?.buildings?.[code]?.level)||0; }
+    function buildingWork(state,code){ return state?.company?.camp?.buildings?.[code]?.construction||null; }
+    function nextBuildingLevel(state,code){
+      const row=CAMP_BUILDINGS.get(code);
+      if(!row) return null;
+      const level=buildingLevel(state,code)+1;
+      if(level>(Number(row.niveaux)||0)) return null;
+      return {code,name:row.nom,level,gold:(Number(row.prix_base)||0)*level*level,days:(Number(row.jours_base)||0)*level};
+    }
+    function startBuilding(state,code){
+      const row=CAMP_BUILDINGS.get(code);
+      if(!row) return {ok:false,reason:"Bâtiment inconnu."};
+      const camp=state.company.camp;
+      camp.buildings=camp.buildings||{};
+      const building=camp.buildings[code]||(camp.buildings[code]={level:0,construction:null});
+      if(building.construction) return {ok:false,reason:"Un chantier est déjà en cours : "+row.nom+"."};
+      const next=nextBuildingLevel(state,code);
+      if(!next) return {ok:false,reason:row.nom+" : niveau maximal."};
+      if(state.company.gold<next.gold) return {ok:false,reason:"Pas assez d’or : il faut "+next.gold+" PO.",cost:next};
+      state.company.gold-=next.gold;
+      building.construction={kind:"building",...next,startDay:state.day,endDay:state.day+next.days};
+      return {ok:true,construction:building.construction};
+    }
+    // Chaque matin : les chantiers terminés montent leur bâtiment d'un niveau.
+    function advanceBuildings(state){
+      const done=[];
+      for(const [code,building] of Object.entries(state.company.camp.buildings||{})){
+        const work=building?.construction;
+        if(!work||state.day<work.endDay) continue;
+        building.construction=null;
+        building.level=work.level;
+        done.push({kind:"building",code,name:work.name,level:work.level});
+      }
+      return done;
+    }
+    function woundCareFactor(state){
+      return Math.max(0,1-(Number(CAMP_BUILDINGS.get("dispensary")?.soins_par_niveau)||0)*buildingLevel(state,"dispensary"));
+    }
+    function fatigueRelief(state){
+      return (Number(CAMP_BUILDINGS.get("baths")?.fatigue_jours_par_niveau)||0)*buildingLevel(state,"baths");
+    }
+    function manaBonusPercent(state){
+      return (Number(CAMP_BUILDINGS.get("baths")?.mana_par_niveau)||0)*buildingLevel(state,"baths");
+    }
+    function campBuildingEffects(state){
+      return {woundFactor:woundCareFactor(state),fatigueRelief:fatigueRelief(state),manaBonus:manaBonusPercent(state)};
+    }
+
     // Indisponibilité après mission (10-mission-time §4 à §6) : un blessé ou un fatigué ne peut pas
     // partir en mission tant que son compteur de jours n'est pas écoulé.
     // state (facultatif) : un mercenaire parti en expédition, ou dont la mission est programmée, n'est pas disponible non
@@ -568,6 +630,7 @@
       const bodyguardTaken=expireBodyguardOffer(state);
       const expeditions=advanceExpeditions(state);
       const built=advanceConstruction(state);
+      const buildings=advanceBuildings(state);
       // Demandes au lieutenant (Idan, 2026-10-25) : le résultat tombe le lendemain matin.
       const lieutenantReports=lieutenants?lieutenants.resolveRequests(state):[];
       const mana=rechargeCampMana(state);
@@ -575,7 +638,7 @@
       expeditions.departed=departScheduled(state);
       // Le marchand de la veille repart ; un autre passe peut-être (doc 18 ; Idan, 2026-10-30).
       const merchant=merchants?merchants.morning(state,{renown:companyRenown(state).total}):null;
-      return {day:state.day,recovered,salaries,tavern:tavernReport,missionTaken,bodyguardTaken,expeditions,built,lieutenants:lieutenantReports,mana,merchant};
+      return {day:state.day,recovered,salaries,tavern:tavernReport,missionTaken,bodyguardTaken,expeditions,built,buildings,lieutenants:lieutenantReports,mana,merchant};
     }
 
     // Recharge du mana (doc 12 ; Idan, 2026-10-25) : chaque jour, pour les membres présents au camp, pas pour ceux qui sont
@@ -583,7 +646,7 @@
     function rechargeCampMana(state){
       if(!magic) return [];
       return rosterOf(state).filter(m=>!awayOf(state,m.id))
-        .map(m=>({id:m.id,...magic.rechargeMana(m)})).filter(x=>x.gained>0);
+        .map(m=>({id:m.id,...magic.rechargeMana(m,{bonusPercent:manaBonusPercent(state)})})).filter(x=>x.gained>0);
     }
 
     // Tableau des contrats (doc 17) : une offre à la fois pour l'instant, « Faire le ménage » en boucle. Une offre
@@ -747,8 +810,8 @@
         const m=rosterOf(state).find(x=>x.id===id);
         if(!m) continue;
         const back=bodyguard.rollReturn();
-        if(back.issue==="fatigue") m.recovery={kind:"fatigued",daysLeft:back.days,sinceDay:state.day};
-        if(back.issue==="blesse") m.recovery={kind:"wounded",daysLeft:woundDaysFor(m,back.days),sinceDay:state.day};
+        if(back.issue==="fatigue") m.recovery={kind:"fatigued",daysLeft:fatigueDaysFor(back.days,state),sinceDay:state.day};
+        if(back.issue==="blesse") m.recovery={kind:"wounded",daysLeft:woundDaysFor(m,back.days,state),sinceDay:state.day};
         const reputation=bodyguard.reputationGain(back.issue);
         if(reputation){
           m.reputationCareerDelta=(Number(m.reputationCareerDelta)||0)+reputation;
@@ -876,10 +939,10 @@
           report.progression.push({mercenary,xp,changes,reputation:{...gain,...progression.applyReputation(mercenary,gain)}});
         }
         if(result.wounded){
-          mercenary.recovery={kind:"wounded",daysLeft:woundDaysFor(mercenary,result.woundDays),sinceDay:state.day};
+          mercenary.recovery={kind:"wounded",daysLeft:woundDaysFor(mercenary,result.woundDays,state),sinceDay:state.day};
           report.wounded.push(mercenary);
         }else{
-          mercenary.recovery={kind:"fatigued",daysLeft:result.fatigueDays,sinceDay:state.day};
+          mercenary.recovery={kind:"fatigued",daysLeft:fatigueDaysFor(result.fatigueDays,state),sinceDay:state.day};
           report.fatigued.push(mercenary);
         }
         // Historique : une mission de plus, ses adversaires abattus, ses coups encaissés, sa blessure.
@@ -942,6 +1005,8 @@
       completeExpeditionCombat,
       dormitoryFree,
       dormitoryUsed,
+      campBuildingRow,campBuildingCodes,buildingLevel,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
+      woundDaysFor,fatigueDaysFor,
       dormitoryPlaces,
       dormitoryExpansionCost,
       nextDormitoryExpansion,

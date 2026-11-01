@@ -144,6 +144,7 @@ function logDayReport(report){
   if(report.bodyguardTaken) tavernLog("L’offre de garde du corps ("+report.bodyguardTaken.client.toLocaleLowerCase("fr")+") a trouvé preneur ailleurs ; une nouvelle est affichée.","info");
   if(typeof logExpeditionReport==="function") logExpeditionReport(report.expeditions);
   if(typeof logCampWork==="function") logCampWork(report.built);
+  if(typeof logCampBuildings==="function") logCampBuildings(report.buildings);
   // Le marchand du jour (doc 18).
   if(typeof logMerchantMorning==="function") logMerchantMorning(report.merchant);
   // Le rapport des lieutenants (Idan, 2026-10-25) : une pop-up par demande de la veille.

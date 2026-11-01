@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "one-shot-missions",
-  "description": "Missions one shot (doc 17). « Faire le ménage » : la mission de la Taverne, en boucle (Idan, 2026-10-24) ; le camp est tiré au hasard parmi les peuples de camps (Idan, 2026-11-01 : Gobelins, Orcs), chacun avec ses lignes, son chef, ses ordres et ses noms. Points de combat (Idan, 2026-11-01) : chaque ennemi vaut ses points (enemy-archetypes.json) ; un camp remplit le budget de sa difficulté (budgets) ; la récompense compte 35 PO par point. Les montants (récompense, coffre, renommée) sont des valeurs de départ, à ajuster en jouant. Idan, 2026-10-25 : coffre de 1D3 objets T2 (70 %) ou T3 (30 %), de toutes les familles d’équipement.",
+  "description": "Missions one shot (doc 17). « Faire le ménage » : la mission de la Taverne, en boucle (Idan, 2026-10-24) ; le camp est tiré au hasard parmi les peuples de camps (Idan, 2026-11-01 : Gobelins, Orcs, Hommes-bêtes, Voleurs, Ogres), chacun avec ses lignes, son chef, ses ordres et ses noms. Points de combat (Idan, 2026-11-01) : chaque ennemi vaut ses points (enemy-archetypes.json) ; un camp remplit le budget de sa difficulté (budgets) ; la récompense compte 35 PO par point. Les montants (récompense, coffre, renommée) sont des valeurs de départ, à ajuster en jouant. Idan, 2026-10-25 : coffre de 1D3 objets T2 (70 %) ou T3 (30 %), de toutes les familles d’équipement.",
   "missions": [
     {
       "code": "cleanup",
@@ -79,6 +79,102 @@
           "noms": {
             "tribus": "tribus_orcs",
             "chefs": "chefs_de_camp_orcs"
+          }
+        },
+        {
+          "faction": "Hommes-bêtes",
+          "nom_camp": "Camp homme-bête",
+          "poids": 1,
+          "lignes": [
+            {
+              "ligne": "Guerrier",
+              "poids": 30
+            },
+            {
+              "ligne": "Brute",
+              "poids": 20
+            },
+            {
+              "ligne": "Arbalétrier",
+              "poids": 20
+            },
+            {
+              "ligne": "Traqueur",
+              "poids": 15
+            },
+            {
+              "ligne": "Archer",
+              "poids": 15
+            }
+          ],
+          "chef": "beastman_chief_1",
+          "noms": {
+            "tribus": "tribus_hommes_betes",
+            "chefs": "chefs_de_camp_hommes_betes"
+          }
+        },
+        {
+          "faction": "Voleurs",
+          "nom_camp": "Camp de voleurs",
+          "poids": 1,
+          "lignes": [
+            {
+              "ligne": "Coupe-jarret",
+              "poids": 25
+            },
+            {
+              "ligne": "Spadassin",
+              "poids": 20
+            },
+            {
+              "ligne": "Arbalétrier",
+              "poids": 20
+            },
+            {
+              "ligne": "Archer",
+              "poids": 20
+            },
+            {
+              "ligne": "Bandit",
+              "poids": 15
+            }
+          ],
+          "chef": "thief_chief_1",
+          "noms": {
+            "tribus": "confreries_voleurs",
+            "chefs": "chefs_de_camp_voleurs"
+          }
+        },
+        {
+          "faction": "Ogres",
+          "nom_camp": "Camp ogre",
+          "poids": 1,
+          "lignes": [
+            {
+              "ligne": "Cogneur",
+              "poids": 30
+            },
+            {
+              "ligne": "Écraseur",
+              "poids": 20
+            },
+            {
+              "ligne": "Tromblonnier",
+              "poids": 20
+            },
+            {
+              "ligne": "Perceur",
+              "poids": 15
+            },
+            {
+              "ligne": "Canonnier",
+              "poids": 15
+            }
+          ],
+          "chef": "ogre_chief_1",
+          "noms": {
+            "tribus": "clans_ogres",
+            "chefs": "chefs_de_camp_ogres"
           }
         }
       ],
@@ -220,6 +316,162 @@
       ],
       "signature": "Donné le {date}, an {an} de l'Âge des Couronnes Brisées. Pour l'Empereur et par délégation, {signataire}, sous-secrétaire adjoint aux Marches.",
       "noms_commanditaire": null
+    },
+    {
+      "code": "village_hommes_betes",
+      "mission": "cleanup",
+      "faction": "Hommes-bêtes",
+      "commanditaire": "Chef de village",
+      "titre": "Un chef de village",
+      "texte": [
+        "À toute compagnie de mercenaires qui voudra bien venir,",
+        "Je m'appelle {commanditaire}, chef de {lieu}, à {jours} de marche de votre camp. On m'a dit que vous tuiez des gens pour de l'argent. Ça tombe bien : nous avons de l'argent, un peu, et des bêtes à chasser, beaucoup.",
+        "Depuis la dernière lune, des hommes-bêtes ont planté leurs totems dans la forêt, au-dessus du village. On les entend hurler la nuit. Au début, on a cru à des loups. Les loups ne laissent pas des cornes plantées dans les portes.",
+        "Combien sont-ils ? Le bûcheron dit {estimation}. Le bûcheron ne va plus en forêt.",
+        "Le village a réuni {récompense} pièces d'or. C'est tout ce que nous avons, à part le bois, que plus personne n'ose aller couper. Ce que vous trouverez dans leur camp sera à vous.",
+        "Le premier qui nous débarrasse d'eux touche la somme. Les autres auront fait le chemin pour rien.",
+        "Venez vite. L'hiver approche, et nous n'avons plus de bois."
+      ],
+      "signature": "{commanditaire}, chef de {lieu}, le {date}",
+      "noms_commanditaire": "chefs_de_village"
+    },
+    {
+      "code": "beastman_rival",
+      "mission": "cleanup",
+      "faction": "Hommes-bêtes",
+      "commanditaire": "Chef homme-bête rival",
+      "titre": "Un chef homme-bête rival",
+      "texte": [
+        "AUX CHASSEURS D'OR,",
+        "Moi, {commanditaire}, corne-maîtresse des {tribu}. Les {tribu_cible} ont souillé notre clairière sacrée, à {lieu}. C'est à {jours} de vos tentes. Ils ont renversé nos totems et mangé nos offrandes. Même celles qui n'étaient pas cuites.",
+        "Ils sont {estimation}. Leur chef s'appelle {boss}. Il porte des bois de cerf et il croit que ça le rend sage. Ça ne le rend pas sage.",
+        "Pour vous : {récompense} pièces d'or, prises à des marchands qui n'en avaient plus besoin. Ce qu'il y a dans leur camp, prenez-le. Sauf les totems. Les totems reviennent à la clairière.",
+        "Le premier qui vient chasse. Les autres regardent.",
+        "La harde a parlé. Enfin, j'ai parlé, et la harde a grogné. C'est pareil."
+      ],
+      "signature": "Signé : {commanditaire} (une empreinte de sabot, à la cendre)",
+      "noms_commanditaire": "chefs_hommes_betes"
+    },
+    {
+      "code": "emperor_hommes_betes",
+      "mission": "cleanup",
+      "faction": "Hommes-bêtes",
+      "commanditaire": "Ordre de l'Empereur",
+      "titre": "Par ordre de Sa Majesté Impériale",
+      "texte": [
+        "PAR ORDRE DE SA MAJESTÉ IMPÉRIALE — Chancellerie des Marches, Bureau des Nuisances et Engeances",
+        "À toute compagnie franche dûment patentée,",
+        "Attendu qu'une harde d'hommes-bêtes a établi un campement illicite à {lieu}, à {jours} de marche de votre cantonnement ; attendu que ladite harde abat les forêts de la Couronne, effraie le gibier royal et a encorné un garde-chasse, lequel s'en remet ; attendu que la garnison impériale la plus proche se trouve, à son grand regret, fort occupée ailleurs ;",
+        "Il est ordonné à la compagnie qui s'en chargera de procéder au nettoyage complet dudit campement, par tout moyen qu'elle jugera utile, dans le respect approximatif des usages de la guerre.",
+        "La Couronne versera {récompense} pièces d'or à l'exécution du présent ordre. Le butin pris sur l'ennemi reste acquis à la compagnie, Sa Majesté étant d'humeur généreuse.",
+        "Le présent ordre expire le {date_expiration}, ou dès qu'une compagnie s'en sera chargée."
+      ],
+      "signature": "Donné le {date}, an {an} de l'Âge des Couronnes Brisées. Pour l'Empereur et par délégation, {signataire}, sous-secrétaire adjoint aux Marches.",
+      "noms_commanditaire": null
+    },
+    {
+      "code": "village_voleurs",
+      "mission": "cleanup",
+      "faction": "Voleurs",
+      "commanditaire": "Chef de village",
+      "titre": "Un chef de village",
+      "texte": [
+        "À toute compagnie de mercenaires qui voudra bien venir,",
+        "Je m'appelle {commanditaire}, chef de {lieu}, à {jours} de marche de votre camp. On m'a dit que vous tuiez des gens pour de l'argent. Ça tombe bien : nous avons de l'argent, un peu, et des brigands sur la route, beaucoup.",
+        "Depuis la foire de printemps, une bande de voleurs tient le vieux moulin, au bord de la route. Ils ont pris un droit de passage. Puis un droit de retour. La semaine dernière, ils ont inventé un droit de respirer, et le percepteur l'a payé double.",
+        "Combien sont-ils ? Le meunier dit {estimation}. Le meunier compte mal depuis qu'on lui a pris son moulin.",
+        "Le village a réuni {récompense} pièces d'or. Ils nous en ont laissé assez pour vous payer : c'est dire s'ils se croient tranquilles. Ce que vous trouverez dans leur repaire sera à vous.",
+        "Le premier qui nous débarrasse d'eux touche la somme. Les autres auront fait le chemin pour rien.",
+        "Venez vite, et venez discrètement : ils ont des yeux partout, même chez nous."
+      ],
+      "signature": "{commanditaire}, chef de {lieu}, le {date}",
+      "noms_commanditaire": "chefs_de_village"
+    },
+    {
+      "code": "thief_rival",
+      "mission": "cleanup",
+      "faction": "Voleurs",
+      "commanditaire": "Maître voleur rival",
+      "titre": "Un maître voleur rival",
+      "texte": [
+        "Cher confrère,",
+        "Permettez que je me présente : {commanditaire}, de la confrérie des {tribu}. Une affaire délicate : les {tribu_cible} se sont installés à {lieu}, à {jours} de chez vous, sur un territoire qui nous revenait par contrat tacite. Si tacite qu'ils ne l'ont pas entendu.",
+        "Ils sont {estimation}, menés par {boss}, une personne sans manières qui égorge avant de négocier. Nous, c'est l'inverse : nous négocions, puis nous vous envoyons.",
+        "Votre rémunération : {récompense} pièces d'or, d'origine parfaitement honnête à trois propriétaires près. Leur butin vous revient. Leur livre de comptes, en revanche, vous me le rapporterez intact, et sans l'avoir lu.",
+        "Le premier qui accepte l'affaire la remporte. Les autres n'en ont jamais entendu parler.",
+        "Brûlez cette lettre. Ou gardez-la : elle porte votre nom, pas le mien."
+      ],
+      "signature": "Avec mes salutations les plus discrètes, {commanditaire}",
+      "noms_commanditaire": "chefs_voleurs"
+    },
+    {
+      "code": "emperor_voleurs",
+      "mission": "cleanup",
+      "faction": "Voleurs",
+      "commanditaire": "Ordre de l'Empereur",
+      "titre": "Par ordre de Sa Majesté Impériale",
+      "texte": [
+        "PAR ORDRE DE SA MAJESTÉ IMPÉRIALE — Chancellerie des Marches, Bureau des Nuisances et Engeances",
+        "À toute compagnie franche dûment patentée,",
+        "Attendu qu'une bande de voleurs a établi un repaire illicite à {lieu}, à {jours} de marche de votre cantonnement ; attendu que ladite bande détrousse les voyageurs, lève sur les routes un péage que la Couronne n'a jamais institué et a eu l'impudence de détrousser un percepteur ; attendu que la garnison impériale la plus proche se trouve, à son grand regret, fort occupée ailleurs ;",
+        "Il est ordonné à la compagnie qui s'en chargera de procéder au nettoyage complet dudit campement, par tout moyen qu'elle jugera utile, dans le respect approximatif des usages de la guerre.",
+        "La Couronne versera {récompense} pièces d'or à l'exécution du présent ordre. Le butin pris sur l'ennemi reste acquis à la compagnie, Sa Majesté étant d'humeur généreuse.",
+        "Le présent ordre expire le {date_expiration}, ou dès qu'une compagnie s'en sera chargée."
+      ],
+      "signature": "Donné le {date}, an {an} de l'Âge des Couronnes Brisées. Pour l'Empereur et par délégation, {signataire}, sous-secrétaire adjoint aux Marches.",
+      "noms_commanditaire": null
+    },
+    {
+      "code": "village_ogres",
+      "mission": "cleanup",
+      "faction": "Ogres",
+      "commanditaire": "Chef de village",
+      "titre": "Un chef de village",
+      "texte": [
+        "À toute compagnie de mercenaires qui voudra bien venir,",
+        "Je m'appelle {commanditaire}, chef de {lieu}, à {jours} de marche de votre camp. On m'a dit que vous tuiez des gens pour de l'argent. Ça tombe bien : nous avons de l'argent, un peu, et des ogres à tuer, ce qui est déjà beaucoup trop.",
+        "Depuis les moissons, des ogres se sont installés dans la carrière, au-dessus du village. Ils ne volent pas grand-chose : ils mangent. Les vaches, d'abord. Puis les cochons. La semaine dernière, ils sont venus demander poliment s'il restait des enfants. Nous avons dit non. Ils ont dit qu'ils repasseraient.",
+        "Combien sont-ils ? Le berger dit {estimation}. Pour des ogres, c'est beaucoup. Le berger tremble encore.",
+        "Le village a réuni {récompense} pièces d'or. C'est tout ce que nous avons, à part la carrière, que vous pouvez garder. Ce que vous trouverez dans leur camp sera à vous, si vous arrivez à le soulever.",
+        "Le premier qui nous débarrasse d'eux touche la somme. Les autres auront fait le chemin pour rien.",
+        "Venez vite. Ils ont dit qu'ils repasseraient."
+      ],
+      "signature": "{commanditaire}, chef de {lieu}, le {date}",
+      "noms_commanditaire": "chefs_de_village"
+    },
+    {
+      "code": "ogre_rival",
+      "mission": "cleanup",
+      "faction": "Ogres",
+      "commanditaire": "Chef ogre rival",
+      "titre": "Un chef ogre rival",
+      "texte": [
+        "TOI. MERCENAIRE.",
+        "Moi c'est {commanditaire}, du clan des {tribu}. Les {tribu_cible}, ils ont pris ma marmite. La grande. À {lieu}. C'est à {jours} de chez toi à pied d'humain. À pied d'ogre, c'est moins.",
+        "Ils sont {estimation}. Leur patron, c'est {boss}. Il est plus gros que moi. Pas beaucoup. Un peu. Tape-le fort.",
+        "Pour toi : {récompense} pièces d'or. Je les ai pas mangées, alors c'est que je tiens à ma marmite. Tout ce qu'il y a dans le camp, tu prends. Sauf la marmite. La marmite, tu me la ramènes. Pleine, si possible.",
+        "Le premier qui vient, il a l'or. Les autres, je les mange.",
+        "C'est une blague. Presque."
+      ],
+      "signature": "Signé : {commanditaire} (une grosse tache de graisse)",
+      "noms_commanditaire": "chefs_ogres"
+    },
+    {
+      "code": "emperor_ogres",
+      "mission": "cleanup",
+      "faction": "Ogres",
+      "commanditaire": "Ordre de l'Empereur",
+      "titre": "Par ordre de Sa Majesté Impériale",
+      "texte": [
+        "PAR ORDRE DE SA MAJESTÉ IMPÉRIALE — Chancellerie des Marches, Bureau des Nuisances et Engeances",
+        "À toute compagnie franche dûment patentée,",
+        "Attendu qu'une bande d'ogres a établi un campement illicite à {lieu}, à {jours} de marche de votre cantonnement ; attendu que ladite bande dévore le cheptel de la Couronne, a mangé un pont (de bois, mais tout de même) et a fait savoir au percepteur qu'il était « appétissant » ; attendu que la garnison impériale la plus proche se trouve, à son grand regret, fort occupée ailleurs ;",
+        "Il est ordonné à la compagnie qui s'en chargera de procéder au nettoyage complet dudit campement, par tout moyen qu'elle jugera utile, dans le respect approximatif des usages de la guerre.",
+        "La Couronne versera {récompense} pièces d'or à l'exécution du présent ordre. Le butin pris sur l'ennemi reste acquis à la compagnie, Sa Majesté étant d'humeur généreuse.",
+        "Le présent ordre expire le {date_expiration}, ou dès qu'une compagnie s'en sera chargée."
+      ],
+      "signature": "Donné le {date}, an {an} de l'Âge des Couronnes Brisées. Pour l'Empereur et par délégation, {signataire}, sous-secrétaire adjoint aux Marches.",
+      "noms_commanditaire": null
     }
   ],
   "noms": {
@@ -317,6 +569,80 @@
       "Vargha la Borgne",
       "Kruul Tête-de-Pioche",
       "Ghorn Brise-Bouclier"
+    ],
+    "chefs_hommes_betes": [
+      "Brann-Corne Cornebrume",
+      "Kessa Crinièregrise",
+      "Drusk Griffechêne",
+      "Hroska Museaucendre",
+      "Garr Longuecorne",
+      "Fenra Hurlebois"
+    ],
+    "tribus_hommes_betes": [
+      "Cornes-Noires",
+      "Sabots-Fendus",
+      "Crocs-de-Givre",
+      "Hurleurs-de-Lune",
+      "Pelages-Gris",
+      "Bois-Brisés",
+      "Griffes-Rouges",
+      "Mufles-de-Cendre"
+    ],
+    "chefs_de_camp_hommes_betes": [
+      "Gharr Corne-Brisée",
+      "Mokka la Hurleuse",
+      "Thurn Sabot-de-Fer",
+      "Vresh Mâche-Écorce",
+      "Orrok Grand-Bois",
+      "Dreka Croc-Pâle"
+    ],
+    "chefs_voleurs": [
+      "Maître Anselin Doigts-d'Or",
+      "Dame Ombeline Sans-Bruit",
+      "Rufin le Discret",
+      "Sire Grégoire de la Bourse",
+      "Mélisande Pas-de-Loup",
+      "Corvin Belles-Manières"
+    ],
+    "confreries_voleurs": [
+      "Mains-Légères",
+      "Lames-Grises",
+      "Bourses-Coupées",
+      "Chats-de-Gouttière",
+      "Masques-de-Suie",
+      "Doigts-de-Velours"
+    ],
+    "chefs_de_camp_voleurs": [
+      "Barthélemy le Borgne",
+      "Jehan Coupe-Gorge",
+      "Margot la Rouge",
+      "Fulcran Trois-Doigts",
+      "Garin le Sanglant",
+      "Pernelle Sans-Merci"
+    ],
+    "chefs_ogres": [
+      "Brog Gros-Poing",
+      "Boulga Écrase-Tout",
+      "Krosh Casse-Mur",
+      "Gorga Deux-Tonnes",
+      "Mork Longue-Mâchoire",
+      "Grotta Piedlourd"
+    ],
+    "clans_ogres": [
+      "Panses-de-Fer",
+      "Grosses-Dents",
+      "Mâche-Rocs",
+      "Marmites-Noires",
+      "Gueules-Lourdes",
+      "Avale-Tout"
+    ],
+    "chefs_de_camp_ogres": [
+      "Gorgo la Panse",
+      "Brokk Mange-Tout",
+      "Ulga Trois-Mentons",
+      "Dorm le Gras",
+      "Hurgh Casse-Marmite",
+      "Magra Gueule-de-Four"
     ]
   }
 }

@@ -99,3 +99,4 @@ details.cov-family{margin-top:10px}details.cov-family summary{cursor:pointer;fon
 .mis-order{border:1px solid #e6dfd5;border-radius:8px;margin:4px 0;background:#fbf8f3}.mis-order summary{cursor:pointer;padding:7px 10px;font-size:.84rem}.mis-order summary small{color:#857b70;margin-left:6px}
 .mis-letter{padding:4px 16px 10px;font-family:Georgia,"Times New Roman",serif;font-size:.9rem;line-height:1.55;color:#3d362e}.mis-letter p{margin:6px 0}.mis-sign{text-align:right;font-style:italic}
 .mis-names{margin-top:16px}.mis-names summary{cursor:pointer;font-size:.84rem;font-weight:750;color:#7b3026}.mis-names .table-wrap{margin-top:8px;max-height:none}.mis-names th,.mis-texts th{width:200px;text-transform:none;letter-spacing:0}
+.best-table td.nowrap{white-space:nowrap}

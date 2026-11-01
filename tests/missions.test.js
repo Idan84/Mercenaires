@@ -135,6 +135,42 @@ assert.ok([...win.loot,...win.chestItems].every(it=>it.owner===null));
 const lose=rules.outcome(offer,{victory:false,deadEnemies:enemies,deadMercenaries:[fallen]});
 assert.deepEqual([lose.reward,lose.chestGold,lose.loot.length,lose.renown],[0,0,0,-30]);
 assert.equal(rules.deathMultiplier(offer,false),2);
+// Bestiaire (Idan, 2026-11-01) : butin et niveau de mission minimum par créature. Par défaut : tout l'équipement porté,
+// rien en plus, dès le niveau 1 (les règles d'avant).
+for(const a of reference.enemyArchetypes.rows){
+  assert.deepEqual([a.niveau_mission_min,a.butin],[1,{equipement:100,objets:[]}],"valeurs par défaut : "+a.code);
+}
+// Chefs (Idan, 2026-11-01 : « les chefs qui n'ont pas de points mesurés ») : toutes les fiches ont leurs points, et chaque
+// chef pèse plus que le précédent de son peuple.
+assert.ok(reference.enemyArchetypes.rows.every(a=>Number.isInteger(a.points)&&a.points>0),"toutes les fiches ont leurs points");
+for(const faction of Object.keys(CAMPS)){
+  const chiefs=["chef 1","chef 2","chef 3","chef 4"].map(n=>reference.enemyArchetypes.rows.find(a=>a.faction===faction&&a.niveau===n).points);
+  assert.ok(chiefs.every((p,i)=>!i||p>chiefs[i-1]),faction+" : "+chiefs.join(" < "));
+}
+{
+  const tuned=JSON.parse(JSON.stringify(reference));
+  const arch=code=>tuned.enemyArchetypes.rows.find(a=>a.code===code);
+  // Butin : 0 % d'équipement, une potion sûre, un manuel jamais.
+  arch(enemies[0].archetype).butin={equipement:0,objets:[{type:"potion",nom:"Potion de soins",tier:1,chance:100},{type:"manual",nom:"Boule de feu",chance:0}]};
+  const made=[];
+  const t=createMissionRules({reference:tuned,random:seeded(11)});
+  const r=t.outcome(offer,{victory:true,deadEnemies:[enemies[0]],makeItem:(type,name,tier)=>(made.push([type,name,tier]),{id:"x",name,owner:5})});
+  assert.deepEqual(made,[["potion","Potion de soins",1]]);
+  assert.deepEqual(r.loot.map(i=>[i.name,i.owner]),[["Potion de soins",null]],"équipement à 0 % : rien de porté ; la potion, sans propriétaire");
+  // Équipement à 50 % : à peu près la moitié des objets portés.
+  arch(enemies[0].archetype).butin={equipement:50,objets:[]};
+  const half=createMissionRules({reference:tuned,random:seeded(12)});
+  let kept=0,carried=0;
+  for(let i=0;i<400;i++){ kept+=half.outcome(offer,{victory:true,deadEnemies:[enemies[0]]}).loot.length; carried+=enemies[0].items.length; }
+  assert.ok(Math.abs(kept/carried-0.5)<0.08,`≈ 50 % : ${kept} / ${carried}`);
+  // Niveau minimum : les gobelins « Archer » attendent une mission 7 (2★ argent) ; à la difficulté 1, jamais d'archer.
+  for(const a of tuned.enemyArchetypes.rows) if(a.faction==="Gobelins"&&a.ligne==="Archer") a.niveau_mission_min=7;
+  const gate=createMissionRules({reference:tuned,random:seeded(13)}),goblinCamp=CAMPS.Gobelins;
+  const lines=level=>new Set(Array.from({length:200},()=>gate.rollCamp(undefined,goblinCamp,{level}).enemies).flat().map(c=>gate.archetype(c).ligne));
+  assert.ok(!lines(1).has("Archer"),"pas d'archer avant la mission 7");
+  assert.ok(lines(7).has("Archer"),"des archers à la mission 7");
+  assert.equal(gate.missionMin(gate.archetype("goblin_archer_novice")),7);
+}
 // Coffre (Idan, 2026-10-25) : 1D3 objets, T2 (70 %) ou T3 (30 %).
 const chestCounts=new Set(),tiers={2:0,3:0};
 for(let i=0;i<600;i++){ chestCounts.add(rules.chestItemCount(offer)); tiers[rules.chestTier(offer)]+=1; }

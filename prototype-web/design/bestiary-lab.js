@@ -79,11 +79,20 @@ const BestiaryLab=(()=>{
   const stat=(e,name)=>`<td class="num">${html(e.caracteristiques?.[name]??"—")}</td>`;
   const statHead=SHOWN.map(([name,short])=>`<th title="${html(name)}">${short}</th>`).join("");
   const initials=name=>String(name||"?").split(/[\s-]+/).map(w=>w[0]).join("").slice(0,2).toUpperCase();
+  // Niveau de mission (1 à 15) en étoiles : 1 à 5 de bronze, puis d'argent, puis d'or (game-core/stars.js).
+  const missionLabel=n=>{ const v=Math.min(15,Math.max(1,Number(n)||1)); return ((v-1)%5+1)+"★ "+["bronze","argent","or"][Math.floor((v-1)/5)]; };
+  // Butin (enemy-archetypes.json) : chance de récupérer chaque objet porté, et les objets en plus avec leur chance.
+  function loot(e){
+    const b=e.butin||{},equip=b.equipement==null?100:Number(b.equipement)||0,extra=Array.isArray(b.objets)?b.objets:[];
+    const lines=["Équipement porté : "+equip+" % par objet",...extra.map(o=>o.nom+(o.tier?" (tier "+o.tier+")":"")+" : "+o.chance+" %")];
+    return {text:equip+" %"+(extra.length?" +"+extra.length:""),title:lines.join("\n"),names:extra.map(o=>o.nom)};
+  }
 
   function enemyRow(e,faction,line){
     const points=e.points==null?`<td class="num muted" title="Pas encore mesuré">—</td>`:`<td class="num"><b>${html(e.points)}</b></td>`;
-    return `<tr data-q="${searchText(e.nom,e.code,faction,line,e.armes||[],e.armure||"",e.niveau)}" title="${html(detail(e))}">
-      <td>${html(e.niveau)}</td>${points}<td class="num">${html(e.pv)}</td>${SHOWN.map(([name])=>stat(e,name)).join("")}
+    const l=loot(e),from=missionLabel(e.niveau_mission_min);
+    return `<tr data-q="${searchText(e.nom,e.code,faction,line,e.armes||[],e.armure||"",e.niveau,l.names)}" title="${html(detail(e))}">
+      <td>${html(e.niveau)}</td>${points}<td class="nowrap" title="${html("Mission "+from+" ou plus")}">${html(from)}</td><td class="num" title="${html(l.title)}">${html(l.text)}</td><td class="num">${html(e.pv)}</td>${SHOWN.map(([name])=>stat(e,name)).join("")}
       <td>${html((e.armes||[]).join(" + ")||"—")}</td><td>${html(e.armure||"—")}</td><td>${html(e.qualite||"—")}</td></tr>`;
   }
 
@@ -95,7 +104,7 @@ const BestiaryLab=(()=>{
     return `<div class="best-line" id="${anchor(f.name+"-"+line.name)}">
       <div class="best-line-head"><span class="best-face" title="Image à produire, une par niveau :\n${html(files)}">${html(initials(line.name))}</span>
         <h4>${html(line.name)}</h4><small>${html(camps.join(" · ")||"Dans aucun camp")}</small></div>
-      <div class="table-wrap best-table"><table><thead><tr><th>Niveau</th><th title="Points de combat (mercenaire moyen = 10)">Points</th><th>PV</th>${statHead}<th>Armes</th><th>Armure</th><th>Qualité</th></tr></thead>
+      <div class="table-wrap best-table"><table><thead><tr><th>Niveau</th><th title="Points de combat (mercenaire moyen = 10)">Points</th><th title="Niveau de mission minimum">Dès</th><th title="Butin : chance de récupérer chaque objet porté (+ objets en plus)">Butin</th><th>PV</th>${statHead}<th>Armes</th><th>Armure</th><th>Qualité</th></tr></thead>
       <tbody>${line.rows.map(e=>enemyRow(e,f.name,line.name)).join("")}</tbody></table></div></div>`;
   }
 
@@ -127,7 +136,8 @@ const BestiaryLab=(()=>{
   function render(data){
     return `<p class="cov-intro">Chaque ennemi a une fiche figée par niveau. <strong>Points de combat</strong> : un mercenaire moyen vaut 10 ;
       les camps se remplissent avec un budget de points. Survolez une ligne pour le détail (résistances, compétences, image attendue).
-      <br><span class="muted">À venir (étape 2) : butin par créature, niveau de mission minimum, créatures partagées entre factions.</span></p>
+      <strong>Dès</strong> : niveau de mission minimum. <strong>Butin</strong> : chance de récupérer chaque objet porté, et les objets en plus (au survol).
+      <br><span class="muted">À venir : créatures partagées entre factions (un loup dans un camp gobelin).</span></p>
       ${data.factions.map(factionBlock).join("")}${summonBlock(data.summons)}`;
   }
   function meta(data){ return data.total+" fiches ennemies · "+data.factions.length+" factions · "+data.summons.length+" invocations"; }

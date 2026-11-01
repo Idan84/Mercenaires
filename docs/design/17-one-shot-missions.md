@@ -197,7 +197,7 @@ Données : `data/reference/enemy-archetypes.json` (24 fiches gobelines ; les orc
 | Caïd gobelin | P75 | Cuir renforcé T3 | ~3 mercenaires | 30 |
 | Grand Caïd gobelin | P90 | Cotte de mailles T4 | ~5,5 | 55 |
 | Chef de clan gobelin | P95 | Brigandine T4 | ~10 | 100 |
-| Roi des Cavernes | P99 | Armure d'écailles T4 | plus de 10 (84 % de victoires contre 10) | au-delà de la mesure |
+| Roi des Cavernes | P99 | Armure d'écailles T4 | ~17 (mesuré le 2026-11-01, §15) | 167 |
 
 Le Roi des Cavernes reste presque intouchable pour une compagnie de départ : c'est voulu (Idan) ; il devra affronter des mercenaires à 4 étoiles d'or, et la magie (boule de feu) ignorera son bouclier.
 
@@ -268,7 +268,7 @@ ennemis, récompense, expiration…), la lettre du commanditaire s'il y en a une
 > « Le peuple est aléatoire, la difficulté dépend de la réputation et on équilibre la difficulté grâce aux nombre d'ennemis qu'on ajoute. » « Chaque ennemi devrait avoir un équivalent en point de combat […] et on monte des escouades grâce à cela. » « Oui, vas-y pour les points et 35 PO par point. »
 
 - **Une seule carte « Faire le ménage »** au tableau ; son camp est tiré au hasard parmi les peuples de camps (`one-shot-missions.json`, `camps[]`, même poids) : **Gobelins**, **Orcs**, **Hommes-bêtes**, **Voleurs** (Humains) et **Ogres** (Idan : « vas-y pour le camp orc et enchaîne avec Hommes-bêtes, voleurs et Ogres »). Chaque peuple a ses lignes, son chef, ses trois ordres de mission et ses noms (tribus, chefs).
-- **Points de combat** : chaque fiche (`enemy-archetypes.json`, `points`) vaut ce qu'elle pèse au combat, sur l'échelle d'un mercenaire généré moyen = 10 (simulateur : nombre d'exemplaires qu'il faut contre 3 mercenaires pour gagner une fois sur deux ; chefs : 10 × le nombre de mercenaires qui le battent une fois sur deux ; null = au-delà de la mesure).
+- **Points de combat** : chaque fiche (`enemy-archetypes.json`, `points`) vaut ce qu'elle pèse au combat, sur l'échelle d'un mercenaire généré moyen = 10 (simulateur : nombre d'exemplaires qu'il faut contre 3 mercenaires pour gagner une fois sur deux ; chefs : 10 × le nombre de mercenaires qui le battent une fois sur deux ; tous mesurés depuis le §15).
 - **Budget** : une mission a le budget de sa difficulté (`budgets`) ; difficulté 1 : tiré entre **55 et 75 points**. Le camp prend son chef, puis tire des ennemis (lignes selon leurs poids ; « normal » dans 5 % des tirages, sinon novice) **tant que le total se rapproche du budget**. Résultat : 65 points en moyenne pour chaque peuple ; en plus du chef, 6,5 gobelins en moyenne (comme l'ancien camp à 1D4+4), 4,3 orcs, 3,7 hommes-bêtes, 3,5 voleurs ou 2,7 ogres. Le total s'écarte du budget d'au plus la moitié d'un « normal ».
 - **Lignes des nouveaux peuples** : cinq rôles comme chez les gobelins (un front, un garde à bouclier ou arme lourde, un rapide, deux tireurs), avec les armes que ce peuple porte vraiment à la génération (mesuré sur 3 000 personnages générés). Mêmes armures par rôle et même spécialisation que les lignes gobelines correspondantes. Une ligne de chaque peuple, ses armes et ses poids peuvent changer sans toucher au reste : seuls ses points comptent pour le budget.
 - **Récompense** : 35 PO par point de combat (même moyenne que 300 PO par ennemi pour les gobelins) : un camp plus dangereux paie plus, quel que soit le nombre d'ennemis.
@@ -287,7 +287,7 @@ Même méthode que les gobelins (§10), sur les centiles des Orcs générés (Or
 | Guerrier | 6 | 15 | 32 | 51 |
 | Assassin | 5 | 10 | 18 | 33 |
 
-Chefs (noms validés par Idan) : **Chef de bande orc** (P75, 38 points), **Chef de guerre orc** (P90, 72), **Seigneur de guerre orc** (P95, au-delà de la mesure), **Khan des Steppes** (P99, au-delà). Pour comparer : Caïd gobelin 30, Grand Caïd 55, Chef de clan 100.
+Chefs (noms validés par Idan) : **Chef de bande orc** (P75, 38 points), **Chef de guerre orc** (P90, 72), **Seigneur de guerre orc** (P95, 111), **Khan des Steppes** (P99, 221 ; mesurés le 2026-11-01, §15). Pour comparer : Caïd gobelin 30, Grand Caïd 55, Chef de clan 100.
 
 Ordres orcs (Idan : « au pire, c'est un texte à changer ») : le chef de village (le vieux fort, le forgeron rendu avec une liste de commandes), le chef orc rival (« Un orc ne ment pas. Presque jamais. ») et l'ordre de l'Empereur (« une horde orque »). Texte complet dans `one-shot-missions.json` (`village_orcs`, `orc_rival`, `emperor_orcs`).
 
@@ -303,7 +303,7 @@ Même méthode, sur les centiles des personnages générés de chaque peuple (to
 | Traqueur (15) | deux Hachettes (+ Discrétion d'un cran) | 5 | 10 | 19 | 30 |
 | Archer (15) | Arc | 6 | 10 | 16 | 25 |
 
-Chefs (Hache de guerre + Rondache) : **Chef de harde** (41), **Grand Chef de harde** (64), **Seigneur des Bêtes**, **Roi-Totem** (au-delà de la mesure).
+Chefs (Hache de guerre + Rondache) : **Chef de harde** (41), **Grand Chef de harde** (64), **Seigneur des Bêtes** (115), **Roi-Totem** (193).
 
 | Voleurs | Armes | Novice | Normal | Vétéran | Élite |
 |---|---|---|---|---|---|
@@ -313,7 +313,7 @@ Chefs (Hache de guerre + Rondache) : **Chef de harde** (41), **Grand Chef de har
 | Archer (20) | Arc | 7 | 11 | 20 | 24 |
 | Bandit (15) | Lance | 8 | 16 | 25 | 50 |
 
-Chefs (Sabre + Rondache) : **Chef de brigands** (40), **Capitaine des brigands** (68), **Maître de la Guilde**, **Prince des Voleurs** (au-delà de la mesure).
+Chefs (Sabre + Rondache) : **Chef de brigands** (40), **Capitaine des brigands** (68), **Maître de la Guilde** (108), **Prince des Voleurs** (211).
 
 | Ogres | Armes | Novice | Normal | Vétéran | Élite |
 |---|---|---|---|---|---|
@@ -323,7 +323,24 @@ Chefs (Sabre + Rondache) : **Chef de brigands** (40), **Capitaine des brigands**
 | Perceur (15) | Pic de guerre | 9 | 19 | 35 | 54 |
 | Canonnier (15) | Canon à main | 8 | 13 | 22 | 29 |
 
-Chefs (Marteau de guerre) : **Patron ogre** (42), **Grand Patron ogre** (58), **Tyran ogre** (79), **Ventre-Roi** (au-delà de la mesure).
+Chefs (Marteau de guerre) : **Patron ogre** (42), **Grand Patron ogre** (58), **Tyran ogre** (79), **Ventre-Roi** (116).
 
 Ordres (trois par peuple, textes de JC, à changer si besoin) : chef de village (les totems dans la forêt ; le droit de respirer du moulin ; les ogres qui « repasseront »), rival (corne-maîtresse d'une harde, maître voleur d'une confrérie, chef ogre qui veut récupérer sa marmite) et ordre de l'Empereur. Codes : `village_hommes_betes`, `beastman_rival`, `emperor_hommes_betes`, `village_voleurs`, `thief_rival`, `emperor_voleurs`, `village_ogres`, `ogre_rival`, `emperor_ogres`.
 
+## 15 — Bestiaire : butin, niveau de mission minimum, chefs mesurés (Idan, 2026-11-01)
+
+> « Il faut que tu fasses : le butin par créature, le niveau de mission minimum et les chefs qui n'ont pas de points mesurés. »
+
+- **Niveau de mission minimum** (`enemy-archetypes.json`, `niveau_mission_min`) : de 1 à 15, comme les étoiles (1 à 5 de bronze, puis d'argent, puis d'or : « 2★ argent » = 7). Une créature ne sort que dans une mission de ce niveau ou plus : au tirage du camp, les lignes dont la fiche n'est pas permise sont écartées. **Toutes les fiches sont à 1 pour l'instant** (rien ne change en jeu) ; les niveaux se régleront avec le budget par étoile.
+- **Butin par créature** (`butin`) : `equipement` = chance (%) de récupérer chaque objet porté par un ennemi mort (100 = la règle d'avant, §11) ; `objets` = objets en plus, chacun `{type, nom, tier, chance}` (type : `weapon`, `armor`, `potion`, `manual` ou un objet à bonus comme `ring`), tirés à la mort de la créature. **Toutes les fiches : 100 % de l'équipement, rien en plus** pour l'instant. L'équipement de nos morts revient toujours en entier.
+- **Chefs mesurés** : les neuf chefs restés « au-delà de la mesure » sont mesurés sur leurs fiches figées, telles que le jeu les applique, contre 1 à 27 mercenaires générés (200 combats par effectif ; points = 10 × le nombre de mercenaires qui les battent une fois sur deux). Contrôle : le Grand Caïd (55) et le Tyran ogre (79) retombent à 51 et 81 avec la même méthode.
+
+| Peuple | Chef 1 | Chef 2 | Chef 3 | Chef 4 |
+|---|---|---|---|---|
+| Gobelins | Caïd 30 | Grand Caïd 55 | Chef de clan 100 | **Roi des Cavernes 167** |
+| Orcs | Chef de bande 38 | Chef de guerre 72 | **Seigneur de guerre 111** | **Khan des Steppes 221** |
+| Hommes-bêtes | Chef de harde 41 | Grand Chef de harde 64 | **Seigneur des Bêtes 115** | **Roi-Totem 193** |
+| Voleurs | Chef de brigands 40 | Capitaine des brigands 68 | **Maître de la Guilde 108** | **Prince des Voleurs 211** |
+| Ogres | Patron 42 | Grand Patron 58 | Tyran 79 | **Ventre-Roi 116** |
+
+- **Design Lab, Bestiaire** : colonnes « Dès » (niveau de mission minimum) et « Butin » (chance par objet porté, et les objets en plus au survol).

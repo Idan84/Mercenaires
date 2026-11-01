@@ -374,7 +374,7 @@ Idan a validé **90 sorts mono-école** (10 par école) et **49 sorts bi-école*
 
 Refusés (à ne pas reproposer tels quels) : Bouclier de vie, Retour à la vie, Météore, Verglas, Forme bestiale, Corps d'acier, Désarmement, Lévitation, Hallucination, Explosion de cadavre, Esprit gardien, Marque de mort.
 
-**Bi-école (49)** — deux écoles **non opposées**. Ils ne sont **pas appris par les recrues** de la Taverne (pas de sort bi-école à la création). Maîtrise, puissance et apprentissage : en discussion (Idan : « prendre la moyenne ou la somme des deux écoles pour calculer la puissance »).
+**Bi-école (49) — en attente** (Idan, 2026-11-01 : « Mets en stand by les sorts bi école. Garde les idées »). Deux écoles **non opposées**. Ils ne seront **pas appris par les recrues** de la Taverne (pas de sort bi-école à la création). Maîtrise, puissance et apprentissage : à décider (Idan : « prendre la moyenne ou la somme des deux écoles pour calculer la puissance » ; JC3 conseille la moyenne).
 
 - **Vie × Feu** : **Flamme sacrée** (dégâts de feu ; la moitié des PV infligés soigne le lanceur) ; **Brasier de guérison** (un cercle de feu 2 tours : il soigne les alliés et brûle les ennemis qui y sont) ; **Cœur ardent** (soigne un allié et le rend insensible à la peur 2 tours).
 - **Vie × Eau** : **Source de jouvence** (soigne un allié et lui rend du mana).

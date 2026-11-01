@@ -203,7 +203,30 @@ function resetMissionActivation(unit){
   unit.prone=false;
   unit.secondMove=false;
   tickMissionRegeneration(unit);
+  tickMissionNaturalRegeneration(unit);
   tickMissionEnchantments(unit);
+}
+
+// Régénération naturelle (sang de troll ; Idan, 2026-11-01 ; game-core/regeneration.js) : au début de chacune de ses
+// activations, s'il est debout ; brûlé depuis sa dernière activation, il ne régénère pas cette fois.
+function missionRegeneration(){
+  const m=game.mission;
+  if(!m||typeof MercenairesRegeneration==="undefined") return null;
+  return m.regeneration||(m.regeneration=MercenairesRegeneration.createRegenerationRules({reference:game.referenceData}));
+}
+function tickMissionNaturalRegeneration(unit){
+  const rules=missionRegeneration();
+  if(!rules||unit.alive===false||!rules.points(unit.character)) return;
+  const name=unit.character.name;
+  if(unit.burned){
+    unit.burned=false;
+    missionLog(name+" a été brûlé"+(missionFeminine(unit)?"e":"")+" : pas de régénération ce tour-ci.","bad");
+    return;
+  }
+  if(unit.hp>=unit.pvMax) return;
+  const tick=rules.roll(unit.character);
+  const healed=healMissionUnit(unit,tick.amount);
+  if(healed) missionLog(name+" se régénère : +"+healed+" PV"+missionWitherNote(unit)+".","magic");
 }
 
 // Un blessé ou un fatigué de la compagnie ne peut pas partir en mission (10-mission-time §4 à §6).
@@ -1212,6 +1235,8 @@ function damageMissionUnitBySpell(unit,amount,source=null,element=null){
   const wasUp=unit.alive!==false;
   unit.hp-=amount;
   unit.damageTaken=(Number(unit.damageTaken)||0)+amount;
+  // Le feu bloque la régénération (sang de troll) à sa prochaine activation.
+  if(element==="feu"&&amount>0) unit.burned=true;
   if(unit.hp<=0){ unit.alive=false; missionLog(unit.character.name+" est hors combat.","death"); }
   missionFx(unit,wasUp&&!unit.alive?"Hors combat":"",wasUp&&!unit.alive?"down":"");
   MercenairesProgression.recordSpellDamage(source,unit,amount,{element,down:wasUp&&!unit.alive});

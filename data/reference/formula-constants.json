@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 250,
+  "row_count": 256,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -1592,6 +1592,54 @@
       "description": "Valeur en pièces d’or d’un manuel de sort, la même pour tous les sorts, sans tier ni qualité ; le marchand en demande × 1,5 selon l’affinité (Idan, 2026-11-01 : « Un sort, on le fixe à 3000 PO »).",
       "formule": "Valeur d’un objet",
       "valeur": 3000,
+      "version": "V1"
+    },
+    {
+      "nom": "Régénération — nombre de dés par tour",
+      "code": "regeneration.combat.dice_count",
+      "description": "Régénération en combat, au début de chaque activation : ceil(dés × (base + Régénération / diviseur)) PV (Idan, 2026-11-01 : « environ 2D6 PV par tour », sang de troll).",
+      "formule": "Régénération",
+      "valeur": 2,
+      "version": "V1"
+    },
+    {
+      "nom": "Régénération — faces des dés",
+      "code": "regeneration.combat.dice_sides",
+      "description": "Faces des dés de la régénération en combat (2D6).",
+      "formule": "Régénération",
+      "valeur": 6,
+      "version": "V1"
+    },
+    {
+      "nom": "Régénération — part fixe du facteur",
+      "code": "regeneration.combat.base",
+      "description": "Facteur des dés = base + Régénération / diviseur : 0,78 à 14 points (lointain ancêtre), 1,04 à 27 (lignée proche), 1,2 à 35 (bâtard), 2,5 à 100.",
+      "formule": "Régénération",
+      "valeur": 0.5,
+      "version": "V1"
+    },
+    {
+      "nom": "Régénération — diviseur du facteur",
+      "code": "regeneration.combat.divisor",
+      "description": "Facteur des dés = base + Régénération / ce diviseur.",
+      "formule": "Régénération",
+      "valeur": 50,
+      "version": "V1"
+    },
+    {
+      "nom": "Régénération — convalescence au camp",
+      "code": "regeneration.camp.divisor",
+      "description": "Jours de convalescence d’une blessure = jours / (1 + Régénération / ce diviseur) : divisés par 2 à 100 (Idan, 2026-11-01).",
+      "formule": "Régénération",
+      "valeur": 100,
+      "version": "V1"
+    },
+    {
+      "nom": "XP — Régénération à chaque brûlure",
+      "code": "progression.regeneration.burn_xp",
+      "description": "XP de Régénération à chaque brûlure (blessure de feu), pour qui en a déjà (Idan, 2026-11-01 : « à chaque brûlure ! »).",
+      "formule": "Progression naturelle V1",
+      "valeur": 30,
       "version": "V1"
     },
     {

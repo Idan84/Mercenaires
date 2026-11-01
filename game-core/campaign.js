@@ -4,10 +4,11 @@
 // résolue jour par jour (10-mission-time-and-unavailability.md). L'état est un objet JSON pur.
 (function(root,factory){
   const history=typeof module!=="undefined"&&module.exports?require("./history.js"):root.MercenairesHistory;
-  const api=factory(history);
+  const regeneration=typeof module!=="undefined"&&module.exports?require("./regeneration.js"):root.MercenairesRegeneration;
+  const api=factory(history,regeneration);
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesCampaign=api;
-})(typeof globalThis!=="undefined"?globalThis:this,function(History){
+})(typeof globalThis!=="undefined"?globalThis:this,function(History,Regeneration){
   // Sauvegarde : l'état de partie complet, sérialisé en JSON avec un format et une version.
   // La trace de génération des mercenaires (détail de calcul pour le Design Lab, ~85 % du poids)
   // n'est pas sauvegardée : un mercenaire passe d'environ 36 Ko à 5 Ko.
@@ -58,6 +59,9 @@
   // merchants (facultatif) : createMerchantRules(...) de game-core/merchants.js (le marchand du jour, doc 18).
   function createCampaignRules({generator,tavern,reference,biographies=null,avatars=null,progression=null,affinity=null,names=null,missions=null,lieutenants=null,bodyguard=null,magic=null,merchants=null}){
     const STARTING_GOLD=referenceConstant(reference,"company.gold.initial",10000);
+    // Régénération (sang de troll ; Idan, 2026-11-01) : une blessure guérit plus vite au camp (regeneration.js).
+    const regeneration=Regeneration?Regeneration.createRegenerationRules({reference}):null;
+    const woundDaysFor=(mercenary,days)=>regeneration?regeneration.campDays(mercenary,days):days;
     const STARTING_DORMITORY_CAPACITY=referenceConstant(reference,"camp.dormitory.initial_capacity",40);
     const RENOWN_RANK_EXPONENT=referenceConstant(reference,"company.renown.rank_exponent",1.5);
     const RENOWN_HERITAGE_SHARE=referenceConstant(reference,"company.renown.heritage_share",0.2);
@@ -744,7 +748,7 @@
         if(!m) continue;
         const back=bodyguard.rollReturn();
         if(back.issue==="fatigue") m.recovery={kind:"fatigued",daysLeft:back.days,sinceDay:state.day};
-        if(back.issue==="blesse") m.recovery={kind:"wounded",daysLeft:back.days,sinceDay:state.day};
+        if(back.issue==="blesse") m.recovery={kind:"wounded",daysLeft:woundDaysFor(m,back.days),sinceDay:state.day};
         const reputation=bodyguard.reputationGain(back.issue);
         if(reputation){
           m.reputationCareerDelta=(Number(m.reputationCareerDelta)||0)+reputation;
@@ -754,8 +758,9 @@
         const bonus=Number(m.contract?.missionBonus)||0;
         state.company.gold-=bonus;
         bonusPaid+=bonus;
-        History.record(m,state.day,"bodyguard",{issue:back.issue,days:back.days,client:expedition.offer.client});
-        results.push({mercenary:m,issue:back.issue,days:back.days,reputation,bonus});
+        const days=back.issue==="blesse"?m.recovery.daysLeft:back.days;
+        History.record(m,state.day,"bodyguard",{issue:back.issue,days,client:expedition.offer.client});
+        results.push({mercenary:m,issue:back.issue,days,reputation,bonus});
       }
       const renown=results.length?bodyguard.renownGain():0;
       if(renown) state.company.missionRenown=(Number(state.company.missionRenown)||0)+renown;
@@ -871,7 +876,7 @@
           report.progression.push({mercenary,xp,changes,reputation:{...gain,...progression.applyReputation(mercenary,gain)}});
         }
         if(result.wounded){
-          mercenary.recovery={kind:"wounded",daysLeft:result.woundDays,sinceDay:state.day};
+          mercenary.recovery={kind:"wounded",daysLeft:woundDaysFor(mercenary,result.woundDays),sinceDay:state.day};
           report.wounded.push(mercenary);
         }else{
           mercenary.recovery={kind:"fatigued",daysLeft:result.fatigueDays,sinceDay:state.day};
@@ -879,7 +884,7 @@
         }
         // Historique : une mission de plus, ses adversaires abattus, ses coups encaissés, sa blessure.
         History.recordMission(mercenary,state.day,{progress:result.progress,wounded:result.wounded,
-          days:result.wounded?result.woundDays:result.fatigueDays});
+          days:result.wounded?mercenary.recovery.daysLeft:result.fatigueDays});
         // §8 — La prime de mission individuelle n'est payée que si le mercenaire revient ; pas à celui qui a fui hors de
         // la carte (Idan, 2026-10-24, doc 17 §8).
         const bonus=result.offMap?0:Number(mercenary.contract?.missionBonus)||0;

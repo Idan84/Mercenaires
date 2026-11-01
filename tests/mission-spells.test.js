@@ -11,6 +11,7 @@ const {createGenerator}=require("../game-core/mercenary-generator.js");
 const Progression=require("../game-core/progression.js");
 const MissionEnd=require("../game-core/mission-end.js");
 const Magic=require("../game-core/magic.js");
+require("../game-core/regeneration.js"); // MercenairesRegeneration, lue par l'écran de combat
 
 const ROOT=path.resolve(__dirname,"..");
 const read=file=>JSON.parse(fs.readFileSync(path.join(ROOT,"data","reference",file),"utf8"));
@@ -45,7 +46,7 @@ const api=new Function("game","$","esc","fmt","renderAvatar","combatEngine","Mer
   +"handleMissionHexClick,resetMissionActivation,missionAiCast,missionActionAvailability,autoResolveMission,missionKey,renderMissionSpellBar,"
   +"missionMagic,endMissionActivation,missionWeaponEnchantStrike,pruneMissionTerrain,occupiedMissionKeys,missionReachablePaths,"
   +"renderMissionProgression,missionLineOfSight,missionCanAttack,frenzyMissionActivation,maintainMissionSummons,checkMissionEnd,onMissionAttack,moveMissionUnitAlongPath,"
-  +"renderMissionConsole,missionAttackFx,tickMissionStorms,missionParalyzedSkip,missionStormAt};")
+  +"renderMissionConsole,missionAttackFx,tickMissionStorms,missionParalyzedSkip,missionStormAt,damageMissionUnitBySpell};")
   .call(null,game,$,v=>String(v??""),v=>String(Math.round(Number(v)||0)),()=>"",()=>engine,Progression,MissionEnd,Magic);
 
 function newMission(){
@@ -1125,6 +1126,31 @@ assert.ok(report.mana.some(x=>x.id===home.id));
   const log=[{message:"Tour 1",kind:"turn"},...[1,2,3].map(n=>({message:"A"+n+" repère B (50 %, jet 3).",kind:"info"})),{message:"C repère D (5 %, jet 1).",kind:"info"}];
   assert.match(api.renderMissionConsole(log),/<details class="combat-log-group"><summary>4 repérages<\/summary>/);
   assert.doesNotMatch(api.renderMissionConsole(log.slice(0,3)),/<details/,"moins de 3 : pas de regroupement");
+}
+
+// Régénération (sang de troll ; Idan, 2026-11-01) : au début de chaque activation ; le feu la bloque une fois.
+{
+  const troll=m.players.find(p=>p.alive)||u;
+  troll.alive=true;troll.withered=false;troll.burned=false;
+  troll.character.skills.physiology={...(troll.character.skills.physiology||{}),"Régénération":27};
+  troll.hp=Math.max(1,troll.pvMax-100);
+  let before=troll.hp;
+  queue.push(0.5,0.5);
+  api.resetMissionActivation(troll);
+  assert.equal(troll.hp,before+Math.ceil(8*1.04-1e-9),"2D6 = 8 × (0,5 + 27 / 50)");
+  assert.ok(logged(/se régénère : \+9 PV/));
+  api.damageMissionUnitBySpell(troll,5,null,"feu");
+  assert.equal(troll.burned,true);
+  before=troll.hp;
+  api.resetMissionActivation(troll);
+  assert.equal(troll.hp,before,"brûlé : pas de régénération");
+  assert.ok(logged(/a été brûlée? : pas de régénération ce tour-ci/));
+  queue.push(0.5,0.5);
+  api.resetMissionActivation(troll);
+  assert.ok(troll.hp>before,"elle reprend");
+  api.damageMissionUnitBySpell(troll,5,null,"froid");
+  assert.equal(troll.burned,false,"le froid ne la bloque pas");
+  troll.character.skills.physiology["Régénération"]=0;
 }
 
 console.log("Sorts de Vie, du Feu, de l'Eau, de la Transmutation, de la Foudre, de la Télékinésie, de l'Illusion, de la Nécromancie et de l'Invocation dans l'écran de combat, poison, recharge du mana au camp — OK");

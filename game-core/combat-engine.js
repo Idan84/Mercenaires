@@ -445,6 +445,10 @@
     function iced(unit,damage){
       return unit?.frozen?Math.max(0,Math.ceil(damage*(Number(unit.frozen.factor)||0.5)-1e-9)):damage;
     }
+    // Sommeil (Illusion) : un dormeur blessé se réveille ; l'écran de combat l'annonce (unit.wokeUp).
+    function wake(unit,damage){
+      if(damage>0&&unit?.asleep){ unit.asleep=null; unit.wokeUp=true; }
+    }
 
     // Dégâts physiques d'un sort (Télékinésie ; Idan, 2026-10-28 : « ça passe par l'armure », contondant) : l'étape
     // Blesser d'une arme, la Puissance magique du lanceur tenant le rôle de la Force et 0,2 × la Maîtrise du sort celui des
@@ -834,6 +838,7 @@
       const damageData=physicalDamage(attacker,defender,mode,chargePower,criticalWound?{roll:"max",resistanceRoll:1}:{});
       // Les PV restent signés : la profondeur sous 0 sert au jet de mort de fin de mission (Issue #13).
       defender.hp-=damageData.damage;
+      wake(defender,damageData.damage);
       // Les soins n'effacent pas l'usure : la fatigue de fin de mission se calcule sur le cumul (10-mission-time §5).
       defender.damageTaken=(Number(defender.damageTaken)||0)+damageData.damage;
       if(defender.hp<=0) defender.alive=false;
@@ -866,6 +871,7 @@
       const will=clamp(statWithGear(attacker,"Volonté")/Math.max(1,statWithGear(defender,"Volonté")),0.5,2);
       const damage=iced(defender,Math.max(0,Math.ceil(10*rolled.total*will-1e-9)));
       defender.hp-=damage;
+      wake(defender,damage);
       defender.damageTaken=(Number(defender.damageTaken)||0)+damage;
       if(defender.hp<=0) defender.alive=false;
       return {psychic:true,will,weaponRoll:rolled.total,weaponDice:rolled.dice,wound:true,damage,targetHp:defender.hp,targetDown:!defender.alive};
@@ -921,13 +927,14 @@
 
     // Sortir de la zone menacée déclenche la réaction ; s'y déplacer ne déclenche rien.
     function opportunityReactors(opponents,from,to){
-      // Figé dans la glace (Prison de glace) : il ne réagit pas.
-      return opponents.filter(o=>!o.frozen&&threatens(o,from)&&!threatens(o,to));
+      // Figé dans la glace (Prison de glace), endormi (Sommeil) ou simple double illusoire (Création de double) : il ne réagit pas.
+      return opponents.filter(o=>!inert(o)&&threatens(o,from)&&!threatens(o,to));
     }
+    function inert(unit){ return Boolean(unit?.frozen||unit?.asleep||unit?.decoy); }
 
     // Tirer sur une autre cible que l'adversaire qui menace déclenche sa réaction.
     function rangedOpportunityReactors(opponents,shooter,target){
-      return opponents.filter(o=>o!==target&&!o.frozen&&threatens(o,shooter));
+      return opponents.filter(o=>o!==target&&!inert(o)&&threatens(o,shooter));
     }
 
     // Encerclement CAC V1 : au moins deux adversaires au contact, armés pour le CAC,
@@ -1189,7 +1196,9 @@
       rollRecovery,
       rollFleeBehavior,
       opportunityReactors,
-      rangedOpportunityReactors
+      rangedOpportunityReactors,
+      inert,
+      wake
     };
   }
 

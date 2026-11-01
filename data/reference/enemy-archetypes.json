@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "enemy-archetypes",
-  "description": "Archétypes d’ennemis fixes (Idan, 2026-10-24 ; doc 17 §10 et §14). Gobelins, Orcs, Hommes-bêtes, Voleurs (Humains) et Ogres (2026-11-01) : cinq lignes sur quatre niveaux et quatre niveaux de chef chacun. Valeurs figées à partir des centiles des personnages générés du même peuple (novice P20, normal P50, vétéran P75, élite P90 ; chefs P75 à P99), avec la spécialisation de chaque ligne (trois caractéristiques un cran au-dessus, deux un cran au-dessous). PV = 3 × (Constitution + 0,2 × Endurance + 0,1 × Volonté). Points de combat (Idan, 2026-11-01) : un mercenaire généré moyen vaut 10 points (simulateur, 150 combats par effectif ; chefs : 10 × le nombre de mercenaires qui le battent une fois sur deux ; les plus forts mesurés jusqu’à 27 mercenaires, 200 combats par effectif). Niveau de mission minimum et butin par créature (Idan, 2026-11-01) : 1 et tout l’équipement porté, comme avant, tant qu’ils ne sont pas réglés. Ils composent les camps de « Faire le ménage » (one-shot-missions.json, budgets).",
+  "description": "Archétypes d’ennemis fixes (Idan, 2026-10-24 ; doc 17 §10 et §14). Gobelins, Orcs, Hommes-bêtes, Voleurs (Humains) et Ogres (2026-11-01) : cinq lignes sur quatre niveaux et quatre niveaux de chef chacun. Valeurs figées à partir des centiles des personnages générés du même peuple (novice P20, normal P50, vétéran P75, élite P90 ; chefs P75 à P99), avec la spécialisation de chaque ligne (trois caractéristiques un cran au-dessus, deux un cran au-dessous). PV = 3 × (Constitution + 0,2 × Endurance + 0,1 × Volonté). Points de combat (Idan, 2026-11-01) : un mercenaire généré moyen vaut 10 points (simulateur, 150 combats par effectif ; chefs : 10 × le nombre de mercenaires qui le battent une fois sur deux ; les plus forts mesurés jusqu’à 27 mercenaires, 200 combats par effectif). Niveau de mission minimum et butin par créature (Idan, 2026-11-01) : niveau 1 pour l’instant ; l’équipement peut se casser au combat : 100 % − 10 % par tier de chance de récupérer chaque objet porté (T1 90 %, T2 80 %, T3 70 %, T4 60 %). Ils composent les camps de « Faire le ménage » (one-shot-missions.json, budgets).",
   "columns": [
     {
       "source": "Nom",
@@ -143,7 +143,7 @@
       "points": 6,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 90,
         "objets": []
       }
     },
@@ -202,7 +202,7 @@
       "points": 12,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 80,
         "objets": []
       }
     },
@@ -261,7 +261,7 @@
       "points": 23,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 70,
         "objets": []
       }
     },
@@ -321,7 +321,7 @@
       "points": 43,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 60,
         "objets": []
       }
     },
@@ -378,7 +378,7 @@
       "points": 5,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 90,
         "objets": []
       }
     },
@@ -435,7 +435,7 @@
       "points": 10,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 80,
         "objets": []
       }
     },
@@ -494,7 +494,7 @@
       "points": 16,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 70,
         "objets": []
       }
     },
@@ -553,7 +553,7 @@
       "points": 22,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 60,
         "objets": []
       }
     },
@@ -610,7 +610,7 @@
       "points": 6,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 90,
         "objets": []
       }
     },
@@ -669,7 +669,7 @@
       "points": 11,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 80,
         "objets": []
       }
     },
@@ -728,7 +728,7 @@
       "points": 16,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 70,
         "objets": []
       }
     },
@@ -787,7 +787,7 @@
       "points": 23,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 60,
         "objets": []
       }
     },
@@ -849,7 +849,7 @@
       "points": 5,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 90,
         "objets": []
       }
     },
@@ -911,7 +911,7 @@
       "points": 11,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 80,
         "objets": []
       }
     },
@@ -974,7 +974,7 @@
       "points": 24,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 70,
         "objets": []
       }
     },
@@ -1037,7 +1037,7 @@
       "points": 47,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 60,
         "objets": []
       }
     },
@@ -1095,7 +1095,7 @@
       "points": 4,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 90,
         "objets": []
       }
     },
@@ -1153,7 +1153,7 @@
       "points": 7,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 80,
         "objets": []
       }
     },
@@ -1211,7 +1211,7 @@
       "points": 15,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 70,
         "objets": []
       }
     },
@@ -1269,7 +1269,7 @@
       "points": 23,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 60,
         "objets": []
       }
     },
@@ -1332,7 +1332,7 @@
       "points": 30,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 70,
         "objets": []
       }
     },
@@ -1395,7 +1395,7 @@
       "points": 55,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 60,
         "objets": []
       }
     },
@@ -1458,7 +1458,7 @@
       "points": 100,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 60,
         "objets": []
       }
     },
@@ -1522,7 +1522,7 @@
       "points": 167,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 60,
         "objets": []
       }
     },
@@ -1579,7 +1579,7 @@
       "points": 7,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 90,
         "objets": []
       }
     },
@@ -1638,7 +1638,7 @@
       "points": 15,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 80,
         "objets": []
       }
     },
@@ -1697,7 +1697,7 @@
       "points": 26,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 70,
         "objets": []
       }
     },
@@ -1757,7 +1757,7 @@
       "points": 43,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 60,
         "objets": []
       }
     },
@@ -1814,7 +1814,7 @@
       "points": 6,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 90,
         "objets": []
       }
     },
@@ -1871,7 +1871,7 @@
       "points": 9,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 80,
         "objets": []
       }
     },
@@ -1930,7 +1930,7 @@
       "points": 15,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 70,
         "objets": []
       }
     },
@@ -1989,7 +1989,7 @@
       "points": 22,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 60,
         "objets": []
       }
     },
@@ -2046,7 +2046,7 @@
       "points": 6,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 90,
         "objets": []
       }
     },
@@ -2105,7 +2105,7 @@
       "points": 11,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 80,
         "objets": []
       }
     },
@@ -2164,7 +2164,7 @@
       "points": 17,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 70,
         "objets": []
       }
     },
@@ -2223,7 +2223,7 @@
       "points": 23,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 60,
         "objets": []
       }
     },
@@ -2285,7 +2285,7 @@
       "points": 6,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 90,
         "objets": []
       }
     },
@@ -2347,7 +2347,7 @@
       "points": 15,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 80,
         "objets": []
       }
     },
@@ -2410,7 +2410,7 @@
       "points": 32,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 70,
         "objets": []
       }
     },
@@ -2473,7 +2473,7 @@
       "points": 51,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 60,
         "objets": []
       }
     },
@@ -2531,7 +2531,7 @@
       "points": 5,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 90,
         "objets": []
       }
     },
@@ -2589,7 +2589,7 @@
       "points": 10,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 80,
         "objets": []
       }
     },
@@ -2647,7 +2647,7 @@
       "points": 18,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 70,
         "objets": []
       }
     },
@@ -2705,7 +2705,7 @@
       "points": 33,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 60,
         "objets": []
       }
     },
@@ -2768,7 +2768,7 @@
       "points": 38,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 70,
         "objets": []
       }
     },
@@ -2831,7 +2831,7 @@
       "points": 72,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 60,
         "objets": []
       }
     },
@@ -2894,7 +2894,7 @@
       "points": 111,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 60,
         "objets": []
       }
     },
@@ -2958,7 +2958,7 @@
       "points": 221,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 60,
         "objets": []
       }
     },
@@ -3015,7 +3015,7 @@
       "points": 6,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 90,
         "objets": []
       }
     },
@@ -3074,7 +3074,7 @@
       "points": 12,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 80,
         "objets": []
       }
     },
@@ -3133,7 +3133,7 @@
       "points": 24,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 70,
         "objets": []
       }
     },
@@ -3193,7 +3193,7 @@
       "points": 42,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 60,
         "objets": []
       }
     },
@@ -3255,7 +3255,7 @@
       "points": 7,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 90,
         "objets": []
       }
     },
@@ -3317,7 +3317,7 @@
       "points": 17,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 80,
         "objets": []
       }
     },
@@ -3380,7 +3380,7 @@
       "points": 37,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 70,
         "objets": []
       }
     },
@@ -3443,7 +3443,7 @@
       "points": 49,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 60,
         "objets": []
       }
     },
@@ -3501,7 +3501,7 @@
       "points": 5,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 90,
         "objets": []
       }
     },
@@ -3559,7 +3559,7 @@
       "points": 10,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 80,
         "objets": []
       }
     },
@@ -3617,7 +3617,7 @@
       "points": 19,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 70,
         "objets": []
       }
     },
@@ -3675,7 +3675,7 @@
       "points": 30,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 60,
         "objets": []
       }
     },
@@ -3732,7 +3732,7 @@
       "points": 7,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 90,
         "objets": []
       }
     },
@@ -3789,7 +3789,7 @@
       "points": 12,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 80,
         "objets": []
       }
     },
@@ -3848,7 +3848,7 @@
       "points": 19,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 70,
         "objets": []
       }
     },
@@ -3907,7 +3907,7 @@
       "points": 24,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 60,
         "objets": []
       }
     },
@@ -3964,7 +3964,7 @@
       "points": 6,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 90,
         "objets": []
       }
     },
@@ -4023,7 +4023,7 @@
       "points": 10,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 80,
         "objets": []
       }
     },
@@ -4082,7 +4082,7 @@
       "points": 16,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 70,
         "objets": []
       }
     },
@@ -4141,7 +4141,7 @@
       "points": 25,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 60,
         "objets": []
       }
     },
@@ -4204,7 +4204,7 @@
       "points": 41,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 70,
         "objets": []
       }
     },
@@ -4267,7 +4267,7 @@
       "points": 64,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 60,
         "objets": []
       }
     },
@@ -4330,7 +4330,7 @@
       "points": 115,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 60,
         "objets": []
       }
     },
@@ -4394,7 +4394,7 @@
       "points": 193,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 60,
         "objets": []
       }
     },
@@ -4452,7 +4452,7 @@
       "points": 5,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 90,
         "objets": []
       }
     },
@@ -4510,7 +4510,7 @@
       "points": 10,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 80,
         "objets": []
       }
     },
@@ -4568,7 +4568,7 @@
       "points": 18,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 70,
         "objets": []
       }
     },
@@ -4626,7 +4626,7 @@
       "points": 35,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 60,
         "objets": []
       }
     },
@@ -4688,7 +4688,7 @@
       "points": 8,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 90,
         "objets": []
       }
     },
@@ -4750,7 +4750,7 @@
       "points": 18,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 80,
         "objets": []
       }
     },
@@ -4813,7 +4813,7 @@
       "points": 48,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 70,
         "objets": []
       }
     },
@@ -4876,7 +4876,7 @@
       "points": 58,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 60,
         "objets": []
       }
     },
@@ -4933,7 +4933,7 @@
       "points": 8,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 90,
         "objets": []
       }
     },
@@ -4992,7 +4992,7 @@
       "points": 16,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 80,
         "objets": []
       }
     },
@@ -5051,7 +5051,7 @@
       "points": 25,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 70,
         "objets": []
       }
     },
@@ -5111,7 +5111,7 @@
       "points": 50,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 60,
         "objets": []
       }
     },
@@ -5168,7 +5168,7 @@
       "points": 8,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 90,
         "objets": []
       }
     },
@@ -5225,7 +5225,7 @@
       "points": 13,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 80,
         "objets": []
       }
     },
@@ -5284,7 +5284,7 @@
       "points": 20,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 70,
         "objets": []
       }
     },
@@ -5343,7 +5343,7 @@
       "points": 25,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 60,
         "objets": []
       }
     },
@@ -5400,7 +5400,7 @@
       "points": 7,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 90,
         "objets": []
       }
     },
@@ -5459,7 +5459,7 @@
       "points": 11,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 80,
         "objets": []
       }
     },
@@ -5518,7 +5518,7 @@
       "points": 20,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 70,
         "objets": []
       }
     },
@@ -5577,7 +5577,7 @@
       "points": 24,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 60,
         "objets": []
       }
     },
@@ -5640,7 +5640,7 @@
       "points": 40,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 70,
         "objets": []
       }
     },
@@ -5703,7 +5703,7 @@
       "points": 68,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 60,
         "objets": []
       }
     },
@@ -5766,7 +5766,7 @@
       "points": 108,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 60,
         "objets": []
       }
     },
@@ -5830,7 +5830,7 @@
       "points": 211,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 60,
         "objets": []
       }
     },
@@ -5887,7 +5887,7 @@
       "points": 9,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 90,
         "objets": []
       }
     },
@@ -5946,7 +5946,7 @@
       "points": 17,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 80,
         "objets": []
       }
     },
@@ -6005,7 +6005,7 @@
       "points": 34,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 70,
         "objets": []
       }
     },
@@ -6065,7 +6065,7 @@
       "points": 48,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 60,
         "objets": []
       }
     },
@@ -6124,7 +6124,7 @@
       "points": 9,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 90,
         "objets": []
       }
     },
@@ -6183,7 +6183,7 @@
       "points": 19,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 80,
         "objets": []
       }
     },
@@ -6243,7 +6243,7 @@
       "points": 44,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 70,
         "objets": []
       }
     },
@@ -6303,7 +6303,7 @@
       "points": 54,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 60,
         "objets": []
       }
     },
@@ -6360,7 +6360,7 @@
       "points": 9,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 90,
         "objets": []
       }
     },
@@ -6419,7 +6419,7 @@
       "points": 19,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 80,
         "objets": []
       }
     },
@@ -6478,7 +6478,7 @@
       "points": 35,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 70,
         "objets": []
       }
     },
@@ -6538,7 +6538,7 @@
       "points": 54,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 60,
         "objets": []
       }
     },
@@ -6595,7 +6595,7 @@
       "points": 7,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 90,
         "objets": []
       }
     },
@@ -6652,7 +6652,7 @@
       "points": 13,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 80,
         "objets": []
       }
     },
@@ -6711,7 +6711,7 @@
       "points": 22,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 70,
         "objets": []
       }
     },
@@ -6770,7 +6770,7 @@
       "points": 28,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 60,
         "objets": []
       }
     },
@@ -6827,7 +6827,7 @@
       "points": 8,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 90,
         "objets": []
       }
     },
@@ -6886,7 +6886,7 @@
       "points": 13,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 80,
         "objets": []
       }
     },
@@ -6945,7 +6945,7 @@
       "points": 22,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 70,
         "objets": []
       }
     },
@@ -7004,7 +7004,7 @@
       "points": 29,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 60,
         "objets": []
       }
     },
@@ -7064,7 +7064,7 @@
       "points": 42,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 70,
         "objets": []
       }
     },
@@ -7124,7 +7124,7 @@
       "points": 58,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 60,
         "objets": []
       }
     },
@@ -7184,7 +7184,7 @@
       "points": 79,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 60,
         "objets": []
       }
     },
@@ -7245,7 +7245,7 @@
       "points": 116,
       "niveau_mission_min": 1,
       "butin": {
-        "equipement": 100,
+        "equipement": 60,
         "objets": []
       }
     }

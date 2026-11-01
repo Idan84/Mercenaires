@@ -21,50 +21,68 @@ function seeded(seed){
   };
 }
 const reference={oneShotMissions:read("one-shot-missions.json"),enemyArchetypes:read("enemy-archetypes.json"),weapons:read("weapons.json"),
-  baseArmors:read("base-armors.json"),skills:read("skills.json"),itemQualities:read("item-qualities.json")};
+  baseArmors:read("base-armors.json"),skills:read("skills.json"),itemQualities:read("item-qualities.json"),
+  reputationStars:read("reputation-stars.json"),spells:read("spells.json")};
 const rules=createMissionRules({reference,random:seeded(7)});
 
-// Camps (Idan, 2026-11-01) : gobelin, orc, homme-bête, voleurs ou ogre au hasard ; points de combat : le chef, puis des
-// ennemis tant que le total se rapproche du budget (55 à 75 à la difficulté 1) ; « normal » dans 5 % des tirages ; 35 PO
-// par point.
+// Camps (Idan, 2026-11-01) : gobelin, orc, homme-bête, voleurs ou ogre au hasard. Budget par métal (doc 17 §16) :
+// Bronze (niveaux 1 à 5) tirage 40–60 × niveau, Argent (6 à 10) 60–80 × niveau, Or (11 à 15) niveau² × tirage 8–12 ;
+// monstres Bronze novice / normal 50–50, Argent novice / normal / vétéran 25–50–25, Or vétéran / élite 50–50 ; chef 1,
+// chef 2, chef 3 ou 4 ; au plus 100 ennemis.
 const CAMPS=Object.fromEntries(reference.oneShotMissions.missions[0].camps.map(c=>[c.faction,c]));
 assert.deepEqual(Object.keys(CAMPS),["Gobelins","Orcs","Hommes-bêtes","Voleurs","Ogres"]);
-const counts=Object.fromEntries(Object.keys(CAMPS).map(f=>[f,[]])),normals=[],totals=[];
-for(let i=0;i<8000;i++){
-  const camp=rules.rollCamp();
-  const sum=rules.points(camp.chief)+camp.enemies.reduce((t,code)=>t+rules.points(code),0);
-  assert.equal(camp.points,sum,"points du camp");
-  assert.ok(Math.abs(camp.points-camp.budget)<=10,`près du budget (au plus la moitié d’un « normal ») : ${camp.points} / ${camp.budget}`);
-  assert.ok(camp.budget>=55&&camp.budget<=75);
-  assert.equal(camp.chief,CAMPS[camp.faction].chef);
-  assert.equal(rules.archetype(camp.chief).niveau,"chef 1");
-  assert.equal(camp.campName,CAMPS[camp.faction].nom_camp);
-  assert.ok(camp.enemies.every(code=>{ const a=rules.archetype(code); return a.faction===camp.faction&&["novice","normal"].includes(a.niveau); }));
-  counts[camp.faction].push(camp.enemies.length);
-  normals.push(...camp.enemies.map(code=>rules.archetype(code).niveau==="normal"));
-  totals.push(camp.points);
-}
+const metalOf=L=>L<=5?"Bronze":L<=10?"Argent":"Or";
+const BUDGET={Bronze:[40,60,1],Argent:[60,80,1],Or:[8,12,2]};
+const LEVELS={Bronze:["novice","normal"],Argent:["novice","normal","vétéran"],Or:["vétéran","d’élite"]};
+const CHIEFS={Bronze:["chef 1"],Argent:["chef 2"],Or:["chef 3","chef 4"]};
 const mean=list=>list.reduce((t,x)=>t+x,0)/list.length;
-for(const [faction,list] of Object.entries(counts)) assert.ok(Math.abs(list.length-1600)<160,`un camp sur cinq : ${faction} ${list.length}`);
-assert.ok(Math.abs(mean(counts.Gobelins)-6.5)<0.25,"6,5 gobelins en moyenne, comme l'ancien 1D4+4 : "+mean(counts.Gobelins));
-assert.ok(Math.min(...counts.Gobelins)>=3&&Math.max(...counts.Gobelins)<=10);
-assert.ok(Math.abs(mean(counts.Orcs)-4.3)<0.25,"4,3 orcs en moyenne : "+mean(counts.Orcs));
-assert.ok(mean(counts.Ogres)<mean(counts.Voleurs)&&mean(counts.Voleurs)<mean(counts.Orcs),"moins d'ogres que de voleurs, moins de voleurs que d'orcs");
-assert.ok(counts.Ogres.every(n=>n>=1&&n<=5));
-assert.ok(Math.abs(mean(totals)-65)<1.5,"65 points en moyenne : "+mean(totals));
-assert.ok(Math.abs(mean(normals)-0.05)<0.015,"5 % de « normaux » : "+mean(normals));
-assert.equal(rules.points("goblin_chief_1"),30);
-assert.equal(rules.points("orc_chief_1"),38);
+const factions=Object.fromEntries(Object.keys(CAMPS).map(f=>[f,0])),drawn={},chiefs={},budgets={},sizes={};
+for(const L of [1,3,5,6,8,10,11,13,15]) for(let i=0;i<300;i++){
+  const camp=rules.rollCamp(undefined,null,{level:L}),metal=metalOf(L),[low,high,power]=BUDGET[metal],unit=Math.pow(L,power);
+  assert.ok(camp.budget>=low*unit&&camp.budget<=high*unit&&camp.budget%unit===0,`budget ${metal} niveau ${L} : ${camp.budget}`);
+  assert.equal(camp.points,rules.points(camp.chief)+camp.enemies.reduce((t,code)=>t+rules.points(code),0),"points du camp");
+  if(camp.enemies.length<100) assert.ok(Math.abs(camp.points-camp.budget)<=30,`près du budget : ${camp.points} / ${camp.budget}`);
+  else assert.ok(camp.points<=camp.budget+30,`plafond de 100 ennemis : ${camp.points} / ${camp.budget}`);
+  assert.ok(camp.enemies.length<=100);
+  assert.equal(rules.archetype(camp.chief).faction,camp.faction);
+  assert.ok(CHIEFS[metal].includes(rules.archetype(camp.chief).niveau),`chef ${metal}`);
+  assert.equal(camp.campName,CAMPS[camp.faction].nom_camp);
+  factions[camp.faction]++;
+  for(const code of camp.enemies){ const a=rules.archetype(code); assert.equal(a.faction,camp.faction); assert.ok(LEVELS[metal].includes(a.niveau),metal+" : "+a.niveau);
+    (drawn[metal]=drawn[metal]||[]).push(a.niveau); }
+  (chiefs[metal]=chiefs[metal]||[]).push(rules.archetype(camp.chief).niveau);
+  (budgets[L]=budgets[L]||[]).push(camp.budget);(sizes[L]=sizes[L]||[]).push(camp.enemies.length);
+}
+const share=(list,value)=>list.filter(x=>x===value).length/list.length;
+for(const [f,n] of Object.entries(factions)) assert.ok(Math.abs(n/2700-0.2)<0.03,`un camp sur cinq : ${f} ${n}`);
+assert.ok(Math.abs(share(drawn.Bronze,"novice")-0.5)<0.05,"Bronze : 50 % de novices");
+assert.ok(Math.abs(share(drawn.Argent,"normal")-0.5)<0.05&&Math.abs(share(drawn.Argent,"vétéran")-0.25)<0.05,"Argent : 25–50–25");
+assert.ok(Math.abs(share(drawn.Or,"d’élite")-0.5)<0.05,"Or : 50 % d'élites");
+assert.ok(Math.abs(share(chiefs.Or,"chef 4")-0.5)<0.08,"Or : chef 3 ou chef 4");
+for(const [L,expected] of [[1,50],[3,150],[5,250],[6,420],[10,700],[11,1210],[15,2250]]) assert.ok(Math.abs(mean(budgets[L])/expected-1)<0.06,`budget moyen niveau ${L} : ${mean(budgets[L])} / ${expected}`);
+assert.ok(mean(sizes[3])>9&&mean(sizes[3])<14,"3★ bronze : une douzaine d'ennemis : "+mean(sizes[3]));
+assert.ok(mean(sizes[15])>50&&Math.max(...sizes[15])<=100,"5★ or : une armée, au plus 100 : "+mean(sizes[15]));
 
-// Offre : distance 1 à 3 jours, récompense = 2 000 + 1 200 par jour aller-retour + 35 PO par point de combat (Idan,
-// 2026-11-01), valable 3 à 6 jours ; un des trois ordres du peuple du camp.
+// Niveau de la mission : niveau de Renommée de la compagnie (reputation-stars.json) + écart de −3 à +2, borné de 1 à 15.
+assert.deepEqual([rules.renownLevel(0),rules.renownLevel(499),rules.renownLevel(500),rules.renownLevel(1000),rules.renownLevel(8000)],[1,2,3,6,15]);
+const levelsAt=renown=>Array.from({length:3000},()=>rules.rollMissionLevel(rules.definition(),renown));
+const at3=levelsAt(500),at15=levelsAt(8000);
+assert.deepEqual([...new Set(at3)].sort((a,b)=>a-b),[1,2,3,4,5]);
+assert.ok(Math.abs(share(at3,1)-2/6)<0.04,"3★ bronze : −3 et −2 tombent au niveau 1");
+assert.deepEqual([...new Set(at15)].sort((a,b)=>a-b),[12,13,14,15]);
+assert.ok(Math.abs(share(at15,15)-0.5)<0.04,"5★ or : 0, +1 et +2 restent au niveau 15");
+
+// Offre (Idan, 2026-11-01) : jours de marche 1 à niveau ; récompense = 5 000 + tirage 30–40 × budget × niveau ; valable 3 à
+// 6 jours ; un des trois ordres du peuple du camp.
 const orders=Object.fromEntries(Object.keys(CAMPS).map(f=>[f,new Set()]));
 for(let day=1;day<=800;day++){
-  const offer=rules.createOffer({day});
+  const level=1+day%15,offer=rules.createOffer({day,level});
   orders[offer.faction].add(offer.order);
-  assert.ok(offer.distance>=1&&offer.distance<=3);
+  assert.deepEqual([offer.level,offer.difficulty],[level,level]);
+  assert.ok(offer.distance>=1&&offer.distance<=level,`marche 1 à ${level} : ${offer.distance}`);
   assert.equal(offer.enemyCount,offer.camp.enemies.length+1);
-  assert.equal(offer.reward,2000+1200*2*offer.distance+Math.round(35*offer.camp.points));
+  const k=(offer.reward-5000)/(offer.camp.budget*level);
+  assert.ok(Number.isInteger(k)&&k>=30&&k<=40,`récompense : ${offer.reward}`);
   assert.equal(offer.campName,offer.camp.campName);
   assert.ok(offer.expiresDay-day>=3&&offer.expiresDay-day<=6);
   const text=rules.orderText(offer,{date:"1 Brumecendre",date_expiration:"5 Brumecendre",an:842});
@@ -74,6 +92,8 @@ for(let day=1;day<=800;day++){
   const bosses=reference.oneShotMissions.noms[CAMPS[offer.faction].noms.chefs];
   if(/rival/.test(offer.order)) assert.ok(bosses.some(n=>text.paragraphs.join(" ").includes(n)),"le chef de camp du bon peuple");
 }
+assert.ok(rules.createOffer({day:1,renown:0}).level<=3,"compagnie à 1★ bronze : niveaux 1 à 3");
+assert.equal(rules.estimation(95),"une véritable armée");
 assert.deepEqual([...orders.Gobelins].sort(),["emperor","goblin_rival","village"],"les trois ordres gobelins");
 assert.deepEqual([...orders.Orcs].sort(),["emperor_orcs","orc_rival","village_orcs"],"les trois ordres orcs");
 assert.deepEqual([...orders["Hommes-bêtes"]].sort(),["beastman_rival","emperor_hommes_betes","village_hommes_betes"]);
@@ -87,12 +107,11 @@ for(const [faction,camp] of Object.entries(CAMPS)){
     const a=own.find(x=>x.ligne===l.ligne&&x.niveau===level);
     assert.ok(a&&a.points>0,`${faction} ${l.ligne} ${level}`);
   }
-  assert.ok(rules.points(camp.chef)>=30&&rules.points(camp.chef)<=45,`chef 1 : ${faction}`);
 }
 
 // Ennemis : la fiche figée remplace caractéristiques, PV, compétences et équipement d'un personnage de base.
 let offer=null;
-for(let day=4;!offer;day++){ const o=rules.createOffer({day}); if(o.faction==="Gobelins") offer=o; }
+for(let day=4;!offer;day++){ const o=rules.createOffer({day,level:1}); if(o.faction==="Gobelins") offer=o; }
 const base=()=>({id:900,name:"Base",stats:{Force:1,Courage:1,Charisme:12},resistances:{"Résistance physique":0},
   skills:{martial:{Lance:80,Arc:80,"Port d’armure lourde":true},social:{Intimidation:99},magic:{Feu:3}},
   equipment:{slots:{armor:null,weapon_set_1_main:null,weapon_set_1_off:null,weapon_set_2_main:null,ring_1:null},profile:{type:"magic"}},
@@ -118,27 +137,34 @@ const names=enemies.slice(0,-1).map(e=>e.name);
 assert.equal(new Set(names).size,names.length,"les doublons sont numérotés");
 // Camp orc : des orcs, et le Chef de bande nommé.
 let orcOffer=null;
-for(let day=10;!orcOffer;day++){ const o=rules.createOffer({day}); if(o.faction==="Orcs") orcOffer=o; }
+for(let day=10;!orcOffer;day++){ const o=rules.createOffer({day,level:2}); if(o.faction==="Orcs") orcOffer=o; }
 const orcs=rules.buildEnemies(orcOffer,()=>base());
 const orcChief=orcs[orcs.length-1],bande=rules.archetype("orc_chief_1");
 assert.equal(orcChief.name,orcOffer.fields.boss+" (Chef de bande orc)");
 assert.equal(orcChief.pvMax,bande.pv);
 assert.ok(orcs.every(e=>/orc/.test(e.archetype)));
 
-// Issue : victoire = récompense + coffre (2D6 × 50 PO) + équipement des morts des deux camps ; défaite = −30 de renommée.
+// Issue : victoire = récompense + coffre + butin des ennemis morts (selon leur fiche) + équipement de nos morts ; défaite =
+// −30 de renommée.
 const fallen={id:1,items:[{id:"m1",name:"Épée longue",owner:1}]};
 const win=rules.outcome(offer,{victory:true,deadEnemies:enemies.slice(0,2),deadMercenaries:[fallen],chestItems:[{id:"c1",name:"Bague du courage",owner:3}]});
 assert.equal(win.reward,offer.reward);
-assert.ok(win.chestGold>=100&&win.chestGold<=600&&win.chestGold%50===0);
-assert.equal(win.loot.length,enemies[0].items.length+enemies[1].items.length+1);
+assert.ok(win.chestGold>=0&&win.chestGold<=Math.floor(100*offer.camp.budget*offer.level/2));
+assert.ok(win.loot.some(i=>i.id==="m1")&&win.loot.length<=enemies[0].items.length+enemies[1].items.length+1,"nos morts rendent tout");
 assert.ok([...win.loot,...win.chestItems].every(it=>it.owner===null));
 const lose=rules.outcome(offer,{victory:false,deadEnemies:enemies,deadMercenaries:[fallen]});
 assert.deepEqual([lose.reward,lose.chestGold,lose.loot.length,lose.renown],[0,0,0,-30]);
 assert.equal(rules.deathMultiplier(offer,false),2);
-// Bestiaire (Idan, 2026-11-01) : butin et niveau de mission minimum par créature. Par défaut : tout l'équipement porté,
-// rien en plus, dès le niveau 1 (les règles d'avant).
+// Bestiaire (Idan, 2026-11-01) : butin et niveau de mission minimum par créature. L'équipement peut se casser au combat :
+// 100 % − 10 % par tier de chance de récupérer chaque objet porté ; rien en plus ; dès le niveau 1.
 for(const a of reference.enemyArchetypes.rows){
-  assert.deepEqual([a.niveau_mission_min,a.butin],[1,{equipement:100,objets:[]}],"valeurs par défaut : "+a.code);
+  assert.deepEqual([a.niveau_mission_min,a.butin],[1,{equipement:100-10*a.tier,objets:[]}],"butin : "+a.code);
+}
+{
+  const breakRules=createMissionRules({reference,random:seeded(21)}),novice=enemies.find(e=>breakRules.archetype(e.archetype).tier===1);
+  let kept=0,carried=0;
+  for(let i=0;i<500;i++){ kept+=breakRules.outcome(offer,{victory:true,deadEnemies:[novice]}).loot.length; carried+=novice.items.length; }
+  assert.ok(Math.abs(kept/carried-0.9)<0.04,`T1 : 90 % récupérés (${kept} / ${carried})`);
 }
 // Chefs (Idan, 2026-11-01 : « les chefs qui n'ont pas de points mesurés ») : toutes les fiches ont leurs points, et chaque
 // chef pèse plus que le précédent de son peuple.
@@ -171,14 +197,23 @@ for(const faction of Object.keys(CAMPS)){
   assert.ok(lines(7).has("Archer"),"des archers à la mission 7");
   assert.equal(gate.missionMin(gate.archetype("goblin_archer_novice")),7);
 }
-// Coffre (Idan, 2026-10-25) : 1D3 objets, T2 (70 %) ou T3 (30 %).
-const chestCounts=new Set(),tiers={2:0,3:0};
-for(let i=0;i<600;i++){ chestCounts.add(rules.chestItemCount(offer)); tiers[rules.chestTier(offer)]+=1; }
-assert.deepEqual([...chestCounts].sort(),[1,2,3]);
-assert.equal(tiers[2]+tiers[3],600,"jamais de T1");
-assert.ok(tiers[2]>350&&tiers[2]<480,`T2 ≈ 70 % : ${tiers[2]} / 600`);
+// Coffre (Idan, 2026-11-01 : « la partie loterie du butin ») : or = tirage 1–100 × budget × niveau ÷ 2 ; T1 1D6 × niveau,
+// T2 1D3 × niveau, T3 ⌈1D6 × niveau ÷ 5⌉, T4 ⌈1D6 × niveau ÷ 5⌉ − 2 ; chaque sort d'une seule école à niveau %.
+const chestAt=(level,budget)=>({code:"cleanup",level,camp:{budget}});
+const golds=Array.from({length:2000},()=>rules.rollChestGold(chestAt(3,150)));
+assert.ok(Math.min(...golds)>=225&&Math.max(...golds)<=22500,"1 à 100 × 150 × 3 ÷ 2");
+assert.ok(Math.abs(mean(golds)/(50.5*150*3/2)-1)<0.05,"moyenne : "+mean(golds));
+const plans=level=>Array.from({length:1500},()=>rules.chestPlan(chestAt(level,50)));
+const tierCount=(plan,t)=>plan.tiers.filter(x=>x===t).length,range=(list,t)=>{ const n=list.map(p=>tierCount(p,t)); return [Math.min(...n),Math.max(...n)]; };
+const p1=plans(1),p3=plans(3),p15=plans(15);
+assert.deepEqual([range(p1,1),range(p1,2),range(p1,3),range(p1,4)],[[1,6],[1,3],[1,2],[0,0]],"1★ bronze");
+assert.deepEqual([range(p15,1),range(p15,2),range(p15,3),range(p15,4)],[[15,90],[15,45],[3,18],[1,16]],"5★ or");
+assert.ok(Math.abs(mean(p3.map(p=>tierCount(p,4)>0?1:0))-0.5)<0.05,"3★ bronze : un T4 une fois sur deux");
+assert.ok(Math.abs(mean(p1.map(p=>p.manuals.length))-0.9)<0.1,"1★ bronze : 90 sorts à 1 % : "+mean(p1.map(p=>p.manuals.length)));
+assert.ok(Math.abs(mean(p15.map(p=>p.manuals.length))-13.5)<0.5,"5★ or : 90 sorts à 15 %");
+assert.ok(p15.every(p=>p.manuals.every(code=>reference.spells.rows.some(sp=>sp.code===code))));
 assert.equal(rules.deathMultiplier(offer,true),1);
-assert.deepEqual(rules.mapSize(offer),{cols:20,rows:12});
+assert.deepEqual(rules.mapSize(offer),{cols:30,rows:15},"carte de 30 × 15 (Idan : « une ambiance à la X-com »)");
 
 // Campagne : une offre au tableau dès le départ, prise par une autre compagnie après sa date ; l'expédition ; la renommée
 // de missions ; pas de prime pour un fuyard sorti de la carte.
@@ -281,7 +316,11 @@ for(let i=0;i<400;i++){
 }
 for(const family of ["weapon","armor"]) assert.ok(families.has(family),family);
 assert.equal(generator.createChestItem(captain,2).qualityCode,"standard");
-assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","mission.js"),"utf8"),/game\.generator\.createChestItem\(captain,rules\.chestTier\(offer\)\)/);
+assert.equal(generator.createChestItem(captain,4).tier,4,"T4 : comme chez les marchands");
+const missionUi=fs.readFileSync(path.join(ROOT,"prototype-web","mission.js"),"utf8");
+assert.match(missionUi,/rules\.chestPlan\(offer\)/);
+assert.match(missionUi,/plan\.tiers\.map\(tier=>game\.generator\.createChestItem\(captain,tier\)\)/);
+assert.match(missionUi,/plan\.manuals\.map\(code=>game\.generator\.createItemByName\("manual",code\)\)/);
 
 // Primes de mission divisées par deux (Idan, 2026-10-25) : une partie commencée avant voit ses contrats divisés une fois.
 const halved=campaign.createCampaign({captain,squad:[generator.createMercenary({id:70,captain})]});
@@ -294,4 +333,4 @@ assert.equal(campaign.ensureHalvedMissionBonuses(halved),true);
 assert.equal(veteran.contract.missionBonus,76);
 assert.equal(campaign.ensureHalvedMissionBonuses(halved),false,"une seule fois");
 
-console.log("Missions one shot : camp ☠, offre, ordres, ennemis, butin, coffre T2/T3, renommée, tableau de la Taverne, primes ÷ 2 — OK");
+console.log("Missions one shot : niveau, budget par métal, monstres, récompense, coffre loterie, casse au combat, carte 30 × 15, ordres, renommée, primes ÷ 2 — OK");

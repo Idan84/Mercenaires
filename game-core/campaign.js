@@ -678,12 +678,12 @@
     // avec son escouade (expédition, ci-dessous) : elle n'est plus au tableau, une nouvelle la remplace.
     function ensureMissionOffer(state){
       if(!missions||state.missionBoard?.offer) return false;
-      state.missionBoard={offer:missions.createOffer({day:state.day})};
+      state.missionBoard={offer:missions.createOffer({day:state.day,renown:companyRenown(state).total})};
       return true;
     }
     function renewMissionOffer(state){
       if(!missions) return null;
-      state.missionBoard={offer:missions.createOffer({day:state.day})};
+      state.missionBoard={offer:missions.createOffer({day:state.day,renown:companyRenown(state).total})};
       return state.missionBoard.offer;
     }
     function expireMissionOffer(state){

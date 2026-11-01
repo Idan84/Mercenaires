@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "one-shot-missions",
-  "description": "Missions one shot (doc 17). V1 : « Faire le ménage », un camp gobelin ☠, la seule mission proposée à la Taverne, en boucle (Idan, 2026-10-24). Les montants (récompense, coffre, renommée) sont des valeurs de départ, à ajuster en jouant. Idan, 2026-10-25 : récompense doublée ; coffre de 1D3 objets T2 (70 %) ou T3 (30 %), de toutes les familles d’équipement.",
+  "description": "Missions one shot (doc 17). V1 : « Faire le ménage », un camp gobelin ☠, la seule mission proposée à la Taverne, en boucle (Idan, 2026-10-24). Les montants (récompense, coffre, renommée) sont des valeurs de départ, à ajuster en jouant. Idan, 2026-10-25 : récompense doublée ; coffre de 1D3 objets T2 (70 %) ou T3 (30 %), de toutes les familles d’équipement. Idan, 2026-11-01 : camp gobelin « un tout petit peu » plus fort, 1D4+4 novices au lieu de 1D4+3.",
   "missions": [
     {
       "code": "cleanup",
@@ -12,7 +12,7 @@
       "difficulte": 1,
       "illustration": "",
       "camp": {
-        "novices_base": 3,
+        "novices_base": 4,
         "novices_faces": 4,
         "chance_un_normal": 0.2,
         "chance_deux_normaux": 0.05,

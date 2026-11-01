@@ -310,7 +310,96 @@
         "puissance_tranchante": 25
       },
       "description": "Armée d'os (Idan, 2026-10-31 : « faibles, lents, nombreux, sans peur » ; chiffres de JC3) : 3 cases, 40 PV, Lame rouillée ≈ 25 ; mort-vivant, sans peur."
+    },
+    {
+      "nom": "Sanglier",
+      "pluriel": "Sangliers",
+      "code": "boar",
+      "ecole": "Invocation",
+      "mort_vivant": false,
+      "immunite_physique": false,
+      "caracteristiques": {
+        "Force": 55,
+        "Constitution": 45,
+        "Dextérité": 60,
+        "Vitesse": 70,
+        "Endurance": 45,
+        "Esquive": 35,
+        "Chance": 43,
+        "Charisme": 38,
+        "Courage": 24,
+        "Intelligence": 20,
+        "Volonté": 30,
+        "Perception": 50,
+        "Puissance magique": 20,
+        "Réserve de mana": 20
+      },
+      "resistances": {
+        "Résistance physique": 1,
+        "Résistance au feu": 1,
+        "Résistance au froid": 2,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 10
+      },
+      "pv": 45,
+      "competences_martiales": {
+        "Armes naturelles": 40,
+        "Défenses": 40,
+        "Discrétion": 25
+      },
+      "attaque": {
+        "nom": "Défenses",
+        "degats_pv_base": "1D8",
+        "puissance_perforante": 35,
+        "bonus_charge": 2
+      },
+      "description": "Invocation de sangliers (Idan, 2026-10-31 : « rapides, chargent fort mais tiennent mal » ; chiffres de JC3) : 6 cases, 45 PV, Défenses 1D8 (≈ 50, le double en charge)."
+    },
+    {
+      "nom": "Araignée géante",
+      "pluriel": "Araignées géantes",
+      "code": "giant_spider",
+      "ecole": "Invocation",
+      "mort_vivant": false,
+      "immunite_physique": false,
+      "caracteristiques": {
+        "Force": 45,
+        "Constitution": 55,
+        "Dextérité": 65,
+        "Vitesse": 50,
+        "Endurance": 55,
+        "Esquive": 45,
+        "Chance": 43,
+        "Charisme": 38,
+        "Courage": 24,
+        "Intelligence": 20,
+        "Volonté": 35,
+        "Perception": 60,
+        "Puissance magique": 20,
+        "Réserve de mana": 20
+      },
+      "resistances": {
+        "Résistance physique": 1,
+        "Résistance au feu": 1,
+        "Résistance au froid": 2,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 60
+      },
+      "pv": 120,
+      "competences_martiales": {
+        "Armes naturelles": 45,
+        "Morsure venimeuse": 45,
+        "Discrétion": 60
+      },
+      "attaque": {
+        "nom": "Morsure venimeuse",
+        "degats_pv_base": "1D6",
+        "puissance_perforante": 30,
+        "empoisonne": true,
+        "immobilise": 1
+      },
+      "description": "Invocation d'araignées géantes (Idan, 2026-10-31 : « morsure empoisonnée, toile qui immobilise 1 tour » ; chiffres de JC3) : 5 cases, 120 PV, Morsure venimeuse 1D6 (≈ 32) : si elle blesse, poison 10 PV par tour pendant 3 tours ; si elle touche, la toile empêche la cible de se déplacer à sa prochaine activation. Discrétion 60."
     }
   ],
-  "row_count": 6
+  "row_count": 8
 }

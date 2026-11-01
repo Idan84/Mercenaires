@@ -457,6 +457,7 @@ body[data-screen="mission"] .app-shell{max-width:none;padding:8px 10px 74px}
 .hex-cell.storm{box-shadow:inset 0 0 0 2px rgba(150,190,255,.85);background-image:linear-gradient(160deg,rgba(60,80,140,.55),rgba(25,30,60,.55))}
 .hex-cell.flames{box-shadow:inset 0 0 0 2px rgba(255,150,60,.9);background-image:linear-gradient(160deg,rgba(220,90,20,.6),rgba(120,30,10,.6))}
 .hex-cell.blizzard{box-shadow:inset 0 0 0 2px rgba(220,240,255,.9);background-image:linear-gradient(160deg,rgba(235,245,255,.75),rgba(170,200,225,.7))}
+.hex-cell.swarm{box-shadow:inset 0 0 0 2px rgba(120,130,40,.9);background-image:radial-gradient(circle at 30% 40%,rgba(40,40,20,.55) 0 2px,transparent 3px),radial-gradient(circle at 70% 65%,rgba(40,40,20,.55) 0 2px,transparent 3px),linear-gradient(160deg,rgba(150,160,70,.45),rgba(95,105,40,.45))}
 /* Bourbier (Invocation) : une case de boue où l'on ne peut plus se déplacer. */
 .hex-cell.mire{background:radial-gradient(circle at 40% 45%,#8a7350 0,#6b5534 55%,#4a3a22 100%)}
 .hex-cell.reachable{background:#8fcdf06b}

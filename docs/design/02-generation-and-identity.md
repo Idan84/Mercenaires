@@ -122,6 +122,21 @@ Répartition par culture (simulation, 300 recrues par culture, 2026-11-01) :
 | Reptilien | Reptiliens des marécages | 17 % | 20 % | 63 % |
 | Reptilien | Reptiliens des villes | 21 % | 8 % | 71 % |
 
+### Garde-fou de l'escouade initiale
+
+Idan, 2026-11-01 : « Il faut 1 mage / 1 distance et 1 CAC sur une escouade. On peut forcer la génération d'un ou deux
+mercenaires en plus si la chance n'a pas souri. » Code : `createInitialSquad` (`game-core/mercenary-generator.js`) ;
+constante `generation.initial_squad.domain_attempts`.
+
+- Après le tirage de l'escouade (le **capitaine ne compte pas**), chaque domaine absent ajoute **un mercenaire de plus**,
+  du même peuple et de la même culture. L'escouade a toujours au moins un mercenaire : **au plus 2 en plus**.
+- On le tire **normalement**, jusqu'à **30 fois**, et on garde le premier qui tombe dans le domaine. Si aucun n'y tombe, le
+  dernier est tiré avec **ce domaine imposé** (accentué vers lui, comme les autres).
+- Mesure (50 escouades par culture, 2026-11-01) : renfort dans **0 à 20 %** des escouades humaines et gobelines, **80 à
+  95 %** chez les hommes-bêtes, les orcs noirs, les gnomes des villes et les elfes des grandes cités, **100 %** chez les
+  ogres (presque toujours un archer et un mage, imposés une fois sur deux ou plus). Un mage imposé chez les ogres n'a
+  souvent aucun sort (3 sur 4) ; chez les mages tirés normalement, 15 à 30 % n'en ont pas non plus.
+
 ## Noms des personnages
 
 Décision d'Idan du 2026-10-21. Les données sont dans `data/reference/character-names.json`, la logique dans `game-core/names.js`.

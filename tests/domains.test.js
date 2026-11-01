@@ -66,10 +66,50 @@ const plain=createGenerator(partial,{random,nameGenerator:(people,id)=>people+" 
 assert.ok(["melee","ranged","magic"].includes(plain.domain));
 assert.deepEqual(plain.generationTrace.domain.moves,[]);
 
+// Domaine imposé (garde-fou de l'escouade) : posé et accentué vers lui, l'équipement suit.
+const ogreCaptain=generator.createCaptain({id:2001,forcedPeople:"Ogre",forcedCulture:"Ogres des montagnes"});
+for(const code of ["melee","ranged","magic"]){
+  const m=generator.createMercenary({id:2002,captain:ogreCaptain,forcedPeople:"Ogre",forcedCulture:"Ogres des montagnes",forcedDomain:code});
+  assert.equal(m.domain,code);assert.equal(m.generationTrace.domain.forced,true);assert.equal(m.equipment.profile.type,code);
+  assert.ok(m.generationTrace.domain.moves.some(x=>x.delta>0),"accentué vers "+code);
+}
+assert.equal(generator.createMercenary({id:2003,captain}).generationTrace.domain.forced,false);
+
+// Garde-fou de l'escouade initiale (Idan, 2026-11-01 : « Il faut 1 mage / 1 distance et 1 CAC sur une escouade ») :
+// chaque domaine absent ajoute un mercenaire du même peuple et de la même culture, tiré normalement jusqu'à 30 fois,
+// sinon imposé. Au plus 2 en plus ; une seule place (un identifiant) par renfort.
+assert.equal(reference.formulaConstants.rows.find(r=>r.code==="generation.initial_squad.domain_attempts").valeur,30);
+let guarded=0,forcedCount=0;
+for(const [people,culture] of [["Ogre","Ogres des montagnes"],["Gnome","Gnomes des villes"],["Orc","Orcs noirs"],["Humain","Cités libres"]]){
+  for(let i=0;i<12;i++){
+    const cap=generator.createCaptain({id:3000,forcedPeople:people,forcedCulture:culture});
+    const ids=[];
+    const squad=generator.createInitialSquad(cap,{nextId:index=>{ids.push(index);return 3001+index;}});
+    for(const code of ["melee","ranged","magic"]) assert.ok(squad.some(m=>m.domain===code),culture+" : "+code);
+    assert.deepEqual(ids,squad.map((_,index)=>index),"un identifiant par place");
+    assert.deepEqual(squad.map(m=>m.id),squad.map((_,index)=>3001+index));
+    const extras=squad.filter(m=>m.generationTrace.squadGuard);
+    assert.ok(extras.length<=2);
+    assert.ok(squad.slice(squad.length-extras.length).every(m=>m.generationTrace.squadGuard),"les renforts viennent après le tirage");
+    const rolled=squad.slice(0,squad.length-extras.length);
+    assert.ok(rolled.length>=1);
+    for(const m of extras){
+      const g=m.generationTrace.squadGuard;
+      assert.equal(m.domain,g.domain);assert.ok(!rolled.some(r=>r.domain===g.domain),"seulement un domaine absent");
+      assert.equal(m.people,people);assert.equal(m.culture,culture);assert.equal(m.role,"Mercenaire initial");
+      assert.ok(g.attempts>=1&&g.attempts<=31);assert.equal(g.forced,g.attempts===31);
+      guarded++;if(g.forced) forcedCount++;
+    }
+  }
+}
+assert.ok(guarded>0&&forcedCount>0,"des renforts, dont des imposés (ogres)");
+const generationUi=fs.readFileSync(path.join(ROOT,"prototype-web","generation.js"),"utf8");
+assert.match(generationUi,/ensureGenerator\(\)\.createInitialSquad\(captain, \{role: "Mercenaire initial", nextId: \(\) => nextCharacterId\(\)\}\)/,"le jeu passe par le garde-fou");
+
 // Fiche : le picto à côté du nom ; les mercenaires d'avant le domaine prennent le profil de leur équipement.
 const ui=fs.readFileSync(path.join(ROOT,"prototype-web","ui.js"),"utf8");
 assert.match(ui,/\$\("dialog-name"\)\.innerHTML = domainBadge\(c\) \+ esc\(c\.name\);/);
 assert.match(ui,/function mercenaryDomain\(c\) \{ return c\?\.domain \|\| c\?\.equipment\?\.profile\?\.type \|\| null; \}/);
 for(const code of ["melee","ranged","magic"]) assert.match(ui,new RegExp("\\b"+code+":'<path"));
-console.log("Domaine du mercenaire : choix d'après les tirages, coup de pouce d'un sort, déplacements 2D6 / 2D10, équipement et fiche — OK",
+console.log("Domaine du mercenaire : choix d'après les tirages, coup de pouce d'un sort, déplacements 2D6 / 2D10, garde-fou de l'escouade, équipement et fiche — OK",
   Object.fromEntries(Object.entries(shares).map(([k,v])=>[k,Math.round(100*v)+" %"])));

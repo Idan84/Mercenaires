@@ -28,7 +28,8 @@ Le pipeline ci-dessous décrit la génération statistique commune. Son point d�
    - **Ogres et bâtons** (Idan, 2026-10-29 : « le A est bien ! Et même encore trop de bâtons ») : depuis que le bâton est une arme de mage (doc 05), les ogres passent de +1 à **−1 en Bâtons** et perdent leur +1 en **Bâton long** ; ils gagnent **+1 en Armes contondantes** (massue, masse d’armes, marteau de guerre, pic de guerre). Sur 2 000 ogres : bâton en arme principale **48 % → 4,5 %** (surtout des érudits, que leur origine pousse vers le bâton), armes contondantes **17 % → 60 %**.
    - **Ajustements en D6 d’un peuple**, hors échelle de la Matrice (Idan, 2026-10-29) : **−1D6 de Discrétion aux Ogres** (« question de logique ») ; `peoples.json`, colonne `ajustements_d6`, appliquée après la Matrice, sans descendre sous 0.
    - **Sorts connus à la création** (doc 12, « Sorts connus à la création ») : trois tirages, école de la culture (`cultures.json`, colonne `ecole_magie`), meilleure et deuxième meilleure école.
-12. **Post-traitement** : valeurs dérivées initiales, réputation personnelle initiale et autres calculs dépendant du profil complet.
+12. **Domaine du mercenaire** (Idan, 2026-11-01 ; voir « Domaine du mercenaire » plus bas) : choisi d'après les tirages, puis accentué par des déplacements.
+13. **Post-traitement** : valeurs dérivées initiales, réputation personnelle initiale et autres calculs dépendant du profil complet.
 
 <aside>
 🎛️
@@ -50,6 +51,76 @@ Le pipeline ci-dessous décrit la génération statistique commune. Son point d�
 **Scalabilité du recrutement** — Tous les jets de dés de `Create_Mercenary` doivent pouvoir être pondérés par la réputation du capitaine / de la compagnie. Les dés indiqués dans les règles de génération sont des **distributions de base**, pas des valeurs à coder en dur. À forte réputation, les candidats générés doivent pouvoir être sensiblement meilleurs qu'au début de partie.
 
 </aside>
+
+## Domaine du mercenaire
+
+Idan, 2026-11-01 : les recrues étaient « encore un peu trop généralistes » (14 caractéristiques tirées chacune de leur
+côté : tout le monde autour de 54). Après la première partie de la génération, chaque mercenaire reçoit un **grand
+domaine**, **fixé à vie** (« c'est le titre qui montrera l'évolution »), puis on l'**accentue**. Données : `domains.json` ;
+constantes `generation.domain.*` ; code : `game-core/mercenary-generator.js` (`chooseDomain`, `accentuateDomain`).
+
+- **Trois domaines** : **Corps à corps**, **Distance**, **Mage**.
+- **Le choix, d'après les tirages** (« il faut justement dans un peuple un peu de tout ») : le profil déjà calculé pour
+  l'équipement de départ et l'avatar (meilleure arme ou école, et les caractéristiques qui vont avec). **Un sort tiré pousse
+  vers Mage** quand la magie est à **5 points** ou moins du meilleur score (« il a tiré un sort de l'eau, on pousse vers
+  ça ») : 12 % des recrues. Les archers restent tels quels (Idan).
+- **L'accentuation : des déplacements** (Idan : dosage B), en moyenne à somme nulle sur les caractéristiques :
+  - caractéristiques : **+2D6** sur les deux du domaine, **−2D6** sur deux autres :
+
+    | Domaine | Monte | Baisse |
+    |---|---|---|
+    | Corps à corps | Force, Endurance | Puissance magique, Intelligence |
+    | Distance | Perception, Dextérité | Force, Puissance magique |
+    | Mage | Puissance magique, Intelligence | Force, Dextérité |
+
+  - compétences, **sur ce qu'il utilise vraiment** : **+2D10** sur son arme (celle qu'il portera) et sa catégorie, **−2D10**
+    sur la meilleure arme de l'autre famille et sa catégorie ; un mage gagne **2 × 2D10** dans l'école de son sort (sinon sa
+    meilleure) et perd 2D10 sur sa meilleure arme de mêlée et sa meilleure arme de tir.
+- **L'équipement de départ et l'avatar suivent le domaine.** Sur la fiche, un **picto** à côté du nom (épée, arc, étoile),
+  avec une infobulle. Les mercenaires créés avant prennent le profil de leur équipement de départ, sans rien changer à leurs
+  chiffres.
+- **Effet mesuré** (3 000 recrues) : domaine net (≥ 1 écart-type devant le deuxième) **36 % → 84 %** ; recrues sans titre
+  (« Chair à canon ») **51 % → 31 %**. Comme on pousse les meilleures compétences et que la réputation compte les trois
+  meilleures : réputation moyenne **+5 %** (134 → 141), salaire **+6 %** (47 → 50 PO par jour), PV **+2 %** (l'Endurance des
+  combattants).
+- Les mesures du besoin en avatars (`avatar-demand.json`) ont été refaites : l'arme en main dépend du domaine.
+
+Répartition par culture (simulation, 300 recrues par culture, 2026-11-01) :
+
+| Peuple | Culture | Corps à corps | Distance | Mage |
+|---|---|---|---|---|
+| Elfe | Elfes des grandes cités | 8 % | 6 % | 86 % |
+| Elfe | Elfes noirs | 16 % | 20 % | 63 % |
+| Elfe | Elfes sylvains | 6 % | 49 % | 46 % |
+| Gnome | Gnomes des cavernes | 2 % | 24 % | 74 % |
+| Gnome | Gnomes des forêts | 2 % | 28 % | 70 % |
+| Gnome | Gnomes des villes | 0 % | 10 % | 89 % |
+| Gobelin | Caravanes de ferrailleurs | 19 % | 59 % | 22 % |
+| Gobelin | Gobelins des cavernes | 35 % | 43 % | 22 % |
+| Gobelin | Gobelins des villes | 26 % | 46 % | 27 % |
+| Halfling | Explorateurs | 7 % | 51 % | 42 % |
+| Halfling | Halflings des cités humaines | 6 % | 47 % | 46 % |
+| Halfling | Halflings des villages isolés | 3 % | 35 % | 62 % |
+| Homme-bête | Clans des grandes steppes | 78 % | 2 % | 20 % |
+| Homme-bête | Tribus des forêts anciennes | 66 % | 1 % | 33 % |
+| Homme-bête | Tribus nordiques | 81 % | 2 % | 17 % |
+| Humain | Cités libres | 42 % | 13 % | 45 % |
+| Humain | Montagnes du Nord | 68 % | 9 % | 23 % |
+| Humain | Royaumes du Soleil Levant | 59 % | 11 % | 30 % |
+| Humain | Steppes désertiques | 51 % | 22 % | 27 % |
+| Humain | Tribus de la jungle | 44 % | 16 % | 40 % |
+| Nain | Nains des montagnes | 75 % | 9 % | 16 % |
+| Nain | Nains du chaos | 30 % | 55 % | 15 % |
+| Nain | Nains réduits en esclavage dans les colonies | 75 % | 20 % | 5 % |
+| Ogre | Ogres des cités humaines | 96 % | 1 % | 3 % |
+| Ogre | Ogres des montagnes | 97 % | 1 % | 2 % |
+| Ogre | Ogres des steppes | 98 % | 1 % | 1 % |
+| Orc | Orcs des steppes | 72 % | 4 % | 24 % |
+| Orc | Orcs des villes | 55 % | 9 % | 36 % |
+| Orc | Orcs noirs | 83 % | 0 % | 17 % |
+| Reptilien | Reptiliens des cités-temples | 10 % | 4 % | 86 % |
+| Reptilien | Reptiliens des marécages | 17 % | 20 % | 63 % |
+| Reptilien | Reptiliens des villes | 21 % | 8 % | 71 % |
 
 ## Noms des personnages
 

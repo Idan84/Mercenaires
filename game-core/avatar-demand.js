@@ -36,7 +36,7 @@
   // Tables qui décident de l'arme ou de l'école d'un mercenaire : si l'une change, les mesures sont à refaire.
   const FINGERPRINT_TABLES=["peoples","cultures","socialOrigins","ancestries","ancestryCompatibility","cultureOriginCompatibility",
     "ancestryLevels","d6Scale","generationMatrix","skills","characteristics","weapons","equipmentSlots","startingEquipmentGeneration",
-    "binaryAptitudeGrants"];
+    "binaryAptitudeGrants","domains"];
 
   function constant(reference,code,fallback){
     const row=(reference?.formulaConstants?.rows||[]).find(r=>r.code===code);

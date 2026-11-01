@@ -55,6 +55,7 @@ jobs:
       - run: node tests/merchant-ui.test.js
       - run: node tests/spell-manuals.test.js
       - run: node tests/regeneration.test.js
+      - run: node tests/domains.test.js
       - run: node scripts/merchant-coverage.js --check
       - run: node tests/mercenary-profile.test.js
       - run: node scripts/build-mercenary-profile.js --check

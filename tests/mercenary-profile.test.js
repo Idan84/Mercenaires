@@ -88,13 +88,14 @@ for (const r of results) {
     assert.ok(next.level < S.titre_min || r.titles[r.titles.length - 1].level - next.level > S.ecart_titre, "le titre suivant manquait");
   }
 }
-// Au début, la plupart sont de la chair à canon ; les autres ont surtout un seul titre.
+// Au début, beaucoup sont de la chair à canon (≈ 30 % depuis le domaine du mercenaire, Idan 2026-11-01 : des recrues moins
+// généralistes ont plus souvent un titre ; ≈ 50 % avant) ; les autres ont surtout un seul titre.
 const fodder = results.filter(r => r.cannonFodder).length / results.length;
-assert.ok(fodder > 0.3 && fodder < 0.7, "Chair à canon : " + fodder);
+assert.ok(fodder > 0.2 && fodder < 0.7, "Chair à canon : " + fodder);
 assert.ok(results.filter(r => r.titles.length === 1).length > results.filter(r => r.titles.length === 3).length);
 // Aucune catégorie mesurée chez tous ne domine les titres.
 const share = code => results.filter(r => r.titles.some(t => t.category === code)).length / results.length;
-for (const code of ["tank", "meneur", "eclaireur", "dps_cac"]) assert.ok(share(code) < 0.25, code + " : " + share(code));
+for (const code of ["tank", "meneur", "eclaireur", "dps_cac"]) assert.ok(share(code) < 0.3, code + " : " + share(code));
 
 // Ce qu'il ne sait pas faire n'est pas noté : sans sort, pas de Healer ; sans arme de tir, pas de DPS à distance.
 for (const [i, r] of results.entries()) {

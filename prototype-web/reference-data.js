@@ -52,6 +52,7 @@ const REFERENCE_FILES = {
   mercenaryProfile: "mercenary-profile.json",
   dayNews: "day-news.json",
   spells: "spells.json",
+  domains: "domains.json",
   itemTitles: "item-titles.json",
   renamedNames: "renamed-names.json"
 };

@@ -546,7 +546,7 @@ apprendre » ; modalités de JC3) :
   rangé à l'Intendance dans l'onglet **Manuels**, par école ; sa case montre le parchemin du sort, sa carte son école et sa
   description. Pas de tier ni de qualité.
 - **Valeur** : **3 000 PO**, la même pour tous les sorts (`economy.manual_value` ; Idan, 2026-11-01) ; le marchand en
-  demande × 1,5 selon l'affinité, comme pour un objet (doc 18).
+  demande × 1,5 selon l'affinité, comme pour un objet (doc 18) : 4 500 PO à affinité nulle (Idan : « 3000 po de base »).
 - **En vente** chez les marchands des cultures de l'école (doc 18) : une ligne « manuels de l'école » ; chaque article est un
   manuel tiré dans l'école.
 - **Apprendre** : à l'Intendance, « Apprendre à… » ; un membre de la compagnie présent au camp lit le manuel et connaît le

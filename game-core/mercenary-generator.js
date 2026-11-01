@@ -64,6 +64,7 @@
     const itemQualityRows = rows.itemQualities || [];
     const equipmentSlotRows = rows.equipmentSlots || [];
     const binaryAptitudeRows = rows.binaryAptitudeGrants || [];
+    const domainRows = rows.domains || [];
     const alignmentGeneration = reference.alignmentGeneration || {};
     const startingEquipmentGeneration = reference.startingEquipmentGeneration || {};
 
@@ -1133,8 +1134,71 @@
       return {...statGearItem(character, kind, randomChoice(STAT_GEAR[kind].rows)), owner:null};
     }
 
+    // Domaine du mercenaire (Idan, 2026-11-01 : « après la première partie de la génération, un grand domaine, et
+    // accentuer celui-ci ») : Corps à corps, Distance ou Mage, fixé à vie. C'est le profil déjà calculé pour l'équipement de
+    // départ et l'avatar (computeEquipmentProfile) ; un sort tiré le fait passer Mage si sa magie est à
+    // generation.domain.spell_margin points ou moins du meilleur score (« il a tiré un sort de l'eau, on pousse vers ça »).
+    function chooseDomain(character) {
+      const profile = computeEquipmentProfile(character);
+      const best = Math.max(profile.scores.melee, profile.scores.ranged);
+      const tipped = profile.type !== "magic" && (character.spells || []).length > 0
+        && profile.scores.magic >= best - constant("generation.domain.spell_margin", 5);
+      return {code: tipped ? "magic" : profile.type, profile, tipped};
+    }
+
+    // Accentuation (dosage B, Idan, 2026-11-01) : des déplacements, en moyenne à somme nulle. Comme on pousse ses meilleures
+    // compétences, sa réputation (qui compte ses 3 meilleures) monte un peu : +5 % en moyenne (doc 02). nD6 en plus sur les deux caractéristiques du domaine, nD6 en moins sur deux autres (domains.json) ; nD10 en plus
+    // sur l'arme qu'il utilise vraiment et sa catégorie, nD10 en moins sur la meilleure arme de l'autre famille et sa
+    // catégorie ; un mage gagne 2 × nD10 dans l'école de son sort (sinon sa meilleure) et perd nD10 sur sa meilleure arme de
+    // mêlée et sa meilleure arme de tir. Sans domains.json (tests partiels), le domaine est posé sans accentuation.
+    function accentuateDomain(character, choice, trace) {
+      const row = domainRows.find(r => r.code === choice.code);
+      if (!row) return [];
+      const label = "Domaine : " + row.nom;
+      const statDice = constant("generation.domain.stat_dice", 2), skillDice = constant("generation.domain.skill_dice", 2);
+      const moves = [];
+      const moveStat = (name, sign) => {
+        if (!Number.isFinite(character.stats[name])) return;
+        const rolled = rollDice(statDice, 6), before = character.stats[name];
+        const minimum = Number(charByName.get(name)?.minimum);
+        character.stats[name] = Math.max(Number.isFinite(minimum) ? minimum : 0, before + sign * rolled);
+        const delta = character.stats[name] - before;
+        moves.push({target: name, delta});
+        const entry = trace.characteristics[name];
+        if (entry) { entry.contributions.push({name: label, kind: "domain", intensity: sign, dice: `${statDice}D6`, roll: rolled, delta}); entry.final = character.stats[name]; }
+      };
+      const moveSkill = (group, name, sign, factor = 1) => {
+        const values = character.skills[group];
+        if (!name || !values || !Number.isFinite(values[name])) return;
+        const rolled = rollDice(skillDice, 10) * factor, before = values[name];
+        values[name] = Math.max(0, before + sign * rolled);
+        const delta = values[name] - before;
+        moves.push({target: name, delta});
+        const entry = trace.skills[name];
+        if (entry) { entry.contributions.push({name: label, kind: "domain", intensity: sign, dice: `${factor > 1 ? factor + " × " : ""}${skillDice}D10`, roll: rolled, delta}); entry.final = values[name]; }
+      };
+      for (const name of row.plus || []) moveStat(name, 1);
+      for (const name of row.moins || []) moveStat(name, -1);
+      const {bestMelee, bestRanged} = choice.profile;
+      if (choice.code === "magic") {
+        const school = (character.spells || [])[0]?.school || choice.profile.bestMagic?.school || null;
+        moveSkill("magic", school, 1, constant("generation.domain.school_factor", 2));
+        moveSkill("martial", bestMelee?.weapon, -1);
+        moveSkill("martial", bestRanged?.weapon, -1);
+      } else {
+        const [own, other] = choice.code === "melee" ? [bestMelee, bestRanged] : [bestRanged, bestMelee];
+        moveSkill("martial", own?.weapon, 1);
+        moveSkill("martial", own?.category, 1);
+        moveSkill("martial", other?.weapon, -1);
+        moveSkill("martial", other?.category, -1);
+      }
+      return moves;
+    }
+
     function generateStartingEquipment(character) {
       const profile = computeEquipmentProfile(character);
+      // Le domaine, fixé à vie, décide de l'arme de départ (et donc de l'avatar).
+      if (character.domain) profile.type = character.domain;
       const slots = Object.fromEntries(equipmentSlotRows.map(slot => [slot.id, null]));
       const items = [];
 
@@ -1400,6 +1464,12 @@
       const startingSpells = drawStartingSpells(character);
       character.spells = startingSpells.known;
       trace.spells = startingSpells.draws;
+      // Domaine (Idan, 2026-11-01) : choisi d'après les tirages, puis accentué ; les préférences d'armes suivent.
+      const domainChoice = chooseDomain(character);
+      character.domain = domainChoice.code;
+      const domainMoves = accentuateDomain(character, domainChoice, trace);
+      trace.domain = {code: domainChoice.code, scores: domainChoice.profile.scores, tippedBySpell: domainChoice.tipped, moves: domainMoves};
+      if (domainMoves.length) character.weaponPreferences = computeWeaponPreferences(character.skills);
 
       character.salaryPretension = rollDice(10,6);
       character.pvMax = Math.ceil(3 * (

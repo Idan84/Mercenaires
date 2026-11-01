@@ -220,6 +220,13 @@ function resetMissionActivation(unit){
     unit.movementRemaining=Math.max(1,Math.floor(unit.movementRemaining*snow.movement));
     missionLog(unit.character.name+" avance dans le blizzard : "+unit.movementRemaining+" case"+(unit.movementRemaining>1?"s":"")+" de déplacement.","bad");
   }
+  // Écrasement (Télékinésie) : pas de déplacement cette activation.
+  if(unit.pinned&&unit.alive){
+    unit.movementRemaining=0;
+    unit.pinned.turns-=1;
+    if(unit.pinned.turns<=0) unit.pinned=null;
+    missionLog(unit.character.name+" est encore écrasé"+(missionFeminine(unit)?"e":"")+" : pas de déplacement.","bad");
+  }
   if(missionMireAt(unit.q,unit.r)&&unit.alive){
     unit.movementRemaining=0;
     missionLog(unit.character.name+" est pris dans le bourbier : pas de déplacement.","bad");
@@ -1391,6 +1398,12 @@ function resolveMissionSpell(caster,target,code,extra={}){
     missionLog(name+" lance "+spell.nom+on+detail+" : "+hit.label+hit.note+". "
       +target.character.name+" reste à "+Math.max(0,target.hp)+" PV."+critical,"damage");
     if(out.move&&target.alive){ missionForcedMove(target,out,caster); effect=true; }
+    // Écrasement (Télékinésie ; Idan, 2026-10-31) : il ne pourra pas se déplacer à sa prochaine activation.
+    if(out.immobilise&&target.alive){
+      target.pinned={turns:out.immobilise};
+      missionLog(target.character.name+" est écrasé"+(missionFeminine(target)?"e":"")+" : pas de déplacement à sa prochaine activation.","magic");
+      effect=true;
+    }
     checkMissionEnd();
   }else if(spell.effet==="degats_paire"){
     // Entrechoc : les deux ennemis, chacun avec sa propre armure.
@@ -1420,6 +1433,26 @@ function resolveMissionSpell(caster,target,code,extra={}){
         +test+" et perdra sa prochaine activation.","magic");
       missionFx(target,"Paralysé"+(missionFeminine(target)?"e":""),"miss");
     }
+  }else if(spell.effet==="lancer_arme"){
+    // Lancer d'arme (Télékinésie ; Idan, 2026-10-31) : l'arme part, frappe et revient dans la main.
+    const t=out.throw;
+    if(t?.wound) damageMissionUnitBySpell(target,t.damage,caster,t.type);
+    effect=Boolean(t?.wound&&t.damage>0);
+    missionLog(name+" lance "+spell.nom+on+detail+" : "+(t?(t.weapon+" part et revient — "+(t.wound?t.damage+" PV "+t.type+"s":"l’armure encaisse")
+      +" (Blesser "+Math.round(t.pWound)+" %, jet "+t.woundRoll+")"):"rien à lancer")+"."+critical,"damage");
+    checkMissionEnd();
+  }else if(spell.effet==="onde_de_choc"){
+    // Onde de choc : chacun repoussé à son tour, choc s'il heurte quelque chose.
+    const waves=(out.waves||[]).filter(w=>w.unit.alive);
+    missionLog(name+" lance "+spell.nom+detail+" : "+(waves.length?waves.length+" personnage"+(waves.length>1?"s":"")+" repoussé"+(waves.length>1?"s":""):"personne autour")+".","magic");
+    for(const w of waves) if(w.unit.alive) missionForcedMove(w.unit,{move:{kind:"repousse",cells:w.cells,chocAmount:out.move?.chocAmount||0},physical:out.physical},caster);
+    effect=waves.length>0;
+    checkMissionEnd();
+  }else if(spell.effet==="bond"){
+    // Bond : un saut, pas un déplacement ; ni attaque d'opportunité ni mouvement dépensé.
+    caster.q=out.leap.to.q;caster.r=out.leap.to.r;
+    missionFx(caster,"","",out.leap.to);
+    missionLog(name+" lance "+spell.nom+detail+" : "+(missionFeminine(caster)?"elle":"il")+" bondit de "+out.leap.distance+" case"+(out.leap.distance>1?"s":"")+".","move");
   }else if(spell.effet==="prison_de_glace"){
     // Prison de glace (Eau ; Idan, 2026-10-31) : la cible résiste (Constitution + protection contre le froid − Maîtrise / 2)
     // ou se fige : elle perd ses activations et ne subit que la moitié des dégâts.

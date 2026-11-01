@@ -351,6 +351,8 @@
       // Source vive : seulement si l'allié n'a pas déjà toute sa réserve.
       if(s.effet==="rend_mana"&&target.character&&currentMana(target)>=manaMax(target)) return {ok:false,reason:"Sa réserve de mana est pleine."};
       if(s.effet==="delivrance"&&!afflictions(target,code).length) return {ok:false,reason:"Rien à retirer : ni peur, ni paralysie, ni gel, ni frénésie."};
+      // Lancer d'arme : il faut une arme de corps à corps en main.
+      if(s.effet==="lancer_arme"&&!combat.isMeleeWeapon(combat.weaponTemplate(combat.activeWeaponItem(caster)))) return {ok:false,reason:"Il faut une arme de corps à corps en main."};
       // Lien de vie : le lanceur garde toujours 1 PV.
       if(s.effet==="transfert_pv"&&num(caster.hp,0)<=1) return {ok:false,reason:"Le lanceur n'a plus de PV à donner."};
       const self=target===caster||(target.q===caster.q&&target.r===caster.r);
@@ -484,6 +486,17 @@
           result.effect={code:s.code,percent:bonus(caster,code),turns:duration(caster,code)};
         }else if(s.effet==="fletrissement"){
           result.effect={code:s.code,turns:duration(caster,code)};
+        }else if(s.effet==="lancer_arme"){
+          result.throw=combat.weaponThrow(caster,target,{mastery:mastery(caster,code),critical:result.critical});
+        }else if(s.effet==="onde_de_choc"){
+          // Onde de choc (Télékinésie ; Idan, 2026-10-31, chiffres de JC3) : tous ceux du cercle, alliés compris, repoussés
+          // dans l'axe lanceur → eux, les plus loin d'abord (pour ne pas se gêner).
+          const steps=forceSteps(caster,code);
+          result.waves=unitsInZone({q:caster.q,r:caster.r},zoneRadius(caster,code),options.units||[]).filter(u=>u!==caster)
+            .sort((a,b)=>combat.axialDistance(caster,b)-combat.axialDistance(caster,a))
+            .map(u=>({unit:u,cells:pushCells(caster,u,steps)}));
+        }else if(s.effet==="bond"){
+          result.leap={from:{q:caster.q,r:caster.r},to:{q:target.q,r:target.r},distance:combat.axialDistance(caster,target)};
         }else if(s.effet==="prison_de_glace"){
           // Prison de glace (Eau ; Idan, 2026-10-31, chiffres de JC3) : la même résistance que la Paralysie, avec le froid.
           const resist=paralysisResistance(caster,target,code),resistRoll=d100();
@@ -549,6 +562,8 @@
             chocAmount:choc?Math.ceil(num(s.effet_base,10)*chocDice*effectFactor(caster,code)-1e-9):0};
         }
         if(s.effet==="purge_poison") result.purge=true;
+        // Écrasement : la cible ne peut plus se déplacer pendant ses prochaines activations.
+        if(num(s.immobilise,0)>0) result.immobilise=num(s.immobilise,0);
         if(s.effet==="delivrance") result.delivrance=afflictions(target,code);
       }else if(roll>=FUMBLE_THRESHOLD){
         const fumbleRoll=d100();

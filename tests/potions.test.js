@@ -216,6 +216,7 @@ assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","reference-data.js")
   archer.character.equipment.slots.weapon_set_1_off=null;
   archer.weaponPoison={turns:2,amount:10,itemId:bow.id,weapon:"Arc"};
   archer.q=foe.q-3;archer.r=foe.r;
+  foe.hp=foe.pvMax=999; // la cible survit au tir : le poison ne s'applique qu'à un blessé encore debout
   force=0.01;
   const shot=engine.resolveAttack(archer,foe,{mode:"ranged",distance:3});
   force=null;

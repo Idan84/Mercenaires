@@ -1085,6 +1085,8 @@ function renderStatsTab(c){
     }
     const effect=effects[name],value=effect?Math.round(effect.value):sheetStatValue(c,name);
     if(!Number.isFinite(value)) return "";
+    // Régénération (Idan, 2026-11-01 : « il faut ») : seulement pour qui en a (sang de troll), pas une ligne à 0 pour tous.
+    if(row.masquer_si_nul&&!(value>0)) return "";
     const shift=effect?Math.sign(value-Math.round(effect.base)):0;
     // Le Charisme ne joue pas encore au combat : « Total ». La Constitution y joue par les PV max (Idan, 2026-10-25).
     const lead=equipmentDetail(effect,name==="Charisme"?"Total":"Au combat");

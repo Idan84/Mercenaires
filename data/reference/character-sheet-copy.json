@@ -148,8 +148,9 @@
     {
       "nom": "Régénération",
       "groupe": "physique",
-      "usage": "",
-      "description_referentiel": false
+      "usage": "Sang de troll : au début de chaque activation en combat, regagner des PV (environ 2D6, davantage avec une Régénération élevée), sauf après une brûlure. Au camp, les blessures guérissent plus vite (deux fois plus vite à 100). Elle monte à chaque brûlure.",
+      "description_referentiel": false,
+      "masquer_si_nul": true
     },
     {
       "nom": "Intelligence",
@@ -440,7 +441,8 @@
             "Constitution",
             "Endurance",
             "Esquive",
-            "Résistance physique"
+            "Résistance physique",
+            "Régénération"
           ]
         }
       ],

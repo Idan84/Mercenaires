@@ -26,7 +26,7 @@ function campaignRules(){
       // Demandes au lieutenant, jouées chaque matin (lieutenant-ui.js, chargé après).
       lieutenants:{resolveRequests:state=>typeof lieutenantRules==="function"?lieutenantRules().resolveRequests(state):[]},
       // Recharge du mana au camp, chaque matin (magic.js).
-      magic:{rechargeMana:character=>magicRules().rechargeMana(character)},
+      magic:{rechargeMana:(character,options)=>magicRules().rechargeMana(character,options)},
       // Le marchand du jour (merchant-ui.js, chargé après ; doc 18).
       merchants:{morning:(state,options)=>typeof merchantRules==="function"?merchantRules().morning(state,options):null}});
   }
@@ -147,6 +147,8 @@ function logDayReport(report){
   if(typeof logExpeditionReport==="function") logExpeditionReport(report.expeditions);
   if(typeof logCampWork==="function") logCampWork(report.built);
   if(typeof logCampBuildings==="function") logCampBuildings(report.buildings);
+  // Entraînement libre à l'École de magie (Idan, 2026-11-02).
+  if(typeof logSchoolDay==="function") logSchoolDay(report.school);
   // Le marchand du jour (doc 18).
   if(typeof logMerchantMorning==="function") logMerchantMorning(report.merchant);
   // Le rapport des lieutenants (Idan, 2026-10-25) : une pop-up par demande de la veille.

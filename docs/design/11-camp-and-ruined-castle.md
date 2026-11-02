@@ -175,12 +175,42 @@ Fonctions :
 - c'est un **mercenaire hors mission, comme l'intendant et le médecin** (Idan : « tu as tout bon ») : il reste au camp,
   vit à l'École (pas de place au dortoir), ne part ni en mission ni en garde du corps, ne devient pas lieutenant et ne
   compte pas pour les 10 mercenaires d'un lieutenant ; il passe dans Ma Compagnie ;
-- **pas encore d'effet** (ni Renommée ni bonus) ; il en aura avec l'entraînement (piste d'Idan : son Charisme et son
-  affinité avec l'élève aideront les mercenaires à venir s'entraîner) ;
+- pas de Renommée ni de bonus en dehors de l'**entraînement libre** (ci-dessous), où son Charisme, son affinité avec
+  l'élève, son niveau et sa Transmission du savoir comptent ;
 - **interface** : en haut de l'Intendance, à côté de l'intendant et du médecin ; « Nommer un directeur de l'École »
   (la meilleure école de chaque candidat, les meilleurs d'abord), puis sa fiche compacte (sa meilleure école et depuis
   quand il est en poste au survol) et « Le renvoyer sur le terrain » ; fiche du mercenaire : « Jours à la tête de
   l'École » et son historique.
+
+**Entraînement libre** (Idan, 2026-11-02 : « un mercenaire hors mission, pas blessé pas fatigué ne restera pas oisif au
+camp […] il faut tous les jours un ordre de tirage pour tous les mercenaires dispo » ; règles
+`game-core/school-training.js`, matin du camp `game-core/campaign.js`, constantes `school.training.*`) :
+
+- **chaque matin**, une fois l'École construite : d'abord le **capitaine**, à la place choisie par le joueur (Idan : « on
+  choisit pour le cap et on est prioritaire »), **sans test** ; puis les mercenaires **disponibles** (au camp, ni
+  blessés, ni fatigués, ni en mission — même programmée —, ni intendant, médecin ou directeur), **dans un ordre tiré au
+  hasard** ;
+- chacun vise **la salle de sa meilleure école** si elle est construite et a une place libre, **sinon la salle
+  généraliste** (l'École elle-même) ; plus de place : il passe la journée à la taverne, sans test ;
+- **test** : chance = **100 / (1 + e^(−Δ/15))**, de 2 à 95 %, avec **Δ = (Volonté − 50) / 2 + (meilleure école − 70) +
+  Charisme du directeur / 10 + affinité avec le directeur / 10** (affinité calculée comme avec le capitaine : peuple,
+  culture, alignement ; −100 à +100). Réussi : il prend la place ; raté : la taverne. La meilleure école d'une recrue
+  vaut 78 en médiane (600 recrues mesurées) : doué (Volonté 50, école 100) 88 % ; recrue moyenne (50, 78) 63 % ; peu
+  doué (40, 40) 9 % ; sans école 2 % ;
+- **gain par jour** = **20 × Intelligence / 50 × (1 + 0,1 × niveau de la salle) × (1 + niveau du directeur / 100) ×
+  (1 + Transmission du savoir du directeur / 100)**, arrondi ; niveau du directeur : son école dans la salle de cette
+  école, sa Puissance magique dans la salle généraliste ; sans directeur, ces deux facteurs valent 1. Exemples :
+  salle 1 sans directeur (Intelligence 54) **24 XP** ; salle 3, directeur à 100 et Transmission 48 **83 XP** ;
+  salle 10, directeur à 120 et Transmission 70 (Intelligence 70) **209 XP** ;
+- **salle d'une école** : l'XP va à cette école ; ses **deux écoles opposées perdent chacune un quart** du gain (comme sur
+  le terrain, doc 12) ; **salle généraliste** : l'XP va à la **Puissance magique** ;
+- **le directeur** gagne **5 XP de Transmission du savoir par élève et par jour** ;
+- l'entraînement ne bloque rien : un élève reste disponible pour partir en mission ;
+- **interface** : dans l'encart de l'École, chaque salle montre ses places prises (« 1/2 places », les élèves et leur
+  XP au survol) ; sous les salles, « Le capitaine » (À la taverne, Salle généraliste ou une salle construite), valable
+  dès le lendemain matin ; une ligne au journal du matin (« École de magie : 3 élèves aujourd'hui. ») ; dans la fiche,
+  onglet Camp, la carte « Aujourd'hui » (la salle et l'XP, ou « À la taverne »).
+- À venir : le ludus (entraînement au combat), et le choix du mercenaire entre la magie et le combat selon ses goûts.
 
 ## 8 — Bâtiments pour animaux et montures
 

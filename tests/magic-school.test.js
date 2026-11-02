@@ -124,10 +124,10 @@ assert.deepEqual(log.at(-1),{message:"Salle du Feu : il faut d’abord École de
 game.campaign.company.camp.buildings={magic_school:{level:2,construction:null},magic_room_fire:{level:2,construction:null},
   magic_room_water:{level:1,construction:{kind:"building",code:"magic_room_water",name:"Salle de l’Eau",level:2,gold:4000,days:8,startDay:1,endDay:game.campaign.day+3}}};
 ui.renderCampBuildings();
-assert.match(company(),/École de magie<\/strong><span>Niveau 2 · 2 places<\/span>/);
+assert.match(company(),/École de magie<\/strong><span>Niveau 2 · <span class="building-places" title="Personne aujourd’hui">0\/2 places<\/span><\/span>/);
 assert.equal((company().match(/class="building-room /g)||[]).length,9,"les neuf salles");
-assert.match(company(),/<strong title="Elle monte au plus jusqu’au niveau de l’École de magie\.">Salle du Feu<\/strong><span>Niveau 2 · 2 places<\/span><\/div>\s*<div class="building-action"><button type="button" class="primary" data-camp-build="magic_room_fire" disabled>Améliorer : niveau 3<\/button>\s*<span class="building-cost">9 000 PO · 12 jours · École de magie niveau 3 requise<\/span>/);
-assert.match(company(),/Salle de l’Eau<\/strong><span>Niveau 1 · 1 place<\/span><\/div>\s*<span class="building-work">Chantier en cours : niveau 2, prêt dans 3 jours\.<\/span>/);
+assert.match(company(),/<strong title="Elle monte au plus jusqu’au niveau de l’École de magie\.">Salle du Feu<\/strong><span>Niveau 2 · <span class="building-places" title="Personne aujourd’hui">0\/2 places<\/span><\/span><\/div>\s*<div class="building-action"><button type="button" class="primary" data-camp-build="magic_room_fire" disabled>Améliorer : niveau 3<\/button>\s*<span class="building-cost">9 000 PO · 12 jours · École de magie niveau 3 requise<\/span>/);
+assert.match(company(),/Salle de l’Eau<\/strong><span>Niveau 1 · <span class="building-places" title="Personne aujourd’hui">0\/1 place<\/span><\/span><\/div>\s*<span class="building-work">Chantier en cours : niveau 2, prêt dans 3 jours\.<\/span>/);
 assert.match(company(),/Salle de la Foudre<\/strong><span>À construire<\/span><\/div>\s*<div class="building-action"><button type="button" class="primary" data-camp-build="magic_room_lightning">Construire<\/button>\s*<span class="building-cost">1 000 PO · 4 jours<\/span>/);
 ui.buildCampBuilding("magic_room_lightning");
 assert.deepEqual(log.at(-1),{message:"Construction lancée : Salle de la Foudre (niveau 1), 1 000 PO, prêt dans 4 jours.",kind:"gear"});

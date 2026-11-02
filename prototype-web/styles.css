@@ -2035,6 +2035,10 @@ body[data-screen="camp"] .camp-scene>.panel .muted{color:#c2b29e}
 .building-room .building-info strong{font-size:17px;cursor:help}
 .building-room .building-action{display:grid;gap:4px;justify-items:end;text-align:right}
 .building-room .building-action button{width:auto;padding:6px 12px;font-size:14px}
+.building-places{cursor:help;border-bottom:1px dotted #c2b29e80}
+.building-captain{grid-column:1/-1;display:flex;align-items:center;gap:10px;padding-top:10px;border-top:1px solid #9c795266;color:#c2b29e;font-size:14px;cursor:help}
+.building-captain{white-space:nowrap}
+.building-captain select{width:auto;min-width:0;max-width:100%;font:inherit;color:#e9d9c0;background:#201916;border:1px solid #9c7952;border-radius:8px;padding:4px 8px}
 /* Écran Dortoir : le décor en plein écran, le panneau en bas à gauche. */
 body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="dormitory"]{display:flex;align-items:flex-end;min-height:calc(100dvh - 150px)}
 .dormitory-panel{width:min(100%,640px);padding:18px 22px 20px;border:1px solid #957652;border-radius:14px;background:rgba(22,17,13,.86);color:#f0e2ca;box-shadow:0 20px 60px #000a}
@@ -2366,6 +2370,8 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 
 /* Onglet Camp (Idan, 2026-10-24) : deux colonnes, compétences de camp et Artisanat avec ses métiers. */
 .sheet-camp .sheet-predilections{grid-template-columns:repeat(2,minmax(0,1fr))}
+.sheet-camp .sheet-predilections--3{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(max-width:700px){.sheet-camp .sheet-predilections--3{grid-template-columns:1fr}}
 .sheet-camp-columns{grid-template-columns:repeat(2,minmax(0,1fr))}
 /* Onglet Historique : compteurs cumulés, puis le journal du plus récent au plus ancien. */
 .sheet-history{display:grid;gap:18px}

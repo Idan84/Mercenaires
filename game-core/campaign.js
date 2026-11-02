@@ -5,10 +5,12 @@
 (function(root,factory){
   const history=typeof module!=="undefined"&&module.exports?require("./history.js"):root.MercenairesHistory;
   const regeneration=typeof module!=="undefined"&&module.exports?require("./regeneration.js"):root.MercenairesRegeneration;
-  const api=factory(history,regeneration);
+  // Entraînement libre à l'École de magie (facultatif hors du jeu : une page sans ce script n'a pas d'entraînement).
+  const training=typeof module!=="undefined"&&module.exports?require("./school-training.js"):root.MercenairesSchoolTraining;
+  const api=factory(history,regeneration,training);
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesCampaign=api;
-})(typeof globalThis!=="undefined"?globalThis:this,function(History,Regeneration){
+})(typeof globalThis!=="undefined"?globalThis:this,function(History,Regeneration,Training){
   // Sauvegarde : l'état de partie complet, sérialisé en JSON avec un format et une version.
   // La trace de génération des mercenaires (détail de calcul pour le Design Lab, ~85 % du poids)
   // n'est pas sauvegardée : un mercenaire passe d'environ 36 Ko à 5 Ko.
@@ -78,8 +80,12 @@
     const medicSkill=state=>Math.max(0,Number(medicOf(state)?.skills?.camp?.["Médecine"])||0);
     function medicCareFactor(state){ return medicOf(state)?Math.max(0,1-medicSkill(state)/MEDIC.divisor):1; }
     function medicRenown(state){ return medicOf(state)?Math.round(MEDIC.renown*medicSkill(state)):0; }
-    // Directeur de l'École de magie (Idan, 2026-11-01 ; nomination : school-director.js) : pas encore d'effet.
+    // Directeur de l'École de magie (Idan, 2026-11-01 ; nomination : school-director.js) : il aide à l'entraînement libre.
     const isDirector=(state,m)=>state.company.directorId!=null&&m.id===state.company.directorId;
+    function directorOf(state){
+      const id=state?.company?.directorId;
+      return id==null?null:(state.company.roster||[]).find(m=>m.id===id)||null;
+    }
     // Hors mission, comme l'intendant : ni dortoir, ni mission, ni garde du corps (médecin et directeur de l'École).
     const offField=(state,m)=>m.id===state.company.intendantId||(state.company.medicId!=null&&m.id===state.company.medicId)||isDirector(state,m);
     // Bains chauds (Idan, 2026-11-01) : un jour de fatigue de moins par niveau, au moins 1 jour.
@@ -611,6 +617,52 @@
       building.construction={kind:"building",...work,startDay:state.day,endDay:state.day+next.days};
       return {ok:true,construction:building.construction};
     }
+    // Entraînement libre à l'École de magie (Idan, 2026-11-02 ; règles : school-training.js) : chaque matin, le capitaine à
+    // la place choisie par le joueur, puis les autres mercenaires disponibles (au camp, ni blessés, ni fatigués, ni en
+    // mission, ni intendant, médecin ou directeur) dans un ordre tiré au hasard. La journée est gardée dans
+    // camp.schoolDay pour l'affichage.
+    const schoolTraining=Training?Training.createSchoolTrainingRules({reference,random,affinity,progression}):null;
+    const SCHOOL_HALL="magic_school";
+    // Les salles construites : la salle généraliste (l'École elle-même) puis les salles des écoles.
+    function schoolRooms(state){
+      if(!(buildingLevel(state,SCHOOL_HALL)>0)) return [];
+      return [SCHOOL_HALL,...campRoomCodes(SCHOOL_HALL)].filter(code=>buildingLevel(state,code)>0).map(code=>({
+        code,name:CAMP_BUILDINGS.get(code).nom,school:CAMP_BUILDINGS.get(code).ecole||null,
+        level:buildingLevel(state,code),places:buildingPlaces(state,code)}));
+    }
+    function trainingAvailable(state,m){ return Boolean(m)&&!m.recovery&&!expeditionOf(state,m.id); }
+    // Le choix du joueur pour le capitaine : une salle construite, ou null (la taverne).
+    function captainTraining(state){
+      const code=state?.company?.camp?.captainTraining||null;
+      return code&&buildingLevel(state,code)>0&&(code===SCHOOL_HALL||campRoomCodes(SCHOOL_HALL).includes(code))?code:null;
+    }
+    function setCaptainTraining(state,code){
+      if(code&&!schoolRooms(state).some(room=>room.code===code)) return {ok:false,reason:"Cette salle n’est pas construite."};
+      state.company.camp.captainTraining=code||null;
+      return {ok:true,code:code||null};
+    }
+    function runSchoolDay(state){
+      const camp=state.company.camp;
+      const rooms=schoolRooms(state);
+      if(!schoolTraining||!rooms.length){ delete camp.schoolDay; return null; }
+      const captain=rosterOf(state).find(m=>m.id===state.company.captainId)||null;
+      const candidates=rosterOf(state).filter(m=>m!==captain&&!offField(state,m)&&trainingAvailable(state,m));
+      const result=schoolTraining.runDay({rooms,candidates,captain:trainingAvailable(state,captain)?captain:null,
+        captainChoice:captainTraining(state),director:directorOf(state)});
+      camp.schoolDay={day:state.day,directorXp:result.directorXp,
+        entries:result.entries.map(e=>({id:e.id,code:e.code,xp:e.xp,chance:e.chance,captain:e.captain||undefined,full:e.full||undefined}))};
+      return {day:state.day,entries:result.entries,directorXp:result.directorXp,director:directorOf(state)};
+    }
+    // La journée d'entraînement du jour (gardée le matin) : { day, entries, directorXp } ou null.
+    function schoolDayOf(state){
+      const day=state?.company?.camp?.schoolDay;
+      return day&&day.day===state.day?day:null;
+    }
+    // Ce que fait un mercenaire aujourd'hui à l'École : son entrée, ou null.
+    function schoolEntryOf(state,mercenaryId){
+      return schoolDayOf(state)?.entries.find(e=>e.id===mercenaryId)||null;
+    }
+
     // Chaque matin : les chantiers terminés montent leur bâtiment d'un niveau.
     function advanceBuildings(state){
       const done=[];
@@ -683,7 +735,9 @@
       expeditions.departed=departScheduled(state);
       // Le marchand de la veille repart ; un autre passe peut-être (doc 18 ; Idan, 2026-10-30).
       const merchant=merchants?merchants.morning(state,{renown:companyRenown(state).total}):null;
-      return {day:state.day,recovered,salaries,tavern:tavernReport,offersLost,expeditions,built,buildings,lieutenants:lieutenantReports,mana,merchant};
+      // Entraînement libre (Idan, 2026-11-02) : ceux qui restent au camp choisissent leur journée.
+      const school=runSchoolDay(state);
+      return {day:state.day,recovered,salaries,tavern:tavernReport,offersLost,expeditions,built,buildings,lieutenants:lieutenantReports,mana,merchant,school};
     }
 
     // Recharge du mana (doc 12 ; Idan, 2026-10-25) : chaque jour, pour les membres présents au camp, pas pour ceux qui sont
@@ -1081,7 +1135,7 @@
       completeExpeditionCombat,
       dormitoryFree,
       dormitoryUsed,
-      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
+      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
       woundDaysFor,fatigueDaysFor,
       dormitoryPlaces,
       dormitoryExpansionCost,

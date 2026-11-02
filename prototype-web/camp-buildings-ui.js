@@ -45,11 +45,33 @@ function campBuildingAction(c,code,level){
   return `<div class="building-action"><button type="button" class="primary" data-camp-build="${esc(code)}"${short||next.locked?" disabled":""}>${level?"Améliorer : niveau "+fmt(next.level):"Construire"}</button>
       <span class="building-cost">${fmt(next.gold)} PO · ${campDays(next.days)}${why}</span></div>`;
 }
+// Entraînement libre (Idan, 2026-11-02) : les élèves du jour dans une salle (entrées de camp.schoolDay).
+function schoolStudents(c,code){
+  const day=campaignRules().schoolDayOf?campaignRules().schoolDayOf(c):null;
+  return day?day.entries.filter(e=>e.code===code):[];
+}
+function schoolStudentsTitle(c,students){
+  const name=id=>c.company.roster.find(m=>m.id===id)?.name||"?";
+  return students.length?"Aujourd’hui : "+students.map(e=>`${name(e.id)} (+${fmt(e.xp)} XP)`).join(", "):"Personne aujourd’hui";
+}
 function campBuildingState(c,code,level){
   if(!level) return "À construire";
   const rules=campaignRules(),effect=campBuildingEffectText(code,rules.campBuildingEffects(c));
   const places=rules.buildingPlaces?rules.buildingPlaces(c,code):0;
-  return `Niveau ${fmt(level)}${places?` · ${fmt(places)} place${places>1?"s":""}`:""}${effect?" · "+effect:""}`;
+  if(!places) return `Niveau ${fmt(level)}${effect?" · "+effect:""}`;
+  // Places prises aujourd'hui / places ; qui s'entraîne, au survol.
+  const students=schoolStudents(c,code);
+  return `Niveau ${fmt(level)} · <span class="building-places" title="${esc(schoolStudentsTitle(c,students))}">${fmt(students.length)}/${fmt(places)} place${places>1?"s":""}</span>${effect?" · "+effect:""}`;
+}
+// Le capitaine (Idan, 2026-11-02 : « on choisit pour le cap et on est prioritaire ») : sa salle, chaque matin, avant les
+// autres et sans test.
+function captainTrainingChoice(c,code){
+  const rules=campaignRules();
+  if(code!=="magic_school"||!rules.schoolRooms||!rules.buildingLevel(c,code)) return "";
+  const current=rules.captainTraining(c)||"";
+  const options=[["","À la taverne"],...rules.schoolRooms(c).map(room=>[room.code,room.school?room.name:"Salle généraliste"])];
+  return `<label class="building-captain" title="Chaque matin, avant les autres et sans test ; à partir de demain.">Le capitaine
+      <select data-captain-training>${options.map(([value,label])=>`<option value="${esc(value)}"${value===current?" selected":""}>${esc(label)}</option>`).join("")}</select></label>`;
 }
 // École de magie (Idan, 2026-11-01) : une ligne par salle, une fois l'École construite.
 function campRoomsList(c,code){
@@ -73,6 +95,7 @@ function campBuildingCard(c,code){
       <div class="building-info"><strong title="${esc(row.description)}">${esc(row.nom)}</strong><span>${campBuildingState(c,code,level)}</span></div>
       ${campBuildingAction(c,code,level)}
       ${campRoomsList(c,code)}
+      ${captainTrainingChoice(c,code)}
     </article>`;
 }
 
@@ -145,6 +168,21 @@ function expandDormitory(){ startCampWork(campaignRules().startDormitoryExpansio
 function improveDormitory(){ startCampWork(campaignRules().startDormitoryQuality(game.campaign)); }
 function buildLieutenantQuarter(){ startCampWork(campaignRules().startLieutenantQuarter(game.campaign)); }
 function buildCampBuilding(code){ startCampWork(campaignRules().startBuilding(game.campaign,code)); }
+function chooseCaptainTraining(code){
+  const result=campaignRules().setCaptainTraining(game.campaign,code||null);
+  if(!result.ok){ tavernLog(result.reason,"bad"); renderCampBuildings(); return; }
+  const room=campaignRules().schoolRooms(game.campaign).find(r=>r.code===result.code);
+  tavernLog(room?`Dès demain matin, le capitaine s’entraîne : ${room.school?room.name:"salle généraliste"}.`:"Dès demain, le capitaine passe ses journées à la taverne.","info");
+  saveGame();
+  renderGame();
+}
+
+// Journal du matin : l'entraînement libre du jour, en une ligne (Idan, 2026-11-02).
+function logSchoolDay(report){
+  const students=(report?.entries||[]).filter(e=>e.code);
+  if(!students.length) return;
+  tavernLog(`École de magie : ${fmt(students.length)} élève${students.length>1?"s":""} aujourd’hui.`,"turn");
+}
 
 // Journal du matin : les bâtiments (et les salles) qui montent d'un niveau.
 function logCampBuildings(list){
@@ -172,5 +210,9 @@ function initializeCampBuildingsUi(){
     else if(event.target.closest("[data-dorm-quality]")) improveDormitory();
     else if(event.target.closest("[data-dorm-quarter]")) buildLieutenantQuarter();
     else if(event.target.closest("[data-camp-build]")) buildCampBuilding(event.target.closest("[data-camp-build]").dataset.campBuild);
+  });
+  document.addEventListener("change",event=>{
+    const select=event.target.closest?.("[data-captain-training]");
+    if(select) chooseCaptainTraining(select.value);
   });
 }

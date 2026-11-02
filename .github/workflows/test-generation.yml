@@ -50,6 +50,7 @@ jobs:
       - run: node tests/magic-school.test.js
       - run: node tests/medic.test.js
       - run: node tests/school-director.test.js
+      - run: node tests/school-training.test.js
       - run: node tests/helmets.test.js
       - run: node tests/potions.test.js
       - run: node tests/sling.test.js

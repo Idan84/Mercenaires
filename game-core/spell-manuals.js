@@ -7,9 +7,9 @@
 // - Sa valeur : la même pour tous les sorts (economy.manual_value, 3 000 PO ; Idan, 2026-11-01) : item-value.js.
 // - Les marchands vendent les manuels d'une école entière (merchants.json : {type:"manual", ecole}) : un article tiré
 //   dans cette école (merchants.js).
-// - Apprendre : à l'Intendance, un membre de la compagnie présent au camp lit le manuel et connaît le sort au niveau 1,
-//   comme un sort de création (generation.spells.starting_level) ; le manuel est consommé. Pas de prérequis d'école
-//   (doc 12 : « pas de prérequis d'école pour connaître ou lancer un sort ») ; on n'apprend pas un sort déjà connu.
+// - Apprendre (Idan, 2026-11-02) : à l'École de magie, dans la salle de l'école du sort (game-core/spell-study.js) ;
+//   canLearn dit seulement si le manuel peut lui servir (un manuel, au camp, un sort qu'il ne connaît pas). Pas de
+//   prérequis d'école pour le mercenaire (doc 12) : seulement la salle construite.
 (function(root,factory){
   const api=factory();
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
@@ -19,8 +19,6 @@
   const PREFIX="Manuel : ";
 
   function createManualRules({reference}={}){
-    const constants=new Map(rows(reference?.formulaConstants).map(r=>[r.code,Number(r.valeur)]));
-    const startingLevel=Number.isFinite(constants.get("generation.spells.starting_level"))?constants.get("generation.spells.starting_level"):1;
     const spells=rows(reference?.spells);
     const schools=[...new Set(spells.map(s=>s.ecole).filter(Boolean))];
 
@@ -42,22 +40,7 @@
       return {ok:true,spell};
     }
 
-    // Lire un manuel de l'Intendance : le sort au niveau 1, le manuel consommé.
-    function learn(state,mercenaryId,itemId){
-      const stock=state.company.stock||[];
-      const item=stock.find(i=>String(i.id)===String(itemId));
-      if(!item) return no("Manuel introuvable à l’Intendance.");
-      const mercenary=state.company.roster.find(m=>m.id===mercenaryId)||null;
-      const check=canLearn(state,mercenary,item);
-      if(!check.ok) return check;
-      const spell=check.spell;
-      if(!Array.isArray(mercenary.spells)) mercenary.spells=[];
-      mercenary.spells.push({code:spell.code,name:spell.nom,school:spell.ecole,mastery:startingLevel});
-      state.company.stock=stock.filter(i=>i!==item);
-      return {ok:true,mercenary,spell,item};
-    }
-
-    return {PREFIX,schools,spellsOf,spellByKey,spellOf,isManual,knows,canLearn,learn};
+    return {PREFIX,schools,spellsOf,spellByKey,spellOf,isManual,knows,canLearn};
   }
 
   return {createManualRules,PREFIX};

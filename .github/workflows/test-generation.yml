@@ -51,6 +51,7 @@ jobs:
       - run: node tests/medic.test.js
       - run: node tests/school-director.test.js
       - run: node tests/school-training.test.js
+      - run: node tests/spell-study.test.js
       - run: node tests/helmets.test.js
       - run: node tests/potions.test.js
       - run: node tests/sling.test.js
@@ -96,6 +97,7 @@ jobs:
       - run: node --check prototype-web/tavern-ui.js
       - run: node --check prototype-web/camp-buildings-ui.js
       - run: node --check prototype-web/school-director-ui.js
+      - run: node --check prototype-web/spell-study-ui.js
       - run: node --check game-core/recruit-dialogue.js
       - run: node --check prototype-web/picto-ui.js
       - run: node --check prototype-web/equipment-art.js

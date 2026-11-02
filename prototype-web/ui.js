@@ -35,6 +35,8 @@ function rosterStatus(c){
   if(expedition) return {kind:"away",label:expedition.status==="returning"?"Sur le retour":"En mission"};
   if(c.recovery?.kind==="wounded") return {kind:"wounded",label:recoveryLabel(c)};
   if(c.recovery) return {kind:"fatigued",label:recoveryLabel(c)};
+  // Recruté aujourd'hui : au jour J, on organise J+1 (Idan, 2026-11-02) ; on l'équipe et on planifie sa journée de demain.
+  if(game.campaign&&Number(c.contract?.joinDay)>game.campaign.day) return {kind:"available",label:"Disponible demain"};
   // L'intendant reste au camp (Idan, 2026-10-24).
   if(game.campaign&&c.id===game.campaign.company.intendantId) return {kind:"steward",label:String(c.sex||"").toLowerCase().startsWith("f")?"Intendante":"Intendant"};
   // Le médecin reste au camp, au Dispensaire (Idan, 2026-11-01).
@@ -42,6 +44,7 @@ function rosterStatus(c){
   // À l'École de magie, jusqu'à ce que l'élève connaisse son sort (Idan, 2026-11-02).
   const studying=game.campaign&&typeof campaignRules==="function"&&campaignRules().spellStudy?campaignRules().spellStudy:null;
   const own=studying?.studyOf(game.campaign,c.id);
+  if(own&&studying.isPlanned(own)) return {kind:"available",label:"Entre à l’École demain"};
   if(own) return {kind:"steward",label:own.kind==="perfect"?"Perfectionne un sort":"Apprend un sort"};
   if(studying?.teachingOf(game.campaign,c.id)) return {kind:"steward",label:"Enseigne un sort"};
   // Le directeur de l'École de magie reste au camp, à l'École (Idan, 2026-11-01).
@@ -1267,7 +1270,8 @@ function renderCampTab(c){
   const entry=day?day.entries.find(e=>e.id===c.id):null;
   const room=entry?.code?rules.schoolRooms(game.campaign).find(r=>r.code===entry.code):null;
   // Apprentissage des sorts (Idan, 2026-11-02) : élève ou professeur, il est à l'École jusqu'à la fin.
-  const study=rules?.spellStudy&&game.campaign.company.roster.includes(c)?rules.spellStudy.studyOf(game.campaign,c.id):null;
+  const own=rules?.spellStudy&&game.campaign.company.roster.includes(c)?rules.spellStudy.studyOf(game.campaign,c.id):null;
+  const study=own&&!rules.spellStudy.isPlanned(own)?own:null;
   const teaching=rules?.spellStudy&&!study&&game.campaign.company.roster.includes(c)?rules.spellStudy.teachingOf(game.campaign,c.id):null;
   const today=study?predilectionCard("Aujourd’hui",`${study.kind==="perfect"?"Perfectionne":"Apprend"} ${study.spellName}`,study.kind==="perfect"?"":`jour ${fmt(study.days+1)}`)
     :teaching?predilectionCard("Aujourd’hui",`Enseigne ${teaching.spellName}`,`jour ${fmt(teaching.days+1)}`)

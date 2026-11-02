@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "spell-study-dialogue",
-  "description": "Apprentissage d’un sort à l’École de magie (Idan, 2026-11-02) : proposer à un mercenaire d’apprendre le sort d’un manuel, proposer à un mercenaire qui connaît le sort de l’enseigner. {prenom} ; {sort} ; {eleve} ; {salle} ; {masculin|féminin} selon celui qui parle ou dont on parle. Textes de JC, à retoucher librement.",
+  "description": "Apprentissage d’un sort à l’École de magie (Idan, 2026-11-02) : proposer à un mercenaire d’apprendre le sort d’un manuel, proposer à un mercenaire qui connaît le sort de l’enseigner. {prenom} ; {sort} ; {eleve} ; {salle} ; {masculin|féminin} selon celui qui parle ou dont on parle. Au jour J, on organise J+1 : l’élève entre et le professeur commence le lendemain matin. Textes de JC, à retoucher librement.",
   "offer": {
     "proposal": "J’ai là un manuel : {sort}. Vous voulez l’apprendre ? Vous resterez à l’École jusqu’à ce que vous le sachiez.",
     "accepted": [
@@ -16,7 +16,7 @@
       "Pas maintenant. Gardez votre manuel pour quelqu’un d’autre.",
       "Moi, apprendre ça ? Vous perdez votre temps."
     ],
-    "outcome_accepted": "{prenom} entre à la {salle} pour apprendre {sort}. Le manuel est détruit.",
+    "outcome_accepted": "{prenom} entrera demain matin à la {salle} pour apprendre {sort}.",
     "outcome_refused": "{prenom} refuse d’apprendre {sort}. Le manuel reste à l’Intendance."
   },
   "teacher": {
@@ -33,7 +33,7 @@
       "Pas pour {eleve}. Demandez à quelqu’un d’autre.",
       "J’ai mieux à faire que de répéter mes formules."
     ],
-    "outcome_accepted": "{prenom} enseignera {sort} à {eleve} et reste à l’École jusqu’à la fin.",
+    "outcome_accepted": "{prenom} enseignera {sort} à {eleve} dès demain matin, et restera à l’École jusqu’à la fin.",
     "outcome_refused": "{prenom} refuse d’enseigner {sort}."
   }
 }

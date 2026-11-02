@@ -401,7 +401,7 @@ function departBodyguards(chosen){
   if(!result.ok){ $("mission-select-error").textContent=result.reason; return; }
   $("mission-select-dialog").close();
   const e=result.expedition;
-  tavernLog(chosen.map(c=>c.name).join(", ")+" partir"+(chosen.length>1?"ont":"a")+" demain matin en garde du corps ("+e.offer.client.toLocaleLowerCase("fr")+") pour "+e.offer.days+" jours : +"+fmt(result.gold)+" PO payés d’avance.","gear");
+  tavernLog(chosen.map(c=>c.name).join(", ")+" partir"+(chosen.length>1?"ont":"a")+" demain matin en garde du corps ("+e.offer.client.toLocaleLowerCase("fr")+") pour "+e.offer.days+" jours : "+fmt(e.offer.payment)+" PO d’acompte au départ.","gear");
   saveGame();
   renderGame();
   if(typeof renderContractBoard==="function") renderContractBoard();

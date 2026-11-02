@@ -159,7 +159,21 @@ function renderExpeditions(){
       <div><strong>${esc(e.kind==="bodyguard"?e.offer.client:e.offer.campName+" de "+e.offer.fields.lieu)}</strong><small>${esc(e.memberIds.map(name).join(", "))}</small></div>
       <em>${esc(expeditionLabel(e))}</em>
       ${e.status==="arrived"?`<button type="button" class="primary" data-expedition-fight="${esc(e.id)}">Commencer le combat</button>`:""}
+      ${e.status==="scheduled"?`<button type="button" class="secondary" data-expedition-cancel="${esc(e.id)}" title="Au jour J, on organise J+1 : on peut encore changer d’avis avant le départ.">Annuler le départ</button>`:""}
     </article>`).join("")}</section>`;
+}
+
+// Au jour J, on organise J+1 (Idan, 2026-11-02) : une mission qui part demain matin peut encore être annulée ; le contrat
+// retourne au tableau, la garde du corps n'a encore rien payé. On peut ensuite la reprendre avec une autre escouade.
+function cancelScheduledExpedition(id){
+  const result=campaignRules().cancelExpedition(game.campaign,id);
+  if(!result.ok){ tavernLog(result.reason,"warn"); return; }
+  const e=result.expedition;
+  tavernLog((e.kind==="bodyguard"?"Garde du corps annulée ("+e.offer.client.toLocaleLowerCase("fr")+")":"Départ annulé pour le "+e.offer.campName.toLocaleLowerCase("fr")+" de "+e.offer.fields.lieu)
+    +(result.returned?" : l’offre retourne au tableau.":"."),"info");
+  saveGame();
+  renderGame();
+  renderContractBoard();
 }
 
 // Journal du jour et, si une escouade arrive, la fenêtre « Commencer le combat ». « Plus tard » laisse finir la journée
@@ -169,7 +183,7 @@ function logExpeditionReport(report){
   // Missions programmées la veille : départ ce matin.
   const name=id=>game.campaign?.company.roster.find(m=>m.id===id)?.name||"?";
   for(const e of report.departed||[]){
-    if(e.kind==="bodyguard") tavernLog(e.memberIds.map(name).join(", ")+" part"+(e.memberIds.length>1?"ent":"")+" en garde du corps ("+e.offer.client.toLocaleLowerCase("fr")+") : retour dans "+e.offer.days+" jours.","turn");
+    if(e.kind==="bodyguard") tavernLog(e.memberIds.map(name).join(", ")+" part"+(e.memberIds.length>1?"ent":"")+" en garde du corps ("+e.offer.client.toLocaleLowerCase("fr")+") : retour dans "+e.offer.days+" jours"+(e.paid?", +"+fmt(e.paid)+" PO d’acompte":"")+".","turn");
     else tavernLog("L’escouade part pour le "+e.offer.campName.toLocaleLowerCase("fr")+" de "+e.offer.fields.lieu+" : arrivée dans "+e.offer.distance+" jour"+(e.offer.distance>1?"s":"")+".","turn");
   }
   for(const e of report.arrived) tavernLog("L’escouade est arrivée au "+e.offer.campName.toLocaleLowerCase("fr")+" de "+e.offer.fields.lieu+" : le combat vous attend.","turn");
@@ -237,6 +251,8 @@ function initializeExpeditionUi(){
     if(event.target.closest("#bodyguard-return-ok")){ showNextBodyguardReturn(); return; }
     const fight=event.target.closest("[data-expedition-fight]");
     if(fight) startExpeditionCombat(fight.dataset.expeditionFight);
+    const cancel=event.target.closest("[data-expedition-cancel]");
+    if(cancel) cancelScheduledExpedition(cancel.dataset.expeditionCancel);
     if(event.target.closest("[data-expedition-later]")) $("expedition-dialog").close();
   });
   document.addEventListener("keydown",event=>{

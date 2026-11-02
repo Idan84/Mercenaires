@@ -569,8 +569,11 @@ règles `game-core/spell-study.js`, constantes `spell_study.*`, interface `proto
   **Δ = 0,5 × affinité avec le capitaine + 0,5 × (école du sort − 50)** + l'appui de l'intendant (0,2 × Intendance +
   0,25 × affinité envers lui) ; une tentative par jour ; le **capitaine** apprend sans test. Affinité 0 et école 80 :
   64 % ; sans l'école : 28 % ; affinité 50 et école 80 : 80 %.
-- **S'il accepte** : le manuel est détruit ; il prend une place de la salle (avant l'entraînement libre) et **reste au
-  camp** (ni mission, ni garde du corps, ni entraînement libre) jusqu'à ce qu'il connaisse le sort.
+- **S'il accepte** (au jour J, on organise J+1, doc 16) : il **entre à l'École le lendemain matin** ; d'ici là, le manuel
+  est mis de côté et la place réservée, et « Annuler » rend le manuel à l'Intendance (sans effet sur l'affinité). Au
+  matin, le manuel est détruit, l'affinité appliquée ; il prend une place de la salle (avant l'entraînement libre) et
+  **reste au camp** (ni mission, ni garde du corps, ni entraînement libre) jusqu'à ce qu'il connaisse le sort. Le premier
+  test a lieu le matin suivant son entrée.
 - **Chaque matin**, un test : chance = **100 / (1 + e^(−(X − 100)/20)) × (1 + 0,1 × niveau de la salle)**, au plus 95 %,
   avec **X = (Intelligence + école du sort) / 2 + (école du sort du directeur + sa Transmission du savoir) / 10 +
   Transmission du savoir du professeur / 5**. Salle niveau 1 : moyen (Intelligence 54, école 70) 14 % par jour, **7 jours**
@@ -583,7 +586,8 @@ règles `game-core/spell-study.js`, constantes `spell_study.*`, interface `proto
 - **Professeur** (facultatif, à tout moment) : un membre qui **connaît le sort**, au camp, ni l'élève ni déjà pris par
   l'École. Il accepte selon 10 + 80 / (1 + e^(−Δ/20)), **Δ = (son affinité avec le capitaine + son affinité envers
   l'élève) / 2** (50 % à 0) ; une tentative par jour ; le capitaine enseigne sans test. Il **reste au camp** jusqu'à la
-  fin (Idan : il ne part pas) ; on peut le **libérer**, l'élève continue seul. +5 XP de Transmission du savoir par jour
+  fin (Idan : il ne part pas) ; il **enseigne dès le lendemain matin** (son affinité change à ce moment-là) ; on peut le
+  **libérer**, l'élève continue seul. +5 XP de Transmission du savoir par jour
   d'enseignement ; le directeur compte les élèves qui apprennent un sort (+5 XP par élève et par jour).
 - **Le faire sortir avant la fin** : le manuel est perdu et **rien n'est acquis**.
 - **Affinité avec le capitaine** (Idan : « toutes ces interactions doivent faire évoluer l'affinité ») : l'élève **+5**
@@ -603,8 +607,9 @@ sort », « une journée à l'école » ; règles `game-core/spell-study.js`, co
 - **Un manuel du même sort**, pour un membre qui le **connaît déjà** : dans « Apprendre à… », il voit « Perfectionner »
   (avec l'XP qu'il gagnera). **Pas de test** ; affinité avec le capitaine **+2**. Il faut la **salle de l'école du sort**
   avec une place libre ; pas pour un sort déjà au niveau 100.
-- **Une journée à l'École** : le manuel est détruit ; il passe la journée dans la salle (une place prise, ni mission, ni
-  garde du corps, ni entraînement libre) ; l'XP tombe **le lendemain matin**, puis il sort.
+- **Une journée à l'École** : il **entre le lendemain matin** (on peut annuler d'ici là : le manuel revient) ; au matin,
+  le manuel est détruit et l'affinité appliquée ; il passe la journée dans la salle (une place prise, ni mission, ni
+  garde du corps, ni entraînement libre) ; l'XP tombe **le matin suivant**, puis il sort.
 - **XP du sort = 1 000 × Intelligence / 50 × (1 + 0,1 × niveau de la salle) × (1 + Transmission du savoir du directeur /
   100)**, jusqu'au niveau 100. Intelligence 54, salle 3, sans directeur : **1 404 XP** (≈ 78 lancers) ; un sort passe du
   niveau 1 à 11, de 10 à 15, de 20 à 23, de 50 à 51, de 90 à 90,8 ; avec un directeur à 48 de Transmission : 2 078 XP.

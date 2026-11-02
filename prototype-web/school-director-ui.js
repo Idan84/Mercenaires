@@ -53,8 +53,8 @@ function renderSchoolDirectorPanel(){
   const picks=company.roster.filter(m=>m.id!==company.captainId&&m.id!==company.intendantId&&m.id!==company.medicId
       &&!lieutenants.includes(m.id)&&!rules.expeditionOf(c,m.id))
     .sort((a,b)=>schoolValue(b)-schoolValue(a)).map(m=>{
-      const asked=m.directorOfferDay===c.day,school=directorSchoolText(m);
-      return `<button type="button" class="steward-pick" data-director-offer="${esc(m.id)}"${asked?` disabled title="${esc(copy.asked_today||"")}"`:` title="${esc(school)}"`}>
+      const asked=m.directorOfferDay===c.day,school=directorSchoolText(m),arriving=Number(m.contract?.joinDay)>c.day;
+      return `<button type="button" class="steward-pick" data-director-offer="${esc(m.id)}"${asked||arriving?` disabled title="${esc(arriving?"Il rejoint la compagnie demain matin.":copy.asked_today||"")}"`:` title="${esc(school)}"`}>
         ${renderAvatar(m,{variant:"compact",kind:"portrait"})}<b>${esc(m.name)}</b><small>${esc(school)}</small></button>`;
     }).join("");
   panel.innerHTML=picks?`<details class="steward-offer"><summary class="talk-offer-btn" title="${esc(copy.appoint_tip||"")}">${esc(copy.appoint||"")}</summary><div class="steward-picks">${picks}</div></details>`:"";

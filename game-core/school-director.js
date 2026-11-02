@@ -45,6 +45,7 @@
       if(!m) return no("Mercenaire introuvable.");
       if(!(schoolLevel(state)>0)) return no("Il faut d’abord construire l’École de magie.");
       if(m.id===state.company.captainId) return no("Le capitaine ne peut pas diriger l’École.");
+      if(Number(m.contract?.joinDay)>state.day) return no("Il rejoint la compagnie demain matin.");
       if((state.company.lieutenantIds||[]).includes(m.id)) return no("Un lieutenant ne peut pas diriger l’École.");
       if(m.id===state.company.intendantId) return no("L’intendant ne peut pas diriger l’École.");
       if(state.company.medicId!=null&&m.id===state.company.medicId) return no("Le médecin ne peut pas diriger l’École.");

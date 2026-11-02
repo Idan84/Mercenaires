@@ -842,7 +842,8 @@
       for(const expedition of expeditionsOf(state)){
         if(expedition.status!=="scheduled"||state.day<expedition.departDay) continue;
         expedition.status=expedition.kind==="bodyguard"?"away":"outbound";
-        if(expedition.kind==="bodyguard"&&!expedition.paid){
+        // payOnDeparture : les gardes signées avant cette règle ont déjà été payées à la signature (ancienne sauvegarde).
+        if(expedition.kind==="bodyguard"&&expedition.payOnDeparture&&!expedition.paid){
           expedition.paid=Number(expedition.offer.payment)||0;
           state.company.gold+=expedition.paid;
         }
@@ -858,6 +859,8 @@
       if(!expedition) return {ok:false,reason:"Mission introuvable."};
       if(expedition.status!=="scheduled") return {ok:false,reason:"L’escouade est déjà partie."};
       list.splice(list.indexOf(expedition),1);
+      // Ancienne sauvegarde : une garde du corps payée à la signature rend son paiement.
+      if(expedition.kind==="bodyguard"&&!expedition.payOnDeparture) state.company.gold-=Number(expedition.offer.payment)||0;
       const slots=boardOf(state).slots;
       const slot=slots.find(x=>!x.offer&&x.emptyUntil===expedition.signedDay+TAVERN_EMPTY_DAYS)||slots.find(x=>!x.offer);
       if(slot){ slot.offer=expedition.offer; slot.emptyUntil=null; }
@@ -960,7 +963,7 @@
       if(ids.length!==offer.count) return {ok:false,reason:`Il faut ${offer.count} mercenaire${offer.count>1?"s":""}.`};
       const members=ids.map(id=>rosterOf(state).find(m=>m.id===id));
       for(const m of members){ const ok=canGuard(state,m,offer); if(!ok.ok) return {ok:false,reason:(m?.name?m.name+" : ":"")+ok.reason}; }
-      const expedition={id:offer.id,kind:"bodyguard",offer,memberIds:ids,signedDay:state.day,departDay:state.day+1,returnDay:state.day+1+offer.days,status:"scheduled"};
+      const expedition={id:offer.id,kind:"bodyguard",offer,memberIds:ids,signedDay:state.day,departDay:state.day+1,returnDay:state.day+1+offer.days,status:"scheduled",payOnDeparture:true};
       expeditionsOf(state).push(expedition);
       takeBoardOffer(state,offer);
       return {ok:true,expedition,gold:offer.payment};

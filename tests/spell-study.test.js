@@ -80,24 +80,47 @@ assert.equal(mage.affinityAcquired,-affinity.memberAffinity(captain,{...mage,aff
 assert.ok(state.company.stock.includes(book));
 assert.equal(study.offer(state,mage.id,book.id).reason,"Vous lui en avez déjà parlé aujourd’hui.");
 assert.deepEqual(mage.history.log.filter(e=>e.kind==="study").map(e=>[e.accepted,e.spell]),[[false,"Boule de feu"]]);
-// Accord : +5, le manuel détruit, une place prise.
+// Accord (Idan, 2026-11-02 : au jour J, on organise J+1) : inscrit pour le lendemain matin, le manuel mis de côté,
+// la place réservée ; l'affinité tombe quand il entre.
 state.day+=1;
 dice=[0];
+const affinityAtAccept=mage.affinityAcquired;
 const accepted=study.offer(state,mage.id,book.id);
-assert.deepEqual([accepted.accepted,accepted.affinityDelta],[true,5]);
-assert.ok(!state.company.stock.includes(book),"le manuel est détruit");
-assert.deepEqual(study.studiesOf(state).map(s=>[s.studentId,s.spellCode,s.room,s.days,s.teacherId]),[[mage.id,fireball.code,"magic_room_fire",0,null]]);
-assert.equal(study.busyReason(state,mage.id),"Il apprend un sort à l’École de magie.");
-// Salle du Feu au niveau 1 : 1 place ; la suivante attend.
+assert.deepEqual([accepted.accepted,accepted.affinityDelta],[true,0]);
+assert.equal(mage.affinityAcquired,affinityAtAccept);
+assert.ok(!state.company.stock.includes(book),"le manuel est mis de côté");
+assert.deepEqual(study.studiesOf(state).map(s=>[s.status,s.studentId,s.spellCode,s.room,s.startDay,s.days,s.teacherId,s.manual===book]),
+  [["planned",mage.id,fireball.code,"magic_room_fire",state.day+1,0,null,true]]);
+assert.equal(study.busyReason(state,mage.id),"Il entre à l’École de magie demain matin.");
+// On change d'avis dans la journée : le manuel revient, sans affinité.
+const cancelled=study.stop(state,study.studyOf(state,mage.id).id);
+assert.deepEqual([cancelled.ok,cancelled.cancelled,cancelled.affinityDelta],[true,true,0]);
+assert.ok(state.company.stock.includes(book),"le manuel revient à l'Intendance");
+assert.equal(mage.affinityAcquired,affinityAtAccept);
+state.day+=1; dice=[0];
+assert.equal(study.offer(state,mage.id,book.id).accepted,true);
+// Salle du Feu au niveau 1 : 1 place, réservée ; la suivante attend.
 const second=manual();
 assert.equal(study.canStudy(state,other,second).reason,"La Salle du Feu n’a plus de place.");
+assert.equal(study.canStudy(state,mage,second).reason,"Il entre à l’École de magie demain matin.","pas de suite planifiée");
+// Le lendemain matin : il entre ; le manuel est détruit, +5 ; premier test le matin suivant.
+state.day+=1;
+const entering=study.advance(state);
+assert.deepEqual(entering.started.map(x=>[x.mercenary.id,x.affinityDelta]),[[mage.id,5]]);
+assert.deepEqual([entering.tested.length,entering.learned.length],[0,0]);
+assert.equal(mage.affinityAcquired,affinityAtAccept+5);
+const entered=study.studyOf(state,mage.id);
+assert.deepEqual([entered.status,entered.startDay,entered.manual],["active",state.day,undefined]);
+assert.ok(!state.company.stock.includes(book),"le manuel est détruit");
+assert.equal(study.busyReason(state,mage.id),"Il apprend un sort à l’École de magie.");
 assert.equal(study.canStudy(state,mage,second).reason,"Il apprend un sort à l’École de magie.");
-// Le capitaine apprend sans test (une place de plus au niveau 2).
+// Le capitaine apprend sans test (une place de plus au niveau 2) ; annulé dans la journée.
 state.company.camp.buildings.magic_room_fire.level=2;
 dice=[0.999];
 const self=study.offer(state,captain.id,second.id);
 assert.deepEqual([self.accepted,self.chance,self.affinityDelta],[true,100,0]);
-study.stop(state,study.studyOf(state,captain.id).id);
+assert.equal(study.stop(state,study.studyOf(state,captain.id).id).cancelled,true);
+assert.ok(state.company.stock.includes(second));
 state.company.camp.buildings.magic_room_fire.level=1;
 
 // Le test du jour : les exemples validés.
@@ -138,39 +161,52 @@ assert.equal(study.offerTeacher(state,current.id,teacher.id).reason,"Vous lui en
 state.day+=1;
 dice=[0];
 const yes=study.offerTeacher(state,current.id,teacher.id);
-assert.deepEqual([yes.accepted,yes.affinityDelta,current.teacherId],[true,3,teacher.id]);
+assert.deepEqual([yes.accepted,yes.affinityDelta,current.teacherId,current.teacherFrom],[true,0,teacher.id,state.day+1],"il enseigne dès demain");
 assert.equal(study.busyReason(state,teacher.id),"Il enseigne un sort à l’École de magie.");
 assert.deepEqual(teacher.history.log.filter(e=>e.kind==="teach").map(e=>e.accepted),[false,true]);
-// Niveau transmis : professeur à 40, Transmission 48 → 19 ; 120 → 48 ; sans professeur : la salle.
+// Niveau transmis (test du surlendemain, quand il enseigne) : professeur à 40, Transmission 48 → 19 ; 120 → 48 ;
+// sans professeur, ou pour le test de demain matin (il n'a pas encore enseigné) : la salle.
 teacher.skills.camp["Transmission du savoir"]=48;
-assert.equal(study.learnedLevel(state,current),19);
+assert.equal(study.learnedLevel(state,current,state.day+2),19);
+assert.equal(study.learnedLevel(state,current),1,"demain matin, il n'a pas encore enseigné");
 teacher.skills.camp["Transmission du savoir"]=120;
-assert.equal(study.learnedLevel(state,current),48,"20 % de plus que le professeur");
+assert.equal(study.learnedLevel(state,current,state.day+2),48,"20 % de plus que le professeur");
 teacher.skills.camp["Transmission du savoir"]=10;
 state.company.camp.buildings.magic_room_fire.level=7;
-assert.equal(study.learnedLevel(state,current),7,"la salle, si le professeur transmet moins");
+assert.equal(study.learnedLevel(state,current,state.day+2),7,"la salle, si le professeur transmet moins");
 state.company.camp.buildings.magic_room_fire.level=1;
 teacher.skills.camp["Transmission du savoir"]=48;
-// Libérer le professeur : −3, l'élève continue seul.
-const released=study.releaseTeacher(state,current.id);
-assert.deepEqual([released.ok,released.affinityDelta,current.teacherId],[true,-3,null]);
-state.day+=1; dice=[0]; study.offerTeacher(state,current.id,teacher.id);
+// On change d'avis dans la journée : libéré avant de commencer, sans affinité.
+assert.deepEqual([study.releaseTeacher(state,current.id).affinityDelta,current.teacherId],[0,null]);
+state.day+=1; dice=[0];
+assert.equal(study.offerTeacher(state,current.id,teacher.id).accepted,true);
 
-// Le matin : raté (un jour de plus, XP du professeur), puis réussi (sort, affinité, historique).
-const transmission=teacher.xp?.skills?.camp?.["Transmission du savoir"]||progression.xpForContinuous(48);
-dice=[0.99];
+// Les matins. Demain : raté ; le professeur commence (+3), il ne compte pas encore (ni bonus ni XP).
+const teacherAffinity0=teacher.affinityAcquired;
+const transmission=teacher.xp?.skills?.camp?.["Transmission du savoir"]??null;
+state.day+=1; dice=[0.99];
 let morning=study.advance(state);
-assert.deepEqual([morning.learned.length,current.days],[0,1]);
-assert.ok(teacher.xp.skills.camp["Transmission du savoir"]>transmission,"+5 XP de Transmission par jour");
-const studentAffinity=mage.affinityAcquired,teacherAffinity=teacher.affinityAcquired;
-dice=[0];
+assert.deepEqual([morning.learned.length,current.days,current.teacherStarted],[0,1,true]);
+assert.equal(teacher.affinityAcquired-teacherAffinity0,3,"+3 quand il commence");
+assert.equal(teacher.xp?.skills?.camp?.["Transmission du savoir"]??null,transmission,"pas encore d'XP");
+// Libéré une fois commencé : −3 ; on le reprend le lendemain.
+assert.equal(study.releaseTeacher(state,current.id).affinityDelta,-3);
+state.day+=1; dice=[0];
+study.offerTeacher(state,current.id,teacher.id);
+state.day+=1; dice=[0.99];
 morning=study.advance(state);
+assert.equal(morning.learned.length,0);
+// Le matin suivant : il a enseigné la veille (XP), et l'élève sait (sort, affinité, historique).
+const studentAffinity=mage.affinityAcquired,teacherAffinity=teacher.affinityAcquired;
+state.day+=1; dice=[0];
+morning=study.advance(state);
+assert.ok(teacher.xp.skills.camp["Transmission du savoir"]>(transmission??0),"+5 XP de Transmission par jour d'enseignement");
 assert.equal(morning.learned.length,1);
 assert.deepEqual(mage.spells,[{code:fireball.code,name:"Boule de feu",school:"Feu",mastery:19}]);
 assert.deepEqual([mage.affinityAcquired-studentAffinity,teacher.affinityAcquired-teacherAffinity],[10,5]);
 assert.equal(study.studiesOf(state).length,0,"il sort de l'École");
 assert.equal(study.busyReason(state,teacher.id),null,"le professeur aussi");
-assert.deepEqual(mage.history.log.filter(e=>e.kind==="study_done").map(e=>[e.spell,e.level,e.days]),[["Boule de feu",19,2]]);
+assert.deepEqual(mage.history.log.filter(e=>e.kind==="study_done").map(e=>[e.spell,e.level,e.days]),[["Boule de feu",19,3]]);
 assert.equal(teacher.history.log.filter(e=>e.kind==="teach_done").length,1);
 
 // Sortir avant la fin : le manuel perdu, rien d'acquis, −10.
@@ -178,6 +214,8 @@ const third=manual();
 neutral(other); other.skills.magic.Feu=80;
 dice=[0];
 study.offer(state,other.id,third.id);
+state.day+=1;
+study.advance(state);
 const before=other.affinityAcquired;
 const stopped=study.stop(state,study.studyOf(state,other.id).id);
 assert.deepEqual([stopped.ok,stopped.affinityDelta,other.affinityAcquired-before],[true,-10,-10]);
@@ -193,12 +231,14 @@ let accepted2=null;
 for(let i=0;i<40&&!accepted2?.accepted;i++){ state.day+=1; accepted2=campaignStudy.offer(state,fourth.id,fourthBook.id); }
 assert.equal(accepted2.accepted,true);
 state.missionBoard={offer:{id:"contrat",code:"cleanup",distance:1}};
-assert.deepEqual(rules.departExpedition(state,[fourth.id,fifth.id]),{ok:false,reason:"Il apprend un sort à l’École de magie."});
+assert.deepEqual(rules.departExpedition(state,[fourth.id,fifth.id]),{ok:false,reason:"Il entre à l’École de magie demain matin."});
 state.missionBoard=null;
-assert.equal(rules.canGuard(state,fourth,{level:1}).reason,"Il apprend un sort à l’École de magie.");
+assert.equal(rules.canGuard(state,fourth,{level:1}).reason,"Il entre à l’École de magie demain matin.");
 const restored=restoreCampaign(serializeCampaign(state)).state;
 assert.equal(restored.company.camp.studies.length,1);
 fourth.stats.Intelligence=1; fourth.skills.magic.Feu=1;
+const [enter]=rules.advanceTime(state,1);
+assert.deepEqual([enter.study.started.length,enter.study.tested.length],[1,0],"il entre ce matin");
 const [report]=rules.advanceTime(state,1);
 assert.ok(report.study&&report.study.tested.length===1,"un test par élève chaque matin");
 assert.ok(!report.school.entries.some(e=>e.id===fourth.id),"l'élève ne fait pas l'entraînement libre");

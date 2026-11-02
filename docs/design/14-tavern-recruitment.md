@@ -436,6 +436,18 @@ Mais il ne peut pas finaliser le recrutement si le Dortoir est à sa capacité m
 
 Les indemnités de licenciement et les moyens plus... créatifs de libérer une place sont hors périmètre V1.
 
+## 10 bis — Arrivée le lendemain matin (Idan, 2026-11-02)
+
+« On recrute immédiatement, mais on paye le salaire à j+1 et elle peut partir en mission ou faire des actions concrètes
+à j+1. Seul l'équipement est immédiat. »
+
+- Signée au jour J, la recrue est **dans la compagnie** (et au Dortoir) tout de suite ; contrat : `joinDay = J + 1`.
+- On peut l'**équiper** et l'inscrire pour une **mission qui part le lendemain matin**.
+- Son **premier salaire** est payé le lendemain matin, avec les autres.
+- **Aucun poste avant le lendemain matin** : intendant, médecin, directeur de l'École, lieutenant (« Il rejoint la
+  compagnie demain matin. ») ; grisée dans les listes de nomination ; effectif : « Disponible demain ».
+- Règle générale : doc 16, « Au jour J, on organise J+1 ». Test : `tests/recruit-next-day.test.js`.
+
 ## 11 — Temps stratégique commun
 
 **Décision validée :** le jeu possède une seule horloge stratégique en jours.

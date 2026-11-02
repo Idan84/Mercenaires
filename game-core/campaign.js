@@ -835,15 +835,36 @@
     function busyReason(state,mercenaryId){
       return expeditionOf(state,mercenaryId)?.status==="scheduled"?"Il part déjà en mission demain.":"Il est en mission.";
     }
-    // Le matin du départ : contrat en route (« outbound »), garde du corps absent (« away »).
+    // Le matin du départ : contrat en route (« outbound »), garde du corps absent (« away »). L'acompte de la garde du
+    // corps arrive ce matin-là (Idan, 2026-11-02 : « On reçoit l'argent le lendemain matin ! »).
     function departScheduled(state){
       const departed=[];
       for(const expedition of expeditionsOf(state)){
         if(expedition.status!=="scheduled"||state.day<expedition.departDay) continue;
         expedition.status=expedition.kind==="bodyguard"?"away":"outbound";
+        // payOnDeparture : les gardes signées avant cette règle ont déjà été payées à la signature (ancienne sauvegarde).
+        if(expedition.kind==="bodyguard"&&expedition.payOnDeparture&&!expedition.paid){
+          expedition.paid=Number(expedition.offer.payment)||0;
+          state.company.gold+=expedition.paid;
+        }
         departed.push(expedition);
       }
       return departed;
+    }
+    // Au jour J, on organise J+1 (Idan, 2026-11-02) : une mission signée aujourd'hui peut encore être annulée avant le
+    // départ du lendemain matin. Le contrat retourne dans sa case du tableau ; la garde du corps n'a encore rien payé.
+    function cancelExpedition(state,expeditionId){
+      const list=expeditionsOf(state);
+      const expedition=list.find(e=>e.id===expeditionId);
+      if(!expedition) return {ok:false,reason:"Mission introuvable."};
+      if(expedition.status!=="scheduled") return {ok:false,reason:"L’escouade est déjà partie."};
+      list.splice(list.indexOf(expedition),1);
+      // Ancienne sauvegarde : une garde du corps payée à la signature rend son paiement.
+      if(expedition.kind==="bodyguard"&&!expedition.payOnDeparture) state.company.gold-=Number(expedition.offer.payment)||0;
+      const slots=boardOf(state).slots;
+      const slot=slots.find(x=>!x.offer&&x.emptyUntil===expedition.signedDay+TAVERN_EMPTY_DAYS)||slots.find(x=>!x.offer);
+      if(slot){ slot.offer=expedition.offer; slot.emptyUntil=null; }
+      return {ok:true,expedition,returned:Boolean(slot)};
     }
     function departExpedition(state,memberIds,offerId=null){
       const offer=boardOffer(state,{id:offerId,kind:"cleanup"});
@@ -933,8 +954,8 @@
       if(bodyguard.levelOf(m.reputation)<offer.level) return {ok:false,reason:"Réputation trop faible."};
       return {ok:true};
     }
-    // Signature : le paiement arrive d'avance ; les gardes partent le lendemain matin (mission programmée) et sont absents
-    // jusqu'au retour.
+    // Signature : les gardes partent le lendemain matin (mission programmée) et sont absents jusqu'au retour ; l'acompte
+    // arrive le matin du départ (departScheduled).
     function departBodyguard(state,memberIds,offerId=null){
       const offer=bodyguard?boardOffer(state,{id:offerId,kind:"bodyguard"}):null;
       if(!offer) return {ok:false,reason:"Aucune offre de garde du corps."};
@@ -942,8 +963,7 @@
       if(ids.length!==offer.count) return {ok:false,reason:`Il faut ${offer.count} mercenaire${offer.count>1?"s":""}.`};
       const members=ids.map(id=>rosterOf(state).find(m=>m.id===id));
       for(const m of members){ const ok=canGuard(state,m,offer); if(!ok.ok) return {ok:false,reason:(m?.name?m.name+" : ":"")+ok.reason}; }
-      state.company.gold+=offer.payment;
-      const expedition={id:offer.id,kind:"bodyguard",offer,memberIds:ids,signedDay:state.day,departDay:state.day+1,returnDay:state.day+1+offer.days,status:"scheduled"};
+      const expedition={id:offer.id,kind:"bodyguard",offer,memberIds:ids,signedDay:state.day,departDay:state.day+1,returnDay:state.day+1+offer.days,status:"scheduled",payOnDeparture:true};
       expeditionsOf(state).push(expedition);
       takeBoardOffer(state,offer);
       return {ok:true,expedition,gold:offer.payment};
@@ -997,7 +1017,10 @@
       if(dormitoryFree(state)<places) return {ok:false,dormFull:true,places,
         reason:places>1?"Dortoir plein : il faut deux places pour un ogre.":"Dortoir plein : impossible de finaliser le recrutement."};
       const mercenary=candidate.mercenary;
-      mercenary.contract={dailySalary:agreed.salary,missionBonus:agreed.bonus,signedDay:state.day};
+      // Au jour J, on organise J+1 (Idan, 2026-11-02 : « on recrute immédiatement, mais on paye le salaire à j+1 et elle
+      // peut partir en mission ou faire des actions concrètes à j+1. Seul l'équipement est immédiat ») : il rejoint la
+      // compagnie tout de suite (on l'équipe, on planifie sa journée de demain) ; un poste attend le lendemain matin.
+      mercenary.contract={dailySalary:agreed.salary,missionBonus:agreed.bonus,signedDay:state.day,joinDay:state.day+1};
       rosterOf(state).push(mercenary);
       History.record(mercenary,state.day,"joined",{initial:false});
       assignBiography(state,mercenary);
@@ -1149,7 +1172,7 @@
       busyReason,
       departScheduled,
       canAdvanceDay,
-      departExpedition,
+      departExpedition,cancelExpedition,
       completeExpeditionCombat,
       dormitoryFree,
       dormitoryUsed,

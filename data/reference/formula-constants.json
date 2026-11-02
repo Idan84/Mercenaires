@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 301,
+  "row_count": 306,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -2440,6 +2440,46 @@
       "description": "Apprentissage d’un sort (Idan, 2026-11-02) : affinité du professeur avec le capitaine quand on le libère avant la fin.",
       "formule": "Apprentissage d’un sort à l’École de magie",
       "valeur": -3,
+      "version": "V1"
+    },
+    {
+      "nom": "Perfectionner — XP de base",
+      "code": "spell_study.perfect.base_xp",
+      "description": "Perfectionner un sort (Idan, 2026-11-02 : « consommer des manuels contre de l’xp de sort ») : un manuel du même sort, une journée dans la salle de son école ; le lendemain, XP du sort = cette base × Intelligence / 50 × (1 + 0,1 × niveau de la salle) × (1 + Transmission du savoir du directeur / 100), jusqu’au niveau 100. Intelligence 54, salle 3 : 1 404 XP (un sort au niveau 1 passe à 11, au niveau 20 à 23, au niveau 50 à 51).",
+      "formule": "Perfectionner un sort à l’École de magie",
+      "valeur": 1000,
+      "version": "V1"
+    },
+    {
+      "nom": "Perfectionner — Intelligence de référence",
+      "code": "spell_study.perfect.intelligence_divisor",
+      "description": "Perfectionner un sort (Idan, 2026-11-02 : « consommer des manuels contre de l’xp de sort ») : XP × Intelligence / ce diviseur.",
+      "formule": "Perfectionner un sort à l’École de magie",
+      "valeur": 50,
+      "version": "V1"
+    },
+    {
+      "nom": "Perfectionner — bonus par niveau de salle",
+      "code": "spell_study.perfect.room_bonus",
+      "description": "Perfectionner un sort (Idan, 2026-11-02 : « consommer des manuels contre de l’xp de sort ») : XP × (1 + cette part × niveau de la salle de l’école du sort).",
+      "formule": "Perfectionner un sort à l’École de magie",
+      "valeur": 0.1,
+      "version": "V1"
+    },
+    {
+      "nom": "Perfectionner — Transmission du directeur",
+      "code": "spell_study.perfect.transmission_divisor",
+      "description": "Perfectionner un sort (Idan, 2026-11-02 : « consommer des manuels contre de l’xp de sort ») : XP × (1 + Transmission du savoir du directeur de l’École / ce diviseur) ; 1 sans directeur.",
+      "formule": "Perfectionner un sort à l’École de magie",
+      "valeur": 100,
+      "version": "V1"
+    },
+    {
+      "nom": "Perfectionner — affinité",
+      "code": "spell_study.affinity.perfect",
+      "description": "Perfectionner un sort (Idan, 2026-11-02 : « consommer des manuels contre de l’xp de sort ») : affinité avec le capitaine quand on lui donne un manuel de son sort à perfectionner (pas de test).",
+      "formule": "Perfectionner un sort à l’École de magie",
+      "valeur": 2,
       "version": "V1"
     }
   ]

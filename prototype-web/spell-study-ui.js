@@ -18,11 +18,19 @@ function studyLearnMenu(item){
   const company=game.campaign.company,rules=spellStudyRules(),spell=manualRules().spellOf(item);
   const members=[...company.roster].sort((a,b)=>(b.id===company.captainId)-(a.id===company.captainId));
   const rows=members.map(m=>{
-    const check=rules.canStudy(game.campaign,m,item);
     const captain=m.id===company.captainId;
-    return `<div class="deal-member"><b>${esc(m.name)}${captain?" · capitaine":""}</b>${check.ok
+    const head=`<div class="deal-member"><b>${esc(m.name)}${captain?" · capitaine":""}</b>`;
+    // Perfectionner (Idan, 2026-11-02) : il connaît déjà le sort ; une journée à l'École, sans test.
+    if((m.spells||[]).some(s=>s.code===spell?.code)){
+      const perfect=rules.canPerfect(game.campaign,m,item);
+      return head+(perfect.ok
+        ?`<button type="button" class="deal-slot" data-study-perfect="${esc(m.id)}" data-study-item="${esc(item.id)}">Perfectionner<small>+${fmt(rules.perfectXp(game.campaign,m,perfect.room.code))} XP · une journée</small></button>`
+        :`<small class="deal-menu-note">${esc(perfect.reason)}</small>`)+`</div>`;
+    }
+    const check=rules.canStudy(game.campaign,m,item);
+    return head+(check.ok
       ?`<button type="button" class="deal-slot" data-study-offer="${esc(m.id)}" data-study-item="${esc(item.id)}">${captain?"Apprendre":"Lui proposer"}<small>${esc(check.room.name)}</small></button>`
-      :`<small class="deal-menu-note">${esc(check.reason)}</small>`}</div>`;
+      :`<small class="deal-menu-note">${esc(check.reason)}</small>`)+`</div>`;
   }).join("");
   return `<p class="deal-menu-title">Apprendre à…</p><p class="deal-menu-current">${esc(spell?.nom||item.name)} · ${esc(spell?.ecole||"")}</p>${rows}`;
 }
@@ -56,6 +64,16 @@ function offerSpellStudy(memberId,itemId){
     return;
   }
   openStudyAnswer(m,"offer",result,{sort:result.spell.nom,salle:result.room.name});
+}
+function perfectSpell(memberId,itemId){
+  if(typeof closeDealMenu==="function") closeDealMenu();
+  const m=studyMember(memberId);
+  if(!m) return;
+  const result=spellStudyRules().perfect(game.campaign,m.id,itemId);
+  if(!result.ok){ tavernLog(result.reason,"warn"); return; }
+  tavernLog(`${m.name} passe la journée à la ${result.room.name} pour perfectionner ${result.spell.nom} (+${fmt(result.xp)} XP demain matin).`,"gear");
+  saveGame();
+  renderGame();
 }
 function offerStudyTeacher(studyId,teacherId){
   const t=studyMember(teacherId);
@@ -99,6 +117,10 @@ function studyListHtml(c){
     const m=c.company.roster.find(x=>x.id===study.studentId);
     if(!m) return "";
     const room=campaignRules().campBuildingRow(study.room);
+    // Perfectionner : une journée, l'XP demain matin ; ni professeur ni sortie.
+    if(study.kind==="perfect") return `<div class="study-row">
+        <div class="building-info"><strong>${esc(m.name)}</strong><span>${esc(study.spellName)} · ${esc(room?.nom||"")} · perfectionne (+${fmt(rules.perfectXp(c,m,study.room))} XP demain)</span></div>
+      </div>`;
     const chance=Math.round(rules.dailyChance(c,study).chance);
     const teacher=study.teacherId==null?null:c.company.roster.find(x=>x.id===study.teacherId);
     let teach;
@@ -125,6 +147,9 @@ function studyListHtml(c){
 
 // Journal du matin : les sorts appris.
 function logSpellStudy(report){
+  for(const done of report?.perfected||[]){
+    tavernLog(`${done.mercenary.name} perfectionne ${done.study.spellName} : niveau ${fmt(Math.floor(done.before))} → ${fmt(Math.floor(done.after))} (+${fmt(done.xp)} XP).`,"turn");
+  }
   for(const done of report?.learned||[]){
     const teacher=done.teacher?`, avec ${done.teacher.name}`:"";
     tavernLog(`${done.mercenary.name} connaît désormais ${done.study.spellName} (niveau ${fmt(done.level)}), après ${fmt(done.days)} jour${done.days>1?"s":""}${teacher}.`,"turn");
@@ -133,6 +158,8 @@ function logSpellStudy(report){
 
 function initializeSpellStudy(){
   document.addEventListener("click",event=>{
+    const perfect=event.target.closest?.("[data-study-perfect]");
+    if(perfect){ perfectSpell(perfect.dataset.studyPerfect,perfect.dataset.studyItem); return; }
     const offer=event.target.closest?.("[data-study-offer]");
     if(offer){ offerSpellStudy(offer.dataset.studyOffer,offer.dataset.studyItem); return; }
     const teacher=event.target.closest?.("[data-study-teacher]");

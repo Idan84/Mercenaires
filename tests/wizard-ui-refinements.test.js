@@ -90,4 +90,10 @@ assert.deepEqual(ui.WIZARD_STEPS.map(s=>s.key),["name","people","culture","origi
     {ascendance:null,sex:"homme",count:2,missing:1},{ascendance:null,sex:"femme",count:1,missing:2},
     {ascendance:"Sang de troll",sex:"homme",count:4,missing:0},{ascendance:"Sang de troll",sex:"femme",count:0,missing:3}]);
 }
+// Étape Portrait sur ordinateur (Idan, 2026-11-02 : « Pourquoi l'avatar plein pied n'est pas plus grand et pourquoi une
+// scroll bar à droite ? ») : la liste remplit son panneau (plus de 55vh qui débordait) ; le portrait prend la hauteur.
+const desktop=css.slice(css.indexOf("/* Étape Portrait sur ordinateur"));
+assert.match(desktop,/@media \(min-width: 941px\)\{\s*\.wizard-layout:has\(\.captain-avatar-groups\)\{height:100%;grid-template-rows:minmax\(0,1fr\)\}/);
+assert.match(desktop,/\.wizard-options-panel \.captain-avatar-groups\{flex:1;min-height:0;max-height:none\}/);
+assert.match(desktop,/\.wizard-detail-panel:has\(\.avatar-frame--detail\) \.avatar-frame\{margin:0;width:auto;height:100%;max-height:100%;max-width:100%\}/);
 console.log("Wizard UI: 9 milestones, compact origin labels, ♂/♀ portrait toggle, portrait after ascendance, clean copy — OK");

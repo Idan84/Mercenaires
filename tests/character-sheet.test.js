@@ -55,7 +55,9 @@ const skills=read("skills.json").rows;
 const layout=copy.skills_layout;
 const placed=[...layout.corps_a_corps,...layout.style,...layout.tir,...layout.discretion_et_pieges];
 assert.equal(new Set(placed).size,placed.length,"une catégorie dans une seule colonne");
-assert.deepEqual(placed.sort(),skills.filter(r=>r.domaine==="Martial"&&r.niveau==="Catégorie").map(r=>r.nom).sort());
+// Armes naturelles (aux créatures) et Combat à mains nues (désactivé) ne sont pas sur la fiche (Idan, 2026-11-02).
+assert.deepEqual(placed.sort(),skills.filter(r=>r.domaine==="Martial"&&r.niveau==="Catégorie"&&r.mercenaire!==false).map(r=>r.nom).sort());
+assert.deepEqual(layout.styles_de_combat,["Combat à une main","Combat à deux armes","Combat à deux mains","Boucliers"]);
 assert.ok(layout.styles_de_combat.every(n=>layout.style.includes(n)));
 assert.deepEqual(layout.discretion_et_pieges,["Discrétion","Pièges"],"pas des styles de combat (Idan, 2026-10-21)");
 assert.ok(!layout.style.includes("Discrétion")&&!layout.style.includes("Pièges"));

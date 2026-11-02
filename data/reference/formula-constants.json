@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 306,
+  "row_count": 308,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -976,6 +976,22 @@
       "description": "XP de Combat à deux mains à chaque attaque de mêlée avec une arme tenue à deux mains (décision Idan du 2026-10-20).",
       "formule": "Progression naturelle V1",
       "valeur": 10,
+      "version": "V1"
+    },
+    {
+      "nom": "XP — Combat à une main par attaque",
+      "code": "progression.skill.one_handed_attack_xp",
+      "description": "XP de Combat à une main à chaque attaque portée avec une arme à une main tenue seule, au corps à corps comme au tir (Idan, 2026-11-02).",
+      "formule": "Progression naturelle V1",
+      "valeur": 10,
+      "version": "V1"
+    },
+    {
+      "nom": "Combat à une main — part dans l'Esquive",
+      "code": "combat.one_handed.dodge_factor",
+      "description": "Esquive effective + ce facteur × Combat à une main, avec une arme à une main tenue seule, l'autre main libre (Idan, 2026-11-02 : « un petit bonus d'esquive », coefficient 0,2).",
+      "formule": "Combat à une main V1",
+      "valeur": 0.2,
       "version": "V1"
     },
     {

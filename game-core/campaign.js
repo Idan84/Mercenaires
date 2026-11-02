@@ -229,6 +229,21 @@
       return changed;
     }
 
+    // Combat à une main (Idan, 2026-11-02) : dans une partie commencée avant, les mercenaires et les candidats de la Taverne
+    // reçoivent le style, comme à la génération mais sans tirage : leur meilleure arme de mêlée à une main.
+    const ONE_HAND_MELEE=(reference?.weapons?.rows||[]).filter(w=>["1 main","Au choix"].includes(w.prise)
+      &&!/Armes de tir|Armes à feu|Boucliers/.test(String(w.domaine||""))).map(w=>w.nom);
+    function ensureOneHandedStyle(state){
+      let changed=false;
+      for(const m of [...rosterOf(state),...(state.tavern?.candidates||[]).map(c=>c.mercenary)]){
+        const martial=m?.skills?.martial;
+        if(!martial||"Combat à une main" in martial) continue;
+        martial["Combat à une main"]=Math.max(0,...ONE_HAND_MELEE.map(name=>Number(martial[name])||0));
+        changed=true;
+      }
+      return changed;
+    }
+
     // Primes de mission divisées par deux (Idan, 2026-10-25 : « les temps sont durs ») : dans une partie commencée avant,
     // les contrats signés et les négociations en cours à la Taverne, une seule fois.
     function ensureHalvedMissionBonuses(state){
@@ -1208,6 +1223,7 @@
       ensureStartingStock,
       ensureHalvedMissionBonuses,
       ensureTwoHandedGrips,
+      ensureOneHandedStyle,
       ensureHistories,
       payroll
     };

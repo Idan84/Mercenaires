@@ -22,7 +22,7 @@ assert.deepEqual(rules.constants,{
   constitutionHpHealed:1,courageChargeAttempt:50,speedFleeHex:2,charismaKnockout:50,perceptionBackstabWound:10,
   forceLoadThreshold:0.25,forceLoadXp:20,
   dexterityChain:50,dodgeWoundTaken:10,enduranceHeavyArmorHex:2,willCourageHeld:20,willRecovery:20,intelligenceWorstChoice:30,
-  skillWeaponAttack:10,skillWeaponHit:5,skillWeaponWound:5,skillTwoHandedAttack:10,skillDualSequence:10,skillShieldBlock:10,
+  skillWeaponAttack:10,skillWeaponHit:5,skillWeaponWound:5,skillTwoHandedAttack:10,skillOneHandedAttack:10,skillDualSequence:10,skillShieldBlock:10,
   skillIntimidation:50,regenerationBurn:30,skillRegressionRatio:0.5,
   spellCast:10,spellSuccess:5,spellEffect:5,schoolRegressionRatio:0.5,schoolFloor:1,magicPowerSpellEffect:20,manaReserveManaSpent:2
 });
@@ -119,6 +119,17 @@ g=rules.gains({twoHandedAttacks:1},fighter).skills.martial;
 assert.deepEqual(g,{"Combat à deux mains":10,"Combat à deux armes":-5},"styles : Boucliers à 0 n'est pas possédé");
 g=rules.gains({blocks:{"Écu":2}},{skills:{martial:{"Écu":5,"Rondache":3,"Dague":8,"Boucliers":10,"Combat à deux mains":4}}}).skills.martial;
 assert.deepEqual(g,{"Écu":20,"Boucliers":20,"Dague":-10,"Combat à deux mains":-10},"bouclier précis : les armes des autres catégories ; Boucliers : les autres styles");
+// Combat à une main (Idan, 2026-11-02) : +10 XP par attaque avec une arme à une main tenue seule, mêlée ou tir ; c'est un
+// style, il fait reculer les autres styles possédés.
+const solo={};
+P.recordAttack(solo,{},{},{ok:true,mode:"melee",weapon:"Sabre",oneHanded:true,hit:false,wound:false});
+P.recordAttack(solo,{},{},{ok:true,mode:"ranged",weapon:"Pistolet",oneHanded:true,hit:false,wound:false});
+P.recordAttack(solo,{},{},{ok:true,mode:"melee",weapon:"Épée longue",twoHanded:true,hit:false,wound:false});
+assert.deepEqual([solo.progress.oneHandedAttacks,solo.progress.twoHandedAttacks],[2,1]);
+g=rules.gains({oneHandedAttacks:2},{skills:{martial:{"Combat à une main":20,"Combat à deux mains":10,"Combat à deux armes":10,"Boucliers":0}}}).skills.martial;
+assert.deepEqual(g,{"Combat à une main":20,"Combat à deux mains":-5,"Combat à deux armes":-5});
+g=rules.gains({twoHandedAttacks:1},{skills:{martial:{"Combat à une main":20,"Combat à deux mains":30}}}).skills.martial;
+assert.deepEqual(g,{"Combat à deux mains":10,"Combat à une main":-5},"un gain de deux mains fait reculer une main");
 assert.deepEqual(rules.gains({intimidations:2}).skills,{social:{Intimidation:100}});
 assert.deepEqual(rules.gains({weaponUses:{"Épée longue":{attacks:1,hits:0,wounds:0}}}).skills.martial,{"Épée longue":10,"Lames longues":10},"sans mercenaire : pas de régression");
 

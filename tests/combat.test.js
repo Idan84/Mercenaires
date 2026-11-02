@@ -319,8 +319,8 @@ function scripted(rolls,sides){
 function expectedDamage(attacker,target,roll,variation){
   const item=combat.activeWeaponItem(attacker),weapon=combat.weaponTemplate(item);
   const q=Number(combat.quality(item).multiplicateur_qualite)||1;
-  // Prise d'arme V1 : une arme Au choix sans arme secondaire est tenue à deux mains (×1,5).
-  const grip=weapon.prise==="Au choix"&&!attacker.character.equipment.slots["weapon_set_"+attacker.activeSet+"_off"]?1.5:1;
+  // Prise d'arme (Idan, 2026-11-02) : une arme Au choix tenue seule n'est à deux mains (×1,5) que si on l'empoigne.
+  const grip=combat.usesTwoHands(attacker,weapon)&&weapon.prise==="Au choix"?1.5:1;
   const rp=Math.max(0,Math.min(50,Number(target.character.resistances?.["Résistance physique"])||0));
   return Math.ceil(10*roll*q*grip*2*(Number(attacker.character.stats.Force)||0)/100*(1-(rp/100)*variation));
 }
@@ -460,8 +460,8 @@ assert.deepEqual(r.poison,{turns:3,amount:10,source:"blowgun"});
 r=scripted([100,100],[100]).resolveAttack(blower,dartTarget,{mode:"ranged",distance:3});
 assert.equal(r.poison,undefined);
 
-// Vitesse combat effective CAC V1 : le malus du bouclier s'ajoute à celui de l'arme, et l'arme Au choix
-// passe en mode une main (son malus n'est plus divisé par deux).
+// Vitesse combat effective CAC V1 : le malus du bouclier s'ajoute à celui de l'arme ; l'arme Au choix a le même malus
+// à une ou à deux mains (Idan, 2026-11-02 : plus de malus divisé par deux).
 const penalty=(c,slot)=>{
   const item=c.items.find(x=>x.id===c.equipment.slots[slot]),w=combat.weaponTemplate(item);
   const m=(Number(c.skills.martial[w.nom])||0)+(Number(c.skills.martial[item.category||""])||0);
@@ -471,7 +471,11 @@ const bare=unit({...a,stats:{...a.stats,Vitesse:100}},0,0),shielded=unit(withShi
 const swordPenalty=penalty(a,"weapon_set_1_main");
 const near2=(x,y,label)=>assert.ok(Math.abs(x-y)<1e-9,label+" : "+x+" ≠ "+y);
 assert.ok(combat.effectiveSpeed(shielded)>1,"Vitesse assez haute pour ne pas toucher le plancher");
-near2(combat.effectiveSpeed(bare)-combat.effectiveSpeed(shielded),swordPenalty*0.5+penalty(guardChar,"weapon_set_1_off"),"avec bouclier");
+near2(combat.effectiveSpeed(bare)-combat.effectiveSpeed(shielded),penalty(guardChar,"weapon_set_1_off"),"avec bouclier");
+bare.twoHandGrip=true;
+const gripped=combat.effectiveSpeed(bare);
+bare.twoHandGrip=false;
+near2(gripped,combat.effectiveSpeed(bare),"empoignée à deux mains : même malus");
 
 // Enchaînement d'attaques CAC V1 : P_N = min(100, (Dextérité + Vitesse combat effective) / N) ;
 // Enchaînement de tirs distance V1 : divisé par 1,5 × N.

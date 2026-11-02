@@ -46,7 +46,7 @@ assert.equal(audit.counts.peoples, 10);
 assert.equal(audit.counts.cultures, 32);
 assert.equal(audit.counts.cultureOriginCompatibilities, 224);
 assert.equal(audit.counts.matrixRows, 106);
-assert.equal(audit.counts.skills, 94);
+assert.equal(audit.counts.skills, 95, "dont Combat à une main (Idan, 2026-11-02)");
 assert.equal(audit.counts.baseArmors, 8);
 assert.equal(audit.counts.equipmentSlots, 23, "dont gants et culotte (Idan, 2026-10-24)");
 assert.deepEqual(generator.equipmentTierDistribution(0), {1:0.9,2:0.09,3:0.01});
@@ -59,7 +59,10 @@ assert.equal(audit.pending.length, 0, `Gameplay generation still has pending rul
 assert.equal(audit.binaryPending.length, 0);
 assert.equal(audit.binaryDisabled.length, 1);
 assert.equal(audit.binaryDisabled[0].target, "Vol");
-assert.equal(audit.matrixCoverage.filter(x => x.status === "active").length, 106);
+// Armes naturelles et Combat à mains nues ne sont plus tirés pour les mercenaires (Idan, 2026-11-02) : leurs lignes de
+// la Matrice sont en sommeil.
+assert.equal(audit.matrixCoverage.filter(x => x.status === "active").length, 104);
+assert.deepEqual(audit.matrixCoverage.filter(x => x.status === "disabled").map(x => x.target).sort(), ["Armes naturelles", "Combat à mains nues"]);
 assert.equal(audit.matrixCoverage.filter(x => x.status === "blocked").length, 0);
 
 function distributionMap(people) {
@@ -408,24 +411,26 @@ for (const [skill, formula] of [
   ["Pièges", "Moyenne(Intelligence, Perception) × Rand(0,8 ; 1,2) × 0,5"],
   ["Discrétion", "Moyenne(Dextérité, Perception, Esquive) × Rand(0,8 ; 1,2) × 0,5"],
   ["Combat à deux armes", "Max(armes de mêlée 1 main) × Rand(0,8 ; 1,2)"],
-  ["Combat à mains nues", "Moyenne(Force, Dextérité) × Rand(0,8 ; 1,2) × 0,5"],
+  ["Combat à une main", "Max(armes de mêlée 1 main) × Rand(0,8 ; 1,2)"],
   ["Combat à deux mains", "Max(armes de mêlée 2 mains) × Rand(0,8 ; 1,2)"]
 ]) {
   assert.equal(goblin.generationTrace.skills[skill].rawFormula, formula);
   assert.ok(Number.isFinite(goblin.skills.martial[skill]));
 }
-// Mains nues, Pièges, Discrétion : tirés des caractéristiques puis ramenés à l'échelle des armes (× 0,5, Idan 2026-10-21).
+// Pièges, Discrétion : tirés des caractéristiques puis ramenés à l'échelle des armes (× 0,5, Idan 2026-10-21).
 for (const [skill, stats] of [
   ["Pièges", ["Intelligence", "Perception"]],
-  ["Discrétion", ["Dextérité", "Perception", "Esquive"]],
-  ["Combat à mains nues", ["Force", "Dextérité"]]
+  ["Discrétion", ["Dextérité", "Perception", "Esquive"]]
 ]) {
   const mean = stats.reduce((sum, name) => sum + goblin.stats[name], 0) / stats.length;
   const raw = goblin.generationTrace.skills[skill].raw;
   assert.ok(raw >= mean * 0.8 * 0.5 - 1e-9 && raw <= mean * 1.2 * 0.5 + 1e-9, `${skill} : ${raw} hors de [${mean * 0.4} ; ${mean * 0.6}]`);
 }
-assert.equal(goblin.generationTrace.skills["Armes naturelles"].rawFormula, "0");
-assert.ok(Number.isFinite(goblin.skills.martial["Armes naturelles"]));
+// Ni Armes naturelles (aux créatures) ni Combat à mains nues (désactivé) chez un mercenaire (Idan, 2026-11-02).
+for (const skill of ["Armes naturelles", "Combat à mains nues"]) {
+  assert.ok(!(skill in goblin.skills.martial), skill);
+  assert.ok(!goblin.generationTrace.skills[skill], skill);
+}
 assert.ok(Number.isFinite(goblin.skills.camp["Médecine"]));
 assert.ok(Number.isFinite(goblin.skills.camp["Artisanat"]));
 assert.equal(

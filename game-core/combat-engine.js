@@ -59,6 +59,7 @@
       const value=Number((rows.formulaConstants||[]).find(r=>r.code===code)?.valeur);
       return Number.isFinite(value)?value:fallback;
     }
+    const ONE_HAND_DODGE=constant("combat.one_handed.dodge_factor",0.2);
     const CRIT={
       min:constant("combat.melee.crit.min",1),
       max:constant("combat.melee.crit.max",25),
@@ -292,10 +293,33 @@
       return Boolean(weapon)&&!isRangedWeapon(weapon)&&!/Boucliers/.test(String(weapon.domaine||""));
     }
 
+    // Prise d'arme (Idan, 2026-11-02) : une arme « Au choix » tenue seule l'est à une main par défaut, la main libre ;
+    // elle n'est empoignée à deux mains que pour une attaque choisie à deux mains (unit.twoHandGrip, jusqu'à la
+    // prochaine activation du combattant).
     function usesTwoHands(unit,weapon){
       if(!weapon) return false;
       if(weapon.prise==="2 mains") return true;
-      return weapon.prise==="Au choix"&&!activeOffhandItem(unit);
+      return weapon.prise==="Au choix"&&!activeOffhandItem(unit)&&unit.twoHandGrip===true;
+    }
+    // Une arme « Au choix » tenue seule, l'autre main vide : on peut l'empoigner à deux mains.
+    function canGripTwoHands(unit){
+      const weapon=weaponTemplate(itemBySlot(unit,"weapon_set_"+unit.activeSet+"_main"));
+      return weapon?.prise==="Au choix"&&!offhandSlotItem(unit);
+    }
+    // L'IA (ennemis, combat automatique) empoigne à deux mains quand Combat à deux mains vaut au moins Combat à une main.
+    function prefersTwoHands(unit){
+      const martial=unit.character?.skills?.martial||{};
+      return (Number(martial["Combat à deux mains"])||0)>=(Number(martial["Combat à une main"])||0);
+    }
+    // Combat à une main (Idan, 2026-11-02) : une arme à une main tenue seule, l'autre main vide (le pistolet compris,
+    // une arme « Au choix » tant qu'elle n'est pas empoignée à deux mains) : Esquive + 0,2 × Combat à une main.
+    function fightsOneHanded(unit){
+      const weapon=weaponTemplate(itemBySlot(unit,"weapon_set_"+unit.activeSet+"_main"));
+      if(!weapon||/Boucliers/.test(String(weapon.domaine||""))||offhandSlotItem(unit)) return false;
+      return weapon.prise==="1 main"||(weapon.prise==="Au choix"&&unit.twoHandGrip!==true);
+    }
+    function oneHandDodge(unit){
+      return fightsOneHanded(unit)?ONE_HAND_DODGE*(Number(unit.character?.skills?.martial?.["Combat à une main"])||0):0;
     }
 
     function armorMobility(unit){
@@ -322,9 +346,8 @@
       const q=quality(item),m=mastery(unit.character,weapon);
       const qualityPenalty=(Number(weapon.malus_vitesse_arme_base)||0)*(Number(q.multiplicateur_malus)||1);
       const masteryFactor=Math.max(0,1-(m.categoryScore+m.weaponScore)/400);
-      let penalty=qualityPenalty*masteryFactor;
-      if(weapon.prise==="Au choix"&&usesTwoHands(unit,weapon)) penalty*=0.5;
-      return Math.max(0,penalty);
+      // Plus de malus divisé par deux pour une arme « Au choix » à deux mains (Idan, 2026-11-02).
+      return Math.max(0,qualityPenalty*masteryFactor);
     }
 
     // Poids du casque (Idan, 2026-10-25) : vitesse_t<tier> points de Vitesse en moins (Casque de constitution).
@@ -339,7 +362,7 @@
 
     function effectiveDodge(unit){
       if(unit.prone) return 0;
-      return Math.max(1,(statWithGear(unit,"Esquive")||1)-armorMobility(unit).dodge);
+      return Math.max(1,(statWithGear(unit,"Esquive")||1)-armorMobility(unit).dodge+oneHandDodge(unit));
     }
 
     // PV maximum (formula pv-maximum-v1) : ceil(3 × (Constitution + 0,2 × Endurance + 0,1 × Volonté)), avec l'équipement
@@ -769,8 +792,10 @@
       }
       const pHit=hitProbability(attacker,defender,mode,distance,{opportunity,backstab});
       const hitRoll=d100(),hit=hitRoll<=pHit;
-      // twoHanded : arme tenue à deux mains (XP de la compétence Combat à deux mains).
-      const head={ok:true,mode,weapon:weapon.nom,distance,pHit,hitRoll,twoHanded:usesTwoHands(attacker,weapon)};
+      // twoHanded : arme tenue à deux mains (XP de Combat à deux mains) ; oneHanded : arme à une main tenue seule (XP de
+      // Combat à une main).
+      const head={ok:true,mode,weapon:weapon.nom,distance,pHit,hitRoll,twoHanded:usesTwoHands(attacker,weapon),
+        oneHanded:attacker.attackHand!=="off"&&fightsOneHanded(attacker)};
       if(!hit){
         // Échec critique CAC V1 : un naturel 96–100 déclenche un test de Chance ; raté → Au Sol.
         const fumble=fumbleTest(attacker,hitRoll);
@@ -1143,6 +1168,10 @@
       armorMobility,
       heldItemSpeedPenalty,
       usesTwoHands,
+      canGripTwoHands,
+      prefersTwoHands,
+      fightsOneHanded,
+      oneHandDodge,
       effectiveSpeed,
       effectiveDodge,
       movementBase,

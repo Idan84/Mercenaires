@@ -122,9 +122,13 @@
     {
       "source": "Écoles opposées",
       "key": "ecoles_opposees"
+    },
+    {
+      "source": "Mercenaire",
+      "key": "mercenaire"
     }
   ],
-  "row_count": 94,
+  "row_count": 95,
   "rows": [
     {
       "nom": "Lames longues",
@@ -155,7 +159,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Lames courtes",
@@ -186,7 +191,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Armes d’hast",
@@ -217,7 +223,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Armes naturelles",
@@ -248,7 +255,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": false
     },
     {
       "nom": "Armes flexibles ou articulées",
@@ -279,7 +287,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Haches",
@@ -310,7 +319,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Bâtons",
@@ -341,7 +351,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Boucliers",
@@ -372,7 +383,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Compagnon animal",
@@ -403,7 +415,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Combat à deux armes",
@@ -434,7 +447,40 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
+    },
+    {
+      "nom": "Combat à une main",
+      "acquisition_possible": null,
+      "alteration_magique_base": null,
+      "attaque_de_zone": false,
+      "bonus_blocage_base": null,
+      "bonus_charge_base": null,
+      "cadence_tir": null,
+      "contre_charge": false,
+      "description": "Combat avec une arme à une main tenue seule, l'autre main libre (le pistolet compris ; une arme Au choix tant qu'on ne l'empoigne pas à deux mains). Ajoute 0,2 × la compétence à l'Esquive effective.",
+      "domaine": "Martial",
+      "degats_pv_base": null,
+      "exemples": null,
+      "malus_vitesse_arme_base": null,
+      "mode": null,
+      "niveau": "Catégorie",
+      "ordre": 15,
+      "parent": null,
+      "portee_max_hex": null,
+      "portee_min_hex": null,
+      "prise": null,
+      "puissance_contondante_base": null,
+      "puissance_perforante_base": null,
+      "puissance_tranchante_base": null,
+      "recharge_action_rapide": false,
+      "type_de_valeur": "Progressive",
+      "types_de_degats": null,
+      "valeur_maximale": 100,
+      "ecoles_d_influence": null,
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Armes à feu",
@@ -465,7 +511,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Combat à mains nues",
@@ -496,7 +543,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": false
     },
     {
       "nom": "Armes contondantes",
@@ -527,7 +575,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Armes de tir",
@@ -558,7 +607,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Combat à deux mains",
@@ -589,7 +639,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Estoc",
@@ -620,7 +671,8 @@
       "types_de_degats": "Perforant",
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Dague",
@@ -651,7 +703,8 @@
       "types_de_degats": "Tranchant,Perforant",
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Lance",
@@ -682,7 +735,8 @@
       "types_de_degats": "Perforant",
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Fronde",
@@ -713,7 +767,8 @@
       "types_de_degats": "Contondant",
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Massue",
@@ -744,7 +799,8 @@
       "types_de_degats": "Contondant",
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Écu",
@@ -775,7 +831,8 @@
       "types_de_degats": "Contondant",
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Hachette",
@@ -806,7 +863,8 @@
       "types_de_degats": "Tranchant",
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Épée double",
@@ -837,7 +895,8 @@
       "types_de_degats": "Tranchant,Perforant",
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Hache double",
@@ -868,7 +927,8 @@
       "types_de_degats": "Tranchant",
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Arquebuse",
@@ -899,7 +959,8 @@
       "types_de_degats": "Perforant",
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Fléau d’armes",
@@ -930,7 +991,8 @@
       "types_de_degats": "Contondant",
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Bardiche",
@@ -961,7 +1023,8 @@
       "types_de_degats": "Tranchant",
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Rondache",
@@ -992,7 +1055,8 @@
       "types_de_degats": "Contondant",
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Sarbacane",
@@ -1023,7 +1087,8 @@
       "types_de_degats": "Perforant",
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Épée courte",
@@ -1054,7 +1119,8 @@
       "types_de_degats": "Tranchant,Perforant",
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Épée longue",
@@ -1085,7 +1151,8 @@
       "types_de_degats": "Tranchant,Perforant",
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Hallebarde",
@@ -1116,7 +1183,8 @@
       "types_de_degats": "Tranchant,Perforant",
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Pavois",
@@ -1147,7 +1215,8 @@
       "types_de_degats": "Contondant",
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Sabre",
@@ -1178,7 +1247,8 @@
       "types_de_degats": "Tranchant",
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Sai",
@@ -1209,7 +1279,8 @@
       "types_de_degats": "Perforant",
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Fouet",
@@ -1240,7 +1311,8 @@
       "types_de_degats": "Tranchant",
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Bâton court",
@@ -1271,7 +1343,8 @@
       "types_de_degats": "Contondant",
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Nunchaku",
@@ -1302,7 +1375,8 @@
       "types_de_degats": "Contondant",
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Pistolet",
@@ -1333,7 +1407,8 @@
       "types_de_degats": "Perforant",
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Hache de guerre",
@@ -1364,7 +1439,8 @@
       "types_de_degats": "Tranchant",
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Arme d’hast double",
@@ -1395,7 +1471,8 @@
       "types_de_degats": "Tranchant,Perforant",
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Trident",
@@ -1426,7 +1503,8 @@
       "types_de_degats": "Perforant",
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Bâton long",
@@ -1457,7 +1535,8 @@
       "types_de_degats": "Contondant",
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Katana",
@@ -1488,7 +1567,8 @@
       "types_de_degats": "Tranchant",
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Tromblon",
@@ -1519,7 +1599,8 @@
       "types_de_degats": "Perforant",
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Pic de guerre",
@@ -1550,7 +1631,8 @@
       "types_de_degats": "Perforant",
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Canon à main",
@@ -1581,7 +1663,8 @@
       "types_de_degats": "Perforant",
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Arbalète",
@@ -1612,7 +1695,8 @@
       "types_de_degats": "Perforant",
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Masse d’armes",
@@ -1643,7 +1727,8 @@
       "types_de_degats": "Contondant",
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Arc",
@@ -1674,7 +1759,8 @@
       "types_de_degats": "Perforant",
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Kukri",
@@ -1705,7 +1791,8 @@
       "types_de_degats": "Tranchant",
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Marteau de guerre",
@@ -1736,7 +1823,8 @@
       "types_de_degats": "Contondant,Perforant",
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Grande épée",
@@ -1767,7 +1855,8 @@
       "types_de_degats": "Tranchant,Perforant",
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Rapaces",
@@ -1798,7 +1887,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Port d’armure intermédiaire",
@@ -1829,7 +1919,8 @@
       "types_de_degats": null,
       "valeur_maximale": 1,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Port d’armure lourde",
@@ -1860,7 +1951,8 @@
       "types_de_degats": null,
       "valeur_maximale": 1,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Vision nocturne",
@@ -1891,7 +1983,8 @@
       "types_de_degats": null,
       "valeur_maximale": 1,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Canidés",
@@ -1922,7 +2015,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Sangliers de combat",
@@ -1953,7 +2047,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Empoisonnement des armes",
@@ -1984,7 +2079,8 @@
       "types_de_degats": null,
       "valeur_maximale": 1,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Équidés",
@@ -2015,7 +2111,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Papillons",
@@ -2046,7 +2143,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Vol",
@@ -2077,7 +2175,8 @@
       "types_de_degats": null,
       "valeur_maximale": 1,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Dragons",
@@ -2108,7 +2207,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Grands monstres",
@@ -2139,7 +2239,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Port d’armure légère",
@@ -2170,7 +2271,8 @@
       "types_de_degats": null,
       "valeur_maximale": 1,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Araignées géantes",
@@ -2201,7 +2303,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Félins",
@@ -2232,7 +2335,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Transmission du savoir",
@@ -2263,7 +2367,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Intendance",
@@ -2294,7 +2399,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Médecine",
@@ -2325,7 +2431,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Pièges",
@@ -2356,7 +2463,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Artisanat",
@@ -2387,7 +2495,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Intimidation",
@@ -2418,7 +2527,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Discrétion",
@@ -2449,7 +2559,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Régénération",
@@ -2480,7 +2591,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Joaillerie",
@@ -2511,7 +2623,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Couture",
@@ -2542,7 +2655,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Enchantement",
@@ -2573,7 +2687,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Armes à feu & Explosifs",
@@ -2604,7 +2719,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Forge",
@@ -2635,7 +2751,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Alchimie",
@@ -2666,7 +2783,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Travail du cuir",
@@ -2697,7 +2815,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Travail du bois",
@@ -2728,7 +2847,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     },
     {
       "nom": "Eau",
@@ -2759,7 +2879,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": "Feu,Foudre"
+      "ecoles_opposees": "Feu,Foudre",
+      "mercenaire": true
     },
     {
       "nom": "Invocation",
@@ -2790,7 +2911,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": "Transmutation,Nécromancie"
+      "ecoles_opposees": "Transmutation,Nécromancie",
+      "mercenaire": true
     },
     {
       "nom": "Transmutation",
@@ -2821,7 +2943,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": "Foudre,Invocation"
+      "ecoles_opposees": "Foudre,Invocation",
+      "mercenaire": true
     },
     {
       "nom": "Télékinésie",
@@ -2852,7 +2975,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": "Illusion,Feu"
+      "ecoles_opposees": "Illusion,Feu",
+      "mercenaire": true
     },
     {
       "nom": "Foudre",
@@ -2883,7 +3007,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": "Eau,Transmutation"
+      "ecoles_opposees": "Eau,Transmutation",
+      "mercenaire": true
     },
     {
       "nom": "Nécromancie",
@@ -2914,7 +3039,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": "Invocation,Vie"
+      "ecoles_opposees": "Invocation,Vie",
+      "mercenaire": true
     },
     {
       "nom": "Feu",
@@ -2945,7 +3071,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": "Télékinésie,Eau"
+      "ecoles_opposees": "Télékinésie,Eau",
+      "mercenaire": true
     },
     {
       "nom": "Illusion",
@@ -2976,7 +3103,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": "Vie,Télékinésie"
+      "ecoles_opposees": "Vie,Télékinésie",
+      "mercenaire": true
     },
     {
       "nom": "Vie",
@@ -3007,7 +3135,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": null,
-      "ecoles_opposees": "Nécromancie,Illusion"
+      "ecoles_opposees": "Nécromancie,Illusion",
+      "mercenaire": true
     },
     {
       "nom": "Sort à créer",
@@ -3038,7 +3167,8 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": "Télékinésie,Transmutation",
-      "ecoles_opposees": null
+      "ecoles_opposees": null,
+      "mercenaire": true
     }
   ]
 }

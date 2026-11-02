@@ -77,13 +77,26 @@
       const arch=archetypeOf(faction,line,level);
       return arch&&missionMin(arch)<=missionLevel?arch:null;
     }
+    // Le chef (Idan, 2026-11-02) : celui du métal s'il est permis à ce niveau de mission (niveau_mission_min), sinon le
+    // cran en dessous (chef 4, 3, 2, 1) ; null si ce peuple n'en a aucun.
+    const chiefRank=level=>Number(String(level).match(/\d+/)?.[0])||1;
+    function chiefFor(faction,chiefLevel,missionLevel){
+      return archetypes.filter(a=>a.faction===faction&&a.ligne==="Chef"&&chiefRank(a.niveau)<=chiefRank(chiefLevel)&&missionMin(a)<=missionLevel)
+        .sort((x,y)=>chiefRank(y.niveau)-chiefRank(x.niveau))[0]?.code||null;
+    }
     // Le camp : le chef, puis des ennemis (niveau selon le métal, ligne selon les poids du camp) tant que le total plus la
-    // moitié du suivant reste dans le budget ; au plus max_ennemis (100).
+    // moitié du suivant reste dans le budget ; au plus max_ennemis (100), plus le chef (Idan, 2026-11-02 : « 100 + chef »).
+    // Si le peuple du camp n'a aucun chef permis, un autre camp est tiré (Idan, 2026-11-02).
     function rollCamp(def=definition(),camp=null,{level:missionLevel=1}={}){
-      const chosen=camp||weighted(campsOf(def).map(c=>({...c,poids:Number(c.poids)||1})));
+      const weightedCamp=list=>weighted(list.map(c=>({...c,poids:Number(c.poids)||1})));
+      let chosen=camp||weightedCamp(campsOf(def));
       const tier=budgetOf(def,missionLevel),budget=rollBudget(tier,missionLevel);
       const chiefLevel=weighted((tier?.chefs||[{niveau:"chef 1",poids:1}]).map(c=>({...c,poids:Number(c.poids)||1}))).niveau;
-      const chief=archetypeOf(chosen.faction,"Chef",chiefLevel)?.code||archetypeOf(chosen.faction,"Chef","chef 1")?.code||null;
+      let chief=chiefFor(chosen.faction,chiefLevel,missionLevel);
+      if(!chief&&!camp){
+        const others=campsOf(def).filter(c=>chiefFor(c.faction,chiefLevel,missionLevel));
+        if(others.length){ chosen=weightedCamp(others); chief=chiefFor(chosen.faction,chiefLevel,missionLevel); }
+      }
       const levels=(tier?.monstres||[{niveau:"novice",poids:1}]).map(m=>({...m,poids:Number(m.poids)||0}));
       const max=Number(def?.max_ennemis)||100;
       let total=points(chief);
@@ -119,7 +132,7 @@
       const def=definition(code);
       if(!def) return null;
       const missionLevel=level==null?rollMissionLevel(def,renown):clampLevel(level);
-      const camp=rollCamp(def,null,{level:missionLevel}),distance=randInt(1,missionLevel),enemyCount=camp.enemies.length+1;
+      const camp=rollCamp(def,null,{level:missionLevel}),distance=randInt(1,missionLevel),enemyCount=camp.enemies.length+(camp.chief?1:0);
       const names=data.noms||{},tribes=names[camp.names.tribus||"tribus"]||[];
       const order=pick((data.ordres||[]).filter(o=>o.mission===def.code&&o.faction===camp.faction));
       const tribe=pick(tribes),target=pick(tribes.filter(t=>t!==tribe));

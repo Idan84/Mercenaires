@@ -63,6 +63,41 @@ assert.ok(Math.abs(share(chiefs.Or,"chef 4")-0.5)<0.08,"Or : chef 3 ou chef 4");
 for(const [L,expected] of [[1,50],[3,150],[5,250],[6,420],[10,700],[11,1210],[15,2250]]) assert.ok(Math.abs(mean(budgets[L])/expected-1)<0.06,`budget moyen niveau ${L} : ${mean(budgets[L])} / ${expected}`);
 assert.ok(mean(sizes[3])>9&&mean(sizes[3])<14,"3★ bronze : une douzaine d'ennemis : "+mean(sizes[3]));
 assert.ok(mean(sizes[15])>50&&Math.max(...sizes[15])<=100,"5★ or : une armée, au plus 100 : "+mean(sizes[15]));
+// « 100 + chef » (Idan, 2026-11-02 : « j'ai dit 100 pour qu'on n'ait pas vraiment de limites ») : 100 troupes au plus,
+// plus le chef.
+{
+  const big=createMissionRules({reference,random:seeded(3)});
+  let most=0;
+  for(let i=0;i<400;i++){ const camp=big.rollCamp(undefined,null,{level:15}); assert.ok(camp.enemies.length<=100&&camp.chief); most=Math.max(most,camp.enemies.length); }
+  assert.equal(most,100,"le plafond est atteint en 5★ or, le chef en plus");
+}
+
+// Chef permis au niveau de la mission (Idan, 2026-11-02) : le chef du métal s'il est permis (niveau_mission_min), sinon le
+// cran en dessous (chef 4, 3, 2, 1) ; si le peuple du camp n'en a aucun, un autre camp.
+{
+  const archetypes=JSON.parse(JSON.stringify(reference.enemyArchetypes));
+  const chiefRow=(faction,level)=>archetypes.rows.find(r=>r.faction===faction&&r.ligne==="Chef"&&r.niveau===level);
+  const withChiefs=()=>createMissionRules({reference:{...reference,enemyArchetypes:archetypes},random:seeded(11)});
+  // Gobelins : chefs 3 et 4 réservés au niveau 12 ; en Or niveau 11, on descend au chef 2.
+  chiefRow("Gobelins","chef 3").niveau_mission_min=12;
+  chiefRow("Gobelins","chef 4").niveau_mission_min=12;
+  let r=withChiefs();
+  for(let i=0;i<50;i++) assert.equal(r.archetype(r.rollCamp(r.definition(),CAMPS.Gobelins,{level:11}).chief).niveau,"chef 2");
+  assert.ok(["chef 3","chef 4"].includes(r.archetype(r.rollCamp(r.definition(),CAMPS.Gobelins,{level:12}).chief).niveau));
+  // Ogres : aucun chef avant le niveau 15 ; au niveau 3, jamais de camp ogre, toujours un chef.
+  for(const n of ["chef 1","chef 2","chef 3","chef 4"]) chiefRow("Ogres",n).niveau_mission_min=15;
+  r=withChiefs();
+  const seen=new Set();
+  for(let i=0;i<500;i++){ const camp=r.rollCamp(undefined,null,{level:3}); seen.add(camp.faction); assert.ok(camp.chief); assert.equal(r.archetype(camp.chief).faction,camp.faction); }
+  assert.deepEqual([...seen].sort(),["Gobelins","Hommes-bêtes","Orcs","Voleurs"],"un autre camp que les ogres");
+  assert.equal(r.rollCamp(r.definition(),CAMPS.Ogres,{level:3}).chief,null,"camp imposé (Design Lab) : sans chef");
+  // Aucun peuple n'a de chef permis : le camp n'a pas de chef, et l'offre ne le compte pas.
+  for(const row of archetypes.rows.filter(x=>x.ligne==="Chef")) row.niveau_mission_min=15;
+  r=withChiefs();
+  const offer=r.createOffer({level:3});
+  assert.equal(offer.camp.chief,null);
+  assert.equal(offer.enemyCount,offer.camp.enemies.length);
+}
 
 // Niveau de la mission : niveau de Renommée de la compagnie (reputation-stars.json) + écart de −3 à +2, borné de 1 à 15.
 assert.deepEqual([rules.renownLevel(0),rules.renownLevel(499),rules.renownLevel(500),rules.renownLevel(1000),rules.renownLevel(8000)],[1,2,3,6,15]);

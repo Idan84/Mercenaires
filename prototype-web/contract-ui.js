@@ -210,7 +210,9 @@ function queueBodyguardReturn(report){
   for(const line of lines) tavernLog(line.text,"turn");
   if(report.renown) tavernLog("Garde du corps : renommée de la compagnie +"+fmt(report.renown)+".","gear");
   (game.bodyguardReturns||(game.bodyguardReturns=[])).push({client:report.expedition.offer.client,lines});
-  showNextBodyguardReturn();
+  // Plusieurs gardes du corps peuvent rentrer le même matin : ne pas écraser la fenêtre déjà ouverte (correctif de
+  // Chatty, PR #310, repris pour le tableau à 5 missions).
+  if(!$("bodyguard-return-dialog")?.open) showNextBodyguardReturn();
 }
 function showNextBodyguardReturn(){
   const dialog=$("bodyguard-return-dialog");
@@ -239,6 +241,10 @@ function openExpeditionDialog(id){
 }
 
 function initializeExpeditionUi(){
+  // Fenêtre fermée par Échap : les retours suivants s'affichent quand même.
+  $("bodyguard-return-dialog")?.addEventListener("close",()=>{
+    if(game.bodyguardReturns?.length) showNextBodyguardReturn();
+  });
   document.addEventListener("click",event=>{
     const open=event.target.closest("[data-mission-open]");
     if(open){ openMissionDetail(open.dataset.missionOpen); return; }

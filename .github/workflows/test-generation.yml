@@ -52,6 +52,7 @@ jobs:
       - run: node tests/school-director.test.js
       - run: node tests/school-training.test.js
       - run: node tests/spell-study.test.js
+      - run: node tests/spell-perfect.test.js
       - run: node tests/helmets.test.js
       - run: node tests/potions.test.js
       - run: node tests/sling.test.js

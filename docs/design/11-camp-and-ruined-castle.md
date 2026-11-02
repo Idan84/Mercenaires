@@ -212,6 +212,10 @@ camp […] il faut tous les jours un ordre de tirage pour tous les mercenaires d
   onglet Camp, la carte « Aujourd'hui » (la salle et l'XP, ou « À la taverne »).
 - À venir : le ludus (entraînement au combat), et le choix du mercenaire entre la magie et le combat selon ses goûts.
 
+**Apprendre un sort** (Idan, 2026-11-02) : avec le manuel, dans la salle de l'école du sort, l'élève y prend une place
+avant l'entraînement libre et reste au camp jusqu'à ce qu'il connaisse le sort ; un professeur facultatif ; règles et
+chiffres au doc 12 (« Apprendre un sort à l'École »).
+
 ## 8 — Bâtiments pour animaux et montures
 
 Le château peut accueillir des structures spécialisées selon les espèces :

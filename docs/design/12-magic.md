@@ -551,13 +551,51 @@ apprendre » ; modalités de JC3) :
   demande × 1,5 selon l'affinité, comme pour un objet (doc 18) : 4 500 PO à affinité nulle (Idan : « 3000 po de base »).
 - **En vente** chez les marchands des cultures de l'école (doc 18) : une ligne « manuels de l'école » ; chaque article est un
   manuel tiré dans l'école.
-- **Apprendre** : à l'Intendance, « Apprendre à… » ; un membre de la compagnie présent au camp lit le manuel et connaît le
-  sort **au niveau 1**, comme un sort de création ; le manuel est consommé. Pas de prérequis d'école (ci-dessus) ; on
-  n'apprend pas un sort déjà connu ; pas pendant une mission (une mission programmée laisse encore la soirée).
+- **Apprendre** (Idan, 2026-11-02 ; remplace la lecture instantanée) : à l'**École de magie**, dans la salle de l'école du
+  sort, en un temps indéterminé (voir ci-dessous). On n'apprend pas un sort déjà connu ; pas pendant une mission ; pas de
+  prérequis d'école pour le mercenaire, seulement la salle construite.
 - Code : `game-core/spell-manuals.js` ; tests : `tests/spell-manuals.test.js`.
 
-**École de magie** (Idan, 2026-11-01) : le bâtiment et ses neuf salles se construisent au camp (doc 11 §7), sans effet
-pour l'instant ; l'apprentissage par le temps, le professeur et l'entraînement sont en discussion.
+**École de magie** (Idan, 2026-11-01 et 2026-11-02) : le bâtiment et ses neuf salles se construisent au camp, avec un
+directeur, l'entraînement libre et l'apprentissage des sorts (doc 11 §7).
+
+**Apprendre un sort à l'École** (Idan, 2026-11-02 : « Il faut le manuel. L'école de magie correspondante construite. On
+parle à un mercenaire pour le convaincre d'apprendre un sort. […] Le seul coût est la durée… qui est indéterminée » ;
+règles `game-core/spell-study.js`, constantes `spell_study.*`, interface `prototype-web/spell-study-ui.js`) :
+
+- **Conditions** : le manuel à l'Intendance, la **salle de l'école du sort** construite (la Salle du Feu pour un sort de
+  Feu) avec une place libre ; le mercenaire au camp (pas d'expédition, même programmée), ni déjà élève ni professeur.
+- **Convaincre**, comme pour l'équipement : « Apprendre à… » sur le manuel ; chance = **10 + 80 / (1 + e^(−Δ/20))**, avec
+  **Δ = 0,5 × affinité avec le capitaine + 0,5 × (école du sort − 50)** + l'appui de l'intendant (0,2 × Intendance +
+  0,25 × affinité envers lui) ; une tentative par jour ; le **capitaine** apprend sans test. Affinité 0 et école 80 :
+  64 % ; sans l'école : 28 % ; affinité 50 et école 80 : 80 %.
+- **S'il accepte** : le manuel est détruit ; il prend une place de la salle (avant l'entraînement libre) et **reste au
+  camp** (ni mission, ni garde du corps, ni entraînement libre) jusqu'à ce qu'il connaisse le sort.
+- **Chaque matin**, un test : chance = **100 / (1 + e^(−(X − 100)/20)) × (1 + 0,1 × niveau de la salle)**, au plus 95 %,
+  avec **X = (Intelligence + école du sort) / 2 + (école du sort du directeur + sa Transmission du savoir) / 10 +
+  Transmission du savoir du professeur / 5**. Salle niveau 1 : moyen (Intelligence 54, école 70) 14 % par jour, **7 jours**
+  en moyenne ; talentueux (75, 110) 45 %, **2 jours** ; pas doué (35, sans l'école) 2 %, 56 jours ; moyen avec un
+  directeur (école 100, Transmission 48) 26 %, 4 jours ; avec un professeur (Transmission 48) 21 %, 5 jours ; les deux
+  37 %, 3 jours ; salle niveau 5 : 20 %, 5 jours.
+- **Niveau du sort appris** : le **niveau de la salle** (1 à 10) ; avec un professeur, **le niveau du sort chez le
+  professeur × sa Transmission du savoir / 100** s'il est plus haut (Transmission 120 : 20 % de plus que lui), au plus
+  100. Professeur à 40 : 19 avec une Transmission de 48, 48 avec 120.
+- **Professeur** (facultatif, à tout moment) : un membre qui **connaît le sort**, au camp, ni l'élève ni déjà pris par
+  l'École. Il accepte selon 10 + 80 / (1 + e^(−Δ/20)), **Δ = (son affinité avec le capitaine + son affinité envers
+  l'élève) / 2** (50 % à 0) ; une tentative par jour ; le capitaine enseigne sans test. Il **reste au camp** jusqu'à la
+  fin (Idan : il ne part pas) ; on peut le **libérer**, l'élève continue seul. +5 XP de Transmission du savoir par jour
+  d'enseignement ; le directeur compte les élèves qui apprennent un sort (+5 XP par élève et par jour).
+- **Le faire sortir avant la fin** : le manuel est perdu et **rien n'est acquis**.
+- **Affinité avec le capitaine** (Idan : « toutes ces interactions doivent faire évoluer l'affinité ») : l'élève **+5**
+  s'il accepte, **−2** s'il refuse, **+10** quand il connaît le sort, **−10** si on le fait sortir ; le professeur **+3**
+  s'il accepte, **−2** s'il refuse, **+5** quand son élève connaît le sort, **−3** si on le libère. Le capitaine ne
+  change pas.
+- **Interface** : « Apprendre à… » (Intendance, onglet Manuels) ouvre la proposition, la réponse passe par la boîte de
+  dialogue des échanges ; dans l'encart de l'École, « Apprentissages » : chaque élève, son sort, sa salle, son jour (la
+  chance du lendemain au survol), « Ajouter un professeur » (ceux qui connaissent le sort, avec leur Transmission) ou
+  « Libérer », et « Le faire sortir » (avec confirmation) ; les places des salles comptent les élèves ; fiche : « Apprend /
+  Enseigne <sort> » ; journal du matin : « … connaît désormais <sort> (niveau 3), après 6 jours. » ; historique.
+- Tests : `tests/spell-study.test.js`.
 
 ### Mise en place
 

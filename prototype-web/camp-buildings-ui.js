@@ -46,13 +46,15 @@ function campBuildingAction(c,code,level){
       <span class="building-cost">${fmt(next.gold)} PO · ${campDays(next.days)}${why}</span></div>`;
 }
 // Entraînement libre (Idan, 2026-11-02) : les élèves du jour dans une salle (entrées de camp.schoolDay).
+// Apprentissage des sorts (Idan, 2026-11-02) : un élève qui apprend un sort prend aussi une place de sa salle.
 function schoolStudents(c,code){
-  const day=campaignRules().schoolDayOf?campaignRules().schoolDayOf(c):null;
-  return day?day.entries.filter(e=>e.code===code):[];
+  const rules=campaignRules(),day=rules.schoolDayOf?rules.schoolDayOf(c):null;
+  const learners=rules.spellStudy?rules.spellStudy.studiesOf(c).filter(s=>s.room===code).map(s=>({id:s.studentId,spell:s.spellName})):[];
+  return [...learners,...(day?day.entries.filter(e=>e.code===code):[])];
 }
 function schoolStudentsTitle(c,students){
   const name=id=>c.company.roster.find(m=>m.id===id)?.name||"?";
-  return students.length?"Aujourd’hui : "+students.map(e=>`${name(e.id)} (+${fmt(e.xp)} XP)`).join(", "):"Personne aujourd’hui";
+  return students.length?"Aujourd’hui : "+students.map(e=>e.spell?`${name(e.id)} (apprend ${e.spell})`:`${name(e.id)} (+${fmt(e.xp)} XP)`).join(", "):"Personne aujourd’hui";
 }
 function campBuildingState(c,code,level){
   if(!level) return "À construire";
@@ -95,6 +97,7 @@ function campBuildingCard(c,code){
       <div class="building-info"><strong title="${esc(row.description)}">${esc(row.nom)}</strong><span>${campBuildingState(c,code,level)}</span></div>
       ${campBuildingAction(c,code,level)}
       ${campRoomsList(c,code)}
+      ${code==="magic_school"&&typeof studyListHtml==="function"?studyListHtml(c):""}
       ${captainTrainingChoice(c,code)}
     </article>`;
 }

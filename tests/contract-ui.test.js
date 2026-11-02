@@ -10,7 +10,7 @@ const js = fs.readFileSync(path.join(root, "prototype-web/contract-ui.js"), "utf
 const html = fs.readFileSync(path.join(root, "prototype-web/index.html"), "utf8");
 const esc = value => String(value ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 const nodes = {};
-const node = id => nodes[id] || (nodes[id] = {innerHTML:"", open:false, showModal(){ this.open = true; }, close(){ this.open = false; }});
+const node = id => nodes[id] || (nodes[id] = {innerHTML:"", open:false, showModal(){ this.open = true; }, close(){ this.open = false; }, addEventListener(){}});
 const contract = {id:"c1", code:"cleanup", name:"Faire le ménage", campName:"Camp gobelin", faction:"Gobelins", difficulty:1, distance:2,
   reward:6800, day:1, expiresDay:5, order:"village", fields:{lieu:"Brumecendre", estimation:"une petite dizaine"}};
 const guard = {id:"g1", kind:"bodyguard", client:"Une veuve fortunée", count:2, days:8, level:3, payment:1520, expiresDay:4};

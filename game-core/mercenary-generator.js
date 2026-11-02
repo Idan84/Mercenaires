@@ -74,6 +74,9 @@
     const cultureByName = new Map(cultureRows.map(r => [r.nom, r]));
     const magicSchoolNames = skillRows.filter(r => r.domaine === "Magie" && r.niveau === "Catégorie").map(r => r.nom);
     const skillByName = new Map(skillRows.map(r => [r.nom, r]));
+    // Compétence tirée pour un mercenaire (skills.json, colonne mercenaire ; Idan, 2026-11-02) : Armes naturelles reste
+    // aux créatures, Combat à mains nues est désactivé pour l'instant.
+    const mercenarySkill = name => skillByName.has(name) && skillByName.get(name).mercenaire !== false;
     const charByName = new Map(characteristicRows.map(r => [r.nom, r]));
     const matrixByTarget = new Map(matrixRows.map(r => [r.cible, r]));
     const constants = new Map(formulaConstantRows.map(r => [r.code, Number(r.valeur)]));
@@ -619,6 +622,7 @@
         "Pièges",
         "Discrétion",
         "Combat à deux armes",
+        "Combat à une main",
         "Combat à mains nues",
         "Combat à deux mains",
         "Armes naturelles"
@@ -653,7 +657,16 @@
         );
       }
 
-      if (skillByName.has("Combat à mains nues")) {
+      // Combat à une main (Idan, 2026-11-02) : comme Combat à deux armes, la meilleure arme de mêlée à une main.
+      if (mercenarySkill("Combat à une main")) {
+        setRawSkill(
+          skills, trace, "martial", "Combat à une main",
+          maxNumeric(oneHandMeleeValues) * randomBetween(0.8, 1.2),
+          {rawFormula: "Max(armes de mêlée 1 main) × Rand(0,8 ; 1,2)"}
+        );
+      }
+
+      if (mercenarySkill("Combat à mains nues")) {
         setRawSkill(
           skills, trace, "martial", "Combat à mains nues",
           ((character.stats.Force + character.stats.Dextérité) / 2) * randomBetween(0.8, 1.2) * statSkillFactor,
@@ -669,7 +682,7 @@
         );
       }
 
-      if (skillByName.has("Armes naturelles")) {
+      if (mercenarySkill("Armes naturelles")) {
         setRawSkill(skills, trace, "martial", "Armes naturelles", 0, {rawFormula: "0"});
       }
 
@@ -1600,6 +1613,8 @@
 
     function classifySkill(skill) {
       if (skill.nom === "Sort à créer") return {status:"placeholder", reason:"Sort placeholder, pas une compétence initiale."};
+      if (skill.mercenaire === false) return {status:"disabled", reason:"Pas tirée pour les mercenaires (skills.json, mercenaire)."};
+      if (skill.nom === "Combat à une main") return {status:"derived", rule:"Max arme de mêlée 1 main × Rand(0,8 ; 1,2)"};
       if (skill.niveau === "Sous-catégorie" && String(skill.domaine || "").includes("Martial")) return {status:"generated", rule:"Martial 1D20 / 2D20"};
       if (skill.parent === "Compagnon animal") return {status:"generated", rule:"Animal"};
       if (skill.nom === "Compagnon animal") return {status:"derived", rule:"Max × Rand(0,8 ; 1,2)"};
@@ -1682,7 +1697,7 @@
           return {
             target: row.cible,
             type: row.type,
-            status: ["generated","derived","binary"].includes(classification.status) ? "active" : "blocked",
+            status: ["generated","derived","binary"].includes(classification.status) ? "active" : classification.status === "disabled" ? "disabled" : "blocked",
             reason: classification.reason || null
           };
         }

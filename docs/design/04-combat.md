@@ -88,6 +88,19 @@ Les règles validées de maniement et cadence sont centralisées ici :
 - [Prise d'arme et mode deux mains V1](/design/#doc=formulas/prise-d-arme-et-mode-deux-mains-v1.md) : prises `1 main`, `2 mains`, `Au choix`.
 - [Combat à deux armes CAC V1](/design/#doc=formulas/combat-a-deux-armes-cac-v1.md) : combat à deux armes.
 
+**Combat à une main** (Idan, 2026-11-02) : avec une arme à une main tenue seule, l'autre main vide — le pistolet compris
+(la fronde se tient à deux mains), une arme `Au choix` tant qu'elle n'est pas empoignée à deux mains — **Esquive effective + 0,2 × Combat à
+une main** (`combat.one_handed.dodge_factor`), contre tous les jets qui lisent l'Esquive effective (corps à corps, tir,
+sorts). Une main à 50 : +10 d'Esquive, une attaque à 50 % passe à 40 %. Au Sol, l'Esquive reste à 0. Le style se tire à la
+création comme Combat à deux armes et progresse de +10 XP par attaque (doc 08). Sur la fiche, la ligne « Combat à une
+main » apparaît dans le détail de l'Esquive. Plus tard, peut-être : une seconde action rapide (Idan : « on verra plus tard
+si besoin »).
+
+**Attaquer à deux mains** (Idan, 2026-11-02) : une arme `Au choix` tenue seule est à une main par défaut ; le bouton
+« Attaquer à deux mains » l'empoigne pour l'attaque (dégâts × 1,5, Combat à deux mains au Blesser) et elle le reste jusqu'au
+prochain tour du combattant. La charge se fait à une main. L'IA empoigne à deux mains quand Combat à deux mains ≥ Combat
+à une main. Voir [Prise d'arme et mode deux mains V1](/design/#doc=formulas/prise-d-arme-et-mode-deux-mains-v1.md).
+
 Choix d'implémentation V1 du combat à deux armes, validés par Idan (2026-10-08 et 2026-10-20) :
 - on combat à deux armes quand chaque main du set actif tient une **arme** (un bouclier n'en est pas une) ;
 - [Prise d'arme et mode deux mains V1](/design/#doc=formulas/prise-d-arme-et-mode-deux-mains-v1.md) : une arme `2 mains` exige une main secondaire vide. Ce qui serait rangé à côté d'elle (bouclier ou seconde arme), comme une arme `2 mains` rangée en main secondaire, n'est pas tenu : pas de paire, pas de blocage, pas de malus de vitesse (correction après la revue Chatty du 2026-10-20) ;

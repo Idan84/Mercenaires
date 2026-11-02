@@ -28,14 +28,15 @@ const knight = {
   equipment:{slots:{armor:"a", weapon_set_1_main:"l"}}
 };
 const e = effects(knight);
-// Vitesse : 42 − 12 × 1,2 (armure usée) − 12 × (1 − 60/400) × 0,5 (lance tenue à deux mains).
+// Vitesse : 42 − 12 × 1,2 (armure usée) − 12 × (1 − 60/400) (la lance, plus divisée par deux à deux mains : Idan,
+// 2026-11-02).
 near(e.Vitesse.base, 42);
-near(e.Vitesse.value, 42 - 14.4 - 12 * 0.85 * 0.5);
-assert.deepEqual(e.Vitesse.lines.map(l => [l.label, l.reason, Boolean(l.twoHands)]),
-  [["Armure de plates (Usée)", "armor", false], ["Lance (Correcte)", "weight", true]]);
+near(e.Vitesse.value, 42 - 14.4 - 12 * 0.85);
+assert.deepEqual(e.Vitesse.lines.map(l => [l.label, l.reason]),
+  [["Armure de plates (Usée)", "armor"], ["Lance (Correcte)", "weight"]]);
 near(e.Vitesse.lines[0].delta, -14.4);
-near(e.Vitesse.lines[1].delta, -5.1);
-// Esquive : 31 − 16 × 1,2.
+near(e.Vitesse.lines[1].delta, -10.2);
+// Esquive : 31 − 16 × 1,2 ; la lance tenue seule, à une main par défaut, mais sans Combat à une main : rien de plus.
 near(e.Esquive.value, 31 - 19.2);
 // Résistances élémentaires (Idan, 2026-10-25) : l'armure compte ; plates −20 au feu, −25 au froid, usées (÷ 0,8).
 near(e["Résistance au feu"].value, -25);
@@ -227,10 +228,12 @@ const fighter = {stats:{Force:60},
     {id:"d", name:"Dague", qualityCode:"worn", qualityName:"Usée"}, {id:"a", name:"Arquebuse", qualityCode:"standard"}],
   equipment:{slots:{weapon_set_1_main:"l", weapon_set_2_main:"s", weapon_set_2_off:"d"}}};
 const [set1, set2] = attacks(fighter);
-// Lance 1D8, Grand Luxe ×1,2, à deux mains ×1,5, Force 60 ×1,2 : ⌈10 × 1 × 2,16⌉ à ⌈10 × 8 × 2,16⌉.
-assert.deepEqual(set1.strikes.map(s => [s.name, s.mode, s.dice, s.min, s.max]), [["Lance","melee","1D8",22,173]]);
+// Lance 1D8 (Au choix), tenue seule : à une main par défaut, Grand Luxe ×1,2, Force 60 ×1,2 : ⌈10 × 1,44⌉ à ⌈10 × 8 × 1,44⌉ ;
+// puis empoignée à deux mains (« Attaquer à deux mains », Idan, 2026-11-02) ×1,5 : ⌈10 × 2,16⌉ à ⌈10 × 8 × 2,16⌉.
+assert.deepEqual(set1.strikes.map(s => [s.name, s.mode, s.twoHands, s.dice, s.min, s.max]), [["Lance","melee",false,"1D8",15,116],["Lance","melee",true,"1D8",22,173]]);
 assert.deepEqual(set1.strikes[0].types, [{type:"Perforant", power:55}]);
-assert.deepEqual(set1.strikes[0].factors.map(f => [f.label, Math.round(f.factor * 100) / 100]), [["Grand Luxe",1.2],["À deux mains",1.5],["Force",1.2]]);
+assert.deepEqual(set1.strikes[0].factors.map(f => [f.label, Math.round(f.factor * 100) / 100]), [["Grand Luxe",1.2],["Force",1.2]]);
+assert.deepEqual(set1.strikes[1].factors.map(f => [f.label, Math.round(f.factor * 100) / 100]), [["Grand Luxe",1.2],["À deux mains",1.5],["Force",1.2]]);
 // Deux armes : chaque main frappe ; la lance n'est plus à deux mains.
 assert.deepEqual(set2.strikes.map(s => [s.hand, s.name, s.min, s.max]), [["main","Épée longue",12,96],["off","Dague",10,39]]);
 assert.deepEqual(set2.strikes[0].types.map(t => t.type), ["Tranchant","Perforant"]);
@@ -253,16 +256,16 @@ const card = renderDamageCard(fighter);
 assert.match(card, /<h4>Dégâts<\/h4>/);
 // Idan (2026-10-30) : quatre chiffres pour comparer, des scores et non des chances — Précision, Puissance, Dégâts
 // (fourchette et type), Pénétration d'armure — rien de la recette (dés, multiplicateurs), rien pour un set vide.
-assert.match(card, /<th scope="col"><small>Set 1<\/small><strong>Lance<\/strong><\/th><th scope="col"><small>Set 2<\/small><strong>Épée longue<\/strong><\/th><th scope="col"><small>Set 2 · main secondaire<\/small><strong>Dague<\/strong><\/th>/,
-  "une colonne par arme qui frappe");
+assert.match(card, /<th scope="col"><small>Set 1<\/small><strong>Lance<\/strong><\/th><th scope="col"><small>Set 1 · à deux mains<\/small><strong>Lance<\/strong><\/th><th scope="col"><small>Set 2<\/small><strong>Épée longue<\/strong><\/th><th scope="col"><small>Set 2 · main secondaire<\/small><strong>Dague<\/strong><\/th>/,
+  "une colonne par arme qui frappe ; la lance tenue seule, aussi à deux mains");
 const lanceUnit = {character:fighter, activeSet:1};
 const cells = name => card.match(new RegExp(`<tr><th scope="row"><span class="sheet-stat-name" tabindex="0">${name}[^]*?</tr>`))[0].match(/<td>[^]*?<\/td>/g);
 assert.equal(cells("Précision")[0], `<td><b>${Math.round(engine.attackPrecision(lanceUnit))}</b></td>`);
 assert.equal(cells("Puissance")[0], `<td><b>${Math.round(engine.attackPower(lanceUnit, "melee"))}</b></td>`);
-assert.deepEqual(cells("Dégâts"), ["<td><b>22 à 173</b> PV<small>en perforant</small></td>",
+assert.deepEqual(cells("Dégâts"), ["<td><b>15 à 116</b> PV<small>en perforant</small></td>","<td><b>22 à 173</b> PV<small>en perforant</small></td>",
   "<td><b>12 à 96</b> PV<small>en tranchant ou perforant</small></td>", "<td><b>10 à 39</b> PV<small>en tranchant ou perforant</small></td>"],
   "du plus petit au plus grand coup, et son type");
-assert.deepEqual(cells("Pénétration d’armure").slice(0, 2), ["<td><b>55</b></td>",
+assert.deepEqual(cells("Pénétration d’armure").slice(0, 3), ["<td><b>55</b></td>","<td><b>55</b></td>",
   "<td><span><b>50</b> tranchant</span><span><b>40</b> perforant</span></td>"], "une pénétration par type");
 assert.match(card, /<strong>Précision<\/strong><em>Les chances de toucher[^<]*<\/em><span>Nouvelles recrues : de 50 à 145\.<\/span>/);
 assert.match(card, /<span>Selon l’arme : de 10 à 95\.<\/span>/);

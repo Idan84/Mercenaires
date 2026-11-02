@@ -41,7 +41,7 @@
       activations:0,loadRatios:[],chargeAttempts:0,knockouts:0,fleeHexes:0,backstabWounds:0,wounds:{},hpHealed:0,
       criticalSuccesses:0,criticalFailures:0,
       chains:0,woundsTaken:0,heavyArmorHexes:0,courageHeld:0,recoveries:0,worstChoices:0,
-      weaponUses:{},twoHandedAttacks:0,dualSequences:0,blocks:{},intimidations:0,
+      weaponUses:{},twoHandedAttacks:0,oneHandedAttacks:0,dualSequences:0,blocks:{},intimidations:0,
       enemyWounds:{},enemyKnockouts:{},
       spellCasts:{},manaSpent:0,spellCriticalSuccesses:0,spellCriticalFailures:0
     };
@@ -79,6 +79,8 @@
       if(result.hit&&!result.blocked&&!result.parried) use.hits++;
       if(result.wound) use.wounds++;
       if(result.twoHanded&&result.mode==="melee") logOf(attacker).twoHandedAttacks++;
+      // Combat à une main (Idan, 2026-11-02) : chaque attaque avec une arme à une main tenue seule, mêlée ou tir.
+      if(result.oneHanded) logOf(attacker).oneHandedAttacks=(logOf(attacker).oneHandedAttacks||0)+1;
     }
     // Intelligence : apprendre de ses erreurs quand il choisit le pire type de dégâts (Idan, 2026-10-20).
     if(result.matchup?.choice==="pire"&&!result.accidental) logOf(attacker).worstChoices++;
@@ -201,6 +203,7 @@
       skillWeaponHit:k("progression.skill.weapon_hit_xp",5),
       skillWeaponWound:k("progression.skill.weapon_wound_xp",5),
       skillTwoHandedAttack:k("progression.skill.two_handed_attack_xp",10),
+      skillOneHandedAttack:k("progression.skill.one_handed_attack_xp",10),
       skillDualSequence:k("progression.skill.dual_sequence_xp",10),
       skillShieldBlock:k("progression.skill.shield_block_xp",10),
       skillIntimidation:k("progression.skill.intimidation_xp",50),
@@ -233,9 +236,9 @@
     const weaponNames=new Set((reference?.weapons?.rows||[]).map(w=>w.nom));
     const categoryOf=new Map(skillRows.filter(r=>weaponNames.has(r.nom)&&r.parent).map(r=>[r.nom,r.parent]));
     const skillMax=new Map(skillRows.map(r=>[r.nom,Number(r.valeur_maximale)]));
-    // Les trois styles de combat progressent l'un au détriment des autres ; « Boucliers » en fait partie et
-    // sort donc des catégories d'armes.
-    const STYLES=["Combat à deux mains","Combat à deux armes","Boucliers"];
+    // Les styles de combat progressent l'un au détriment des autres ; « Boucliers » en fait partie et sort donc des
+    // catégories d'armes. Combat à une main les rejoint (Idan, 2026-11-02).
+    const STYLES=["Combat à une main","Combat à deux mains","Combat à deux armes","Boucliers"];
     // Écoles de magie : leurs deux écoles opposées (skills.json, ecoles_opposees).
     const oppositeSchools=new Map(skillRows.filter(r=>r.ecoles_opposees)
       .map(r=>[r.nom,String(r.ecoles_opposees).split(",").map(x=>x.trim()).filter(Boolean)]));
@@ -295,7 +298,7 @@
     // total ratio × gain, à parts égales, aux compétences que le mercenaire possède (valeur > 0) dans :
     // - les armes des autres catégories, pour un gain d'arme (pas les armes de la même catégorie) ;
     // - les autres catégories d'armes, pour un gain de catégorie ;
-    // - les autres styles (deux mains, deux armes, boucliers), pour un gain de style.
+    // - les autres styles (une main, deux mains, deux armes, boucliers), pour un gain de style.
     function martialGains(l,mercenary){
       const raw={};
       const add=(name,xp)=>{ if(xp) raw[name]=(raw[name]||0)+xp; };
@@ -306,6 +309,7 @@
         if(category) add(category,xp);
       }
       add("Combat à deux mains",l.twoHandedAttacks*C.skillTwoHandedAttack);
+      add("Combat à une main",(l.oneHandedAttacks||0)*C.skillOneHandedAttack);
       add("Combat à deux armes",l.dualSequences*C.skillDualSequence);
       for(const [shield,count] of Object.entries(l.blocks||{})){
         add(shield,count*C.skillShieldBlock);

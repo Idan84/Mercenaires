@@ -382,6 +382,17 @@
         "accord": "Quitte l’École de magie et retourne sur le terrain après {jours}.",
         "refus": "Refuse de quitter l’École de magie."
       },
+      "study": {
+        "accord": "Accepte d’apprendre {sort} à l’École de magie.",
+        "refus": "Refuse d’apprendre {sort}."
+      },
+      "study_done": "Connaît désormais {sort} (niveau {niveau}), après {jours} à l’École.",
+      "study_stopped": "Quitte l’École sans avoir appris {sort}.",
+      "teach": {
+        "accord": "Accepte d’enseigner {sort} à {eleve}.",
+        "refus": "Refuse d’enseigner {sort} à {eleve}."
+      },
+      "teach_done": "{eleve} connaît désormais {sort} grâce à ses leçons.",
       "lieutenant": {
         "accord": "Devient {lieutenant|lieutenante} de la compagnie, pour {salaire} PO par jour.",
         "refus": "Refuse, pour de bon, de devenir {lieutenant|lieutenante}."

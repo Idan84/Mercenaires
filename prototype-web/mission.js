@@ -299,8 +299,10 @@ function openMissionSelection(contract=null){
   $("mission-select-title").textContent=game.missionSelect.contract?"Choisir l’escouade ("+min+" à "+max+")":"Choisir 3 mercenaires";
   // L'intendant ne part plus en mission (Idan, 2026-10-24) ; un mercenaire déjà en expédition non plus (doc 17).
   const away=c=>game.campaign&&campaignRules().expeditionOf(game.campaign,c.id);
+  // À l'École (élève ou professeur d'un sort ; Idan, 2026-11-02) : il reste au camp jusqu'à la fin.
+  const studying=c=>game.campaign&&campaignRules().studyBusy?campaignRules().studyBusy(game.campaign,c):null;
   const offField=c=>game.campaign&&(c.id===game.campaign.company.intendantId||(game.campaign.company.medicId!=null&&c.id===game.campaign.company.medicId)||(game.campaign.company.directorId!=null&&c.id===game.campaign.company.directorId));
-  const eligible=allCharacters().filter(c=>!offField(c)&&!away(c));
+  const eligible=allCharacters().filter(c=>!offField(c)&&!away(c)&&!studying(c));
   const available=eligible.filter(c=>!c.recovery);
   const preselected=new Set(game.missionSelect.contract?[]:available.slice(0,3));
   $("mission-select-list").innerHTML=eligible.map(c=>`
@@ -325,7 +327,7 @@ function openBodyguardSelection(offer){
   $("mission-select-eyebrow").textContent="Garde du corps · "+offer.client;
   $("mission-select-title").textContent="Choisir "+(offer.count>1?"les "+offer.count+" gardes":"le garde");
   const members=c.company.roster.filter(m=>m.id!==c.company.captainId&&m.id!==c.company.intendantId&&(c.company.medicId==null||m.id!==c.company.medicId)
-    &&(c.company.directorId==null||m.id!==c.company.directorId)&&!rules.expeditionOf(c,m.id));
+    &&(c.company.directorId==null||m.id!==c.company.directorId)&&!rules.expeditionOf(c,m.id)&&!(rules.studyBusy&&rules.studyBusy(c,m)));
   $("mission-select-list").innerHTML=members.map(m=>{
     const allowed=rules.canGuard(c,m,offer);
     return `<label class="mission-pick${allowed.ok?"":" unavailable"}">

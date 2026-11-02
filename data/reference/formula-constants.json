@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 280,
+  "row_count": 301,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -2272,6 +2272,174 @@
       "description": "Entraînement libre (Idan, 2026-11-02) : XP de Transmission du savoir gagnée par le directeur de l’École, par élève et par jour.",
       "formule": "Entraînement libre à l’École de magie",
       "valeur": 5,
+      "version": "V1"
+    },
+    {
+      "nom": "Apprentissage — poids de l’affinité",
+      "code": "spell_study.offer.affinity_weight",
+      "description": "Apprentissage d’un sort (Idan, 2026-11-02) : chance d’accepter = 10 + 80 / (1 + e^(−Δ / 20)), Δ = ce poids × affinité avec le capitaine + 0,5 × (école du sort − 50) + l’appui de l’intendant (comme un échange d’équipement).",
+      "formule": "Apprentissage d’un sort à l’École de magie",
+      "valeur": 0.5,
+      "version": "V1"
+    },
+    {
+      "nom": "Apprentissage — poids de l’école",
+      "code": "spell_study.offer.school_weight",
+      "description": "Apprentissage d’un sort (Idan, 2026-11-02) : dans Δ, ce poids × (école du sort − 50).",
+      "formule": "Apprentissage d’un sort à l’École de magie",
+      "valeur": 0.5,
+      "version": "V1"
+    },
+    {
+      "nom": "Apprentissage — école de référence",
+      "code": "spell_study.offer.school_center",
+      "description": "Apprentissage d’un sort (Idan, 2026-11-02) : dans Δ, école du sort − cette valeur.",
+      "formule": "Apprentissage d’un sort à l’École de magie",
+      "valeur": 50,
+      "version": "V1"
+    },
+    {
+      "nom": "Apprentissage — pente des tests",
+      "code": "spell_study.offer.slope",
+      "description": "Apprentissage d’un sort (Idan, 2026-11-02) : chance d’accepter (élève ou professeur) = 10 + 80 / (1 + e^(−Δ / cette pente)).",
+      "formule": "Apprentissage d’un sort à l’École de magie",
+      "valeur": 20,
+      "version": "V1"
+    },
+    {
+      "nom": "Apprentissage — centre du test du jour",
+      "code": "spell_study.daily.center",
+      "description": "Apprentissage d’un sort (Idan, 2026-11-02) : chaque matin, chance = 100 / (1 + e^(−(X − ce centre) / 20)) × (1 + 0,1 × niveau de la salle), X = (Intelligence + école du sort) / 2 + bonus du directeur + bonus du professeur. Moyen (54, 70) : 14 % (7 jours) ; talentueux (75, 110) : 45 % (2 jours) ; pas doué (35, sans l’école) : 2 %.",
+      "formule": "Apprentissage d’un sort à l’École de magie",
+      "valeur": 100,
+      "version": "V1"
+    },
+    {
+      "nom": "Apprentissage — pente du test du jour",
+      "code": "spell_study.daily.slope",
+      "description": "Apprentissage d’un sort (Idan, 2026-11-02) : chance du jour = 100 / (1 + e^(−(X − 100) / cette pente)) × (1 + 0,1 × niveau de la salle).",
+      "formule": "Apprentissage d’un sort à l’École de magie",
+      "valeur": 20,
+      "version": "V1"
+    },
+    {
+      "nom": "Apprentissage — bonus par niveau de salle",
+      "code": "spell_study.daily.room_bonus",
+      "description": "Apprentissage d’un sort (Idan, 2026-11-02) : chance du jour × (1 + cette part × niveau de la salle de l’école du sort).",
+      "formule": "Apprentissage d’un sort à l’École de magie",
+      "valeur": 0.1,
+      "version": "V1"
+    },
+    {
+      "nom": "Apprentissage — chance du jour maximale",
+      "code": "spell_study.daily.max",
+      "description": "Apprentissage d’un sort (Idan, 2026-11-02) : la chance du jour ne dépasse pas ce pourcentage.",
+      "formule": "Apprentissage d’un sort à l’École de magie",
+      "valeur": 95,
+      "version": "V1"
+    },
+    {
+      "nom": "Apprentissage — directeur",
+      "code": "spell_study.daily.director_divisor",
+      "description": "Apprentissage d’un sort (Idan, 2026-11-02) : X + (école du sort du directeur + sa Transmission du savoir) / ce diviseur.",
+      "formule": "Apprentissage d’un sort à l’École de magie",
+      "valeur": 10,
+      "version": "V1"
+    },
+    {
+      "nom": "Apprentissage — professeur",
+      "code": "spell_study.daily.teacher_divisor",
+      "description": "Apprentissage d’un sort (Idan, 2026-11-02) : X + Transmission du savoir du professeur / ce diviseur.",
+      "formule": "Apprentissage d’un sort à l’École de magie",
+      "valeur": 5,
+      "version": "V1"
+    },
+    {
+      "nom": "Apprentissage — niveau transmis",
+      "code": "spell_study.teacher.transmission_divisor",
+      "description": "Apprentissage d’un sort (Idan, 2026-11-02) : avec un professeur, l’élève connaît le sort au niveau du sort chez le professeur × sa Transmission du savoir / ce diviseur (120 : 20 % de plus), s’il dépasse le niveau de la salle.",
+      "formule": "Apprentissage d’un sort à l’École de magie",
+      "valeur": 100,
+      "version": "V1"
+    },
+    {
+      "nom": "Apprentissage — niveau maximal",
+      "code": "spell_study.max_level",
+      "description": "Apprentissage d’un sort (Idan, 2026-11-02) : le sort appris ne dépasse pas ce niveau.",
+      "formule": "Apprentissage d’un sort à l’École de magie",
+      "valeur": 100,
+      "version": "V1"
+    },
+    {
+      "nom": "Apprentissage — XP du professeur",
+      "code": "spell_study.xp.teacher_transmission",
+      "description": "Apprentissage d’un sort (Idan, 2026-11-02) : XP de Transmission du savoir du professeur par jour d’enseignement.",
+      "formule": "Apprentissage d’un sort à l’École de magie",
+      "valeur": 5,
+      "version": "V1"
+    },
+    {
+      "nom": "Apprentissage — affinité, accord de l’élève",
+      "code": "spell_study.affinity.accept",
+      "description": "Apprentissage d’un sort (Idan, 2026-11-02) : affinité avec le capitaine quand il accepte d’apprendre le sort (on lui offre un sort).",
+      "formule": "Apprentissage d’un sort à l’École de magie",
+      "valeur": 5,
+      "version": "V1"
+    },
+    {
+      "nom": "Apprentissage — affinité, refus de l’élève",
+      "code": "spell_study.affinity.refuse",
+      "description": "Apprentissage d’un sort (Idan, 2026-11-02) : affinité avec le capitaine quand il refuse (on a insisté).",
+      "formule": "Apprentissage d’un sort à l’École de magie",
+      "valeur": -2,
+      "version": "V1"
+    },
+    {
+      "nom": "Apprentissage — affinité, sort appris",
+      "code": "spell_study.affinity.learned",
+      "description": "Apprentissage d’un sort (Idan, 2026-11-02) : affinité avec le capitaine quand il connaît le sort.",
+      "formule": "Apprentissage d’un sort à l’École de magie",
+      "valeur": 10,
+      "version": "V1"
+    },
+    {
+      "nom": "Apprentissage — affinité, sortie avant la fin",
+      "code": "spell_study.affinity.stopped",
+      "description": "Apprentissage d’un sort (Idan, 2026-11-02) : affinité avec le capitaine quand on le fait sortir avant la fin (temps perdu pour rien).",
+      "formule": "Apprentissage d’un sort à l’École de magie",
+      "valeur": -10,
+      "version": "V1"
+    },
+    {
+      "nom": "Apprentissage — affinité, accord du professeur",
+      "code": "spell_study.affinity.teacher_accept",
+      "description": "Apprentissage d’un sort (Idan, 2026-11-02) : affinité du professeur avec le capitaine quand il accepte d’enseigner (on reconnaît son savoir).",
+      "formule": "Apprentissage d’un sort à l’École de magie",
+      "valeur": 3,
+      "version": "V1"
+    },
+    {
+      "nom": "Apprentissage — affinité, refus du professeur",
+      "code": "spell_study.affinity.teacher_refuse",
+      "description": "Apprentissage d’un sort (Idan, 2026-11-02) : affinité du professeur avec le capitaine quand il refuse.",
+      "formule": "Apprentissage d’un sort à l’École de magie",
+      "valeur": -2,
+      "version": "V1"
+    },
+    {
+      "nom": "Apprentissage — affinité, élève formé",
+      "code": "spell_study.affinity.teacher_learned",
+      "description": "Apprentissage d’un sort (Idan, 2026-11-02) : affinité du professeur avec le capitaine quand son élève connaît le sort.",
+      "formule": "Apprentissage d’un sort à l’École de magie",
+      "valeur": 5,
+      "version": "V1"
+    },
+    {
+      "nom": "Apprentissage — affinité, professeur libéré",
+      "code": "spell_study.affinity.teacher_released",
+      "description": "Apprentissage d’un sort (Idan, 2026-11-02) : affinité du professeur avec le capitaine quand on le libère avant la fin.",
+      "formule": "Apprentissage d’un sort à l’École de magie",
+      "valeur": -3,
       "version": "V1"
     }
   ]

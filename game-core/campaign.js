@@ -7,10 +7,12 @@
   const regeneration=typeof module!=="undefined"&&module.exports?require("./regeneration.js"):root.MercenairesRegeneration;
   // Entraînement libre à l'École de magie (facultatif hors du jeu : une page sans ce script n'a pas d'entraînement).
   const training=typeof module!=="undefined"&&module.exports?require("./school-training.js"):root.MercenairesSchoolTraining;
-  const api=factory(history,regeneration,training);
+  // Apprentissage des sorts à l'École (facultatif de même).
+  const study=typeof module!=="undefined"&&module.exports?require("./spell-study.js"):root.MercenairesSpellStudy;
+  const api=factory(history,regeneration,training,study);
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesCampaign=api;
-})(typeof globalThis!=="undefined"?globalThis:this,function(History,Regeneration,Training){
+})(typeof globalThis!=="undefined"?globalThis:this,function(History,Regeneration,Training,Study){
   // Sauvegarde : l'état de partie complet, sérialisé en JSON avec un format et une version.
   // La trace de génération des mercenaires (détail de calcul pour le Design Lab, ~85 % du poids)
   // n'est pas sauvegardée : un mercenaire passe d'environ 36 Ko à 5 Ko.
@@ -630,7 +632,16 @@
         code,name:CAMP_BUILDINGS.get(code).nom,school:CAMP_BUILDINGS.get(code).ecole||null,
         level:buildingLevel(state,code),places:buildingPlaces(state,code)}));
     }
-    function trainingAvailable(state,m){ return Boolean(m)&&!m.recovery&&!expeditionOf(state,m.id); }
+    // Apprentissage des sorts (Idan, 2026-11-02 ; règles : spell-study.js) : l'élève prend une place dans la salle de
+    // l'école du sort, avant l'entraînement libre ; élève et professeur restent au camp jusqu'à la fin.
+    const spellStudy=Study?Study.createSpellStudyRules({reference,random,affinity,progression,camp:{
+      roomOfSchool:school=>{
+        const row=[...CAMP_BUILDINGS.values()].find(r=>r.requiert===SCHOOL_HALL&&r.ecole===school);
+        return row?{code:row.code,name:row.nom}:null;
+      },
+      buildingLevel,buildingPlaces,directorOf,expeditionOf}}):null;
+    const studyBusy=(state,m)=>spellStudy&&m?spellStudy.busyReason(state,m.id):null;
+    function trainingAvailable(state,m){ return Boolean(m)&&!m.recovery&&!expeditionOf(state,m.id)&&!studyBusy(state,m); }
     // Le choix du joueur pour le capitaine : une salle construite, ou null (la taverne).
     function captainTraining(state){
       const code=state?.company?.camp?.captainTraining||null;
@@ -647,6 +658,8 @@
       if(!schoolTraining||!rooms.length){ delete camp.schoolDay; return null; }
       const captain=rosterOf(state).find(m=>m.id===state.company.captainId)||null;
       const candidates=rosterOf(state).filter(m=>m!==captain&&!offField(state,m)&&trainingAvailable(state,m));
+      // Les places prises par les élèves qui apprennent un sort ne sont plus libres.
+      for(const room of rooms) if(spellStudy) room.places=Math.max(0,room.places-spellStudy.learnersIn(state,room.code));
       const result=schoolTraining.runDay({rooms,candidates,captain:trainingAvailable(state,captain)?captain:null,
         captainChoice:captainTraining(state),director:directorOf(state)});
       camp.schoolDay={day:state.day,directorXp:result.directorXp,
@@ -735,9 +748,11 @@
       expeditions.departed=departScheduled(state);
       // Le marchand de la veille repart ; un autre passe peut-être (doc 18 ; Idan, 2026-10-30).
       const merchant=merchants?merchants.morning(state,{renown:companyRenown(state).total}):null;
+      // Apprentissage des sorts (Idan, 2026-11-02) : un test par élève ; ceux qui savent sortent de l'École.
+      const study=spellStudy?spellStudy.advance(state):null;
       // Entraînement libre (Idan, 2026-11-02) : ceux qui restent au camp choisissent leur journée.
       const school=runSchoolDay(state);
-      return {day:state.day,recovered,salaries,tavern:tavernReport,offersLost,expeditions,built,buildings,lieutenants:lieutenantReports,mana,merchant,school};
+      return {day:state.day,recovered,salaries,tavern:tavernReport,offersLost,expeditions,built,buildings,lieutenants:lieutenantReports,mana,merchant,school,study};
     }
 
     // Recharge du mana (doc 12 ; Idan, 2026-10-25) : chaque jour, pour les membres présents au camp, pas pour ceux qui sont
@@ -839,6 +854,8 @@
       if(ids.some(id=>expeditionOf(state,id))) return {ok:false,reason:"Un de ces mercenaires est déjà en mission."};
       if(state.company.medicId!=null&&ids.includes(state.company.medicId)) return {ok:false,reason:"Le médecin reste au camp."};
       if(state.company.directorId!=null&&ids.includes(state.company.directorId)) return {ok:false,reason:"Le directeur de l’École reste au camp."};
+      const studying=ids.map(id=>studyBusy(state,{id})).find(Boolean);
+      if(studying) return {ok:false,reason:studying};
       // Départ le lendemain matin, puis les jours de marche.
       const expedition={id:offer.id,offer,memberIds:ids,signedDay:state.day,departDay:state.day+1,arriveDay:state.day+1+offer.distance,status:"scheduled"};
       expeditionsOf(state).push(expedition);
@@ -911,6 +928,7 @@
       if(m.id===state.company.intendantId) return {ok:false,reason:"L’intendant reste au camp."};
       if(state.company.medicId!=null&&m.id===state.company.medicId) return {ok:false,reason:"Le médecin reste au camp."};
       if(isDirector(state,m)) return {ok:false,reason:"Le directeur de l’École reste au camp."};
+      if(studyBusy(state,m)) return {ok:false,reason:studyBusy(state,m)};
       if(!isAvailable(m,state)) return {ok:false,reason:m.recovery?"Il doit d’abord se remettre.":busyReason(state,m.id)};
       if(bodyguard.levelOf(m.reputation)<offer.level) return {ok:false,reason:"Réputation trop faible."};
       return {ok:true};
@@ -1135,7 +1153,7 @@
       completeExpeditionCombat,
       dormitoryFree,
       dormitoryUsed,
-      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
+      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,spellStudy,studyBusy,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
       woundDaysFor,fatigueDaysFor,
       dormitoryPlaces,
       dormitoryExpansionCost,

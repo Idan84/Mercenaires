@@ -149,6 +149,8 @@ function logDayReport(report){
   if(typeof logCampBuildings==="function") logCampBuildings(report.buildings);
   // Entraînement libre à l'École de magie (Idan, 2026-11-02).
   if(typeof logSchoolDay==="function") logSchoolDay(report.school);
+  // Apprentissage des sorts : ceux qui connaissent désormais leur sort.
+  if(typeof logSpellStudy==="function") logSpellStudy(report.study);
   // Le marchand du jour (doc 18).
   if(typeof logMerchantMorning==="function") logMerchantMorning(report.merchant);
   // Le rapport des lieutenants (Idan, 2026-10-25) : une pop-up par demande de la veille.

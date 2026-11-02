@@ -40,26 +40,24 @@ for(const spell of spells){
 }
 assert.equal(generator.createItemByName("manual","Sort inconnu"),null);
 
-// Apprendre : le sort au niveau 1, le manuel consommé.
+// Apprendre (Idan, 2026-11-02) : à l'École de magie (tests/spell-study.test.js) ; canLearn dit seulement si le manuel
+// peut lui servir.
 const captain=generator.createCaptain({id:1});
 const merc=generator.createMercenary({id:2,captain});
 merc.spells=[];
 const fireball=spells.find(s=>s.nom==="Boule de feu");
 const book=generator.createItemByName("manual",fireball.nom);
 const state={day:4,company:{roster:[captain,merc],captainId:1,stock:[book]},expeditions:[]};
-const learned=manuals.learn(state,2,book.id);
-assert.equal(learned.ok,true);
-assert.deepEqual(merc.spells,[{code:fireball.code,name:"Boule de feu",school:"Feu",mastery:1}],"niveau 1, comme un sort de création");
-assert.deepEqual(state.company.stock,[],"le manuel est consommé");
-assert.equal(manuals.learn(state,2,book.id).reason,"Manuel introuvable à l’Intendance.");
-// Déjà connu : refusé, le manuel reste.
-const again=generator.createItemByName("manual",fireball.nom);
-state.company.stock.push(again);
-assert.equal(manuals.learn(state,2,again.id).reason,"Il connaît déjà ce sort.");
-assert.equal(state.company.stock.length,1);
-// Pas de prérequis d'école : le capitaine sans magie l'apprend aussi.
+assert.equal(manuals.canLearn(state,merc,book).ok,true);
+assert.equal(manuals.canLearn(state,merc,book).spell.code,fireball.code);
+assert.equal(manuals.learn,undefined,"plus de lecture instantanée à l’Intendance");
+// Déjà connu : refusé.
+merc.spells=[{code:fireball.code,name:"Boule de feu",school:"Feu",mastery:1}];
+assert.equal(manuals.canLearn(state,merc,book).reason,"Il connaît déjà ce sort.");
+merc.spells=[];
+// Pas de prérequis d'école : le capitaine sans magie le peut aussi.
 captain.spells=[];
-assert.equal(manuals.learn(state,1,again.id).ok,true);
+assert.equal(manuals.canLearn(state,captain,book).ok,true);
 // En mission : non ; mission programmée (encore au camp) : oui.
 const heal=generator.createItemByName("manual","Soin rapide");
 state.company.stock.push(heal);
@@ -94,7 +92,7 @@ const deal=fs.readFileSync(path.join(ROOT,"prototype-web","deal-ui.js"),"utf8");
 const html=fs.readFileSync(path.join(ROOT,"prototype-web","index.html"),"utf8");
 assert.match(qm,/\["manual","Manuels","book"\]/);
 assert.match(deal,/Apprendre à…/);
-assert.match(deal,/data-manual-learn/);
+assert.match(deal,/function manualLearnMenu\(item\)\{ return studyLearnMenu\(item\); \}/);
 assert.match(html,/<script src="\/core\/spell-manuals\.js"><\/script>/);
 
-console.log("Manuels de sorts : un par sort, 3 000 PO, vente par école, apprentissage au niveau 1 — OK");
+console.log("Manuels de sorts : un par sort, 3 000 PO, vente par école, « Apprendre à… » vers l’École — OK");

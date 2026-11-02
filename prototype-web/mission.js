@@ -255,6 +255,8 @@ function resetMissionActivation(unit){
   unit.quickAvailable=true;
   unit.prone=false;
   unit.secondMove=false;
+  // Prise d'arme (Idan, 2026-11-02) : à chaque tour, une arme « Au choix » repart à une main, la main libre.
+  unit.twoHandGrip=false;
   tickMissionRegeneration(unit);
   tickMissionNaturalRegeneration(unit);
   tickMissionEnchantments(unit);
@@ -513,10 +515,12 @@ function endMissionActivation(){
   selectNextMissionPlayer();
 }
 
-function setMissionMode(mode){
+function setMissionMode(mode,{twoHands=false}={}){
   const u=missionActiveUnit();
   if(!u||game.mission.phase!=="player"||game.mission.over) return;
   game.mission.mode=mode;
+  // « Attaquer à deux mains » (Idan, 2026-11-02) : l'attaque de mêlée, l'arme « Au choix » empoignée à deux mains.
+  game.mission.twoHands=Boolean(twoHands&&mode==="melee");
   game.mission.spellTarget=null;
   renderMission();
 }
@@ -1186,7 +1190,12 @@ function resolvePlayerMissionAttack(a,d,mode,distance){
   const m=game.mission;
   if(!missionCanAttack(a,d,mode)){ missionLog("Cible hors portée ou arme incompatible.","bad"); return; }
   a.attackAvailable=false;
-  m.mode=null;
+  // Attaquer à deux mains : il frappe fort, mais perd l'esquive de la main libre jusqu'à son prochain tour.
+  if(m.twoHands&&mode==="melee"&&m.engine.canGripTwoHands(a)){
+    a.twoHandGrip=true;
+    missionLog(a.character.name+" empoigne "+(m.engine.activeWeaponItem(a)?.name||"son arme")+" à deux mains.","info");
+  }
+  m.mode=null;m.twoHands=false;
   performMissionAttack(a,d,mode,distance);
   if(missionActiveUnitLost()) return;
   renderMission();
@@ -2570,6 +2579,8 @@ function enemyMissionAct(unit,options={}){
 function enemyMissionActivation(unit,{reset=true}={}){
   if(!unit.alive||game.mission.over||unit.decoy) return;
   if(reset) resetMissionActivation(unit);
+  // L'IA empoigne une arme « Au choix » à deux mains quand Combat à deux mains vaut au moins Combat à une main.
+  unit.twoHandGrip=game.mission.engine.prefersTwoHands(unit);
   if(unit.alive&&missionParalyzedSkip(unit)) return;
   if(unit.fleeing&&resolveMissionFleeingActivation(unit)) return;
   if(!unit.alive||game.mission.over) return;
@@ -2686,6 +2697,7 @@ function missionActionAvailability(){
   return {
     move:u.movementRemaining>0,
     melee:u.attackAvailable&&missionHeldModes(u).has("melee"),
+    twoHands:u.attackAvailable&&missionHeldModes(u).has("melee")&&e.canGripTwoHands(u),
     ranged:u.attackAvailable&&missionHeldModes(u).has("ranged"),
     charge:u.attackAvailable&&e.isMeleeWeapon(w)&&u.movementRemaining===e.movementBase(u),
     switch:u.quickAvailable&&e.canSwitchWeaponSet(u),
@@ -2952,7 +2964,14 @@ function renderMission(){
   ];
   for(const [id,key] of buttons){
     $(id).disabled=!availability[key];
-    $(id).classList.toggle("selected",m.mode===key);
+    $(id).classList.toggle("selected",m.mode===key&&!(key==="melee"&&m.twoHands));
+  }
+  // « Attaquer à deux mains » : seulement avec une arme « Au choix » tenue seule.
+  const twoHandsBtn=$("mission-two-hands-btn");
+  if(twoHandsBtn){
+    twoHandsBtn.classList.toggle("hidden",!(u&&m.engine.canGripTwoHands(u)));
+    twoHandsBtn.disabled=!availability.twoHands;
+    twoHandsBtn.classList.toggle("selected",m.mode==="melee"&&Boolean(m.twoHands));
   }
   $("mission-test-spells-btn").disabled=!availability.testSpells;
   $("mission-spells").innerHTML=renderMissionSpellBar(u);
@@ -3101,6 +3120,13 @@ function missionAttackPreview(u,target){
   const mode=m.mode==="charge"?"melee":m.mode;
   const hands=dual?(charge?e.usableHands(u,1):missionUsableHands(u,target)):(charge||missionCanAttack(u,target,mode)?[{hand:"main",mode}]:[]);
   const hidden=Boolean(u.camouflaged)&&u.team!==target.team;
+  // Aperçu d'« Attaquer à deux mains » : les chances avec l'arme empoignée à deux mains.
+  const grip=u.twoHandGrip;
+  if(m.mode==="melee"&&m.twoHands) u.twoHandGrip=true;
+  try{ return missionAttackPreviewRows(u,target,hands,{e,charge,distance,hidden}); }
+  finally{ u.twoHandGrip=grip; }
+}
+function missionAttackPreviewRows(u,target,hands,{e,charge,distance,hidden}){
   return hands.map(h=>e.withHand(u,h.hand,()=>{
     const item=e.activeWeaponItem(u),weapon=e.weaponTemplate(item);
     const backstab=hidden||Boolean(target.fleeing)||(h.mode==="melee"&&missionEncircled(target));
@@ -3134,7 +3160,7 @@ function renderMissionHoverCard(q,r){
     html+=`<strong>${esc(unit.character.name)}</strong><span class="hc-sub">${Math.max(0,unit.hp)} / ${unit.pvMax} PV · ${esc(weapon?.name||"Sans arme")}</span>`
       +(tags.length?`<span class="hc-tags">${tags.join(" · ")}</span>`:"");
     for(const row of missionAttackPreview(u,unit)){
-      html+=`<div class="hc-attack"><em>${esc(row.weapon)} · ${row.mode==="ranged"?"tir":m.mode==="charge"?"charge":"corps à corps"}${row.backstab?" · dans le dos":""}</em><dl>`
+      html+=`<div class="hc-attack"><em>${esc(row.weapon)} · ${row.mode==="ranged"?"tir":m.mode==="charge"?"charge":m.twoHands?"à deux mains":"corps à corps"}${row.backstab?" · dans le dos":""}</em><dl>`
         +(row.pDeflect?`<dt>Déviation</dt>${missionOdds(row.pDeflect)}`:"")
         +`<dt>Toucher</dt>${missionOdds(row.pHit)}`
         +(row.immune?`<dt>Immunisé</dt><dd class="odds-bad">dégâts physiques</dd>`:"")
@@ -3215,6 +3241,7 @@ function initializeMissionUi(){
 
   $("mission-move-btn").addEventListener("click",()=>setMissionMode("move"));
   $("mission-attack-btn").addEventListener("click",()=>setMissionMode("melee"));
+  $("mission-two-hands-btn").addEventListener("click",()=>setMissionMode("melee",{twoHands:true}));
   $("mission-charge-btn").addEventListener("click",()=>setMissionMode("charge"));
   $("mission-ranged-btn").addEventListener("click",()=>setMissionMode("ranged"));
   $("mission-switch-btn").addEventListener("click",switchMissionWeapon);

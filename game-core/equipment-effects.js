@@ -51,9 +51,8 @@
         if(!item) continue;
         const penalty=engine.heldItemSpeedPenalty(unit,item);
         if(!penalty) continue;
-        const weapon=engine.weaponTemplate(item);
-        lines.push({label:itemLabel(item),delta:-penalty,reason:"weight",
-          twoHands:weapon?.prise==="Au choix"&&engine.usesTwoHands(unit,weapon)});
+        // Plus de malus divisé par deux pour une arme « Au choix » à deux mains (Idan, 2026-11-02).
+        lines.push({label:itemLabel(item),delta:-penalty,reason:"weight"});
       }
       return lines;
     }
@@ -70,8 +69,11 @@
 
       add("Vitesse",Number(character.stats.Vitesse)||0,engine.effectiveSpeed(unit),speedLines(unit));
       const armor=engine.armorItem(unit),dodge=engine.armorMobility(unit).dodge;
+      // Combat à une main (Idan, 2026-11-02) : arme à une main tenue seule dans le premier set.
+      const oneHand=engine.oneHandDodge?engine.oneHandDodge(unit):0;
       add("Esquive",Number(character.stats.Esquive)||0,engine.effectiveDodge(unit),
-        [...gearLines(unit,"Esquive"),...(armor&&dodge?[{label:itemLabel(armor),delta:-dodge,reason:"armor"}]:[])]);
+        [...gearLines(unit,"Esquive"),...(armor&&dodge?[{label:itemLabel(armor),delta:-dodge,reason:"armor"}]:[]),
+          ...(oneHand?[{label:"Combat à une main",delta:oneHand,reason:"style"}]:[])]);
       for(const stat of ["Perception","Endurance","Courage","Réserve de mana","Puissance magique","Volonté","Chance",
         "Résistance physique","Discrétion","Force","Pièges","Charisme","Intimidation","Constitution","Intelligence","Compagnon animal",
         ...(engine.MAGIC_SCHOOLS||[])]){
@@ -113,8 +115,9 @@
 
     // Un coup : jet minimum et maximum de l'arme (qualité, prise à deux mains, Force en mêlée), Précision et Puissance
     // de l'attaquant, types et pénétrations d'armure.
-    function strike(character,set,hand){
-      const unit={character,activeSet:set,attackHand:hand};
+    // twoHands : l'arme « Au choix » tenue seule, empoignée à deux mains (« Attaquer à deux mains », Idan, 2026-11-02).
+    function strike(character,set,hand,{twoHands:grip=false}={}){
+      const unit={character,activeSet:set,attackHand:hand,twoHandGrip:grip};
       const item=engine.activeWeaponItem(unit),weapon=engine.weaponTemplate(item);
       if(!weapon) return null;
       const mode=engine.isRangedWeapon(weapon)?"ranged":"melee";
@@ -126,17 +129,19 @@
         twoHands?{label:"À deux mains",factor:1.5}:null,
         mode==="melee"?{label:"Force",factor:2*engine.statWithGear(unit,"Force")/100}:null
       ].filter(Boolean);
-      return {hand,name:item.name,mode,dice:low.weaponDice,min:low.damage,max:high.damage,factors,
+      return {hand,name:item.name,mode,twoHands,dice:low.weaponDice,min:low.damage,max:high.damage,factors,
         precision:engine.attackPrecision(unit),power:engine.attackPower(unit,mode),
         types:engine.damageMatchups(TARGET,weapon).map(m=>({type:capitalize(m.type),power:m.power}))};
     }
 
-    // [{set, strikes}] pour les sets 1 et 2 : l'arme principale, et la main secondaire au combat à deux armes.
+    // [{set, strikes}] pour les sets 1 et 2 : l'arme principale, la main secondaire au combat à deux armes, et l'arme
+    // « Au choix » tenue seule une seconde fois, empoignée à deux mains.
     function attacks(character){
       if(!engine||!character) return [];
       return [1,2].map(set=>{
-        const dual=engine.isDualWielding({character,activeSet:set});
-        return {set,strikes:[strike(character,set,"main"),dual?strike(character,set,"off"):null].filter(Boolean)};
+        const unit={character,activeSet:set},dual=engine.isDualWielding(unit);
+        const gripped=!dual&&engine.canGripTwoHands?.(unit)?strike(character,set,"main",{twoHands:true}):null;
+        return {set,strikes:[strike(character,set,"main"),dual?strike(character,set,"off"):null,gripped].filter(Boolean)};
       });
     }
 

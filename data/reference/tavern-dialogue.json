@@ -129,6 +129,10 @@
         "Mes poings. Pas besoin d’arme pour casser des dents.",
         "À mains nues. Rien ne vaut le contact."
       ],
+      "Combat à une main": [
+        "Une seule lame, et la main libre. Je ne suis jamais là où on frappe.",
+        "Une arme, pas de bouclier : on esquive, on pique, on recommence."
+      ],
       "Combat à deux armes": [
         "Une arme dans chaque main. Deux fois plus de chances de toucher.",
         "Deux lames : deux fois plus de soucis pour l’ennemi."

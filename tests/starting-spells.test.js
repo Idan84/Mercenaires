@@ -73,7 +73,9 @@ checkDraws(captain);
 const recruits=Array.from({length:1500},(_,i)=>generator.createMercenary({id:i+2,captain}));
 recruits.forEach(checkDraws);
 const withSpell=recruits.filter(m=>m.spells.length&&!m.generationTrace.mageSpell).length;
-assert.ok(withSpell>350&&withSpell<800,"aujourd'hui (Vie, Feu, Eau, Transmutation, Foudre, Télékinésie et Illusion écrits) : environ deux recrues sur cinq tirent un sort ("+withSpell+")");
+// Les neuf écoles sont écrites (catalogue validé le 2026-10-31) : environ une recrue sur deux tire un sort (de 740 à 816
+// sur 1 500 selon le tirage).
+assert.ok(withSpell>650&&withSpell<900,"environ une recrue sur deux tire un sort ("+withSpell+")");
 // Rattrapage : tout Mage connaît au moins un sort ; seuls les Mages sans tirage réussi en reçoivent un.
 assert.ok(recruits.filter(m=>m.domain==="magic").every(m=>m.spells.length>0),"pas de Mage sans sort");
 assert.ok(recruits.every(m=>!m.generationTrace.mageSpell||(m.domain==="magic"&&m.spells.length===1)));

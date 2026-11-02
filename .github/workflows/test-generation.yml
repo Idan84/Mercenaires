@@ -15,6 +15,7 @@ jobs:
           node-version: 22
       - run: node tests/generation.test.js
       - run: node tests/combat.test.js
+      - run: node tests/combat-styles.test.js
       - run: node tests/tavern.test.js
       - run: node tests/tavern-home-ui.test.js
       - run: node tests/music-ui.test.js

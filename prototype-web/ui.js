@@ -672,7 +672,7 @@ function renderDamageCard(c) {
   const type = t => esc(t.type.toLowerCase());
   const row = (name, cell, span) => `<tr><th scope="row">${attackTip(name, span)}</th>${strikes.map(s => `<td>${cell(s)}</td>`).join("")}</tr>`;
   return `<section class="gear-card gear-damage"><h4>Dégâts</h4><table class="gear-damage-table">
-    <thead><tr><td></td>${strikes.map(s => `<th scope="col"><small>Set ${s.set}${s.hand === "off" ? " · main secondaire" : ""}</small><strong>${esc(s.name)}</strong></th>`).join("")}</tr></thead>
+    <thead><tr><td></td>${strikes.map(s => `<th scope="col"><small>Set ${s.set}${s.hand === "off" ? " · main secondaire" : s.twoHands ? " · à deux mains" : ""}</small><strong>${esc(s.name)}</strong></th>`).join("")}</tr></thead>
     <tbody>
       ${row("Précision", s => `<b>${Math.round(s.precision)}</b>`)}
       ${row("Puissance", s => `<b>${Math.round(s.power)}</b>`)}
@@ -1031,10 +1031,10 @@ function sheetEquippedValue(m,name){
 // Charisme (pas encore joués au combat).
 function equipmentDetail(effect,total="Au combat"){
   if(!effect?.lines.length) return "";
-  const note={weight:"poids, réduit par la maîtrise",armor:"handicap de l’armure",armorElement:"protection de l’armure",helmet:"poids du casque",speed:"avec l’équipement",dual:"une arme dans chaque main"};
+  const note={weight:"poids, réduit par la maîtrise",armor:"handicap de l’armure",armorElement:"protection de l’armure",helmet:"poids du casque",speed:"avec l’équipement",dual:"une arme dans chaque main",style:"arme tenue seule, la main libre"};
   const line=l=>{
     const delta=Math.round(l.delta);
-    return `<span class="sheet-gear-line"><span>${esc(l.label)}<small>${esc(l.reason==="gear"?(l.points!=null?`+${l.points} points`:`${l.percent<0?"−":"+"}${Math.abs(l.percent)} % de la valeur de base`):note[l.reason]||"")}${l.twoHands?" · à deux mains ÷2":""}</small></span><b class="${delta<0?"is-malus":delta>0?"is-bonus":""}">${delta>0?"+":""}${fmt(delta)}</b></span>`;
+    return `<span class="sheet-gear-line"><span>${esc(l.label)}<small>${esc(l.reason==="gear"?(l.points!=null?`+${l.points} points`:`${l.percent<0?"−":"+"}${Math.abs(l.percent)} % de la valeur de base`):note[l.reason]||"")}</small></span><b class="${delta<0?"is-malus":delta>0?"is-bonus":""}">${delta>0?"+":""}${fmt(delta)}</b></span>`;
   };
   return `<span class="sheet-gear-detail">
     <span class="sheet-stat-pop-title">Avec l’équipement</span>

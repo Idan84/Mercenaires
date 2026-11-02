@@ -242,20 +242,19 @@
       "Lames longues",
       "Lames courtes",
       "Armes d’hast",
-      "Armes naturelles",
       "Armes flexibles ou articulées",
       "Haches",
       "Bâtons",
       "Armes contondantes"
     ],
     "style": [
-      "Combat à mains nues",
+      "Combat à une main",
       "Combat à deux armes",
       "Combat à deux mains",
       "Boucliers"
     ],
     "styles_de_combat": [
-      "Combat à mains nues",
+      "Combat à une main",
       "Combat à deux armes",
       "Combat à deux mains",
       "Boucliers"

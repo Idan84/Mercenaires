@@ -1784,6 +1784,16 @@ body[data-screen="camp"] > .app-shell { position: relative; z-index: 1; }
 .captain-avatar-choice:hover,.captain-avatar-choice:focus-visible{border-color:#edc983;outline:none}
 .captain-avatar-choice.is-selected{border-color:#ffd582;box-shadow:0 0 0 2px rgba(255,213,130,.2)}
 .wizard-detail-panel:has(.avatar-frame--detail) .avatar-frame{margin:18px auto 0;max-height:380px}
+/* Étape Portrait sur ordinateur (Idan, 2026-11-02 : « Pourquoi l'avatar plein pied n'est pas plus grand et pourquoi une
+   scroll bar à droite ? ») : la liste remplit son panneau au lieu de 55vh (elle débordait de quelques pixels et faisait
+   défiler toute l'étape), et le portrait en pied prend la hauteur du panneau, entier. */
+@media (min-width: 941px){
+  .wizard-layout:has(.captain-avatar-groups){height:100%;grid-template-rows:minmax(0,1fr)}
+  .wizard-options-panel:has(.captain-avatar-groups){display:flex;flex-direction:column;min-height:0}
+  .wizard-options-panel .captain-avatar-groups{flex:1;min-height:0;max-height:none}
+  .wizard-detail-panel:has(.avatar-frame--detail){min-height:0;align-items:center;justify-content:center}
+  .wizard-detail-panel:has(.avatar-frame--detail) .avatar-frame{margin:0;width:auto;height:100%;max-height:100%;max-width:100%}
+}
 
 
 /* Taverne (Idan, 2026-10-21) : deux boutons à gauche, de la taille de ceux du camp ; une bulle posée sur le

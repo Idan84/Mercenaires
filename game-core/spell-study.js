@@ -19,6 +19,10 @@
 // - Sortir avant la fin : le manuel est perdu, rien n'est acquis.
 // - Affinité avec le capitaine : l'élève +5 s'il accepte, −2 s'il refuse, +10 quand il connaît le sort, −10 si on le
 //   fait sortir ; le professeur +3 s'il accepte, −2 s'il refuse, +5 quand l'élève connaît le sort, −3 si on le libère.
+// - Perfectionner un sort (Idan, 2026-11-02 : « consommer des manuels contre de l'xp de sort ») : un manuel du même sort,
+//   sans test ; le manuel est détruit, il passe une journée dans la salle de l'école du sort (une place prise, au camp)
+//   et gagne le lendemain matin 1 000 × Intelligence / 50 × (1 + 0,1 × niveau de la salle) × (1 + Transmission du
+//   savoir du directeur / 100) XP de sort, jusqu'au niveau 100 ; affinité +2.
 // Constantes : formula-constants.json (spell_study.*). Doc 11 §7 et doc 12.
 (function(root,factory){
   const node=typeof module!=="undefined"&&module.exports;
@@ -49,10 +53,13 @@
       directorDivisor:k("spell_study.daily.director_divisor",10),teacherDivisor:k("spell_study.daily.teacher_divisor",5),
       transmissionDivisor:k("spell_study.teacher.transmission_divisor",100),maxLevel:k("spell_study.max_level",100),
       teacherXp:k("spell_study.xp.teacher_transmission",5),directorXp:k("school.training.director_transmission_xp",5),
+      perfectXp:k("spell_study.perfect.base_xp",1000),perfectIntelligence:k("spell_study.perfect.intelligence_divisor",50),
+      perfectRoom:k("spell_study.perfect.room_bonus",0.1),perfectTransmission:k("spell_study.perfect.transmission_divisor",100),
       affinity:{accept:k("spell_study.affinity.accept",5),refuse:k("spell_study.affinity.refuse",-2),
         learned:k("spell_study.affinity.learned",10),stopped:k("spell_study.affinity.stopped",-10),
         teacherAccept:k("spell_study.affinity.teacher_accept",3),teacherRefuse:k("spell_study.affinity.teacher_refuse",-2),
-        teacherLearned:k("spell_study.affinity.teacher_learned",5),teacherReleased:k("spell_study.affinity.teacher_released",-3)}
+        teacherLearned:k("spell_study.affinity.teacher_learned",5),teacherReleased:k("spell_study.affinity.teacher_released",-3),
+        perfect:k("spell_study.affinity.perfect",2)}
     };
     const manuals=Manuals.createManualRules({reference});
     const rosterOf=state=>state?.company?.roster||[];
@@ -74,8 +81,10 @@
     const studyOf=(state,mercenaryId)=>studiesOf(state).find(s=>s.studentId===mercenaryId)||null;
     const teachingOf=(state,mercenaryId)=>studiesOf(state).find(s=>s.teacherId!=null&&s.teacherId===mercenaryId)||null;
     // Retenu à l'École (élève ou professeur) : la raison, ou null.
+    const isPerfect=study=>study?.kind==="perfect";
     function busyReason(state,mercenaryId){
-      if(studyOf(state,mercenaryId)) return "Il apprend un sort à l’École de magie.";
+      const own=studyOf(state,mercenaryId);
+      if(own) return isPerfect(own)?"Il perfectionne un sort à l’École de magie.":"Il apprend un sort à l’École de magie.";
       if(teachingOf(state,mercenaryId)) return "Il enseigne un sort à l’École de magie.";
       return null;
     }
@@ -142,6 +151,43 @@
       return {ok:true,accepted:true,chance,roll:captain?null:dice,affinityDelta,mercenary:m,spell,room,study};
     }
 
+    // Perfectionner : un manuel du même sort, une journée dans la salle, sans test.
+    function canPerfect(state,m,item){
+      const spell=manuals.spellOf(item);
+      if(!spell) return no("Ce n’est pas un manuel de sort.");
+      if(!m) return no("Mercenaire introuvable.");
+      const known=(m.spells||[]).find(s=>s.code===spell.code);
+      if(!known) return no("Il ne connaît pas ce sort.");
+      if(camp.expeditionOf(state,m.id)) return no(camp.expeditionOf(state,m.id).status==="scheduled"?"Il part en mission demain.":"Il est en mission.");
+      const busy=busyReason(state,m.id);
+      if(busy) return no(busy);
+      if((Number(known.mastery)||0)>=C.maxLevel) return no("Il maîtrise déjà ce sort au plus haut.");
+      const room=roomFor(spell);
+      if(!room||!(camp.buildingLevel(state,room.code)>0)) return no("Il faut d’abord construire la "+(room?.name||"salle de cette école")+".");
+      if(learnersIn(state,room.code)>=camp.buildingPlaces(state,room.code)) return no("La "+room.name+" n’a plus de place.");
+      return {ok:true,spell,room,known};
+    }
+    // L'XP qu'il gagnera demain matin (salle et directeur d'aujourd'hui).
+    function perfectXp(state,m,roomCode){
+      const director=camp.directorOf(state);
+      const transmission=director?1+transmissionOf(director)/C.perfectTransmission:1;
+      return Math.round(C.perfectXp*stat(m,"Intelligence")/C.perfectIntelligence*(1+C.perfectRoom*camp.buildingLevel(state,roomCode))*transmission);
+    }
+    function perfect(state,mercenaryId,itemId){
+      const item=(state.company.stock||[]).find(i=>String(i.id)===String(itemId));
+      if(!item) return no("Manuel introuvable à l’Intendance.");
+      const m=memberOf(state,mercenaryId);
+      const check=canPerfect(state,m,item);
+      if(!check.ok) return check;
+      const {spell,room}=check;
+      state.company.stock=(state.company.stock||[]).filter(i=>i!==item);
+      const study={id:"perfect-"+state.day+"-"+m.id,kind:"perfect",studentId:m.id,spellCode:spell.code,spellName:spell.nom,
+        school:spell.ecole,room:room.code,startDay:state.day,days:0,teacherId:null};
+      studiesOf(state).push(study);
+      const affinityDelta=shiftAffinity(state,m,C.affinity.perfect);
+      return {ok:true,mercenary:m,spell,room,study,xp:perfectXp(state,m,room.code),affinityDelta};
+    }
+
     // Le test du matin : la chance (en %) et son détail.
     function dailyChance(state,study){
       const m=memberOf(state,study.studentId);
@@ -173,9 +219,22 @@
       const studies=studiesOf(state);
       const learned=[],tested=[];
       const director=camp.directorOf(state);
+      const perfected=[];
       for(const study of [...studies]){
         const m=memberOf(state,study.studentId);
         if(!m){ studies.splice(studies.indexOf(study),1); continue; }
+        // Perfectionner : la journée est passée, l'XP tombe ce matin.
+        if(isPerfect(study)){
+          const known=(m.spells||[]).find(s=>s.code===study.spellCode);
+          const before=Number(known?.mastery)||0;
+          const xp=perfectXp(state,m,study.room);
+          if(known&&progression) progression.apply(m,{spells:{[study.spellCode]:xp}});
+          const after=Number(known?.mastery)||before;
+          studies.splice(studies.indexOf(study),1);
+          History.record(m,state.day,"perfect",{spell:study.spellName,xp,before:Math.floor(before),after:Math.floor(after)});
+          perfected.push({study,mercenary:m,xp,before,after});
+          continue;
+        }
         if(study.teacherId!=null&&!memberOf(state,study.teacherId)) study.teacherId=null;
         const teacher=study.teacherId==null?null:memberOf(state,study.teacherId);
         study.days+=1;
@@ -193,15 +252,16 @@
         if(teacher) History.record(teacher,state.day,"teach_done",{spell:study.spellName,student:m.name});
         learned.push({study,mercenary:m,teacher,level,days:study.days,affinityDelta,teacherDelta});
       }
-      const learners=studies.length+learned.length;
+      const learners=studies.length+learned.length+perfected.length;
       const directorXp=director&&learners?C.directorXp*learners:0;
       if(director&&progression&&directorXp>0) progression.apply(director,{skills:{camp:{[TRANSMISSION]:directorXp}}});
-      return {learned,tested,directorXp};
+      return {learned,tested,perfected,directorXp};
     }
 
     // Professeurs possibles : au camp, connaissent le sort, ni l'élève, ni déjà pris par l'École.
     function canTeach(state,study,t){
       if(!study) return no("Apprentissage introuvable.");
+      if(isPerfect(study)) return no("Pas de professeur pour perfectionner un sort.");
       if(!t) return no("Mercenaire introuvable.");
       if(study.teacherId!=null) return no("Il a déjà un professeur.");
       if(t.id===study.studentId) return no("Il ne peut pas s’enseigner le sort.");
@@ -255,7 +315,7 @@
       return {ok:true,mercenary:m,affinityDelta,study};
     }
 
-    return {constants:C,studiesOf,studyById,studyOf,teachingOf,busyReason,learnersIn,canStudy,offerChance,offer,dailyChance,
+    return {constants:C,studiesOf,studyById,studyOf,teachingOf,busyReason,learnersIn,canStudy,offerChance,offer,canPerfect,perfectXp,perfect,dailyChance,
       learnedLevel,advance,canTeach,teachChance,offerTeacher,releaseTeacher,stop};
   }
 

@@ -41,7 +41,8 @@ function rosterStatus(c){
   if(game.campaign&&game.campaign.company.medicId!=null&&c.id===game.campaign.company.medicId) return {kind:"steward",label:"Médecin"};
   // À l'École de magie, jusqu'à ce que l'élève connaisse son sort (Idan, 2026-11-02).
   const studying=game.campaign&&typeof campaignRules==="function"&&campaignRules().spellStudy?campaignRules().spellStudy:null;
-  if(studying?.studyOf(game.campaign,c.id)) return {kind:"steward",label:"Apprend un sort"};
+  const own=studying?.studyOf(game.campaign,c.id);
+  if(own) return {kind:"steward",label:own.kind==="perfect"?"Perfectionne un sort":"Apprend un sort"};
   if(studying?.teachingOf(game.campaign,c.id)) return {kind:"steward",label:"Enseigne un sort"};
   // Le directeur de l'École de magie reste au camp, à l'École (Idan, 2026-11-01).
   if(game.campaign&&game.campaign.company.directorId!=null&&c.id===game.campaign.company.directorId) return {kind:"steward",label:String(c.sex||"").toLowerCase().startsWith("f")?"Directrice":"Directeur"};
@@ -1268,7 +1269,7 @@ function renderCampTab(c){
   // Apprentissage des sorts (Idan, 2026-11-02) : élève ou professeur, il est à l'École jusqu'à la fin.
   const study=rules?.spellStudy&&game.campaign.company.roster.includes(c)?rules.spellStudy.studyOf(game.campaign,c.id):null;
   const teaching=rules?.spellStudy&&!study&&game.campaign.company.roster.includes(c)?rules.spellStudy.teachingOf(game.campaign,c.id):null;
-  const today=study?predilectionCard("Aujourd’hui",`Apprend ${study.spellName}`,`jour ${fmt(study.days+1)}`)
+  const today=study?predilectionCard("Aujourd’hui",`${study.kind==="perfect"?"Perfectionne":"Apprend"} ${study.spellName}`,study.kind==="perfect"?"":`jour ${fmt(study.days+1)}`)
     :teaching?predilectionCard("Aujourd’hui",`Enseigne ${teaching.spellName}`,`jour ${fmt(teaching.days+1)}`)
     :day?predilectionCard("Aujourd’hui",room?(room.school?room.name:"Salle généraliste"):entry?"À la taverne":status.label,room?`+${fmt(entry.xp)} XP`:""):"";
   return `<section class="sheet-skills sheet-camp">
@@ -1322,6 +1323,7 @@ function historyEntryText(c,entry){
   if(entry.kind==="study") return fill(copy.study?.[entry.accepted?"accord":"refus"],{sort:entry.spell||""});
   if(entry.kind==="study_done") return fill(copy.study_done,{sort:entry.spell||"",niveau:fmt(entry.level||1),jours:historyPlural(entry.days||0,"jour","jours")});
   if(entry.kind==="study_stopped") return fill(copy.study_stopped,{sort:entry.spell||""});
+  if(entry.kind==="perfect") return fill(copy.perfect,{sort:entry.spell||"",avant:fmt(entry.before||0),apres:fmt(entry.after||0)});
   if(entry.kind==="teach") return fill(copy.teach?.[entry.accepted?"accord":"refus"],{sort:entry.spell||"",eleve:entry.student||""});
   if(entry.kind==="teach_done") return fill(copy.teach_done,{sort:entry.spell||"",eleve:entry.student||""});
   if(entry.kind==="lieutenant") return fill(copy.lieutenant?.[entry.accepted?"accord":"refus"],{salaire:fmt(entry.salary||0)});

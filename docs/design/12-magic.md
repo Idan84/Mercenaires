@@ -597,6 +597,21 @@ règles `game-core/spell-study.js`, constantes `spell_study.*`, interface `proto
   Enseigne <sort> » ; journal du matin : « … connaît désormais <sort> (niveau 3), après 6 jours. » ; historique.
 - Tests : `tests/spell-study.test.js`.
 
+**Perfectionner un sort à l'École** (Idan, 2026-11-02 : « consommer des manuels contre de l'xp de sort » ; « le même
+sort », « une journée à l'école » ; règles `game-core/spell-study.js`, constantes `spell_study.perfect.*`) :
+
+- **Un manuel du même sort**, pour un membre qui le **connaît déjà** : dans « Apprendre à… », il voit « Perfectionner »
+  (avec l'XP qu'il gagnera). **Pas de test** ; affinité avec le capitaine **+2**. Il faut la **salle de l'école du sort**
+  avec une place libre ; pas pour un sort déjà au niveau 100.
+- **Une journée à l'École** : le manuel est détruit ; il passe la journée dans la salle (une place prise, ni mission, ni
+  garde du corps, ni entraînement libre) ; l'XP tombe **le lendemain matin**, puis il sort.
+- **XP du sort = 1 000 × Intelligence / 50 × (1 + 0,1 × niveau de la salle) × (1 + Transmission du savoir du directeur /
+  100)**, jusqu'au niveau 100. Intelligence 54, salle 3, sans directeur : **1 404 XP** (≈ 78 lancers) ; un sort passe du
+  niveau 1 à 11, de 10 à 15, de 20 à 23, de 50 à 51, de 90 à 90,8 ; avec un directeur à 48 de Transmission : 2 078 XP.
+- Interface : la ligne de l'élève dans « Apprentissages » (« perfectionne (+1 404 XP demain) ») ; statut « Perfectionne un
+  sort » ; journal du matin (« … perfectionne Boule de feu : niveau 20 → 23 (+1 404 XP). ») ; historique.
+- Tests : `tests/spell-perfect.test.js`.
+
 ### Mise en place
 
 1. **Étape 1** — ces décisions, `spells.json`, les règles des sorts (`game-core/magic.js`) et leurs tests (`tests/magic.test.js`) : Soin rapide, puis les six sorts de l'école de la Vie.

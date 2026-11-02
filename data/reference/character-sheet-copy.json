@@ -388,6 +388,7 @@
       },
       "study_done": "Connaît désormais {sort} (niveau {niveau}), après {jours} à l’École.",
       "study_stopped": "Quitte l’École sans avoir appris {sort}.",
+      "perfect": "Perfectionne {sort} à l’École : niveau {avant} → {apres}.",
       "teach": {
         "accord": "Accepte d’enseigner {sort} à {eleve}.",
         "refus": "Refuse d’enseigner {sort} à {eleve}."

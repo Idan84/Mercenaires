@@ -1256,15 +1256,22 @@ function renderCampTab(c){
   const crafts=rated("craft",skillChildren("Artisanat"));
   const line=(group,x,child=false)=>`<div class="sheet-skill${child?" sheet-skill--child":""}"${skillLevelStyle(x.v)}>${skillName(x.n)}${skillValueCell(c,group,x.n)}</div>`;
   const craft=rated("camp",["Artisanat"])[0];
+  // Entraînement libre (Idan, 2026-11-02) : ce qu'il fait aujourd'hui, une fois l'École de magie construite.
+  const rules=game.campaign&&typeof campaignRules==="function"?campaignRules():null;
+  const day=rules?.schoolDayOf&&game.campaign.company.roster.includes(c)?rules.schoolDayOf(game.campaign):null;
+  const entry=day?day.entries.find(e=>e.id===c.id):null;
+  const room=entry?.code?rules.schoolRooms(game.campaign).find(r=>r.code===entry.code):null;
+  const today=day?predilectionCard("Aujourd’hui",room?(room.school?room.name:"Salle généraliste"):entry?"À la taverne":status.label,room?`+${fmt(entry.xp)} XP`:""):"";
   return `<section class="sheet-skills sheet-camp">
     <aside class="sheet-portrait">
       ${renderEvaluation(c)}${renderAvatar(c,{variant:"detail",kind:"full"})}
       <em class="roster-status roster-status--${status.kind}">${esc(status.label)}</em>
     </aside>
     <div class="sheet-skills-main">
-      <div class="sheet-predilections">
+      <div class="sheet-predilections${today?" sheet-predilections--3":""}">
         ${predilectionCard("Point fort au camp",camp[0]?.n,camp[0]?fmt(camp[0].v):"")}
         ${predilectionCard("Meilleur métier",crafts[0]?.n,crafts[0]?fmt(crafts[0].v):"")}
+        ${today}
       </div>
       <div class="sheet-skill-columns sheet-camp-columns">
         <section class="sheet-skill-column"><h4>Camp</h4>${rated("camp",CAMP_SKILLS).map(x=>line("camp",x)).join("")}</section>

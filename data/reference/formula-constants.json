@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 266,
+  "row_count": 280,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -2160,6 +2160,118 @@
       "description": "Médecin (Idan, 2026-11-01) : XP de Médecine du médecin à chaque blessé guéri pendant qu’il est en poste, par jour que la blessure a duré.",
       "formule": "Médecin",
       "valeur": 10,
+      "version": "V1"
+    },
+    {
+      "nom": "Entraînement — pente du test",
+      "code": "school.training.chance_slope",
+      "description": "Entraînement libre (Idan, 2026-11-02) : chance de prendre la place visée = 100 / (1 + e^(−Δ / cette pente)) %, avec Δ = (Volonté − 50) / 2 + (meilleure école − 70) + Charisme du directeur / 10 + affinité avec le directeur / 10.",
+      "formule": "Entraînement libre à l’École de magie",
+      "valeur": 15,
+      "version": "V1"
+    },
+    {
+      "nom": "Entraînement — chance minimale",
+      "code": "school.training.chance_min",
+      "description": "Entraînement libre (Idan, 2026-11-02) : la chance de prendre une place ne descend pas sous ce pourcentage.",
+      "formule": "Entraînement libre à l’École de magie",
+      "valeur": 2,
+      "version": "V1"
+    },
+    {
+      "nom": "Entraînement — chance maximale",
+      "code": "school.training.chance_max",
+      "description": "Entraînement libre (Idan, 2026-11-02) : la chance de prendre une place ne dépasse pas ce pourcentage.",
+      "formule": "Entraînement libre à l’École de magie",
+      "valeur": 95,
+      "version": "V1"
+    },
+    {
+      "nom": "Entraînement — Volonté de référence",
+      "code": "school.training.will_center",
+      "description": "Entraînement libre (Idan, 2026-11-02) : dans Δ, (Volonté − cette valeur) / diviseur.",
+      "formule": "Entraînement libre à l’École de magie",
+      "valeur": 50,
+      "version": "V1"
+    },
+    {
+      "nom": "Entraînement — diviseur de la Volonté",
+      "code": "school.training.will_divisor",
+      "description": "Entraînement libre (Idan, 2026-11-02) : dans Δ, (Volonté − 50) / ce diviseur.",
+      "formule": "Entraînement libre à l’École de magie",
+      "valeur": 2,
+      "version": "V1"
+    },
+    {
+      "nom": "Entraînement — école de référence",
+      "code": "school.training.school_center",
+      "description": "Entraînement libre (Idan, 2026-11-02) : dans Δ, meilleure école − cette valeur (meilleure école d’une recrue : 78 en médiane).",
+      "formule": "Entraînement libre à l’École de magie",
+      "valeur": 70,
+      "version": "V1"
+    },
+    {
+      "nom": "Entraînement — Charisme du directeur",
+      "code": "school.training.director_charisma_divisor",
+      "description": "Entraînement libre (Idan, 2026-11-02) : dans Δ, + Charisme du directeur de l’École / ce diviseur.",
+      "formule": "Entraînement libre à l’École de magie",
+      "valeur": 10,
+      "version": "V1"
+    },
+    {
+      "nom": "Entraînement — affinité avec le directeur",
+      "code": "school.training.director_affinity_divisor",
+      "description": "Entraînement libre (Idan, 2026-11-02) : dans Δ, + affinité du mercenaire envers le directeur (−100 à +100, calculée comme avec le capitaine) / ce diviseur.",
+      "formule": "Entraînement libre à l’École de magie",
+      "valeur": 10,
+      "version": "V1"
+    },
+    {
+      "nom": "Entraînement — XP de base par jour",
+      "code": "school.training.base_xp",
+      "description": "Entraînement libre (Idan, 2026-11-02) : XP par jour = cette base × Intelligence / 50 × (1 + 0,1 × niveau de la salle) × (1 + niveau du directeur / 100) × (1 + Transmission du savoir du directeur / 100).",
+      "formule": "Entraînement libre à l’École de magie",
+      "valeur": 20,
+      "version": "V1"
+    },
+    {
+      "nom": "Entraînement — Intelligence de référence",
+      "code": "school.training.intelligence_divisor",
+      "description": "Entraînement libre (Idan, 2026-11-02) : XP par jour × Intelligence de l’élève / ce diviseur.",
+      "formule": "Entraînement libre à l’École de magie",
+      "valeur": 50,
+      "version": "V1"
+    },
+    {
+      "nom": "Entraînement — bonus par niveau de salle",
+      "code": "school.training.room_level_bonus",
+      "description": "Entraînement libre (Idan, 2026-11-02) : XP par jour × (1 + cette part × niveau de la salle ; salle généraliste : niveau de l’École).",
+      "formule": "Entraînement libre à l’École de magie",
+      "valeur": 0.1,
+      "version": "V1"
+    },
+    {
+      "nom": "Entraînement — niveau du directeur",
+      "code": "school.training.director_level_divisor",
+      "description": "Entraînement libre (Idan, 2026-11-02) : XP par jour × (1 + niveau du directeur / ce diviseur) : son niveau dans l’école de la salle, sa Puissance magique dans la salle généraliste ; 1 sans directeur.",
+      "formule": "Entraînement libre à l’École de magie",
+      "valeur": 100,
+      "version": "V1"
+    },
+    {
+      "nom": "Entraînement — Transmission du savoir",
+      "code": "school.training.transmission_divisor",
+      "description": "Entraînement libre (Idan, 2026-11-02) : XP par jour × (1 + Transmission du savoir du directeur / ce diviseur) ; 1 sans directeur.",
+      "formule": "Entraînement libre à l’École de magie",
+      "valeur": 100,
+      "version": "V1"
+    },
+    {
+      "nom": "Entraînement — XP du directeur",
+      "code": "school.training.director_transmission_xp",
+      "description": "Entraînement libre (Idan, 2026-11-02) : XP de Transmission du savoir gagnée par le directeur de l’École, par élève et par jour.",
+      "formule": "Entraînement libre à l’École de magie",
+      "valeur": 5,
       "version": "V1"
     }
   ]

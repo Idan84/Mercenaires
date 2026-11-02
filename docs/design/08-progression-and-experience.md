@@ -210,6 +210,11 @@ L’XP choisie permet au joueur d’orienter volontairement la progression d’u
 
 La qualité/niveau de la salle pourra servir de multiplicateur ou modificateur de formation. Les valeurs exactes restent à équilibrer.
 
+**Entraînement libre à l'École de magie** (Idan, 2026-11-02 ; doc 11 §7) : premier entraînement au camp en jeu. Chaque
+jour, les mercenaires disponibles vont d'eux-mêmes à l'École selon les places, leur Volonté, leur meilleure école et le
+directeur ; ils gagnent de l'XP d'école (écoles opposées −¼ chacune) ou de Puissance magique, selon leur Intelligence, le
+niveau de la salle, le niveau et la Transmission du savoir du directeur.
+
 ## 4 — Principe de conception
 
 > Un mercenaire progresse naturellement parce qu’il **vit certaines situations**, et progresse volontairement parce que le joueur accepte de **sacrifier une semaine de disponibilité et de l’argent pour le former**.

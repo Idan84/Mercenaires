@@ -60,7 +60,7 @@ function offerSpellStudy(memberId,itemId){
   saveGame();
   renderGame();
   if(m.id===game.campaign.company.captainId){
-    tavernLog(`Le capitaine entre à la ${result.room.name} pour apprendre ${result.spell.nom}.`,"gear");
+    tavernLog(`Le capitaine entrera demain matin à la ${result.room.name} pour apprendre ${result.spell.nom}.`,"gear");
     return;
   }
   openStudyAnswer(m,"offer",result,{sort:result.spell.nom,salle:result.room.name});
@@ -71,7 +71,7 @@ function perfectSpell(memberId,itemId){
   if(!m) return;
   const result=spellStudyRules().perfect(game.campaign,m.id,itemId);
   if(!result.ok){ tavernLog(result.reason,"warn"); return; }
-  tavernLog(`${m.name} passe la journée à la ${result.room.name} pour perfectionner ${result.spell.nom} (+${fmt(result.xp)} XP demain matin).`,"gear");
+  tavernLog(`${m.name} passera demain la journée à la ${result.room.name} pour perfectionner ${result.spell.nom} (+${fmt(result.xp)} XP le surlendemain matin).`,"gear");
   saveGame();
   renderGame();
 }
@@ -84,7 +84,7 @@ function offerStudyTeacher(studyId,teacherId){
   renderGame();
   const vars={sort:result.study.spellName,eleve:MercenairesRecruitDialogue.firstName(result.student)};
   if(t.id===game.campaign.company.captainId){
-    tavernLog(`Le capitaine enseigne ${vars.sort} à ${result.student.name}.`,"gear");
+    tavernLog(`Dès demain matin, le capitaine enseigne ${vars.sort} à ${result.student.name}.`,"gear");
     return;
   }
   openStudyAnswer(t,"teacher",result,vars);
@@ -100,10 +100,13 @@ function stopSpellStudy(studyId){
   const study=spellStudyRules().studyById(game.campaign,studyId);
   const m=study?studyMember(study.studentId):null;
   if(!study||!m) return;
-  if(typeof confirm==="function"&&!confirm(`Faire sortir ${m.name} de l’École ? Le manuel de ${study.spellName} est perdu et rien n’est acquis.`)) return;
+  // Pas encore entré (au jour J, on organise J+1) : on change d'avis, le manuel revient.
+  const planned=spellStudyRules().isPlanned(study);
+  if(!planned&&typeof confirm==="function"&&!confirm(`Faire sortir ${m.name} de l’École ? Le manuel de ${study.spellName} est perdu et rien n’est acquis.`)) return;
   const result=spellStudyRules().stop(game.campaign,studyId);
   if(!result.ok){ tavernLog(result.reason,"warn"); return; }
-  tavernLog(`${m.name} sort de l’École sans avoir appris ${study.spellName}.`,"bad");
+  tavernLog(planned?`${m.name} n’entrera pas à l’École : le manuel de ${study.spellName} revient à l’Intendance.`
+    :`${m.name} sort de l’École sans avoir appris ${study.spellName}.`,planned?"info":"bad");
   saveGame();
   renderGame();
 }
@@ -117,15 +120,19 @@ function studyListHtml(c){
     const m=c.company.roster.find(x=>x.id===study.studentId);
     if(!m) return "";
     const room=campaignRules().campBuildingRow(study.room);
-    // Perfectionner : une journée, l'XP demain matin ; ni professeur ni sortie.
+    // Au jour J, on organise J+1 : inscrit pour demain, on peut encore annuler (le manuel revient).
+    const planned=rules.isPlanned(study);
+    const cancel=`<button type="button" class="secondary" data-study-stop="${esc(study.id)}" title="Il n’est pas encore entré : le manuel revient à l’Intendance.">Annuler</button>`;
+    // Perfectionner : une journée, l'XP le matin suivant ; ni professeur ni sortie.
     if(study.kind==="perfect") return `<div class="study-row">
-        <div class="building-info"><strong>${esc(m.name)}</strong><span>${esc(study.spellName)} · ${esc(room?.nom||"")} · perfectionne (+${fmt(rules.perfectXp(c,m,study.room))} XP demain)</span></div>
+        <div class="building-info"><strong>${esc(m.name)}</strong><span>${esc(study.spellName)} · ${esc(room?.nom||"")} · ${planned?"perfectionne, entre demain matin":`perfectionne (+${fmt(rules.perfectXp(c,m,study.room))} XP demain)`}</span></div>
+        ${planned?`<div class="study-actions">${cancel}</div>`:""}
       </div>`;
     const chance=Math.round(rules.dailyChance(c,study).chance);
     const teacher=study.teacherId==null?null:c.company.roster.find(x=>x.id===study.teacherId);
     let teach;
     if(teacher){
-      teach=`<span class="study-teacher">Professeur : ${esc(teacher.name)}</span><button type="button" class="secondary" data-study-release="${esc(study.id)}">Libérer</button>`;
+      teach=`<span class="study-teacher">Professeur : ${esc(teacher.name)}${study.teacherStarted===false?" (dès demain)":""}</span><button type="button" class="secondary" data-study-release="${esc(study.id)}">Libérer</button>`;
     }else{
       // Ceux qui connaissent le sort et sont au camp ; déjà sollicités aujourd'hui : grisés.
       const picks=c.company.roster.filter(t=>{ const check=rules.canTeach(c,study,t); return check.ok||check.reason==="Vous lui en avez déjà parlé aujourd’hui."; });
@@ -138,8 +145,10 @@ function studyListHtml(c){
         :`<span class="study-teacher study-teacher--none">Personne ne connaît ce sort</span>`;
     }
     return `<div class="study-row">
-        <div class="building-info"><strong>${esc(m.name)}</strong><span title="Chance de le savoir demain matin : ${fmt(chance)} %">${esc(study.spellName)} · ${esc(room?.nom||"")} · jour ${fmt(study.days+1)}</span></div>
-        <div class="study-actions">${teach}<button type="button" class="secondary" data-study-stop="${esc(study.id)}" title="Le manuel est perdu et rien n’est acquis.">Le faire sortir</button></div>
+        <div class="building-info"><strong>${esc(m.name)}</strong>${planned
+          ?`<span>${esc(study.spellName)} · ${esc(room?.nom||"")} · entre demain matin</span>`
+          :`<span title="Chance de le savoir demain matin : ${fmt(chance)} %">${esc(study.spellName)} · ${esc(room?.nom||"")} · jour ${fmt(study.days+1)}</span>`}</div>
+        <div class="study-actions">${teach}${planned?cancel:`<button type="button" class="secondary" data-study-stop="${esc(study.id)}" title="Le manuel est perdu et rien n’est acquis.">Le faire sortir</button>`}</div>
       </div>`;
   }).join("");
   return `<div class="study-list"><h4>Apprentissages</h4>${rows}</div>`;
@@ -147,6 +156,10 @@ function studyListHtml(c){
 
 // Journal du matin : les sorts appris.
 function logSpellStudy(report){
+  for(const go of report?.started||[]){
+    const room=campaignRules().campBuildingRow(go.study.room)?.nom||"l’École";
+    tavernLog(`${go.mercenary.name} entre à la ${room} pour ${go.study.kind==="perfect"?"perfectionner":"apprendre"} ${go.study.spellName}.`,"turn");
+  }
   for(const done of report?.perfected||[]){
     tavernLog(`${done.mercenary.name} perfectionne ${done.study.spellName} : niveau ${fmt(Math.floor(done.before))} → ${fmt(Math.floor(done.after))} (+${fmt(done.xp)} XP).`,"turn");
   }

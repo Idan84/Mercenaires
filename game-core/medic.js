@@ -46,6 +46,7 @@
       if(!m) return no("Mercenaire introuvable.");
       if(!(dispensaryLevel(state)>0)) return no("Il faut d’abord construire le Dispensaire.");
       if(m.id===state.company.captainId) return no("Le capitaine ne peut pas être médecin.");
+      if(Number(m.contract?.joinDay)>state.day) return no("Il rejoint la compagnie demain matin.");
       if((state.company.lieutenantIds||[]).includes(m.id)) return no("Un lieutenant ne peut pas être médecin.");
       if(m.id===state.company.intendantId) return no("L’intendant ne peut pas être médecin.");
       if(state.company.directorId!=null&&m.id===state.company.directorId) return no("Le directeur de l’École ne peut pas être médecin.");

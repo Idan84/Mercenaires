@@ -23,6 +23,10 @@
 //   sans test ; le manuel est détruit, il passe une journée dans la salle de l'école du sort (une place prise, au camp)
 //   et gagne le lendemain matin 1 000 × Intelligence / 50 × (1 + 0,1 × niveau de la salle) × (1 + Transmission du
 //   savoir du directeur / 100) XP de sort, jusqu'au niveau 100 ; affinité +2.
+// - Au jour J, on organise J+1 (Idan, 2026-11-02) : à l'accord, il est inscrit pour le lendemain matin (sa place est
+//   réservée, le manuel mis de côté) ; le lendemain matin, il entre à l'École, le manuel est détruit et l'affinité tombe ;
+//   d'ici là, on peut annuler (le manuel revient à l'Intendance). Un professeur accepté aujourd'hui enseigne dès demain.
+//   Pas de suite planifiée pendant un apprentissage.
 // Constantes : formula-constants.json (spell_study.*). Doc 11 §7 et doc 12.
 (function(root,factory){
   const node=typeof module!=="undefined"&&module.exports;
@@ -82,8 +86,13 @@
     const teachingOf=(state,mercenaryId)=>studiesOf(state).find(s=>s.teacherId!=null&&s.teacherId===mercenaryId)||null;
     // Retenu à l'École (élève ou professeur) : la raison, ou null.
     const isPerfect=study=>study?.kind==="perfect";
+    // Inscrit pour le lendemain matin, pas encore entré à l'École.
+    const isPlanned=study=>study?.status==="planned";
+    // Le professeur compte pour le test du matin testDay s'il enseignait la veille (accepté avant testDay − 1).
+    const teacherCounts=(study,testDay)=>study.teacherId!=null&&!(Number(study.teacherFrom)>=testDay);
     function busyReason(state,mercenaryId){
       const own=studyOf(state,mercenaryId);
+      if(own&&isPlanned(own)) return "Il entre à l’École de magie demain matin.";
       if(own) return isPerfect(own)?"Il perfectionne un sort à l’École de magie.":"Il apprend un sort à l’École de magie.";
       if(teachingOf(state,mercenaryId)) return "Il enseigne un sort à l’École de magie.";
       return null;
@@ -143,12 +152,11 @@
         return {ok:true,accepted:false,chance,roll:dice,affinityDelta,mercenary:m,spell,room};
       }
       state.company.stock=(state.company.stock||[]).filter(i=>i!==item);
-      const study={id:"study-"+state.day+"-"+m.id,studentId:m.id,spellCode:spell.code,spellName:spell.nom,school:spell.ecole,
-        room:room.code,startDay:state.day,days:0,teacherId:null};
+      const study={id:"study-"+state.day+"-"+m.id,status:"planned",studentId:m.id,spellCode:spell.code,spellName:spell.nom,
+        school:spell.ecole,room:room.code,startDay:state.day+1,days:0,teacherId:null,manual:item};
       studiesOf(state).push(study);
-      const affinityDelta=shiftAffinity(state,m,C.affinity.accept);
       History.record(m,state.day,"study",{accepted:true,spell:spell.nom});
-      return {ok:true,accepted:true,chance,roll:captain?null:dice,affinityDelta,mercenary:m,spell,room,study};
+      return {ok:true,accepted:true,chance,roll:captain?null:dice,affinityDelta:0,mercenary:m,spell,room,study};
     }
 
     // Perfectionner : un manuel du même sort, une journée dans la salle, sans test.
@@ -181,18 +189,17 @@
       if(!check.ok) return check;
       const {spell,room}=check;
       state.company.stock=(state.company.stock||[]).filter(i=>i!==item);
-      const study={id:"perfect-"+state.day+"-"+m.id,kind:"perfect",studentId:m.id,spellCode:spell.code,spellName:spell.nom,
-        school:spell.ecole,room:room.code,startDay:state.day,days:0,teacherId:null};
+      const study={id:"perfect-"+state.day+"-"+m.id,kind:"perfect",status:"planned",studentId:m.id,spellCode:spell.code,
+        spellName:spell.nom,school:spell.ecole,room:room.code,startDay:state.day+1,days:0,teacherId:null,manual:item};
       studiesOf(state).push(study);
-      const affinityDelta=shiftAffinity(state,m,C.affinity.perfect);
-      return {ok:true,mercenary:m,spell,room,study,xp:perfectXp(state,m,room.code),affinityDelta};
+      return {ok:true,mercenary:m,spell,room,study,xp:perfectXp(state,m,room.code),affinityDelta:0};
     }
 
     // Le test du matin : la chance (en %) et son détail.
-    function dailyChance(state,study){
+    function dailyChance(state,study,testDay=state.day+1){
       const m=memberOf(state,study.studentId);
       const director=camp.directorOf(state);
-      const teacher=study.teacherId==null?null:memberOf(state,study.teacherId);
+      const teacher=teacherCounts(study,testDay)?memberOf(state,study.teacherId):null;
       const base=(stat(m,"Intelligence")+schoolOf(m,study.school))/2;
       const directorBonus=director?(schoolOf(director,study.school)+transmissionOf(director))/C.directorDivisor:0;
       const teacherBonus=teacher?transmissionOf(teacher)/C.teacherDivisor:0;
@@ -202,9 +209,9 @@
       return {chance,x,base,directorBonus,teacherBonus,roomLevel:level};
     }
     // Le niveau du sort à la sortie : celui de la salle, ou celui du professeur × sa Transmission / 100 s'il est plus haut.
-    function learnedLevel(state,study){
+    function learnedLevel(state,study,testDay=state.day+1){
       const roomLevel=Math.max(1,camp.buildingLevel(state,study.room));
-      const teacher=study.teacherId==null?null:memberOf(state,study.teacherId);
+      const teacher=teacherCounts(study,testDay)?memberOf(state,study.teacherId):null;
       const known=teacher?(teacher.spells||[]).find(s=>s.code===study.spellCode):null;
       const taught=known?Math.round((Number(known.mastery)||0)*transmissionOf(teacher)/C.transmissionDivisor):0;
       return clamp(Math.max(roomLevel,taught),1,C.maxLevel);
@@ -219,10 +226,20 @@
       const studies=studiesOf(state);
       const learned=[],tested=[];
       const director=camp.directorOf(state);
-      const perfected=[];
+      const perfected=[],started=[];
       for(const study of [...studies]){
         const m=memberOf(state,study.studentId);
         if(!m){ studies.splice(studies.indexOf(study),1); continue; }
+        // Inscrit la veille : il entre ce matin ; le manuel est détruit, l'affinité tombe ; premier test demain.
+        if(isPlanned(study)){
+          if(state.day<Number(study.startDay)) continue;
+          study.status="active";
+          study.startDay=state.day;
+          delete study.manual;
+          const affinityDelta=shiftAffinity(state,m,isPerfect(study)?C.affinity.perfect:C.affinity.accept);
+          started.push({study,mercenary:m,affinityDelta});
+          continue;
+        }
         // Perfectionner : la journée est passée, l'XP tombe ce matin.
         if(isPerfect(study)){
           const known=(m.spells||[]).find(s=>s.code===study.spellCode);
@@ -236,14 +253,19 @@
           continue;
         }
         if(study.teacherId!=null&&!memberOf(state,study.teacherId)) study.teacherId=null;
-        const teacher=study.teacherId==null?null:memberOf(state,study.teacherId);
+        // Le professeur de la veille compte pour ce test ; celui accepté hier commence aujourd'hui (+3 d'affinité).
+        const teacher=teacherCounts(study,state.day)?memberOf(state,study.teacherId):null;
+        if(study.teacherId!=null&&study.teacherStarted===false&&!(Number(study.teacherFrom)>state.day)){
+          study.teacherStarted=true;
+          shiftAffinity(state,memberOf(state,study.teacherId),C.affinity.teacherAccept);
+        }
         study.days+=1;
-        const {chance}=dailyChance(state,study);
+        const {chance}=dailyChance(state,study,state.day);
         const dice=roll();
         if(teacher&&progression&&C.teacherXp>0) progression.apply(teacher,{skills:{camp:{[TRANSMISSION]:C.teacherXp}}});
         tested.push({id:study.id,studentId:m.id,chance,roll:dice});
         if(dice>=chance) continue;
-        const level=learnedLevel(state,study);
+        const level=learnedLevel(state,study,state.day);
         grant(m,study,level);
         studies.splice(studies.indexOf(study),1);
         const affinityDelta=shiftAffinity(state,m,C.affinity.learned);
@@ -252,10 +274,11 @@
         if(teacher) History.record(teacher,state.day,"teach_done",{spell:study.spellName,student:m.name});
         learned.push({study,mercenary:m,teacher,level,days:study.days,affinityDelta,teacherDelta});
       }
-      const learners=studies.length+learned.length+perfected.length;
+      // Le directeur compte les élèves qui ont passé la veille à l'École.
+      const learners=studies.filter(s=>!isPlanned(s)&&!started.some(x=>x.study===s)).length+learned.length+perfected.length;
       const directorXp=director&&learners?C.directorXp*learners:0;
       if(director&&progression&&directorXp>0) progression.apply(director,{skills:{camp:{[TRANSMISSION]:directorXp}}});
-      return {learned,tested,perfected,directorXp};
+      return {learned,tested,perfected,started,directorXp};
     }
 
     // Professeurs possibles : au camp, connaissent le sort, ni l'élève, ni déjà pris par l'École.
@@ -289,8 +312,8 @@
       const dice=captain?0:roll();
       if(!captain) t.teachOfferDay=state.day;
       const accepted=dice<chance;
-      if(accepted) study.teacherId=t.id;
-      const affinityDelta=shiftAffinity(state,t,accepted?C.affinity.teacherAccept:C.affinity.teacherRefuse);
+      if(accepted){ study.teacherId=t.id; study.teacherFrom=state.day+1; study.teacherStarted=false; }
+      const affinityDelta=accepted?0:shiftAffinity(state,t,C.affinity.teacherRefuse);
       History.record(t,state.day,"teach",{accepted,spell:study.spellName,student:student?.name||""});
       return {ok:true,accepted,chance,roll:captain?null:dice,affinityDelta,mercenary:t,student,study};
     }
@@ -299,8 +322,11 @@
       const study=studyById(state,studyId);
       if(!study||study.teacherId==null) return no("Pas de professeur à libérer.");
       const t=memberOf(state,study.teacherId);
+      // Pas encore commencé (accepté aujourd'hui) : on change simplement d'avis.
+      const started=study.teacherStarted!==false;
       study.teacherId=null;
-      const affinityDelta=shiftAffinity(state,t,C.affinity.teacherReleased);
+      delete study.teacherFrom; delete study.teacherStarted;
+      const affinityDelta=started?shiftAffinity(state,t,C.affinity.teacherReleased):0;
       return {ok:true,mercenary:t,affinityDelta,study};
     }
     // Le faire sortir avant la fin : le manuel est perdu, rien n'est acquis.
@@ -310,13 +336,17 @@
       const studies=studiesOf(state);
       studies.splice(studies.indexOf(study),1);
       const m=memberOf(state,study.studentId);
+      if(isPlanned(study)){
+        if(study.manual) (state.company.stock||(state.company.stock=[])).push(study.manual);
+        return {ok:true,mercenary:m,affinityDelta:0,study,cancelled:true};
+      }
       const affinityDelta=shiftAffinity(state,m,C.affinity.stopped);
       if(m) History.record(m,state.day,"study_stopped",{spell:study.spellName,days:study.days});
       return {ok:true,mercenary:m,affinityDelta,study};
     }
 
     return {constants:C,studiesOf,studyById,studyOf,teachingOf,busyReason,learnersIn,canStudy,offerChance,offer,canPerfect,perfectXp,perfect,dailyChance,
-      learnedLevel,advance,canTeach,teachChance,offerTeacher,releaseTeacher,stop};
+      learnedLevel,advance,canTeach,teachChance,offerTeacher,releaseTeacher,stop,isPlanned};
   }
 
   return {createSpellStudyRules};

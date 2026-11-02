@@ -201,7 +201,7 @@ s4.company.intendantId=null;
 s4.company.camp.dormitoryCapacity=40;
 const signed=stable.signCandidate(s4,pick.mercenary.id);
 assert.equal(signed.ok,true);
-assert.deepEqual(signed.mercenary.contract,{dailySalary:n.salary,missionBonus:n.bonus,signedDay:1});
+assert.deepEqual(signed.mercenary.contract,{dailySalary:n.salary,missionBonus:n.bonus,signedDay:1,joinDay:2},"il rejoint la compagnie le lendemain matin");
 assert.equal(s4.company.roster.length,4);
 assert.equal(s4.tavern.candidates.length,4);
 

@@ -27,3 +27,29 @@ La barre affiche le **numéro absolu du jour de campagne**, le jour de semaine, 
 Le bouton **Jour suivant** a simplement changé de place : il appelle toujours `campaignRules().advanceTime(campaign, 1)`, le traitement existant de la Taverne étant réutilisé pour les salaires, guérisons, départs et arrivées des candidats, journalisation et sauvegarde.
 
 Le calendrier est **dérivé de `campaign.day`** : aucune date secondaire à sauvegarder, aucune formule de combat, de recrutement ou d'économie modifiée.
+
+## Au jour J, on organise J+1 (Idan, 2026-11-02)
+
+« A jour J, on organise la journée de J+1. […] Pendant la journée, on peut encore changer les plans. […] Pour
+l'équipement, ou pour planifier son prochain entraînement, le fait qu'il soit en entraînement ne gêne pas. On vient juste
+lui parler, c'est instantané. »
+
+- **Missions et garde du corps** : signées au jour J, elles partent le lendemain matin (doc 17) ; jusque-là, on peut
+  **annuler le départ** (« Annuler le départ » sur l'expédition programmée) : l'offre revient au tableau. Le paiement d'une
+  garde du corps arrive **au départ** (« Les SEPA heroic fantasy, c'est long ») : annuler ne rembourse donc rien.
+- **Apprendre ou perfectionner un sort** : accepté au jour J, il **entre à l'École le lendemain matin** (doc 12) ; le
+  manuel est mis de côté et la place réservée ; « Annuler » le rend à l'Intendance, sans effet sur l'affinité. Au matin, le
+  manuel est détruit et l'affinité appliquée. Un professeur ajouté enseigne dès le lendemain matin. Pendant qu'il étudie,
+  on ne planifie pas sa journée suivante.
+- **Recrue** : signée au jour J, elle est **dans la compagnie tout de suite** (on l'équipe, on l'inscrit pour une mission
+  qui part demain matin) ; son premier salaire est payé le lendemain matin ; aucun poste (intendant, médecin, directeur de
+  l'École, lieutenant) avant le lendemain matin (« Il rejoint la compagnie demain matin. ») ; effectif : « Disponible
+  demain » (doc 14 §10 bis).
+- **Entraînement du capitaine** : la salle choisie vaut pour le lendemain matin (doc 11 §7) ; on peut la changer jusque-là.
+- **Les oisifs** s'entraînent pendant la journée (entraînement libre du matin, doc 11 §7) ; on peut les envoyer en mission
+  pour le lendemain.
+- **Équipement** : immédiat, même pendant un entraînement.
+
+Code : `game-core/campaign.js` (`signCandidate`, `departExpedition`, `departBodyguard`, `cancelExpedition`),
+`game-core/spell-study.js` (statut `planned`), `steward.js`, `medic.js`, `school-director.js`, `lieutenants.js`. Tests :
+`tests/recruit-next-day.test.js`, `tests/spell-study.test.js`, `tests/spell-perfect.test.js`, `tests/bodyguard.test.js`.

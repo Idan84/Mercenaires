@@ -83,9 +83,17 @@ assert.deepEqual(campaign.canGuard(state,c),{ok:false,reason:"Réputation trop f
 assert.equal(campaign.departBodyguard(state,[a.id]).ok,false,"exactement le nombre demandé");
 const gold=state.company.gold;
 const offerId=slot.offer.id;
+// Au jour J, on organise J+1 (Idan, 2026-11-02) : on peut annuler avant le départ ; l'offre retourne dans sa case.
+const first=campaign.departBodyguard(state,[a.id,b.id],offerId);
+assert.equal(first.ok,true);
+assert.deepEqual([slot.offer,slot.emptyUntil],[null,state.day+1]);
+const cancelled=campaign.cancelExpedition(state,first.expedition.id);
+assert.deepEqual([cancelled.ok,cancelled.returned,slot.offer.id,slot.emptyUntil],[true,true,offerId,null],"l'offre retourne au tableau");
+assert.equal(campaign.expeditionOf(state,a.id),null);
+assert.equal(campaign.cancelExpedition(state,first.expedition.id).reason,"Mission introuvable.");
 const left=campaign.departBodyguard(state,[a.id,b.id],offerId);
 assert.equal(left.ok,true);
-assert.equal(state.company.gold,gold+1000,"payé d'avance");
+assert.equal(state.company.gold,gold,"l'acompte n'arrive pas à la signature (Idan : « On reçoit l'argent le lendemain matin ! »)");
 assert.deepEqual([slot.offer,slot.emptyUntil],[null,state.day+1],"case prise : vide jusqu'au lendemain");
 assert.equal(campaign.isAvailable(a,state),false,"pris par la mission");
 assert.ok(campaign.expeditionOf(state,b.id));
@@ -98,9 +106,29 @@ assert.equal(deals.canDeal(state,a).ok,true,"on peut encore l'équiper");
 a.contract.missionBonus=40;b.contract.missionBonus=30;
 for(const o of campaign.boardOffers(state)) o.expiresDay=99;
 const repA=a.reputation,renown=Number(state.company.missionRenown)||0;
+const goldBeforeDeparture=state.company.gold;
 const [leave]=campaign.advanceTime(state,1);
 assert.deepEqual(leave.expeditions.departed,[left.expedition],"départ le lendemain matin");
 assert.equal(left.expedition.status,"away");
+assert.equal(left.expedition.paid,1000);
+assert.equal(state.company.gold,goldBeforeDeparture+1000-leave.salaries.total,"l'acompte arrive le matin du départ");
+assert.equal(campaign.cancelExpedition(state,left.expedition.id).reason,"L’escouade est déjà partie.");
+// Ancienne sauvegarde : une garde du corps signée avant cette règle a déjà été payée à la signature ; pas de second
+// paiement au départ, et l'annuler rend l'argent.
+{
+  const oldSquad=[20,21].map(id=>generator.createMercenary({id,captain}));
+  const old=campaign.createCampaign({captain,squad:oldSquad});
+  const offer={...campaign.boardOffers(old)[0],payment:500};
+  const scheduled=id=>({id,kind:"bodyguard",offer,memberIds:[oldSquad[0].id],signedDay:old.day,departDay:old.day+1,returnDay:old.day+6,status:"scheduled"});
+  old.expeditions=[scheduled("old-1")];
+  const before=old.company.gold;
+  const [morning]=campaign.advanceTime(old,1);
+  assert.equal(old.company.gold,before-morning.salaries.total,"pas de second paiement au départ");
+  old.expeditions.push({...scheduled("old-2"),memberIds:[oldSquad[1].id],signedDay:old.day,departDay:old.day+1});
+  const kept=old.company.gold;
+  assert.equal(campaign.cancelExpedition(old,"old-2").ok,true);
+  assert.equal(old.company.gold,kept-500,"annulée : le paiement déjà reçu est rendu");
+}
 assert.equal(deals.canDeal(state,a).reason,"Il est en mission.");
 const days4=campaign.advanceTime(state,4);
 assert.ok(days4.every(r=>r.expeditions.bodyguards.length===0),"pas avant 5 jours d'absence");

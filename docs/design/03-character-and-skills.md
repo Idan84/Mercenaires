@@ -177,6 +177,14 @@ La probabilité finale est plafonnée à 100 %.
 
 Les trois jets peuvent être calculés, puis la hiérarchie est appliquée au résultat final.
 
+### Sans le port, pas d’armure
+
+Idan, 2026-11-03 : « le mercenaire ne devrait pas pouvoir l’équiper du tout ». Un personnage ne peut porter une armure
+que s’il a le port de son type (ou un port plus lourd) ; les Vêtements ne demandent rien. L’Intendance ne la lui propose
+pas, il ne peut pas la sortir de son inventaire (où il peut la garder). Une partie commencée avant : l’armure portée sans
+son port retourne dans son inventaire, au dortoir. Les recrues partent déjà avec une armure qu’elles savent porter, et
+tous les ennemis aussi. Code : `game-core/armor-ports.js`, `equipment-deals.js` ; test : `tests/armor-ports.test.js`.
+
 ## Fiche : onglets Camp et Historique (Idan, 2026-10-24)
 
 - **Camp** : les compétences de camp — Transmission du savoir, Intendance, Médecine — et l’Artisanat avec ses huit métiers, du meilleur au moins bon ; en tête, le point fort au camp et le meilleur métier.

@@ -94,6 +94,7 @@ async function loadSilhouetteCatalog(reference) {
 // Avatars : ceux de Git (data/avatars.json) et ceux qu'Idan dépose sur Hostinger (media/avatars/,
 // indexés par api/avatars.php). À identifiant égal, Hostinger l'emporte. Si l'un des deux manque
 // (serveur local sans PHP, dossier vide…), on fait avec l'autre ; sans aucun, portraits génériques.
+const AVATAR_INDEX_RETRIES = 5;
 async function loadAvatarCatalog(reference, base = "/data/") {
   const catalog = globalThis.MercenairesAvatarCatalog;
   const fetchJson = async url => {
@@ -105,10 +106,18 @@ async function loadAvatarCatalog(reference, base = "/data/") {
       return null;
     }
   };
-  const [git, hosted] = await Promise.all([fetchJson(base + "avatars.json"), fetchJson("/api/avatars.php")]);
+  // api/avatars.php lit les nouvelles images quelques secondes par appel (« complete »: false tant qu'il en reste) : on le
+  // redemande jusqu'à ce que l'index soit complet, quelques fois au plus (Idan, 2026-11-03 : « ça lit pas tout »).
+  const readIndex = async () => {
+    let index = await fetchJson("/api/avatars.php");
+    for (let i = 0; index && index.complete === false && i < AVATAR_INDEX_RETRIES; i++) index = await fetchJson("/api/avatars.php");
+    return index;
+  };
+  const [git, hosted] = await Promise.all([fetchJson(base + "avatars.json"), readIndex()]);
   const baseUrl = catalog.fileUrl("/", hosted?.base || "media/avatars");
   const media = hosted && Array.isArray(hosted.files) ? catalog.buildAvatarCatalog(hosted.files, reference, { baseUrl }) : { rows: [], warnings: [] };
   if (media.warnings.length) console.warn("Avatars Hostinger :", media.warnings);
   const rows = catalog.mergeCatalogs(git?.rows || [], media.rows);
-  return { row_count: rows.length, rows, warnings: media.warnings, sources: { git: git?.rows?.length || 0, hostinger: media.rows.length } };
+  return { row_count: rows.length, rows, warnings: media.warnings, complete: hosted ? hosted.complete !== false : true,
+    sources: { git: git?.rows?.length || 0, hostinger: media.rows.length } };
 }

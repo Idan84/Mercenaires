@@ -57,7 +57,6 @@ td.gap-high{background:#f8e3df}td.gap-mid{background:#fbf0d9}td.gap-ok{backgroun
 .tag-todo span{display:block;margin-top:3px;font-size:.84rem;color:#7d2d24;font-weight:650}
 .tag-todo button,.link-button{border:1px solid #cfc5b8;background:#f7f2ea;border-radius:8px;padding:7px 12px;font-weight:750;cursor:pointer;color:#26221d}
 .tag-todo button:hover,.link-button:hover{background:#eee5d8}
-.cov-warnings{margin-top:30px}.cov-warnings li{font-size:.85rem;color:#6b6258}
 /* Besoin en avatars par culture (Idan, 2026-10-30) : bilan, à produire, cases précises, repli. */
 .cov-alert{margin:0 0 16px;padding:12px 16px;border:1px solid #d9a79f;background:#faece9;border-radius:10px;color:#7d2d24;font-weight:650}
 .cov-summary td.v{color:#3f7a4a;font-weight:750}.cov-summary td.o{color:#b46a12;font-weight:750}.cov-summary td.r{color:#7d2d24;font-weight:750}

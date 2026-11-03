@@ -426,6 +426,12 @@
       },
       "study_done": "Connaît désormais {sort} (niveau {niveau}), après {jours} à l’École.",
       "study_stopped": "Quitte l’École sans avoir appris {sort}.",
+      "armor_study": {
+        "accord": "Accepte d’apprendre à porter une armure {armure} à l’Académie de la survie.",
+        "refus": "Refuse d’apprendre à porter une armure {armure}."
+      },
+      "armor_study_done": "Sait désormais porter une armure {armure}, après {jours} à l’Académie de la survie.",
+      "armor_study_stopped": "Quitte l’Académie sans avoir appris à porter une armure {armure}.",
       "perfect": "Perfectionne {sort} à l’École : niveau {avant} → {apres}.",
       "teach": {
         "accord": "Accepte d’enseigner {sort} à {eleve}.",

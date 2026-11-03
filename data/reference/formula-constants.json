@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 309,
+  "row_count": 311,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -2360,6 +2360,22 @@
       "description": "Apprentissage d’un sort (Idan, 2026-11-02) : la chance du jour ne dépasse pas ce pourcentage.",
       "formule": "Apprentissage d’un sort à l’École de magie",
       "valeur": 95,
+      "version": "V1"
+    },
+    {
+      "nom": "Apprendre une armure — malus par cran",
+      "code": "armor_study.daily.class_malus",
+      "description": "Apprendre un port d’armure à l’Académie de la survie (Idan, 2026-11-03) : chaque matin, chance = 100 / (1 + e^(−(X − 100) / 20)) × (1 + 0,1 × niveau de l’Académie), au plus 95 % (constantes spell_study.daily.*), X = (Force + Endurance) / 2 − ce malus par cran au-delà de la légère (0, 10, 20) + bonus du Vétéran. Moyen (54, 59), Académie niveau 1 : légère 11 % (9 jours), intermédiaire 7 % (14 jours), lourde 4 % (23 jours).",
+      "formule": "Apprendre un port d’armure à l’Académie",
+      "valeur": 10,
+      "version": "V1"
+    },
+    {
+      "nom": "Apprendre une armure — diviseur du Vétéran",
+      "code": "armor_study.daily.veteran_divisor",
+      "description": "Apprendre un port d’armure (Idan, 2026-11-03) : le Vétéran ajoute à X sa Transmission du savoir / ce diviseur, s’il a lui-même ce port. Transmission 48 : légère 17 % (6 jours) au lieu de 11 %.",
+      "formule": "Apprendre un port d’armure à l’Académie",
+      "valeur": 5,
       "version": "V1"
     },
     {

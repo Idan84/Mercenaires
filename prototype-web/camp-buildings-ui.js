@@ -48,15 +48,18 @@ function campBuildingAction(c,code,level){
       <span class="building-cost">${fmt(next.gold)} PO · ${campDays(next.days)}${why}</span></div>`;
 }
 // Entraînement libre (Idan, 2026-11-02) : les élèves du jour dans une salle (entrées de camp.schoolDay).
-// Apprentissage des sorts (Idan, 2026-11-02) : un élève qui apprend un sort prend aussi une place de sa salle.
+// Apprentissage des sorts (Idan, 2026-11-02) : un élève qui apprend un sort prend aussi une place de sa salle ; de même à
+// l'Académie pour une armure (2026-11-03).
 function schoolStudents(c,code){
   const rules=campaignRules(),day=rules.schoolDayOf?rules.schoolDayOf(c):null;
   const learners=rules.spellStudy?rules.spellStudy.studiesOf(c).filter(s=>s.room===code).map(s=>({id:s.studentId,spell:s.spellName})):[];
-  return [...learners,...(day?day.entries.filter(e=>e.code===code):[])];
+  const armor=rules.armorStudy&&code===rules.armorStudy.HALL?rules.armorStudy.studiesOf(c).map(s=>({id:s.studentId,armor:s.type})):[];
+  return [...learners,...armor,...(day?day.entries.filter(e=>e.code===code):[])];
 }
 function schoolStudentsTitle(c,students){
   const name=id=>c.company.roster.find(m=>m.id===id)?.name||"?";
-  return students.length?"Aujourd’hui : "+students.map(e=>e.spell?`${name(e.id)} (apprend ${e.spell})`:`${name(e.id)} (+${fmt(e.xp)} XP)`).join(", "):"Personne aujourd’hui";
+  const what=e=>e.spell?`apprend ${e.spell}`:e.armor?`apprend l’armure ${e.armor.toLocaleLowerCase("fr")}`:`+${fmt(e.xp)} XP`;
+  return students.length?"Aujourd’hui : "+students.map(e=>`${name(e.id)} (${what(e)})`).join(", "):"Personne aujourd’hui";
 }
 function campBuildingState(c,code,level){
   // Bâtiments d'entraînement (Idan, 2026-11-03) : ce que travaille la salle principale ou l'aile, devant son état.
@@ -108,6 +111,7 @@ function campBuildingCard(c,code){
       ${campBuildingAction(c,code,level)}
       ${campRoomsList(c,code)}
       ${code==="magic_school"&&typeof studyListHtml==="function"?studyListHtml(c):""}
+      ${code==="survival_academy"&&typeof armorStudyHtml==="function"?armorStudyHtml(c):""}
     </article>`;
 }
 

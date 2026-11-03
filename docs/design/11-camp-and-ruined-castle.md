@@ -252,7 +252,8 @@ armures** (les ports d'armure, légère puis intermédiaire puis lourde, appris 
 autres ») : Salle des Lames longues, Salle des Lames courtes, Salle des Deux armes, Salle de la Main seule (noms
 provisoires). Deuxième fonction (Idan, 2026-11-03 : « On garde juste l'augmentation de la prime, pas la fréquence ») :
 on y croise des nobles, le **paiement d'une garde du corps × (1 + 5 % par niveau du Cercle)**, arrondi à 10 PO, pour
-les offres qui arrivent au tableau (`garde_paie_par_niveau`, doc 17 §12) ; +50 % au niveau 10.
+les offres qui arrivent au tableau (`garde_paie_par_niveau`, doc 17 §12) ; +50 % au niveau 10. La fiche de l'offre
+montre le paiement, sans commentaire.
 
 Pistes gardées en tête, non validées : la **Tour de guet** (salle principale Perception, Armes de tir ; anticiper les
 attaques du camp, à venir), le **Labo d'alchimie** (potions ; Armes à feu, Pièges, apprendre à empoisonner ses armes),

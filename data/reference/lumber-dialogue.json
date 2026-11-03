@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "name": "lumber-dialogue",
+  "description": "Cabane du bûcheron (Idan, 2026-11-03) : envoyer un mercenaire bûcheronner demain. Il y va toujours, de bon cœur (willing) ou à contrecœur (grudging). panel : la carte de la Cabane ; send : la demande, les répliques, les issues. {prenom} ; {masculin|féminin} selon celui qui parle. Textes de JC, à retoucher librement.",
+  "panel": {
+    "send": "Envoyer bûcheronner",
+    "send_tip": "Il y va toujours, parfois à contrecœur. Chaque bûcheron retire un jour à un chantier du camp (niveaux 1 à 5).",
+    "title": "Bûcherons de demain",
+    "grudging": "à contrecœur"
+  },
+  "send": {
+    "proposal": "Demain, il nous faut des bras pour couper du bois. Vous y allez.",
+    "willing": [
+      "Un peu d’exercice, ça ne fait pas de mal.",
+      "Du bois ? Comptez sur moi, capitaine.",
+      "Je vais leur montrer comment on manie une hache."
+    ],
+    "grudging": [
+      "Je suis mercenaire, pas bûcheron… Bon, j’y vais.",
+      "Encore la corvée ? D’accord, mais je m’en souviendrai.",
+      "Couper du bois… Si ma mère me voyait."
+    ],
+    "outcome_willing": "{prenom} ira bûcheronner demain.",
+    "outcome_grudging": "{prenom} ira bûcheronner demain, à contrecœur."
+  }
+}

@@ -73,14 +73,17 @@ function campBuildingLevelState(c,code,level){
   return `Niveau ${fmt(level)} · <span class="building-places" title="${esc(schoolStudentsTitle(c,students))}">${fmt(students.length)}/${fmt(places)} place${places>1?"s":""}</span>${effect?" · "+effect:""}`;
 }
 // Le capitaine (Idan, 2026-11-02 : « on choisit pour le cap et on est prioritaire ») : sa salle, chaque matin, avant les
-// autres et sans test.
-function captainTrainingChoice(c,code){
-  const rules=campaignRules();
-  if(code!=="magic_school"||!rules.schoolRooms||!rules.buildingLevel(c,code)) return "";
+// autres et sans test ; parmi les salles et ailes de tous les bâtiments d'entraînement (2026-11-03), une ligne sous les
+// bâtiments, les salles rangées par bâtiment.
+function captainTrainingChoice(c){
+  const rules=campaignRules(),rooms=rules.trainingRooms?rules.trainingRooms(c):[];
+  if(!rooms.length) return "";
   const current=rules.captainTraining(c)||"";
-  const options=[["","À la taverne"],...rules.schoolRooms(c).map(room=>[room.code,room.school?room.name:"Salle généraliste"])];
+  const option=(value,label)=>`<option value="${esc(value)}"${value===current?" selected":""}>${esc(label)}</option>`;
+  const groups=[...new Set(rooms.map(room=>room.building))].map(building=>`<optgroup label="${esc(rules.campBuildingRow(building).nom)}">${
+    rooms.filter(room=>room.building===building).map(room=>option(room.code,room.code===building&&building!=="magic_school"?room.trains:room.label)).join("")}</optgroup>`).join("");
   return `<label class="building-captain" title="Chaque matin, avant les autres et sans test ; à partir de demain.">Le capitaine
-      <select data-captain-training>${options.map(([value,label])=>`<option value="${esc(value)}"${value===current?" selected":""}>${esc(label)}</option>`).join("")}</select></label>`;
+      <select data-captain-training>${option("","À la taverne")}${groups}</select></label>`;
 }
 // École de magie (Idan, 2026-11-01) : une ligne par salle, une fois l'École construite.
 function campRoomsList(c,code){
@@ -105,7 +108,6 @@ function campBuildingCard(c,code){
       ${campBuildingAction(c,code,level)}
       ${campRoomsList(c,code)}
       ${code==="magic_school"&&typeof studyListHtml==="function"?studyListHtml(c):""}
-      ${captainTrainingChoice(c,code)}
     </article>`;
 }
 
@@ -119,7 +121,7 @@ function renderCampBuildings(){
     <article class="building-card building-card--link">
       <div class="building-info"><strong>Dortoir</strong><span>${dormitoryPlacesLine(c)} · ${esc(quality.nom)}</span>${work?`<span class="building-work">${campWorkText(work,c.day)}</span>`:""}</div>
       <button type="button" class="primary" data-open-camp-scene="dormitory" data-destination="Dortoir">Aller au dortoir</button>
-    </article>`+(rules.campBuildingCodes?rules.campBuildingCodes().map(code=>campBuildingCard(c,code)).join(""):"");
+    </article>`+(rules.campBuildingCodes?rules.campBuildingCodes().map(code=>campBuildingCard(c,code)).join(""):"")+captainTrainingChoice(c);
   renderDormitory();
 }
 
@@ -181,17 +183,21 @@ function buildCampBuilding(code){ startCampWork(campaignRules().startBuilding(ga
 function chooseCaptainTraining(code){
   const result=campaignRules().setCaptainTraining(game.campaign,code||null);
   if(!result.ok){ tavernLog(result.reason,"bad"); renderCampBuildings(); return; }
-  const room=campaignRules().schoolRooms(game.campaign).find(r=>r.code===result.code);
-  tavernLog(room?`Dès demain matin, le capitaine s’entraîne : ${room.school?room.name:"salle généraliste"}.`:"Dès demain, le capitaine passe ses journées à la taverne.","info");
+  const room=campaignRules().trainingRooms(game.campaign).find(r=>r.code===result.code);
+  const where=room?(room.code==="magic_school"?"salle généraliste":room.code===room.building?`${room.name} (${room.trains})`:room.name):null;
+  tavernLog(room?`Dès demain matin, le capitaine s’entraîne : ${where}.`:"Dès demain, le capitaine passe ses journées à la taverne.","info");
   saveGame();
   renderGame();
 }
 
-// Journal du matin : l'entraînement libre du jour, en une ligne (Idan, 2026-11-02).
+// Journal du matin : l'entraînement libre du jour (Idan, 2026-11-02) ; une ligne par bâtiment d'entraînement qui a des élèves (« Ludus : 2 élèves aujourd'hui. »).
 function logSchoolDay(report){
-  const students=(report?.entries||[]).filter(e=>e.code);
-  if(!students.length) return;
-  tavernLog(`École de magie : ${fmt(students.length)} élève${students.length>1?"s":""} aujourd’hui.`,"turn");
+  const rules=campaignRules(),count=new Map();
+  for(const e of (report?.entries||[]).filter(e=>e.code)){
+    const row=rules.campBuildingRow(e.code),building=row?.requiert||e.code;
+    count.set(building,(count.get(building)||0)+1);
+  }
+  for(const [building,n] of count) tavernLog(`${rules.campBuildingRow(building)?.nom||"École de magie"} : ${fmt(n)} élève${n>1?"s":""} aujourd’hui.`,"turn");
 }
 
 // Journal du matin : les bâtiments (et les salles) qui montent d'un niveau.

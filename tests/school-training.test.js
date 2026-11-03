@@ -67,36 +67,66 @@ assert.equal(training.dailyXp(person(1,{int:50}),hall,boss),Math.round(20*1*1.1*
 assert.deepEqual(training.xpOf(room("Feu",1),40),{skills:{magic:{Feu:40,"Télékinésie":-10,Eau:-10}}});
 assert.deepEqual(training.xpOf(hall,40),{stats:{"Puissance magique":40}});
 
-// Une journée : le capitaine d'abord, sans test ; les places limitent ; ceux qui ratent vont à la taverne.
+// Une journée (Idan, 2026-11-03 : « Là où il est le plus doué à 75 % de chance, sinon au hasard ») : le capitaine d'abord,
+// sans test ; puis chacun, à 75 %, là où il se classe le mieux dans la compagnie parmi les places libres, sinon au hasard ;
+// plus de place : la taverne, sans test.
 let dice=[];
 const day=createSchoolTrainingRules({reference,random:()=>dice.length?dice.shift():0,progression});
 const cap=person(100,{best:"Feu",value:50,int:50});
 const fire1=person(1,{best:"Feu",value:100}),fire2=person(2,{best:"Feu",value:100}),none=person(3),weak=person(4,{will:40,best:"Eau",value:40});
 const rooms=[{code:"magic_school",school:null,level:1,places:1},{code:"magic_room_fire",school:"Feu",level:1,places:1}];
-// Ordre tiré : Fisher–Yates (3 tirages à 0 : [fire2, none, weak, fire1]), puis les jets.
-dice=[0,0,0, 0.5,0.5,0.5];
+// Ordre tiré : Fisher–Yates (3 tirages à 0 : [fire2, none, weak, fire1]) ; fire2 : talent (0,5 < 0,75), puis son test.
+dice=[0,0,0, 0.5,0.5];
 const result=day.runDay({rooms,candidates:[fire1,fire2,none,weak],captain:cap,captainChoice:"magic_room_fire",director:null});
 const byId=Object.fromEntries(result.entries.map(e=>[e.id,e]));
 assert.deepEqual([byId[100].code,byId[100].captain,byId[100].chance],["magic_room_fire",true,null],"le capitaine prend sa place sans test");
-assert.equal(byId[2].code,"magic_school","la salle du Feu est prise : il va dans la salle généraliste");
-assert.equal(byId[2].chance,88.1);
+assert.deepEqual([byId[2].code,byId[2].talent],["magic_school",true],"la salle du Feu est prise : la seule place libre");
+assert.equal(byId[2].chance,88.1,"à l'École, le test de l'École");
 assert.ok(fire2.xp.stats["Puissance magique"]>10*50*50,"salle généraliste : de l'XP de Puissance magique (la valeur est entière)");
 assert.equal(fire2.xp.skills?.magic?.Feu,undefined,"pas d'XP d'école dans la salle généraliste");
-assert.deepEqual([byId[3].code,byId[3].full],[null,true],"plus de place : la taverne, sans test");
-assert.deepEqual([byId[4].code,byId[1].code],[null,null]);
+for(const id of [3,4,1]) assert.deepEqual([byId[id].code,byId[id].full],[null,true],"plus de place : la taverne, sans test");
 assert.ok(cap.skills.magic.Feu>50&&cap.skills.magic.Eau<1+1e-9,"le capitaine gagne en Feu, l'Eau ne descend pas sous 1");
 assert.equal(result.directorXp,0,"pas de directeur");
-// Avec un directeur : il ne s'entraîne pas lui-même et gagne 5 XP de Transmission par élève.
-dice=[0,0, 0,0];
+// Avec un directeur : il ne s'entraîne pas lui-même et gagne 5 XP de Transmission par élève de l'École.
+dice=[0, 0.5,0, 0.5,0];
 const dir=person(50,{cha:60,best:"Feu",value:100,transmission:40});
 const t0=dir.skills.camp["Transmission du savoir"];
 const r2=day.runDay({rooms:[{code:"magic_school",school:null,level:2,places:2}],candidates:[fire1,fire2],director:dir});
 assert.equal(r2.entries.filter(e=>e.code).length,2);
 assert.equal(r2.directorXp,10);
 assert.ok(dir.skills.camp["Transmission du savoir"]>t0);
-// Test raté.
-dice=[0.99]; // un seul candidat : pas de tirage d’ordre, seulement le jet
+// Test raté : un seul candidat, pas de tirage d'ordre ; talent, puis le jet.
+dice=[0.5,0.99];
 assert.equal(day.runDay({rooms:[{code:"magic_school",school:null,level:1,places:1}],candidates:[weak]}).entries[0].code,null);
+
+// Le rang : la part de ses camarades qu'il dépasse (égalité : la moitié), pour ce que travaille la salle.
+const brute=person(10),thinker=person(11,{best:"Feu",value:90}),other=person(12);
+brute.stats.Force=80;thinker.stats.Force=40;other.stats.Force=40;
+const forceRoom={code:"ludus_force",building:"ludus",trains:"Force",learnWith:"Endurance",level:1,places:1};
+const fireRoom={code:"magic_room_fire",building:"magic_school",school:"Feu",level:1,places:1};
+const peers=[brute,thinker,other];
+assert.deepEqual([day.valueOf(brute,forceRoom),day.valueOf(thinker,fireRoom),day.valueOf(brute,{code:"magic_school"})],[80,90,50]);
+assert.deepEqual([day.rankOf(brute,forceRoom,peers),day.rankOf(thinker,forceRoom,peers),day.rankOf(thinker,fireRoom,peers)],[1,0.25,1]);
+assert.equal(day.bestRoom(brute,[fireRoom,forceRoom],peers),forceRoom,"il va là où il dépasse le plus de monde");
+assert.equal(day.bestRoom(thinker,[fireRoom,forceRoom],peers),fireRoom);
+// Hors École : le test de la Volonté seule ; le gain avec la caractéristique du bâtiment.
+assert.equal(Math.round(day.trainingChance(person(1)).chance),50);
+assert.equal(Math.round(day.trainingChance(person(1,{will:80})).chance*10)/10,73.1);
+brute.stats.Endurance=60;
+assert.equal(day.dailyXp(brute,forceRoom),26,"20 × 60 / 50 × 1,1");
+// Une journée au Ludus : à 75 %, là où il est le plus doué ; sinon au hasard.
+dice=[0.2, 0.5,0.1, 0.5,0.1];
+const r3=day.runDay({rooms:[fireRoom,{...forceRoom}],candidates:[brute,thinker],company:peers});
+const by3=Object.fromEntries(r3.entries.map(e=>[e.id,e]));
+assert.deepEqual([by3[11].code,by3[10].code],["magic_room_fire","ludus_force"],"chacun là où il est le plus doué");
+assert.ok(brute.xp.stats.Force>0,"une caractéristique monte");
+dice=[0.9,0.6,0.1];
+const r4=day.runDay({rooms:[fireRoom,{...forceRoom}],candidates:[thinker],company:peers});
+assert.deepEqual([r4.entries[0].talent,r4.entries[0].code],[false,"ludus_force"],"au hasard (0,9 ≥ 0,75) : pas là où il est le plus doué");
+// L'XP selon ce que travaille la salle : une résistance, une arme (les autres reculent comme en combat).
+const tough={stats:{},resistances:{"Résistance au feu":4},skills:{martial:{"Lames longues":30,"Haches":20,"Lames courtes":10}}};
+assert.deepEqual(day.xpOf({trains:"Résistance au feu"},20,tough),{resistances:{"Résistance au feu":20}});
+assert.deepEqual(day.xpOf({trains:"Lames longues"},20,tough),{skills:{martial:{"Lames longues":20,"Haches":-5,"Lames courtes":-5}}});
 
 // Dans la campagne : chaque matin, ceux qui sont au camp ; le choix du capitaine est gardé.
 let seed=3;
@@ -154,7 +184,8 @@ ui.renderCampBuildings();
 const html=elements["camp-buildings"].innerHTML;
 const fireStudents=rules.schoolDayOf(state).entries.filter(e=>e.code==="magic_room_fire");
 assert.match(html,new RegExp(`Salle du Feu<\\/strong><span>Niveau 2 · <span class="building-places" title="Aujourd’hui : [^"]+">${fireStudents.length}\\/2 places<\\/span>`));
-assert.match(html,/<label class="building-captain"[^>]*>Le capitaine\s*<select data-captain-training><option value="">À la taverne<\/option><option value="magic_school">Salle généraliste<\/option><option value="magic_room_fire" selected>Salle du Feu<\/option><\/select><\/label>/);
+// Le capitaine : une ligne sous les bâtiments, ses salles rangées par bâtiment (Idan, 2026-11-03).
+assert.match(html,/<label class="building-captain"[^>]*>Le capitaine\s*<select data-captain-training><option value="">À la taverne<\/option><optgroup label="École de magie"><option value="magic_school">Salle généraliste<\/option><option value="magic_room_fire" selected>Salle du Feu<\/option><\/optgroup><\/select><\/label>/);
 ui.chooseCaptainTraining("magic_school");
 assert.equal(state.company.camp.captainTraining,"magic_school");
 assert.deepEqual(log.at(-1),{message:"Dès demain matin, le capitaine s’entraîne : salle généraliste.",kind:"info"});

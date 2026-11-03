@@ -1268,14 +1268,14 @@ function renderCampTab(c){
   const rules=game.campaign&&typeof campaignRules==="function"?campaignRules():null;
   const day=rules?.schoolDayOf&&game.campaign.company.roster.includes(c)?rules.schoolDayOf(game.campaign):null;
   const entry=day?day.entries.find(e=>e.id===c.id):null;
-  const room=entry?.code?rules.schoolRooms(game.campaign).find(r=>r.code===entry.code):null;
+  const room=entry?.code?(rules.trainingRooms||rules.schoolRooms)(game.campaign).find(r=>r.code===entry.code):null;
   // Apprentissage des sorts (Idan, 2026-11-02) : élève ou professeur, il est à l'École jusqu'à la fin.
   const own=rules?.spellStudy&&game.campaign.company.roster.includes(c)?rules.spellStudy.studyOf(game.campaign,c.id):null;
   const study=own&&!rules.spellStudy.isPlanned(own)?own:null;
   const teaching=rules?.spellStudy&&!study&&game.campaign.company.roster.includes(c)?rules.spellStudy.teachingOf(game.campaign,c.id):null;
   const today=study?predilectionCard("Aujourd’hui",`${study.kind==="perfect"?"Perfectionne":"Apprend"} ${study.spellName}`,study.kind==="perfect"?"":`jour ${fmt(study.days+1)}`)
     :teaching?predilectionCard("Aujourd’hui",`Enseigne ${teaching.spellName}`,`jour ${fmt(teaching.days+1)}`)
-    :day?predilectionCard("Aujourd’hui",room?(room.school?room.name:"Salle généraliste"):entry?"À la taverne":status.label,room?`+${fmt(entry.xp)} XP`:""):"";
+    :day?predilectionCard("Aujourd’hui",room?(room.label||(room.school?room.name:"Salle généraliste")):entry?"À la taverne":status.label,room?`+${fmt(entry.xp)} XP${room.building&&room.building!=="magic_school"&&room.trains?" · "+room.trains:""}`:""):"";
   return `<section class="sheet-skills sheet-camp">
     <aside class="sheet-portrait">
       ${renderEvaluation(c)}${renderAvatar(c,{variant:"detail",kind:"full"})}

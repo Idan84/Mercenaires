@@ -12,6 +12,7 @@ const {createGenerator}=require("../game-core/mercenary-generator.js");
 const {createTavernRules}=require("../game-core/tavern.js");
 const {createCampaignRules}=require("../game-core/campaign.js");
 const {createBodyguardRules}=require("../game-core/bodyguard.js");
+const {createProgressionRules}=require("../game-core/progression.js");
 
 const ROOT=path.resolve(__dirname,"..");
 const source=fs.readFileSync(path.join(ROOT,"prototype-web","reference-data.js"),"utf8");
@@ -22,7 +23,7 @@ let seed=9;
 const random=()=>((seed=(seed*16807)%2147483647)/2147483647);
 const generator=createGenerator(reference,{random,nameGenerator:(people,id)=>people+" "+id});
 const rules=createCampaignRules({generator,tavern:createTavernRules({random:()=>0.999,reference}),reference,
-  bodyguard:createBodyguardRules({reference,random}),random});
+  bodyguard:createBodyguardRules({reference,random}),progression:createProgressionRules({reference}),random});
 const captain=generator.createCaptain({id:1});
 const state=rules.createCampaign({captain,squad:[2,3].map(id=>generator.createMercenary({id,captain}))});
 const at=(code,level)=>{ state.company.camp.buildings=state.company.camp.buildings||{}; state.company.camp.buildings[code]={level,construction:null}; };
@@ -40,12 +41,12 @@ const BUILDINGS={
 const known=new Set([...reference.characteristics.rows.map(r=>r.nom),...reference.skills.rows.map(r=>r.nom)]);
 for(const [code,[name,trains,wings]] of Object.entries(BUILDINGS)){
   const b=row(code);
-  assert.deepEqual([b.nom,b.entraine,b.niveaux,b.prix_base,b.jours_base,b.requiert,b.places_pas],[name,trains,10,1000,4,null,0],code);
+  assert.deepEqual([b.nom,b.entraine,b.niveaux,b.prix_base,b.jours_base,b.requiert,b.places_base,b.places_pas],[name,trains,10,1000,4,null,1,2],code);
   const rooms=rules.campRoomCodes(code).map(row);
   assert.deepEqual(rooms.map(r=>[r.nom,r.entraine]),wings,code+" : ses ailes");
   for(const r of [b,...rooms]){
     assert.ok(known.has(r.entraine),r.code+" : "+r.entraine+" existe");
-    assert.deepEqual([r.niveaux,r.prix_base,r.jours_base,r.places_pas],[10,1000,4,0],r.code+" : barème, pas encore de places");
+    assert.deepEqual([r.niveaux,r.prix_base,r.jours_base,r.places_base,r.places_pas],[10,1000,4,1,2],r.code+" : barème, places comme l'École");
     assert.ok(r.description.length>20,r.code+" : une info-bulle");
   }
 }
@@ -64,7 +65,10 @@ assert.equal(rules.startBuilding(state,"ludus").ok,true);
 rules.advanceTime(state,4);
 assert.equal(rules.buildingLevel(state,"ludus"),1);
 assert.equal(rules.startBuilding(state,"ludus_force").ok,true);
-assert.equal(rules.buildingPlaces(state,"ludus"),0,"pas encore de places");
+assert.equal(rules.buildingPlaces(state,"ludus"),1,"1 place, +1 tous les 2 niveaux");
+// La caractéristique qui fait le gain (Idan, 2026-11-03) : Intelligence, Endurance, Volonté, Dextérité.
+assert.deepEqual(["magic_school","ludus","survival_academy","blade_circle"].map(code=>row(code).apprend_avec),["Intelligence","Endurance","Volonté","Dextérité"]);
+assert.equal(reference.formulaConstants.rows.find(r=>r.code==="camp.training.talent_share").valeur,0.75);
 
 // Cercle des Fines Lames : la garde du corps paie mieux, + 5 % par niveau, arrondi à 10 PO ; la fréquence ne change pas.
 const guards=()=>{
@@ -101,13 +105,39 @@ const ui=new Function("game","$","fmt","esc","campaignRules","dormitoryPlacesTex
 delete state.company.camp.buildings.survival_academy;
 ui.renderCampBuildings();
 const html=elements["camp-buildings"].innerHTML;
-assert.match(html,/<strong title="Le Doctore y endurcit les corps[^"]*">Ludus<\/strong><span>Résistance physique · Niveau 1<\/span>/);
+assert.match(html,/<strong title="Le Doctore y endurcit les corps[^"]*">Ludus<\/strong><span>Résistance physique · Niveau 1 · <span class="building-places" title="[^"]*">\d\/1 place<\/span><\/span>/);
 assert.match(html,/<strong title="« On pousse la meule à la place de l'âne\. L'âne, lui, se repose\. »">La Meule<\/strong><span>Force · À construire<\/span>/,"l'info-bulle au survol du nom");
 assert.match(html,/Académie de la survie<\/strong><span>Boucliers · À construire<\/span>/);
 assert.doesNotMatch(html,/Le Four/,"pas d'aile avant l'Académie");
-assert.match(html,/Cercle des Fines Lames<\/strong><span>Dextérité · Niveau 10 · garde du corps \+50 %<\/span>/);
+assert.match(html,/Cercle des Fines Lames<\/strong><span>Dextérité · Niveau 10 · <span class="building-places" title="[^"]*">\d\/6 places<\/span> · garde du corps \+50 %<\/span>/);
 assert.match(html,/Salle de la Main seule<\/strong><span>Combat à une main · À construire<\/span>/);
+// Le capitaine choisit parmi les salles de tous les bâtiments, rangées par bâtiment : la salle principale par ce qu'elle
+// travaille, les ailes par leur nom.
+assert.match(html,/<optgroup label="Ludus"><option value="ludus">Résistance physique<\/option><\/optgroup><optgroup label="Cercle des Fines Lames"><option value="blade_circle">Dextérité<\/option><\/optgroup><\/select>/);
+
+// Entraînement libre (Idan, 2026-11-03) : chaque matin, les disponibles s'entraînent dans tous les bâtiments ; au Ludus,
+// la Résistance physique monte, le gain vient de l'Endurance.
+state.company.camp.buildings={ludus:{level:10,construction:null},ludus_force:{level:10,construction:null},blade_circle:{level:10,construction:null}};
+for(const m of state.company.roster) m.stats["Volonté"]=95;
+assert.deepEqual(rules.setCaptainTraining(state,"ludus_force"),{ok:true,code:"ludus_force"});
+const forceBefore=captain.stats.Force,xpBefore=captain.xp?.stats?.Force||0;
+const [morning]=rules.advanceTime(state,1);
+const entries=morning.school.entries;
+assert.deepEqual(entries.find(e=>e.captain)?.code,"ludus_force","le capitaine à La Meule, sans test");
+assert.ok((captain.xp?.stats?.Force||0)>xpBefore||captain.stats.Force>forceBefore,"sa Force progresse");
+const others=entries.filter(e=>!e.captain);
+assert.equal(others.length,2);
+for(const e of others) assert.equal(e.chance,81.8,"hors École, la Volonté seule : Δ = (95 − 50) / 2 = 22,5 → 81,8 %");
+assert.ok(others.every(e=>["ludus","ludus_force","blade_circle"].includes(e.code||e.aimed)),"une salle d'un bâtiment construit");
+assert.ok(others.some(e=>e.code),"au moins un s'entraîne");
+const lines=[];
+const logUi=new Function("game","$","fmt","esc","campaignRules","dormitoryPlacesText","tavernLog","saveGame","renderGame","document",
+  fs.readFileSync(path.join(ROOT,"prototype-web","camp-buildings-ui.js"),"utf8")+"\nreturn {logSchoolDay};")(
+  game,$,fmt,esc,()=>rules,String,message=>lines.push(message),()=>{},()=>{},{});
+logUi.logSchoolDay({entries:[{code:"ludus"},{code:"ludus_force"},{code:"blade_circle"},{code:null}]});
+assert.deepEqual(lines,["Ludus : 2 élèves aujourd’hui.","Cercle des Fines Lames : 1 élève aujourd’hui."],"une ligne par bâtiment");
+
 // La fiche de l'offre montre le paiement, sans commentaire (Idan : « tu veux toujours mettre du blabla inutile ! »).
 assert.doesNotMatch(fs.readFileSync(path.join(ROOT,"prototype-web","contract-ui.js"),"utf8"),/du Cercle des Fines Lames/);
 
-console.log("Ludus, Académie de la survie, Cercle des Fines Lames : 10 niveaux, ailes, noms, garde du corps + 5 % par niveau du Cercle — OK");
+console.log("Ludus, Académie de la survie, Cercle des Fines Lames : 10 niveaux, ailes, noms, garde du corps + 5 % par niveau du Cercle, entraînement libre — OK");

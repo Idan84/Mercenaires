@@ -647,6 +647,25 @@
         code,name:CAMP_BUILDINGS.get(code).nom,school:CAMP_BUILDINGS.get(code).ecole||null,
         level:buildingLevel(state,code),places:buildingPlaces(state,code)}));
     }
+    // Bâtiments d'entraînement (Idan, 2026-11-03) : l'École de magie, le Ludus, l'Académie de la survie et le Cercle des
+    // Fines Lames (ceux qui ont des places) ; chaque salle principale construite, puis ses ailes construites, avec ce
+    // qu'elles travaillent (entraine, l'école, ou la Puissance magique pour la salle généraliste) et la caractéristique
+    // qui fait le gain (apprend_avec du bâtiment).
+    const TRAINING_HALLS=[...CAMP_BUILDINGS.values()].filter(row=>!row.requiert&&Number(row.places_pas)>0).map(row=>row.code);
+    function trainingRooms(state){
+      const rooms=[];
+      for(const hall of TRAINING_HALLS){
+        if(!(buildingLevel(state,hall)>0)) continue;
+        const hallRow=CAMP_BUILDINGS.get(hall);
+        for(const code of [hall,...campRoomCodes(hall)].filter(code=>buildingLevel(state,code)>0)){
+          const row=CAMP_BUILDINGS.get(code);
+          rooms.push({code,building:hall,name:row.nom,label:code===SCHOOL_HALL?"Salle généraliste":row.nom,school:row.ecole||null,
+            trains:row.entraine||row.ecole||(code===SCHOOL_HALL?"Puissance magique":null),learnWith:hallRow.apprend_avec||"Intelligence",
+            level:buildingLevel(state,code),places:buildingPlaces(state,code)});
+        }
+      }
+      return rooms;
+    }
     // Apprentissage des sorts (Idan, 2026-11-02 ; règles : spell-study.js) : l'élève prend une place dans la salle de
     // l'école du sort, avant l'entraînement libre ; élève et professeur restent au camp jusqu'à la fin.
     const spellStudy=Study?Study.createSpellStudyRules({reference,random,affinity,progression,camp:{
@@ -657,26 +676,27 @@
       buildingLevel,buildingPlaces,directorOf,expeditionOf}}):null;
     const studyBusy=(state,m)=>spellStudy&&m?spellStudy.busyReason(state,m.id):null;
     function trainingAvailable(state,m){ return Boolean(m)&&!m.recovery&&!expeditionOf(state,m.id)&&!studyBusy(state,m); }
-    // Le choix du joueur pour le capitaine : une salle construite, ou null (la taverne).
+    // Le choix du joueur pour le capitaine : une salle ou une aile construite, de n'importe quel bâtiment d'entraînement, ou
+    // null (la taverne).
     function captainTraining(state){
       const code=state?.company?.camp?.captainTraining||null;
-      return code&&buildingLevel(state,code)>0&&(code===SCHOOL_HALL||campRoomCodes(SCHOOL_HALL).includes(code))?code:null;
+      return code&&trainingRooms(state).some(room=>room.code===code)?code:null;
     }
     function setCaptainTraining(state,code){
-      if(code&&!schoolRooms(state).some(room=>room.code===code)) return {ok:false,reason:"Cette salle n’est pas construite."};
+      if(code&&!trainingRooms(state).some(room=>room.code===code)) return {ok:false,reason:"Cette salle n’est pas construite."};
       state.company.camp.captainTraining=code||null;
       return {ok:true,code:code||null};
     }
     function runSchoolDay(state){
       const camp=state.company.camp;
-      const rooms=schoolRooms(state);
+      const rooms=trainingRooms(state);
       if(!schoolTraining||!rooms.length){ delete camp.schoolDay; return null; }
       const captain=rosterOf(state).find(m=>m.id===state.company.captainId)||null;
       const candidates=rosterOf(state).filter(m=>m!==captain&&!offField(state,m)&&trainingAvailable(state,m));
       // Les places prises par les élèves qui apprennent un sort ne sont plus libres.
       for(const room of rooms) if(spellStudy) room.places=Math.max(0,room.places-spellStudy.learnersIn(state,room.code));
       const result=schoolTraining.runDay({rooms,candidates,captain:trainingAvailable(state,captain)?captain:null,
-        captainChoice:captainTraining(state),director:directorOf(state)});
+        captainChoice:captainTraining(state),director:directorOf(state),company:rosterOf(state)});
       camp.schoolDay={day:state.day,directorXp:result.directorXp,
         entries:result.entries.map(e=>({id:e.id,code:e.code,xp:e.xp,chance:e.chance,captain:e.captain||undefined,full:e.full||undefined}))};
       return {day:state.day,entries:result.entries,directorXp:result.directorXp,director:directorOf(state)};
@@ -1207,7 +1227,7 @@
       completeExpeditionCombat,
       dormitoryFree,
       dormitoryUsed,
-      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,spellStudy,studyBusy,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
+      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,trainingRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,spellStudy,studyBusy,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
       woundDaysFor,fatigueDaysFor,
       dormitoryPlaces,
       dormitoryExpansionCost,

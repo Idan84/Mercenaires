@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "name": "camp-masters-dialogue",
+  "description": "Maîtres des bâtiments d’entraînement (Idan, 2026-11-03 : « Oui pour les maîtres ») : le Doctore au Ludus, le Vétéran à l’Académie de la survie, le Maître des lames au Cercle des Fines Lames, nommés comme le directeur de l’École (school-director-dialogue.json). common : le panneau, les refus neutres, le retour sur le terrain ; masters : ce qui est propre à chacun (remplace common). Humeur d’un refus : flattered, vexed, neutral. {prenom} ; {masculin|féminin} selon celui qui parle ou dont on parle ; {jours}. Textes de JC, à retoucher librement.",
+  "common": {
+    "panel": {
+      "asked_today": "déjà sollicité aujourd’hui",
+      "since": "En poste depuis {jours}",
+      "since_today": "{Nommé|Nommée} aujourd’hui",
+      "recall": "Le renvoyer sur le terrain"
+    },
+    "offer": {
+      "neutral": [
+        "Non merci, capitaine. Pas pour l’instant.",
+        "Très peu pour moi.",
+        "Je préfère rester où je suis."
+      ],
+      "outcome_refused": "{prenom} reste sur le terrain."
+    },
+    "recall": {
+      "proposal": "La compagnie a besoin de vous sur le terrain. Vous reprenez les armes ?",
+      "accepted": [
+        "Enfin ! À force de regarder les autres suer, je rouillais.",
+        "J’y retourne. Ils savent tout ce que je pouvais leur apprendre.",
+        "Je pensais que vous ne demanderiez jamais. Allons-y."
+      ],
+      "flattered": [
+        "Vous avez besoin de moi au front ? Touchant. Mais mes élèves aussi.",
+        "Qui les tiendrait, sans moi ? Pas encore, capitaine.",
+        "Plus tard, peut-être. Ils ne sont pas prêts."
+      ],
+      "vexed": [
+        "Vous me trouvez inutile ici ? Charmant.",
+        "Je les forme pour qu’ils reviennent vivants, et vous voulez me renvoyer me faire trouer ?",
+        "Non. Et ne me reposez pas la question."
+      ],
+      "neutral": [
+        "Non, je suis bien ici.",
+        "Pas tout de suite, capitaine.",
+        "Laissez-moi encore un peu de temps."
+      ],
+      "dorm_full": "Le dortoir est plein : il n’y a pas de place pour son retour."
+    }
+  },
+  "masters": {
+    "doctore": {
+      "label": "Doctore",
+      "origin": "Ludus",
+      "panel": {
+        "title": "{Le|La} Doctore",
+        "appoint": "Nommer un Doctore",
+        "appoint_tip": "Le mercenaire choisi peut refuser le poste. Il quittera le terrain pour le Ludus."
+      },
+      "offer": {
+        "proposal": "Le Ludus a besoin d’un Doctore. Vous savez cogner et crier : ça vous dit ?",
+        "accepted": [
+          "Crier sur des gens qui n’ont pas le droit de répondre ? J’ai attendu ça toute ma vie.",
+          "Donnez-moi la meule. Dans un mois, ils la pousseront avec l’âne dessus.",
+          "Enfin un poste où c’est moi qui frappe et les autres qui encaissent."
+        ],
+        "flattered": [
+          "Doctore, moi ? Ça sonne bien… mais mes poings servent encore au front.",
+          "Je saurais les faire suer, c’est sûr. Mais j’ai encore des ennemis à faire suer.",
+          "Redemandez-moi quand j’aurai moins de cicatrices à gagner."
+        ],
+        "vexed": [
+          "Courir derrière un cochon graissé ? Je vaux mieux que ça !",
+          "Vous me trouvez trop {lent|lente} pour le terrain ? Je vous montre ?",
+          "Me ranger au Ludus comme une vieille quintaine ? Je m’en souviendrai."
+        ],
+        "outcome_accepted": "{prenom} prend le Ludus en main."
+      },
+      "recall": {
+        "outcome_accepted": "{prenom} retourne sur le terrain : le Ludus n’a plus de Doctore.",
+        "outcome_refused": "{prenom} reste au Ludus."
+      }
+    },
+    "veteran": {
+      "label": "{Vétéran|Vétérane}",
+      "origin": "Académie de la survie",
+      "panel": {
+        "title": "{Le Vétéran|La Vétérane}",
+        "appoint": "Nommer un Vétéran",
+        "appoint_tip": "Le mercenaire choisi peut refuser le poste. Il quittera le terrain pour l’Académie de la survie."
+      },
+      "offer": {
+        "proposal": "L’Académie a besoin de quelqu’un qui sait revenir vivant. Vous en êtes la preuve. Ça vous dit ?",
+        "accepted": [
+          "Apprendre aux jeunes à ne pas mourir ? C’est la seule leçon qui compte. J’accepte.",
+          "J’ai survécu à tout, même à la cantine. Je prends le poste.",
+          "Enfin du repos. Enfin, façon de parler : eux, je les mets au four."
+        ],
+        "flattered": [
+          "{Vétéran|Vétérane}, moi ? Ça me touche… mais je n’ai pas fini de survivre.",
+          "Je leur apprendrais volontiers à revenir vivants. Quand j’aurai fini d’y aller.",
+          "Pas encore, capitaine. Il me reste quelques cicatrices à collectionner."
+        ],
+        "vexed": [
+          "{Vétéran|Vétérane} ? Vous voulez dire {vieux|vieille} ? Merci bien.",
+          "M’enfermer dans un placard pendant que les autres se battent ? Non.",
+          "Je survis mieux sur le terrain que dans votre glacière."
+        ],
+        "outcome_accepted": "{prenom} prend l’Académie de la survie en main."
+      },
+      "recall": {
+        "outcome_accepted": "{prenom} retourne sur le terrain : l’Académie n’a plus de Vétéran.",
+        "outcome_refused": "{prenom} reste à l’Académie de la survie."
+      }
+    },
+    "bladeMaster": {
+      "label": "{Maître|Maîtresse} des lames",
+      "origin": "Cercle des Fines Lames",
+      "panel": {
+        "title": "{Le Maître|La Maîtresse} des lames",
+        "appoint": "Nommer un Maître des lames",
+        "appoint_tip": "Le mercenaire choisi peut refuser le poste. Il quittera le terrain pour le Cercle des Fines Lames."
+      },
+      "offer": {
+        "proposal": "Le Cercle des Fines Lames cherche un maître. Du style, du mordant et une tasse de thé : ça vous dit ?",
+        "accepted": [
+          "Enseigner l’escrime entre deux tasses de thé ? Voilà un poste à ma mesure.",
+          "Enfin des élèves qui savent se tenir. Ou qui l’apprendront, à coups de plat d’épée.",
+          "Les nobles, la rapière et les médisances ? Je suis {né|née} pour ça."
+        ],
+        "flattered": [
+          "{Maître|Maîtresse} des lames ? Quel joli titre… mais ma lame a encore à faire dehors.",
+          "Vous me flattez, capitaine. Je reviendrai prendre le thé plus tard.",
+          "Le Salon de thé attendra : j’ai encore des duels à gagner."
+        ],
+        "vexed": [
+          "Servir le thé à des petits nobles ? Je suis {un tueur|une tueuse}, pas {un majordome|une gouvernante}.",
+          "Vous me voyez faire des révérences au Bal masqué ? Je préfère frapper.",
+          "Des rapières en dentelle ? Gardez votre Cercle."
+        ],
+        "outcome_accepted": "{prenom} prend le Cercle des Fines Lames en main."
+      },
+      "recall": {
+        "outcome_accepted": "{prenom} retourne sur le terrain : le Cercle n’a plus de Maître des lames.",
+        "outcome_refused": "{prenom} reste au Cercle des Fines Lames."
+      }
+    }
+  }
+}

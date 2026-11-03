@@ -329,6 +329,21 @@
         "key": "directorDays",
         "label": "Jours à la tête de l’École",
         "hideZero": true
+      },
+      {
+        "key": "doctoreDays",
+        "label": "Jours à la tête du Ludus",
+        "hideZero": true
+      },
+      {
+        "key": "veteranDays",
+        "label": "Jours à la tête de l’Académie",
+        "hideZero": true
+      },
+      {
+        "key": "bladeMasterDays",
+        "label": "Jours à la tête du Cercle",
+        "hideZero": true
       }
     ],
     "events": {
@@ -380,6 +395,30 @@
       "director_recall": {
         "accord": "Quitte l’École de magie et retourne sur le terrain après {jours}.",
         "refus": "Refuse de quitter l’École de magie."
+      },
+      "doctore": {
+        "accord": "Devient {le|la} Doctore du Ludus.",
+        "refus": "Refuse de devenir {le|la} Doctore du Ludus."
+      },
+      "doctore_recall": {
+        "accord": "Quitte le Ludus et retourne sur le terrain après {jours}.",
+        "refus": "Refuse de quitter le Ludus."
+      },
+      "veteran": {
+        "accord": "Devient {le Vétéran|la Vétérane} de l’Académie de la survie.",
+        "refus": "Refuse de devenir {le Vétéran|la Vétérane} de l’Académie de la survie."
+      },
+      "veteran_recall": {
+        "accord": "Quitte l’Académie de la survie et retourne sur le terrain après {jours}.",
+        "refus": "Refuse de quitter l’Académie de la survie."
+      },
+      "bladeMaster": {
+        "accord": "Devient {le Maître|la Maîtresse} des lames du Cercle.",
+        "refus": "Refuse de devenir {le Maître|la Maîtresse} des lames du Cercle."
+      },
+      "bladeMaster_recall": {
+        "accord": "Quitte le Cercle des Fines Lames et retourne sur le terrain après {jours}.",
+        "refus": "Refuse de quitter le Cercle des Fines Lames."
       },
       "study": {
         "accord": "Accepte d’apprendre {sort} à l’École de magie.",

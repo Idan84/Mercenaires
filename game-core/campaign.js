@@ -9,10 +9,12 @@
   const training=typeof module!=="undefined"&&module.exports?require("./school-training.js"):root.MercenairesSchoolTraining;
   // Apprentissage des sorts à l'École (facultatif de même).
   const study=typeof module!=="undefined"&&module.exports?require("./spell-study.js"):root.MercenairesSpellStudy;
-  const api=factory(history,regeneration,training,study);
+  // Postes du camp : le directeur de l'École et les maîtres.
+  const posts=typeof module!=="undefined"&&module.exports?require("./camp-posts.js"):root.MercenairesCampPosts;
+  const api=factory(history,regeneration,training,study,posts);
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesCampaign=api;
-})(typeof globalThis!=="undefined"?globalThis:this,function(History,Regeneration,Training,Study){
+})(typeof globalThis!=="undefined"?globalThis:this,function(History,Regeneration,Training,Study,Posts){
   // Sauvegarde : l'état de partie complet, sérialisé en JSON avec un format et une version.
   // La trace de génération des mercenaires (détail de calcul pour le Design Lab, ~85 % du poids)
   // n'est pas sauvegardée : un mercenaire passe d'environ 36 Ko à 5 Ko.
@@ -82,14 +84,15 @@
     const medicSkill=state=>Math.max(0,Number(medicOf(state)?.skills?.camp?.["Médecine"])||0);
     function medicCareFactor(state){ return medicOf(state)?Math.max(0,1-medicSkill(state)/MEDIC.divisor):1; }
     function medicRenown(state){ return medicOf(state)?Math.round(MEDIC.renown*medicSkill(state)):0; }
-    // Directeur de l'École de magie (Idan, 2026-11-01 ; nomination : school-director.js) : il aide à l'entraînement libre.
-    const isDirector=(state,m)=>state.company.directorId!=null&&m.id===state.company.directorId;
+    // Directeur de l'École de magie (Idan, 2026-11-01) et maîtres du Ludus, de l'Académie et du Cercle (Idan, 2026-11-03) ;
+    // nomination : school-director.js ; postes : camp-posts.js. Chacun aide à l'entraînement libre dans son bâtiment.
+    const postOf=(state,m)=>Posts?Posts.postOf(state,m):null;
     function directorOf(state){
       const id=state?.company?.directorId;
       return id==null?null:(state.company.roster||[]).find(m=>m.id===id)||null;
     }
-    // Hors mission, comme l'intendant : ni dortoir, ni mission, ni garde du corps (médecin et directeur de l'École).
-    const offField=(state,m)=>m.id===state.company.intendantId||(state.company.medicId!=null&&m.id===state.company.medicId)||isDirector(state,m);
+    // Hors mission, comme l'intendant : ni dortoir, ni mission, ni garde du corps (médecin, directeur de l'École, maîtres).
+    const offField=(state,m)=>m.id===state.company.intendantId||(state.company.medicId!=null&&m.id===state.company.medicId)||Boolean(postOf(state,m));
     // Bains chauds (Idan, 2026-11-01) : un jour de fatigue de moins par niveau, au moins 1 jour.
     const fatigueDaysFor=(days,state)=>Math.max(1,(Number(days)||0)-fatigueRelief(state));
     const STARTING_DORMITORY_CAPACITY=referenceConstant(reference,"camp.dormitory.initial_capacity",25);
@@ -417,6 +420,9 @@
           intendantId:null,
           medicId:null,
           directorId:null,
+          doctoreId:null,
+          veteranId:null,
+          bladeMasterId:null,
           camp:{dormitoryCapacity:STARTING_DORMITORY_CAPACITY},
           renownHeritage:[],
           // Armes et armures de rechange de la compagnie, sans propriétaire, listées à l'Intendance (Idan, 2026-10-23
@@ -696,10 +702,10 @@
       // Les places prises par les élèves qui apprennent un sort ne sont plus libres.
       for(const room of rooms) if(spellStudy) room.places=Math.max(0,room.places-spellStudy.learnersIn(state,room.code));
       const result=schoolTraining.runDay({rooms,candidates,captain:trainingAvailable(state,captain)?captain:null,
-        captainChoice:captainTraining(state),director:directorOf(state),company:rosterOf(state)});
-      camp.schoolDay={day:state.day,directorXp:result.directorXp,
+        captainChoice:captainTraining(state),masters:Posts?Posts.mastersOf(state):{magic_school:directorOf(state)},company:rosterOf(state)});
+      camp.schoolDay={day:state.day,directorXp:result.directorXp,masterXp:result.masterXp,
         entries:result.entries.map(e=>({id:e.id,code:e.code,xp:e.xp,chance:e.chance,captain:e.captain||undefined,full:e.full||undefined}))};
-      return {day:state.day,entries:result.entries,directorXp:result.directorXp,director:directorOf(state)};
+      return {day:state.day,entries:result.entries,directorXp:result.directorXp,masterXp:result.masterXp,director:directorOf(state)};
     }
     // La journée d'entraînement du jour (gardée le matin) : { day, entries, directorXp } ou null.
     function schoolDayOf(state){
@@ -925,7 +931,8 @@
       if(!ids.length) return {ok:false,reason:"Aucun mercenaire choisi."};
       if(ids.some(id=>expeditionOf(state,id))) return {ok:false,reason:"Un de ces mercenaires est déjà en mission."};
       if(state.company.medicId!=null&&ids.includes(state.company.medicId)) return {ok:false,reason:"Le médecin reste au camp."};
-      if(state.company.directorId!=null&&ids.includes(state.company.directorId)) return {ok:false,reason:"Le directeur de l’École reste au camp."};
+      const post=ids.map(id=>postOf(state,{id})).find(Boolean);
+      if(post) return {ok:false,reason:`${post.title} reste au camp.`};
       const studying=ids.map(id=>studyBusy(state,{id})).find(Boolean);
       if(studying) return {ok:false,reason:studying};
       // Départ le lendemain matin, puis les jours de marche.
@@ -999,7 +1006,7 @@
       if(m.id===state.company.captainId) return {ok:false,reason:"Le capitaine reste à la compagnie."};
       if(m.id===state.company.intendantId) return {ok:false,reason:"L’intendant reste au camp."};
       if(state.company.medicId!=null&&m.id===state.company.medicId) return {ok:false,reason:"Le médecin reste au camp."};
-      if(isDirector(state,m)) return {ok:false,reason:"Le directeur de l’École reste au camp."};
+      if(postOf(state,m)) return {ok:false,reason:`${postOf(state,m).title} reste au camp.`};
       if(studyBusy(state,m)) return {ok:false,reason:studyBusy(state,m)};
       if(!isAvailable(m,state)) return {ok:false,reason:m.recovery?"Il doit d’abord se remettre.":busyReason(state,m.id)};
       if(bodyguard.levelOf(m.reputation)<offer.level) return {ok:false,reason:"Réputation trop faible."};
@@ -1137,7 +1144,7 @@
           roster.splice(roster.indexOf(mercenary),1);
           if(state.company.intendantId===mercenary.id) state.company.intendantId=null;
           if(state.company.medicId===mercenary.id) state.company.medicId=null;
-          if(state.company.directorId===mercenary.id) state.company.directorId=null;
+          if(Posts) Posts.release(state,mercenary);
           // Son inventaire, gardé au dortoir, retourne à l'Intendance (Idan, 2026-10-30) ; ce qu'il portait reste avec
           // lui (butin d'une victoire, perdu sur une défaite).
           const worn=new Set(Object.values(mercenary.equipment?.slots||{}).filter(Boolean));

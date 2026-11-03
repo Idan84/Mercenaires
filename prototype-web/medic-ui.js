@@ -40,7 +40,7 @@ function renderMedicPanel(){
     return;
   }
   const company=c.company,lieutenants=company.lieutenantIds||[];
-  const picks=company.roster.filter(m=>m.id!==company.captainId&&m.id!==company.intendantId&&m.id!==company.directorId&&!lieutenants.includes(m.id)&&!rules.expeditionOf(c,m.id))
+  const picks=company.roster.filter(m=>m.id!==company.captainId&&m.id!==company.intendantId&&!MercenairesCampPosts.postOf(c,m)&&!lieutenants.includes(m.id)&&!rules.expeditionOf(c,m.id))
     .sort((a,b)=>medicSkill(b)-medicSkill(a)).map(m=>{
       const asked=m.medicOfferDay===c.day,arriving=Number(m.contract?.joinDay)>c.day;
       return `<button type="button" class="steward-pick" data-medic-offer="${esc(m.id)}"${asked||arriving?` disabled title="${esc(arriving?"Il rejoint la compagnie demain matin.":copy.asked_today||"")}"`:` title="Médecine ${fmt(medicSkill(m))}"`}>

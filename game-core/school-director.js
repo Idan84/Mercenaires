@@ -21,6 +21,8 @@
 })(typeof globalThis!=="undefined"?globalThis:this,function(Steward,History,Posts){
   const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
   const capitalize=text=>text.charAt(0).toUpperCase()+text.slice(1);
+  // « de » ou « d’ » devant le titre (« n’a pas d’Alchimiste »).
+  const of=noun=>(/^[aeiouyéèêëàâîïôû]/i.test(noun)?"d’":"de ")+noun;
 
   // dormitory : { free(state), places(mercenaire) } ; buildingLevel(state, code) : niveau d'un bâtiment (campaign.js) ;
   // schoolLevel(state) : l'ancien paramètre, le niveau de l'École de magie ; post : "director" (par défaut), "doctore",
@@ -97,7 +99,7 @@
     // Lui proposer de revenir sur le terrain : il reprend une place au dortoir.
     function recall(state){
       const m=directorOf(state);
-      if(!m) return no(`${capitalize(P.short)} n’a pas de ${P.noun}.`);
+      if(!m) return no(`${capitalize(P.short)} n’a pas ${of(P.noun)}.`);
       if(m[OFFER_DAY]===state.day) return no("Vous lui en avez déjà parlé aujourd’hui.");
       if(dormitory&&dormitory.free(state)<dormitory.places(m)) return {...no("Le dortoir est plein : pas de place pour son retour."),dormFull:true};
       const chance=returnChance(state,m),dice=roll(),days=daysAsDirector(state);

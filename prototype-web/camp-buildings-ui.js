@@ -53,12 +53,13 @@ function campBuildingAction(c,code,level){
 function schoolStudents(c,code){
   const rules=campaignRules(),day=rules.schoolDayOf?rules.schoolDayOf(c):null;
   const learners=rules.spellStudy?rules.spellStudy.studiesOf(c).filter(s=>s.room===code).map(s=>({id:s.studentId,spell:s.spellName})):[];
-  const armor=rules.armorStudy&&code===rules.armorStudy.HALL?rules.armorStudy.studiesOf(c).map(s=>({id:s.studentId,armor:s.type})):[];
-  return [...learners,...armor,...(day?day.entries.filter(e=>e.code===code):[])];
+  const armor=rules.armorStudy&&code===rules.armorStudy.HALL?rules.armorStudy.studiesOf(c).map(s=>({id:s.studentId,learn:`l’armure ${s.type.toLocaleLowerCase("fr")}`})):[];
+  const poison=rules.poisonStudy&&code===rules.poisonStudy.HALL?rules.poisonStudy.studiesOf(c).map(s=>({id:s.studentId,learn:"l’empoisonnement"})):[];
+  return [...learners,...armor,...poison,...(day?day.entries.filter(e=>e.code===code):[])];
 }
 function schoolStudentsTitle(c,students){
   const name=id=>c.company.roster.find(m=>m.id===id)?.name||"?";
-  const what=e=>e.spell?`apprend ${e.spell}`:e.armor?`apprend l’armure ${e.armor.toLocaleLowerCase("fr")}`:`+${fmt(e.xp)} XP`;
+  const what=e=>e.spell?`apprend ${e.spell}`:e.learn?`apprend ${e.learn}`:`+${fmt(e.xp)} XP`;
   return students.length?"Aujourd’hui : "+students.map(e=>`${name(e.id)} (${what(e)})`).join(", "):"Personne aujourd’hui";
 }
 function campBuildingState(c,code,level){
@@ -112,6 +113,7 @@ function campBuildingCard(c,code){
       ${campRoomsList(c,code)}
       ${code==="magic_school"&&typeof studyListHtml==="function"?studyListHtml(c):""}
       ${code==="survival_academy"&&typeof armorStudyHtml==="function"?armorStudyHtml(c):""}
+      ${code==="alchemy_lab"&&typeof poisonStudyHtml==="function"?poisonStudyHtml(c):""}
     </article>`;
 }
 

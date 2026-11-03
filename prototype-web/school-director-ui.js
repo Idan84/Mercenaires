@@ -56,7 +56,8 @@ function campPostLabel(post,m){
   if(post==="director") return String(m?.sex||"").toLowerCase().startsWith("f")?"Directrice":"Directeur";
   return directorFill(campPostCopy(post).label||"",m);
 }
-const CAMP_POST_PANELS={director:"director-panel",doctore:"doctore-panel",veteran:"veteran-panel",bladeMaster:"blade-master-panel"};
+const CAMP_POST_PANELS={director:"director-panel",doctore:"doctore-panel",veteran:"veteran-panel",bladeMaster:"blade-master-panel",
+  alchemist:"alchemist-panel"};
 
 function renderSchoolDirectorPanel(post="director"){
   const panel=$(CAMP_POST_PANELS[post]);
@@ -93,7 +94,7 @@ function renderSchoolDirectorPanel(post="director"){
 }
 // Les panneaux des trois maîtres.
 function renderCampMasterPanels(){
-  for(const post of ["doctore","veteran","bladeMaster"]) renderSchoolDirectorPanel(post);
+  for(const post of ["doctore","veteran","bladeMaster","alchemist"]) renderSchoolDirectorPanel(post);
 }
 
 // Réponse à une proposition (poste ou retour sur le terrain), dans la boîte de dialogue des échanges.

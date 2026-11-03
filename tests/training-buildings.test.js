@@ -42,7 +42,7 @@ const BUILDINGS={
   // deuxième fonction : « Rien pour l'instant ! »).
   watchtower:["Tour de guet","Perception",[["Le Créneau","Armes de tir"]]],
   // Le Labo d'alchimie (Idan, 2026-11-03 : « Dans la salle principale, on peut entraîner sa résistance au poison » ;
-  // « piège et armes à feu, c'est validé » ; pas de chef ; les potions plus tard).
+  // « piège et armes à feu, c'est validé » ; les potions plus tard).
   alchemy_lab:["Labo d’alchimie","Résistance au poison",[["La Poudrière","Armes à feu"],["La Cave","Pièges"]]]
 };
 const known=new Set([...reference.characteristics.rows.map(r=>r.nom),...reference.skills.rows.map(r=>r.nom)]);
@@ -152,10 +152,11 @@ state.company.camp.buildings={watchtower:{level:1,construction:null},watchtower_
 assert.deepEqual(rules.trainingRooms(state).map(r=>[r.code,r.building,r.trains,r.learnWith,r.places]),
   [["watchtower","watchtower","Perception","Perception",1],["watchtower_ranged","watchtower","Armes de tir","Perception",1]]);
 
-// Le Labo d'alchimie : la Résistance au poison à l'Alambic, appris avec l'Intelligence ; pas de chef.
+// Le Labo d'alchimie : la Résistance au poison à l'Alambic, appris avec l'Intelligence ; un chef de salle, l'Alchimiste
+// (Idan, 2026-11-03 : « En fait, on va nommer un alchimiste comme chef de salle ! »).
 assert.equal(row("alchemy_lab").apprend_avec,"Intelligence");
 assert.match(row("alchemy_lab").description,/Dans l’Alambic : « Ça bout, ça fume, ça sent le chou\. Personne ne sait ce que c’est\. »/);
-assert.equal(require("../game-core/camp-posts.js").postOfBuilding("alchemy_lab"),null,"pas de chef");
+assert.equal(require("../game-core/camp-posts.js").postOfBuilding("alchemy_lab")?.key,"alchemist","l'Alchimiste");
 state.company.camp.buildings={alchemy_lab:{level:1,construction:null},alchemy_firearms:{level:1,construction:null},alchemy_traps:{level:1,construction:null}};
 assert.deepEqual(rules.trainingRooms(state).map(r=>[r.code,r.trains,r.learnWith]),
   [["alchemy_lab","Résistance au poison","Intelligence"],["alchemy_firearms","Armes à feu","Intelligence"],["alchemy_traps","Pièges","Intelligence"]]);

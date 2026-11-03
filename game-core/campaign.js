@@ -443,6 +443,7 @@
           doctoreId:null,
           veteranId:null,
           bladeMasterId:null,
+          alchemistId:null,
           camp:{dormitoryCapacity:STARTING_DORMITORY_CAPACITY},
           renownHeritage:[],
           // Armes et armures de rechange de la compagnie, sans propriétaire, listées à l'Intendance (Idan, 2026-10-23
@@ -699,13 +700,16 @@
         const row=[...CAMP_BUILDINGS.values()].find(r=>r.requiert===SCHOOL_HALL&&r.ecole===school);
         return row?{code:row.code,name:row.nom}:null;
       },
-      buildingLevel,buildingPlaces,directorOf,expeditionOf,busyElsewhere:(state,id)=>armorStudy?armorStudy.busyReason(state,id):null}}):null;
-    // Apprendre un port d'armure (Idan, 2026-11-03 ; règles : armor-study.js) : une place de la salle principale de
-    // l'Académie, avant l'entraînement libre ; l'élève reste au camp jusqu'à la fin.
-    const armorStudy=ArmorStudy?ArmorStudy.createArmorStudyRules({reference,random,affinity,progression,camp:{
-      buildingLevel,buildingPlaces,expeditionOf,veteranOf:state=>Posts?Posts.holderOf(state,Posts.postByKey("veteran")):null,
-      busyElsewhere:(state,id)=>spellStudy?spellStudy.busyReason(state,id):null}}):null;
-    const studyBusy=(state,m)=>m?(spellStudy?.busyReason(state,m.id)||armorStudy?.busyReason(state,m.id)||null):null;
+      buildingLevel,buildingPlaces,directorOf,expeditionOf,busyElsewhere:(state,id)=>aptitudeBusy(state,id)}}):null;
+    // Apprendre un port d'armure à l'Académie, l'Empoisonnement des armes au Labo d'alchimie (Idan, 2026-11-03 ; règles :
+    // armor-study.js) : une place de la salle principale, avant l'entraînement libre ; l'élève reste au camp jusqu'à la fin.
+    const holderOfPost=key=>state=>Posts?Posts.holderOf(state,Posts.postByKey(key)):null;
+    const aptitudeRules=(course,masterKey,others)=>ArmorStudy?ArmorStudy.createAptitudeStudyRules({reference,random,affinity,progression,course,camp:{
+      buildingLevel,buildingPlaces,expeditionOf,masterOf:holderOfPost(masterKey),busyElsewhere:others}}):null;
+    const armorStudy=aptitudeRules("armor","veteran",(state,id)=>spellStudy?.busyReason(state,id)||poisonStudy?.busyReason(state,id)||null);
+    const poisonStudy=aptitudeRules("poison","alchemist",(state,id)=>spellStudy?.busyReason(state,id)||armorStudy?.busyReason(state,id)||null);
+    function aptitudeBusy(state,id){ return armorStudy?.busyReason(state,id)||poisonStudy?.busyReason(state,id)||null; }
+    const studyBusy=(state,m)=>m?(spellStudy?.busyReason(state,m.id)||aptitudeBusy(state,m.id)):null;
     function trainingAvailable(state,m){ return Boolean(m)&&!m.recovery&&!expeditionOf(state,m.id)&&!studyBusy(state,m); }
     // Le choix du joueur pour le capitaine : une salle ou une aile construite, de n'importe quel bâtiment d'entraînement, ou
     // null (la taverne).
@@ -726,7 +730,7 @@
       const candidates=rosterOf(state).filter(m=>m!==captain&&!offField(state,m)&&trainingAvailable(state,m));
       // Les places prises par les élèves qui apprennent un sort ne sont plus libres.
       for(const room of rooms) room.places=Math.max(0,room.places-(spellStudy?spellStudy.learnersIn(state,room.code):0)
-        -(armorStudy?armorStudy.learnersIn(state,room.code):0));
+        -(armorStudy?armorStudy.learnersIn(state,room.code):0)-(poisonStudy?poisonStudy.learnersIn(state,room.code):0));
       const result=schoolTraining.runDay({rooms,candidates,captain:trainingAvailable(state,captain)?captain:null,
         captainChoice:captainTraining(state),masters:Posts?Posts.mastersOf(state):{magic_school:directorOf(state)},company:rosterOf(state)});
       camp.schoolDay={day:state.day,directorXp:result.directorXp,masterXp:result.masterXp,
@@ -824,11 +828,12 @@
       const merchant=merchants?merchants.morning(state,{renown:companyRenown(state).total}):null;
       // Apprentissage des sorts (Idan, 2026-11-02) : un test par élève ; ceux qui savent sortent de l'École.
       const study=spellStudy?spellStudy.advance(state):null;
-      // Ports d'armure à l'Académie (Idan, 2026-11-03) : de même.
+      // Ports d'armure à l'Académie, empoisonnement au Labo (Idan, 2026-11-03) : de même.
       const armor=armorStudy?armorStudy.advance(state):null;
+      const poison=poisonStudy?poisonStudy.advance(state):null;
       // Entraînement libre (Idan, 2026-11-02) : ceux qui restent au camp choisissent leur journée.
       const school=runSchoolDay(state);
-      return {day:state.day,recovered,salaries,tavern:tavernReport,offersLost,expeditions,built,buildings,lieutenants:lieutenantReports,mana,merchant,school,study,armorStudy:armor};
+      return {day:state.day,recovered,salaries,tavern:tavernReport,offersLost,expeditions,built,buildings,lieutenants:lieutenantReports,mana,merchant,school,study,armorStudy:armor,poisonStudy:poison};
     }
 
     // Recharge du mana (doc 12 ; Idan, 2026-10-25) : chaque jour, pour les membres présents au camp, pas pour ceux qui sont
@@ -1262,7 +1267,7 @@
       completeExpeditionCombat,
       dormitoryFree,
       dormitoryUsed,
-      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,trainingRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,spellStudy,armorStudy,studyBusy,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
+      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,trainingRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,spellStudy,armorStudy,poisonStudy,studyBusy,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
       woundDaysFor,fatigueDaysFor,
       dormitoryPlaces,
       dormitoryExpansionCost,

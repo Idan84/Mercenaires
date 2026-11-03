@@ -222,8 +222,28 @@ Sur le modèle de l'École de magie : un bâtiment, un maître nommé, une **sal
 aile construite) et des **ailes**. **En jeu** (Idan, 2026-11-03 : « Je te laisse coder Ludus / Survie / Fines Lames »)
 : les trois bâtiments se construisent puis montent de 1 à 10, au même barème que les autres (niveau n = 1 000 × n² PO et
 4 × n jours) ; leurs ailes montent au plus au niveau de leur bâtiment ; dans Ma Compagnie, chacun montre ce qu'il
-travaille devant son état, l'info-bulle au survol du nom (`camp-buildings.json`, colonne `entraine`). Pas encore
-d'entraînement, de places ni de maître : ils suivront l'École (règles à valider). Test : `tests/training-buildings.test.js`.
+travaille devant son état, l'info-bulle au survol du nom (`camp-buildings.json`, colonne `entraine`). Test :
+`tests/training-buildings.test.js`.
+
+**Entraînement libre dans tous les bâtiments** (Idan, 2026-11-03 : « Là où il est le plus doué à 75 % de chance, sinon au
+hasard » ; « Le reste, c'est nickel ») — remplace le choix de l'École (sa meilleure école, sinon la salle généraliste) :
+
+- chaque matin, le capitaine d'abord, dans la salle ou l'aile choisie par le joueur, de n'importe quel bâtiment
+  d'entraînement (« Le capitaine », sous les bâtiments, les salles rangées par bâtiment), sans test ;
+- puis chacun, dans un ordre tiré au hasard : à **75 %** (`camp.training.talent_share`), il va là où il **se classe le
+  mieux dans la compagnie** (la part de ses camarades qu'il dépasse, pour ce que travaille la salle ; les échelles ne se
+  comparent pas : résistances 4 à 8, caractéristiques 55, armes 28, meilleure école 75 en médiane), parmi les salles et
+  ailes qui ont une place libre ; sinon **au hasard** parmi elles ; plus de place nulle part : la taverne ;
+- **test** : à l'École, celui de l'École ; ailleurs, la **Volonté seule**, 100 / (1 + e^(−Δ/15)), de 2 à 95 %, Δ = (Volonté −
+  50) / 2 (une chance sur deux pour un mercenaire moyen ; le maître ajoutera son bonus) ;
+- **gain** : 20 × carac / 50 × (1 + 0,1 × niveau), la carac de chaque bâtiment (`apprend_avec`) : **Intelligence** (École),
+  **Endurance** (Ludus), **Volonté** (Académie), **Dextérité** (Cercle) ; caractéristiques et résistances montent ; une arme,
+  une catégorie ou un style fait reculer les autres comme en combat (doc 08) ;
+- **places** : 1, +1 tous les 2 niveaux, pour chaque salle principale et chaque aile ;
+- journal du matin : une ligne par bâtiment (« Ludus : 2 élèves aujourd'hui. ») ; fiche, onglet Camp, « Aujourd'hui » :
+  la salle, l'XP et ce qu'elle travaille ;
+- **maîtres** à venir : le Doctore (Ludus), le Vétéran (Académie), **le Maître des lames** (Cercle ; Idan), nommés comme le
+  directeur.
 
 **Ludus** (validé, noms compris) — maître : **le Doctore**.
 

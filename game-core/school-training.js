@@ -15,7 +15,17 @@
 //   Puissance magique dans la salle généraliste ; sans directeur, ces deux facteurs valent 1. Salle d'une école : l'XP va
 //   à l'école, ses deux opposées perdent la moitié du gain à elles deux (progression.js) ; salle généraliste : l'XP va à
 //   la Puissance magique. Le directeur gagne 5 XP de Transmission du savoir par élève et par jour.
-// Constantes : formula-constants.json (school.training.*). Doc 11 §7.
+// Ludus, Académie de la survie, Cercle des Fines Lames (Idan, 2026-11-03 : « Là où il est le plus doué à 75 % de chance,
+// sinon au hasard » ; « Le reste, c'est nickel ») : le même entraînement pour tous les bâtiments, École comprise.
+// - Chaque mercenaire (après le capitaine) va, à 75 % (camp.training.talent_share), là où il se classe le mieux dans la
+//   compagnie (la part de ses camarades qu'il dépasse), parmi les salles et ailes qui ont une place libre ; sinon au
+//   hasard parmi elles. Plus de place nulle part : la taverne.
+// - Test hors École : chance = 100 / (1 + e^(−Δ/15)), de 2 à 95 %, Δ = (Volonté − 50) / 2 (le choix de la salle tient déjà
+//   compte du talent ; les maîtres viendront) ; à l'École, le test ci-dessus.
+// - Gain : 20 × carac / 50 × (1 + 0,1 × niveau), la carac du bâtiment (apprend_avec : Intelligence, Endurance, Volonté,
+//   Dextérité) ; caractéristiques et résistances montent ; une arme, une catégorie ou un style fait reculer les autres
+//   comme en combat (progression.martialSpread).
+// Constantes : formula-constants.json (school.training.*, camp.training.*). Doc 11 §7.
 (function(root,factory){
   const api=factory();
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
@@ -41,7 +51,7 @@
       baseXp:k("school.training.base_xp",20),intelligenceDivisor:k("school.training.intelligence_divisor",50),
       roomBonus:k("school.training.room_level_bonus",0.1),directorDivisor:k("school.training.director_level_divisor",100),
       transmissionDivisor:k("school.training.transmission_divisor",100),directorXp:k("school.training.director_transmission_xp",5),
-      oppositeRatio:k("progression.magic.opposite_regression_ratio",0.5)
+      oppositeRatio:k("progression.magic.opposite_regression_ratio",0.5),talentShare:k("camp.training.talent_share",0.75)
     };
     const skillRows=reference?.skills?.rows||[];
     const SCHOOLS=skillRows.filter(r=>r.domaine==="Magie"&&r.ecoles_opposees).map(r=>r.nom);
@@ -79,17 +89,55 @@
       if(!director) return 0;
       return room.school?schoolOf(director,room.school):stat(director,MAGIC_POWER);
     }
-    // XP d'une journée dans la salle room ({ code, school, level }).
+    // Chance de prendre la place dans un bâtiment autre que l'École : la Volonté seule (en %).
+    function trainingChance(m){
+      const delta=(stat(m,"Volonté")-C.willCenter)/C.willDivisor;
+      return {chance:clamp(100/(1+Math.exp(-delta/C.slope)),C.min,C.max),delta};
+    }
+    // Ce que travaille une salle : son école, ou room.trains (Puissance magique pour la salle généraliste de l'École).
+    const trainsOf=room=>room?.school||room?.trains||MAGIC_POWER;
+    // La valeur du mercenaire pour ce que travaille la salle (caractéristique, résistance, compétence martiale ou école).
+    function valueOf(m,room){
+      if(room?.school) return schoolOf(m,room.school);
+      const name=trainsOf(room);
+      for(const group of [m?.stats,m?.resistances,m?.skills?.martial,m?.skills?.magic]){
+        if(group&&name in group) return Number(group[name])||0;
+      }
+      return 0;
+    }
+    // Son rang dans la compagnie pour cette salle : la part de ses camarades qu'il dépasse (égalité : la moitié), de 0 à 1.
+    function rankOf(m,room,peers){
+      const others=(peers||[]).filter(x=>x&&x!==m);
+      if(!others.length) return 0.5;
+      const mine=valueOf(m,room);
+      let score=0;
+      for(const other of others){ const v=valueOf(other,room); score+=v<mine?1:v===mine?0.5:0; }
+      return score/others.length;
+    }
+    // La salle où il est le plus doué, parmi open (à égalité, l'ordre des salles).
+    function bestRoom(m,open,peers){
+      let best=null,bestRank=-1;
+      for(const room of open){ const rank=rankOf(m,room,peers); if(rank>bestRank){ best=room; bestRank=rank; } }
+      return best;
+    }
+    // XP d'une journée dans la salle room ({ code, school, level, learnWith }).
     function dailyXp(m,room,director=null){
-      const intelligence=stat(m,"Intelligence")/C.intelligenceDivisor;
+      const intelligence=stat(m,room?.learnWith||"Intelligence")/C.intelligenceDivisor;
       const roomFactor=1+C.roomBonus*(Number(room?.level)||0);
       const directorFactor=director?1+directorLevel(director,room)/C.directorDivisor:1;
       const transmission=director?1+(Number(director.skills?.camp?.[TRANSMISSION])||0)/C.transmissionDivisor:1;
       return Math.max(0,Math.round(C.baseXp*intelligence*roomFactor*directorFactor*transmission));
     }
-    // L'XP d'une journée, à appliquer avec progression.apply : l'école et ses opposées, ou la Puissance magique.
-    function xpOf(room,xp){
-      if(!room.school) return {stats:{[MAGIC_POWER]:xp}};
+    // L'XP d'une journée, à appliquer avec progression.apply : l'école et ses opposées, une caractéristique, une résistance
+    // ou une compétence martiale (avec le recul des autres) ; m : le mercenaire (où ranger l'XP).
+    function xpOf(room,xp,m=null){
+      if(!room.school){
+        const name=trainsOf(room);
+        if(name===MAGIC_POWER||(m?.stats&&name in m.stats)) return {stats:{[name]:xp}};
+        if(m?.resistances&&name in m.resistances) return {resistances:{[name]:xp}};
+        const raw={[name]:xp};
+        return {skills:{martial:progression?.martialSpread?progression.martialSpread(m,raw):raw}};
+      }
       const opposites=OPPOSITES.get(room.school)||[];
       const magic={[room.school]:xp};
       for(const other of opposites) magic[other]=(magic[other]||0)-C.oppositeRatio*xp/opposites.length;
@@ -105,20 +153,24 @@
       return copy;
     }
 
-    // Une journée. rooms : [{ code, school (null pour la salle généraliste), level, places }] (salles construites) ;
+    // Une salle de l'École de magie (son directeur, son test) : building magic_school, ou une salle sans building (ancien
+    // appel, l'École seule).
+    const atSchool=room=>!room.building||room.building===HALL;
+    // Une journée. rooms : [{ code, building, school, trains, learnWith, level, places }] (salles et ailes construites) ;
     // candidates : les mercenaires disponibles, sans le capitaine ; captain : le capitaine s'il est disponible ;
-    // captainChoice : le code de la salle choisie pour lui (null : la taverne) ; director : le directeur ou null.
-    // Renvoie { entries, directorXp } ; chaque entrée : { id, name, code, school, xp, chance, roll, captain }, code null
-    // pour la taverne (place visée prise ou test raté). L'XP est appliquée si progression est fourni.
-    function runDay({rooms=[],candidates=[],captain=null,captainChoice=null,director=null}={}){
+    // captainChoice : le code de la salle choisie pour lui (null : la taverne) ; director : le directeur de l'École ou
+    // null ; company : toute la compagnie (pour le rang ; par défaut, le capitaine et les candidats).
+    // Renvoie { entries, directorXp } ; chaque entrée : { id, name, code, school, xp, chance, roll, captain, talent },
+    // code null pour la taverne (test raté, ou plus de place : full). L'XP est appliquée si progression est fourni.
+    function runDay({rooms=[],candidates=[],captain=null,captainChoice=null,director=null,company=null}={}){
       const free=new Map(rooms.map(room=>[room.code,Math.max(0,Number(room.places)||0)]));
       const byCode=new Map(rooms.map(room=>[room.code,room]));
-      const bySchool=new Map(rooms.filter(room=>room.school).map(room=>[room.school,room]));
+      const peers=company||[captain,...candidates].filter(Boolean);
       const entries=[];
       const train=(m,room,extra)=>{
         free.set(room.code,free.get(room.code)-1);
-        const xp=dailyXp(m,room,director);
-        if(progression&&xp>0) progression.apply(m,xpOf(room,xp));
+        const xp=dailyXp(m,room,atSchool(room)?director:null);
+        if(progression&&xp>0) progression.apply(m,xpOf(room,xp,m));
         entries.push({id:m.id,name:m.name,code:room.code,school:room.school||null,xp,...extra});
       };
       if(captain){
@@ -127,22 +179,25 @@
         else entries.push({id:captain.id,name:captain.name,code:null,school:null,xp:0,captain:true,chance:null,roll:null});
       }
       for(const m of shuffled(candidates)){
-        const test=chance(m,director);
-        const own=test.best.school?bySchool.get(test.best.school):null;
-        const room=own&&free.get(own.code)>0?own:(byCode.get(HALL)&&free.get(HALL)>0?byCode.get(HALL):null);
-        if(!room){ entries.push({id:m.id,name:m.name,code:null,school:null,xp:0,captain:false,chance:null,roll:null,full:true}); continue; }
+        const open=rooms.filter(room=>free.get(room.code)>0);
+        if(!open.length){ entries.push({id:m.id,name:m.name,code:null,school:null,xp:0,captain:false,chance:null,roll:null,full:true}); continue; }
+        // Là où il est le plus doué (75 %), sinon au hasard parmi les places libres.
+        const talent=random()<C.talentShare;
+        const room=talent?bestRoom(m,open,peers):open[Math.min(open.length-1,Math.floor(random()*open.length))];
+        const test=atSchool(room)?chance(m,director):trainingChance(m);
         const roll=random()*100;
-        const extra={captain:false,chance:Math.round(test.chance*10)/10,roll:Math.round(roll*10)/10};
+        const extra={captain:false,talent,chance:Math.round(test.chance*10)/10,roll:Math.round(roll*10)/10};
         if(roll<test.chance) train(m,room,extra);
-        else entries.push({id:m.id,name:m.name,code:null,school:null,xp:0,...extra});
+        else entries.push({id:m.id,name:m.name,code:null,school:null,xp:0,aimed:room.code,...extra});
       }
-      const students=entries.filter(e=>e.code&&!(director&&e.id===director.id)).length;
+      // Le directeur compte les élèves de l'École seulement.
+      const students=entries.filter(e=>e.code&&atSchool(byCode.get(e.code))&&!(director&&e.id===director.id)).length;
       const directorXp=director&&students?C.directorXp*students:0;
       if(progression&&directorXp>0) progression.apply(director,{skills:{camp:{[TRANSMISSION]:directorXp}}});
       return {entries,directorXp};
     }
 
-    return {constants:C,HALL,SCHOOLS,bestSchool,chance,directorLevel,dailyXp,xpOf,runDay};
+    return {constants:C,HALL,SCHOOLS,bestSchool,chance,trainingChance,valueOf,rankOf,bestRoom,directorLevel,dailyXp,xpOf,runDay};
   }
 
   return {createSchoolTrainingRules};

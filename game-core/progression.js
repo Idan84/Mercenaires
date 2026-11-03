@@ -315,6 +315,11 @@
         add(shield,count*C.skillShieldBlock);
         add("Boucliers",count*C.skillShieldBlock);
       }
+      return martialSpread(mercenary,raw);
+    }
+    // La régression d'un gain martial (combat ou entraînement au camp, Idan, 2026-11-03) : raw = { compétence: XP } →
+    // ces gains, et les pertes qu'ils font subir aux autres armes, catégories ou styles possédés.
+    function martialSpread(mercenary,raw){
       const result={...raw};
       const owned=mercenary?.skills?.martial||{};
       const has=name=>Number(owned[name])>0;
@@ -490,7 +495,7 @@
 
     return {
       constants:C,reputationConstants:R,xpForLevel,levelForXp,startingXp,continuousLevel,xpForContinuous,loadOf,wearsHeavyArmor,
-      gains,apply,reputationGains,applyReputation,recordActivation:recordUnitActivation,recordStep
+      gains,apply,martialSpread,reputationGains,applyReputation,recordActivation:recordUnitActivation,recordStep
     };
   }
 

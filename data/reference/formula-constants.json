@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 308,
+  "row_count": 309,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -2288,6 +2288,14 @@
       "description": "Entraînement libre (Idan, 2026-11-02) : XP de Transmission du savoir gagnée par le directeur de l’École, par élève et par jour.",
       "formule": "Entraînement libre à l’École de magie",
       "valeur": 5,
+      "version": "V1"
+    },
+    {
+      "nom": "Entraînement libre — là où il est le plus doué",
+      "code": "camp.training.talent_share",
+      "description": "Chaque matin, un mercenaire disponible va, avec cette chance, là où il se classe le mieux dans la compagnie parmi les salles et ailes qui ont une place libre ; sinon au hasard parmi elles (Idan, 2026-11-03 : « Là où il est le plus doué à 75 % de chance, sinon au hasard »).",
+      "formule": "Entraînement libre V1",
+      "valeur": 0.75,
       "version": "V1"
     },
     {

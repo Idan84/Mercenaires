@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "camp-buildings",
-  "description": "Bâtiments du camp (Idan, 2026-11-01) : à construire, puis à améliorer niveau par niveau. Le niveau n coûte prix_base × n² PO et jours_base × n jours ; un chantier par bâtiment (chaque salle de l'École de magie a le sien), en parallèle de celui du dortoir ; l'or est payé au lancement, le niveau est atteint le matin du dernier jour. Dispensaire : la durée des blessures × (1 − soins_par_niveau × niveau), après le minimum de 7 jours, pour les blessures reçues après la construction. Bains chauds : fatigue − fatigue_jours_par_niveau × niveau jours (au moins 1 jour), et recharge du mana au camp + mana_par_niveau × niveau % de la Réserve par jour. École de magie : 10 niveaux ; une salle par école de magie, 10 niveaux, au plus au niveau atteint par l'École (colonne requiert) ; places (élèves en même temps) = places_base + ⌊niveau ÷ places_pas⌋ : 1 place, +1 tous les 2 niveaux, 6 au niveau 10 (60 en tout) ; pas encore d'effet. Bâtiments d'entraînement (Idan, 2026-11-03 ; doc 11 §7) : le Ludus, l'Académie de la survie et le Cercle des Fines Lames, 10 niveaux chacun, et leurs ailes (colonne requiert) ; colonne entraine : ce qu'ils travailleront (pas encore d'entraînement, ni de places) ; Cercle : paiement de la garde du corps × (1 + garde_paie_par_niveau × niveau). Code : game-core/campaign.js (bâtiments du camp), affichage : prototype-web/camp-buildings-ui.js (Ma Compagnie). Doc 11 §7 et §9.",
+  "description": "Bâtiments du camp (Idan, 2026-11-01) : à construire, puis à améliorer niveau par niveau. Le niveau n coûte prix_base × n² PO et jours_base × n jours ; un chantier par bâtiment (chaque salle de l'École de magie a le sien), en parallèle de celui du dortoir ; l'or est payé au lancement, le niveau est atteint le matin du dernier jour. Dispensaire : la durée des blessures × (1 − soins_par_niveau × niveau), après le minimum de 7 jours, pour les blessures reçues après la construction. Bains chauds : fatigue − fatigue_jours_par_niveau × niveau jours (au moins 1 jour), et recharge du mana au camp + mana_par_niveau × niveau % de la Réserve par jour. École de magie : 10 niveaux ; une salle par école de magie, 10 niveaux, au plus au niveau atteint par l'École (colonne requiert) ; places (élèves en même temps) = places_base + ⌊niveau ÷ places_pas⌋ : 1 place, +1 tous les 2 niveaux, 6 au niveau 10 (60 en tout) ; pas encore d'effet. Bâtiments d'entraînement (Idan, 2026-11-03 ; doc 11 §7) : le Ludus, l'Académie de la survie et le Cercle des Fines Lames, 10 niveaux chacun, et leurs ailes (colonne requiert) ; colonne entraine : ce qu'ils travaillent ; places comme l'École ; colonne apprend_avec : la caractéristique qui fait le gain (Idan, 2026-11-03) ; Cercle : paiement de la garde du corps × (1 + garde_paie_par_niveau × niveau). Code : game-core/campaign.js (bâtiments du camp), affichage : prototype-web/camp-buildings-ui.js (Ma Compagnie). Doc 11 §7 et §9.",
   "columns": [
     {
       "key": "code",
@@ -62,6 +62,10 @@
     {
       "key": "garde_paie_par_niveau",
       "source": "Cercle des Fines Lames : paiement d'une garde du corps × (1 + garde_paie_par_niveau × niveau)"
+    },
+    {
+      "key": "apprend_avec",
+      "source": "Bâtiments d'entraînement : la caractéristique de l'élève qui fait le gain de la journée (20 × valeur / 50 × …) ; ses ailes la reprennent"
     }
   ],
   "rows": [
@@ -80,7 +84,8 @@
       "places_base": 0,
       "places_pas": 0,
       "entraine": null,
-      "garde_paie_par_niveau": 0
+      "garde_paie_par_niveau": 0,
+      "apprend_avec": null
     },
     {
       "code": "baths",
@@ -97,7 +102,8 @@
       "places_base": 0,
       "places_pas": 0,
       "entraine": null,
-      "garde_paie_par_niveau": 0
+      "garde_paie_par_niveau": 0,
+      "apprend_avec": null
     },
     {
       "code": "magic_school",
@@ -114,7 +120,8 @@
       "places_base": 1,
       "places_pas": 2,
       "entraine": null,
-      "garde_paie_par_niveau": 0
+      "garde_paie_par_niveau": 0,
+      "apprend_avec": "Intelligence"
     },
     {
       "code": "magic_room_fire",
@@ -131,7 +138,8 @@
       "places_base": 1,
       "places_pas": 2,
       "entraine": null,
-      "garde_paie_par_niveau": 0
+      "garde_paie_par_niveau": 0,
+      "apprend_avec": null
     },
     {
       "code": "magic_room_water",
@@ -148,7 +156,8 @@
       "places_base": 1,
       "places_pas": 2,
       "entraine": null,
-      "garde_paie_par_niveau": 0
+      "garde_paie_par_niveau": 0,
+      "apprend_avec": null
     },
     {
       "code": "magic_room_lightning",
@@ -165,7 +174,8 @@
       "places_base": 1,
       "places_pas": 2,
       "entraine": null,
-      "garde_paie_par_niveau": 0
+      "garde_paie_par_niveau": 0,
+      "apprend_avec": null
     },
     {
       "code": "magic_room_life",
@@ -182,7 +192,8 @@
       "places_base": 1,
       "places_pas": 2,
       "entraine": null,
-      "garde_paie_par_niveau": 0
+      "garde_paie_par_niveau": 0,
+      "apprend_avec": null
     },
     {
       "code": "magic_room_necromancy",
@@ -199,7 +210,8 @@
       "places_base": 1,
       "places_pas": 2,
       "entraine": null,
-      "garde_paie_par_niveau": 0
+      "garde_paie_par_niveau": 0,
+      "apprend_avec": null
     },
     {
       "code": "magic_room_illusion",
@@ -216,7 +228,8 @@
       "places_base": 1,
       "places_pas": 2,
       "entraine": null,
-      "garde_paie_par_niveau": 0
+      "garde_paie_par_niveau": 0,
+      "apprend_avec": null
     },
     {
       "code": "magic_room_summoning",
@@ -233,7 +246,8 @@
       "places_base": 1,
       "places_pas": 2,
       "entraine": null,
-      "garde_paie_par_niveau": 0
+      "garde_paie_par_niveau": 0,
+      "apprend_avec": null
     },
     {
       "code": "magic_room_transmutation",
@@ -250,7 +264,8 @@
       "places_base": 1,
       "places_pas": 2,
       "entraine": null,
-      "garde_paie_par_niveau": 0
+      "garde_paie_par_niveau": 0,
+      "apprend_avec": null
     },
     {
       "code": "magic_room_telekinesis",
@@ -267,7 +282,8 @@
       "places_base": 1,
       "places_pas": 2,
       "entraine": null,
-      "garde_paie_par_niveau": 0
+      "garde_paie_par_niveau": 0,
+      "apprend_avec": null
     },
     {
       "code": "ludus",
@@ -281,10 +297,11 @@
       "mana_par_niveau": 0,
       "requiert": null,
       "ecole": null,
-      "places_base": 0,
-      "places_pas": 0,
+      "places_base": 1,
+      "places_pas": 2,
       "entraine": "Résistance physique",
-      "garde_paie_par_niveau": 0
+      "garde_paie_par_niveau": 0,
+      "apprend_avec": "Endurance"
     },
     {
       "code": "ludus_force",
@@ -298,10 +315,11 @@
       "mana_par_niveau": 0,
       "requiert": "ludus",
       "ecole": null,
-      "places_base": 0,
-      "places_pas": 0,
+      "places_base": 1,
+      "places_pas": 2,
       "entraine": "Force",
-      "garde_paie_par_niveau": 0
+      "garde_paie_par_niveau": 0,
+      "apprend_avec": null
     },
     {
       "code": "ludus_endurance",
@@ -315,10 +333,11 @@
       "mana_par_niveau": 0,
       "requiert": "ludus",
       "ecole": null,
-      "places_base": 0,
-      "places_pas": 0,
+      "places_base": 1,
+      "places_pas": 2,
       "entraine": "Endurance",
-      "garde_paie_par_niveau": 0
+      "garde_paie_par_niveau": 0,
+      "apprend_avec": null
     },
     {
       "code": "ludus_speed",
@@ -332,10 +351,11 @@
       "mana_par_niveau": 0,
       "requiert": "ludus",
       "ecole": null,
-      "places_base": 0,
-      "places_pas": 0,
+      "places_base": 1,
+      "places_pas": 2,
       "entraine": "Vitesse",
-      "garde_paie_par_niveau": 0
+      "garde_paie_par_niveau": 0,
+      "apprend_avec": null
     },
     {
       "code": "ludus_dodge",
@@ -349,10 +369,11 @@
       "mana_par_niveau": 0,
       "requiert": "ludus",
       "ecole": null,
-      "places_base": 0,
-      "places_pas": 0,
+      "places_base": 1,
+      "places_pas": 2,
       "entraine": "Esquive",
-      "garde_paie_par_niveau": 0
+      "garde_paie_par_niveau": 0,
+      "apprend_avec": null
     },
     {
       "code": "ludus_constitution",
@@ -366,10 +387,11 @@
       "mana_par_niveau": 0,
       "requiert": "ludus",
       "ecole": null,
-      "places_base": 0,
-      "places_pas": 0,
+      "places_base": 1,
+      "places_pas": 2,
       "entraine": "Constitution",
-      "garde_paie_par_niveau": 0
+      "garde_paie_par_niveau": 0,
+      "apprend_avec": null
     },
     {
       "code": "survival_academy",
@@ -383,10 +405,11 @@
       "mana_par_niveau": 0,
       "requiert": null,
       "ecole": null,
-      "places_base": 0,
-      "places_pas": 0,
+      "places_base": 1,
+      "places_pas": 2,
       "entraine": "Boucliers",
-      "garde_paie_par_niveau": 0
+      "garde_paie_par_niveau": 0,
+      "apprend_avec": "Volonté"
     },
     {
       "code": "survival_fire",
@@ -400,10 +423,11 @@
       "mana_par_niveau": 0,
       "requiert": "survival_academy",
       "ecole": null,
-      "places_base": 0,
-      "places_pas": 0,
+      "places_base": 1,
+      "places_pas": 2,
       "entraine": "Résistance au feu",
-      "garde_paie_par_niveau": 0
+      "garde_paie_par_niveau": 0,
+      "apprend_avec": null
     },
     {
       "code": "survival_cold",
@@ -417,10 +441,11 @@
       "mana_par_niveau": 0,
       "requiert": "survival_academy",
       "ecole": null,
-      "places_base": 0,
-      "places_pas": 0,
+      "places_base": 1,
+      "places_pas": 2,
       "entraine": "Résistance au froid",
-      "garde_paie_par_niveau": 0
+      "garde_paie_par_niveau": 0,
+      "apprend_avec": null
     },
     {
       "code": "survival_lightning",
@@ -434,10 +459,11 @@
       "mana_par_niveau": 0,
       "requiert": "survival_academy",
       "ecole": null,
-      "places_base": 0,
-      "places_pas": 0,
+      "places_base": 1,
+      "places_pas": 2,
       "entraine": "Résistance à la foudre",
-      "garde_paie_par_niveau": 0
+      "garde_paie_par_niveau": 0,
+      "apprend_avec": null
     },
     {
       "code": "survival_poison",
@@ -451,10 +477,11 @@
       "mana_par_niveau": 0,
       "requiert": "survival_academy",
       "ecole": null,
-      "places_base": 0,
-      "places_pas": 0,
+      "places_base": 1,
+      "places_pas": 2,
       "entraine": "Résistance au poison",
-      "garde_paie_par_niveau": 0
+      "garde_paie_par_niveau": 0,
+      "apprend_avec": null
     },
     {
       "code": "survival_stealth",
@@ -468,10 +495,11 @@
       "mana_par_niveau": 0,
       "requiert": "survival_academy",
       "ecole": null,
-      "places_base": 0,
-      "places_pas": 0,
+      "places_base": 1,
+      "places_pas": 2,
       "entraine": "Discrétion",
-      "garde_paie_par_niveau": 0
+      "garde_paie_par_niveau": 0,
+      "apprend_avec": null
     },
     {
       "code": "blade_circle",
@@ -485,10 +513,11 @@
       "mana_par_niveau": 0,
       "requiert": null,
       "ecole": null,
-      "places_base": 0,
-      "places_pas": 0,
+      "places_base": 1,
+      "places_pas": 2,
       "entraine": "Dextérité",
-      "garde_paie_par_niveau": 0.05
+      "garde_paie_par_niveau": 0.05,
+      "apprend_avec": "Dextérité"
     },
     {
       "code": "blade_long",
@@ -502,10 +531,11 @@
       "mana_par_niveau": 0,
       "requiert": "blade_circle",
       "ecole": null,
-      "places_base": 0,
-      "places_pas": 0,
+      "places_base": 1,
+      "places_pas": 2,
       "entraine": "Lames longues",
-      "garde_paie_par_niveau": 0
+      "garde_paie_par_niveau": 0,
+      "apprend_avec": null
     },
     {
       "code": "blade_short",
@@ -519,10 +549,11 @@
       "mana_par_niveau": 0,
       "requiert": "blade_circle",
       "ecole": null,
-      "places_base": 0,
-      "places_pas": 0,
+      "places_base": 1,
+      "places_pas": 2,
       "entraine": "Lames courtes",
-      "garde_paie_par_niveau": 0
+      "garde_paie_par_niveau": 0,
+      "apprend_avec": null
     },
     {
       "code": "blade_dual",
@@ -536,10 +567,11 @@
       "mana_par_niveau": 0,
       "requiert": "blade_circle",
       "ecole": null,
-      "places_base": 0,
-      "places_pas": 0,
+      "places_base": 1,
+      "places_pas": 2,
       "entraine": "Combat à deux armes",
-      "garde_paie_par_niveau": 0
+      "garde_paie_par_niveau": 0,
+      "apprend_avec": null
     },
     {
       "code": "blade_single",
@@ -553,10 +585,11 @@
       "mana_par_niveau": 0,
       "requiert": "blade_circle",
       "ecole": null,
-      "places_base": 0,
-      "places_pas": 0,
+      "places_base": 1,
+      "places_pas": 2,
       "entraine": "Combat à une main",
-      "garde_paie_par_niveau": 0
+      "garde_paie_par_niveau": 0,
+      "apprend_avec": null
     }
   ],
   "row_count": 29

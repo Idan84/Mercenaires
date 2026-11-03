@@ -16,10 +16,11 @@
 // L'aide de l'intendant aux échanges d'équipement est dans equipment-deals.js. Constantes : steward.*.
 (function(root,factory){
   const history=typeof module!=="undefined"&&module.exports?require("./history.js"):root.MercenairesHistory;
-  const api=factory(history);
+  const posts=typeof module!=="undefined"&&module.exports?require("./camp-posts.js"):root.MercenairesCampPosts;
+  const api=factory(history,posts);
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesSteward=api;
-})(typeof globalThis!=="undefined"?globalThis:this,function(History){
+})(typeof globalThis!=="undefined"?globalThis:this,function(History,Posts){
   const rows=data=>Array.isArray(data)?data:(data?.rows||[]);
   const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
 
@@ -73,7 +74,9 @@
       // Le lieutenant reste sur le terrain (Idan, 2026-10-25).
       if((state.company.lieutenantIds||[]).includes(m.id)) return no("Un lieutenant ne peut pas être intendant.");
       if(state.company.medicId!=null&&m.id===state.company.medicId) return no("Le médecin ne peut pas être intendant.");
-      if(state.company.directorId!=null&&m.id===state.company.directorId) return no("Le directeur de l’École ne peut pas être intendant.");
+      // Le directeur de l'École et les maîtres (camp-posts.js).
+      const post=Posts.postOf(state,m);
+      if(post) return no(`${post.title} ne peut pas être intendant.`);
       // Parti en expédition (doc 17) : on lui en parlera à son retour. Mission programmée : l'intendant reste au camp,
       // celui qui part demain ne peut pas l'être.
       const mission=(state.expeditions||[]).find(e=>e.memberIds.includes(m.id));

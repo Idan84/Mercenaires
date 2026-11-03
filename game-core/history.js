@@ -9,7 +9,8 @@
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesHistory=api;
 })(typeof globalThis!=="undefined"?globalThis:this,function(){
-  const COUNTERS=["missions","knockouts","timesWounded","woundsTaken","criticals","stewardDays","medicDays","directorDays"];
+  const COUNTERS=["missions","knockouts","timesWounded","woundsTaken","criticals","stewardDays","medicDays","directorDays",
+    "doctoreDays","veteranDays","bladeMasterDays"];
 
   // since : jour d'arrivée dans la compagnie.
   function historyOf(mercenary,since=1){

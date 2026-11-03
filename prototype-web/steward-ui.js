@@ -37,7 +37,7 @@ function renderStewardPanel(){
     return;
   }
   const company=game.campaign.company;
-  const picks=company.roster.filter(m=>m.id!==company.captainId&&!(company.lieutenantIds||[]).includes(m.id)&&m.id!==company.medicId&&m.id!==company.directorId).map(m=>{
+  const picks=company.roster.filter(m=>m.id!==company.captainId&&!(company.lieutenantIds||[]).includes(m.id)&&m.id!==company.medicId&&!MercenairesCampPosts.postOf(game.campaign,m)).map(m=>{
     // Recruté aujourd'hui : un poste attend le lendemain matin (Idan, 2026-11-02).
     const asked=m.stewardOfferDay===game.campaign.day,arriving=Number(m.contract?.joinDay)>game.campaign.day;
     return `<button type="button" class="steward-pick" data-steward-offer="${esc(m.id)}"${asked||arriving?` disabled title="${esc(arriving?"Il rejoint la compagnie demain matin.":copy.asked_today||"")}"`:""}>

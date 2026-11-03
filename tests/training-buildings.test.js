@@ -35,8 +35,9 @@ const BUILDINGS={
     ["La Quintaine","Esquive"],["Le Réfectoire du Doctore","Constitution"]]],
   survival_academy:["Académie de la survie","Boucliers",[["Le Four","Résistance au feu"],["Le Frigo","Résistance au froid"],
     ["La Décharge","Résistance à la foudre"],["La Cantine","Résistance au poison"],["Le Placard","Discrétion"]]],
-  blade_circle:["Cercle des Fines Lames","Dextérité",[["Salle des Lames longues","Lames longues"],["Salle des Lames courtes","Lames courtes"],
-    ["Salle des Deux armes","Combat à deux armes"],["Salle de la Main seule","Combat à une main"]]]
+  // Les ailes du Cercle (Idan, 2026-11-03 : « je garde tes noms dandy »).
+  blade_circle:["Cercle des Fines Lames","Dextérité",[["La Salle des Miroirs","Lames longues"],["Le Boudoir","Lames courtes"],
+    ["Le Bal masqué","Combat à deux armes"],["Le Salon de thé","Combat à une main"]]]
 };
 const known=new Set([...reference.characteristics.rows.map(r=>r.nom),...reference.skills.rows.map(r=>r.nom)]);
 for(const [code,[name,trains,wings]] of Object.entries(BUILDINGS)){
@@ -110,7 +111,7 @@ assert.match(html,/<strong title="« On pousse la meule à la place de l'âne\. 
 assert.match(html,/Académie de la survie<\/strong><span>Boucliers · À construire<\/span>/);
 assert.doesNotMatch(html,/Le Four/,"pas d'aile avant l'Académie");
 assert.match(html,/Cercle des Fines Lames<\/strong><span>Dextérité · Niveau 10 · <span class="building-places" title="[^"]*">\d\/6 places<\/span> · garde du corps \+50 %<\/span>/);
-assert.match(html,/Salle de la Main seule<\/strong><span>Combat à une main · À construire<\/span>/);
+assert.match(html,/<strong title="« La tasse dans une main, l'épée dans l'autre\. Ne rien renverser\. »">Le Salon de thé<\/strong><span>Combat à une main · À construire<\/span>/);
 // Le capitaine choisit parmi les salles de tous les bâtiments, rangées par bâtiment : la salle principale par ce qu'elle
 // travaille, les ailes par leur nom.
 assert.match(html,/<optgroup label="Ludus"><option value="ludus">Résistance physique<\/option><\/optgroup><optgroup label="Cercle des Fines Lames"><option value="blade_circle">Dextérité<\/option><\/optgroup><\/select>/);

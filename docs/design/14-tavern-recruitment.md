@@ -444,7 +444,7 @@ Les indemnités de licenciement et les moyens plus... créatifs de libérer une 
 - Signée au jour J, la recrue est **dans la compagnie** (et au Dortoir) tout de suite ; contrat : `joinDay = J + 1`.
 - On peut l'**équiper** et l'inscrire pour une **mission qui part le lendemain matin**.
 - Son **premier salaire** est payé le lendemain matin, avec les autres.
-- **Aucun poste avant le lendemain matin** : intendant, médecin, directeur de l'École, lieutenant (« Il rejoint la
+- **Aucun poste avant le lendemain matin** : intendant, médecin, directeur de l'École, maître (Doctore, Vétéran, Maître des lames), lieutenant (« Il rejoint la
   compagnie demain matin. ») ; grisée dans les listes de nomination ; effectif : « Disponible demain ».
 - Règle générale : doc 16, « Au jour J, on organise J+1 ». Test : `tests/recruit-next-day.test.js`.
 

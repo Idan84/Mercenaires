@@ -10,10 +10,11 @@
   const node=typeof module!=="undefined"&&module.exports;
   const steward=node?require("./steward.js"):root.MercenairesSteward;
   const history=node?require("./history.js"):root.MercenairesHistory;
-  const api=factory(steward,history);
+  const posts=node?require("./camp-posts.js"):root.MercenairesCampPosts;
+  const api=factory(steward,history,posts);
   if(node) module.exports=api;
   root.MercenairesMedic=api;
-})(typeof globalThis!=="undefined"?globalThis:this,function(Steward,History){
+})(typeof globalThis!=="undefined"?globalThis:this,function(Steward,History,Posts){
   const rows=data=>Array.isArray(data)?data:(data?.rows||[]);
   const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
 
@@ -49,7 +50,8 @@
       if(Number(m.contract?.joinDay)>state.day) return no("Il rejoint la compagnie demain matin.");
       if((state.company.lieutenantIds||[]).includes(m.id)) return no("Un lieutenant ne peut pas être médecin.");
       if(m.id===state.company.intendantId) return no("L’intendant ne peut pas être médecin.");
-      if(state.company.directorId!=null&&m.id===state.company.directorId) return no("Le directeur de l’École ne peut pas être médecin.");
+      const post=Posts.postOf(state,m);
+      if(post) return no(`${post.title} ne peut pas être médecin.`);
       const mission=(state.expeditions||[]).find(e=>e.memberIds.includes(m.id));
       if(mission) return no(mission.status==="scheduled"?"Il part en mission demain.":"Il est en mission.");
       if(m.medicOfferDay===state.day) return no("Vous lui en avez déjà parlé aujourd’hui.");

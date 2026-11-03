@@ -111,8 +111,8 @@ assert.equal(restored.company.directorId,mage.id);
 const old=JSON.parse(serializeCampaign(state));
 delete (old.state||old).company.directorId;
 assert.equal(director.directorOf(restoreCampaign(JSON.stringify(old)).state),null);
-// S'il meurt en mission, le poste se libère (même code que l'intendant et le médecin).
-assert.match(fs.readFileSync(path.join(ROOT,"game-core","campaign.js"),"utf8"),/if\(state\.company\.directorId===mercenary\.id\) state\.company\.directorId=null;/);
+// S'il meurt en mission, le poste se libère (comme l'intendant et le médecin ; camp-posts.js).
+assert.match(fs.readFileSync(path.join(ROOT,"game-core","campaign.js"),"utf8"),/if\(state\.company\.medicId===mercenary\.id\) state\.company\.medicId=null;\s*if\(Posts\) Posts\.release\(state,mercenary\);/);
 
 // Interface : sa fiche à côté de l'intendant et du médecin, en haut de l'Intendance.
 const html=fs.readFileSync(path.join(ROOT,"prototype-web","index.html"),"utf8");

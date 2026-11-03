@@ -590,7 +590,43 @@
       "entraine": "Combat à une main",
       "garde_paie_par_niveau": 0,
       "apprend_avec": null
+    },
+    {
+      "code": "watchtower",
+      "nom": "Tour de guet",
+      "description": "Dans la Vigie : « Là-haut, on voit venir les ennuis. Et la pluie. » Chaque niveau de la Tour permet de monter ses ailes jusqu’à ce niveau.",
+      "niveaux": 10,
+      "prix_base": 1000,
+      "jours_base": 4,
+      "soins_par_niveau": 0,
+      "fatigue_jours_par_niveau": 0,
+      "mana_par_niveau": 0,
+      "requiert": null,
+      "ecole": null,
+      "places_base": 1,
+      "places_pas": 2,
+      "entraine": "Perception",
+      "garde_paie_par_niveau": 0,
+      "apprend_avec": "Perception"
+    },
+    {
+      "code": "watchtower_ranged",
+      "nom": "Le Créneau",
+      "description": "« On tire sur tout ce qui approche. Le facteur ne passe plus. »",
+      "niveaux": 10,
+      "prix_base": 1000,
+      "jours_base": 4,
+      "soins_par_niveau": 0,
+      "fatigue_jours_par_niveau": 0,
+      "mana_par_niveau": 0,
+      "requiert": "watchtower",
+      "ecole": null,
+      "places_base": 1,
+      "places_pas": 2,
+      "entraine": "Armes de tir",
+      "garde_paie_par_niveau": 0,
+      "apprend_avec": null
     }
   ],
-  "row_count": 29
+  "row_count": 31
 }

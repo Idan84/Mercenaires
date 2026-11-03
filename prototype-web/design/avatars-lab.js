@@ -50,8 +50,11 @@ const AvatarsLab=(()=>{
   // « Affiner les tags » (demande d'Idan, 2026-10-21) : avatars dont les tags gênent l'attribution des visages.
   // Une ligne disparaît d'elle-même quand l'avatar retagué est redéposé ; « Fait » la masque tout de suite,
   // dans ce navigateur, tant que ses problèmes restent les mêmes.
+  // Une seule liste (Idan, 2026-11-03 : « il y en a en haut et en bas ») : les remarques du catalogue (deux sexes, mauvais
+  // peuple, mot-clé inconnu, image écartée…) y sont rangées avec l'avatar qu'elles visent, sans doublon.
   const TAG_CHECKS=[
     {key:"tags",label:"aucun tag (profil, culture, arme…)",test:a=>!Object.keys(a.tags||{}).length},
+    {key:"culture",label:"culture manquante : aucune recrue ne l'aura",test:a=>Object.keys(a.tags||{}).length>0&&!a.tags.culture},
     {key:"sex",label:"sexe manquant (F ou H)",test:a=>!a.sex},
     {key:"profile",label:"profil manquant (Corps à corps, Distance ou Magie)",test:a=>Object.keys(a.tags||{}).length&&!a.tags.profile},
     {key:"weapon",label:"arme manquante pour un profil Corps à corps ou Distance",test:a=>(a.tags?.profile||[]).some(p=>p==="melee"||p==="ranged")&&!a.tags.weapon},
@@ -60,8 +63,25 @@ const AvatarsLab=(()=>{
   const DONE_KEY="mercenaires.designlab.tagsDone";
   function readDone(){ try{ return JSON.parse(localStorage.getItem(DONE_KEY)||"{}")||{}; }catch(e){ return {}; } }
   function writeDone(done){ try{ localStorage.setItem(DONE_KEY,JSON.stringify(done)); }catch(e){} }
+  // Remarques du catalogue (« identifiant : texte » ou « chemin : texte »), par avatar ou par image, sans doublon.
+  function catalogNotes(avatars){
+    const notes=new Map();
+    for(const w of avatars.warnings||[]){
+      const text=String(w),i=text.indexOf(" : ");
+      const key=i>0?text.slice(0,i):"?",note=i>0?text.slice(i+3):text;
+      if(!notes.has(key)) notes.set(key,[]);
+      if(!notes.get(key).includes(note)) notes.get(key).push(note);
+    }
+    return notes;
+  }
   function tagTodos(avatars){
-    return (avatars.rows||[]).map(a=>({avatar:a,problems:TAG_CHECKS.filter(c=>c.test(a))}))
+    const notes=catalogNotes(avatars);
+    const asProblems=list=>(list||[]).map(note=>({key:"note:"+note,label:note}));
+    const todos=(avatars.rows||[]).map(a=>({avatar:a,problems:[...TAG_CHECKS.filter(c=>c.test(a)),...asProblems(notes.get(a.id))]}));
+    // Images écartées par le catalogue (nom, peuple, plein pied ou portrait manquant) : une ligne sans avatar.
+    const known=new Set((avatars.rows||[]).map(a=>a.id));
+    for(const [key,list] of notes) if(!known.has(key)) todos.push({avatar:{id:key,source:key.includes("/")?key:"",portrait:null},problems:asProblems(list)});
+    return todos
       .filter(t=>t.problems.length)
       .map(t=>({...t,signature:t.problems.map(p=>p.key).join(",")}))
       .sort((a,b)=>a.avatar.id.localeCompare(b.avatar.id));
@@ -76,7 +96,7 @@ const AvatarsLab=(()=>{
     const {all,shown}=visibleTodos(avatars);
     const hidden=all.length-shown.length;
     const items=shown.map(t=>`<li>
-        <img src="${html(imageUrl(t.avatar.portrait))}" alt="" loading="lazy">
+        ${t.avatar.portrait?`<img src="${html(imageUrl(t.avatar.portrait))}" alt="" loading="lazy">`:"<span></span>"}
         <div><strong>${html(t.avatar.id)}</strong><code>media/avatars/${html(t.avatar.source||"")}</code>
           <span>${t.problems.map(p=>html(p.label)).join(" · ")}</span></div>
         <button type="button" data-tag-done="${html(t.avatar.id)}" data-signature="${html(t.signature)}">Fait</button>
@@ -215,7 +235,8 @@ const AvatarsLab=(()=>{
     if(model.stale) alerts.push(`Les règles de génération ont changé depuis les mesures du ${frDate(model.measuredOn)} : les besoins peuvent être faux.
       JC3 doit refaire les mesures (<code>node scripts/build-avatar-demand.js</code>).`);
     if(data.unmeasured.length) alerts.push(`Cultures sans mesure : ${data.unmeasured.map(html).join(", ")}. Refaire les mesures.`);
-    const warnings=avatars.warnings||[];
+    // Index lu par morceaux sur Hostinger : après plusieurs essais, encore des images à lire.
+    if(avatars.complete===false) alerts.push("Hostinger n'a pas fini de lire les nouvelles images : la liste est incomplète. Rechargez la page dans un instant.");
     return `${alerts.map(a=>`<div class="cov-alert">${a}</div>`).join("")}
       <p class="cov-intro">Pour chaque <strong>culture</strong>, le joueur voit passer <strong>${s.mercenaries} mercenaires</strong> dans une partie.
       Une <strong>case précise</strong> = culture × ascendance × arme tenue en main (ou école du mage) ; sa <strong>part</strong> vient des mesures du
@@ -228,8 +249,7 @@ const AvatarsLab=(()=>{
       que pour le repli. Réglages dans les données : <code>avatars.demand.*</code>.</p>
       ${summaryTable(data)}
       <section class="cov-tags" id="cov-tags">${renderTagTodos(avatars)}</section>
-      ${data.peoples.map(peopleSection).join("")}
-      ${warnings.length?`<div class="cov-warnings"><h3>Remarques sur les avatars de Hostinger</h3><ul>${warnings.map(w=>`<li>${html(w)}</li>`).join("")}</ul></div>`:""}`;
+      ${data.peoples.map(peopleSection).join("")}`;
   }
 
   function meta(data){

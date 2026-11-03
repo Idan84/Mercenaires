@@ -50,7 +50,7 @@ assert.equal(fileUrl("/media/avatars","a b/c.jpg"),"/media/avatars/a%20b/c.jpg")
 // Remarques pour Idan : rien n'est ignoré en silence.
 const expected=[
   "reptilien-003 : mot-clé inconnu « Mot inventé »",
-  "halfling-007 : deux sexes tagués",
+  "halfling-007 : deux sexes tagués (plein pied : M, F ; portrait : aucun)",
   "ogre-020 : il manque le portrait, ignoré",
   "Ogres/sans-numero.jpg : nom sans « Peuple_Numéro », ignoré",
   "Divers/Truc_4.jpg : peuple inconnu (« Truc »), ignoré"

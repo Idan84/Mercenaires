@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 313,
+  "row_count": 318,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -2392,6 +2392,46 @@
       "description": "Apprendre l’Empoisonnement des armes (Idan, 2026-11-03) : l’Alchimiste ajoute à X sa Transmission du savoir / ce diviseur, s’il a lui-même l’aptitude. Transmission 48 : médiane 21 % (5 jours) au lieu de 14 %.",
       "formule": "Apprendre l’Empoisonnement des armes au Labo d’alchimie",
       "valeur": 5,
+      "version": "V1"
+    },
+    {
+      "nom": "Bûcherons — par niveau de la Cabane",
+      "code": "camp.lumber.workers_per_level",
+      "description": "Cabane du bûcheron (Idan, 2026-11-03 : « On peut envoyer 1 mercenaire par niveau de cabane ») : bûcherons par jour et par niveau.",
+      "formule": "Cabane du bûcheron",
+      "valeur": 1,
+      "version": "V1"
+    },
+    {
+      "nom": "Bûcherons — jours retirés par bûcheron",
+      "code": "camp.lumber.days_per_worker",
+      "description": "Cabane du bûcheron (Idan, 2026-11-03 : effet « fixe ») : chaque bûcheron du jour retire ce nombre de jours au chantier qui finit le plus tôt ; un chantier finit au plus tôt le lendemain matin.",
+      "formule": "Cabane du bûcheron",
+      "valeur": 1,
+      "version": "V1"
+    },
+    {
+      "nom": "Bûcherons — niveau maximal des chantiers",
+      "code": "camp.lumber.max_work_level",
+      "description": "Cabane du bûcheron (Idan, 2026-11-03 : « sur les constructions actuelles de niveau 1 à 5 (y’aura la mine pour 6 à 10) ») : bâtiment (niveau en construction), qualité du dortoir (niveau), agrandissement (rang), quartier du lieutenant (numéro).",
+      "formule": "Cabane du bûcheron",
+      "valeur": 5,
+      "version": "V1"
+    },
+    {
+      "nom": "Bûcherons — décalage du test",
+      "code": "camp.lumber.offer_offset",
+      "description": "Cabane du bûcheron (Idan, 2026-11-03 : « test assez dur et petite perte à chaque fois » ; « Parfait ») : il y va toujours ; de bon cœur avec la chance 10 + 80 / (1 + e^(−Δ/20)), Δ = 0,5 × affinité avec le capitaine + ce décalage + appui de l’intendant. Affinité 0 : 25 % ; 50 : 45 % ; 100 : 69 %.",
+      "formule": "Cabane du bûcheron",
+      "valeur": -30,
+      "version": "V1"
+    },
+    {
+      "nom": "Bûcherons — affinité à contrecœur",
+      "code": "camp.lumber.grudge_affinity",
+      "description": "Cabane du bûcheron (Idan, 2026-11-03) : test raté, il y va à contrecœur ; son affinité avec le capitaine bouge de ce nombre.",
+      "formule": "Cabane du bûcheron",
+      "valeur": -2,
       "version": "V1"
     },
     {

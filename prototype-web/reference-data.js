@@ -53,6 +53,7 @@ const REFERENCE_FILES = {
   spellStudyDialogue: "spell-study-dialogue.json",
   armorStudyDialogue: "armor-study-dialogue.json",
   poisonStudyDialogue: "poison-study-dialogue.json",
+  lumberDialogue: "lumber-dialogue.json",
   lieutenantDialogue: "lieutenant-dialogue.json",
   bodyguardMissions: "bodyguard-missions.json",
   merchants: "merchants.json",

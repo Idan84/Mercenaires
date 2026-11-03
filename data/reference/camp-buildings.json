@@ -680,7 +680,25 @@
       "entraine": "Pièges",
       "garde_paie_par_niveau": 0,
       "apprend_avec": null
+    },
+    {
+      "code": "lumber_camp",
+      "nom": "Cabane du bûcheron",
+      "description": "Dans le Billot : « On fend du bois toute la journée. Le bois, lui, ne se défend pas. » Chaque niveau envoie un bûcheron de plus par jour : un jour de moins sur un chantier du camp (niveaux 1 à 5).",
+      "niveaux": 10,
+      "prix_base": 1000,
+      "jours_base": 4,
+      "soins_par_niveau": 0,
+      "fatigue_jours_par_niveau": 0,
+      "mana_par_niveau": 0,
+      "requiert": null,
+      "ecole": null,
+      "places_base": 1,
+      "places_pas": 2,
+      "entraine": "Haches",
+      "garde_paie_par_niveau": 0,
+      "apprend_avec": "Force"
     }
   ],
-  "row_count": 34
+  "row_count": 35
 }

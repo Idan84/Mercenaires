@@ -216,6 +216,32 @@ camp […] il faut tous les jours un ordre de tirage pour tous les mercenaires d
 avant l'entraînement libre et reste au camp jusqu'à ce qu'il connaisse le sort ; un professeur facultatif ; règles et
 chiffres au doc 12 (« Apprendre un sort à l'École »).
 
+### Bâtiments d'entraînement (conception en cours, Idan, 2026-11-02 et 2026-11-03)
+
+Sur le modèle de l'École de magie : un bâtiment, un maître nommé, une **salle principale** (ce qu'on y travaille sans
+aile construite) et des **ailes**. Rien n'est encore codé ; les règles (tests, gains, places) suivront l'École.
+
+**Ludus** (validé, noms compris) — maître : **le Doctore**.
+
+| Aile | Travaille | Info-bulle |
+|---|---|---|
+| **La Cour** (salle principale) | Résistance physique | « Le Doctore frappe. On encaisse. Jusqu'à ce que ça ne fasse plus mal. » |
+| **La Meule** | Force | « On pousse la meule à la place de l'âne. L'âne, lui, se repose. » |
+| **La Longue Piste** | Endurance | « Dix tours du camp en armure. Le onzième, c'est pour avoir demandé combien il en restait. » |
+| **La Course au Cochon** | Vitesse | « Le cochon est graissé. Le vainqueur le garde. Personne n'a encore gagné. » |
+| **La Quintaine** | Esquive | « On frappe le mannequin, il tourne et rend le coup. On apprend vite à se baisser. » |
+| **Le Réfectoire du Doctore** | Constitution | « Six œufs crus au réveil, bouillie et viande de cheval. Le corps suit, ou pas. » |
+
+**Académie de la survie** (en cours) — maître : **le Vétéran**. Salle principale : Boucliers. Ailes : **Le Four**
+(Résistance au feu), **Le Frigo** (Résistance au froid), **La Décharge** (Résistance à la foudre), Résistance au poison,
+Discrétion, et l'**apprentissage des armures** (les ports d'armure, appris comme un sort).
+
+Pistes gardées en tête, non validées : la **Tour de guet** (salle principale Perception, Armes de tir ; anticiper les
+attaques du camp, à venir), le **Labo d'alchimie** (potions ; Armes à feu, Pièges, apprendre à empoisonner ses armes),
+et pour les armes de mêlée trois bâtiments d'ambiance : **l'Ermitage** (Bâtons, Flexibles, Hast ; le mana),
+**le Hall des Berserkers** (Haches, Contondantes, Deux mains) et **le Cercle des Fines Lames** (Lames longues, Lames
+courtes, Une main, Deux armes). Les compétences de camp (artisanat) attendront les bâtiments de fabrication.
+
 ## 8 — Bâtiments pour animaux et montures
 
 Le château peut accueillir des structures spécialisées selon les espèces :

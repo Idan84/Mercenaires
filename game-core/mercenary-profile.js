@@ -112,8 +112,11 @@
         .map(item=>potionRows.find(r=>r.nom===item.name||"potion:"+r.code===item.templateId)).filter(Boolean);
     }
     // Poison : dégâts × tours × chance qu'un coup blesse × chance que l'étalon ne résiste pas.
-    function poisonValue(character,ranged){
-      const vial=beltPotions(character).find(p=>p.effet==="poison_arme");
+    // La fiole ne compte que s'il sait empoisonner une arme (Idan, 2026-11-03) ; l'étalonnage (calibrate) la mesure chez
+    // tous ceux qui en portent une, pour poser les seuils, comme l'aura.
+    function poisonValue(character,ranged,context={}){
+      const skilled=context.calibrate||engine.canPoisonWeapon({character});
+      const vial=skilled?beltPotions(character).find(p=>p.effet==="poison_arme"):null;
       const defender=refs().leger;
       const resisted=engine.poisonResistChance(defender)/100;
       const turns=Number(engine.POISON?.turns)||3;
@@ -151,8 +154,8 @@
         const chargePower=travel*(Number(held.weapon.bonus_charge_base)||1)*quality;
         return strike(held.unit,refs().leger,"melee",1,{chargePower}).damage;
       })),
-      poison_contact:c=>poisonValue(c,false),
-      poison_tir:c=>poisonValue(c,true),
+      poison_contact:(c,context)=>poisonValue(c,false,context),
+      poison_tir:(c,context)=>poisonValue(c,true,context),
       // Toutes les armes de tir contre-chargent : seule l'arme d'hast en fait une spécialité de contact.
       contre_charge:c=>best([1,2].map(set=>{
         const held=setWeapon(c,set,false);

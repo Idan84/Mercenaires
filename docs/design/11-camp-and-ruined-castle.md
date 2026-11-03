@@ -323,8 +323,15 @@ d'instructeur** (Idan : « Immobiliser un mercenaire pour si peu me semble de tr
 plusieurs bâtiments… Mais on verra ») ; **pas de deuxième fonction** pour l'instant (« Rien pour l'instant ! ») : anticiper
 les attaques du camp viendra avec la défense du camp.
 
-Pistes gardées en tête, non validées : le **Labo d'alchimie** (potions ; Armes à feu, Pièges, apprendre à empoisonner ses armes),
-et pour les autres armes de mêlée deux bâtiments d'ambiance : **l'Ermitage** (Bâtons, Flexibles, Hast ; le mana) et
+**Le Labo d'alchimie** (Idan, 2026-11-03 : « Dans la salle principale, on peut entraîner sa résistance au poison » ; « piège
+et armes à feu, c'est validé » ; pas de chef) — salle principale **L'Alambic** : **Résistance au poison** (« Ça bout, ça
+fume, ça sent le chou. Personne ne sait ce que c'est. ») ; ailes **La Poudrière** : **Armes à feu** (« On y apprend à
+charger, à viser… et surtout à ne pas fumer. ») et **La Cave** : **Pièges** (« Chaque marche est un piège. La rampe
+aussi. ») ; les élèves apprennent avec leur **Intelligence**. Même barème et mêmes places que les autres bâtiments. Les
+**potions** (préparation, ingrédients, recettes) viendront avec la fabrication, qui fera monter l'Alchimie (« On verra
+après pour le craft qui lui fera monter le niveau d'alchimiste »).
+
+Pistes gardées en tête, non validées : pour les autres armes de mêlée, deux bâtiments d'ambiance : **l'Ermitage** (Bâtons, Flexibles, Hast ; le mana) et
 **le Hall des Berserkers** (Haches, Contondantes, Deux mains). Les compétences de camp (artisanat) attendront les bâtiments de fabrication.
 
 ## 8 — Bâtiments pour animaux et montures

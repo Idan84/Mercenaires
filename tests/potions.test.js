@@ -183,9 +183,16 @@ assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","reference-data.js")
   assert.equal(c.mana,Math.min(max,Math.ceil(max*0.2)));
   assert.ok(logged(/boit une potion de mana : \+\d+ mana/));
 
-  // Fiole de poison : l'arme active est enduite le tour où on l'applique et les deux suivants.
+  // Fiole de poison : il faut l'aptitude Empoisonnement des armes (Idan, 2026-11-03 : « Seul ceux qui ont la compétence
+  // peuvent empoisonner leur arme en utilisant une potion »).
   u.quickAvailable=true;
   give("Fiole de poison","belt_item_4");
+  delete c.skills.martial["Empoisonnement des armes"];
+  assert.equal(engine.canPoisonWeapon(u),false);
+  assert.equal(api.useMissionPotion(u,"belt_item_4"),false,"sans l'aptitude, pas de fiole");
+  assert.match(api.renderMissionSpellBar(u),/data-potion="belt_item_4" title="[^"]*\nIl ne sait pas empoisonner une arme\." disabled>/);
+  c.skills.martial["Empoisonnement des armes"]=true;
+  // L'arme active est enduite le tour où on l'applique et les deux suivants.
   const weapon=engine.activeWeaponItem(u);
   assert.equal(api.useMissionPotion(u,"belt_item_4"),true);
   assert.deepEqual(u.weaponPoison,{turns:2,amount:10,itemId:weapon.id,weapon:weapon.name});

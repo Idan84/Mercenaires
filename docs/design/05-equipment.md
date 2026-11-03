@@ -90,6 +90,8 @@ Après l’arme principale : **50 % de chance** de recevoir une arme complément
 
 Le mercenaire reçoit au hasard une armure de la catégorie la plus lourde qu’il sait porter : **Lourde → Intermédiaire → Légère → Vêtement**. `Vêtement` est désormais une catégorie propre, inférieure à légère et ne nécessitant aucune aptitude.
 
+**Sans le port, pas d’armure** (Idan, 2026-11-03) : on ne peut équiper que les armures dont on a le port (doc 03, « Sans le port, pas d’armure »).
+
 ### Tier / qualité
 
 Chaque objet tire son tier **indépendamment** selon la réputation personnelle du mercenaire, avec interpolation linéaire entre ces points :

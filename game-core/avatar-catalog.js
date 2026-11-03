@@ -100,14 +100,20 @@
     for(const g of [...groups.values()].sort((a,b)=>a.id.localeCompare(b.id))){
       if(!g.files.full||!g.files.portrait){ warnings.push(`${g.id} : il manque le ${g.files.full?"portrait":"plein pied"}, ignoré`); continue; }
       const tags=Object.fromEntries(TAG_FAMILIES.map(f=>[f,[]]));
-      let sex=null,ascendanceOnly=false;
+      let sex=null,ascendanceOnly=false,sexConflict=false;
       for(const k of g.keywords){
         const c=classify(k);
         if(!c){ warnings.push(`${g.id} : mot-clé inconnu « ${k} »`); continue; }
         if(c.family==="people"){ if(c.value!==g.people) warnings.push(`${g.id} : tag peuple « ${k} » ≠ ${g.people}`); continue; }
-        if(c.family==="sex"){ if(sex&&sex!==c.value) warnings.push(`${g.id} : deux sexes tagués`); sex=c.value; continue; }
+        if(c.family==="sex"){ if(sex&&sex!==c.value) sexConflict=true; sex=c.value; continue; }
         if(c.family==="ascendanceOnly"){ ascendanceOnly=true; continue; }
         if(!tags[c.family].includes(c.value)) tags[c.family].push(c.value);
+      }
+      // Deux sexes : une seule remarque, qui dit dans quelle image chercher (Idan, 2026-11-03).
+      if(sexConflict){
+        const short={femme:"F",homme:"M"};
+        const of=kind=>[...new Set((g.files[kind]?.keywords||[]).map(classify).filter(c=>c?.family==="sex").map(c=>short[c.value]))].join(", ")||"aucun";
+        warnings.push(`${g.id} : deux sexes tagués (plein pied : ${of("full")} ; portrait : ${of("portrait")})`);
       }
       if(tags.magic.length&&!tags.profile.length) tags.profile.push("magic");
       if(ascendanceOnly&&!tags.ascendance.length){ warnings.push(`${g.id} : « Ascendance only » sans ascendance tagguée, ignoré`); ascendanceOnly=false; }

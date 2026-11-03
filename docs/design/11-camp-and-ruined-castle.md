@@ -234,16 +234,24 @@ hasard » ; « Le reste, c'est nickel ») — remplace le choix de l'École (sa 
   mieux dans la compagnie** (la part de ses camarades qu'il dépasse, pour ce que travaille la salle ; les échelles ne se
   comparent pas : résistances 4 à 8, caractéristiques 55, armes 28, meilleure école 75 en médiane), parmi les salles et
   ailes qui ont une place libre ; sinon **au hasard** parmi elles ; plus de place nulle part : la taverne ;
-- **test** : à l'École, celui de l'École ; ailleurs, la **Volonté seule**, 100 / (1 + e^(−Δ/15)), de 2 à 95 %, Δ = (Volonté −
-  50) / 2 (une chance sur deux pour un mercenaire moyen ; le maître ajoutera son bonus) ;
-- **gain** : 20 × carac / 50 × (1 + 0,1 × niveau), la carac de chaque bâtiment (`apprend_avec`) : **Intelligence** (École),
-  **Endurance** (Ludus), **Volonté** (Académie), **Dextérité** (Cercle) ; caractéristiques et résistances montent ; une arme,
-  une catégorie ou un style fait reculer les autres comme en combat (doc 08) ;
+- **test** : à l'École, celui de l'École ; ailleurs, 100 / (1 + e^(−Δ/15)), de 2 à 95 %, Δ = (Volonté − 50) / 2 (une chance
+  sur deux pour un mercenaire moyen sans maître) + Charisme du maître / 10 + affinité avec le maître / 10 ;
+- **gain** : 20 × carac / 50 × (1 + 0,1 × niveau) × (1 + niveau du maître / 100) × (1 + Transmission du savoir du maître
+  / 100), la carac de chaque bâtiment (`apprend_avec`) : **Intelligence** (École), **Endurance** (Ludus), **Volonté**
+  (Académie), **Dextérité** (Cercle) ; caractéristiques et résistances montent ; une arme, une catégorie ou un style fait
+  reculer les autres comme en combat (doc 08) ;
 - **places** : 1, +1 tous les 2 niveaux, pour chaque salle principale et chaque aile ;
 - journal du matin : une ligne par bâtiment (« Ludus : 2 élèves aujourd'hui. ») ; fiche, onglet Camp, « Aujourd'hui » :
   la salle, l'XP et ce qu'elle travaille ;
-- **maîtres** à venir : le Doctore (Ludus), le Vétéran (Académie), **le Maître des lames** (Cercle ; Idan), nommés comme le
-  directeur.
+- **maîtres** (Idan, 2026-11-03 : « Oui pour les maîtres ») : **le Doctore** (Ludus), **le Vétéran** (Académie), **le Maître
+  des lames** (Cercle ; nom d'Idan), nommés **comme le directeur** : bâtiment construit, même chance d'accepter, même
+  refus, même retour sur le terrain, une proposition par jour ; hors mission, ils vivent dans leur bâtiment (pas de place
+  au dortoir) ; un mercenaire ne tient qu'un poste (intendant, médecin, directeur, maître, lieutenant). Ils aident comme
+  le directeur à l'École : même test, même gain ; **niveau du maître** : sa valeur dans ce que travaille la salle ou
+  l'aile (sa Force à la Meule, sa Résistance au feu au Four…) ; chacun gagne **5 XP de Transmission du savoir par élève
+  de son bâtiment et par jour**. Intendance : un panneau par maître, à côté du directeur, une fois le bâtiment construit
+  (la liste montre ce que travaille la salle principale) ; fiche : statut, journal et jours en poste. Code :
+  `camp-posts.js`, `school-director.js` (paramètre `post`), `school-training.js` ; textes : `camp-masters-dialogue.json`.
 
 **Ludus** (validé, noms compris) — maître : **le Doctore**.
 
@@ -268,9 +276,17 @@ armures** (les ports d'armure, légère puis intermédiaire puis lourde, appris 
 | **La Cantine** | Résistance au poison | « Le plat du jour est toujours un test. Personne n'a jamais su lequel. » |
 | **Le Placard** | Discrétion | « On s'y cache pendant que le Vétéran vous cherche. Il cherche encore le dernier. » |
 
-**Le Cercle des Fines Lames** (validé) — salle principale : **Dextérité** ; ailes (des salles à construire, « comme les
-autres ») : Salle des Lames longues, Salle des Lames courtes, Salle des Deux armes, Salle de la Main seule (noms
-provisoires). Deuxième fonction (Idan, 2026-11-03 : « On garde juste l'augmentation de la prime, pas la fréquence ») :
+**Le Cercle des Fines Lames** (validé, noms compris) — maître : **le Maître des lames** ; salle principale : **Dextérité** ;
+ailes (des salles à construire, « comme les autres »).
+
+| Aile | Travaille | Info-bulle |
+|---|---|---|
+| **La Salle des Miroirs** | Lames longues | « On s'y bat contre son reflet. Il triche. » |
+| **Le Boudoir** | Lames courtes | « Les dagues, les confidences et les coups bas. » |
+| **Le Bal masqué** | Combat à deux armes | « Une rapière, une main-gauche, et surtout ne pas marcher sur les pieds. » |
+| **Le Salon de thé** | Combat à une main | « La tasse dans une main, l'épée dans l'autre. Ne rien renverser. » |
+
+Deuxième fonction (Idan, 2026-11-03 : « On garde juste l'augmentation de la prime, pas la fréquence ») :
 on y croise des nobles, le **paiement d'une garde du corps × (1 + 5 % par niveau du Cercle)**, arrondi à 10 PO, pour
 les offres qui arrivent au tableau (`garde_paie_par_niveau`, doc 17 §12) ; +50 % au niveau 10. La fiche de l'offre
 montre le paiement, sans commentaire.

@@ -21,10 +21,15 @@
 //   compagnie (la part de ses camarades qu'il dépasse), parmi les salles et ailes qui ont une place libre ; sinon au
 //   hasard parmi elles. Plus de place nulle part : la taverne.
 // - Test hors École : chance = 100 / (1 + e^(−Δ/15)), de 2 à 95 %, Δ = (Volonté − 50) / 2 (le choix de la salle tient déjà
-//   compte du talent ; les maîtres viendront) ; à l'École, le test ci-dessus.
-// - Gain : 20 × carac / 50 × (1 + 0,1 × niveau), la carac du bâtiment (apprend_avec : Intelligence, Endurance, Volonté,
-//   Dextérité) ; caractéristiques et résistances montent ; une arme, une catégorie ou un style fait reculer les autres
-//   comme en combat (progression.martialSpread).
+//   compte du talent) + Charisme du maître / 10 + affinité avec le maître / 10 ; à l'École, le test ci-dessus.
+// - Gain : 20 × carac / 50 × (1 + 0,1 × niveau) × (1 + niveau du maître / 100) × (1 + Transmission du savoir du maître
+//   / 100), la carac du bâtiment (apprend_avec : Intelligence, Endurance, Volonté, Dextérité) ; caractéristiques et
+//   résistances montent ; une arme, une catégorie ou un style fait reculer les autres comme en combat
+//   (progression.martialSpread).
+// Les maîtres (Idan, 2026-11-03 : « Oui pour les maîtres ») : le Doctore au Ludus, le Vétéran à l'Académie de la survie,
+// le Maître des lames au Cercle des Fines Lames aident comme le directeur à l'École : même test, même gain ; niveau du
+// maître : sa valeur dans ce que travaille la salle ou l'aile. Chacun gagne 5 XP de Transmission du savoir par élève de
+// son bâtiment et par jour.
 // Constantes : formula-constants.json (school.training.*, camp.training.*). Doc 11 §7.
 (function(root,factory){
   const api=factory();
@@ -84,15 +89,18 @@
       const delta=will+school+charisma+liking;
       return {chance:clamp(100/(1+Math.exp(-delta/C.slope)),C.min,C.max),delta,parts:{will,school,charisma,affinity:liking},best};
     }
-    // Niveau du directeur dans la salle : son école (salle d'une école), sa Puissance magique (salle généraliste).
+    // Niveau du directeur ou du maître dans la salle : sa valeur dans ce qu'elle travaille (son école dans la salle d'une
+    // école, sa Puissance magique dans la salle généraliste, sa Force à la Meule…).
     function directorLevel(director,room){
-      if(!director) return 0;
-      return room.school?schoolOf(director,room.school):stat(director,MAGIC_POWER);
+      return director?valueOf(director,room):0;
     }
-    // Chance de prendre la place dans un bâtiment autre que l'École : la Volonté seule (en %).
-    function trainingChance(m){
-      const delta=(stat(m,"Volonté")-C.willCenter)/C.willDivisor;
-      return {chance:clamp(100/(1+Math.exp(-delta/C.slope)),C.min,C.max),delta};
+    // Chance de prendre la place dans un bâtiment autre que l'École (en %) : la Volonté, et le maître s'il y en a un.
+    function trainingChance(m,master=null){
+      const will=(stat(m,"Volonté")-C.willCenter)/C.willDivisor;
+      const charisma=master?stat(master,"Charisme")/C.charismaDivisor:0;
+      const liking=master?directorAffinity(master,m)/C.affinityDivisor:0;
+      const delta=will+charisma+liking;
+      return {chance:clamp(100/(1+Math.exp(-delta/C.slope)),C.min,C.max),delta,parts:{will,charisma,affinity:liking}};
     }
     // Ce que travaille une salle : son école, ou room.trains (Puissance magique pour la salle généraliste de l'École).
     const trainsOf=room=>room?.school||room?.trains||MAGIC_POWER;
@@ -158,18 +166,23 @@
     const atSchool=room=>!room.building||room.building===HALL;
     // Une journée. rooms : [{ code, building, school, trains, learnWith, level, places }] (salles et ailes construites) ;
     // candidates : les mercenaires disponibles, sans le capitaine ; captain : le capitaine s'il est disponible ;
-    // captainChoice : le code de la salle choisie pour lui (null : la taverne) ; director : le directeur de l'École ou
-    // null ; company : toute la compagnie (pour le rang ; par défaut, le capitaine et les candidats).
-    // Renvoie { entries, directorXp } ; chaque entrée : { id, name, code, school, xp, chance, roll, captain, talent },
-    // code null pour la taverne (test raté, ou plus de place : full). L'XP est appliquée si progression est fourni.
-    function runDay({rooms=[],candidates=[],captain=null,captainChoice=null,director=null,company=null}={}){
+    // captainChoice : le code de la salle choisie pour lui (null : la taverne) ; masters : les maîtres par bâtiment
+    // ({ magic_school: directeur, ludus: Doctore, … }) ; director : l'ancien paramètre, le directeur de l'École seul ;
+    // company : toute la compagnie (pour le rang ; par défaut, le capitaine et les candidats).
+    // Renvoie { entries, directorXp, masterXp } (masterXp : l'XP de Transmission par bâtiment) ; chaque entrée : { id,
+    // name, code, school, xp, chance, roll, captain, talent }, code null pour la taverne (test raté, ou plus de place :
+    // full). L'XP est appliquée si progression est fourni.
+    function runDay({rooms=[],candidates=[],captain=null,captainChoice=null,director=null,masters=null,company=null}={}){
       const free=new Map(rooms.map(room=>[room.code,Math.max(0,Number(room.places)||0)]));
       const byCode=new Map(rooms.map(room=>[room.code,room]));
       const peers=company||[captain,...candidates].filter(Boolean);
+      const teachers=masters||{[HALL]:director};
+      const buildingOf=room=>room.building||HALL;
+      const masterOf=room=>teachers[buildingOf(room)]||null;
       const entries=[];
       const train=(m,room,extra)=>{
         free.set(room.code,free.get(room.code)-1);
-        const xp=dailyXp(m,room,atSchool(room)?director:null);
+        const xp=dailyXp(m,room,masterOf(room));
         if(progression&&xp>0) progression.apply(m,xpOf(room,xp,m));
         entries.push({id:m.id,name:m.name,code:room.code,school:room.school||null,xp,...extra});
       };
@@ -184,17 +197,23 @@
         // Là où il est le plus doué (75 %), sinon au hasard parmi les places libres.
         const talent=random()<C.talentShare;
         const room=talent?bestRoom(m,open,peers):open[Math.min(open.length-1,Math.floor(random()*open.length))];
-        const test=atSchool(room)?chance(m,director):trainingChance(m);
+        const test=atSchool(room)?chance(m,masterOf(room)):trainingChance(m,masterOf(room));
         const roll=random()*100;
         const extra={captain:false,talent,chance:Math.round(test.chance*10)/10,roll:Math.round(roll*10)/10};
         if(roll<test.chance) train(m,room,extra);
         else entries.push({id:m.id,name:m.name,code:null,school:null,xp:0,aimed:room.code,...extra});
       }
-      // Le directeur compte les élèves de l'École seulement.
-      const students=entries.filter(e=>e.code&&atSchool(byCode.get(e.code))&&!(director&&e.id===director.id)).length;
-      const directorXp=director&&students?C.directorXp*students:0;
-      if(progression&&directorXp>0) progression.apply(director,{skills:{camp:{[TRANSMISSION]:directorXp}}});
-      return {entries,directorXp};
+      // Chaque maître compte les élèves de son bâtiment.
+      const masterXp={};
+      for(const [building,master] of Object.entries(teachers)){
+        if(!master) continue;
+        const students=entries.filter(e=>e.code&&buildingOf(byCode.get(e.code))===building&&e.id!==master.id).length;
+        const xp=students?C.directorXp*students:0;
+        if(!xp) continue;
+        masterXp[building]=xp;
+        if(progression) progression.apply(master,{skills:{camp:{[TRANSMISSION]:xp}}});
+      }
+      return {entries,directorXp:masterXp[HALL]||0,masterXp};
     }
 
     return {constants:C,HALL,SCHOOLS,bestSchool,chance,trainingChance,valueOf,rankOf,bestRoom,directorLevel,dailyXp,xpOf,runDay};

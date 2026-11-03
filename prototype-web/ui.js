@@ -47,8 +47,9 @@ function rosterStatus(c){
   if(own&&studying.isPlanned(own)) return {kind:"available",label:"Entre à l’École demain"};
   if(own) return {kind:"steward",label:own.kind==="perfect"?"Perfectionne un sort":"Apprend un sort"};
   if(studying?.teachingOf(game.campaign,c.id)) return {kind:"steward",label:"Enseigne un sort"};
-  // Le directeur de l'École de magie reste au camp, à l'École (Idan, 2026-11-01).
-  if(game.campaign&&game.campaign.company.directorId!=null&&c.id===game.campaign.company.directorId) return {kind:"steward",label:String(c.sex||"").toLowerCase().startsWith("f")?"Directrice":"Directeur"};
+  // Le directeur de l'École de magie (Idan, 2026-11-01) et les maîtres (Idan, 2026-11-03) restent au camp.
+  const post=game.campaign&&typeof MercenairesCampPosts!=="undefined"?MercenairesCampPosts.postOf(game.campaign,c):null;
+  if(post) return {kind:"steward",label:typeof campPostLabel==="function"?campPostLabel(post.key,c):post.noun};
   return {kind:"available",label:"Disponible"};
 }
 
@@ -132,11 +133,12 @@ function renderGame() {
   $("setup-panel").classList.add("hidden");
   $("game-panel").classList.remove("hidden");
   $("company-title").textContent = game.campaign?.company.name || `Compagnie de ${game.captain.name}`;
-  // Ma Compagnie : le capitaine, l'intendant (Idan, 2026-10-24), le médecin et le directeur de l'École (Idan, 2026-11-01).
+  // Ma Compagnie : le capitaine, l'intendant (Idan, 2026-10-24), le médecin, le directeur de l'École (Idan, 2026-11-01) et
+  // les maîtres (Idan, 2026-11-03).
   const steward = game.campaign?.company.roster.find(m => m.id === game.campaign.company.intendantId);
   const medic = game.campaign?.company.medicId != null ? game.campaign.company.roster.find(m => m.id === game.campaign.company.medicId) : null;
-  const director = game.campaign?.company.directorId != null ? game.campaign.company.roster.find(m => m.id === game.campaign.company.directorId) : null;
-  $("captain-summary").innerHTML = characterRow(game.captain, true) + (steward ? characterRow(steward) : "") + (medic ? characterRow(medic) : "") + (director ? characterRow(director) : "");
+  const masters = game.campaign ? MercenairesCampPosts.POSTS.map(post => MercenairesCampPosts.holderOf(game.campaign, post)).filter(Boolean) : [];
+  $("captain-summary").innerHTML = characterRow(game.captain, true) + (steward ? characterRow(steward) : "") + (medic ? characterRow(medic) : "") + masters.map(m => characterRow(m)).join("");
   renderGameHud();
   renderMercenaryRoster();
   renderGenerated();
@@ -174,9 +176,10 @@ function dormitoryPlacesText(places){
 }
 
 function renderMercenaryRoster() {
-  // L'intendant, le médecin et le directeur de l'École passent dans Ma Compagnie (Idan, 2026-10-24 et 2026-11-01).
+  // L'intendant, le médecin, le directeur de l'École et les maîtres passent dans Ma Compagnie (Idan, 2026-10-24, 2026-11-01
+  // et 2026-11-03).
   const squad=teamCharacters().filter(c=>c!==game.captain&&c.id!==game.campaign?.company.intendantId&&(game.campaign?.company.medicId==null||c.id!==game.campaign.company.medicId)
-    &&(game.campaign?.company.directorId==null||c.id!==game.campaign.company.directorId));
+    &&!(game.campaign&&MercenairesCampPosts.postOf(game.campaign,c)));
   const company=game.campaign?.company;
   const occupied=game.campaign?campaignRules().dormitoryUsed(game.campaign):squad.length;
   const capacity=company?.camp?.dormitoryCapacity;
@@ -826,6 +829,8 @@ function renderSituation(c) {
   if (company && c.id === company.intendantId) roles.push("Intendant");
   if (company && company.medicId != null && c.id === company.medicId) roles.push("Médecin");
   if (company && company.directorId != null && c.id === company.directorId) roles.push(String(c.sex || "").toLowerCase().startsWith("f") ? "Directrice de l’École" : "Directeur de l’École");
+  const master = company ? MercenairesCampPosts.postOf(game.campaign, c) : null;
+  if (master && master.key !== "director") roles.push(campPostLabel(master.key, c));
   const rows = [
     `<div class="metric"><small>Statut</small><strong>${inCompany ? (roles.join(" · ") || "Membre de la compagnie") : esc(c.role || "Hors compagnie")}</strong></div>`,
     `<div class="metric"><small>État</small><strong>${c.recovery ? esc(recoveryLabel(c)) : "Disponible"}</strong></div>`
@@ -1321,8 +1326,9 @@ function historyEntryText(c,entry){
   if(entry.kind==="recall") return fill(copy.recall?.[entry.accepted?"accord":"refus"],{jours:historyPlural(entry.days||0,"jour","jours")});
   if(entry.kind==="medic") return fill(copy.medic?.[entry.accepted?"accord":"refus"]);
   if(entry.kind==="medic_recall") return fill(copy.medic_recall?.[entry.accepted?"accord":"refus"],{jours:historyPlural(entry.days||0,"jour","jours")});
-  if(entry.kind==="director") return fill(copy.director?.[entry.accepted?"accord":"refus"]);
-  if(entry.kind==="director_recall") return fill(copy.director_recall?.[entry.accepted?"accord":"refus"],{jours:historyPlural(entry.days||0,"jour","jours")});
+  // Directeur de l'École et maîtres (camp-posts.js) : nomination (kind = le poste) et retour sur le terrain (_recall).
+  if(MercenairesCampPosts.postByKey(String(entry.kind).replace(/_recall$/,"")))
+    return fill(copy[entry.kind]?.[entry.accepted?"accord":"refus"],{jours:historyPlural(entry.days||0,"jour","jours")});
   // Apprentissage des sorts à l'École (Idan, 2026-11-02).
   if(entry.kind==="study") return fill(copy.study?.[entry.accepted?"accord":"refus"],{sort:entry.spell||""});
   if(entry.kind==="study_done") return fill(copy.study_done,{sort:entry.spell||"",niveau:fmt(entry.level||1),jours:historyPlural(entry.days||0,"jour","jours")});
@@ -1350,7 +1356,8 @@ function renderHistoryTab(c){
   const values={...history,days:MercenairesHistory.daysInCompany(c,game.campaign?.day),
     stewardDays:typeof stewardRules==="function"&&game.campaign?stewardRules().totalStewardDays(game.campaign,c):Number(history.stewardDays)||0,
     medicDays:typeof medicRules==="function"&&game.campaign?medicRules().totalMedicDays(game.campaign,c):Number(history.medicDays)||0,
-    directorDays:typeof schoolDirectorRules==="function"&&game.campaign?schoolDirectorRules().totalDirectorDays(game.campaign,c):Number(history.directorDays)||0};
+    ...Object.fromEntries(MercenairesCampPosts.POSTS.map(post=>[post.key+"Days",
+      typeof schoolDirectorRules==="function"&&game.campaign?schoolDirectorRules(post.key).totalDirectorDays(game.campaign,c):Number(history[post.key+"Days"])||0]))};
   const counters=(copy.counters||[]).filter(k=>!k.hideZero||Number(values[k.key])>0).map(k=>`<div class="sheet-history-counter"><strong>${fmt(Number(values[k.key])||0)}</strong><small>${esc(k.label)}</small></div>`).join("");
   const entries=[...(history.log||[])].map((entry,index)=>({entry,index})).sort((a,b)=>b.entry.day-a.entry.day||b.index-a.index)
     .map(({entry})=>({entry,text:historyEntryText(c,entry)})).filter(x=>x.text);

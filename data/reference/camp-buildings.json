@@ -521,8 +521,8 @@
     },
     {
       "code": "blade_long",
-      "nom": "Salle des Lames longues",
-      "description": "Elle monte au plus jusqu’au niveau du Cercle des Fines Lames.",
+      "nom": "La Salle des Miroirs",
+      "description": "« On s'y bat contre son reflet. Il triche. »",
       "niveaux": 10,
       "prix_base": 1000,
       "jours_base": 4,
@@ -539,8 +539,8 @@
     },
     {
       "code": "blade_short",
-      "nom": "Salle des Lames courtes",
-      "description": "Elle monte au plus jusqu’au niveau du Cercle des Fines Lames.",
+      "nom": "Le Boudoir",
+      "description": "« Les dagues, les confidences et les coups bas. »",
       "niveaux": 10,
       "prix_base": 1000,
       "jours_base": 4,
@@ -557,8 +557,8 @@
     },
     {
       "code": "blade_dual",
-      "nom": "Salle des Deux armes",
-      "description": "Elle monte au plus jusqu’au niveau du Cercle des Fines Lames.",
+      "nom": "Le Bal masqué",
+      "description": "« Une rapière, une main-gauche, et surtout ne pas marcher sur les pieds. »",
       "niveaux": 10,
       "prix_base": 1000,
       "jours_base": 4,
@@ -575,8 +575,8 @@
     },
     {
       "code": "blade_single",
-      "nom": "Salle de la Main seule",
-      "description": "Elle monte au plus jusqu’au niveau du Cercle des Fines Lames.",
+      "nom": "Le Salon de thé",
+      "description": "« La tasse dans une main, l'épée dans l'autre. Ne rien renverser. »",
       "niveaux": 10,
       "prix_base": 1000,
       "jours_base": 4,

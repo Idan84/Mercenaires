@@ -45,7 +45,8 @@
   const curve=(delta,slope)=>10+80/(1+Math.exp(-delta/slope));
 
   // camp : { roomOfSchool(school) → { code, name } | null, buildingLevel(state, code), buildingPlaces(state, code),
-  //          directorOf(state), expeditionOf(state, id) } (campaign.js).
+  //          directorOf(state), expeditionOf(state, id), busyElsewhere(state, id) → raison ou null (une armure à
+  //          l'Académie) } (campaign.js).
   function createSpellStudyRules({reference,random=Math.random,affinity=null,progression=null,camp}={}){
     const k=(code,fallback)=>referenceConstant(reference,code,fallback);
     const C={
@@ -90,6 +91,8 @@
     const isPlanned=study=>study?.status==="planned";
     // Le professeur compte pour le test du matin testDay s'il enseignait la veille (accepté avant testDay − 1).
     const teacherCounts=(study,testDay)=>study.teacherId!=null&&!(Number(study.teacherFrom)>=testDay);
+    // Retenu ailleurs au camp (une armure à l'Académie) : la raison, ou null.
+    const elsewhere=(state,mercenaryId)=>camp?.busyElsewhere?.(state,mercenaryId)||null;
     function busyReason(state,mercenaryId){
       const own=studyOf(state,mercenaryId);
       if(own&&isPlanned(own)) return "Il entre à l’École de magie demain matin.";
@@ -113,7 +116,7 @@
       const check=manuals.canLearn(state,m,item);
       if(!check.ok) return check;
       if(camp.expeditionOf(state,m.id)) return no("Il part en mission demain.");
-      const busy=busyReason(state,m.id);
+      const busy=busyReason(state,m.id)||elsewhere(state,m.id);
       if(busy) return no(busy);
       const room=roomFor(check.spell);
       if(!room||!(camp.buildingLevel(state,room.code)>0)) return no("Il faut d’abord construire la "+(room?.name||"salle de cette école")+".");
@@ -167,7 +170,7 @@
       const known=(m.spells||[]).find(s=>s.code===spell.code);
       if(!known) return no("Il ne connaît pas ce sort.");
       if(camp.expeditionOf(state,m.id)) return no(camp.expeditionOf(state,m.id).status==="scheduled"?"Il part en mission demain.":"Il est en mission.");
-      const busy=busyReason(state,m.id);
+      const busy=busyReason(state,m.id)||elsewhere(state,m.id);
       if(busy) return no(busy);
       if((Number(known.mastery)||0)>=C.maxLevel) return no("Il maîtrise déjà ce sort au plus haut.");
       const room=roomFor(spell);
@@ -290,7 +293,7 @@
       if(t.id===study.studentId) return no("Il ne peut pas s’enseigner le sort.");
       if(!(t.spells||[]).some(s=>s.code===study.spellCode)) return no("Il ne connaît pas ce sort.");
       if(camp.expeditionOf(state,t.id)) return no("Il est en mission.");
-      const busy=busyReason(state,t.id);
+      const busy=busyReason(state,t.id)||elsewhere(state,t.id);
       if(busy) return no(busy);
       if(!isCaptain(state,t)&&t.teachOfferDay===state.day) return no("Vous lui en avez déjà parlé aujourd’hui.");
       return {ok:true};

@@ -216,6 +216,49 @@ camp […] il faut tous les jours un ordre de tirage pour tous les mercenaires d
 avant l'entraînement libre et reste au camp jusqu'à ce qu'il connaisse le sort ; un professeur facultatif ; règles et
 chiffres au doc 12 (« Apprendre un sort à l'École »).
 
+### Bâtiments d'entraînement (conception en cours, Idan, 2026-11-02 et 2026-11-03)
+
+Sur le modèle de l'École de magie : un bâtiment, un maître nommé, une **salle principale** (ce qu'on y travaille sans
+aile construite) et des **ailes**. **En jeu** (Idan, 2026-11-03 : « Je te laisse coder Ludus / Survie / Fines Lames »)
+: les trois bâtiments se construisent puis montent de 1 à 10, au même barème que les autres (niveau n = 1 000 × n² PO et
+4 × n jours) ; leurs ailes montent au plus au niveau de leur bâtiment ; dans Ma Compagnie, chacun montre ce qu'il
+travaille devant son état, l'info-bulle au survol du nom (`camp-buildings.json`, colonne `entraine`). Pas encore
+d'entraînement, de places ni de maître : ils suivront l'École (règles à valider). Test : `tests/training-buildings.test.js`.
+
+**Ludus** (validé, noms compris) — maître : **le Doctore**.
+
+| Aile | Travaille | Info-bulle |
+|---|---|---|
+| **La Cour** (salle principale) | Résistance physique | « Le Doctore frappe. On encaisse. Jusqu'à ce que ça ne fasse plus mal. » |
+| **La Meule** | Force | « On pousse la meule à la place de l'âne. L'âne, lui, se repose. » |
+| **La Longue Piste** | Endurance | « Dix tours du camp en armure. Le onzième, c'est pour avoir demandé combien il en restait. » |
+| **La Course au Cochon** | Vitesse | « Le cochon est graissé. Le vainqueur le garde. Personne n'a encore gagné. » |
+| **La Quintaine** | Esquive | « On frappe le mannequin, il tourne et rend le coup. On apprend vite à se baisser. » |
+| **Le Réfectoire du Doctore** | Constitution | « Six œufs crus au réveil, bouillie et viande de cheval. Le corps suit, ou pas. » |
+
+**Académie de la survie** (validée, noms compris) — maître : **le Vétéran**. Dans le bâtiment lui-même, sans aile à
+construire (Idan : « on ne construit rien de plus ») : les **Boucliers** (salle principale) et l'**apprentissage des
+armures** (les ports d'armure, légère puis intermédiaire puis lourde, appris comme un sort ; règles à fixer).
+
+| Aile | Travaille | Info-bulle |
+|---|---|---|
+| **Le Four** | Résistance au feu | « On y entre en armure. On en ressort cuit à point, ou endurci. » |
+| **Le Frigo** | Résistance au froid | « Une nuit dans la glacière. Le Vétéran appelle ça “se rafraîchir les idées”. » |
+| **La Décharge** | Résistance à la foudre | « Un mage en colère, une flaque d'eau, et vous dedans. » |
+| **La Cantine** | Résistance au poison | « Le plat du jour est toujours un test. Personne n'a jamais su lequel. » |
+| **Le Placard** | Discrétion | « On s'y cache pendant que le Vétéran vous cherche. Il cherche encore le dernier. » |
+
+**Le Cercle des Fines Lames** (validé) — salle principale : **Dextérité** ; ailes (des salles à construire, « comme les
+autres ») : Salle des Lames longues, Salle des Lames courtes, Salle des Deux armes, Salle de la Main seule (noms
+provisoires). Deuxième fonction (Idan, 2026-11-03 : « On garde juste l'augmentation de la prime, pas la fréquence ») :
+on y croise des nobles, le **paiement d'une garde du corps × (1 + 5 % par niveau du Cercle)**, arrondi à 10 PO, pour
+les offres qui arrivent au tableau (`garde_paie_par_niveau`, doc 17 §12) ; +50 % au niveau 10.
+
+Pistes gardées en tête, non validées : la **Tour de guet** (salle principale Perception, Armes de tir ; anticiper les
+attaques du camp, à venir), le **Labo d'alchimie** (potions ; Armes à feu, Pièges, apprendre à empoisonner ses armes),
+et pour les autres armes de mêlée deux bâtiments d'ambiance : **l'Ermitage** (Bâtons, Flexibles, Hast ; le mana) et
+**le Hall des Berserkers** (Haches, Contondantes, Deux mains). Les compétences de camp (artisanat) attendront les bâtiments de fabrication.
+
 ## 8 — Bâtiments pour animaux et montures
 
 Le château peut accueillir des structures spécialisées selon les espèces :

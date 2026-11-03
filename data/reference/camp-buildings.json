@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "camp-buildings",
-  "description": "Bâtiments du camp (Idan, 2026-11-01) : à construire, puis à améliorer niveau par niveau. Le niveau n coûte prix_base × n² PO et jours_base × n jours ; un chantier par bâtiment (chaque salle de l'École de magie a le sien), en parallèle de celui du dortoir ; l'or est payé au lancement, le niveau est atteint le matin du dernier jour. Dispensaire : la durée des blessures × (1 − soins_par_niveau × niveau), après le minimum de 7 jours, pour les blessures reçues après la construction. Bains chauds : fatigue − fatigue_jours_par_niveau × niveau jours (au moins 1 jour), et recharge du mana au camp + mana_par_niveau × niveau % de la Réserve par jour. École de magie : 10 niveaux ; une salle par école de magie, 10 niveaux, au plus au niveau atteint par l'École (colonne requiert) ; places (élèves en même temps) = places_base + ⌊niveau ÷ places_pas⌋ : 1 place, +1 tous les 2 niveaux, 6 au niveau 10 (60 en tout) ; pas encore d'effet. Code : game-core/campaign.js (bâtiments du camp), affichage : prototype-web/camp-buildings-ui.js (Ma Compagnie). Doc 11 §7 et §9.",
+  "description": "Bâtiments du camp (Idan, 2026-11-01) : à construire, puis à améliorer niveau par niveau. Le niveau n coûte prix_base × n² PO et jours_base × n jours ; un chantier par bâtiment (chaque salle de l'École de magie a le sien), en parallèle de celui du dortoir ; l'or est payé au lancement, le niveau est atteint le matin du dernier jour. Dispensaire : la durée des blessures × (1 − soins_par_niveau × niveau), après le minimum de 7 jours, pour les blessures reçues après la construction. Bains chauds : fatigue − fatigue_jours_par_niveau × niveau jours (au moins 1 jour), et recharge du mana au camp + mana_par_niveau × niveau % de la Réserve par jour. École de magie : 10 niveaux ; une salle par école de magie, 10 niveaux, au plus au niveau atteint par l'École (colonne requiert) ; places (élèves en même temps) = places_base + ⌊niveau ÷ places_pas⌋ : 1 place, +1 tous les 2 niveaux, 6 au niveau 10 (60 en tout) ; pas encore d'effet. Bâtiments d'entraînement (Idan, 2026-11-03 ; doc 11 §7) : le Ludus, l'Académie de la survie et le Cercle des Fines Lames, 10 niveaux chacun, et leurs ailes (colonne requiert) ; colonne entraine : ce qu'ils travailleront (pas encore d'entraînement, ni de places) ; Cercle : paiement de la garde du corps × (1 + garde_paie_par_niveau × niveau). Code : game-core/campaign.js (bâtiments du camp), affichage : prototype-web/camp-buildings-ui.js (Ma Compagnie). Doc 11 §7 et §9.",
   "columns": [
     {
       "key": "code",
@@ -54,6 +54,14 @@
     {
       "key": "places_pas",
       "source": "École de magie et salles : une place de plus tous les places_pas niveaux (0 : pas de places)"
+    },
+    {
+      "key": "entraine",
+      "source": "Bâtiments d'entraînement (Idan, 2026-11-03) : ce que travaille la salle principale ou l'aile (affiché à côté de son nom ; l'entraînement viendra ensuite)"
+    },
+    {
+      "key": "garde_paie_par_niveau",
+      "source": "Cercle des Fines Lames : paiement d'une garde du corps × (1 + garde_paie_par_niveau × niveau)"
     }
   ],
   "rows": [
@@ -70,7 +78,9 @@
       "requiert": null,
       "ecole": null,
       "places_base": 0,
-      "places_pas": 0
+      "places_pas": 0,
+      "entraine": null,
+      "garde_paie_par_niveau": 0
     },
     {
       "code": "baths",
@@ -85,7 +95,9 @@
       "requiert": null,
       "ecole": null,
       "places_base": 0,
-      "places_pas": 0
+      "places_pas": 0,
+      "entraine": null,
+      "garde_paie_par_niveau": 0
     },
     {
       "code": "magic_school",
@@ -100,7 +112,9 @@
       "requiert": null,
       "ecole": null,
       "places_base": 1,
-      "places_pas": 2
+      "places_pas": 2,
+      "entraine": null,
+      "garde_paie_par_niveau": 0
     },
     {
       "code": "magic_room_fire",
@@ -115,7 +129,9 @@
       "requiert": "magic_school",
       "ecole": "Feu",
       "places_base": 1,
-      "places_pas": 2
+      "places_pas": 2,
+      "entraine": null,
+      "garde_paie_par_niveau": 0
     },
     {
       "code": "magic_room_water",
@@ -130,7 +146,9 @@
       "requiert": "magic_school",
       "ecole": "Eau",
       "places_base": 1,
-      "places_pas": 2
+      "places_pas": 2,
+      "entraine": null,
+      "garde_paie_par_niveau": 0
     },
     {
       "code": "magic_room_lightning",
@@ -145,7 +163,9 @@
       "requiert": "magic_school",
       "ecole": "Foudre",
       "places_base": 1,
-      "places_pas": 2
+      "places_pas": 2,
+      "entraine": null,
+      "garde_paie_par_niveau": 0
     },
     {
       "code": "magic_room_life",
@@ -160,7 +180,9 @@
       "requiert": "magic_school",
       "ecole": "Vie",
       "places_base": 1,
-      "places_pas": 2
+      "places_pas": 2,
+      "entraine": null,
+      "garde_paie_par_niveau": 0
     },
     {
       "code": "magic_room_necromancy",
@@ -175,7 +197,9 @@
       "requiert": "magic_school",
       "ecole": "Nécromancie",
       "places_base": 1,
-      "places_pas": 2
+      "places_pas": 2,
+      "entraine": null,
+      "garde_paie_par_niveau": 0
     },
     {
       "code": "magic_room_illusion",
@@ -190,7 +214,9 @@
       "requiert": "magic_school",
       "ecole": "Illusion",
       "places_base": 1,
-      "places_pas": 2
+      "places_pas": 2,
+      "entraine": null,
+      "garde_paie_par_niveau": 0
     },
     {
       "code": "magic_room_summoning",
@@ -205,7 +231,9 @@
       "requiert": "magic_school",
       "ecole": "Invocation",
       "places_base": 1,
-      "places_pas": 2
+      "places_pas": 2,
+      "entraine": null,
+      "garde_paie_par_niveau": 0
     },
     {
       "code": "magic_room_transmutation",
@@ -220,7 +248,9 @@
       "requiert": "magic_school",
       "ecole": "Transmutation",
       "places_base": 1,
-      "places_pas": 2
+      "places_pas": 2,
+      "entraine": null,
+      "garde_paie_par_niveau": 0
     },
     {
       "code": "magic_room_telekinesis",
@@ -235,8 +265,299 @@
       "requiert": "magic_school",
       "ecole": "Télékinésie",
       "places_base": 1,
-      "places_pas": 2
+      "places_pas": 2,
+      "entraine": null,
+      "garde_paie_par_niveau": 0
+    },
+    {
+      "code": "ludus",
+      "nom": "Ludus",
+      "description": "Le Doctore y endurcit les corps. Dans la Cour : « Le Doctore frappe. On encaisse. Jusqu'à ce que ça ne fasse plus mal. » Chaque niveau du Ludus permet de monter ses ailes jusqu’à ce niveau.",
+      "niveaux": 10,
+      "prix_base": 1000,
+      "jours_base": 4,
+      "soins_par_niveau": 0,
+      "fatigue_jours_par_niveau": 0,
+      "mana_par_niveau": 0,
+      "requiert": null,
+      "ecole": null,
+      "places_base": 0,
+      "places_pas": 0,
+      "entraine": "Résistance physique",
+      "garde_paie_par_niveau": 0
+    },
+    {
+      "code": "ludus_force",
+      "nom": "La Meule",
+      "description": "« On pousse la meule à la place de l'âne. L'âne, lui, se repose. »",
+      "niveaux": 10,
+      "prix_base": 1000,
+      "jours_base": 4,
+      "soins_par_niveau": 0,
+      "fatigue_jours_par_niveau": 0,
+      "mana_par_niveau": 0,
+      "requiert": "ludus",
+      "ecole": null,
+      "places_base": 0,
+      "places_pas": 0,
+      "entraine": "Force",
+      "garde_paie_par_niveau": 0
+    },
+    {
+      "code": "ludus_endurance",
+      "nom": "La Longue Piste",
+      "description": "« Dix tours du camp en armure. Le onzième, c'est pour avoir demandé combien il en restait. »",
+      "niveaux": 10,
+      "prix_base": 1000,
+      "jours_base": 4,
+      "soins_par_niveau": 0,
+      "fatigue_jours_par_niveau": 0,
+      "mana_par_niveau": 0,
+      "requiert": "ludus",
+      "ecole": null,
+      "places_base": 0,
+      "places_pas": 0,
+      "entraine": "Endurance",
+      "garde_paie_par_niveau": 0
+    },
+    {
+      "code": "ludus_speed",
+      "nom": "La Course au Cochon",
+      "description": "« Le cochon est graissé. Le vainqueur le garde. Personne n'a encore gagné. »",
+      "niveaux": 10,
+      "prix_base": 1000,
+      "jours_base": 4,
+      "soins_par_niveau": 0,
+      "fatigue_jours_par_niveau": 0,
+      "mana_par_niveau": 0,
+      "requiert": "ludus",
+      "ecole": null,
+      "places_base": 0,
+      "places_pas": 0,
+      "entraine": "Vitesse",
+      "garde_paie_par_niveau": 0
+    },
+    {
+      "code": "ludus_dodge",
+      "nom": "La Quintaine",
+      "description": "« On frappe le mannequin, il tourne et rend le coup. On apprend vite à se baisser. »",
+      "niveaux": 10,
+      "prix_base": 1000,
+      "jours_base": 4,
+      "soins_par_niveau": 0,
+      "fatigue_jours_par_niveau": 0,
+      "mana_par_niveau": 0,
+      "requiert": "ludus",
+      "ecole": null,
+      "places_base": 0,
+      "places_pas": 0,
+      "entraine": "Esquive",
+      "garde_paie_par_niveau": 0
+    },
+    {
+      "code": "ludus_constitution",
+      "nom": "Le Réfectoire du Doctore",
+      "description": "« Six œufs crus au réveil, bouillie et viande de cheval. Le corps suit, ou pas. »",
+      "niveaux": 10,
+      "prix_base": 1000,
+      "jours_base": 4,
+      "soins_par_niveau": 0,
+      "fatigue_jours_par_niveau": 0,
+      "mana_par_niveau": 0,
+      "requiert": "ludus",
+      "ecole": null,
+      "places_base": 0,
+      "places_pas": 0,
+      "entraine": "Constitution",
+      "garde_paie_par_niveau": 0
+    },
+    {
+      "code": "survival_academy",
+      "nom": "Académie de la survie",
+      "description": "Le Vétéran y apprend à revenir vivant : le bouclier, les armures, et tout ce qui brûle, gèle, électrocute ou empoisonne. Chaque niveau de l’Académie permet de monter ses ailes jusqu’à ce niveau.",
+      "niveaux": 10,
+      "prix_base": 1000,
+      "jours_base": 4,
+      "soins_par_niveau": 0,
+      "fatigue_jours_par_niveau": 0,
+      "mana_par_niveau": 0,
+      "requiert": null,
+      "ecole": null,
+      "places_base": 0,
+      "places_pas": 0,
+      "entraine": "Boucliers",
+      "garde_paie_par_niveau": 0
+    },
+    {
+      "code": "survival_fire",
+      "nom": "Le Four",
+      "description": "« On y entre en armure. On en ressort cuit à point, ou endurci. »",
+      "niveaux": 10,
+      "prix_base": 1000,
+      "jours_base": 4,
+      "soins_par_niveau": 0,
+      "fatigue_jours_par_niveau": 0,
+      "mana_par_niveau": 0,
+      "requiert": "survival_academy",
+      "ecole": null,
+      "places_base": 0,
+      "places_pas": 0,
+      "entraine": "Résistance au feu",
+      "garde_paie_par_niveau": 0
+    },
+    {
+      "code": "survival_cold",
+      "nom": "Le Frigo",
+      "description": "« Une nuit dans la glacière. Le Vétéran appelle ça “se rafraîchir les idées”. »",
+      "niveaux": 10,
+      "prix_base": 1000,
+      "jours_base": 4,
+      "soins_par_niveau": 0,
+      "fatigue_jours_par_niveau": 0,
+      "mana_par_niveau": 0,
+      "requiert": "survival_academy",
+      "ecole": null,
+      "places_base": 0,
+      "places_pas": 0,
+      "entraine": "Résistance au froid",
+      "garde_paie_par_niveau": 0
+    },
+    {
+      "code": "survival_lightning",
+      "nom": "La Décharge",
+      "description": "« Un mage en colère, une flaque d'eau, et vous dedans. »",
+      "niveaux": 10,
+      "prix_base": 1000,
+      "jours_base": 4,
+      "soins_par_niveau": 0,
+      "fatigue_jours_par_niveau": 0,
+      "mana_par_niveau": 0,
+      "requiert": "survival_academy",
+      "ecole": null,
+      "places_base": 0,
+      "places_pas": 0,
+      "entraine": "Résistance à la foudre",
+      "garde_paie_par_niveau": 0
+    },
+    {
+      "code": "survival_poison",
+      "nom": "La Cantine",
+      "description": "« Le plat du jour est toujours un test. Personne n'a jamais su lequel. »",
+      "niveaux": 10,
+      "prix_base": 1000,
+      "jours_base": 4,
+      "soins_par_niveau": 0,
+      "fatigue_jours_par_niveau": 0,
+      "mana_par_niveau": 0,
+      "requiert": "survival_academy",
+      "ecole": null,
+      "places_base": 0,
+      "places_pas": 0,
+      "entraine": "Résistance au poison",
+      "garde_paie_par_niveau": 0
+    },
+    {
+      "code": "survival_stealth",
+      "nom": "Le Placard",
+      "description": "« On s'y cache pendant que le Vétéran vous cherche. Il cherche encore le dernier. »",
+      "niveaux": 10,
+      "prix_base": 1000,
+      "jours_base": 4,
+      "soins_par_niveau": 0,
+      "fatigue_jours_par_niveau": 0,
+      "mana_par_niveau": 0,
+      "requiert": "survival_academy",
+      "ecole": null,
+      "places_base": 0,
+      "places_pas": 0,
+      "entraine": "Discrétion",
+      "garde_paie_par_niveau": 0
+    },
+    {
+      "code": "blade_circle",
+      "nom": "Cercle des Fines Lames",
+      "description": "Rapières, thé et médisances. On y croise des nobles : la garde du corps paie mieux, +5 % par niveau du Cercle. Chaque niveau du Cercle permet de monter ses ailes jusqu’à ce niveau.",
+      "niveaux": 10,
+      "prix_base": 1000,
+      "jours_base": 4,
+      "soins_par_niveau": 0,
+      "fatigue_jours_par_niveau": 0,
+      "mana_par_niveau": 0,
+      "requiert": null,
+      "ecole": null,
+      "places_base": 0,
+      "places_pas": 0,
+      "entraine": "Dextérité",
+      "garde_paie_par_niveau": 0.05
+    },
+    {
+      "code": "blade_long",
+      "nom": "Salle des Lames longues",
+      "description": "Elle monte au plus jusqu’au niveau du Cercle des Fines Lames.",
+      "niveaux": 10,
+      "prix_base": 1000,
+      "jours_base": 4,
+      "soins_par_niveau": 0,
+      "fatigue_jours_par_niveau": 0,
+      "mana_par_niveau": 0,
+      "requiert": "blade_circle",
+      "ecole": null,
+      "places_base": 0,
+      "places_pas": 0,
+      "entraine": "Lames longues",
+      "garde_paie_par_niveau": 0
+    },
+    {
+      "code": "blade_short",
+      "nom": "Salle des Lames courtes",
+      "description": "Elle monte au plus jusqu’au niveau du Cercle des Fines Lames.",
+      "niveaux": 10,
+      "prix_base": 1000,
+      "jours_base": 4,
+      "soins_par_niveau": 0,
+      "fatigue_jours_par_niveau": 0,
+      "mana_par_niveau": 0,
+      "requiert": "blade_circle",
+      "ecole": null,
+      "places_base": 0,
+      "places_pas": 0,
+      "entraine": "Lames courtes",
+      "garde_paie_par_niveau": 0
+    },
+    {
+      "code": "blade_dual",
+      "nom": "Salle des Deux armes",
+      "description": "Elle monte au plus jusqu’au niveau du Cercle des Fines Lames.",
+      "niveaux": 10,
+      "prix_base": 1000,
+      "jours_base": 4,
+      "soins_par_niveau": 0,
+      "fatigue_jours_par_niveau": 0,
+      "mana_par_niveau": 0,
+      "requiert": "blade_circle",
+      "ecole": null,
+      "places_base": 0,
+      "places_pas": 0,
+      "entraine": "Combat à deux armes",
+      "garde_paie_par_niveau": 0
+    },
+    {
+      "code": "blade_single",
+      "nom": "Salle de la Main seule",
+      "description": "Elle monte au plus jusqu’au niveau du Cercle des Fines Lames.",
+      "niveaux": 10,
+      "prix_base": 1000,
+      "jours_base": 4,
+      "soins_par_niveau": 0,
+      "fatigue_jours_par_niveau": 0,
+      "mana_par_niveau": 0,
+      "requiert": "blade_circle",
+      "ecole": null,
+      "places_base": 0,
+      "places_pas": 0,
+      "entraine": "Combat à une main",
+      "garde_paie_par_niveau": 0
     }
   ],
-  "row_count": 12
+  "row_count": 29
 }

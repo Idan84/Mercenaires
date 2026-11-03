@@ -80,7 +80,7 @@ function bodyguardCard(guard){
     difficulty:{level:guard.level,label:"Réputation minimale"},
     reward:fmt(guard.payment)+" PO",rewardNote:"d’avance",duration:missionDays(guard.days),
     facts:[["crew","Mercenaires",String(guard.count)],["days","Durée",missionDays(guard.days)+", sans combat"],
-      ["gold","Paiement d’avance",fmt(guard.payment)+" PO"],["expires","Expire le",contractDate(guard.expiresDay).label]],
+      ["gold","Paiement d’avance",fmt(guard.payment)+" PO"+(guard.payBonus?` (dont +${fmt(Math.round(guard.payBonus*100))} % du Cercle des Fines Lames)`:"")],["expires","Expire le",contractDate(guard.expiresDay).label]],
     letter:null,action:{label:plural?"Choisir les gardes":"Choisir le garde",attr:`data-bodyguard-accept="${esc(guard.id)}"`}};
 }
 function missionCards(){

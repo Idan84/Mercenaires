@@ -119,7 +119,7 @@ ui.renderCampBuildings();
 assert.match(company(),/<strong title="Grimoires[^"]*">École de magie<\/strong><span>À construire<\/span>/);
 assert.match(company(),/data-camp-build="magic_school">Construire<\/button>\s*<span class="building-cost">1 000 PO · 4 jours<\/span>/);
 assert.doesNotMatch(company(),/Salle du Feu/,"pas de salle avant l'École");
-assert.equal((company().match(/<article /g)||[]).length,7,"dortoir, dispensaire, bains, École, Ludus, Académie de la survie, Cercle : les salles ne sont pas des encarts à part");
+assert.equal((company().match(/<article /g)||[]).length,8,"dortoir, dispensaire, bains, École, Ludus, Académie de la survie, Cercle, Tour de guet : les salles ne sont pas des encarts à part");
 ui.buildCampBuilding("magic_room_fire");
 assert.deepEqual(log.at(-1),{message:"Salle du Feu : il faut d’abord École de magie au niveau 1.",kind:"bad"});
 game.campaign.company.camp.buildings={magic_school:{level:2,construction:null},magic_room_fire:{level:2,construction:null},

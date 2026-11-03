@@ -49,6 +49,7 @@ jobs:
       - run: node tests/camp-buildings.test.js
       - run: node tests/camp-care.test.js
       - run: node tests/magic-school.test.js
+      - run: node tests/training-buildings.test.js
       - run: node tests/medic.test.js
       - run: node tests/school-director.test.js
       - run: node tests/school-training.test.js

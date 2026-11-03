@@ -32,6 +32,8 @@ function dormitoryPlacesLine(c){
 function campBuildingEffectText(code,effects){
   if(code==="dispensary") return `blessures −${fmt(Math.round((1-effects.woundFactor)*100))} %`;
   if(code==="baths") return `fatigue −${campDays(effects.fatigueRelief)}, mana +${fmt(effects.manaBonus)} % par jour`;
+  // Cercle des Fines Lames (Idan, 2026-11-03) : la garde du corps paie mieux.
+  if(Number(campaignRules().campBuildingRow(code)?.garde_paie_par_niveau)>0&&effects.bodyguardPay) return `garde du corps +${fmt(Math.round(effects.bodyguardPay*100))} %`;
   return "";
 }
 // Le chantier en cours, ou le bouton du prochain niveau avec son prix (grisé s'il manque de l'or ou, pour une salle de
@@ -57,7 +59,12 @@ function schoolStudentsTitle(c,students){
   return students.length?"Aujourd’hui : "+students.map(e=>e.spell?`${name(e.id)} (apprend ${e.spell})`:`${name(e.id)} (+${fmt(e.xp)} XP)`).join(", "):"Personne aujourd’hui";
 }
 function campBuildingState(c,code,level){
-  if(!level) return "À construire";
+  // Bâtiments d'entraînement (Idan, 2026-11-03) : ce que travaille la salle principale ou l'aile, devant son état.
+  const trains=campaignRules().campBuildingRow(code)?.entraine,lead=trains?`${esc(trains)} · `:"";
+  if(!level) return lead+"À construire";
+  return lead+campBuildingLevelState(c,code,level);
+}
+function campBuildingLevelState(c,code,level){
   const rules=campaignRules(),effect=campBuildingEffectText(code,rules.campBuildingEffects(c));
   const places=rules.buildingPlaces?rules.buildingPlaces(c,code):0;
   if(!places) return `Niveau ${fmt(level)}${effect?" · "+effect:""}`;

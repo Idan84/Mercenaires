@@ -712,8 +712,15 @@
     function manaBonusPercent(state){
       return (Number(CAMP_BUILDINGS.get("baths")?.mana_par_niveau)||0)*buildingLevel(state,"baths");
     }
+    // Cercle des Fines Lames : la part en plus sur le paiement d'une garde du corps (0,05 par niveau ; 0 sans le Cercle).
+    function bodyguardPayBonus(state){
+      let bonus=0;
+      for(const row of CAMP_BUILDINGS.values()) bonus+=(Number(row.garde_paie_par_niveau)||0)*buildingLevel(state,row.code);
+      return Math.round(bonus*1000)/1000;
+    }
     function campBuildingEffects(state){
-      return {woundFactor:woundCareFactor(state),medicFactor:medicCareFactor(state),fatigueRelief:fatigueRelief(state),manaBonus:manaBonusPercent(state)};
+      return {woundFactor:woundCareFactor(state),medicFactor:medicCareFactor(state),fatigueRelief:fatigueRelief(state),manaBonus:manaBonusPercent(state),
+        bodyguardPay:bodyguardPayBonus(state)};
     }
 
     // Indisponibilité après mission (10-mission-time §4 à §6) : un blessé ou un fatigué ne peut pas
@@ -788,8 +795,17 @@
     const offerKind=offer=>offer?.kind==="bodyguard"?"bodyguard":"cleanup";
     function missionKinds(){ return [missions&&"cleanup",bodyguard&&"bodyguard"].filter(Boolean); }
     function createBoardOffer(state,kind){
-      return kind==="bodyguard"?bodyguard.createOffer({day:state.day,bestLevel:bestMercenaryLevel(state)})
-        :missions.createOffer({day:state.day,renown:companyRenown(state).total});
+      if(kind!=="bodyguard") return missions.createOffer({day:state.day,renown:companyRenown(state).total});
+      const offer=bodyguard.createOffer({day:state.day,bestLevel:bestMercenaryLevel(state)});
+      // Cercle des Fines Lames (Idan, 2026-11-03 : « On garde juste l'augmentation de la prime ») : on y croise des nobles,
+      // la garde du corps paie mieux, × (1 + 5 % par niveau du Cercle), arrondi à 10 PO ; la fréquence ne change pas.
+      const bonus=bodyguardPayBonus(state);
+      if(bonus>0&&offer){
+        offer.basePayment=offer.payment;
+        offer.payBonus=bonus;
+        offer.payment=Math.round(offer.payment*(1+bonus)/10)*10;
+      }
+      return offer;
     }
     // Le tableau ; une ancienne sauvegarde (une offre de contrat, une de garde du corps) passe ses offres aux premières cases.
     function boardOf(state){

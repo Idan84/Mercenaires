@@ -138,6 +138,38 @@
         "outcome_accepted": "{prenom} retourne sur le terrain : le Cercle n’a plus de Maître des lames.",
         "outcome_refused": "{prenom} reste au Cercle des Fines Lames."
       }
+    },
+    "alchemist": {
+      "label": "Alchimiste",
+      "origin": "Labo d’alchimie",
+      "panel": {
+        "title": "L’Alchimiste",
+        "appoint": "Nommer un Alchimiste",
+        "appoint_tip": "Le mercenaire choisi peut refuser le poste. Il quittera le terrain pour le Labo d’alchimie."
+      },
+      "offer": {
+        "proposal": "Le Labo a besoin de quelqu’un pour surveiller l’Alambic. Vous avez le nez pour ça : ça vous dit ?",
+        "accepted": [
+          "Des fioles, des fumées et personne pour me tirer dessus ? J’accepte.",
+          "Quelqu’un doit bien empêcher ces apprentis de goûter à tout. Je prends le poste.",
+          "Enfin un endroit où l’odeur de chou est normale. Marché conclu."
+        ],
+        "flattered": [
+          "Alchimiste, moi ? C’est flatteur… mais j’ai encore des ennemis à empoisonner dehors.",
+          "Je saurais tenir l’Alambic, c’est sûr. Mais pas tant que je tiens une arme.",
+          "Redemandez-moi quand j’aurai fini de faire mes preuves sur le terrain."
+        ],
+        "vexed": [
+          "Remuer des marmites pendant que les autres se battent ? Non merci.",
+          "Vous me trouvez juste bon à respirer des vapeurs ? Charmant.",
+          "M’enfermer avec l’Alambic ? Je m’en souviendrai."
+        ],
+        "outcome_accepted": "{prenom} prend le Labo d’alchimie en main."
+      },
+      "recall": {
+        "outcome_accepted": "{prenom} retourne sur le terrain : le Labo n’a plus d’Alchimiste.",
+        "outcome_refused": "{prenom} reste au Labo d’alchimie."
+      }
     }
   }
 }

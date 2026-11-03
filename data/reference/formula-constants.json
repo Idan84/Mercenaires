@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 311,
+  "row_count": 313,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -2375,6 +2375,22 @@
       "code": "armor_study.daily.veteran_divisor",
       "description": "Apprendre un port d’armure (Idan, 2026-11-03) : le Vétéran ajoute à X sa Transmission du savoir / ce diviseur, s’il a lui-même ce port. Transmission 48 : légère 17 % (6 jours) au lieu de 11 %.",
       "formule": "Apprendre un port d’armure à l’Académie",
+      "valeur": 5,
+      "version": "V1"
+    },
+    {
+      "nom": "Apprendre l’empoisonnement — poids de la Résistance au poison",
+      "code": "poison_study.daily.resistance_weight",
+      "description": "Apprendre l’Empoisonnement des armes au Labo d’alchimie (Idan, 2026-11-03 : « Ça doit dépendre d’intelligence, de dextérité (pour pas en mettre partout !) et de résistance au poison (au cas où on en met partout) ») : chaque matin, chance = 100 / (1 + e^(−(X − 100) / 20)) × (1 + 0,1 × niveau du Labo), au plus 95 % (constantes spell_study.daily.*), X = (Intelligence + Dextérité) / 2 + ce poids × Résistance au poison + bonus de l’Alchimiste. Labo niveau 1 : 10 % les moins doués 7 % (13 jours), médiane 14 % (7 jours), 10 % les meilleurs 31 % (3 jours).",
+      "formule": "Apprendre l’Empoisonnement des armes au Labo d’alchimie",
+      "valeur": 1,
+      "version": "V1"
+    },
+    {
+      "nom": "Apprendre l’empoisonnement — diviseur de l’Alchimiste",
+      "code": "poison_study.daily.master_divisor",
+      "description": "Apprendre l’Empoisonnement des armes (Idan, 2026-11-03) : l’Alchimiste ajoute à X sa Transmission du savoir / ce diviseur, s’il a lui-même l’aptitude. Transmission 48 : médiane 21 % (5 jours) au lieu de 14 %.",
+      "formule": "Apprendre l’Empoisonnement des armes au Labo d’alchimie",
       "valeur": 5,
       "version": "V1"
     },

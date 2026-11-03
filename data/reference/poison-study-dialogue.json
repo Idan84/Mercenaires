@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "name": "poison-study-dialogue",
+  "description": "Apprendre l’Empoisonnement des armes au Labo d’alchimie (Idan, 2026-11-03). panel : la carte du Labo ; offer : la proposition, les répliques accepted / refused, les issues. {prenom} ; {masculin|féminin} selon celui qui parle ou dont on parle. Au jour J, on organise J+1 : il entre au Labo le lendemain matin. Textes de JC, à retoucher librement.",
+  "panel": {
+    "learn": "Apprendre l’empoisonnement",
+    "learn_tip": "Il peut refuser. Il reste au Labo jusqu’à ce qu’il sache.",
+    "title": "Apprentissages"
+  },
+  "offer": {
+    "proposal": "Le Labo peut vous apprendre à enduire une lame sans vous empoisonner vous-même. Vous y resterez jusqu’à ce que vous sachiez.",
+    "accepted": [
+      "Du poison sur ma lame ? Enfin une idée qui me plaît.",
+      "Tant qu’on m’apprend aussi l’antidote, je suis {partant|partante}.",
+      "Une égratignure, et l’autre est fini. J’y vais."
+    ],
+    "refused": [
+      "Du poison ? C’est bon pour les lâches.",
+      "La dernière fois que j’ai touché une fiole, j’ai perdu un doigt. Non.",
+      "Je préfère tuer mes ennemis franchement, capitaine."
+    ],
+    "outcome_accepted": "{prenom} entrera demain matin au Labo d’alchimie pour apprendre à empoisonner une arme.",
+    "outcome_refused": "{prenom} refuse d’apprendre à empoisonner une arme."
+  }
+}

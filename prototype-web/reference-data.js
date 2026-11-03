@@ -52,6 +52,7 @@ const REFERENCE_FILES = {
   campMastersDialogue: "camp-masters-dialogue.json",
   spellStudyDialogue: "spell-study-dialogue.json",
   armorStudyDialogue: "armor-study-dialogue.json",
+  poisonStudyDialogue: "poison-study-dialogue.json",
   lieutenantDialogue: "lieutenant-dialogue.json",
   bodyguardMissions: "bodyguard-missions.json",
   merchants: "merchants.json",

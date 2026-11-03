@@ -55,6 +55,7 @@ jobs:
       - run: node tests/camp-masters.test.js
       - run: node tests/armor-ports.test.js
       - run: node tests/armor-study.test.js
+      - run: node tests/poison-study.test.js
       - run: node tests/school-training.test.js
       - run: node tests/spell-study.test.js
       - run: node tests/spell-perfect.test.js

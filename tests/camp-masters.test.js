@@ -28,7 +28,9 @@ const reference=Object.fromEntries(Object.entries(files).map(([k,f])=>[k,JSON.pa
 
 // Les postes : le directeur et les trois maîtres, chacun dans son bâtiment.
 assert.deepEqual(Posts.POSTS.map(p=>[p.key,p.building,p.title]),[["director","magic_school","Le directeur de l’École"],
-  ["doctore","ludus","Le Doctore"],["veteran","survival_academy","Le Vétéran"],["bladeMaster","blade_circle","Le Maître des lames"]]);
+  ["doctore","ludus","Le Doctore"],["veteran","survival_academy","Le Vétéran"],["bladeMaster","blade_circle","Le Maître des lames"],
+  // L'Alchimiste (Idan, 2026-11-03 : « En fait, on va nommer un alchimiste comme chef de salle ! »).
+  ["alchemist","alchemy_lab","L’Alchimiste"]]);
 for(const p of Posts.POSTS) assert.ok(reference.campBuildings.rows.some(r=>r.code===p.building&&!r.requiert),p.building);
 
 let seed=17;
@@ -120,10 +122,21 @@ Posts.release(state,fencer);
 assert.equal(state.company.bladeMasterId,null);
 state.company.bladeMasterId=fencer.id;
 
+// L'Alchimiste : nommé de même au Labo d'alchimie (« d'Alchimiste », élidé).
+const alchemist=post("alchemist");
+assert.equal(alchemist.offer(state,other.id).reason,"Il faut d’abord construire le Labo d’alchimie.");
+assert.equal(alchemist.recall(state).reason,"Le Labo n’a pas d’Alchimiste.");
+state.company.camp.buildings.alchemy_lab={level:1,construction:null};
+dice=[0];
+assert.equal(alchemist.offer(state,other.id).accepted,true);
+assert.equal(createStewardRules({reference,random:()=>0}).offer(state,other.id).reason,"L’Alchimiste ne peut pas être intendant.");
+assert.equal(alchemist.offer(state,brute.id).reason,"Le Labo a déjà un Alchimiste.");
+state.company.alchemistId=null;
+
 // Textes : chaque maître a ses répliques (avec les communes), son titre, ses lignes de journal et son compteur.
 const copy=reference.campMastersDialogue;
 const sheet=reference.characterSheetCopy.history;
-for(const key of ["doctore","veteran","bladeMaster"]){
+for(const key of ["doctore","veteran","bladeMaster","alchemist"]){
   const own=copy.masters[key];
   for(const mood of ["accepted","flattered","vexed"]) assert.ok(own.offer[mood].length>=3,`${key} ${mood}`);
   for(const mood of ["accepted","flattered","vexed","neutral"]) assert.ok(copy.common.recall[mood].length>=3,`retour ${mood}`);
@@ -134,7 +147,7 @@ for(const key of ["doctore","veteran","bladeMaster"]){
 
 // Interface : un panneau par maître, à côté du directeur ; rendu une fois le bâtiment construit.
 const html=fs.readFileSync(path.join(ROOT,"prototype-web","index.html"),"utf8");
-assert.match(html,/<div id="director-panel" class="steward-panel director-panel"><\/div><div id="doctore-panel" class="steward-panel director-panel"><\/div><div id="veteran-panel" class="steward-panel director-panel"><\/div><div id="blade-master-panel" class="steward-panel director-panel"><\/div>/);
+assert.match(html,/<div id="director-panel" class="steward-panel director-panel"><\/div><div id="doctore-panel" class="steward-panel director-panel"><\/div><div id="veteran-panel" class="steward-panel director-panel"><\/div><div id="blade-master-panel" class="steward-panel director-panel"><\/div><div id="alchemist-panel" class="steward-panel director-panel"><\/div>/);
 assert.match(html,/<script src="\/core\/camp-posts\.js"><\/script>\s*<script src="\/core\/steward\.js"><\/script>/);
 assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","quartermaster-ui.js"),"utf8"),/renderCampMasterPanels\(\);/);
 const elements={};

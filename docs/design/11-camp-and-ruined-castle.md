@@ -232,15 +232,26 @@ aile construite) et des **ailes**. Rien n'est encore codé ; les règles (tests,
 | **La Quintaine** | Esquive | « On frappe le mannequin, il tourne et rend le coup. On apprend vite à se baisser. » |
 | **Le Réfectoire du Doctore** | Constitution | « Six œufs crus au réveil, bouillie et viande de cheval. Le corps suit, ou pas. » |
 
-**Académie de la survie** (en cours) — maître : **le Vétéran**. Salle principale : Boucliers. Ailes : **Le Four**
-(Résistance au feu), **Le Frigo** (Résistance au froid), **La Décharge** (Résistance à la foudre), Résistance au poison,
-Discrétion, et l'**apprentissage des armures** (les ports d'armure, appris comme un sort).
+**Académie de la survie** (validée, noms compris) — maître : **le Vétéran**. Dans le bâtiment lui-même, sans aile à
+construire (Idan : « on ne construit rien de plus ») : les **Boucliers** (salle principale) et l'**apprentissage des
+armures** (les ports d'armure, légère puis intermédiaire puis lourde, appris comme un sort ; règles à fixer).
+
+| Aile | Travaille | Info-bulle |
+|---|---|---|
+| **Le Four** | Résistance au feu | « On y entre en armure. On en ressort cuit à point, ou endurci. » |
+| **Le Frigo** | Résistance au froid | « Une nuit dans la glacière. Le Vétéran appelle ça “se rafraîchir les idées”. » |
+| **La Décharge** | Résistance à la foudre | « Un mage en colère, une flaque d'eau, et vous dedans. » |
+| **La Cantine** | Résistance au poison | « Le plat du jour est toujours un test. Personne n'a jamais su lequel. » |
+| **Le Placard** | Discrétion | « On s'y cache pendant que le Vétéran vous cherche. Il cherche encore le dernier. » |
+
+**Le Cercle des Fines Lames** (validé) — salle principale : **Dextérité** ; ailes : Lames longues, Lames courtes, Deux
+armes, Combat à une main. Deuxième fonction (Idan) : plus de missions de garde du corps, et mieux payées, selon le niveau
+du Cercle (chiffres à valider).
 
 Pistes gardées en tête, non validées : la **Tour de guet** (salle principale Perception, Armes de tir ; anticiper les
 attaques du camp, à venir), le **Labo d'alchimie** (potions ; Armes à feu, Pièges, apprendre à empoisonner ses armes),
-et pour les armes de mêlée trois bâtiments d'ambiance : **l'Ermitage** (Bâtons, Flexibles, Hast ; le mana),
-**le Hall des Berserkers** (Haches, Contondantes, Deux mains) et **le Cercle des Fines Lames** (Lames longues, Lames
-courtes, Une main, Deux armes). Les compétences de camp (artisanat) attendront les bâtiments de fabrication.
+et pour les autres armes de mêlée deux bâtiments d'ambiance : **l'Ermitage** (Bâtons, Flexibles, Hast ; le mana) et
+**le Hall des Berserkers** (Haches, Contondantes, Deux mains). Les compétences de camp (artisanat) attendront les bâtiments de fabrication.
 
 ## 8 — Bâtiments pour animaux et montures
 

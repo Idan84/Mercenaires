@@ -13,10 +13,12 @@
   const posts=typeof module!=="undefined"&&module.exports?require("./camp-posts.js"):root.MercenairesCampPosts;
   // Ports d'armure : pas d'armure sans son port.
   const armorPorts=typeof module!=="undefined"&&module.exports?require("./armor-ports.js"):root.MercenairesArmorPorts;
-  const api=factory(history,regeneration,training,study,posts,armorPorts);
+  // Apprendre un port d'armure à l'Académie (facultatif hors du jeu, comme l'apprentissage des sorts).
+  const armorStudy=typeof module!=="undefined"&&module.exports?require("./armor-study.js"):root.MercenairesArmorStudy;
+  const api=factory(history,regeneration,training,study,posts,armorPorts,armorStudy);
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesCampaign=api;
-})(typeof globalThis!=="undefined"?globalThis:this,function(History,Regeneration,Training,Study,Posts,ArmorPorts){
+})(typeof globalThis!=="undefined"?globalThis:this,function(History,Regeneration,Training,Study,Posts,ArmorPorts,ArmorStudy){
   // Sauvegarde : l'état de partie complet, sérialisé en JSON avec un format et une version.
   // La trace de génération des mercenaires (détail de calcul pour le Design Lab, ~85 % du poids)
   // n'est pas sauvegardée : un mercenaire passe d'environ 36 Ko à 5 Ko.
@@ -697,8 +699,13 @@
         const row=[...CAMP_BUILDINGS.values()].find(r=>r.requiert===SCHOOL_HALL&&r.ecole===school);
         return row?{code:row.code,name:row.nom}:null;
       },
-      buildingLevel,buildingPlaces,directorOf,expeditionOf}}):null;
-    const studyBusy=(state,m)=>spellStudy&&m?spellStudy.busyReason(state,m.id):null;
+      buildingLevel,buildingPlaces,directorOf,expeditionOf,busyElsewhere:(state,id)=>armorStudy?armorStudy.busyReason(state,id):null}}):null;
+    // Apprendre un port d'armure (Idan, 2026-11-03 ; règles : armor-study.js) : une place de la salle principale de
+    // l'Académie, avant l'entraînement libre ; l'élève reste au camp jusqu'à la fin.
+    const armorStudy=ArmorStudy?ArmorStudy.createArmorStudyRules({reference,random,affinity,progression,camp:{
+      buildingLevel,buildingPlaces,expeditionOf,veteranOf:state=>Posts?Posts.holderOf(state,Posts.postByKey("veteran")):null,
+      busyElsewhere:(state,id)=>spellStudy?spellStudy.busyReason(state,id):null}}):null;
+    const studyBusy=(state,m)=>m?(spellStudy?.busyReason(state,m.id)||armorStudy?.busyReason(state,m.id)||null):null;
     function trainingAvailable(state,m){ return Boolean(m)&&!m.recovery&&!expeditionOf(state,m.id)&&!studyBusy(state,m); }
     // Le choix du joueur pour le capitaine : une salle ou une aile construite, de n'importe quel bâtiment d'entraînement, ou
     // null (la taverne).
@@ -718,7 +725,8 @@
       const captain=rosterOf(state).find(m=>m.id===state.company.captainId)||null;
       const candidates=rosterOf(state).filter(m=>m!==captain&&!offField(state,m)&&trainingAvailable(state,m));
       // Les places prises par les élèves qui apprennent un sort ne sont plus libres.
-      for(const room of rooms) if(spellStudy) room.places=Math.max(0,room.places-spellStudy.learnersIn(state,room.code));
+      for(const room of rooms) room.places=Math.max(0,room.places-(spellStudy?spellStudy.learnersIn(state,room.code):0)
+        -(armorStudy?armorStudy.learnersIn(state,room.code):0));
       const result=schoolTraining.runDay({rooms,candidates,captain:trainingAvailable(state,captain)?captain:null,
         captainChoice:captainTraining(state),masters:Posts?Posts.mastersOf(state):{magic_school:directorOf(state)},company:rosterOf(state)});
       camp.schoolDay={day:state.day,directorXp:result.directorXp,masterXp:result.masterXp,
@@ -816,9 +824,11 @@
       const merchant=merchants?merchants.morning(state,{renown:companyRenown(state).total}):null;
       // Apprentissage des sorts (Idan, 2026-11-02) : un test par élève ; ceux qui savent sortent de l'École.
       const study=spellStudy?spellStudy.advance(state):null;
+      // Ports d'armure à l'Académie (Idan, 2026-11-03) : de même.
+      const armor=armorStudy?armorStudy.advance(state):null;
       // Entraînement libre (Idan, 2026-11-02) : ceux qui restent au camp choisissent leur journée.
       const school=runSchoolDay(state);
-      return {day:state.day,recovered,salaries,tavern:tavernReport,offersLost,expeditions,built,buildings,lieutenants:lieutenantReports,mana,merchant,school,study};
+      return {day:state.day,recovered,salaries,tavern:tavernReport,offersLost,expeditions,built,buildings,lieutenants:lieutenantReports,mana,merchant,school,study,armorStudy:armor};
     }
 
     // Recharge du mana (doc 12 ; Idan, 2026-10-25) : chaque jour, pour les membres présents au camp, pas pour ceux qui sont
@@ -1252,7 +1262,7 @@
       completeExpeditionCombat,
       dormitoryFree,
       dormitoryUsed,
-      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,trainingRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,spellStudy,studyBusy,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
+      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,trainingRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,spellStudy,armorStudy,studyBusy,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
       woundDaysFor,fatigueDaysFor,
       dormitoryPlaces,
       dormitoryExpansionCost,

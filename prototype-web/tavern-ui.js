@@ -151,6 +151,7 @@ function logDayReport(report){
   if(typeof logSchoolDay==="function") logSchoolDay(report.school);
   // Apprentissage des sorts : ceux qui connaissent désormais leur sort.
   if(typeof logSpellStudy==="function") logSpellStudy(report.study);
+  if(typeof logArmorStudy==="function") logArmorStudy(report.armorStudy);
   // Le marchand du jour (doc 18).
   if(typeof logMerchantMorning==="function") logMerchantMorning(report.merchant);
   // Le rapport des lieutenants (Idan, 2026-10-25) : une pop-up par demande de la veille.

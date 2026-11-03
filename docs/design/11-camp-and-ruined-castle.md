@@ -266,7 +266,7 @@ hasard » ; « Le reste, c'est nickel ») — remplace le choix de l'École (sa 
 
 **Académie de la survie** (validée, noms compris) — maître : **le Vétéran**. Dans le bâtiment lui-même, sans aile à
 construire (Idan : « on ne construit rien de plus ») : les **Boucliers** (salle principale) et l'**apprentissage des
-armures** (les ports d'armure, légère puis intermédiaire puis lourde, appris comme un sort ; règles à fixer).
+armures** (les ports d'armure, légère puis intermédiaire puis lourde, appris comme un sort ; voir ci-dessous).
 
 | Aile | Travaille | Info-bulle |
 |---|---|---|
@@ -275,6 +275,30 @@ armures** (les ports d'armure, légère puis intermédiaire puis lourde, appris 
 | **La Décharge** | Résistance à la foudre | « Un mage en colère, une flaque d'eau, et vous dedans. » |
 | **La Cantine** | Résistance au poison | « Le plat du jour est toujours un test. Personne n'a jamais su lequel. » |
 | **Le Placard** | Discrétion | « On s'y cache pendant que le Vétéran vous cherche. Il cherche encore le dernier. » |
+
+**Apprendre une armure à l'Académie** (Idan, 2026-11-03 : « comme un sort » ; Force + Endurance : « Parfait » ; « pas de
+professeur pour ça » ; sans le port, pas d'armure : doc 03 ; règles `game-core/armor-study.js`, interface
+`prototype-web/armor-study-ui.js`, textes `armor-study-dialogue.json`) :
+
+- **dans l'ordre** : légère, puis intermédiaire, puis lourde ; **pas de manuel**, le seul coût est le temps ;
+- **le convaincre**, comme pour un sort : 10 + 80 / (1 + e^(−Δ/20)), **Δ = 0,5 × affinité avec le capitaine** + l'appui de
+  l'intendant (50 % à affinité 0) ; une tentative par jour ; le capitaine sans test ;
+- **au jour J, on organise J+1** : il entre à l'Académie le lendemain matin (« Annuler » d'ici là) ; il prend **une place
+  de la salle principale** (avant l'entraînement libre) et reste au camp — ni mission, ni garde du corps, ni
+  entraînement libre, ni sort à l'École — jusqu'à ce qu'il sache ;
+- **chaque matin**, à partir du matin suivant son entrée : chance = **100 / (1 + e^(−(X − 100)/20)) × (1 + 0,1 × niveau de
+  l'Académie)**, au plus 95 %, **X = (Force + Endurance) / 2 − 10 par cran** (0 légère, 10 intermédiaire, 20 lourde)
+  **+ Transmission du savoir du Vétéran / 5** s'il a lui-même ce port ; réussi : il a ce port et ceux d'en dessous. Moyen
+  (Force 54, Endurance 59), Académie niveau 1 : légère 11 % (**9 jours**), intermédiaire 7 % (14 jours), lourde 4 %
+  (23 jours) ; avec un Vétéran à 48 de Transmission : légère 17 % (6 jours) ;
+- **le faire sortir** avant la fin : rien n'est acquis ;
+- **affinité avec le capitaine**, comme pour un sort : +5 à l'entrée, −2 s'il refuse, +10 quand il sait, −10 si on le fait
+  sortir ; le Vétéran gagne **5 XP de Transmission du savoir par élève et par jour** ;
+- **interface** : sur la carte de l'Académie, « Apprendre une armure » (les membres et le port qu'ils apprendraient ;
+  plus de place : plus de bouton), puis « Apprentissages » (l'armure, le jour, la chance du lendemain au survol,
+  « Annuler » ou « Le faire sortir ») ; statut « Apprend une armure » ; journal du matin ; historique.
+- Constantes : `spell_study.*` (les mêmes que pour un sort), `armor_study.daily.class_malus`,
+  `armor_study.daily.veteran_divisor`. Test : `tests/armor-study.test.js`.
 
 **Le Cercle des Fines Lames** (validé, noms compris) — maître : **le Maître des lames** ; salle principale : **Dextérité** ;
 ailes (des salles à construire, « comme les autres »).

@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "name": "armor-study-dialogue",
+  "description": "Apprendre un port d’armure à l’Académie de la survie (Idan, 2026-11-03 : « comme un sort »). panel : la carte de l’Académie ; offer : la proposition, les répliques accepted / refused, les issues. {prenom} ; {armure} (légère, intermédiaire, lourde) ; {masculin|féminin} selon celui qui parle ou dont on parle. Au jour J, on organise J+1 : il entre à l’Académie le lendemain matin. Textes de JC, à retoucher librement.",
+  "panel": {
+    "learn": "Apprendre une armure",
+    "learn_tip": "Il peut refuser. Il reste à l’Académie jusqu’à ce qu’il sache.",
+    "title": "Apprentissages"
+  },
+  "offer": {
+    "proposal": "L’Académie peut vous apprendre à porter une armure {armure}. Vous y resterez jusqu’à ce que vous sachiez.",
+    "accepted": [
+      "Plus de ferraille entre l’ennemi et moi ? J’en suis.",
+      "Si ça m’évite une flèche dans le ventre, je veux bien suer un peu.",
+      "D’accord. Mais si on me met au four avec, je reviens vous voir."
+    ],
+    "refused": [
+      "Je me bats mieux sans casserole sur le dos.",
+      "Courir avec trente livres de fer ? Très peu pour moi.",
+      "Pas maintenant, capitaine. J’ai déjà assez mal au dos."
+    ],
+    "outcome_accepted": "{prenom} entrera demain matin à l’Académie de la survie pour apprendre à porter une armure {armure}.",
+    "outcome_refused": "{prenom} refuse d’apprendre à porter une armure {armure}."
+  }
+}

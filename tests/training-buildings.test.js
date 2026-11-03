@@ -43,7 +43,9 @@ const BUILDINGS={
   watchtower:["Tour de guet","Perception",[["Le Créneau","Armes de tir"]]],
   // Le Labo d'alchimie (Idan, 2026-11-03 : « Dans la salle principale, on peut entraîner sa résistance au poison » ;
   // « piège et armes à feu, c'est validé » ; les potions plus tard).
-  alchemy_lab:["Labo d’alchimie","Résistance au poison",[["La Poudrière","Armes à feu"],["La Cave","Pièges"]]]
+  alchemy_lab:["Labo d’alchimie","Résistance au poison",[["La Poudrière","Armes à feu"],["La Cave","Pièges"]]],
+  // La Cabane du bûcheron (Idan, 2026-11-03 : « On aura une salle d'entraînement aux haches » ; « Pas de chef pour l'instant »).
+  lumber_camp:["Cabane du bûcheron","Haches",[]]
 };
 const known=new Set([...reference.characteristics.rows.map(r=>r.nom),...reference.skills.rows.map(r=>r.nom)]);
 for(const [code,[name,trains,wings]] of Object.entries(BUILDINGS)){
@@ -160,6 +162,12 @@ assert.equal(require("../game-core/camp-posts.js").postOfBuilding("alchemy_lab")
 state.company.camp.buildings={alchemy_lab:{level:1,construction:null},alchemy_firearms:{level:1,construction:null},alchemy_traps:{level:1,construction:null}};
 assert.deepEqual(rules.trainingRooms(state).map(r=>[r.code,r.trains,r.learnWith]),
   [["alchemy_lab","Résistance au poison","Intelligence"],["alchemy_firearms","Armes à feu","Intelligence"],["alchemy_traps","Pièges","Intelligence"]]);
+
+// La Cabane du bûcheron : les Haches au Billot, apprises avec la Force ; pas de chef.
+assert.equal(row("lumber_camp").apprend_avec,"Force");
+assert.equal(require("../game-core/camp-posts.js").postOfBuilding("lumber_camp"),null,"pas de chef");
+state.company.camp.buildings={lumber_camp:{level:1,construction:null}};
+assert.deepEqual(rules.trainingRooms(state).map(r=>[r.code,r.building,r.trains,r.learnWith,r.places]),[["lumber_camp","lumber_camp","Haches","Force",1]]);
 
 // La fiche de l'offre montre le paiement, sans commentaire (Idan : « tu veux toujours mettre du blabla inutile ! »).
 assert.doesNotMatch(fs.readFileSync(path.join(ROOT,"prototype-web","contract-ui.js"),"utf8"),/du Cercle des Fines Lames/);

@@ -244,7 +244,7 @@ hasard » ; « Le reste, c'est nickel ») — remplace le choix de l'École (sa 
 - journal du matin : une ligne par bâtiment (« Ludus : 2 élèves aujourd'hui. ») ; fiche, onglet Camp, « Aujourd'hui » :
   la salle, l'XP et ce qu'elle travaille ;
 - **maîtres** (Idan, 2026-11-03 : « Oui pour les maîtres ») : **le Doctore** (Ludus), **le Vétéran** (Académie), **le Maître
-  des lames** (Cercle ; nom d'Idan), puis **l'Alchimiste** (Labo d'alchimie ; pas de maître à la Tour de guet), nommés **comme le directeur** : bâtiment construit, même chance d'accepter, même
+  des lames** (Cercle ; nom d'Idan), puis **l'Alchimiste** (Labo d'alchimie ; pas de maître à la Tour de guet ni à la Cabane du bûcheron), nommés **comme le directeur** : bâtiment construit, même chance d'accepter, même
   refus, même retour sur le terrain, une proposition par jour ; hors mission, ils vivent dans leur bâtiment (pas de place
   au dortoir) ; un mercenaire ne tient qu'un poste (intendant, médecin, directeur, maître, lieutenant). Ils aident comme
   le directeur à l'École : même test, même gain ; **niveau du maître** : sa valeur dans ce que travaille la salle ou
@@ -343,8 +343,33 @@ un Alchimiste à 48), 10 % les meilleurs ~3 jours ; l'Alchimiste gagne 5 XP de T
 seul apprentissage à la fois (sort, armure ou empoisonnement). Constantes `poison_study.daily.*` ; code
 `game-core/armor-study.js` (course "poison") ; test `tests/poison-study.test.js`.
 
+**La Cabane du bûcheron** (Idan, 2026-11-03 : « On aura une salle d'entraînement aux haches, mais l'idée c'est d'envoyer des
+mercenaires bûcheronner pour accélérer la construction du camp. Pas une ressource de bois […] sur les constructions
+actuelles de niveau 1 à 5 (y'aura la mine pour 6 à 10). On peut envoyer 1 mercenaire par niveau de cabane » ; « Pas de chef
+pour l'instant » ; « Parfait. ») — salle principale **Le Billot** : **Haches** (« On fend du bois toute la journée. Le bois,
+lui, ne se défend pas. »), apprises avec la **Force** ; même barème et mêmes places que les autres bâtiments, entraînement
+libre compris ; pas d'aile.
+
+Deuxième fonction, **les bûcherons du jour** :
+
+- **1 bûcheron par niveau** de la Cabane et par jour (`camp.lumber.workers_per_level`). Au jour J, on organise J+1 : on
+  l'envoie aujourd'hui (carte de la Cabane, « Envoyer bûcheronner »), il bûcheronne demain toute la journée — ni mission, ni
+  garde du corps, ni entraînement libre, ni apprentissage ; on peut annuler d'ici là. Ni l'intendant, ni le médecin, ni un
+  maître à son poste, ni un blessé.
+- **Il y va toujours** (« Pas de rejet direct… Il y va mais à contrecœur… test assez dur et petite perte à chaque fois ») :
+  chance d'y aller de bon cœur = 10 + 80 / (1 + e^(−Δ/20)), **Δ = 0,5 × affinité avec le capitaine − 30** + l'appui de
+  l'intendant (comme pour un sort) ; ~25 % à affinité 0. Raté : il y va **à contrecœur, affinité −2**
+  (`camp.lumber.grudge_affinity`), même si on annule ensuite. Le capitaine, sans test.
+- **Effet fixe** : chaque bûcheron retire **1 jour** (`camp.lumber.days_per_worker`) au chantier **qui finit le plus tôt**
+  (« A »), parmi ceux de **niveau 1 à 5** (`camp.lumber.max_work_level`) : un bâtiment (son niveau en construction) et le
+  dortoir (« Oui ») — qualité : le niveau visé ; agrandissement : son rang ; quartier du lieutenant : son numéro. Un
+  chantier finit au plus tôt le lendemain matin ; s'il n'y en a aucun, la journée est perdue. Le journal du matin dit les
+  jours gagnés, chantier par chantier.
+- Statuts : « Bûcheronne demain », « Bûcheronne ». Constantes `camp.lumber.*` ; code `game-core/lumber.js` ; textes
+  `lumber-dialogue.json` ; test `tests/lumber.test.js`. La **mine** fera de même pour les chantiers de niveau 6 à 10.
+
 Pistes gardées en tête, non validées : pour les autres armes de mêlée, deux bâtiments d'ambiance : **l'Ermitage** (Bâtons, Flexibles, Hast ; le mana) et
-**le Hall des Berserkers** (Haches, Contondantes, Deux mains). Les compétences de camp (artisanat) attendront les bâtiments de fabrication.
+**le Hall des Berserkers** (Contondantes, Deux mains ; les Haches sont à la Cabane du bûcheron). Les compétences de camp (artisanat) attendront les bâtiments de fabrication.
 
 ## 8 — Bâtiments pour animaux et montures
 

@@ -53,6 +53,9 @@ function rosterStatus(c){
   // Empoisonnement des armes au Labo (Idan, 2026-11-03).
   const poisonStudy=game.campaign&&typeof campaignRules==="function"&&campaignRules().poisonStudy?campaignRules().poisonStudy.studyOf(game.campaign,c.id):null;
   if(poisonStudy) return campaignRules().poisonStudy.isPlanned(poisonStudy)?{kind:"available",label:"Entre au Labo demain"}:{kind:"steward",label:"Apprend l’empoisonnement"};
+  // Bûcheron du jour, ou de demain (Idan, 2026-11-03).
+  const lumber=game.campaign&&typeof campaignRules==="function"&&campaignRules().lumberjacks?campaignRules().lumberjacks.busyReason(game.campaign,c.id):null;
+  if(lumber) return lumber.includes("demain")?{kind:"available",label:"Bûcheronne demain"}:{kind:"steward",label:"Bûcheronne"};
   // Le directeur de l'École de magie (Idan, 2026-11-01) et les maîtres (Idan, 2026-11-03) restent au camp.
   const post=game.campaign&&typeof MercenairesCampPosts!=="undefined"?MercenairesCampPosts.postOf(game.campaign,c):null;
   if(post) return {kind:"steward",label:typeof campPostLabel==="function"?campPostLabel(post.key,c):post.noun};

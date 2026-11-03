@@ -56,6 +56,7 @@ jobs:
       - run: node tests/armor-ports.test.js
       - run: node tests/armor-study.test.js
       - run: node tests/poison-study.test.js
+      - run: node tests/lumber.test.js
       - run: node tests/school-training.test.js
       - run: node tests/spell-study.test.js
       - run: node tests/spell-perfect.test.js
@@ -123,6 +124,8 @@ jobs:
       - run: node --check game-core/armor-ports.js
       - run: node --check game-core/armor-study.js
       - run: node --check prototype-web/armor-study-ui.js
+      - run: node --check game-core/lumber.js
+      - run: node --check prototype-web/lumber-ui.js
       - run: node --check prototype-web/day-news-ui.js
       - run: node --check prototype-web/reference-data.js
       - run: node --check prototype-web/design/design.js

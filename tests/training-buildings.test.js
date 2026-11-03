@@ -107,6 +107,7 @@ assert.match(html,/Académie de la survie<\/strong><span>Boucliers · À constru
 assert.doesNotMatch(html,/Le Four/,"pas d'aile avant l'Académie");
 assert.match(html,/Cercle des Fines Lames<\/strong><span>Dextérité · Niveau 10 · garde du corps \+50 %<\/span>/);
 assert.match(html,/Salle de la Main seule<\/strong><span>Combat à une main · À construire<\/span>/);
-assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","contract-ui.js"),"utf8"),/\(dont \+\$\{fmt\(Math\.round\(guard\.payBonus\*100\)\)\} % du Cercle des Fines Lames\)/);
+// La fiche de l'offre montre le paiement, sans commentaire (Idan : « tu veux toujours mettre du blabla inutile ! »).
+assert.doesNotMatch(fs.readFileSync(path.join(ROOT,"prototype-web","contract-ui.js"),"utf8"),/du Cercle des Fines Lames/);
 
 console.log("Ludus, Académie de la survie, Cercle des Fines Lames : 10 niveaux, ailes, noms, garde du corps + 5 % par niveau du Cercle — OK");

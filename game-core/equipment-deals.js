@@ -18,13 +18,16 @@
 //   Donner les y met (même jet) ; Retirer peut aussi les reprendre (même jet). Entre ses propres objets — emplacements
 //   portés, set 1, set 2, inventaire — tout est libre : ni jet, ni affinité, ni limite par jour (rearrange, swapSets),
 //   tant qu'il est au camp. S'il meurt en mission, l'inventaire retourne à l'Intendance (campaign.js).
+// - Armure (Idan, 2026-11-03) : sans le port de son type, il ne peut pas la porter (armor-ports.js) ; l'inventaire la
+//   garde.
 // Constantes : formula-constants.json (equipment_deal.*).
 (function(root,factory){
   const history=typeof module!=="undefined"&&module.exports?require("./history.js"):root.MercenairesHistory;
-  const api=factory(history);
+  const armorPorts=typeof module!=="undefined"&&module.exports?require("./armor-ports.js"):root.MercenairesArmorPorts;
+  const api=factory(history,armorPorts);
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesEquipmentDeals=api;
-})(typeof globalThis!=="undefined"?globalThis:this,function(History){
+})(typeof globalThis!=="undefined"?globalThis:this,function(History,ArmorPorts){
   const rows=data=>Array.isArray(data)?data:(data?.rows||[]);
   const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
   const WEAPON_SLOT=/^weapon_set_(\d+)_(main|off)$/;
@@ -36,6 +39,7 @@
 
   function createEquipmentDeals({reference,affinityRules=null,random=Math.random}={}){
     const weapons=new Map(rows(reference?.weapons).map(r=>[r.nom,r]));
+    const ports=ArmorPorts.createArmorPorts(reference);
     const constant=(code,fallback)=>{
       const value=Number(rows(reference?.formulaConstants).find(r=>r.code===code)?.valeur);
       return Number.isFinite(value)?value:fallback;
@@ -77,7 +81,7 @@
       if(!item) return no("Aucun objet.");
       // Les fioles vont dans les poches de ceinture, pas dans l'inventaire.
       if(slot===INVENTORY) return item.itemType==="potion"?no("Une fiole se range dans une poche de ceinture."):{ok:true};
-      if(slot==="armor") return item.itemType==="armor"?{ok:true}:no("Cet emplacement reçoit une armure.");
+      if(slot==="armor") return item.itemType==="armor"?ports.canWear(mercenary,item):no("Cet emplacement reçoit une armure.");
       if(slot==="boots") return item.itemType==="boots"?{ok:true}:no("Cet emplacement reçoit des bottes.");
       if(slot==="belt") return item.itemType==="belt"?{ok:true}:no("Cet emplacement reçoit une ceinture.");
       if(slot==="amulet") return item.itemType==="amulet"?{ok:true}:no("Cet emplacement reçoit une amulette.");

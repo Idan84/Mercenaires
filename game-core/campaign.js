@@ -11,10 +11,12 @@
   const study=typeof module!=="undefined"&&module.exports?require("./spell-study.js"):root.MercenairesSpellStudy;
   // Postes du camp : le directeur de l'École et les maîtres.
   const posts=typeof module!=="undefined"&&module.exports?require("./camp-posts.js"):root.MercenairesCampPosts;
-  const api=factory(history,regeneration,training,study,posts);
+  // Ports d'armure : pas d'armure sans son port.
+  const armorPorts=typeof module!=="undefined"&&module.exports?require("./armor-ports.js"):root.MercenairesArmorPorts;
+  const api=factory(history,regeneration,training,study,posts,armorPorts);
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesCampaign=api;
-})(typeof globalThis!=="undefined"?globalThis:this,function(History,Regeneration,Training,Study,Posts){
+})(typeof globalThis!=="undefined"?globalThis:this,function(History,Regeneration,Training,Study,Posts,ArmorPorts){
   // Sauvegarde : l'état de partie complet, sérialisé en JSON avec un format et une version.
   // La trace de génération des mercenaires (détail de calcul pour le Design Lab, ~85 % du poids)
   // n'est pas sauvegardée : un mercenaire passe d'environ 36 Ko à 5 Ko.
@@ -242,6 +244,22 @@
         const martial=m?.skills?.martial;
         if(!martial||"Combat à une main" in martial) continue;
         martial["Combat à une main"]=Math.max(0,...ONE_HAND_MELEE.map(name=>Number(martial[name])||0));
+        changed=true;
+      }
+      return changed;
+    }
+    // Ancienne partie (Idan, 2026-11-03 : sans le port de son type, pas d'armure) : une armure portée sans son port
+    // retourne dans l'inventaire du mercenaire, au dortoir.
+    const armorPorts=ArmorPorts?ArmorPorts.createArmorPorts(reference):null;
+    function ensureArmorPorts(state){
+      if(!armorPorts) return false;
+      let changed=false;
+      for(const m of rosterOf(state)){
+        const slots=m?.equipment?.slots,id=slots?.armor;
+        const item=id?(m.items||[]).find(x=>x.id===id):null;
+        if(!item||armorPorts.canWear(m,item).ok) continue;
+        slots.armor=null;
+        item.slot=null;
         changed=true;
       }
       return changed;
@@ -1267,6 +1285,7 @@
       ensureHalvedMissionBonuses,
       ensureTwoHandedGrips,
       ensureOneHandedStyle,
+      ensureArmorPorts,
       ensureHistories,
       payroll
     };

@@ -53,6 +53,7 @@ jobs:
       - run: node tests/medic.test.js
       - run: node tests/school-director.test.js
       - run: node tests/camp-masters.test.js
+      - run: node tests/armor-ports.test.js
       - run: node tests/school-training.test.js
       - run: node tests/spell-study.test.js
       - run: node tests/spell-perfect.test.js
@@ -117,6 +118,7 @@ jobs:
       - run: node --check game-core/spell-manuals.js
       - run: node --check game-core/regeneration.js
       - run: node --check game-core/camp-posts.js
+      - run: node --check game-core/armor-ports.js
       - run: node --check prototype-web/day-news-ui.js
       - run: node --check prototype-web/reference-data.js
       - run: node --check prototype-web/design/design.js

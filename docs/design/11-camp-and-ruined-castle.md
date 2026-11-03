@@ -219,7 +219,11 @@ chiffres au doc 12 (« Apprendre un sort à l'École »).
 ### Bâtiments d'entraînement (conception en cours, Idan, 2026-11-02 et 2026-11-03)
 
 Sur le modèle de l'École de magie : un bâtiment, un maître nommé, une **salle principale** (ce qu'on y travaille sans
-aile construite) et des **ailes**. Rien n'est encore codé ; les règles (tests, gains, places) suivront l'École.
+aile construite) et des **ailes**. **En jeu** (Idan, 2026-11-03 : « Je te laisse coder Ludus / Survie / Fines Lames »)
+: les trois bâtiments se construisent puis montent de 1 à 10, au même barème que les autres (niveau n = 1 000 × n² PO et
+4 × n jours) ; leurs ailes montent au plus au niveau de leur bâtiment ; dans Ma Compagnie, chacun montre ce qu'il
+travaille devant son état, l'info-bulle au survol du nom (`camp-buildings.json`, colonne `entraine`). Pas encore
+d'entraînement, de places ni de maître : ils suivront l'École (règles à valider). Test : `tests/training-buildings.test.js`.
 
 **Ludus** (validé, noms compris) — maître : **le Doctore**.
 
@@ -244,9 +248,11 @@ armures** (les ports d'armure, légère puis intermédiaire puis lourde, appris 
 | **La Cantine** | Résistance au poison | « Le plat du jour est toujours un test. Personne n'a jamais su lequel. » |
 | **Le Placard** | Discrétion | « On s'y cache pendant que le Vétéran vous cherche. Il cherche encore le dernier. » |
 
-**Le Cercle des Fines Lames** (validé) — salle principale : **Dextérité** ; ailes : Lames longues, Lames courtes, Deux
-armes, Combat à une main. Deuxième fonction (Idan) : plus de missions de garde du corps, et mieux payées, selon le niveau
-du Cercle (chiffres à valider).
+**Le Cercle des Fines Lames** (validé) — salle principale : **Dextérité** ; ailes (des salles à construire, « comme les
+autres ») : Salle des Lames longues, Salle des Lames courtes, Salle des Deux armes, Salle de la Main seule (noms
+provisoires). Deuxième fonction (Idan, 2026-11-03 : « On garde juste l'augmentation de la prime, pas la fréquence ») :
+on y croise des nobles, le **paiement d'une garde du corps × (1 + 5 % par niveau du Cercle)**, arrondi à 10 PO, pour
+les offres qui arrivent au tableau (`garde_paie_par_niveau`, doc 17 §12) ; +50 % au niveau 10.
 
 Pistes gardées en tête, non validées : la **Tour de guet** (salle principale Perception, Armes de tir ; anticiper les
 attaques du camp, à venir), le **Labo d'alchimie** (potions ; Armes à feu, Pièges, apprendre à empoisonner ses armes),

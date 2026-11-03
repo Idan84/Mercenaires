@@ -2338,6 +2338,7 @@ function missionPotionBlock(unit,potion){
   if(potion.effet==="soin"&&unit.hp>=unit.pvMax) return "PV au maximum.";
   const magic=missionMagic();
   if(potion.effet==="mana"&&(!magic||magic.currentMana(unit)>=magic.manaMax(unit))) return "Mana au maximum.";
+  if(potion.effet==="poison_arme"&&!game.mission.engine.canPoisonWeapon(unit)) return "Il ne sait pas empoisonner une arme.";
   if(potion.effet==="poison_arme"&&!game.mission.engine.activeWeaponItem(unit)) return "Aucune arme à enduire.";
   return "";
 }

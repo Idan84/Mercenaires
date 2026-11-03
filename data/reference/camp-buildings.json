@@ -626,7 +626,61 @@
       "entraine": "Armes de tir",
       "garde_paie_par_niveau": 0,
       "apprend_avec": null
+    },
+    {
+      "code": "alchemy_lab",
+      "nom": "Labo d’alchimie",
+      "description": "Dans l’Alambic : « Ça bout, ça fume, ça sent le chou. Personne ne sait ce que c’est. » Chaque niveau du Labo permet de monter ses ailes jusqu’à ce niveau.",
+      "niveaux": 10,
+      "prix_base": 1000,
+      "jours_base": 4,
+      "soins_par_niveau": 0,
+      "fatigue_jours_par_niveau": 0,
+      "mana_par_niveau": 0,
+      "requiert": null,
+      "ecole": null,
+      "places_base": 1,
+      "places_pas": 2,
+      "entraine": "Résistance au poison",
+      "garde_paie_par_niveau": 0,
+      "apprend_avec": "Intelligence"
+    },
+    {
+      "code": "alchemy_firearms",
+      "nom": "La Poudrière",
+      "description": "« On y apprend à charger, à viser… et surtout à ne pas fumer. »",
+      "niveaux": 10,
+      "prix_base": 1000,
+      "jours_base": 4,
+      "soins_par_niveau": 0,
+      "fatigue_jours_par_niveau": 0,
+      "mana_par_niveau": 0,
+      "requiert": "alchemy_lab",
+      "ecole": null,
+      "places_base": 1,
+      "places_pas": 2,
+      "entraine": "Armes à feu",
+      "garde_paie_par_niveau": 0,
+      "apprend_avec": null
+    },
+    {
+      "code": "alchemy_traps",
+      "nom": "La Cave",
+      "description": "« Chaque marche est un piège. La rampe aussi. »",
+      "niveaux": 10,
+      "prix_base": 1000,
+      "jours_base": 4,
+      "soins_par_niveau": 0,
+      "fatigue_jours_par_niveau": 0,
+      "mana_par_niveau": 0,
+      "requiert": "alchemy_lab",
+      "ecole": null,
+      "places_base": 1,
+      "places_pas": 2,
+      "entraine": "Pièges",
+      "garde_paie_par_niveau": 0,
+      "apprend_avec": null
     }
   ],
-  "row_count": 31
+  "row_count": 34
 }

@@ -515,6 +515,10 @@
       return {p,roll,spotted:roll<=p};
     }
 
+    // Fiole de poison (Idan, 2026-11-03 : « Seul ceux qui ont la compétence peuvent empoisonner leur arme en utilisant une
+    // potion ») : il faut l'aptitude Empoisonnement des armes. La sarbacane, elle, empoisonne d'elle-même.
+    const POISONER="Empoisonnement des armes";
+    function canPoisonWeapon(unit){ return unit?.character?.skills?.martial?.[POISONER]===true; }
     // Poison (Idan, 2026-10-27) : au début de chaque activation de l'empoisonné (unit.poisoned = {turns, amount}), un jet
     // de résistance, D100 ≤ part × Constitution + Résistance au poison (équipement compris, de 5 à 95 %), annule l'effet ;
     // sinon il subit les dégâts légers du poison, réduits par sa Résistance au poison. L'écran de combat décompte les tours.
@@ -1149,6 +1153,7 @@
       attackStatBonus,
       resolveFear,
       poisonResistChance,
+      canPoisonWeapon,
       resolvePoison,
       activeWeaponItem,
       activeOffhandItem,

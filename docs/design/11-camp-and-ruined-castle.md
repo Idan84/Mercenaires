@@ -315,8 +315,15 @@ on y croise des nobles, le **paiement d'une garde du corps × (1 + 5 % par nivea
 les offres qui arrivent au tableau (`garde_paie_par_niveau`, doc 17 §12) ; +50 % au niveau 10. La fiche de l'offre
 montre le paiement, sans commentaire.
 
-Pistes gardées en tête, non validées : la **Tour de guet** (salle principale Perception, Armes de tir ; anticiper les
-attaques du camp, à venir), le **Labo d'alchimie** (potions ; Armes à feu, Pièges, apprendre à empoisonner ses armes),
+**La Tour de guet** (Idan, 2026-11-03) — salle principale **La Vigie** : **Perception** (« Là-haut, on voit venir les
+ennuis. Et la pluie. ») ; une aile, **Le Créneau** : **Armes de tir** (« On tire sur tout ce qui approche. Le facteur ne
+passe plus. ») ; les élèves apprennent avec leur **Perception** (`apprend_avec`). Même barème et mêmes places que les
+autres bâtiments, entraînement libre compris. Ni Armes à feu, ni Pièges, ni Courage, ni Volonté (« Non »). **Pas
+d'instructeur** (Idan : « Immobiliser un mercenaire pour si peu me semble de trop… Peut-être qu'on fera un chef pour
+plusieurs bâtiments… Mais on verra ») ; **pas de deuxième fonction** pour l'instant (« Rien pour l'instant ! ») : anticiper
+les attaques du camp viendra avec la défense du camp.
+
+Pistes gardées en tête, non validées : le **Labo d'alchimie** (potions ; Armes à feu, Pièges, apprendre à empoisonner ses armes),
 et pour les autres armes de mêlée deux bâtiments d'ambiance : **l'Ermitage** (Bâtons, Flexibles, Hast ; le mana) et
 **le Hall des Berserkers** (Haches, Contondantes, Deux mains). Les compétences de camp (artisanat) attendront les bâtiments de fabrication.
 

@@ -37,7 +37,10 @@ const BUILDINGS={
     ["La Décharge","Résistance à la foudre"],["La Cantine","Résistance au poison"],["Le Placard","Discrétion"]]],
   // Les ailes du Cercle (Idan, 2026-11-03 : « je garde tes noms dandy »).
   blade_circle:["Cercle des Fines Lames","Dextérité",[["La Salle des Miroirs","Lames longues"],["Le Boudoir","Lames courtes"],
-    ["Le Bal masqué","Combat à deux armes"],["Le Salon de thé","Combat à une main"]]]
+    ["Le Bal masqué","Combat à deux armes"],["Le Salon de thé","Combat à une main"]]],
+  // La Tour de guet (Idan, 2026-11-03 : Armes à feu, Pièges, Courage, Volonté : « Non » ; « pas d'instructeur ici » ;
+  // deuxième fonction : « Rien pour l'instant ! »).
+  watchtower:["Tour de guet","Perception",[["Le Créneau","Armes de tir"]]]
 };
 const known=new Set([...reference.characteristics.rows.map(r=>r.nom),...reference.skills.rows.map(r=>r.nom)]);
 for(const [code,[name,trains,wings]] of Object.entries(BUILDINGS)){
@@ -137,6 +140,14 @@ const logUi=new Function("game","$","fmt","esc","campaignRules","dormitoryPlaces
   game,$,fmt,esc,()=>rules,String,message=>lines.push(message),()=>{},()=>{},{});
 logUi.logSchoolDay({entries:[{code:"ludus"},{code:"ludus_force"},{code:"blade_circle"},{code:null}]});
 assert.deepEqual(lines,["Ludus : 2 élèves aujourd’hui.","Cercle des Fines Lames : 1 élève aujourd’hui."],"une ligne par bâtiment");
+
+// La Tour de guet : la Perception à la Vigie, les Armes de tir au Créneau, apprises avec la Perception ; pas de maître.
+assert.equal(row("watchtower").apprend_avec,"Perception");
+assert.match(row("watchtower").description,/Dans la Vigie : « Là-haut, on voit venir les ennuis\. Et la pluie\. »/);
+assert.equal(require("../game-core/camp-posts.js").postOfBuilding("watchtower"),null,"pas d'instructeur");
+state.company.camp.buildings={watchtower:{level:1,construction:null},watchtower_ranged:{level:1,construction:null}};
+assert.deepEqual(rules.trainingRooms(state).map(r=>[r.code,r.building,r.trains,r.learnWith,r.places]),
+  [["watchtower","watchtower","Perception","Perception",1],["watchtower_ranged","watchtower","Armes de tir","Perception",1]]);
 
 // La fiche de l'offre montre le paiement, sans commentaire (Idan : « tu veux toujours mettre du blabla inutile ! »).
 assert.doesNotMatch(fs.readFileSync(path.join(ROOT,"prototype-web","contract-ui.js"),"utf8"),/du Cercle des Fines Lames/);

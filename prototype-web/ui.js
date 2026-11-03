@@ -50,6 +50,9 @@ function rosterStatus(c){
   // Port d'armure à l'Académie (Idan, 2026-11-03).
   const armorStudy=game.campaign&&typeof campaignRules==="function"&&campaignRules().armorStudy?campaignRules().armorStudy.studyOf(game.campaign,c.id):null;
   if(armorStudy) return campaignRules().armorStudy.isPlanned(armorStudy)?{kind:"available",label:"Entre à l’Académie demain"}:{kind:"steward",label:"Apprend une armure"};
+  // Empoisonnement des armes au Labo (Idan, 2026-11-03).
+  const poisonStudy=game.campaign&&typeof campaignRules==="function"&&campaignRules().poisonStudy?campaignRules().poisonStudy.studyOf(game.campaign,c.id):null;
+  if(poisonStudy) return campaignRules().poisonStudy.isPlanned(poisonStudy)?{kind:"available",label:"Entre au Labo demain"}:{kind:"steward",label:"Apprend l’empoisonnement"};
   // Le directeur de l'École de magie (Idan, 2026-11-01) et les maîtres (Idan, 2026-11-03) restent au camp.
   const post=game.campaign&&typeof MercenairesCampPosts!=="undefined"?MercenairesCampPosts.postOf(game.campaign,c):null;
   if(post) return {kind:"steward",label:typeof campPostLabel==="function"?campPostLabel(post.key,c):post.noun};
@@ -1341,6 +1344,10 @@ function historyEntryText(c,entry){
   if(entry.kind==="armor_study") return fill(copy.armor_study?.[entry.accepted?"accord":"refus"],{armure});
   if(entry.kind==="armor_study_done") return fill(copy.armor_study_done,{armure,jours:historyPlural(entry.days||0,"jour","jours")});
   if(entry.kind==="armor_study_stopped") return fill(copy.armor_study_stopped,{armure});
+  // Empoisonnement des armes au Labo (Idan, 2026-11-03).
+  if(entry.kind==="poison_study") return fill(copy.poison_study?.[entry.accepted?"accord":"refus"]);
+  if(entry.kind==="poison_study_done") return fill(copy.poison_study_done,{jours:historyPlural(entry.days||0,"jour","jours")});
+  if(entry.kind==="poison_study_stopped") return fill(copy.poison_study_stopped);
   if(entry.kind==="perfect") return fill(copy.perfect,{sort:entry.spell||"",avant:fmt(entry.before||0),apres:fmt(entry.after||0)});
   if(entry.kind==="teach") return fill(copy.teach?.[entry.accepted?"accord":"refus"],{sort:entry.spell||"",eleve:entry.student||""});
   if(entry.kind==="teach_done") return fill(copy.teach_done,{sort:entry.spell||"",eleve:entry.student||""});

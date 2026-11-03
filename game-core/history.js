@@ -10,7 +10,7 @@
   root.MercenairesHistory=api;
 })(typeof globalThis!=="undefined"?globalThis:this,function(){
   const COUNTERS=["missions","knockouts","timesWounded","woundsTaken","criticals","stewardDays","medicDays","directorDays",
-    "doctoreDays","veteranDays","bladeMasterDays"];
+    "doctoreDays","veteranDays","bladeMasterDays","alchemistDays"];
 
   // since : jour d'arrivée dans la compagnie.
   function historyOf(mercenary,since=1){

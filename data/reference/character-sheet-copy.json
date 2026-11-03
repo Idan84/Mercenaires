@@ -344,6 +344,11 @@
         "key": "bladeMasterDays",
         "label": "Jours à la tête du Cercle",
         "hideZero": true
+      },
+      {
+        "key": "alchemistDays",
+        "label": "Jours à la tête du Labo",
+        "hideZero": true
       }
     ],
     "events": {
@@ -420,6 +425,14 @@
         "accord": "Quitte le Cercle des Fines Lames et retourne sur le terrain après {jours}.",
         "refus": "Refuse de quitter le Cercle des Fines Lames."
       },
+      "alchemist": {
+        "accord": "Devient l’Alchimiste du Labo d’alchimie.",
+        "refus": "Refuse de devenir l’Alchimiste du Labo d’alchimie."
+      },
+      "alchemist_recall": {
+        "accord": "Quitte le Labo d’alchimie et retourne sur le terrain après {jours}.",
+        "refus": "Refuse de quitter le Labo d’alchimie."
+      },
       "study": {
         "accord": "Accepte d’apprendre {sort} à l’École de magie.",
         "refus": "Refuse d’apprendre {sort}."
@@ -432,6 +445,12 @@
       },
       "armor_study_done": "Sait désormais porter une armure {armure}, après {jours} à l’Académie de la survie.",
       "armor_study_stopped": "Quitte l’Académie sans avoir appris à porter une armure {armure}.",
+      "poison_study": {
+        "accord": "Accepte d’apprendre à empoisonner une arme au Labo d’alchimie.",
+        "refus": "Refuse d’apprendre à empoisonner une arme."
+      },
+      "poison_study_done": "Sait désormais empoisonner une arme, après {jours} au Labo d’alchimie.",
+      "poison_study_stopped": "Quitte le Labo sans avoir appris à empoisonner une arme.",
       "perfect": "Perfectionne {sort} à l’École : niveau {avant} → {apres}.",
       "teach": {
         "accord": "Accepte d’enseigner {sort} à {eleve}.",

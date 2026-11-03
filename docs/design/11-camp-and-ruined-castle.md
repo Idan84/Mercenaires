@@ -244,7 +244,7 @@ hasard » ; « Le reste, c'est nickel ») — remplace le choix de l'École (sa 
 - journal du matin : une ligne par bâtiment (« Ludus : 2 élèves aujourd'hui. ») ; fiche, onglet Camp, « Aujourd'hui » :
   la salle, l'XP et ce qu'elle travaille ;
 - **maîtres** (Idan, 2026-11-03 : « Oui pour les maîtres ») : **le Doctore** (Ludus), **le Vétéran** (Académie), **le Maître
-  des lames** (Cercle ; nom d'Idan), nommés **comme le directeur** : bâtiment construit, même chance d'accepter, même
+  des lames** (Cercle ; nom d'Idan), puis **l'Alchimiste** (Labo d'alchimie ; pas de maître à la Tour de guet), nommés **comme le directeur** : bâtiment construit, même chance d'accepter, même
   refus, même retour sur le terrain, une proposition par jour ; hors mission, ils vivent dans leur bâtiment (pas de place
   au dortoir) ; un mercenaire ne tient qu'un poste (intendant, médecin, directeur, maître, lieutenant). Ils aident comme
   le directeur à l'École : même test, même gain ; **niveau du maître** : sa valeur dans ce que travaille la salle ou
@@ -324,12 +324,24 @@ plusieurs bâtiments… Mais on verra ») ; **pas de deuxième fonction** pour l
 les attaques du camp viendra avec la défense du camp.
 
 **Le Labo d'alchimie** (Idan, 2026-11-03 : « Dans la salle principale, on peut entraîner sa résistance au poison » ; « piège
-et armes à feu, c'est validé » ; pas de chef) — salle principale **L'Alambic** : **Résistance au poison** (« Ça bout, ça
+et armes à feu, c'est validé ») — chef de salle : **l'Alchimiste** (« En fait, on va nommer un alchimiste comme chef de
+salle ! » ; nommé et aidant comme les autres maîtres) ; salle principale **L'Alambic** : **Résistance au poison** (« Ça bout, ça
 fume, ça sent le chou. Personne ne sait ce que c'est. ») ; ailes **La Poudrière** : **Armes à feu** (« On y apprend à
 charger, à viser… et surtout à ne pas fumer. ») et **La Cave** : **Pièges** (« Chaque marche est un piège. La rampe
 aussi. ») ; les élèves apprennent avec leur **Intelligence**. Même barème et mêmes places que les autres bâtiments. Les
 **potions** (préparation, ingrédients, recettes) viendront avec la fabrication, qui fera monter l'Alchimie (« On verra
 après pour le craft qui lui fera monter le niveau d'alchimiste »).
+
+**Apprendre l'Empoisonnement des armes au Labo** (Idan, 2026-11-03 : « Ça doit dépendre d'intelligence, de dextérité (pour
+pas en mettre partout !) et de résistance au poison (au cas où on en met partout) » ; « Oui, vas-y ») — comme un port
+d'armure à l'Académie (même conviction, entrée le lendemain matin, une place de l'Alambic, au camp jusqu'à la fin, même
+affinité, rien d'acquis si on le fait sortir) ; chaque matin, chance = 100 / (1 + e^(−(X − 100)/20)) × (1 + 0,1 × niveau du
+Labo), au plus 95 %, **X = (Intelligence + Dextérité) / 2 + Résistance au poison + Transmission du savoir de
+l'Alchimiste / 5** s'il a lui-même l'aptitude. Labo niveau 1 : 10 % les moins doués ~13 jours, médiane ~7 jours (~5 avec
+un Alchimiste à 48), 10 % les meilleurs ~3 jours ; l'Alchimiste gagne 5 XP de Transmission par élève. Carte du Labo :
+« Apprendre l'empoisonnement », « Apprentissages » ; statut « Apprend l'empoisonnement » ; journal ; historique. Un
+seul apprentissage à la fois (sort, armure ou empoisonnement). Constantes `poison_study.daily.*` ; code
+`game-core/armor-study.js` (course "poison") ; test `tests/poison-study.test.js`.
 
 Pistes gardées en tête, non validées : pour les autres armes de mêlée, deux bâtiments d'ambiance : **l'Ermitage** (Bâtons, Flexibles, Hast ; le mana) et
 **le Hall des Berserkers** (Haches, Contondantes, Deux mains). Les compétences de camp (artisanat) attendront les bâtiments de fabrication.

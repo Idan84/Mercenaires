@@ -20,14 +20,18 @@
 //   tant qu'il est au camp. S'il meurt en mission, l'inventaire retourne à l'Intendance (campaign.js).
 // - Armure (Idan, 2026-11-03) : sans le port de son type, il ne peut pas la porter (armor-ports.js) ; l'inventaire la
 //   garde.
+// - Relance après un refus (Idan, 2026-11-04 ; persuasion.js) : une fois, Intimider (+ Intimidation du capitaine) ou
+//   Convaincre (+ Charisme ÷ 2) ; l'affinité de l'échange, déjà comptée, est revue : une perte × 2 (intimidé) ou × 0,5
+//   (convaincu), accord ou refus ; un gain accordé, rien s'il a été intimidé.
 // Constantes : formula-constants.json (equipment_deal.*).
 (function(root,factory){
   const history=typeof module!=="undefined"&&module.exports?require("./history.js"):root.MercenairesHistory;
   const armorPorts=typeof module!=="undefined"&&module.exports?require("./armor-ports.js"):root.MercenairesArmorPorts;
-  const api=factory(history,armorPorts);
+  const persuasion=typeof module!=="undefined"&&module.exports?require("./persuasion.js"):root.MercenairesPersuasion;
+  const api=factory(history,armorPorts,persuasion);
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesEquipmentDeals=api;
-})(typeof globalThis!=="undefined"?globalThis:this,function(History,ArmorPorts){
+})(typeof globalThis!=="undefined"?globalThis:this,function(History,ArmorPorts,Persuasion){
   const rows=data=>Array.isArray(data)?data:(data?.rows||[]);
   const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
   const WEAPON_SLOT=/^weapon_set_(\d+)_(main|off)$/;
@@ -40,6 +44,8 @@
   function createEquipmentDeals({reference,affinityRules=null,random=Math.random}={}){
     const weapons=new Map(rows(reference?.weapons).map(r=>[r.nom,r]));
     const ports=ArmorPorts.createArmorPorts(reference);
+    const persuasion=Persuasion?Persuasion.createPersuasionRules({reference}):null;
+    const REFUSAL="dealRefusal";
     const constant=(code,fallback)=>{
       const value=Number(rows(reference?.formulaConstants).find(r=>r.code===code)?.valeur);
       return Number.isFinite(value)?value:fallback;
@@ -137,7 +143,8 @@
 
     // Le marché vu par le mercenaire : valeurs perçues, chance d'accord et effet sur l'affinité. Sans jet ni mutation.
     // slot : un emplacement, ou INVENTORY (itemId : l'objet de l'inventaire à reprendre).
-    function evaluate(state,{mercenaryId,slot,stockItemId=null,itemId=null}={}){
+    // approach : la relance (Intimider, Convaincre), qui s'ajoute à l'écart.
+    function evaluate(state,{mercenaryId,slot,stockItemId=null,itemId=null}={},approach=null){
       const mercenary=rosterOf(state).find(m=>m.id===mercenaryId);
       if(!mercenary) return no("Mercenaire introuvable.");
       const given=slot===INVENTORY?(itemId==null?null:inventoryOf(mercenary).find(item=>String(item.id)===String(itemId))||null):itemIn(mercenary,slot);
@@ -156,7 +163,8 @@
       const gain=valueReceived-valueGiven;
       const affinity=Number(affinityRules?.memberAffinity(captainOf(state),mercenary)?.total)||0;
       const help=stewardHelp(state,mercenary);
-      const delta=C.valueWeight*gain+C.affinityWeight*affinity+help.bonus;
+      const persuade=persuasion&&approach?persuasion.bonus(captainOf(state),approach):0;
+      const delta=C.valueWeight*gain+C.affinityWeight*affinity+help.bonus+persuade;
       return {...base,free:false,valueGiven,valueReceived,gain,affinity,steward:help.steward,stewardBonus:help.bonus,delta,
         chance:10+80/(1+Math.exp(-delta/20)),
         affinityDelta:Math.round(C.affinityPerValue*gain),
@@ -165,13 +173,13 @@
 
     // Une tentative par mercenaire et par jour (Idan, 2026-10-24) ; le capitaine n'en a pas besoin, ni une fiole
     // rangée dans une poche de ceinture (slot).
-    function canDeal(state,mercenary,slot=null){
+    function canDeal(state,mercenary,slot=null,{retry=false}={}){
       if(!mercenary) return no("Mercenaire introuvable.");
       // Parti en expédition (doc 17) : pas d'échange avant son retour. Mission programmée (Idan, 2026-10-30) : il est
       // encore au camp jusqu'au lendemain matin, on peut l'équiper.
       if((state.expeditions||[]).some(e=>e.memberIds.includes(mercenary.id)&&e.status!=="scheduled")) return no("Il est en mission.");
       if(isCaptain(state,mercenary)||isPocket(slot)) return {ok:true};
-      if(mercenary.equipmentDealDay===state.day) return no("Vous lui avez déjà parlé d’équipement aujourd’hui.");
+      if(!retry&&mercenary.equipmentDealDay===state.day) return no("Vous lui avez déjà parlé d’équipement aujourd’hui.");
       return {ok:true};
     }
 
@@ -284,11 +292,38 @@
       // Historique (Idan, 2026-10-24) : l'échange proposé, accepté ou refusé ; pas les fioles.
       const brief=item=>item?{name:item.name,tier:item.tier}:null;
       if(!isPocket(slot)) History?.record(mercenary,state.day,"deal",{action:deal.action,accepted,free:deal.free,given:brief(given),received:brief(received)});
+      // Refusé : on peut relancer une fois aujourd'hui.
+      const canRetry=!accepted&&!deal.free&&Boolean(persuasion);
+      if(canRetry) persuasion.markRefused(mercenary,REFUSAL,state.day,{request:{mercenaryId:mercenary.id,slot,stockItemId:request.stockItemId??null,itemId:request.itemId??null}});
       return {ok:true,action:deal.action,free:deal.free,accepted,roll,chance:deal.chance,affinityDelta:deal.affinityDelta,
-        mood:deal.mood,mercenaryId:mercenary.id,slot,given,received,steward:deal.steward||null};
+        mood:deal.mood,mercenaryId:mercenary.id,slot,given,received,steward:deal.steward||null,canRetry};
+    }
+    // Après un refus, aujourd'hui : une relance, Intimider ou Convaincre, sur le même échange.
+    function retry(state,mercenaryId,approach){
+      const mercenary=rosterOf(state).find(m=>m.id===mercenaryId);
+      if(!persuasion?.approachOf(approach)) return no("Approche inconnue.");
+      const again=persuasion.canRetry(mercenary,REFUSAL,state.day);
+      if(!again.ok) return again;
+      const deal=evaluate(state,again.refusal.request,approach);
+      if(!deal.ok) return deal;
+      const allowed=canDeal(state,mercenary,deal.slot,{retry:true});
+      if(!allowed.ok) return allowed;
+      const {slot,given,received}=deal;
+      const roll=Math.floor(random()*100)+1,accepted=roll<=deal.chance;
+      persuasion.markRetried(mercenary,REFUSAL,approach,accepted);
+      const affinityDelta=persuasion.outcomeExtra(deal.affinityDelta,approach,accepted);
+      mercenary.affinityAcquired=(Number(mercenary.affinityAcquired)||0)+affinityDelta;
+      if(accepted){
+        if(given) moveToStock(state,mercenary,given);
+        if(received) equipFromStock(state,mercenary,slot,received);
+        const brief=item=>item?{name:item.name,tier:item.tier}:null;
+        History?.record(mercenary,state.day,"deal",{action:deal.action,accepted:true,free:false,given:brief(given),received:brief(received)});
+      }
+      return {ok:true,action:deal.action,free:false,accepted,approach,roll,chance:deal.chance,affinityDelta,mood:deal.mood,
+        mercenaryId:mercenary.id,slot,given,received,steward:deal.steward||null};
     }
 
-    return {constants:C,perceivedValue,slotAccepts,compatibleSlots,evaluate,canDeal,propose,isPocket,INVENTORY,inventoryOf,
+    return {constants:C,perceivedValue,slotAccepts,compatibleSlots,evaluate,canDeal,propose,retry,isPocket,INVENTORY,inventoryOf,
       canRearrange,rearrange,placeOptions,swapSets};
   }
 

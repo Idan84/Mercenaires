@@ -44,7 +44,7 @@ const state=rules.createCampaign({captain,squad:[2,3,4,5,6].map(id=>generator.cr
 const [, first, second, third, master]=state.company.roster;
 state.company.intendantId=null;
 assert.equal(state.company.pleasureMasterId,null);
-assert.deepEqual(rules.agenda.keys(),["spell","armor","poison","lumber","mine","palace"]);
+assert.deepEqual(rules.agenda.keys(),["dungeon","spell","armor","poison","lumber","mine","palace"]);
 
 // Il faut le Palais ; 1 place par niveau ; l'Arrière-salle est la seule salle d'entraînement.
 assert.equal(work.canSend(state,first).reason,"Il faut d’abord construire le Palais des plaisirs.");

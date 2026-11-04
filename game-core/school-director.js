@@ -62,6 +62,8 @@
       if(!m) return no("Mercenaire introuvable.");
       if(!(levelOf(state)>0)) return no(`Il faut d’abord construire ${P.place}.`);
       if(m.id===state.company.captainId) return no(`Le capitaine ne peut pas diriger ${P.short}.`);
+      // Au cachot (Idan, 2026-11-04) : pas de poste.
+      if(m.dungeon) return no("Il est au cachot.");
       if(Number(m.contract?.joinDay)>state.day) return no("Il rejoint la compagnie demain matin.");
       if((state.company.lieutenantIds||[]).includes(m.id)) return no(`Un lieutenant ne peut pas diriger ${P.short}.`);
       if(m.id===state.company.intendantId) return no(`L’intendant ne peut pas diriger ${P.short}.`);

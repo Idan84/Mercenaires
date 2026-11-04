@@ -398,7 +398,8 @@ double la perte d'affinité. En charisme, ça la divise par deux » ; « valable
 - **postes** (Idan, 2026-11-04 : « Oui, vas-y pour les postes ») : intendant, médecin, directeur, maîtres, et leur retour
   sur le terrain ; leur chance est un pourcentage : la relance y ajoute l'Intimidation ou le Charisme ÷ 2, en points (au
   plus 95 %) ; si le refus tient : **vexé**, la perte × 2 (intimidé) ou × 0,5 (convaincu) ; **flatté**, le bonus est
-  perdu s'il a été intimidé (il pourra être flatté une autre fois), gardé s'il a été convaincu ; accepté, rien ne change.
+  perdu s'il a été intimidé (il pourra être flatté une autre fois), gardé s'il a été convaincu ; accepté, rien ne change ;
+- **la relance a échoué** : en plus de « Partir », « **Au cachot !** », s'il reste une cellule (§11, Le Cachot).
 
 **La Guilde des mineurs** (Idan, 2026-11-04 : « même chose mais avec les pierres pour des bâtiments de lvl 6 à 10 et on y
 apprend les armes contondantes » ; « Oui, oui et pareil ») — salle principale **Le Puits** : **Armes contondantes** (« On y
@@ -540,12 +541,25 @@ Peut accueillir :
 
 ## 11 — Prison
 
-La prison peut contenir :
+**Le Cachot** (Idan, 2026-11-04 : « On va créer un bâtiment "Le cachot". Avec 10 niveaux et un nombre de places par niveau. Un
+mercenaire qui refuse après test inti ou charisme peut aller au cachot. L'affinité va forcément en prendre un coup…
+Surtout qu'au cachot, on n'a pas de salaire… D'ailleurs le capitaine peut envoyer n'importe qui au cachot » ; « Parfait
+pour tout. Non l'affinité ne revient pas après ») — 10 niveaux, même barème que les autres bâtiments :
 
-- prisonniers ennemis ;
-- mercenaires dissidents / contestataires.
+- **1 cellule par niveau** (`camp.dungeon.cells_per_level`) ;
+- **qui** : n'importe quel membre, sauf le capitaine et ceux qui partent ou sont partis en mission ; depuis la carte du
+  Cachot (« Envoyer au cachot »), ou dans le dialogue quand une relance (Intimider, Convaincre) a échoué : « Au cachot ! » ;
+- **tout de suite, jusqu'à ce qu'on le libère** (« Libérer ») ; il garde son lit au dortoir ;
+- en y entrant, **il perd son poste** (intendant, médecin, directeur, maître, lieutenant ; ses jours de poste sont comptés)
+  et quitte sa corvée et son apprentissage (sortir de l'École ou de l'Académie coûte ce que ça coûte d'habitude) ;
+- **affinité −10** en y entrant, **−2 chaque matin** (`camp.dungeon.entry_affinity`, `camp.dungeon.daily_affinity`) ;
+  elle **ne revient pas** à la libération ;
+- **pas de salaire** ; ni mission, ni garde du corps, ni entraînement, ni corvée, ni apprentissage, ni poste ; statut
+  « Au cachot » ; historique : « Est jeté au cachot. », « Sort du cachot après 3 jours. » ;
+- les autres membres ne réagissent pas, pour l'instant. Code `game-core/dungeon.js`, `prototype-web/dungeon-ui.js` ; textes
+  `dungeon-dialogue.json` ; test `tests/dungeon.test.js`.
 
-Elle pourra plus tard se connecter aux systèmes d’interrogatoire, intimidation, torture ou événements internes.
+Plus tard : les prisonniers ennemis, l'interrogatoire, les événements internes.
 
 ## 12 — Embellissement / prestige kitsch
 

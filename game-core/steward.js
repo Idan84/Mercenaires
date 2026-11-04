@@ -75,6 +75,8 @@
     function canOffer(state,m,{retry=false}={}){
       if(!m) return no("Mercenaire introuvable.");
       if(m.id===state.company.captainId) return no("Le capitaine ne peut pas être intendant.");
+      // Au cachot (Idan, 2026-11-04) : pas de poste.
+      if(m.dungeon) return no("Il est au cachot.");
       // Recruté aujourd'hui : un poste attend le lendemain matin (Idan, 2026-11-02).
       if(Number(m.contract?.joinDay)>state.day) return no("Il rejoint la compagnie demain matin.");
       // Le lieutenant reste sur le terrain (Idan, 2026-10-25).

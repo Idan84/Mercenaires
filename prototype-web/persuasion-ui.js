@@ -28,7 +28,9 @@ function persuasionAppend(m,result,outcome,seed){
   $("deal-talk-log").insertAdjacentHTML("beforeend",`<p class="talk-say talk-say--you"><b>Vous</b><span>« ${esc(studyFill(line,m))} »</span></p>
     <p class="talk-say talk-say--merc"><b>${esc(MercenairesRecruitDialogue.firstName(m))}</b><span>« ${esc(studyFill(reply,m))} »</span></p>
     <p class="talk-note">${esc(result.accepted?outcome:studyFill(pers.final_refused,m))}</p>`);
-  $("deal-talk-choices").innerHTML=persuasionLeaveHtml();
+  // Il refuse encore : on peut le jeter au cachot (Idan, 2026-11-04 ; dungeon-ui.js).
+  const jail=!result.accepted&&typeof dungeonChoiceHtml==="function"?dungeonChoiceHtml(m):"";
+  $("deal-talk-choices").innerHTML=jail?`<ol class="talk-options">${jail}<li><button type="button" data-deal-leave>Partir</button></li></ol>`:persuasionLeaveHtml();
 }
 
 function initializePersuasion(){

@@ -270,7 +270,7 @@ Depuis l’onglet Équipement de la fiche ou l’Intendance, le capitaine peut *
 
 **Affinité** (formule de JC, demandée par Idan) : accord ou refus, l’affinité acquise (`affinityAcquired`) change de **2 × (valeur perçue reçue − valeur perçue cédée)**, arrondi. Un cadeau la fait monter (Donner un T2 : +4 ou +5), un équipement rétrogradé ou repris la fait baisser (Retirer son T3 : −6 ou −7). Reprendre ce qu’on vient de donner coûte plus qu’on n’a gagné : pas de boucle pour gonfler l’affinité.
 
-**Règles** : une seule tentative par mercenaire et par jour ; le capitaine s’équipe librement (ni jet, ni affinité, ni limite) ; un objet donné appartient ensuite au mercenaire, un objet retiré retourne au stock sans propriétaire. Emplacements : armure, bottes, armes selon la prise (une arme à deux mains en arme principale avec la main secondaire libre, un bouclier en main secondaire). Constantes `equipment_deal.*` ; code `game-core/equipment-deals.js`.
+**Règles** : pas de limite par jour (Idan, 2026-11-04 : « faut virer la règle du 1 par jour. Trop contraignant ») ; chaque proposition a son jet et fait bouger l’affinité ; le capitaine s’équipe librement (ni jet, ni affinité, ni limite) ; un objet donné appartient ensuite au mercenaire, un objet retiré retourne au stock sans propriétaire. Emplacements : armure, bottes, armes selon la prise (une arme à deux mains en arme principale avec la main secondaire libre, un bouclier en main secondaire). Constantes `equipment_deal.*` ; code `game-core/equipment-deals.js`.
 
 **Inventaire et réaménagement libre** (Idan, 2026-10-30) :
 - chaque mercenaire a un **inventaire** : les objets qu’il possède sans les porter, gardés au dortoir, **sans limite** ;

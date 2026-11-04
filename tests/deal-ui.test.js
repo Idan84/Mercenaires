@@ -69,12 +69,11 @@ assert.match(give, /data-deal-member="2" data-deal-slot="weapon_set_1_main" data
 assert.match(give, /data-deal-member="2" data-deal-slot="weapon_set_2_main" data-deal-stock="w1">\s*Set 2 — arme principale<small>libre<\/small>/);
 assert.match(ui.stockDealMenu("s1"), /Personne ne peut le porter\./);
 
-// Une tentative par jour : le menu le dit, sans actions.
+// Pas de limite par jour (Idan, 2026-11-04) : une ancienne sauvegarde qui la notait ne bloque plus rien.
 borin.equipmentDealDay = 3;
 const later = ui.sheetDealMenu(borin, "weapon_set_1_main");
-assert.match(later, /Vous lui avez déjà parlé d’équipement aujourd’hui\./);
-assert.doesNotMatch(later, /data-deal-stock/);
-assert.match(ui.stockDealMenu("w1"), /<small class="deal-menu-note">Vous lui avez déjà parlé d’équipement aujourd’hui\.<\/small>/);
+assert.doesNotMatch(later, /déjà parlé d’équipement/);
+assert.match(later, /data-deal-stock/);
 delete borin.equipmentDealDay;
 
 // Répliques : proposition du capitaine, réponse selon l'action, l'accord et l'humeur, ce qui change.

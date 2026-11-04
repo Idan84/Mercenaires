@@ -8,7 +8,8 @@
 // - Chance d'accord = 10 + 80 / (1 + e^(−Δ/20)), la courbe du combat ; Δ = 20 × (valeur perçue reçue − valeur
 //   perçue cédée) + 0,5 × Affinité. Jet D100 : accord si le jet ne dépasse pas la chance.
 // - Accord ou refus, l'affinité acquise bouge selon la valeur perçue : + 2 par point gagné, − 2 par point perdu.
-// - Une seule tentative par mercenaire et par jour ; le capitaine s'équipe librement (ni jet, ni affinité).
+// - Pas de limite par jour (Idan, 2026-11-04 : « faut virer la règle du 1 par jour. Trop contraignant ») : chaque
+//   proposition a son jet et bouge l'affinité ; le capitaine s'équipe librement (ni jet, ni affinité).
 // - Un objet donné appartient ensuite au mercenaire ; un objet retiré retourne au stock, sans propriétaire.
 // - Chaque proposition entre dans l'historique du mercenaire (history.js).
 // - Potions et fioles (Idan, 2026-10-29) : consommables de la compagnie, distribués librement dans les 4 emplacements
@@ -171,15 +172,12 @@
         mood:gain>0?"pleased":gain<0?"displeased":"neutral"};
     }
 
-    // Une tentative par mercenaire et par jour (Idan, 2026-10-24) ; le capitaine n'en a pas besoin, ni une fiole
-    // rangée dans une poche de ceinture (slot).
-    function canDeal(state,mercenary,slot=null,{retry=false}={}){
+    // Pas de limite par jour (Idan, 2026-11-04) : seulement pas pendant une mission.
+    function canDeal(state,mercenary,slot=null){
       if(!mercenary) return no("Mercenaire introuvable.");
       // Parti en expédition (doc 17) : pas d'échange avant son retour. Mission programmée (Idan, 2026-10-30) : il est
       // encore au camp jusqu'au lendemain matin, on peut l'équiper.
       if((state.expeditions||[]).some(e=>e.memberIds.includes(mercenary.id)&&e.status!=="scheduled")) return no("Il est en mission.");
-      if(isCaptain(state,mercenary)||isPocket(slot)) return {ok:true};
-      if(!retry&&mercenary.equipmentDealDay===state.day) return no("Vous lui avez déjà parlé d’équipement aujourd’hui.");
       return {ok:true};
     }
 
@@ -283,7 +281,6 @@
         roll=Math.floor(random()*100)+1;
         accepted=roll<=deal.chance;
         mercenary.affinityAcquired=(Number(mercenary.affinityAcquired)||0)+deal.affinityDelta;
-        mercenary.equipmentDealDay=state.day;
       }
       if(accepted){
         if(given) moveToStock(state,mercenary,given);
@@ -306,7 +303,7 @@
       if(!again.ok) return again;
       const deal=evaluate(state,again.refusal.request,approach);
       if(!deal.ok) return deal;
-      const allowed=canDeal(state,mercenary,deal.slot,{retry:true});
+      const allowed=canDeal(state,mercenary,deal.slot);
       if(!allowed.ok) return allowed;
       const {slot,given,received}=deal;
       const roll=Math.floor(random()*100)+1,accepted=roll<=deal.chance;

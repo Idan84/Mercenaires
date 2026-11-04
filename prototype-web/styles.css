@@ -2458,6 +2458,11 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .quartermaster-head .steward-offer summary::-webkit-details-marker{display:none}
 .quartermaster-head .steward-picks{position:absolute;right:0;top:calc(100% + 6px);z-index:30;width:min(560px,80vw);max-height:60vh;overflow:auto;margin:0;padding:10px;border:1px solid #9a7a4f;border-radius:12px;background:#21170f;box-shadow:0 12px 30px #000a}
 .steward-pick b{min-width:0;font-weight:normal;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* Politique sociale (Idan, 2026-11-04) : un curseur par ligne, dans le menu déroulant de l'Intendance. */
+.quartermaster-head .social-policy-rows{left:0;right:auto;grid-template-columns:1fr;width:min(440px,80vw);gap:12px;padding:14px 16px}
+.social-policy-row{display:grid;grid-template-columns:150px minmax(0,1fr) 60px;align-items:center;gap:12px;color:#ead9bd;font:15px Georgia,serif}
+.social-policy-row input{width:100%;accent-color:#c9a15f;cursor:pointer}
+.social-policy-row output{color:#ffe1ac;text-align:right;font-variant-numeric:tabular-nums}
 /* Garde du corps (Idan, 2026-10-25) : l'offre au tableau de la Taverne, la fenêtre du retour. */
 .contract-card--bodyguard{margin-top:16px}
 .contract-pitch{margin:0 0 10px;color:#e9d9c0;font:italic 16px/1.45 Georgia,serif}

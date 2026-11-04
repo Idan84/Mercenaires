@@ -295,7 +295,7 @@ La négociation conjointe **Salaire + Prime de mission** est définie dans [Tave
 
 - **L’escouade initiale est sous contrat** (décision Idan, 2026-10-04), aux conditions qu’elle demande : salaire demandé et prime de mission demandée, sans négociation. Le capitaine n’a pas de contrat. Validé par Idan après la review de Chatty (PR #37).
 - Les recrues de la Taverne gardent le contrat négocié (`14-tavern-recruitment.md`).
-- Le **salaire contractuel est versé chaque jour** par `AdvanceTime`, après la guérison et avant la Taverne, à tous les membres sous contrat. Les blessés et les fatigués sont payés à 100 % pour l’instant (Idan, 2026-10-04) ; le taux deviendra une option de l’Intendance avec la politique des blessés (§7).
+- Le **salaire contractuel est versé chaque jour** par `AdvanceTime`, après la guérison et avant la Taverne, à tous les membres sous contrat. Les fatigués sont payés à 100 % ; les blessés et les corvées suivent la politique sociale de l'Intendance (§7 ; Idan, 2026-11-04 : blessés à 50 % par défaut).
 - La prime de mission est payée au retour de mission (`10-mission-time-and-unavailability.md` §8 et §11).
 - Si l’or manque, le trésor passe sous 0, sans conséquence pour l’instant (Idan, 2026-10-04). Dette, impayés et départs restent à concevoir.
 
@@ -331,16 +331,27 @@ perte d'affinité » ; « oui » ; « parfait ».
 
 ## 7 — Politique des blessés — « T’es pas à la Sécu ici »
 
-La compagnie pourra définir un **taux de salaire des blessés de 0 à 100 %**.
+**La politique sociale, à l'Intendance** (Idan, 2026-11-04 : « Un mercenaire blessé touche 50 % de son salaire pendant les
+jours où il est blessé (c'est la nouvelle norme par défaut). Dans l'intendance, on a un curseur qu'on déplace librement de 0
+à 100 %. Plus le taux est bas, plus l'affinité baisse sur les jours de blessure. A contrario, au-dessus de 50, on gagne de
+l'affinité. On va faire la même chose pour chaque corvée, mais par défaut, c'est 100 %. Avec les corvées, on perd moins
+d'affinité quand on monte le salaire. Un curseur par corvée » ; « Parfait et oui à tout ») :
 
-Un taux faible :
+- **Les blessés** touchent le **taux des blessés** × leur salaire, chaque jour de blessure : **50 % par défaut**, de 0 à
+  100 %, y compris dans les parties en cours. Chaque jour de blessure, leur affinité avec le capitaine bouge de
+  **(taux − 50) ÷ 25** : −2 à 0 %, −1 à 25 %, 0 à 50 %, +1 à 75 %, +2 à 100 % (`social.wounded.*`). Un **fatigué** touche
+  tout son salaire. La prime de mission ne bouge pas.
+- **Les corvées** (Bûcherons, Mineurs, Palais des plaisirs), **un curseur chacune** : le salaire des jours de corvée,
+  **100 % par défaut**, de 0 à 200 % ; la perte d'affinité du jour × **(2 − taux ÷ 100)** : −2 à 0 %, −1 à 100 %, −0,5 à
+  150 %, 0 à 200 % ; jamais de gain ; puis × 2 s'il a été intimidé pour y aller, × 0,5 s'il a été convaincu
+  (`social.chore.*`).
+- **Interface** : à l'Intendance, un menu « Politique sociale » : un curseur par ligne (par pas de 5 %) et son pourcentage,
+  sans autre texte ; le curseur d'une corvée n'apparaît que si son bâtiment est construit ; pas besoin d'intendant.
+- Une baisse d'affinité déclenche le test de désertion du lendemain (doc 11 §11) : un blessé mal payé peut filer.
+- Code `game-core/social-policy.js` (salaire du jour dans `campaign.js`, perte des corvées dans `lumber.js`),
+  `prototype-web/social-policy-ui.js` ; textes `social-policy-copy.json` ; test `tests/social-policy.test.js`.
 
-- économise de l’or à court terme ;
-- rend la compagnie moins attractive ;
-- augmente le risque de départ des blessés ;
-- peut conduire un mercenaire à partir avec l’équipement qui lui avait été confié.
-
-Les formules exactes de loyauté, départ et attractivité restent à définir.
+Plus tard : l'attractivité de la compagnie à la Taverne.
 
 ## 8 — Points encore ouverts
 

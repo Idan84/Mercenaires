@@ -291,12 +291,13 @@ const daily=crew.reduce((sum,m)=>sum+m.salary,0);
 assert.equal(stable.payroll(s9),daily);
 const gold9=s9.company.gold;
 const [pay]=stable.advanceTime(s9,1);
-assert.deepEqual(pay.salaries,{total:daily,count:crew.length});
+assert.deepEqual(pay.salaries,{total:daily,count:crew.length,wounded:[]});
 assert.equal(s9.company.gold,gold9-daily,"un jour de salaires versé");
 stable.advanceTime(s9,2);
 assert.equal(s9.company.gold,gold9-3*daily,"trois jours de salaires");
 crew[0].recovery={kind:"wounded",daysLeft:10,sinceDay:4};
-assert.equal(stable.payroll(s9),daily,"les blessés restent payés (politique des blessés à venir)");
+// Politique sociale (Idan, 2026-11-04 ; doc 09 §7) : un blessé touche 50 % de son salaire par défaut.
+assert.equal(stable.payroll(s9),Math.round(daily-crew[0].salary/2),"les blessés touchent la moitié de leur salaire");
 // Ancienne sauvegarde sans contrats initiaux : complétée, puis rien à faire.
 const old9=restoreCampaign(serializeCampaign(s9)).state;
 for(const m of old9.company.roster) delete m.contract;

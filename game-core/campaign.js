@@ -25,10 +25,12 @@
   const desertion=typeof module!=="undefined"&&module.exports?require("./desertion.js"):root.MercenairesDesertion;
   // La renégociation salariale : une étoile gagnée, il vient réclamer (facultatif hors du jeu, de même).
   const salaryReview=typeof module!=="undefined"&&module.exports?require("./salary-review.js"):root.MercenairesSalaryReview;
-  const api=factory(history,regeneration,training,study,posts,armorPorts,armorStudy,lumber,agenda,dungeon,desertion,salaryReview);
+  // La politique sociale : le salaire des blessés et des corvées, leur affinité.
+  const socialPolicy=typeof module!=="undefined"&&module.exports?require("./social-policy.js"):root.MercenairesSocialPolicy;
+  const api=factory(history,regeneration,training,study,posts,armorPorts,armorStudy,lumber,agenda,dungeon,desertion,salaryReview,socialPolicy);
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesCampaign=api;
-})(typeof globalThis!=="undefined"?globalThis:this,function(History,Regeneration,Training,Study,Posts,ArmorPorts,ArmorStudy,Lumber,Agenda,Dungeon,Desertion,SalaryReview){
+})(typeof globalThis!=="undefined"?globalThis:this,function(History,Regeneration,Training,Study,Posts,ArmorPorts,ArmorStudy,Lumber,Agenda,Dungeon,Desertion,SalaryReview,SocialPolicy){
   // Sauvegarde : l'état de partie complet, sérialisé en JSON avec un format et une version.
   // La trace de génération des mercenaires (détail de calcul pour le Design Lab, ~85 % du poids)
   // n'est pas sauvegardée : un mercenaire passe d'environ 36 Ko à 5 Ko.
@@ -427,16 +429,27 @@
     // (la politique de salaire des blessés, 09-reputation §7, n'existe pas encore : taux de 100 %).
     // Au cachot, pas de salaire (Idan, 2026-11-04).
     const salaried=state=>rosterOf(state).filter(m=>!m.dungeon);
+    // Politique sociale (Idan, 2026-11-04 ; social-policy.js) : un blessé touche le taux des blessés (50 % par défaut), un
+    // mercenaire en corvée aujourd'hui le taux de sa corvée (100 % par défaut).
+    const social=SocialPolicy?SocialPolicy.createSocialPolicyRules({reference}):null;
+    const choreToday=(state,m)=>[lumberjacks,miners,palaceWorkers].find(chores=>chores?.working(state).some(e=>e.id===m.id))?.course||null;
+    const salaryToday=(state,m)=>(Number(m.contract?.dailySalary)||0)*(social?social.payFactor(state,m,choreToday(state,m)):1);
     function payroll(state){
-      return salaried(state).reduce((sum,m)=>sum+(Number(m.contract?.dailySalary)||0),0);
+      return Math.round(salaried(state).reduce((sum,m)=>sum+salaryToday(state,m),0));
     }
 
-    // Salaire journalier versé chaque jour ; l'or peut passer sous 0 (aucune conséquence définie pour l'instant).
+    // Salaire journalier versé chaque jour ; l'or peut passer sous 0 (aucune conséquence définie pour l'instant). Chaque jour
+    // de blessure, l'affinité d'un blessé sous contrat bouge selon le taux des blessés : (taux − 50) ÷ 25.
     function paySalaries(state){
       const paid=salaried(state).filter(m=>Number(m.contract?.dailySalary)>0);
       const total=payroll(state);
       state.company.gold-=total;
-      return {total,count:paid.length};
+      const delta=social?social.woundedAffinity(state):0;
+      const wounded=paid.filter(m=>m.id!==state.company.captainId&&m.recovery?.kind==="wounded").map(m=>{
+        if(delta) m.affinityAcquired=(Number(m.affinityAcquired)||0)+delta;
+        return {id:m.id,salary:salaryToday(state,m),affinityDelta:delta||0};
+      });
+      return {total,count:paid.length,wounded};
     }
 
     function createCampaign({captain,squad=[],companyName=null}){
@@ -736,7 +749,9 @@
     const campWorks=state=>[state.company.camp.construction,...Object.values(state.company.camp.buildings||{}).map(b=>b?.construction)].filter(Boolean);
     const campWorkRules=course=>Lumber?Lumber.createLumberRules({reference,random,affinity,course,camp:{
       buildingLevel,expeditionOf,offField:(state,m)=>offField(state,m),works:campWorks,busyElsewhere:elsewhere(course),
-      masterOf:holderOfPost("pleasureMaster")}}):null;
+      masterOf:holderOfPost("pleasureMaster"),
+      // Politique sociale : plus le salaire de la corvée est haut, moins il perd d'affinité (× (2 − taux ÷ 100)).
+      lossFactor:state=>social?social.choreLossFactor(state,course):1}}):null;
     const lumberjacks=campWorkRules("lumber");
     const miners=campWorkRules("mine");
     // Palais des plaisirs (Idan, 2026-11-04) : on y fait travailler des mercenaires, qui rapportent de l'or.
@@ -1392,7 +1407,7 @@
       completeExpeditionCombat,
       dormitoryFree,
       dormitoryUsed,
-      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,trainingRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,spellStudy,armorStudy,poisonStudy,lumberjacks,miners,palaceWorkers,dungeonRules,desertionRules,salaryReviewRules,agenda,studyBusy,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
+      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,trainingRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,spellStudy,armorStudy,poisonStudy,lumberjacks,miners,palaceWorkers,dungeonRules,desertionRules,salaryReviewRules,socialPolicy:social,agenda,studyBusy,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
       woundDaysFor,fatigueDaysFor,
       dormitoryPlaces,
       dormitoryExpansionCost,
@@ -1427,7 +1442,8 @@
       ensureOneHandedStyle,
       ensureArmorPorts,
       ensureHistories,
-      payroll
+      payroll,
+      paySalaries
     };
   }
 

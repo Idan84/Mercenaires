@@ -14,13 +14,12 @@ const CAMP_WORKS={
 };
 function campWorkRules(course){ return campaignRules()[CAMP_WORKS[course]?.rules]||null; }
 function campWorkCopy(course){ return game.referenceData?.[CAMP_WORKS[course]?.copy]||{}; }
-function persuasionCopy(){ return game.referenceData?.persuasionDialogue||{}; }
 
 // La carte du bâtiment : le bouton, puis ceux qui y travaillent.
 function campWorkHtml(c,course){
   const rules=c&&typeof campaignRules==="function"?campWorkRules(course):null;
   if(!rules||!(rules.slots(c)>0)) return "";
-  const copy=campWorkCopy(course).panel||{},labels=persuasionCopy().labels||{},company=c.company;
+  const copy=campWorkCopy(course).panel||{},labels=game.referenceData?.persuasionDialogue?.labels||{},company=c.company;
   const entries=rules.entriesOf(c),slots=rules.slots(c);
   const members=[...company.roster].sort((a,b)=>(b.id===company.captainId)-(a.id===company.captainId));
   const picks=members.filter(m=>rules.canSend(c,m).ok).map(m=>`<button type="button" class="steward-pick" data-course="${course}" data-work-send="${esc(m.id)}">
@@ -53,28 +52,16 @@ function openCampWork(m,result,course){
   $("deal-talk-log").innerHTML=talkSay("Vous",studyFill(copy.proposal,m),true)
     +talkSay(MercenairesRecruitDialogue.firstName(m),studyFill(reply,m),false)
     +(result.accepted?`<p class="talk-note">${esc(studyFill(copy.outcome_accepted,m))}</p>`:"");
-  campWorkChoices(m,course,!result.accepted);
+  persuasionAfter(result,"work",{member:m.id,course});
   $("deal-talk-dialog").showModal();
 }
-function campWorkChoices(m,course,retry){
-  const options=persuasionCopy().options||{};
-  $("deal-talk-choices").innerHTML=retry
-    ?`<ol class="talk-options">${["intimidate","convince"].map(key=>`<li><button type="button" data-course="${course}" data-work-retry="${key}" data-member="${esc(m.id)}">${esc(options[key]||"")}</button></li>`).join("")}
-        <li><button type="button" data-deal-leave>${esc(options.leave||"")}</button></li></ol>`
-    :`<ol class="talk-options"><li><button type="button" data-deal-leave>Partir</button></li></ol>`;
-}
+// Relancer après un refus : Intimider ou Convaincre (persuasion-ui.js).
 function retryCampWorker(memberId,course,approach){
   const m=studyMember(memberId);
   if(!m) return;
   const result=campWorkRules(course).retry(game.campaign,m.id,approach);
   if(!result.ok){ tavernLog(result.reason,"warn"); return; }
-  const pers=persuasionCopy(),copy=campWorkCopy(course).send||{},seed=`${m.id}|${game.campaign.day}|${course}|${approach}`;
-  const line=variantPhrase(pers.captain?.[approach]||[],seed);
-  const reply=variantPhrase(pers.reply?.[approach]?.[result.accepted?"accepted":"refused"]||[],seed);
-  $("deal-talk-log").insertAdjacentHTML("beforeend",talkSay("Vous",studyFill(line,m),true)
-    +talkSay(MercenairesRecruitDialogue.firstName(m),studyFill(reply,m),false)
-    +`<p class="talk-note">${esc(studyFill(result.accepted?copy.outcome_accepted:pers.final_refused,m))}</p>`);
-  campWorkChoices(m,course,false);
+  persuasionAppend(m,result,studyFill(campWorkCopy(course).send?.outcome_accepted,m),`${m.id}|${game.campaign.day}|${course}|${approach}`);
   saveGame();
   renderGame();
 }
@@ -111,11 +98,10 @@ function logCampWork(report,course){
 }
 
 function initializeCampWork(){
+  if(typeof registerPersuasion==="function") registerPersuasion("work",(approach,data)=>retryCampWorker(data.persuadeMember,data.persuadeCourse,approach));
   document.addEventListener("click",event=>{
     const send=event.target.closest?.("[data-work-send]");
     if(send){ sendCampWorker(send.dataset.workSend,send.dataset.course); return; }
-    const retry=event.target.closest?.("[data-work-retry]");
-    if(retry){ retryCampWorker(retry.dataset.member,retry.dataset.course,retry.dataset.workRetry); return; }
     const withdraw=event.target.closest?.("[data-work-withdraw]");
     if(withdraw) withdrawCampWorker(withdraw.dataset.workWithdraw,withdraw.dataset.course);
   });

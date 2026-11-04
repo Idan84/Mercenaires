@@ -384,10 +384,16 @@ double la perte d'affinité. En charisme, ça la divise par deux » ; « valable
   38) ; **Convaincre** : avec son **Charisme ÷ 2** (`persuasion.convince.weight`, médiane 27). Exemple, un test à 50 % :
   environ 77 % en intimidant, 70 % en convainquant ;
 - la perte d'affinité qui suit est **× 2** si on l'a intimidé, **× 0,5** si on l'a convaincu (`persuasion.*.loss_factor`) :
-  pour une corvée, la perte de chaque jour, pendant toute l'affectation ; pour les autres tests (à venir : apprentissages,
-  équipements, postes), la perte du refus si la relance échoue, celle de l'accord si elle réussit ;
-- code `game-core/persuasion.js` ; textes communs `persuasion-dialogue.json` (options, phrases du capitaine, répliques).
-  Étape 1 : les corvées ; étape 2 : le Palais des plaisirs ; étape 3 : les autres tests de refus.
+  pour une corvée, la perte de chaque jour, pendant toute l'affectation ; pour les autres tests, la perte du refus si la
+  relance échoue, celle de l'accord si elle réussit ;
+- **apprentissages** (Idan, 2026-11-04 : « vas-y pour les apprentissages ») : proposer un sort, un professeur, un port
+  d'armure, l'empoisonnement ; un refus coûte −2 d'affinité ; relance ratée : −4 en tout (intimidé) ou −1 (convaincu) ;
+  relance réussie : il entre le lendemain matin comme d'habitude (l'accord ne coûte rien, il rapporte même +5 au premier
+  matin) ;
+- code `game-core/persuasion.js` (bonus, facteur, refus du jour : une seule relance), `prototype-web/persuasion-ui.js`
+  (les trois choix, la relance ajoutée au dialogue) ; textes communs `persuasion-dialogue.json` ; test
+  `tests/persuasion.test.js`. Fait : les corvées, le Palais des plaisirs, les apprentissages ; à venir : les échanges
+  d'équipement, les postes (intendant, médecin, directeur, maîtres).
 
 **La Guilde des mineurs** (Idan, 2026-11-04 : « même chose mais avec les pierres pour des bâtiments de lvl 6 à 10 et on y
 apprend les armes contondantes » ; « Oui, oui et pareil ») — salle principale **Le Puits** : **Armes contondantes** (« On y

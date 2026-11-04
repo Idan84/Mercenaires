@@ -164,6 +164,8 @@ function renderGame() {
   renderCampBuildings();
   renderLieutenants();
   if (typeof renderMerchant === "function") renderMerchant();
+  // Un déserteur repéré par la Tour de guet : la scène, avant tout le reste (desertion-ui.js).
+  if (typeof checkDesertions === "function") checkDesertions();
 }
 
 // Tri exclusivement visuel : aucune modification de l'ordre sauvegardé ni des règles.
@@ -1366,6 +1368,8 @@ function historyEntryText(c,entry){
   // Le Cachot (Idan, 2026-11-04).
   if(entry.kind==="dungeon") return fill(copy.dungeon);
   if(entry.kind==="dungeon_release") return fill(copy.dungeon_release,{jours:historyPlural(entry.days||0,"jour","jours")});
+  // Désertion (Idan, 2026-11-04).
+  if(["desertion_stayed","desertion","desertion_let_go","duel"].includes(entry.kind)) return fill(copy[entry.kind]);
   if(entry.kind==="bodyguard") return fill(copy.bodyguard?.[entry.issue],{client:String(entry.client||"").toLocaleLowerCase("fr")});
   if(entry.kind==="lieutenant_request") return fill(copy.lieutenant_request?.[entry.type],{lieutenant:entry.lieutenant||"",gain:fmt(entry.gain||0)});
   if(entry.kind==="deal"){

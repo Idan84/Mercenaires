@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "name": "desertion-dialogue",
+  "description": "Désertion (Idan, 2026-11-04) : la scène du matin quand la Tour de guet l'a repéré, et le journal. scene : l'origine, ce qu'a vu la Vigie, sa phrase, les choix, les phrases du capitaine, ses réponses, les issues ; day_news : la notification du jour ; log : le journal ({nom} ; {intendant} : le nom de l'intendant). {prenom} ; {masculin|féminin} selon le mercenaire. Textes de JC, à retoucher librement.",
+  "scene": {
+    "origin": "Tour de guet",
+    "spotted": [
+      "La Vigie l’a {vu|vue} filer avant l’aube, son sac sur le dos.",
+      "Les guetteurs l’ont {surpris|surprise} au pied du mur, son sac à l’épaule.",
+      "Une torche, un sac, une ombre près de la poterne : la Vigie a donné l’alerte."
+    ],
+    "says": [
+      "Je m’en vais, capitaine. C’est décidé.",
+      "Ne me retenez pas. J’ai assez donné.",
+      "Il y a d’autres compagnies. Et d’autres capitaines."
+    ],
+    "options": {
+      "intimidate": "Intimider",
+      "convince": "Convaincre",
+      "duel": "{Le|La} défier en combat singulier",
+      "let_go": "{Le|La} laisser partir",
+      "continue": "Continuer"
+    },
+    "captain": {
+      "intimidate": [
+        "Vous avez signé. On ne quitte pas ma compagnie par la poterne.",
+        "Posez ce sac. Tout de suite.",
+        "Un pas de plus, et ce sera votre dernier."
+      ],
+      "convince": [
+        "Restez. La compagnie a besoin de vous, et je le sais.",
+        "Dites-moi ce qui ne va pas. On peut arranger ça.",
+        "Où irez-vous ? Ici, au moins, on se bat ensemble."
+      ],
+      "duel": [
+        "Alors prenez votre arme. Si vous voulez partir, passez sur moi.",
+        "Il n’y a qu’une façon de quitter ma compagnie : l’épée à la main.",
+        "En garde."
+      ],
+      "let_go": [
+        "Allez. Je ne retiens personne de force.",
+        "Partez. Et ne revenez pas.",
+        "Bonne route. Vous auriez pu le dire en face."
+      ]
+    },
+    "reply": {
+      "intimidate": {
+        "accepted": ["… Bien, capitaine. Je reste.", "D’accord, d’accord. Je pose mon sac.", "Vous ne me laissez pas le choix."],
+        "refused": ["Vous ne me faites plus peur.", "Menacez tant que vous voulez. Je pars.", "C’est justement pour ça que je m’en vais."]
+      },
+      "convince": {
+        "accepted": ["… Vous avez peut-être raison. Je reste.", "Bon. Encore un peu, alors.", "Personne ne m’avait parlé comme ça. Je reste."],
+        "refused": ["Les belles paroles, ça ne nourrit personne.", "Trop tard pour ça, capitaine.", "Non. Ma décision est prise."]
+      }
+    },
+    "outcome": {
+      "stayed": "{prenom} reste dans la compagnie.",
+      "refused": "{prenom} ne changera pas d’avis.",
+      "duel": "Le combat est bref. {prenom} ne se relève pas.",
+      "let_go": "{prenom} s’en va."
+    }
+  },
+  "day_news": {
+    "fled": "{nom} a filé cette nuit",
+    "fled_steward": "Signalé par l’intendant",
+    "fled_alone": "Avec son sac",
+    "spotted": "La Vigie a repéré {nom}",
+    "spotted_detail": "Décidez de son sort"
+  },
+  "log": {
+    "steward": "{intendant} : « {prenom} a filé cette nuit, avec son sac. »",
+    "vanished": "{nom} a disparu cette nuit, avec son sac.",
+    "spotted": "La Vigie a repéré {nom} qui filait.",
+    "stayed": "{nom} reste dans la compagnie.",
+    "duel": "{nom} est {mort|morte} en combat singulier contre le capitaine.",
+    "let_go": "{nom} a quitté la compagnie."
+  }
+}

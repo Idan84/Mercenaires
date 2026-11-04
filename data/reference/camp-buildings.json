@@ -860,7 +860,25 @@
       "entraine": "Armes flexibles ou articulées",
       "garde_paie_par_niveau": 0,
       "apprend_avec": null
+    },
+    {
+      "code": "dungeon",
+      "nom": "Le Cachot",
+      "description": "« On y apprend la patience. Et à compter les rats. » Une cellule par niveau ; pas de salaire là-dedans.",
+      "niveaux": 10,
+      "prix_base": 1000,
+      "jours_base": 4,
+      "soins_par_niveau": 0,
+      "fatigue_jours_par_niveau": 0,
+      "mana_par_niveau": 0,
+      "requiert": null,
+      "ecole": null,
+      "places_base": 0,
+      "places_pas": 0,
+      "entraine": null,
+      "garde_paie_par_niveau": 0,
+      "apprend_avec": null
     }
   ],
-  "row_count": 44
+  "row_count": 45
 }

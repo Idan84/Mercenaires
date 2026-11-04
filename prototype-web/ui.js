@@ -33,6 +33,8 @@ function rosterStatus(c){
   const expedition=game.campaign&&typeof campaignRules==="function"?campaignRules().expeditionOf(game.campaign,c.id):null;
   if(expedition?.status==="scheduled") return {kind:"scheduled",label:"Mission programmée"};
   if(expedition) return {kind:"away",label:expedition.status==="returning"?"Sur le retour":"En mission"};
+  // Au cachot (Idan, 2026-11-04).
+  if(c.dungeon) return {kind:"wounded",label:"Au cachot"};
   if(c.recovery?.kind==="wounded") return {kind:"wounded",label:recoveryLabel(c)};
   if(c.recovery) return {kind:"fatigued",label:recoveryLabel(c)};
   // Recruté aujourd'hui : au jour J, on organise J+1 (Idan, 2026-11-02) ; on l'équipe et on planifie sa journée de demain.
@@ -1361,6 +1363,9 @@ function historyEntryText(c,entry){
   if(entry.kind==="teach") return fill(copy.teach?.[entry.accepted?"accord":"refus"],{sort:entry.spell||"",eleve:entry.student||""});
   if(entry.kind==="teach_done") return fill(copy.teach_done,{sort:entry.spell||"",eleve:entry.student||""});
   if(entry.kind==="lieutenant") return fill(copy.lieutenant?.[entry.accepted?"accord":"refus"],{salaire:fmt(entry.salary||0)});
+  // Le Cachot (Idan, 2026-11-04).
+  if(entry.kind==="dungeon") return fill(copy.dungeon);
+  if(entry.kind==="dungeon_release") return fill(copy.dungeon_release,{jours:historyPlural(entry.days||0,"jour","jours")});
   if(entry.kind==="bodyguard") return fill(copy.bodyguard?.[entry.issue],{client:String(entry.client||"").toLocaleLowerCase("fr")});
   if(entry.kind==="lieutenant_request") return fill(copy.lieutenant_request?.[entry.type],{lieutenant:entry.lieutenant||"",gain:fmt(entry.gain||0)});
   if(entry.kind==="deal"){

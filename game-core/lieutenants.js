@@ -86,6 +86,8 @@
     function canPromote(state,m){
       if(!m) return no("Mercenaire introuvable.");
       if(m.id===state.company.captainId) return no("Le capitaine ne peut pas être lieutenant.");
+      // Au cachot (Idan, 2026-11-04) : pas de poste.
+      if(m.dungeon) return no("Il est au cachot.");
       if(Number(m.contract?.joinDay)>state.day) return no("Il rejoint la compagnie demain matin.");
       if(m.id===state.company.intendantId) return no("L’intendant ne peut pas être lieutenant.");
       if(state.company.medicId!=null&&m.id===state.company.medicId) return no("Le médecin ne peut pas être lieutenant.");

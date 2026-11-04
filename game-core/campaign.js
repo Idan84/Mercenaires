@@ -19,10 +19,12 @@
   const lumber=typeof module!=="undefined"&&module.exports?require("./lumber.js"):root.MercenairesLumber;
   // L'agenda : les apprentissages et les corvées qui retiennent un mercenaire au camp, en une seule liste.
   const agenda=typeof module!=="undefined"&&module.exports?require("./agenda.js"):root.MercenairesAgenda;
-  const api=factory(history,regeneration,training,study,posts,armorPorts,armorStudy,lumber,agenda);
+  // Le Cachot : on peut y jeter n'importe quel membre (facultatif hors du jeu, de même).
+  const dungeon=typeof module!=="undefined"&&module.exports?require("./dungeon.js"):root.MercenairesDungeon;
+  const api=factory(history,regeneration,training,study,posts,armorPorts,armorStudy,lumber,agenda,dungeon);
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesCampaign=api;
-})(typeof globalThis!=="undefined"?globalThis:this,function(History,Regeneration,Training,Study,Posts,ArmorPorts,ArmorStudy,Lumber,Agenda){
+})(typeof globalThis!=="undefined"?globalThis:this,function(History,Regeneration,Training,Study,Posts,ArmorPorts,ArmorStudy,Lumber,Agenda,Dungeon){
   // Sauvegarde : l'état de partie complet, sérialisé en JSON avec un format et une version.
   // La trace de génération des mercenaires (détail de calcul pour le Design Lab, ~85 % du poids)
   // n'est pas sauvegardée : un mercenaire passe d'environ 36 Ko à 5 Ko.
@@ -419,13 +421,15 @@
 
     // Masse salariale journalière : tous les membres sous contrat, blessés et fatigués compris
     // (la politique de salaire des blessés, 09-reputation §7, n'existe pas encore : taux de 100 %).
+    // Au cachot, pas de salaire (Idan, 2026-11-04).
+    const salaried=state=>rosterOf(state).filter(m=>!m.dungeon);
     function payroll(state){
-      return rosterOf(state).reduce((sum,m)=>sum+(Number(m.contract?.dailySalary)||0),0);
+      return salaried(state).reduce((sum,m)=>sum+(Number(m.contract?.dailySalary)||0),0);
     }
 
     // Salaire journalier versé chaque jour ; l'or peut passer sous 0 (aucune conséquence définie pour l'instant).
     function paySalaries(state){
-      const paid=rosterOf(state).filter(m=>Number(m.contract?.dailySalary)>0);
+      const paid=salaried(state).filter(m=>Number(m.contract?.dailySalary)>0);
       const total=payroll(state);
       state.company.gold-=total;
       return {total,count:paid.length};
@@ -734,7 +738,32 @@
     // Palais des plaisirs (Idan, 2026-11-04) : on y fait travailler des mercenaires, qui rapportent de l'or.
     const palaceWorkers=campWorkRules("palace");
     // L'ordre d'inscription est celui des raisons affichées.
-    agenda?.add("spell",spellStudy).add("armor",armorStudy).add("poison",poisonStudy)
+    // Le Cachot (Idan, 2026-11-04 ; règles : dungeon.js) : en y entrant, il perd son poste, quitte sa corvée et son
+    // apprentissage (les règles de chacun : sortir de l'École coûte ce que ça coûte) ; il y reste jusqu'à ce qu'on le libère.
+    function leaveForDungeon(state,m){
+      const company=state.company,left=[],since=key=>Math.max(0,state.day-(Number(company[key])||state.day));
+      const addDays=(key,days)=>{ const h=History.historyOf(m); h[key]=(Number(h[key])||0)+days; };
+      if(company.intendantId===m.id){ addDays("stewardDays",since("intendantSince")); company.intendantId=null; delete company.intendantSince; left.push("steward"); }
+      if(company.medicId!=null&&company.medicId===m.id){ addDays("medicDays",since("medicSince")); company.medicId=null; delete company.medicSince; left.push("medic"); }
+      for(const post of Posts?Posts.POSTS:[]){
+        if(company[post.key+"Id"]!==m.id) continue;
+        addDays(post.key+"Days",since(post.key+"Since"));
+        company[post.key+"Id"]=null; delete company[post.key+"Since"]; left.push(post.key);
+      }
+      if((company.lieutenantIds||[]).includes(m.id)){ company.lieutenantIds=company.lieutenantIds.filter(id=>id!==m.id); left.push("lieutenant"); }
+      for(const chores of [lumberjacks,miners,palaceWorkers]) if(chores?.entryOf(state,m.id)){ chores.withdraw(state,m.id); left.push(chores.course); }
+      const own=spellStudy?.studyOf(state,m.id);
+      if(own){ spellStudy.stop(state,own.id); left.push("spell"); }
+      const taught=spellStudy?.studiesOf(state).find(s=>s.teacherId===m.id);
+      if(taught){ spellStudy.releaseTeacher(state,taught.id); left.push("teach"); }
+      for(const aptitude of [armorStudy,poisonStudy]){
+        const study=aptitude?.studyOf(state,m.id);
+        if(study){ aptitude.stop(state,study.id); left.push(aptitude.course); }
+      }
+      return left;
+    }
+    const dungeonRules=Dungeon?Dungeon.createDungeonRules({reference,camp:{buildingLevel,expeditionOf,leave:leaveForDungeon}}):null;
+    agenda?.add("dungeon",dungeonRules).add("spell",spellStudy).add("armor",armorStudy).add("poison",poisonStudy)
       .add("lumber",lumberjacks,{chore:true}).add("mine",miners,{chore:true}).add("palace",palaceWorkers,{chore:true});
     // Ce qui le retient demain (mission, garde du corps : au jour J, on organise J+1) ; une corvée, tant qu'on ne l'a pas
     // retiré (Idan, 2026-11-04).
@@ -854,6 +883,8 @@
       const mine=miners?miners.morning(state):null;
       // Le Palais des plaisirs : l'or de la journée.
       const palace=palaceWorkers?palaceWorkers.morning(state):null;
+      // Le Cachot : −2 d'affinité par jour pour chaque prisonnier.
+      const dungeon=dungeonRules?dungeonRules.morning(state):null;
       // Demandes au lieutenant (Idan, 2026-10-25) : le résultat tombe le lendemain matin.
       const lieutenantReports=lieutenants?lieutenants.resolveRequests(state):[];
       const mana=rechargeCampMana(state);
@@ -868,7 +899,7 @@
       const poison=poisonStudy?poisonStudy.advance(state):null;
       // Entraînement libre (Idan, 2026-11-02) : ceux qui restent au camp choisissent leur journée.
       const school=runSchoolDay(state);
-      return {day:state.day,recovered,salaries,tavern:tavernReport,offersLost,expeditions,built,buildings,lieutenants:lieutenantReports,mana,merchant,school,study,armorStudy:armor,poisonStudy:poison,lumber,mine,palace};
+      return {day:state.day,recovered,salaries,tavern:tavernReport,offersLost,expeditions,built,buildings,lieutenants:lieutenantReports,mana,merchant,school,study,armorStudy:armor,poisonStudy:poison,lumber,mine,palace,dungeon};
     }
 
     // Recharge du mana (doc 12 ; Idan, 2026-10-25) : chaque jour, pour les membres présents au camp, pas pour ceux qui sont
@@ -1302,7 +1333,7 @@
       completeExpeditionCombat,
       dormitoryFree,
       dormitoryUsed,
-      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,trainingRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,spellStudy,armorStudy,poisonStudy,lumberjacks,miners,palaceWorkers,agenda,studyBusy,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
+      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,trainingRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,spellStudy,armorStudy,poisonStudy,lumberjacks,miners,palaceWorkers,dungeonRules,agenda,studyBusy,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
       woundDaysFor,fatigueDaysFor,
       dormitoryPlaces,
       dormitoryExpansionCost,

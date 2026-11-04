@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 335,
+  "row_count": 338,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -2520,6 +2520,30 @@
       "description": "Le Maître des plaisirs multiplie l'or de chacun par 1 + son Charisme ÷ ce diviseur (Charisme 60 : + 30 %).",
       "formule": "Palais des plaisirs",
       "valeur": 200,
+      "version": "V1"
+    },
+    {
+      "nom": "Cachot — cellules par niveau",
+      "code": "camp.dungeon.cells_per_level",
+      "description": "Le Cachot (Idan, 2026-11-04 : « On va créer un bâtiment \"Le cachot\". Avec 10 niveaux et un nombre de places par niveau. […] L'affinité va forcément en prendre un coup… Surtout qu'au cachot, on n'a pas de salaire… D'ailleurs le capitaine peut envoyer n'importe qui au cachot » ; « Parfait pour tout. Non l'affinité ne revient pas après ») : cellules par niveau du Cachot.",
+      "formule": "Le Cachot",
+      "valeur": 1,
+      "version": "V1"
+    },
+    {
+      "nom": "Cachot — affinité en y entrant",
+      "code": "camp.dungeon.entry_affinity",
+      "description": "En y entrant, son affinité avec le capitaine bouge de ce nombre ; elle ne revient pas à la libération.",
+      "formule": "Le Cachot",
+      "valeur": -10,
+      "version": "V1"
+    },
+    {
+      "nom": "Cachot — affinité par jour",
+      "code": "camp.dungeon.daily_affinity",
+      "description": "Chaque matin au cachot, son affinité avec le capitaine bouge de ce nombre ; elle ne revient pas à la libération.",
+      "formule": "Le Cachot",
+      "valeur": -2,
       "version": "V1"
     },
     {

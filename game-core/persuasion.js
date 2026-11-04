@@ -10,8 +10,9 @@
 // - la perte d'affinité qui suit est multipliée par 2 (intimidé) ou par 0,5 (convaincu) : pour une corvée, la perte de
 //   chaque jour, pendant toute l'affectation.
 //
-// Module pur : chaque test de refus lui demande le bonus et le facteur de perte. Étape 1 : les corvées (lumber.js) ; les
-// autres tests (apprentissages, équipements, postes) suivront.
+// Module pur : chaque test de refus lui demande le bonus et le facteur de perte, et garde le refus du jour sur le mercenaire
+// (markRefused, canRetry, markRetried). Les corvées (lumber.js), les apprentissages (spell-study.js, armor-study.js) ; les
+// équipements et les postes suivront.
 (function(root,factory){
   const api=factory();
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
@@ -41,7 +42,18 @@
     }
     // Le facteur de la perte d'affinité : 2 (intimidé), 0,5 (convaincu), 1 sans relance.
     const lossFactor=key=>approachOf(key)?.lossFactor??1;
-    return {APPROACHES,approachOf,bonus,lossFactor,valueOf};
+    // Quand la relance échoue : ce qu'il faut ajouter à la perte du refus pour qu'elle soit × 2 ou × 0,5.
+    const refusalExtra=(refuseDelta,key)=>Math.round((Number(refuseDelta)||0)*(lossFactor(key)-1)*100)/100;
+    // Le refus du jour, gardé sur le mercenaire (m[field] = { day, retried, accepted, approach, … }) : une seule relance.
+    function markRefused(m,field,day,extra={}){ m[field]={day,retried:false,accepted:false,approach:null,...extra}; return m[field]; }
+    function canRetry(m,field,day){
+      const refusal=m?.[field];
+      if(!refusal||refusal.day!==day||refusal.accepted) return {ok:false,reason:"Il n’a rien refusé aujourd’hui."};
+      if(refusal.retried) return {ok:false,reason:"Vous avez déjà insisté aujourd’hui."};
+      return {ok:true,refusal};
+    }
+    function markRetried(m,field,key,accepted){ Object.assign(m[field],{retried:true,approach:key,accepted}); return m[field]; }
+    return {APPROACHES,approachOf,bonus,lossFactor,refusalExtra,markRefused,canRetry,markRetried,valueOf};
   }
   return {createPersuasionRules,valueOf};
 });

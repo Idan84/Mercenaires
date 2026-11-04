@@ -150,13 +150,14 @@ assert.ok(copy.send.accepted.length>=3&&copy.send.refused.length>=3);
 assert.deepEqual(pers.options,{intimidate:"Intimider",convince:"Convaincre",leave:"Laisser tomber"});
 for(const key of ["intimidate","convince"]) assert.ok(pers.captain[key].length>=3&&pers.reply[key].accepted.length>=3&&pers.reply[key].refused.length>=3);
 const uiSource=fs.readFileSync(path.join(ROOT,"prototype-web","lumber-ui.js"),"utf8");
-assert.match(uiSource,/data-work-retry="\$\{key\}"/,"après un refus : Intimider, Convaincre");
-assert.match(uiSource,/<button type="button" data-deal-leave>\$\{esc\(options\.leave\|\|""\)\}<\/button>/,"ou laisser tomber");
+assert.match(uiSource,/persuasionAfter\(result,"work",\{member:m\.id,course\}\)/,"après un refus : Intimider, Convaincre ou laisser tomber (persuasion-ui.js)");
+assert.match(uiSource,/registerPersuasion\("work",/);
 assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","camp-buildings-ui.js"),"utf8"),/code==="lumber_camp"&&typeof lumberHtml==="function"\?lumberHtml\(c\):""/);
 assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","tavern-ui.js"),"utf8"),/logCampWork\(report\.lumber,"lumber"\)/);
 assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","ui.js"),"utf8"),/\{kind:"available",label:"Bûcheronne demain"\}/);
 const index=fs.readFileSync(path.join(ROOT,"prototype-web","index.html"),"utf8");
-assert.match(index,/<script src="\/core\/persuasion\.js"><\/script>\s*<script src="\/core\/lumber\.js"><\/script>/);
+assert.ok(index.indexOf('<script src="/core/persuasion.js">')<index.indexOf('<script src="/core/spell-study.js">'),"avant les apprentissages et les corvées");
+assert.ok(index.indexOf('<script src="persuasion-ui.js">')<index.indexOf('<script src="spell-study-ui.js">'));
 assert.match(index,/<script src="lumber-ui\.js"><\/script>/);
 
 console.log("Cabane du bûcheron : 1 bûcheron par niveau, jusqu'au retrait, −1 d'affinité par jour, refus et relance, 1 jour de moins au chantier le plus proche (niveaux 1 à 5) — OK");

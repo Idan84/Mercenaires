@@ -64,8 +64,19 @@ function openArmorStudyAnswer(m,result,course="armor"){
   $("deal-talk-log").innerHTML=`<p class="talk-say talk-say--you"><b>Vous</b><span>« ${esc(studyFill(copy.proposal,m,vars))} »</span></p>
     <p class="talk-say talk-say--merc"><b>${esc(MercenairesRecruitDialogue.firstName(m))}</b><span>« ${esc(studyFill(reply,m,vars))} »</span></p>
     <p class="talk-note">${esc(studyFill(result.accepted?copy.outcome_accepted:copy.outcome_refused,m,vars))}</p>`;
-  $("deal-talk-choices").innerHTML=`<ol class="talk-options"><li><button type="button" data-deal-leave>Partir</button></li></ol>`;
+  // Après un refus, la relance (Idan, 2026-11-04 ; persuasion-ui.js).
+  if(typeof persuasionAfter==="function") persuasionAfter(result,"aptitude",{member:m.id,course});
+  else $("deal-talk-choices").innerHTML=`<ol class="talk-options"><li><button type="button" data-deal-leave>Partir</button></li></ol>`;
   $("deal-talk-dialog").showModal();
+}
+function retryArmorStudy(memberId,course,approach){
+  const ui=APTITUDE_STUDIES[course],m=studyMember(memberId);
+  if(!ui||!m) return;
+  const result=ui.rules().retry(game.campaign,m.id,approach);
+  if(!result.ok){ tavernLog(result.reason,"warn"); return; }
+  persuasionAppend(m,result,studyFill(ui.copy().offer?.outcome_accepted,m,ui.vars(result.type)),`${m.id}|${game.campaign.day}|${course}|${approach}`);
+  saveGame();
+  renderGame();
 }
 
 function offerArmorStudy(memberId,course="armor"){
@@ -103,6 +114,7 @@ function logArmorStudy(report,course="armor"){
 }
 
 function initializeArmorStudy(){
+  if(typeof registerPersuasion==="function") registerPersuasion("aptitude",(approach,data)=>retryArmorStudy(data.persuadeMember,data.persuadeCourse||"armor",approach));
   document.addEventListener("click",event=>{
     const offer=event.target.closest?.("[data-armor-offer]");
     if(offer){ offerArmorStudy(offer.dataset.armorOffer,offer.dataset.course||"armor"); return; }

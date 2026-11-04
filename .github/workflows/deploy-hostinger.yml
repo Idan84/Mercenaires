@@ -3,6 +3,9 @@ name: Mise en ligne Hostinger
 # À chaque mise en ligne sur main : assemble le site (scripts/build-site.sh) et l'envoie par FTP
 # sur Hostinger. L'envoi ajoute et remplace des fichiers, il n'en efface jamais : ce qu'Idan
 # dépose directement sur Hostinger (médias) n'est jamais touché.
+# Seulement ce qui a changé depuis le dernier envoi réussi (Idan, 2026-11-04 ; scripts/deploy-ftp.sh) :
+# un manifeste (.deploy-manifest) reste en ligne ; chaque fichier est remplacé sans être effacé d'abord.
+# Lancé à la main avec « complet », il renvoie tout le site.
 #
 # Secrets du dépôt (Settings → Secrets and variables → Actions) :
 #   HOSTINGER_FTP_HOST, HOSTINGER_FTP_USER, HOSTINGER_FTP_PASSWORD
@@ -14,6 +17,11 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      complet:
+        description: "Tout renvoyer, sans lire le manifeste (si un fichier a disparu chez Hostinger)"
+        type: boolean
+        default: false
 
 concurrency:
   group: deploy-hostinger
@@ -49,24 +57,18 @@ jobs:
       - name: Installer lftp
         run: sudo apt-get update -qq && sudo apt-get install -y -qq lftp
 
-      - name: Envoyer sur Hostinger (FTP chiffré, sans rien effacer)
+      - name: Envoyer sur Hostinger (FTP chiffré, seulement ce qui a changé, sans rien effacer)
         env:
           FTP_HOST: ${{ secrets.HOSTINGER_FTP_HOST }}
           FTP_USER: ${{ secrets.HOSTINGER_FTP_USER }}
           LFTP_PASSWORD: ${{ secrets.HOSTINGER_FTP_PASSWORD }}
+          DEPLOY_FULL: ${{ inputs.complet && '1' || '' }}
         run: |
           # Le certificat FTP de Hostinger est générique (*.hstgr.io), pas au nom de l'adresse configurée :
           # on se connecte sous un nom qu'il couvre, associé à l'IP du serveur, et il reste vérifié.
           read -r tls_host tls_ip < <(bash scripts/ftp-tls-host.sh "$FTP_HOST")
           if [ -n "${tls_ip:-}" ]; then echo "$tls_ip $tls_host" | sudo tee -a /etc/hosts >/dev/null; fi
-          lftp -c "
-            set ftp:ssl-force true;
-            set ftp:ssl-protect-data true;
-            set net:max-retries 3;
-            set net:timeout 30;
-            open --env-password -u \"$FTP_USER\" \"$tls_host\";
-            mirror --reverse --no-perms --parallel=4 --verbose site/ \"$FTP_DIR\";
-          "
+          LFTP_OPEN="open --env-password -u \"$FTP_USER\" \"$tls_host\"" bash scripts/deploy-ftp.sh site "$FTP_DIR"
 
       - name: Vérifier le site en ligne
         run: |

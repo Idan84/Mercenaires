@@ -34,10 +34,23 @@ Le CDN de Hostinger et les navigateurs gardent les scripts et les styles 7 jours
 Le workflow `.github/workflows/deploy-hostinger.yml` se lance à chaque mise à jour de `main`, ou à la main depuis l'onglet **Actions** de GitHub (« Mise en ligne Hostinger » → **Run workflow**). Il :
 
 1. assemble le site ;
-2. l'envoie par FTP chiffré dans le dossier du sous-domaine ;
+2. l'envoie par FTP chiffré dans le dossier du sous-domaine, **seulement ce qui a changé** depuis le dernier envoi réussi
+   (`scripts/deploy-ftp.sh`, Idan, 2026-11-04) ;
 3. vérifie que le site répond.
 
 L'envoi **ajoute et remplace** des fichiers, il **n'en efface jamais**. Un fichier déposé directement sur Hostinger (un média, par exemple) n'est jamais touché ; un fichier supprimé de Git reste sur le serveur jusqu'à ce qu'on l'y supprime à la main.
+
+**Seulement ce qui a changé.** Chaque envoi réussi laisse dans le dossier du site un manifeste, `.deploy-manifest` :
+l'empreinte (SHA-1) de chaque fichier envoyé. L'envoi suivant le lit, compare avec le site assemblé
+(`scripts/deploy-changes.sh`) et n'envoie que les fichiers nouveaux ou modifiés ; le manifeste n'est remplacé qu'une fois
+tous les fichiers passés : après un envoi raté, le suivant renvoie ce qui manquait. Sans manifeste (le premier envoi), tout
+part. Chaque fichier est **remplacé sans être effacé d'abord** (`mirror --overwrite`) : un envoi interrompu laisse
+l'ancienne version en place, au lieu d'un fichier manquant. Avant, chaque mise en ligne renvoyait les quelque 950 fichiers
+du site ; quand le FTP de Hostinger ralentissait, un gros fichier pouvait dépasser le délai, l'envoi réessayait et Hostinger
+gardait un fichier temporaire caché (`.in.<nom>.`) qui bloquait les envois suivants de ce fichier (2026-11-04).
+
+**Tout renvoyer.** Si un fichier a disparu chez Hostinger (le manifeste ne le sait pas) : Actions → « Mise en ligne
+Hostinger » → **Run workflow**, case « complet » cochée.
 
 ### Prérequis
 

@@ -16,12 +16,27 @@
 //   niveau 1 à 5 (camp.lumber.max_work_level) : un bâtiment (son niveau en construction), la qualité du dortoir (son
 //   niveau), un agrandissement du dortoir (son rang), un quartier du lieutenant (son numéro). Un chantier finit au plus tôt
 //   le lendemain matin.
+//
+// La Guilde des mineurs (Idan, 2026-11-04 : « même chose mais avec les pierres pour des bâtiments de lvl 6 à 10 » ; « Le
+// Puits » ; la Force ; le test « pareil ») : course "mine", 1 mineur par niveau de la Guilde, chantiers de niveau 6 à 10
+// (camp.mine.*), même test et même perte (camp.lumber.offer_offset, camp.lumber.grudge_affinity). Un mercenaire ne fait
+// qu'une corvée par jour.
 (function(root,factory){
   const api=factory();
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesLumber=api;
 })(typeof globalThis!=="undefined"?globalThis:this,function(){
   const HALL="lumber_camp";
+  const COURSES={
+    lumber:{hall:"lumber_camp",key:"lumberjacks",prefix:"camp.lumber",minLevel:1,maxLevel:5,text:{
+      noHall:"Il faut d’abord construire la Cabane du bûcheron.",already:"Il part déjà bûcheronner demain.",
+      full:"La Cabane n’a plus de place demain.",tomorrow:"Il part bûcheronner demain matin.",today:"Il bûcheronne aujourd’hui.",
+      notPlanned:"Il ne part pas bûcheronner demain."}},
+    mine:{hall:"miners_guild",key:"miners",prefix:"camp.mine",minLevel:6,maxLevel:10,text:{
+      noHall:"Il faut d’abord construire la Guilde des mineurs.",already:"Il descend déjà à la mine demain.",
+      full:"La Guilde n’a plus de place demain.",tomorrow:"Il descend à la mine demain matin.",today:"Il est à la mine aujourd’hui.",
+      notPlanned:"Il ne descend pas à la mine demain."}}
+  };
   function referenceConstant(reference,code,fallback){
     const value=Number((reference?.formulaConstants?.rows||[]).find(r=>r.code===code)?.valeur);
     return Number.isFinite(value)?value:fallback;
@@ -41,14 +56,17 @@
     return work?.name||"Chantier";
   }
 
+  // course : "lumber" (Cabane, par défaut) ou "mine" (Guilde).
   // camp : { buildingLevel(state, code), expeditionOf(state, id), busyElsewhere(state, id) → raison ou null (un
-  //          apprentissage), offField(state, m) (intendant, médecin, maîtres : à leur poste), works(state) → les chantiers
+  //          apprentissage, l'autre corvée demain), offField(state, m) (intendant, médecin, maîtres : à leur poste), works(state) → les chantiers
   //          en cours (objets construction, modifiés sur place) } (campaign.js).
-  function createLumberRules({reference,random=Math.random,affinity=null,camp}={}){
+  function createLumberRules({reference,random=Math.random,affinity=null,camp,course="lumber"}={}){
+    const COURSE=COURSES[course]||COURSES.lumber,T=COURSE.text,hall=COURSE.hall;
     const k=(code,fallback)=>referenceConstant(reference,code,fallback);
     const C={
-      perLevel:k("camp.lumber.workers_per_level",1),daysPerWorker:k("camp.lumber.days_per_worker",1),
-      maxLevel:k("camp.lumber.max_work_level",5),offset:k("camp.lumber.offer_offset",-30),grudge:k("camp.lumber.grudge_affinity",-2),
+      perLevel:k(COURSE.prefix+".workers_per_level",1),daysPerWorker:k(COURSE.prefix+".days_per_worker",1),
+      minLevel:k(COURSE.prefix+".min_work_level",COURSE.minLevel),maxLevel:k(COURSE.prefix+".max_work_level",COURSE.maxLevel),
+      offset:k("camp.lumber.offer_offset",-30),grudge:k("camp.lumber.grudge_affinity",-2),
       offerAffinity:k("spell_study.offer.affinity_weight",0.5),slope:k("spell_study.offer.slope",20),
       stewardSkill:k("equipment_deal.steward_skill_weight",0.2),stewardAffinity:k("equipment_deal.steward_affinity_weight",0.25)
     };
@@ -59,20 +77,22 @@
     const no=reason=>({ok:false,reason});
     const roll=()=>random()*100;
 
-    // Les bûcherons : [{ id, day, grudging }] (day : le jour de travail).
+    // Les bûcherons (camp.lumberjacks), les mineurs (camp.miners) : [{ id, day, grudging }] (day : le jour de travail).
     function entriesOf(state){
       const camp_=state.company.camp;
-      if(!Array.isArray(camp_.lumberjacks)) camp_.lumberjacks=[];
-      return camp_.lumberjacks;
+      if(!Array.isArray(camp_[COURSE.key])) camp_[COURSE.key]=[];
+      return camp_[COURSE.key];
     }
-    const slots=state=>Math.max(0,(Number(camp.buildingLevel(state,HALL))||0)*C.perLevel);
+    const slots=state=>Math.max(0,(Number(camp.buildingLevel(state,hall))||0)*C.perLevel);
     const plannedFor=(state,day)=>entriesOf(state).filter(e=>e.day===day);
     const tomorrow=state=>plannedFor(state,state.day+1);
     function busyReason(state,mercenaryId){
       const entry=entriesOf(state).find(e=>e.id===mercenaryId&&e.day>=state.day);
       if(!entry) return null;
-      return entry.day>state.day?"Il part bûcheronner demain matin.":"Il bûcheronne aujourd’hui.";
+      return entry.day>state.day?T.tomorrow:T.today;
     }
+    // Retenu demain seulement (pour l'autre corvée : on peut bûcheronner aujourd'hui et descendre à la mine demain).
+    const tomorrowReason=(state,mercenaryId)=>entriesOf(state).some(e=>e.id===mercenaryId&&e.day===state.day+1)?T.tomorrow:null;
     const affinityWithCaptain=(state,m)=>Number(affinity?.memberAffinity?.(captainOf(state),m)?.total)||0;
     const feeling=(toward,who)=>Number(affinity?.affinity?.(toward,who)?.total)||0;
     function stewardHelp(state,m){
@@ -89,15 +109,15 @@
 
     function canSend(state,m){
       if(!m) return no("Mercenaire introuvable.");
-      if(!(slots(state)>0)) return no("Il faut d’abord construire la Cabane du bûcheron.");
-      if(entriesOf(state).some(e=>e.id===m.id&&e.day===state.day+1)) return no("Il part déjà bûcheronner demain.");
+      if(!(slots(state)>0)) return no(T.noHall);
+      if(entriesOf(state).some(e=>e.id===m.id&&e.day===state.day+1)) return no(T.already);
       if(camp.offField?.(state,m)) return no("Il ne quitte pas son poste au camp.");
       if(m.recovery) return no("Il doit d’abord se remettre.");
       const expedition=camp.expeditionOf(state,m.id);
       if(expedition) return no(expedition.status==="scheduled"?"Il part en mission demain.":"Il est en mission.");
       const busy=camp.busyElsewhere?.(state,m.id);
       if(busy) return no(busy);
-      if(tomorrow(state).length>=slots(state)) return no("La Cabane n’a plus de place demain.");
+      if(tomorrow(state).length>=slots(state)) return no(T.full);
       return {ok:true};
     }
     // L'envoyer bûcheronner demain : il y va toujours, de bon cœur ou à contrecœur (affinité −2).
@@ -117,17 +137,17 @@
     // Annuler avant demain (l'affinité perdue ne revient pas).
     function cancel(state,mercenaryId){
       const list=entriesOf(state),i=list.findIndex(e=>e.id===mercenaryId&&e.day===state.day+1);
-      if(i<0) return no("Il ne part pas bûcheronner demain.");
+      if(i<0) return no(T.notPlanned);
       list.splice(i,1);
       return {ok:true};
     }
 
-    // Les chantiers que le bois peut accélérer aujourd'hui : niveau 1 à 5, pas déjà au plus court.
+    // Les chantiers que le bois (niveaux 1 à 5) ou la pierre (6 à 10) peut accélérer aujourd'hui, pas déjà au plus court.
     const eligible=state=>(camp.works(state)||[]).filter(work=>{
       const level=workLevel(work);
-      return level>=1&&level<=C.maxLevel&&Number(work.endDay)>state.day+1;
+      return level>=C.minLevel&&level<=C.maxLevel&&Number(work.endDay)>state.day+1;
     });
-    // Chaque matin : les bûcherons du jour travaillent ; chacun retire un jour au chantier qui finit le plus tôt.
+    // Chaque matin : les bûcherons (ou mineurs) du jour travaillent ; chacun retire un jour au chantier qui finit le plus tôt.
     function morning(state){
       const list=entriesOf(state);
       for(let i=list.length-1;i>=0;i--) if(list[i].day<state.day||!memberOf(state,list[i].id)) list.splice(i,1);
@@ -147,8 +167,8 @@
       return {workers:workers.map(w=>({id:w.id,grudging:w.grudging,mercenary:memberOf(state,w.id)})),reduced:[...reduced.values()]};
     }
 
-    return {constants:C,HALL,slots,entriesOf,plannedFor,tomorrow,busyReason,chance,canSend,send,cancel,morning,workLevel,workName};
+    return {constants:C,HALL:hall,course,slots,entriesOf,plannedFor,tomorrow,busyReason,tomorrowReason,chance,canSend,send,cancel,morning,workLevel,workName};
   }
 
-  return {createLumberRules,HALL,workLevel,workName};
+  return {createLumberRules,HALL,COURSES,workLevel,workName};
 });

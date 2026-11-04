@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 318,
+  "row_count": 322,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -2432,6 +2432,38 @@
       "description": "Cabane du bûcheron (Idan, 2026-11-03) : test raté, il y va à contrecœur ; son affinité avec le capitaine bouge de ce nombre.",
       "formule": "Cabane du bûcheron",
       "valeur": -2,
+      "version": "V1"
+    },
+    {
+      "nom": "Mineurs — par niveau de la Guilde",
+      "code": "camp.mine.workers_per_level",
+      "description": "Guilde des mineurs (Idan, 2026-11-04 : « même chose mais avec les pierres pour des bâtiments de lvl 6 à 10 ») : mineurs par jour et par niveau. Même test et même perte que les bûcherons (camp.lumber.offer_offset, camp.lumber.grudge_affinity : « pareil »).",
+      "formule": "Guilde des mineurs",
+      "valeur": 1,
+      "version": "V1"
+    },
+    {
+      "nom": "Mineurs — jours retirés par mineur",
+      "code": "camp.mine.days_per_worker",
+      "description": "Guilde des mineurs (Idan, 2026-11-04) : chaque mineur du jour retire ce nombre de jours au chantier de niveau 6 à 10 qui finit le plus tôt ; un chantier finit au plus tôt le lendemain matin.",
+      "formule": "Guilde des mineurs",
+      "valeur": 1,
+      "version": "V1"
+    },
+    {
+      "nom": "Mineurs — niveau minimal des chantiers",
+      "code": "camp.mine.min_work_level",
+      "description": "Guilde des mineurs (Idan, 2026-11-04 : « des bâtiments de lvl 6 à 10 ») : bâtiment (niveau en construction), qualité du dortoir (niveau), agrandissement (rang), quartier du lieutenant (numéro).",
+      "formule": "Guilde des mineurs",
+      "valeur": 6,
+      "version": "V1"
+    },
+    {
+      "nom": "Mineurs — niveau maximal des chantiers",
+      "code": "camp.mine.max_work_level",
+      "description": "Guilde des mineurs (Idan, 2026-11-04) : voir camp.mine.min_work_level.",
+      "formule": "Guilde des mineurs",
+      "valeur": 10,
       "version": "V1"
     },
     {

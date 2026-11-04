@@ -244,7 +244,7 @@ hasard » ; « Le reste, c'est nickel ») — remplace le choix de l'École (sa 
 - journal du matin : une ligne par bâtiment (« Ludus : 2 élèves aujourd'hui. ») ; fiche, onglet Camp, « Aujourd'hui » :
   la salle, l'XP et ce qu'elle travaille ;
 - **maîtres** (Idan, 2026-11-03 : « Oui pour les maîtres ») : **le Doctore** (Ludus), **le Vétéran** (Académie), **le Maître
-  des lames** (Cercle ; nom d'Idan), puis **l'Alchimiste** (Labo d'alchimie ; pas de maître à la Tour de guet ni à la Cabane du bûcheron), nommés **comme le directeur** : bâtiment construit, même chance d'accepter, même
+  des lames** (Cercle ; nom d'Idan), puis **l'Alchimiste** (Labo d'alchimie ; pas de maître à la Tour de guet, à la Cabane du bûcheron ni à la Guilde des mineurs), nommés **comme le directeur** : bâtiment construit, même chance d'accepter, même
   refus, même retour sur le terrain, une proposition par jour ; hors mission, ils vivent dans leur bâtiment (pas de place
   au dortoir) ; un mercenaire ne tient qu'un poste (intendant, médecin, directeur, maître, lieutenant). Ils aident comme
   le directeur à l'École : même test, même gain ; **niveau du maître** : sa valeur dans ce que travaille la salle ou
@@ -366,10 +366,29 @@ Deuxième fonction, **les bûcherons du jour** :
   chantier finit au plus tôt le lendemain matin ; s'il n'y en a aucun, la journée est perdue. Le journal du matin dit les
   jours gagnés, chantier par chantier.
 - Statuts : « Bûcheronne demain », « Bûcheronne ». Constantes `camp.lumber.*` ; code `game-core/lumber.js` ; textes
-  `lumber-dialogue.json` ; test `tests/lumber.test.js`. La **mine** fera de même pour les chantiers de niveau 6 à 10.
+  `lumber-dialogue.json` ; test `tests/lumber.test.js`. La **Guilde des mineurs** fait de même pour les chantiers de
+  niveau 6 à 10.
+
+**La Guilde des mineurs** (Idan, 2026-11-04 : « même chose mais avec les pierres pour des bâtiments de lvl 6 à 10 et on y
+apprend les armes contondantes » ; « Oui, oui et pareil ») — salle principale **Le Puits** : **Armes contondantes** (« On y
+descend avec une lanterne, on en remonte avec un marteau. »), apprises avec la **Force** ; même barème et mêmes places,
+entraînement libre compris ; pas d'aile, pas de chef.
+
+Deuxième fonction, **les mineurs du jour** — comme les bûcherons :
+
+- **1 mineur par niveau** de la Guilde et par jour (`camp.mine.workers_per_level`), envoyé la veille (« Envoyer à la
+  mine »), annulable d'ici là ; mêmes exclusions.
+- **Même test, même perte** (« pareil ») : `camp.lumber.offer_offset`, `camp.lumber.grudge_affinity` ; le capitaine sans test.
+- **Effet** : chaque mineur retire **1 jour** (`camp.mine.days_per_worker`) au chantier de **niveau 6 à 10**
+  (`camp.mine.min_work_level`, `camp.mine.max_work_level`) qui finit le plus tôt, dortoir compris (même lecture du niveau) ;
+  les bûcherons ne touchent que les niveaux 1 à 5.
+- **Une seule corvée par jour** : on ne part pas bûcheronner et descendre à la mine le même jour ; bûcheron aujourd'hui,
+  mineur demain, c'est possible.
+- Statuts : « À la mine demain », « À la mine ». Code `game-core/lumber.js` (course "mine") et `prototype-web/lumber-ui.js` ;
+  textes `mine-dialogue.json` ; test `tests/mine.test.js`.
 
 Pistes gardées en tête, non validées : pour les autres armes de mêlée, deux bâtiments d'ambiance : **l'Ermitage** (Bâtons, Flexibles, Hast ; le mana) et
-**le Hall des Berserkers** (Contondantes, Deux mains ; les Haches sont à la Cabane du bûcheron). Les compétences de camp (artisanat) attendront les bâtiments de fabrication.
+**le Hall des Berserkers** (Deux mains ; les Haches sont à la Cabane du bûcheron, les Contondantes à la Guilde des mineurs). Les compétences de camp (artisanat) attendront les bâtiments de fabrication.
 
 ## 8 — Bâtiments pour animaux et montures
 

@@ -20,7 +20,7 @@ assert.equal(files.salaryReviewDialogue,"salary-review-dialogue.json","le jeu ch
 const reference=Object.fromEntries(Object.entries(files).map(([k,f])=>[k,JSON.parse(fs.readFileSync(path.join(ROOT,"data","reference",f),"utf8"))]));
 const constant=code=>reference.formulaConstants.rows.find(r=>r.code===code)?.valeur;
 assert.deepEqual(["chance.gap_weight","chance.intelligence_median","chance.intelligence_weight","chance.offset","chance.scale","chance.min",
-  "chance.max","affinity.granted","affinity.refused","retry.max"].map(k=>constant("salary_review."+k)),[100,50,0.5,-15,10,5,95,5,-10,95]);
+  "chance.max","affinity.granted","affinity.refused","retry.max","concession_weight"].map(k=>constant("salary_review."+k)),[100,50,0.5,-15,10,5,95,5,-10,95,50]);
 assert.equal(reference.formulaConstants.row_count,reference.formulaConstants.rows.length);
 
 let seed=53,dice=[];
@@ -119,6 +119,24 @@ was=aff(d);
 dice=[0];
 o=review.offer(state,d.id,keep+3);
 assert.deepEqual([o.outcome,salary(d),aff(d)-was],["accepted",keep+3,0],"d'accord plus bas : rien");
+// La concession se compte sur l'augmentation qu'on lui refuse (« Oui ») : il demande 55, il touche 47, résistance 40 :
+// aucune augmentation, 5 % ; la moitié, 49 % ; les trois quarts, 74 %.
+{
+  const m=generator.createMercenary({id:90,captain});
+  Object.assign(m,{salaryPretension:30,contract:{dailySalary:47,missionBonus:70}});
+  Object.assign(m.stats,{Intelligence:50,"Volonté":50});
+  const resistance=createTavernRules({random:()=>0.999,reference}).negotiationResistance(m,affinity.memberAffinity(captain,m).total);
+  m.affinityAcquired=4*(resistance-40)+(Number(m.affinityAcquired)||0);
+  company.roster.push(m);
+  const pAt=offer=>{
+    company.salaryReviews=[{id:m.id,day:state.day,demand:55,current:47,salary:55,refused:null,rounds:0,broken:null}];
+    dice=[0.999,0.999,0.5];
+    return Math.round(review.offer(state,m.id,offer).pAccept);
+  };
+  assert.deepEqual([pAt(47),pAt(51),pAt(53)],[5,49,74]);
+  company.salaryReviews=[];
+  company.roster.splice(company.roster.indexOf(m),1);
+}
 // Proposer sa demande, ou plus : accepté, +5.
 entry=ask(d);
 was=aff(d);

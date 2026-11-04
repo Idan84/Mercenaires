@@ -4,7 +4,8 @@
 // Intimider, Convaincre. On refait le test en ajoutant son intimidation ou son charisme (moitié du cha). En intimidation, ça
 // double la perte d'affinité. En charisme, ça la divise par deux » ; « valable pour tout test de refus » ; « Oui Go ! » ;
 // étape 3a, « vas-y pour les apprentissages ») : le module commun, puis les apprentissages (sort, professeur, port d'armure,
-// empoisonnement) ; si la relance échoue, la perte du refus est × 2 (intimidé) ou × 0,5 (convaincu).
+// empoisonnement) ; si la relance échoue, la perte du refus est × 2 (intimidé) ou × 0,5 (convaincu) ; si elle réussit en
+// intimidant, pas de gain d'affinité au premier matin.
 const assert=require("node:assert/strict");
 const fs=require("node:fs");
 const path=require("node:path");
@@ -107,6 +108,20 @@ assert.equal(rules.poisonStudy.offer(state,alchemist.id).accepted,false);
 const poison=rules.poisonStudy.retry(state,alchemist.id,"convince");
 assert.deepEqual([poison.accepted,poison.study.status],[true,"planned"]);
 assert.equal(rules.poisonStudy.retry(state,soldier.id,"convince").reason,"Il n’a rien refusé aujourd’hui.","chaque apprentissage garde son refus");
+
+// Intimidé, il ne gagne pas les +5 du premier matin ; convaincu, il les garde (Idan, 2026-11-04 : « B ») ; de même pour le
+// professeur (+3).
+assert.deepEqual([persuasion.gainFactor("intimidate"),persuasion.gainFactor("convince"),persuasion.gainFactor(null)],[0,1,1]);
+const constant=code=>reference.formulaConstants.rows.find(r=>r.code===code)?.valeur;
+assert.deepEqual([constant("persuasion.intimidate.gain_factor"),constant("persuasion.convince.gain_factor")],[0,1]);
+const teacherBefore=aff(teacher);
+dice=[];
+const [morning]=rules.advanceTime(state,1);
+assert.deepEqual(morning.study.started.map(s=>[s.mercenary.id,s.affinityDelta]),[[mage.id,0]],"intimidé : rien");
+assert.deepEqual(morning.poisonStudy.started.map(s=>[s.mercenary.id,s.affinityDelta]),[[alchemist.id,5]],"convaincu : +5");
+// Le professeur commence le matin d'après l'entrée de l'élève.
+rules.advanceTime(state,1);
+assert.equal(aff(teacher)-teacherBefore,3,"le professeur convaincu garde ses +3");
 
 // 3. L'interface commune : les trois choix après un refus, la relance ajoutée au dialogue.
 const ui=fs.readFileSync(path.join(ROOT,"prototype-web","persuasion-ui.js"),"utf8");

@@ -29,7 +29,8 @@
 //   Pas de suite planifiée pendant un apprentissage.
 // - Relance après un refus (Idan, 2026-11-04 ; persuasion.js) : pour l'élève comme pour le professeur, une relance,
 //   Intimider (+ Intimidation du capitaine) ou Convaincre (+ Charisme ÷ 2) ; si elle échoue, la perte du refus est × 2
-//   (intimidé) ou × 0,5 (convaincu).
+//   (intimidé) ou × 0,5 (convaincu) ; si elle réussit en intimidant, il ne gagne pas l'affinité du premier matin (élève +5,
+//   professeur +3) ; convaincu, il la garde.
 // Constantes : formula-constants.json (spell_study.*). Doc 11 §7 et doc 12.
 (function(root,factory){
   const node=typeof module!=="undefined"&&module.exports;
@@ -181,7 +182,9 @@
         const affinityDelta=shiftAffinity(state,m,persuasion.refusalExtra(C.affinity.refuse,approach));
         return {ok:true,accepted:false,approach,chance,roll:dice,affinityDelta,mercenary:m,spell,room};
       }
-      return {...startStudy(state,m,item,spell,room,{chance,roll:dice}),approach};
+      const started=startStudy(state,m,item,spell,room,{chance,roll:dice});
+      started.study.approach=approach;
+      return {...started,approach};
     }
     function startStudy(state,m,item,spell,room,{chance,roll}){
       state.company.stock=(state.company.stock||[]).filter(i=>i!==item);
@@ -269,7 +272,8 @@
           study.status="active";
           study.startDay=state.day;
           delete study.manual;
-          const affinityDelta=shiftAffinity(state,m,isPerfect(study)?C.affinity.perfect:C.affinity.accept);
+          const gain=isPerfect(study)?C.affinity.perfect:C.affinity.accept*(persuasion?persuasion.gainFactor(study.approach):1);
+          const affinityDelta=shiftAffinity(state,m,gain);
           started.push({study,mercenary:m,affinityDelta});
           continue;
         }
@@ -290,7 +294,7 @@
         const teacher=teacherCounts(study,state.day)?memberOf(state,study.teacherId):null;
         if(study.teacherId!=null&&study.teacherStarted===false&&!(Number(study.teacherFrom)>state.day)){
           study.teacherStarted=true;
-          shiftAffinity(state,memberOf(state,study.teacherId),C.affinity.teacherAccept);
+          shiftAffinity(state,memberOf(state,study.teacherId),C.affinity.teacherAccept*(persuasion?persuasion.gainFactor(study.teacherApproach):1));
         }
         study.days+=1;
         const {chance}=dailyChance(state,study,state.day);
@@ -345,7 +349,7 @@
       const dice=captain?0:roll();
       if(!captain) t.teachOfferDay=state.day;
       const accepted=dice<chance;
-      if(accepted){ study.teacherId=t.id; study.teacherFrom=state.day+1; study.teacherStarted=false; }
+      if(accepted){ study.teacherId=t.id; study.teacherFrom=state.day+1; study.teacherStarted=false; study.teacherApproach=null; }
       const affinityDelta=accepted?0:shiftAffinity(state,t,C.affinity.teacherRefuse);
       History.record(t,state.day,"teach",{accepted,spell:study.spellName,student:student?.name||""});
       if(!accepted) persuasion?.markRefused(t,"teachRefusal",state.day,{studyId:study.id});
@@ -365,7 +369,7 @@
       const {chance}=teachChance(state,study,t,approach),dice=roll(),accepted=dice<chance;
       persuasion.markRetried(t,"teachRefusal",approach,accepted);
       if(accepted){
-        study.teacherId=t.id; study.teacherFrom=state.day+1; study.teacherStarted=false;
+        study.teacherId=t.id; study.teacherFrom=state.day+1; study.teacherStarted=false; study.teacherApproach=approach;
         History.record(t,state.day,"teach",{accepted:true,spell:study.spellName,student:student?.name||""});
       }
       const affinityDelta=accepted?0:shiftAffinity(state,t,persuasion.refusalExtra(C.affinity.teacherRefuse,approach));

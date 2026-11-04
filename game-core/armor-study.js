@@ -197,7 +197,9 @@
         const affinityDelta=shiftAffinity(state,m,persuasion.refusalExtra(C.affinity.refuse,approach));
         return {ok:true,accepted:false,approach,chance,roll:dice,affinityDelta,mercenary:m,type:check.type};
       }
-      return {...startStudy(state,m,check.type,{chance,roll:dice}),approach};
+      const started=startStudy(state,m,check.type,{chance,roll:dice});
+      started.study.approach=approach;
+      return {...started,approach};
     }
 
     // Le test du matin : la chance (en %) et son détail.
@@ -225,7 +227,9 @@
           if(state.day<Number(study.startDay)) continue;
           study.status="active";
           study.startDay=state.day;
-          started.push({study,mercenary:m,affinityDelta:shiftAffinity(state,m,C.affinity.accept)});
+          // Intimidé : pas de gain au premier matin ; convaincu, il le garde (Idan, 2026-11-04).
+          const gain=C.affinity.accept*(persuasion?persuasion.gainFactor(study.approach):1);
+          started.push({study,mercenary:m,affinityDelta:shiftAffinity(state,m,gain)});
           continue;
         }
         learners+=1;

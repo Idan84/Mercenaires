@@ -31,8 +31,10 @@
   function createPersuasionRules({reference}={}){
     const k=(code,fallback)=>referenceConstant(reference,code,fallback);
     const APPROACHES={
-      intimidate:{key:"intimidate",name:"Intimidation",weight:k("persuasion.intimidate.weight",1),lossFactor:k("persuasion.intimidate.loss_factor",2)},
-      convince:{key:"convince",name:"Charisme",weight:k("persuasion.convince.weight",0.5),lossFactor:k("persuasion.convince.loss_factor",0.5)}
+      intimidate:{key:"intimidate",name:"Intimidation",weight:k("persuasion.intimidate.weight",1),lossFactor:k("persuasion.intimidate.loss_factor",2),
+        gainFactor:k("persuasion.intimidate.gain_factor",0)},
+      convince:{key:"convince",name:"Charisme",weight:k("persuasion.convince.weight",0.5),lossFactor:k("persuasion.convince.loss_factor",0.5),
+        gainFactor:k("persuasion.convince.gain_factor",1)}
     };
     const approachOf=key=>APPROACHES[key]||null;
     // Ce que la relance ajoute à l'écart (Δ) du test : l'Intimidation du capitaine, ou son Charisme ÷ 2.
@@ -42,6 +44,10 @@
     }
     // Le facteur de la perte d'affinité : 2 (intimidé), 0,5 (convaincu), 1 sans relance.
     const lossFactor=key=>approachOf(key)?.lossFactor??1;
+    // Le gain d'affinité d'un accord (un apprentissage : +5 au premier matin) : rien s'il a été intimidé, entier s'il a été
+    // convaincu (Idan, 2026-11-04 : « S'il a été intimidé, il ne gagne pas les +5 du premier matin. Convaincu, il les
+    // garde »).
+    const gainFactor=key=>approachOf(key)?.gainFactor??1;
     // Quand la relance échoue : ce qu'il faut ajouter à la perte du refus pour qu'elle soit × 2 ou × 0,5.
     const refusalExtra=(refuseDelta,key)=>Math.round((Number(refuseDelta)||0)*(lossFactor(key)-1)*100)/100;
     // Le refus du jour, gardé sur le mercenaire (m[field] = { day, retried, accepted, approach, … }) : une seule relance.
@@ -53,7 +59,7 @@
       return {ok:true,refusal};
     }
     function markRetried(m,field,key,accepted){ Object.assign(m[field],{retried:true,approach:key,accepted}); return m[field]; }
-    return {APPROACHES,approachOf,bonus,lossFactor,refusalExtra,markRefused,canRetry,markRetried,valueOf};
+    return {APPROACHES,approachOf,bonus,lossFactor,gainFactor,refusalExtra,markRefused,canRetry,markRetried,valueOf};
   }
   return {createPersuasionRules,valueOf};
 });

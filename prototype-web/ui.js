@@ -59,6 +59,9 @@ function rosterStatus(c){
   // Mineur du jour, ou de demain (Idan, 2026-11-04).
   const mine=game.campaign&&typeof campaignRules==="function"&&campaignRules().miners?campaignRules().miners.busyReason(game.campaign,c.id):null;
   if(mine) return mine.includes("demain")?{kind:"available",label:"À la mine demain"}:{kind:"steward",label:"À la mine"};
+  // Au Palais des plaisirs (Idan, 2026-11-04).
+  const palace=game.campaign&&typeof campaignRules==="function"&&campaignRules().palaceWorkers?campaignRules().palaceWorkers.busyReason(game.campaign,c.id):null;
+  if(palace) return palace.includes("demain")?{kind:"available",label:"Au Palais demain"}:{kind:"steward",label:"Au Palais"};
   // Le directeur de l'École de magie (Idan, 2026-11-01) et les maîtres (Idan, 2026-11-03) restent au camp.
   const post=game.campaign&&typeof MercenairesCampPosts!=="undefined"?MercenairesCampPosts.postOf(game.campaign,c):null;
   if(post) return {kind:"steward",label:typeof campPostLabel==="function"?campPostLabel(post.key,c):post.noun};

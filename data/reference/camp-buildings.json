@@ -824,7 +824,43 @@
       "entraine": "Armes d’hast",
       "garde_paie_par_niveau": 0,
       "apprend_avec": null
+    },
+    {
+      "code": "pleasure_palace",
+      "nom": "Palais des plaisirs",
+      "description": "Dans le Grand Salon : « Sourire, écouter, ne jamais annoncer son prix en premier. » Chaque niveau fait travailler un mercenaire de plus : il rapporte de l’or chaque jour.",
+      "niveaux": 10,
+      "prix_base": 1000,
+      "jours_base": 4,
+      "soins_par_niveau": 0,
+      "fatigue_jours_par_niveau": 0,
+      "mana_par_niveau": 0,
+      "requiert": null,
+      "ecole": null,
+      "places_base": 0,
+      "places_pas": 0,
+      "entraine": null,
+      "garde_paie_par_niveau": 0,
+      "apprend_avec": "Charisme"
+    },
+    {
+      "code": "pleasure_backroom",
+      "nom": "L’Arrière-salle",
+      "description": "« On y apprend le fouet. Officiellement, pour le dressage. »",
+      "niveaux": 10,
+      "prix_base": 1000,
+      "jours_base": 4,
+      "soins_par_niveau": 0,
+      "fatigue_jours_par_niveau": 0,
+      "mana_par_niveau": 0,
+      "requiert": "pleasure_palace",
+      "ecole": null,
+      "places_base": 1,
+      "places_pas": 2,
+      "entraine": "Armes flexibles ou articulées",
+      "garde_paie_par_niveau": 0,
+      "apprend_avec": null
     }
   ],
-  "row_count": 42
+  "row_count": 44
 }

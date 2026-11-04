@@ -423,9 +423,32 @@ abandonnés) — même barème et mêmes places que les autres salles, entraîne
 - **Le Sauna** des Bains chauds (« Dans les bains chauds, on peut faire le sauna où on peut s'entraîner au maximum de
   mana ») : **Réserve de mana** (« On transpire, on médite, on remplit sa réserve. Surtout de vapeur. »), appris avec la
   **Volonté** ; au plus au niveau des Bains (5). Les Bains eux-mêmes n'ont pas de places.
-- **Armes flexibles** : au **Palais des plaisirs** (étape suivante). **Combat à mains nues** : désactivé (doc 03).
+- **Armes flexibles** : au **Palais des plaisirs** (ci-dessous). **Combat à mains nues** : désactivé (doc 03).
 
 Test : `tests/training-buildings.test.js`. Les compétences de camp (artisanat) attendront les bâtiments de fabrication.
+
+**Le Palais des plaisirs** (Idan, 2026-11-04 : « Le bâtiment a un chef, le maître des plaisirs. On peut y faire travailler
+nos mercenaires, ils rapportent des pièces d'or en fonction de leur charisme et de leur réputation. Il faut un test
+d'affinité pour envoyer un mercenaire. On a une salle pour s'entraîner aux armes flexibles » ; « le charisme ne s'entraîne
+pas. Les gains sont pas assez importants. Il faut que ça soit rentable d'y faire travailler des mercenaires. Le maître
+augmente les gains » ; « Parfait » ; « vas-y pour le Palais ») — même barème que les autres bâtiments :
+
+- salle principale **Le Grand Salon** (« Sourire, écouter, ne jamais annoncer son prix en premier. ») : on y travaille, on
+  ne s'y entraîne pas ; une aile, **L'Arrière-salle** : **Armes flexibles** (« On y apprend le fouet. Officiellement, pour
+  le dressage. »), apprises avec le **Charisme** ;
+- chef : **le Maître des plaisirs** (la Maîtresse), nommé comme les autres maîtres, choisi sur son Charisme ; il aide
+  l'entraînement de l'Arrière-salle et **multiplie l'or de chacun par 1 + son Charisme ÷ 200** (`camp.palace.master_divisor` ;
+  Charisme 60 : + 30 %) ;
+- **le travail**, comme les corvées : 1 par niveau du Palais (`camp.palace.workers_per_level`), envoyé la veille
+  (« Envoyer au Palais »), jusqu'à ce qu'on le retire ; une seule corvée à la fois ; il peut refuser : **~50 % à affinité
+  0**, 69 % à 50, 85 % à 100 (`camp.palace.offer_offset` = 0), et la relance (Intimider, Convaincre) ; **−1 d'affinité
+  par jour** (`camp.palace.daily_affinity`), × 2 intimidé, × 0,5 convaincu ;
+- **l'or de chaque journée = Charisme × (1 + 0,2 × niveau de réputation)** (1 à 15 ; `camp.palace.reputation_weight`),
+  arrondi : ~55 PO pour un faible (Charisme 39, niveau 2), ~86 pour un moyen (54, niveau 3), ~124 pour un très bon (69,
+  niveau 4) ; le salaire médian est de 48 PO. Journal du matin : « Palais des plaisirs : 273 PO. » ;
+- statuts « Au Palais demain », « Au Palais » ; fiche : « Jours à la tête du Palais », nomination et retour sur le terrain.
+  Code `game-core/lumber.js` (course "palace"), `game-core/camp-posts.js` ; textes `palace-dialogue.json`,
+  `camp-masters-dialogue.json` ; test `tests/palace.test.js`.
 
 ## 8 — Bâtiments pour animaux et montures
 

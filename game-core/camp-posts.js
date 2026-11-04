@@ -4,7 +4,8 @@
 // le directeur de l'École de magie (Idan, 2026-11-01) et les maîtres des bâtiments d'entraînement (Idan, 2026-11-03 :
 // « Oui pour les maîtres ») : le Doctore au Ludus, le Vétéran à l'Académie de la survie, le Maître des lames au Cercle
 // des Fines Lames ; l'Alchimiste au Labo d'alchimie (Idan, 2026-11-03 : « on va nommer un alchimiste comme chef de salle »).
-// Le titulaire d'un poste : state.company[key + "Id"] (directorId, doctoreId, veteranId, bladeMasterId, alchemistId).
+// Le titulaire d'un poste : state.company[key + "Id"] (directorId, doctoreId, veteranId, bladeMasterId, alchemistId,
+// pleasureMasterId). Le Maître des plaisirs au Palais des plaisirs (Idan, 2026-11-04).
 // Nomination et retour sur le terrain : school-director.js ; aide à l'entraînement : school-training.js.
 (function(root,factory){
   const api=factory();
@@ -19,7 +20,10 @@
     {key:"doctore",building:"ludus",noun:"Doctore",title:"Le Doctore",place:"le Ludus",short:"le Ludus"},
     {key:"veteran",building:"survival_academy",noun:"Vétéran",title:"Le Vétéran",place:"l’Académie de la survie",short:"l’Académie"},
     {key:"bladeMaster",building:"blade_circle",noun:"Maître des lames",title:"Le Maître des lames",place:"le Cercle des Fines Lames",short:"le Cercle"},
-    {key:"alchemist",building:"alchemy_lab",noun:"Alchimiste",title:"L’Alchimiste",place:"le Labo d’alchimie",short:"le Labo"}
+    {key:"alchemist",building:"alchemy_lab",noun:"Alchimiste",title:"L’Alchimiste",place:"le Labo d’alchimie",short:"le Labo"},
+    // Le Maître des plaisirs (Idan, 2026-11-04 : « Le bâtiment a un chef, le maître des plaisirs » ; « Le maître augmente les
+    // gains ») : skill, ce qu'on regarde pour le choisir (la salle principale du Palais n'entraîne rien).
+    {key:"pleasureMaster",building:"pleasure_palace",noun:"Maître des plaisirs",title:"Le Maître des plaisirs",place:"le Palais des plaisirs",short:"le Palais",skill:"Charisme"}
   ];
   const idKey=post=>post.key+"Id";
   const postByKey=key=>POSTS.find(post=>post.key===key)||null;

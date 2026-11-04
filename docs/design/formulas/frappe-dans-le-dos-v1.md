@@ -5,7 +5,7 @@
 Code: combat.position.backstab
 Domaine: Combat
 Expression: backstab = is_opportunity_attack || target_encircled || defender_is_fleeing || attack_not_detected; if backstab: defender_perception_for_hit=0; defender_damage_type_resistance_for_wound*=0.5; defender_physical_resistance_for_hp_damage unchanged
-Notes: S'applique notamment à toute attaque d'opportunité, à l'encerclement, à une cible qui fuit et aux attaques non détectées. Le blocage au bouclier reste autorisé : abstraction volontaire, le bouclier peut aussi protéger le dos.
+Notes: S'applique notamment à toute attaque d'opportunité, à l'encerclement, à une cible qui fuit et aux attaques non détectées. Pas de blocage au bouclier dans le dos (Idan, 2026-11-04).
 Statut: Validée
 Type attaque: N/A
 Version: V1
@@ -40,4 +40,4 @@ La **Résistance physique %** qui réduit ensuite les PV perdus n'est pas divis�
 
 ## Bouclier
 
-Le blocage au bouclier reste possible, même contre une attaque non détectée ou venue du dos.
+Pas de blocage au bouclier contre une Frappe dans le dos, ni contre une attaque non détectée (Idan, 2026-11-04 : « 3 + limiter à un blocage par tour »).

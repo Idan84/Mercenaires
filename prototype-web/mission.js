@@ -2666,6 +2666,8 @@ function runMissionEnemyTurn(){
   if(checkMissionEnd()){ renderMission(); return; }
   resolveMissionDetection();
   for(const unit of m.players) unit.acted=false;
+  // Un seul blocage au bouclier par tour (Idan, 2026-11-04) : chacun retrouve le sien.
+  m.engine.resetShieldBlocks(missionUnits());
   missionLog("Tour "+m.turn+" — votre équipe.","turn");
   selectNextMissionPlayer();
 }
@@ -3135,7 +3137,8 @@ function missionAttackPreviewRows(u,target,hands,{e,charge,distance,hidden}){
     const row={weapon:item?.name||weapon?.nom||"Arme",mode:h.mode,backstab,pHit:e.hitProbability(u,target,h.mode,distance,{backstab})};
     if(h.mode==="ranged"&&target.projectileShield) row.pDeflect=Number(target.projectileShield.chance)||0;
     if(target.character?.immunePhysical&&weapon?.degats_type!=="psychique"){ row.immune=true; return row; }
-    const block=e.blockChance(target),cut=Number(weapon?.malus_blocage_pourcentage)||0;
+    // Pas de blocage dans le dos, ni s'il a déjà bloqué ce tour (Idan, 2026-11-04).
+    const block=e.shieldReady(target,{backstab})?e.blockChance(target):null,cut=Number(weapon?.malus_blocage_pourcentage)||0;
     if(block!==null) row.pBlock=cut?block*(1-cut/100):block;
     row.pCrit=e.criticalChance(u);
     if(weapon?.degats_type==="psychique"){ row.psychic=true; return row; }

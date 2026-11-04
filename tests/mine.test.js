@@ -85,7 +85,8 @@ const [morning]=rules.advanceTime(state,1);
 assert.deepEqual(morning.mine.reduced.map(r=>[r.name,r.days]),[["École de magie",2]]);
 assert.deepEqual(morning.lumber.reduced.map(r=>[r.name,r.days]),[["Cercle des Fines Lames",1]]);
 assert.deepEqual([circle,school,ludus].map(w=>w.endDay-day0),[3,22,28]);
-assert.equal(rules.studyBusy(state,first),"Il est à la mine aujourd’hui.");
+assert.equal(rules.agenda.reason(state,first.id),"Il est à la mine aujourd’hui.");
+assert.equal(rules.studyBusy(state,first),null,"libre pour demain");
 assert.ok(!morning.school.entries.some(e=>[first.id,second.id,third.id].includes(e.id)),"ils ne s'entraînent pas");
 // Bûcheron aujourd'hui, mineur demain : possible.
 dice=[0];

@@ -726,9 +726,11 @@
     // L'ordre d'inscription est celui des raisons affichées.
     agenda?.add("spell",spellStudy).add("armor",armorStudy).add("poison",poisonStudy)
       .add("lumber",lumberjacks,{chore:true}).add("mine",miners,{chore:true});
-    // Ce qui le retient au camp, toutes activités confondues (missions, garde du corps, entraînement libre).
-    const studyBusy=(state,m)=>m&&agenda?agenda.reason(state,m.id):null;
-    function trainingAvailable(state,m){ return Boolean(m)&&!m.recovery&&!expeditionOf(state,m.id)&&!studyBusy(state,m); }
+    // Ce qui le retient demain (mission, garde du corps : au jour J, on organise J+1) ; une corvée d'aujourd'hui ne compte pas
+    // (Idan, 2026-11-04 : « Oui »).
+    const studyBusy=(state,m)=>m&&agenda?agenda.tomorrowReason(state,m.id):null;
+    // L'entraînement libre du jour : tout ce qui le retient, corvée du jour comprise.
+    function trainingAvailable(state,m){ return Boolean(m)&&!m.recovery&&!expeditionOf(state,m.id)&&!(agenda&&agenda.reason(state,m.id)); }
     // Le choix du joueur pour le capitaine : une salle ou une aile construite, de n'importe quel bâtiment d'entraînement, ou
     // null (la taverne).
     function captainTraining(state){

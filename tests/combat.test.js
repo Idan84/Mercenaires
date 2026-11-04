@@ -396,7 +396,28 @@ assert.equal(combat.blockChance(unit(a,0,0)),null,"sans bouclier : pas de jet");
 const shieldBearer=unit(guardChar,1,0),guardAttacker=unit(b,0,0);setFamily(guardAttacker,"melee");
 const blocked=combat.resolveAttack(guardAttacker,shieldBearer,{mode:"melee",distance:1});
 assert.deepEqual([blocked.hit,blocked.blocked,blocked.shield,blocked.wound,blocked.criticalHit,shieldBearer.hp],[true,true,"Écu",false,undefined,guardChar.pvMax]);
-assert.equal(combat.resolveAttack(guardAttacker,shieldBearer,{mode:"melee",opportunity:true}).blocked,true,"possible même dans le dos");
+// Un seul blocage réussi par tour (Idan, 2026-11-04 : « limiter à un blocage par tour ») : le coup suivant passe, sans jet de
+// blocage ; au tour suivant, il bloque de nouveau.
+assert.equal(shieldBearer.shieldBlocked,true);
+assert.equal(combat.shieldReady(shieldBearer),false);
+const second=combat.resolveAttack(guardAttacker,shieldBearer,{mode:"melee",distance:1});
+assert.deepEqual([second.hit,second.blocked,second.pBlock],[true,undefined,undefined],"déjà bloqué ce tour");
+combat.resetShieldBlocks([shieldBearer,guardAttacker]);
+assert.equal(combat.resolveAttack(guardAttacker,shieldBearer,{mode:"melee",distance:1}).blocked,true,"nouveau tour, nouveau blocage");
+combat.resetShieldBlocks([shieldBearer]);
+// Pas de blocage dans le dos (Idan, 2026-11-04 : « 3 ») : opportunité, encerclé, en fuite, attaque non détectée.
+for(const options of [{opportunity:true},{encircled:true},{backstab:true}]){
+  const r=combat.resolveAttack(guardAttacker,shieldBearer,{mode:"melee",distance:1,...options});
+  assert.deepEqual([r.hit,r.blocked,r.pBlock],[true,undefined,undefined],"pas de blocage dans le dos : "+Object.keys(options)[0]);
+}
+assert.equal(combat.shieldReady(shieldBearer,{backstab:true}),false);
+assert.equal(shieldBearer.shieldBlocked,undefined,"un coup dans le dos n'use pas le blocage du tour");
+// L'écran de combat : chacun retrouve son blocage au début de chaque tour ; l'aperçu ne montre pas un blocage impossible.
+{
+  const mission=fs.readFileSync(path.join(__dirname,"..","prototype-web","mission.js"),"utf8");
+  assert.match(mission,/m\.turn\+=1;[\s\S]{0,400}unit\.acted=false;\n[^\n]*\n  m\.engine\.resetShieldBlocks\(missionUnits\(\)\);\n  missionLog\("Tour "\+m\.turn/);
+  assert.match(mission,/const block=e\.shieldReady\(target,\{backstab\}\)\?e\.blockChance\(target\):null/);
+}
 // Blocage raté (D100 = 100) : l'attaque continue normalement, avec le jet de blocage dans le résultat.
 r=scripted([1,100,100,50,1,100],[100]).resolveAttack(guardAttacker,shieldBearer,{mode:"melee",distance:1});
 assert.deepEqual([r.blocked,r.blockRoll,r.criticalHit,r.wound],[false,100,false,true]);

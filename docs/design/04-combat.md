@@ -56,7 +56,7 @@ Les registres complets de formules, termes et constantes sont rangés dans **05 
 - Toute attaque d'opportunité en bénéficie.
 - Elle s'applique contre une cible en train de fuir ou à une attaque non détectée.
 - [Encerclement CAC V1](/design/#doc=formulas/encerclement-cac-v1.md) : deux ennemis au contact sur des cases **non adjacentes entre elles** suffisent ; une fois la cible encerclée, **tous** ses adversaires au CAC bénéficient de Frappe dans le dos.
-- Le blocage au bouclier reste possible.
+- Pas de blocage au bouclier (Idan, 2026-11-04).
 
 ## CAC V1 — Toucher, Blesser & dégâts
 
@@ -118,7 +118,7 @@ Choix d'implémentation V1 des enchaînements (attaques CAC et tirs `Répétable
 
 ## Bouclier physique V1
 
-La même règle de blocage s'applique au **CAC et aux projectiles physiques**, sans malus spécifique au tir. Le bouclier peut également bloquer une Frappe dans le dos / attaque non détectée.
+La même règle de blocage s'applique au **CAC et aux projectiles physiques**, sans malus spécifique au tir. Il est trop fort (Idan, 2026-11-04 : « 3 + limiter à un blocage par tour. C'est surtout ça le problème ») : **pas de blocage contre une Frappe dans le dos** / une attaque non détectée, et **un seul blocage réussi par tour** (les coups suivants passent ; chacun retrouve son blocage au début du tour suivant).
 
 Un bouclier intervient **après un Toucher réussi et avant le critique positif de Toucher** via [Blocage bouclier physique V1](/design/#doc=formulas/blocage-bouclier-physique-v1.md).
 

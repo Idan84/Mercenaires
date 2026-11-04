@@ -28,7 +28,9 @@ function campaignRules(){
       // Recharge du mana au camp, chaque matin (magic.js).
       magic:{rechargeMana:(character,options)=>magicRules().rechargeMana(character,options)},
       // Le marchand du jour (merchant-ui.js, chargé après ; doc 18).
-      merchants:{morning:(state,options)=>typeof merchantRules==="function"?merchantRules().morning(state,options):null}});
+      merchants:{morning:(state,options)=>typeof merchantRules==="function"?merchantRules().morning(state,options):null},
+      // La Discrétion d'un déserteur, équipement compris, face à la Tour de guet (desertion.js).
+      statOf:(m,name)=>combatEngine().statWithGear({character:m,activeSet:1},name)});
   }
   return game.campaignRules;
 }
@@ -155,6 +157,8 @@ function advanceCampDay(){
   const allowed=campaignRules().canAdvanceDay(game.campaign);
   if(!allowed.ok){
     tavernLog(allowed.reason,"warn");
+    // Un déserteur repéré attend qu'on décide de son sort (desertion-ui.js).
+    if(allowed.desertion!=null){ if(typeof checkDesertions==="function") checkDesertions(); return; }
     if(typeof openExpeditionDialog==="function") openExpeditionDialog(allowed.expedition.id);
     return;
   }
@@ -197,6 +201,8 @@ function logDayReport(report){
   if(typeof logMerchantMorning==="function") logMerchantMorning(report.merchant);
   // Le rapport des lieutenants (Idan, 2026-10-25) : une pop-up par demande de la veille.
   if(typeof queueLieutenantReports==="function") queueLieutenantReports(report.lieutenants);
+  // Désertion (Idan, 2026-11-04) : celui qui a filé, celui que la Vigie a repéré (la scène s'ouvre avec renderGame).
+  if(typeof logDesertion==="function") logDesertion(report.desertion);
 }
 
 // Dialogue de recrutement (Idan, 2026-10-21) : salutation selon l'affinité, réponses sincères, prétentions,

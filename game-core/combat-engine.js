@@ -667,6 +667,11 @@
       return clamp((dexterity+(m.categoryScore+m.weaponScore)/2)/2+bonus,BLOCK.min,BLOCK.max);
     }
 
+    // Le bouclier peut-il bloquer ce coup (Idan, 2026-11-04) ? Pas dans le dos, et un seul blocage réussi par tour.
+    function shieldReady(unit,{backstab=false}={}){ return !backstab&&!unit?.shieldBlocked; }
+    // Au début de chaque tour : chacun retrouve son blocage.
+    function resetShieldBlocks(units){ for(const unit of units||[]) if(unit) delete unit.shieldBlocked; }
+
     // Critique positif CAC V1 : 1 % à 25 % selon la Chance, après un Toucher puis après un Blesser réussis.
     // 04-combat « Critiques physiques V1 » : la V1 distance réutilise ce même principe.
     function criticalChance(unit){
@@ -819,16 +824,19 @@
       // Spectre (Idan, 2026-10-28) : immunisé aux dégâts physiques, le coup le traverse.
       if(defender.character?.immunePhysical&&!psychic) return {immune:true,wound:false,damage:0};
 
-      // Blocage bouclier physique V1 : après le Toucher, avant le critique ; au CAC comme au tir, même dans
-      // le dos. Un coup bloqué ne compte pas comme un toucher réel : ni critique, ni Blesser, ni dégâts.
+      // Blocage bouclier physique V1 : après le Toucher, avant le critique ; au CAC comme au tir. Un coup bloqué ne compte
+      // pas comme un toucher réel : ni critique, ni Blesser, ni dégâts.
       // Fléau d'armes (Idan, 2026-10-29) : la chance de blocage du bouclier adverse baisse de malus_blocage_pourcentage %.
-      const blockCut=Number(weapon?.malus_blocage_pourcentage)||0,baseBlock=blockChance(defender);
+      // Idan, 2026-11-04 (« 3 + limiter à un blocage par tour. C'est surtout ça le problème ») : pas de blocage contre une
+      // Frappe dans le dos (opportunité, encerclé, en fuite, attaque non détectée) ; un seul blocage réussi par tour
+      // (defender.shieldBlocked, remis à zéro au début de chaque tour : shieldReady).
+      const blockCut=Number(weapon?.malus_blocage_pourcentage)||0,baseBlock=shieldReady(defender,{backstab})?blockChance(defender):null;
       const pBlock=baseBlock!==null&&blockCut?baseBlock*(1-blockCut/100):baseBlock;
       const block={};
       if(pBlock!==null){
         const blockRoll=d100();
         Object.assign(block,{pBlock,blockRoll,blocked:blockRoll<=pBlock,shield:weaponTemplate(activeOffhandItem(defender)).nom});
-        if(block.blocked) return {...block,wound:false,damage:0};
+        if(block.blocked){ defender.shieldBlocked=true; return {...block,wound:false,damage:0}; }
       }
 
       const pCritical=criticalChance(attacker);
@@ -1196,6 +1204,8 @@
       effectiveDexterity,
       usableHands,
       blockChance,
+      shieldReady,
+      resetShieldBlocks,
       isRepeatable,
       needsLoading,
       isLoaded,

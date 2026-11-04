@@ -1,7 +1,7 @@
 "use strict";
 
 // Échanges d'équipement (Idan, 2026-10-24) : Donner, Retirer, Troquer ; jet selon la valeur perçue (Intelligence)
-// et l'affinité ; l'affinité bouge selon la valeur perçue, accord ou refus ; une tentative par jour ; capitaine libre.
+// et l'affinité ; l'affinité bouge selon la valeur perçue, accord ou refus ; pas de limite par jour (Idan, 2026-11-04) ; capitaine libre.
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
@@ -82,7 +82,8 @@ assert.ok(!ok("ring_1", item("x", "Dague", 1)));
 assert.deepEqual(deals.compatibleSlots(merc, item("x", "Épée longue", 1)).map(s => [s.slot, s.current?.name || null]),
   [["weapon_set_1_main","Hallebarde"],["weapon_set_2_main",null],["weapon_set_2_off",null]]);
 
-// Accord : l'objet change de main ; l'affinité bouge ; plus de tentative ce jour-là.
+// Accord : l'objet change de main ; l'affinité bouge ; pas de limite par jour (Idan, 2026-11-04 : « faut virer la règle du
+// 1 par jour. Trop contraignant »).
 const give = world(50, {stock:[item("s", "Lance", 2)]});
 roll = 0;
 const accepted = deals.propose(give, {mercenaryId:2, slot:"weapon_set_1_main", stockItemId:"s"});
@@ -93,13 +94,10 @@ assert.deepEqual(borin.items.map(i => [i.id, i.owner, i.slot]), [["s", 2, "weapo
 assert.equal(borin.equipment.slots.weapon_set_1_main, "s");
 assert.equal(borin.affinityAcquired, accepted.affinityDelta);
 assert.ok(accepted.affinityDelta > 0, "un cadeau fait monter l'affinité");
-assert.equal(borin.equipmentDealDay, 4);
-const again = deals.propose(give, {mercenaryId:2, slot:"weapon_set_1_main"});
-assert.deepEqual([again.ok, again.reason], [false, "Vous lui avez déjà parlé d’équipement aujourd’hui."]);
-assert.equal(borin.equipment.slots.weapon_set_1_main, "s", "rien ne bouge");
+assert.equal(borin.equipmentDealDay, undefined);
+assert.equal(deals.canDeal(give, borin).ok, true, "le même jour, on peut lui reparler d'équipement");
 
-// Refus : rien ne change de main, mais l'affinité baisse quand même (on voulait lui reprendre son arme).
-give.day = 5;
+// Refus, le même jour : rien ne change de main, mais l'affinité baisse quand même (on voulait lui reprendre son arme).
 roll = 0.999;
 const refused = deals.propose(give, {mercenaryId:2, slot:"weapon_set_1_main"});
 assert.deepEqual([refused.ok, refused.action, refused.accepted, refused.roll, refused.mood], [true, "retirer", false, 100, "displeased"]);
@@ -122,7 +120,7 @@ give.day = 7;
 give.company.stock.push(item("e", "Écu", 1));
 const wrong = deals.propose(give, {mercenaryId:2, slot:"weapon_set_1_main", stockItemId:"e"});
 assert.deepEqual([wrong.ok, wrong.reason], [false, "Un bouclier se tient en main secondaire."]);
-assert.equal(borin.equipmentDealDay, 6);
+assert.equal(borin.equipmentDealDay, undefined);
 
 // Le capitaine s'équipe librement : ni jet, ni affinité, ni limite par jour.
 const self = world(50, {stock:[item("c1", "Sabre", 1), item("c2", "Brigandine", 1, "armor")]});
@@ -151,8 +149,8 @@ assert.equal(deals.propose(world(50), {mercenaryId:2, slot:"armor"}).reason, "Ri
   assert.deepEqual(deals.inventoryOf(kid).map(x => [x.name, x.owner, x.slot]), [["Arc", 2, null]]);
   assert.equal(kid.equipment.slots.weapon_set_1_main, "sab", "rien ne change sur lui");
   assert.equal(deals.evaluate(camp, {mercenaryId:2, slot:deals.INVENTORY, stockItemId:"ps"}).reason, "Une fiole se range dans une poche de ceinture.");
-  // Le jour même, une seconde proposition est refusée, mais le réaménagement reste libre.
-  assert.equal(deals.canDeal(camp, kid, deals.INVENTORY).ok, false);
+  // Le jour même, une seconde proposition est possible (pas de limite par jour) ; le réaménagement reste libre.
+  assert.equal(deals.canDeal(camp, kid, deals.INVENTORY).ok, true);
   const affinityBefore = kid.affinityAcquired;
   const equip = deals.rearrange(camp, {mercenaryId:2, itemId:"bow", slot:"weapon_set_1_main"});
   assert.equal(equip.ok, true);
@@ -196,4 +194,4 @@ assert.equal(deals.propose(world(50), {mercenaryId:2, slot:"armor"}).reason, "Ri
   roll = 0;
 }
 
-console.log("Échanges d'équipement : valeur perçue, chance, affinité, une tentative par jour, capitaine libre — OK");
+console.log("Échanges d'équipement : valeur perçue, chance, affinité, sans limite par jour, capitaine libre — OK");

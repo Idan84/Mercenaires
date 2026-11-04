@@ -17,10 +17,12 @@
 (function(root,factory){
   const history=typeof module!=="undefined"&&module.exports?require("./history.js"):root.MercenairesHistory;
   const posts=typeof module!=="undefined"&&module.exports?require("./camp-posts.js"):root.MercenairesCampPosts;
-  const api=factory(history,posts);
+  // Relance après un refus (Idan, 2026-11-04) : Intimider ou Convaincre, ajoutés à la chance.
+  const persuasion=typeof module!=="undefined"&&module.exports?require("./persuasion.js"):root.MercenairesPersuasion;
+  const api=factory(history,posts,persuasion);
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesSteward=api;
-})(typeof globalThis!=="undefined"?globalThis:this,function(History,Posts){
+})(typeof globalThis!=="undefined"?globalThis:this,function(History,Posts,Persuasion){
   const rows=data=>Array.isArray(data)?data:(data?.rows||[]);
   const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
 
@@ -45,6 +47,10 @@
     const rosterOf=state=>state?.company?.roster||[];
     const stat=(m,name)=>Number(m?.stats?.[name])||0;
     function no(reason){ return {ok:false,reason}; }
+    // La relance (persuasion.js) : + Intimidation du capitaine, ou + son Charisme ÷ 2, en points de chance.
+    const persuasion=Persuasion?Persuasion.createPersuasionRules({reference}):null;
+    const REFUSAL="stewardRefusal";
+    const persuade=(state,key)=>persuasion&&key?persuasion.bonus(rosterOf(state).find(m=>m.id===state.company.captainId),key):0;
     function stewardOf(state){
       const id=state?.company?.intendantId;
       return id==null?null:rosterOf(state).find(m=>m.id===id)||null;
@@ -66,7 +72,7 @@
       return delta>0&&m.stewardFlattered?0:delta;
     }
 
-    function canOffer(state,m){
+    function canOffer(state,m,{retry=false}={}){
       if(!m) return no("Mercenaire introuvable.");
       if(m.id===state.company.captainId) return no("Le capitaine ne peut pas être intendant.");
       // Recruté aujourd'hui : un poste attend le lendemain matin (Idan, 2026-11-02).
@@ -81,7 +87,7 @@
       // celui qui part demain ne peut pas l'être.
       const mission=(state.expeditions||[]).find(e=>e.memberIds.includes(m.id));
       if(mission) return no(mission.status==="scheduled"?"Il part en mission demain.":"Il est en mission.");
-      if(m.stewardOfferDay===state.day) return no("Vous lui en avez déjà parlé aujourd’hui.");
+      if(!retry&&m.stewardOfferDay===state.day) return no("Vous lui en avez déjà parlé aujourd’hui.");
       return {ok:true};
     }
 
@@ -94,14 +100,22 @@
       return {affinityDelta,mood:affinityDelta>0?"flattered":affinityDelta<0?"vexed":"neutral"};
     }
 
-    // Proposer le poste d'intendant.
-    function offer(state,mercenaryId){
+    // Refusé : le refus du jour (une relance possible), ou la relance ratée (rien de plus ici : retryRefusal revoit
+    // l'affinité du premier refus).
+    function refused(state,m,kind,record,base,retry){
+      if(retry) return {ok:true,accepted:false,...base,mercenary:m};
+      const r=refuse(m,state,record);
+      persuasion?.markRefused(m,REFUSAL,state.day,{kind,affinityDelta:r.affinityDelta,mood:r.mood});
+      return {ok:true,accepted:false,...base,mercenary:m,...r,canRetry:Boolean(persuasion)};
+    }
+    // Proposer le poste d'intendant ; approach : la relance.
+    function offer(state,mercenaryId,{approach=null,retry=false}={}){
       const m=rosterOf(state).find(x=>x.id===mercenaryId);
       const current=stewardOf(state);
       if(current) return no(current===m?"Il est déjà intendant.":"La compagnie a déjà un intendant.");
-      const allowed=canOffer(state,m);
+      const allowed=canOffer(state,m,{retry});
       if(!allowed.ok) return allowed;
-      const chance=appointChance(m),dice=roll();
+      const chance=approach?clamp(desire(m)+persuade(state,approach),C.min,C.max):appointChance(m),dice=roll();
       m.stewardOfferDay=state.day;
       if(dice<=chance){
         state.company.intendantId=m.id;
@@ -109,17 +123,17 @@
         History.record(m,state.day,"steward",{accepted:true});
         return {ok:true,accepted:true,roll:dice,chance,affinityDelta:0,mood:"neutral",mercenary:m};
       }
-      return {ok:true,accepted:false,roll:dice,chance,mercenary:m,...refuse(m,state,"steward")};
+      return refused(state,m,"offer","steward",{roll:dice,chance},retry);
     }
 
-    // Proposer à l'intendant de revenir sur le terrain.
-    function recall(state){
+    // Proposer à l'intendant de revenir sur le terrain ; approach : la relance.
+    function recall(state,{approach=null,retry=false}={}){
       const m=stewardOf(state);
       if(!m) return no("La compagnie n’a pas d’intendant.");
-      const allowed=canOffer(state,m);
+      const allowed=canOffer(state,m,{retry});
       if(!allowed.ok) return allowed;
       if(dormitory&&dormitory.free(state)<dormitory.places(m)) return {...no("Le dortoir est plein : pas de place pour son retour."),dormFull:true};
-      const chance=returnChance(state,m),dice=roll(),days=daysAsSteward(state);
+      const chance=clamp(C.returnBase-desire(m)+C.perDay*daysAsSteward(state)+persuade(state,approach),C.min,C.max),dice=roll(),days=daysAsSteward(state);
       m.stewardOfferDay=state.day;
       if(dice<=chance){
         History.historyOf(m).stewardDays=(Number(m.history?.stewardDays)||0)+days;
@@ -128,7 +142,14 @@
         History.record(m,state.day,"recall",{accepted:true,days});
         return {ok:true,accepted:true,roll:dice,chance,affinityDelta:0,mood:"neutral",days,mercenary:m};
       }
-      return {ok:true,accepted:false,roll:dice,chance,days,mercenary:m,...refuse(m,state,"recall")};
+      return refused(state,m,"recall","recall",{roll:dice,chance,days},retry);
+    }
+    // Après un refus (le poste, ou le retour sur le terrain), aujourd'hui : une relance, Intimider ou Convaincre.
+    function retry(state,mercenaryId,approach){
+      const m=rosterOf(state).find(x=>x.id===mercenaryId);
+      if(!persuasion) return no("Pas de relance.");
+      return persuasion.retryRefusal(m,REFUSAL,state.day,approach,
+        (refusal,key)=>refusal.kind==="recall"?recall(state,{approach:key,retry:true}):offer(state,mercenaryId,{approach:key,retry:true}),"stewardFlattered");
     }
 
     // Évaluer une caractéristique d'un candidat de la Taverne : estimation figée, gratuite.
@@ -151,7 +172,7 @@
       return (Number(m?.history?.stewardDays)||0)+(stewardOf(state)===m?daysAsSteward(state):0);
     }
 
-    return {constants:C,stewardOf,desire,appointChance,returnChance,daysAsSteward,totalStewardDays,refusalAffinity,canOffer,offer,recall,estimate};
+    return {constants:C,stewardOf,desire,appointChance,returnChance,daysAsSteward,totalStewardDays,refusalAffinity,canOffer,offer,recall,retry,estimate};
   }
 
   return {createStewardRules};

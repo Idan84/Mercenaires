@@ -115,6 +115,7 @@ function campBuildingCard(c,code){
       ${code==="survival_academy"&&typeof armorStudyHtml==="function"?armorStudyHtml(c):""}
       ${code==="alchemy_lab"&&typeof poisonStudyHtml==="function"?poisonStudyHtml(c):""}
       ${code==="lumber_camp"&&typeof lumberHtml==="function"?lumberHtml(c):""}
+      ${code==="miners_guild"&&typeof mineHtml==="function"?mineHtml(c):""}
     </article>`;
 }
 

@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "name": "mine-dialogue",
+  "description": "Guilde des mineurs (Idan, 2026-11-04) : envoyer un mercenaire à la mine demain. Il y va toujours, de bon cœur (willing) ou à contrecœur (grudging). panel : la carte de la Guilde ({nom} : le nom du mercenaire) ; send : la demande, les répliques, les issues ; log : le journal du matin ({chantier}, {jours}). {prenom} ; {masculin|féminin} selon celui qui parle. Textes de JC, à retoucher librement.",
+  "panel": {
+    "send": "Envoyer à la mine",
+    "send_tip": "Il y va toujours, parfois à contrecœur. Chaque mineur retire un jour à un chantier du camp (niveaux 6 à 10).",
+    "title": "Mineurs de demain",
+    "grudging": "à contrecœur",
+    "captain": "Le capitaine descendra à la mine demain.",
+    "cancelled": "{nom} ne descendra pas à la mine demain."
+  },
+  "send": {
+    "proposal": "Demain, il nous faut des bras à la mine. Vous y descendez.",
+    "willing": [
+      "Des pierres ? Je m’en occupe, capitaine.",
+      "Un peu de pioche, ça forge le bras.",
+      "J’y descends. Gardez-moi une bière au frais."
+    ],
+    "grudging": [
+      "Je suis mercenaire, pas mineur… Bon, j’y descends.",
+      "Sous terre toute la journée ? D’accord, mais je m’en souviendrai.",
+      "Casser des cailloux… Quel honneur."
+    ],
+    "outcome_willing": "{prenom} descendra à la mine demain.",
+    "outcome_grudging": "{prenom} descendra à la mine demain, à contrecœur."
+  },
+  "log": {
+    "reduced": "{chantier} : {jours} de moins grâce aux mineurs.",
+    "none": "Les mineurs n’ont trouvé aucun chantier à accélérer."
+  }
+}

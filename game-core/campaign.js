@@ -708,15 +708,18 @@
     const holderOfPost=key=>state=>Posts?Posts.holderOf(state,Posts.postByKey(key)):null;
     const aptitudeRules=(course,masterKey,others)=>ArmorStudy?ArmorStudy.createAptitudeStudyRules({reference,random,affinity,progression,course,camp:{
       buildingLevel,buildingPlaces,expeditionOf,masterOf:holderOfPost(masterKey),busyElsewhere:others}}):null;
-    const armorStudy=aptitudeRules("armor","veteran",(state,id)=>spellStudy?.busyReason(state,id)||poisonStudy?.busyReason(state,id)||lumberBusy(state,id));
-    const poisonStudy=aptitudeRules("poison","alchemist",(state,id)=>spellStudy?.busyReason(state,id)||armorStudy?.busyReason(state,id)||lumberBusy(state,id));
-    function aptitudeBusy(state,id){ return armorStudy?.busyReason(state,id)||poisonStudy?.busyReason(state,id)||lumberBusy(state,id)||null; }
-    // Cabane du bûcheron (Idan, 2026-11-03 ; règles : lumber.js) : les bûcherons du jour, retenus au camp toute la journée.
-    const lumberjacks=Lumber?Lumber.createLumberRules({reference,random,affinity,camp:{
-      buildingLevel,expeditionOf,offField:(state,m)=>offField(state,m),
-      busyElsewhere:(state,id)=>spellStudy?.busyReason(state,id)||armorStudy?.busyReason(state,id)||poisonStudy?.busyReason(state,id)||null,
-      works:state=>[state.company.camp.construction,...Object.values(state.company.camp.buildings||{}).map(b=>b?.construction)].filter(Boolean)}}):null;
-    function lumberBusy(state,id){ return lumberjacks?lumberjacks.busyReason(state,id):null; }
+    const armorStudy=aptitudeRules("armor","veteran",(state,id)=>spellStudy?.busyReason(state,id)||poisonStudy?.busyReason(state,id)||workBusy(state,id));
+    const poisonStudy=aptitudeRules("poison","alchemist",(state,id)=>spellStudy?.busyReason(state,id)||armorStudy?.busyReason(state,id)||workBusy(state,id));
+    function aptitudeBusy(state,id){ return armorStudy?.busyReason(state,id)||poisonStudy?.busyReason(state,id)||workBusy(state,id)||null; }
+    // Cabane du bûcheron (Idan, 2026-11-03) et Guilde des mineurs (Idan, 2026-11-04) (règles : lumber.js) : les bûcherons et
+    // les mineurs du jour, retenus au camp toute la journée ; une seule corvée par jour.
+    const campWorks=state=>[state.company.camp.construction,...Object.values(state.company.camp.buildings||{}).map(b=>b?.construction)].filter(Boolean);
+    const campWorkRules=(course,other)=>Lumber?Lumber.createLumberRules({reference,random,affinity,course,camp:{
+      buildingLevel,expeditionOf,offField:(state,m)=>offField(state,m),works:campWorks,
+      busyElsewhere:(state,id)=>spellStudy?.busyReason(state,id)||armorStudy?.busyReason(state,id)||poisonStudy?.busyReason(state,id)||other()?.tomorrowReason(state,id)||null}}):null;
+    const lumberjacks=campWorkRules("lumber",()=>miners);
+    const miners=campWorkRules("mine",()=>lumberjacks);
+    function workBusy(state,id){ return lumberjacks?.busyReason(state,id)||miners?.busyReason(state,id)||null; }
     const studyBusy=(state,m)=>m?(spellStudy?.busyReason(state,m.id)||aptitudeBusy(state,m.id)):null;
     function trainingAvailable(state,m){ return Boolean(m)&&!m.recovery&&!expeditionOf(state,m.id)&&!studyBusy(state,m); }
     // Le choix du joueur pour le capitaine : une salle ou une aile construite, de n'importe quel bâtiment d'entraînement, ou
@@ -827,8 +830,9 @@
       const expeditions=advanceExpeditions(state);
       const built=advanceConstruction(state);
       const buildings=advanceBuildings(state);
-      // Les bûcherons du jour (Idan, 2026-11-03) : un jour de moins sur les chantiers qui finissent le plus tôt.
+      // Les bûcherons (niveaux 1 à 5) et les mineurs (6 à 10) du jour : un jour de moins sur les chantiers qui finissent le plus tôt.
       const lumber=lumberjacks?lumberjacks.morning(state):null;
+      const mine=miners?miners.morning(state):null;
       // Demandes au lieutenant (Idan, 2026-10-25) : le résultat tombe le lendemain matin.
       const lieutenantReports=lieutenants?lieutenants.resolveRequests(state):[];
       const mana=rechargeCampMana(state);
@@ -843,7 +847,7 @@
       const poison=poisonStudy?poisonStudy.advance(state):null;
       // Entraînement libre (Idan, 2026-11-02) : ceux qui restent au camp choisissent leur journée.
       const school=runSchoolDay(state);
-      return {day:state.day,recovered,salaries,tavern:tavernReport,offersLost,expeditions,built,buildings,lieutenants:lieutenantReports,mana,merchant,school,study,armorStudy:armor,poisonStudy:poison,lumber};
+      return {day:state.day,recovered,salaries,tavern:tavernReport,offersLost,expeditions,built,buildings,lieutenants:lieutenantReports,mana,merchant,school,study,armorStudy:armor,poisonStudy:poison,lumber,mine};
     }
 
     // Recharge du mana (doc 12 ; Idan, 2026-10-25) : chaque jour, pour les membres présents au camp, pas pour ceux qui sont
@@ -1277,7 +1281,7 @@
       completeExpeditionCombat,
       dormitoryFree,
       dormitoryUsed,
-      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,trainingRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,spellStudy,armorStudy,poisonStudy,lumberjacks,studyBusy,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
+      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,trainingRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,spellStudy,armorStudy,poisonStudy,lumberjacks,miners,studyBusy,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
       woundDaysFor,fatigueDaysFor,
       dormitoryPlaces,
       dormitoryExpansionCost,

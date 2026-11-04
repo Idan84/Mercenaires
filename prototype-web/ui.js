@@ -56,6 +56,9 @@ function rosterStatus(c){
   // Bûcheron du jour, ou de demain (Idan, 2026-11-03).
   const lumber=game.campaign&&typeof campaignRules==="function"&&campaignRules().lumberjacks?campaignRules().lumberjacks.busyReason(game.campaign,c.id):null;
   if(lumber) return lumber.includes("demain")?{kind:"available",label:"Bûcheronne demain"}:{kind:"steward",label:"Bûcheronne"};
+  // Mineur du jour, ou de demain (Idan, 2026-11-04).
+  const mine=game.campaign&&typeof campaignRules==="function"&&campaignRules().miners?campaignRules().miners.busyReason(game.campaign,c.id):null;
+  if(mine) return mine.includes("demain")?{kind:"available",label:"À la mine demain"}:{kind:"steward",label:"À la mine"};
   // Le directeur de l'École de magie (Idan, 2026-11-01) et les maîtres (Idan, 2026-11-03) restent au camp.
   const post=game.campaign&&typeof MercenairesCampPosts!=="undefined"?MercenairesCampPosts.postOf(game.campaign,c):null;
   if(post) return {kind:"steward",label:typeof campPostLabel==="function"?campPostLabel(post.key,c):post.noun};

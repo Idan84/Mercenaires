@@ -38,6 +38,8 @@ function dayDigest(report){
   for(const e of ex.arrived||[]) entries.push({tone:"alert",icon:"swords",text:"Escouade arrivée au "+place(e),detail:"Le combat vous attend",faces:e.memberIds.map(member)});
   // Désertion (Idan, 2026-11-04 ; desertion-ui.js) : celui qui a filé, celui que la Vigie a repéré.
   if(typeof desertionNews==="function") entries.push(...desertionNews(report.desertion));
+  // Renégociation salariale (Idan, 2026-11-04 ; salary-review-ui.js) : il veut vous parler de son salaire.
+  if(typeof salaryReviewNews==="function") entries.push(...salaryReviewNews(report.salaryReview));
   // Taverne à 5 missions : une offre prise ailleurs est aussitôt remplacée ; une seule ligne, pas d'alerte.
   const lost=(report.offersLost||[]).length;
   if(lost) entries.push({tone:"",icon:"alert",text:lost>1?lost+" offres prises ailleurs":"Une offre prise ailleurs",detail:"Remplacée"+(lost>1?"s":"")+" à la Taverne"});

@@ -1344,11 +1344,18 @@
       return {affinity: result.total, factor: 1 - constant("salary.affinity.max_effect", 0.2) * result.total / 100};
     }
 
-    function calcSalary(character, captain = null) {
+    // Salaire demandé (09 §4) pour une affinité avec le capitaine donnée (null : facteur 1). Aussi le salaire théorique d'un
+    // membre de la compagnie, avec ses valeurs du jour (renégociation salariale, Idan, 2026-11-04 ; salary-review.js).
+    function salaryDemand(character, affinityTotal = null) {
       const base = Math.max(1, character.reputation / 30);
       const pretensions = 1 + (character.salaryPretension - 35) / 100;
       const intelligence = 1 + 0.25 * Math.pow((character.stats.Intelligence - 100) / 100, 2);
-      return Math.round(10 * base * pretensions * intelligence * salaryAffinityFactor(character, captain).factor);
+      const factor = affinityTotal == null ? 1 : 1 - constant("salary.affinity.max_effect", 0.2) * affinityTotal / 100;
+      return Math.round(10 * base * pretensions * intelligence * factor);
+    }
+
+    function calcSalary(character, captain = null) {
+      return salaryDemand(character, salaryAffinityFactor(character, captain).affinity);
     }
 
     function choosePeople(captain) {
@@ -1755,6 +1762,7 @@
     return {
       createMercenary,
       createCaptain,
+      salaryDemand,
       createInitialSquad,
       rollInitialSquadSize,
       auditReferenceData,

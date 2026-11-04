@@ -488,7 +488,9 @@
       "desertion_stayed": "A voulu quitter la compagnie ; le capitaine l’a {retenu|retenue}.",
       "desertion": "Quitte la compagnie en pleine nuit, avec son sac.",
       "desertion_let_go": "Quitte la compagnie : le capitaine l’a {laissé|laissée} partir.",
-      "duel": "Meurt en combat singulier contre le capitaine."
+      "duel": "Meurt en combat singulier contre le capitaine.",
+      "salary_raise": "Obtient une augmentation : de {avant} à {apres} PO par jour.",
+      "salary_refused": "Réclame une augmentation ; n’obtient rien."
     },
     "empty": "Rien à raconter pour l’instant."
   },

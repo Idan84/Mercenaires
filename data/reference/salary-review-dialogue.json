@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "name": "salary-review-dialogue",
+  "description": "Renégociation salariale (Idan, 2026-11-04) : la scène du matin quand un mercenaire qui a gagné une étoile vient réclamer une augmentation ; la notification du jour ; le journal. {salaire} : le montant en jeu ; {actuel} : son salaire actuel ; {prenom}, {nom} ; {masculin|féminin} selon le mercenaire. Le capitaine vouvoie. Textes de JC, à retoucher librement.",
+  "scene": {
+    "origin": "Salaire",
+    "demand": [
+      "Capitaine, on parle de moi dans les tavernes, maintenant. Je touche {actuel} PO par jour ; j’en vaux {salaire}.",
+      "J’ai fait mes preuves. {actuel} PO, ce n’est plus assez : je veux {salaire} PO par jour.",
+      "Mon nom circule, capitaine. Il est temps que ma paie suive : {salaire} PO par jour.",
+      "Vous savez ce que je vaux. Les autres compagnies aussi. {salaire} PO par jour, et on n’en parle plus."
+    ],
+    "resume": [
+      "On en était à {salaire} PO par jour, capitaine.",
+      "Toujours {salaire} PO par jour. Alors ?"
+    ],
+    "accept_terms": "Accepter : {salaire} PO par jour",
+    "negotiate": "Négocier",
+    "refuse": "Refuser",
+    "salary_label": "Salaire journalier",
+    "submit": "Proposer",
+    "back": "Retour",
+    "continue": "Continuer",
+    "you": {
+      "accept": "Marché conclu : {salaire} PO par jour.",
+      "offer": "Je vous propose {salaire} PO par jour.",
+      "refuse": [
+        "Non. Vous êtes payé ce qu’on a convenu.",
+        "Pas d’augmentation. Les temps sont durs pour tout le monde.",
+        "Revenez quand vous aurez fait vos preuves ici."
+      ],
+      "intimidate": [
+        "Vous prendrez ce que je vous donne, et vous me remercierez.",
+        "Ne me forcez pas à vous rappeler qui commande ici.",
+        "C’est ma dernière offre. Et ce n’en est pas une."
+      ],
+      "convince": [
+        "Allons, vous savez que c’est une bonne offre. La caisse ne peut pas faire mieux.",
+        "Acceptez celle-là ; on en reparlera après la prochaine campagne.",
+        "Je tiens à vous. Mais je dois payer tout le monde."
+      ]
+    },
+    "merc": {
+      "granted": [
+        "Merci, capitaine. Vous ne le regretterez pas.",
+        "Voilà qui fait plaisir. On se comprend.",
+        "Je savais qu’on pouvait compter sur vous."
+      ],
+      "accepted": [
+        "Va pour ça.",
+        "Ça me va. Pour cette fois.",
+        "D’accord, capitaine. Marché conclu."
+      ],
+      "counter": [
+        "Pas en dessous de {salaire} PO.",
+        "Faites un effort : {salaire} PO par jour.",
+        "Je descends à {salaire} PO. Pas plus bas."
+      ],
+      "floor_below": "Moins que maintenant ? Vous plaisantez : au moins {salaire} PO.",
+      "floor_refused": "Vous m’avez déjà proposé {salaire} PO. Pas moins.",
+      "broken": [
+        "Laissez tomber. On voit bien ce que je vaux pour vous.",
+        "Je n’ai plus envie d’en parler.",
+        "C’est une insulte. N’en parlons plus."
+      ],
+      "vexed": [
+        "Je m’en souviendrai, capitaine.",
+        "Comme vous voudrez… capitaine.",
+        "Bien. Je saurai à quoi m’en tenir."
+      ],
+      "retry": {
+        "accepted": ["… Bon. Va pour votre offre.", "D’accord, d’accord. Je prends.", "Vous avez gagné. Pour cette fois."],
+        "refused": ["Non. C’est trop tard.", "Ça ne change rien.", "Gardez votre or, et vos discours."]
+      }
+    },
+    "outcome": {
+      "raise": "{prenom} touche désormais {salaire} PO par jour.",
+      "kept": "{prenom} garde son salaire : {salaire} PO par jour.",
+      "broken": "{prenom} rompt la négociation."
+    }
+  },
+  "day_news": {
+    "request": "{nom} veut vous parler de son salaire",
+    "detail": "{Il|Elle} demande {salaire} PO par jour"
+  },
+  "log": {
+    "raise": "{nom} : augmentation, {salaire} PO par jour.",
+    "kept": "{nom} garde son salaire."
+  }
+}

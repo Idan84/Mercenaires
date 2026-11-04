@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 353,
+  "row_count": 363,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -2856,6 +2856,86 @@
       "description": "Retenu, il n'a plus de test de désertion pendant ce nombre de jours (Idan : « Garde-fou : s'il reste, il est immunisé aux tests de désertion pendant 15 jours »).",
       "formule": "Désertion",
       "valeur": 15,
+      "version": "V1"
+    },
+    {
+      "nom": "Renégociation — poids de l'écart",
+      "code": "salary_review.chance.gap_weight",
+      "description": "Renégociation salariale (Idan, 2026-11-04 : « Quand un mercenaire gagne une étoile de réputation, il fait un test (entre salaire perçu et salaire théorique). En fonction de son intelligence, il vient demander un meilleur salaire au capitaine » ; « oui ») : chance de venir réclamer = 100 / (1 + e^(−Δ / échelle)), Δ = poids × écart + poids de l'Intelligence × (Intelligence − médiane) + décalage ; écart = salaire théorique ÷ salaire − 1 (rien s'il est assez payé).",
+      "formule": "Renégociation salariale",
+      "valeur": 100,
+      "version": "V1"
+    },
+    {
+      "nom": "Renégociation — Intelligence médiane",
+      "code": "salary_review.chance.intelligence_median",
+      "description": "Intelligence d'un mercenaire moyen (médiane, environ 53).",
+      "formule": "Renégociation salariale",
+      "valeur": 50,
+      "version": "V1"
+    },
+    {
+      "nom": "Renégociation — poids de l'Intelligence",
+      "code": "salary_review.chance.intelligence_weight",
+      "description": "Poids de l'Intelligence dans Δ.",
+      "formule": "Renégociation salariale",
+      "valeur": 0.5,
+      "version": "V1"
+    },
+    {
+      "nom": "Renégociation — décalage",
+      "code": "salary_review.chance.offset",
+      "description": "Décalage de Δ.",
+      "formule": "Renégociation salariale",
+      "valeur": -15,
+      "version": "V1"
+    },
+    {
+      "nom": "Renégociation — échelle",
+      "code": "salary_review.chance.scale",
+      "description": "Échelle de la courbe.",
+      "formule": "Renégociation salariale",
+      "valeur": 10,
+      "version": "V1"
+    },
+    {
+      "nom": "Renégociation — minimum",
+      "code": "salary_review.chance.min",
+      "description": "Chance de venir réclamer, au moins (%), s'il est sous-payé.",
+      "formule": "Renégociation salariale",
+      "valeur": 5,
+      "version": "V1"
+    },
+    {
+      "nom": "Renégociation — maximum",
+      "code": "salary_review.chance.max",
+      "description": "Chance de venir réclamer, au plus (%).",
+      "formule": "Renégociation salariale",
+      "valeur": 95,
+      "version": "V1"
+    },
+    {
+      "nom": "Renégociation — affinité, tout accordé",
+      "code": "salary_review.affinity.granted",
+      "description": "Il obtient tout ce qu'il demande (ou plus) : son affinité avec le capitaine bouge de ce nombre (Idan : « parfait ») ; d'accord plus bas : rien.",
+      "formule": "Renégociation salariale",
+      "valeur": 5,
+      "version": "V1"
+    },
+    {
+      "nom": "Renégociation — affinité, refus",
+      "code": "salary_review.affinity.refused",
+      "description": "Le capitaine refuse, ou il rompt la négociation : son affinité bouge de ce nombre ; relance ratée : × 2 (intimidé) ou × 0,5 (convaincu).",
+      "formule": "Renégociation salariale",
+      "valeur": -10,
+      "version": "V1"
+    },
+    {
+      "nom": "Renégociation — relance, au plus",
+      "code": "salary_review.retry.max",
+      "description": "Après une rupture, la relance : chance d'accepter la dernière offre + Intimidation (ou Charisme ÷ 2) du capitaine, au plus ce pourcentage.",
+      "formule": "Renégociation salariale",
+      "valeur": 95,
       "version": "V1"
     }
   ]

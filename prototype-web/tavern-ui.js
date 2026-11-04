@@ -159,6 +159,8 @@ function advanceCampDay(){
     tavernLog(allowed.reason,"warn");
     // Un déserteur repéré attend qu'on décide de son sort (desertion-ui.js).
     if(allowed.desertion!=null){ if(typeof checkDesertions==="function") checkDesertions(); return; }
+    // Un mercenaire réclame une augmentation (salary-review-ui.js).
+    if(allowed.salaryReview!=null){ if(typeof checkSalaryReviews==="function") checkSalaryReviews(); return; }
     if(typeof openExpeditionDialog==="function") openExpeditionDialog(allowed.expedition.id);
     return;
   }

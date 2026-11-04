@@ -355,7 +355,8 @@ Deuxième fonction, **les bûcherons du jour** :
 - **1 bûcheron par niveau** de la Cabane et par jour (`camp.lumber.workers_per_level`). Au jour J, on organise J+1 : on
   l'envoie aujourd'hui (carte de la Cabane, « Envoyer bûcheronner »), il bûcheronne demain toute la journée — ni mission, ni
   garde du corps, ni entraînement libre, ni apprentissage ; on peut annuler d'ici là. Ni l'intendant, ni le médecin, ni un
-  maître à son poste, ni un blessé.
+  maître à son poste, ni un blessé. Le jour où il bûcheronne, on peut l'organiser pour le lendemain : mission, garde du
+  corps, apprentissage, autre corvée (Idan, 2026-11-04 : « Oui »).
 - **Il y va toujours** (« Pas de rejet direct… Il y va mais à contrecœur… test assez dur et petite perte à chaque fois ») :
   chance d'y aller de bon cœur = 10 + 80 / (1 + e^(−Δ/20)), **Δ = 0,5 × affinité avec le capitaine − 30** + l'appui de
   l'intendant (comme pour un sort) ; ~25 % à affinité 0. Raté : il y va **à contrecœur, affinité −2**
@@ -382,8 +383,8 @@ Deuxième fonction, **les mineurs du jour** — comme les bûcherons :
 - **Effet** : chaque mineur retire **1 jour** (`camp.mine.days_per_worker`) au chantier de **niveau 6 à 10**
   (`camp.mine.min_work_level`, `camp.mine.max_work_level`) qui finit le plus tôt, dortoir compris (même lecture du niveau) ;
   les bûcherons ne touchent que les niveaux 1 à 5.
-- **Une seule corvée par jour** : on ne part pas bûcheronner et descendre à la mine le même jour ; bûcheron aujourd'hui,
-  mineur demain, c'est possible.
+- **Une seule corvée par jour** : on ne part pas bûcheronner et descendre à la mine le même jour ; à la mine aujourd'hui,
+  bûcheron, élève ou en mission demain, c'est possible (Idan, 2026-11-04 : « Oui »).
 - Statuts : « À la mine demain », « À la mine ». Code `game-core/lumber.js` (course "mine") et `prototype-web/lumber-ui.js` ;
   textes `mine-dialogue.json` ; test `tests/mine.test.js`.
 

@@ -2,13 +2,15 @@
 
 // L'agenda d'un mercenaire au camp (refonte technique, Idan, 2026-11-04 : « Ok pour A ») : une seule liste des activités qui
 // le retiennent au camp — les apprentissages (sort, port d'armure, empoisonnement) et les corvées (bûcheron, mineur) — au
-// lieu de relier chaque activité à toutes les autres. Aucune règle ne change :
+// lieu de relier chaque activité à toutes les autres (la refonte n'a changé aucune règle ; depuis, une corvée d'aujourd'hui
+// n'empêche plus d'organiser demain) :
 //
 // - chaque activité est inscrite une fois (add), avec busyReason(state, id) → raison (aujourd'hui ou demain) ou null ;
 // - une activité demande à l'agenda ce qui le retient ailleurs (elsewhere) : toutes les autres, dans l'ordre d'inscription ;
-// - une corvée ne regarde les autres corvées que pour demain (tomorrowReason) : bûcheron aujourd'hui, mineur demain, c'est
-//   possible ; une seule corvée par jour ;
-// - reason(state, id) : ce qui le retient, toutes activités confondues (missions, garde du corps, entraînement libre).
+// - tomorrowReason(state, id) : ce qui le retient demain, pour organiser J+1 (apprentissage, mission, garde du corps,
+//   corvée) ; une corvée d'aujourd'hui ne compte pas (Idan, 2026-11-04 : « Oui ») : bûcheron aujourd'hui, mineur, élève ou
+//   en mission demain, c'est possible ; une seule corvée par jour ;
+// - reason(state, id) : ce qui le retient, aujourd'hui ou demain, toutes activités confondues (l'entraînement libre du jour).
 //
 // Les postes (intendant, médecin, maîtres…), les missions et les blessures restent vérifiés à part, comme avant.
 // Ajouter une activité : une ligne add() dans campaign.js. Module pur (portage Unreal : un tableau d'activités).
@@ -33,18 +35,19 @@
       return null;
     }
     const reason=(state,mercenaryId)=>entryOf(state,mercenaryId)?.reason||null;
-    // Pour l'activité « key » : ce qui le retient ailleurs, ou null.
-    function elsewhere(key,state,mercenaryId){
-      const chore=entries.find(e=>e.key===key)?.chore;
+    // Ce qui le retient demain (sauf l'activité « except », celle qui demande), ou null.
+    function tomorrowReason(state,mercenaryId,except=null){
       for(const e of entries){
-        if(e.key===key) continue;
-        const r=chore&&e.chore?e.rules.tomorrowReason(state,mercenaryId):e.rules.busyReason(state,mercenaryId);
+        if(e.key===except) continue;
+        const r=e.chore?e.rules.tomorrowReason(state,mercenaryId):e.rules.busyReason(state,mercenaryId);
         if(r) return r;
       }
       return null;
     }
+    // Pour l'activité « key » : ce qui le retient ailleurs demain, ou null.
+    const elsewhere=(key,state,mercenaryId)=>tomorrowReason(state,mercenaryId,key);
     const keys=()=>entries.map(e=>e.key);
-    const api={add,entryOf,reason,elsewhere,keys};
+    const api={add,entryOf,reason,tomorrowReason,elsewhere,keys};
     return api;
   }
   return {createAgenda};

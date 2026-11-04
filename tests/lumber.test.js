@@ -88,7 +88,9 @@ const [morning]=rules.advanceTime(state,1);
 // Le dortoir finit déjà demain matin : les deux jours vont au Ludus, le plus proche de la fin ensuite.
 assert.deepEqual(morning.lumber.reduced.map(r=>[r.name,r.days]),[["Ludus",2]]);
 assert.deepEqual([dorm.endDay-day0,ludus.endDay-day0,school.endDay-day0],[2,2,24]);
-assert.equal(rules.studyBusy(state,first),"Il bûcheronne aujourd’hui.");
+assert.equal(rules.agenda.reason(state,first.id),"Il bûcheronne aujourd’hui.");
+// Il bûcheronne aujourd'hui : on peut l'organiser pour demain (Idan, 2026-11-04 : « Oui »).
+assert.equal(rules.studyBusy(state,first),null);
 assert.ok(!morning.school.entries.some(e=>[first.id,second.id].includes(e.id)),"les bûcherons ne s'entraînent pas");
 // Le dortoir (son rang : 1) profite aussi du bois quand il est le plus proche de la fin.
 dice=[0];

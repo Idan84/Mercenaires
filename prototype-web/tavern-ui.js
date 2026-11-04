@@ -192,7 +192,7 @@ function logDayReport(report){
   if(typeof logArmorStudy==="function") logArmorStudy(report.armorStudy);
   if(typeof logArmorStudy==="function") logArmorStudy(report.poisonStudy,"poison");
   // Bûcherons (Idan, 2026-11-03) et mineurs (Idan, 2026-11-04) du jour.
-  if(typeof logCampWork==="function"){ logCampWork(report.lumber,"lumber"); logCampWork(report.mine,"mine"); }
+  if(typeof logCampWork==="function"){ logCampWork(report.lumber,"lumber"); logCampWork(report.mine,"mine"); logCampWork(report.palace,"palace"); }
   // Le marchand du jour (doc 18).
   if(typeof logMerchantMorning==="function") logMerchantMorning(report.merchant);
   // Le rapport des lieutenants (Idan, 2026-10-25) : une pop-up par demande de la veille.

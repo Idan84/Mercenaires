@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 328,
+  "row_count": 333,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -2480,6 +2480,46 @@
       "description": "Guilde des mineurs (Idan, 2026-11-04) : voir camp.mine.min_work_level.",
       "formule": "Guilde des mineurs",
       "valeur": 10,
+      "version": "V1"
+    },
+    {
+      "nom": "Palais — travailleurs par niveau",
+      "code": "camp.palace.workers_per_level",
+      "description": "Palais des plaisirs (Idan, 2026-11-04 : « On peut y faire travailler nos mercenaires, ils rapportent des pièces d'or en fonction de leur charisme et de leur réputation. Il faut un test d'affinité pour envoyer un mercenaire » ; « Il faut que ça soit rentable » ; « Le maître augmente les gains » ; « Parfait ») : mercenaires qui y travaillent par niveau du Palais, jusqu'à ce qu'on les retire.",
+      "formule": "Palais des plaisirs",
+      "valeur": 1,
+      "version": "V1"
+    },
+    {
+      "nom": "Palais — décalage du test",
+      "code": "camp.palace.offer_offset",
+      "description": "Chance d'accepter 10 + 80 / (1 + e^(−Δ/20)), Δ = 0,5 × affinité avec le capitaine + ce décalage + appui de l'intendant (+ la relance : persuasion.*). Affinité 0 : 50 % ; 50 : 69 % ; 100 : 85 %.",
+      "formule": "Palais des plaisirs",
+      "valeur": 0,
+      "version": "V1"
+    },
+    {
+      "nom": "Palais — affinité par jour de travail",
+      "code": "camp.palace.daily_affinity",
+      "description": "Idan, 2026-11-04 : « Pour la mine / palais / bûcheron […] chaque jour fait baisser l'affinité » ; « -1 par jour c'est bien » ; × 2 s'il a été intimidé, × 0,5 s'il a été convaincu.",
+      "formule": "Palais des plaisirs",
+      "valeur": -1,
+      "version": "V1"
+    },
+    {
+      "nom": "Palais — poids de la réputation",
+      "code": "camp.palace.reputation_weight",
+      "description": "Or d'une journée = Charisme × (1 + ce poids × niveau de réputation (1 à 15)) × (1 + Charisme du Maître des plaisirs ÷ camp.palace.master_divisor), arrondi. Mercenaire moyen (Charisme 54, niveau 3) : ≈ 86 PO ; salaire médian : 48 PO.",
+      "formule": "Palais des plaisirs",
+      "valeur": 0.2,
+      "version": "V1"
+    },
+    {
+      "nom": "Palais — diviseur du Maître des plaisirs",
+      "code": "camp.palace.master_divisor",
+      "description": "Le Maître des plaisirs multiplie l'or de chacun par 1 + son Charisme ÷ ce diviseur (Charisme 60 : + 30 %).",
+      "formule": "Palais des plaisirs",
+      "valeur": 200,
       "version": "V1"
     },
     {

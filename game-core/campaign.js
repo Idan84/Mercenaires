@@ -448,6 +448,7 @@
           veteranId:null,
           bladeMasterId:null,
           alchemistId:null,
+          pleasureMasterId:null,
           camp:{dormitoryCapacity:STARTING_DORMITORY_CAPACITY},
           renownHeritage:[],
           // Armes et armures de rechange de la compagnie, sans propriétaire, listées à l'Intendance (Idan, 2026-10-23
@@ -726,12 +727,15 @@
     // les mineurs du jour, retenus au camp toute la journée.
     const campWorks=state=>[state.company.camp.construction,...Object.values(state.company.camp.buildings||{}).map(b=>b?.construction)].filter(Boolean);
     const campWorkRules=course=>Lumber?Lumber.createLumberRules({reference,random,affinity,course,camp:{
-      buildingLevel,expeditionOf,offField:(state,m)=>offField(state,m),works:campWorks,busyElsewhere:elsewhere(course)}}):null;
+      buildingLevel,expeditionOf,offField:(state,m)=>offField(state,m),works:campWorks,busyElsewhere:elsewhere(course),
+      masterOf:holderOfPost("pleasureMaster")}}):null;
     const lumberjacks=campWorkRules("lumber");
     const miners=campWorkRules("mine");
+    // Palais des plaisirs (Idan, 2026-11-04) : on y fait travailler des mercenaires, qui rapportent de l'or.
+    const palaceWorkers=campWorkRules("palace");
     // L'ordre d'inscription est celui des raisons affichées.
     agenda?.add("spell",spellStudy).add("armor",armorStudy).add("poison",poisonStudy)
-      .add("lumber",lumberjacks,{chore:true}).add("mine",miners,{chore:true});
+      .add("lumber",lumberjacks,{chore:true}).add("mine",miners,{chore:true}).add("palace",palaceWorkers,{chore:true});
     // Ce qui le retient demain (mission, garde du corps : au jour J, on organise J+1) ; une corvée, tant qu'on ne l'a pas
     // retiré (Idan, 2026-11-04).
     const studyBusy=(state,m)=>m&&agenda?agenda.tomorrowReason(state,m.id):null;
@@ -848,6 +852,8 @@
       // Les bûcherons (niveaux 1 à 5) et les mineurs (6 à 10) du jour : un jour de moins sur les chantiers qui finissent le plus tôt.
       const lumber=lumberjacks?lumberjacks.morning(state):null;
       const mine=miners?miners.morning(state):null;
+      // Le Palais des plaisirs : l'or de la journée.
+      const palace=palaceWorkers?palaceWorkers.morning(state):null;
       // Demandes au lieutenant (Idan, 2026-10-25) : le résultat tombe le lendemain matin.
       const lieutenantReports=lieutenants?lieutenants.resolveRequests(state):[];
       const mana=rechargeCampMana(state);
@@ -862,7 +868,7 @@
       const poison=poisonStudy?poisonStudy.advance(state):null;
       // Entraînement libre (Idan, 2026-11-02) : ceux qui restent au camp choisissent leur journée.
       const school=runSchoolDay(state);
-      return {day:state.day,recovered,salaries,tavern:tavernReport,offersLost,expeditions,built,buildings,lieutenants:lieutenantReports,mana,merchant,school,study,armorStudy:armor,poisonStudy:poison,lumber,mine};
+      return {day:state.day,recovered,salaries,tavern:tavernReport,offersLost,expeditions,built,buildings,lieutenants:lieutenantReports,mana,merchant,school,study,armorStudy:armor,poisonStudy:poison,lumber,mine,palace};
     }
 
     // Recharge du mana (doc 12 ; Idan, 2026-10-25) : chaque jour, pour les membres présents au camp, pas pour ceux qui sont
@@ -1296,7 +1302,7 @@
       completeExpeditionCombat,
       dormitoryFree,
       dormitoryUsed,
-      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,trainingRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,spellStudy,armorStudy,poisonStudy,lumberjacks,miners,agenda,studyBusy,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
+      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,trainingRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,spellStudy,armorStudy,poisonStudy,lumberjacks,miners,palaceWorkers,agenda,studyBusy,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
       woundDaysFor,fatigueDaysFor,
       dormitoryPlaces,
       dormitoryExpansionCost,

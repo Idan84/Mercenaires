@@ -61,8 +61,19 @@ function openMedicAnswer(m,kind,result){
   $("deal-talk-log").innerHTML=`<p class="talk-say talk-say--you"><b>Vous</b><span>« ${esc(copy.proposal||"")} »</span></p>
     <p class="talk-say talk-say--merc"><b>${esc(first)}</b><span>« ${esc(medicFill(reply,m))} »</span></p>
     <p class="talk-note">${esc(medicFill(result.accepted?copy.outcome_accepted:copy.outcome_refused,m))}</p>`;
-  $("deal-talk-choices").innerHTML=`<ol class="talk-options"><li><button type="button" data-deal-leave>Partir</button></li></ol>`;
+  // Après un refus, la relance (Idan, 2026-11-04 ; persuasion-ui.js).
+  if(typeof persuasionAfter==="function") persuasionAfter(result,"medic",{member:m.id});
+  else $("deal-talk-choices").innerHTML=`<ol class="talk-options"><li><button type="button" data-deal-leave>Partir</button></li></ol>`;
   $("deal-talk-dialog").showModal();
+}
+function retryMedicPost(memberId,approach){
+  const m=game.campaign?.company.roster.find(x=>String(x.id)===String(memberId));
+  if(!m) return;
+  const result=medicRules().retry(game.campaign,m.id,approach);
+  if(!result.ok){ if(typeof tavernLog==="function") tavernLog(result.reason,"warn"); return; }
+  persuasionAppend(m,result,medicFill(medicCopy()[result.kind]?.outcome_accepted||"",m),`${m.id}|${game.campaign.day}|medic|${approach}`);
+  saveGame();
+  renderGame();
 }
 
 function offerMedicPost(id){
@@ -85,6 +96,7 @@ function recallMedic(){
 }
 
 function initializeMedic(){
+  if(typeof registerPersuasion==="function") registerPersuasion("medic",(approach,data)=>retryMedicPost(data.persuadeMember,approach));
   document.addEventListener("click",event=>{
     const offer=event.target.closest?.("[data-medic-offer]");
     if(offer){ offerMedicPost(offer.dataset.medicOffer); return; }

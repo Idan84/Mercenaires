@@ -15,10 +15,12 @@
   const steward=node?require("./steward.js"):root.MercenairesSteward;
   const history=node?require("./history.js"):root.MercenairesHistory;
   const posts=node?require("./camp-posts.js"):root.MercenairesCampPosts;
-  const api=factory(steward,history,posts);
+  // Relance après un refus (Idan, 2026-11-04) : Intimider ou Convaincre, ajoutés à la chance.
+  const persuasion=node?require("./persuasion.js"):root.MercenairesPersuasion;
+  const api=factory(steward,history,posts,persuasion);
   if(node) module.exports=api;
   root.MercenairesSchoolDirector=api;
-})(typeof globalThis!=="undefined"?globalThis:this,function(Steward,History,Posts){
+})(typeof globalThis!=="undefined"?globalThis:this,function(Steward,History,Posts,Persuasion){
   const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
   const capitalize=text=>text.charAt(0).toUpperCase()+text.slice(1);
   // « de » ou « d’ » devant le titre (« n’a pas d’Alchimiste »).
@@ -38,6 +40,9 @@
     const rosterOf=state=>state?.company?.roster||[];
     const stat=(m,name)=>Number(m?.stats?.[name])||0;
     const no=reason=>({ok:false,reason});
+    const persuasion=Persuasion?Persuasion.createPersuasionRules({reference}):null;
+    const REFUSAL=P.key+"Refusal";
+    const persuade=(state,key)=>persuasion&&key?persuasion.bonus(rosterOf(state).find(m=>m.id===state.company.captainId),key):0;
     const directorOf=state=>Posts.holderOf(state,P);
     function daysAsDirector(state){
       return directorOf(state)?Math.max(0,state.day-(Number(state.company[SINCE])||state.day)):0;
@@ -53,7 +58,7 @@
       return delta>0&&m[FLATTERED]?0:delta;
     }
 
-    function canOffer(state,m){
+    function canOffer(state,m,{retry=false}={}){
       if(!m) return no("Mercenaire introuvable.");
       if(!(levelOf(state)>0)) return no(`Il faut d’abord construire ${P.place}.`);
       if(m.id===state.company.captainId) return no(`Le capitaine ne peut pas diriger ${P.short}.`);
@@ -65,7 +70,7 @@
       if(other&&other!==P) return no(`${other.title} ne peut pas diriger ${P.short}.`);
       const mission=(state.expeditions||[]).find(e=>e.memberIds.includes(m.id));
       if(mission) return no(mission.status==="scheduled"?"Il part en mission demain.":"Il est en mission.");
-      if(m[OFFER_DAY]===state.day) return no("Vous lui en avez déjà parlé aujourd’hui.");
+      if(!retry&&m[OFFER_DAY]===state.day) return no("Vous lui en avez déjà parlé aujourd’hui.");
       return {ok:true};
     }
 
@@ -78,14 +83,21 @@
       return {affinityDelta,mood:affinityDelta>0?"flattered":affinityDelta<0?"vexed":"neutral"};
     }
 
-    // Proposer le poste.
-    function offer(state,mercenaryId){
+    // Refusé : le refus du jour (une relance possible), ou la relance ratée.
+    function refused(state,m,kind,record,base,retry){
+      if(retry) return {ok:true,accepted:false,...base,mercenary:m};
+      const r=refuse(m,state,record);
+      persuasion?.markRefused(m,REFUSAL,state.day,{kind,affinityDelta:r.affinityDelta,mood:r.mood});
+      return {ok:true,accepted:false,...base,mercenary:m,...r,canRetry:Boolean(persuasion)};
+    }
+    // Proposer le poste ; approach : la relance.
+    function offer(state,mercenaryId,{approach=null,retry=false}={}){
       const m=rosterOf(state).find(x=>x.id===mercenaryId);
       const current=directorOf(state);
       if(current) return no(current===m?`Il dirige déjà ${P.short}.`:`${capitalize(P.short)} a déjà un ${P.noun}.`);
-      const allowed=canOffer(state,m);
+      const allowed=canOffer(state,m,{retry});
       if(!allowed.ok) return allowed;
-      const chance=appointChance(m),dice=roll();
+      const chance=approach?clamp(steward.desire(m)+persuade(state,approach),C.min,C.max):appointChance(m),dice=roll();
       m[OFFER_DAY]=state.day;
       if(dice<=chance){
         state.company[ID]=m.id;
@@ -93,16 +105,16 @@
         History.record(m,state.day,P.key,{accepted:true});
         return {ok:true,accepted:true,roll:dice,chance,affinityDelta:0,mood:"neutral",mercenary:m};
       }
-      return {ok:true,accepted:false,roll:dice,chance,mercenary:m,...refuse(m,state,P.key)};
+      return refused(state,m,"offer",P.key,{roll:dice,chance},retry);
     }
 
-    // Lui proposer de revenir sur le terrain : il reprend une place au dortoir.
-    function recall(state){
+    // Lui proposer de revenir sur le terrain : il reprend une place au dortoir ; approach : la relance.
+    function recall(state,{approach=null,retry=false}={}){
       const m=directorOf(state);
       if(!m) return no(`${capitalize(P.short)} n’a pas ${of(P.noun)}.`);
-      if(m[OFFER_DAY]===state.day) return no("Vous lui en avez déjà parlé aujourd’hui.");
+      if(!retry&&m[OFFER_DAY]===state.day) return no("Vous lui en avez déjà parlé aujourd’hui.");
       if(dormitory&&dormitory.free(state)<dormitory.places(m)) return {...no("Le dortoir est plein : pas de place pour son retour."),dormFull:true};
-      const chance=returnChance(state,m),dice=roll(),days=daysAsDirector(state);
+      const chance=clamp(returnChance(state,m)+persuade(state,approach),C.min,C.max),dice=roll(),days=daysAsDirector(state);
       m[OFFER_DAY]=state.day;
       if(dice<=chance){
         History.historyOf(m)[DAYS]=(Number(m.history?.[DAYS])||0)+days;
@@ -111,10 +123,17 @@
         History.record(m,state.day,RECALL,{accepted:true,days});
         return {ok:true,accepted:true,roll:dice,chance,affinityDelta:0,mood:"neutral",days,mercenary:m};
       }
-      return {ok:true,accepted:false,roll:dice,chance,days,mercenary:m,...refuse(m,state,RECALL)};
+      return refused(state,m,"recall",RECALL,{roll:dice,chance,days},retry);
+    }
+    // Après un refus (le poste, ou le retour sur le terrain), aujourd'hui : une relance, Intimider ou Convaincre.
+    function retry(state,mercenaryId,approach){
+      const m=rosterOf(state).find(x=>x.id===mercenaryId);
+      if(!persuasion) return no("Pas de relance.");
+      return persuasion.retryRefusal(m,REFUSAL,state.day,approach,
+        (refusal,key)=>refusal.kind==="recall"?recall(state,{approach:key,retry:true}):offer(state,mercenaryId,{approach:key,retry:true}),FLATTERED);
     }
 
-    return {constants:C,post:P,directorOf,daysAsDirector,totalDirectorDays,appointChance,returnChance,refusalAffinity,canOffer,offer,recall};
+    return {constants:C,post:P,directorOf,daysAsDirector,totalDirectorDays,appointChance,returnChance,refusalAffinity,canOffer,offer,recall,retry};
   }
 
   return {createSchoolDirectorRules,POSTS:Posts.POSTS};

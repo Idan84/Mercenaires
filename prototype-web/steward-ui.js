@@ -58,8 +58,19 @@ function openStewardAnswer(m,kind,result){
   $("deal-talk-log").innerHTML=`<p class="talk-say talk-say--you"><b>Vous</b><span>« ${esc(copy.proposal||"")} »</span></p>
     <p class="talk-say talk-say--merc"><b>${esc(first)}</b><span>« ${esc(stewardFill(reply,m))} »</span></p>
     <p class="talk-note">${esc(stewardFill(result.accepted?copy.outcome_accepted:copy.outcome_refused,m))}</p>`;
-  $("deal-talk-choices").innerHTML=`<ol class="talk-options"><li><button type="button" data-deal-leave>Partir</button></li></ol>`;
+  // Après un refus, la relance (Idan, 2026-11-04 ; persuasion-ui.js).
+  if(typeof persuasionAfter==="function") persuasionAfter(result,"steward",{member:m.id});
+  else $("deal-talk-choices").innerHTML=`<ol class="talk-options"><li><button type="button" data-deal-leave>Partir</button></li></ol>`;
   $("deal-talk-dialog").showModal();
+}
+function retryStewardPost(memberId,approach){
+  const m=game.campaign?.company.roster.find(x=>String(x.id)===String(memberId));
+  if(!m) return;
+  const result=stewardRules().retry(game.campaign,m.id,approach);
+  if(!result.ok){ if(typeof tavernLog==="function") tavernLog(result.reason,"warn"); return; }
+  persuasionAppend(m,result,stewardFill(stewardCopy()[result.kind]?.outcome_accepted||"",m),`${m.id}|${game.campaign.day}|steward|${approach}`);
+  saveGame();
+  renderGame();
 }
 
 function offerStewardship(id){
@@ -132,6 +143,7 @@ function stewardEstimate(statName){
 }
 
 function initializeSteward(){
+  if(typeof registerPersuasion==="function") registerPersuasion("steward",(approach,data)=>retryStewardPost(data.persuadeMember,approach));
   document.addEventListener("click",event=>{
     const offer=event.target.closest?.("[data-steward-offer]");
     if(offer){ offerStewardship(offer.dataset.stewardOffer); return; }

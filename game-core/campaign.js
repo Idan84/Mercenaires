@@ -684,13 +684,17 @@
     // Fines Lames (ceux qui ont des places) ; chaque salle principale construite, puis ses ailes construites, avec ce
     // qu'elles travaillent (entraine, l'école, ou la Puissance magique pour la salle généraliste) et la caractéristique
     // qui fait le gain (apprend_avec du bâtiment).
-    const TRAINING_HALLS=[...CAMP_BUILDINGS.values()].filter(row=>!row.requiert&&Number(row.places_pas)>0).map(row=>row.code);
+    // Un bâtiment sans places à lui compte aussi s'il a une salle d'entraînement : les Bains chauds et leur Sauna (Idan,
+    // 2026-11-04) ; sa salle principale, sans places, n'entraîne rien.
+    const hasPlaces=row=>Number(row?.places_pas)>0;
+    const TRAINING_HALLS=[...CAMP_BUILDINGS.values()].filter(row=>!row.requiert
+      &&(hasPlaces(row)||campRoomCodes(row.code).some(code=>hasPlaces(CAMP_BUILDINGS.get(code))))).map(row=>row.code);
     function trainingRooms(state){
       const rooms=[];
       for(const hall of TRAINING_HALLS){
         if(!(buildingLevel(state,hall)>0)) continue;
         const hallRow=CAMP_BUILDINGS.get(hall);
-        for(const code of [hall,...campRoomCodes(hall)].filter(code=>buildingLevel(state,code)>0)){
+        for(const code of [hall,...campRoomCodes(hall)].filter(code=>buildingLevel(state,code)>0&&hasPlaces(CAMP_BUILDINGS.get(code)))){
           const row=CAMP_BUILDINGS.get(code);
           rooms.push({code,building:hall,name:row.nom,label:code===SCHOOL_HALL?"Salle généraliste":row.nom,school:row.ecole||null,
             trains:row.entraine||row.ecole||(code===SCHOOL_HALL?"Puissance magique":null),learnWith:hallRow.apprend_avec||"Intelligence",

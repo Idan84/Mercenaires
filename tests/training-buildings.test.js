@@ -45,9 +45,13 @@ const BUILDINGS={
   // « piège et armes à feu, c'est validé » ; les potions plus tard).
   alchemy_lab:["Labo d’alchimie","Résistance au poison",[["La Poudrière","Armes à feu"],["La Cave","Pièges"]]],
   // La Cabane du bûcheron (Idan, 2026-11-03 : « On aura une salle d'entraînement aux haches » ; « Pas de chef pour l'instant »).
-  lumber_camp:["Cabane du bûcheron","Haches",[]],
+  // Le Combat à deux mains chez les bûcherons et chez les mineurs (Idan, 2026-11-04).
+  lumber_camp:["Cabane du bûcheron","Haches",[["Le Merlin","Combat à deux mains"]]],
   // La Guilde des mineurs (Idan, 2026-11-04 : « on y apprend les armes contondantes » ; « Le Puits » ; la Force).
-  miners_guild:["Guilde des mineurs","Armes contondantes",[]]
+  miners_guild:["Guilde des mineurs","Armes contondantes",[["La Masse","Combat à deux mains"]]],
+  // La Caverne de la terreur (Idan, 2026-11-04 : « On y apprend par défaut le courage. On a une salle où on peut
+  // s'entraîner aux armes d'hast. On fait très simple pour l'instant » ; apprise avec le Courage).
+  terror_cave:["Caverne de la terreur","Courage",[["Le Hérisson","Armes d’hast"]]]
 };
 const known=new Set([...reference.characteristics.rows.map(r=>r.nom),...reference.skills.rows.map(r=>r.nom)]);
 for(const [code,[name,trains,wings]] of Object.entries(BUILDINGS)){
@@ -177,7 +181,35 @@ assert.equal(require("../game-core/camp-posts.js").postOfBuilding("miners_guild"
 state.company.camp.buildings={miners_guild:{level:1,construction:null}};
 assert.deepEqual(rules.trainingRooms(state).map(r=>[r.code,r.building,r.trains,r.learnWith,r.places]),[["miners_guild","miners_guild","Armes contondantes","Force",1]]);
 
-// La fiche de l'offre montre le paiement, sans commentaire (Idan : « tu veux toujours mettre du blabla inutile ! »).
+// Les nouvelles salles (Idan, 2026-11-04) : la Caverne de la terreur (Courage, appris avec le Courage ; Le Hérisson : Armes
+// d'hast), le Sauna des Bains chauds (Réserve de mana, apprise avec la Volonté ; au plus au niveau 5 des Bains), la Salle du
+// Bâton à l'École de magie, le Combat à deux mains chez les bûcherons et chez les mineurs. Pas de chef à la Caverne.
+assert.equal(require("../game-core/camp-posts.js").postOfBuilding("terror_cave"),null,"pas de chef");
+assert.match(row("terror_cave").description,/Dans la Gueule : « On y entre en héros\. On en ressort en courant\. »/);
+assert.deepEqual([row("baths_sauna").nom,row("baths_sauna").niveaux,row("baths").apprend_avec,row("baths").places_pas],["Le Sauna",5,"Volonté",0]);
+state.company.camp.buildings={baths:{level:2},baths_sauna:{level:1},magic_school:{level:1},magic_room_staff:{level:1},
+  lumber_camp:{level:1},lumber_two_handed:{level:1},miners_guild:{level:1},mine_two_handed:{level:1},terror_cave:{level:1},terror_cave_polearms:{level:1}};
+const newRooms=rules.trainingRooms(state);
+assert.deepEqual(newRooms.map(r=>[r.code,r.building,r.trains,r.learnWith]),[
+  ["baths_sauna","baths","Réserve de mana","Volonté"],
+  ["magic_school","magic_school","Puissance magique","Intelligence"],["magic_room_staff","magic_school","Bâtons","Intelligence"],
+  ["lumber_camp","lumber_camp","Haches","Force"],["lumber_two_handed","lumber_camp","Combat à deux mains","Force"],
+  ["miners_guild","miners_guild","Armes contondantes","Force"],["mine_two_handed","miners_guild","Combat à deux mains","Force"],
+  ["terror_cave","terror_cave","Courage","Courage"],["terror_cave_polearms","terror_cave","Armes d’hast","Courage"]],"les Bains eux-mêmes n'entraînent rien");
+// Une journée y fait monter ce qu'il faut : caractéristiques, ou compétence martiale (avec le recul des autres).
+const trainee=state.company.roster[1],xpOf=code=>rules.schoolTraining.xpOf(newRooms.find(r=>r.code===code),10,trainee);
+assert.deepEqual(xpOf("baths_sauna"),{stats:{"Réserve de mana":10}});
+assert.deepEqual(xpOf("terror_cave"),{stats:{Courage:10}});
+for(const [code,skill] of [["terror_cave_polearms","Armes d’hast"],["magic_room_staff","Bâtons"],["lumber_two_handed","Combat à deux mains"],["mine_two_handed","Combat à deux mains"]])
+  assert.ok(xpOf(code).skills.martial[skill]>0,code);
+// Le Sauna monte au plus jusqu'au niveau des Bains.
+assert.equal(rules.nextBuildingLevel(state,"baths_sauna").locked,false);
+state.company.camp.buildings.baths_sauna.level=2;
+assert.equal(rules.nextBuildingLevel(state,"baths_sauna").locked,true);
+state.company.camp.buildings.baths_sauna.level=5;
+assert.equal(rules.nextBuildingLevel(state,"baths_sauna"),null,"niveau 5 au plus");
+
+// La fiche de l'offre montre le paiement (Idan : « tu veux toujours mettre du blabla inutile ! »).
 assert.doesNotMatch(fs.readFileSync(path.join(ROOT,"prototype-web","contract-ui.js"),"utf8"),/du Cercle des Fines Lames/);
 
 console.log("Ludus, Académie de la survie, Cercle des Fines Lames : 10 niveaux, ailes, noms, garde du corps + 5 % par niveau du Cercle, entraînement libre — OK");

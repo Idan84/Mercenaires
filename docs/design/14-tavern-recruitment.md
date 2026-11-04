@@ -15,11 +15,19 @@ Conséquence voulue : un candidat médiocre peut rester assez longtemps pour occ
 
 ## 2 — Capacité de la Taverne
 
-La Taverne possède **5 places de candidats au début de partie**.
+**Places = 3 + niveau de renommée de la compagnie** (Idan, 2026-11-04 : « 3 + nombre d'étoiles de réputation de la
+compagnie » ; le niveau, de 1 à 15 : 1 à 5 étoiles de bronze, puis d'argent, puis d'or ; « Oui, parfait »), soit **4 à 18
+places** (constantes `tavern.slots.base`, `tavern.slots.per_renown_level`). Une compagnie neuve démarre le plus souvent au
+niveau 2 ou 3 : 5 ou 6 places (sur 200 compagnies simulées : niveau 1 pour 9, 2 pour 112, 3 pour 78, 4 pour 1).
 
-`TavernCandidateSlots = 5` au départ.
+- Les places sont recalculées chaque matin, avant le remplissage : une place gagnée se remplit le lendemain matin.
+- Si la renommée baisse, **personne n'est chassé** : aucun nouveau candidat tant que la Taverne est au-dessus de ses places.
+- Sans le référentiel des étoiles (tests isolés) : `tavern.slots.initial` (5).
+- Écran « Recruter » : les candidats **défilent en carrousel** (Idan, 2026-11-04 : « fais un système qui défile comme un
+  carousel ») : une rangée de portraits, une flèche de chaque côté (grisée au bout), la molette ou le doigt ; quand tout
+  tient à l'écran, la rangée est centrée, sans flèches.
 
-La capacité doit ensuite augmenter avec la **Renommée de compagnie**. La formule de progression exacte est reportée : on fixe d'abord le comportement du système avec 5 places.
+Code : `game-core/tavern.js` (`slotsFor`), `prototype-web/tavern-ui.js` ; test : `tests/tavern-slots.test.js`.
 
 Cette capacité est totalement distincte de celle du Dortoir :
 
@@ -496,7 +504,7 @@ Le besoin d'un état de partie persistant a été signalé par JC3 : les candida
 
 Les principes ci-dessus sont suffisamment définis pour permettre un prototype. Restent à traiter séparément :
 
-1. formule exacte Renommée → nombre de places de Taverne ;
+1. ~~formule exacte Renommée → nombre de places de Taverne~~ : tranché le 2026-11-04 (§2) ;
 2. ~~formule Renommée → qualité des nouveaux candidats~~ : tranché le 2026-10-20 (§5) ;
 3. constantes du test `Engagé ailleurs` ;
 4. coefficients exacts de la prime de mission ;

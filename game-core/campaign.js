@@ -17,10 +17,12 @@
   const armorStudy=typeof module!=="undefined"&&module.exports?require("./armor-study.js"):root.MercenairesArmorStudy;
   // Cabane du bûcheron : les bûcherons du jour accélèrent les chantiers (facultatif hors du jeu, de même).
   const lumber=typeof module!=="undefined"&&module.exports?require("./lumber.js"):root.MercenairesLumber;
-  const api=factory(history,regeneration,training,study,posts,armorPorts,armorStudy,lumber);
+  // L'agenda : les apprentissages et les corvées qui retiennent un mercenaire au camp, en une seule liste.
+  const agenda=typeof module!=="undefined"&&module.exports?require("./agenda.js"):root.MercenairesAgenda;
+  const api=factory(history,regeneration,training,study,posts,armorPorts,armorStudy,lumber,agenda);
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesCampaign=api;
-})(typeof globalThis!=="undefined"?globalThis:this,function(History,Regeneration,Training,Study,Posts,ArmorPorts,ArmorStudy,Lumber){
+})(typeof globalThis!=="undefined"?globalThis:this,function(History,Regeneration,Training,Study,Posts,ArmorPorts,ArmorStudy,Lumber,Agenda){
   // Sauvegarde : l'état de partie complet, sérialisé en JSON avec un format et une version.
   // La trace de génération des mercenaires (détail de calcul pour le Design Lab, ~85 % du poids)
   // n'est pas sauvegardée : un mercenaire passe d'environ 36 Ko à 5 Ko.
@@ -695,6 +697,10 @@
       }
       return rooms;
     }
+    // L'agenda (agenda.js ; Idan, 2026-11-04) : chaque apprentissage et chaque corvée y est inscrit une fois, et lui demande
+    // ce qui retient un mercenaire ailleurs ; une seule activité à la fois, une seule corvée par jour.
+    const agenda=Agenda?Agenda.createAgenda():null;
+    const elsewhere=key=>(state,id)=>agenda?agenda.elsewhere(key,state,id):null;
     // Apprentissage des sorts (Idan, 2026-11-02 ; règles : spell-study.js) : l'élève prend une place dans la salle de
     // l'école du sort, avant l'entraînement libre ; élève et professeur restent au camp jusqu'à la fin.
     const spellStudy=Study?Study.createSpellStudyRules({reference,random,affinity,progression,camp:{
@@ -702,25 +708,26 @@
         const row=[...CAMP_BUILDINGS.values()].find(r=>r.requiert===SCHOOL_HALL&&r.ecole===school);
         return row?{code:row.code,name:row.nom}:null;
       },
-      buildingLevel,buildingPlaces,directorOf,expeditionOf,busyElsewhere:(state,id)=>aptitudeBusy(state,id)}}):null;
+      buildingLevel,buildingPlaces,directorOf,expeditionOf,busyElsewhere:elsewhere("spell")}}):null;
     // Apprendre un port d'armure à l'Académie, l'Empoisonnement des armes au Labo d'alchimie (Idan, 2026-11-03 ; règles :
     // armor-study.js) : une place de la salle principale, avant l'entraînement libre ; l'élève reste au camp jusqu'à la fin.
     const holderOfPost=key=>state=>Posts?Posts.holderOf(state,Posts.postByKey(key)):null;
-    const aptitudeRules=(course,masterKey,others)=>ArmorStudy?ArmorStudy.createAptitudeStudyRules({reference,random,affinity,progression,course,camp:{
-      buildingLevel,buildingPlaces,expeditionOf,masterOf:holderOfPost(masterKey),busyElsewhere:others}}):null;
-    const armorStudy=aptitudeRules("armor","veteran",(state,id)=>spellStudy?.busyReason(state,id)||poisonStudy?.busyReason(state,id)||workBusy(state,id));
-    const poisonStudy=aptitudeRules("poison","alchemist",(state,id)=>spellStudy?.busyReason(state,id)||armorStudy?.busyReason(state,id)||workBusy(state,id));
-    function aptitudeBusy(state,id){ return armorStudy?.busyReason(state,id)||poisonStudy?.busyReason(state,id)||workBusy(state,id)||null; }
+    const aptitudeRules=(course,masterKey)=>ArmorStudy?ArmorStudy.createAptitudeStudyRules({reference,random,affinity,progression,course,camp:{
+      buildingLevel,buildingPlaces,expeditionOf,masterOf:holderOfPost(masterKey),busyElsewhere:elsewhere(course)}}):null;
+    const armorStudy=aptitudeRules("armor","veteran");
+    const poisonStudy=aptitudeRules("poison","alchemist");
     // Cabane du bûcheron (Idan, 2026-11-03) et Guilde des mineurs (Idan, 2026-11-04) (règles : lumber.js) : les bûcherons et
-    // les mineurs du jour, retenus au camp toute la journée ; une seule corvée par jour.
+    // les mineurs du jour, retenus au camp toute la journée.
     const campWorks=state=>[state.company.camp.construction,...Object.values(state.company.camp.buildings||{}).map(b=>b?.construction)].filter(Boolean);
-    const campWorkRules=(course,other)=>Lumber?Lumber.createLumberRules({reference,random,affinity,course,camp:{
-      buildingLevel,expeditionOf,offField:(state,m)=>offField(state,m),works:campWorks,
-      busyElsewhere:(state,id)=>spellStudy?.busyReason(state,id)||armorStudy?.busyReason(state,id)||poisonStudy?.busyReason(state,id)||other()?.tomorrowReason(state,id)||null}}):null;
-    const lumberjacks=campWorkRules("lumber",()=>miners);
-    const miners=campWorkRules("mine",()=>lumberjacks);
-    function workBusy(state,id){ return lumberjacks?.busyReason(state,id)||miners?.busyReason(state,id)||null; }
-    const studyBusy=(state,m)=>m?(spellStudy?.busyReason(state,m.id)||aptitudeBusy(state,m.id)):null;
+    const campWorkRules=course=>Lumber?Lumber.createLumberRules({reference,random,affinity,course,camp:{
+      buildingLevel,expeditionOf,offField:(state,m)=>offField(state,m),works:campWorks,busyElsewhere:elsewhere(course)}}):null;
+    const lumberjacks=campWorkRules("lumber");
+    const miners=campWorkRules("mine");
+    // L'ordre d'inscription est celui des raisons affichées.
+    agenda?.add("spell",spellStudy).add("armor",armorStudy).add("poison",poisonStudy)
+      .add("lumber",lumberjacks,{chore:true}).add("mine",miners,{chore:true});
+    // Ce qui le retient au camp, toutes activités confondues (missions, garde du corps, entraînement libre).
+    const studyBusy=(state,m)=>m&&agenda?agenda.reason(state,m.id):null;
     function trainingAvailable(state,m){ return Boolean(m)&&!m.recovery&&!expeditionOf(state,m.id)&&!studyBusy(state,m); }
     // Le choix du joueur pour le capitaine : une salle ou une aile construite, de n'importe quel bâtiment d'entraînement, ou
     // null (la taverne).
@@ -1281,7 +1288,7 @@
       completeExpeditionCombat,
       dormitoryFree,
       dormitoryUsed,
-      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,trainingRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,spellStudy,armorStudy,poisonStudy,lumberjacks,miners,studyBusy,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
+      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,trainingRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,spellStudy,armorStudy,poisonStudy,lumberjacks,miners,agenda,studyBusy,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
       woundDaysFor,fatigueDaysFor,
       dormitoryPlaces,
       dormitoryExpansionCost,

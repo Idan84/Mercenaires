@@ -350,41 +350,60 @@ pour l'instant » ; « Parfait. ») — salle principale **Le Billot** : **Hache
 lui, ne se défend pas. »), apprises avec la **Force** ; même barème et mêmes places que les autres bâtiments, entraînement
 libre compris ; pas d'aile.
 
-Deuxième fonction, **les bûcherons du jour** :
+Deuxième fonction, **les bûcherons** (corvée ; Idan, 2026-11-04 : « on va mettre les mercenaires en durée indéterminée.
+On peut les retirer quand on le souhaite. Par contre, chaque jour fait baisser l'affinité » ; « Dans les 3 cas, ils peuvent
+refuser. -1 par jour c'est bien ») :
 
-- **1 bûcheron par niveau** de la Cabane et par jour (`camp.lumber.workers_per_level`). Au jour J, on organise J+1 : on
-  l'envoie aujourd'hui (carte de la Cabane, « Envoyer bûcheronner »), il bûcheronne demain toute la journée — ni mission, ni
-  garde du corps, ni entraînement libre, ni apprentissage ; on peut annuler d'ici là. Ni l'intendant, ni le médecin, ni un
-  maître à son poste, ni un blessé. Le jour où il bûcheronne, on peut l'organiser pour le lendemain : mission, garde du
-  corps, apprentissage, autre corvée (Idan, 2026-11-04 : « Oui »).
-- **Il y va toujours** (« Pas de rejet direct… Il y va mais à contrecœur… test assez dur et petite perte à chaque fois ») :
-  chance d'y aller de bon cœur = 10 + 80 / (1 + e^(−Δ/20)), **Δ = 0,5 × affinité avec le capitaine − 30** + l'appui de
-  l'intendant (comme pour un sort) ; ~25 % à affinité 0. Raté : il y va **à contrecœur, affinité −2**
-  (`camp.lumber.grudge_affinity`), même si on annule ensuite. Le capitaine, sans test.
+- **1 bûcheron par niveau** de la Cabane (`camp.lumber.workers_per_level`), places prises tant qu'ils y restent. Au jour J,
+  on organise J+1 : on l'envoie aujourd'hui (carte de la Cabane, « Envoyer bûcheronner »), il commence demain matin et
+  continue chaque jour **jusqu'à ce qu'on le retire** (« Retirer ») ; retiré, il est libre le lendemain (mission, garde du
+  corps, apprentissage, autre corvée). Tant qu'il y est : ni mission, ni garde du corps, ni entraînement libre, ni
+  apprentissage. Ni l'intendant, ni le médecin, ni un maître à son poste, ni un blessé.
+- **Il peut refuser** : chance d'accepter = 10 + 80 / (1 + e^(−Δ/20)), **Δ = 0,5 × affinité avec le capitaine − 30** +
+  l'appui de l'intendant (comme pour un sort) ; ~25 % à affinité 0, 45 % à 50, 69 % à 100. Après un refus, **une relance**
+  (§ « Relance après un refus » ci-dessous) : Intimider ou Convaincre, ou laisser tomber ; puis c'est non pour aujourd'hui.
+  Le capitaine accepte toujours.
+- **Chaque matin de travail : affinité −1** (`camp.lumber.daily_affinity`), **−2** s'il a été intimidé, **−0,5** s'il a
+  été convaincu ; l'affinité perdue ne revient pas quand on le retire. Le capitaine ne perd rien.
 - **Effet fixe** : chaque bûcheron retire **1 jour** (`camp.lumber.days_per_worker`) au chantier **qui finit le plus tôt**
   (« A »), parmi ceux de **niveau 1 à 5** (`camp.lumber.max_work_level`) : un bâtiment (son niveau en construction) et le
   dortoir (« Oui ») — qualité : le niveau visé ; agrandissement : son rang ; quartier du lieutenant : son numéro. Un
   chantier finit au plus tôt le lendemain matin ; s'il n'y en a aucun, la journée est perdue. Le journal du matin dit les
   jours gagnés, chantier par chantier.
-- Statuts : « Bûcheronne demain », « Bûcheronne ». Constantes `camp.lumber.*` ; code `game-core/lumber.js` ; textes
+- Carte de la Cabane : « Bûcherons (2 / 3) », chacun avec « dès demain », « intimidé » ou « convaincu » s'il y a lieu.
+  Statuts : « Bûcheronne demain », « Bûcheronne ». Constantes `camp.lumber.*` ; code `game-core/lumber.js` ; textes
   `lumber-dialogue.json` ; test `tests/lumber.test.js`. La **Guilde des mineurs** fait de même pour les chantiers de
   niveau 6 à 10.
+
+**Relance après un refus** (Idan, 2026-11-04 : « On peut retenter via deux options de dialogues (ou laisser tomber) :
+Intimider, Convaincre. On refait le test en ajoutant son intimidation ou son charisme (moitié du cha). En intimidation, ça
+double la perte d'affinité. En charisme, ça la divise par deux » ; « valable pour tout test de refus » ; « Oui Go ! ») :
+
+- après un refus, **une seule relance**, l'une ou l'autre, ou « Laisser tomber » ; puis c'est non pour aujourd'hui ;
+- **Intimider** : le test est refait avec, en plus, l'**Intimidation du capitaine** (`persuasion.intimidate.weight`, médiane
+  38) ; **Convaincre** : avec son **Charisme ÷ 2** (`persuasion.convince.weight`, médiane 27). Exemple, un test à 50 % :
+  environ 77 % en intimidant, 70 % en convainquant ;
+- la perte d'affinité qui suit est **× 2** si on l'a intimidé, **× 0,5** si on l'a convaincu (`persuasion.*.loss_factor`) :
+  pour une corvée, la perte de chaque jour, pendant toute l'affectation ; pour les autres tests (à venir : apprentissages,
+  équipements, postes), la perte du refus si la relance échoue, celle de l'accord si elle réussit ;
+- code `game-core/persuasion.js` ; textes communs `persuasion-dialogue.json` (options, phrases du capitaine, répliques).
+  Étape 1 : les corvées ; étape 2 : le Palais des plaisirs ; étape 3 : les autres tests de refus.
 
 **La Guilde des mineurs** (Idan, 2026-11-04 : « même chose mais avec les pierres pour des bâtiments de lvl 6 à 10 et on y
 apprend les armes contondantes » ; « Oui, oui et pareil ») — salle principale **Le Puits** : **Armes contondantes** (« On y
 descend avec une lanterne, on en remonte avec un marteau. »), apprises avec la **Force** ; même barème et mêmes places,
 entraînement libre compris ; pas d'aile, pas de chef.
 
-Deuxième fonction, **les mineurs du jour** — comme les bûcherons :
+Deuxième fonction, **les mineurs** — comme les bûcherons :
 
-- **1 mineur par niveau** de la Guilde et par jour (`camp.mine.workers_per_level`), envoyé la veille (« Envoyer à la
-  mine »), annulable d'ici là ; mêmes exclusions.
-- **Même test, même perte** (« pareil ») : `camp.lumber.offer_offset`, `camp.lumber.grudge_affinity` ; le capitaine sans test.
+- **1 mineur par niveau** de la Guilde (`camp.mine.workers_per_level`), envoyé la veille (« Envoyer à la mine »), jusqu'à
+  ce qu'on le retire ; mêmes exclusions.
+- **Même test, même relance, même perte par jour** (« pareil ») : `camp.lumber.offer_offset`, `camp.lumber.daily_affinity`.
 - **Effet** : chaque mineur retire **1 jour** (`camp.mine.days_per_worker`) au chantier de **niveau 6 à 10**
   (`camp.mine.min_work_level`, `camp.mine.max_work_level`) qui finit le plus tôt, dortoir compris (même lecture du niveau) ;
   les bûcherons ne touchent que les niveaux 1 à 5.
-- **Une seule corvée par jour** : on ne part pas bûcheronner et descendre à la mine le même jour ; à la mine aujourd'hui,
-  bûcheron, élève ou en mission demain, c'est possible (Idan, 2026-11-04 : « Oui »).
+- **Une seule corvée à la fois** : pour passer de la Cabane à la mine, on le retire d'abord ; il peut descendre à la mine
+  dès le lendemain.
 - Statuts : « À la mine demain », « À la mine ». Code `game-core/lumber.js` (course "mine") et `prototype-web/lumber-ui.js` ;
   textes `mine-dialogue.json` ; test `tests/mine.test.js`.
 

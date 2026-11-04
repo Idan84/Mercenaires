@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "name": "persuasion-dialogue",
+  "description": "Relance après un refus (Idan, 2026-11-04 : « On peut retenter via deux options de dialogues (ou laisser tomber) : Intimider, Convaincre ») : les options, la phrase du capitaine, la réplique du mercenaire (accepted / refused), l'issue d'un second refus, l'étiquette laissée sur la carte. Commun à tous les tests de refus. {prenom} ; {masculin|féminin} selon le mercenaire. Textes de JC, à retoucher librement.",
+  "options": {
+    "intimidate": "Intimider",
+    "convince": "Convaincre",
+    "leave": "Laisser tomber"
+  },
+  "labels": {
+    "intimidate": "{intimidé|intimidée}",
+    "convince": "{convaincu|convaincue}"
+  },
+  "captain": {
+    "intimidate": [
+      "Ce n’était pas une question.",
+      "Vous y allez, ou vous vous cherchez un autre capitaine.",
+      "Je ne le répéterai pas."
+    ],
+    "convince": [
+      "Faites-le pour la compagnie. Je m’en souviendrai.",
+      "Tout le monde saura ce que vous avez fait pour nous.",
+      "Je vous le demande comme un service, pas comme un ordre."
+    ]
+  },
+  "reply": {
+    "intimidate": {
+      "accepted": [
+        "… À vos ordres.",
+        "Bien, capitaine. Bien.",
+        "Je n’oublierai pas, capitaine."
+      ],
+      "refused": [
+        "Menacez tant que vous voulez. C’est non.",
+        "Vous ne me faites pas peur.",
+        "Essayez encore, pour voir."
+      ]
+    },
+    "convince": {
+      "accepted": [
+        "Bon… pour vous, d’accord.",
+        "Vu comme ça… j’y vais.",
+        "Vous savez parler, capitaine."
+      ],
+      "refused": [
+        "C’est gentil, mais non.",
+        "Belle tentative. Toujours non.",
+        "Je vous aime bien, capitaine. Mais non."
+      ]
+    }
+  },
+  "final_refused": "{prenom} ne changera pas d’avis aujourd’hui."
+}

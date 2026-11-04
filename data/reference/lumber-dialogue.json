@@ -1,29 +1,30 @@
 {
   "schema_version": 1,
   "name": "lumber-dialogue",
-  "description": "Cabane du bûcheron (Idan, 2026-11-03) : envoyer un mercenaire bûcheronner demain. Il y va toujours, de bon cœur (willing) ou à contrecœur (grudging). panel : la carte de la Cabane ({nom} : le nom du mercenaire) ; send : la demande, les répliques, les issues ; log : le journal du matin ({chantier}, {jours}). {prenom} ; {masculin|féminin} selon celui qui parle. Textes de JC, à retoucher librement.",
+  "description": "Cabane du bûcheron (Idan, 2026-11-03 et 2026-11-04) : envoyer un mercenaire bûcheronner à partir de demain, jusqu'à ce qu'on le retire. Il peut refuser (accepted / refused) ; la relance (Intimider, Convaincre) : persuasion-dialogue.json. panel : la carte de la Cabane ({nom} : le nom du mercenaire) ; send : la demande, les répliques, les issues ; log : le journal du matin ({chantier}, {jours}). {prenom} ; {masculin|féminin} selon celui qui parle. Textes de JC, à retoucher librement.",
   "panel": {
     "send": "Envoyer bûcheronner",
-    "send_tip": "Il y va toujours, parfois à contrecœur. Chaque bûcheron retire un jour à un chantier du camp (niveaux 1 à 5).",
-    "title": "Bûcherons de demain",
-    "grudging": "à contrecœur",
-    "captain": "Le capitaine ira bûcheronner demain.",
-    "cancelled": "{nom} n’ira pas bûcheronner demain."
+    "send_tip": "Il peut refuser. Chaque jour à la Cabane coûte un peu d’affinité. Chaque bûcheron retire un jour à un chantier du camp (niveaux 1 à 5).",
+    "title": "Bûcherons",
+    "starting": "dès demain",
+    "withdraw": "Retirer",
+    "captain": "Le capitaine ira bûcheronner dès demain.",
+    "withdrawn": "{nom} ne bûcheronnera plus."
   },
   "send": {
-    "proposal": "Demain, il nous faut des bras pour couper du bois. Vous y allez.",
-    "willing": [
+    "proposal": "Il nous faut des bras pour couper du bois, à partir de demain. Vous y allez.",
+    "accepted": [
       "Un peu d’exercice, ça ne fait pas de mal.",
       "Du bois ? Comptez sur moi, capitaine.",
       "Je vais leur montrer comment on manie une hache."
     ],
-    "grudging": [
-      "Je suis mercenaire, pas bûcheron… Bon, j’y vais.",
-      "Encore la corvée ? D’accord, mais je m’en souviendrai.",
-      "Couper du bois… Si ma mère me voyait."
+    "refused": [
+      "Bûcheronner ? Je suis payé pour me battre, capitaine.",
+      "Trouvez-vous un autre bûcheron.",
+      "Le bois attendra. Moi aussi."
     ],
-    "outcome_willing": "{prenom} ira bûcheronner demain.",
-    "outcome_grudging": "{prenom} ira bûcheronner demain, à contrecœur."
+    "outcome_accepted": "{prenom} ira bûcheronner dès demain.",
+    "outcome_refused": "{prenom} refuse."
   },
   "log": {
     "reduced": "{chantier} : {jours} de moins grâce aux bûcherons.",

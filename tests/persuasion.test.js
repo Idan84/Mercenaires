@@ -16,6 +16,7 @@ const {createCampaignRules}=require("../game-core/campaign.js");
 const {createProgressionRules}=require("../game-core/progression.js");
 const {createAffinityRules}=require("../game-core/affinity.js");
 const {createSpellStudyRules}=require("../game-core/spell-study.js");
+const {createEquipmentDeals}=require("../game-core/equipment-deals.js");
 
 const ROOT=path.resolve(__dirname,"..");
 const source=fs.readFileSync(path.join(ROOT,"prototype-web","reference-data.js"),"utf8");
@@ -123,7 +124,51 @@ assert.deepEqual(morning.poisonStudy.started.map(s=>[s.mercenary.id,s.affinityDe
 rules.advanceTime(state,1);
 assert.equal(aff(teacher)-teacherBefore,3,"le professeur convaincu garde ses +3");
 
-// 3. L'interface commune : les trois choix après un refus, la relance ajoutée au dialogue.
+// 3. Les échanges d'équipement (Idan, 2026-11-04 : « vas-y pour les équipements ») : l'affinité de l'échange (accord ou
+// refus) est revue après la relance : une perte × 2 (intimidé) ou × 0,5 (convaincu) ; un gain accordé, rien s'il a été
+// intimidé.
+assert.deepEqual([persuasion.outcomeExtra(-6,"intimidate",false),persuasion.outcomeExtra(-6,"convince",true),
+  persuasion.outcomeExtra(4,"intimidate",true),persuasion.outcomeExtra(4,"convince",true),persuasion.outcomeExtra(4,"intimidate",false)],[-6,3,-4,0,0]);
+let roll=0;
+const deals=createEquipmentDeals({reference,random:()=>roll,affinityRules:{memberAffinity:()=>({total:0})}});
+const gear=(id,name,tier)=>({id,name,tier,itemType:"weapon",owner:null,slot:null});
+function camp(day,{mine=null,stock=[]}={}){
+  const borin={id:2,name:"Borin",stats:{Intelligence:80},items:[],equipment:{slots:{weapon_set_1_main:null,weapon_set_1_off:null}}};
+  if(mine){ borin.items.push({...mine,owner:2,slot:"weapon_set_1_main"}); borin.equipment.slots.weapon_set_1_main=mine.id; }
+  const boss={id:1,name:"Capitaine",stats:{Intelligence:60,Charisme:54},skills:{social:{Intimidation:38}},items:[],equipment:{slots:{}}};
+  return {day,company:{captainId:1,roster:[boss,borin],stock}};
+}
+// On veut lui reprendre son sabre : il refuse (−6), on l'intimide, il refuse encore : −12 en tout.
+const take=camp(4,{mine:gear("a","Sabre",3)}),borin=take.company.roster[1],request={mercenaryId:2,slot:"weapon_set_1_main"};
+assert.equal(deals.evaluate(take,request,"intimidate").delta,deals.evaluate(take,request).delta+38);
+assert.equal(deals.evaluate(take,request,"convince").delta,deals.evaluate(take,request).delta+27);
+roll=0.999;
+const no1=deals.propose(take,request);
+assert.deepEqual([no1.accepted,no1.affinityDelta,no1.canRetry],[false,-6,true]);
+const no2=deals.retry(take,2,"intimidate");
+assert.deepEqual([no2.ok,no2.accepted,no2.affinityDelta,borin.affinityAcquired],[true,false,-6,-12]);
+assert.equal(deals.retry(take,2,"convince").reason,"Vous avez déjà insisté aujourd’hui.");
+assert.equal(borin.equipment.slots.weapon_set_1_main,"a","il garde son sabre");
+// Le lendemain : il refuse (−6), on le convainc, il le rend : la perte devient −3.
+take.day=5; borin.affinityAcquired=0;
+assert.equal(deals.propose(take,request).accepted,false);
+roll=0;
+const yes=deals.retry(take,2,"convince");
+assert.deepEqual([yes.accepted,yes.affinityDelta,borin.affinityAcquired,borin.equipment.slots.weapon_set_1_main,take.company.stock.map(i=>i.id)],
+  [true,3,-3,null,["a"]]);
+// Un cadeau refusé (+4 quand même) puis accepté sous la menace : il ne gagne rien ; convaincu, il garde ses +4.
+for(const [approach,total] of [["intimidate",0],["convince",4]]){
+  const gift=camp(6,{stock:[gear("s","Lance",2)]}),who=gift.company.roster[1];
+  roll=0.999;
+  const first=deals.propose(gift,{mercenaryId:2,slot:"weapon_set_1_main",stockItemId:"s"});
+  assert.deepEqual([first.accepted,first.affinityDelta],[false,4]);
+  roll=0;
+  assert.equal(deals.retry(gift,2,approach).accepted,true);
+  assert.deepEqual([who.affinityAcquired,who.equipment.slots.weapon_set_1_main],[total,"s"],approach);
+}
+assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","deal-ui.js"),"utf8"),/persuasionAfter\(result,"deal",\{member:m\.id\}\)/);
+
+// 4. L'interface commune : les trois choix après un refus, la relance ajoutée au dialogue.
 const ui=fs.readFileSync(path.join(ROOT,"prototype-web","persuasion-ui.js"),"utf8");
 assert.match(ui,/\["intimidate","convince"\]\.map\(key=>`<li><button type="button" data-persuade="\$\{key\}" data-persuade-kind="\$\{esc\(kind\)\}"/);
 assert.match(ui,/<button type="button" data-deal-leave>\$\{esc\(options\.leave\|\|""\)\}<\/button>/,"ou laisser tomber");
@@ -132,6 +177,6 @@ assert.match(spellUi,/registerPersuasion\("study",/);
 assert.match(spellUi,/registerPersuasion\("teach",/);
 assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","armor-study-ui.js"),"utf8"),/persuasionAfter\(result,"aptitude",\{member:m\.id,course\}\)/);
 const index=fs.readFileSync(path.join(ROOT,"prototype-web","index.html"),"utf8");
-assert.ok(index.indexOf('<script src="persuasion-ui.js">')>0&&index.indexOf('<script src="persuasion-ui.js">')<index.indexOf('<script src="spell-study-ui.js">'));
+assert.ok(index.indexOf('<script src="persuasion-ui.js">')>0&&index.indexOf('<script src="persuasion-ui.js">')<index.indexOf('<script src="deal-ui.js">'));
 
-console.log("Relance : Intimider (+ Intimidation, perte × 2) ou Convaincre (+ Charisme ÷ 2, perte × 0,5), une fois ; sorts, professeurs, ports d'armure, empoisonnement — OK");
+console.log("Relance : Intimider (+ Intimidation, perte × 2) ou Convaincre (+ Charisme ÷ 2, perte × 0,5), une fois ; sorts, professeurs, ports d'armure, empoisonnement, équipements — OK");

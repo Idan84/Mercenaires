@@ -394,8 +394,11 @@ double la perte d'affinité. En charisme, ça la divise par deux » ; « valable
 - code `game-core/persuasion.js` (bonus, facteur, refus du jour : une seule relance), `prototype-web/persuasion-ui.js`
   (les trois choix, la relance ajoutée au dialogue) ; textes communs `persuasion-dialogue.json` ; test
   `tests/persuasion.test.js`. Fait : les corvées, le Palais des plaisirs, les apprentissages, les échanges d'équipement
-  (doc 05 : l'affinité de l'échange, perte × 2 ou × 0,5, gain annulé s'il a été intimidé) ; à venir : les postes (intendant,
-  médecin, directeur, maîtres).
+  (doc 05 : l'affinité de l'échange, perte × 2 ou × 0,5, gain annulé s'il a été intimidé) et les postes ;
+- **postes** (Idan, 2026-11-04 : « Oui, vas-y pour les postes ») : intendant, médecin, directeur, maîtres, et leur retour
+  sur le terrain ; leur chance est un pourcentage : la relance y ajoute l'Intimidation ou le Charisme ÷ 2, en points (au
+  plus 95 %) ; si le refus tient : **vexé**, la perte × 2 (intimidé) ou × 0,5 (convaincu) ; **flatté**, le bonus est
+  perdu s'il a été intimidé (il pourra être flatté une autre fois), gardé s'il a été convaincu ; accepté, rien ne change.
 
 **La Guilde des mineurs** (Idan, 2026-11-04 : « même chose mais avec les pierres pour des bâtiments de lvl 6 à 10 et on y
 apprend les armes contondantes » ; « Oui, oui et pareil ») — salle principale **Le Puits** : **Armes contondantes** (« On y

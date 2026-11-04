@@ -17,6 +17,9 @@ const {createProgressionRules}=require("../game-core/progression.js");
 const {createAffinityRules}=require("../game-core/affinity.js");
 const {createSpellStudyRules}=require("../game-core/spell-study.js");
 const {createEquipmentDeals}=require("../game-core/equipment-deals.js");
+const {createStewardRules}=require("../game-core/steward.js");
+const {createMedicRules}=require("../game-core/medic.js");
+const {createSchoolDirectorRules}=require("../game-core/school-director.js");
 
 const ROOT=path.resolve(__dirname,"..");
 const source=fs.readFileSync(path.join(ROOT,"prototype-web","reference-data.js"),"utf8");
@@ -168,7 +171,60 @@ for(const [approach,total] of [["intimidate",0],["convince",4]]){
 }
 assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","deal-ui.js"),"utf8"),/persuasionAfter\(result,"deal",\{member:m\.id\}\)/);
 
-// 4. L'interface commune : les trois choix après un refus, la relance ajoutée au dialogue.
+// 4. Les postes (Idan, 2026-11-04 : « Oui, vas-y pour les postes ») : la relance s'ajoute à la chance (en points) ; si le
+// refus tient, vexé : la perte × 2 ou × 0,5 ; flatté : le bonus perdu s'il a été intimidé, gardé s'il a été convaincu.
+let postDice=[];
+const postRandom=()=>postDice.length?postDice.shift():0.999;
+const stewardRules=createStewardRules({reference,random:postRandom});
+const medicRules=createMedicRules({reference,random:postRandom,dispensaryLevel:()=>1});
+const alchemistRules=createSchoolDirectorRules({reference,random:postRandom,buildingLevel:()=>1,post:"alchemist"});
+const posts=rules.createCampaign({captain,squad:[7,8,9,10].map(id=>generator.createMercenary({id,captain}))});
+posts.company.intendantId=null; posts.company.medicId=null;
+const [, vexed, proud, healer, cook]=posts.company.roster;
+Object.assign(vexed.stats,{Intelligence:30,Courage:60});   // refus : (30 − 60) / 10 = −3, vexé
+Object.assign(proud.stats,{Intelligence:80,Courage:40});   // refus : +4, flatté (une fois)
+for(const m of [vexed,proud,healer,cook]) m.affinityAcquired=0;
+const desire=stewardRules.desire(vexed),{min,max}=stewardRules.constants;
+// Vexé (−3), intimidé, refuse encore : −6.
+postDice=[0.999,0.999];
+const v1=stewardRules.offer(posts,vexed.id);
+assert.deepEqual([v1.accepted,v1.mood,v1.affinityDelta,v1.canRetry],[false,"vexed",-3,true]);
+const v2=stewardRules.retry(posts,vexed.id,"intimidate");
+assert.deepEqual([v2.ok,v2.accepted,v2.kind,v2.affinityDelta,vexed.affinityAcquired],[true,false,"offer",-3,-6]);
+assert.equal(v2.chance,Math.max(min,Math.min(max,desire+captain.skills.social.Intimidation)),"+ l'Intimidation, en points");
+assert.equal(stewardRules.retry(posts,vexed.id,"convince").reason,"Vous avez déjà insisté aujourd’hui.");
+// Flatté (+4), intimidé, refuse encore : le bonus est perdu ; il pourra être flatté une autre fois.
+postDice=[0.999,0.999];
+assert.deepEqual([stewardRules.offer(posts,proud.id).mood,proud.affinityAcquired,proud.stewardFlattered],["flattered",4,true]);
+assert.deepEqual([stewardRules.retry(posts,proud.id,"intimidate").affinityDelta,proud.affinityAcquired,proud.stewardFlattered],[-4,0,false]);
+// Le lendemain : flatté de nouveau (+4), convaincu, refuse encore : il garde son bonus.
+posts.day+=1;
+postDice=[0.999,0.999];
+stewardRules.offer(posts,proud.id);
+assert.deepEqual([stewardRules.retry(posts,proud.id,"convince").affinityDelta,proud.affinityAcquired],[0,4]);
+// Convaincu, il accepte : il devient intendant.
+postDice=[0.999,0];
+stewardRules.offer(posts,cook.id);
+const c2=stewardRules.retry(posts,cook.id,"convince");
+assert.deepEqual([c2.accepted,c2.kind,posts.company.intendantId],[true,"offer",cook.id]);
+// Le médecin refuse de revenir sur le terrain (vexé), on le convainc, il refuse encore : la perte × 0,5.
+posts.company.medicId=healer.id; posts.company.medicSince=posts.day-10;
+Object.assign(healer.stats,{Intelligence:30,Courage:50});   // −2
+postDice=[0.999,0.999];
+const r1=medicRules.recall(posts);
+assert.deepEqual([r1.accepted,r1.affinityDelta,r1.canRetry],[false,-2,true]);
+const r2=medicRules.retry(posts,healer.id,"convince");
+assert.deepEqual([r2.accepted,r2.kind,r2.affinityDelta,healer.affinityAcquired],[false,"recall",1,-1]);
+// Un maître : l'Alchimiste refuse, on l'intimide, il accepte.
+posts.day+=1;
+postDice=[0.999,0];
+assert.equal(alchemistRules.offer(posts,vexed.id).canRetry,true);
+const a2=alchemistRules.retry(posts,vexed.id,"intimidate");
+assert.deepEqual([a2.accepted,posts.company.alchemistId],[true,vexed.id]);
+for(const [file,kind] of [["steward-ui.js",'"steward",{member:m.id}'],["medic-ui.js",'"medic",{member:m.id}'],["school-director-ui.js",'"camp-post",{member:m.id,post}']])
+  assert.ok(fs.readFileSync(path.join(ROOT,"prototype-web",file),"utf8").includes(`persuasionAfter(result,${kind})`),file);
+
+// 5. L'interface commune : les trois choix après un refus, la relance ajoutée au dialogue.
 const ui=fs.readFileSync(path.join(ROOT,"prototype-web","persuasion-ui.js"),"utf8");
 assert.match(ui,/\["intimidate","convince"\]\.map\(key=>`<li><button type="button" data-persuade="\$\{key\}" data-persuade-kind="\$\{esc\(kind\)\}"/);
 assert.match(ui,/<button type="button" data-deal-leave>\$\{esc\(options\.leave\|\|""\)\}<\/button>/,"ou laisser tomber");
@@ -179,4 +235,4 @@ assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","armor-study-ui.js")
 const index=fs.readFileSync(path.join(ROOT,"prototype-web","index.html"),"utf8");
 assert.ok(index.indexOf('<script src="persuasion-ui.js">')>0&&index.indexOf('<script src="persuasion-ui.js">')<index.indexOf('<script src="deal-ui.js">'));
 
-console.log("Relance : Intimider (+ Intimidation, perte × 2) ou Convaincre (+ Charisme ÷ 2, perte × 0,5), une fois ; sorts, professeurs, ports d'armure, empoisonnement, équipements — OK");
+console.log("Relance : Intimider (+ Intimidation, perte × 2) ou Convaincre (+ Charisme ÷ 2, perte × 0,5), une fois ; sorts, professeurs, ports d'armure, empoisonnement, équipements, postes — OK");

@@ -12,7 +12,7 @@
 //
 // Module pur : chaque test de refus lui demande le bonus et le facteur de perte, et garde le refus du jour sur le mercenaire
 // (markRefused, canRetry, markRetried). Les corvées (lumber.js), les apprentissages (spell-study.js, armor-study.js), les
-// échanges d'équipement (equipment-deals.js) ; les postes suivront.
+// échanges d'équipement (equipment-deals.js), les postes (steward.js, medic.js, school-director.js : retryRefusal).
 (function(root,factory){
   const api=factory();
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
@@ -52,12 +52,13 @@
     const refusalExtra=(refuseDelta,key)=>Math.round((Number(refuseDelta)||0)*(lossFactor(key)-1)*100)/100;
     // Après une relance, ce qu'il faut ajouter à l'affinité déjà comptée (delta, accord ou refus, comme pour un échange
     // d'équipement) : une perte × 2 ou × 0,5 ; un gain accordé, × 0 s'il a été intimidé.
-    function outcomeExtra(delta,key,accepted){
+    function reviseExtra(delta,key){
       const d=Number(delta)||0;
       if(d<0) return Math.round(d*(lossFactor(key)-1)*100)/100;
-      if(d>0&&accepted) return Math.round(d*(gainFactor(key)-1)*100)/100;
+      if(d>0) return Math.round(d*(gainFactor(key)-1)*100)/100;
       return 0;
     }
+    const outcomeExtra=(delta,key,accepted)=>(Number(delta)||0)>0&&!accepted?0:reviseExtra(delta,key);
     // Le refus du jour, gardé sur le mercenaire (m[field] = { day, retried, accepted, approach, … }) : une seule relance.
     function markRefused(m,field,day,extra={}){ m[field]={day,retried:false,accepted:false,approach:null,...extra}; return m[field]; }
     function canRetry(m,field,day){
@@ -67,7 +68,26 @@
       return {ok:true,refusal};
     }
     function markRetried(m,field,key,accepted){ Object.assign(m[field],{retried:true,approach:key,accepted}); return m[field]; }
-    return {APPROACHES,approachOf,bonus,lossFactor,gainFactor,refusalExtra,outcomeExtra,markRefused,canRetry,markRetried,valueOf};
+    // Relancer un poste refusé (intendant, médecin, directeur, maîtres ; Idan, 2026-11-04 : « Oui, vas-y pour les
+    // postes ») : attempt(refusal, key) refait le test avec la relance, sans nouveau refus ; si le refus tient, son affinité
+    // (refusal.affinityDelta) est revue : vexé, la perte × 2 ou × 0,5 ; flatté, le bonus perdu s'il a été intimidé
+    // (flatteredKey remis à faux : il pourra l'être une autre fois), gardé s'il a été convaincu.
+    function retryRefusal(m,field,day,key,attempt,flatteredKey=null){
+      if(!approachOf(key)) return {ok:false,reason:"Approche inconnue."};
+      const again=canRetry(m,field,day);
+      if(!again.ok) return again;
+      const result=attempt(again.refusal,key);
+      if(!result.ok) return result;
+      markRetried(m,field,key,result.accepted);
+      const kind=again.refusal.kind||null;
+      if(result.accepted) return {...result,approach:key,affinityDelta:0,kind};
+      const before=Number(again.refusal.affinityDelta)||0,extra=reviseExtra(before,key);
+      if(extra) m.affinityAcquired=(Number(m.affinityAcquired)||0)+extra;
+      if(before>0&&extra<0&&flatteredKey) m[flatteredKey]=false;
+      return {...result,approach:key,affinityDelta:extra,mood:again.refusal.mood||result.mood,kind};
+    }
+    return {APPROACHES,approachOf,bonus,lossFactor,gainFactor,refusalExtra,reviseExtra,outcomeExtra,markRefused,canRetry,markRetried,
+      retryRefusal,valueOf};
   }
   return {createPersuasionRules,valueOf};
 });

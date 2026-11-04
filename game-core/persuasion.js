@@ -11,8 +11,8 @@
 //   chaque jour, pendant toute l'affectation.
 //
 // Module pur : chaque test de refus lui demande le bonus et le facteur de perte, et garde le refus du jour sur le mercenaire
-// (markRefused, canRetry, markRetried). Les corvées (lumber.js), les apprentissages (spell-study.js, armor-study.js) ; les
-// équipements et les postes suivront.
+// (markRefused, canRetry, markRetried). Les corvées (lumber.js), les apprentissages (spell-study.js, armor-study.js), les
+// échanges d'équipement (equipment-deals.js) ; les postes suivront.
 (function(root,factory){
   const api=factory();
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
@@ -50,6 +50,14 @@
     const gainFactor=key=>approachOf(key)?.gainFactor??1;
     // Quand la relance échoue : ce qu'il faut ajouter à la perte du refus pour qu'elle soit × 2 ou × 0,5.
     const refusalExtra=(refuseDelta,key)=>Math.round((Number(refuseDelta)||0)*(lossFactor(key)-1)*100)/100;
+    // Après une relance, ce qu'il faut ajouter à l'affinité déjà comptée (delta, accord ou refus, comme pour un échange
+    // d'équipement) : une perte × 2 ou × 0,5 ; un gain accordé, × 0 s'il a été intimidé.
+    function outcomeExtra(delta,key,accepted){
+      const d=Number(delta)||0;
+      if(d<0) return Math.round(d*(lossFactor(key)-1)*100)/100;
+      if(d>0&&accepted) return Math.round(d*(gainFactor(key)-1)*100)/100;
+      return 0;
+    }
     // Le refus du jour, gardé sur le mercenaire (m[field] = { day, retried, accepted, approach, … }) : une seule relance.
     function markRefused(m,field,day,extra={}){ m[field]={day,retried:false,accepted:false,approach:null,...extra}; return m[field]; }
     function canRetry(m,field,day){
@@ -59,7 +67,7 @@
       return {ok:true,refusal};
     }
     function markRetried(m,field,key,accepted){ Object.assign(m[field],{retried:true,approach:key,accepted}); return m[field]; }
-    return {APPROACHES,approachOf,bonus,lossFactor,gainFactor,refusalExtra,markRefused,canRetry,markRetried,valueOf};
+    return {APPROACHES,approachOf,bonus,lossFactor,gainFactor,refusalExtra,outcomeExtra,markRefused,canRetry,markRetried,valueOf};
   }
   return {createPersuasionRules,valueOf};
 });

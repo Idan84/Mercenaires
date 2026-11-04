@@ -3,8 +3,9 @@
 // Échanges d'équipement (Idan, 2026-10-24) : un clic sur une case de l'onglet Équipement ouvre un petit menu (Retirer,
 // Troquer contre…, Donner…), un clic sur une ligne de l'Intendance propose « Donner à… ». Inventaire et réaménagement
 // libre (Idan, 2026-10-30) : ranger, prendre dans l'inventaire, passer d'un set à l'autre, échanger les sets (⇄). Le mercenaire répond dans une
-// boîte de dialogue (portrait, sa réplique, ce qui change) ; seule réponse : Partir. Le capitaine s'équipe sans
-// dialogue. Règles : game-core/equipment-deals.js ; textes : data/reference/equipment-dialogue.json.
+// boîte de dialogue (portrait, sa réplique, ce qui change) ; après un refus, la relance (Idan, 2026-11-04 : Intimider,
+// Convaincre ou laisser tomber ; persuasion-ui.js), sinon Partir. Le capitaine s'équipe sans dialogue. Règles :
+// game-core/equipment-deals.js ; textes : data/reference/equipment-dialogue.json.
 let equipmentDeals=null;
 function dealRules(){
   if(!equipmentDeals&&game.referenceData){
@@ -193,8 +194,20 @@ function openDealDialog(m,result){
     ${lines.support?`<p class="talk-note">${esc(lines.support)}</p>`:""}
     <p class="talk-say talk-say--merc"><b>${esc(first)}</b><span>« ${esc(lines.reply)} »</span></p>
     <p class="talk-note">${esc(lines.outcome)}</p>`;
-  $("deal-talk-choices").innerHTML=`<ol class="talk-options"><li><button type="button" data-deal-leave>Partir</button></li></ol>`;
+  if(typeof persuasionAfter==="function") persuasionAfter(result,"deal",{member:m.id});
+  else $("deal-talk-choices").innerHTML=`<ol class="talk-options"><li><button type="button" data-deal-leave>Partir</button></li></ol>`;
   $("deal-talk-dialog").showModal();
+}
+// Relancer après un refus : Intimider ou Convaincre, sur le même échange.
+function retryDeal(memberId,approach){
+  const m=dealMember(memberId);
+  if(!m) return;
+  const result=dealRules().retry(game.campaign,m.id,approach);
+  if(!result.ok){ tavernLog(result.reason,"warn"); return; }
+  persuasionAppend(m,result,dealLines(m,result).outcome,`${m.id}|${game.campaign.day}|deal|${approach}`);
+  saveGame();
+  renderGame();
+  if($("character-dialog").open&&game.sheetCharacter) renderSheet();
 }
 
 function runDeal({member,slot,stock,item}){
@@ -223,6 +236,7 @@ function runOwnMove(action){
 }
 
 function initializeDeals(){
+  if(typeof registerPersuasion==="function") registerPersuasion("deal",(approach,data)=>retryDeal(data.persuadeMember,approach));
   document.addEventListener("click",event=>{
     const menu=document.getElementById("deal-menu");
     const action=event.target.closest?.("[data-deal-member]");

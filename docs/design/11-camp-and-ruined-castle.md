@@ -388,8 +388,25 @@ Deuxième fonction, **les mineurs du jour** — comme les bûcherons :
 - Statuts : « À la mine demain », « À la mine ». Code `game-core/lumber.js` (course "mine") et `prototype-web/lumber-ui.js` ;
   textes `mine-dialogue.json` ; test `tests/mine.test.js`.
 
-Pistes gardées en tête, non validées : pour les autres armes de mêlée, deux bâtiments d'ambiance : **l'Ermitage** (Bâtons, Flexibles, Hast ; le mana) et
-**le Hall des Berserkers** (Deux mains ; les Haches sont à la Cabane du bûcheron, les Contondantes à la Guilde des mineurs). Les compétences de camp (artisanat) attendront les bâtiments de fabrication.
+**Les dernières armes** (Idan, 2026-11-04 : « Je voulais des nouvelles idées ! » ; l'Ermitage et le Hall des Berserkers sont
+abandonnés) — même barème et mêmes places que les autres salles, entraînement libre compris :
+
+- **La Caverne de la terreur** (« On y apprend par défaut le courage. On a une salle où on peut s'entraîner aux armes
+  d'hast. On fait très simple pour l'instant, je pense qu'on pourra y récupérer des cristaux après ») — salle principale
+  **La Gueule** : **Courage** (« On y entre en héros. On en ressort en courant. ») ; aile **Le Hérisson** : **Armes d'hast**
+  (« Des piques partout, et quelque chose de gros derrière. ») ; apprises avec le **Courage** ; pas de chef.
+- **Combat à deux mains** (« On va le mettre chez les bûcherons et chez les mineurs ») : aile **Le Merlin** de la Cabane du
+  bûcheron (« Le merlin se tient à deux mains. La bûche n'a rien demandé. ») et aile **La Masse** de la Guilde des mineurs
+  (« Une masse de carrier, deux mains, et la roche finit par céder. Le carrier aussi. ») ; apprises avec la **Force**.
+- **Bâtons** (« On va mettre l'entraînement aux bâtons dans l'école de magie ») : la **Salle du Bâton** de l'École de magie
+  (« Un bâton de mage, c'est d'abord un bâton. Demandez au gobelin qui a ri. »), comme les salles des écoles : au plus au
+  niveau de l'École, l'Intelligence, le test et le directeur de l'École.
+- **Le Sauna** des Bains chauds (« Dans les bains chauds, on peut faire le sauna où on peut s'entraîner au maximum de
+  mana ») : **Réserve de mana** (« On transpire, on médite, on remplit sa réserve. Surtout de vapeur. »), appris avec la
+  **Volonté** ; au plus au niveau des Bains (5). Les Bains eux-mêmes n'ont pas de places.
+- **Armes flexibles** : au **Palais des plaisirs** (étape suivante). **Combat à mains nues** : désactivé (doc 03).
+
+Test : `tests/training-buildings.test.js`. Les compétences de camp (artisanat) attendront les bâtiments de fabrication.
 
 ## 8 — Bâtiments pour animaux et montures
 
@@ -430,7 +447,7 @@ Les bâtiments médicaux améliorent :
   (au moins 1 jour), pour les blessures reçues après la construction. Au niveau 5 : 7 → 4 jours, 27 → 14, 48 → 24, 60 → 30 ;
 - **Bains chauds** : la fatigue (doc 10 §5) dure **1 jour de moins par niveau**, au moins 1 jour (5 à 7 jours → 1 à 2 jours
   au niveau 5) ; la recharge du mana au camp (doc 12) gagne **+5 % de la Réserve par jour et par niveau** (Volonté 52 :
-  36 % → 61 % par jour au niveau 5) ;
+  36 % → 61 % par jour au niveau 5) ; une salle, **Le Sauna** (Réserve de mana, §7, Idan, 2026-11-04) ;
 - pas d'écran à part ni d'image pour l'instant ; le nom de chaque bâtiment donne son rôle en infobulle.
 
 **Médecin** (Idan, 2026-11-01 ; règles `game-core/medic.js`, effets `game-core/campaign.js`, panneau `prototype-web/medic-ui.js`) :

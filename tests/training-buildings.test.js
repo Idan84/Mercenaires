@@ -45,7 +45,9 @@ const BUILDINGS={
   // « piège et armes à feu, c'est validé » ; les potions plus tard).
   alchemy_lab:["Labo d’alchimie","Résistance au poison",[["La Poudrière","Armes à feu"],["La Cave","Pièges"]]],
   // La Cabane du bûcheron (Idan, 2026-11-03 : « On aura une salle d'entraînement aux haches » ; « Pas de chef pour l'instant »).
-  lumber_camp:["Cabane du bûcheron","Haches",[]]
+  lumber_camp:["Cabane du bûcheron","Haches",[]],
+  // La Guilde des mineurs (Idan, 2026-11-04 : « on y apprend les armes contondantes » ; « Le Puits » ; la Force).
+  miners_guild:["Guilde des mineurs","Armes contondantes",[]]
 };
 const known=new Set([...reference.characteristics.rows.map(r=>r.nom),...reference.skills.rows.map(r=>r.nom)]);
 for(const [code,[name,trains,wings]] of Object.entries(BUILDINGS)){
@@ -168,6 +170,12 @@ assert.equal(row("lumber_camp").apprend_avec,"Force");
 assert.equal(require("../game-core/camp-posts.js").postOfBuilding("lumber_camp"),null,"pas de chef");
 state.company.camp.buildings={lumber_camp:{level:1,construction:null}};
 assert.deepEqual(rules.trainingRooms(state).map(r=>[r.code,r.building,r.trains,r.learnWith,r.places]),[["lumber_camp","lumber_camp","Haches","Force",1]]);
+
+// La Guilde des mineurs : les Armes contondantes au Puits, apprises avec la Force ; pas de chef.
+assert.equal(row("miners_guild").apprend_avec,"Force");
+assert.equal(require("../game-core/camp-posts.js").postOfBuilding("miners_guild"),null,"pas de chef");
+state.company.camp.buildings={miners_guild:{level:1,construction:null}};
+assert.deepEqual(rules.trainingRooms(state).map(r=>[r.code,r.building,r.trains,r.learnWith,r.places]),[["miners_guild","miners_guild","Armes contondantes","Force",1]]);
 
 // La fiche de l'offre montre le paiement, sans commentaire (Idan : « tu veux toujours mettre du blabla inutile ! »).
 assert.doesNotMatch(fs.readFileSync(path.join(ROOT,"prototype-web","contract-ui.js"),"utf8"),/du Cercle des Fines Lames/);

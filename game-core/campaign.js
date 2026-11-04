@@ -23,10 +23,12 @@
   const dungeon=typeof module!=="undefined"&&module.exports?require("./dungeon.js"):root.MercenairesDungeon;
   // La désertion : le test du matin, la Tour de guet, la scène (facultatif hors du jeu, de même).
   const desertion=typeof module!=="undefined"&&module.exports?require("./desertion.js"):root.MercenairesDesertion;
-  const api=factory(history,regeneration,training,study,posts,armorPorts,armorStudy,lumber,agenda,dungeon,desertion);
+  // La renégociation salariale : une étoile gagnée, il vient réclamer (facultatif hors du jeu, de même).
+  const salaryReview=typeof module!=="undefined"&&module.exports?require("./salary-review.js"):root.MercenairesSalaryReview;
+  const api=factory(history,regeneration,training,study,posts,armorPorts,armorStudy,lumber,agenda,dungeon,desertion,salaryReview);
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesCampaign=api;
-})(typeof globalThis!=="undefined"?globalThis:this,function(History,Regeneration,Training,Study,Posts,ArmorPorts,ArmorStudy,Lumber,Agenda,Dungeon,Desertion){
+})(typeof globalThis!=="undefined"?globalThis:this,function(History,Regeneration,Training,Study,Posts,ArmorPorts,ArmorStudy,Lumber,Agenda,Dungeon,Desertion,SalaryReview){
   // Sauvegarde : l'état de partie complet, sérialisé en JSON avec un format et une version.
   // La trace de génération des mercenaires (détail de calcul pour le Design Lab, ~85 % du poids)
   // n'est pas sauvegardée : un mercenaire passe d'environ 36 Ko à 5 Ko.
@@ -806,6 +808,16 @@
       },
       bondOf:(lieutenant,m)=>{ const bond=affinity.affinity(lieutenant,m); return bond?.ok?bond.total:0; },
       remove:leaveCompany}}):null;
+    // Renégociation salariale (Idan, 2026-11-04 ; règles : salary-review.js) : son salaire théorique (la formule du
+    // recrutement, generator.salaryDemand), sa résistance à la négociation (tavern.js).
+    const salaryReviewRules=SalaryReview&&affinity&&generator?.salaryDemand?SalaryReview.createSalaryReviewRules({reference,random,camp:{awayOf,
+      affinityOf:(state,m)=>{
+        const captain=captainOf(state);
+        const bond=captain?affinity.memberAffinity(captain,m):null;
+        return bond?.ok?bond.total:0;
+      },
+      salaryDemand:(m,affinityTotal)=>generator.salaryDemand(m,affinityTotal),
+      resistance:(m,affinityTotal)=>tavern?.negotiationResistance?tavern.negotiationResistance(m,affinityTotal):50}}):null;
     agenda?.add("dungeon",dungeonRules).add("spell",spellStudy).add("armor",armorStudy).add("poison",poisonStudy)
       .add("lumber",lumberjacks,{chore:true}).add("mine",miners,{chore:true}).add("palace",palaceWorkers,{chore:true});
     // Ce qui le retient demain (mission, garde du corps : au jour J, on organise J+1) ; une corvée, tant qu'on ne l'a pas
@@ -944,7 +956,9 @@
       const school=runSchoolDay(state);
       // Désertion (Idan, 2026-11-04) : après tout ce qui fait bouger l'affinité du matin.
       const desertion=desertionRules?desertionRules.morning(state):null;
-      return {day:state.day,recovered,salaries,tavern:tavernReport,offersLost,expeditions,built,buildings,lieutenants:lieutenantReports,mana,merchant,school,study,armorStudy:armor,poisonStudy:poison,lumber,mine,palace,dungeon,desertion};
+      // Renégociation salariale (Idan, 2026-11-04) : ceux qui ont gagné une étoile.
+      const salaryReview=salaryReviewRules?salaryReviewRules.morning(state):null;
+      return {day:state.day,recovered,salaries,tavern:tavernReport,offersLost,expeditions,built,buildings,lieutenants:lieutenantReports,mana,merchant,school,study,armorStudy:armor,poisonStudy:poison,lumber,mine,palace,dungeon,desertion,salaryReview};
     }
 
     // Recharge du mana (doc 12 ; Idan, 2026-10-25) : chaque jour, pour les membres présents au camp, pas pour ceux qui sont
@@ -1122,6 +1136,9 @@
       // Un mercenaire repéré par la Tour de guet attend qu'on décide de son sort (Idan, 2026-11-04).
       const leaving=desertionRules?desertionRules.canAdvance(state):{ok:true};
       if(!leaving.ok) return {...leaving,desertion:leaving.id};
+      // Un mercenaire réclame une augmentation (Idan, 2026-11-04) : on lui répond d'abord.
+      const asking=salaryReviewRules?salaryReviewRules.canAdvance(state):{ok:true};
+      if(!asking.ok) return {...asking,salaryReview:asking.id};
       const waiting=expeditionsOf(state).find(e=>e.status==="arrived");
       return waiting?{ok:false,reason:"Une escouade attend vos ordres : livrez son combat avant de passer au jour suivant.",expedition:waiting}:{ok:true};
     }
@@ -1375,7 +1392,7 @@
       completeExpeditionCombat,
       dormitoryFree,
       dormitoryUsed,
-      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,trainingRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,spellStudy,armorStudy,poisonStudy,lumberjacks,miners,palaceWorkers,dungeonRules,desertionRules,agenda,studyBusy,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
+      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,trainingRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,spellStudy,armorStudy,poisonStudy,lumberjacks,miners,palaceWorkers,dungeonRules,desertionRules,salaryReviewRules,agenda,studyBusy,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
       woundDaysFor,fatigueDaysFor,
       dormitoryPlaces,
       dormitoryExpansionCost,

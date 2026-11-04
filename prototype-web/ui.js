@@ -166,6 +166,8 @@ function renderGame() {
   if (typeof renderMerchant === "function") renderMerchant();
   // Un déserteur repéré par la Tour de guet : la scène, avant tout le reste (desertion-ui.js).
   if (typeof checkDesertions === "function") checkDesertions();
+  // Puis un mercenaire qui réclame une augmentation (salary-review-ui.js).
+  if (typeof checkSalaryReviews === "function") checkSalaryReviews();
 }
 
 // Tri exclusivement visuel : aucune modification de l'ordre sauvegardé ni des règles.
@@ -1370,6 +1372,9 @@ function historyEntryText(c,entry){
   if(entry.kind==="dungeon_release") return fill(copy.dungeon_release,{jours:historyPlural(entry.days||0,"jour","jours")});
   // Désertion (Idan, 2026-11-04).
   if(["desertion_stayed","desertion","desertion_let_go","duel"].includes(entry.kind)) return fill(copy[entry.kind]);
+  // Renégociation salariale (Idan, 2026-11-04).
+  if(entry.kind==="salary_raise") return fill(copy.salary_raise,{avant:fmt(entry.from||0),apres:fmt(entry.to||0)});
+  if(entry.kind==="salary_refused") return fill(copy.salary_refused);
   if(entry.kind==="bodyguard") return fill(copy.bodyguard?.[entry.issue],{client:String(entry.client||"").toLocaleLowerCase("fr")});
   if(entry.kind==="lieutenant_request") return fill(copy.lieutenant_request?.[entry.type],{lieutenant:entry.lieutenant||"",gain:fmt(entry.gain||0)});
   if(entry.kind==="deal"){

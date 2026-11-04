@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "name": "dungeon-dialogue",
+  "description": "Le Cachot (Idan, 2026-11-04) : y envoyer un membre, le libérer. panel : la carte du Cachot ({jours}) ; choice : le choix ajouté après une relance ratée, avec la phrase du capitaine et l'issue ; log : le journal ({nom}). {prenom} ; {masculin|féminin} selon le mercenaire. Textes de JC, à retoucher librement.",
+  "panel": {
+    "send": "Envoyer au cachot",
+    "send_tip": "Il perd son poste, sa corvée, son apprentissage et son salaire ; son affinité en prend un coup, puis un peu plus chaque jour.",
+    "title": "Au cachot",
+    "since": "depuis {jours}",
+    "today": "depuis aujourd’hui",
+    "release": "Libérer"
+  },
+  "choice": {
+    "label": "Au cachot !",
+    "captain": [
+      "Puisque c’est comme ça : au cachot.",
+      "Gardes ! Emmenez-{le|la}.",
+      "Vous réfléchirez mieux au frais."
+    ],
+    "outcome": "{prenom} est {jeté|jetée} au cachot."
+  },
+  "log": {
+    "jailed": "{nom} est {jeté|jetée} au cachot.",
+    "released": "{nom} sort du cachot."
+  }
+}

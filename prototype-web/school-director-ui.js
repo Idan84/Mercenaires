@@ -35,8 +35,9 @@ function directorSchoolText(m){
 }
 // Un maître : sa valeur dans ce que travaille la salle principale de son bâtiment ({ name, value }).
 function masterSkill(post,m){
-  const building=MercenairesSchoolDirector.POSTS.find(p=>p.key===post)?.building;
-  const name=building?campaignRules().campBuildingRow(building)?.entraine:null;
+  const P=MercenairesSchoolDirector.POSTS.find(p=>p.key===post),building=P?.building;
+  // Le Maître des plaisirs : son Charisme (la salle principale du Palais n'entraîne rien).
+  const name=P?.skill||(building?campaignRules().campBuildingRow(building)?.entraine:null);
   if(!name) return {name:"",value:0};
   for(const group of [m?.stats,m?.resistances,m?.skills?.martial,m?.skills?.magic]) if(group&&name in group) return {name,value:Number(group[name])||0};
   return {name,value:0};
@@ -57,7 +58,7 @@ function campPostLabel(post,m){
   return directorFill(campPostCopy(post).label||"",m);
 }
 const CAMP_POST_PANELS={director:"director-panel",doctore:"doctore-panel",veteran:"veteran-panel",bladeMaster:"blade-master-panel",
-  alchemist:"alchemist-panel"};
+  alchemist:"alchemist-panel",pleasureMaster:"pleasure-master-panel"};
 
 function renderSchoolDirectorPanel(post="director"){
   const panel=$(CAMP_POST_PANELS[post]);
@@ -94,7 +95,7 @@ function renderSchoolDirectorPanel(post="director"){
 }
 // Les panneaux des trois maîtres.
 function renderCampMasterPanels(){
-  for(const post of ["doctore","veteran","bladeMaster","alchemist"]) renderSchoolDirectorPanel(post);
+  for(const post of ["doctore","veteran","bladeMaster","alchemist","pleasureMaster"]) renderSchoolDirectorPanel(post);
 }
 
 // Réponse à une proposition (poste ou retour sur le terrain), dans la boîte de dialogue des échanges.

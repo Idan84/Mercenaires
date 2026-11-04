@@ -21,6 +21,13 @@
 //   niveau 1 à 5 (bois) ou 6 à 10 (pierre) : un bâtiment (son niveau en construction), la qualité du dortoir (son niveau),
 //   un agrandissement du dortoir (son rang), un quartier du lieutenant (son numéro). Un chantier finit au plus tôt le
 //   lendemain matin.
+//
+// Le Palais des plaisirs (Idan, 2026-11-04 : « On peut y faire travailler nos mercenaires, ils rapportent des pièces d'or en
+// fonction de leur charisme et de leur réputation. Il faut un test d'affinité pour envoyer un mercenaire » ; « Il faut que
+// ça soit rentable » ; « Le maître augmente les gains » ; « Parfait ») : course "palace", même affectation, même refus et
+// même relance, −1 d'affinité par jour ; test plus facile (camp.palace.offer_offset : ~50 % à affinité 0). Chaque matin,
+// chacun rapporte Charisme × (1 + 0,2 × niveau de réputation) PO (camp.palace.reputation_weight ; niveau 1 à 15,
+// reputation-stars.json), × (1 + Charisme du Maître des plaisirs ÷ 200) s'il y en a un (camp.palace.master_divisor).
 (function(root,factory){
   const Persuasion=typeof module!=="undefined"&&module.exports?require("./persuasion.js"):root.MercenairesPersuasion;
   const api=factory(Persuasion);
@@ -36,7 +43,11 @@
     mine:{hall:"miners_guild",key:"miners",offerKey:"mineOffer",prefix:"camp.mine",minLevel:6,maxLevel:10,text:{
       noHall:"Il faut d’abord construire la Guilde des mineurs.",already:"Il travaille déjà à la mine.",
       full:"La Guilde n’a plus de place.",tomorrow:"Il descend à la mine demain matin.",working:"Il travaille à la mine.",
-      notAssigned:"Il ne travaille pas à la mine."}}
+      notAssigned:"Il ne travaille pas à la mine."}},
+    palace:{hall:"pleasure_palace",key:"palaceWorkers",offerKey:"palaceOffer",prefix:"camp.palace",effect:"gold",text:{
+      noHall:"Il faut d’abord construire le Palais des plaisirs.",already:"Il travaille déjà au Palais.",
+      full:"Le Palais n’a plus de place.",tomorrow:"Il commence au Palais demain matin.",working:"Il travaille au Palais.",
+      notAssigned:"Il ne travaille pas au Palais."}}
   };
   function referenceConstant(reference,code,fallback){
     const value=Number((reference?.formulaConstants?.rows||[]).find(r=>r.code===code)?.valeur);
@@ -57,10 +68,11 @@
     return work?.name||"Chantier";
   }
 
-  // course : "lumber" (Cabane, par défaut) ou "mine" (Guilde).
+  // course : "lumber" (Cabane, par défaut), "mine" (Guilde) ou "palace" (Palais des plaisirs).
   // camp : { buildingLevel(state, code), expeditionOf(state, id), busyElsewhere(state, id) → raison ou null (un
   //          apprentissage, l'autre corvée), offField(state, m) (intendant, médecin, maîtres : à leur poste), works(state) →
-  //          les chantiers en cours (objets construction, modifiés sur place) } (campaign.js).
+  //          les chantiers en cours (objets construction, modifiés sur place), masterOf(state) → le Maître des plaisirs }
+  //          (campaign.js).
   function createLumberRules({reference,random=Math.random,affinity=null,camp,course="lumber"}={}){
     const COURSE=COURSES[course]||COURSES.lumber,T=COURSE.text,hall=COURSE.hall;
     const k=(code,fallback)=>referenceConstant(reference,code,fallback);
@@ -68,7 +80,9 @@
     const C={
       perLevel:k(COURSE.prefix+".workers_per_level",1),daysPerWorker:k(COURSE.prefix+".days_per_worker",1),
       minLevel:k(COURSE.prefix+".min_work_level",COURSE.minLevel),maxLevel:k(COURSE.prefix+".max_work_level",COURSE.maxLevel),
-      offset:k("camp.lumber.offer_offset",-30),daily:k("camp.lumber.daily_affinity",-1),
+      offset:k(COURSE.prefix+".offer_offset",k("camp.lumber.offer_offset",-30)),
+      daily:k(COURSE.prefix+".daily_affinity",k("camp.lumber.daily_affinity",-1)),
+      reputationWeight:k("camp.palace.reputation_weight",0.2),masterDivisor:k("camp.palace.master_divisor",200),
       offerAffinity:k("spell_study.offer.affinity_weight",0.5),slope:k("spell_study.offer.slope",20),
       stewardSkill:k("equipment_deal.steward_skill_weight",0.2),stewardAffinity:k("equipment_deal.steward_affinity_weight",0.25)
     };
@@ -78,6 +92,20 @@
     const isCaptain=(state,m)=>Boolean(m)&&m.id===state.company.captainId;
     const no=reason=>({ok:false,reason});
     const roll=()=>random()*100;
+    const stat=(m,name)=>Number(m?.stats?.[name])||0;
+    // Niveau de réputation (1 à 15 : reputation-stars.json, colonne reputation_min).
+    const STARS=[...(reference?.reputationStars?.rows||[])].sort((a,b)=>a.niveau-b.niveau);
+    function reputationLevel(m){
+      let level=1;
+      for(const row of STARS) if((Number(m?.reputation)||0)>=Number(row.reputation_min)) level=Number(row.niveau)||level;
+      return level;
+    }
+    // Au Palais : ce qu'il rapporte en une journée (PO).
+    function earnings(state,m){
+      const master=camp.masterOf?.(state)||null;
+      const masterFactor=master?1+stat(master,"Charisme")/C.masterDivisor:1;
+      return Math.round(stat(m,"Charisme")*(1+C.reputationWeight*reputationLevel(m))*masterFactor);
+    }
 
     // Les bûcherons (camp.lumberjacks), les mineurs (camp.miners) : [{ id, startDay, approach }] (approach : null,
     // "intimidate" ou "convince"). Anciennes sauvegardes ({ id, day } : une seule journée) : gardées à partir de ce jour-là.
@@ -193,6 +221,13 @@
         if(delta) m.affinityAcquired=(Number(m.affinityAcquired)||0)+delta;
         report.push({id:worker.id,approach:worker.approach,affinityDelta:delta,mercenary:m});
       }
+      // Au Palais : de l'or, chacun selon son Charisme et sa réputation (et le Maître des plaisirs).
+      if(COURSE.effect==="gold"){
+        let gold=0;
+        for(const r of report){ r.gold=earnings(state,r.mercenary); gold+=r.gold; }
+        state.company.gold=(Number(state.company.gold)||0)+gold;
+        return {workers:report,reduced:[],gold};
+      }
       const reduced=new Map();
       for(let n=0;n<workers.length;n++){
         const work=eligible(state).sort((a,b)=>a.endDay-b.endDay)[0];
@@ -206,7 +241,7 @@
       return {workers:report,reduced:[...reduced.values()]};
     }
 
-    return {constants:C,HALL:hall,course,slots,entriesOf,entryOf,working,busyReason,tomorrowReason,chance,dailyLoss,canSend,send,
+    return {constants:C,HALL:hall,course,slots,entriesOf,entryOf,working,busyReason,tomorrowReason,chance,dailyLoss,reputationLevel,earnings,canSend,send,
       canRetry,retry,withdraw,cancel:withdraw,morning,workLevel,workName};
   }
 

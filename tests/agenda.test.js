@@ -47,7 +47,7 @@ const genRandom=()=>((seed=(seed*16807)%2147483647)/2147483647);
 const generator=createGenerator(reference,{random:genRandom,nameGenerator:(people,id)=>people+" "+id});
 const rules=createCampaignRules({generator,tavern:createTavernRules({random:()=>0.999,reference}),reference,
   random:()=>dice.length?dice.shift():0.999});
-assert.deepEqual(rules.agenda.keys(),["spell","armor","poison","lumber","mine"]);
+assert.deepEqual(rules.agenda.keys(),["spell","armor","poison","lumber","mine","palace"]);
 const captain=generator.createCaptain({id:1});
 const state=rules.createCampaign({captain,squad:[2,3,4,5,6].map(id=>generator.createMercenary({id,captain}))});
 state.company.intendantId=null;

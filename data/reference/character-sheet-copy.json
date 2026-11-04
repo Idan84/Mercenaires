@@ -349,6 +349,11 @@
         "key": "alchemistDays",
         "label": "Jours à la tête du Labo",
         "hideZero": true
+      },
+      {
+        "key": "pleasureMasterDays",
+        "label": "Jours à la tête du Palais",
+        "hideZero": true
       }
     ],
     "events": {
@@ -433,6 +438,14 @@
         "accord": "Quitte le Labo d’alchimie et retourne sur le terrain après {jours}.",
         "refus": "Refuse de quitter le Labo d’alchimie."
       },
+      "pleasureMaster": {
+        "accord": "Devient {le Maître|la Maîtresse} des plaisirs du Palais.",
+        "refus": "Refuse de devenir {le Maître|la Maîtresse} des plaisirs du Palais."
+      },
+      "pleasureMaster_recall": {
+        "accord": "Quitte le Palais des plaisirs et retourne sur le terrain après {jours}.",
+        "refus": "Refuse de quitter le Palais des plaisirs."
+      },
       "study": {
         "accord": "Accepte d’apprendre {sort} à l’École de magie.",
         "refus": "Refuse d’apprendre {sort}."
@@ -493,11 +506,17 @@
     "description": "Case Dégâts de l’onglet Équipement (Idan, 2026-10-30) : quatre chiffres pour comparer les mercenaires, des scores et non des chances. usage : l’infobulle ; recrues : le plus bas et le plus haut mesurés sur 3 000 recrues générées avec l’arme de leur set 1 (2026-10-30), arrondis à 5 ; les vétérans peuvent dépasser. La Pénétration d’armure va de la plus faible à la plus forte des armes (weapons.json).",
     "Précision": {
       "usage": "Les chances de toucher, face à l’Esquive de la cible.",
-      "recrues": [50, 145]
+      "recrues": [
+        50,
+        145
+      ]
     },
     "Puissance": {
       "usage": "Les chances de blesser quand le coup touche, face à l’Endurance de la cible.",
-      "recrues": [25, 160]
+      "recrues": [
+        25,
+        160
+      ]
     },
     "Dégâts": {
       "usage": "Les PV que perd la cible quand le coup blesse. Sa Résistance physique en retire une partie."

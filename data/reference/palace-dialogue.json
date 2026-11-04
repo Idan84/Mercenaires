@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "name": "palace-dialogue",
+  "description": "Palais des plaisirs (Idan, 2026-11-04) : y envoyer un mercenaire travailler à partir de demain, jusqu'à ce qu'on le retire. Il peut refuser (accepted / refused) ; la relance (Intimider, Convaincre) : persuasion-dialogue.json. panel : la carte du Palais ({nom} : le nom du mercenaire) ; send : la demande, les répliques, les issues ; log : le journal du matin ({or}). {prenom} ; {masculin|féminin} selon celui qui parle. Textes de JC, à retoucher librement.",
+  "panel": {
+    "send": "Envoyer au Palais",
+    "send_tip": "Il peut refuser. Chaque jour au Palais coûte un peu d’affinité ; chacun rapporte de l’or selon son Charisme et sa réputation.",
+    "title": "Au Palais",
+    "starting": "dès demain",
+    "withdraw": "Retirer",
+    "captain": "Le capitaine tiendra le Grand Salon dès demain.",
+    "withdrawn": "{nom} ne travaillera plus au Palais."
+  },
+  "send": {
+    "proposal": "Le Palais a besoin de quelqu’un pour tenir compagnie aux clients, à partir de demain. Vous y allez.",
+    "accepted": [
+      "Sourire, écouter, encaisser. Je sais faire.",
+      "Le Palais ? Avec plaisir, capitaine.",
+      "J’ai toujours aimé la bonne compagnie. Surtout quand elle paie."
+    ],
+    "refused": [
+      "Je suis là pour me battre, pas pour faire {le courtisan|la courtisane}.",
+      "Le Palais ? Sans façon.",
+      "Trouvez quelqu’un de plus aimable."
+    ],
+    "outcome_accepted": "{prenom} travaillera au Palais dès demain.",
+    "outcome_refused": "{prenom} refuse."
+  },
+  "log": {
+    "earned": "Palais des plaisirs : {or} PO."
+  }
+}

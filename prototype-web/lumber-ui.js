@@ -1,15 +1,16 @@
 "use strict";
 
-// Cabane du bûcheron (Idan, 2026-11-03) et Guilde des mineurs (Idan, 2026-11-04), interface. Sur la carte du bâtiment (Ma
+// Cabane du bûcheron (Idan, 2026-11-03), Guilde des mineurs et Palais des plaisirs (Idan, 2026-11-04), interface. Sur la carte du bâtiment (Ma
 // Compagnie) : « Envoyer bûcheronner » / « Envoyer à la mine » ouvre la liste des membres disponibles ; la réponse passe par
 // la boîte de dialogue des échanges : il accepte, ou il refuse et on peut relancer une fois (Intimider, Convaincre) ou
 // laisser tomber. Puis « Bûcherons (2 / 3) » : chacun (« dès demain », « intimidé », « convaincu »), et « Retirer ». Le
 // journal du matin dit quels chantiers ont gagné des jours.
 // Règles : game-core/lumber.js, game-core/persuasion.js ; textes : lumber-dialogue.json, mine-dialogue.json,
-// persuasion-dialogue.json.
+// palace-dialogue.json, persuasion-dialogue.json.
 const CAMP_WORKS={
   lumber:{rules:"lumberjacks",copy:"lumberDialogue"},
-  mine:{rules:"miners",copy:"mineDialogue"}
+  mine:{rules:"miners",copy:"mineDialogue"},
+  palace:{rules:"palaceWorkers",copy:"palaceDialogue"}
 };
 function campWorkRules(course){ return campaignRules()[CAMP_WORKS[course]?.rules]||null; }
 function campWorkCopy(course){ return game.referenceData?.[CAMP_WORKS[course]?.copy]||{}; }
@@ -38,6 +39,7 @@ function campWorkHtml(c,course){
 }
 function lumberHtml(c){ return campWorkHtml(c,"lumber"); }
 function mineHtml(c){ return campWorkHtml(c,"mine"); }
+function palaceHtml(c){ return campWorkHtml(c,"palace"); }
 
 // La boîte de dialogue des échanges : la demande, sa réponse ; après un refus, Intimider, Convaincre ou laisser tomber.
 const talkSay=(who,text,you)=>`<p class="talk-say talk-say--${you?"you":"merc"}"><b>${esc(who)}</b><span>« ${esc(text)} »</span></p>`;
@@ -96,10 +98,11 @@ function withdrawCampWorker(memberId,course){
   renderGame();
 }
 
-// Journal du matin : les jours gagnés, chantier par chantier.
+// Journal du matin : les jours gagnés, chantier par chantier ; au Palais, l'or de la journée.
 function logCampWork(report,course){
   if(!report?.workers?.length) return;
   const copy=campWorkCopy(course).log||{};
+  if(report.gold!=null){ tavernLog(String(copy.earned||"").replace("{or}",fmt(report.gold)),"turn"); return; }
   if(!report.reduced.length){ tavernLog(copy.none||"","info"); return; }
   for(const r of report.reduced){
     const days=`${fmt(r.days)} jour${r.days>1?"s":""}`;

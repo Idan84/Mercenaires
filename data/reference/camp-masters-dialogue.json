@@ -170,6 +170,38 @@
         "outcome_accepted": "{prenom} retourne sur le terrain : le Labo n’a plus d’Alchimiste.",
         "outcome_refused": "{prenom} reste au Labo d’alchimie."
       }
+    },
+    "pleasureMaster": {
+      "label": "{Maître|Maîtresse} des plaisirs",
+      "origin": "Palais des plaisirs",
+      "panel": {
+        "title": "{Le Maître|La Maîtresse} des plaisirs",
+        "appoint": "Nommer un Maître des plaisirs",
+        "appoint_tip": "Le mercenaire choisi peut refuser le poste. Il quittera le terrain pour le Palais des plaisirs."
+      },
+      "offer": {
+        "proposal": "Le Palais a besoin de quelqu’un pour recevoir, sourire et compter les pièces. Vous avez ce qu’il faut : ça vous dit ?",
+        "accepted": [
+          "Recevoir, sourire, compter. Je prends le Palais.",
+          "Enfin un poste à la hauteur de mes talents. J’accepte.",
+          "Des coussins, du vin et personne pour me tirer dessus ? Marché conclu."
+        ],
+        "flattered": [
+          "{Maître|Maîtresse} des plaisirs, moi ? C’est flatteur… mais j’ai encore à faire sur le terrain.",
+          "Je saurais tenir le Palais, c’est sûr. Mais pas tant que je tiens une arme.",
+          "Redemandez-moi quand j’aurai fini de faire mes preuves dehors."
+        ],
+        "vexed": [
+          "Tenir un salon pendant que les autres se battent ? Non merci.",
+          "Vous me trouvez juste bon à servir le vin ? Charmant.",
+          "M’enfermer dans un boudoir ? Je m’en souviendrai."
+        ],
+        "outcome_accepted": "{prenom} prend le Palais des plaisirs en main."
+      },
+      "recall": {
+        "outcome_accepted": "{prenom} retourne sur le terrain : le Palais n’a plus de Maître des plaisirs.",
+        "outcome_refused": "{prenom} reste au Palais des plaisirs."
+      }
     }
   }
 }

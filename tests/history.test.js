@@ -24,7 +24,7 @@ const lone = {};
 History.recordMission(lone, 4, {progress:{...P.emptyLog(), knockouts:2, woundsTaken:3, criticalSuccesses:1}, wounded:true, days:5});
 assert.deepEqual(lone.history, {since:1, log:[{day:4, kind:"mission", knockouts:2, wounded:true, days:5}],
   missions:1, knockouts:2, timesWounded:1, woundsTaken:3, criticals:1, stewardDays:0, medicDays:0, directorDays:0,
-  doctoreDays:0, veteranDays:0, bladeMasterDays:0, alchemistDays:0});
+  doctoreDays:0, veteranDays:0, bladeMasterDays:0, alchemistDays:0, pleasureMasterDays:0});
 assert.equal(History.daysInCompany({history:{since:3}}, 10), 7);
 assert.equal(History.daysInCompany({contract:{signedDay:2}}, 2), 0, "le jour de l'arrivée : 0 jour");
 

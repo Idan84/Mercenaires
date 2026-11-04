@@ -528,6 +528,9 @@ Les bâtiments médicaux améliorent :
 
 Le mémorial a une **capacité illimitée** et conserve la mémoire des mercenaires morts.
 
+Pour l'instant, la compagnie garde la liste des morts en combat singulier contre le capitaine (`company.memorial`, §11, la
+désertion) ; le bâtiment viendra plus tard.
+
 ## 10 — Grande salle du château
 
 Lieu de vie et de discussions avec les mercenaires.
@@ -560,6 +563,42 @@ pour tout. Non l'affinité ne revient pas après ») — 10 niveaux, même barè
   `dungeon-dialogue.json` ; test `tests/dungeon.test.js`.
 
 Plus tard : les prisonniers ennemis, l'interrogatoire, les événements internes.
+
+### La désertion (Idan, 2026-11-04)
+
+« Chaque matin, quand l'affinité d'un mercenaire a baissé, il fait un test d'affinité avec le capitaine, puis en cas d'échec
+avec chacun des lieutenants. Si tous les tests échouent, le mercenaire se barre ! (Sauf s'il est au cachot, il le fera à sa
+sortie.) » ; « Variante plus douce » ; « il part avec son sac aussi ! » ; « Garde-fou : s'il reste, il est immunisé aux tests
+de désertion pendant 15 jours » ; « Si ! Il est mort dans un combat ».
+
+- **Le test du matin**, après tout ce qui fait bouger l'affinité ce matin-là : chaque membre présent au camp (pas en mission),
+  sauf le capitaine, dont l'affinité avec le capitaine a **baissé depuis la veille** (le bilan sur 24 heures : −2 puis +5, pas
+  de test). Chance de rester = **100 / (1 + e^(−(affinité + 60) / 10))**, de 1 à 99 % (`desertion.stay.*`) : 99 % à 0,
+  98 % à −20, 88 % à −40, 50 % à −60, 12 % à −80. D'abord avec le capitaine ; s'il rate, avec **chaque lieutenant présent**
+  au camp (son affinité envers le lieutenant : peuple, culture, alignement). Tous ratés : il part cette nuit.
+- **Au cachot** : il ne part pas ; il **veut partir** (plus de test) et tente de filer le matin qui suit sa libération.
+- **La Tour de guet** (« En fonction du niveau de la tour et de la discrétion du mercenaire… niveau 10, y'a 95 % de chance
+  qu'il se fasse repérer ») : chance de le repérer = **100 / (1 + e^(−Δ/15))**, **Δ = 10 × niveau − 55 − (Discrétion − 30)**
+  (équipement compris), de 5 à 95 % (`desertion.spot.*`) ; sans Tour, jamais. Discrétion 30 (la moyenne) : 5 % au niveau 1,
+  42 % au niveau 5, 95 % au niveau 10.
+- **Passé inaperçu** : il part avec ce qu'il porte **et son sac** ; dans la notification du jour et au journal, l'intendant le signale (« Brak a
+  filé cette nuit, avec son sac. ») ; sans intendant, on l'apprend quand même (« … a disparu cette nuit »). Son profil est
+  gardé (`company.deserters`), pour plus tard.
+- **Repéré** (« La Vigie a repéré … » dans la notification du jour) : une scène **au début de la journée**, une par repéré ; on ne peut rien faire d'autre (ni passer au jour
+  suivant) avant de l'avoir réglée :
+  - **Intimider** ou **Convaincre** : une seule tentative, **dure** : 10 + 80 / (1 + e^(−Δ/20)), **Δ = 0,5 × affinité +
+    Intimidation (ou Charisme ÷ 2) du capitaine − 60** (`desertion.persuade.*`) ; capitaine moyen, mercenaire à −20 :
+    23 % en intimidant, 18 % en convainquant. **Il reste** : **+20** d'affinité (« on la fait bien remonter »,
+    `desertion.persuade.stay_affinity`) et **15 jours sans test** (`desertion.immunity_days`). Raté : il reste les deux choix
+    suivants ;
+  - **le défier en combat singulier** (pour l'instant automatique) : le capitaine gagne, **il meurt** ; il rejoint le
+    mémorial (§9), laisse son **héritage de renommée** (doc 09) ; ses affaires (portées et sac) vont à l'Intendance ;
+  - **le laisser partir** : **+10** d'affinité (`desertion.let_go.affinity`, gardée dans son profil), et il part avec son sac.
+- **En partant ou en mourant**, il quitte son poste, sa corvée et son apprentissage, comme pour le Cachot.
+- Historique : « A voulu quitter la compagnie ; le capitaine l'a retenu. » ; dans le profil gardé : « Quitte la compagnie en
+  pleine nuit, avec son sac. », « Quitte la compagnie : le capitaine l'a laissé partir. », « Meurt en combat singulier contre
+  le capitaine. ». Code `game-core/desertion.js`, `prototype-web/desertion-ui.js` ; textes `desertion-dialogue.json` ; test
+  `tests/desertion.test.js`.
 
 ## 12 — Embellissement / prestige kitsch
 

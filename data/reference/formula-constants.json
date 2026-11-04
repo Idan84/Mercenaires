@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 338,
+  "row_count": 353,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -2736,6 +2736,126 @@
       "description": "Perfectionner un sort (Idan, 2026-11-02 : « consommer des manuels contre de l’xp de sort ») : affinité avec le capitaine quand on lui donne un manuel de son sort à perfectionner (pas de test).",
       "formule": "Perfectionner un sort à l’École de magie",
       "valeur": 2,
+      "version": "V1"
+    },
+    {
+      "nom": "Désertion — rester, décalage",
+      "code": "desertion.stay.offset",
+      "description": "Désertion (Idan, 2026-11-04 : « Chaque matin, quand l'affinité d'un mercenaire a baissé, il fait un test d'affinité avec le capitaine, puis en cas d'échec avec chacun des lieutenants. Si tous les tests échouent, le mercenaire se barre ! » ; « Variante plus douce ») : chance de rester = 100 / (1 + e^(−(affinité + décalage) / échelle)) ; 50 % à −60.",
+      "formule": "Désertion",
+      "valeur": 60,
+      "version": "V1"
+    },
+    {
+      "nom": "Désertion — rester, échelle",
+      "code": "desertion.stay.scale",
+      "description": "Échelle de la courbe de la chance de rester.",
+      "formule": "Désertion",
+      "valeur": 10,
+      "version": "V1"
+    },
+    {
+      "nom": "Désertion — rester, minimum",
+      "code": "desertion.stay.min",
+      "description": "Chance de rester, au moins (%).",
+      "formule": "Désertion",
+      "valeur": 1,
+      "version": "V1"
+    },
+    {
+      "nom": "Désertion — rester, maximum",
+      "code": "desertion.stay.max",
+      "description": "Chance de rester, au plus (%).",
+      "formule": "Désertion",
+      "valeur": 99,
+      "version": "V1"
+    },
+    {
+      "nom": "Désertion — Tour de guet, par niveau",
+      "code": "desertion.spot.per_level",
+      "description": "La Tour de guet repère le déserteur (Idan, 2026-11-04 : « En fonction du niveau de la tour et de la discrétion du mercenaire… sachant que niveau 10, y'a 95 % de chance qu'il se fasse repérer ») : chance = 100 / (1 + e^(−Δ / échelle)), Δ = par niveau × niveau − décalage − (Discrétion − Discrétion moyenne) ; sans Tour, jamais.",
+      "formule": "Désertion",
+      "valeur": 10,
+      "version": "V1"
+    },
+    {
+      "nom": "Désertion — Tour de guet, décalage",
+      "code": "desertion.spot.offset",
+      "description": "Décalage de Δ (Tour de guet).",
+      "formule": "Désertion",
+      "valeur": 55,
+      "version": "V1"
+    },
+    {
+      "nom": "Désertion — Tour de guet, Discrétion moyenne",
+      "code": "desertion.spot.stealth_median",
+      "description": "Discrétion d'un mercenaire moyen (médiane, environ 30).",
+      "formule": "Désertion",
+      "valeur": 30,
+      "version": "V1"
+    },
+    {
+      "nom": "Désertion — Tour de guet, échelle",
+      "code": "desertion.spot.scale",
+      "description": "Échelle de la courbe de la Tour de guet.",
+      "formule": "Désertion",
+      "valeur": 15,
+      "version": "V1"
+    },
+    {
+      "nom": "Désertion — Tour de guet, minimum",
+      "code": "desertion.spot.min",
+      "description": "Chance de le repérer, au moins (%), avec une Tour.",
+      "formule": "Désertion",
+      "valeur": 5,
+      "version": "V1"
+    },
+    {
+      "nom": "Désertion — Tour de guet, maximum",
+      "code": "desertion.spot.max",
+      "description": "Chance de le repérer, au plus (%).",
+      "formule": "Désertion",
+      "valeur": 95,
+      "version": "V1"
+    },
+    {
+      "nom": "Désertion — le retenir, poids de l'affinité",
+      "code": "desertion.persuade.affinity_weight",
+      "description": "Repéré, on tente de le retenir (Idan : « Par intimidation, par persuasion (charisme). Les deux tests sont durs ») : chance = 10 + 80 / (1 + e^(−Δ/20)), Δ = poids × affinité + Intimidation (ou Charisme ÷ 2) du capitaine + décalage.",
+      "formule": "Désertion",
+      "valeur": 0.5,
+      "version": "V1"
+    },
+    {
+      "nom": "Désertion — le retenir, décalage",
+      "code": "desertion.persuade.offset",
+      "description": "Décalage de Δ : un test dur.",
+      "formule": "Désertion",
+      "valeur": -60,
+      "version": "V1"
+    },
+    {
+      "nom": "Désertion — retenu, affinité",
+      "code": "desertion.persuade.stay_affinity",
+      "description": "Retenu (intimidé ou convaincu), son affinité avec le capitaine remonte de ce nombre (Idan : « on la fait bien remonter »).",
+      "formule": "Désertion",
+      "valeur": 20,
+      "version": "V1"
+    },
+    {
+      "nom": "Désertion — laissé partir, affinité",
+      "code": "desertion.let_go.affinity",
+      "description": "Laissé partir, son affinité remonte de ce nombre (Idan : « son affinité remonte un peu, mais il part ! ») ; gardée dans son profil.",
+      "formule": "Désertion",
+      "valeur": 10,
+      "version": "V1"
+    },
+    {
+      "nom": "Désertion — immunité",
+      "code": "desertion.immunity_days",
+      "description": "Retenu, il n'a plus de test de désertion pendant ce nombre de jours (Idan : « Garde-fou : s'il reste, il est immunisé aux tests de désertion pendant 15 jours »).",
+      "formule": "Désertion",
+      "valeur": 15,
       "version": "V1"
     }
   ]

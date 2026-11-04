@@ -21,10 +21,12 @@
   const agenda=typeof module!=="undefined"&&module.exports?require("./agenda.js"):root.MercenairesAgenda;
   // Le Cachot : on peut y jeter n'importe quel membre (facultatif hors du jeu, de même).
   const dungeon=typeof module!=="undefined"&&module.exports?require("./dungeon.js"):root.MercenairesDungeon;
-  const api=factory(history,regeneration,training,study,posts,armorPorts,armorStudy,lumber,agenda,dungeon);
+  // La désertion : le test du matin, la Tour de guet, la scène (facultatif hors du jeu, de même).
+  const desertion=typeof module!=="undefined"&&module.exports?require("./desertion.js"):root.MercenairesDesertion;
+  const api=factory(history,regeneration,training,study,posts,armorPorts,armorStudy,lumber,agenda,dungeon,desertion);
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesCampaign=api;
-})(typeof globalThis!=="undefined"?globalThis:this,function(History,Regeneration,Training,Study,Posts,ArmorPorts,ArmorStudy,Lumber,Agenda,Dungeon){
+})(typeof globalThis!=="undefined"?globalThis:this,function(History,Regeneration,Training,Study,Posts,ArmorPorts,ArmorStudy,Lumber,Agenda,Dungeon,Desertion){
   // Sauvegarde : l'état de partie complet, sérialisé en JSON avec un format et une version.
   // La trace de génération des mercenaires (détail de calcul pour le Design Lab, ~85 % du poids)
   // n'est pas sauvegardée : un mercenaire passe d'environ 36 Ko à 5 Ko.
@@ -73,7 +75,7 @@
   // lieutenants : règles des lieutenants (lieutenants.js) ; leurs demandes de la veille sont jouées chaque matin.
   // bodyguard : règles des missions de garde du corps (bodyguard.js).
   // merchants (facultatif) : createMerchantRules(...) de game-core/merchants.js (le marchand du jour, doc 18).
-  function createCampaignRules({generator,tavern,reference,biographies=null,avatars=null,progression=null,affinity=null,names=null,missions=null,lieutenants=null,bodyguard=null,magic=null,merchants=null,random=Math.random}){
+  function createCampaignRules({generator,tavern,reference,biographies=null,avatars=null,progression=null,affinity=null,names=null,missions=null,lieutenants=null,bodyguard=null,magic=null,merchants=null,statOf=null,random=Math.random}){
     const STARTING_GOLD=referenceConstant(reference,"company.gold.initial",10000);
     // Régénération (sang de troll ; Idan, 2026-11-01) : une blessure guérit plus vite au camp (regeneration.js).
     const regeneration=Regeneration?Regeneration.createRegenerationRules({reference}):null;
@@ -763,6 +765,47 @@
       return left;
     }
     const dungeonRules=Dungeon?Dungeon.createDungeonRules({reference,camp:{buildingLevel,expeditionOf,leave:leaveForDungeon}}):null;
+    // Héritage (issue #111) : 20 % de la part du défunt juste avant son retrait (standing : sa place au classement), figés
+    // pour toujours et comptés une seule fois. Le capitaine n'en laisse pas : sa mort met fin à la partie.
+    function recordHeritage(state,mercenary,standing){
+      const heritage=state.company.renownHeritage||(state.company.renownHeritage=[]);
+      if(!standing||heritage.some(h=>h.id===mercenary.id)) return null;
+      const entry={id:mercenary.id,name:mercenary.name,day:state.day,reputation:standing.reputation,
+        rank:standing.rank,contribution:standing.contribution,heritage:standing.contribution*RENOWN_HERITAGE_SHARE};
+      heritage.push(entry);
+      return entry;
+    }
+    // Il quitte la compagnie (désertion, duel ; Idan, 2026-11-04) : poste, corvée, apprentissage (comme pour le Cachot) ;
+    // son avatar n'est plus tiré à la Taverne. Déserteur : il part avec ce qu'il porte et son sac (« il part avec son sac
+    // aussi ! »). Mort en duel : héritage de renommée (« Il est mort dans un combat ») ; ses affaires vont à l'Intendance.
+    function leaveCompany(state,m,how){
+      const standing=how==="duel"?companyRenown(state).ranking.find(x=>x.id===m.id):null;
+      const left=leaveForDungeon(state,m);
+      delete m.dungeon;
+      const roster=rosterOf(state);
+      roster.splice(roster.indexOf(m),1);
+      if(m.avatar?.id) (state.avatarsRetired=state.avatarsRetired||[]).push(m.avatar.id);
+      if(how!=="duel") return {left};
+      const heritage=recordHeritage(state,m,standing);
+      const items=m.items||[];
+      if(items.length){
+        if(!Array.isArray(state.company.stock)) state.company.stock=[];
+        state.company.stock.push(...items.map(item=>({...item,owner:null,slot:null})));
+      }
+      m.items=[];
+      if(m.equipment?.slots) for(const slot of Object.keys(m.equipment.slots)) m.equipment.slots[slot]=null;
+      return {left,heritage,items};
+    }
+    // Désertion (Idan, 2026-11-04 ; règles : desertion.js) : l'affinité avec le capitaine, celle envers un lieutenant, la
+    // Discrétion avec l'équipement (statOf, fourni par le jeu).
+    const desertionRules=Desertion&&affinity?Desertion.createDesertionRules({reference,random,camp:{buildingLevel,awayOf,statOf,
+      affinityOf:(state,m)=>{
+        const captain=captainOf(state);
+        const bond=captain?affinity.memberAffinity(captain,m):null;
+        return bond?.ok?{total:bond.total,raw:bond.initial+bond.acquired+(bond.gear||0)}:null;
+      },
+      bondOf:(lieutenant,m)=>{ const bond=affinity.affinity(lieutenant,m); return bond?.ok?bond.total:0; },
+      remove:leaveCompany}}):null;
     agenda?.add("dungeon",dungeonRules).add("spell",spellStudy).add("armor",armorStudy).add("poison",poisonStudy)
       .add("lumber",lumberjacks,{chore:true}).add("mine",miners,{chore:true}).add("palace",palaceWorkers,{chore:true});
     // Ce qui le retient demain (mission, garde du corps : au jour J, on organise J+1) ; une corvée, tant qu'on ne l'a pas
@@ -899,7 +942,9 @@
       const poison=poisonStudy?poisonStudy.advance(state):null;
       // Entraînement libre (Idan, 2026-11-02) : ceux qui restent au camp choisissent leur journée.
       const school=runSchoolDay(state);
-      return {day:state.day,recovered,salaries,tavern:tavernReport,offersLost,expeditions,built,buildings,lieutenants:lieutenantReports,mana,merchant,school,study,armorStudy:armor,poisonStudy:poison,lumber,mine,palace,dungeon};
+      // Désertion (Idan, 2026-11-04) : après tout ce qui fait bouger l'affinité du matin.
+      const desertion=desertionRules?desertionRules.morning(state):null;
+      return {day:state.day,recovered,salaries,tavern:tavernReport,offersLost,expeditions,built,buildings,lieutenants:lieutenantReports,mana,merchant,school,study,armorStudy:armor,poisonStudy:poison,lumber,mine,palace,dungeon,desertion};
     }
 
     // Recharge du mana (doc 12 ; Idan, 2026-10-25) : chaque jour, pour les membres présents au camp, pas pour ceux qui sont
@@ -1074,6 +1119,9 @@
     }
     // Une escouade arrivée attend ses ordres (Idan, 2026-10-24) : pas de jour suivant tant que son combat n'est pas livré.
     function canAdvanceDay(state){
+      // Un mercenaire repéré par la Tour de guet attend qu'on décide de son sort (Idan, 2026-11-04).
+      const leaving=desertionRules?desertionRules.canAdvance(state):{ok:true};
+      if(!leaving.ok) return {...leaving,desertion:leaving.id};
       const waiting=expeditionsOf(state).find(e=>e.status==="arrived");
       return waiting?{ok:false,reason:"Une escouade attend vos ordres : livrez son combat avant de passer au jour suivant.",expedition:waiting}:{ok:true};
     }
@@ -1232,14 +1280,8 @@
         if(result.dead){
           // Héritage (issue #111) : 20 % de la part du défunt juste avant son retrait, figés pour toujours
           // et comptés une seule fois. Le capitaine n'en laisse pas : sa mort met fin à la partie.
-          const standing=standingAtStart.get(mercenary.id);
-          const heritage=state.company.renownHeritage||(state.company.renownHeritage=[]);
-          if(standing&&!heritage.some(h=>h.id===mercenary.id)){
-            const entry={id:mercenary.id,name:mercenary.name,day:state.day,reputation:standing.reputation,
-              rank:standing.rank,contribution:standing.contribution,heritage:standing.contribution*RENOWN_HERITAGE_SHARE};
-            heritage.push(entry);
-            report.heritage.push(entry);
-          }
+          const entry=recordHeritage(state,mercenary,standingAtStart.get(mercenary.id));
+          if(entry) report.heritage.push(entry);
           roster.splice(roster.indexOf(mercenary),1);
           if(state.company.intendantId===mercenary.id) state.company.intendantId=null;
           if(state.company.medicId===mercenary.id) state.company.medicId=null;
@@ -1333,7 +1375,7 @@
       completeExpeditionCombat,
       dormitoryFree,
       dormitoryUsed,
-      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,trainingRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,spellStudy,armorStudy,poisonStudy,lumberjacks,miners,palaceWorkers,dungeonRules,agenda,studyBusy,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
+      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,trainingRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,spellStudy,armorStudy,poisonStudy,lumberjacks,miners,palaceWorkers,dungeonRules,desertionRules,agenda,studyBusy,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
       woundDaysFor,fatigueDaysFor,
       dormitoryPlaces,
       dormitoryExpansionCost,

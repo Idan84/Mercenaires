@@ -484,7 +484,11 @@
         "respect": "Respecte un peu plus le capitaine, grâce à {lieutenant}."
       },
       "dungeon": "Est {jeté|jetée} au cachot.",
-      "dungeon_release": "Sort du cachot après {jours}."
+      "dungeon_release": "Sort du cachot après {jours}.",
+      "desertion_stayed": "A voulu quitter la compagnie ; le capitaine l’a {retenu|retenue}.",
+      "desertion": "Quitte la compagnie en pleine nuit, avec son sac.",
+      "desertion_let_go": "Quitte la compagnie : le capitaine l’a {laissé|laissée} partir.",
+      "duel": "Meurt en combat singulier contre le capitaine."
     },
     "empty": "Rien à raconter pour l’instant."
   },

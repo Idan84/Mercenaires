@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 324,
+  "row_count": 328,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -2437,23 +2437,23 @@
     {
       "nom": "Bûcherons — décalage du test",
       "code": "camp.lumber.offer_offset",
-      "description": "Cabane du bûcheron (Idan, 2026-11-03 : « test assez dur et petite perte à chaque fois » ; « Parfait ») : il y va toujours ; de bon cœur avec la chance 10 + 80 / (1 + e^(−Δ/20)), Δ = 0,5 × affinité avec le capitaine + ce décalage + appui de l’intendant. Affinité 0 : 25 % ; 50 : 45 % ; 100 : 69 %.",
+      "description": "Corvées (Cabane du bûcheron, Guilde des mineurs ; Idan, 2026-11-03 : « test assez dur » ; 2026-11-04 : « Dans les 3 cas, ils peuvent refuser ») : chance d'accepter 10 + 80 / (1 + e^(−Δ/20)), Δ = 0,5 × affinité avec le capitaine + ce décalage + appui de l'intendant (+ la relance : persuasion.*). Affinité 0 : 25 % ; 50 : 45 % ; 100 : 69 %.",
       "formule": "Cabane du bûcheron",
       "valeur": -30,
       "version": "V1"
     },
     {
-      "nom": "Bûcherons — affinité à contrecœur",
-      "code": "camp.lumber.grudge_affinity",
-      "description": "Cabane du bûcheron (Idan, 2026-11-03) : test raté, il y va à contrecœur ; son affinité avec le capitaine bouge de ce nombre.",
+      "nom": "Corvées — affinité par jour de travail",
+      "code": "camp.lumber.daily_affinity",
+      "description": "Corvées (Cabane du bûcheron, Guilde des mineurs ; Idan, 2026-11-04 : « on va mettre les mercenaires en durée indéterminée. On peut les retirer quand on le souhaite. Par contre, chaque jour fait baisser l'affinité » ; « -1 par jour c'est bien ») : chaque matin de travail, son affinité avec le capitaine bouge de ce nombre ; × persuasion.intimidate.loss_factor s'il a été intimidé, × persuasion.convince.loss_factor s'il a été convaincu.",
       "formule": "Cabane du bûcheron",
-      "valeur": -2,
+      "valeur": -1,
       "version": "V1"
     },
     {
       "nom": "Mineurs — par niveau de la Guilde",
       "code": "camp.mine.workers_per_level",
-      "description": "Guilde des mineurs (Idan, 2026-11-04 : « même chose mais avec les pierres pour des bâtiments de lvl 6 à 10 ») : mineurs par jour et par niveau. Même test et même perte que les bûcherons (camp.lumber.offer_offset, camp.lumber.grudge_affinity : « pareil »).",
+      "description": "Guilde des mineurs (Idan, 2026-11-04 : « même chose mais avec les pierres pour des bâtiments de lvl 6 à 10 ») : mineurs par jour et par niveau. Même test et même perte quotidienne que les bûcherons (camp.lumber.offer_offset, camp.lumber.daily_affinity : « pareil »).",
       "formule": "Guilde des mineurs",
       "valeur": 1,
       "version": "V1"
@@ -2480,6 +2480,38 @@
       "description": "Guilde des mineurs (Idan, 2026-11-04) : voir camp.mine.min_work_level.",
       "formule": "Guilde des mineurs",
       "valeur": 10,
+      "version": "V1"
+    },
+    {
+      "nom": "Relance — Intimider, poids de l'Intimidation",
+      "code": "persuasion.intimidate.weight",
+      "description": "Relance après un refus (Idan, 2026-11-04 : « On peut retenter via deux options de dialogues (ou laisser tomber) : Intimider, Convaincre. On refait le test en ajoutant son intimidation ou son charisme (moitié du cha) ») : Intimider ajoute à l'écart (Δ) du test l'Intimidation du capitaine × ce poids (médiane 38). Une seule relance par refus.",
+      "formule": "Relance après un refus",
+      "valeur": 1,
+      "version": "V1"
+    },
+    {
+      "nom": "Relance — Intimider, facteur de la perte d'affinité",
+      "code": "persuasion.intimidate.loss_factor",
+      "description": "Idan, 2026-11-04 : « En intimidation, ça double la perte d'affinité » : la perte qui suit (pour une corvée : celle de chaque jour) est multipliée par ce facteur.",
+      "formule": "Relance après un refus",
+      "valeur": 2,
+      "version": "V1"
+    },
+    {
+      "nom": "Relance — Convaincre, poids du Charisme",
+      "code": "persuasion.convince.weight",
+      "description": "Convaincre ajoute à l'écart (Δ) du test le Charisme du capitaine × ce poids (« moitié du cha » ; médiane 27).",
+      "formule": "Relance après un refus",
+      "valeur": 0.5,
+      "version": "V1"
+    },
+    {
+      "nom": "Relance — Convaincre, facteur de la perte d'affinité",
+      "code": "persuasion.convince.loss_factor",
+      "description": "Idan, 2026-11-04 : « En charisme, ça la divise par deux » : la perte qui suit est multipliée par ce facteur.",
+      "formule": "Relance après un refus",
+      "valeur": 0.5,
       "version": "V1"
     },
     {

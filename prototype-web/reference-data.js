@@ -55,6 +55,7 @@ const REFERENCE_FILES = {
   poisonStudyDialogue: "poison-study-dialogue.json",
   lumberDialogue: "lumber-dialogue.json",
   mineDialogue: "mine-dialogue.json",
+  persuasionDialogue: "persuasion-dialogue.json",
   lieutenantDialogue: "lieutenant-dialogue.json",
   bodyguardMissions: "bodyguard-missions.json",
   merchants: "merchants.json",

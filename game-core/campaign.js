@@ -732,8 +732,8 @@
     // L'ordre d'inscription est celui des raisons affichées.
     agenda?.add("spell",spellStudy).add("armor",armorStudy).add("poison",poisonStudy)
       .add("lumber",lumberjacks,{chore:true}).add("mine",miners,{chore:true});
-    // Ce qui le retient demain (mission, garde du corps : au jour J, on organise J+1) ; une corvée d'aujourd'hui ne compte pas
-    // (Idan, 2026-11-04 : « Oui »).
+    // Ce qui le retient demain (mission, garde du corps : au jour J, on organise J+1) ; une corvée, tant qu'on ne l'a pas
+    // retiré (Idan, 2026-11-04).
     const studyBusy=(state,m)=>m&&agenda?agenda.tomorrowReason(state,m.id):null;
     // L'entraînement libre du jour : tout ce qui le retient, corvée du jour comprise.
     function trainingAvailable(state,m){ return Boolean(m)&&!m.recovery&&!expeditionOf(state,m.id)&&!(agenda&&agenda.reason(state,m.id)); }

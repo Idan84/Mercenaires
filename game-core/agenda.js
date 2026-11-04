@@ -8,8 +8,8 @@
 // - chaque activité est inscrite une fois (add), avec busyReason(state, id) → raison (aujourd'hui ou demain) ou null ;
 // - une activité demande à l'agenda ce qui le retient ailleurs (elsewhere) : toutes les autres, dans l'ordre d'inscription ;
 // - tomorrowReason(state, id) : ce qui le retient demain, pour organiser J+1 (apprentissage, mission, garde du corps,
-//   corvée) ; une corvée d'aujourd'hui ne compte pas (Idan, 2026-11-04 : « Oui ») : bûcheron aujourd'hui, mineur, élève ou
-//   en mission demain, c'est possible ; une seule corvée par jour ;
+//   corvée) ; une corvée y compte par son propre tomorrowReason : elle dure jusqu'à ce qu'on le retire, et une fois retiré,
+//   il est libre le lendemain (Idan, 2026-11-04 : « Oui ») ; une seule corvée à la fois ;
 // - reason(state, id) : ce qui le retient, aujourd'hui ou demain, toutes activités confondues (l'entraînement libre du jour).
 //
 // Les postes (intendant, médecin, maîtres…), les missions et les blessures restent vérifiés à part, comme avant.

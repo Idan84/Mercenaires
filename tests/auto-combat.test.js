@@ -41,7 +41,9 @@ const api=new Function("game","$","esc","fmt","renderAvatar","combatEngine","Mer
   source+"\nlet renders=0;const draw=renderMission;renderMission=function(){ if(!game.mission?.autoRunning) renders++; return draw(); };"
   // Compte les débuts d'activation (poison, régénération, effets à durée) de chaque combattant.
   +"\nconst resets=new Map();const reset=resetMissionActivation;resetMissionActivation=function(u){ resets.set(u,(resets.get(u)||0)+1); return reset(u); };"
-  +"\nreturn {makeMissionUnit,sortMissionInitiative,selectNextMissionPlayer,autoResolveMission,missionActionAvailability,renders:()=>renders,resets};")
+  // Chaque message du journal (le journal du combat ne garde que les 180 derniers).
+  +"\nconst logged=[];const log0=missionLog;missionLog=function(message,kind){ logged.push(message); return log0(message,kind); };"
+  +"\nreturn {makeMissionUnit,sortMissionInitiative,selectNextMissionPlayer,autoResolveMission,missionActionAvailability,renders:()=>renders,resets,logged};")
   .call(null,game,$,v=>String(v??""),v=>String(Math.round(Number(v)||0)),()=>"",()=>engine,Progression,MissionEnd);
 
 // Trois contre trois, comme la Mission Test : votre équipe joue la première.
@@ -69,12 +71,12 @@ for(const u of players) assert.equal(api.resets.get(u)||0,activations.get(u)||0,
 assert.equal(m.over,true,"le combat va jusqu'au bout");
 assert.ok(["player","enemy"].includes(m.winner));
 assert.ok(m.aftermath?.results?.length===3,"le bilan de fin de mission est fait pour votre équipe");
-assert.equal(m.log.filter(x=>x.message==="Combat automatique : votre équipe joue seule jusqu’à la fin du combat.").length,1);
+assert.equal(api.logged.filter(x=>x==="Combat automatique : votre équipe joue seule jusqu’à la fin du combat.").length,1);
 assert.ok(m.turn>=1&&m.turn<=100);
 assert.equal(m.autoRunning,false);
 assert.equal(api.missionActionAvailability().auto,undefined,"plus rien à faire une fois le combat fini");
 api.autoResolveMission();
-assert.equal(m.log.filter(x=>/Combat automatique/.test(x.message)).length,1,"rien ne se passe après la fin");
+assert.equal(api.logged.filter(x=>/Combat automatique/.test(x)).length,1,"rien ne se passe après la fin");
 
 // Le bouton dans l'écran de combat.
 const html=fs.readFileSync(path.join(ROOT,"prototype-web","index.html"),"utf8");

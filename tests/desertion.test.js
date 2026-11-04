@@ -196,7 +196,7 @@ assert.match(tavernUi,/logDesertion\(report\.desertion\)/);
 assert.match(tavernUi,/if\(allowed\.desertion!=null\)\{ if\(typeof checkDesertions==="function"\) checkDesertions\(\); return; \}/);
 assert.match(tavernUi,/statOf:\(m,name\)=>combatEngine\(\)\.statWithGear/);
 const ui2=fs.readFileSync(path.join(ROOT,"prototype-web","ui.js"),"utf8");
-assert.match(ui2,/if \(typeof checkDesertions === "function"\) checkDesertions\(\);\n\}/);
+assert.match(ui2,/if \(typeof checkDesertions === "function"\) checkDesertions\(\);\n/);
 assert.match(ui2,/\["desertion_stayed","desertion","desertion_let_go","duel"\]\.includes\(entry\.kind\)/);
 const events=reference.characterSheetCopy.history.events;
 assert.ok(["desertion_stayed","desertion","desertion_let_go","duel"].every(kind=>events[kind]));

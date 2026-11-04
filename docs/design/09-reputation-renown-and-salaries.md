@@ -299,6 +299,32 @@ La négociation conjointe **Salaire + Prime de mission** est définie dans [Tave
 - La prime de mission est payée au retour de mission (`10-mission-time-and-unavailability.md` §8 et §11).
 - Si l’or manque, le trésor passe sous 0, sans conséquence pour l’instant (Idan, 2026-10-04). Dette, impayés et départs restent à concevoir.
 
+### Renégociation salariale (Idan, 2026-11-04)
+
+« Quand un mercenaire gagne une étoile de réputation, il fait un test (entre salaire perçu et salaire théorique). En fonction
+de son intelligence, il vient demander un meilleur salaire au capitaine… On rentre dans une phase de négociation. Avec gain ou
+perte d'affinité » ; « oui » ; « parfait ».
+
+- **Le test** : le matin, un membre au camp (pas en mission, pas au cachot : il viendra le premier matin où il y est) qui a
+  gagné une étoile depuis la dernière fois compare son salaire à son **salaire théorique** : la formule du §4 avec ses valeurs
+  du jour (réputation, prétentions, Intelligence, affinité avec le capitaine). Assez payé : rien. Sinon, chance de venir
+  réclamer = **100 / (1 + e^(−Δ/10))**, **Δ = 100 × écart + (Intelligence − 50) / 2 − 15**, de 5 à 95 %
+  (`salary_review.chance.*` ; écart = théorique ÷ salaire − 1). Une étoile, pour une recrue moyenne, c'est environ 16 %
+  d'écart : 29 % à 30 d'Intelligence, 56 % à 53, 82 % à 79. S'il ne vient pas, rien avant sa prochaine étoile.
+- **La demande** : son salaire théorique ; la prime de mission ne bouge pas.
+- **La scène**, au début de la journée (après celle d'un déserteur), qui bloque le jeu ; une ligne dans la notification du
+  jour (« … veut vous parler de son salaire ») : **Accepter**, **Négocier**, **Refuser**. On négocie comme à la Taverne
+  (doc 14 §9, sur le salaire seul) : jamais moins que son salaire actuel, ni que l'offre refusée ; il accepte, fait une
+  contre-proposition, ou **rompt** (il garde son salaire).
+- **Affinité** : **+5** s'il obtient tout ce qu'il demande (ou plus) ; **0** si on tombe d'accord plus bas ; **−10** si on
+  refuse ou s'il rompt (`salary_review.affinity.*`). Après une rupture, la relance (doc 11 §7) : **Intimider** ou
+  **Convaincre** pour qu'il accepte la dernière offre (chance d'accepter cette offre + Intimidation ou Charisme ÷ 2, au plus
+  95 %) ; ratée : −20 (intimidé) ou −5 (convaincu) ; ou **Laisser tomber** (−10). Une baisse d'affinité déclenche le test de
+  désertion du lendemain (doc 11 §11).
+- Historique : « Obtient une augmentation : de 47 à 55 PO par jour. », « Réclame une augmentation ; n'obtient rien. ». Code
+  `game-core/salary-review.js` (le salaire théorique : `salaryDemand`, `mercenary-generator.js`),
+  `prototype-web/salary-review-ui.js` ; textes `salary-review-dialogue.json` ; test `tests/salary-review.test.js`.
+
 ## 7 — Politique des blessés — « T’es pas à la Sécu ici »
 
 La compagnie pourra définir un **taux de salaire des blessés de 0 à 100 %**.

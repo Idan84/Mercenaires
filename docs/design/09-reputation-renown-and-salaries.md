@@ -315,7 +315,11 @@ perte d'affinité » ; « oui » ; « parfait ».
 - **La scène**, au début de la journée (après celle d'un déserteur), qui bloque le jeu ; une ligne dans la notification du
   jour (« … veut vous parler de son salaire ») : **Accepter**, **Négocier**, **Refuser**. On négocie comme à la Taverne
   (doc 14 §9, sur le salaire seul) : jamais moins que son salaire actuel, ni que l'offre refusée ; il accepte, fait une
-  contre-proposition, ou **rompt** (il garde son salaire).
+  contre-proposition, ou **rompt** (il garde son salaire). Mais la **concession se compte sur l'augmentation** qu'on lui
+  refuse (Idan, 2026-11-04 : « Oui ») : **concession = 50 × (1 − augmentation offerte ÷ augmentation demandée)**
+  (`salary_review.concession_weight`). Il demande 55, il touche 47 (résistance 40) : 47, aucune augmentation, 5 % qu'il
+  accepte ; 51, la moitié, 49 % ; 53, les trois quarts, 74 %. Avec la concession de la Taverne, ne rien lui accorder
+  passait 7 fois sur 10.
 - **Affinité** : **+5** s'il obtient tout ce qu'il demande (ou plus) ; **0** si on tombe d'accord plus bas ; **−10** si on
   refuse ou s'il rompt (`salary_review.affinity.*`). Après une rupture, la relance (doc 11 §7) : **Intimider** ou
   **Convaincre** pour qu'il accepte la dernière offre (chance d'accepter cette offre + Intimidation ou Charisme ÷ 2, au plus

@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 363,
+  "row_count": 364,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -2936,6 +2936,14 @@
       "description": "Après une rupture, la relance : chance d'accepter la dernière offre + Intimidation (ou Charisme ÷ 2) du capitaine, au plus ce pourcentage.",
       "formule": "Renégociation salariale",
       "valeur": 95,
+      "version": "V1"
+    },
+    {
+      "nom": "Renégociation — concession",
+      "code": "salary_review.concession_weight",
+      "description": "Dans la négociation, la concession (14 §9) se compte sur l'augmentation qu'on lui refuse (Idan, 2026-11-04 : « Oui ») : concession = ce nombre × (1 − augmentation offerte ÷ augmentation demandée). Sans augmentation : 5 % qu'il accepte ; la moitié : environ 50 % ; les trois quarts : environ 75 %.",
+      "formule": "Renégociation salariale",
+      "valeur": 50,
       "version": "V1"
     }
   ]

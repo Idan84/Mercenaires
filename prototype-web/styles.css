@@ -460,6 +460,8 @@ body[data-screen="mission"] .app-shell{max-width:none;padding:8px 10px 74px}
 .hex-cell.swarm{box-shadow:inset 0 0 0 2px rgba(120,130,40,.9);background-image:radial-gradient(circle at 30% 40%,rgba(40,40,20,.55) 0 2px,transparent 3px),radial-gradient(circle at 70% 65%,rgba(40,40,20,.55) 0 2px,transparent 3px),linear-gradient(160deg,rgba(150,160,70,.45),rgba(95,105,40,.45))}
 /* Bourbier (Invocation) : une case de boue où l'on ne peut plus se déplacer. */
 .hex-cell.mire{background:radial-gradient(circle at 40% 45%,#8a7350 0,#6b5534 55%,#4a3a22 100%)}
+/* Portée de l'attaque, de la charge ou du sort choisi (Idan, 2026-11-04) : un voile doré, sous les cibles. */
+.hex-cell.in-range{background:#f2d27a40}
 .hex-cell.reachable{background:#8fcdf06b}
 .hex-cell.reachable:hover{background:#b5e2fbb8}
 .hex-cell.targetable{background:#ec5b4390;animation:hex-pulse 1.5s ease-in-out infinite}
@@ -499,6 +501,10 @@ body[data-screen="mission"] .app-shell{max-width:none;padding:8px 10px 74px}
 /* Chemin prévu au survol (mode déplacement) : cases éclairées, nombre de cases sur la dernière. */
 .hex-cell.reachable.path{background:#d8f1ffd9}
 .hex-cell.reachable.provokes.path{background:#ffe2a0e0}
+/* La zone d'un sort de zone, au survol d'une case visée (Idan, 2026-11-04). */
+.hex-cell.aoe,.hex-cell.aoe.in-range,.hex-cell.aoe.spell-target{background:#ffa64dc0;animation:none}
+/* Le chemin d'une attaque avec déplacement (Idan, 2026-11-04), comme celui d'un déplacement. */
+.hex-cell.path,.hex-cell.in-range.path{background:#d8f1ffc8}
 .hex-cell.path-end::after{content:attr(data-step);position:absolute;inset:0;display:grid;place-items:center;color:#1b3a52;font:800 1.05rem Georgia,serif}
 /* Chiffres et mentions qui sautent au-dessus des pions (rejoués dans l'ordre des événements). */
 .mission-pop{position:absolute;z-index:40;display:flex;flex-direction:column;align-items:center;gap:0;opacity:0;pointer-events:none;color:#fff;
@@ -585,7 +591,7 @@ body[data-screen="mission"] .app-shell{max-width:none;padding:8px 10px 74px}
 .mission-actions button:disabled{opacity:.32;cursor:not-allowed}
 #mission-end-activation-btn{border-color:#d0805a;background:linear-gradient(180deg,#8f3b2b,#5a1f16);color:#ffe9cf}
 #mission-auto-btn{margin-left:auto}
-#mission-auto-btn,#mission-test-spells-btn{min-width:64px;background:linear-gradient(180deg,#33271e,#1f1712);color:#cbb592}
+#mission-auto-btn,#mission-test-spells-btn,#mission-speed-btn{min-width:64px;background:linear-gradient(180deg,#33271e,#1f1712);color:#cbb592}
 #mission-move-btn{--mission-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 3.5c1.6 0 2.5 2 2.5 4.4S8.6 12 7.2 12 4.9 10.5 4.9 8.2 5.4 3.5 7 3.5zM5.3 14.6h3.9l-.3 2.2a1.8 1.8 0 0 1-3.4 0zM17 7.5c1.6 0 2.3 2.1 2.3 4.4S18.4 16 17 16s-2.3-1.6-2.3-4 .7-4.5 2.3-4.5zM15.1 18.6H19l-.3 2.1a1.8 1.8 0 0 1-3.4 0z'/%3E%3C/svg%3E")}
 #mission-attack-btn,#mission-two-hands-btn{--mission-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14.5 17.5 3 6V3h3l11.5 11.5'/%3E%3Cpath d='m13 19 6-6'/%3E%3Cpath d='m16 16 4 4'/%3E%3Cpath d='m19 21 2-2'/%3E%3C/svg%3E")}
 #mission-charge-btn{--mission-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 17 5-5-5-5'/%3E%3Cpath d='m12 17 5-5-5-5'/%3E%3Cpath d='M20 6v12'/%3E%3C/svg%3E")}
@@ -596,6 +602,7 @@ body[data-screen="mission"] .app-shell{max-width:none;padding:8px 10px 74px}
 #mission-end-activation-btn{--mission-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='m8 12 3 3 5-6'/%3E%3C/svg%3E")}
 #mission-auto-btn{--mission-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 5l7 7-7 7zM13 5l7 7-7 7z'/%3E%3C/svg%3E")}
 #mission-test-spells-btn{--mission-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z'/%3E%3Cpath d='M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5'/%3E%3Cpath d='m12 7 .8 1.7 1.7.8-1.7.8L12 12l-.8-1.7-1.7-.8 1.7-.8z'/%3E%3C/svg%3E")}
+#mission-speed-btn{--mission-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m12 14 4-4'/%3E%3Cpath d='M3.34 19a10 10 0 1 1 17.32 0'/%3E%3C/svg%3E")}
 /* Barre de sorts (doc 12) : les sorts connus du mercenaire actif et son mana ; au-delà de 8 sorts, un onglet par école. */
 .mission-spells{display:flex;flex-wrap:wrap;align-items:center;gap:5px;max-height:100px;margin:0;overflow:auto;scrollbar-width:thin;scrollbar-color:#6e5233 transparent}
 .mission-spells:empty{display:none}

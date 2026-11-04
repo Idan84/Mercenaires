@@ -477,16 +477,26 @@
     // Blesser d'une arme, la Puissance magique du lanceur tenant le rôle de la Force et 0,2 × la Maîtrise du sort celui des
     // compétences d'arme ; la puissance du sort face à la résistance de l'armure au type ; puis la Résistance physique de la
     // cible, avec sa variation D3, comme pour une arme. Ne touche pas aux PV : l'écran de combat les applique.
-    function spellPhysicalHit(caster,target,amount,{type="contondant",power=0,mastery=0}={}){
-      if(target.character?.immunePhysical) return {type,power,immune:true,wound:false,damage:0};
+    // La chance qu'un sort physique blesse, sans jet (aussi pour l'aperçu des sorts).
+    function spellWoundChance(caster,target,{type="contondant",power=0,mastery=0}={}){
       const armorResistance=effectiveArmorResistance(target,type),matchup=power-armorResistance;
       const delta=statWithGear(caster,"Puissance magique")+0.2*mastery+matchup-statWithGear(target,"Endurance");
-      const pWound=clamp(logistic(delta),10,90),woundRoll=d100();
+      return {armorResistance,matchup,pWound:clamp(logistic(delta),10,90)};
+    }
+    function spellPhysicalHit(caster,target,amount,{type="contondant",power=0,mastery=0}={}){
+      if(target.character?.immunePhysical) return {type,power,immune:true,wound:false,damage:0};
+      const {armorResistance,matchup,pWound}=spellWoundChance(caster,target,{type,power,mastery}),woundRoll=d100();
       const head={type,power,armorResistance,matchup,pWound,woundRoll};
       if(woundRoll>pWound) return {...head,wound:false,damage:0};
-      const physicalResistance=clamp(statWithGear(target,"Résistance physique"),0,50),resistanceRoll=die(3);
+      const resistanceRoll=die(3);
+      return {...head,wound:true,...spellPhysicalDamage(target,amount,resistanceRoll)};
+    }
+    // Les dégâts d'un sort physique qui blesse : la Résistance physique (50 % au plus) × (jet d3 + 8) ÷ 10 ; jet 3 : le moins
+    // de dégâts, jet 1 : le plus (l'aperçu des sorts).
+    function spellPhysicalDamage(target,amount,resistanceRoll){
+      const physicalResistance=clamp(statWithGear(target,"Résistance physique"),0,50);
       const damage=iced(target,Math.max(0,Math.ceil(amount*(1-(physicalResistance/100)*((resistanceRoll+8)/10))-1e-9)));
-      return {...head,wound:true,physicalResistance,resistanceRoll,damage};
+      return {physicalResistance,resistanceRoll,damage};
     }
 
     // Lancer d'arme (Télékinésie ; Idan, 2026-10-31, chiffres de JC3) : l'arme de corps à corps tenue, lancée par l'esprit
@@ -1124,23 +1134,23 @@
       const weapon=weaponTemplate(activeWeaponItem(attacker));
       if(!isMeleeWeapon(weapon)) return {valid:false};
 
-      const dq=defender.q-attacker.q,dr=defender.r-attacker.r;
+      // Charge en ligne droite (Idan, 2026-11-04 : « La charge devrait être possible si dans la ligne droite entre le chargeur
+      // et le chargé, il n'y a aucun obstacle ou personnage ») : dans n'importe quelle direction, la ligne droite
+      // d'hexagones entre les deux (hexLine) ; le chemin, ce sont ses cases entre les deux, la dernière au contact de la
+      // cible. L'écran de combat vérifie qu'aucune n'est occupée. step : la direction de la dernière case vers la cible.
       const distance=axialDistance(attacker,defender);
-      const straight=dq===0||dr===0||dq+dr===0;
-      if(!straight||distance<2) return {valid:false};
+      if(distance<2) return {valid:false};
+      const path=hexLine(attacker,defender).slice(1,-1);
+      const destination=path[path.length-1];
+      const step={q:defender.q-destination.q,r:defender.r-destination.r};
 
-      let step;
-      if(dq===0) step={q:0,r:Math.sign(dr)};
-      else if(dr===0) step={q:Math.sign(dq),r:0};
-      else step={q:Math.sign(dq),r:Math.sign(dr)};
-
-      const travel=distance-1;
+      const travel=path.length;
       const base=movementBase(attacker);
       return {
         valid:travel>=base&&travel<=2*base,
         travel,
-        path:Array.from({length:travel},(_,i)=>({q:attacker.q+step.q*(i+1),r:attacker.r+step.r*(i+1)})),
-        destination:{q:defender.q-step.q,r:defender.r-step.r},
+        path,
+        destination,
         step,
         min:base,
         max:2*base
@@ -1154,7 +1164,9 @@
       STEALTH,
       detectionChance,
       rollDetection,
+      spellWoundChance,
       spellPhysicalHit,
+      spellPhysicalDamage,
       weaponThrow,
       fearHold,
       parryChance,

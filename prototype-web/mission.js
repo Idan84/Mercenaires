@@ -900,8 +900,9 @@ function missionChargeIfClear(unit,target){
   if(missionHiddenFrom(target,unit)) return null;
   const charge=game.mission.engine.chargeData(unit,target);
   if(!charge.valid) return null;
+  // Aucun personnage, aucune flaque de magma, aucun bourbier sur la ligne (Idan, 2026-11-04) ; le brouillard ne gêne pas.
   const occupied=occupiedMissionKeys(unit);
-  return charge.path.some(h=>occupied.has(missionKey(h.q,h.r)))?null:charge;
+  return charge.path.some(h=>occupied.has(missionKey(h.q,h.r))||missionMireAt(h.q,h.r)||!validMissionHex(h.q,h.r))?null:charge;
 }
 
 function missionActiveUnitLost(){
@@ -1244,6 +1245,16 @@ function handleMissionHexClick(q,r){
   const distance=m.engine.axialDistance(u,clicked);
 
   if(m.mode==="melee"){
+    // Hors d'atteinte : il s'approche d'abord, par le plus court chemin, puis frappe s'il le peut encore.
+    const approach=missionCanAttack(u,clicked,"melee")?null:missionMeleeApproach(u,clicked);
+    if(approach){
+      const moved=moveMissionUnitAlongPath(u,approach.path);
+      if(moved) missionLog(u.character.name+" s’approche de "+clicked.character.name+" ("+moved+" hex).","move");
+      if(missionActiveUnitLost()) return;
+      if(!clicked.alive||!missionCanAttack(u,clicked,"melee")){ m.mode=null; renderMission(); return; }
+      resolvePlayerMissionAttack(u,clicked,"melee",m.engine.axialDistance(u,clicked));
+      return;
+    }
     resolvePlayerMissionAttack(u,clicked,"melee",distance);
   }else if(m.mode==="ranged"){
     resolvePlayerMissionAttack(u,clicked,"ranged",distance);
@@ -2645,18 +2656,59 @@ function autoResolveMission(){
   renderMission();
 }
 
+// Rythme de l'IA (Idan, 2026-11-04 : « L'IA joue beaucoup trop vite, on n'a rien le temps de comprendre ») : dans la page,
+// les ennemis jouent l'un après l'autre ; les déplacements et les coups de chacun s'animent, puis une pause avant le suivant
+// (« Accélérer » la raccourcit) ; l'ennemi qui joue est mis en évidence. Sans page (tests) ou en combat automatique : tout le
+// tour d'un coup.
+const MISSION_PACE={pause:900,fastPause:150};
+function missionPaced(){
+  return typeof window!=="undefined"&&typeof document!=="undefined"&&typeof setTimeout==="function"&&!game.mission?.autoRunning;
+}
+// La durée des animations en attente (déplacements, coups), en millisecondes.
+function missionFxEstimate(fx){
+  if(!fx?.length||fx.length>MISSION_FX.cap) return 0;
+  let t=0;
+  for(const f of fx) t+=f.step?MISSION_FX.step:MISSION_FX.pop;
+  return Math.min(t,MISSION_FX.max);
+}
 function runMissionEnemyTurn(){
   const m=game.mission;
   if(!m||m.over) return;
   m.phase="enemy";m.activeUnit=null;m.mode=null;
   missionLog("Tour ennemi.","turn");
   renderMission();
-
-  for(const unit of m.enemyOrder){
-    if(m.over) break;
-    enemyMissionAct(unit);
+  if(!missionPaced()){
+    for(const unit of m.enemyOrder){
+      if(m.over) break;
+      enemyMissionAct(unit);
+    }
+    finishMissionEnemyTurn();
+    return;
   }
-
+  m.enemyQueue=[...m.enemyOrder];
+  stepMissionEnemyTurn(m);
+}
+// Un ennemi, puis la pause ; à la fin de la file, la fin du tour.
+function stepMissionEnemyTurn(m){
+  if(!m||game.mission!==m||m.phase!=="enemy") return;
+  m.enemyTimer=null;
+  while(m.enemyQueue?.length&&!m.over){
+    const unit=m.enemyQueue.shift();
+    if(!unit.alive||unit.decoy) continue;
+    m.pacedUnit=unit;
+    enemyMissionAct(unit);
+    const wait=missionFxEstimate(m.fx)+(game.missionFast?MISSION_PACE.fastPause:MISSION_PACE.pause);
+    renderMission();
+    m.enemyTimer=setTimeout(()=>stepMissionEnemyTurn(m),wait);
+    return;
+  }
+  m.pacedUnit=null;
+  m.enemyQueue=null;
+  finishMissionEnemyTurn();
+}
+function finishMissionEnemyTurn(){
+  const m=game.mission;
+  if(!m) return;
   if(m.over){ renderMission(); return; }
   m.turn+=1;
   pruneMissionTerrain();
@@ -2693,6 +2745,26 @@ function missionUsableHands(u,target){
 function missionCanAttack(u,target,mode){
   return missionUsableHands(u,target).some(h=>h.mode===mode);
 }
+// Attaquer au corps à corps en se déplaçant (Idan, 2026-11-04 : « On doit pouvoir cliquer sur attaquer au CAC en se déplaçant
+// automatiquement (ça doit être implicite) ») : un ennemi hors d'atteinte, mais qu'on rejoint avec le mouvement restant. Le
+// plus court chemin jusqu'à une case d'où l'arme le frappe ; à égalité, celui qui provoque le moins d'attaques
+// d'opportunité. reach : missionReachablePaths, calculé une fois pour plusieurs cibles. null : pas d'approche.
+function missionMeleeApproach(u,target,reach=null){
+  const m=game.mission,e=m.engine;
+  if(!u||!target?.alive||target.team===u.team||!u.attackAvailable||!(u.movementRemaining>0)||missionHiddenFrom(target,u)) return null;
+  if(missionCanAttack(u,target,"melee")) return null;
+  const dual=e.isDualWielding(u),strikesAt=d=>dual?e.usableHands(u,d).some(h=>h.mode==="melee"):e.canAttackAtDistance(u,d,"melee");
+  let best=null;
+  for(const path of (reach||missionReachablePaths(u,u.movementRemaining)).values()){
+    if(!path.length) continue;
+    const end=path[path.length-1],distance=e.axialDistance(end,target);
+    if(!strikesAt(distance)) continue;
+    if(best&&path.length>best.path.length) continue;
+    const risk=missionPathOpportunityCount(u,path);
+    if(!best||path.length<best.path.length||risk<best.risk) best={path,risk,distance};
+  }
+  return best;
+}
 
 function missionActionAvailability(){
   const u=missionActiveUnit(),m=game.mission;
@@ -2711,6 +2783,46 @@ function missionActionAvailability(){
     auto:true,
     testSpells:Boolean(missionMagic())&&!m.testSpells
   };
+}
+
+// Surbrillance de la portée (Idan, 2026-11-04 : « une attaque, un déplacement ou un sort sélectionné doit montrer une
+// surbrillance pour la portée ») : les cases à portée de l'arme (au corps à corps, à distance), de la charge (de 1 à 2 fois le
+// mouvement de base, plus la case de la cible) ou du sort choisi ; le déplacement garde ses cases atteignables.
+function missionRangeCells(){
+  const set=new Set(),m=game.mission,u=missionActiveUnit();
+  if(!m||!u||m.phase!=="player"||!m.mode||m.mode==="move") return set;
+  const e=m.engine,add=within=>{ for(const c of missionCells()){ const d=e.axialDistance(u,c); if(d>0&&within(d)) set.add(missionKey(c.q,c.r)); } };
+  const spellCode=missionSpellMode(),magic=missionMagic();
+  if(spellCode){
+    const s=magic?.spell(spellCode);
+    if(!s||s.cible==="soi"||s.cible==="invocation") return set;
+    const reach=Number(magic.range(u,spellCode))||0,min=Number(s.portee_min)||0;
+    add(d=>d<=reach&&d>=min);
+    return set;
+  }
+  if(m.mode==="charge"){
+    const base=e.movementBase(u);
+    add(d=>d-1>=base&&d-1<=2*base);
+    return set;
+  }
+  if(m.mode==="melee"||m.mode==="ranged"){
+    const dual=e.isDualWielding(u);
+    add(d=>(dual?e.usableHands(u,d):(e.canAttackAtDistance(u,d,m.mode)?[{mode:m.mode}]:[])).some(h=>h.mode===m.mode));
+  }
+  return set;
+}
+// La zone d'un sort de zone, s'il visait cette case (Idan, 2026-11-04 : « Les sorts de zone doivent montrer en surbrillance la
+// zone lors de la sélection ») : mur, cône, ligne, ou disque (anneau) autour de la case ou du lanceur.
+function missionSpellAreaCells(u,code,target){
+  const magic=missionMagic(),e=game.mission.engine,s=magic?.spell(code);
+  if(!s||!u||!target) return [];
+  if(s.zone_forme==="mur") return magic.wallCells(u,target,magic.zoneLength(u,code));
+  if(s.zone_forme==="cone") return magic.coneCells(u,target,magic.zoneLength(u,code));
+  if(s.zone_forme==="ligne") return magic.lineCells(u,target,magic.zoneLength(u,code));
+  if(s.zone_rayon_base==null) return [];
+  const center=s.cible==="soi"?{q:u.q,r:u.r}:{q:target.q,r:target.r};
+  const radius=Number(magic.zoneRadius(u,code))||0,min=Number(s.zone_anneau_min)||0;
+  return missionCells().filter(c=>{ const d=e.axialDistance(center,c); return d<=radius&&d>=min; });
 }
 
 function targetableMissionCells(){
@@ -2745,8 +2857,11 @@ function targetableMissionCells(){
     return set;
   }
 
+  const reach=m.mode==="melee"&&u.movementRemaining>0?missionReachablePaths(u,u.movementRemaining):null;
   for(const enemy of livingMissionUnits("enemy")){
     if((m.mode==="melee"||m.mode==="ranged")&&missionCanAttack(u,enemy,m.mode)) set.add(missionKey(enemy.q,enemy.r));
+    // En se déplaçant d'abord (Idan, 2026-11-04).
+    else if(reach&&missionMeleeApproach(u,enemy,reach)) set.add(missionKey(enemy.q,enemy.r));
     if(m.mode==="charge"&&missionChargeIfClear(u,enemy)) set.add(missionKey(enemy.q,enemy.r));
   }
   return set;
@@ -2883,7 +2998,7 @@ function renderMissionDrawers(){
 function renderMission(){
   const m=game.mission;
   if(!m||m.autoRunning) return;
-  const e=m.engine,u=missionActiveUnit(),targets=targetableMissionCells();
+  const e=m.engine,u=missionActiveUnit(),targets=targetableMissionCells(),inRange=missionRangeCells();
   const {width,height}=missionMapSize();
 
   $("mission-turn").textContent=m.over?(m.winner==="player"?"Victoire":"Défaite"):"Tour "+m.turn+" · "+(m.phase==="player"?"Votre équipe":"Ennemi");
@@ -2896,6 +3011,7 @@ function renderMission(){
     const p=missionHexPixel(q,r),key=missionKey(q,r),classes=["hex-cell"];
     let title="";
     if(targets.has(key)) classes.push(m.mode==="move"?"reachable":missionSpellMode()?"spell-target":"targetable");
+    else if(inRange.has(key)) classes.push("in-range");
     const magma=missionTerrainAt(q,r);
     if(magma){ classes.push("magma"); title=` title="Flaque de magma : infranchissable jusqu’au tour ${magma.untilTurn}"`; }
     if(m.spellTarget&&m.spellTarget.q===q&&m.spellTarget.r===r) classes.push("spell-chosen");
@@ -2927,7 +3043,7 @@ function renderMission(){
     const p=missionHexPixel(unit.q,unit.r);
     const pct=Math.max(0,Math.min(100,Math.round(unit.hp/unit.pvMax*100)));
     const classes=["mission-token",unit.team,unit.alive?"alive":"down"];
-    if(u===unit) classes.push("active");
+    if(u===unit||m.pacedUnit===unit) classes.push("active");
     const encircled=unit.alive&&missionEncircled(unit);
     if(encircled) classes.push("encircled");
     if(unit.alive&&unit.fleeing) classes.push("fleeing");
@@ -2978,6 +3094,12 @@ function renderMission(){
     twoHandsBtn.classList.toggle("selected",m.mode==="melee"&&Boolean(m.twoHands));
   }
   $("mission-test-spells-btn").disabled=!availability.testSpells;
+  // « Accélérer » : pendant le tour ennemi, la pause entre deux ennemis raccourcit (MISSION_PACE).
+  const speedBtn=$("mission-speed-btn");
+  if(speedBtn){
+    speedBtn.classList.toggle("hidden",!(m.phase==="enemy"&&!m.over));
+    speedBtn.textContent=game.missionFast?"Vitesse normale":"Accélérer";
+  }
   $("mission-spells").innerHTML=renderMissionSpellBar(u);
   $("mission-active-card").innerHTML=renderMissionActiveCard(u);
   $("mission-initiative").innerHTML=renderMissionInitiative();
@@ -3122,12 +3244,18 @@ function missionAttackPreview(u,target){
   if(m.mode==="charge"&&!charge) return [];
   const dual=e.isDualWielding(u),distance=charge?1:e.axialDistance(u,target);
   const mode=m.mode==="charge"?"melee":m.mode;
-  const hands=dual?(charge?e.usableHands(u,1):missionUsableHands(u,target)):(charge||missionCanAttack(u,target,mode)?[{hand:"main",mode}]:[]);
+  const approach=m.mode==="melee"?missionMeleeApproach(u,target):null;
+  const hands=approach?(dual?e.usableHands(u,approach.distance).filter(h=>h.mode==="melee"):[{hand:"main",mode}])
+    :dual?(charge?e.usableHands(u,1):missionUsableHands(u,target)):(charge||missionCanAttack(u,target,mode)?[{hand:"main",mode}]:[]);
   const hidden=Boolean(u.camouflaged)&&u.team!==target.team;
   // Aperçu d'« Attaquer à deux mains » : les chances avec l'arme empoignée à deux mains.
   const grip=u.twoHandGrip;
   if(m.mode==="melee"&&m.twoHands) u.twoHandGrip=true;
-  try{ return missionAttackPreviewRows(u,target,hands,{e,charge,distance,hidden}); }
+  try{
+    const rows=missionAttackPreviewRows(u,target,hands,{e,charge,distance:approach?approach.distance:distance,hidden});
+    if(approach&&rows.length) rows[0].approach={steps:approach.path.length,risk:approach.risk};
+    return rows;
+  }
   finally{ u.twoHandGrip=grip; }
 }
 function missionAttackPreviewRows(u,target,hands,{e,charge,distance,hidden}){
@@ -3166,6 +3294,8 @@ function renderMissionHoverCard(q,r){
       +(tags.length?`<span class="hc-tags">${tags.join(" · ")}</span>`:"");
     for(const row of missionAttackPreview(u,unit)){
       html+=`<div class="hc-attack"><em>${esc(row.weapon)} · ${row.mode==="ranged"?"tir":m.mode==="charge"?"charge":m.twoHands?"à deux mains":"corps à corps"}${row.backstab?" · dans le dos":""}</em><dl>`
+        +(row.approach?`<dt>Approche</dt><dd>${row.approach.steps} case${row.approach.steps>1?"s":""}</dd>`
+          +(row.approach.risk?`<dt>Danger</dt><dd class="odds-bad">${row.approach.risk} attaque${row.approach.risk>1?"s":""} d’opportunité</dd>`:""):"")
         +(row.pDeflect?`<dt>Déviation</dt>${missionOdds(row.pDeflect)}`:"")
         +`<dt>Toucher</dt>${missionOdds(row.pHit)}`
         +(row.immune?`<dt>Immunisé</dt><dd class="odds-bad">dégâts physiques</dd>`:"")
@@ -3181,8 +3311,7 @@ function renderMissionHoverCard(q,r){
   const spellCode=missionSpellMode(),magic=missionMagic();
   if(u&&spellCode&&magic&&targets.has(key)){
     const spell=magic.spell(spellCode);
-    html+=`<div class="hc-attack hc-spell"><em>${esc(spell?.nom||"Sort")}</em><dl><dt>Réussite</dt>${missionOdds(magic.castChance(u,spellCode).p)}`
-      +`<dt>Coût</dt><dd>${magic.manaCost(u,spellCode)} mana</dd></dl></div>`;
+    html+=`<div class="hc-attack hc-spell"><em>${esc(spell?.nom||"Sort")}</em><dl>${missionSpellPreviewRows(u,spellCode,q,r)}</dl></div>`;
   }
   if(u&&m.mode==="move"&&targets.has(key)){
     const path=shortestMissionPath(u,{q,r},u)||[],risk=missionPathOpportunityCount(u,path);
@@ -3192,14 +3321,78 @@ function renderMissionHoverCard(q,r){
   }
   return html;
 }
+// Aperçu d'un sort (Idan, 2026-11-04 : « Faut bosser les aperçus pour les sorts également (% chance de toucher, dégâts…) ») :
+// la réussite et le coût ; la chance de toucher (un trait) ou la précision (une zone qui peut dévier) ; les dégâts, les soins
+// ou le mana de tant à tant (dés au plus bas, dés au plus haut), sur la cible survolée : après sa protection élémentaire, selon
+// sa Volonté (psychique), avec la chance de blesser d'un sort physique ; le bonus ; la zone ; la durée. Sans jet de dé.
+const MISSION_SPELL_HEALS=new Set(["soin","soin_de_zone","soin_sur_duree","transfert_pv"]);
+const MISSION_SPELL_MANA=new Set(["rend_mana","siphon_mana","pacte_de_sang"]);
+const MISSION_SPELL_PER_TURN=new Set(["soin_sur_duree","degats_sur_duree","blizzard","tempete","mur_de_flammes","aura_de_feu","malediction"]);
+function missionSpellPreviewRows(u,code,q,r){
+  const magic=missionMagic(),e=game.mission.engine,s=magic.spell(code);
+  if(!s) return "";
+  const unit=missionUnits().find(x=>x.alive&&!x.offMap&&x.q===q&&x.r===r)||null;
+  const target=s.cible==="soi"?u:unit,foe=target&&target.team!==u.team?target:null;
+  const rows=[`<dt>Réussite</dt>${missionOdds(magic.castChance(u,code).p)}`,`<dt>Coût</dt><dd>${magic.manaCost(u,code)} mana</dd>`];
+  if(s.toucher==="distance"&&foe) rows.push(`<dt>Toucher</dt>${missionOdds(magic.hitChance(u,foe,code))}`);
+  if(s.deviation_max) rows.push(`<dt>Précision</dt>${missionOdds(magic.precisionChance(u,code,e.axialDistance(u,{q,r})))}`);
+  const range=magic.effectRange(u,code);
+  if(range.max>0){
+    const heal=MISSION_SPELL_HEALS.has(s.effet),mana=MISSION_SPELL_MANA.has(s.effet);
+    let {min,max}=range,extra="";
+    if(!heal&&!mana&&foe){
+      const physical=["contondant","tranchant","perforant"].includes(s.degats_type);
+      if(physical){
+        // L'étape Blesser, puis la Résistance physique ; un immunisé ne subit rien.
+        if(foe.character?.immunePhysical){ extra=`<dt>Immunisé</dt><dd class="odds-bad">dégâts physiques</dd>`;min=0;max=0; }
+        else{
+          const w=e.spellWoundChance(u,foe,{type:s.degats_type,power:Number(s.puissance)||0,mastery:magic.mastery(u,code)});
+          extra=`<dt>Blesser</dt>${missionOdds(w.pWound)}`;
+          min=e.spellPhysicalDamage(foe,min,3).damage;max=e.spellPhysicalDamage(foe,max,1).damage;
+        }
+      }else if(s.degats_type==="psychique"){
+        const k=magic.willFactor(u,foe);
+        min=Math.ceil(min*k-1e-9);max=Math.ceil(max*k-1e-9);
+      }else if(s.element&&s.effet!=="arme_elementaire"){
+        min=e.elementalDamage(foe,s.element,min).damage;max=e.elementalDamage(foe,s.element,max).damage;
+      }
+    }
+    const label=s.effet==="arme_elementaire"?"Par coup":heal?"Soins":mana?"Mana":"Dégâts";
+    rows.push(extra+`<dt>${label}${MISSION_SPELL_PER_TURN.has(s.effet)?" / tour":""}</dt><dd>${min===max?min:min+"–"+max}${mana?"":" PV"}</dd>`);
+  }
+  if(s.bonus_base!=null){
+    const b=Number(magic.bonus(u,code))||0,stats=magic.targetStats(code),sign=s.effet==="malus_caracteristiques"?"−":"+";
+    rows.push(`<dt>${esc(stats.length?stats.join(", "):"Bonus")}</dt><dd>${sign}${fmt(b)}</dd>`);
+  }
+  const length=s.zone_forme?magic.zoneLength(u,code):0;
+  const zone=s.zone_forme==="mur"?"mur de "+length:s.zone_forme==="cone"?"cône de "+length:s.zone_forme==="ligne"?"ligne de "+length
+    :s.zone_rayon_base!=null?"rayon "+magic.zoneRadius(u,code):"";
+  if(zone) rows.push(`<dt>Zone</dt><dd>${zone}${s.zone_anneau_min?" (anneau)":""}</dd>`);
+  if(s.duree_base!=null){ const t=Number(magic.duration(u,code))||0; rows.push(`<dt>Durée</dt><dd>${t} tour${t>1?"s":""}</dd>`); }
+  return rows.join("");
+}
 function clearMissionPath(){
   for(const cell of document.querySelectorAll("#mission-map .hex-cell.path")){ cell.classList.remove("path","path-end"); delete cell.dataset.step; }
+  for(const cell of document.querySelectorAll("#mission-map .hex-cell.aoe")) cell.classList.remove("aoe");
 }
+const missionHexCell=c=>document.querySelector(`#mission-map .hex-cell[data-hex-q="${c.q}"][data-hex-r="${c.r}"]`);
 function showMissionHover(q,r){
   const m=game.mission,u=missionActiveUnit(),key=missionKey(q,r);
   if(!m||missionHover.key===key) return;
   missionHover.key=key;
   clearMissionPath();
+  // Attaquer en se déplaçant : le chemin jusqu'à la case d'où il frappera ; la charge : sa ligne droite.
+  const hovered=m.mode==="melee"||m.mode==="charge"?missionUnits().find(x=>x.alive&&x.q===q&&x.r===r):null;
+  const route=!hovered||!u||hovered.team===u.team?null:m.mode==="melee"?missionMeleeApproach(u,hovered)?.path:missionChargeIfClear(u,hovered)?.path;
+  if(route) route.forEach((c,i)=>{
+    const cell=missionHexCell(c);
+    if(!cell) return;
+    cell.classList.add("path");
+    if(i===route.length-1){ cell.classList.add("path-end"); cell.dataset.step=String(route.length); }
+  });
+  // Un sort de zone : la zone qu'il toucherait, au survol d'une case qu'il peut viser.
+  const spellCode=missionSpellMode();
+  if(u&&spellCode&&targetableMissionCells().has(key)) for(const c of missionSpellAreaCells(u,spellCode,{q,r})) missionHexCell(c)?.classList.add("aoe");
   if(u&&m.mode==="move"&&targetableMissionCells().has(key)){
     const path=shortestMissionPath(u,{q,r},u)||[];
     path.forEach((c,i)=>{
@@ -3255,6 +3448,7 @@ function initializeMissionUi(){
   window.addEventListener("resize",()=>{ if(game.mission) renderMission(); });
   $("mission-end-activation-btn").addEventListener("click",endMissionActivation);
   $("mission-auto-btn").addEventListener("click",autoResolveMission);
+  $("mission-speed-btn")?.addEventListener("click",()=>{ game.missionFast=!game.missionFast; renderMission(); });
   $("mission-test-spells-btn").addEventListener("click",teachMissionTestSpells);
   $("mission-spells").addEventListener("click",event=>{
     const potion=event.target.closest("[data-potion]");

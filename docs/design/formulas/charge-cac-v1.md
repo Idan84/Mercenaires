@@ -14,7 +14,7 @@ Version: V1
 
 ## Conditions
 
-- trajectoire **en ligne droite** ;
+- trajectoire **en ligne droite**, dans **n'importe quelle direction** (Idan, 2026-11-04 : « La charge devrait être possible si dans la ligne droite entre le chargeur et le chargé, il n'y a aucun obstacle ou personnage, alors, on peut charger ») : la ligne droite d'hexagones entre le chargeur et la cible (`hexLine`), pas seulement les 6 axes ; aucune case de la ligne entre les deux ne doit contenir un personnage, une flaque de magma ou un bourbier (le brouillard ne gêne pas) ; la charge finit sur la dernière case, au contact de la cible ;
 - distance minimale : `MouvementBase` ;
 - distance maximale : `2 × MouvementBase` ;
 - arrivée suivie d'une attaque si aucun événement ne l'annule.

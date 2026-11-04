@@ -304,6 +304,14 @@ const charge=combat.chargeData(charger,chargeTarget);
 assert.equal(charge.path.length,charge.travel);
 assert.deepEqual(charge.path[0],{q:1,r:0});
 assert.deepEqual(charge.path[charge.path.length-1],charge.destination);
+// Hors des 6 axes aussi (Idan, 2026-11-04) : la ligne droite d'hexagones entre les deux ; la dernière case au contact.
+{
+  const slanted=combat.chargeData(charger,unit(b,3,2));
+  assert.equal(slanted.travel,combat.axialDistance({q:0,r:0},{q:3,r:2})-1);
+  assert.deepEqual(slanted.path,combat.hexLine({q:0,r:0},{q:3,r:2}).slice(1,-1));
+  assert.equal(combat.axialDistance(slanted.destination,{q:3,r:2}),1);
+  assert.equal(combat.axialDistance({q:0,r:0},{q:0,r:0}),0);
+}
 
 // Critiques physiques V1 (04-combat) : probabilité de critique = Chance / 10, bornée à 1–25 %.
 const lucky=(character,luck)=>({...character,stats:{...character.stats,Chance:luck}});

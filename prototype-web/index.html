@@ -236,7 +236,11 @@
         </section>
         <section id="tavern-recruits-view" class="hidden">
           <button class="tavern-back" data-tavern-view="home">← Retour à la taverne</button>
-          <div id="tavern-candidates" class="recruit-grid"></div>
+          <div class="recruit-carousel">
+            <button type="button" class="recruit-nav" data-recruit-scroll="-1" aria-label="Candidats précédents">‹</button>
+            <div id="tavern-candidates" class="recruit-track"></div>
+            <button type="button" class="recruit-nav" data-recruit-scroll="1" aria-label="Candidats suivants">›</button>
+          </div>
         </section>
       </section>
 

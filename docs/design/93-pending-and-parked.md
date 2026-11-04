@@ -31,7 +31,6 @@ On en a parlé, et on a choisi d'attendre.
 - **Sorts bi-école** (Idan, 2026-11-01 : « stand by ») : 49 idées validées le 2026-10-31, gardées dans le doc 12 ; à décider ensuite : la maîtrise (moyenne ou somme des deux écoles), l'apprentissage, et des sorts très forts pour les écoles opposées. → [doc 12, « Catalogue validé »](/design/#doc=12-magic.md)
 
 - **Ennemis typés** (Idan, 2026-10-20).
-- **Places de Taverne selon la renommée** : 5 places pour l'instant (Idan, 2026-10-20). → [doc 14](/design/#doc=14-tavern-recruitment.md)
 - **« Utiliser ma partie en cours »** dans le simulateur du graphe, sans passer par un fichier de sauvegarde (Idan, 2026-10-20).
 - **Réputation de départ recalculée quand les caractéristiques progressent** (doc 09 §1) : passée après la renommée.
 - **Changement d'équipement négocié avec le mercenaire**, dont le bouclier ou la seconde arme (Idan, 2026-10-08).

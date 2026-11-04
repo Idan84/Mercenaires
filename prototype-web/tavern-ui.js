@@ -96,6 +96,44 @@ function renderTavern(){
   $("tavern-candidates").innerHTML=c.tavern.candidates.length
     ?c.tavern.candidates.map(renderTavernCard).join("")
     :`<p class="recruit-empty">Personne à l’auberge.</p>`;
+  updateRecruitCarousel();
+}
+
+// Les candidats en carrousel (Idan, 2026-11-04 : « fais un système qui défile comme un carousel ») : une rangée qui défile,
+// une flèche sur chaque bord (effacée au bout), la molette ou le doigt ; tout tient à l'écran : rangée centrée, sans flèches.
+function updateRecruitCarousel(){
+  const track=$("tavern-candidates"),carousel=track?.closest(".recruit-carousel");
+  if(!carousel) return;
+  const overflow=track.scrollWidth-track.clientWidth>1;
+  carousel.classList.toggle("is-static",!overflow);
+  const [prev,next]=carousel.querySelectorAll("[data-recruit-scroll]");
+  if(prev) prev.disabled=!overflow||track.scrollLeft<=1;
+  if(next) next.disabled=!overflow||track.scrollLeft+track.clientWidth>=track.scrollWidth-1;
+}
+// Une page de cartes à la fois ; l'accroche des cartes (scroll-snap) cale la rangée sur un portrait.
+function scrollRecruits(direction){
+  const track=$("tavern-candidates");
+  track.scrollBy({left:direction*Math.max(1,track.clientWidth-12),behavior:"smooth"});
+}
+function initializeRecruitCarousel(){
+  const track=$("tavern-candidates"),carousel=track?.closest(".recruit-carousel");
+  if(!carousel) return;
+  carousel.addEventListener("click",event=>{
+    const nav=event.target.closest("[data-recruit-scroll]");
+    if(nav) scrollRecruits(Number(nav.dataset.recruitScroll));
+  });
+  track.addEventListener("scroll",updateRecruitCarousel,{passive:true});
+  // La molette verticale fait défiler la rangée, sauf au bout : la page reprend la main.
+  track.addEventListener("wheel",event=>{
+    if(Math.abs(event.deltaY)<=Math.abs(event.deltaX)) return;
+    const atStart=track.scrollLeft<=1,atEnd=track.scrollLeft+track.clientWidth>=track.scrollWidth-1;
+    if((event.deltaY<0&&atStart)||(event.deltaY>0&&atEnd)) return;
+    event.preventDefault();
+    track.scrollBy({left:event.deltaY});
+  },{passive:false});
+  // Recalculé dès que la rangée change de taille (vue ouverte, fenêtre, écran de téléphone tourné).
+  if(typeof ResizeObserver==="function") new ResizeObserver(()=>updateRecruitCarousel()).observe(track);
+  else window.addEventListener("resize",updateRecruitCarousel);
 }
 
 // Outil de test (pas une règle du jeu) : ajoute de l'or pour tester les paiements (demande d'Idan).
@@ -306,6 +344,7 @@ function showTavernView(view="home"){
     $(id).classList.toggle("hidden",name!==view);
   }
   if(view==="missions") renderContractBoard();
+  if(view==="recruits") updateRecruitCarousel();
   // La bulle du tavernier n'apparaît que sur l'accueil de la taverne (styles.css).
   document.body.dataset.tavernView=view;
 }
@@ -423,6 +462,7 @@ function initializeTavernUi(){
     const btn=e.target.closest("[data-tavern-open]");
     if(btn) openRecruitTalk(Number(btn.dataset.tavernOpen));
   });
+  initializeRecruitCarousel();
   const recruit=$("recruit-talk-dialog");
   recruit.addEventListener("click",event=>{
     const option=event.target.closest("[data-talk]");

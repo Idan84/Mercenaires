@@ -1884,8 +1884,22 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 /* Écran Recruter (Idan, 2026-10-21) : portraits en pied (9:16), nom, peuple, culture, réputation, présence. */
 .tavern-back{margin-bottom:16px;padding:8px 14px;border:1px solid #b58c53;border-radius:10px;background:linear-gradient(180deg,#3a2a1ef2,#1b130ef2);color:#f1d49b;font:600 14px Georgia,serif;box-shadow:0 6px 18px #0009;cursor:pointer}
 .tavern-back:hover,.tavern-back:focus-visible{border-color:#ffe1a5;color:#ffe1ac;outline:none}
-/* Une seule rangée tant que l'écran le permet : colonnes souples, cartes plafonnées à 220 px de large. */
-.recruit-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));justify-items:center;gap:12px}
+/* Les candidats en carrousel (Idan, 2026-11-04) : une rangée qui défile (accroche sur chaque carte), une flèche posée sur
+   chaque bord, effacée au bout ; quand tout tient, la rangée est centrée (marges automatiques : rien n'est coupé si elle
+   déborde) et les flèches disparaissent. Cartes de 150 à 220 px de large ; de la marge dessous pour leur ombre. */
+.recruit-carousel{position:relative}
+.recruit-track{display:flex;gap:12px;padding:4px 2px 44px;margin-bottom:-32px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scroll-padding-inline:2px;scroll-behavior:smooth;scrollbar-width:none}
+.recruit-track::-webkit-scrollbar{display:none}
+.recruit-track>:first-child{margin-left:auto}
+.recruit-track>:last-child{margin-right:auto}
+.recruit-track .recruit-card{flex:0 0 auto;width:clamp(150px,calc((100dvh - 400px) * 9 / 16),220px);max-width:none;scroll-snap-align:start}
+.recruit-track .recruit-empty{flex:1}
+.recruit-nav{position:absolute;top:calc(50% - 42px);z-index:2;width:40px;height:72px;padding:0;border:1px solid #b58c53;border-radius:10px;background:linear-gradient(180deg,#3a2a1ef2,#1b130ef2);color:#f1d49b;font:700 30px/1 Georgia,serif;box-shadow:0 6px 18px #0009;cursor:pointer;transition:opacity .2s}
+.recruit-nav[data-recruit-scroll="-1"]{left:-4px}
+.recruit-nav[data-recruit-scroll="1"]{right:-4px}
+.recruit-nav:hover,.recruit-nav:focus-visible{border-color:#ffe1a5;color:#ffe1ac;outline:none}
+.recruit-nav:disabled{opacity:0;pointer-events:none}
+.recruit-carousel.is-static .recruit-nav{display:none}
 .recruit-card{display:flex;flex-direction:column;width:100%;max-width:min(220px,calc((100dvh - 400px) * 9 / 16));overflow:hidden;border:1px solid #9a7a4f;border-radius:12px;background:linear-gradient(180deg,#3a2b21f5,#1b130ef5);box-shadow:0 12px 30px #000a;color:#ead9bd}
 .avatar-frame--recruit{width:100%;aspect-ratio:9 / 16;margin:0;border:0;border-bottom:1px solid #71583e;border-radius:0;box-shadow:none}
 .avatar-frame--recruit .avatar-fallback span{font-size:3rem}

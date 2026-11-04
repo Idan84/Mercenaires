@@ -12,7 +12,8 @@
 // - il réclame son salaire théorique ; la prime de mission ne bouge pas ;
 // - la négociation (une scène au début de la journée, qui bloque le jeu) : Accepter, Proposer, Refuser ; jamais moins que son
 //   salaire actuel ; comme à la Taverne (14 §9, salaire seul) : il accepte, fait une contre-proposition ou rompt (il garde
-//   son salaire) ;
+//   son salaire) ; mais la concession se compte sur l'augmentation qu'on lui refuse (Idan, 2026-11-04 : « Oui ») :
+//   concession = 50 × (1 − augmentation offerte ÷ augmentation demandée) ; sans augmentation : 5 % qu'il accepte ;
 // - affinité : +5 s'il obtient tout ce qu'il demande ; 0 si on tombe d'accord plus bas ; −10 si on refuse ou s'il rompt ;
 //   après une rupture, la relance (persuasion.js) : Intimider ou Convaincre pour qu'il accepte la dernière offre (chance
 //   d'accepter cette offre + Intimidation ou Charisme ÷ 2, au plus 95 %) ; ratée : −10 × 2 (intimidé) ou × 0,5 (convaincu).
@@ -46,7 +47,7 @@
       scale:k("salary_review.chance.scale",10),min:k("salary_review.chance.min",5),max:k("salary_review.chance.max",95),
       granted:k("salary_review.affinity.granted",5),refused:k("salary_review.affinity.refused",-10),
       quitConcession:k("tavern.negotiation.quit_concession_coefficient",1.5),quitMax:k("tavern.negotiation.quit_max",95),
-      retryMax:k("salary_review.retry.max",95)
+      retryMax:k("salary_review.retry.max",95),concessionWeight:k("salary_review.concession_weight",50)
     };
     const persuasion=Persuasion?Persuasion.createPersuasionRules({reference}):null;
     const STARS=[...(reference?.reputationStars?.rows||[])].sort((a,b)=>a.niveau-b.niveau);
@@ -146,8 +147,8 @@
       if(entry.refused!=null&&salary<entry.refused) return {outcome:"invalid",reason:"refused",floor:entry.refused};
       entry.rounds+=1;
       if(salary>=entry.salary) return settle(state,m,entry,salary,salary>=entry.demand?C.granted:0,{outcome:"accepted",automatic:true});
-      // Comme à la Taverne (14 §9), sur le salaire seul.
-      const concession=100*(1-salary/entry.salary);
+      // Comme à la Taverne (14 §9), sur le salaire seul ; la concession, sur l'augmentation qu'on lui refuse.
+      const concession=C.concessionWeight*(1-(salary-entry.current)/(entry.salary-entry.current));
       const resistance=camp.resistance?camp.resistance(m,affinityOf(state,m)):50;
       const pAccept=clamp(95-2*concession-0.4*(resistance-50),5,95);
       const acceptRoll=roll();

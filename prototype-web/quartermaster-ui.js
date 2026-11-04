@@ -47,6 +47,8 @@ function renderQuartermaster(){
   const list=$("quartermaster-stock");
   if(!list||!game.campaign) return;
   const items=game.campaign.company.stock||[];
+  // La politique sociale (Idan, 2026-11-04 ; social-policy-ui.js).
+  if(typeof renderSocialPolicyPanel==="function") renderSocialPolicyPanel();
   if(typeof renderStewardPanel==="function") renderStewardPanel();
   if(typeof renderMedicPanel==="function") renderMedicPanel();
   if(typeof renderSchoolDirectorPanel==="function") renderSchoolDirectorPanel();

@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 364,
+  "row_count": 371,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -2944,6 +2944,62 @@
       "description": "Dans la négociation, la concession (14 §9) se compte sur l'augmentation qu'on lui refuse (Idan, 2026-11-04 : « Oui ») : concession = ce nombre × (1 − augmentation offerte ÷ augmentation demandée). Sans augmentation : 5 % qu'il accepte ; la moitié : environ 50 % ; les trois quarts : environ 75 %.",
       "formule": "Renégociation salariale",
       "valeur": 50,
+      "version": "V1"
+    },
+    {
+      "nom": "Politique sociale — blessés, taux par défaut",
+      "code": "social.wounded.default_rate",
+      "description": "Politique sociale, à l'Intendance (Idan, 2026-11-04 : « Un mercenaire blessé touche 50 % de son salaire pendant les jours où il est blessé (c'est la nouvelle norme par défaut). Dans l'intendance, on a un curseur qu'on déplace librement de 0 à 100 % » ; « Parfait et oui à tout ») : part du salaire versée à un blessé, chaque jour de blessure (%) ; un fatigué touche tout son salaire.",
+      "formule": "Politique sociale",
+      "valeur": 50,
+      "version": "V1"
+    },
+    {
+      "nom": "Politique sociale — blessés, taux au plus",
+      "code": "social.wounded.max_rate",
+      "description": "Le curseur des blessés va de 0 à ce taux (%).",
+      "formule": "Politique sociale",
+      "valeur": 100,
+      "version": "V1"
+    },
+    {
+      "nom": "Politique sociale — blessés, taux neutre",
+      "code": "social.wounded.neutral_rate",
+      "description": "Chaque jour de blessure, son affinité avec le capitaine bouge de (taux − ce taux) ÷ diviseur (Idan : « Plus le taux est bas, plus l'affinité baisse sur les jours de blessure. A contrario, au-dessus de 50, on gagne de l'affinité »).",
+      "formule": "Politique sociale",
+      "valeur": 50,
+      "version": "V1"
+    },
+    {
+      "nom": "Politique sociale — blessés, diviseur de l'affinité",
+      "code": "social.wounded.affinity_divisor",
+      "description": "Diviseur : −2 par jour à 0 %, 0 à 50 %, +2 à 100 %.",
+      "formule": "Politique sociale",
+      "valeur": 25,
+      "version": "V1"
+    },
+    {
+      "nom": "Politique sociale — corvées, taux par défaut",
+      "code": "social.chore.default_rate",
+      "description": "Part du salaire versée les jours de corvée (Bûcherons, Mineurs, Palais), un curseur par corvée (Idan : « par défaut, c'est 100 %. Avec les corvées, on perd moins d'affinité quand on monte le salaire ») ; la perte du jour × (2 − taux ÷ 100) : −2 à 0 %, −1 à 100 %, 0 à 200 %, jamais de gain.",
+      "formule": "Politique sociale",
+      "valeur": 100,
+      "version": "V1"
+    },
+    {
+      "nom": "Politique sociale — corvées, taux au plus",
+      "code": "social.chore.max_rate",
+      "description": "Le curseur d'une corvée va de 0 à ce taux (%).",
+      "formule": "Politique sociale",
+      "valeur": 200,
+      "version": "V1"
+    },
+    {
+      "nom": "Politique sociale — pas des curseurs",
+      "code": "social.rate_step",
+      "description": "Les curseurs vont par pas de ce nombre (%).",
+      "formule": "Politique sociale",
+      "valeur": 5,
       "version": "V1"
     }
   ]

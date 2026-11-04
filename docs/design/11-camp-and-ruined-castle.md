@@ -364,7 +364,9 @@ refuser. -1 par jour c'est bien ») :
   (§ « Relance après un refus » ci-dessous) : Intimider ou Convaincre, ou laisser tomber ; puis c'est non pour aujourd'hui.
   Le capitaine accepte toujours.
 - **Chaque matin de travail : affinité −1** (`camp.lumber.daily_affinity`), **−2** s'il a été intimidé, **−0,5** s'il a
-  été convaincu ; l'affinité perdue ne revient pas quand on le retire. Le capitaine ne perd rien.
+  été convaincu ; l'affinité perdue ne revient pas quand on le retire. Le capitaine ne perd rien. Le salaire de la corvée se
+  règle à l'Intendance (« Politique sociale », doc 09 §7) : de 0 à 200 %, la perte du jour × (2 − taux ÷ 100) ; −1 à 100 %
+  (par défaut), 0 à 200 %. Même chose pour les mineurs et le Palais, un curseur par corvée.
 - **Effet fixe** : chaque bûcheron retire **1 jour** (`camp.lumber.days_per_worker`) au chantier **qui finit le plus tôt**
   (« A »), parmi ceux de **niveau 1 à 5** (`camp.lumber.max_work_level`) : un bâtiment (son niveau en construction) et le
   dortoir (« Oui ») — qualité : le niveau visé ; agrandissement : son rang ; quartier du lieutenant : son numéro. Un

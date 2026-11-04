@@ -1,0 +1,77 @@
+"use strict";
+
+// Places de la Taverne (Idan, 2026-11-04 : « 3 + nombre d'étoiles de réputation de la compagnie » ; le niveau de renommée,
+// de 1 à 15 ; « Oui, parfait ») : de 4 à 18 places ; si la renommée baisse, personne n'est chassé. Les candidats défilent
+// en carrousel (« fais un système qui défile comme un carousel »).
+const assert=require("node:assert/strict");
+const fs=require("node:fs");
+const path=require("node:path");
+const {createGenerator}=require("../game-core/mercenary-generator.js");
+const {createTavernRules}=require("../game-core/tavern.js");
+const {createCampaignRules}=require("../game-core/campaign.js");
+
+const ROOT=path.resolve(__dirname,"..");
+const source=fs.readFileSync(path.join(ROOT,"prototype-web","reference-data.js"),"utf8");
+const block=source.slice(source.indexOf("REFERENCE_FILES"),source.indexOf("};",source.indexOf("REFERENCE_FILES")));
+const files=Object.fromEntries([...block.matchAll(/^\s*(\w+):\s*"([\w.-]+\.json)"/gm)].map(m=>[m[1],m[2]]));
+const reference=Object.fromEntries(Object.entries(files).map(([k,f])=>[k,JSON.parse(fs.readFileSync(path.join(ROOT,"data","reference",f),"utf8"))]));
+const constant=code=>reference.formulaConstants.rows.find(r=>r.code===code)?.valeur;
+assert.deepEqual([constant("tavern.slots.base"),constant("tavern.slots.per_renown_level")],[3,1]);
+assert.equal(reference.formulaConstants.row_count,reference.formulaConstants.rows.length);
+
+// Le niveau de renommée (reputation-stars.json, renommee_min) : 1 à 15 ; 3 + niveau, de 4 à 18 places.
+const stay=createTavernRules({random:()=>0.999,reference});
+assert.deepEqual([0,399,400,999,1000,7999,8000,99999].map(stay.renownLevel),[1,1,2,5,6,14,15,15]);
+assert.deepEqual([0,400,1000,8000,99999].map(stay.slotsFor),[4,5,9,18,18]);
+assert.equal(createTavernRules({reference:{formulaConstants:reference.formulaConstants}}).slotsFor(8000),5,"sans les étoiles : tavern.slots.initial");
+
+let seed=37;
+const genRandom=()=>((seed=(seed*16807)%2147483647)/2147483647);
+const generator=createGenerator(reference,{random:genRandom,nameGenerator:(people,id)=>people+" "+id});
+const rules=createCampaignRules({generator,tavern:stay,reference,random:()=>0.999});
+const captain=generator.createCaptain({id:1});
+const state=rules.createCampaign({captain,squad:[2,3,4,5,6,7,8,9].map(id=>generator.createMercenary({id,captain}))});
+const renown=()=>rules.companyRenown(state).total;
+const expected=()=>3+stay.renownLevel(renown());
+
+// Au départ : 3 + le niveau de la compagnie.
+assert.equal(state.tavern.slots,expected());
+assert.equal(state.tavern.candidates.length,state.tavern.slots);
+
+// La renommée monte (ici, 5 000 points de mission) : les nouvelles places se remplissent le lendemain matin.
+const before=state.tavern.candidates.length;
+state.company.missionRenown=5000;
+const [up]=rules.advanceTime(state,1);
+assert.ok(expected()>before);
+assert.deepEqual([state.tavern.slots,state.tavern.candidates.length,up.tavern.arrivals.length],[expected(),expected(),expected()-before]);
+
+// Elle retombe : personne n'est chassé ; aucun nouveau candidat tant qu'il n'y a pas de place.
+const present=state.tavern.candidates.map(c=>c.mercenary.id);
+state.company.missionRenown=-2000;
+const [down]=rules.advanceTime(state,1);
+assert.equal(state.tavern.slots,4);
+assert.deepEqual([down.tavern.departures.length,down.tavern.arrivals.length],[0,0]);
+assert.deepEqual(state.tavern.candidates.map(c=>c.mercenary.id),present);
+// Quand ils partent d'eux-mêmes, on redescend jusqu'aux places du jour, sans en ajouter.
+const leave=createTavernRules({random:()=>0,reference});
+const morning=leave.tavernMorning(state.tavern,state.day+1,()=>generator.createMercenary({id:999,captain}),4);
+assert.deepEqual([morning.departures.length,morning.arrivals.length,state.tavern.candidates.length],[present.length,4,4]);
+
+// Le carrousel : la rangée, une flèche sur chaque bord ; l'accroche sur chaque carte ; rangée centrée quand tout tient, sans
+// rien couper quand elle déborde (marges automatiques) ; recalculé quand la rangée change de taille.
+const index=fs.readFileSync(path.join(ROOT,"prototype-web","index.html"),"utf8");
+assert.match(index,/<div class="recruit-carousel">\s*<button type="button" class="recruit-nav" data-recruit-scroll="-1" aria-label="Candidats précédents">‹<\/button>\s*<div id="tavern-candidates" class="recruit-track"><\/div>\s*<button type="button" class="recruit-nav" data-recruit-scroll="1" aria-label="Candidats suivants">›<\/button>/);
+const css=fs.readFileSync(path.join(ROOT,"prototype-web","styles.css"),"utf8");
+assert.match(css,/\.recruit-track\{[^}]*overflow-x:auto;[^}]*scroll-snap-type:x mandatory/);
+assert.match(css,/\.recruit-track \.recruit-card\{[^}]*scroll-snap-align:start\}/);
+assert.match(css,/\.recruit-track>:first-child\{margin-left:auto\}\n\.recruit-track>:last-child\{margin-right:auto\}/);
+assert.match(css,/\.recruit-track\{[^}]*scroll-padding-inline:2px/);
+assert.match(css,/\.recruit-nav\{position:absolute;/,"les flèches ne prennent pas de place");
+assert.match(css,/\.recruit-carousel\.is-static \.recruit-nav\{display:none\}/);
+assert.doesNotMatch(css,/\.recruit-grid\{/);
+const ui=fs.readFileSync(path.join(ROOT,"prototype-web","tavern-ui.js"),"utf8");
+assert.match(ui,/updateRecruitCarousel\(\);\n\}/,"après chaque rendu de la Taverne");
+assert.match(ui,/if\(view==="recruits"\) updateRecruitCarousel\(\);/,"à l'ouverture de « Recruter »");
+assert.match(ui,/new ResizeObserver\(\(\)=>updateRecruitCarousel\(\)\)\.observe\(track\)/);
+
+console.log("Taverne : 3 + niveau de renommée (4 à 18 places), personne chassé si elle baisse, candidats en carrousel — OK");

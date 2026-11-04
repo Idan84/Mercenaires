@@ -144,7 +144,7 @@ $$
 - Pas de plafond ; pas de perte de l'héritage. La mort du capitaine reste un Game Over.
 - Constantes : `company.renown.rank_exponent` (1,5) et `company.renown.heritage_share` (0,2) dans `data/reference/formula-constants.json`.
 
-**Points de mission** (doc 17 §8, 2026-10-24) : un contrat échoué retire 30 points de renommée (`company.missionRenown`, compté dans le total). **Dortoir** (doc 11 §4, Idan 2026-10-25) : chaque niveau de qualité atteint ajoute sa Renommée (+50 par niveau), pour de bon (part « dortoir »). **Ajouts futurs** : les points de missions et la réputation de développement du camp, prévus dans l'architecture d'origine (`PointsMissions + ReputationDeveloppementCamp + PrestigeTop10Mercenaires`), seront ajoutés quand ces systèmes existeront dans le jeu. Les effets de la renommée (qualité des recrues, missions, marchands, places de Taverne) attendent une validation distincte d'Idan.
+**Points de mission** (doc 17 §8, 2026-10-24) : un contrat échoué retire 30 points de renommée (`company.missionRenown`, compté dans le total). **Dortoir** (doc 11 §4, Idan 2026-10-25) : chaque niveau de qualité atteint ajoute sa Renommée (+50 par niveau), pour de bon (part « dortoir »). **Ajouts futurs** : les points de missions et la réputation de développement du camp, prévus dans l'architecture d'origine (`PointsMissions + ReputationDeveloppementCamp + PrestigeTop10Mercenaires`), seront ajoutés quand ces systèmes existeront dans le jeu. Les effets de la renommée (qualité des recrues, missions, marchands) attendent une validation distincte d'Idan ; places de Taverne : 3 + niveau de renommée (Idan, 2026-11-04 ; doc 14 §2).
 
 <aside>
 📈

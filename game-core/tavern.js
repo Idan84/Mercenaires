@@ -23,6 +23,12 @@
   function createTavernRules(options={}){
     const random=options.random||Math.random;
     const INITIAL_SLOTS=referenceConstant(options.reference,"tavern.slots.initial",5);
+    // Places (Idan, 2026-11-04 : « 3 + nombre d'étoiles de réputation de la compagnie » ; le niveau de renommée, de 1 à 15 :
+    // 1 à 5 étoiles de bronze, puis d'argent, puis d'or ; « Oui, parfait ») : de 4 à 18 places. Sans le référentiel des
+    // étoiles : tavern.slots.initial.
+    const SLOTS_BASE=referenceConstant(options.reference,"tavern.slots.base",3);
+    const SLOTS_PER_LEVEL=referenceConstant(options.reference,"tavern.slots.per_renown_level",1);
+    const STAR_ROWS=[...(options.reference?.reputationStars?.rows||[])].sort((a,b)=>a.niveau-b.niveau);
     // Départ après un refus (PLAYTEST) : poids de la concession demandée et plafond de la probabilité.
     const QUIT_CONCESSION_COEFFICIENT=referenceConstant(options.reference,"tavern.negotiation.quit_concession_coefficient",0.75);
     const QUIT_MAX=referenceConstant(options.reference,"tavern.negotiation.quit_max",75);
@@ -77,6 +83,13 @@
     function createTavernState(){
       return {slots:INITIAL_SLOTS,candidates:[]};
     }
+    // Niveau de renommée de la compagnie (1 à 15, reputation-stars.json, colonne renommee_min).
+    function renownLevel(renown){
+      let level=1;
+      for(const row of STAR_ROWS) if((Number(renown)||0)>=Number(row.renommee_min)) level=Number(row.niveau)||level;
+      return level;
+    }
+    const slotsFor=renown=>STAR_ROWS.length?SLOTS_BASE+SLOTS_PER_LEVEL*renownLevel(renown):INITIAL_SLOTS;
 
     // §3 — Remplir exactement les places libres avec de nouveaux mercenaires.
     function fillTavern(tavern,day,generateCandidate){
@@ -89,8 +102,10 @@
       return arrivals;
     }
 
-    // §3 — Matin : tests « Engagé ailleurs » des candidats présents, puis remplissage des places libres.
-    function tavernMorning(tavern,day,generateCandidate){
+    // §3 — Matin : tests « Engagé ailleurs » des candidats présents, puis remplissage des places libres. slots : les places
+    // du jour (slotsFor) ; si la renommée a baissé, personne n'est chassé : on attend qu'il y ait de la place.
+    function tavernMorning(tavern,day,generateCandidate,slots=null){
+      if(Number.isFinite(slots)) tavern.slots=slots;
       const departures=[];
       tavern.candidates=tavern.candidates.filter(candidate=>{
         const p=engagedElsewhereChance(candidate.mercenary),roll=d100();
@@ -219,6 +234,8 @@
       INITIAL_SLOTS,
       QUESTIONS_PER_CANDIDATE,
       createTavernState,
+      renownLevel,
+      slotsFor,
       engagedElsewhereChance,
       missionBonusDemand,
       visibleProfile,

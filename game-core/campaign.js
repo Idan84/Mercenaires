@@ -480,6 +480,8 @@
         assignAvatar(state,m);
         assignBiography(state,m);
       }
+      // Places de la Taverne : 3 + niveau de renommée (Idan, 2026-11-04).
+      if(tavern.slotsFor) state.tavern.slots=tavern.slotsFor(companyRenown(state).total);
       tavern.fillTavern(state.tavern,state.day,candidateFactory(state));
       fillTavernBoard(state);
       // Historique (Idan, 2026-10-24) : le capitaine fonde la compagnie, l'escouade de départ l'accompagne.
@@ -834,7 +836,7 @@
       state.day+=1;
       const recovered=recoverOneDay(state);
       const salaries=paySalaries(state);
-      const tavernReport=tavern.tavernMorning(state.tavern,state.day,candidateFactory(state));
+      const tavernReport=tavern.tavernMorning(state.tavern,state.day,candidateFactory(state),tavern.slotsFor?.(companyRenown(state).total));
       const offersLost=expireBoardOffers(state);
       const expeditions=advanceExpeditions(state);
       const built=advanceConstruction(state);

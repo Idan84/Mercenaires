@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 322,
+  "row_count": 324,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -597,9 +597,25 @@
     {
       "nom": "Taverne — places de candidats au départ",
       "code": "tavern.slots.initial",
-      "description": "Nombre de places de candidats de la Taverne en début de partie, avant tout effet de la Renommée.",
+      "description": "Nombre de places de candidats de la Taverne sans le référentiel des étoiles (repli) ; en jeu : tavern.slots.base + tavern.slots.per_renown_level × niveau de renommée (Idan, 2026-11-04).",
       "formule": "Taverne — recrutement V1",
       "valeur": 5,
+      "version": "V1"
+    },
+    {
+      "nom": "Taverne — places de base",
+      "code": "tavern.slots.base",
+      "description": "Places de candidats = cette base + tavern.slots.per_renown_level × niveau de renommée de la compagnie (1 à 15 : 1 à 5 étoiles de bronze, puis d'argent, puis d'or). Idan, 2026-11-04 : « 3 + nombre d'étoiles de réputation de la compagnie » ; « Oui, parfait ». De 4 à 18 places ; une compagnie neuve démarre le plus souvent au niveau 2 ou 3 (5 ou 6 places). Si la renommée baisse, personne n'est chassé : aucun nouveau candidat tant qu'il n'y a pas de place.",
+      "formule": "Taverne — recrutement V1",
+      "valeur": 3,
+      "version": "V1"
+    },
+    {
+      "nom": "Taverne — places par niveau de renommée",
+      "code": "tavern.slots.per_renown_level",
+      "description": "Voir tavern.slots.base (Idan, 2026-11-04).",
+      "formule": "Taverne — recrutement V1",
+      "valeur": 1,
       "version": "V1"
     },
     {

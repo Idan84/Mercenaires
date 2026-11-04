@@ -28,10 +28,12 @@
   const node=typeof module!=="undefined"&&module.exports;
   const history=node?require("./history.js"):root.MercenairesHistory;
   const ports=node?require("./armor-ports.js"):root.MercenairesArmorPorts;
-  const api=factory(history,ports);
+  // Relance après un refus (Idan, 2026-11-04) : Intimider ou Convaincre ; si elle échoue, la perte du refus × 2 ou × 0,5.
+  const persuasion=node?require("./persuasion.js"):root.MercenairesPersuasion;
+  const api=factory(history,ports,persuasion);
   if(node) module.exports=api;
   root.MercenairesArmorStudy=api;
-})(typeof globalThis!=="undefined"?globalThis:this,function(History,ArmorPorts){
+})(typeof globalThis!=="undefined"?globalThis:this,function(History,ArmorPorts,Persuasion){
   const TRANSMISSION="Transmission du savoir";
   const POISONER="Empoisonnement des armes";
   function referenceConstant(reference,code,fallback){
@@ -85,6 +87,8 @@
     if(!COURSE) throw new Error(`Apprentissage inconnu : ${course}`);
     const HALL=COURSE.hall,TEXT=COURSE.text;
     const k=(code,fallback)=>referenceConstant(reference,code,fallback);
+    const persuasion=Persuasion?Persuasion.createPersuasionRules({reference}):null;
+    const REFUSAL=course+"Refusal";
     const RULE=COURSE.setup(k,reference);
     const C={
       offerAffinity:k("spell_study.offer.affinity_weight",0.5),slope:k("spell_study.offer.slope",20),
@@ -130,7 +134,7 @@
     }
 
     // Peut-on lui proposer d'apprendre ? {ok, type} ou {ok:false, reason}.
-    function canStudy(state,m){
+    function canStudy(state,m,{retry=false}={}){
       if(!m) return no("Mercenaire introuvable.");
       if(!(camp.buildingLevel(state,HALL)>0)) return no(TEXT.build);
       const type=nextClass(m);
@@ -140,7 +144,7 @@
       const busy=busyReason(state,m.id)||camp.busyElsewhere?.(state,m.id);
       if(busy) return no(busy);
       if(learnersIn(state,HALL)>=camp.buildingPlaces(state,HALL)) return no(TEXT.full);
-      if(!isCaptain(state,m)&&m[COURSE.offerDay]===state.day) return no("Vous lui en avez déjà parlé aujourd’hui.");
+      if(!retry&&!isCaptain(state,m)&&m[COURSE.offerDay]===state.day) return no("Vous lui en avez déjà parlé aujourd’hui.");
       return {ok:true,type};
     }
     // L'appui de l'intendant, comme pour un sort (pas quand on lui parle à lui).
@@ -149,10 +153,11 @@
       if(!steward||steward===m) return 0;
       return C.stewardSkill*clamp(Number(steward.skills?.camp?.Intendance)||0,0,100)+C.stewardAffinity*feeling(steward,m);
     }
-    // La chance qu'il accepte (en %), sans jet.
-    function offerChance(state,m){
+    // La chance qu'il accepte (en %), sans jet ; approach : la relance (Intimider, Convaincre).
+    function offerChance(state,m,approach=null){
       if(isCaptain(state,m)) return {chance:100,delta:null};
-      const delta=C.offerAffinity*affinityWithCaptain(state,m)+stewardHelp(state,m);
+      const extra=persuasion&&approach?persuasion.bonus(captainOf(state),approach):0;
+      const delta=C.offerAffinity*affinityWithCaptain(state,m)+stewardHelp(state,m)+extra;
       return {chance:curve(delta,C.slope),delta};
     }
     function offer(state,mercenaryId){
@@ -167,12 +172,32 @@
       if(!(dice<chance)){
         const affinityDelta=shiftAffinity(state,m,C.affinity.refuse);
         History.record(m,state.day,COURSE.kind,{accepted:false,armor:type});
-        return {ok:true,accepted:false,chance,roll:dice,affinityDelta,mercenary:m,type};
+        persuasion?.markRefused(m,REFUSAL,state.day);
+        return {ok:true,accepted:false,chance,roll:dice,affinityDelta,mercenary:m,type,canRetry:Boolean(persuasion)};
       }
+      return startStudy(state,m,type,{chance,roll:captain?null:dice});
+    }
+    function startStudy(state,m,type,{chance,roll}){
       const study={id:course+"-"+state.day+"-"+m.id,status:"planned",studentId:m.id,type,startDay:state.day+1,days:0};
       studiesOf(state).push(study);
       History.record(m,state.day,COURSE.kind,{accepted:true,armor:type});
-      return {ok:true,accepted:true,chance,roll:captain?null:dice,affinityDelta:0,mercenary:m,type,study};
+      return {ok:true,accepted:true,chance,roll,affinityDelta:0,mercenary:m,type,study};
+    }
+    // Après un refus, aujourd'hui : une relance, Intimider ou Convaincre ; si elle échoue, la perte du refus × 2 ou × 0,5.
+    function retry(state,mercenaryId,approach){
+      const m=memberOf(state,mercenaryId);
+      if(!persuasion?.approachOf(approach)) return no("Approche inconnue.");
+      const again=persuasion.canRetry(m,REFUSAL,state.day);
+      if(!again.ok) return again;
+      const check=canStudy(state,m,{retry:true});
+      if(!check.ok) return check;
+      const {chance}=offerChance(state,m,approach),dice=roll(),accepted=dice<chance;
+      persuasion.markRetried(m,REFUSAL,approach,accepted);
+      if(!accepted){
+        const affinityDelta=shiftAffinity(state,m,persuasion.refusalExtra(C.affinity.refuse,approach));
+        return {ok:true,accepted:false,approach,chance,roll:dice,affinityDelta,mercenary:m,type:check.type};
+      }
+      return {...startStudy(state,m,check.type,{chance,roll:dice}),approach};
     }
 
     // Le test du matin : la chance (en %) et son détail.
@@ -234,7 +259,7 @@
       return {ok:true,mercenary:m,affinityDelta,study};
     }
 
-    return {constants:C,course,HALL,lower,studiesOf,studyById,studyOf,isPlanned,busyReason,learnersIn,nextClass,canStudy,offerChance,offer,
+    return {constants:C,course,HALL,lower,studiesOf,studyById,studyOf,isPlanned,busyReason,learnersIn,nextClass,canStudy,offerChance,offer,retry,
       dailyChance,advance,stop};
   }
   const createArmorStudyRules=options=>createAptitudeStudyRules({...options,course:"armor"});

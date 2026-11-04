@@ -35,8 +35,8 @@ function studyLearnMenu(item){
   return `<p class="deal-menu-title">Apprendre à…</p><p class="deal-menu-current">${esc(spell?.nom||item.name)} · ${esc(spell?.ecole||"")}</p>${rows}`;
 }
 
-// La réponse, dans la boîte de dialogue des échanges.
-function openStudyAnswer(m,kind,result,vars){
+// La réponse, dans la boîte de dialogue des échanges ; après un refus, la relance (persuasion-ui.js).
+function openStudyAnswer(m,kind,result,vars,retry=null){
   const copy=spellStudyCopy()[kind]||{};
   const lines=copy[result.accepted?"accepted":"refused"]||[];
   const reply=variantPhrase(lines,`${m.id}|${game.campaign.day}|study-${kind}`);
@@ -47,7 +47,8 @@ function openStudyAnswer(m,kind,result,vars){
   $("deal-talk-log").innerHTML=`<p class="talk-say talk-say--you"><b>Vous</b><span>« ${esc(you)} »</span></p>
     <p class="talk-say talk-say--merc"><b>${esc(MercenairesRecruitDialogue.firstName(m))}</b><span>« ${esc(studyFill(reply,m,vars))} »</span></p>
     <p class="talk-note">${esc(studyFill(result.accepted?copy.outcome_accepted:copy.outcome_refused,m,vars))}</p>`;
-  $("deal-talk-choices").innerHTML=`<ol class="talk-options"><li><button type="button" data-deal-leave>Partir</button></li></ol>`;
+  if(retry&&typeof persuasionAfter==="function") persuasionAfter(result,retry.kind,retry.data);
+  else $("deal-talk-choices").innerHTML=`<ol class="talk-options"><li><button type="button" data-deal-leave>Partir</button></li></ol>`;
   $("deal-talk-dialog").showModal();
 }
 
@@ -63,7 +64,28 @@ function offerSpellStudy(memberId,itemId){
     tavernLog(`Le capitaine entrera demain matin à la ${result.room.name} pour apprendre ${result.spell.nom}.`,"gear");
     return;
   }
-  openStudyAnswer(m,"offer",result,{sort:result.spell.nom,salle:result.room.name});
+  openStudyAnswer(m,"offer",result,{sort:result.spell.nom,salle:result.room.name},{kind:"study",data:{member:m.id}});
+}
+// Relancer après un refus (Idan, 2026-11-04) : Intimider ou Convaincre.
+function retrySpellStudy(memberId,approach){
+  const m=studyMember(memberId);
+  if(!m) return;
+  const result=spellStudyRules().retryOffer(game.campaign,m.id,approach);
+  if(!result.ok){ tavernLog(result.reason,"warn"); return; }
+  const vars={sort:result.spell.nom,salle:result.room.name};
+  persuasionAppend(m,result,studyFill(spellStudyCopy().offer?.outcome_accepted,m,vars),`${m.id}|${game.campaign.day}|study|${approach}`);
+  saveGame();
+  renderGame();
+}
+function retryStudyTeacher(studyId,teacherId,approach){
+  const t=studyMember(teacherId);
+  if(!t) return;
+  const result=spellStudyRules().retryTeacher(game.campaign,studyId,t.id,approach);
+  if(!result.ok){ tavernLog(result.reason,"warn"); return; }
+  const vars={sort:result.study.spellName,eleve:MercenairesRecruitDialogue.firstName(result.student)};
+  persuasionAppend(t,result,studyFill(spellStudyCopy().teacher?.outcome_accepted,t,vars),`${t.id}|${game.campaign.day}|teach|${approach}`);
+  saveGame();
+  renderGame();
 }
 function perfectSpell(memberId,itemId){
   if(typeof closeDealMenu==="function") closeDealMenu();
@@ -87,7 +109,7 @@ function offerStudyTeacher(studyId,teacherId){
     tavernLog(`Dès demain matin, le capitaine enseigne ${vars.sort} à ${result.student.name}.`,"gear");
     return;
   }
-  openStudyAnswer(t,"teacher",result,vars);
+  openStudyAnswer(t,"teacher",result,vars,{kind:"teach",data:{member:t.id,study:result.study.id}});
 }
 function releaseStudyTeacher(studyId){
   const result=spellStudyRules().releaseTeacher(game.campaign,studyId);
@@ -170,6 +192,10 @@ function logSpellStudy(report){
 }
 
 function initializeSpellStudy(){
+  if(typeof registerPersuasion==="function"){
+    registerPersuasion("study",(approach,data)=>retrySpellStudy(data.persuadeMember,approach));
+    registerPersuasion("teach",(approach,data)=>retryStudyTeacher(data.persuadeStudy,data.persuadeMember,approach));
+  }
   document.addEventListener("click",event=>{
     const perfect=event.target.closest?.("[data-study-perfect]");
     if(perfect){ perfectSpell(perfect.dataset.studyPerfect,perfect.dataset.studyItem); return; }

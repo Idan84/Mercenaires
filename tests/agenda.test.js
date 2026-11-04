@@ -80,12 +80,15 @@ for(const [m,reason] of reasons){
   }
 }
 
-// Une corvée d'aujourd'hui (Idan, 2026-11-04 : « Oui ») : pas d'entraînement libre ce jour-là, mais un apprentissage, une
-// mission, une garde du corps ou une autre corvée pour demain, oui.
+// Une corvée dure jusqu'à ce qu'on le retire (Idan, 2026-11-04) : il y est encore demain. Retiré aujourd'hui, il n'y est plus
+// demain : un apprentissage, une mission, une garde du corps ou une autre corvée pour demain, oui (« Oui »).
 const camp=state.company.camp;
 camp.armorStudies=[];camp.poisonStudies=[];camp.studies=[];camp.miners=[];
-camp.lumberjacks=[{id:c.id,day:state.day,grudging:false}];
-assert.equal(rules.agenda.reason(state,c.id),"Il bûcheronne aujourd’hui.");
+camp.lumberjacks=[{id:c.id,startDay:state.day,approach:null}];
+assert.equal(rules.agenda.reason(state,c.id),"Il bûcheronne.");
+assert.equal(rules.studyBusy(state,c),"Il bûcheronne.");
+assert.equal(rules.miners.canSend(state,c).reason,"Il bûcheronne.");
+assert.equal(rules.lumberjacks.withdraw(state,c.id).ok,true);
 assert.equal(rules.studyBusy(state,c),null);
 assert.deepEqual(rules.armorStudy.canStudy(state,c).ok,true);
 assert.deepEqual(rules.poisonStudy.canStudy(state,c).ok,true);

@@ -2,40 +2,41 @@
 
 // Cabane du bûcheron (Idan, 2026-11-03 : « l'idée c'est d'envoyer des mercenaires bûcheronner pour accélérer la
 // construction du camp. Pas une ressource de bois […] sur les constructions actuelles de niveau 1 à 5 (y'aura la mine pour
-// 6 à 10). On peut envoyer 1 mercenaire par niveau de cabane […] pour 1 journée » ; chantier : « A » (celui qui finit le plus
-// tôt) ; dortoir : « Oui » ; effet « fixe » ; « Pas de rejet direct, mais test qui implique une baisse d'affinité. Il y va
-// mais à contrecœur… test assez dur et petite perte à chaque fois » ; « Parfait »). Module pur : campaign.js lui donne le
-// camp et appelle morning(state) chaque matin, après les chantiers terminés.
+// 6 à 10). On peut envoyer 1 mercenaire par niveau de cabane » ; chantier : « A » (celui qui finit le plus tôt) ; dortoir :
+// « Oui » ; effet « fixe ») et Guilde des mineurs (Idan, 2026-11-04 : « même chose mais avec les pierres pour des bâtiments
+// de lvl 6 à 10 » ; le test « pareil ») : course "lumber" ou "mine". Module pur : campaign.js lui donne le camp et appelle
+// morning(state) chaque matin, après les chantiers terminés.
 //
-// - Places : 1 bûcheron par niveau de la Cabane et par jour (camp.lumber.workers_per_level).
-// - Au jour J, on organise J+1 : on l'envoie aujourd'hui, il bûcheronne demain toute la journée (ni mission, ni garde du
-//   corps, ni entraînement libre, ni apprentissage) ; on peut annuler d'ici là.
-// - Il y va toujours : chance d'y aller de bon cœur = 10 + 80 / (1 + e^(−Δ/20)), Δ = 0,5 × affinité avec le capitaine − 30
-//   + l'appui de l'intendant ; raté, il y va à contrecœur : affinité −2. Le capitaine, sans test.
-// - Effet : chaque bûcheron retire 1 jour (camp.lumber.days_per_worker) au chantier qui finit le plus tôt, parmi ceux de
-//   niveau 1 à 5 (camp.lumber.max_work_level) : un bâtiment (son niveau en construction), la qualité du dortoir (son
-//   niveau), un agrandissement du dortoir (son rang), un quartier du lieutenant (son numéro). Un chantier finit au plus tôt
-//   le lendemain matin.
-//
-// La Guilde des mineurs (Idan, 2026-11-04 : « même chose mais avec les pierres pour des bâtiments de lvl 6 à 10 » ; « Le
-// Puits » ; la Force ; le test « pareil ») : course "mine", 1 mineur par niveau de la Guilde, chantiers de niveau 6 à 10
-// (camp.mine.*), même test et même perte (camp.lumber.offer_offset, camp.lumber.grudge_affinity). Un mercenaire ne fait
-// qu'une corvée par jour.
+// Les corvées (Idan, 2026-11-04 : « on va mettre les mercenaires en durée indéterminée. On peut les retirer quand on le
+// souhaite. Par contre, chaque jour fait baisser l'affinité » ; « Dans les 3 cas, ils peuvent refuser. -1 par jour c'est
+// bien » ; « Oui Go ! ») :
+// - Places : 1 par niveau du bâtiment (camp.<course>.workers_per_level), prises tant qu'il y reste.
+// - On l'envoie aujourd'hui : il commence demain matin, puis chaque jour jusqu'à ce qu'on le retire ; retiré, il est libre
+//   le lendemain. Une seule corvée à la fois ; ni mission, ni garde du corps, ni entraînement libre, ni apprentissage.
+// - Il peut refuser : chance d'accepter = 10 + 80 / (1 + e^(−Δ/20)), Δ = 0,5 × affinité avec le capitaine − 30
+//   (camp.lumber.offer_offset) + l'appui de l'intendant ; une relance après un refus (persuasion.js) : Intimider
+//   (+ Intimidation du capitaine) ou Convaincre (+ Charisme ÷ 2) ; puis c'est non pour aujourd'hui. Le capitaine, sans test.
+// - Chaque matin de travail : affinité −1 (camp.lumber.daily_affinity), × 2 s'il a été intimidé, × 0,5 s'il a été convaincu.
+// - Effet : chaque travailleur retire 1 jour (camp.<course>.days_per_worker) au chantier qui finit le plus tôt, parmi ceux de
+//   niveau 1 à 5 (bois) ou 6 à 10 (pierre) : un bâtiment (son niveau en construction), la qualité du dortoir (son niveau),
+//   un agrandissement du dortoir (son rang), un quartier du lieutenant (son numéro). Un chantier finit au plus tôt le
+//   lendemain matin.
 (function(root,factory){
-  const api=factory();
+  const Persuasion=typeof module!=="undefined"&&module.exports?require("./persuasion.js"):root.MercenairesPersuasion;
+  const api=factory(Persuasion);
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesLumber=api;
-})(typeof globalThis!=="undefined"?globalThis:this,function(){
+})(typeof globalThis!=="undefined"?globalThis:this,function(Persuasion){
   const HALL="lumber_camp";
   const COURSES={
-    lumber:{hall:"lumber_camp",key:"lumberjacks",prefix:"camp.lumber",minLevel:1,maxLevel:5,text:{
-      noHall:"Il faut d’abord construire la Cabane du bûcheron.",already:"Il part déjà bûcheronner demain.",
-      full:"La Cabane n’a plus de place demain.",tomorrow:"Il part bûcheronner demain matin.",today:"Il bûcheronne aujourd’hui.",
-      notPlanned:"Il ne part pas bûcheronner demain."}},
-    mine:{hall:"miners_guild",key:"miners",prefix:"camp.mine",minLevel:6,maxLevel:10,text:{
-      noHall:"Il faut d’abord construire la Guilde des mineurs.",already:"Il descend déjà à la mine demain.",
-      full:"La Guilde n’a plus de place demain.",tomorrow:"Il descend à la mine demain matin.",today:"Il est à la mine aujourd’hui.",
-      notPlanned:"Il ne descend pas à la mine demain."}}
+    lumber:{hall:"lumber_camp",key:"lumberjacks",offerKey:"lumberOffer",prefix:"camp.lumber",minLevel:1,maxLevel:5,text:{
+      noHall:"Il faut d’abord construire la Cabane du bûcheron.",already:"Il bûcheronne déjà.",
+      full:"La Cabane n’a plus de place.",tomorrow:"Il part bûcheronner demain matin.",working:"Il bûcheronne.",
+      notAssigned:"Il ne bûcheronne pas."}},
+    mine:{hall:"miners_guild",key:"miners",offerKey:"mineOffer",prefix:"camp.mine",minLevel:6,maxLevel:10,text:{
+      noHall:"Il faut d’abord construire la Guilde des mineurs.",already:"Il travaille déjà à la mine.",
+      full:"La Guilde n’a plus de place.",tomorrow:"Il descend à la mine demain matin.",working:"Il travaille à la mine.",
+      notAssigned:"Il ne travaille pas à la mine."}}
   };
   function referenceConstant(reference,code,fallback){
     const value=Number((reference?.formulaConstants?.rows||[]).find(r=>r.code===code)?.valeur);
@@ -43,7 +44,7 @@
   }
   const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
   const curve=(delta,slope)=>10+80/(1+Math.exp(-delta/slope));
-  // Le « niveau » d'un chantier, pour la règle des niveaux 1 à 5.
+  // Le « niveau » d'un chantier, pour la règle des niveaux 1 à 5 (bois) ou 6 à 10 (pierre).
   function workLevel(work){
     if(!work) return 0;
     if(work.kind==="dormitory"||work.kind==="lieutenant_quarter") return Number(work.number)||0;
@@ -58,15 +59,16 @@
 
   // course : "lumber" (Cabane, par défaut) ou "mine" (Guilde).
   // camp : { buildingLevel(state, code), expeditionOf(state, id), busyElsewhere(state, id) → raison ou null (un
-  //          apprentissage, l'autre corvée demain), offField(state, m) (intendant, médecin, maîtres : à leur poste), works(state) → les chantiers
-  //          en cours (objets construction, modifiés sur place) } (campaign.js).
+  //          apprentissage, l'autre corvée), offField(state, m) (intendant, médecin, maîtres : à leur poste), works(state) →
+  //          les chantiers en cours (objets construction, modifiés sur place) } (campaign.js).
   function createLumberRules({reference,random=Math.random,affinity=null,camp,course="lumber"}={}){
     const COURSE=COURSES[course]||COURSES.lumber,T=COURSE.text,hall=COURSE.hall;
     const k=(code,fallback)=>referenceConstant(reference,code,fallback);
+    const persuasion=Persuasion?Persuasion.createPersuasionRules({reference}):null;
     const C={
       perLevel:k(COURSE.prefix+".workers_per_level",1),daysPerWorker:k(COURSE.prefix+".days_per_worker",1),
       minLevel:k(COURSE.prefix+".min_work_level",COURSE.minLevel),maxLevel:k(COURSE.prefix+".max_work_level",COURSE.maxLevel),
-      offset:k("camp.lumber.offer_offset",-30),grudge:k("camp.lumber.grudge_affinity",-2),
+      offset:k("camp.lumber.offer_offset",-30),daily:k("camp.lumber.daily_affinity",-1),
       offerAffinity:k("spell_study.offer.affinity_weight",0.5),slope:k("spell_study.offer.slope",20),
       stewardSkill:k("equipment_deal.steward_skill_weight",0.2),stewardAffinity:k("equipment_deal.steward_affinity_weight",0.25)
     };
@@ -77,22 +79,30 @@
     const no=reason=>({ok:false,reason});
     const roll=()=>random()*100;
 
-    // Les bûcherons (camp.lumberjacks), les mineurs (camp.miners) : [{ id, day, grudging }] (day : le jour de travail).
+    // Les bûcherons (camp.lumberjacks), les mineurs (camp.miners) : [{ id, startDay, approach }] (approach : null,
+    // "intimidate" ou "convince"). Anciennes sauvegardes ({ id, day } : une seule journée) : gardées à partir de ce jour-là.
     function entriesOf(state){
       const camp_=state.company.camp;
       if(!Array.isArray(camp_[COURSE.key])) camp_[COURSE.key]=[];
-      return camp_[COURSE.key];
+      const list=camp_[COURSE.key];
+      for(let i=list.length-1;i>=0;i--){
+        const e=list[i];
+        if(e.startDay!=null) continue;
+        if(!(Number(e.day)>=state.day)){ list.splice(i,1); continue; }
+        list[i]={id:e.id,startDay:Number(e.day),approach:null};
+      }
+      return list;
     }
     const slots=state=>Math.max(0,(Number(camp.buildingLevel(state,hall))||0)*C.perLevel);
-    const plannedFor=(state,day)=>entriesOf(state).filter(e=>e.day===day);
-    const tomorrow=state=>plannedFor(state,state.day+1);
+    const entryOf=(state,id)=>entriesOf(state).find(e=>e.id===id)||null;
+    const working=(state,day=state.day)=>entriesOf(state).filter(e=>e.startDay<=day);
     function busyReason(state,mercenaryId){
-      const entry=entriesOf(state).find(e=>e.id===mercenaryId&&e.day>=state.day);
+      const entry=entryOf(state,mercenaryId);
       if(!entry) return null;
-      return entry.day>state.day?T.tomorrow:T.today;
+      return entry.startDay>state.day?T.tomorrow:T.working;
     }
-    // Retenu demain seulement (pour l'autre corvée : on peut bûcheronner aujourd'hui et descendre à la mine demain).
-    const tomorrowReason=(state,mercenaryId)=>entriesOf(state).some(e=>e.id===mercenaryId&&e.day===state.day+1)?T.tomorrow:null;
+    // Retenu demain (pour organiser J+1) : tant qu'on ne l'a pas retiré, il y est encore demain.
+    const tomorrowReason=busyReason;
     const affinityWithCaptain=(state,m)=>Number(affinity?.memberAffinity?.(captainOf(state),m)?.total)||0;
     const feeling=(toward,who)=>Number(affinity?.affinity?.(toward,who)?.total)||0;
     function stewardHelp(state,m){
@@ -100,46 +110,69 @@
       if(!steward||steward===m) return 0;
       return C.stewardSkill*clamp(Number(steward.skills?.camp?.Intendance)||0,0,100)+C.stewardAffinity*feeling(steward,m);
     }
-    // La chance qu'il y aille de bon cœur (en %), sans jet.
-    function chance(state,m){
+    // La chance qu'il accepte (en %), sans jet ; approach : la relance (Intimider, Convaincre).
+    function chance(state,m,approach=null){
       if(isCaptain(state,m)) return {chance:100,delta:null};
-      const delta=C.offerAffinity*affinityWithCaptain(state,m)+C.offset+stewardHelp(state,m);
-      return {chance:curve(delta,C.slope),delta};
+      const extra=persuasion&&approach?persuasion.bonus(captainOf(state),approach):0;
+      const delta=C.offerAffinity*affinityWithCaptain(state,m)+C.offset+stewardHelp(state,m)+extra;
+      return {chance:curve(delta,C.slope),delta,extra};
     }
+    // La perte d'affinité de chaque matin de travail.
+    const dailyLoss=approach=>C.daily*(persuasion?persuasion.lossFactor(approach):1);
 
     function canSend(state,m){
       if(!m) return no("Mercenaire introuvable.");
       if(!(slots(state)>0)) return no(T.noHall);
-      if(entriesOf(state).some(e=>e.id===m.id&&e.day===state.day+1)) return no(T.already);
+      if(entryOf(state,m.id)) return no(T.already);
       if(camp.offField?.(state,m)) return no("Il ne quitte pas son poste au camp.");
       if(m.recovery) return no("Il doit d’abord se remettre.");
       const expedition=camp.expeditionOf(state,m.id);
       if(expedition) return no(expedition.status==="scheduled"?"Il part en mission demain.":"Il est en mission.");
       const busy=camp.busyElsewhere?.(state,m.id);
       if(busy) return no(busy);
-      if(tomorrow(state).length>=slots(state)) return no(T.full);
+      if(entriesOf(state).length>=slots(state)) return no(T.full);
+      if(!isCaptain(state,m)&&m[COURSE.offerKey]?.day===state.day) return no("Vous lui en avez déjà parlé aujourd’hui.");
       return {ok:true};
     }
-    // L'envoyer bûcheronner demain : il y va toujours, de bon cœur ou à contrecœur (affinité −2).
+    function assign(state,m,approach){
+      const entry={id:m.id,startDay:state.day+1,approach:approach||null};
+      entriesOf(state).push(entry);
+      return entry;
+    }
+    // L'envoyer, à partir de demain : il accepte ou refuse (le capitaine accepte toujours).
     function send(state,mercenaryId){
       const m=memberOf(state,mercenaryId);
       const check=canSend(state,m);
       if(!check.ok) return check;
       const odds=chance(state,m).chance;
-      const captain=isCaptain(state,m);
-      const dice=captain?0:roll();
-      const grudging=!(dice<odds);
-      let affinityDelta=0;
-      if(grudging){ m.affinityAcquired=(Number(m.affinityAcquired)||0)+C.grudge; affinityDelta=C.grudge; }
-      entriesOf(state).push({id:m.id,day:state.day+1,grudging});
-      return {ok:true,grudging,chance:odds,roll:captain?null:dice,affinityDelta,mercenary:m};
+      if(isCaptain(state,m)) return {ok:true,accepted:true,chance:odds,roll:null,mercenary:m,entry:assign(state,m,null)};
+      const dice=roll(),accepted=dice<odds;
+      m[COURSE.offerKey]={day:state.day,retried:false,accepted};
+      return {ok:true,accepted,chance:odds,roll:dice,mercenary:m,entry:accepted?assign(state,m,null):null,canRetry:!accepted};
     }
-    // Annuler avant demain (l'affinité perdue ne revient pas).
-    function cancel(state,mercenaryId){
-      const list=entriesOf(state),i=list.findIndex(e=>e.id===mercenaryId&&e.day===state.day+1);
-      if(i<0) return no(T.notPlanned);
-      list.splice(i,1);
+    // Après un refus, aujourd'hui : une seule relance, Intimider ou Convaincre.
+    function canRetry(state,m){
+      const offer=m?.[COURSE.offerKey];
+      if(!offer||offer.day!==state.day||offer.accepted) return no("Il n’a rien refusé aujourd’hui.");
+      if(offer.retried) return no("Vous avez déjà insisté aujourd’hui.");
+      if(entriesOf(state).length>=slots(state)) return no(T.full);
       return {ok:true};
+    }
+    function retry(state,mercenaryId,approach){
+      const m=memberOf(state,mercenaryId);
+      if(!persuasion?.approachOf(approach)) return no("Approche inconnue.");
+      const check=canRetry(state,m);
+      if(!check.ok) return check;
+      const odds=chance(state,m,approach).chance,dice=roll(),accepted=dice<odds;
+      Object.assign(m[COURSE.offerKey],{retried:true,accepted,approach});
+      return {ok:true,accepted,approach,chance:odds,roll:dice,mercenary:m,entry:accepted?assign(state,m,approach):null,dailyLoss:dailyLoss(approach)};
+    }
+    // Le retirer (avant de commencer, ou en cours) : il est libre dès demain ; l'affinité perdue ne revient pas.
+    function withdraw(state,mercenaryId){
+      const list=entriesOf(state),i=list.findIndex(e=>e.id===mercenaryId);
+      if(i<0) return no(T.notAssigned);
+      const [entry]=list.splice(i,1);
+      return {ok:true,entry};
     }
 
     // Les chantiers que le bois (niveaux 1 à 5) ou la pierre (6 à 10) peut accélérer aujourd'hui, pas déjà au plus court.
@@ -147,27 +180,34 @@
       const level=workLevel(work);
       return level>=C.minLevel&&level<=C.maxLevel&&Number(work.endDay)>state.day+1;
     });
-    // Chaque matin : les bûcherons (ou mineurs) du jour travaillent ; chacun retire un jour au chantier qui finit le plus tôt.
+    // Chaque matin : ceux qui travaillent aujourd'hui perdent un peu d'affinité, puis chacun retire un jour au chantier qui
+    // finit le plus tôt.
     function morning(state){
       const list=entriesOf(state);
-      for(let i=list.length-1;i>=0;i--) if(list[i].day<state.day||!memberOf(state,list[i].id)) list.splice(i,1);
-      const workers=list.filter(e=>e.day===state.day&&!camp.expeditionOf(state,e.id));
-      const reduced=new Map();
+      for(let i=list.length-1;i>=0;i--) if(!memberOf(state,list[i].id)) list.splice(i,1);
+      const workers=working(state).filter(e=>!camp.expeditionOf(state,e.id));
+      const report=[];
       for(const worker of workers){
-        const works=eligible(state).sort((a,b)=>a.endDay-b.endDay);
-        const work=works[0];
+        const m=memberOf(state,worker.id);
+        const delta=isCaptain(state,m)?0:dailyLoss(worker.approach);
+        if(delta) m.affinityAcquired=(Number(m.affinityAcquired)||0)+delta;
+        report.push({id:worker.id,approach:worker.approach,affinityDelta:delta,mercenary:m});
+      }
+      const reduced=new Map();
+      for(let n=0;n<workers.length;n++){
+        const work=eligible(state).sort((a,b)=>a.endDay-b.endDay)[0];
         if(!work) break;
         work.endDay=Math.max(state.day+1,work.endDay-C.daysPerWorker);
         const entry=reduced.get(work)||{name:workName(work),days:0,endDay:work.endDay};
         entry.days+=1;
         entry.endDay=work.endDay;
         reduced.set(work,entry);
-        worker.helped=entry.name;
       }
-      return {workers:workers.map(w=>({id:w.id,grudging:w.grudging,mercenary:memberOf(state,w.id)})),reduced:[...reduced.values()]};
+      return {workers:report,reduced:[...reduced.values()]};
     }
 
-    return {constants:C,HALL:hall,course,slots,entriesOf,plannedFor,tomorrow,busyReason,tomorrowReason,chance,canSend,send,cancel,morning,workLevel,workName};
+    return {constants:C,HALL:hall,course,slots,entriesOf,entryOf,working,busyReason,tomorrowReason,chance,dailyLoss,canSend,send,
+      canRetry,retry,withdraw,cancel:withdraw,morning,workLevel,workName};
   }
 
   return {createLumberRules,HALL,COURSES,workLevel,workName};

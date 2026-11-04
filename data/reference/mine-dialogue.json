@@ -1,29 +1,30 @@
 {
   "schema_version": 1,
   "name": "mine-dialogue",
-  "description": "Guilde des mineurs (Idan, 2026-11-04) : envoyer un mercenaire à la mine demain. Il y va toujours, de bon cœur (willing) ou à contrecœur (grudging). panel : la carte de la Guilde ({nom} : le nom du mercenaire) ; send : la demande, les répliques, les issues ; log : le journal du matin ({chantier}, {jours}). {prenom} ; {masculin|féminin} selon celui qui parle. Textes de JC, à retoucher librement.",
+  "description": "Guilde des mineurs (Idan, 2026-11-04) : envoyer un mercenaire à la mine à partir de demain, jusqu'à ce qu'on le retire. Il peut refuser (accepted / refused) ; la relance (Intimider, Convaincre) : persuasion-dialogue.json. panel : la carte de la Guilde ({nom} : le nom du mercenaire) ; send : la demande, les répliques, les issues ; log : le journal du matin ({chantier}, {jours}). {prenom} ; {masculin|féminin} selon celui qui parle. Textes de JC, à retoucher librement.",
   "panel": {
     "send": "Envoyer à la mine",
-    "send_tip": "Il y va toujours, parfois à contrecœur. Chaque mineur retire un jour à un chantier du camp (niveaux 6 à 10).",
-    "title": "Mineurs de demain",
-    "grudging": "à contrecœur",
-    "captain": "Le capitaine descendra à la mine demain.",
-    "cancelled": "{nom} ne descendra pas à la mine demain."
+    "send_tip": "Il peut refuser. Chaque jour à la mine coûte un peu d’affinité. Chaque mineur retire un jour à un chantier du camp (niveaux 6 à 10).",
+    "title": "Mineurs",
+    "starting": "dès demain",
+    "withdraw": "Retirer",
+    "captain": "Le capitaine descendra à la mine dès demain.",
+    "withdrawn": "{nom} ne descendra plus à la mine."
   },
   "send": {
-    "proposal": "Demain, il nous faut des bras à la mine. Vous y descendez.",
-    "willing": [
+    "proposal": "Il nous faut des bras à la mine, à partir de demain. Vous y descendez.",
+    "accepted": [
       "Des pierres ? Je m’en occupe, capitaine.",
       "Un peu de pioche, ça forge le bras.",
       "J’y descends. Gardez-moi une bière au frais."
     ],
-    "grudging": [
-      "Je suis mercenaire, pas mineur… Bon, j’y descends.",
-      "Sous terre toute la journée ? D’accord, mais je m’en souviendrai.",
-      "Casser des cailloux… Quel honneur."
+    "refused": [
+      "Sous terre ? Très peu pour moi.",
+      "La mine, c’est pour les condamnés. Je ne suis pas condamné. Pas encore.",
+      "Je n’y descendrai pas, capitaine."
     ],
-    "outcome_willing": "{prenom} descendra à la mine demain.",
-    "outcome_grudging": "{prenom} descendra à la mine demain, à contrecœur."
+    "outcome_accepted": "{prenom} descendra à la mine dès demain.",
+    "outcome_refused": "{prenom} refuse."
   },
   "log": {
     "reduced": "{chantier} : {jours} de moins grâce aux mineurs.",

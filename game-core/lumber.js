@@ -217,7 +217,8 @@
       const report=[];
       for(const worker of workers){
         const m=memberOf(state,worker.id);
-        const delta=isCaptain(state,m)?0:dailyLoss(worker.approach);
+        // La politique sociale (Idan, 2026-11-04) : × (2 − taux ÷ 100) selon le salaire de la corvée.
+        const delta=isCaptain(state,m)?0:(dailyLoss(worker.approach)*(camp.lossFactor?camp.lossFactor(state):1))||0;
         if(delta) m.affinityAcquired=(Number(m.affinityAcquired)||0)+delta;
         report.push({id:worker.id,approach:worker.approach,affinityDelta:delta,mercenary:m});
       }

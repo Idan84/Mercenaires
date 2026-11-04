@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "name": "social-policy-copy",
+  "description": "Politique sociale, à l'Intendance (Idan, 2026-11-04) : le menu et le nom des curseurs (les blessés ; une corvée, quand son bâtiment est construit). Textes de JC, à retoucher librement.",
+  "panel": {
+    "title": "Politique sociale",
+    "wounded": "Blessés",
+    "lumber": "Bûcherons",
+    "mine": "Mineurs",
+    "palace": "Palais des plaisirs"
+  }
+}

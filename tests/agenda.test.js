@@ -1,8 +1,8 @@
 "use strict";
 
 // L'agenda d'un mercenaire au camp (refonte technique, Idan, 2026-11-04 : « Ok pour A ») : les apprentissages et les corvées
-// inscrits une fois, au lieu d'être reliés deux à deux. Aucune règle ne change : les tests de chaque activité restent tels
-// quels ; celui-ci vérifie l'agenda lui-même et que chaque activité voit toutes les autres.
+// inscrits une fois, au lieu d'être reliés deux à deux ; une corvée d'aujourd'hui n'empêche pas d'organiser demain
+// (Idan, 2026-11-04 : « Oui »). Celui-ci vérifie l'agenda lui-même et que chaque activité voit toutes les autres.
 const assert=require("node:assert/strict");
 const fs=require("node:fs");
 const path=require("node:path");
@@ -24,11 +24,17 @@ table.wood={1:"aujourd’hui"};
 table.stone={1:"demain"};
 assert.deepEqual(agenda.entryOf({},1),{key:"wood",reason:"wood aujourd’hui"},"la première dans l'ordre d'inscription");
 assert.equal(agenda.elsewhere("wood",{},1),"stone demain");
-assert.equal(agenda.elsewhere("study",{},1),"wood aujourd’hui","une corvée aujourd'hui retient un apprentissage");
+assert.equal(agenda.tomorrowReason({},1),"stone demain");
 table.stone={};
+assert.equal(agenda.reason({},1),"wood aujourd’hui","pas d'entraînement libre aujourd'hui");
+assert.equal(agenda.tomorrowReason({},1),null,"une corvée d'aujourd'hui n'empêche pas d'organiser demain");
+assert.equal(agenda.elsewhere("study",{},1),null);
 assert.equal(agenda.elsewhere("stone",{},1),null,"bûcheron aujourd'hui, mineur demain : possible");
 table.wood={1:"demain"};
 assert.equal(agenda.elsewhere("stone",{},1),"wood demain","une seule corvée par jour");
+assert.equal(agenda.elsewhere("study",{},1),"wood demain");
+table.study={1:"demain"};
+assert.equal(agenda.elsewhere("wood",{},1),"study demain","un apprentissage compte, demain comme aujourd'hui");
 
 // 2. Dans la campagne : les cinq activités, chacune bloquée par les autres avec la même raison.
 const ROOT=path.resolve(__dirname,"..");
@@ -74,9 +80,23 @@ for(const [m,reason] of reasons){
   }
 }
 
+// Une corvée d'aujourd'hui (Idan, 2026-11-04 : « Oui ») : pas d'entraînement libre ce jour-là, mais un apprentissage, une
+// mission, une garde du corps ou une autre corvée pour demain, oui.
+const camp=state.company.camp;
+camp.armorStudies=[];camp.poisonStudies=[];camp.studies=[];camp.miners=[];
+camp.lumberjacks=[{id:c.id,day:state.day,grudging:false}];
+assert.equal(rules.agenda.reason(state,c.id),"Il bûcheronne aujourd’hui.");
+assert.equal(rules.studyBusy(state,c),null);
+assert.deepEqual(rules.armorStudy.canStudy(state,c).ok,true);
+assert.deepEqual(rules.poisonStudy.canStudy(state,c).ok,true);
+assert.deepEqual(rules.miners.canSend(state,c).ok,true);
+state.missionBoard={offer:{id:"contrat",code:"cleanup",distance:1}};
+assert.equal(rules.departExpedition(state,[c.id,d.id,e.id]).ok,true,"il part en mission demain matin");
+assert.equal(rules.expeditionOf(state,c.id)?.status,"scheduled");
+
 // 3. campaign.js ne relie plus les activités deux à deux.
 const campaign=fs.readFileSync(path.join(ROOT,"game-core","campaign.js"),"utf8");
-assert.doesNotMatch(campaign,/aptitudeBusy|workBusy|lumberBusy|tomorrowReason/);
+assert.doesNotMatch(campaign,/aptitudeBusy|workBusy|lumberBusy|other\(\)\?\.tomorrowReason/);
 assert.equal((campaign.match(/busyElsewhere:elsewhere\(/g)||[]).length,3,"sorts, apprentissages, corvées");
 const index=fs.readFileSync(path.join(ROOT,"prototype-web","index.html"),"utf8");
 assert.ok(index.indexOf('<script src="/core/agenda.js">')>0&&index.indexOf('<script src="/core/agenda.js">')<index.indexOf('<script src="/core/campaign.js">'));

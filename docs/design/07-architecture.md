@@ -309,10 +309,10 @@ Le système d’XP choisie au camp est décrit dans [Progression & expérience](
 
 **L’agenda d’un mercenaire** (Idan, 2026-11-04) : les activités qui le retiennent au camp — apprentissages (sort, port
 d’armure, empoisonnement) et corvées (bûcheron, mineur) — sont inscrites une fois dans une seule liste
-(`game-core/agenda.js`), dans l’ordre où leurs raisons s’affichent. Chaque activité demande à l’agenda ce qui le retient
-ailleurs ; les missions, la garde du corps et l’entraînement libre lui demandent ce qui le retient tout court. Une corvée ne
-regarde les autres corvées que pour demain (une seule corvée par jour ; bûcheron aujourd’hui, mineur demain, c’est
-possible). Ajouter une activité, c’est une inscription de plus (`agenda.add` dans `campaign.js`), sans toucher aux autres.
+(`game-core/agenda.js`), dans l’ordre où leurs raisons s’affichent. Deux questions : **ce qui le retient demain**, pour
+organiser J+1 (chaque activité pour les autres, les missions, la garde du corps) — une corvée d’aujourd’hui n’y compte pas
+(Idan, 2026-11-04 : « Oui ») : à la mine aujourd’hui, élève, en mission ou bûcheron demain ; et **ce qui le retient
+aujourd’hui ou demain**, pour l’entraînement libre du jour. Une seule corvée par jour. Ajouter une activité, c’est une inscription de plus (`agenda.add` dans `campaign.js`), sans toucher aux autres.
 Les postes, les missions et les blessures restent vérifiés à part. Test : `tests/agenda.test.js`.
 
 ## 7 — Inventory / Item

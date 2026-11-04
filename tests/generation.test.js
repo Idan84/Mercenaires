@@ -134,6 +134,8 @@ let sawNonMageArmorBonus = false;
 let sawHighMagicArmorPenalty = false;
 let secondaryWeaponCount = 0;
 const bootsSeen = {}, beltsSeen = {}, amuletsSeen = {}, capesSeen = {}, glovesSeen = {}, pantsSeen = {}, ringsSeen = {};
+const offHandsSeen = {};
+const skillByName = new Map(reference.skills.rows.map(row => [row.nom, row]));
 const profileCounts = {melee:0, ranged:0, magic:0};
 for (let i = 0; i < 1000; i++) {
   const c = generator.createMercenary({id:i+1});
@@ -247,7 +249,28 @@ for (let i = 0; i < 1000; i++) {
     assert.ok(reference.rings.rows.some(row => row.nom === ring.name && "ring:" + row.code === ring.templateId), ring.name);
     ringsSeen[ring.name] = (ringsSeen[ring.name] || 0) + 1;
   }
-  for (const emptySlot of ["head","ring_2","ring_3","ring_4","ring_5","ring_6","weapon_set_1_off","weapon_set_2_off","belt_item_1","belt_item_2","belt_item_3","belt_item_4","mount"]) {
+  // Seconde main (Idan, 2026-11-04) : une arme principale de corps à corps à une main ; Boucliers ≥ 50 : le bouclier le
+  // mieux maîtrisé ; Combat à deux armes ≥ 50 : la meilleure arme de corps à corps à une main ; les deux : la meilleure
+  // compétence décide.
+  {
+    const rows = reference.weapons.rows, w = name => rows.find(x => x.nom === name);
+    const main = c.items.find(item => item.id === c.equipment.slots.weapon_set_1_main);
+    const off = c.items.find(item => item.id === c.equipment.slots.weapon_set_1_off);
+    const isShield = x => /Boucliers/.test(x.domaine), isRanged = x => /Armes de tir|Armes à feu/.test(x.domaine);
+    const oneHand = x => ["1 main","Au choix"].includes(x.prise);
+    const mk = c.skills.martial, shield = mk.Boucliers, dual = mk["Combat à deux armes"];
+    const eligible = main && !isRanged(w(main.name)) && oneHand(w(main.name));
+    const expected = !eligible ? null : shield >= 50 && (dual < 50 || shield >= dual) ? "shield" : dual >= 50 ? "dual" : null;
+    const score = x => (mk[x.nom] ?? -Infinity) + (mk[skillByName.get(x.nom)?.parent] ?? -Infinity);
+    const best = filter => rows.filter(filter).sort((a,b) => score(b) - score(a) || a.nom.localeCompare(b.nom, "fr"))[0].nom;
+    if (!expected) assert.equal(c.equipment.slots.weapon_set_1_off, null);
+    else {
+      assert.equal(off.slot, "weapon_set_1_off");
+      assert.equal(off.name, expected === "shield" ? best(isShield) : best(x => !isShield(x) && !isRanged(x) && oneHand(x)));
+      offHandsSeen[expected] = (offHandsSeen[expected] || 0) + 1;
+    }
+  }
+  for (const emptySlot of ["head","ring_2","ring_3","ring_4","ring_5","ring_6","weapon_set_2_off","belt_item_1","belt_item_2","belt_item_3","belt_item_4","mount"]) {
     assert.equal(c.equipment.slots[emptySlot], null);
   }
 
@@ -305,6 +328,10 @@ assert.equal(Object.keys(pantsSeen).length, 3, "les trois types de culottes");
 const ringsTotal = Object.values(ringsSeen).reduce((a,b) => a + b, 0);
 assert.ok(ringsTotal >= 25 && ringsTotal <= 80, `bagues à la création ≈ 5 % : ${ringsTotal}/1000`);
 assert.ok(Object.keys(ringsSeen).length >= 8, "la plupart des onze types de bagues");
+// Seconde main (Idan, 2026-11-04) : environ 6 % de boucliers et 12 % de secondes armes.
+assert.ok(offHandsSeen.shield >= 25 && offHandsSeen.shield <= 110, `boucliers à la création ≈ 6 % : ${offHandsSeen.shield}/1000`);
+assert.ok(offHandsSeen.dual >= 60 && offHandsSeen.dual <= 190, `secondes armes à la création ≈ 12 % : ${offHandsSeen.dual}/1000`);
+assert.deepEqual(["generation.off_hand.shield_min","generation.off_hand.dual_min"].map(code => reference.formulaConstants.rows.find(r => r.code === code)?.valeur), [50,50]);
 // Issue #12 : avant correction, ~89 % des mercenaires sortaient « Magie ». Garde-fou contre un retour accidentel.
 assert.ok(profileCounts.magic < 600, `Profil Magie trop fréquent : ${JSON.stringify(profileCounts)}`);
 assert.ok(profileCounts.melee > 200 && profileCounts.ranged > 50, `Profils CAC / Distance trop rares : ${JSON.stringify(profileCounts)}`);

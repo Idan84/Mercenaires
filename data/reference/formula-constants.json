@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 371,
+  "row_count": 373,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -1768,6 +1768,22 @@
       "description": "Nombre de D10 déplacés sur l'arme réellement utilisée et sa catégorie (en plus), sur l'arme et la catégorie de l'autre famille (en moins) ; l'école d'un mage gagne le double (Idan, 2026-11-01 : dosage B).",
       "formule": "Domaine du mercenaire",
       "valeur": 2,
+      "version": "V1"
+    },
+    {
+      "nom": "Seconde main — seuil Boucliers",
+      "code": "generation.off_hand.shield_min",
+      "description": "À la génération, un mercenaire dont l'arme principale est une arme de corps à corps à une main reçoit en main secondaire le bouclier qu'il maîtrise le mieux si sa compétence Boucliers atteint ce seuil (Idan, 2026-11-04).",
+      "formule": "Équipement de départ",
+      "valeur": 50,
+      "version": "V1"
+    },
+    {
+      "nom": "Seconde main — seuil Combat à deux armes",
+      "code": "generation.off_hand.dual_min",
+      "description": "À la génération, un mercenaire dont l'arme principale est une arme de corps à corps à une main reçoit en main secondaire sa meilleure arme de corps à corps à une main (la Dague par défaut) si sa compétence Combat à deux armes atteint ce seuil ; avec les deux seuils atteints, la meilleure des deux compétences décide (Idan, 2026-11-04).",
+      "formule": "Équipement de départ",
+      "valeur": 50,
       "version": "V1"
     },
     {

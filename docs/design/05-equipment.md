@@ -68,7 +68,7 @@ La vue **Boucliers — équilibrage** expose `Bonus blocage base`, `Malus vitess
 - **4 équipements de ceinture** (potions / consommables / petits objets actifs) ;
 - **1 Monture / Animal de combat**.
 
-À la création, seuls l’**armure**, le **set d’armes 1** et éventuellement le **set d’armes 2** sont remplis. Tous les autres slots existent mais restent vides.
+À la création, seuls l’**armure**, le **set d’armes 1** (arme principale, et parfois la main secondaire : voir « Main secondaire ») et éventuellement le **set d’armes 2** sont remplis. Tous les autres slots existent mais restent vides.
 
 ### Profil temporaire d’équipement
 
@@ -85,6 +85,19 @@ La meilleure arme est déterminée avec le score existant `Maîtrise catégorie 
 ### Arme secondaire
 
 Après l’arme principale : **50 % de chance** de recevoir une arme complémentaire. Si l’arme principale est CAC, on cherche la meilleure arme Distance ; si elle est Distance, on cherche la meilleure arme CAC. Cette seconde arme va dans le set d’armes 2.
+
+### Main secondaire (Idan, 2026-11-04)
+
+« Un bouclier pour ceux qui ont bouclier comme bonne compétence et à minima une dague dans la seconde main pour ceux qui ont 2 armes » ; validé (« parfait ») :
+
+- seulement si l’arme principale est une arme de **corps à corps tenue à une main** (« 1 main » ou « Au choix ») : une arme à deux mains ou une arme de tir prend les deux mains ;
+- **Boucliers ≥ 50** : le bouclier qu’il maîtrise le mieux (Écu, Rondache ou Pavois ; `Maîtrise catégorie + Maîtrise arme précise`, comme pour les armes) ;
+- **Combat à deux armes ≥ 50** : sa meilleure arme de corps à corps à une main (« 1 main » ou « Au choix », boucliers exclus), la **Dague** par défaut ;
+- les deux seuils atteints : la meilleure des deux compétences décide (à égalité, le bouclier) ;
+- tier : la même table que le reste de l’équipement de départ ; tirée en dernier, après la fiole ;
+- pour les nouveaux mercenaires (recrues, Taverne, nouvelle partie, capitaine compris) ; les mercenaires déjà en jeu ne changent pas.
+
+Mesure (3 000 mercenaires) : environ **6 %** reçoivent un bouclier et **12 %** une seconde arme. Constantes : `generation.off_hand.shield_min` (50), `generation.off_hand.dual_min` (50).
 
 ### Armure
 

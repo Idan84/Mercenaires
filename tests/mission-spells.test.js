@@ -134,7 +134,7 @@ assert.equal(api.missionActionAvailability().melee,false,"plus d'attaque ce tour
 api.resetMissionActivation(u);
 u.character.mana=53;
 const foe=m.enemies[0];
-foe.q=u.q;foe.r=u.r+1;foe.hp=5;
+foe.q=u.q-1;foe.r=u.r;foe.hp=5; // à côté, sur une case libre (pas celle d'un autre allié)
 api.setMissionMode("spell:mass_heal");
 cells=api.targetableMissionCells();
 assert.ok(cells.size>10,"des cases, pas seulement des personnages");
@@ -1122,7 +1122,9 @@ for(const x of [u,ally,wet,distant]){ x.statBuffs=null;x.mindFog=null;x.asleep=n
 
 // École de la Nécromancie dans l'écran de combat (Idan, 2026-10-28). Maîtrise 60,5 et Charisme 50 : zombie à 55 %,
 // maintien 82 %, entretien 4 mana ; Flétrissement 3 activations ; Drain de vie : cette activation et les 2 suivantes.
-for(const p of m.players){ p.character.skills.magic["Nécromancie"]=60; p.character.stats.Charisme=50; }
+// Charisme 50 équipement compris (un fouet, par exemple, en ajoute 10 %).
+const charisma50=p=>{ p.character.stats.Charisme=50; const g=engine.statWithGear(p,"Charisme"); if(g!==50) p.character.stats.Charisme=2500/g; };
+for(const p of m.players){ p.character.skills.magic["Nécromancie"]=60; charisma50(p); }
 for(const x of [u,ally,wet,distant]){ x.alive=true;x.hp=x.pvMax;x.fleeing=false;x.frenzy=null;x.statBuffs=null;x.regeneration=null; }
 u.q=2;u.r=4;ally.q=2;ally.r=5;wet.q=3;wet.r=4;distant.q=6;distant.r=4;
 assert.equal(magic.holdChance(u,"summon_specter").toFixed(1),"81.7");
@@ -1243,7 +1245,7 @@ assert.ok(logged(/n’a plus assez de mana pour garder Spectre 2 \(4 nécessaire
 // Les quatre sorts du 2026-10-31 (validés par Idan, chiffrés par JC3).
 // Malédiction : des dégâts nécrotiques au début de ses 3 prochaines activations, puis elle se dissipe.
 reset();
-distant.withered=null;
+distant.withered=null;distant.hp=distant.pvMax; // en pleine forme : la malédiction ne la met pas hors combat
 api.setMissionMode("spell:curse");
 queue.push(0,0.99);
 api.handleMissionHexClick(distant.q,distant.r);
@@ -1334,7 +1336,7 @@ assert.ok(logged(/relevé en zombie par un nécromancien/));
 m=newMission();
 api.teachMissionTestSpells();
 const caller=m.activeUnit,[f1,f2,f3]=m.enemies,helper=m.players.find(p=>p!==caller);
-for(const p of m.players){ p.character.skills.magic.Invocation=60; p.character.stats.Charisme=50; }
+for(const p of m.players){ p.character.skills.magic.Invocation=60; charisma50(p); }
 m.players.forEach((p,i)=>{ p.q=0;p.r=8-i; });
 caller.q=2;caller.r=4;helper.q=0;helper.r=4;f1.q=4;f1.r=4;f2.q=10;f2.r=4;f3.q=10;f3.r=2;
 for(const e of m.enemies) e.camouflaged=false;

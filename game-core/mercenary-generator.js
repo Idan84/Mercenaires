@@ -1228,6 +1228,28 @@
       return moves;
     }
 
+    // Seconde main (Idan, 2026-11-04 : « un bouclier pour ceux qui ont bouclier comme bonne compétence et à minima une dague
+    // dans la seconde main pour ceux qui ont 2 armes » ; « parfait ») : seulement si l'arme principale est une arme de corps
+    // à corps tenue à une main (« 1 main » ou « Au choix »). Boucliers ≥ 50 : le bouclier qu'il maîtrise le mieux ; Combat
+    // à deux armes ≥ 50 : sa meilleure arme de corps à corps à une main, la Dague par défaut ; les deux : la meilleure des
+    // deux compétences décide. Constantes : generation.off_hand.shield_min, generation.off_hand.dual_min. Tier : la même
+    // table que le reste de l'équipement de départ.
+    function offHandItem(character, primary) {
+      const template = primary && weaponByName.get(primary.name);
+      if (!template || !isMeleeWeapon(template) || !["1 main", "Au choix"].includes(template.prise)) return null;
+      const martial = character.skills.martial || {};
+      const shield = Number(martial.Boucliers) || 0, dual = Number(martial["Combat à deux armes"]) || 0;
+      const shieldOk = shield >= constant("generation.off_hand.shield_min", 50);
+      const dualOk = dual >= constant("generation.off_hand.dual_min", 50);
+      if (!shieldOk && !dualOk) return null;
+      const dagger = weaponByName.get("Dague");
+      const preference = shieldOk && (!dualOk || shield >= dual)
+        ? bestWeaponPreference(character.skills, isShieldWeapon)
+        : bestWeaponPreference(character.skills, weapon => isMeleeWeapon(weapon) && ["1 main", "Au choix"].includes(weapon.prise))
+          || (dagger ? {weapon:dagger.nom, category:skillByName.get(dagger.nom)?.parent || null} : null);
+      return weaponItem(character, preference, "weapon_set_1_off");
+    }
+
     function generateStartingEquipment(character) {
       const profile = computeEquipmentProfile(character);
       // Le domaine, fixé à vie, décide de l'arme de départ (et donc de l'avatar).
@@ -1285,6 +1307,12 @@
         const potion = {...potionItem(character, randomChoice(potionRows)), slot:"belt_item_1"};
         items.push(potion);
         slots.belt_item_1 = potion.id;
+      }
+      // La main secondaire, en dernier pour ne rien changer aux autres tirages.
+      const offHand = offHandItem(character, primary);
+      if (offHand) {
+        items.push(offHand);
+        slots.weapon_set_1_off = offHand.id;
       }
 
       return {

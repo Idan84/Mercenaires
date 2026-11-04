@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 333,
+  "row_count": 335,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -2552,6 +2552,22 @@
       "description": "Idan, 2026-11-04 : « En charisme, ça la divise par deux » : la perte qui suit est multipliée par ce facteur.",
       "formule": "Relance après un refus",
       "valeur": 0.5,
+      "version": "V1"
+    },
+    {
+      "nom": "Relance — Intimider, part du gain de l'accord",
+      "code": "persuasion.intimidate.gain_factor",
+      "description": "Idan, 2026-11-04 : « S'il a été intimidé, il ne gagne pas les +5 du premier matin. Convaincu, il les garde » : le gain d'affinité d'un accord obtenu en intimidant (apprentissage : +5 au premier matin ; professeur : +3) est multiplié par ce facteur.",
+      "formule": "Relance après un refus",
+      "valeur": 0,
+      "version": "V1"
+    },
+    {
+      "nom": "Relance — Convaincre, part du gain de l'accord",
+      "code": "persuasion.convince.gain_factor",
+      "description": "Voir persuasion.intimidate.gain_factor : convaincu, il garde son gain.",
+      "formule": "Relance après un refus",
+      "valeur": 1,
       "version": "V1"
     },
     {

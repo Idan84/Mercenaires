@@ -388,8 +388,9 @@ double la perte d'affinité. En charisme, ça la divise par deux » ; « valable
   relance échoue, celle de l'accord si elle réussit ;
 - **apprentissages** (Idan, 2026-11-04 : « vas-y pour les apprentissages ») : proposer un sort, un professeur, un port
   d'armure, l'empoisonnement ; un refus coûte −2 d'affinité ; relance ratée : −4 en tout (intimidé) ou −1 (convaincu) ;
-  relance réussie : il entre le lendemain matin comme d'habitude (l'accord ne coûte rien, il rapporte même +5 au premier
-  matin) ;
+  relance réussie : il entre le lendemain matin comme d'habitude, mais **intimidé, il ne gagne pas les +5 du premier
+  matin ; convaincu, il les garde** (Idan, 2026-11-04 : « B ») ; de même pour le professeur et ses +3
+  (`persuasion.*.gain_factor`) ;
 - code `game-core/persuasion.js` (bonus, facteur, refus du jour : une seule relance), `prototype-web/persuasion-ui.js`
   (les trois choix, la relance ajoutée au dialogue) ; textes communs `persuasion-dialogue.json` ; test
   `tests/persuasion.test.js`. Fait : les corvées, le Palais des plaisirs, les apprentissages ; à venir : les échanges

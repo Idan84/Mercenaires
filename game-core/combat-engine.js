@@ -189,11 +189,16 @@
       }).concat(heldWeaponBonuses(unit,stat,base)).filter(Boolean);
     }
     // Armes tenues dans le set actif qui servent une caractéristique (weapons.json, bonus_caracteristique et
-    // bonus_pourcentage ; Idan, 2026-10-29) : Bâton long + 5 % de Puissance magique, Bâton court + 10 % de Réserve de mana,
-    // Fouet + 10 % de Charisme, Trident + 20 % en Eau, Marteau de guerre + 10 % en Foudre, Grande épée + 10 % en Feu.
+    // bonus_t1 à bonus_t4 ; Idan, 2026-10-29, par tier depuis le 2026-11-05) : Bâton long (Puissance magique), Bâton court
+    // (Réserve de mana), Fouet (Charisme), Trident (Eau) : 5 / 10 / 15 / 20 % ; Marteau de guerre (Foudre), Grande épée
+    // (Feu) : 3 / 6 / 9 / 12 %. Deux bâtons courts se cumulent.
+    function weaponTierValue(weapon,prefix,item){
+      const tier=Math.min(4,Math.max(1,Math.round(Number(item?.tier)||1)));
+      return Number(weapon?.[prefix+"_t"+tier])||0;
+    }
     function heldWeaponBonuses(unit,stat,base){
       return [activeWeaponItem(unit),activeOffhandItem(unit)].map(item=>{
-        const weapon=weaponTemplate(item),value=Number(weapon?.bonus_pourcentage)||0;
+        const weapon=weaponTemplate(item),value=weaponTierValue(weapon,"bonus",item);
         return weapon?.bonus_caracteristique===stat&&value?{item,slot:"weapon",percent:value,bonus:base*value/100}:null;
       });
     }
@@ -1031,9 +1036,9 @@
       const whip=weaponAuraBonus(unit,"Courage",units);
       return {...best,bonus:best.bonus+whip,whip};
     }
-    // Fouet (weapons.json, aura_caracteristique, aura_pourcentage et aura_portee ; Idan, 2026-10-29) : un allié qui le tient
-    // dans son set actif donne + aura_pourcentage % de la valeur de base aux autres alliés à aura_portee cases ou moins ;
-    // plusieurs fouets ne se cumulent pas (le plus fort compte).
+    // Fouet (weapons.json, aura_caracteristique, aura_t1 à aura_t4 et aura_portee ; Idan, 2026-10-29, par tier depuis le
+    // 2026-11-05 : 5 / 10 / 15 / 20 %) : un allié qui le tient dans son set actif donne ce pourcentage de la valeur de base
+    // aux autres alliés à aura_portee cases ou moins ; plusieurs fouets ne se cumulent pas (le plus fort compte).
     function weaponAuraBonus(unit,stat,units=[]){
       let best=0;
       for(const ally of units||[]){
@@ -1041,7 +1046,7 @@
         for(const item of [activeWeaponItem(ally),activeOffhandItem(ally)]){
           const weapon=weaponTemplate(item);
           if(weapon?.aura_caracteristique!==stat||axialDistance(ally,unit)>(Number(weapon.aura_portee)||0)) continue;
-          best=Math.max(best,baseValue(unit,stat)*(Number(weapon.aura_pourcentage)||0)/100);
+          best=Math.max(best,baseValue(unit,stat)*weaponTierValue(weapon,"aura",item)/100);
         }
       }
       return best;

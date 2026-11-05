@@ -41,19 +41,28 @@ assert.equal(lance.counterCharge, true);
 assert.equal(lance.block, null);
 assert.equal(lance.stat, null);
 
-// Bâtons (Idan, 2026-10-29) : + 5 % de Puissance magique ou + 10 % de Réserve de mana, quelle que soit la qualité.
+// Bâtons (Idan, 2026-10-29) : un pourcentage de Puissance magique ou de Réserve de mana, selon le tier (5 / 10 / 15 / 20 ;
+// Idan, 2026-11-05), quelle que soit la qualité.
 assert.deepEqual(cards.card(item("weapon","Bâton long",1,"worn")).stat, {name:"Puissance magique", percent:5});
-assert.deepEqual(cards.card(item("weapon","Bâton court",4,"luxury")).stat, {name:"Réserve de mana", percent:10});
+assert.deepEqual(cards.card(item("weapon","Bâton long",3,"luxury")).stat, {name:"Puissance magique", percent:15});
+assert.deepEqual(cards.card(item("weapon","Bâton court",4,"luxury")).stat, {name:"Réserve de mana", percent:20});
 // Saï (Idan, 2026-10-29) : parade de 5 % contre les coups tranchants.
 assert.deepEqual(cards.card(item("weapon","Sai",1,"standard")).parry, {type:"tranchant", chance:5});
 assert.equal(cards.card(item("weapon","Dague",1,"standard")).parry, null);
 // Traits d'armes (Idan, 2026-10-29) : fouet, fléau, trident, marteau de guerre.
+// Par tier (Idan, 2026-11-05) : fouet (Charisme et aura de Courage) et trident 5 / 10 / 15 / 20 ; marteau et grande épée
+// 3 / 6 / 9 / 12 ; le fléau reste fixe.
 const whip = cards.card(item("weapon","Fouet",1,"standard"));
-assert.deepEqual([whip.stat, whip.aura, whip.range], [{name:"Charisme", percent:10}, {name:"Courage", percent:10, range:3}, {min:1, max:2}]);
+assert.deepEqual([whip.stat, whip.aura, whip.range], [{name:"Charisme", percent:5}, {name:"Courage", percent:5, range:3}, {min:1, max:2}]);
+const whip4 = cards.card(item("weapon","Fouet",4,"standard"));
+assert.deepEqual([whip4.stat, whip4.aura], [{name:"Charisme", percent:20}, {name:"Courage", percent:20, range:3}]);
 assert.equal(cards.card(item("weapon","Fléau d’armes",1,"standard")).blockCut, 50);
-assert.deepEqual(cards.card(item("weapon","Trident",1,"standard")).stat, {name:"Eau", percent:20});
-assert.deepEqual(cards.card(item("weapon","Marteau de guerre",1,"standard")).stat, {name:"Foudre", percent:10});
-assert.deepEqual(cards.card(item("weapon","Grande épée",1,"standard")).stat, {name:"Feu", percent:10});
+assert.equal(cards.card(item("weapon","Fléau d’armes",4,"standard")).blockCut, 50);
+assert.deepEqual(cards.card(item("weapon","Trident",1,"standard")).stat, {name:"Eau", percent:5});
+assert.deepEqual(cards.card(item("weapon","Trident",2,"standard")).stat, {name:"Eau", percent:10});
+assert.deepEqual(cards.card(item("weapon","Marteau de guerre",1,"standard")).stat, {name:"Foudre", percent:3});
+assert.deepEqual(cards.card(item("weapon","Marteau de guerre",4,"standard")).stat, {name:"Foudre", percent:12});
+assert.deepEqual(cards.card(item("weapon","Grande épée",3,"standard")).stat, {name:"Feu", percent:9});
 assert.equal(cards.card(item("weapon","Sarbacane",1,"standard")).poison, true);
 assert.deepEqual(cards.card(item("weapon","Nunchaku",1,"standard")).attackBonus, {stat:"Dextérité", source:"Télékinésie", percent:10});
 

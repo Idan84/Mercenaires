@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 373,
+  "row_count": 374,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -1784,6 +1784,14 @@
       "description": "À la génération, un mercenaire dont l'arme principale est une arme de corps à corps à une main reçoit en main secondaire sa meilleure arme de corps à corps à une main (la Dague par défaut) si sa compétence Combat à deux armes atteint ce seuil ; avec les deux seuils atteints, la meilleure des deux compétences décide (Idan, 2026-11-04).",
       "formule": "Équipement de départ",
       "valeur": 50,
+      "version": "V1"
+    },
+    {
+      "nom": "Seconde main — arme légère",
+      "code": "generation.off_hand.light_max_speed_malus",
+      "description": "À la génération, la seconde arme (Combat à deux armes) est une arme légère : une arme de corps à corps à une main dont le malus de vitesse de base ne dépasse pas cette valeur (Dague, Sai, Fouet, Bâton court, Kukri, Épée courte, Nunchaku, Estoc, Hachette ; Idan, 2026-11-05).",
+      "formule": "Équipement de départ",
+      "valeur": 8,
       "version": "V1"
     },
     {

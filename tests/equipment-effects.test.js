@@ -114,33 +114,46 @@ const sage = amuleted("Amulette de puissance magique", 1);
 near(sage.e["Puissance magique"].value, 52.5);
 assert.equal(sage.e.Chance.lines.length, 0, "une amulette de puissance magique ne touche pas la Chance");
 
-// Bâtons (Idan, 2026-10-29) : tenus dans le set actif, Bâton long + 5 % de Puissance magique, Bâton court + 10 % de
-// Réserve de mana ; rangés dans l'autre set, rien.
-const staffed = (name, slot) => {
+// Bâtons (Idan, 2026-10-29 ; par tier, 2026-11-05) : tenus dans le set actif, Bâton long + 5 / 10 / 15 / 20 % de
+// Puissance magique, Bâton court + 5 / 10 / 15 / 20 % de Réserve de mana (T1 à T4) ; rangés dans l'autre set, rien.
+const staffed = (name, slot, tier = 1) => {
   const c = {...knight, stats:{...stats, "Puissance magique":60, "Réserve de mana":50},
-    items:[...knight.items, {id:"b", itemType:"weapon", name, tier:1, qualityName:"Correcte"}], equipment:{slots:{armor:"a", [slot]:"b"}}};
+    items:[...knight.items, {id:"b", itemType:"weapon", name, tier, qualityName:"Correcte"}], equipment:{slots:{armor:"a", [slot]:"b"}}};
   return {c, e:effects(c), unit:{character:c, activeSet:1}};
 };
 const longStaff = staffed("Bâton long", "weapon_set_1_main");
 near(longStaff.e["Puissance magique"].value, 63);
 assert.deepEqual(longStaff.e["Puissance magique"].lines, [{label:"Bâton long (Correcte)", delta:3, reason:"gear", percent:5}]);
 near(longStaff.e["Réserve de mana"].value, 50);
+for (const [tier, value] of [[2,66],[3,69],[4,72]]) near(staffed("Bâton long", "weapon_set_1_main", tier).e["Puissance magique"].value, value, `Bâton long T${tier}`);
 const shortStaff = staffed("Bâton court", "weapon_set_1_off");
-near(shortStaff.e["Réserve de mana"].value, 55);
-near(engine.statWithGear(shortStaff.unit, "Réserve de mana"), 55, "le combat et la magie lisent la même valeur");
+near(shortStaff.e["Réserve de mana"].value, 52.5);
+near(engine.statWithGear(shortStaff.unit, "Réserve de mana"), 52.5, "le combat et la magie lisent la même valeur");
 near(engine.statWithGear({...shortStaff.unit, activeSet:2}, "Réserve de mana"), 50, "set 2 en main : le bâton du set 1 ne compte pas");
+near(staffed("Bâton court", "weapon_set_1_off", 4).e["Réserve de mana"].value, 60, "Bâton court T4 : + 20 %");
 near(staffed("Bâton long", "weapon_set_2_main").e["Puissance magique"].value, 60);
-// Fouet + 10 % de Charisme, Trident + 20 % en Eau, Marteau de guerre + 10 % en Foudre (Idan, 2026-10-29).
-const held = name => {
+// Deux bâtons courts (Idan, 2026-11-05 : « surtout qu'on peut en mettre 2 ») : les deux comptent.
+{
+  const c = {...knight, stats:{...stats, "Réserve de mana":50}, items:[...knight.items,
+    {id:"s1", itemType:"weapon", name:"Bâton court", tier:2, qualityName:"Correcte"}, {id:"s2", itemType:"weapon", name:"Bâton court", tier:3, qualityName:"Correcte"}],
+    equipment:{slots:{armor:"a", weapon_set_1_main:"s1", weapon_set_1_off:"s2"}}};
+  near(engine.statWithGear({character:c, activeSet:1}, "Réserve de mana"), 50 * 1.25, "T2 + T3 : + 10 % + 15 %");
+}
+// Fouet, Trident (5 / 10 / 15 / 20 %), Marteau de guerre, Épée à deux mains (3 / 6 / 9 / 12 %) ; Idan, 2026-11-05.
+const held = (name, tier = 1) => {
   const c = {...knight, stats:{...stats, Charisme:40}, skills:{...knight.skills, magic:{Eau:50, Foudre:30, Feu:40}},
-    items:[...knight.items, {id:"h", itemType:"weapon", name, tier:1, qualityName:"Correcte"}], equipment:{slots:{armor:"a", weapon_set_1_main:"h"}}};
+    items:[...knight.items, {id:"h", itemType:"weapon", name, tier, qualityName:"Correcte"}], equipment:{slots:{armor:"a", weapon_set_1_main:"h"}}};
   return effects(c);
 };
-near(held("Fouet").Charisme.value, 44);
-near(held("Trident").Eau.value, 60);
-near(held("Marteau de guerre").Foudre.value, 33);
+near(held("Fouet").Charisme.value, 42);
+near(held("Fouet", 4).Charisme.value, 48);
+near(held("Trident").Eau.value, 52.5);
+near(held("Trident", 3).Eau.value, 57.5);
+near(held("Marteau de guerre").Foudre.value, 30.9);
+near(held("Marteau de guerre", 4).Foudre.value, 33.6);
 near(held("Trident").Foudre.value, 30, "le trident ne touche que l'Eau");
-near(held("Grande épée").Feu.value, 44, "Grande épée + 10 % en Feu (Idan, 2026-10-29)");
+near(held("Épée à deux mains").Feu.value, 41.2, "Épée à deux mains T1 + 3 % en Feu");
+near(held("Épée à deux mains", 2).Feu.value, 42.4, "Épée à deux mains T2 + 6 % en Feu");
 
 // Capes (Idan, 2026-10-24) : Esquive et Discrétion en pourcentage ; Résistance physique en points (+5 à +20).
 const caped = (name, tier) => {

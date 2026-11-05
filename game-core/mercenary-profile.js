@@ -191,14 +191,16 @@
         return whipAura(c);
       }
     };
-    // Le fouet (weapons.json, aura_caracteristique Courage) : dans la main principale ou secondaire d'un set.
+    // Le fouet (weapons.json, aura_caracteristique Courage, aura_t1 à aura_t4 selon son tier) : dans la main principale ou
+    // secondaire d'un set.
     function whipAura(character){
       const slots=character.equipment?.slots||{};
       const courage=Number(etalon.caracteristiques?.Courage)||0;
       return best(["weapon_set_1_main","weapon_set_1_off","weapon_set_2_main","weapon_set_2_off"].map(slot=>{
         const item=(character.items||[]).find(i=>i.id===slots[slot]);
         const row=item&&weaponRows.find(w=>w.nom===item.name);
-        return row?.aura_caracteristique==="Courage"?courage*(Number(row.aura_pourcentage)||0)/100:null;
+        const tier=Math.min(4,Math.max(1,Math.round(Number(item?.tier)||1)));
+        return row?.aura_caracteristique==="Courage"?courage*(Number(row["aura_t"+tier])||0)/100:null;
       }));
     }
 

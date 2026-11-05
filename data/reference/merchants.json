@@ -455,7 +455,7 @@
         },
         {
           "type": "weapon",
-          "objet": "Grande épée"
+          "objet": "Épée à deux mains"
         },
         {
           "type": "weapon",
@@ -901,7 +901,7 @@
       "vend": [
         {
           "type": "weapon",
-          "objet": "Grande épée"
+          "objet": "Épée à deux mains"
         },
         {
           "type": "weapon",

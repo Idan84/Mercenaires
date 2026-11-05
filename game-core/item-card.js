@@ -59,6 +59,11 @@
       return armors.find(a=>a.code===code)||armors.find(a=>a.nom===item?.name)||null;
     }
 
+    // Une valeur par tier (T1 à T4) d'une arme : bonus_t<n>, aura_t<n>.
+    function tierValue(weapon,prefix,item){
+      const tier=Math.min(4,Math.max(1,Math.round(Number(item?.tier)||1)));
+      return number(weapon?.[prefix+"_t"+tier]);
+    }
     function weaponCard(item,weapon,q){
       const skill=skills.get(weapon.nom)||{};
       const min=Number(weapon.portee_min_hex),max=Number(weapon.portee_max_hex);
@@ -74,14 +79,16 @@
         weight:number(weapon.malus_vitesse_arme_base)*q.bad,
         charge:charge>0?charge*q.good:null,
         block:block>0?block*q.good:null,
-        // Bâtons (Idan, 2026-10-29) : + un pourcentage d'une caractéristique, tant qu'ils sont tenus.
-        stat:weapon.bonus_caracteristique&&number(weapon.bonus_pourcentage)>0
-          ?{name:weapon.bonus_caracteristique,percent:number(weapon.bonus_pourcentage)}:null,
+        // Bâtons, fouet, trident… (Idan, 2026-10-29) : + un pourcentage d'une caractéristique, tant qu'ils sont tenus ;
+        // selon le tier (bonus_t1 à bonus_t4 ; Idan, 2026-11-05).
+        stat:weapon.bonus_caracteristique&&tierValue(weapon,"bonus",item)>0
+          ?{name:weapon.bonus_caracteristique,percent:tierValue(weapon,"bonus",item)}:null,
         // Parade (Idan, 2026-10-29) : le saï pare un coup tranchant sur 20 (deux saïs : 10 %).
         parry:weapon.parade_type&&number(weapon.parade_chance)>0?{type:weapon.parade_type,chance:number(weapon.parade_chance)}:null,
-        // Fouet : + aura_pourcentage % d'une caractéristique aux alliés proches ; Fléau : le bouclier adverse bloque moins.
-        aura:weapon.aura_caracteristique&&number(weapon.aura_pourcentage)>0
-          ?{name:weapon.aura_caracteristique,percent:number(weapon.aura_pourcentage),range:number(weapon.aura_portee)}:null,
+        // Fouet : + un pourcentage (aura_t1 à aura_t4) d'une caractéristique aux alliés proches ; Fléau : le bouclier adverse
+        // bloque moins.
+        aura:weapon.aura_caracteristique&&tierValue(weapon,"aura",item)>0
+          ?{name:weapon.aura_caracteristique,percent:tierValue(weapon,"aura",item),range:number(weapon.aura_portee)}:null,
         blockCut:number(weapon.malus_blocage_pourcentage)>0?number(weapon.malus_blocage_pourcentage):null,
         // Sarbacane : la fléchette qui blesse empoisonne ; Nunchaku : + 10 % de Télékinésie en Dextérité pour attaquer.
         poison:Boolean(weapon.empoisonne),

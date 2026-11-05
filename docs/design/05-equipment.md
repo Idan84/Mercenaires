@@ -130,7 +130,7 @@ Chaque objet a une **valeur en pièces d’or, cachée** : rien ne l’affiche a
 **Valeur = prix de base × tier × qualité**, arrondie à la pièce (`game-core/item-value.js`).
 
 - **Prix de base** (objet T1, qualité Correcte) : colonne `prix_base` des fichiers d’équipement, modifiable à la main.
-  - Armes (`weapons.json`) : 40 + 10 × dégât maximal, × 1,5 pour les armes à feu, arrondi à 5. Par exemple Dague 80, Épée longue 120, Grande épée 200, Pistolet 180, Arquebuse 240.
+  - Armes (`weapons.json`) : 40 + 10 × dégât maximal, × 1,5 pour les armes à feu, arrondi à 5. Par exemple Dague 80, Épée longue 120, Épée à deux mains 200, Pistolet 180, Arquebuse 240.
   - Armures (`base-armors.json`) : Vêtements 20, Gambison 60, Armure de cuir 90, Cuir renforcé 160, Brigandine 220, Cotte de mailles 260, Armure d’écailles 380, Armure de plates 600.
   - Bottes, ceintures, capes, gants, culottes : 100. Amulettes et bagues : 150.
 - **Tier** : T1 × 1, T2 × 3, T3 × 8, T4 × 25 (`economy.item_value.tier_<n>_multiplier`).
@@ -243,26 +243,26 @@ Trois consommables (`data/reference/potions.json`), rangés dans les **4 emplace
 
 ### Bâtons (Idan, 2026-10-29)
 
-Tenus dans le set d’armes actif, en main principale ou secondaire, les bâtons servent la magie : le **Bâton long** donne **+5 %** de la Puissance magique de base, le **Bâton court** **+10 %** de la Réserve de mana de base. Le tier et la qualité ne changent rien ; rangé dans l’autre set, le bâton ne donne rien. Le combat et la magie (effet des sorts, mana maximum) lisent la valeur bonifiée ; la fiche (onglet Magie) et la carte d’objet la montrent. Données : `weapons.json`, colonnes `bonus_caracteristique` et `bonus_pourcentage`.
+Tenus dans le set d’armes actif, en main principale ou secondaire, les bâtons servent la magie : le **Bâton long** donne un pourcentage de la Puissance magique de base, le **Bâton court** de la Réserve de mana de base, selon le tier : **5 / 10 / 15 / 20 %** de T1 à T4 (Idan, 2026-11-05 : « Bâton court : 5 / 10 / 15 / 20, surtout qu'on peut en mettre 2 » ; deux bâtons tenus se cumulent). La qualité ne change rien ; rangé dans l’autre set, le bâton ne donne rien. Le combat et la magie (effet des sorts, mana maximum) lisent la valeur bonifiée ; la fiche (onglet Magie) et la carte d’objet la montrent. Données : `weapons.json`, colonnes `bonus_caracteristique` et `bonus_pourcentage`.
 
 ### Traits des armes (Idan, 2026-10-29)
 
-Idan : chaque arme doit avoir sa raison d'être, « un choix de construction ». Un trait par arme, en données (`weapons.json`), affiché sur la carte d'objet ; il compte tant que l'arme est tenue dans le set actif. Le tier et la qualité ne le changent pas.
+Idan : chaque arme doit avoir sa raison d'être, « un choix de construction ». Un trait par arme, en données (`weapons.json`), affiché sur la carte d'objet ; il compte tant que l'arme est tenue dans le set actif. La qualité ne le change pas. **Par tier (Idan, 2026-11-05)** : les bonus de caractéristique et l'aura du fouet varient de T1 à T4 ; « le reste est fixe pour l'instant » (saï, fléau, nunchaku, sarbacane).
 
 | Arme | Trait |
 |---|---|
-| Bâton long | **+5 %** de Puissance magique |
-| Bâton court | **+10 %** de Réserve de mana |
+| Bâton long | **+5 / 10 / 15 / 20 %** de Puissance magique (T1 à T4) |
+| Bâton court | **+5 / 10 / 15 / 20 %** de Réserve de mana (T1 à T4) |
 | Saï | **pare 5 %** des coups tranchants de mêlée, **10 %** avec deux saïs (doc 04, « Parade du saï ») |
-| Fouet | **+10 % de Charisme** ; **allonge 2** ; **+10 % du Courage** de base des autres alliés à **3 cases** ou moins (en plus de l'aura du capitaine ou du lieutenant ; plusieurs fouets ne se cumulent pas) |
+| Fouet | **+5 / 10 / 15 / 20 % de Charisme** (T1 à T4) ; **allonge 2** ; **+5 / 10 / 15 / 20 % du Courage** de base des autres alliés à **3 cases** ou moins (en plus de l'aura du capitaine ou du lieutenant ; plusieurs fouets ne se cumulent pas : le plus fort compte) |
 | Fléau d'armes | le bouclier adverse bloque **deux fois moins** souvent (−50 % de sa chance de blocage) |
-| Trident | **+20 %** en magie de l'**Eau** |
-| Marteau de guerre | **+10 %** en magie de la **Foudre** |
-| Grande épée | **+10 %** en magie du **Feu** (la « flamberge ») |
+| Trident | **+5 / 10 / 15 / 20 %** en magie de l'**Eau** (T1 à T4) |
+| Marteau de guerre | **+3 / 6 / 9 / 12 %** en magie de la **Foudre** (T1 à T4) |
+| Épée à deux mains | **+3 / 6 / 9 / 12 %** en magie du **Feu** (T1 à T4 ; la « flamberge ») ; anciennement « Grande épée » (Idan, 2026-11-05 : « on peut l'appeler épée à deux mains… c'est plus clair » ; `renamed-names.json` : parties sauvegardées et mots-clés Bridge) |
 | Nunchaku | en attaquant avec lui, **+10 % de sa Télékinésie** en Dextérité (Toucher et enchaînements ; la fiche le montre) |
 | Sarbacane | une fléchette qui **blesse** (elle passe par l'armure, comme une flèche) **empoisonne** la cible : le poison du doc 12, 3 tours, 10 PV par tour (× la qualité), jet de résistance à chaque activation ; Idan : « peut-être un bonus plus tard » |
 
-Colonnes : `bonus_caracteristique` et `bonus_pourcentage` (une caractéristique ou une école de magie), `parade_type` et `parade_chance`, `aura_caracteristique`, `aura_pourcentage` et `aura_portee`, `malus_blocage_pourcentage`, `empoisonne`, `attaque_caracteristique`, `attaque_source` et `attaque_part` ; l'allonge du fouet est sa `portee_max_hex`.
+Colonnes : `bonus_caracteristique` et `bonus_t1` à `bonus_t4` (une caractéristique ou une école de magie ; le pourcentage selon le tier de l'arme), `parade_type` et `parade_chance`, `aura_caracteristique`, `aura_t1` à `aura_t4` et `aura_portee`, `malus_blocage_pourcentage`, `empoisonne`, `attaque_caracteristique`, `attaque_source` et `attaque_part` ; l'allonge du fouet est sa `portee_max_hex`.
 
 ### Échanges d’équipement : Donner, Retirer, Troquer (Idan, 2026-10-24)
 

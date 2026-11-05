@@ -62,7 +62,7 @@ assert.deepEqual(cards.card(item("weapon","Trident",1,"standard")).stat, {name:"
 assert.deepEqual(cards.card(item("weapon","Trident",2,"standard")).stat, {name:"Eau", percent:10});
 assert.deepEqual(cards.card(item("weapon","Marteau de guerre",1,"standard")).stat, {name:"Foudre", percent:3});
 assert.deepEqual(cards.card(item("weapon","Marteau de guerre",4,"standard")).stat, {name:"Foudre", percent:12});
-assert.deepEqual(cards.card(item("weapon","Grande épée",3,"standard")).stat, {name:"Feu", percent:9});
+assert.deepEqual(cards.card(item("weapon","Épée à deux mains",3,"standard")).stat, {name:"Feu", percent:9});
 assert.equal(cards.card(item("weapon","Sarbacane",1,"standard")).poison, true);
 assert.deepEqual(cards.card(item("weapon","Nunchaku",1,"standard")).attackBonus, {stat:"Dextérité", source:"Télékinésie", percent:10});
 

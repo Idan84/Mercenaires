@@ -20,7 +20,7 @@
       "source": "Date de la décision"
     }
   ],
-  "row_count": 3,
+  "row_count": 4,
   "rows": [
     {
       "ancien": "Nains des plaines",
@@ -39,6 +39,12 @@
       "nouveau": "Arquebuse",
       "famille": "arme",
       "date": "2026-10-24"
+    },
+    {
+      "ancien": "Grande épée",
+      "nouveau": "Épée à deux mains",
+      "famille": "arme",
+      "date": "2026-11-05"
     }
   ]
 }

@@ -319,6 +319,11 @@ assert.deepEqual(old9.tavern.candidates.at(-1).mercenary,{culture:"Nains du chao
   items:[{name:"Massue",templateId:"weapon:massue"}],weaponPreferences:{ranged:{weapon:"Arquebuse"}}});
 assert.equal(stable.ensureRenamedNames(old9),false);
 old9.tavern.candidates.pop();
+// « Grande épée » → « Épée à deux mains » (Idan, 2026-11-05) : l'objet, son modèle et la compétence.
+old9.tavern.candidates.push({mercenary:{skills:{martial:{"Grande épée":21}},items:[{name:"Grande épée",templateId:"weapon:grande_epee"}]}});
+assert.equal(stable.ensureRenamedNames(old9),true);
+assert.deepEqual(old9.tavern.candidates.at(-1).mercenary,{skills:{martial:{"Épée à deux mains":21}},items:[{name:"Épée à deux mains",templateId:"weapon:epee_a_deux_mains"}]});
+old9.tavern.candidates.pop();
 // Stock d'armes de départ (Idan, 2026-10-23) : à la création, et pour une ancienne sauvegarde qui n'en a pas.
 // Armures (Idan, 2026-10-24) : 1D6 par type, données une fois, même à une partie commencée avant.
 const stockOf=(state,type)=>state.company.stock.filter(item=>item.itemType===type);

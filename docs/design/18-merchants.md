@@ -153,7 +153,7 @@ bloque si elle n'est plus à jour (`node scripts/merchant-coverage.js --check`).
 | Drusk Sabot-de-Poussière | Clans des grandes steppes | Arc, Lance, Sabre, Bottes de vitesse, Bague du courage, Ceinture de courage, Manuels de Feu | 7 |
 | Gorma Porte-Tonneau | Ogres des cités humaines | Hallebarde, Masse d’armes, Brigandine, Gants de force, Culotte d’Intimidation, Potion de soins | 6 |
 | Rasz Tzel'Varr | Reptiliens des villes | Estoc, Sarbacane, Cuir renforcé, Chapeau d’intelligence, Bague de la télékinésie, Amulette de puissance magique, Manuels de Télékinésie | 7 |
-| Gudrun Isfjell | Montagnes du Nord | Hache double, Grande épée, Hache de guerre, Cotte de mailles, Cape de résistance physique, Bague du nécromancien, Manuels de Nécromancie | 7 |
+| Gudrun Isfjell | Montagnes du Nord | Hache double, Épée à deux mains, Hache de guerre, Cotte de mailles, Cape de résistance physique, Bague du nécromancien, Manuels de Nécromancie | 7 |
 | Isska Ssul'Varek | Reptiliens des marécages | Trident, Sarbacane, Armure d'écailles, Fiole de poison, Bague de l’Eau, Potion de soins, Manuels d’Eau | 7 |
 | Calaena Ombrevenin | Elfes noirs | Dague, Arbalète, Fouet, Cape de discrétion, Fiole de poison, Bague de la Foudre, Manuels de Foudre | 7 |
 | Jasper Bonnebourse | Halflings des cités humaines | Dague, Fronde, Rondache, String du Charisme, Gants de dextérité, Bague de la télékinésie, Manuels de Télékinésie | 7 |
@@ -163,7 +163,7 @@ bloque si elle n'est plus à jour (`node scripts/merchant-coverage.js --check`).
 | Lirri Feuillecoque | Gnomes des forêts | Fronde, Bâton court, Cape d’esquive, Gants de dextérité, Bottes d’esquive, Bague de l’illusionniste, Manuels d’Illusion | 7 |
 | Callie Loincompas | Explorateurs | Katana, Sai, Nunchaku, Bottes de perception, Chapeau du dresseur, Amulette de chance, Manuels d’Invocation | 7 |
 | Amar Rathore | Steppes désertiques | Sabre, Arc, Lance, Cuir renforcé, Gambison, Bague de Feu, Manuels de Feu | 7 |
-| Karg Brisenclume | Orcs noirs | Grande épée, Hache double, Bardiche, Armure de plates, Armure d'écailles, Gants de force, Manuels de Transmutation | 7 |
+| Karg Brisenclume | Orcs noirs | Épée à deux mains, Hache double, Bardiche, Armure de plates, Armure d'écailles, Gants de force, Manuels de Transmutation | 7 |
 | Ilyra Hauteverrière | Elfes des grandes cités | Estoc, Épée longue, Bâton long, Ceinture de mana, Amulette de puissance magique, Vêtements, Manuels d’Eau | 7 |
 | Crik Fouillecrâne | Gobelins des cavernes | Dague, Kukri, Fronde, Bottes d’esquive, Gants de pièges, Bague de l’invocation, Manuels d’Invocation | 7 |
 | Dottie Mielbruyère | Halflings des villages isolés | Bâton court, Potion de soins, Potion de mana, Slip d’Affinité, Bague du soigneur, Vêtements, Manuels d’Illusion | 7 |
@@ -189,6 +189,7 @@ bloque si elle n'est plus à jour (`node scripts/merchant-coverage.js --check`).
 | Armes | Canon à main | Thorval, Flek | 2 |
 | Armes | Dague | Calaena, Jasper, Crik, Fizzi | 4 |
 | Armes | Écu | Hroska, Aymeric | 2 |
+| Armes | Épée à deux mains | Gudrun, Karg | 2 |
 | Armes | Épée courte | Gasha, Fizzi | 2 |
 | Armes | Épée double | Gasha, Kippa | 2 |
 | Armes | Épée longue | Aymeric, Ilyra | 2 |
@@ -196,7 +197,6 @@ bloque si elle n'est plus à jour (`node scripts/merchant-coverage.js --check`).
 | Armes | Fléau d’armes | Flek, Krosh | 2 |
 | Armes | Fouet | Orvald, Calaena | 2 |
 | Armes | Fronde | Jasper, Lirri, Crik, Bimble | 4 |
-| Armes | Grande épée | Gudrun, Karg | 2 |
 | Armes | Hache de guerre | Durgan, Gudrun | 2 |
 | Armes | Hache double | Hroska, Gudrun, Karg | 3 |
 | Armes | Hachette | Orvald, Draz | 2 |

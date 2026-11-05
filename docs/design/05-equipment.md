@@ -92,12 +92,12 @@ Après l’arme principale : **50 % de chance** de recevoir une arme complément
 
 - seulement si l’arme principale est une arme de **corps à corps tenue à une main** (« 1 main » ou « Au choix ») : une arme à deux mains ou une arme de tir prend les deux mains ;
 - **Boucliers ≥ 50** : le bouclier qu’il maîtrise le mieux (Écu, Rondache ou Pavois ; `Maîtrise catégorie + Maîtrise arme précise`, comme pour les armes) ;
-- **Combat à deux armes ≥ 50** : sa meilleure arme de corps à corps à une main (« 1 main » ou « Au choix », boucliers exclus), la **Dague** par défaut ;
+- **Combat à deux armes ≥ 50** : sa meilleure **arme légère** de corps à corps à une main, la **Dague** par défaut. Arme légère (Idan, 2026-11-05 : « Oui armes légères » ; « 8 avec le fouet ») : malus de vitesse de base ≤ 8, soit Dague, Sai, Fouet, Bâton court, Kukri, Épée courte, Nunchaku, Estoc et Hachette ;
 - les deux seuils atteints : la meilleure des deux compétences décide (à égalité, le bouclier) ;
 - tier : la même table que le reste de l’équipement de départ ; tirée en dernier, après la fiole ;
 - pour les nouveaux mercenaires (recrues, Taverne, nouvelle partie, capitaine compris) ; les mercenaires déjà en jeu ne changent pas.
 
-Mesure (3 000 mercenaires) : environ **6 %** reçoivent un bouclier et **12 %** une seconde arme. Constantes : `generation.off_hand.shield_min` (50), `generation.off_hand.dual_min` (50).
+Mesure (3 000 mercenaires) : environ **6 %** reçoivent un bouclier et **12 %** une seconde arme. Constantes : `generation.off_hand.shield_min` (50), `generation.off_hand.dual_min` (50), `generation.off_hand.light_max_speed_malus` (8).
 
 ### Armure
 

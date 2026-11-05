@@ -189,6 +189,7 @@ bloque si elle n'est plus à jour (`node scripts/merchant-coverage.js --check`).
 | Armes | Canon à main | Thorval, Flek | 2 |
 | Armes | Dague | Calaena, Jasper, Crik, Fizzi | 4 |
 | Armes | Écu | Hroska, Aymeric | 2 |
+| Armes | Épée à deux mains | Gudrun, Karg | 2 |
 | Armes | Épée courte | Gasha, Fizzi | 2 |
 | Armes | Épée double | Gasha, Kippa | 2 |
 | Armes | Épée longue | Aymeric, Ilyra | 2 |
@@ -196,7 +197,6 @@ bloque si elle n'est plus à jour (`node scripts/merchant-coverage.js --check`).
 | Armes | Fléau d’armes | Flek, Krosh | 2 |
 | Armes | Fouet | Orvald, Calaena | 2 |
 | Armes | Fronde | Jasper, Lirri, Crik, Bimble | 4 |
-| Armes | Épée à deux mains | Gudrun, Karg | 2 |
 | Armes | Hache de guerre | Durgan, Gudrun | 2 |
 | Armes | Hache double | Hroska, Gudrun, Karg | 3 |
 | Armes | Hachette | Orvald, Draz | 2 |

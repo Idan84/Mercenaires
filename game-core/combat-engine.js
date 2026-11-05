@@ -190,7 +190,7 @@
     }
     // Armes tenues dans le set actif qui servent une caractéristique (weapons.json, bonus_caracteristique et
     // bonus_t1 à bonus_t4 ; Idan, 2026-10-29, par tier depuis le 2026-11-05) : Bâton long (Puissance magique), Bâton court
-    // (Réserve de mana), Fouet (Charisme), Trident (Eau) : 5 / 10 / 15 / 20 % ; Marteau de guerre (Foudre), Grande épée
+    // (Réserve de mana), Fouet (Charisme), Trident (Eau) : 5 / 10 / 15 / 20 % ; Marteau de guerre (Foudre), Épée à deux mains
     // (Feu) : 3 / 6 / 9 / 12 %. Deux bâtons courts se cumulent.
     function weaponTierValue(weapon,prefix,item){
       const tier=Math.min(4,Math.max(1,Math.round(Number(item?.tier)||1)));

@@ -139,7 +139,7 @@ near(staffed("Bâton long", "weapon_set_2_main").e["Puissance magique"].value, 6
     equipment:{slots:{armor:"a", weapon_set_1_main:"s1", weapon_set_1_off:"s2"}}};
   near(engine.statWithGear({character:c, activeSet:1}, "Réserve de mana"), 50 * 1.25, "T2 + T3 : + 10 % + 15 %");
 }
-// Fouet, Trident (5 / 10 / 15 / 20 %), Marteau de guerre, Grande épée (3 / 6 / 9 / 12 %) ; Idan, 2026-11-05.
+// Fouet, Trident (5 / 10 / 15 / 20 %), Marteau de guerre, Épée à deux mains (3 / 6 / 9 / 12 %) ; Idan, 2026-11-05.
 const held = (name, tier = 1) => {
   const c = {...knight, stats:{...stats, Charisme:40}, skills:{...knight.skills, magic:{Eau:50, Foudre:30, Feu:40}},
     items:[...knight.items, {id:"h", itemType:"weapon", name, tier, qualityName:"Correcte"}], equipment:{slots:{armor:"a", weapon_set_1_main:"h"}}};
@@ -152,8 +152,8 @@ near(held("Trident", 3).Eau.value, 57.5);
 near(held("Marteau de guerre").Foudre.value, 30.9);
 near(held("Marteau de guerre", 4).Foudre.value, 33.6);
 near(held("Trident").Foudre.value, 30, "le trident ne touche que l'Eau");
-near(held("Grande épée").Feu.value, 41.2, "Grande épée T1 + 3 % en Feu");
-near(held("Grande épée", 2).Feu.value, 42.4, "Grande épée T2 + 6 % en Feu");
+near(held("Épée à deux mains").Feu.value, 41.2, "Épée à deux mains T1 + 3 % en Feu");
+near(held("Épée à deux mains", 2).Feu.value, 42.4, "Épée à deux mains T2 + 6 % en Feu");
 
 // Capes (Idan, 2026-10-24) : Esquive et Discrétion en pourcentage ; Résistance physique en points (+5 à +20).
 const caped = (name, tier) => {

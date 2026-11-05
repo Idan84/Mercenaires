@@ -140,7 +140,7 @@ assert.equal(deals.propose(world(50), {mercenaryId:2, slot:"armor"}).reason, "Ri
 // propres objets, tout est libre (ni jet, ni affinité, ni limite par jour) tant qu'il est au camp ; Retirer reprend
 // aussi un objet de l'inventaire (jet).
 {
-  const camp = world(50, {mine:item("sab", "Sabre", 1), stock:[item("bow", "Arc", 2), item("gs", "Grande épée", 2), item("dg", "Dague", 1),
+  const camp = world(50, {mine:item("sab", "Sabre", 1), stock:[item("bow", "Arc", 2), item("gs", "Épée à deux mains", 2), item("dg", "Dague", 1),
     item("ps", "Potion de soin", 1, "potion")]});
   const kid = camp.company.roster[1];
   roll = 0;

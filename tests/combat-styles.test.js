@@ -41,7 +41,7 @@ const fighter=(main,off=null,martial={},stats={})=>({character:{
 const sabre=fighter("Sabre");
 assert.deepEqual([engine.fightsOneHanded(sabre),engine.oneHandDodge(sabre),engine.effectiveDodge(sabre)],[true,10,50]);
 assert.equal(engine.effectiveDodge(fighter("Pistolet")),50,"le pistolet tenu seul compte (Idan : « oui »)");
-for(const [main,off,why] of [["Sabre","Écu","avec un bouclier"],["Sabre","Dague","avec une seconde arme"],["Grande épée",null,"arme à deux mains"],
+for(const [main,off,why] of [["Sabre","Écu","avec un bouclier"],["Sabre","Dague","avec une seconde arme"],["Épée à deux mains",null,"arme à deux mains"],
   ["Fronde",null,"la fronde se tient à deux mains"],["Écu",null,"un bouclier seul n'est pas une arme"]]){
   const u=fighter(main,off);
   assert.deepEqual([engine.fightsOneHanded(u),engine.effectiveDodge(u)],[false,40],why);
@@ -102,7 +102,7 @@ const rules=createCampaignRules({generator,tavern:createTavernRules({random:()=>
 const state=rules.createCampaign({captain,squad:[generator.createMercenary({id:50,captain})]});
 const veteran=state.company.roster[1];
 delete veteran.skills.martial["Combat à une main"];
-Object.assign(veteran.skills.martial,{"Sabre":44,"Dague":12,"Grande épée":80,"Pistolet":90,"Épée longue":30});
+Object.assign(veteran.skills.martial,{"Sabre":44,"Dague":12,"Épée à deux mains":80,"Pistolet":90,"Épée longue":30});
 assert.equal(rules.ensureOneHandedStyle(state),true);
 assert.ok(veteran.skills.martial["Combat à une main"]>=44,"au moins le sabre (ni la grande épée ni le pistolet)");
 assert.equal(rules.ensureOneHandedStyle(state),false,"rien à faire la seconde fois");

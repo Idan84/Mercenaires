@@ -130,7 +130,7 @@ Chaque objet a une **valeur en pièces d’or, cachée** : rien ne l’affiche a
 **Valeur = prix de base × tier × qualité**, arrondie à la pièce (`game-core/item-value.js`).
 
 - **Prix de base** (objet T1, qualité Correcte) : colonne `prix_base` des fichiers d’équipement, modifiable à la main.
-  - Armes (`weapons.json`) : 40 + 10 × dégât maximal, × 1,5 pour les armes à feu, arrondi à 5. Par exemple Dague 80, Épée longue 120, Grande épée 200, Pistolet 180, Arquebuse 240.
+  - Armes (`weapons.json`) : 40 + 10 × dégât maximal, × 1,5 pour les armes à feu, arrondi à 5. Par exemple Dague 80, Épée longue 120, Épée à deux mains 200, Pistolet 180, Arquebuse 240.
   - Armures (`base-armors.json`) : Vêtements 20, Gambison 60, Armure de cuir 90, Cuir renforcé 160, Brigandine 220, Cotte de mailles 260, Armure d’écailles 380, Armure de plates 600.
   - Bottes, ceintures, capes, gants, culottes : 100. Amulettes et bagues : 150.
 - **Tier** : T1 × 1, T2 × 3, T3 × 8, T4 × 25 (`economy.item_value.tier_<n>_multiplier`).
@@ -258,7 +258,7 @@ Idan : chaque arme doit avoir sa raison d'être, « un choix de construction ».
 | Fléau d'armes | le bouclier adverse bloque **deux fois moins** souvent (−50 % de sa chance de blocage) |
 | Trident | **+5 / 10 / 15 / 20 %** en magie de l'**Eau** (T1 à T4) |
 | Marteau de guerre | **+3 / 6 / 9 / 12 %** en magie de la **Foudre** (T1 à T4) |
-| Grande épée | **+3 / 6 / 9 / 12 %** en magie du **Feu** (T1 à T4 ; la « flamberge ») |
+| Épée à deux mains | **+3 / 6 / 9 / 12 %** en magie du **Feu** (T1 à T4 ; la « flamberge ») ; anciennement « Grande épée » (Idan, 2026-11-05 : « on peut l'appeler épée à deux mains… c'est plus clair » ; `renamed-names.json` : parties sauvegardées et mots-clés Bridge) |
 | Nunchaku | en attaquant avec lui, **+10 % de sa Télékinésie** en Dextérité (Toucher et enchaînements ; la fiche le montre) |
 | Sarbacane | une fléchette qui **blesse** (elle passe par l'armure, comme une flèche) **empoisonne** la cible : le poison du doc 12, 3 tours, 10 PV par tour (× la qualité), jet de résistance à chaque activation ; Idan : « peut-être un bonus plus tard » |
 

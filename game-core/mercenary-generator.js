@@ -1231,9 +1231,11 @@
     // Seconde main (Idan, 2026-11-04 : « un bouclier pour ceux qui ont bouclier comme bonne compétence et à minima une dague
     // dans la seconde main pour ceux qui ont 2 armes » ; « parfait ») : seulement si l'arme principale est une arme de corps
     // à corps tenue à une main (« 1 main » ou « Au choix »). Boucliers ≥ 50 : le bouclier qu'il maîtrise le mieux ; Combat
-    // à deux armes ≥ 50 : sa meilleure arme de corps à corps à une main, la Dague par défaut ; les deux : la meilleure des
-    // deux compétences décide. Constantes : generation.off_hand.shield_min, generation.off_hand.dual_min. Tier : la même
-    // table que le reste de l'équipement de départ.
+    // à deux armes ≥ 50 : sa meilleure arme légère de corps à corps à une main, la Dague par défaut ; les deux : la meilleure des
+    // deux compétences décide. Arme légère (Idan, 2026-11-05 : « Oui armes légères » ; « 8 avec le fouet ») : malus de
+    // vitesse de base ≤ 8 (Dague, Sai, Fouet, Bâton court, Kukri, Épée courte, Nunchaku, Estoc, Hachette). Constantes :
+    // generation.off_hand.shield_min, generation.off_hand.dual_min, generation.off_hand.light_max_speed_malus. Tier : la
+    // même table que le reste de l'équipement de départ.
     function offHandItem(character, primary) {
       const template = primary && weaponByName.get(primary.name);
       if (!template || !isMeleeWeapon(template) || !["1 main", "Au choix"].includes(template.prise)) return null;
@@ -1245,7 +1247,8 @@
       const dagger = weaponByName.get("Dague");
       const preference = shieldOk && (!dualOk || shield >= dual)
         ? bestWeaponPreference(character.skills, isShieldWeapon)
-        : bestWeaponPreference(character.skills, weapon => isMeleeWeapon(weapon) && ["1 main", "Au choix"].includes(weapon.prise))
+        : bestWeaponPreference(character.skills, weapon => isMeleeWeapon(weapon) && ["1 main", "Au choix"].includes(weapon.prise)
+          && Number(weapon.malus_vitesse_arme_base) <= constant("generation.off_hand.light_max_speed_malus", 8))
           || (dagger ? {weapon:dagger.nom, category:skillByName.get(dagger.nom)?.parent || null} : null);
       return weaponItem(character, preference, "weapon_set_1_off");
     }

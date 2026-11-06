@@ -77,6 +77,7 @@ Aucun agent ne travaille spontanément : il faut qu'une session soit lancée. Gi
 
 | Chantier | Responsable | Branche / PR | État |
 |---|---|---|---|
+| Neuf cadres d’école de magie détourés, dont le remplacement de Vie | Chatty | `chatty/spell-school-frames` | Intégration proposée vers `test` |
 | Combat lot 1 complet : Attaques d'opportunité, Frappe dans le dos, Encerclement, Courage, Fuite (+ Force de charge au Blesser) | JC3 | PR #7 | Fusionné |
 | Corrections Mission Test : second Mouvement, carte 13×9 rectangulaire et entièrement visible | JC3 | PR #7 | Fusionné |
 | Sauvegarde de la partie (automatique, « Continuer » au démarrage) | JC3 | PR #15 | Fusionné |

@@ -918,25 +918,18 @@ function profileRules(){
   return game.profileRules||(game.profileRules=MercenairesProfile.createProfileRules({reference:game.referenceData,engine:combatEngine(),
     magic:typeof magicRules==="function"?magicRules():null}));
 }
-// Titres (Idan, 2026-10-31 et 2026-11-01) : 1 à 3 titres, chacun avec ses étoiles en dessous, ou « Chair à canon ».
-// Titre écrit (« Soigneur de garde »), petite ligne « spécialité : … » s'il est spécialisé, et une infobulle de deux
-// lignes sur le rôle (mercenary-titles.json). Sans les données, le nom brut (« DPS au CAC · Perce-armure »).
+// Titre (Idan, 2026-11-06, v3) : un seul titre écrit qui fond ses 1 à 3 rôles (« Archer éclaireur en herbe »), sans
+// étoiles, ou « Chair à canon » ; une infobulle de deux lignes sur le rôle principal (mercenary-titles.json).
 function renderEvaluation(c){
   const rules=profileRules();
   // L'aura ne compte que pour le capitaine et les lieutenants (et le fouet).
   const company=game.campaign?.company;
-  const result=rules?.evaluate(c,{captain:company?company.captainId===c.id:c.role==="Capitaine",lieutenant:Boolean(company?.lieutenantIds?.includes(c.id))});
-  if(!result) return "";
-  const female=isFemale(c);
-  const item=(copy,fallback,stars)=>{
-    if(!copy) return `<div class="sheet-eval-item"><h3 class="sheet-eval-title">${esc(fallback)}</h3>${stars}</div>`;
-    return `<div class="sheet-eval-item" tabindex="0"><h3 class="sheet-eval-title">${esc(copy.name)}</h3>`
-      +(copy.specialty?`<small class="sheet-eval-spec">spécialité : ${esc(copy.specialty)}</small>`:"")+stars
-      +`<span class="sheet-stat-tip" role="tooltip">${copy.lines.map(line=>`<em>${esc(line)}</em>`).join("")}</span></div>`;
-  };
-  const items=result.cannonFodder?[item(rules.titleCopy?.(null,{female}),"Chair à canon","")]
-    :result.titles.map(t=>item(rules.titleCopy?.(t,{female}),t.label,renderStarLevel(starRules().byLevel(t.level))));
-  return `<section class="sheet-evaluation" aria-label="Titres">${items.join("")}</section>`;
+  const context={captain:company?company.captainId===c.id:c.role==="Capitaine",lieutenant:Boolean(company?.lieutenantIds?.includes(c.id))};
+  const result=rules?.evaluate(c,context);
+  const copy=result&&rules.composeTitle?.(c,result,context);
+  if(!copy) return "";
+  const tip=copy.lines.length?`<span class="sheet-stat-tip" role="tooltip">${copy.lines.map(line=>`<em>${esc(line)}</em>`).join("")}</span>`:"";
+  return `<section class="sheet-evaluation" aria-label="Titre"><div class="sheet-eval-item" tabindex="0"><h3 class="sheet-eval-title">${esc(copy.name)}</h3>${tip}</div></section>`;
 }
 function renderProfileTab(c){
   const captain=game.campaign?.company.captainId===c.id;

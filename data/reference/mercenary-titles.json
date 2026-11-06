@@ -1,7 +1,8 @@
 {
   "schema_version": 1,
   "name": "mercenary-titles",
-  "description": "Titres écrits des mercenaires (Idan, 2026-11-01) : le mot du rôle, toujours le même (Soigneur), suivi d'un mot décalé selon le palier d'étoiles ; un titre spécialisé ajoute une petite ligne « spécialité : … » ; l'infobulle donne deux lignes qui décrivent le rôle ou la spécialité, avec humour, sans dire au joueur quoi faire. Masculin et féminin écrits à la main. Les catégories et sous-catégories viennent de mercenary-profile.json ; code : game-core/mercenary-profile.js (titleCopy), affichage : prototype-web/ui.js (renderEvaluation).",
+  "description": "Titres des mercenaires (Idan, 2026-11-06, v3) : le titre résume la fiche, « ce qu'il fait × comment il le fait ». Les rôles et leurs étoiles viennent de mercenary-profile.json (1 à 3 rôles, ou Chair à canon) ; chaque rôle est écrit selon l'arme (armes, styles), l'école du sort ou la sous-catégorie qui le porte (roles). Plusieurs rôles se fondent en un seul titre (« Archer éclaireur », « Guérisseur et meneur à la hache de guerre »), suivi du mot de niveau du rôle principal (paliers), placé avant l'arme ou à la fin (paliers_place). Pas d'étoiles sous le titre. Masculin seulement pour l'instant (le féminin après correction). L'infobulle donne deux lignes sur le rôle principal ou sa sous-catégorie. Code : game-core/mercenary-profile.js (composeTitle), affichage : prototype-web/ui.js (renderEvaluation).",
+  "composition": "Titre = rôle principal (titre) + autres rôles (court) + mot de niveau s'il se place « avant » + compléments d'arme (apres du rôle principal, complement des autres) + mot de niveau s'il se place à la « fin ». Trois rôles : « et » avant le dernier. Un rôle déjà dit (même école de dégâts, même mot) n'est pas répété.",
   "paliers": [
     4,
     6,
@@ -26,13 +27,456 @@
       ]
     }
   },
+  "armes": {
+    "description": "Arme qui porte un rôle de dégâts : titre (rôle principal), apres (ce qui suit le titre quand l'arme n'y est pas déjà dite), complement (quand ce rôle vient en second).",
+    "Dague": {
+      "titre": "Poignardeur",
+      "complement": "à la dague"
+    },
+    "Épée courte": {
+      "titre": "Spadassin",
+      "apres": "à l'épée courte",
+      "complement": "à l'épée courte"
+    },
+    "Kukri": {
+      "titre": "Coupe-jarret",
+      "apres": "au kukri",
+      "complement": "au kukri"
+    },
+    "Sai": {
+      "titre": "Combattant",
+      "apres": "aux saïs",
+      "complement": "aux saïs"
+    },
+    "Estoc": {
+      "titre": "Bretteur",
+      "complement": "à l'estoc"
+    },
+    "Sabre": {
+      "titre": "Sabreur",
+      "complement": "au sabre"
+    },
+    "Épée longue": {
+      "titre": "Épéiste",
+      "complement": "à l'épée longue"
+    },
+    "Katana": {
+      "titre": "Samouraï",
+      "complement": "au katana"
+    },
+    "Épée double": {
+      "titre": "Danseur",
+      "apres": "à l'épée double",
+      "complement": "à l'épée double"
+    },
+    "Épée à deux mains": {
+      "titre": "Épéiste",
+      "apres": "à deux mains",
+      "complement": "à l'épée à deux mains"
+    },
+    "Hachette": {
+      "titre": "Bûcheron",
+      "apres": "à la hachette",
+      "complement": "à la hachette"
+    },
+    "Hache de guerre": {
+      "titre": "Combattant",
+      "apres": "à la hache de guerre",
+      "complement": "à la hache de guerre"
+    },
+    "Hache double": {
+      "titre": "Fendeur",
+      "apres": "à la hache double",
+      "complement": "à la hache double"
+    },
+    "Massue": {
+      "titre": "Assommeur",
+      "apres": "à la massue",
+      "complement": "à la massue"
+    },
+    "Masse d’armes": {
+      "titre": "Massier",
+      "complement": "à la masse d'armes"
+    },
+    "Marteau de guerre": {
+      "titre": "Marteleur",
+      "complement": "au marteau de guerre"
+    },
+    "Pic de guerre": {
+      "titre": "Brise-plates",
+      "apres": "au pic de guerre",
+      "complement": "au pic de guerre"
+    },
+    "Fléau d’armes": {
+      "titre": "Moissonneur",
+      "apres": "au fléau",
+      "complement": "au fléau d'armes"
+    },
+    "Nunchaku": {
+      "titre": "Combattant",
+      "apres": "au nunchaku",
+      "complement": "au nunchaku"
+    },
+    "Fouet": {
+      "titre": "Dompteur",
+      "apres": "au fouet",
+      "complement": "au fouet"
+    },
+    "Bâton court": {
+      "titre": "Bâtonniste",
+      "complement": "au bâton court"
+    },
+    "Bâton long": {
+      "titre": "Pèlerin",
+      "apres": "au bâton long",
+      "complement": "au bâton long"
+    },
+    "Lance": {
+      "titre": "Lancier",
+      "complement": "à la lance"
+    },
+    "Trident": {
+      "titre": "Rétiaire",
+      "apres": "au trident",
+      "complement": "au trident"
+    },
+    "Hallebarde": {
+      "titre": "Hallebardier",
+      "complement": "à la hallebarde"
+    },
+    "Bardiche": {
+      "titre": "Faucheur",
+      "apres": "à la bardiche",
+      "complement": "à la bardiche"
+    },
+    "Arme d’hast double": {
+      "titre": "Combattant",
+      "apres": "à l'arme d'hast double",
+      "complement": "à l'arme d'hast double"
+    },
+    "Arc": {
+      "titre": "Archer",
+      "complement": "à l'arc"
+    },
+    "Arbalète": {
+      "titre": "Arbalétrier",
+      "complement": "à l'arbalète"
+    },
+    "Fronde": {
+      "titre": "Frondeur",
+      "complement": "à la fronde"
+    },
+    "Sarbacane": {
+      "titre": "Souffleur de dards",
+      "complement": "à la sarbacane"
+    },
+    "Pistolet": {
+      "titre": "Pistolier",
+      "complement": "au pistolet"
+    },
+    "Arquebuse": {
+      "titre": "Arquebusier",
+      "complement": "à l'arquebuse"
+    },
+    "Tromblon": {
+      "titre": "Tireur",
+      "apres": "au tromblon",
+      "complement": "au tromblon"
+    },
+    "Canon à main": {
+      "titre": "Canonnier",
+      "complement": "au canon à main"
+    }
+  },
+  "styles": {
+    "description": "Aucune arme ne domine : ses deux sets frappent au même niveau avec deux armes différentes (ou deux armes différentes dans les mains d'un même set). {categorie} : la catégorie commune, en minuscules.",
+    "deux_armes": {
+      "titre": "Ambidextre",
+      "complement": "à deux armes"
+    },
+    "deux_mains": {
+      "titre": "Combattant",
+      "apres": "à deux mains",
+      "complement": "à deux mains"
+    },
+    "categorie": {
+      "titre": "Combattant",
+      "apres": "aux {categorie}",
+      "complement": "aux {categorie}"
+    },
+    "bouclier": {
+      "titre": "Combattant",
+      "apres": "au bouclier",
+      "complement": "au bouclier"
+    },
+    "une_main": {
+      "titre": "Duelliste",
+      "complement": "à une main"
+    },
+    "tir": {
+      "titre": "Tireur",
+      "complement": "au tir"
+    }
+  },
+  "roles": {
+    "description": "Comment chaque rôle s'écrit. arme : le rôle prend l'arme ou le style (armes, styles) ; sous : une sous-catégorie qui a son propre mot (sans_complement : armes qu'il dit déjà ; bouclier : avec un bouclier ; fouet : l'aura vient du fouet, pas du capitaine ni d'un lieutenant) ; ecoles : l'école du meilleur sort de la sous-catégorie (directement, ou par sous-catégorie). Sinon, le mot du rôle (defaut).",
+    "dps_cac": {
+      "arme": true,
+      "sous": {
+        "assassin": {
+          "titre": "Assassin",
+          "court": "assassin",
+          "sans_complement": [
+            "Dague"
+          ]
+        },
+        "duree": {
+          "titre": "Empoisonneur",
+          "court": "empoisonneur"
+        }
+      }
+    },
+    "dps_distance": {
+      "arme": true,
+      "sous": {
+        "duree": {
+          "titre": "Empoisonneur",
+          "court": "empoisonneur"
+        }
+      }
+    },
+    "dps_magie": {
+      "defaut": {
+        "titre": "Mage de guerre",
+        "court": "mage de guerre"
+      },
+      "ecoles": {
+        "Feu": {
+          "titre": "Pyromancien",
+          "court": "pyromancien"
+        },
+        "Eau": {
+          "titre": "Hydromancien",
+          "court": "hydromancien"
+        },
+        "Foudre": {
+          "titre": "Mage de Foudre",
+          "court": "mage de Foudre"
+        },
+        "Vie": {
+          "titre": "Mage de Vie",
+          "court": "mage de Vie"
+        },
+        "Télékinésie": {
+          "titre": "Télékinésiste",
+          "court": "télékinésiste"
+        },
+        "Illusion": {
+          "titre": "Illusionniste",
+          "court": "illusionniste"
+        },
+        "Nécromancie": {
+          "titre": "Nécromancien",
+          "court": "nécromancien"
+        }
+      }
+    },
+    "healer": {
+      "defaut": {
+        "titre": "Soigneur",
+        "court": "guérisseur"
+      },
+      "ecoles": {
+        "Vie": {
+          "titre": "Guérisseur",
+          "court": "guérisseur"
+        },
+        "Eau": {
+          "titre": "Hydromancien guérisseur",
+          "court": "guérisseur"
+        },
+        "Transmutation": {
+          "titre": "Transmutateur guérisseur",
+          "court": "guérisseur"
+        }
+      }
+    },
+    "controleur": {
+      "defaut": {
+        "titre": "Entraveur",
+        "court": "entraveur"
+      },
+      "ecoles": {
+        "Feu": {
+          "titre": "Pyromancien entraveur",
+          "court": "entraveur"
+        },
+        "Eau": {
+          "titre": "Cryomancien",
+          "court": "entraveur"
+        },
+        "Foudre": {
+          "titre": "Mage de Foudre paralyseur",
+          "court": "paralyseur"
+        },
+        "Télékinésie": {
+          "titre": "Télékinésiste entraveur",
+          "court": "entraveur"
+        },
+        "Illusion": {
+          "titre": "Illusionniste envoûteur",
+          "court": "envoûteur"
+        },
+        "Nécromancie": {
+          "titre": "Nécromancien flétrisseur",
+          "court": "flétrisseur"
+        },
+        "Invocation": {
+          "titre": "Invocateur entraveur",
+          "court": "entraveur"
+        }
+      }
+    },
+    "buffer": {
+      "defaut": {
+        "titre": "Renforceur",
+        "court": "renforceur"
+      },
+      "ecoles": {
+        "Feu": {
+          "titre": "Forgeflamme",
+          "court": "renforceur"
+        },
+        "Eau": {
+          "titre": "Hydromancien renforceur",
+          "court": "renforceur"
+        },
+        "Foudre": {
+          "titre": "Mage de Foudre renforceur",
+          "court": "renforceur"
+        },
+        "Vie": {
+          "titre": "Mage de Vie renforceur",
+          "court": "renforceur"
+        },
+        "Transmutation": {
+          "titre": "Transmutateur",
+          "court": "renforceur"
+        },
+        "Télékinésie": {
+          "titre": "Télékinésiste protecteur",
+          "court": "protecteur"
+        },
+        "Illusion": {
+          "titre": "Illusionniste renforceur",
+          "court": "renforceur"
+        }
+      }
+    },
+    "summoner": {
+      "defaut": {
+        "titre": "Invocateur",
+        "court": "invocateur"
+      },
+      "ecoles": {
+        "Nécromancie": {
+          "titre": "Leveur de morts",
+          "court": "leveur de morts"
+        },
+        "Invocation": {
+          "titre": "Invocateur de bêtes",
+          "court": "invocateur"
+        }
+      }
+    },
+    "tank": {
+      "defaut": {
+        "titre": "Encaisseur",
+        "court": "encaisseur"
+      },
+      "sous": {
+        "inblessable": {
+          "titre": "Cuirassé",
+          "court": "cuirassé",
+          "bouclier": {
+            "titre": "Rempart",
+            "court": "rempart"
+          }
+        },
+        "esquiveur": {
+          "titre": "Insaisissable",
+          "court": "insaisissable"
+        },
+        "auto_soigneur": {
+          "titre": "Increvable",
+          "court": "increvable"
+        },
+        "gardien_ligne": {
+          "titre": "Piquier",
+          "court": "piquier"
+        }
+      }
+    },
+    "eclaireur": {
+      "defaut": {
+        "titre": "Éclaireur",
+        "court": "éclaireur"
+      },
+      "sous": {
+        "vigie": {
+          "titre": "Guetteur",
+          "court": "éclaireur"
+        },
+        "infiltrateur": {
+          "titre": "Rôdeur",
+          "court": "rôdeur"
+        },
+        "magique": {
+          "titre": "Augure",
+          "apres": "au corbeau",
+          "court": "augure",
+          "complement": "au corbeau"
+        }
+      }
+    },
+    "meneur": {
+      "defaut": {
+        "titre": "Meneur",
+        "court": "meneur"
+      },
+      "sous": {
+        "soutien": {
+          "titre": "Chef de guerre",
+          "court": "chef de guerre",
+          "fouet": {
+            "titre": "Meneur",
+            "apres": "au fouet",
+            "court": "meneur",
+            "complement": "au fouet"
+          }
+        },
+        "demoralisateur": {
+          "titre": "Intimidateur",
+          "court": "intimidateur"
+        }
+      },
+      "ecoles": {
+        "Illusion": {
+          "soutien": {
+            "titre": "Illusionniste galvaniseur",
+            "court": "galvaniseur"
+          },
+          "demoralisateur": {
+            "titre": "Illusionniste épouvanteur",
+            "court": "épouvanteur"
+          }
+        }
+      }
+    }
+  },
   "rows": [
     {
       "code": "healer",
-      "mot": {
-        "m": "Soigneur",
-        "f": "Soigneuse"
-      },
       "paliers": {
         "m": [
           "en herbe",
@@ -49,6 +493,13 @@
           "miraculeuse"
         ]
       },
+      "paliers_place": [
+        "avant",
+        "avant",
+        "fin",
+        "fin",
+        "avant"
+      ],
       "infobulle": {
         "m": [
           "Ferme les plaies, recolle les doigts et rend leurs couleurs aux mourants.",
@@ -62,10 +513,6 @@
       "specialites": [
         {
           "code": "urgentiste",
-          "etiquette": {
-            "m": "urgences",
-            "f": "urgences"
-          },
           "infobulle": {
             "m": [
               "Ses soins arrivent d'un coup, et en gros : de quoi relever un mourant.",
@@ -79,10 +526,6 @@
         },
         {
           "code": "masse",
-          "etiquette": {
-            "m": "soins de groupe",
-            "f": "soins de groupe"
-          },
           "infobulle": {
             "m": [
               "Soigne plusieurs compagnons à la fois.",
@@ -96,10 +539,6 @@
         },
         {
           "code": "duree",
-          "etiquette": {
-            "m": "soins au long cours",
-            "f": "soins au long cours"
-          },
           "infobulle": {
             "m": [
               "Ses soins agissent lentement, mais longtemps.",
@@ -115,10 +554,6 @@
     },
     {
       "code": "summoner",
-      "mot": {
-        "m": "Invocateur",
-        "f": "Invocatrice"
-      },
       "paliers": {
         "m": [
           "en herbe",
@@ -135,6 +570,13 @@
           "intarissable"
         ]
       },
+      "paliers_place": [
+        "avant",
+        "avant",
+        "avant",
+        "avant",
+        "avant"
+      ],
       "infobulle": {
         "m": [
           "Ne se bat jamais seul : il fait surgir des créatures qui se battent à sa place.",
@@ -148,10 +590,6 @@
       "specialites": [
         {
           "code": "masse",
-          "etiquette": {
-            "m": "nuées",
-            "f": "nuées"
-          },
           "infobulle": {
             "m": [
               "Fait surgir des essaims et des meutes entières.",
@@ -165,10 +603,6 @@
         },
         {
           "code": "dps",
-          "etiquette": {
-            "m": "bêtes de combat",
-            "f": "bêtes de combat"
-          },
           "infobulle": {
             "m": [
               "Ses créatures sont faites pour mordre, griffer et déchiqueter.",
@@ -182,10 +616,6 @@
         },
         {
           "code": "gardien",
-          "etiquette": {
-            "m": "gardiens",
-            "f": "gardiens"
-          },
           "infobulle": {
             "m": [
               "Ses créatures s'interposent pour protéger leur maître et ses alliés.",
@@ -199,10 +629,6 @@
         },
         {
           "code": "necromancien",
-          "etiquette": {
-            "m": "morts-vivants",
-            "f": "morts-vivants"
-          },
           "infobulle": {
             "m": [
               "Relève les morts et les envoie se battre.",
@@ -218,10 +644,6 @@
     },
     {
       "code": "buffer",
-      "mot": {
-        "m": "Renforceur",
-        "f": "Renforceuse"
-      },
       "paliers": {
         "m": [
           "en herbe",
@@ -238,6 +660,13 @@
           "survoltée"
         ]
       },
+      "paliers_place": [
+        "avant",
+        "avant",
+        "avant",
+        "avant",
+        "avant"
+      ],
       "infobulle": {
         "m": [
           "Sa magie rend les autres plus forts, plus vifs et plus durs à abattre.",
@@ -251,10 +680,6 @@
       "specialites": [
         {
           "code": "masse",
-          "etiquette": {
-            "m": "toute la troupe",
-            "f": "toute la troupe"
-          },
           "infobulle": {
             "m": [
               "Ses bénédictions touchent plusieurs alliés à la fois.",
@@ -268,10 +693,6 @@
         },
         {
           "code": "dps",
-          "etiquette": {
-            "m": "coups plus forts",
-            "f": "coups plus forts"
-          },
           "infobulle": {
             "m": [
               "Sa magie fait frapper ses alliés plus fort.",
@@ -285,10 +706,6 @@
         },
         {
           "code": "accelerateur",
-          "etiquette": {
-            "m": "vitesse",
-            "f": "vitesse"
-          },
           "infobulle": {
             "m": [
               "Rend ses alliés plus rapides : ils bougent et agissent plus vite.",
@@ -302,10 +719,6 @@
         },
         {
           "code": "source_mana",
-          "etiquette": {
-            "m": "mana des autres",
-            "f": "mana des autres"
-          },
           "infobulle": {
             "m": [
               "Rend du mana aux mages de la compagnie.",
@@ -319,10 +732,6 @@
         },
         {
           "code": "protecteur",
-          "etiquette": {
-            "m": "boucliers magiques",
-            "f": "boucliers magiques"
-          },
           "infobulle": {
             "m": [
               "Pose sur ses alliés des armures de feu, de glace ou de pierre.",
@@ -338,10 +747,6 @@
     },
     {
       "code": "controleur",
-      "mot": {
-        "m": "Entraveur",
-        "f": "Entraveuse"
-      },
       "paliers": {
         "m": [
           "en herbe",
@@ -358,6 +763,13 @@
           "implacable"
         ]
       },
+      "paliers_place": [
+        "avant",
+        "avant",
+        "avant",
+        "avant",
+        "avant"
+      ],
       "infobulle": {
         "m": [
           "Ralentit, fige, déplace, endort : l'ennemi ne fait jamais ce qu'il avait prévu.",
@@ -371,10 +783,6 @@
       "specialites": [
         {
           "code": "foules",
-          "etiquette": {
-            "m": "foules",
-            "f": "foules"
-          },
           "infobulle": {
             "m": [
               "Entrave plusieurs ennemis d'un seul sort.",
@@ -388,10 +796,6 @@
         },
         {
           "code": "boss",
-          "etiquette": {
-            "m": "gros morceaux",
-            "f": "gros morceaux"
-          },
           "infobulle": {
             "m": [
               "S'attaque aux ennemis les plus coriaces pour les clouer sur place.",
@@ -405,10 +809,6 @@
         },
         {
           "code": "placeur",
-          "etiquette": {
-            "m": "déplacements",
-            "f": "déplacements"
-          },
           "infobulle": {
             "m": [
               "Pousse, tire et déplace les ennemis où ça l'arrange.",
@@ -422,10 +822,6 @@
         },
         {
           "code": "anti_mage",
-          "etiquette": {
-            "m": "anti-magie",
-            "f": "anti-magie"
-          },
           "infobulle": {
             "m": [
               "Coupe la magie des mages ennemis.",
@@ -441,10 +837,6 @@
     },
     {
       "code": "dps_cac",
-      "mot": {
-        "m": "Cogneur",
-        "f": "Cogneuse"
-      },
       "paliers": {
         "m": [
           "en herbe",
@@ -461,6 +853,13 @@
           "apocalyptique"
         ]
       },
+      "paliers_place": [
+        "avant",
+        "avant",
+        "fin",
+        "avant",
+        "avant"
+      ],
       "infobulle": {
         "m": [
           "Au contact, il frappe fort et il frappe souvent.",
@@ -474,10 +873,6 @@
       "specialites": [
         {
           "code": "perce_armure",
-          "etiquette": {
-            "m": "perce-armure",
-            "f": "perce-armure"
-          },
           "infobulle": {
             "m": [
               "Ses coups lourds traversent le métal.",
@@ -491,10 +886,6 @@
         },
         {
           "code": "foules",
-          "etiquette": {
-            "m": "coups en rafale",
-            "f": "coups en rafale"
-          },
           "infobulle": {
             "m": [
               "Arme légère, bras rapide : il frappe plus souvent que les autres.",
@@ -508,10 +899,6 @@
         },
         {
           "code": "assassin",
-          "etiquette": {
-            "m": "coups en traître",
-            "f": "coups en traître"
-          },
           "infobulle": {
             "m": [
               "Sort de l'ombre, frappe une fois, et c'est souvent assez.",
@@ -525,10 +912,6 @@
         },
         {
           "code": "duree",
-          "etiquette": {
-            "m": "lames empoisonnées",
-            "f": "lames empoisonnées"
-          },
           "infobulle": {
             "m": [
               "Ses coups font mal, et le poison continue le travail.",
@@ -542,10 +925,6 @@
         },
         {
           "code": "chargeur",
-          "etiquette": {
-            "m": "charges",
-            "f": "charges"
-          },
           "infobulle": {
             "m": [
               "Arrive en courant et frappe de tout son poids.",
@@ -561,10 +940,6 @@
     },
     {
       "code": "dps_distance",
-      "mot": {
-        "m": "Tireur",
-        "f": "Tireuse"
-      },
       "paliers": {
         "m": [
           "en herbe",
@@ -581,6 +956,13 @@
           "infaillible"
         ]
       },
+      "paliers_place": [
+        "avant",
+        "avant",
+        "fin",
+        "fin",
+        "avant"
+      ],
       "infobulle": {
         "m": [
           "Arc, arbalète ou poudre : il fait mal de loin.",
@@ -594,10 +976,6 @@
       "specialites": [
         {
           "code": "perce_armure",
-          "etiquette": {
-            "m": "perce-armure",
-            "f": "perce-armure"
-          },
           "infobulle": {
             "m": [
               "Ses tirs lourds passent à travers les armures.",
@@ -611,10 +989,6 @@
         },
         {
           "code": "foules",
-          "etiquette": {
-            "m": "tirs en rafale",
-            "f": "tirs en rafale"
-          },
           "infobulle": {
             "m": [
               "Tire vite et souvent : il arrose plus qu'il ne vise.",
@@ -628,10 +1002,6 @@
         },
         {
           "code": "elite",
-          "etiquette": {
-            "m": "tir de loin",
-            "f": "tir de loin"
-          },
           "infobulle": {
             "m": [
               "Touche ce que les autres voient à peine.",
@@ -645,10 +1015,6 @@
         },
         {
           "code": "duree",
-          "etiquette": {
-            "m": "traits empoisonnés",
-            "f": "traits empoisonnés"
-          },
           "infobulle": {
             "m": [
               "Ses flèches et ses carreaux laissent du poison dans la plaie.",
@@ -664,10 +1030,6 @@
     },
     {
       "code": "dps_magie",
-      "mot": {
-        "m": "Mage de guerre",
-        "f": "Mage de guerre"
-      },
       "paliers": {
         "m": [
           "en herbe",
@@ -684,6 +1046,13 @@
           "cataclysmique"
         ]
       },
+      "paliers_place": [
+        "avant",
+        "avant",
+        "avant",
+        "avant",
+        "avant"
+      ],
       "infobulle": {
         "m": [
           "Ses sorts font de gros dégâts : feu, foudre, glace ou pire.",
@@ -697,10 +1066,6 @@
       "specialites": [
         {
           "code": "foules",
-          "etiquette": {
-            "m": "sorts de zone",
-            "f": "sorts de zone"
-          },
           "infobulle": {
             "m": [
               "Ses sorts frappent tout un groupe d'un coup.",
@@ -714,10 +1079,6 @@
         },
         {
           "code": "tueur",
-          "etiquette": {
-            "m": "une cible à la fois",
-            "f": "une cible à la fois"
-          },
           "infobulle": {
             "m": [
               "Concentre toute sa magie sur un seul ennemi.",
@@ -731,10 +1092,6 @@
         },
         {
           "code": "duree",
-          "etiquette": {
-            "m": "brûlures et maléfices",
-            "f": "brûlures et maléfices"
-          },
           "infobulle": {
             "m": [
               "Ses sorts continuent de faire mal tour après tour.",
@@ -748,10 +1105,6 @@
         },
         {
           "code": "perce_resistances",
-          "etiquette": {
-            "m": "perce-résistances",
-            "f": "perce-résistances"
-          },
           "infobulle": {
             "m": [
               "Ses sorts passent à travers les protections et les résistances magiques.",
@@ -767,10 +1120,6 @@
     },
     {
       "code": "tank",
-      "mot": {
-        "m": "Encaisseur",
-        "f": "Encaisseuse"
-      },
       "paliers": {
         "m": [
           "en herbe",
@@ -787,6 +1136,13 @@
           "indestructible"
         ]
       },
+      "paliers_place": [
+        "avant",
+        "avant",
+        "avant",
+        "avant",
+        "avant"
+      ],
       "infobulle": {
         "m": [
           "Prend les coups que personne n'a envie de prendre, et tient la ligne.",
@@ -800,10 +1156,6 @@
       "specialites": [
         {
           "code": "inblessable",
-          "etiquette": {
-            "m": "carapace",
-            "f": "carapace"
-          },
           "infobulle": {
             "m": [
               "Les coups glissent sur lui ou s'écrasent sur son armure.",
@@ -817,10 +1169,6 @@
         },
         {
           "code": "esquiveur",
-          "etiquette": {
-            "m": "esquive",
-            "f": "esquive"
-          },
           "infobulle": {
             "m": [
               "Ne se fait presque jamais toucher.",
@@ -834,10 +1182,6 @@
         },
         {
           "code": "auto_soigneur",
-          "etiquette": {
-            "m": "se soigne tout seul",
-            "f": "se soigne toute seule"
-          },
           "infobulle": {
             "m": [
               "Referme ses propres blessures en plein combat.",
@@ -851,10 +1195,6 @@
         },
         {
           "code": "gardien_ligne",
-          "etiquette": {
-            "m": "contre-charges",
-            "f": "contre-charges"
-          },
           "infobulle": {
             "m": [
               "Arrête net ceux qui lui foncent dessus.",
@@ -870,10 +1210,6 @@
     },
     {
       "code": "eclaireur",
-      "mot": {
-        "m": "Éclaireur",
-        "f": "Éclaireuse"
-      },
       "paliers": {
         "m": [
           "en herbe",
@@ -890,6 +1226,13 @@
           "invisible"
         ]
       },
+      "paliers_place": [
+        "avant",
+        "avant",
+        "fin",
+        "avant",
+        "avant"
+      ],
       "infobulle": {
         "m": [
           "Voit l'ennemi avant d'être vu : il repère, se faufile et pose des pièges.",
@@ -903,10 +1246,6 @@
       "specialites": [
         {
           "code": "vigie",
-          "etiquette": {
-            "m": "guet",
-            "f": "guet"
-          },
           "infobulle": {
             "m": [
               "Repère tout, de loin et avant tout le monde.",
@@ -920,10 +1259,6 @@
         },
         {
           "code": "infiltrateur",
-          "etiquette": {
-            "m": "infiltration",
-            "f": "infiltration"
-          },
           "infobulle": {
             "m": [
               "Se cache et se faufile là où personne ne passe.",
@@ -937,10 +1272,6 @@
         },
         {
           "code": "magique",
-          "etiquette": {
-            "m": "yeux magiques",
-            "f": "yeux magiques"
-          },
           "infobulle": {
             "m": [
               "Voit par les yeux des créatures qu'il invoque.",
@@ -954,10 +1285,6 @@
         },
         {
           "code": "pieges",
-          "etiquette": {
-            "m": "pièges",
-            "f": "pièges"
-          },
           "infobulle": {
             "m": [
               "Pose des pièges là où l'ennemi va marcher.",
@@ -973,10 +1300,6 @@
     },
     {
       "code": "meneur",
-      "mot": {
-        "m": "Meneur",
-        "f": "Meneuse"
-      },
       "paliers": {
         "m": [
           "en herbe",
@@ -993,6 +1316,13 @@
           "qu'on suivrait en enfer"
         ]
       },
+      "paliers_place": [
+        "avant",
+        "fin",
+        "fin",
+        "fin",
+        "fin"
+      ],
       "infobulle": {
         "m": [
           "Tient le moral de ses troupes et fait trembler celui de l'ennemi.",
@@ -1006,10 +1336,6 @@
       "specialites": [
         {
           "code": "soutien",
-          "etiquette": {
-            "m": "moral des troupes",
-            "f": "moral des troupes"
-          },
           "infobulle": {
             "m": [
               "Ses paroles et sa présence redonnent du courage à ses alliés.",
@@ -1023,10 +1349,6 @@
         },
         {
           "code": "demoralisateur",
-          "etiquette": {
-            "m": "terreur",
-            "f": "terreur"
-          },
           "infobulle": {
             "m": [
               "Fait perdre courage à l'ennemi.",

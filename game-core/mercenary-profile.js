@@ -3,8 +3,8 @@
 // Titres des mercenaires (Idan, 2026-10-31, version 2) : chaque mercenaire est noté dans 10 catégories de rôle (Healer,
 // Summoner, Buffer, Contrôleur, DPS au CAC, DPS à distance, DPS magiques, Tank, Éclaireur, Meneur). Une catégorie est
 // faite de sous-catégories mesurées avec les formules du combat (game-core/combat-engine.js, game-core/magic.js) et
-// l'équipement porté, notées sur les 15 niveaux de la réputation. Il reçoit 1 à 3 titres, ou « Chair à canon » ; un titre
-// prend sa sous-catégorie quand elle se détache. Tout se recalcule quand l'équipement change.
+// l'équipement porté, notées sur les 15 niveaux de la réputation. Il a 1 à 3 rôles, ou « Chair à canon » ; ses rôles se
+// fondent en un seul titre écrit (v3, 2026-11-06 : composeTitle). Tout se recalcule quand l'équipement change.
 // Données : data/reference/mercenary-profile.json (catégories, sorts et créatures par sous-catégorie, sélection, seuils) ;
 // les seuils sont mesurés sur les recrues par scripts/build-mercenary-profile.js.
 (function(root,factory){
@@ -101,7 +101,6 @@
       return (main.damage+off.damage)*(ranged?1:chainFactor(unit,"melee",pAny));
     }
     const best=values=>{ const v=values.filter(x=>x!=null&&Number.isFinite(x)); return v.length?Math.max(...v):null; };
-    const bestSet=(character,ranged,defender,reach)=>best([1,2].map(set=>setDamage(character,set,ranged,defender,reach)));
     const stat=(character,name)=>engine.statWithGear({character,activeSet:1},name);
 
     // Objets à la ceinture (belt_item_1 à 4) : potions et fioles.
@@ -114,53 +113,55 @@
     // Poison : dégâts × tours × chance qu'un coup blesse × chance que l'étalon ne résiste pas.
     // La fiole ne compte que s'il sait empoisonner une arme (Idan, 2026-11-03) ; l'étalonnage (calibrate) la mesure chez
     // tous ceux qui en portent une, pour poser les seuils, comme l'aura.
-    function poisonValue(character,ranged,context={}){
+    function poisonSet(character,set,ranged,context={}){
       const skilled=context.calibrate||engine.canPoisonWeapon({character});
       const vial=skilled?beltPotions(character).find(p=>p.effet==="poison_arme"):null;
       const defender=refs().leger;
       const resisted=engine.poisonResistChance(defender)/100;
       const turns=Number(engine.POISON?.turns)||3;
-      return best([1,2].map(set=>{
-        const held=setWeapon(character,set,ranged);
-        if(!held) return null;
-        const quality=Number(engine.quality(held.item)?.multiplicateur_qualite)||1;
-        const dice=Number(String(held.weapon.degats_pv_base||"").match(/^(\d+)/)?.[1])||1;
-        const blowgun=held.weapon.empoisonne?Math.ceil(10*dice*quality-1e-9):0;
-        const amount=Math.max(blowgun,vial?Number(vial.degats_poison)||0:0);
-        if(!amount) return null;
-        const hit=strike(held.unit,defender,ranged?"ranged":"melee",ranged?midRange(held.unit):1);
-        return amount*turns*hit.pHit*hit.pWound*(1-resisted);
-      }));
+      const held=setWeapon(character,set,ranged);
+      if(!held) return null;
+      const quality=Number(engine.quality(held.item)?.multiplicateur_qualite)||1;
+      const dice=Number(String(held.weapon.degats_pv_base||"").match(/^(\d+)/)?.[1])||1;
+      const blowgun=held.weapon.empoisonne?Math.ceil(10*dice*quality-1e-9):0;
+      const amount=Math.max(blowgun,vial?Number(vial.degats_poison)||0:0);
+      if(!amount) return null;
+      const hit=strike(held.unit,defender,ranged?"ranged":"melee",ranged?midRange(held.unit):1);
+      return amount*turns*hit.pHit*hit.pWound*(1-resisted);
     }
 
     // ---- Sources (data/reference/mercenary-profile.json, sources) ----
-    const SOURCES={
-      contact_lourd:c=>bestSet(c,false,refs().lourd),
-      contact_leger:c=>bestSet(c,false,refs().leger),
-      tir_lourd:c=>bestSet(c,true,refs().lourd),
-      tir_leger:c=>bestSet(c,true,refs().leger),
-      tir_loin:c=>bestSet(c,true,refs().leger,"max"),
-      assassin:c=>best([1,2].map(set=>{
+    // Les sources d'arme se mesurent set par set (le titre dit quelle arme porte le rôle) ; la source garde le meilleur set.
+    const SET_SOURCES={
+      contact_lourd:(c,set)=>setDamage(c,set,false,refs().lourd),
+      contact_leger:(c,set)=>setDamage(c,set,false,refs().leger),
+      tir_lourd:(c,set)=>setDamage(c,set,true,refs().lourd),
+      tir_leger:(c,set)=>setDamage(c,set,true,refs().leger),
+      tir_loin:(c,set)=>setDamage(c,set,true,refs().leger,"max"),
+      assassin:(c,set)=>{
         const held=setWeapon(c,set,false);
         if(!held) return null;
         const hidden=1-engine.detectionChance(refs().leger,held.unit,3)/100;
         return strike(held.unit,refs().leger,"melee",1,{backstab:true}).damage*hidden;
-      })),
-      charge:c=>best([1,2].map(set=>{
+      },
+      charge:(c,set)=>{
         const held=setWeapon(c,set,false);
         if(!held) return null;
         const travel=Math.round(1.5*engine.movementBase(held.unit));
         const quality=Number(engine.quality(held.item)?.multiplicateur_qualite)||1;
         const chargePower=travel*(Number(held.weapon.bonus_charge_base)||1)*quality;
         return strike(held.unit,refs().leger,"melee",1,{chargePower}).damage;
-      })),
-      poison_contact:(c,context)=>poisonValue(c,false,context),
-      poison_tir:(c,context)=>poisonValue(c,true,context),
+      },
+      poison_contact:(c,set,context)=>poisonSet(c,set,false,context),
+      poison_tir:(c,set,context)=>poisonSet(c,set,true,context),
       // Toutes les armes de tir contre-chargent : seule l'arme d'hast en fait une spécialité de contact.
-      contre_charge:c=>best([1,2].map(set=>{
+      contre_charge:(c,set)=>{
         const held=setWeapon(c,set,false);
         return held?.weapon.contre_charge?strike(held.unit,refs().leger,"melee",1).damage:null;
-      })),
+      }
+    };
+    const SOURCES={
+      ...Object.fromEntries(Object.keys(SET_SOURCES).map(key=>[key,(c,context)=>best([1,2].map(set=>SET_SOURCES[key](c,set,context)))])),
       encaisser:c=>{
         const unit={character:c,activeSet:1};
         const block=(Number(engine.blockChance(unit))||0)/100;
@@ -284,7 +285,8 @@
           if(sub.a_venir) return null;
           const levels=sub.sources.map(source=>{
             const key=source==="sorts"?"sorts:"+sub.key:source;
-            return level(key,values[key]);
+            const found=level(key,values[key]);
+            return found&&{...found,source:key};
           }).filter(Boolean).sort(byLevel);
           return levels[0]?{...levels[0],code:sub.code,key:sub.key,nom:sub.nom}:null;
         }).filter(Boolean).sort(byLevel);
@@ -319,15 +321,16 @@
         const [top,second]=cat.subs;
         const specific=second?top.level-second.level>=(S.ecart_specificite??2):top.level>=(S.specificite_min??3);
         const sub=specific?{code:top.code,nom:top.nom}:null;
-        return {category:cat.code,categoryName:cat.nom,sub,level:cat.level,label:sub?cat.nom+" · "+sub.nom:cat.nom};
+        return {category:cat.code,categoryName:cat.nom,sub,level:cat.level,label:sub?cat.nom+" · "+sub.nom:cat.nom,
+          top:{code:top.code,source:top.source}};
       });
       return {values,categories:scored,titles:result,cannonFodder:!result.length};
     }
 
-    // ---- Titres écrits (Idan, 2026-11-01 ; mercenary-titles.json) ----
-    // Le mot du rôle, toujours le même (« Soigneur »), puis un mot décalé selon le palier d'étoiles (« de garde ») ; un
-    // titre spécialisé garde ce titre et ajoute sa spécialité (« urgences »). L'infobulle : deux lignes sur le rôle, ou
-    // sur la spécialité. Sans les données (anciens tests), rien : la fiche garde le nom brut.
+    // ---- Titres écrits (Idan, 2026-11-06, v3 ; mercenary-titles.json) ----
+    // « Ce qu'il fait × comment il le fait » : chaque rôle (catégorie) s'écrit avec l'arme, le style, l'école ou la
+    // sous-catégorie qui le porte ; ses 1 à 3 rôles se fondent en un seul titre, suivi du mot de niveau du rôle principal.
+    // Pas d'étoiles ; masculin seulement pour l'instant (Idan : le féminin après correction).
     const titleData=reference?.mercenaryTitles||null;
     const titleRows=new Map(rows(titleData).map(row=>[row.code,row]));
     function tierIndex(stars){
@@ -336,20 +339,121 @@
       mins.forEach((min,i)=>{ if(stars>=min) index=i; });
       return index;
     }
-    function titleCopy(title,{female=false}={}){
-      if(!titleData) return null;
-      const g=female?"f":"m";
-      if(!title){
-        const fodder=titleData.chair_a_canon;
-        return fodder?{name:fodder.titre[g],specialty:null,lines:fodder.infobulle[g]}:null;
+    const isShieldRow=weapon=>/Boucliers/.test(String(weapon?.domaine||""));
+    const weaponCategoryName=weapon=>String(weapon?.domaine||"").split(",")[0].trim();
+    const holdsTwoHands=held=>held.main?.prise==="2 mains"||(held.main?.prise==="Au choix"&&!held.off);
+    // L'arme (ou le style) qui porte un rôle de dégâts : le set qui donne la meilleure valeur à sa source. Le style, quand
+    // aucune arme ne domine : le set tient deux armes différentes (Ambidextre), ou l'autre set frappe au même niveau avec
+    // une autre arme (deux armes à deux mains, une même catégorie, deux boucliers, deux armes à une main ; au tir, Tireur).
+    function weaponPick(character,source,context){
+      const measureSet=SET_SOURCES[source];
+      if(!measureSet) return null;
+      const sets=[1,2].map(set=>{
+        const value=measureSet(character,set,context);
+        if(value==null||!Number.isFinite(value)) return null;
+        const unit={character,activeSet:set};
+        return {value,level:level(source,value)?.level||0,dual:engine.isDualWielding(unit),
+          main:engine.weaponTemplate(engine.activeWeaponItem(unit)),off:engine.weaponTemplate(engine.activeOffhandItem(unit))};
+      }).filter(held=>held?.main).sort((a,b)=>b.value-a.value);
+      const [first,other]=sets;
+      if(!first) return null;
+      const styles=titleData?.styles||{};
+      const style=(code,category)=>{
+        const entry=styles[code];
+        if(!entry) return null;
+        const fill=text=>text&&String(text).replace("{categorie}",String(category||"").toLowerCase());
+        return {entry:{titre:entry.titre,apres:fill(entry.apres),complement:fill(entry.complement)},weapon:null};
+      };
+      const ranged=engine.isRangedWeapon(first.main);
+      if(!ranged&&first.dual&&first.off?.nom!==first.main.nom) return style("deux_armes");
+      if(other&&other.level===first.level&&other.main.nom!==first.main.nom){
+        if(ranged) return style("tir");
+        if(holdsTwoHands(first)&&holdsTwoHands(other)) return style("deux_mains");
+        if(weaponCategoryName(first.main)===weaponCategoryName(other.main)) return style("categorie",weaponCategoryName(first.main));
+        if(isShieldRow(first.off)&&isShieldRow(other.off)) return style("bouclier");
+        if(!first.off&&!other.off) return style("une_main");
       }
-      const row=titleRows.get(title.category);
-      if(!row) return null;
-      const spec=title.sub?(row.specialites||[]).find(s=>s.code===title.sub.code)||null:null;
-      return {name:row.mot[g]+" "+row.paliers[g][tierIndex(title.level)],specialty:spec?spec.etiquette[g]:null,lines:(spec||row).infobulle[g]};
+      const entry=titleData?.armes?.[first.main.nom]||{titre:ranged?"Tireur":"Combattant"};
+      return {entry,weapon:first.main.nom};
+    }
+    // L'école du meilleur sort d'une sous-catégorie.
+    function spellSchool(character,subKey){
+      const sub=subByKey.get(subKey);
+      if(!magic||!sub) return null;
+      const unit={character,activeSet:1};
+      let top=null;
+      for(const known of character.spells||[]){
+        const spell=magic.spell(known.code);
+        if(spellRole(spell)!==subKey) continue;
+        const value=spellValue(unit,known,spell,sub.sorts);
+        if(value!=null&&Number.isFinite(value)&&(!top||value>top.value)) top={value,school:spell.ecole||known.school||null};
+      }
+      return top?.school||null;
+    }
+    // Un rôle écrit : titre (rôle principal), apres (la suite du titre principal), court (rôle en second), complement (son
+    // arme, en second), ecole.
+    function rolePiece(title,character,context){
+      const role=titleData?.roles?.[title.category]||{};
+      const top=title.top||{};
+      const own=role.sous?.[top.code]||null;
+      const fallback=role.defaut||{titre:title.categoryName,court:String(title.categoryName||"").toLowerCase()};
+      if(role.arme){
+        const pick=weaponPick(character,top.source,context);
+        const weapon=pick?.entry||fallback;
+        if(!own) return {...weapon,category:title.category};
+        const complement=(own.sans_complement||[]).includes(pick?.weapon)?"":weapon.complement||"";
+        return {titre:own.titre,apres:complement,court:own.court,complement,category:title.category};
+      }
+      if(String(top.source||"").startsWith("sorts:")){
+        const school=spellSchool(character,top.source.slice(6));
+        const bySchool=role.ecoles?.[school];
+        const entry=(bySchool?.titre?bySchool:bySchool?.[top.code])||own||fallback;
+        return {...entry,school,category:title.category};
+      }
+      let entry=own||fallback;
+      if(own?.bouclier&&engine.blockChance({character,activeSet:1})!=null) entry=own.bouclier;
+      if(own?.fouet&&top.source==="aura"&&!context.captain&&!context.lieutenant) entry=own.fouet;
+      return {...entry,category:title.category};
+    }
+    // Le titre : rôle principal + autres rôles (« Archer éclaireur ») + mot de niveau « avant » + armes (« à la massue »,
+    // « à la hache de guerre et au fouet ») + mot de niveau de « fin ». Trois rôles : « et » avant le dernier. Un rôle déjà
+    // dit n'est pas répété (même mot, ou dégâts d'une école déjà nommée). L'infobulle : celle du rôle principal (ou de sa
+    // sous-catégorie). result : evaluate(character, context).
+    function composeTitle(character,result,context={}){
+      if(!titleData||!result) return null;
+      if(result.cannonFodder){
+        const fodder=titleData.chair_a_canon;
+        return fodder?{name:fodder.titre.m,lines:fodder.infobulle.m}:null;
+      }
+      const pieces=result.titles.map(title=>rolePiece(title,character,context));
+      const main=pieces[0];
+      const words=[main.titre],complements=main.apres?[main.apres]:[];
+      const schools=new Set(main.school?[main.school]:[]);
+      let kept=1;
+      for(const piece of pieces.slice(1)){
+        const said=words.join(" ").toLowerCase();
+        const repeated=piece.category==="dps_magie"&&piece.school&&schools.has(piece.school);
+        const word=!repeated&&piece.court&&!said.includes(piece.court.toLowerCase())?piece.court:"";
+        const complement=piece.complement&&!complements.includes(piece.complement)?piece.complement:"";
+        if(!word&&!complement) continue;
+        kept++;
+        if(word) words.push(word);
+        if(complement) complements.push(complement);
+        if(piece.school) schools.add(piece.school);
+      }
+      const joinWithEt=kept===3&&(words.length===3||(words.length===2&&!main.apres));
+      const head=joinWithEt?words.slice(0,-1).join(" ")+" et "+words[words.length-1]:words.join(" ");
+      const first=result.titles[0];
+      const row=titleRows.get(first.category);
+      const index=tierIndex(first.level);
+      const tier=row?.paliers?.m?.[index]||"";
+      const place=row?.paliers_place?.[index]||"fin";
+      const name=[head,place==="avant"?tier:"",complements.join(" et "),place==="fin"?tier:""].filter(Boolean).join(" ");
+      const spec=(row?.specialites||[]).find(s=>s.code===first.top?.code);
+      return {name,lines:(spec||row)?.infobulle?.m||[]};
     }
 
-    return {measure,level,evaluate,strike,perTurn,categories,spellRole,titleCopy,tierIndex};
+    return {measure,level,evaluate,strike,perTurn,categories,spellRole,composeTitle,tierIndex};
   }
 
   return {createProfileRules};

@@ -58,8 +58,8 @@ for (const [i, c] of chefs.entries()) {
 }
 assert.ok(chefs.every(c => c.sorts.some(s => s.code === "raise_dead") && c.sorts.some(s => s.code === "death_arrow")));
 assert.ok(chefs.slice(2).every(c => c.sorts.some(s => s.code === "summon_specter")));
-// Le spectre, insensible aux armes, ne sort qu'à partir du niveau de mission 3.
-assert.ok(cult.filter(r => r.ligne === "Spectre").every(r => r.niveau_mission_min >= 3));
+// Le spectre, insensible aux armes, ne sort qu’à partir du niveau de mission 6 (Idan : « un peu plus tard. 6 ou 7 »).
+assert.ok(cult.filter(r => r.ligne === "Spectre").every(r => r.niveau_mission_min === 6));
 assert.ok(cult.filter(r => r.ligne !== "Spectre").every(r => r.niveau_mission_min === 1));
 
 // 2. Le camp, les noms et les trois lettres.

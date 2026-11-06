@@ -195,9 +195,9 @@ assert.deepEqual([lose.reward,lose.chestGold,lose.loot.length,lose.renown],[0,0,
 assert.equal(rules.deathMultiplier(offer,false),2);
 // Bestiaire (Idan, 2026-11-01) : butin et niveau de mission minimum par créature. L'équipement peut se casser au combat :
 // 100 % − 10 % par tier de chance de récupérer chaque objet porté ; rien en plus ; dès le niveau 1.
-// Culte des morts (2026-11-06) : les spectres, insensibles aux armes, à partir du niveau de mission 3.
+// Culte des morts (2026-11-06) : les spectres, insensibles aux armes, à partir du niveau de mission 6 (Idan : « un peu plus tard. 6 ou 7 »).
 for(const a of reference.enemyArchetypes.rows){
-  assert.deepEqual([a.niveau_mission_min,a.butin],[a.ligne==="Spectre"?3:1,{equipement:100-10*a.tier,objets:[]}],"butin : "+a.code);
+  assert.deepEqual([a.niveau_mission_min,a.butin],[a.ligne==="Spectre"?6:1,{equipement:100-10*a.tier,objets:[]}],"butin : "+a.code);
 }
 {
   const breakRules=createMissionRules({reference,random:seeded(21)});

@@ -8122,7 +8122,7 @@
       "tier": 1,
       "qualite": "Usée",
       "points": 12,
-      "niveau_mission_min": 3,
+      "niveau_mission_min": 6,
       "butin": {
         "equipement": 90,
         "objets": []
@@ -8186,7 +8186,7 @@
       "tier": 2,
       "qualite": "Correcte",
       "points": 22,
-      "niveau_mission_min": 3,
+      "niveau_mission_min": 6,
       "butin": {
         "equipement": 80,
         "objets": []
@@ -8250,7 +8250,7 @@
       "tier": 3,
       "qualite": "De bonne facture",
       "points": 42,
-      "niveau_mission_min": 3,
+      "niveau_mission_min": 6,
       "butin": {
         "equipement": 70,
         "objets": []
@@ -8314,7 +8314,7 @@
       "tier": 4,
       "qualite": "De luxe",
       "points": 66,
-      "niveau_mission_min": 3,
+      "niveau_mission_min": 6,
       "butin": {
         "equipement": 60,
         "objets": []

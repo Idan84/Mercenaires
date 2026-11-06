@@ -1365,7 +1365,7 @@
       "armure": null,
       "tier": 1,
       "qualite": "Usée",
-      "points": null,
+      "points": 17,
       "niveau_mission_min": 6,
       "butin": {
         "equipement": 90,
@@ -1426,7 +1426,7 @@
       "armure": null,
       "tier": 2,
       "qualite": "Correcte",
-      "points": null,
+      "points": 47,
       "niveau_mission_min": 6,
       "butin": {
         "equipement": 80,
@@ -1487,7 +1487,7 @@
       "armure": null,
       "tier": 3,
       "qualite": "De bonne facture",
-      "points": null,
+      "points": 99,
       "niveau_mission_min": 6,
       "butin": {
         "equipement": 70,
@@ -1548,7 +1548,7 @@
       "armure": null,
       "tier": 4,
       "qualite": "De luxe",
-      "points": null,
+      "points": 180,
       "niveau_mission_min": 6,
       "butin": {
         "equipement": 60,
@@ -3045,7 +3045,7 @@
       "armure": null,
       "tier": 1,
       "qualite": "Usée",
-      "points": null,
+      "points": 17,
       "niveau_mission_min": 6,
       "butin": {
         "equipement": 90,
@@ -3106,7 +3106,7 @@
       "armure": null,
       "tier": 2,
       "qualite": "Correcte",
-      "points": null,
+      "points": 47,
       "niveau_mission_min": 6,
       "butin": {
         "equipement": 80,
@@ -3167,7 +3167,7 @@
       "armure": null,
       "tier": 3,
       "qualite": "De bonne facture",
-      "points": null,
+      "points": 99,
       "niveau_mission_min": 6,
       "butin": {
         "equipement": 70,
@@ -3228,7 +3228,7 @@
       "armure": null,
       "tier": 4,
       "qualite": "De luxe",
-      "points": null,
+      "points": 180,
       "niveau_mission_min": 6,
       "butin": {
         "equipement": 60,
@@ -4725,7 +4725,7 @@
       "armure": null,
       "tier": 1,
       "qualite": "Usée",
-      "points": null,
+      "points": 17,
       "niveau_mission_min": 6,
       "butin": {
         "equipement": 90,
@@ -4786,7 +4786,7 @@
       "armure": null,
       "tier": 2,
       "qualite": "Correcte",
-      "points": null,
+      "points": 47,
       "niveau_mission_min": 6,
       "butin": {
         "equipement": 80,
@@ -4847,7 +4847,7 @@
       "armure": null,
       "tier": 3,
       "qualite": "De bonne facture",
-      "points": null,
+      "points": 99,
       "niveau_mission_min": 6,
       "butin": {
         "equipement": 70,
@@ -4908,7 +4908,7 @@
       "armure": null,
       "tier": 4,
       "qualite": "De luxe",
-      "points": null,
+      "points": 180,
       "niveau_mission_min": 6,
       "butin": {
         "equipement": 60,

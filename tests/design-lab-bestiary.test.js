@@ -27,7 +27,7 @@ assert.equal(bestiary.factions.reduce((s,f)=>s+f.lines.reduce((n,l)=>n+l.rows.le
 const goblins=bestiary.factions.find(f=>f.name==="Gobelins");
 assert.deepEqual(goblins.lines.find(l=>l.name==="Lancier").rows.map(e=>e.niveau),["novice","normal","vétéran","d’élite"]);
 assert.equal(goblins.camps.length,1);
-assert.deepEqual([goblins.camps[0].camp,goblins.camps[0].chance,goblins.camps[0].lines.Frondeur],["Camp gobelin","14 %","35 %"]);
+assert.deepEqual([goblins.camps[0].camp,goblins.camps[0].chance,goblins.camps[0].lines.Frondeur],["Camp gobelin","14 %","32 %"]);
 const html=BestiaryLab.render(built);
 for(const e of enemies) assert.ok(html.includes("("+e.code+")"),"fiche affichée : "+e.code);
 for(const f of bestiary.factions) assert.ok(html.includes(`id="${BestiaryLab.anchor(f.name)}"`));

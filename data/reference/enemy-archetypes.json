@@ -8623,7 +8623,7 @@
       "armure": "Vêtements",
       "tier": 3,
       "qualite": "De bonne facture",
-      "points": 26,
+      "points": 31,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 70,
@@ -8699,7 +8699,7 @@
       "armure": "Vêtements",
       "tier": 4,
       "qualite": "De luxe",
-      "points": 46,
+      "points": 48,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -8781,7 +8781,7 @@
       "armure": "Gambison",
       "tier": 4,
       "qualite": "De luxe",
-      "points": 83,
+      "points": 85,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,

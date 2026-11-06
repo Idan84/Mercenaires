@@ -27,7 +27,7 @@
   "rows": [
     {
       "code": "melee",
-      "nom": "Corps à corps",
+      "nom": "Combat rapproché",
       "plus": [
         "Force",
         "Endurance"

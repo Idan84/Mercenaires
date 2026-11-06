@@ -1,7 +1,7 @@
 "use strict";
 
-// Domaine du mercenaire (Idan, 2026-11-01) : après les tirages, un grand domaine — Corps à corps, Distance ou Mage —, fixé
-// à vie, puis accentué par des déplacements (dosage B : 2D6 sur les caractéristiques, 2D10 sur les compétences, en plus
+// Domaine du mercenaire (Idan, 2026-11-01) : après les tirages, un grand domaine — Combat rapproché, Distance ou Mage —,
+// puis accentué par des déplacements (dosage B : 2D6 sur les caractéristiques, 2D10 sur les compétences, en plus
 // et en moins). Un sort tiré pousse vers Mage quand c'est serré ; on pousse l'arme ou l'école qu'il utilise vraiment.
 const assert=require("node:assert/strict");
 const fs=require("node:fs");
@@ -21,7 +21,7 @@ const generator=createGenerator(reference,{random,nameGenerator:(people,id)=>peo
 // Les trois domaines : ce qui monte, ce qui baisse.
 const domains=reference.domains.rows;
 assert.deepEqual(domains.map(d=>d.code),["melee","ranged","magic"]);
-assert.deepEqual(domains.map(d=>d.nom),["Corps à corps","Distance","Mage"]);
+assert.deepEqual(domains.map(d=>d.nom),["Combat rapproché","Distance","Mage"]); // Idan, 2026-11-06 : « renomme en Combat rapproché »
 for(const d of domains){ assert.equal(d.plus.length,2); assert.equal(d.moins.length,2); assert.ok(d.description); }
 
 const captain=generator.createCaptain({id:1});

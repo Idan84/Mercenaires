@@ -866,7 +866,9 @@
       "invocation_nb_des": null,
       "invocation_de": null,
       "invocation_pas_maitrise": null,
-      "cadre": "spells/eau/cadre.webp"
+      "cadre": "spells/eau/cadre.webp",
+      "icone": "spells/eau/fog.webp",
+      "illustration": "spells/eau/fog-large.webp"
     },
     {
       "nom": "Eau guérissante",
@@ -892,7 +894,9 @@
       "invocation_nb_des": null,
       "invocation_de": null,
       "invocation_pas_maitrise": null,
-      "cadre": "spells/eau/cadre.webp"
+      "cadre": "spells/eau/cadre.webp",
+      "icone": "spells/eau/healing_water.webp",
+      "illustration": "spells/eau/healing_water-large.webp"
     },
     {
       "nom": "Flèche de glace",
@@ -920,7 +924,9 @@
       "invocation_nb_des": null,
       "invocation_de": null,
       "invocation_pas_maitrise": null,
-      "cadre": "spells/eau/cadre.webp"
+      "cadre": "spells/eau/cadre.webp",
+      "icone": "spells/eau/ice_arrow.webp",
+      "illustration": "spells/eau/ice_arrow-large.webp"
     },
     {
       "nom": "Tsunami",
@@ -950,7 +956,9 @@
       "invocation_nb_des": null,
       "invocation_de": null,
       "invocation_pas_maitrise": null,
-      "cadre": "spells/eau/cadre.webp"
+      "cadre": "spells/eau/cadre.webp",
+      "icone": "spells/eau/tsunami.webp",
+      "illustration": "spells/eau/tsunami-large.webp"
     },
     {
       "nom": "Armure de froid",
@@ -978,7 +986,9 @@
       "invocation_nb_des": null,
       "invocation_de": null,
       "invocation_pas_maitrise": null,
-      "cadre": "spells/eau/cadre.webp"
+      "cadre": "spells/eau/cadre.webp",
+      "icone": "spells/eau/frost_armor.webp",
+      "illustration": "spells/eau/frost_armor-large.webp"
     },
     {
       "nom": "Gel",
@@ -1008,7 +1018,9 @@
       "invocation_nb_des": null,
       "invocation_de": null,
       "invocation_pas_maitrise": null,
-      "cadre": "spells/eau/cadre.webp"
+      "cadre": "spells/eau/cadre.webp",
+      "icone": "spells/eau/freeze.webp",
+      "illustration": "spells/eau/freeze-large.webp"
     },
     {
       "nom": "Arme de glace",
@@ -1038,7 +1050,9 @@
       "invocation_nb_des": null,
       "invocation_de": null,
       "invocation_pas_maitrise": null,
-      "cadre": "spells/eau/cadre.webp"
+      "cadre": "spells/eau/cadre.webp",
+      "icone": "spells/eau/ice_weapon.webp",
+      "illustration": "spells/eau/ice_weapon-large.webp"
     },
     {
       "nom": "Prison de glace",
@@ -1063,7 +1077,9 @@
       "resistance_maitrise_facteur": 0.5,
       "degats_subis_facteur": 0.5,
       "description": "La cible est figée dans la glace 1 tour (2 pour un maître) : elle ne bouge ni n’agit, mais ne subit que la moitié des dégâts. Elle résiste avec sa Constitution et sa protection contre le froid. Action principale.",
-      "cadre": "spells/eau/cadre.webp"
+      "cadre": "spells/eau/cadre.webp",
+      "icone": "spells/eau/ice_prison.webp",
+      "illustration": "spells/eau/ice_prison-large.webp"
     },
     {
       "nom": "Blizzard",
@@ -1091,7 +1107,9 @@
       "element": "froid",
       "deplacement_facteur": 0.5,
       "description": "Une tempête de neige sur une zone pendant 3 tours : à chaque tour, dès le lancer, tous ceux qui s’y trouvent, alliés compris, prennent de petits dégâts de froid ; on n’y voit rien à travers, comme dans le Brouillard ; qui y commence son activation n’a que la moitié de son déplacement. Action principale.",
-      "cadre": "spells/eau/cadre.webp"
+      "cadre": "spells/eau/cadre.webp",
+      "icone": "spells/eau/blizzard.webp",
+      "illustration": "spells/eau/blizzard-large.webp"
     },
     {
       "nom": "Source vive",
@@ -1112,7 +1130,9 @@
       "mana_base": 10,
       "mana_diviseur_maitrise": 300,
       "description": "Le lanceur rend du mana à un autre allié, sans dépasser sa réserve. Action principale.",
-      "cadre": "spells/eau/cadre.webp"
+      "cadre": "spells/eau/cadre.webp",
+      "icone": "spells/eau/living_spring.webp",
+      "illustration": "spells/eau/living_spring-large.webp"
     },
     {
       "nom": "6e sens",
@@ -1416,7 +1436,9 @@
       "invocation_nb_des": null,
       "invocation_de": null,
       "invocation_pas_maitrise": null,
-      "cadre": "spells/foudre/cadre.webp"
+      "cadre": "spells/foudre/cadre.webp",
+      "icone": "spells/foudre/shock.webp",
+      "illustration": "spells/foudre/shock-large.webp"
     },
     {
       "nom": "Éclair",
@@ -1444,7 +1466,9 @@
       "invocation_nb_des": null,
       "invocation_de": null,
       "invocation_pas_maitrise": null,
-      "cadre": "spells/foudre/cadre.webp"
+      "cadre": "spells/foudre/cadre.webp",
+      "icone": "spells/foudre/lightning_bolt.webp",
+      "illustration": "spells/foudre/lightning_bolt-large.webp"
     },
     {
       "nom": "Arme électrique",
@@ -1474,7 +1498,9 @@
       "invocation_nb_des": null,
       "invocation_de": null,
       "invocation_pas_maitrise": null,
-      "cadre": "spells/foudre/cadre.webp"
+      "cadre": "spells/foudre/cadre.webp",
+      "icone": "spells/foudre/shock_weapon.webp",
+      "illustration": "spells/foudre/shock_weapon-large.webp"
     },
     {
       "nom": "Boule d'éclairs",
@@ -1505,7 +1531,9 @@
       "invocation_nb_des": null,
       "invocation_de": null,
       "invocation_pas_maitrise": null,
-      "cadre": "spells/foudre/cadre.webp"
+      "cadre": "spells/foudre/cadre.webp",
+      "icone": "spells/foudre/chain_lightning.webp",
+      "illustration": "spells/foudre/chain_lightning-large.webp"
     },
     {
       "nom": "Foudre",
@@ -1533,7 +1561,9 @@
       "invocation_nb_des": null,
       "invocation_de": null,
       "invocation_pas_maitrise": null,
-      "cadre": "spells/foudre/cadre.webp"
+      "cadre": "spells/foudre/cadre.webp",
+      "icone": "spells/foudre/thunder.webp",
+      "illustration": "spells/foudre/thunder-large.webp"
     },
     {
       "nom": "Célérité",
@@ -1559,7 +1589,9 @@
       "invocation_nb_des": null,
       "invocation_de": null,
       "invocation_pas_maitrise": null,
-      "cadre": "spells/foudre/cadre.webp"
+      "cadre": "spells/foudre/cadre.webp",
+      "icone": "spells/foudre/celerity.webp",
+      "illustration": "spells/foudre/celerity-large.webp"
     },
     {
       "nom": "Étincelle",
@@ -1581,7 +1613,9 @@
       "mana_diviseur_maitrise": 300,
       "element": "foudre",
       "description": "Une petite décharge sur un ennemi proche, au contact au début (la portée monte avec la maîtrise) : peu de dégâts de foudre, sans jet de toucher. Le métal la conduit. Action rapide.",
-      "cadre": "spells/foudre/cadre.webp"
+      "cadre": "spells/foudre/cadre.webp",
+      "icone": "spells/foudre/spark.webp",
+      "illustration": "spells/foudre/spark-large.webp"
     },
     {
       "nom": "Arc électrique",
@@ -1606,7 +1640,9 @@
       "zone_longueur_pas_maitrise": 25,
       "zone_longueur_max": 8,
       "description": "Un arc de foudre part de la case voisine choisie et traverse tout en ligne droite sur 4 à 8 cases : tous ceux qui s’y trouvent, alliés compris, subissent les mêmes dégâts de foudre. Ne s’évite pas. Action principale.",
-      "cadre": "spells/foudre/cadre.webp"
+      "cadre": "spells/foudre/cadre.webp",
+      "icone": "spells/foudre/electric_arc.webp",
+      "illustration": "spells/foudre/electric_arc-large.webp"
     },
     {
       "nom": "Paralysie",
@@ -1628,7 +1664,9 @@
       "resistance_caracteristique": "Constitution",
       "resistance_maitrise_facteur": 0.5,
       "description": "Une décharge bloque les muscles d’un ennemi : il perd sa prochaine activation, sauf s’il résiste (Constitution et protection contre la foudre, contre la maîtrise du lanceur ; le métal aide la foudre). Action principale.",
-      "cadre": "spells/foudre/cadre.webp"
+      "cadre": "spells/foudre/cadre.webp",
+      "icone": "spells/foudre/paralysis.webp",
+      "illustration": "spells/foudre/paralysis-large.webp"
     },
     {
       "nom": "Tempête",
@@ -1656,7 +1694,9 @@
       "element": "foudre",
       "frappes_de": 3,
       "description": "Une tempête au-dessus d’une zone pendant 3 tours : à chaque tour, dès le lancer, la foudre frappe 1 à 3 personnages au hasard dans la zone, alliés et lanceur compris. Dégâts de foudre, sans jet de toucher. Action principale.",
-      "cadre": "spells/foudre/cadre.webp"
+      "cadre": "spells/foudre/cadre.webp",
+      "icone": "spells/foudre/storm.webp",
+      "illustration": "spells/foudre/storm-large.webp"
     },
     {
       "nom": "Attraction",

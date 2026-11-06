@@ -19,6 +19,7 @@ for dir in assets-src/Sorts/*/; do
         -resize 256x256 -strip -define webp:alpha-quality=100 -quality 88 "$out/cadre.webp"
     else
       convert "$src" -resize 256x256 -strip -quality 82 "$out/$name.webp"
+      convert "$src" -resize 1024x1024 -strip -quality 88 "$out/$name-large.webp"
     fi
   done
   ls -l "$out"

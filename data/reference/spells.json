@@ -224,6 +224,10 @@
       "key": "icone"
     },
     {
+      "source": "Illustration haute définition",
+      "key": "illustration"
+    },
+    {
       "source": "Cadre",
       "key": "cadre"
     },
@@ -570,7 +574,9 @@
       "invocation_nb_des": null,
       "invocation_de": null,
       "invocation_pas_maitrise": null,
-      "cadre": "spells/feu/cadre.webp"
+      "cadre": "spells/feu/cadre.webp",
+      "icone": "spells/feu/fire_bolt.webp",
+      "illustration": "spells/feu/fire_bolt-large.webp"
     },
     {
       "nom": "Boule de feu",
@@ -606,7 +612,9 @@
       "invocation_nb_des": null,
       "invocation_de": null,
       "invocation_pas_maitrise": null,
-      "cadre": "spells/feu/cadre.webp"
+      "cadre": "spells/feu/cadre.webp",
+      "icone": "spells/feu/fireball.webp",
+      "illustration": "spells/feu/fireball-large.webp"
     },
     {
       "nom": "Anneau de feu",
@@ -633,7 +641,9 @@
       "invocation_nb_des": null,
       "invocation_de": null,
       "invocation_pas_maitrise": null,
-      "cadre": "spells/feu/cadre.webp"
+      "cadre": "spells/feu/cadre.webp",
+      "icone": "spells/feu/fire_ring.webp",
+      "illustration": "spells/feu/fire_ring-large.webp"
     },
     {
       "nom": "Arme enflammée",
@@ -663,7 +673,9 @@
       "invocation_nb_des": null,
       "invocation_de": null,
       "invocation_pas_maitrise": null,
-      "cadre": "spells/feu/cadre.webp"
+      "cadre": "spells/feu/cadre.webp",
+      "icone": "spells/feu/flaming_weapon.webp",
+      "illustration": "spells/feu/flaming_weapon-large.webp"
     },
     {
       "nom": "Armure de feu",
@@ -691,7 +703,9 @@
       "invocation_nb_des": null,
       "invocation_de": null,
       "invocation_pas_maitrise": null,
-      "cadre": "spells/feu/cadre.webp"
+      "cadre": "spells/feu/cadre.webp",
+      "icone": "spells/feu/fire_armor.webp",
+      "illustration": "spells/feu/fire_armor-large.webp"
     },
     {
       "nom": "Flaque de magma",
@@ -715,7 +729,9 @@
       "invocation_nb_des": null,
       "invocation_de": null,
       "invocation_pas_maitrise": null,
-      "cadre": "spells/feu/cadre.webp"
+      "cadre": "spells/feu/cadre.webp",
+      "icone": "spells/feu/magma.webp",
+      "illustration": "spells/feu/magma-large.webp"
     },
     {
       "nom": "Embrasement",
@@ -742,7 +758,9 @@
       "mana_diviseur_maitrise": 300,
       "element": "feu",
       "description": "La cible prend feu : elle brûle au début de chacune de ses activations, pendant 2 à 3 tours (1D6 de feu à chaque fois). Ne se cumule pas : le relancer remplace le précédent. Action principale.",
-      "cadre": "spells/feu/cadre.webp"
+      "cadre": "spells/feu/cadre.webp",
+      "icone": "spells/feu/ignite.webp",
+      "illustration": "spells/feu/ignite-large.webp"
     },
     {
       "nom": "Mur de flammes",
@@ -769,7 +787,9 @@
       "zone_longueur_pas_maitrise": 50,
       "zone_longueur_max": 5,
       "description": "Une ligne de feu de 3 à 5 cases, en travers, pendant 3 tours : qui y entre, ou y commence son activation, brûle (1D6 de feu à chaque fois). Action principale.",
-      "cadre": "spells/feu/cadre.webp"
+      "cadre": "spells/feu/cadre.webp",
+      "icone": "spells/feu/flame_wall.webp",
+      "illustration": "spells/feu/flame_wall-large.webp"
     },
     {
       "nom": "Souffle ardent",
@@ -792,7 +812,9 @@
       "zone_forme": "cone",
       "zone_longueur_base": 3,
       "description": "Les flammes balaient un cône de 3 cases de profondeur devant le lanceur, dans la direction de la case voisine choisie : tous ceux qui s’y trouvent, alliés compris, subissent les mêmes dégâts de feu. Ne s’évite pas. Action principale.",
-      "cadre": "spells/feu/cadre.webp"
+      "cadre": "spells/feu/cadre.webp",
+      "icone": "spells/feu/fiery_breath.webp",
+      "illustration": "spells/feu/fiery_breath-large.webp"
     },
     {
       "nom": "Torche vivante",
@@ -817,7 +839,9 @@
       "mana_diviseur_maitrise": 300,
       "element": "feu",
       "description": "Un allié, ou le lanceur, s’entoure de flammes pendant 2 à 4 tours : au début de chacune de ses activations, les ennemis à son contact brûlent (1D4 de feu). Lui ne brûle pas. Action rapide.",
-      "cadre": "spells/feu/cadre.webp"
+      "cadre": "spells/feu/cadre.webp",
+      "icone": "spells/feu/living_torch.webp",
+      "illustration": "spells/feu/living_torch-large.webp"
     },
     {
       "nom": "Brouillard",

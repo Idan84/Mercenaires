@@ -2,7 +2,7 @@
 
 // Titres v3 (Idan, 2026-11-06) : « ce qu'il fait × comment il le fait ». Chaque rôle s'écrit avec l'arme, le style, l'école
 // ou la sous-catégorie qui le porte ; 1 à 3 rôles se fondent en un seul titre (« Archer éclaireur »), suivi du mot de
-// niveau du rôle principal, avant l'arme ou à la fin ; pas d'étoiles ; masculin seulement pour l'instant.
+// niveau du rôle principal, avant l'arme ou à la fin ; pas d'étoiles ; au masculin et au féminin.
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
@@ -24,19 +24,19 @@ const filled = (value, label) => assert.ok(typeof value === "string" && value.tr
 const twoLines = (lines, label) => { assert.equal(lines?.length, 2, label); lines.forEach(x => filled(x, label)); };
 assert.deepEqual(titles.paliers, [4, 6, 9, 11, 15]);
 assert.equal(titles.row_count, titles.rows.length);
-filled(titles.chair_a_canon.titre.m, "Chair à canon");
-twoLines(titles.chair_a_canon.infobulle.m, "Chair à canon");
+const both = (pair, label, check) => { for (const g of ["m", "f"]) check(pair?.[g], label + " (" + g + ")"); };
+both(titles.chair_a_canon.titre, "Chair à canon", filled);
+both(titles.chair_a_canon.infobulle, "Chair à canon", twoLines);
 for (const cat of reference.mercenaryProfile.categories) {
   const row = titles.rows.find(r => r.code === cat.code);
   assert.ok(row, "niveau et infobulle pour " + cat.nom);
-  assert.equal(row.paliers.m.length, 5, cat.nom);
-  row.paliers.m.forEach(x => filled(x, cat.nom));
+  both(row.paliers, cat.nom, (list, l) => { assert.equal(list?.length, 5, l); list.forEach(x => filled(x, l)); });
   assert.equal(row.paliers_place.length, 5, cat.nom + " : place de chaque mot de niveau");
   row.paliers_place.forEach(x => assert.ok(["avant", "fin"].includes(x), cat.nom + " : " + x));
-  twoLines(row.infobulle.m, cat.nom);
+  both(row.infobulle, cat.nom, twoLines);
   for (const spec of row.specialites) {
     assert.ok(cat.sous.some(s => s.code === spec.code), "sous-catégorie inconnue : " + spec.code);
-    twoLines(spec.infobulle.m, cat.nom + " · " + spec.code);
+    both(spec.infobulle, cat.nom + " · " + spec.code, twoLines);
   }
   // Chaque rôle sait s'écrire : par l'arme, ou par son mot par défaut.
   const role = titles.roles[cat.code];
@@ -44,19 +44,32 @@ for (const cat of reference.mercenaryProfile.categories) {
   for (const code of Object.keys(role.sous || {})) assert.ok(cat.sous.some(s => s.code === code), cat.nom + " : " + code);
 }
 // Les mots qui ne se lisent pas avant l'arme vont à la fin (« Meneur au fouet à la grosse voix »).
-for (const row of titles.rows) row.paliers.m.forEach((word, i) => {
+for (const row of titles.rows) for (const g of ["m", "f"]) row.paliers[g].forEach((word, i) => {
   if (/^(qu|qui |à |aux )/.test(word)) assert.equal(row.paliers_place[i], "fin", row.code + " : " + word);
 });
+// Chaque mot de titre existe au masculin et au féminin (Idan, 2026-11-06 : « je te laisse faire la version féminine »).
+const entries = [];
+const collect = (entry, label) => {
+  if (!entry || typeof entry !== "object" || Array.isArray(entry)) return;
+  if ("titre" in entry || "court" in entry) entries.push([entry, label]);
+  for (const [key, value] of Object.entries(entry)) if (!["titre", "court"].includes(key)) collect(value, label + "." + key);
+};
+for (const section of ["armes", "styles", "roles"]) collect(titles[section], section);
+for (const [entry, label] of entries) {
+  if ("titre" in entry) both(entry.titre, label, filled);
+  if ("court" in entry) both(entry.court, label + " (court)", filled);
+}
+assert.ok(entries.length > 80, "mots de titre : " + entries.length);
 // Une entrée par arme qui frappe (les boucliers ne portent pas de rôle de dégâts), avec son complément.
 const weaponNames = reference.weapons.rows.filter(w => !/Boucliers/.test(w.domaine)).map(w => w.nom);
 assert.deepEqual(Object.keys(titles.armes).filter(k => k !== "description").sort(), [...weaponNames].sort());
 for (const name of weaponNames) {
   const entry = titles.armes[name];
-  filled(entry.titre, name);
+  both(entry.titre, name, filled);
   assert.match(entry.complement, /^(à|au|aux) /, name);
   if (entry.apres) assert.match(entry.apres, /^(à|au|aux) /, name);
 }
-for (const code of ["deux_armes", "deux_mains", "categorie", "bouclier", "une_main", "tir"]) filled(titles.styles[code]?.titre, code);
+for (const code of ["deux_armes", "deux_mains", "categorie", "bouclier", "une_main", "tir"]) both(titles.styles[code]?.titre, code, filled);
 // Chaque école qui a un sort d'un rôle a son mot pour ce rôle (sinon le mot du rôle, sans école).
 const profileData = reference.mercenaryProfile;
 const spellCategory = spell => {
@@ -79,7 +92,8 @@ const profile = createProfileRules({reference, engine, magic});
 const captain = generator.createCaptain({id: 1});
 const base = generator.createMercenary({id: 2, captain});
 const role = (category, level, code, source) => ({category, categoryName: category, level, top: {code, source}});
-const title = (character, list, context = {}) => profile.composeTitle(character, {titles: list, cannonFodder: !list.length}, context).name;
+const title = (character, list, context = {}, options = {}) => profile.composeTitle(character, {titles: list, cannonFodder: !list.length}, context, options).name;
+const her = (character, list, context = {}) => title(character, list, context, {female: true});
 
 assert.equal(title(base, []), "Chair à canon");
 assert.equal(title(base, [role("eclaireur", 5, "vigie", "perception")]), "Guetteur en herbe");
@@ -128,13 +142,23 @@ assert.equal(title(mage, [role("controleur", 5, "boss", "sorts:controleur.boss")
 assert.equal(title(mage, [role("healer", 9, "urgentiste", "sorts:healer.urgentiste")]), "Guérisseur aux doigts de fée");
 assert.equal(title(mage, [role("buffer", 5, "dps", "sorts:buffer.dps"), role("healer", 5, "urgentiste", "sorts:healer.urgentiste")]), "Forgeflamme guérisseur en herbe");
 
+// Au féminin : le titre, les autres rôles et le mot de niveau.
+assert.equal(her(base, []), "Chair à canon");
+assert.equal(her(club, [role("dps_cac", 11, "perce_armure", "contact_lourd")]), "Assommeuse dévastatrice à la massue");
+assert.equal(her(armed({weapon_set_1_main: "Arc"}), [role("dps_distance", 5, "foules", "tir_leger"), role("eclaireur", 5, "vigie", "perception")]), "Archère éclaireuse en herbe");
+assert.equal(her(club, [role("eclaireur", 5, "vigie", "perception"), role("tank", 5, "inblessable", "encaisser"), role("meneur", 4, "demoralisateur", "intimidation")]),
+  "Guetteuse cuirassée et intimidatrice en herbe");
+assert.equal(her(base, [role("meneur", 7, "soutien", "aura")], {captain: true}), "Cheffe de guerre à la grosse voix");
+assert.equal(her(mage, [role("controleur", 6, "boss", "sorts:controleur.boss")]), "Mage de Foudre paralyseuse agaçante");
+assert.equal(her(mage, [role("healer", 15, "urgentiste", "sorts:healer.urgentiste")]), "Guérisseuse miraculeuse");
+
 // ---- Sur de vraies recrues : un titre, propre, avec son infobulle ----
 let titled = 0;
 const names = new Set();
 for (let i = 0; i < 300; i++) {
   const m = generator.createMercenary({id: i + 3, captain});
   const result = profile.evaluate(m);
-  const copy = profile.composeTitle(m, result, {});
+  const copy = profile.composeTitle(m, result, {}, {female: /^f/i.test(m.sex || "")});
   assert.ok(copy && copy.name, "un titre");
   assert.doesNotMatch(copy.name, /\s{2}|^\s|\s$|undefined|null|\{/, copy.name);
   const words = copy.name.toLowerCase().split(/\s+/).filter(w => w.length > 3);
@@ -149,7 +173,7 @@ assert.equal(createProfileRules({reference: {...reference, mercenaryTitles: unde
 // ---- Fiche : un seul titre, pas d'étoiles, pas de petite ligne ----
 const ui = fs.readFileSync(path.join(ROOT, "prototype-web", "ui.js"), "utf8");
 const render = ui.slice(ui.indexOf("function renderEvaluation("), ui.indexOf("function renderProfileTab("));
-assert.match(render, /rules\.composeTitle\?\.\(c,result,context\)/);
+assert.match(render, /rules\.composeTitle\?\.\(c,result,context,\{female:isFemale\(c\)\}\)/);
 assert.doesNotMatch(render, /renderStarLevel|sheet-eval-spec|spécialité/);
 assert.match(render, /copy\.lines\.map\(line=>`<em>\$\{esc\(line\)\}<\/em>`\)/);
-console.log("Titres v3 : " + weaponNames.length + " armes, 10 rôles, titres composés — OK (" + titled + " recrues titrées, " + names.size + " titres différents)");
+console.log("Titres v3 : " + weaponNames.length + " armes, 10 rôles, titres composés, masculin et féminin — OK (" + titled + " recrues titrées, " + names.size + " titres différents)");

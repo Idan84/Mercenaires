@@ -330,7 +330,7 @@
     // ---- Titres écrits (Idan, 2026-11-06, v3 ; mercenary-titles.json) ----
     // « Ce qu'il fait × comment il le fait » : chaque rôle (catégorie) s'écrit avec l'arme, le style, l'école ou la
     // sous-catégorie qui le porte ; ses 1 à 3 rôles se fondent en un seul titre, suivi du mot de niveau du rôle principal.
-    // Pas d'étoiles ; masculin seulement pour l'instant (Idan : le féminin après correction).
+    // Pas d'étoiles ; au masculin et au féminin (titre et court : m, f ; Idan : « je te laisse faire la version féminine »).
     const titleData=reference?.mercenaryTitles||null;
     const titleRows=new Map(rows(titleData).map(row=>[row.code,row]));
     function tierIndex(stars){
@@ -418,14 +418,19 @@
     // Le titre : rôle principal + autres rôles (« Archer éclaireur ») + mot de niveau « avant » + armes (« à la massue »,
     // « à la hache de guerre et au fouet ») + mot de niveau de « fin ». Trois rôles : « et » avant le dernier. Un rôle déjà
     // dit n'est pas répété (même mot, ou dégâts d'une école déjà nommée). L'infobulle : celle du rôle principal (ou de sa
-    // sous-catégorie). result : evaluate(character, context).
-    function composeTitle(character,result,context={}){
+    // sous-catégorie). result : evaluate(character, context) ; female : le titre au féminin.
+    function composeTitle(character,result,context={},{female=false}={}){
       if(!titleData||!result) return null;
+      const g=female?"f":"m";
+      const gendered=value=>value==null||typeof value==="string"?value:value[g]??value.m;
       if(result.cannonFodder){
         const fodder=titleData.chair_a_canon;
-        return fodder?{name:fodder.titre.m,lines:fodder.infobulle.m}:null;
+        return fodder?{name:gendered(fodder.titre),lines:fodder.infobulle[g]||fodder.infobulle.m}:null;
       }
-      const pieces=result.titles.map(title=>rolePiece(title,character,context));
+      const pieces=result.titles.map(title=>{
+        const piece=rolePiece(title,character,context);
+        return {...piece,titre:gendered(piece.titre),court:gendered(piece.court)};
+      });
       const main=pieces[0];
       const words=[main.titre],complements=main.apres?[main.apres]:[];
       const schools=new Set(main.school?[main.school]:[]);
@@ -446,11 +451,12 @@
       const first=result.titles[0];
       const row=titleRows.get(first.category);
       const index=tierIndex(first.level);
-      const tier=row?.paliers?.m?.[index]||"";
+      const tier=(row?.paliers?.[g]||row?.paliers?.m)?.[index]||"";
       const place=row?.paliers_place?.[index]||"fin";
       const name=[head,place==="avant"?tier:"",complements.join(" et "),place==="fin"?tier:""].filter(Boolean).join(" ");
       const spec=(row?.specialites||[]).find(s=>s.code===first.top?.code);
-      return {name,lines:(spec||row)?.infobulle?.m||[]};
+      const tip=(spec||row)?.infobulle;
+      return {name,lines:tip?.[g]||tip?.m||[]};
     }
 
     return {measure,level,evaluate,strike,perTurn,categories,spellRole,composeTitle,tierIndex};

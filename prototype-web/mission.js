@@ -2652,6 +2652,28 @@ function enemyMoveToward(unit,target){
   }
 }
 
+// Un tireur qui ne peut pas tirer d'où il est (trop près : un arc ne tire pas à moins de 2 cases ; trop loin ; hors de vue)
+// cherche, dans son mouvement, la case la moins chère d'où il peut tirer, en provoquant le moins d'attaques d'opportunité.
+// Sans cela, deux archers au contact tournaient l'un autour de l'autre sans fin (combat automatique bloqué).
+function enemyMoveToShoot(unit,target){
+  const e=game.mission.engine;
+  if(missionMireAt(unit.q,unit.r)) return false;
+  const budget=unit.movementRemaining??e.movementBase(unit);
+  let best=null;
+  // Les chemins viennent dans l'ordre des coûts : à risque égal, le moins cher.
+  for(const path of missionReachablePaths(unit,budget).values()){
+    if(!path.length) continue;
+    const end=path[path.length-1];
+    if(!e.canAttackAtDistance(unit,e.axialDistance(end,target),"ranged")||!missionLineOfSight(end,target)) continue;
+    const risk=missionPathOpportunityCount(unit,path);
+    if(!best||risk<best.risk) best={path,risk};
+  }
+  if(!best) return false;
+  const moved=moveMissionUnitAlongPath(unit,best.path);
+  if(moved) missionLog(unit.character.name+" se place pour tirer ("+moved+" hex).","move");
+  return moved>0;
+}
+
 function enemyTryCharge(unit,target){
   const e=game.mission.engine,charge=missionChargeIfClear(unit,target);
   if(!charge) return false;
@@ -2781,7 +2803,7 @@ function enemyMissionActivation(unit,{reset=true}={}){
   if(mode==="melee"&&missionChargeIfClear(unit,target)) missionAiCoat(unit);
   if(mode==="melee"&&enemyTryCharge(unit,target)) return;
 
-  enemyMoveToward(unit,target);
+  if(mode!=="ranged"||!enemyMoveToShoot(unit,target)) enemyMoveToward(unit,target);
   if(game.mission.over||!unit.alive||unit.fleeing) return;
 
   target=nearestMissionTarget(unit);

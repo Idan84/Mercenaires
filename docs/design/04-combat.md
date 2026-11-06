@@ -272,6 +272,10 @@ peut y avoir une subtilité dans franchissable : vitesse réduite ». Données :
   elle va chercher l'ennemi le plus proche (elle sait à peu près où il est), l'attaque si elle le voit alors, sinon un tireur
   que personne ne voit guette (mode sentinelle) : sans cela, un combat sur 12 environ se figeait, chacun attendant l'autre
   derrière le décor (mesure sur 150 combats de Mission Test ; plus aucun sur 300 après).
+- **Un tireur qui ne peut pas tirer d'où il est** (trop près : un arc ou une arbalète ne tire pas à moins de 2 cases ; trop
+  loin ; hors de vue) **se place pour tirer** : la case la moins chère de son mouvement d'où il a la portée et la vue, en
+  provoquant le moins d'attaques d'opportunité ; sinon il avance comme avant. Sans cela, deux archers au contact tournaient
+  l'un autour de l'autre sans fin (un combat automatique sur quelques centaines se bloquait ; plus aucun sur 2 000 après).
 
 ## Altitude (Idan, 2026-11-06)
 

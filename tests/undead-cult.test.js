@@ -71,7 +71,18 @@ assert.ok(cult.filter(r => r.ligne !== "Spectre").every(r => r.niveau_mission_mi
 const missions = reference.oneShotMissions, def = missions.missions[0];
 const camp = def.camps.find(c => c.faction === FACTION);
 assert.equal(camp.nom_camp, "Cimetière profané");
-assert.deepEqual(camp.lignes.map(l => l.ligne).sort(), [...lines].sort());
+assert.deepEqual(camp.lignes.filter(l => !l.faction).map(l => l.ligne).sort(), [...lines].sort());
+// Le troll mort-vivant (Idan, 2026-11-06 : « Un troll mort vivant pour l'équipe du nécromancien », « pas de régénération ») :
+// une créature partagée (Créatures), le troll sans sa régénération, mort-vivant, dès le niveau 6.
+assert.deepEqual(camp.lignes.find(l => l.ligne === "Troll mort-vivant"), {ligne: "Troll mort-vivant", faction: "Créatures", poids: 10});
+const undeadTrolls = reference.enemyArchetypes.rows.filter(r => r.ligne === "Troll mort-vivant");
+const livingTrolls = reference.enemyArchetypes.rows.filter(r => r.ligne === "Troll");
+assert.deepEqual(undeadTrolls.map(r => r.niveau), ["novice", "normal", "vétéran", "d’élite"]);
+for (const [i, r] of undeadTrolls.entries()) {
+  assert.deepEqual([r.faction, r.mort_vivant, r.insensible_poison, r.regeneration, r.niveau_mission_min], ["Créatures", true, true, undefined, 6], r.code);
+  assert.deepEqual([r.caracteristiques, r.pv, r.attaque], [livingTrolls[i].caracteristiques, livingTrolls[i].pv, livingTrolls[i].attaque], r.code + " : le troll");
+  assert.ok(r.points > 0 && r.points <= livingTrolls[i].points, r.code + " : sans régénération, pas plus cher que le troll");
+}
 for (const key of Object.values(camp.noms)) assert.ok(missions.noms[key]?.length >= 5, key);
 const orders = missions.ordres.filter(o => o.faction === FACTION);
 assert.deepEqual(orders.map(o => o.code), ["village_culte", "priest_culte", "emperor_culte"]);

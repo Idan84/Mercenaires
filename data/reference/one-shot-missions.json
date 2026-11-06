@@ -231,6 +231,11 @@
             {
               "ligne": "Spectre",
               "poids": 10
+            },
+            {
+              "ligne": "Troll mort-vivant",
+              "faction": "Créatures",
+              "poids": 10
             }
           ],
           "noms": {

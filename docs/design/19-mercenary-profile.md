@@ -1,13 +1,13 @@
 # Titres des mercenaires
 
 > Décisions d'Idan du 2026-10-31 (version 2, qui remplace les facettes, points forts et points faibles). Étape codée :
-> notes des catégories et sous-catégories, attribution des titres, titres écrits (section 5 ; 2026-11-01). À venir : l'onglet **Conseils**
+> notes des catégories et sous-catégories, attribution des titres, titres écrits (section 5 ; v3 du 2026-11-06). À venir : l'onglet **Conseils**
 > (l'intendant, façon adjoint de Football Manager, avec des erreurs volontaires).
 
 ## 1 — Ce que voit le joueur
 
-Au-dessus du portrait 9:16 de la fiche, dans chaque onglet qui l'affiche : **1 à 3 titres**, chacun avec ses étoiles de
-réputation en dessous (15 niveaux : bronze, argent, or), ou **Chair à canon**. Tout se recalcule avec l'équipement porté.
+Au-dessus du portrait 9:16 de la fiche, dans chaque onglet qui l'affiche : **un seul titre écrit**, qui fond ses **1 à 3
+rôles**, **sans étoiles** (v3, 2026-11-06 ; section 5), ou **Chair à canon**. Tout se recalcule avec l'équipement porté.
 On ne montre ni points faibles ni valeur de combat globale.
 
 ## 2 — Les 10 catégories et leurs sous-catégories
@@ -51,8 +51,12 @@ Summoner de support et Poseur de pièges (les pièges n'existent pas encore en c
 2. **Titre 1** : sa meilleure catégorie.
 3. **Titre 2**, puis **titre 3** : la catégorie suivante, si elle a au moins 4★ et **au plus 1★ de moins** que la
    précédente. En cas d'égalité, la mieux placée dans son niveau passe devant.
-4. **Spécificité** : un titre prend sa meilleure sous-catégorie si elle a **au moins 2★ de plus** que toutes les autres
-   (6★ contre 5★ : générique), ou s'il ne sait faire qu'elle (au moins 3★). Sinon il reste générique.
+4. **Spécificité** (v2) : un titre prend sa meilleure sous-catégorie si elle a **au moins 2★ de plus** que toutes les autres
+   (6★ contre 5★ : générique), ou s'il ne sait faire qu'elle (au moins 3★). Sinon il reste générique. Depuis la v3
+   (section 5), le titre écrit prend toujours le « comment » de sa meilleure sous-catégorie : la spécificité n'est plus
+   montrée (elle reste dans la mesure de l'étalonnage).
+
+Les étoiles de chaque rôle servent à choisir ses rôles et le mot de niveau ; le joueur ne les voit plus (v3).
 
 Mesure d'origine (2026-10-31, 4 000 recrues) : 50 % de Chair à canon, 33 % un titre, 12 % deux, 5 % trois ; un titre sur trois est précisé
 (surtout Tank et Meneur : leurs sous-catégories varient indépendamment ; celles des DPS viennent de la même arme et se
@@ -84,51 +88,153 @@ titres au début ».
   Titre principal hors du domaine : 2 sur 655 (avant : 7 %). Capitaines : Meneur pour 11 % (aura nettement au-dessus de
   la moyenne).
 
-## 5 — Les titres écrits
+## 5 — Les titres écrits (v3)
 
-Décisions d'Idan du 2026-11-01. Données : `data/reference/mercenary-titles.json` ; code : `titleCopy`
+Décisions d'Idan du 2026-11-06 (remplacent les titres écrits du 2026-11-01 : mot du rôle, petite ligne de spécialité, un
+titre par ligne avec ses étoiles). Données : `data/reference/mercenary-titles.json` ; code : `composeTitle`
 (`game-core/mercenary-profile.js`) ; affichage : `renderEvaluation` (`prototype-web/ui.js`).
 
-- **Explicite d'abord** : le rôle est toujours dit par le même mot (Healer → **Soigneur**).
-- **Le décalage est dans le niveau** : un mot par palier d'étoiles, propre au rôle — 4–5★, 6–8★, 9–10★, 11–14★, 15★.
-- **Spécialisation** (format A) : le titre reste celui de la catégorie ; une petite ligne « spécialité : … » s'ajoute dessous.
-- **Les titres sont séparés** : 1 à 3 lignes, comme avant, chacune avec ses étoiles.
-- **Infobulle** : deux lignes qui décrivent le rôle (ou la spécialité), avec humour ; elle ne dit pas au joueur quoi faire. Le titre brut n'est plus montré.
-- Tout est écrit à la main, au masculin et au féminin.
+« Ce qu'il fait sur le terrain × comment il le fait » ; « l'idée du titre, c'est de faire un résumé de la fiche du
+personnage » ; « on ajoute surtout pas de petite ligne » ; « pas d'étoile » ; « le 3 titres c'est bien. On rajoute un
+niveau comme on avait déjà ».
 
-| Catégorie | Mot | 4–5★ | 6–8★ | 9–10★ | 11–14★ | 15★ |
-|---|---|---|---|---|---|---|
-| Healer | Soigneur / Soigneuse | en herbe | de garde | aux doigts de fée | qui recoud tout | miraculeux |
-| Summoner | Invocateur / Invocatrice | en herbe | de basse-cour | de ménagerie | des hordes | intarissable |
-| Buffer | Renforceur / Renforceuse | en herbe | vitaminé | gonflé à bloc | électrisant | survolté |
-| Contrôleur | Entraveur / Entraveuse | en herbe | agaçant | exaspérant | tyrannique | implacable |
-| DPS au CAC | Cogneur / Cogneuse | en herbe | de taverne | qu'on évite | dévastateur | apocalyptique |
-| DPS à distance | Tireur / Tireuse | en herbe | de foire | à l'œil de lynx | qui décoiffe | infaillible |
-| DPS magiques | Mage de guerre / Mage de guerre | en herbe | pétaradant | explosif | ravageur | cataclysmique |
-| Tank | Encaisseur / Encaisseuse | en herbe | rembourré | blindé | inébranlable | indestructible |
-| Éclaireur | Éclaireur / Éclaireuse | en herbe | fouineur | qui voit tout | fantôme | invisible |
-| Meneur | Meneur / Meneuse | en herbe | à la grosse voix | qu'on écoute | qu'on acclame | qu'on suivrait en enfer |
+- **Un seul titre** : ses 1 à 3 rôles (section 4) fondus en un titre, **sans étoiles**, ou **Chair à canon**.
+- **Le comment** : l'**arme** qui porte le rôle (le set qui donne la meilleure valeur), le **style** quand aucune arme ne
+  domine, l'**école** de son meilleur sort, ou la **sous-catégorie** qui a son propre mot (Assassin, Rempart, Rôdeur…).
+  On y lit toujours l'arme ou l'école, et ce qu'il fait.
+- **L'écriture** : le nom de métier quand il dit l'arme (Épéiste, Lancier, Archer, Marteleur…), sinon un nom qui a du
+  cachet suivi de l'arme (« Assommeur à la massue ») ; pour la magie, le nom de l'école quand il est transparent
+  (Pyromancien, Hydromancien, Nécromancien, Illusionniste), sinon « Mage de [école] ».
+- **Plusieurs rôles** : rôle principal (son titre) + autres rôles (leur forme courte) + armes en complément ;
+  à trois rôles, « et » avant le dernier. Un rôle déjà dit n'est pas répété (« Mage de Foudre paralyseur » dit déjà ses
+  dégâts de Foudre). Exemples : *Archer éclaireur*, *Guérisseur à la hache de guerre*, *Guetteur insaisissable et
+  intimidateur*, *Assassin rôdeur à l'épée longue et à l'arc*.
+- **Le niveau** : le mot du rôle principal, aux paliers d'étoiles d'avant (4–5★, 6–8★, 9–10★, 11–14★, 15★), placé
+  **avant l'arme** ou **à la fin** selon le mot (`paliers_place`) : *Assommeur en herbe à la massue*, *Combattant à la
+  hache de guerre qu'on évite*, *Meneur au fouet à la grosse voix*.
+- **Infobulle** : deux lignes sur le rôle principal (ou sa sous-catégorie), comme avant.
+- **Masculin et féminin** (Idan, 2026-11-06 : « je te laisse faire la version féminine ») : *Archère éclaireuse*,
+  *Assommeuse dévastatrice à la massue*, *Cheffe de guerre*, *Mage de Foudre paralyseuse*, *Transmutatrice*. Restent
+  identiques : Épéiste, Samouraï, Coupe-jarret, Brise-plates, Bâtonniste, Rétiaire, Ambidextre, Duelliste, Mage de…,
+  Télékinésiste, Illusionniste, Forgeflamme, Rempart, Insaisissable, Increvable, Augure.
 
-Chair à canon ne change pas.
+| Rôle | 4–5★ | 6–8★ | 9–10★ | 11–14★ | 15★ |
+|---|---|---|---|---|---|
+| Soin | en herbe | de garde | aux doigts de fée *(fin)* | qui recoud tout *(fin)* | miraculeux |
+| Invocation | en herbe | de basse-cour | de ménagerie | des hordes | intarissable |
+| Renfort | en herbe | vitaminé | gonflé à bloc | électrisant | survolté |
+| Entrave | en herbe | agaçant | exaspérant | tyrannique | implacable |
+| Corps à corps | en herbe | de taverne | qu'on évite *(fin)* | dévastateur | apocalyptique |
+| Distance | en herbe | de foire | à l'œil de lynx *(fin)* | qui décoiffe *(fin)* | infaillible |
+| Dégâts magiques | en herbe | pétaradant | explosif | ravageur | cataclysmique |
+| Protection | en herbe | rembourré | blindé | inébranlable | indestructible |
+| Éclaireur | en herbe | fouineur | qui voit tout *(fin)* | fantôme | invisible |
+| Meneur | en herbe | à la grosse voix *(fin)* | qu'on écoute *(fin)* | qu'on acclame *(fin)* | qu'on suivrait en enfer *(fin)* |
 
-| Catégorie | Spécialités (sous-catégorie → étiquette) |
+### Armes (dégâts au corps à corps et à distance)
+
+| Arme | Titre | En second rôle |
+|---|---|---|
+| Dague | Poignardeur | à la dague |
+| Épée courte | Spadassin à l'épée courte | à l'épée courte |
+| Kukri | Coupe-jarret au kukri | au kukri |
+| Sai | Combattant aux saïs | aux saïs |
+| Estoc | Bretteur | à l'estoc |
+| Sabre | Sabreur | au sabre |
+| Épée longue | Épéiste | à l'épée longue |
+| Katana | Samouraï | au katana |
+| Épée double | Danseur à l'épée double | à l'épée double |
+| Épée à deux mains | Épéiste à deux mains | à l'épée à deux mains |
+| Hachette | Bûcheron à la hachette | à la hachette |
+| Hache de guerre | Combattant à la hache de guerre | à la hache de guerre |
+| Hache double | Fendeur à la hache double | à la hache double |
+| Massue | Assommeur à la massue | à la massue |
+| Masse d'armes | Massier | à la masse d'armes |
+| Marteau de guerre | Marteleur | au marteau de guerre |
+| Pic de guerre | Brise-plates au pic de guerre | au pic de guerre |
+| Fléau d'armes | Moissonneur au fléau | au fléau d'armes |
+| Nunchaku | Combattant au nunchaku | au nunchaku |
+| Fouet | Dompteur au fouet | au fouet |
+| Bâton court | Bâtonniste | au bâton court |
+| Bâton long | Pèlerin au bâton long | au bâton long |
+| Lance | Lancier | à la lance |
+| Trident | Rétiaire au trident | au trident |
+| Hallebarde | Hallebardier | à la hallebarde |
+| Bardiche | Faucheur à la bardiche | à la bardiche |
+| Arme d'hast double | Combattant à l'arme d'hast double | à l'arme d'hast double |
+| Arc | Archer | à l'arc |
+| Arbalète | Arbalétrier | à l'arbalète |
+| Fronde | Frondeur | à la fronde |
+| Sarbacane | Souffleur de dards | à la sarbacane |
+| Pistolet | Pistolier | au pistolet |
+| Arquebuse | Arquebusier | à l'arquebuse |
+| Tromblon | Tireur au tromblon | au tromblon |
+| Canon à main | Canonnier | au canon à main |
+
+Sous-catégories qui ont leur mot, avec l'arme en complément : **Assassin** (la dague va de soi : « Assassin », « Assassin
+au kukri ») ; **Empoisonneur** (« Empoisonneur à la sarbacane »). Les autres (perce-armure, de foules, charge, tir de loin)
+gardent le titre de l'arme.
+
+### Styles (aucune arme ne domine)
+
+Le set tient deux armes différentes, ou l'autre set frappe au **même niveau** avec une autre arme :
+
+| Cas | Titre |
 |---|---|
-| Healer | Urgentiste → urgences ; De masse → soins de groupe ; Dans la durée → soins au long cours |
-| Summoner | De masse → nuées ; De DPS → bêtes de combat ; Gardien → gardiens ; Nécromancien → morts-vivants |
-| Buffer | De masse → toute la troupe ; De DPS → coups plus forts ; Accélérateur → vitesse ; Source de mana → mana des autres ; Protecteur → boucliers magiques |
-| Contrôleur | Des foules → foules ; Des boss → gros morceaux ; Placeur → déplacements ; Anti-mage → anti-magie |
-| DPS au CAC | Perce-armure → perce-armure ; De foules → coups en rafale ; Assassin → coups en traître ; Dans la durée → lames empoisonnées ; Chargeur → charges |
-| DPS à distance | Perce-armure → perce-armure ; De foules → tirs en rafale ; Tireur d'élite → tir de loin ; Dans la durée → traits empoisonnés |
-| DPS magiques | De foules → sorts de zone ; Tueur de cible → une cible à la fois ; Dans la durée → brûlures et maléfices ; Perce-résistances → perce-résistances |
-| Tank | Inblessable → carapace ; Esquiveur → esquive ; Auto-soigneur → se soigne tout seul ; Gardien de ligne → contre-charges |
-| Éclaireur | Vigie → guet ; Infiltrateur → infiltration ; Éclaireur magique → yeux magiques ; Poseur de pièges → pièges |
-| Meneur | Soutien de ses troupes → moral des troupes ; Démoralisateur → terreur |
+| Deux armes différentes dans les mains | Ambidextre |
+| Deux armes tenues à deux mains | Combattant à deux mains |
+| Deux armes d'une même catégorie | Combattant aux [catégorie] (« Combattant aux lames longues ») |
+| Deux armes avec bouclier | Combattant au bouclier |
+| Deux armes à une main, main libre | Duelliste |
+| Deux armes de tir | Tireur |
 
-Les infobulles (deux lignes par rôle et par spécialité) sont dans les données.
+### Protection, Éclaireur, Meneur
+
+| Rôle · comment | Titre | En second rôle |
+|---|---|---|
+| Protection · encaisser, avec bouclier | Rempart | rempart |
+| Protection · encaisser, sans bouclier | Cuirassé | cuirassé |
+| Protection · esquive | Insaisissable | insaisissable |
+| Protection · se soigne (Drain de vie, potions) | Increvable | increvable |
+| Protection · arrête les charges (armes d'hast) | Piquier | piquier |
+| Éclaireur · Perception | Guetteur | éclaireur |
+| Éclaireur · Discrétion | Rôdeur | rôdeur |
+| Éclaireur · Corbeau | Augure au corbeau | augure |
+| Meneur · aura du capitaine ou d'un lieutenant | Chef de guerre | chef de guerre |
+| Meneur · aura du fouet | Meneur au fouet | meneur (au fouet) |
+| Meneur · sorts de moral (Illusion) | Illusionniste galvaniseur | galvaniseur |
+| Meneur · Intimidation | Intimidateur | intimidateur |
+| Meneur · sorts de peur (Illusion) | Illusionniste épouvanteur | épouvanteur |
+
+### Magie (école du meilleur sort × rôle)
+
+| École | Dégâts | Soin | Entrave | Renfort | Invocation |
+|---|---|---|---|---|---|
+| Feu | Pyromancien | — | Pyromancien entraveur | Forgeflamme | — |
+| Eau | Hydromancien | Hydromancien guérisseur | Cryomancien | Hydromancien renforceur | — |
+| Foudre | Mage de Foudre | — | Mage de Foudre paralyseur | Mage de Foudre renforceur | — |
+| Vie | Mage de Vie | Guérisseur | — | Mage de Vie renforceur | — |
+| Transmutation | — | Transmutateur guérisseur | — | Transmutateur | — |
+| Télékinésie | Télékinésiste | — | Télékinésiste entraveur | Télékinésiste protecteur | — |
+| Illusion | Illusionniste | — | Illusionniste envoûteur | Illusionniste renforceur | — |
+| Nécromancie | Nécromancien | — | Nécromancien flétrisseur | — | Leveur de morts |
+| Invocation | — | — | Invocateur entraveur | — | Invocateur de bêtes |
+
+En second rôle : l'école de dégâts (pyromancien, mage de Foudre…), guérisseur, entraveur (paralyseur, envoûteur,
+flétrisseur), renforceur (protecteur), leveur de morts, invocateur. Une école sans entrée prend le mot du rôle
+(Soigneur, Entraveur, Renforceur, Invocateur, Mage de guerre).
+
+- **Renforceur** plutôt que « de soutien » (brouillon) : « de soutien » ne se compose pas (« Rôdeur guérisseur et de
+  soutien »).
+- **Mesure** (4 000 recrues, 2026-11-06) : 234 titres différents ; Chair à canon 66 %, un rôle 28 %, deux 5 %, trois
+  0,9 %. Les plus fréquents : Intimidateur, Fendeur à la hache double, Canonnier, Insaisissable, Arquebusier, Marteleur,
+  Rempart, Archer, Arbalétrier, Guetteur, Mage de Foudre (« en herbe » pour presque tous : 4–5★).
 
 ## 6 — Code et données
 
-- `game-core/mercenary-profile.js` : sources, notes, titres (`createProfileRules`, `evaluate`, `measure`, `spellRole`).
+- `game-core/mercenary-profile.js` : sources, notes, rôles, titre écrit (`createProfileRules`, `evaluate`, `measure`,
+  `spellRole`, `composeTitle`) ; les sources d'arme se mesurent set par set (`SET_SOURCES`), pour dire quelle arme porte
+  le rôle.
 - `data/reference/mercenary-profile.json` : sélection, catégories, sources, sorts et créatures par sous-catégorie (à la
   main) ; étalon, seuils et mesure (par le script).
 - `scripts/build-mercenary-profile.js` : étalonnage sur 4 000 recrues ; à relancer quand la génération, le combat, les
@@ -137,5 +243,6 @@ Les infobulles (deux lignes par rôle et par spécialité) sont dans les donnée
   `creatures`, ou `sans_role` pour Purge et Célérité), et si l'étalonnage n'est plus celui que donnent les règles
   (`node scripts/build-mercenary-profile.js --check`). L'équipement et la progression, eux, suivent tout seuls : les
   mesures passent par les règles du combat.
-- `data/reference/mercenary-titles.json` : titres écrits (section 5).
+- `data/reference/mercenary-titles.json` : titres écrits (section 5) : armes, styles, rôles (écoles, sous-catégories,
+  variantes), mots de niveau et leur place, infobulles.
 - `prototype-web/ui.js` (`renderEvaluation`) ; tests : `tests/mercenary-profile.test.js`, `tests/mercenary-titles.test.js`.

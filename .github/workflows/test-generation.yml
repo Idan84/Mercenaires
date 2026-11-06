@@ -89,6 +89,8 @@ jobs:
       - run: node tests/magic.test.js
       - run: node tests/mission-spells.test.js
       - run: node tests/mission-ui.test.js
+      - run: node tests/mission-sentinel.test.js
+      - run: node tests/mission-decor.test.js
       - run: node tests/stealth.test.js
       - run: node tests/spell-icons.test.js
       - run: node tests/starting-spells.test.js

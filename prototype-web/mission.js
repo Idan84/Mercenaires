@@ -28,7 +28,71 @@ function missionEncircled(unit){ return game.mission.engine.isEncircled(unit,mis
 function occupiedMissionKeys(except=null){
   const keys=new Set(missionUnits().filter(u=>u.alive&&u!==except).map(u=>missionKey(u.q,u.r)));
   for(const t of game.mission?.terrain||[]) keys.add(missionKey(t.q,t.r));
+  for(const d of game.mission?.decor||[]) if(missionDecorBlocksMove(d.q,d.r)) keys.add(missionKey(d.q,d.r));
   return keys;
+}
+// Décor (doc 04 ; Idan, 2026-11-06 ; terrain-decors.json) : m.decor = [{q, r, code}]. Trois réglages par décor : le
+// passage (coût de mouvement de la case : 1, 2, 3 ou 4 ; null : infranchissable), la vue, la couverture.
+function missionDecorRow(code){ return (game.referenceData?.terrainDecors?.rows||[]).find(d=>d.code===code)||null; }
+function missionDecorAt(q,r){
+  const cell=(game.mission?.decor||[]).find(d=>d.q===q&&d.r===r);
+  return cell?missionDecorRow(cell.code):null;
+}
+function missionDecorBlocksMove(q,r){ const d=missionDecorAt(q,r); return Boolean(d)&&d.cout_mouvement==null; }
+// Points de mouvement pour entrer dans la case (Idan : « vitesse réduite : mouvement à moitié / tiers / quart »).
+function missionStepCost(c){
+  const d=missionDecorAt(c.q,c.r);
+  if(!d) return 1;
+  return d.cout_mouvement==null?Infinity:Math.max(1,Number(d.cout_mouvement)||1);
+}
+function missionPathCost(path){ return (path||[]).reduce((total,c)=>total+missionStepCost(c),0); }
+// « Forêt : mouvement ½, bloque la vue, couverture partielle ».
+const MISSION_DECOR_PACE={2:"½",3:"⅓",4:"¼"};
+function missionDecorLabel(d){
+  const parts=[d.cout_mouvement==null?"infranchissable":MISSION_DECOR_PACE[d.cout_mouvement]?"mouvement "+MISSION_DECOR_PACE[d.cout_mouvement]:"",
+    d.bloque_vue?"bloque la vue":"",d.couverture&&d.couverture!=="sans"?"couverture "+d.couverture:""].filter(Boolean);
+  return d.nom+(parts.length?" : "+parts.join(", "):"");
+}
+// Couverture (Idan, 2026-11-06 : « Au tir et en défense de charge ») : le décor collé à la cible sur la ligne qui vient de
+// from (pas la case de from : un muret collé au tireur ne le gêne pas), ou la case de la cible elle-même ; la meilleure.
+function missionCoverLevel(from,target){
+  if(!game.mission?.decor?.length||!from||!target) return null;
+  const line=game.mission.engine.hexLine(from,target),before=line[line.length-2];
+  const cells=[{q:target.q,r:target.r}];
+  if(before&&!(before.q===from.q&&before.r===from.r)) cells.push(before);
+  let best=null;
+  for(const c of cells){
+    const level=missionDecorAt(c.q,c.r)?.couverture;
+    if(level==="totale") return "totale";
+    if(level==="partielle") best="partielle";
+  }
+  return best;
+}
+// Vue (Idan, 2026-11-06 : « Derrière une forêt, on voit pas » ; dedans, « oui » : on n'y est vu qu'au contact).
+function missionDecorBlocksSight(a,b){
+  if(!game.mission?.decor?.length) return false;
+  const e=game.mission.engine,blocks=c=>Boolean(missionDecorAt(c.q,c.r)?.bloque_vue);
+  if(e.axialDistance(a,b)>1&&(blocks(a)||blocks(b))) return true;
+  return e.hexLine(a,b).slice(1,-1).some(blocks);
+}
+// Mission Test (étape 1 du décor) : quelques groupes de décor au hasard, entre les deux lignes de déploiement.
+function generateMissionDecor(){
+  const rows=game.referenceData?.terrainDecors?.rows||[];
+  if(!rows.length) return [];
+  const inner=missionCells().filter(c=>{ const col=missionColumn(c.q,c.r); return col>MISSION_MAP.spawnInset&&col<MISSION_MAP.cols-1-MISSION_MAP.spawnInset; });
+  const isInner=c=>inner.some(x=>x.q===c.q&&x.r===c.r);
+  const decor=[],taken=new Set(),groups=4+Math.floor(Math.random()*3);
+  for(let i=0;i<groups;i++){
+    const row=rows[Math.floor(Math.random()*rows.length)],size=1+Math.floor(Math.random()*4);
+    let cell=inner[Math.floor(Math.random()*inner.length)];
+    for(let n=0;n<size&&cell;n++){
+      const key=missionKey(cell.q,cell.r);
+      if(!taken.has(key)){ taken.add(key); decor.push({q:cell.q,r:cell.r,code:row.code}); }
+      const next=missionNeighbors(cell).filter(c=>isInner(c)&&!taken.has(missionKey(c.q,c.r)));
+      cell=next[Math.floor(Math.random()*next.length)];
+    }
+  }
+  return decor;
 }
 // Flaque de magma (doc 12) : une case infranchissable jusqu'au tour untilTurn (exclu).
 function missionTerrainAt(q,r){ return (game.mission?.terrain||[]).find(t=>t.q===q&&t.r===r)||null; }
@@ -47,7 +111,9 @@ function missionStormAt(q,r){
 // Ligne de vue (doc 04 et 12) : seul le Brouillard la coupe pour l'instant, dès qu'une case de la ligne droite entre
 // les deux, extrémités comprises, est dans le brouillard. Elle compte pour les tirs et les sorts.
 function missionLineOfSight(a,b){
-  if((!game.mission?.fog?.length&&!game.mission?.blizzards?.length)||!a||!b) return true;
+  if(!a||!b) return true;
+  if(missionDecorBlocksSight(a,b)) return false;
+  if(!game.mission?.fog?.length&&!game.mission?.blizzards?.length) return true;
   return !game.mission.engine.hexLine(a,b).some(c=>missionFogAt(c.q,c.r)||missionBlizzardAt(c.q,c.r));
 }
 // Blizzard (Eau ; Idan, 2026-10-31) : la zone où il neige, jusqu'au tour untilTurn (exclu) ; on n'y voit pas à travers.
@@ -121,7 +187,7 @@ function resolveMissionDetection(){
     if(!observer.alive||observer.offMap) continue;
     for(const target of missionOpponents(observer)){
       if(!target.camouflaged||target.offMap||!missionLineOfSight(observer,target)) continue;
-      const r=e.rollDetection(observer,target,e.axialDistance(observer,target));
+      const r=e.rollDetection(observer,target,e.axialDistance(observer,target),e.coverDiscretion(missionCoverLevel(observer,target)));
       if(!r.spotted) continue;
       target.camouflaged=false;
       missionFx(target,"Repéré","spot");
@@ -135,34 +201,37 @@ function resolveMissionDetection(){
 // Un ennemi camouflé est invisible pour son adversaire.
 function missionHiddenFrom(target,observer){ return Boolean(target?.camouflaged)&&target.team!==observer?.team; }
 
+// Plus courts chemins en points de mouvement (décor lent : 2, 3 ou 4 par case), depuis start ; blocked : cases interdites.
+// Dans un bourbier, on entre mais on n'en sort plus : on ne le traverse pas. Renvoie la Map clé → {path, cost}, dans
+// l'ordre des coûts croissants (à coût égal, le moins de cases) ; stopKey : on s'arrête dès qu'elle est atteinte.
+function missionPaths(start,blocked,budget=Infinity,stopKey=null){
+  const startKey=missionKey(start.q,start.r),done=new Map();
+  const open=new Map([[startKey,{cell:{q:start.q,r:start.r},path:[],cost:0}]]);
+  while(open.size){
+    let key=null,cur=null;
+    for(const [k,v] of open) if(!cur||v.cost<cur.cost||(v.cost===cur.cost&&v.path.length<cur.path.length)){ key=k; cur=v; }
+    open.delete(key);
+    done.set(key,{path:cur.path,cost:cur.cost});
+    if(key===stopKey) break;
+    if(missionMireAt(cur.cell.q,cur.cell.r)) continue;
+    for(const next of missionNeighbors(cur.cell)){
+      const k=missionKey(next.q,next.r);
+      if(done.has(k)||blocked.has(k)) continue;
+      const cost=cur.cost+missionStepCost(next);
+      if(!Number.isFinite(cost)||cost>budget) continue;
+      const known=open.get(k);
+      if(!known||cost<known.cost||(cost===known.cost&&cur.path.length+1<known.path.length)) open.set(k,{cell:next,path:[...cur.path,next],cost});
+    }
+  }
+  return done;
+}
+
 function shortestMissionPath(start,end,except=null){
   const blocked=occupiedMissionKeys(except);
   const startKey=missionKey(start.q,start.r),endKey=missionKey(end.q,end.r);
   if(blocked.has(endKey)) return null;
   if(startKey!==endKey&&missionMireAt(start.q,start.r)) return null;
-
-  const queue=[{q:start.q,r:start.r}],came=new Map([[startKey,null]]);
-  while(queue.length){
-    const cur=queue.shift(),key=missionKey(cur.q,cur.r);
-    if(key===endKey) break;
-    if(key!==startKey&&missionMireAt(cur.q,cur.r)) continue;
-    for(const next of missionNeighbors(cur)){
-      const nk=missionKey(next.q,next.r);
-      if(came.has(nk)||blocked.has(nk)) continue;
-      came.set(nk,key);
-      queue.push(next);
-    }
-  }
-  if(!came.has(endKey)) return null;
-
-  const path=[];
-  let cursor=endKey;
-  while(cursor!==startKey){
-    const [q,r]=cursor.split(",").map(Number);
-    path.unshift({q,r});
-    cursor=came.get(cursor);
-  }
-  return path;
+  return missionPaths(start,blocked,Infinity,endKey).get(endKey)?.path||null;
 }
 
 function missionHexPixel(q,r){
@@ -253,6 +322,7 @@ function resetMissionActivation(unit){
   }
   unit.attackAvailable=true;
   unit.quickAvailable=true;
+  unit.sentinel=null;
   unit.prone=false;
   unit.secondMove=false;
   // Prise d'arme (Idan, 2026-11-02) : à chaque tour, une arme « Au choix » repart à une main, la main libre.
@@ -387,6 +457,7 @@ function startMissionFromSelection(){
     enemyOrder:sortMissionInitiative(enemies,engine),
     activeUnit:null,phase:"player",turn:1,mode:null,log:[],over:false,winner:null,aftermath:null
   };
+  game.mission.decor=generateMissionDecor();
 
   $("mission-select-dialog").close();
   $("game-panel").classList.add("hidden");
@@ -743,10 +814,11 @@ function logMissionAttackLines(a,d,result,kind){
   missionAttackFx(a,d,result);
   const verb={charge:" charge ",opportunity:" profite de l’ouverture et frappe ",countercharge:" contre-charge ",stray:" touche par accident "}[kind]||" attaque ";
   const prefix=a.character.name+verb+d.character.name+" avec "+result.weapon
-    +(result.opportunity?" (attaque d’opportunité, dans le dos)":result.encircled?" (cible encerclée, dans le dos)":result.backstab?" (dans le dos)":"");
+    +(result.opportunity?" (attaque d’opportunité, dans le dos)":result.encircled?" (cible encerclée, dans le dos)":result.backstab?" (dans le dos)":"")
+    +(result.cover?" (couverture "+result.cover+")":"");
 
   if(result.chargeFall){
-    missionLog(a.character.name+" chute pendant sa charge et perd son attaque !","bad");
+    missionLog(a.character.name+" chute pendant sa charge et perd son attaque !"+(result.pFall>game.mission.engine.CHARGE_FALL.base?" (terrain difficile : "+Math.round(result.pFall)+" %, jet "+result.fallRoll+")":""),"bad");
     return;
   }
   if(result.deflected){
@@ -870,12 +942,15 @@ function moveMissionUnitAlongPath(unit,path){
     missionFx(unit,"","",step);
     if(wasFleeing) MercenairesProgression.recordFleeHex(unit);
     game.mission.progression.recordStep(unit);
-    unit.movementRemaining=Math.max(0,(unit.movementRemaining||0)-1);
+    unit.movementRemaining=Math.max(0,(unit.movementRemaining||0)-missionStepCost(step));
     const flames=missionFlameAt(step.q,step.r);
     if(flames){
       missionFlameBurn(unit,flames,"traverse le mur de flammes");
       if(!unit.alive) break;
     }
+    // Mode sentinelle : un pas à la portée d'une sentinelle ennemie, et il essuie son tir.
+    missionSentinelReact(unit);
+    if(!unit.alive||game.mission.over||unit.q!==step.q||unit.r!==step.r||unit.fleeing!==wasFleeing) break;
     if(missionMireAt(step.q,step.r)){
       unit.movementRemaining=0;
       missionLog(unit.character.name+" s’enlise dans le bourbier.","bad");
@@ -902,7 +977,11 @@ function missionChargeIfClear(unit,target){
   if(!charge.valid) return null;
   // Aucun personnage, aucune flaque de magma, aucun bourbier sur la ligne (Idan, 2026-11-04) ; le brouillard ne gêne pas.
   const occupied=occupiedMissionKeys(unit);
-  return charge.path.some(h=>occupied.has(missionKey(h.q,h.r))||missionMireAt(h.q,h.r)||!validMissionHex(h.q,h.r))?null:charge;
+  if(charge.path.some(h=>occupied.has(missionKey(h.q,h.r))||missionMireAt(h.q,h.r)||!validMissionHex(h.q,h.r))) return null;
+  // Décor (Idan, 2026-11-06) : la charge traverse un décor lent, mais risque davantage la chute (« pieds dans le tapis ») ;
+  // la cible derrière une couverture, vue du point de départ de la charge, est protégée.
+  const slowSteps=charge.path.reduce((total,h)=>total+Math.max(0,missionStepCost(h)-1),0);
+  return {...charge,slowSteps,cover:missionCoverLevel({q:unit.q,r:unit.r},target)};
 }
 
 function missionActiveUnitLost(){
@@ -915,7 +994,8 @@ function missionActiveUnitLost(){
 
 // charge (facultatif) : données de Charge CAC V1 ; la charge est une seule séquence, sans enchaînement, et
 // chaque arme de mêlée y reçoit le bonus de charge (à deux armes, chaque arme frappe : décision Idan, 2026-10-08).
-function performMissionAttack(attacker,target,mode,distance,charge=null){
+// sentinel : le tir d'une sentinelle (plus précis, il enchaîne comme au corps à corps).
+function performMissionAttack(attacker,target,mode,distance,charge=null,{sentinel=false}={}){
   const m=game.mission,e=m.engine;
   // Combat à deux armes CAC V1 : à chaque séquence, chaque arme utilisable frappe une fois (principale puis
   // secondaire), chacune avec son propre mode ; sinon, la seule arme principale.
@@ -946,7 +1026,8 @@ function performMissionAttack(attacker,target,mode,distance,charge=null){
       const charging=charge&&h.mode==="melee";
       const result=e.resolveAttack(attacker,target,{
         mode:h.mode,distance:d,hand:h.hand,encircled:h.mode==="melee"&&missionEncircled(target),bystanders:missionUnits(),
-        chargeDistance:charging?charge.travel:0,chargeFollowUp:Boolean(charging&&first)
+        chargeDistance:charging?charge.travel:0,chargeFollowUp:Boolean(charging&&first),sentinel,
+        chargeSlowSteps:charging?charge.slowSteps||0:0,cover:h.mode==="ranged"?missionCoverLevel(attacker,target):charging?charge.cover:null
       });
       first=first||result;
       logMissionAttack(attacker,target,result,charging?"charge":"attack");
@@ -971,7 +1052,7 @@ function performMissionAttack(attacker,target,mode,distance,charge=null){
     if(!results.length){ if(n===1) return first; break; }
     if(dual) MercenairesProgression.recordDualSequence(attacker,results);
     if(charge||m.over||!handsAt(e.axialDistance(attacker,target)).length) break;
-    const chain=dual?e.rollPairChain(attacker,target,results,n+1):e.rollChain(attacker,target,results[0],n+1,mode);
+    const chain=dual?e.rollPairChain(attacker,target,results,n+1):e.rollChain(attacker,target,results[0],n+1,mode,{sentinel});
     if(!chain) break;
     const label=dual?"séquence":mode==="ranged"?"tir":"attaque";
     const detail=" ("+label+" n°"+chain.n+" : "+missionPercent(chain.p)+", jet "+chain.roll+")";
@@ -1056,22 +1137,13 @@ function missionMinDistance(cell,units){
   return units.length?Math.min(...units.map(u=>game.mission.engine.axialDistance(cell,u))):0;
 }
 
-// Chemins les plus courts vers chaque case libre atteignable, dans l'ordre de distance.
+// Chemins les plus courts (en points de mouvement) vers chaque case libre atteignable avec budget, dans l'ordre des coûts.
 // forbidden : cases interdites en plus des cases occupées (la case de départ reste permise).
 function missionReachablePaths(unit,budget=Infinity,forbidden=null){
   const blocked=occupiedMissionKeys(unit),start={q:unit.q,r:unit.r};
   if(forbidden) for(const key of forbidden) blocked.add(key);
-  const paths=new Map([[missionKey(start.q,start.r),[]]]),queue=missionMireAt(start.q,start.r)?[]:[start];
-  while(queue.length){
-    const cur=queue.shift(),path=paths.get(missionKey(cur.q,cur.r));
-    if(path.length>=budget||(path.length&&missionMireAt(cur.q,cur.r))) continue;
-    for(const next of missionNeighbors(cur)){
-      const key=missionKey(next.q,next.r);
-      if(paths.has(key)||blocked.has(key)) continue;
-      paths.set(key,[...path,next]);
-      queue.push(next);
-    }
-  }
+  const paths=new Map();
+  for(const [key,{path}] of missionPaths(start,blocked,budget)) paths.set(key,path);
   return paths;
 }
 
@@ -1097,7 +1169,7 @@ function missionExitPath(unit,budget,threats,forbidden=null){
   let best=null,bestScore=-1;
   for(const path of missionReachablePaths(unit,budget,forbidden).values()){
     const cell=path.length?path[path.length-1]:unit;
-    if(!isMissionBorder(cell)||path.length+1>budget) continue;
+    if(!isMissionBorder(cell)||missionPathCost(path)+1>budget) continue;
     const value=missionMinDistance(cell,threats);
     if(value>bestScore){ best=path;bestScore=value; }
   }
@@ -1211,7 +1283,7 @@ function handleMissionHexClick(q,r){
 
   if(m.mode==="move"&&!clicked){
     const path=shortestMissionPath(u,{q,r},u);
-    if(path&&path.length<=u.movementRemaining){
+    if(path&&missionPathCost(path)<=u.movementRemaining){
       m.mode=null;
       const moved=moveMissionUnitAlongPath(u,path);
       if(moved) missionLog(u.character.name+" se déplace de "+moved+" hex.","move");
@@ -1791,7 +1863,8 @@ function resolveMissionSpell(caster,target,code,extra={}){
 // Case vide : ni personnage en jeu, ni flaque de magma.
 function missionCellFree(target){
   if(!target||target.character) return true;
-  return !missionUnits().some(u=>u.alive&&!u.offMap&&u.q===target.q&&u.r===target.r)&&!missionTerrainAt(target.q,target.r);
+  return !missionUnits().some(u=>u.alive&&!u.offMap&&u.q===target.q&&u.r===target.r)&&!missionTerrainAt(target.q,target.r)
+    &&!missionDecorBlocksMove(target.q,target.r);
 }
 
 // Invocations (Nécromancie ; Idan, 2026-10-28) : le joueur les joue (l'IA en combat automatique), dès le tour suivant ;
@@ -2216,6 +2289,7 @@ function missionForcedMove(unit,out,caster){
     const other=missionUnits().find(u=>u!==unit&&u.alive&&!u.offMap&&u.q===c.q&&u.r===c.r);
     if(other){ obstacle=other.character.name; break; }
     if(missionTerrainAt(c.q,c.r)){ obstacle="la flaque de magma"; break; }
+    if(missionDecorBlocksMove(c.q,c.r)){ obstacle=missionDecorAt(c.q,c.r).article||missionDecorAt(c.q,c.r).nom; break; }
     unit.q=c.q;unit.r=c.r;moved++;
     missionFx(unit,"","",c);
   }
@@ -2482,25 +2556,13 @@ function enemyTryReload(unit){
 }
 
 function enemyMoveToward(unit,target){
-  const max=game.mission.engine.movementBase(unit);
-  const blocked=occupiedMissionKeys(unit);
-  let best={q:unit.q,r:unit.r,path:[],distance:game.mission.engine.axialDistance(unit,target)};
-  const queue=[{q:unit.q,r:unit.r,path:[]}],seen=new Set([missionKey(unit.q,unit.r)]);
-
-  while(queue.length){
-    const cur=queue.shift();
-    if(cur.path.length>=max) continue;
-    for(const next of missionNeighbors(cur)){
-      const key=missionKey(next.q,next.r);
-      if(seen.has(key)||blocked.has(key)) continue;
-      seen.add(key);
-      const path=[...cur.path,next];
-      const dist=game.mission.engine.axialDistance(next,target);
-      if(dist<best.distance||(dist===best.distance&&path.length<best.path.length)){
-        best={q:next.q,r:next.r,path,distance:dist};
-      }
-      queue.push({q:next.q,r:next.r,path});
-    }
+  const e=game.mission.engine;
+  let best={path:[],distance:e.axialDistance(unit,target)};
+  // Les chemins viennent dans l'ordre des coûts : à distance égale, le moins cher.
+  for(const path of missionReachablePaths(unit,unit.movementRemaining??e.movementBase(unit)).values()){
+    if(!path.length) continue;
+    const dist=e.axialDistance(path[path.length-1],target);
+    if(dist<best.distance) best={path,distance:dist};
   }
 
   if(best.path.length){
@@ -2602,7 +2664,8 @@ function enemyMissionActivation(unit,{reset=true}={}){
   missionAiCast(unit);
   if(!unit.alive||game.mission.over||unit.attackAvailable===false) return;
   let target=nearestMissionTarget(unit);
-  if(!target) return;
+  // Mode sentinelle (Idan, 2026-11-06 : les ennemis aussi) : un tireur qui n'a rien à viser, et que personne ne voit, guette.
+  if(!target){ missionStandSentinel(unit); return; }
 
   enemyTryUsefulSet(unit,target);
   enemyTryReload(unit);
@@ -2623,7 +2686,7 @@ function enemyMissionActivation(unit,{reset=true}={}){
   if(game.mission.over||!unit.alive||unit.fleeing) return;
 
   target=nearestMissionTarget(unit);
-  if(!target) return;
+  if(!target){ missionStandSentinel(unit); return; }
   enemyTryUsefulSet(unit,target);
   enemyTryReload(unit);
   weapon=e.weaponTemplate(e.activeWeaponItem(unit));
@@ -2633,7 +2696,9 @@ function enemyMissionActivation(unit,{reset=true}={}){
   if(missionUsableHands(unit,target).length){
     missionAiCoat(unit);
     performMissionAttack(unit,target,mode,distance);
+    return;
   }
+  missionStandSentinel(unit);
 }
 
 // Combat automatique (doc 17 ; Idan, 2026-10-25 : « un mode simu pour tester rapidement les missions ») : votre équipe
@@ -2745,6 +2810,48 @@ function missionUsableHands(u,target){
 function missionCanAttack(u,target,mode){
   return missionUsableHands(u,target).some(h=>h.mode===mode);
 }
+// Mode sentinelle (Idan, 2026-11-06 : « Un personnage avec une arme de tir peut se mettre en sentinelle au lieu de tirer. En
+// mode sentinelle, pendant le tour de l'adversaire, tire sur la première cible qui se déplace à sa portée. Il a un double
+// bonus : plus de précision et plus de chance pour enchaîner plusieurs tirs (sauf arme à feu). Il ne peut passer en mode
+// sentinelle que si aucun ennemi ne le voit » ; « les deux » : camouflé, ou hors de la ligne de vue de tous les ennemis ;
+// les ennemis aussi). Il y passe à la place de son attaque, et son activation s'arrête là. Bonus : game-core/combat-engine.js
+// (SENTINEL).
+function missionUnseen(unit){
+  return Boolean(unit.camouflaged)||!missionOpponents(unit).some(o=>!o.offMap&&missionLineOfSight(o,unit));
+}
+function missionCanStandSentinel(unit){
+  return Boolean(unit?.alive&&!unit.fleeing&&unit.attackAvailable&&!unit.sentinel&&missionHeldModes(unit).has("ranged")&&missionUnseen(unit));
+}
+function missionStandSentinel(unit){
+  if(!missionCanStandSentinel(unit)) return false;
+  unit.attackAvailable=false;
+  unit.sentinel={turn:game.mission.turn};
+  missionFx(unit,"Sentinelle");
+  missionLog(unit.character.name+" se met en sentinelle.","info");
+  return true;
+}
+// Le pas d'un personnage : chaque sentinelle ennemie qui l'a à sa portée, en vue, tire (dans l'ordre d'initiative) ; sa
+// sentinelle s'arrête après ce tir. Sinon, elle s'arrête au début de sa prochaine activation (resetMissionActivation).
+function missionSentinelReact(mover){
+  const m=game.mission;
+  const order=mover.team==="player"?m.enemyOrder:m.playerOrder;
+  for(const sentinel of order){
+    if(m.over||!mover.alive) return;
+    if(!sentinel.sentinel||!sentinel.alive||sentinel.fleeing||sentinel.team===mover.team) continue;
+    if(!missionCanAttack(sentinel,mover,"ranged")) continue;
+    sentinel.sentinel=null;
+    missionFx(sentinel,"Sentinelle");
+    missionLog(sentinel.character.name+", en sentinelle, tire sur "+mover.character.name+".","info");
+    performMissionAttack(sentinel,mover,"ranged",m.engine.axialDistance(sentinel,mover),null,{sentinel:true});
+    checkMissionEnd();
+  }
+}
+// Le bouton : le mercenaire se met en sentinelle, puis son activation s'arrête.
+function standMissionSentinel(){
+  const u=missionActiveUnit(),m=game.mission;
+  if(!u||m.phase!=="player"||m.over||!missionStandSentinel(u)) return;
+  endMissionActivation();
+}
 // Attaquer au corps à corps en se déplaçant (Idan, 2026-11-04 : « On doit pouvoir cliquer sur attaquer au CAC en se déplaçant
 // automatiquement (ça doit être implicite) ») : un ennemi hors d'atteinte, mais qu'on rejoint avec le mouvement restant. Le
 // plus court chemin jusqu'à une case d'où l'arme le frappe ; à égalité, celui qui provoque le moins d'attaques
@@ -2759,9 +2866,10 @@ function missionMeleeApproach(u,target,reach=null){
     if(!path.length) continue;
     const end=path[path.length-1],distance=e.axialDistance(end,target);
     if(!strikesAt(distance)) continue;
-    if(best&&path.length>best.path.length) continue;
+    const cost=missionPathCost(path);
+    if(best&&cost>best.cost) continue;
     const risk=missionPathOpportunityCount(u,path);
-    if(!best||path.length<best.path.length||risk<best.risk) best={path,risk,distance};
+    if(!best||cost<best.cost||risk<best.risk) best={path,risk,distance,cost};
   }
   return best;
 }
@@ -2775,6 +2883,7 @@ function missionActionAvailability(){
     melee:u.attackAvailable&&missionHeldModes(u).has("melee"),
     twoHands:u.attackAvailable&&missionHeldModes(u).has("melee")&&e.canGripTwoHands(u),
     ranged:u.attackAvailable&&missionHeldModes(u).has("ranged"),
+    sentinel:missionCanStandSentinel(u),
     charge:u.attackAvailable&&e.isMeleeWeapon(w)&&u.movementRemaining===e.movementBase(u),
     switch:u.quickAvailable&&e.canSwitchWeaponSet(u),
     reload:u.quickAvailable&&e.canReload(u),
@@ -2893,7 +3002,7 @@ function renderMissionRoster(units){
       ${renderMissionPortrait(u,"compact")}
       <div class="mission-roster-copy">
         <strong>${esc(u.character.name)}</strong>
-        <span>${u.raised?"Relevé en zombie":u.offMap?"A quitté le combat":(u.summon?"Invocation · ":"")+Math.max(0,u.hp)+"/"+u.pvMax+" PV"+(u.hp<0?" ("+u.hp+")":"")+(u.alive&&u.fleeing?" · En fuite":"")+(u.alive&&u.camouflaged?" · Camouflé":"")+(u.alive&&!game.mission.engine.isLoaded(u,game.mission.engine.activeWeaponItem(u))?" · Arme déchargée":"")}</span>
+        <span>${u.raised?"Relevé en zombie":u.offMap?"A quitté le combat":(u.summon?"Invocation · ":"")+Math.max(0,u.hp)+"/"+u.pvMax+" PV"+(u.hp<0?" ("+u.hp+")":"")+(u.alive&&u.fleeing?" · En fuite":"")+(u.alive&&u.camouflaged?" · Camouflé":"")+(u.alive&&u.sentinel?" · En sentinelle":"")+(u.alive&&!game.mission.engine.isLoaded(u,game.mission.engine.activeWeaponItem(u))?" · Arme déchargée":"")}</span>
         ${u.alive&&!u.offMap?`<i class="mission-roster-hp${missionHpClass(pct)}"><b style="width:${pct}%"></b></i>`:""}
         <small>Init ${Math.round(game.mission.engine.initiative(u))} · Mvt ${game.mission.engine.movementBase(u)}${missionRosterMagic(u)}</small>
       </div>
@@ -3015,12 +3124,21 @@ function renderMission(){
     ?"Actif : "+u.character.name+" · Mouvement "+u.movementRemaining+"/"+e.movementBase(u)*(u.secondMove?2:1)+" · Set "+u.activeSet
     :"";
 
+  // Décor (Idan : « des couleurs pour commencer ») : une couche de cases colorées sous les cases cliquables.
+  let decorTiles="";
+  for(const d of m.decor||[]){
+    const row=missionDecorRow(d.code),p=missionHexPixel(d.q,d.r);
+    if(row) decorTiles+=`<span class="hex-decor${row.cout_mouvement==null?" blocking":""}" style="left:${p.x-MISSION_MAP.size}px;top:${p.y-MISSION_MAP.size}px;--decor:${row.couleur}"></span>`;
+  }
+  const reach=m.mode==="move"&&u?missionReachablePaths(u,u.movementRemaining):null;
   let cells="";
   for(const {q,r} of missionCells()){
     const p=missionHexPixel(q,r),key=missionKey(q,r),classes=["hex-cell"];
     let title="";
     if(targets.has(key)) classes.push(m.mode==="move"?"reachable":missionSpellMode()?"spell-target":"targetable");
     else if(inRange.has(key)) classes.push("in-range");
+    const decor=missionDecorAt(q,r);
+    if(decor) title=` title="${esc(missionDecorLabel(decor))}"`;
     const magma=missionTerrainAt(q,r);
     if(magma){ classes.push("magma"); title=` title="Flaque de magma : infranchissable jusqu’au tour ${magma.untilTurn}"`; }
     if(m.spellTarget&&m.spellTarget.q===q&&m.spellTarget.r===r) classes.push("spell-chosen");
@@ -3037,7 +3155,7 @@ function renderMission(){
     const storm=missionStormAt(q,r);
     if(storm){ classes.push("storm"); title=` title="Tempête : la foudre frappe au hasard dans la zone (encore ${storm.turnsLeft} tour${storm.turnsLeft>1?"s":""})"`; }
     if(targets.has(key)&&m.mode==="move"){
-      const risk=missionPathOpportunityCount(u,shortestMissionPath(u,{q,r},u));
+      const risk=missionPathOpportunityCount(u,reach?.get(key)||[]);
       if(risk){
         classes.push("provokes");
         title=` title="Provoque ${risk} attaque${risk>1?"s":""} d’opportunité"`;
@@ -3081,7 +3199,7 @@ function renderMission(){
   else if(missionView.fitted) fitMissionView();
   if(u&&u.id!==missionView.activeId){ missionView.activeId=u.id; if(!missionView.fitted) centerMissionView(u,true); }
   applyMissionView();
-  map.innerHTML=cells+tokens;
+  map.innerHTML=decorTiles+cells+tokens;
   missionHover.key=null;
   $("mission-hover-card").classList.add("hidden");
   scheduleMissionFx();
@@ -3089,7 +3207,7 @@ function renderMission(){
   const availability=missionActionAvailability();
   const buttons=[
     ["mission-move-btn","move"],["mission-attack-btn","melee"],["mission-charge-btn","charge"],
-    ["mission-switch-btn","switch"],["mission-reload-btn","reload"],["mission-ranged-btn","ranged"],["mission-second-move-btn","secondMove"],["mission-end-activation-btn","end"],["mission-auto-btn","auto"]
+    ["mission-switch-btn","switch"],["mission-reload-btn","reload"],["mission-ranged-btn","ranged"],["mission-sentinel-btn","sentinel"],["mission-second-move-btn","secondMove"],["mission-end-activation-btn","end"],["mission-auto-btn","auto"]
   ];
   for(const [id,key] of buttons){
     $(id).disabled=!availability[key];
@@ -3271,7 +3389,8 @@ function missionAttackPreviewRows(u,target,hands,{e,charge,distance,hidden}){
   return hands.map(h=>e.withHand(u,h.hand,()=>{
     const item=e.activeWeaponItem(u),weapon=e.weaponTemplate(item);
     const backstab=hidden||Boolean(target.fleeing)||(h.mode==="melee"&&missionEncircled(target));
-    const row={weapon:item?.name||weapon?.nom||"Arme",mode:h.mode,backstab,pHit:e.hitProbability(u,target,h.mode,distance,{backstab})};
+    const cover=h.mode==="ranged"?missionCoverLevel(u,target):charge&&h.mode==="melee"?charge.cover:null;
+    const row={weapon:item?.name||weapon?.nom||"Arme",mode:h.mode,backstab,cover,pHit:e.hitProbability(u,target,h.mode,distance,{backstab,cover})};
     if(h.mode==="ranged"&&target.projectileShield) row.pDeflect=Number(target.projectileShield.chance)||0;
     if(target.character?.immunePhysical&&weapon?.degats_type!=="psychique"){ row.immune=true; return row; }
     // Pas de blocage dans le dos, ni s'il a déjà bloqué ce tour (Idan, 2026-11-04).
@@ -3297,7 +3416,7 @@ function renderMissionHoverCard(q,r){
   if(unit){
     const weapon=e.activeWeaponItem(unit);
     const up=unit.alive;
-    const tags=[unit.summon&&"Invocation",unit.character.undead&&"Mort-vivant",up&&unit.camouflaged&&"Camouflé",up&&unit.fleeing&&"En fuite",
+    const tags=[unit.summon&&"Invocation",unit.character.undead&&"Mort-vivant",up&&unit.camouflaged&&"Camouflé",up&&unit.sentinel&&"En sentinelle",up&&unit.fleeing&&"En fuite",
       up&&missionEncircled(unit)&&"Encerclé",up&&unit.poisoned&&"Empoisonné",up&&unit.weaponPoison&&"Arme empoisonnée",up&&unit.prone&&"Au sol",!up&&"Hors combat"].filter(Boolean);
     html+=`<strong>${esc(unit.character.name)}</strong><span class="hc-sub">${Math.max(0,unit.hp)} / ${unit.pvMax} PV · ${esc(weapon?.name||"Sans arme")}</span>`
       +(tags.length?`<span class="hc-tags">${tags.join(" · ")}</span>`:"");
@@ -3306,6 +3425,7 @@ function renderMissionHoverCard(q,r){
         +(row.approach?`<dt>Approche</dt><dd>${row.approach.steps} case${row.approach.steps>1?"s":""}</dd>`
           +(row.approach.risk?`<dt>Danger</dt><dd class="odds-bad">${row.approach.risk} attaque${row.approach.risk>1?"s":""} d’opportunité</dd>`:""):"")
         +(row.pDeflect?`<dt>Déviation</dt>${missionOdds(row.pDeflect)}`:"")
+        +(row.cover?`<dt>Couverture</dt><dd>${row.cover}</dd>`:"")
         +`<dt>Toucher</dt>${missionOdds(row.pHit)}`
         +(row.immune?`<dt>Immunisé</dt><dd class="odds-bad">dégâts physiques</dd>`:"")
         +(row.pBlock!==undefined?`<dt>Bouclier</dt><dd>${Math.round(row.pBlock)} % de blocage</dd>`:"")
@@ -3324,7 +3444,7 @@ function renderMissionHoverCard(q,r){
   }
   if(u&&m.mode==="move"&&targets.has(key)){
     const path=shortestMissionPath(u,{q,r},u)||[],risk=missionPathOpportunityCount(u,path);
-    html+=`<div class="hc-attack"><em>Déplacement</em><dl><dt>Cases</dt><dd>${path.length} / ${u.movementRemaining}</dd>`
+    html+=`<div class="hc-attack"><em>Déplacement</em><dl><dt>Mouvement</dt><dd>${missionPathCost(path)} / ${u.movementRemaining}</dd>`
       +(risk?`<dt>Danger</dt><dd class="odds-bad">${risk} attaque${risk>1?"s":""} d’opportunité</dd>`:"")
       +(missionMireAt(q,r)?`<dt>Bourbier</dt><dd class="odds-bad">arrêt</dd>`:"")+`</dl></div>`;
   }
@@ -3451,6 +3571,7 @@ function initializeMissionUi(){
   $("mission-two-hands-btn").addEventListener("click",()=>setMissionMode("melee",{twoHands:true}));
   $("mission-charge-btn").addEventListener("click",()=>setMissionMode("charge"));
   $("mission-ranged-btn").addEventListener("click",()=>setMissionMode("ranged"));
+  $("mission-sentinel-btn").addEventListener("click",standMissionSentinel);
   $("mission-switch-btn").addEventListener("click",switchMissionWeapon);
   $("mission-reload-btn").addEventListener("click",reloadMissionWeapon);
   $("mission-second-move-btn").addEventListener("click",missionSecondMove);

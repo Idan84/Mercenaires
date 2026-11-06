@@ -134,13 +134,16 @@ for (const [i, r] of results.entries()) {
   if (!ranged) assert.ok(!r.categories.some(c => c.code === "dps_distance"));
 }
 
-// Les tirs enchaînés comptent : l'arc (« Répétable ») vaut plus qu'un seul tir, l'arbalète non.
+// Les tirs enchaînés comptent : l'arc et l'arbalète (« Répétable » ; Idan, 2026-11-06) valent plus qu'un seul tir, une arme
+// à feu non.
 const holding = name => recruits.find(m => engine.weaponTemplate(engine.activeWeaponItem({character:m, activeSet:1}))?.nom === name);
 const target = {character:recruits[0], activeSet:1};
 const bowUnit = {character:holding("Arc"), activeSet:1}, crossbowUnit = {character:holding("Arbalète"), activeSet:1};
-assert.ok(bowUnit.character && crossbowUnit.character, "un archer et un arbalétrier dans l'échantillon");
+const gunUnit = {character:["Arquebuse", "Pistolet", "Canon à main", "Tromblon"].map(holding).find(Boolean), activeSet:1};
+assert.ok(bowUnit.character && crossbowUnit.character && gunUnit.character, "un archer, un arbalétrier et un tireur à l'arme à feu dans l'échantillon");
 assert.ok(profile.perTurn(bowUnit, target, "ranged", 4) > profile.strike(bowUnit, target, "ranged", 4).damage, "l'arc enchaîne ses tirs");
-assert.equal(profile.perTurn(crossbowUnit, target, "ranged", 4), profile.strike(crossbowUnit, target, "ranged", 4).damage, "l'arbalète tire une fois");
+assert.ok(profile.perTurn(crossbowUnit, target, "ranged", 4) > profile.strike(crossbowUnit, target, "ranged", 4).damage, "l'arbalète aussi");
+assert.equal(profile.perTurn(gunUnit, target, "ranged", 4), profile.strike(gunUnit, target, "ranged", 4).damage, "une arme à feu tire une fois");
 
 // Sorts : chacun dans sa sous-catégorie (Soin profond : Urgentiste ; loups : Summoner de masse ; corbeau : Éclaireur
 // magique) ; Purge et Célérité n'en ont pas.

@@ -166,7 +166,7 @@ Le tir est construit comme un combat physique à distance, sans créer un second
 - **Toucher** : [Toucher distance V1](/design/#doc=formulas/toucher-distance-v1.md). Aucun malus jusqu'au quart de la portée max ; ensuite le malus croît jusqu'à `−40` au Delta à portée max. La couverture multiplie la probabilité finale par `0,5` ou `0,25`.
 - **Blesser** : [Blesser distance V1](/design/#doc=formulas/blesser-distance-v1.md). La **Perception remplace la Force**.
 - **Dégâts physiques** : [Dégâts PV physiques distance V1](/design/#doc=formulas/degats-pv-physiques-distance-v1.md). Aucun facteur Force : l'énergie est encodée dans les dés et puissances de l'arme.
-- **Cadence** : [Enchaînement de tirs distance V1](/design/#doc=formulas/enchainement-de-tirs-distance-v1.md) pour les armes `Répétable`.
+- **Cadence** : [Enchaînement de tirs distance V1](/design/#doc=formulas/enchainement-de-tirs-distance-v1.md) pour les armes `Répétable` : arc, arbalète (Idan, 2026-11-06 : « Pour moi l'arbalète était comme l'arc » ; elle était en `Tir unique`), fronde, sarbacane. Les armes à feu tirent une fois.
 - **Projectile raté / approximation** : [Approximation projectile V1](/design/#doc=formulas/approximation-projectile-v1.md) peut toucher accidentellement un allié ou ennemi dans le couloir de tir. **Couloir de tir** (décision Idan du 2026-10-08) : cône de **30°** depuis le tireur, centré sur l'axe tireur → cible, compté de la **moitié de la distance** de la cible jusqu'à la **portée max** de l'arme (constantes `combat.ranged.stray.cone_angle`, `combat.ranged.stray.corridor_start_ratio`).
 - **Courage** : [Courage post-tir V1](/design/#doc=formulas/courage-post-tir-v1.md). Une cible réellement blessée peut fuir ; le tireur ne teste jamais son Courage simplement parce qu'il a raté ou n'a pas blessé.
 - **Armes à feu** : [Armes à feu — recharge et double pistolet V1](/design/#doc=formulas/armes-a-feu-recharge-et-double-pistolet-v1.md) : pas de stock de munitions normales ; **recharger une arme = 1 Action rapide** ; épée + pistolet et deux pistolets suivent le combat à deux armes, avec inerties cumulées et une attaque de base par arme actuellement utilisable.
@@ -193,11 +193,72 @@ Tirer sur une cible distante alors qu'un ennemi est adjacent reste autorisé, ma
 
 - **Camouflé** : un personnage qu'aucun ennemi n'a encore vu est camouflé, **invisible pour l'armée ennemie**. Au début du combat, tout le monde l'est.
 - **Repérage** : au **début de chaque tour** (et au début du combat), chaque personnage fait un test de Perception pour chaque ennemi encore camouflé **dans sa ligne de vue** (le Brouillard l'empêche) : **P = 100 / (1 + e^(−Δ/15))**, **Δ = Perception − (Discrétion + couverture) + 40 − 5 × distance**, de 5 à 95 % (`combat.stealth.*` ; Idan : « le mec à 3 cases, on le voit »). Un seul succès suffit : l'ennemi est **repéré par toute l'armée, pour toute la partie** (Idan : on ne redevient jamais camouflé).
-- **Couverture** (Idan : « un bonus de discrétion important ») : **+30** de Discrétion derrière une couverture partielle, **+60** derrière une couverture totale, quand le décor existera.
+- **Couverture** (Idan : « un bonus de discrétion important ») : **+30** de Discrétion derrière une couverture partielle, **+60** derrière une couverture totale (le décor, 2026-11-06 : section « Décor »).
 - **Invisible** : on ne peut ni l'attaquer, ni le charger, ni le viser avec un sort (les sorts de zone le touchent quand même) ; l'IA ne le choisit pas comme cible ; personne ne lui porte d'attaque d'opportunité ni de contre-charge.
 - **Il agit sans se découvrir** (Idan : on attaque, tire et lance des sorts « tout en étant et restant camouflé ») : son attaque est une **attaque non détectée**, donc une **Frappe dans le dos V1** (la cible ne se défend pas avec sa Perception ; la résistance de son armure est divisée par deux pour Blesser) ; un sort qui vole comme une flèche ignore lui aussi la Perception de la cible.
 - Exemples : un archer gobelin novice (Perception 62) repère un mercenaire de Discrétion 30 à 95 % à 3 cases, 89 % à 8 ; un lancier gobelin novice (Perception 43) à 39 % à 12 cases ; sous Avancée cachée (+52 de Discrétion), l’archer ne le repère plus qu’à 34 % à 6 cases.
 - Plus tard (Idan) : le **brouillard de guerre** (les ennemis camouflés disparaissent de la carte). En attendant, ils restent dessinés, en transparence, avec la mention « Camouflé ».
+
+## Décor (Idan, 2026-11-06)
+
+« Franchissable / infranchissable. Couverture : sans / partiel / totale » ; « je distinguerais ligne de vue et couverture. Le
+mec est derrière un gros rocher, on le voit, on peut le viser, mais il est protégé. Derrière une forêt, on voit pas » ; « il
+peut y avoir une subtilité dans franchissable : vitesse réduite ». Données : `terrain-decors.json` ; code :
+`prototype-web/mission.js` (décor, chemins, vue, couverture), `game-core/combat-engine.js` (`COVER`, `CHARGE_FALL`).
+
+**Trois réglages indépendants par décor** :
+
+| Décor | Passage | Vue | Couverture |
+|---|---|---|---|
+| Buissons | ½ | laisse voir | partielle |
+| Forêt | ½ | bloque | partielle |
+| Blé haut | ½ | bloque | sans |
+| Marais, eau peu profonde | ⅓ | laisse voir | sans |
+| Éboulis | ⅓ | laisse voir | partielle |
+| Muret, caisses | infranchissable | laisse voir | partielle |
+| Gros rocher | infranchissable | laisse voir | totale |
+| Mur, maison | infranchissable | bloque | totale |
+| Gouffre, eau profonde | infranchissable | laisse voir | sans |
+
+- **Passage** : entrer dans une case lente coûte **2** (½), **3** (⅓) ou **4** (¼) points de mouvement (Idan : « parfait ») ;
+  les chemins prennent le moins cher (à coût égal, le moins de cases) ; une case infranchissable ne se traverse pas (ni
+  déplacement, ni charge, ni déplacement forcé : on la heurte ; on n'y invoque rien).
+- **Vue** : un décor qui bloque coupe la ligne de vue (ni tir, ni sort visé, ni repérage à travers), comme le Brouillard ;
+  **dedans, on ne voit et on n'est vu qu'au contact** (Idan : « oui »).
+- **Couverture** (Idan : « au tir et en défense de charge ») : la cible est couverte par le décor **collé à elle sur la
+  ligne** qui vient de l'attaquant (pas la case de l'attaquant : un muret collé au tireur ne gêne pas son tir), ou par
+  **sa propre case** (dans les buissons) ; la meilleure des deux. Pour une charge, la ligne part de la case de départ.
+  - **partielle** : Toucher **× 0,5** (`combat.cover.partial_hit_factor`), **+30** de Discrétion au repérage ;
+  - **totale** : Toucher **× 0,25** (`combat.cover.total_hit_factor`), **+60** de Discrétion ; on le voit et on peut le viser.
+  - Pas au corps à corps (hors charge), ni contre les sorts.
+- **Charge** (Idan : « Elle peut, mais on augmente la proba d'échec critique, pieds dans le tapis ») : elle traverse un
+  décor lent ; la chute de charge (2 %) gagne **+5 % × (coût − 1)** par case lente de la course
+  (`combat.charge.fall_per_slow_step`, chiffre proposé par JC3, à valider).
+- **Affichage** (Idan : « des couleurs pour commencer ») : une couleur par décor sous la case (plus sombre sur les bords quand
+  on ne la traverse pas) ; le survol de la case dit ce qu'elle fait ; l'aperçu d'une attaque montre la couverture.
+- **Cartes** : la Mission Test pose 4 à 6 groupes de décor au hasard entre les deux lignes de déploiement (étape 1). Le
+  relief (l'altitude) et le décor des cartes de mission viendront ensuite.
+
+## Mode sentinelle (Idan, 2026-11-06)
+
+« Un personnage avec une arme de tir peut se mettre en sentinelle au lieu de tirer. En mode sentinelle, pendant le tour de
+l'adversaire, tire sur la première cible qui se déplace à sa portée. Il a un double bonus : plus de précision et plus de
+chance pour enchaîner plusieurs tirs (sauf arme à feu). Il ne peut passer en mode sentinelle que si aucun ennemi ne le voit. »
+
+- **Qui** : un personnage dont l'arme de tir est prête (chargée, pour une arme à feu), qui n'a pas encore attaqué, et
+  qu'**aucun ennemi ne voit** : il est **camouflé**, ou **aucun ennemi n'a de ligne de vue** sur lui (Idan : « les deux » ;
+  aujourd'hui le Brouillard et le Blizzard, bientôt le décor).
+- **Quand** : à son activation, **au lieu de tirer** (bouton « Sentinelle ») ; il peut se déplacer avant ; son activation
+  s'arrête là.
+- **Le tir** : pendant le tour adverse, le **premier ennemi visible qui fait un pas à sa portée** (déplacement, approche,
+  charge, fuite ; pas un déplacement forcé par un sort), et dans sa ligne de vue, essuie aussitôt son tir, avant de
+  continuer. Les règles du tir s'appliquent (couloir de tir, attaques des ennemis au contact, Courage post-tir) ; s'il est
+  encore camouflé, c'est aussi une attaque non détectée.
+- **Les bonus** (`combat.sentinel.*`) : **+20 au Toucher** ; l'**enchaînement** comme au corps à corps : (Dextérité effective
+  + Vitesse) / N au lieu de / (1,5 × N), pour les armes `Répétable` (arc, arbalète, fronde, sarbacane).
+- **Fin** : après ce tir ; sans cible, au début de sa prochaine activation.
+- **Les ennemis aussi** (Idan : « Bien sûr ! ») : un tireur ennemi qui n'a rien à viser après son déplacement, et que
+  personne ne voit, se met en sentinelle ; le combat automatique fait de même pour vos mercenaires.
 
 ## Invocations et morts-vivants (Idan, 2026-10-28)
 
@@ -217,7 +278,7 @@ La **forme et le rayon** restent propres à l'arme ou au sort. Cette règle doit
 
 ## Charge & contre-charge V1
 
-- [Charge CAC V1](/design/#doc=formulas/charge-cac-v1.md) : ligne droite d'hexagones dans n'importe quelle direction, sans personnage, magma ni bourbier entre les deux (Idan, 2026-11-04) ; distance `MouvementBase` à `2 × MouvementBase` ; 2 % de chute de base ; puissance croissante selon distance parcourue × `Bonus charge base` de l'arme ; V1 = **1** par défaut, **2** pour hast / armes `2 mains`.
+- [Charge CAC V1](/design/#doc=formulas/charge-cac-v1.md) : ligne droite d'hexagones dans n'importe quelle direction, sans personnage, magma ni bourbier entre les deux (Idan, 2026-11-04) ; distance `MouvementBase` à `2 × MouvementBase` ; 2 % de chute de base (plus à travers un décor lent : section « Décor ») ; puissance croissante selon distance parcourue × `Bonus charge base` de l'arme ; V1 = **1** par défaut, **2** pour hast / armes `2 mains`.
 - [Contre-charge V1](/design/#doc=formulas/contre-charge-v1.md) : la cible d'une charge peut réagir avec une arme configurée `Contre-charge`. Une réaction **à distance part à mi-course** ; une réaction de mêlée / hast part à sa portée normale.
 
 Si la contre-charge **blesse** le chargeur, son attaque est annulée et il teste immédiatement son Courage. En cas d'échec, il fait demi-tour et consomme tout mouvement de charge restant pour repartir dans la direction opposée.

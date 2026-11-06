@@ -258,9 +258,9 @@ for (let i = 0; i < 1000; i++) {
       "Combat à une main","Combat à deux mains","Combat à deux armes","Boucliers"]);
     for (const name of unpracticed) {
       const v = c.skills.martial[name];
-      if (Number.isFinite(v)) assert.ok(v <= 1 || v > 20, `${name} : ${v} (20 ou moins → 1)`);
+      if (Number.isFinite(v)) assert.ok(v === 1 || v > 20, `${name} : ${v} (20 ou moins, 0 compris → 1)`);
     }
-    for (const [school, v] of Object.entries(c.skills.magic)) assert.ok(v <= 1 || v > 20, `${school} : ${v} (20 ou moins → 1)`);
+    for (const [school, v] of Object.entries(c.skills.magic)) assert.ok(v === 1 || v > 20, `${school} : ${v} (20 ou moins, 0 compris → 1)`);
     for (const spell of c.spells || []) assert.ok(c.skills.magic[spell.school] > 20, `${spell.name} : école ${spell.school} à ${c.skills.magic[spell.school]}`);
   }
 // Seconde main (Idan, 2026-11-04) : une arme principale de corps à corps à une main ; Boucliers ≥ 50 : le bouclier le

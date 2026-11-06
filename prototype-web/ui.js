@@ -921,11 +921,14 @@ function profileRules(){
 // Titre (Idan, 2026-11-06, v3) : un seul titre écrit qui fond ses 1 à 3 rôles (« Archer éclaireur en herbe »), sans
 // étoiles, ou « Chair à canon », au masculin ou au féminin ; une infobulle de deux lignes sur le rôle principal
 // (mercenary-titles.json).
+// L'aura ne compte que pour le capitaine et les lieutenants (et le fouet).
+function evaluationContext(c){
+  const company=game.campaign?.company;
+  return {captain:company?company.captainId===c.id:c.role==="Capitaine",lieutenant:Boolean(company?.lieutenantIds?.includes(c.id))};
+}
 function renderEvaluation(c){
   const rules=profileRules();
-  // L'aura ne compte que pour le capitaine et les lieutenants (et le fouet).
-  const company=game.campaign?.company;
-  const context={captain:company?company.captainId===c.id:c.role==="Capitaine",lieutenant:Boolean(company?.lieutenantIds?.includes(c.id))};
+  const context=evaluationContext(c);
   const result=rules?.evaluate(c,context);
   const copy=result&&rules.composeTitle?.(c,result,context,{female:isFemale(c)});
   if(!copy) return "";
@@ -1617,6 +1620,26 @@ const DOMAIN_ICONS = {
   magic:'<path d="M12 3l2.1 6.9L21 12l-6.9 2.1L12 21l-2.1-6.9L3 12l6.9-2.1z"/>'
 };
 function mercenaryDomain(c) { return c?.domain || c?.equipment?.profile?.type || null; }
+// Domaine évolutif (Idan, 2026-11-06 : « le statut (l'icône) évolue dans le temps », « un message dans le journal, mais on
+// utilise le terme de combat rapproché ») : le titre recalculé (game-core/mercenary-profile.js, titleDomain) ; à la fin
+// d'une mission, après un changement d'équipement et chaque matin au camp. Renvoie ceux qui ont changé.
+const DOMAIN_SHIFT = {melee: "passe au combat rapproché", ranged: "passe au combat à distance", magic: "passe à la magie"};
+function refreshMercenaryDomains(characters, {log = null} = {}) {
+  const rules = profileRules();
+  if (!rules?.titleDomain) return [];
+  const changed = [];
+  for (const c of characters || []) {
+    if (!c?.stats) continue;
+    const next = rules.titleDomain(rules.evaluate(c, evaluationContext(c)));
+    if (!next || next === mercenaryDomain(c) || !DOMAIN_SHIFT[next]) continue;
+    c.domain = next;
+    changed.push(c);
+    const message = c.name + " " + DOMAIN_SHIFT[next] + ".";
+    if (typeof gameAction === "function") gameAction(message);
+    if (log) log(message);
+  }
+  return changed;
+}
 function domainBadge(c) {
   const code = mercenaryDomain(c), row = (game.referenceData?.domains?.rows || []).find(r => r.code === code);
   if (!row) return "";

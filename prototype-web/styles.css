@@ -407,6 +407,9 @@ body[data-screen="mission"] .app-shell{max-width:none;padding:8px 10px 74px}
 .mission-initiative{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;min-width:0;margin:0;padding:4px 0;list-style:none;overflow:hidden}
 .mission-init{flex:none;width:34px;height:34px;border:2px solid #5fa0d8;border-radius:50%;overflow:hidden;background:#191919;box-shadow:0 2px 6px #0009;cursor:pointer;transition:transform .15s}
 .mission-init.enemy{border-color:#d4523c}
+/* Cadre de nos personnages : leur domaine du moment (combat rapproché, distance, magie). */
+.mission-init[data-domain="ranged"]{border-color:#6cc25a}
+.mission-init[data-domain="magic"]{border-color:#a97be6}
 .mission-init .avatar-frame--compact{width:100%;height:100%;flex-basis:auto;border:0;border-radius:50%}
 .mission-init.done{opacity:.35;filter:grayscale(.8)}
 .mission-init.active{width:42px;height:42px;border-color:#f0c050;box-shadow:0 0 0 2px #f0c05055,0 0 14px #f0c050aa}
@@ -432,6 +435,8 @@ body[data-screen="mission"] .app-shell{max-width:none;padding:8px 10px 74px}
 .mission-roster-row.active{background:#f0c05017;box-shadow:inset 0 0 0 1px #f0c05066}
 .mission-roster-row .avatar-frame--compact{width:38px;height:38px;flex-basis:38px;border:2px solid #5fa0d8;border-radius:50%}
 .mission-roster-row.enemy .avatar-frame--compact{border-color:#d4523c}
+.mission-roster-row[data-domain="ranged"] .avatar-frame--compact{border-color:#6cc25a}
+.mission-roster-row[data-domain="magic"] .avatar-frame--compact{border-color:#a97be6}
 .mission-roster-copy{display:grid;gap:2px;min-width:0}
 .mission-roster-row strong{overflow:hidden;color:#f3e2c0;font-size:.76rem;text-overflow:ellipsis;white-space:nowrap}
 .mission-roster-row span{color:#d1bf9f;font-size:.66rem}
@@ -499,6 +504,8 @@ body[data-screen="mission"] .app-shell{max-width:none;padding:8px 10px 74px}
 .mission-token{position:absolute;z-index:5;width:52px;height:52px;border-radius:50%;color:#fff;text-align:center;cursor:pointer}
 .token-ring{position:absolute;inset:0;overflow:hidden;border:3px solid #5fa0d8;border-radius:50%;background:#191919;box-shadow:0 5px 10px #000b,0 0 0 1px #000}
 .mission-token.enemy .token-ring{border-color:#d4523c}
+.mission-token[data-domain="ranged"] .token-ring{border-color:#6cc25a}
+.mission-token[data-domain="magic"] .token-ring{border-color:#a97be6}
 .token-ring .avatar-frame--battle{border-radius:50%}
 .mission-token .token-hp{position:absolute;z-index:3;left:8px;right:8px;bottom:-5px;height:6px;border:1px solid #000;border-radius:99px;background:#1a1a1a;overflow:hidden;box-shadow:0 1px 3px #000a}
 .token-hp i{display:block;height:100%;background:#7cc46a}

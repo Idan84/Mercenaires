@@ -39,6 +39,17 @@
     "titre_min": 4,
     "ecart_titre": 1,
     "max_titres": 3,
+    "domaine_par_role_description": "Domaine évolutif (Idan, 2026-11-06 : « le statut (l'icône) évolue dans le temps », « on garde le frein ») : à chaque recalcul du titre (fin de mission, changement d'équipement, chaque matin au camp), le domaine prend celui du premier rôle de son titre qui dit comment il se bat ; un rôle porté par ses sorts (Tank, Éclaireur, Meneur) compte pour domaine_sorts ; sinon le rôle suivant ; sans titre ou sans rôle qui le dise, il ne change pas.",
+    "domaine_par_role": {
+      "dps_cac": "melee",
+      "dps_distance": "ranged",
+      "dps_magie": "magic",
+      "healer": "magic",
+      "buffer": "magic",
+      "controleur": "magic",
+      "summoner": "magic"
+    },
+    "domaine_sorts": "magic",
     "ecart_specificite": 2,
     "specificite_min": 3,
     "progression": 1.25,

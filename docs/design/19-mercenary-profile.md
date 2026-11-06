@@ -83,6 +83,25 @@ titres au début ».
   haut).
 - **Domaine** : une catégorie hors du domaine du mercenaire demande **une étoile de plus** (`selection.domaines`,
   `ecart_hors_domaine`) : un mage n'est « DPS au CAC » qu'à 5★.
+- **Domaine évolutif** (Idan, 2026-11-06 : « le statut (l'icône) évolue dans le temps et le cadre suit cette évolution » ;
+  « on garde le frein, et un message dans le journal, mais on utilise le terme de combat rapproché ») : à chaque recalcul du
+  titre — **fin de mission** (expérience), **changement d'équipement** (échange, relance, réaménagement), **chaque matin**
+  au camp (entraînements, apprentissages) —, le domaine prend celui du **premier rôle du titre qui dit comment il se bat**
+  (`selection.domaine_par_role`) : DPS au CAC → Corps à corps ; DPS à distance → Distance ; DPS magiques, Healer, Buffer,
+  Contrôleur, Summoner → Mage. Un Tank, un Éclaireur ou un Meneur **porté par ses sorts** compte Mage
+  (`selection.domaine_sorts`) ; sinon on passe au rôle suivant. Sans titre, ou sans rôle qui le dise, il ne change pas.
+  **Le frein reste** : hors de son domaine, un rôle demande une étoile de plus pour entrer dans le titre ; un mage passe au
+  combat rapproché quand l'épée a vraiment pris le dessus (exemple du test : un mage gnome en épée à deux mains, compétences
+  au maximum, n'y passe qu'avec +40 en Force, Dextérité et Vitesse : 5★ au CAC), et il faudra ensuite une étoile de plus à
+  sa magie pour revenir. À la génération, le titre suit le domaine tiré : personne ne change au premier matin. Le journal
+  de la compagnie le dit (« Malik passe au combat rapproché. », « … au combat à distance. », « … à la magie. »), le journal
+  du combat aussi en fin de mission. Le picto de la fiche suit. Code : `titleDomain` (`game-core/mercenary-profile.js`),
+  `refreshMercenaryDomains` (`prototype-web/ui.js`).
+- **Cadre de combat** (Idan, 2026-11-06 : « un cadre de couleur pour nos personnages ? Archer / CAC / Magie » ; « combat
+  seulement », « on ne touche pas aux ennemis ») : en combat, l'anneau de nos personnages prend la couleur de leur domaine
+  du moment : **bleu** (combat rapproché), **vert** (distance), **violet** (magie), sur le pion, la barre d'ordre de jeu et
+  la liste de l'équipe. Le personnage actif reste doré ; les ennemis gardent leur rouge et leurs cadres de rang ; les
+  invocations gardent leur anneau.
 - **Mesure** (4000 recrues) : Chair à canon 65.8 %, un titre 28.4 %, deux 5.1 %, trois 0.7 %
   (avant : 27 / 37 / 24 / 12 %). Titres par catégorie : DPS au CAC 9.2 %, DPS à distance 8.2 %, Tank 5 %, Éclaireur 4.9 %, Meneur 4.6 %, Contrôleur 2.6 %, DPS magiques 2.5 %, Buffer 2 %, Summoner 1.2 %, Healer 0.7 %.
   Titre principal hors du domaine : 2 sur 655 (avant : 7 %). Capitaines : Meneur pour 11 % (aura nettement au-dessus de

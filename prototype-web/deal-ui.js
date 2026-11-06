@@ -205,6 +205,7 @@ function retryDeal(memberId,approach){
   const result=dealRules().retry(game.campaign,m.id,approach);
   if(!result.ok){ tavernLog(result.reason,"warn"); return; }
   persuasionAppend(m,result,dealLines(m,result).outcome,`${m.id}|${game.campaign.day}|deal|${approach}`);
+  if(typeof refreshMercenaryDomains==="function") refreshMercenaryDomains([m]);
   saveGame();
   renderGame();
   if($("character-dialog").open&&game.sheetCharacter) renderSheet();
@@ -216,6 +217,7 @@ function runDeal({member,slot,stock,item}){
   if(!m) return;
   const result=dealRules().propose(game.campaign,{mercenaryId:m.id,slot,stockItemId:stock||null,itemId:item||null});
   if(!result.ok) return;
+  if(typeof refreshMercenaryDomains==="function") refreshMercenaryDomains([m]);
   saveGame();
   renderGame();
   if($("character-dialog").open&&game.sheetCharacter) renderSheet();
@@ -230,6 +232,7 @@ function runOwnMove(action){
   const result=action.swap?dealRules().swapSets(game.campaign,{mercenaryId:m.id})
     :dealRules().rearrange(game.campaign,{mercenaryId:m.id,itemId:action.item,slot:action.slot});
   if(!result.ok) return;
+  if(typeof refreshMercenaryDomains==="function") refreshMercenaryDomains([m]);
   saveGame();
   renderGame();
   if($("character-dialog").open&&game.sheetCharacter) renderSheet();

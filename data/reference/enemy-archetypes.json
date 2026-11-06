@@ -8699,7 +8699,7 @@
       "armure": "Vêtements",
       "tier": 4,
       "qualite": "De luxe",
-      "points": 48,
+      "points": 56,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -8711,19 +8711,19 @@
       "sorts": [
         {
           "code": "bone_army",
-          "maitrise": 65
+          "maitrise": 80
         },
         {
           "code": "raise_dead",
-          "maitrise": 65
+          "maitrise": 80
         },
         {
           "code": "curse",
-          "maitrise": 65
+          "maitrise": 80
         },
         {
           "code": "death_arrow",
-          "maitrise": 65
+          "maitrise": 80
         }
       ],
       "sort_initial": "bone_army",
@@ -8781,7 +8781,7 @@
       "armure": "Gambison",
       "tier": 4,
       "qualite": "De luxe",
-      "points": 85,
+      "points": 88,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -8793,27 +8793,27 @@
       "sorts": [
         {
           "code": "bone_army",
-          "maitrise": 65
+          "maitrise": 100
         },
         {
           "code": "summon_specter",
-          "maitrise": 65
+          "maitrise": 100
         },
         {
           "code": "raise_dead",
-          "maitrise": 65
+          "maitrise": 100
         },
         {
           "code": "curse",
-          "maitrise": 65
+          "maitrise": 100
         },
         {
           "code": "necrosis",
-          "maitrise": 65
+          "maitrise": 100
         },
         {
           "code": "death_arrow",
-          "maitrise": 65
+          "maitrise": 100
         }
       ],
       "sort_initial": "bone_army",
@@ -8871,7 +8871,7 @@
       "armure": "Gambison",
       "tier": 4,
       "qualite": "De luxe",
-      "points": 126,
+      "points": 130,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -8883,31 +8883,31 @@
       "sorts": [
         {
           "code": "bone_army",
-          "maitrise": 65
+          "maitrise": 130
         },
         {
           "code": "summon_specter",
-          "maitrise": 65
+          "maitrise": 130
         },
         {
           "code": "raise_dead",
-          "maitrise": 65
+          "maitrise": 130
         },
         {
           "code": "curse",
-          "maitrise": 65
+          "maitrise": 130
         },
         {
           "code": "soul_siphon",
-          "maitrise": 65
+          "maitrise": 130
         },
         {
           "code": "necrosis",
-          "maitrise": 65
+          "maitrise": 130
         },
         {
           "code": "death_arrow",
-          "maitrise": 65
+          "maitrise": 130
         }
       ],
       "sort_initial": "bone_army",

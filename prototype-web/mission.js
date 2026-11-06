@@ -28,7 +28,8 @@ function missionEncircled(unit){ return game.mission.engine.isEncircled(unit,mis
 function occupiedMissionKeys(except=null){
   const keys=new Set(missionUnits().filter(u=>u.alive&&u!==except).map(u=>missionKey(u.q,u.r)));
   for(const t of game.mission?.terrain||[]) keys.add(missionKey(t.q,t.r));
-  for(const d of game.mission?.decor||[]) if(missionDecorBlocksMove(d.q,d.r)) keys.add(missionKey(d.q,d.r));
+  // Un volant passe au-dessus du décor infranchissable (missionPaths l'empêche de s'y arrêter).
+  if(!missionFlies(except)) for(const d of game.mission?.decor||[]) if(missionDecorBlocksMove(d.q,d.r)) keys.add(missionKey(d.q,d.r));
   return keys;
 }
 // Décor (doc 04 ; Idan, 2026-11-06 ; terrain-decors.json) : m.decor = [{q, r, code}]. Trois réglages par décor : le
@@ -49,9 +50,14 @@ function missionDecorCost(c){
 function missionHeightAt(q,r){ return (game.mission?.relief||[]).find(c=>c.q===q&&c.r===r)?.h||0; }
 function missionUnitHeight(u){ return u?missionHeightAt(u.q,u.r):0; }
 function missionAltitude(){ return game.mission?.engine?.ALTITUDE||{climbCost:1,cliff:2,hitPerLevel:10,max:3}; }
+// Vol (les chauves-souris de la Cour de sang ; Idan, 2026-11-06 : « Elles volent donc ignorent les pénalités de
+// mouvement », « Elles survolent tout ») : 1 point par case, sans décor, montée ni falaise ; elles passent au-dessus d'un
+// décor infranchissable, mais ne peuvent pas s'y arrêter.
+function missionFlies(unit){ return Boolean(unit?.character?.flies); }
 // Un pas de from à c : le décor, plus la montée (+ climbCost par niveau ; descendre est gratuit) ; un écart de cliff niveaux
-// ou plus est une falaise, infranchissable dans les deux sens.
-function missionStepCost(c,from=null){
+// ou plus est une falaise, infranchissable dans les deux sens. Un volant (unit) : 1.
+function missionStepCost(c,from=null,unit=null){
+  if(missionFlies(unit)) return 1;
   const decor=missionDecorCost(c);
   if(!from||!game.mission?.relief?.length) return decor;
   const rise=missionHeightAt(c.q,c.r)-missionHeightAt(from.q,from.r),alt=missionAltitude();
@@ -60,7 +66,8 @@ function missionStepCost(c,from=null){
 }
 function missionPathCost(path,start=null){
   let prev=start,total=0;
-  for(const c of path||[]){ total+=missionStepCost(c,prev); prev=c; }
+  const unit=start?.character?start:null;
+  for(const c of path||[]){ total+=missionStepCost(c,prev,unit); prev=c; }
   return total;
 }
 // « Forêt : mouvement ½, bloque la vue, couverture partielle ».
@@ -239,20 +246,22 @@ function missionHiddenFrom(target,observer){ return Boolean(target?.camouflaged)
 // Plus courts chemins en points de mouvement (décor lent : 2, 3 ou 4 par case), depuis start ; blocked : cases interdites.
 // Dans un bourbier, on entre mais on n'en sort plus : on ne le traverse pas. Renvoie la Map clé → {path, cost}, dans
 // l'ordre des coûts croissants (à coût égal, le moins de cases) ; stopKey : on s'arrête dès qu'elle est atteinte.
-function missionPaths(start,blocked,budget=Infinity,stopKey=null){
-  const startKey=missionKey(start.q,start.r),done=new Map();
+function missionPaths(start,blocked,budget=Infinity,stopKey=null,flyer=null){
+  const startKey=missionKey(start.q,start.r),done=new Map(),seen=new Set();
   const open=new Map([[startKey,{cell:{q:start.q,r:start.r},path:[],cost:0}]]);
   while(open.size){
     let key=null,cur=null;
     for(const [k,v] of open) if(!cur||v.cost<cur.cost||(v.cost===cur.cost&&v.path.length<cur.path.length)){ key=k; cur=v; }
     open.delete(key);
-    done.set(key,{path:cur.path,cost:cur.cost});
+    seen.add(key);
+    // Un volant survole un décor infranchissable, sans pouvoir s'y arrêter.
+    if(!flyer||!missionDecorBlocksMove(cur.cell.q,cur.cell.r)) done.set(key,{path:cur.path,cost:cur.cost});
     if(key===stopKey) break;
     if(missionMireAt(cur.cell.q,cur.cell.r)) continue;
     for(const next of missionNeighbors(cur.cell)){
       const k=missionKey(next.q,next.r);
-      if(done.has(k)||blocked.has(k)) continue;
-      const cost=cur.cost+missionStepCost(next,cur.cell);
+      if(seen.has(k)||blocked.has(k)) continue;
+      const cost=cur.cost+missionStepCost(next,cur.cell,flyer);
       if(!Number.isFinite(cost)||cost>budget) continue;
       const known=open.get(k);
       if(!known||cost<known.cost||(cost===known.cost&&cur.path.length+1<known.path.length)) open.set(k,{cell:next,path:[...cur.path,next],cost});
@@ -266,7 +275,7 @@ function shortestMissionPath(start,end,except=null){
   const startKey=missionKey(start.q,start.r),endKey=missionKey(end.q,end.r);
   if(blocked.has(endKey)) return null;
   if(startKey!==endKey&&missionMireAt(start.q,start.r)) return null;
-  return missionPaths(start,blocked,Infinity,endKey).get(endKey)?.path||null;
+  return missionPaths(start,blocked,Infinity,endKey,missionFlies(except)?except:null).get(endKey)?.path||null;
 }
 
 function missionHexPixel(q,r){
@@ -992,7 +1001,7 @@ function moveMissionUnitAlongPath(unit,path){
     missionFx(unit,"","",step);
     if(wasFleeing) MercenairesProgression.recordFleeHex(unit);
     game.mission.progression.recordStep(unit);
-    unit.movementRemaining=Math.max(0,(unit.movementRemaining||0)-missionStepCost(step,from));
+    unit.movementRemaining=Math.max(0,(unit.movementRemaining||0)-missionStepCost(step,from,unit));
     const flames=missionFlameAt(step.q,step.r);
     if(flames){
       missionFlameBurn(unit,flames,"traverse le mur de flammes");
@@ -1028,11 +1037,16 @@ function missionChargeIfClear(unit,target){
   // Aucun personnage, aucune flaque de magma, aucun bourbier sur la ligne (Idan, 2026-11-04) ; le brouillard ne gêne pas.
   const occupied=occupiedMissionKeys(unit);
   if(charge.path.some(h=>occupied.has(missionKey(h.q,h.r))||missionMireAt(h.q,h.r)||!validMissionHex(h.q,h.r))) return null;
+  // Un volant survole le décor, mais ne finit pas sa charge dessus.
+  const last=charge.path[charge.path.length-1];
+  if(last&&missionDecorBlocksMove(last.q,last.r)) return null;
   // Décor (Idan, 2026-11-06) : la charge traverse un décor lent, mais risque davantage la chute (« pieds dans le tapis ») ;
   // la cible derrière une couverture, vue du point de départ de la charge, est protégée.
-  const slowSteps=charge.path.reduce((total,h)=>total+Math.max(0,missionDecorCost(h)-1),0);
-  // Altitude (Idan, 2026-11-06) : pas de falaise sur la ligne, et pas de charge qui monte de plus d'un niveau.
-  if(game.mission?.relief?.length){
+  const flyer=missionFlies(unit);
+  const slowSteps=flyer?0:charge.path.reduce((total,h)=>total+Math.max(0,missionDecorCost(h)-1),0);
+  // Altitude (Idan, 2026-11-06) : pas de falaise sur la ligne, et pas de charge qui monte de plus d'un niveau (un volant
+  // survole tout).
+  if(game.mission?.relief?.length&&!flyer){
     let prev={q:unit.q,r:unit.r},climb=0;
     for(const h of charge.path){
       const rise=missionHeightAt(h.q,h.r)-missionHeightAt(prev.q,prev.r);
@@ -1203,7 +1217,7 @@ function missionReachablePaths(unit,budget=Infinity,forbidden=null){
   const blocked=occupiedMissionKeys(unit),start={q:unit.q,r:unit.r};
   if(forbidden) for(const key of forbidden) blocked.add(key);
   const paths=new Map();
-  for(const [key,{path}] of missionPaths(start,blocked,budget)) paths.set(key,path);
+  for(const [key,{path}] of missionPaths(start,blocked,budget,null,missionFlies(unit)?unit:null)) paths.set(key,path);
   return paths;
 }
 
@@ -2484,8 +2498,8 @@ function missionAiCast(unit){
 
 // Sorts de l'IA (le nécromancien ; Idan, 2026-11-06) : un ennemi dont la fiche donne des sorts (character.aiSpells) les
 // essaie dans l'ordre de sa fiche, et lance le premier qui passe : une invocation tant que la sienne n'est pas là (au plus
-// près de l'ennemi), une Résurrection sur un corps, un sort sur l'ennemi visible le plus proche. Les sorts sur soi, de zone
-// ou en deux temps ne sont pas joués par l'IA. Nos mercenaires en combat automatique n'ont pas de aiSpells : rien ne
+// près de l'ennemi), une Résurrection sur un corps, un sort sur l'ennemi visible le plus proche, le Drain de vie sur soi
+// (le vampire). Les autres sorts sur soi, de zone ou en deux temps ne sont pas joués par l'IA. Nos mercenaires en combat automatique n'ont pas de aiSpells : rien ne
 // change pour eux.
 // La cible d'un sort de l'IA depuis la case où elle se tient, ou null.
 function missionAiSpellTarget(unit,code,spell,opponents){
@@ -2510,7 +2524,17 @@ function missionAiSpell(unit){
   if(!opponents.length) return false;
   for(const code of codes){
     const spell=magic.spell(code);
-    if(!spell||["soi","case"].includes(spell.cible)||["deplacement_force","degats_paire"].includes(spell.effet)) continue;
+    if(!spell||spell.cible==="case"||["deplacement_force","degats_paire"].includes(spell.effet)) continue;
+    // Sur soi : le Drain de vie seulement (la Cour de sang ; Idan, 2026-11-06 : « estoc, drain de vie, sort d'illusions »),
+    // s'il n'est pas déjà actif et qu'un ennemi visible est à portée de ses pas.
+    if(spell.cible==="soi"){
+      if(spell.effet!=="drain_de_vie"||unit.lifeDrain||(spell.action==="rapide"&&unit.quickAvailable===false)) continue;
+      const reach=(unit.movementRemaining||0)+1;
+      if(!opponents.some(o=>!missionHiddenFrom(o,unit)&&game.mission.engine.axialDistance(unit,o)<=reach)) continue;
+      const out=resolveMissionSpell(unit,unit,code);
+      if(out?.ok) return true;
+      continue;
+    }
     if(spell.cible==="case_vide"&&missionUnits().some(x=>x.alive&&!x.offMap&&x.summon?.casterId===unit.id&&x.summon?.code===code)) continue;
     let target=missionAiSpellTarget(unit,code,spell,opponents);
     // Hors de portée (la Résurrection se lance au contact) : il se déplace d'abord vers la case la moins chère d'où il peut
@@ -2707,7 +2731,7 @@ function enemyMoveToward(unit,target){
   const blocked=occupiedMissionKeys(unit);
   if(!missionMireAt(unit.q,unit.r)){
     let full=null;
-    for(const [,found] of missionPaths({q:unit.q,r:unit.r},blocked,Infinity)){
+    for(const [,found] of missionPaths({q:unit.q,r:unit.r},blocked,Infinity,null,missionFlies(unit)?unit:null)){
       const end=found.path[found.path.length-1];
       if(end&&e.axialDistance(end,target)<=1){ full=found.path; break; }
     }
@@ -2715,7 +2739,7 @@ function enemyMoveToward(unit,target){
       const path=[];
       let spent=0;
       let prev={q:unit.q,r:unit.r};
-      for(const step of full){ spent+=missionStepCost(step,prev); if(spent>budget) break; path.push(step); prev=step; }
+      for(const step of full){ spent+=missionStepCost(step,prev,unit); if(spent>budget) break; path.push(step); prev=step; }
       if(path.length) best={path,distance:e.axialDistance(path[path.length-1],target)};
     }
   }

@@ -50,8 +50,11 @@ assert.equal(land("Culte des morts").enceinte_decor, "muret");
 assert.ok(land("Culte des morts").decors.tombe >= 5);
 const tomb = reference.terrainDecors.rows.find(d => d.code === "tombe");
 assert.deepEqual([tomb.nom, tomb.cout_mouvement, tomb.bloque_vue, tomb.couverture], ["Tombe", null, false, "partielle"]);
+// Le château en ruine de la Cour de sang (Idan, 2026-11-06 : « camp en hauteur, enceinte de murs », « murs ok ») : un plateau,
+// des murs (qui bloquent la vue).
+assert.deepEqual([land("Cour de sang").nom, land("Cour de sang").enceinte_decor, land("Cour de sang").camp_hauteur], ["Château en ruine", "mur", 2]);
 for (const row of lands.rows) if (row.enceinte_decor) assert.ok(decorCodes.has(row.enceinte_decor), row.faction);
-assert.deepEqual(["Gobelins", "Ogres"].map(f => land(f).camp_hauteur), [2, 2], "les carrières : le camp en hauteur");
+assert.deepEqual(["Gobelins", "Ogres", "Cour de sang"].map(f => land(f).camp_hauteur), [2, 2, 2], "les carrières et le château : le camp en hauteur");
 assert.deepEqual(["Orcs", "Hommes-bêtes", "Voleurs"].map(f => land(f).camp_hauteur), [0, 0, 0]);
 assert.ok(land("Hommes-bêtes").decors.foret >= 5 && land("Hommes-bêtes").zone_libre >= 3, "une clairière dans la forêt");
 assert.ok(land("Voleurs").decors.maison > 0 && land("Ogres").decors.gros_rocher > 0);

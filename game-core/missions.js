@@ -224,6 +224,10 @@
       // invocation, sans mana ni jet) ; il reste derrière ses troupes tant qu'elles tiennent (en_retrait).
       if(arch.sort_initial) c.startSpells=[arch.sort_initial];
       if(arch.en_retrait) c.staysBehind=true;
+      // Cour de sang (Idan, 2026-11-06) : les chauves-souris volent (« Elles survolent tout ») ; le vampire régénère (la
+      // règle du sang de troll, game-core/regeneration.js : Régénération = points de la fiche ; le feu la bloque).
+      if(arch.vol) c.flies=true;
+      if(arch.regeneration!=null) c.skills.physiology={...(c.skills.physiology||{}),"Régénération":Number(arch.regeneration)||0};
       return c;
     }
 

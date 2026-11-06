@@ -208,6 +208,7 @@ function pruneMissionTerrain(){
 
 // Discrétion (doc 04 ; Idan, 2026-10-28) : au début du combat, personne n'a vu personne, tout le monde est camouflé.
 function startMissionCamouflage(){
+  raiseMissionStartSummons();
   for(const u of missionUnits()) u.camouflaged=true;
   missionLog("Personne ne s’est encore vu : tout le monde est camouflé. Au début de chaque tour, chacun cherche les ennemis qu’il a en vue.","info");
   resolveMissionDetection();
@@ -2007,7 +2008,23 @@ function missionSummonCells(start,count){
   }
   return cells;
 }
-function summonMissionCreature(caster,spell,out,detail){
+// Armée levée d'avance (le nécromancien dans son cimetière ; Idan, 2026-11-06 : « B, vas-y ») : au début du combat, chaque
+// personnage dont la fiche donne un sort_initial (character.startSpells, une invocation) l'a déjà autour de lui, sans mana
+// ni jet ; ensuite, mêmes règles que lancée en combat (entretien, test de Charisme, elle tombe avec lui).
+function raiseMissionStartSummons(){
+  const magic=missionMagic();
+  if(!magic) return;
+  for(const caster of missionUnits().filter(u=>u.alive&&!u.offMap&&u.character?.startSpells?.length)){
+    for(const code of caster.character.startSpells){
+      const spell=magic.spell(code);
+      if(spell?.effet!=="invocation") continue;
+      const summon={code,creature:spell.creature||null,upkeep:magic.upkeepCost(caster,code),cell:{q:caster.q,r:caster.r},
+        count:magic.summonCount(caster,code)};
+      summonMissionCreature(caster,spell,{summon},"",{start:true});
+    }
+  }
+}
+function summonMissionCreature(caster,spell,out,detail,{start=false}={}){
   const m=game.mission,s=out.summon,arch=missionSummonArchetype(s.creature);
   if(!arch){ missionLog("Créature inconnue : "+s.creature+".","bad"); return false; }
   const wanted=s.count?.count||1,cells=missionSummonCells(s.cell,wanted),group="pack-"+((m.summonSeq||0)+1);
@@ -2018,7 +2035,8 @@ function summonMissionCreature(caster,spell,out,detail){
   const roll=s.count?.dice?" ("+s.count.dice+" : "+s.count.rolled+(s.count.bonus?", +"+s.count.bonus+" pour la Maîtrise":"")+")":"";
   const what=units.length>1?units.length+" "+arch.pluriel.toLowerCase()+" apparaissent"+roll+" ("+units[0].pvMax+" PV chacun)"
     :units[0].character.name+" apparaît"+roll+" ("+units[0].pvMax+" PV)";
-  missionLog(caster.character.name+" lance "+spell.nom+detail+" : "+what+(cells.length<wanted?", faute de place pour "+wanted:"")
+  missionLog((start?"Autour de "+caster.character.name+", son "+spell.nom+" est déjà levée":caster.character.name+" lance "+spell.nom+detail)
+    +" : "+what+(cells.length<wanted?", faute de place pour "+wanted:"")
     +" ; entretien "+s.upkeep+" mana par tour"+(units.length>1?" pour le groupe":"")+".","magic");
   return true;
 }
@@ -2831,6 +2849,16 @@ function enemyMissionActivation(unit,{reset=true}={}){
   missionAiCast(unit);
   if(unit.alive&&!game.mission.over) missionAiSpell(unit);
   if(!unit.alive||game.mission.over||unit.attackAvailable===false) return;
+  // En retrait (le nécromancien ; Idan, 2026-11-06 : « B, vas-y ») : tant que ses troupes tiennent, il reste derrière elles
+  // et n'avance que pour lancer un sort ; il ne frappe qu'un ennemi à son contact. Seul, il se bat comme les autres.
+  if(unit.character?.staysBehind&&livingMissionUnits(unit.team).some(a=>a!==unit&&!a.offMap&&!a.decoy)){
+    const foe=nearestMissionTarget(unit);
+    if(foe&&game.mission.engine.axialDistance(unit,foe)===1&&missionUsableHands(unit,foe).length){
+      missionAiCoat(unit);
+      performMissionAttack(unit,foe,"melee",1);
+    }
+    return;
+  }
   let target=nearestMissionTarget(unit);
   // Personne en vue (le décor coupe la vue) : il va chercher l'ennemi le plus proche, puis, s'il le voit, l'attaque ; sinon,
   // un tireur que personne ne voit guette (mode sentinelle, Idan, 2026-11-06 : les ennemis aussi).

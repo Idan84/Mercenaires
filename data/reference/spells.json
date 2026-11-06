@@ -2282,6 +2282,8 @@
       "portee_min": null,
       "icone": null,
       "cadre": "spells/necromancie/cadre.webp",
+      "icone": "spells/necromancie/raise_dead.webp",
+      "illustration": "spells/necromancie/raise_dead-large.webp",
       "description": "Relève un combattant mort, allié ou ennemi, sur une case voisine : il devient un zombie de votre camp, avec 10 à 100 % de ses caractéristiques, compétences et PV selon la Maîtrise et le Charisme du nécromancien ; il garde son arme et son armure. Chaque tour, un test de Charisme le maintient, et il coûte du mana ; sinon, il tombe en poussière. Un allié relevé ne survit pas au combat. Action principale.",
       "entretien_mana": 5,
       "creature": "zombie",
@@ -2346,6 +2348,8 @@
       "portee_min": null,
       "icone": null,
       "cadre": "spells/necromancie/cadre.webp",
+      "icone": "spells/necromancie/summon_specter.webp",
+      "illustration": "spells/necromancie/summon_specter-large.webp",
       "description": "Invoque un spectre sur une case libre voisine : rapide, immunisé aux dégâts physiques, il frappe au contact avec des dégâts psychiques. Chaque tour, un test de Charisme le maintient, et il coûte du mana ; sinon, il disparaît. Action principale.",
       "entretien_mana": 5,
       "creature": "specter",
@@ -2410,6 +2414,8 @@
       "portee_min": null,
       "icone": null,
       "cadre": "spells/necromancie/cadre.webp",
+      "icone": "spells/necromancie/life_drain.webp",
+      "illustration": "spells/necromancie/life_drain-large.webp",
       "description": "Le nécromancien, et lui seul, récupère en PV la moitié des PV que ses coups d'arme au corps à corps retirent, pendant 2 à 3 tours : cette activation et les suivantes. Action rapide.",
       "entretien_mana": null,
       "creature": null,
@@ -2474,6 +2480,8 @@
       "portee_min": null,
       "icone": null,
       "cadre": "spells/necromancie/cadre.webp",
+      "icone": "spells/necromancie/death_arrow.webp",
+      "illustration": "spells/necromancie/death_arrow-large.webp",
       "description": "Un trait de mort, comme une flèche : jet de toucher, puis des dégâts nécrotiques qui traversent l'armure et les résistances. Sans effet sur les morts-vivants. Action principale.",
       "entretien_mana": null,
       "creature": null,
@@ -2538,6 +2546,8 @@
       "portee_min": null,
       "icone": null,
       "cadre": "spells/necromancie/cadre.webp",
+      "icone": "spells/necromancie/necrosis.webp",
+      "illustration": "spells/necromancie/necrosis-large.webp",
       "description": "Au contact, sans jet de toucher : de gros dégâts nécrotiques à un ennemi voisin, qui traversent l'armure et les résistances. Sans effet sur les morts-vivants. Action principale.",
       "entretien_mana": null,
       "creature": null,
@@ -2602,6 +2612,8 @@
       "portee_min": null,
       "icone": null,
       "cadre": "spells/necromancie/cadre.webp",
+      "icone": "spells/necromancie/wither.webp",
+      "illustration": "spells/necromancie/wither-large.webp",
       "description": "Pendant 3 à 4 tours, la cible ne peut plus être soignée ni récupérer de PV : sorts de soin, Régénération, Drain de vie. Sans jet de toucher. Action principale.",
       "entretien_mana": null,
       "creature": null,
@@ -2632,7 +2644,9 @@
       "mana_diviseur_maitrise": 300,
       "degats_type": "necrotique",
       "description": "Une malédiction ronge un ennemi vivant : 1D4 de dégâts nécrotiques au début de chacune de ses 3 prochaines activations, qui traversent l'armure et les résistances. Sans effet sur les morts-vivants. Ne se cumule pas : la relancer remplace la précédente. Action principale.",
-      "cadre": "spells/necromancie/cadre.webp"
+      "cadre": "spells/necromancie/cadre.webp",
+      "icone": "spells/necromancie/curse.webp",
+      "illustration": "spells/necromancie/curse-large.webp"
     },
     {
       "nom": "Armée d'os",
@@ -2653,7 +2667,9 @@
       "invocation_de": 4,
       "invocation_pas_maitrise": 50,
       "description": "Relève du sol 1D4 squelettes, et un de plus par tranche de 50 de Maîtrise, autour d'une case libre voisine : faibles, lents, nombreux, sans peur. Le groupe compte pour une seule invocation : un test de Charisme et un entretien chaque tour. Action principale.",
-      "cadre": "spells/necromancie/cadre.webp"
+      "cadre": "spells/necromancie/cadre.webp",
+      "icone": "spells/necromancie/bone_army.webp",
+      "illustration": "spells/necromancie/bone_army-large.webp"
     },
     {
       "nom": "Siphon d'âme",
@@ -2675,7 +2691,9 @@
       "mana_base": 10,
       "mana_diviseur_maitrise": 300,
       "description": "Le nécromancien aspire le mana d'un ennemi, à son seul profit : la cible perd ce mana, il le récupère sans dépasser sa réserve. Action principale.",
-      "cadre": "spells/necromancie/cadre.webp"
+      "cadre": "spells/necromancie/cadre.webp",
+      "icone": "spells/necromancie/soul_siphon.webp",
+      "illustration": "spells/necromancie/soul_siphon-large.webp"
     },
     {
       "nom": "Pacte de sang",
@@ -2695,7 +2713,9 @@
       "mana_diviseur_maitrise": 300,
       "transfert_facteur": 2,
       "description": "Le nécromancien sacrifie son sang : il regagne du mana et perd 2 PV par point de mana regagné. Il ne prend que ce qu'il faut pour remplir sa réserve et garde toujours 1 PV. Action rapide.",
-      "cadre": "spells/necromancie/cadre.webp"
+      "cadre": "spells/necromancie/cadre.webp",
+      "icone": "spells/necromancie/blood_pact.webp",
+      "illustration": "spells/necromancie/blood_pact-large.webp"
     },
     {
       "nom": "Corbeau",

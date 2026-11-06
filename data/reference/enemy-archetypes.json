@@ -132,7 +132,7 @@
       "key": "regeneration"
     }
   ],
-  "row_count": 172,
+  "row_count": 184,
   "rows": [
     {
       "nom": "Lancier gobelin novice",
@@ -1316,6 +1316,250 @@
         "equipement": 60,
         "objets": []
       }
+    },
+    {
+      "nom": "Troll novice",
+      "code": "goblin_troll_novice",
+      "faction": "Gobelins",
+      "peuple": "Gobelin",
+      "culture": "Gobelins des cavernes",
+      "ligne": "Troll",
+      "niveau": "novice",
+      "centile": "P20",
+      "caracteristiques": {
+        "Force": 80,
+        "Constitution": 70,
+        "Dextérité": 45,
+        "Vitesse": 25,
+        "Endurance": 70,
+        "Esquive": 43,
+        "Chance": 42,
+        "Charisme": 45,
+        "Courage": 70,
+        "Intelligence": 10,
+        "Volonté": 44,
+        "Perception": 34,
+        "Puissance magique": 30,
+        "Réserve de mana": 28
+      },
+      "resistances": {
+        "Résistance physique": 9,
+        "Résistance au feu": 3,
+        "Résistance au froid": 3,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 3
+      },
+      "pv": 300,
+      "competences_martiales": {
+        "Discrétion": 19,
+        "Pièges": 19,
+        "Combat à deux armes": 26,
+        "Combat à mains nues": 29,
+        "Combat à deux mains": 28,
+        "Grosse massue": 42,
+        "Armes naturelles": 44
+      },
+      "intimidation": 70,
+      "port_d_armure": [],
+      "armes": [],
+      "armure": null,
+      "tier": 1,
+      "qualite": "Usée",
+      "points": null,
+      "niveau_mission_min": 6,
+      "butin": {
+        "equipement": 90,
+        "objets": []
+      },
+      "attaque": {
+        "nom": "Grosse massue",
+        "degats_pv_base": "2D8",
+        "puissance_contondante": 80
+      },
+      "regeneration": 100
+    },
+    {
+      "nom": "Troll",
+      "code": "goblin_troll",
+      "faction": "Gobelins",
+      "peuple": "Gobelin",
+      "culture": "Gobelins des cavernes",
+      "ligne": "Troll",
+      "niveau": "normal",
+      "centile": "P50",
+      "caracteristiques": {
+        "Force": 100,
+        "Constitution": 79,
+        "Dextérité": 55,
+        "Vitesse": 30,
+        "Endurance": 81,
+        "Esquive": 52,
+        "Chance": 52,
+        "Charisme": 54,
+        "Courage": 75,
+        "Intelligence": 12,
+        "Volonté": 53,
+        "Perception": 43,
+        "Puissance magique": 40,
+        "Réserve de mana": 37
+      },
+      "resistances": {
+        "Résistance physique": 12,
+        "Résistance au feu": 6,
+        "Résistance au froid": 6,
+        "Résistance à la foudre": 4,
+        "Résistance au poison": 6
+      },
+      "pv": 600,
+      "competences_martiales": {
+        "Discrétion": 23,
+        "Pièges": 24,
+        "Combat à deux armes": 32,
+        "Combat à mains nues": 36,
+        "Combat à deux mains": 36,
+        "Grosse massue": 48,
+        "Armes naturelles": 51
+      },
+      "intimidation": 80,
+      "port_d_armure": [],
+      "armes": [],
+      "armure": null,
+      "tier": 2,
+      "qualite": "Correcte",
+      "points": null,
+      "niveau_mission_min": 6,
+      "butin": {
+        "equipement": 80,
+        "objets": []
+      },
+      "attaque": {
+        "nom": "Grosse massue",
+        "degats_pv_base": "2D8",
+        "puissance_contondante": 80
+      },
+      "regeneration": 150
+    },
+    {
+      "nom": "Troll vétéran",
+      "code": "goblin_troll_veteran",
+      "faction": "Gobelins",
+      "peuple": "Gobelin",
+      "culture": "Gobelins des cavernes",
+      "ligne": "Troll",
+      "niveau": "vétéran",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 120,
+        "Constitution": 88,
+        "Dextérité": 63,
+        "Vitesse": 35,
+        "Endurance": 90,
+        "Esquive": 59,
+        "Chance": 60,
+        "Charisme": 62,
+        "Courage": 80,
+        "Intelligence": 14,
+        "Volonté": 61,
+        "Perception": 52,
+        "Puissance magique": 49,
+        "Réserve de mana": 45
+      },
+      "resistances": {
+        "Résistance physique": 15,
+        "Résistance au feu": 18,
+        "Résistance au froid": 16,
+        "Résistance à la foudre": 6,
+        "Résistance au poison": 15
+      },
+      "pv": 900,
+      "competences_martiales": {
+        "Discrétion": 28,
+        "Pièges": 29,
+        "Combat à deux armes": 38,
+        "Combat à mains nues": 47,
+        "Combat à deux mains": 42,
+        "Grosse massue": 55,
+        "Armes naturelles": 57
+      },
+      "intimidation": 90,
+      "port_d_armure": [],
+      "armes": [],
+      "armure": null,
+      "tier": 3,
+      "qualite": "De bonne facture",
+      "points": null,
+      "niveau_mission_min": 6,
+      "butin": {
+        "equipement": 70,
+        "objets": []
+      },
+      "attaque": {
+        "nom": "Grosse massue",
+        "degats_pv_base": "2D8",
+        "puissance_contondante": 80
+      },
+      "regeneration": 200
+    },
+    {
+      "nom": "Troll d’élite",
+      "code": "goblin_troll_elite",
+      "faction": "Gobelins",
+      "peuple": "Gobelin",
+      "culture": "Gobelins des cavernes",
+      "ligne": "Troll",
+      "niveau": "d’élite",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 140,
+        "Constitution": 94,
+        "Dextérité": 71,
+        "Vitesse": 40,
+        "Endurance": 99,
+        "Esquive": 65,
+        "Chance": 68,
+        "Charisme": 70,
+        "Courage": 85,
+        "Intelligence": 16,
+        "Volonté": 67,
+        "Perception": 61,
+        "Puissance magique": 59,
+        "Réserve de mana": 52
+      },
+      "resistances": {
+        "Résistance physique": 19,
+        "Résistance au feu": 26,
+        "Résistance au froid": 21,
+        "Résistance à la foudre": 9,
+        "Résistance au poison": 20
+      },
+      "pv": 1200,
+      "competences_martiales": {
+        "Discrétion": 36,
+        "Pièges": 36,
+        "Combat à deux armes": 44,
+        "Combat à mains nues": 70,
+        "Combat à deux mains": 49,
+        "Grosse massue": 61,
+        "Armes naturelles": 62
+      },
+      "intimidation": 100,
+      "port_d_armure": [],
+      "armes": [],
+      "armure": null,
+      "tier": 4,
+      "qualite": "De luxe",
+      "points": null,
+      "niveau_mission_min": 6,
+      "butin": {
+        "equipement": 60,
+        "objets": []
+      },
+      "attaque": {
+        "nom": "Grosse massue",
+        "degats_pv_base": "2D8",
+        "puissance_contondante": 80
+      },
+      "regeneration": 300
     },
     {
       "nom": "Caïd gobelin",
@@ -2754,6 +2998,250 @@
       }
     },
     {
+      "nom": "Troll novice",
+      "code": "orc_troll_novice",
+      "faction": "Orcs",
+      "peuple": "Orc",
+      "culture": "Orcs des steppes",
+      "ligne": "Troll",
+      "niveau": "novice",
+      "centile": "P20",
+      "caracteristiques": {
+        "Force": 80,
+        "Constitution": 70,
+        "Dextérité": 45,
+        "Vitesse": 25,
+        "Endurance": 70,
+        "Esquive": 43,
+        "Chance": 42,
+        "Charisme": 45,
+        "Courage": 70,
+        "Intelligence": 10,
+        "Volonté": 44,
+        "Perception": 34,
+        "Puissance magique": 30,
+        "Réserve de mana": 28
+      },
+      "resistances": {
+        "Résistance physique": 9,
+        "Résistance au feu": 3,
+        "Résistance au froid": 3,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 3
+      },
+      "pv": 300,
+      "competences_martiales": {
+        "Discrétion": 19,
+        "Pièges": 19,
+        "Combat à deux armes": 26,
+        "Combat à mains nues": 29,
+        "Combat à deux mains": 28,
+        "Grosse massue": 42,
+        "Armes naturelles": 44
+      },
+      "intimidation": 70,
+      "port_d_armure": [],
+      "armes": [],
+      "armure": null,
+      "tier": 1,
+      "qualite": "Usée",
+      "points": null,
+      "niveau_mission_min": 6,
+      "butin": {
+        "equipement": 90,
+        "objets": []
+      },
+      "attaque": {
+        "nom": "Grosse massue",
+        "degats_pv_base": "2D8",
+        "puissance_contondante": 80
+      },
+      "regeneration": 100
+    },
+    {
+      "nom": "Troll",
+      "code": "orc_troll",
+      "faction": "Orcs",
+      "peuple": "Orc",
+      "culture": "Orcs des steppes",
+      "ligne": "Troll",
+      "niveau": "normal",
+      "centile": "P50",
+      "caracteristiques": {
+        "Force": 100,
+        "Constitution": 79,
+        "Dextérité": 55,
+        "Vitesse": 30,
+        "Endurance": 81,
+        "Esquive": 52,
+        "Chance": 52,
+        "Charisme": 54,
+        "Courage": 75,
+        "Intelligence": 12,
+        "Volonté": 53,
+        "Perception": 43,
+        "Puissance magique": 40,
+        "Réserve de mana": 37
+      },
+      "resistances": {
+        "Résistance physique": 12,
+        "Résistance au feu": 6,
+        "Résistance au froid": 6,
+        "Résistance à la foudre": 4,
+        "Résistance au poison": 6
+      },
+      "pv": 600,
+      "competences_martiales": {
+        "Discrétion": 23,
+        "Pièges": 24,
+        "Combat à deux armes": 32,
+        "Combat à mains nues": 36,
+        "Combat à deux mains": 36,
+        "Grosse massue": 48,
+        "Armes naturelles": 51
+      },
+      "intimidation": 80,
+      "port_d_armure": [],
+      "armes": [],
+      "armure": null,
+      "tier": 2,
+      "qualite": "Correcte",
+      "points": null,
+      "niveau_mission_min": 6,
+      "butin": {
+        "equipement": 80,
+        "objets": []
+      },
+      "attaque": {
+        "nom": "Grosse massue",
+        "degats_pv_base": "2D8",
+        "puissance_contondante": 80
+      },
+      "regeneration": 150
+    },
+    {
+      "nom": "Troll vétéran",
+      "code": "orc_troll_veteran",
+      "faction": "Orcs",
+      "peuple": "Orc",
+      "culture": "Orcs des steppes",
+      "ligne": "Troll",
+      "niveau": "vétéran",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 120,
+        "Constitution": 88,
+        "Dextérité": 63,
+        "Vitesse": 35,
+        "Endurance": 90,
+        "Esquive": 59,
+        "Chance": 60,
+        "Charisme": 62,
+        "Courage": 80,
+        "Intelligence": 14,
+        "Volonté": 61,
+        "Perception": 52,
+        "Puissance magique": 49,
+        "Réserve de mana": 45
+      },
+      "resistances": {
+        "Résistance physique": 15,
+        "Résistance au feu": 18,
+        "Résistance au froid": 16,
+        "Résistance à la foudre": 6,
+        "Résistance au poison": 15
+      },
+      "pv": 900,
+      "competences_martiales": {
+        "Discrétion": 28,
+        "Pièges": 29,
+        "Combat à deux armes": 38,
+        "Combat à mains nues": 47,
+        "Combat à deux mains": 42,
+        "Grosse massue": 55,
+        "Armes naturelles": 57
+      },
+      "intimidation": 90,
+      "port_d_armure": [],
+      "armes": [],
+      "armure": null,
+      "tier": 3,
+      "qualite": "De bonne facture",
+      "points": null,
+      "niveau_mission_min": 6,
+      "butin": {
+        "equipement": 70,
+        "objets": []
+      },
+      "attaque": {
+        "nom": "Grosse massue",
+        "degats_pv_base": "2D8",
+        "puissance_contondante": 80
+      },
+      "regeneration": 200
+    },
+    {
+      "nom": "Troll d’élite",
+      "code": "orc_troll_elite",
+      "faction": "Orcs",
+      "peuple": "Orc",
+      "culture": "Orcs des steppes",
+      "ligne": "Troll",
+      "niveau": "d’élite",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 140,
+        "Constitution": 94,
+        "Dextérité": 71,
+        "Vitesse": 40,
+        "Endurance": 99,
+        "Esquive": 65,
+        "Chance": 68,
+        "Charisme": 70,
+        "Courage": 85,
+        "Intelligence": 16,
+        "Volonté": 67,
+        "Perception": 61,
+        "Puissance magique": 59,
+        "Réserve de mana": 52
+      },
+      "resistances": {
+        "Résistance physique": 19,
+        "Résistance au feu": 26,
+        "Résistance au froid": 21,
+        "Résistance à la foudre": 9,
+        "Résistance au poison": 20
+      },
+      "pv": 1200,
+      "competences_martiales": {
+        "Discrétion": 36,
+        "Pièges": 36,
+        "Combat à deux armes": 44,
+        "Combat à mains nues": 70,
+        "Combat à deux mains": 49,
+        "Grosse massue": 61,
+        "Armes naturelles": 62
+      },
+      "intimidation": 100,
+      "port_d_armure": [],
+      "armes": [],
+      "armure": null,
+      "tier": 4,
+      "qualite": "De luxe",
+      "points": null,
+      "niveau_mission_min": 6,
+      "butin": {
+        "equipement": 60,
+        "objets": []
+      },
+      "attaque": {
+        "nom": "Grosse massue",
+        "degats_pv_base": "2D8",
+        "puissance_contondante": 80
+      },
+      "regeneration": 300
+    },
+    {
       "nom": "Chef de bande orc",
       "code": "orc_chief_1",
       "faction": "Orcs",
@@ -4188,6 +4676,250 @@
         "equipement": 60,
         "objets": []
       }
+    },
+    {
+      "nom": "Troll novice",
+      "code": "beastman_troll_novice",
+      "faction": "Hommes-bêtes",
+      "peuple": "Homme-bête",
+      "culture": "Tribus des forêts anciennes",
+      "ligne": "Troll",
+      "niveau": "novice",
+      "centile": "P20",
+      "caracteristiques": {
+        "Force": 80,
+        "Constitution": 70,
+        "Dextérité": 45,
+        "Vitesse": 25,
+        "Endurance": 70,
+        "Esquive": 43,
+        "Chance": 42,
+        "Charisme": 45,
+        "Courage": 70,
+        "Intelligence": 10,
+        "Volonté": 44,
+        "Perception": 34,
+        "Puissance magique": 30,
+        "Réserve de mana": 28
+      },
+      "resistances": {
+        "Résistance physique": 9,
+        "Résistance au feu": 3,
+        "Résistance au froid": 3,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 3
+      },
+      "pv": 300,
+      "competences_martiales": {
+        "Discrétion": 19,
+        "Pièges": 19,
+        "Combat à deux armes": 26,
+        "Combat à mains nues": 29,
+        "Combat à deux mains": 28,
+        "Grosse massue": 42,
+        "Armes naturelles": 44
+      },
+      "intimidation": 70,
+      "port_d_armure": [],
+      "armes": [],
+      "armure": null,
+      "tier": 1,
+      "qualite": "Usée",
+      "points": null,
+      "niveau_mission_min": 6,
+      "butin": {
+        "equipement": 90,
+        "objets": []
+      },
+      "attaque": {
+        "nom": "Grosse massue",
+        "degats_pv_base": "2D8",
+        "puissance_contondante": 80
+      },
+      "regeneration": 100
+    },
+    {
+      "nom": "Troll",
+      "code": "beastman_troll",
+      "faction": "Hommes-bêtes",
+      "peuple": "Homme-bête",
+      "culture": "Tribus des forêts anciennes",
+      "ligne": "Troll",
+      "niveau": "normal",
+      "centile": "P50",
+      "caracteristiques": {
+        "Force": 100,
+        "Constitution": 79,
+        "Dextérité": 55,
+        "Vitesse": 30,
+        "Endurance": 81,
+        "Esquive": 52,
+        "Chance": 52,
+        "Charisme": 54,
+        "Courage": 75,
+        "Intelligence": 12,
+        "Volonté": 53,
+        "Perception": 43,
+        "Puissance magique": 40,
+        "Réserve de mana": 37
+      },
+      "resistances": {
+        "Résistance physique": 12,
+        "Résistance au feu": 6,
+        "Résistance au froid": 6,
+        "Résistance à la foudre": 4,
+        "Résistance au poison": 6
+      },
+      "pv": 600,
+      "competences_martiales": {
+        "Discrétion": 23,
+        "Pièges": 24,
+        "Combat à deux armes": 32,
+        "Combat à mains nues": 36,
+        "Combat à deux mains": 36,
+        "Grosse massue": 48,
+        "Armes naturelles": 51
+      },
+      "intimidation": 80,
+      "port_d_armure": [],
+      "armes": [],
+      "armure": null,
+      "tier": 2,
+      "qualite": "Correcte",
+      "points": null,
+      "niveau_mission_min": 6,
+      "butin": {
+        "equipement": 80,
+        "objets": []
+      },
+      "attaque": {
+        "nom": "Grosse massue",
+        "degats_pv_base": "2D8",
+        "puissance_contondante": 80
+      },
+      "regeneration": 150
+    },
+    {
+      "nom": "Troll vétéran",
+      "code": "beastman_troll_veteran",
+      "faction": "Hommes-bêtes",
+      "peuple": "Homme-bête",
+      "culture": "Tribus des forêts anciennes",
+      "ligne": "Troll",
+      "niveau": "vétéran",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 120,
+        "Constitution": 88,
+        "Dextérité": 63,
+        "Vitesse": 35,
+        "Endurance": 90,
+        "Esquive": 59,
+        "Chance": 60,
+        "Charisme": 62,
+        "Courage": 80,
+        "Intelligence": 14,
+        "Volonté": 61,
+        "Perception": 52,
+        "Puissance magique": 49,
+        "Réserve de mana": 45
+      },
+      "resistances": {
+        "Résistance physique": 15,
+        "Résistance au feu": 18,
+        "Résistance au froid": 16,
+        "Résistance à la foudre": 6,
+        "Résistance au poison": 15
+      },
+      "pv": 900,
+      "competences_martiales": {
+        "Discrétion": 28,
+        "Pièges": 29,
+        "Combat à deux armes": 38,
+        "Combat à mains nues": 47,
+        "Combat à deux mains": 42,
+        "Grosse massue": 55,
+        "Armes naturelles": 57
+      },
+      "intimidation": 90,
+      "port_d_armure": [],
+      "armes": [],
+      "armure": null,
+      "tier": 3,
+      "qualite": "De bonne facture",
+      "points": null,
+      "niveau_mission_min": 6,
+      "butin": {
+        "equipement": 70,
+        "objets": []
+      },
+      "attaque": {
+        "nom": "Grosse massue",
+        "degats_pv_base": "2D8",
+        "puissance_contondante": 80
+      },
+      "regeneration": 200
+    },
+    {
+      "nom": "Troll d’élite",
+      "code": "beastman_troll_elite",
+      "faction": "Hommes-bêtes",
+      "peuple": "Homme-bête",
+      "culture": "Tribus des forêts anciennes",
+      "ligne": "Troll",
+      "niveau": "d’élite",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 140,
+        "Constitution": 94,
+        "Dextérité": 71,
+        "Vitesse": 40,
+        "Endurance": 99,
+        "Esquive": 65,
+        "Chance": 68,
+        "Charisme": 70,
+        "Courage": 85,
+        "Intelligence": 16,
+        "Volonté": 67,
+        "Perception": 61,
+        "Puissance magique": 59,
+        "Réserve de mana": 52
+      },
+      "resistances": {
+        "Résistance physique": 19,
+        "Résistance au feu": 26,
+        "Résistance au froid": 21,
+        "Résistance à la foudre": 9,
+        "Résistance au poison": 20
+      },
+      "pv": 1200,
+      "competences_martiales": {
+        "Discrétion": 36,
+        "Pièges": 36,
+        "Combat à deux armes": 44,
+        "Combat à mains nues": 70,
+        "Combat à deux mains": 49,
+        "Grosse massue": 61,
+        "Armes naturelles": 62
+      },
+      "intimidation": 100,
+      "port_d_armure": [],
+      "armes": [],
+      "armure": null,
+      "tier": 4,
+      "qualite": "De luxe",
+      "points": null,
+      "niveau_mission_min": 6,
+      "butin": {
+        "equipement": 60,
+        "objets": []
+      },
+      "attaque": {
+        "nom": "Grosse massue",
+        "degats_pv_base": "2D8",
+        "puissance_contondante": 80
+      },
+      "regeneration": 300
     },
     {
       "nom": "Chef de harde",

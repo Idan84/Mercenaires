@@ -1436,7 +1436,9 @@ function resolveMissionSpell(caster,target,code,extra={}){
   const m=game.mission,magic=missionMagic(),spell=magic?.spell(code);
   if(!spell) return null;
   if(spell.cible==="soi") target=caster;
+  // Un sort qui vole comme une flèche : la couverture de la cible compte (Idan, 2026-11-06).
   const out=magic.cast(caster,target,code,{units:missionUnits(),cellFree:missionCellFree(spell.cible==="mort"?{q:target.q,r:target.r}:target),lineOfSight:missionLineOfSight(caster,target),
+    cover:spell.toucher==="distance"&&target?.character?missionCoverLevel(caster,target):null,
     destination:extra.destination,destinationFree:extra.destination?missionCellFree(extra.destination):undefined,
     second:extra.second,secondLineOfSight:extra.second?missionLineOfSight(caster,extra.second):true});
   if(!out.ok){ missionLog(out.reason,"bad"); return out; }
@@ -1531,7 +1533,7 @@ function resolveMissionSpell(caster,target,code,extra={}){
     effect=removed.length>0;
     missionLog(name+" lance "+spell.nom+on+detail+" : fin "+removed.map(x=>LABELS[x]).join(", ")+".","magic");
   }else if(spell.effet==="degats"&&spell.toucher==="distance"){
-    const aim=" (toucher "+Math.round(out.pHit)+" %, jet "+out.hitRoll+")";
+    const aim=" (toucher "+Math.round(out.pHit)+" %, jet "+out.hitRoll+(out.cover?", couverture "+out.cover:"")+")";
     effect=false;
     if(out.deflected){
       missionLog(name+" lance "+spell.nom+on+detail+" : le projectile est dévié par le champ de protection ("+Math.round(out.pDeflect)+" %, jet "+out.deflectRoll+").","miss");
@@ -2331,7 +2333,7 @@ function handleMissionTwoStepSpell(spell,q,r,clicked){
 }
 // Crachat de venin (doc 12) : le tir de venin, par l'action rapide de celui qui a reçu le sort ; s'il blesse, il empoisonne.
 function spitMissionVenom(unit,target){
-  const magic=missionMagic(),out=magic.spit(unit,target,{lineOfSight:missionLineOfSight(unit,target)});
+  const magic=missionMagic(),out=magic.spit(unit,target,{lineOfSight:missionLineOfSight(unit,target),cover:missionCoverLevel(unit,target)});
   if(!out.ok){ missionLog(out.reason,"bad"); return out; }
   unit.quickAvailable=false;
   const name=unit.character.name,foe=target.character.name;
@@ -2339,7 +2341,7 @@ function spitMissionVenom(unit,target){
     missionLog(name+" crache du venin sur "+foe+" : dévié par le champ de protection ("+Math.round(out.pDeflect)+" %, jet "+out.deflectRoll+").","miss");
     return out;
   }
-  const aim=" (toucher "+Math.round(out.pHit)+" %, jet "+out.hitRoll+")";
+  const aim=" (toucher "+Math.round(out.pHit)+" %, jet "+out.hitRoll+(out.cover?", couverture "+out.cover:"")+")";
   if(!out.hit){ missionLog(name+" crache du venin sur "+foe+" : raté"+aim+".","miss"); return out; }
   const hit=missionElementalHit(target,"poison",out.amount,unit);
   missionLog(name+" crache du venin sur "+foe+" : touché"+aim+", "+hit.damage+" PV de poison"+missionProtectionNote(hit)+".","damage");
@@ -2555,14 +2557,32 @@ function enemyTryReload(unit){
   missionLog(unit.character.name+" recharge son "+item.name+".","gear");
 }
 
+// L'IA avance vers sa cible par le vrai chemin, autour du décor (Dijkstra jusqu'à une case voisine de la cible), aussi
+// loin que son mouvement le permet ; sans chemin, vers la case atteignable la plus proche à vol d'oiseau.
 function enemyMoveToward(unit,target){
-  const e=game.mission.engine;
+  const e=game.mission.engine,budget=unit.movementRemaining??e.movementBase(unit);
   let best={path:[],distance:e.axialDistance(unit,target)};
-  // Les chemins viennent dans l'ordre des coûts : à distance égale, le moins cher.
-  for(const path of missionReachablePaths(unit,unit.movementRemaining??e.movementBase(unit)).values()){
-    if(!path.length) continue;
-    const dist=e.axialDistance(path[path.length-1],target);
-    if(dist<best.distance) best={path,distance:dist};
+  const blocked=occupiedMissionKeys(unit);
+  if(!missionMireAt(unit.q,unit.r)){
+    let full=null;
+    for(const [,found] of missionPaths({q:unit.q,r:unit.r},blocked,Infinity)){
+      const end=found.path[found.path.length-1];
+      if(end&&e.axialDistance(end,target)<=1){ full=found.path; break; }
+    }
+    if(full){
+      const path=[];
+      let spent=0;
+      for(const step of full){ spent+=missionStepCost(step); if(spent>budget) break; path.push(step); }
+      if(path.length) best={path,distance:e.axialDistance(path[path.length-1],target)};
+    }
+  }
+  if(!best.path.length){
+    // Les chemins viennent dans l'ordre des coûts : à distance égale, le moins cher.
+    for(const path of missionReachablePaths(unit,budget).values()){
+      if(!path.length) continue;
+      const dist=e.axialDistance(path[path.length-1],target);
+      if(dist<best.distance) best={path,distance:dist};
+    }
   }
 
   if(best.path.length){
@@ -2664,8 +2684,26 @@ function enemyMissionActivation(unit,{reset=true}={}){
   missionAiCast(unit);
   if(!unit.alive||game.mission.over||unit.attackAvailable===false) return;
   let target=nearestMissionTarget(unit);
-  // Mode sentinelle (Idan, 2026-11-06 : les ennemis aussi) : un tireur qui n'a rien à viser, et que personne ne voit, guette.
-  if(!target){ missionStandSentinel(unit); return; }
+  // Personne en vue (le décor coupe la vue) : il va chercher l'ennemi le plus proche, puis, s'il le voit, l'attaque ; sinon,
+  // un tireur que personne ne voit guette (mode sentinelle, Idan, 2026-11-06 : les ennemis aussi).
+  if(!target){
+    const sought=missionOpponents(unit).filter(o=>!o.offMap).sort((a,b)=>game.mission.engine.axialDistance(unit,a)-game.mission.engine.axialDistance(unit,b))[0];
+    if(sought) enemyMoveToward(unit,sought);
+    if(game.mission.over||!unit.alive||unit.fleeing) return;
+    target=nearestMissionTarget(unit);
+    if(target){
+      enemyTryUsefulSet(unit,target);
+      enemyTryReload(unit);
+      if(missionUsableHands(unit,target).length){
+        const w=game.mission.engine.weaponTemplate(game.mission.engine.activeWeaponItem(unit));
+        missionAiCoat(unit);
+        performMissionAttack(unit,target,game.mission.engine.isRangedWeapon(w)?"ranged":"melee",game.mission.engine.axialDistance(unit,target));
+        return;
+      }
+    }
+    missionStandSentinel(unit);
+    return;
+  }
 
   enemyTryUsefulSet(unit,target);
   enemyTryReload(unit);
@@ -3463,7 +3501,11 @@ function missionSpellPreviewRows(u,code,q,r){
   const unit=missionUnits().find(x=>x.alive&&!x.offMap&&x.q===q&&x.r===r)||null;
   const target=s.cible==="soi"?u:unit,foe=target&&target.team!==u.team?target:null;
   const rows=[`<dt>Réussite</dt>${missionOdds(magic.castChance(u,code).p)}`,`<dt>Coût</dt><dd>${magic.manaCost(u,code)} mana</dd>`];
-  if(s.toucher==="distance"&&foe) rows.push(`<dt>Toucher</dt>${missionOdds(magic.hitChance(u,foe,code))}`);
+  if(s.toucher==="distance"&&foe){
+    const cover=missionCoverLevel(u,foe);
+    if(cover) rows.push(`<dt>Couverture</dt><dd>${cover}</dd>`);
+    rows.push(`<dt>Toucher</dt>${missionOdds(magic.hitChance(u,foe,code,{cover}))}`);
+  }
   if(s.deviation_max) rows.push(`<dt>Précision</dt>${missionOdds(magic.precisionChance(u,code,e.axialDistance(u,{q,r})))}`);
   const range=magic.effectRange(u,code);
   if(range.max>0){

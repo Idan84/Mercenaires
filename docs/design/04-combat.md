@@ -230,14 +230,20 @@ peut y avoir une subtilité dans franchissable : vitesse réduite ». Données :
   **sa propre case** (dans les buissons) ; la meilleure des deux. Pour une charge, la ligne part de la case de départ.
   - **partielle** : Toucher **× 0,5** (`combat.cover.partial_hit_factor`), **+30** de Discrétion au repérage ;
   - **totale** : Toucher **× 0,25** (`combat.cover.total_hit_factor`), **+60** de Discrétion ; on le voit et on peut le viser.
-  - Pas au corps à corps (hors charge), ni contre les sorts.
+  - Aussi contre les **sorts qui volent comme une flèche** (Idan : « oui pour les sorts qui volent ») : Trait de feu, Flèche
+    de glace, Éclair, Lancer de pierre, Choc psychique, Flèche de mort, crachat de venin. Pas au corps à corps (hors
+    charge), ni contre les zones et les autres sorts.
 - **Charge** (Idan : « Elle peut, mais on augmente la proba d'échec critique, pieds dans le tapis ») : elle traverse un
   décor lent ; la chute de charge (2 %) gagne **+5 % × (coût − 1)** par case lente de la course
-  (`combat.charge.fall_per_slow_step`, chiffre proposé par JC3, à valider).
+  (`combat.charge.fall_per_slow_step` ; Idan : « oui ») : +5 % par case à ½, +10 % à ⅓, +15 % à ¼.
 - **Affichage** (Idan : « des couleurs pour commencer ») : une couleur par décor sous la case (plus sombre sur les bords quand
   on ne la traverse pas) ; le survol de la case dit ce qu'elle fait ; l'aperçu d'une attaque montre la couverture.
 - **Cartes** : la Mission Test pose 4 à 6 groupes de décor au hasard entre les deux lignes de déploiement (étape 1). Le
   relief (l'altitude) et le décor des cartes de mission viendront ensuite.
+- **L'IA** avance vers sa cible par le vrai chemin, autour du décor. Quand elle ne voit personne (le décor coupe la vue),
+  elle va chercher l'ennemi le plus proche (elle sait à peu près où il est), l'attaque si elle le voit alors, sinon un tireur
+  que personne ne voit guette (mode sentinelle) : sans cela, un combat sur 12 environ se figeait, chacun attendant l'autre
+  derrière le décor (mesure sur 150 combats de Mission Test ; plus aucun sur 300 après).
 
 ## Mode sentinelle (Idan, 2026-11-06)
 

@@ -287,6 +287,9 @@ Une école de **contrôle** : elle déplace les gens sur la carte. Même modèle
 | Écrasement | principale | **2D6** contondant (puissance 45), et la cible **ne peut pas se déplacer** à sa prochaine activation | 6 + M/25, au plus 12 | 20 |
 
 - **Déplacement forcé** (Attraction, Projection, Déplacement) : jamais d'attaque d'opportunité. La cible suit les cases jusqu'au premier **obstacle** (un personnage, une flaque de magma, le bord du terrain) ; l'obstacle l'arrête et lui inflige un **choc** (Idan : « dégâts en plus ») : **1D4** contondant, qui passe lui aussi par l'armure. L'Attraction s'arrête au contact du lanceur, sans choc. Si la cible meurt du coup, elle ne bouge pas.
+- **Couverture du décor** (doc 04 ; Idan, 2026-11-06 : « oui pour les sorts qui volent ») : un sort qui vole comme une
+  flèche (et le crachat de venin) voit sa chance de toucher multipliée par 0,5 contre une cible en couverture partielle,
+  0,25 en couverture totale, comme un tir.
 - **Champ de protection** (Idan : il dévie aussi les sorts) : avant le jet de toucher, 50 % de dévier les tirs d'armes (arcs, frondes, armes à feu, contre-charges au tir) et les sorts qui volent comme une flèche (Trait de feu, Flèche de glace, Éclair, Lancer de pierre, crachat de venin). Il dure 4 tours : jusqu'au début du 4e tour suivant le lancer. Il ne gêne ni la Foudre, ni les zones, ni la Décharge.
 - **Lancer de pierre** en action rapide : il se combine avec un sort principal dans le même tour.
 - **Les quatre sorts du 2026-10-31** (validés par Idan, chiffrés par JC3) amènent l'école à 10 sorts, sur le même modèle.

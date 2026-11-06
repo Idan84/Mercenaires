@@ -39,13 +39,30 @@ function missionDecorAt(q,r){
   return cell?missionDecorRow(cell.code):null;
 }
 function missionDecorBlocksMove(q,r){ const d=missionDecorAt(q,r); return Boolean(d)&&d.cout_mouvement==null; }
-// Points de mouvement pour entrer dans la case (Idan : « vitesse réduite : mouvement à moitié / tiers / quart »).
-function missionStepCost(c){
+// Points de mouvement du décor pour entrer dans la case (Idan : « vitesse réduite : mouvement à moitié / tiers / quart »).
+function missionDecorCost(c){
   const d=missionDecorAt(c.q,c.r);
   if(!d) return 1;
   return d.cout_mouvement==null?Infinity:Math.max(1,Number(d.cout_mouvement)||1);
 }
-function missionPathCost(path){ return (path||[]).reduce((total,c)=>total+missionStepCost(c),0); }
+// Altitude (doc 04 ; Idan, 2026-11-06 : « vas-y pour l'altitude ») : m.relief = [{q, r, h}], une hauteur de 0 à 3 par case.
+function missionHeightAt(q,r){ return (game.mission?.relief||[]).find(c=>c.q===q&&c.r===r)?.h||0; }
+function missionUnitHeight(u){ return u?missionHeightAt(u.q,u.r):0; }
+function missionAltitude(){ return game.mission?.engine?.ALTITUDE||{climbCost:1,cliff:2,hitPerLevel:10,max:3}; }
+// Un pas de from à c : le décor, plus la montée (+ climbCost par niveau ; descendre est gratuit) ; un écart de cliff niveaux
+// ou plus est une falaise, infranchissable dans les deux sens.
+function missionStepCost(c,from=null){
+  const decor=missionDecorCost(c);
+  if(!from||!game.mission?.relief?.length) return decor;
+  const rise=missionHeightAt(c.q,c.r)-missionHeightAt(from.q,from.r),alt=missionAltitude();
+  if(Math.abs(rise)>=alt.cliff) return Infinity;
+  return decor+Math.max(0,rise)*alt.climbCost;
+}
+function missionPathCost(path,start=null){
+  let prev=start,total=0;
+  for(const c of path||[]){ total+=missionStepCost(c,prev); prev=c; }
+  return total;
+}
 // « Forêt : mouvement ½, bloque la vue, couverture partielle ».
 const MISSION_DECOR_PACE={2:"½",3:"⅓",4:"¼"};
 function missionDecorLabel(d){
@@ -55,8 +72,10 @@ function missionDecorLabel(d){
 }
 // Couverture (Idan, 2026-11-06 : « Au tir et en défense de charge ») : le décor collé à la cible sur la ligne qui vient de
 // from (pas la case de from : un muret collé au tireur ne le gêne pas), ou la case de la cible elle-même ; la meilleure.
-function missionCoverLevel(from,target){
+// shot : un tir (ou un sort qui vole) ; d'au moins un niveau plus haut, il passe par-dessus la couverture partielle.
+function missionCoverLevel(from,target,{shot=false}={}){
   if(!game.mission?.decor?.length||!from||!target) return null;
+  const above=shot&&missionHeightAt(from.q,from.r)>=missionHeightAt(target.q,target.r)+1;
   const line=game.mission.engine.hexLine(from,target),before=line[line.length-2];
   const cells=[{q:target.q,r:target.r}];
   if(before&&!(before.q===from.q&&before.r===from.r)) cells.push(before);
@@ -64,16 +83,29 @@ function missionCoverLevel(from,target){
   for(const c of cells){
     const level=missionDecorAt(c.q,c.r)?.couverture;
     if(level==="totale") return "totale";
-    if(level==="partielle") best="partielle";
+    if(level==="partielle"&&!above) best="partielle";
   }
   return best;
 }
 // Vue (Idan, 2026-11-06 : « Derrière une forêt, on voit pas » ; dedans, « oui » : on n'y est vu qu'au contact).
+// Altitude : une case entre les deux dont le sommet (sa hauteur, + 1 si son décor bloque la vue) dépasse les deux personnages
+// coupe la vue ; plus haut, on voit par-dessus.
 function missionDecorBlocksSight(a,b){
-  if(!game.mission?.decor?.length) return false;
+  if(!game.mission?.decor?.length&&!game.mission?.relief?.length) return false;
   const e=game.mission.engine,blocks=c=>Boolean(missionDecorAt(c.q,c.r)?.bloque_vue);
   if(e.axialDistance(a,b)>1&&(blocks(a)||blocks(b))) return true;
-  return e.hexLine(a,b).slice(1,-1).some(blocks);
+  const eye=Math.max(missionHeightAt(a.q,a.r),missionHeightAt(b.q,b.r));
+  return e.hexLine(a,b).slice(1,-1).some(c=>missionHeightAt(c.q,c.r)+(blocks(c)?1:0)>eye);
+}
+// Mission Test (altitude) : 1 à 3 collines, centrées entre les deux lignes de déploiement, de hauteur 1 à 3 ; chaque case
+// prend la plus haute des collines, moins sa distance au sommet : deux cases voisines ne diffèrent jamais de plus d'un niveau
+// (pas de falaise au hasard).
+function generateMissionRelief(){
+  const max=game.mission?.engine?.ALTITUDE?.max??3;
+  const inner=missionCells().filter(c=>{ const col=missionColumn(c.q,c.r); return col>MISSION_MAP.spawnInset&&col<MISSION_MAP.cols-1-MISSION_MAP.spawnInset; });
+  const hills=Array.from({length:1+Math.floor(Math.random()*3)},()=>({...inner[Math.floor(Math.random()*inner.length)],h:1+Math.floor(Math.random()*max)}));
+  const e=game.mission?.engine||combatEngine();
+  return missionCells().map(c=>({q:c.q,r:c.r,h:Math.max(0,...hills.map(hill=>hill.h-e.axialDistance(hill,c)))})).filter(c=>c.h>0);
 }
 // Mission Test (étape 1 du décor) : quelques groupes de décor au hasard, entre les deux lignes de déploiement.
 function generateMissionDecor(){
@@ -217,7 +249,7 @@ function missionPaths(start,blocked,budget=Infinity,stopKey=null){
     for(const next of missionNeighbors(cur.cell)){
       const k=missionKey(next.q,next.r);
       if(done.has(k)||blocked.has(k)) continue;
-      const cost=cur.cost+missionStepCost(next);
+      const cost=cur.cost+missionStepCost(next,cur.cell);
       if(!Number.isFinite(cost)||cost>budget) continue;
       const known=open.get(k);
       if(!known||cost<known.cost||(cost===known.cost&&cur.path.length+1<known.path.length)) open.set(k,{cell:next,path:[...cur.path,next],cost});
@@ -445,7 +477,7 @@ function startMissionFromSelection(){
   setMissionMapSize();
 
   const enemyChars=Array.from({length:3},()=>createCharacter({role:"Ennemi test"}));
-  const engine=MercenairesCombat.createCombatEngine(game.referenceData,{onAttack:onMissionAttack});
+  const engine=MercenairesCombat.createCombatEngine(game.referenceData,{onAttack:onMissionAttack,heightOf:missionUnitHeight});
   const endRules=MercenairesMissionEnd.createMissionEndRules({reference:game.referenceData});
   const progression=MercenairesProgression.createProgressionRules({reference:game.referenceData});
   const players=chosen.map((c,i)=>makeMissionUnit(c,"player",i));
@@ -457,6 +489,7 @@ function startMissionFromSelection(){
     enemyOrder:sortMissionInitiative(enemies,engine),
     activeUnit:null,phase:"player",turn:1,mode:null,log:[],over:false,winner:null,aftermath:null
   };
+  game.mission.relief=generateMissionRelief();
   game.mission.decor=generateMissionDecor();
 
   $("mission-select-dialog").close();
@@ -505,7 +538,7 @@ function startExpeditionCombat(expeditionId){
   const offer=e.offer;
   setMissionMapSize(missionRules().mapSize(offer));
   const enemyChars=missionRules().buildEnemies(offer,arch=>createCharacter({forcedPeople:arch.peuple,forcedCulture:arch.culture,role:arch.nom}));
-  const engine=MercenairesCombat.createCombatEngine(game.referenceData,{onAttack:onMissionAttack});
+  const engine=MercenairesCombat.createCombatEngine(game.referenceData,{onAttack:onMissionAttack,heightOf:missionUnitHeight});
   const endRules=MercenairesMissionEnd.createMissionEndRules({reference:game.referenceData});
   const progression=MercenairesProgression.createProgressionRules({reference:game.referenceData});
   const players=placeMissionArmy(chosen.map((c,i)=>makeMissionUnit(c,"player",i%3)),"player");
@@ -815,7 +848,8 @@ function logMissionAttackLines(a,d,result,kind){
   const verb={charge:" charge ",opportunity:" profite de l’ouverture et frappe ",countercharge:" contre-charge ",stray:" touche par accident "}[kind]||" attaque ";
   const prefix=a.character.name+verb+d.character.name+" avec "+result.weapon
     +(result.opportunity?" (attaque d’opportunité, dans le dos)":result.encircled?" (cible encerclée, dans le dos)":result.backstab?" (dans le dos)":"")
-    +(result.cover?" (couverture "+result.cover+")":"");
+    +(result.cover?" (couverture "+result.cover+")":"")
+    +(result.heightDiff>0?" (d’en haut)":result.heightDiff<0?" (vers le haut)":"");
 
   if(result.chargeFall){
     missionLog(a.character.name+" chute pendant sa charge et perd son attaque !"+(result.pFall>game.mission.engine.CHARGE_FALL.base?" (terrain difficile : "+Math.round(result.pFall)+" %, jet "+result.fallRoll+")":""),"bad");
@@ -942,7 +976,7 @@ function moveMissionUnitAlongPath(unit,path){
     missionFx(unit,"","",step);
     if(wasFleeing) MercenairesProgression.recordFleeHex(unit);
     game.mission.progression.recordStep(unit);
-    unit.movementRemaining=Math.max(0,(unit.movementRemaining||0)-missionStepCost(step));
+    unit.movementRemaining=Math.max(0,(unit.movementRemaining||0)-missionStepCost(step,from));
     const flames=missionFlameAt(step.q,step.r);
     if(flames){
       missionFlameBurn(unit,flames,"traverse le mur de flammes");
@@ -980,7 +1014,17 @@ function missionChargeIfClear(unit,target){
   if(charge.path.some(h=>occupied.has(missionKey(h.q,h.r))||missionMireAt(h.q,h.r)||!validMissionHex(h.q,h.r))) return null;
   // Décor (Idan, 2026-11-06) : la charge traverse un décor lent, mais risque davantage la chute (« pieds dans le tapis ») ;
   // la cible derrière une couverture, vue du point de départ de la charge, est protégée.
-  const slowSteps=charge.path.reduce((total,h)=>total+Math.max(0,missionStepCost(h)-1),0);
+  const slowSteps=charge.path.reduce((total,h)=>total+Math.max(0,missionDecorCost(h)-1),0);
+  // Altitude (Idan, 2026-11-06) : pas de falaise sur la ligne, et pas de charge qui monte de plus d'un niveau.
+  if(game.mission?.relief?.length){
+    let prev={q:unit.q,r:unit.r},climb=0;
+    for(const h of charge.path){
+      const rise=missionHeightAt(h.q,h.r)-missionHeightAt(prev.q,prev.r);
+      if(Math.abs(rise)>=missionAltitude().cliff) return null;
+      climb+=Math.max(0,rise);prev=h;
+    }
+    if(climb>1) return null;
+  }
   return {...charge,slowSteps,cover:missionCoverLevel({q:unit.q,r:unit.r},target)};
 }
 
@@ -1027,7 +1071,7 @@ function performMissionAttack(attacker,target,mode,distance,charge=null,{sentine
       const result=e.resolveAttack(attacker,target,{
         mode:h.mode,distance:d,hand:h.hand,encircled:h.mode==="melee"&&missionEncircled(target),bystanders:missionUnits(),
         chargeDistance:charging?charge.travel:0,chargeFollowUp:Boolean(charging&&first),sentinel,
-        chargeSlowSteps:charging?charge.slowSteps||0:0,cover:h.mode==="ranged"?missionCoverLevel(attacker,target):charging?charge.cover:null
+        chargeSlowSteps:charging?charge.slowSteps||0:0,cover:h.mode==="ranged"?missionCoverLevel(attacker,target,{shot:true}):charging?charge.cover:null
       });
       first=first||result;
       logMissionAttack(attacker,target,result,charging?"charge":"attack");
@@ -1169,7 +1213,7 @@ function missionExitPath(unit,budget,threats,forbidden=null){
   let best=null,bestScore=-1;
   for(const path of missionReachablePaths(unit,budget,forbidden).values()){
     const cell=path.length?path[path.length-1]:unit;
-    if(!isMissionBorder(cell)||missionPathCost(path)+1>budget) continue;
+    if(!isMissionBorder(cell)||missionPathCost(path,unit)+1>budget) continue;
     const value=missionMinDistance(cell,threats);
     if(value>bestScore){ best=path;bestScore=value; }
   }
@@ -1283,7 +1327,7 @@ function handleMissionHexClick(q,r){
 
   if(m.mode==="move"&&!clicked){
     const path=shortestMissionPath(u,{q,r},u);
-    if(path&&missionPathCost(path)<=u.movementRemaining){
+    if(path&&missionPathCost(path,u)<=u.movementRemaining){
       m.mode=null;
       const moved=moveMissionUnitAlongPath(u,path);
       if(moved) missionLog(u.character.name+" se déplace de "+moved+" hex.","move");
@@ -1438,7 +1482,8 @@ function resolveMissionSpell(caster,target,code,extra={}){
   if(spell.cible==="soi") target=caster;
   // Un sort qui vole comme une flèche : la couverture de la cible compte (Idan, 2026-11-06).
   const out=magic.cast(caster,target,code,{units:missionUnits(),cellFree:missionCellFree(spell.cible==="mort"?{q:target.q,r:target.r}:target),lineOfSight:missionLineOfSight(caster,target),
-    cover:spell.toucher==="distance"&&target?.character?missionCoverLevel(caster,target):null,
+    cover:spell.toucher==="distance"&&target?.character?missionCoverLevel(caster,target,{shot:true}):null,
+    heightDiff:target?.character?missionUnitHeight(caster)-missionUnitHeight(target):0,
     destination:extra.destination,destinationFree:extra.destination?missionCellFree(extra.destination):undefined,
     second:extra.second,secondLineOfSight:extra.second?missionLineOfSight(caster,extra.second):true});
   if(!out.ok){ missionLog(out.reason,"bad"); return out; }
@@ -2292,6 +2337,7 @@ function missionForcedMove(unit,out,caster){
     if(other){ obstacle=other.character.name; break; }
     if(missionTerrainAt(c.q,c.r)){ obstacle="la flaque de magma"; break; }
     if(missionDecorBlocksMove(c.q,c.r)){ obstacle=missionDecorAt(c.q,c.r).article||missionDecorAt(c.q,c.r).nom; break; }
+    if(Math.abs(missionHeightAt(c.q,c.r)-missionHeightAt(unit.q,unit.r))>=missionAltitude().cliff){ obstacle="la falaise"; break; }
     unit.q=c.q;unit.r=c.r;moved++;
     missionFx(unit,"","",c);
   }
@@ -2333,7 +2379,8 @@ function handleMissionTwoStepSpell(spell,q,r,clicked){
 }
 // Crachat de venin (doc 12) : le tir de venin, par l'action rapide de celui qui a reçu le sort ; s'il blesse, il empoisonne.
 function spitMissionVenom(unit,target){
-  const magic=missionMagic(),out=magic.spit(unit,target,{lineOfSight:missionLineOfSight(unit,target),cover:missionCoverLevel(unit,target)});
+  const magic=missionMagic(),out=magic.spit(unit,target,{lineOfSight:missionLineOfSight(unit,target),cover:missionCoverLevel(unit,target,{shot:true}),
+    heightDiff:missionUnitHeight(unit)-missionUnitHeight(target)});
   if(!out.ok){ missionLog(out.reason,"bad"); return out; }
   unit.quickAvailable=false;
   const name=unit.character.name,foe=target.character.name;
@@ -2572,7 +2619,8 @@ function enemyMoveToward(unit,target){
     if(full){
       const path=[];
       let spent=0;
-      for(const step of full){ spent+=missionStepCost(step); if(spent>budget) break; path.push(step); }
+      let prev={q:unit.q,r:unit.r};
+      for(const step of full){ spent+=missionStepCost(step,prev); if(spent>budget) break; path.push(step); prev=step; }
       if(path.length) best={path,distance:e.axialDistance(path[path.length-1],target)};
     }
   }
@@ -2904,7 +2952,7 @@ function missionMeleeApproach(u,target,reach=null){
     if(!path.length) continue;
     const end=path[path.length-1],distance=e.axialDistance(end,target);
     if(!strikesAt(distance)) continue;
-    const cost=missionPathCost(path);
+    const cost=missionPathCost(path,u);
     if(best&&cost>best.cost) continue;
     const risk=missionPathOpportunityCount(u,path);
     if(!best||cost<best.cost||risk<best.risk) best={path,risk,distance,cost};
@@ -3168,6 +3216,12 @@ function renderMission(){
     const row=missionDecorRow(d.code),p=missionHexPixel(d.q,d.r);
     if(row) decorTiles+=`<span class="hex-decor${row.cout_mouvement==null?" blocking":""}" data-decor="${esc(row.code)}" style="left:${p.x-MISSION_MAP.size}px;top:${p.y-MISSION_MAP.size}px;--decor:${row.couleur}"></span>`;
   }
+  // Altitude : une couche par-dessus le décor, un peu plus claire à chaque niveau, avec son chiffre.
+  let reliefTiles="";
+  for(const c of m.relief||[]){
+    const p=missionHexPixel(c.q,c.r);
+    reliefTiles+=`<span class="hex-relief" data-level="${c.h}" style="left:${p.x-MISSION_MAP.size}px;top:${p.y-MISSION_MAP.size}px"></span>`;
+  }
   const reach=m.mode==="move"&&u?missionReachablePaths(u,u.movementRemaining):null;
   let cells="";
   for(const {q,r} of missionCells()){
@@ -3175,8 +3229,9 @@ function renderMission(){
     let title="";
     if(targets.has(key)) classes.push(m.mode==="move"?"reachable":missionSpellMode()?"spell-target":"targetable");
     else if(inRange.has(key)) classes.push("in-range");
-    const decor=missionDecorAt(q,r);
-    if(decor) title=` title="${esc(missionDecorLabel(decor))}"`;
+    const decor=missionDecorAt(q,r),level=missionHeightAt(q,r);
+    const about=[decor?missionDecorLabel(decor):"",level?"altitude "+level:""].filter(Boolean).join(" · ");
+    if(about) title=` title="${esc(about.charAt(0).toUpperCase()+about.slice(1))}"`;
     const magma=missionTerrainAt(q,r);
     if(magma){ classes.push("magma"); title=` title="Flaque de magma : infranchissable jusqu’au tour ${magma.untilTurn}"`; }
     if(m.spellTarget&&m.spellTarget.q===q&&m.spellTarget.r===r) classes.push("spell-chosen");
@@ -3237,7 +3292,7 @@ function renderMission(){
   else if(missionView.fitted) fitMissionView();
   if(u&&u.id!==missionView.activeId){ missionView.activeId=u.id; if(!missionView.fitted) centerMissionView(u,true); }
   applyMissionView();
-  map.innerHTML=decorTiles+cells+tokens;
+  map.innerHTML=decorTiles+reliefTiles+cells+tokens;
   missionHover.key=null;
   $("mission-hover-card").classList.add("hidden");
   scheduleMissionFx();
@@ -3417,18 +3472,21 @@ function missionAttackPreview(u,target){
   const grip=u.twoHandGrip;
   if(m.mode==="melee"&&m.twoHands) u.twoHandGrip=true;
   try{
-    const rows=missionAttackPreviewRows(u,target,hands,{e,charge,distance:approach?approach.distance:distance,hidden});
+    // Altitude : la hauteur de la case d'où il frappera (fin de l'approche, case d'arrivée de la charge).
+    const from=approach?approach.path[approach.path.length-1]:charge?charge.destination:u;
+    const rows=missionAttackPreviewRows(u,target,hands,{e,charge,distance:approach?approach.distance:distance,hidden,from});
     if(approach&&rows.length) rows[0].approach={steps:approach.path.length,risk:approach.risk};
     return rows;
   }
   finally{ u.twoHandGrip=grip; }
 }
-function missionAttackPreviewRows(u,target,hands,{e,charge,distance,hidden}){
+function missionAttackPreviewRows(u,target,hands,{e,charge,distance,hidden,from=u}){
   return hands.map(h=>e.withHand(u,h.hand,()=>{
     const item=e.activeWeaponItem(u),weapon=e.weaponTemplate(item);
     const backstab=hidden||Boolean(target.fleeing)||(h.mode==="melee"&&missionEncircled(target));
-    const cover=h.mode==="ranged"?missionCoverLevel(u,target):charge&&h.mode==="melee"?charge.cover:null;
-    const row={weapon:item?.name||weapon?.nom||"Arme",mode:h.mode,backstab,cover,pHit:e.hitProbability(u,target,h.mode,distance,{backstab,cover})};
+    const cover=h.mode==="ranged"?missionCoverLevel(u,target,{shot:true}):charge&&h.mode==="melee"?charge.cover:null;
+    const heightDiff=missionHeightAt(from.q,from.r)-missionUnitHeight(target);
+    const row={weapon:item?.name||weapon?.nom||"Arme",mode:h.mode,backstab,cover,heightDiff,pHit:e.hitProbability(u,target,h.mode,distance,{backstab,cover,heightDiff})};
     if(h.mode==="ranged"&&target.projectileShield) row.pDeflect=Number(target.projectileShield.chance)||0;
     if(target.character?.immunePhysical&&weapon?.degats_type!=="psychique"){ row.immune=true; return row; }
     // Pas de blocage dans le dos, ni s'il a déjà bloqué ce tour (Idan, 2026-11-04).
@@ -3464,6 +3522,7 @@ function renderMissionHoverCard(q,r){
           +(row.approach.risk?`<dt>Danger</dt><dd class="odds-bad">${row.approach.risk} attaque${row.approach.risk>1?"s":""} d’opportunité</dd>`:""):"")
         +(row.pDeflect?`<dt>Déviation</dt>${missionOdds(row.pDeflect)}`:"")
         +(row.cover?`<dt>Couverture</dt><dd>${row.cover}</dd>`:"")
+        +(row.heightDiff?`<dt>Hauteur</dt><dd>${row.heightDiff>0?"d’en haut":"vers le haut"}${Math.abs(row.heightDiff)>1?` (${Math.abs(row.heightDiff)} niveaux)`:""}</dd>`:"")
         +`<dt>Toucher</dt>${missionOdds(row.pHit)}`
         +(row.immune?`<dt>Immunisé</dt><dd class="odds-bad">dégâts physiques</dd>`:"")
         +(row.pBlock!==undefined?`<dt>Bouclier</dt><dd>${Math.round(row.pBlock)} % de blocage</dd>`:"")
@@ -3482,7 +3541,7 @@ function renderMissionHoverCard(q,r){
   }
   if(u&&m.mode==="move"&&targets.has(key)){
     const path=shortestMissionPath(u,{q,r},u)||[],risk=missionPathOpportunityCount(u,path);
-    html+=`<div class="hc-attack"><em>Déplacement</em><dl><dt>Mouvement</dt><dd>${missionPathCost(path)} / ${u.movementRemaining}</dd>`
+    html+=`<div class="hc-attack"><em>Déplacement</em><dl><dt>Mouvement</dt><dd>${missionPathCost(path,u)} / ${u.movementRemaining}</dd>`
       +(risk?`<dt>Danger</dt><dd class="odds-bad">${risk} attaque${risk>1?"s":""} d’opportunité</dd>`:"")
       +(missionMireAt(q,r)?`<dt>Bourbier</dt><dd class="odds-bad">arrêt</dd>`:"")+`</dl></div>`;
   }
@@ -3502,9 +3561,9 @@ function missionSpellPreviewRows(u,code,q,r){
   const target=s.cible==="soi"?u:unit,foe=target&&target.team!==u.team?target:null;
   const rows=[`<dt>Réussite</dt>${missionOdds(magic.castChance(u,code).p)}`,`<dt>Coût</dt><dd>${magic.manaCost(u,code)} mana</dd>`];
   if(s.toucher==="distance"&&foe){
-    const cover=missionCoverLevel(u,foe);
+    const cover=missionCoverLevel(u,foe,{shot:true}),heightDiff=missionUnitHeight(u)-missionUnitHeight(foe);
     if(cover) rows.push(`<dt>Couverture</dt><dd>${cover}</dd>`);
-    rows.push(`<dt>Toucher</dt>${missionOdds(magic.hitChance(u,foe,code,{cover}))}`);
+    rows.push(`<dt>Toucher</dt>${missionOdds(magic.hitChance(u,foe,code,{cover,heightDiff}))}`);
   }
   if(s.deviation_max) rows.push(`<dt>Précision</dt>${missionOdds(magic.precisionChance(u,code,e.axialDistance(u,{q,r})))}`);
   const range=magic.effectRange(u,code);

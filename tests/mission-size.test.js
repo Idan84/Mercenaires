@@ -46,6 +46,8 @@ assert.deepEqual(["normale", "longue", "grande", "enorme"].map(t => engine.sizeH
 // 2. L'écran de combat (mission.js, comme les autres tests).
 let seed = 31;
 const random = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+// Tout le hasard du test est fixé dès le début (sinon un tirage diffère d'une machine à l'autre).
+Math.random = random;
 const rules = Missions.createMissionRules({reference, random});
 const generator = createGenerator(reference, {random, nameGenerator: (people, id) => people + " " + id});
 const captain = generator.createCaptain({id: 1});
@@ -57,7 +59,6 @@ const $ = id => elements[id] || (elements[id] = element());
 const game = {campaign: null, captain, referenceData: reference};
 let api = null;
 const combat = createCombatEngine(reference, {onAttack: Progression.recordAttack, heightOf: u => api.missionUnitHeight(u)});
-Math.random = random;
 const mission = fs.readFileSync(path.join(ROOT, "prototype-web", "mission.js"), "utf8");
 api = new Function("game", "$", "esc", "fmt", "renderAvatar", "combatEngine", "MercenairesProgression", "MercenairesMissionEnd",
   "MercenairesMagic", "MercenairesMissionTerrain", "missionRules", mission + "\nreturn {makeMissionUnit,sortMissionInitiative,"
@@ -190,7 +191,9 @@ for (let i = 0; i < 12; i++) {
   api.autoResolveMission();
   played++;
   if (!m.over) stuck++;
+  // Il va au contact et frappe, sauf s'il est tombé ou a fui avant (carreaux dans le dos, panique) : jamais immobile.
   if (m.log.some(x => x.message.startsWith("Troll géant attaque"))) beastHits++;
+  else assert.ok(!t.alive || t.fleeing || t.offMap || m.log.some(x => /Troll géant (panique|s.enfuit)/.test(x.message)), "sans coup, il est tombé ou a fui");
   const occupied = new Set();
   for (const u of [...m.players, ...m.enemies].filter(x => x.alive && !x.offMap)) for (const c of api.missionFootprint(u)) {
     assert.ok(!occupied.has(key(c)), "jamais deux personnages sur la même case");
@@ -198,5 +201,5 @@ for (let i = 0; i < 12; i++) {
   }
 }
 assert.ok(stuck === 0, "combats bloqués : " + stuck);
-assert.ok(beastHits >= 10, "le troll géant va au contact et frappe : " + beastHits + " sur " + played);
+assert.ok(beastHits >= played / 2, "le troll géant va au contact et frappe : " + beastHits + " sur " + played);
 console.log("Grandes créatures : empreintes 1/2/3/7, distance, occupation, déplacement, zone, poussée, vue, Toucher +10/+20, " + played + " combats — OK");

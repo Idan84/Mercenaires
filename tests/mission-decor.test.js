@@ -61,7 +61,8 @@ const source=fs.readFileSync(path.join(ROOT,"prototype-web","mission.js"),"utf8"
 const EXPOSED="makeMissionUnit,sortMissionInitiative,selectNextMissionPlayer,shortestMissionPath,missionReachablePaths,"
   +"moveMissionUnitAlongPath,missionLineOfSight,missionCoverLevel,missionChargeIfClear,performMissionAttack,missionForcedMove,"
   +"generateMissionDecor,missionDecorLabel,missionCellFree,handleMissionHexClick,setMissionMode,resolveMissionDetection,"
-  +"missionAttackPreview,missionColumn,missionKey";
+  +"missionAttackPreview,missionColumn,missionKey,startMissionCamouflage,autoResolveMission,enemyMissionAct,resolveMissionSpell,"
+  +"missionMagic,missionSpellPreviewRows";
 const api=new Function("game","$","esc","fmt","renderAvatar","combatEngine","MercenairesProgression","MercenairesMissionEnd",
   "MercenairesMagic",source+"\nreturn {"+EXPOSED+"};")
   .call(null,game,$,v=>String(v??""),v=>String(Math.round(Number(v)||0)),()=>"",()=>engine,Progression,MissionEnd,Magic);
@@ -248,4 +249,61 @@ assert.equal(api.missionDecorLabel(row("foret")),"Forêt : mouvement ½, bloque 
 assert.equal(api.missionDecorLabel(row("gros_rocher")),"Gros rocher : infranchissable, couverture totale");
 assert.equal(api.missionDecorLabel(row("marais")),"Marais : mouvement ⅓");
 assert.match(source,/game\.mission\.decor=generateMissionDecor\(\);/);
-console.log("Décor : passage (coût, infranchissable), vue (mur, forêt, au contact), couverture (tir, charge, repérage), chute de charge, Mission Test — OK");
+// Un motif dessiné par décor, sur sa couleur (Idan : « Tu peux faire mieux que juste de la couleur ? »).
+const css=fs.readFileSync(path.join(ROOT,"prototype-web","styles.css"),"utf8");
+for(const d of decors.rows) assert.match(css,new RegExp('\\.hex-decor\\[data-decor="'+d.code+'"\\]\\{background-image:url\\("data:image/svg\\+xml,'),d.code);
+assert.match(source,/data-decor="\$\{esc\(row\.code\)\}"/);
+// 9. Les sorts qui volent comme une flèche (Idan, 2026-11-06 : « oui pour les sorts qui volent ») : la couverture compte.
+m=newMission([{q:7,r:4,code:"buissons"}]);
+const mage=m.players[0],prey=at(m.enemies[0],7,4);
+mage.character.skills.magic.Feu=60;
+mage.character.stats["Réserve de mana"]=200;mage.character.mana=200;
+mage.character.spells=[{code:"fire_bolt",name:"Trait de feu",school:"Feu",mastery:40}];
+const magic=api.missionMagic();
+const bare=magic.hitChance(mage,prey,"fire_bolt");
+assert.equal(magic.hitChance(mage,prey,"fire_bolt",{cover:"partielle"}),bare*0.5);
+assert.equal(magic.hitChance(mage,prey,"fire_bolt",{cover:"totale"}),bare*0.25);
+const out=api.resolveMissionSpell(mage,prey,"fire_bolt");
+assert.ok(out.ok,out.reason);
+assert.equal(out.cover,"partielle");
+assert.equal(out.pHit,bare*0.5);
+assert.match(api.missionSpellPreviewRows(mage,"fire_bolt",prey.q,prey.r),/<dt>Couverture<\/dt><dd>partielle<\/dd>/);
+// Un sort de zone, non (pas de cible visée comme une flèche).
+assert.equal(reference.spells.rows.find(x=>x.code==="fireball").toucher===undefined||reference.spells.rows.find(x=>x.code==="fireball").toucher===null,true);
+
+// 10. L'IA contourne le décor : un mur entre elle et sa cible, elle passe par le trou au lieu de s'y coller.
+m=newMission([{q:5,r:2,code:"mur"},{q:5,r:3,code:"mur"},{q:5,r:4,code:"mur"},{q:5,r:5,code:"mur"},{q:5,r:6,code:"mur"}]);
+const walker=at(m.enemies[0],7,4),aim=at(m.players[1],2,4);
+at(m.players[0],0,8);
+walker.movementRemaining=4;
+const routeAround=api.shortestMissionPath(walker,{q:3,r:4},walker);
+api.enemyMissionAct(walker,{reset:false});
+assert.ok(engine.axialDistance(walker,aim)<6,"il avance vers sa cible");
+assert.ok(walker.q!==6||walker.r!==4,"il ne reste pas collé au mur");
+assert.ok(routeAround&&!routeAround.some(c=>c.q===5&&c.r>=2&&c.r<=6),"le chemin contourne le mur");
+// Personne en vue : il va chercher l'ennemi le plus proche, puis guette s'il ne le voit toujours pas.
+m=newMission();
+const hunter=at(m.enemies[0],10,4);
+for(const p of m.players) p.camouflaged=true;
+hunter.movementRemaining=engine.movementBase(hunter);
+const from=engine.axialDistance(hunter,m.players[0]);
+api.enemyMissionAct(hunter,{reset:false});
+assert.ok(engine.axialDistance(hunter,m.players[0])<from,"il avance vers eux");
+
+// 11. Plus de combat automatique bloqué par le décor : 200 combats de Mission Test au hasard, tous finissent.
+let stuck=0;
+for(let k=0;k<200;k++){
+  const squad=[1,2,3].map(i=>generator.createMercenary({id:1000+10*k+i,captain}));
+  const foes=[4,5,6].map(i=>generator.createMercenary({id:1000+10*k+i,captain}));
+  const players=squad.map((c,i)=>api.makeMissionUnit(c,"player",i)),enemies=foes.map((c,i)=>api.makeMissionUnit(c,"enemy",i));
+  game.mission={engine,endRules:MissionEnd.createMissionEndRules({reference}),progression:Progression.createProgressionRules({reference}),
+    players,enemies,playerOrder:api.sortMissionInitiative(players,engine),enemyOrder:api.sortMissionInitiative(enemies,engine),
+    activeUnit:null,phase:"player",turn:1,mode:null,log:[],over:false,winner:null,aftermath:null};
+  game.mission.decor=api.generateMissionDecor();
+  api.startMissionCamouflage();
+  api.selectNextMissionPlayer();
+  api.autoResolveMission();
+  if(!game.mission.over) stuck++;
+}
+assert.equal(stuck,0,"combats bloqués : "+stuck);
+console.log("Décor : passage (coût, infranchissable), vue (mur, forêt, au contact), couverture (tir, charge, sorts qui volent, repérage), chute de charge, IA (contourne, va chercher), Mission Test — OK");

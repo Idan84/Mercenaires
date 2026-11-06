@@ -17,18 +17,16 @@ const files = Object.fromEntries([...block.matchAll(/^\s*(\w+):\s*"([\w.-]+\.jso
 const reference = Object.fromEntries(Object.entries(files).map(([key, file]) => [key, JSON.parse(fs.readFileSync(path.join(ROOT, "data", "reference", file), "utf8"))]));
 const FACTIONS = ["Gobelins", "Orcs", "Hommes-bêtes"];
 
-// 1. Les fiches : un troll sur quatre niveaux dans chacun des trois peuples, identique de l'un à l'autre.
+// 1. Les fiches : un seul troll sur quatre niveaux, une créature partagée (faction Créatures) que les trois camps appellent
+// (Idan : « Ça devrait être les mêmes fiches qui s'intègrent pour les différentes factions »).
 const trolls = reference.enemyArchetypes.rows.filter(r => r.ligne === "Troll");
-assert.deepEqual([...new Set(trolls.map(r => r.faction))].sort(), [...FACTIONS].sort());
-const stats = r => JSON.stringify([r.caracteristiques, r.pv, r.regeneration, r.intimidation, r.attaque, r.points]);
-for (const faction of FACTIONS) {
-  const own = trolls.filter(r => r.faction === faction);
-  assert.deepEqual(own.map(r => r.niveau), ["novice", "normal", "vétéran", "d’élite"], faction);
-  assert.deepEqual(own.map(r => r.caracteristiques.Force), [80, 100, 120, 140], faction + " : Force");
-  assert.deepEqual(own.map(r => r.pv), [300, 600, 900, 1200], faction + " : PV");
-  assert.deepEqual(own.map(r => r.regeneration), [100, 150, 200, 300], faction + " : Régénération");
-  assert.deepEqual(own.map(stats), trolls.filter(r => r.faction === "Orcs").map(stats), faction + " : le même troll");
-}
+assert.equal(trolls.length, 4);
+assert.ok(trolls.every(r => r.faction === "Créatures"));
+assert.deepEqual(trolls.map(r => r.code), ["troll_novice", "troll", "troll_veteran", "troll_elite"]);
+assert.deepEqual(trolls.map(r => r.niveau), ["novice", "normal", "vétéran", "d’élite"]);
+assert.deepEqual(trolls.map(r => r.caracteristiques.Force), [80, 100, 120, 140], "Force");
+assert.deepEqual(trolls.map(r => r.pv), [300, 600, 900, 1200], "PV");
+assert.deepEqual(trolls.map(r => r.regeneration), [100, 150, 200, 300], "Régénération");
 const maxIntimidation = Math.max(...reference.enemyArchetypes.rows.filter(r => r.ligne !== "Troll").map(r => r.intimidation));
 for (const r of trolls) {
   assert.ok(r.points > 0, r.code + " : points");
@@ -40,11 +38,12 @@ for (const r of trolls) {
 
 // 2. Les camps : une ligne Troll (poids 10) chez les trois peuples ; jamais avant le niveau 6, puis de temps en temps.
 const camps = reference.oneShotMissions.missions[0].camps;
-for (const faction of FACTIONS) assert.equal(camps.find(c => c.faction === faction).lignes.find(l => l.ligne === "Troll")?.poids, 10, faction);
+for (const faction of FACTIONS) assert.deepEqual(camps.find(c => c.faction === faction).lignes.find(l => l.ligne === "Troll"), {ligne: "Troll", faction: "Créatures", poids: 10}, faction);
+assert.ok(camps.filter(c => !FACTIONS.includes(c.faction)).every(c => !c.lignes.some(l => l.ligne === "Troll")), "pas ailleurs");
 let seed = 91;
 const random = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
 const rules = Missions.createMissionRules({reference, random});
-const isTroll = code => rules.archetype(code).ligne === "Troll";
+const isTroll = code => rules.archetype(code).faction === "Créatures" && rules.archetype(code).ligne === "Troll";
 let before = 0, after = 0, campsAfter = 0;
 for (let i = 0; i < 600; i++) {
   const low = rules.rollCamp(undefined, camps.find(c => c.faction === FACTIONS[i % 3]), {level: 1 + i % 5});
@@ -59,7 +58,7 @@ assert.ok(after > 0 && campsAfter > 100, "des trolls à partir du niveau 6 : " +
 // 3. La fiche appliquée : sa massue (pas de butin), sa Régénération, son Intimidation.
 const generator = createGenerator(reference, {random, nameGenerator: (people, id) => people + " " + id});
 const captain = generator.createCaptain({id: 1});
-const arch = rules.archetype("orc_troll_elite");
+const arch = rules.archetype("troll_elite");
 const troll = rules.applyArchetype(generator.createMercenary({id: 2, captain, forcedPeople: arch.peuple, forcedCulture: arch.culture}), arch, {idPrefix: "t"});
 const club = troll.items.find(i => i.natural);
 assert.ok(club && club.template.nom === "Grosse massue" && troll.equipment.slots.weapon_set_1_main === club.id);
@@ -68,4 +67,4 @@ assert.equal(troll.skills.physiology["Régénération"], 300);
 assert.equal(troll.skills.social.Intimidation, 100);
 const regen = Regeneration.createRegenerationRules({reference, random});
 assert.equal(regen.points(troll), 300);
-console.log("Troll : 3 peuples × 4 niveaux, Force 80 à 140, PV 300 à 1200, Régénération 100 à 300, dès le niveau 6 (" + campsAfter + " camps sur 600 en ont) — OK");
+console.log("Troll : une créature partagée par 3 peuples, 4 niveaux, Force 80 à 140, PV 300 à 1200, Régénération 100 à 300, dès le niveau 6 (" + campsAfter + " camps sur 600 en ont) — OK");

@@ -119,3 +119,7 @@ La formule d'initiative V1 reste volontairement **sans Fatigue** pour l'instant.
 ## Occupation de plusieurs hexagones & montures
 
 La grille V1 considère `1 personnage = 1 hex`. Les Ogres, Dragons, grandes montures et autres créatures multi-hex devront disposer plus tard d'une empreinte, de règles de rotation, de portée et de déplacement adaptées.
+
+## Ennemis : force aux hauts niveaux de mission
+
+Idan, 2026-11-06 : « Tu prends les centiles, pas le niveau qu'auront les mercenaires 12 ou 15 étoiles d'une compagnie. […] on a le temps si on veut renforcer. » Les fiches ennemies (`enemy-archetypes.json`) suivent les centiles des personnages **tout juste générés** (novice P20, normal P50, vétéran P75, élite P90 ; chefs P75 à P99), et leurs points sont mesurés contre des mercenaires générés (doc 17 §14). Une compagnie à 12 ou 15 étoiles aura des mercenaires progressés (XP, compétences, équipement T3–T4) : aux niveaux d'Or, élites et chefs 3–4 seront trop faibles un à un ; seul le budget du camp (niveau² × 8–12) compense, par le nombre. Piste : mesurer les mercenaires réels à 5, 10 et 15 étoiles (campagne simulée), y caler vétérans, élites et chefs, puis remesurer les points contre eux. Idan : « il faudra une logique d'équilibrage. Par défaut, pour équilibrer il faut un point de repère ! » : définir d'abord ce repère (le mercenaire type de chaque palier d'étoiles), puis équilibrer tous les peuples dessus.

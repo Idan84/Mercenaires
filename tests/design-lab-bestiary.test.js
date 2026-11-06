@@ -30,8 +30,9 @@ assert.equal(goblins.camps.length,1);
 assert.deepEqual([goblins.camps[0].camp,goblins.camps[0].chance,goblins.camps[0].lines.Frondeur],["Camp gobelin","14 %","32 %"]);
 // Les créatures partagées (le troll, faction Créatures) : leurs camps, ceux des peuples qui les appellent.
 const creatures=bestiary.factions.find(f=>f.name==="Créatures");
-assert.deepEqual(creatures.camps.map(c=>c.camp).sort(),["Camp gobelin","Camp homme-bête","Camp orc"]);
-assert.ok(creatures.camps.every(c=>c.lines.Troll==="9 %"),"le troll : 10 sur 110 dans chaque camp");
+assert.deepEqual(creatures.camps.map(c=>c.camp).sort(),["Camp gobelin","Camp homme-bête","Camp orc","Cimetière profané"]);
+assert.ok(creatures.camps.filter(c=>c.camp!=="Cimetière profané").every(c=>c.lines.Troll==="9 %"),"le troll : 10 sur 110 dans chaque camp");
+assert.equal(creatures.camps.find(c=>c.camp==="Cimetière profané").lines["Troll mort-vivant"],"9 %");
 const html=BestiaryLab.render(built);
 for(const e of enemies) assert.ok(html.includes("("+e.code+")"),"fiche affichée : "+e.code);
 for(const f of bestiary.factions) assert.ok(html.includes(`id="${BestiaryLab.anchor(f.name)}"`));

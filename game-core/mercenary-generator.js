@@ -152,6 +152,11 @@
     }
     // Échelle des écoles de magie à la génération (Idan, 2026-11-05 : « Division par deux »).
     const schoolScale = constant("generation.magic.school_scale", 0.5);
+    // Compétences non pratiquées (Idan, 2026-11-06 : « que ce soit pour les armes ou la magie, je te propose qu'on passe à 1
+    // ceux qui ont 20 ou moins » ; catégories et styles aussi ; en fin de génération, après le domaine) : une arme précise,
+    // une catégorie d'arme, un style ou une école à 20 ou moins passe à 1 ; un sort ne se tire pas dans une telle école.
+    const unpracticedMax = constant("generation.skills.unpracticed_max", 20);
+    const unpracticedValue = constant("generation.skills.unpracticed_value", 1);
 
     function culturesForPeople(people) {
       return cultureRows
@@ -389,7 +394,8 @@
       const steps = [["culture", cultureByName.get(character.culture)?.ecole_magie || null], ["best", ranked[0]], ["second", ranked[1]]];
       for (const [source, school] of steps) {
         if (!school) continue;
-        const base = Math.min(constant("generation.spells.chance_max", 75), level(school) * intelligence / constant("generation.spells.chance_divisor", 150));
+        const base = level(school) <= unpracticedMax ? 0
+          : Math.min(constant("generation.spells.chance_max", 75), level(school) * intelligence / constant("generation.spells.chance_divisor", 150));
         const chance = base * multipliers[Math.min(known.length, multipliers.length - 1)];
         const available = spellRows.filter(spell => spell.ecole === school && !known.some(k => k.code === spell.code));
         const draw = {source, school, chance, roll: null, spell: null};
@@ -409,6 +415,28 @@
     // Rattrapage du mage (Idan, 2026-11-01 : « Un profil mage sans sort, c'est quand même problématique… Qu'il connaisse
     // au moins un sort de sa meilleure école ») : un Mage qui n'a rien tiré apprend un sort au hasard dans sa meilleure
     // école, une fois le domaine accentué.
+    // Armes précises, catégories d'armes, styles et écoles à unpracticedMax ou moins → unpracticedValue (Idan, 2026-11-06).
+    const unpracticedMartial = new Set([
+      ...weaponRows.map(w => w.nom),
+      ...weaponRows.map(w => skillByName.get(w.nom)?.parent).filter(Boolean),
+      "Combat à une main", "Combat à deux mains", "Combat à deux armes", "Boucliers"
+    ]);
+    function clearUnpracticedSkills(character, trace) {
+      const cleared = [];
+      const clear = (group, name) => {
+        const values = character.skills[group];
+        const before = values?.[name];
+        if (!Number.isFinite(before) || before <= unpracticedValue || before > unpracticedMax) return;
+        values[name] = unpracticedValue;
+        cleared.push(name);
+        const entry = trace.skills[name];
+        if (entry) { entry.contributions.push({name: "Non pratiquée (20 ou moins)", kind: "unpracticed", delta: unpracticedValue - before}); entry.final = unpracticedValue; }
+      };
+      for (const name of unpracticedMartial) clear("martial", name);
+      for (const name of magicSchoolNames) clear("magic", name);
+      return cleared;
+    }
+
     function grantMageSpell(character) {
       if (character.domain !== "magic" || (character.spells || []).length || !spellRows.length) return null;
       const values = character.skills.magic || {};
@@ -1550,6 +1578,8 @@
       trace.domain = {code: domainChoice.code, scores: domainChoice.profile.scores, tippedBySpell: domainChoice.tipped, forced: Boolean(domainChoice.forced), moves: domainMoves};
       if (domainMoves.length) character.weaponPreferences = computeWeaponPreferences(character.skills);
       trace.mageSpell = grantMageSpell(character);
+      trace.unpracticed = clearUnpracticedSkills(character, trace);
+      if (trace.unpracticed.length) character.weaponPreferences = computeWeaponPreferences(character.skills);
 
       character.salaryPretension = rollDice(10,6);
       character.pvMax = Math.ceil(3 * (

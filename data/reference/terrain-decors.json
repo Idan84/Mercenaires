@@ -1,0 +1,155 @@
+{
+  "schema_version": 1,
+  "name": "terrain-decors",
+  "description": "Décor des cartes de combat (doc 04 ; Idan, 2026-11-06 : « Franchissable / infranchissable. Couverture : sans / partiel / totale » ; « je distinguerais ligne de vue et couverture » ; « vitesse réduite : mouvement à moitié / tiers / quart »). Trois réglages indépendants par décor. cout_mouvement : points de mouvement pour entrer dans la case (1 normal, 2 à moitié, 3 au tiers, 4 au quart ; null : infranchissable). bloque_vue : on ne voit pas à travers (et, dedans, on n'est vu qu'au contact). couverture : sans, partielle ou totale (Toucher × combat.cover.*, Discrétion + combat.stealth.cover_*), au tir et en défense de charge. article : le nom dans une phrase (« heurte le muret ») ; couleur : affichage provisoire de la case (Idan : « des couleurs pour commencer »).",
+  "columns": [
+    {
+      "source": "Code",
+      "key": "code"
+    },
+    {
+      "source": "Nom",
+      "key": "nom"
+    },
+    {
+      "source": "Avec l'article",
+      "key": "article"
+    },
+    {
+      "source": "Coût de mouvement",
+      "key": "cout_mouvement"
+    },
+    {
+      "source": "Bloque la vue",
+      "key": "bloque_vue"
+    },
+    {
+      "source": "Couverture",
+      "key": "couverture"
+    },
+    {
+      "source": "Couleur",
+      "key": "couleur"
+    }
+  ],
+  "row_count": 13,
+  "rows": [
+    {
+      "code": "buissons",
+      "nom": "Buissons",
+      "article": "les buissons",
+      "cout_mouvement": 2,
+      "bloque_vue": false,
+      "couverture": "partielle",
+      "couleur": "#6f8f3a"
+    },
+    {
+      "code": "foret",
+      "nom": "Forêt",
+      "article": "la forêt",
+      "cout_mouvement": 2,
+      "bloque_vue": true,
+      "couverture": "partielle",
+      "couleur": "#2f5a2a"
+    },
+    {
+      "code": "ble_haut",
+      "nom": "Blé haut",
+      "article": "le blé haut",
+      "cout_mouvement": 2,
+      "bloque_vue": true,
+      "couverture": "sans",
+      "couleur": "#c9b04a"
+    },
+    {
+      "code": "marais",
+      "nom": "Marais",
+      "article": "le marais",
+      "cout_mouvement": 3,
+      "bloque_vue": false,
+      "couverture": "sans",
+      "couleur": "#4f6b5a"
+    },
+    {
+      "code": "eau_peu_profonde",
+      "nom": "Eau peu profonde",
+      "article": "l’eau peu profonde",
+      "cout_mouvement": 3,
+      "bloque_vue": false,
+      "couverture": "sans",
+      "couleur": "#5f8fb0"
+    },
+    {
+      "code": "eboulis",
+      "nom": "Éboulis",
+      "article": "les éboulis",
+      "cout_mouvement": 3,
+      "bloque_vue": false,
+      "couverture": "partielle",
+      "couleur": "#8a7f70"
+    },
+    {
+      "code": "muret",
+      "nom": "Muret",
+      "article": "le muret",
+      "cout_mouvement": null,
+      "bloque_vue": false,
+      "couverture": "partielle",
+      "couleur": "#9b8f7a"
+    },
+    {
+      "code": "caisses",
+      "nom": "Caisses",
+      "article": "les caisses",
+      "cout_mouvement": null,
+      "bloque_vue": false,
+      "couverture": "partielle",
+      "couleur": "#8b6a43"
+    },
+    {
+      "code": "gros_rocher",
+      "nom": "Gros rocher",
+      "article": "le gros rocher",
+      "cout_mouvement": null,
+      "bloque_vue": false,
+      "couverture": "totale",
+      "couleur": "#6e6a64"
+    },
+    {
+      "code": "mur",
+      "nom": "Mur",
+      "article": "le mur",
+      "cout_mouvement": null,
+      "bloque_vue": true,
+      "couverture": "totale",
+      "couleur": "#4a4440"
+    },
+    {
+      "code": "maison",
+      "nom": "Maison",
+      "article": "la maison",
+      "cout_mouvement": null,
+      "bloque_vue": true,
+      "couverture": "totale",
+      "couleur": "#6b4a36"
+    },
+    {
+      "code": "gouffre",
+      "nom": "Gouffre",
+      "article": "le bord du gouffre",
+      "cout_mouvement": null,
+      "bloque_vue": false,
+      "couverture": "sans",
+      "couleur": "#1d1a18"
+    },
+    {
+      "code": "eau_profonde",
+      "nom": "Eau profonde",
+      "article": "l’eau profonde",
+      "cout_mouvement": null,
+      "bloque_vue": false,
+      "couverture": "sans",
+      "couleur": "#2f5f86"
+    }
+  ]
+}

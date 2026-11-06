@@ -95,6 +95,19 @@
       min:constant("combat.poison.resist_min",5),
       max:constant("combat.poison.resist_max",95)
     };
+    // Décor (doc 04 ; Idan, 2026-11-06) : derrière une couverture partielle ou totale, le Toucher au tir et en charge est
+    // multiplié par ce facteur ; une case lente traversée par une charge ajoute fallPerSlowStep × (coût − 1) % de chute.
+    const COVER={
+      partielle:constant("combat.cover.partial_hit_factor",0.5),
+      totale:constant("combat.cover.total_hit_factor",0.25)
+    };
+    const CHARGE_FALL={
+      base:constant("combat.charge.base_fall_probability",2),
+      perSlowStep:constant("combat.charge.fall_per_slow_step",5)
+    };
+    const coverHitFactor=level=>COVER[level]??1;
+    // Le bonus de Discrétion d'une couverture, pour le repérage (doc 04 : +30 partielle, +60 totale).
+    const coverDiscretion=level=>level==="totale"?STEALTH.totalCover:level==="partielle"?STEALTH.partialCover:0;
     // Mode sentinelle (Idan, 2026-11-06) : le tir de sentinelle gagne en précision (au Toucher) et enchaîne comme au corps à
     // corps (Enchaînement de tirs : diviseur par N au lieu de 1,5 × N).
     const SENTINEL={
@@ -621,7 +634,8 @@
           delta-=40*(distance-free)/(range.max-free);
         }
       }
-      return clamp(logistic(delta),10,90);
+      // Couverture (doc 04 ; Idan, 2026-11-06) : context.cover, « partielle » ou « totale », au tir et en défense de charge.
+      return clamp(logistic(delta),10,90)*coverHitFactor(context.cover);
     }
 
     // Charge CAC V1 : ForceEffectiveCharge = Force + PuissanceCharge pour Blesser.
@@ -807,10 +821,13 @@
       // de charge n'est tirée qu'une fois, pour la première arme.
       let chargePower=0;
       if(Number(options.chargeDistance)>0){
+        // Chute de charge : 2 % ; plus, à travers un décor lent (Idan, 2026-11-06 : « pieds dans le tapis »),
+        // options.chargeSlowSteps = la somme des (coût − 1) des cases lentes de la course.
+        const pFall=CHARGE_FALL.base+CHARGE_FALL.perSlowStep*(Number(options.chargeSlowSteps)||0);
         const fallRoll=options.chargeFollowUp?100:d100();
-        if(fallRoll<=2){
+        if(fallRoll<=pFall){
           attacker.prone=true;
-          return {ok:true,mode,weapon:weapon.nom,charge:true,chargeFall:true,fallRoll,hit:false,wound:false,damage:0};
+          return {ok:true,mode,weapon:weapon.nom,charge:true,chargeFall:true,fallRoll,pFall,hit:false,wound:false,damage:0};
         }
         const bonus=Number(weapon.bonus_charge_base)||1;
         chargePower=Number(options.chargeDistance)*bonus*(Number(quality(item).multiplicateur_qualite)||1);
@@ -818,13 +835,15 @@
 
       // Tir de sentinelle (Idan, 2026-11-06) : + SENTINEL.precision au Toucher.
       const sentinel=mode==="ranged"&&Boolean(options.sentinel);
-      const tags={chargePower,opportunity,encircled,fleeingTarget,backstab,hidden,...(sentinel?{sentinel}:{})};
+      // Couverture : au tir, et contre une charge (options.cover : « partielle » ou « totale »).
+      const cover=(mode==="ranged"||chargePower>0)&&COVER[options.cover]?options.cover:null;
+      const tags={chargePower,opportunity,encircled,fleeingTarget,backstab,hidden,...(sentinel?{sentinel}:{}),...(cover?{cover}:{})};
       // Champ de protection (Télékinésie, doc 12) : avant le Toucher, le projectile a projectileShield.chance % d'être dévié.
       if(mode==="ranged"&&defender.projectileShield){
         const pDeflect=Number(defender.projectileShield.chance)||0,deflectRoll=d100();
         if(deflectRoll<=pDeflect) return {ok:true,mode,weapon:weapon.nom,distance,deflected:true,pDeflect,deflectRoll,hit:false,wound:false,damage:0,...tags};
       }
-      const pHit=hitProbability(attacker,defender,mode,distance,{opportunity,backstab,sentinel});
+      const pHit=hitProbability(attacker,defender,mode,distance,{opportunity,backstab,sentinel,cover});
       const hitRoll=d100(),hit=hitRoll<=pHit;
       // twoHanded : arme tenue à deux mains (XP de Combat à deux mains) ; oneHanded : arme à une main tenue seule (XP de
       // Combat à une main).
@@ -1178,6 +1197,10 @@
       POISON,
       STEALTH,
       SENTINEL,
+      COVER,
+      CHARGE_FALL,
+      coverHitFactor,
+      coverDiscretion,
       detectionChance,
       rollDetection,
       spellWoundChance,

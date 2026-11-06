@@ -6,15 +6,16 @@ Cette page ne contient que les **chantiers encore ouverts**. Les règles validé
 
 ## Décor, ligne de vue & terrain futur
 
-Principe V1 retenu pour la couverture : **le décor porte explicitement son type de couverture**. Un élément peut fournir aucune couverture, une couverture partielle (`×0,5`), forte / quasi-totale (`×0,25`) ou bloquer totalement la ligne de vue (tir impossible).
+Fait (Idan, 2026-11-06, doc 04 « Décor ») : trois réglages par décor, passage (normal, ½, ⅓, ¼, infranchissable), vue
+(laisse voir, bloque) et couverture (sans, partielle × 0,5, totale × 0,25) ; la charge à travers un décor lent.
 
 Restent pour plus tard :
 
-- types de terrain et coûts / effets de déplacement ;
-- hauteur et différences de niveau ;
+- hauteur et différences de niveau (l'altitude, prochaine étape : une hauteur par case, à la Battle Brothers ; puis des
+  cartes à étages façon Mordheim / X-Com) ;
+- décor des cartes de mission ;
 - couverture destructible ;
-- géométrie du **couloir de tir** utilisé par l'approximation ;
-- effets du terrain sur la charge et son risque de chute ;
+- géométrie du **couloir de tir** utilisé par l'approximation (un tir raté qui finit dans le décor) ;
 - murs, portes, mobilier, cordes, leviers et interactions de décor.
 
 ## Détection, camouflage & attaques non détectées

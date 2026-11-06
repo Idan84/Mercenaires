@@ -35,9 +35,12 @@ Les gros chantiers à venir, dans l'ordre de la liste d'Idan, avec ce qui s'y ra
 15. **Mémorial** (Idan : « indispensable ») : le bâtiment, et les morts de mission qui y entrent.
 16. **Traumatismes physiques et psychologiques après une mission** (Idan, 2026-11-06) ; ils reprennent les séquelles
     permanentes des blessures, reportées le 2026-10-03 ([doc 10](/design/#doc=10-mission-time-and-unavailability.md)).
-17. **Actions rapides en combat qui manquent** : donner une potion à un allié, ramasser ou lâcher, posture ou garde,
-    encourager ou provoquer, ordres. Déjà en place : changer de set, recharger, boire une potion (soin, mana), enduire son
-    arme de poison, attaquer à deux mains.
+17. **Mode sentinelle** (Idan, 2026-11-06 : « le seul truc que je veux ajouter, au moteur de jeu (pour l'instant) ») : un
+    tireur qu'aucun ennemi ne voit se met en sentinelle au lieu de tirer ; pendant le tour adverse, il tire sur la
+    première cible qui se déplace à sa portée, avec plus de précision et plus de chances d'enchaîner (sauf arme à feu).
+    Règles à finir avec Idan, puis [doc 04](/design/#doc=04-combat.md). Les autres actions rapides (donner une potion,
+    ramasser, posture, provoquer, ordres) restent des idées du [doc 90](/design/#doc=90-mechanics-backlog.md).
+18. **Marchands** : leurs portraits (aucun pour l'instant) et la négociation du capitaine ([doc 18](/design/#doc=18-merchants.md)).
 
 ## 1 — Attend ta décision
 
@@ -54,7 +57,6 @@ Rien de ce bloc n'est codé : JC3 attend ton choix avant d'y toucher.
 - **Trésor négatif** : l'or peut passer sous 0 sans conséquence. Réponse en cours : l'usurier (feuille de route, 13).
 - **Type de dégâts, cas « moyen »** : la formule dit `AVERAGE(matchups)` ; le moteur choisit le type le plus proche de cette moyenne. Moyenne numérique ou type le plus proche ?
 - **Missions one shot** : récompense, renommée, factions, cartes, abandon, combat automatique (brouillon du 2026-10-24). → [doc 17 §6](/design/#doc=17-one-shot-missions.md)
-- **Marchands** : les 32 marchands d'Idan sont en place (étal, affinité, achat, revente, aide de l'intendant). Restent : leurs **portraits** (aucun pour l'instant) et la **négociation** du capitaine (« On pourra négocier », doc 18). → [doc 18](/design/#doc=18-merchants.md)
 - **Loyauté** : formules de loyauté, de départ et d'attractivité. → [doc 09](/design/#doc=09-reputation-renown-and-salaries.md)
 
 ## 2 — Reporté volontairement

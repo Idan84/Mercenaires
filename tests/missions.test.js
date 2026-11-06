@@ -206,7 +206,7 @@ assert.equal(rules.deathMultiplier(offer,false),2);
 // Culte des morts (2026-11-06) : les spectres, insensibles aux armes, à partir du niveau de mission 6 (Idan : « un peu plus tard. 6 ou 7 »).
 for(const a of reference.enemyArchetypes.rows){
   // Le troll (Idan, 2026-11-06 : « à partir de 6* ») aussi.
-  assert.deepEqual([a.niveau_mission_min,a.butin],[["Spectre","Troll"].includes(a.ligne)?6:1,{equipement:100-10*a.tier,objets:[]}],"butin : "+a.code);
+  assert.deepEqual([a.niveau_mission_min,a.butin],[["Spectre","Troll","Troll mort-vivant"].includes(a.ligne)?6:1,{equipement:100-10*a.tier,objets:[]}],"butin : "+a.code);
 }
 {
   const breakRules=createMissionRules({reference,random:seeded(21)});

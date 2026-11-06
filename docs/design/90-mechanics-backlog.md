@@ -14,7 +14,7 @@ vue d'en haut, charge).
 Restent pour plus tard :
 
 - cartes à étages façon Mordheim / X-Com (passerelles, échelles, toits) ;
-- enceinte des camps (palissade, étape 3b, validée par Idan le 2026-11-06) ; décor des autres missions à venir ;
+- décor des autres missions à venir (l'enceinte des camps de contrat est faite : doc 04, « Décor ») ;
 - couverture destructible ;
 - géométrie du **couloir de tir** utilisé par l'approximation (un tir raté qui finit dans le décor) ;
 - murs, portes, mobilier, cordes, leviers et interactions de décor.

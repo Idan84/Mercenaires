@@ -219,6 +219,7 @@ peut y avoir une subtilité dans franchissable : vitesse réduite ». Données :
 | Gros rocher | infranchissable | laisse voir | totale |
 | Mur, maison | infranchissable | bloque | totale |
 | Gouffre, eau profonde | infranchissable | laisse voir | sans |
+| Palissade (Idan, 2026-11-06 : « palissade nouvelle ») | infranchissable | laisse voir | partielle |
 
 - **Passage** : entrer dans une case lente coûte **2** (½), **3** (⅓) ou **4** (¼) points de mouvement (Idan : « parfait ») ;
   les chemins prennent le moins cher (à coût égal, le moins de cases) ; une case infranchissable ne se traverse pas (ni
@@ -259,11 +260,22 @@ peut y avoir une subtilité dans franchissable : vitesse réduite ». Données :
   **1 ou 2 rampes**, dont une au moins face à votre escouade. Pas de décor à 2 cases ou moins de votre escouade ni sur ses
   colonnes de déploiement, ni à côté des ennemis (4 cases pour la clairière). **Garde-fou** : chacun peut toujours atteindre
   l'ennemi à pied (sinon on retire, jusqu'à 30 fois, puis la carte garde son relief sans décor). Mesure : 1 500 combats
-  automatiques sur ces cartes, tous terminés (9 tours en médiane). L'enceinte du camp (palissade) vient ensuite.
+  automatiques sur ces cartes, tous terminés (9 tours en médiane).
+- **Enceinte du camp** (étape 3b ; Idan, 2026-11-06 : « palissade nouvelle », « vas-y pour la palissade et l'enceinte ») :
+  une **palissade** (bois : infranchissable, laisse voir, couverture partielle ; un motif de pieux) en anneau à **2 cases**
+  de l'ennemi le plus proche, avec **2 ou 3 ouvertures de 2 cases**, dont une face à votre escouade, les autres à 4 cases au
+  moins l'une de l'autre ; rien devant une ouverture (`mission-landscapes.json`, `enceinte`). **Carrières** (gobelins,
+  ogres) : le plateau va jusqu'à l'enceinte, posée sur son bord, et **chaque ouverture a sa rampe**. **Pas d'enceinte dans
+  la clairière** des hommes-bêtes (la forêt suffit). La palissade n'est pas tirée au hasard dans la Mission Test. Mesure :
+  1 000 combats automatiques avec l'enceinte, tous terminés.
 - **L'IA** avance vers sa cible par le vrai chemin, autour du décor. Quand elle ne voit personne (le décor coupe la vue),
   elle va chercher l'ennemi le plus proche (elle sait à peu près où il est), l'attaque si elle le voit alors, sinon un tireur
   que personne ne voit guette (mode sentinelle) : sans cela, un combat sur 12 environ se figeait, chacun attendant l'autre
   derrière le décor (mesure sur 150 combats de Mission Test ; plus aucun sur 300 après).
+- **Un tireur qui ne peut pas tirer d'où il est** (trop près : un arc ou une arbalète ne tire pas à moins de 2 cases ; trop
+  loin ; hors de vue) **se place pour tirer** : la case la moins chère de son mouvement d'où il a la portée et la vue, en
+  provoquant le moins d'attaques d'opportunité ; sinon il avance comme avant. Sans cela, deux archers au contact tournaient
+  l'un autour de l'autre sans fin (un combat automatique sur quelques centaines se bloquait ; plus aucun sur 2 000 après).
 
 ## Altitude (Idan, 2026-11-06)
 

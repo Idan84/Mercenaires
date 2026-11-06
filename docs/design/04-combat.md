@@ -346,6 +346,17 @@ chance pour enchaîner plusieurs tirs (sauf arme à feu). Il ne peut passer en m
   sans mana ni jet (`sort_initial`) ; ensuite, mêmes règles qu'une invocation lancée (entretien, test de Charisme). Il reste
   **en retrait** (`en_retrait`) : tant que ses troupes tiennent, il n'avance que pour lancer un sort et ne frappe qu'un
   ennemi à son contact ; seul, il se bat comme les autres. Code : `raiseMissionStartSummons`, `enemyMissionActivation`.
+- **Vol** (les chauves-souris de la Cour de sang ; Idan, 2026-11-06 : « Elles volent donc ignorent les pénalités de
+  mouvement ! », « Elles survolent tout ») : 1 point de mouvement par case, sans coût de décor, de montée ni de falaise ; un
+  volant passe au-dessus d'un décor infranchissable (murs, rochers, maisons), sans pouvoir s'y arrêter. Le bourbier et la
+  flaque de magma restent ce qu'ils sont. Données : `enemy-archetypes.json` (`vol`) ; code : `missionFlies`,
+  `missionStepCost`, `missionPaths`.
+- **Drain de vie de l'IA** (le vampire et ses rejetons ; Idan : « estoc, drain de vie, sort d'illusions ») : un ennemi dont
+  la fiche donne le Drain de vie se le lance (action rapide) quand un ennemi visible est à portée de ses pas et que l'effet
+  n'est pas déjà actif, puis frappe. C'est le seul sort sur soi que joue l'IA.
+- **Régénération d'une fiche** (le vampire ; Idan : « régénération (bloquée par le feu) ») : `regeneration` donne les points
+  de Régénération du personnage ; la règle est celle du sang de troll (au début de chaque activation, 2D6 × (0,5 +
+  Régénération / 50) PV ; brûlé depuis sa dernière activation, rien).
 
 ## Attaques de zone — Toucher V1
 

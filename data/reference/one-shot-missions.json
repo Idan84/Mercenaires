@@ -222,6 +222,41 @@
             "tribus": "cultes_des_morts",
             "chefs": "necromanciens"
           }
+        },
+        {
+          "faction": "Cour de sang",
+          "nom_camp": "Château maudit",
+          "poids": 1,
+          "lignes": [
+            {
+              "ligne": "Garde de sang",
+              "poids": 25
+            },
+            {
+              "ligne": "Rejeton",
+              "poids": 20
+            },
+            {
+              "ligne": "Arbalétrier asservi",
+              "poids": 15
+            },
+            {
+              "ligne": "Goule",
+              "poids": 15
+            },
+            {
+              "ligne": "Loup",
+              "poids": 15
+            },
+            {
+              "ligne": "Chauve-souris",
+              "poids": 10
+            }
+          ],
+          "noms": {
+            "tribus": "cours_de_sang",
+            "chefs": "vampires"
+          }
         }
       ],
       "validite_jours": [
@@ -568,6 +603,58 @@
       ],
       "signature": "Donné le {date}, an {an} de l'Âge des Couronnes Brisées. Pour l'Empereur et par délégation, {signataire}, sous-secrétaire adjoint aux Marches.",
       "noms_commanditaire": null
+    },
+    {
+      "code": "village_cour",
+      "mission": "cleanup",
+      "faction": "Cour de sang",
+      "commanditaire": "Chef de village",
+      "titre": "Un chef de village",
+      "texte": [
+        "À toute compagnie de mercenaires qui voudra bien venir,",
+        "Je m'appelle {commanditaire}, chef de {lieu}, à {jours} de marche de votre camp. Il y a un vieux château sur la colline, au-dessus du village. Il est en ruine depuis que mon grand-père était petit. Depuis la dernière lune, il y a de la lumière aux fenêtres, de la musique le soir, et des voitures noires qui montent sans jamais redescendre.",
+        "Chez nous, les gens disparaissent la nuit. Certains reviennent, très pâles, très polis, et ne veulent plus manger d'ail. Le forgeron dit qu'on voit des loups sur les remparts, et des chauves-souris grandes comme des chiens. Le forgeron boit, mais pas tant que ça.",
+        "Combien sont-ils ? Le forgeron dit {estimation}. Le maître des lieux se fait appeler {boss}. Il a envoyé un carton d'invitation au village tout entier. Personne n'y est allé. Enfin, presque personne.",
+        "Le village a réuni {récompense} pièces d'or. Ce que vous trouverez là-haut sera à vous : on dit qu'ils ont de la belle argenterie, ce qui est curieux pour des gens qui ne supportent pas l'argent.",
+        "Le premier qui nous débarrasse d'eux touche la somme. Les autres auront fait le chemin pour rien.",
+        "Venez de jour. Surtout, venez de jour."
+      ],
+      "signature": "{commanditaire}, chef de {lieu}, le {date}",
+      "noms_commanditaire": "chefs_de_village"
+    },
+    {
+      "code": "noble_cour",
+      "mission": "cleanup",
+      "faction": "Cour de sang",
+      "commanditaire": "Noble",
+      "titre": "Une famille noble",
+      "texte": [
+        "Messieurs les mercenaires,",
+        "Je suis {commanditaire}, de la maison qui tient {lieu}, à {jours} de marche de votre cantonnement. Je n'écris d'ordinaire pas à des gens de votre condition, mais la situation me l'impose, et mon intendant refuse de s'en charger.",
+        "Au bal de la Saint-Michel, ma fille a dansé trois fois avec un gentilhomme d'une pâleur distinguée, qui se fait appeler {boss}. Le lendemain, elle était partie le rejoindre dans le vieux château, au-dessus de {lieu}. Elle nous écrit qu'elle va très bien, qu'elle ne sort plus le jour, et qu'elle a rejoint une société fort élégante qui se nomme {tribu}.",
+        "Mes gens les disent {estimation}, en comptant les loups. Je ne compte pas les loups.",
+        "Ma maison vous offre {récompense} pièces d'or pour me ramener ma fille, et pour que ce monsieur cesse de recevoir. Ce que vous trouverez au château vous est abandonné, à l'exception des portraits de famille, qui sont les miens.",
+        "Le premier qui y parviendra touchera la somme. Je compte sur votre discrétion : à la cour, on dit qu'elle est partie se reposer à la campagne."
+      ],
+      "signature": "{commanditaire}, en son hôtel de {lieu}, le {date}",
+      "noms_commanditaire": "nobles"
+    },
+    {
+      "code": "emperor_cour",
+      "mission": "cleanup",
+      "faction": "Cour de sang",
+      "commanditaire": "Ordre de l'Empereur",
+      "titre": "Par ordre de Sa Majesté Impériale",
+      "texte": [
+        "PAR ORDRE DE SA MAJESTÉ IMPÉRIALE — Chancellerie des Marches, Bureau des Nuisances et Engeances",
+        "À toute compagnie franche dûment patentée,",
+        "Attendu qu'une cour de vampires a pris ses quartiers dans le château en ruine de {lieu}, à {jours} de marche de votre cantonnement ; attendu que ladite cour donne des réceptions nocturnes sans autorisation, prélève sur la population un impôt qui n'est pas celui de la Couronne, et a fait parvenir à la Chancellerie une invitation que le sous-secrétaire a eu la sagesse de décliner ;",
+        "Il est ordonné à la compagnie qui s'en chargera de procéder au nettoyage complet dudit château, par tout moyen qu'elle jugera utile, dans le respect approximatif des usages de la guerre. Les maîtres des lieux seront rendus à la poussière, et leurs loups à la forêt.",
+        "La Couronne versera {récompense} pièces d'or à l'exécution du présent ordre. Le butin pris sur l'ennemi reste acquis à la compagnie, Sa Majesté étant d'humeur généreuse.",
+        "Le présent ordre expire le {date_expiration}, ou dès qu'une compagnie s'en sera chargée."
+      ],
+      "signature": "Donné le {date}, an {an} de l'Âge des Couronnes Brisées. Pour l'Empereur et par délégation, {signataire}, sous-secrétaire adjoint aux Marches.",
+      "noms_commanditaire": null
     }
   ],
   "noms": {
@@ -779,6 +866,30 @@
       "Père Hubert",
       "Sœur Agathe",
       "Frère Bénédic"
+    ],
+    "cours_de_sang": [
+      "Cour Écarlate",
+      "Maison de la Nuit Longue",
+      "Cercle du Calice",
+      "Cour des Murmures",
+      "Maison Sanguine",
+      "Enfants du Crépuscule"
+    ],
+    "vampires": [
+      "Valérien d'Ombreval",
+      "Isolde de Morteval",
+      "Casimir Noirsang",
+      "Aurèle de Vauclair",
+      "Séverine la Blême",
+      "Lucien Sombrelune"
+    ],
+    "nobles": [
+      "Baronne de Lamotte",
+      "Sire Godefroy d'Aubrac",
+      "Dame Hermine de Valcourt",
+      "Comte Ferrand de Brisay",
+      "Dame Aliénor de Montlouis",
+      "Sire Bertrand de Sauveterre"
     ]
   }
 }

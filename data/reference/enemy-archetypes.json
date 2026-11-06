@@ -122,9 +122,17 @@
     {
       "source": "En retrait derrière ses troupes",
       "key": "en_retrait"
+    },
+    {
+      "source": "Vole : ignore décor, montées et falaises, sans s’arrêter sur un décor infranchissable",
+      "key": "vol"
+    },
+    {
+      "source": "Régénération (points ; la règle du sang de troll, le feu la bloque)",
+      "key": "regeneration"
     }
   ],
-  "row_count": 144,
+  "row_count": 172,
   "rows": [
     {
       "nom": "Lancier gobelin novice",
@@ -8912,6 +8920,1871 @@
       ],
       "sort_initial": "bone_army",
       "en_retrait": true
+    },
+    {
+      "nom": "Garde de sang novice",
+      "code": "court_blood_guard_novice",
+      "faction": "Cour de sang",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Garde de sang",
+      "niveau": "novice",
+      "centile": "P20",
+      "caracteristiques": {
+        "Force": 55,
+        "Constitution": 54,
+        "Dextérité": 55,
+        "Vitesse": 36,
+        "Endurance": 58,
+        "Esquive": 36,
+        "Chance": 44,
+        "Charisme": 45,
+        "Courage": 43,
+        "Intelligence": 38,
+        "Volonté": 45,
+        "Perception": 42,
+        "Puissance magique": 38,
+        "Réserve de mana": 43
+      },
+      "resistances": {
+        "Résistance physique": 2,
+        "Résistance au feu": 2,
+        "Résistance au froid": 1,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 2
+      },
+      "pv": 210,
+      "competences_martiales": {
+        "Hallebarde": 42,
+        "Armes d’hast": 46,
+        "Discrétion": 23,
+        "Pièges": 23,
+        "Combat à deux armes": 39,
+        "Combat à mains nues": 24,
+        "Combat à deux mains": 30
+      },
+      "intimidation": 32,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire"
+      ],
+      "armes": [
+        "Hallebarde"
+      ],
+      "armure": "Cotte de mailles",
+      "tier": 1,
+      "qualite": "Usée",
+      "points": 6,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 90,
+        "objets": []
+      }
+    },
+    {
+      "nom": "Garde de sang",
+      "code": "court_blood_guard",
+      "faction": "Cour de sang",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Garde de sang",
+      "niveau": "normal",
+      "centile": "P50",
+      "caracteristiques": {
+        "Force": 67,
+        "Constitution": 62,
+        "Dextérité": 64,
+        "Vitesse": 44,
+        "Endurance": 67,
+        "Esquive": 45,
+        "Chance": 54,
+        "Charisme": 56,
+        "Courage": 53,
+        "Intelligence": 52,
+        "Volonté": 55,
+        "Perception": 52,
+        "Puissance magique": 49,
+        "Réserve de mana": 52
+      },
+      "resistances": {
+        "Résistance physique": 5,
+        "Résistance au feu": 4,
+        "Résistance au froid": 4,
+        "Résistance à la foudre": 4,
+        "Résistance au poison": 5
+      },
+      "pv": 243,
+      "competences_martiales": {
+        "Hallebarde": 50,
+        "Armes d’hast": 54,
+        "Discrétion": 28,
+        "Pièges": 28,
+        "Combat à deux armes": 46,
+        "Combat à mains nues": 31,
+        "Combat à deux mains": 37
+      },
+      "intimidation": 37,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire"
+      ],
+      "armes": [
+        "Hallebarde"
+      ],
+      "armure": "Brigandine",
+      "tier": 2,
+      "qualite": "Correcte",
+      "points": 14,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 80,
+        "objets": []
+      }
+    },
+    {
+      "nom": "Garde de sang vétéran",
+      "code": "court_blood_guard_veteran",
+      "faction": "Cour de sang",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Garde de sang",
+      "niveau": "vétéran",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 77,
+        "Constitution": 70,
+        "Dextérité": 73,
+        "Vitesse": 53,
+        "Endurance": 76,
+        "Esquive": 54,
+        "Chance": 63,
+        "Charisme": 64,
+        "Courage": 61,
+        "Intelligence": 65,
+        "Volonté": 62,
+        "Perception": 61,
+        "Puissance magique": 60,
+        "Réserve de mana": 60
+      },
+      "resistances": {
+        "Résistance physique": 8,
+        "Résistance au feu": 6,
+        "Résistance au froid": 11,
+        "Résistance à la foudre": 6,
+        "Résistance au poison": 11
+      },
+      "pv": 274,
+      "competences_martiales": {
+        "Hallebarde": 57,
+        "Armes d’hast": 60,
+        "Discrétion": 35,
+        "Pièges": 35,
+        "Combat à deux armes": 53,
+        "Combat à mains nues": 40,
+        "Combat à deux mains": 43
+      },
+      "intimidation": 41,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire",
+        "Port d’armure lourde"
+      ],
+      "armes": [
+        "Hallebarde"
+      ],
+      "armure": "Armure d'écailles",
+      "tier": 3,
+      "qualite": "De bonne facture",
+      "points": 31,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 70,
+        "objets": []
+      }
+    },
+    {
+      "nom": "Garde de sang d’élite",
+      "code": "court_blood_guard_elite",
+      "faction": "Cour de sang",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Garde de sang",
+      "niveau": "d’élite",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 84,
+        "Constitution": 75,
+        "Dextérité": 79,
+        "Vitesse": 60,
+        "Endurance": 82,
+        "Esquive": 61,
+        "Chance": 72,
+        "Charisme": 71,
+        "Courage": 67,
+        "Intelligence": 77,
+        "Volonté": 69,
+        "Perception": 69,
+        "Puissance magique": 70,
+        "Réserve de mana": 67
+      },
+      "resistances": {
+        "Résistance physique": 12,
+        "Résistance au feu": 12,
+        "Résistance au froid": 19,
+        "Résistance à la foudre": 10,
+        "Résistance au poison": 19
+      },
+      "pv": 295,
+      "competences_martiales": {
+        "Hallebarde": 63,
+        "Armes d’hast": 66,
+        "Discrétion": 43,
+        "Pièges": 42,
+        "Combat à deux armes": 61,
+        "Combat à mains nues": 48,
+        "Combat à deux mains": 50
+      },
+      "intimidation": 46,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire",
+        "Port d’armure lourde"
+      ],
+      "armes": [
+        "Hallebarde"
+      ],
+      "armure": "Armure de plates",
+      "tier": 4,
+      "qualite": "De luxe",
+      "points": 68,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 60,
+        "objets": []
+      }
+    },
+    {
+      "nom": "Rejeton novice",
+      "code": "court_spawn_novice",
+      "faction": "Cour de sang",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Rejeton",
+      "niveau": "novice",
+      "centile": "P20",
+      "caracteristiques": {
+        "Force": 41,
+        "Constitution": 35,
+        "Dextérité": 64,
+        "Vitesse": 44,
+        "Endurance": 46,
+        "Esquive": 54,
+        "Chance": 44,
+        "Charisme": 56,
+        "Courage": 43,
+        "Intelligence": 38,
+        "Volonté": 45,
+        "Perception": 42,
+        "Puissance magique": 38,
+        "Réserve de mana": 43
+      },
+      "resistances": {
+        "Résistance physique": 2,
+        "Résistance au feu": 2,
+        "Résistance au froid": 1,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 2
+      },
+      "pv": 146,
+      "competences_martiales": {
+        "Estoc": 42,
+        "Lames longues": 46,
+        "Discrétion": 23,
+        "Pièges": 23,
+        "Combat à deux armes": 39,
+        "Combat à mains nues": 24,
+        "Combat à deux mains": 30,
+        "Combat à une main": 39
+      },
+      "intimidation": 32,
+      "port_d_armure": [],
+      "armes": [
+        "Estoc"
+      ],
+      "armure": "Vêtements",
+      "tier": 1,
+      "qualite": "Usée",
+      "points": 7,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 90,
+        "objets": []
+      },
+      "mort_vivant": true,
+      "insensible_poison": true,
+      "ecoles": {
+        "Nécromancie": 33,
+        "Illusion": 33
+      },
+      "sorts": [
+        {
+          "code": "life_drain",
+          "maitrise": 20
+        },
+        {
+          "code": "psychic_shock",
+          "maitrise": 20
+        }
+      ]
+    },
+    {
+      "nom": "Rejeton",
+      "code": "court_spawn",
+      "faction": "Cour de sang",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Rejeton",
+      "niveau": "normal",
+      "centile": "P50",
+      "caracteristiques": {
+        "Force": 55,
+        "Constitution": 44,
+        "Dextérité": 73,
+        "Vitesse": 53,
+        "Endurance": 46,
+        "Esquive": 61,
+        "Chance": 54,
+        "Charisme": 64,
+        "Courage": 53,
+        "Intelligence": 52,
+        "Volonté": 55,
+        "Perception": 52,
+        "Puissance magique": 49,
+        "Réserve de mana": 52
+      },
+      "resistances": {
+        "Résistance physique": 5,
+        "Résistance au feu": 4,
+        "Résistance au froid": 4,
+        "Résistance à la foudre": 4,
+        "Résistance au poison": 5
+      },
+      "pv": 176,
+      "competences_martiales": {
+        "Estoc": 50,
+        "Lames longues": 54,
+        "Discrétion": 28,
+        "Pièges": 28,
+        "Combat à deux armes": 46,
+        "Combat à mains nues": 31,
+        "Combat à deux mains": 37,
+        "Combat à une main": 46
+      },
+      "intimidation": 37,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Estoc"
+      ],
+      "armure": "Gambison",
+      "tier": 2,
+      "qualite": "Correcte",
+      "points": 16,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 80,
+        "objets": []
+      },
+      "mort_vivant": true,
+      "insensible_poison": true,
+      "ecoles": {
+        "Nécromancie": 40,
+        "Illusion": 40
+      },
+      "sorts": [
+        {
+          "code": "life_drain",
+          "maitrise": 35
+        },
+        {
+          "code": "psychic_shock",
+          "maitrise": 35
+        }
+      ]
+    },
+    {
+      "nom": "Rejeton vétéran",
+      "code": "court_spawn_veteran",
+      "faction": "Cour de sang",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Rejeton",
+      "niveau": "vétéran",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 67,
+        "Constitution": 54,
+        "Dextérité": 79,
+        "Vitesse": 60,
+        "Endurance": 58,
+        "Esquive": 68,
+        "Chance": 63,
+        "Charisme": 71,
+        "Courage": 61,
+        "Intelligence": 65,
+        "Volonté": 62,
+        "Perception": 61,
+        "Puissance magique": 60,
+        "Réserve de mana": 60
+      },
+      "resistances": {
+        "Résistance physique": 8,
+        "Résistance au feu": 6,
+        "Résistance au froid": 11,
+        "Résistance à la foudre": 6,
+        "Résistance au poison": 11
+      },
+      "pv": 215,
+      "competences_martiales": {
+        "Estoc": 57,
+        "Lames longues": 60,
+        "Discrétion": 35,
+        "Pièges": 35,
+        "Combat à deux armes": 53,
+        "Combat à mains nues": 40,
+        "Combat à deux mains": 43,
+        "Combat à une main": 53
+      },
+      "intimidation": 41,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Estoc"
+      ],
+      "armure": "Armure de cuir",
+      "tier": 3,
+      "qualite": "De bonne facture",
+      "points": 26,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 70,
+        "objets": []
+      },
+      "mort_vivant": true,
+      "insensible_poison": true,
+      "ecoles": {
+        "Nécromancie": 51,
+        "Illusion": 51
+      },
+      "sorts": [
+        {
+          "code": "life_drain",
+          "maitrise": 50
+        },
+        {
+          "code": "psychic_shock",
+          "maitrise": 50
+        }
+      ]
+    },
+    {
+      "nom": "Rejeton d’élite",
+      "code": "court_spawn_elite",
+      "faction": "Cour de sang",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Rejeton",
+      "niveau": "d’élite",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 77,
+        "Constitution": 62,
+        "Dextérité": 79,
+        "Vitesse": 67,
+        "Endurance": 67,
+        "Esquive": 73,
+        "Chance": 72,
+        "Charisme": 77,
+        "Courage": 67,
+        "Intelligence": 77,
+        "Volonté": 69,
+        "Perception": 69,
+        "Puissance magique": 70,
+        "Réserve de mana": 67
+      },
+      "resistances": {
+        "Résistance physique": 12,
+        "Résistance au feu": 12,
+        "Résistance au froid": 19,
+        "Résistance à la foudre": 10,
+        "Résistance au poison": 19
+      },
+      "pv": 247,
+      "competences_martiales": {
+        "Estoc": 63,
+        "Lames longues": 66,
+        "Discrétion": 43,
+        "Pièges": 42,
+        "Combat à deux armes": 61,
+        "Combat à mains nues": 48,
+        "Combat à deux mains": 50,
+        "Combat à une main": 61
+      },
+      "intimidation": 46,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Estoc"
+      ],
+      "armure": "Armure de cuir",
+      "tier": 4,
+      "qualite": "De luxe",
+      "points": 52,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 60,
+        "objets": []
+      },
+      "mort_vivant": true,
+      "insensible_poison": true,
+      "ecoles": {
+        "Nécromancie": 57,
+        "Illusion": 57
+      },
+      "sorts": [
+        {
+          "code": "life_drain",
+          "maitrise": 65
+        },
+        {
+          "code": "psychic_shock",
+          "maitrise": 65
+        }
+      ]
+    },
+    {
+      "nom": "Arbalétrier asservi novice",
+      "code": "court_thrall_crossbowman_novice",
+      "faction": "Cour de sang",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Arbalétrier asservi",
+      "niveau": "novice",
+      "centile": "P20",
+      "caracteristiques": {
+        "Force": 30,
+        "Constitution": 44,
+        "Dextérité": 64,
+        "Vitesse": 44,
+        "Endurance": 46,
+        "Esquive": 36,
+        "Chance": 54,
+        "Charisme": 45,
+        "Courage": 43,
+        "Intelligence": 38,
+        "Volonté": 45,
+        "Perception": 52,
+        "Puissance magique": 38,
+        "Réserve de mana": 43
+      },
+      "resistances": {
+        "Résistance physique": 2,
+        "Résistance au feu": 2,
+        "Résistance au froid": 1,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 2
+      },
+      "pv": 173,
+      "competences_martiales": {
+        "Arbalète": 42,
+        "Armes de tir": 46,
+        "Discrétion": 23,
+        "Pièges": 23,
+        "Combat à deux armes": 39,
+        "Combat à mains nues": 24,
+        "Combat à deux mains": 30
+      },
+      "intimidation": 32,
+      "port_d_armure": [],
+      "armes": [
+        "Arbalète"
+      ],
+      "armure": "Vêtements",
+      "tier": 1,
+      "qualite": "Usée",
+      "points": 12,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 90,
+        "objets": []
+      }
+    },
+    {
+      "nom": "Arbalétrier asservi",
+      "code": "court_thrall_crossbowman",
+      "faction": "Cour de sang",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Arbalétrier asservi",
+      "niveau": "normal",
+      "centile": "P50",
+      "caracteristiques": {
+        "Force": 41,
+        "Constitution": 54,
+        "Dextérité": 73,
+        "Vitesse": 53,
+        "Endurance": 58,
+        "Esquive": 45,
+        "Chance": 63,
+        "Charisme": 56,
+        "Courage": 53,
+        "Intelligence": 52,
+        "Volonté": 55,
+        "Perception": 61,
+        "Puissance magique": 49,
+        "Réserve de mana": 52
+      },
+      "resistances": {
+        "Résistance physique": 5,
+        "Résistance au feu": 4,
+        "Résistance au froid": 4,
+        "Résistance à la foudre": 4,
+        "Résistance au poison": 5
+      },
+      "pv": 213,
+      "competences_martiales": {
+        "Arbalète": 50,
+        "Armes de tir": 54,
+        "Discrétion": 28,
+        "Pièges": 28,
+        "Combat à deux armes": 46,
+        "Combat à mains nues": 31,
+        "Combat à deux mains": 37
+      },
+      "intimidation": 37,
+      "port_d_armure": [],
+      "armes": [
+        "Arbalète"
+      ],
+      "armure": "Vêtements",
+      "tier": 2,
+      "qualite": "Correcte",
+      "points": 22,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 80,
+        "objets": []
+      }
+    },
+    {
+      "nom": "Arbalétrier asservi vétéran",
+      "code": "court_thrall_crossbowman_veteran",
+      "faction": "Cour de sang",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Arbalétrier asservi",
+      "niveau": "vétéran",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 55,
+        "Constitution": 62,
+        "Dextérité": 79,
+        "Vitesse": 60,
+        "Endurance": 67,
+        "Esquive": 54,
+        "Chance": 72,
+        "Charisme": 64,
+        "Courage": 61,
+        "Intelligence": 65,
+        "Volonté": 62,
+        "Perception": 69,
+        "Puissance magique": 60,
+        "Réserve de mana": 60
+      },
+      "resistances": {
+        "Résistance physique": 8,
+        "Résistance au feu": 6,
+        "Résistance au froid": 11,
+        "Résistance à la foudre": 6,
+        "Résistance au poison": 11
+      },
+      "pv": 245,
+      "competences_martiales": {
+        "Arbalète": 57,
+        "Armes de tir": 60,
+        "Discrétion": 35,
+        "Pièges": 35,
+        "Combat à deux armes": 53,
+        "Combat à mains nues": 40,
+        "Combat à deux mains": 43
+      },
+      "intimidation": 41,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Arbalète"
+      ],
+      "armure": "Gambison",
+      "tier": 3,
+      "qualite": "De bonne facture",
+      "points": 32,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 70,
+        "objets": []
+      }
+    },
+    {
+      "nom": "Arbalétrier asservi d’élite",
+      "code": "court_thrall_crossbowman_elite",
+      "faction": "Cour de sang",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Arbalétrier asservi",
+      "niveau": "d’élite",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 67,
+        "Constitution": 70,
+        "Dextérité": 79,
+        "Vitesse": 67,
+        "Endurance": 76,
+        "Esquive": 61,
+        "Chance": 77,
+        "Charisme": 71,
+        "Courage": 67,
+        "Intelligence": 77,
+        "Volonté": 69,
+        "Perception": 74,
+        "Puissance magique": 70,
+        "Réserve de mana": 67
+      },
+      "resistances": {
+        "Résistance physique": 12,
+        "Résistance au feu": 12,
+        "Résistance au froid": 19,
+        "Résistance à la foudre": 10,
+        "Résistance au poison": 19
+      },
+      "pv": 276,
+      "competences_martiales": {
+        "Arbalète": 63,
+        "Armes de tir": 66,
+        "Discrétion": 43,
+        "Pièges": 42,
+        "Combat à deux armes": 61,
+        "Combat à mains nues": 48,
+        "Combat à deux mains": 50
+      },
+      "intimidation": 46,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Arbalète"
+      ],
+      "armure": "Armure de cuir",
+      "tier": 4,
+      "qualite": "De luxe",
+      "points": 55,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 60,
+        "objets": []
+      }
+    },
+    {
+      "nom": "Goule novice",
+      "code": "court_ghoul_novice",
+      "faction": "Cour de sang",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Goule",
+      "niveau": "novice",
+      "centile": "P20",
+      "caracteristiques": {
+        "Force": 55,
+        "Constitution": 44,
+        "Dextérité": 64,
+        "Vitesse": 53,
+        "Endurance": 46,
+        "Esquive": 45,
+        "Chance": 44,
+        "Charisme": 10,
+        "Courage": 43,
+        "Intelligence": 15,
+        "Volonté": 45,
+        "Perception": 42,
+        "Puissance magique": 38,
+        "Réserve de mana": 43
+      },
+      "resistances": {
+        "Résistance physique": 2,
+        "Résistance au feu": 2,
+        "Résistance au froid": 1,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 2
+      },
+      "pv": 173,
+      "competences_martiales": {
+        "Griffes": 42,
+        "Armes naturelles": 46,
+        "Discrétion": 23,
+        "Pièges": 23,
+        "Combat à deux armes": 39,
+        "Combat à mains nues": 24,
+        "Combat à deux mains": 30
+      },
+      "intimidation": 32,
+      "port_d_armure": [],
+      "armes": [],
+      "armure": "Vêtements",
+      "tier": 1,
+      "qualite": "Usée",
+      "points": 11,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 90,
+        "objets": []
+      },
+      "attaque": {
+        "nom": "Griffes",
+        "degats_pv_base": "1D8",
+        "puissance_tranchante": 35,
+        "puissance_contondante": 20
+      },
+      "mort_vivant": true,
+      "insensible_poison": true,
+      "sorts": []
+    },
+    {
+      "nom": "Goule",
+      "code": "court_ghoul",
+      "faction": "Cour de sang",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Goule",
+      "niveau": "normal",
+      "centile": "P50",
+      "caracteristiques": {
+        "Force": 67,
+        "Constitution": 54,
+        "Dextérité": 73,
+        "Vitesse": 60,
+        "Endurance": 58,
+        "Esquive": 54,
+        "Chance": 54,
+        "Charisme": 10,
+        "Courage": 53,
+        "Intelligence": 15,
+        "Volonté": 55,
+        "Perception": 52,
+        "Puissance magique": 49,
+        "Réserve de mana": 52
+      },
+      "resistances": {
+        "Résistance physique": 5,
+        "Résistance au feu": 4,
+        "Résistance au froid": 4,
+        "Résistance à la foudre": 4,
+        "Résistance au poison": 5
+      },
+      "pv": 213,
+      "competences_martiales": {
+        "Griffes": 50,
+        "Armes naturelles": 54,
+        "Discrétion": 28,
+        "Pièges": 28,
+        "Combat à deux armes": 46,
+        "Combat à mains nues": 31,
+        "Combat à deux mains": 37
+      },
+      "intimidation": 37,
+      "port_d_armure": [],
+      "armes": [],
+      "armure": "Vêtements",
+      "tier": 2,
+      "qualite": "Correcte",
+      "points": 19,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 80,
+        "objets": []
+      },
+      "attaque": {
+        "nom": "Griffes",
+        "degats_pv_base": "1D8",
+        "puissance_tranchante": 35,
+        "puissance_contondante": 20
+      },
+      "mort_vivant": true,
+      "insensible_poison": true,
+      "sorts": []
+    },
+    {
+      "nom": "Goule vétéran",
+      "code": "court_ghoul_veteran",
+      "faction": "Cour de sang",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Goule",
+      "niveau": "vétéran",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 77,
+        "Constitution": 62,
+        "Dextérité": 79,
+        "Vitesse": 67,
+        "Endurance": 67,
+        "Esquive": 61,
+        "Chance": 63,
+        "Charisme": 10,
+        "Courage": 61,
+        "Intelligence": 15,
+        "Volonté": 62,
+        "Perception": 61,
+        "Puissance magique": 60,
+        "Réserve de mana": 60
+      },
+      "resistances": {
+        "Résistance physique": 8,
+        "Résistance au feu": 6,
+        "Résistance au froid": 11,
+        "Résistance à la foudre": 6,
+        "Résistance au poison": 11
+      },
+      "pv": 245,
+      "competences_martiales": {
+        "Griffes": 57,
+        "Armes naturelles": 60,
+        "Discrétion": 35,
+        "Pièges": 35,
+        "Combat à deux armes": 53,
+        "Combat à mains nues": 40,
+        "Combat à deux mains": 43
+      },
+      "intimidation": 41,
+      "port_d_armure": [],
+      "armes": [],
+      "armure": "Vêtements",
+      "tier": 3,
+      "qualite": "De bonne facture",
+      "points": 30,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 70,
+        "objets": []
+      },
+      "attaque": {
+        "nom": "Griffes",
+        "degats_pv_base": "1D8",
+        "puissance_tranchante": 35,
+        "puissance_contondante": 20
+      },
+      "mort_vivant": true,
+      "insensible_poison": true,
+      "sorts": []
+    },
+    {
+      "nom": "Goule d’élite",
+      "code": "court_ghoul_elite",
+      "faction": "Cour de sang",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Goule",
+      "niveau": "d’élite",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 84,
+        "Constitution": 70,
+        "Dextérité": 79,
+        "Vitesse": 71,
+        "Endurance": 76,
+        "Esquive": 68,
+        "Chance": 72,
+        "Charisme": 10,
+        "Courage": 67,
+        "Intelligence": 15,
+        "Volonté": 69,
+        "Perception": 69,
+        "Puissance magique": 70,
+        "Réserve de mana": 67
+      },
+      "resistances": {
+        "Résistance physique": 12,
+        "Résistance au feu": 12,
+        "Résistance au froid": 19,
+        "Résistance à la foudre": 10,
+        "Résistance au poison": 19
+      },
+      "pv": 276,
+      "competences_martiales": {
+        "Griffes": 63,
+        "Armes naturelles": 66,
+        "Discrétion": 43,
+        "Pièges": 42,
+        "Combat à deux armes": 61,
+        "Combat à mains nues": 48,
+        "Combat à deux mains": 50
+      },
+      "intimidation": 46,
+      "port_d_armure": [],
+      "armes": [],
+      "armure": "Vêtements",
+      "tier": 4,
+      "qualite": "De luxe",
+      "points": 48,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 60,
+        "objets": []
+      },
+      "attaque": {
+        "nom": "Griffes",
+        "degats_pv_base": "1D8",
+        "puissance_tranchante": 35,
+        "puissance_contondante": 20
+      },
+      "mort_vivant": true,
+      "insensible_poison": true,
+      "sorts": []
+    },
+    {
+      "nom": "Loup novice",
+      "code": "court_wolf_novice",
+      "faction": "Cour de sang",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Loup",
+      "niveau": "novice",
+      "centile": "P20",
+      "caracteristiques": {
+        "Force": 30,
+        "Constitution": 35,
+        "Dextérité": 64,
+        "Vitesse": 53,
+        "Endurance": 46,
+        "Esquive": 45,
+        "Chance": 44,
+        "Charisme": 15,
+        "Courage": 43,
+        "Intelligence": 15,
+        "Volonté": 45,
+        "Perception": 52,
+        "Puissance magique": 38,
+        "Réserve de mana": 43
+      },
+      "resistances": {
+        "Résistance physique": 2,
+        "Résistance au feu": 2,
+        "Résistance au froid": 1,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 2
+      },
+      "pv": 146,
+      "competences_martiales": {
+        "Morsure": 42,
+        "Armes naturelles": 46,
+        "Discrétion": 23,
+        "Pièges": 23,
+        "Combat à deux armes": 39,
+        "Combat à mains nues": 24,
+        "Combat à deux mains": 30
+      },
+      "intimidation": 32,
+      "port_d_armure": [],
+      "armes": [],
+      "armure": null,
+      "tier": 1,
+      "qualite": "Usée",
+      "points": 5,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 90,
+        "objets": []
+      },
+      "attaque": {
+        "nom": "Morsure",
+        "degats_pv_base": "1D8",
+        "puissance_perforante": 35
+      }
+    },
+    {
+      "nom": "Loup",
+      "code": "court_wolf",
+      "faction": "Cour de sang",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Loup",
+      "niveau": "normal",
+      "centile": "P50",
+      "caracteristiques": {
+        "Force": 41,
+        "Constitution": 44,
+        "Dextérité": 73,
+        "Vitesse": 60,
+        "Endurance": 58,
+        "Esquive": 54,
+        "Chance": 54,
+        "Charisme": 15,
+        "Courage": 53,
+        "Intelligence": 15,
+        "Volonté": 55,
+        "Perception": 61,
+        "Puissance magique": 49,
+        "Réserve de mana": 52
+      },
+      "resistances": {
+        "Résistance physique": 5,
+        "Résistance au feu": 4,
+        "Résistance au froid": 4,
+        "Résistance à la foudre": 4,
+        "Résistance au poison": 5
+      },
+      "pv": 183,
+      "competences_martiales": {
+        "Morsure": 50,
+        "Armes naturelles": 54,
+        "Discrétion": 28,
+        "Pièges": 28,
+        "Combat à deux armes": 46,
+        "Combat à mains nues": 31,
+        "Combat à deux mains": 37
+      },
+      "intimidation": 37,
+      "port_d_armure": [],
+      "armes": [],
+      "armure": null,
+      "tier": 2,
+      "qualite": "Correcte",
+      "points": 10,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 80,
+        "objets": []
+      },
+      "attaque": {
+        "nom": "Morsure",
+        "degats_pv_base": "1D8",
+        "puissance_perforante": 35
+      }
+    },
+    {
+      "nom": "Loup vétéran",
+      "code": "court_wolf_veteran",
+      "faction": "Cour de sang",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Loup",
+      "niveau": "vétéran",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 55,
+        "Constitution": 54,
+        "Dextérité": 79,
+        "Vitesse": 67,
+        "Endurance": 67,
+        "Esquive": 61,
+        "Chance": 63,
+        "Charisme": 15,
+        "Courage": 61,
+        "Intelligence": 15,
+        "Volonté": 62,
+        "Perception": 69,
+        "Puissance magique": 60,
+        "Réserve de mana": 60
+      },
+      "resistances": {
+        "Résistance physique": 8,
+        "Résistance au feu": 6,
+        "Résistance au froid": 11,
+        "Résistance à la foudre": 6,
+        "Résistance au poison": 11
+      },
+      "pv": 221,
+      "competences_martiales": {
+        "Morsure": 57,
+        "Armes naturelles": 60,
+        "Discrétion": 35,
+        "Pièges": 35,
+        "Combat à deux armes": 53,
+        "Combat à mains nues": 40,
+        "Combat à deux mains": 43
+      },
+      "intimidation": 41,
+      "port_d_armure": [],
+      "armes": [],
+      "armure": null,
+      "tier": 3,
+      "qualite": "De bonne facture",
+      "points": 18,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 70,
+        "objets": []
+      },
+      "attaque": {
+        "nom": "Morsure",
+        "degats_pv_base": "1D8",
+        "puissance_perforante": 35
+      }
+    },
+    {
+      "nom": "Loup d’élite",
+      "code": "court_wolf_elite",
+      "faction": "Cour de sang",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Loup",
+      "niveau": "d’élite",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 67,
+        "Constitution": 62,
+        "Dextérité": 79,
+        "Vitesse": 71,
+        "Endurance": 76,
+        "Esquive": 68,
+        "Chance": 72,
+        "Charisme": 15,
+        "Courage": 67,
+        "Intelligence": 15,
+        "Volonté": 69,
+        "Perception": 74,
+        "Puissance magique": 70,
+        "Réserve de mana": 67
+      },
+      "resistances": {
+        "Résistance physique": 12,
+        "Résistance au feu": 12,
+        "Résistance au froid": 19,
+        "Résistance à la foudre": 10,
+        "Résistance au poison": 19
+      },
+      "pv": 252,
+      "competences_martiales": {
+        "Morsure": 63,
+        "Armes naturelles": 66,
+        "Discrétion": 43,
+        "Pièges": 42,
+        "Combat à deux armes": 61,
+        "Combat à mains nues": 48,
+        "Combat à deux mains": 50
+      },
+      "intimidation": 46,
+      "port_d_armure": [],
+      "armes": [],
+      "armure": null,
+      "tier": 4,
+      "qualite": "De luxe",
+      "points": 31,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 60,
+        "objets": []
+      },
+      "attaque": {
+        "nom": "Morsure",
+        "degats_pv_base": "1D8",
+        "puissance_perforante": 35
+      }
+    },
+    {
+      "nom": "Chauve-souris novice",
+      "code": "court_bat_novice",
+      "faction": "Cour de sang",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Chauve-souris",
+      "niveau": "novice",
+      "centile": "P20",
+      "caracteristiques": {
+        "Force": 30,
+        "Constitution": 35,
+        "Dextérité": 55,
+        "Vitesse": 53,
+        "Endurance": 46,
+        "Esquive": 54,
+        "Chance": 44,
+        "Charisme": 10,
+        "Courage": 43,
+        "Intelligence": 10,
+        "Volonté": 45,
+        "Perception": 52,
+        "Puissance magique": 38,
+        "Réserve de mana": 43
+      },
+      "resistances": {
+        "Résistance physique": 2,
+        "Résistance au feu": 2,
+        "Résistance au froid": 1,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 2
+      },
+      "pv": 146,
+      "competences_martiales": {
+        "Morsure": 42,
+        "Armes naturelles": 46,
+        "Discrétion": 23,
+        "Pièges": 23,
+        "Combat à deux armes": 39,
+        "Combat à mains nues": 24,
+        "Combat à deux mains": 30
+      },
+      "intimidation": 32,
+      "port_d_armure": [],
+      "armes": [],
+      "armure": null,
+      "tier": 1,
+      "qualite": "Usée",
+      "points": 5,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 90,
+        "objets": []
+      },
+      "attaque": {
+        "nom": "Morsure",
+        "degats_pv_base": "1D6",
+        "puissance_perforante": 25
+      },
+      "vol": true
+    },
+    {
+      "nom": "Chauve-souris",
+      "code": "court_bat",
+      "faction": "Cour de sang",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Chauve-souris",
+      "niveau": "normal",
+      "centile": "P50",
+      "caracteristiques": {
+        "Force": 41,
+        "Constitution": 44,
+        "Dextérité": 64,
+        "Vitesse": 60,
+        "Endurance": 58,
+        "Esquive": 61,
+        "Chance": 54,
+        "Charisme": 10,
+        "Courage": 53,
+        "Intelligence": 10,
+        "Volonté": 55,
+        "Perception": 61,
+        "Puissance magique": 49,
+        "Réserve de mana": 52
+      },
+      "resistances": {
+        "Résistance physique": 5,
+        "Résistance au feu": 4,
+        "Résistance au froid": 4,
+        "Résistance à la foudre": 4,
+        "Résistance au poison": 5
+      },
+      "pv": 183,
+      "competences_martiales": {
+        "Morsure": 50,
+        "Armes naturelles": 54,
+        "Discrétion": 28,
+        "Pièges": 28,
+        "Combat à deux armes": 46,
+        "Combat à mains nues": 31,
+        "Combat à deux mains": 37
+      },
+      "intimidation": 37,
+      "port_d_armure": [],
+      "armes": [],
+      "armure": null,
+      "tier": 2,
+      "qualite": "Correcte",
+      "points": 8,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 80,
+        "objets": []
+      },
+      "attaque": {
+        "nom": "Morsure",
+        "degats_pv_base": "1D6",
+        "puissance_perforante": 25
+      },
+      "vol": true
+    },
+    {
+      "nom": "Chauve-souris vétéran",
+      "code": "court_bat_veteran",
+      "faction": "Cour de sang",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Chauve-souris",
+      "niveau": "vétéran",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 55,
+        "Constitution": 54,
+        "Dextérité": 73,
+        "Vitesse": 67,
+        "Endurance": 67,
+        "Esquive": 68,
+        "Chance": 63,
+        "Charisme": 10,
+        "Courage": 61,
+        "Intelligence": 10,
+        "Volonté": 62,
+        "Perception": 69,
+        "Puissance magique": 60,
+        "Réserve de mana": 60
+      },
+      "resistances": {
+        "Résistance physique": 8,
+        "Résistance au feu": 6,
+        "Résistance au froid": 11,
+        "Résistance à la foudre": 6,
+        "Résistance au poison": 11
+      },
+      "pv": 221,
+      "competences_martiales": {
+        "Morsure": 57,
+        "Armes naturelles": 60,
+        "Discrétion": 35,
+        "Pièges": 35,
+        "Combat à deux armes": 53,
+        "Combat à mains nues": 40,
+        "Combat à deux mains": 43
+      },
+      "intimidation": 41,
+      "port_d_armure": [],
+      "armes": [],
+      "armure": null,
+      "tier": 3,
+      "qualite": "De bonne facture",
+      "points": 18,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 70,
+        "objets": []
+      },
+      "attaque": {
+        "nom": "Morsure",
+        "degats_pv_base": "1D6",
+        "puissance_perforante": 25
+      },
+      "vol": true
+    },
+    {
+      "nom": "Chauve-souris d’élite",
+      "code": "court_bat_elite",
+      "faction": "Cour de sang",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Chauve-souris",
+      "niveau": "d’élite",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 67,
+        "Constitution": 62,
+        "Dextérité": 79,
+        "Vitesse": 71,
+        "Endurance": 76,
+        "Esquive": 73,
+        "Chance": 72,
+        "Charisme": 10,
+        "Courage": 67,
+        "Intelligence": 10,
+        "Volonté": 69,
+        "Perception": 74,
+        "Puissance magique": 70,
+        "Réserve de mana": 67
+      },
+      "resistances": {
+        "Résistance physique": 12,
+        "Résistance au feu": 12,
+        "Résistance au froid": 19,
+        "Résistance à la foudre": 10,
+        "Résistance au poison": 19
+      },
+      "pv": 252,
+      "competences_martiales": {
+        "Morsure": 63,
+        "Armes naturelles": 66,
+        "Discrétion": 43,
+        "Pièges": 42,
+        "Combat à deux armes": 61,
+        "Combat à mains nues": 48,
+        "Combat à deux mains": 50
+      },
+      "intimidation": 46,
+      "port_d_armure": [],
+      "armes": [],
+      "armure": null,
+      "tier": 4,
+      "qualite": "De luxe",
+      "points": 34,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 60,
+        "objets": []
+      },
+      "attaque": {
+        "nom": "Morsure",
+        "degats_pv_base": "1D6",
+        "puissance_perforante": 25
+      },
+      "vol": true
+    },
+    {
+      "nom": "Vampire",
+      "code": "court_vampire_1",
+      "faction": "Cour de sang",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Chef",
+      "niveau": "chef 1",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 67,
+        "Constitution": 62,
+        "Dextérité": 79,
+        "Vitesse": 60,
+        "Endurance": 67,
+        "Esquive": 61,
+        "Chance": 63,
+        "Charisme": 71,
+        "Courage": 61,
+        "Intelligence": 65,
+        "Volonté": 62,
+        "Perception": 61,
+        "Puissance magique": 70,
+        "Réserve de mana": 60
+      },
+      "resistances": {
+        "Résistance physique": 8,
+        "Résistance au feu": 6,
+        "Résistance au froid": 11,
+        "Résistance à la foudre": 6,
+        "Résistance au poison": 11
+      },
+      "pv": 245,
+      "competences_martiales": {
+        "Estoc": 57,
+        "Lames longues": 60,
+        "Combat à une main": 53,
+        "Discrétion": 35,
+        "Pièges": 35,
+        "Combat à deux armes": 53,
+        "Combat à mains nues": 40,
+        "Combat à deux mains": 43
+      },
+      "intimidation": 46,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Estoc"
+      ],
+      "armure": "Gambison",
+      "tier": 3,
+      "qualite": "De bonne facture",
+      "points": 34,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 70,
+        "objets": []
+      },
+      "mort_vivant": true,
+      "insensible_poison": true,
+      "regeneration": 50,
+      "ecoles": {
+        "Illusion": 56,
+        "Nécromancie": 56
+      },
+      "sorts": [
+        {
+          "code": "life_drain",
+          "maitrise": 65
+        },
+        {
+          "code": "sleep",
+          "maitrise": 65
+        },
+        {
+          "code": "psychic_shock",
+          "maitrise": 65
+        }
+      ]
+    },
+    {
+      "nom": "Seigneur vampire",
+      "code": "court_vampire_2",
+      "faction": "Cour de sang",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Chef",
+      "niveau": "chef 2",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 77,
+        "Constitution": 70,
+        "Dextérité": 79,
+        "Vitesse": 67,
+        "Endurance": 76,
+        "Esquive": 68,
+        "Chance": 72,
+        "Charisme": 77,
+        "Courage": 67,
+        "Intelligence": 77,
+        "Volonté": 69,
+        "Perception": 69,
+        "Puissance magique": 76,
+        "Réserve de mana": 67
+      },
+      "resistances": {
+        "Résistance physique": 12,
+        "Résistance au feu": 12,
+        "Résistance au froid": 19,
+        "Résistance à la foudre": 10,
+        "Résistance au poison": 19
+      },
+      "pv": 276,
+      "competences_martiales": {
+        "Estoc": 63,
+        "Lames longues": 66,
+        "Combat à une main": 61,
+        "Discrétion": 43,
+        "Pièges": 42,
+        "Combat à deux armes": 61,
+        "Combat à mains nues": 48,
+        "Combat à deux mains": 50
+      },
+      "intimidation": 49,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Estoc"
+      ],
+      "armure": "Armure de cuir",
+      "tier": 4,
+      "qualite": "De luxe",
+      "points": 66,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 60,
+        "objets": []
+      },
+      "mort_vivant": true,
+      "insensible_poison": true,
+      "regeneration": 75,
+      "ecoles": {
+        "Illusion": 61,
+        "Nécromancie": 61
+      },
+      "sorts": [
+        {
+          "code": "life_drain",
+          "maitrise": 80
+        },
+        {
+          "code": "despair",
+          "maitrise": 80
+        },
+        {
+          "code": "sleep",
+          "maitrise": 80
+        },
+        {
+          "code": "psychic_shock",
+          "maitrise": 80
+        }
+      ]
+    },
+    {
+      "nom": "Comte de sang",
+      "code": "court_vampire_3",
+      "faction": "Cour de sang",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Chef",
+      "niveau": "chef 3",
+      "centile": "P95",
+      "caracteristiques": {
+        "Force": 84,
+        "Constitution": 75,
+        "Dextérité": 90,
+        "Vitesse": 71,
+        "Endurance": 82,
+        "Esquive": 73,
+        "Chance": 77,
+        "Charisme": 86,
+        "Courage": 71,
+        "Intelligence": 83,
+        "Volonté": 73,
+        "Perception": 74,
+        "Puissance magique": 86,
+        "Réserve de mana": 71
+      },
+      "resistances": {
+        "Résistance physique": 14,
+        "Résistance au feu": 14,
+        "Résistance au froid": 22,
+        "Résistance à la foudre": 12,
+        "Résistance au poison": 22
+      },
+      "pv": 296,
+      "competences_martiales": {
+        "Estoc": 66,
+        "Lames longues": 69,
+        "Combat à une main": 66,
+        "Discrétion": 48,
+        "Pièges": 46,
+        "Combat à deux armes": 66,
+        "Combat à mains nues": 54,
+        "Combat à deux mains": 55
+      },
+      "intimidation": 55,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Estoc"
+      ],
+      "armure": "Armure de cuir",
+      "tier": 4,
+      "qualite": "De luxe",
+      "points": 97,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 60,
+        "objets": []
+      },
+      "mort_vivant": true,
+      "insensible_poison": true,
+      "regeneration": 100,
+      "ecoles": {
+        "Illusion": 64,
+        "Nécromancie": 64
+      },
+      "sorts": [
+        {
+          "code": "life_drain",
+          "maitrise": 100
+        },
+        {
+          "code": "despair",
+          "maitrise": 100
+        },
+        {
+          "code": "sleep",
+          "maitrise": 100
+        },
+        {
+          "code": "mind_fog",
+          "maitrise": 100
+        },
+        {
+          "code": "psychic_shock",
+          "maitrise": 100
+        }
+      ]
+    },
+    {
+      "nom": "Prince de la nuit",
+      "code": "court_vampire_4",
+      "faction": "Cour de sang",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Chef",
+      "niveau": "chef 4",
+      "centile": "P99",
+      "caracteristiques": {
+        "Force": 96,
+        "Constitution": 85,
+        "Dextérité": 90,
+        "Vitesse": 78,
+        "Endurance": 92,
+        "Esquive": 81,
+        "Chance": 90,
+        "Charisme": 86,
+        "Courage": 79,
+        "Intelligence": 94,
+        "Volonté": 80,
+        "Perception": 82,
+        "Puissance magique": 86,
+        "Réserve de mana": 84
+      },
+      "resistances": {
+        "Résistance physique": 18,
+        "Résistance au feu": 31,
+        "Résistance au froid": 31,
+        "Résistance à la foudre": 26,
+        "Résistance au poison": 30
+      },
+      "pv": 334,
+      "competences_martiales": {
+        "Estoc": 73,
+        "Lames longues": 79,
+        "Combat à une main": 77,
+        "Discrétion": 56,
+        "Pièges": 54,
+        "Combat à deux armes": 77,
+        "Combat à mains nues": 83,
+        "Combat à deux mains": 63
+      },
+      "intimidation": 55,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire"
+      ],
+      "armes": [
+        "Estoc"
+      ],
+      "armure": "Cuir renforcé",
+      "tier": 4,
+      "qualite": "De luxe",
+      "points": 184,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 60,
+        "objets": []
+      },
+      "mort_vivant": true,
+      "insensible_poison": true,
+      "regeneration": 150,
+      "ecoles": {
+        "Illusion": 70,
+        "Nécromancie": 70
+      },
+      "sorts": [
+        {
+          "code": "life_drain",
+          "maitrise": 130
+        },
+        {
+          "code": "decoy",
+          "maitrise": 130
+        },
+        {
+          "code": "despair",
+          "maitrise": 130
+        },
+        {
+          "code": "sleep",
+          "maitrise": 130
+        },
+        {
+          "code": "mind_fog",
+          "maitrise": 130
+        },
+        {
+          "code": "psychic_shock",
+          "maitrise": 130
+        }
+      ]
     }
   ]
 }

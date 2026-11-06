@@ -41,9 +41,11 @@ for(const L of [1,3,5,6,8,10,11,13,15]) for(let i=0;i<300;i++){
   const camp=rules.rollCamp(undefined,null,{level:L}),metal=metalOf(L),[low,high,power]=BUDGET[metal],unit=Math.pow(L,power);
   assert.ok(camp.budget>=low*unit&&camp.budget<=high*unit&&camp.budget%unit===0,`budget ${metal} niveau ${L} : ${camp.budget}`);
   assert.equal(camp.points,rules.points(camp.chief)+camp.enemies.reduce((t,code)=>t+rules.points(code),0),"points du camp");
-  // À une demi-créature près (la plus lourde du métal : une élite De luxe pèse jusqu'à 88 points).
-  if(camp.enemies.length<100) assert.ok(Math.abs(camp.points-camp.budget)<=45,`près du budget : ${camp.points} / ${camp.budget}`);
-  else assert.ok(camp.points<=camp.budget+45,`plafond de 100 ennemis : ${camp.points} / ${camp.budget}`);
+  // À une demi-créature près : la plus lourde que ce camp pouvait tirer (le troll d'élite pèse 180 points).
+  const half=Math.ceil(Math.max(...reference.enemyArchetypes.rows.filter(a=>a.faction===camp.faction&&a.ligne!=="Chef"&&LEVELS[metal].includes(a.niveau)
+    &&(a.niveau_mission_min||1)<=L).map(a=>a.points))/2);
+  if(camp.enemies.length<100) assert.ok(Math.abs(camp.points-camp.budget)<=half,`près du budget : ${camp.points} / ${camp.budget}`);
+  else assert.ok(camp.points<=camp.budget+half,`plafond de 100 ennemis : ${camp.points} / ${camp.budget}`);
   assert.ok(camp.enemies.length<=100);
   assert.equal(rules.archetype(camp.chief).faction,camp.faction);
   assert.ok(CHIEFS[metal].includes(rules.archetype(camp.chief).niveau),`chef ${metal}`);
@@ -66,7 +68,10 @@ assert.ok(mean(sizes[15])>50&&Math.max(...sizes[15])<=100,"5★ or : une armée,
 // « 100 + chef » (Idan, 2026-11-02 : « j'ai dit 100 pour qu'on n'ait pas vraiment de limites ») : 100 troupes au plus,
 // plus le chef.
 {
-  const big=createMissionRules({reference,random:seeded(3)});
+  // Sans la ligne Troll (le troll d'élite pèse 180 points) : le camp gobelin, le plus léger, atteint encore le plafond.
+  const light=JSON.parse(JSON.stringify(reference));
+  for(const c of light.oneShotMissions.missions[0].camps) c.lignes=c.lignes.filter(l=>l.ligne!=="Troll");
+  const big=createMissionRules({reference:light,random:seeded(3)});
   let most=0;
   for(let i=0;i<400;i++){ const camp=big.rollCamp(undefined,null,{level:15}); assert.ok(camp.enemies.length<=100&&camp.chief); most=Math.max(most,camp.enemies.length); }
   assert.equal(most,100,"le plafond est atteint en 5★ or, le chef en plus");
@@ -198,7 +203,8 @@ assert.equal(rules.deathMultiplier(offer,false),2);
 // 100 % − 10 % par tier de chance de récupérer chaque objet porté ; rien en plus ; dès le niveau 1.
 // Culte des morts (2026-11-06) : les spectres, insensibles aux armes, à partir du niveau de mission 6 (Idan : « un peu plus tard. 6 ou 7 »).
 for(const a of reference.enemyArchetypes.rows){
-  assert.deepEqual([a.niveau_mission_min,a.butin],[a.ligne==="Spectre"?6:1,{equipement:100-10*a.tier,objets:[]}],"butin : "+a.code);
+  // Le troll (Idan, 2026-11-06 : « à partir de 6* ») aussi.
+  assert.deepEqual([a.niveau_mission_min,a.butin],[["Spectre","Troll"].includes(a.ligne)?6:1,{equipement:100-10*a.tier,objets:[]}],"butin : "+a.code);
 }
 {
   const breakRules=createMissionRules({reference,random:seeded(21)});

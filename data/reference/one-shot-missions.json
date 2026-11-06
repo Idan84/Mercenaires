@@ -61,6 +61,10 @@
             {
               "ligne": "Assassin",
               "poids": 15
+            },
+            {
+              "ligne": "Troll",
+              "poids": 10
             }
           ],
           "noms": {
@@ -92,6 +96,10 @@
             {
               "ligne": "Assassin",
               "poids": 15
+            },
+            {
+              "ligne": "Troll",
+              "poids": 10
             }
           ],
           "noms": {
@@ -123,6 +131,10 @@
             {
               "ligne": "Archer",
               "poids": 15
+            },
+            {
+              "ligne": "Troll",
+              "poids": 10
             }
           ],
           "noms": {

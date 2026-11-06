@@ -1,7 +1,7 @@
 {
  "description": "Besoin en avatars : pour chaque culture et chaque ascendance possible (null = sans ascendance), ce que tiennent en main les mercenaires tirés par le générateur du jeu (profil, arme précise ou école) et combien de fois. Généré par scripts/build-avatar-demand.js, ne pas éditer.",
  "generated_on": "2026-11-06",
- "fingerprint": "93ce7be8",
+ "fingerprint": "a3b2ffd8",
  "draws": {
   "none": 40000,
   "ascendance": 8000

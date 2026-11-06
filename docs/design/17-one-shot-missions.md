@@ -448,3 +448,23 @@ Chefs (Estoc seul, « combat à une main ») : **Vampire** (34), **Seigneur vamp
 - **Ordres** : le chef de village (le château qui se rallume, les gens qui reviennent très pâles et très polis), une famille noble (leur fille partie au bal, `noms_commanditaire` : `nobles`) et l'ordre de l'Empereur. Codes : `village_cour`, `noble_cour`, `emperor_cour`. Noms : `cours_de_sang`, `vampires`.
 - **Château en ruine** (`mission-landscapes.json`) : éboulis, murs, gros rochers, buissons, une tombe, un peu de marais ; le camp sur un plateau de hauteur 2, avec ses rampes, entouré de **murs** (qui bloquent la vue : on ne voit dedans, et eux dehors, que par les ouvertures).
 - Code : `game-core/missions.js` (`applyArchetype` : `vol`, `regeneration`), `prototype-web/mission.js` (`missionFlies`, `missionAiSpell`). Test : `tests/blood-court.test.js`.
+
+## 21 — Troll (Idan, 2026-11-06)
+
+> « On va ajouter un troll. Niveau 1 à 4. Peut être chez les orcs, les gobelins ou les hommes bêtes à partir de 6*. Il est lent, bête mais fort et très intimidant. Il se régénère et tape avec une grosse massue. En force je dirais : 80/100/140. En PV : 300/600/900/1200. » Puis : « 80/100/120/140 », « ok pour la régénération ».
+
+Une ligne **Troll** (poids 10) dans les camps gobelin, orc et homme-bête, à partir du niveau de mission 6 (1★ argent) : le même troll dans les trois peuples (`goblin_troll*`, `orc_troll*`, `beastman_troll*`).
+
+| Troll | Force | PV | Régénération | Vitesse | Intelligence | Intimidation | Points |
+|---|---|---|---|---|---|---|---|
+| Novice | 80 | 300 | 100 | 25 | 10 | 70 | 17 |
+| Normal | 100 | 600 | 150 | 30 | 12 | 80 | 47 |
+| Vétéran | 120 | 900 | 200 | 35 | 14 | 90 | 99 |
+| Élite | 140 | 1200 | 300 | 40 | 16 | 100 | 180 |
+
+- **Base** : le Cogneur ogre de même niveau (les autres caractéristiques, les résistances, les compétences), puis Force, PV, Vitesse (lent), Intelligence (bête), Courage (70 à 85) et Intimidation (au-dessus de toutes les autres fiches, 67 au plus) du troll.
+- **Grosse massue** : son arme propre (2D8, contondant 80), comme les griffes du zombie : elle ne tombe pas en butin.
+- **Régénération** : la règle du sang de troll (au début de chaque activation, 2D6 × (0,5 + Régénération / 50) PV, soit environ 17, 24, 31 et 45 PV) ; brûlé depuis sa dernière activation, rien.
+- **Points** : même méthode et même recalage × 1,2 (§19) ; le troll d'élite, trop fort pour la méthode des troupes, est mesuré comme un chef (il bat 15 mercenaires une fois sur deux).
+- **Fréquence** : avec un poids de 10 et des camps de dizaines d'ennemis à partir du niveau 6, presque chaque camp de ces trois peuples a au moins un troll.
+- Test : `tests/troll.test.js`.

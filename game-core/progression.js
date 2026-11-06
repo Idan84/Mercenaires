@@ -242,7 +242,6 @@
     const oppositeSchools=new Map(skillRows.filter(r=>r.ecoles_opposees)
       .map(r=>[r.nom,String(r.ecoles_opposees).split(",").map(x=>x.trim()).filter(Boolean)]));
     const weaponCategories=new Set([...categoryOf.values()].filter(c=>!STYLES.includes(c)));
-    const SPELL_MAX=100;
     const LOAD_SLOTS=["weapon_set_1_main","weapon_set_1_off","weapon_set_2_main","weapon_set_2_off","armor"];
 
     // Charge portée (Force, décision Idan du 2026-10-07) : malus de vitesse de base de l'armure et de
@@ -435,7 +434,7 @@
           changes.push({family:"skills",group,name,xp:delta,before,after,xpBefore,xpAfter});
         }
       }
-      // Sorts du grimoire (mercenary.spells : {code, name, school, mastery}) : même courbe, niveau continu de 1 à 100.
+      // Sorts du grimoire (mercenary.spells : {code, name, school, mastery}) : même courbe, niveau continu à partir de 1, sans plafond.
       // Un sort prêté pour un seul combat (bouton de test) n'est pas dans le grimoire : son XP reste dans le bilan.
       for(const [code,delta] of Object.entries(xp?.spells||{})){
         const known=(mercenary.spells||[]).find(x=>x.code===code);
@@ -444,7 +443,8 @@
         const store=mercenary.xp.spells||(mercenary.xp.spells={});
         const stored=store[code];
         const xpBefore=Number.isFinite(stored)&&Math.abs(continuousLevel(stored)-before)<1e-6?stored:xpForContinuous(before);
-        const xpAfter=before>=SPELL_MAX?xpBefore:Math.min(xpBefore+delta,xpForContinuous(SPELL_MAX));
+        // Sans plafond (Idan, 2026-11-06 : « oui libère les sorts »).
+        const xpAfter=xpBefore+delta;
         const after=Math.round(continuousLevel(xpAfter)*1e6)/1e6;
         store[code]=xpAfter;
         known.mastery=after;

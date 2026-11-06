@@ -100,7 +100,8 @@ assert.ok(mean(sizes[15])>50&&Math.max(...sizes[15])<=100,"5★ or : une armée,
 }
 
 // Niveau de la mission : niveau de Renommée de la compagnie (reputation-stars.json) + écart de −3 à +2, borné de 1 à 15.
-assert.deepEqual([rules.renownLevel(0),rules.renownLevel(499),rules.renownLevel(500),rules.renownLevel(1000),rules.renownLevel(8000)],[1,2,3,6,15]);
+// Seuils recalés le 2026-11-06 (reputation-stars.json).
+assert.deepEqual([rules.renownLevel(0),rules.renownLevel(451),rules.renownLevel(452),rules.renownLevel(800),rules.renownLevel(6400)],[1,2,3,6,15]);
 const levelsAt=renown=>Array.from({length:3000},()=>rules.rollMissionLevel(rules.definition(),renown));
 const at3=levelsAt(500),at15=levelsAt(8000);
 assert.deepEqual([...new Set(at3)].sort((a,b)=>a-b),[1,2,3,4,5]);

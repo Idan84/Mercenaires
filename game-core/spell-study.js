@@ -12,7 +12,7 @@
 // - Chaque matin : chance = 100 / (1 + e^(−(X − 100)/20)) × (1 + 0,1 × niveau de la salle), au plus 95 %, avec
 //   X = (Intelligence + école du sort) / 2 + (école du directeur + sa Transmission du savoir) / 10 + Transmission du
 //   professeur / 5. Réussi : il connaît le sort au niveau de la salle (1 à 10) ou, avec un professeur, au niveau du sort
-//   chez le professeur × sa Transmission / 100 s'il est plus haut (au plus 100).
+//   chez le professeur × sa Transmission / 100 s'il est plus haut (sans plafond depuis le 2026-11-06).
 // - Professeur : il connaît le sort ; il accepte selon 10 + 80 / (1 + e^(−Δ/20)), Δ = (son affinité avec le capitaine
 //   + son affinité envers l'élève) / 2 ; le capitaine enseigne sans test ; il reste au camp jusqu'à la fin (on peut le
 //   libérer) ; +5 XP de Transmission du savoir par jour d'enseignement.
@@ -22,7 +22,7 @@
 // - Perfectionner un sort (Idan, 2026-11-02 : « consommer des manuels contre de l'xp de sort ») : un manuel du même sort,
 //   sans test ; le manuel est détruit, il passe une journée dans la salle de l'école du sort (une place prise, au camp)
 //   et gagne le lendemain matin 1 000 × Intelligence / 50 × (1 + 0,1 × niveau de la salle) × (1 + Transmission du
-//   savoir du directeur / 100) XP de sort, jusqu'au niveau 100 ; affinité +2.
+//   savoir du directeur / 100) XP de sort, sans plafond (Idan, 2026-11-06) ; affinité +2.
 // - Au jour J, on organise J+1 (Idan, 2026-11-02) : à l'accord, il est inscrit pour le lendemain matin (sa place est
 //   réservée, le manuel mis de côté) ; le lendemain matin, il entre à l'École, le manuel est détruit et l'affinité tombe ;
 //   d'ici là, on peut annuler (le manuel revient à l'Intendance). Un professeur accepté aujourd'hui enseigne dès demain.
@@ -62,7 +62,7 @@
       dailyCenter:k("spell_study.daily.center",100),dailySlope:k("spell_study.daily.slope",20),
       roomBonus:k("spell_study.daily.room_bonus",0.1),dailyMax:k("spell_study.daily.max",95),
       directorDivisor:k("spell_study.daily.director_divisor",10),teacherDivisor:k("spell_study.daily.teacher_divisor",5),
-      transmissionDivisor:k("spell_study.teacher.transmission_divisor",100),maxLevel:k("spell_study.max_level",100),
+      transmissionDivisor:k("spell_study.teacher.transmission_divisor",100),
       teacherXp:k("spell_study.xp.teacher_transmission",5),directorXp:k("school.training.director_transmission_xp",5),
       perfectXp:k("spell_study.perfect.base_xp",1000),perfectIntelligence:k("spell_study.perfect.intelligence_divisor",50),
       perfectRoom:k("spell_study.perfect.room_bonus",0.1),perfectTransmission:k("spell_study.perfect.transmission_divisor",100),
@@ -205,7 +205,6 @@
       if(camp.expeditionOf(state,m.id)) return no(camp.expeditionOf(state,m.id).status==="scheduled"?"Il part en mission demain.":"Il est en mission.");
       const busy=busyReason(state,m.id)||elsewhere(state,m.id);
       if(busy) return no(busy);
-      if((Number(known.mastery)||0)>=C.maxLevel) return no("Il maîtrise déjà ce sort au plus haut.");
       const room=roomFor(spell);
       if(!room||!(camp.buildingLevel(state,room.code)>0)) return no("Il faut d’abord construire la "+(room?.name||"salle de cette école")+".");
       if(learnersIn(state,room.code)>=camp.buildingPlaces(state,room.code)) return no("La "+room.name+" n’a plus de place.");
@@ -250,7 +249,7 @@
       const teacher=teacherCounts(study,testDay)?memberOf(state,study.teacherId):null;
       const known=teacher?(teacher.spells||[]).find(s=>s.code===study.spellCode):null;
       const taught=known?Math.round((Number(known.mastery)||0)*transmissionOf(teacher)/C.transmissionDivisor):0;
-      return clamp(Math.max(roomLevel,taught),1,C.maxLevel);
+      return Math.max(1,roomLevel,taught);
     }
     function grant(m,study,level){
       if(!Array.isArray(m.spells)) m.spells=[];

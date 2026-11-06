@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 375,
+  "row_count": 374,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -2646,14 +2646,6 @@
       "nom": "Apprentissage — niveau transmis",
       "code": "spell_study.teacher.transmission_divisor",
       "description": "Apprentissage d’un sort (Idan, 2026-11-02) : avec un professeur, l’élève connaît le sort au niveau du sort chez le professeur × sa Transmission du savoir / ce diviseur (120 : 20 % de plus), s’il dépasse le niveau de la salle.",
-      "formule": "Apprentissage d’un sort à l’École de magie",
-      "valeur": 100,
-      "version": "V1"
-    },
-    {
-      "nom": "Apprentissage — niveau maximal",
-      "code": "spell_study.max_level",
-      "description": "Apprentissage d’un sort (Idan, 2026-11-02) : le sort appris ne dépasse pas ce niveau.",
       "formule": "Apprentissage d’un sort à l’École de magie",
       "valeur": 100,
       "version": "V1"

@@ -378,7 +378,7 @@ assert.equal(wizard.stats["Puissance magique"],50);
 assert.ok(wizardChanges.some(c=>c.name==="Réserve de mana"&&c.xp===86));
 const master={stats:{},resistances:{},skills:{magic:{}},spells:[{code:"quick_heal",mastery:100},{code:"purge",mastery:99.9}]};
 rules.apply(master,{spells:{quick_heal:5000,purge:5000}});
-assert.deepEqual(master.spells.map(x=>x.mastery),[100,100],"un sort plafonne à 100");
+assert.ok(master.spells.every(x=>x.mastery>100),"un sort dépasse 100 (sans plafond, 2026-11-06)");
 
 // Dégâts d'un sort : la blessure d'un élément compte pour la résistance de la cible ; le lanceur compte la blessure et
 // la mise hors combat d'un adversaire (Charisme, réputation), pas celle d'un allié touché par accident.

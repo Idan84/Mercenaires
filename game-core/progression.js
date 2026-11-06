@@ -9,9 +9,9 @@
 // - une valeur générée démarre dans la tranche de son niveau à la position
 //   progression.xp_curve.start_position (0 = bas de la tranche, 0,5 = milieu), pour qu'une petite
 //   perte ne fasse pas tomber un point dès la première mission.
-// Compétences (décisions Idan du 2026-10-20) : même courbe, plafond à la valeur maximale de la compétence
-// (100) ; les valeurs générées ayant des décimales, une compétence est un niveau continu : 30,6 = niveau 30,
-// à 60 % de la tranche vers 31. On progresse dans ce qu'on pratique au détriment des autres armes et styles.
+// Compétences (décisions Idan du 2026-10-20) : même courbe, sans plafond (Idan, 2026-11-06 : « pas de plafond. La courbe
+// d'expérience fait que c'est plus dur de monter, mais sky is the limit ! ») ; les valeurs générées ayant des décimales,
+// une compétence est un niveau continu : 30,6 = niveau 30, à 60 % de la tranche vers 31. On progresse dans ce qu'on pratique au détriment des autres armes et styles.
 // Magie (12-magic.md, étape 3 ; Idan, 2026-10-25) : chaque lancer donne de l'XP au sort et à son école (comme l'arme et
 // sa catégorie) ; ses deux écoles opposées perdent la moitié du gain de l'école, un quart chacune.
 // Toutes les valeurs sont des constantes d'équilibrage (data/reference/formula-constants.json).
@@ -231,11 +231,10 @@
     const minimum=new Map((reference?.characteristics?.rows||[]).map(r=>[r.nom,Number(r.minimum)]));
     const weaponPenalty=new Map((reference?.weapons?.rows||[]).map(w=>[w.nom,Number(w.malus_vitesse_arme_base)||0]));
     const armorRows=reference?.baseArmors?.rows||[];
-    // Compétences martiales : arme précise → catégorie (skills.json, parent) ; plafond = valeur_maximale.
+    // Compétences martiales : arme précise → catégorie (skills.json, parent).
     const skillRows=reference?.skills?.rows||[];
     const weaponNames=new Set((reference?.weapons?.rows||[]).map(w=>w.nom));
     const categoryOf=new Map(skillRows.filter(r=>weaponNames.has(r.nom)&&r.parent).map(r=>[r.nom,r.parent]));
-    const skillMax=new Map(skillRows.map(r=>[r.nom,Number(r.valeur_maximale)]));
     // Les styles de combat progressent l'un au détriment des autres ; « Boucliers » en fait partie et sort donc des
     // catégories d'armes. Combat à une main les rejoint (Idan, 2026-11-02).
     const STYLES=["Combat à une main","Combat à deux mains","Combat à deux armes","Boucliers"];
@@ -417,8 +416,7 @@
           changes.push({family,name,xp:delta,before,after,xpBefore,xpAfter});
         }
       }
-      // Compétences : niveau continu, plafond à valeur_maximale (100). Une valeur générée au-delà du plafond
-      // n'est pas touchée (Idan, 2026-10-20) : elle ne monte plus, mais peut redescendre.
+      // Compétences : niveau continu, sans plafond (Idan, 2026-11-06 : « sky is the limit »).
       for(const [group,entries] of Object.entries(xp?.skills||{})){
         const values=mercenary.skills?.[group];
         for(const [name,delta] of Object.entries(entries||{})){
@@ -428,11 +426,9 @@
           const store=skillStore[group]||(skillStore[group]={});
           const stored=store[name];
           const xpBefore=Number.isFinite(stored)&&Math.abs(continuousLevel(stored)-before)<1e-6?stored:xpForContinuous(before);
-          const cap=Number.isFinite(skillMax.get(name))?skillMax.get(name):Infinity;
           // Une école ne descend pas sous la valeur « sans l'école » de la génération (1).
           const floor=group==="magic"?xpForContinuous(Math.min(before,C.schoolFloor)):0;
-          let xpAfter=Math.max(floor,xpBefore+delta);
-          if(delta>0) xpAfter=before>=cap?xpBefore:Math.min(xpAfter,xpForContinuous(cap));
+          const xpAfter=Math.max(floor,xpBefore+delta);
           const after=Math.round(continuousLevel(xpAfter)*1e6)/1e6;
           store[name]=xpAfter;
           values[name]=after;

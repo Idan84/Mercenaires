@@ -150,6 +150,8 @@
       const value = constants.get(code);
       return Number.isFinite(value) ? value : fallback;
     }
+    // Échelle des écoles de magie à la génération (Idan, 2026-11-05 : « Division par deux »).
+    const schoolScale = constant("generation.magic.school_scale", 0.5);
 
     function culturesForPeople(people) {
       return cultureRows
@@ -733,15 +735,18 @@
         });
       }
 
+      // Écoles de magie à l'échelle des armes (Idan, 2026-11-05 : « l'échelle arme / magie devrait être identique.
+      // Division par deux ») : tout est divisé par deux (generation.magic.school_scale), le tirage
+      // Moyenne(Int, PM, Mana) × Rand(0,5 ; 1,5) comme les dés de la Matrice (applySkillModifiers).
       const magicSchools = skillRows.filter(r => r.domaine === "Magie" && r.niveau === "Catégorie");
       const magicBase = (character.stats.Intelligence + character.stats["Puissance magique"] + character.stats["Réserve de mana"]) / 3;
       for (const skill of magicSchools) {
         const bonusSources = generationBonusSources(skill.nom, identity);
         const hasBonus = bonusSources.length > 0;
         const present = hasBonus || random() < 0.5;
-        const raw = present ? magicBase * randomBetween(0.5, 1.5) : 1;
+        const raw = present ? magicBase * randomBetween(0.5, 1.5) * schoolScale : 1;
         setRawSkill(skills, trace, "magic", skill.nom, raw, {
-          rawFormula: present ? "Moyenne(Int, PM, Mana) × Rand(0,5 ; 1,5)" : "1",
+          rawFormula: present ? "Moyenne(Int, PM, Mana) × Rand(0,5 ; 1,5) × " + String(schoolScale).replace(".", ",") : "1",
           generationBonus: hasBonus,
           generationBonusSources: bonusSources
         });
@@ -788,8 +793,10 @@
         if (!location) continue;
         const current = location.values[row.cible];
         if (!Number.isFinite(current)) continue;
-        const contributions = matrixContributions(row.cible, identity).map(rollContribution);
+        let contributions = matrixContributions(row.cible, identity).map(rollContribution);
         if (!contributions.length) continue;
+        // Une école de magie : les dés de la Matrice divisés par deux aussi (2026-11-05).
+        if (location.group === "magic" && schoolScale !== 1) contributions = contributions.map(x => ({...x, scale:schoolScale, delta:x.delta * schoolScale}));
         const final = Math.max(0, current + sum(contributions.map(x => x.delta)));
         location.values[row.cible] = final;
         trace.skills[row.cible].contributions.push(...contributions);
@@ -885,7 +892,8 @@
           character.stats.Dextérité, character.stats.Perception, character.stats.Vitesse
         ]),
         // Même échelle que les armes : la meilleure école est aussi divisée par 2 (décision Idan + Chatty, Issue #12).
-        magic: 0.6 * (bestMagic / 2) + 0.4 * mean([
+        // L'école est à l'échelle d'une arme (2026-11-05) : plus divisée par 2, contrairement à arme + catégorie.
+        magic: 0.6 * bestMagic + 0.4 * mean([
           character.stats.Intelligence, character.stats["Puissance magique"], character.stats["Réserve de mana"]
         ])
       };

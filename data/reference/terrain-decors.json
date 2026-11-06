@@ -32,7 +32,7 @@
       "key": "couleur"
     }
   ],
-  "row_count": 13,
+  "row_count": 14,
   "rows": [
     {
       "code": "buissons",
@@ -150,6 +150,15 @@
       "bloque_vue": false,
       "couverture": "sans",
       "couleur": "#2f5f86"
+    },
+    {
+      "code": "palissade",
+      "nom": "Palissade",
+      "article": "la palissade",
+      "cout_mouvement": null,
+      "bloque_vue": false,
+      "couverture": "partielle",
+      "couleur": "#6e5434"
     }
   ]
 }

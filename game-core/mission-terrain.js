@@ -4,7 +4,7 @@
 // oui ») : un paysage par faction (mission-landscapes.json), tiré au hasard à chaque combat. Module pur : la carte (colonnes,
 // lignes, en « offset » lignes impaires décalées, logique en axial q, r), les positions des deux camps, la faction ; il
 // rend le décor ({q, r, code}) et le relief ({q, r, h}). L'écran de combat (prototype-web/mission.js) l'applique.
-// Données : mission-landscapes.json, terrain-decors.json, formula-constants.json (combat.altitude.*).
+// Données : mission-landscapes.json (paysages, enceinte), terrain-decors.json, formula-constants.json (combat.altitude.*).
 (function(root,factory){
   const api=factory();
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
@@ -36,6 +36,7 @@
     };
 
     function landscape(faction){ return landscapes.find(l=>l.faction===faction)||null; }
+    const nearest=(c,list)=>Math.min(...list.map(e=>distance(c,e)));
 
     // La carte : ses cases, leurs voisines.
     function grid(cols,rowCount){
@@ -46,15 +47,47 @@
       return {cells,inside,neighbors};
     }
 
+    // Enceinte (Idan, 2026-11-06 : « palissade nouvelle », « vas-y pour la palissade et l'enceinte ») : l'anneau des cases à
+    // enceinte.distance de l'ennemi le plus proche, hors de la zone de l'escouade ; ouvertures de enceinte.largeur cases,
+    // la première face à l'escouade (la colonne la plus à l'ouest de l'anneau), les autres à enceinte.ecart cases au moins.
+    function enclosure(map,land,{players,enemies}){
+      const wall=data.enceinte||{};
+      if(!land.enceinte||!decorRows.has(wall.decor)||!enemies.length) return null;
+      const D=Number(wall.distance)||2,freeSquad=Number(data.zone_libre_escouade)||2;
+      const ring=map.cells.filter(c=>nearest(c,enemies)===D&&column(c.q,c.r)>2&&!players.some(p=>distance(p,c)<=freeSquad));
+      if(!ring.length) return null;
+      const inRing=new Set(ring.map(key)),open=new Set(),openings=[];
+      const carve=anchor=>{
+        const cells=[anchor];
+        while(cells.length<(Number(wall.largeur)||1)){
+          const next=cells.flatMap(c=>map.neighbors(c)).filter(n=>inRing.has(key(n))&&!open.has(key(n))&&!cells.some(x=>key(x)===key(n)));
+          if(!next.length) break;
+          cells.push(pick(next));
+        }
+        for(const c of cells) open.add(key(c));
+        openings.push(cells);
+      };
+      const west=Math.min(...ring.map(c=>column(c.q,c.r)));
+      carve(pick(ring.filter(c=>column(c.q,c.r)===west)));
+      const count=Math.max(1,between(wall.ouvertures||[1,1]));
+      for(let i=0;openings.length<count&&i<60;i++){
+        const c=pick(ring);
+        if(!open.has(key(c))&&openings.every(o=>distance(o[0],c)>=(Number(wall.ecart)||4))) carve(c);
+      }
+      return {radius:D,openings,wall:ring.filter(c=>!open.has(key(c))).map(c=>({q:c.q,r:c.r,code:wall.decor}))};
+    }
+
     // Relief : le plateau du camp (ses cases et leurs voisines, à camp_hauteur), bordé de falaises ; chaque rampe est un
     // cône qui descend d'un niveau par case depuis une case du bord ; les collines, des cônes de hauteur 1 à
     // hauteur_collines au milieu de la carte. Chaque case prend le plus haut.
-    function relief(map,land,{enemies,cols}){
+    // Avec une enceinte, le plateau va jusqu'à elle, et chaque ouverture a sa rampe.
+    function relief(map,land,{enemies,cols},ring=null){
       const H=Math.min(maxHeight,Number(land.camp_hauteur)||0);
-      const plateau=new Set();
-      if(H>0) for(const c of map.cells) if(enemies.some(e=>distance(c,e)<=1)) plateau.add(key(c));
+      const plateau=new Set(),radius=ring?ring.radius:1;
+      if(H>0) for(const c of map.cells) if(enemies.some(e=>distance(c,e)<=radius)) plateau.add(key(c));
       const cones=[];
-      if(H>0){
+      if(H>0&&ring) for(const opening of ring.openings) cones.push({...opening[0],h:H});
+      else if(H>0){
         const edge=map.cells.filter(c=>plateau.has(key(c))&&map.neighbors(c).some(n=>!plateau.has(key(n))));
         const west=Math.min(...edge.map(c=>column(c.q,c.r)));
         // Une rampe au moins face à l'escouade (le bord ouest du plateau), les autres ailleurs sur le bord.
@@ -81,11 +114,13 @@
 
     // Décor : des groupes de décor tirés selon les poids du paysage, hors des zones libres (autour de l'escouade, du camp,
     // et sur les colonnes de déploiement de l'escouade).
-    function decor(map,land,{players,enemies}){
+    function decor(map,land,{players,enemies},ring=null){
       const freeSquad=Number(data.zone_libre_escouade)||2,freeCamp=Number(land.zone_libre)||1;
-      const allowed=c=>column(c.q,c.r)>2&&!players.some(p=>distance(p,c)<=freeSquad)&&!enemies.some(e=>distance(e,c)<=freeCamp);
+      const walled=new Set((ring?.wall||[]).map(key)),doors=(ring?.openings||[]).flat();
+      const allowed=c=>column(c.q,c.r)>2&&!players.some(p=>distance(p,c)<=freeSquad)&&!enemies.some(e=>distance(e,c)<=freeCamp)
+        &&!walled.has(key(c))&&!doors.some(o=>distance(o,c)<=1);
       const spots=map.cells.filter(allowed);
-      const out=[],taken=new Set();
+      const out=[...(ring?.wall||[])],taken=new Set(walled);
       for(let g=0,groups=between(land.groupes);g<groups&&spots.length;g++){
         const code=weighted(land.decors);
         if(!code) break;
@@ -122,16 +157,21 @@
       const land=landscape(faction);
       if(!land) return {landscape:null,decor:[],relief:[]};
       const map=grid(cols,rowCount),spots={players,enemies,cols};
+      let ring=null;
       for(let attempt=1;attempt<=(Number(data.essais)||30);attempt++){
-        const r=relief(map,land,spots),d=decor(map,land,spots);
-        if(reachable(map,{players,enemies,decor:d,relief:r})) return {landscape:land.nom,decor:d,relief:r,attempts:attempt};
+        ring=enclosure(map,land,spots);
+        const r=relief(map,land,spots,ring),d=decor(map,land,spots,ring);
+        if(reachable(map,{players,enemies,decor:d,relief:r}))
+          return {landscape:land.nom,decor:d,relief:r,attempts:attempt,openings:ring?ring.openings:[]};
       }
-      const r=relief(map,land,spots);
+      // Repli : le relief, avec l'enceinte seule si elle laisse passer, sinon sans décor.
+      const r=relief(map,land,spots,ring);
+      if(ring&&reachable(map,{players,enemies,decor:ring.wall,relief:r})) return {landscape:land.nom,decor:ring.wall,relief:r,attempts:0,openings:ring.openings};
       if(reachable(map,{players,enemies,relief:r})) return {landscape:land.nom,decor:[],relief:r,attempts:0};
       return {landscape:land.nom,decor:[],relief:[],attempts:0};
     }
 
-    return {landscape,generate,reachable,grid};
+    return {landscape,generate,reachable,grid,enclosure};
   }
 
   return {createMissionTerrain,column,axial,distance};

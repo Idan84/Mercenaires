@@ -43,14 +43,17 @@ for(const school of SCHOOLS) assert.ok(cultures.some(c=>c.ecole_magie===school),
 // Chaque tirage suit la règle : ordre, école, chance, réussite.
 const multipliers=[1,1.1,1.3];
 function checkDraws(m){
-  const values=m.skills.magic,level=s=>Number(values[s])||0;
+  // La valeur au moment du tirage : sans le passage à 1 des écoles à 20 ou moins (fin de génération, 2026-11-06).
+  const cleared=s=>(m.generationTrace.skills[s]?.contributions||[]).filter(x=>x.kind==="unpracticed").reduce((t,x)=>t+x.delta,0);
+  const values=m.skills.magic,level=s=>(Number(values[s])||0)-cleared(s);
   const ranked=[...SCHOOLS].sort((a,b)=>level(b)-level(a));
   const cultureSchool=cultureOf(m.culture).ecole_magie||null;
   const expected=[["culture",cultureSchool],["best",ranked[0]],["second",ranked[1]]].filter(([,s])=>s);
   assert.deepEqual(m.generationTrace.spells.map(d=>[d.source,d.school]),expected,m.name+" : trois tirages dans l'ordre");
   let count=0;
   for(const d of m.generationTrace.spells){
-    const chance=Math.min(75,level(d.school)*m.stats.Intelligence/75)*multipliers[count];
+    // Aucun sort dans une école à 20 ou moins (Idan, 2026-11-06).
+    const chance=level(d.school)<=20?0:Math.min(75,level(d.school)*m.stats.Intelligence/75)*multipliers[count];
     assert.ok(Math.abs(d.chance-chance)<1e-9,m.name+" : chance du tirage "+d.source);
     const written=reference.spells.rows.some(s=>s.ecole===d.school);
     if(!written) assert.equal(d.roll,null,"une école sans sort écrit ne donne rien");

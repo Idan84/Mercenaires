@@ -3,7 +3,7 @@
 // Perfectionner un sort à l'École de magie (Idan, 2026-11-02 : « consommer des manuels contre de l'xp de sort ») : un
 // manuel du même sort, sans test ; le manuel détruit, une journée dans la salle de l'école du sort (une place prise, au
 // camp) ; le lendemain matin, 1 000 × Intelligence / 50 × (1 + 0,1 × salle) × (1 + Transmission du directeur / 100) XP
-// de sort, jusqu'au niveau 100 ; affinité +2.
+// de sort, sans plafond (Idan, 2026-11-06) ; affinité +2.
 const assert=require("node:assert/strict");
 const fs=require("node:fs");
 const path=require("node:path");
@@ -39,13 +39,13 @@ mage.spells=[{code:fireball.code,name:fireball.nom,school:"Feu",mastery:20}];
 mage.stats.Intelligence=54;
 const book=manual();
 
-// Conditions : il connaît le sort ; la salle de son école, avec une place ; pas au plus haut.
+// Conditions : il connaît le sort ; la salle de son école, avec une place ; même au-delà de 100 (sans plafond, 2026-11-06).
 assert.equal(study.canPerfect(state,other,book).reason,"Il ne connaît pas ce sort.");
 assert.equal(study.canPerfect(state,mage,book).reason,"Il faut d’abord construire la Salle du Feu.");
 state.company.camp.buildings={magic_school:{level:3,construction:null},magic_room_fire:{level:3,construction:null}};
 assert.equal(study.canPerfect(state,mage,book).ok,true);
 mage.spells[0].mastery=100;
-assert.equal(study.canPerfect(state,mage,book).reason,"Il maîtrise déjà ce sort au plus haut.");
+assert.equal(study.canPerfect(state,mage,book).ok,true,"un sort au niveau 100 se perfectionne encore");
 mage.spells[0].mastery=20;
 assert.equal(study.canStudy(state,mage,book).reason,"Il connaît déjà ce sort.","on n'apprend pas un sort connu : on le perfectionne");
 
@@ -91,11 +91,11 @@ assert.ok(Math.abs(mage.spells[0].mastery-expected)<1e-6,"niveau 20 → 23,2");
 assert.equal(Math.floor(mage.spells[0].mastery),23);
 assert.equal(study.studyOf(state,mage.id),null,"une seule journée");
 assert.deepEqual(mage.history.log.filter(e=>e.kind==="perfect").map(e=>[e.spell,e.xp,e.before,e.after]),[["Boule de feu",1404,20,23]]);
-// Le sort ne dépasse pas 100.
+// Sans plafond (Idan, 2026-11-06 : « oui libère les sorts ») : le sort dépasse 100.
 mage.spells[0].mastery=99.9;
 study.perfect(state,mage.id,manual().id);
 rules.advanceTime(state,2);
-assert.equal(mage.spells[0].mastery,100);
+assert.ok(mage.spells[0].mastery>100,"au-delà de 100");
 
 // Interface : « Perfectionner » dans « Apprendre à… », la ligne de l'encart, le journal.
 const elements={};

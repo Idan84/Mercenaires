@@ -220,6 +220,10 @@
         c.skills.magic={...Object.fromEntries(Object.keys(c.skills?.magic||{}).map(k=>[k,0])),...(arch.ecoles||{})};
         delete c.mana;
       }
+      // Nécromancien (Idan, 2026-11-06 : « B, vas-y ») : son armée est déjà levée au début du combat (sort_initial, une
+      // invocation, sans mana ni jet) ; il reste derrière ses troupes tant qu'elles tiennent (en_retrait).
+      if(arch.sort_initial) c.startSpells=[arch.sort_initial];
+      if(arch.en_retrait) c.staysBehind=true;
       return c;
     }
 

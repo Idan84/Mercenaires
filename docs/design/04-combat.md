@@ -342,6 +342,10 @@ chance pour enchaîner plusieurs tirs (sauf arme à feu). Il ne peut passer en m
   invocation tant qu'elle n'est pas là (au plus près de l'ennemi), la Résurrection sur un corps, puis ses sorts sur l'ennemi
   visible le plus proche ; hors de portée, il se déplace d'abord vers la case la moins chère d'où il peut le lancer. Nos
   mercenaires en combat automatique ne lancent toujours que leurs soins.
+- **Nécromancien** (Idan, 2026-11-06 : « B, vas-y ») : son **Armée d'os est déjà levée** au début du combat, autour de lui,
+  sans mana ni jet (`sort_initial`) ; ensuite, mêmes règles qu'une invocation lancée (entretien, test de Charisme). Il reste
+  **en retrait** (`en_retrait`) : tant que ses troupes tiennent, il n'avance que pour lancer un sort et ne frappe qu'un
+  ennemi à son contact ; seul, il se bat comme les autres. Code : `raiseMissionStartSummons`, `enemyMissionActivation`.
 
 ## Attaques de zone — Toucher V1
 

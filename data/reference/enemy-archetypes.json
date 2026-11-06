@@ -114,6 +114,14 @@
     {
       "source": "Sorts",
       "key": "sorts"
+    },
+    {
+      "source": "Invocation déjà levée au début du combat (sans mana ni jet)",
+      "key": "sort_initial"
+    },
+    {
+      "source": "En retrait derrière ses troupes",
+      "key": "en_retrait"
     }
   ],
   "row_count": 144,
@@ -8122,7 +8130,7 @@
       "tier": 1,
       "qualite": "Usée",
       "points": 12,
-      "niveau_mission_min": 3,
+      "niveau_mission_min": 6,
       "butin": {
         "equipement": 90,
         "objets": []
@@ -8186,7 +8194,7 @@
       "tier": 2,
       "qualite": "Correcte",
       "points": 22,
-      "niveau_mission_min": 3,
+      "niveau_mission_min": 6,
       "butin": {
         "equipement": 80,
         "objets": []
@@ -8250,7 +8258,7 @@
       "tier": 3,
       "qualite": "De bonne facture",
       "points": 42,
-      "niveau_mission_min": 3,
+      "niveau_mission_min": 6,
       "butin": {
         "equipement": 70,
         "objets": []
@@ -8314,7 +8322,7 @@
       "tier": 4,
       "qualite": "De luxe",
       "points": 66,
-      "niveau_mission_min": 3,
+      "niveau_mission_min": 6,
       "butin": {
         "equipement": 60,
         "objets": []
@@ -8588,7 +8596,7 @@
         "Volonté": 69,
         "Perception": 61,
         "Puissance magique": 70,
-        "Réserve de mana": 67
+        "Réserve de mana": 134
       },
       "resistances": {
         "Résistance physique": 8,
@@ -8615,7 +8623,7 @@
       "armure": "Vêtements",
       "tier": 3,
       "qualite": "De bonne facture",
-      "points": 25,
+      "points": 26,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 70,
@@ -8637,7 +8645,9 @@
           "code": "death_arrow",
           "maitrise": 20
         }
-      ]
+      ],
+      "sort_initial": "bone_army",
+      "en_retrait": true
     },
     {
       "nom": "Maître nécromancien",
@@ -8662,7 +8672,7 @@
         "Volonté": 73,
         "Perception": 69,
         "Puissance magique": 76,
-        "Réserve de mana": 71
+        "Réserve de mana": 142
       },
       "resistances": {
         "Résistance physique": 12,
@@ -8689,7 +8699,7 @@
       "armure": "Vêtements",
       "tier": 4,
       "qualite": "De luxe",
-      "points": 42,
+      "points": 46,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -8715,7 +8725,9 @@
           "code": "death_arrow",
           "maitrise": 35
         }
-      ]
+      ],
+      "sort_initial": "bone_army",
+      "en_retrait": true
     },
     {
       "nom": "Seigneur des tombes",
@@ -8740,7 +8752,7 @@
         "Volonté": 80,
         "Perception": 74,
         "Puissance magique": 86,
-        "Réserve de mana": 84
+        "Réserve de mana": 168
       },
       "resistances": {
         "Résistance physique": 14,
@@ -8769,7 +8781,7 @@
       "armure": "Gambison",
       "tier": 4,
       "qualite": "De luxe",
-      "points": 62,
+      "points": 83,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -8803,7 +8815,9 @@
           "code": "death_arrow",
           "maitrise": 50
         }
-      ]
+      ],
+      "sort_initial": "bone_army",
+      "en_retrait": true
     },
     {
       "nom": "Roi des morts",
@@ -8828,7 +8842,7 @@
         "Volonté": 80,
         "Perception": 82,
         "Puissance magique": 86,
-        "Réserve de mana": 84
+        "Réserve de mana": 168
       },
       "resistances": {
         "Résistance physique": 18,
@@ -8857,7 +8871,7 @@
       "armure": "Gambison",
       "tier": 4,
       "qualite": "De luxe",
-      "points": 104,
+      "points": 126,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -8895,7 +8909,9 @@
           "code": "death_arrow",
           "maitrise": 65
         }
-      ]
+      ],
+      "sort_initial": "bone_army",
+      "en_retrait": true
     }
   ]
 }

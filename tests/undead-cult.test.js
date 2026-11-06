@@ -58,8 +58,11 @@ for (const [i, c] of chefs.entries()) {
 }
 assert.ok(chefs.every(c => c.sorts.some(s => s.code === "raise_dead") && c.sorts.some(s => s.code === "death_arrow")));
 assert.ok(chefs.slice(2).every(c => c.sorts.some(s => s.code === "summon_specter")));
-// Le spectre, insensible aux armes, ne sort qu'à partir du niveau de mission 3.
-assert.ok(cult.filter(r => r.ligne === "Spectre").every(r => r.niveau_mission_min >= 3));
+// Idan, 2026-11-06 (« B, vas-y ») : son Armée d'os déjà levée au début du combat, sa Réserve de mana doublée, en retrait.
+assert.ok(chefs.every(c => c.sort_initial === "bone_army" && c.en_retrait === true));
+assert.deepEqual(chefs.map(c => c.caracteristiques["Réserve de mana"]), [134, 142, 168, 168], "Réserve de mana doublée (67, 71, 84, 84)");
+// Le spectre, insensible aux armes, ne sort qu’à partir du niveau de mission 6 (Idan : « un peu plus tard. 6 ou 7 »).
+assert.ok(cult.filter(r => r.ligne === "Spectre").every(r => r.niveau_mission_min === 6));
 assert.ok(cult.filter(r => r.ligne !== "Spectre").every(r => r.niveau_mission_min === 1));
 
 // 2. Le camp, les noms et les trois lettres.
@@ -198,6 +201,37 @@ const foe = m.players[0];
 foe.q = caster.q - 4; foe.r = caster.r;
 api.missionAiSpell(caster);
 assert.ok(m.log.some(x => /Flèche de mort/.test(x.message)), "Flèche de mort");
+// Armée levée d'avance : au début du combat, ses squelettes sont déjà autour de lui, sans mana ni jet.
+m = newMission(["cult_necromancer_1"]);
+caster = m.enemies[0];
+const full = caster.character.stats["Réserve de mana"];
+api.startMissionCamouflage();
+const raised = m.enemies.filter(u => u.summon?.code === "bone_army" && u.summon.casterId === caster.id);
+assert.ok(raised.length >= 2 && raised.length <= 5, "1D4 + 1 squelettes : " + raised.length);
+assert.ok(raised.every(u => combat.axialDistance(u, caster) <= 2 && u.character.undead));
+assert.ok(m.log.some(x => /Autour de .*, son Armée d'os est déjà levée : \d squelettes apparaissent/.test(x.message)));
+assert.ok(!(Number(caster.character.mana) < full), "sans mana");
+// En retrait : tant que ses troupes tiennent, il ne marche pas vers l'ennemi (rien à lancer : plus de mana) ; un ennemi à
+// son contact, il le frappe ; seul, il avance comme les autres.
+for (const u of [...m.players, ...m.enemies]) u.camouflaged = false;
+caster.character.mana = 0;
+const far = m.players[0];
+far.q = caster.q - 8; far.r = caster.r;
+for (const u of m.players.slice(1)) { u.q = caster.q - 12; }
+const home = {q: caster.q, r: caster.r};
+api.enemyMissionAct(caster);
+assert.deepEqual({q: caster.q, r: caster.r}, home, "il reste derrière ses squelettes");
+const near = m.players[1];
+const free = [[-1, 0], [0, -1], [1, -1], [1, 0], [0, 1], [-1, 1]].map(([dq, dr]) => ({q: caster.q + dq, r: caster.r + dr}))
+  .find(c => !m.enemies.some(u => u.alive && u.q === c.q && u.r === c.r));
+near.q = free.q; near.r = free.r;
+const before = m.log.length;
+api.enemyMissionAct(caster);
+assert.ok(m.log.slice(before).some(x => /attaque/.test(x.message)), "il frappe l'ennemi à son contact");
+near.q = caster.q - 12;
+for (const u of raised) { u.alive = false; u.offMap = true; }
+api.enemyMissionAct(caster);
+assert.notDeepEqual({q: caster.q, r: caster.r}, home, "seul, il avance");
 // Nos mercenaires : pas de aiSpells, donc pas de sorts joués par l'IA.
 assert.ok(m.players.every(u => !u.character.aiSpells));
 assert.equal(api.missionAiSpell(m.players[1]), false);

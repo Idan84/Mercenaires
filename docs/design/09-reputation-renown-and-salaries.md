@@ -104,15 +104,20 @@ Mise en œuvre V1 (choix d'implémentation, relecture Chatty) :
 
 Décision Idan du 2026-10-20 : dans le jeu, la réputation personnelle et la renommée de compagnie ne s'affichent plus en chiffres mais en **15 niveaux** : 1 à 5 étoiles de **bronze**, puis d'**argent**, puis d'**or**. 5 étoiles d'or est un maximum difficilement atteignable. La valeur chiffrée reste dans le moteur (salaires, renommée, prétendants) et apparaît au survol des étoiles, pour les tests du prototype.
 
-Échelle V1 (`data/reference/reputation-stars.json`) : géométrique, environ ×1,25 par niveau ; la renommée utilise les mêmes seuils × 4.
+Échelle (`data/reference/reputation-stars.json`) : géométrique, environ ×1,25 par niveau ; la renommée utilise les mêmes seuils × 4.
+**Recalée le 2026-11-06** (Idan : « recale les étoiles ») : les écoles de magie, divisées par deux, gonflaient la réputation
+(médiane des recrues 138 → 123) ; les seuils de 2 à 5 étoiles de bronze redonnent aux recrues la même répartition
+qu'avant (≈ 1 / 25 / 52 / 19 / 3 %), puis ×1,25 par niveau à partir de 160. Auparavant : 0 · 100 · 125 · 160 · 200 ·
+250 · 320 · 400 · 500 · 640 · 800 · 1 000 · 1 250 · 1 600 · 2 000. Ce qui suit les seuils suit avec eux (salaire de
+référence du garde du corps, niveau des missions, places de la Taverne…).
 
 | Niveau | Étoiles | Réputation dès | Renommée dès |
 |---|---|---|---|
-| 1 à 5 | 1 à 5 bronze | 0 · 100 · 125 · 160 · 200 | 0 · 400 · 500 · 640 · 800 |
-| 6 à 10 | 1 à 5 argent | 250 · 320 · 400 · 500 · 640 | 1 000 · 1 280 · 1 600 · 2 000 · 2 560 |
-| 11 à 15 | 1 à 5 or | 800 · 1 000 · 1 250 · 1 600 · 2 000 | 3 200 · 4 000 · 5 000 · 6 400 · 8 000 |
+| 1 à 5 | 1 à 5 bronze | 0 · 93 · 113 · 137 · 160 | 0 · 372 · 452 · 548 · 640 |
+| 6 à 10 | 1 à 5 argent | 200 · 256 · 320 · 400 · 512 | 800 · 1 024 · 1 280 · 1 600 · 2 048 |
+| 11 à 15 | 1 à 5 or | 640 · 800 · 1 000 · 1 280 · 1 600 | 2 560 · 3 200 · 4 000 · 5 120 · 6 400 |
 
-Repères mesurés :
+Repères mesurés (avant le recalage du 2026-11-06 ; les recrues ont aujourd'hui une médiane de 123) :
 
 - recrues générées (réputation 87 à 260, médiane 137) : surtout 2 à 4 étoiles de bronze ; 5 étoiles de bronze ou 1 d'argent pour les profils exceptionnels ;
 - un vétéran revenu d'environ 25 missions (≈ 550) : 4 étoiles d'argent ; l'or commence à 800 ; 5 étoiles d'or (2 000) demandent une très longue carrière ;

@@ -61,7 +61,7 @@ assert.deepEqual([work.dailyLoss(null),work.dailyLoss("intimidate"),work.dailyLo
 
 // L'or : Charisme × (1 + 0,2 × niveau de réputation) ; mercenaire moyen (Charisme 54, niveau 3) : 86 PO.
 Object.assign(first.stats,{Charisme:54});first.reputation=130;
-Object.assign(second.stats,{Charisme:69});second.reputation=170;
+Object.assign(second.stats,{Charisme:69});second.reputation=150;
 assert.deepEqual([work.reputationLevel(first),work.reputationLevel(second)],[3,4]);
 assert.deepEqual([work.earnings(state,first),work.earnings(state,second)],[86,124]);
 // Le Maître des plaisirs : × (1 + son Charisme ÷ 200) ; il reste à son poste.

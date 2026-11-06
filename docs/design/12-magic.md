@@ -495,7 +495,7 @@ Chaque gain dans une école fait perdre **la moitié de ce gain**, partagée à 
 
 - **+10 XP** au sort et à son école ; **+5** de plus si le sort réussit ; **+5** de plus s'il a un **vrai effet** (PV soignés, dégâts qui passent la protection, effet posé, poison purgé) ;
 - les deux écoles opposées perdent chacune **un quart** de l'XP gagnée par l'école ; une école ne descend pas sous 1 (la valeur d'un mercenaire sans l'école) ;
-- les **sorts ne régressent pas** ; même courbe que les compétences (XP = 10 × niveau², niveau continu), plafond 100 ;
+- les **sorts ne régressent pas** ; même courbe que les compétences (XP = 10 × niveau², niveau continu), **sans plafond** (Idan, 2026-11-06 : « oui libère les sorts » ; plafond 100 auparavant) ;
 - **Puissance magique** : +20 XP par sort réussi qui a un vrai effet ; **Réserve de mana** : +2 XP par point de mana dépensé, même si le sort rate ;
 - **Chance et réputation** : les critiques des sorts comptent comme ceux des armes (Chance : coup critique −5 XP, échec critique confirmé +30 XP ; réputation : +1 / −1) ;
 - appliquée **en fin de mission** avec le reste de l'XP naturelle, et montrée dans le bilan (« Sort Soin rapide +45 », « Écoles opposées −11 »).
@@ -606,12 +606,12 @@ sort », « une journée à l'école » ; règles `game-core/spell-study.js`, co
 
 - **Un manuel du même sort**, pour un membre qui le **connaît déjà** : dans « Apprendre à… », il voit « Perfectionner »
   (avec l'XP qu'il gagnera). **Pas de test** ; affinité avec le capitaine **+2**. Il faut la **salle de l'école du sort**
-  avec une place libre ; pas pour un sort déjà au niveau 100.
+  avec une place libre ; sans plafond de niveau (2026-11-06).
 - **Une journée à l'École** : il **entre le lendemain matin** (on peut annuler d'ici là : le manuel revient) ; au matin,
   le manuel est détruit et l'affinité appliquée ; il passe la journée dans la salle (une place prise, ni mission, ni
   garde du corps, ni entraînement libre) ; l'XP tombe **le matin suivant**, puis il sort.
 - **XP du sort = 1 000 × Intelligence / 50 × (1 + 0,1 × niveau de la salle) × (1 + Transmission du savoir du directeur /
-  100)**, jusqu'au niveau 100. Intelligence 54, salle 3, sans directeur : **1 404 XP** (≈ 78 lancers) ; un sort passe du
+  100)**, sans plafond. Intelligence 54, salle 3, sans directeur : **1 404 XP** (≈ 78 lancers) ; un sort passe du
   niveau 1 à 11, de 10 à 15, de 20 à 23, de 50 à 51, de 90 à 90,8 ; avec un directeur à 48 de Transmission : 2 078 XP.
 - Interface : la ligne de l'élève dans « Apprentissages » (« perfectionne (+1 404 XP demain) ») ; statut « Perfectionne un
   sort » ; journal du matin (« … perfectionne Boule de feu : niveau 20 → 23 (+1 404 XP). ») ; historique.

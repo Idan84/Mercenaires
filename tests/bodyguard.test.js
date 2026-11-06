@@ -29,16 +29,17 @@ const random=()=>((seed=(seed*16807)%2147483647)/2147483647);
 const rules=createBodyguardRules({reference,random});
 
 // Niveaux de réputation : 15 étoiles (bronze, argent, or).
-assert.deepEqual([0,99,100,140,160,2000,9000].map(r=>rules.levelOf(r)),[1,1,2,3,4,15,15]);
+assert.deepEqual([0,92,93,120,137,1600,9000].map(r=>rules.levelOf(r)),[1,1,2,3,4,15,15]);
 // Salaire de référence : 10 × Réputation du niveau suivant / 30 ; au-delà de 15 étoiles, × 1,25.
-assert.equal(Math.round(rules.referenceWage(3)),53,"3★ : 10 × 160 / 30");
-assert.equal(Math.round(rules.referenceWage(15)),833,"15★ : 10 × 2 500 / 30");
+// Seuils recalés le 2026-11-06 (reputation-stars.json).
+assert.equal(Math.round(rules.referenceWage(3)),46,"3★ : 10 × 137 / 30");
+assert.equal(Math.round(rules.referenceWage(15)),667,"15★ : 10 × 2 000 / 30");
 // Paiement par mercenaire = W × (2 + jours × (1,3 + (jours − 3)/22)), arrondi à 10 ; plus c'est long, plus la journée paie.
-assert.equal(rules.payment(3,3),310);
-assert.equal(rules.payment(3,21),2480);
-assert.equal(rules.payment(3,7,2),2*660,"par mercenaire");
+assert.equal(rules.payment(3,3),270);
+assert.equal(rules.payment(3,21),2120);
+assert.equal(rules.payment(3,7,2),2*570,"par mercenaire");
 assert.ok(rules.payment(3,21)/21>rules.payment(3,3)/3);
-assert.equal(rules.payment(15,21),38730);
+assert.equal(rules.payment(15,21),30990);
 
 // Offres : 1 à 3 mercenaires, 3 à 21 jours, 1★ à 5★ ; elles montent avec le meilleur mercenaire de la compagnie.
 const levels={},counts=new Set(),days=new Set();

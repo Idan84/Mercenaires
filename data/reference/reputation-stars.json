@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "reputation-stars",
-  "description": "Affichage de la réputation personnelle et de la renommée de compagnie en 15 niveaux : 1 à 5 étoiles de bronze, puis d'argent, puis d'or (décision Idan du 2026-10-20). Un niveau est atteint dès que la valeur atteint son seuil minimal. Échelle géométrique (×1,25 environ par niveau) ; renommée = 4 × réputation. 5 étoiles d'or : maximum difficilement atteignable. Chaque niveau porte une phrase qui explique la réputation d'un mercenaire, de « Même sa mère ne sait pas qui c'est. » à « Les enfants apprennent son nom avant le leur. » (Idan, 2026-10-21). Trois variantes de même sens par niveau, pour que les mercenaires d’un même niveau n’aient pas tous la même phrase (Idan, 2026-10-24).",
+  "description": "Affichage de la réputation personnelle et de la renommée de compagnie en 15 niveaux : 1 à 5 étoiles de bronze, puis d'argent, puis d'or (décision Idan du 2026-10-20). Un niveau est atteint dès que la valeur atteint son seuil minimal. Échelle géométrique (×1,25 environ par niveau) ; renommée = 4 × réputation. Recalée le 2026-11-06 (Idan : « recale les étoiles ») après la division par deux des écoles de magie : les seuils de 2 à 5 étoiles de bronze (93, 113, 137, 160) redonnent aux recrues la même répartition qu'avant (≈ 1 / 25 / 52 / 19 / 3 %), puis ×1,25 par niveau à partir de 160 (200, 256, 320… 1 600) ; auparavant 100, 125, 160, 200, 250… 2 000. 5 étoiles d'or : maximum difficilement atteignable. Chaque niveau porte une phrase qui explique la réputation d'un mercenaire, de « Même sa mère ne sait pas qui c'est. » à « Les enfants apprennent son nom avant le leur. » (Idan, 2026-10-21). Trois variantes de même sens par niveau, pour que les mercenaires d’un même niveau n’aient pas tous la même phrase (Idan, 2026-10-24).",
   "columns": [
     {
       "source": "Niveau",
@@ -51,8 +51,8 @@
       "niveau": 2,
       "metal": "Bronze",
       "etoiles": 2,
-      "reputation_min": 100,
-      "renommee_min": 400,
+      "reputation_min": 93,
+      "renommee_min": 372,
       "phrase": "Son nom ne dit rien à personne, pas même à l’aubergiste.",
       "variantes": [
         "Le crieur public n’a jamais eu l’occasion de prononcer son nom.",
@@ -64,8 +64,8 @@
       "niveau": 3,
       "metal": "Bronze",
       "etoiles": 3,
-      "reputation_min": 125,
-      "renommee_min": 500,
+      "reputation_min": 113,
+      "renommee_min": 452,
       "phrase": "Quelques piliers de taverne se souviennent vaguement de sa tête.",
       "variantes": [
         "Un ivrogne ou deux jurent avoir déjà vu cette tête quelque part.",
@@ -77,8 +77,8 @@
       "niveau": 4,
       "metal": "Bronze",
       "etoiles": 4,
-      "reputation_min": 160,
-      "renommee_min": 640,
+      "reputation_min": 137,
+      "renommee_min": 548,
       "phrase": "Les sergents recruteurs commencent à retenir son nom.",
       "variantes": [
         "Son nom apparaît parfois sur les listes des sergents recruteurs.",
@@ -90,8 +90,8 @@
       "niveau": 5,
       "metal": "Bronze",
       "etoiles": 5,
-      "reputation_min": 200,
-      "renommee_min": 800,
+      "reputation_min": 160,
+      "renommee_min": 640,
       "phrase": "Dans les tavernes du coin, on lui paie parfois une chope pour entendre ses histoires.",
       "variantes": [
         "Ses histoires de bataille lui valent souvent une tournée gratuite.",
@@ -103,8 +103,8 @@
       "niveau": 6,
       "metal": "Argent",
       "etoiles": 1,
-      "reputation_min": 250,
-      "renommee_min": 1000,
+      "reputation_min": 200,
+      "renommee_min": 800,
       "phrase": "Les marchands prudents changent de trottoir à son approche.",
       "variantes": [
         "Les colporteurs serrent leur bourse quand son ombre passe.",
@@ -116,8 +116,8 @@
       "niveau": 7,
       "metal": "Argent",
       "etoiles": 2,
-      "reputation_min": 320,
-      "renommee_min": 1280,
+      "reputation_min": 256,
+      "renommee_min": 1024,
       "phrase": "Son nom circule de caserne en caserne.",
       "variantes": [
         "Dans les chambrées, on se raconte ses coups d’éclat à voix basse.",
@@ -129,8 +129,8 @@
       "niveau": 8,
       "metal": "Argent",
       "etoiles": 3,
-      "reputation_min": 400,
-      "renommee_min": 1600,
+      "reputation_min": 320,
+      "renommee_min": 1280,
       "phrase": "Les bardes ont écrit une chanson sur ses exploits. Elle est mauvaise, mais tout le monde la connaît.",
       "variantes": [
         "Un ménestrel a mis ses exploits en vers. Les rimes sont atroces, le refrain inoubliable.",
@@ -142,8 +142,8 @@
       "niveau": 9,
       "metal": "Argent",
       "etoiles": 4,
-      "reputation_min": 500,
-      "renommee_min": 2000,
+      "reputation_min": 400,
+      "renommee_min": 1600,
       "phrase": "Les seigneurs du pays connaissent son nom, et le prononcent avec prudence.",
       "variantes": [
         "À la table des barons, on baisse la voix quand son nom est cité.",
@@ -155,8 +155,8 @@
       "niveau": 10,
       "metal": "Argent",
       "etoiles": 5,
-      "reputation_min": 640,
-      "renommee_min": 2560,
+      "reputation_min": 512,
+      "renommee_min": 2048,
       "phrase": "On raconte ses faits d’armes jusque dans les cours étrangères.",
       "variantes": [
         "Ses exploits ont franchi les frontières, avec quelques embellissements.",
@@ -168,8 +168,8 @@
       "niveau": 11,
       "metal": "Or",
       "etoiles": 1,
-      "reputation_min": 800,
-      "renommee_min": 3200,
+      "reputation_min": 640,
+      "renommee_min": 2560,
       "phrase": "Des villages entiers l’acclament ou se barricadent, selon son humeur.",
       "variantes": [
         "Quand on l’annonce, les villages hésitent entre la fête et la fuite.",
@@ -181,8 +181,8 @@
       "niveau": 12,
       "metal": "Or",
       "etoiles": 2,
-      "reputation_min": 1000,
-      "renommee_min": 4000,
+      "reputation_min": 800,
+      "renommee_min": 3200,
       "phrase": "Les rois négocient ses services en personne.",
       "variantes": [
         "Aucun intermédiaire : pour l’engager, il faut un trône.",
@@ -194,8 +194,8 @@
       "niveau": 13,
       "metal": "Or",
       "etoiles": 3,
-      "reputation_min": 1250,
-      "renommee_min": 5000,
+      "reputation_min": 1000,
+      "renommee_min": 4000,
       "phrase": "Ses ennemis regardent sous leur lit avant de dormir.",
       "variantes": [
         "Ses ennemis dorment avec une lampe allumée. Quand ils dorment.",
@@ -207,8 +207,8 @@
       "niveau": 14,
       "metal": "Or",
       "etoiles": 4,
-      "reputation_min": 1600,
-      "renommee_min": 6400,
+      "reputation_min": 1280,
+      "renommee_min": 5120,
       "phrase": "Son nom est gravé dans les chroniques, et sur un bon nombre de pierres tombales.",
       "variantes": [
         "Les chroniqueurs lui consacrent des chapitres ; les fossoyeurs, des journées entières.",
@@ -220,8 +220,8 @@
       "niveau": 15,
       "metal": "Or",
       "etoiles": 5,
-      "reputation_min": 2000,
-      "renommee_min": 8000,
+      "reputation_min": 1600,
+      "renommee_min": 6400,
       "phrase": "Les enfants apprennent son nom avant le leur.",
       "variantes": [
         "Les mères menacent les enfants désobéissants de son nom.",

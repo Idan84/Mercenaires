@@ -76,7 +76,7 @@ Trois scores non persistants comme « classe » sont comparés : **CAC**, **Dist
 
 - `CAC = 0,6 × (meilleure arme CAC / 2) + 0,4 × moyenne(Force, Dextérité, Endurance, Courage)` ;
 - `Distance = 0,6 × (meilleure arme Distance / 2) + 0,4 × moyenne(Dextérité, Perception, Vitesse)` ;
-- `Magie = 0,6 × (meilleure école / 2) + 0,4 × moyenne(Intelligence, Puissance magique, Réserve de mana)`.
+- `Magie = 0,6 × meilleure école + 0,4 × moyenne(Intelligence, Puissance magique, Réserve de mana)` : depuis le 2026-11-05, l'école est générée à l'échelle d'une arme (doc 02) et n'est plus divisée par 2 ici ; le résultat est le même qu'avant.
 
 **Décision Idan + Chatty du 2026-10-03 (Issue #12)** : la meilleure école est divisée par 2, comme la meilleure arme, pour comparer les trois profils sur la même échelle. Avant cette correction, 89 % des mercenaires générés sortaient « Magie ». Mesure après correction (4 000 mercenaires) : 48 % CAC, 27 % Magie, 26 % Distance ; Ogres 98 % CAC, Orcs et Hommes-bêtes 80 % CAC, Halflings et Gobelins ~58 % Distance, Gnomes 67 % Magie. Cette répartition n'est pas une cible : elle sera observée en playtest.
 

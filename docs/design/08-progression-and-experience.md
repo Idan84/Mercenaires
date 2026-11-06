@@ -29,7 +29,7 @@ $$
 XP(L\rightarrow L+1)=10(2L+1)
 $$
 
-Pour les caractéristiques, **pas de plafond maximum**. Le plafond éventuel des compétences reste à confirmer.
+Pour les caractéristiques, **pas de plafond maximum** ; pour les compétences non plus (Idan, 2026-11-06 : « pas de plafond. La courbe d'expérience fait que c'est plus dur de monter, mais sky is the limit ! »).
 
 ### Repères de progression
 
@@ -148,7 +148,7 @@ Détail dans le doc 12 (« Écoles : progression et régression »).
 
 ### Compétences (décisions Idan du 2026-10-20)
 
-- Même courbe que les caractéristiques ; **plafond à 100** (`valeur_maximale` de la compétence). Des bonus temporaires ou magiques pourront le dépasser plus tard. Les valeurs générées au-delà de 100 ne sont pas touchées : elles ne montent plus, mais peuvent redescendre.
+- Même courbe que les caractéristiques ; **sans plafond** depuis le 2026-11-06 (Idan : « sky is the limit ») : `valeur_maximale` n'est plus une limite. Auparavant plafond à 100.
 - Les valeurs générées ont des décimales : une compétence est un **niveau continu**, 30,6 = niveau 30, à 60 % de la tranche vers 31. Le bilan arrondit au point entier.
 - **Arme et catégorie** : chaque attaque portée avec une arme : `+10 XP` à l'arme précise et à sa catégorie ; `+5` de plus si elle touche réellement (non bloquée), `+5` si elle blesse. La chute de charge et le projectile perdu (même tir) ne comptent pas.
 - **Styles** : Combat à une main `+10 XP` par attaque avec une arme à une main tenue seule, mêlée ou tir (Idan, 2026-11-02) ; Combat à deux mains `+10 XP` par attaque de mêlée à deux mains ; Combat à deux armes `+10 XP` par séquence où **les deux armes ont réellement frappé** (une seconde arme déchargée ou hors de portée ne donne rien, revue Chatty du 2026-10-20) ; Boucliers et le bouclier précis `+10 XP` chacun par blocage.

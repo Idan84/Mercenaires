@@ -141,9 +141,10 @@ for (let i = 0; i < 1000; i++) {
   const c = generator.createMercenary({id:i+1});
   profileCounts[c.equipment.profile.type] += 1;
   const meanOf = values => values.reduce((a,b) => a + b, 0) / values.length;
-  const expectedMagicScore = 0.6 * ((c.equipment.profile.bestMagic?.score || 0) / 2)
+  // L'école est à l'échelle d'une arme depuis le 2026-11-05 : plus de division par 2 (arme + catégorie, elles, le sont).
+  const expectedMagicScore = 0.6 * (c.equipment.profile.bestMagic?.score || 0)
     + 0.4 * meanOf([c.stats.Intelligence, c.stats["Puissance magique"], c.stats["Réserve de mana"]]);
-  assert.ok(Math.abs(c.equipment.profile.scores.magic - expectedMagicScore) < 1e-9, "Profil Magie : école divisée par 2 (Issue #12)");
+  assert.ok(Math.abs(c.equipment.profile.scores.magic - expectedMagicScore) < 1e-9, "Profil Magie : 0,6 × école + 0,4 × moyenne (Issue #12, écoles à l'échelle des armes)");
   assert.ok(generator.culturesForPeople(c.people).includes(c.culture), `Invalid culture: ${c.people} / ${c.culture}`);
   assert.ok(generator.originsForCulture(c.culture).includes(c.origin), `Invalid origin: ${c.culture} / ${c.origin}`);
   if (c.ascendance) assert.ok(generator.isAncestryCompatible(c.people, c.ascendance), `Invalid ancestry: ${c.people} / ${c.ascendance}`);
@@ -278,13 +279,14 @@ for (let i = 0; i < 1000; i++) {
   const light = c.generationTrace.skills["Port d’armure légère"];
   const intermediate = c.generationTrace.skills["Port d’armure intermédiaire"];
   const heavy = c.generationTrace.skills["Port d’armure lourde"];
-  if (heavy.magicMax <= 50) {
+  // Seuils de magie des ports d'armure : 25 et 37,5 depuis les écoles divisées par deux (2026-11-05 ; 50 et 75 avant).
+  if (heavy.magicMax <= 25) {
     sawNonMageArmorBonus = true;
     assert.equal(heavy.warriorBonus, 20);
     assert.equal(intermediate.warriorBonus, 30);
     assert.equal(light.warriorBonus, 50);
   }
-  if (heavy.magicMax > 75) {
+  if (heavy.magicMax > 37.5) {
     sawHighMagicArmorPenalty = true;
     assert.equal(heavy.magicMultiplier, 0.8);
     assert.equal(intermediate.magicMultiplier, 0.8);
@@ -381,7 +383,7 @@ const nonMage = lowGenerator.createMercenary({
   forcedAscendance:null,
   forcedAlignment:"Neutre"
 });
-assert.ok(nonMage.generationTrace.skills["Port d’armure légère"].magicMax <= 50);
+assert.ok(nonMage.generationTrace.skills["Port d’armure légère"].magicMax <= 25);
 assert.equal(nonMage.generationTrace.skills["Port d’armure légère"].probability, 50);
 assert.equal(nonMage.generationTrace.skills["Port d’armure intermédiaire"].probability, 30);
 assert.equal(nonMage.generationTrace.skills["Port d’armure lourde"].probability, 20);

@@ -160,11 +160,11 @@ Les chances identitaires se cumulent en points de pourcentage.
 
 Après génération finale des écoles de magie :
 
-- si **aucune école de magie ne dépasse 50**, ajouter :
+- si **aucune école de magie ne dépasse 25** (50 avant que les écoles soient divisées par deux, le 2026-11-05), ajouter :
   - +50 pp pour légère
   - +30 pp pour intermédiaire
   - +20 pp pour lourde
-- si **au moins une école dépasse 75**, multiplier la probabilité finale de chaque port d’armure par `0,8`.
+- si **au moins une école dépasse 37,5** (75 avant le 2026-11-05), multiplier la probabilité finale de chaque port d’armure par `0,8`.
 
 Le malus de 20 % est donc relatif, pas une soustraction de 20 points.
 

@@ -27,7 +27,7 @@ assert.deepEqual(trolls.map(r => r.niveau), ["novice", "normal", "vétéran", "d
 assert.deepEqual(trolls.map(r => r.caracteristiques.Force), [80, 100, 120, 140], "Force");
 assert.deepEqual(trolls.map(r => r.pv), [300, 600, 900, 1200], "PV");
 assert.deepEqual(trolls.map(r => r.regeneration), [100, 150, 200, 300], "Régénération");
-const maxIntimidation = Math.max(...reference.enemyArchetypes.rows.filter(r => r.ligne !== "Troll").map(r => r.intimidation));
+const maxIntimidation = Math.max(...reference.enemyArchetypes.rows.filter(r => !r.ligne.startsWith("Troll")).map(r => r.intimidation));
 for (const r of trolls) {
   assert.ok(r.points > 0, r.code + " : points");
   assert.equal(r.niveau_mission_min, 6, r.code + " : à partir du niveau 6");

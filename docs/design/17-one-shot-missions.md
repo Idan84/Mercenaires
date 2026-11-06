@@ -468,3 +468,9 @@ Une ligne **Troll** (poids 10) dans les camps gobelin, orc et homme-bête, à pa
 - **Points** : même méthode et même recalage × 1,2 (§19) ; le troll d'élite, trop fort pour la méthode des troupes, est mesuré comme un chef (il bat 15 mercenaires une fois sur deux).
 - **Poids** : comme pour toute ligne, la chance qu'un ennemi tiré soit un troll (10 sur 110, soit 9 %), pas la chance par camp ; avec des camps de dizaines d'ennemis à partir du niveau 6, presque chaque camp de ces trois peuples a au moins un troll.
 - Test : `tests/troll.test.js`.
+
+### Troll mort-vivant (Idan, 2026-11-06)
+
+> « Un troll mort vivant pour l'équipe du nécromancien… » ; « Non, pas de régénération ».
+
+Quatre fiches de la famille **Créatures** (`undead_troll_novice`, `undead_troll`, `undead_troll_veteran`, `undead_troll_elite`) : le troll (mêmes caractéristiques, PV, Grosse massue, Intimidation), **sans régénération**, mort-vivant (sans peur, insensible au poison). Ligne **Troll mort-vivant** (poids 10) au camp du Culte des morts, à partir du niveau de mission 6. Points (× 1,2, l'élite mesuré comme un chef) : **19, 47, 91, 140** (le troll : 17, 47, 99, 180) ; sans régénération, il coûte moins aux hauts niveaux.

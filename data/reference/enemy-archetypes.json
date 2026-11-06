@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "enemy-archetypes",
-  "description": "Archétypes d’ennemis fixes (Idan, 2026-10-24 ; doc 17 §10 et §14). Gobelins, Orcs, Hommes-bêtes, Voleurs (Humains) et Ogres (2026-11-01) : cinq lignes sur quatre niveaux et quatre niveaux de chef chacun. Culte des morts (doc 17 §19) et Cour de sang (§20). Créatures (§21) : des fiches partagées entre peuples, qu’un camp appelle par sa ligne (le troll chez les gobelins, les orcs et les hommes-bêtes). Valeurs figées à partir des centiles des personnages générés du même peuple (novice P20, normal P50, vétéran P75, élite P90 ; chefs P75 à P99), avec la spécialisation de chaque ligne (trois caractéristiques un cran au-dessus, deux un cran au-dessous). PV = 3 × (Constitution + 0,2 × Endurance + 0,1 × Volonté). Points de combat (Idan, 2026-11-01) : un mercenaire généré moyen vaut 10 points (simulateur, 150 combats par effectif ; chefs : 10 × le nombre de mercenaires qui le battent une fois sur deux ; les plus forts mesurés jusqu’à 27 mercenaires, 200 combats par effectif ; fiches T4 remesurées avec la qualité De luxe, Idan 2026-11-01). Niveau de mission minimum et butin par créature (Idan, 2026-11-01) : niveau 1 pour l’instant ; l’équipement peut se casser au combat : 100 % − 10 % par tier de chance de récupérer chaque objet porté (T1 90 %, T2 80 %, T3 70 %, T4 60 %). Ils composent les camps de « Faire le ménage » (one-shot-missions.json, budgets).",
+  "description": "Archétypes d’ennemis fixes (Idan, 2026-10-24 ; doc 17 §10 et §14). Gobelins, Orcs, Hommes-bêtes, Voleurs (Humains) et Ogres (2026-11-01) : cinq lignes sur quatre niveaux et quatre niveaux de chef chacun. Culte des morts (doc 17 §19) et Cour de sang (§20). Créatures (§21) : des fiches partagées entre peuples, qu’un camp appelle par sa ligne (le troll chez les gobelins, les orcs et les hommes-bêtes ; le troll mort-vivant au Culte des morts). Valeurs figées à partir des centiles des personnages générés du même peuple (novice P20, normal P50, vétéran P75, élite P90 ; chefs P75 à P99), avec la spécialisation de chaque ligne (trois caractéristiques un cran au-dessus, deux un cran au-dessous). PV = 3 × (Constitution + 0,2 × Endurance + 0,1 × Volonté). Points de combat (Idan, 2026-11-01) : un mercenaire généré moyen vaut 10 points (simulateur, 150 combats par effectif ; chefs : 10 × le nombre de mercenaires qui le battent une fois sur deux ; les plus forts mesurés jusqu’à 27 mercenaires, 200 combats par effectif ; fiches T4 remesurées avec la qualité De luxe, Idan 2026-11-01). Niveau de mission minimum et butin par créature (Idan, 2026-11-01) : niveau 1 pour l’instant ; l’équipement peut se casser au combat : 100 % − 10 % par tier de chance de récupérer chaque objet porté (T1 90 %, T2 80 %, T3 70 %, T4 60 %). Ils composent les camps de « Faire le ménage » (one-shot-missions.json, budgets).",
   "columns": [
     {
       "source": "Nom",
@@ -132,7 +132,7 @@
       "key": "regeneration"
     }
   ],
-  "row_count": 176,
+  "row_count": 180,
   "rows": [
     {
       "nom": "Lancier gobelin novice",
@@ -11029,6 +11029,254 @@
         "puissance_contondante": 80
       },
       "regeneration": 300
+    },
+    {
+      "nom": "Troll mort-vivant novice",
+      "code": "undead_troll_novice",
+      "faction": "Créatures",
+      "peuple": "Ogre",
+      "culture": "Ogres des montagnes",
+      "ligne": "Troll mort-vivant",
+      "niveau": "novice",
+      "centile": "P20",
+      "caracteristiques": {
+        "Force": 80,
+        "Constitution": 70,
+        "Dextérité": 45,
+        "Vitesse": 25,
+        "Endurance": 70,
+        "Esquive": 43,
+        "Chance": 42,
+        "Charisme": 45,
+        "Courage": 70,
+        "Intelligence": 10,
+        "Volonté": 44,
+        "Perception": 34,
+        "Puissance magique": 30,
+        "Réserve de mana": 28
+      },
+      "resistances": {
+        "Résistance physique": 9,
+        "Résistance au feu": 3,
+        "Résistance au froid": 3,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 3
+      },
+      "pv": 300,
+      "competences_martiales": {
+        "Discrétion": 19,
+        "Pièges": 19,
+        "Combat à deux armes": 26,
+        "Combat à mains nues": 29,
+        "Combat à deux mains": 28,
+        "Grosse massue": 42,
+        "Armes naturelles": 44
+      },
+      "intimidation": 70,
+      "port_d_armure": [],
+      "armes": [],
+      "armure": null,
+      "tier": 1,
+      "qualite": "Usée",
+      "points": 19,
+      "niveau_mission_min": 6,
+      "butin": {
+        "equipement": 90,
+        "objets": []
+      },
+      "attaque": {
+        "nom": "Grosse massue",
+        "degats_pv_base": "2D8",
+        "puissance_contondante": 80
+      },
+      "mort_vivant": true,
+      "insensible_poison": true
+    },
+    {
+      "nom": "Troll mort-vivant",
+      "code": "undead_troll",
+      "faction": "Créatures",
+      "peuple": "Ogre",
+      "culture": "Ogres des montagnes",
+      "ligne": "Troll mort-vivant",
+      "niveau": "normal",
+      "centile": "P50",
+      "caracteristiques": {
+        "Force": 100,
+        "Constitution": 79,
+        "Dextérité": 55,
+        "Vitesse": 30,
+        "Endurance": 81,
+        "Esquive": 52,
+        "Chance": 52,
+        "Charisme": 54,
+        "Courage": 75,
+        "Intelligence": 12,
+        "Volonté": 53,
+        "Perception": 43,
+        "Puissance magique": 40,
+        "Réserve de mana": 37
+      },
+      "resistances": {
+        "Résistance physique": 12,
+        "Résistance au feu": 6,
+        "Résistance au froid": 6,
+        "Résistance à la foudre": 4,
+        "Résistance au poison": 6
+      },
+      "pv": 600,
+      "competences_martiales": {
+        "Discrétion": 23,
+        "Pièges": 24,
+        "Combat à deux armes": 32,
+        "Combat à mains nues": 36,
+        "Combat à deux mains": 36,
+        "Grosse massue": 48,
+        "Armes naturelles": 51
+      },
+      "intimidation": 80,
+      "port_d_armure": [],
+      "armes": [],
+      "armure": null,
+      "tier": 2,
+      "qualite": "Correcte",
+      "points": 47,
+      "niveau_mission_min": 6,
+      "butin": {
+        "equipement": 80,
+        "objets": []
+      },
+      "attaque": {
+        "nom": "Grosse massue",
+        "degats_pv_base": "2D8",
+        "puissance_contondante": 80
+      },
+      "mort_vivant": true,
+      "insensible_poison": true
+    },
+    {
+      "nom": "Troll mort-vivant vétéran",
+      "code": "undead_troll_veteran",
+      "faction": "Créatures",
+      "peuple": "Ogre",
+      "culture": "Ogres des montagnes",
+      "ligne": "Troll mort-vivant",
+      "niveau": "vétéran",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 120,
+        "Constitution": 88,
+        "Dextérité": 63,
+        "Vitesse": 35,
+        "Endurance": 90,
+        "Esquive": 59,
+        "Chance": 60,
+        "Charisme": 62,
+        "Courage": 80,
+        "Intelligence": 14,
+        "Volonté": 61,
+        "Perception": 52,
+        "Puissance magique": 49,
+        "Réserve de mana": 45
+      },
+      "resistances": {
+        "Résistance physique": 15,
+        "Résistance au feu": 18,
+        "Résistance au froid": 16,
+        "Résistance à la foudre": 6,
+        "Résistance au poison": 15
+      },
+      "pv": 900,
+      "competences_martiales": {
+        "Discrétion": 28,
+        "Pièges": 29,
+        "Combat à deux armes": 38,
+        "Combat à mains nues": 47,
+        "Combat à deux mains": 42,
+        "Grosse massue": 55,
+        "Armes naturelles": 57
+      },
+      "intimidation": 90,
+      "port_d_armure": [],
+      "armes": [],
+      "armure": null,
+      "tier": 3,
+      "qualite": "De bonne facture",
+      "points": 91,
+      "niveau_mission_min": 6,
+      "butin": {
+        "equipement": 70,
+        "objets": []
+      },
+      "attaque": {
+        "nom": "Grosse massue",
+        "degats_pv_base": "2D8",
+        "puissance_contondante": 80
+      },
+      "mort_vivant": true,
+      "insensible_poison": true
+    },
+    {
+      "nom": "Troll mort-vivant d’élite",
+      "code": "undead_troll_elite",
+      "faction": "Créatures",
+      "peuple": "Ogre",
+      "culture": "Ogres des montagnes",
+      "ligne": "Troll mort-vivant",
+      "niveau": "d’élite",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 140,
+        "Constitution": 94,
+        "Dextérité": 71,
+        "Vitesse": 40,
+        "Endurance": 99,
+        "Esquive": 65,
+        "Chance": 68,
+        "Charisme": 70,
+        "Courage": 85,
+        "Intelligence": 16,
+        "Volonté": 67,
+        "Perception": 61,
+        "Puissance magique": 59,
+        "Réserve de mana": 52
+      },
+      "resistances": {
+        "Résistance physique": 19,
+        "Résistance au feu": 26,
+        "Résistance au froid": 21,
+        "Résistance à la foudre": 9,
+        "Résistance au poison": 20
+      },
+      "pv": 1200,
+      "competences_martiales": {
+        "Discrétion": 36,
+        "Pièges": 36,
+        "Combat à deux armes": 44,
+        "Combat à mains nues": 70,
+        "Combat à deux mains": 49,
+        "Grosse massue": 61,
+        "Armes naturelles": 62
+      },
+      "intimidation": 100,
+      "port_d_armure": [],
+      "armes": [],
+      "armure": null,
+      "tier": 4,
+      "qualite": "De luxe",
+      "points": 140,
+      "niveau_mission_min": 6,
+      "butin": {
+        "equipement": 60,
+        "objets": []
+      },
+      "attaque": {
+        "nom": "Grosse massue",
+        "degats_pv_base": "2D8",
+        "puissance_contondante": 80
+      },
+      "mort_vivant": true,
+      "insensible_poison": true
     }
   ]
 }

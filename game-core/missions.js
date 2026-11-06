@@ -230,6 +230,10 @@
       // Cour de sang (Idan, 2026-11-06) : les chauves-souris volent (« Elles survolent tout ») ; le vampire régénère (la
       // règle du sang de troll, game-core/regeneration.js : Régénération = points de la fiche ; le feu la bloque).
       if(arch.vol) c.flies=true;
+      // Taille (doc 04) : normale, longue (2 cases), grande (3) ou énorme (7).
+      if(arch.taille) c.taille=arch.taille;
+      // La mana du personnage de base ne dépasse pas la Réserve de la fiche (un troll affichait « 66/37 »).
+      if(Number.isFinite(Number(c.mana))&&Number.isFinite(Number(c.stats?.["Réserve de mana"]))) c.mana=Math.min(Number(c.mana),Number(c.stats["Réserve de mana"]));
       if(arch.regeneration!=null) c.skills.physiology={...(c.skills.physiology||{}),"Régénération":Number(arch.regeneration)||0};
       return c;
     }

@@ -115,6 +115,34 @@
       cliff:constant("combat.altitude.cliff",2),
       max:constant("combat.altitude.max",3)
     };
+    // Taille (créatures sur plusieurs cases ; Idan, 2026-11-06 : tailles 1, 3 et 7 cases « Parfait », « Un cheval, deux
+    // cases », une grande créature plus facile à toucher « Oui ») : character.taille = normale (1 case), longue (2 cases :
+    // la tête et le corps derrière elle, dans le sens du déplacement, une monture), grande (3 cases en triangle) ou énorme
+    // (7 cases : une case et son anneau). unit.q, unit.r = sa case d'ancrage (la tête, la pointe, le centre) ; unit.facing =
+    // son sens (0 à 5). Toutes les distances se mesurent de case la plus proche à case la plus proche.
+    const SIZE={
+      hit:{normale:0,longue:constant("combat.taille.toucher_longue",0),grande:constant("combat.taille.toucher_grande",10),
+        enorme:constant("combat.taille.toucher_enorme",20)}
+    };
+    const HEX_DIRS=[{q:1,r:0},{q:1,r:-1},{q:0,r:-1},{q:-1,r:0},{q:-1,r:1},{q:0,r:1}];
+    const SIZES=["normale","longue","grande","enorme"];
+    function sizeOf(unit){ const t=unit?.character?.taille; return SIZES.includes(t)?t:"normale"; }
+    function isLarge(unit){ return sizeOf(unit)!=="normale"; }
+    // Les cases d'une taille posée en (q, r) avec le sens facing.
+    function footprintAt(q,r,size="normale",facing=0){
+      const f=((Number(facing)||0)%6+6)%6,d=HEX_DIRS[f],e=HEX_DIRS[(f+1)%6];
+      if(size==="longue") return [{q,r},{q:q-d.q,r:r-d.r}];
+      if(size==="grande") return [{q,r},{q:q+d.q,r:r+d.r},{q:q+e.q,r:r+e.r}];
+      if(size==="enorme") return [{q,r},...HEX_DIRS.map(x=>({q:q+x.q,r:r+x.r}))];
+      return [{q,r}];
+    }
+    // Les cases d'un personnage (une case, ou son empreinte) ; d'une simple case, elle-même.
+    function footprint(unit){
+      if(!unit) return [];
+      return unit.character?footprintAt(unit.q,unit.r,sizeOf(unit),unit.facing):[{q:unit.q,r:unit.r}];
+    }
+    // Plus facile à toucher : + SIZE.hit[taille] au Toucher (corps à corps, tir, sorts qui visent).
+    function sizeHitBonus(defender){ return Number(SIZE.hit[sizeOf(defender)])||0; }
     const heightDiffOf=(attacker,defender)=>heightOf?(Number(heightOf(attacker))||0)-(Number(heightOf(defender))||0):0;
     // Le bonus de Discrétion d'une couverture, pour le repérage (doc 04 : +30 partielle, +60 totale).
     const coverDiscretion=level=>level==="totale"?STEALTH.totalCover:level==="partielle"?STEALTH.partialCover:0;
@@ -136,9 +164,16 @@
       max:constant("combat.shield.block.max_probability",80)
     };
 
-    function axialDistance(a,b){
+    function hexDistance(a,b){
       const dq=a.q-b.q,dr=a.r-b.r;
       return (Math.abs(dq)+Math.abs(dr)+Math.abs(dq+dr))/2;
+    }
+    // Distance entre deux personnages ou cases : de case la plus proche à case la plus proche (une grande créature).
+    function axialDistance(a,b){
+      if(!isLarge(a)&&!isLarge(b)) return hexDistance(a,b);
+      let best=Infinity;
+      for(const x of footprint(a)) for(const y of footprint(b)) best=Math.min(best,hexDistance(x,y));
+      return best;
     }
     // Cases traversées par une ligne droite de a à b, extrémités comprises (ligne de vue : Brouillard, doc 12). Un petit
     // décalage fixe tranche quand la ligne passe exactement entre deux cases : toujours du même côté.
@@ -650,6 +685,7 @@
         -dodgeFactor*effectiveDodge(defender)
         -0.2*(defensivePerception+effectiveSpeed(defender));
       if(context.sentinel&&mode==="ranged") delta+=SENTINEL.precision;
+      delta+=sizeHitBonus(defender);
       // Altitude : context.heightDiff = hauteur de l'attaquant − hauteur du défenseur (au tir comme au corps à corps).
       delta+=ALTITUDE.hitPerLevel*(Number(context.heightDiff)||0);
 
@@ -1199,11 +1235,14 @@
       // et le chargé, il n'y a aucun obstacle ou personnage ») : dans n'importe quelle direction, la ligne droite
       // d'hexagones entre les deux (hexLine) ; le chemin, ce sont ses cases entre les deux, la dernière au contact de la
       // cible. L'écran de combat vérifie qu'aucune n'est occupée. step : la direction de la dernière case vers la cible.
+      // Une grande créature ne charge pas encore (à venir avec les bêtes) ; contre elle, on charge sa case la plus proche.
+      if(isLarge(attacker)) return {valid:false};
       const distance=axialDistance(attacker,defender);
       if(distance<2) return {valid:false};
-      const path=hexLine(attacker,defender).slice(1,-1);
+      const aim=footprint(defender).reduce((best,c)=>!best||hexDistance(attacker,c)<hexDistance(attacker,best)?c:best,null);
+      const path=hexLine(attacker,aim).slice(1,-1);
       const destination=path[path.length-1];
-      const step={q:defender.q-destination.q,r:defender.r-destination.r};
+      const step={q:aim.q-destination.q,r:aim.r-destination.r};
 
       const travel=path.length;
       const base=movementBase(attacker);
@@ -1220,6 +1259,13 @@
 
     return {
       axialDistance,
+      hexDistance,
+      SIZE,
+      sizeOf,
+      isLarge,
+      footprintAt,
+      footprint,
+      sizeHitBonus,
       hexLine,
       POISON,
       STEALTH,

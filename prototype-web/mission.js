@@ -25,8 +25,39 @@ function missionActiveUnit(){ return game.mission?.activeUnit||null; }
 function missionOpponents(unit){ return livingMissionUnits(unit.team==="player"?"enemy":"player"); }
 function missionEncircled(unit){ return game.mission.engine.isEncircled(unit,missionOpponents(unit)); }
 
+// Grandes créatures (doc 04 ; Idan, 2026-11-06 : tailles 1, 3 et 7 cases, « Un cheval, deux cases ») : les cases d'un
+// personnage (combat-engine.js, footprint) ; une seule pour la plupart.
+function missionEngine(){ return game.mission?.engine||(typeof combatEngine==="function"?combatEngine():null); }
+function missionFootprint(u){ const e=missionEngine(); return e?.footprint?e.footprint(u):[{q:u.q,r:u.r}]; }
+function missionLarge(u){ return Boolean(u?.character&&missionEngine()?.isLarge?.(u)); }
+// Placement : une grande créature prend la case d'ancrage la plus proche de la sienne où toute son empreinte tient (dans la
+// carte, sans autre personnage) ; les autres gardent leur place.
+function fitMissionLarge(units,others=[]){
+  const e=missionEngine();
+  if(!e?.isLarge) return units;
+  const taken=new Set(),mark=u=>e.footprint(u).forEach(c=>taken.add(missionKey(c.q,c.r)));
+  others.forEach(mark);
+  units.filter(u=>!e.isLarge(u)).forEach(mark);
+  for(const u of units.filter(x=>e.isLarge(x))){
+    const fits=c=>e.footprintAt(c.q,c.r,e.sizeOf(u),u.facing).every(x=>validMissionHex(x.q,x.r)&&!taken.has(missionKey(x.q,x.r)));
+    const seen=new Set([missionKey(u.q,u.r)]),queue=[{q:u.q,r:u.r}];
+    while(queue.length){
+      const c=queue.shift();
+      if(fits(c)){ u.q=c.q;u.r=c.r;break; }
+      for(const n of missionNeighbors(c)){ const k=missionKey(n.q,n.r); if(!seen.has(k)){ seen.add(k);queue.push(n); } }
+    }
+    mark(u);
+  }
+  return units;
+}
+function missionOccupies(u,q,r){ return missionFootprint(u).some(c=>c.q===q&&c.r===r); }
+function missionUnitAtCell(q,r,filter=x=>x.alive&&!x.offMap){ return missionUnits().find(x=>filter(x)&&missionOccupies(x,q,r))||null; }
+// Le personnage posé sur une autre case (un pas, une case visée) : pour une grande créature, avec son empreinte et son sens.
+function missionAt(unit,cell){
+  return missionLarge(unit)?{q:cell.q,r:cell.r,facing:cell.facing??unit.facing,character:unit.character}:{q:cell.q,r:cell.r};
+}
 function occupiedMissionKeys(except=null){
-  const keys=new Set(missionUnits().filter(u=>u.alive&&u!==except).map(u=>missionKey(u.q,u.r)));
+  const keys=new Set(missionUnits().filter(u=>u.alive&&u!==except).flatMap(missionFootprint).map(c=>missionKey(c.q,c.r)));
   for(const t of game.mission?.terrain||[]) keys.add(missionKey(t.q,t.r));
   // Un volant passe au-dessus du décor infranchissable (missionPaths l'empêche de s'y arrêter).
   if(!missionFlies(except)) for(const d of game.mission?.decor||[]) if(missionDecorBlocksMove(d.q,d.r)) keys.add(missionKey(d.q,d.r));
@@ -64,9 +95,42 @@ function missionStepCost(c,from=null,unit=null){
   if(Math.abs(rise)>=alt.cliff) return Infinity;
   return decor+Math.max(0,rise)*alt.climbCost;
 }
+// Un pas d'une grande créature (non volante : chaque case de son empreinte libre et franchissable, sans falaise sous elle ;
+// le pas coûte la case la plus lente qu'elle couvre, plus la montée de sa case d'ancrage) : {cost, facing}, ou null. Une
+// créature longue (une monture) suit son pas : le corps prend la place de la tête ; un triangle prend le premier sens qui
+// passe ; une créature énorme n'a pas de sens.
+function missionLargeStep(mover,cur,next,blocked){
+  const e=game.mission.engine,size=e.sizeOf(mover),flyer=missionFlies(mover),alt=missionAltitude();
+  const dir=HEX_DIRS.findIndex(d=>cur.q+d.q===next.q&&cur.r+d.r===next.r);
+  const facings=size==="longue"?[dir]:size==="grande"?[cur.facing??mover.facing??0,0,1,2,3,4,5]:[0];
+  for(const facing of new Set(facings)){
+    const cells=e.footprintAt(next.q,next.r,size,facing);
+    if(!cells.every(c=>validMissionHex(c.q,c.r)&&!blocked.has(missionKey(c.q,c.r)))) continue;
+    if(flyer) return {cost:1,facing};
+    const heights=cells.map(c=>missionHeightAt(c.q,c.r));
+    if(Math.max(...heights)-Math.min(...heights)>=alt.cliff) continue;
+    const rise=missionHeightAt(next.q,next.r)-missionHeightAt(cur.q,cur.r);
+    if(Math.abs(rise)>=alt.cliff) continue;
+    const decor=Math.max(...cells.map(missionDecorCost));
+    if(!Number.isFinite(decor)) continue;
+    return {cost:decor+Math.max(0,rise)*alt.climbCost,facing};
+  }
+  return null;
+}
+// Une grande créature volante peut survoler un décor infranchissable, mais pas s'y arrêter (aucune de ses cases).
+function missionCanStop(mover,cell){
+  if(!missionFlies(mover)) return true;
+  return game.mission.engine.footprint(missionAt(mover,cell)).every(c=>!missionDecorBlocksMove(c.q,c.r));
+}
 function missionPathCost(path,start=null){
   let prev=start,total=0;
   const unit=start?.character?start:null;
+  if(missionLarge(unit)){
+    const blocked=occupiedMissionKeys(unit);
+    prev={q:unit.q,r:unit.r,facing:unit.facing};
+    for(const c of path||[]){ total+=missionLargeStep(unit,prev,c,blocked)?.cost??Infinity; prev={...c,facing:c.facing??prev.facing}; }
+    return total;
+  }
   for(const c of path||[]){ total+=missionStepCost(c,prev,unit); prev=c; }
   return total;
 }
@@ -80,7 +144,15 @@ function missionDecorLabel(d){
 // Couverture (Idan, 2026-11-06 : « Au tir et en défense de charge ») : le décor collé à la cible sur la ligne qui vient de
 // from (pas la case de from : un muret collé au tireur ne le gêne pas), ou la case de la cible elle-même ; la meilleure.
 // shot : un tir (ou un sort qui vole) ; d'au moins un niveau plus haut, il passe par-dessus la couverture partielle.
-function missionCoverLevel(from,target,{shot=false}={}){
+function missionCoverLevel(from,target,options={}){
+  // Une grande créature se couvre mal : la couverture de sa case la plus exposée.
+  if(missionLarge(target)){
+    const rank={totale:2,partielle:1};
+    return missionFootprint(target).map(c=>missionCellCover(from,c,options)).reduce((a,b)=>(rank[b]||0)<(rank[a]||0)?b:a,"totale");
+  }
+  return missionCellCover(from,target,options);
+}
+function missionCellCover(from,target,{shot=false}={}){
   if(!game.mission?.decor?.length||!from||!target) return null;
   const above=shot&&missionHeightAt(from.q,from.r)>=missionHeightAt(target.q,target.r)+1;
   const line=game.mission.engine.hexLine(from,target),before=line[line.length-2];
@@ -153,6 +225,14 @@ function missionStormAt(q,r){
 // les deux, extrémités comprises, est dans le brouillard. Elle compte pour les tirs et les sorts.
 function missionLineOfSight(a,b){
   if(!a||!b) return true;
+  // Une grande créature : on la voit si on voit une de ses cases (et elle voit depuis n'importe laquelle).
+  if(missionLarge(a)||missionLarge(b)){
+    const from=missionLarge(a)?missionFootprint(a):[a],to=missionLarge(b)?missionFootprint(b):[b];
+    return from.some(x=>to.some(y=>missionCellLineOfSight(x,y)));
+  }
+  return missionCellLineOfSight(a,b);
+}
+function missionCellLineOfSight(a,b){
   if(missionDecorBlocksSight(a,b)) return false;
   if(!game.mission?.fog?.length&&!game.mission?.blizzards?.length) return true;
   return !game.mission.engine.hexLine(a,b).some(c=>missionFogAt(c.q,c.r)||missionBlizzardAt(c.q,c.r));
@@ -246,25 +326,32 @@ function missionHiddenFrom(target,observer){ return Boolean(target?.camouflaged)
 // Plus courts chemins en points de mouvement (décor lent : 2, 3 ou 4 par case), depuis start ; blocked : cases interdites.
 // Dans un bourbier, on entre mais on n'en sort plus : on ne le traverse pas. Renvoie la Map clé → {path, cost}, dans
 // l'ordre des coûts croissants (à coût égal, le moins de cases) ; stopKey : on s'arrête dès qu'elle est atteinte.
-function missionPaths(start,blocked,budget=Infinity,stopKey=null,flyer=null){
+function missionPaths(start,blocked,budget=Infinity,stopKey=null,mover=null){
+  const flyer=missionFlies(mover)?mover:null,large=missionLarge(mover);
   const startKey=missionKey(start.q,start.r),done=new Map(),seen=new Set();
-  const open=new Map([[startKey,{cell:{q:start.q,r:start.r},path:[],cost:0}]]);
+  const open=new Map([[startKey,{cell:{q:start.q,r:start.r,...(large?{facing:mover.facing}:{})},path:[],cost:0}]]);
   while(open.size){
     let key=null,cur=null;
     for(const [k,v] of open) if(!cur||v.cost<cur.cost||(v.cost===cur.cost&&v.path.length<cur.path.length)){ key=k; cur=v; }
     open.delete(key);
     seen.add(key);
     // Un volant survole un décor infranchissable, sans pouvoir s'y arrêter.
-    if(!flyer||!missionDecorBlocksMove(cur.cell.q,cur.cell.r)) done.set(key,{path:cur.path,cost:cur.cost});
+    if(large?missionCanStop(mover,cur.cell):(!flyer||!missionDecorBlocksMove(cur.cell.q,cur.cell.r))) done.set(key,{path:cur.path,cost:cur.cost});
     if(key===stopKey) break;
     if(missionMireAt(cur.cell.q,cur.cell.r)) continue;
     for(const next of missionNeighbors(cur.cell)){
       const k=missionKey(next.q,next.r);
       if(seen.has(k)||blocked.has(k)) continue;
-      const cost=cur.cost+missionStepCost(next,cur.cell,flyer);
+      let cell=next,stepCost;
+      if(large){
+        const step=missionLargeStep(mover,cur.cell,next,blocked);
+        if(!step) continue;
+        stepCost=step.cost;cell={...next,facing:step.facing};
+      }else stepCost=missionStepCost(next,cur.cell,flyer);
+      const cost=cur.cost+stepCost;
       if(!Number.isFinite(cost)||cost>budget) continue;
       const known=open.get(k);
-      if(!known||cost<known.cost||(cost===known.cost&&cur.path.length+1<known.path.length)) open.set(k,{cell:next,path:[...cur.path,next],cost});
+      if(!known||cost<known.cost||(cost===known.cost&&cur.path.length+1<known.path.length)) open.set(k,{cell,path:[...cur.path,cell],cost});
     }
   }
   return done;
@@ -275,7 +362,7 @@ function shortestMissionPath(start,end,except=null){
   const startKey=missionKey(start.q,start.r),endKey=missionKey(end.q,end.r);
   if(blocked.has(endKey)) return null;
   if(startKey!==endKey&&missionMireAt(start.q,start.r)) return null;
-  return missionPaths(start,blocked,Infinity,endKey,missionFlies(except)?except:null).get(endKey)?.path||null;
+  return missionPaths(start,blocked,Infinity,endKey,except?.character?except:null).get(endKey)?.path||null;
 }
 
 function missionHexPixel(q,r){
@@ -489,11 +576,18 @@ function startMissionFromSelection(){
   setMissionMapSize();
 
   const enemyChars=Array.from({length:3},()=>createCharacter({role:"Ennemi test"}));
+  // Grandes créatures (Idan, 2026-11-06) : le troisième ennemi de test est un troll géant, grand (3 cases) ou énorme
+  // (7 cases), au hasard.
+  const rules=typeof missionRules==="function"?missionRules():null,troll=rules?.archetype("troll");
+  if(troll){
+    rules.applyArchetype(enemyChars[2],troll,{idPrefix:"test-troll",name:"Troll géant"});
+    enemyChars[2].taille=Math.random()<0.5?"grande":"enorme";
+  }
   const engine=MercenairesCombat.createCombatEngine(game.referenceData,{onAttack:onMissionAttack,heightOf:missionUnitHeight});
   const endRules=MercenairesMissionEnd.createMissionEndRules({reference:game.referenceData});
   const progression=MercenairesProgression.createProgressionRules({reference:game.referenceData});
   const players=chosen.map((c,i)=>makeMissionUnit(c,"player",i));
-  const enemies=enemyChars.map((c,i)=>makeMissionUnit(c,"enemy",i));
+  const enemies=fitMissionLarge(enemyChars.map((c,i)=>makeMissionUnit(c,"enemy",i)),players);
 
   game.mission={
     engine,endRules,progression,players,enemies,
@@ -586,13 +680,13 @@ function placeMissionArmy(units,team){
   const put=(u,col,row)=>{ const cell=missionAxial(col,row); u.q=cell.q; u.r=cell.r; };
   if(team==="player"){
     units.forEach((u,i)=>put(u,1+Math.floor(i/rows),order[i%rows]));
-    return units;
+    return fitMissionLarge(units);
   }
   const chief=units[units.length-1],others=units.slice(0,-1);
   put(chief,cols-2,mid);
   const perCol=Math.max(1,Math.min(rows,Math.max(3,Math.ceil(others.length/2))));
   others.forEach((u,i)=>put(u,cols-4-Math.floor(i/perCol),order[i%perCol]));
-  return units;
+  return fitMissionLarge(units);
 }
 
 function selectNextMissionPlayer(){
@@ -990,18 +1084,21 @@ function moveMissionUnitAlongPath(unit,path){
   let moved=0;
   for(const step of path){
     if(!unit.alive||game.mission.over) break;
-    const from={q:unit.q,r:unit.r},wasFleeing=unit.fleeing;
-    const reactors=unit.camouflaged?[]:e.opportunityReactors(missionOpponents(unit),unit,step);
+    const from={q:unit.q,r:unit.r,facing:unit.facing},wasFleeing=unit.fleeing;
+    const large=missionLarge(unit),stepCost=large?missionLargeStep(unit,from,step,occupiedMissionKeys(unit))?.cost:null;
+    if(large&&stepCost==null) break;
+    const reactors=unit.camouflaged?[]:e.opportunityReactors(missionOpponents(unit),unit,missionAt(unit,step));
     if(reactors.length){
       missionLog(unit.character.name+" quitte la zone de menace de "+reactors.map(x=>x.character.name).join(", ")+".","move");
       resolveOpportunityAttacks(reactors,unit);
       if(!unit.alive||unit.q!==from.q||unit.r!==from.r||unit.fleeing!==wasFleeing) break;
     }
     unit.q=step.q;unit.r=step.r;moved++;
+    if(large&&step.facing!=null) unit.facing=step.facing;
     missionFx(unit,"","",step);
     if(wasFleeing) MercenairesProgression.recordFleeHex(unit);
     game.mission.progression.recordStep(unit);
-    unit.movementRemaining=Math.max(0,(unit.movementRemaining||0)-missionStepCost(step,from,unit));
+    unit.movementRemaining=Math.max(0,(unit.movementRemaining||0)-(large?stepCost:missionStepCost(step,from,unit)));
     const flames=missionFlameAt(step.q,step.r);
     if(flames){
       missionFlameBurn(unit,flames,"traverse le mur de flammes");
@@ -1021,10 +1118,11 @@ function moveMissionUnitAlongPath(unit,path){
 
 function missionPathOpportunityCount(unit,path){
   const e=game.mission.engine,opponents=missionOpponents(unit);
-  let from={q:unit.q,r:unit.r},count=0;
+  let from=missionAt(unit,{q:unit.q,r:unit.r,facing:unit.facing}),count=0;
   for(const step of path){
-    if(!unit.camouflaged) count+=e.opportunityReactors(opponents,from,step).length;
-    from=step;
+    const to=missionAt(unit,step);
+    if(!unit.camouflaged) count+=e.opportunityReactors(opponents,from,to).length;
+    from=to;
   }
   return count;
 }
@@ -1217,7 +1315,7 @@ function missionReachablePaths(unit,budget=Infinity,forbidden=null){
   const blocked=occupiedMissionKeys(unit),start={q:unit.q,r:unit.r};
   if(forbidden) for(const key of forbidden) blocked.add(key);
   const paths=new Map();
-  for(const [key,{path}] of missionPaths(start,blocked,budget,null,missionFlies(unit)?unit:null)) paths.set(key,path);
+  for(const [key,{path}] of missionPaths(start,blocked,budget,null,unit)) paths.set(key,path);
   return paths;
 }
 
@@ -1243,7 +1341,8 @@ function missionExitPath(unit,budget,threats,forbidden=null){
   let best=null,bestScore=-1;
   for(const path of missionReachablePaths(unit,budget,forbidden).values()){
     const cell=path.length?path[path.length-1]:unit;
-    if(!isMissionBorder(cell)||missionPathCost(path,unit)+1>budget) continue;
+    // Une grande créature est au bord dès qu'une de ses cases l'est.
+    if(!missionFootprint(missionAt(unit,cell)).some(isMissionBorder)||missionPathCost(path,unit)+1>budget) continue;
     const value=missionMinDistance(cell,threats);
     if(value>bestScore){ best=path;bestScore=value; }
   }
@@ -1353,7 +1452,7 @@ function handleMissionHexClick(q,r){
   const m=game.mission,u=missionActiveUnit();
   if(!m||m.phase!=="player"||!u||m.over) return;
 
-  const clicked=missionUnits().find(x=>x.alive&&x.q===q&&x.r===r);
+  const clicked=missionUnitAtCell(q,r,x=>x.alive);
 
   if(m.mode==="move"&&!clicked){
     const path=shortestMissionPath(u,{q,r},u);
@@ -1940,7 +2039,7 @@ function resolveMissionSpell(caster,target,code,extra={}){
 // Case vide : ni personnage en jeu, ni flaque de magma.
 function missionCellFree(target){
   if(!target||target.character) return true;
-  return !missionUnits().some(u=>u.alive&&!u.offMap&&u.q===target.q&&u.r===target.r)&&!missionTerrainAt(target.q,target.r)
+  return !missionUnitAtCell(target.q,target.r)&&!missionTerrainAt(target.q,target.r)
     &&!missionDecorBlocksMove(target.q,target.r);
 }
 
@@ -2377,10 +2476,15 @@ function missionSpellHit(unit,out,amount,caster){
 // l'armure.
 function missionForcedMove(unit,out,caster){
   const move=out.move,name=unit.character.name;
+  // Une grande créature ne se laisse ni pousser ni attirer (Idan, 2026-11-06).
+  if(missionLarge(unit)){
+    missionLog(name+" est trop massi"+(missionFeminine(unit)?"ve":"f")+" pour être "+(move.kind==="attire"?"attiré":"repoussé")+(missionFeminine(unit)?"e":"")+".","bad");
+    return;
+  }
   let moved=0,obstacle=null;
   for(const c of move.cells){
     if(!validMissionHex(c.q,c.r)){ obstacle="le bord du terrain"; break; }
-    const other=missionUnits().find(u=>u!==unit&&u.alive&&!u.offMap&&u.q===c.q&&u.r===c.r);
+    const other=missionUnitAtCell(c.q,c.r,u=>u!==unit&&u.alive&&!u.offMap);
     if(other){ obstacle=other.character.name; break; }
     if(missionTerrainAt(c.q,c.r)){ obstacle="la flaque de magma"; break; }
     if(missionDecorBlocksMove(c.q,c.r)){ obstacle=missionDecorAt(c.q,c.r).article||missionDecorAt(c.q,c.r).nom; break; }
@@ -2731,15 +2835,21 @@ function enemyMoveToward(unit,target){
   const blocked=occupiedMissionKeys(unit);
   if(!missionMireAt(unit.q,unit.r)){
     let full=null;
-    for(const [,found] of missionPaths({q:unit.q,r:unit.r},blocked,Infinity,null,missionFlies(unit)?unit:null)){
+    for(const [,found] of missionPaths({q:unit.q,r:unit.r},blocked,Infinity,null,unit)){
       const end=found.path[found.path.length-1];
-      if(end&&e.axialDistance(end,target)<=1){ full=found.path; break; }
+      if(end&&e.axialDistance(missionAt(unit,end),target)<=1){ full=found.path; break; }
     }
     if(full){
       const path=[];
       let spent=0;
       let prev={q:unit.q,r:unit.r};
-      for(const step of full){ spent+=missionStepCost(step,prev,unit); if(spent>budget) break; path.push(step); prev=step; }
+      const blockedNow=missionLarge(unit)?occupiedMissionKeys(unit):null;
+      prev={q:unit.q,r:unit.r,facing:unit.facing};
+      for(const step of full){
+        spent+=blockedNow?(missionLargeStep(unit,prev,step,blockedNow)?.cost??Infinity):missionStepCost(step,prev,unit);
+        if(spent>budget) break;
+        path.push(step); prev=step;
+      }
       if(path.length) best={path,distance:e.axialDistance(path[path.length-1],target)};
     }
   }
@@ -3420,9 +3530,13 @@ function renderMission(){
   // Pions : portrait rond, anneau de camp ou de rang, barre de PV ; le nom s'affiche au survol et sur l'actif.
   // Un clic sur un pion vaut un clic sur sa case.
   const tokens=missionUnits().filter(unit=>!unit.offMap&&!unit.raised).map(unit=>{
-    const p=missionHexPixel(unit.q,unit.r);
+    // Une grande créature : un gros pion au centre de ses cases.
+    const large=missionLarge(unit),cells=large?missionFootprint(unit).map(c=>missionHexPixel(c.q,c.r)):null;
+    const p=large?{x:cells.reduce((t,c)=>t+c.x,0)/cells.length,y:cells.reduce((t,c)=>t+c.y,0)/cells.length}:missionHexPixel(unit.q,unit.r);
+    const half=large?{longue:32,grande:42,enorme:64}[m.engine.sizeOf(unit)]:26;
     const pct=Math.max(0,Math.min(100,Math.round(unit.hp/unit.pvMax*100)));
     const classes=["mission-token",unit.team,unit.alive?"alive":"down"];
+    if(large) classes.push("size-"+m.engine.sizeOf(unit));
     if(u===unit||m.pacedUnit===unit) classes.push("active");
     const encircled=unit.alive&&missionEncircled(unit);
     if(encircled) classes.push("encircled");
@@ -3431,7 +3545,7 @@ function renderMission(){
     if(unit.summon) classes.push("summoned");
     if(unit.character.undead) classes.push("undead");
     if(targets.has(missionKey(unit.q,unit.r))&&m.mode!=="move") classes.push(missionSpellMode()?"spell-aim":"target");
-    return `<div class="${classes.join(" ")}"${missionDomainAttr(unit)} data-unit-id="${esc(String(unit.id))}" data-hex-q="${unit.q}" data-hex-r="${unit.r}" style="left:${p.x-26}px;top:${p.y-26}px">
+    return `<div class="${classes.join(" ")}"${missionDomainAttr(unit)} data-unit-id="${esc(String(unit.id))}" data-hex-q="${unit.q}" data-hex-r="${unit.r}" style="left:${p.x-half}px;top:${p.y-half}px">
       <span class="token-ring">${renderMissionPortrait(unit,"battle")}</span>
       ${unit.alive?`<span class="token-hp${missionHpClass(pct)}"><i style="width:${pct}%"></i></span>`:""}
       <strong>${esc(unit.character.name.split(" ")[0])}</strong>
@@ -3614,7 +3728,7 @@ function playMissionFx(){
 // Tout est calculé par les fonctions du moteur, sans jet de dé.
 const missionHover={key:null,click:null};
 function missionUnitAt(q,r){
-  const here=missionUnits().filter(x=>!x.offMap&&!x.raised&&!x.vanished&&x.q===q&&x.r===r);
+  const here=missionUnits().filter(x=>!x.offMap&&!x.raised&&!x.vanished&&missionOccupies(x,q,r));
   return here.find(x=>x.alive)||here[0]||null;
 }
 function missionAttackPreview(u,target){
@@ -3717,7 +3831,7 @@ const MISSION_SPELL_PER_TURN=new Set(["soin_sur_duree","degats_sur_duree","blizz
 function missionSpellPreviewRows(u,code,q,r){
   const magic=missionMagic(),e=game.mission.engine,s=magic.spell(code);
   if(!s) return "";
-  const unit=missionUnits().find(x=>x.alive&&!x.offMap&&x.q===q&&x.r===r)||null;
+  const unit=missionUnitAtCell(q,r);
   const target=s.cible==="soi"?u:unit,foe=target&&target.team!==u.team?target:null;
   const rows=[`<dt>Réussite</dt>${missionOdds(magic.castChance(u,code).p)}`,`<dt>Coût</dt><dd>${magic.manaCost(u,code)} mana</dd>`];
   if(s.toucher==="distance"&&foe){
@@ -3772,7 +3886,7 @@ function showMissionHover(q,r){
   missionHover.key=key;
   clearMissionPath();
   // Attaquer en se déplaçant : le chemin jusqu'à la case d'où il frappera ; la charge : sa ligne droite.
-  const hovered=m.mode==="melee"||m.mode==="charge"?missionUnits().find(x=>x.alive&&x.q===q&&x.r===r):null;
+  const hovered=m.mode==="melee"||m.mode==="charge"?missionUnitAtCell(q,r,x=>x.alive):null;
   const route=!hovered||!u||hovered.team===u.team?null:m.mode==="melee"?missionMeleeApproach(u,hovered)?.path:missionChargeIfClear(u,hovered)?.path;
   if(route) route.forEach((c,i)=>{
     const cell=missionHexCell(c);

@@ -351,6 +351,26 @@ chance pour enchaîner plusieurs tirs (sauf arme à feu). Il ne peut passer en m
   volant passe au-dessus d'un décor infranchissable (murs, rochers, maisons), sans pouvoir s'y arrêter. Le bourbier et la
   flaque de magma restent ce qu'ils sont. Données : `enemy-archetypes.json` (`vol`) ; code : `missionFlies`,
   `missionStepCost`, `missionPaths`.
+- **Créatures sur plusieurs cases** (Idan, 2026-11-06 : tailles 1, 3 et 7 cases « Parfait » ; « Un cheval, deux cases…
+  mais on pourra dompter un dragon » ; plus facile à toucher « Oui ») : `taille` (`enemy-archetypes.json`, `character.taille`)
+  = **normale** (1 case), **longue** (2 cases : la tête et le corps derrière elle, dans le sens du déplacement, pour les
+  montures), **grande** (3 cases en triangle, qui tourne tout seul pour passer) ou **énorme** (7 cases : une case et son
+  anneau). `unit.q, unit.r` = sa case d'ancrage ; `unit.facing` = son sens.
+  - **Distance** : de case la plus proche à case la plus proche (portée des armes et des sorts, contact, attaques
+    d'opportunité, encerclement) ; on peut entourer une créature énorme à 12.
+  - **Déplacement** : toute l'empreinte doit passer (dans la carte, sans personnage ni décor infranchissable, sans falaise
+    sous elle) ; un pas coûte la case la plus lente qu'elle couvre, plus la montée de sa case d'ancrage ; une créature
+    longue suit son pas (le corps prend la place de la tête). Volante : 1 par case, elle survole tout sans s'arrêter sur un
+    décor infranchissable. En fuite, elle sort de la carte dès qu'une de ses cases touche le bord.
+  - **Toucher** : + 10 contre une grande, + 20 contre une énorme (corps à corps, tir, sorts qui visent ;
+    `combat.taille.toucher_*`, chiffres proposés) ; sa couverture est celle de sa case la plus exposée.
+  - **Zones** : une zone qui touche une de ses cases la touche, une fois. **Ni poussée ni attraction.** **Vue** : on la
+    voit si on voit une de ses cases. **Hauteur** : celle de sa case d'ancrage. Elle ne charge pas encore ; contre elle, la
+    charge vise sa case la plus proche.
+  - **Placement** : au début du combat, la case la plus proche de la sienne où toute son empreinte tient. **Affichage** :
+    un gros pion au centre de ses cases. **Mission Test** : le troisième ennemi est un **troll géant**, grand ou énorme.
+  - Code : `combat-engine.js` (`footprint`, `axialDistance`, `sizeHitBonus`), `mission.js` (`missionFootprint`,
+    `missionLargeStep`, `fitMissionLarge`). Test : `tests/mission-size.test.js`.
 - **Drain de vie de l'IA** (le vampire et ses rejetons ; Idan : « estoc, drain de vie, sort d'illusions ») : un ennemi dont
   la fiche donne le Drain de vie se le lance (action rapide) quand un ennemi visible est à portée de ses pas et que l'effet
   n'est pas déjà actif, puis frappe. C'est le seul sort sur soi que joue l'IA.

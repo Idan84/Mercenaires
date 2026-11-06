@@ -123,7 +123,7 @@ La formule d'initiative V1 reste volontairement **sans Fatigue** pour l'instant.
 
 ## Occupation de plusieurs hexagones & montures
 
-La grille V1 considère `1 personnage = 1 hex`. Les Ogres, Dragons, grandes montures et autres créatures multi-hex devront disposer plus tard d'une empreinte, de règles de rotation, de portée et de déplacement adaptées.
+Fait (doc 04, « Créatures sur plusieurs cases », 2026-11-06) : tailles normale, longue (2 cases), grande (3) et énorme (7), empreinte, distance, déplacement, Toucher. Reste : la charge d'une grande créature, les montures (un cavalier sur une créature longue, puis un dragon dompté), et les bêtes de la mission « Éliminer la bête ! ».
 
 ## Ennemis : force aux hauts niveaux de mission
 

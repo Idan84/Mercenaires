@@ -97,6 +97,7 @@ jobs:
       - run: node tests/undead-cult.test.js
       - run: node tests/blood-court.test.js
       - run: node tests/troll.test.js
+      - run: node tests/mission-size.test.js
       - run: node tests/stealth.test.js
       - run: node tests/spell-icons.test.js
       - run: node tests/starting-spells.test.js

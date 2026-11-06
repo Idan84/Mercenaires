@@ -1673,7 +1673,7 @@
       "attaque_de_zone": false,
       "bonus_blocage_base": null,
       "bonus_charge_base": 2,
-      "cadence_tir": "Tir unique",
+      "cadence_tir": "Répétable",
       "contre_charge": true,
       "description": "Le mécanisme, le mode de rechargement et la nécessité d’un appui sont propres à chaque modèle.",
       "domaine": "Armes de tir, Martial",

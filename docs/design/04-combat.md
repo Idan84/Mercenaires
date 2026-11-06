@@ -166,7 +166,7 @@ Le tir est construit comme un combat physique à distance, sans créer un second
 - **Toucher** : [Toucher distance V1](/design/#doc=formulas/toucher-distance-v1.md). Aucun malus jusqu'au quart de la portée max ; ensuite le malus croît jusqu'à `−40` au Delta à portée max. La couverture multiplie la probabilité finale par `0,5` ou `0,25`.
 - **Blesser** : [Blesser distance V1](/design/#doc=formulas/blesser-distance-v1.md). La **Perception remplace la Force**.
 - **Dégâts physiques** : [Dégâts PV physiques distance V1](/design/#doc=formulas/degats-pv-physiques-distance-v1.md). Aucun facteur Force : l'énergie est encodée dans les dés et puissances de l'arme.
-- **Cadence** : [Enchaînement de tirs distance V1](/design/#doc=formulas/enchainement-de-tirs-distance-v1.md) pour les armes `Répétable`.
+- **Cadence** : [Enchaînement de tirs distance V1](/design/#doc=formulas/enchainement-de-tirs-distance-v1.md) pour les armes `Répétable` : arc, arbalète (Idan, 2026-11-06 : « Pour moi l'arbalète était comme l'arc » ; elle était en `Tir unique`), fronde, sarbacane. Les armes à feu tirent une fois.
 - **Projectile raté / approximation** : [Approximation projectile V1](/design/#doc=formulas/approximation-projectile-v1.md) peut toucher accidentellement un allié ou ennemi dans le couloir de tir. **Couloir de tir** (décision Idan du 2026-10-08) : cône de **30°** depuis le tireur, centré sur l'axe tireur → cible, compté de la **moitié de la distance** de la cible jusqu'à la **portée max** de l'arme (constantes `combat.ranged.stray.cone_angle`, `combat.ranged.stray.corridor_start_ratio`).
 - **Courage** : [Courage post-tir V1](/design/#doc=formulas/courage-post-tir-v1.md). Une cible réellement blessée peut fuir ; le tireur ne teste jamais son Courage simplement parce qu'il a raté ou n'a pas blessé.
 - **Armes à feu** : [Armes à feu — recharge et double pistolet V1](/design/#doc=formulas/armes-a-feu-recharge-et-double-pistolet-v1.md) : pas de stock de munitions normales ; **recharger une arme = 1 Action rapide** ; épée + pistolet et deux pistolets suivent le combat à deux armes, avec inerties cumulées et une attaque de base par arme actuellement utilisable.
@@ -215,7 +215,7 @@ chance pour enchaîner plusieurs tirs (sauf arme à feu). Il ne peut passer en m
   continuer. Les règles du tir s'appliquent (couloir de tir, attaques des ennemis au contact, Courage post-tir) ; s'il est
   encore camouflé, c'est aussi une attaque non détectée.
 - **Les bonus** (`combat.sentinel.*`) : **+20 au Toucher** ; l'**enchaînement** comme au corps à corps : (Dextérité effective
-  + Vitesse) / N au lieu de / (1,5 × N), pour les armes `Répétable` (arc, fronde, sarbacane).
+  + Vitesse) / N au lieu de / (1,5 × N), pour les armes `Répétable` (arc, arbalète, fronde, sarbacane).
 - **Fin** : après ce tir ; sans cible, au début de sa prochaine activation.
 - **Les ennemis aussi** (Idan : « Bien sûr ! ») : un tireur ennemi qui n'a rien à viser après son déplacement, et que
   personne ne voit, se met en sentinelle ; le combat automatique fait de même pour vos mercenaires.

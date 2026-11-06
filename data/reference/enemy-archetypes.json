@@ -8635,15 +8635,15 @@
       "sorts": [
         {
           "code": "bone_army",
-          "maitrise": 20
+          "maitrise": 65
         },
         {
           "code": "raise_dead",
-          "maitrise": 20
+          "maitrise": 65
         },
         {
           "code": "death_arrow",
-          "maitrise": 20
+          "maitrise": 65
         }
       ],
       "sort_initial": "bone_army",
@@ -8711,19 +8711,19 @@
       "sorts": [
         {
           "code": "bone_army",
-          "maitrise": 35
+          "maitrise": 65
         },
         {
           "code": "raise_dead",
-          "maitrise": 35
+          "maitrise": 65
         },
         {
           "code": "curse",
-          "maitrise": 35
+          "maitrise": 65
         },
         {
           "code": "death_arrow",
-          "maitrise": 35
+          "maitrise": 65
         }
       ],
       "sort_initial": "bone_army",
@@ -8793,27 +8793,27 @@
       "sorts": [
         {
           "code": "bone_army",
-          "maitrise": 50
+          "maitrise": 65
         },
         {
           "code": "summon_specter",
-          "maitrise": 50
+          "maitrise": 65
         },
         {
           "code": "raise_dead",
-          "maitrise": 50
+          "maitrise": 65
         },
         {
           "code": "curse",
-          "maitrise": 50
+          "maitrise": 65
         },
         {
           "code": "necrosis",
-          "maitrise": 50
+          "maitrise": 65
         },
         {
           "code": "death_arrow",
-          "maitrise": 50
+          "maitrise": 65
         }
       ],
       "sort_initial": "bone_army",

@@ -249,6 +249,10 @@ assert.equal(api.missionDecorLabel(row("foret")),"Forêt : mouvement ½, bloque 
 assert.equal(api.missionDecorLabel(row("gros_rocher")),"Gros rocher : infranchissable, couverture totale");
 assert.equal(api.missionDecorLabel(row("marais")),"Marais : mouvement ⅓");
 assert.match(source,/game\.mission\.decor=generateMissionDecor\(\);/);
+// Un motif dessiné par décor, sur sa couleur (Idan : « Tu peux faire mieux que juste de la couleur ? »).
+const css=fs.readFileSync(path.join(ROOT,"prototype-web","styles.css"),"utf8");
+for(const d of decors.rows) assert.match(css,new RegExp('\\.hex-decor\\[data-decor="'+d.code+'"\\]\\{background-image:url\\("data:image/svg\\+xml,'),d.code);
+assert.match(source,/data-decor="\$\{esc\(row\.code\)\}"/);
 // 9. Les sorts qui volent comme une flèche (Idan, 2026-11-06 : « oui pour les sorts qui volent ») : la couverture compte.
 m=newMission([{q:7,r:4,code:"buissons"}]);
 const mage=m.players[0],prey=at(m.enemies[0],7,4);

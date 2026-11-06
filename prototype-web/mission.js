@@ -3166,7 +3166,7 @@ function renderMission(){
   let decorTiles="";
   for(const d of m.decor||[]){
     const row=missionDecorRow(d.code),p=missionHexPixel(d.q,d.r);
-    if(row) decorTiles+=`<span class="hex-decor${row.cout_mouvement==null?" blocking":""}" style="left:${p.x-MISSION_MAP.size}px;top:${p.y-MISSION_MAP.size}px;--decor:${row.couleur}"></span>`;
+    if(row) decorTiles+=`<span class="hex-decor${row.cout_mouvement==null?" blocking":""}" data-decor="${esc(row.code)}" style="left:${p.x-MISSION_MAP.size}px;top:${p.y-MISSION_MAP.size}px;--decor:${row.couleur}"></span>`;
   }
   const reach=m.mode==="move"&&u?missionReachablePaths(u,u.movementRemaining):null;
   let cells="";

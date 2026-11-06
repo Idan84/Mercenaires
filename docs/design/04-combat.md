@@ -236,8 +236,10 @@ peut y avoir une subtilité dans franchissable : vitesse réduite ». Données :
 - **Charge** (Idan : « Elle peut, mais on augmente la proba d'échec critique, pieds dans le tapis ») : elle traverse un
   décor lent ; la chute de charge (2 %) gagne **+5 % × (coût − 1)** par case lente de la course
   (`combat.charge.fall_per_slow_step` ; Idan : « oui ») : +5 % par case à ½, +10 % à ⅓, +15 % à ¼.
-- **Affichage** (Idan : « des couleurs pour commencer ») : une couleur par décor sous la case (plus sombre sur les bords quand
-  on ne la traverse pas) ; le survol de la case dit ce qu'elle fait ; l'aperçu d'une attaque montre la couverture.
+- **Affichage** (Idan : « des couleurs pour commencer », puis « Tu peux faire mieux que juste de la couleur ? ») : sous la
+  case, la couleur du décor et un motif dessiné (arbres, buissons, épis, roseaux, vagues, pierres, muret, caisses, rocher,
+  briques, toit, gouffre ; `styles.css`, en attendant de vraies images) ; plus sombre sur les bords quand on ne la traverse
+  pas ; le survol de la case dit ce qu'elle fait ; l'aperçu d'une attaque montre la couverture.
 - **Cartes** : la Mission Test pose 4 à 6 groupes de décor au hasard entre les deux lignes de déploiement (étape 1). Le
   relief (l'altitude) et le décor des cartes de mission viendront ensuite.
 - **L'IA** avance vers sa cible par le vrai chemin, autour du décor. Quand elle ne voit personne (le décor coupe la vue),

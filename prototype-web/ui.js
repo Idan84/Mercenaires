@@ -1611,8 +1611,8 @@ function stepSheet(step){
   showCharacter(order[(index+step+order.length)%order.length]);
 }
 
-// Domaine du mercenaire (Idan, 2026-11-01 : « 3 pictos, pour l'instant à côté de son nom dans la fiche ») : Corps à corps,
-// Distance ou Mage, fixé à vie (domains.json). Les mercenaires d'avant le domaine prennent le profil de leur équipement de
+// Domaine du mercenaire (Idan, 2026-11-01 : « 3 pictos, pour l'instant à côté de son nom dans la fiche ») : Combat rapproché,
+// Distance ou Mage (domains.json) ; il évolue avec le titre (refreshMercenaryDomains, plus bas). Les mercenaires d'avant le domaine prennent le profil de leur équipement de
 // départ, qui en tenait lieu.
 const DOMAIN_ICONS = {
   melee:'<path d="M4 4h3.5l9.5 9.5-3.5 3.5L4 7.5z"/><path d="M12 19l7-7M16.5 16.5 20 20M18.5 21.5l3-3"/>',

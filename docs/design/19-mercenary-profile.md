@@ -87,7 +87,7 @@ titres au début ».
   « on garde le frein, et un message dans le journal, mais on utilise le terme de combat rapproché ») : à chaque recalcul du
   titre — **fin de mission** (expérience), **changement d'équipement** (échange, relance, réaménagement), **chaque matin**
   au camp (entraînements, apprentissages) —, le domaine prend celui du **premier rôle du titre qui dit comment il se bat**
-  (`selection.domaine_par_role`) : DPS au CAC → Corps à corps ; DPS à distance → Distance ; DPS magiques, Healer, Buffer,
+  (`selection.domaine_par_role`) : DPS au CAC → Combat rapproché ; DPS à distance → Distance ; DPS magiques, Healer, Buffer,
   Contrôleur, Summoner → Mage. Un Tank, un Éclaireur ou un Meneur **porté par ses sorts** compte Mage
   (`selection.domaine_sorts`) ; sinon on passe au rôle suivant. Sans titre, ou sans rôle qui le dise, il ne change pas.
   **Le frein reste** : hors de son domaine, un rôle demande une étoile de plus pour entrer dans le titre ; un mage passe au

@@ -1203,8 +1203,8 @@
     }
 
     // Domaine du mercenaire (Idan, 2026-11-01 : « après la première partie de la génération, un grand domaine, et
-    // accentuer celui-ci ») : Corps à corps, Distance ou Mage, fixé à vie. C'est le profil déjà calculé pour l'équipement de
-    // départ et l'avatar (computeEquipmentProfile) ; un sort tiré le fait passer Mage si sa magie est à
+    // accentuer celui-ci ») : Combat rapproché, Distance ou Mage ; il évolue ensuite avec le titre (doc 19). C'est le
+    // profil déjà calculé pour l'équipement de départ et l'avatar (computeEquipmentProfile) ; un sort tiré le fait passer Mage si sa magie est à
     // generation.domain.spell_margin points ou moins du meilleur score (« il a tiré un sort de l'eau, on pousse vers ça »).
     // forced : domaine imposé par le garde-fou de l'escouade initiale (createInitialSquad), après l'échec des tirages normaux.
     function chooseDomain(character, forced = null) {

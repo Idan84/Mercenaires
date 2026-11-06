@@ -109,7 +109,9 @@ function generateMissionRelief(){
 }
 // Mission Test (étape 1 du décor) : quelques groupes de décor au hasard, entre les deux lignes de déploiement.
 function generateMissionDecor(){
-  const rows=game.referenceData?.terrainDecors?.rows||[];
+  // La palissade sert à l'enceinte des camps de contrat (mission-landscapes.json), pas au hasard.
+  const wall=game.referenceData?.missionLandscapes?.enceinte?.decor;
+  const rows=(game.referenceData?.terrainDecors?.rows||[]).filter(row=>row.code!==wall);
   if(!rows.length) return [];
   const inner=missionCells().filter(c=>{ const col=missionColumn(c.q,c.r); return col>MISSION_MAP.spawnInset&&col<MISSION_MAP.cols-1-MISSION_MAP.spawnInset; });
   const isInner=c=>inner.some(x=>x.q===c.q&&x.r===c.r);

@@ -4,6 +4,8 @@
   "description": "Décor, étape 3 (Idan, 2026-11-06 : « Oui pour les paysages », « camp en hauteur oui ») : un paysage par faction, tiré au hasard à chaque combat de contrat, d'après les lettres de contrat (vieille carrière, camp, clairière en forêt, repaire). groupes : nombre de groupes de décor ; taille : cases par groupe ; decors : poids de chaque décor (terrain-decors.json), avec un peu de marais ou d'eau en accent ; collines : nombre de collines au hasard, de hauteur 1 à hauteur_collines ; camp_hauteur : le camp ennemi sur un plateau de cette hauteur (0 : au sol), bordé de falaises, avec rampes rampes (une au moins face à votre escouade) ; zone_libre : pas de décor à cette distance des ennemis ou moins (la clairière des hommes-bêtes). zone_libre_escouade : pas de décor à cette distance de votre escouade ou moins. essais : tirages au plus pour que chacun puisse atteindre l'ennemi, sinon la carte garde son relief sans décor. Code : game-core/mission-terrain.js ; doc 04, « Décor ».",
   "zone_libre_escouade": 2,
   "essais": 30,
+  "enceinte_description": "Enceinte du camp (Idan, 2026-11-06 : « palissade nouvelle », « vas-y pour la palissade et l'enceinte ») : un anneau de ce décor à distance cases des ennemis (le plus proche), ouvertures ouvertures de largeur cases, dont une face à votre escouade, les autres à au moins ecart cases l'une de l'autre ; pas de décor à côté d'une ouverture. Un camp en hauteur a son plateau jusqu'à l'enceinte, et une rampe à chaque ouverture. Les paysages sans enceinte (enceinte : false) n'en ont pas.",
+  "enceinte": {"decor": "palissade", "distance": 2, "ouvertures": [2, 3], "largeur": 2, "ecart": 4},
   "columns": [
     {"source": "Faction", "key": "faction"},
     {"source": "Paysage", "key": "nom"},
@@ -14,12 +16,14 @@
     {"source": "Hauteur des collines", "key": "hauteur_collines"},
     {"source": "Hauteur du camp", "key": "camp_hauteur"},
     {"source": "Rampes", "key": "rampes"},
-    {"source": "Zone libre autour des ennemis", "key": "zone_libre"}
+    {"source": "Zone libre autour des ennemis", "key": "zone_libre"},
+    {"source": "Enceinte", "key": "enceinte"}
   ],
   "row_count": 5,
   "rows": [
     {
       "faction": "Gobelins",
+      "enceinte": true,
       "nom": "Vieille carrière",
       "groupes": [12, 18],
       "taille": [1, 4],
@@ -32,6 +36,7 @@
     },
     {
       "faction": "Orcs",
+      "enceinte": true,
       "nom": "Camp",
       "groupes": [10, 14],
       "taille": [1, 3],
@@ -44,6 +49,7 @@
     },
     {
       "faction": "Hommes-bêtes",
+      "enceinte": false,
       "nom": "Clairière en forêt",
       "groupes": [28, 36],
       "taille": [3, 6],
@@ -56,6 +62,7 @@
     },
     {
       "faction": "Voleurs",
+      "enceinte": true,
       "nom": "Repaire",
       "groupes": [12, 16],
       "taille": [1, 4],
@@ -68,6 +75,7 @@
     },
     {
       "faction": "Ogres",
+      "enceinte": true,
       "nom": "Carrière",
       "groupes": [12, 18],
       "taille": [1, 4],

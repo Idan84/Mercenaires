@@ -38,6 +38,12 @@ for (const land of lands.rows) {
   assert.ok(land.camp_hauteur === 0 || land.rampes[0] >= 1, land.faction + " : un camp en hauteur a ses rampes");
 }
 const land = faction => lands.rows.find(r => r.faction === faction);
+// La palissade (Idan, 2026-11-06 : « palissade nouvelle ») : bois, infranchissable, laisse voir, couverture partielle.
+const pale = reference.terrainDecors.rows.find(d => d.code === "palissade");
+assert.deepEqual([pale.nom, pale.cout_mouvement, pale.bloque_vue, pale.couverture], ["Palissade", null, false, "partielle"]);
+assert.equal(lands.enceinte.decor, "palissade");
+assert.deepEqual([lands.enceinte.distance, lands.enceinte.ouvertures, lands.enceinte.largeur], [2, [2, 3], 2]);
+assert.deepEqual(lands.rows.filter(r => !r.enceinte).map(r => r.faction), ["Hommes-bêtes"], "la forêt suffit");
 assert.deepEqual(["Gobelins", "Ogres"].map(f => land(f).camp_hauteur), [2, 2], "les carrières : le camp en hauteur");
 assert.deepEqual(["Orcs", "Hommes-bêtes", "Voleurs"].map(f => land(f).camp_hauteur), [0, 0, 0]);
 assert.ok(land("Hommes-bêtes").decors.foret >= 5 && land("Hommes-bêtes").zone_libre >= 3, "une clairière dans la forêt");
@@ -71,13 +77,38 @@ for (const row of lands.rows) {
     const h = new Map(out.relief.map(c => [key(c), c.h]));
     const height = c => h.get(key(c)) || 0;
     assert.equal(new Set(out.decor.map(key)).size, out.decor.length, "une case, un décor");
+    const pales = out.decor.filter(d => d.code === lands.enceinte.decor);
     for (const d of out.decor) {
-      assert.ok(row.decors[d.code], row.faction + " : " + d.code);
+      assert.ok(row.decors[d.code] || (row.enceinte && d.code === lands.enceinte.decor), row.faction + " : " + d.code);
       assert.ok(Terrain.column(d.q, d.r) > 2, "pas sur les colonnes de l'escouade");
       assert.ok(spots.players.every(p => Terrain.distance(p, d) > lands.zone_libre_escouade), "autour de l'escouade, libre");
       assert.ok(spots.enemies.every(e => Terrain.distance(e, d) > row.zone_libre), "autour du camp, libre");
     }
     for (const c of out.relief) assert.ok(Number.isInteger(c.h) && c.h >= 1 && c.h <= 3);
+    // L'enceinte : la palissade à 2 cases de l'ennemi le plus proche ; 2 ou 3 ouvertures de 2 cases, la première face à
+    // l'escouade ; rien devant une ouverture ; pas d'enceinte dans la clairière.
+    const nearest = c => Math.min(...spots.enemies.map(e => Terrain.distance(e, c)));
+    if (row.enceinte) {
+      s.walled = (s.walled || 0) + 1;
+      assert.ok(pales.length > 0, row.faction + " : une enceinte");
+      for (const p of pales) assert.equal(nearest(p), lands.enceinte.distance, "à 2 cases du camp");
+      assert.ok(out.openings.length >= lands.enceinte.ouvertures[0] && out.openings.length <= lands.enceinte.ouvertures[1], "2 ou 3 ouvertures");
+      const doors = out.openings.flat();
+      for (const o of out.openings) assert.ok(o.length >= 1 && o.length <= lands.enceinte.largeur);
+      s.wide = (s.wide || 0) + out.openings.filter(o => o.length === lands.enceinte.largeur).length;
+      s.doors = (s.doors || 0) + out.openings.length;
+      for (const c of doors) assert.equal(nearest(c), lands.enceinte.distance);
+      assert.ok(out.decor.every(d => !doors.some(c => key(c) === key(d))), "l'ouverture est libre");
+      assert.ok(out.decor.filter(d => d.code !== lands.enceinte.decor).every(d => doors.every(c => Terrain.distance(c, d) > 1)), "rien devant une ouverture");
+      const ring = map.cells.filter(c => nearest(c) === lands.enceinte.distance && Terrain.column(c.q, c.r) > 2
+        && spots.players.every(p => Terrain.distance(p, c) > lands.zone_libre_escouade));
+      const westCol = Math.min(...ring.map(c => Terrain.column(c.q, c.r)));
+      assert.equal(Terrain.column(out.openings[0][0].q, out.openings[0][0].r), westCol, "une ouverture face à l'escouade");
+      if (row.camp_hauteur) for (const o of out.openings) {
+        assert.equal(height(o[0]), row.camp_hauteur, "l'enceinte au bord du plateau");
+        assert.ok(map.neighbors(o[0]).some(n => height(n) === row.camp_hauteur - 1), "une rampe à chaque ouverture");
+      }
+    } else assert.equal(pales.length, 0, row.faction + " : pas de palissade");
     const cliffs = map.cells.filter(c => map.neighbors(c).some(n => Math.abs(height(n) - height(c)) >= 2));
     if (row.camp_hauteur) {
       assert.ok(spots.enemies.every(e => height(e) === row.camp_hauteur), "le camp sur la hauteur");
@@ -92,6 +123,7 @@ for (const row of lands.rows) {
   s.decor = Math.round(s.decor / 120);
 }
 assert.ok(stats["Hommes-bêtes"].decor > 2 * stats.Orcs.decor, "la forêt est épaisse : " + JSON.stringify(stats));
+for (const row of lands.rows.filter(r => r.enceinte)) assert.ok(stats[row.faction].wide > 0.8 * stats[row.faction].doors, "des ouvertures de 2 cases : " + row.faction);
 // Le garde-fou : un mur qui ferme la carte ne passe pas, le tirage recommence ; un camp bouclé par les falaises, non plus.
 const wall = map.cells.filter(c => Terrain.column(c.q, c.r) === 15).map(c => ({...c, code: "mur"}));
 const spots = deploy(3, 5);
@@ -106,6 +138,7 @@ const start = mission.slice(mission.indexOf("function startExpeditionCombat("), 
 assert.match(start, /missionTerrain\(\)\?\.generate\(\{cols:MISSION_MAP\.cols,rows:MISSION_MAP\.rows,faction:offer\.faction,players,enemies\}\)/);
 assert.match(start, /decor:terrain\?\.decor\|\|\[\],relief:terrain\?\.relief\|\|\[\]/);
 assert.match(mission, /game\.mission\.relief=generateMissionRelief\(\);\n\s+game\.mission\.decor=generateMissionDecor\(\);/, "la Mission Test garde les siens");
+assert.match(mission, /filter\(row=>row\.code!==wall\)/, "sans palissade au hasard");
 assert.match(read("index.html"), /<script src="\/core\/mission-terrain\.js"><\/script>/);
 
 // 4. Les combats automatiques finissent, sur chaque paysage : 30 par faction, carte de contrat 30 × 15.
@@ -140,5 +173,5 @@ for (const row of lands.rows) for (let k = 0; k < 30; k++) {
   if (!game.mission.over) stuck++;
 }
 assert.equal(stuck, 0, "combats bloqués : " + stuck);
-console.log("Paysages des contrats : " + Object.entries(stats).map(([f, s]) => f + " " + s.decor).join(", ")
+console.log("Enceinte : palissade à 2 cases, 2 ou 3 ouvertures, une rampe à chaque ouverture des carrières. Paysages des contrats : " + Object.entries(stats).map(([f, s]) => f + " " + s.decor).join(", ")
   + " cases de décor en moyenne ; camp en hauteur des carrières, rampes, garde-fou, combats automatiques — OK");

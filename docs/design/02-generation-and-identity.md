@@ -61,7 +61,7 @@ domaine**, puis on l'**accentue**. Données : `domains.json` ; constantes `gener
 l'évolution »), il **évolue désormais avec le titre** (Idan, 2026-11-06 : « le statut (l'icône) évolue dans le temps ») :
 voir doc 19, « Domaine évolutif ». L'accentuation, elle, n'a lieu qu'une fois, à la génération.
 
-- **Trois domaines** : **Corps à corps**, **Distance**, **Mage**.
+- **Trois domaines** : **Combat rapproché** (Idan, 2026-11-06 : « renomme en Combat rapproché » ; d'abord « Corps à corps »), **Distance**, **Mage**.
 - **Le choix, d'après les tirages** (« il faut justement dans un peuple un peu de tout ») : le profil déjà calculé pour
   l'équipement de départ et l'avatar (meilleure arme ou école, et les caractéristiques qui vont avec). **Un sort tiré pousse
   vers Mage** quand la magie est à **5 points** ou moins du meilleur score (« il a tiré un sort de l'eau, on pousse vers
@@ -71,7 +71,7 @@ voir doc 19, « Domaine évolutif ». L'accentuation, elle, n'a lieu qu'une fois
 
     | Domaine | Monte | Baisse |
     |---|---|---|
-    | Corps à corps | Force, Endurance | Puissance magique, Intelligence |
+    | Combat rapproché | Force, Endurance | Puissance magique, Intelligence |
     | Distance | Perception, Dextérité | Force, Puissance magique |
     | Mage | Puissance magique, Intelligence | Force, Dextérité |
 

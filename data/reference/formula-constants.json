@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 385,
+  "row_count": 388,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -2000,6 +2000,30 @@
       "description": "Altitude (doc 04 ; Idan, 2026-11-06) : chaque case a une hauteur de 0 à 3. Hauteur la plus haute d'une case.",
       "formule": "Altitude",
       "valeur": 3,
+      "version": "V1"
+    },
+    {
+      "nom": "Taille — toucher une créature longue",
+      "code": "combat.taille.toucher_longue",
+      "description": "Créatures sur plusieurs cases (doc 04 ; Idan, 2026-11-06 : une grande créature plus facile à toucher « Oui », chiffres proposés) : bonus au Toucher contre une monture (2 cases), au corps à corps, au tir et pour les sorts qui visent.",
+      "formule": "Taille",
+      "valeur": 0,
+      "version": "V1"
+    },
+    {
+      "nom": "Taille — toucher une grande créature",
+      "code": "combat.taille.toucher_grande",
+      "description": "Créatures sur plusieurs cases (doc 04 ; Idan, 2026-11-06 : une grande créature plus facile à toucher « Oui », chiffres proposés) : bonus au Toucher contre une grande créature (3 cases), au corps à corps, au tir et pour les sorts qui visent.",
+      "formule": "Taille",
+      "valeur": 10,
+      "version": "V1"
+    },
+    {
+      "nom": "Taille — toucher une créature énorme",
+      "code": "combat.taille.toucher_enorme",
+      "description": "Créatures sur plusieurs cases (doc 04 ; Idan, 2026-11-06 : une grande créature plus facile à toucher « Oui », chiffres proposés) : bonus au Toucher contre une créature énorme (7 cases), au corps à corps, au tir et pour les sorts qui visent.",
+      "formule": "Taille",
+      "valeur": 20,
       "version": "V1"
     },
     {

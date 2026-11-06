@@ -516,6 +516,10 @@ body[data-screen="mission"] .app-shell{max-width:none;padding:8px 10px}
 .token-hp i{display:block;height:100%;background:#7cc46a}
 .mission-token strong{display:none;position:absolute;z-index:6;bottom:calc(100% + 3px);left:50%;max-width:120px;overflow:hidden;padding:1px 7px;border:1px solid #8a6a40;border-radius:99px;background:#1b130ef0;color:#ffe3ab;font:600 .62rem Georgia,serif;text-overflow:ellipsis;white-space:nowrap;transform:translateX(-50%)}
 .mission-token em{display:none;position:absolute;z-index:6;top:calc(100% + 4px);left:50%;padding:0 6px;border-radius:99px;background:#000c;color:#f1dfba;font-size:.56rem;font-style:normal;white-space:nowrap;transform:translateX(-50%)}
+/* Grandes créatures (doc 04) : un gros pion au centre de leurs cases. */
+.mission-token.size-longue{width:64px;height:64px}
+.mission-token.size-grande{width:84px;height:84px}
+.mission-token.size-enorme{width:128px;height:128px}
 .mission-token:hover{z-index:8}
 .mission-token:hover strong,.mission-token.active strong{display:block}
 .mission-token.active{z-index:7}

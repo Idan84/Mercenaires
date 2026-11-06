@@ -27,6 +27,7 @@ const REFERENCE_FILES = {
   enemyArchetypes: "enemy-archetypes.json",
   summonArchetypes: "summon-archetypes.json",
   terrainDecors: "terrain-decors.json",
+  missionLandscapes: "mission-landscapes.json",
   potions: "potions.json",
   oneShotMissions: "one-shot-missions.json",
   dormitoryQuality: "dormitory-quality.json",

@@ -241,7 +241,25 @@ peut y avoir une subtilité dans franchissable : vitesse réduite ». Données :
   briques, toit, gouffre ; `styles.css`, en attendant de vraies images) ; plus sombre sur les bords quand on ne la traverse
   pas ; le survol de la case dit ce qu'elle fait ; l'aperçu d'une attaque montre la couverture.
 - **Cartes** : la Mission Test pose 4 à 6 groupes de décor au hasard entre les deux lignes de déploiement (étape 1), et du
-  relief (étape 2, « Altitude » ci-dessous). Le décor et le relief des cartes de mission viendront ensuite.
+  relief (étape 2, « Altitude » ci-dessous).
+- **Cartes de contrat** (étape 3 ; Idan, 2026-11-06 : « Oui pour les paysages », « camp en hauteur oui ») : un **paysage par
+  faction**, tiré au hasard à chaque combat, d'après les lettres de contrat (`mission-landscapes.json`,
+  `game-core/mission-terrain.js`) :
+
+  | Faction | Paysage | Décor (poids) | Relief |
+  |---|---|---|---|
+  | Gobelins | Vieille carrière | éboulis, gros rochers, buissons, caisses, marais | camp sur un plateau de hauteur 2 |
+  | Ogres | Carrière | gros rochers, éboulis, buissons, eau peu profonde | camp sur un plateau de hauteur 2 |
+  | Orcs | Camp | caisses, murets, gros rochers, buissons, marais | collines basses |
+  | Hommes-bêtes | Clairière en forêt | forêt épaisse, buissons, marais ; le camp dans une clairière | collines |
+  | Voleurs | Repaire | maisons, murs, caisses, blé haut, eau peu profonde | collines basses |
+
+  10 à 18 groupes de décor (28 à 36 en forêt) sur la carte de 30 × 15 : en moyenne 24 à 37 cases de décor, 130 pour la forêt
+  des hommes-bêtes. **Le camp des carrières** est sur un **plateau** (le camp et une case autour) **bordé de falaises**, avec
+  **1 ou 2 rampes**, dont une au moins face à votre escouade. Pas de décor à 2 cases ou moins de votre escouade ni sur ses
+  colonnes de déploiement, ni à côté des ennemis (4 cases pour la clairière). **Garde-fou** : chacun peut toujours atteindre
+  l'ennemi à pied (sinon on retire, jusqu'à 30 fois, puis la carte garde son relief sans décor). Mesure : 1 500 combats
+  automatiques sur ces cartes, tous terminés (9 tours en médiane). L'enceinte du camp (palissade) vient ensuite.
 - **L'IA** avance vers sa cible par le vrai chemin, autour du décor. Quand elle ne voit personne (le décor coupe la vue),
   elle va chercher l'ennemi le plus proche (elle sait à peu près où il est), l'attaque si elle le voit alors, sinon un tireur
   que personne ne voit guette (mode sentinelle) : sans cela, un combat sur 12 environ se figeait, chacun attendant l'autre

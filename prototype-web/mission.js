@@ -543,11 +543,15 @@ function startExpeditionCombat(expeditionId){
   const progression=MercenairesProgression.createProgressionRules({reference:game.referenceData});
   const players=placeMissionArmy(chosen.map((c,i)=>makeMissionUnit(c,"player",i%3)),"player");
   const enemies=placeMissionArmy(enemyChars.map((c,i)=>makeMissionUnit(c,"enemy",i%3)),"enemy");
+  // Décor, étape 3 (Idan, 2026-11-06) : le paysage de la faction, le camp des carrières sur la hauteur
+  // (game-core/mission-terrain.js, mission-landscapes.json).
+  const terrain=missionTerrain()?.generate({cols:MISSION_MAP.cols,rows:MISSION_MAP.rows,faction:offer.faction,players,enemies});
   game.mission={
     engine,endRules,progression,players,enemies,contract:offer,expeditionId:e.id,
     playerOrder:sortMissionInitiative(players,engine),
     enemyOrder:sortMissionInitiative(enemies,engine),
-    activeUnit:null,phase:"player",turn:1,mode:null,log:[],over:false,winner:null,aftermath:null
+    activeUnit:null,phase:"player",turn:1,mode:null,log:[],over:false,winner:null,aftermath:null,
+    decor:terrain?.decor||[],relief:terrain?.relief||[]
   };
   $("expedition-dialog")?.close?.();
   $("game-panel").classList.add("hidden");
@@ -558,6 +562,10 @@ function startExpeditionCombat(expeditionId){
   selectNextMissionPlayer();
 }
 
+function missionTerrain(){
+  if(typeof MercenairesMissionTerrain==="undefined") return null;
+  return game.missionTerrain||(game.missionTerrain=MercenairesMissionTerrain.createMissionTerrain({reference:game.referenceData}));
+}
 // Déploiement : votre escouade en colonnes sur le bord gauche, du centre vers les bords ; le camp ennemi à droite, le
 // chef au fond et les autres devant lui.
 function placeMissionArmy(units,team){

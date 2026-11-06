@@ -86,6 +86,11 @@ Les principes d'apprentissage, incantation et le premier catalogue sont regroup�
 7. critiques / échecs critiques éventuels ;
 8. terrain, invocation et zones magiques.
 
+**Sorts bi-école** (Idan, 2026-11-06 : « on pourra peut-être ajouter des sorts bi-école plus tard », « sort très puissant mais
+basé sur le min des deux écoles ! ») : un sort qui demande deux écoles (par exemple Nécromancie et Illusion pour le vampire),
+nettement plus puissant qu'un sort d'une seule école, mais dont le niveau d'école retenu (incantation, effet, Maîtrise) est le
+plus faible des deux. À chiffrer et à cataloguer.
+
 ## Progression & fin de mission — désormais partiellement formalisées
 
 La progression sans niveaux globaux est désormais documentée dans [Progression & expérience](/design/#doc=08-progression-and-experience.md).

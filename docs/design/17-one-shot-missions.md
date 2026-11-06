@@ -268,7 +268,7 @@ ennemis, récompense, expiration…), la lettre du commanditaire s'il y en a une
 
 > « Le peuple est aléatoire, la difficulté dépend de la réputation et on équilibre la difficulté grâce aux nombre d'ennemis qu'on ajoute. » « Chaque ennemi devrait avoir un équivalent en point de combat […] et on monte des escouades grâce à cela. » « Oui, vas-y pour les points et 35 PO par point. »
 
-- **Une seule carte « Faire le ménage »** au tableau ; son camp est tiré au hasard parmi les peuples de camps (`one-shot-missions.json`, `camps[]`, même poids) : **Gobelins**, **Orcs**, **Hommes-bêtes**, **Voleurs** (Humains) et **Ogres** (Idan : « vas-y pour le camp orc et enchaîne avec Hommes-bêtes, voleurs et Ogres »). Chaque peuple a ses lignes, son chef, ses trois ordres de mission et ses noms (tribus, chefs). Depuis le §19 : **Culte des morts**.
+- **Une seule carte « Faire le ménage »** au tableau ; son camp est tiré au hasard parmi les peuples de camps (`one-shot-missions.json`, `camps[]`, même poids) : **Gobelins**, **Orcs**, **Hommes-bêtes**, **Voleurs** (Humains) et **Ogres** (Idan : « vas-y pour le camp orc et enchaîne avec Hommes-bêtes, voleurs et Ogres »). Chaque peuple a ses lignes, son chef, ses trois ordres de mission et ses noms (tribus, chefs). Depuis le §19 : **Culte des morts** ; depuis le §20 : **Cour de sang**.
 - **Points de combat** : chaque fiche (`enemy-archetypes.json`, `points`) vaut ce qu'elle pèse au combat, sur l'échelle d'un mercenaire généré moyen = 10 (simulateur : nombre d'exemplaires qu'il faut contre 3 mercenaires pour gagner une fois sur deux ; chefs : 10 × le nombre de mercenaires qui le battent une fois sur deux ; tous mesurés depuis le §15).
 - **Budget** : une mission a le budget de sa difficulté (`budgets`) ; difficulté 1 : tiré entre **55 et 75 points**. Le camp prend son chef, puis tire des ennemis (lignes selon leurs poids ; « normal » dans 5 % des tirages, sinon novice) **tant que le total se rapproche du budget**. Résultat : 65 points en moyenne pour chaque peuple ; en plus du chef, 6,5 gobelins en moyenne (comme l'ancien camp à 1D4+4), 4,3 orcs, 3,7 hommes-bêtes, 3,5 voleurs ou 2,7 ogres. Le total s'écarte du budget d'au plus la moitié d'un « normal ».
 - **Lignes des nouveaux peuples** : cinq rôles comme chez les gobelins (un front, un garde à bouclier ou arme lourde, un rapide, deux tireurs), avec les armes que ce peuple porte vraiment à la génération (mesuré sur 3 000 personnages générés). Mêmes armures par rôle et même spécialisation que les lignes gobelines correspondantes. Une ligne de chaque peuple, ses armes et ses poids peuvent changer sans toucher au reste : seuls ses points comptent pour le budget.
@@ -423,3 +423,28 @@ Chefs (Bâton long, école de Nécromancie) : **Nécromancien** (31), **Maître 
 - **Ordres** : le chef de village (les tombes ouvertes), le prêtre (`noms_commanditaire` : `pretres`) et l'ordre de l'Empereur. Codes : `village_culte`, `priest_culte`, `emperor_culte`. Noms : `cultes_des_morts`, `necromanciens`.
 - **Cimetière** (`mission-landscapes.json`) : tombes (nouveau décor, infranchissable, transparent, couverture partielle), un peu de forêt, de marais, de buissons et d'éboulis ; enceinte de **murets** au lieu de la palissade ; camp au sol.
 - Code : `game-core/missions.js` (`applyArchetype` : `attaque`, `mort_vivant`, `insensible_poison`, `immunite_physique`, `degats_subis`, `ecoles`, `sorts`), `game-core/combat-engine.js` (`poisonImmune`, `damageTypeFactor`), `prototype-web/mission.js` (`missionAiSpell`). Test : `tests/undead-cult.test.js`.
+
+## 20 — Cour de sang (Idan, 2026-11-06)
+
+> « Ajoute aussi des chauves-souris. Elles volent donc ignorent les pénalités de mouvement ! J'aimerais bien qu'on donne quelques sorts à notre vampire. » « Elles survolent tout. » « Dans ma tête, les vampires et rejetons sont très classe et dandy, pas bête sauvage. C'est plutôt estoc, drain de vie, sort d'illusions. » « murs ok »
+
+Septième peuple de camp (`one-shot-missions.json`, camp « Château maudit »), tiré comme les autres (un camp sur sept). Même échelle que le Culte des morts (les fiches Voleurs, Humains des Cités libres).
+
+| Cour de sang | Armes | Novice | Normal | Vétéran | Élite |
+|---|---|---|---|---|---|
+| Garde de sang (25) | Hallebarde, armure de la Cotte de mailles aux plates | 6 | 14 | 31 | 68 |
+| Rejeton (20) | Estoc seul ; Drain de vie, Choc psychique (maîtrise 20 à 65) | 7 | 16 | 26 | 52 |
+| Arbalétrier asservi (15) | Arbalète | 12 | 22 | 32 | 55 |
+| Goule (15) | Griffes (arme naturelle, 1D8) | 11 | 19 | 30 | 48 |
+| Loup (15) | Morsure (1D8) | 5 | 10 | 18 | 31 |
+| Chauve-souris (10) | Morsure (1D6) ; vole | 5 | 8 | 18 | 34 |
+
+Chefs (Estoc seul, « combat à une main ») : **Vampire** (34), **Seigneur vampire** (66), **Comte de sang** (97), **Prince de la nuit** (184). Ils régénèrent (`regeneration` : 50, 75, 100, 150 ; la règle du sang de troll, que le feu bloque) et lancent, à la maîtrise 65, 80, 100 et 130 comme les nécromanciens, dans l'ordre où l'IA les essaie : Drain de vie, Création de double (chef 4), Désespoir (dès le chef 2), Sommeil, Brouillage mental (chefs 3 et 4), Choc psychique.
+
+- **Morts-vivants** : le vampire, les rejetons et les goules (insensibles au poison). Gardes, arbalétriers, loups et chauves-souris sont vivants.
+- **Vol** (`vol`) : les chauves-souris ignorent décor, montées et falaises (1 point par case) et survolent les murs, rochers et maisons sans pouvoir s'y arrêter (doc 04).
+- **Drain de vie** : l'IA se le lance (action rapide) quand un ennemi est à portée de ses pas, puis frappe (doc 04).
+- **Points** : même méthode et même recalage × 1,2 qu'au §19, 120 combats par effectif. La Cour est plus dure que le Culte : ses chefs se battent eux-mêmes et régénèrent (34, 66, 97, 184, contre environ 40, 80, 130, 250 pour les autres peuples).
+- **Ordres** : le chef de village (le château qui se rallume, les gens qui reviennent très pâles et très polis), une famille noble (leur fille partie au bal, `noms_commanditaire` : `nobles`) et l'ordre de l'Empereur. Codes : `village_cour`, `noble_cour`, `emperor_cour`. Noms : `cours_de_sang`, `vampires`.
+- **Château en ruine** (`mission-landscapes.json`) : éboulis, murs, gros rochers, buissons, une tombe, un peu de marais ; le camp sur un plateau de hauteur 2, avec ses rampes, entouré de **murs** (qui bloquent la vue : on ne voit dedans, et eux dehors, que par les ouvertures).
+- Code : `game-core/missions.js` (`applyArchetype` : `vol`, `regeneration`), `prototype-web/mission.js` (`missionFlies`, `missionAiSpell`). Test : `tests/blood-court.test.js`.

@@ -20,7 +20,7 @@
     {"source": "Enceinte", "key": "enceinte"},
     {"source": "Décor de l'enceinte (sinon la palissade)", "key": "enceinte_decor"}
   ],
-  "row_count": 6,
+  "row_count": 7,
   "rows": [
     {
       "faction": "Gobelins",
@@ -99,6 +99,20 @@
       "hauteur_collines": 1,
       "camp_hauteur": 0,
       "rampes": [0, 0],
+      "zone_libre": 1
+    },
+    {
+      "faction": "Cour de sang",
+      "enceinte": true,
+      "enceinte_decor": "mur",
+      "nom": "Château en ruine",
+      "groupes": [12, 18],
+      "taille": [1, 4],
+      "decors": {"eboulis": 5, "mur": 3, "gros_rocher": 2, "buissons": 2, "tombe": 1, "marais": 1},
+      "collines": [0, 2],
+      "hauteur_collines": 1,
+      "camp_hauteur": 2,
+      "rampes": [1, 2],
       "zone_libre": 1
     }
   ]

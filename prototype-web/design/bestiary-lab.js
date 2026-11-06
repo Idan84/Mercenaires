@@ -29,7 +29,11 @@ const BestiaryLab=(()=>{
         const chiefs=(Array.isArray(mission.budgets)?mission.budgets:[]).flatMap(b=>(b.chefs||[]).map(c=>({niveau:c.niveau,metal:b.metal})));
         (usage[camp.faction]=usage[camp.faction]||[]).push({mission:mission.nom,camp:camp.nom_camp||camp.faction,
           chance:pct(Number(camp.poids)||1,totalCamp),chiefs,
-          lines:Object.fromEntries((camp.lignes||[]).map(l=>[l.ligne,pct(Number(l.poids)||0,totalLine)]))});
+          lines:Object.fromEntries((camp.lignes||[]).filter(l=>!l.faction).map(l=>[l.ligne,pct(Number(l.poids)||0,totalLine)]))});
+        // Les créatures partagées (le troll) : le camp qui les appelle, avec leur part dans ce camp.
+        for(const l of (camp.lignes||[]).filter(x=>x.faction))
+          (usage[l.faction]=usage[l.faction]||[]).push({mission:mission.nom,camp:camp.nom_camp||camp.faction,
+            chance:pct(Number(camp.poids)||1,totalCamp),chiefs:[],lines:{[l.ligne]:pct(Number(l.poids)||0,totalLine)}});
       }
     }
     return usage;
@@ -139,7 +143,7 @@ const BestiaryLab=(()=>{
     return `<p class="cov-intro">Chaque ennemi a une fiche figée par niveau. <strong>Points de combat</strong> : un mercenaire moyen vaut 10 ;
       les camps se remplissent avec un budget de points. Survolez une ligne pour le détail (résistances, compétences, image attendue).
       <strong>Dès</strong> : niveau de mission minimum. <strong>Butin</strong> : chance de récupérer chaque objet porté, et les objets en plus (au survol).
-      <br><span class="muted">À venir : créatures partagées entre factions (un loup dans un camp gobelin).</span></p>
+      <br><span class="muted">Créatures : des fiches partagées entre factions, appelées par les camps (le troll chez les gobelins, les orcs et les hommes-bêtes).</span></p>
       ${data.factions.map(factionBlock).join("")}${summonBlock(data.summons)}`;
   }
   function meta(data){ return data.total+" fiches ennemies · "+data.factions.length+" factions · "+data.summons.length+" invocations"; }

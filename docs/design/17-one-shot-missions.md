@@ -453,7 +453,7 @@ Chefs (Estoc seul, « combat à une main ») : **Vampire** (34), **Seigneur vamp
 
 > « On va ajouter un troll. Niveau 1 à 4. Peut être chez les orcs, les gobelins ou les hommes bêtes à partir de 6*. Il est lent, bête mais fort et très intimidant. Il se régénère et tape avec une grosse massue. En force je dirais : 80/100/140. En PV : 300/600/900/1200. » Puis : « 80/100/120/140 », « ok pour la régénération ».
 
-Une ligne **Troll** (poids 10) dans les camps gobelin, orc et homme-bête, à partir du niveau de mission 6 (1★ argent) : le même troll dans les trois peuples (`goblin_troll*`, `orc_troll*`, `beastman_troll*`).
+Une ligne **Troll** (poids 10) dans les camps gobelin, orc et homme-bête, à partir du niveau de mission 6 (1★ argent). **Une seule série de fiches** (Idan : « Ça devrait être les mêmes fiches qui s'intègrent pour les différentes factions ») : `troll_novice`, `troll`, `troll_veteran`, `troll_elite`, de la famille **Créatures** (`enemy-archetypes.json`, faction « Créatures »), qu'un camp appelle par sa ligne (`one-shot-missions.json` : `{"ligne": "Troll", "faction": "Créatures", "poids": 10}`). D'autres créatures partagées (un loup dans un camp gobelin) pourront s'y ajouter.
 
 | Troll | Force | PV | Régénération | Vitesse | Intelligence | Intimidation | Points |
 |---|---|---|---|---|---|---|---|
@@ -466,5 +466,5 @@ Une ligne **Troll** (poids 10) dans les camps gobelin, orc et homme-bête, à pa
 - **Grosse massue** : son arme propre (2D8, contondant 80), comme les griffes du zombie : elle ne tombe pas en butin.
 - **Régénération** : la règle du sang de troll (au début de chaque activation, 2D6 × (0,5 + Régénération / 50) PV, soit environ 17, 24, 31 et 45 PV) ; brûlé depuis sa dernière activation, rien.
 - **Points** : même méthode et même recalage × 1,2 (§19) ; le troll d'élite, trop fort pour la méthode des troupes, est mesuré comme un chef (il bat 15 mercenaires une fois sur deux).
-- **Fréquence** : avec un poids de 10 et des camps de dizaines d'ennemis à partir du niveau 6, presque chaque camp de ces trois peuples a au moins un troll.
+- **Poids** : comme pour toute ligne, la chance qu'un ennemi tiré soit un troll (10 sur 110, soit 9 %), pas la chance par camp ; avec des camps de dizaines d'ennemis à partir du niveau 6, presque chaque camp de ces trois peuples a au moins un troll.
 - Test : `tests/troll.test.js`.

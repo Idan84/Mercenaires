@@ -919,14 +919,15 @@ function profileRules(){
     magic:typeof magicRules==="function"?magicRules():null}));
 }
 // Titre (Idan, 2026-11-06, v3) : un seul titre écrit qui fond ses 1 à 3 rôles (« Archer éclaireur en herbe »), sans
-// étoiles, ou « Chair à canon » ; une infobulle de deux lignes sur le rôle principal (mercenary-titles.json).
+// étoiles, ou « Chair à canon », au masculin ou au féminin ; une infobulle de deux lignes sur le rôle principal
+// (mercenary-titles.json).
 function renderEvaluation(c){
   const rules=profileRules();
   // L'aura ne compte que pour le capitaine et les lieutenants (et le fouet).
   const company=game.campaign?.company;
   const context={captain:company?company.captainId===c.id:c.role==="Capitaine",lieutenant:Boolean(company?.lieutenantIds?.includes(c.id))};
   const result=rules?.evaluate(c,context);
-  const copy=result&&rules.composeTitle?.(c,result,context);
+  const copy=result&&rules.composeTitle?.(c,result,context,{female:isFemale(c)});
   if(!copy) return "";
   const tip=copy.lines.length?`<span class="sheet-stat-tip" role="tooltip">${copy.lines.map(line=>`<em>${esc(line)}</em>`).join("")}</span>`:"";
   return `<section class="sheet-evaluation" aria-label="Titre"><div class="sheet-eval-item" tabindex="0"><h3 class="sheet-eval-title">${esc(copy.name)}</h3>${tip}</div></section>`;

@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "name": "Paysages des cartes de contrat",
+  "description": "Décor, étape 3 (Idan, 2026-11-06 : « Oui pour les paysages », « camp en hauteur oui ») : un paysage par faction, tiré au hasard à chaque combat de contrat, d'après les lettres de contrat (vieille carrière, camp, clairière en forêt, repaire). groupes : nombre de groupes de décor ; taille : cases par groupe ; decors : poids de chaque décor (terrain-decors.json), avec un peu de marais ou d'eau en accent ; collines : nombre de collines au hasard, de hauteur 1 à hauteur_collines ; camp_hauteur : le camp ennemi sur un plateau de cette hauteur (0 : au sol), bordé de falaises, avec rampes rampes (une au moins face à votre escouade) ; zone_libre : pas de décor à cette distance des ennemis ou moins (la clairière des hommes-bêtes). zone_libre_escouade : pas de décor à cette distance de votre escouade ou moins. essais : tirages au plus pour que chacun puisse atteindre l'ennemi, sinon la carte garde son relief sans décor. Code : game-core/mission-terrain.js ; doc 04, « Décor ».",
+  "zone_libre_escouade": 2,
+  "essais": 30,
+  "columns": [
+    {"source": "Faction", "key": "faction"},
+    {"source": "Paysage", "key": "nom"},
+    {"source": "Groupes de décor", "key": "groupes"},
+    {"source": "Cases par groupe", "key": "taille"},
+    {"source": "Poids des décors", "key": "decors"},
+    {"source": "Collines", "key": "collines"},
+    {"source": "Hauteur des collines", "key": "hauteur_collines"},
+    {"source": "Hauteur du camp", "key": "camp_hauteur"},
+    {"source": "Rampes", "key": "rampes"},
+    {"source": "Zone libre autour des ennemis", "key": "zone_libre"}
+  ],
+  "row_count": 5,
+  "rows": [
+    {
+      "faction": "Gobelins",
+      "nom": "Vieille carrière",
+      "groupes": [12, 18],
+      "taille": [1, 4],
+      "decors": {"eboulis": 5, "gros_rocher": 4, "buissons": 2, "caisses": 1, "marais": 1},
+      "collines": [1, 3],
+      "hauteur_collines": 2,
+      "camp_hauteur": 2,
+      "rampes": [1, 2],
+      "zone_libre": 1
+    },
+    {
+      "faction": "Orcs",
+      "nom": "Camp",
+      "groupes": [10, 14],
+      "taille": [1, 3],
+      "decors": {"caisses": 4, "muret": 3, "gros_rocher": 2, "buissons": 2, "marais": 1},
+      "collines": [1, 2],
+      "hauteur_collines": 1,
+      "camp_hauteur": 0,
+      "rampes": [0, 0],
+      "zone_libre": 1
+    },
+    {
+      "faction": "Hommes-bêtes",
+      "nom": "Clairière en forêt",
+      "groupes": [28, 36],
+      "taille": [3, 6],
+      "decors": {"foret": 8, "buissons": 3, "marais": 1},
+      "collines": [1, 3],
+      "hauteur_collines": 2,
+      "camp_hauteur": 0,
+      "rampes": [0, 0],
+      "zone_libre": 4
+    },
+    {
+      "faction": "Voleurs",
+      "nom": "Repaire",
+      "groupes": [12, 16],
+      "taille": [1, 4],
+      "decors": {"maison": 3, "mur": 2, "caisses": 3, "ble_haut": 3, "eau_peu_profonde": 1},
+      "collines": [1, 2],
+      "hauteur_collines": 1,
+      "camp_hauteur": 0,
+      "rampes": [0, 0],
+      "zone_libre": 1
+    },
+    {
+      "faction": "Ogres",
+      "nom": "Carrière",
+      "groupes": [12, 18],
+      "taille": [1, 4],
+      "decors": {"gros_rocher": 5, "eboulis": 4, "buissons": 1, "eau_peu_profonde": 1},
+      "collines": [1, 3],
+      "hauteur_collines": 2,
+      "camp_hauteur": 2,
+      "rampes": [1, 2],
+      "zone_libre": 1
+    }
+  ]
+}

@@ -35,12 +35,7 @@ Les gros chantiers à venir, dans l'ordre de la liste d'Idan, avec ce qui s'y ra
 15. **Mémorial** (Idan : « indispensable ») : le bâtiment, et les morts de mission qui y entrent.
 16. **Traumatismes physiques et psychologiques après une mission** (Idan, 2026-11-06) ; ils reprennent les séquelles
     permanentes des blessures, reportées le 2026-10-03 ([doc 10](/design/#doc=10-mission-time-and-unavailability.md)).
-17. **Mode sentinelle** (Idan, 2026-11-06 : « le seul truc que je veux ajouter, au moteur de jeu (pour l'instant) ») : un
-    tireur qu'aucun ennemi ne voit se met en sentinelle au lieu de tirer ; pendant le tour adverse, il tire sur la
-    première cible qui se déplace à sa portée, avec plus de précision et plus de chances d'enchaîner (sauf arme à feu).
-    Règles à finir avec Idan, puis [doc 04](/design/#doc=04-combat.md). Les autres actions rapides (donner une potion,
-    ramasser, posture, provoquer, ordres) restent des idées du [doc 90](/design/#doc=90-mechanics-backlog.md).
-18. **Marchands** : leurs portraits (aucun pour l'instant) et la négociation du capitaine ([doc 18](/design/#doc=18-merchants.md)).
+17. **Marchands** : leurs portraits (aucun pour l'instant) et la négociation du capitaine ([doc 18](/design/#doc=18-merchants.md)).
 
 ## 1 — Attend ta décision
 

@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 376,
+  "row_count": 378,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -1928,6 +1928,22 @@
       "description": "Le jet de résistance au poison échoue toujours au moins à 100 moins ce pourcentage.",
       "formule": "Poison",
       "valeur": 95,
+      "version": "V1"
+    },
+    {
+      "nom": "Sentinelle — bonus de précision",
+      "code": "combat.sentinel.precision_bonus",
+      "description": "Mode sentinelle (doc 04 ; Idan, 2026-11-06) : un tireur qu'aucun ennemi ne voit (camouflé, ou hors de la ligne de vue de tous les ennemis) se met en sentinelle au lieu de tirer ; pendant le tour adverse, il tire sur le premier ennemi visible qui fait un pas à sa portée. Le tir de sentinelle ajoute cette valeur au delta du Toucher.",
+      "formule": "Mode sentinelle",
+      "valeur": 20,
+      "version": "V1"
+    },
+    {
+      "nom": "Sentinelle — diviseur d'enchaînement",
+      "code": "combat.sentinel.chain_divisor",
+      "description": "Mode sentinelle (doc 04 ; Idan, 2026-11-06) : un tireur qu'aucun ennemi ne voit (camouflé, ou hors de la ligne de vue de tous les ennemis) se met en sentinelle au lieu de tirer ; pendant le tour adverse, il tire sur le premier ennemi visible qui fait un pas à sa portée. Enchaînement de tirs : P_N = (Dextérité effective + Vitesse) / (diviseur × N), comme au corps à corps (1) au lieu de 1,5 ; armes « Répétable » seulement.",
+      "formule": "Mode sentinelle",
+      "valeur": 1,
       "version": "V1"
     },
     {

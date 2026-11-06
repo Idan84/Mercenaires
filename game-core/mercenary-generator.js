@@ -415,7 +415,8 @@
     // Rattrapage du mage (Idan, 2026-11-01 : « Un profil mage sans sort, c'est quand même problématique… Qu'il connaisse
     // au moins un sort de sa meilleure école ») : un Mage qui n'a rien tiré apprend un sort au hasard dans sa meilleure
     // école, une fois le domaine accentué.
-    // Armes précises, catégories d'armes, styles et écoles à unpracticedMax ou moins → unpracticedValue (Idan, 2026-11-06).
+    // Armes précises, catégories d'armes, styles et écoles à unpracticedMax ou moins → unpracticedValue (Idan, 2026-11-06),
+    // 0 compris (« On remonte les 0 à 1 ») : un malus de peuple, de culture ou de domaine ne descend plus sous 1.
     const unpracticedMartial = new Set([
       ...weaponRows.map(w => w.nom),
       ...weaponRows.map(w => skillByName.get(w.nom)?.parent).filter(Boolean),
@@ -426,7 +427,7 @@
       const clear = (group, name) => {
         const values = character.skills[group];
         const before = values?.[name];
-        if (!Number.isFinite(before) || before <= unpracticedValue || before > unpracticedMax) return;
+        if (!Number.isFinite(before) || before === unpracticedValue || before > unpracticedMax) return;
         values[name] = unpracticedValue;
         cleared.push(name);
         const entry = trace.skills[name];

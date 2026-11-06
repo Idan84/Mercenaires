@@ -253,6 +253,7 @@ function resetMissionActivation(unit){
   }
   unit.attackAvailable=true;
   unit.quickAvailable=true;
+  unit.sentinel=null;
   unit.prone=false;
   unit.secondMove=false;
   // Prise d'arme (Idan, 2026-11-02) : à chaque tour, une arme « Au choix » repart à une main, la main libre.
@@ -876,6 +877,9 @@ function moveMissionUnitAlongPath(unit,path){
       missionFlameBurn(unit,flames,"traverse le mur de flammes");
       if(!unit.alive) break;
     }
+    // Mode sentinelle : un pas à la portée d'une sentinelle ennemie, et il essuie son tir.
+    missionSentinelReact(unit);
+    if(!unit.alive||game.mission.over||unit.q!==step.q||unit.r!==step.r||unit.fleeing!==wasFleeing) break;
     if(missionMireAt(step.q,step.r)){
       unit.movementRemaining=0;
       missionLog(unit.character.name+" s’enlise dans le bourbier.","bad");
@@ -915,7 +919,8 @@ function missionActiveUnitLost(){
 
 // charge (facultatif) : données de Charge CAC V1 ; la charge est une seule séquence, sans enchaînement, et
 // chaque arme de mêlée y reçoit le bonus de charge (à deux armes, chaque arme frappe : décision Idan, 2026-10-08).
-function performMissionAttack(attacker,target,mode,distance,charge=null){
+// sentinel : le tir d'une sentinelle (plus précis, il enchaîne comme au corps à corps).
+function performMissionAttack(attacker,target,mode,distance,charge=null,{sentinel=false}={}){
   const m=game.mission,e=m.engine;
   // Combat à deux armes CAC V1 : à chaque séquence, chaque arme utilisable frappe une fois (principale puis
   // secondaire), chacune avec son propre mode ; sinon, la seule arme principale.
@@ -946,7 +951,7 @@ function performMissionAttack(attacker,target,mode,distance,charge=null){
       const charging=charge&&h.mode==="melee";
       const result=e.resolveAttack(attacker,target,{
         mode:h.mode,distance:d,hand:h.hand,encircled:h.mode==="melee"&&missionEncircled(target),bystanders:missionUnits(),
-        chargeDistance:charging?charge.travel:0,chargeFollowUp:Boolean(charging&&first)
+        chargeDistance:charging?charge.travel:0,chargeFollowUp:Boolean(charging&&first),sentinel
       });
       first=first||result;
       logMissionAttack(attacker,target,result,charging?"charge":"attack");
@@ -971,7 +976,7 @@ function performMissionAttack(attacker,target,mode,distance,charge=null){
     if(!results.length){ if(n===1) return first; break; }
     if(dual) MercenairesProgression.recordDualSequence(attacker,results);
     if(charge||m.over||!handsAt(e.axialDistance(attacker,target)).length) break;
-    const chain=dual?e.rollPairChain(attacker,target,results,n+1):e.rollChain(attacker,target,results[0],n+1,mode);
+    const chain=dual?e.rollPairChain(attacker,target,results,n+1):e.rollChain(attacker,target,results[0],n+1,mode,{sentinel});
     if(!chain) break;
     const label=dual?"séquence":mode==="ranged"?"tir":"attaque";
     const detail=" ("+label+" n°"+chain.n+" : "+missionPercent(chain.p)+", jet "+chain.roll+")";
@@ -2602,7 +2607,8 @@ function enemyMissionActivation(unit,{reset=true}={}){
   missionAiCast(unit);
   if(!unit.alive||game.mission.over||unit.attackAvailable===false) return;
   let target=nearestMissionTarget(unit);
-  if(!target) return;
+  // Mode sentinelle (Idan, 2026-11-06 : les ennemis aussi) : un tireur qui n'a rien à viser, et que personne ne voit, guette.
+  if(!target){ missionStandSentinel(unit); return; }
 
   enemyTryUsefulSet(unit,target);
   enemyTryReload(unit);
@@ -2623,7 +2629,7 @@ function enemyMissionActivation(unit,{reset=true}={}){
   if(game.mission.over||!unit.alive||unit.fleeing) return;
 
   target=nearestMissionTarget(unit);
-  if(!target) return;
+  if(!target){ missionStandSentinel(unit); return; }
   enemyTryUsefulSet(unit,target);
   enemyTryReload(unit);
   weapon=e.weaponTemplate(e.activeWeaponItem(unit));
@@ -2633,7 +2639,9 @@ function enemyMissionActivation(unit,{reset=true}={}){
   if(missionUsableHands(unit,target).length){
     missionAiCoat(unit);
     performMissionAttack(unit,target,mode,distance);
+    return;
   }
+  missionStandSentinel(unit);
 }
 
 // Combat automatique (doc 17 ; Idan, 2026-10-25 : « un mode simu pour tester rapidement les missions ») : votre équipe
@@ -2745,6 +2753,48 @@ function missionUsableHands(u,target){
 function missionCanAttack(u,target,mode){
   return missionUsableHands(u,target).some(h=>h.mode===mode);
 }
+// Mode sentinelle (Idan, 2026-11-06 : « Un personnage avec une arme de tir peut se mettre en sentinelle au lieu de tirer. En
+// mode sentinelle, pendant le tour de l'adversaire, tire sur la première cible qui se déplace à sa portée. Il a un double
+// bonus : plus de précision et plus de chance pour enchaîner plusieurs tirs (sauf arme à feu). Il ne peut passer en mode
+// sentinelle que si aucun ennemi ne le voit » ; « les deux » : camouflé, ou hors de la ligne de vue de tous les ennemis ;
+// les ennemis aussi). Il y passe à la place de son attaque, et son activation s'arrête là. Bonus : game-core/combat-engine.js
+// (SENTINEL).
+function missionUnseen(unit){
+  return Boolean(unit.camouflaged)||!missionOpponents(unit).some(o=>!o.offMap&&missionLineOfSight(o,unit));
+}
+function missionCanStandSentinel(unit){
+  return Boolean(unit?.alive&&!unit.fleeing&&unit.attackAvailable&&!unit.sentinel&&missionHeldModes(unit).has("ranged")&&missionUnseen(unit));
+}
+function missionStandSentinel(unit){
+  if(!missionCanStandSentinel(unit)) return false;
+  unit.attackAvailable=false;
+  unit.sentinel={turn:game.mission.turn};
+  missionFx(unit,"Sentinelle");
+  missionLog(unit.character.name+" se met en sentinelle.","info");
+  return true;
+}
+// Le pas d'un personnage : chaque sentinelle ennemie qui l'a à sa portée, en vue, tire (dans l'ordre d'initiative) ; sa
+// sentinelle s'arrête après ce tir. Sinon, elle s'arrête au début de sa prochaine activation (resetMissionActivation).
+function missionSentinelReact(mover){
+  const m=game.mission;
+  const order=mover.team==="player"?m.enemyOrder:m.playerOrder;
+  for(const sentinel of order){
+    if(m.over||!mover.alive) return;
+    if(!sentinel.sentinel||!sentinel.alive||sentinel.fleeing||sentinel.team===mover.team) continue;
+    if(!missionCanAttack(sentinel,mover,"ranged")) continue;
+    sentinel.sentinel=null;
+    missionFx(sentinel,"Sentinelle");
+    missionLog(sentinel.character.name+", en sentinelle, tire sur "+mover.character.name+".","info");
+    performMissionAttack(sentinel,mover,"ranged",m.engine.axialDistance(sentinel,mover),null,{sentinel:true});
+    checkMissionEnd();
+  }
+}
+// Le bouton : le mercenaire se met en sentinelle, puis son activation s'arrête.
+function standMissionSentinel(){
+  const u=missionActiveUnit(),m=game.mission;
+  if(!u||m.phase!=="player"||m.over||!missionStandSentinel(u)) return;
+  endMissionActivation();
+}
 // Attaquer au corps à corps en se déplaçant (Idan, 2026-11-04 : « On doit pouvoir cliquer sur attaquer au CAC en se déplaçant
 // automatiquement (ça doit être implicite) ») : un ennemi hors d'atteinte, mais qu'on rejoint avec le mouvement restant. Le
 // plus court chemin jusqu'à une case d'où l'arme le frappe ; à égalité, celui qui provoque le moins d'attaques
@@ -2775,6 +2825,7 @@ function missionActionAvailability(){
     melee:u.attackAvailable&&missionHeldModes(u).has("melee"),
     twoHands:u.attackAvailable&&missionHeldModes(u).has("melee")&&e.canGripTwoHands(u),
     ranged:u.attackAvailable&&missionHeldModes(u).has("ranged"),
+    sentinel:missionCanStandSentinel(u),
     charge:u.attackAvailable&&e.isMeleeWeapon(w)&&u.movementRemaining===e.movementBase(u),
     switch:u.quickAvailable&&e.canSwitchWeaponSet(u),
     reload:u.quickAvailable&&e.canReload(u),
@@ -2884,7 +2935,7 @@ function renderMissionRoster(units){
       ${renderAvatar(u.character,{variant:"compact",kind:"portrait"})}
       <div class="mission-roster-copy">
         <strong>${esc(u.character.name)}</strong>
-        <span>${u.raised?"Relevé en zombie":u.offMap?"A quitté le combat":(u.summon?"Invocation · ":"")+Math.max(0,u.hp)+"/"+u.pvMax+" PV"+(u.hp<0?" ("+u.hp+")":"")+(u.alive&&u.fleeing?" · En fuite":"")+(u.alive&&u.camouflaged?" · Camouflé":"")+(u.alive&&!game.mission.engine.isLoaded(u,game.mission.engine.activeWeaponItem(u))?" · Arme déchargée":"")}</span>
+        <span>${u.raised?"Relevé en zombie":u.offMap?"A quitté le combat":(u.summon?"Invocation · ":"")+Math.max(0,u.hp)+"/"+u.pvMax+" PV"+(u.hp<0?" ("+u.hp+")":"")+(u.alive&&u.fleeing?" · En fuite":"")+(u.alive&&u.camouflaged?" · Camouflé":"")+(u.alive&&u.sentinel?" · En sentinelle":"")+(u.alive&&!game.mission.engine.isLoaded(u,game.mission.engine.activeWeaponItem(u))?" · Arme déchargée":"")}</span>
         ${u.alive&&!u.offMap?`<i class="mission-roster-hp${missionHpClass(pct)}"><b style="width:${pct}%"></b></i>`:""}
         <small>Init ${Math.round(game.mission.engine.initiative(u))} · Mvt ${game.mission.engine.movementBase(u)}${missionRosterMagic(u)}</small>
       </div>
@@ -3080,7 +3131,7 @@ function renderMission(){
   const availability=missionActionAvailability();
   const buttons=[
     ["mission-move-btn","move"],["mission-attack-btn","melee"],["mission-charge-btn","charge"],
-    ["mission-switch-btn","switch"],["mission-reload-btn","reload"],["mission-ranged-btn","ranged"],["mission-second-move-btn","secondMove"],["mission-end-activation-btn","end"],["mission-auto-btn","auto"]
+    ["mission-switch-btn","switch"],["mission-reload-btn","reload"],["mission-ranged-btn","ranged"],["mission-sentinel-btn","sentinel"],["mission-second-move-btn","secondMove"],["mission-end-activation-btn","end"],["mission-auto-btn","auto"]
   ];
   for(const [id,key] of buttons){
     $(id).disabled=!availability[key];
@@ -3288,7 +3339,7 @@ function renderMissionHoverCard(q,r){
   if(unit){
     const weapon=e.activeWeaponItem(unit);
     const up=unit.alive;
-    const tags=[unit.summon&&"Invocation",unit.character.undead&&"Mort-vivant",up&&unit.camouflaged&&"Camouflé",up&&unit.fleeing&&"En fuite",
+    const tags=[unit.summon&&"Invocation",unit.character.undead&&"Mort-vivant",up&&unit.camouflaged&&"Camouflé",up&&unit.sentinel&&"En sentinelle",up&&unit.fleeing&&"En fuite",
       up&&missionEncircled(unit)&&"Encerclé",up&&unit.poisoned&&"Empoisonné",up&&unit.weaponPoison&&"Arme empoisonnée",up&&unit.prone&&"Au sol",!up&&"Hors combat"].filter(Boolean);
     html+=`<strong>${esc(unit.character.name)}</strong><span class="hc-sub">${Math.max(0,unit.hp)} / ${unit.pvMax} PV · ${esc(weapon?.name||"Sans arme")}</span>`
       +(tags.length?`<span class="hc-tags">${tags.join(" · ")}</span>`:"");
@@ -3442,6 +3493,7 @@ function initializeMissionUi(){
   $("mission-two-hands-btn").addEventListener("click",()=>setMissionMode("melee",{twoHands:true}));
   $("mission-charge-btn").addEventListener("click",()=>setMissionMode("charge"));
   $("mission-ranged-btn").addEventListener("click",()=>setMissionMode("ranged"));
+  $("mission-sentinel-btn").addEventListener("click",standMissionSentinel);
   $("mission-switch-btn").addEventListener("click",switchMissionWeapon);
   $("mission-reload-btn").addEventListener("click",reloadMissionWeapon);
   $("mission-second-move-btn").addEventListener("click",missionSecondMove);

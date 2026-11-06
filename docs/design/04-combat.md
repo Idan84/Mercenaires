@@ -199,6 +199,27 @@ Tirer sur une cible distante alors qu'un ennemi est adjacent reste autorisé, ma
 - Exemples : un archer gobelin novice (Perception 62) repère un mercenaire de Discrétion 30 à 95 % à 3 cases, 89 % à 8 ; un lancier gobelin novice (Perception 43) à 39 % à 12 cases ; sous Avancée cachée (+52 de Discrétion), l’archer ne le repère plus qu’à 34 % à 6 cases.
 - Plus tard (Idan) : le **brouillard de guerre** (les ennemis camouflés disparaissent de la carte). En attendant, ils restent dessinés, en transparence, avec la mention « Camouflé ».
 
+## Mode sentinelle (Idan, 2026-11-06)
+
+« Un personnage avec une arme de tir peut se mettre en sentinelle au lieu de tirer. En mode sentinelle, pendant le tour de
+l'adversaire, tire sur la première cible qui se déplace à sa portée. Il a un double bonus : plus de précision et plus de
+chance pour enchaîner plusieurs tirs (sauf arme à feu). Il ne peut passer en mode sentinelle que si aucun ennemi ne le voit. »
+
+- **Qui** : un personnage dont l'arme de tir est prête (chargée, pour une arme à feu), qui n'a pas encore attaqué, et
+  qu'**aucun ennemi ne voit** : il est **camouflé**, ou **aucun ennemi n'a de ligne de vue** sur lui (Idan : « les deux » ;
+  aujourd'hui le Brouillard et le Blizzard, bientôt le décor).
+- **Quand** : à son activation, **au lieu de tirer** (bouton « Sentinelle ») ; il peut se déplacer avant ; son activation
+  s'arrête là.
+- **Le tir** : pendant le tour adverse, le **premier ennemi visible qui fait un pas à sa portée** (déplacement, approche,
+  charge, fuite ; pas un déplacement forcé par un sort), et dans sa ligne de vue, essuie aussitôt son tir, avant de
+  continuer. Les règles du tir s'appliquent (couloir de tir, attaques des ennemis au contact, Courage post-tir) ; s'il est
+  encore camouflé, c'est aussi une attaque non détectée.
+- **Les bonus** (`combat.sentinel.*`) : **+20 au Toucher** ; l'**enchaînement** comme au corps à corps : (Dextérité effective
+  + Vitesse) / N au lieu de / (1,5 × N), pour les armes `Répétable` (arc, fronde, sarbacane).
+- **Fin** : après ce tir ; sans cible, au début de sa prochaine activation.
+- **Les ennemis aussi** (Idan : « Bien sûr ! ») : un tireur ennemi qui n'a rien à viser après son déplacement, et que
+  personne ne voit, se met en sentinelle ; le combat automatique fait de même pour vos mercenaires.
+
 ## Invocations et morts-vivants (Idan, 2026-10-28)
 
 - Les **invocations** (zombie, spectre ; corbeau, loups, ours, crocodiles ; doc 12, Nécromancie et Invocation) jouent dans le camp du mage, avec leur propre activation dans l'ordre d'initiative, dès le tour suivant leur arrivée. Au début de chaque tour, le mage les garde (test de Charisme, puis mana) ; elles disparaissent quand il tombe. Elles ne laissent pas de corps et ne passent pas le bilan de fin de mission.

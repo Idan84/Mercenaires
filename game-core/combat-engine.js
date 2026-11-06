@@ -95,6 +95,12 @@
       min:constant("combat.poison.resist_min",5),
       max:constant("combat.poison.resist_max",95)
     };
+    // Mode sentinelle (Idan, 2026-11-06) : le tir de sentinelle gagne en précision (au Toucher) et enchaîne comme au corps à
+    // corps (Enchaînement de tirs : diviseur par N au lieu de 1,5 × N).
+    const SENTINEL={
+      precision:constant("combat.sentinel.precision_bonus",20),
+      chainDivisor:constant("combat.sentinel.chain_divisor",1)
+    };
     const STRAY={
       initial:constant("combat.ranged.stray.initial_factor",0.35),
       decay:constant("combat.ranged.stray.decay_factor",0.5),
@@ -606,6 +612,7 @@
       let delta=attackPrecision(attacker)
         -dodgeFactor*effectiveDodge(defender)
         -0.2*(defensivePerception+effectiveSpeed(defender));
+      if(context.sentinel&&mode==="ranged") delta+=SENTINEL.precision;
 
       if(mode==="ranged"){
         const range=weaponRange(attacker);
@@ -704,8 +711,9 @@
     function isRepeatable(weapon){
       return skillByName.get(weapon?.nom)?.cadence_tir==="Répétable";
     }
-    function chainChance(attacker,n,mode){
-      const divisor=mode==="ranged"?CHAIN.rangedDivisor*n:n;
+    // sentinel : tir de sentinelle (Idan, 2026-11-06), il enchaîne comme au corps à corps.
+    function chainChance(attacker,n,mode,{sentinel=false}={}){
+      const divisor=mode==="ranged"?(sentinel?SENTINEL.chainDivisor:CHAIN.rangedDivisor)*n:n;
       return Math.min(CHAIN.max,(effectiveDexterity(attacker)+effectiveSpeed(attacker))/divisor);
     }
     // L'attaque précédente doit avoir réellement touché (ni bloquée ni parée), sans échec critique, contre une cible
@@ -716,9 +724,9 @@
       return mode!=="ranged"||isRepeatable(weaponTemplate(activeWeaponItem(attacker)));
     }
     // Tente d'ouvrir l'attaque numéro n (n ≥ 2) ; null si la chaîne s'arrête d'elle-même.
-    function rollChain(attacker,defender,result,n,mode){
+    function rollChain(attacker,defender,result,n,mode,{sentinel=false}={}){
       if(!canChain(attacker,defender,result,mode)) return null;
-      const p=chainChance(attacker,n,mode),roll=d100();
+      const p=chainChance(attacker,n,mode,{sentinel}),roll=d100();
       return {n,p,roll,continues:roll<=p};
     }
 
@@ -808,13 +816,15 @@
         chargePower=Number(options.chargeDistance)*bonus*(Number(quality(item).multiplicateur_qualite)||1);
       }
 
-      const tags={chargePower,opportunity,encircled,fleeingTarget,backstab,hidden};
+      // Tir de sentinelle (Idan, 2026-11-06) : + SENTINEL.precision au Toucher.
+      const sentinel=mode==="ranged"&&Boolean(options.sentinel);
+      const tags={chargePower,opportunity,encircled,fleeingTarget,backstab,hidden,...(sentinel?{sentinel}:{})};
       // Champ de protection (Télékinésie, doc 12) : avant le Toucher, le projectile a projectileShield.chance % d'être dévié.
       if(mode==="ranged"&&defender.projectileShield){
         const pDeflect=Number(defender.projectileShield.chance)||0,deflectRoll=d100();
         if(deflectRoll<=pDeflect) return {ok:true,mode,weapon:weapon.nom,distance,deflected:true,pDeflect,deflectRoll,hit:false,wound:false,damage:0,...tags};
       }
-      const pHit=hitProbability(attacker,defender,mode,distance,{opportunity,backstab});
+      const pHit=hitProbability(attacker,defender,mode,distance,{opportunity,backstab,sentinel});
       const hitRoll=d100(),hit=hitRoll<=pHit;
       // twoHanded : arme tenue à deux mains (XP de Combat à deux mains) ; oneHanded : arme à une main tenue seule (XP de
       // Combat à une main).
@@ -1167,6 +1177,7 @@
       hexLine,
       POISON,
       STEALTH,
+      SENTINEL,
       detectionChance,
       rollDetection,
       spellWoundChance,

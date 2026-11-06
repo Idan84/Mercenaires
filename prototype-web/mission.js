@@ -2985,12 +2985,21 @@ function missionRosterMagic(u){
 
 function missionHpClass(pct){ return pct<=30?" hp-low":pct<=60?" hp-mid":""; }
 
+// Le tier de l’archétype fixe le cadre, y compris pour les chefs. Les ennemis du test libre sont Normal.
+function renderMissionPortrait(unit,variant){
+  const portrait=renderAvatar(unit.character,{variant,kind:"portrait"});
+  if(unit.team!=="enemy"||unit.summon) return portrait;
+  const tier=unit.character.archetype?missionRules().archetype(unit.character.archetype)?.tier:null;
+  const rank=["novice","normal","veteran","elite"][Number(tier)-1]||"normal";
+  return `<span class="enemy-rank-portrait" data-enemy-rank="${rank}">${portrait}<img class="enemy-rank-ring" src="/assets/enemy-ranks/${rank}.webp" alt="" aria-hidden="true" decoding="async"></span>`;
+}
+
 function renderMissionRoster(units){
   return units.filter(u=>!u.vanished).map(u=>{
     const pct=Math.max(0,Math.min(100,Math.round(u.hp/u.pvMax*100)));
     return `
     <div class="mission-roster-row ${u.team} ${u.alive?"":"down"}${missionActiveUnit()===u?" active":""}" data-unit-id="${esc(String(u.id))}" title="Centrer la carte sur ${esc(u.character.name)}">
-      ${renderAvatar(u.character,{variant:"compact",kind:"portrait"})}
+      ${renderMissionPortrait(u,"compact")}
       <div class="mission-roster-copy">
         <strong>${esc(u.character.name)}</strong>
         <span>${u.raised?"Relevé en zombie":u.offMap?"A quitté le combat":(u.summon?"Invocation · ":"")+Math.max(0,u.hp)+"/"+u.pvMax+" PV"+(u.hp<0?" ("+u.hp+")":"")+(u.alive&&u.fleeing?" · En fuite":"")+(u.alive&&u.camouflaged?" · Camouflé":"")+(u.alive&&u.sentinel?" · En sentinelle":"")+(u.alive&&!game.mission.engine.isLoaded(u,game.mission.engine.activeWeaponItem(u))?" · Arme déchargée":"")}</span>
@@ -3006,7 +3015,7 @@ function renderMissionInitiative(){
   const m=game.mission,u=missionActiveUnit();
   const shown=x=>x.alive&&!x.offMap&&!x.vanished&&!x.raised;
   const chip=(x,done)=>`<li class="mission-init ${x.team}${x===u?" active":""}${done?" done":""}" data-unit-id="${esc(String(x.id))}" title="${esc(x.character.name)} — initiative ${Math.round(m.engine.initiative(x))}${done?" — a joué":""}">`
-    +`${renderAvatar(x.character,{variant:"compact",kind:"portrait"})}</li>`;
+    +`${renderMissionPortrait(x,"compact")}</li>`;
   const players=m.playerOrder.filter(shown),enemies=m.enemyOrder.filter(shown);
   return players.map(x=>chip(x,m.phase==="player"&&x.acted)).join("")
     +(players.length&&enemies.length?`<li class="mission-init-sep" aria-hidden="true">⚔</li>`:"")
@@ -3022,7 +3031,7 @@ function renderMissionActiveCard(u){
   const knows=magic&&magic.knownSpells(u).length;
   const mana=knows?magic.currentMana(u):0,manaMax=knows?Math.round(magic.manaMax(u)):0;
   const moveMax=e.movementBase(u)*(u.secondMove?2:1);
-  return `<span class="mission-active-portrait ${u.team}">${renderAvatar(u.character,{variant:"battle",kind:"portrait"})}</span>
+  return `<span class="mission-active-portrait ${u.team}">${renderMissionPortrait(u,"battle")}</span>
     <div class="mission-active-copy">
       <strong>${esc(u.character.name)}</strong>
       <span class="mission-meter hp${missionHpClass(pct)}"><b style="width:${pct}%"></b><em>${Math.max(0,u.hp)} / ${u.pvMax} PV</em></span>
@@ -3155,7 +3164,7 @@ function renderMission(){
     cells+=`<button class="${classes.join(" ")}" data-hex-q="${q}" data-hex-r="${r}"${title} style="left:${p.x-MISSION_MAP.size}px;top:${p.y-MISSION_MAP.size}px"></button>`;
   }
 
-  // Pions : portrait rond, anneau de la couleur du camp, barre de PV ; le nom s'affiche au survol et sur l'actif.
+  // Pions : portrait rond, anneau de camp ou de rang, barre de PV ; le nom s'affiche au survol et sur l'actif.
   // Un clic sur un pion vaut un clic sur sa case.
   const tokens=missionUnits().filter(unit=>!unit.offMap&&!unit.raised).map(unit=>{
     const p=missionHexPixel(unit.q,unit.r);
@@ -3170,7 +3179,7 @@ function renderMission(){
     if(unit.character.undead) classes.push("undead");
     if(targets.has(missionKey(unit.q,unit.r))&&m.mode!=="move") classes.push(missionSpellMode()?"spell-aim":"target");
     return `<div class="${classes.join(" ")}" data-unit-id="${esc(String(unit.id))}" data-hex-q="${unit.q}" data-hex-r="${unit.r}" style="left:${p.x-26}px;top:${p.y-26}px">
-      <span class="token-ring">${renderAvatar(unit.character,{variant:"battle",kind:"portrait"})}</span>
+      <span class="token-ring">${renderMissionPortrait(unit,"battle")}</span>
       ${unit.alive?`<span class="token-hp${missionHpClass(pct)}"><i style="width:${pct}%"></i></span>`:""}
       <strong>${esc(unit.character.name.split(" ")[0])}</strong>
       <em>${unit.alive&&unit.fleeing?"En fuite":Math.max(0,unit.hp)+"/"+unit.pvMax+" PV"}</em>

@@ -30,7 +30,7 @@ Les fiches d'armes portent désormais les champs `Portée min hex`, `Portée max
 
 - Une arme de mêlée ordinaire sans portée explicite est traitée comme **1–1**.
 - Les armes d'hast configurées ici sont **1–2** et peuvent contre-charger.
-- Les armes de tir disposent de leurs portées V1 et de leur cadence `Répétable` ou `Tir unique`.
+- Les armes de tir disposent de leurs portées V1 et de leur cadence `Répétable` (arc, arbalète depuis le 2026-11-06, fronde, sarbacane) ou `Tir unique` (armes à feu).
 - Les armes à feu sont à tir unique et nécessitent une Action rapide pour recharger.
 - Le **Tromblon** est marqué comme attaque de zone ; sa géométrie sera définie avec les attaques de zone.
 - `Bonus charge base` est renseigné sur les armes : **1** par défaut, **2** pour les armes d'hast et les armes `2 mains`. Ce premier équilibrage pourra être affiné arme par arme.

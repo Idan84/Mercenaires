@@ -1,7 +1,7 @@
 "use strict";
 
 // Sorts connus à la création (12-magic.md ; Idan, 2026-10-25) : trois tirages (école de la culture, meilleure école,
-// deuxième meilleure), chance = min(75, École × Intelligence / 150) % × 1 / 1,1 / 1,3, sort au hasard dans l'école, niveau 1,
+// deuxième meilleure), chance = min(75, École × Intelligence / 75) % × 1 / 1,1 / 1,3 (diviseur 150 avant les écoles divisées par deux, 2026-11-05), sort au hasard dans l'école, niveau 1,
 // capitaine compris ; cultures sans école : deux tirages et +1D6 Courage (nains) ou Force (ogres).
 const assert=require("node:assert/strict");
 const fs=require("node:fs");
@@ -50,7 +50,7 @@ function checkDraws(m){
   assert.deepEqual(m.generationTrace.spells.map(d=>[d.source,d.school]),expected,m.name+" : trois tirages dans l'ordre");
   let count=0;
   for(const d of m.generationTrace.spells){
-    const chance=Math.min(75,level(d.school)*m.stats.Intelligence/150)*multipliers[count];
+    const chance=Math.min(75,level(d.school)*m.stats.Intelligence/75)*multipliers[count];
     assert.ok(Math.abs(d.chance-chance)<1e-9,m.name+" : chance du tirage "+d.source);
     const written=reference.spells.rows.some(s=>s.ecole===d.school);
     if(!written) assert.equal(d.roll,null,"une école sans sort écrit ne donne rien");

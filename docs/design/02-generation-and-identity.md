@@ -74,7 +74,7 @@ constantes `generation.domain.*` ; code : `game-core/mercenary-generator.js` (`c
     | Mage | Puissance magique, Intelligence | Force, Dextérité |
 
   - compétences, **sur ce qu'il utilise vraiment** : **+2D10** sur son arme (celle qu'il portera) et sa catégorie, **−2D10**
-    sur la meilleure arme de l'autre famille et sa catégorie ; un mage gagne **2 × 2D10** dans l'école de son sort (sinon sa
+    sur la meilleure arme de l'autre famille et sa catégorie ; un mage gagne **2D10** (2 × 2D10 avant que les écoles soient divisées par deux, le 2026-11-05) dans l'école de son sort (sinon sa
     meilleure) et perd 2D10 sur sa meilleure arme de mêlée et sa meilleure arme de tir.
 - **Rattrapage du mage** (Idan, 2026-11-01) : un Mage qui n'a tiré aucun sort en apprend un dans sa meilleure école
   (doc 12). Il n'y a plus de Mage sans sort.
@@ -234,7 +234,8 @@ La valeur de la **catégorie Animal** est dérivée de sa meilleure sous-compét
 
 Pour chaque école de magie :
 
-- si le mercenaire possède un bonus sur cette école **ou** réussit un jet de présence à 50 %, alors : `École = Moyenne(Intelligence, Puissance magique, Réserve de mana) × Rand(0,5 ; 1,5)` ;
+- si le mercenaire possède un bonus sur cette école **ou** réussit un jet de présence à 50 %, alors : `École = Moyenne(Intelligence, Puissance magique, Réserve de mana) × Rand(0,5 ; 1,5) × 0,5` ;
+- **les écoles à l'échelle des armes** (Idan, 2026-11-05 : « l'échelle arme / magie devrait être identique. Division par deux ») : le tirage et les dés de la Matrice sur une école sont multipliés par `generation.magic.school_scale` (0,5). Ce qui comparait une école à un nombre suit (seuils de magie des ports d'armure 25 et 37,5, diviseur de chance des sorts de départ 75, score Magie du profil d'équipement sans division par 2, accentuation du mage 2D10) : à tirage égal, mêmes domaines, mêmes sorts, mêmes ports d'armure. Mesure (4 000 recrues) : meilleure école d'un mage **54** en médiane (107 avant), d'un non-mage 34 (67 avant), arme d'un combattant 55 ; réputation médiane des mages 128 (159 avant ; 121 pour le corps à corps), salaire médian 44 PO par jour (54 avant) ;
 - sinon : `École = 1`.
 
 ### Camp
@@ -264,7 +265,7 @@ Soit, sous forme simplifiée :
   - **en combat**, au début de chacune de ses activations, s'il est debout : **ceil(2D6 × (0,5 + Régénération / 50)) PV**, sans dépasser ses PV max. Lointain ancêtre : 2 à 10 PV par tour ; lignée proche : 3 à 13 (≈ 2D6) ; bâtard : 3 à 15 ; à 100 : 5 à 30. Le Flétrissement l'empêche, comme les soins ;
   - **le feu la bloque** : brûlé depuis sa dernière activation, il ne régénère pas cette fois ;
   - **au camp**, une blessure guérit en **jours / (1 + Régénération / 100)** : deux fois plus vite à 100 ;
-  - elle **monte à chaque brûlure** (validé par Idan, 2026-11-01) : +30 XP de Régénération par blessure de feu, pour qui en a déjà (`progression.regeneration.burn_xp`), jusqu'à 100 ;
+  - elle **monte à chaque brûlure** (validé par Idan, 2026-11-01) : +30 XP de Régénération par blessure de feu, pour qui en a déjà (`progression.regeneration.burn_xp`), sans plafond (Idan, 2026-11-06 : « sky is the limit ») ;
   - **sur la fiche** (Idan : « il faut ») : onglet Caractéristiques, groupe Défense, avec son infobulle ; la ligne n'apparaît que si elle est au-dessus de 0 (`character-sheet-copy.json`, `masquer_si_nul`).
 
 ### Social

@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 374,
+  "row_count": 375,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -1749,9 +1749,9 @@
     {
       "nom": "Sorts à la création — diviseur de la chance",
       "code": "generation.spells.chance_divisor",
-      "description": "Chance d'un tirage = École × Intelligence / diviseur, en % (Idan, 2026-10-25).",
+      "description": "Chance d'un tirage = École × Intelligence / diviseur, en % (Idan, 2026-10-25) ; 75 depuis que les écoles sont divisées par deux (2026-11-05 ; 150 auparavant), pour garder le même nombre de sorts tirés.",
       "formule": "Sorts connus à la création",
-      "valeur": 150,
+      "valeur": 75,
       "version": "V1"
     },
     {
@@ -1795,11 +1795,19 @@
       "version": "V1"
     },
     {
+      "nom": "Écoles de magie — échelle",
+      "code": "generation.magic.school_scale",
+      "description": "Les écoles de magie à l'échelle des armes (Idan, 2026-11-05 : « l'échelle arme / magie devrait être identique. Division par deux ») : le tirage Moyenne(Intelligence, Puissance magique, Réserve de mana) × Rand(0,5 ; 1,5) et les dés de la Matrice sur une école sont multipliés par ce facteur.",
+      "formule": "Génération des compétences",
+      "valeur": 0.5,
+      "version": "V1"
+    },
+    {
       "nom": "Domaine — multiplicateur de l'école",
       "code": "generation.domain.school_factor",
-      "description": "L'école d'un mage gagne ce multiple des dés de compétence : les écoles vont jusqu'à 100, les armes vers 50.",
+      "description": "L'école d'un mage gagne ce multiple des dés de compétence : 1, comme l'arme d'un combattant, depuis que les écoles sont à l'échelle des armes (Idan, 2026-11-05 ; 2 auparavant).",
       "formule": "Domaine du mercenaire",
-      "valeur": 2,
+      "valeur": 1,
       "version": "V1"
     },
     {

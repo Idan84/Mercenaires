@@ -7,15 +7,15 @@
       "Port d’armure intermédiaire",
       "Port d’armure légère"
     ],
-    "warrior_magic_threshold": 50,
+    "warrior_magic_threshold": 25,
     "warrior_bonus_pp": {
       "Port d’armure lourde": 20,
       "Port d’armure intermédiaire": 30,
       "Port d’armure légère": 50
     },
-    "magic_penalty_threshold": 75,
+    "magic_penalty_threshold": 37.5,
     "magic_penalty_multiplier": 0.8,
-    "notes": "Si aucune école de magie ne dépasse 50, ajouter le bonus guerrier. Si au moins une école dépasse 75, multiplier la probabilité finale d'armure par 0,8. Les chances sont plafonnées à 100 %."
+    "notes": "Si aucune école de magie ne dépasse 25, ajouter le bonus guerrier. Si au moins une école dépasse 37,5, multiplier la probabilité finale d'armure par 0,8. Les chances sont plafonnées à 100 %. Seuils divisés par deux le 2026-11-05 (50 et 75 auparavant), avec les écoles de magie, ramenées à l'échelle des armes."
   },
   "rows": [
     {

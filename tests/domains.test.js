@@ -50,11 +50,12 @@ for(const m of recruits){
 }
 assert.ok(Math.abs(statDelta/recruits.length)<1.5,"des déplacements, pas des bonus : "+(statDelta/recruits.length).toFixed(2));
 
-// Un mage pousse l'école de son sort (2 × 2D10) et perd sur ses armes ; un archer pousse son arc et sa catégorie.
+// Un mage pousse l'école de son sort (2D10 depuis les écoles divisées par deux, 2026-11-05) et perd sur ses armes ; un archer
+// pousse son arc et sa catégorie.
 const mage=recruits.find(m=>m.domain==="magic"&&m.spells.length);
 const school=mage.spells[0].school;
 const schoolMove=mage.generationTrace.skills[school].contributions.find(x=>x.kind==="domain");
-assert.ok(schoolMove&&schoolMove.dice==="2 × 2D10"&&schoolMove.delta>0,"l'école de son sort");
+assert.ok(schoolMove&&schoolMove.dice==="2D10"&&schoolMove.delta>0,"l'école de son sort");
 const archer=recruits.find(m=>m.domain==="ranged");
 const raised=archer.generationTrace.domain.moves.filter(x=>x.delta>0&&!(x.target in archer.stats)).map(x=>x.target);
 assert.equal(raised.length,2,"son arme de tir et sa catégorie");

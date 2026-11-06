@@ -133,20 +133,21 @@ assert.deepEqual(g,{"Combat à deux mains":10,"Combat à une main":-5},"un gain 
 assert.deepEqual(rules.gains({intimidations:2}).skills,{social:{Intimidation:100}});
 assert.deepEqual(rules.gains({weaponUses:{"Épée longue":{attacks:1,hits:0,wounds:0}}}).skills.martial,{"Épée longue":10,"Lames longues":10},"sans mercenaire : pas de régression");
 
-// Application : niveau continu (30,6 = niveau 30, à 60 % vers 31), plafond 100, valeur générée au-delà intacte.
+// Application : niveau continu (30,6 = niveau 30, à 60 % vers 31), sans plafond (Idan, 2026-11-06 : « sky is the limit »).
 const near=(x,y,label)=>assert.ok(Math.abs(x-y)<1e-6,label+" : "+x+" ≠ "+y);
 near(rules.xpForContinuous(30.6),9000+0.6*610,"XP de 30,6");
 near(rules.continuousLevel(9366),30.6,"niveau de 9 366 XP");
 const learner={skills:{martial:{"Lames longues":30.6,"Épée longue":99.9,"Combat à mains nues":132.4,"Dague":0}}};
 let sk=rules.apply(learner,{skills:{martial:{"Lames longues":100,"Épée longue":10000,"Combat à mains nues":50,"Inconnue":10,"Dague":-5}}});
 near(learner.skills.martial["Lames longues"],30+466/610,"+100 XP depuis 30,6");
-assert.equal(learner.skills.martial["Épée longue"],100,"plafond 100");
-assert.equal(learner.skills.martial["Combat à mains nues"],132.4,"valeur générée au-delà de 100 : ne monte plus");
+near(learner.skills.martial["Épée longue"],rules.continuousLevel(rules.xpForContinuous(99.9)+10000),"pas de plafond à 100");
+assert.ok(learner.skills.martial["Épée longue"]>100,"au-delà de 100");
+assert.ok(learner.skills.martial["Combat à mains nues"]>132.4,"une valeur au-delà de 100 monte encore");
 assert.equal(learner.skills.martial["Dague"],0,"jamais sous 0");
 assert.deepEqual(sk.map(c=>c.name),["Lames longues","Épée longue","Combat à mains nues","Dague"],"compétence inconnue ignorée");
 assert.equal(sk[0].family,"skills");
-rules.apply(learner,{skills:{martial:{"Combat à mains nues":-50}}});
-assert.ok(learner.skills.martial["Combat à mains nues"]<132.4,"mais elle peut redescendre");
+rules.apply(learner,{skills:{martial:{"Combat à mains nues":-200}}});
+assert.ok(learner.skills.martial["Combat à mains nues"]<132.4,"et elle peut redescendre");
 rules.apply(learner,{skills:{martial:{"Lames longues":10}}});
 near(learner.xp.skills.martial["Lames longues"],9366+100+10,"l'XP gardée sert de base à la mission suivante");
 

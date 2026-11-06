@@ -246,7 +246,8 @@
     // Toucher d'un sort « comme une flèche » (Trait de feu ; Idan, 2026-10-25 : « les mêmes règles que pour l'arc ») :
     // la formule de tir, la Maîtrise du sort à la place des compétences d'arme (catégorie et arme), la portée du sort pour
     // la perte avec la distance (au-delà du quart de la portée). over : {mastery, reach} pour un tir accordé par un sort
-    // (Crachat de venin : la Maîtrise du lanceur, la portée de la sarbacane).
+    // (Crachat de venin : la Maîtrise du lanceur, la portée de la sarbacane). over.cover : la couverture de la cible
+    // (décor, doc 04 ; Idan, 2026-11-06 : « oui pour les sorts qui volent »), « partielle » ou « totale ».
     function hitChance(caster,target,code,over={}){
       const reach=over.reach??range(caster,code),distance=combat.axialDistance(caster,target),m=over.mastery??mastery(caster,code);
       // Depuis le camouflage, la cible ne se défend pas avec sa Perception (Frappe dans le dos V1).
@@ -257,7 +258,8 @@
         -0.2*(defensivePerception+combat.effectiveSpeed(target));
       const free=Math.ceil(reach/4);
       if(distance>free&&reach>free) delta-=40*(distance-free)/(reach-free);
-      return clamp(10+80/(1+Math.exp(-delta/20)),10,90);
+      const cover=over.cover&&typeof combat.coverHitFactor==="function"?combat.coverHitFactor(over.cover):1;
+      return clamp(10+80/(1+Math.exp(-delta/20)),10,90)*cover;
     }
     // Précision d'une zone (Boule de feu) : base + part × Maîtrise − perte × distance, de 10 à 95 %.
     function precisionChance(caster,code,distance){
@@ -403,14 +405,14 @@
     // amount : PV soignés ou dégâts ; zone : {center, radius} ; effect : la Régénération à poser sur la cible.
     // Toucher « comme une flèche » : le trait touche la cible, ou part dans la ligne de tir et peut toucher quelqu'un
     // d'autre (approximation des projectiles : P = toucher × 0,35, puis × 0,5 pour chaque candidat suivant).
-    function resolveSpellHit(caster,target,code,result,units){
+    function resolveSpellHit(caster,target,code,result,units,cover=null){
       const shield=deflection(target);
       if(shield?.deflected){
         Object.assign(result,{deflected:true,pDeflect:shield.p,deflectRoll:shield.roll,hit:false,victim:null});
         return;
       }
-      const p=hitChance(caster,target,code),hitRoll=d100();
-      Object.assign(result,{pHit:p,hitRoll,hit:hitRoll<=p,victim:hitRoll<=p?target:null});
+      const p=hitChance(caster,target,code,{cover}),hitRoll=d100();
+      Object.assign(result,{pHit:p,hitRoll,hit:hitRoll<=p,victim:hitRoll<=p?target:null,...(cover?{cover}:{})});
       if(result.hit) return;
       const tries=[];
       let factor=combat.STRAY?.initial??0.35;
@@ -583,7 +585,7 @@
           }
           result.zone={center,aimed,radius,minDistance:num(s.zone_anneau_min,0),degressive:Boolean(s.zone_degressive),precision};
         }
-        if(s.toucher==="distance") resolveSpellHit(caster,target,code,result,options.units||[]);
+        if(s.toucher==="distance") resolveSpellHit(caster,target,code,result,options.units||[],options.cover||null);
         if(s.effet==="degats_rebonds") result.chain=chainTargets(caster,target,code,options.units||[]);
         if(s.effet==="degats_paire") result.second=options.second;
         // Dégâts physiques : l'écran de combat les fait passer par l'armure (combat.spellPhysicalHit).
@@ -623,9 +625,9 @@
       if(!lineOfSight) return {ok:false,reason:"Pas de ligne de vue."};
       return {ok:true,distance};
     }
-    function spitChance(unit,target){
+    function spitChance(unit,target,cover=null){
       const fx=unit.venom;
-      return hitChance(unit,target,fx.code,{mastery:fx.mastery,reach:fx.max});
+      return hitChance(unit,target,fx.code,{mastery:fx.mastery,reach:fx.max,cover});
     }
     // Le tir : toucher comme un trait ; 1D4 de poison × la Puissance du lanceur ; s'il blesse, l'écran de combat empoisonne
     // la cible (poison : turns tours, le minimum du venin à chaque fois).
@@ -634,8 +636,8 @@
       if(!check.ok) return check;
       const fx=unit.venom,s=spell(fx.code),shield=deflection(target);
       if(shield?.deflected) return {ok:true,code:fx.code,element:fx.element,distance:check.distance,deflected:true,pDeflect:shield.p,deflectRoll:shield.roll,hit:false,dice:0,amount:0};
-      const pHit=spitChance(unit,target),hitRoll=d100();
-      const result={ok:true,code:fx.code,element:fx.element,distance:check.distance,pHit,hitRoll,hit:hitRoll<=pHit,dice:0,amount:0};
+      const pHit=spitChance(unit,target,options.cover||null),hitRoll=d100();
+      const result={ok:true,code:fx.code,element:fx.element,distance:check.distance,pHit,hitRoll,hit:hitRoll<=pHit,dice:0,amount:0,...(options.cover?{cover:options.cover}:{})};
       if(result.hit){
         result.dice=rollDice(fx.code);
         result.amount=Math.ceil(num(s?.effet_base,10)*result.dice*fx.factor-1e-9);

@@ -260,6 +260,8 @@
       const free=Math.ceil(reach/4);
       if(distance>free&&reach>free) delta-=40*(distance-free)/(reach-free);
       delta+=(combat.ALTITUDE?.hitPerLevel??10)*(Number(over.heightDiff)||0);
+      // Une grande créature est plus facile à toucher (combat-engine.js, sizeHitBonus).
+      if(typeof combat.sizeHitBonus==="function") delta+=combat.sizeHitBonus(target);
       const cover=over.cover&&typeof combat.coverHitFactor==="function"?combat.coverHitFactor(over.cover):1;
       return clamp(10+80/(1+Math.exp(-delta/20)),10,90)*cover;
     }

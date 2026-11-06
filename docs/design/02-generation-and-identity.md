@@ -56,8 +56,10 @@ Le pipeline ci-dessous décrit la génération statistique commune. Son point d�
 
 Idan, 2026-11-01 : les recrues étaient « encore un peu trop généralistes » (14 caractéristiques tirées chacune de leur
 côté : tout le monde autour de 54). Après la première partie de la génération, chaque mercenaire reçoit un **grand
-domaine**, **fixé à vie** (« c'est le titre qui montrera l'évolution »), puis on l'**accentue**. Données : `domains.json` ;
-constantes `generation.domain.*` ; code : `game-core/mercenary-generator.js` (`chooseDomain`, `accentuateDomain`).
+domaine**, puis on l'**accentue**. Données : `domains.json` ; constantes `generation.domain.*` ; code :
+`game-core/mercenary-generator.js` (`chooseDomain`, `accentuateDomain`). D'abord fixé à vie (« c'est le titre qui montrera
+l'évolution »), il **évolue désormais avec le titre** (Idan, 2026-11-06 : « le statut (l'icône) évolue dans le temps ») :
+voir doc 19, « Domaine évolutif ». L'accentuation, elle, n'a lieu qu'une fois, à la génération.
 
 - **Trois domaines** : **Corps à corps**, **Distance**, **Mage**.
 - **Le choix, d'après les tirages** (« il faut justement dans un peuple un peu de tout ») : le profil déjà calculé pour

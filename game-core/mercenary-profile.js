@@ -327,6 +327,20 @@
       return {values,categories:scored,titles:result,cannonFodder:!result.length};
     }
 
+    // Domaine évolutif (Idan, 2026-11-06 : « le statut (l'icône) évolue dans le temps ») : à chaque recalcul du titre, le
+    // domaine prend celui de son premier rôle qui dit comment il se bat (selection.domaine_par_role) ; un Tank, un Éclaireur
+    // ou un Meneur porté par ses sorts compte pour selection.domaine_sorts ; sinon on passe au rôle suivant. Sans titre, ou
+    // sans rôle qui le dise : null, le domaine ne change pas. Le frein reste dans evaluate (« on garde le frein ») : un rôle
+    // hors du domaine demande ecart_hors_domaine étoile de plus pour entrer dans le titre.
+    function titleDomain(result){
+      const byRole=S.domaine_par_role||{};
+      for(const title of result?.titles||[]){
+        if(byRole[title.category]) return byRole[title.category];
+        if(/^sorts(:|$)/.test(String(title.top?.source||""))&&S.domaine_sorts) return S.domaine_sorts;
+      }
+      return null;
+    }
+
     // ---- Titres écrits (Idan, 2026-11-06, v3 ; mercenary-titles.json) ----
     // « Ce qu'il fait × comment il le fait » : chaque rôle (catégorie) s'écrit avec l'arme, le style, l'école ou la
     // sous-catégorie qui le porte ; ses 1 à 3 rôles se fondent en un seul titre, suivi du mot de niveau du rôle principal.
@@ -459,7 +473,7 @@
       return {name,lines:tip?.[g]||tip?.m||[]};
     }
 
-    return {measure,level,evaluate,strike,perTurn,categories,spellRole,composeTitle,tierIndex};
+    return {measure,level,evaluate,titleDomain,strike,perTurn,categories,spellRole,composeTitle,tierIndex};
   }
 
   return {createProfileRules};

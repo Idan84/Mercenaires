@@ -86,9 +86,37 @@
     {
       "source": "Butin : equipement = chance (%) de récupérer chaque objet porté ; objets = tirages en plus [{type, nom, tier, chance}]",
       "key": "butin"
+    },
+    {
+      "source": "Mort-vivant",
+      "key": "mort_vivant"
+    },
+    {
+      "source": "Insensible au poison",
+      "key": "insensible_poison"
+    },
+    {
+      "source": "Insensible aux armes",
+      "key": "immunite_physique"
+    },
+    {
+      "source": "Dégâts subis par type",
+      "key": "degats_subis"
+    },
+    {
+      "source": "Arme naturelle",
+      "key": "attaque"
+    },
+    {
+      "source": "Écoles de magie",
+      "key": "ecoles"
+    },
+    {
+      "source": "Sorts",
+      "key": "sorts"
     }
   ],
-  "row_count": 120,
+  "row_count": 144,
   "rows": [
     {
       "nom": "Lancier gobelin novice",
@@ -7248,6 +7276,1626 @@
         "equipement": 60,
         "objets": []
       }
+    },
+    {
+      "nom": "Squelette guerrier novice",
+      "code": "cult_skeleton_warrior_novice",
+      "faction": "Culte des morts",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Squelette guerrier",
+      "niveau": "novice",
+      "centile": "P20",
+      "caracteristiques": {
+        "Force": 41,
+        "Constitution": 54,
+        "Dextérité": 64,
+        "Vitesse": 36,
+        "Endurance": 58,
+        "Esquive": 45,
+        "Chance": 44,
+        "Charisme": 15,
+        "Courage": 43,
+        "Intelligence": 15,
+        "Volonté": 45,
+        "Perception": 32,
+        "Puissance magique": 38,
+        "Réserve de mana": 43
+      },
+      "resistances": {
+        "Résistance physique": 2,
+        "Résistance au feu": 2,
+        "Résistance au froid": 1,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 2
+      },
+      "pv": 210,
+      "competences_martiales": {
+        "Épée courte": 42,
+        "Lames courtes": 46,
+        "Rondache": 28,
+        "Boucliers": 30,
+        "Discrétion": 23,
+        "Pièges": 23,
+        "Combat à deux armes": 39,
+        "Combat à mains nues": 24,
+        "Combat à deux mains": 30
+      },
+      "intimidation": 32,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Épée courte",
+        "Rondache"
+      ],
+      "armure": "Gambison",
+      "tier": 1,
+      "qualite": "Usée",
+      "points": 12,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 90,
+        "objets": []
+      },
+      "mort_vivant": true,
+      "insensible_poison": true,
+      "sorts": [],
+      "degats_subis": {
+        "tranchant": 0.5,
+        "contondant": 1.5
+      }
+    },
+    {
+      "nom": "Squelette guerrier",
+      "code": "cult_skeleton_warrior",
+      "faction": "Culte des morts",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Squelette guerrier",
+      "niveau": "normal",
+      "centile": "P50",
+      "caracteristiques": {
+        "Force": 55,
+        "Constitution": 62,
+        "Dextérité": 73,
+        "Vitesse": 44,
+        "Endurance": 67,
+        "Esquive": 54,
+        "Chance": 54,
+        "Charisme": 15,
+        "Courage": 53,
+        "Intelligence": 15,
+        "Volonté": 55,
+        "Perception": 42,
+        "Puissance magique": 49,
+        "Réserve de mana": 52
+      },
+      "resistances": {
+        "Résistance physique": 5,
+        "Résistance au feu": 4,
+        "Résistance au froid": 4,
+        "Résistance à la foudre": 4,
+        "Résistance au poison": 5
+      },
+      "pv": 243,
+      "competences_martiales": {
+        "Épée courte": 50,
+        "Lames courtes": 54,
+        "Rondache": 34,
+        "Boucliers": 38,
+        "Discrétion": 28,
+        "Pièges": 28,
+        "Combat à deux armes": 46,
+        "Combat à mains nues": 31,
+        "Combat à deux mains": 37
+      },
+      "intimidation": 37,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Épée courte",
+        "Rondache"
+      ],
+      "armure": "Armure de cuir",
+      "tier": 2,
+      "qualite": "Correcte",
+      "points": 22,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 80,
+        "objets": []
+      },
+      "mort_vivant": true,
+      "insensible_poison": true,
+      "sorts": [],
+      "degats_subis": {
+        "tranchant": 0.5,
+        "contondant": 1.5
+      }
+    },
+    {
+      "nom": "Squelette guerrier vétéran",
+      "code": "cult_skeleton_warrior_veteran",
+      "faction": "Culte des morts",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Squelette guerrier",
+      "niveau": "vétéran",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 67,
+        "Constitution": 70,
+        "Dextérité": 79,
+        "Vitesse": 53,
+        "Endurance": 76,
+        "Esquive": 61,
+        "Chance": 63,
+        "Charisme": 15,
+        "Courage": 61,
+        "Intelligence": 15,
+        "Volonté": 62,
+        "Perception": 52,
+        "Puissance magique": 60,
+        "Réserve de mana": 60
+      },
+      "resistances": {
+        "Résistance physique": 8,
+        "Résistance au feu": 6,
+        "Résistance au froid": 11,
+        "Résistance à la foudre": 6,
+        "Résistance au poison": 11
+      },
+      "pv": 274,
+      "competences_martiales": {
+        "Épée courte": 57,
+        "Lames courtes": 60,
+        "Rondache": 39,
+        "Boucliers": 44,
+        "Discrétion": 35,
+        "Pièges": 35,
+        "Combat à deux armes": 53,
+        "Combat à mains nues": 40,
+        "Combat à deux mains": 43
+      },
+      "intimidation": 41,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire"
+      ],
+      "armes": [
+        "Épée courte",
+        "Rondache"
+      ],
+      "armure": "Cuir renforcé",
+      "tier": 3,
+      "qualite": "De bonne facture",
+      "points": 42,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 70,
+        "objets": []
+      },
+      "mort_vivant": true,
+      "insensible_poison": true,
+      "sorts": [],
+      "degats_subis": {
+        "tranchant": 0.5,
+        "contondant": 1.5
+      }
+    },
+    {
+      "nom": "Squelette guerrier d’élite",
+      "code": "cult_skeleton_warrior_elite",
+      "faction": "Culte des morts",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Squelette guerrier",
+      "niveau": "d’élite",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 77,
+        "Constitution": 75,
+        "Dextérité": 79,
+        "Vitesse": 60,
+        "Endurance": 82,
+        "Esquive": 68,
+        "Chance": 72,
+        "Charisme": 15,
+        "Courage": 67,
+        "Intelligence": 15,
+        "Volonté": 69,
+        "Perception": 61,
+        "Puissance magique": 70,
+        "Réserve de mana": 67
+      },
+      "resistances": {
+        "Résistance physique": 12,
+        "Résistance au feu": 12,
+        "Résistance au froid": 19,
+        "Résistance à la foudre": 10,
+        "Résistance au poison": 19
+      },
+      "pv": 295,
+      "competences_martiales": {
+        "Épée courte": 63,
+        "Lames courtes": 66,
+        "Rondache": 43,
+        "Boucliers": 51,
+        "Discrétion": 43,
+        "Pièges": 42,
+        "Combat à deux armes": 61,
+        "Combat à mains nues": 48,
+        "Combat à deux mains": 50
+      },
+      "intimidation": 46,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire"
+      ],
+      "armes": [
+        "Épée courte",
+        "Rondache"
+      ],
+      "armure": "Brigandine",
+      "tier": 4,
+      "qualite": "De luxe",
+      "points": 66,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 60,
+        "objets": []
+      },
+      "mort_vivant": true,
+      "insensible_poison": true,
+      "sorts": [],
+      "degats_subis": {
+        "tranchant": 0.5,
+        "contondant": 1.5
+      }
+    },
+    {
+      "nom": "Squelette archer novice",
+      "code": "cult_skeleton_archer_novice",
+      "faction": "Culte des morts",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Squelette archer",
+      "niveau": "novice",
+      "centile": "P20",
+      "caracteristiques": {
+        "Force": 30,
+        "Constitution": 44,
+        "Dextérité": 64,
+        "Vitesse": 44,
+        "Endurance": 46,
+        "Esquive": 36,
+        "Chance": 54,
+        "Charisme": 15,
+        "Courage": 43,
+        "Intelligence": 15,
+        "Volonté": 45,
+        "Perception": 52,
+        "Puissance magique": 38,
+        "Réserve de mana": 43
+      },
+      "resistances": {
+        "Résistance physique": 2,
+        "Résistance au feu": 2,
+        "Résistance au froid": 1,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 2
+      },
+      "pv": 173,
+      "competences_martiales": {
+        "Arc": 42,
+        "Armes de tir": 46,
+        "Discrétion": 23,
+        "Pièges": 23,
+        "Combat à deux armes": 39,
+        "Combat à mains nues": 24,
+        "Combat à deux mains": 30
+      },
+      "intimidation": 32,
+      "port_d_armure": [],
+      "armes": [
+        "Arc"
+      ],
+      "armure": "Vêtements",
+      "tier": 1,
+      "qualite": "Usée",
+      "points": 12,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 90,
+        "objets": []
+      },
+      "mort_vivant": true,
+      "insensible_poison": true,
+      "sorts": [],
+      "degats_subis": {
+        "tranchant": 0.5,
+        "contondant": 1.5
+      }
+    },
+    {
+      "nom": "Squelette archer",
+      "code": "cult_skeleton_archer",
+      "faction": "Culte des morts",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Squelette archer",
+      "niveau": "normal",
+      "centile": "P50",
+      "caracteristiques": {
+        "Force": 41,
+        "Constitution": 54,
+        "Dextérité": 73,
+        "Vitesse": 53,
+        "Endurance": 58,
+        "Esquive": 45,
+        "Chance": 63,
+        "Charisme": 15,
+        "Courage": 53,
+        "Intelligence": 15,
+        "Volonté": 55,
+        "Perception": 61,
+        "Puissance magique": 49,
+        "Réserve de mana": 52
+      },
+      "resistances": {
+        "Résistance physique": 5,
+        "Résistance au feu": 4,
+        "Résistance au froid": 4,
+        "Résistance à la foudre": 4,
+        "Résistance au poison": 5
+      },
+      "pv": 213,
+      "competences_martiales": {
+        "Arc": 50,
+        "Armes de tir": 54,
+        "Discrétion": 28,
+        "Pièges": 28,
+        "Combat à deux armes": 46,
+        "Combat à mains nues": 31,
+        "Combat à deux mains": 37
+      },
+      "intimidation": 37,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Arc"
+      ],
+      "armure": "Gambison",
+      "tier": 2,
+      "qualite": "Correcte",
+      "points": 19,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 80,
+        "objets": []
+      },
+      "mort_vivant": true,
+      "insensible_poison": true,
+      "sorts": [],
+      "degats_subis": {
+        "tranchant": 0.5,
+        "contondant": 1.5
+      }
+    },
+    {
+      "nom": "Squelette archer vétéran",
+      "code": "cult_skeleton_archer_veteran",
+      "faction": "Culte des morts",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Squelette archer",
+      "niveau": "vétéran",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 55,
+        "Constitution": 62,
+        "Dextérité": 79,
+        "Vitesse": 60,
+        "Endurance": 67,
+        "Esquive": 54,
+        "Chance": 72,
+        "Charisme": 15,
+        "Courage": 61,
+        "Intelligence": 15,
+        "Volonté": 62,
+        "Perception": 69,
+        "Puissance magique": 60,
+        "Réserve de mana": 60
+      },
+      "resistances": {
+        "Résistance physique": 8,
+        "Résistance au feu": 6,
+        "Résistance au froid": 11,
+        "Résistance à la foudre": 6,
+        "Résistance au poison": 11
+      },
+      "pv": 245,
+      "competences_martiales": {
+        "Arc": 57,
+        "Armes de tir": 60,
+        "Discrétion": 35,
+        "Pièges": 35,
+        "Combat à deux armes": 53,
+        "Combat à mains nues": 40,
+        "Combat à deux mains": 43
+      },
+      "intimidation": 41,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Arc"
+      ],
+      "armure": "Armure de cuir",
+      "tier": 3,
+      "qualite": "De bonne facture",
+      "points": 31,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 70,
+        "objets": []
+      },
+      "mort_vivant": true,
+      "insensible_poison": true,
+      "sorts": [],
+      "degats_subis": {
+        "tranchant": 0.5,
+        "contondant": 1.5
+      }
+    },
+    {
+      "nom": "Squelette archer d’élite",
+      "code": "cult_skeleton_archer_elite",
+      "faction": "Culte des morts",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Squelette archer",
+      "niveau": "d’élite",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 67,
+        "Constitution": 70,
+        "Dextérité": 79,
+        "Vitesse": 67,
+        "Endurance": 76,
+        "Esquive": 61,
+        "Chance": 77,
+        "Charisme": 15,
+        "Courage": 67,
+        "Intelligence": 15,
+        "Volonté": 69,
+        "Perception": 74,
+        "Puissance magique": 70,
+        "Réserve de mana": 67
+      },
+      "resistances": {
+        "Résistance physique": 12,
+        "Résistance au feu": 12,
+        "Résistance au froid": 19,
+        "Résistance à la foudre": 10,
+        "Résistance au poison": 19
+      },
+      "pv": 276,
+      "competences_martiales": {
+        "Arc": 63,
+        "Armes de tir": 66,
+        "Discrétion": 43,
+        "Pièges": 42,
+        "Combat à deux armes": 61,
+        "Combat à mains nues": 48,
+        "Combat à deux mains": 50
+      },
+      "intimidation": 46,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Arc"
+      ],
+      "armure": "Armure de cuir",
+      "tier": 4,
+      "qualite": "De luxe",
+      "points": 46,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 60,
+        "objets": []
+      },
+      "mort_vivant": true,
+      "insensible_poison": true,
+      "sorts": [],
+      "degats_subis": {
+        "tranchant": 0.5,
+        "contondant": 1.5
+      }
+    },
+    {
+      "nom": "Zombie novice",
+      "code": "cult_zombie_novice",
+      "faction": "Culte des morts",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Zombie",
+      "niveau": "novice",
+      "centile": "P20",
+      "caracteristiques": {
+        "Force": 55,
+        "Constitution": 54,
+        "Dextérité": 44,
+        "Vitesse": 30,
+        "Endurance": 58,
+        "Esquive": 36,
+        "Chance": 44,
+        "Charisme": 10,
+        "Courage": 43,
+        "Intelligence": 10,
+        "Volonté": 45,
+        "Perception": 42,
+        "Puissance magique": 38,
+        "Réserve de mana": 43
+      },
+      "resistances": {
+        "Résistance physique": 2,
+        "Résistance au feu": 2,
+        "Résistance au froid": 1,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 2
+      },
+      "pv": 210,
+      "competences_martiales": {
+        "Griffes": 42,
+        "Armes naturelles": 46,
+        "Discrétion": 23,
+        "Pièges": 23,
+        "Combat à deux armes": 39,
+        "Combat à mains nues": 24,
+        "Combat à deux mains": 30
+      },
+      "intimidation": 32,
+      "port_d_armure": [],
+      "armes": [],
+      "armure": "Vêtements",
+      "tier": 1,
+      "qualite": "Usée",
+      "points": 8,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 90,
+        "objets": []
+      },
+      "attaque": {
+        "nom": "Griffes",
+        "degats_pv_base": "1D8",
+        "puissance_tranchante": 35,
+        "puissance_contondante": 20
+      },
+      "mort_vivant": true,
+      "insensible_poison": true,
+      "sorts": []
+    },
+    {
+      "nom": "Zombie",
+      "code": "cult_zombie",
+      "faction": "Culte des morts",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Zombie",
+      "niveau": "normal",
+      "centile": "P50",
+      "caracteristiques": {
+        "Force": 67,
+        "Constitution": 62,
+        "Dextérité": 55,
+        "Vitesse": 30,
+        "Endurance": 67,
+        "Esquive": 45,
+        "Chance": 54,
+        "Charisme": 10,
+        "Courage": 53,
+        "Intelligence": 10,
+        "Volonté": 55,
+        "Perception": 52,
+        "Puissance magique": 49,
+        "Réserve de mana": 52
+      },
+      "resistances": {
+        "Résistance physique": 5,
+        "Résistance au feu": 4,
+        "Résistance au froid": 4,
+        "Résistance à la foudre": 4,
+        "Résistance au poison": 5
+      },
+      "pv": 243,
+      "competences_martiales": {
+        "Griffes": 50,
+        "Armes naturelles": 54,
+        "Discrétion": 28,
+        "Pièges": 28,
+        "Combat à deux armes": 46,
+        "Combat à mains nues": 31,
+        "Combat à deux mains": 37
+      },
+      "intimidation": 37,
+      "port_d_armure": [],
+      "armes": [],
+      "armure": "Vêtements",
+      "tier": 2,
+      "qualite": "Correcte",
+      "points": 14,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 80,
+        "objets": []
+      },
+      "attaque": {
+        "nom": "Griffes",
+        "degats_pv_base": "1D8",
+        "puissance_tranchante": 35,
+        "puissance_contondante": 20
+      },
+      "mort_vivant": true,
+      "insensible_poison": true,
+      "sorts": []
+    },
+    {
+      "nom": "Zombie vétéran",
+      "code": "cult_zombie_veteran",
+      "faction": "Culte des morts",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Zombie",
+      "niveau": "vétéran",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 77,
+        "Constitution": 70,
+        "Dextérité": 64,
+        "Vitesse": 30,
+        "Endurance": 76,
+        "Esquive": 54,
+        "Chance": 63,
+        "Charisme": 10,
+        "Courage": 61,
+        "Intelligence": 10,
+        "Volonté": 62,
+        "Perception": 61,
+        "Puissance magique": 60,
+        "Réserve de mana": 60
+      },
+      "resistances": {
+        "Résistance physique": 8,
+        "Résistance au feu": 6,
+        "Résistance au froid": 11,
+        "Résistance à la foudre": 6,
+        "Résistance au poison": 11
+      },
+      "pv": 274,
+      "competences_martiales": {
+        "Griffes": 57,
+        "Armes naturelles": 60,
+        "Discrétion": 35,
+        "Pièges": 35,
+        "Combat à deux armes": 53,
+        "Combat à mains nues": 40,
+        "Combat à deux mains": 43
+      },
+      "intimidation": 41,
+      "port_d_armure": [],
+      "armes": [],
+      "armure": "Vêtements",
+      "tier": 3,
+      "qualite": "De bonne facture",
+      "points": 22,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 70,
+        "objets": []
+      },
+      "attaque": {
+        "nom": "Griffes",
+        "degats_pv_base": "1D8",
+        "puissance_tranchante": 35,
+        "puissance_contondante": 20
+      },
+      "mort_vivant": true,
+      "insensible_poison": true,
+      "sorts": []
+    },
+    {
+      "nom": "Zombie d’élite",
+      "code": "cult_zombie_elite",
+      "faction": "Culte des morts",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Zombie",
+      "niveau": "d’élite",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 84,
+        "Constitution": 75,
+        "Dextérité": 73,
+        "Vitesse": 30,
+        "Endurance": 82,
+        "Esquive": 61,
+        "Chance": 72,
+        "Charisme": 10,
+        "Courage": 67,
+        "Intelligence": 10,
+        "Volonté": 69,
+        "Perception": 69,
+        "Puissance magique": 70,
+        "Réserve de mana": 67
+      },
+      "resistances": {
+        "Résistance physique": 12,
+        "Résistance au feu": 12,
+        "Résistance au froid": 19,
+        "Résistance à la foudre": 10,
+        "Résistance au poison": 19
+      },
+      "pv": 295,
+      "competences_martiales": {
+        "Griffes": 63,
+        "Armes naturelles": 66,
+        "Discrétion": 43,
+        "Pièges": 42,
+        "Combat à deux armes": 61,
+        "Combat à mains nues": 48,
+        "Combat à deux mains": 50
+      },
+      "intimidation": 46,
+      "port_d_armure": [],
+      "armes": [],
+      "armure": "Vêtements",
+      "tier": 4,
+      "qualite": "De luxe",
+      "points": 32,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 60,
+        "objets": []
+      },
+      "attaque": {
+        "nom": "Griffes",
+        "degats_pv_base": "1D8",
+        "puissance_tranchante": 35,
+        "puissance_contondante": 20
+      },
+      "mort_vivant": true,
+      "insensible_poison": true,
+      "sorts": []
+    },
+    {
+      "nom": "Spectre novice",
+      "code": "cult_specter_novice",
+      "faction": "Culte des morts",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Spectre",
+      "niveau": "novice",
+      "centile": "P20",
+      "caracteristiques": {
+        "Force": 30,
+        "Constitution": 35,
+        "Dextérité": 55,
+        "Vitesse": 53,
+        "Endurance": 46,
+        "Esquive": 54,
+        "Chance": 44,
+        "Charisme": 45,
+        "Courage": 43,
+        "Intelligence": 38,
+        "Volonté": 55,
+        "Perception": 42,
+        "Puissance magique": 38,
+        "Réserve de mana": 43
+      },
+      "resistances": {
+        "Résistance physique": 2,
+        "Résistance au feu": 2,
+        "Résistance au froid": 1,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 2
+      },
+      "pv": 149,
+      "competences_martiales": {
+        "Toucher spectral": 42,
+        "Armes naturelles": 46,
+        "Discrétion": 23,
+        "Pièges": 23,
+        "Combat à deux armes": 39,
+        "Combat à mains nues": 24,
+        "Combat à deux mains": 30
+      },
+      "intimidation": 32,
+      "port_d_armure": [],
+      "armes": [],
+      "armure": null,
+      "tier": 1,
+      "qualite": "Usée",
+      "points": 12,
+      "niveau_mission_min": 3,
+      "butin": {
+        "equipement": 90,
+        "objets": []
+      },
+      "attaque": {
+        "nom": "Toucher spectral",
+        "degats_pv_base": "1D6",
+        "degats_type": "psychique"
+      },
+      "mort_vivant": true,
+      "insensible_poison": true,
+      "sorts": [],
+      "immunite_physique": true
+    },
+    {
+      "nom": "Spectre",
+      "code": "cult_specter",
+      "faction": "Culte des morts",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Spectre",
+      "niveau": "normal",
+      "centile": "P50",
+      "caracteristiques": {
+        "Force": 41,
+        "Constitution": 44,
+        "Dextérité": 64,
+        "Vitesse": 60,
+        "Endurance": 58,
+        "Esquive": 61,
+        "Chance": 54,
+        "Charisme": 56,
+        "Courage": 53,
+        "Intelligence": 52,
+        "Volonté": 62,
+        "Perception": 52,
+        "Puissance magique": 49,
+        "Réserve de mana": 52
+      },
+      "resistances": {
+        "Résistance physique": 5,
+        "Résistance au feu": 4,
+        "Résistance au froid": 4,
+        "Résistance à la foudre": 4,
+        "Résistance au poison": 5
+      },
+      "pv": 185,
+      "competences_martiales": {
+        "Toucher spectral": 50,
+        "Armes naturelles": 54,
+        "Discrétion": 28,
+        "Pièges": 28,
+        "Combat à deux armes": 46,
+        "Combat à mains nues": 31,
+        "Combat à deux mains": 37
+      },
+      "intimidation": 37,
+      "port_d_armure": [],
+      "armes": [],
+      "armure": null,
+      "tier": 2,
+      "qualite": "Correcte",
+      "points": 22,
+      "niveau_mission_min": 3,
+      "butin": {
+        "equipement": 80,
+        "objets": []
+      },
+      "attaque": {
+        "nom": "Toucher spectral",
+        "degats_pv_base": "1D6",
+        "degats_type": "psychique"
+      },
+      "mort_vivant": true,
+      "insensible_poison": true,
+      "sorts": [],
+      "immunite_physique": true
+    },
+    {
+      "nom": "Spectre vétéran",
+      "code": "cult_specter_veteran",
+      "faction": "Culte des morts",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Spectre",
+      "niveau": "vétéran",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 55,
+        "Constitution": 54,
+        "Dextérité": 73,
+        "Vitesse": 67,
+        "Endurance": 67,
+        "Esquive": 68,
+        "Chance": 63,
+        "Charisme": 64,
+        "Courage": 61,
+        "Intelligence": 65,
+        "Volonté": 69,
+        "Perception": 61,
+        "Puissance magique": 60,
+        "Réserve de mana": 60
+      },
+      "resistances": {
+        "Résistance physique": 8,
+        "Résistance au feu": 6,
+        "Résistance au froid": 11,
+        "Résistance à la foudre": 6,
+        "Résistance au poison": 11
+      },
+      "pv": 223,
+      "competences_martiales": {
+        "Toucher spectral": 57,
+        "Armes naturelles": 60,
+        "Discrétion": 35,
+        "Pièges": 35,
+        "Combat à deux armes": 53,
+        "Combat à mains nues": 40,
+        "Combat à deux mains": 43
+      },
+      "intimidation": 41,
+      "port_d_armure": [],
+      "armes": [],
+      "armure": null,
+      "tier": 3,
+      "qualite": "De bonne facture",
+      "points": 42,
+      "niveau_mission_min": 3,
+      "butin": {
+        "equipement": 70,
+        "objets": []
+      },
+      "attaque": {
+        "nom": "Toucher spectral",
+        "degats_pv_base": "1D6",
+        "degats_type": "psychique"
+      },
+      "mort_vivant": true,
+      "insensible_poison": true,
+      "sorts": [],
+      "immunite_physique": true
+    },
+    {
+      "nom": "Spectre d’élite",
+      "code": "cult_specter_elite",
+      "faction": "Culte des morts",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Spectre",
+      "niveau": "d’élite",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 67,
+        "Constitution": 62,
+        "Dextérité": 79,
+        "Vitesse": 71,
+        "Endurance": 76,
+        "Esquive": 73,
+        "Chance": 72,
+        "Charisme": 71,
+        "Courage": 67,
+        "Intelligence": 77,
+        "Volonté": 73,
+        "Perception": 69,
+        "Puissance magique": 70,
+        "Réserve de mana": 67
+      },
+      "resistances": {
+        "Résistance physique": 12,
+        "Résistance au feu": 12,
+        "Résistance au froid": 19,
+        "Résistance à la foudre": 10,
+        "Résistance au poison": 19
+      },
+      "pv": 254,
+      "competences_martiales": {
+        "Toucher spectral": 63,
+        "Armes naturelles": 66,
+        "Discrétion": 43,
+        "Pièges": 42,
+        "Combat à deux armes": 61,
+        "Combat à mains nues": 48,
+        "Combat à deux mains": 50
+      },
+      "intimidation": 46,
+      "port_d_armure": [],
+      "armes": [],
+      "armure": null,
+      "tier": 4,
+      "qualite": "De luxe",
+      "points": 66,
+      "niveau_mission_min": 3,
+      "butin": {
+        "equipement": 60,
+        "objets": []
+      },
+      "attaque": {
+        "nom": "Toucher spectral",
+        "degats_pv_base": "1D6",
+        "degats_type": "psychique"
+      },
+      "mort_vivant": true,
+      "insensible_poison": true,
+      "sorts": [],
+      "immunite_physique": true
+    },
+    {
+      "nom": "Acolyte novice",
+      "code": "cult_acolyte_novice",
+      "faction": "Culte des morts",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Acolyte",
+      "niveau": "novice",
+      "centile": "P20",
+      "caracteristiques": {
+        "Force": 41,
+        "Constitution": 35,
+        "Dextérité": 64,
+        "Vitesse": 53,
+        "Endurance": 46,
+        "Esquive": 45,
+        "Chance": 44,
+        "Charisme": 45,
+        "Courage": 34,
+        "Intelligence": 38,
+        "Volonté": 55,
+        "Perception": 42,
+        "Puissance magique": 38,
+        "Réserve de mana": 43
+      },
+      "resistances": {
+        "Résistance physique": 2,
+        "Résistance au feu": 2,
+        "Résistance au froid": 1,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 2
+      },
+      "pv": 149,
+      "competences_martiales": {
+        "Dague": 42,
+        "Lames courtes": 46,
+        "Discrétion": 28,
+        "Pièges": 23,
+        "Combat à deux armes": 39,
+        "Combat à mains nues": 24,
+        "Combat à deux mains": 30
+      },
+      "intimidation": 32,
+      "port_d_armure": [],
+      "armes": [
+        "Dague",
+        "Dague"
+      ],
+      "armure": "Vêtements",
+      "tier": 1,
+      "qualite": "Usée",
+      "points": 5,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 90,
+        "objets": []
+      }
+    },
+    {
+      "nom": "Acolyte",
+      "code": "cult_acolyte",
+      "faction": "Culte des morts",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Acolyte",
+      "niveau": "normal",
+      "centile": "P50",
+      "caracteristiques": {
+        "Force": 55,
+        "Constitution": 44,
+        "Dextérité": 73,
+        "Vitesse": 60,
+        "Endurance": 58,
+        "Esquive": 54,
+        "Chance": 54,
+        "Charisme": 56,
+        "Courage": 43,
+        "Intelligence": 52,
+        "Volonté": 62,
+        "Perception": 52,
+        "Puissance magique": 49,
+        "Réserve de mana": 52
+      },
+      "resistances": {
+        "Résistance physique": 5,
+        "Résistance au feu": 4,
+        "Résistance au froid": 4,
+        "Résistance à la foudre": 4,
+        "Résistance au poison": 5
+      },
+      "pv": 185,
+      "competences_martiales": {
+        "Dague": 50,
+        "Lames courtes": 54,
+        "Discrétion": 35,
+        "Pièges": 28,
+        "Combat à deux armes": 46,
+        "Combat à mains nues": 31,
+        "Combat à deux mains": 37
+      },
+      "intimidation": 37,
+      "port_d_armure": [],
+      "armes": [
+        "Dague",
+        "Dague"
+      ],
+      "armure": "Vêtements",
+      "tier": 2,
+      "qualite": "Correcte",
+      "points": 11,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 80,
+        "objets": []
+      }
+    },
+    {
+      "nom": "Acolyte vétéran",
+      "code": "cult_acolyte_veteran",
+      "faction": "Culte des morts",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Acolyte",
+      "niveau": "vétéran",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 67,
+        "Constitution": 54,
+        "Dextérité": 79,
+        "Vitesse": 67,
+        "Endurance": 67,
+        "Esquive": 61,
+        "Chance": 63,
+        "Charisme": 64,
+        "Courage": 53,
+        "Intelligence": 65,
+        "Volonté": 69,
+        "Perception": 61,
+        "Puissance magique": 60,
+        "Réserve de mana": 60
+      },
+      "resistances": {
+        "Résistance physique": 8,
+        "Résistance au feu": 6,
+        "Résistance au froid": 11,
+        "Résistance à la foudre": 6,
+        "Résistance au poison": 11
+      },
+      "pv": 223,
+      "competences_martiales": {
+        "Dague": 57,
+        "Lames courtes": 60,
+        "Discrétion": 43,
+        "Pièges": 35,
+        "Combat à deux armes": 53,
+        "Combat à mains nues": 40,
+        "Combat à deux mains": 43
+      },
+      "intimidation": 41,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Dague",
+        "Dague"
+      ],
+      "armure": "Gambison",
+      "tier": 3,
+      "qualite": "De bonne facture",
+      "points": 20,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 70,
+        "objets": []
+      }
+    },
+    {
+      "nom": "Acolyte d’élite",
+      "code": "cult_acolyte_elite",
+      "faction": "Culte des morts",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Acolyte",
+      "niveau": "d’élite",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 77,
+        "Constitution": 62,
+        "Dextérité": 79,
+        "Vitesse": 71,
+        "Endurance": 76,
+        "Esquive": 68,
+        "Chance": 72,
+        "Charisme": 71,
+        "Courage": 61,
+        "Intelligence": 77,
+        "Volonté": 73,
+        "Perception": 69,
+        "Puissance magique": 70,
+        "Réserve de mana": 67
+      },
+      "resistances": {
+        "Résistance physique": 12,
+        "Résistance au feu": 12,
+        "Résistance au froid": 19,
+        "Résistance à la foudre": 10,
+        "Résistance au poison": 19
+      },
+      "pv": 254,
+      "competences_martiales": {
+        "Dague": 63,
+        "Lames courtes": 66,
+        "Discrétion": 43,
+        "Pièges": 42,
+        "Combat à deux armes": 61,
+        "Combat à mains nues": 48,
+        "Combat à deux mains": 50
+      },
+      "intimidation": 46,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Dague",
+        "Dague"
+      ],
+      "armure": "Armure de cuir",
+      "tier": 4,
+      "qualite": "De luxe",
+      "points": 40,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 60,
+        "objets": []
+      }
+    },
+    {
+      "nom": "Nécromancien",
+      "code": "cult_necromancer_1",
+      "faction": "Culte des morts",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Chef",
+      "niveau": "chef 1",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 67,
+        "Constitution": 62,
+        "Dextérité": 73,
+        "Vitesse": 60,
+        "Endurance": 67,
+        "Esquive": 61,
+        "Chance": 63,
+        "Charisme": 64,
+        "Courage": 61,
+        "Intelligence": 65,
+        "Volonté": 69,
+        "Perception": 61,
+        "Puissance magique": 70,
+        "Réserve de mana": 67
+      },
+      "resistances": {
+        "Résistance physique": 8,
+        "Résistance au feu": 6,
+        "Résistance au froid": 11,
+        "Résistance à la foudre": 6,
+        "Résistance au poison": 11
+      },
+      "pv": 247,
+      "competences_martiales": {
+        "Bâton long": 57,
+        "Bâtons": 60,
+        "Discrétion": 35,
+        "Pièges": 35,
+        "Combat à deux armes": 53,
+        "Combat à mains nues": 40,
+        "Combat à deux mains": 43
+      },
+      "intimidation": 46,
+      "port_d_armure": [],
+      "armes": [
+        "Bâton long"
+      ],
+      "armure": "Vêtements",
+      "tier": 3,
+      "qualite": "De bonne facture",
+      "points": 25,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 70,
+        "objets": []
+      },
+      "ecoles": {
+        "Nécromancie": 56
+      },
+      "sorts": [
+        {
+          "code": "bone_army",
+          "maitrise": 20
+        },
+        {
+          "code": "raise_dead",
+          "maitrise": 20
+        },
+        {
+          "code": "death_arrow",
+          "maitrise": 20
+        }
+      ]
+    },
+    {
+      "nom": "Maître nécromancien",
+      "code": "cult_necromancer_2",
+      "faction": "Culte des morts",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Chef",
+      "niveau": "chef 2",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 77,
+        "Constitution": 70,
+        "Dextérité": 79,
+        "Vitesse": 67,
+        "Endurance": 76,
+        "Esquive": 68,
+        "Chance": 72,
+        "Charisme": 71,
+        "Courage": 67,
+        "Intelligence": 77,
+        "Volonté": 73,
+        "Perception": 69,
+        "Puissance magique": 76,
+        "Réserve de mana": 71
+      },
+      "resistances": {
+        "Résistance physique": 12,
+        "Résistance au feu": 12,
+        "Résistance au froid": 19,
+        "Résistance à la foudre": 10,
+        "Résistance au poison": 19
+      },
+      "pv": 278,
+      "competences_martiales": {
+        "Bâton long": 63,
+        "Bâtons": 66,
+        "Discrétion": 43,
+        "Pièges": 42,
+        "Combat à deux armes": 61,
+        "Combat à mains nues": 48,
+        "Combat à deux mains": 50
+      },
+      "intimidation": 49,
+      "port_d_armure": [],
+      "armes": [
+        "Bâton long"
+      ],
+      "armure": "Vêtements",
+      "tier": 4,
+      "qualite": "De luxe",
+      "points": 42,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 60,
+        "objets": []
+      },
+      "ecoles": {
+        "Nécromancie": 61
+      },
+      "sorts": [
+        {
+          "code": "bone_army",
+          "maitrise": 35
+        },
+        {
+          "code": "raise_dead",
+          "maitrise": 35
+        },
+        {
+          "code": "curse",
+          "maitrise": 35
+        },
+        {
+          "code": "death_arrow",
+          "maitrise": 35
+        }
+      ]
+    },
+    {
+      "nom": "Seigneur des tombes",
+      "code": "cult_necromancer_3",
+      "faction": "Culte des morts",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Chef",
+      "niveau": "chef 3",
+      "centile": "P95",
+      "caracteristiques": {
+        "Force": 84,
+        "Constitution": 75,
+        "Dextérité": 79,
+        "Vitesse": 71,
+        "Endurance": 82,
+        "Esquive": 73,
+        "Chance": 77,
+        "Charisme": 77,
+        "Courage": 71,
+        "Intelligence": 83,
+        "Volonté": 80,
+        "Perception": 74,
+        "Puissance magique": 86,
+        "Réserve de mana": 84
+      },
+      "resistances": {
+        "Résistance physique": 14,
+        "Résistance au feu": 14,
+        "Résistance au froid": 22,
+        "Résistance à la foudre": 12,
+        "Résistance au poison": 22
+      },
+      "pv": 298,
+      "competences_martiales": {
+        "Bâton long": 66,
+        "Bâtons": 69,
+        "Discrétion": 48,
+        "Pièges": 46,
+        "Combat à deux armes": 66,
+        "Combat à mains nues": 54,
+        "Combat à deux mains": 55
+      },
+      "intimidation": 55,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Bâton long"
+      ],
+      "armure": "Gambison",
+      "tier": 4,
+      "qualite": "De luxe",
+      "points": 62,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 60,
+        "objets": []
+      },
+      "ecoles": {
+        "Nécromancie": 64
+      },
+      "sorts": [
+        {
+          "code": "bone_army",
+          "maitrise": 50
+        },
+        {
+          "code": "summon_specter",
+          "maitrise": 50
+        },
+        {
+          "code": "raise_dead",
+          "maitrise": 50
+        },
+        {
+          "code": "curse",
+          "maitrise": 50
+        },
+        {
+          "code": "necrosis",
+          "maitrise": 50
+        },
+        {
+          "code": "death_arrow",
+          "maitrise": 50
+        }
+      ]
+    },
+    {
+      "nom": "Roi des morts",
+      "code": "cult_necromancer_4",
+      "faction": "Culte des morts",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Chef",
+      "niveau": "chef 4",
+      "centile": "P99",
+      "caracteristiques": {
+        "Force": 96,
+        "Constitution": 85,
+        "Dextérité": 90,
+        "Vitesse": 78,
+        "Endurance": 92,
+        "Esquive": 81,
+        "Chance": 90,
+        "Charisme": 86,
+        "Courage": 79,
+        "Intelligence": 94,
+        "Volonté": 80,
+        "Perception": 82,
+        "Puissance magique": 86,
+        "Réserve de mana": 84
+      },
+      "resistances": {
+        "Résistance physique": 18,
+        "Résistance au feu": 31,
+        "Résistance au froid": 31,
+        "Résistance à la foudre": 26,
+        "Résistance au poison": 30
+      },
+      "pv": 334,
+      "competences_martiales": {
+        "Bâton long": 73,
+        "Bâtons": 79,
+        "Discrétion": 56,
+        "Pièges": 54,
+        "Combat à deux armes": 77,
+        "Combat à mains nues": 83,
+        "Combat à deux mains": 63
+      },
+      "intimidation": 55,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Bâton long"
+      ],
+      "armure": "Gambison",
+      "tier": 4,
+      "qualite": "De luxe",
+      "points": 104,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 60,
+        "objets": []
+      },
+      "ecoles": {
+        "Nécromancie": 70
+      },
+      "sorts": [
+        {
+          "code": "bone_army",
+          "maitrise": 65
+        },
+        {
+          "code": "summon_specter",
+          "maitrise": 65
+        },
+        {
+          "code": "raise_dead",
+          "maitrise": 65
+        },
+        {
+          "code": "curse",
+          "maitrise": 65
+        },
+        {
+          "code": "soul_siphon",
+          "maitrise": 65
+        },
+        {
+          "code": "necrosis",
+          "maitrise": 65
+        },
+        {
+          "code": "death_arrow",
+          "maitrise": 65
+        }
+      ]
     }
   ]
 }

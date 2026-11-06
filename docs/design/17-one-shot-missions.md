@@ -268,7 +268,7 @@ ennemis, récompense, expiration…), la lettre du commanditaire s'il y en a une
 
 > « Le peuple est aléatoire, la difficulté dépend de la réputation et on équilibre la difficulté grâce aux nombre d'ennemis qu'on ajoute. » « Chaque ennemi devrait avoir un équivalent en point de combat […] et on monte des escouades grâce à cela. » « Oui, vas-y pour les points et 35 PO par point. »
 
-- **Une seule carte « Faire le ménage »** au tableau ; son camp est tiré au hasard parmi les peuples de camps (`one-shot-missions.json`, `camps[]`, même poids) : **Gobelins**, **Orcs**, **Hommes-bêtes**, **Voleurs** (Humains) et **Ogres** (Idan : « vas-y pour le camp orc et enchaîne avec Hommes-bêtes, voleurs et Ogres »). Chaque peuple a ses lignes, son chef, ses trois ordres de mission et ses noms (tribus, chefs).
+- **Une seule carte « Faire le ménage »** au tableau ; son camp est tiré au hasard parmi les peuples de camps (`one-shot-missions.json`, `camps[]`, même poids) : **Gobelins**, **Orcs**, **Hommes-bêtes**, **Voleurs** (Humains) et **Ogres** (Idan : « vas-y pour le camp orc et enchaîne avec Hommes-bêtes, voleurs et Ogres »). Chaque peuple a ses lignes, son chef, ses trois ordres de mission et ses noms (tribus, chefs). Depuis le §19 : **Culte des morts**.
 - **Points de combat** : chaque fiche (`enemy-archetypes.json`, `points`) vaut ce qu'elle pèse au combat, sur l'échelle d'un mercenaire généré moyen = 10 (simulateur : nombre d'exemplaires qu'il faut contre 3 mercenaires pour gagner une fois sur deux ; chefs : 10 × le nombre de mercenaires qui le battent une fois sur deux ; tous mesurés depuis le §15).
 - **Budget** : une mission a le budget de sa difficulté (`budgets`) ; difficulté 1 : tiré entre **55 et 75 points**. Le camp prend son chef, puis tire des ennemis (lignes selon leurs poids ; « normal » dans 5 % des tirages, sinon novice) **tant que le total se rapproche du budget**. Résultat : 65 points en moyenne pour chaque peuple ; en plus du chef, 6,5 gobelins en moyenne (comme l'ancien camp à 1D4+4), 4,3 orcs, 3,7 hommes-bêtes, 3,5 voleurs ou 2,7 ogres. Le total s'écarte du budget d'au plus la moitié d'un « normal ».
 - **Lignes des nouveaux peuples** : cinq rôles comme chez les gobelins (un front, un garde à bouclier ou arme lourde, un rapide, deux tireurs), avec les armes que ce peuple porte vraiment à la génération (mesuré sur 3 000 personnages générés). Mêmes armures par rôle et même spécialisation que les lignes gobelines correspondantes. Une ligne de chaque peuple, ses armes et ses poids peuvent changer sans toucher au reste : seuls ses points comptent pour le budget.
@@ -399,3 +399,26 @@ Une qualité par tier (`item-qualities.json`, doc 05) : T1 Usée, T2 Correcte, T
 - **Anciennes sauvegardes** : l'offre de contrat et l'offre de garde du corps passent dans les deux premières cases.
 - Code : `game-core/campaign.js` (`tavernBoard`, `fillTavernBoard`, `boardOffers`, `boardOffer`) ; interface `prototype-web/contract-ui.js` (une carte par case, « Nouvelle mission demain » pour une case vide).
 
+
+## 19 — Culte des morts (Idan, 2026-11-06)
+
+> « On ajoute des factions morts-vivants ? Une plutôt basée sur un vampire comme capitaine et l'autre sur un nécromancien… » « Oui, insensibles aux poisons. Squelettes très résistants aux dégâts tranchants, très faibles aux contondants… » « Les portraits arriveront ! »
+
+Sixième peuple de camp (`one-shot-missions.json`, camp « Cimetière profané »), tiré comme les autres (un camp sur six). La Cour de sang (vampire) suivra.
+
+| Culte des morts | Armes | Novice | Normal | Vétéran | Élite |
+|---|---|---|---|---|---|
+| Squelette guerrier (30) | Épée courte + Rondache | 12 | 22 | 42 | 66 |
+| Squelette archer (20) | Arc | 12 | 19 | 31 | 46 |
+| Zombie (20) | Griffes (arme naturelle, 1D8) | 8 | 14 | 22 | 32 |
+| Acolyte (20) | deux Dagues | 5 | 11 | 20 | 40 |
+| Spectre (10) | Toucher spectral (psychique, 1D6) | 12* | 22* | 42* | 66* |
+
+Chefs (Bâton long, école de Nécromancie) : **Nécromancien** (25), **Maître nécromancien** (42), **Seigneur des tombes** (62), **Roi des morts** (104). Leurs sorts (maîtrise 20, 35, 50, 65), dans l'ordre où l'IA les essaie : Armée d'os, Invocation de spectre (chefs 3 et 4), Résurrection, Malédiction (dès le chef 2), Siphon d'âme (chef 4), Nécrose (chefs 3 et 4), Flèche de mort. Règles des morts-vivants et IA des sorts : doc 04, « Invocations et morts-vivants ».
+
+- **Morts-vivants** (squelettes, zombies, spectres) : sans peur, insensibles au poison. **Squelettes** : dégâts tranchants × 0,5, contondants × 1,5 (`degats_subis`). **Spectres** : insensibles aux armes (seuls les sorts les blessent), à partir du niveau de mission 3.
+- **Points** : même méthode qu'au §14 (troupes contre 3 mercenaires générés, chefs contre 1 à 27 ; un combat bloqué compte comme une victoire ennemie), 120 combats par effectif, sur une carte 30 × 15 sans décor. **Recalage × 1,2** : les fiches témoins des Voleurs (Coupe-jarret, Spadassin, Archer, Bandit, Chef de brigands) mesurées le même jour sortent en moyenne 1,2 fois plus bas que leurs points figés ; les points du Culte sont donc les mesures × 1,2, pour rester sur la même échelle que les autres peuples.
+- **\* Spectre, points provisoires** (ceux du Squelette guerrier) : il ne se mesure pas. Seul contre 10 mercenaires, il gagne 77 % (novice) à 91 % (élite) des combats, même quand nos mages lancent leurs sorts, car rien d'autre ne le blesse et le combat bloqué compte pour lui. À revoir avec Idan.
+- **Ordres** : le chef de village (les tombes ouvertes), le prêtre (`noms_commanditaire` : `pretres`) et l'ordre de l'Empereur. Codes : `village_culte`, `priest_culte`, `emperor_culte`. Noms : `cultes_des_morts`, `necromanciens`.
+- **Cimetière** (`mission-landscapes.json`) : tombes (nouveau décor, infranchissable, transparent, couverture partielle), un peu de forêt, de marais, de buissons et d'éboulis ; enceinte de **murets** au lieu de la palissade ; camp au sol.
+- Code : `game-core/missions.js` (`applyArchetype` : `attaque`, `mort_vivant`, `insensible_poison`, `immunite_physique`, `degats_subis`, `ecoles`, `sorts`), `game-core/combat-engine.js` (`poisonImmune`, `damageTypeFactor`), `prototype-web/mission.js` (`missionAiSpell`). Test : `tests/undead-cult.test.js`.

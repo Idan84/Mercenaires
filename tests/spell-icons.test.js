@@ -43,6 +43,9 @@ const spellIconHtml=new Function("esc",ui.match(/function spellIconHtml\(spell\)
 assert.equal(spellIconHtml(spells[0]),'<span class="spell-icon" aria-hidden="true"><img src="assets/spells/vie/quick_heal.webp" alt="" loading="lazy">'
   +'<img src="assets/spells/vie/cadre.webp" alt="" loading="lazy"></span>');
 assert.equal(spellIconHtml(null),"");
-assert.equal(spellIconHtml(spells.find(x=>!x.icone)),"","un sort sans image : pas d'icône");
+// Un sort sans parchemin : le cadre de son école seul (Chatty, 2026-11-05).
+const bare=spells.find(x=>!x.icone);
+assert.equal(spellIconHtml(bare),`<span class="spell-icon" aria-hidden="true"><img src="assets/${bare.cadre}" alt="" loading="lazy"></span>`,"un sort sans parchemin : le cadre seul");
+assert.equal(spellIconHtml({...bare,cadre:null}),"","ni parchemin ni cadre : pas d'icône");
 
 console.log("Icônes des sorts : parchemins, cadres et affichage — OK");

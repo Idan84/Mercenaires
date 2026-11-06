@@ -1519,8 +1519,9 @@ function renderMagicTab(c) {
 
 // Icône d'un sort (Idan, 2026-10-25) : le parchemin du sort sous le cadre de son école (spells.json : icone, cadre).
 function spellIconHtml(spell) {
-  if (!spell?.icone) return "";
-  return `<span class="spell-icon" aria-hidden="true"><img src="assets/${esc(spell.icone)}" alt="" loading="lazy">`
+  if (!spell?.icone && !spell?.cadre) return "";
+  return `<span class="spell-icon" aria-hidden="true">`
+    + `${spell.icone ? `<img src="assets/${esc(spell.icone)}" alt="" loading="lazy">` : ""}`
     + `${spell.cadre ? `<img src="assets/${esc(spell.cadre)}" alt="" loading="lazy">` : ""}</span>`;
 }
 

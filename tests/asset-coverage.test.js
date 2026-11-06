@@ -34,8 +34,8 @@ assert.equal(icons.filter(i=>i.present).length,spells.filter(s=>s.icone).length)
 assert.ok(icons.some(i=>i.file==="quick_heal.jpg"&&i.present),"Soin rapide a son parchemin");
 const schoolFrames=byKey.frames.groups[0].items;
 assert.equal(schoolFrames.length,new Set(spells.map(s=>s.ecole)).size);
-assert.equal(schoolFrames.find(i=>i.name==="Vie").present,true);
-assert.equal(schoolFrames.find(i=>i.name==="Feu").present,false);
+// Les neuf cadres d'école (Chatty, 2026-11-05) : tous présents.
+assert.ok(schoolFrames.every(i=>i.present),"un cadre par école de magie");
 assert.ok(byKey.frames.groups[1].items.every(i=>i.present),"cadres de tier T1 à T4 présents");
 
 // Ennemis et invocations : pas encore d'image dans le jeu, tout est « à produire ».

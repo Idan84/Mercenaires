@@ -35,7 +35,7 @@ assert.equal(new Set(court.map(r => r.code)).size, 28);
 const weapons = new Set(reference.weapons.rows.map(w => w.nom)), armors = new Set(reference.baseArmors.rows.map(a => a.nom));
 const spells = new Map(reference.spells.rows.map(s => [s.code, s]));
 for (const r of court) {
-  if (process.env.SKIP_POINTS !== "1") assert.ok(r.points > 0 && Number.isFinite(r.points), r.code + " : points");
+  assert.ok(r.points > 0 && Number.isFinite(r.points), r.code + " : points");
   assert.equal(r.pv, Math.round(3 * (r.caracteristiques.Constitution + 0.2 * r.caracteristiques.Endurance + 0.1 * r.caracteristiques.Volonté)), r.code + " : PV");
   for (const w of r.armes) assert.ok(weapons.has(w), r.code + " : " + w);
   assert.ok(r.armure === null || armors.has(r.armure), r.code);

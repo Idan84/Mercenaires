@@ -205,7 +205,8 @@ for(const a of reference.enemyArchetypes.rows){
   let novice=null;
   for(let day=50;!novice;day++) novice=rules.buildEnemies(rules.createOffer({day,level:1}),()=>base()).find(e=>breakRules.archetype(e.archetype).tier===1);
   let kept=0,carried=0;
-  for(let i=0;i<500;i++){ kept+=breakRules.outcome(offer,{victory:true,deadEnemies:[novice]}).loot.length; carried+=novice.items.length; }
+  // Une arme naturelle (griffes, morsure) ne se ramasse jamais : on ne compte que l'équipement.
+  for(let i=0;i<500;i++){ kept+=breakRules.outcome(offer,{victory:true,deadEnemies:[novice]}).loot.length; carried+=novice.items.filter(it=>!it.natural).length; }
   assert.ok(Math.abs(kept/carried-0.9)<0.04,`T1 : 90 % récupérés (${kept} / ${carried})`);
 }
 // Chefs (Idan, 2026-11-01 : « les chefs qui n'ont pas de points mesurés ») : toutes les fiches ont leurs points, et chaque

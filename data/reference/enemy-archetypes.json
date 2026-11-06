@@ -8974,7 +8974,7 @@
       "armure": "Cotte de mailles",
       "tier": 1,
       "qualite": "Usée",
-      "points": null,
+      "points": 6,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 90,
@@ -9034,7 +9034,7 @@
       "armure": "Brigandine",
       "tier": 2,
       "qualite": "Correcte",
-      "points": null,
+      "points": 14,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 80,
@@ -9095,7 +9095,7 @@
       "armure": "Armure d'écailles",
       "tier": 3,
       "qualite": "De bonne facture",
-      "points": null,
+      "points": 31,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 70,
@@ -9156,7 +9156,7 @@
       "armure": "Armure de plates",
       "tier": 4,
       "qualite": "De luxe",
-      "points": null,
+      "points": 68,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -9214,7 +9214,7 @@
       "armure": "Vêtements",
       "tier": 1,
       "qualite": "Usée",
-      "points": null,
+      "points": 7,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 90,
@@ -9290,7 +9290,7 @@
       "armure": "Gambison",
       "tier": 2,
       "qualite": "Correcte",
-      "points": null,
+      "points": 16,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 80,
@@ -9366,7 +9366,7 @@
       "armure": "Armure de cuir",
       "tier": 3,
       "qualite": "De bonne facture",
-      "points": null,
+      "points": 26,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 70,
@@ -9442,7 +9442,7 @@
       "armure": "Armure de cuir",
       "tier": 4,
       "qualite": "De luxe",
-      "points": null,
+      "points": 52,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -9515,7 +9515,7 @@
       "armure": "Vêtements",
       "tier": 1,
       "qualite": "Usée",
-      "points": null,
+      "points": 12,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 90,
@@ -9572,7 +9572,7 @@
       "armure": "Vêtements",
       "tier": 2,
       "qualite": "Correcte",
-      "points": null,
+      "points": 22,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 80,
@@ -9631,7 +9631,7 @@
       "armure": "Gambison",
       "tier": 3,
       "qualite": "De bonne facture",
-      "points": null,
+      "points": 32,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 70,
@@ -9690,7 +9690,7 @@
       "armure": "Armure de cuir",
       "tier": 4,
       "qualite": "De luxe",
-      "points": null,
+      "points": 55,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -9745,7 +9745,7 @@
       "armure": "Vêtements",
       "tier": 1,
       "qualite": "Usée",
-      "points": null,
+      "points": 11,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 90,
@@ -9809,7 +9809,7 @@
       "armure": "Vêtements",
       "tier": 2,
       "qualite": "Correcte",
-      "points": null,
+      "points": 19,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 80,
@@ -9873,7 +9873,7 @@
       "armure": "Vêtements",
       "tier": 3,
       "qualite": "De bonne facture",
-      "points": null,
+      "points": 30,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 70,
@@ -9937,7 +9937,7 @@
       "armure": "Vêtements",
       "tier": 4,
       "qualite": "De luxe",
-      "points": null,
+      "points": 48,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -10001,7 +10001,7 @@
       "armure": null,
       "tier": 1,
       "qualite": "Usée",
-      "points": null,
+      "points": 5,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 90,
@@ -10061,7 +10061,7 @@
       "armure": null,
       "tier": 2,
       "qualite": "Correcte",
-      "points": null,
+      "points": 10,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 80,
@@ -10121,7 +10121,7 @@
       "armure": null,
       "tier": 3,
       "qualite": "De bonne facture",
-      "points": null,
+      "points": 18,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 70,
@@ -10181,7 +10181,7 @@
       "armure": null,
       "tier": 4,
       "qualite": "De luxe",
-      "points": null,
+      "points": 31,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -10241,7 +10241,7 @@
       "armure": null,
       "tier": 1,
       "qualite": "Usée",
-      "points": null,
+      "points": 5,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 90,
@@ -10302,7 +10302,7 @@
       "armure": null,
       "tier": 2,
       "qualite": "Correcte",
-      "points": null,
+      "points": 8,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 80,
@@ -10363,7 +10363,7 @@
       "armure": null,
       "tier": 3,
       "qualite": "De bonne facture",
-      "points": null,
+      "points": 18,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 70,
@@ -10424,7 +10424,7 @@
       "armure": null,
       "tier": 4,
       "qualite": "De luxe",
-      "points": null,
+      "points": 34,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -10490,7 +10490,7 @@
       "armure": "Gambison",
       "tier": 3,
       "qualite": "De bonne facture",
-      "points": null,
+      "points": 34,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 70,
@@ -10571,7 +10571,7 @@
       "armure": "Armure de cuir",
       "tier": 4,
       "qualite": "De luxe",
-      "points": null,
+      "points": 66,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -10656,7 +10656,7 @@
       "armure": "Armure de cuir",
       "tier": 4,
       "qualite": "De luxe",
-      "points": null,
+      "points": 97,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,
@@ -10746,7 +10746,7 @@
       "armure": "Cuir renforcé",
       "tier": 4,
       "qualite": "De luxe",
-      "points": null,
+      "points": 184,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,

@@ -862,7 +862,9 @@ function logMissionAttackLines(a,d,result,kind){
   const prefix=a.character.name+verb+d.character.name+" avec "+result.weapon
     +(result.opportunity?" (attaque d’opportunité, dans le dos)":result.encircled?" (cible encerclée, dans le dos)":result.backstab?" (dans le dos)":"")
     +(result.cover?" (couverture "+result.cover+")":"")
-    +(result.heightDiff>0?" (d’en haut)":result.heightDiff<0?" (vers le haut)":"");
+    +(result.heightDiff>0?" (d’en haut)":result.heightDiff<0?" (vers le haut)":"")
+    // Squelettes : dégâts tranchants × 0,5, contondants × 1,5 (character.damageTypeFactors).
+    +(result.typeFactor?" ("+result.matchup?.type+" × "+String(result.typeFactor).replace(".",",")+")":"");
 
   if(result.chargeFall){
     missionLog(a.character.name+" chute pendant sa charge et perd son attaque !"+(result.pFall>game.mission.engine.CHARGE_FALL.base?" (terrain difficile : "+Math.round(result.pFall)+" %, jet "+result.fallRoll+")":""),"bad");
@@ -2431,6 +2433,7 @@ function missionElementalHit(unit,element,amount,source=null){
 function missionElementThe(element){ return element==="foudre"?"la foudre":"le "+element; }
 function missionElementSome(element){ return element==="foudre"?"de la foudre":"du "+element; }
 function missionProtectionNote(hit){
+  if(hit.immune) return " (insensible au poison)";
   const p=Math.round(hit.applied);
   return p?" (protection "+(p>0?p:"−"+Math.abs(p))+" %)":"";
 }
@@ -2459,6 +2462,67 @@ function missionAiCast(unit){
     const ally=pick(code,0.6);
     if(ally){ resolveMissionSpell(unit,ally,code); break; }
   }
+}
+
+// Sorts de l'IA (le nécromancien ; Idan, 2026-11-06) : un ennemi dont la fiche donne des sorts (character.aiSpells) les
+// essaie dans l'ordre de sa fiche, et lance le premier qui passe : une invocation tant que la sienne n'est pas là (au plus
+// près de l'ennemi), une Résurrection sur un corps, un sort sur l'ennemi visible le plus proche. Les sorts sur soi, de zone
+// ou en deux temps ne sont pas joués par l'IA. Nos mercenaires en combat automatique n'ont pas de aiSpells : rien ne
+// change pour eux.
+// La cible d'un sort de l'IA depuis la case où elle se tient, ou null.
+function missionAiSpellTarget(unit,code,spell,opponents){
+  const magic=missionMagic(),e=game.mission.engine;
+  const nearestFoe=c=>Math.min(...opponents.map(o=>e.axialDistance(o,c)));
+  if(spell.cible==="case_vide"){
+    const cells=missionCells().filter(c=>magic.canCast(unit,c,code,{cellFree:missionCellFree(c),lineOfSight:missionLineOfSight(unit,c)}).ok);
+    return cells.sort((a,b)=>nearestFoe(a)-nearestFoe(b))[0]||null;
+  }
+  if(spell.cible==="mort"){
+    const dead=missionUnits().filter(x=>magic.isCorpse(x)&&magic.canCast(unit,x,code,{cellFree:missionCellFree({q:x.q,r:x.r}),
+      lineOfSight:missionLineOfSight(unit,x)}).ok);
+    return dead.sort((a,b)=>b.pvMax-a.pvMax)[0]||null;
+  }
+  const foes=opponents.filter(o=>!missionHiddenFrom(o,unit)&&magic.canCast(unit,o,code,{lineOfSight:missionLineOfSight(unit,o)}).ok);
+  return foes.sort((a,b)=>e.axialDistance(unit,a)-e.axialDistance(unit,b))[0]||null;
+}
+function missionAiSpell(unit){
+  const codes=unit.character?.aiSpells,magic=missionMagic();
+  if(!codes?.length||!magic||unit.attackAvailable===false||!unit.alive) return false;
+  const opponents=missionOpponents(unit).filter(o=>!o.offMap);
+  if(!opponents.length) return false;
+  for(const code of codes){
+    const spell=magic.spell(code);
+    if(!spell||["soi","case"].includes(spell.cible)||["deplacement_force","degats_paire"].includes(spell.effet)) continue;
+    if(spell.cible==="case_vide"&&missionUnits().some(x=>x.alive&&!x.offMap&&x.summon?.casterId===unit.id&&x.summon?.code===code)) continue;
+    let target=missionAiSpellTarget(unit,code,spell,opponents);
+    // Hors de portée (la Résurrection se lance au contact) : il se déplace d'abord vers la case la moins chère d'où il peut
+    // le lancer, en provoquant le moins d'attaques d'opportunité.
+    if(!target&&spell.cible!=="case_vide"&&unit.movementRemaining>0&&!missionMireAt(unit.q,unit.r)){
+      const home={q:unit.q,r:unit.r};
+      let best=null;
+      for(const path of missionReachablePaths(unit,unit.movementRemaining).values()){
+        if(!path.length) continue;
+        const end=path[path.length-1];
+        unit.q=end.q;unit.r=end.r;
+        const found=missionAiSpellTarget(unit,code,spell,opponents);
+        unit.q=home.q;unit.r=home.r;
+        if(!found) continue;
+        const risk=missionPathOpportunityCount(unit,path);
+        if(!best||risk<best.risk) best={path,risk};
+        if(risk===0) break;
+      }
+      if(best){
+        const moved=moveMissionUnitAlongPath(unit,best.path);
+        if(moved) missionLog(unit.character.name+" se place pour lancer "+spell.nom+" ("+moved+" hex).","move");
+        if(!unit.alive||game.mission.over) return true;
+        target=missionAiSpellTarget(unit,code,spell,opponents);
+      }
+    }
+    if(!target) continue;
+    const out=resolveMissionSpell(unit,target,code);
+    if(out?.ok) return true;
+  }
+  return false;
 }
 
 // Potions et fioles (Idan, 2026-10-29) : les fioles des 4 poches de ceinture, bues ou appliquées sur soi seulement par une
@@ -2765,6 +2829,7 @@ function enemyMissionActivation(unit,{reset=true}={}){
   if(unit.frenzy){ frenzyMissionActivation(unit); return; }
   missionAiPotion(unit);
   missionAiCast(unit);
+  if(unit.alive&&!game.mission.over) missionAiSpell(unit);
   if(!unit.alive||game.mission.over||unit.attackAvailable===false) return;
   let target=nearestMissionTarget(unit);
   // Personne en vue (le décor coupe la vue) : il va chercher l'ennemi le plus proche, puis, s'il le voit, l'attaque ; sinon,

@@ -332,6 +332,16 @@ chance pour enchaîner plusieurs tirs (sauf arme à feu). Il ne peut passer en m
 - **Bourbier** (Invocation) : une case où l'on entre mais d'où l'on ne sort plus, tant qu'il dure ; on ne la traverse pas. On y attaque et on y lance des sorts.
 - **Immunité aux dégâts physiques** (spectre) : un coup d'arme ou un tir qui touche le traverse sans dégâts ; un sort contondant aussi.
 - **Toucher spectral** : dégâts psychiques au contact, sans l'étape Blesser, ni armure ni résistance : 10 × 1D6 × Volonté de l'attaquant / Volonté de la cible (de × 0,5 à × 2).
+- **Morts-vivants ennemis** (Culte des morts, doc 17 §19 ; Idan, 2026-11-06) : **insensibles au poison** (ni dégâts, ni
+  empoisonnement : sarbacane, fiole, crachat de venin) ; les **squelettes** encaissent les dégâts **tranchants × 0,5** et les
+  **contondants × 1,5** (Idan : « très résistants aux dégâts tranchants, très faibles aux contondants » ; chiffres proposés),
+  au corps à corps, au tir et par les sorts physiques ; les perforants comptent entiers. Le journal le dit (« tranchant ×
+  0,5 »). Données : `enemy-archetypes.json` (`mort_vivant`, `insensible_poison`, `immunite_physique`, `degats_subis`,
+  `attaque`) ; code : `combat-engine.js` (`poisonImmune`, `damageTypeFactor`).
+- **Sorts de l'IA** : un ennemi dont la fiche donne des sorts (le nécromancien) les essaie dans l'ordre de sa fiche : son
+  invocation tant qu'elle n'est pas là (au plus près de l'ennemi), la Résurrection sur un corps, puis ses sorts sur l'ennemi
+  visible le plus proche ; hors de portée, il se déplace d'abord vers la case la moins chère d'où il peut le lancer. Nos
+  mercenaires en combat automatique ne lancent toujours que leurs soins.
 
 ## Attaques de zone — Toucher V1
 

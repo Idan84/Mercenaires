@@ -532,12 +532,9 @@ for(const [stop,label] of [
 ]) assert.equal(combat.rollChain(chainer,chainTarget,stop,2,"melee"),null,label);
 assert.equal(combat.rollChain(chainer,{...chainTarget,alive:false},realHit,2,"melee"),null,"cible hors combat");
 assert.equal(combat.rollChain({...chainer,alive:false},chainTarget,realHit,2,"melee"),null,"attaquant hors combat");
-// Cadence : seules les armes « Répétable » enchaînent les tirs.
-assert.deepEqual(["Arc","Fronde","Sarbacane","Arbalète","Pistolet"].map(nom=>combat.isRepeatable({nom})),[true,true,true,false,false]);
-const crossbow=unit(a,0,0);
-if(setFamily(crossbow,"ranged")&&combat.weaponTemplate(combat.activeWeaponItem(crossbow)).nom==="Arbalète"){
-  assert.equal(combat.rollChain(crossbow,chainTarget,realHit,2,"ranged"),null,"Arbalète : tir unique");
-}
+// Cadence : seules les armes « Répétable » enchaînent les tirs ; l'arbalète aussi (Idan, 2026-11-06 : « Pour moi l'arbalète
+// était comme l'arc »), pas les armes à feu.
+assert.deepEqual(["Arc","Fronde","Sarbacane","Arbalète","Pistolet","Arquebuse"].map(nom=>combat.isRepeatable({nom})),[true,true,true,true,false,false]);
 
 // Armes à feu — recharge V1 : chargée pour tirer, déchargée après le tir, une Action rapide recharge.
 function withMainWeapon(character,name){

@@ -51,7 +51,8 @@
     // enceinte.distance de l'ennemi le plus proche, hors de la zone de l'escouade ; ouvertures de enceinte.largeur cases,
     // la première face à l'escouade (la colonne la plus à l'ouest de l'anneau), les autres à enceinte.ecart cases au moins.
     function enclosure(map,land,{players,enemies}){
-      const wall=data.enceinte||{};
+      // Le décor de l'enceinte : celui du paysage (les murets du cimetière), sinon la palissade.
+      const wall={...(data.enceinte||{}),...(land.enceinte_decor?{decor:land.enceinte_decor}:{})};
       if(!land.enceinte||!decorRows.has(wall.decor)||!enemies.length) return null;
       const D=Number(wall.distance)||2,freeSquad=Number(data.zone_libre_escouade)||2;
       const ring=map.cells.filter(c=>nearest(c,enemies)===D&&column(c.q,c.r)>2&&!players.some(p=>distance(p,c)<=freeSquad));

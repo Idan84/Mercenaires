@@ -494,6 +494,7 @@
     }
     function elementalDamage(unit,element,amount){
       const protection=elementalProtection(unit,element);
+      if(element==="poison"&&poisonImmune(unit)) return {...protection,amount,damage:0,immune:true};
       return {...protection,amount,damage:iced(unit,Math.max(0,Math.ceil(amount*(1-protection.applied/100)-1e-9)))};
     }
     // Prison de glace (Eau ; Idan, 2026-10-31) : figé dans la glace, on ne subit que unit.frozen.factor des dégâts (0,5) :
@@ -517,13 +518,23 @@
       const delta=statWithGear(caster,"Puissance magique")+0.2*mastery+matchup-statWithGear(target,"Endurance");
       return {armorResistance,matchup,pWound:clamp(logistic(delta),10,90)};
     }
+    // Squelettes (Idan, 2026-11-06 : « très résistants aux dégâts tranchants, très faibles aux contondants ») :
+    // character.damageTypeFactors[type] multiplie les dégâts d'un coup ou d'un sort physique de ce type (1 par défaut).
+    function damageTypeFactor(unit,type){
+      const f=Number(unit?.character?.damageTypeFactors?.[type]);
+      return Number.isFinite(f)&&f>=0?f:1;
+    }
+    function withTypeFactor(unit,type,data){
+      const factor=damageTypeFactor(unit,type);
+      return factor===1?data:{...data,damage:Math.max(0,Math.ceil(data.damage*factor-1e-9)),typeFactor:factor};
+    }
     function spellPhysicalHit(caster,target,amount,{type="contondant",power=0,mastery=0}={}){
       if(target.character?.immunePhysical) return {type,power,immune:true,wound:false,damage:0};
       const {armorResistance,matchup,pWound}=spellWoundChance(caster,target,{type,power,mastery}),woundRoll=d100();
       const head={type,power,armorResistance,matchup,pWound,woundRoll};
       if(woundRoll>pWound) return {...head,wound:false,damage:0};
       const resistanceRoll=die(3);
-      return {...head,wound:true,...spellPhysicalDamage(target,amount,resistanceRoll)};
+      return {...head,wound:true,...withTypeFactor(target,type,spellPhysicalDamage(target,amount,resistanceRoll))};
     }
     // Les dégâts d'un sort physique qui blesse : la Résistance physique (50 % au plus) × (jet d3 + 8) ÷ 10 ; jet 3 : le moins
     // de dégâts, jet 1 : le plus (l'aperçu des sorts).
@@ -566,12 +577,15 @@
     // Poison (Idan, 2026-10-27) : au début de chaque activation de l'empoisonné (unit.poisoned = {turns, amount}), un jet
     // de résistance, D100 ≤ part × Constitution + Résistance au poison (équipement compris, de 5 à 95 %), annule l'effet ;
     // sinon il subit les dégâts légers du poison, réduits par sa Résistance au poison. L'écran de combat décompte les tours.
+    // Morts-vivants (Idan, 2026-11-06 : « Oui insensible aux poisons ») : character.immunePoison, ni dégâts ni effet.
+    function poisonImmune(unit){ return Boolean(unit?.character?.immunePoison); }
     function poisonResistChance(unit){
       return clamp(POISON.constitutionShare*statWithGear(unit,"Constitution")+statWithGear(unit,"Résistance au poison"),POISON.min,POISON.max);
     }
     function resolvePoison(unit){
       const fx=unit?.poisoned;
       if(!fx||typeof fx!=="object") return null;
+      if(poisonImmune(unit)) return {p:100,roll:0,resisted:true,immune:true,damage:0};
       const p=poisonResistChance(unit),roll=d100();
       if(roll<=p) return {p,roll,resisted:true,damage:0};
       return {p,roll,resisted:false,...elementalDamage(unit,"poison",Number(fx.amount)||0)};
@@ -929,7 +943,7 @@
       // Critique de blessure positif CAC V1 : dégâts de l'arme au maximum et variation de Résistance à 0,9.
       const criticalWoundRoll=d100(),criticalWound=criticalWoundRoll<=pCritical;
       Object.assign(crit,{criticalWoundRoll,criticalWound});
-      const damageData=physicalDamage(attacker,defender,mode,chargePower,criticalWound?{roll:"max",resistanceRoll:1}:{});
+      const damageData=withTypeFactor(defender,matchup.type,physicalDamage(attacker,defender,mode,chargePower,criticalWound?{roll:"max",resistanceRoll:1}:{}));
       // Les PV restent signés : la profondeur sous 0 sert au jet de mort de fin de mission (Issue #13).
       defender.hp-=damageData.damage;
       wake(defender,damageData.damage);
@@ -943,7 +957,7 @@
       const coated=attacker.weaponPoison&&attacker.weaponPoison.itemId!=null&&attacker.weaponPoison.itemId===activeWeaponItem(attacker)?.id;
       const blowgun=weapon?.empoisonne?Math.ceil(10*parseDice(weapon.degats_pv_base).count*(Number(quality(activeWeaponItem(attacker)).multiplicateur_qualite)||1)-1e-9):0;
       const vial=coated?Number(attacker.weaponPoison.amount)||0:0;
-      const poison=(blowgun||vial)&&damageData.damage>0&&defender.alive
+      const poison=(blowgun||vial)&&damageData.damage>0&&defender.alive&&!poisonImmune(defender)
         ?{turns:POISON.turns,amount:Math.max(blowgun,vial),source:vial>blowgun?"poison_vial":"blowgun"}:null;
       return {...crit,matchup,pWound,woundRoll,wound:true,...damageData,targetHp:defender.hp,targetDown:!defender.alive,...(poison?{poison}:{})};
     }
@@ -1226,6 +1240,8 @@
       attackStatBonus,
       resolveFear,
       poisonResistChance,
+      poisonImmune,
+      damageTypeFactor,
       canPoisonWeapon,
       resolvePoison,
       activeWeaponItem,

@@ -17,9 +17,10 @@
     {"source": "Hauteur du camp", "key": "camp_hauteur"},
     {"source": "Rampes", "key": "rampes"},
     {"source": "Zone libre autour des ennemis", "key": "zone_libre"},
-    {"source": "Enceinte", "key": "enceinte"}
+    {"source": "Enceinte", "key": "enceinte"},
+    {"source": "Décor de l'enceinte (sinon la palissade)", "key": "enceinte_decor"}
   ],
-  "row_count": 5,
+  "row_count": 6,
   "rows": [
     {
       "faction": "Gobelins",
@@ -84,6 +85,20 @@
       "hauteur_collines": 2,
       "camp_hauteur": 2,
       "rampes": [1, 2],
+      "zone_libre": 1
+    },
+    {
+      "faction": "Culte des morts",
+      "enceinte": true,
+      "enceinte_decor": "muret",
+      "nom": "Cimetière",
+      "groupes": [14, 20],
+      "taille": [1, 4],
+      "decors": {"tombe": 6, "foret": 2, "marais": 2, "buissons": 1, "eboulis": 1},
+      "collines": [0, 1],
+      "hauteur_collines": 1,
+      "camp_hauteur": 0,
+      "rampes": [0, 0],
       "zone_libre": 1
     }
   ]

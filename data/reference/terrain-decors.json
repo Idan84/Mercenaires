@@ -32,7 +32,7 @@
       "key": "couleur"
     }
   ],
-  "row_count": 14,
+  "row_count": 15,
   "rows": [
     {
       "code": "buissons",
@@ -159,6 +159,15 @@
       "bloque_vue": false,
       "couverture": "partielle",
       "couleur": "#6e5434"
+    },
+    {
+      "code": "tombe",
+      "nom": "Tombe",
+      "article": "la tombe",
+      "cout_mouvement": null,
+      "bloque_vue": false,
+      "couverture": "partielle",
+      "couleur": "#5d5a52"
     }
   ]
 }

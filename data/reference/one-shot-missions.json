@@ -191,6 +191,37 @@
             "tribus": "clans_ogres",
             "chefs": "chefs_de_camp_ogres"
           }
+        },
+        {
+          "faction": "Culte des morts",
+          "nom_camp": "Cimetière profané",
+          "poids": 1,
+          "lignes": [
+            {
+              "ligne": "Squelette guerrier",
+              "poids": 30
+            },
+            {
+              "ligne": "Squelette archer",
+              "poids": 20
+            },
+            {
+              "ligne": "Zombie",
+              "poids": 20
+            },
+            {
+              "ligne": "Acolyte",
+              "poids": 20
+            },
+            {
+              "ligne": "Spectre",
+              "poids": 10
+            }
+          ],
+          "noms": {
+            "tribus": "cultes_des_morts",
+            "chefs": "necromanciens"
+          }
         }
       ],
       "validite_jours": [
@@ -484,6 +515,59 @@
       ],
       "signature": "Donné le {date}, an {an} de l'Âge des Couronnes Brisées. Pour l'Empereur et par délégation, {signataire}, sous-secrétaire adjoint aux Marches.",
       "noms_commanditaire": null
+    },
+    {
+      "code": "village_culte",
+      "mission": "cleanup",
+      "faction": "Culte des morts",
+      "commanditaire": "Chef de village",
+      "titre": "Un chef de village",
+      "texte": [
+        "À toute compagnie de mercenaires qui voudra bien venir,",
+        "Je m'appelle {commanditaire}, chef de {lieu}, à {jours} de marche de votre camp. On m'a dit que vous tuiez des gens pour de l'argent. Ça tombe bien : nous avons de l'argent, un peu, et des gens à tuer, sauf qu'ils sont déjà morts. C'est tout le problème.",
+        "Depuis la dernière lune, des hommes en robe noire se sont installés dans le vieux cimetière, derrière le village. Au début, ils déterraient nos défunts. Puis nos défunts se sont mis à se déterrer tout seuls. La semaine dernière, le grand-père Mathurin est rentré dîner. On l'avait enterré aux moissons.",
+        "Combien sont-ils ? Le fossoyeur dit {estimation}, sans compter ceux qui sont encore sous terre. Leur chef se fait appeler {boss}. Le fossoyeur, lui, ne dit plus rien : il a démissionné.",
+        "Le village a réuni {récompense} pièces d'or. C'est tout ce que nous avons, à part le cimetière, dont nous ne voulons plus. Ce que vous trouverez là-bas sera à vous, à condition que ça ne se relève pas.",
+        "Le premier qui nous débarrasse d'eux touche la somme. Les autres auront fait le chemin pour rien.",
+        "Venez vite. Le grand-père Mathurin veut reprendre sa place à table."
+      ],
+      "signature": "{commanditaire}, chef de {lieu}, le {date}",
+      "noms_commanditaire": "chefs_de_village"
+    },
+    {
+      "code": "priest_culte",
+      "mission": "cleanup",
+      "faction": "Culte des morts",
+      "commanditaire": "Prêtre",
+      "titre": "Un prêtre",
+      "texte": [
+        "Mes enfants,",
+        "Je suis {commanditaire}, desservant du temple de {lieu}, à {jours} de marche de votre camp. Je n'ai pas l'habitude d'écrire à des gens de votre sorte, mais les dieux m'ont fait savoir, par l'intermédiaire de mon archiprêtre, qu'ils ne viendraient pas en personne.",
+        "Une secte impie, les {tribu}, a pris possession de notre cimetière. Ils y psalmodient la nuit, ils y creusent le jour, et à l'office il me manque des fidèles. Pas des vivants : des morts. Ils se lèvent pendant la prière et s'en vont avant la quête.",
+        "Leur maître se nomme {boss}. On dit qu'ils sont {estimation}, en comptant large, puisque certains n'ont plus que les os.",
+        "Le temple vous offre {récompense} pièces d'or, prélevées sur le tronc des offrandes. Le butin impie vous est abandonné ; je vous saurais gré de ne pas emporter les cierges.",
+        "Le premier qui purifiera ce lieu touchera la somme. Que les dieux vous gardent. Enfin, qu'ils fassent ce qu'ils peuvent.",
+        "Faites vite : la fête des Ancêtres approche, et je ne voudrais pas que les ancêtres viennent en personne."
+      ],
+      "signature": "{commanditaire}, desservant du temple de {lieu}, le {date}",
+      "noms_commanditaire": "pretres"
+    },
+    {
+      "code": "emperor_culte",
+      "mission": "cleanup",
+      "faction": "Culte des morts",
+      "commanditaire": "Ordre de l'Empereur",
+      "titre": "Par ordre de Sa Majesté Impériale",
+      "texte": [
+        "PAR ORDRE DE SA MAJESTÉ IMPÉRIALE — Chancellerie des Marches, Bureau des Nuisances et Engeances",
+        "À toute compagnie franche dûment patentée,",
+        "Attendu qu'une secte de nécromanciens a établi un culte illicite au cimetière de {lieu}, à {jours} de marche de votre cantonnement ; attendu que ledit culte relève les morts sans autorisation, prive le Trésor des droits de succession et a fait inscrire plusieurs défunts sur les registres de la milice ; attendu que la garnison impériale la plus proche se trouve, à son grand regret, fort occupée ailleurs ;",
+        "Il est ordonné à la compagnie qui s'en chargera de procéder au nettoyage complet dudit cimetière, par tout moyen qu'elle jugera utile, dans le respect approximatif des usages de la guerre. Les morts y seront rendus à leur état naturel, de préférence définitif.",
+        "La Couronne versera {récompense} pièces d'or à l'exécution du présent ordre. Le butin pris sur l'ennemi reste acquis à la compagnie, Sa Majesté étant d'humeur généreuse.",
+        "Le présent ordre expire le {date_expiration}, ou dès qu'une compagnie s'en sera chargée."
+      ],
+      "signature": "Donné le {date}, an {an} de l'Âge des Couronnes Brisées. Pour l'Empereur et par délégation, {signataire}, sous-secrétaire adjoint aux Marches.",
+      "noms_commanditaire": null
     }
   ],
   "noms": {
@@ -671,6 +755,30 @@
       "Dorm le Gras",
       "Hurgh Casse-Marmite",
       "Morg Gueule-de-Four"
+    ],
+    "cultes_des_morts": [
+      "Frères du Linceul",
+      "Cercle des Os",
+      "Veilleurs du Tombeau",
+      "Enfants de la Cendre",
+      "Confrérie de la Fosse",
+      "Ceux de la Dernière Veille"
+    ],
+    "necromanciens": [
+      "Morvaine la Pâle",
+      "Ozric le Fossoyeur",
+      "Sœur Cendre",
+      "Maître Vélin",
+      "Aldous Tombeval",
+      "Ysmer aux Os"
+    ],
+    "pretres": [
+      "Père Anselme",
+      "Frère Gautier",
+      "Mère Ombeline",
+      "Père Hubert",
+      "Sœur Agathe",
+      "Frère Bénédic"
     ]
   }
 }

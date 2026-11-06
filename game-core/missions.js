@@ -191,8 +191,35 @@
         items.push(it);
         slots.armor=it.id;
       }
+      // Arme naturelle (griffes du zombie, toucher du spectre ; Idan, 2026-11-06) : son gabarit voyage avec l'objet, comme
+      // celui des créatures invoquées (combat-engine.js, weaponTemplate).
+      if(arch.attaque){
+        const a=arch.attaque;
+        const it=item({templateId:"natural:"+arch.code,name:a.nom,itemType:"weapon",slot:"weapon_set_1_main",natural:true,
+          category:"Armes naturelles",combatFamily:"melee",grip:"1 main",
+          template:{nom:a.nom,domaine:"Armes naturelles",prise:"1 main",degats_pv_base:a.degats_pv_base,degats_type:a.degats_type||null,
+            puissance_tranchante_base:Number(a.puissance_tranchante)||0,puissance_perforante_base:Number(a.puissance_perforante)||0,
+            puissance_contondante_base:Number(a.puissance_contondante)||0,malus_vitesse_arme_base:0,bonus_charge_base:Number(a.bonus_charge)||1,
+            contre_charge:false,portee_min_hex:1,portee_max_hex:1}});
+        items.unshift(it);
+        slots.weapon_set_1_main=it.id;
+      }
       c.items=items;
       c.equipment={...(c.equipment||{}),slots,profile:{...(c.equipment?.profile||{}),type:items[0]?.combatFamily||"melee"}};
+      // Morts-vivants (Idan, 2026-11-06) : sans peur (mort_vivant), insensibles au poison, insensibles aux armes (le spectre),
+      // dégâts subis selon le type (squelettes : « très résistants aux dégâts tranchants, très faibles aux contondants »).
+      if(arch.mort_vivant) c.undead=true;
+      if(arch.insensible_poison) c.immunePoison=true;
+      if(arch.immunite_physique) c.immunePhysical=true;
+      if(arch.degats_subis) c.damageTypeFactors={...arch.degats_subis};
+      // Sorts de la fiche (le nécromancien ; Idan, 2026-11-06) : ses écoles, ses sorts et leur maîtrise, dans l'ordre où l'IA
+      // les essaie (aiSpells) ; une fiche avec « sorts » remplace ceux tirés à la génération ; mana plein au départ.
+      if(Array.isArray(arch.sorts)){
+        c.spells=arch.sorts.map(x=>({code:x.code,mastery:Number(x.maitrise)||1}));
+        c.aiSpells=arch.sorts.map(x=>x.code);
+        c.skills.magic={...Object.fromEntries(Object.keys(c.skills?.magic||{}).map(k=>[k,0])),...(arch.ecoles||{})};
+        delete c.mana;
+      }
       return c;
     }
 
@@ -222,7 +249,8 @@
     }
     function enemyLoot(c,makeItem){
       const b=lootOf(archetype(c?.archetype));
-      const kept=(c?.items||[]).filter(()=>b.equipement>=100||random()*100<b.equipement);
+      // Une arme naturelle (griffes, toucher spectral) ne se ramasse pas.
+      const kept=(c?.items||[]).filter(it=>!it.natural).filter(()=>b.equipement>=100||random()*100<b.equipement);
       const extra=b.objets.filter(o=>random()*100<(Number(o.chance)||0)).map(o=>makeItem?makeItem(o.type,o.nom,Number(o.tier)||1):null).filter(Boolean);
       return [...kept,...extra];
     }

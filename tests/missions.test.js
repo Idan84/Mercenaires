@@ -30,7 +30,7 @@ const rules=createMissionRules({reference,random:seeded(7)});
 // monstres Bronze novice / normal 50–50, Argent novice / normal / vétéran 25–50–25, Or vétéran / élite 50–50 ; chef 1,
 // chef 2, chef 3 ou 4 ; au plus 100 ennemis.
 const CAMPS=Object.fromEntries(reference.oneShotMissions.missions[0].camps.map(c=>[c.faction,c]));
-assert.deepEqual(Object.keys(CAMPS),["Gobelins","Orcs","Hommes-bêtes","Voleurs","Ogres"]);
+assert.deepEqual(Object.keys(CAMPS),["Gobelins","Orcs","Hommes-bêtes","Voleurs","Ogres","Culte des morts"]);
 const metalOf=L=>L<=5?"Bronze":L<=10?"Argent":"Or";
 const BUDGET={Bronze:[40,60,1],Argent:[60,80,1],Or:[8,12,2]};
 const LEVELS={Bronze:["novice","normal"],Argent:["novice","normal","vétéran"],Or:["vétéran","d’élite"]};
@@ -55,7 +55,7 @@ for(const L of [1,3,5,6,8,10,11,13,15]) for(let i=0;i<300;i++){
   (budgets[L]=budgets[L]||[]).push(camp.budget);(sizes[L]=sizes[L]||[]).push(camp.enemies.length);
 }
 const share=(list,value)=>list.filter(x=>x===value).length/list.length;
-for(const [f,n] of Object.entries(factions)) assert.ok(Math.abs(n/2700-0.2)<0.03,`un camp sur cinq : ${f} ${n}`);
+for(const [f,n] of Object.entries(factions)) assert.ok(Math.abs(n/2700-1/6)<0.03,`un camp sur six : ${f} ${n}`);
 assert.ok(Math.abs(share(drawn.Bronze,"novice")-0.5)<0.05,"Bronze : 50 % de novices");
 assert.ok(Math.abs(share(drawn.Argent,"normal")-0.5)<0.05&&Math.abs(share(drawn.Argent,"vétéran")-0.25)<0.05,"Argent : 25–50–25");
 assert.ok(Math.abs(share(drawn.Or,"d’élite")-0.5)<0.05,"Or : 50 % d'élites");
@@ -89,7 +89,7 @@ assert.ok(mean(sizes[15])>50&&Math.max(...sizes[15])<=100,"5★ or : une armée,
   r=withChiefs();
   const seen=new Set();
   for(let i=0;i<500;i++){ const camp=r.rollCamp(undefined,null,{level:3}); seen.add(camp.faction); assert.ok(camp.chief); assert.equal(r.archetype(camp.chief).faction,camp.faction); }
-  assert.deepEqual([...seen].sort(),["Gobelins","Hommes-bêtes","Orcs","Voleurs"],"un autre camp que les ogres");
+  assert.deepEqual([...seen].sort(),["Culte des morts","Gobelins","Hommes-bêtes","Orcs","Voleurs"],"un autre camp que les ogres");
   assert.equal(r.rollCamp(r.definition(),CAMPS.Ogres,{level:3}).chief,null,"camp imposé (Design Lab) : sans chef");
   // Aucun peuple n'a de chef permis : le camp n'a pas de chef, et l'offre ne le compte pas.
   for(const row of archetypes.rows.filter(x=>x.ligne==="Chef")) row.niveau_mission_min=15;
@@ -136,6 +136,7 @@ assert.deepEqual([...orders.Orcs].sort(),["emperor_orcs","orc_rival","village_or
 assert.deepEqual([...orders["Hommes-bêtes"]].sort(),["beastman_rival","emperor_hommes_betes","village_hommes_betes"]);
 assert.deepEqual([...orders.Voleurs].sort(),["emperor_voleurs","thief_rival","village_voleurs"]);
 assert.deepEqual([...orders.Ogres].sort(),["emperor_ogres","ogre_rival","village_ogres"]);
+assert.deepEqual([...orders["Culte des morts"]].sort(),["emperor_culte","priest_culte","village_culte"]);
 // Chaque peuple de camp : cinq lignes sur quatre niveaux et quatre chefs, avec leurs points.
 for(const [faction,camp] of Object.entries(CAMPS)){
   const own=reference.enemyArchetypes.rows.filter(a=>a.faction===faction);
@@ -194,8 +195,9 @@ assert.deepEqual([lose.reward,lose.chestGold,lose.loot.length,lose.renown],[0,0,
 assert.equal(rules.deathMultiplier(offer,false),2);
 // Bestiaire (Idan, 2026-11-01) : butin et niveau de mission minimum par créature. L'équipement peut se casser au combat :
 // 100 % − 10 % par tier de chance de récupérer chaque objet porté ; rien en plus ; dès le niveau 1.
+// Culte des morts (2026-11-06) : les spectres, insensibles aux armes, à partir du niveau de mission 3.
 for(const a of reference.enemyArchetypes.rows){
-  assert.deepEqual([a.niveau_mission_min,a.butin],[1,{equipement:100-10*a.tier,objets:[]}],"butin : "+a.code);
+  assert.deepEqual([a.niveau_mission_min,a.butin],[a.ligne==="Spectre"?3:1,{equipement:100-10*a.tier,objets:[]}],"butin : "+a.code);
 }
 {
   const breakRules=createMissionRules({reference,random:seeded(21)});

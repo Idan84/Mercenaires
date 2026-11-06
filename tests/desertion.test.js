@@ -122,6 +122,8 @@ assert.equal(total(d),-20);
 assert.deepEqual([Math.round(desertion.persuadeChance(state,d,"intimidate")),Math.round(desertion.persuadeChance(state,d,"convince"))],[23,18]);
 
 // Le défier en combat singulier : il meurt ; mémorial, héritage de renommée, ses affaires à l'Intendance.
+// (L'affinité de d vient de baisser pour la mesure ci-dessus : on l'immunise, pour que seul e passe le test ce matin.)
+d.loyalty.immuneUntil=state.day+1;
 drop(e); dice=[0.999,0];
 morning();
 const stock=(company.stock||[]).length,owned=e.items.length;

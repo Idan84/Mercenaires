@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 374,
+  "row_count": 376,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -1792,6 +1792,22 @@
       "description": "À la génération, la seconde arme (Combat à deux armes) est une arme légère : une arme de corps à corps à une main dont le malus de vitesse de base ne dépasse pas cette valeur (Dague, Sai, Fouet, Bâton court, Kukri, Épée courte, Nunchaku, Estoc, Hachette ; Idan, 2026-11-05).",
       "formule": "Équipement de départ",
       "valeur": 8,
+      "version": "V1"
+    },
+    {
+      "nom": "Compétences non pratiquées — seuil",
+      "code": "generation.skills.unpracticed_max",
+      "description": "En fin de génération, après le domaine, une arme précise, une catégorie d'arme, un style (Combat à une main, à deux mains, à deux armes, Boucliers) ou une école de magie à ce nombre ou moins passe à generation.skills.unpracticed_value ; aucun sort ne se tire dans une école à ce nombre ou moins (Idan, 2026-11-06 : « que ce soit pour les armes ou la magie, je te propose qu'on passe à 1 ceux qui ont 20 ou moins »).",
+      "formule": "Génération des compétences",
+      "valeur": 20,
+      "version": "V1"
+    },
+    {
+      "nom": "Compétences non pratiquées — valeur",
+      "code": "generation.skills.unpracticed_value",
+      "description": "Valeur d'une compétence non pratiquée (voir generation.skills.unpracticed_max) : 1, comme une école de magie absente.",
+      "formule": "Génération des compétences",
+      "valeur": 1,
       "version": "V1"
     },
     {

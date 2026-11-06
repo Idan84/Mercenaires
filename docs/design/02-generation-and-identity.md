@@ -238,6 +238,22 @@ Pour chaque école de magie :
 - **les écoles à l'échelle des armes** (Idan, 2026-11-05 : « l'échelle arme / magie devrait être identique. Division par deux ») : le tirage et les dés de la Matrice sur une école sont multipliés par `generation.magic.school_scale` (0,5). Ce qui comparait une école à un nombre suit (seuils de magie des ports d'armure 25 et 37,5, diviseur de chance des sorts de départ 75, score Magie du profil d'équipement sans division par 2, accentuation du mage 2D10) : à tirage égal, mêmes domaines, mêmes sorts, mêmes ports d'armure. Mesure (4 000 recrues) : meilleure école d'un mage **54** en médiane (107 avant), d'un non-mage 34 (67 avant), arme d'un combattant 55 ; réputation médiane des mages 128 (159 avant ; 121 pour le corps à corps), salaire médian 44 PO par jour (54 avant) ;
 - sinon : `École = 1`.
 
+### Compétences non pratiquées (Idan, 2026-11-06)
+
+« Que ce soit pour les armes ou la magie, je te propose qu'on passe à 1 ceux qui ont 20 ou moins » ; catégories et styles
+aussi ; en fin de génération, après le domaine.
+
+- Une **arme précise**, une **catégorie d'arme**, un **style** (Combat à une main, à deux mains, à deux armes, Boucliers) ou
+  une **école de magie** à **20 ou moins** passe à **1** : « jamais pratiqué », comme une école absente
+  (`generation.skills.unpracticed_max`, `generation.skills.unpracticed_value`). La trace de génération le montre
+  (« Non pratiquée »).
+- **Aucun sort ne se tire dans une école à 20 ou moins** (Idan : « il devrait pas connaître un sort dans une école où il a
+  moins de 20 »). Avant, 63 sorts pour 4 000 recrues tombaient dans une telle école : surtout le tirage de l'**école de la culture** (qui ne
+  regardait pas le niveau), puis celui de la deuxième école. Sorts par recrue : 0,82 → 0,79.
+- Mesure (4 000 recrues) : 62 % des armes précises, 31 % des catégories, 8 % des styles et 12 % des écoles passent à 1 ; un
+  mercenaire garde en médiane 14 armes au-dessus de 20 sur 38. Domaines, réputation (trois meilleures compétences) et
+  équipement de départ (meilleure arme) ne bougent pas.
+
 ### Camp
 
 Pour chaque compétence de la famille Camp :

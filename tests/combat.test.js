@@ -101,7 +101,7 @@ function withMainWeapon(character,name){
 }
 
 // Zone de menace : arme de mêlée standard 1 hex, arme d'hast 1–2 hex, rien avec une arme de tir.
-const guard=unit(a,0,0);
+const guard=unit(withMainWeapon(a,"Épée longue"),0,0);
 assert.equal(setFamily(guard,"melee"),true);
 assert.equal(combat.weaponRange(guard).max,1);
 assert.equal(combat.threatens(guard,{q:1,r:0}),true);
@@ -391,13 +391,15 @@ function withShield(character,shieldName,qualityCode="standard",stats={}){
     equipment:{...character.equipment,slots:{...character.equipment.slots,weapon_set_1_off:shield.id}}
   };
 }
-const guardChar=withShield(a,"Écu");
+// Une arme à une main en main principale : le bouclier est tenu (avec une arme à deux mains, il ne l'est pas).
+const swordA=withMainWeapon(a,"Épée longue");
+const guardChar=withShield(swordA,"Écu");
 const shieldMastery=c=>((Number(c.skills.martial.Boucliers)||0)+(Number(c.skills.martial["Écu"])||0))/2;
 const blockOf=(c,bonus)=>Math.min(80,Math.max(5,((Number(c.stats["Dextérité"])||0)+shieldMastery(c))/2+bonus));
 assert.equal(combat.blockChance(unit(guardChar,1,0)),blockOf(guardChar,10),"(Dextérité + maîtrise effective) / 2 + bonus de l'Écu");
-assert.equal(combat.blockChance(unit(withShield(a,"Écu","luxury"),1,0)),blockOf(guardChar,10*1.2),"le bonus suit la qualité");
-assert.equal(combat.blockChance(unit(withShield(a,"Pavois","standard",{"Dextérité":300}),1,0)),80,"plafond 80 %");
-assert.equal(combat.blockChance(unit({...withShield(a,"Rondache","worn",{"Dextérité":0}),skills:{...a.skills,martial:{...a.skills.martial,Boucliers:0,"Rondache":0}}},1,0)),5,"plancher 5 %");
+assert.equal(combat.blockChance(unit(withShield(swordA,"Écu","luxury"),1,0)),blockOf(guardChar,10*1.2),"le bonus suit la qualité");
+assert.equal(combat.blockChance(unit(withShield(swordA,"Pavois","standard",{"Dextérité":300}),1,0)),80,"plafond 80 %");
+assert.equal(combat.blockChance(unit({...withShield(swordA,"Rondache","worn",{"Dextérité":0}),skills:{...swordA.skills,martial:{...swordA.skills.martial,Boucliers:0,"Rondache":0}}},1,0)),5,"plancher 5 %");
 assert.equal(combat.blockChance(unit(a,0,0)),null,"sans bouclier : pas de jet");
 
 // Coup bloqué (D100 à 1 : touche, puis bloque) : ni critique, ni Blesser, ni dégâts.
@@ -502,8 +504,8 @@ const penalty=(c,slot)=>{
   const m=(Number(c.skills.martial[w.nom])||0)+(Number(c.skills.martial[item.category||""])||0);
   return w.malus_vitesse_arme_base*(Number(combat.quality(item).multiplicateur_malus)||1)*Math.max(0,1-m/400);
 };
-const bare=unit({...a,stats:{...a.stats,Vitesse:100}},0,0),shielded=unit(withShield(a,"Écu","standard",{Vitesse:100}),0,0);
-const swordPenalty=penalty(a,"weapon_set_1_main");
+const bare=unit({...swordA,stats:{...swordA.stats,Vitesse:100}},0,0),shielded=unit(withShield(swordA,"Écu","standard",{Vitesse:100}),0,0);
+const swordPenalty=penalty(swordA,"weapon_set_1_main");
 const near2=(x,y,label)=>assert.ok(Math.abs(x-y)<1e-9,label+" : "+x+" ≠ "+y);
 assert.ok(combat.effectiveSpeed(shielded)>1,"Vitesse assez haute pour ne pas toucher le plancher");
 near2(combat.effectiveSpeed(bare)-combat.effectiveSpeed(shielded),penalty(guardChar,"weapon_set_1_off"),"avec bouclier");
@@ -629,7 +631,7 @@ function withDual(character,mainName,offName,mastery=0){
 }
 const dex=Number(a.stats["Dextérité"])||0;
 assert.equal(combat.isDualWielding(unit(withDual(a,"Épée courte","Dague"),0,0)),true);
-assert.equal(combat.isDualWielding(unit(withShield(a,"Écu"),0,0)),false,"un bouclier n'est pas une seconde arme");
+assert.equal(combat.isDualWielding(unit(withShield(swordA,"Écu"),0,0)),false,"un bouclier n'est pas une seconde arme");
 assert.equal(combat.isDualWielding(unit(a,0,0)),false);
 near(combat.effectiveDexterity(unit(withDual(a,"Épée courte","Dague",0),0,0)),dex/2,"maîtrise 0 : Dextérité / 2");
 near(combat.effectiveDexterity(unit(withDual(a,"Épée courte","Dague",50),0,0)),dex/1.5,"maîtrise 50 : Dextérité / 1,5");

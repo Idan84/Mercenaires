@@ -8,6 +8,8 @@ Le même jour, Idan a précisé l'emplacement : le calendrier, en petit, et le b
 - **Juste à sa gauche** : la date, le jour de campagne et l'an. L'ère et la citation du jour s'affichent au survol.
 - **À gauche** : la compagnie et ses étoiles de renommée, puis l'or, l'entretien de la compagnie et l'effectif, chacun avec son picto.
 - **À droite** : le journal de la compagnie. La barre montre sa dernière ligne ; un clic le déplie au-dessus de la barre.
+- **En combat, pas de barre** (Idan, 2026-11-06 : « Elle n'a pas raison d'être là. Ça permet d'agrandir un peu la
+  carte ») : l'écran de combat prend toute la hauteur ; Échap ouvre toujours le menu de pause. La barre revient au camp.
 
 ## Référentiel et convention d'affichage
 

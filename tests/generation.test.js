@@ -200,6 +200,7 @@ for (let i = 0; i < 1000; i++) {
     const secondaryItem = c.items.find(item => item.id === c.equipment.slots.weapon_set_2_main);
     assert.equal(secondaryItem.itemType, "weapon");
     assert.notEqual(secondaryItem.combatFamily, primaryItem.combatFamily);
+    assert.ok(c.skills.martial[secondaryItem.name] > 1, `set 2 : ${secondaryItem.name} pratiquée (Idan, 2026-11-06)`);
   }
   // Bottes (Idan, 2026-10-24) : 5 % de chance, type au hasard.
   if (c.equipment.slots.boots) {
@@ -280,7 +281,8 @@ for (let i = 0; i < 1000; i++) {
     else {
       assert.equal(off.slot, "weapon_set_1_off");
       // Seconde arme : une arme légère (malus de vitesse ≤ 8 ; Idan, 2026-11-05).
-      assert.equal(off.name, expected === "shield" ? best(isShield) : best(x => !isShield(x) && !isRanged(x) && oneHand(x) && x.malus_vitesse_arme_base <= 8));
+      const practicedLight = x => !isShield(x) && !isRanged(x) && oneHand(x) && x.malus_vitesse_arme_base <= 8 && mk[x.nom] > 1;
+      assert.equal(off.name, expected === "shield" ? best(isShield) : rows.some(practicedLight) ? best(practicedLight) : "Dague");
       offHandsSeen[expected] = (offHandsSeen[expected] || 0) + 1;
     }
   }

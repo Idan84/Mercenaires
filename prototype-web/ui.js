@@ -1229,11 +1229,14 @@ function skillColumn(c,title,names){
   return `<section class="sheet-skill-column"><h4>${title}</h4>${skillRows(c,names)}</section>`;
 }
 // Meilleure arme d'un ensemble de catégories : score = catégorie + arme précise (comme à la génération).
+// La meilleure arme pratiquée (au-dessus de 1, la valeur d'une arme non pratiquée : Idan, 2026-11-06) ; null s'il n'en
+// pratique aucune, et la carte n'est pas montrée.
 function bestWeapon(c,categories){
   let best=null;
   for(const category of categories){
     const base=skillValue(c,"martial",category);
     for(const weapon of skillChildren(category)){
+      if(!(skillValue(c,"martial",weapon)>1)) continue;
       const score=base+skillValue(c,"martial",weapon);
       if(Number.isFinite(score)&&(!best||score>best.score)) best={weapon,category,score};
     }
@@ -1260,9 +1263,9 @@ function renderSkillsTab(c){
     </aside>
     <div class="sheet-skills-main">
       <div class="sheet-predilections">
-        ${predilectionCard("Arme de prédilection",melee?.weapon,melee?.category)}
+        ${melee?predilectionCard("Arme de prédilection",melee.weapon,melee.category):""}
         ${predilectionCard("Style de combat",style?.n,style?fmt(style.v):"")}
-        ${predilectionCard("Arme de tir",ranged?.weapon,ranged?.category)}
+        ${ranged?predilectionCard("Arme de tir",ranged.weapon,ranged.category):""}
       </div>
       <!-- Trois colonnes, sans rien en dessous (Idan, 2026-10-30) : Discrétion sous le style de combat, monture et
            armures sous le tir. -->

@@ -84,7 +84,7 @@ La meilleure arme est déterminée avec le score existant `Maîtrise catégorie 
 
 ### Arme secondaire
 
-Après l’arme principale : **50 % de chance** de recevoir une arme complémentaire. Si l’arme principale est CAC, on cherche la meilleure arme Distance ; si elle est Distance, on cherche la meilleure arme CAC. Cette seconde arme va dans le set d’armes 2.
+Après l’arme principale : **50 % de chance** de recevoir une arme complémentaire. Si l’arme principale est CAC, on cherche la meilleure arme Distance ; si elle est Distance, on cherche la meilleure arme CAC. Cette seconde arme va dans le set d’armes 2. Seulement une arme **pratiquée** (au-dessus de 1 : Idan, 2026-11-06, depuis que les armes à 20 ou moins passent à 1 à la génération, doc 02).
 
 ### Main secondaire (Idan, 2026-11-04)
 
@@ -92,7 +92,7 @@ Après l’arme principale : **50 % de chance** de recevoir une arme complément
 
 - seulement si l’arme principale est une arme de **corps à corps tenue à une main** (« 1 main » ou « Au choix ») : une arme à deux mains ou une arme de tir prend les deux mains ;
 - **Boucliers ≥ 50** : le bouclier qu’il maîtrise le mieux (Écu, Rondache ou Pavois ; `Maîtrise catégorie + Maîtrise arme précise`, comme pour les armes) ;
-- **Combat à deux armes ≥ 50** : sa meilleure **arme légère** de corps à corps à une main, la **Dague** par défaut. Arme légère (Idan, 2026-11-05 : « Oui armes légères » ; « 8 avec le fouet ») : malus de vitesse de base ≤ 8, soit Dague, Sai, Fouet, Bâton court, Kukri, Épée courte, Nunchaku, Estoc et Hachette ;
+- **Combat à deux armes ≥ 50** : sa meilleure **arme légère** de corps à corps à une main, la **Dague** par défaut. Arme légère (Idan, 2026-11-05 : « Oui armes légères » ; « 8 avec le fouet ») : malus de vitesse de base ≤ 8, soit Dague, Sai, Fouet, Bâton court, Kukri, Épée courte, Nunchaku, Estoc et Hachette ; une arme qu'il a pratiquée (au-dessus de 1, 2026-11-06), sinon la Dague ;
 - les deux seuils atteints : la meilleure des deux compétences décide (à égalité, le bouclier) ;
 - tier : la même table que le reste de l’équipement de départ ; tirée en dernier, après la fiole ;
 - pour les nouveaux mercenaires (recrues, Taverne, nouvelle partie, capitaine compris) ; les mercenaires déjà en jeu ne changent pas.

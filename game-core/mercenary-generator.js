@@ -1284,7 +1284,8 @@
       const preference = shieldOk && (!dualOk || shield >= dual)
         ? bestWeaponPreference(character.skills, isShieldWeapon)
         : bestWeaponPreference(character.skills, weapon => isMeleeWeapon(weapon) && ["1 main", "Au choix"].includes(weapon.prise)
-          && Number(weapon.malus_vitesse_arme_base) <= constant("generation.off_hand.light_max_speed_malus", 8))
+          && Number(weapon.malus_vitesse_arme_base) <= constant("generation.off_hand.light_max_speed_malus", 8)
+          && Number(character.skills.martial?.[weapon.nom]) > unpracticedValue)
           || (dagger ? {weapon:dagger.nom, category:skillByName.get(dagger.nom)?.parent || null} : null);
       return weaponItem(character, preference, "weapon_set_1_off");
     }
@@ -1313,7 +1314,8 @@
       const secondaryChance = Number(startingEquipmentGeneration.secondary_weapon_chance);
       if (primary && random() < (Number.isFinite(secondaryChance) ? secondaryChance : 0.5)) {
         const complementary = primary.combatFamily === "ranged" ? profile.bestMelee : profile.bestRanged;
-        if (complementary && complementary.score > 1) {
+        // Une arme qu'il a pratiquée (au-dessus de 1 : Idan, 2026-11-06, « fais les deux »), pas une arme non pratiquée.
+        if (complementary && complementary.specificScore > unpracticedValue) {
           const secondary = weaponItem(character, complementary, "weapon_set_2_main");
           if (secondary) {
             items.push(secondary);

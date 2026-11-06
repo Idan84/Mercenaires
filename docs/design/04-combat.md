@@ -240,12 +240,39 @@ peut y avoir une subtilité dans franchissable : vitesse réduite ». Données :
   case, la couleur du décor et un motif dessiné (arbres, buissons, épis, roseaux, vagues, pierres, muret, caisses, rocher,
   briques, toit, gouffre ; `styles.css`, en attendant de vraies images) ; plus sombre sur les bords quand on ne la traverse
   pas ; le survol de la case dit ce qu'elle fait ; l'aperçu d'une attaque montre la couverture.
-- **Cartes** : la Mission Test pose 4 à 6 groupes de décor au hasard entre les deux lignes de déploiement (étape 1). Le
-  relief (l'altitude) et le décor des cartes de mission viendront ensuite.
+- **Cartes** : la Mission Test pose 4 à 6 groupes de décor au hasard entre les deux lignes de déploiement (étape 1), et du
+  relief (étape 2, « Altitude » ci-dessous). Le décor et le relief des cartes de mission viendront ensuite.
 - **L'IA** avance vers sa cible par le vrai chemin, autour du décor. Quand elle ne voit personne (le décor coupe la vue),
   elle va chercher l'ennemi le plus proche (elle sait à peu près où il est), l'attaque si elle le voit alors, sinon un tireur
   que personne ne voit guette (mode sentinelle) : sans cela, un combat sur 12 environ se figeait, chacun attendant l'autre
   derrière le décor (mesure sur 150 combats de Mission Test ; plus aucun sur 300 après).
+
+## Altitude (Idan, 2026-11-06)
+
+« Je voudrais aussi qu'on bosse l'altitude » ; « l'idée, c'est de faire des cartes à la Mordheim / X-Com à terme » ; puis,
+sur la proposition ci-dessous : « Oui, ça me va, vas-y pour l'altitude ». Première étape, à la Battle Brothers : **une
+hauteur par case, de 0 à 3** (`combat.altitude.max`). Code : `prototype-web/mission.js` (`m.relief`, chemins, vue,
+couverture, charge), `game-core/combat-engine.js` (`ALTITUDE`, option `heightOf`), `game-core/magic.js` (sorts qui volent).
+
+- **Déplacement** : monter d'un niveau coûte **+1** point de mouvement (`combat.altitude.climb_cost`), en plus du décor
+  (forêt en montée : 3) ; **descendre est gratuit**. Un écart de **2 niveaux ou plus** entre deux cases voisines est une
+  **falaise** (`combat.altitude.cliff`) : infranchissable dans les deux sens (déplacement, charge ; un déplacement forcé
+  s'arrête au pied : « heurte aussitôt la falaise »).
+- **Toucher** : **+10** au delta par niveau quand on attaque d'en haut, **−10** par niveau vers le haut
+  (`combat.altitude.hit_per_level`), **au tir comme au corps à corps**, et pour les sorts qui volent comme une flèche (et le
+  crachat de venin). La hauteur est celle des cases au moment du coup (case d'arrivée d'une charge ou d'une approche).
+- **Vue** : une case entre les deux dont le sommet (sa hauteur, **+1** si son décor bloque la vue) dépasse **à la fois le
+  tireur et sa cible** coupe la ligne de vue ; plus haut, on voit par-dessus (une forêt au pied d'une colline ne cache plus
+  rien à qui est dessus ; une forêt sur la colline, si). Dans une forêt, on n'est toujours vu qu'au contact.
+- **Couverture** : un tireur placé **au moins un niveau plus haut** que sa cible ignore la **couverture partielle** (tirs et
+  sorts qui volent) ; la couverture **totale** compte toujours. Rien ne change au repérage ni en défense de charge.
+- **Charge** : pas de falaise sur la ligne, et **pas de charge qui monte de plus d'un niveau** au total ; la descente ne
+  gêne pas.
+- **Mission Test** : 1 à 3 collines, au sommet entre les deux lignes de déploiement, de 1 à 3 niveaux ; chaque case prend la
+  plus haute des collines moins sa distance au sommet : deux cases voisines ne diffèrent jamais de plus d'un niveau (pas de
+  falaise au hasard). Les cartes de mission (étape 3) pourront poser des falaises.
+- **Affichage** : par-dessus le décor, la case est un peu plus claire à chaque niveau, avec un contour et son chiffre ; le
+  survol dit « altitude N » ; l'aperçu d'une attaque montre la hauteur (« d’en haut », « vers le haut (2 niveaux) ») et le journal la note.
 
 ## Mode sentinelle (Idan, 2026-11-06)
 

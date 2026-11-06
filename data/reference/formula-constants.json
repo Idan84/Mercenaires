@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 381,
+  "row_count": 385,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -1968,6 +1968,38 @@
       "description": "Mode sentinelle (doc 04 ; Idan, 2026-11-06) : un tireur qu'aucun ennemi ne voit (camouflé, ou hors de la ligne de vue de tous les ennemis) se met en sentinelle au lieu de tirer ; pendant le tour adverse, il tire sur le premier ennemi visible qui fait un pas à sa portée. Enchaînement de tirs : P_N = (Dextérité effective + Vitesse) / (diviseur × N), comme au corps à corps (1) au lieu de 1,5 ; armes « Répétable » seulement.",
       "formule": "Mode sentinelle",
       "valeur": 1,
+      "version": "V1"
+    },
+    {
+      "nom": "Altitude — Toucher par niveau",
+      "code": "combat.altitude.hit_per_level",
+      "description": "Altitude (doc 04 ; Idan, 2026-11-06) : chaque case a une hauteur de 0 à 3. Au tir comme au corps à corps (et pour les sorts), chaque niveau d'écart ajoute cette valeur au delta du Toucher quand on attaque d'en haut, et la retire quand on attaque vers le haut.",
+      "formule": "Altitude",
+      "valeur": 10,
+      "version": "V1"
+    },
+    {
+      "nom": "Altitude — coût de la montée",
+      "code": "combat.altitude.climb_cost",
+      "description": "Altitude (doc 04 ; Idan, 2026-11-06) : chaque case a une hauteur de 0 à 3. Monter d'un niveau coûte ce nombre de points de mouvement en plus du décor ; descendre est gratuit.",
+      "formule": "Altitude",
+      "valeur": 1,
+      "version": "V1"
+    },
+    {
+      "nom": "Altitude — falaise",
+      "code": "combat.altitude.cliff",
+      "description": "Altitude (doc 04 ; Idan, 2026-11-06) : chaque case a une hauteur de 0 à 3. Un écart d'au moins ce nombre de niveaux entre deux cases voisines est une falaise : infranchissable dans les deux sens (déplacement, charge, déplacement forcé).",
+      "formule": "Altitude",
+      "valeur": 2,
+      "version": "V1"
+    },
+    {
+      "nom": "Altitude — hauteur maximale",
+      "code": "combat.altitude.max",
+      "description": "Altitude (doc 04 ; Idan, 2026-11-06) : chaque case a une hauteur de 0 à 3. Hauteur la plus haute d'une case.",
+      "formule": "Altitude",
+      "valeur": 3,
       "version": "V1"
     },
     {

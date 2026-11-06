@@ -42,7 +42,8 @@ for(const L of [1,3,5,6,8,10,11,13,15]) for(let i=0;i<300;i++){
   assert.ok(camp.budget>=low*unit&&camp.budget<=high*unit&&camp.budget%unit===0,`budget ${metal} niveau ${L} : ${camp.budget}`);
   assert.equal(camp.points,rules.points(camp.chief)+camp.enemies.reduce((t,code)=>t+rules.points(code),0),"points du camp");
   // À une demi-créature près : la plus lourde que ce camp pouvait tirer (le troll d'élite pèse 180 points).
-  const half=Math.ceil(Math.max(...reference.enemyArchetypes.rows.filter(a=>a.faction===camp.faction&&a.ligne!=="Chef"&&LEVELS[metal].includes(a.niveau)
+  const sources=new Set([camp.faction,...CAMPS[camp.faction].lignes.map(l=>l.faction).filter(Boolean)]);
+  const half=Math.ceil(Math.max(...reference.enemyArchetypes.rows.filter(a=>sources.has(a.faction)&&a.ligne!=="Chef"&&LEVELS[metal].includes(a.niveau)
     &&(a.niveau_mission_min||1)<=L).map(a=>a.points))/2);
   if(camp.enemies.length<100) assert.ok(Math.abs(camp.points-camp.budget)<=half,`près du budget : ${camp.points} / ${camp.budget}`);
   else assert.ok(camp.points<=camp.budget+half,`plafond de 100 ennemis : ${camp.points} / ${camp.budget}`);
@@ -51,7 +52,8 @@ for(const L of [1,3,5,6,8,10,11,13,15]) for(let i=0;i<300;i++){
   assert.ok(CHIEFS[metal].includes(rules.archetype(camp.chief).niveau),`chef ${metal}`);
   assert.equal(camp.campName,CAMPS[camp.faction].nom_camp);
   factions[camp.faction]++;
-  for(const code of camp.enemies){ const a=rules.archetype(code); assert.equal(a.faction,camp.faction); assert.ok(LEVELS[metal].includes(a.niveau),metal+" : "+a.niveau);
+  // Ses fiches, ou une créature partagée que son camp appelle (le troll, faction Créatures).
+  for(const code of camp.enemies){ const a=rules.archetype(code); assert.ok(sources.has(a.faction),camp.faction+" : "+code); assert.ok(LEVELS[metal].includes(a.niveau),metal+" : "+a.niveau);
     (drawn[metal]=drawn[metal]||[]).push(a.niveau); }
   (chiefs[metal]=chiefs[metal]||[]).push(rules.archetype(camp.chief).niveau);
   (budgets[L]=budgets[L]||[]).push(camp.budget);(sizes[L]=sizes[L]||[]).push(camp.enemies.length);
@@ -146,9 +148,9 @@ assert.deepEqual([...orders["Cour de sang"]].sort(),["emperor_cour","noble_cour"
 // Chaque peuple de camp : ses lignes (cinq, six pour la Cour de sang) sur quatre niveaux et quatre chefs, avec leurs points.
 for(const [faction,camp] of Object.entries(CAMPS)){
   const own=reference.enemyArchetypes.rows.filter(a=>a.faction===faction);
-  assert.equal(own.length,4*camp.lignes.length+4,faction);
+  assert.equal(own.length,4*camp.lignes.filter(l=>!l.faction).length+4,faction);
   for(const l of camp.lignes) for(const level of ["novice","normal","vétéran","d’élite"]){
-    const a=own.find(x=>x.ligne===l.ligne&&x.niveau===level);
+    const a=reference.enemyArchetypes.rows.find(x=>x.faction===(l.faction||faction)&&x.ligne===l.ligne&&x.niveau===level);
     assert.ok(a&&a.points>0,`${faction} ${l.ligne} ${level}`);
   }
 }

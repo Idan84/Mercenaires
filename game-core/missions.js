@@ -103,8 +103,11 @@
       const enemies=[];
       while(enemies.length<max){
         const level=weighted(levels).niveau;
-        const lines=(chosen.lignes||[]).filter(l=>allowedAt(chosen.faction,l.ligne,level,missionLevel));
-        const code=lines.length?allowedAt(chosen.faction,weighted(lines).ligne,level,missionLevel).code:null;
+        // Une ligne peut venir d'une autre famille de fiches (faction : les Créatures, comme le troll ; Idan, 2026-11-06 :
+        // « Ça devrait être les mêmes fiches qui s'intègrent pour les différentes factions »).
+        const lines=(chosen.lignes||[]).filter(l=>allowedAt(l.faction||chosen.faction,l.ligne,level,missionLevel));
+        const line=lines.length?weighted(lines):null;
+        const code=line?allowedAt(line.faction||chosen.faction,line.ligne,level,missionLevel).code:null;
         if(!code||total+points(code)/2>budget) break;
         enemies.push(code);
         total+=points(code);

@@ -85,6 +85,7 @@ jobs:
       - run: node scripts/merchant-coverage.js --check
       - run: node tests/mercenary-profile.test.js
       - run: node tests/mercenary-titles.test.js
+      - run: node tests/mercenary-domain.test.js
       - run: node scripts/build-mercenary-profile.js --check
       - run: node tests/magic.test.js
       - run: node tests/mission-spells.test.js

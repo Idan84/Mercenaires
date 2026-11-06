@@ -678,6 +678,9 @@ function resolveMissionAftermath(){
     const repStars=reputation&&starChange(starRules().personal(reputation.before),starRules().personal(reputation.after));
     if(repStars) missionLog(mercenary.name+" : réputation "+repStars.text+".",repStars.up?"gear":"bad");
   }
+  // Domaine évolutif (Idan, 2026-11-06) : le titre recalculé après l'expérience de la mission (ui.js).
+  if(typeof refreshMercenaryDomains==="function")
+    refreshMercenaryDomains((report.progression||[]).map(p=>p.mercenary),{log:text=>missionLog(text,"gear")});
   if(m.contract&&!report.gameOver) resolveContractOutcome(m,report,victory);
   if(report.gameOver){
     missionLog("Le capitaine est mort : la partie est terminée.","death");
@@ -3072,6 +3075,14 @@ function missionRosterMagic(u){
 function missionHpClass(pct){ return pct<=30?" hp-low":pct<=60?" hp-mid":""; }
 
 // Le tier de l’archétype fixe le cadre, y compris pour les chefs. Les ennemis du test libre sont Normal.
+// Cadre de nos personnages en combat (Idan, 2026-11-06 : « un cadre de couleur pour nos personnages ? Archer / CAC /
+// Magie » ; « combat seulement », « on ne touche pas aux ennemis ») : la couleur de leur domaine du moment (bleu, vert,
+// violet ; styles.css) sur le pion, la barre d'ordre de jeu et la liste. Ni les ennemis, ni les invocations.
+function missionDomainAttr(unit){
+  if(unit.team!=="player"||unit.summon) return "";
+  const domain=unit.character?.domain||unit.character?.equipment?.profile?.type;
+  return ["melee","ranged","magic"].includes(domain)?` data-domain="${domain}"`:"";
+}
 function renderMissionPortrait(unit,variant){
   const portrait=renderAvatar(unit.character,{variant,kind:"portrait"});
   if(unit.team!=="enemy"||unit.summon) return portrait;
@@ -3084,7 +3095,7 @@ function renderMissionRoster(units){
   return units.filter(u=>!u.vanished).map(u=>{
     const pct=Math.max(0,Math.min(100,Math.round(u.hp/u.pvMax*100)));
     return `
-    <div class="mission-roster-row ${u.team} ${u.alive?"":"down"}${missionActiveUnit()===u?" active":""}" data-unit-id="${esc(String(u.id))}" title="Centrer la carte sur ${esc(u.character.name)}">
+    <div class="mission-roster-row ${u.team} ${u.alive?"":"down"}${missionActiveUnit()===u?" active":""}"${missionDomainAttr(u)} data-unit-id="${esc(String(u.id))}" title="Centrer la carte sur ${esc(u.character.name)}">
       ${renderMissionPortrait(u,"compact")}
       <div class="mission-roster-copy">
         <strong>${esc(u.character.name)}</strong>
@@ -3100,7 +3111,7 @@ function renderMissionRoster(units){
 function renderMissionInitiative(){
   const m=game.mission,u=missionActiveUnit();
   const shown=x=>x.alive&&!x.offMap&&!x.vanished&&!x.raised;
-  const chip=(x,done)=>`<li class="mission-init ${x.team}${x===u?" active":""}${done?" done":""}" data-unit-id="${esc(String(x.id))}" title="${esc(x.character.name)} — initiative ${Math.round(m.engine.initiative(x))}${done?" — a joué":""}">`
+  const chip=(x,done)=>`<li class="mission-init ${x.team}${x===u?" active":""}${done?" done":""}"${missionDomainAttr(x)} data-unit-id="${esc(String(x.id))}" title="${esc(x.character.name)} — initiative ${Math.round(m.engine.initiative(x))}${done?" — a joué":""}">`
     +`${renderMissionPortrait(x,"compact")}</li>`;
   const players=m.playerOrder.filter(shown),enemies=m.enemyOrder.filter(shown);
   return players.map(x=>chip(x,m.phase==="player"&&x.acted)).join("")
@@ -3271,7 +3282,7 @@ function renderMission(){
     if(unit.summon) classes.push("summoned");
     if(unit.character.undead) classes.push("undead");
     if(targets.has(missionKey(unit.q,unit.r))&&m.mode!=="move") classes.push(missionSpellMode()?"spell-aim":"target");
-    return `<div class="${classes.join(" ")}" data-unit-id="${esc(String(unit.id))}" data-hex-q="${unit.q}" data-hex-r="${unit.r}" style="left:${p.x-26}px;top:${p.y-26}px">
+    return `<div class="${classes.join(" ")}"${missionDomainAttr(unit)} data-unit-id="${esc(String(unit.id))}" data-hex-q="${unit.q}" data-hex-r="${unit.r}" style="left:${p.x-26}px;top:${p.y-26}px">
       <span class="token-ring">${renderMissionPortrait(unit,"battle")}</span>
       ${unit.alive?`<span class="token-hp${missionHpClass(pct)}"><i style="width:${pct}%"></i></span>`:""}
       <strong>${esc(unit.character.name.split(" ")[0])}</strong>

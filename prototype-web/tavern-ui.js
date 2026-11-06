@@ -166,6 +166,8 @@ function advanceCampDay(){
   }
   const [report]=campaignRules().advanceTime(game.campaign,1);
   logDayReport(report);
+  // Domaine évolutif (Idan, 2026-11-06) : chaque matin, après les entraînements et les apprentissages de la nuit.
+  if(typeof refreshMercenaryDomains==="function") refreshMercenaryDomains(game.campaign.company.roster);
   saveGame();
   renderGame();
   if(typeof renderContractBoard==="function"&&!$("tavern-missions-view").classList.contains("hidden")) renderContractBoard();

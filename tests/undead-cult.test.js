@@ -48,15 +48,15 @@ for (const r of cult) {
   if (r.ligne === "Spectre") assert.equal(r.attaque.degats_type, "psychique");
   if (undead) assert.deepEqual(r.sorts, [], r.code + " : pas de sorts tirés à la génération");
 }
-// Le nécromancien : Nécromancie et ses sorts, de plus en plus nombreux, à la maîtrise 65 (130 pour le Roi des morts).
+// Le nécromancien : Nécromancie et ses sorts, de plus en plus nombreux, à la maîtrise 65, 80, 100 et 130.
 const chefs = cult.filter(r => r.ligne === "Chef");
 for (const [i, c] of chefs.entries()) {
   assert.ok(c.ecoles["Nécromancie"] > 50, c.code);
   for (const s of c.sorts) { assert.equal(spells.get(s.code)?.ecole, "Nécromancie", s.code); assert.ok(s.maitrise > 0); }
   assert.equal(c.sorts[0].code, "bone_army", "l'Armée d'os d'abord");
   if (i) assert.ok(c.sorts.length >= chefs[i - 1].sorts.length);
-  // Idan, 2026-11-06 : « monte la maîtrise à 65 », puis « le roi des morts… Il devrait être à 130 ! ».
-  assert.ok(c.sorts.every(s => s.maitrise === (i === 3 ? 130 : 65)), c.code + " : maîtrise");
+  // Idan, 2026-11-06 : « monte la maîtrise à 65 », « le roi des morts… Il devrait être à 130 ! », « le 2 à 80 et le 3 à 100 ».
+  assert.ok(c.sorts.every(s => s.maitrise === [65, 80, 100, 130][i]), c.code + " : maîtrise");
 }
 assert.ok(chefs.every(c => c.sorts.some(s => s.code === "raise_dead") && c.sorts.some(s => s.code === "death_arrow")));
 assert.ok(chefs.slice(2).every(c => c.sorts.some(s => s.code === "summon_specter")));

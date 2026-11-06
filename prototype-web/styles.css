@@ -2687,3 +2687,12 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 /* Taverne à 5 missions (Idan, 2026-11-01) : une case prise reste vide jusqu'au lendemain. */
 .mission-card--empty{display:flex;align-items:center;justify-content:center;min-height:180px;border-style:dashed;opacity:.6;cursor:default}
 .mission-card--empty p{margin:0;color:#a98d66;font:italic 15px Georgia,serif}
+
+/* Le portrait et le cadre partagent la même boîte, à toutes les tailles de miniature. */
+.enemy-rank-portrait{position:relative;display:block;width:100%;height:100%;aspect-ratio:1;overflow:hidden;border-radius:50%}
+.mission-roster-row .enemy-rank-portrait{width:38px;height:38px}
+.enemy-rank-portrait > .avatar-frame,
+.mission-roster-row .enemy-rank-portrait > .avatar-frame--compact{width:100%;height:100%;border:0;border-radius:50%;clip-path:circle(45%)}
+.enemy-rank-ring{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.token-ring:has(> .enemy-rank-portrait),
+.mission-active-portrait:has(> .enemy-rank-portrait){border-width:0}

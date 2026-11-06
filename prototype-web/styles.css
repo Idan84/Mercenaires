@@ -2672,12 +2672,10 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .sheet-evaluation{display:grid;gap:6px;margin:0;padding:9px 10px;border:1px solid #71583e;border-radius:10px;background:#2e231c}
 .sheet-eval-title{margin:0;color:#ffe1ac;font:700 16px/1.2 Georgia,serif}
 .sheet-eval-item{position:relative;display:grid;gap:1px;cursor:help}
-.sheet-eval-spec{color:#cdb38c;font:italic 12px/1.2 Georgia,serif}
 .sheet-eval-item .sheet-stat-tip{left:0;top:calc(100% + 6px);bottom:auto;width:260px}
 .sheet-eval-item .sheet-stat-tip em{display:block;font-style:normal}
 .sheet-eval-item .sheet-stat-tip em+em{margin-top:5px;color:#cdb38c;font-style:italic}
 .sheet-eval-item:hover .sheet-stat-tip,.sheet-eval-item:focus .sheet-stat-tip{display:block}
-.sheet-eval-item .rep-stars{font-size:13px;white-space:nowrap}
 /* Avec l'évaluation au-dessus, la colonne a la hauteur de la fiche (celle de la boîte moins son en-tête et ses marges) :
    le portrait prend ce qui reste, en gardant ses proportions ; la fiche tient sans défiler. */
 @media(min-width:861px){

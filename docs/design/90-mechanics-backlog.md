@@ -7,13 +7,14 @@ Cette page ne contient que les **chantiers encore ouverts**. Les règles validé
 ## Décor, ligne de vue & terrain futur
 
 Fait (Idan, 2026-11-06, doc 04 « Décor ») : trois réglages par décor, passage (normal, ½, ⅓, ¼, infranchissable), vue
-(laisse voir, bloque) et couverture (sans, partielle × 0,5, totale × 0,25) ; la charge à travers un décor lent.
+(laisse voir, bloque) et couverture (sans, partielle × 0,5, totale × 0,25) ; la charge à travers un décor lent. Fait
+aussi (doc 04 « Altitude ») : une hauteur de 0 à 3 par case (montée +1, falaises, Toucher ±10 par niveau, vue, couverture
+vue d'en haut, charge).
 
 Restent pour plus tard :
 
-- hauteur et différences de niveau (l'altitude, prochaine étape : une hauteur par case, à la Battle Brothers ; puis des
-  cartes à étages façon Mordheim / X-Com) ;
-- décor des cartes de mission ;
+- cartes à étages façon Mordheim / X-Com (passerelles, échelles, toits) ;
+- décor et relief des cartes de mission ;
 - couverture destructible ;
 - géométrie du **couloir de tir** utilisé par l'approximation (un tir raté qui finit dans le décor) ;
 - murs, portes, mobilier, cordes, leviers et interactions de décor.

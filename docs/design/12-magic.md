@@ -290,6 +290,8 @@ Une école de **contrôle** : elle déplace les gens sur la carte. Même modèle
 - **Couverture du décor** (doc 04 ; Idan, 2026-11-06 : « oui pour les sorts qui volent ») : un sort qui vole comme une
   flèche (et le crachat de venin) voit sa chance de toucher multipliée par 0,5 contre une cible en couverture partielle,
   0,25 en couverture totale, comme un tir.
+- **Altitude** (doc 04 « Altitude ») : comme un tir, ce sort gagne **+10** au delta du Toucher par niveau au-dessus de sa
+  cible (−10 par niveau en dessous), et passe par-dessus la couverture partielle d'au moins un niveau plus haut.
 - **Champ de protection** (Idan : il dévie aussi les sorts) : avant le jet de toucher, 50 % de dévier les tirs d'armes (arcs, frondes, armes à feu, contre-charges au tir) et les sorts qui volent comme une flèche (Trait de feu, Flèche de glace, Éclair, Lancer de pierre, crachat de venin). Il dure 4 tours : jusqu'au début du 4e tour suivant le lancer. Il ne gêne ni la Foudre, ni les zones, ni la Décharge.
 - **Lancer de pierre** en action rapide : il se combine avec un sort principal dans le même tour.
 - **Les quatre sorts du 2026-10-31** (validés par Idan, chiffrés par JC3) amènent l'école à 10 sorts, sur le même modèle.

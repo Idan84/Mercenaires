@@ -21,6 +21,8 @@
 
   function createCombatEngine(reference,options={}){
     const random=options.random||Math.random;
+    // Altitude (doc 04 ; Idan, 2026-11-06) : options.heightOf(unit) = la hauteur de sa case (0 à 3), donnée par la carte.
+    const heightOf=typeof options.heightOf==="function"?options.heightOf:null;
     const rows={};
     for(const [name,payload] of Object.entries(reference||{})) rows[name]=payload?.rows||[];
 
@@ -106,6 +108,14 @@
       perSlowStep:constant("combat.charge.fall_per_slow_step",5)
     };
     const coverHitFactor=level=>COVER[level]??1;
+    // Altitude : + hitPerLevel au Toucher par niveau au-dessus de la cible, autant de moins par niveau en dessous.
+    const ALTITUDE={
+      hitPerLevel:constant("combat.altitude.hit_per_level",10),
+      climbCost:constant("combat.altitude.climb_cost",1),
+      cliff:constant("combat.altitude.cliff",2),
+      max:constant("combat.altitude.max",3)
+    };
+    const heightDiffOf=(attacker,defender)=>heightOf?(Number(heightOf(attacker))||0)-(Number(heightOf(defender))||0):0;
     // Le bonus de Discrétion d'une couverture, pour le repérage (doc 04 : +30 partielle, +60 totale).
     const coverDiscretion=level=>level==="totale"?STEALTH.totalCover:level==="partielle"?STEALTH.partialCover:0;
     // Mode sentinelle (Idan, 2026-11-06) : le tir de sentinelle gagne en précision (au Toucher) et enchaîne comme au corps à
@@ -626,6 +636,8 @@
         -dodgeFactor*effectiveDodge(defender)
         -0.2*(defensivePerception+effectiveSpeed(defender));
       if(context.sentinel&&mode==="ranged") delta+=SENTINEL.precision;
+      // Altitude : context.heightDiff = hauteur de l'attaquant − hauteur du défenseur (au tir comme au corps à corps).
+      delta+=ALTITUDE.hitPerLevel*(Number(context.heightDiff)||0);
 
       if(mode==="ranged"){
         const range=weaponRange(attacker);
@@ -837,13 +849,14 @@
       const sentinel=mode==="ranged"&&Boolean(options.sentinel);
       // Couverture : au tir, et contre une charge (options.cover : « partielle » ou « totale »).
       const cover=(mode==="ranged"||chargePower>0)&&COVER[options.cover]?options.cover:null;
-      const tags={chargePower,opportunity,encircled,fleeingTarget,backstab,hidden,...(sentinel?{sentinel}:{}),...(cover?{cover}:{})};
+      const heightDiff=options.heightDiff??heightDiffOf(attacker,defender);
+      const tags={chargePower,opportunity,encircled,fleeingTarget,backstab,hidden,...(sentinel?{sentinel}:{}),...(cover?{cover}:{}),...(heightDiff?{heightDiff}:{})};
       // Champ de protection (Télékinésie, doc 12) : avant le Toucher, le projectile a projectileShield.chance % d'être dévié.
       if(mode==="ranged"&&defender.projectileShield){
         const pDeflect=Number(defender.projectileShield.chance)||0,deflectRoll=d100();
         if(deflectRoll<=pDeflect) return {ok:true,mode,weapon:weapon.nom,distance,deflected:true,pDeflect,deflectRoll,hit:false,wound:false,damage:0,...tags};
       }
-      const pHit=hitProbability(attacker,defender,mode,distance,{opportunity,backstab,sentinel,cover});
+      const pHit=hitProbability(attacker,defender,mode,distance,{opportunity,backstab,sentinel,cover,heightDiff});
       const hitRoll=d100(),hit=hitRoll<=pHit;
       // twoHanded : arme tenue à deux mains (XP de Combat à deux mains) ; oneHanded : arme à une main tenue seule (XP de
       // Combat à une main).
@@ -1199,6 +1212,7 @@
       SENTINEL,
       COVER,
       CHARGE_FALL,
+      ALTITUDE,
       coverHitFactor,
       coverDiscretion,
       detectionChance,

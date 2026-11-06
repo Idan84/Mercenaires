@@ -244,7 +244,8 @@ Pour chaque école de magie :
 aussi ; en fin de génération, après le domaine.
 
 - Une **arme précise**, une **catégorie d'arme**, un **style** (Combat à une main, à deux mains, à deux armes, Boucliers) ou
-  une **école de magie** à **20 ou moins** passe à **1** : « jamais pratiqué », comme une école absente
+  une **école de magie** à **20 ou moins** passe à **1**, **0 compris** (Idan : « On remonte les 0 à 1 » : un malus de
+  peuple, de culture ou de domaine ne la laisse plus à 0) : « jamais pratiqué », comme une école absente
   (`generation.skills.unpracticed_max`, `generation.skills.unpracticed_value`). La trace de génération le montre
   (« Non pratiquée »).
 - **Aucun sort ne se tire dans une école à 20 ou moins** (Idan : « il devrait pas connaître un sort dans une école où il a

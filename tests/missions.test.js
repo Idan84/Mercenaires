@@ -277,6 +277,8 @@ const files={peoples:"peoples.json",cultures:"cultures.json",socialOrigins:"soci
 const full=Object.fromEntries(Object.entries(files).map(([key,file])=>[key,read(file)]));
 const generator=createGenerator(full,{random:seeded(3),nameGenerator:(people,id)=>people+" "+id});
 const tavern=createTavernRules({reference:full,random:seeded(4)});
+// Ici, seulement des contrats « Faire le ménage » : pas de chasse au tableau (tests/hunts.test.js).
+full.formulaConstants={...full.formulaConstants,rows:full.formulaConstants.rows.map(r=>r.code==="tavern.missions.weight_hunt"?{...r,valeur:0}:r)};
 const campaign=createCampaignRules({generator,tavern,reference:full,missions:createMissionRules({reference,random:seeded(5)})});
 const captain=generator.createCaptain({id:1,name:"Capitaine"});
 const squad=[2,3].map(id=>generator.createMercenary({id,captain}));

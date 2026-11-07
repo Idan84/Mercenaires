@@ -493,3 +493,19 @@ Une ligne **Cavalier** (poids 10) au camp de voleurs, dès le niveau de mission 
 - **Butin** : celui du Bandit (100 % − 10 % par tier) ; le cheval tombé peut être capturé après la victoire (test de survie, une place aux Écuries ; doc 11 §8).
 - **Mission Test** : le deuxième ennemi est un Cavalier, sur son destrier.
 - Test : `tests/mounts.test.js`.
+
+## 23 — Chasses (Idan, 2026-11-07)
+
+> « On va pouvoir travailler sur les missions Éliminez la bête. Récompense de 1000 Po par étoile. 0,25 à 1 jour de marche par étoile. Arrondi sup. Textes cohérents avec l'espèce : Version Meute de Loup : 3D6 par étoile. Version Licorne : 1D6 par étoile. On élimine les animaux. On peut en capturer ou se prendre une pilée ! On génère des missions -2 / +2 étoiles par rapport à l'étoile. » « Les fiches fixes. » « Éliminez la bête, c'est notre nom interne pour classer les missions… On peut trouver mieux et plus variés. »
+
+Deux missions (`one-shot-missions.json`, celles qui ont une `bete`) : **Chasse au loup** (`hunt_wolves`) et **Chasse à la licorne** (`hunt_unicorn`).
+
+- **Difficulté** : le niveau de Renommée de la compagnie + un écart de −2 à +2 (`niveau.ecart`), de 1 à 15.
+- **Les bêtes** : **3D6 loups par étoile** (3★ : 9D6, une trentaine), **1D6 licornes par étoile** ; au plus 100. Elles ont la **fiche fixe** de nos animaux (`mounts.json` : le Loup, la Licorne), quelle que soit l'étoile : pas de chef, pas de niveaux. Elles se battent et fuient comme tout combattant ; la licorne lance sa Création de double.
+- **Marche** : étoiles × un tirage de 0,25 à 1, arrondi au jour supérieur.
+- **Récompense** : **1 000 PO par étoile**, seule : ni coffre ni butin (l'équipement de nos morts revient). Un échec fait baisser la renommée et une défaite double le jet de mort, comme un contrat.
+- **Capture** : après la victoire, chaque bête restée à terre passe le test de survie et rentre avec l'escouade, s'il reste une place au Chenil (loups) ou aux Écuries (licornes ; doc 11 §8).
+- **Au tableau** : environ **une case sur cinq** (`tavern.missions.weight_*` : contrat 2, garde du corps 2, chasse 1) ; les loups **3 fois sur 4** (`poids`). Elle se signe comme un contrat (l'escouade part le lendemain matin).
+- **Lieux** : « Repaire des loups », « Territoire de la meute », « Bois des hurlements » ; « Bois de la licorne », « Vallon de la licorne », « Sanctuaire de la licorne » ; paysages : **Forêt profonde** (loups), **Clairière** (licornes), sans enceinte (`mission-landscapes.json`).
+- **Lettres** : un village d'éleveurs et un seigneur sans gibier pour les loups ; un noble endetté et un alchimiste pour les licornes (`ordres`, noms `alchimistes`).
+- Code : `missions.js` (`createHunt`, `rollBeasts`, `huntDistance`, `buildEnemies`), `campaign.js` (tableau), `mission.js`, `contract-ui.js`. Test : `tests/hunts.test.js`.

@@ -84,8 +84,9 @@
       if(result.oneHanded) logOf(attacker).oneHandedAttacks=(logOf(attacker).oneHandedAttacks||0)+1;
     }
     // Compétences animales du cavalier (Idan, 2026-11-07 : « xp catégorie animal pour le cavalier ») : chaque attaque de sa
-    // monture, comme une arme : la famille de la monture (Équidés…) comme l'arme, Compagnon animal comme sa catégorie.
-    const rider=attacker?.rider&&attacker.rider.mount===attacker?attacker.rider:null;
+    // monture, comme une arme : la famille de la monture (Équidés…) comme l'arme, Compagnon animal comme sa catégorie ;
+    // montée ou à pied à ses côtés (le loup qu'un humain emmène ; Idan : « Oui bien sur »).
+    const rider=attacker?.character?.mount&&attacker.master&&attacker.master!==attacker?attacker.master:null;
     if(rider&&result.weapon&&!result.chargeFall&&!result.accidental){
       const family=attacker.character?.mountSkill||"Compagnon animal",uses=logOf(rider).animalUses||(logOf(rider).animalUses={});
       const use=uses[family]||(uses[family]={attacks:0,hits:0,wounds:0});

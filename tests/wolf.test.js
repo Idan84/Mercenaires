@@ -151,6 +151,17 @@ assert.equal(order.indexOf(pet), order.indexOf(humanUnit) + 1, "juste après lui
 assert.equal(humanUnit.companion, undefined);
 assert.equal(api.missionRemountable(humanUnit), null, "l'humain ne peut pas le monter");
 assert.ok(api.missionOwnMounts(game.mission).some(u => u === pet), "sa fin de mission, comme une monture");
+// Ses attaques, à pied, donnent l'XP animale à son maître (Idan : « Oui bien sur ») ; celles du loup monté aussi.
+Progression.recordAttack(pet, enemies[0], {mode: "melee"}, {ok: true, hit: true, wound: true, damage: 8, weapon: "Morsure"});
+assert.deepEqual(humanUnit.progress.animalUses["Canidés"], {attacks: 1, hits: 1, wounds: 1}, "l'humain apprend de son loup");
+Progression.recordAttack(goblinUnit.mount, enemies[0], {mode: "melee"}, {ok: true, hit: true, weapon: "Morsure"});
+assert.equal(goblinUnit.progress.animalUses["Canidés"].attacks, 1, "le gobelin de celui qu'il monte");
+// Le titre (Idan : « Oui ») : « à dos de loup » pour celui qui le monte, rien pour celui qui l'emmène à pied.
+const {createProfileRules} = require("../game-core/mercenary-profile.js");
+const profile = createProfileRules({reference, engine: combat});
+const titleOf = m => profile.composeTitle(m, {titles: [], cannonFodder: true}, {}, {}).name;
+assert.match(titleOf(goblin), /^Chair à canon à dos de loup$/, "le gobelin : " + titleOf(goblin));
+assert.equal(titleOf(human), "Chair à canon", "l'humain l'emmène à pied");
 
 // 5. La capture : un loup de la Cour de sang KO passe le test de survie et rejoint le Chenil.
 const prey = generator.createMercenary({id: 950, captain});

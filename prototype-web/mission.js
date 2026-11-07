@@ -856,7 +856,8 @@ function toggleMissionAimMount(){
   const m=game.mission,u=missionActiveUnit();
   if(!u||m.phase!=="player"||m.over) return;
   m.aimMount=!m.aimMount;
-  if(m.aimMount&&!["melee","charge","mountMelee"].includes(m.mode)){ setMissionMode(u.attackAvailable?"melee":"mountMelee"); return; }
+  // Sans mode choisi, contre un cavalier ennemi : l'attaque.
+  if(m.aimMount&&!m.mode&&missionOpponents(u).some(o=>!o.offMap&&m.engine.mountOf?.(o))){ setMissionMode(u.attackAvailable?"melee":"mountMelee"); return; }
   renderMission();
 }
 function setMissionMode(mode,{twoHands=false,caster=null}={}){
@@ -1242,27 +1243,44 @@ function logMissionFumble(unit,roll,confirmed,effect){
 
 // Attaque d'opportunité CAC V1 : les réactions sont résolues avant la fin de l'action déclenchante,
 // dans l'ordre d'initiative de l'équipe qui réagit.
+// Les adversaires qui réagissent (attaques d'opportunité) : avec leurs chevaux montés, qui menacent aussi (Idan, 2026-11-07).
+function missionReactors(unit){
+  const e=game.mission.engine,opponents=missionOpponents(unit);
+  return [...opponents,...opponents.map(o=>e.mountOf?.(o)).filter(Boolean)];
+}
+// Qui prend le coup quand un couple est frappé sans que l'attaquant choisisse (attaque d'opportunité, IA ; Idan,
+// 2026-11-07 : « oui ») : le jet du tir, selon le gabarit.
+function missionStrikeVictim(attacker,target,what="Coup"){
+  const e=game.mission.engine;
+  if(!e.mountOf?.(target)) return target;
+  const hit=e.rollShotTarget(target);
+  missionLog(what+" sur "+target.character.name+", à cheval : "+(hit.mount?"le cheval":"le cavalier")+" le prend ("+missionPercent(hit.p)+" pour le cheval, jet "+hit.roll+").","info");
+  return hit.target;
+}
 function resolveOpportunityAttacks(reactors,target){
-  const m=game.mission,order=target.team==="player"?m.enemyOrder:m.playerOrder;
-  const sorted=[...reactors].sort((x,y)=>order.indexOf(x)-order.indexOf(y));
+  const m=game.mission,e=m.engine,order=target.team==="player"?m.enemyOrder:m.playerOrder;
+  // Un cheval monté réagit juste après son cavalier.
+  const rank=x=>order.indexOf(e.pairOf?e.pairOf(x):x)+(x.rider?0.5:0);
+  const sorted=[...reactors].sort((x,y)=>rank(x)-rank(y));
   const from={q:target.q,r:target.r};
   for(const reactor of sorted){
     if(m.over||!target.alive||target.q!==from.q||target.r!==from.r) break;
-    if(!m.engine.threatens(reactor,target)) continue;
+    if(!e.threatens(reactor,target)) continue;
+    const victim=missionStrikeVictim(reactor,target,"Attaque d’opportunité");
     // Combat à deux armes : un coup avec chaque arme de mêlée, sans enchaînement (Attaque d'opportunité CAC V1).
-    const hands=m.engine.usableHands(reactor,m.engine.axialDistance(reactor,target)).filter(h=>h.mode==="melee");
+    const hands=e.usableHands(reactor,e.axialDistance(reactor,victim)).filter(h=>h.mode==="melee");
     let struck=false,wounded=false;
     for(const h of hands){
-      if(m.over||!target.alive) break;
-      const result=m.engine.resolveAttack(reactor,target,{mode:"melee",opportunity:true,hand:h.hand});
-      logMissionAttack(reactor,target,result,"opportunity");
-      missionWeaponEnchantStrike(reactor,target,result);
+      if(m.over||!victim.alive) break;
+      const result=e.resolveAttack(reactor,victim,{mode:"melee",opportunity:true,hand:h.hand});
+      logMissionAttack(reactor,victim,result,"opportunity");
+      missionWeaponEnchantStrike(reactor,victim,result);
       checkMissionEnd();
       if(!result.ok) continue;
       struck=true;wounded=wounded||result.wound;
       if(result.fumble||result.woundFumble) break;
     }
-    if(struck) resolveMissionCourage(reactor,target,{ok:true,mode:"melee",wound:wounded});
+    if(struck) resolveMissionCourage(reactor,victim,{ok:true,mode:"melee",wound:wounded});
   }
   return target.alive;
 }
@@ -1277,7 +1295,7 @@ function moveMissionUnitAlongPath(unit,path){
     const large=missionLarge(unit),largeStep=large?missionLargeStep(unit,from,step,occupiedMissionKeys(unit)):null,stepCost=largeStep?.cost;
     if(large&&stepCost==null) break;
     const facing=large?step.facing??largeStep.facing:undefined;
-    const reactors=unit.camouflaged?[]:e.opportunityReactors(missionOpponents(unit),unit,missionAt(unit,{...step,facing}));
+    const reactors=unit.camouflaged?[]:e.opportunityReactors(missionReactors(unit),unit,missionAt(unit,{...step,facing}));
     if(reactors.length){
       missionLog(unit.character.name+" quitte la zone de menace de "+reactors.map(x=>x.character.name).join(", ")+".","move");
       resolveOpportunityAttacks(reactors,unit);
@@ -1307,7 +1325,7 @@ function moveMissionUnitAlongPath(unit,path){
 }
 
 function missionPathOpportunityCount(unit,path){
-  const e=game.mission.engine,opponents=missionOpponents(unit);
+  const e=game.mission.engine,opponents=missionReactors(unit);
   let from=missionAt(unit,{q:unit.q,r:unit.r,facing:unit.facing}),count=0;
   for(const step of path){
     const to=missionAt(unit,step);
@@ -1357,8 +1375,13 @@ function missionActiveUnitLost(){
 // charge (facultatif) : données de Charge CAC V1 ; la charge est une seule séquence, sans enchaînement, et
 // chaque arme de mêlée y reçoit le bonus de charge (à deux armes, chaque arme frappe : décision Idan, 2026-10-08).
 // sentinel : le tir d'une sentinelle (plus précis, il enchaîne comme au corps à corps).
-function performMissionAttack(attacker,target,mode,distance,charge=null,{sentinel=false}={}){
+// chosen : le joueur a choisi sa victime (le cavalier, ou son cheval avec « Viser le cheval ») ; sinon, contre un couple, un jet.
+function performMissionAttack(attacker,target,mode,distance,charge=null,{sentinel=false,chosen=false}={}){
   const m=game.mission,e=m.engine;
+  if(mode!=="ranged"&&!chosen&&e.mountOf?.(target)){
+    target=missionStrikeVictim(attacker,target,charge?"Charge":"Coup");
+    distance=e.axialDistance(attacker,target);
+  }
   // Tir sur un cavalier (Idan, 2026-11-07 : « À distance, jet qui dépend de la taille de la monture par rapport au
   // cavalier ») : le cheval prend le tir à gabarit du cheval ÷ (gabarit du cheval + gabarit du cavalier).
   if(mode==="ranged"&&e.mountOf?.(target)){
@@ -1372,7 +1395,7 @@ function performMissionAttack(attacker,target,mode,distance,charge=null,{sentine
   const handsAt=d=>(dual?e.usableHands(attacker,d):(e.canAttackAtDistance(attacker,d,mode)?[{hand:"main",mode}]:[]))
     .filter(h=>h.mode!=="ranged"||missionLineOfSight(attacker,target));
   if(handsAt(distance).some(h=>h.mode==="ranged")){
-    const reactors=attacker.camouflaged?[]:e.rangedOpportunityReactors(missionOpponents(attacker),attacker,target);
+    const reactors=attacker.camouflaged?[]:e.rangedOpportunityReactors(missionReactors(attacker),attacker,target);
     if(reactors.length){
       const from={q:attacker.q,r:attacker.r},wasFleeing=attacker.fleeing;
       missionLog(attacker.character.name+" tire alors qu’il est menacé par "+reactors.map(x=>x.character.name).join(", ")+".","move");
@@ -1640,7 +1663,7 @@ function resolvePlayerMissionAttack(a,d,mode,distance){
     missionLog(a.character.name+" empoigne "+(m.engine.activeWeaponItem(a)?.name||"son arme")+" à deux mains.","info");
   }
   m.mode=null;m.twoHands=false;
-  performMissionAttack(a,d,mode,distance);
+  performMissionAttack(a,d,mode,distance,null,{chosen:true});
   if(missionActiveUnitLost()) return;
   renderMission();
 }
@@ -1692,7 +1715,7 @@ function handleMissionHexClick(q,r){
     if(!horse?.attackAvailable||!missionCanAttack(horse,victim,"melee")) return;
     horse.attackAvailable=false;
     m.mode=null;
-    performMissionAttack(horse,victim,"melee",m.engine.axialDistance(horse,victim));
+    performMissionAttack(horse,victim,"melee",m.engine.axialDistance(horse,victim),null,{chosen:true});
     if(missionActiveUnitLost()) return;
     renderMission();
     return;
@@ -1716,7 +1739,7 @@ function handleMissionHexClick(q,r){
     if(!charge) return;
 
     u.attackAvailable=false;u.movementRemaining=0;m.mode=null;
-    performMissionCharge(u,victim,charge);
+    performMissionCharge(u,victim,charge,{chosen:true});
     if(missionActiveUnitLost()) return;
     renderMission();
   }
@@ -2411,6 +2434,8 @@ function maintainMissionSummons(){
 function castPlayerMissionSpell(target,extra={}){
   const m=game.mission,u=missionSpellUnit(),code=missionSpellMode();
   if(!u||!code) return;
+  // Un sort sur un couple allié (un soin…) : « Viser le cheval » le donne au cheval (Idan, 2026-11-07).
+  if(m.aimMount&&target?.character&&target.team===u.team&&m.engine.mountOf?.(target)) target=target.mount;
   if(missionMagic()?.spell(code)?.cible==="soi"&&target!==u) return;
   m.mode=null;
   m.spellTarget=null;
@@ -2923,15 +2948,18 @@ function useMissionPotion(unit,slot){
   if(!m||!entry||missionPotionBlock(unit,entry.potion)) return false;
   const {item,potion}=entry,name=unit.character.name,percent=Number(potion.pourcentage)||0;
   unit.quickAvailable=false;
+  // Avec « Viser le cheval », le cavalier fait boire sa monture (Idan, 2026-11-07), une potion de soin ou de mana.
+  const horse=m.aimMount&&["soin","mana"].includes(potion.effet)?m.engine.mountOf?.(unit):null;
+  const drinker=horse||unit,who=horse?name+" fait boire à "+horse.character.name:name+" boit";
   if(potion.effet==="soin"){
-    const healed=healMissionUnit(unit,Math.ceil(unit.pvMax*percent/100-1e-9));
-    missionLog(name+" boit une "+potion.nom.toLowerCase()+" : +"+healed+" PV ("+Math.max(0,unit.hp)+" / "+unit.pvMax+").","magic");
+    const healed=healMissionUnit(drinker,Math.ceil(drinker.pvMax*percent/100-1e-9));
+    missionLog(who+" une "+potion.nom.toLowerCase()+" : +"+healed+" PV ("+Math.max(0,drinker.hp)+" / "+drinker.pvMax+").","magic");
   }else if(potion.effet==="mana"){
-    const magic=missionMagic(),max=magic.manaMax(unit),before=magic.currentMana(unit);
-    unit.character.mana=Math.round(Math.min(max,before+Math.ceil(max*percent/100-1e-9))*100)/100;
-    const gained=Math.round(unit.character.mana-before);
-    missionLog(name+" boit une "+potion.nom.toLowerCase()+" : +"+gained+" mana ("+Math.floor(unit.character.mana)+" / "+Math.round(max)+").","magic");
-    missionFx(unit,"+"+gained+" mana","heal");
+    const magic=missionMagic(),max=magic.manaMax(drinker),before=magic.currentMana(drinker);
+    drinker.character.mana=Math.round(Math.min(max,before+Math.ceil(max*percent/100-1e-9))*100)/100;
+    const gained=Math.round(drinker.character.mana-before);
+    missionLog(who+" une "+potion.nom.toLowerCase()+" : +"+gained+" mana ("+Math.floor(drinker.character.mana)+" / "+Math.round(max)+").","magic");
+    missionFx(drinker,"+"+gained+" mana","heal");
   }else if(potion.effet==="poison_arme"){
     const weapon=m.engine.activeWeaponItem(unit),turns=Number(potion.tours)||3;
     unit.weaponPoison={turns:Math.max(0,turns-1),amount:Number(potion.degats_poison)||0,itemId:weapon.id,weapon:weapon.name};
@@ -3137,7 +3165,7 @@ function enemyTryCharge(unit,target){
 // Charge CAC V1, avec Contre-charge V1 : la cible réagit une fois pendant la course (mi-course pour une arme
 // à distance, entrée dans la portée pour une arme d'hast), avant l'attaque du chargeur. Si la réaction blesse,
 // la charge est brisée et le chargeur teste son Courage face à la cible.
-function performMissionCharge(unit,target,charge){
+function performMissionCharge(unit,target,charge,{chosen=false}={}){
   const m=game.mission,e=m.engine;
   // À deux armes, chaque arme de contre-charge riposte à son propre moment (décision Idan, 2026-10-08).
   // Un cheval monté chargé : son cavalier riposte (Idan, 2026-11-07).
@@ -3174,7 +3202,14 @@ function performMissionCharge(unit,target,charge){
     }
   }
   if(!advanceTo(charge.path.length)){ broken(); return; }
-  performMissionAttack(unit,target,"melee",1,charge);
+  performMissionAttack(unit,target,"melee",1,charge,{chosen});
+  // La monture frappe aussi (Idan, 2026-11-07 : « La monture frappe également ») : son action principale, avec le bonus de
+  // charge, sur la même cible.
+  const horse=e.mountOf?.(unit);
+  if(horse?.attackAvailable&&unit.alive&&!unit.fleeing&&!m.over&&target.alive&&missionCanAttack(horse,target,"melee")){
+    horse.attackAvailable=false;
+    performMissionAttack(horse,target,"melee",e.axialDistance(horse,target),charge,{chosen});
+  }
 }
 
 // Contre-charge V1 : en cas d'échec, le chargeur passe En Fuite, fait demi-tour et dépense tout le mouvement
@@ -3844,9 +3879,9 @@ function renderMission(){
   // « Viser le cheval » : seulement face à un cavalier.
   const aimBtn=$("mission-aim-mount-btn");
   if(aimBtn){
-    const riders=Boolean(u)&&missionOpponents(u).some(o=>!o.offMap&&e.mountOf?.(o));
+    const riders=Boolean(u)&&missionUnits().some(o=>o.alive&&!o.offMap&&e.mountOf?.(o));
     aimBtn.classList.toggle("hidden",!riders);
-    aimBtn.disabled=!(riders&&(u.attackAvailable||availability.mountMelee)&&m.phase==="player"&&!m.over);
+    aimBtn.disabled=!(riders&&(u.attackAvailable||u.quickAvailable||availability.mountMelee)&&m.phase==="player"&&!m.over);
     aimBtn.classList.toggle("selected",Boolean(m.aimMount));
   }
   // L'attaque de sa monture (Idan, 2026-11-07) : seulement pour un cavalier.

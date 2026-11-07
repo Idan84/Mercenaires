@@ -409,19 +409,24 @@ chance pour enchaîner plusieurs tirs (sauf arme à feu). Il ne peut passer en m
   principale et sa propre action rapide : le bouton **Attaque de la monture** (au contact du couple ; « Viser le cheval »
   vaut aussi pour elle) et ses sorts dans la barre de sorts, avec son mana. Le déplacement est celui du couple. Ennemis et
   combat automatique : après le cavalier, dans la même activation, un sort, sinon son attaque contre un ennemi au contact.
-  Les attaques d'opportunité restent celles du cavalier.
+- **Le cheval monté menace aussi** (Idan, 2026-11-07 : « pourquoi la monture ne fait pas des attaques d'opportunités ? » ;
+  « oui ») : un ennemi qui quitte le contact du couple subit l'attaque d'opportunité du cavalier puis celle du cheval.
 - **Ce que le cavalier apprend** (Idan : « xp catégorie animal pour le cavalier ») : chaque attaque de sa monture lui donne
   de l'XP comme une arme (doc 08 : 10 par attaque, + 5 si elle touche, + 5 si elle blesse), la famille de la monture
   (Équidés…) comme l'arme et Compagnon animal comme sa catégorie.
 - **Déplacement** : celui du cheval (8 cases pour le destrier, 5 pour un humain moyen).
-- **Qui prend les coups** : au corps à corps et en charge, l'attaquant choisit (bouton **Viser le cheval** ; sinon le
-  cavalier) ; au tir et pour un sort qui vise, un jet : le cheval est visé à gabarit du cheval ÷ (gabarit du cheval + gabarit
-  du cavalier) (un humain sur un destrier : 2 ÷ 3, un gobelin : 80 %) ; une zone touche les deux.
+- **Qui prend les coups** : au corps à corps et en charge, le joueur choisit (bouton **Viser le cheval** ; sinon le
+  cavalier) ; au tir, pour un sort qui vise, pour une attaque d'opportunité et pour les coups de l'IA (Idan, 2026-11-07 :
+  « oui »), un jet : le cheval est visé à gabarit du cheval ÷ (gabarit du cheval + gabarit du cavalier) (un humain sur un
+  destrier : 2 ÷ 3, un gobelin : 80 %) ; une zone touche les deux. Sur un allié à cheval, **Viser le cheval** donne au cheval
+  le sort (un soin…) ou la potion de soins ou de mana que le cavalier lui fait boire (action rapide).
 - **Hauteur** : au corps à corps, le cavalier compte comme un niveau plus haut (+ 10 au Toucher pour lui, − 10 contre lui ;
   rien contre le cheval ; `combat.monture.hauteur_cac`).
 - **Charge** : avec le déplacement du cheval (8 à 16 cases en ligne droite), la ligne part de la tête et le corps suit ; la
-  **moitié de la Force du cheval** s'ajoute à celle du cavalier (Blesser et dégâts ; `combat.monture.force_charge`). Les
-  armes de contre-charge restent la parade ; charger le cheval, c'est essuyer la contre-charge de son cavalier.
+  **moitié de la Force du cheval** s'ajoute à celle du cavalier (Blesser et dégâts ; `combat.monture.force_charge`) ; **le
+  cheval frappe aussi** (Idan, 2026-11-07 : « La monture frappe également »), juste après, sur la même cible, avec le bonus
+  de charge : c'est son action principale. Les armes de contre-charge restent la parade ; charger le cheval, c'est essuyer
+  la contre-charge de son cavalier.
 - **Courage et Volonté partagés** (Idan : « Montées, elles les partagent avec le cavalier en fonction de son niveau ») : ceux
   du cheval + (ceux du cavalier − ceux du cheval) × part ; part = (Compagnon animal + la famille de la monture, Équidés pour
   le destrier) ÷ 100, au plus 1 (`combat.monture.partage_diviseur`). **Un seul test de Courage pour le couple** (un coup sur

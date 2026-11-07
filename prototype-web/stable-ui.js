@@ -9,6 +9,11 @@ const pct=p=>p>=10||p===0?fmt(Math.round(p)):String(Math.round(p*10)/10).replace
 // Son nom (Idan, 2026-11-07 : « à la capture ou à l'achat de l'animal, on lui attribue un nom ») : celui qu'on lui a
 // donné (stables.js, giveName), l'espèce à défaut.
 const mountName=item=>item?.petName||item?.name||"Monture";
+// Son logement, en mots : « les Écuries », « au Chenil » (stables.js).
+const mountHouse=itemOrCode=>{
+  const rules=stableRules();
+  return rules?rules.houseWords(rules.houseOf(itemOrCode)):{the:"les Écuries",at:"aux Écuries"};
+};
 // « son destrier Tonnerre », « sa licorne Nacre » ; « le », « la ».
 const FEMININE_MOUNTS=new Set(["licorne"]);
 const mountWords=item=>{
@@ -31,14 +36,18 @@ function mountStatus(c,item){
 function stableHtml(c){
   const rules=stableRules();
   if(!rules||!c) return "";
-  const places=rules.places(c),mounts=rules.mountsOf(c);
-  if(!places&&!mounts.length) return "";
-  const rows=mounts.map(m=>`<div class="study-row">
+  // Les Écuries, puis le Chenil (Idan, 2026-11-07 : « Il loge au chenil ») : chacun ses places et ses animaux.
+  return [rules.STABLES,rules.KENNEL].map(house=>{
+    const places=rules.places(c,house),mounts=rules.mountsIn(c,house);
+    if(!places&&!mounts.length) return "";
+    const rows=mounts.map(m=>`<div class="study-row">
       <div class="building-info"><strong data-rename-host>${esc(mountName(m))}${typeof renameButton==="function"?renameButton("mount",m.id):""}</strong><span>${esc([m.petName?m.name:"",mountStatus(c,m),m.origin,m.day?"jour "+fmt(m.day):"",fmt(rules.upkeepOf(m))+" PO par jour"].filter(Boolean).join(" · "))}</span>${tamingLine(c,m)}</div>
       ${m.owner==null?`<div class="study-actions"><button type="button" class="secondary" data-stable-release="${esc(m.id)}">Relâcher</button></div>`:tamingAction(c,m)}
     </div>`).join("");
-  const upkeep=rules.upkeep(c);
-  return `<div class="study-list"><h4>Les Écuries (${fmt(mounts.length)} / ${fmt(places)})${upkeep?` · entretien ${fmt(upkeep)} PO par jour`:""}</h4>${rows}</div>`;
+    const upkeep=mounts.reduce((sum,m)=>sum+rules.upkeepOf(m),0);
+    const title=campaignRules().campBuildingRow?.(house)?.nom||"Les Écuries";
+    return `<div class="study-list"><h4>${esc(title)} (${fmt(mounts.length)} / ${fmt(places)})${upkeep?` · entretien ${fmt(upkeep)} PO par jour`:""}</h4>${rows}</div>`;
+  }).join("");
 }
 
 // Apprivoiser (Idan, 2026-11-07 ; règles : game-core/taming.js) : celui qui l'a reçue va à la Grange ; chaque matin, deux
@@ -91,7 +100,9 @@ function logTaming(report){
   for(const s of report?.started||[]) tavernLog(`${s.mercenary.name} entre à la Grange du dresseur.`,"turn");
   for(const t of report?.tamed||[]){
     const words=mountWords(t.mount);
-    tavernLog(`${t.mercenary.name} a apprivoisé ${words.own} (${fmt(t.days)} jour${t.days>1?"s":""}) : il peut ${words.it} monter.`,"gear");
+    // Le loup d'un humain (Idan, 2026-11-07) : il ne le monte pas, il l'emmène au combat.
+    const rides=stableRules()?.rides(t.mercenary,t.mount)!==false;
+    tavernLog(`${t.mercenary.name} a apprivoisé ${words.own} (${fmt(t.days)} jour${t.days>1?"s":""}) : ${rides?`il peut ${words.it} monter`:"il l’emmènera au combat"}.`,"gear");
   }
 }
 
@@ -122,14 +133,14 @@ function releaseStableMount(id){
   const result=rules.release(c,id);
   if(typeof closeDealMenu==="function") closeDealMenu();
   if(!result.ok){ tavernLog(result.reason,"bad"); return; }
-  tavernLog(mountName(result.mount)+" est relâché"+mountWords(result.mount).e+" : une place se libère aux Écuries.","info");
+  tavernLog(mountName(result.mount)+" est relâché"+mountWords(result.mount).e+" : une place se libère "+mountHouse(result.mount).at+".","info");
   saveGame();
   renderGame();
 }
 
 // Journal du matin : l'entretien du jour, les montures remises de leur mission.
 function logStableUpkeep(report){
-  if(report?.total) tavernLog("Écuries : −"+fmt(report.total)+" PO d’entretien ("+fmt(report.count)+" monture"+(report.count>1?"s":"")+").","gear");
+  if(report?.total) tavernLog("Animaux : −"+fmt(report.total)+" PO d’entretien ("+fmt(report.count)+" anima"+(report.count>1?"ux":"l")+").","gear");
   for(const r of report?.recovered||[]){
     const e=mountWords(r.mount).e;
     tavernLog(`${mountName(r.mount)}${r.owner?" de "+r.owner.name:""} est ${r.kind==="wounded"?"guéri"+e+" de ses blessures":"reposé"+e}.`,"turn");
@@ -137,8 +148,8 @@ function logStableUpkeep(report){
 }
 // Retour d'une escouade : les montures capturées entrent aux Écuries, ou sont relâchées faute de place.
 function logStableArrivals(report){
-  for(const m of report?.kept||[]) tavernLog(`${mountName(m)}${m.petName?" ("+m.name+")":""} rejoint les Écuries.`,"gear");
-  for(const m of report?.released||[]) tavernLog((m.name||"Une monture")+" : pas de place aux Écuries, relâchée.","bad");
+  for(const m of report?.kept||[]) tavernLog(`${mountName(m)}${m.petName?" ("+m.name+")":""} rejoint ${mountHouse(m).the}.`,"gear");
+  for(const m of report?.released||[]) tavernLog(`${m.name||"Une monture"} : pas de place ${mountHouse(m.code||m).at}, relâché${mountWords(m).e}.`,"bad");
 }
 
 if(typeof document!=="undefined") document.addEventListener("click",event=>{

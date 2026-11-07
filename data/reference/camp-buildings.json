@@ -965,7 +965,26 @@
       "garde_paie_par_niveau": 0,
       "apprend_avec": null,
       "places_par_niveau": 2
+    },
+    {
+      "code": "trainer_kennel",
+      "nom": "Le Chenil",
+      "description": "Les loups : deux places par niveau. Chaque loup coûte son entretien, chaque jour.",
+      "niveaux": 10,
+      "prix_base": 1000,
+      "jours_base": 4,
+      "soins_par_niveau": 0,
+      "fatigue_jours_par_niveau": 0,
+      "mana_par_niveau": 0,
+      "requiert": "trainer_barn",
+      "ecole": null,
+      "places_base": 0,
+      "places_pas": 0,
+      "entraine": null,
+      "garde_paie_par_niveau": 0,
+      "apprend_avec": null,
+      "places_par_niveau": 2
     }
   ],
-  "row_count": 47
+  "row_count": 48
 }

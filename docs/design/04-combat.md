@@ -469,9 +469,16 @@ chance pour enchaîner plusieurs tirs (sauf arme à feu). Il ne peut passer en m
   fatigue, avec le jet doublé d'une défaite de contrat) ; morte, elle est perdue ; blessée ou fatiguée, elle se repose aux
   Écuries autant de jours qu'un mercenaire (Dispensaire, médecin, bains chauds) et, d'ici là, son cavalier part à pied. Son
   cavalier mort, elle retourne à l'Intendance, sans propriétaire : un autre mercenaire devra l'apprivoiser.
+- **Le loup de combat** (Idan, 2026-11-07 : « Non on limite à un compagnon/ monture pour l'instant » ; les petits peuples
+  le montent : « C'est exactement à quoi je pensais ») : la fiche du Loup de la Cour de sang (`mounts.json`, `loup` :
+  gabarit 1, une case, **Morsure** 1D8 perforant 35), chaotique neutre. Il prend l'emplacement Monture. **Un petit**
+  (gobelin, gnome, halfling : gabarit 0,5) **le monte**, avec les règles du cheval. **Les autres l'emmènent à pied**
+  (`compagnon`) : au début du combat, il se pose sur la case libre la plus proche de son maître et joue seul, **juste après
+  lui** dans l'ordre (le mécanisme de « Descendre ») ; on le joue comme un mercenaire ; son maître ne peut pas le monter. Sa
+  fin de combat est celle d'une monture.
 - Code : `combat-engine.js` (`mountOf`, `canRide`, `mentalStat`, `mountChargeForce`, `rollShotTarget`), `missions.js`
   (`createMount`), `mission.js` (`missionMountOf`, `attachMissionMount`, `settleMissionMounts`, `settleOwnMissionMounts`,
-  `missionAimed`). Tests : `tests/mounts.test.js`, `tests/own-mounts.test.js`.
+  `missionAimed`, `deployMissionCompanions`). Tests : `tests/mounts.test.js`, `tests/own-mounts.test.js`, `tests/wolf.test.js`.
 
 ## Attaques de zone — Toucher V1
 

@@ -25,7 +25,9 @@
 //   la première fois qu'on en a besoin : elle progresse avec l'XP de ses combats et garde son mana d'un combat à l'autre
 //   (Idan, 2026-11-07 : « Mana de la licorne + xp licorne »), comme un mercenaire ;
 // - son nom (Idan, 2026-11-07 : « à la capture ou à l'achat de l'animal, on lui attribue un nom ») : un nom de sa liste
-//   (animal-names.json) qu'aucun autre de nos animaux ne porte (item.petName) ; le joueur le renomme librement.
+//   (animal-names.json) qu'aucun autre de nos animaux ne porte (item.petName) ; le joueur le renomme librement ;
+// - son logement (mounts.json, logement ; Idan, 2026-11-07 : « Il loge au chenil ») : les Écuries pour les chevaux et la
+//   licorne, le Chenil (trainer_kennel, l'autre aile de la Grange, 2 places par niveau) pour le loup ; chacun ses places.
 // Module pur ; makeItem(type, nom) fabrique l'objet (le générateur).
 (function(root,factory){
   // Le jet de mort (mission-end.js) : lu au moment de créer les règles, le script peut se charger après celui-ci.
@@ -34,7 +36,13 @@
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesStables=api;
 })(typeof globalThis!=="undefined"?globalThis:this,function(missionEnd){
-  const BARN="trainer_barn",STABLES="trainer_stables";
+  const BARN="trainer_barn",STABLES="trainer_stables",KENNEL="trainer_kennel";
+  // Les logements : leurs mots dans les phrases (« Pas de place au Chenil. »).
+  const HOUSE_WORDS={
+    [STABLES]:{the:"les Écuries",at:"aux Écuries",need:"des Écuries"},
+    [KENNEL]:{the:"le Chenil",at:"au Chenil",need:"un Chenil"}
+  };
+  const houseWords=code=>HOUSE_WORDS[code]||HOUSE_WORDS[STABLES];
   const rows=x=>Array.isArray(x)?x:(x?.rows||[]);
   const isMount=item=>item?.itemType==="mount";
   // Un nom choisi par le joueur : sans caractères de contrôle, espaces réduits, 40 caractères au plus.
@@ -44,13 +52,16 @@
     const sheets=new Map(rows(reference?.mounts).map(s=>[s.code,s]));
     const spellRows=new Map(rows(reference?.spells).map(s=>[s.code,s]));
     const namesByCode=new Map(rows(reference?.animalNames).map(r=>[r.code,r.noms||[]]));
-    const stablesRow=rows(reference?.campBuildings).find(r=>r.code===STABLES)||null;
+    const houseRows=new Map(rows(reference?.campBuildings).filter(r=>r.code in HOUSE_WORDS).map(r=>[r.code,r]));
     const MissionEnd=missionEnd();
     const endRules=MissionEnd?MissionEnd.createMissionEndRules({reference,random}):null;
     const d100=()=>Math.floor(random()*100)+1;
     const levelOf=(state,code)=>typeof camp.buildingLevel==="function"?camp.buildingLevel(state,code):Number(state?.company?.camp?.buildings?.[code]?.level)||0;
 
+    const peopleSize=new Map(rows(reference?.peoples).map(p=>[p.nom,Number(p.places_dortoir)||1]));
     function sheet(code){ return sheets.get(code)||null; }
+    // Peut-il la monter ? Plus petit qu'elle (gabarit : les places du dortoir de son peuple ; combat-engine.js, canRide).
+    function rides(mercenary,item){ return (peopleSize.get(mercenary?.people)||1)<(Number(sheetOf(item)?.gabarit)||1); }
     function sheetOf(item){ return sheet(item?.mountCode); }
     // Toutes les montures de la compagnie : celles de l'Intendance, puis celles des mercenaires (avec leur propriétaire).
     function mountsOf(state){
@@ -60,12 +71,19 @@
       return [...stock,...owned];
     }
     function ownerOf(state,item){ return item?.owner==null?null:(state.company.roster||[]).find(m=>m.id===item.owner)||null; }
-    function places(state){ return (Number(stablesRow?.places_par_niveau)||0)*levelOf(state,STABLES); }
-    function free(state){ return Math.max(0,places(state)-mountsOf(state).length); }
-    // Un objet qui demande une place aux Écuries (un achat chez un marchand) : {ok, reason}.
+    // Son logement (un objet monture, ou le code d'un animal) : les Écuries, ou le Chenil pour le loup.
+    function houseOf(itemOrCode){
+      const s=typeof itemOrCode==="string"?sheet(itemOrCode):sheetOf(itemOrCode);
+      return s?.logement&&s.logement in HOUSE_WORDS?s.logement:STABLES;
+    }
+    function places(state,house=STABLES){ return (Number(houseRows.get(house)?.places_par_niveau)||0)*levelOf(state,house); }
+    function mountsIn(state,house=STABLES){ return mountsOf(state).filter(i=>houseOf(i)===house); }
+    function free(state,house=STABLES){ return Math.max(0,places(state,house)-mountsIn(state,house).length); }
+    // Un objet qui demande une place dans son logement (un achat chez un marchand) : {ok, reason}.
     function canStore(state,item){
       if(!isMount(item)) return {ok:true};
-      return free(state)>0?{ok:true}:{ok:false,reason:places(state)?"Pas de place aux Écuries.":"Il faut d’abord des Écuries (à la Grange du dresseur)."};
+      const house=houseOf(item),words=houseWords(house);
+      return free(state,house)>0?{ok:true}:{ok:false,reason:places(state,house)?"Pas de place "+words.at+".":"Il faut d’abord "+words.need+" (à la Grange du dresseur)."};
     }
     function upkeepOf(item){ return Number(sheetOf(item)?.entretien)||0; }
     function upkeep(state){ return mountsOf(state).reduce((sum,m)=>sum+upkeepOf(m),0); }
@@ -92,7 +110,7 @@
       for(const c of captured||[]){
         const s=sheet(c?.code);
         if(!s) continue;
-        if(free(state)<=0){ released.push(c); continue; }
+        if(free(state,houseOf(s.code))<=0){ released.push(c); continue; }
         const item=typeof makeItem==="function"?makeItem("mount",s.nom):null;
         if(!item){ released.push(c); continue; }
         Object.assign(item,{owner:null,origin:c.origin||null,day});
@@ -208,9 +226,9 @@
       return {ok:true,mount:item,before,name:clean};
     }
 
-    return {BARN,STABLES,sheet,sheetOf,isMount,mountsOf,ownerOf,places,free,canStore,upkeepOf,upkeep,payUpkeep,rollSurvival,capturable,admit,release,
+    return {BARN,STABLES,KENNEL,houseOf,houseWords,mountsIn,rides,sheet,sheetOf,isMount,mountsOf,ownerOf,places,free,canStore,upkeepOf,upkeep,payUpkeep,rollSurvival,capturable,admit,release,
       applyAftermath,recoverOneDay,returnToStable,ownSheet,giveName,rename};
   }
 
-  return {createStableRules,BARN,STABLES,isMount,cleanName};
+  return {createStableRules,BARN,STABLES,KENNEL,isMount,cleanName,houseWords};
 });

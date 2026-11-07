@@ -98,7 +98,7 @@ function showDayNews(day,report){
   $("day-news-list").innerHTML=entries.length?entries.map(renderDayEntry).join(""):`<li class="day-news-calm">${esc(dayPhrase("calme",day))}</li>`;
   const salaries=report?.salaries?.total||0,gold=Math.round(game.campaign.company.gold);
   const upkeep=report?.stable?.total||0;
-  $("day-news-money").innerHTML=`${dayIcon("gold")}<span>${salaries?`Salaires <b>−${fmt(salaries)} PO</b> · `:""}${upkeep?`Écuries <b>−${fmt(upkeep)} PO</b> · `:""}Caisse <b${gold<0?' class="is-negative"':""}>${fmt(gold)} PO</b></span>`;
+  $("day-news-money").innerHTML=`${dayIcon("gold")}<span>${salaries?`Salaires <b>−${fmt(salaries)} PO</b> · `:""}${upkeep?`Animaux <b>−${fmt(upkeep)} PO</b> · `:""}Caisse <b${gold<0?' class="is-negative"':""}>${fmt(gold)} PO</b></span>`;
   if(dialog.open) dialog.close();
   dialog.showModal();
 }

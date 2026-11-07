@@ -145,7 +145,7 @@ function mountDealMenu(item){
     return `<div class="deal-member"><b>${esc(m.name)}${m.id===company.captainId?" · capitaine":""}</b>${choice}</div>`;
   }).join("");
   return `<p class="deal-menu-title">Proposer à…</p><p class="deal-menu-current">${esc(dealItemLabel(item))}</p>${rows}`
-    +`<button type="button" class="deal-action" data-stable-release="${esc(item.id)}">Relâcher<small>une place se libère aux Écuries</small></button>`;
+    +`<button type="button" class="deal-action" data-stable-release="${esc(item.id)}">Relâcher<small>une place se libère ${typeof mountHouse==="function"?mountHouse(item).at:"aux Écuries"}</small></button>`;
 }
 
 function dealMenuElement(){

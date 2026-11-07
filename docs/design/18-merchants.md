@@ -138,7 +138,7 @@ bloque si elle n'est plus à jour (`node scripts/merchant-coverage.js --check`).
 
 <!-- couverture:debut (généré par node scripts/merchant-coverage.js : ne pas modifier à la main) -->
 
-**Bilan** : 92 objets ; **92** vendus par au moins 2 marchands (les montures : un marchand chacune), **0** par un seul, **0** par aucun.
+**Bilan** : 93 objets ; **93** vendus par au moins 2 marchands (les montures : un marchand chacune), **0** par un seul, **0** par aucun.
 
 **32 marchands**, dont 16 marchandes.
 
@@ -169,7 +169,7 @@ bloque si elle n'est plus à jour (`node scripts/merchant-coverage.js --check`).
 | Dottie Mielbruyère | Halflings des villages isolés | Bâton court, Potion de soins, Potion de mana, Slip d’Affinité, Bague du soigneur, Vêtements, Manuels d’Illusion | 7 |
 | Gasha Poing-de-Marché | Orcs des villes | Épée courte, Arbalète, Épée double, Pavois, Culotte d’Intimidation, Ceinture de courage, Manuels de Transmutation | 7 |
 | Cairn Racinesombre | Tribus des forêts anciennes | Lance, Massue, Arme d’hast double, Armure de cuir, Chapeau du dresseur, Bague du nécromancien, Manuels de Nécromancie | 7 |
-| Fizzi Doigts-Légers | Gobelins des villes | Dague, Épée courte, Cape de discrétion, Gants de dextérité, Slip d’Affinité, Bague de l’illusionniste, Manuels d’Illusion | 7 |
+| Fizzi Doigts-Légers | Gobelins des villes | Dague, Épée courte, Cape de discrétion, Gants de dextérité, Slip d’Affinité, Bague de l’illusionniste, Manuels d’Illusion, Loup | 8 |
 | Draz Crinsauvage | Orcs des steppes | Lance, Bague de la transmutation, Hachette, Bottes de vitesse, Cuir renforcé, Ceinture d’endurance, Manuels de Transmutation | 7 |
 | Bruga Roc-Fendu | Ogres des montagnes | Massue, Marteau de guerre, Pavois, Armure d'écailles, Casque de constitution, Ceinture d’endurance | 6 |
 | Bimble Lampeterne | Gnomes des cavernes | Pic de guerre, Fronde, Gants de pièges, Chapeau d’intelligence, Potion de mana, Bague du nécromancien, Manuels de Nécromancie | 7 |
@@ -262,6 +262,7 @@ bloque si elle n'est plus à jour (`node scripts/merchant-coverage.js --check`).
 | Fioles | Potion de soins | Gorma, Isska, Dottie | 3 |
 | Montures | Destrier | Amar | 1 |
 | Montures | Licorne | Ysolwen | 1 |
+| Montures | Loup | Fizzi | 1 |
 | Manuels | Manuels de Vie | Jiraya, Ysolwen, Aymeric | 3 |
 | Manuels | Manuels de Feu | Drusk, Amar, Krosh | 3 |
 | Manuels | Manuels d’Eau | Hroska, Isska, Ilyra | 3 |
@@ -280,7 +281,8 @@ bloque si elle n'est plus à jour (`node scripts/merchant-coverage.js --check`).
 
 - **Amar Rathore** (Steppes désertiques) vend des **destriers** ; **Ysolwen Chantesève** (Elfes sylvains) des **licornes** (`merchants.json`, type `mount`). Un marchand chacune : l'exception à la règle des deux marchands (`scripts/merchant-coverage.js`).
 - **Valeur** = 300 × entretien (`economy.mount_value_per_upkeep`, `mounts.json`) : destrier **3 000 PO**, licorne **9 000 PO** ; puis les prix habituels (achat × 1,5, revente × 0,8, × 0,4 hors de sa liste…). Sans tier ni qualité : pas de rareté.
-- **Acheter** demande une place libre aux Écuries (doc 11 §8) ; la monture rejoint l'Intendance (onglet **Montures**).
+- **Fizzi Doigts-Légers** (Gobelins des villes) vend des **loups** (Idan, 2026-11-07 : « Marchand gobelin », « Gobelin des villes ! ») : 3 000 PO de valeur (10 PO d'entretien).
+- **Acheter** demande une place libre dans son logement (doc 11 §8 : les Écuries, le Chenil pour un loup) ; la monture rejoint l'Intendance (onglet **Montures**).
 - **Vendre** : depuis l'Intendance, comme tout objet ; une monture donnée à un mercenaire n'y est plus, on ne peut pas la vendre.
 
 ## 13 — Étapes suivantes

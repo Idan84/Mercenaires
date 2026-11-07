@@ -5222,7 +5222,7 @@
       "armure": "Gambison",
       "tier": 1,
       "qualite": "Usée",
-      "points": 14,
+      "points": 17,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 90,
@@ -5289,7 +5289,7 @@
       "armure": "Armure de cuir",
       "tier": 2,
       "qualite": "Correcte",
-      "points": 32,
+      "points": 28,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 80,
@@ -5357,7 +5357,7 @@
       "armure": "Cuir renforcé",
       "tier": 3,
       "qualite": "De bonne facture",
-      "points": 50,
+      "points": 49,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 70,
@@ -5425,7 +5425,7 @@
       "armure": "Brigandine",
       "tier": 4,
       "qualite": "De luxe",
-      "points": 73,
+      "points": 74,
       "niveau_mission_min": 1,
       "butin": {
         "equipement": 60,

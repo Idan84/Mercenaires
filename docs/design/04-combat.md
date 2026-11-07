@@ -403,6 +403,9 @@ chance pour enchaîner plusieurs tirs (sauf arme à feu). Il ne peut passer en m
   Réserve de mana 40 ; ni vision nocturne, ni vol, ni régénération ; artisanat, camp et compétences animales à 0.
 - **Discrétion d'un couple** (Idan : « Quand un cavalier est sur une monture, c'est la discrétion minimale des deux qui est
   prise en compte. ( Dur de se camoufler sur un dragon) ») : la plus basse du cavalier et de sa monture (`stealthOf`).
+- **Intimidation d'un couple** (Idan, 2026-11-07 : « pour l'intimidation, on prend la plus haute des deux... Le gobelin sur le
+  dragon... Bah, c'est pas l'intimidation du Gobelin qui compte ! ») : la plus haute du cavalier et de sa monture, pour le
+  test de Courage de ceux qu'il frappe.
 - **Gabarit** (Idan : « on fait la même chose que pour le dortoir ») : les places du dortoir du peuple (Gobelin, Gnome,
   Halfling 0,5 ; Ogre 2 ; les autres 1) ; celui de la monture dans sa fiche (destrier 2). **On ne monte qu'une bête plus
   grande que soi** : un ogre ne monte pas un destrier.

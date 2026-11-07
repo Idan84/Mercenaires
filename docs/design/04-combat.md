@@ -422,7 +422,9 @@ chance pour enchaîner plusieurs tirs (sauf arme à feu). Il ne peut passer en m
   « oui ») : un ennemi qui quitte le contact du couple subit l'attaque d'opportunité du cavalier puis celle du cheval.
 - **Ce que le cavalier apprend** (Idan : « xp catégorie animal pour le cavalier ») : chaque attaque de sa monture lui donne
   de l'XP comme une arme (doc 08 : 10 par attaque, + 5 si elle touche, + 5 si elle blesse), la famille de la monture
-  (Équidés…) comme l'arme et Compagnon animal comme sa catégorie.
+  (Équidés…) comme l'arme et Compagnon animal comme sa catégorie. **Réputation et titre** (Idan : « réputation 1 et le
+  titre A ») : les exploits de sa monture comptent pour sa réputation (doc 09) ; sa monture équipée s'ajoute à son titre
+  (« à cheval », doc 19).
 - **Déplacement** : celui du cheval (8 cases pour le destrier, 5 pour un humain moyen).
 - **Qui prend les coups** : au corps à corps et en charge, le joueur choisit (bouton **Viser le cheval** ; sinon le
   cavalier) ; au tir, pour un sort qui vise, pour une attaque d'opportunité et pour les coups de l'IA (Idan, 2026-11-07 :

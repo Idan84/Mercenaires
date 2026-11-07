@@ -261,7 +261,7 @@
       if(own){
         const base=createMount(code,{id,name});
         return Object.assign(base,{stats:{...base.stats,...own.stats},resistances:{...base.resistances,...own.resistances},
-          skills:{...base.skills,martial:{...base.skills.martial,...(own.skills?.martial||{})},magic:{...base.skills.magic,...(own.skills?.magic||{})}},
+          skills:Object.fromEntries(Object.entries(base.skills).map(([group,values])=>[group,{...values,...(own.skills?.[group]||{})}])),
           spells:(own.spells||base.spells).map(x=>({...x})),aiSpells:(own.spells||base.spells).map(x=>x.code)},
           Number.isFinite(Number(own.mana))?{mana:Number(own.mana)}:{});
       }
@@ -269,7 +269,9 @@
       return {id,name:name||s.nom,role:s.nom,people:"",mount:{code:s.code,capturable:s.capturable!==false},
         gabarit:Number(s.gabarit)||1,taille:s.taille||"normale",mountSkill:s.espece||null,
         stats:{...s.caracteristiques},resistances:{...s.resistances},
-        skills:{martial:{...(s.competences_martiales||{})},animal:{},social:{},magic:{...(s.competences_magiques||{})}},
+        // Sa fiche complète, comme un mercenaire (Idan, 2026-11-07) : artisanat, camp et compétences animales à 0.
+        skills:{martial:{...(s.competences_martiales||{})},animal:{},social:{...(s.competences_sociales||{})},magic:{...(s.competences_magiques||{})},
+          craft:{},camp:{},technique:{},physiology:{...(s.physiologie||{})}},
         // Ses sorts, comme un mercenaire (la licorne : Création de double) ; l'IA les essaie dans l'ordre.
         spells:(s.sorts||[]).map(x=>({code:x.code,mastery:Number(x.maitrise)||1})),aiSpells:(s.sorts||[]).map(x=>x.code),
         items:[weapon],equipment:{slots:{weapon_set_1_main:weapon.id},profile:{type:"melee"}}};

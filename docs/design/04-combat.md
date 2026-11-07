@@ -387,6 +387,11 @@ chance pour enchaîner plusieurs tirs (sauf arme à feu). Il ne peut passer en m
 - **Monture** (`mounts.json`, une fiche fixe ; aujourd'hui le **Destrier**) : Force 90, Constitution 70, Dextérité 30,
   Vitesse 90, Endurance 85, Esquive 20, Courage 35, Volonté 30, Perception 60, Intelligence 10 ; **270 PV** (la formule de
   nos mercenaires) ; **Sabots** 1D8, contondant 50 ; résistances, Chance et maîtrise des sabots d'un humain moyen (P50).
+- **Licorne** (Idan, 2026-11-07 : « C'est un Destrier plus rapide, plus endurant, qui frappe plus fort grâce à sa corne,
+  mais qui est un peu moins courageuse. Elle a de plus une grande résistance à la magie » ; « résistances élémentaires
+  élevées. Genre 50 » ; « La licorne est intelligente et a une grande volonté ») : le destrier, avec Vitesse 110 (10 cases),
+  Endurance 100, Courage 30, Intelligence 80, Volonté 85 (296 PV), **Corne** 1D10 perforant 70, résistances au feu, au
+  froid et à la foudre 50 ; loyale bonne. Son sort, Création de double, viendra avec nos montures au combat.
 - **Gabarit** (Idan : « on fait la même chose que pour le dortoir ») : les places du dortoir du peuple (Gobelin, Gnome,
   Halfling 0,5 ; Ogre 2 ; les autres 1) ; celui de la monture dans sa fiche (destrier 2). **On ne monte qu'une bête plus
   grande que soi** : un ogre ne monte pas un destrier.

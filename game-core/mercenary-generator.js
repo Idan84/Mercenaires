@@ -61,6 +61,7 @@
     const helmetRows = rows.helmets || [];
     const potionRows = rows.potions || [];
     const spellRows = rows.spells || [];
+    const mountRows = rows.mounts || [];
     const itemQualityRows = rows.itemQualities || [];
     const equipmentSlotRows = rows.equipmentSlots || [];
     const binaryAptitudeRows = rows.binaryAptitudeGrants || [];
@@ -1186,6 +1187,12 @@
         return spell ? {id:makeItemId(holder, "manual"), templateId:`manual:${spell.code}`, name:`Manuel : ${spell.nom}`,
           itemType:"manual", slot:null, category:spell.ecole, spellCode:spell.code, school:spell.ecole,
           description:spell.description || null, owner:null} : null;
+      } else if (itemType === "mount") {
+        // Monture (Idan, 2026-11-07 ; mounts.json) : un animal, sans tier ni qualité ; il loge aux Écuries (stables.js) ;
+        // son rang pour un échange (rang_echange) tient lieu de tier quand on le propose à un mercenaire.
+        const row = mountRows.find(r => r.nom === name || r.code === name);
+        return row ? {id:makeItemId(holder, "mount"), templateId:`mount:${row.code}`, name:row.nom, itemType:"mount", slot:"mount",
+          category:row.espece || null, mountCode:row.code, exchangeTier:Number(row.rang_echange) || 1, owner:null} : null;
       } else if (STAT_GEAR[itemType]) {
         const row = STAT_GEAR[itemType].rows.find(r => r.nom === name);
         item = row ? statGearItem(holder, itemType, row) : null;

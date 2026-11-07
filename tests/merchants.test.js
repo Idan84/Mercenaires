@@ -338,7 +338,9 @@ const defaultAlignment=m=>reference.alignmentGeneration.culture_overrides[m.cult
 for(const m of merchantRows){
   assert.ok(reference.cultures.rows.some(c=>c.nom===m.culture&&String(c.peuples).includes(m.peuple)),m.nom+" : culture de son peuple");
   assert.equal(m.alignement,defaultAlignment(m),m.nom+" : alignement par défaut de sa culture");
-  assert.ok(m.vend.length>=6&&m.vend.length<=7,m.nom+" : autant d'objets que les autres");
+  // Les montures (Idan, 2026-11-07 : Amar le destrier, Ysolwen la licorne) viennent en plus.
+  const gear=m.vend.filter(v=>v.type!=="mount");
+  assert.ok(gear.length>=6&&gear.length<=7,m.nom+" : autant d'objets que les autres");
   for(const v of m.vend){
     // Une ligne de manuels : tous les sorts de l'école de sa culture (Idan, 2026-10-31).
     if(v.type==="manual"){
@@ -372,10 +374,12 @@ for(let i=0;i<2500;i++){
 const passes=Object.values(seen).reduce((a,b)=>a+b,0);
 for(const m of merchantRows) assert.ok(Math.abs((seen[m.id]||0)/passes-1/merchantRows.length)<0.02,"autant de passages : "+JSON.stringify(seen));
 // Qui vend quoi (Idan, 2026-10-31) : chaque objet et chaque école de manuels chez au moins deux marchands.
-const {coverage}=require("../scripts/merchant-coverage.js");
+const {coverage,targetOf}=require("../scripts/merchant-coverage.js");
 const cover=coverage();
 assert.deepEqual(cover.unknown,[]);
-assert.deepEqual(cover.items.filter(i=>i.sellers.length<2).map(i=>i.name),[],"chaque objet chez au moins deux marchands");
+// Les montures (Idan, 2026-11-07) : un marchand chacune (Amar le destrier, Ysolwen la licorne).
+assert.deepEqual(cover.items.filter(i=>i.sellers.length<targetOf(i)).map(i=>i.name),[],"chaque objet chez au moins deux marchands");
+assert.deepEqual(cover.items.filter(i=>i.type==="mount").map(i=>[i.name,i.sellers]),[["Destrier",["Amar"]],["Licorne",["Ysolwen"]]]);
 // Ses plates sont « ses armes » à la revente ; il hait les nains du chaos et en est haï (doc 02).
 const plates=generator.createItemByName("armor","Armure de plates",3);
 twoProbe.market.visit={merchantId:"durgan-battefer",day:twoProbe.day,stock:[],sold:{},traded:false};

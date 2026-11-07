@@ -110,6 +110,7 @@ function stockDealMenu(itemId){
   const item=(game.campaign.company.stock||[]).find(x=>String(x.id)===String(itemId));
   if(!item) return "";
   if(item.itemType==="manual") return manualLearnMenu(item);
+  if(item.itemType==="mount") return mountDealMenu(item);
   const company=game.campaign.company;
   const members=[...company.roster].sort((a,b)=>(b.id===company.captainId)-(a.id===company.captainId));
   // Une fiole (Idan, 2026-10-29) : la première poche de ceinture libre ; ceinture pleine, rien à proposer.
@@ -128,6 +129,22 @@ function stockDealMenu(itemId){
   }).join("");
   return `<p class="deal-menu-title">Donner à…</p><p class="deal-menu-current">${esc(dealItemLabel(item))}</p>`
     +(rows||`<p class="deal-menu-note">Personne ne peut le porter.</p>`);
+}
+
+// Une monture (Idan, 2026-11-07 : « on peut proposer à un mercenaire une monture (comme les autres Items, il accepte /
+// refuse.) S'il accepte il a la monture dans son inventaire en statut "non equipable" ») : « Proposer à… », dans son
+// inventaire seulement ; ou la relâcher.
+function mountDealMenu(item){
+  const company=game.campaign.company,INV=dealRules().INVENTORY;
+  const members=[...company.roster].sort((a,b)=>(b.id===company.captainId)-(a.id===company.captainId));
+  const rows=members.map(m=>{
+    const allowed=dealRules().canDeal(game.campaign,m,INV);
+    const choice=allowed.ok?`<button type="button" class="deal-slot" data-deal-member="${esc(m.id)}" data-deal-slot="${INV}" data-deal-stock="${esc(item.id)}">Inventaire<small>à apprivoiser chez le Dresseur</small></button>`
+      :`<small class="deal-menu-note">${esc(allowed.reason)}</small>`;
+    return `<div class="deal-member"><b>${esc(m.name)}${m.id===company.captainId?" · capitaine":""}</b>${choice}</div>`;
+  }).join("");
+  return `<p class="deal-menu-title">Proposer à…</p><p class="deal-menu-current">${esc(dealItemLabel(item))}</p>${rows}`
+    +`<button type="button" class="deal-action" data-stable-release="${esc(item.id)}">Relâcher<small>une place se libère aux Écuries</small></button>`;
 }
 
 function dealMenuElement(){

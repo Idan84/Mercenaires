@@ -785,7 +785,8 @@
     }
     const dungeonRules=Dungeon?Dungeon.createDungeonRules({reference,camp:{buildingLevel,expeditionOf,leave:leaveForDungeon}}):null;
     // Les Écuries (Idan, 2026-11-07 ; règles : stables.js) : les montures capturées, leurs places et leur entretien.
-    const stableRules=Stables?Stables.createStableRules({reference,random,camp:{buildingLevel}}):null;
+    const stableRules=Stables?Stables.createStableRules({reference,random,camp:{buildingLevel},
+      makeItem:(type,name)=>typeof generator?.createItemByName==="function"?generator.createItemByName(type,name):null}):null;
     // Héritage (issue #111) : 20 % de la part du défunt juste avant son retrait (standing : sa place au classement), figés
     // pour toujours et comptés une seule fois. Le capitaine n'en laisse pas : sa mort met fin à la partie.
     function recordHeritage(state,mercenary,standing){

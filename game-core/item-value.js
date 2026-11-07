@@ -27,6 +27,8 @@
     // Idan, 2026-11-01 : « Un sort, on le fixe à 3000 PO »), sans tier ni qualité.
     const spells=rows(reference?.spells);
     const spellCodes=new Set(spells.map(s=>s.code));
+    // Montures (Idan, 2026-11-07 : « la valeur d'un animal soit de 300 x coût d'entretien ») : sans tier ni qualité.
+    const mounts=new Map(rows(reference?.mounts).map(m=>[m.code,m]));
     const qualities=new Map(rows(reference?.itemQualities).map(r=>[r.code,r]));
     const constants=new Map(rows(reference?.formulaConstants).map(r=>[r.code,Number(r.valeur)]));
 
@@ -63,9 +65,14 @@
       return Number.isFinite(price)?price:null;
     }
 
+    function mountValue(item){
+      const upkeep=Number(mounts.get(item?.mountCode)?.entretien),per=constants.get("economy.mount_value_per_upkeep");
+      return Number.isFinite(upkeep)&&Number.isFinite(per)?Math.round(upkeep*per):null;
+    }
     // Valeur en pièces d'or, ou null si l'objet n'a pas de prix de base.
     function value(item){
       if(item?.itemType==="manual") return manualValue(item);
+      if(item?.itemType==="mount") return mountValue(item);
       const base=basePrice(item);
       return base===null?null:Math.round(base*tierMultiplier(item.tier)*qualityMultiplier(item));
     }

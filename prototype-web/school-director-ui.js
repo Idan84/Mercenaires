@@ -39,7 +39,8 @@ function masterSkill(post,m){
   // Le Maître des plaisirs : son Charisme (la salle principale du Palais n'entraîne rien).
   const name=P?.skill||(building?campaignRules().campBuildingRow(building)?.entraine:null);
   if(!name) return {name:"",value:0};
-  for(const group of [m?.stats,m?.resistances,m?.skills?.martial,m?.skills?.magic]) if(group&&name in group) return {name,value:Number(group[name])||0};
+  // Le Dresseur (Idan, 2026-11-07) : sa compétence animale.
+  for(const group of [m?.stats,m?.resistances,m?.skills?.martial,m?.skills?.magic,m?.skills?.animal]) if(group&&name in group) return {name,value:Number(group[name])||0};
   return {name,value:0};
 }
 const postSkillValue=(post,m)=>post==="director"?directorBestSchool(m)?.value||0:masterSkill(post,m).value;
@@ -58,7 +59,7 @@ function campPostLabel(post,m){
   return directorFill(campPostCopy(post).label||"",m);
 }
 const CAMP_POST_PANELS={director:"director-panel",doctore:"doctore-panel",veteran:"veteran-panel",bladeMaster:"blade-master-panel",
-  alchemist:"alchemist-panel",pleasureMaster:"pleasure-master-panel"};
+  alchemist:"alchemist-panel",pleasureMaster:"pleasure-master-panel",trainer:"trainer-panel"};
 
 function renderSchoolDirectorPanel(post="director"){
   const panel=$(CAMP_POST_PANELS[post]);
@@ -95,7 +96,7 @@ function renderSchoolDirectorPanel(post="director"){
 }
 // Les panneaux des trois maîtres.
 function renderCampMasterPanels(){
-  for(const post of ["doctore","veteran","bladeMaster","alchemist","pleasureMaster"]) renderSchoolDirectorPanel(post);
+  for(const post of ["doctore","veteran","bladeMaster","alchemist","pleasureMaster","trainer"]) renderSchoolDirectorPanel(post);
 }
 
 // Réponse à une proposition (poste ou retour sur le terrain), dans la boîte de dialogue des échanges.

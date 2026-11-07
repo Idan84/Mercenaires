@@ -44,7 +44,7 @@ const state=rules.createCampaign({captain,squad:[2,3,4,5,6].map(id=>generator.cr
 const [, first, second, third, master]=state.company.roster;
 state.company.intendantId=null;
 assert.equal(state.company.pleasureMasterId,null);
-assert.deepEqual(rules.agenda.keys(),["dungeon","spell","armor","poison","lumber","mine","palace"]);
+assert.deepEqual(rules.agenda.keys(),["dungeon","spell","armor","poison","taming","lumber","mine","palace"]);
 
 // Il faut le Palais ; 1 place par niveau ; l'Arrière-salle est la seule salle d'entraînement.
 assert.equal(work.canSend(state,first).reason,"Il faut d’abord construire le Palais des plaisirs.");
@@ -120,7 +120,7 @@ assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","tavern-ui.js"),"utf
 assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","ui.js"),"utf8"),/\{kind:"available",label:"Au Palais demain"\}/);
 const directorUi=fs.readFileSync(path.join(ROOT,"prototype-web","school-director-ui.js"),"utf8");
 assert.match(directorUi,/pleasureMaster:"pleasure-master-panel"/);
-assert.match(directorUi,/\["doctore","veteran","bladeMaster","alchemist","pleasureMaster"\]/);
+assert.match(directorUi,/\["doctore","veteran","bladeMaster","alchemist","pleasureMaster","trainer"\]/);
 assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","index.html"),"utf8"),/<div id="pleasure-master-panel" class="steward-panel director-panel"><\/div>/);
 
 console.log("Palais des plaisirs : le Maître des plaisirs, l'Arrière-salle, l'or selon Charisme et réputation, jusqu'au retrait, refus et relance — OK");

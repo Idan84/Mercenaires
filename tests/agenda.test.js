@@ -47,7 +47,7 @@ const genRandom=()=>((seed=(seed*16807)%2147483647)/2147483647);
 const generator=createGenerator(reference,{random:genRandom,nameGenerator:(people,id)=>people+" "+id});
 const rules=createCampaignRules({generator,tavern:createTavernRules({random:()=>0.999,reference}),reference,
   random:()=>dice.length?dice.shift():0.999});
-assert.deepEqual(rules.agenda.keys(),["dungeon","spell","armor","poison","lumber","mine","palace"]);
+assert.deepEqual(rules.agenda.keys(),["dungeon","spell","armor","poison","taming","lumber","mine","palace"]);
 const captain=generator.createCaptain({id:1});
 const state=rules.createCampaign({captain,squad:[2,3,4,5,6].map(id=>generator.createMercenary({id,captain}))});
 state.company.intendantId=null;
@@ -100,7 +100,7 @@ assert.equal(rules.expeditionOf(state,c.id)?.status,"scheduled");
 // 3. campaign.js ne relie plus les activités deux à deux.
 const campaign=fs.readFileSync(path.join(ROOT,"game-core","campaign.js"),"utf8");
 assert.doesNotMatch(campaign,/aptitudeBusy|workBusy|lumberBusy|other\(\)\?\.tomorrowReason/);
-assert.equal((campaign.match(/busyElsewhere:elsewhere\(/g)||[]).length,3,"sorts, apprentissages, corvées");
+assert.equal((campaign.match(/busyElsewhere:elsewhere\(/g)||[]).length,4,"sorts, apprentissages, corvées, apprivoisement");
 const index=fs.readFileSync(path.join(ROOT,"prototype-web","index.html"),"utf8");
 assert.ok(index.indexOf('<script src="/core/agenda.js">')>0&&index.indexOf('<script src="/core/agenda.js">')<index.indexOf('<script src="/core/campaign.js">'));
 

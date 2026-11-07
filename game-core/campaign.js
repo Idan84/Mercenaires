@@ -29,10 +29,12 @@
   const socialPolicy=typeof module!=="undefined"&&module.exports?require("./social-policy.js"):root.MercenairesSocialPolicy;
   // Les Écuries : les montures capturées, leur entretien (facultatif hors du jeu, de même).
   const stables=typeof module!=="undefined"&&module.exports?require("./stables.js"):root.MercenairesStables;
-  const api=factory(history,regeneration,training,study,posts,armorPorts,armorStudy,lumber,agenda,dungeon,desertion,salaryReview,socialPolicy,stables);
+  // Apprivoiser une monture à la Grange du dresseur (facultatif hors du jeu, de même).
+  const taming=typeof module!=="undefined"&&module.exports?require("./taming.js"):root.MercenairesTaming;
+  const api=factory(history,regeneration,training,study,posts,armorPorts,armorStudy,lumber,agenda,dungeon,desertion,salaryReview,socialPolicy,stables,taming);
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesCampaign=api;
-})(typeof globalThis!=="undefined"?globalThis:this,function(History,Regeneration,Training,Study,Posts,ArmorPorts,ArmorStudy,Lumber,Agenda,Dungeon,Desertion,SalaryReview,SocialPolicy,Stables){
+})(typeof globalThis!=="undefined"?globalThis:this,function(History,Regeneration,Training,Study,Posts,ArmorPorts,ArmorStudy,Lumber,Agenda,Dungeon,Desertion,SalaryReview,SocialPolicy,Stables,Taming){
   // Sauvegarde : l'état de partie complet, sérialisé en JSON avec un format et une version.
   // La trace de génération des mercenaires (détail de calcul pour le Design Lab, ~85 % du poids)
   // n'est pas sauvegardée : un mercenaire passe d'environ 36 Ko à 5 Ko.
@@ -472,6 +474,7 @@
           bladeMasterId:null,
           alchemistId:null,
           pleasureMasterId:null,
+          trainerId:null,
           camp:{dormitoryCapacity:STARTING_DORMITORY_CAPACITY},
           renownHeritage:[],
           // Armes et armures de rechange de la compagnie, sans propriétaire, listées à l'Intendance (Idan, 2026-10-23
@@ -746,6 +749,10 @@
       buildingLevel,buildingPlaces,expeditionOf,masterOf:holderOfPost(masterKey),busyElsewhere:elsewhere(course)}}):null;
     const armorStudy=aptitudeRules("armor","veteran");
     const poisonStudy=aptitudeRules("poison","alchemist");
+    // Apprivoiser une monture à la Grange du dresseur (Idan, 2026-11-07 ; règles : taming.js) : le Dresseur aide ; l'élève
+    // reste au camp jusqu'à la fin.
+    const tamingRules=Taming?Taming.createTamingRules({reference,random,progression,camp:{
+      buildingLevel,expeditionOf,trainerOf:holderOfPost("trainer"),busyElsewhere:elsewhere("taming")}}):null;
     // Cabane du bûcheron (Idan, 2026-11-03) et Guilde des mineurs (Idan, 2026-11-04) (règles : lumber.js) : les bûcherons et
     // les mineurs du jour, retenus au camp toute la journée.
     const campWorks=state=>[state.company.camp.construction,...Object.values(state.company.camp.buildings||{}).map(b=>b?.construction)].filter(Boolean);
@@ -781,6 +788,8 @@
         const study=aptitude?.studyOf(state,m.id);
         if(study){ aptitude.stop(state,study.id); left.push(aptitude.course); }
       }
+      const taming=tamingRules?.tamingOf(state,m.id);
+      if(taming){ tamingRules.stop(state,taming.id); left.push("taming"); }
       return left;
     }
     const dungeonRules=Dungeon?Dungeon.createDungeonRules({reference,camp:{buildingLevel,expeditionOf,leave:leaveForDungeon}}):null;
@@ -838,7 +847,7 @@
       },
       salaryDemand:(m,affinityTotal)=>generator.salaryDemand(m,affinityTotal),
       resistance:(m,affinityTotal)=>tavern?.negotiationResistance?tavern.negotiationResistance(m,affinityTotal):50}}):null;
-    agenda?.add("dungeon",dungeonRules).add("spell",spellStudy).add("armor",armorStudy).add("poison",poisonStudy)
+    agenda?.add("dungeon",dungeonRules).add("spell",spellStudy).add("armor",armorStudy).add("poison",poisonStudy).add("taming",tamingRules)
       .add("lumber",lumberjacks,{chore:true}).add("mine",miners,{chore:true}).add("palace",palaceWorkers,{chore:true});
     // Ce qui le retient demain (mission, garde du corps : au jour J, on organise J+1) ; une corvée, tant qu'on ne l'a pas
     // retiré (Idan, 2026-11-04).
@@ -974,13 +983,15 @@
       // Ports d'armure à l'Académie, empoisonnement au Labo (Idan, 2026-11-03) : de même.
       const armor=armorStudy?armorStudy.advance(state):null;
       const poison=poisonStudy?poisonStudy.advance(state):null;
+      // Apprivoisement (Idan, 2026-11-07) : les deux tests du matin, à la Grange du dresseur.
+      const tamingReport=tamingRules?tamingRules.advance(state):null;
       // Entraînement libre (Idan, 2026-11-02) : ceux qui restent au camp choisissent leur journée.
       const school=runSchoolDay(state);
       // Désertion (Idan, 2026-11-04) : après tout ce qui fait bouger l'affinité du matin.
       const desertion=desertionRules?desertionRules.morning(state):null;
       // Renégociation salariale (Idan, 2026-11-04) : ceux qui ont gagné une étoile.
       const salaryReview=salaryReviewRules?salaryReviewRules.morning(state):null;
-      return {day:state.day,recovered,salaries,tavern:tavernReport,offersLost,expeditions,built,buildings,lieutenants:lieutenantReports,mana,merchant,school,study,armorStudy:armor,poisonStudy:poison,lumber,mine,palace,dungeon,desertion,salaryReview,stable};
+      return {day:state.day,recovered,salaries,tavern:tavernReport,offersLost,expeditions,built,buildings,lieutenants:lieutenantReports,mana,merchant,school,study,armorStudy:armor,poisonStudy:poison,lumber,mine,palace,dungeon,desertion,salaryReview,stable,taming:tamingReport};
     }
 
     // Recharge du mana (doc 12 ; Idan, 2026-10-25) : chaque jour, pour les membres présents au camp, pas pour ceux qui sont
@@ -1416,7 +1427,7 @@
       completeExpeditionCombat,
       dormitoryFree,
       dormitoryUsed,
-      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,trainingRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,spellStudy,armorStudy,poisonStudy,lumberjacks,miners,palaceWorkers,dungeonRules,desertionRules,salaryReviewRules,stableRules,socialPolicy:social,agenda,studyBusy,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
+      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,trainingRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,spellStudy,armorStudy,poisonStudy,lumberjacks,miners,palaceWorkers,dungeonRules,desertionRules,salaryReviewRules,stableRules,tamingRules,socialPolicy:social,agenda,studyBusy,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
       woundDaysFor,fatigueDaysFor,
       dormitoryPlaces,
       dormitoryExpansionCost,

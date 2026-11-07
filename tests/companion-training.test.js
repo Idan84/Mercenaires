@@ -61,8 +61,8 @@ const training = rules.schoolTraining;
 Object.assign(wolfMan.stats, {Charisme: 40, Intelligence: 60});
 wolfMan.skills.social = {...wolfMan.skills.social, Intimidation: 80};
 assert.equal(training.learnValue(wolfMan, "Charisme, Intelligence, Intimidation"), 60);
-assert.equal(training.dailyXp(wolfMan, room("trainer_kennel")), Math.round(20 * 60 / 50 * 1.1), "Chenil niveau 1, sans Dresseur : 26 XP");
-assert.deepEqual(training.xpOf(room("trainer_kennel"), 26, wolfMan), {skills: {animal: {"Canidés": 26, "Compagnon animal": 26}}},
+assert.equal(training.dailyXp(wolfMan, room("trainer_kennel")), Math.round(40 * 60 / 50 * 1.1), "Chenil niveau 1, sans Dresseur : 53 XP (XP doublée)");
+assert.deepEqual(training.xpOf(room("trainer_kennel"), 53, wolfMan), {skills: {animal: {"Canidés": 53, "Compagnon animal": 53}}},
   "la famille et Compagnon animal");
 
 // 4. Une matinée : il y va selon ses envies ; les autres n'y vont pas ; le Dresseur gagne sa Transmission du savoir.

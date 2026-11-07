@@ -20,21 +20,23 @@ const merc=(hp,extra={})=>({id:1,name:"Test",hp,pvMax:100,damageTaken:0,stats:{E
 
 // Toutes les constantes viennent des données de référence (aucune valeur de repli utilisée).
 const codes=reference.formulaConstants.rows.map(r=>r.code).filter(c=>c.startsWith("mission."));
-assert.equal(codes.length,21);
-assert.equal(Object.keys(rules.constants).length,21);
+assert.equal(codes.length,22);
+assert.equal(Object.keys(rules.constants).length,22);
 
-// §3 — Jet de mort (formule validée) : à -10 % des PV max, la base vaut 100 %, moins Volonté / 20.
+// §3 — Jet de mort (formule validée) : à -10 % des PV max, la base vaut 100 %, moins Volonté / 20 ; puis divisée par deux
+// (Idan, 2026-11-07, après le bêta-test : « On divise par deux les chances de mort ») : au plus 50 %.
+assert.equal(rules.constants.deathChanceFactor,0.5);
 assert.equal(rules.deathChance(merc(0)),null);
 assert.equal(rules.deathChance(merc(5)),null);
-assert.equal(rules.deathChance(merc(-10)),98);
-assert.equal(rules.deathChance(merc(-1,{stats:{"Volonté":100}})),5);
+assert.equal(rules.deathChance(merc(-10)),49);
+assert.equal(rules.deathChance(merc(-1,{stats:{"Volonté":100}})),2.5);
 assert.equal(rules.deathChance(merc(-1,{stats:{"Volonté":400}})),0);
-// Défaite d'un contrat « Faire le ménage » (doc 17 §8) : probabilité doublée, bornée à 100 %.
-assert.equal(rules.deathChance(merc(-1,{stats:{"Volonté":100}}),2),10);
-assert.equal(rules.deathChance(merc(-10),2),100);
+// Défaite d'un contrat « Faire le ménage » (doc 17 §8) : probabilité doublée, bornée à 100 %, puis divisée par deux.
+assert.equal(rules.deathChance(merc(-1,{stats:{"Volonté":100}}),2),5);
+assert.equal(rules.deathChance(merc(-10),2),50);
 const doubled=createMissionEndRules({reference,random:scripted([roll(15)])}).resolveMissionEnd([merc(-1,{stats:{"Volonté":100}})],{deathMultiplier:2});
-assert.deepEqual([doubled.results[0].death.p,doubled.results[0].dead],[10,false],"15 > 10 % : il fait le mort et s'échappe");
-assert.equal(rules.deathChance(merc(-50)),100);
+assert.deepEqual([doubled.results[0].death.p,doubled.results[0].dead],[5,false],"15 > 5 % : il fait le mort et s'échappe");
+assert.equal(rules.deathChance(merc(-50)),50,"au plus 50 %");
 
 // §4 — Jet de blessure entre 0 et 50 % PV (zone portée de 20 à 50 % par Idan ; courbe Chatty, Endurance 50).
 for(const [hp,expected] of [[50,26.67],[37.5,42.92],[25,59.17],[12.5,75.42],[0,91.67]]){
@@ -65,9 +67,9 @@ assert.equal(rules.fatigueDays(merc(100,{stats:{Endurance:400}})),1,"au moins 1 
 const chain=values=>createMissionEndRules({reference,random:scripted(values)});
 
 // Sous 0 PV, jet de mort raté : mort, rien d'autre.
-let r=chain([roll(98)]).resolveParticipant(merc(-10));
+let r=chain([roll(49)]).resolveParticipant(merc(-10));
 assert.equal(r.outcome,"dead");
-assert.deepEqual(r.death,{p:98,roll:98});
+assert.deepEqual(r.death,{p:49,roll:49});
 assert.equal(r.wound,null);
 assert.equal(r.fatigueDays,null);
 

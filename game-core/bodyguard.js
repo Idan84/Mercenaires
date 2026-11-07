@@ -9,7 +9,8 @@
 //   référence du niveau : 10 × Réputation minimale du niveau suivant / 30 (au-delà de 15 étoiles : × 1,25). Plus c'est
 //   long, plus la journée paie. Un mercenaire payé bien plus que son niveau fait perdre de l'or sur les courtes missions.
 // - Pas de combat. Au retour, chacun tire : 50 % rentré, 25 % fatigué (1D3 jours), 25 % blessé (1D3 jours) ; il gagne
-//   un peu de réputation (10, ou 5 s'il est blessé) et la compagnie un peu de renommée (+10) ; sa prime est versée.
+//   un peu de réputation (5, ou 2,5 s'il est blessé) et la compagnie un peu de renommée (+5 depuis le bêta-test ; Idan,
+//   2026-11-07) ; sa prime est versée.
 (function(root,factory){
   const api=factory();
   if(typeof module!=="undefined"&&module.exports) module.exports=api;

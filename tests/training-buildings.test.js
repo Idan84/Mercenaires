@@ -56,12 +56,12 @@ const BUILDINGS={
 const known=new Set([...reference.characteristics.rows.map(r=>r.nom),...reference.skills.rows.map(r=>r.nom)]);
 for(const [code,[name,trains,wings]] of Object.entries(BUILDINGS)){
   const b=row(code);
-  assert.deepEqual([b.nom,b.entraine,b.niveaux,b.prix_base,b.jours_base,b.requiert,b.places_base,b.places_pas],[name,trains,10,1000,4,null,1,2],code);
+  assert.deepEqual([b.nom,b.entraine,b.niveaux,b.prix_base,b.jours_base,b.requiert,b.places_base,b.places_pas],[name,trains,10,500,4,null,1,2],code);
   const rooms=rules.campRoomCodes(code).map(row);
   assert.deepEqual(rooms.map(r=>[r.nom,r.entraine]),wings,code+" : ses ailes");
   for(const r of [b,...rooms]){
     assert.ok(known.has(r.entraine),r.code+" : "+r.entraine+" existe");
-    assert.deepEqual([r.niveaux,r.prix_base,r.jours_base,r.places_base,r.places_pas],[10,1000,4,1,2],r.code+" : barème, places comme l'École");
+    assert.deepEqual([r.niveaux,r.prix_base,r.jours_base,r.places_base,r.places_pas],[10,500,4,1,2],r.code+" : barème, places comme l'École");
     assert.ok(r.description.length>20,r.code+" : une info-bulle");
   }
 }
@@ -73,7 +73,7 @@ assert.equal(reference.campBuildings.row_count,rows.length);
 
 // Une aile monte au plus jusqu'au niveau de son bâtiment.
 assert.deepEqual(rules.nextBuildingLevel(state,"ludus_force"),
-  {code:"ludus_force",name:"La Meule",level:1,gold:1000,days:4,requires:{code:"ludus",name:"Ludus",level:1},locked:true});
+  {code:"ludus_force",name:"La Meule",level:1,gold:500,days:4,requires:{code:"ludus",name:"Ludus",level:1},locked:true});
 state.company.gold=100000;
 assert.equal(rules.startBuilding(state,"ludus_force").reason,"La Meule : il faut d’abord Ludus au niveau 1.");
 assert.equal(rules.startBuilding(state,"ludus").ok,true);

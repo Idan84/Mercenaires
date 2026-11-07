@@ -85,7 +85,7 @@ const transmission=alchemist.skills.camp["Transmission du savoir"];
 dice=[0];
 const [day]=rules.advanceTime(state,1);
 assert.deepEqual(day.poisonStudy.learned.map(l=>[l.mercenary.id,l.days]),[[student.id,1]]);
-assert.equal(day.poisonStudy.masterXp,5);
+assert.equal(day.poisonStudy.masterXp,10);
 assert.ok(alchemist.skills.camp["Transmission du savoir"]>transmission);
 assert.equal(engine.canPoisonWeapon({character:student}),true);
 assert.deepEqual(student.history.log.filter(e=>e.kind==="poison_study_done").map(e=>e.days),[1]);

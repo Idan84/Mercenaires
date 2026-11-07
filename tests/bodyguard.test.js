@@ -61,7 +61,7 @@ assert.ok(rules.createOffer({bestLevel:15}).level<=15);
 const issues={rentre:0,fatigue:0,blesse:0};
 for(let i=0;i<4000;i++){ const r=rules.rollReturn(); issues[r.issue]+=1; if(r.issue!=="rentre") assert.ok(r.days>=1&&r.days<=3); else assert.equal(r.days,0); }
 assert.ok(issues.rentre>1850&&issues.rentre<2150&&issues.fatigue>850&&issues.blesse>850,JSON.stringify(issues));
-assert.deepEqual([rules.reputationGain("rentre"),rules.reputationGain("fatigue"),rules.reputationGain("blesse"),rules.renownGain()],[10,10,5,10]);
+assert.deepEqual([rules.reputationGain("rentre"),rules.reputationGain("fatigue"),rules.reputationGain("blesse"),rules.renownGain()],[5,5,2.5,5],"divisés par deux après le bêta-test (Idan, 2026-11-07)");
 
 // Campagne : départ (paiement d'avance), absence, retour (sort, réputation, prime, renommée).
 const generator=createGenerator(reference,{random,nameGenerator:(people,id)=>people+" "+id});
@@ -140,14 +140,14 @@ scripted.push(0.1,0.9,0.4);
 const goldBefore=state.company.gold;
 const [day5]=campaign.advanceTime(state,1);
 const back=day5.expeditions.bodyguards[0];
-assert.deepEqual(back.results.map(r=>[r.mercenary.id,r.issue,r.days,r.reputation,r.bonus]),[[a.id,"rentre",0,10,40],[b.id,"blesse",2,5,30]]);
+assert.deepEqual(back.results.map(r=>[r.mercenary.id,r.issue,r.days,r.reputation,r.bonus]),[[a.id,"rentre",0,5,40],[b.id,"blesse",2,2.5,30]]);
 assert.equal(back.bonusPaid,70);
-assert.equal(back.renown,10);
+assert.equal(back.renown,5);
 assert.ok(state.company.gold<=goldBefore-70,"primes versées au retour (et salaires du jour)");
-assert.equal(a.reputation,repA+10);
+assert.equal(a.reputation,repA+5);
 assert.equal(a.recovery,undefined);
 assert.deepEqual([b.recovery.kind,b.recovery.daysLeft],["wounded",2]);
-assert.equal(state.company.missionRenown,renown+10);
+assert.equal(state.company.missionRenown,renown+5);
 assert.equal(campaign.expeditionOf(state,a.id),null,"de retour au camp");
 assert.equal(a.history.log.at(-1).kind,"bodyguard");
 

@@ -22,8 +22,8 @@
     {"issue": "fatigue", "poids": 25, "jours_faces": 3},
     {"issue": "blesse", "poids": 25, "jours_faces": 3}
   ],
-  "reputation": {"rentre": 10, "fatigue": 10, "blesse": 5},
-  "renommee": 10,
+  "reputation": {"rentre": 5, "fatigue": 5, "blesse": 2.5},
+  "renommee": 5,
   "illustration": "",
   "clients": [
     "Un marchand d’épices et sa caravane",

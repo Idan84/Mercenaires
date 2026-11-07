@@ -65,7 +65,7 @@ const progress={
 };
 const cp=s.compare("progression",progress,{...progress,criticalSuccesses:2});
 assert.equal(cp.after.metrics.reputationGain-cp.before.metrics.reputationGain,2);
-assert.equal(cp.after.metrics["xp.Chance"]-cp.before.metrics["xp.Chance"],-10);
+assert.equal(cp.after.metrics["xp.Chance"]-cp.before.metrics["xp.Chance"],-20,"−10 par coup critique (doublé)");
 assert.ok(s.run("progression",{...progress,knockouts:2}).metrics["xp.Charisme"]>0);
 assert.ok(s.run("progression",{...progress,chargeAttempts:2}).metrics["xp.Courage"]>0);
 

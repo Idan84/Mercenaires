@@ -13,18 +13,25 @@ const {createCampaignRules,serializeCampaign,restoreCampaign}=require("../game-c
 const ROOT=path.resolve(__dirname,"..");
 const files={peoples:"peoples.json",cultures:"cultures.json",socialOrigins:"social-origins.json",alignments:"alignments.json",ancestries:"ancestries.json",ancestryCompatibility:"ancestry-compatibility.json",cultureOriginCompatibility:"culture-origin-compatibility.json",ancestryLevels:"ancestry-levels.json",d6Scale:"d6-generation-scale.json",generationMatrix:"generation-matrix.json",skills:"skills.json",characteristics:"characteristics.json",formulaConstants:"formula-constants.json",weapons:"weapons.json",baseArmors:"base-armors.json",itemQualities:"item-qualities.json",equipmentSlots:"equipment-slots.json",startingEquipmentGeneration:"starting-equipment-generation.json",binaryAptitudeGrants:"binary-aptitude-grants.json",alignmentGeneration:"alignment-generation.json"};
 const reference=Object.fromEntries(Object.entries(files).map(([k,f])=>[k,JSON.parse(fs.readFileSync(path.join(ROOT,"data","reference",f),"utf8"))]));
-const rules=P.createProgressionRules({reference});
+const real=P.createProgressionRules({reference});
+// Les mécanismes plus bas sont vérifiés avec les XP d'avant le doublement du bêta-test (Idan, 2026-11-07 : « On double
+// l'xp gagné partout ») : chaque gain est linéaire dans sa constante, et les valeurs réelles (doublées) sont vérifiées
+// juste en dessous.
+const XP_CODE=/^progression\.(?!xp_curve).*_xp$/;
+const rules=P.createProgressionRules({reference:{...reference,formulaConstants:{...reference.formulaConstants,
+  rows:reference.formulaConstants.rows.map(r=>XP_CODE.test(r.code)?{...r,valeur:r.valeur/2}:r)}}});
 
 // Constantes d'équilibrage lues dans formula-constants.json (valeurs de 08-progression-and-experience.md
-// et décisions Idan du 2026-10-06).
-assert.deepEqual(rules.constants,{
-  curve:10,startPosition:0.5,chanceCriticalFailure:30,chanceCriticalSuccess:-5,resistanceWound:8,resistanceOthers:-2,
-  constitutionHpHealed:1,courageChargeAttempt:50,speedFleeHex:2,charismaKnockout:50,perceptionBackstabWound:10,
-  forceLoadThreshold:0.25,forceLoadXp:20,
-  dexterityChain:50,dodgeWoundTaken:10,enduranceHeavyArmorHex:2,willCourageHeld:20,willRecovery:20,intelligenceWorstChoice:30,
-  skillWeaponAttack:10,skillWeaponHit:5,skillWeaponWound:5,skillTwoHandedAttack:10,skillOneHandedAttack:10,skillDualSequence:10,skillShieldBlock:10,
-  skillIntimidation:50,mountReturn:50,regenerationBurn:30,skillRegressionRatio:0.5,
-  spellCast:10,spellSuccess:5,spellEffect:5,schoolRegressionRatio:0.5,schoolFloor:1,magicPowerSpellEffect:20,manaReserveManaSpent:2
+// et décisions Idan du 2026-10-06) ; toutes les XP doublées après le bêta-test (Idan, 2026-11-07 : « On double l'xp
+// gagné partout »), la courbe, les seuils et les parts de régression inchangés.
+assert.deepEqual(real.constants,{
+  curve:10,startPosition:0.5,chanceCriticalFailure:60,chanceCriticalSuccess:-10,resistanceWound:16,resistanceOthers:-4,
+  constitutionHpHealed:2,courageChargeAttempt:100,speedFleeHex:4,charismaKnockout:100,perceptionBackstabWound:20,
+  forceLoadThreshold:0.25,forceLoadXp:40,
+  dexterityChain:100,dodgeWoundTaken:20,enduranceHeavyArmorHex:4,willCourageHeld:40,willRecovery:40,intelligenceWorstChoice:60,
+  skillWeaponAttack:20,skillWeaponHit:10,skillWeaponWound:10,skillTwoHandedAttack:20,skillOneHandedAttack:20,skillDualSequence:20,skillShieldBlock:20,
+  skillIntimidation:100,mountReturn:100,regenerationBurn:60,skillRegressionRatio:0.5,
+  spellCast:20,spellSuccess:10,spellEffect:10,schoolRegressionRatio:0.5,schoolFloor:1,magicPowerSpellEffect:40,manaReserveManaSpent:4
 });
 const tuned=P.createProgressionRules({reference:{formulaConstants:{rows:[{code:"progression.charisma.knockout_xp",valeur:80}]}}});
 assert.equal(tuned.constants.charismaKnockout,80,"une constante modifiée est prise en compte");

@@ -113,7 +113,7 @@ state.company.camp.buildings.survival_academy.level=1;
 const transmission=Number(fourth.skills.camp["Transmission du savoir"]);
 dice=[0.999];
 let [day]=rules.advanceTime(state,1);
-assert.deepEqual([day.armorStudy.tested.length,day.armorStudy.learned.length,day.armorStudy.masterXp,active.days],[1,0,5,1]);
+assert.deepEqual([day.armorStudy.tested.length,day.armorStudy.learned.length,day.armorStudy.masterXp,active.days],[1,0,10,1]);
 assert.ok(fourth.skills.camp["Transmission du savoir"]>transmission,"XP de Transmission");
 const plates=reference.baseArmors.rows.find(r=>r.type_armure==="Légère");
 assert.equal(ports.canWear(novice,{itemType:"armor",templateId:"armor:"+plates.code,name:plates.nom}).ok,false);

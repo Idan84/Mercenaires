@@ -31,7 +31,7 @@ const state=rules.createCampaign({captain,squad:[2,3].map(id=>generator.createMe
 // Données.
 // (L'École de magie et ses salles suivent : tests/magic-school.test.js.)
 const rows=reference.campBuildings.rows.slice(0,2);
-assert.deepEqual(rows.map(r=>[r.code,r.nom,r.niveaux,r.prix_base,r.jours_base,r.requiert]),[["dispensary","Dispensaire",5,1000,4,null],["baths","Bains chauds",5,1000,4,null]]);
+assert.deepEqual(rows.map(r=>[r.code,r.nom,r.niveaux,r.prix_base,r.jours_base,r.requiert]),[["dispensary","Dispensaire",5,500,4,null],["baths","Bains chauds",5,500,4,null]]);
 assert.deepEqual(rows.map(r=>[r.soins_par_niveau,r.fatigue_jours_par_niveau,r.mana_par_niveau]),[[0.1,0,0],[0,1,5]]);
 assert.equal(reference.campBuildings.row_count,reference.campBuildings.rows.length);
 assert.deepEqual(rules.campBuildingCodes().slice(0,2),["dispensary","baths"]);
@@ -41,7 +41,7 @@ const at=(code,level)=>{ state.company.camp.buildings={...state.company.camp.bui
 assert.equal(rules.buildingLevel(state,"dispensary"),0,"à construire");
 const costs=[];
 for(let n=1;n<=5;n++){ at("dispensary",n-1); costs.push(rules.nextBuildingLevel(state,"dispensary")); }
-assert.deepEqual(costs.map(c=>[c.level,c.gold,c.days]),[[1,1000,4],[2,4000,8],[3,9000,12],[4,16000,16],[5,25000,20]]);
+assert.deepEqual(costs.map(c=>[c.level,c.gold,c.days]),[[1,500,4],[2,2000,8],[3,4500,12],[4,8000,16],[5,12500,20]]);
 at("dispensary",5);
 assert.equal(rules.nextBuildingLevel(state,"dispensary"),null);
 assert.deepEqual(rules.startBuilding(state,"dispensary"),{ok:false,reason:"Dispensaire : niveau maximal."});
@@ -52,15 +52,15 @@ state.company.gold=30000;
 const day=state.day;
 const started=rules.startBuilding(state,"dispensary");
 assert.equal(started.ok,true);
-assert.equal(state.company.gold,29000);
-assert.deepEqual(started.construction,{kind:"building",code:"dispensary",name:"Dispensaire",level:1,gold:1000,days:4,startDay:day,endDay:day+4});
+assert.equal(state.company.gold,29500);
+assert.deepEqual(started.construction,{kind:"building",code:"dispensary",name:"Dispensaire",level:1,gold:500,days:4,startDay:day,endDay:day+4});
 assert.deepEqual(rules.startBuilding(state,"dispensary"),{ok:false,reason:"Un chantier est déjà en cours : Dispensaire."});
 assert.equal(rules.startBuilding(state,"baths").ok,true,"les bains en même temps");
 assert.equal(rules.startDormitoryExpansion(state).ok,true,"et le dortoir aussi");
-state.company.gold=500;
+state.company.gold=400;
 state.company.camp.buildings.baths.construction=null;
-assert.deepEqual(rules.startBuilding(state,"baths"),{ok:false,reason:"Pas assez d’or : il faut 1000 PO.",cost:{code:"baths",name:"Bains chauds",level:1,gold:1000,days:4}});
-assert.equal(state.company.gold,500);
+assert.deepEqual(rules.startBuilding(state,"baths"),{ok:false,reason:"Pas assez d’or : il faut 500 PO.",cost:{code:"baths",name:"Bains chauds",level:1,gold:500,days:4}});
+assert.equal(state.company.gold,400);
 // Sauvegarde, puis le niveau arrive le matin du dernier jour.
 const restored=restoreCampaign(serializeCampaign(state)).state;
 assert.equal(restored.company.camp.buildings.dispensary.construction.endDay,day+4);
@@ -111,10 +111,10 @@ const company=()=>elements["camp-buildings"].innerHTML;
 game.campaign.company.gold=10000;
 ui.renderCampBuildings();
 assert.match(company(),/<strong title="On y recoud[^"]*">Dispensaire<\/strong><span>À construire<\/span>/);
-assert.match(company(),/data-camp-build="dispensary">Construire<\/button>\s*<span class="building-cost">1 000 PO · 4 jours<\/span>/);
+assert.match(company(),/data-camp-build="dispensary">Construire<\/button>\s*<span class="building-cost">500 PO · 4 jours<\/span>/);
 assert.match(company(),/<strong title="Vapeur[^"]*">Bains chauds<\/strong><span>À construire<\/span>/);
 ui.buildCampBuilding("dispensary");
-assert.deepEqual(log.at(-1),{message:"Construction lancée : Dispensaire (niveau 1), 1 000 PO, prêt dans 4 jours.",kind:"gear"});
+assert.deepEqual(log.at(-1),{message:"Construction lancée : Dispensaire (niveau 1), 500 PO, prêt dans 4 jours.",kind:"gear"});
 ui.renderCampBuildings();
 assert.match(company(),/Dispensaire<\/strong><span>À construire<\/span><\/div>\s*<span class="building-work">Chantier en cours : niveau 1, prêt dans 4 jours\.<\/span>/);
 game.campaign.company.camp.buildings={dispensary:{level:2,construction:null},baths:{level:3,construction:null}};
@@ -122,7 +122,7 @@ game.campaign.company.gold=100;
 ui.renderCampBuildings();
 assert.match(company(),/Dispensaire<\/strong><span>Niveau 2 · blessures −20 %<\/span>/);
 assert.match(company(),/Bains chauds<\/strong><span>Niveau 3 · fatigue −3 jours, mana \+15 % par jour<\/span>/);
-assert.match(company(),/data-camp-build="baths" disabled>Améliorer : niveau 4<\/button>\s*<span class="building-cost">16 000 PO · 16 jours · pas assez d’or<\/span>/);
+assert.match(company(),/data-camp-build="baths" disabled>Améliorer : niveau 4<\/button>\s*<span class="building-cost">8 000 PO · 16 jours · pas assez d’or<\/span>/);
 ui.logCampBuildings([{kind:"building",code:"baths",name:"Bains chauds",level:3}]);
 assert.deepEqual(log.at(-1),{message:"Bains chauds : niveau 3 terminé (fatigue −3 jours, mana +15 % par jour).",kind:"turn"});
 const news=fs.readFileSync(path.join(ROOT,"prototype-web","day-news-ui.js"),"utf8");

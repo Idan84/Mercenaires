@@ -158,7 +158,8 @@
     // rapport à l'étoile » ; « Les fiches fixes ») : les missions qui ont une bête (one-shot-missions.json, bete), tirées
     // selon leur poids ; les bêtes ont la fiche fixe de nos animaux (mounts.json) ; ni coffre ni butin.
     const hunts=()=>(data.missions||[]).filter(m=>m.bete);
-    // Le nombre de bêtes : les dés de la bête pour chaque étoile (3D6 loups, 1D6 licornes), au plus max_ennemis.
+    // Le nombre de bêtes : les dés de la bête pour chaque étoile (1D6 loups, 1D3 licornes depuis le bêta-test ; Idan,
+    // 2026-11-07), au plus max_ennemis.
     function rollBeasts(def,level){
       const b=def.bete||{};
       let count=0;

@@ -24,7 +24,7 @@ const constant=code=>reference.formulaConstants.rows.find(r=>r.code===code)?.val
 assert.deepEqual(["cells_per_level","entry_affinity","daily_affinity"].map(k=>constant("camp.dungeon."+k)),[1,-10,-2]);
 assert.equal(reference.formulaConstants.row_count,reference.formulaConstants.rows.length);
 const row=reference.campBuildings.rows.find(r=>r.code==="dungeon");
-assert.deepEqual([row.nom,row.niveaux,row.prix_base,row.jours_base,row.requiert,row.places_pas,row.entraine],["Le Cachot",10,1000,4,null,0,null]);
+assert.deepEqual([row.nom,row.niveaux,row.prix_base,row.jours_base,row.requiert,row.places_pas,row.entraine],["Le Cachot",10,500,4,null,0,null]);
 
 let seed=43,dice=[];
 const genRandom=()=>((seed=(seed*16807)%2147483647)/2147483647);

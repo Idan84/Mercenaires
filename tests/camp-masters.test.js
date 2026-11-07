@@ -93,22 +93,22 @@ const mill={code:"ludus_force",building:"ludus",trains:"Force",learnWith:"Endura
 assert.equal(training.trainingChance(student).delta,0);
 assert.equal(training.trainingChance(student,master).delta,3+2,"Charisme 30 / 10 + affinité 20 / 10");
 assert.equal(training.directorLevel(master,mill),60,"sa Force à la Meule");
-assert.equal(training.dailyXp(student,mill),22,"20 × 50 / 50 × 1,1");
-assert.equal(training.dailyXp(student,mill,master),Math.round(22*1.6*1.4),"× (1 + 60 / 100) × (1 + 40 / 100)");
+assert.equal(training.dailyXp(student,mill),44,"40 × 50 / 50 × 1,1 (XP doublée)");
+assert.equal(training.dailyXp(student,mill,master),Math.round(44*1.6*1.4),"× (1 + 60 / 100) × (1 + 40 / 100)");
 assert.equal(training.directorLevel(master,{code:"survival_fire",building:"survival_academy",trains:"Résistance au feu"}),0);
 const always=createSchoolTrainingRules({reference,random:()=>0});
 const run=always.runDay({rooms:[mill,{code:"blade_circle",building:"blade_circle",trains:"Dextérité",learnWith:"Dextérité",level:1,places:1}],
   candidates:[student,{id:"t",name:"Autre",stats:{Volonté:50,Endurance:50,Force:30,Dextérité:20}}],masters:{ludus:master}});
-// L'autre va au Cercle (là où il est le plus doué), sans maître : 20 × 20 / 50 × 1,1.
-assert.deepEqual(run.entries.map(e=>[e.id,e.code,e.xp]),[["t","blade_circle",9],["s","ludus_force",49]]);
-assert.deepEqual([run.masterXp,run.directorXp],[{ludus:5},0],"5 XP de Transmission par élève de son bâtiment");
+// L'autre va au Cercle (là où il est le plus doué), sans maître : 40 × 20 / 50 × 1,1 (XP doublée).
+assert.deepEqual(run.entries.map(e=>[e.id,e.code,e.xp]),[["t","blade_circle",18],["s","ludus_force",99]]);
+assert.deepEqual([run.masterXp,run.directorXp],[{ludus:10},0],"10 XP de Transmission par élève de son bâtiment");
 
 // Le matin du camp : chaque maître compte les élèves de son bâtiment ; les maîtres ne s'entraînent pas.
 const day=rules.runSchoolDay(state);
 const roomOf=new Map(rules.trainingRooms(state).map(r=>[r.code,r.building]));
 for(const p of Posts.POSTS.slice(1)){
   const students=day.entries.filter(e=>e.code&&roomOf.get(e.code)===p.building).length;
-  assert.equal(day.masterXp[p.building]||0,5*students,p.key);
+  assert.equal(day.masterXp[p.building]||0,10*students,p.key);
 }
 assert.ok(!day.entries.some(e=>[brute.id,survivor.id,fencer.id].includes(e.id)),"les maîtres enseignent");
 

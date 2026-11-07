@@ -99,6 +99,14 @@ human.skills.martial["Discrétion"] = 35;
 assert.equal(engine.stealthOf(rider), 10, "à cheval : la plus basse des deux");
 assert.equal(engine.stealthOf({...rider, mount: null}), engine.statWithGear({...rider, mount: null}, "Discrétion"), "à pied : la sienne");
 assert.ok(engine.detectionChance(foot0(), rider, 3) > engine.detectionChance(foot0(), {...rider, mount: null}, 3), "plus facile à repérer à cheval");
+// L'Intimidation d'un couple : la plus haute des deux (Idan : « Le gobelin sur le dragon... Bah, c'est pas l'intimidation du
+// Gobelin qui compte ! »).
+human.skills.social = {...human.skills.social, Intimidation: 10};
+assert.equal(engine.intimidation(rider), 40, "celle du destrier");
+assert.equal(engine.intimidation(rider.mount), 40, "le cheval monté répond pour le couple");
+human.skills.social.Intimidation = 65;
+assert.equal(engine.intimidation(rider), 65, "celle du cavalier");
+assert.equal(engine.intimidation({...rider, mount: null}), 65, "à pied : la sienne");
 // Au corps à corps, le cavalier compte comme un niveau plus haut (rien contre le cheval).
 const foot = {character: generator.createMercenary({id: ++uid, captain, forcedPeople: "Humain"}), q: 3, r: 5, alive: true, activeSet: 1, team: "player"};
 const alone = {...rider, mount: null};

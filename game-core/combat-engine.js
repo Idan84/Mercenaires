@@ -1148,9 +1148,13 @@
       return contact.some((a,i)=>contact.slice(i+1).some(b=>axialDistance(a,b)>1));
     }
 
-    // Intimidation de l'adversaire, avec la Culotte d'Intimidation (Idan, 2026-10-24).
+    // Intimidation de l'adversaire, avec la Culotte d'Intimidation (Idan, 2026-10-24). Un couple (Idan, 2026-11-07 : « pour
+    // l'intimidation, on prend la plus haute des deux... Le gobelin sur le dragon... Bah, c'est pas l'intimidation du Gobelin
+    // qui compte ! ») : la plus haute du cavalier et de sa monture.
     function intimidation(unit){
-      return unit?.character?statWithGear(unit,"Intimidation"):0;
+      if(!unit?.character) return 0;
+      const pair=pairOf(unit),horse=mountOf(pair);
+      return horse?Math.max(statWithGear(pair,"Intimidation"),statWithGear(horse,"Intimidation")):statWithGear(unit,"Intimidation");
     }
 
     // Bonus de l'aura d'un capitaine (Idan, 2026-10-24) : 35 % de son Courage + 25 % de son Charisme, équipement compris,

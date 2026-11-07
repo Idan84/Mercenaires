@@ -153,6 +153,8 @@ Détail dans le doc 12 (« Écoles : progression et régression »).
 - **Arme et catégorie** : chaque attaque portée avec une arme : `+10 XP` à l'arme précise et à sa catégorie ; `+5` de plus si elle touche réellement (non bloquée), `+5` si elle blesse. La chute de charge et le projectile perdu (même tir) ne comptent pas.
 - **Styles** : Combat à une main `+10 XP` par attaque avec une arme à une main tenue seule, mêlée ou tir (Idan, 2026-11-02) ; Combat à deux mains `+10 XP` par attaque de mêlée à deux mains ; Combat à deux armes `+10 XP` par séquence où **les deux armes ont réellement frappé** (une seconde arme déchargée ou hors de portée ne donne rien, revue Chatty du 2026-10-20) ; Boucliers et le bouclier précis `+10 XP` chacun par blocage.
 - **Intimidation** : chaque adversaire qui rate son test de Courage face au mercenaire : `+50 XP`.
+- **Compétences animales** (Idan, 2026-11-07 : « xp catégorie animal pour le cavalier ») : chaque attaque de sa monture, quand il la monte, comme une arme : `+10 XP` à la famille de la monture (Équidés…) et à Compagnon animal, `+5` si elle touche, `+5` si elle blesse (mêmes constantes que les armes ; sans recul des autres familles).
+- **Nos montures** (Idan, 2026-11-07 : « xp licorne ») : leur fiche à elles progresse avec ces mêmes règles (doc 04, « Combat à cheval »).
 - **On progresse au détriment des autres** : chaque gain fait perdre, au total, **la moitié de ce gain**, à parts égales, aux compétences que le mercenaire possède (valeur > 0) :
   - un gain d'arme : les **armes des autres catégories** (l'épée longue fait reculer haches, marteaux… mais pas les autres lames longues) ;
   - un gain de catégorie : les autres catégories d'armes ;
@@ -167,7 +169,7 @@ Détail dans le doc 12 (« Écoles : progression et régression »).
 - Résistances : chaque composante de dégâts qui blesse effectivement compte séparément. **Limite V1** : le moteur de combat ne produit encore qu'une composante, physique, par attaque ; les dégâts mixtes (physique + feu), les dégâts sur la durée et les coups multiples s'inscriront composante par composante quand ils existeront.
 - Le joueur voit un **récapitulatif** dans le bilan de fin de mission : XP gagnée ou perdue par caractéristique, et valeurs qui ont changé.
 - Toutes les valeurs de cette section sont des **constantes d'équilibrage** (`data/reference/formula-constants.json`, codes `progression.*`).
-- Branché dans le prototype : Résistances, Courage, Vitesse, Charisme, Perception, Force, Chance, Dextérité, Esquive, Endurance, Volonté, Intelligence, Constitution, Puissance magique, Réserve de mana, les compétences de combat (armes, catégories, styles, Intimidation), les écoles de magie et les sorts. En attente : les autres compétences.
+- Branché dans le prototype : Résistances, Courage, Vitesse, Charisme, Perception, Force, Chance, Dextérité, Esquive, Endurance, Volonté, Intelligence, Constitution, Puissance magique, Réserve de mana, les compétences de combat (armes, catégories, styles, Intimidation), les compétences animales (attaques de la monture), les écoles de magie et les sorts. En attente : les autres compétences.
 - Chance (choix d'implémentation validés par Idan le 2026-10-20) : chaque critique positif, au Toucher comme à Blesser, compte comme un CC ; chaque échec critique confirmé, au Toucher (Au Sol) comme à Blesser (contrecoup), compte comme un EC. Le contrecoup d'un échec critique de blessure compte comme une blessure physique subie pour les Résistances.
 
 ## 3 — XP choisie : formation au camp

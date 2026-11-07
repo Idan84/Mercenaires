@@ -411,7 +411,9 @@ function missionMountOf(character){
 function attachMissionMount(unit){
   const own=missionMountOf(unit.character),code=own?.code,rules=typeof missionRules==="function"?missionRules():null,e=combatEngine();
   if(!code||!rules?.createMount||!e?.canRide) return null;
-  const horse=rules.createMount(code,{id:"mount-"+unit.character.id,name:missionMountName(rules.mountSheet(code),unit.character.name)});
+  // La nôtre : sa fiche à elle (ses progrès, son mana ; stables.js).
+  const sheet=own.item?missionStableRules()?.ownSheet(own.item)||null:null;
+  const horse=rules.createMount(code,{id:"mount-"+unit.character.id,name:missionMountName(rules.mountSheet(code),unit.character.name),own:sheet});
   if(!horse||!e.canRide({character:unit.character},{character:horse})) return null;
   if(own.item) horse.mount.itemId=own.item.id;
   const pvMax=e.maxHp({character:horse,activeSet:1});
@@ -513,6 +515,7 @@ function resetMissionActivation(unit){
   if(horse?.alive&&unit.alive){
     tickMissionPoison(horse);tickMissionBurning(horse);tickMissionCurse(horse);tickMissionChill(horse);tickMissionBuffs(horse);
     settleMissionMounts();
+    prepareMissionMount(unit);
   }
   // Nuée d'insectes : qui commence son activation dans la nuée d'un ennemi est piqué.
   const swarm=unit.alive?missionSwarmAt(unit.q,unit.r,unit.team):null;
@@ -822,34 +825,23 @@ function endMissionActivation(){
   u.acted=true;
   game.mission.activeUnit=null;
   game.mission.mode=null;
-  if(startMissionMountActivation(u)) return;
   selectNextMissionPlayer();
 }
-// Le cheval monté a son attaque (Idan, 2026-11-07 : « oui, il a une attaque. La seule chose, c'est le déplacement commun ») :
-// il joue juste après son cavalier, comme un mercenaire, mais sans se déplacer (le couple s'est déplacé avec le cavalier) ;
-// ni charge, ni second mouvement, ni sentinelle. Ses effets (poison…) se comptent toujours avec ceux de son cavalier.
-const missionCarried=u=>Boolean(u?.rider&&u.rider.mount===u);
-function prepareMissionMountActivation(horse){
-  Object.assign(horse,{movementRemaining:0,attackAvailable:true,quickAvailable:true,sentinel:null,secondMove:false,acted:false});
+// Le cheval monté a son attaque (Idan, 2026-11-07 : « oui, il a une attaque. La seule chose, c'est le déplacement commun » ;
+// « faut pas que l'animal joue après. Ils jouent en même temps, on rajoute des boutons.. l'attaque principale de l'animal qui
+// compte pas pour le mercenaire ») : pendant l'activation de son cavalier, le cheval a sa propre action principale et sa
+// propre action rapide (bouton « Attaque de la monture », ses sorts dans la barre de sorts) ; le déplacement est celui du
+// couple. Ses effets (poison…) se comptent avec ceux de son cavalier.
+function prepareMissionMount(rider){
+  const horse=game.mission?.engine.mountOf?.(rider);
+  if(horse) Object.assign(horse,{movementRemaining:0,attackAvailable:true,quickAvailable:true,sentinel:null,secondMove:false});
+  return horse;
 }
-function startMissionMountActivation(rider){
-  const m=game.mission,horse=m.engine.mountOf?.(rider);
-  if(!horse||!rider.alive||rider.fleeing||m.over) return false;
-  prepareMissionMountActivation(horse);
-  m.progression.recordActivation(horse);
-  m.phase="player";
-  m.activeUnit=horse;
-  m.mode=null;
-  m.aimMount=false;
-  missionLog("Activation de "+horse.character.name+".","turn");
-  renderMission();
-  return true;
-}
-// L'IA (ennemis, combat automatique) : sur place, un sort (character.aiSpells), sinon son attaque contre un ennemi à son contact.
+// L'IA (ennemis, combat automatique) : après son cavalier, sur place, un sort (character.aiSpells), sinon son attaque contre
+// un ennemi à son contact.
 function mountMissionActivation(horse){
   const m=game.mission;
   if(!horse?.alive||m.over) return;
-  prepareMissionMountActivation(horse);
   missionAiSpell(horse);
   if(!horse.alive||m.over||horse.attackAvailable===false) return;
   const near=nearestMissionTarget(horse);
@@ -857,27 +849,21 @@ function mountMissionActivation(horse){
     :missionOpponents(horse).find(o=>o.alive&&!o.offMap&&missionUsableHands(horse,o).length);
   if(foe) performMissionAttack(horse,foe,"melee",m.engine.axialDistance(horse,foe));
 }
-// Un ennemi, puis son cheval s'il est monté.
-function enemyMissionActWithMount(unit){
-  enemyMissionAct(unit);
-  const m=game.mission,horse=m?.engine.mountOf?.(unit);
-  if(!horse||!unit.alive||unit.fleeing||m.over) return;
-  m.actingUnit=horse;
-  try{ mountMissionActivation(horse); }finally{ if(game.mission) game.mission.actingUnit=null; }
-}
+
 
 // « Viser le cheval » (Idan, 2026-11-07) : au corps à corps et en charge, le prochain coup va au cheval du cavalier cliqué.
 function toggleMissionAimMount(){
   const m=game.mission,u=missionActiveUnit();
   if(!u||m.phase!=="player"||m.over) return;
   m.aimMount=!m.aimMount;
-  if(m.aimMount&&m.mode!=="melee"&&m.mode!=="charge"){ setMissionMode("melee"); return; }
+  if(m.aimMount&&!["melee","charge","mountMelee"].includes(m.mode)){ setMissionMode(u.attackAvailable?"melee":"mountMelee"); return; }
   renderMission();
 }
-function setMissionMode(mode,{twoHands=false}={}){
+function setMissionMode(mode,{twoHands=false,caster=null}={}){
   const u=missionActiveUnit();
   if(!u||game.mission.phase!=="player"||game.mission.over) return;
   game.mission.mode=mode;
+  game.mission.spellCaster=mode&&caster?caster:null;
   // « Attaquer à deux mains » (Idan, 2026-11-02) : l'attaque de mêlée, l'arme « Au choix » empoignée à deux mains.
   game.mission.twoHands=Boolean(twoHands&&mode==="melee");
   game.mission.spellTarget=null;
@@ -979,11 +965,20 @@ function settleOwnMissionMounts(m,options={}){
   const horses=missionOwnMounts(m);
   if(!horses.length||!game.campaign||typeof campaignRules!=="function") return null;
   const participants=horses.map(u=>({id:u.character.mount.itemId,name:u.character.name,hp:u.hp,pvMax:u.pvMax,damageTaken:u.damageTaken,
-    stats:{...u.character.stats,Endurance:m.engine.statWithGear(u,"Endurance"),"Volonté":m.engine.statWithGear(u,"Volonté")},offMap:u.offMap}));
+    stats:{...u.character.stats,Endurance:m.engine.statWithGear(u,"Endurance"),"Volonté":m.engine.statWithGear(u,"Volonté")},offMap:u.offMap,
+    progress:u.progress||null}));
   const aftermath=m.endRules.resolveMissionEnd(participants,options);
   m.mountAftermath=aftermath;
   for(const r of aftermath.results) missionLog(r.name+" — "+missionAftermathText(r)+(r.dead?" : la monture est perdue.":""),r.dead?"death":r.wounded?"bad":"info");
-  return campaignRules().applyMountAftermath(game.campaign,aftermath.results);
+  // Son mana à la fin du combat (gardé jusqu'au prochain), son XP (sa fiche progresse comme celle d'un mercenaire).
+  const results=aftermath.results.map((r,i)=>({...r,mana:horses[i].character.mana}));
+  const report=campaignRules().applyMountAftermath(game.campaign,results);
+  for(const {mount,changes} of report?.progression||[]){
+    const name=horses.find(u=>String(u.character.mount.itemId)===String(mount.id))?.character.name||mount.name;
+    for(const c of (typeof visibleProgressionChanges==="function"?visibleProgressionChanges(changes):[]))
+      missionLog(name+" : "+c.name+" "+c.shownBefore+" → "+c.shownAfter+".",c.shownAfter>c.shownBefore?"gear":"bad");
+  }
+  return report;
 }
 function admitMissionMounts(captured){
   const stable=missionStableRules();
@@ -1682,7 +1677,7 @@ function handleMissionHexClick(q,r){
   if(spellCode){
     const spell=missionMagic()?.spell(spellCode);
     if(spell?.effet==="deplacement_force"||spell?.effet==="degats_paire"){ handleMissionTwoStepSpell(spell,q,r,clicked); return; }
-    const target=spell?.cible==="case"||spell?.cible==="case_vide"?{q,r}:spell?.cible==="soi"?u
+    const target=spell?.cible==="case"||spell?.cible==="case_vide"?{q,r}:spell?.cible==="soi"?missionSpellUnit()
       :spell?.cible==="mort"?missionUnits().find(x=>missionMagic().isCorpse(x)&&x.q===q&&x.r===r):clicked;
     if(target) castPlayerMissionSpell(target);
     return;
@@ -1692,6 +1687,16 @@ function handleMissionHexClick(q,r){
   const distance=m.engine.axialDistance(u,clicked);
   const victim=missionAimed(clicked);
 
+  if(m.mode==="mountMelee"){
+    const horse=m.engine.mountOf?.(u);
+    if(!horse?.attackAvailable||!missionCanAttack(horse,victim,"melee")) return;
+    horse.attackAvailable=false;
+    m.mode=null;
+    performMissionAttack(horse,victim,"melee",m.engine.axialDistance(horse,victim));
+    if(missionActiveUnitLost()) return;
+    renderMission();
+    return;
+  }
   if(m.mode==="melee"){
     // Hors d'atteinte : il s'approche d'abord, par le plus court chemin, puis frappe s'il le peut encore.
     const approach=missionCanAttack(u,victim,"melee")?null:missionMeleeApproach(u,victim);
@@ -1720,7 +1725,7 @@ function handleMissionHexClick(q,r){
 // Activation hexagonale V1 : l'Attaque peut être sacrifiée pour une seconde action de Mouvement.
 function missionSecondMove(){
   const u=missionActiveUnit(),m=game.mission;
-  if(!u||!u.attackAvailable||m.phase!=="player"||m.over||missionCarried(u)) return;
+  if(!u||!u.attackAvailable||m.phase!=="player"||m.over) return;
   u.attackAvailable=false;
   u.secondMove=true;
   u.movementRemaining+=m.engine.movementBase(u);
@@ -1763,6 +1768,11 @@ function missionMagic(){
 function missionSpellMode(){
   const mode=String(game.mission?.mode||"");
   return mode.startsWith("spell:")?mode.slice(6):null;
+}
+// Qui lance le sort choisi : l'actif, ou sa monture (un sort de la monture, dans la barre de sorts de son cavalier).
+function missionSpellUnit(){
+  const m=game.mission,u=missionActiveUnit();
+  return m?.spellCaster==="mount"&&missionSpellMode()?(m.engine.mountOf?.(u)||u):u;
 }
 function missionSelf(unit){ return String(unit?.character?.sex||"").trim().toLowerCase().startsWith("f")?"elle-même":"lui-même"; }
 
@@ -2399,7 +2409,7 @@ function maintainMissionSummons(){
 }
 
 function castPlayerMissionSpell(target,extra={}){
-  const m=game.mission,u=missionActiveUnit(),code=missionSpellMode();
+  const m=game.mission,u=missionSpellUnit(),code=missionSpellMode();
   if(!u||!code) return;
   if(missionMagic()?.spell(code)?.cible==="soi"&&target!==u) return;
   m.mode=null;
@@ -2712,7 +2722,7 @@ function missionForcedMove(unit,out,caster){
 // Déplacement et Entrechoc (Télékinésie) : deux clics. D'abord la cible ; puis la case libre où la pousser
 // (Déplacement) ou l'ennemi voisin à frapper avec elle (Entrechoc).
 function missionTwoStepTargets(spell){
-  const m=game.mission,u=missionActiveUnit(),magic=missionMagic(),set=new Set(),first=m.spellTarget;
+  const m=game.mission,u=missionSpellUnit(),magic=missionMagic(),set=new Set(),first=m.spellTarget;
   if(!u||!magic) return set;
   if(first?.alive){
     if(spell.effet==="deplacement_force"){
@@ -2968,6 +2978,31 @@ const MISSION_GRIMOIRE_MIN=9;
 function renderMissionSpellBar(u){
   const m=game.mission,magic=missionMagic();
   if(!u||m.phase!=="player"||m.over) return "";
+  return renderMissionOwnSpellBar(u)+renderMissionMountSpells(u);
+}
+// Les sorts de la monture (la licorne : Création de double) : son mana, ses actions.
+function renderMissionMountSpells(u){
+  const m=game.mission,magic=missionMagic(),horse=m.engine.mountOf?.(u);
+  const spells=horse&&magic?magic.knownSpells(horse):[];
+  if(!spells.length) return "";
+  const button=s=>missionSpellButton(horse,s,"mount");
+  return `<span class="mission-mana">${esc(horse.character.name.split(" ")[0])} · mana ${Math.floor(magic.currentMana(horse))}/${Math.round(magic.manaMax(horse))}</span>`
+    +spells.map(button).join("");
+}
+function missionSpellButton(u,s,caster=null){
+  const m=game.mission,magic=missionMagic(),mana=magic.currentMana(u);
+  const cost=magic.manaCost(u,s.code),p=magic.castChance(u,s.code).p,quick=s.action==="rapide";
+  const used=quick?u.quickAvailable===false:u.attackAvailable===false;
+  const reason=used?(quick?"Action rapide déjà utilisée.":"Action principale déjà utilisée."):mana<cost?"Pas assez de mana.":"";
+  const title=s.nom+" — "+(quick?"action rapide":"action principale")+" · "+cost+" mana · "+Math.round(p)+" % de réussite\n"
+    +s.description+(reason?"\n"+reason:"");
+  const selected=m.mode==="spell:"+s.code&&(m.spellCaster||null)===caster;
+  return `<button class="secondary mission-spell${selected?" selected":""}" data-spell="${esc(s.code)}"${caster?` data-spell-caster="${caster}"`:""} title="${esc(title)}"${reason?" disabled":""}>`
+    +`${typeof spellIconHtml==="function"?spellIconHtml(s):""}`
+    +`<span class="mission-spell-text">${esc(s.nom)}<small>${quick?"rapide":"principale"} · ${cost} mana · ${Math.round(p)} %</small></span></button>`;
+}
+function renderMissionOwnSpellBar(u){
+  const m=game.mission,magic=missionMagic();
   if(!magic) return renderMissionPotionButtons(u);
   const spells=magic.knownSpells(u);
   // Crachat de venin reçu : un bouton de tir, même sans sort connu.
@@ -2977,16 +3012,7 @@ function renderMissionSpellBar(u){
   const potions=renderMissionPotionButtons(u);
   if(!spells.length) return venom+potions;
   const mana=magic.currentMana(u);
-  const button=s=>{
-    const cost=magic.manaCost(u,s.code),p=magic.castChance(u,s.code).p,quick=s.action==="rapide";
-    const used=quick?u.quickAvailable===false:u.attackAvailable===false;
-    const reason=used?(quick?"Action rapide déjà utilisée.":"Action principale déjà utilisée."):mana<cost?"Pas assez de mana.":"";
-    const title=s.nom+" — "+(quick?"action rapide":"action principale")+" · "+cost+" mana · "+Math.round(p)+" % de réussite\n"
-      +s.description+(reason?"\n"+reason:"");
-    return `<button class="secondary mission-spell${m.mode==="spell:"+s.code?" selected":""}" data-spell="${esc(s.code)}" title="${esc(title)}"${reason?" disabled":""}>`
-      +`${typeof spellIconHtml==="function"?spellIconHtml(s):""}`
-      +`<span class="mission-spell-text">${esc(s.nom)}<small>${quick?"rapide":"principale"} · ${cost} mana · ${Math.round(p)} %</small></span></button>`;
-  };
+  const button=s=>missionSpellButton(u,s);
   const head=`<span class="mission-mana">Mana ${Math.floor(mana)}/${Math.round(magic.manaMax(u))}</span>`;
   if(spells.length<MISSION_GRIMOIRE_MIN) return head+spells.map(button).join("")+venom+potions;
   // Beaucoup de sorts : le grimoire se range par école, un onglet par école (les boutons restent tous dans la page).
@@ -3177,14 +3203,17 @@ function enemyMissionAct(unit,options={}){
   game.mission.actingUnit=unit;
   try{ enemyMissionActivation(unit,options); }
   finally{ if(game.mission) game.mission.actingUnit=null; }
+  // Son cheval monté, dans la même activation.
+  const m=game.mission,horse=m?.engine.mountOf?.(unit);
+  if(!horse||!unit.alive||unit.fleeing||m.over||unit.decoy) return;
+  m.actingUnit=horse;
+  try{ mountMissionActivation(horse); }finally{ if(game.mission) game.mission.actingUnit=null; }
 }
 
 // reset : false pour un mercenaire dont selectNextMissionPlayer vient de commencer l'activation (combat automatique) ;
 // sinon le poison, la régénération et les effets à durée compteraient deux fois.
 function enemyMissionActivation(unit,{reset=true}={}){
   if(!unit.alive||game.mission.over||unit.decoy) return;
-  // Le cheval monté de notre équipe, en combat automatique : sur place.
-  if(missionCarried(unit)){ mountMissionActivation(unit); return; }
   if(reset) resetMissionActivation(unit);
   // L'IA empoigne une arme « Au choix » à deux mains quand Combat à deux mains vaut au moins Combat à une main.
   unit.twoHandGrip=game.mission.engine.prefersTwoHands(unit);
@@ -3306,7 +3335,7 @@ function runMissionEnemyTurn(){
   if(!missionPaced()){
     for(const unit of m.enemyOrder){
       if(m.over) break;
-      enemyMissionActWithMount(unit);
+      enemyMissionAct(unit);
     }
     finishMissionEnemyTurn();
     return;
@@ -3322,7 +3351,7 @@ function stepMissionEnemyTurn(m){
     const unit=m.enemyQueue.shift();
     if(!unit.alive||unit.decoy) continue;
     m.pacedUnit=unit;
-    enemyMissionActWithMount(unit);
+    enemyMissionAct(unit);
     const wait=missionFxEstimate(m.fx)+(game.missionFast?MISSION_PACE.fastPause:MISSION_PACE.pause);
     renderMission();
     m.enemyTimer=setTimeout(()=>stepMissionEnemyTurn(m),wait);
@@ -3438,17 +3467,19 @@ function missionMeleeApproach(u,target,reach=null){
 function missionActionAvailability(){
   const u=missionActiveUnit(),m=game.mission;
   if(!u||!m||m.phase!=="player"||m.over) return {};
-  const e=m.engine,w=e.weaponTemplate(e.activeWeaponItem(u)),carried=missionCarried(u);
+  const e=m.engine,w=e.weaponTemplate(e.activeWeaponItem(u)),horse=e.mountOf?.(u);
   return {
-    move:!carried&&u.movementRemaining>0,
+    move:u.movementRemaining>0,
     melee:u.attackAvailable&&missionHeldModes(u).has("melee"),
     twoHands:u.attackAvailable&&missionHeldModes(u).has("melee")&&e.canGripTwoHands(u),
     ranged:u.attackAvailable&&missionHeldModes(u).has("ranged"),
-    sentinel:!carried&&missionCanStandSentinel(u),
-    charge:!carried&&u.attackAvailable&&e.isMeleeWeapon(w)&&u.movementRemaining===e.movementBase(u),
+    sentinel:missionCanStandSentinel(u),
+    charge:u.attackAvailable&&e.isMeleeWeapon(w)&&u.movementRemaining===e.movementBase(u),
+    // L'attaque de sa monture : son action principale à elle.
+    mountMelee:Boolean(horse?.attackAvailable&&missionHeldModes(horse).has("melee")),
     switch:u.quickAvailable&&e.canSwitchWeaponSet(u),
     reload:u.quickAvailable&&e.canReload(u),
-    secondMove:!carried&&u.attackAvailable,
+    secondMove:u.attackAvailable,
     end:true,
     auto:true,
     testSpells:Boolean(missionMagic())&&!m.testSpells
@@ -3459,7 +3490,7 @@ function missionActionAvailability(){
 // surbrillance pour la portée ») : les cases à portée de l'arme (au corps à corps, à distance), de la charge (de 1 à 2 fois le
 // mouvement de base, plus la case de la cible) ou du sort choisi ; le déplacement garde ses cases atteignables.
 function missionRangeCells(){
-  const set=new Set(),m=game.mission,u=missionActiveUnit();
+  const set=new Set(),m=game.mission,u=missionSpellUnit();
   if(!m||!u||m.phase!=="player"||!m.mode||m.mode==="move") return set;
   const e=m.engine,add=within=>{ for(const c of missionCells()){ const d=e.axialDistance(u,c); if(d>0&&within(d)) set.add(missionKey(c.q,c.r)); } };
   const spellCode=missionSpellMode(),magic=missionMagic();
@@ -3473,6 +3504,11 @@ function missionRangeCells(){
   if(m.mode==="charge"){
     const base=e.movementBase(u);
     add(d=>d-1>=base&&d-1<=2*base);
+    return set;
+  }
+  if(m.mode==="mountMelee"){
+    const horse=e.mountOf?.(u);
+    if(horse) add(d=>e.usableHands(horse,d).some(h=>h.mode==="melee"));
     return set;
   }
   if(m.mode==="melee"||m.mode==="ranged"){
@@ -3496,7 +3532,7 @@ function missionSpellAreaCells(u,code,target){
 }
 
 function targetableMissionCells(){
-  const set=new Set(),m=game.mission,u=missionActiveUnit();
+  const set=new Set(),m=game.mission,u=missionSpellUnit();
   if(!m||!u||m.phase!=="player") return set;
 
   if(m.mode==="move"){
@@ -3528,7 +3564,9 @@ function targetableMissionCells(){
   }
 
   const reach=m.mode==="melee"&&u.movementRemaining>0?missionReachablePaths(u,u.movementRemaining):null;
+  const horse=m.mode==="mountMelee"?m.engine.mountOf?.(u):null;
   for(const enemy of livingMissionUnits("enemy")){
+    if(horse&&missionCanAttack(horse,enemy,"melee")) set.add(missionKey(enemy.q,enemy.r));
     if((m.mode==="melee"||m.mode==="ranged")&&missionCanAttack(u,enemy,m.mode)) set.add(missionKey(enemy.q,enemy.r));
     // En se déplaçant d'abord (Idan, 2026-11-04).
     else if(reach&&missionMeleeApproach(u,enemy,reach)) set.add(missionKey(enemy.q,enemy.r));
@@ -3751,8 +3789,7 @@ function renderMission(){
     const pct=Math.max(0,Math.min(100,Math.round(unit.hp/unit.pvMax*100)));
     const classes=["mission-token",unit.team,unit.alive?"alive":"down"];
     if(large) classes.push("size-"+m.engine.sizeOf(unit));
-    // Le cheval monté joue sous son cavalier : leur pion est le sien.
-    if(u===unit||m.pacedUnit===unit||(u&&missionCarried(u)&&u.rider===unit)) classes.push("active");
+    if(u===unit||m.pacedUnit===unit) classes.push("active");
     const encircled=unit.alive&&missionEncircled(unit);
     if(encircled) classes.push("encircled");
     if(unit.alive&&unit.fleeing) classes.push("fleeing");
@@ -3790,7 +3827,7 @@ function renderMission(){
 
   const availability=missionActionAvailability();
   const buttons=[
-    ["mission-move-btn","move"],["mission-attack-btn","melee"],["mission-charge-btn","charge"],
+    ["mission-move-btn","move"],["mission-attack-btn","melee"],["mission-charge-btn","charge"],["mission-mount-attack-btn","mountMelee"],
     ["mission-switch-btn","switch"],["mission-reload-btn","reload"],["mission-ranged-btn","ranged"],["mission-sentinel-btn","sentinel"],["mission-second-move-btn","secondMove"],["mission-end-activation-btn","end"],["mission-auto-btn","auto"]
   ];
   for(const [id,key] of buttons){
@@ -3809,9 +3846,11 @@ function renderMission(){
   if(aimBtn){
     const riders=Boolean(u)&&missionOpponents(u).some(o=>!o.offMap&&e.mountOf?.(o));
     aimBtn.classList.toggle("hidden",!riders);
-    aimBtn.disabled=!(riders&&u.attackAvailable&&m.phase==="player"&&!m.over);
+    aimBtn.disabled=!(riders&&(u.attackAvailable||availability.mountMelee)&&m.phase==="player"&&!m.over);
     aimBtn.classList.toggle("selected",Boolean(m.aimMount));
   }
+  // L'attaque de sa monture (Idan, 2026-11-07) : seulement pour un cavalier.
+  $("mission-mount-attack-btn")?.classList.toggle("hidden",!(u&&e.mountOf?.(u)));
   $("mission-test-spells-btn").disabled=!availability.testSpells;
   // « Accélérer » : pendant le tour ennemi, la pause entre deux ennemis raccourcit (MISSION_PACE).
   const speedBtn=$("mission-speed-btn");
@@ -4041,7 +4080,7 @@ function renderMissionHoverCard(q,r){
   const spellCode=missionSpellMode(),magic=missionMagic();
   if(u&&spellCode&&magic&&targets.has(key)){
     const spell=magic.spell(spellCode);
-    html+=`<div class="hc-attack hc-spell"><em>${esc(spell?.nom||"Sort")}</em><dl>${missionSpellPreviewRows(u,spellCode,q,r)}</dl></div>`;
+    html+=`<div class="hc-attack hc-spell"><em>${esc(spell?.nom||"Sort")}</em><dl>${missionSpellPreviewRows(missionSpellUnit(),spellCode,q,r)}</dl></div>`;
   }
   if(u&&m.mode==="move"&&targets.has(key)){
     const path=shortestMissionPath(u,{q,r},u)||[],risk=missionPathOpportunityCount(u,path);
@@ -4126,7 +4165,7 @@ function showMissionHover(q,r){
   });
   // Un sort de zone : la zone qu'il toucherait, au survol d'une case qu'il peut viser.
   const spellCode=missionSpellMode();
-  if(u&&spellCode&&targetableMissionCells().has(key)) for(const c of missionSpellAreaCells(u,spellCode,{q,r})) missionHexCell(c)?.classList.add("aoe");
+  if(u&&spellCode&&targetableMissionCells().has(key)) for(const c of missionSpellAreaCells(missionSpellUnit(),spellCode,{q,r})) missionHexCell(c)?.classList.add("aoe");
   if(u&&m.mode==="move"&&targetableMissionCells().has(key)){
     const path=shortestMissionPath(u,{q,r},u)||[];
     path.forEach((c,i)=>{
@@ -4175,6 +4214,7 @@ function initializeMissionUi(){
   $("mission-attack-btn").addEventListener("click",()=>setMissionMode("melee"));
   $("mission-two-hands-btn").addEventListener("click",()=>setMissionMode("melee",{twoHands:true}));
   $("mission-aim-mount-btn")?.addEventListener("click",toggleMissionAimMount);
+  $("mission-mount-attack-btn")?.addEventListener("click",()=>setMissionMode(game.mission?.mode==="mountMelee"?null:"mountMelee"));
   $("mission-charge-btn").addEventListener("click",()=>setMissionMode("charge"));
   $("mission-ranged-btn").addEventListener("click",()=>setMissionMode("ranged"));
   $("mission-sentinel-btn").addEventListener("click",standMissionSentinel);
@@ -4196,8 +4236,9 @@ function initializeMissionUi(){
     if(venom){ if(!venom.disabled) setMissionMode(game.mission?.mode==="venom"?null:"venom"); return; }
     const button=event.target.closest("[data-spell]");
     if(!button||button.disabled) return;
-    const mode="spell:"+button.dataset.spell;
-    setMissionMode(game.mission?.mode===mode?null:mode);
+    const mode="spell:"+button.dataset.spell,caster=button.dataset.spellCaster||null;
+    const same=game.mission?.mode===mode&&(game.mission.spellCaster||null)===caster;
+    setMissionMode(same?null:mode,{caster});
   });
   $("mission-leave-btn").addEventListener("click",leaveMission);
   $("mission-result-back-btn").addEventListener("click",leaveMission);

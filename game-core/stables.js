@@ -20,7 +20,10 @@
 //   mission. Si le cavalier meurt, elle repart dans l'enclos et peut être attribuée à un autre mercenaire. Globalement, elle
 //   a la même fiche qu'un mercenaire. ») : la chaîne de fin de mission de nos mercenaires (mort → blessure → fatigue,
 //   mission-end.js), puis le repos (item.recovery, un jour de moins chaque matin) ; au repos, elle ne part pas en mission ;
-//   son cavalier mort, elle retourne à l'Intendance, sans propriétaire (un autre devra l'apprivoiser).
+//   son cavalier mort, elle retourne à l'Intendance, sans propriétaire (un autre devra l'apprivoiser) ;
+// - sa fiche à elle (item.sheet : caractéristiques, résistances, compétences, sorts, XP, mana), créée depuis mounts.json
+//   la première fois qu'on en a besoin : elle progresse avec l'XP de ses combats et garde son mana d'un combat à l'autre
+//   (Idan, 2026-11-07 : « Mana de la licorne + xp licorne »), comme un mercenaire.
 // Module pur ; makeItem(type, nom) fabrique l'objet (le générateur).
 (function(root,factory){
   // Le jet de mort (mission-end.js) : lu au moment de créer les règles, le script peut se charger après celui-ci.
@@ -35,6 +38,7 @@
 
   function createStableRules({reference,random=Math.random,camp={},makeItem=null}={}){
     const sheets=new Map(rows(reference?.mounts).map(s=>[s.code,s]));
+    const spellRows=new Map(rows(reference?.spells).map(s=>[s.code,s]));
     const stablesRow=rows(reference?.campBuildings).find(r=>r.code===STABLES)||null;
     const MissionEnd=missionEnd();
     const endRules=MissionEnd?MissionEnd.createMissionEndRules({reference,random}):null;
@@ -107,6 +111,17 @@
     // Fin de mission de nos montures : results de resolveMissionEnd (id = celui de l'objet monture) ; days : les durées au
     // camp (Dispensaire, médecin, bains chauds), comme pour nos mercenaires.
     const mountById=(state,id)=>mountsOf(state).find(i=>String(i.id)===String(id))||null;
+    function ownSheet(item){
+      if(!isMount(item)) return null;
+      if(item.sheet) return item.sheet;
+      const s=sheetOf(item);
+      if(!s) return null;
+      item.sheet={stats:{...(s.caracteristiques||{})},resistances:{...(s.resistances||{})},
+        skills:{martial:{...(s.competences_martiales||{})},magic:{...(s.competences_magiques||{})}},
+        spells:(s.sorts||[]).map(x=>({code:x.code,name:spellRows.get(x.code)?.nom||x.code,school:spellRows.get(x.code)?.ecole||null,
+          mastery:Number(x.maitrise)||1})),xp:{}};
+      return item.sheet;
+    }
     function remove(state,item){
       const company=state.company;
       company.stock=(company.stock||[]).filter(i=>i!==item);
@@ -116,12 +131,19 @@
         for(const [slot,id] of Object.entries(m.equipment?.slots||{})) if(String(id)===String(item.id)) m.equipment.slots[slot]=null;
       }
     }
-    function applyAftermath(state,results=[],{woundDays=d=>d,fatigueDays=d=>d}={}){
-      const report={dead:[],wounded:[],fatigued:[]};
+    // learn(sheet, progress) : l'XP de son combat sur sa fiche (progression.js) ; r.mana : son mana à la fin du combat.
+    function applyAftermath(state,results=[],{woundDays=d=>d,fatigueDays=d=>d,learn=null}={}){
+      const report={dead:[],wounded:[],fatigued:[],progression:[]};
       for(const r of results||[]){
         const item=mountById(state,r.id);
         if(!item) continue;
         if(r.dead){ remove(state,item); report.dead.push(item); continue; }
+        const sheet=ownSheet(item);
+        if(sheet&&Number.isFinite(Number(r.mana))) sheet.mana=Number(r.mana);
+        if(sheet&&learn&&r.progress){
+          const changes=learn(sheet,r.progress)||[];
+          if(changes.length) report.progression.push({mount:item,changes});
+        }
         item.recovery=r.wounded?{kind:"wounded",daysLeft:woundDays(r.woundDays),sinceDay:state.day}
           :{kind:"fatigued",daysLeft:fatigueDays(r.fatigueDays),sinceDay:state.day};
         report[r.wounded?"wounded":"fatigued"].push(item);
@@ -152,7 +174,7 @@
     }
 
     return {BARN,STABLES,sheet,sheetOf,isMount,mountsOf,ownerOf,places,free,canStore,upkeepOf,upkeep,payUpkeep,rollSurvival,capturable,admit,release,
-      applyAftermath,recoverOneDay,returnToStable};
+      applyAftermath,recoverOneDay,returnToStable,ownSheet};
   }
 
   return {createStableRules,BARN,STABLES,isMount};

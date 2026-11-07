@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 392,
+  "row_count": 395,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -3168,6 +3168,30 @@
       "description": "Montures (Idan, 2026-11-07 : « la valeur d'un animal soit de 300 x coût d'entretien ») : valeur cachée d'une monture = ce nombre × son entretien journalier (mounts.json) ; les marchands l'achètent et la vendent à leurs prix habituels (doc 18).",
       "formule": "Économie",
       "valeur": 300,
+      "version": "V1"
+    },
+    {
+      "nom": "Apprivoiser — centre",
+      "code": "taming.daily.center",
+      "description": "Apprivoiser (Idan, 2026-11-07 : « chaque jour tenter de réussir un jet en fonction de 5 caracs ( intelligence/ charisme/ intimidation/ animal/ animal spécifique) Le dresseur offre un bonus ») : X = moyenne des 5 + bonus du Dresseur ; chance du jour = 100 / (1 + e^(−(X − ce nombre) / pente)) : 50 % à ce niveau.",
+      "formule": "Monture",
+      "valeur": 60,
+      "version": "V1"
+    },
+    {
+      "nom": "Apprivoiser — pente",
+      "code": "taming.daily.slope",
+      "description": "Apprivoiser : la pente de la courbe (taming.daily.center) ; 10 points de X de plus ou de moins font passer de 50 % à environ 73 % ou 27 %.",
+      "formule": "Monture",
+      "valeur": 10,
+      "version": "V1"
+    },
+    {
+      "nom": "Apprivoiser — bonus du Dresseur",
+      "code": "taming.trainer.divisor",
+      "description": "Apprivoiser : bonus du Dresseur (le maître de la Grange du dresseur, s'il n'est pas l'élève) = (Compagnon animal + Intelligence + Charisme + Intimidation) ÷ ce nombre, environ +10 points de X.",
+      "formule": "Monture",
+      "valeur": 20,
       "version": "V1"
     }
   ]

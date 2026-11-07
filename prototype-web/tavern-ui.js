@@ -183,6 +183,7 @@ function logDayReport(report){
   for(const r of report.recovered) tavernLog(r.mercenary.name+(r.kind==="wounded"?" est guéri de ses blessures.":" est reposé."),"turn");
   if(report.salaries.total) tavernLog("Salaires : −"+fmt(report.salaries.total)+" PO.","gear");
   if(typeof logStableUpkeep==="function") logStableUpkeep(report.stable);
+  if(typeof logTaming==="function") logTaming(report.taming);
   const gone=report.tavern.departures.map(d=>d.candidate.mercenary.name);
   const arrived=report.tavern.arrivals.map(a=>a.mercenary.name);
   if(gone.length) tavernLog("Engagés ailleurs pendant la nuit : "+gone.join(", ")+".","bad");

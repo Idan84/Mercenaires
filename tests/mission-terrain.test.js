@@ -162,8 +162,9 @@ const elements = {};
 const $ = id => elements[id] || (elements[id] = element());
 const game = {campaign: null, captain, referenceData: reference};
 let api = null;
-const engine = createCombatEngine(reference, {onAttack: Progression.recordAttack, heightOf: u => api.missionUnitHeight(u)});
+// Le hasard du test avant le moteur (qui garde Math.random à sa création) : les combats se rejouent à l'identique.
 Math.random = random;
+const engine = createCombatEngine(reference, {onAttack: Progression.recordAttack, heightOf: u => api.missionUnitHeight(u)});
 api = new Function("game", "$", "esc", "fmt", "renderAvatar", "combatEngine", "MercenairesProgression", "MercenairesMissionEnd",
   "MercenairesMagic", "MercenairesMissionTerrain", mission + "\nreturn {makeMissionUnit,sortMissionInitiative,selectNextMissionPlayer,"
   + "startMissionCamouflage,autoResolveMission,setMissionMapSize,placeMissionArmy,missionTerrain,missionUnitHeight};")

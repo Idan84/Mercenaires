@@ -55,6 +55,9 @@ function rosterStatus(c){
   // Empoisonnement des armes au Labo (Idan, 2026-11-03).
   const poisonStudy=game.campaign&&typeof campaignRules==="function"&&campaignRules().poisonStudy?campaignRules().poisonStudy.studyOf(game.campaign,c.id):null;
   if(poisonStudy) return campaignRules().poisonStudy.isPlanned(poisonStudy)?{kind:"available",label:"Entre au Labo demain"}:{kind:"steward",label:"Apprend l’empoisonnement"};
+  // Apprivoise sa monture à la Grange du dresseur (Idan, 2026-11-07).
+  const taming=game.campaign&&typeof campaignRules==="function"&&campaignRules().tamingRules?campaignRules().tamingRules.tamingOf(game.campaign,c.id):null;
+  if(taming) return campaignRules().tamingRules.isPlanned(taming)?{kind:"available",label:"Entre à la Grange demain"}:{kind:"steward",label:"Apprivoise sa monture"};
   // Bûcheron du jour, ou de demain (Idan, 2026-11-03).
   const lumber=game.campaign&&typeof campaignRules==="function"&&campaignRules().lumberjacks?campaignRules().lumberjacks.busyReason(game.campaign,c.id):null;
   if(lumber) return lumber.includes("demain")?{kind:"available",label:"Bûcheronne demain"}:{kind:"steward",label:"Bûcheronne"};
@@ -1365,6 +1368,11 @@ function historyEntryText(c,entry){
   if(entry.kind==="poison_study") return fill(copy.poison_study?.[entry.accepted?"accord":"refus"]);
   if(entry.kind==="poison_study_done") return fill(copy.poison_study_done,{jours:historyPlural(entry.days||0,"jour","jours")});
   if(entry.kind==="poison_study_stopped") return fill(copy.poison_study_stopped);
+  // Apprivoiser une monture à la Grange du dresseur (Idan, 2026-11-07).
+  const monture=/^licorne$/i.test(entry.mount||"")?"sa licorne":"son "+String(entry.mount||"").toLocaleLowerCase("fr");
+  if(entry.kind==="taming") return fill(copy.taming,{monture});
+  if(entry.kind==="taming_done") return fill(copy.taming_done,{monture,jours:historyPlural(entry.days||0,"jour","jours")});
+  if(entry.kind==="taming_stopped") return fill(copy.taming_stopped,{monture});
   if(entry.kind==="perfect") return fill(copy.perfect,{sort:entry.spell||"",avant:fmt(entry.before||0),apres:fmt(entry.after||0)});
   if(entry.kind==="teach") return fill(copy.teach?.[entry.accepted?"accord":"refus"],{sort:entry.spell||"",eleve:entry.student||""});
   if(entry.kind==="teach_done") return fill(copy.teach_done,{sort:entry.spell||"",eleve:entry.student||""});

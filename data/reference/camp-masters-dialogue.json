@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "camp-masters-dialogue",
-  "description": "Maîtres des bâtiments d’entraînement (Idan, 2026-11-03 : « Oui pour les maîtres ») : le Doctore au Ludus, le Vétéran à l’Académie de la survie, le Maître des lames au Cercle des Fines Lames, nommés comme le directeur de l’École (school-director-dialogue.json). common : le panneau, les refus neutres, le retour sur le terrain ; masters : ce qui est propre à chacun (remplace common). Humeur d’un refus : flattered, vexed, neutral. {prenom} ; {masculin|féminin} selon celui qui parle ou dont on parle ; {jours}. Textes de JC, à retoucher librement.",
+  "description": "Maîtres des bâtiments d’entraînement (Idan, 2026-11-03 : « Oui pour les maîtres ») : le Doctore au Ludus, le Vétéran à l’Académie de la survie, le Maître des lames au Cercle des Fines Lames, le Dresseur à la Grange du dresseur (Idan, 2026-11-07), nommés comme le directeur de l’École (school-director-dialogue.json). common : le panneau, les refus neutres, le retour sur le terrain ; masters : ce qui est propre à chacun (remplace common). Humeur d’un refus : flattered, vexed, neutral. {prenom} ; {masculin|féminin} selon celui qui parle ou dont on parle ; {jours}. Textes de JC, à retoucher librement.",
   "common": {
     "panel": {
       "asked_today": "déjà sollicité aujourd’hui",
@@ -201,6 +201,38 @@
       "recall": {
         "outcome_accepted": "{prenom} retourne sur le terrain : le Palais n’a plus de Maître des plaisirs.",
         "outcome_refused": "{prenom} reste au Palais des plaisirs."
+      }
+    },
+    "trainer": {
+      "label": "{Dresseur|Dresseuse}",
+      "origin": "Grange du dresseur",
+      "panel": {
+        "title": "Le Dresseur",
+        "appoint": "Nommer un Dresseur",
+        "appoint_tip": "Le mercenaire choisi peut refuser le poste. Il quittera le terrain pour la Grange du dresseur."
+      },
+      "offer": {
+        "proposal": "La Grange a besoin de quelqu’un qui parle aux bêtes. Vous avez la main pour ça : ça vous dit ?",
+        "accepted": [
+          "Des chevaux plutôt que des orcs ? Ça me va, capitaine.",
+          "Les bêtes, au moins, ne mentent pas. J’accepte.",
+          "Quelqu’un doit bien leur apprendre qui commande. Je prends la Grange."
+        ],
+        "flattered": [
+          "Dresseur, moi ? C’est flatteur… mais je préfère encore le champ de bataille.",
+          "Je saurais les tenir, c’est sûr. Mais pas tant que je tiens une arme.",
+          "Redemandez-moi quand j’aurai fini de faire mes preuves dehors."
+        ],
+        "vexed": [
+          "Ramasser le crottin pendant que les autres se battent ? Non merci.",
+          "Vous me trouvez juste bon à soigner des canassons ? Charmant.",
+          "M’enfermer dans une grange ? Je m’en souviendrai."
+        ],
+        "outcome_accepted": "{prenom} prend la Grange du dresseur en main."
+      },
+      "recall": {
+        "outcome_accepted": "{prenom} retourne sur le terrain : la Grange n’a plus de Dresseur.",
+        "outcome_refused": "{prenom} reste à la Grange du dresseur."
       }
     }
   }

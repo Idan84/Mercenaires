@@ -261,7 +261,9 @@
       return {id,name:name||s.nom,role:s.nom,people:"",mount:{code:s.code,capturable:s.capturable!==false},
         gabarit:Number(s.gabarit)||1,taille:s.taille||"normale",mountSkill:s.espece||null,
         stats:{...s.caracteristiques},resistances:{...s.resistances},
-        skills:{martial:{...(s.competences_martiales||{})},animal:{},social:{},magic:{}},spells:[],
+        skills:{martial:{...(s.competences_martiales||{})},animal:{},social:{},magic:{...(s.competences_magiques||{})}},
+        // Ses sorts, comme un mercenaire (la licorne : Création de double) ; l'IA les essaie dans l'ordre.
+        spells:(s.sorts||[]).map(x=>({code:x.code,mastery:Number(x.maitrise)||1})),aiSpells:(s.sorts||[]).map(x=>x.code),
         items:[weapon],equipment:{slots:{weapon_set_1_main:weapon.id},profile:{type:"melee"}}};
     }
 

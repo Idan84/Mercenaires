@@ -405,7 +405,8 @@ function missionMountOf(character){
   if(character?.mountCode) return {code:character.mountCode,item:null};
   const id=character?.equipment?.slots?.mount;
   const item=id==null?null:(character.items||[]).find(i=>String(i.id)===String(id)&&i.itemType==="mount");
-  return item?.mountCode&&item.tamedBy===character.id?{code:item.mountCode,item}:null;
+  // Au repos (blessée ou fatiguée, stables.js) : il part à pied.
+  return item?.mountCode&&item.tamedBy===character.id&&!item.recovery?{code:item.mountCode,item}:null;
 }
 function attachMissionMount(unit){
   const own=missionMountOf(unit.character),code=own?.code,rules=typeof missionRules==="function"?missionRules():null,e=combatEngine();
@@ -821,7 +822,48 @@ function endMissionActivation(){
   u.acted=true;
   game.mission.activeUnit=null;
   game.mission.mode=null;
+  if(startMissionMountActivation(u)) return;
   selectNextMissionPlayer();
+}
+// Le cheval monté a son attaque (Idan, 2026-11-07 : « oui, il a une attaque. La seule chose, c'est le déplacement commun ») :
+// il joue juste après son cavalier, comme un mercenaire, mais sans se déplacer (le couple s'est déplacé avec le cavalier) ;
+// ni charge, ni second mouvement, ni sentinelle. Ses effets (poison…) se comptent toujours avec ceux de son cavalier.
+const missionCarried=u=>Boolean(u?.rider&&u.rider.mount===u);
+function prepareMissionMountActivation(horse){
+  Object.assign(horse,{movementRemaining:0,attackAvailable:true,quickAvailable:true,sentinel:null,secondMove:false,acted:false});
+}
+function startMissionMountActivation(rider){
+  const m=game.mission,horse=m.engine.mountOf?.(rider);
+  if(!horse||!rider.alive||rider.fleeing||m.over) return false;
+  prepareMissionMountActivation(horse);
+  m.progression.recordActivation(horse);
+  m.phase="player";
+  m.activeUnit=horse;
+  m.mode=null;
+  m.aimMount=false;
+  missionLog("Activation de "+horse.character.name+".","turn");
+  renderMission();
+  return true;
+}
+// L'IA (ennemis, combat automatique) : sur place, un sort (character.aiSpells), sinon son attaque contre un ennemi à son contact.
+function mountMissionActivation(horse){
+  const m=game.mission;
+  if(!horse?.alive||m.over) return;
+  prepareMissionMountActivation(horse);
+  missionAiSpell(horse);
+  if(!horse.alive||m.over||horse.attackAvailable===false) return;
+  const near=nearestMissionTarget(horse);
+  const foe=near&&missionUsableHands(horse,near).length?near
+    :missionOpponents(horse).find(o=>o.alive&&!o.offMap&&missionUsableHands(horse,o).length);
+  if(foe) performMissionAttack(horse,foe,"melee",m.engine.axialDistance(horse,foe));
+}
+// Un ennemi, puis son cheval s'il est monté.
+function enemyMissionActWithMount(unit){
+  enemyMissionAct(unit);
+  const m=game.mission,horse=m?.engine.mountOf?.(unit);
+  if(!horse||!unit.alive||unit.fleeing||m.over) return;
+  m.actingUnit=horse;
+  try{ mountMissionActivation(horse); }finally{ if(game.mission) game.mission.actingUnit=null; }
 }
 
 // « Viser le cheval » (Idan, 2026-11-07) : au corps à corps et en charge, le prochain coup va au cheval du cavalier cliqué.
@@ -865,7 +907,7 @@ function checkMissionEnd(){
 function resolveMissionAftermath(){
   const m=game.mission;
   const captainId=game.campaign?game.campaign.company.captainId:game.captain?.id;
-  // Nos montures ne passent pas la chaîne des mercenaires : leur propre test de survie (settleOwnMissionMounts).
+  // Nos montures passent la même chaîne, à part (settleOwnMissionMounts) : elles ne sont pas des membres de la compagnie.
   const participants=m.players.filter(u=>!u.summon&&!u.character?.mount).map(u=>({
     id:u.character.id,name:u.character.name,hp:u.hp,pvMax:u.pvMax,
     // Endurance avec la ceinture et Volonté avec l'amulette (Idan, 2026-10-24) : blessure, mort et convalescence
@@ -876,11 +918,12 @@ function resolveMissionAftermath(){
   }));
   const victory=m.winner==="player";
   // Défaite d'un contrat : l'ennemi tient le terrain, le jet de mort de nos mercenaires à terre est doublé (doc 17 §8).
-  m.aftermath=m.endRules.resolveMissionEnd(participants,{deathMultiplier:m.contract?missionRules().deathMultiplier(m.contract,victory):1});
+  const endOptions={deathMultiplier:m.contract?missionRules().deathMultiplier(m.contract,victory):1};
+  m.aftermath=m.endRules.resolveMissionEnd(participants,endOptions);
   missionLog("Fin de mission : bilan de votre équipe.","turn");
   for(const r of m.aftermath.results) missionLog(r.name+" — "+missionAftermathText(r),r.dead?"death":r.wounded?"bad":"info");
   if(!game.campaign) return;
-  settleOwnMissionMounts(m);
+  settleOwnMissionMounts(m,endOptions);
   // Expédition : les primes sont versées au retour de l'escouade (doc 17).
   const report=m.companyReport=campaignRules().applyMissionAftermath(game.campaign,m.aftermath,{deferBonuses:Boolean(m.expeditionId)});
   for(const h of report.heritage||[]) missionLog(h.name+" entre dans la mémoire de la compagnie.","death");
@@ -925,26 +968,22 @@ function missionCapturedMounts(m){
   }
   return captured;
 }
-// Nos montures (Idan, 2026-11-07) : celle restée KO sur la carte passe le test de survie des montures capturées ; morte, elle
-// est perdue (son cavalier devra en apprivoiser une autre). Celle qui a fui, ou qui est partie avec son cavalier, rentre.
-function settleOwnMissionMounts(m){
-  const stable=missionStableRules();
-  if(!stable) return;
-  const horses=[...m.players.filter(u=>u.character?.mount),...m.players.map(u=>u.mount).filter(Boolean)];
-  for(const u of horses){
-    const itemId=u.character.mount.itemId;
-    if(itemId==null||u.alive||u.offMap) continue;
-    const roll=stable.rollSurvival({hp:u.hp,pvMax:u.pvMax,stats:u.character.stats});
-    if(roll.survives) continue;
-    for(const member of game.campaign.company.roster){
-      const item=(member.items||[]).find(i=>String(i.id)===String(itemId));
-      if(!item) continue;
-      member.items=member.items.filter(i=>i!==item);
-      for(const [slot,id] of Object.entries(member.equipment?.slots||{})) if(String(id)===String(itemId)) member.equipment.slots[slot]=null;
-    }
-    const detail=roll.roll==null?"":" (mort "+missionPercent(roll.pDeath)+", jet "+roll.roll+")";
-    missionLog(u.character.name+" ne se relève pas"+detail+" : la monture est perdue.","death");
-  }
+// Nos montures (Idan, 2026-11-07 : « La monture peut mourir indépendamment du cavalier ou être blessée en fin de mission. […]
+// Globalement, elle a la même fiche qu'un mercenaire. ») : la chaîne de fin de mission de nos mercenaires (mort → blessure →
+// fatigue), avec les mêmes options (défaite d'un contrat) ; morte, elle est perdue ; sinon, elle se repose aux Écuries.
+function missionOwnMounts(m){
+  return [...m.players.filter(u=>u.character?.mount),...m.players.map(u=>u.mount).filter(Boolean)]
+    .filter(u=>u.character?.mount?.itemId!=null&&!u.summon);
+}
+function settleOwnMissionMounts(m,options={}){
+  const horses=missionOwnMounts(m);
+  if(!horses.length||!game.campaign||typeof campaignRules!=="function") return null;
+  const participants=horses.map(u=>({id:u.character.mount.itemId,name:u.character.name,hp:u.hp,pvMax:u.pvMax,damageTaken:u.damageTaken,
+    stats:{...u.character.stats,Endurance:m.engine.statWithGear(u,"Endurance"),"Volonté":m.engine.statWithGear(u,"Volonté")},offMap:u.offMap}));
+  const aftermath=m.endRules.resolveMissionEnd(participants,options);
+  m.mountAftermath=aftermath;
+  for(const r of aftermath.results) missionLog(r.name+" — "+missionAftermathText(r)+(r.dead?" : la monture est perdue.":""),r.dead?"death":r.wounded?"bad":"info");
+  return campaignRules().applyMountAftermath(game.campaign,aftermath.results);
 }
 function admitMissionMounts(captured){
   const stable=missionStableRules();
@@ -1681,7 +1720,7 @@ function handleMissionHexClick(q,r){
 // Activation hexagonale V1 : l'Attaque peut être sacrifiée pour une seconde action de Mouvement.
 function missionSecondMove(){
   const u=missionActiveUnit(),m=game.mission;
-  if(!u||!u.attackAvailable||m.phase!=="player"||m.over) return;
+  if(!u||!u.attackAvailable||m.phase!=="player"||m.over||missionCarried(u)) return;
   u.attackAvailable=false;
   u.secondMove=true;
   u.movementRemaining+=m.engine.movementBase(u);
@@ -3144,6 +3183,8 @@ function enemyMissionAct(unit,options={}){
 // sinon le poison, la régénération et les effets à durée compteraient deux fois.
 function enemyMissionActivation(unit,{reset=true}={}){
   if(!unit.alive||game.mission.over||unit.decoy) return;
+  // Le cheval monté de notre équipe, en combat automatique : sur place.
+  if(missionCarried(unit)){ mountMissionActivation(unit); return; }
   if(reset) resetMissionActivation(unit);
   // L'IA empoigne une arme « Au choix » à deux mains quand Combat à deux mains vaut au moins Combat à une main.
   unit.twoHandGrip=game.mission.engine.prefersTwoHands(unit);
@@ -3265,7 +3306,7 @@ function runMissionEnemyTurn(){
   if(!missionPaced()){
     for(const unit of m.enemyOrder){
       if(m.over) break;
-      enemyMissionAct(unit);
+      enemyMissionActWithMount(unit);
     }
     finishMissionEnemyTurn();
     return;
@@ -3281,7 +3322,7 @@ function stepMissionEnemyTurn(m){
     const unit=m.enemyQueue.shift();
     if(!unit.alive||unit.decoy) continue;
     m.pacedUnit=unit;
-    enemyMissionAct(unit);
+    enemyMissionActWithMount(unit);
     const wait=missionFxEstimate(m.fx)+(game.missionFast?MISSION_PACE.fastPause:MISSION_PACE.pause);
     renderMission();
     m.enemyTimer=setTimeout(()=>stepMissionEnemyTurn(m),wait);
@@ -3397,17 +3438,17 @@ function missionMeleeApproach(u,target,reach=null){
 function missionActionAvailability(){
   const u=missionActiveUnit(),m=game.mission;
   if(!u||!m||m.phase!=="player"||m.over) return {};
-  const e=m.engine,w=e.weaponTemplate(e.activeWeaponItem(u));
+  const e=m.engine,w=e.weaponTemplate(e.activeWeaponItem(u)),carried=missionCarried(u);
   return {
-    move:u.movementRemaining>0,
+    move:!carried&&u.movementRemaining>0,
     melee:u.attackAvailable&&missionHeldModes(u).has("melee"),
     twoHands:u.attackAvailable&&missionHeldModes(u).has("melee")&&e.canGripTwoHands(u),
     ranged:u.attackAvailable&&missionHeldModes(u).has("ranged"),
-    sentinel:missionCanStandSentinel(u),
-    charge:u.attackAvailable&&e.isMeleeWeapon(w)&&u.movementRemaining===e.movementBase(u),
+    sentinel:!carried&&missionCanStandSentinel(u),
+    charge:!carried&&u.attackAvailable&&e.isMeleeWeapon(w)&&u.movementRemaining===e.movementBase(u),
     switch:u.quickAvailable&&e.canSwitchWeaponSet(u),
     reload:u.quickAvailable&&e.canReload(u),
-    secondMove:u.attackAvailable,
+    secondMove:!carried&&u.attackAvailable,
     end:true,
     auto:true,
     testSpells:Boolean(missionMagic())&&!m.testSpells
@@ -3710,7 +3751,8 @@ function renderMission(){
     const pct=Math.max(0,Math.min(100,Math.round(unit.hp/unit.pvMax*100)));
     const classes=["mission-token",unit.team,unit.alive?"alive":"down"];
     if(large) classes.push("size-"+m.engine.sizeOf(unit));
-    if(u===unit||m.pacedUnit===unit) classes.push("active");
+    // Le cheval monté joue sous son cavalier : leur pion est le sien.
+    if(u===unit||m.pacedUnit===unit||(u&&missionCarried(u)&&u.rider===unit)) classes.push("active");
     const encircled=unit.alive&&missionEncircled(unit);
     if(encircled) classes.push("encircled");
     if(unit.alive&&unit.fleeing) classes.push("fleeing");

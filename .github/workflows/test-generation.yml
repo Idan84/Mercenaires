@@ -102,6 +102,7 @@ jobs:
       - run: node tests/stables.test.js
       - run: node tests/mount-market.test.js
       - run: node tests/taming.test.js
+      - run: node tests/own-mounts.test.js
       - run: node tests/stealth.test.js
       - run: node tests/spell-icons.test.js
       - run: node tests/starting-spells.test.js

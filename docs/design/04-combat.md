@@ -475,7 +475,8 @@ chance pour enchaîner plusieurs tirs (sauf arme à feu). Il ne peut passer en m
   (gobelin, gnome, halfling : gabarit 0,5) **le monte**, avec les règles du cheval. **Les autres l'emmènent à pied**
   (`compagnon`) : au début du combat, il se pose sur la case libre la plus proche de son maître et joue seul, **juste après
   lui** dans l'ordre (le mécanisme de « Descendre ») ; on le joue comme un mercenaire ; son maître ne peut pas le monter. Sa
-  fin de combat est celle d'une monture.
+  fin de combat est celle d'une monture. Ses attaques donnent à son maître l'XP animale (Canidés, Compagnon animal), comme
+  celles d'une monture (Idan : « Oui bien sur ») ; son titre : « à dos de loup », seulement pour celui qui le monte.
 - Code : `combat-engine.js` (`mountOf`, `canRide`, `mentalStat`, `mountChargeForce`, `rollShotTarget`), `missions.js`
   (`createMount`), `mission.js` (`missionMountOf`, `attachMissionMount`, `settleMissionMounts`, `settleOwnMissionMounts`,
   `missionAimed`, `deployMissionCompanions`). Tests : `tests/mounts.test.js`, `tests/own-mounts.test.js`, `tests/wolf.test.js`.

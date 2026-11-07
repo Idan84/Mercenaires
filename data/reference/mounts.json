@@ -72,7 +72,7 @@
       "key": "rang_echange"
     },
     {
-      "source": "Au titre de son cavalier, quand elle est équipée (mercenary-profile.js)",
+      "source": "Au titre de son cavalier, quand elle est équipée et qu'il la monte (mercenary-profile.js)",
       "key": "titre"
     },
     {
@@ -264,7 +264,7 @@
       "entretien": 10,
       "alignement": "Chaotique neutre",
       "rang_echange": 3,
-      "titre": "",
+      "titre": "à dos de loup",
       "logement": "trainer_kennel",
       "compagnon": true
     }

@@ -42,6 +42,10 @@
     {
       "source": "Capturable",
       "key": "capturable"
+    },
+    {
+      "source": "Entretien (PO par jour, aux Écuries)",
+      "key": "entretien"
     }
   ],
   "row_count": 1,
@@ -81,7 +85,8 @@
         "degats_pv_base": "1D8",
         "puissance_contondante": 50
       },
-      "capturable": true
+      "capturable": true,
+      "entretien": 10
     }
   ]
 }

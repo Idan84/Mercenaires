@@ -919,7 +919,8 @@
     }
     function campBuildingEffects(state){
       return {woundFactor:woundCareFactor(state),medicFactor:medicCareFactor(state),fatigueRelief:fatigueRelief(state),manaBonus:manaBonusPercent(state),
-        bodyguardPay:bodyguardPayBonus(state),stablePlaces:stableRules?stableRules.places(state):0};
+        bodyguardPay:bodyguardPayBonus(state),stablePlaces:stableRules?stableRules.places(state):0,
+        kennelPlaces:stableRules?stableRules.places(state,stableRules.KENNEL):0};
     }
 
     // Indisponibilité après mission (10-mission-time §4 à §6) : un blessé ou un fatigué ne peut pas

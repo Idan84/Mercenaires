@@ -416,15 +416,40 @@ function attachMissionMount(unit){
   // Son nom, la nôtre (stables.js, giveName) ; « Destrier de … » pour celles d'en face.
   const name=own.item?.petName||missionMountName(rules.mountSheet(code),unit.character.name);
   const horse=rules.createMount(code,{id:"mount-"+unit.character.id,name,own:sheet});
-  if(!horse||!e.canRide({character:unit.character},{character:horse})) return null;
+  if(!horse) return null;
+  // Un compagnon (le loup ; Idan, 2026-11-07 : « Loup de combat », « montable par les petits peuples ») : celui qui ne
+  // peut pas le monter l'emmène à pied ; il se bat à ses côtés et joue juste après lui (deployMissionCompanions).
+  const rides=e.canRide({character:unit.character},{character:horse});
+  if(!rides&&!rules.mountSheet(code)?.compagnon) return null;
   if(own.item) horse.mount.itemId=own.item.id;
   const pvMax=e.maxHp({character:horse,activeSet:1});
   const mount={id:unit.id+"-mount",character:horse,team:unit.team,isCaptain:false,isLieutenant:false,hp:pvMax,pvMax,alive:true,
     activeSet:1,prone:false,acted:true,movementRemaining:0,attackAvailable:false,quickAvailable:false,fleeing:false,fleeTurn:0,
     offMap:false,damageTaken:0};
-  linkMissionMount(unit,mount);
   unit.facing=unit.facing??(unit.team==="player"?0:3);
+  if(!rides){
+    Object.assign(mount,{rider:null,follows:unit.id,master:unit,acted:false,attackAvailable:true,quickAvailable:true,facing:unit.facing});
+    unit.companion=mount;
+    return mount;
+  }
+  linkMissionMount(unit,mount);
   return mount;
+}
+// Les compagnons à pied, une fois la carte prête (décor, terrain) : sur la case libre la plus proche de leur maître, dans
+// son camp, juste après lui dans l'ordre.
+function deployMissionCompanions(){
+  const m=game.mission,e=m.engine;
+  for(const u of [...m.players,...m.enemies]){
+    const pet=u.companion;
+    if(!pet) continue;
+    delete u.companion;
+    const cell=missionCells().filter(c=>missionCellFree(c)).sort((a,b)=>e.axialDistance(u,a)-e.axialDistance(u,b))[0];
+    if(!cell) continue;
+    Object.assign(pet,{q:cell.q,r:cell.r});
+    const army=u.team==="player"?"players":"enemies",order=u.team==="player"?"playerOrder":"enemyOrder";
+    m[army].push(pet);
+    m[order]=sortMissionInitiative([...m[order],pet],e);
+  }
 }
 // Le cheval sous son cavalier : ses cases sont celles du cavalier (le déplacer, c'est déplacer le couple). follows : il n'a
 // pas sa propre initiative, il joue juste après son cavalier (Idan, 2026-11-07), et seul ce cavalier peut le monter.
@@ -768,6 +793,7 @@ function startMissionFromSelection(){
   };
   game.mission.relief=generateMissionRelief();
   game.mission.decor=generateMissionDecor();
+  deployMissionCompanions();
 
   $("mission-select-dialog").close();
   $("game-panel").classList.add("hidden");
@@ -835,6 +861,7 @@ function startExpeditionCombat(expeditionId){
   $("mission-panel").classList.remove("hidden");
   missionLog(offer.name+" : le "+offer.campName.toLocaleLowerCase("fr")+" de "+offer.fields.lieu+". Votre équipe a l’initiative.","turn");
   missionLog("Dans le camp : "+enemies.map(u=>u.character.name).join(", ")+".");
+  deployMissionCompanions();
   startMissionCamouflage();
   selectNextMissionPlayer();
 }
@@ -1023,8 +1050,11 @@ function missionCapturedMounts(m){
   if(!stable) return [];
   const origin=m.contract?m.contract.campName+" de "+m.contract.fields.lieu:"Mission Test";
   const captured=[];
-  for(const u of m.enemies.filter(x=>x.character?.mount&&!x.alive&&!x.offMap)){
-    const code=u.character.mount.code;
+  // Un loup de la Cour de sang (Idan, 2026-11-07 : « ceux de la cour de sang ») : son archétype dit l'animal qu'on prend
+  // sur son corps KO (enemy-archetypes.json, capture).
+  const captureOf=u=>u.character?.mount?.code||(u.character?.archetype&&missionRules()?.archetype(u.character.archetype)?.capture)||null;
+  for(const u of m.enemies.filter(x=>captureOf(x)&&!x.alive&&!x.offMap&&!x.summon)){
+    const code=captureOf(u);
     if(!stable.capturable(code)) continue;
     const roll=stable.rollSurvival({hp:u.hp,pvMax:u.pvMax,stats:u.character.stats});
     const detail=roll.roll==null?"":" (mort "+missionPercent(roll.pDeath)+", jet "+roll.roll+")";
@@ -1064,8 +1094,10 @@ function admitMissionMounts(captured){
   if(!stable||!captured.length) return;
   for(const c of captured){
     const {kept}=stable.admit(game.campaign,[c]);
-    if(kept.length) missionLog(c.name+" capturé"+c.detail+" : il rejoint les Écuries ("+stable.mountsOf(game.campaign).length+" / "+stable.places(game.campaign)+").","gear");
-    else missionLog(c.name+" capturé"+c.detail+", mais pas de place aux Écuries : il est relâché.","bad");
+    // Son logement : les Écuries, le Chenil pour un loup.
+    const house=stable.houseOf(c.code),words=stable.houseWords(house);
+    if(kept.length) missionLog(c.name+" capturé"+c.detail+" : il rejoint "+words.the+" ("+stable.mountsIn(game.campaign,house).length+" / "+stable.places(game.campaign,house)+").","gear");
+    else missionLog(c.name+" capturé"+c.detail+", mais pas de place "+words.at+" : il est relâché.","bad");
   }
 }
 
@@ -1084,7 +1116,12 @@ function resolveContractOutcome(m,report,victory){
   const result=m.contractResult=rules.outcome(offer,{victory,deadEnemies,deadMercenaries:report.deaths,chestItems,
     makeItem:(type,name,tier)=>game.generator.createItemByName(type,name,tier)});
   result.mounts=mounts;
-  for(const c of mounts){ const text=c.name+" capturé"+c.detail+" : il rentre avec l’escouade, s’il reste une place aux Écuries."; missionLog(text,"gear"); tavernLog(text,"gear"); }
+  const stable=missionStableRules();
+  for(const c of mounts){
+    const at=stable?stable.houseWords(stable.houseOf(c.code)).at:"aux Écuries";
+    const text=c.name+" capturé"+c.detail+" : il rentre avec l’escouade, s’il reste une place "+at+".";
+    missionLog(text,"gear"); tavernLog(text,"gear");
+  }
   const back=campaignRules().completeExpeditionCombat(game.campaign,m.expeditionId,{result,bonuses:report.bonusesDue});
   m.contractReturn=back?.expedition?{days:offer.distance,bonuses:report.bonusesDue.reduce((sum,b)=>sum+b.bonus,0)}:null;
   for(const line of contractResultLines(result,m.contractReturn)){ missionLog(line.text,line.kind); tavernLog(line.text,line.kind); }
@@ -3978,7 +4015,9 @@ function renderMission(){
   // sur la carte.
   $("mission-mount-attack-btn")?.classList.toggle("hidden",!(u&&e.mountOf?.(u)));
   $("mission-dismount-btn")?.classList.toggle("hidden",!(u&&e.mountOf?.(u)));
-  $("mission-remount-btn")?.classList.toggle("hidden",!(u&&!e.mountOf?.(u)&&missionLooseMount(u)));
+  // Un loup qu'il ne peut pas monter (son compagnon à pied) : pas de bouton.
+  const loose=u&&!e.mountOf?.(u)?missionLooseMount(u):null;
+  $("mission-remount-btn")?.classList.toggle("hidden",!(loose&&e.canRide(u,loose)));
   $("mission-test-spells-btn").disabled=!availability.testSpells;
   // « Accélérer » : pendant le tour ennemi, la pause entre deux ennemis raccourcit (MISSION_PACE).
   const speedBtn=$("mission-speed-btn");

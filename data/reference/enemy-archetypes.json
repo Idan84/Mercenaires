@@ -138,6 +138,10 @@
     {
       "source": "Monture (mounts.json)",
       "key": "monture"
+    },
+    {
+      "source": "Capture : l'animal (code de mounts.json) qu'on peut prendre sur son corps KO après une victoire (les loups de la Cour de sang)",
+      "key": "capture"
     }
   ],
   "row_count": 184,
@@ -10289,7 +10293,8 @@
         "nom": "Morsure",
         "degats_pv_base": "1D8",
         "puissance_perforante": 35
-      }
+      },
+      "capture": "loup"
     },
     {
       "nom": "Loup",
@@ -10349,7 +10354,8 @@
         "nom": "Morsure",
         "degats_pv_base": "1D8",
         "puissance_perforante": 35
-      }
+      },
+      "capture": "loup"
     },
     {
       "nom": "Loup vétéran",
@@ -10409,7 +10415,8 @@
         "nom": "Morsure",
         "degats_pv_base": "1D8",
         "puissance_perforante": 35
-      }
+      },
+      "capture": "loup"
     },
     {
       "nom": "Loup d’élite",
@@ -10469,7 +10476,8 @@
         "nom": "Morsure",
         "degats_pv_base": "1D8",
         "puissance_perforante": 35
-      }
+      },
+      "capture": "loup"
     },
     {
       "nom": "Chauve-souris novice",

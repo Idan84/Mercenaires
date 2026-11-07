@@ -490,6 +490,6 @@ Une ligne **Cavalier** (poids 10) au camp de voleurs, dès le niveau de mission 
 
 - **Base** : les caractéristiques, les PV, l'Intimidation et la lance du Bandit de même niveau ; la rondache, l'armure et le port d'armure du Spadassin ; Compagnon animal et Équidés aux centiles des humains générés (P20, P50, P75, P90), soit une part de 0,84 à 1 pour le partage du Courage et de la Volonté avec son cheval.
 - **Points** : cavalier et cheval ensemble, même méthode et même recalage × 1,2 qu'au §19 ; le vétéran et l'élite, trop forts pour la méthode des troupes, sont mesurés seuls contre 3 à 6 mercenaires. Pour comparer, le Bandit vaut 8, 16, 25 et 48. Sa charge (lance, 8 à 16 cases, la moitié de la Force du cheval en plus) frappe très fort : jusqu'à 190–270 PV d'un coup dans les combats de mesure.
-- **Butin** : celui du Bandit (100 % − 10 % par tier) ; le cheval tombé ne laisse rien pour l'instant (la capture viendra).
+- **Butin** : celui du Bandit (100 % − 10 % par tier) ; le cheval tombé peut être capturé après la victoire (test de survie, une place aux Écuries ; doc 11 §8).
 - **Mission Test** : le deuxième ennemi est un Cavalier, sur son destrier.
 - Test : `tests/mounts.test.js`.

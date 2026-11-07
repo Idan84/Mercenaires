@@ -886,11 +886,41 @@ function resolveMissionAftermath(){
   if(typeof refreshMercenaryDomains==="function")
     refreshMercenaryDomains((report.progression||[]).map(p=>p.mercenary),{log:text=>missionLog(text,"gear")});
   if(m.contract&&!report.gameOver) resolveContractOutcome(m,report,victory);
+  // Mission Test : les montures capturées entrent tout de suite aux Écuries (un contrat les ramène avec l'escouade).
+  else if(victory&&!report.gameOver) admitMissionMounts(missionCapturedMounts(m));
   if(report.gameOver){
     missionLog("Le capitaine est mort : la partie est terminée.","death");
     deleteSavedGame();
   }else{
     saveGame();
+  }
+}
+
+// Capture des montures (Idan, 2026-11-07 ; stables.js) : après une victoire, chaque monture capturable restée KO sur la carte
+// passe le test de survie (le jet de mort de nos mercenaires) ; celle qui a fui ou qui est partie avec son cavalier est perdue.
+function missionStableRules(){ return game.campaign&&typeof campaignRules==="function"?campaignRules().stableRules||null:null; }
+function missionCapturedMounts(m){
+  const stable=missionStableRules();
+  if(!stable) return [];
+  const origin=m.contract?m.contract.campName+" de "+m.contract.fields.lieu:"Mission Test";
+  const captured=[];
+  for(const u of m.enemies.filter(x=>x.character?.mount&&!x.alive&&!x.offMap)){
+    const code=u.character.mount.code;
+    if(!stable.capturable(code)) continue;
+    const roll=stable.rollSurvival({hp:u.hp,pvMax:u.pvMax,stats:u.character.stats});
+    const detail=roll.roll==null?"":" (mort "+missionPercent(roll.pDeath)+", jet "+roll.roll+")";
+    if(!roll.survives){ missionLog(u.character.name+" ne se relève pas"+detail+".","death"); continue; }
+    captured.push({code,name:stable.sheet(code)?.nom||u.character.role||"Monture",origin,detail});
+  }
+  return captured;
+}
+function admitMissionMounts(captured){
+  const stable=missionStableRules();
+  if(!stable||!captured.length) return;
+  for(const c of captured){
+    const {kept}=stable.admit(game.campaign,[c]);
+    if(kept.length) missionLog(c.name+" capturé"+c.detail+" : il rejoint les Écuries ("+stable.mountsOf(game.campaign).length+" / "+stable.places(game.campaign)+").","gear");
+    else missionLog(c.name+" capturé"+c.detail+", mais pas de place aux Écuries : il est relâché.","bad");
   }
 }
 
@@ -904,9 +934,12 @@ function resolveContractOutcome(m,report,victory){
   const plan=victory&&captain?rules.chestPlan(offer):{tiers:[],manuals:[]};
   const chestItems=[...plan.tiers.map(tier=>game.generator.createChestItem(captain,tier)),
     ...plan.manuals.map(code=>game.generator.createItemByName("manual",code))].filter(Boolean);
-  const deadEnemies=m.enemies.filter(u=>!u.alive&&!u.offMap&&!u.summon).map(u=>u.character);
+  const deadEnemies=m.enemies.filter(u=>!u.alive&&!u.offMap&&!u.summon&&!u.character?.mount).map(u=>u.character);
+  const mounts=victory?missionCapturedMounts(m):[];
   const result=m.contractResult=rules.outcome(offer,{victory,deadEnemies,deadMercenaries:report.deaths,chestItems,
     makeItem:(type,name,tier)=>game.generator.createItemByName(type,name,tier)});
+  result.mounts=mounts;
+  for(const c of mounts){ const text=c.name+" capturé"+c.detail+" : il rentre avec l’escouade, s’il reste une place aux Écuries."; missionLog(text,"gear"); tavernLog(text,"gear"); }
   const back=campaignRules().completeExpeditionCombat(game.campaign,m.expeditionId,{result,bonuses:report.bonusesDue});
   m.contractReturn=back?.expedition?{days:offer.distance,bonuses:report.bonusesDue.reduce((sum,b)=>sum+b.bonus,0)}:null;
   for(const line of contractResultLines(result,m.contractReturn)){ missionLog(line.text,line.kind); tavernLog(line.text,line.kind); }

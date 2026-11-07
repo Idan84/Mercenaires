@@ -192,6 +192,7 @@ function logExpeditionReport(report){
     tavernLog(e.memberIds.length
       ?"L’escouade du "+e.offer.campName.toLocaleLowerCase("fr")+" de "+e.offer.fields.lieu+" est rentrée"+(r.gold?" : +"+fmt(r.gold)+" PO":"")+(r.items?", "+r.items+" objet"+(r.items>1?"s":"")+" à l’Intendance":"")+(r.bonusPaid?", primes versées "+fmt(r.bonusPaid)+" PO":"")+"."
       :"Personne ne revient du "+e.offer.campName.toLocaleLowerCase("fr")+" de "+e.offer.fields.lieu+".",r.gold?"gear":"info");
+    if(typeof logStableArrivals==="function") logStableArrivals(r.mounts);
   }
   if(report.waiting.length) game.pendingExpeditionDialog=report.waiting[0].id;
   for(const r of report.bodyguards||[]) queueBodyguardReturn(r);

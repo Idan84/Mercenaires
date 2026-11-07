@@ -475,6 +475,18 @@ Le château peut accueillir des structures spécialisées selon les espèces :
 
 Objectif : supporter des unités montées, y compris des compositions volontairement extravagantes comme une troupe se déplaçant sur plusieurs dragons.
 
+### La Grange du dresseur et les Écuries (Idan, 2026-11-07)
+
+> « On peut déjà créer un premier bâtiment, la grange du dresseur et y nommer un mercenaire maître. » « Ensuite, on peut créer des salles qui permettent de stocker des montures. Commençons par écuries et Nid de griffon. Avec les niveaux, on augmente le nombre de places disponibles pour le stockage. » « Un animal aura un coût d'entretien. » « On ajoute des montures aux ennemis. La monture est mise KO au combat. En fonction du type de monture, elle est capturable ou non. Pour chaque monture, on fait test de survie. Si elle survit et qu'on a de la place, elle est stockée dans l'enclos. » « Tout est validé ! »
+
+- **Grange du dresseur** (`trainer_barn`) : à construire, puis 10 niveaux au barème habituel (niveau n = 1 000 × n² PO et 4 × n jours). Son maître, le Dresseur (Animal, Intelligence, Charisme, Intimidation), viendra avec l'apprivoisement.
+- **Les Écuries** (`trainer_stables`), son aile : au plus au niveau de la Grange ; **2 places par niveau** (`places_par_niveau`), 20 au niveau 10. Le Nid de griffon viendra avec le griffon.
+- **Capture** : après une victoire, chaque monture **capturable** (`mounts.json`, `capturable`) restée KO sur la carte passe le **test de survie** : le jet de mort de nos mercenaires (doc 10 §3 : à 0 PV ou plus, elle vit ; sous 0, mort = −1 000 × PV ÷ PV max − Volonté ÷ 20 %). Un cheval qui a fui, ou qui est parti avec son cavalier, est perdu.
+- **Arrivée** : après un contrat, les montures rentrent **avec l'escouade** ; à son retour, chacune prend une place aux Écuries, sinon elle est **relâchée**. Dans la Mission Test, elles entrent tout de suite.
+- **Entretien** : chaque matin, **10 PO par destrier** (`mounts.json`, `entretien`), avec les salaires (le journal et la notification du jour le disent ; l'or peut passer sous 0).
+- **Écran** : sous la Grange, dans Ma Compagnie, la liste des montures (d'où elles viennent, le jour de leur capture, leur entretien), places prises / places, et **Relâcher** pour libérer une place. Elles ne servent pas encore : l'apprivoisement et nos mercenaires à cheval viendront ensuite.
+- Code : `game-core/stables.js`, `campaign.js` (entretien du matin, retour d'expédition), `mission.js` (`missionCapturedMounts`, `admitMissionMounts`), `prototype-web/stable-ui.js`. Test : `tests/stables.test.js`.
+
 ## 9 — Soins & mémorial
 
 ### Soins

@@ -170,6 +170,20 @@ assert.ok(titled > 50, "des recrues ont un titre : " + titled);
 assert.ok(names.size > 30, "des titres variés : " + names.size);
 assert.equal(createProfileRules({reference: {...reference, mercenaryTitles: undefined}, engine}).composeTitle(base, profile.evaluate(base)), null, "sans données, pas de titre");
 
+// ---- Sa monture équipée (Idan, 2026-11-07 : « titre A » ; « on prend en compte la monture équipée ») ----
+const rider = generator.createMercenary({id: 3, captain});
+const destrier = generator.createItemByName("mount", "Destrier"), licorne = generator.createItemByName("mount", "Licorne");
+for (const item of [destrier, licorne]) { item.owner = rider.id; item.tamedBy = rider.id; rider.items.push(item); }
+const scout = [role("eclaireur", 5, "vigie", "perception")];
+assert.equal(title(rider, scout), "Guetteur en herbe", "dans l'inventaire : rien ne change");
+rider.equipment.slots.mount = destrier.id;
+assert.equal(title(rider, scout), "Guetteur en herbe à cheval");
+assert.equal(title(rider, []), "Chair à canon à cheval");
+destrier.recovery = {kind: "wounded", daysLeft: 4};
+assert.equal(title(rider, scout), "Guetteur en herbe à cheval", "blessée quelques jours, toujours équipée : rien ne change");
+rider.equipment.slots.mount = licorne.id;
+assert.equal(title(rider, scout), "Guetteur en herbe à dos de licorne", "deux montures, une seule équipée");
+
 // ---- Fiche : un seul titre, pas d'étoiles, pas de petite ligne ----
 const ui = fs.readFileSync(path.join(ROOT, "prototype-web", "ui.js"), "utf8");
 const render = ui.slice(ui.indexOf("function renderEvaluation("), ui.indexOf("function renderProfileTab("));

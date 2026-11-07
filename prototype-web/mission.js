@@ -432,7 +432,8 @@ function linkMissionMount(unit,mount){
     Object.defineProperty(mount,k,{enumerable:true,configurable:true,
       get(){ return this.rider?this.rider[k]:undefined; },set(v){ if(this.rider) this.rider[k]=v; }});
   }
-  mount.rider=unit;mount.follows=unit.id;unit.mount=mount;
+  // master : son cavalier, monté ou non (ses exploits comptent pour lui : progression.js).
+  mount.rider=unit;mount.follows=unit.id;mount.master=unit;unit.mount=mount;
 }
 // Le cheval descend de scène avec son propre emplacement, et entre dans les listes du combat.
 function detachMissionMount(rider){

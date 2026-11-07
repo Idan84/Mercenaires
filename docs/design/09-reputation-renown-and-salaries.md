@@ -72,6 +72,10 @@ La réputation personnelle possède désormais une petite composante persistante
 - **revient vivant d’une mission mais blessé** : `+10 Réputation` ;
 - **revient vivant d’une mission sans blessure** : `+20 Réputation`.
 
+**Sa monture** (Idan, 2026-11-07 : « réputation 1 ») : les exploits de sa monture équipée — participation à la blessure
+d'un ennemi et coup de grâce — comptent pour son cavalier, qu'il la monte ou non, une fois par ennemi comme les siens (la
+monture garde son XP). Sa meilleure compétence Animal est déjà dans le pool.
+
 La participation à la blessure est comptée **une seule fois par mercenaire et par ennemi**, dès lors que le mercenaire a effectivement contribué à ses dégâts. Le mercenaire qui porte le coup de grâce reçoit donc normalement le bonus de participation (`1 %`) **plus** le bonus de coup de grâce (`10 %`), soit `11 %` de la réputation de la cible s’il avait participé à sa mise à mort.
 
 Les bonus de retour de mission sont **exclusifs** : un mercenaire indemne reçoit `+20`, pas `+10 +20`. La fatigue seule n’est pas considérée comme une blessure pour cette règle.

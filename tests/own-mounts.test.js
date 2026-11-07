@@ -139,6 +139,12 @@ assert.equal(api.missionActionAvailability().mountMelee, false);
 assert.equal(duo.progress.animalUses["Équidés"].attacks, 1);
 const learned = Progression.createProgressionRules({reference}).gains(duo.progress, rider).skills.animal;
 assert.ok(learned["Équidés"] >= 10 && learned["Compagnon animal"] === learned["Équidés"], "Équidés et Compagnon animal : " + JSON.stringify(learned));
+// Les exploits de sa monture comptent pour sa réputation (Idan : « réputation 1 ») : participation et coup de grâce.
+assert.equal(duo.mount.master, duo);
+if (target.hp < hpBefore) assert.ok(Object.keys(duo.progress.enemyWounds).length > 0, "sa participation à la blessure");
+Progression.recordAttack(duo.mount, target, {mode: "melee"}, {ok: true, wound: true, damage: 12, targetDown: true, weapon: "Sabots", hit: true});
+assert.ok(Object.keys(duo.progress.enemyKnockouts).length > 0, "le coup de grâce de sa monture compte pour lui");
+assert.ok(Progression.createProgressionRules({reference}).reputationGains(duo.progress).sources.enemyKnockouts > 0);
 api.endMissionActivation();
 assert.ok(!m.log.some(l => l.message === "Activation de " + duo.mount.character.name + "."), "le cheval ne joue pas après");
 // Le cheval monté menace aussi (Idan : « pourquoi la monture ne fait pas des attaques d'opportunités ? » ; « oui ») : un

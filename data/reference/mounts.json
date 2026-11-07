@@ -74,6 +74,10 @@
     {
       "source": "Rang pour un échange (le tier qu'un mercenaire lui voit, equipment-deals.js)",
       "key": "rang_echange"
+    },
+    {
+      "source": "Au titre de son cavalier, quand elle est équipée (mercenary-profile.js)",
+      "key": "titre"
     }
   ],
   "row_count": 2,
@@ -131,7 +135,8 @@
       "entretien": 10,
       "alignement": "Neutre",
       "tolerance": 4,
-      "rang_echange": 3
+      "rang_echange": 3,
+      "titre": "à cheval"
     },
     {
       "nom": "Licorne",
@@ -193,7 +198,8 @@
       "entretien": 30,
       "alignement": "Loyal bon",
       "tolerance": 0,
-      "rang_echange": 4
+      "rang_echange": 4,
+      "titre": "à dos de licorne"
     }
   ]
 }

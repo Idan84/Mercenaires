@@ -105,6 +105,13 @@
       logOf(attacker).knockouts++;
       logOf(attacker).enemyKnockouts[unitKey(defender)]=reputationOf(defender);
     }
+    // Les exploits de sa monture comptent pour son cavalier (Idan, 2026-11-07 : « réputation 1 ») : participation aux blessures
+    // et coups de grâce, pour la réputation (une fois par ennemi, comme les siens) ; la monture garde son XP.
+    const master=attacker?.master&&attacker.master!==attacker?attacker.master:null;
+    if(master&&adversary){
+      if(result.wound&&Number(result.damage)>0) logOf(master).enemyWounds[unitKey(defender)]=reputationOf(defender);
+      if(result.targetDown) logOf(master).enemyKnockouts[unitKey(defender)]=reputationOf(defender);
+    }
     // Chance : chaque critique (Toucher ou Blesser) et chaque échec critique confirmé.
     if(result.criticalHit) recordCritical(attacker,"success");
     if(result.criticalWound) recordCritical(attacker,"success");

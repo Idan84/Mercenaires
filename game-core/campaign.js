@@ -958,7 +958,7 @@
       const recovered=recoverOneDay(state);
       const salaries=paySalaries(state);
       // Les Écuries : l'entretien des montures, chaque matin.
-      const stable=stableRules?stableRules.payUpkeep(state):null;
+      const stable=stableRules?{...stableRules.payUpkeep(state),recovered:stableRules.recoverOneDay(state)}:null;
       const tavernReport=tavern.tavernMorning(state.tavern,state.day,candidateFactory(state),tavern.slotsFor?.(companyRenown(state).total));
       const offersLost=expireBoardOffers(state);
       const expeditions=advanceExpeditions(state);
@@ -1318,6 +1318,12 @@
     const appliedAftermaths=new WeakMap();
     // options.deferBonuses : les primes ne sont pas versées tout de suite (report.bonusesDue) ; une expédition les verse au
     // retour de l'escouade (doc 17).
+    // Nos montures en fin de mission (Idan, 2026-11-07 : « elle a la même fiche qu'un mercenaire ») : results de
+    // resolveMissionEnd ; leur repos se compte comme celui de nos mercenaires (Dispensaire, médecin, bains chauds).
+    function applyMountAftermath(state,results){
+      return stableRules?stableRules.applyAftermath(state,results,{woundDays:days=>woundDaysFor({},days,state),
+        fatigueDays:days=>fatigueDaysFor(days,state)}):null;
+    }
     function applyMissionAftermath(state,aftermath,options={}){
       if(appliedAftermaths.has(aftermath)) return appliedAftermaths.get(aftermath);
       const report={deaths:[],wounded:[],fatigued:[],bonuses:[],bonusPaid:0,bonusesDue:[],gameOver:false,progression:[],heritage:[]};
@@ -1338,6 +1344,9 @@
           if(state.company.intendantId===mercenary.id) state.company.intendantId=null;
           if(state.company.medicId===mercenary.id) state.company.medicId=null;
           if(Posts) Posts.release(state,mercenary);
+          // Ses montures repartent dans l'enclos (Idan, 2026-11-07), qu'il la montât ou non.
+          const mounts=stableRules?stableRules.returnToStable(state,mercenary):[];
+          if(mounts.length) report.mountsReturned=(report.mountsReturned||[]).concat(mounts);
           // Son inventaire, gardé au dortoir, retourne à l'Intendance (Idan, 2026-10-30) ; ce qu'il portait reste avec
           // lui (butin d'une victoire, perdu sur une défaite).
           const worn=new Set(Object.values(mercenary.equipment?.slots||{}).filter(Boolean));
@@ -1449,6 +1458,7 @@
       askCandidate,
       isAvailable,
       applyMissionAftermath,
+      applyMountAftermath,
       companyRenown,
       suitorCount,
       assignBiography,

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "mounts",
-  "description": "Montures (Idan, 2026-11-07 ; doc 04, « Combat à cheval » ; doc 11 §8). Une fiche fixe par monture : le destrier et la licorne (plus rapide, plus endurante, une corne, un peu moins courageuse, intelligente, une grande volonté et de fortes résistances élémentaires). Valeur = 300 × entretien (economy.mount_value_per_upkeep). gabarit : sa taille sur l'échelle des places du dortoir (peoples.json, places_dortoir : 0,5, 1, 2…) ; on ne monte qu'une bête plus grande que soi (un humain, 1, monte un destrier, 2 ; un ogre, 2, ne peut pas). taille : ses cases au combat (longue = 2). PV = 3 × (Constitution + 0,2 × Endurance + 0,1 × Volonté), comme nos mercenaires. Monté, le cheval prête son déplacement ; le Courage et la Volonté du couple se partagent selon la compétence du cavalier (Compagnon animal + espece). Sans cavalier, il se bat avec son arme naturelle et fuit comme tout combattant. Résistances, Chance et maîtrise de l'arme naturelle : celles d'un humain moyen (P50).",
+  "description": "Montures (Idan, 2026-11-07 ; doc 04, « Combat à cheval » ; doc 11 §8). Une fiche fixe par monture : le destrier et la licorne (plus rapide, plus endurante, une corne, un peu moins courageuse, intelligente, une grande volonté et de fortes résistances élémentaires). Valeur = 300 × entretien (economy.mount_value_per_upkeep). gabarit : sa taille sur l'échelle des places du dortoir (peoples.json, places_dortoir : 0,5, 1, 2…) ; on ne monte qu'une bête plus grande que soi (un humain, 1, monte un destrier, 2 ; un ogre, 2, ne peut pas). taille : ses cases au combat (longue = 2). PV = 3 × (Constitution + 0,2 × Endurance + 0,1 × Volonté), comme nos mercenaires. Monté, le cheval prête son déplacement ; le Courage et la Volonté du couple se partagent selon la compétence du cavalier (Compagnon animal + espece). Sans cavalier, il se bat avec son arme naturelle et fuit comme tout combattant. Résistances, Chance et maîtrise de l'arme naturelle : celles d'un humain moyen (P50). Ses sorts, comme un mercenaire (Idan, 2026-11-07 : « Reprend le sort qui existe déjà. On lui donne juste des points de mana et des niveaux de compétences de magie ») : la licorne, Création de double (Illusion 50, Réserve de mana 40).",
   "columns": [
     {
       "source": "Nom",
@@ -38,6 +38,14 @@
     {
       "source": "Arme naturelle",
       "key": "attaque"
+    },
+    {
+      "source": "Compétences magiques (écoles, comme un mercenaire)",
+      "key": "competences_magiques"
+    },
+    {
+      "source": "Sorts (spells.json, code et niveau ; l'IA les essaie dans cet ordre)",
+      "key": "sorts"
     },
     {
       "source": "Capturable",
@@ -97,6 +105,8 @@
         "degats_pv_base": "1D8",
         "puissance_contondante": 50
       },
+      "competences_magiques": {},
+      "sorts": [],
       "capturable": true,
       "entretien": 10,
       "alignement": "Neutre",
@@ -120,7 +130,8 @@
         "Volonté": 85,
         "Perception": 60,
         "Intelligence": 80,
-        "Chance": 60
+        "Chance": 60,
+        "Réserve de mana": 40
       },
       "resistances": {
         "Résistance physique": 5,
@@ -138,6 +149,15 @@
         "degats_pv_base": "1D10",
         "puissance_perforante": 70
       },
+      "competences_magiques": {
+        "Illusion": 50
+      },
+      "sorts": [
+        {
+          "code": "decoy",
+          "maitrise": 1
+        }
+      ],
       "capturable": true,
       "entretien": 30,
       "alignement": "Loyal bon",

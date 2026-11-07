@@ -15,7 +15,12 @@
 // - capture : après une victoire, chaque monture capturable restée KO sur la carte passe le jet de mort de nos mercenaires
 //   (doc 10 §3, mission-end.js : à 0 PV ou plus, elle survit) ; une monture partie avec son cavalier n'est pas prise ;
 //   après un contrat, elle rentre avec l'escouade (la place se juge à l'arrivée) ;
-// - entretien : chaque matin, entretien (PO, mounts.json) par monture ; « Relâcher » (sans propriétaire) libère sa place.
+// - entretien : chaque matin, entretien (PO, mounts.json) par monture ; « Relâcher » (sans propriétaire) libère sa place ;
+// - nos montures au combat (Idan, 2026-11-07 : « La monture peut mourir indépendamment du cavalier ou être blessée en fin de
+//   mission. Si le cavalier meurt, elle repart dans l'enclos et peut être attribuée à un autre mercenaire. Globalement, elle
+//   a la même fiche qu'un mercenaire. ») : la chaîne de fin de mission de nos mercenaires (mort → blessure → fatigue,
+//   mission-end.js), puis le repos (item.recovery, un jour de moins chaque matin) ; au repos, elle ne part pas en mission ;
+//   son cavalier mort, elle retourne à l'Intendance, sans propriétaire (un autre devra l'apprivoiser).
 // Module pur ; makeItem(type, nom) fabrique l'objet (le générateur).
 (function(root,factory){
   // Le jet de mort (mission-end.js) : lu au moment de créer les règles, le script peut se charger après celui-ci.
@@ -99,7 +104,55 @@
       return {ok:true,mount:item};
     }
 
-    return {BARN,STABLES,sheet,sheetOf,isMount,mountsOf,ownerOf,places,free,canStore,upkeepOf,upkeep,payUpkeep,rollSurvival,capturable,admit,release};
+    // Fin de mission de nos montures : results de resolveMissionEnd (id = celui de l'objet monture) ; days : les durées au
+    // camp (Dispensaire, médecin, bains chauds), comme pour nos mercenaires.
+    const mountById=(state,id)=>mountsOf(state).find(i=>String(i.id)===String(id))||null;
+    function remove(state,item){
+      const company=state.company;
+      company.stock=(company.stock||[]).filter(i=>i!==item);
+      for(const m of company.roster||[]){
+        if(!(m.items||[]).includes(item)) continue;
+        m.items=m.items.filter(i=>i!==item);
+        for(const [slot,id] of Object.entries(m.equipment?.slots||{})) if(String(id)===String(item.id)) m.equipment.slots[slot]=null;
+      }
+    }
+    function applyAftermath(state,results=[],{woundDays=d=>d,fatigueDays=d=>d}={}){
+      const report={dead:[],wounded:[],fatigued:[]};
+      for(const r of results||[]){
+        const item=mountById(state,r.id);
+        if(!item) continue;
+        if(r.dead){ remove(state,item); report.dead.push(item); continue; }
+        item.recovery=r.wounded?{kind:"wounded",daysLeft:woundDays(r.woundDays),sinceDay:state.day}
+          :{kind:"fatigued",daysLeft:fatigueDays(r.fatigueDays),sinceDay:state.day};
+        report[r.wounded?"wounded":"fatigued"].push(item);
+      }
+      return report;
+    }
+    // Chaque matin : un jour de repos de moins.
+    function recoverOneDay(state){
+      const recovered=[];
+      for(const item of mountsOf(state)){
+        if(!item.recovery) continue;
+        item.recovery.daysLeft-=1;
+        if(item.recovery.daysLeft>0) continue;
+        recovered.push({mount:item,kind:item.recovery.kind,owner:ownerOf(state,item)});
+        delete item.recovery;
+      }
+      return recovered;
+    }
+    // Son cavalier mort : ses montures retournent à l'Intendance, sans propriétaire.
+    function returnToStable(state,m){
+      const mounts=(m?.items||[]).filter(isMount);
+      if(!mounts.length) return [];
+      for(const item of mounts) remove(state,item);
+      const back=mounts.map(item=>({...item,owner:null,slot:null}));
+      if(!Array.isArray(state.company.stock)) state.company.stock=[];
+      state.company.stock.push(...back);
+      return back;
+    }
+
+    return {BARN,STABLES,sheet,sheetOf,isMount,mountsOf,ownerOf,places,free,canStore,upkeepOf,upkeep,payUpkeep,rollSurvival,capturable,admit,release,
+      applyAftermath,recoverOneDay,returnToStable};
   }
 
   return {createStableRules,BARN,STABLES,isMount};

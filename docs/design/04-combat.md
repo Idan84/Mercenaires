@@ -391,13 +391,21 @@ chance pour enchaîner plusieurs tirs (sauf arme à feu). Il ne peut passer en m
   mais qui est un peu moins courageuse. Elle a de plus une grande résistance à la magie » ; « résistances élémentaires
   élevées. Genre 50 » ; « La licorne est intelligente et a une grande volonté ») : le destrier, avec Vitesse 110 (10 cases),
   Endurance 100, Courage 30, Intelligence 80, Volonté 85 (296 PV), **Corne** 1D10 perforant 70, résistances au feu, au
-  froid et à la foudre 50 ; loyale bonne. Son sort, Création de double, viendra avec nos montures au combat.
+  froid et à la foudre 50 ; loyale bonne. **Son sort**, comme un mercenaire (Idan : « Reprend le sort qui existe déjà. On
+  lui donne juste des points de mana et des niveaux de compétences de magie ») : Création de double (doc 12), Illusion 50,
+  Réserve de mana 40 (17 mana, portée 5 ; mana plein au début de chaque combat) ; elle le lance pendant sa propre
+  activation, montée ou non (`mounts.json`, `competences_magiques`, `sorts`).
 - **Gabarit** (Idan : « on fait la même chose que pour le dortoir ») : les places du dortoir du peuple (Gobelin, Gnome,
   Halfling 0,5 ; Ogre 2 ; les autres 1) ; celui de la monture dans sa fiche (destrier 2). **On ne monte qu'une bête plus
   grande que soi** : un ogre ne monte pas un destrier.
 - **Un pion, deux fiches** : le cavalier et son cheval sont deux unités (PV, effets, poison, brûlure…), sur les mêmes cases ;
-  le couple a la **taille du cheval** (longue : 2 cases) et regarde vers l'adversaire. Le cheval monté n'agit pas, ne menace
-  personne et n'attaque pas seul ; il subit ses effets au début de l'activation de son cavalier.
+  le couple a la **taille du cheval** (longue : 2 cases) et regarde vers l'adversaire. Le cheval subit ses effets au début de
+  l'activation de son cavalier.
+- **Le cheval monté a son attaque** (Idan, 2026-11-07 : « oui, il a une attaque. La seule chose, c'est le déplacement
+  commun ») : il joue **juste après son cavalier**, comme un mercenaire (son attaque, ses sorts), mais **sur place** : ni
+  déplacement, ni charge, ni second mouvement, ni sentinelle (le couple s'est déplacé avec le cavalier). Ennemis et combat
+  automatique : un sort, sinon son attaque contre un ennemi à son contact. Les attaques d'opportunité restent celles du
+  cavalier.
 - **Déplacement** : celui du cheval (8 cases pour le destrier, 5 pour un humain moyen).
 - **Qui prend les coups** : au corps à corps et en charge, l'attaquant choisit (bouton **Viser le cheval** ; sinon le
   cavalier) ; au tir et pour un sort qui vise, un jet : le cheval est visé à gabarit du cheval ÷ (gabarit du cheval + gabarit
@@ -421,9 +429,12 @@ chance pour enchaîner plusieurs tirs (sauf arme à feu). Il ne peut passer en m
   « Pour les montures, on les contrôle comme on contrôle un mercenaire. Avec ou sans cavalier. ») : celui qui a apprivoisé sa
   monture et l'a équipée (emplacement Monture ; doc 11 §8, « Apprivoiser ») part à cheval, avec les mêmes règles que le
   Cavalier. Son cavalier KO, le cheval seul rejoint l'ordre du tour de notre équipe : on le joue comme un mercenaire (il fuit
-  comme tout combattant). En fin de combat, notre monture restée KO sur la carte passe le test de survie des montures
-  capturées : morte, elle est perdue (il devra en apprivoiser une autre) ; elle ne passe pas la chaîne mort → blessure →
-  fatigue de nos mercenaires.
+  comme tout combattant). En fin de combat (Idan : « La monture peut mourir indépendamment du cavalier ou être blessée en fin
+  de mission. Si le cavalier meurt, elle repart dans l'enclos et peut être attribuée à un autre mercenaire. Globalement, elle
+  a la même fiche qu'un mercenaire. ») : notre monture passe la **chaîne de nos mercenaires** (doc 10 : mort → blessure →
+  fatigue, avec le jet doublé d'une défaite de contrat) ; morte, elle est perdue ; blessée ou fatiguée, elle se repose aux
+  Écuries autant de jours qu'un mercenaire (Dispensaire, médecin, bains chauds) et, d'ici là, son cavalier part à pied. Son
+  cavalier mort, elle retourne à l'Intendance, sans propriétaire : un autre mercenaire devra l'apprivoiser.
 - Code : `combat-engine.js` (`mountOf`, `canRide`, `mentalStat`, `mountChargeForce`, `rollShotTarget`), `missions.js`
   (`createMount`), `mission.js` (`missionMountOf`, `attachMissionMount`, `settleMissionMounts`, `settleOwnMissionMounts`,
   `missionAimed`). Tests : `tests/mounts.test.js`, `tests/own-mounts.test.js`.

@@ -14,10 +14,15 @@ const mountWords=item=>{
 };
 
 // Le statut d'une monture : à l'Intendance, à un mercenaire (non équipable tant qu'il ne l'a pas apprivoisée), apprivoisée.
+// Au repos après une mission (Idan, 2026-11-07 : « elle a la même fiche qu'un mercenaire ») : blessée ou fatiguée, N jours.
+function mountRest(item){
+  const r=item?.recovery;
+  return r?`${r.kind==="wounded"?"blessée":"fatiguée"}, indisponible ${fmt(r.daysLeft)} j`:"";
+}
 function mountStatus(c,item){
-  const rules=stableRules(),owner=rules?.ownerOf(c,item);
-  if(!owner) return "à l’Intendance";
-  return item.tamedBy===owner.id?`à ${owner.name}, apprivoisée`:`à ${owner.name}, non équipable (à apprivoiser)`;
+  const rules=stableRules(),owner=rules?.ownerOf(c,item),rest=mountRest(item);
+  const where=!owner?"à l’Intendance":item.tamedBy===owner.id?`à ${owner.name}, apprivoisée`:`à ${owner.name}, non équipable (à apprivoiser)`;
+  return rest?`${where} · ${rest}`:where;
 }
 
 function stableHtml(c){
@@ -109,9 +114,13 @@ function releaseStableMount(id){
   renderGame();
 }
 
-// Journal du matin : l'entretien du jour.
+// Journal du matin : l'entretien du jour, les montures remises de leur mission.
 function logStableUpkeep(report){
   if(report?.total) tavernLog("Écuries : −"+fmt(report.total)+" PO d’entretien ("+fmt(report.count)+" monture"+(report.count>1?"s":"")+").","gear");
+  for(const r of report?.recovered||[]){
+    const e=mountWords(r.mount).it==="la"?"e":"";
+    tavernLog(`${r.mount.name}${r.owner?" de "+r.owner.name:""} est ${r.kind==="wounded"?"guéri"+e+" de ses blessures":"reposé"+e}.`,"turn");
+  }
 }
 // Retour d'une escouade : les montures capturées entrent aux Écuries, ou sont relâchées faute de place.
 function logStableArrivals(report){

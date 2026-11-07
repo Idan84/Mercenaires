@@ -625,8 +625,14 @@
     // (unit.camouflaged) ; au début de chaque tour, chaque personnage tente de repérer chaque ennemi encore camouflé dans sa
     // ligne de vue : P = 100 / (1 + e^(−Δ/15)), Δ = Perception − (Discrétion + couverture) + 40 − 5 × distance, de 5 à 95 %.
     // cover : le bonus de couverture (STEALTH.partialCover, STEALTH.totalCover), quand le décor existera.
+    // Un cavalier (Idan, 2026-11-07 : « Quand un cavalier est sur une monture, c'est la discrétion minimale des deux qui est
+    // prise en compte. ( Dur de se camoufler sur un dragon) ») : la plus basse du cavalier et de sa monture.
+    function stealthOf(unit){
+      const own=statWithGear(unit,"Discrétion"),m=mountOf(unit);
+      return m?Math.min(own,statWithGear(m,"Discrétion")):own;
+    }
     function detectionChance(observer,target,distance,cover=0){
-      const delta=statWithGear(observer,"Perception")-(statWithGear(target,"Discrétion")+cover)+STEALTH.offset-STEALTH.distance*distance;
+      const delta=statWithGear(observer,"Perception")-(stealthOf(target)+cover)+STEALTH.offset-STEALTH.distance*distance;
       return clamp(100/(1+Math.exp(-delta/STEALTH.scale)),STEALTH.min,STEALTH.max);
     }
     function rollDetection(observer,target,distance,cover=0){
@@ -1341,6 +1347,7 @@
       bodySize,
       canRide,
       riderShare,
+      stealthOf,
       mentalStat,
       mountChargeForce,
       mountHitChance,

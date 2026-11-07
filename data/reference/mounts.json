@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "mounts",
-  "description": "Montures (Idan, 2026-11-07 ; doc 04, « Combat à cheval » ; doc 11 §8). Une fiche fixe par monture : le destrier et la licorne (plus rapide, plus endurante, une corne, un peu moins courageuse, intelligente, une grande volonté et de fortes résistances élémentaires). Valeur = 300 × entretien (economy.mount_value_per_upkeep). gabarit : sa taille sur l'échelle des places du dortoir (peoples.json, places_dortoir : 0,5, 1, 2…) ; on ne monte qu'une bête plus grande que soi (un humain, 1, monte un destrier, 2 ; un ogre, 2, ne peut pas). taille : ses cases au combat (longue = 2). PV = 3 × (Constitution + 0,2 × Endurance + 0,1 × Volonté), comme nos mercenaires. Monté, le cheval prête son déplacement ; le Courage et la Volonté du couple se partagent selon la compétence du cavalier (Compagnon animal + espece). Sans cavalier, il se bat avec son arme naturelle et fuit comme tout combattant. Résistances, Chance et maîtrise de l'arme naturelle : celles d'un humain moyen (P50). Ses sorts, comme un mercenaire (Idan, 2026-11-07 : « Reprend le sort qui existe déjà. On lui donne juste des points de mana et des niveaux de compétences de magie ») : la licorne, Création de double (Illusion 50, Réserve de mana 40).",
+  "description": "Montures (Idan, 2026-11-07 ; doc 04, « Combat à cheval » ; doc 11 §8). Une fiche fixe par monture : le destrier et la licorne (plus rapide, plus endurante, une corne, un peu moins courageuse, intelligente, une grande volonté et de fortes résistances élémentaires). Valeur = 300 × entretien (economy.mount_value_per_upkeep). gabarit : sa taille sur l'échelle des places du dortoir (peoples.json, places_dortoir : 0,5, 1, 2…) ; on ne monte qu'une bête plus grande que soi (un humain, 1, monte un destrier, 2 ; un ogre, 2, ne peut pas). taille : ses cases au combat (longue = 2). PV = 3 × (Constitution + 0,2 × Endurance + 0,1 × Volonté), comme nos mercenaires. Monté, le cheval prête son déplacement ; le Courage et la Volonté du couple se partagent selon la compétence du cavalier (Compagnon animal + espece). Sans cavalier, il se bat avec son arme naturelle et fuit comme tout combattant. Résistances, Chance et maîtrise de l'arme naturelle : celles d'un humain moyen (P50). Une fiche complète, comme un mercenaire (Idan, 2026-11-07 : « la monture doit avoir une fiche complète comme les mercenaires. Les ennemis également » ; valeurs validées : « Parfait ») : Charisme, Puissance magique, Réserve de mana, Discrétion 10 (la Discrétion d'un couple est la plus basse des deux), Intimidation, physiologie ; artisanat, camp et compétences animales à 0. Ses sorts, comme un mercenaire (Idan, 2026-11-07 : « Reprend le sort qui existe déjà. On lui donne juste des points de mana et des niveaux de compétences de magie ») : la licorne, Création de double (Illusion 50, Réserve de mana 40).",
   "columns": [
     {
       "source": "Nom",
@@ -48,6 +48,14 @@
       "key": "sorts"
     },
     {
+      "source": "Compétences sociales (Intimidation)",
+      "key": "competences_sociales"
+    },
+    {
+      "source": "Physiologie (Régénération, Vision nocturne, Vol)",
+      "key": "physiologie"
+    },
+    {
       "source": "Capturable",
       "key": "capturable"
     },
@@ -87,7 +95,10 @@
         "Volonté": 30,
         "Perception": 60,
         "Intelligence": 10,
-        "Chance": 60
+        "Chance": 60,
+        "Charisme": 30,
+        "Puissance magique": 0,
+        "Réserve de mana": 0
       },
       "resistances": {
         "Résistance physique": 5,
@@ -98,7 +109,8 @@
       },
       "competences_martiales": {
         "Armes naturelles": 54,
-        "Sabots": 50
+        "Sabots": 50,
+        "Discrétion": 10
       },
       "attaque": {
         "nom": "Sabots",
@@ -107,6 +119,14 @@
       },
       "competences_magiques": {},
       "sorts": [],
+      "competences_sociales": {
+        "Intimidation": 40
+      },
+      "physiologie": {
+        "Régénération": 0,
+        "Vision nocturne": false,
+        "Vol": false
+      },
       "capturable": true,
       "entretien": 10,
       "alignement": "Neutre",
@@ -131,7 +151,9 @@
         "Perception": 60,
         "Intelligence": 80,
         "Chance": 60,
-        "Réserve de mana": 40
+        "Réserve de mana": 40,
+        "Charisme": 70,
+        "Puissance magique": 50
       },
       "resistances": {
         "Résistance physique": 5,
@@ -142,7 +164,8 @@
       },
       "competences_martiales": {
         "Armes naturelles": 54,
-        "Corne": 50
+        "Corne": 50,
+        "Discrétion": 10
       },
       "attaque": {
         "nom": "Corne",
@@ -158,6 +181,14 @@
           "maitrise": 1
         }
       ],
+      "competences_sociales": {
+        "Intimidation": 20
+      },
+      "physiologie": {
+        "Régénération": 0,
+        "Vision nocturne": false,
+        "Vol": false
+      },
       "capturable": true,
       "entretien": 30,
       "alignement": "Loyal bon",

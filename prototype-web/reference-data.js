@@ -29,6 +29,7 @@ const REFERENCE_FILES = {
   terrainDecors: "terrain-decors.json",
   missionLandscapes: "mission-landscapes.json",
   mounts: "mounts.json",
+  animalNames: "animal-names.json",
   potions: "potions.json",
   oneShotMissions: "one-shot-missions.json",
   dormitoryQuality: "dormitory-quality.json",

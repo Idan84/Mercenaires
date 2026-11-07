@@ -22,6 +22,7 @@ function dealSlotLabel(slot){
 function dealItemLabel(item){
   if(!item) return "";
   if(item.itemType==="potion") return item.name;
+  if(item.itemType==="mount") return item.petName?item.petName+" · "+item.name:item.name;
   return (typeof itemCardRules==="function"?itemCardRules()?.title(item):null)||item.name;
 }
 function dealItemIn(m,slot){

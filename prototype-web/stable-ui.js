@@ -6,11 +6,14 @@
 function stableRules(){ return typeof campaignRules==="function"?campaignRules().stableRules||null:null; }
 function tamingRules(){ return typeof campaignRules==="function"?campaignRules().tamingRules||null:null; }
 const pct=p=>p>=10||p===0?fmt(Math.round(p)):String(Math.round(p*10)/10).replace(".",",");
-// « son destrier », « sa licorne » ; « le », « la ».
+// Son nom (Idan, 2026-11-07 : « à la capture ou à l'achat de l'animal, on lui attribue un nom ») : celui qu'on lui a
+// donné (stables.js, giveName), l'espèce à défaut.
+const mountName=item=>item?.petName||item?.name||"Monture";
+// « son destrier Tonnerre », « sa licorne Nacre » ; « le », « la ».
 const FEMININE_MOUNTS=new Set(["licorne"]);
 const mountWords=item=>{
   const name=String(item?.name||"").toLocaleLowerCase("fr"),female=FEMININE_MOUNTS.has(name);
-  return {own:(female?"sa ":"son ")+name,it:female?"la":"le"};
+  return {own:(female?"sa ":"son ")+name+(item?.petName?" "+item.petName:""),it:female?"la":"le",e:female?"e":""};
 };
 
 // Le statut d'une monture : à l'Intendance, à un mercenaire (non équipable tant qu'il ne l'a pas apprivoisée), apprivoisée.
@@ -31,7 +34,7 @@ function stableHtml(c){
   const places=rules.places(c),mounts=rules.mountsOf(c);
   if(!places&&!mounts.length) return "";
   const rows=mounts.map(m=>`<div class="study-row">
-      <div class="building-info"><strong>${esc(m.name)}</strong><span>${esc([mountStatus(c,m),m.origin,m.day?"jour "+fmt(m.day):"",fmt(rules.upkeepOf(m))+" PO par jour"].filter(Boolean).join(" · "))}</span>${tamingLine(c,m)}</div>
+      <div class="building-info"><strong data-rename-host>${esc(mountName(m))}${typeof renameButton==="function"?renameButton("mount",m.id):""}</strong><span>${esc([m.petName?m.name:"",mountStatus(c,m),m.origin,m.day?"jour "+fmt(m.day):"",fmt(rules.upkeepOf(m))+" PO par jour"].filter(Boolean).join(" · "))}</span>${tamingLine(c,m)}</div>
       ${m.owner==null?`<div class="study-actions"><button type="button" class="secondary" data-stable-release="${esc(m.id)}">Relâcher</button></div>`:tamingAction(c,m)}
     </div>`).join("");
   const upkeep=rules.upkeep(c);
@@ -96,11 +99,21 @@ function logTaming(report){
 function mountCardHtml(item){
   const c=game.campaign,rules=stableRules(),sheet=rules?.sheetOf(item);
   if(!sheet) return "";
-  const lines=[sheet.espece,sheet.alignement,fmt(rules.upkeepOf(item))+" PO par jour"].filter(Boolean).join(" · ");
+  const lines=[item.petName?item.name:"",sheet.espece,sheet.alignement,fmt(rules.upkeepOf(item))+" PO par jour"].filter(Boolean).join(" · ");
   return `<div class="item-card">
-    <div class="item-card-names"><strong class="item-card-title">${esc(item.name)}</strong><span class="item-card-sub">${esc(lines)}</span></div>
+    <div class="item-card-names"><strong class="item-card-title">${esc(mountName(item))}</strong><span class="item-card-sub">${esc(lines)}</span></div>
     ${c?`<p class="item-card-flavor">${esc(mountStatus(c,item))}</p>`:""}
   </div>`;
+}
+
+// Le renommer (Idan, 2026-11-07 : « renommer un mercenaire ou un animal librement ») : le crayon à côté de son nom.
+function renameStableMount(button){
+  const item=stableRules()?.mountsOf(game.campaign).find(i=>String(i.id)===String(button.dataset.renameId));
+  if(!item) return;
+  renameField(button.closest("[data-rename-host]"),mountName(item),name=>{
+    if(name!=null&&stableRules().rename(game.campaign,item.id,name).ok) saveGame();
+    renderGame();
+  });
 }
 
 function releaseStableMount(id){
@@ -109,7 +122,7 @@ function releaseStableMount(id){
   const result=rules.release(c,id);
   if(typeof closeDealMenu==="function") closeDealMenu();
   if(!result.ok){ tavernLog(result.reason,"bad"); return; }
-  tavernLog(result.mount.name+" est relâché"+(/e$/.test(result.mount.name)?"e":"")+" : une place se libère aux Écuries.","info");
+  tavernLog(mountName(result.mount)+" est relâché"+mountWords(result.mount).e+" : une place se libère aux Écuries.","info");
   saveGame();
   renderGame();
 }
@@ -118,19 +131,21 @@ function releaseStableMount(id){
 function logStableUpkeep(report){
   if(report?.total) tavernLog("Écuries : −"+fmt(report.total)+" PO d’entretien ("+fmt(report.count)+" monture"+(report.count>1?"s":"")+").","gear");
   for(const r of report?.recovered||[]){
-    const e=mountWords(r.mount).it==="la"?"e":"";
-    tavernLog(`${r.mount.name}${r.owner?" de "+r.owner.name:""} est ${r.kind==="wounded"?"guéri"+e+" de ses blessures":"reposé"+e}.`,"turn");
+    const e=mountWords(r.mount).e;
+    tavernLog(`${mountName(r.mount)}${r.owner?" de "+r.owner.name:""} est ${r.kind==="wounded"?"guéri"+e+" de ses blessures":"reposé"+e}.`,"turn");
   }
 }
 // Retour d'une escouade : les montures capturées entrent aux Écuries, ou sont relâchées faute de place.
 function logStableArrivals(report){
-  for(const m of report?.kept||[]) tavernLog(m.name+" rejoint les Écuries.","gear");
+  for(const m of report?.kept||[]) tavernLog(`${mountName(m)}${m.petName?" ("+m.name+")":""} rejoint les Écuries.`,"gear");
   for(const m of report?.released||[]) tavernLog((m.name||"Une monture")+" : pas de place aux Écuries, relâchée.","bad");
 }
 
 if(typeof document!=="undefined") document.addEventListener("click",event=>{
   const button=event.target.closest?.("[data-stable-release]");
   if(button){ releaseStableMount(button.dataset.stableRelease); return; }
+  const rename=event.target.closest?.("[data-rename='mount']");
+  if(rename){ renameStableMount(rename); return; }
   const start=event.target.closest?.("[data-taming-start]");
   if(start){ startTaming(start.dataset.tamingStart); return; }
   const stop=event.target.closest?.("[data-taming-stop]");

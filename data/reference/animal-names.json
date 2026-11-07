@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "name": "animal-names",
+  "description": "Noms de nos animaux (Idan, 2026-11-07 : « à la capture ou à l'achat de l'animal, on lui attribue un nom ( il faut faire une liste de noms pour chaque animal) »). Une liste par animal (code de mounts.json) ; à son arrivée dans la compagnie, il reçoit un nom de sa liste qu'aucun autre de nos animaux ne porte (stables.js, giveName). Le joueur peut le renommer librement.",
+  "columns": [
+    {
+      "source": "Animal (code de mounts.json)",
+      "key": "code"
+    },
+    {
+      "source": "Noms",
+      "key": "noms"
+    }
+  ],
+  "row_count": 3,
+  "rows": [
+    {
+      "code": "destrier",
+      "noms": ["Tonnerre", "Brise-Vent", "Fougueux", "Sombrecrin", "Éclair", "Orage", "Fer-de-Lance", "Cendre", "Bravache", "Hardi", "Tempête", "Roc", "Vaillant", "Rouan", "Fléau", "Silex", "Sabre", "Charbon", "Gaillard", "Comète", "Bourrasque", "Flamberge", "Hussard", "Piaffe"]
+    },
+    {
+      "code": "licorne",
+      "noms": ["Aube-d'Argent", "Lune-Claire", "Nacre", "Étoile", "Opaline", "Brume", "Perle", "Aurore", "Clarté", "Givre", "Iris", "Albe", "Candide", "Lys", "Neige", "Rosée", "Sylphe", "Aster", "Félicité", "Ondine", "Célesta", "Blanche-Corne", "Pâle-Crinière", "Songe"]
+    },
+    {
+      "code": "loup",
+      "noms": ["Croc", "Griffe-Noire", "Hurleur", "Cendre-Grise", "Ombre-Lune", "Rôdeur", "Sauvage", "Grisou", "Mâchefer", "Saignée", "Faucheur", "Écorche", "Brumeloup", "Taïga", "Vorace", "Givrecroc", "Ronce", "Charogne", "Balafre", "Fenrir", "Sorgue", "Pillard", "Noirpoil", "Hargne"]
+    }
+  ]
+}

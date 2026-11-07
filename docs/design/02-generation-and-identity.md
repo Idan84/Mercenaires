@@ -181,7 +181,8 @@ Décision d'Idan du 2026-10-21. Les données sont dans `data/reference/character
 | Steppes désertiques | indienne |
 
 - **Autres peuples** : prénoms propres au peuple, pour les femmes et pour les hommes ; noms de famille propres à la culture.
-- **Capitaine** : son nom est saisi par le joueur et ne change jamais.
+- **Capitaine** : son nom est saisi par le joueur et ne change jamais (sauf si le joueur le renomme).
+- **Renommer** (Idan, 2026-11-07 : « Je voudrais ajouter la possibilité pour le joueur de renommer un mercenaire ou un animal librement ») : sur sa fiche, le crayon à côté du nom ; n'importe quel mercenaire de la compagnie, capitaine compris. Le premier mot devient son prénom (les dialogues l'emploient), le reste son nom de famille. 40 caractères au plus. Code : `campaign.js` (`renameMember`), `ui.js` (`renameField`). Test : `tests/animal-names.test.js`.
 - **Anciennes sauvegardes** : les personnages déjà créés gardent leur nom.
 - **Sans avatar sexué** (choix technique de JC3, à valider) : le sexe tiré pour le nom devient celui du personnage, et le portrait attribué plus tard le respecte.
 

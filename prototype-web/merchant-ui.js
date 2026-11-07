@@ -9,7 +9,9 @@ function merchantRules(){
   return game.merchantRules||(game.merchantRules=MercenairesMerchants.createMerchantRules({reference:game.referenceData,
     generator:game.generator,affinity:affinityRules(),
     // Une monture demande une place aux Écuries (Idan, 2026-11-07).
-    canStore:(state,item)=>typeof campaignRules==="function"&&campaignRules().stableRules?campaignRules().stableRules.canStore(state,item):{ok:true}}));
+    canStore:(state,item)=>typeof campaignRules==="function"&&campaignRules().stableRules?campaignRules().stableRules.canStore(state,item):{ok:true},
+    // Elle reçoit son nom à l'achat (Idan, 2026-11-07).
+    onAcquire:(state,item)=>{ if(typeof campaignRules==="function") campaignRules().stableRules?.giveName(state,item); }}));
 }
 
 const merchantIsWoman=m=>String(m?.sex||"").toLowerCase().startsWith("f");

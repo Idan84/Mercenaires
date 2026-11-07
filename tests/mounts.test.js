@@ -65,6 +65,7 @@ const goblin = generator.createMercenary({id: ++uid, captain, forcedPeople: "Gob
 assert.equal(engine.canRide({character: human}, {character: horseChar}), true, "un humain (1) monte un destrier (2)");
 assert.equal(engine.canRide({character: goblin}, {character: horseChar}), true);
 assert.equal(engine.canRide({character: ogre}, {character: horseChar}), false, "un ogre (2) ne peut pas");
+const foot0 = () => ({character: generator.createMercenary({id: 777777, captain, forcedPeople: "Humain"}), q: 1, r: 1, alive: true, activeSet: 1, team: "player"});
 const pair = (character, skills = {}) => {
   character.skills.animal = {...character.skills.animal, ...skills};
   const rider = {character, q: 5, r: 5, facing: 3, alive: true, activeSet: 1, team: "enemy"};
@@ -87,6 +88,17 @@ assert.equal(Math.round(engine.mountHitChance(rider) * 10) / 10, 66.7, "humain s
 assert.equal(engine.mountHitChance(pair(goblin)), 80, "gobelin sur destrier : 2 ÷ 2,5");
 assert.equal(engine.pairOf(rider.mount), rider, "un cheval monté répond par son cavalier");
 assert.equal(engine.threatens(rider.mount, {q: 4, r: 5}), true, "monté, le cheval menace aussi, de ses sabots (Idan : « oui »)");
+// Une fiche complète, comme un mercenaire (Idan : « la monture doit avoir une fiche complète comme les mercenaires. Les ennemis
+// également » ; « Parfait ») ; la Discrétion d'un couple est la plus basse des deux (« Dur de se camoufler sur un dragon »).
+assert.deepEqual(["Charisme", "Puissance magique", "Réserve de mana"].map(k => horseChar.stats[k]), [30, 0, 0]);
+assert.deepEqual([horseChar.skills.martial["Discrétion"], horseChar.skills.social.Intimidation, horseChar.skills.physiology["Vision nocturne"]], [10, 40, false]);
+assert.deepEqual(Object.keys(horseChar.skills).sort(), ["animal", "camp", "craft", "magic", "martial", "physiology", "social", "technique"]);
+const unicornChar = rules.createMount("licorne", {id: "u1"});
+assert.deepEqual([unicornChar.stats.Charisme, unicornChar.stats["Puissance magique"], unicornChar.stats["Réserve de mana"], unicornChar.skills.social.Intimidation], [70, 50, 40, 20]);
+human.skills.martial["Discrétion"] = 35;
+assert.equal(engine.stealthOf(rider), 10, "à cheval : la plus basse des deux");
+assert.equal(engine.stealthOf({...rider, mount: null}), engine.statWithGear({...rider, mount: null}, "Discrétion"), "à pied : la sienne");
+assert.ok(engine.detectionChance(foot0(), rider, 3) > engine.detectionChance(foot0(), {...rider, mount: null}, 3), "plus facile à repérer à cheval");
 // Au corps à corps, le cavalier compte comme un niveau plus haut (rien contre le cheval).
 const foot = {character: generator.createMercenary({id: ++uid, captain, forcedPeople: "Humain"}), q: 3, r: 5, alive: true, activeSet: 1, team: "player"};
 const alone = {...rider, mount: null};

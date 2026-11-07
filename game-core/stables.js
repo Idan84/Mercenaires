@@ -117,7 +117,8 @@
       const s=sheetOf(item);
       if(!s) return null;
       item.sheet={stats:{...(s.caracteristiques||{})},resistances:{...(s.resistances||{})},
-        skills:{martial:{...(s.competences_martiales||{})},magic:{...(s.competences_magiques||{})}},
+        skills:{martial:{...(s.competences_martiales||{})},magic:{...(s.competences_magiques||{})},social:{...(s.competences_sociales||{})},
+          physiology:{...(s.physiologie||{})}},
         spells:(s.sorts||[]).map(x=>({code:x.code,name:spellRows.get(x.code)?.nom||x.code,school:spellRows.get(x.code)?.ecole||null,
           mastery:Number(x.maitrise)||1})),xp:{}};
       return item.sheet;

@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 391,
+  "row_count": 392,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -3160,6 +3160,14 @@
       "description": "Combat à cheval (doc 04 ; Idan, 2026-11-07) : monté, le Courage et la Volonté du couple = ceux du cheval + (ceux du cavalier − ceux du cheval) × part ; part = (Compagnon animal + compétence de la famille de la monture) ÷ ce nombre, au plus 1.",
       "formule": "Monture",
       "valeur": 100,
+      "version": "V1"
+    },
+    {
+      "nom": "Monture — valeur",
+      "code": "economy.mount_value_per_upkeep",
+      "description": "Montures (Idan, 2026-11-07 : « la valeur d'un animal soit de 300 x coût d'entretien ») : valeur cachée d'une monture = ce nombre × son entretien journalier (mounts.json) ; les marchands l'achètent et la vendent à leurs prix habituels (doc 18).",
+      "formule": "Économie",
+      "valeur": 300,
       "version": "V1"
     }
   ]

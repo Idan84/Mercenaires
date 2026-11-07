@@ -7,7 +7,9 @@
 // « Je prends » ou « Pas aujourd'hui ». Règles : game-core/merchants.js.
 function merchantRules(){
   return game.merchantRules||(game.merchantRules=MercenairesMerchants.createMerchantRules({reference:game.referenceData,
-    generator:game.generator,affinity:affinityRules()}));
+    generator:game.generator,affinity:affinityRules(),
+    // Une monture demande une place aux Écuries (Idan, 2026-11-07).
+    canStore:(state,item)=>typeof campaignRules==="function"&&campaignRules().stableRules?campaignRules().stableRules.canStore(state,item):{ok:true}}));
 }
 
 const merchantIsWoman=m=>String(m?.sex||"").toLowerCase().startsWith("f");

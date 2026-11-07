@@ -21,9 +21,11 @@ const FAMILIES=[
   ["weapon","Armes","weapons.json"],["armor","Armures","base-armors.json"],["helmet","Casques","helmets.json"],
   ["boots","Bottes","boots.json"],["belt","Ceintures","belts.json"],["amulet","Amulettes","amulets.json"],
   ["cape","Capes","capes.json"],["gloves","Gants","gloves.json"],["pants","Culottes","pants.json"],
-  ["ring","Bagues","rings.json"],["potion","Fioles","potions.json"]
+  ["ring","Bagues","rings.json"],["potion","Fioles","potions.json"],["mount","Montures","mounts.json"]
 ];
 const TARGET=2;
+// Les montures (Idan, 2026-11-07) : un marchand chacune, nommé par Idan (Amar le destrier, Ysolwen la licorne).
+const targetOf=item=>item.type==="mount"?1:TARGET;
 
 function coverage(){
   const merchants=rows(read("merchants.json"));
@@ -38,24 +40,24 @@ function coverage(){
   const known=new Set(items.map(i=>i.type==="manual"?"manual|"+i.school:i.type+"|"+i.name));
   const unknown=merchants.flatMap(m=>(m.vend||[]).filter(v=>!known.has(key(v))).map(v=>`${m.nom} : ${v.objet||v.ecole}`));
   for(const item of items) item.sellers=merchants.filter(m=>(m.vend||[]).some(v=>key(v)===(item.type==="manual"?"manual|"+item.school:item.type+"|"+item.name))).map(firstName);
-  const count=n=>items.filter(i=>n(i.sellers.length)).length;
+  const count=n=>items.filter(i=>n(i.sellers.length,targetOf(i))).length;
   return {
     merchants:merchants.map(m=>({name:m.nom,culture:m.culture,sex:m.sexe,count:(m.vend||[]).length,
       sells:(m.vend||[]).map(v=>v.type==="manual"?"Manuels "+of(v.ecole):v.objet)})),
     items,unknown,
-    summary:{total:items.length,covered:count(n=>n>=TARGET),once:count(n=>n===1),none:count(n=>n===0)}
+    summary:{total:items.length,covered:count((n,t)=>n>=t),once:count((n,t)=>n===1&&t>1),none:count(n=>n===0)}
   };
 }
 
 function markdown(c){
   const s=c.summary;
   const lines=[START,"",
-    `**Bilan** : ${s.total} objets ; **${s.covered}** vendus par au moins ${TARGET} marchands, **${s.once}** par un seul, **${s.none}** par aucun.`,"",
+    `**Bilan** : ${s.total} objets ; **${s.covered}** vendus par au moins ${TARGET} marchands (les montures : un marchand chacune), **${s.once}** par un seul, **${s.none}** par aucun.`,"",
     `**${c.merchants.length} marchands**, dont ${c.merchants.filter(m=>m.sex==="Femme").length} marchandes.`,"",
     "| Marchand | Culture | Vend | Lignes |","|---|---|---|---|",
     ...c.merchants.map(m=>`| ${m.name} | ${m.culture||"—"} | ${m.sells.join(", ")} | ${m.count} |`),"",
     "| Famille | Objet | Marchands | Nombre |","|---|---|---|---|",
-    ...c.items.map(i=>`| ${i.label} | ${i.name} | ${i.sellers.join(", ")||"—"} | ${i.sellers.length>=TARGET?i.sellers.length:i.sellers.length+" ⚠"} |`),
+    ...c.items.map(i=>`| ${i.label} | ${i.name} | ${i.sellers.join(", ")||"—"} | ${i.sellers.length>=targetOf(i)?i.sellers.length:i.sellers.length+" ⚠"} |`),
     "",END];
   return lines.join("\n");
 }
@@ -82,4 +84,4 @@ function main(){
 }
 
 if(require.main===module) main();
-module.exports={coverage,markdown,START,END};
+module.exports={coverage,markdown,targetOf,START,END};

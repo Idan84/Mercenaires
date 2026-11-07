@@ -62,7 +62,8 @@ api = new Function("game", "$", "esc", "fmt", "renderAvatar", "combatEngine", "M
   "MercenairesMagic", "missionRules", "campaignRules", mission + "\nreturn {makeMissionUnit,sortMissionInitiative,selectNextMissionPlayer,"
   + "startMissionCamouflage,autoResolveMission,setMissionMapSize,placeMissionArmy,missionUnitHeight,missionUnits,checkMissionEnd,"
   + "missionMountOf,settleOwnMissionMounts,endMissionActivation,missionActionAvailability,performMissionAttack,missionUnitAtCell,"
-  + "enemyMissionAct,missionMagic,handleMissionHexClick,renderMissionSpellBar,setMissionMode,missionSpellUnit,targetableMissionCells};")
+  + "enemyMissionAct,missionMagic,handleMissionHexClick,renderMissionSpellBar,setMissionMode,missionSpellUnit,targetableMissionCells,"
+  + "missionReactors,useMissionPotion,performMissionAttack};")
   .call(null, game, $, v => String(v ?? ""), v => String(Math.round(Number(v) || 0)), () => "", () => combat, Progression, MissionEnd, Magic,
     () => rules, () => campaign);
 api.setMissionMapSize({cols: 30, rows: 15});
@@ -139,16 +140,48 @@ const learned = Progression.createProgressionRules({reference}).gains(duo.progre
 assert.ok(learned["Équidés"] >= 10 && learned["Compagnon animal"] === learned["Équidés"], "Équidés et Compagnon animal : " + JSON.stringify(learned));
 api.endMissionActivation();
 assert.ok(!m.log.some(l => l.message === "Activation de " + duo.mount.character.name + "."), "le cheval ne joue pas après");
+// Le cheval monté menace aussi (Idan : « pourquoi la monture ne fait pas des attaques d'opportunités ? » ; « oui ») : un
+// ennemi qui quitte le contact du couple subit aussi son attaque d'opportunité.
+assert.ok(api.missionReactors(target).includes(duo.mount), "le cheval réagit");
+const away = {q: target.q + (target.q - duo.q) * 3, r: target.r};
+assert.ok(combat.opportunityReactors(api.missionReactors(target), target, {...target, q: away.q, r: away.r}).includes(duo.mount));
+// Une potion de soins avec « Viser le cheval » : c'est le cheval qui la boit (Idan : « oui »).
+const potion = generator.createItemByName("potion", "Potion de soins");
+rider.items.push(potion);
+rider.equipment.slots.belt_item_1 = potion.id;
+duo.mount.hp = 100; duo.quickAvailable = true;
+m.activeUnit = duo; m.phase = "player"; m.aimMount = true;
+assert.equal(api.useMissionPotion(duo, "belt_item_1"), true);
+assert.ok(duo.mount.hp > 100, "le cheval est soigné : " + duo.mount.hp);
+assert.ok(m.log.some(l => /fait boire à Destrier/.test(l.message)));
+m.aimMount = false;
+// Un coup d'IA sur un couple (Idan : « oui ») : le jet du tir décide qui le prend.
+const strikes = {horse: 0, rider: 0};
+for (let i = 0; i < 40; i++) {
+  const before = m.log.length;
+  target.attackAvailable = true;
+  api.performMissionAttack(target, duo, "melee", combat.axialDistance(target, duo));
+  const line = m.log.slice(before).find(l => /^Coup sur /.test(l.message));
+  if (line) strikes[/le cheval le prend/.test(line.message) ? "horse" : "rider"]++;
+  duo.hp = duo.pvMax; duo.mount.hp = duo.mount.pvMax; duo.alive = true; duo.mount.alive = true; duo.fleeing = false; target.fleeing = false;
+  if (m.over) break;
+}
+assert.ok(strikes.horse > strikes.rider && strikes.rider > 0, "le cheval prend environ 2 coups sur 3 : " + JSON.stringify(strikes));
 // Un cavalier ennemi : son cheval frappe aussi, dans la même activation, sur place.
 const enemyRider = rules.applyArchetype(generator.createMercenary({id: 950, captain, forcedPeople: "Humain", forcedCulture: rules.archetype("thief_rider").culture}),
   rules.archetype("thief_rider"), {idPrefix: "c950", name: "Cavalier"});
+const keepCampaign = game.campaign;
+game.campaign = null;
 m = newMission([walker], [enemyRider]);
 const foeRider = m.enemies[0], victim = m.players[0];
 adjacentTo(foeRider, victim);
 victim.camouflaged = false;
+victim.character.undead = true; // sans peur : il reste au contact
 foeRider.fleeing = false;
 api.enemyMissionAct(foeRider);
 assert.ok(m.log.some(l => /^Destrier de Cavalier attaque /.test(l.message)), "le cheval du Cavalier attaque : " + m.log.map(l => l.message).join(" | "));
+delete victim.character.undead;
+game.campaign = keepCampaign;
 // La licorne et son sort (Idan : « Reprend le sort qui existe déjà. On lui donne juste des points de mana et des niveaux de
 // compétences de magie. Comme un mercenaire ») : Création de double, Illusion 50, Réserve de mana 40, lancé depuis la barre de
 // sorts de son cavalier, par elle.

@@ -254,9 +254,17 @@
     // du dortoir : on ne monte qu'une bête plus grande que soi) et la famille de compétence animale qui le mène (Équidés).
     // Ses PV suivent la formule de nos mercenaires (pas de « archetype »).
     function mountSheet(code){ return mountByCode.get(code)||null; }
-    function createMount(code,{id=null,name=null}={}){
+    // own : la fiche propre d'une de nos montures (stables.js, ownSheet) : ses valeurs après progression, son mana.
+    function createMount(code,{id=null,name=null,own=null}={}){
       const s=mountSheet(code);
       if(!s) return null;
+      if(own){
+        const base=createMount(code,{id,name});
+        return Object.assign(base,{stats:{...base.stats,...own.stats},resistances:{...base.resistances,...own.resistances},
+          skills:{...base.skills,martial:{...base.skills.martial,...(own.skills?.martial||{})},magic:{...base.skills.magic,...(own.skills?.magic||{})}},
+          spells:(own.spells||base.spells).map(x=>({...x})),aiSpells:(own.spells||base.spells).map(x=>x.code)},
+          Number.isFinite(Number(own.mana))?{mana:Number(own.mana)}:{});
+      }
       const weapon={id:`${id??s.code}-1`,owner:id,...naturalWeapon(s.attaque||{},s.code)};
       return {id,name:name||s.nom,role:s.nom,people:"",mount:{code:s.code,capturable:s.capturable!==false},
         gabarit:Number(s.gabarit)||1,taille:s.taille||"normale",mountSkill:s.espece||null,

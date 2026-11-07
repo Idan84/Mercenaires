@@ -393,8 +393,10 @@ chance pour enchaîner plusieurs tirs (sauf arme à feu). Il ne peut passer en m
   Endurance 100, Courage 30, Intelligence 80, Volonté 85 (296 PV), **Corne** 1D10 perforant 70, résistances au feu, au
   froid et à la foudre 50 ; loyale bonne. **Son sort**, comme un mercenaire (Idan : « Reprend le sort qui existe déjà. On
   lui donne juste des points de mana et des niveaux de compétences de magie ») : Création de double (doc 12), Illusion 50,
-  Réserve de mana 40 (17 mana, portée 5 ; mana plein au début de chaque combat) ; elle le lance pendant sa propre
-  activation, montée ou non (`mounts.json`, `competences_magiques`, `sorts`).
+  Réserve de mana 40 (17 mana, portée 5) ; montée, depuis la barre de sorts de son cavalier, seule, pendant sa propre
+  activation (`mounts.json`, `competences_magiques`, `sorts`). **Sa fiche à elle** (Idan : « Mana de la licorne + xp
+  licorne ») : chacune de nos montures garde son mana d'un combat à l'autre (recharge au camp comme nos mercenaires) et
+  progresse avec l'XP de ses combats, avec les règles de nos mercenaires (doc 08 ; stables.js, `ownSheet`).
 - **Gabarit** (Idan : « on fait la même chose que pour le dortoir ») : les places du dortoir du peuple (Gobelin, Gnome,
   Halfling 0,5 ; Ogre 2 ; les autres 1) ; celui de la monture dans sa fiche (destrier 2). **On ne monte qu'une bête plus
   grande que soi** : un ogre ne monte pas un destrier.
@@ -402,10 +404,15 @@ chance pour enchaîner plusieurs tirs (sauf arme à feu). Il ne peut passer en m
   le couple a la **taille du cheval** (longue : 2 cases) et regarde vers l'adversaire. Le cheval subit ses effets au début de
   l'activation de son cavalier.
 - **Le cheval monté a son attaque** (Idan, 2026-11-07 : « oui, il a une attaque. La seule chose, c'est le déplacement
-  commun ») : il joue **juste après son cavalier**, comme un mercenaire (son attaque, ses sorts), mais **sur place** : ni
-  déplacement, ni charge, ni second mouvement, ni sentinelle (le couple s'est déplacé avec le cavalier). Ennemis et combat
-  automatique : un sort, sinon son attaque contre un ennemi à son contact. Les attaques d'opportunité restent celles du
-  cavalier.
+  commun » ; « faut pas que l'animal joue après. Ils jouent en même temps, on rajoute des boutons.. l'attaque principale de
+  l'animal qui compte pas pour le mercenaire ») : **pendant l'activation de son cavalier**, le cheval a sa propre action
+  principale et sa propre action rapide : le bouton **Attaque de la monture** (au contact du couple ; « Viser le cheval »
+  vaut aussi pour elle) et ses sorts dans la barre de sorts, avec son mana. Le déplacement est celui du couple. Ennemis et
+  combat automatique : après le cavalier, dans la même activation, un sort, sinon son attaque contre un ennemi au contact.
+  Les attaques d'opportunité restent celles du cavalier.
+- **Ce que le cavalier apprend** (Idan : « xp catégorie animal pour le cavalier ») : chaque attaque de sa monture lui donne
+  de l'XP comme une arme (doc 08 : 10 par attaque, + 5 si elle touche, + 5 si elle blesse), la famille de la monture
+  (Équidés…) comme l'arme et Compagnon animal comme sa catégorie.
 - **Déplacement** : celui du cheval (8 cases pour le destrier, 5 pour un humain moyen).
 - **Qui prend les coups** : au corps à corps et en charge, l'attaquant choisit (bouton **Viser le cheval** ; sinon le
   cavalier) ; au tir et pour un sort qui vise, un jet : le cheval est visé à gabarit du cheval ÷ (gabarit du cheval + gabarit

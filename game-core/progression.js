@@ -43,7 +43,8 @@
       chains:0,woundsTaken:0,heavyArmorHexes:0,courageHeld:0,recoveries:0,worstChoices:0,
       weaponUses:{},twoHandedAttacks:0,oneHandedAttacks:0,dualSequences:0,blocks:{},intimidations:0,
       enemyWounds:{},enemyKnockouts:{},
-      spellCasts:{},manaSpent:0,spellCriticalSuccesses:0,spellCriticalFailures:0
+      spellCasts:{},manaSpent:0,spellCriticalSuccesses:0,spellCriticalFailures:0,
+      animalUses:{}
     };
   }
   function logOf(unit){ return unit.progress||(unit.progress=emptyLog()); }
@@ -81,6 +82,16 @@
       if(result.twoHanded&&result.mode==="melee") logOf(attacker).twoHandedAttacks++;
       // Combat à une main (Idan, 2026-11-02) : chaque attaque avec une arme à une main tenue seule, mêlée ou tir.
       if(result.oneHanded) logOf(attacker).oneHandedAttacks=(logOf(attacker).oneHandedAttacks||0)+1;
+    }
+    // Compétences animales du cavalier (Idan, 2026-11-07 : « xp catégorie animal pour le cavalier ») : chaque attaque de sa
+    // monture, comme une arme : la famille de la monture (Équidés…) comme l'arme, Compagnon animal comme sa catégorie.
+    const rider=attacker?.rider&&attacker.rider.mount===attacker?attacker.rider:null;
+    if(rider&&result.weapon&&!result.chargeFall&&!result.accidental){
+      const family=attacker.character?.mountSkill||"Compagnon animal",uses=logOf(rider).animalUses||(logOf(rider).animalUses={});
+      const use=uses[family]||(uses[family]={attacks:0,hits:0,wounds:0});
+      use.attacks++;
+      if(result.hit&&!result.blocked&&!result.parried) use.hits++;
+      if(result.wound) use.wounds++;
     }
     // Intelligence : apprendre de ses erreurs quand il choisit le pire type de dégâts (Idan, 2026-10-20).
     if(result.matchup?.choice==="pire"&&!result.accidental) logOf(attacker).worstChoices++;
@@ -386,6 +397,15 @@
       const martial=martialGains(l,mercenary);
       if(Object.keys(martial).length) skills.martial=martial;
       if(l.intimidations) skills.social={Intimidation:l.intimidations*C.skillIntimidation};
+      // Compétences animales : les attaques de sa monture (comme celles d'une arme, mêmes XP).
+      const animal={};
+      for(const [family,use] of Object.entries(l.animalUses||{})){
+        const xp=use.attacks*C.skillWeaponAttack+use.hits*C.skillWeaponHit+use.wounds*C.skillWeaponWound;
+        if(!xp) continue;
+        animal[family]=(animal[family]||0)+xp;
+        if(family!=="Compagnon animal") animal["Compagnon animal"]=(animal["Compagnon animal"]||0)+xp;
+      }
+      if(Object.keys(animal).length) skills.animal=animal;
       const burns=Number(l.wounds?.["Résistance au feu"])||0;
       if(burns&&Number(mercenary?.skills?.physiology?.["Régénération"])>0) skills.physiology={"Régénération":burns*C.regenerationBurn};
       const magic=magicGains(l);

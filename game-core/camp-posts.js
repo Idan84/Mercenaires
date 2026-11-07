@@ -5,7 +5,8 @@
 // « Oui pour les maîtres ») : le Doctore au Ludus, le Vétéran à l'Académie de la survie, le Maître des lames au Cercle
 // des Fines Lames ; l'Alchimiste au Labo d'alchimie (Idan, 2026-11-03 : « on va nommer un alchimiste comme chef de salle »).
 // Le titulaire d'un poste : state.company[key + "Id"] (directorId, doctoreId, veteranId, bladeMasterId, alchemistId,
-// pleasureMasterId). Le Maître des plaisirs au Palais des plaisirs (Idan, 2026-11-04).
+// pleasureMasterId, trainerId). Le Maître des plaisirs au Palais des plaisirs (Idan, 2026-11-04) ; le Dresseur à la Grange
+// du dresseur (Idan, 2026-11-07).
 // Nomination et retour sur le terrain : school-director.js ; aide à l'entraînement : school-training.js.
 (function(root,factory){
   const api=factory();
@@ -23,7 +24,10 @@
     {key:"alchemist",building:"alchemy_lab",noun:"Alchimiste",title:"L’Alchimiste",place:"le Labo d’alchimie",short:"le Labo"},
     // Le Maître des plaisirs (Idan, 2026-11-04 : « Le bâtiment a un chef, le maître des plaisirs » ; « Le maître augmente les
     // gains ») : skill, ce qu'on regarde pour le choisir (la salle principale du Palais n'entraîne rien).
-    {key:"pleasureMaster",building:"pleasure_palace",noun:"Maître des plaisirs",title:"Le Maître des plaisirs",place:"le Palais des plaisirs",short:"le Palais",skill:"Charisme"}
+    {key:"pleasureMaster",building:"pleasure_palace",noun:"Maître des plaisirs",title:"Le Maître des plaisirs",place:"le Palais des plaisirs",short:"le Palais",skill:"Charisme"},
+    // Le Dresseur (Idan, 2026-11-07 : « la grange du dresseur et y nommer un mercenaire maître. Ses compétences de dresseur
+    // seront : Animal, Intelligence, Charisme, Intimidation ») : il aide à apprivoiser les montures (taming.js).
+    {key:"trainer",building:"trainer_barn",noun:"Dresseur",title:"Le Dresseur",place:"la Grange du dresseur",short:"la Grange",skill:"Compagnon animal"}
   ];
   const idKey=post=>post.key+"Id";
   const postByKey=key=>POSTS.find(post=>post.key===key)||null;

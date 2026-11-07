@@ -30,7 +30,9 @@ const reference=Object.fromEntries(Object.entries(files).map(([k,f])=>[k,JSON.pa
 assert.deepEqual(Posts.POSTS.map(p=>[p.key,p.building,p.title]),[["director","magic_school","Le directeur de l’École"],
   ["doctore","ludus","Le Doctore"],["veteran","survival_academy","Le Vétéran"],["bladeMaster","blade_circle","Le Maître des lames"],
   // L'Alchimiste (Idan, 2026-11-03 : « En fait, on va nommer un alchimiste comme chef de salle ! »).
-  ["alchemist","alchemy_lab","L’Alchimiste"],["pleasureMaster","pleasure_palace","Le Maître des plaisirs"]]);
+  ["alchemist","alchemy_lab","L’Alchimiste"],["pleasureMaster","pleasure_palace","Le Maître des plaisirs"],
+  // Le Dresseur (Idan, 2026-11-07 : « la grange du dresseur et y nommer un mercenaire maître »).
+  ["trainer","trainer_barn","Le Dresseur"]]);
 for(const p of Posts.POSTS) assert.ok(reference.campBuildings.rows.some(r=>r.code===p.building&&!r.requiert),p.building);
 
 let seed=17;
@@ -136,7 +138,7 @@ state.company.alchemistId=null;
 // Textes : chaque maître a ses répliques (avec les communes), son titre, ses lignes de journal et son compteur.
 const copy=reference.campMastersDialogue;
 const sheet=reference.characterSheetCopy.history;
-for(const key of ["doctore","veteran","bladeMaster","alchemist","pleasureMaster"]){
+for(const key of ["doctore","veteran","bladeMaster","alchemist","pleasureMaster","trainer"]){
   const own=copy.masters[key];
   for(const mood of ["accepted","flattered","vexed"]) assert.ok(own.offer[mood].length>=3,`${key} ${mood}`);
   for(const mood of ["accepted","flattered","vexed","neutral"]) assert.ok(copy.common.recall[mood].length>=3,`retour ${mood}`);

@@ -354,6 +354,11 @@
         "key": "pleasureMasterDays",
         "label": "Jours à la tête du Palais",
         "hideZero": true
+      },
+      {
+        "key": "trainerDays",
+        "label": "Jours à la tête de la Grange",
+        "hideZero": true
       }
     ],
     "events": {
@@ -446,6 +451,17 @@
         "accord": "Quitte le Palais des plaisirs et retourne sur le terrain après {jours}.",
         "refus": "Refuse de quitter le Palais des plaisirs."
       },
+      "trainer": {
+        "accord": "Devient {le Dresseur|la Dresseuse} de la Grange du dresseur.",
+        "refus": "Refuse de devenir {le Dresseur|la Dresseuse} de la Grange du dresseur."
+      },
+      "trainer_recall": {
+        "accord": "Quitte la Grange du dresseur et retourne sur le terrain après {jours}.",
+        "refus": "Refuse de quitter la Grange du dresseur."
+      },
+      "taming": "Entre à la Grange du dresseur pour apprivoiser {monture}.",
+      "taming_done": "A apprivoisé {monture} après {jours} à la Grange du dresseur.",
+      "taming_stopped": "Quitte la Grange du dresseur sans avoir apprivoisé {monture}.",
       "study": {
         "accord": "Accepte d’apprendre {sort} à l’École de magie.",
         "refus": "Refuse d’apprendre {sort}."

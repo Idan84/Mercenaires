@@ -27,10 +27,12 @@
   const salaryReview=typeof module!=="undefined"&&module.exports?require("./salary-review.js"):root.MercenairesSalaryReview;
   // La politique sociale : le salaire des blessés et des corvées, leur affinité.
   const socialPolicy=typeof module!=="undefined"&&module.exports?require("./social-policy.js"):root.MercenairesSocialPolicy;
-  const api=factory(history,regeneration,training,study,posts,armorPorts,armorStudy,lumber,agenda,dungeon,desertion,salaryReview,socialPolicy);
+  // Les Écuries : les montures capturées, leur entretien (facultatif hors du jeu, de même).
+  const stables=typeof module!=="undefined"&&module.exports?require("./stables.js"):root.MercenairesStables;
+  const api=factory(history,regeneration,training,study,posts,armorPorts,armorStudy,lumber,agenda,dungeon,desertion,salaryReview,socialPolicy,stables);
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesCampaign=api;
-})(typeof globalThis!=="undefined"?globalThis:this,function(History,Regeneration,Training,Study,Posts,ArmorPorts,ArmorStudy,Lumber,Agenda,Dungeon,Desertion,SalaryReview,SocialPolicy){
+})(typeof globalThis!=="undefined"?globalThis:this,function(History,Regeneration,Training,Study,Posts,ArmorPorts,ArmorStudy,Lumber,Agenda,Dungeon,Desertion,SalaryReview,SocialPolicy,Stables){
   // Sauvegarde : l'état de partie complet, sérialisé en JSON avec un format et une version.
   // La trace de génération des mercenaires (détail de calcul pour le Design Lab, ~85 % du poids)
   // n'est pas sauvegardée : un mercenaire passe d'environ 36 Ko à 5 Ko.
@@ -782,6 +784,8 @@
       return left;
     }
     const dungeonRules=Dungeon?Dungeon.createDungeonRules({reference,camp:{buildingLevel,expeditionOf,leave:leaveForDungeon}}):null;
+    // Les Écuries (Idan, 2026-11-07 ; règles : stables.js) : les montures capturées, leurs places et leur entretien.
+    const stableRules=Stables?Stables.createStableRules({reference,random,camp:{buildingLevel}}):null;
     // Héritage (issue #111) : 20 % de la part du défunt juste avant son retrait (standing : sa place au classement), figés
     // pour toujours et comptés une seule fois. Le capitaine n'en laisse pas : sa mort met fin à la partie.
     function recordHeritage(state,mercenary,standing){
@@ -905,7 +909,7 @@
     }
     function campBuildingEffects(state){
       return {woundFactor:woundCareFactor(state),medicFactor:medicCareFactor(state),fatigueRelief:fatigueRelief(state),manaBonus:manaBonusPercent(state),
-        bodyguardPay:bodyguardPayBonus(state)};
+        bodyguardPay:bodyguardPayBonus(state),stablePlaces:stableRules?stableRules.places(state):0};
     }
 
     // Indisponibilité après mission (10-mission-time §4 à §6) : un blessé ou un fatigué ne peut pas
@@ -943,6 +947,8 @@
       state.day+=1;
       const recovered=recoverOneDay(state);
       const salaries=paySalaries(state);
+      // Les Écuries : l'entretien des montures, chaque matin.
+      const stable=stableRules?stableRules.payUpkeep(state):null;
       const tavernReport=tavern.tavernMorning(state.tavern,state.day,candidateFactory(state),tavern.slotsFor?.(companyRenown(state).total));
       const offersLost=expireBoardOffers(state);
       const expeditions=advanceExpeditions(state);
@@ -973,7 +979,7 @@
       const desertion=desertionRules?desertionRules.morning(state):null;
       // Renégociation salariale (Idan, 2026-11-04) : ceux qui ont gagné une étoile.
       const salaryReview=salaryReviewRules?salaryReviewRules.morning(state):null;
-      return {day:state.day,recovered,salaries,tavern:tavernReport,offersLost,expeditions,built,buildings,lieutenants:lieutenantReports,mana,merchant,school,study,armorStudy:armor,poisonStudy:poison,lumber,mine,palace,dungeon,desertion,salaryReview};
+      return {day:state.day,recovered,salaries,tavern:tavernReport,offersLost,expeditions,built,buildings,lieutenants:lieutenantReports,mana,merchant,school,study,armorStudy:armor,poisonStudy:poison,lumber,mine,palace,dungeon,desertion,salaryReview,stable};
     }
 
     // Recharge du mana (doc 12 ; Idan, 2026-10-25) : chaque jour, pour les membres présents au camp, pas pour ceux qui sont
@@ -1124,7 +1130,7 @@
       expedition.memberIds=expedition.memberIds.filter(id=>roster.has(id));
       if(result.renown) state.company.missionRenown=(Number(state.company.missionRenown)||0)+result.renown;
       expedition.pending={victory:result.victory,reward:result.reward,chestGold:result.chestGold,items:[...result.loot,...result.chestItems],
-        bonuses:bonuses.map(b=>({id:b.id,bonus:b.bonus}))};
+        bonuses:bonuses.map(b=>({id:b.id,bonus:b.bonus})),mounts:[...(result.mounts||[])]};
       expedition.status="returning";
       expedition.returnDay=state.day+expedition.offer.distance;
       return expedition.memberIds.length?{expedition}:finishExpedition(state,expedition);
@@ -1141,6 +1147,8 @@
         state.company.stock.push(...(pending.items||[]));
         report.items=(pending.items||[]).length;
         for(const b of pending.bonuses||[]) if(roster.has(b.id)){ state.company.gold-=b.bonus; report.bonusPaid+=b.bonus; }
+        // Les montures capturées rentrent avec l'escouade : une place aux Écuries chacune, sinon relâchées.
+        if(stableRules&&pending.mounts?.length) report.mounts=stableRules.admit(state,pending.mounts);
       }
       expedition.status="done";
       state.expeditions=expeditionsOf(state).filter(e=>e!==expedition);
@@ -1407,7 +1415,7 @@
       completeExpeditionCombat,
       dormitoryFree,
       dormitoryUsed,
-      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,trainingRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,spellStudy,armorStudy,poisonStudy,lumberjacks,miners,palaceWorkers,dungeonRules,desertionRules,salaryReviewRules,socialPolicy:social,agenda,studyBusy,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
+      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,trainingRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,spellStudy,armorStudy,poisonStudy,lumberjacks,miners,palaceWorkers,dungeonRules,desertionRules,salaryReviewRules,stableRules,socialPolicy:social,agenda,studyBusy,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
       woundDaysFor,fatigueDaysFor,
       dormitoryPlaces,
       dormitoryExpansionCost,

@@ -407,7 +407,7 @@ chance pour enchaîner plusieurs tirs (sauf arme à feu). Il ne peut passer en m
   le destrier) ÷ 100, au plus 1 (`combat.monture.partage_diviseur`). **Un seul test de Courage pour le couple** (un coup sur
   le cheval fait tester le couple) ; ils fuient ensemble.
 - **Cheval KO** : le cavalier tombe **au sol** (jusqu'à sa prochaine activation) et se bat à pied ; le cheval reste couché
-  sur sa case (la capture viendra à l'étape suivante).
+  sur sa case : après une victoire, on peut le capturer (doc 11 §8, « La Grange du dresseur et les Écuries »).
 - **Cavalier KO** : le cheval reste, seul : il prend sa place dans l'ordre du tour suivant, se bat avec ses sabots et fuit
   comme tout combattant (son propre Courage, 35). Un cavalier qui sort de la carte emporte son cheval.
 - **Écran** : le pion du couple couvre ses deux cases, avec une seconde barre de PV (le cheval) ; la carte de survol donne

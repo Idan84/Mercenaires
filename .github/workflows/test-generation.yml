@@ -99,6 +99,7 @@ jobs:
       - run: node tests/troll.test.js
       - run: node tests/mission-size.test.js
       - run: node tests/mounts.test.js
+      - run: node tests/stables.test.js
       - run: node tests/stealth.test.js
       - run: node tests/spell-icons.test.js
       - run: node tests/starting-spells.test.js

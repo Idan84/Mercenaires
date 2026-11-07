@@ -94,7 +94,8 @@ assert.equal(rules.nextBuildingLevel(state,"magic_room_fire"),null,"niveau 10 au
 assert.deepEqual([school.places_base,school.places_pas],[1,2]);
 for(const r of rooms) assert.deepEqual([r.places_base,r.places_pas],[1,2],r.nom);
 // Ludus, Académie de la survie, Cercle des Fines Lames (Idan, 2026-11-03) : les places viendront avec leur entraînement.
-for(const r of rows.filter(r=>!r.places_pas)) assert.ok(["dispensary","baths","pleasure_palace","dungeon"].includes(r.code)||r.entraine,r.code);
+// La Grange du dresseur et ses Écuries (Idan, 2026-11-07) : des places pour les montures (places_par_niveau), pas pour des élèves.
+for(const r of rows.filter(r=>!r.places_pas)) assert.ok(["dispensary","baths","pleasure_palace","dungeon","trainer_barn","trainer_stables"].includes(r.code)||r.entraine,r.code);
 const places=[];
 for(let n=0;n<=10;n++){ at("magic_room_water",n); places.push(rules.buildingPlaces(state,"magic_room_water")); }
 assert.deepEqual(places,[0,1,2,2,3,3,4,4,5,5,6]);
@@ -102,7 +103,7 @@ assert.equal(rules.buildingPlaces(state,"dispensary"),0);
 for(const code of ["magic_school",...rooms.map(r=>r.code)]) at(code,10);
 assert.equal(["magic_school",...rooms.map(r=>r.code)].reduce((sum,code)=>sum+rules.buildingPlaces(state,code),0),60);
 // Pas encore d'effet : les bâtiments de soins ne bougent pas.
-assert.deepEqual(rules.campBuildingEffects(state),{woundFactor:1,medicFactor:1,fatigueRelief:0,manaBonus:0,bodyguardPay:0});
+assert.deepEqual(rules.campBuildingEffects(state),{woundFactor:1,medicFactor:1,fatigueRelief:0,manaBonus:0,bodyguardPay:0,stablePlaces:0});
 
 // Interface : l'encart de l'École dans Ma Compagnie, ses salles dedans une fois construite.
 const elements={};
@@ -122,7 +123,7 @@ ui.renderCampBuildings();
 assert.match(company(),/<strong title="Grimoires[^"]*">École de magie<\/strong><span>À construire<\/span>/);
 assert.match(company(),/data-camp-build="magic_school">Construire<\/button>\s*<span class="building-cost">1 000 PO · 4 jours<\/span>/);
 assert.doesNotMatch(company(),/Salle du Feu/,"pas de salle avant l'École");
-assert.equal((company().match(/<article /g)||[]).length,14,"dortoir, dispensaire, bains, École, Ludus, Académie de la survie, Cercle, Tour de guet, Labo d'alchimie, Cabane du bûcheron, Guilde des mineurs, Caverne de la terreur, Palais des plaisirs, Cachot : les salles ne sont pas des encarts à part");
+assert.equal((company().match(/<article /g)||[]).length,15,"dortoir, dispensaire, bains, École, Ludus, Académie de la survie, Cercle, Tour de guet, Labo d’alchimie, Cabane du bûcheron, Guilde des mineurs, Caverne de la terreur, Palais des plaisirs, Cachot, Grange du dresseur : les salles ne sont pas des encarts à part");
 ui.buildCampBuilding("magic_room_fire");
 assert.deepEqual(log.at(-1),{message:"Salle du Feu : il faut d’abord École de magie au niveau 1.",kind:"bad"});
 game.campaign.company.camp.buildings={magic_school:{level:2,construction:null},magic_room_fire:{level:2,construction:null},

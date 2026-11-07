@@ -86,7 +86,7 @@ assert.equal(engine.mentalStat(rider, "Courage"), 60);
 assert.equal(Math.round(engine.mountHitChance(rider) * 10) / 10, 66.7, "humain sur destrier : 2 ÷ 3 pour le cheval");
 assert.equal(engine.mountHitChance(pair(goblin)), 80, "gobelin sur destrier : 2 ÷ 2,5");
 assert.equal(engine.pairOf(rider.mount), rider, "un cheval monté répond par son cavalier");
-assert.equal(engine.threatens(rider.mount, {q: 4, r: 5}), false, "monté, le cheval ne menace personne");
+assert.equal(engine.threatens(rider.mount, {q: 4, r: 5}), true, "monté, le cheval menace aussi, de ses sabots (Idan : « oui »)");
 // Au corps à corps, le cavalier compte comme un niveau plus haut (rien contre le cheval).
 const foot = {character: generator.createMercenary({id: ++uid, captain, forcedPeople: "Humain"}), q: 3, r: 5, alive: true, activeSet: 1, team: "player"};
 const alone = {...rider, mount: null};
@@ -212,17 +212,19 @@ assert.ok(gone.offMap && !gone.alive, "parti avec son cavalier");
 assert.equal(m.over, true);
 
 // Des combats entiers, sans erreur : le couple charge, le cheval prend des tirs, chacun finit.
-let charges = 0, horseHits = 0, alones = 0, over = 0;
+let charges = 0, horseHits = 0, alones = 0, over = 0, horseCharges = 0;
 for (let i = 0; i < 12; i++) {
   m = newMission([cavalier(["thief_rider_novice", "thief_rider", "thief_rider_veteran", "thief_rider_elite"][i % 4])], 3);
   api.startMissionCamouflage(); api.selectNextMissionPlayer(); api.autoResolveMission();
   if (m.over) over++;
   charges += m.log.filter(l => /^Cavalier.* charge /.test(l.message)).length;
   horseHits += m.log.filter(l => / attaque Destrier de /.test(l.message)).length;
+  horseCharges += m.log.filter(l => /^Destrier de Cavalier.* charge /.test(l.message)).length;
   alones += m.log.filter(l => /se retrouve sans cavalier/.test(l.message)).length;
 }
 assert.equal(over, 12, "chaque combat se termine");
 assert.ok(charges > 0, "le cavalier charge : " + charges);
 assert.ok(horseHits > 0, "le cheval prend des coups : " + horseHits);
+assert.ok(horseCharges > 0, "le cheval frappe aussi en charge (Idan : « La monture frappe également ») : " + horseCharges);
 
 console.log(JSON.stringify({ok: true, destrier: {pv: 270, deplacement: 8}, combats: over, charges, coupsSurLeCheval: horseHits, chevauxSeuls: alones}, null, 2));

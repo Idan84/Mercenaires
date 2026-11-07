@@ -1100,8 +1100,10 @@
     // Attaque d'opportunité CAC V1 : un combattant menace les hexagones atteignables par son arme de mêlée active.
     // Un personnage En Fuite ne menace personne : il ne fait pas d'attaque d'opportunité (décision Idan, Issue #8).
     // À deux armes, chaque arme de mêlée tenue menace sa propre portée.
+    // Le cheval monté menace aussi, de son arme naturelle (Idan, 2026-11-07 : « pourquoi la monture ne fait pas des
+    // attaques d'opportunités ? » ; « oui »).
     function threatens(unit,hex){
-      if(!unit?.alive||unit.fleeing||ridden(unit)) return false;
+      if(!unit?.alive||unit.fleeing) return false;
       return usableHands(unit,axialDistance(unit,hex)).some(h=>h.mode==="melee");
     }
 

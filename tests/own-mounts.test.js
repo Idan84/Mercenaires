@@ -311,7 +311,12 @@ assert.ok(m.log.some(l => /^Destrier d.* — Mort .* : la monture est perdue\.$/
 // Sans une égratignure : fatiguée, comme un mercenaire ; au repos, son cavalier part à pied.
 const second = give(rider, "Destrier");
 m = newMission([rider], foes(1));
+// Rentrer vivant avec elle (Idan : « 50 XP oui ») : Équidés et Compagnon animal, s'il survit lui aussi.
+m.aftermath = {results: [{id: rider.id, name: rider.name, dead: false}]};
+const equides = Number(rider.skills.animal["Équidés"]) || 0;
 after = api.settleOwnMissionMounts(m);
+assert.deepEqual(m.mountReturns, [{id: rider.id, family: "Équidés", xp: 50}], "+50 XP au retour");
+assert.ok(Number(rider.skills.animal["Équidés"]) > equides, "ses Équidés montent : " + equides + " → " + rider.skills.animal["Équidés"]);
 assert.deepEqual(after.fatigued.map(i => i.id), [second.id]);
 assert.equal(second.recovery.kind, "fatigued");
 assert.ok(second.recovery.daysLeft >= 1, "indisponible quelques jours");

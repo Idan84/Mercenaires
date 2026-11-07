@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 395,
+  "row_count": 396,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -1030,6 +1030,14 @@
       "nom": "XP — Intimidation par adversaire en fuite",
       "code": "progression.skill.intimidation_xp",
       "description": "XP d'Intimidation à chaque adversaire qui rate son test de Courage face au mercenaire (décision Idan du 2026-10-20).",
+      "formule": "Progression naturelle V1",
+      "valeur": 50,
+      "version": "V1"
+    },
+    {
+      "nom": "XP — retour de mission avec sa monture",
+      "code": "progression.skill.mount_return_xp",
+      "description": "XP de Compagnon animal et de la famille de l'animal (Équidés, Canidés…) quand le mercenaire et la monture ou le compagnon avec lequel il est parti rentrent vivants de mission (Idan, 2026-11-07 : « 50 XP oui »).",
       "formule": "Progression naturelle V1",
       "valeur": 50,
       "version": "V1"

@@ -14,6 +14,8 @@ function itemCardRules(){
 function itemPublicName(item){
   if(!item) return "";
   if(item.itemType==="potion") return item.name;
+  // Une monture : son nom (stables.js, giveName).
+  if(item.itemType==="mount") return item.petName||item.name;
   return itemCardRules()?.title(item)||item.name;
 }
 // Nom de base, en petit sous le nom public quand il en diffère (« Épée longue » sous « Lame ébréchée »).

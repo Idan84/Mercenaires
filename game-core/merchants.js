@@ -37,7 +37,8 @@
   // reference : data/reference/ ; generator : createGenerator(...) (createItemByName) ; affinity : createAffinityRules
   // (facultatif : affinité initiale nulle sans lui).
   // canStore (facultatif) : canStore(state, objet) → {ok, reason} ; une monture demande une place aux Écuries (stables.js).
-  function createMerchantRules({reference,generator,affinity=null,random=Math.random,canStore=null}={}){
+  // onAcquire(state, item) : à l'achat (une monture reçoit son nom : stables.js, giveName).
+  function createMerchantRules({reference,generator,affinity=null,random=Math.random,canStore=null,onAcquire=null}={}){
     const constants=new Map(rows(reference?.formulaConstants).map(r=>[r.code,Number(r.valeur)]));
     const constant=(code,fallback)=>Number.isFinite(constants.get(code))?constants.get(code):fallback;
     const C={
@@ -257,6 +258,7 @@
       if(room&&room.ok===false) return {ok:false,reason:room.reason||"Pas de place pour elle.",price:offer.price};
       state.company.gold-=offer.price;
       if(!Array.isArray(state.company.stock)) state.company.stock=[];
+      if(typeof onAcquire==="function") onAcquire(state,offer.item);
       state.company.stock.push(offer.item);
       const market=state.market;
       market.visit.stock=market.visit.stock.filter(a=>a.id!==offer.id);
@@ -276,6 +278,7 @@
       if(state.company.gold<price) return {ok:false,reason:"Pas assez d'or.",price};
       state.company.gold-=price;
       if(!Array.isArray(state.company.stock)) state.company.stock=[];
+      if(typeof onAcquire==="function") onAcquire(state,item);
       state.company.stock.push(item);
       state.market.visit.special.taken=true;
       state.market.visit.traded=true;

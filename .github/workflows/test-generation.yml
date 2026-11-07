@@ -107,6 +107,7 @@ jobs:
       - run: node tests/wolf.test.js
       - run: node tests/companion-training.test.js
       - run: node tests/hunts.test.js
+      - run: node tests/combat-ai.test.js
       - run: node tests/stealth.test.js
       - run: node tests/spell-icons.test.js
       - run: node tests/starting-spells.test.js

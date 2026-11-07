@@ -41,7 +41,7 @@ const api=new Function("game","$","esc","fmt","renderAvatar","combatEngine","Mer
   source+"\nlet renders=0;const draw=renderMission;renderMission=function(){ if(!game.mission?.autoRunning) renders++; return draw(); };"
   // Compte les débuts d'activation (poison, régénération, effets à durée) de chaque combattant.
   +"\nconst resets=new Map();const reset=resetMissionActivation;resetMissionActivation=function(u){ resets.set(u,(resets.get(u)||0)+1); return reset(u); };"
-  // Chaque message du journal (le journal du combat ne garde que les 180 derniers).
+  // Chaque message du journal, compté au fil du combat.
   +"\nconst logged=[];const log0=missionLog;missionLog=function(message,kind){ logged.push(message); return log0(message,kind); };"
   +"\nreturn {makeMissionUnit,sortMissionInitiative,selectNextMissionPlayer,autoResolveMission,missionActionAvailability,renders:()=>renders,resets,logged};")
   .call(null,game,$,v=>String(v??""),v=>String(Math.round(Number(v)||0)),()=>"",()=>engine,Progression,MissionEnd);

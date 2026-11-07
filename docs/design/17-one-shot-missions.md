@@ -474,3 +474,22 @@ Une ligne **Troll** (poids 10) dans les camps gobelin, orc et homme-bête, à pa
 > « Un troll mort vivant pour l'équipe du nécromancien… » ; « Non, pas de régénération ».
 
 Quatre fiches de la famille **Créatures** (`undead_troll_novice`, `undead_troll`, `undead_troll_veteran`, `undead_troll_elite`) : le troll (mêmes caractéristiques, PV, Grosse massue, Intimidation), **sans régénération**, mort-vivant (sans peur, insensible au poison). Ligne **Troll mort-vivant** (poids 10) au camp du Culte des morts, à partir du niveau de mission 6. Points (× 1,2, l'élite mesuré comme un chef) : **19, 47, 91, 140** (le troll : 17, 47, 99, 180) ; sans régénération, il coûte moins aux hauts niveaux.
+
+## 22 — Cavalier (Idan, 2026-11-07)
+
+> « On ajoute des montures aux ennemis. » « Faisons une nouvelle ligne, cavalier dans le camp des voleurs, on étendra plus tard avec un jet de proba pour les chefs. » « Restons sur le Destrier pour l'instant. »
+
+Une ligne **Cavalier** (poids 10) au camp de voleurs, dès le niveau de mission 1 : `thief_rider_novice`, `thief_rider`, `thief_rider_veteran`, `thief_rider_elite`, chacun sur un **destrier** (`monture`, `mounts.json` ; les règles du combat à cheval : doc 04).
+
+| Cavalier | Base | Armes | Armure | Compagnon animal | Équidés | Points |
+|---|---|---|---|---|---|---|
+| Novice | Bandit novice | Lance + Rondache | Gambison | 48 | 36 | 12 |
+| Normal | Bandit | Lance + Rondache | Armure de cuir | 54 | 44 | 22 |
+| Vétéran | Bandit vétéran | Lance + Rondache | Cuir renforcé | 59 | 51 | 46 |
+| Élite | Bandit d'élite | Lance + Rondache | Brigandine | 63 | 57 | 70 |
+
+- **Base** : les caractéristiques, les PV, l'Intimidation et la lance du Bandit de même niveau ; la rondache, l'armure et le port d'armure du Spadassin ; Compagnon animal et Équidés aux centiles des humains générés (P20, P50, P75, P90), soit une part de 0,84 à 1 pour le partage du Courage et de la Volonté avec son cheval.
+- **Points** : cavalier et cheval ensemble, même méthode et même recalage × 1,2 qu'au §19 ; le vétéran et l'élite, trop forts pour la méthode des troupes, sont mesurés seuls contre 3 à 6 mercenaires. Pour comparer, le Bandit vaut 8, 16, 25 et 48. Sa charge (lance, 8 à 16 cases, la moitié de la Force du cheval en plus) frappe très fort : jusqu'à 190–270 PV d'un coup dans les combats de mesure.
+- **Butin** : celui du Bandit (100 % − 10 % par tier) ; le cheval tombé ne laisse rien pour l'instant (la capture viendra).
+- **Mission Test** : le deuxième ennemi est un Cavalier, sur son destrier.
+- Test : `tests/mounts.test.js`.

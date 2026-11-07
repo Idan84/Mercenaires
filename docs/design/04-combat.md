@@ -378,6 +378,43 @@ chance pour enchaîner plusieurs tirs (sauf arme à feu). Il ne peut passer en m
   de Régénération du personnage ; la règle est celle du sang de troll (au début de chaque activation, 2D6 × (0,5 +
   Régénération / 50) PV ; brûlé depuis sa dernière activation, rien).
 
+## Combat à cheval (Idan, 2026-11-07)
+
+> « On ajoute des montures aux ennemis. La monture est mise KO au combat. » « Au cac, l'attaquant choisit. À distance, jet
+> qui dépend de la taille de la monture par rapport au cavalier. » « Le cheval pourra se battre seul autour de son cavalier
+> KO, mais il a de grandes chances de fuir (même règles qu'un combattant). » « Tout est validé ! »
+
+- **Monture** (`mounts.json`, une fiche fixe ; aujourd'hui le **Destrier**) : Force 90, Constitution 70, Dextérité 30,
+  Vitesse 90, Endurance 85, Esquive 20, Courage 35, Volonté 30, Perception 60, Intelligence 10 ; **270 PV** (la formule de
+  nos mercenaires) ; **Sabots** 1D8, contondant 50 ; résistances, Chance et maîtrise des sabots d'un humain moyen (P50).
+- **Gabarit** (Idan : « on fait la même chose que pour le dortoir ») : les places du dortoir du peuple (Gobelin, Gnome,
+  Halfling 0,5 ; Ogre 2 ; les autres 1) ; celui de la monture dans sa fiche (destrier 2). **On ne monte qu'une bête plus
+  grande que soi** : un ogre ne monte pas un destrier.
+- **Un pion, deux fiches** : le cavalier et son cheval sont deux unités (PV, effets, poison, brûlure…), sur les mêmes cases ;
+  le couple a la **taille du cheval** (longue : 2 cases) et regarde vers l'adversaire. Le cheval monté n'agit pas, ne menace
+  personne et n'attaque pas seul ; il subit ses effets au début de l'activation de son cavalier.
+- **Déplacement** : celui du cheval (8 cases pour le destrier, 5 pour un humain moyen).
+- **Qui prend les coups** : au corps à corps et en charge, l'attaquant choisit (bouton **Viser le cheval** ; sinon le
+  cavalier) ; au tir et pour un sort qui vise, un jet : le cheval est visé à gabarit du cheval ÷ (gabarit du cheval + gabarit
+  du cavalier) (un humain sur un destrier : 2 ÷ 3, un gobelin : 80 %) ; une zone touche les deux.
+- **Hauteur** : au corps à corps, le cavalier compte comme un niveau plus haut (+ 10 au Toucher pour lui, − 10 contre lui ;
+  rien contre le cheval ; `combat.monture.hauteur_cac`).
+- **Charge** : avec le déplacement du cheval (8 à 16 cases en ligne droite), la ligne part de la tête et le corps suit ; la
+  **moitié de la Force du cheval** s'ajoute à celle du cavalier (Blesser et dégâts ; `combat.monture.force_charge`). Les
+  armes de contre-charge restent la parade ; charger le cheval, c'est essuyer la contre-charge de son cavalier.
+- **Courage et Volonté partagés** (Idan : « Montées, elles les partagent avec le cavalier en fonction de son niveau ») : ceux
+  du cheval + (ceux du cavalier − ceux du cheval) × part ; part = (Compagnon animal + la famille de la monture, Équidés pour
+  le destrier) ÷ 100, au plus 1 (`combat.monture.partage_diviseur`). **Un seul test de Courage pour le couple** (un coup sur
+  le cheval fait tester le couple) ; ils fuient ensemble.
+- **Cheval KO** : le cavalier tombe **au sol** (jusqu'à sa prochaine activation) et se bat à pied ; le cheval reste couché
+  sur sa case (la capture viendra à l'étape suivante).
+- **Cavalier KO** : le cheval reste, seul : il prend sa place dans l'ordre du tour suivant, se bat avec ses sabots et fuit
+  comme tout combattant (son propre Courage, 35). Un cavalier qui sort de la carte emporte son cheval.
+- **Écran** : le pion du couple couvre ses deux cases, avec une seconde barre de PV (le cheval) ; la carte de survol donne
+  les PV du cheval et, au tir, sa chance de prendre le coup.
+- Code : `combat-engine.js` (`mountOf`, `canRide`, `mentalStat`, `mountChargeForce`, `rollShotTarget`), `missions.js`
+  (`createMount`), `mission.js` (`attachMissionMount`, `settleMissionMounts`, `missionAimed`). Test : `tests/mounts.test.js`.
+
 ## Attaques de zone — Toucher V1
 
 [Précision d'attaque de zone V1](/design/#doc=formulas/precision-d-attaque-de-zone-v1.md) fournit le noyau commun : l'attaque vise une **case**, puis chaque cible potentielle perd **10 points de probabilité de toucher par hex d'écart** à cette case.

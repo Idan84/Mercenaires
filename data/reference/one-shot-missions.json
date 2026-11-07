@@ -169,6 +169,10 @@
             {
               "ligne": "Bandit",
               "poids": 15
+            },
+            {
+              "ligne": "Cavalier",
+              "poids": 10
             }
           ],
           "noms": {

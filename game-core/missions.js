@@ -25,6 +25,7 @@
     const armors=new Map(rows(reference?.baseArmors).map(a=>[a.nom,a]));
     const skills=new Map(rows(reference?.skills).map(s=>[s.nom,s]));
     const qualityCode=new Map(rows(reference?.itemQualities).map(q=>[q.nom,q.code]));
+    const mountByCode=new Map(rows(reference?.mounts).map(x=>[x.code,x]));
     const die=sides=>1+Math.floor(random()*sides);
     const pick=list=>list.length?list[Math.floor(random()*list.length)]:"";
     function weighted(list){
@@ -197,13 +198,7 @@
       // Arme naturelle (griffes du zombie, toucher du spectre ; Idan, 2026-11-06) : son gabarit voyage avec l'objet, comme
       // celui des créatures invoquées (combat-engine.js, weaponTemplate).
       if(arch.attaque){
-        const a=arch.attaque;
-        const it=item({templateId:"natural:"+arch.code,name:a.nom,itemType:"weapon",slot:"weapon_set_1_main",natural:true,
-          category:"Armes naturelles",combatFamily:"melee",grip:"1 main",
-          template:{nom:a.nom,domaine:"Armes naturelles",prise:"1 main",degats_pv_base:a.degats_pv_base,degats_type:a.degats_type||null,
-            puissance_tranchante_base:Number(a.puissance_tranchante)||0,puissance_perforante_base:Number(a.puissance_perforante)||0,
-            puissance_contondante_base:Number(a.puissance_contondante)||0,malus_vitesse_arme_base:0,bonus_charge_base:Number(a.bonus_charge)||1,
-            contre_charge:false,portee_min_hex:1,portee_max_hex:1}});
+        const it=item(naturalWeapon(arch.attaque,arch.code));
         items.unshift(it);
         slots.weapon_set_1_main=it.id;
       }
@@ -235,7 +230,39 @@
       // La mana du personnage de base ne dépasse pas la Réserve de la fiche (un troll affichait « 66/37 »).
       if(Number.isFinite(Number(c.mana))&&Number.isFinite(Number(c.stats?.["Réserve de mana"]))) c.mana=Math.min(Number(c.mana),Number(c.stats["Réserve de mana"]));
       if(arch.regeneration!=null) c.skills.physiology={...(c.skills.physiology||{}),"Régénération":Number(arch.regeneration)||0};
+      // Cavalier (Idan, 2026-11-07) : ses compétences animales (Compagnon animal et la famille de sa monture) et sa monture
+      // (mounts.json), que l'écran de combat lui donne s'il est assez petit pour la monter.
+      if(arch.competences_animales){
+        const animal=Object.fromEntries(Object.keys(c.skills?.animal||{}).map(k=>[k,0]));
+        c.skills.animal={...animal,...arch.competences_animales};
+      }
+      if(arch.monture) c.mountCode=arch.monture; else delete c.mountCode;
       return c;
+    }
+
+    function naturalWeapon(a,code){
+      return {templateId:"natural:"+code,name:a.nom,itemType:"weapon",slot:"weapon_set_1_main",natural:true,
+        category:"Armes naturelles",combatFamily:"melee",grip:"1 main",
+        template:{nom:a.nom,domaine:"Armes naturelles",prise:"1 main",degats_pv_base:a.degats_pv_base,degats_type:a.degats_type||null,
+          puissance_tranchante_base:Number(a.puissance_tranchante)||0,puissance_perforante_base:Number(a.puissance_perforante)||0,
+          puissance_contondante_base:Number(a.puissance_contondante)||0,malus_vitesse_arme_base:0,bonus_charge_base:Number(a.bonus_charge)||1,
+          contre_charge:false,portee_min_hex:1,portee_max_hex:1}};
+    }
+
+    // Montures (Idan, 2026-11-07 ; mounts.json) : une fiche fixe. Le personnage du cheval : ses caractéristiques, ses
+    // résistances, son arme naturelle (les sabots du destrier), sa taille au combat (longue : 2 cases), son gabarit (places
+    // du dortoir : on ne monte qu'une bête plus grande que soi) et la famille de compétence animale qui le mène (Équidés).
+    // Ses PV suivent la formule de nos mercenaires (pas de « archetype »).
+    function mountSheet(code){ return mountByCode.get(code)||null; }
+    function createMount(code,{id=null,name=null}={}){
+      const s=mountSheet(code);
+      if(!s) return null;
+      const weapon={id:`${id??s.code}-1`,owner:id,...naturalWeapon(s.attaque||{},s.code)};
+      return {id,name:name||s.nom,role:s.nom,people:"",mount:{code:s.code,capturable:s.capturable!==false},
+        gabarit:Number(s.gabarit)||1,taille:s.taille||"normale",mountSkill:s.espece||null,
+        stats:{...s.caracteristiques},resistances:{...s.resistances},
+        skills:{martial:{...(s.competences_martiales||{})},animal:{},social:{},magic:{}},spells:[],
+        items:[weapon],equipment:{slots:{weapon_set_1_main:weapon.id},profile:{type:"melee"}}};
     }
 
     // Les ennemis du camp, chef en dernier : makeBase(archétype) donne le personnage de base. Les doublons sont numérotés
@@ -308,7 +335,7 @@
     function mapSize(offer){ const map=definition(offer.code)?.carte||{}; return {cols:map.colonnes||30,rows:map.lignes||15}; }
 
     return {definition,archetype,points,missionMin,lootOf,campsOf,budgetOf,rollBudget,renownLevel,rollMissionLevel,rollCamp,estimation,contractReward,
-      createOffer,orderText,applyArchetype,buildEnemies,outcome,deathMultiplier,rollChestGold,chestPlan,mapSize};
+      createOffer,orderText,applyArchetype,buildEnemies,outcome,deathMultiplier,rollChestGold,chestPlan,mapSize,mountSheet,createMount};
   }
 
   return {createMissionRules};

@@ -96,7 +96,7 @@ Mesure sur 800 combats : 8 compagnies différentes, équipe de 3 tirée au hasar
 
 **Décision d'Idan (2026-10-03)** : « on tue assez, on ne blesse pas assez ». Les morts restent inchangés, et la zone du jet de blessure passe de 0–20 % à **0–50 % des PV max**, pour avoir plus de blessés que de morts. Seuls 7 % des combattants finissent entre 0 et 20 % de leurs PV, et 59 % au-dessus de la moitié : augmenter la probabilité dans l'ancienne zone ne faisait passer les blessés que de 8,5 % à 9,5 %.
 
-**Décision d'Idan (2026-11-07, après un bêta-test de 365 jours où presque chaque mercenaire à terre mourait)** : « On divise par deux les chances de mort » : la probabilité finale est multipliée par 0,5 (`mission.death.chance_factor`), au plus 50 % (doc 10 §3).
+**Décision d'Idan (2026-11-07, après un bêta-test de 365 jours où presque chaque mercenaire à terre mourait)** : « on reduise les chances par 2 en montant le seuil de 10% à 20% […] à -20% de PV, on bloque à 90% de chance de mourir max » : coefficient 500 au lieu de 1000, plafond 90 % (`mission.death.max_chance`, doc 10 §3).
 
 Espérance mesurée sur les mêmes 800 combats :
 

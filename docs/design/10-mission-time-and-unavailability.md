@@ -52,12 +52,12 @@ Règle retenue : un personnage en dessous de `0 PV` ne peut pas être simplement
 Pour un mercenaire avec `PV_restants < 0` :
 
 $$
-P(mort)\% = Clamp\left(-1000 \times \frac{PV_{restants}}{PV_{max}} - \frac{Volonte}{20},\ 0,\ 100\right)
+P(mort)\% = Clamp\left(-500 \times \frac{PV_{restants}}{PV_{max}} - \frac{Volonte}{20},\ 0,\ 90\right)
 $$
 
-Exemple : à `-10 %` des PV max, la base vaut `100 %`, diminuée de `Volonté / 20`.
+Exemple : à `-20 %` des PV max, la base vaut `100 %`, diminuée de `Volonté / 20`, et plafonnée à **90 %**.
 
-**Chances de mort divisées par deux** (Idan, 2026-11-07, après le bêta-test : « On divise par deux les chances de mort ») : la probabilité ainsi bornée (défaite comprise, doc 17 §8) est multipliée par `mission.death.chance_factor` = 0,5, donc **au plus 50 %**. Un mercenaire relevé en zombie meurt toujours. Les montures suivent la même règle.
+**Après le bêta-test** (Idan, 2026-11-07 : « on reduise les chances par 2 en montant le seuil de 10% à 20%. Il faut des cas où le mercenaire meurt. […] à -20% de PV, on bloque à 90% de chance de mourir max ») : coefficient 500 au lieu de 1000 (`mission.death.hp_ratio_coefficient`), plafond 90 % au lieu de 100 % (`mission.death.max_chance`), défaite comprise (doc 17 §8). Un mercenaire relevé en zombie meurt toujours. Les montures suivent la même règle.
 
 Un mercenaire qui échoue au jet meurt. **La mort du capitaine entraîne Game Over.**
 

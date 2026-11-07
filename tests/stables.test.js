@@ -82,7 +82,7 @@ assert.equal(stable.release(state, "inconnu").ok, false);
 assert.deepEqual(stable.rollSurvival({hp: 0, pvMax: 270, stats: {"Volonté": 30}}), {survives: true, pDeath: 0, roll: null}, "à 0 PV, elle vit");
 dice = [0.98];
 let roll = stable.rollSurvival({hp: -27, pvMax: 270, stats: {"Volonté": 30}});
-assert.equal(roll.pDeath, 49.25, "−10 % des PV : (100 − Volonté ÷ 20) ÷ 2 (chances de mort divisées par deux)");
+assert.equal(roll.pDeath, 48.5, "−10 % des PV : 50 − Volonté ÷ 20 (seuil à −20 % depuis le bêta-test)");
 assert.deepEqual([roll.roll, roll.survives], [99, true]);
 dice = [0.4];
 assert.equal(stable.rollSurvival({hp: -27, pvMax: 270, stats: {"Volonté": 30}}).survives, false);

@@ -2990,8 +2990,46 @@ function missionAiCast(unit){
 // Sorts de l'IA (le nécromancien ; Idan, 2026-11-06) : un ennemi dont la fiche donne des sorts (character.aiSpells) les
 // essaie dans l'ordre de sa fiche, et lance le premier qui passe : une invocation tant que la sienne n'est pas là (au plus
 // près de l'ennemi), une Résurrection sur un corps, un sort sur l'ennemi visible le plus proche, le Drain de vie sur soi
-// (le vampire). Les autres sorts sur soi, de zone ou en deux temps ne sont pas joués par l'IA. Nos mercenaires en combat automatique n'ont pas de aiSpells : rien ne
-// change pour eux.
+// (le vampire).
+// IA commune, premier jet (Idan, 2026-11-07, après le bêta-test : « Rendre l'IA plus performante : jouer des sorts. Savoir
+// reculer. Se regrouper. Se cacher » ; « Nous et les ennemis » ; « On fait un premier jet ») : sans fiche (nos mercenaires
+// en combat automatique, un ennemi généré), il essaie ses sorts connus ; les zones visent là où elles touchent le plus
+// d'ennemis sans toucher d'allié ; les renforts sur soi, une fois par combat, quand l'ennemi approche. Les soins passent
+// par missionAiCast. Réglages : combat.ai.* (formula-constants.json).
+function missionAiConstant(code,fallback){
+  const value=Number((game.referenceData?.formulaConstants?.rows||[]).find(r=>r.code===code)?.valeur);
+  return Number.isFinite(value)?value:fallback;
+}
+const MISSION_AI_ZONE=new Set(["degats_zone","blizzard","tempete","mur_de_flammes","nuee","peur","degats_sans_resistance"]);
+const MISSION_AI_FOE=new Set(["degats","degats_rebonds","degats_sur_duree","paralysie","sommeil","prison_de_glace","fletrissement",
+  "malediction","malus_caracteristiques","brouillage","lancer_arme","siphon_mana"]);
+const MISSION_AI_BUFF=new Set(["arme_elementaire","bonus_caracteristiques","protection_elementaire","protection_projectiles","aura_de_feu"]);
+// Les sorts que l'IA essaie, dans l'ordre : ceux de la fiche (aiSpells) ; sinon ses sorts connus : invocations,
+// Résurrection, zones, sorts sur un ennemi, renforts sur soi.
+function missionAiSpellCodes(unit){
+  const own=unit.character?.aiSpells;
+  if(own?.length) return own;
+  const magic=missionMagic();
+  if(!magic) return [];
+  const rank=s=>s.cible==="case_vide"&&["invocation","double"].includes(s.effet)?0:s.cible==="mort"?1
+    :s.cible==="case"&&MISSION_AI_ZONE.has(s.effet)?2:s.cible==="ennemi"&&MISSION_AI_FOE.has(s.effet)?3
+    :["soi","allie_ou_soi"].includes(s.cible)&&MISSION_AI_BUFF.has(s.effet)?4:null;
+  return magic.knownSpells(unit).map(s=>({code:s.code,rank:rank(s)})).filter(x=>x.rank!=null).sort((a,b)=>a.rank-b.rank).map(x=>x.code);
+}
+// Une zone : la case (sur un ennemi en vue) où elle touche le plus d'ennemis, au moins combat.ai.zone_min_foes, et aucun
+// allié ni le lanceur ; ou null.
+function missionAiZoneTarget(unit,code,opponents){
+  const magic=missionMagic(),minFoes=missionAiConstant("combat.ai.zone_min_foes",2);
+  let best=null;
+  for(const o of opponents){
+    if(missionHiddenFrom(o,unit)||!magic.canCast(unit,o,code,{lineOfSight:missionLineOfSight(unit,o)}).ok) continue;
+    const keys=new Set(missionSpellAreaCells(unit,code,o).map(c=>missionKey(c.q,c.r)));
+    const inside=missionUnits().filter(u=>u.alive&&!u.offMap&&(missionLarge(u)?missionFootprint(u):[u]).some(c=>keys.has(missionKey(c.q,c.r))));
+    if(inside.some(u=>u.team===unit.team)) continue;
+    if(inside.length>=minFoes&&(!best||inside.length>best.count)) best={target:o,count:inside.length};
+  }
+  return best?.target||null;
+}
 // La cible d'un sort de l'IA depuis la case où elle se tient, ou null.
 function missionAiSpellTarget(unit,code,spell,opponents){
   const magic=missionMagic(),e=game.mission.engine;
@@ -3009,13 +3047,32 @@ function missionAiSpellTarget(unit,code,spell,opponents){
   return foes.sort((a,b)=>e.axialDistance(unit,a)-e.axialDistance(unit,b))[0]||null;
 }
 function missionAiSpell(unit){
-  const codes=unit.character?.aiSpells,magic=missionMagic();
-  if(!codes?.length||!magic||unit.attackAvailable===false||!unit.alive) return false;
+  const magic=missionMagic(),codes=magic?missionAiSpellCodes(unit):[];
+  if(!codes.length||unit.attackAvailable===false||!unit.alive) return false;
   const opponents=missionOpponents(unit).filter(o=>!o.offMap);
   if(!opponents.length) return false;
+  // Sans fiche, il ne tente pas un sort qu'il rate trop souvent : il frappe plutôt avec son arme.
+  const listed=Boolean(unit.character?.aiSpells?.length),minChance=missionAiConstant("combat.ai.min_cast_chance",40);
+  const reach=(unit.movementRemaining||0)+1;
+  const foeNear=()=>opponents.some(o=>!missionHiddenFrom(o,unit)&&game.mission.engine.axialDistance(unit,o)<=reach+1);
   for(const code of codes){
     const spell=magic.spell(code);
-    if(!spell||spell.cible==="case"||["deplacement_force","degats_paire"].includes(spell.effet)) continue;
+    if(!spell||["deplacement_force","degats_paire"].includes(spell.effet)) continue;
+    if(!listed&&magic.castChance(unit,code).p<minChance) continue;
+    // Zone : la meilleure case, sans allié dedans.
+    if(spell.cible==="case"){
+      const zoneTarget=MISSION_AI_ZONE.has(spell.effet)?missionAiZoneTarget(unit,code,opponents):null;
+      if(zoneTarget&&resolveMissionSpell(unit,zoneTarget,code)?.ok) return true;
+      continue;
+    }
+    // Renfort sur soi (Arme électrique, Peau d'écailles…) : une fois par combat, quand l'ennemi approche.
+    if(MISSION_AI_BUFF.has(spell.effet)&&["soi","allie_ou_soi"].includes(spell.cible)){
+      unit.aiBuffs=unit.aiBuffs||[];
+      if(unit.aiBuffs.includes(code)||!foeNear()||!magic.canCast(unit,unit,code).ok) continue;
+      unit.aiBuffs.push(code);
+      if(resolveMissionSpell(unit,unit,code)?.ok&&unit.attackAvailable===false) return true;
+      continue;
+    }
     // Sur soi : le Drain de vie seulement (la Cour de sang ; Idan, 2026-11-06 : « estoc, drain de vie, sort d'illusions »),
     // s'il n'est pas déjà actif et qu'un ennemi visible est à portée de ses pas.
     if(spell.cible==="soi"){
@@ -3075,25 +3132,29 @@ function missionPotionEffect(potion){
   return potion.effet==="soin"?"+"+potion.pourcentage+" % des PV max":potion.effet==="mana"?"+"+potion.pourcentage+" % du mana max"
     :"arme empoisonnée "+potion.tours+" tours";
 }
-// Pourquoi la fiole ne servirait à rien maintenant (bouton grisé, l'IA s'abstient), ou "".
-function missionPotionBlock(unit,potion){
+// Pourquoi la fiole ne servirait à rien maintenant (bouton grisé, l'IA s'abstient), ou "". drinker : celui qui la boit
+// (le cheval avec « Viser le cheval ») ; l'action rapide reste celle du cavalier.
+function missionPotionDrinker(unit,potion){
+  return game.mission?.aimMount&&["soin","mana"].includes(potion.effet)&&game.mission.engine.mountOf?.(unit)||unit;
+}
+function missionPotionBlock(unit,potion,drinker=unit){
   if(!unit?.alive||unit.quickAvailable===false) return "Action rapide déjà utilisée.";
-  if(potion.effet==="soin"&&unit.withered) return "Flétri"+(missionFeminine(unit)?"e":"")+" : aucun soin.";
-  if(potion.effet==="soin"&&unit.hp>=unit.pvMax) return "PV au maximum.";
+  if(potion.effet==="soin"&&drinker.withered) return "Flétri"+(missionFeminine(drinker)?"e":"")+" : aucun soin.";
+  if(potion.effet==="soin"&&drinker.hp>=drinker.pvMax) return "PV au maximum.";
   const magic=missionMagic();
-  if(potion.effet==="mana"&&(!magic||magic.currentMana(unit)>=magic.manaMax(unit))) return "Mana au maximum.";
+  if(potion.effet==="mana"&&(!magic||magic.currentMana(drinker)>=magic.manaMax(drinker))) return "Mana au maximum.";
   if(potion.effet==="poison_arme"&&!game.mission.engine.canPoisonWeapon(unit)) return "Il ne sait pas empoisonner une arme.";
   if(potion.effet==="poison_arme"&&!game.mission.engine.activeWeaponItem(unit)) return "Aucune arme à enduire.";
   return "";
 }
 function useMissionPotion(unit,slot){
   const m=game.mission,entry=missionBeltPotions(unit).find(p=>p.slot===slot);
-  if(!m||!entry||missionPotionBlock(unit,entry.potion)) return false;
+  if(!m||!entry||missionPotionBlock(unit,entry.potion,missionPotionDrinker(unit,entry.potion))) return false;
   const {item,potion}=entry,name=unit.character.name,percent=Number(potion.pourcentage)||0;
   unit.quickAvailable=false;
   // Avec « Viser le cheval », le cavalier fait boire sa monture (Idan, 2026-11-07), une potion de soin ou de mana.
-  const horse=m.aimMount&&["soin","mana"].includes(potion.effet)?m.engine.mountOf?.(unit):null;
-  const drinker=horse||unit,who=horse?name+" fait boire à "+horse.character.name:name+" boit";
+  const drinker=missionPotionDrinker(unit,potion),horse=drinker!==unit?drinker:null;
+  const who=horse?name+" fait boire à "+horse.character.name:name+" boit";
   if(potion.effet==="soin"){
     const healed=healMissionUnit(drinker,Math.ceil(drinker.pvMax*percent/100-1e-9));
     missionLog(who+" une "+potion.nom.toLowerCase()+" : +"+healed+" PV ("+Math.max(0,drinker.hp)+" / "+drinker.pvMax+").","magic");
@@ -3121,7 +3182,7 @@ function renderMissionPotionButtons(u){
     if(group) group.count+=1; else groups.set(p.potion.code,{...p,count:1});
   }
   return [...groups.values()].map(({slot,potion,count})=>{
-    const effect=missionPotionEffect(potion),reason=missionPotionBlock(u,potion);
+    const effect=missionPotionEffect(potion),reason=missionPotionBlock(u,potion,missionPotionDrinker(u,potion));
     return `<button class="secondary mission-spell mission-potion" data-potion="${esc(slot)}" title="${esc(potion.nom+" — action rapide, sur soi · "+effect+(reason?"\n"+reason:""))}"${reason?" disabled":""}>`
       +`<span class="mission-spell-text">${esc(potion.nom)}${count>1?" ×"+count:""}<small>rapide · ${effect}</small></span></button>`;
   }).join("");
@@ -3268,10 +3329,78 @@ function enemyMoveToward(unit,target){
     }
   }
 
+  if(best.path.length) best.path=missionAiKeepFormation(unit,best.path);
   if(best.path.length){
     const moved=moveMissionUnitAlongPath(unit,best.path);
     if(moved) missionLog(unit.character.name+" avance de "+moved+" hex.","move");
   }
+}
+// IA commune, premier jet (Idan, 2026-11-07) : se regrouper et se cacher, avant le contact.
+// - Se regrouper : un combattant de mêlée n'avance pas à plus de combat.ai.cohesion_hexes cases devant le plus en retard
+//   de ses alliés de mêlée (on avance au pas du plus lent) ; le plus en retard avance toujours.
+// - Se cacher : encore camouflé et hors de vue des ennemis, il n'entre pas dans leur vue s'il ne pourra pas frapper au tour
+//   suivant ; il attend en embuscade, au plus combat.ai.ambush_turns tours.
+function missionAiKeepFormation(unit,path){
+  const e=game.mission.engine,foes=missionOpponents(unit).filter(o=>!o.offMap&&!o.decoy);
+  if(!foes.length||!path.length) return path;
+  const foeDist=x=>Math.min(...foes.map(o=>e.axialDistance(x,o)));
+  const cellDist=c=>foeDist(missionAt(unit,c));
+  const melee=u=>!e.isRangedWeapon(e.weaponTemplate(e.activeWeaponItem(u)));
+  let out=path;
+  const pack=livingMissionUnits(unit.team).filter(a=>a!==unit&&!a.offMap&&!a.decoy&&!a.fleeing&&!a.summon&&!a.rider
+    &&!a.character?.staysBehind&&melee(a));
+  if(pack.length&&melee(unit)){
+    const limit=Math.max(...pack.map(foeDist))-missionAiConstant("combat.ai.cohesion_hexes",3);
+    let keep=out.length;
+    while(keep>0&&cellDist(out[keep-1])<limit) keep--;
+    out=out.slice(0,keep);
+  }
+  if(unit.camouflaged&&out.length&&(unit.aiAmbush||0)<missionAiConstant("combat.ai.ambush_turns",2)){
+    const seen=c=>foes.some(o=>missionLineOfSight(o,missionAt(unit,c)));
+    const end=out[out.length-1],strike=(Number(e.movementBase(unit))||0)+1;
+    if(!seen({q:unit.q,r:unit.r})&&seen(end)&&cellDist(end)>strike){
+      let keep=out.length;
+      while(keep>0&&seen(out[keep-1])) keep--;
+      out=out.slice(0,keep);
+      unit.aiAmbush=(unit.aiAmbush||0)+1;
+    }
+  }
+  return out;
+}
+// Reculer, premier jet (Idan, 2026-11-07 : « Je recule pas si je suis à 10% de PV mais que je pense que je vais faire le
+// coup de grace ») : sous combat.ai.retreat_hp_ratio de ses PV, celui qui n'est au contact d'aucun ennemi et n'a pas de
+// coup de grâce à portée ce tour (un ennemi sous combat.ai.finish_hp_ratio de ses PV) recule vers les siens, sur une case
+// plus loin des ennemis et plus près d'un allié valide, sans attaque d'opportunité ; sans allié valide, il se bat. Les
+// morts-vivants, les invocations et les leurres ne reculent pas.
+function missionAiRetreat(unit){
+  const e=game.mission.engine,ch=unit.character;
+  if(!unit.alive||unit.fleeing||unit.decoy||unit.summon||unit.rider||ch?.undead||ch?.staysBehind) return false;
+  if(unit.hp>=unit.pvMax*missionAiConstant("combat.ai.retreat_hp_ratio",0.3)) return false;
+  if(!(unit.movementRemaining>0)||missionMireAt(unit.q,unit.r)) return false;
+  const foes=missionOpponents(unit).filter(o=>!o.offMap&&!o.decoy);
+  if(!foes.length||foes.some(o=>e.axialDistance(unit,o)<=1)) return false;
+  const reach=unit.movementRemaining+1,finish=missionAiConstant("combat.ai.finish_hp_ratio",0.25);
+  if(foes.some(o=>!o.camouflaged&&o.hp<=o.pvMax*finish&&(missionUsableHands(unit,o).length||e.axialDistance(unit,o)<=reach))) return false;
+  const foeDist=c=>Math.min(...foes.map(o=>e.axialDistance(c,o)));
+  // On recule vers un allié valide qui peut nous couvrir ; sans lui, on se bat (sinon deux blessés se poursuivaient
+  // sans fin, l'un reculant quand l'autre avançait).
+  const ratio=missionAiConstant("combat.ai.retreat_hp_ratio",0.3);
+  const allies=livingMissionUnits(unit.team).filter(a=>a!==unit&&!a.offMap&&!a.decoy&&!a.fleeing&&a.hp>=a.pvMax*ratio);
+  if(!allies.length) return false;
+  const allyDist=c=>Math.min(...allies.map(a=>e.axialDistance(c,a)));
+  const here=foeDist(unit);
+  let best=null;
+  for(const path of missionReachablePaths(unit,unit.movementRemaining).values()){
+    if(!path.length) continue;
+    const end=missionAt(unit,path[path.length-1]),d=foeDist(end);
+    if(d<=here||missionPathOpportunityCount(unit,path)>0) continue;
+    const score=2*d-allyDist(end);
+    if(!best||score>best.score) best={path,score};
+  }
+  if(!best) return false;
+  const moved=moveMissionUnitAlongPath(unit,best.path);
+  if(moved) missionLog(ch.name+" recule de "+moved+" hex pour souffler.","move");
+  return moved>0;
 }
 
 // Un tireur qui ne peut pas tirer d'où il est (trop près : un arc ne tire pas à moins de 2 cases ; trop loin ; hors de vue)
@@ -3288,7 +3417,9 @@ function enemyMoveToShoot(unit,target){
     const end=path[path.length-1];
     if(!e.canAttackAtDistance(unit,e.axialDistance(end,target),"ranged")||!missionLineOfSight(end,target)) continue;
     const risk=missionPathOpportunityCount(unit,path);
-    if(!best||risk<best.risk) best={path,risk};
+    // Se cacher (IA commune, Idan, 2026-11-07) : à risque égal, la case la mieux couverte face à sa cible.
+    const cover={totale:2,partielle:1}[missionCoverLevel(target,missionAt(unit,end),{shot:true})]||0;
+    if(!best||risk<best.risk||(risk===best.risk&&cover>best.cover)) best={path,risk,cover};
   }
   if(!best) return false;
   const moved=moveMissionUnitAlongPath(unit,best.path);
@@ -3403,6 +3534,14 @@ function enemyMissionActivation(unit,{reset=true}={}){
   missionAiCast(unit);
   if(unit.alive&&!game.mission.over) missionAiSpell(unit);
   if(!unit.alive||game.mission.over||unit.attackAvailable===false) return;
+  // Reculer (IA commune, Idan, 2026-11-07) ; un tireur tire encore s'il le peut.
+  if(missionAiRetreat(unit)){
+    if(!unit.alive||game.mission.over||unit.fleeing) return;
+    const foe=nearestMissionTarget(unit),en=game.mission.engine;
+    if(foe&&en.isRangedWeapon(en.weaponTemplate(en.activeWeaponItem(unit)))&&missionUsableHands(unit,foe).length)
+      performMissionAttack(unit,foe,"ranged",en.axialDistance(unit,foe));
+    return;
+  }
   // En retrait (le nécromancien ; Idan, 2026-11-06 : « B, vas-y ») : tant que ses troupes tiennent, il reste derrière elles
   // et n'avance que pour lancer un sort ; il ne frappe qu'un ennemi à son contact. Seul, il se bat comme les autres.
   if(unit.character?.staysBehind&&livingMissionUnits(unit.team).some(a=>a!==unit&&!a.offMap&&!a.decoy)){

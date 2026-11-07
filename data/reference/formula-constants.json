@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 400,
+  "row_count": 406,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -1016,6 +1016,54 @@
       "description": "Esquive effective + ce facteur × Combat à une main, avec une arme à une main tenue seule, l'autre main libre (Idan, 2026-11-02 : « un petit bonus d'esquive », coefficient 0,2).",
       "formule": "Combat à une main V1",
       "valeur": 0.2,
+      "version": "V1"
+    },
+    {
+      "nom": "IA — sorts de zone : ennemis au moins",
+      "code": "combat.ai.zone_min_foes",
+      "description": "Un sort de zone n'est lancé par l'IA que s'il touche au moins ce nombre d'ennemis, et aucun allié ni le lanceur (Idan, 2026-11-07, après le bêta-test : « Rendre l'IA plus performante : jouer des sorts. Savoir reculer. Se regrouper. Se cacher » ; « On fait un premier jet »).",
+      "formule": "IA de combat commune V1",
+      "valeur": 2,
+      "version": "V1"
+    },
+    {
+      "nom": "IA — chance de réussite minimale d'un sort",
+      "code": "combat.ai.min_cast_chance",
+      "description": "Sans liste de sorts dans sa fiche (nos mercenaires en combat automatique), l'IA ne tente pas un sort dont la chance de réussite est sous ce pourcentage : elle frappe avec son arme (Idan, 2026-11-07, après le bêta-test : « Rendre l'IA plus performante : jouer des sorts. Savoir reculer. Se regrouper. Se cacher » ; « On fait un premier jet »).",
+      "formule": "IA de combat commune V1",
+      "valeur": 40,
+      "version": "V1"
+    },
+    {
+      "nom": "IA — se regrouper : avance devant le plus en retard",
+      "code": "combat.ai.cohesion_hexes",
+      "description": "Avant le contact, un combattant de mêlée n'avance pas à plus de ce nombre de cases (vers l'ennemi) devant le plus en retard de ses alliés de mêlée : on avance au pas du plus lent (Idan, 2026-11-07, après le bêta-test : « Rendre l'IA plus performante : jouer des sorts. Savoir reculer. Se regrouper. Se cacher » ; « On fait un premier jet »).",
+      "formule": "IA de combat commune V1",
+      "valeur": 3,
+      "version": "V1"
+    },
+    {
+      "nom": "IA — se cacher : tours d'embuscade",
+      "code": "combat.ai.ambush_turns",
+      "description": "Encore camouflé et hors de vue, un combattant qui ne pourrait pas frapper au tour suivant attend au plus ce nombre de tours avant d'entrer dans la vue de l'ennemi (Idan, 2026-11-07, après le bêta-test : « Rendre l'IA plus performante : jouer des sorts. Savoir reculer. Se regrouper. Se cacher » ; « On fait un premier jet »).",
+      "formule": "IA de combat commune V1",
+      "valeur": 2,
+      "version": "V1"
+    },
+    {
+      "nom": "IA — reculer : PV restants",
+      "code": "combat.ai.retreat_hp_ratio",
+      "description": "Sous cette part de ses PV, un combattant qui n'est au contact d'aucun ennemi recule vers les siens, sans attaque d'opportunité (Idan, 2026-11-07, après le bêta-test : « Rendre l'IA plus performante : jouer des sorts. Savoir reculer. Se regrouper. Se cacher » ; « On fait un premier jet »).",
+      "formule": "IA de combat commune V1",
+      "valeur": 0.3,
+      "version": "V1"
+    },
+    {
+      "nom": "IA — reculer : coup de grâce",
+      "code": "combat.ai.finish_hp_ratio",
+      "description": "Il ne recule pas s'il peut frapper ce tour un ennemi sous cette part de ses PV : le coup de grâce d'abord (Idan : « Je recule pas si je suis à 10% de PV mais que je pense que je vais faire le coup de grace »).",
+      "formule": "IA de combat commune V1",
+      "valeur": 0.25,
       "version": "V1"
     },
     {

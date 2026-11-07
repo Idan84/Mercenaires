@@ -25,7 +25,8 @@ const read = file => fs.readFileSync(path.join(ROOT, "prototype-web", file), "ut
 // 1. Les données : un paysage par faction des camps de contrat, des décors qui existent.
 const lands = reference.missionLandscapes;
 assert.equal(lands.row_count, lands.rows.length);
-const factions = [...new Set(reference.oneShotMissions.missions.flatMap(m => (m.camps || []).map(c => c.faction)))];
+// Les camps, et les chasses (Idan, 2026-11-07 : les loups en forêt, les licornes en clairière).
+const factions = [...new Set(reference.oneShotMissions.missions.flatMap(m => [...(m.camps || []).map(c => c.faction), m.bete?.faction].filter(Boolean)))];
 assert.deepEqual(lands.rows.map(r => r.faction).sort(), [...factions].sort(), "un paysage par faction");
 const decorCodes = new Set(reference.terrainDecors.rows.map(d => d.code));
 const range = (pair, label) => { assert.ok(Array.isArray(pair) && pair.length === 2 && pair[0] <= pair[1] && pair[0] >= 0, label); };
@@ -43,7 +44,7 @@ const pale = reference.terrainDecors.rows.find(d => d.code === "palissade");
 assert.deepEqual([pale.nom, pale.cout_mouvement, pale.bloque_vue, pale.couverture], ["Palissade", null, false, "partielle"]);
 assert.equal(lands.enceinte.decor, "palissade");
 assert.deepEqual([lands.enceinte.distance, lands.enceinte.ouvertures, lands.enceinte.largeur], [2, [2, 3], 2]);
-assert.deepEqual(lands.rows.filter(r => !r.enceinte).map(r => r.faction), ["Hommes-bêtes"], "la forêt suffit");
+assert.deepEqual(lands.rows.filter(r => !r.enceinte).map(r => r.faction), ["Hommes-bêtes", "Loups", "Licornes"], "la forêt suffit ; les bêtes n’ont pas de camp");
 // Le cimetière du Culte des morts (Idan, 2026-11-06) : des tombes, entouré de murets.
 assert.equal(land("Culte des morts").nom, "Cimetière");
 assert.equal(land("Culte des morts").enceinte_decor, "muret");

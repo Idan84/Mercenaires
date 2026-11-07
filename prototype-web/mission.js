@@ -860,7 +860,10 @@ function startExpeditionCombat(expeditionId){
   $("game-panel").classList.add("hidden");
   $("mission-panel").classList.remove("hidden");
   missionLog(offer.name+" : le "+offer.campName.toLocaleLowerCase("fr")+" de "+offer.fields.lieu+". Votre équipe a l’initiative.","turn");
-  missionLog("Dans le camp : "+enemies.map(u=>u.character.name).join(", ")+".");
+  // Une chasse (Idan, 2026-11-07) : les bêtes, en nombre.
+  const beast=offer.camp?.beast;
+  missionLog(beast?"Sur place : "+enemies.length+" "+(enemies.length>1?(beast.code==="licorne"?"licornes":"loups"):(beast.code==="licorne"?"licorne":"loup"))+"."
+    :"Dans le camp : "+enemies.map(u=>u.character.name).join(", ")+".");
   deployMissionCompanions();
   startMissionCamouflage();
   selectNextMissionPlayer();
@@ -1141,6 +1144,13 @@ function resolveContractOutcome(m,report,victory){
 function contractResultLines(result,trip=null){
   const home=trip?{text:"Retour au camp dans "+trip.days+" jour"+(trip.days>1?"s":"")+(trip.bonuses?" ; primes dues à l’arrivée : "+fmt(trip.bonuses)+" PO.":"."),kind:"turn"}:null;
   if(!result.victory) return [{text:"Contrat échoué : rien n’est payé et la renommée de la compagnie baisse ("+result.renown+").",kind:"bad"},home].filter(Boolean);
+  // Une chasse (Idan, 2026-11-07) : la récompense seule (ni coffre ni butin), et l'équipement de nos morts s'il y en a.
+  if(result.hunt){
+    const lines=[{text:"Contrat rempli : "+fmt(result.reward)+" PO de récompense.",kind:"gear"}];
+    if(result.loot.length) lines.push({text:"Équipement de nos morts : "+result.loot.length+" objet"+(result.loot.length>1?"s":"")+", rapporté"+(result.loot.length>1?"s":"")+" à l’Intendance par l’escouade.",kind:"gear"});
+    if(home) lines.push(home);
+    return lines;
+  }
   const lines=[{text:"Contrat rempli : "+fmt(result.reward)+" PO de récompense et "+fmt(result.chestGold)+" PO dans le coffre.",kind:"gear"}];
   if(result.chestItems.length) lines.push({text:"Dans le coffre : "+result.chestItems.map(i=>itemPublicName(i)).join(", ")+".",kind:"gear"});
   lines.push({text:"Butin des morts : "+result.loot.length+" objet"+(result.loot.length>1?"s":"")+", rapporté"+(result.loot.length>1?"s":"")+" à l’Intendance par l’escouade.",kind:"gear"});

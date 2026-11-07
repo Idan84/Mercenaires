@@ -63,12 +63,14 @@ const missionDays=n=>n+" jour"+(n>1?"s":"");
 function contractCard(offer){
   const def=(game.referenceData?.oneShotMissions?.missions||[]).find(m=>m.code===offer.code)||{};
   const order=contractOrder(offer);
+  // Une chasse (Idan, 2026-11-07) : la récompense seule, ni coffre ni butin.
+  const loot=def.bete?"":" + butin";
   return {id:"contract:"+offer.id,kind:"contract",type:offer.name,title:offer.campName+" de "+offer.fields.lieu,
     illustration:def.illustration||"",description:def.description||"",
     difficulty:{level:offer.difficulty||1,label:"Difficulté"},
-    reward:fmt(offer.reward)+" PO",rewardNote:"+ butin",duration:missionDays(offer.distance)+" de marche",
+    reward:fmt(offer.reward)+" PO",rewardNote:loot.trim(),duration:missionDays(offer.distance)+" de marche",
     facts:[["client","Commanditaire",order?.from||""],["days","Distance",missionDays(offer.distance)+" de marche, "+missionDays(2*offer.distance)+" aller-retour"],
-      ["enemies","Ennemis",offer.faction+", "+offer.fields.estimation],["gold","Récompense",fmt(offer.reward)+" PO + butin"],
+      ["enemies","Ennemis",offer.faction+", "+offer.fields.estimation],["gold","Récompense",fmt(offer.reward)+" PO"+loot],
       ["expires","Expire le",contractDate(offer.expiresDay).label]],
     letter:order,action:{label:"Accepter le contrat",attr:`data-contract-accept="${esc(offer.id)}"`}};
 }

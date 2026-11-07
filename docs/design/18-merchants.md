@@ -138,7 +138,7 @@ bloque si elle n'est plus à jour (`node scripts/merchant-coverage.js --check`).
 
 <!-- couverture:debut (généré par node scripts/merchant-coverage.js : ne pas modifier à la main) -->
 
-**Bilan** : 90 objets ; **90** vendus par au moins 2 marchands, **0** par un seul, **0** par aucun.
+**Bilan** : 92 objets ; **92** vendus par au moins 2 marchands (les montures : un marchand chacune), **0** par un seul, **0** par aucun.
 
 **32 marchands**, dont 16 marchandes.
 
@@ -148,7 +148,7 @@ bloque si elle n'est plus à jour (`node scripts/merchant-coverage.js --check`).
 | Durgan Battefer | Nains des montagnes | Armure de plates, Casque de constitution, Amulette de volonté, Bague du courage, Marteau de guerre, Hache de guerre | 6 |
 | Orvald Sans-Collier | Nains réduits en esclavage dans les colonies | Pic de guerre, Hachette, Fouet, Ceinture de courage, Amulette de volonté, Bague de la chance | 6 |
 | Jiraya Senin | Royaumes du Soleil Levant | Katana, Nunchaku, Sai, Bottes d’esquive, Cape de discrétion, String du Charisme, Manuels de Vie | 7 |
-| Ysolwen Chantesève | Elfes sylvains | Arc, Bâton court, Bâton long, Slip d’Affinité, Cape d’esquive, Bottes de perception, Manuels de Vie | 7 |
+| Ysolwen Chantesève | Elfes sylvains | Arc, Bâton court, Bâton long, Slip d’Affinité, Cape d’esquive, Bottes de perception, Manuels de Vie, Licorne | 8 |
 | Hroska Crocs-de-Neige | Tribus nordiques | Hache double, Écu, Trident, Cape de résistance physique, Ceinture d’endurance, Bague de l’Eau, Manuels d’Eau | 7 |
 | Drusk Sabot-de-Poussière | Clans des grandes steppes | Arc, Lance, Sabre, Bottes de vitesse, Bague du courage, Ceinture de courage, Manuels de Feu | 7 |
 | Gorma Porte-Tonneau | Ogres des cités humaines | Hallebarde, Masse d’armes, Brigandine, Gants de force, Culotte d’Intimidation, Potion de soins | 6 |
@@ -162,7 +162,7 @@ bloque si elle n'est plus à jour (`node scripts/merchant-coverage.js --check`).
 | Flek Visseclou | Caravanes de ferrailleurs | Amulette de chance, Tromblon, Canon à main, Fléau d’armes, Gants de pièges, Bague de la chance, Manuels de Télékinésie | 7 |
 | Lirri Feuillecoque | Gnomes des forêts | Fronde, Bâton court, Cape d’esquive, Gants de dextérité, Bottes d’esquive, Bague de l’illusionniste, Manuels d’Illusion | 7 |
 | Callie Loincompas | Explorateurs | Katana, Sai, Nunchaku, Bottes de perception, Chapeau du dresseur, Amulette de chance, Manuels d’Invocation | 7 |
-| Amar Rathore | Steppes désertiques | Sabre, Arc, Lance, Cuir renforcé, Gambison, Bague de Feu, Manuels de Feu | 7 |
+| Amar Rathore | Steppes désertiques | Sabre, Arc, Lance, Cuir renforcé, Gambison, Bague de Feu, Manuels de Feu, Destrier | 8 |
 | Karg Brisenclume | Orcs noirs | Épée à deux mains, Hache double, Bardiche, Armure de plates, Armure d'écailles, Gants de force, Manuels de Transmutation | 7 |
 | Ilyra Hauteverrière | Elfes des grandes cités | Estoc, Épée longue, Bâton long, Ceinture de mana, Amulette de puissance magique, Vêtements, Manuels d’Eau | 7 |
 | Crik Fouillecrâne | Gobelins des cavernes | Dague, Kukri, Fronde, Bottes d’esquive, Gants de pièges, Bague de l’invocation, Manuels d’Invocation | 7 |
@@ -260,6 +260,8 @@ bloque si elle n'est plus à jour (`node scripts/merchant-coverage.js --check`).
 | Fioles | Fiole de poison | Isska, Calaena, Malaika | 3 |
 | Fioles | Potion de mana | Dottie, Bimble, Kippa | 3 |
 | Fioles | Potion de soins | Gorma, Isska, Dottie | 3 |
+| Montures | Destrier | Amar | 1 |
+| Montures | Licorne | Ysolwen | 1 |
 | Manuels | Manuels de Vie | Jiraya, Ysolwen, Aymeric | 3 |
 | Manuels | Manuels de Feu | Drusk, Amar, Krosh | 3 |
 | Manuels | Manuels d’Eau | Hroska, Isska, Ilyra | 3 |
@@ -271,6 +273,15 @@ bloque si elle n'est plus à jour (`node scripts/merchant-coverage.js --check`).
 | Manuels | Manuels d’Invocation | Callie, Crik, Azhiss | 3 |
 
 <!-- couverture:fin -->
+
+## 12 bis — Les montures (Idan, 2026-11-07)
+
+> « On ajoute pour le marchand des humains des steppes, l'achat et la vente du cheval. Je te propose que la valeur d'un animal soit de 300 x coût d'entretien. On peut donc acheter et vendre des chevaux comme les autres biens. » « Le marchand elfe Sylvain en vend et en achète. »
+
+- **Amar Rathore** (Steppes désertiques) vend des **destriers** ; **Ysolwen Chantesève** (Elfes sylvains) des **licornes** (`merchants.json`, type `mount`). Un marchand chacune : l'exception à la règle des deux marchands (`scripts/merchant-coverage.js`).
+- **Valeur** = 300 × entretien (`economy.mount_value_per_upkeep`, `mounts.json`) : destrier **3 000 PO**, licorne **9 000 PO** ; puis les prix habituels (achat × 1,5, revente × 0,8, × 0,4 hors de sa liste…). Sans tier ni qualité : pas de rareté.
+- **Acheter** demande une place libre aux Écuries (doc 11 §8) ; la monture rejoint l'Intendance (onglet **Montures**).
+- **Vendre** : depuis l'Intendance, comme tout objet ; une monture donnée à un mercenaire n'y est plus, on ne peut pas la vendre.
 
 ## 13 — Étapes suivantes
 

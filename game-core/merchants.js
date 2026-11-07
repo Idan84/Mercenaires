@@ -36,7 +36,8 @@
 
   // reference : data/reference/ ; generator : createGenerator(...) (createItemByName) ; affinity : createAffinityRules
   // (facultatif : affinité initiale nulle sans lui).
-  function createMerchantRules({reference,generator,affinity=null,random=Math.random}={}){
+  // canStore (facultatif) : canStore(state, objet) → {ok, reason} ; une monture demande une place aux Écuries (stables.js).
+  function createMerchantRules({reference,generator,affinity=null,random=Math.random,canStore=null}={}){
     const constants=new Map(rows(reference?.formulaConstants).map(r=>[r.code,Number(r.valeur)]));
     const constant=(code,fallback)=>Number.isFinite(constants.get(code))?constants.get(code):fallback;
     const C={
@@ -251,6 +252,9 @@
       if(!offer) return {ok:false,reason:"Cet objet n'est plus en vente."};
       if(offer.price===null) return {ok:false,reason:"Cet objet n'a pas de prix."};
       if(state.company.gold<offer.price) return {ok:false,reason:"Pas assez d'or.",price:offer.price};
+      // Une monture (Idan, 2026-11-07) : il faut une place libre aux Écuries.
+      const room=typeof canStore==="function"?canStore(state,offer.item):{ok:true};
+      if(room&&room.ok===false) return {ok:false,reason:room.reason||"Pas de place pour elle.",price:offer.price};
       state.company.gold-=offer.price;
       if(!Array.isArray(state.company.stock)) state.company.stock=[];
       state.company.stock.push(offer.item);

@@ -79,7 +79,8 @@
     function perceivedValue(item,mercenary,owned){
       if(!item) return 0;
       const sense=clamp(Number(mercenary?.stats?.Intelligence)||0,0,100)/100;
-      return (Number(item.tier)||1)*sense+(owned?C.ownedValue:C.offeredValue)*(1-sense);
+      // Une monture (Idan, 2026-11-07) : son rang d'échange (mounts.json : le destrier comme un T3, la licorne comme un T4).
+      return (Number(item.exchangeTier??item.tier)||1)*sense+(owned?C.ownedValue:C.offeredValue)*(1-sense);
     }
 
     function no(reason){ return {ok:false,reason}; }
@@ -102,6 +103,13 @@
       if(slot==="head") return item.itemType==="helmet"?{ok:true}:no("Cet emplacement reçoit un casque ou un chapeau.");
       // Potions et fioles (Idan, 2026-10-29) : les 4 emplacements de ceinture.
       if(isPocket(slot)) return item.itemType==="potion"?{ok:true}:no("Cet emplacement reçoit une potion ou une fiole.");
+      // Monture (Idan, 2026-11-07 : « S'il accepte il a la monture dans son inventaire en statut "non equipable". Pour
+      // pouvoir l'équiper […], il doit passer du temps chez le dresseur ») : seulement celle qu'il a apprivoisée.
+      if(slot==="mount"){
+        if(item.itemType!=="mount") return no("Cet emplacement reçoit une monture.");
+        return item.tamedBy!=null&&item.tamedBy===mercenary?.id?{ok:true}:no("Il doit d’abord l’apprivoiser chez le Dresseur.");
+      }
+      if(item.itemType==="mount") return no("Une monture va dans son emplacement de monture.");
       const match=String(slot).match(WEAPON_SLOT);
       if(!match||item.itemType!=="weapon") return no("Cet objet ne va pas dans cet emplacement.");
       const weapon=weapons.get(item.name)||{};

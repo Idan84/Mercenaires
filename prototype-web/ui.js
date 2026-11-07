@@ -636,6 +636,7 @@ function gearIcon(kind){
 function gearKind(slot,item){
   if(item?.itemType==="potion") return "flask";
   if(item?.itemType==="manual") return "book";
+  if(item?.itemType==="mount") return "mount";
   if(item?.itemType==="weapon") return /Boucliers/.test(String(item.category||""))?"shield":item.combatFamily==="ranged"?"ranged":"melee";
   if(item?.itemType==="armor") return "armor";
   if(/^ring_/.test(slot.id)) return "ring";
@@ -646,7 +647,8 @@ function gearKind(slot,item){
 }
 // Carte de l'objet au survol (item-card-ui.js), gardée dans un modèle caché de la case.
 function gearTooltip(item){
-  const card=typeof renderItemCard==="function"?renderItemCard(item):"";
+  // Une monture (Idan, 2026-11-07 ; stable-ui.js) : sa famille, son alignement, son entretien, son statut.
+  const card=item?.itemType==="mount"&&typeof mountCardHtml==="function"?mountCardHtml(item):typeof renderItemCard==="function"?renderItemCard(item):"";
   return `<template class="item-card-template">${card||`<div class="item-card item-card--t${Number(item.tier)||1}">
     <div class="item-card-names"><strong class="item-card-title">${esc(itemPublicName(item))}</strong>
     <span class="item-card-sub">${esc(item.category||item.itemType||"")}</span></div>

@@ -148,14 +148,17 @@ assert.ok(captured.some(x => x.detail === ""), "à 0 PV, pris sans jet");
 assert.ok(captured.length >= 1 && captured.length <= 2);
 assert.ok(captured.every(x => x.code === "destrier" && x.origin === "Mission Test"));
 assert.ok(!captured.some(x => x === undefined));
-// Mission Test : tout de suite aux Écuries, s'il reste une place.
-state.company.stable = [];
+// Mission Test : tout de suite aux Écuries (à l'Intendance), s'il reste une place.
+const clearMounts = () => { state.company.stock = (state.company.stock || []).filter(i => i.itemType !== "mount"); };
+clearMounts();
 state.company.camp.buildings.trainer_stables.level = 1;
 api.admitMissionMounts(captured);
 assert.equal(stable.mountsOf(state).length, Math.min(2, captured.length));
+assert.ok(stable.mountsOf(state).every(i => i.itemType === "mount" && i.owner == null), "une monture est un objet de l'Intendance");
 assert.ok(m.log.some(l => /Destrier capturé.*il rejoint les Écuries \(\d \/ 2\)/.test(l.message)));
 // Pas de place : relâché.
-state.company.stable = [{id: "mount-a", code: "destrier", name: "Destrier", day: 1}, {id: "mount-b", code: "destrier", name: "Destrier", day: 1}];
+clearMounts();
+stable.admit(state, [destrier("Mission Test"), destrier("Mission Test")]);
 api.admitMissionMounts([destrier("Mission Test")]);
 assert.equal(stable.mountsOf(state).length, 2);
 assert.ok(m.log.some(l => /pas de place aux Écuries : il est relâché/.test(l.message)));

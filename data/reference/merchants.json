@@ -255,6 +255,10 @@
         {
           "type": "manual",
           "ecole": "Vie"
+        },
+        {
+          "type": "mount",
+          "objet": "Licorne"
         }
       ],
       "repliques": {
@@ -881,6 +885,10 @@
         {
           "type": "manual",
           "ecole": "Feu"
+        },
+        {
+          "type": "mount",
+          "objet": "Destrier"
         }
       ],
       "repliques": {

@@ -1204,6 +1204,10 @@
         {
           "type": "manual",
           "ecole": "Illusion"
+        },
+        {
+          "type": "mount",
+          "objet": "Loup"
         }
       ],
       "repliques": {

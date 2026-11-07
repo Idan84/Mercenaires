@@ -12,7 +12,7 @@
 //
 // - La monture : un objet « mount » à lui (stables.js), qu'il n'a pas encore apprivoisé (item.tamedBy). Il faut la Grange,
 //   et pouvoir la monter (Idan, 2026-11-07 : « un ogre ne peut pas monter sur un cheval » : sa taille, ses places au
-//   dortoir, sous le gabarit de la monture).
+//   dortoir, sous le gabarit de la monture) ; un compagnon (le loup, mounts.json compagnon), tout le monde.
 // - Au jour J, on organise J+1 : il entre à la Grange le lendemain matin (on peut annuler d'ici là), et reste au camp (ni
 //   mission, ni garde du corps, ni entraînement, ni autre apprentissage) jusqu'à la fin. Pas de test pour qu'il y aille : il
 //   a déjà accepté la monture.
@@ -101,7 +101,8 @@
       const item=mountOf(m,mountId);
       if(!item) return no("Cette monture n’est pas à lui.");
       if(item.tamedBy===m.id) return no("Il l’a déjà apprivoisée.");
-      if((peopleSize.get(m.people)||1)>=(Number(sheetOf(item)?.gabarit)||1)) return no("Il est trop grand pour la monter.");
+      // Un compagnon (le loup ; Idan, 2026-11-07 : « Loup de combat ») : celui qui ne peut pas le monter l'emmène à ses côtés.
+      if(!sheetOf(item)?.compagnon&&(peopleSize.get(m.people)||1)>=(Number(sheetOf(item)?.gabarit)||1)) return no("Il est trop grand pour la monter.");
       const expedition=camp.expeditionOf?.(state,m.id);
       if(expedition) return no(expedition.status==="scheduled"?"Il part en mission demain.":"Il est en mission.");
       const busy=busyReason(state,m.id)||camp.busyElsewhere?.(state,m.id);

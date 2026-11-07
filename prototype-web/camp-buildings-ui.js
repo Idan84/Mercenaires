@@ -34,8 +34,9 @@ function campBuildingEffectText(code,effects){
   if(code==="baths") return `fatigue −${campDays(effects.fatigueRelief)}, mana +${fmt(effects.manaBonus)} % par jour`;
   // Cercle des Fines Lames (Idan, 2026-11-03) : la garde du corps paie mieux.
   if(Number(campaignRules().campBuildingRow(code)?.garde_paie_par_niveau)>0&&effects.bodyguardPay) return `garde du corps +${fmt(Math.round(effects.bodyguardPay*100))} %`;
-  // Les Écuries (Idan, 2026-11-07) : deux places par niveau pour les montures.
-  if(Number(campaignRules().campBuildingRow(code)?.places_par_niveau)>0&&effects.stablePlaces) return `${fmt(effects.stablePlaces)} place${effects.stablePlaces>1?"s":""}`;
+  // Les Écuries et le Chenil (Idan, 2026-11-07) : deux places par niveau pour les animaux.
+  const animalPlaces=code==="trainer_kennel"?effects.kennelPlaces:effects.stablePlaces;
+  if(Number(campaignRules().campBuildingRow(code)?.places_par_niveau)>0&&animalPlaces) return `${fmt(animalPlaces)} place${animalPlaces>1?"s":""}`;
   return "";
 }
 // Le chantier en cours, ou le bouton du prochain niveau avec son prix (grisé s'il manque de l'or ou, pour une salle de

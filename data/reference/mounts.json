@@ -74,9 +74,17 @@
     {
       "source": "Au titre de son cavalier, quand elle est équipée (mercenary-profile.js)",
       "key": "titre"
+    },
+    {
+      "source": "Logement (le bâtiment du camp où il loge : trainer_stables les Écuries, trainer_kennel le Chenil)",
+      "key": "logement"
+    },
+    {
+      "source": "Compagnon : celui qui ne peut pas le monter l'emmène quand même au combat, à ses côtés (le loup)",
+      "key": "compagnon"
     }
   ],
-  "row_count": 2,
+  "row_count": 3,
   "rows": [
     {
       "nom": "Destrier",
@@ -131,7 +139,9 @@
       "entretien": 10,
       "alignement": "Neutre",
       "rang_echange": 3,
-      "titre": "à cheval"
+      "titre": "à cheval",
+      "logement": "trainer_stables",
+      "compagnon": false
     },
     {
       "nom": "Licorne",
@@ -193,7 +203,70 @@
       "entretien": 30,
       "alignement": "Loyal bon",
       "rang_echange": 4,
-      "titre": "à dos de licorne"
+      "titre": "à dos de licorne",
+      "logement": "trainer_stables",
+      "compagnon": false
+    },
+    {
+      "nom": "Loup",
+      "code": "loup",
+      "espece": "Canidés",
+      "gabarit": 1,
+      "taille": "normale",
+      "caracteristiques": {
+        "Force": 41,
+        "Constitution": 44,
+        "Dextérité": 73,
+        "Vitesse": 60,
+        "Endurance": 58,
+        "Esquive": 54,
+        "Chance": 54,
+        "Charisme": 15,
+        "Courage": 53,
+        "Intelligence": 15,
+        "Volonté": 55,
+        "Perception": 61,
+        "Puissance magique": 49,
+        "Réserve de mana": 52
+      },
+      "resistances": {
+        "Résistance physique": 5,
+        "Résistance au feu": 4,
+        "Résistance au froid": 4,
+        "Résistance à la foudre": 4,
+        "Résistance au poison": 5
+      },
+      "competences_martiales": {
+        "Morsure": 50,
+        "Armes naturelles": 54,
+        "Discrétion": 28,
+        "Pièges": 28,
+        "Combat à deux armes": 46,
+        "Combat à mains nues": 31,
+        "Combat à deux mains": 37
+      },
+      "attaque": {
+        "nom": "Morsure",
+        "degats_pv_base": "1D8",
+        "puissance_perforante": 35
+      },
+      "competences_magiques": {},
+      "sorts": [],
+      "competences_sociales": {
+        "Intimidation": 37
+      },
+      "physiologie": {
+        "Régénération": 0,
+        "Vision nocturne": false,
+        "Vol": false
+      },
+      "capturable": true,
+      "entretien": 10,
+      "alignement": "Chaotique neutre",
+      "rang_echange": 3,
+      "titre": "",
+      "logement": "trainer_kennel",
+      "compagnon": true
     }
   ]
 }

@@ -3347,8 +3347,10 @@ function missionAiKeepFormation(unit,path){
   const cellDist=c=>foeDist(missionAt(unit,c));
   const melee=u=>!e.isRangedWeapon(e.weaponTemplate(e.activeWeaponItem(u)));
   let out=path;
+  // Un blessé qui souffle à l'arrière ne retient pas le groupe (sinon les valides l'attendaient : combat bloqué).
+  const ratio=missionAiConstant("combat.ai.retreat_hp_ratio",0.3);
   const pack=livingMissionUnits(unit.team).filter(a=>a!==unit&&!a.offMap&&!a.decoy&&!a.fleeing&&!a.summon&&!a.rider
-    &&!a.character?.staysBehind&&melee(a));
+    &&!a.character?.staysBehind&&a.hp>=a.pvMax*ratio&&melee(a));
   if(pack.length&&melee(unit)){
     const limit=Math.max(...pack.map(foeDist))-missionAiConstant("combat.ai.cohesion_hexes",3);
     let keep=out.length;
@@ -3370,8 +3372,9 @@ function missionAiKeepFormation(unit,path){
 // Reculer, premier jet (Idan, 2026-11-07 : « Je recule pas si je suis à 10% de PV mais que je pense que je vais faire le
 // coup de grace ») : sous combat.ai.retreat_hp_ratio de ses PV, celui qui n'est au contact d'aucun ennemi et n'a pas de
 // coup de grâce à portée ce tour (un ennemi sous combat.ai.finish_hp_ratio de ses PV) recule vers les siens, sur une case
-// plus loin des ennemis et plus près d'un allié valide, sans attaque d'opportunité ; sans allié valide, il se bat. Les
-// morts-vivants, les invocations et les leurres ne reculent pas.
+// plus loin des ennemis et plus près d'un allié valide, sans attaque d'opportunité ; déjà au plus loin, il reste là ; sans
+// allié valide (le nécromancien en retrait ne compte pas), il se bat. Les morts-vivants, les invocations et les leurres ne
+// reculent pas.
 function missionAiRetreat(unit){
   const e=game.mission.engine,ch=unit.character;
   if(!unit.alive||unit.fleeing||unit.decoy||unit.summon||unit.rider||ch?.undead||ch?.staysBehind) return false;
@@ -3385,7 +3388,8 @@ function missionAiRetreat(unit){
   // On recule vers un allié valide qui peut nous couvrir ; sans lui, on se bat (sinon deux blessés se poursuivaient
   // sans fin, l'un reculant quand l'autre avançait).
   const ratio=missionAiConstant("combat.ai.retreat_hp_ratio",0.3);
-  const allies=livingMissionUnits(unit.team).filter(a=>a!==unit&&!a.offMap&&!a.decoy&&!a.fleeing&&a.hp>=a.pvMax*ratio);
+  const allies=livingMissionUnits(unit.team).filter(a=>a!==unit&&!a.offMap&&!a.decoy&&!a.fleeing&&!a.character?.staysBehind
+    &&a.hp>=a.pvMax*ratio);
   if(!allies.length) return false;
   const allyDist=c=>Math.min(...allies.map(a=>e.axialDistance(c,a)));
   const here=foeDist(unit);
@@ -3397,7 +3401,8 @@ function missionAiRetreat(unit){
     const score=2*d-allyDist(end);
     if(!best||score>best.score) best={path,score};
   }
-  if(!best) return false;
+  // Déjà au plus loin : il reste là (avant, il revenait au combat puis reculait, tour après tour).
+  if(!best){ missionLog(ch.name+" reste en retrait pour souffler.","move"); return true; }
   const moved=moveMissionUnitAlongPath(unit,best.path);
   if(moved) missionLog(ch.name+" recule de "+moved+" hex pour souffler.","move");
   return moved>0;

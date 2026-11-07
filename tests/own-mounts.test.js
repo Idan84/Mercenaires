@@ -63,7 +63,8 @@ api = new Function("game", "$", "esc", "fmt", "renderAvatar", "combatEngine", "M
   + "startMissionCamouflage,autoResolveMission,setMissionMapSize,placeMissionArmy,missionUnitHeight,missionUnits,checkMissionEnd,"
   + "missionMountOf,settleOwnMissionMounts,endMissionActivation,missionActionAvailability,performMissionAttack,missionUnitAtCell,"
   + "enemyMissionAct,missionMagic,handleMissionHexClick,renderMissionSpellBar,setMissionMode,missionSpellUnit,targetableMissionCells,"
-  + "missionReactors,useMissionPotion,performMissionAttack};")
+  + "missionReactors,useMissionPotion,performMissionAttack,dismountMission,remountMission,missionDismountCells,missionLooseMount,"
+  + "moveMissionUnitAlongPath,shortestMissionPath,missionSecondMove};")
   .call(null, game, $, v => String(v ?? ""), v => String(Math.round(Number(v) || 0)), () => "", () => combat, Progression, MissionEnd, Magic,
     () => rules, () => campaign);
 api.setMissionMapSize({cols: 30, rows: 15});
@@ -182,12 +183,81 @@ api.enemyMissionAct(foeRider);
 assert.ok(m.log.some(l => /^Destrier de Cavalier attaque /.test(l.message)), "le cheval du Cavalier attaque : " + m.log.map(l => l.message).join(" | "));
 delete victim.character.undead;
 game.campaign = keepCampaign;
+// Descendre / Monter (Idan : « un bouton descendre de la monture / monter. […] La monture joue alors seule dans l'ordre, juste
+// après le mercenaire. Monter : il faut être adjacent. Cela prend une action rapide. » ; « Le cavalier descend : il aura son
+// deuxième déplacement et la monture son deuxième à son tour. » ; « Qui peut monter : seulement son cavalier. »).
+game.campaign = null;
+m = newMission([rider, other], foes(1));
+let pairUnit = m.players.find(u => u.character === rider);
+let steed = pairUnit.mount;
+m.enemies[0].camouflaged = false;
+while (m.activeUnit !== pairUnit) { if (m.activeUnit) api.endMissionActivation(); else api.selectNextMissionPlayer(); }
+let can2 = api.missionActionAvailability();
+assert.deepEqual([can2.dismount, can2.remount], [true, false]);
+// Sans avoir bougé : il pose le pied, garde son premier déplacement ; elle aura le sien, juste après lui.
+const spot = api.missionDismountCells(pairUnit)[0];
+assert.equal(api.dismountMission(pairUnit, spot), true);
+assert.ok(!pairUnit.mount && !steed.rider, "deux groupes");
+assert.deepEqual([pairUnit.q, pairUnit.r], [spot.q, spot.r], "sur une case au contact");
+assert.equal(pairUnit.quickAvailable, false, "une action rapide");
+assert.equal(pairUnit.movementRemaining, combat.movementBase(pairUnit), "son déplacement, à pied");
+assert.ok(m.players.includes(steed), "elle joue seule");
+assert.equal(m.playerOrder.indexOf(steed), m.playerOrder.indexOf(pairUnit) + 1, "juste après lui");
+assert.equal(api.missionLooseMount(pairUnit), steed);
+assert.equal(api.missionLooseMount(m.players.find(u => u.character === other)), null, "seul son cavalier peut la monter");
+api.endMissionActivation();
+assert.equal(m.activeUnit, steed, "elle joue juste après lui");
+assert.equal(steed.movementRemaining, combat.movementBase(steed), "son déplacement normal");
+assert.equal(steed.attackAvailable, true);
+api.endMissionActivation();
+// Tour suivant : il remonte (au contact, action rapide) ; le couple repart avec le déplacement de la monture.
+for (const u of m.players) u.acted = false;
+m.activeUnit = null;
+while (m.activeUnit !== pairUnit) { if (m.activeUnit) api.endMissionActivation(); else api.selectNextMissionPlayer(); }
+assert.equal(combat.axialDistance(pairUnit, steed), 1);
+assert.equal(api.missionActionAvailability().remount, true);
+assert.equal(api.remountMission(pairUnit), true);
+assert.equal(pairUnit.mount, steed);
+assert.ok(!m.players.includes(steed) && !m.playerOrder.includes(steed), "le couple, de nouveau");
+assert.equal(pairUnit.movementRemaining, combat.movementBase(pairUnit), "le déplacement de la monture");
+assert.equal(combat.movementBase(pairUnit), combat.movementBase(steed));
+assert.equal(pairUnit.quickAvailable, false);
+// Après un déplacement du couple : il descend avec son second déplacement à lui, elle aura le sien à son tour.
+const step = api.shortestMissionPath(pairUnit, {q: pairUnit.q, r: pairUnit.r + 1}, pairUnit) || api.shortestMissionPath(pairUnit, {q: pairUnit.q, r: pairUnit.r - 1}, pairUnit);
+assert.ok(step, "un pas possible");
+const remaining = pairUnit.movementRemaining;
+assert.equal(api.moveMissionUnitAlongPath(pairUnit, step), step.length);
+pairUnit.movementRemaining = remaining - step.length;
+pairUnit.quickAvailable = true;
+{
+  assert.equal(api.dismountMission(pairUnit, api.missionDismountCells(pairUnit)[0]), true);
+  assert.equal(pairUnit.movementRemaining, 0, "son premier déplacement est fait");
+  assert.equal(api.missionActionAvailability().secondMove, true, "il lui reste le second");
+  assert.equal(steed.carryOver.movementRemaining, 0, "elle aussi a fait son premier");
+  api.endMissionActivation();
+  assert.equal(m.activeUnit, steed);
+  assert.equal(api.missionActionAvailability().secondMove, true, "et garde son second");
+  api.endMissionActivation();
+}
+// Cavalier KO : la monture n'a pas sa propre initiative, elle joue juste après lui.
+m = newMission([rider, other], foes(1));
+pairUnit = m.players.find(u => u.character === rider);
+steed = pairUnit.mount;
+pairUnit.hp = -5; pairUnit.alive = false;
+api.checkMissionEnd();
+assert.equal(m.playerOrder.indexOf(steed), m.playerOrder.indexOf(pairUnit) + 1, "juste après son cavalier");
+game.campaign = keepCampaign;
+
 // La licorne et son sort (Idan : « Reprend le sort qui existe déjà. On lui donne juste des points de mana et des niveaux de
 // compétences de magie. Comme un mercenaire ») : Création de double, Illusion 50, Réserve de mana 40, lancé depuis la barre de
 // sorts de son cavalier, par elle.
 const unicornItem = give(rider, "Licorne");
 m = newMission([rider], foes(1));
+// Les jets du sort, fixés (réussite, pas d'échec critique) : la magie lit Math.random à sa création.
+const seededRandom = Math.random;
+Math.random = () => 0.3;
 const mage = m.players[0].mount, magic = api.missionMagic();
+Math.random = seededRandom;
 assert.equal(mage.character.name.split(" ")[0], "Licorne");
 assert.deepEqual(magic.knownSpells(mage).map(s => s.code), ["decoy"], "elle connaît Création de double");
 assert.deepEqual([magic.manaMax(mage), magic.currentMana(mage), magic.manaCost(mage, "decoy"), magic.range(mage, "decoy")], [40, 40, 17, 5]);

@@ -433,8 +433,19 @@ chance pour enchaîner plusieurs tirs (sauf arme à feu). Il ne peut passer en m
   le cheval fait tester le couple) ; ils fuient ensemble.
 - **Cheval KO** : le cavalier tombe **au sol** (jusqu'à sa prochaine activation) et se bat à pied ; le cheval reste couché
   sur sa case : après une victoire, on peut le capturer (doc 11 §8, « La Grange du dresseur et les Écuries »).
-- **Cavalier KO** : le cheval reste, seul : il prend sa place dans l'ordre du tour suivant, se bat avec ses sabots et fuit
-  comme tout combattant (son propre Courage, 35). Un cavalier qui sort de la carte emporte son cheval.
+- **Cavalier KO** : le cheval reste, seul : il joue dès le tour suivant, **juste après son cavalier** dans l'ordre (Idan,
+  2026-11-07 : « La monture n'a pas sa propre initiative »), se bat avec ses sabots et fuit comme tout combattant (son propre
+  Courage, 35). Un cavalier qui sort de la carte emporte son cheval.
+- **Descendre / Monter** (Idan, 2026-11-07 : « un bouton descendre de la monture / monter. Elle permet tout simplement de
+  scinder en deux groupes. La monture joue alors seule dans l'ordre, juste après le mercenaire. Monter : il faut être
+  adjacent. Cela prend une action rapide. ») : **Descendre**, action rapide : il pose le pied sur une case libre au contact du
+  couple ; la monture joue seule, juste après lui. **Monter**, action rapide, au contact de sa monture ; **seul son cavalier**
+  la monte. Les déplacements (« le mercenaire a utilisé deux déplacements et son action rapide pour arriver près de la
+  monture - la monture aura son déplacement normal. La monture a utilisé un déplacement. Le cavalier descend : il aura son
+  deuxième déplacement et la monture son deuxième à son tour. ») : chacun compte les siens ; le couple a fait le premier de
+  chacun s'il a bougé, les deux s'il a fait un second mouvement ; en remontant, le couple repart avec le déplacement de la
+  monture si elle n'a pas encore joué ce tour. L'IA ne descend pas d'elle-même. Le même mécanisme servira aux compagnons
+  qu'on ne monte pas.
 - **Écran** : le pion du couple couvre ses deux cases, avec une seconde barre de PV (le cheval) ; la carte de survol donne
   les PV du cheval et, au tir, sa chance de prendre le coup.
 - **Nos mercenaires à cheval** (Idan, 2026-11-07 : « Pour pouvoir l'équiper […], il doit passer du temps chez le dresseur » ;

@@ -419,13 +419,20 @@ function attachMissionMount(unit){
   const pvMax=e.maxHp({character:horse,activeSet:1});
   const mount={id:unit.id+"-mount",character:horse,team:unit.team,isCaptain:false,isLieutenant:false,hp:pvMax,pvMax,alive:true,
     activeSet:1,prone:false,acted:true,movementRemaining:0,attackAvailable:false,quickAvailable:false,fleeing:false,fleeTurn:0,
-    offMap:false,damageTaken:0,rider:unit};
-  // Ses cases sont celles de son cavalier (et le déplacer, c'est déplacer le couple).
-  for(const k of ["q","r","facing"]) Object.defineProperty(mount,k,{enumerable:true,configurable:true,
-    get(){ return this.rider?this.rider[k]:undefined; },set(v){ if(this.rider) this.rider[k]=v; }});
-  unit.mount=mount;
+    offMap:false,damageTaken:0};
+  linkMissionMount(unit,mount);
   unit.facing=unit.facing??(unit.team==="player"?0:3);
   return mount;
+}
+// Le cheval sous son cavalier : ses cases sont celles du cavalier (le déplacer, c'est déplacer le couple). follows : il n'a
+// pas sa propre initiative, il joue juste après son cavalier (Idan, 2026-11-07), et seul ce cavalier peut le monter.
+function linkMissionMount(unit,mount){
+  for(const k of ["q","r","facing"]){
+    delete mount[k];
+    Object.defineProperty(mount,k,{enumerable:true,configurable:true,
+      get(){ return this.rider?this.rider[k]:undefined; },set(v){ if(this.rider) this.rider[k]=v; }});
+  }
+  mount.rider=unit;mount.follows=unit.id;unit.mount=mount;
 }
 // Le cheval descend de scène avec son propre emplacement, et entre dans les listes du combat.
 function detachMissionMount(rider){
@@ -462,6 +469,66 @@ function settleMissionMounts(){
     missionLog(horse.character.name+" se retrouve sans cavalier.","info");
   }
 }
+// Descendre / Monter (Idan, 2026-11-07 : « un bouton descendre de la monture / monter. Elle permet tout simplement de scinder
+// en deux groupes. La monture joue alors seule dans l'ordre, juste après le mercenaire. Monter : il faut être adjacent. Cela
+// prend une action rapide. » ; « le mercenaire a utilisé deux déplacements et son action rapide pour arriver près de la
+// monture - la monture aura son déplacement normal. La monture a utilisé un déplacement. Le cavalier descend : il aura son
+// deuxième déplacement et la monture son deuxième à son tour. » ; « Qui peut monter : seulement son cavalier. »).
+// Les déplacements du couple dans cette activation : 0 (il n'a pas bougé), 1, 2 (second mouvement).
+function missionMovesUsed(u){ return u.secondMove?2:(u.movementRemaining<game.mission.engine.movementBase(u)?1:0); }
+// Où il pose le pied : une case libre au contact du couple.
+function missionDismountCells(u){
+  const e=game.mission.engine;
+  if(!e.mountOf?.(u)) return [];
+  return missionCells().filter(c=>e.axialDistance(u,c)===1&&missionCellFree(c));
+}
+function dismountMission(u,cell){
+  const m=game.mission,e=m.engine,horse=e.mountOf?.(u);
+  if(!horse||u.quickAvailable===false||!missionDismountCells(u).some(c=>c.q===cell.q&&c.r===cell.r)) return false;
+  const used=missionMovesUsed(u);
+  detachMissionMount(u);
+  u.q=cell.q;u.r=cell.r;
+  u.quickAvailable=false;
+  // Lui : son premier déplacement si le couple n'a pas bougé ; sinon il lui reste le second (au prix de son attaque).
+  u.movementRemaining=used===0?e.movementBase(u):0;
+  // Elle : juste après lui, ce qui lui reste (son déplacement, ses actions).
+  horse.carryOver={movementRemaining:used===0?e.movementBase(horse):0,attackAvailable:horse.attackAvailable!==false,
+    quickAvailable:horse.quickAvailable!==false,secondMove:used===2};
+  horse.acted=false;
+  const army=u.team==="player"?"players":"enemies",order=u.team==="player"?"playerOrder":"enemyOrder";
+  if(!m[army].includes(horse)) m[army].push(horse);
+  m[order]=sortMissionInitiative([...m[order].filter(x=>x!==horse),horse],e);
+  missionLog(u.character.name+" descend de "+horse.character.name+".","move");
+  return true;
+}
+// Sa monture, à terre : seul son cavalier la remonte.
+function missionLooseMount(u){
+  return missionUnits().find(x=>x!==u&&x.follows===u.id&&x.character?.mount&&x.alive&&!x.offMap&&!x.rider)||null;
+}
+function missionRemountable(u){
+  const e=game.mission.engine,horse=missionLooseMount(u);
+  if(!horse||e.mountOf?.(u)||u.quickAvailable===false||horse.fleeing||e.axialDistance(u,horse)!==1||!e.canRide(u,horse)) return null;
+  return horse;
+}
+function remountMission(u){
+  const m=game.mission,e=m.engine,horse=missionRemountable(u);
+  if(!horse) return false;
+  // Elle n'a pas encore joué ce tour (elle joue après lui) : le couple part avec son déplacement normal et ses actions.
+  const fresh=!horse.acted;
+  const army=u.team==="player"?"players":"enemies",order=u.team==="player"?"playerOrder":"enemyOrder";
+  m[army]=m[army].filter(x=>x!==horse);
+  m[order]=m[order].filter(x=>x!==horse);
+  const at={q:horse.q,r:horse.r,facing:horse.facing};
+  linkMissionMount(u,horse);
+  u.q=at.q;u.r=at.r;u.facing=at.facing;
+  u.quickAvailable=false;
+  u.movementRemaining=fresh?e.movementBase(u):0;
+  if(fresh) Object.assign(horse,{attackAvailable:true,quickAvailable:true,movementRemaining:0,secondMove:false});
+  horse.acted=true;delete horse.carryOver;
+  missionLog(u.character.name+" monte sur "+horse.character.name+".","move");
+  return true;
+}
+
 // Au corps à corps et en charge, on vise le cavalier ou, avec « Viser le cheval », sa monture (Idan, 2026-11-07).
 function missionAimed(target){
   const m=game.mission;
@@ -493,16 +560,24 @@ function missionAttackFx(a,d,result){
 }
 
 function sortMissionInitiative(units,engine){
-  return [...units].sort((a,b)=>{
+  const byInitiative=(a,b)=>{
     const ai=engine.initiative(a),bi=engine.initiative(b);
     if(bi!==ai) return bi-ai;
     const ac=Number(a.character.stats.Courage)||0,bc=Number(b.character.stats.Courage)||0;
     return bc-ac||String(a.id).localeCompare(String(b.id));
-  });
+  };
+  // Une monture n'a pas sa propre initiative (Idan, 2026-11-07) : elle joue juste après son cavalier.
+  const leaderOf=u=>u.follows!=null?units.find(x=>x!==u&&x.id===u.follows)||null:null;
+  const followers=units.filter(leaderOf);
+  const sorted=units.filter(u=>!followers.includes(u)).sort(byInitiative);
+  for(const f of followers.sort(byInitiative)){ const i=sorted.indexOf(leaderOf(f)); sorted.splice(i<0?sorted.length:i+1,0,f); }
+  return sorted;
 }
 
 function resetMissionActivation(unit){
   settleMissionMounts();
+  // Juste descendue de son cavalier : la monture joue ce qui lui reste de ce tour (ses effets se sont comptés avec lui).
+  if(unit.carryOver){ Object.assign(unit,unit.carryOver,{sentinel:null}); delete unit.carryOver; return; }
   tickMissionPoison(unit);
   tickMissionBurning(unit);
   tickMissionCurse(unit);
@@ -1686,6 +1761,11 @@ function handleMissionHexClick(q,r){
     return;
   }
 
+  if(m.mode==="dismount"){
+    if(!clicked&&dismountMission(u,{q,r})){ m.mode=null; renderMission(); }
+    return;
+  }
+
   if(m.mode==="venom"){
     if(clicked&&clicked.team!==u.team){
       m.mode=null;
@@ -1748,7 +1828,7 @@ function handleMissionHexClick(q,r){
 // Activation hexagonale V1 : l'Attaque peut être sacrifiée pour une seconde action de Mouvement.
 function missionSecondMove(){
   const u=missionActiveUnit(),m=game.mission;
-  if(!u||!u.attackAvailable||m.phase!=="player"||m.over) return;
+  if(!u||!u.attackAvailable||u.secondMove||m.phase!=="player"||m.over) return;
   u.attackAvailable=false;
   u.secondMove=true;
   u.movementRemaining+=m.engine.movementBase(u);
@@ -3514,7 +3594,9 @@ function missionActionAvailability(){
     mountMelee:Boolean(horse?.attackAvailable&&missionHeldModes(horse).has("melee")),
     switch:u.quickAvailable&&e.canSwitchWeaponSet(u),
     reload:u.quickAvailable&&e.canReload(u),
-    secondMove:u.attackAvailable,
+    secondMove:u.attackAvailable&&!u.secondMove,
+    dismount:Boolean(horse)&&u.quickAvailable!==false&&missionDismountCells(u).length>0,
+    remount:Boolean(missionRemountable(u)),
     end:true,
     auto:true,
     testSpells:Boolean(missionMagic())&&!m.testSpells
@@ -3576,6 +3658,10 @@ function targetableMissionCells(){
   }
 
   const spellCode=missionSpellMode(),magic=missionMagic();
+  if(m.mode==="dismount"){
+    for(const c of missionDismountCells(u)) set.add(missionKey(c.q,c.r));
+    return set;
+  }
   if(m.mode==="venom"){
     for(const foe of missionOpponents(u)) if(!foe.offMap&&magic?.canSpit(u,foe,{lineOfSight:missionLineOfSight(u,foe)}).ok) set.add(missionKey(foe.q,foe.r));
     return set;
@@ -3863,6 +3949,7 @@ function renderMission(){
   const availability=missionActionAvailability();
   const buttons=[
     ["mission-move-btn","move"],["mission-attack-btn","melee"],["mission-charge-btn","charge"],["mission-mount-attack-btn","mountMelee"],
+    ["mission-dismount-btn","dismount"],["mission-remount-btn","remount"],
     ["mission-switch-btn","switch"],["mission-reload-btn","reload"],["mission-ranged-btn","ranged"],["mission-sentinel-btn","sentinel"],["mission-second-move-btn","secondMove"],["mission-end-activation-btn","end"],["mission-auto-btn","auto"]
   ];
   for(const [id,key] of buttons){
@@ -3884,8 +3971,11 @@ function renderMission(){
     aimBtn.disabled=!(riders&&(u.attackAvailable||u.quickAvailable||availability.mountMelee)&&m.phase==="player"&&!m.over);
     aimBtn.classList.toggle("selected",Boolean(m.aimMount));
   }
-  // L'attaque de sa monture (Idan, 2026-11-07) : seulement pour un cavalier.
+  // L'attaque de sa monture (Idan, 2026-11-07) : seulement pour un cavalier ; descendre, à cheval ; monter, à pied, sa monture
+  // sur la carte.
   $("mission-mount-attack-btn")?.classList.toggle("hidden",!(u&&e.mountOf?.(u)));
+  $("mission-dismount-btn")?.classList.toggle("hidden",!(u&&e.mountOf?.(u)));
+  $("mission-remount-btn")?.classList.toggle("hidden",!(u&&!e.mountOf?.(u)&&missionLooseMount(u)));
   $("mission-test-spells-btn").disabled=!availability.testSpells;
   // « Accélérer » : pendant le tour ennemi, la pause entre deux ennemis raccourcit (MISSION_PACE).
   const speedBtn=$("mission-speed-btn");
@@ -4250,6 +4340,8 @@ function initializeMissionUi(){
   $("mission-two-hands-btn").addEventListener("click",()=>setMissionMode("melee",{twoHands:true}));
   $("mission-aim-mount-btn")?.addEventListener("click",toggleMissionAimMount);
   $("mission-mount-attack-btn")?.addEventListener("click",()=>setMissionMode(game.mission?.mode==="mountMelee"?null:"mountMelee"));
+  $("mission-dismount-btn")?.addEventListener("click",()=>setMissionMode(game.mission?.mode==="dismount"?null:"dismount"));
+  $("mission-remount-btn")?.addEventListener("click",()=>{ const u=missionActiveUnit(); if(u&&game.mission.phase==="player"&&remountMission(u)){ game.mission.mode=null; renderMission(); } });
   $("mission-charge-btn").addEventListener("click",()=>setMissionMode("charge"));
   $("mission-ranged-btn").addEventListener("click",()=>setMissionMode("ranged"));
   $("mission-sentinel-btn").addEventListener("click",standMissionSentinel);

@@ -311,6 +311,76 @@
       "defaite": {
         "multiplicateur_mort": 2
       }
+    },
+    {
+      "code": "hunt_wolves",
+      "nom": "Chasse au loup",
+      "description": "Une meute de loups : tous tués ou mis en déroute. Ceux qui restent à terre peuvent être capturés.",
+      "illustration": "",
+      "niveau": {
+        "ecart": [-2, 2]
+      },
+      "max_ennemis": 100,
+      "validite_jours": [3, 6],
+      "carte": {
+        "colonnes": 30,
+        "lignes": 15
+      },
+      "bete": {
+        "code": "loup",
+        "des": 3,
+        "faces": 6,
+        "faction": "Loups",
+        "lieux": ["Repaire des loups", "Territoire de la meute", "Bois des hurlements"]
+      },
+      "marche": {
+        "facteur": [0.25, 1]
+      },
+      "recompense": {
+        "par_niveau": 1000
+      },
+      "poids": 3,
+      "echec": {
+        "renommee": -30
+      },
+      "defaite": {
+        "multiplicateur_mort": 2
+      }
+    },
+    {
+      "code": "hunt_unicorn",
+      "nom": "Chasse à la licorne",
+      "description": "Des licornes : toutes tuées ou mises en déroute. Celles qui restent à terre peuvent être capturées.",
+      "illustration": "",
+      "niveau": {
+        "ecart": [-2, 2]
+      },
+      "max_ennemis": 100,
+      "validite_jours": [3, 6],
+      "carte": {
+        "colonnes": 30,
+        "lignes": 15
+      },
+      "bete": {
+        "code": "licorne",
+        "des": 1,
+        "faces": 6,
+        "faction": "Licornes",
+        "lieux": ["Bois de la licorne", "Vallon de la licorne", "Sanctuaire de la licorne"]
+      },
+      "marche": {
+        "facteur": [0.25, 1]
+      },
+      "recompense": {
+        "par_niveau": 1000
+      },
+      "poids": 1,
+      "echec": {
+        "renommee": -30
+      },
+      "defaite": {
+        "multiplicateur_mort": 2
+      }
     }
   ],
   "ordres": [
@@ -679,6 +749,71 @@
       ],
       "signature": "Donné le {date}, an {an} de l'Âge des Couronnes Brisées. Pour l'Empereur et par délégation, {signataire}, sous-secrétaire adjoint aux Marches.",
       "noms_commanditaire": null
+    },
+    {
+      "code": "wolves_village",
+      "mission": "hunt_wolves",
+      "faction": "Loups",
+      "commanditaire": "Chef de village",
+      "titre": "Un village d'éleveurs",
+      "texte": [
+        "À la compagnie de mercenaires qui voudra bien l'entendre,",
+        "Je m'appelle {commanditaire}, chef de {lieu}, à {jours} de marche de votre camp. Chez nous, on élève des moutons. Enfin, on en élevait.",
+        "Depuis le dernier hiver, une meute a pris ses quartiers dans les bois au-dessus des pâtures. D'abord les agneaux, puis les brebis, puis le chien du berger. Hier, c'est le berger qu'on a retrouvé dans un arbre, et il ne veut plus en descendre.",
+        "Combien sont-ils ? Le berger dit {estimation}, mais il les compte depuis son arbre.",
+        "Le village a réuni {récompense} pièces d'or. Tuez-les, chassez-les, faites-en des descentes de lit : nous ne voulons plus les entendre hurler.",
+        "Faites vite. Il nous reste onze moutons."
+      ],
+      "signature": "{commanditaire}, chef de {lieu}, le {date}",
+      "noms_commanditaire": "chefs_de_village"
+    },
+    {
+      "code": "wolves_lord",
+      "mission": "hunt_wolves",
+      "faction": "Loups",
+      "commanditaire": "Seigneur",
+      "titre": "Un seigneur sans gibier",
+      "texte": [
+        "À la compagnie de mercenaires de passage,",
+        "Moi, {commanditaire}, seigneur de {lieu}, à {jours} de marche de votre camp, vous fais savoir que mes chasses sont ruinées. Plus un cerf, plus un sanglier : une meute de loups a tout pris, et mes gardes refusent d'entrer dans le bois.",
+        "Mes piqueurs les estiment à {estimation}. Mes piqueurs exagèrent toujours, mais cette fois je n'en suis pas certain.",
+        "Je vous offre {récompense} pièces d'or pour nettoyer ce bois. Les peaux sont à vous ; le bois est à moi.",
+        "Ne revenez pas sans avoir fini."
+      ],
+      "signature": "{commanditaire}, seigneur de {lieu}, le {date}",
+      "noms_commanditaire": "nobles"
+    },
+    {
+      "code": "unicorn_noble",
+      "mission": "hunt_unicorn",
+      "faction": "Licornes",
+      "commanditaire": "Noble",
+      "titre": "Une corne pour un noble",
+      "texte": [
+        "À la compagnie de mercenaires la moins regardante,",
+        "Je suis {commanditaire}, de {lieu}, à {jours} de marche de votre camp. On m'a dit que vous ne posiez pas de questions. Je n'en attends donc aucune.",
+        "Des licornes paissent dans les bois de mes terres. Le prêtre dit qu'elles portent bonheur. Le prêtre n'a pas de dettes. Moi, j'en ai, et une corne de licorne vaut plus que mon château.",
+        "Mes gardes en ont vu {estimation}. Elles ne se laissent pas faire : deux de mes gardes ne sont pas revenus, et le troisième jure qu'il les a vues se dédoubler.",
+        "Je vous offre {récompense} pièces d'or. Les cornes sont pour moi. Celles que vous ramènerez vivantes, gardez-les : je ne veux pas le savoir."
+      ],
+      "signature": "{commanditaire}, de {lieu}, le {date}",
+      "noms_commanditaire": "nobles"
+    },
+    {
+      "code": "unicorn_alchemist",
+      "mission": "hunt_unicorn",
+      "faction": "Licornes",
+      "commanditaire": "Alchimiste",
+      "titre": "Un alchimiste pressé",
+      "texte": [
+        "Messieurs les mercenaires,",
+        "Je suis {commanditaire}, alchimiste à {lieu}, à {jours} de marche de votre camp. Mes recherches exigent une poudre que l'on ne tire que d'une corne de licorne. Les marchands m'en vendent : c'est de la corne de chèvre.",
+        "Il y a des licornes dans le vallon, derrière le moulin. D'après le meunier, il y en a {estimation}. Le meunier a aussi vu un dragon l'an dernier.",
+        "Prenez garde : elles sont plus fortes qu'un destrier, plus rapides, et elles jettent des sorts. Je l'ai lu dans un livre très ancien et très cher.",
+        "Je paie {récompense} pièces d'or pour le travail. Rapportez-moi les cornes. Le reste de la bête ne m'intéresse pas."
+      ],
+      "signature": "{commanditaire}, alchimiste à {lieu}, le {date}",
+      "noms_commanditaire": "alchimistes"
     }
   ],
   "noms": {
@@ -914,6 +1049,7 @@
       "Comte Ferrand de Brisay",
       "Dame Aliénor de Montlouis",
       "Sire Bertrand de Sauveterre"
-    ]
+    ],
+    "alchimistes": ["Maître Albrecht Vogel", "Ysmer le Distillateur", "Dame Oriane Fiole", "Bastien Cornue", "Théodric Sel-de-Lune", "Maître Grisemine", "Jehan Alambic", "Prudence Ventaillon", "Ozric le Calciné", "Maître Hespérin"]
   }
 }

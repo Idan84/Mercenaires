@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 396,
+  "row_count": 399,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -1246,6 +1246,30 @@
       "nom": "Taverne — jours de case vide",
       "code": "tavern.missions.empty_days",
       "description": "Taverne à 5 missions (Idan, 2026-11-01) : une case dont la mission vient d’être prise reste vide ce nombre de jours (24 heures) avant qu’une nouvelle mission arrive.",
+      "formule": "Taverne à 5 missions",
+      "valeur": 1,
+      "version": "V1"
+    },
+    {
+      "nom": "Taverne — poids des contrats",
+      "code": "tavern.missions.weight_cleanup",
+      "description": "Poids du contrat « Faire le ménage » au tirage d’une case du tableau (Idan, 2026-11-07 : les chasses environ une case sur cinq).",
+      "formule": "Taverne à 5 missions",
+      "valeur": 2,
+      "version": "V1"
+    },
+    {
+      "nom": "Taverne — poids des gardes du corps",
+      "code": "tavern.missions.weight_bodyguard",
+      "description": "Poids de la garde du corps au tirage d’une case du tableau.",
+      "formule": "Taverne à 5 missions",
+      "valeur": 2,
+      "version": "V1"
+    },
+    {
+      "nom": "Taverne — poids des chasses",
+      "code": "tavern.missions.weight_hunt",
+      "description": "Poids des chasses (meute de loups, licornes) au tirage d’une case du tableau : environ une case sur cinq.",
       "formule": "Taverne à 5 missions",
       "valeur": 1,
       "version": "V1"

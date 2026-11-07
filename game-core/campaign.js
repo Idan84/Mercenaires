@@ -1026,8 +1026,18 @@
     const TAVERN_SLOTS=referenceConstant(reference,"tavern.missions.slots",5);
     const TAVERN_EMPTY_DAYS=referenceConstant(reference,"tavern.missions.empty_days",1);
     const offerKind=offer=>offer?.kind==="bodyguard"?"bodyguard":"cleanup";
-    function missionKinds(){ return [missions&&"cleanup",bodyguard&&"bodyguard"].filter(Boolean); }
+    // Les chasses (Idan, 2026-11-07) : environ une case sur cinq ; les contrats et les gardes du corps se partagent le reste
+    // (tavern.missions.weight_*).
+    const KIND_WEIGHTS={cleanup:referenceConstant(reference,"tavern.missions.weight_cleanup",2),
+      bodyguard:referenceConstant(reference,"tavern.missions.weight_bodyguard",2),hunt:referenceConstant(reference,"tavern.missions.weight_hunt",1)};
+    function missionKinds(){ return [missions&&"cleanup",bodyguard&&"bodyguard",missions?.createHunt&&"hunt"].filter(Boolean); }
+    function pickKind(kinds){
+      let r=random()*kinds.reduce((sum,k)=>sum+(KIND_WEIGHTS[k]||0),0);
+      for(const k of kinds){ if((r-=KIND_WEIGHTS[k]||0)<0) return k; }
+      return kinds[kinds.length-1];
+    }
     function createBoardOffer(state,kind){
+      if(kind==="hunt") return missions.createHunt({day:state.day,renown:companyRenown(state).total});
       if(kind!=="bodyguard") return missions.createOffer({day:state.day,renown:companyRenown(state).total});
       const offer=bodyguard.createOffer({day:state.day,bestLevel:bestMercenaryLevel(state)});
       // Cercle des Fines Lames (Idan, 2026-11-03 : « On garde juste l'augmentation de la prime ») : on y croise des nobles,
@@ -1058,7 +1068,7 @@
       let changed=false;
       for(const slot of boardOf(state).slots){
         if(slot.offer||(slot.emptyUntil!=null&&state.day<slot.emptyUntil)) continue;
-        slot.offer=createBoardOffer(state,kinds[Math.min(kinds.length-1,Math.floor(random()*kinds.length))]);
+        slot.offer=createBoardOffer(state,pickKind(kinds));
         slot.emptyUntil=null;
         changed=true;
       }

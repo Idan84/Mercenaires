@@ -105,8 +105,10 @@ for(const o of paid){
 }
 at("blade_circle",10);
 assert.equal(rules.campBuildingEffects(state).bodyguardPay,0.5,"+50 % au niveau 10");
+// Le Cercle ne change pas la fréquence : le tirage du type suit ses poids fixes (contrat 2, garde du corps 2, chasse 1 ;
+// Idan, 2026-11-07).
 assert.match(fs.readFileSync(path.join(ROOT,"game-core","campaign.js"),"utf8"),
-  /slot\.offer=createBoardOffer\(state,kinds\[Math\.min\(kinds\.length-1,Math\.floor\(random\(\)\*kinds\.length\)\)\]\);/,"le tirage du type de mission reste à chances égales");
+  /slot\.offer=createBoardOffer\(state,pickKind\(kinds\)\);/,"le tirage du type de mission ne dépend pas du Cercle");
 
 // Interface : un encart par bâtiment, ce qu'il travaille devant son état, ses ailes une fois construit ; l'effet du Cercle.
 const elements={};

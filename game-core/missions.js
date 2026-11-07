@@ -135,6 +135,7 @@
     function createOffer({day=1,code="cleanup",renown=0,level=null}={}){
       const def=definition(code);
       if(!def) return null;
+      if(def.bete) return createHuntOffer(def,{day,renown,level});
       const missionLevel=level==null?rollMissionLevel(def,renown):clampLevel(level);
       const camp=rollCamp(def,null,{level:missionLevel}),distance=randInt(1,missionLevel),enemyCount=camp.enemies.length+(camp.chief?1:0);
       const names=data.noms||{},tribes=names[camp.names.tribus||"tribus"]||[];
@@ -149,6 +150,50 @@
       return {id:`${def.code}-${day}-${Math.floor(random()*1e9).toString(36)}`,code:def.code,name:def.nom,campName:camp.campName,faction:camp.faction,
         difficulty:missionLevel,level:missionLevel,day,expiresDay:day+minDays+Math.floor(random()*(maxDays-minDays+1)),distance,camp,enemyCount,
         reward:fields.récompense,order:order.code,fields};
+    }
+
+    // Les chasses (Idan, 2026-11-07 : « Récompense de 1000 Po par étoile. 0,25 à 1 jour de marche par étoile. Arrondi sup.
+    // Textes cohérents avec l'espèce : Version Meute de Loup : 3D6 par étoile. Version Licorne : 1D6 par étoile. On
+    // élimine les animaux. On peut en capturer ou se prendre une pilée ! On génère des missions -2 / +2 étoiles par
+    // rapport à l'étoile » ; « Les fiches fixes ») : les missions qui ont une bête (one-shot-missions.json, bete), tirées
+    // selon leur poids ; les bêtes ont la fiche fixe de nos animaux (mounts.json) ; ni coffre ni butin.
+    const hunts=()=>(data.missions||[]).filter(m=>m.bete);
+    // Le nombre de bêtes : les dés de la bête pour chaque étoile (3D6 loups, 1D6 licornes), au plus max_ennemis.
+    function rollBeasts(def,level){
+      const b=def.bete||{};
+      let count=0;
+      for(let star=0;star<level;star++) for(let d=0;d<(Number(b.des)||1);d++) count+=die(Number(b.faces)||6);
+      return Math.min(Number(def.max_ennemis)||100,Math.max(1,count));
+    }
+    // Jours de marche : étoiles × un tirage de 0,25 à 1, arrondi au jour supérieur.
+    function huntDistance(def,level){
+      const [low,high]=def.marche?.facteur||[0.25,1];
+      return Math.max(1,Math.ceil(level*(low+random()*(high-low))-1e-9));
+    }
+    function createHuntOffer(def,{day=1,renown=0,level=null}={}){
+      const missionLevel=level==null?rollMissionLevel(def,renown):clampLevel(level);
+      const b=def.bete,count=rollBeasts(def,missionLevel),distance=huntDistance(def,missionLevel);
+      const names=data.noms||{};
+      const order=pick((data.ordres||[]).filter(o=>o.mission===def.code&&o.faction===b.faction));
+      const place=pick(b.lieux||[])||def.nom;
+      const camp={faction:b.faction,campName:place,enemies:[],chief:null,beast:{code:b.code,count},points:0,budget:0,names:{}};
+      const [minDays,maxDays]=def.validite_jours||[3,6];
+      const reward=(Number(def.recompense?.par_niveau)||0)*missionLevel;
+      const fields={
+        commanditaire:order?.noms_commanditaire?pick(names[order.noms_commanditaire]||[]):"",
+        lieu:pick(names.lieux||[]),jours:distance+(distance>1?" jours":" jour"),estimation:estimation(count),récompense:reward,
+        signataire:pick(names.signataires||[])
+      };
+      return {id:`${def.code}-${day}-${Math.floor(random()*1e9).toString(36)}`,code:def.code,name:def.nom,campName:place,faction:b.faction,
+        difficulty:missionLevel,level:missionLevel,day,expiresDay:day+minDays+Math.floor(random()*(maxDays-minDays+1)),distance,camp,enemyCount:count,
+        reward,order:order?.code||null,fields,hunt:true};
+    }
+    // Une chasse au tableau : l'une des missions de chasse, selon son poids (les loups 3 fois sur 4).
+    function createHunt({day=1,renown=0,level=null}={}){
+      const list=hunts();
+      if(!list.length) return null;
+      const def=weighted(list.map(m=>({...m,poids:Number(m.poids)||1})));
+      return createHuntOffer(definition(def.code),{day,renown,level});
     }
 
     // Texte de l'ordre : les accolades remplacées par les champs de l'offre et par extra (dates mises en forme,
@@ -280,6 +325,13 @@
     // Les ennemis du camp, chef en dernier : makeBase(archétype) donne le personnage de base. Les doublons sont numérotés
     // (« Frondeur gobelin novice 2 ») ; le chef porte le nom de l'offre.
     function buildEnemies(offer,makeBase){
+      // Une chasse : les bêtes, la fiche fixe de nos animaux (« Loup 1 », « Loup 2 »…).
+      const beast=offer.camp?.beast;
+      if(beast){
+        const sheet=mountSheet(beast.code);
+        return Array.from({length:Number(beast.count)||0},(_,i)=>createMount(beast.code,{id:`${offer.id}-b${i}`,
+          name:beast.count>1?`${sheet?.nom||beast.code} ${i+1}`:sheet?.nom})).filter(Boolean);
+      }
       const codes=[...offer.camp.enemies,offer.camp.chief],seen=new Map();
       const total=new Map();
       for(const code of offer.camp.enemies) total.set(code,(total.get(code)||0)+1);
@@ -314,10 +366,10 @@
     // morts est perdu.
     function outcome(offer,{victory,deadEnemies=[],deadMercenaries=[],chestItems=[],makeItem=null}={}){
       const def=definition(offer.code);
-      if(!victory) return {victory:false,reward:0,chestGold:0,chestItems:[],loot:[],renown:Number(def.echec?.renommee)||0};
+      if(!victory) return {victory:false,reward:0,chestGold:0,chestItems:[],loot:[],renown:Number(def.echec?.renommee)||0,hunt:Boolean(def.bete)};
       const chestGold=rollChestGold(offer);
       const loot=[...deadEnemies.flatMap(c=>enemyLoot(c,makeItem)),...deadMercenaries.flatMap(c=>c.items||[])].map(it=>({...it,owner:null}));
-      return {victory:true,reward:offer.reward,chestGold,chestItems:chestItems.map(it=>({...it,owner:null})),loot,renown:0};
+      return {victory:true,reward:offer.reward,chestGold,chestItems:chestItems.map(it=>({...it,owner:null})),loot,renown:0,hunt:Boolean(def.bete)};
     }
 
     function deathMultiplier(offer,victory){ return victory?1:Number(definition(offer.code)?.defaite?.multiplicateur_mort)||1; }
@@ -347,7 +399,7 @@
     function mapSize(offer){ const map=definition(offer.code)?.carte||{}; return {cols:map.colonnes||30,rows:map.lignes||15}; }
 
     return {definition,archetype,points,missionMin,lootOf,campsOf,budgetOf,rollBudget,renownLevel,rollMissionLevel,rollCamp,estimation,contractReward,
-      createOffer,orderText,applyArchetype,buildEnemies,outcome,deathMultiplier,rollChestGold,chestPlan,mapSize,mountSheet,createMount};
+      createOffer,createHunt,rollBeasts,huntDistance,orderText,applyArchetype,buildEnemies,outcome,deathMultiplier,rollChestGold,chestPlan,mapSize,mountSheet,createMount};
   }
 
   return {createMissionRules};

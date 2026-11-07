@@ -131,6 +131,11 @@ niveau comme on avait déjà ».
 - **Le niveau** : le mot du rôle principal, aux paliers d'étoiles d'avant (4–5★, 6–8★, 9–10★, 11–14★, 15★), placé
   **avant l'arme** ou **à la fin** selon le mot (`paliers_place`) : *Assommeur en herbe à la massue*, *Combattant à la
   hache de guerre qu'on évite*, *Meneur au fouet à la grosse voix*.
+- **Sa monture équipée** (Idan, 2026-11-07 : « titre A » ; « Pour pas changer en permanence son titre et sa réputation : on
+  prend en compte la monture équipée. Si elle est pas équipée, mais equipable dans l'inventaire ( blessée quelques jours par
+  exemple, on change rien. ) ») : à la fin du titre, « à cheval », « à dos de licorne » (`mounts.json`, `titre`) :
+  *Lancier vétéran à cheval*, *Chair à canon à cheval*. Une monture au repos (blessée, fatiguée) reste équipée : le titre ne
+  bouge pas ; une monture dans l'inventaire ne compte pas.
 - **Infobulle** : deux lignes sur le rôle principal (ou sa sous-catégorie), comme avant.
 - **Masculin et féminin** (Idan, 2026-11-06 : « je te laisse faire la version féminine ») : *Archère éclaireuse*,
   *Assommeuse dévastatrice à la massue*, *Cheffe de guerre*, *Mage de Foudre paralyseuse*, *Transmutatrice*. Restent

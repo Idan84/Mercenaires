@@ -346,6 +346,16 @@
     // sous-catégorie qui le porte ; ses 1 à 3 rôles se fondent en un seul titre, suivi du mot de niveau du rôle principal.
     // Pas d'étoiles ; au masculin et au féminin (titre et court : m, f ; Idan : « je te laisse faire la version féminine »).
     const titleData=reference?.mercenaryTitles||null;
+    // Sa monture équipée (Idan, 2026-11-07 : « titre A » ; « on prend en compte la monture équipée. Si elle est pas équipée,
+    // mais equipable dans l'inventaire ( blessée quelques jours par exemple, on change rien. ) ») : « à cheval », « à dos de
+    // licorne » (mounts.json, titre), à la fin du titre ; une monture au repos reste équipée.
+    const mountTitles=new Map(rows(reference?.mounts).map(row=>[row.code,row.titre||""]));
+    function mountTitle(character){
+      const id=character?.equipment?.slots?.mount;
+      const item=id==null?null:(character.items||[]).find(i=>String(i.id)===String(id)&&i.itemType==="mount");
+      return item?mountTitles.get(item.mountCode)||"":"";
+    }
+    const withMount=(name,character)=>{ const extra=mountTitle(character); return extra?name+" "+extra:name; };
     const titleRows=new Map(rows(titleData).map(row=>[row.code,row]));
     function tierIndex(stars){
       const mins=titleData?.paliers||[];
@@ -439,7 +449,7 @@
       const gendered=value=>value==null||typeof value==="string"?value:value[g]??value.m;
       if(result.cannonFodder){
         const fodder=titleData.chair_a_canon;
-        return fodder?{name:gendered(fodder.titre),lines:fodder.infobulle[g]||fodder.infobulle.m}:null;
+        return fodder?{name:withMount(gendered(fodder.titre),character),lines:fodder.infobulle[g]||fodder.infobulle.m}:null;
       }
       const pieces=result.titles.map(title=>{
         const piece=rolePiece(title,character,context);
@@ -467,7 +477,7 @@
       const index=tierIndex(first.level);
       const tier=(row?.paliers?.[g]||row?.paliers?.m)?.[index]||"";
       const place=row?.paliers_place?.[index]||"fin";
-      const name=[head,place==="avant"?tier:"",complements.join(" et "),place==="fin"?tier:""].filter(Boolean).join(" ");
+      const name=withMount([head,place==="avant"?tier:"",complements.join(" et "),place==="fin"?tier:""].filter(Boolean).join(" "),character);
       const spec=(row?.specialites||[]).find(s=>s.code===first.top?.code);
       const tip=(spec||row)?.infobulle;
       return {name,lines:tip?.[g]||tip?.m||[]};

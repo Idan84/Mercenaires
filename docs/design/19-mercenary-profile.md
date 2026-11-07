@@ -135,7 +135,8 @@ niveau comme on avait déjà ».
   prend en compte la monture équipée. Si elle est pas équipée, mais equipable dans l'inventaire ( blessée quelques jours par
   exemple, on change rien. ) ») : à la fin du titre, « à cheval », « à dos de licorne » (`mounts.json`, `titre`) :
   *Lancier vétéran à cheval*, *Chair à canon à cheval*. Une monture au repos (blessée, fatiguée) reste équipée : le titre ne
-  bouge pas ; une monture dans l'inventaire ne compte pas.
+  bouge pas ; une monture dans l'inventaire ne compte pas. Le loup (Idan, 2026-11-07 : « Oui ») : « à dos de loup » pour un
+  petit qui le monte ; rien pour celui qui l'emmène à pied (il faut pouvoir la monter).
 - **Infobulle** : deux lignes sur le rôle principal (ou sa sous-catégorie), comme avant.
 - **Masculin et féminin** (Idan, 2026-11-06 : « je te laisse faire la version féminine ») : *Archère éclaireuse*,
   *Assommeuse dévastatrice à la massue*, *Cheffe de guerre*, *Mage de Foudre paralyseuse*, *Transmutatrice*. Restent

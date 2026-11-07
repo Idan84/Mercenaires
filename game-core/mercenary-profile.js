@@ -349,11 +349,16 @@
     // Sa monture équipée (Idan, 2026-11-07 : « titre A » ; « on prend en compte la monture équipée. Si elle est pas équipée,
     // mais equipable dans l'inventaire ( blessée quelques jours par exemple, on change rien. ) ») : « à cheval », « à dos de
     // licorne » (mounts.json, titre), à la fin du titre ; une monture au repos reste équipée.
-    const mountTitles=new Map(rows(reference?.mounts).map(row=>[row.code,row.titre||""]));
+    // Le loup (Idan, 2026-11-07 : « à dos de loup » pour un petit qui le monte ; rien pour celui qui l'emmène à pied) : il
+    // faut pouvoir la monter (plus petit qu'elle : le gabarit, les places du dortoir de son peuple).
+    const mountRows=new Map(rows(reference?.mounts).map(row=>[row.code,row]));
+    const peopleSize=new Map(rows(reference?.peoples).map(p=>[p.nom,Number(p.places_dortoir)||1]));
     function mountTitle(character){
       const id=character?.equipment?.slots?.mount;
       const item=id==null?null:(character.items||[]).find(i=>String(i.id)===String(id)&&i.itemType==="mount");
-      return item?mountTitles.get(item.mountCode)||"":"";
+      const row=item?mountRows.get(item.mountCode):null;
+      if(!row||(peopleSize.get(character.people)||1)>=(Number(row.gabarit)||1)) return "";
+      return row.titre||"";
     }
     const withMount=(name,character)=>{ const extra=mountTitle(character); return extra?name+" "+extra:name; };
     const titleRows=new Map(rows(titleData).map(row=>[row.code,row]));

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "enemy-archetypes",
-  "description": "Archétypes d’ennemis fixes (Idan, 2026-10-24 ; doc 17 §10 et §14). Gobelins, Orcs, Hommes-bêtes, Voleurs (Humains) et Ogres (2026-11-01) : cinq lignes sur quatre niveaux et quatre niveaux de chef chacun. Culte des morts (doc 17 §19) et Cour de sang (§20). Créatures (§21) : des fiches partagées entre peuples, qu’un camp appelle par sa ligne (le troll chez les gobelins, les orcs et les hommes-bêtes ; le troll mort-vivant au Culte des morts). Valeurs figées à partir des centiles des personnages générés du même peuple (novice P20, normal P50, vétéran P75, élite P90 ; chefs P75 à P99), avec la spécialisation de chaque ligne (trois caractéristiques un cran au-dessus, deux un cran au-dessous). PV = 3 × (Constitution + 0,2 × Endurance + 0,1 × Volonté). Points de combat (Idan, 2026-11-01) : un mercenaire généré moyen vaut 10 points (simulateur, 150 combats par effectif ; chefs : 10 × le nombre de mercenaires qui le battent une fois sur deux ; les plus forts mesurés jusqu’à 27 mercenaires, 200 combats par effectif ; fiches T4 remesurées avec la qualité De luxe, Idan 2026-11-01). Niveau de mission minimum et butin par créature (Idan, 2026-11-01) : niveau 1 pour l’instant ; l’équipement peut se casser au combat : 100 % − 10 % par tier de chance de récupérer chaque objet porté (T1 90 %, T2 80 %, T3 70 %, T4 60 %). Ils composent les camps de « Faire le ménage » (one-shot-missions.json, budgets).",
+  "description": "Archétypes d’ennemis fixes (Idan, 2026-10-24 ; doc 17 §10 et §14). Gobelins, Orcs, Hommes-bêtes, Voleurs (Humains) et Ogres (2026-11-01) : cinq lignes sur quatre niveaux et quatre niveaux de chef chacun. Culte des morts (doc 17 §19) et Cour de sang (§20). Le Cavalier des voleurs (§22) monte un destrier (mounts.json). Créatures (§21) : des fiches partagées entre peuples, qu’un camp appelle par sa ligne (le troll chez les gobelins, les orcs et les hommes-bêtes ; le troll mort-vivant au Culte des morts). Valeurs figées à partir des centiles des personnages générés du même peuple (novice P20, normal P50, vétéran P75, élite P90 ; chefs P75 à P99), avec la spécialisation de chaque ligne (trois caractéristiques un cran au-dessus, deux un cran au-dessous). PV = 3 × (Constitution + 0,2 × Endurance + 0,1 × Volonté). Points de combat (Idan, 2026-11-01) : un mercenaire généré moyen vaut 10 points (simulateur, 150 combats par effectif ; chefs : 10 × le nombre de mercenaires qui le battent une fois sur deux ; les plus forts mesurés jusqu’à 27 mercenaires, 200 combats par effectif ; fiches T4 remesurées avec la qualité De luxe, Idan 2026-11-01). Niveau de mission minimum et butin par créature (Idan, 2026-11-01) : niveau 1 pour l’instant ; l’équipement peut se casser au combat : 100 % − 10 % par tier de chance de récupérer chaque objet porté (T1 90 %, T2 80 %, T3 70 %, T4 60 %). Ils composent les camps de « Faire le ménage » (one-shot-missions.json, budgets).",
   "columns": [
     {
       "source": "Nom",
@@ -130,9 +130,17 @@
     {
       "source": "Régénération (points ; la règle du sang de troll, le feu la bloque)",
       "key": "regeneration"
+    },
+    {
+      "source": "Compétences animales (Compagnon animal et la famille de sa monture)",
+      "key": "competences_animales"
+    },
+    {
+      "source": "Monture (mounts.json)",
+      "key": "monture"
     }
   ],
-  "row_count": 180,
+  "row_count": 184,
   "rows": [
     {
       "nom": "Lancier gobelin novice",
@@ -5158,6 +5166,276 @@
         "equipement": 60,
         "objets": []
       }
+    },
+    {
+      "nom": "Cavalier novice",
+      "code": "thief_rider_novice",
+      "faction": "Voleurs",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Cavalier",
+      "niveau": "novice",
+      "centile": "P20",
+      "caracteristiques": {
+        "Force": 55,
+        "Constitution": 54,
+        "Dextérité": 44,
+        "Vitesse": 36,
+        "Endurance": 46,
+        "Esquive": 45,
+        "Chance": 44,
+        "Charisme": 45,
+        "Courage": 53,
+        "Intelligence": 38,
+        "Volonté": 45,
+        "Perception": 32,
+        "Puissance magique": 38,
+        "Réserve de mana": 43
+      },
+      "resistances": {
+        "Résistance physique": 2,
+        "Résistance au feu": 2,
+        "Résistance au froid": 1,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 2
+      },
+      "pv": 204,
+      "competences_martiales": {
+        "Lance": 42,
+        "Armes d’hast": 46,
+        "Discrétion": 23,
+        "Pièges": 23,
+        "Combat à deux armes": 39,
+        "Combat à mains nues": 24,
+        "Combat à deux mains": 30,
+        "Rondache": 28,
+        "Boucliers": 30
+      },
+      "intimidation": 32,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Lance",
+        "Rondache"
+      ],
+      "armure": "Gambison",
+      "tier": 1,
+      "qualite": "Usée",
+      "points": 12,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 90,
+        "objets": []
+      },
+      "competences_animales": {
+        "Compagnon animal": 48,
+        "Équidés": 36
+      },
+      "monture": "destrier"
+    },
+    {
+      "nom": "Cavalier",
+      "code": "thief_rider",
+      "faction": "Voleurs",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Cavalier",
+      "niveau": "normal",
+      "centile": "P50",
+      "caracteristiques": {
+        "Force": 67,
+        "Constitution": 62,
+        "Dextérité": 55,
+        "Vitesse": 44,
+        "Endurance": 58,
+        "Esquive": 54,
+        "Chance": 54,
+        "Charisme": 56,
+        "Courage": 61,
+        "Intelligence": 52,
+        "Volonté": 55,
+        "Perception": 42,
+        "Puissance magique": 49,
+        "Réserve de mana": 52
+      },
+      "resistances": {
+        "Résistance physique": 5,
+        "Résistance au feu": 4,
+        "Résistance au froid": 4,
+        "Résistance à la foudre": 4,
+        "Résistance au poison": 5
+      },
+      "pv": 238,
+      "competences_martiales": {
+        "Lance": 50,
+        "Armes d’hast": 54,
+        "Discrétion": 28,
+        "Pièges": 28,
+        "Combat à deux armes": 46,
+        "Combat à mains nues": 31,
+        "Combat à deux mains": 37,
+        "Rondache": 34,
+        "Boucliers": 38
+      },
+      "intimidation": 37,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Lance",
+        "Rondache"
+      ],
+      "armure": "Armure de cuir",
+      "tier": 2,
+      "qualite": "Correcte",
+      "points": 22,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 80,
+        "objets": []
+      },
+      "competences_animales": {
+        "Compagnon animal": 54,
+        "Équidés": 44
+      },
+      "monture": "destrier"
+    },
+    {
+      "nom": "Cavalier vétéran",
+      "code": "thief_rider_veteran",
+      "faction": "Voleurs",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Cavalier",
+      "niveau": "vétéran",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 77,
+        "Constitution": 70,
+        "Dextérité": 64,
+        "Vitesse": 53,
+        "Endurance": 67,
+        "Esquive": 61,
+        "Chance": 63,
+        "Charisme": 64,
+        "Courage": 67,
+        "Intelligence": 65,
+        "Volonté": 62,
+        "Perception": 52,
+        "Puissance magique": 60,
+        "Réserve de mana": 60
+      },
+      "resistances": {
+        "Résistance physique": 8,
+        "Résistance au feu": 6,
+        "Résistance au froid": 11,
+        "Résistance à la foudre": 6,
+        "Résistance au poison": 11
+      },
+      "pv": 269,
+      "competences_martiales": {
+        "Lance": 57,
+        "Armes d’hast": 60,
+        "Discrétion": 35,
+        "Pièges": 35,
+        "Combat à deux armes": 53,
+        "Combat à mains nues": 40,
+        "Combat à deux mains": 43,
+        "Rondache": 39,
+        "Boucliers": 44
+      },
+      "intimidation": 41,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire"
+      ],
+      "armes": [
+        "Lance",
+        "Rondache"
+      ],
+      "armure": "Cuir renforcé",
+      "tier": 3,
+      "qualite": "De bonne facture",
+      "points": 46,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 70,
+        "objets": []
+      },
+      "competences_animales": {
+        "Compagnon animal": 59,
+        "Équidés": 51
+      },
+      "monture": "destrier"
+    },
+    {
+      "nom": "Cavalier d’élite",
+      "code": "thief_rider_elite",
+      "faction": "Voleurs",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Cavalier",
+      "niveau": "d’élite",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 84,
+        "Constitution": 75,
+        "Dextérité": 73,
+        "Vitesse": 60,
+        "Endurance": 76,
+        "Esquive": 68,
+        "Chance": 72,
+        "Charisme": 71,
+        "Courage": 71,
+        "Intelligence": 77,
+        "Volonté": 69,
+        "Perception": 61,
+        "Puissance magique": 70,
+        "Réserve de mana": 67
+      },
+      "resistances": {
+        "Résistance physique": 12,
+        "Résistance au feu": 12,
+        "Résistance au froid": 19,
+        "Résistance à la foudre": 10,
+        "Résistance au poison": 19
+      },
+      "pv": 292,
+      "competences_martiales": {
+        "Lance": 63,
+        "Armes d’hast": 66,
+        "Discrétion": 43,
+        "Pièges": 42,
+        "Combat à deux armes": 61,
+        "Combat à mains nues": 48,
+        "Combat à deux mains": 50,
+        "Rondache": 43,
+        "Boucliers": 51
+      },
+      "intimidation": 46,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire"
+      ],
+      "armes": [
+        "Lance",
+        "Rondache"
+      ],
+      "armure": "Brigandine",
+      "tier": 4,
+      "qualite": "De luxe",
+      "points": 70,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 60,
+        "objets": []
+      },
+      "competences_animales": {
+        "Compagnon animal": 63,
+        "Équidés": 57
+      },
+      "monture": "destrier"
     },
     {
       "nom": "Arbalétrier novice",

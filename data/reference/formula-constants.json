@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 388,
+  "row_count": 391,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -3136,6 +3136,30 @@
       "description": "Les curseurs vont par pas de ce nombre (%).",
       "formule": "Politique sociale",
       "valeur": 5,
+      "version": "V1"
+    },
+    {
+      "nom": "Monture — hauteur au corps à corps",
+      "code": "combat.monture.hauteur_cac",
+      "description": "Combat à cheval (doc 04 ; Idan, 2026-11-07) : au corps à corps, le cavalier compte comme ce nombre de niveaux plus haut qu'un combattant à pied (la règle d'altitude : + 10 au Toucher par niveau pour lui, − 10 contre lui). Rien contre le cheval lui-même.",
+      "formule": "Monture",
+      "valeur": 1,
+      "version": "V1"
+    },
+    {
+      "nom": "Monture — Force du cheval en charge",
+      "code": "combat.monture.force_charge",
+      "description": "Combat à cheval (doc 04 ; Idan, 2026-11-07) : en charge, cette part de la Force du cheval s'ajoute à celle du cavalier (Blesser et dégâts).",
+      "formule": "Monture",
+      "valeur": 0.5,
+      "version": "V1"
+    },
+    {
+      "nom": "Monture — partage du mental",
+      "code": "combat.monture.partage_diviseur",
+      "description": "Combat à cheval (doc 04 ; Idan, 2026-11-07) : monté, le Courage et la Volonté du couple = ceux du cheval + (ceux du cavalier − ceux du cheval) × part ; part = (Compagnon animal + compétence de la famille de la monture) ÷ ce nombre, au plus 1.",
+      "formule": "Monture",
+      "valeur": 100,
       "version": "V1"
     }
   ]

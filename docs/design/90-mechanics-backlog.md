@@ -123,7 +123,7 @@ La formule d'initiative V1 reste volontairement **sans Fatigue** pour l'instant.
 
 ## Occupation de plusieurs hexagones & montures
 
-Fait (doc 04, « Créatures sur plusieurs cases », 2026-11-06) : tailles normale, longue (2 cases), grande (3) et énorme (7), empreinte, distance, déplacement, Toucher. Reste : la charge d'une grande créature, les montures (un cavalier sur une créature longue, puis un dragon dompté), et les bêtes de la mission « Éliminer la bête ! ».
+Fait (doc 04, « Créatures sur plusieurs cases », 2026-11-06) : tailles normale, longue (2 cases), grande (3) et énorme (7), empreinte, distance, déplacement, Toucher. Fait (doc 04, « Combat à cheval », 2026-11-07) : le cavalier ennemi sur son destrier (Cavalier des voleurs). Reste : la capture des montures et les écuries (étape 2), l'apprivoisement et nos mercenaires à cheval (étape 3), Pégase et Licorne, un dragon dompté, la charge d'une grande créature, et les bêtes de la mission « Éliminer la bête ! ».
 
 ## Ennemis : force aux hauts niveaux de mission
 

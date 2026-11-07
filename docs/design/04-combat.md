@@ -340,21 +340,26 @@ chance pour enchaîner plusieurs tirs (sauf arme à feu). Il ne peut passer en m
   `attaque`) ; code : `combat-engine.js` (`poisonImmune`, `damageTypeFactor`).
 - **Sorts de l'IA** : un ennemi dont la fiche donne des sorts (le nécromancien) les essaie dans l'ordre de sa fiche : son
   invocation tant qu'elle n'est pas là (au plus près de l'ennemi), la Résurrection sur un corps, puis ses sorts sur l'ennemi
-  visible le plus proche ; hors de portée, il se déplace d'abord vers la case la moins chère d'où il peut le lancer.
+  visible le plus proche ; hors de portée, il se déplace d'abord vers la case la moins chère d'où il peut le lancer. Un
+  ennemi dont la fiche ne donne **aucun sort** n'en lance aucun, soins compris (Idan, 2026-11-07) : la fiche remplace les
+  sorts et les écoles de son personnage de base.
 - **IA commune, premier jet** (Idan, 2026-11-07, après le bêta-test : « Rendre l'IA plus performante : jouer des sorts.
   Savoir reculer. Se regrouper. Se cacher » ; « Nous et les ennemis » ; « On fait un premier jet ») : la même IA pour les
   ennemis et pour nos mercenaires en combat automatique. Réglages `combat.ai.*` (`formula-constants.json`) ; code :
   `prototype-web/mission.js` (`missionAiSpellCodes`, `missionAiZoneTarget`, `missionAiKeepFormation`, `missionAiRetreat`).
-  - **Sorts** : sans liste dans sa fiche (nos mercenaires, un ennemi généré), il essaie ses sorts connus dans cet ordre :
+  - **Sorts** : sans fiche (nos mercenaires, l'ennemi généré de la Mission Test), il essaie ses sorts connus dans cet ordre :
     invocations, Résurrection, sorts de zone, sorts sur un ennemi, renforts sur soi ; les soins restent ceux de l'IA
     (allié sous 35 % / 60 %). Il ne tente pas un sort qui réussit moins de **40 %** du temps : il frappe avec son arme.
     Une **zone** vise la case (sur un ennemi en vue) où elle touche le plus d'ennemis, **au moins 2**, et **aucun allié**
     ni le lanceur. Un **renfort sur soi** (Arme électrique, Peau d'écailles…) est lancé **une fois par combat**, quand
     l'ennemi approche ; en action rapide, il frappe encore.
   - **Se regrouper** : avant le contact, un combattant de mêlée n'avance pas à plus de **3 cases** devant le plus en retard
-    de ses alliés de mêlée (on avance au pas du plus lent) ; le plus en retard avance toujours.
+    de ses alliés de mêlée valides (on avance au pas du plus lent) ; le plus en retard avance toujours ; un blessé qui
+    souffle à l'arrière (sous 30 % de ses PV) ne retient pas le groupe.
   - **Reculer** : sous **30 %** de ses PV, celui qui n'est au contact d'aucun ennemi recule vers les siens, sur une case
-    plus loin des ennemis et sans attaque d'opportunité ; un tireur tire encore s'il le peut. Pas s'il peut frapper ce
+    plus loin des ennemis et sans attaque d'opportunité ; déjà au plus loin, il reste là (« reste en retrait pour
+    souffler ») ; un tireur tire encore s'il le peut. Il faut un allié valide pour le couvrir (le nécromancien en retrait
+    ne compte pas) ; sinon, il se bat. Pas s'il peut frapper ce
     tour un ennemi sous **25 %** de ses PV (« Je recule pas si je suis à 10% de PV mais que je pense que je vais faire le
     coup de grace »). Les morts-vivants, les invocations, les leurres et le nécromancien ne reculent pas.
   - **Se cacher** : un tireur qui se place pour tirer prend, à risque égal, la case la mieux couverte face à sa cible ;

@@ -257,10 +257,12 @@
       if(arch.immunite_physique) c.immunePhysical=true;
       if(arch.degats_subis) c.damageTypeFactors={...arch.degats_subis};
       // Sorts de la fiche (le nécromancien ; Idan, 2026-11-06) : ses écoles, ses sorts et leur maîtrise, dans l'ordre où l'IA
-      // les essaie (aiSpells) ; une fiche avec « sorts » remplace ceux tirés à la génération ; mana plein au départ.
-      if(Array.isArray(arch.sorts)){
-        c.spells=arch.sorts.map(x=>({code:x.code,mastery:Number(x.maitrise)||1}));
-        c.aiSpells=arch.sorts.map(x=>x.code);
+      // les essaie (aiSpells) ; la fiche remplace ceux tirés à la génération ; mana plein au départ. Une fiche sans sorts
+      // n'en lance aucun (Idan, 2026-11-07 : le troll lançait les sorts de son personnage de base).
+      {
+        const sorts=Array.isArray(arch.sorts)?arch.sorts:[];
+        c.spells=sorts.map(x=>({code:x.code,mastery:Number(x.maitrise)||1}));
+        c.aiSpells=sorts.map(x=>x.code);
         c.skills.magic={...Object.fromEntries(Object.keys(c.skills?.magic||{}).map(k=>[k,0])),...(arch.ecoles||{})};
         delete c.mana;
       }

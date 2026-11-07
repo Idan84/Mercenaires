@@ -172,7 +172,8 @@ assert.equal(chief.skills.martial.Lance,0,"les autres compétences tombent à 0"
 assert.equal(chief.skills.martial["Port d’armure lourde"],false);
 assert.equal(chief.skills.martial["Port d’armure intermédiaire"],true);
 assert.equal(chief.skills.social.Intimidation,caid.intimidation);
-assert.equal(chief.skills.magic.Feu,3,"la magie de la base reste");
+assert.equal(chief.skills.magic.Feu,0,"la fiche remplace la magie de la base (Idan, 2026-11-07 : une fiche sans sorts n'en lance aucun)");
+assert.deepEqual([chief.spells,chief.aiSpells],[[],[]]);
 const [sabre,rondache,armor]=chief.items;
 assert.deepEqual([sabre.name,sabre.itemType,sabre.tier,sabre.qualityCode,sabre.category,sabre.combatFamily,chief.equipment.slots.weapon_set_1_main],
   ["Sabre","weapon",3,"luxury","Lames longues","melee",sabre.id]);

@@ -30,7 +30,10 @@ const random = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
 Math.random = random;
 const rules = Missions.createMissionRules({reference, random});
 const generator = createGenerator(reference, {random, nameGenerator: (people, id) => people + " " + id});
+// Le mana au camp, chaque matin, comme dans le jeu (tavern-ui.js).
+const campMagic = Magic.createMagicRules({reference, combat: createCombatEngine(reference, {})});
 const campaign = createCampaignRules({generator, tavern: createTavernRules({random: () => 0.999, reference}), reference,
+  progression: Progression.createProgressionRules({reference}), magic: {rechargeMana: (c, o) => campMagic.rechargeMana(c, o)},
   random: () => dice.length ? dice.shift() : 0.5});
 const captain = generator.createCaptain({id: 1});
 const state = campaign.createCampaign({captain, squad: [2, 3, 4].map(id => generator.createMercenary({id, captain, forcedPeople: "Humain"}))});
@@ -59,7 +62,7 @@ api = new Function("game", "$", "esc", "fmt", "renderAvatar", "combatEngine", "M
   "MercenairesMagic", "missionRules", "campaignRules", mission + "\nreturn {makeMissionUnit,sortMissionInitiative,selectNextMissionPlayer,"
   + "startMissionCamouflage,autoResolveMission,setMissionMapSize,placeMissionArmy,missionUnitHeight,missionUnits,checkMissionEnd,"
   + "missionMountOf,settleOwnMissionMounts,endMissionActivation,missionActionAvailability,performMissionAttack,missionUnitAtCell,"
-  + "enemyMissionActWithMount,enemyMissionAct,missionMagic};")
+  + "enemyMissionAct,missionMagic,handleMissionHexClick,renderMissionSpellBar,setMissionMode,missionSpellUnit,targetableMissionCells};")
   .call(null, game, $, v => String(v ?? ""), v => String(Math.round(Number(v) || 0)), () => "", () => combat, Progression, MissionEnd, Magic,
     () => rules, () => campaign);
 api.setMissionMapSize({cols: 30, rows: 15});
@@ -101,8 +104,9 @@ api.checkMissionEnd();
 assert.ok(m.players.includes(lone) && lone.alive && !lone.rider, "le cheval seul, dans notre équipe");
 assert.ok(m.playerOrder.includes(lone), "il prend sa place dans notre ordre du tour");
 
-// 2 bis. Le cheval monté a son attaque (Idan : « oui, il a une attaque. La seule chose, c'est le déplacement commun ») : il
-// joue juste après son cavalier, sur place ; ni déplacement, ni charge, ni second mouvement, ni sentinelle.
+// 2 bis. Le cheval monté a son attaque (Idan : « oui, il a une attaque. La seule chose, c'est le déplacement commun » ; « faut
+// pas que l'animal joue après. Ils jouent en même temps, on rajoute des boutons.. l'attaque principale de l'animal qui compte
+// pas pour le mercenaire ») : dans l'activation de son cavalier, le bouton « Attaque de la monture » ; ses sorts dans la barre.
 const adjacentTo = (unit, other) => {
   for (const c of combat.footprint(unit)) for (const [dq, dr] of [[1, 0], [1, -1], [0, -1], [-1, 0], [-1, 1], [0, 1]]) {
     const cell = {q: c.q + dq, r: c.r + dr};
@@ -116,32 +120,38 @@ m = newMission([rider], foes(1));
 const duo = m.players[0], target = m.enemies[0];
 assert.ok(adjacentTo(duo, target), "l'ennemi au contact du couple");
 target.camouflaged = false;
-m.phase = "player"; m.activeUnit = duo; duo.acted = false;
-api.endMissionActivation();
-assert.equal(m.activeUnit, duo.mount, "son cheval joue juste après lui");
-assert.ok(m.log.some(l => l.message === "Activation de " + duo.mount.character.name + "."));
+api.selectNextMissionPlayer();
+assert.equal(m.activeUnit, duo, "le cavalier joue");
 const can = api.missionActionAvailability();
-assert.deepEqual([can.move, can.charge, can.secondMove, can.sentinel, can.melee], [false, false, false, false, true]);
-assert.equal(duo.mount.movementRemaining, 0, "le déplacement est commun");
+assert.deepEqual([can.mountMelee, can.melee, can.move], [true, true, true], "l'attaque de sa monture, en plus de la sienne");
+assert.equal(duo.mount.movementRemaining, 0, "le déplacement est celui du couple");
+m.mode = "mountMelee";
 const hpBefore = target.hp;
-api.performMissionAttack(duo.mount, target, "melee", combat.axialDistance(duo.mount, target));
-assert.ok(m.log.some(l => new RegExp("^" + duo.mount.character.name + " attaque ").test(l.message)), "il attaque avec ses sabots");
+api.handleMissionHexClick(target.q, target.r);
+assert.ok(m.log.some(l => new RegExp("^" + duo.mount.character.name + " attaque ").test(l.message)), "le cheval attaque avec ses sabots");
 assert.ok(target.hp <= hpBefore);
+assert.equal(duo.mount.attackAvailable, false, "l'action principale du cheval est prise");
+assert.equal(m.activeUnit === duo && duo.attackAvailable, true, "celle du cavalier reste : il joue toujours");
+assert.equal(api.missionActionAvailability().mountMelee, false);
+// Le cavalier apprend (Idan : « xp catégorie animal pour le cavalier ») : chaque attaque de sa monture, comme une arme.
+assert.equal(duo.progress.animalUses["Équidés"].attacks, 1);
+const learned = Progression.createProgressionRules({reference}).gains(duo.progress, rider).skills.animal;
+assert.ok(learned["Équidés"] >= 10 && learned["Compagnon animal"] === learned["Équidés"], "Équidés et Compagnon animal : " + JSON.stringify(learned));
 api.endMissionActivation();
-assert.notEqual(m.activeUnit, duo.mount, "puis le suivant");
-// Un cavalier ennemi : son cheval frappe aussi, sur place.
+assert.ok(!m.log.some(l => l.message === "Activation de " + duo.mount.character.name + "."), "le cheval ne joue pas après");
+// Un cavalier ennemi : son cheval frappe aussi, dans la même activation, sur place.
 const enemyRider = rules.applyArchetype(generator.createMercenary({id: 950, captain, forcedPeople: "Humain", forcedCulture: rules.archetype("thief_rider").culture}),
   rules.archetype("thief_rider"), {idPrefix: "c950", name: "Cavalier"});
 m = newMission([walker], [enemyRider]);
 const foeRider = m.enemies[0], victim = m.players[0];
 adjacentTo(foeRider, victim);
 victim.camouflaged = false;
-const at = {q: foeRider.q, r: foeRider.r};
 foeRider.fleeing = false;
-api.enemyMissionActWithMount(foeRider);
+api.enemyMissionAct(foeRider);
 assert.ok(m.log.some(l => /^Destrier de Cavalier attaque /.test(l.message)), "le cheval du Cavalier attaque : " + m.log.map(l => l.message).join(" | "));
 // La licorne et son sort (Idan : « Reprend le sort qui existe déjà. On lui donne juste des points de mana et des niveaux de
-// compétences de magie. Comme un mercenaire ») : Création de double, Illusion 50, Réserve de mana 40.
+// compétences de magie. Comme un mercenaire ») : Création de double, Illusion 50, Réserve de mana 40, lancé depuis la barre de
+// sorts de son cavalier, par elle.
 const unicornItem = give(rider, "Licorne");
 m = newMission([rider], foes(1));
 const mage = m.players[0].mount, magic = api.missionMagic();
@@ -149,15 +159,34 @@ assert.equal(mage.character.name.split(" ")[0], "Licorne");
 assert.deepEqual(magic.knownSpells(mage).map(s => s.code), ["decoy"], "elle connaît Création de double");
 assert.deepEqual([magic.manaMax(mage), magic.currentMana(mage), magic.manaCost(mage, "decoy"), magic.range(mage, "decoy")], [40, 40, 17, 5]);
 m.enemies[0].camouflaged = false;
-m.phase = "player"; m.activeUnit = m.players[0]; m.players[0].acted = false;
-api.endMissionActivation();
-assert.equal(m.activeUnit, mage, "la licorne joue après son cavalier");
-api.enemyMissionAct(mage, {reset: false});
+api.selectNextMissionPlayer();
+assert.equal(m.activeUnit, m.players[0]);
+const bar = api.renderMissionSpellBar(m.activeUnit);
+assert.match(bar, /Licorne · mana 40\/40/);
+assert.match(bar, /data-spell="decoy" data-spell-caster="mount"/);
+api.setMissionMode("spell:decoy", {caster: "mount"});
+assert.equal(api.missionSpellUnit(), mage, "c'est la licorne qui lance");
+const cell = [...api.targetableMissionCells()][0].split(",").map(Number);
+api.handleMissionHexClick(cell[0], cell[1]);
 const decoy = m.players.find(u => u.decoy && u.summon?.casterId === mage.id);
 assert.ok(decoy, "elle lance son double : " + m.log.slice(-4).map(l => l.message).join(" | "));
 assert.equal(magic.currentMana(mage), 23, "40 − 17 mana");
-api.settleOwnMissionMounts(m);
+assert.equal(m.players[0].attackAvailable, true, "le cavalier garde son action");
+const after2 = api.settleOwnMissionMounts(m);
 assert.deepEqual(m.mountAftermath.results.map(r => r.id), [unicornItem.id], "son double n'est pas une monture");
+// Sa fiche à elle (Idan : « Mana de la licorne + xp licorne ») : son mana gardé, son XP (ici, Réserve de mana et son sort).
+assert.equal(unicornItem.sheet.mana, 23, "le mana de la fin du combat");
+assert.ok(unicornItem.sheet.xp.spells.decoy > 0 && unicornItem.sheet.xp.skills.magic.Illusion > 0 && unicornItem.sheet.xp.stats["Réserve de mana"] > 0,
+  "son sort, l'Illusion et la Réserve de mana gagnent de l'XP, sur sa fiche à elle");
+assert.ok(unicornItem.sheet.spells[0].mastery > 1, "son sort progresse");
+delete unicornItem.recovery;
+campaign.advanceTime(state, 1);
+assert.ok(unicornItem.sheet.mana > 23, "au camp, elle recharge son mana comme un mercenaire : " + unicornItem.sheet.mana);
+unicornItem.sheet.mana = 30;
+unicornItem.sheet.stats.Vitesse = 120;
+m = newMission([rider], foes(1));
+assert.equal(api.missionMagic().currentMana(m.players[0].mount), 30, "elle part avec son mana");
+assert.equal(m.players[0].mount.character.stats.Vitesse, 120, "et ses progrès");
 rider.items = rider.items.filter(i => i !== third && i !== unicornItem);
 rider.equipment.slots.mount = horse.id;
 m = game.mission = saved;
@@ -208,4 +237,4 @@ for (let i = 0; i < 8; i++) {
 }
 assert.equal(over, 8, "chaque combat se termine");
 
-console.log("Nos mercenaires à cheval : monture apprivoisée et équipée, règles du Cavalier, le cheval monté attaque après son cavalier (sur place), le double de la licorne, cheval seul dans notre ordre du tour, mort / blessure / fatigue en fin de combat, repos, l'enclos si le cavalier meurt — OK");
+console.log("Nos mercenaires à cheval : monture apprivoisée et équipée, règles du Cavalier, le cheval monté attaque dans l'activation de son cavalier (bouton, sorts), l'XP animale du cavalier, le double de la licorne, son mana et son XP, cheval seul dans notre ordre du tour, mort / blessure / fatigue en fin de combat, repos, l'enclos si le cavalier meurt — OK");

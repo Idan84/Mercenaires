@@ -998,6 +998,12 @@
     // en route (contrat ou garde du corps). Formule : magic.js (rechargeMana).
     function rechargeCampMana(state){
       if(!magic) return [];
+      // Nos montures au camp (la licorne ; Idan, 2026-11-07 : « Mana de la licorne »), comme nos mercenaires.
+      if(stableRules) for(const item of stableRules.mountsOf(state)){
+        if(item.owner!=null&&awayOf(state,item.owner)) continue;
+        const sheet=item.sheet;
+        if(sheet&&Number(sheet.stats?.["Réserve de mana"])>0) magic.rechargeMana(sheet,{bonusPercent:manaBonusPercent(state)});
+      }
       return rosterOf(state).filter(m=>!awayOf(state,m.id))
         .map(m=>({id:m.id,...magic.rechargeMana(m,{bonusPercent:manaBonusPercent(state)})})).filter(x=>x.gained>0);
     }
@@ -1322,7 +1328,8 @@
     // resolveMissionEnd ; leur repos se compte comme celui de nos mercenaires (Dispensaire, médecin, bains chauds).
     function applyMountAftermath(state,results){
       return stableRules?stableRules.applyAftermath(state,results,{woundDays:days=>woundDaysFor({},days,state),
-        fatigueDays:days=>fatigueDaysFor(days,state)}):null;
+        fatigueDays:days=>fatigueDaysFor(days,state),
+        learn:(sheet,progress)=>progression?progression.apply(sheet,progression.gains(progress,sheet)):[]}):null;
     }
     function applyMissionAftermath(state,aftermath,options={}){
       if(appliedAftermaths.has(aftermath)) return appliedAftermaths.get(aftermath);

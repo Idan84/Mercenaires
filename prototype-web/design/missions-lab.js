@@ -56,6 +56,8 @@ const MissionsLab=(()=>{
     const types=(data.missions||[]).map(def=>{
       const camps=def.camps||[],totalCamp=camps.reduce((s,c)=>s+(Number(c.poids)||1),0);
       const orders=(data.ordres||[]).filter(o=>o.mission===def.code);
+      // Une chasse (Idan, 2026-11-07) : une bête, ses dés par étoile, ses lieux ; pas de camp.
+      if(def.bete) return {kind:"hunt",code:def.code,def,orders,variables:variablesOf(orders.map(o=>[o.titre,o.texte,o.signature]))};
       return {kind:"camp",code:def.code,def,orders,
         camps:camps.map(c=>{
           const totalLine=(c.lignes||[]).reduce((s,l)=>s+(Number(l.poids)||0),0);
@@ -152,6 +154,24 @@ const MissionsLab=(()=>{
       ${nameLists(names)}</section>`;
   }
 
+  function huntType(type){
+    const d=type.def,b=d.bete||{},[low,high]=d.marche?.facteur||[0.25,1];
+    return `<section class="cov-people mis-type" id="${anchor(type.code)}">
+      <h3>${html(d.nom)} <span class="badge ok">${type.orders.length} ordres</span></h3>
+      <table class="mis-rules"><tbody>
+        ${rule("Règles",html(d.description))}
+        ${rule("Bêtes",`${html(b.des)}D${html(b.faces)} par étoile, au plus ${html(d.max_ennemis||100)} · fiche fixe : ${html(b.code)} (mounts.json) · ${html(b.faction)}`)}
+        ${rule("Niveau",`Renommée ${(d.niveau?.ecart||[]).map(x=>(x>0?"+":"")+x).join(" à ")}`)}
+        ${rule("Marche",`étoiles × ${html(low)} à ${html(high)}, arrondi au jour supérieur`)}
+        ${rule("Récompense",`${html(d.recompense?.par_niveau)} PO par étoile · ni coffre ni butin`)}
+        ${rule("Lieux",html((b.lieux||[]).join(", ")))}
+        ${rule("Poids",`${html(d.poids||1)} (parmi les chasses)`)}
+      </tbody></table>
+      <h4 class="mis-h" id="${anchor(type.code+"-ordres")}">Ordres de mission</h4>
+      ${variableList(type.variables)}
+      <div class="mis-orders">${type.orders.map(orderBlock).join("")||'<p class="muted">Aucun ordre.</p>'}</div></section>`;
+  }
+
   function bodyguardType(type){
     const b=type.def,levels=(b.niveaux||[]),total=levels.reduce((s,l)=>s+(Number(l.poids)||0),0);
     const back=(b.retour||[]),backTotal=back.reduce((s,r)=>s+(Number(r.poids)||0),0);
@@ -174,12 +194,13 @@ const MissionsLab=(()=>{
   function render(data){
     return `<p class="cov-intro">Les types de mission de la Taverne, tels qu’ils sont dans les données. Les <mark class="mis-var">{variables}</mark>
       sont remplacées quand l’offre est tirée.</p>
-      ${data.types.map(t=>t.kind==="camp"?campType(t,data.names):bodyguardType(t)).join("")}`;
+      ${data.types.map(t=>t.kind==="camp"?campType(t,data.names):t.kind==="hunt"?huntType(t):bodyguardType(t)).join("")}`;
   }
   function meta(data){ return data.types.length+" types de mission · "+data.orderCount+" ordres"; }
   function nav(data){
     return data.types.flatMap(t=>t.kind==="camp"
       ? [{id:anchor(t.code),label:t.def.nom,sub:t.camps.map(c=>c.faction).join(", ")},{id:anchor(t.code+"-ordres"),label:"Ordres de mission",sub:t.orders.length+" lettres"}]
+      : t.kind==="hunt"?[{id:anchor(t.code),label:t.def.nom,sub:t.def.bete?.faction||""}]
       : [{id:anchor(t.code),label:t.def.textes?.titre||"Garde du corps",sub:(t.def.clients||[]).length+" clients"}]);
   }
 

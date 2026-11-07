@@ -30,6 +30,11 @@
 // le Maître des lames au Cercle des Fines Lames aident comme le directeur à l'École : même test, même gain ; niveau du
 // maître : sa valeur dans ce que travaille la salle ou l'aile. Chacun gagne 5 XP de Transmission du savoir par élève de
 // son bâtiment et par jour.
+// Avec son compagnon (Idan, 2026-11-07 : « Charisme + Intelligence + Intimidation. Un mix des trois. C'est un
+// entraînement libre comme pour les écoles de magie. Il y va en fonction de ses envies ») : les Écuries (Équidés) et le
+// Chenil (Canidés), ailes de la Grange du dresseur ; seulement pour celui qui y a son animal apprivoisé (room.only) ; gain
+// avec la moyenne de ses Charisme, Intelligence et Intimidation (apprend_avec : une liste) ; la famille et Compagnon
+// animal montent du gain chacune (sans recul des autres familles, comme en combat).
 // Constantes : formula-constants.json (school.training.*, camp.training.*). Doc 11 §7.
 (function(root,factory){
   const api=factory();
@@ -39,6 +44,7 @@
   const HALL="magic_school";
   const TRANSMISSION="Transmission du savoir";
   const MAGIC_POWER="Puissance magique";
+  const ANIMAL_COMPANION="Compagnon animal";
   function referenceConstant(reference,code,fallback){
     const value=Number((reference?.formulaConstants?.rows||[]).find(r=>r.code===code)?.valeur);
     return Number.isFinite(value)?value:fallback;
@@ -108,7 +114,7 @@
     function valueOf(m,room){
       if(room?.school) return schoolOf(m,room.school);
       const name=trainsOf(room);
-      for(const group of [m?.stats,m?.resistances,m?.skills?.martial,m?.skills?.magic]){
+      for(const group of [m?.stats,m?.resistances,m?.skills?.martial,m?.skills?.magic,m?.skills?.animal]){
         if(group&&name in group) return Number(group[name])||0;
       }
       return 0;
@@ -128,9 +134,16 @@
       for(const room of open){ const rank=rankOf(m,room,peers); if(rank>bestRank){ best=room; bestRank=rank; } }
       return best;
     }
+    // La caractéristique qui fait le gain : une caractéristique, ou la moyenne d'une liste (« Charisme, Intelligence,
+    // Intimidation » : une caractéristique ou une compétence sociale chacune).
+    function learnValue(m,learnWith){
+      const names=String(learnWith||"Intelligence").split(",").map(x=>x.trim()).filter(Boolean);
+      const one=name=>name in (m?.stats||{})?stat(m,name):Number(m?.skills?.social?.[name]??m?.skills?.martial?.[name])||0;
+      return names.reduce((sum,name)=>sum+one(name),0)/names.length;
+    }
     // XP d'une journée dans la salle room ({ code, school, level, learnWith }).
     function dailyXp(m,room,director=null){
-      const intelligence=stat(m,room?.learnWith||"Intelligence")/C.intelligenceDivisor;
+      const intelligence=learnValue(m,room?.learnWith)/C.intelligenceDivisor;
       const roomFactor=1+C.roomBonus*(Number(room?.level)||0);
       const directorFactor=director?1+directorLevel(director,room)/C.directorDivisor:1;
       const transmission=director?1+(Number(director.skills?.camp?.[TRANSMISSION])||0)/C.transmissionDivisor:1;
@@ -143,6 +156,8 @@
         const name=trainsOf(room);
         if(name===MAGIC_POWER||(m?.stats&&name in m.stats)) return {stats:{[name]:xp}};
         if(m?.resistances&&name in m.resistances) return {resistances:{[name]:xp}};
+        // Une famille d'animaux (Équidés, Canidés) : elle et Compagnon animal.
+        if(room.animal) return {skills:{animal:{[name]:xp,[ANIMAL_COMPANION]:xp}}};
         const raw={[name]:xp};
         return {skills:{martial:progression?.martialSpread?progression.martialSpread(m,raw):raw}};
       }
@@ -180,6 +195,8 @@
       const buildingOf=room=>room.building||HALL;
       const masterOf=room=>teachers[buildingOf(room)]||null;
       const entries=[];
+      // Une salle réservée (les Écuries, le Chenil : ceux qui y ont leur animal).
+      const allows=(room,m)=>!room.only||room.only.has(m.id);
       const train=(m,room,extra)=>{
         free.set(room.code,free.get(room.code)-1);
         const xp=dailyXp(m,room,masterOf(room));
@@ -188,11 +205,11 @@
       };
       if(captain){
         const room=captainChoice?byCode.get(captainChoice):null;
-        if(room&&free.get(room.code)>0) train(captain,room,{captain:true,chance:null,roll:null});
+        if(room&&free.get(room.code)>0&&allows(room,captain)) train(captain,room,{captain:true,chance:null,roll:null});
         else entries.push({id:captain.id,name:captain.name,code:null,school:null,xp:0,captain:true,chance:null,roll:null});
       }
       for(const m of shuffled(candidates)){
-        const open=rooms.filter(room=>free.get(room.code)>0);
+        const open=rooms.filter(room=>free.get(room.code)>0&&allows(room,m));
         if(!open.length){ entries.push({id:m.id,name:m.name,code:null,school:null,xp:0,captain:false,chance:null,roll:null,full:true}); continue; }
         // Là où il est le plus doué (75 %), sinon au hasard parmi les places libres.
         const talent=random()<C.talentShare;
@@ -216,7 +233,7 @@
       return {entries,directorXp:masterXp[HALL]||0,masterXp};
     }
 
-    return {constants:C,HALL,SCHOOLS,bestSchool,chance,trainingChance,valueOf,rankOf,bestRoom,directorLevel,dailyXp,xpOf,runDay};
+    return {constants:C,HALL,SCHOOLS,bestSchool,chance,trainingChance,valueOf,rankOf,bestRoom,directorLevel,learnValue,dailyXp,xpOf,runDay};
   }
 
   return {createSchoolTrainingRules};

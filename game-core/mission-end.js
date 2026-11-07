@@ -19,6 +19,8 @@
     const C={
       deathHpCoefficient:k("mission.death.hp_ratio_coefficient",1000),
       deathWillpowerDivisor:k("mission.death.willpower_divisor",20),
+      // Les chances de mort divisées par deux (Idan, 2026-11-07, après le bêta-test).
+      deathChanceFactor:k("mission.death.chance_factor",1),
       woundZoneRatio:k("mission.wound.zone_ratio",0.5),
       woundBase:k("mission.wound.base",35),
       woundDangerCoefficient:k("mission.wound.danger_coefficient",0.65),
@@ -46,10 +48,11 @@
     function hpRatio(p){ return p.hp/p.pvMax; }
 
     // §3 — Jet de mort, uniquement sous 0 PV. multiplier : défaite d'une mission « Faire le ménage », l'ennemi tient le
-    // terrain, la probabilité est doublée (doc 17 §8), toujours bornée à 100 %.
+    // terrain, la probabilité est doublée (doc 17 §8), toujours bornée à 100 %. Puis × mission.death.chance_factor (0,5 :
+    // au plus 50 % ; Idan, 2026-11-07 : « On divise par deux les chances de mort »).
     function deathChance(p,multiplier=1){
       if(p.hp>=0) return null;
-      return clamp((-C.deathHpCoefficient*hpRatio(p)-stat(p,"Volonté")/C.deathWillpowerDivisor)*multiplier,0,100);
+      return clamp((-C.deathHpCoefficient*hpRatio(p)-stat(p,"Volonté")/C.deathWillpowerDivisor)*multiplier,0,100)*C.deathChanceFactor;
     }
 
     // §4 — Jet de blessure, uniquement entre 0 et 50 % des PV max (zone portée de 20 à 50 % par Idan).

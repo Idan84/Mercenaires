@@ -53,7 +53,7 @@ const builtMissions=MissionsLab.build(reference),missions=plain(builtMissions);
 assert.deepEqual(missions.types.map(t=>t.code),["cleanup","hunt_wolves","hunt_unicorn","bodyguard"]);
 // Les chasses (Idan, 2026-11-07) : leurs règles et leurs lettres, sans camp.
 assert.deepEqual(missions.types.filter(t=>t.kind==="hunt").map(t=>[t.code,t.orders.length]),[["hunt_wolves",2],["hunt_unicorn",2]]);
-assert.match(MissionsLab.render(builtMissions),/3D6 par étoile, au plus 100 · fiche fixe : loup/);
+assert.match(MissionsLab.render(builtMissions),/1D6 par étoile, au plus 100 · fiche fixe : loup/);
 const cleanup=missions.types[0];
 assert.deepEqual(cleanup.camps.map(c=>c.faction),reference.oneShotMissions.missions[0].camps.map(c=>c.faction));
 assert.equal(cleanup.camps.reduce((s,c)=>s+c.orders.length,0),reference.oneShotMissions.ordres.filter(o=>o.mission==="cleanup").length,"chaque ordre sous son peuple");

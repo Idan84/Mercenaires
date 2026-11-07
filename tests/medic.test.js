@@ -21,7 +21,7 @@ const files=Object.fromEntries([...block.matchAll(/^\s*(\w+):\s*"([\w.-]+\.json)
 assert.equal(files.medicDialogue,"medic-dialogue.json","le jeu charge les textes du médecin");
 const reference=Object.fromEntries(Object.entries(files).map(([k,f])=>[k,JSON.parse(fs.readFileSync(path.join(ROOT,"data","reference",f),"utf8"))]));
 const constant=code=>reference.formulaConstants.rows.find(r=>r.code===code)?.valeur;
-assert.deepEqual([constant("medic.wound.skill_divisor"),constant("medic.renown.skill_share"),constant("medic.xp.per_wound_day")],[250,1,10]);
+assert.deepEqual([constant("medic.wound.skill_divisor"),constant("medic.renown.skill_share"),constant("medic.xp.per_wound_day")],[250,1,20]);
 
 let seed=7;
 const random=()=>((seed=(seed*16807)%2147483647)/2147483647);
@@ -93,10 +93,10 @@ fifth.recovery={kind:"fatigued",daysLeft:1,sinceDay:state.day-3};
 const before=doc.skills.camp["Médecine"];
 const [report]=rules.advanceTime(state,1);
 const healed=report.recovered.find(r=>r.mercenary===wounded);
-assert.equal(healed.medicXp,90,"blessé pendant 9 jours");
+assert.equal(healed.medicXp,180,"blessé pendant 9 jours : 20 XP par jour (doublé)");
 assert.equal(report.recovered.find(r=>r.mercenary===fifth).medicXp,undefined,"la fatigue ne compte pas");
 assert.ok(doc.skills.camp["Médecine"]>before,"sa Médecine monte");
-assert.equal(doc.xp.skills.camp["Médecine"],progression.xpForContinuous(before)+90);
+assert.equal(doc.xp.skills.camp["Médecine"],progression.xpForContinuous(before)+180);
 
 // Retour sur le terrain : même règle que l'intendant, place au dortoir comprise.
 const capacity=state.company.camp.dormitoryCapacity;

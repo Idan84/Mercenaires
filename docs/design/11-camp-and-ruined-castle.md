@@ -149,7 +149,7 @@ Fonctions :
 - **une salle par école de magie** (Feu, Eau, Foudre, Vie, Nécromancie, Illusion, Invocation, Transmutation,
   Télékinésie), chacune avec ses **10 niveaux**, et **au plus au niveau atteint par l'École** : une École de niveau 3
   permet des salles jusqu'au niveau 3 ; le niveau de l'École encore en chantier ne compte pas ;
-- même barème que les autres bâtiments du camp (JC3, en attendant les prix d'Idan) : le niveau n coûte **1 000 × n² PO**
+- même barème que les autres bâtiments du camp (JC3, en attendant les prix d'Idan) : le niveau n coûte **500 × n² PO**
   et **4 × n jours** (niveau 10 : 100 000 PO et 40 jours ; 385 000 PO pour les dix niveaux) ; **un chantier par bâtiment
   et par salle**, en parallèle les uns des autres et du dortoir ; l'or est payé au lancement, le niveau est atteint le
   matin du dernier jour ;
@@ -197,14 +197,14 @@ camp […] il faut tous les jours un ordre de tirage pour tous les mercenaires d
   culture, alignement ; −100 à +100). Réussi : il prend la place ; raté : la taverne. La meilleure école d'une recrue
   vaut 78 en médiane (600 recrues mesurées) : doué (Volonté 50, école 100) 88 % ; recrue moyenne (50, 78) 63 % ; peu
   doué (40, 40) 9 % ; sans école 2 % ;
-- **gain par jour** = **20 × Intelligence / 50 × (1 + 0,1 × niveau de la salle) × (1 + niveau du directeur / 100) ×
+- **gain par jour** = **40 × Intelligence / 50 (20 avant le bêta-test : XP doublée, Idan, 2026-11-07) × (1 + 0,1 × niveau de la salle) × (1 + niveau du directeur / 100) ×
   (1 + Transmission du savoir du directeur / 100)**, arrondi ; niveau du directeur : son école dans la salle de cette
   école, sa Puissance magique dans la salle généraliste ; sans directeur, ces deux facteurs valent 1. Exemples :
-  salle 1 sans directeur (Intelligence 54) **24 XP** ; salle 3, directeur à 100 et Transmission 48 **83 XP** ;
-  salle 10, directeur à 120 et Transmission 70 (Intelligence 70) **209 XP** ;
+  salle 1 sans directeur (Intelligence 54) **48 XP** ; salle 3, directeur à 100 et Transmission 48 **166 XP** ;
+  salle 10, directeur à 120 et Transmission 70 (Intelligence 70) **419 XP** ;
 - **salle d'une école** : l'XP va à cette école ; ses **deux écoles opposées perdent chacune un quart** du gain (comme sur
   le terrain, doc 12) ; **salle généraliste** : l'XP va à la **Puissance magique** ;
-- **le directeur** gagne **5 XP de Transmission du savoir par élève et par jour** ;
+- **le directeur** gagne **10 XP de Transmission du savoir par élève et par jour** (doublé après le bêta-test, Idan, 2026-11-07) ;
 - l'entraînement ne bloque rien : un élève reste disponible pour partir en mission ;
 - **interface** : dans l'encart de l'École, chaque salle montre ses places prises (« 1/2 places », les élèves et leur
   XP au survol) ; sous les salles, « Le capitaine » (À la taverne, Salle généraliste ou une salle construite), valable
@@ -220,7 +220,7 @@ chiffres au doc 12 (« Apprendre un sort à l'École »).
 
 Sur le modèle de l'École de magie : un bâtiment, un maître nommé, une **salle principale** (ce qu'on y travaille sans
 aile construite) et des **ailes**. **En jeu** (Idan, 2026-11-03 : « Je te laisse coder Ludus / Survie / Fines Lames »)
-: les trois bâtiments se construisent puis montent de 1 à 10, au même barème que les autres (niveau n = 1 000 × n² PO et
+: les trois bâtiments se construisent puis montent de 1 à 10, au même barème que les autres (niveau n = 500 × n² PO et
 4 × n jours) ; leurs ailes montent au plus au niveau de leur bâtiment ; dans Ma Compagnie, chacun montre ce qu'il
 travaille devant son état, l'info-bulle au survol du nom (`camp-buildings.json`, colonne `entraine`). Test :
 `tests/training-buildings.test.js`.
@@ -248,7 +248,7 @@ hasard » ; « Le reste, c'est nickel ») — remplace le choix de l'École (sa 
   refus, même retour sur le terrain, une proposition par jour ; hors mission, ils vivent dans leur bâtiment (pas de place
   au dortoir) ; un mercenaire ne tient qu'un poste (intendant, médecin, directeur, maître, lieutenant). Ils aident comme
   le directeur à l'École : même test, même gain ; **niveau du maître** : sa valeur dans ce que travaille la salle ou
-  l'aile (sa Force à la Meule, sa Résistance au feu au Four…) ; chacun gagne **5 XP de Transmission du savoir par élève
+  l'aile (sa Force à la Meule, sa Résistance au feu au Four…) ; chacun gagne **10 XP de Transmission du savoir par élève
   de son bâtiment et par jour**. Intendance : un panneau par maître, à côté du directeur, une fois le bâtiment construit
   (la liste montre ce que travaille la salle principale) ; fiche : statut, journal et jours en poste. Code :
   `camp-posts.js`, `school-director.js` (paramètre `post`), `school-training.js` ; textes : `camp-masters-dialogue.json`.
@@ -293,7 +293,7 @@ professeur pour ça » ; sans le port, pas d'armure : doc 03 ; règles `game-cor
   (23 jours) ; avec un Vétéran à 48 de Transmission : légère 17 % (6 jours) ;
 - **le faire sortir** avant la fin : rien n'est acquis ;
 - **affinité avec le capitaine**, comme pour un sort : +5 à l'entrée, −2 s'il refuse, +10 quand il sait, −10 si on le fait
-  sortir ; le Vétéran gagne **5 XP de Transmission du savoir par élève et par jour** ;
+  sortir ; le Vétéran gagne **10 XP de Transmission du savoir par élève et par jour** (doublé après le bêta-test, Idan, 2026-11-07) ;
 - **interface** : sur la carte de l'Académie, « Apprendre une armure » (les membres et le port qu'ils apprendraient ;
   plus de place : plus de bouton), puis « Apprentissages » (l'armure, le jour, la chance du lendemain au survol,
   « Annuler » ou « Le faire sortir ») ; statut « Apprend une armure » ; journal du matin ; historique.
@@ -338,7 +338,7 @@ d'armure à l'Académie (même conviction, entrée le lendemain matin, une place
 affinité, rien d'acquis si on le fait sortir) ; chaque matin, chance = 100 / (1 + e^(−(X − 100)/20)) × (1 + 0,1 × niveau du
 Labo), au plus 95 %, **X = (Intelligence + Dextérité) / 2 + Résistance au poison + Transmission du savoir de
 l'Alchimiste / 5** s'il a lui-même l'aptitude. Labo niveau 1 : 10 % les moins doués ~13 jours, médiane ~7 jours (~5 avec
-un Alchimiste à 48), 10 % les meilleurs ~3 jours ; l'Alchimiste gagne 5 XP de Transmission par élève. Carte du Labo :
+un Alchimiste à 48), 10 % les meilleurs ~3 jours ; l'Alchimiste gagne 10 XP de Transmission par élève. Carte du Labo :
 « Apprendre l'empoisonnement », « Apprentissages » ; statut « Apprend l'empoisonnement » ; journal ; historique. Un
 seul apprentissage à la fois (sort, armure ou empoisonnement). Constantes `poison_study.daily.*` ; code
 `game-core/armor-study.js` (course "poison") ; test `tests/poison-study.test.js`.
@@ -479,7 +479,7 @@ Objectif : supporter des unités montées, y compris des compositions volontaire
 
 > « On peut déjà créer un premier bâtiment, la grange du dresseur et y nommer un mercenaire maître. » « Ensuite, on peut créer des salles qui permettent de stocker des montures. Commençons par écuries et Nid de griffon. Avec les niveaux, on augmente le nombre de places disponibles pour le stockage. » « Un animal aura un coût d'entretien. » « On ajoute des montures aux ennemis. La monture est mise KO au combat. En fonction du type de monture, elle est capturable ou non. Pour chaque monture, on fait test de survie. Si elle survit et qu'on a de la place, elle est stockée dans l'enclos. » « Tout est validé ! »
 
-- **Grange du dresseur** (`trainer_barn`) : à construire, puis 10 niveaux au barème habituel (niveau n = 1 000 × n² PO et 4 × n jours). Son maître, le **Dresseur** (Animal, Intelligence, Charisme, Intimidation) : nommé comme les autres maîtres (doc 08, poste `trainer`, choisi sur son Compagnon animal), il aide à apprivoiser.
+- **Grange du dresseur** (`trainer_barn`) : à construire, puis 10 niveaux au barème habituel (niveau n = 500 × n² PO et 4 × n jours). Son maître, le **Dresseur** (Animal, Intelligence, Charisme, Intimidation) : nommé comme les autres maîtres (doc 08, poste `trainer`, choisi sur son Compagnon animal), il aide à apprivoiser.
 - **Les Écuries** (`trainer_stables`), son aile : au plus au niveau de la Grange ; **2 places par niveau** (`places_par_niveau`), 20 au niveau 10. Le Nid de griffon viendra avec le griffon.
 - **Le Chenil** (`trainer_kennel`, Idan, 2026-11-07 : « Il loge au chenil » ; « Parfait » pour le faire comme les Écuries) : l'autre aile de la Grange, mêmes prix et durées, 2 places par niveau. Chaque animal loge dans le sien (`mounts.json`, `logement`) : les chevaux et la licorne aux Écuries, le loup au Chenil ; chacun ses places. L'entretien du matin compte tous nos animaux (journal : « Animaux »).
 - **Capture** : après une victoire, chaque monture **capturable** (`mounts.json`, `capturable`) restée KO sur la carte, et chaque **loup de la Cour de sang** (Idan, 2026-11-07 : « ceux de la cours de sang » ; `enemy-archetypes.json`, `capture`), passe le **test de survie** : le jet de mort de nos mercenaires (doc 10 §3 : à 0 PV ou plus, elle vit ; sous 0, mort = −1 000 × PV ÷ PV max − Volonté ÷ 20 %). Un cheval qui a fui, ou qui est parti avec son cavalier, est perdu.
@@ -509,7 +509,7 @@ Objectif : supporter des unités montées, y compris des compositions volontaire
   1. **Dressage** : X = moyenne de ses Intelligence, Charisme, Intimidation, Compagnon animal et compétence de la famille de la monture (Équidés…) + **bonus du Dresseur** = (Compagnon animal + Intelligence + Charisme + Intimidation du Dresseur) ÷ 20 (`taming.trainer.divisor`), environ +10, s'il y en a un et qu'il n'est pas l'élève ; chance = 100 / (1 + e^(−(X − 60) / 10)) (`taming.daily.center`, `taming.daily.slope`) : 50 % à X = 60.
   2. **Alignement** : écart = crans sur l'axe Loyal–Chaotique + crans sur l'axe Bon–Mauvais (0 à 4) ; sans écart, réussi d'office ; sinon, chance = 100 × ((100 − entêtement) ÷ 100)^écart, **entêtement** = (Intelligence + Volonté de l'animal) ÷ 2. Pas de tolérance (Idan, 2026-11-07 : « je veux qu'on evite au max d'ajouter des caractéristiques. On supprime la tolérance ») : l'entêtement suffit. La licorne (82,5) : 17,5 % pour un cran, 3 % pour deux, 0,5 % pour trois, **0,09 % pour quatre** (un orc chaotique mauvais : environ 1 pour 1000). Le destrier (20), peu têtu : 80 % pour un cran, 64 % pour deux (il est neutre : deux crans au plus).
 - **Réussi** : il l'a apprivoisée (`tamedBy`), il peut l'équiper (emplacement Monture de sa fiche) et sort de la Grange. Une monture apprivoisée par un autre ne s'équipe pas.
-- **Le Dresseur** gagne 5 XP de Transmission du savoir par élève et par jour, comme les autres maîtres.
+- **Le Dresseur** gagne 10 XP de Transmission du savoir par élève et par jour, comme les autres maîtres.
 - **Le faire sortir**, la monture qui n'est plus à lui, le Cachot : rien n'est acquis.
 - Journal du matin (entrée, réussite), statut « Apprivoise sa monture », historique de la fiche (entrée, réussite, sortie ; jours à la tête de la Grange).
 - Code : `game-core/stables.js`, `campaign.js` (entretien du matin, retour d'expédition), `mission.js` (`missionCapturedMounts`, `admitMissionMounts`), `equipment-deals.js` (rang d'échange, emplacement Monture), `prototype-web/stable-ui.js`, `deal-ui.js` (« Proposer à… »), `quartermaster-ui.js` (onglet Montures), `game-core/taming.js` (apprivoiser), `camp-posts.js` (le Dresseur). Tests : `tests/stables.test.js`, `tests/mount-market.test.js`, `tests/taming.test.js`, `tests/animal-names.test.js` (noms, renommer), `tests/wolf.test.js` (le loup, le Chenil).
@@ -527,7 +527,7 @@ Les bâtiments médicaux améliorent :
 **Dispensaire et Bains chauds** (Idan, 2026-11-01 ; données `camp-buildings.json`, code `game-core/campaign.js`, encarts dans
 **Ma Compagnie**) :
 
-- **à construire, puis 5 niveaux** ; le niveau n coûte **1 000 × n² PO** et **4 × n jours** ; **un chantier par bâtiment**,
+- **à construire, puis 5 niveaux** ; le niveau n coûte **500 × n² PO** (1 000 × n² avant le bêta-test : Idan, 2026-11-07, « On divise par 2 le coût du bâtiment lvl 1 (1000 à 500) », tous les niveaux ÷ 2) et **4 × n jours** ; **un chantier par bâtiment**,
   en parallèle de celui du dortoir ; l'or est payé au lancement, le niveau est atteint le matin du dernier jour ;
 
   | Niveau | Prix | Jours | Total |
@@ -559,7 +559,7 @@ Les bâtiments médicaux améliorent :
   blessures reçues pendant qu'il est en poste. Médecine 46 (une recrue moyenne) : −18 % ; 63 : −25 % ; 100 : −40 %.
   Dispensaire 1 et médecin à 50 : 10 jours → 8 ;
 - **Renommée de la compagnie** : + sa Médecine, tant qu'il est en poste (+46 pour un médecin moyen) ;
-- **expérience** : chaque fois qu'un blessé guérit pendant qu'il est en poste, il gagne **10 XP de Médecine par jour** que la
+- **expérience** : chaque fois qu'un blessé guérit pendant qu'il est en poste, il gagne **20 XP de Médecine par jour** (doublé après le bêta-test, Idan, 2026-11-07) que la
   blessure a duré ;
 - **interface** (Idan : « on déplace sa fiche à côté de l'intendant ») : en haut de l'Intendance, à côté de l'intendant ;
   « Nommer un médecin » (la Médecine de chaque candidat), puis sa fiche compacte avec ses effets au survol et « Le renvoyer

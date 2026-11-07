@@ -246,7 +246,7 @@ Une mission sans combat pour gagner de l'or ; la contrepartie : on est privé de
 
 - **Qui** : un mercenaire au camp, disponible (ni blessé, ni fatigué), du niveau demandé ; pas le capitaine ni l'intendant (validé par Idan). Exactement le nombre demandé. Les salaires courent comme d'habitude.
 - **Pas de combat.** Au retour, chacun tire son sort : **50 %** rentré ; **25 %** rentré fatigué (« il a trop gardé le corps de charmantes demoiselles », fatigue 1D3 jours) ; **25 %** rentré blessé (« bagarre dans une taverne », blessure 1D3 jours). Une fenêtre le dit, avec une ligne par mercenaire ; si plusieurs gardes rentrent le même matin, leurs fenêtres se suivent (correctif de Chatty, PR #310, issue #503).
-- **Prime de mission** versée au retour. **Réputation** : +10 (rentré ou fatigué), +5 (blessé) ; **renommée de la compagnie** : +10 par mission (points de mission, doc 09 §2) — « un peu », chiffres de JC validés par Idan.
+- **Prime de mission** versée au retour. **Réputation** : +5 (rentré ou fatigué), +2,5 (blessé) (+10 et +5 avant le bêta-test, divisés par deux comme la renommée) ; **renommée de la compagnie** : +5 par mission (points de mission, doc 09 §2) — « un peu », chiffres de JC validés par Idan ; +10 avant le bêta-test, divisé par deux (Idan, 2026-11-07 : « On reduit par 2 la réputation donnée par les gardes du corps »).
 
 
 ## 13 — Tableau des missions (Idan, 2026-10-31)
@@ -501,7 +501,7 @@ Une ligne **Cavalier** (poids 10) au camp de voleurs, dès le niveau de mission 
 Deux missions (`one-shot-missions.json`, celles qui ont une `bete`) : **Chasse au loup** (`hunt_wolves`) et **Chasse à la licorne** (`hunt_unicorn`).
 
 - **Difficulté** : le niveau de Renommée de la compagnie + un écart de −2 à +2 (`niveau.ecart`), de 1 à 15.
-- **Les bêtes** : **3D6 loups par étoile** (3★ : 9D6, une trentaine), **1D6 licornes par étoile** ; au plus 100. Elles ont la **fiche fixe** de nos animaux (`mounts.json` : le Loup, la Licorne), quelle que soit l'étoile : pas de chef, pas de niveaux. Elles se battent et fuient comme tout combattant ; la licorne lance sa Création de double.
+- **Les bêtes** : **1D6 loups par étoile** (3★ : 3D6, une dizaine), **1D3 licornes par étoile** ; au plus 100. Après le bêta-test (Idan, 2026-11-07 : « On passe la mission loup à 1D6 loups au lieu de 3D6 et les licornes en 1D3 ») ; avant : 3D6 loups et 1D6 licornes par étoile. Elles ont la **fiche fixe** de nos animaux (`mounts.json` : le Loup, la Licorne), quelle que soit l'étoile : pas de chef, pas de niveaux. Elles se battent et fuient comme tout combattant ; la licorne lance sa Création de double.
 - **Marche** : étoiles × un tirage de 0,25 à 1, arrondi au jour supérieur.
 - **Récompense** : **1 000 PO par étoile**, seule : ni coffre ni butin (l'équipement de nos morts revient). Un échec fait baisser la renommée et une défaite double le jet de mort, comme un contrat.
 - **Capture** : après la victoire, chaque bête restée à terre passe le test de survie et rentre avec l'escouade, s'il reste une place au Chenil (loups) ou aux Écuries (licornes ; doc 11 §8).

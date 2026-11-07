@@ -4,7 +4,8 @@
 // Textes cohérents avec l'espèce : Version Meute de Loup : 3D6 par étoile. Version Licorne : 1D6 par étoile. On élimine
 // les animaux. On peut en capturer ou se prendre une pilée ! On génère des missions -2 / +2 étoiles par rapport à
 // l'étoile » ; « Les fiches fixes » ; ni coffre ni butin : « Oui » ; une case sur cinq au tableau, les loups 3 fois sur 4) :
-// le tirage, les bêtes, la récompense, le tableau, les lettres, le paysage, des combats entiers, la capture.
+// le tirage, les bêtes, la récompense, le tableau, les lettres, le paysage, des combats entiers, la capture. Après le
+// bêta-test (Idan, 2026-11-07 : « On passe la mission loup à 1D6 loups au lieu de 3D6 et les licornes en 1D3 »).
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
@@ -33,8 +34,8 @@ const rules = Missions.createMissionRules({reference, random});
 // 1. Les données : deux chasses, leurs bêtes, leurs lettres.
 const wolves = rules.definition("hunt_wolves"), unicorns = rules.definition("hunt_unicorn");
 assert.deepEqual([wolves.bete.code, wolves.bete.des, wolves.bete.faces, wolves.poids, wolves.niveau.ecart, wolves.recompense.par_niveau, wolves.marche.facteur],
-  ["loup", 3, 6, 3, [-2, 2], 1000, [0.25, 1]]);
-assert.deepEqual([unicorns.bete.code, unicorns.bete.des, unicorns.poids], ["licorne", 1, 1]);
+  ["loup", 1, 6, 3, [-2, 2], 1000, [0.25, 1]]);
+assert.deepEqual([unicorns.bete.code, unicorns.bete.des, unicorns.bete.faces, unicorns.poids], ["licorne", 1, 3, 1]);
 assert.equal(wolves.coffre, undefined, "ni coffre");
 for (const def of [wolves, unicorns]) {
   const orders = reference.oneShotMissions.ordres.filter(o => o.mission === def.code);
@@ -51,7 +52,7 @@ for (let i = 0; i < 400; i++) {
   const def = rules.definition(offer.code), L = offer.level;
   assert.ok(L >= Math.max(1, base - 2) && L <= base + 2, "étoiles : " + L);
   const dice = def.bete.des * L;
-  assert.ok(offer.enemyCount >= dice && offer.enemyCount <= Math.min(100, dice * 6), "bêtes : " + offer.enemyCount);
+  assert.ok(offer.enemyCount >= dice && offer.enemyCount <= Math.min(100, dice * def.bete.faces), "bêtes : " + offer.enemyCount);
   assert.ok(offer.distance >= Math.ceil(0.25 * L) && offer.distance <= L, "marche : " + offer.distance + " pour " + L + " étoiles");
   assert.equal(offer.reward, 1000 * L);
   assert.equal(offer.hunt, true);
@@ -69,7 +70,7 @@ const offer = rules.createOffer({code: "hunt_wolves", level: 1});
 const beasts = rules.buildEnemies(offer);
 assert.equal(beasts.length, offer.enemyCount);
 assert.ok(beasts.every(b => b.mount?.code === "loup" && b.gabarit === 1), "des loups, la fiche de mounts.json");
-assert.equal(beasts[0].name, "Loup 1");
+assert.equal(beasts[0].name, beasts.length > 1 ? "Loup 1" : "Loup", "numérotés s'ils sont plusieurs");
 assert.deepEqual(rules.chestPlan(offer), {tiers: [], manuals: []});
 assert.equal(rules.rollChestGold(offer), 0);
 assert.deepEqual(rules.outcome(offer, {victory: true}), {victory: true, reward: offer.reward, chestGold: 0, chestItems: [], loot: [], renown: 0, hunt: true});

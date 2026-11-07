@@ -328,7 +328,7 @@
       },
       "bete": {
         "code": "loup",
-        "des": 3,
+        "des": 1,
         "faces": 6,
         "faction": "Loups",
         "lieux": ["Repaire des loups", "Territoire de la meute", "Bois des hurlements"]
@@ -364,7 +364,7 @@
       "bete": {
         "code": "licorne",
         "des": 1,
-        "faces": 6,
+        "faces": 3,
         "faction": "Licornes",
         "lieux": ["Bois de la licorne", "Vallon de la licorne", "Sanctuaire de la licorne"]
       },

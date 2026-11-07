@@ -24,7 +24,7 @@ const reference=Object.fromEntries(Object.entries(files).map(([k,f])=>[k,JSON.pa
 const constant=code=>reference.formulaConstants.rows.find(r=>r.code===code)?.valeur;
 assert.deepEqual(["chance_slope","chance_min","chance_max","will_center","will_divisor","school_center","director_charisma_divisor",
   "director_affinity_divisor","base_xp","intelligence_divisor","room_level_bonus","director_level_divisor","transmission_divisor",
-  "director_transmission_xp"].map(k=>constant("school.training."+k)),[15,2,95,50,2,70,10,10,20,50,0.1,100,100,5]);
+  "director_transmission_xp"].map(k=>constant("school.training."+k)),[15,2,95,50,2,70,10,10,40,50,0.1,100,100,10]);
 assert.equal(reference.formulaConstants.row_count,reference.formulaConstants.rows.length);
 
 const progression=createProgressionRules({reference});
@@ -57,12 +57,12 @@ assert.ok(detail.chance>withAffinity.chance(student).chance,"le directeur aide")
 // Le gain : les exemples validés (arrondis).
 const hall={code:"magic_school",school:null,level:1};
 const room=(school,level)=>({code:"magic_room_x",school,level});
-assert.equal(training.dailyXp(person(1,{int:54}),room("Feu",1)),24,"salle 1, sans directeur");
-assert.equal(training.dailyXp(person(1,{int:54}),room("Feu",3),boss),83,"salle 3, directeur à 100, Transmission 48");
+assert.equal(training.dailyXp(person(1,{int:54}),room("Feu",1)),48,"salle 1, sans directeur (XP doublée)");
+assert.equal(training.dailyXp(person(1,{int:54}),room("Feu",3),boss),166,"salle 3, directeur à 100, Transmission 48");
 const master=person(8,{best:"Feu",value:120,transmission:70});
-assert.equal(training.dailyXp(person(1,{int:70}),room("Feu",10),master),209,"salle 10, directeur à 120, Transmission 70");
+assert.equal(training.dailyXp(person(1,{int:70}),room("Feu",10),master),419,"salle 10, directeur à 120, Transmission 70");
 assert.equal(training.directorLevel(boss,hall),80,"salle généraliste : sa Puissance magique");
-assert.equal(training.dailyXp(person(1,{int:50}),hall,boss),Math.round(20*1*1.1*1.8*1.48));
+assert.equal(training.dailyXp(person(1,{int:50}),hall,boss),Math.round(40*1*1.1*1.8*1.48));
 // L'XP : l'école et ses opposées (−¼ chacune), ou la Puissance magique.
 assert.deepEqual(training.xpOf(room("Feu",1),40),{skills:{magic:{Feu:40,"Télékinésie":-10,Eau:-10}}});
 assert.deepEqual(training.xpOf(hall,40),{stats:{"Puissance magique":40}});
@@ -87,13 +87,13 @@ assert.equal(fire2.xp.skills?.magic?.Feu,undefined,"pas d'XP d'école dans la sa
 for(const id of [3,4,1]) assert.deepEqual([byId[id].code,byId[id].full],[null,true],"plus de place : la taverne, sans test");
 assert.ok(cap.skills.magic.Feu>50&&cap.skills.magic.Eau<1+1e-9,"le capitaine gagne en Feu, l'Eau ne descend pas sous 1");
 assert.equal(result.directorXp,0,"pas de directeur");
-// Avec un directeur : il ne s'entraîne pas lui-même et gagne 5 XP de Transmission par élève de l'École.
+// Avec un directeur : il ne s'entraîne pas lui-même et gagne 10 XP de Transmission par élève de l'École (XP doublée).
 dice=[0, 0.5,0, 0.5,0];
 const dir=person(50,{cha:60,best:"Feu",value:100,transmission:40});
 const t0=dir.skills.camp["Transmission du savoir"];
 const r2=day.runDay({rooms:[{code:"magic_school",school:null,level:2,places:2}],candidates:[fire1,fire2],director:dir});
 assert.equal(r2.entries.filter(e=>e.code).length,2);
-assert.equal(r2.directorXp,10);
+assert.equal(r2.directorXp,20);
 assert.ok(dir.skills.camp["Transmission du savoir"]>t0);
 // Test raté : un seul candidat, pas de tirage d'ordre ; talent, puis le jet.
 dice=[0.5,0.99];
@@ -113,7 +113,7 @@ assert.equal(day.bestRoom(thinker,[fireRoom,forceRoom],peers),fireRoom);
 assert.equal(Math.round(day.trainingChance(person(1)).chance),50);
 assert.equal(Math.round(day.trainingChance(person(1,{will:80})).chance*10)/10,73.1);
 brute.stats.Endurance=60;
-assert.equal(day.dailyXp(brute,forceRoom),26,"20 × 60 / 50 × 1,1");
+assert.equal(day.dailyXp(brute,forceRoom),53,"40 × 60 / 50 × 1,1 (XP doublée)");
 // Une journée au Ludus : à 75 %, là où il est le plus doué ; sinon au hasard.
 dice=[0.2, 0.5,0.1, 0.5,0.1];
 const r3=day.runDay({rooms:[fireRoom,{...forceRoom}],candidates:[brute,thinker],company:peers});

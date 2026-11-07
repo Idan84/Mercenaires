@@ -565,8 +565,9 @@ function missionAimed(target){
 
 function missionLog(message,kind="info"){
   if(!game.mission) return;
+  // Tout le combat, du premier au dernier mot (Idan, 2026-11-07, après le bêta-test : « Journal de combat limité à 180
+  // lignes : impossible de relire un combat long ») ; la console le montre en entier, du plus récent au plus ancien.
   game.mission.log.push({message,kind});
-  if(game.mission.log.length>180) game.mission.log.shift();
 }
 
 // Retours visuels (écran de combat, étape 2) : chaque événement visible est mis en file avec les PV et la case du

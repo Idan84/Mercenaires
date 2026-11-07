@@ -19,7 +19,7 @@ const block=source.slice(source.indexOf("REFERENCE_FILES"),source.indexOf("};",s
 const files=Object.fromEntries([...block.matchAll(/^\s*(\w+):\s*"([\w.-]+\.json)"/gm)].map(m=>[m[1],m[2]]));
 const reference=Object.fromEntries(Object.entries(files).map(([k,f])=>[k,JSON.parse(fs.readFileSync(path.join(ROOT,"data","reference",f),"utf8"))]));
 const constant=code=>reference.formulaConstants.rows.find(r=>r.code===code)?.valeur;
-assert.deepEqual(["base_xp","intelligence_divisor","room_bonus","transmission_divisor"].map(k=>constant("spell_study.perfect."+k)),[1000,50,0.1,100]);
+assert.deepEqual(["base_xp","intelligence_divisor","room_bonus","transmission_divisor"].map(k=>constant("spell_study.perfect."+k)),[2000,50,0.1,100]);
 assert.equal(constant("spell_study.affinity.perfect"),2);
 
 const progression=createProgressionRules({reference});
@@ -49,18 +49,18 @@ assert.equal(study.canPerfect(state,mage,book).ok,true,"un sort au niveau 100 se
 mage.spells[0].mastery=20;
 assert.equal(study.canStudy(state,mage,book).reason,"Il connaît déjà ce sort.","on n'apprend pas un sort connu : on le perfectionne");
 
-// L'XP : 1 000 × 54 / 50 × 1,3 = 1 404 ; avec un directeur à 48 de Transmission × 1,48.
-assert.equal(study.perfectXp(state,mage,"magic_room_fire"),1404);
+// L'XP : 2 000 × 54 / 50 × 1,3 = 2 808 (doublée après le bêta-test) ; avec un directeur à 48 de Transmission × 1,48.
+assert.equal(study.perfectXp(state,mage,"magic_room_fire"),2808);
 director.skills.camp["Transmission du savoir"]=48;
 state.company.directorId=director.id;
-assert.equal(study.perfectXp(state,mage,"magic_room_fire"),2078);
+assert.equal(study.perfectXp(state,mage,"magic_room_fire"),4156);
 state.company.directorId=null;
 
 // Sans test. Au jour J, on organise J+1 (Idan, 2026-11-02) : inscrit pour demain, le manuel mis de côté, la place
 // réservée ; on peut encore annuler (le manuel revient).
 const affinityBefore=Number(mage.affinityAcquired)||0;
 const done=study.perfect(state,mage.id,book.id);
-assert.deepEqual([done.ok,done.xp,done.affinityDelta,done.room.code,done.study.status],[true,1404,0,"magic_room_fire","planned"]);
+assert.deepEqual([done.ok,done.xp,done.affinityDelta,done.room.code,done.study.status],[true,2808,0,"magic_room_fire","planned"]);
 assert.ok(!state.company.stock.includes(book),"le manuel est mis de côté");
 assert.equal(study.busyReason(state,mage.id),"Il entre à l’École de magie demain matin.");
 assert.equal(study.learnersIn(state,"magic_room_fire"),1,"la place est réservée");
@@ -85,12 +85,12 @@ assert.equal(study.busyReason(state,mage.id),"Il perfectionne un sort à l’Éc
 const [report]=rules.advanceTime(state,1);
 assert.equal(report.study.perfected.length,1);
 const p=report.study.perfected[0];
-assert.deepEqual([p.mercenary,p.xp,p.before],[mage,1404,20]);
-const expected=progression.continuousLevel(progression.xpForContinuous(20)+1404);
-assert.ok(Math.abs(mage.spells[0].mastery-expected)<1e-6,"niveau 20 → 23,2");
-assert.equal(Math.floor(mage.spells[0].mastery),23);
+assert.deepEqual([p.mercenary,p.xp,p.before],[mage,2808,20]);
+const expected=progression.continuousLevel(progression.xpForContinuous(20)+2808);
+assert.ok(Math.abs(mage.spells[0].mastery-expected)<1e-6,"niveau 20 → 26,1");
+assert.equal(Math.floor(mage.spells[0].mastery),26);
 assert.equal(study.studyOf(state,mage.id),null,"une seule journée");
-assert.deepEqual(mage.history.log.filter(e=>e.kind==="perfect").map(e=>[e.spell,e.xp,e.before,e.after]),[["Boule de feu",1404,20,23]]);
+assert.deepEqual(mage.history.log.filter(e=>e.kind==="perfect").map(e=>[e.spell,e.xp,e.before,e.after]),[["Boule de feu",2808,20,26]]);
 // Sans plafond (Idan, 2026-11-06 : « oui libère les sorts ») : le sort dépasse 100.
 mage.spells[0].mastery=99.9;
 study.perfect(state,mage.id,manual().id);
@@ -110,14 +110,14 @@ const ui=new Function("game","$","fmt","esc","campaignRules","manualRules","tave
   game,$,fmt,esc,()=>rules,()=>({spellOf:item=>reference.spells.rows.find(s=>"Manuel : "+s.nom===item.name)}),(message,kind)=>log.push({message,kind}),()=>{},()=>{},()=>"",
   lines=>lines[0],{fill:(text,vars)=>String(text||""),firstName:m=>m.name});
 const menuBook=manual();
-assert.match(ui.studyLearnMenu(menuBook),new RegExp(`data-study-perfect="${mage.id}" data-study-item="${menuBook.id}">Perfectionner<small>\\+1404 XP · une journée<\\/small>`));
+assert.match(ui.studyLearnMenu(menuBook),new RegExp(`data-study-perfect="${mage.id}" data-study-item="${menuBook.id}">Perfectionner<small>\\+2808 XP · une journée<\\/small>`));
 ui.perfectSpell(mage.id,menuBook.id);
-assert.deepEqual(log.at(-1),{message:`${mage.name} passera demain la journée à la Salle du Feu pour perfectionner Boule de feu (+1404 XP le surlendemain matin).`,kind:"gear"});
+assert.deepEqual(log.at(-1),{message:`${mage.name} passera demain la journée à la Salle du Feu pour perfectionner Boule de feu (+2808 XP le surlendemain matin).`,kind:"gear"});
 // Inscrit pour demain : « Annuler » (le manuel revient) ; une fois entré : ni professeur ni sortie.
 assert.match(ui.studyListHtml(state),new RegExp(`<strong>${mage.name}<\\/strong><span>Boule de feu · Salle du Feu · perfectionne, entre demain matin<\\/span>`));
 assert.match(ui.studyListHtml(state),/data-study-stop="[^"]+" title="Il n’est pas encore entré : le manuel revient à l’Intendance\.">Annuler<\/button>/);
 rules.spellStudy.advance({...state,day:state.day+1});
-assert.match(ui.studyListHtml(state),new RegExp(`<strong>${mage.name}<\\/strong><span>Boule de feu · Salle du Feu · perfectionne \\(\\+1404 XP demain\\)<\\/span>`));
+assert.match(ui.studyListHtml(state),new RegExp(`<strong>${mage.name}<\\/strong><span>Boule de feu · Salle du Feu · perfectionne \\(\\+2808 XP demain\\)<\\/span>`));
 assert.doesNotMatch(ui.studyListHtml(state),/data-study-stop/,"ni professeur ni sortie pour une journée");
 ui.logSpellStudy({started:[{mercenary:{name:"Aldric"},study:{kind:"perfect",room:"magic_room_fire",spellName:"Boule de feu"}}]});
 assert.deepEqual(log.at(-1),{message:"Aldric entre à la Salle du Feu pour perfectionner Boule de feu.",kind:"turn"});

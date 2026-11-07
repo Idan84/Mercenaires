@@ -57,6 +57,8 @@ $$
 
 Exemple : à `-10 %` des PV max, la base vaut `100 %`, diminuée de `Volonté / 20`.
 
+**Chances de mort divisées par deux** (Idan, 2026-11-07, après le bêta-test : « On divise par deux les chances de mort ») : la probabilité ainsi bornée (défaite comprise, doc 17 §8) est multipliée par `mission.death.chance_factor` = 0,5, donc **au plus 50 %**. Un mercenaire relevé en zombie meurt toujours. Les montures suivent la même règle.
+
 Un mercenaire qui échoue au jet meurt. **La mort du capitaine entraîne Game Over.**
 
 ## 4 — Blessure

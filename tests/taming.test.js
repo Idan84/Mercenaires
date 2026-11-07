@@ -114,7 +114,7 @@ assert.deepEqual(student.history.log.filter(e => e.kind === "taming").map(e => e
 const transmission = Number(trainer.skills.camp["Transmission du savoir"]);
 [report] = rules.advanceTime(state, 1);
 assert.deepEqual(report.taming.tested.map(t => [t.studentId, t.success]), [[student.id, false]]);
-assert.equal(report.taming.masterXp, 5);
+assert.equal(report.taming.masterXp, 10);
 assert.ok(trainer.skills.camp["Transmission du savoir"] > transmission, "XP de Transmission");
 assert.equal(horse.tamedBy, undefined);
 // Réussi : il l'a apprivoisée et peut l'équiper (emplacement Monture).

@@ -25,7 +25,7 @@ assert.equal(reference.formulaConstants.row_count,reference.formulaConstants.row
 // Le bâtiment : le Puits entraîne les Armes contondantes, apprises avec la Force ; pas de chef.
 const guild=reference.campBuildings.rows.find(r=>r.code==="miners_guild");
 assert.deepEqual([guild.nom,guild.entraine,guild.apprend_avec,guild.requiert,guild.niveaux,guild.prix_base,guild.jours_base,guild.places_base,guild.places_pas],
-  ["Guilde des mineurs","Armes contondantes","Force",null,10,1000,4,1,2]);
+  ["Guilde des mineurs","Armes contondantes","Force",null,10,500,4,1,2]);
 assert.match(guild.description,/Dans le Puits : « On y descend avec une lanterne, on en remonte avec un marteau\. »/);
 assert.equal(reference.campBuildings.row_count,reference.campBuildings.rows.length);
 assert.equal(Posts.postOfBuilding("miners_guild"),null,"pas de chef");

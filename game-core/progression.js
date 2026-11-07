@@ -226,6 +226,7 @@
       skillDualSequence:k("progression.skill.dual_sequence_xp",10),
       skillShieldBlock:k("progression.skill.shield_block_xp",10),
       skillIntimidation:k("progression.skill.intimidation_xp",50),
+      mountReturn:k("progression.skill.mount_return_xp",50),
       // Régénération (sang de troll ; Idan, 2026-11-01) : elle monte à chaque brûlure, pour qui en a déjà.
       regenerationBurn:k("progression.regeneration.burn_xp",30),
       skillRegressionRatio:k("progression.skill.regression_ratio",0.5),

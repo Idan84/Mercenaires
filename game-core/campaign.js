@@ -1326,6 +1326,19 @@
     // retour de l'escouade (doc 17).
     // Nos montures en fin de mission (Idan, 2026-11-07 : « elle a la même fiche qu'un mercenaire ») : results de
     // resolveMissionEnd ; leur repos se compte comme celui de nos mercenaires (Dispensaire, médecin, bains chauds).
+    // Renommer un mercenaire librement (Idan, 2026-11-07 : « renommer un mercenaire ou un animal librement »).
+    function renameMember(state,id,name){
+      const member=(state?.company?.roster||[]).find(m=>String(m.id)===String(id));
+      const clean=Stables?Stables.cleanName(name):String(name??"").trim().slice(0,40);
+      if(!member) return {ok:false,reason:"Mercenaire introuvable."};
+      if(!clean) return {ok:false,reason:"Il faut un nom."};
+      const before=member.name;
+      // Le prénom (les dialogues l'emploient) : le premier mot ; le reste, le nom de famille.
+      const [first,...rest]=clean.split(" ");
+      Object.assign(member,{name:clean,firstName:first,familyName:rest.join(" ")||null});
+      return {ok:true,member,before,name:clean};
+    }
+
     function applyMountAftermath(state,results){
       return stableRules?stableRules.applyAftermath(state,results,{woundDays:days=>woundDaysFor({},days,state),
         fatigueDays:days=>fatigueDaysFor(days,state),
@@ -1466,6 +1479,7 @@
       isAvailable,
       applyMissionAftermath,
       applyMountAftermath,
+      renameMember,
       companyRenown,
       suitorCount,
       assignBiography,

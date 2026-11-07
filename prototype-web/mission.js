@@ -413,7 +413,9 @@ function attachMissionMount(unit){
   if(!code||!rules?.createMount||!e?.canRide) return null;
   // La nôtre : sa fiche à elle (ses progrès, son mana ; stables.js).
   const sheet=own.item?missionStableRules()?.ownSheet(own.item)||null:null;
-  const horse=rules.createMount(code,{id:"mount-"+unit.character.id,name:missionMountName(rules.mountSheet(code),unit.character.name),own:sheet});
+  // Son nom, la nôtre (stables.js, giveName) ; « Destrier de … » pour celles d'en face.
+  const name=own.item?.petName||missionMountName(rules.mountSheet(code),unit.character.name);
+  const horse=rules.createMount(code,{id:"mount-"+unit.character.id,name,own:sheet});
   if(!horse||!e.canRide({character:unit.character},{character:horse})) return null;
   if(own.item) horse.mount.itemId=own.item.id;
   const pvMax=e.maxHp({character:horse,activeSet:1});

@@ -23,7 +23,9 @@
 //   son cavalier mort, elle retourne à l'Intendance, sans propriétaire (un autre devra l'apprivoiser) ;
 // - sa fiche à elle (item.sheet : caractéristiques, résistances, compétences, sorts, XP, mana), créée depuis mounts.json
 //   la première fois qu'on en a besoin : elle progresse avec l'XP de ses combats et garde son mana d'un combat à l'autre
-//   (Idan, 2026-11-07 : « Mana de la licorne + xp licorne »), comme un mercenaire.
+//   (Idan, 2026-11-07 : « Mana de la licorne + xp licorne »), comme un mercenaire ;
+// - son nom (Idan, 2026-11-07 : « à la capture ou à l'achat de l'animal, on lui attribue un nom ») : un nom de sa liste
+//   (animal-names.json) qu'aucun autre de nos animaux ne porte (item.petName) ; le joueur le renomme librement.
 // Module pur ; makeItem(type, nom) fabrique l'objet (le générateur).
 (function(root,factory){
   // Le jet de mort (mission-end.js) : lu au moment de créer les règles, le script peut se charger après celui-ci.
@@ -35,10 +37,13 @@
   const BARN="trainer_barn",STABLES="trainer_stables";
   const rows=x=>Array.isArray(x)?x:(x?.rows||[]);
   const isMount=item=>item?.itemType==="mount";
+  // Un nom choisi par le joueur : sans caractères de contrôle, espaces réduits, 40 caractères au plus.
+  const cleanName=name=>String(name??"").replace(/[\u0000-\u001f\u007f]/g,"").replace(/\s+/g," ").trim().slice(0,40);
 
   function createStableRules({reference,random=Math.random,camp={},makeItem=null}={}){
     const sheets=new Map(rows(reference?.mounts).map(s=>[s.code,s]));
     const spellRows=new Map(rows(reference?.spells).map(s=>[s.code,s]));
+    const namesByCode=new Map(rows(reference?.animalNames).map(r=>[r.code,r.noms||[]]));
     const stablesRow=rows(reference?.campBuildings).find(r=>r.code===STABLES)||null;
     const MissionEnd=missionEnd();
     const endRules=MissionEnd?MissionEnd.createMissionEndRules({reference,random}):null;
@@ -91,6 +96,7 @@
         const item=typeof makeItem==="function"?makeItem("mount",s.nom):null;
         if(!item){ released.push(c); continue; }
         Object.assign(item,{owner:null,origin:c.origin||null,day});
+        giveName(state,item);
         if(!Array.isArray(state.company.stock)) state.company.stock=[];
         state.company.stock.push(item);
         kept.push(item);
@@ -174,9 +180,37 @@
       return back;
     }
 
+    // Son nom, à son arrivée (capture, achat) : un de sa liste qu'aucun autre de nos animaux ne porte ; la liste épuisée, un
+    // nom de la liste suivi d'un numéro.
+    function giveName(state,item){
+      if(!isMount(item)) return null;
+      if(item.petName) return item.petName;
+      const used=new Set(mountsOf(state).filter(i=>i!==item).map(i=>i.petName).filter(Boolean));
+      const list=namesByCode.get(item.mountCode)||[];
+      const unused=list.filter(n=>!used.has(n));
+      let name=unused.length?unused[Math.floor(random()*unused.length)]:null;
+      if(!name){
+        const base=list.length?list[Math.floor(random()*list.length)]:(sheetOf(item)?.nom||"Monture");
+        let n=2;
+        while(used.has(base+" "+n)) n++;
+        name=base+" "+n;
+      }
+      item.petName=name;
+      return name;
+    }
+    // Le renommer librement (Idan, 2026-11-07 : « renommer un mercenaire ou un animal librement »).
+    function rename(state,id,name){
+      const item=mountById(state,id),clean=cleanName(name);
+      if(!item) return {ok:false,reason:"Monture introuvable."};
+      if(!clean) return {ok:false,reason:"Il faut un nom."};
+      const before=item.petName||item.name;
+      item.petName=clean;
+      return {ok:true,mount:item,before,name:clean};
+    }
+
     return {BARN,STABLES,sheet,sheetOf,isMount,mountsOf,ownerOf,places,free,canStore,upkeepOf,upkeep,payUpkeep,rollSurvival,capturable,admit,release,
-      applyAftermath,recoverOneDay,returnToStable,ownSheet};
+      applyAftermath,recoverOneDay,returnToStable,ownSheet,giveName,rename};
   }
 
-  return {createStableRules,BARN,STABLES,isMount};
+  return {createStableRules,BARN,STABLES,isMount,cleanName};
 });

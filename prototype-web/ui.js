@@ -1658,8 +1658,39 @@ function domainBadge(c) {
     + `<span class="sheet-stat-tip" role="tooltip"><strong>${esc(row.nom)}</strong><em>${esc(row.description)}</em></span></span>`;
 }
 
+// Renommer (Idan, 2026-11-07 : « renommer un mercenaire ou un animal librement ») : le crayon à côté du nom ouvre un
+// champ ; Entrée ou un clic ailleurs valide, Échap annule. onDone(nom) ou onDone(null).
+function renameButton(kind,id){
+  return `<button type="button" class="rename-btn" data-rename="${esc(kind)}" data-rename-id="${esc(id)}" title="Renommer" aria-label="Renommer">✎</button>`;
+}
+function renameField(host,current,onDone){
+  if(!host) return;
+  const input=document.createElement("input");
+  Object.assign(input,{type:"text",maxLength:40,value:current,className:"rename-input"});
+  input.setAttribute("aria-label","Nouveau nom");
+  host.replaceChildren(input);
+  input.focus();
+  input.select();
+  let done=false;
+  const finish=keep=>{ if(done) return; done=true; onDone(keep?input.value:null); };
+  input.addEventListener("keydown",event=>{
+    if(event.key==="Enter"){ event.preventDefault(); finish(true); }
+    else if(event.key==="Escape"){ event.preventDefault(); event.stopPropagation(); finish(false); }
+  });
+  input.addEventListener("blur",()=>finish(true));
+}
+const renamable=c=>Boolean(game.campaign?.company.roster.some(m=>m===c||m.id===c?.id));
+function renameSheetCharacter(){
+  const c=game.sheetCharacter;
+  if(!renamable(c)) return;
+  renameField($("dialog-name"),c.name,name=>{
+    if(name!=null&&campaignRules().renameMember(game.campaign,c.id,name).ok){ saveGame(); renderGame(); }
+    showCharacter(c);
+  });
+}
+
 function showCharacter(c) {
-  $("dialog-name").innerHTML = domainBadge(c) + esc(c.name);
+  $("dialog-name").innerHTML = domainBadge(c) + esc(c.name) + (renamable(c) ? renameButton("member", c.id) : "");
   game.sheetCharacter = c;
   renderSheetNav(c);
   renderSheet();
@@ -1766,6 +1797,7 @@ async function init() {
 
     $("close-dialog").addEventListener("click", () => $("character-dialog").close());
     for (const id of ["sheet-prev","sheet-next"]) $(id).addEventListener("click", event => stepSheet(Number(event.currentTarget.dataset.sheetStep)));
+    $("dialog-name").addEventListener("click", event => { if (event.target.closest("[data-rename='member']")) renameSheetCharacter(); });
     // Flèches du clavier : fiche précédente ou suivante, hors champ de saisie.
     $("character-dialog").addEventListener("keydown", event => {
       if (!["ArrowLeft","ArrowRight"].includes(event.key) || event.target.closest?.("input,select,textarea")) return;

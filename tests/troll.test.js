@@ -65,6 +65,11 @@ assert.ok(club && club.template.nom === "Grosse massue" && troll.equipment.slots
 assert.equal(troll.pvMax, 1200);
 assert.equal(troll.skills.physiology["Régénération"], 300);
 assert.equal(troll.skills.social.Intimidation, 100);
+// Une fiche sans sorts n'en lance aucun, même si son personnage de base en avait (Idan, 2026-11-07).
+const base = generator.createMercenary({id: 3, captain, forcedPeople: "Humain"});
+base.spells = [{code: "fire_bolt", mastery: 20}]; base.skills.magic.Feu = 80;
+const bare = rules.applyArchetype(base, arch, {idPrefix: "t2"});
+assert.deepEqual([bare.spells, bare.aiSpells, bare.skills.magic.Feu], [[], [], 0], "le troll ne lance aucun sort");
 const regen = Regeneration.createRegenerationRules({reference, random});
 assert.equal(regen.points(troll), 300);
 console.log("Troll : une créature partagée par 3 peuples, 4 niveaux, Force 80 à 140, PV 300 à 1200, Régénération 100 à 300, dès le niveau 6 (" + campsAfter + " camps sur 600 en ont) — OK");

@@ -92,6 +92,12 @@ assert.deepEqual(kept.map(c => c.q), [2, 3], "au plus 3 cases devant le plus len
 battle([fast], [far]);
 assert.equal(api.missionAiKeepFormation(fast, line).length, 5, "seul : il avance");
 
+// Un blessé qui souffle à l'arrière ne retient pas le groupe.
+battle([fast, slow], [far]);
+slow.hp = Math.floor(slow.pvMax * 0.2);
+assert.equal(api.missionAiKeepFormation(fast, line).length, 5, "le blessé ne retient pas le groupe");
+slow.hp = slow.pvMax;
+
 // 4. Reculer : blessé, pas au contact, un allié valide derrière lui : il recule, plus loin de l'ennemi.
 const hurt = fighter("player", 8, 5), mate = fighter("player", 3, 5), foe = fighter("enemy", 12, 5);
 const reset = () => { hurt.q = 8; hurt.r = 5; hurt.hp = Math.floor(hurt.pvMax * 0.2); hurt.movementRemaining = 4; foe.hp = foe.pvMax; mate.hp = mate.pvMax; };
@@ -99,6 +105,10 @@ battle([hurt, mate], [foe]);
 reset();
 assert.equal(api.missionAiRetreat(hurt), true);
 assert.ok(engine.axialDistance(hurt, foe) > 4, "il s'éloigne : " + engine.axialDistance(hurt, foe));
+// Déjà au plus loin, il reste là (avant, il revenait au combat puis reculait, tour après tour : combat bloqué).
+let hops = 0;
+while (hops < 20) { hurt.movementRemaining = 4; const at = [hurt.q, hurt.r]; assert.equal(api.missionAiRetreat(hurt), true); if (at[0] === hurt.q && at[1] === hurt.r) break; hops++; }
+assert.ok(hops < 20 && api.logged.at(-1).endsWith("reste en retrait pour souffler."), "au bout, il reste en retrait");
 // Le coup de grâce d'abord : l'ennemi à 10 % de ses PV, à sa portée.
 reset(); foe.hp = Math.floor(foe.pvMax * 0.1);
 assert.equal(api.missionAiRetreat(hurt), false, "« Je recule pas si […] je vais faire le coup de grace »");

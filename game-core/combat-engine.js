@@ -126,7 +126,33 @@
     };
     const HEX_DIRS=[{q:1,r:0},{q:1,r:-1},{q:0,r:-1},{q:-1,r:0},{q:-1,r:1},{q:0,r:1}];
     const SIZES=["normale","longue","grande","enorme"];
-    function sizeOf(unit){ const t=unit?.character?.taille; return SIZES.includes(t)?t:"normale"; }
+    // Combat à cheval (Idan, 2026-11-07 ; doc 04) : unit.mount = son cheval, une unité à part entière (PV, effets), posée
+    // sous lui (mêmes cases) tant qu'il le monte ; mount.rider = le cavalier. Le couple a la taille du cheval (un destrier :
+    // longue, 2 cases) et son déplacement ; un seul test de Courage pour les deux, avec le Courage et la Volonté partagés.
+    const MOUNT={
+      meleeLevel:constant("combat.monture.hauteur_cac",1),
+      chargeForce:constant("combat.monture.force_charge",0.5),
+      shareDivisor:constant("combat.monture.partage_diviseur",100)
+    };
+    const MOUNT_SHARED=["Courage","Volonté"];
+    // Gabarit (Idan, 2026-11-07 : « on fait la même chose que pour le dortoir ») : les places du dortoir du peuple
+    // (peoples.json : 0,5, 1 ou 2) ; une monture, le sien (mounts.json, gabarit). On ne monte qu'une bête plus grande que soi.
+    const peopleSize=new Map((rows.peoples||[]).map(p=>[p.nom,Number(p.places_dortoir)||1]));
+    function bodySize(unit){
+      const c=unit?.character;
+      if(c?.gabarit!=null) return Number(c.gabarit)||1;
+      return peopleSize.get(c?.people)||1;
+    }
+    function canRide(rider,mount){ return bodySize(rider)<bodySize(mount); }
+    function mountOf(unit){ const m=unit?.mount; return m&&m.alive!==false&&!m.offMap&&unit.alive!==false?m:null; }
+    // Le couple : un cheval monté répond par son cavalier (Courage, sous-nombre).
+    function pairOf(unit){ const r=unit?.rider; return r&&r.mount===unit&&r.alive!==false&&!r.offMap?r:unit; }
+    function ridden(unit){ return pairOf(unit)!==unit; }
+    function sizeOf(unit){
+      const m=mountOf(unit);
+      if(m) return sizeOf(m);
+      const t=unit?.character?.taille; return SIZES.includes(t)?t:"normale";
+    }
     function isLarge(unit){ return sizeOf(unit)!=="normale"; }
     // Les cases d'une taille posée en (q, r) avec le sens facing.
     function footprintAt(q,r,size="normale",facing=0){
@@ -444,6 +470,9 @@
     }
 
     function movementBase(unit){
+      // À cheval, c'est le cheval qui marche.
+      const m=mountOf(unit);
+      if(m) return movementBase(m);
       const score=effectiveSpeed(unit)
         +0.25*statWithGear(unit,"Endurance")
         +0.10*statWithGear(unit,"Volonté");
@@ -688,6 +717,8 @@
       delta+=sizeHitBonus(defender);
       // Altitude : context.heightDiff = hauteur de l'attaquant − hauteur du défenseur (au tir comme au corps à corps).
       delta+=ALTITUDE.hitPerLevel*(Number(context.heightDiff)||0);
+      // À cheval (Idan, 2026-11-07) : au corps à corps, le cavalier compte comme un niveau plus haut (rien contre le cheval).
+      if(mode==="melee") delta+=ALTITUDE.hitPerLevel*MOUNT.meleeLevel*((mountOf(attacker)?1:0)-(mountOf(defender)?1:0));
 
       if(mode==="ranged"){
         const range=weaponRange(attacker);
@@ -700,10 +731,15 @@
       return clamp(logistic(delta),10,90)*coverHitFactor(context.cover);
     }
 
+    // Charge à cheval (Idan, 2026-11-07) : la moitié de la Force du cheval s'ajoute à celle du cavalier.
+    function mountChargeForce(attacker,chargePower=0){
+      const m=Number(chargePower)>0?mountOf(attacker):null;
+      return m?MOUNT.chargeForce*statWithGear(m,"Force"):0;
+    }
     // Charge CAC V1 : ForceEffectiveCharge = Force + PuissanceCharge pour Blesser.
     function woundProbability(attacker,defender,mode,matchup,context={}){
       const delta=attackPower(attacker,mode)
-        +(mode==="ranged"?0:Number(context.chargePower)||0)
+        +(mode==="ranged"?0:(Number(context.chargePower)||0)+mountChargeForce(attacker,context.chargePower))
         +(Number(matchup?.matchup)||0)
         -statWithGear(defender,"Endurance");
       return clamp(logistic(delta),10,90);
@@ -740,7 +776,7 @@
       const resistanceRoll=fixed.resistanceRoll||die(3);
       const resistanceFactor=1-(physicalResistance/100)*((resistanceRoll+8)/10);
       const strengthFactor=mode==="melee"
-        ? 2*statWithGear(attacker,"Force")/100
+        ? 2*(statWithGear(attacker,"Force")+mountChargeForce(attacker,chargePower))/100
         : 1;
 
       return {
@@ -1065,7 +1101,7 @@
     // Un personnage En Fuite ne menace personne : il ne fait pas d'attaque d'opportunité (décision Idan, Issue #8).
     // À deux armes, chaque arme de mêlée tenue menace sa propre portée.
     function threatens(unit,hex){
-      if(!unit?.alive||unit.fleeing) return false;
+      if(!unit?.alive||unit.fleeing||ridden(unit)) return false;
       return usableHands(unit,axialDistance(unit,hex)).some(h=>h.mode==="melee");
     }
 
@@ -1075,6 +1111,22 @@
       return opponents.filter(o=>!inert(o)&&threatens(o,from)&&!threatens(o,to));
     }
     function inert(unit){ return Boolean(unit?.frozen||unit?.asleep||unit?.decoy); }
+
+    // Tir ou sort qui vise un cavalier (Idan, 2026-11-07 : « À distance, jet qui dépend de la taille de la monture par rapport
+    // au cavalier ») : le cheval est visé à gabarit du cheval ÷ (gabarit du cheval + gabarit du cavalier) ; un humain sur
+    // un destrier : 2 ÷ 3.
+    function mountHitChance(rider){
+      const m=mountOf(rider);
+      if(!m) return 0;
+      const a=bodySize(m),b=bodySize(rider);
+      return 100*a/(a+b);
+    }
+    function rollShotTarget(rider){
+      const m=mountOf(rider);
+      if(!m) return {target:rider,mount:false};
+      const p=mountHitChance(rider),roll=d100();
+      return {target:roll<=p?m:rider,mount:roll<=p,p,roll};
+    }
 
     // Tirer sur une autre cible que l'adversaire qui menace déclenche sa réaction.
     function rangedOpportunityReactors(opponents,shooter,target){
@@ -1145,18 +1197,34 @@
     }
 
     // Courage post-attaque CAC V1 / Courage post-tir V1, avec le malus de Courage en sous-nombre V1 et l'aura (capitaine ou lieutenant).
+    // Monté (Idan, 2026-11-07) : le Courage et la Volonté du couple = ceux du cheval + (ceux du cavalier − ceux du cheval)
+    // × part ; part = (Compagnon animal + la famille de la monture) ÷ 100, au plus 1.
+    function riderShare(unit){
+      const m=mountOf(unit);
+      if(!m) return 1;
+      const animal=unit.character?.skills?.animal||{};
+      const skill=(Number(animal["Compagnon animal"])||0)+(Number(animal[m.character?.mountSkill])||0);
+      return clamp(skill/MOUNT.shareDivisor,0,1);
+    }
+    function mentalStat(unit,stat){
+      const own=statWithGear(unit,stat),m=mountOf(unit);
+      if(!m||!MOUNT_SHARED.includes(stat)) return own;
+      const horse=statWithGear(m,stat);
+      return horse+(own-horse)*riderShare(unit);
+    }
     function courageHold(subject,opponent,surplus=0,aura=0){
-      return clamp(statWithGear(subject,"Courage")+aura+0.25*statWithGear(subject,"Volonté")-0.25*intimidation(opponent)-10*surplus,5,95);
+      return clamp(mentalStat(subject,"Courage")+aura+0.25*mentalStat(subject,"Volonté")-0.25*intimidation(opponent)-10*surplus,5,95);
     }
     // Peur (Illusion ; Idan, 2026-10-28 : « la volonté du mage… ici, c'est la force mentale ») : le même test de Courage, la
     // Maîtrise du sort et la Volonté du lanceur tenant le rôle de l'Intimidation de l'adversaire. Un personnage déjà en fuite
     // ou en frénésie ne teste pas.
     function fearHold(subject,caster,mastery,aura=0){
-      return clamp(statWithGear(subject,"Courage")+aura+0.25*statWithGear(subject,"Volonté")-0.25*(mastery+statWithGear(caster,"Volonté")),5,95);
+      return clamp(mentalStat(subject,"Courage")+aura+0.25*mentalStat(subject,"Volonté")-0.25*(mastery+statWithGear(caster,"Volonté")),5,95);
     }
     // Sans peur : en frénésie (Illusion) ou mort-vivant (zombie, spectre : Idan, 2026-10-28) ; jamais de test de Courage.
     function fearless(unit){ return Boolean(unit?.frenzy||unit?.character?.undead); }
     function resolveFear(subject,caster,mastery,units=[]){
+      subject=pairOf(subject);
       if(!subject||subject.alive===false||subject.fleeing||fearless(subject)) return null;
       const aura=allyAura(subject,units),pHold=fearHold(subject,caster,mastery,aura.bonus),roll=d100();
       return {subject,source:caster,pHold,roll,flees:roll>pHold,aura:aura.bonus,auraFrom:aura.from,whip:aura.whip};
@@ -1164,6 +1232,7 @@
 
     // Courage en sous-nombre V1 : mêlée locale = groupe connecté de combattants liés par leurs zones de menace CAC.
     function localMelee(subject,units){
+      subject=pairOf(subject);
       const alive=units.filter(u=>u.alive);
       const linked=(a,b)=>a.team!==b.team&&(threatens(a,b)||threatens(b,a));
       const group=new Set([subject]),queue=[subject];
@@ -1182,6 +1251,8 @@
       if(!result?.ok||result.chargeFall) return null;
       let subject,source,pHold,rule,aura;
       if(result.wound){
+        // Un cheval monté : c'est le couple qui teste, par son cavalier (Idan, 2026-11-07).
+        defender=pairOf(defender);
         // Une cible déjà En Fuite ne reteste pas (décision Idan, Issue #8) ; en frénésie (Illusion), plus de peur.
         if(!defender.alive||defender.fleeing||fearless(defender)) return null;
         const surplus=result.mode==="melee"?Math.max(0,Number(context.defenderSurplus)||0):0;
@@ -1204,7 +1275,7 @@
     // Reprise de contrôle — En Fuite V1 ; ennemi de référence = ennemi actif le plus proche (vivant, pas En Fuite) ;
     // aura alliée (capitaine ou lieutenant) si units est donné.
     function recoveryChance(unit,referenceEnemy,fleeTurn,units=[]){
-      return clamp(statWithGear(unit,"Courage")+allyAura(unit,units).bonus+0.25*statWithGear(unit,"Volonté")-0.25*intimidation(referenceEnemy)+10*fleeTurn,5,95);
+      return clamp(mentalStat(unit,"Courage")+allyAura(unit,units).bonus+0.25*mentalStat(unit,"Volonté")-0.25*intimidation(referenceEnemy)+10*fleeTurn,5,95);
     }
 
     function rollRecovery(unit,referenceEnemy,fleeTurn,units=[]){
@@ -1235,8 +1306,9 @@
       // et le chargé, il n'y a aucun obstacle ou personnage ») : dans n'importe quelle direction, la ligne droite
       // d'hexagones entre les deux (hexLine) ; le chemin, ce sont ses cases entre les deux, la dernière au contact de la
       // cible. L'écran de combat vérifie qu'aucune n'est occupée. step : la direction de la dernière case vers la cible.
-      // Une grande créature ne charge pas encore (à venir avec les bêtes) ; contre elle, on charge sa case la plus proche.
-      if(isLarge(attacker)) return {valid:false};
+      // Une grande créature ne charge pas encore (à venir avec les bêtes) ; contre elle, on charge sa case la plus proche. Un
+      // cavalier charge (Idan, 2026-11-07) : la ligne part de sa tête, le corps suit, avec le déplacement du cheval.
+      if(isLarge(attacker)&&!mountOf(attacker)) return {valid:false};
       const distance=axialDistance(attacker,defender);
       if(distance<2) return {valid:false};
       const aim=footprint(defender).reduce((best,c)=>!best||hexDistance(attacker,c)<hexDistance(attacker,best)?c:best,null);
@@ -1261,6 +1333,16 @@
       axialDistance,
       hexDistance,
       SIZE,
+      MOUNT,
+      mountOf,
+      pairOf,
+      bodySize,
+      canRide,
+      riderShare,
+      mentalStat,
+      mountChargeForce,
+      mountHitChance,
+      rollShotTarget,
       sizeOf,
       isLarge,
       footprintAt,

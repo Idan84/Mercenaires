@@ -1079,6 +1079,18 @@ function settleOwnMissionMounts(m,options={}){
   const aftermath=m.endRules.resolveMissionEnd(participants,options);
   m.mountAftermath=aftermath;
   for(const r of aftermath.results) missionLog(r.name+" — "+missionAftermathText(r)+(r.dead?" : la monture est perdue.":""),r.dead?"death":r.wounded?"bad":"info");
+  // Rentrer vivant avec elle (Idan, 2026-11-07 : « 50 XP oui ») : lui et l'animal avec lequel il est parti, tous deux
+  // vivants après la chaîne de fin de mission : Compagnon animal et la famille de l'animal (Équidés, Canidés).
+  const back=Number(m.progression?.constants?.mountReturn)||0;
+  aftermath.results.forEach((r,i)=>{
+    const master=horses[i].master?.character,mine=master&&(m.aftermath?.results||[]).find(x=>x.id===master.id);
+    if(!back||r.dead||!mine||mine.dead||!m.progression?.apply) return;
+    const family=horses[i].character.mountSkill||"Compagnon animal",xp={[family]:back,"Compagnon animal":back};
+    const changes=m.progression.apply(master,{skills:{animal:xp}});
+    m.mountReturns=[...(m.mountReturns||[]),{id:master.id,family,xp:back}];
+    for(const c of (typeof visibleProgressionChanges==="function"?visibleProgressionChanges(changes):[]))
+      missionLog(master.name+" : "+c.name+" "+c.shownBefore+" → "+c.shownAfter+".",c.shownAfter>c.shownBefore?"gear":"bad");
+  });
   // Son mana à la fin du combat (gardé jusqu'au prochain), son XP (sa fiche progresse comme celle d'un mercenaire).
   const results=aftermath.results.map((r,i)=>({...r,mana:horses[i].character.mana}));
   const report=campaignRules().applyMountAftermath(game.campaign,results);

@@ -23,7 +23,7 @@ assert.deepEqual(rules.constants,{
   forceLoadThreshold:0.25,forceLoadXp:20,
   dexterityChain:50,dodgeWoundTaken:10,enduranceHeavyArmorHex:2,willCourageHeld:20,willRecovery:20,intelligenceWorstChoice:30,
   skillWeaponAttack:10,skillWeaponHit:5,skillWeaponWound:5,skillTwoHandedAttack:10,skillOneHandedAttack:10,skillDualSequence:10,skillShieldBlock:10,
-  skillIntimidation:50,regenerationBurn:30,skillRegressionRatio:0.5,
+  skillIntimidation:50,mountReturn:50,regenerationBurn:30,skillRegressionRatio:0.5,
   spellCast:10,spellSuccess:5,spellEffect:5,schoolRegressionRatio:0.5,schoolFloor:1,magicPowerSpellEffect:20,manaReserveManaSpent:2
 });
 const tuned=P.createProgressionRules({reference:{formulaConstants:{rows:[{code:"progression.charisma.knockout_xp",valeur:80}]}}});

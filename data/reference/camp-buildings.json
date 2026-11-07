@@ -944,7 +944,7 @@
       "places_pas": 0,
       "entraine": null,
       "garde_paie_par_niveau": 0,
-      "apprend_avec": null,
+      "apprend_avec": "Charisme, Intelligence, Intimidation",
       "places_par_niveau": 0
     },
     {
@@ -961,7 +961,7 @@
       "ecole": null,
       "places_base": 0,
       "places_pas": 0,
-      "entraine": null,
+      "entraine": "Équidés",
       "garde_paie_par_niveau": 0,
       "apprend_avec": null,
       "places_par_niveau": 2
@@ -980,7 +980,7 @@
       "ecole": null,
       "places_base": 0,
       "places_pas": 0,
-      "entraine": null,
+      "entraine": "Canidés",
       "garde_paie_par_niveau": 0,
       "apprend_avec": null,
       "places_par_niveau": 2

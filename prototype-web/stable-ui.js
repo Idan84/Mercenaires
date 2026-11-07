@@ -54,7 +54,7 @@ function tamingOddsText(c,item){
   if(!rules||!owner) return "";
   const odds=rules.dailyChance(c,{studentId:owner.id,mountId:item.id});
   return `Chaque jour : ${pct(odds.skill)} % (dressage${odds.trainerBonus?", avec le Dresseur":""})`
-    +(odds.excess?` × ${pct(odds.alignment)} % (alignement, ${odds.excess} cran${odds.excess>1?"s":""} de trop)`:"")+` = ${pct(odds.chance)} %`;
+    +(odds.gap?` × ${pct(odds.alignment)} % (alignement, ${odds.gap} cran${odds.gap>1?"s":""} d’écart)`:"")+` = ${pct(odds.chance)} %`;
 }
 function tamingLine(c,item){
   const t=tamingOf(c,item);

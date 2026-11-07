@@ -662,8 +662,11 @@
     // ⌊niveau ÷ places_pas⌋), 6 au niveau 10 ; aucune avant la construction, ni pour un bâtiment sans places.
     function buildingPlaces(state,code){
       const row=CAMP_BUILDINGS.get(code),level=buildingLevel(state,code),step=Number(row?.places_pas)||0;
+      // Les Écuries et le Chenil (Idan, 2026-11-07) : on s'y entraîne avec son animal, qui a sa place.
+      if(animalWing(row)) return level*Number(row.places_par_niveau);
       return level>0&&step>0?(Number(row.places_base)||0)+Math.floor(level/step):0;
     }
+    function animalWing(row){ return Number(row?.places_par_niveau)>0&&Boolean(row?.entraine); }
     // Le prochain niveau ; pour une salle, requires dit le niveau du bâtiment qu'il faut d'abord atteindre (locked).
     function nextBuildingLevel(state,code){
       const row=CAMP_BUILDINGS.get(code);
@@ -713,7 +716,7 @@
     // qui fait le gain (apprend_avec du bâtiment).
     // Un bâtiment sans places à lui compte aussi s'il a une salle d'entraînement : les Bains chauds et leur Sauna (Idan,
     // 2026-11-04) ; sa salle principale, sans places, n'entraîne rien.
-    const hasPlaces=row=>Number(row?.places_pas)>0;
+    const hasPlaces=row=>Number(row?.places_pas)>0||animalWing(row);
     const TRAINING_HALLS=[...CAMP_BUILDINGS.values()].filter(row=>!row.requiert
       &&(hasPlaces(row)||campRoomCodes(row.code).some(code=>hasPlaces(CAMP_BUILDINGS.get(code))))).map(row=>row.code);
     function trainingRooms(state){
@@ -723,9 +726,15 @@
         const hallRow=CAMP_BUILDINGS.get(hall);
         for(const code of [hall,...campRoomCodes(hall)].filter(code=>buildingLevel(state,code)>0&&hasPlaces(CAMP_BUILDINGS.get(code)))){
           const row=CAMP_BUILDINGS.get(code);
-          rooms.push({code,building:hall,name:row.nom,label:code===SCHOOL_HALL?"Salle généraliste":row.nom,school:row.ecole||null,
+          const room={code,building:hall,name:row.nom,label:code===SCHOOL_HALL?"Salle généraliste":row.nom,school:row.ecole||null,
             trains:row.entraine||row.ecole||(code===SCHOOL_HALL?"Puissance magique":null),learnWith:hallRow.apprend_avec||"Intelligence",
-            level:buildingLevel(state,code),places:buildingPlaces(state,code)});
+            level:buildingLevel(state,code),places:buildingPlaces(state,code)};
+          // Avec son compagnon (Idan, 2026-11-07) : seulement celui qui y a son animal apprivoisé, pas au repos.
+          if(animalWing(row)&&stableRules){
+            room.animal=true;
+            room.only=new Set(stableRules.mountsIn(state,code).filter(i=>i.owner!=null&&i.tamedBy===i.owner&&!i.recovery).map(i=>i.owner));
+          }
+          rooms.push(room);
         }
       }
       return rooms;

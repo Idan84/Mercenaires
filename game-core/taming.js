@@ -4,6 +4,8 @@
 // chez le dresseur. Ici, un peu comme les apprentissages, il doit chaque jour tenter de réussir un jet en fonction de 5
 // caracs ( intelligence/ charisme/ intimidation/ animal/ animal spécifique). Le dresseur offre un bonus. Sauf qu'en plus, il
 // y a un second test à faire : les montures/ compagnons ont un alignement et une tolérance à l'écart d'alignement. » ;
+// la tolérance supprimée, 2026-11-07 : « je veux qu'on evite au max d'ajouter des caractéristiques. On supprime la
+// tolérance » ;
 // « faudrait que ce facteur soit pondéré par la volonté et l'intelligence de l'animal […] Un orc a statistiquement très peu
 // de chances de monter sur une licorne, mais c'est pas impossible au sens propre.. peut-être 1 pour 1000 ? »). Module pur :
 // campaign.js lui donne le camp et appelle advance(state) chaque matin.
@@ -18,10 +20,10 @@
 //   1. X = moyenne (Intelligence, Charisme, Intimidation, Compagnon animal, la famille de la monture : Équidés…) + bonus du
 //      Dresseur ; chance = 100 / (1 + e^(−(X − 60) / 10)) ; bonus du Dresseur = (Compagnon animal + Intelligence + Charisme
 //      + Intimidation) ÷ 20 (environ +10), s'il y en a un (et qu'il n'est pas l'élève).
-//   2. L'alignement : écart = crans sur l'axe Loyal–Chaotique + crans sur l'axe Bon–Mauvais (0 à 4) ; dans la tolérance de la
-//      monture (mounts.json), réussi d'office ; au-delà, chance = 100 × ((100 − entêtement) / 100)^(crans de trop), entêtement
-//      = (Intelligence + Volonté de l'animal) / 2. La licorne (82,5) : 17,5 % pour un cran de trop, 0,1 % pour quatre (un orc
-//      chaotique mauvais : environ 1 pour 1000).
+//   2. L'alignement : écart = crans sur l'axe Loyal–Chaotique + crans sur l'axe Bon–Mauvais (0 à 4) ; sans écart, réussi
+//      d'office ; sinon, chance = 100 × ((100 − entêtement) / 100)^écart, entêtement = (Intelligence + Volonté de l'animal)
+//      / 2. La licorne (82,5) : 17,5 % pour un cran, 0,1 % pour quatre (un orc chaotique mauvais : environ 1 pour 1000) ;
+//      le destrier (20), peu têtu : 80 % pour un cran, 64 % pour deux.
 //   Réussi : il l'a apprivoisée (item.tamedBy) et peut l'équiper (emplacement Monture) ; il sort de la Grange.
 // - Le Dresseur gagne 5 XP de Transmission du savoir par élève et par jour, comme les autres maîtres.
 // - Le faire sortir, ou la monture qui n'est plus à lui : rien n'est acquis.
@@ -124,10 +126,9 @@
       const x=own+trainerBonus;
       const skill=100/(1+Math.exp(-(x-C.center)/C.slope));
       const gap=alignmentGap(m?.alignment,sheet?.alignement);
-      const excess=Math.max(0,gap-(Number(sheet?.tolerance)||0));
       const stubborn=clamp(((Number(sheet?.caracteristiques?.Intelligence)||0)+(Number(sheet?.caracteristiques?.["Volonté"])||0))/2,0,100);
-      const alignment=excess?100*Math.pow((100-stubborn)/100,excess):100;
-      return {skill,alignment,chance:skill*alignment/100,x,own,trainerBonus,gap,excess,stubborn};
+      const alignment=gap?100*Math.pow((100-stubborn)/100,gap):100;
+      return {skill,alignment,chance:skill*alignment/100,x,own,trainerBonus,gap,stubborn};
     }
 
     // Chaque matin : l'entrée des inscrits de la veille, les deux tests, l'XP du Dresseur.
@@ -149,7 +150,7 @@
         students+=1;
         taming.days+=1;
         const odds=dailyChance(state,taming);
-        const skillRoll=roll(),alignmentRoll=odds.excess?roll():null;
+        const skillRoll=roll(),alignmentRoll=odds.gap?roll():null;
         const success=skillRoll<odds.skill&&(alignmentRoll==null||alignmentRoll<odds.alignment);
         tested.push({id:taming.id,studentId:m.id,...odds,skillRoll,alignmentRoll,success});
         if(!success) continue;

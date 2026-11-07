@@ -30,9 +30,10 @@ const constant = code => reference.formulaConstants.rows.find(r => r.code === co
 assert.equal(reference.mounts.row_count, reference.mounts.rows.length);
 const sheet = code => reference.mounts.rows.find(r => r.code === code);
 const destrier = sheet("destrier"), licorne = sheet("licorne");
-assert.deepEqual([destrier.alignement, destrier.tolerance, destrier.rang_echange, destrier.entretien], ["Neutre", 4, 3, 10]);
-assert.deepEqual([licorne.alignement, licorne.tolerance, licorne.rang_echange, licorne.entretien, licorne.gabarit, licorne.taille],
-  ["Loyal bon", 0, 4, 30, 2, "longue"]);
+assert.deepEqual([destrier.alignement, destrier.rang_echange, destrier.entretien], ["Neutre", 3, 10]);
+assert.ok(reference.mounts.rows.every(r => !("tolerance" in r)), "plus de tolérance (Idan, 2026-11-07 : « On supprime la tolérance »)");
+assert.deepEqual([licorne.alignement, licorne.rang_echange, licorne.entretien, licorne.gabarit, licorne.taille],
+  ["Loyal bon", 4, 30, 2, "longue"]);
 assert.deepEqual(["Vitesse", "Endurance", "Courage"].map(k => [destrier.caracteristiques[k], licorne.caracteristiques[k]]),
   [[90, 110], [85, 100], [35, 30]], "plus rapide, plus endurante, un peu moins courageuse");
 assert.ok(licorne.caracteristiques.Intelligence >= 80 && licorne.caracteristiques["Volonté"] >= 80, "intelligente, une grande volonté");

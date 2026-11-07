@@ -68,10 +68,6 @@
       "key": "alignement"
     },
     {
-      "source": "Tolérance : crans d'écart d'alignement acceptés sans test (0 à 4)",
-      "key": "tolerance"
-    },
-    {
       "source": "Rang pour un échange (le tier qu'un mercenaire lui voit, equipment-deals.js)",
       "key": "rang_echange"
     },
@@ -134,7 +130,6 @@
       "capturable": true,
       "entretien": 10,
       "alignement": "Neutre",
-      "tolerance": 4,
       "rang_echange": 3,
       "titre": "à cheval"
     },
@@ -197,7 +192,6 @@
       "capturable": true,
       "entretien": 30,
       "alignement": "Loyal bon",
-      "tolerance": 0,
       "rang_echange": 4,
       "titre": "à dos de licorne"
     }

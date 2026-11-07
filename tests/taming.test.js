@@ -67,10 +67,11 @@ assert.equal(taming.canTame(state, ogre, ogreHorse.id).reason, "Il est trop gran
 
 // 3. Les deux tests du jour. X = moyenne des 5 (+ le Dresseur) ; chance = 100 / (1 + e^(−(X − 60) / 10)).
 let odds = taming.dailyChance(state, {studentId: student.id, mountId: horse.id});
-assert.deepEqual([odds.own, odds.trainerBonus, odds.x, odds.gap, odds.excess, odds.alignment], [50, 0, 50, 2, 0, 100],
-  "le destrier, neutre, tolère tout");
+assert.deepEqual([odds.own, odds.trainerBonus, odds.x, odds.gap, odds.stubborn], [50, 0, 50, 2, 20],
+  "le destrier, neutre, peu têtu (Intelligence 10, Volonté 30)");
 close(odds.skill, 100 / (1 + Math.exp(1)));
-assert.equal(Math.round(odds.chance), 27);
+close(odds.alignment, 64, 1e-9);
+assert.equal(Math.round(odds.chance), 17, "plus de tolérance (Idan, 2026-11-07 : « On supprime la tolérance ») : 27 % × 64 %");
 // Le Dresseur : (Compagnon animal + Intelligence + Charisme + Intimidation) ÷ 20.
 state.company.trainerId = trainer.id;
 setSkills(trainer, 50);
@@ -79,9 +80,9 @@ assert.deepEqual([odds.trainerBonus, odds.x, odds.skill], [10, 60, 50], "avec le
 state.company.trainerId = student.id;
 assert.equal(taming.dailyChance(state, {studentId: student.id, mountId: horse.id}).trainerBonus, 0, "pas son propre Dresseur");
 state.company.trainerId = trainer.id;
-// La licorne : loyale bonne, tolérance 0, entêtement (Intelligence + Volonté) / 2 = 82,5.
+// La licorne : loyale bonne, entêtement (Intelligence + Volonté) / 2 = 82,5.
 odds = taming.dailyChance(state, {studentId: student.id, mountId: unicorn.id});
-assert.deepEqual([odds.gap, odds.excess, odds.stubborn], [4, 4, 82.5]);
+assert.deepEqual([odds.gap, odds.stubborn], [4, 82.5]);
 close(odds.alignment, 100 * 0.175 ** 4);
 assert.ok(odds.alignment > 0.05 && odds.alignment < 0.15, "chaotique mauvais : environ 1 pour 1000");
 student.alignment = "Neutre bon";
@@ -119,7 +120,7 @@ assert.equal(horse.tamedBy, undefined);
 // Réussi : il l'a apprivoisée et peut l'équiper (emplacement Monture).
 const deals = createEquipmentDeals({reference, random: () => 0, affinityRules: {memberAffinity: () => ({total: 0})}});
 assert.equal(deals.slotAccepts(student, "mount", horse).ok, false, "pas encore");
-dice = [0];
+dice = [0, 0];
 [report] = rules.advanceTime(state, 1);
 assert.deepEqual(report.taming.tamed.map(t => [t.mercenary.id, t.mount.id, t.days]), [[student.id, horse.id, 2]]);
 assert.equal(horse.tamedBy, student.id);

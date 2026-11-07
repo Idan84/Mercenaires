@@ -399,11 +399,20 @@ function missionMountName(sheet,riderName){
   const name=String(riderName||"");
   return (sheet?.nom||"Monture")+(/^[aeiouyhàâéèêëîïôûü]/i.test(name)?" d’":" de ")+name;
 }
+// Sa monture : celle de sa fiche (le Cavalier des voleurs), ou, pour nos mercenaires (Idan, 2026-11-07), celle qu'il a
+// apprivoisée et équipée (emplacement Monture ; taming.js).
+function missionMountOf(character){
+  if(character?.mountCode) return {code:character.mountCode,item:null};
+  const id=character?.equipment?.slots?.mount;
+  const item=id==null?null:(character.items||[]).find(i=>String(i.id)===String(id)&&i.itemType==="mount");
+  return item?.mountCode&&item.tamedBy===character.id?{code:item.mountCode,item}:null;
+}
 function attachMissionMount(unit){
-  const code=unit.character?.mountCode,rules=typeof missionRules==="function"?missionRules():null,e=combatEngine();
+  const own=missionMountOf(unit.character),code=own?.code,rules=typeof missionRules==="function"?missionRules():null,e=combatEngine();
   if(!code||!rules?.createMount||!e?.canRide) return null;
   const horse=rules.createMount(code,{id:"mount-"+unit.character.id,name:missionMountName(rules.mountSheet(code),unit.character.name)});
   if(!horse||!e.canRide({character:unit.character},{character:horse})) return null;
+  if(own.item) horse.mount.itemId=own.item.id;
   const pvMax=e.maxHp({character:horse,activeSet:1});
   const mount={id:unit.id+"-mount",character:horse,team:unit.team,isCaptain:false,isLieutenant:false,hp:pvMax,pvMax,alive:true,
     activeSet:1,prone:false,acted:true,movementRemaining:0,attackAvailable:false,quickAvailable:false,fleeing:false,fleeTurn:0,
@@ -856,7 +865,8 @@ function checkMissionEnd(){
 function resolveMissionAftermath(){
   const m=game.mission;
   const captainId=game.campaign?game.campaign.company.captainId:game.captain?.id;
-  const participants=m.players.filter(u=>!u.summon).map(u=>({
+  // Nos montures ne passent pas la chaîne des mercenaires : leur propre test de survie (settleOwnMissionMounts).
+  const participants=m.players.filter(u=>!u.summon&&!u.character?.mount).map(u=>({
     id:u.character.id,name:u.character.name,hp:u.hp,pvMax:u.pvMax,
     // Endurance avec la ceinture et Volonté avec l'amulette (Idan, 2026-10-24) : blessure, mort et convalescence
     // les lisent aussi.
@@ -870,6 +880,7 @@ function resolveMissionAftermath(){
   missionLog("Fin de mission : bilan de votre équipe.","turn");
   for(const r of m.aftermath.results) missionLog(r.name+" — "+missionAftermathText(r),r.dead?"death":r.wounded?"bad":"info");
   if(!game.campaign) return;
+  settleOwnMissionMounts(m);
   // Expédition : les primes sont versées au retour de l'escouade (doc 17).
   const report=m.companyReport=campaignRules().applyMissionAftermath(game.campaign,m.aftermath,{deferBonuses:Boolean(m.expeditionId)});
   for(const h of report.heritage||[]) missionLog(h.name+" entre dans la mémoire de la compagnie.","death");
@@ -913,6 +924,27 @@ function missionCapturedMounts(m){
     captured.push({code,name:stable.sheet(code)?.nom||u.character.role||"Monture",origin,detail});
   }
   return captured;
+}
+// Nos montures (Idan, 2026-11-07) : celle restée KO sur la carte passe le test de survie des montures capturées ; morte, elle
+// est perdue (son cavalier devra en apprivoiser une autre). Celle qui a fui, ou qui est partie avec son cavalier, rentre.
+function settleOwnMissionMounts(m){
+  const stable=missionStableRules();
+  if(!stable) return;
+  const horses=[...m.players.filter(u=>u.character?.mount),...m.players.map(u=>u.mount).filter(Boolean)];
+  for(const u of horses){
+    const itemId=u.character.mount.itemId;
+    if(itemId==null||u.alive||u.offMap) continue;
+    const roll=stable.rollSurvival({hp:u.hp,pvMax:u.pvMax,stats:u.character.stats});
+    if(roll.survives) continue;
+    for(const member of game.campaign.company.roster){
+      const item=(member.items||[]).find(i=>String(i.id)===String(itemId));
+      if(!item) continue;
+      member.items=member.items.filter(i=>i!==item);
+      for(const [slot,id] of Object.entries(member.equipment?.slots||{})) if(String(id)===String(itemId)) member.equipment.slots[slot]=null;
+    }
+    const detail=roll.roll==null?"":" (mort "+missionPercent(roll.pDeath)+", jet "+roll.roll+")";
+    missionLog(u.character.name+" ne se relève pas"+detail+" : la monture est perdue.","death");
+  }
 }
 function admitMissionMounts(captured){
   const stable=missionStableRules();

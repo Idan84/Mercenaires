@@ -417,8 +417,16 @@ chance pour enchaîner plusieurs tirs (sauf arme à feu). Il ne peut passer en m
   comme tout combattant (son propre Courage, 35). Un cavalier qui sort de la carte emporte son cheval.
 - **Écran** : le pion du couple couvre ses deux cases, avec une seconde barre de PV (le cheval) ; la carte de survol donne
   les PV du cheval et, au tir, sa chance de prendre le coup.
+- **Nos mercenaires à cheval** (Idan, 2026-11-07 : « Pour pouvoir l'équiper […], il doit passer du temps chez le dresseur » ;
+  « Pour les montures, on les contrôle comme on contrôle un mercenaire. Avec ou sans cavalier. ») : celui qui a apprivoisé sa
+  monture et l'a équipée (emplacement Monture ; doc 11 §8, « Apprivoiser ») part à cheval, avec les mêmes règles que le
+  Cavalier. Son cavalier KO, le cheval seul rejoint l'ordre du tour de notre équipe : on le joue comme un mercenaire (il fuit
+  comme tout combattant). En fin de combat, notre monture restée KO sur la carte passe le test de survie des montures
+  capturées : morte, elle est perdue (il devra en apprivoiser une autre) ; elle ne passe pas la chaîne mort → blessure →
+  fatigue de nos mercenaires.
 - Code : `combat-engine.js` (`mountOf`, `canRide`, `mentalStat`, `mountChargeForce`, `rollShotTarget`), `missions.js`
-  (`createMount`), `mission.js` (`attachMissionMount`, `settleMissionMounts`, `missionAimed`). Test : `tests/mounts.test.js`.
+  (`createMount`), `mission.js` (`missionMountOf`, `attachMissionMount`, `settleMissionMounts`, `settleOwnMissionMounts`,
+  `missionAimed`). Tests : `tests/mounts.test.js`, `tests/own-mounts.test.js`.
 
 ## Attaques de zone — Toucher V1
 

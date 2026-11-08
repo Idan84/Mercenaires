@@ -27,10 +27,14 @@ Décidé :
    c'est certain »). Repères : atteindre 50 = 6 250 XP (25 000 aujourd'hui), 100 = 43 750 (100 000), 150 = 168 750
    (225 000), 200 ≈ 402 000 (400 000). Sur un an de la partie n°5 : Zizza 64 → 79 (72 aujourd'hui), le capitaine
    55 → ≈ 106 (88). **Décidé** : on lisse le tout (« option 1, on lisse le tout, fais les maths ») : pas de marche à
-   51 ni à 101, le multiplicateur glisse d'une zone à l'autre ; **au-delà de 200, on durcit encore un peu**. Reste à
-   trancher : régression des autres compétences au tarif de la zone (fond 4 fois plus vite sous 50) ou au tarif
-   d'aujourd'hui.
-6. **Design Lab** (`/design/graph/`) : la renommée y montre 3 des 6 parts (capitaine, mercenaires, héritage) ; ajouter
+   51 ni à 101, le multiplicateur glisse d'une zone à l'autre ; **au-delà de 200, on durcit encore un peu**. La
+   régression des autres compétences suit la courbe (elle fond plus vite sous 50) : **on laisse comme ça**.
+6. **XP de combat** : on garde le système à l'action (Idan : « j'aime globalement l'idée »). À chiffrer avec Idan :
+   multiplicateur selon le tier de l'ennemi visé par l'action (proposé ×1 / ×1,5 / ×2 / ×3) ; multiplicateur selon les
+   étoiles de la mission (proposé × (1 + 0,25 par étoile au-delà de 1), plus doux si cumulé avec le tier) ; nouvelles
+   actions pour les caractéristiques peu alimentées (Constitution, Esquive, Force, Vitesse, Endurance, Courage,
+   Perception, Volonté, Intelligence, Charisme).
+7. **Design Lab** (`/design/graph/`) : la renommée y montre 3 des 6 parts (capitaine, mercenaires, héritage) ; ajouter
    les points de mission (gardes, échecs), le dortoir et le médecin, et le nouveau classement (capitaine 1er).
 
 ## En réflexion (propositions du 2026-11-08, non décidées)

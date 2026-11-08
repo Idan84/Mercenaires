@@ -12,15 +12,11 @@ Décidé :
    trop fort est retiré : le camp n'a que sa troupe, et le plus fort de la troupe porte le nom du chef de la lettre. Au-
    delà, le chef du cran en dessous (chef 3, 2, 1) s'il tient dans la moitié du budget. Constat : en 1★, le budget est
    de 40 à 60 points et un chef 1 en vaut 30 à 42 ; 11 des 13 morts de la partie n°5 sont tombés dans ces camps.
-2. **Gardes du corps** : renommée de la compagnie +3 par garde (au lieu de +5). Constat : environ 92 gardes ont donné
-   460 points de renommée sur 1 938 à J365, les contrats gagnés aucun. *(Code prêt en local, pas encore en ligne.)*
-3. **Classement de la renommée** (« on descend d'un cran ») : le capitaine est le 1er et compte toujours à 100 % ; le
-   mercenaire le plus réputé est 2e (÷ 2^1,5 ≈ 2,8), le suivant 3e (÷ 5,2), etc. Avant : le meilleur mercenaire comptait
-   à 100 % (Aerendyl, 542, faisait 28 % de la renommée à J365). *(Code prêt en local, pas encore en ligne.)*
 4. **Qualité du dortoir** (« La qualité du dortoir réduit la fatigue de 10 % par niveau ») : −10 % de jours de fatigue
-   par niveau de qualité (1 à 10). Aujourd'hui, chaque niveau donne +50 de renommée, +5 d'affinité à chaque membre le
-   jour où il est atteint, et un quartier du lieutenant tous les deux niveaux. À trancher plus tard : au niveau 10,
-   −100 % (plus de fatigue du tout) ; arrondi ; cumul avec les Bains chauds (−1 jour par niveau).
+   par niveau de qualité (1 à 10), **arrondi au jour supérieur** ; **au niveau 10, plus de fatigue du tout**. **Cumul
+   avec les Bains chauds** : le dortoir d'abord, puis −1 jour par niveau des Bains, au moins 1 jour (sauf au niveau 10
+   du dortoir). Aujourd'hui, chaque niveau donne +50 de renommée, +5 d'affinité à chaque membre le jour où il est
+   atteint, et un quartier du lieutenant tous les deux niveaux.
 5. **Courbe d'XP** (Idan, 2026-11-08 : « je voudrais une augmentation peut-être moins linéaire ») — proposition :
    même courbe quadratique, coût de chaque point divisé selon la zone : **0–50 ÷ 4**, **51–100 ÷ 2**, **101–150 comme
    aujourd'hui**, **151–200 ÷ 0,75** (× 1,33, plus dur). **Caractéristiques et compétences restent alignées** (« ça

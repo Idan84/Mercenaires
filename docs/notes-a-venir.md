@@ -21,7 +21,11 @@ Décidé :
    par niveau de qualité (1 à 10). Aujourd'hui, chaque niveau donne +50 de renommée, +5 d'affinité à chaque membre le
    jour où il est atteint, et un quartier du lieutenant tous les deux niveaux. À trancher plus tard : au niveau 10,
    −100 % (plus de fatigue du tout) ; arrondi ; cumul avec les Bains chauds (−1 jour par niveau).
-5. **Design Lab** (`/design/graph/`) : la renommée y montre 3 des 6 parts (capitaine, mercenaires, héritage) ; ajouter
+5. **Courbe d'XP** (« on garde la même courbe, mais le point dur, c'est 200 au lieu de 100… En gros on divise par 2
+   l'xp nécessaire ») : même forme (quadratique), moins d'XP par point. À préciser : coefficient 5 (XP ÷ 2 : 100 coûte
+   50 000 ; 100 000 XP mènent à ≈ 141) ou 2,5 (200 coûte ce que coûtait 100 : XP ÷ 4) ; caractéristiques seules ou
+   compétences aussi (aujourd'hui la même courbe, doc 08 §1).
+6. **Design Lab** (`/design/graph/`) : la renommée y montre 3 des 6 parts (capitaine, mercenaires, héritage) ; ajouter
    les points de mission (gardes, échecs), le dortoir et le médecin, et le nouveau classement (capitaine 1er).
 
 ## En réflexion (propositions du 2026-11-08, non décidées)

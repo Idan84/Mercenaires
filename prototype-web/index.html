@@ -227,12 +227,19 @@
           <nav class="camp-hub-menu" aria-label="Taverne">
             <button class="menu-btn camp-hub-btn" data-tavern-view="missions"><span>Trouver une mission</span><i class="menu-btn-line"></i></button>
             <button class="menu-btn camp-hub-btn" data-tavern-view="recruits"><span>Recruter</span><i class="menu-btn-line"></i></button>
+            <button class="menu-btn camp-hub-btn" data-tavern-view="canteen"><span>La Cantine</span><i class="menu-btn-line"></i></button>
           </nav>
         </div>
         <section id="tavern-missions-view" class="panel tavern-panel hidden">
           <button class="secondary" data-tavern-view="home">← Retour à la taverne</button>
           <h2>Missions</h2>
           <div id="tavern-contracts" class="contract-board"></div>
+        </section>
+        <!-- La Cantine (Idan, 2026-11-08) : une salle de la Taverne, le tavernier cuisine (canteen-ui.js). -->
+        <section id="tavern-canteen-view" class="panel tavern-panel hidden">
+          <button class="secondary" data-tavern-view="home">← Retour à la taverne</button>
+          <h2>La Cantine</h2>
+          <div id="tavern-canteen" class="tavern-canteen"></div>
         </section>
         <section id="tavern-recruits-view" class="hidden">
           <button class="tavern-back" data-tavern-view="home">← Retour à la taverne</button>
@@ -507,6 +514,7 @@
   <script src="/core/lumber.js"></script>
   <script src="/core/agenda.js"></script>
   <script src="/core/dungeon.js"></script>
+  <script src="/core/canteen.js"></script>
   <script src="/core/stables.js"></script>
   <script src="/core/taming.js"></script>
   <script src="/core/desertion.js"></script>
@@ -555,6 +563,7 @@
   <script src="armor-study-ui.js"></script>
   <script src="lumber-ui.js"></script>
   <script src="dungeon-ui.js"></script>
+  <script src="canteen-ui.js"></script>
   <script src="stable-ui.js"></script>
   <script src="desertion-ui.js"></script>
   <script src="salary-review-ui.js"></script>

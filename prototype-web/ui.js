@@ -165,6 +165,7 @@ function renderGame() {
   renderTavern();
   renderQuartermaster();
   renderCampBuildings();
+  if(typeof renderCanteen==="function") renderCanteen();
   renderLieutenants();
   if (typeof renderMerchant === "function") renderMerchant();
   // Un déserteur repéré par la Tour de guet : la scène, avant tout le reste (desertion-ui.js).
@@ -1740,6 +1741,7 @@ async function init() {
     initializeTavernUi();
     initializeExpeditionUi();
     initializeCampBuildingsUi();
+    if(typeof initializeCanteenUi==="function") initializeCanteenUi();
     initializeSaveUi();
     initializeScreenUi();
     initializeIntroUi();

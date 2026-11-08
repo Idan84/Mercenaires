@@ -5,23 +5,8 @@ fait, puis sera retiré d'ici.
 
 ## À appliquer (Idan, 2026-11-08, après la partie n°5 de 365 jours)
 
-Décidé :
-
-7. **La Cantine** (Idan, 2026-11-08) : **une salle de la Taverne**, pas un bâtiment du camp ; le **tavernier** (personnage
-   du décor) y cuisine. Elle s'ouvre au niveau 1 pour 500 PO ; niveaux 1 à 10 au prix des autres bâtiments,
-   500 × niveau² PO (500, 2 000, 4 500… 50 000). Chaque jour, elle donne **40 × niveau XP** (40 au niveau 1… 400 au
-   niveau 10) dans la caractéristique du plat cuisiné à **tous les mercenaires au camp, blessés et fatigués compris**,
-   pas à ceux qui sont dehors (mission, garde). Dix plats, un par peuple :
-   Force — Ragoût de Mamie Ogresse (Ogre) ; Endurance — Fromage au lait de poule (Nain) ; Vitesse — Hérisson rôti à
-   la sauce des bois (Reptilien) ; Perception — Poêlée de champignons (Gnome) ; Esquive — Lapin rôti et ses carottes
-   confites (Gobelin) ; Chance — Tourte aux trèfles (Halfling) ; Constitution — Soupe de Géant Vert (Orc) ;
-   Intelligence — Têtes de harengs (Elfe) ; Courage — Chili aux piments doux (Homme-bête) ; Dextérité — Tataki
-   d'hirondelle (Humain). Le plat du peuple du capitaine est inclus à l'ouverture de la Cantine. Ensuite, **un
-   nouveau plat par niveau du Labo d'alchimie à partir du niveau 2** (niveaux 2 à 10 : les 9 autres plats), proposé
-   par le tavernier, **gratuit** ; on ne connaît son effet qu'une fois débloqué. On choisit le plat du jour parmi
-   les plats débloqués (effet affiché : « augmente la Force »).
-8. **Design Lab** (`/design/graph/`) : la renommée y montre 3 des 6 parts (capitaine, mercenaires, héritage) ; ajouter
-   les points de mission (gardes, échecs), le dortoir et le médecin, et le nouveau classement (capitaine 1er).
+Tout est fait (2026-11-08) : chefs, renommée (gardes +3, capitaine 1er), dortoir, courbe d'XP, XP de combat, Cantine,
+Design Lab.
 
 ## En réflexion (propositions du 2026-11-08, non décidées)
 

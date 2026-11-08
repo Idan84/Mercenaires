@@ -31,10 +31,12 @@
   const stables=typeof module!=="undefined"&&module.exports?require("./stables.js"):root.MercenairesStables;
   // Apprivoiser une monture à la Grange du dresseur (facultatif hors du jeu, de même).
   const taming=typeof module!=="undefined"&&module.exports?require("./taming.js"):root.MercenairesTaming;
-  const api=factory(history,regeneration,training,study,posts,armorPorts,armorStudy,lumber,agenda,dungeon,desertion,salaryReview,socialPolicy,stables,taming);
+  // La Cantine, salle de la Taverne : le plat du jour (facultatif hors du jeu, de même).
+  const canteen=typeof module!=="undefined"&&module.exports?require("./canteen.js"):root.MercenairesCanteen;
+  const api=factory(history,regeneration,training,study,posts,armorPorts,armorStudy,lumber,agenda,dungeon,desertion,salaryReview,socialPolicy,stables,taming,canteen);
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesCampaign=api;
-})(typeof globalThis!=="undefined"?globalThis:this,function(History,Regeneration,Training,Study,Posts,ArmorPorts,ArmorStudy,Lumber,Agenda,Dungeon,Desertion,SalaryReview,SocialPolicy,Stables,Taming){
+})(typeof globalThis!=="undefined"?globalThis:this,function(History,Regeneration,Training,Study,Posts,ArmorPorts,ArmorStudy,Lumber,Agenda,Dungeon,Desertion,SalaryReview,SocialPolicy,Stables,Taming,Canteen){
   // Sauvegarde : l'état de partie complet, sérialisé en JSON avec un format et une version.
   // La trace de génération des mercenaires (détail de calcul pour le Design Lab, ~85 % du poids)
   // n'est pas sauvegardée : un mercenaire passe d'environ 36 Ko à 5 Ko.
@@ -820,6 +822,8 @@
       return left;
     }
     const dungeonRules=Dungeon?Dungeon.createDungeonRules({reference,camp:{buildingLevel,expeditionOf,leave:leaveForDungeon}}):null;
+    // La Cantine (Idan, 2026-11-08 ; règles : canteen.js) : salle de la Taverne, le plat du jour pour ceux qui sont au camp.
+    const canteenRules=Canteen?Canteen.createCanteenRules({reference,progression,random,camp:{buildingLevel,awayOf:(state,id)=>awayOf(state,id)}}):null;
     // Les Écuries (Idan, 2026-11-07 ; règles : stables.js) : les montures capturées, leurs places et leur entretien.
     const stableRules=Stables?Stables.createStableRules({reference,random,camp:{buildingLevel},
       makeItem:(type,name)=>typeof generator?.createItemByName==="function"?generator.createItemByName(type,name):null}):null;
@@ -1015,6 +1019,8 @@
       const tamingReport=tamingRules?tamingRules.advance(state):null;
       // Entraînement libre (Idan, 2026-11-02) : ceux qui restent au camp choisissent leur journée.
       const school=runSchoolDay(state);
+      // La Cantine (Idan, 2026-11-08) : le plat du jour pour tous ceux qui sont au camp, blessés et fatigués compris.
+      const canteen=canteenRules?canteenRules.morning(state):null;
       // Désertion (Idan, 2026-11-04) : après tout ce qui fait bouger l'affinité du matin.
       const desertion=desertionRules?desertionRules.morning(state):null;
       // La part calculée de la réputation suit la progression (doc 09 ; Idan, 2026-11-08) : recalculée chaque matin, après
@@ -1022,7 +1028,7 @@
       if(generator?.recalculateReputation) for(const m of rosterOf(state)) generator.recalculateReputation(m);
       // Renégociation salariale (Idan, 2026-11-04) : ceux qui ont gagné une étoile.
       const salaryReview=salaryReviewRules?salaryReviewRules.morning(state):null;
-      return {day:state.day,recovered,salaries,tavern:tavernReport,offersLost,expeditions,built,buildings,lieutenants:lieutenantReports,mana,merchant,school,study,armorStudy:armor,poisonStudy:poison,lumber,mine,palace,dungeon,desertion,salaryReview,stable,taming:tamingReport};
+      return {day:state.day,recovered,salaries,tavern:tavernReport,offersLost,expeditions,built,buildings,lieutenants:lieutenantReports,mana,merchant,school,study,armorStudy:armor,poisonStudy:poison,lumber,mine,palace,dungeon,desertion,salaryReview,stable,taming:tamingReport,canteen};
     }
 
     // Recharge du mana (doc 12 ; Idan, 2026-10-25) : chaque jour, pour les membres présents au camp, pas pour ceux qui sont
@@ -1514,7 +1520,7 @@
       completeExpeditionCombat,
       dormitoryFree,
       dormitoryUsed,
-      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,trainingRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,spellStudy,armorStudy,poisonStudy,lumberjacks,miners,palaceWorkers,dungeonRules,desertionRules,salaryReviewRules,stableRules,tamingRules,socialPolicy:social,agenda,studyBusy,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
+      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,trainingRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,spellStudy,armorStudy,poisonStudy,lumberjacks,miners,palaceWorkers,dungeonRules,canteenRules,desertionRules,salaryReviewRules,stableRules,tamingRules,socialPolicy:social,agenda,studyBusy,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
       woundDaysFor,fatigueDaysFor,dormitoryFatigueCut,
       dormitoryPlaces,
       dormitoryExpansionCost,

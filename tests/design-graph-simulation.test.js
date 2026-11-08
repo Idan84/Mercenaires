@@ -14,7 +14,8 @@ const reference={
   weapons:read("weapons.json"),
   skills:read("skills.json"),
   baseArmors:read("base-armors.json"),
-  itemQualities:read("item-qualities.json")
+  itemQualities:read("item-qualities.json"),
+  dormitoryQuality:read("dormitory-quality.json")
 };
 const s=core.createSimulator({
   reference,
@@ -38,6 +39,18 @@ assert.ok(s.compare("economy",economy,{...economy,offerPercent:50}).after.metric
   s.run("economy",economy).metrics.pAccept);
 const reversed=s.compare("economy",economy,{...economy,second:800});
 assert.ok(reversed.after.metrics.renown>reversed.before.metrics.renown,"Le classement doit être recalculé");
+// Les six parts de la renommée (doc 09 §2 ; Idan, 2026-11-08 : le capitaine 1er, puis le meilleur mercenaire au rang 2) :
+// capitaine, mercenaires, héritage, missions, dortoir, médecin.
+{
+  const base=s.run("economy",economy).metrics;
+  assert.equal(base.renownCaptain,200);
+  assert.ok(Math.abs(base.renownOthers-(300/Math.pow(2,1.5)+120/Math.pow(3,1.5)))<1e-9,"meilleur mercenaire au rang 2, le suivant au rang 3");
+  assert.deepEqual([base.renownMissions,base.renownCamp,base.renownMedic],[0,0,0]);
+  const full=s.run("economy",{...economy,missions:-24,dorm:3,medic:62}).metrics;
+  assert.deepEqual([full.renownMissions,full.renownCamp,full.renownMedic],[-24,150,62]);
+  assert.ok(Math.abs(full.renown-(base.renown-24+150+62))<1e-9,"les six parts s'additionnent");
+  assert.equal(full.renownOthers,base.renownOthers,"le médecin fictif (réputation 0) ne change pas le classement");
+}
 
 const weapon=reference.weapons.rows.find(w=>w.puissance_tranchante_base>0&&w.nom&&!/Boucliers/.test(w.domaine||""));
 assert.ok(weapon,"Le référentiel doit avoir une arme physique");
@@ -90,9 +103,10 @@ const save={
         {id:10,name:"Capitaine",reputation:180},
         {id:20,name:"Héros",reputation:300},
         {id:30,name:"Soldat",reputation:200},
-        {id:40,name:"Archer",reputation:50}
+        {id:40,name:"Archer",reputation:50,skills:{camp:{"Médecine":45}}}
       ],
-      renownHeritage:[{heritage:15},{heritage:5}]
+      renownHeritage:[{heritage:15},{heritage:5}],
+      missionRenown:9,camp:{dormitoryQuality:2},medicId:40
     },
     tavern:{candidates:[{mercenary:{id:99,reputation:80,salary:17,salaryPretension:35,stats:{Courage:55,Intelligence:60,"Volonté":70}}}]}
   }
@@ -102,10 +116,14 @@ assert.equal(loaded.rosterCount,4);
 assert.equal(loaded.economy.companySnapshot.roster.length,4);
 assert.equal(loaded.economy.heritage,20);
 assert.equal(loaded.economy.salary,17);
+assert.deepEqual([loaded.economy.missions,loaded.economy.dorm,loaded.economy.medic,loaded.economy.companySnapshot.medicId],[9,2,45,40]);
 const expectedCompany=require("../game-core/campaign.js").createCampaignRules({generator:{},tavern:{},reference})
   .companyRenown(save.state);
 const importedCompany=s.run("economy",loaded.economy);
 assert.ok(Math.abs(importedCompany.metrics.renown-expectedCompany.total)<1e-8);
+assert.deepEqual([importedCompany.metrics.renownMissions,importedCompany.metrics.renownCamp,importedCompany.metrics.renownMedic],
+  [expectedCompany.parts.missions,expectedCompany.parts.camp,expectedCompany.parts.medic]);
+assert.deepEqual([expectedCompany.parts.missions,expectedCompany.parts.camp,expectedCompany.parts.medic],[9,100,45]);
 const modified=s.compare("economy",loaded.economy,{...loaded.economy,first:500});
 assert.ok(modified.after.metrics.renown>modified.before.metrics.renown);
 assert.equal(save.state.company.roster[1].reputation,300,"Aucune mutation de la sauvegarde source");

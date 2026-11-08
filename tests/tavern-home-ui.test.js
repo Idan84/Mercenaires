@@ -12,7 +12,7 @@ const css=fs.readFileSync(path.join(root,"prototype-web/styles.css"),"utf8");
 
 const home=html.slice(html.indexOf('<div id="tavern-home"'),html.indexOf('<section id="tavern-missions-view"'));
 assert.deepEqual([...home.matchAll(/data-tavern-view="(\w+)"><span>([^<]+)<\/span>/g)].map(m=>[m[1],m[2]]),
-  [["missions","Trouver une mission"],["recruits","Recruter"]]);
+  [["missions","Trouver une mission"],["recruits","Recruter"],["canteen","La Cantine"]],"La Cantine, salle de la Taverne (Idan, 2026-11-08)");
 assert.ok(!/data-tavern-drink/.test(html),"la bière et la tournée passent dans le dialogue");
 
 const talk=html.slice(html.indexOf('<dialog id="tavern-talk-dialog"'),html.indexOf('<dialog id="recruit-talk-dialog"'));

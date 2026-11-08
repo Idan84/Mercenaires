@@ -61,6 +61,7 @@ jobs:
       - run: node tests/palace.test.js
       - run: node tests/persuasion.test.js
       - run: node tests/dungeon.test.js
+      - run: node tests/canteen.test.js
       - run: node tests/desertion.test.js
       - run: node tests/salary-review.test.js
       - run: node tests/social-policy.test.js
@@ -160,6 +161,8 @@ jobs:
       - run: node --check prototype-web/persuasion-ui.js
       - run: node --check game-core/dungeon.js
       - run: node --check prototype-web/dungeon-ui.js
+      - run: node --check game-core/canteen.js
+      - run: node --check prototype-web/canteen-ui.js
       - run: node --check game-core/desertion.js
       - run: node --check prototype-web/desertion-ui.js
       - run: node --check game-core/salary-review.js

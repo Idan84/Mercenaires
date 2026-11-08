@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 421,
+  "row_count": 423,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -3400,6 +3400,22 @@
       "description": "Apprivoiser : bonus du Dresseur (le maître de la Grange du dresseur, s'il n'est pas l'élève) = (Compagnon animal + Intelligence + Charisme + Intimidation) ÷ ce nombre, environ +10 points de X.",
       "formule": "Monture",
       "valeur": 20,
+      "version": "V1"
+    },
+    {
+      "nom": "Cantine — XP par jour et par niveau",
+      "code": "canteen.xp_per_level",
+      "description": "La Cantine (salle de la Taverne) : chaque jour, le plat du jour donne valeur × niveau de la Cantine XP dans sa caractéristique (canteen-dishes.json) à chaque mercenaire présent au camp, blessés et fatigués compris (doc 11 §2). Idan, 2026-11-08 : « On monte le niveau de la cantine (de 1 à 10) qui multiplie l'effet. Niveau 1 : 40 » ; « 40 × niveau XP par jour : oui ».",
+      "formule": "La Cantine V1",
+      "valeur": 40,
+      "version": "V1"
+    },
+    {
+      "nom": "Cantine — niveau du Labo d'alchimie pour un nouveau plat",
+      "code": "canteen.unlock_from_lab_level",
+      "description": "Le tavernier propose un nouveau plat par niveau du Labo d'alchimie à partir de ce niveau (2 : un plat au niveau 2… les neuf autres au niveau 10), gratuitement ; le plat du peuple du capitaine est inclus à l'ouverture (Idan, 2026-11-08 : « A partir du niveau 2 du laboratoire d'alchimie, […] le cantinier nous propose de débloquer un nouveau plat » ; « Débloquage gratuit. Le premier est inclus dans la construction du bâtiment »).",
+      "formule": "La Cantine V1",
+      "valeur": 2,
       "version": "V1"
     }
   ]

@@ -22,7 +22,7 @@ const XP_CODE=/^progression\.(?!xp_curve).*_xp$/;
 // (Idan, 2026-11-08) est vérifiée à part, avec real.
 const FLAT=/^progression\.xp_curve\.zone_\d_divisor$/;
 const rules=P.createProgressionRules({reference:{...reference,formulaConstants:{...reference.formulaConstants,
-  rows:reference.formulaConstants.rows.map(r=>XP_CODE.test(r.code)?{...r,valeur:r.valeur/4}:FLAT.test(r.code)?{...r,valeur:1}:r)}}});
+  rows:reference.formulaConstants.rows.map(r=>XP_CODE.test(r.code)&&r.version!=="V2"?{...r,valeur:r.valeur/4}:FLAT.test(r.code)?{...r,valeur:1}:r)}}});
 
 // Constantes d'équilibrage lues dans formula-constants.json (valeurs de 08-progression-and-experience.md
 // et décisions Idan du 2026-10-06) ; toutes les XP doublées après le bêta-test (Idan, 2026-11-07 : « On double l'xp
@@ -35,7 +35,10 @@ assert.deepEqual(real.constants,{
   dexterityChain:200,dodgeWoundTaken:40,enduranceHeavyArmorHex:8,willCourageHeld:80,willRecovery:80,intelligenceWorstChoice:120,
   skillWeaponAttack:40,skillWeaponHit:20,skillWeaponWound:20,skillTwoHandedAttack:40,skillOneHandedAttack:40,skillDualSequence:40,skillShieldBlock:40,
   skillIntimidation:200,mountReturn:200,regenerationBurn:120,skillRegressionRatio:0.5,
-  spellCast:40,spellSuccess:20,spellEffect:20,schoolRegressionRatio:0.5,schoolFloor:1,magicPowerSpellEffect:80,manaReserveManaSpent:8
+  spellCast:40,spellSuccess:20,spellEffect:20,schoolRegressionRatio:0.5,schoolFloor:1,magicPowerSpellEffect:80,manaReserveManaSpent:8,
+  // XP de combat (Idan, 2026-11-08) : valeurs telles quelles (pas de doublement) ; multiplicateur d'étoiles.
+  speedHexMoved:1,constitutionDamageTaken:2,enduranceContactTurn:10,perceptionLongShot:20,willSpellResisted:80,charismaAuraHold:40,
+  starBonus:0.25
 });
 const tuned=P.createProgressionRules({reference:{formulaConstants:{rows:[{code:"progression.charisma.knockout_xp",valeur:80}]}}});
 assert.equal(tuned.constants.charismaKnockout,80,"une constante modifiée est prise en compte");
@@ -435,5 +438,39 @@ assert.equal(pyro.progress.knockouts,1);
 assert.deepEqual(pyro.progress.enemyKnockouts,{gob:30});
 assert.deepEqual(pyro.progress.enemyWounds,{gob:30});
 assert.deepEqual(rules.gains(goblin.progress).resistances,{"Résistance au feu":8,"Résistance physique":-2,"Résistance au froid":-2,"Résistance à la foudre":-2,"Résistance au poison":-2});
+
+// XP de combat (Idan, 2026-11-08 : « On ajoute : Vitesse +1 par case parcourue en combat… Constitution +2 XP par PV de
+// dégâts encaissés et survécus… Endurance +10 par tour passé au contact d'un ennemi… Perception +20 par tir qui touche
+// au-delà de la moitié de la portée… Volonté +80 par sort ennemi résisté… Charisme +40 quand un allié proche réussit son
+// test de Courage et qu'il a utilisé son aura »).
+{
+  const archer={team:"player"},target={team:"enemy"},ally={team:"player"},foe={team:"enemy"};
+  P.recordAttack(archer,target,{},{ok:true,mode:"ranged",weapon:"Arc court",hit:true,wound:false,distance:7,rangeMax:12});
+  P.recordAttack(archer,target,{},{ok:true,mode:"ranged",weapon:"Arc court",hit:true,wound:false,distance:6,rangeMax:12});
+  P.recordAttack(archer,target,{},{ok:true,mode:"ranged",weapon:"Arc court",hit:true,blocked:true,shield:"Rondache",wound:false,distance:11,rangeMax:12});
+  P.recordAttack(archer,target,{},{ok:true,mode:"ranged",weapon:"Arc court",hit:false,wound:false,distance:11,rangeMax:12});
+  assert.equal(archer.progress.longShots,1,"au-delà de la moitié de la portée, touché pour de bon : 7 sur 12 oui ; 6 non ; bloqué ou raté non");
+  P.recordSpellResisted(target,ally);
+  P.recordSpellResisted(target,foe);
+  assert.equal(target.progress.spellsResisted,1,"un sort ennemi seulement");
+  P.recordAuraHold(archer);P.recordAuraHold(null);
+  P.recordContactTurn(archer);P.recordContactTurn(archer);
+  P.recordDamageTaken(archer,35);
+  const walker={character:{equipment:{slots:{}},items:[]}};
+  for(let i=0;i<12;i++) real.recordStep(walker);
+  assert.equal(walker.progress.hexesMoved,12);
+  assert.deepEqual(real.gains(walker.progress).stats,{Vitesse:12},"+1 par case, en fuite ou non");
+  const g=real.gains(archer.progress).stats;
+  assert.deepEqual([g.Perception,g.Charisme,g.Endurance,g.Constitution],[20,40,20,70]);
+  assert.equal(real.gains(target.progress).stats["Volonté"],80);
+  // Multiplicateur d'étoiles (Idan, 2026-11-08) : × (1 + 0,25 par étoile au-delà de 1), sur toute l'XP de la mission.
+  assert.deepEqual([1,2,3,5,10,15].map(real.starMultiplier),[1,1.25,1.5,2,3.25,4.5]);
+  assert.equal(real.starMultiplier(undefined),1,"sans mission : × 1");
+  const swordsman={progress:{...P.emptyLog(),weaponUses:{"Épée longue":{attacks:3,hits:2,wounds:1}},hexesMoved:4}};
+  const merc={skills:{martial:{"Épée longue":40,"Lames longues":40,Hache:20,"Haches":20}}};
+  const one=real.gains(swordsman.progress,merc),five=real.gains(swordsman.progress,merc,{stars:5});
+  assert.equal(five.stats.Vitesse,2*one.stats.Vitesse);
+  for(const [name,xp] of Object.entries(one.skills.martial)) assert.ok(Math.abs(five.skills.martial[name]-2*xp)<1e-9,name+" : × 2 en 5★, régression comprise");
+}
 
 console.log(JSON.stringify({ok:true,charisme:[charismaBefore,m1.stats.Charisme],reputation:[repBefore,veteran.reputation]},null,2));

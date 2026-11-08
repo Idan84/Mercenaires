@@ -447,6 +447,18 @@ game.company.camp.dormitoryQuality=5;
 campaign.applyMissionAftermath(game,{results:[{id:2,dead:false,wounded:false,fatigueDays:3,offMap:false}],captainDead:false});
 assert.equal(squad[0].recovery.daysLeft,2);
 game.company.camp.dormitoryQuality=0;
+// Multiplicateur d'étoiles (Idan, 2026-11-08) : la même mission en 5★ donne deux fois l'XP de la 1★.
+{
+  const progress={hexesMoved:40,contactTurns:2};
+  const {createProgressionRules}=require("../game-core/progression.js");
+  const withXp=createCampaignRules({generator,tavern,reference:full,progression:createProgressionRules({reference:full})});
+  const xpAt=stars=>{ squad[0].recovery=null; return withXp.applyMissionAftermath(game,{results:[{id:2,dead:false,wounded:false,fatigueDays:3,offMap:false,progress}],captainDead:false},{stars}).progression[0].xp.stats; };
+  const one=xpAt(1),five=xpAt(5),none=xpAt(undefined);
+  assert.deepEqual(one,{Vitesse:40,Endurance:20});
+  assert.deepEqual(five,{Vitesse:80,Endurance:40});
+  assert.deepEqual(none,one,"sans niveau de mission : × 1");
+  squad[0].recovery=null;
+}
 // Inventaire (Idan, 2026-10-30) : un mort en mission rend à l'Intendance ce qu'il gardait au dortoir ; ce qu'il portait
 // reste avec lui (butin d'une victoire).
 const dead=squad[0],deadWorn=Object.values(dead.equipment.slots).filter(Boolean);

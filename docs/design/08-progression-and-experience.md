@@ -67,6 +67,10 @@ Coût d'un seul point : 53 XP à 10, 169 à 30, 381 à 50, 763 à 75, 1 518 à 1
 
 Principe général : les caractéristiques progressent en conséquence d’actions et de résultats d’actions en combat. Un plafond de gain par mission est envisagé mais **pas encore chiffré**.
 
+**Multiplicateur d'étoiles** (Idan, 2026-11-08 : « Multiplicateur selon les étoiles de la mission … On prend ça, c'est le plus rapide à équilibrer et ça boostera tout le monde ») : toute l'XP d'une mission (caractéristiques, résistances, compétences, sorts, et les reculs qui vont avec) est multipliée par **1 + 0,25 × (étoiles − 1)** : 1★ × 1, 3★ × 1,5, 5★ × 2, 10★ × 3,25, 15★ × 4,5 (`progression.mission.star_bonus`). Pas de multiplicateur selon le tier de l'ennemi. Un combat sans mission (Mission Test) : × 1. Le « rentrer vivant avec sa monture » n'est pas multiplié (ce n'est pas du combat).
+
+**Nouvelles actions** (Idan, 2026-11-08) : leurs valeurs sont celles d'Idan, sans les doublements du bêta-test (constantes `progression.*` en version V2).
+
 ### Chance — « La chance tourne »
 
 - **EC confirmé** : `+120 XP Chance`.
@@ -95,6 +99,8 @@ Types concernés : Physique, Feu, Froid, Foudre, Poison.
 Pour chaque **1 PV réellement restauré par un soin** :
 
 - `+4 XP Constitution`.
+
+Pour chaque **PV de dégâts encaissé** pendant la mission, s'il y survit (Idan, 2026-11-08 : « +2 XP par PV de dégâts encaissés et survécus ») : `+2 XP Constitution` (le cumul de la mission, celui de la fatigue : les soins ne l'effacent pas ; `progression.constitution.damage_taken_xp`).
 - Les PV de soin qui dépassent les PV max ne rapportent rien.
 - Seuls les PV réellement récupérés comptent.
 
@@ -110,11 +116,15 @@ Chaque **case parcourue en état de fuite** :
 
 - `+8 XP Vitesse`.
 
+Chaque **case parcourue en combat**, en fuite ou non (Idan, 2026-11-08 : « Vitesse +1 par case parcourue en combat ») : `+1 XP Vitesse` (`progression.speed.hex_moved_xp`) ; en fuite, les deux s'additionnent.
+
 ### Charisme — « Triste Monde ! »
 
 Chaque **adversaire mis hors combat** par le mercenaire (décision Idan, 2026-10-06 : les ennemis ne font pas de jet de mort, « tué » = hors combat) :
 
 - `+200 XP Charisme`.
+
+Chaque **test de Courage tenu par un allié grâce à son aura** (Idan, 2026-11-08 : « Charisme +40 quand un allié proche réussit son test de Courage et qu'il a utilisé son aura (donc pour capitaine et lieutenant uniquement) ») : `+40 XP Charisme` au capitaine ou au lieutenant dont l'aura a compté (la plus forte à portée, doc 04 ; le fouet seul ne compte pas) ; après une attaque, un tir, une charge ou un sort de Peur (`progression.charisma.aura_hold_xp`).
 
 Le Charisme inclut ici l’idée d’aura, de présence et de réputation martiale, pas seulement l’aisance sociale.
 
@@ -123,6 +133,8 @@ Le Charisme inclut ici l’idée d’aura, de présence et de réputation martia
 Chaque fois qu’un mercenaire est **effectivement blessé par une attaque reçue dans le dos** :
 
 - `+40 XP Perception`.
+
+Chaque **tir qui touche** (ni bloqué ni paré) **au-delà de la moitié de la portée** de l'arme (Idan, 2026-11-08) : `+20 XP Perception` (`progression.perception.long_shot_xp`). Exemple : un arc de portée 12 tire à 7 cases ou plus.
 
 ### Force — porter son équipement
 
@@ -144,8 +156,8 @@ Chaque caractéristique pourra recevoir d'autres sources plus tard : leurs XP s'
 
 - **Dextérité** : chaque **enchaînement réussi** (attaque, tir ou séquence à deux armes supplémentaire) : `+200 XP`.
 - **Esquive** : chaque **coup encaissé qui blesse** : `+40 XP`. Le contrecoup de sa propre arme n'en est pas un.
-- **Endurance** : chaque **case parcourue en armure lourde** (plates, écailles) : `+8 XP`.
-- **Volonté** : chaque **test de Courage réussi** : `+80 XP` ; chaque **reprise de contrôle** réussie en fuite : `+80 XP`.
+- **Endurance** : chaque **case parcourue en armure lourde** (plates, écailles) : `+8 XP` ; chaque **activation commencée au contact d'un ennemi** (à une case ; Idan, 2026-11-08 : « +10 par tour passé au contact d'un ennemi ») : `+10 XP` (`progression.endurance.contact_turn_xp`).
+- **Volonté** : chaque **test de Courage réussi** : `+80 XP` ; chaque **reprise de contrôle** réussie en fuite : `+80 XP` ; chaque **sort ennemi résisté** (Paralysie, Sommeil, Prison de glace ; Idan, 2026-11-08) : `+80 XP` (`progression.will.spell_resisted_xp`).
 - **Intelligence** : il apprend de ses erreurs : chaque fois qu'il choisit le **pire type de dégâts** : `+120 XP`. Ce mauvais choix n'arrive qu'aux mercenaires sous 50 d'Intelligence.
 
 ### Puissance magique, Réserve de mana, écoles et sorts (décisions Idan du 2026-10-25)

@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 414,
+  "row_count": 421,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -1209,6 +1209,62 @@
       "formule": "Progression naturelle V1",
       "valeur": 8,
       "version": "V1"
+    },
+    {
+      "nom": "Progression — Vitesse — case parcourue en combat",
+      "code": "progression.speed.hex_moved_xp",
+      "description": "XP de Vitesse par case parcourue en combat, pas seulement en fuite (08 §2). Idan, 2026-11-08 : « On ajoute : Vitesse +1 par case parcourue en combat… Constitution +2 XP par PV de dégâts encaissés et survécus… Endurance +10 par tour passé au contact d'un ennemi… Perception +20 par tir qui touche au-delà de la moitié de la portée… Volonté +80 par sort ennemi résisté… Charisme +40 quand un allié proche réussit son test de Courage et qu'il a utilisé son aura (donc pour capitaine et lieutenant uniquement) ».",
+      "formule": "Progression naturelle V2",
+      "valeur": 1,
+      "version": "V2"
+    },
+    {
+      "nom": "Progression — Constitution — PV encaissés",
+      "code": "progression.constitution.damage_taken_xp",
+      "description": "XP de Constitution par PV de dégâts encaissés pendant la mission (le cumul, soins compris : les soins n'effacent pas l'usure), pour qui y survit (08 §2). Idan, 2026-11-08 : « On ajoute : Vitesse +1 par case parcourue en combat… Constitution +2 XP par PV de dégâts encaissés et survécus… Endurance +10 par tour passé au contact d'un ennemi… Perception +20 par tir qui touche au-delà de la moitié de la portée… Volonté +80 par sort ennemi résisté… Charisme +40 quand un allié proche réussit son test de Courage et qu'il a utilisé son aura (donc pour capitaine et lieutenant uniquement) ».",
+      "formule": "Progression naturelle V2",
+      "valeur": 2,
+      "version": "V2"
+    },
+    {
+      "nom": "Progression — Endurance — tour au contact",
+      "code": "progression.endurance.contact_turn_xp",
+      "description": "XP d'Endurance par activation commencée au contact d'un ennemi (une case) (08 §2). Idan, 2026-11-08 : « On ajoute : Vitesse +1 par case parcourue en combat… Constitution +2 XP par PV de dégâts encaissés et survécus… Endurance +10 par tour passé au contact d'un ennemi… Perception +20 par tir qui touche au-delà de la moitié de la portée… Volonté +80 par sort ennemi résisté… Charisme +40 quand un allié proche réussit son test de Courage et qu'il a utilisé son aura (donc pour capitaine et lieutenant uniquement) ».",
+      "formule": "Progression naturelle V2",
+      "valeur": 10,
+      "version": "V2"
+    },
+    {
+      "nom": "Progression — Perception — tir au loin",
+      "code": "progression.perception.long_shot_xp",
+      "description": "XP de Perception par tir qui touche (ni bloqué ni paré) à plus de la moitié de la portée de l'arme (08 §2). Idan, 2026-11-08 : « On ajoute : Vitesse +1 par case parcourue en combat… Constitution +2 XP par PV de dégâts encaissés et survécus… Endurance +10 par tour passé au contact d'un ennemi… Perception +20 par tir qui touche au-delà de la moitié de la portée… Volonté +80 par sort ennemi résisté… Charisme +40 quand un allié proche réussit son test de Courage et qu'il a utilisé son aura (donc pour capitaine et lieutenant uniquement) ».",
+      "formule": "Progression naturelle V2",
+      "valeur": 20,
+      "version": "V2"
+    },
+    {
+      "nom": "Progression — Volonté — sort ennemi résisté",
+      "code": "progression.will.spell_resisted_xp",
+      "description": "XP de Volonté par sort ennemi résisté : Paralysie, Sommeil, Prison de glace (08 §2). Idan, 2026-11-08 : « On ajoute : Vitesse +1 par case parcourue en combat… Constitution +2 XP par PV de dégâts encaissés et survécus… Endurance +10 par tour passé au contact d'un ennemi… Perception +20 par tir qui touche au-delà de la moitié de la portée… Volonté +80 par sort ennemi résisté… Charisme +40 quand un allié proche réussit son test de Courage et qu'il a utilisé son aura (donc pour capitaine et lieutenant uniquement) ».",
+      "formule": "Progression naturelle V2",
+      "valeur": 80,
+      "version": "V2"
+    },
+    {
+      "nom": "Progression — Charisme — Courage tenu grâce à l'aura",
+      "code": "progression.charisma.aura_hold_xp",
+      "description": "XP de Charisme du capitaine ou du lieutenant dont l'aura a compté dans un test de Courage tenu par un allié (la plus forte aura à portée ; le fouet seul ne compte pas) (08 §2). Idan, 2026-11-08 : « On ajoute : Vitesse +1 par case parcourue en combat… Constitution +2 XP par PV de dégâts encaissés et survécus… Endurance +10 par tour passé au contact d'un ennemi… Perception +20 par tir qui touche au-delà de la moitié de la portée… Volonté +80 par sort ennemi résisté… Charisme +40 quand un allié proche réussit son test de Courage et qu'il a utilisé son aura (donc pour capitaine et lieutenant uniquement) ».",
+      "formule": "Progression naturelle V2",
+      "valeur": 40,
+      "version": "V2"
+    },
+    {
+      "nom": "Progression — multiplicateur d'étoiles de la mission",
+      "code": "progression.mission.star_bonus",
+      "description": "Toute l'XP d'une mission × (1 + valeur × (étoiles − 1)) : 1★ × 1, 3★ × 1,5, 5★ × 2, 10★ × 3,25, 15★ × 4,5 (Idan, 2026-11-08 : « Multiplicateur selon les étoiles de la mission… On prend ça, c'est le plus rapide à équilibrer et ça boostera tout le monde » ; 08 §2). Sans mission (combat de test) : × 1.",
+      "formule": "Progression naturelle V2",
+      "valeur": 0.25,
+      "version": "V2"
     },
     {
       "nom": "Réputation — coup critique",

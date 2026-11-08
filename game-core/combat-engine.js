@@ -952,8 +952,9 @@
       const hitRoll=d100(),hit=hitRoll<=pHit;
       // twoHanded : arme tenue à deux mains (XP de Combat à deux mains) ; oneHanded : arme à une main tenue seule (XP de
       // Combat à une main).
+      // rangeMax : la portée de l'arme au tir (XP de Perception d'un tir au loin ; Idan, 2026-11-08).
       const head={ok:true,mode,weapon:weapon.nom,distance,pHit,hitRoll,twoHanded:usesTwoHands(attacker,weapon),
-        oneHanded:attacker.attackHand!=="off"&&fightsOneHanded(attacker)};
+        oneHanded:attacker.attackHand!=="off"&&fightsOneHanded(attacker),...(mode==="ranged"?{rangeMax:weaponRange(attacker).max}:{})};
       if(!hit){
         // Échec critique CAC V1 : un naturel 96–100 déclenche un test de Chance ; raté → Au Sol.
         const fumble=fumbleTest(attacker,hitRoll);
@@ -1239,7 +1240,7 @@
       subject=pairOf(subject);
       if(!subject||subject.alive===false||subject.fleeing||fearless(subject)) return null;
       const aura=allyAura(subject,units),pHold=fearHold(subject,caster,mastery,aura.bonus),roll=d100();
-      return {subject,source:caster,pHold,roll,flees:roll>pHold,aura:aura.bonus,auraFrom:aura.from,whip:aura.whip};
+      return {subject,source:caster,pHold,roll,flees:roll>pHold,aura:aura.bonus,auraFrom:aura.from,auraSource:aura.source,whip:aura.whip};
     }
 
     // Courage en sous-nombre V1 : mêlée locale = groupe connecté de combattants liés par leurs zones de menace CAC.
@@ -1281,7 +1282,7 @@
         rule="no-wound";
       }
       const roll=d100();
-      return {subject,source,pHold,roll,flees:roll>pHold,rule,aura:aura.bonus,auraFrom:aura.from,whip:aura.whip};
+      return {subject,source,pHold,roll,flees:roll>pHold,rule,aura:aura.bonus,auraFrom:aura.from,auraSource:aura.source,whip:aura.whip};
     }
 
     // Reprise de contrôle — En Fuite V1 ; ennemi de référence = ennemi actif le plus proche (vivant, pas En Fuite) ;
@@ -1293,7 +1294,7 @@
     function rollRecovery(unit,referenceEnemy,fleeTurn,units=[]){
       const p=recoveryChance(unit,referenceEnemy,fleeTurn,units),roll=d100();
       const aura=allyAura(unit,units);
-      return {p,roll,recovered:roll<=p,aura:aura.bonus,auraFrom:aura.from,whip:aura.whip};
+      return {p,roll,recovered:roll<=p,aura:aura.bonus,auraFrom:aura.from,auraSource:aura.source,whip:aura.whip};
     }
 
     // Comportement automatique — En Fuite V1 : 1 Course effrénée, 2 Cachons-nous, 3 Feu à volonté.

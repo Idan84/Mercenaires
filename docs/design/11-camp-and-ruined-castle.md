@@ -284,7 +284,7 @@ armures** (les ports d'armure, légère puis intermédiaire puis lourde, appris 
 | **Le Four** | Résistance au feu | « On y entre en armure. On en ressort cuit à point, ou endurci. » |
 | **Le Frigo** | Résistance au froid | « Une nuit dans la glacière. Le Vétéran appelle ça “se rafraîchir les idées”. » |
 | **La Décharge** | Résistance à la foudre | « Un mage en colère, une flaque d'eau, et vous dedans. » |
-| **La Cantine** | Résistance au poison | « Le plat du jour est toujours un test. Personne n'a jamais su lequel. » |
+| **L'Assommoir** | Résistance au poison | « Le plat du jour est toujours un test. Personne n'a jamais su lequel. » (Nommée « La Cantine » jusqu'au 2026-11-08 ; Idan : « L'assommoir en référence à l'absinthe et à Zola », pour ne pas la confondre avec la Cantine de la Taverne.) |
 | **Le Placard** | Discrétion | « On s'y cache pendant que le Vétéran vous cherche. Il cherche encore le dernier. » |
 
 **Apprendre une armure à l'Académie** (Idan, 2026-11-03 : « comme un sort » ; Force + Endurance : « Parfait » ; « pas de

@@ -34,7 +34,7 @@ const BUILDINGS={
   ludus:["Ludus","Résistance physique",[["La Meule","Force"],["La Longue Piste","Endurance"],["La Course au Cochon","Vitesse"],
     ["La Quintaine","Esquive"],["Le Réfectoire du Doctore","Constitution"]]],
   survival_academy:["Académie de la survie","Boucliers",[["Le Four","Résistance au feu"],["Le Frigo","Résistance au froid"],
-    ["La Décharge","Résistance à la foudre"],["La Cantine","Résistance au poison"],["Le Placard","Discrétion"]]],
+    ["La Décharge","Résistance à la foudre"],["L’Assommoir","Résistance au poison"],["Le Placard","Discrétion"]]],
   // Les ailes du Cercle (Idan, 2026-11-03 : « je garde tes noms dandy »).
   blade_circle:["Cercle des Fines Lames","Dextérité",[["La Salle des Miroirs","Lames longues"],["Le Boudoir","Lames courtes"],
     ["Le Bal masqué","Combat à deux armes"],["Le Salon de thé","Combat à une main"]]],

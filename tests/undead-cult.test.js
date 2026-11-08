@@ -248,9 +248,14 @@ near.q = caster.q - 12;
 for (const u of raised) { u.alive = false; u.offMap = true; }
 api.enemyMissionAct(caster);
 assert.notDeepEqual({q: caster.q, r: caster.r}, home, "seul, il avance");
-// Nos mercenaires : pas de aiSpells, donc pas de sorts joués par l'IA.
+// Nos mercenaires : pas de aiSpells ; l'IA ne leur fait jouer que leurs propres sorts (une Flèche de glace, selon le
+// tirage), jamais ceux du nécromancien.
 assert.ok(m.players.every(u => !u.character.aiSpells));
-assert.equal(api.missionAiSpell(m.players[1]), false);
+{
+  const before = m.log.length;
+  api.missionAiSpell(m.players[1]);
+  assert.ok(!m.log.slice(before).some(x => /Armée d'os|Résurrection|Flèche de mort/.test(x.message)));
+}
 
 // 6. Des contrats du Culte joués jusqu'au bout (cimetière, enceinte de murets) : niveaux 1 à 6.
 let stuck = 0, played = 0;

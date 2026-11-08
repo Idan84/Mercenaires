@@ -29,12 +29,29 @@ Décidé :
    55 → ≈ 106 (88). **Décidé** : on lisse le tout (« option 1, on lisse le tout, fais les maths ») : pas de marche à
    51 ni à 101, le multiplicateur glisse d'une zone à l'autre ; **au-delà de 200, on durcit encore un peu**. La
    régression des autres compétences suit la courbe (elle fond plus vite sous 50) : **on laisse comme ça**.
-6. **XP de combat** : on garde le système à l'action (Idan : « j'aime globalement l'idée »). À chiffrer avec Idan :
-   multiplicateur selon le tier de l'ennemi visé par l'action (proposé ×1 / ×1,5 / ×2 / ×3) ; multiplicateur selon les
-   étoiles de la mission (proposé × (1 + 0,25 par étoile au-delà de 1), plus doux si cumulé avec le tier) ; nouvelles
-   actions pour les caractéristiques peu alimentées (Constitution, Esquive, Force, Vitesse, Endurance, Courage,
-   Perception, Volonté, Intelligence, Charisme).
-7. **Design Lab** (`/design/graph/`) : la renommée y montre 3 des 6 parts (capitaine, mercenaires, héritage) ; ajouter
+6. **XP de combat** : on garde le système à l'action (Idan : « j'aime globalement l'idée »).
+   - **Multiplicateur d'étoiles** (décidé) : toute l'XP gagnée pendant une mission × (1 + 0,25 par étoile au-delà
+     de 1) : 1★ × 1, 3★ × 1,5, 5★ × 2, 10★ × 3,25, 15★ × 4,5 (« le plus rapide à équilibrer et ça boostera tout le
+     monde »). Pas de multiplicateur par tier d'ennemi.
+   - **Nouvelles actions** (décidé) : Vitesse +1 par case parcourue en combat (pas seulement en fuite) ; Constitution +2
+     par PV de dégâts encaissés et survécus ; Endurance +10 par tour passé au contact d'un ennemi ; Perception +20 par
+     tir qui touche au-delà de la moitié de la portée ; Volonté +80 par sort ennemi résisté (Sommeil, Choc
+     psychique…) ; Charisme +40 quand un allié proche réussit son test de Courage grâce à son aura (capitaine et
+     lieutenants seulement ; l'aura existe : combat-engine.js, captainAuraBonus, lieutenant à 50 %).
+7. **La Cantine** (nouveau bâtiment, Idan, 2026-11-08) : se construit pour 500 PO comme les autres ; niveaux 1 à 10
+   qui multiplient l'effet (niveau 1 : 40). Chaque jour, elle fait gagner de l'XP dans la caractéristique du plat
+   cuisiné à **tous les mercenaires au camp, blessés et fatigués compris**, pas à ceux qui sont dehors (mission,
+   garde). Dix plats, un par peuple ; la compagnie commence avec celui du peuple du capitaine :
+   Force — Ragoût de Mamie Ogresse (Ogre) ; Endurance — Fromage au lait de poule (Nain) ; Vitesse — Hérisson rôti à
+   la sauce des bois (Reptilien) ; Perception — Poêlée de champignons (Gnome) ; Esquive — Lapin rôti et ses carottes
+   confites (Gobelin) ; Chance — Tourte aux trèfles (Halfling) ; Constitution — Soupe de Géant Vert (Orc) ;
+   Intelligence — Têtes de harengs (Elfe) ; Courage — Chili aux piments doux (Homme-bête) ; Dextérité — Tataki
+   d'hirondelle (Humain). À partir du niveau 2 du Labo d'alchimie, le cantinier propose de débloquer un nouveau plat,
+   dont on ne connaît l'effet qu'une fois débloqué ; ensuite on choisit le plat du jour (effet affiché : « augmente la
+   Force »). À préciser : effet par niveau (40 × niveau XP par jour ?) ; prix des niveaux (500 × n² comme les
+   autres ?) ; rythme et prix du déblocage (un plat par niveau du Labo à partir de 2 ?) ; le cantinier est-il un
+   personnage du décor ou un poste tenu par un mercenaire ?
+8. **Design Lab** (`/design/graph/`) : la renommée y montre 3 des 6 parts (capitaine, mercenaires, héritage) ; ajouter
    les points de mission (gardes, échecs), le dortoir et le médecin, et le nouveau classement (capitaine 1er).
 
 ## En réflexion (propositions du 2026-11-08, non décidées)

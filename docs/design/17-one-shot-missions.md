@@ -246,7 +246,7 @@ Une mission sans combat pour gagner de l'or ; la contrepartie : on est privé de
 
 - **Qui** : un mercenaire au camp, disponible (ni blessé, ni fatigué), du niveau demandé ; pas le capitaine ni l'intendant (validé par Idan). Exactement le nombre demandé. Les salaires courent comme d'habitude.
 - **Pas de combat.** Au retour, chacun tire son sort : **50 %** rentré ; **25 %** rentré fatigué (« il a trop gardé le corps de charmantes demoiselles », fatigue 1D3 jours) ; **25 %** rentré blessé (« bagarre dans une taverne », blessure 1D3 jours). Une fenêtre le dit, avec une ligne par mercenaire ; si plusieurs gardes rentrent le même matin, leurs fenêtres se suivent (correctif de Chatty, PR #310, issue #503).
-- **Prime de mission** versée au retour. **Réputation** : +5 (rentré ou fatigué), +2,5 (blessé) (+10 et +5 avant le bêta-test, divisés par deux comme la renommée) ; **renommée de la compagnie** : +5 par mission (points de mission, doc 09 §2) — « un peu », chiffres de JC validés par Idan ; +10 avant le bêta-test, divisé par deux (Idan, 2026-11-07 : « On reduit par 2 la réputation donnée par les gardes du corps »).
+- **Prime de mission** versée au retour. **Réputation** : +5 (rentré ou fatigué), +2,5 (blessé) (+10 et +5 avant le bêta-test, divisés par deux comme la renommée) ; **renommée de la compagnie** : **+3** par mission (points de mission, doc 09 §2 ; Idan, 2026-11-08 : « Les gardes - réputation compagnie de 5 à 3 ») — « un peu », chiffres de JC validés par Idan ; +10 avant le bêta-test, puis +5 (Idan, 2026-11-07 : « On reduit par 2 la réputation donnée par les gardes du corps »).
 
 
 ## 13 — Tableau des missions (Idan, 2026-10-31)

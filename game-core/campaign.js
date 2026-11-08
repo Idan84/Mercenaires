@@ -125,7 +125,8 @@
     function rosterOf(state){ return state.company.roster; }
 
     // Renommée de compagnie (09 §2 ; Idan, 2026-10-20, issue #111). Les membres vivants autres que le
-    // capitaine sont classés par réputation décroissante ; le rang i compte pour réputation / i^1,5.
+    // capitaine sont classés par réputation décroissante ; le rang i compte pour réputation / i^1,5. Le capitaine est
+    // toujours 1er (100 %) : le meilleur mercenaire est 2e (Idan, 2026-11-08 : « on descend d'un cran »).
     // À réputation égale, le plus ancien dans la compagnie (ordre du roster) est mieux classé.
     function renownRanking(state){
       return rosterOf(state)
@@ -133,8 +134,8 @@
         .map((m,seniority)=>({m,seniority,reputation:Number(m.reputation)||0}))
         .sort((a,b)=>b.reputation-a.reputation||a.seniority-b.seniority)
         .map(({m,reputation},index)=>({
-          id:m.id,name:m.name,reputation,rank:index+1,
-          contribution:reputation/Math.pow(index+1,RENOWN_RANK_EXPONENT)
+          id:m.id,name:m.name,reputation,rank:index+2,
+          contribution:reputation/Math.pow(index+2,RENOWN_RANK_EXPONENT)
         }));
     }
 

@@ -14,24 +14,25 @@ const ROOT=path.resolve(__dirname,"..");
 const files={peoples:"peoples.json",cultures:"cultures.json",socialOrigins:"social-origins.json",alignments:"alignments.json",ancestries:"ancestries.json",ancestryCompatibility:"ancestry-compatibility.json",cultureOriginCompatibility:"culture-origin-compatibility.json",ancestryLevels:"ancestry-levels.json",d6Scale:"d6-generation-scale.json",generationMatrix:"generation-matrix.json",skills:"skills.json",characteristics:"characteristics.json",formulaConstants:"formula-constants.json",weapons:"weapons.json",baseArmors:"base-armors.json",itemQualities:"item-qualities.json",equipmentSlots:"equipment-slots.json",startingEquipmentGeneration:"starting-equipment-generation.json",binaryAptitudeGrants:"binary-aptitude-grants.json",alignmentGeneration:"alignment-generation.json"};
 const reference=Object.fromEntries(Object.entries(files).map(([k,f])=>[k,JSON.parse(fs.readFileSync(path.join(ROOT,"data","reference",f),"utf8"))]));
 const real=P.createProgressionRules({reference});
-// Les mécanismes plus bas sont vérifiés avec les XP d'avant le doublement du bêta-test (Idan, 2026-11-07 : « On double
-// l'xp gagné partout ») : chaque gain est linéaire dans sa constante, et les valeurs réelles (doublées) sont vérifiées
-// juste en dessous.
+// Les mécanismes plus bas sont vérifiés avec les XP d'origine, d'avant les deux doublements (Idan, 2026-11-07 : « On
+// double l'xp gagné partout » ; 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau ») : chaque gain est linéaire dans
+// sa constante, et les valeurs réelles (× 4) sont vérifiées juste en dessous.
 const XP_CODE=/^progression\.(?!xp_curve).*_xp$/;
 const rules=P.createProgressionRules({reference:{...reference,formulaConstants:{...reference.formulaConstants,
-  rows:reference.formulaConstants.rows.map(r=>XP_CODE.test(r.code)?{...r,valeur:r.valeur/2}:r)}}});
+  rows:reference.formulaConstants.rows.map(r=>XP_CODE.test(r.code)?{...r,valeur:r.valeur/4}:r)}}});
 
 // Constantes d'équilibrage lues dans formula-constants.json (valeurs de 08-progression-and-experience.md
 // et décisions Idan du 2026-10-06) ; toutes les XP doublées après le bêta-test (Idan, 2026-11-07 : « On double l'xp
-// gagné partout »), la courbe, les seuils et les parts de régression inchangés.
+// gagné partout »), puis doublées à nouveau (Idan, 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau ») ; la courbe,
+// les seuils et les parts de régression inchangés.
 assert.deepEqual(real.constants,{
-  curve:10,startPosition:0.5,chanceCriticalFailure:60,chanceCriticalSuccess:-10,resistanceWound:16,resistanceOthers:-4,
-  constitutionHpHealed:2,courageChargeAttempt:100,speedFleeHex:4,charismaKnockout:100,perceptionBackstabWound:20,
-  forceLoadThreshold:0.25,forceLoadXp:40,
-  dexterityChain:100,dodgeWoundTaken:20,enduranceHeavyArmorHex:4,willCourageHeld:40,willRecovery:40,intelligenceWorstChoice:60,
-  skillWeaponAttack:20,skillWeaponHit:10,skillWeaponWound:10,skillTwoHandedAttack:20,skillOneHandedAttack:20,skillDualSequence:20,skillShieldBlock:20,
-  skillIntimidation:100,mountReturn:100,regenerationBurn:60,skillRegressionRatio:0.5,
-  spellCast:20,spellSuccess:10,spellEffect:10,schoolRegressionRatio:0.5,schoolFloor:1,magicPowerSpellEffect:40,manaReserveManaSpent:4
+  curve:10,startPosition:0.5,chanceCriticalFailure:120,chanceCriticalSuccess:-20,resistanceWound:32,resistanceOthers:-8,
+  constitutionHpHealed:4,courageChargeAttempt:200,speedFleeHex:8,charismaKnockout:200,perceptionBackstabWound:40,
+  forceLoadThreshold:0.25,forceLoadXp:80,
+  dexterityChain:200,dodgeWoundTaken:40,enduranceHeavyArmorHex:8,willCourageHeld:80,willRecovery:80,intelligenceWorstChoice:120,
+  skillWeaponAttack:40,skillWeaponHit:20,skillWeaponWound:20,skillTwoHandedAttack:40,skillOneHandedAttack:40,skillDualSequence:40,skillShieldBlock:40,
+  skillIntimidation:200,mountReturn:200,regenerationBurn:120,skillRegressionRatio:0.5,
+  spellCast:40,spellSuccess:20,spellEffect:20,schoolRegressionRatio:0.5,schoolFloor:1,magicPowerSpellEffect:80,manaReserveManaSpent:8
 });
 const tuned=P.createProgressionRules({reference:{formulaConstants:{rows:[{code:"progression.charisma.knockout_xp",valeur:80}]}}});
 assert.equal(tuned.constants.charismaKnockout,80,"une constante modifiée est prise en compte");
@@ -295,9 +296,10 @@ const again=campaign.applyMissionAftermath(restored.state,endRules.resolveMissio
 assert.equal(again.progression[0].changes.find(c=>c.name==="Charisme").xpBefore,xpSaved);
 assert.equal(m1Restored.xp.stats.Charisme,xpSaved+50);
 
-// Réputation de carrière (09 §1, Exploits et carrière ; barème confirmé par Idan le 2026-10-20).
+// Réputation de carrière (09 §1, Exploits et carrière ; barème confirmé par Idan le 2026-10-20) ; retour de mission
+// divisé par deux le 2026-11-08 (Idan : +10 indemne ou fatigué, +5 blessé).
 assert.deepEqual(rules.reputationConstants,{
-  criticalSuccess:1,criticalFailure:-1,enemyWoundShare:0.01,enemyKnockoutShare:0.1,returnWounded:10,returnUnhurt:20
+  criticalSuccess:1,criticalFailure:-1,enemyWoundShare:0.01,enemyKnockoutShare:0.1,returnWounded:5,returnUnhurt:10
 });
 const renowned={id:"player-1",team:"player",character:{reputation:137}};
 const ally={id:"player-2",team:"player",character:{reputation:120}};
@@ -314,8 +316,8 @@ const heroGain=rules.reputationGains(renowned.progress);
 assert.equal(heroGain.sources.criticalSuccesses,1);
 assert.ok(Math.abs(heroGain.sources.enemyWounds-0.01*(80+1000))<1e-9,"1 % de la réputation de chaque ennemi blessé");
 assert.ok(Math.abs(heroGain.sources.enemyKnockouts-0.1*(80+1000))<1e-9,"10 % de la réputation de chaque ennemi mis hors combat");
-assert.equal(heroGain.sources.missionReturn,20,"retour indemne par défaut");
-assert.ok(Math.abs(heroGain.total-(1+10.8+108+20))<1e-9);
+assert.equal(heroGain.sources.missionReturn,10,"retour indemne par défaut");
+assert.ok(Math.abs(heroGain.total-(1+10.8+108+10))<1e-9);
 // Un gobelin rapporte peu, un dragon beaucoup, une armée de troufions s'additionne (Idan, 2026-10-20).
 const army={};
 for(let i=0;i<30;i++) P.recordAttack(army,{id:"g"+i,team:"enemy",reputation:60},{},{ok:true,wound:true,damage:9,targetDown:true});
@@ -323,9 +325,9 @@ assert.ok(rules.reputationGains(army.progress).sources.enemyKnockouts>rules.repu
 // Échecs critiques, retour blessé (exclusif du retour indemne) et mission sans combat.
 const clumsy={...P.emptyLog(),criticalFailures:2};
 assert.deepEqual(rules.reputationGains(clumsy,{wounded:true}),{
-  sources:{criticalSuccesses:0,criticalFailures:-2,enemyWounds:0,enemyKnockouts:0,missionReturn:10},total:8
+  sources:{criticalSuccesses:0,criticalFailures:-2,enemyWounds:0,enemyKnockouts:0,missionReturn:5},total:3
 });
-assert.equal(rules.reputationGains(null).total,20,"mission sans combat : seulement le retour indemne");
+assert.equal(rules.reputationGains(null).total,10,"mission sans combat : seulement le retour indemne");
 
 // Campagne : le gain s'ajoute au delta de carrière et à la réputation totale ; un bilan rejoué ne recrédite rien.
 const veteran=restored.state.company.roster.find(m=>m.id===m1.id);
@@ -333,13 +335,25 @@ const repBefore=veteran.reputation,deltaBefore=Number(veteran.reputationCareerDe
 const heroAftermath={results:[{id:veteran.id,dead:false,wounded:true,woundDays:10,progress:renowned.progress}],captainDead:false};
 const repReport=campaign.applyMissionAftermath(restored.state,heroAftermath);
 const repLine=repReport.progression[0].reputation;
-assert.equal(repLine.sources.missionReturn,10,"issue « Blessé » : +10");
+assert.equal(repLine.sources.missionReturn,5,"issue « Blessé » : +5");
 assert.equal(repLine.before,repBefore);
 assert.ok(Math.abs(veteran.reputation-(repBefore+repLine.total))<1e-9);
 assert.ok(Math.abs(veteran.reputationCareerDelta-(deltaBefore+repLine.total))<1e-9);
 assert.equal(veteran.reputationBreakdown.careerDelta,veteran.reputationCareerDelta);
 assert.equal(campaign.applyMissionAftermath(restored.state,heroAftermath),repReport,"bilan rejoué : même rapport");
 assert.ok(Math.abs(veteran.reputation-(repBefore+repLine.total))<1e-9,"bilan rejoué : pas de double crédit");
+// La part calculée suit la progression (doc 09 ; Idan, 2026-11-08 : « brancher le recalcul ») : recalculée chaque matin
+// avec les valeurs du jour, la carrière gardée telle quelle.
+{
+  const calculatedBefore=veteran.reputation-veteran.reputationCareerDelta,careerBefore=veteran.reputationCareerDelta;
+  assert.ok(Math.abs(calculatedBefore-veteran.reputationBreakdown.calculated)<1e-9);
+  veteran.stats.Charisme+=20;
+  campaign.advanceTime(restored.state,1);
+  assert.ok(veteran.reputationBreakdown.calculated>calculatedBefore*1.1,"plus de Charisme, plus de réputation");
+  assert.equal(veteran.reputationCareerDelta,careerBefore);
+  assert.ok(Math.abs(veteran.reputation-(veteran.reputationBreakdown.calculated+careerBefore))<1e-9);
+  assert.equal(generator.recalculateReputation({name:"sans fiche"}),null);
+}
 assert.equal(veteran.xp.stats.Charisme,charismaXp+2*50,"bilan rejoué : l'XP n'est pas recréditée non plus");
 const reloaded=restoreCampaign(serializeCampaign(restored.state));
 assert.equal(reloaded.state.company.roster.find(m=>m.id===m1.id).reputationCareerDelta,veteran.reputationCareerDelta,"le delta de carrière est sauvegardé");

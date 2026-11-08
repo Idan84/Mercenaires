@@ -48,7 +48,7 @@ const morning=()=>{ state.day+=1; return review.morning(state); };
 // Une étoile de plus : la réputation au seuil du niveau suivant.
 const STARS=reference.reputationStars.rows;
 const nextStar=m=>{ const next=STARS.find(r=>r.niveau===review.starLevel(m.reputation)+1); m.reputation=Number(next.reputation_min); };
-assert.deepEqual([92,93,113,137,1600].map(x=>review.starLevel(x)),[1,2,3,4,15]);
+assert.deepEqual([92,93,140,209,18100].map(x=>review.starLevel(x)),[1,2,3,4,15],"seuils × 1,5 (Idan, 2026-11-08)");
 
 // Le premier matin note les étoiles de chacun, sans test ; ensuite, seulement une étoile de plus.
 assert.deepEqual(morning().tests,[]);

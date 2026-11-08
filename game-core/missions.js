@@ -26,6 +26,10 @@
     const skills=new Map(rows(reference?.skills).map(s=>[s.nom,s]));
     const qualityCode=new Map(rows(reference?.itemQualities).map(q=>[q.nom,q.code]));
     const mountByCode=new Map(rows(reference?.mounts).map(x=>[x.code,x]));
+    // Réputation d'une fiche d'ennemi (Idan, 2026-11-08) : 3 × ses points de combat (reputation.enemy.points_factor).
+    const enemyReputationFactor=Number(rows(reference?.formulaConstants).find(r=>r.code==="reputation.enemy.points_factor")?.valeur??3);
+    // Accessoires sur les morts (Idan, 2026-11-08) : chance (%) par emplacement d'accessoire.
+    const accessoryChance=Number(rows(reference?.formulaConstants).find(r=>r.code==="loot.accessory.chance_per_slot")?.valeur??2);
     const die=sides=>1+Math.floor(random()*sides);
     const pick=list=>list.length?list[Math.floor(random()*list.length)]:"";
     function weighted(list){
@@ -214,6 +218,11 @@
       c.role=arch.nom;
       c.archetype=arch.code;
       c.name=name||arch.nom;
+      // Sa réputation est celle de sa fiche, pas celle du personnage de base (Idan, 2026-11-08 : un gobelin novice valait
+      // autant qu'un chef) : 3 × ses points de combat ; tuer en rapporte 10 % (doc 09).
+      c.reputation=enemyReputationFactor*(Number(arch.points)||0);
+      c.reputationCareerDelta=0;
+      delete c.reputationBreakdown;
       c.stats={...c.stats,...arch.caracteristiques};
       c.resistances={...c.resistances,...arch.resistances};
       c.pvMax=c.pv=arch.pv;
@@ -356,12 +365,30 @@
       const b=arch?.butin||{};
       return {equipement:b.equipement==null?100:Number(b.equipement)||0,objets:Array.isArray(b.objets)?b.objets:[]};
     }
+    // Les 13 emplacements d'accessoire de la fiche (equipment-slots.json : le corps sans l'armure, et les 6 bagues) et la
+    // famille d'objet de chacun (casque, amulette, cape, gants, ceinturon, culotte, bottes, bague).
+    const ACCESSORY_SLOTS=(()=>{
+      const slots=rows(reference?.equipmentSlots).filter(s=>(s.group==="body"&&s.id!=="armor")||s.group==="rings").map(s=>s.id);
+      const list=slots.length?slots:["head","amulet","cape","gloves","belt","pants","boots","ring_1","ring_2","ring_3","ring_4","ring_5","ring_6"];
+      return list.map(slot=>({slot,type:slot==="head"?"helmet":/^ring_/.test(slot)?"ring":slot}));
+    })();
+    // Accessoires laissés par un ennemi mort (Idan, 2026-11-08 : « Sur chaque mort, on a 2% de chance de dropper un
+    // accessoire par slot d'un tier equivalent au tier de l'ennemi mort ») : un tirage par emplacement, un objet de sa
+    // famille au tier de la fiche ; seulement les humanoïdes (« La règle, c'est plutôt humanoïde ou non » : ni loup ni
+    // chauve-souris ; les goules, zombies, spectres et trolls, oui).
+    function accessoryDrops(arch){
+      if(!arch||arch.humanoide===false) return [];
+      const tier=Number(arch.tier)||1;
+      return ACCESSORY_SLOTS.filter(()=>random()*100<accessoryChance).map(({type})=>({type,tier}));
+    }
     function enemyLoot(c,makeItem){
-      const b=lootOf(archetype(c?.archetype));
+      const arch=archetype(c?.archetype),b=lootOf(arch);
       // Une arme naturelle (griffes, toucher spectral) ne se ramasse pas.
       const kept=(c?.items||[]).filter(it=>!it.natural).filter(()=>b.equipement>=100||random()*100<b.equipement);
       const extra=b.objets.filter(o=>random()*100<(Number(o.chance)||0)).map(o=>makeItem?makeItem(o.type,o.nom,Number(o.tier)||1):null).filter(Boolean);
-      return [...kept,...extra];
+      // Sans nom : makeItem tire un objet de la famille au hasard.
+      const accessories=accessoryDrops(arch).map(o=>makeItem?makeItem(o.type,null,o.tier):null).filter(Boolean);
+      return [...kept,...extra,...accessories];
     }
 
     // Issue (doc 17 §8). Victoire : récompense du contrat, coffre (or et objets), le butin des ennemis morts (selon leur
@@ -401,7 +428,7 @@
     // Carte (Idan, 2026-11-01 : « une ambiance à la X-com ») : 30 × 15 cases pour les contrats.
     function mapSize(offer){ const map=definition(offer.code)?.carte||{}; return {cols:map.colonnes||30,rows:map.lignes||15}; }
 
-    return {definition,archetype,points,missionMin,lootOf,campsOf,budgetOf,rollBudget,renownLevel,rollMissionLevel,rollCamp,estimation,contractReward,
+    return {definition,archetype,points,missionMin,lootOf,accessoryDrops,ACCESSORY_SLOTS,campsOf,budgetOf,rollBudget,renownLevel,rollMissionLevel,rollCamp,estimation,contractReward,
       createOffer,createHunt,rollBeasts,huntDistance,orderText,applyArchetype,buildEnemies,outcome,deathMultiplier,rollChestGold,chestPlan,mapSize,mountSheet,createMount};
   }
 

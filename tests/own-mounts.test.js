@@ -315,7 +315,7 @@ m = newMission([rider], foes(1));
 m.aftermath = {results: [{id: rider.id, name: rider.name, dead: false}]};
 const equides = Number(rider.skills.animal["Équidés"]) || 0;
 after = api.settleOwnMissionMounts(m);
-assert.deepEqual(m.mountReturns, [{id: rider.id, family: "Équidés", xp: 100}], "+100 XP au retour (50, doublé après le bêta-test)");
+assert.deepEqual(m.mountReturns, [{id: rider.id, family: "Équidés", xp: 200}], "+200 XP au retour (50, doublé deux fois : Idan, 2026-11-07 et 2026-11-08)");
 assert.ok(Number(rider.skills.animal["Équidés"]) > equides, "ses Équidés montent : " + equides + " → " + rider.skills.animal["Équidés"]);
 assert.deepEqual(after.fatigued.map(i => i.id), [second.id]);
 assert.equal(second.recovery.kind, "fatigued");

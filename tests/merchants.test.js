@@ -387,4 +387,17 @@ assert.equal(both.visitOf(twoProbe,{renown}).buyback(plates).specialty,true);
 assert.equal(both.visitOf(twoProbe,{renown}).buyback(item("Pistolet",3)).specialty,false);
 assert.equal(affinity.affinity({people:"Nain",culture:"Nains du chaos",alignment:"Chaotique neutre"},{people:"Nain",culture:"Nains des montagnes",alignment:"Neutre bon"}).components.cultureRule,"cousins");
 
+// Sans nom, un objet à bonus est tiré au hasard dans sa famille (accessoires sur les morts, Idan, 2026-11-08), au tier
+// demandé et à sa qualité, sans propriétaire ; une arme ou une armure garde son nom obligatoire.
+for(const type of ["helmet","amulet","cape","gloves","belt","pants","boots","ring"]){
+  const names=new Set();
+  for(let i=0;i<30;i++){
+    const it=generator.createItemByName(type,null,3);
+    assert.ok(it&&it.itemType===type&&it.tier===3&&it.owner===null&&it.qualityCode,type);
+    names.add(it.name);
+  }
+  assert.ok(names.size>1,type+" : tiré au hasard");
+}
+assert.equal(generator.createItemByName("weapon",null,2),null);
+
 console.log("Marchands : Thorval Poudredefeu (4 armes à feu, 10 articles T2–T4), affinité, achat, rachat, intendant, rien que pour toi ; 32 marchands, chaque objet chez deux d'entre eux — OK");

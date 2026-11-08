@@ -1169,6 +1169,7 @@
 
     // Un objet précis, désigné par son type et son nom, à un tier donné et à sa qualité, sans propriétaire (marchands,
     // Idan 2026-10-30). itemType : weapon, armor, potion ou un objet à bonus (boots, belt, amulet…). null s'il est inconnu.
+    // Pour un objet à bonus, name = null tire un objet de sa famille au hasard.
     function createItemByName(itemType, name, tier = 1) {
       const holder = {id:"shop", reputation:0};
       let item = null;
@@ -1194,7 +1195,9 @@
         return row ? {id:makeItemId(holder, "mount"), templateId:`mount:${row.code}`, name:row.nom, itemType:"mount", slot:"mount",
           category:row.espece || null, mountCode:row.code, exchangeTier:Number(row.rang_echange) || 1, owner:null} : null;
       } else if (STAT_GEAR[itemType]) {
-        const row = STAT_GEAR[itemType].rows.find(r => r.nom === name);
+        // Sans nom : un objet de la famille tiré au hasard (accessoires sur les morts, Idan, 2026-11-08).
+        const list = STAT_GEAR[itemType].rows;
+        const row = name == null ? (list.length ? randomChoice(list) : null) : list.find(r => r.nom === name);
         item = row ? statGearItem(holder, itemType, row) : null;
       }
       if (!item) return null;
@@ -1411,6 +1414,17 @@
         careerDelta: character.reputationCareerDelta || 0
       };
       return calculated + (character.reputationCareerDelta || 0);
+    }
+
+    // Recalcul de la part calculée après progression (doc 09, Idan, 2026-11-08 : « brancher le recalcul ») : même formule
+    // qu'à la création, sur les valeurs du jour ; le delta de carrière est gardé tel quel.
+    function recalculateReputation(character) {
+      if (!character?.stats || !character?.skills) return null;
+      const before = Number(character.reputation) || 0;
+      const after = calcReputation(character);
+      if (!Number.isFinite(after)) return null;
+      character.reputation = after;
+      return {before, after};
     }
 
     // Affinité avec le capitaine qui recrute (09 §4 ; Idan, 2026-10-20) : ±20 % au plus, une bonne
@@ -1842,6 +1856,7 @@
       createMercenary,
       createCaptain,
       salaryDemand,
+      recalculateReputation,
       createInitialSquad,
       rollInitialSquadSize,
       auditReferenceData,

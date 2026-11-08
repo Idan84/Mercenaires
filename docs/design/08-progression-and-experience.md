@@ -53,14 +53,14 @@ Pour les caractéristiques, **pas de plafond maximum** ; pour les compétences n
 
 ## 2 — XP naturelle
 
-> **Bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout (combat / entrainement au camp ....) »)** : toutes les XP de cette page et de la formation au camp (entraînement libre, médecin, directeur, professeur, Perfectionner) sont **doublées** ; les valeurs ci-dessous sont déjà doublées, `data/reference/formula-constants.json` fait foi. La courbe XP → niveau ne change pas.
+> **Bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout (combat / entrainement au camp ....) »)** : toutes les XP de cette page et de la formation au camp (entraînement libre, médecin, directeur, professeur, Perfectionner) sont **doublées**, puis **doublées à nouveau** (Idan, 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau ») : × 4 en tout ; les valeurs ci-dessous sont à jour, `data/reference/formula-constants.json` fait foi. La courbe XP → niveau ne change pas.
 
 Principe général : les caractéristiques progressent en conséquence d’actions et de résultats d’actions en combat. Un plafond de gain par mission est envisagé mais **pas encore chiffré**.
 
 ### Chance — « La chance tourne »
 
-- **EC confirmé** : `+60 XP Chance`.
-- **CC** : `−10 XP Chance`.
+- **EC confirmé** : `+120 XP Chance`.
+- **CC** : `−20 XP Chance`.
 - L’XP ne descend jamais sous 0.
 
 Avec les formules actuelles de CC/EC, le système crée un équilibre statistique naturel autour de **Chance 75** : en dessous, la tendance moyenne est à la hausse ; au-dessus, à la baisse.
@@ -69,8 +69,8 @@ Avec les formules actuelles de CC/EC, le système crée un équilibre statistiqu
 
 À chaque **blessure effectivement subie** d’un type de dégâts :
 
-- résistance correspondant au type : `+16 XP` ;
-- chacune des quatre autres résistances : `−4 XP` ;
+- résistance correspondant au type : `+32 XP` ;
+- chacune des quatre autres résistances : `−8 XP` ;
 - aucune résistance ne descend sous `0 XP` ;
 - aucun plafond maximum.
 
@@ -84,7 +84,7 @@ Types concernés : Physique, Feu, Froid, Foudre, Poison.
 
 Pour chaque **1 PV réellement restauré par un soin** :
 
-- `+2 XP Constitution`.
+- `+4 XP Constitution`.
 - Les PV de soin qui dépassent les PV max ne rapportent rien.
 - Seuls les PV réellement récupérés comptent.
 
@@ -92,19 +92,19 @@ Pour chaque **1 PV réellement restauré par un soin** :
 
 Chaque **charge tentée contre un ennemi**, même ratée ou finie en chute (« le courage, c'est de tenter » — Idan, 2026-10-06) :
 
-- `+100 XP Courage`.
+- `+200 XP Courage`.
 
 ### Vitesse — « Cours Forest, cours ! »
 
 Chaque **case parcourue en état de fuite** :
 
-- `+4 XP Vitesse`.
+- `+8 XP Vitesse`.
 
 ### Charisme — « Triste Monde ! »
 
 Chaque **adversaire mis hors combat** par le mercenaire (décision Idan, 2026-10-06 : les ennemis ne font pas de jet de mort, « tué » = hors combat) :
 
-- `+100 XP Charisme`.
+- `+200 XP Charisme`.
 
 Le Charisme inclut ici l’idée d’aura, de présence et de réputation martiale, pas seulement l’aisance sociale.
 
@@ -112,7 +112,7 @@ Le Charisme inclut ici l’idée d’aura, de présence et de réputation martia
 
 Chaque fois qu’un mercenaire est **effectivement blessé par une attaque reçue dans le dos** :
 
-- `+20 XP Perception`.
+- `+40 XP Perception`.
 
 ### Force — porter son équipement
 
@@ -122,41 +122,41 @@ Décision Idan du 2026-10-07 : la Force progresse selon le **rapport entre le po
 - À chaque **activation** en mission, avec la charge et la Force **du moment** (relevées à chaque activation : un changement d'équipement ne modifie pas l'XP déjà acquise) :
 
 $$
-XP_{Force}=40\times\max\left(0;\ \frac{Charge}{Force}-0{,}25\right)
+XP_{Force}=80\times\max\left(0;\ \frac{Charge}{Force}-0{,}25\right)
 $$
 
 - Un équipement léger pour le mercenaire (charge sous le quart de sa Force) ne rapporte rien ; plus il est lourd pour lui, plus il progresse. Le rendement baisse de lui-même quand la Force monte : le mercenaire tend à devenir « aussi fort que ce qu'il porte ».
-- Repères (≈ 5 activations par mission) : hache double + plates (charge 52) à Force 55 → ≈ 140 XP par mission ; épée longue + écu + mailles (28) → ≈ 50 XP ; dague + arc + cuir (14) → 0.
+- Repères (≈ 5 activations par mission) : hache double + plates (charge 52) à Force 55 → ≈ 280 XP par mission ; épée longue + écu + mailles (28) → ≈ 100 XP ; dague + arc + cuir (14) → 0.
 
 ### Dextérité, Esquive, Endurance, Volonté, Intelligence (décisions Idan du 2026-10-20)
 
 Chaque caractéristique pourra recevoir d'autres sources plus tard : leurs XP s'additionnent.
 
-- **Dextérité** : chaque **enchaînement réussi** (attaque, tir ou séquence à deux armes supplémentaire) : `+100 XP`.
-- **Esquive** : chaque **coup encaissé qui blesse** : `+20 XP`. Le contrecoup de sa propre arme n'en est pas un.
-- **Endurance** : chaque **case parcourue en armure lourde** (plates, écailles) : `+4 XP`.
-- **Volonté** : chaque **test de Courage réussi** : `+40 XP` ; chaque **reprise de contrôle** réussie en fuite : `+40 XP`.
-- **Intelligence** : il apprend de ses erreurs : chaque fois qu'il choisit le **pire type de dégâts** : `+60 XP`. Ce mauvais choix n'arrive qu'aux mercenaires sous 50 d'Intelligence.
+- **Dextérité** : chaque **enchaînement réussi** (attaque, tir ou séquence à deux armes supplémentaire) : `+200 XP`.
+- **Esquive** : chaque **coup encaissé qui blesse** : `+40 XP`. Le contrecoup de sa propre arme n'en est pas un.
+- **Endurance** : chaque **case parcourue en armure lourde** (plates, écailles) : `+8 XP`.
+- **Volonté** : chaque **test de Courage réussi** : `+80 XP` ; chaque **reprise de contrôle** réussie en fuite : `+80 XP`.
+- **Intelligence** : il apprend de ses erreurs : chaque fois qu'il choisit le **pire type de dégâts** : `+120 XP`. Ce mauvais choix n'arrive qu'aux mercenaires sous 50 d'Intelligence.
 
 ### Puissance magique, Réserve de mana, écoles et sorts (décisions Idan du 2026-10-25)
 
 Détail dans le doc 12 (« Écoles : progression et régression »).
 
-- **Puissance magique** : chaque sort réussi qui a un vrai effet : `+40 XP`.
-- **Réserve de mana** : chaque point de mana dépensé, même si le sort rate : `+4 XP`.
-- **Chance** : les critiques des sorts comptent comme ceux des armes (`−10` / `+60`), et pour la réputation aussi (doc 09).
-- **Sort et école** : chaque lancer `+20 XP`, `+10` s'il réussit, `+10` s'il a un vrai effet ; les deux écoles opposées perdent chacune un quart du gain de l'école ; une école ne descend pas sous 1 ; les sorts ne régressent pas, plafond 100.
+- **Puissance magique** : chaque sort réussi qui a un vrai effet : `+80 XP`.
+- **Réserve de mana** : chaque point de mana dépensé, même si le sort rate : `+8 XP`.
+- **Chance** : les critiques des sorts comptent comme ceux des armes (`−20` / `+120`), et pour la réputation aussi (doc 09).
+- **Sort et école** : chaque lancer `+40 XP`, `+20` s'il réussit, `+20` s'il a un vrai effet ; les deux écoles opposées perdent chacune un quart du gain de l'école ; une école ne descend pas sous 1 ; les sorts ne régressent pas, plafond 100.
 - Les dégâts des sorts et de l'arme enflammée comptent pour les **Résistances** de la cible (brûlure : Résistance au feu) et, pour le lanceur, comme un coup d'arme (Charisme, réputation) ; les soins comptent pour la **Constitution** du soigné.
 
 ### Compétences (décisions Idan du 2026-10-20)
 
 - Même courbe que les caractéristiques ; **sans plafond** depuis le 2026-11-06 (Idan : « sky is the limit ») : `valeur_maximale` n'est plus une limite. Auparavant plafond à 100.
 - Les valeurs générées ont des décimales : une compétence est un **niveau continu**, 30,6 = niveau 30, à 60 % de la tranche vers 31. Le bilan arrondit au point entier.
-- **Arme et catégorie** : chaque attaque portée avec une arme : `+20 XP` à l'arme précise et à sa catégorie ; `+10` de plus si elle touche réellement (non bloquée), `+10` si elle blesse. La chute de charge et le projectile perdu (même tir) ne comptent pas.
-- **Styles** : Combat à une main `+20 XP` par attaque avec une arme à une main tenue seule, mêlée ou tir (Idan, 2026-11-02) ; Combat à deux mains `+20 XP` par attaque de mêlée à deux mains ; Combat à deux armes `+20 XP` par séquence où **les deux armes ont réellement frappé** (une seconde arme déchargée ou hors de portée ne donne rien, revue Chatty du 2026-10-20) ; Boucliers et le bouclier précis `+20 XP` chacun par blocage.
-- **Intimidation** : chaque adversaire qui rate son test de Courage face au mercenaire : `+100 XP`.
-- **Compétences animales** (Idan, 2026-11-07 : « xp catégorie animal pour le cavalier ») : chaque attaque de sa monture, quand il la monte ou qu'elle se bat à pied à ses côtés (le loup qu'un humain emmène, sa monture quand il est descendu ; Idan : « Oui bien sur »), comme une arme : `+20 XP` à la famille de la monture (Équidés…) et à Compagnon animal, `+10` si elle touche, `+10` si elle blesse (mêmes constantes que les armes ; sans recul des autres familles).
-- **Rentrer vivant avec sa monture** (Idan, 2026-11-07 : « 50 XP oui », doublé depuis) : quand le mercenaire et la monture ou le compagnon avec lequel il est parti survivent tous deux à la chaîne de fin de mission, `+100 XP` à Compagnon animal et à la famille de l'animal (`progression.skill.mount_return_xp`).
+- **Arme et catégorie** : chaque attaque portée avec une arme : `+40 XP` à l'arme précise et à sa catégorie ; `+20` de plus si elle touche réellement (non bloquée), `+20` si elle blesse. La chute de charge et le projectile perdu (même tir) ne comptent pas.
+- **Styles** : Combat à une main `+40 XP` par attaque avec une arme à une main tenue seule, mêlée ou tir (Idan, 2026-11-02) ; Combat à deux mains `+40 XP` par attaque de mêlée à deux mains ; Combat à deux armes `+40 XP` par séquence où **les deux armes ont réellement frappé** (une seconde arme déchargée ou hors de portée ne donne rien, revue Chatty du 2026-10-20) ; Boucliers et le bouclier précis `+40 XP` chacun par blocage.
+- **Intimidation** : chaque adversaire qui rate son test de Courage face au mercenaire : `+200 XP`.
+- **Compétences animales** (Idan, 2026-11-07 : « xp catégorie animal pour le cavalier ») : chaque attaque de sa monture, quand il la monte ou qu'elle se bat à pied à ses côtés (le loup qu'un humain emmène, sa monture quand il est descendu ; Idan : « Oui bien sur »), comme une arme : `+40 XP` à la famille de la monture (Équidés…) et à Compagnon animal, `+20` si elle touche, `+20` si elle blesse (mêmes constantes que les armes ; sans recul des autres familles).
+- **Rentrer vivant avec sa monture** (Idan, 2026-11-07 : « 50 XP oui », doublé deux fois depuis) : quand le mercenaire et la monture ou le compagnon avec lequel il est parti survivent tous deux à la chaîne de fin de mission, `+200 XP` à Compagnon animal et à la famille de l'animal (`progression.skill.mount_return_xp`).
 - **Nos montures** (Idan, 2026-11-07 : « xp licorne ») : leur fiche à elles progresse avec ces mêmes règles (doc 04, « Combat à cheval »).
 - **On progresse au détriment des autres** : chaque gain fait perdre, au total, **la moitié de ce gain**, à parts égales, aux compétences que le mercenaire possède (valeur > 0) :
   - un gain d'arme : les **armes des autres catégories** (l'épée longue fait reculer haches, marteaux… mais pas les autres lames longues) ;

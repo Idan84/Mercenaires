@@ -78,14 +78,14 @@ delete alchemist.skills.martial[POISONER];
 assert.equal(study.dailyChance(state,active).masterBonus,0,"l'Alchimiste n'aide que s'il sait lui-même");
 alchemist.skills.martial[POISONER]=true;
 
-// Il sait : il peut enduire son arme d'une fiole ; l'Alchimiste gagne 5 XP de Transmission par élève.
+// Il sait : il peut enduire son arme d'une fiole ; l'Alchimiste gagne 20 XP de Transmission par élève.
 const engine=createCombatEngine(reference);
 assert.equal(engine.canPoisonWeapon({character:student}),false);
 const transmission=alchemist.skills.camp["Transmission du savoir"];
 dice=[0];
 const [day]=rules.advanceTime(state,1);
 assert.deepEqual(day.poisonStudy.learned.map(l=>[l.mercenary.id,l.days]),[[student.id,1]]);
-assert.equal(day.poisonStudy.masterXp,10);
+assert.equal(day.poisonStudy.masterXp,20);
 assert.ok(alchemist.skills.camp["Transmission du savoir"]>transmission);
 assert.equal(engine.canPoisonWeapon({character:student}),true);
 assert.deepEqual(student.history.log.filter(e=>e.kind==="poison_study_done").map(e=>e.days),[1]);

@@ -22,7 +22,8 @@ function seeded(seed){
 }
 const reference={oneShotMissions:read("one-shot-missions.json"),enemyArchetypes:read("enemy-archetypes.json"),weapons:read("weapons.json"),
   baseArmors:read("base-armors.json"),skills:read("skills.json"),itemQualities:read("item-qualities.json"),
-  reputationStars:read("reputation-stars.json"),spells:read("spells.json")};
+  reputationStars:read("reputation-stars.json"),spells:read("spells.json"),formulaConstants:read("formula-constants.json"),
+  equipmentSlots:read("equipment-slots.json")};
 const rules=createMissionRules({reference,random:seeded(7)});
 
 // Camps (Idan, 2026-11-01) : gobelin, orc, homme-bête, voleurs ou ogre au hasard. Budget par métal (doc 17 §16) :
@@ -106,15 +107,16 @@ assert.ok(mean(sizes[15])>50&&Math.max(...sizes[15])<=100,"5★ or : une armée,
   assert.equal(offer.enemyCount,offer.camp.enemies.length);
 }
 
-// Niveau de la mission : niveau de Renommée de la compagnie (reputation-stars.json) + écart de −3 à +2, borné de 1 à 15.
-// Seuils recalés le 2026-11-06 (reputation-stars.json).
-assert.deepEqual([rules.renownLevel(0),rules.renownLevel(451),rules.renownLevel(452),rules.renownLevel(800),rules.renownLevel(6400)],[1,2,3,6,15]);
+// Niveau de la mission : niveau de Renommée de la compagnie (reputation-stars.json) + écart de −4 à +1 (Idan, 2026-11-08),
+// borné de 1 à 15.
+// Seuils × 1,5 par étoile depuis le 2026-11-08 (reputation-stars.json, renommée = 4 × réputation).
+assert.deepEqual([rules.renownLevel(0),rules.renownLevel(559),rules.renownLevel(560),rules.renownLevel(1884),rules.renownLevel(72400)],[1,2,3,6,15]);
 const levelsAt=renown=>Array.from({length:3000},()=>rules.rollMissionLevel(rules.definition(),renown));
-const at3=levelsAt(500),at15=levelsAt(8000);
-assert.deepEqual([...new Set(at3)].sort((a,b)=>a-b),[1,2,3,4,5]);
-assert.ok(Math.abs(share(at3,1)-2/6)<0.04,"3★ bronze : −3 et −2 tombent au niveau 1");
-assert.deepEqual([...new Set(at15)].sort((a,b)=>a-b),[12,13,14,15]);
-assert.ok(Math.abs(share(at15,15)-0.5)<0.04,"5★ or : 0, +1 et +2 restent au niveau 15");
+const at3=levelsAt(700),at15=levelsAt(80000);
+assert.deepEqual([...new Set(at3)].sort((a,b)=>a-b),[1,2,3,4]);
+assert.ok(Math.abs(share(at3,1)-3/6)<0.04,"3★ bronze : −4, −3 et −2 tombent au niveau 1");
+assert.deepEqual([...new Set(at15)].sort((a,b)=>a-b),[11,12,13,14,15]);
+assert.ok(Math.abs(share(at15,15)-2/6)<0.04,"5★ or : 0 et +1 restent au niveau 15");
 
 // Offre (Idan, 2026-11-01) : jours de marche 1 à niveau ; récompense = 5 000 + tirage 30–40 × budget × niveau ; valable 3 à
 // 6 jours ; un des trois ordres du peuple du camp.
@@ -174,6 +176,13 @@ assert.equal(chief.skills.martial["Port d’armure intermédiaire"],true);
 assert.equal(chief.skills.social.Intimidation,caid.intimidation);
 assert.equal(chief.skills.magic.Feu,0,"la fiche remplace la magie de la base (Idan, 2026-11-07 : une fiche sans sorts n'en lance aucun)");
 assert.deepEqual([chief.spells,chief.aiSpells],[[],[]]);
+// Réputation de la fiche (Idan, 2026-11-08) : 3 × ses points de combat, pas celle du personnage de base (100 à 180,
+// même pour un novice) ; tuer en rapporte 10 % (doc 09).
+assert.equal(reference.formulaConstants.rows.find(r=>r.code==="reputation.enemy.points_factor").valeur,3);
+assert.equal(chief.reputation,3*caid.points);
+for(const e of enemies) assert.equal(e.reputation,3*rules.archetype(e.archetype).points,e.name);
+assert.ok(enemies.slice(0,-1).every(e=>e.reputation<chief.reputation),"un troufion vaut moins que son chef");
+assert.deepEqual([chief.reputationCareerDelta,chief.reputationBreakdown],[0,undefined]);
 const [sabre,rondache,armor]=chief.items;
 assert.deepEqual([sabre.name,sabre.itemType,sabre.tier,sabre.qualityCode,sabre.category,sabre.combatFamily,chief.equipment.slots.weapon_set_1_main],
   ["Sabre","weapon",3,"luxury","Lames longues","melee",sabre.id]);
@@ -212,11 +221,45 @@ for(const a of reference.enemyArchetypes.rows){
 {
   const breakRules=createMissionRules({reference,random:seeded(21)});
   let novice=null;
-  for(let day=50;!novice;day++) novice=rules.buildEnemies(rules.createOffer({day,level:1}),()=>base()).find(e=>breakRules.archetype(e.archetype).tier===1);
+  for(let day=50;!novice;day++) novice=rules.buildEnemies(rules.createOffer({day,level:1}),()=>base())
+    .find(e=>breakRules.archetype(e.archetype).tier===1&&e.items.some(it=>!it.natural));
   let kept=0,carried=0;
   // Une arme naturelle (griffes, morsure) ne se ramasse jamais : on ne compte que l'équipement.
   for(let i=0;i<500;i++){ kept+=breakRules.outcome(offer,{victory:true,deadEnemies:[novice]}).loot.length; carried+=novice.items.filter(it=>!it.natural).length; }
   assert.ok(Math.abs(kept/carried-0.9)<0.04,`T1 : 90 % récupérés (${kept} / ${carried})`);
+}
+// Accessoires sur les morts (Idan, 2026-11-08 : « Sur chaque mort, on a 2% de chance de dropper un accessoire par slot
+// d'un tier equivalent au tier de l'ennemi mort » ; « La règle, c'est plutôt humanoïde ou non ») : 13 emplacements, un
+// tirage chacun, un objet de la famille au tier de la fiche ; ni loup ni chauve-souris de la Cour de sang.
+{
+  assert.equal(reference.formulaConstants.rows.find(r=>r.code==="loot.accessory.chance_per_slot").valeur,2);
+  assert.deepEqual(rules.ACCESSORY_SLOTS.map(s=>s.type),["helmet","amulet","cape","gloves","belt","pants","boots","ring","ring","ring","ring","ring","ring"]);
+  assert.deepEqual(createMissionRules({reference:{}}).ACCESSORY_SLOTS,rules.ACCESSORY_SLOTS,"sans equipment-slots.json : les mêmes 13");
+  assert.ok(reference.enemyArchetypes.rows.every(a=>typeof a.humanoide==="boolean"),"chaque fiche dit si elle est humanoïde");
+  assert.deepEqual(reference.enemyArchetypes.rows.filter(a=>!a.humanoide).map(a=>a.code).sort(),
+    ["court_bat","court_bat_elite","court_bat_novice","court_bat_veteran","court_wolf","court_wolf_elite","court_wolf_novice","court_wolf_veteran"]);
+  for(const code of ["court_ghoul","cult_zombie","cult_specter","troll","undead_troll","cult_skeleton_warrior"]) assert.equal(rules.archetype(code).humanoide,true,code+" : il droppe");
+  const dropRules=createMissionRules({reference,random:seeded(31)});
+  const spearman=dropRules.archetype("goblin_spearman"),N=6000;
+  let drops=0,rings=0;
+  for(let i=0;i<N;i++){
+    const d=dropRules.accessoryDrops(spearman);
+    drops+=d.length; rings+=d.filter(x=>x.type==="ring").length;
+    assert.ok(d.every(x=>x.tier===spearman.tier),"au tier de la fiche");
+  }
+  assert.ok(Math.abs(drops/N-0.26)<0.03,"≈ 0,26 accessoire par ennemi : "+drops/N);
+  assert.ok(Math.abs(rings/N-0.12)<0.02,"≈ 0,12 bague : "+rings/N);
+  for(let i=0;i<500;i++) assert.deepEqual(dropRules.accessoryDrops(dropRules.archetype("court_wolf")),[],"un loup ne laisse rien");
+  // Au bilan : makeItem(famille, sans nom, tier) fabrique l'objet ; il rejoint le butin sans propriétaire.
+  const always=JSON.parse(JSON.stringify(reference));
+  always.formulaConstants.rows.find(r=>r.code==="loot.accessory.chance_per_slot").valeur=100;
+  const made=[];
+  const sure=createMissionRules({reference:always,random:seeded(32)});
+  const won=sure.outcome(offer,{victory:true,deadEnemies:[enemies[0]],makeItem:(type,name,tier)=>(made.push([type,name,tier]),{id:"a"+made.length,name:type,owner:7})});
+  const tier=sure.archetype(enemies[0].archetype).tier;
+  assert.deepEqual(made,sure.ACCESSORY_SLOTS.map(s=>[s.type,null,tier]),"un par emplacement à 100 %");
+  assert.equal(won.loot.filter(i=>/^a\d+$/.test(i.id)).length,13);
+  assert.ok(won.loot.every(i=>i.owner===null));
 }
 // Chefs (Idan, 2026-11-01 : « les chefs qui n'ont pas de points mesurés ») : toutes les fiches ont leurs points, et chaque
 // chef pèse plus que le précédent de son peuple.
@@ -274,7 +317,7 @@ const files={peoples:"peoples.json",cultures:"cultures.json",socialOrigins:"soci
   d6Scale:"d6-generation-scale.json",generationMatrix:"generation-matrix.json",skills:"skills.json",characteristics:"characteristics.json",
   formulaConstants:"formula-constants.json",weapons:"weapons.json",baseArmors:"base-armors.json",itemQualities:"item-qualities.json",
   equipmentSlots:"equipment-slots.json",startingEquipmentGeneration:"starting-equipment-generation.json",binaryAptitudeGrants:"binary-aptitude-grants.json",
-  alignmentGeneration:"alignment-generation.json",renamedNames:"renamed-names.json"};
+  alignmentGeneration:"alignment-generation.json",renamedNames:"renamed-names.json",reputationStars:"reputation-stars.json"};
 const full=Object.fromEntries(Object.entries(files).map(([key,file])=>[key,read(file)]));
 const generator=createGenerator(full,{random:seeded(3),nameGenerator:(people,id)=>people+" "+id});
 const tavern=createTavernRules({reference:full,random:seeded(4)});
@@ -284,17 +327,35 @@ const campaign=createCampaignRules({generator,tavern,reference:full,missions:cre
 const captain=generator.createCaptain({id:1,name:"Capitaine"});
 const squad=[2,3].map(id=>generator.createMercenary({id,captain}));
 const game=campaign.createCampaign({captain,squad});
-// Taverne à 5 missions (Idan, 2026-11-01) : 5 cases, ici toutes des contrats (pas de garde du corps dans cette campagne).
-const offers=()=>campaign.boardOffers(game);
-assert.equal(campaign.tavernSlots(game).length,5);
-assert.ok(offers().length===5&&offers().every(o=>o.code==="cleanup"),"5 contrats au tableau");
+// Tableau des missions (Idan, 2026-11-08) : 3 + 1 case par étoile de la compagnie, ici toutes des contrats (pas de garde
+// du corps dans cette campagne).
+const offers=()=>campaign.boardOffers(game),size=3+campaign.companyRenownLevel(game);
+assert.equal(campaign.tavernSlots(game).length,size);
+assert.ok(offers().length===size&&offers().every(o=>o.code==="cleanup"),size+" contrats au tableau");
 assert.equal(campaign.fillTavernBoard(game),false,"tableau plein");
 const first=offers().reduce((a,b)=>a.expiresDay<=b.expiresDay?a:b);
 const reports=campaign.advanceTime(game,first.expiresDay-game.day);
 assert.ok(reports.every(r=>!r.offersLost.includes(first)),"valable jusqu'à sa date");
 const [taken]=campaign.advanceTime(game,1);
 assert.ok(taken.offersLost.includes(first),"prise par une autre compagnie le lendemain");
-assert.ok(!offers().includes(first)&&offers().length===5,"aussitôt remplacée");
+assert.ok(!offers().includes(first)&&offers().length===campaign.boardSize(game),"aussitôt remplacée");
+// La renommée monte : une case de plus par étoile ; elle baisse : les cases vides en trop disparaissent, pas les offres.
+{
+  const before=campaign.boardSize(game),saved=game.company.missionRenown||0;
+  game.company.missionRenown=saved+10000;
+  assert.equal(campaign.boardSize(game),3+campaign.companyRenownLevel(game));
+  assert.ok(campaign.boardSize(game)>before);
+  campaign.fillTavernBoard(game);
+  assert.equal(offers().length,campaign.boardSize(game),"les nouvelles cases se remplissent");
+  game.company.missionRenown=saved;
+  const extra=campaign.tavernSlots(game).slice(before);
+  extra[0].offer=null;
+  campaign.fillTavernBoard(game);
+  assert.equal(campaign.tavernSlots(game).length,before+extra.length-1,"une case vide en trop disparaît, les offres restent");
+  for(const slot of campaign.tavernSlots(game).slice(before)) slot.offer=null;
+  campaign.fillTavernBoard(game);
+  assert.equal(campaign.tavernSlots(game).length,before);
+}
 // Expédition (Idan, 2026-10-24) : l'escouade part, le camp continue ; elle arrive au bout de la distance, le combat
 // l'attend ; après le combat, elle rentre en autant de jours avec l'or, les objets et les primes.
 const signed=offers()[2],signedSlot=campaign.tavernSlots(game)[2];
@@ -305,7 +366,7 @@ const trip=departure.expedition;
 // Mission programmée (Idan, 2026-10-30) : départ le lendemain matin, puis les jours de marche ; d'ici là, l'escouade est
 // au camp (on lui parle, on l'équipe, elle recharge son mana) mais ne part sur aucune autre mission.
 assert.deepEqual([trip.offer,trip.memberIds,trip.status,trip.departDay,trip.arriveDay],[signed,[2,3],"scheduled",game.day+1,game.day+1+signed.distance]);
-assert.deepEqual([signedSlot.offer,signedSlot.emptyUntil,offers().length],[null,game.day+1,4],"case prise : vide jusqu'au lendemain ; les autres restent (plusieurs escouades possibles)");
+assert.deepEqual([signedSlot.offer,signedSlot.emptyUntil,offers().length],[null,game.day+1,campaign.boardSize(game)-1],"case prise : vide jusqu'au lendemain ; les autres restent (plusieurs escouades possibles)");
 assert.equal(campaign.isAvailable(squad[0],game),false,"pris par la mission");
 assert.equal(campaign.awayOf(game,2),null,"encore au camp");
 assert.equal(campaign.isAvailable(captain,game),true);

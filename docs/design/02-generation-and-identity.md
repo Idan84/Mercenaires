@@ -285,7 +285,7 @@ Soit, sous forme simplifiée :
   - **en combat**, au début de chacune de ses activations, s'il est debout : **ceil(2D6 × (0,5 + Régénération / 50)) PV**, sans dépasser ses PV max. Lointain ancêtre : 2 à 10 PV par tour ; lignée proche : 3 à 13 (≈ 2D6) ; bâtard : 3 à 15 ; à 100 : 5 à 30. Le Flétrissement l'empêche, comme les soins ;
   - **le feu la bloque** : brûlé depuis sa dernière activation, il ne régénère pas cette fois ;
   - **au camp**, une blessure guérit en **jours / (1 + Régénération / 100)** : deux fois plus vite à 100 ;
-  - elle **monte à chaque brûlure** (validé par Idan, 2026-11-01) : +30 XP de Régénération par blessure de feu, pour qui en a déjà (`progression.regeneration.burn_xp`), sans plafond (Idan, 2026-11-06 : « sky is the limit ») ;
+  - elle **monte à chaque brûlure** (validé par Idan, 2026-11-01) : +120 XP de Régénération par blessure de feu (30 à l'origine, XP doublée deux fois, Idan, 2026-11-07 et 2026-11-08), pour qui en a déjà (`progression.regeneration.burn_xp`), sans plafond (Idan, 2026-11-06 : « sky is the limit ») ;
   - **sur la fiche** (Idan : « il faut ») : onglet Caractéristiques, groupe Défense, avec son infobulle ; la ligne n'apparaît que si elle est au-dessus de 0 (`character-sheet-copy.json`, `masquer_si_nul`).
 
 ### Social

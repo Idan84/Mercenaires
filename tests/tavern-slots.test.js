@@ -19,10 +19,11 @@ const constant=code=>reference.formulaConstants.rows.find(r=>r.code===code)?.val
 assert.deepEqual([constant("tavern.slots.base"),constant("tavern.slots.per_renown_level")],[3,1]);
 assert.equal(reference.formulaConstants.row_count,reference.formulaConstants.rows.length);
 
-// Le niveau de renommée (reputation-stars.json, renommee_min) : 1 à 15 ; 3 + niveau, de 4 à 18 places.
+// Le niveau de renommée (reputation-stars.json, renommee_min ; seuils × 1,5 depuis le 2026-11-08) : 1 à 15 ; 3 + niveau,
+// de 4 à 18 places.
 const stay=createTavernRules({random:()=>0.999,reference});
-assert.deepEqual([0,371,372,799,800,6399,6400,99999].map(stay.renownLevel),[1,1,2,5,6,14,15,15]);
-assert.deepEqual([0,372,800,6400,99999].map(stay.slotsFor),[4,5,9,18,18]);
+assert.deepEqual([0,371,372,1883,1884,72399,72400,999999].map(stay.renownLevel),[1,1,2,5,6,14,15,15]);
+assert.deepEqual([0,372,1884,72400,999999].map(stay.slotsFor),[4,5,9,18,18]);
 assert.equal(createTavernRules({reference:{formulaConstants:reference.formulaConstants}}).slotsFor(8000),5,"sans les étoiles : tavern.slots.initial");
 
 let seed=37;

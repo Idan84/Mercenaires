@@ -7,11 +7,6 @@ fait, puis sera retiré d'ici.
 
 Décidé :
 
-1. **Chefs** (« PC du chef au max 50 % du PC total. Les missions jusqu'à 3★ peuvent ne pas avoir de chef ») : les
-   points de combat du chef ne dépassent pas la moitié du budget du camp. Jusqu'à 3★ (niveau de mission 1 à 3), un chef
-   trop fort est retiré : le camp n'a que sa troupe, et le plus fort de la troupe porte le nom du chef de la lettre. Au-
-   delà, le chef du cran en dessous (chef 3, 2, 1) s'il tient dans la moitié du budget. Constat : en 1★, le budget est
-   de 40 à 60 points et un chef 1 en vaut 30 à 42 ; 11 des 13 morts de la partie n°5 sont tombés dans ces camps.
 4. **Qualité du dortoir** (« La qualité du dortoir réduit la fatigue de 10 % par niveau ») : −10 % de jours de fatigue
    par niveau de qualité (1 à 10), **arrondi au jour supérieur** ; **au niveau 10, plus de fatigue du tout**. **Cumul
    avec les Bains chauds** : le dortoir d'abord, puis −1 jour par niveau des Bains, au moins 1 jour (sauf au niveau 10

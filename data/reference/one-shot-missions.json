@@ -109,6 +109,11 @@
           ]
         }
       ],
+      "chef": {
+        "part_max_budget": 0.5,
+        "sans_chef_jusqu_au_niveau": 3,
+        "note": "Idan, 2026-11-08 : « PC du chef au max 50 % du PC total. Les missions jusqu'à 3★ peuvent ne pas avoir de chef. » Le chef du cran en dessous s'il tient dans la moitié du budget ; jusqu'à 3★, sans chef si aucun ne tient (le plus fort de la troupe porte le nom du chef de la lettre) ; au-delà, toujours un chef."
+      },
       "camps": [
         {
           "faction": "Gobelins",

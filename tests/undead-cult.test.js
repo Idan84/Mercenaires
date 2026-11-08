@@ -100,7 +100,8 @@ for (const o of offers) {
   seenOrders.add(o.order);
   const text = rules.orderText(o, {date: "1 Brumecendre", date_expiration: "6 Brumecendre", an: 842, récompense: "9 000"});
   assert.ok(![...text.paragraphs, text.signature].join(" ").includes("{"), o.order + " : tous les champs remplis");
-  assert.ok(o.camp.chief.startsWith("cult_necromancer_"));
+  // 1★ : sans chef possible (Idan, 2026-11-08 : chef au plus la moitié du budget).
+  assert.ok(o.level === 1 && !o.camp.chief || o.camp.chief.startsWith("cult_necromancer_"), o.level + " : " + o.camp.chief);
   if (o.level < 3) assert.ok(o.camp.enemies.every(code => !code.startsWith("cult_specter")), "pas de spectre avant le niveau 3");
 }
 assert.equal(seenOrders.size, 3, "les trois lettres");

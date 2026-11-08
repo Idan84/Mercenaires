@@ -18,7 +18,8 @@ Conséquence voulue : un candidat médiocre peut rester assez longtemps pour occ
 **Places = 3 + niveau de renommée de la compagnie** (Idan, 2026-11-04 : « 3 + nombre d'étoiles de réputation de la
 compagnie » ; le niveau, de 1 à 15 : 1 à 5 étoiles de bronze, puis d'argent, puis d'or ; « Oui, parfait »), soit **4 à 18
 places** (constantes `tavern.slots.base`, `tavern.slots.per_renown_level`). Une compagnie neuve démarre le plus souvent au
-niveau 2 ou 3 : 5 ou 6 places (sur 200 compagnies simulées : niveau 1 pour 9, 2 pour 112, 3 pour 78, 4 pour 1).
+niveau 2 : 5 places (seuils × 1,5 depuis le 2026-11-08 ; sur 200 compagnies simulées : niveau 1 pour 15, 2 pour 185 ;
+renommée 345 à 490, médiane 415). Avant : niveau 1 pour 9, 2 pour 112, 3 pour 78, 4 pour 1.
 
 - Les places sont recalculées chaque matin, avant le remplissage : une place gagnée se remplit le lendemain matin.
 - Si la renommée baisse, **personne n'est chassé** : aucun nouveau candidat tant que la Taverne est au-dessus de ses places.

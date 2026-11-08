@@ -26,6 +26,8 @@
     const skills=new Map(rows(reference?.skills).map(s=>[s.nom,s]));
     const qualityCode=new Map(rows(reference?.itemQualities).map(q=>[q.nom,q.code]));
     const mountByCode=new Map(rows(reference?.mounts).map(x=>[x.code,x]));
+    // Réputation d'une fiche d'ennemi (Idan, 2026-11-08) : 3 × ses points de combat (reputation.enemy.points_factor).
+    const enemyReputationFactor=Number(rows(reference?.formulaConstants).find(r=>r.code==="reputation.enemy.points_factor")?.valeur??3);
     const die=sides=>1+Math.floor(random()*sides);
     const pick=list=>list.length?list[Math.floor(random()*list.length)]:"";
     function weighted(list){
@@ -214,6 +216,11 @@
       c.role=arch.nom;
       c.archetype=arch.code;
       c.name=name||arch.nom;
+      // Sa réputation est celle de sa fiche, pas celle du personnage de base (Idan, 2026-11-08 : un gobelin novice valait
+      // autant qu'un chef) : 3 × ses points de combat ; tuer en rapporte 10 % (doc 09).
+      c.reputation=enemyReputationFactor*(Number(arch.points)||0);
+      c.reputationCareerDelta=0;
+      delete c.reputationBreakdown;
       c.stats={...c.stats,...arch.caracteristiques};
       c.resistances={...c.resistances,...arch.resistances};
       c.pvMax=c.pv=arch.pv;

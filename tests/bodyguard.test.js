@@ -29,17 +29,18 @@ const random=()=>((seed=(seed*16807)%2147483647)/2147483647);
 const rules=createBodyguardRules({reference,random});
 
 // Niveaux de réputation : 15 étoiles (bronze, argent, or).
-assert.deepEqual([0,92,93,120,137,1600,9000].map(r=>rules.levelOf(r)),[1,1,2,3,4,15,15]);
-// Salaire de référence : 10 × Réputation du niveau suivant / 30 ; au-delà de 15 étoiles, × 1,25.
-// Seuils recalés le 2026-11-06 (reputation-stars.json).
-assert.equal(Math.round(rules.referenceWage(3)),46,"3★ : 10 × 137 / 30");
-assert.equal(Math.round(rules.referenceWage(15)),667,"15★ : 10 × 2 000 / 30");
+// Seuils × 1,5 par étoile depuis le 2026-11-08 (reputation-stars.json : 93, 140, 209… 18 100).
+assert.deepEqual([0,92,93,139,140,209,18099,18100,90000].map(r=>rules.levelOf(r)),[1,1,2,2,3,4,14,15,15]);
+// Salaire de référence : 10 × Réputation du niveau suivant / 30 ; au-delà de 15 étoiles, × 1,5 (comme les seuils).
+assert.equal(reference.bodyguardMissions.paiement.au_dela_15,1.5);
+assert.equal(Math.round(rules.referenceWage(3)),70,"3★ : 10 × 209 / 30");
+assert.equal(Math.round(rules.referenceWage(15)),9050,"15★ : 10 × 18 100 × 1,5 / 30");
 // Paiement par mercenaire = W × (2 + jours × (1,3 + (jours − 3)/22)), arrondi à 10 ; plus c'est long, plus la journée paie.
-assert.equal(rules.payment(3,3),270);
-assert.equal(rules.payment(3,21),2120);
-assert.equal(rules.payment(3,7,2),2*570,"par mercenaire");
+assert.equal(rules.payment(3,3),410);
+assert.equal(rules.payment(3,21),3240);
+assert.equal(rules.payment(3,7,2),2*860,"par mercenaire");
 assert.ok(rules.payment(3,21)/21>rules.payment(3,3)/3);
-assert.equal(rules.payment(15,21),30990);
+assert.equal(rules.payment(15,21),420660);
 
 // Offres : 1 à 3 mercenaires, 3 à 21 jours ; niveau = niveau de renommée de la compagnie + écart de −4 à +1 (Idan,
 // 2026-11-08 : « Ecart : -4 / +1 pour les 3 types de missions » ; « De la compagnie »), de 1 à 15.
@@ -110,7 +111,7 @@ const deals=createEquipmentDeals({reference:{weapons:{rows:[]},equipmentSlots:{r
 assert.equal(deals.canDeal(state,a).ok,true,"on peut encore l'équiper");
 a.contract.missionBonus=40;b.contract.missionBonus=30;
 for(const o of campaign.boardOffers(state)) o.expiresDay=99;
-const repA=a.reputation,renown=Number(state.company.missionRenown)||0;
+const careerA=Number(a.reputationCareerDelta)||0,renown=Number(state.company.missionRenown)||0;
 const goldBeforeDeparture=state.company.gold;
 const [leave]=campaign.advanceTime(state,1);
 assert.deepEqual(leave.expeditions.departed,[left.expedition],"départ le lendemain matin");
@@ -148,7 +149,9 @@ assert.deepEqual(back.results.map(r=>[r.mercenary.id,r.issue,r.days,r.reputation
 assert.equal(back.bonusPaid,70);
 assert.equal(back.renown,5);
 assert.ok(state.company.gold<=goldBefore-70,"primes versées au retour (et salaires du jour)");
-assert.equal(a.reputation,repA+5);
+assert.equal(a.reputationCareerDelta,careerA+5);
+// La part calculée est recalculée chaque matin (Idan, 2026-11-08) : la réputation forcée plus haut ne tient pas.
+assert.ok(Math.abs(a.reputation-(a.reputationBreakdown.calculated+a.reputationCareerDelta))<1e-9);
 assert.equal(a.recovery,undefined);
 assert.deepEqual([b.recovery.kind,b.recovery.daysLeft],["wounded",2]);
 assert.equal(state.company.missionRenown,renown+5);

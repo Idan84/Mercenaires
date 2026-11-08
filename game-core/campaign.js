@@ -999,6 +999,9 @@
       const school=runSchoolDay(state);
       // Désertion (Idan, 2026-11-04) : après tout ce qui fait bouger l'affinité du matin.
       const desertion=desertionRules?desertionRules.morning(state):null;
+      // La part calculée de la réputation suit la progression (doc 09 ; Idan, 2026-11-08) : recalculée chaque matin, après
+      // l'entraînement et la guérison, avant la renégociation salariale.
+      if(generator?.recalculateReputation) for(const m of rosterOf(state)) generator.recalculateReputation(m);
       // Renégociation salariale (Idan, 2026-11-04) : ceux qui ont gagné une étoile.
       const salaryReview=salaryReviewRules?salaryReviewRules.morning(state):null;
       return {day:state.day,recovered,salaries,tavern:tavernReport,offersLost,expeditions,built,buildings,lieutenants:lieutenantReports,mana,merchant,school,study,armorStudy:armor,poisonStudy:poison,lumber,mine,palace,dungeon,desertion,salaryReview,stable,taming:tamingReport};

@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 407,
+  "row_count": 408,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -1197,17 +1197,25 @@
     {
       "nom": "Réputation — retour de mission blessé",
       "code": "reputation.career.return_wounded",
-      "description": "Réputation de carrière d'un mercenaire qui revient vivant avec l'issue « Blessé » de fin de mission (09 §1, Exploits et carrière ; barème confirmé par Idan le 2026-10-20).",
+      "description": "Réputation de carrière d'un mercenaire qui revient vivant avec l'issue « Blessé » de fin de mission (09 §1, Exploits et carrière ; barème confirmé par Idan le 2026-10-20). Réduit de 10 à 5 (Idan, 2026-11-08 : la réputation montait d'environ une étoile par mission).",
       "formule": "Réputation de carrière V1",
-      "valeur": 10,
+      "valeur": 5,
       "version": "V1"
     },
     {
       "nom": "Réputation — retour de mission indemne",
       "code": "reputation.career.return_unhurt",
-      "description": "Réputation de carrière d'un mercenaire qui revient vivant sans blessure (la fatigue seule n'est pas une blessure) ; exclusif du bonus « blessé » (09 §1, Exploits et carrière ; barème confirmé par Idan le 2026-10-20).",
+      "description": "Réputation de carrière d'un mercenaire qui revient vivant sans blessure (la fatigue seule n'est pas une blessure) ; exclusif du bonus « blessé » (09 §1, Exploits et carrière ; barème confirmé par Idan le 2026-10-20). Réduit de 20 à 10 (Idan, 2026-11-08 : la réputation montait d'environ une étoile par mission).",
       "formule": "Réputation de carrière V1",
-      "valeur": 20,
+      "valeur": 10,
+      "version": "V1"
+    },
+    {
+      "nom": "Réputation — fiche d'ennemi",
+      "code": "reputation.enemy.points_factor",
+      "description": "Réputation d'un ennemi tiré d'une fiche (enemy-archetypes.json) = ce facteur × ses points de combat (Idan, 2026-11-08) : gobelin novice 12 à 18, chef de clan gobelin 306, troll d'élite 540. Auparavant, celle du personnage généré sous la fiche (100 à 180, même pour un novice). Les bêtes des chasses (fiches de mounts.json) n'en ont pas.",
+      "formule": "Réputation de carrière V1",
+      "valeur": 3,
       "version": "V1"
     },
     {

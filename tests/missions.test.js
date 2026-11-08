@@ -223,11 +223,13 @@ assert.ok(orcs.every(e=>/orc/.test(e.archetype)));
 
 // Issue : victoire = récompense + coffre + butin des ennemis morts (selon leur fiche) + équipement de nos morts ; défaite =
 // −30 de renommée.
-const fallen={id:1,items:[{id:"m1",name:"Épée longue",owner:1}]};
+const fallen={id:1,items:[{id:"m1",name:"Épée longue",owner:1},{id:"w1",name:"Loup",itemType:"mount",owner:1}]};
 const win=rules.outcome(offer,{victory:true,deadEnemies:enemies.slice(0,2),deadMercenaries:[fallen],chestItems:[{id:"c1",name:"Bague du courage",owner:3}]});
 assert.equal(win.reward,offer.reward);
 assert.ok(win.chestGold>=0&&win.chestGold<=Math.floor(100*offer.camp.budget*offer.level/2));
 assert.ok(win.loot.some(i=>i.id==="m1")&&win.loot.length<=enemies[0].items.length+enemies[1].items.length+1,"nos morts rendent tout");
+// Sauf la monture : elle repart à l'enclos (campaign.js), pas dans le butin (sinon elle revient en double).
+assert.ok(!win.loot.some(i=>i.id==="w1"),"la monture d'un mort ne part pas dans le butin");
 assert.ok([...win.loot,...win.chestItems].every(it=>it.owner===null));
 const lose=rules.outcome(offer,{victory:false,deadEnemies:enemies,deadMercenaries:[fallen]});
 assert.deepEqual([lose.reward,lose.chestGold,lose.loot.length,lose.renown],[0,0,0,-30]);

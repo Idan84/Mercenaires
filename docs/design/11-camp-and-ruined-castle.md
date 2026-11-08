@@ -78,7 +78,7 @@ Le dortoir fixe la **capacité maximale de mercenaires** hébergés.
   | 150 | 7 950 PO, 10 jours | 47 180 PO, 142 jours |
   | 200 | 49 220 PO, 13 jours | 294 820 PO, 257 jours |
 
-- **qualité** (Idan, 2026-10-25) : **dix niveaux** au-dessus du niveau 0 (`data/reference/dormitory-quality.json`, modifiable niveau par niveau). Atteindre le niveau n coûte **500 × n² PO** et **3 × n jours** (formule de JC). Chaque niveau atteint donne **+50 de Renommée** à la compagnie, pour de bon (part « dortoir » de la Renommée, doc 09 §2), et **+5 d'affinité** avec le capitaine à **chaque membre de la compagnie** ce jour-là, en expédition compris, capitaine exclu ; les recrues arrivées après n'ont rien. **Un seul chantier à la fois au dortoir** : agrandissement ou qualité. Noms des niveaux proposés par JC, validés par Idan ;
+- **qualité** (Idan, 2026-10-25) : **dix niveaux** au-dessus du niveau 0 (`data/reference/dormitory-quality.json`, modifiable niveau par niveau). Atteindre le niveau n coûte **500 × n² PO** et **3 × n jours** (formule de JC). Chaque niveau atteint donne **+50 de Renommée** à la compagnie, pour de bon (part « dortoir » de la Renommée, doc 09 §2), et **+5 d'affinité** avec le capitaine à **chaque membre de la compagnie** ce jour-là, en expédition compris, capitaine exclu ; les recrues arrivées après n'ont rien. **Fatigue** (Idan, 2026-11-08 : « La qualité du dortoir réduit la fatigue de 10 % par niveau » ; colonne `fatigue`) : chaque niveau retire **10 % des jours de fatigue** au retour d'une mission ou d'une garde du corps (doc 10 §5), **arrondi au jour supérieur** ; **au niveau 10, plus de fatigue du tout**. Puis les **Bains chauds** (§9) retirent 1 jour par niveau, au moins 1 jour. Exemple : 7 jours de fatigue, dortoir 3 et Bains 2 → ⌈7 × 0,7⌉ − 2 = 3 jours. Nos animaux, qui logent aux Écuries et au Chenil, n'ont que les Bains. **Un seul chantier à la fois au dortoir** : agrandissement ou qualité. Noms des niveaux proposés par JC, validés par Idan ;
 
   | Niveau | Nom | Prix | Jours | Total investi | Renommée |
   |---:|---|---:|---:|---:|---:|
@@ -541,7 +541,7 @@ Les bâtiments médicaux améliorent :
 - **Dispensaire** : la durée d'une blessure (doc 10 §6), déjà bornée de 7 à 60 jours, est multipliée par **1 − 0,1 × niveau**
   (au moins 1 jour), pour les blessures reçues après la construction. Au niveau 5 : 7 → 4 jours, 27 → 14, 48 → 24, 60 → 30 ;
 - **Bains chauds** : la fatigue (doc 10 §5) dure **1 jour de moins par niveau**, au moins 1 jour (5 à 7 jours → 1 à 2 jours
-  au niveau 5) ; la recharge du mana au camp (doc 12) gagne **+5 % de la Réserve par jour et par niveau** (Volonté 52 :
+  au niveau 5), après la réduction de la qualité du dortoir (§4 ; au niveau 10 du dortoir, plus de fatigue) ; la recharge du mana au camp (doc 12) gagne **+5 % de la Réserve par jour et par niveau** (Volonté 52 :
   36 % → 61 % par jour au niveau 5) ; une salle, **Le Sauna** (Réserve de mana, §7, Idan, 2026-11-04) ;
 - pas d'écran à part ni d'image pour l'instant ; le nom de chaque bâtiment donne son rôle en infobulle.
 

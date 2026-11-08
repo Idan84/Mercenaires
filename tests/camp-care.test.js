@@ -83,6 +83,19 @@ const fatigue=(level,days)=>{ at("baths",level); return rules.fatigueDaysFor(day
 assert.deepEqual([5,6,7].map(d=>fatigue(0,d)),[5,6,7]);
 assert.deepEqual([5,6,7].map(d=>fatigue(2,d)),[3,4,5]);
 assert.deepEqual([5,6,7].map(d=>fatigue(5,d)),[1,1,2]);
+// Qualité du dortoir (Idan, 2026-11-08) : −10 % de jours de fatigue par niveau, arrondi au jour supérieur ; au niveau 10,
+// plus de fatigue du tout ; puis les Bains chauds (−1 jour par niveau, au moins 1 jour).
+const rested=(quality,baths,days)=>{ state.company.camp.dormitoryQuality=quality; return fatigue(baths,days); };
+assert.deepEqual([1,3,5,7,10].map(d=>rested(1,0,d)),[1,3,5,7,9],"niveau 1 : −10 %, arrondi au jour supérieur");
+assert.deepEqual([1,3,5,7,10].map(d=>rested(5,0,d)),[1,2,3,4,5],"niveau 5 : −50 %");
+assert.deepEqual([1,3,5,7,10].map(d=>rested(9,0,d)),[1,1,1,1,1],"niveau 9 : −90 %");
+assert.deepEqual([1,3,5,7,10].map(d=>rested(10,0,d)),[0,0,0,0,0],"niveau 10 : plus de fatigue");
+assert.deepEqual([5,7,10].map(d=>rested(3,2,d)),[2,3,5],"niveau 3 puis Bains 2 : ⌈7 × 0,7⌉ − 2 = 3");
+assert.deepEqual([5,7,10].map(d=>rested(10,5,d)),[0,0,0],"niveau 10 : rien à retrancher");
+assert.equal(rules.dormitoryFatigueCut(state),100);
+// Nos animaux ne dorment pas au dortoir : les Bains seulement.
+assert.equal(rules.fatigueDaysFor(7,state,{dormitory:false}),2);
+state.company.camp.dormitoryQuality=0;
 assert.equal(rules.campBuildingEffects(state).manaBonus,25);
 const mage={...m,mana:0};
 const plain=magic.rechargeMana({...mage}).gained,warm=magic.rechargeMana({...mage},{bonusPercent:25}).gained;

@@ -118,7 +118,7 @@ $$
 JoursFatigue = Clamp\left(Ceil\left(5 + 2 \times \frac{DegatsCumulesSubis}{PV_{max}} - \frac{Endurance}{100}\right),\ 1,\ 7\right)
 $$
 
-Avec Endurance 50 : 5 jours sans dégâts, 6 jours après 0,5 × PV max encaissés, 7 jours dès 1 × PV max. **Bains chauds** (Idan, 2026-11-01 ; doc 11 §9) : 1 jour de moins par niveau, au moins 1 jour. Un tank soigné plusieurs fois peut revenir à pleins PV mais complètement rincé.
+Avec Endurance 50 : 5 jours sans dégâts, 6 jours après 0,5 × PV max encaissés, 7 jours dès 1 × PV max. **Qualité du dortoir** (Idan, 2026-11-08 ; doc 11 §4) : −10 % des jours par niveau, arrondi au jour supérieur ; au niveau 10, plus de fatigue. Puis les **Bains chauds** (Idan, 2026-11-01 ; doc 11 §9) : 1 jour de moins par niveau, au moins 1 jour. Un tank soigné plusieurs fois peut revenir à pleins PV mais complètement rincé.
 
 ## 6 — Durée d’une blessure
 

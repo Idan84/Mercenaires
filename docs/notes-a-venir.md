@@ -7,11 +7,6 @@ fait, puis sera retiré d'ici.
 
 Décidé :
 
-4. **Qualité du dortoir** (« La qualité du dortoir réduit la fatigue de 10 % par niveau ») : −10 % de jours de fatigue
-   par niveau de qualité (1 à 10), **arrondi au jour supérieur** ; **au niveau 10, plus de fatigue du tout**. **Cumul
-   avec les Bains chauds** : le dortoir d'abord, puis −1 jour par niveau des Bains, au moins 1 jour (sauf au niveau 10
-   du dortoir). Aujourd'hui, chaque niveau donne +50 de renommée, +5 d'affinité à chaque membre le jour où il est
-   atteint, et un quartier du lieutenant tous les deux niveaux.
 5. **Courbe d'XP** (Idan, 2026-11-08 : « je voudrais une augmentation peut-être moins linéaire ») — proposition :
    même courbe quadratique, coût de chaque point divisé selon la zone : **0–50 ÷ 4**, **51–100 ÷ 2**, **101–150 comme
    aujourd'hui**, **151–200 ÷ 0,75** (× 1,33, plus dur). **Caractéristiques et compétences restent alignées** (« ça

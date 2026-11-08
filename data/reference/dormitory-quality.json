@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "dormitory-quality",
-  "description": "Qualité du dortoir (Idan, 2026-10-25) : dix niveaux au-dessus du niveau 0. Atteindre le niveau n coûte prix PO et jours de chantier (formule de JC, validée : 500 × n² PO et 3 × n jours) ; il donne renommee points de Renommée à la compagnie, pour de bon, et affinite points d'affinité avec le capitaine à chaque membre de la compagnie le jour où le chantier se termine. Noms des niveaux proposés par JC, validés par Idan. Valeurs modifiables niveau par niveau. Image de fond de l'écran Dortoir (Jean-Mimi, 2026-10-25) : prototype-web/assets/dormitory/<image> ; une image par niveau (le niveau 0 ajouté le même jour).",
+  "description": "Qualité du dortoir (Idan, 2026-10-25) : dix niveaux au-dessus du niveau 0. Atteindre le niveau n coûte prix PO et jours de chantier (formule de JC, validée : 500 × n² PO et 3 × n jours) ; il donne renommee points de Renommée à la compagnie, pour de bon, et affinite points d'affinité avec le capitaine à chaque membre de la compagnie le jour où le chantier se termine. Noms des niveaux proposés par JC, validés par Idan. Valeurs modifiables niveau par niveau. Image de fond de l'écran Dortoir (Jean-Mimi, 2026-10-25) : prototype-web/assets/dormitory/<image> ; une image par niveau (le niveau 0 ajouté le même jour). Fatigue (Idan, 2026-11-08 : « La qualité du dortoir réduit la fatigue de 10 % par niveau ») : fatigue = pourcentage de jours de fatigue en moins au retour d'une mission ou d'une garde, arrondi au jour supérieur ; au niveau 10, plus de fatigue du tout ; puis les Bains chauds (−1 jour par niveau, au moins 1 jour).",
   "columns": [
     {
       "source": "Niveau",
@@ -28,6 +28,10 @@
       "key": "affinite"
     },
     {
+      "source": "Fatigue en moins (%)",
+      "key": "fatigue"
+    },
+    {
       "source": "Image de fond",
       "key": "image"
     }
@@ -41,6 +45,7 @@
       "jours": 0,
       "renommee": 0,
       "affinite": 0,
+      "fatigue": 0,
       "image": "dortoir-0.jpg"
     },
     {
@@ -50,6 +55,7 @@
       "jours": 3,
       "renommee": 50,
       "affinite": 5,
+      "fatigue": 10,
       "image": "dortoir-1.jpg"
     },
     {
@@ -59,6 +65,7 @@
       "jours": 6,
       "renommee": 50,
       "affinite": 5,
+      "fatigue": 20,
       "image": "dortoir-2.jpg"
     },
     {
@@ -68,6 +75,7 @@
       "jours": 9,
       "renommee": 50,
       "affinite": 5,
+      "fatigue": 30,
       "image": "dortoir-3.jpg"
     },
     {
@@ -77,6 +85,7 @@
       "jours": 12,
       "renommee": 50,
       "affinite": 5,
+      "fatigue": 40,
       "image": "dortoir-4.jpg"
     },
     {
@@ -86,6 +95,7 @@
       "jours": 15,
       "renommee": 50,
       "affinite": 5,
+      "fatigue": 50,
       "image": "dortoir-5.jpg"
     },
     {
@@ -95,6 +105,7 @@
       "jours": 18,
       "renommee": 50,
       "affinite": 5,
+      "fatigue": 60,
       "image": "dortoir-6.jpg"
     },
     {
@@ -104,6 +115,7 @@
       "jours": 21,
       "renommee": 50,
       "affinite": 5,
+      "fatigue": 70,
       "image": "dortoir-7.jpg"
     },
     {
@@ -113,6 +125,7 @@
       "jours": 24,
       "renommee": 50,
       "affinite": 5,
+      "fatigue": 80,
       "image": "dortoir-8.jpg"
     },
     {
@@ -122,6 +135,7 @@
       "jours": 27,
       "renommee": 50,
       "affinite": 5,
+      "fatigue": 90,
       "image": "dortoir-9.jpg"
     },
     {
@@ -131,6 +145,7 @@
       "jours": 30,
       "renommee": 50,
       "affinite": 5,
+      "fatigue": 100,
       "image": "dortoir-10.jpg"
     }
   ]

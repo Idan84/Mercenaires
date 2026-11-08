@@ -39,11 +39,11 @@ assert.equal(rules.campDays(troll(27),10),8,"10 / 1,27 = 7,9");
 assert.equal(rules.campDays(troll(100),1),1);
 assert.equal(rules.campDays(troll(50),0),0);
 
-// Progression : à chaque brûlure, +60 XP de Régénération (30 avant le doublement de l'XP), pour qui en a déjà.
+// Progression : à chaque brûlure, +120 XP de Régénération (30 avant les deux doublements de l'XP), pour qui en a déjà.
 const progression=Progression.createProgressionRules({reference});
 const log={wounds:{"Résistance au feu":3,"Résistance physique":2}};
 const xpTroll=progression.gains(log,{...troll(20),stats:{},resistances:{}});
-assert.deepEqual(xpTroll.skills.physiology,{"Régénération":180});
+assert.deepEqual(xpTroll.skills.physiology,{"Régénération":360});
 const xpHuman=progression.gains(log,{name:"Humain",skills:{physiology:{"Régénération":0}},stats:{},resistances:{}});
 assert.equal(xpHuman.skills.physiology,undefined,"pas de Régénération : pas de progression");
 const mercenary={...troll(20),stats:{},resistances:{},xp:{}};

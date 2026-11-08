@@ -592,8 +592,8 @@ règles `game-core/spell-study.js`, constantes `spell_study.*`, interface `proto
   l'École. Il accepte selon 10 + 80 / (1 + e^(−Δ/20)), **Δ = (son affinité avec le capitaine + son affinité envers
   l'élève) / 2** (50 % à 0) ; une tentative par jour ; le capitaine enseigne sans test. Il **reste au camp** jusqu'à la
   fin (Idan : il ne part pas) ; il **enseigne dès le lendemain matin** (son affinité change à ce moment-là) ; on peut le
-  **libérer**, l'élève continue seul. +10 XP de Transmission du savoir par jour
-  d'enseignement ; le directeur compte les élèves qui apprennent un sort (+10 XP par élève et par jour ; XP doublées après le bêta-test, Idan, 2026-11-07).
+  **libérer**, l'élève continue seul. +20 XP de Transmission du savoir par jour
+  d'enseignement ; le directeur compte les élèves qui apprennent un sort (+20 XP par élève et par jour ; XP doublées deux fois après le bêta-test, Idan, 2026-11-07 et 2026-11-08).
 - **Le faire sortir avant la fin** : le manuel est perdu et **rien n'est acquis**.
 - **Affinité avec le capitaine** (Idan : « toutes ces interactions doivent faire évoluer l'affinité ») : l'élève **+5**
   s'il accepte, **−2** s'il refuse, **+10** quand il connaît le sort, **−10** si on le fait sortir ; le professeur **+3**
@@ -615,11 +615,11 @@ sort », « une journée à l'école » ; règles `game-core/spell-study.js`, co
 - **Une journée à l'École** : il **entre le lendemain matin** (on peut annuler d'ici là : le manuel revient) ; au matin,
   le manuel est détruit et l'affinité appliquée ; il passe la journée dans la salle (une place prise, ni mission, ni
   garde du corps, ni entraînement libre) ; l'XP tombe **le matin suivant**, puis il sort.
-- **XP du sort = 2 000 × Intelligence / 50 × (1 + 0,1 × niveau de la salle) × (1 + Transmission du savoir du directeur /
-  100)**, sans plafond (1 000 avant le bêta-test : XP doublée, Idan, 2026-11-07). Exemples d'avant le doublement : Intelligence 54, salle 3, sans directeur : **1 404 XP** (≈ 78 lancers) ; un sort passe du
-  niveau 1 à 11, de 10 à 15, de 20 à 23, de 50 à 51, de 90 à 90,8 ; avec un directeur à 48 de Transmission : 2 078 XP.
-- Interface : la ligne de l'élève dans « Apprentissages » (« perfectionne (+1 404 XP demain) ») ; statut « Perfectionne un
-  sort » ; journal du matin (« … perfectionne Boule de feu : niveau 20 → 23 (+1 404 XP). ») ; historique.
+- **XP du sort = 4 000 × Intelligence / 50 × (1 + 0,1 × niveau de la salle) × (1 + Transmission du savoir du directeur /
+  100)**, sans plafond (1 000 avant le bêta-test, puis 2 000 : XP doublée deux fois, Idan, 2026-11-07 et 2026-11-08). Exemples : Intelligence 54, salle 3, sans directeur : **5 616 XP** (≈ 78 lancers) ; un sort passe du
+  niveau 1 à 23, de 10 à 25, de 20 à 31, de 50 à 55, de 90 à 93 ; avec un directeur à 48 de Transmission : 8 312 XP.
+- Interface : la ligne de l'élève dans « Apprentissages » (« perfectionne (+5 616 XP demain) ») ; statut « Perfectionne un
+  sort » ; journal du matin (« … perfectionne Boule de feu : niveau 20 → 31 (+5 616 XP). ») ; historique.
 - Tests : `tests/spell-perfect.test.js`.
 
 ### Mise en place

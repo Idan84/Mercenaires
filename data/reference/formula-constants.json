@@ -837,73 +837,73 @@
     {
       "nom": "Progression — Chance — échec critique confirmé",
       "code": "progression.chance.critical_failure_xp",
-      "description": "« La chance tourne » : XP de Chance par échec critique (EC) confirmé (08 §2). En attente des critiques dans le moteur de combat. Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »).",
+      "description": "« La chance tourne » : XP de Chance par échec critique (EC) confirmé (08 §2). En attente des critiques dans le moteur de combat. Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »). Doublé à nouveau (Idan, 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau »).",
       "formule": "Progression naturelle V1",
-      "valeur": 60,
+      "valeur": 120,
       "version": "V1"
     },
     {
       "nom": "Progression — Chance — coup critique",
       "code": "progression.chance.critical_success_xp",
-      "description": "« La chance tourne » : XP de Chance par coup critique (CC), négative (08 §2). En attente des critiques dans le moteur de combat. Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »).",
+      "description": "« La chance tourne » : XP de Chance par coup critique (CC), négative (08 §2). En attente des critiques dans le moteur de combat. Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »). Doublé à nouveau (Idan, 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau »).",
       "formule": "Progression naturelle V1",
-      "valeur": -10,
+      "valeur": -20,
       "version": "V1"
     },
     {
       "nom": "Progression — Résistances — blessure subie",
       "code": "progression.resistance.wound_xp",
-      "description": "« Ce qui ne te tue pas te rend plus fort » : XP de la résistance du type de dégâts, par blessure effectivement subie (08 §2). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »).",
+      "description": "« Ce qui ne te tue pas te rend plus fort » : XP de la résistance du type de dégâts, par blessure effectivement subie (08 §2). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »). Doublé à nouveau (Idan, 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau »).",
       "formule": "Progression naturelle V1",
-      "valeur": 16,
+      "valeur": 32,
       "version": "V1"
     },
     {
       "nom": "Progression — Résistances — autres résistances",
       "code": "progression.resistance.other_resistances_xp",
-      "description": "XP de chacune des quatre autres résistances, par blessure effectivement subie (08 §2). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »).",
+      "description": "XP de chacune des quatre autres résistances, par blessure effectivement subie (08 §2). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »). Doublé à nouveau (Idan, 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau »).",
       "formule": "Progression naturelle V1",
-      "valeur": -4,
+      "valeur": -8,
       "version": "V1"
     },
     {
       "nom": "Progression — Constitution — PV soigné",
       "code": "progression.constitution.hp_healed_xp",
-      "description": "« Y'a quelque chose dans ta potion, non ? » : XP de Constitution par PV réellement restauré par un soin (08 §2). En attente des soins en combat. Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »).",
-      "formule": "Progression naturelle V1",
-      "valeur": 2,
-      "version": "V1"
-    },
-    {
-      "nom": "Progression — Courage — charge tentée",
-      "code": "progression.courage.charge_attempt_xp",
-      "description": "« Courage, fuyons ! » : XP de Courage par charge tentée, même ratée ou finie en chute (Idan, 2026-10-06). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »).",
-      "formule": "Progression naturelle V1",
-      "valeur": 100,
-      "version": "V1"
-    },
-    {
-      "nom": "Progression — Vitesse — case parcourue en fuite",
-      "code": "progression.speed.flee_hex_xp",
-      "description": "« Cours Forest, cours ! » : XP de Vitesse par case parcourue en état de fuite (08 §2). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »).",
+      "description": "« Y'a quelque chose dans ta potion, non ? » : XP de Constitution par PV réellement restauré par un soin (08 §2). En attente des soins en combat. Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »). Doublé à nouveau (Idan, 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau »).",
       "formule": "Progression naturelle V1",
       "valeur": 4,
       "version": "V1"
     },
     {
+      "nom": "Progression — Courage — charge tentée",
+      "code": "progression.courage.charge_attempt_xp",
+      "description": "« Courage, fuyons ! » : XP de Courage par charge tentée, même ratée ou finie en chute (Idan, 2026-10-06). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »). Doublé à nouveau (Idan, 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau »).",
+      "formule": "Progression naturelle V1",
+      "valeur": 200,
+      "version": "V1"
+    },
+    {
+      "nom": "Progression — Vitesse — case parcourue en fuite",
+      "code": "progression.speed.flee_hex_xp",
+      "description": "« Cours Forest, cours ! » : XP de Vitesse par case parcourue en état de fuite (08 §2). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »). Doublé à nouveau (Idan, 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau »).",
+      "formule": "Progression naturelle V1",
+      "valeur": 8,
+      "version": "V1"
+    },
+    {
       "nom": "Progression — Charisme — adversaire hors combat",
       "code": "progression.charisma.knockout_xp",
-      "description": "« Triste Monde ! » : XP de Charisme par adversaire mis hors combat par le mercenaire (Idan, 2026-10-06). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »).",
+      "description": "« Triste Monde ! » : XP de Charisme par adversaire mis hors combat par le mercenaire (Idan, 2026-10-06). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »). Doublé à nouveau (Idan, 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau »).",
       "formule": "Progression naturelle V1",
-      "valeur": 100,
+      "valeur": 200,
       "version": "V1"
     },
     {
       "nom": "Progression — Perception — blessé dans le dos",
       "code": "progression.perception.backstab_wound_xp",
-      "description": "« C'est comme ça que le métier rentre » : XP de Perception par blessure reçue d'une attaque dans le dos, y compris cible encerclée ou en fuite (08 §2 ; Frappe dans le dos V1). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »).",
+      "description": "« C'est comme ça que le métier rentre » : XP de Perception par blessure reçue d'une attaque dans le dos, y compris cible encerclée ou en fuite (08 §2 ; Frappe dans le dos V1). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »). Doublé à nouveau (Idan, 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau »).",
       "formule": "Progression naturelle V1",
-      "valeur": 20,
+      "valeur": 40,
       "version": "V1"
     },
     {
@@ -917,97 +917,97 @@
     {
       "nom": "Progression — Force — XP par activation",
       "code": "progression.force.load_ratio_xp",
-      "description": "Coefficient de la formule de Force : XP par activation en mission = coefficient × max(0, Charge / Force − seuil) (Idan, 2026-10-07). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »).",
+      "description": "Coefficient de la formule de Force : XP par activation en mission = coefficient × max(0, Charge / Force − seuil) (Idan, 2026-10-07). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »). Doublé à nouveau (Idan, 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau »).",
       "formule": "Progression naturelle V1",
-      "valeur": 40,
+      "valeur": 80,
       "version": "V1"
     },
     {
       "nom": "XP — Dextérité par enchaînement",
       "code": "progression.dexterity.chain_xp",
-      "description": "XP de Dextérité à chaque enchaînement réussi : attaque, tir ou séquence à deux armes supplémentaire (décision Idan du 2026-10-20). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »).",
+      "description": "XP de Dextérité à chaque enchaînement réussi : attaque, tir ou séquence à deux armes supplémentaire (décision Idan du 2026-10-20). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »). Doublé à nouveau (Idan, 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau »).",
       "formule": "Progression naturelle V1",
-      "valeur": 100,
+      "valeur": 200,
       "version": "V1"
     },
     {
       "nom": "XP — Esquive par blessure encaissée",
       "code": "progression.dodge.wound_taken_xp",
-      "description": "XP d'Esquive à chaque coup reçu qui blesse (décision Idan du 2026-10-20). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »).",
+      "description": "XP d'Esquive à chaque coup reçu qui blesse (décision Idan du 2026-10-20). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »). Doublé à nouveau (Idan, 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau »).",
       "formule": "Progression naturelle V1",
-      "valeur": 20,
+      "valeur": 40,
       "version": "V1"
     },
     {
       "nom": "XP — Endurance par case en armure lourde",
       "code": "progression.endurance.heavy_armor_hex_xp",
-      "description": "XP d'Endurance par case parcourue en armure lourde (plates, écailles) (décision Idan du 2026-10-20). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »).",
+      "description": "XP d'Endurance par case parcourue en armure lourde (plates, écailles) (décision Idan du 2026-10-20). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »). Doublé à nouveau (Idan, 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau »).",
       "formule": "Progression naturelle V1",
-      "valeur": 4,
+      "valeur": 8,
       "version": "V1"
     },
     {
       "nom": "XP — Volonté par test de Courage tenu",
       "code": "progression.will.courage_held_xp",
-      "description": "XP de Volonté à chaque test de Courage réussi (décision Idan du 2026-10-20). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »).",
+      "description": "XP de Volonté à chaque test de Courage réussi (décision Idan du 2026-10-20). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »). Doublé à nouveau (Idan, 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau »).",
       "formule": "Progression naturelle V1",
-      "valeur": 40,
+      "valeur": 80,
       "version": "V1"
     },
     {
       "nom": "XP — Volonté par reprise de contrôle",
       "code": "progression.will.recovery_xp",
-      "description": "XP de Volonté à chaque reprise de contrôle réussie en fuite (décision Idan du 2026-10-20). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »).",
+      "description": "XP de Volonté à chaque reprise de contrôle réussie en fuite (décision Idan du 2026-10-20). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »). Doublé à nouveau (Idan, 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau »).",
       "formule": "Progression naturelle V1",
-      "valeur": 40,
+      "valeur": 80,
       "version": "V1"
     },
     {
       "nom": "XP — Intelligence par pire choix",
       "code": "progression.intelligence.worst_choice_xp",
-      "description": "XP d'Intelligence quand il choisit le pire type de dégâts : il apprend de ses erreurs (décision Idan du 2026-10-20). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »).",
+      "description": "XP d'Intelligence quand il choisit le pire type de dégâts : il apprend de ses erreurs (décision Idan du 2026-10-20). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »). Doublé à nouveau (Idan, 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau »).",
       "formule": "Progression naturelle V1",
-      "valeur": 60,
+      "valeur": 120,
       "version": "V1"
     },
     {
       "nom": "XP — arme par attaque",
       "code": "progression.skill.weapon_attack_xp",
-      "description": "XP de l'arme précise et de sa catégorie à chaque attaque portée avec elle (décision Idan du 2026-10-20). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »).",
+      "description": "XP de l'arme précise et de sa catégorie à chaque attaque portée avec elle (décision Idan du 2026-10-20). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »). Doublé à nouveau (Idan, 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau »).",
       "formule": "Progression naturelle V1",
-      "valeur": 20,
+      "valeur": 40,
       "version": "V1"
     },
     {
       "nom": "XP — arme par toucher réel",
       "code": "progression.skill.weapon_hit_xp",
-      "description": "XP en plus, pour l'arme et sa catégorie, quand l'attaque touche réellement (non bloquée) (décision Idan du 2026-10-20). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »).",
+      "description": "XP en plus, pour l'arme et sa catégorie, quand l'attaque touche réellement (non bloquée) (décision Idan du 2026-10-20). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »). Doublé à nouveau (Idan, 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau »).",
       "formule": "Progression naturelle V1",
-      "valeur": 10,
+      "valeur": 20,
       "version": "V1"
     },
     {
       "nom": "XP — arme par blessure",
       "code": "progression.skill.weapon_wound_xp",
-      "description": "XP en plus, pour l'arme et sa catégorie, quand l'attaque blesse (décision Idan du 2026-10-20). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »).",
+      "description": "XP en plus, pour l'arme et sa catégorie, quand l'attaque blesse (décision Idan du 2026-10-20). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »). Doublé à nouveau (Idan, 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau »).",
       "formule": "Progression naturelle V1",
-      "valeur": 10,
+      "valeur": 20,
       "version": "V1"
     },
     {
       "nom": "XP — Combat à deux mains par attaque",
       "code": "progression.skill.two_handed_attack_xp",
-      "description": "XP de Combat à deux mains à chaque attaque de mêlée avec une arme tenue à deux mains (décision Idan du 2026-10-20). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »).",
+      "description": "XP de Combat à deux mains à chaque attaque de mêlée avec une arme tenue à deux mains (décision Idan du 2026-10-20). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »). Doublé à nouveau (Idan, 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau »).",
       "formule": "Progression naturelle V1",
-      "valeur": 20,
+      "valeur": 40,
       "version": "V1"
     },
     {
       "nom": "XP — Combat à une main par attaque",
       "code": "progression.skill.one_handed_attack_xp",
-      "description": "XP de Combat à une main à chaque attaque portée avec une arme à une main tenue seule, au corps à corps comme au tir (Idan, 2026-11-02). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »).",
+      "description": "XP de Combat à une main à chaque attaque portée avec une arme à une main tenue seule, au corps à corps comme au tir (Idan, 2026-11-02). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »). Doublé à nouveau (Idan, 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau »).",
       "formule": "Progression naturelle V1",
-      "valeur": 20,
+      "valeur": 40,
       "version": "V1"
     },
     {
@@ -1069,33 +1069,33 @@
     {
       "nom": "XP — Combat à deux armes par séquence",
       "code": "progression.skill.dual_sequence_xp",
-      "description": "XP de Combat à deux armes à chaque séquence menée avec les deux armes (décision Idan du 2026-10-20). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »).",
+      "description": "XP de Combat à deux armes à chaque séquence menée avec les deux armes (décision Idan du 2026-10-20). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »). Doublé à nouveau (Idan, 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau »).",
       "formule": "Progression naturelle V1",
-      "valeur": 20,
+      "valeur": 40,
       "version": "V1"
     },
     {
       "nom": "XP — Boucliers par blocage",
       "code": "progression.skill.shield_block_xp",
-      "description": "XP de Boucliers et du bouclier précis à chaque blocage (décision Idan du 2026-10-20). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »).",
+      "description": "XP de Boucliers et du bouclier précis à chaque blocage (décision Idan du 2026-10-20). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »). Doublé à nouveau (Idan, 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau »).",
       "formule": "Progression naturelle V1",
-      "valeur": 20,
+      "valeur": 40,
       "version": "V1"
     },
     {
       "nom": "XP — Intimidation par adversaire en fuite",
       "code": "progression.skill.intimidation_xp",
-      "description": "XP d'Intimidation à chaque adversaire qui rate son test de Courage face au mercenaire (décision Idan du 2026-10-20). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »).",
+      "description": "XP d'Intimidation à chaque adversaire qui rate son test de Courage face au mercenaire (décision Idan du 2026-10-20). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »). Doublé à nouveau (Idan, 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau »).",
       "formule": "Progression naturelle V1",
-      "valeur": 100,
+      "valeur": 200,
       "version": "V1"
     },
     {
       "nom": "XP — retour de mission avec sa monture",
       "code": "progression.skill.mount_return_xp",
-      "description": "XP de Compagnon animal et de la famille de l'animal (Équidés, Canidés…) quand le mercenaire et la monture ou le compagnon avec lequel il est parti rentrent vivants de mission (Idan, 2026-11-07 : « 50 XP oui »). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »).",
+      "description": "XP de Compagnon animal et de la famille de l'animal (Équidés, Canidés…) quand le mercenaire et la monture ou le compagnon avec lequel il est parti rentrent vivants de mission (Idan, 2026-11-07 : « 50 XP oui »). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »). Doublé à nouveau (Idan, 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau »).",
       "formule": "Progression naturelle V1",
-      "valeur": 100,
+      "valeur": 200,
       "version": "V1"
     },
     {
@@ -1109,25 +1109,25 @@
     {
       "nom": "XP — lancer d'un sort",
       "code": "progression.magic.spell_cast_xp",
-      "description": "XP du sort et de son école à chaque lancer, même raté (décision Idan du 2026-10-25, comme une attaque d'arme). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »).",
+      "description": "XP du sort et de son école à chaque lancer, même raté (décision Idan du 2026-10-25, comme une attaque d'arme). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »). Doublé à nouveau (Idan, 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau »).",
       "formule": "Progression naturelle V1",
-      "valeur": 20,
+      "valeur": 40,
       "version": "V1"
     },
     {
       "nom": "XP — sort réussi",
       "code": "progression.magic.spell_success_xp",
-      "description": "XP supplémentaire du sort et de son école quand le sort réussit (décision Idan du 2026-10-25). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »).",
+      "description": "XP supplémentaire du sort et de son école quand le sort réussit (décision Idan du 2026-10-25). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »). Doublé à nouveau (Idan, 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau »).",
       "formule": "Progression naturelle V1",
-      "valeur": 10,
+      "valeur": 20,
       "version": "V1"
     },
     {
       "nom": "XP — sort qui a un vrai effet",
       "code": "progression.magic.spell_effect_xp",
-      "description": "XP supplémentaire du sort et de son école quand le sort réussi a un vrai effet : PV soignés, dégâts qui passent la protection, effet posé, poison purgé (décision Idan du 2026-10-25). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »).",
+      "description": "XP supplémentaire du sort et de son école quand le sort réussi a un vrai effet : PV soignés, dégâts qui passent la protection, effet posé, poison purgé (décision Idan du 2026-10-25). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »). Doublé à nouveau (Idan, 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau »).",
       "formule": "Progression naturelle V1",
-      "valeur": 10,
+      "valeur": 20,
       "version": "V1"
     },
     {
@@ -1149,17 +1149,17 @@
     {
       "nom": "XP — Puissance magique par sort efficace",
       "code": "progression.magic_power.spell_effect_xp",
-      "description": "XP de Puissance magique à chaque sort réussi qui a un vrai effet (décision Idan du 2026-10-25). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »).",
+      "description": "XP de Puissance magique à chaque sort réussi qui a un vrai effet (décision Idan du 2026-10-25). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »). Doublé à nouveau (Idan, 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau »).",
       "formule": "Progression naturelle V1",
-      "valeur": 40,
+      "valeur": 80,
       "version": "V1"
     },
     {
       "nom": "XP — Réserve de mana par point dépensé",
       "code": "progression.mana_reserve.mana_spent_xp",
-      "description": "XP de Réserve de mana pour chaque point de mana dépensé, même si le sort rate (décision Idan du 2026-10-25). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »).",
+      "description": "XP de Réserve de mana pour chaque point de mana dépensé, même si le sort rate (décision Idan du 2026-10-25). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »). Doublé à nouveau (Idan, 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau »).",
       "formule": "Progression naturelle V1",
-      "valeur": 4,
+      "valeur": 8,
       "version": "V1"
     },
     {
@@ -1781,9 +1781,9 @@
     {
       "nom": "XP — Régénération à chaque brûlure",
       "code": "progression.regeneration.burn_xp",
-      "description": "XP de Régénération à chaque brûlure (blessure de feu), pour qui en a déjà (Idan, 2026-11-01 : « à chaque brûlure ! »). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »).",
+      "description": "XP de Régénération à chaque brûlure (blessure de feu), pour qui en a déjà (Idan, 2026-11-01 : « à chaque brûlure ! »). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »). Doublé à nouveau (Idan, 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau »).",
       "formule": "Progression naturelle V1",
-      "valeur": 60,
+      "valeur": 120,
       "version": "V1"
     },
     {
@@ -2429,9 +2429,9 @@
     {
       "nom": "Médecin — XP par jour de blessure",
       "code": "medic.xp.per_wound_day",
-      "description": "Médecin (Idan, 2026-11-01) : XP de Médecine du médecin à chaque blessé guéri pendant qu’il est en poste, par jour que la blessure a duré. Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »).",
+      "description": "Médecin (Idan, 2026-11-01) : XP de Médecine du médecin à chaque blessé guéri pendant qu’il est en poste, par jour que la blessure a duré. Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »). Doublé à nouveau (Idan, 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau »).",
       "formule": "Médecin",
-      "valeur": 20,
+      "valeur": 40,
       "version": "V1"
     },
     {
@@ -2501,9 +2501,9 @@
     {
       "nom": "Entraînement — XP de base par jour",
       "code": "school.training.base_xp",
-      "description": "Entraînement libre (Idan, 2026-11-02) : XP par jour = cette base × Intelligence / 50 × (1 + 0,1 × niveau de la salle) × (1 + niveau du directeur / 100) × (1 + Transmission du savoir du directeur / 100). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »).",
+      "description": "Entraînement libre (Idan, 2026-11-02) : XP par jour = cette base × Intelligence / 50 × (1 + 0,1 × niveau de la salle) × (1 + niveau du directeur / 100) × (1 + Transmission du savoir du directeur / 100). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »). Doublé à nouveau (Idan, 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau »).",
       "formule": "Entraînement libre à l’École de magie",
-      "valeur": 40,
+      "valeur": 80,
       "version": "V1"
     },
     {
@@ -2541,9 +2541,9 @@
     {
       "nom": "Entraînement — XP du directeur",
       "code": "school.training.director_transmission_xp",
-      "description": "Entraînement libre (Idan, 2026-11-02) : XP de Transmission du savoir gagnée par le directeur de l’École, par élève et par jour. Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »).",
+      "description": "Entraînement libre (Idan, 2026-11-02) : XP de Transmission du savoir gagnée par le directeur de l’École, par élève et par jour. Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »). Doublé à nouveau (Idan, 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau »).",
       "formule": "Entraînement libre à l’École de magie",
-      "valeur": 10,
+      "valeur": 20,
       "version": "V1"
     },
     {
@@ -2861,9 +2861,9 @@
     {
       "nom": "Apprentissage — XP du professeur",
       "code": "spell_study.xp.teacher_transmission",
-      "description": "Apprentissage d’un sort (Idan, 2026-11-02) : XP de Transmission du savoir du professeur par jour d’enseignement. Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »).",
+      "description": "Apprentissage d’un sort (Idan, 2026-11-02) : XP de Transmission du savoir du professeur par jour d’enseignement. Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »). Doublé à nouveau (Idan, 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau »).",
       "formule": "Apprentissage d’un sort à l’École de magie",
-      "valeur": 10,
+      "valeur": 20,
       "version": "V1"
     },
     {
@@ -2933,9 +2933,9 @@
     {
       "nom": "Perfectionner — XP de base",
       "code": "spell_study.perfect.base_xp",
-      "description": "Perfectionner un sort (Idan, 2026-11-02 : « consommer des manuels contre de l’xp de sort ») : un manuel du même sort, une journée dans la salle de son école ; le lendemain, XP du sort = cette base × Intelligence / 50 × (1 + 0,1 × niveau de la salle) × (1 + Transmission du savoir du directeur / 100), jusqu’au niveau 100. Intelligence 54, salle 3 : 1 404 XP (un sort au niveau 1 passe à 11, au niveau 20 à 23, au niveau 50 à 51). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »).",
+      "description": "Perfectionner un sort (Idan, 2026-11-02 : « consommer des manuels contre de l’xp de sort ») : un manuel du même sort, une journée dans la salle de son école ; le lendemain, XP du sort = cette base × Intelligence / 50 × (1 + 0,1 × niveau de la salle) × (1 + Transmission du savoir du directeur / 100), jusqu’au niveau 100. Intelligence 54, salle 3 : 1 404 XP (un sort au niveau 1 passe à 11, au niveau 20 à 23, au niveau 50 à 51). Doublé après le bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout »). Doublé à nouveau (Idan, 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau »).",
       "formule": "Perfectionner un sort à l’École de magie",
-      "valeur": 2000,
+      "valeur": 4000,
       "version": "V1"
     },
     {

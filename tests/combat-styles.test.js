@@ -22,7 +22,7 @@ const files=Object.fromEntries([...block.matchAll(/^\s*(\w+):\s*"([\w.-]+\.json)
 const reference=Object.fromEntries(Object.entries(files).map(([k,f])=>[k,JSON.parse(fs.readFileSync(path.join(ROOT,"data","reference",f),"utf8"))]));
 const constant=code=>reference.formulaConstants.rows.find(r=>r.code===code)?.valeur;
 assert.equal(constant("combat.one_handed.dodge_factor"),0.2);
-assert.equal(constant("progression.skill.one_handed_attack_xp"),20,"doublé après le bêta-test (Idan, 2026-11-07)");
+assert.equal(constant("progression.skill.one_handed_attack_xp"),40,"doublé après le bêta-test (Idan, 2026-11-07), puis à nouveau (2026-11-08)");
 
 // Données : le nouveau style ; les deux compétences retirées des mercenaires.
 const skills=reference.skills.rows;

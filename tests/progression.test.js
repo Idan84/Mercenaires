@@ -14,24 +14,25 @@ const ROOT=path.resolve(__dirname,"..");
 const files={peoples:"peoples.json",cultures:"cultures.json",socialOrigins:"social-origins.json",alignments:"alignments.json",ancestries:"ancestries.json",ancestryCompatibility:"ancestry-compatibility.json",cultureOriginCompatibility:"culture-origin-compatibility.json",ancestryLevels:"ancestry-levels.json",d6Scale:"d6-generation-scale.json",generationMatrix:"generation-matrix.json",skills:"skills.json",characteristics:"characteristics.json",formulaConstants:"formula-constants.json",weapons:"weapons.json",baseArmors:"base-armors.json",itemQualities:"item-qualities.json",equipmentSlots:"equipment-slots.json",startingEquipmentGeneration:"starting-equipment-generation.json",binaryAptitudeGrants:"binary-aptitude-grants.json",alignmentGeneration:"alignment-generation.json"};
 const reference=Object.fromEntries(Object.entries(files).map(([k,f])=>[k,JSON.parse(fs.readFileSync(path.join(ROOT,"data","reference",f),"utf8"))]));
 const real=P.createProgressionRules({reference});
-// Les mécanismes plus bas sont vérifiés avec les XP d'avant le doublement du bêta-test (Idan, 2026-11-07 : « On double
-// l'xp gagné partout ») : chaque gain est linéaire dans sa constante, et les valeurs réelles (doublées) sont vérifiées
-// juste en dessous.
+// Les mécanismes plus bas sont vérifiés avec les XP d'origine, d'avant les deux doublements (Idan, 2026-11-07 : « On
+// double l'xp gagné partout » ; 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau ») : chaque gain est linéaire dans
+// sa constante, et les valeurs réelles (× 4) sont vérifiées juste en dessous.
 const XP_CODE=/^progression\.(?!xp_curve).*_xp$/;
 const rules=P.createProgressionRules({reference:{...reference,formulaConstants:{...reference.formulaConstants,
-  rows:reference.formulaConstants.rows.map(r=>XP_CODE.test(r.code)?{...r,valeur:r.valeur/2}:r)}}});
+  rows:reference.formulaConstants.rows.map(r=>XP_CODE.test(r.code)?{...r,valeur:r.valeur/4}:r)}}});
 
 // Constantes d'équilibrage lues dans formula-constants.json (valeurs de 08-progression-and-experience.md
 // et décisions Idan du 2026-10-06) ; toutes les XP doublées après le bêta-test (Idan, 2026-11-07 : « On double l'xp
-// gagné partout »), la courbe, les seuils et les parts de régression inchangés.
+// gagné partout »), puis doublées à nouveau (Idan, 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau ») ; la courbe,
+// les seuils et les parts de régression inchangés.
 assert.deepEqual(real.constants,{
-  curve:10,startPosition:0.5,chanceCriticalFailure:60,chanceCriticalSuccess:-10,resistanceWound:16,resistanceOthers:-4,
-  constitutionHpHealed:2,courageChargeAttempt:100,speedFleeHex:4,charismaKnockout:100,perceptionBackstabWound:20,
-  forceLoadThreshold:0.25,forceLoadXp:40,
-  dexterityChain:100,dodgeWoundTaken:20,enduranceHeavyArmorHex:4,willCourageHeld:40,willRecovery:40,intelligenceWorstChoice:60,
-  skillWeaponAttack:20,skillWeaponHit:10,skillWeaponWound:10,skillTwoHandedAttack:20,skillOneHandedAttack:20,skillDualSequence:20,skillShieldBlock:20,
-  skillIntimidation:100,mountReturn:100,regenerationBurn:60,skillRegressionRatio:0.5,
-  spellCast:20,spellSuccess:10,spellEffect:10,schoolRegressionRatio:0.5,schoolFloor:1,magicPowerSpellEffect:40,manaReserveManaSpent:4
+  curve:10,startPosition:0.5,chanceCriticalFailure:120,chanceCriticalSuccess:-20,resistanceWound:32,resistanceOthers:-8,
+  constitutionHpHealed:4,courageChargeAttempt:200,speedFleeHex:8,charismaKnockout:200,perceptionBackstabWound:40,
+  forceLoadThreshold:0.25,forceLoadXp:80,
+  dexterityChain:200,dodgeWoundTaken:40,enduranceHeavyArmorHex:8,willCourageHeld:80,willRecovery:80,intelligenceWorstChoice:120,
+  skillWeaponAttack:40,skillWeaponHit:20,skillWeaponWound:20,skillTwoHandedAttack:40,skillOneHandedAttack:40,skillDualSequence:40,skillShieldBlock:40,
+  skillIntimidation:200,mountReturn:200,regenerationBurn:120,skillRegressionRatio:0.5,
+  spellCast:40,spellSuccess:20,spellEffect:20,schoolRegressionRatio:0.5,schoolFloor:1,magicPowerSpellEffect:80,manaReserveManaSpent:8
 });
 const tuned=P.createProgressionRules({reference:{formulaConstants:{rows:[{code:"progression.charisma.knockout_xp",valeur:80}]}}});
 assert.equal(tuned.constants.charismaKnockout,80,"une constante modifiée est prise en compte");

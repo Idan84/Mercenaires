@@ -21,12 +21,14 @@ Décidé :
    par niveau de qualité (1 à 10). Aujourd'hui, chaque niveau donne +50 de renommée, +5 d'affinité à chaque membre le
    jour où il est atteint, et un quartier du lieutenant tous les deux niveaux. À trancher plus tard : au niveau 10,
    −100 % (plus de fatigue du tout) ; arrondi ; cumul avec les Bains chauds (−1 jour par niveau).
-5. **Courbe d'XP** (« on garde la même courbe, mais le point dur, c'est 200 au lieu de 100… En gros on divise par 2
-   l'xp nécessaire ») : même forme (quadratique), moins d'XP par point. À préciser : coefficient 5 (XP ÷ 2 : 100 coûte
-   50 000 ; 100 000 XP mènent à ≈ 141) ou 2,5 (200 coûte ce que coûtait 100 : XP ÷ 4). **Caractéristiques et
-   compétences restent alignées sur la même courbe** (Idan : « ça c'est certain »). Repères sur un an de la partie n°5 :
-   Zizza 64 → 72 aujourd'hui, → 79 avec ÷ 2, → 92 avec ÷ 4 ; le capitaine (entraînement quotidien) 55 → 88, → 112,
-   → 148.
+5. **Courbe d'XP** (Idan, 2026-11-08 : « je voudrais une augmentation peut-être moins linéaire ») — proposition :
+   même courbe quadratique, coût de chaque point divisé selon la zone : **0–50 ÷ 4**, **51–100 ÷ 2**, **101–150 comme
+   aujourd'hui**, **151–200 ÷ 0,75** (× 1,33, plus dur). **Caractéristiques et compétences restent alignées** (« ça
+   c'est certain »). Repères : atteindre 50 = 6 250 XP (25 000 aujourd'hui), 100 = 43 750 (100 000), 150 = 168 750
+   (225 000), 200 ≈ 402 000 (400 000). Sur un an de la partie n°5 : Zizza 64 → 79 (72 aujourd'hui), le capitaine
+   55 → ≈ 106 (88). À trancher : marches aux frontières (le prix d'un point double à 51 et à 101) ou lissage ;
+   régression des autres compétences au tarif de la zone (fond 4 fois plus vite sous 50) ou au tarif d'aujourd'hui ;
+   au-delà de 200.
 6. **Design Lab** (`/design/graph/`) : la renommée y montre 3 des 6 parts (capitaine, mercenaires, héritage) ; ajouter
    les points de mission (gardes, échecs), le dortoir et le médecin, et le nouveau classement (capitaine 1er).
 

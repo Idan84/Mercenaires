@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 409,
+  "row_count": 414,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -829,7 +829,7 @@
     {
       "nom": "Progression — courbe XP → niveau — coefficient",
       "code": "progression.xp_curve.coefficient",
-      "description": "XP cumulée = coefficient × Niveau² ; la valeur d'une caractéristique est son niveau (Idan, 2026-10-06). Même courbe pour caractéristiques et compétences (08-progression-and-experience.md §1).",
+      "description": "XP cumulée = coefficient × Niveau² ; la valeur d'une caractéristique est son niveau (Idan, 2026-10-06). Même courbe pour caractéristiques et compétences (08-progression-and-experience.md §1). Depuis le 2026-11-08, le coût de chaque point (coefficient × (2N+1)) est multiplié selon la zone (progression.xp_curve.zone_*).",
       "formule": "Progression naturelle V1",
       "valeur": 10,
       "version": "V1"
@@ -841,6 +841,46 @@
       "formule": "Progression naturelle V1",
       "valeur": 0.5,
       "version": "V1"
+    },
+    {
+      "nom": "Progression — courbe XP → niveau — largeur d'une zone",
+      "code": "progression.xp_curve.zone_width",
+      "description": "Courbe par zones (Idan, 2026-11-08 : « De 0 à 50, c'est très facile (on divise par 4) De 51 à 100, (on divise par 2) De 101 à 150 comme aujourd'hui De 151 à 200 on divise par 0,75 » ; « on lisse le tout » ; « Après 200, on durcit encore un peu ») : largeur de chaque zone (0–50, 51–100, 101–150, 151–200). Le coût d'un point (coefficient × (2N+1)) est multiplié par 1 / diviseur au milieu de la zone, en ligne droite d'un milieu à l'autre (08 §1).",
+      "formule": "Progression naturelle V2",
+      "valeur": 50,
+      "version": "V2"
+    },
+    {
+      "nom": "Progression — courbe XP → niveau — diviseur de la zone 1",
+      "code": "progression.xp_curve.zone_1_divisor",
+      "description": "Zone 0–50 : ÷ 4 (« très facile »). Diviseur du coût d'un point au milieu de la zone (Idan, 2026-11-08 ; 08 §1).",
+      "formule": "Progression naturelle V2",
+      "valeur": 4,
+      "version": "V2"
+    },
+    {
+      "nom": "Progression — courbe XP → niveau — diviseur de la zone 2",
+      "code": "progression.xp_curve.zone_2_divisor",
+      "description": "Zone 51–100 : ÷ 2. Diviseur du coût d'un point au milieu de la zone (Idan, 2026-11-08 ; 08 §1).",
+      "formule": "Progression naturelle V2",
+      "valeur": 2,
+      "version": "V2"
+    },
+    {
+      "nom": "Progression — courbe XP → niveau — diviseur de la zone 3",
+      "code": "progression.xp_curve.zone_3_divisor",
+      "description": "Zone 101–150 : comme avant. Diviseur du coût d'un point au milieu de la zone (Idan, 2026-11-08 ; 08 §1).",
+      "formule": "Progression naturelle V2",
+      "valeur": 1,
+      "version": "V2"
+    },
+    {
+      "nom": "Progression — courbe XP → niveau — diviseur de la zone 4",
+      "code": "progression.xp_curve.zone_4_divisor",
+      "description": "Zone 151–200 : ÷ 0,75 (× 1,33) ; au-delà, le multiplicateur continue de monter avec la même pente (« on durcit encore un peu »). Diviseur du coût d'un point au milieu de la zone (Idan, 2026-11-08 ; 08 §1).",
+      "formule": "Progression naturelle V2",
+      "valeur": 0.75,
+      "version": "V2"
     },
     {
       "nom": "Progression — Chance — échec critique confirmé",

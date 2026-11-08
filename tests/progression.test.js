@@ -18,15 +18,18 @@ const real=P.createProgressionRules({reference});
 // double l'xp gagné partout » ; 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau ») : chaque gain est linéaire dans
 // sa constante, et les valeurs réelles (× 4) sont vérifiées juste en dessous.
 const XP_CODE=/^progression\.(?!xp_curve).*_xp$/;
+// Les calculs de journal ci-dessous gardent la courbe d'avant les zones (10 × N², diviseurs à 1) ; la courbe par zones
+// (Idan, 2026-11-08) est vérifiée à part, avec real.
+const FLAT=/^progression\.xp_curve\.zone_\d_divisor$/;
 const rules=P.createProgressionRules({reference:{...reference,formulaConstants:{...reference.formulaConstants,
-  rows:reference.formulaConstants.rows.map(r=>XP_CODE.test(r.code)?{...r,valeur:r.valeur/4}:r)}}});
+  rows:reference.formulaConstants.rows.map(r=>XP_CODE.test(r.code)?{...r,valeur:r.valeur/4}:FLAT.test(r.code)?{...r,valeur:1}:r)}}});
 
 // Constantes d'équilibrage lues dans formula-constants.json (valeurs de 08-progression-and-experience.md
 // et décisions Idan du 2026-10-06) ; toutes les XP doublées après le bêta-test (Idan, 2026-11-07 : « On double l'xp
 // gagné partout »), puis doublées à nouveau (Idan, 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau ») ; la courbe,
 // les seuils et les parts de régression inchangés.
 assert.deepEqual(real.constants,{
-  curve:10,startPosition:0.5,chanceCriticalFailure:120,chanceCriticalSuccess:-20,resistanceWound:32,resistanceOthers:-8,
+  curve:10,zoneWidth:50,zoneDivisors:[4,2,1,0.75],startPosition:0.5,chanceCriticalFailure:120,chanceCriticalSuccess:-20,resistanceWound:32,resistanceOthers:-8,
   constitutionHpHealed:4,courageChargeAttempt:200,speedFleeHex:8,charismaKnockout:200,perceptionBackstabWound:40,
   forceLoadThreshold:0.25,forceLoadXp:80,
   dexterityChain:200,dodgeWoundTaken:40,enduranceHeavyArmorHex:8,willCourageHeld:80,willRecovery:80,intelligenceWorstChoice:120,
@@ -45,6 +48,24 @@ assert.equal(rules.levelForXp(26009),50);
 assert.equal(rules.levelForXp(26010),51);
 assert.equal(rules.levelForXp(-5),0);
 assert.equal(rules.startingXp(50),25505,"milieu de la tranche 25 000 – 26 010");
+// Courbe par zones, lissée (Idan, 2026-11-08 : « De 0 à 50, c'est très facile (on divise par 4) De 51 à 100, (on divise
+// par 2) De 101 à 150 comme aujourd'hui De 151 à 200 on divise par 0,75 » ; « on lisse le tout » ; « Après 200, on
+// durcit encore un peu ») : coût du point n → n+1 = 10 × (2n+1) × multiplicateur (¼ au milieu de 0–50, ½ de 51–100, 1 de
+// 101–150, 1/0,75 de 151–200, en ligne droite entre deux milieux, même pente au-delà), arrondi.
+{
+  const cost=n=>real.xpForLevel(n+1)-real.xpForLevel(n);
+  assert.deepEqual([10,50,100,150,200,250].map(real.xpForLevel),[255,7561,48970,173107,407826,784210]);
+  // Les repères de la proposition à marches (6 250, 43 750, 168 750, 402 083) à quelques pour cent près.
+  for(const [n,step] of [[50,6250],[100,43750],[150,168750],[200,402083]]) assert.ok(Math.abs(real.xpForLevel(n)/step-1)<0.21,n+" : "+real.xpForLevel(n));
+  for(const [n,m] of [[10,0.25],[25,0.25],[75,0.5],[125,1],[175,1/0.75]]) assert.ok(Math.abs(cost(n)/(10*(2*n+1))-m)<0.02,"multiplicateur au milieu des zones : "+n);
+  assert.ok(Math.abs(cost(50)-cost(49))<20&&Math.abs(cost(100)-cost(99))<50,"pas de marche à 50 ni à 100");
+  for(let n=1;n<400;n++) assert.ok(cost(n)>=cost(n-1),"chaque point coûte au moins autant que le précédent : "+n);
+  assert.ok(cost(250)/(10*501)>1.8,"au-delà de 200, plus dur que 1/0,75");
+  for(const n of [0,1,49,50,51,100,199,200,333]){ assert.equal(real.levelForXp(real.xpForLevel(n)),n); if(n) assert.equal(real.levelForXp(real.xpForLevel(n)-1),n-1); }
+  assert.equal(real.startingXp(50),Math.round(7561+0.5*cost(50)));
+  // Caractéristiques et compétences sur la même courbe (« ça c'est certain ») : 30,6 = 30 + 60 % de la tranche.
+  assert.ok(Math.abs(real.continuousLevel(real.xpForContinuous(30.6))-30.6)<1e-9);
+}
 
 // Journal : ce que le moteur de combat signale.
 const a={},d={};

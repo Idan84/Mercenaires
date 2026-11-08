@@ -7,14 +7,6 @@ fait, puis sera retiré d'ici.
 
 Décidé :
 
-5. **Courbe d'XP** (Idan, 2026-11-08 : « je voudrais une augmentation peut-être moins linéaire ») — proposition :
-   même courbe quadratique, coût de chaque point divisé selon la zone : **0–50 ÷ 4**, **51–100 ÷ 2**, **101–150 comme
-   aujourd'hui**, **151–200 ÷ 0,75** (× 1,33, plus dur). **Caractéristiques et compétences restent alignées** (« ça
-   c'est certain »). Repères : atteindre 50 = 6 250 XP (25 000 aujourd'hui), 100 = 43 750 (100 000), 150 = 168 750
-   (225 000), 200 ≈ 402 000 (400 000). Sur un an de la partie n°5 : Zizza 64 → 79 (72 aujourd'hui), le capitaine
-   55 → ≈ 106 (88). **Décidé** : on lisse le tout (« option 1, on lisse le tout, fais les maths ») : pas de marche à
-   51 ni à 101, le multiplicateur glisse d'une zone à l'autre ; **au-delà de 200, on durcit encore un peu**. La
-   régression des autres compétences suit la courbe (elle fond plus vite sous 50) : **on laisse comme ça**.
 6. **XP de combat** : on garde le système à l'action (Idan : « j'aime globalement l'idée »).
    - **Multiplicateur d'étoiles** (décidé) : toute l'XP gagnée pendant une mission × (1 + 0,25 par étoile au-delà
      de 1) : 1★ × 1, 3★ × 1,5, 5★ × 2, 10★ × 3,25, 15★ × 4,5 (« le plus rapide à équilibrer et ça boostera tout le

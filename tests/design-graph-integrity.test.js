@@ -27,6 +27,11 @@ for(const e of E){
 }
 assert.ok(E.some(e=>e.a==="chance"&&e.b==="critique"&&e.s==="implemented"));
 assert.ok(E.some(e=>e.a==="rep"&&e.b==="renommee"&&e.s==="implemented"));
+// Les six parts de la renommée (doc 09 §2) : réputation (capitaine 1er, puis les autres), héritage, missions, dortoir,
+// médecin ; et la renommée donne le niveau des missions.
+for(const from of ["heritage","missions","camp","artisanat"]) assert.ok(E.some(e=>e.a===from&&e.b==="renommee"&&e.s==="implemented"),from+" → renommée");
+assert.ok(/Capitaine toujours 1er/.test(E.find(e=>e.a==="rep"&&e.b==="renommee").detail));
+assert.ok(E.some(e=>e.a==="renommee"&&e.b==="missions"&&e.s==="implemented"),"le niveau des missions suit la renommée");
 // Recrutement (Idan, 2026-10-20) : l'affinité pèse sur la négociation et le salaire, la renommée sur les recrues.
 assert.ok(E.some(e=>e.a==="affinite"&&e.b==="negociation"&&e.s==="implemented"));
 assert.ok(E.some(e=>e.a==="affinite"&&e.b==="salaire"&&e.s==="implemented"));

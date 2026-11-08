@@ -70,6 +70,7 @@ if(setFamily(ua,"ranged")){
   assert.equal(combat.canAttackAtDistance(ua,rd,"ranged"),true);
   const ranged=combat.resolveAttack(ua,ub,{mode:"ranged",distance:rd});
   assert.equal(ranged.hit,true);
+  assert.equal(ranged.rangeMax,rr.max,"la portée de l'arme au tir (XP de Perception d'un tir au loin)");
   assert.equal(ranged.wound,true);
   assert.ok(ranged.damage>0);
 }

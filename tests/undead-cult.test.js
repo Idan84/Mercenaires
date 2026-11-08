@@ -100,7 +100,8 @@ for (const o of offers) {
   seenOrders.add(o.order);
   const text = rules.orderText(o, {date: "1 Brumecendre", date_expiration: "6 Brumecendre", an: 842, récompense: "9 000"});
   assert.ok(![...text.paragraphs, text.signature].join(" ").includes("{"), o.order + " : tous les champs remplis");
-  assert.ok(o.camp.chief.startsWith("cult_necromancer_"));
+  // 1★ : sans chef possible (Idan, 2026-11-08 : chef au plus la moitié du budget).
+  assert.ok(o.level === 1 && !o.camp.chief || o.camp.chief.startsWith("cult_necromancer_"), o.level + " : " + o.camp.chief);
   if (o.level < 3) assert.ok(o.camp.enemies.every(code => !code.startsWith("cult_specter")), "pas de spectre avant le niveau 3");
 }
 assert.equal(seenOrders.size, 3, "les trois lettres");
@@ -247,9 +248,14 @@ near.q = caster.q - 12;
 for (const u of raised) { u.alive = false; u.offMap = true; }
 api.enemyMissionAct(caster);
 assert.notDeepEqual({q: caster.q, r: caster.r}, home, "seul, il avance");
-// Nos mercenaires : pas de aiSpells, donc pas de sorts joués par l'IA.
+// Nos mercenaires : pas de aiSpells ; l'IA ne leur fait jouer que leurs propres sorts (une Flèche de glace, selon le
+// tirage), jamais ceux du nécromancien.
 assert.ok(m.players.every(u => !u.character.aiSpells));
-assert.equal(api.missionAiSpell(m.players[1]), false);
+{
+  const before = m.log.length;
+  api.missionAiSpell(m.players[1]);
+  assert.ok(!m.log.slice(before).some(x => /Armée d'os|Résurrection|Flèche de mort/.test(x.message)));
+}
 
 // 6. Des contrats du Culte joués jusqu'au bout (cimetière, enceinte de murets) : niveaux 1 à 6.
 let stuck = 0, played = 0;

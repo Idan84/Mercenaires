@@ -82,7 +82,7 @@ const byId=Object.fromEntries(result.entries.map(e=>[e.id,e]));
 assert.deepEqual([byId[100].code,byId[100].captain,byId[100].chance],["magic_room_fire",true,null],"le capitaine prend sa place sans test");
 assert.deepEqual([byId[2].code,byId[2].talent],["magic_school",true],"la salle du Feu est prise : la seule place libre");
 assert.equal(byId[2].chance,88.1,"à l'École, le test de l'École");
-assert.ok(fire2.xp.stats["Puissance magique"]>10*50*50,"salle généraliste : de l'XP de Puissance magique (la valeur est entière)");
+assert.ok(fire2.xp.stats["Puissance magique"]>progression.xpForLevel(50),"salle généraliste : de l'XP de Puissance magique (la valeur est entière)");
 assert.equal(fire2.xp.skills?.magic?.Feu,undefined,"pas d'XP d'école dans la salle généraliste");
 for(const id of [3,4,1]) assert.deepEqual([byId[id].code,byId[id].full],[null,true],"plus de place : la taverne, sans test");
 assert.ok(cap.skills.magic.Feu>50&&cap.skills.magic.Eau<1+1e-9,"le capitaine gagne en Feu, l'Eau ne descend pas sous 1");

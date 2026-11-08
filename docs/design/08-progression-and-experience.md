@@ -11,51 +11,65 @@
 
 ## 1 — Courbe universelle XP → niveau
 
-Même fonction pour les caractéristiques et les compétences :
+Même fonction pour les caractéristiques, les compétences et les sorts (Idan, 2026-11-08 : « Je veux qu'on reste aligné pour compétences et carac, ça c'est certain »). La **valeur** est le **niveau**.
+
+**Avant le 2026-11-08** : XP cumulée = 10 × Niveau², soit un point n → n+1 à 10 × (2n+1) XP.
+
+**Courbe par zones, lissée** (Idan, 2026-11-08 : « De 0 à 50, c'est très facile (on divise par 4) De 51 à 100, (on divise par 2) De 101 à 150 comme aujourd'hui De 151 à 200 on divise par 0,75 » ; « Je choisis option 1 on lisse le tout (fais les maths, je te fais confiance). Après 200, on durcit encore un peu ») :
 
 $$
-XP_{cumulé}=10\times Niveau^2
+XP(n\rightarrow n+1)=arrondi\left(10(2n+1)\times m(n+0{,}5)\right)
 $$
 
-$$
-Niveau=\sqrt{XP/10}
-$$
+- **m** vaut **1 / diviseur au milieu de chaque zone** : ¼ à 25 (zone 0–50), ½ à 75 (51–100), 1 à 125 (101–150), 1 / 0,75 ≈ 1,33 à 175 (151–200) ;
+- entre deux milieux, m varie **en ligne droite** : pas de marche à 50 ni à 100 ;
+- sous 25, m reste à ¼ ; **au-delà de 175, m continue de monter avec la même pente** (≈ 1,67 à 225, 2 à 275) : « on durcit encore un peu » ;
+- constantes : `progression.xp_curve.coefficient` (10), `progression.xp_curve.zone_width` (50), `progression.xp_curve.zone_1_divisor` à `zone_4_divisor` (4, 2, 1, 0,75) ; code : `game-core/progression.js` (`xpForLevel`, `levelForXp`).
 
-Le rendement de l’XP est donc décroissant : chaque point supplémentaire demande davantage d’XP que le précédent.
+Chaque point coûte au moins autant que le précédent. Les repères restent proches de la proposition à marches (6 250, 43 750, 168 750 et ≈ 402 000 XP pour 50, 100, 150 et 200).
 
-Le coût marginal d’un niveau est :
-
-$$
-XP(L\rightarrow L+1)=10(2L+1)
-$$
+Une compétence est un **niveau continu** (30,6 = niveau 30, à 60 % de la tranche vers 31). Une valeur sans XP enregistrée (valeur générée, ou changée par ailleurs) repart du milieu de sa tranche : les valeurs ne bougent pas quand la courbe change, seul le prix des points suivants change.
 
 Pour les caractéristiques, **pas de plafond maximum** ; pour les compétences non plus (Idan, 2026-11-06 : « pas de plafond. La courbe d'expérience fait que c'est plus dur de monter, mais sky is the limit ! »).
 
 ### Repères de progression
 
-| Passage | XP nécessaire sur la tranche | XP cumulé à l’arrivée |
-| --- | --- | --- |
-| 0 → 10 | 1 000 | 1 000 |
-| 10 → 20 | 3 000 | 4 000 |
-| 20 → 30 | 5 000 | 9 000 |
-| 30 → 40 | 7 000 | 16 000 |
-| 40 → 50 | 9 000 | 25 000 |
-| 50 → 60 | 11 000 | 36 000 |
-| 60 → 70 | 13 000 | 49 000 |
-| 70 → 80 | 15 000 | 64 000 |
-| 80 → 90 | 17 000 | 81 000 |
-| 90 → 100 | 19 000 | 100 000 |
-| 100 → 110 | 21 000 | 121 000 |
-| 110 → 120 | 23 000 | 144 000 |
-| 120 → 130 | 25 000 | 169 000 |
-| 130 → 140 | 27 000 | 196 000 |
-| 140 → 150 | 29 000 | 225 000 |
+| Passage | XP nécessaire sur la tranche | XP cumulé à l'arrivée | Avant (10 × N²) |
+| --- | --- | --- | --- |
+| 0 → 10 | 255 | 255 | 1 000 |
+| 10 → 20 | 755 | 1 010 | 4 000 |
+| 20 → 30 | 1 287 | 2 297 | 9 000 |
+| 30 → 40 | 2 107 | 4 404 | 16 000 |
+| 40 → 50 | 3 157 | 7 561 | 25 000 |
+| 50 → 60 | 4 407 | 11 968 | 36 000 |
+| 60 → 70 | 5 857 | 17 825 | 49 000 |
+| 70 → 80 | 7 607 | 25 432 | 64 000 |
+| 80 → 90 | 10 219 | 35 651 | 81 000 |
+| 90 → 100 | 13 319 | 48 970 | 100 000 |
+| 100 → 110 | 16 819 | 65 789 | 121 000 |
+| 110 → 120 | 20 719 | 86 508 | 144 000 |
+| 120 → 130 | 24 911 | 111 419 | 169 000 |
+| 130 → 140 | 28 811 | 140 230 | 196 000 |
+| 140 → 150 | 32 877 | 173 107 | 225 000 |
+| 150 → 160 | 37 210 | 210 317 | 256 000 |
+| 160 → 170 | 41 811 | 252 128 | 289 000 |
+| 170 → 180 | 46 677 | 298 805 | 324 000 |
+| 180 → 190 | 51 810 | 350 615 | 361 000 |
+| 190 → 200 | 57 211 | 407 826 | 400 000 |
+| 200 → 250 | 376 384 | 784 210 | 625 000 |
+| 250 → 300 | 551 386 | 1 335 596 | 900 000 |
+
+Coût d'un seul point : 53 XP à 10, 169 à 30, 381 à 50, 763 à 75, 1 518 à 100, 2 518 à 125, 3 522 à 150, 4 692 à 175, 6 028 à 200, 9 202 à 250.
 
 ## 2 — XP naturelle
 
-> **Bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout (combat / entrainement au camp ....) »)** : toutes les XP de cette page et de la formation au camp (entraînement libre, médecin, directeur, professeur, Perfectionner) sont **doublées**, puis **doublées à nouveau** (Idan, 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau ») : × 4 en tout ; les valeurs ci-dessous sont à jour, `data/reference/formula-constants.json` fait foi. La courbe XP → niveau ne change pas.
+> **Bêta-test (Idan, 2026-11-07 : « On double l'xp gagné partout (combat / entrainement au camp ....) »)** : toutes les XP de cette page et de la formation au camp (entraînement libre, médecin, directeur, professeur, Perfectionner) sont **doublées**, puis **doublées à nouveau** (Idan, 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau ») : × 4 en tout ; les valeurs ci-dessous sont à jour, `data/reference/formula-constants.json` fait foi. La courbe XP → niveau ne change pas avec ces doublements (elle passe par zones le 2026-11-08, §1).
 
 Principe général : les caractéristiques progressent en conséquence d’actions et de résultats d’actions en combat. Un plafond de gain par mission est envisagé mais **pas encore chiffré**.
+
+**Multiplicateur d'étoiles** (Idan, 2026-11-08 : « Multiplicateur selon les étoiles de la mission … On prend ça, c'est le plus rapide à équilibrer et ça boostera tout le monde ») : toute l'XP d'une mission (caractéristiques, résistances, compétences, sorts, et les reculs qui vont avec) est multipliée par **1 + 0,25 × (étoiles − 1)** : 1★ × 1, 3★ × 1,5, 5★ × 2, 10★ × 3,25, 15★ × 4,5 (`progression.mission.star_bonus`). Pas de multiplicateur selon le tier de l'ennemi. Un combat sans mission (Mission Test) : × 1. Le « rentrer vivant avec sa monture » n'est pas multiplié (ce n'est pas du combat).
+
+**Nouvelles actions** (Idan, 2026-11-08) : leurs valeurs sont celles d'Idan, sans les doublements du bêta-test (constantes `progression.*` en version V2).
 
 ### Chance — « La chance tourne »
 
@@ -85,6 +99,8 @@ Types concernés : Physique, Feu, Froid, Foudre, Poison.
 Pour chaque **1 PV réellement restauré par un soin** :
 
 - `+4 XP Constitution`.
+
+Pour chaque **PV de dégâts encaissé** pendant la mission, s'il y survit (Idan, 2026-11-08 : « +2 XP par PV de dégâts encaissés et survécus ») : `+2 XP Constitution` (le cumul de la mission, celui de la fatigue : les soins ne l'effacent pas ; `progression.constitution.damage_taken_xp`).
 - Les PV de soin qui dépassent les PV max ne rapportent rien.
 - Seuls les PV réellement récupérés comptent.
 
@@ -100,11 +116,15 @@ Chaque **case parcourue en état de fuite** :
 
 - `+8 XP Vitesse`.
 
+Chaque **case parcourue en combat**, en fuite ou non (Idan, 2026-11-08 : « Vitesse +1 par case parcourue en combat ») : `+1 XP Vitesse` (`progression.speed.hex_moved_xp`) ; en fuite, les deux s'additionnent.
+
 ### Charisme — « Triste Monde ! »
 
 Chaque **adversaire mis hors combat** par le mercenaire (décision Idan, 2026-10-06 : les ennemis ne font pas de jet de mort, « tué » = hors combat) :
 
 - `+200 XP Charisme`.
+
+Chaque **test de Courage tenu par un allié grâce à son aura** (Idan, 2026-11-08 : « Charisme +40 quand un allié proche réussit son test de Courage et qu'il a utilisé son aura (donc pour capitaine et lieutenant uniquement) ») : `+40 XP Charisme` au capitaine ou au lieutenant dont l'aura a compté (la plus forte à portée, doc 04 ; le fouet seul ne compte pas) ; après une attaque, un tir, une charge ou un sort de Peur (`progression.charisma.aura_hold_xp`).
 
 Le Charisme inclut ici l’idée d’aura, de présence et de réputation martiale, pas seulement l’aisance sociale.
 
@@ -113,6 +133,8 @@ Le Charisme inclut ici l’idée d’aura, de présence et de réputation martia
 Chaque fois qu’un mercenaire est **effectivement blessé par une attaque reçue dans le dos** :
 
 - `+40 XP Perception`.
+
+Chaque **tir qui touche** (ni bloqué ni paré) **au-delà de la moitié de la portée** de l'arme (Idan, 2026-11-08) : `+20 XP Perception` (`progression.perception.long_shot_xp`). Exemple : un arc de portée 12 tire à 7 cases ou plus.
 
 ### Force — porter son équipement
 
@@ -134,8 +156,8 @@ Chaque caractéristique pourra recevoir d'autres sources plus tard : leurs XP s'
 
 - **Dextérité** : chaque **enchaînement réussi** (attaque, tir ou séquence à deux armes supplémentaire) : `+200 XP`.
 - **Esquive** : chaque **coup encaissé qui blesse** : `+40 XP`. Le contrecoup de sa propre arme n'en est pas un.
-- **Endurance** : chaque **case parcourue en armure lourde** (plates, écailles) : `+8 XP`.
-- **Volonté** : chaque **test de Courage réussi** : `+80 XP` ; chaque **reprise de contrôle** réussie en fuite : `+80 XP`.
+- **Endurance** : chaque **case parcourue en armure lourde** (plates, écailles) : `+8 XP` ; chaque **activation commencée au contact d'un ennemi** (à une case ; Idan, 2026-11-08 : « +10 par tour passé au contact d'un ennemi ») : `+10 XP` (`progression.endurance.contact_turn_xp`).
+- **Volonté** : chaque **test de Courage réussi** : `+80 XP` ; chaque **reprise de contrôle** réussie en fuite : `+80 XP` ; chaque **sort ennemi résisté** (Paralysie, Sommeil, Prison de glace ; Idan, 2026-11-08) : `+80 XP` (`progression.will.spell_resisted_xp`).
 - **Intelligence** : il apprend de ses erreurs : chaque fois qu'il choisit le **pire type de dégâts** : `+120 XP`. Ce mauvais choix n'arrive qu'aux mercenaires sous 50 d'Intelligence.
 
 ### Puissance magique, Réserve de mana, écoles et sorts (décisions Idan du 2026-10-25)
@@ -165,7 +187,7 @@ Détail dans le doc 12 (« Écoles : progression et régression »).
 
 ### Application en fin de mission (V1 — décisions Idan du 2026-10-06)
 
-- La **valeur** d'une caractéristique ou d'une résistance **est son niveau** : une valeur de 50 correspond à 25 000 XP cumulés.
+- La **valeur** d'une caractéristique ou d'une résistance **est son niveau** : une valeur de 50 correspond à 7 561 XP cumulés (25 000 avant la courbe par zones du 2026-11-08, §1).
 - Pendant la mission, chaque mercenaire tient un **journal** de ce qu'il vit ; l'XP naturelle est calculée et appliquée **en fin de mission**, aux survivants (y compris ceux qui ont fui le combat).
 - Une valeur **monte ou descend** selon son XP ; l'XP ne descend jamais sous 0, ni la valeur sous son minimum.
 - Une valeur générée, qui n'a pas encore d'XP, démarre au **milieu de la tranche** de son niveau (constante `progression.xp_curve.start_position` = 0,5, validée par Idan le 2026-10-07) : sans cela, la première petite perte ferait tomber un point.

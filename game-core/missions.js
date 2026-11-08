@@ -85,9 +85,22 @@
     // Le chef (Idan, 2026-11-02) : celui du métal s'il est permis à ce niveau de mission (niveau_mission_min), sinon le
     // cran en dessous (chef 4, 3, 2, 1) ; null si ce peuple n'en a aucun.
     const chiefRank=level=>Number(String(level).match(/\d+/)?.[0])||1;
-    function chiefFor(faction,chiefLevel,missionLevel){
-      return archetypes.filter(a=>a.faction===faction&&a.ligne==="Chef"&&chiefRank(a.niveau)<=chiefRank(chiefLevel)&&missionMin(a)<=missionLevel)
+    // maxPoints : seulement les chefs qui ne dépassent pas ce nombre de points de combat.
+    function chiefFor(faction,chiefLevel,missionLevel,maxPoints=Infinity){
+      return archetypes.filter(a=>a.faction===faction&&a.ligne==="Chef"&&chiefRank(a.niveau)<=chiefRank(chiefLevel)&&missionMin(a)<=missionLevel
+        &&(Number(a.points)||0)<=maxPoints)
         .sort((x,y)=>chiefRank(y.niveau)-chiefRank(x.niveau))[0]?.code||null;
+    }
+    // Le chef au plus la moitié du budget (Idan, 2026-11-08 : « PC du chef au max 50 % du PC total. Les missions jusqu'à
+    // 3★ peuvent ne pas avoir de chef ») : le chef du cran en dessous s'il tient dans la part ; jusqu'à 3★, un camp sans
+    // chef si aucun ne tient (le plus fort de la troupe porte alors le nom du chef de la lettre : buildEnemies) ; au-delà,
+    // toujours un chef (le plus petit permis si aucun ne tient).
+    function cappedChief(def,faction,chiefLevel,missionLevel,budget){
+      const rule=def?.chef||{},share=rule.part_max_budget==null?1:Number(rule.part_max_budget);
+      const capped=chiefFor(faction,chiefLevel,missionLevel,budget*share);
+      if(capped||missionLevel<=(Number(rule.sans_chef_jusqu_au_niveau)||0)) return capped;
+      return archetypes.filter(a=>a.faction===faction&&a.ligne==="Chef"&&chiefRank(a.niveau)<=chiefRank(chiefLevel)&&missionMin(a)<=missionLevel)
+        .sort((x,y)=>chiefRank(x.niveau)-chiefRank(y.niveau))[0]?.code||null;
     }
     // Le camp : le chef, puis des ennemis (niveau selon le métal, ligne selon les poids du camp) tant que le total plus la
     // moitié du suivant reste dans le budget ; au plus max_ennemis (100), plus le chef (Idan, 2026-11-02 : « 100 + chef »).
@@ -102,6 +115,7 @@
         const others=campsOf(def).filter(c=>chiefFor(c.faction,chiefLevel,missionLevel));
         if(others.length){ chosen=weightedCamp(others); chief=chiefFor(chosen.faction,chiefLevel,missionLevel); }
       }
+      if(chief) chief=cappedChief(def,chosen.faction,chiefLevel,missionLevel,budget);
       const levels=(tier?.monstres||[{niveau:"novice",poids:1}]).map(m=>({...m,poids:Number(m.poids)||0}));
       const max=Number(def?.max_ennemis)||100;
       let total=points(chief);
@@ -335,7 +349,8 @@
     }
 
     // Les ennemis du camp, chef en dernier : makeBase(archétype) donne le personnage de base. Les doublons sont numérotés
-    // (« Frondeur gobelin novice 2 ») ; le chef porte le nom de l'offre.
+    // (« Frondeur gobelin novice 2 ») ; le chef porte le nom de l'offre. Un camp sans chef (jusqu'à 3★) : le plus fort de
+    // la troupe (le premier tiré à points égaux) prend sa place, en dernier, avec le nom du chef de la lettre.
     function buildEnemies(offer,makeBase){
       // Une chasse : les bêtes, la fiche fixe de nos animaux (« Loup 1 », « Loup 2 »…).
       const beast=offer.camp?.beast;
@@ -344,9 +359,15 @@
         return Array.from({length:Number(beast.count)||0},(_,i)=>createMount(beast.code,{id:`${offer.id}-b${i}`,
           name:beast.count>1?`${sheet?.nom||beast.code} ${i+1}`:sheet?.nom})).filter(Boolean);
       }
-      const codes=[...offer.camp.enemies,offer.camp.chief],seen=new Map();
+      const troops=[...offer.camp.enemies];
+      let boss=offer.camp.chief;
+      if(!boss&&troops.length){
+        const strongest=troops.reduce((best,code,i)=>points(code)>points(troops[best])?i:best,0);
+        boss=troops.splice(strongest,1)[0];
+      }
+      const codes=[...troops,boss],seen=new Map();
       const total=new Map();
-      for(const code of offer.camp.enemies) total.set(code,(total.get(code)||0)+1);
+      for(const code of troops) total.set(code,(total.get(code)||0)+1);
       return codes.map((code,index)=>{
         const arch=archetype(code);
         if(!arch) return null;

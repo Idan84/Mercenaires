@@ -109,7 +109,8 @@ function campRoomsList(c,code){
 // l'École de magie dans le sien.
 function campBuildingCard(c,code){
   const rules=campaignRules(),row=rules.campBuildingRow(code);
-  if(!row||row.requiert) return "";
+  // Une salle de la Taverne (La Cantine, lieu taverne) se gère à la Taverne, pas dans Ma Compagnie.
+  if(!row||row.requiert||row.lieu) return "";
   const level=rules.buildingLevel(c,code);
   return `<article class="building-card building-card--care building-card--${esc(code)}">
       <div class="building-info"><strong title="${esc(row.description)}">${esc(row.nom)}</strong><span>${campBuildingState(c,code,level)}</span></div>
@@ -160,7 +161,7 @@ function renderDormitory(){
       <span class="building-cost">${fmt(expand.gold)} PO · ${campDays(expand.days)}${short(expand.gold)}</span></div>`
       +(upgrade
         ?`<div class="building-action"><button type="button" class="primary" data-dorm-quality${gold<upgrade.gold?" disabled":""}>Améliorer : ${esc(upgrade.name)}</button>
-      <span class="building-cost">${fmt(upgrade.gold)} PO · ${campDays(upgrade.days)} · Renommée +${fmt(upgrade.renown)}, affinité +${fmt(upgrade.affinity)}${short(upgrade.gold)}</span></div>`
+      <span class="building-cost">${fmt(upgrade.gold)} PO · ${campDays(upgrade.days)} · Renommée +${fmt(upgrade.renown)}, affinité +${fmt(upgrade.affinity)}${upgrade.fatigue?`, fatigue −${fmt(upgrade.fatigue)} %`:""}${short(upgrade.gold)}</span></div>`
         :`<p class="building-work">Qualité maximale.</p>`)
       +(quarter
         ?`<div class="building-action"><button type="button" class="primary" data-dorm-quarter${locked||gold<quarter.gold?" disabled":""}>Construire : quartier du lieutenant n° ${fmt(quarter.number)}</button>
@@ -170,7 +171,7 @@ function renderDormitory(){
   box.innerHTML=`<button type="button" class="secondary dormitory-back" data-open-camp-scene="company" data-destination="Ma Compagnie">← Ma Compagnie</button>
     <p class="eyebrow">Dortoir</p>
     <h2>${esc(quality.nom)}</h2>
-    <p class="dormitory-meta">Niveau ${fmt(quality.niveau)} · ${dormitoryPlacesLine(c)} · ${lieutenantQuartersLine(c)}</p>
+    <p class="dormitory-meta">Niveau ${fmt(quality.niveau)} · ${dormitoryPlacesLine(c)} · ${lieutenantQuartersLine(c)}${Number(quality.fatigue)>0?` · fatigue −${fmt(quality.fatigue)} %`:""}</p>
     <div class="building-actions">${actions}</div>`;
 }
 

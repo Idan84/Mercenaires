@@ -617,9 +617,9 @@ sort », « une journée à l'école » ; règles `game-core/spell-study.js`, co
   garde du corps, ni entraînement libre) ; l'XP tombe **le matin suivant**, puis il sort.
 - **XP du sort = 4 000 × Intelligence / 50 × (1 + 0,1 × niveau de la salle) × (1 + Transmission du savoir du directeur /
   100)**, sans plafond (1 000 avant le bêta-test, puis 2 000 : XP doublée deux fois, Idan, 2026-11-07 et 2026-11-08). Exemples : Intelligence 54, salle 3, sans directeur : **5 616 XP** (≈ 78 lancers) ; un sort passe du
-  niveau 1 à 23, de 10 à 25, de 20 à 31, de 50 à 55, de 90 à 93 ; avec un directeur à 48 de Transmission : 8 312 XP.
+  niveau 1 à 44, de 10 à 45, de 20 à 47, de 50 à 62, de 90 à 94 (courbe par zones du 2026-11-08, doc 08 §1 ; avant : 1 à 23, 10 à 25, 20 à 31, 50 à 55, 90 à 93) ; avec un directeur à 48 de Transmission : 8 312 XP.
 - Interface : la ligne de l'élève dans « Apprentissages » (« perfectionne (+5 616 XP demain) ») ; statut « Perfectionne un
-  sort » ; journal du matin (« … perfectionne Boule de feu : niveau 20 → 31 (+5 616 XP). ») ; historique.
+  sort » ; journal du matin (« … perfectionne Boule de feu : niveau 20 → 47 (+5 616 XP). ») ; historique.
 - Tests : `tests/spell-perfect.test.js`.
 
 ### Mise en place

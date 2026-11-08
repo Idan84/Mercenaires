@@ -34,6 +34,7 @@ const REFERENCE_FILES = {
   oneShotMissions: "one-shot-missions.json",
   dormitoryQuality: "dormitory-quality.json",
   campBuildings: "camp-buildings.json",
+  canteenDishes: "canteen-dishes.json",
   itemQualities: "item-qualities.json",
   equipmentSlots: "equipment-slots.json",
   startingEquipmentGeneration: "starting-equipment-generation.json",

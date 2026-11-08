@@ -37,7 +37,7 @@ const BUDGET={Bronze:[40,60,1],Argent:[60,80,1],Or:[8,12,2]};
 const LEVELS={Bronze:["novice","normal"],Argent:["novice","normal","vétéran"],Or:["vétéran","d’élite"]};
 const CHIEFS={Bronze:["chef 1"],Argent:["chef 2"],Or:["chef 3","chef 4"]};
 const mean=list=>list.reduce((t,x)=>t+x,0)/list.length;
-const factions=Object.fromEntries(Object.keys(CAMPS).map(f=>[f,0])),drawn={},chiefs={},budgets={},sizes={};
+const factions=Object.fromEntries(Object.keys(CAMPS).map(f=>[f,0])),drawn={},chiefs={},budgets={},sizes={},noChief={};
 for(const L of [1,3,5,6,8,10,11,13,15]) for(let i=0;i<300;i++){
   const camp=rules.rollCamp(undefined,null,{level:L}),metal=metalOf(L),[low,high,power]=BUDGET[metal],unit=Math.pow(L,power);
   assert.ok(camp.budget>=low*unit&&camp.budget<=high*unit&&camp.budget%unit===0,`budget ${metal} niveau ${L} : ${camp.budget}`);
@@ -49,14 +49,18 @@ for(const L of [1,3,5,6,8,10,11,13,15]) for(let i=0;i<300;i++){
   if(camp.enemies.length<100) assert.ok(Math.abs(camp.points-camp.budget)<=half,`près du budget : ${camp.points} / ${camp.budget}`);
   else assert.ok(camp.points<=camp.budget+half,`plafond de 100 ennemis : ${camp.points} / ${camp.budget}`);
   assert.ok(camp.enemies.length<=100);
-  assert.equal(rules.archetype(camp.chief).faction,camp.faction);
-  assert.ok(CHIEFS[metal].includes(rules.archetype(camp.chief).niveau),`chef ${metal}`);
+  // Le chef au plus la moitié du budget (Idan, 2026-11-08) ; sans chef possible jusqu'à 3★ seulement.
+  if(camp.chief){
+    assert.equal(rules.archetype(camp.chief).faction,camp.faction);
+    assert.ok(CHIEFS[metal].includes(rules.archetype(camp.chief).niveau),`chef ${metal}`);
+    assert.ok(rules.points(camp.chief)<=camp.budget/2,`chef ${rules.points(camp.chief)} / budget ${camp.budget}`);
+  }else{ assert.ok(L<=3,`sans chef au niveau ${L}`); (noChief[L]=(noChief[L]||0)+1); }
   assert.equal(camp.campName,CAMPS[camp.faction].nom_camp);
   factions[camp.faction]++;
   // Ses fiches, ou une créature partagée que son camp appelle (le troll, faction Créatures).
   for(const code of camp.enemies){ const a=rules.archetype(code); assert.ok(sources.has(a.faction),camp.faction+" : "+code); assert.ok(LEVELS[metal].includes(a.niveau),metal+" : "+a.niveau);
     (drawn[metal]=drawn[metal]||[]).push(a.niveau); }
-  (chiefs[metal]=chiefs[metal]||[]).push(rules.archetype(camp.chief).niveau);
+  if(camp.chief) (chiefs[metal]=chiefs[metal]||[]).push(rules.archetype(camp.chief).niveau);
   (budgets[L]=budgets[L]||[]).push(camp.budget);(sizes[L]=sizes[L]||[]).push(camp.enemies.length);
 }
 const share=(list,value)=>list.filter(x=>x===value).length/list.length;
@@ -65,6 +69,8 @@ assert.ok(Math.abs(share(drawn.Bronze,"novice")-0.5)<0.05,"Bronze : 50 % de novi
 assert.ok(Math.abs(share(drawn.Argent,"normal")-0.5)<0.05&&Math.abs(share(drawn.Argent,"vétéran")-0.25)<0.05,"Argent : 25–50–25");
 assert.ok(Math.abs(share(drawn.Or,"d’élite")-0.5)<0.05,"Or : 50 % d'élites");
 assert.ok(Math.abs(share(chiefs.Or,"chef 4")-0.5)<0.08,"Or : chef 3 ou chef 4");
+// En 1★, le budget (40 à 60) est trop petit pour un chef 1 (30 à 42 points) presque toujours ; en 3★, toujours un chef.
+assert.ok(noChief[1]>250&&!noChief[3],"1★ : presque jamais de chef ; 3★ : toujours : "+JSON.stringify(noChief));
 for(const [L,expected] of [[1,50],[3,150],[5,250],[6,420],[10,700],[11,1210],[15,2250]]) assert.ok(Math.abs(mean(budgets[L])/expected-1)<0.06,`budget moyen niveau ${L} : ${mean(budgets[L])} / ${expected}`);
 assert.ok(mean(sizes[3])>9&&mean(sizes[3])<14,"3★ bronze : une douzaine d'ennemis : "+mean(sizes[3]));
 assert.ok(mean(sizes[15])>50&&Math.max(...sizes[15])<=100,"5★ or : une armée, au plus 100 : "+mean(sizes[15]));
@@ -126,7 +132,8 @@ for(let day=1;day<=800;day++){
   orders[offer.faction].add(offer.order);
   assert.deepEqual([offer.level,offer.difficulty],[level,level]);
   assert.ok(offer.distance>=1&&offer.distance<=level,`marche 1 à ${level} : ${offer.distance}`);
-  assert.equal(offer.enemyCount,offer.camp.enemies.length+1);
+  assert.equal(offer.enemyCount,offer.camp.enemies.length+(offer.camp.chief?1:0));
+  if(level>3) assert.ok(offer.camp.chief,"au-delà de 3★, toujours un chef");
   const k=(offer.reward-5000)/(offer.camp.budget*level);
   assert.ok(Number.isInteger(k)&&k>=30&&k<=40,`récompense : ${offer.reward}`);
   assert.equal(offer.campName,offer.camp.campName);
@@ -159,7 +166,7 @@ for(const [faction,camp] of Object.entries(CAMPS)){
 
 // Ennemis : la fiche figée remplace caractéristiques, PV, compétences et équipement d'un personnage de base.
 let offer=null;
-for(let day=4;!offer;day++){ const o=rules.createOffer({day,level:1}); if(o.faction==="Gobelins") offer=o; }
+for(let day=4;!offer;day++){ const o=rules.createOffer({day,level:3}); if(o.faction==="Gobelins") offer=o; }
 const base=()=>({id:900,name:"Base",stats:{Force:1,Courage:1,Charisme:12},resistances:{"Résistance physique":0},
   skills:{martial:{Lance:80,Arc:80,"Port d’armure lourde":true},social:{Intimidation:99},magic:{Feu:3}},
   equipment:{slots:{armor:null,weapon_set_1_main:null,weapon_set_1_off:null,weapon_set_2_main:null,ring_1:null},profile:{type:"magic"}},
@@ -199,6 +206,20 @@ const orcChief=orcs[orcs.length-1],bande=rules.archetype("orc_chief_1");
 assert.equal(orcChief.name,orcOffer.fields.boss+" (Chef de bande orc)");
 assert.equal(orcChief.pvMax,bande.pv);
 assert.ok(orcs.every(e=>/orc/.test(e.archetype)));
+// Camp sans chef (1★, Idan, 2026-11-08) : le plus fort de la troupe passe en dernier et porte le nom du chef de la
+// lettre ; les autres gardent leur numéro.
+{
+  let bare=null;
+  for(let day=20;!bare;day++){ const o=rules.createOffer({day,level:1}); if(!o.camp.chief&&o.camp.enemies.length>2) bare=o; }
+  const troop=rules.buildEnemies(bare,()=>base()),boss=troop[troop.length-1];
+  assert.equal(troop.length,bare.enemyCount);
+  const best=Math.max(...bare.camp.enemies.map(rules.points));
+  assert.equal(rules.points(boss.archetype),best);
+  assert.equal(boss.name,`${bare.fields.boss} (${rules.archetype(boss.archetype).nom})`);
+  const others=troop.slice(0,-1).map(e=>e.name);
+  assert.equal(new Set(others).size,others.length);
+  assert.ok(others.every(n=>!n.includes(bare.fields.boss)));
+}
 
 // Issue : victoire = récompense + coffre + butin des ennemis morts (selon leur fiche) + équipement de nos morts ; défaite =
 // −30 de renommée.
@@ -317,7 +338,8 @@ const files={peoples:"peoples.json",cultures:"cultures.json",socialOrigins:"soci
   d6Scale:"d6-generation-scale.json",generationMatrix:"generation-matrix.json",skills:"skills.json",characteristics:"characteristics.json",
   formulaConstants:"formula-constants.json",weapons:"weapons.json",baseArmors:"base-armors.json",itemQualities:"item-qualities.json",
   equipmentSlots:"equipment-slots.json",startingEquipmentGeneration:"starting-equipment-generation.json",binaryAptitudeGrants:"binary-aptitude-grants.json",
-  alignmentGeneration:"alignment-generation.json",renamedNames:"renamed-names.json",reputationStars:"reputation-stars.json"};
+  alignmentGeneration:"alignment-generation.json",renamedNames:"renamed-names.json",reputationStars:"reputation-stars.json",
+  dormitoryQuality:"dormitory-quality.json"};
 const full=Object.fromEntries(Object.entries(files).map(([key,file])=>[key,read(file)]));
 const generator=createGenerator(full,{random:seeded(3),nameGenerator:(people,id)=>people+" "+id});
 const tavern=createTavernRules({reference:full,random:seeded(4)});
@@ -416,6 +438,27 @@ squad[0].recovery=null;
 const deferred=campaign.applyMissionAftermath(game,{results:[{id:2,dead:false,wounded:false,fatigueDays:3,offMap:false}],captainDead:false},{deferBonuses:true});
 assert.deepEqual([deferred.bonusPaid,deferred.bonusesDue.map(b=>[b.id,b.bonus])],[0,[[2,100]]],"expédition : prime due au retour");
 assert.equal(game.company.gold,gold);
+// Dortoir de qualité 10 (Idan, 2026-11-08) : plus de fatigue du tout au retour ; qualité 5 : 3 jours → 2.
+squad[0].recovery=null;
+game.company.camp.dormitoryQuality=10;
+const restedReport=campaign.applyMissionAftermath(game,{results:[{id:2,dead:false,wounded:false,fatigueDays:3,offMap:false}],captainDead:false});
+assert.deepEqual([Boolean(squad[0].recovery),restedReport.fatigued.length],[false,0]);
+game.company.camp.dormitoryQuality=5;
+campaign.applyMissionAftermath(game,{results:[{id:2,dead:false,wounded:false,fatigueDays:3,offMap:false}],captainDead:false});
+assert.equal(squad[0].recovery.daysLeft,2);
+game.company.camp.dormitoryQuality=0;
+// Multiplicateur d'étoiles (Idan, 2026-11-08) : la même mission en 5★ donne deux fois l'XP de la 1★.
+{
+  const progress={hexesMoved:40,contactTurns:2};
+  const {createProgressionRules}=require("../game-core/progression.js");
+  const withXp=createCampaignRules({generator,tavern,reference:full,progression:createProgressionRules({reference:full})});
+  const xpAt=stars=>{ squad[0].recovery=null; return withXp.applyMissionAftermath(game,{results:[{id:2,dead:false,wounded:false,fatigueDays:3,offMap:false,progress}],captainDead:false},{stars}).progression[0].xp.stats; };
+  const one=xpAt(1),five=xpAt(5),none=xpAt(undefined);
+  assert.deepEqual(one,{Vitesse:40,Endurance:20});
+  assert.deepEqual(five,{Vitesse:80,Endurance:40});
+  assert.deepEqual(none,one,"sans niveau de mission : × 1");
+  squad[0].recovery=null;
+}
 // Inventaire (Idan, 2026-10-30) : un mort en mission rend à l'Intendance ce qu'il gardait au dortoir ; ce qu'il portait
 // reste avec lui (butin d'une victoire).
 const dead=squad[0],deadWorn=Object.values(dead.equipment.slots).filter(Boolean);

@@ -95,7 +95,7 @@ assert.deepEqual([school.places_base,school.places_pas],[1,2]);
 for(const r of rooms) assert.deepEqual([r.places_base,r.places_pas],[1,2],r.nom);
 // Ludus, Académie de la survie, Cercle des Fines Lames (Idan, 2026-11-03) : les places viendront avec leur entraînement.
 // La Grange du dresseur et ses Écuries (Idan, 2026-11-07) : des places pour les montures (places_par_niveau), pas pour des élèves.
-for(const r of rows.filter(r=>!r.places_pas)) assert.ok(["dispensary","baths","pleasure_palace","dungeon","trainer_barn","trainer_stables","trainer_kennel"].includes(r.code)||r.entraine,r.code);
+for(const r of rows.filter(r=>!r.places_pas)) assert.ok(["dispensary","baths","pleasure_palace","dungeon","trainer_barn","trainer_stables","trainer_kennel","canteen"].includes(r.code)||r.entraine,r.code);
 const places=[];
 for(let n=0;n<=10;n++){ at("magic_room_water",n); places.push(rules.buildingPlaces(state,"magic_room_water")); }
 assert.deepEqual(places,[0,1,2,2,3,3,4,4,5,5,6]);

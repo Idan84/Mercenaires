@@ -31,10 +31,12 @@
   const stables=typeof module!=="undefined"&&module.exports?require("./stables.js"):root.MercenairesStables;
   // Apprivoiser une monture à la Grange du dresseur (facultatif hors du jeu, de même).
   const taming=typeof module!=="undefined"&&module.exports?require("./taming.js"):root.MercenairesTaming;
-  const api=factory(history,regeneration,training,study,posts,armorPorts,armorStudy,lumber,agenda,dungeon,desertion,salaryReview,socialPolicy,stables,taming);
+  // La Cantine, salle de la Taverne : le plat du jour (facultatif hors du jeu, de même).
+  const canteen=typeof module!=="undefined"&&module.exports?require("./canteen.js"):root.MercenairesCanteen;
+  const api=factory(history,regeneration,training,study,posts,armorPorts,armorStudy,lumber,agenda,dungeon,desertion,salaryReview,socialPolicy,stables,taming,canteen);
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesCampaign=api;
-})(typeof globalThis!=="undefined"?globalThis:this,function(History,Regeneration,Training,Study,Posts,ArmorPorts,ArmorStudy,Lumber,Agenda,Dungeon,Desertion,SalaryReview,SocialPolicy,Stables,Taming){
+})(typeof globalThis!=="undefined"?globalThis:this,function(History,Regeneration,Training,Study,Posts,ArmorPorts,ArmorStudy,Lumber,Agenda,Dungeon,Desertion,SalaryReview,SocialPolicy,Stables,Taming,Canteen){
   // Sauvegarde : l'état de partie complet, sérialisé en JSON avec un format et une version.
   // La trace de génération des mercenaires (détail de calcul pour le Design Lab, ~85 % du poids)
   // n'est pas sauvegardée : un mercenaire passe d'environ 36 Ko à 5 Ko.
@@ -113,8 +115,21 @@
     }
     // Hors mission, comme l'intendant : ni dortoir, ni mission, ni garde du corps (médecin, directeur de l'École, maîtres).
     const offField=(state,m)=>m.id===state.company.intendantId||(state.company.medicId!=null&&m.id===state.company.medicId)||Boolean(postOf(state,m));
-    // Bains chauds (Idan, 2026-11-01) : un jour de fatigue de moins par niveau, au moins 1 jour.
-    const fatigueDaysFor=(days,state)=>Math.max(1,(Number(days)||0)-fatigueRelief(state));
+    // Fatigue au retour (mission, garde du corps). Qualité du dortoir d'abord (Idan, 2026-11-08 : « La qualité du dortoir
+    // réduit la fatigue de 10 % par niveau » ; dormitory-quality.json, fatigue) : arrondi au jour supérieur, et au niveau
+    // 10, plus de fatigue du tout (0 jour). Puis les Bains chauds (Idan, 2026-11-01) : un jour de moins par niveau, au
+    // moins 1 jour. Nos animaux ne dorment pas au dortoir : {dormitory:false} (Écuries, Chenil), les Bains seulement.
+    function fatigueDaysFor(days,state,{dormitory=true}={}){
+      const cut=dormitory?dormitoryFatigueCut(state):0;
+      const left=Math.ceil((Number(days)||0)*(100-cut)/100);
+      if(left<=0) return 0;
+      return Math.max(1,left-fatigueRelief(state));
+    }
+    // Un retour fatigué : la récupération, ou null s'il n'y a plus de fatigue du tout.
+    const fatigueRecovery=(days,state)=>{
+      const daysLeft=fatigueDaysFor(days,state);
+      return daysLeft>0?{kind:"fatigued",daysLeft,sinceDay:state.day}:null;
+    };
     const STARTING_DORMITORY_CAPACITY=referenceConstant(reference,"camp.dormitory.initial_capacity",25);
     const RENOWN_RANK_EXPONENT=referenceConstant(reference,"company.renown.rank_exponent",1.5);
     const RENOWN_HERITAGE_SHARE=referenceConstant(reference,"company.renown.heritage_share",0.2);
@@ -125,7 +140,8 @@
     function rosterOf(state){ return state.company.roster; }
 
     // Renommée de compagnie (09 §2 ; Idan, 2026-10-20, issue #111). Les membres vivants autres que le
-    // capitaine sont classés par réputation décroissante ; le rang i compte pour réputation / i^1,5.
+    // capitaine sont classés par réputation décroissante ; le rang i compte pour réputation / i^1,5. Le capitaine est
+    // toujours 1er (100 %) : le meilleur mercenaire est 2e (Idan, 2026-11-08 : « on descend d'un cran »).
     // À réputation égale, le plus ancien dans la compagnie (ordre du roster) est mieux classé.
     function renownRanking(state){
       return rosterOf(state)
@@ -133,8 +149,8 @@
         .map((m,seniority)=>({m,seniority,reputation:Number(m.reputation)||0}))
         .sort((a,b)=>b.reputation-a.reputation||a.seniority-b.seniority)
         .map(({m,reputation},index)=>({
-          id:m.id,name:m.name,reputation,rank:index+1,
-          contribution:reputation/Math.pow(index+1,RENOWN_RANK_EXPONENT)
+          id:m.id,name:m.name,reputation,rank:index+2,
+          contribution:reputation/Math.pow(index+2,RENOWN_RANK_EXPONENT)
         }));
     }
 
@@ -572,6 +588,10 @@
       const level=dormitoryQualityLevel(state);
       return QUALITY_LEVELS.find(q=>q.niveau===level)||{niveau:level,nom:"Niveau "+level};
     }
+    // Le pourcentage de jours de fatigue en moins (0 à 100) au niveau de qualité actuel.
+    function dormitoryFatigueCut(state){
+      return Math.min(100,Math.max(0,Number(dormitoryQuality(state).fatigue)||0));
+    }
     function dormitoryQualityRenown(state){
       const level=dormitoryQualityLevel(state);
       return QUALITY_LEVELS.filter(q=>q.niveau>0&&q.niveau<=level).reduce((sum,q)=>sum+(Number(q.renommee)||0),0);
@@ -580,7 +600,7 @@
     function nextDormitoryQuality(state){
       const row=QUALITY_LEVELS.find(q=>q.niveau===dormitoryQualityLevel(state)+1);
       return row?{level:row.niveau,name:row.nom,gold:Number(row.prix)||0,days:Number(row.jours)||0,
-        renown:Number(row.renommee)||0,affinity:Number(row.affinite)||0}:null;
+        renown:Number(row.renommee)||0,affinity:Number(row.affinite)||0,fatigue:Number(row.fatigue)||0}:null;
     }
     function startDormitoryQuality(state){
       const camp=state.company.camp;
@@ -802,6 +822,8 @@
       return left;
     }
     const dungeonRules=Dungeon?Dungeon.createDungeonRules({reference,camp:{buildingLevel,expeditionOf,leave:leaveForDungeon}}):null;
+    // La Cantine (Idan, 2026-11-08 ; règles : canteen.js) : salle de la Taverne, le plat du jour pour ceux qui sont au camp.
+    const canteenRules=Canteen?Canteen.createCanteenRules({reference,progression,random,camp:{buildingLevel,awayOf:(state,id)=>awayOf(state,id)}}):null;
     // Les Écuries (Idan, 2026-11-07 ; règles : stables.js) : les montures capturées, leurs places et leur entretien.
     const stableRules=Stables?Stables.createStableRules({reference,random,camp:{buildingLevel},
       makeItem:(type,name)=>typeof generator?.createItemByName==="function"?generator.createItemByName(type,name):null}):null;
@@ -997,6 +1019,8 @@
       const tamingReport=tamingRules?tamingRules.advance(state):null;
       // Entraînement libre (Idan, 2026-11-02) : ceux qui restent au camp choisissent leur journée.
       const school=runSchoolDay(state);
+      // La Cantine (Idan, 2026-11-08) : le plat du jour pour tous ceux qui sont au camp, blessés et fatigués compris.
+      const canteen=canteenRules?canteenRules.morning(state):null;
       // Désertion (Idan, 2026-11-04) : après tout ce qui fait bouger l'affinité du matin.
       const desertion=desertionRules?desertionRules.morning(state):null;
       // La part calculée de la réputation suit la progression (doc 09 ; Idan, 2026-11-08) : recalculée chaque matin, après
@@ -1004,7 +1028,7 @@
       if(generator?.recalculateReputation) for(const m of rosterOf(state)) generator.recalculateReputation(m);
       // Renégociation salariale (Idan, 2026-11-04) : ceux qui ont gagné une étoile.
       const salaryReview=salaryReviewRules?salaryReviewRules.morning(state):null;
-      return {day:state.day,recovered,salaries,tavern:tavernReport,offersLost,expeditions,built,buildings,lieutenants:lieutenantReports,mana,merchant,school,study,armorStudy:armor,poisonStudy:poison,lumber,mine,palace,dungeon,desertion,salaryReview,stable,taming:tamingReport};
+      return {day:state.day,recovered,salaries,tavern:tavernReport,offersLost,expeditions,built,buildings,lieutenants:lieutenantReports,mana,merchant,school,study,armorStudy:armor,poisonStudy:poison,lumber,mine,palace,dungeon,desertion,salaryReview,stable,taming:tamingReport,canteen};
     }
 
     // Recharge du mana (doc 12 ; Idan, 2026-10-25) : chaque jour, pour les membres présents au camp, pas pour ceux qui sont
@@ -1278,7 +1302,7 @@
         const m=rosterOf(state).find(x=>x.id===id);
         if(!m) continue;
         const back=bodyguard.rollReturn();
-        if(back.issue==="fatigue") m.recovery={kind:"fatigued",daysLeft:fatigueDaysFor(back.days,state),sinceDay:state.day};
+        if(back.issue==="fatigue"){ const rest=fatigueRecovery(back.days,state); if(rest) m.recovery=rest; }
         if(back.issue==="blesse") m.recovery={kind:"wounded",daysLeft:woundDaysFor(m,back.days,state),sinceDay:state.day};
         const reputation=bodyguard.reputationGain(back.issue);
         if(reputation){
@@ -1289,7 +1313,8 @@
         const bonus=Number(m.contract?.missionBonus)||0;
         state.company.gold-=bonus;
         bonusPaid+=bonus;
-        const days=back.issue==="blesse"?m.recovery.daysLeft:back.days;
+        // Les jours de repos réels (dortoir, Bains, Dispensaire, médecin) ; 0 si le dortoir efface la fatigue.
+        const days=back.issue==="blesse"?m.recovery.daysLeft:back.issue==="fatigue"?(m.recovery?.daysLeft||0):back.days;
         History.record(m,state.day,"bodyguard",{issue:back.issue,days,client:expedition.offer.client});
         results.push({mercenary:m,issue:back.issue,days,reputation,bonus});
       }
@@ -1377,10 +1402,11 @@
       return {ok:true,member,before,name:clean};
     }
 
-    function applyMountAftermath(state,results){
+    // stars : le niveau de la mission (multiplicateur d'étoiles de l'XP, Idan, 2026-11-08) ; 1 sans mission.
+    function applyMountAftermath(state,results,{stars=1}={}){
       return stableRules?stableRules.applyAftermath(state,results,{woundDays:days=>woundDaysFor({},days,state),
-        fatigueDays:days=>fatigueDaysFor(days,state),
-        learn:(sheet,progress)=>progression?progression.apply(sheet,progression.gains(progress,sheet)):[]}):null;
+        fatigueDays:days=>fatigueDaysFor(days,state,{dormitory:false}),
+        learn:(sheet,progress)=>progression?progression.apply(sheet,progression.gains(progress,sheet,{stars})):[]}):null;
     }
     function applyMissionAftermath(state,aftermath,options={}){
       if(appliedAftermaths.has(aftermath)) return appliedAftermaths.get(aftermath);
@@ -1423,7 +1449,7 @@
         // en fin de mission aux survivants, y compris ceux qui ont fui le combat.
         // Réputation de carrière (09 §1) : retour de mission, critiques et ennemis blessés / mis hors combat.
         if(progression){
-          const xp=progression.gains(result.progress,mercenary);
+          const xp=progression.gains(result.progress,mercenary,{stars:options.stars});
           const changes=progression.apply(mercenary,xp);
           const gain=progression.reputationGains(result.progress,{wounded:result.wounded});
           report.progression.push({mercenary,xp,changes,reputation:{...gain,...progression.applyReputation(mercenary,gain)}});
@@ -1432,8 +1458,8 @@
           mercenary.recovery={kind:"wounded",daysLeft:woundDaysFor(mercenary,result.woundDays,state),sinceDay:state.day};
           report.wounded.push(mercenary);
         }else{
-          mercenary.recovery={kind:"fatigued",daysLeft:fatigueDaysFor(result.fatigueDays,state),sinceDay:state.day};
-          report.fatigued.push(mercenary);
+          const rest=fatigueRecovery(result.fatigueDays,state);
+          if(rest){ mercenary.recovery=rest; report.fatigued.push(mercenary); }
         }
         // Historique : une mission de plus, ses adversaires abattus, ses coups encaissés, sa blessure.
         History.recordMission(mercenary,state.day,{progress:result.progress,wounded:result.wounded,
@@ -1494,8 +1520,8 @@
       completeExpeditionCombat,
       dormitoryFree,
       dormitoryUsed,
-      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,trainingRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,spellStudy,armorStudy,poisonStudy,lumberjacks,miners,palaceWorkers,dungeonRules,desertionRules,salaryReviewRules,stableRules,tamingRules,socialPolicy:social,agenda,studyBusy,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
-      woundDaysFor,fatigueDaysFor,
+      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,trainingRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,spellStudy,armorStudy,poisonStudy,lumberjacks,miners,palaceWorkers,dungeonRules,canteenRules,desertionRules,salaryReviewRules,stableRules,tamingRules,socialPolicy:social,agenda,studyBusy,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
+      woundDaysFor,fatigueDaysFor,dormitoryFatigueCut,
       dormitoryPlaces,
       dormitoryExpansionCost,
       nextDormitoryExpansion,

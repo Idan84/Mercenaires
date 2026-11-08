@@ -87,10 +87,10 @@ assert.equal(report.study.perfected.length,1);
 const p=report.study.perfected[0];
 assert.deepEqual([p.mercenary,p.xp,p.before],[mage,5616,20]);
 const expected=progression.continuousLevel(progression.xpForContinuous(20)+5616);
-assert.ok(Math.abs(mage.spells[0].mastery-expected)<1e-6,"niveau 20 → 31,0");
-assert.equal(Math.floor(mage.spells[0].mastery),31);
+assert.ok(Math.abs(mage.spells[0].mastery-expected)<1e-6,"niveau 20 → 47,4 (courbe par zones, Idan, 2026-11-08 ; 31,0 avant)");
+assert.equal(Math.floor(mage.spells[0].mastery),47);
 assert.equal(study.studyOf(state,mage.id),null,"une seule journée");
-assert.deepEqual(mage.history.log.filter(e=>e.kind==="perfect").map(e=>[e.spell,e.xp,e.before,e.after]),[["Boule de feu",5616,20,31]]);
+assert.deepEqual(mage.history.log.filter(e=>e.kind==="perfect").map(e=>[e.spell,e.xp,e.before,e.after]),[["Boule de feu",5616,20,47]]);
 // Sans plafond (Idan, 2026-11-06 : « oui libère les sorts ») : le sort dépasse 100.
 mage.spells[0].mastery=99.9;
 study.perfect(state,mage.id,manual().id);

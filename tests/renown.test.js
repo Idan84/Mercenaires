@@ -1,7 +1,8 @@
 "use strict";
 
 // Renommée de compagnie (09 §2 ; Idan, 2026-10-20, issue #111) : capitaine entier, membres vivants
-// pondérés par rang (réputation / rang^1,5), héritage de 20 % de la part d'un mort au combat.
+// pondérés par rang (réputation / rang^1,5), héritage de 20 % de la part d'un mort au combat. Le capitaine est toujours
+// 1er : le meilleur mercenaire est 2e (Idan, 2026-11-08 : « on descend d'un cran »).
 const assert=require("node:assert/strict");
 const fs=require("node:fs");
 const path=require("node:path");
@@ -17,32 +18,33 @@ const company=(captainRep,reps)=>({
   company:{name:"Test",gold:0,captainId:1,intendantId:null,roster:[person(1,captainRep),...reps.map((r,i)=>person(i+2,r))]}
 });
 const deaths=(...ids)=>({results:ids.map(id=>({id,dead:true})),captainDead:false});
+const w=r=>Math.pow(r,1.5);
 
 // Capitaine seul : sa réputation entière, sans membre ni héritage.
 let state=company(147,[]);
 assert.deepEqual(campaign.companyRenown(state).parts,{captain:147,members:0,heritage:0,missions:0,camp:0,medic:0});
 assert.equal(campaign.companyRenown(state).total,147);
 
-// Classement décroissant, quel que soit l'ordre du roster : 500, 300, 100.
+// Classement décroissant, quel que soit l'ordre du roster : 500, 300, 100, aux rangs 2, 3, 4 (le capitaine est 1er).
 state=company(147,[100,500,300]);
 let renown=campaign.companyRenown(state);
-assert.deepEqual(renown.ranking.map(x=>[x.reputation,x.rank]),[[500,1],[300,2],[100,3]]);
-near(renown.parts.members,500+300/Math.pow(2,1.5)+100/Math.pow(3,1.5),"parts pondérées par rang");
+assert.deepEqual(renown.ranking.map(x=>[x.reputation,x.rank]),[[500,2],[300,3],[100,4]]);
+near(renown.parts.members,500/w(2)+300/w(3)+100/w(4),"parts pondérées par rang");
 near(renown.total,147+renown.parts.members,"total = capitaine + membres");
 
 // Égalités : le plus ancien (ordre du roster) est mieux classé.
 renown=campaign.companyRenown(company(147,[137,137,137]));
 assert.deepEqual(renown.ranking.map(x=>x.id),[2,3,4]);
 
-// Mort du premier mercenaire : héritage = 20 % de sa part avant retrait (500 → +100), puis reclassement.
+// Mort du meilleur mercenaire : héritage = 20 % de sa part avant retrait (500 / 2^1,5), puis reclassement.
 state=company(147,[100,500,300]);
 let report=campaign.applyMissionAftermath(state,deaths(3));
 assert.equal(report.heritage.length,1);
-assert.deepEqual({...report.heritage[0]},{id:3,name:"M3",day:5,reputation:500,rank:1,contribution:500,heritage:100});
+assert.deepEqual({...report.heritage[0]},{id:3,name:"M3",day:5,reputation:500,rank:2,contribution:500/w(2),heritage:500/w(2)*0.2});
 renown=campaign.companyRenown(state);
-assert.deepEqual(renown.ranking.map(x=>[x.reputation,x.rank]),[[300,1],[100,2]]);
-near(renown.total,147+300+100/Math.pow(2,1.5)+100,"survivants reclassés + héritage fixe");
-near(report.renown.before,147+500+300/Math.pow(2,1.5)+100/Math.pow(3,1.5),"renommée avant le bilan");
+assert.deepEqual(renown.ranking.map(x=>[x.reputation,x.rank]),[[300,2],[100,3]]);
+near(renown.total,147+300/w(2)+100/w(3)+0.2*500/w(2),"survivants reclassés + héritage fixe");
+near(report.renown.before,147+500/w(2)+300/w(3)+100/w(4),"renommée avant le bilan");
 near(report.renown.after,renown.total,"renommée après le bilan");
 
 // Bilan rejoué : pas de second héritage.
@@ -52,29 +54,30 @@ const first=campaign.applyMissionAftermath(state,replayed);
 assert.equal(campaign.applyMissionAftermath(state,replayed),first,"même bilan : même rapport");
 assert.equal(state.company.renownHeritage.length,1,"héritage compté une seule fois");
 
-// Mort du deuxième : 20 % de 300 / 2^1,5.
+// Mort du deuxième mercenaire (3e du classement) : 20 % de 300 / 3^1,5.
 state=company(147,[100,500,300]);
 report=campaign.applyMissionAftermath(state,deaths(4));
-near(report.heritage[0].heritage,0.2*300/Math.pow(2,1.5),"deuxième du classement");
-assert.equal(report.heritage[0].rank,2);
+near(report.heritage[0].heritage,0.2*300/w(3),"troisième du classement");
+assert.equal(report.heritage[0].rank,3);
 
 // Plusieurs morts dans la même mission : classement du début de mission, l'ordre des résultats ne change rien.
 const twoDeaths=order=>{ const s=company(147,[100,500,300]); campaign.applyMissionAftermath(s,deaths(...order)); return s.company.renownHeritage.map(h=>[h.id,h.heritage]).sort((a,b)=>a[0]-b[0]); };
 assert.deepEqual(twoDeaths([3,4]),twoDeaths([4,3]));
 const both=twoDeaths([4,3]);
-near(both[0][1],0.2*500,"le premier garde son rang 1");
-near(both[1][1],0.2*300/Math.pow(2,1.5),"le deuxième garde son rang 2");
+near(both[0][1],0.2*500/w(2),"le meilleur garde son rang 2");
+near(both[1][1],0.2*300/w(3),"le suivant garde son rang 3");
 
 // Héritage cumulé sur plusieurs missions, stable quand le roster évolue.
 state=company(147,[100,500,300]);
-campaign.applyMissionAftermath(state,deaths(3));            // 500 au rang 1 → +100
-campaign.applyMissionAftermath(state,deaths(4));            // 300, désormais au rang 1 → +60
-near(campaign.companyRenown(state).parts.heritage,160,"héritages cumulés");
+campaign.applyMissionAftermath(state,deaths(3));            // 500 au rang 2 → +35,4
+campaign.applyMissionAftermath(state,deaths(4));            // 300, désormais au rang 2 → +21,2
+const cumul=0.2*500/w(2)+0.2*300/w(2);
+near(campaign.companyRenown(state).parts.heritage,cumul,"héritages cumulés");
 state.company.roster.push(person(9,900));                   // une nouvelle vedette arrive
 state.company.roster.find(m=>m.id===2).reputation=50;      // un survivant perd de la réputation
 renown=campaign.companyRenown(state);
-near(renown.parts.heritage,160,"l'héritage ne se repondère pas");
-near(renown.total,147+900+50/Math.pow(2,1.5)+160,"seuls les vivants sont reclassés");
+near(renown.parts.heritage,cumul,"l'héritage ne se repondère pas");
+near(renown.total,147+900/w(2)+50/w(3)+cumul,"seuls les vivants sont reclassés");
 
 // Mort du capitaine : Game Over existant, pas d'héritage.
 state=company(147,[100]);
@@ -88,8 +91,8 @@ campaign.applyMissionAftermath(state,deaths(2));
 assert.equal(campaign.companyRenown(state).parts.members,0);
 const restored=restoreCampaign(serializeCampaign(state));
 assert.equal(restored.ok,true);
-assert.deepEqual(restored.state.company.renownHeritage,[{id:2,name:"M2",day:5,reputation:400,rank:1,contribution:400,heritage:80}]);
-near(campaign.companyRenown(restored.state).total,147+80,"renommée après chargement");
+assert.deepEqual(restored.state.company.renownHeritage,[{id:2,name:"M2",day:5,reputation:400,rank:2,contribution:400/w(2),heritage:400/w(2)*0.2}]);
+near(campaign.companyRenown(restored.state).total,147+0.2*400/w(2),"renommée après chargement");
 
 // Ancienne sauvegarde sans héritage : 0.
 const legacy=company(147,[137]);

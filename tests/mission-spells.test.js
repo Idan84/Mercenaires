@@ -807,6 +807,8 @@ queue.push(0,0);
 api.handleMissionHexClick(distant.q,distant.r);
 assert.equal(distant.paralyzed??null,null);
 assert.ok(logged(/lance Paralysie sur .* résiste \(résistance \d+ %, jet 1\)/));
+// Volonté (Idan, 2026-11-08 : « +80 par sort ennemi résisté ») : la cible, adversaire du lanceur, note le sort résisté.
+assert.ok(distant.progress.spellsResisted>=1,"sort ennemi résisté");
 // Tempête : rayon 2 + 1, 3 tours, à travers le brouillard ; une vague au lancer, puis une à chaque tour, puis elle se dissipe.
 reset();
 for(const x of [u,ally,wet,distant]) x.hp=x.pvMax;

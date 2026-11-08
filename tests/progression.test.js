@@ -18,21 +18,27 @@ const real=P.createProgressionRules({reference});
 // double l'xp gagné partout » ; 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau ») : chaque gain est linéaire dans
 // sa constante, et les valeurs réelles (× 4) sont vérifiées juste en dessous.
 const XP_CODE=/^progression\.(?!xp_curve).*_xp$/;
+// Les calculs de journal ci-dessous gardent la courbe d'avant les zones (10 × N², diviseurs à 1) ; la courbe par zones
+// (Idan, 2026-11-08) est vérifiée à part, avec real.
+const FLAT=/^progression\.xp_curve\.zone_\d_divisor$/;
 const rules=P.createProgressionRules({reference:{...reference,formulaConstants:{...reference.formulaConstants,
-  rows:reference.formulaConstants.rows.map(r=>XP_CODE.test(r.code)?{...r,valeur:r.valeur/4}:r)}}});
+  rows:reference.formulaConstants.rows.map(r=>XP_CODE.test(r.code)&&r.version!=="V2"?{...r,valeur:r.valeur/4}:FLAT.test(r.code)?{...r,valeur:1}:r)}}});
 
 // Constantes d'équilibrage lues dans formula-constants.json (valeurs de 08-progression-and-experience.md
 // et décisions Idan du 2026-10-06) ; toutes les XP doublées après le bêta-test (Idan, 2026-11-07 : « On double l'xp
 // gagné partout »), puis doublées à nouveau (Idan, 2026-11-08 : « multiplie l'xp Gagné par 2 à nouveau ») ; la courbe,
 // les seuils et les parts de régression inchangés.
 assert.deepEqual(real.constants,{
-  curve:10,startPosition:0.5,chanceCriticalFailure:120,chanceCriticalSuccess:-20,resistanceWound:32,resistanceOthers:-8,
+  curve:10,zoneWidth:50,zoneDivisors:[4,2,1,0.75],startPosition:0.5,chanceCriticalFailure:120,chanceCriticalSuccess:-20,resistanceWound:32,resistanceOthers:-8,
   constitutionHpHealed:4,courageChargeAttempt:200,speedFleeHex:8,charismaKnockout:200,perceptionBackstabWound:40,
   forceLoadThreshold:0.25,forceLoadXp:80,
   dexterityChain:200,dodgeWoundTaken:40,enduranceHeavyArmorHex:8,willCourageHeld:80,willRecovery:80,intelligenceWorstChoice:120,
   skillWeaponAttack:40,skillWeaponHit:20,skillWeaponWound:20,skillTwoHandedAttack:40,skillOneHandedAttack:40,skillDualSequence:40,skillShieldBlock:40,
   skillIntimidation:200,mountReturn:200,regenerationBurn:120,skillRegressionRatio:0.5,
-  spellCast:40,spellSuccess:20,spellEffect:20,schoolRegressionRatio:0.5,schoolFloor:1,magicPowerSpellEffect:80,manaReserveManaSpent:8
+  spellCast:40,spellSuccess:20,spellEffect:20,schoolRegressionRatio:0.5,schoolFloor:1,magicPowerSpellEffect:80,manaReserveManaSpent:8,
+  // XP de combat (Idan, 2026-11-08) : valeurs telles quelles (pas de doublement) ; multiplicateur d'étoiles.
+  speedHexMoved:1,constitutionDamageTaken:2,enduranceContactTurn:10,perceptionLongShot:20,willSpellResisted:80,charismaAuraHold:40,
+  starBonus:0.25
 });
 const tuned=P.createProgressionRules({reference:{formulaConstants:{rows:[{code:"progression.charisma.knockout_xp",valeur:80}]}}});
 assert.equal(tuned.constants.charismaKnockout,80,"une constante modifiée est prise en compte");
@@ -45,6 +51,24 @@ assert.equal(rules.levelForXp(26009),50);
 assert.equal(rules.levelForXp(26010),51);
 assert.equal(rules.levelForXp(-5),0);
 assert.equal(rules.startingXp(50),25505,"milieu de la tranche 25 000 – 26 010");
+// Courbe par zones, lissée (Idan, 2026-11-08 : « De 0 à 50, c'est très facile (on divise par 4) De 51 à 100, (on divise
+// par 2) De 101 à 150 comme aujourd'hui De 151 à 200 on divise par 0,75 » ; « on lisse le tout » ; « Après 200, on
+// durcit encore un peu ») : coût du point n → n+1 = 10 × (2n+1) × multiplicateur (¼ au milieu de 0–50, ½ de 51–100, 1 de
+// 101–150, 1/0,75 de 151–200, en ligne droite entre deux milieux, même pente au-delà), arrondi.
+{
+  const cost=n=>real.xpForLevel(n+1)-real.xpForLevel(n);
+  assert.deepEqual([10,50,100,150,200,250].map(real.xpForLevel),[255,7561,48970,173107,407826,784210]);
+  // Les repères de la proposition à marches (6 250, 43 750, 168 750, 402 083) à quelques pour cent près.
+  for(const [n,step] of [[50,6250],[100,43750],[150,168750],[200,402083]]) assert.ok(Math.abs(real.xpForLevel(n)/step-1)<0.21,n+" : "+real.xpForLevel(n));
+  for(const [n,m] of [[10,0.25],[25,0.25],[75,0.5],[125,1],[175,1/0.75]]) assert.ok(Math.abs(cost(n)/(10*(2*n+1))-m)<0.02,"multiplicateur au milieu des zones : "+n);
+  assert.ok(Math.abs(cost(50)-cost(49))<20&&Math.abs(cost(100)-cost(99))<50,"pas de marche à 50 ni à 100");
+  for(let n=1;n<400;n++) assert.ok(cost(n)>=cost(n-1),"chaque point coûte au moins autant que le précédent : "+n);
+  assert.ok(cost(250)/(10*501)>1.8,"au-delà de 200, plus dur que 1/0,75");
+  for(const n of [0,1,49,50,51,100,199,200,333]){ assert.equal(real.levelForXp(real.xpForLevel(n)),n); if(n) assert.equal(real.levelForXp(real.xpForLevel(n)-1),n-1); }
+  assert.equal(real.startingXp(50),Math.round(7561+0.5*cost(50)));
+  // Caractéristiques et compétences sur la même courbe (« ça c'est certain ») : 30,6 = 30 + 60 % de la tranche.
+  assert.ok(Math.abs(real.continuousLevel(real.xpForContinuous(30.6))-30.6)<1e-9);
+}
 
 // Journal : ce que le moteur de combat signale.
 const a={},d={};
@@ -414,5 +438,39 @@ assert.equal(pyro.progress.knockouts,1);
 assert.deepEqual(pyro.progress.enemyKnockouts,{gob:30});
 assert.deepEqual(pyro.progress.enemyWounds,{gob:30});
 assert.deepEqual(rules.gains(goblin.progress).resistances,{"Résistance au feu":8,"Résistance physique":-2,"Résistance au froid":-2,"Résistance à la foudre":-2,"Résistance au poison":-2});
+
+// XP de combat (Idan, 2026-11-08 : « On ajoute : Vitesse +1 par case parcourue en combat… Constitution +2 XP par PV de
+// dégâts encaissés et survécus… Endurance +10 par tour passé au contact d'un ennemi… Perception +20 par tir qui touche
+// au-delà de la moitié de la portée… Volonté +80 par sort ennemi résisté… Charisme +40 quand un allié proche réussit son
+// test de Courage et qu'il a utilisé son aura »).
+{
+  const archer={team:"player"},target={team:"enemy"},ally={team:"player"},foe={team:"enemy"};
+  P.recordAttack(archer,target,{},{ok:true,mode:"ranged",weapon:"Arc court",hit:true,wound:false,distance:7,rangeMax:12});
+  P.recordAttack(archer,target,{},{ok:true,mode:"ranged",weapon:"Arc court",hit:true,wound:false,distance:6,rangeMax:12});
+  P.recordAttack(archer,target,{},{ok:true,mode:"ranged",weapon:"Arc court",hit:true,blocked:true,shield:"Rondache",wound:false,distance:11,rangeMax:12});
+  P.recordAttack(archer,target,{},{ok:true,mode:"ranged",weapon:"Arc court",hit:false,wound:false,distance:11,rangeMax:12});
+  assert.equal(archer.progress.longShots,1,"au-delà de la moitié de la portée, touché pour de bon : 7 sur 12 oui ; 6 non ; bloqué ou raté non");
+  P.recordSpellResisted(target,ally);
+  P.recordSpellResisted(target,foe);
+  assert.equal(target.progress.spellsResisted,1,"un sort ennemi seulement");
+  P.recordAuraHold(archer);P.recordAuraHold(null);
+  P.recordContactTurn(archer);P.recordContactTurn(archer);
+  P.recordDamageTaken(archer,35);
+  const walker={character:{equipment:{slots:{}},items:[]}};
+  for(let i=0;i<12;i++) real.recordStep(walker);
+  assert.equal(walker.progress.hexesMoved,12);
+  assert.deepEqual(real.gains(walker.progress).stats,{Vitesse:12},"+1 par case, en fuite ou non");
+  const g=real.gains(archer.progress).stats;
+  assert.deepEqual([g.Perception,g.Charisme,g.Endurance,g.Constitution],[20,40,20,70]);
+  assert.equal(real.gains(target.progress).stats["Volonté"],80);
+  // Multiplicateur d'étoiles (Idan, 2026-11-08) : × (1 + 0,25 par étoile au-delà de 1), sur toute l'XP de la mission.
+  assert.deepEqual([1,2,3,5,10,15].map(real.starMultiplier),[1,1.25,1.5,2,3.25,4.5]);
+  assert.equal(real.starMultiplier(undefined),1,"sans mission : × 1");
+  const swordsman={progress:{...P.emptyLog(),weaponUses:{"Épée longue":{attacks:3,hits:2,wounds:1}},hexesMoved:4}};
+  const merc={skills:{martial:{"Épée longue":40,"Lames longues":40,Hache:20,"Haches":20}}};
+  const one=real.gains(swordsman.progress,merc),five=real.gains(swordsman.progress,merc,{stars:5});
+  assert.equal(five.stats.Vitesse,2*one.stats.Vitesse);
+  for(const [name,xp] of Object.entries(one.skills.martial)) assert.ok(Math.abs(five.skills.martial[name]-2*xp)<1e-9,name+" : × 2 en 5★, régression comprise");
+}
 
 console.log(JSON.stringify({ok:true,charisme:[charismaBefore,m1.stats.Charisme],reputation:[repBefore,veteran.reputation]},null,2));

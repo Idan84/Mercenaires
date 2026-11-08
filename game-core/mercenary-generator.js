@@ -1413,6 +1413,17 @@
       return calculated + (character.reputationCareerDelta || 0);
     }
 
+    // Recalcul de la part calculée après progression (doc 09, Idan, 2026-11-08 : « brancher le recalcul ») : même formule
+    // qu'à la création, sur les valeurs du jour ; le delta de carrière est gardé tel quel.
+    function recalculateReputation(character) {
+      if (!character?.stats || !character?.skills) return null;
+      const before = Number(character.reputation) || 0;
+      const after = calcReputation(character);
+      if (!Number.isFinite(after)) return null;
+      character.reputation = after;
+      return {before, after};
+    }
+
     // Affinité avec le capitaine qui recrute (09 §4 ; Idan, 2026-10-20) : ±20 % au plus, une bonne
     // affinité fait baisser le salaire demandé. Pas de capitaine (capitaine lui-même, ennemis) : facteur 1.
     function salaryAffinityFactor(character, captain) {
@@ -1842,6 +1853,7 @@
       createMercenary,
       createCaptain,
       salaryDemand,
+      recalculateReputation,
       createInitialSquad,
       rollInitialSquadSize,
       auditReferenceData,

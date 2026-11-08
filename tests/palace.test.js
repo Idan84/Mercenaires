@@ -59,9 +59,10 @@ assert.equal(work.chance(state,captain).chance,100);
 assert.ok(work.chance(state,first,"convince").chance>50);
 assert.deepEqual([work.dailyLoss(null),work.dailyLoss("intimidate"),work.dailyLoss("convince")],[-1,-2,-0.5]);
 
-// L'or : Charisme × (1 + 0,2 × niveau de réputation) ; mercenaire moyen (Charisme 54, niveau 3) : 86 PO.
-Object.assign(first.stats,{Charisme:54});first.reputation=130;
-Object.assign(second.stats,{Charisme:69});second.reputation=150;
+// L'or : Charisme × (1 + 0,2 × niveau de réputation) ; mercenaire moyen (Charisme 54, niveau 3) : 86 PO (seuils × 1,5
+// depuis le 2026-11-08 : niveau 3 dès 140, niveau 4 dès 209).
+Object.assign(first.stats,{Charisme:54});first.reputation=150;
+Object.assign(second.stats,{Charisme:69});second.reputation=220;
 assert.deepEqual([work.reputationLevel(first),work.reputationLevel(second)],[3,4]);
 assert.deepEqual([work.earnings(state,first),work.earnings(state,second)],[86,124]);
 // Le Maître des plaisirs : × (1 + son Charisme ÷ 200) ; il reste à son poste.

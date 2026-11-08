@@ -22,7 +22,7 @@ function seeded(seed){
 }
 const reference={oneShotMissions:read("one-shot-missions.json"),enemyArchetypes:read("enemy-archetypes.json"),weapons:read("weapons.json"),
   baseArmors:read("base-armors.json"),skills:read("skills.json"),itemQualities:read("item-qualities.json"),
-  reputationStars:read("reputation-stars.json"),spells:read("spells.json")};
+  reputationStars:read("reputation-stars.json"),spells:read("spells.json"),formulaConstants:read("formula-constants.json")};
 const rules=createMissionRules({reference,random:seeded(7)});
 
 // Camps (Idan, 2026-11-01) : gobelin, orc, homme-bête, voleurs ou ogre au hasard. Budget par métal (doc 17 §16) :
@@ -108,10 +108,10 @@ assert.ok(mean(sizes[15])>50&&Math.max(...sizes[15])<=100,"5★ or : une armée,
 
 // Niveau de la mission : niveau de Renommée de la compagnie (reputation-stars.json) + écart de −4 à +1 (Idan, 2026-11-08),
 // borné de 1 à 15.
-// Seuils recalés le 2026-11-06 (reputation-stars.json).
-assert.deepEqual([rules.renownLevel(0),rules.renownLevel(451),rules.renownLevel(452),rules.renownLevel(800),rules.renownLevel(6400)],[1,2,3,6,15]);
+// Seuils × 1,5 par étoile depuis le 2026-11-08 (reputation-stars.json, renommée = 4 × réputation).
+assert.deepEqual([rules.renownLevel(0),rules.renownLevel(559),rules.renownLevel(560),rules.renownLevel(1884),rules.renownLevel(72400)],[1,2,3,6,15]);
 const levelsAt=renown=>Array.from({length:3000},()=>rules.rollMissionLevel(rules.definition(),renown));
-const at3=levelsAt(500),at15=levelsAt(8000);
+const at3=levelsAt(700),at15=levelsAt(80000);
 assert.deepEqual([...new Set(at3)].sort((a,b)=>a-b),[1,2,3,4]);
 assert.ok(Math.abs(share(at3,1)-3/6)<0.04,"3★ bronze : −4, −3 et −2 tombent au niveau 1");
 assert.deepEqual([...new Set(at15)].sort((a,b)=>a-b),[11,12,13,14,15]);
@@ -175,6 +175,13 @@ assert.equal(chief.skills.martial["Port d’armure intermédiaire"],true);
 assert.equal(chief.skills.social.Intimidation,caid.intimidation);
 assert.equal(chief.skills.magic.Feu,0,"la fiche remplace la magie de la base (Idan, 2026-11-07 : une fiche sans sorts n'en lance aucun)");
 assert.deepEqual([chief.spells,chief.aiSpells],[[],[]]);
+// Réputation de la fiche (Idan, 2026-11-08) : 3 × ses points de combat, pas celle du personnage de base (100 à 180,
+// même pour un novice) ; tuer en rapporte 10 % (doc 09).
+assert.equal(reference.formulaConstants.rows.find(r=>r.code==="reputation.enemy.points_factor").valeur,3);
+assert.equal(chief.reputation,3*caid.points);
+for(const e of enemies) assert.equal(e.reputation,3*rules.archetype(e.archetype).points,e.name);
+assert.ok(enemies.slice(0,-1).every(e=>e.reputation<chief.reputation),"un troufion vaut moins que son chef");
+assert.deepEqual([chief.reputationCareerDelta,chief.reputationBreakdown],[0,undefined]);
 const [sabre,rondache,armor]=chief.items;
 assert.deepEqual([sabre.name,sabre.itemType,sabre.tier,sabre.qualityCode,sabre.category,sabre.combatFamily,chief.equipment.slots.weapon_set_1_main],
   ["Sabre","weapon",3,"luxury","Lames longues","melee",sabre.id]);

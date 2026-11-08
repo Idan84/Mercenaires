@@ -234,15 +234,15 @@ Une mission sans combat pour gagner de l'or ; la contrepartie : on est privé de
 
 - **Offre** : une à la fois au tableau de la Taverne, sous le contrat, valable 3 à 6 jours ; un client (texte de JC), **1 à 3 mercenaires** d'un **niveau de réputation minimal**, pour **3 à 21 jours**. Niveau : le **niveau de renommée de la compagnie + un écart de −4 à +1**, chaque écart avec la même chance, de 1 à 15 (Idan, 2026-11-08 : « Ecart : -4 / +1 pour les 3 types de missions » ; « De la compagnie » ; `bodyguard-missions.json`, `niveau.ecart`). Avant : 1★ 10 %, 2★ 30 %, 3★ 30 %, 4★ 20 %, 5★ 10 %, + max(0, niveau du meilleur mercenaire − 4).
 - **Cercle des Fines Lames** (doc 11 §7 ; Idan, 2026-11-03) : le paiement d'une offre × (1 + 5 % par niveau du Cercle), arrondi à 10 PO ; la fiche de l'offre montre le paiement, sans commentaire.
-- **Paiement d'avance**, versé **le matin du départ** (Idan, 2026-11-02 : « On reçoit l'argent le lendemain matin ! Les SEPA heroic fantasy, c'est long » ; annuler avant le départ ne coûte ni ne rapporte rien), par mercenaire (formule de JC, validée et relevée sur les durées courtes par Idan) : **W × (2 + jours × (1,3 + (jours − 3) / 22))**, arrondi à 10 PO, où **W = 10 × Réputation minimale du niveau suivant / 30** (le salaire d'un mercenaire en haut du niveau demandé ; au-delà de 15★, × 1,25). Plus c'est long, plus la journée paie ; un mercenaire payé nettement plus que son niveau fait perdre de l'or, surtout sur les missions courtes.
+- **Paiement d'avance**, versé **le matin du départ** (Idan, 2026-11-02 : « On reçoit l'argent le lendemain matin ! Les SEPA heroic fantasy, c'est long » ; annuler avant le départ ne coûte ni ne rapporte rien), par mercenaire (formule de JC, validée et relevée sur les durées courtes par Idan) : **W × (2 + jours × (1,3 + (jours − 3) / 22))**, arrondi à 10 PO, où **W = 10 × Réputation minimale du niveau suivant / 30** (le salaire d'un mercenaire en haut du niveau demandé ; au-delà de 15★, × 1,5 comme les seuils). Les seuils d'étoiles × 1,5 par niveau (Idan, 2026-11-08, doc 09) font monter W avec le niveau ; la compagnie, elle, monte plus lentement en étoiles. Plus c'est long, plus la journée paie ; un mercenaire payé nettement plus que son niveau fait perdre de l'or, surtout sur les missions courtes.
 
   | Niveau | W | 3 jours | 7 jours | 14 jours | 21 jours |
   |---:|---:|---:|---:|---:|---:|
-  | 1★ | 33 | 200 | 410 | 910 | 1 550 |
-  | 3★ | 53 | 310 | 660 | 1 450 | 2 480 |
-  | 5★ | 83 | 490 | 1 030 | 2 270 | 3 870 |
-  | 10★ | 267 | 1 570 | 3 300 | 7 250 | 12 400 |
-  | 15★ | 833 | 4 920 | 10 310 | 22 670 | 38 730 |
+  | 1★ | 31 | 180 | 380 | 840 | 1 440 |
+  | 3★ | 70 | 410 | 860 | 1 890 | 3 240 |
+  | 5★ | 157 | 930 | 1 940 | 4 270 | 7 300 |
+  | 10★ | 1 192 | 7 030 | 14 740 | 32 410 | 55 390 |
+  | 15★ | 9 050 | 53 400 | 111 970 | 246 160 | 420 660 |
 
 - **Qui** : un mercenaire au camp, disponible (ni blessé, ni fatigué), du niveau demandé ; pas le capitaine ni l'intendant (validé par Idan). Exactement le nombre demandé. Les salaires courent comme d'habitude.
 - **Pas de combat.** Au retour, chacun tire son sort : **50 %** rentré ; **25 %** rentré fatigué (« il a trop gardé le corps de charmantes demoiselles », fatigue 1D3 jours) ; **25 %** rentré blessé (« bagarre dans une taverne », blessure 1D3 jours). Une fenêtre le dit, avec une ligne par mercenaire ; si plusieurs gardes rentrent le même matin, leurs fenêtres se suivent (correctif de Chatty, PR #310, issue #503).

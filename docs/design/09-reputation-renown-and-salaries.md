@@ -69,8 +69,11 @@ La réputation personnelle possède désormais une petite composante persistante
 - **EC confirmé** : `−1 Réputation` ;
 - **participation à la blessure d’un ennemi** : `+1 % de la RéputationPerso de cet ennemi` ;
 - **coup de grâce / ennemi tué** : `+10 % supplémentaires de la RéputationPerso de cet ennemi` ;
-- **revient vivant d’une mission mais blessé** : `+10 Réputation` ;
-- **revient vivant d’une mission sans blessure** : `+20 Réputation`.
+- **revient vivant d’une mission mais blessé** : `+5 Réputation` ;
+- **revient vivant d’une mission sans blessure** : `+10 Réputation`.
+
+Retour de mission **divisé par deux** le 2026-11-08 (Idan : « +10 / +5 » ; auparavant +20 / +10) : la réputation montait
+d'environ une étoile par mission.
 
 **Sa monture** (Idan, 2026-11-07 : « réputation 1 ») : les exploits de sa monture équipée — participation à la blessure
 d'un ennemi et coup de grâce — comptent pour son cavalier, qu'il la monte ou non, une fois par ennemi comme les siens (la
@@ -78,7 +81,7 @@ monture garde son XP). Sa meilleure compétence Animal est déjà dans le pool.
 
 La participation à la blessure est comptée **une seule fois par mercenaire et par ennemi**, dès lors que le mercenaire a effectivement contribué à ses dégâts. Le mercenaire qui porte le coup de grâce reçoit donc normalement le bonus de participation (`1 %`) **plus** le bonus de coup de grâce (`10 %`), soit `11 %` de la réputation de la cible s’il avait participé à sa mise à mort.
 
-Les bonus de retour de mission sont **exclusifs** : un mercenaire indemne reçoit `+20`, pas `+10 +20`. La fatigue seule n’est pas considérée comme une blessure pour cette règle.
+Les bonus de retour de mission sont **exclusifs** : un mercenaire indemne reçoit `+10`, pas `+5 +10`. La fatigue seule n’est pas considérée comme une blessure pour cette règle.
 
 On stocke donc un `ReputationCareerDelta` persistant, initialisé à `0`, puis modifié par ces événements.
 
@@ -97,18 +100,26 @@ Mise en œuvre V1 (choix d'implémentation, relecture Chatty) :
 - **CC / EC confirmés** : les mêmes événements que l'XP de Chance (doc 08) — chaque critique au Toucher et chaque critique au Blesser (+1 chacun) ; l'échec critique au Toucher (chute Au Sol) et l'échec critique au Blesser (contrecoup), −1 chacun. Les critiques des sorts aussi : coup critique +1, échec critique confirmé −1 (Idan, 2026-10-25).
 - **Participation** : le premier coup qui inflige des dégâts (> 0) à un ennemi, une seule fois par ennemi ; un allié touché par accident ne compte pas ; un projectile perdu qui blesse un ennemi compte.
 - **Coup de grâce** : le coup qui met l'ennemi hors combat (ennemi « tué » au sens V1).
-- **Réputation de l'ennemi** : sa réputation pendant la mission ; elle ne bouge pas avant le bilan, puisque les gains sont appliqués en fin de mission. Ennemis générés : leur réputation de génération.
-- **Retour de mission** (validé par Idan le 2026-10-20) : « revenir blessé » = finir la mission avec le statut « Blessé » (10-mission-time §7), qui donne `+10`. « Fatigué » donne `+20`, même si le mercenaire a perdu des PV ou a fui la carte. Un mort ne gagne rien.
+- **Réputation de l'ennemi** : sa réputation pendant la mission ; elle ne bouge pas avant le bilan, puisque les gains sont appliqués en fin de mission. **Ennemis tirés d'une fiche** (Idan, 2026-11-08) : **3 × les points de combat** de la fiche (`reputation.enemy.points_factor`), par exemple 12 à 18 pour un gobelin novice, 306 pour le chef de clan gobelin, 540 pour le troll d'élite ; auparavant, la réputation du personnage généré sous la fiche (100 à 180, même pour un novice). Les bêtes des chasses (fiches de `mounts.json`) n'ont pas de points : elles ne rapportent rien.
+- **Retour de mission** (validé par Idan le 2026-10-20) : « revenir blessé » = finir la mission avec le statut « Blessé » (10-mission-time §7), qui donne `+5`. « Fatigué » donne `+10`, même si le mercenaire a perdu des PV ou a fui la carte. Un mort ne gagne rien.
 - Le delta garde ses décimales ; la fiche et le bilan l'affichent arrondi. La fiche montre la réputation totale, puis « initiale » (part calculée) et « carrière » (delta) dès qu'il y a un gain.
 - Un bilan déjà appliqué n'est pas crédité une seconde fois.
 - Constantes : `reputation.career.*` dans `data/reference/formula-constants.json`.
-- Pas encore branché : le recalcul de `ReputationCalculee` après progression (étape suivante) ; le contrat et le salaire ne changent pas avec la réputation ; les soins ne rapportent pas de réputation (absents du barème).
+- **Recalcul de `ReputationCalculee`** (Idan, 2026-11-08 : « brancher le recalcul ») : chaque matin, après la guérison et l'entraînement, avant la renégociation salariale, la part calculée est recalculée pour toute la compagnie avec les valeurs du jour (même formule qu'à la création, `recalculateReputation` de `mercenary-generator.js`) ; le delta de carrière est gardé. Une réputation de mercenaire progresse donc aussi avec ses caractéristiques et ses compétences.
+- Pas encore branché : le contrat et le salaire ne changent pas avec la réputation (hors renégociation à l'étoile gagnée) ; les soins ne rapportent pas de réputation (absents du barème).
 
 ### Affichage en étoiles
 
 Décision Idan du 2026-10-20 : dans le jeu, la réputation personnelle et la renommée de compagnie ne s'affichent plus en chiffres mais en **15 niveaux** : 1 à 5 étoiles de **bronze**, puis d'**argent**, puis d'**or**. 5 étoiles d'or est un maximum difficilement atteignable. La valeur chiffrée reste dans le moteur (salaires, renommée, prétendants) et apparaît au survol des étoiles, pour les tests du prototype.
 
-Échelle (`data/reference/reputation-stars.json`) : géométrique, environ ×1,25 par niveau ; la renommée utilise les mêmes seuils × 4.
+Échelle (`data/reference/reputation-stars.json`) : géométrique, **× 1,5 par niveau** depuis le 2026-11-08 ; la renommée utilise les mêmes seuils × 4.
+
+**Écartée le 2026-11-08** (Idan : « × 1,5 par étoile ») : la réputation montait d'environ une étoile par mission (23 à 56 points
+entre deux étoiles) ; chaque seuil vaut désormais 1,5 fois le précédent à partir de 2 étoiles de bronze = 93, arrondi.
+Effet sur les recrues (600 tirées, médiane 124) : ≈ 2 % 1 étoile, 80 % 2 étoiles, 18 % 3 étoiles de bronze. Les salaires
+ne changent pas (ils suivent la valeur, pas l'étoile) ; le salaire de référence du garde du corps, le niveau des
+missions et les places de la Taverne suivent les nouveaux seuils (au-delà de 15★, × 1,5).
+
 **Recalée le 2026-11-06** (Idan : « recale les étoiles ») : les écoles de magie, divisées par deux, gonflaient la réputation
 (médiane des recrues 138 → 123) ; les seuils de 2 à 5 étoiles de bronze redonnent aux recrues la même répartition
 qu'avant (≈ 1 / 25 / 52 / 19 / 3 %), puis ×1,25 par niveau à partir de 160. Auparavant : 0 · 100 · 125 · 160 · 200 ·
@@ -117,11 +128,14 @@ référence du garde du corps, niveau des missions, places de la Taverne…).
 
 | Niveau | Étoiles | Réputation dès | Renommée dès |
 |---|---|---|---|
-| 1 à 5 | 1 à 5 bronze | 0 · 93 · 113 · 137 · 160 | 0 · 372 · 452 · 548 · 640 |
-| 6 à 10 | 1 à 5 argent | 200 · 256 · 320 · 400 · 512 | 800 · 1 024 · 1 280 · 1 600 · 2 048 |
-| 11 à 15 | 1 à 5 or | 640 · 800 · 1 000 · 1 280 · 1 600 | 2 560 · 3 200 · 4 000 · 5 120 · 6 400 |
+| 1 à 5 | 1 à 5 bronze | 0 · 93 · 140 · 209 · 314 | 0 · 372 · 560 · 836 · 1 256 |
+| 6 à 10 | 1 à 5 argent | 471 · 706 · 1 059 · 1 589 · 2 383 | 1 884 · 2 824 · 4 236 · 6 356 · 9 532 |
+| 11 à 15 | 1 à 5 or | 3 575 · 5 363 · 8 044 · 12 066 · 18 100 | 14 300 · 21 452 · 32 176 · 48 264 · 72 400 |
 
-Repères mesurés (avant le recalage du 2026-11-06 ; les recrues ont aujourd'hui une médiane de 123) :
+Seuils du 2026-11-06 au 2026-11-08 : réputation 0 · 93 · 113 · 137 · 160 · 200 · 256 · 320 · 400 · 512 · 640 · 800 · 1 000 ·
+1 280 · 1 600.
+
+Repères mesurés (avant les recalages du 2026-11-06 et du 2026-11-08, à relire avec les seuils d'alors) :
 
 - recrues générées (réputation 87 à 260, médiane 137) : surtout 2 à 4 étoiles de bronze ; 5 étoiles de bronze ou 1 d'argent pour les profils exceptionnels ;
 - un vétéran revenu d'environ 25 missions (≈ 550) : 4 étoiles d'argent ; l'or commence à 800 ; 5 étoiles d'or (2 000) demandent une très longue carrière ;

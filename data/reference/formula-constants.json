@@ -1229,7 +1229,7 @@
     {
       "nom": "Renommée — pondération par rang",
       "code": "company.renown.rank_exponent",
-      "description": "Exposant du rang : chaque membre vivant autre que le capitaine, classé par réputation décroissante, compte pour réputation / rang^exposant ; le capitaine compte entier (09 §2 ; décision Idan du 2026-10-20, issue #111).",
+      "description": "Exposant du rang : chaque membre vivant autre que le capitaine, classé par réputation décroissante à partir du rang 2, compte pour réputation / rang^exposant ; le capitaine est 1er et compte entier (09 §2 ; décision Idan du 2026-10-20, issue #111 ; capitaine 1er depuis le 2026-11-08 : « on descend d'un cran »).",
       "formule": "Renommée de compagnie V1",
       "valeur": 1.5,
       "version": "V1"

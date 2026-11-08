@@ -26,9 +26,10 @@ Décidé :
    aujourd'hui**, **151–200 ÷ 0,75** (× 1,33, plus dur). **Caractéristiques et compétences restent alignées** (« ça
    c'est certain »). Repères : atteindre 50 = 6 250 XP (25 000 aujourd'hui), 100 = 43 750 (100 000), 150 = 168 750
    (225 000), 200 ≈ 402 000 (400 000). Sur un an de la partie n°5 : Zizza 64 → 79 (72 aujourd'hui), le capitaine
-   55 → ≈ 106 (88). À trancher : marches aux frontières (le prix d'un point double à 51 et à 101) ou lissage ;
-   régression des autres compétences au tarif de la zone (fond 4 fois plus vite sous 50) ou au tarif d'aujourd'hui ;
-   au-delà de 200.
+   55 → ≈ 106 (88). **Décidé** : on lisse le tout (« option 1, on lisse le tout, fais les maths ») : pas de marche à
+   51 ni à 101, le multiplicateur glisse d'une zone à l'autre ; **au-delà de 200, on durcit encore un peu**. Reste à
+   trancher : régression des autres compétences au tarif de la zone (fond 4 fois plus vite sous 50) ou au tarif
+   d'aujourd'hui.
 6. **Design Lab** (`/design/graph/`) : la renommée y montre 3 des 6 parts (capitaine, mercenaires, héritage) ; ajouter
    les points de mission (gardes, échecs), le dortoir et le médecin, et le nouveau classement (capitaine 1er).
 

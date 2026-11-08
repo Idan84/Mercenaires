@@ -42,6 +42,17 @@ Fonctions validées :
 
 </aside>
 
+### La Cantine (Idan, 2026-11-08)
+
+> « On ajoute également un autre bâtiment ! La cantine ! On la construit pour 500Po comme les autres. On monte le niveau de la cantine (de 1 à 10) qui multiplie l'effet. Niveau 1 : 40. L'effet fait monter l'XP d'une carac en fonction du plat que l'on cuisine. Cela touche automatiquement tous les mercenaires au camp (blessé et fatigués compris) mais pas ceux à l'exterieur (en mission). On va avoir 10 plats. […] A partir du niveau 2 du laboratoire d'alchimie, […] le cantinier nous propose de débloquer un nouveau plat. On ne sait pas ce qu'il fait avant de l'avoir débloqué. Ensuite, on peut choisir le plat de la cantine » ; « 40 × niveau : oui » ; « 500 × n² : oui » ; « Débloquage gratuit. Le premier est inclus dans la construction du bâtiment » ; « Perso du décor. En fait, mieux. C'est le tavernier. Et c'est pas un bâtiment, mais une salle à la taverne. »
+
+- **Une salle de la Taverne**, où cuisine le tavernier : le bouton **La Cantine** de la Taverne (`camp-buildings.json`, ligne `canteen`, `lieu` taverne ; elle n'apparaît pas dans Ma Compagnie). Elle se construit et monte comme les autres bâtiments : **10 niveaux, 500 × n² PO** (500, 2 000, 4 500… 50 000) et 4 × n jours de chantier.
+- **Chaque matin**, le **plat du jour** donne **40 × niveau XP** (`canteen.xp_per_level`) dans sa caractéristique à **chaque mercenaire présent au camp** : blessés, fatigués et prisonniers du Cachot compris ; pas à ceux qui sont partis (contrat, chasse, garde du corps). Pas de multiplicateur.
+- **Dix plats**, un par peuple (`canteen-dishes.json`) : Force — Ragoût de Mamie Ogresse (Ogre) ; Endurance — Fromage au lait de poule (Nain) ; Vitesse — Hérisson rôti à la sauce des bois (Reptilien) ; Perception — Poêlée de champignons (Gnome) ; Esquive — Lapin rôti et ses carottes confites (Gobelin) ; Chance — Tourte aux trèfles (Halfling) ; Constitution — Soupe de Géant Vert (Orc) ; Intelligence — Têtes de harengs (Elfe) ; Courage — Chili aux piments doux (Homme-bête) ; Dextérité — Tataki d'hirondelle (Humain).
+- **À l'ouverture**, le plat du **peuple du capitaine** est au menu. Ensuite, **un nouveau plat par niveau du Labo d'alchimie à partir du niveau 2** (`canteen.unlock_from_lab_level` ; au niveau 10 du Labo, les dix plats) : le tavernier en propose un, tiré au hasard parmi les autres, dont on ne voit que le nom ; on le **goûte gratuitement**, et son effet est alors connu. Le plat du jour se choisit parmi les plats goûtés (« augmente la Force ») ; il ne change pas tout seul.
+- Journal du matin : « La Cantine sert … : +40 XP de … pour N mercenaires (M gagnent un point). »
+- Code : `game-core/canteen.js` (règles), `campaign.js` (le matin), `prototype-web/canteen-ui.js` (écran). Test : `tests/canteen.test.js`.
+
 ### Renseignements sur les missions
 
 Au lieu d’une salle des cartes dédiée, l’information supplémentaire passe par **un vieux type louche qui connaît un mec qui connaît un mec…**

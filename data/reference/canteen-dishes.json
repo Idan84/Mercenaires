@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "name": "Plats de la Cantine",
+  "description": "La Cantine (Idan, 2026-11-08) : une salle de la Taverne (camp-buildings.json, canteen, lieu taverne), où le tavernier cuisine. Chaque jour, le plat du jour donne xp_par_niveau × niveau de la Cantine XP (formula-constants.json, canteen.xp_per_level : 40) dans sa caractéristique à tous les mercenaires présents au camp, blessés et fatigués compris, pas à ceux qui sont dehors (mission, garde du corps). Dix plats, un par peuple (Idan : « Chaque peuple commence avec un plat ») ; le plat du peuple du capitaine est inclus à l'ouverture de la Cantine ; ensuite, le tavernier propose un nouveau plat par niveau du Labo d'alchimie à partir du niveau 2 (canteen.unlock_from_lab_level), gratuitement ; on ne connaît son effet qu'une fois débloqué (Idan : « On ne sait pas ce qu'il fait avant de l'avoir débloqué »). Noms d'Idan.",
+  "columns": [
+    {
+      "key": "code",
+      "source": "Code"
+    },
+    {
+      "key": "nom",
+      "source": "Nom du plat"
+    },
+    {
+      "key": "caracteristique",
+      "source": "Caractéristique qui gagne l'XP"
+    },
+    {
+      "key": "peuple",
+      "source": "Peuple dont c'est le plat"
+    }
+  ],
+  "row_count": 10,
+  "rows": [
+    {
+      "code": "ragout_mamie_ogresse",
+      "nom": "Ragoût de Mamie Ogresse",
+      "caracteristique": "Force",
+      "peuple": "Ogre"
+    },
+    {
+      "code": "fromage_lait_de_poule",
+      "nom": "Fromage au lait de poule",
+      "caracteristique": "Endurance",
+      "peuple": "Nain"
+    },
+    {
+      "code": "herisson_roti",
+      "nom": "Hérisson rôti à la sauce des bois",
+      "caracteristique": "Vitesse",
+      "peuple": "Reptilien"
+    },
+    {
+      "code": "poelee_champignons",
+      "nom": "Poêlée de champignons",
+      "caracteristique": "Perception",
+      "peuple": "Gnome"
+    },
+    {
+      "code": "lapin_roti",
+      "nom": "Lapin rôti et ses carottes confites",
+      "caracteristique": "Esquive",
+      "peuple": "Gobelin"
+    },
+    {
+      "code": "tourte_aux_trefles",
+      "nom": "Tourte aux trèfles",
+      "caracteristique": "Chance",
+      "peuple": "Halfling"
+    },
+    {
+      "code": "soupe_geant_vert",
+      "nom": "Soupe de Géant Vert",
+      "caracteristique": "Constitution",
+      "peuple": "Orc"
+    },
+    {
+      "code": "tetes_de_harengs",
+      "nom": "Têtes de harengs",
+      "caracteristique": "Intelligence",
+      "peuple": "Elfe"
+    },
+    {
+      "code": "chili_piments_doux",
+      "nom": "Chili aux piments doux",
+      "caracteristique": "Courage",
+      "peuple": "Homme-bête"
+    },
+    {
+      "code": "tataki_hirondelle",
+      "nom": "Tataki d'hirondelle",
+      "caracteristique": "Dextérité",
+      "peuple": "Humain"
+    }
+  ]
+}

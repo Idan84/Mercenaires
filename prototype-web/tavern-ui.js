@@ -197,6 +197,8 @@ function logDayReport(report){
   if(typeof logCampBuildings==="function") logCampBuildings(report.buildings);
   // Entraînement libre à l'École de magie (Idan, 2026-11-02).
   if(typeof logSchoolDay==="function") logSchoolDay(report.school);
+  // La Cantine (Idan, 2026-11-08) : le plat du jour.
+  if(typeof logCanteen==="function") logCanteen(report.canteen);
   // Apprentissage des sorts : ceux qui connaissent désormais leur sort.
   if(typeof logSpellStudy==="function") logSpellStudy(report.study);
   if(typeof logArmorStudy==="function") logArmorStudy(report.armorStudy);
@@ -352,11 +354,12 @@ function finishRecruitment(){
 
 // Les deux consommations sont pour l'instant des dépenses sans effet de gameplay.
 function showTavernView(view="home"){
-  for(const [name,id] of [["home","tavern-home"],["missions","tavern-missions-view"],["recruits","tavern-recruits-view"]]){
+  for(const [name,id] of [["home","tavern-home"],["missions","tavern-missions-view"],["recruits","tavern-recruits-view"],["canteen","tavern-canteen-view"]]){
     $(id).classList.toggle("hidden",name!==view);
   }
   if(view==="missions") renderContractBoard();
   if(view==="recruits") updateRecruitCarousel();
+  if(view==="canteen"&&typeof renderCanteen==="function") renderCanteen();
   // La bulle du tavernier n'apparaît que sur l'accueil de la taverne (styles.css).
   document.body.dataset.tavernView=view;
 }
@@ -460,7 +463,7 @@ function initializeTavernUi(){
     if(option&&!option.disabled) tavernTalk(option.dataset.talk,option.dataset.arg);
   });
   talk.addEventListener("close",()=>{ game.tavernTalk=null; });
-  for(const id of ["tavern-missions-view","tavern-recruits-view"]){
+  for(const id of ["tavern-missions-view","tavern-recruits-view","tavern-canteen-view"]){
     $(id).addEventListener("click",event=>{
       const btn=event.target.closest("[data-tavern-view]");
       if(btn) showTavernView(btn.dataset.tavernView);

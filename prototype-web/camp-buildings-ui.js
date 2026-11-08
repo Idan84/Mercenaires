@@ -109,7 +109,8 @@ function campRoomsList(c,code){
 // l'École de magie dans le sien.
 function campBuildingCard(c,code){
   const rules=campaignRules(),row=rules.campBuildingRow(code);
-  if(!row||row.requiert) return "";
+  // Une salle de la Taverne (La Cantine, lieu taverne) se gère à la Taverne, pas dans Ma Compagnie.
+  if(!row||row.requiert||row.lieu) return "";
   const level=rules.buildingLevel(c,code);
   return `<article class="building-card building-card--care building-card--${esc(code)}">
       <div class="building-info"><strong title="${esc(row.description)}">${esc(row.nom)}</strong><span>${campBuildingState(c,code,level)}</span></div>

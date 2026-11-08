@@ -70,6 +70,10 @@
     {
       "key": "places_par_niveau",
       "source": "Écuries (Idan, 2026-11-07) : places pour les montures par niveau"
+    },
+    {
+      "key": "lieu",
+      "source": "Où il se trouve : null = au camp ; taverne = une salle de la Taverne (La Cantine, Idan, 2026-11-08)"
     }
   ],
   "rows": [
@@ -90,7 +94,8 @@
       "entraine": null,
       "garde_paie_par_niveau": 0,
       "apprend_avec": null,
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "baths",
@@ -109,7 +114,8 @@
       "entraine": null,
       "garde_paie_par_niveau": 0,
       "apprend_avec": "Volonté",
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "baths_sauna",
@@ -128,7 +134,8 @@
       "entraine": "Réserve de mana",
       "garde_paie_par_niveau": 0,
       "apprend_avec": null,
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "magic_school",
@@ -147,7 +154,8 @@
       "entraine": null,
       "garde_paie_par_niveau": 0,
       "apprend_avec": "Intelligence",
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "magic_room_fire",
@@ -166,7 +174,8 @@
       "entraine": null,
       "garde_paie_par_niveau": 0,
       "apprend_avec": null,
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "magic_room_water",
@@ -185,7 +194,8 @@
       "entraine": null,
       "garde_paie_par_niveau": 0,
       "apprend_avec": null,
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "magic_room_lightning",
@@ -204,7 +214,8 @@
       "entraine": null,
       "garde_paie_par_niveau": 0,
       "apprend_avec": null,
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "magic_room_life",
@@ -223,7 +234,8 @@
       "entraine": null,
       "garde_paie_par_niveau": 0,
       "apprend_avec": null,
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "magic_room_necromancy",
@@ -242,7 +254,8 @@
       "entraine": null,
       "garde_paie_par_niveau": 0,
       "apprend_avec": null,
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "magic_room_illusion",
@@ -261,7 +274,8 @@
       "entraine": null,
       "garde_paie_par_niveau": 0,
       "apprend_avec": null,
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "magic_room_summoning",
@@ -280,7 +294,8 @@
       "entraine": null,
       "garde_paie_par_niveau": 0,
       "apprend_avec": null,
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "magic_room_transmutation",
@@ -299,7 +314,8 @@
       "entraine": null,
       "garde_paie_par_niveau": 0,
       "apprend_avec": null,
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "magic_room_telekinesis",
@@ -318,7 +334,8 @@
       "entraine": null,
       "garde_paie_par_niveau": 0,
       "apprend_avec": null,
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "magic_room_staff",
@@ -337,7 +354,8 @@
       "entraine": "Bâtons",
       "garde_paie_par_niveau": 0,
       "apprend_avec": null,
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "ludus",
@@ -356,7 +374,8 @@
       "entraine": "Résistance physique",
       "garde_paie_par_niveau": 0,
       "apprend_avec": "Endurance",
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "ludus_force",
@@ -375,7 +394,8 @@
       "entraine": "Force",
       "garde_paie_par_niveau": 0,
       "apprend_avec": null,
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "ludus_endurance",
@@ -394,7 +414,8 @@
       "entraine": "Endurance",
       "garde_paie_par_niveau": 0,
       "apprend_avec": null,
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "ludus_speed",
@@ -413,7 +434,8 @@
       "entraine": "Vitesse",
       "garde_paie_par_niveau": 0,
       "apprend_avec": null,
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "ludus_dodge",
@@ -432,7 +454,8 @@
       "entraine": "Esquive",
       "garde_paie_par_niveau": 0,
       "apprend_avec": null,
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "ludus_constitution",
@@ -451,7 +474,8 @@
       "entraine": "Constitution",
       "garde_paie_par_niveau": 0,
       "apprend_avec": null,
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "survival_academy",
@@ -470,7 +494,8 @@
       "entraine": "Boucliers",
       "garde_paie_par_niveau": 0,
       "apprend_avec": "Volonté",
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "survival_fire",
@@ -489,7 +514,8 @@
       "entraine": "Résistance au feu",
       "garde_paie_par_niveau": 0,
       "apprend_avec": null,
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "survival_cold",
@@ -508,7 +534,8 @@
       "entraine": "Résistance au froid",
       "garde_paie_par_niveau": 0,
       "apprend_avec": null,
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "survival_lightning",
@@ -527,7 +554,8 @@
       "entraine": "Résistance à la foudre",
       "garde_paie_par_niveau": 0,
       "apprend_avec": null,
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "survival_poison",
@@ -546,7 +574,8 @@
       "entraine": "Résistance au poison",
       "garde_paie_par_niveau": 0,
       "apprend_avec": null,
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "survival_stealth",
@@ -565,7 +594,8 @@
       "entraine": "Discrétion",
       "garde_paie_par_niveau": 0,
       "apprend_avec": null,
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "blade_circle",
@@ -584,7 +614,8 @@
       "entraine": "Dextérité",
       "garde_paie_par_niveau": 0.05,
       "apprend_avec": "Dextérité",
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "blade_long",
@@ -603,7 +634,8 @@
       "entraine": "Lames longues",
       "garde_paie_par_niveau": 0,
       "apprend_avec": null,
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "blade_short",
@@ -622,7 +654,8 @@
       "entraine": "Lames courtes",
       "garde_paie_par_niveau": 0,
       "apprend_avec": null,
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "blade_dual",
@@ -641,7 +674,8 @@
       "entraine": "Combat à deux armes",
       "garde_paie_par_niveau": 0,
       "apprend_avec": null,
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "blade_single",
@@ -660,7 +694,8 @@
       "entraine": "Combat à une main",
       "garde_paie_par_niveau": 0,
       "apprend_avec": null,
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "watchtower",
@@ -679,7 +714,8 @@
       "entraine": "Perception",
       "garde_paie_par_niveau": 0,
       "apprend_avec": "Perception",
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "watchtower_ranged",
@@ -698,7 +734,8 @@
       "entraine": "Armes de tir",
       "garde_paie_par_niveau": 0,
       "apprend_avec": null,
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "alchemy_lab",
@@ -717,7 +754,8 @@
       "entraine": "Résistance au poison",
       "garde_paie_par_niveau": 0,
       "apprend_avec": "Intelligence",
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "alchemy_firearms",
@@ -736,7 +774,8 @@
       "entraine": "Armes à feu",
       "garde_paie_par_niveau": 0,
       "apprend_avec": null,
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "alchemy_traps",
@@ -755,7 +794,8 @@
       "entraine": "Pièges",
       "garde_paie_par_niveau": 0,
       "apprend_avec": null,
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "lumber_camp",
@@ -774,7 +814,8 @@
       "entraine": "Haches",
       "garde_paie_par_niveau": 0,
       "apprend_avec": "Force",
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "lumber_two_handed",
@@ -793,7 +834,8 @@
       "entraine": "Combat à deux mains",
       "garde_paie_par_niveau": 0,
       "apprend_avec": null,
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "miners_guild",
@@ -812,7 +854,8 @@
       "entraine": "Armes contondantes",
       "garde_paie_par_niveau": 0,
       "apprend_avec": "Force",
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "mine_two_handed",
@@ -831,7 +874,8 @@
       "entraine": "Combat à deux mains",
       "garde_paie_par_niveau": 0,
       "apprend_avec": null,
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "terror_cave",
@@ -850,7 +894,8 @@
       "entraine": "Courage",
       "garde_paie_par_niveau": 0,
       "apprend_avec": "Courage",
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "terror_cave_polearms",
@@ -869,7 +914,8 @@
       "entraine": "Armes d’hast",
       "garde_paie_par_niveau": 0,
       "apprend_avec": null,
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "pleasure_palace",
@@ -888,7 +934,8 @@
       "entraine": null,
       "garde_paie_par_niveau": 0,
       "apprend_avec": "Charisme",
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "pleasure_backroom",
@@ -907,7 +954,8 @@
       "entraine": "Armes flexibles ou articulées",
       "garde_paie_par_niveau": 0,
       "apprend_avec": null,
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "dungeon",
@@ -926,7 +974,8 @@
       "entraine": null,
       "garde_paie_par_niveau": 0,
       "apprend_avec": null,
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "trainer_barn",
@@ -945,7 +994,8 @@
       "entraine": null,
       "garde_paie_par_niveau": 0,
       "apprend_avec": "Charisme, Intelligence, Intimidation",
-      "places_par_niveau": 0
+      "places_par_niveau": 0,
+      "lieu": null
     },
     {
       "code": "trainer_stables",
@@ -964,7 +1014,8 @@
       "entraine": "Équidés",
       "garde_paie_par_niveau": 0,
       "apprend_avec": null,
-      "places_par_niveau": 2
+      "places_par_niveau": 2,
+      "lieu": null
     },
     {
       "code": "trainer_kennel",
@@ -983,8 +1034,29 @@
       "entraine": "Canidés",
       "garde_paie_par_niveau": 0,
       "apprend_avec": null,
-      "places_par_niveau": 2
+      "places_par_niveau": 2,
+      "lieu": null
+    },
+    {
+      "code": "canteen",
+      "nom": "La Cantine",
+      "description": "Le tavernier y cuisine pour toute la compagnie : chaque jour, le plat du jour fait progresser ceux qui sont au camp.",
+      "niveaux": 10,
+      "prix_base": 500,
+      "jours_base": 4,
+      "soins_par_niveau": 0,
+      "fatigue_jours_par_niveau": 0,
+      "mana_par_niveau": 0,
+      "requiert": null,
+      "ecole": null,
+      "places_base": 0,
+      "places_pas": 0,
+      "entraine": null,
+      "garde_paie_par_niveau": 0,
+      "apprend_avec": null,
+      "places_par_niveau": 0,
+      "lieu": "taverne"
     }
   ],
-  "row_count": 48
+  "row_count": 49
 }

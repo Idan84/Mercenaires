@@ -1023,8 +1023,20 @@
     // ménage » ou garde du corps). Une offre non signée qui dépasse sa date est prise par une autre compagnie : une autre
     // la remplace aussitôt. Une offre signée laisse sa case vide 24 heures : la mission suivante arrive le lendemain.
     // Le contrat est au niveau de la Renommée (missions.js) ; la garde du corps suit le meilleur mercenaire (bodyguard.js).
-    const TAVERN_SLOTS=referenceConstant(reference,"tavern.missions.slots",5);
+    // Cases du tableau (Idan, 2026-11-08 : « Cases : 3 + Nombre d'étoiles de la compagnie ») : 3 + 1 par étoile de
+    // renommée, de 1 à 15 (les métaux ne sont que l'affichage : 1★ d'argent = 6 étoiles). Si la renommée baisse, une case
+    // en trop disparaît quand elle se libère.
+    const TAVERN_SLOTS=referenceConstant(reference,"tavern.missions.slots",3);
+    const TAVERN_SLOTS_PER_LEVEL=referenceConstant(reference,"tavern.missions.slots_per_renown_level",1);
     const TAVERN_EMPTY_DAYS=referenceConstant(reference,"tavern.missions.empty_days",1);
+    const STAR_ROWS=reference?.reputationStars?.rows||[];
+    function companyRenownLevel(state){
+      const renown=companyRenown(state).total;
+      let level=1;
+      for(const row of STAR_ROWS) if((Number(renown)||0)>=Number(row.renommee_min)) level=Number(row.niveau)||level;
+      return level;
+    }
+    function boardSize(state){ return TAVERN_SLOTS+TAVERN_SLOTS_PER_LEVEL*companyRenownLevel(state); }
     const offerKind=offer=>offer?.kind==="bodyguard"?"bodyguard":"cleanup";
     // Les chasses (Idan, 2026-11-07) : environ une case sur cinq ; les contrats et les gardes du corps se partagent le reste
     // (tavern.missions.weight_*).
@@ -1039,7 +1051,7 @@
     function createBoardOffer(state,kind){
       if(kind==="hunt") return missions.createHunt({day:state.day,renown:companyRenown(state).total});
       if(kind!=="bodyguard") return missions.createOffer({day:state.day,renown:companyRenown(state).total});
-      const offer=bodyguard.createOffer({day:state.day,bestLevel:bestMercenaryLevel(state)});
+      const offer=bodyguard.createOffer({day:state.day,companyLevel:companyRenownLevel(state)});
       // Cercle des Fines Lames (Idan, 2026-11-03 : « On garde juste l'augmentation de la prime ») : on y croise des nobles,
       // la garde du corps paie mieux, × (1 + 5 % par niveau du Cercle), arrondi à 10 PO ; la fréquence ne change pas.
       const bonus=bodyguardPayBonus(state);
@@ -1054,11 +1066,14 @@
     function boardOf(state){
       if(!state.tavernBoard){
         const old=[state.missionBoard?.offer,state.bodyguardBoard?.offer].filter(Boolean);
-        state.tavernBoard={slots:Array.from({length:TAVERN_SLOTS},(_,i)=>({offer:old[i]||null,emptyUntil:null}))};
+        state.tavernBoard={slots:Array.from({length:Math.max(boardSize(state),old.length)},(_,i)=>({offer:old[i]||null,emptyUntil:null}))};
       }
       delete state.missionBoard;
       delete state.bodyguardBoard;
-      while(state.tavernBoard.slots.length<TAVERN_SLOTS) state.tavernBoard.slots.push({offer:null,emptyUntil:null});
+      const size=boardSize(state),slots=state.tavernBoard.slots;
+      while(slots.length<size) slots.push({offer:null,emptyUntil:null});
+      // Renommée en baisse : les cases vides en trop disparaissent (une offre en cours garde la sienne).
+      for(let i=slots.length-1;i>=0&&slots.length>size;i--) if(!slots[i].offer) slots.splice(i,1);
       return state.tavernBoard;
     }
     // Remplit les cases libres (et celles dont les 24 heures sont passées). true si une offre est arrivée.
@@ -1462,7 +1477,7 @@
       STARTING_DORMITORY_CAPACITY,
       createCampaign,
       advanceTime,
-      fillTavernBoard,boardOffers,boardOffer,
+      fillTavernBoard,boardOffers,boardOffer,boardSize,companyRenownLevel,
       canGuard,
       departBodyguard,
       bestMercenaryLevel,

@@ -41,22 +41,23 @@ assert.equal(rules.payment(3,7,2),2*570,"par mercenaire");
 assert.ok(rules.payment(3,21)/21>rules.payment(3,3)/3);
 assert.equal(rules.payment(15,21),30990);
 
-// Offres : 1 à 3 mercenaires, 3 à 21 jours, 1★ à 5★ ; elles montent avec le meilleur mercenaire de la compagnie.
+// Offres : 1 à 3 mercenaires, 3 à 21 jours ; niveau = niveau de renommée de la compagnie + écart de −4 à +1 (Idan,
+// 2026-11-08 : « Ecart : -4 / +1 pour les 3 types de missions » ; « De la compagnie »), de 1 à 15.
 const levels={},counts=new Set(),days=new Set();
 for(let i=0;i<2000;i++){
-  const o=rules.createOffer({day:5,bestLevel:3});
+  const o=rules.createOffer({day:5,companyLevel:3});
   levels[o.level]=(levels[o.level]||0)+1; counts.add(o.count); days.add(o.days);
   assert.ok(o.expiresDay-5>=3&&o.expiresDay-5<=6);
   assert.equal(o.payment,rules.payment(o.level,o.days,o.count));
   assert.ok(o.client);
 }
-assert.deepEqual(Object.keys(levels).map(Number),[1,2,3,4,5]);
-assert.ok(levels[2]>500&&levels[2]<700&&levels[5]>130&&levels[5]<270,JSON.stringify(levels));
+assert.deepEqual(Object.keys(levels).map(Number),[1,2,3,4]);
+assert.ok(levels[1]>900&&levels[1]<1100&&levels[4]>270&&levels[4]<400,"−4, −3, −2 tombent au niveau 1 : "+JSON.stringify(levels));
 assert.deepEqual([...counts].sort(),[1,2,3]);
 assert.equal(Math.min(...days),3);
 assert.equal(Math.max(...days),21);
-assert.equal(rules.createOffer({bestLevel:9}).level>=6,true,"meilleur mercenaire à 9★ : décalage de 5");
-assert.ok(rules.createOffer({bestLevel:15}).level<=15);
+for(let i=0;i<200;i++){ const l=rules.createOffer({companyLevel:9}).level; assert.ok(l>=5&&l<=10,"compagnie à 9 étoiles : 5 à 10 ("+l+")"); }
+for(let i=0;i<200;i++){ const l=rules.createOffer({companyLevel:15}).level; assert.ok(l>=11&&l<=15); }
 // Retour : 50 % rentré, 25 % fatigué (1D3 jours), 25 % blessé (1D3 jours).
 const issues={rentre:0,fatigue:0,blesse:0};
 for(let i=0;i<4000;i++){ const r=rules.rollReturn(); issues[r.issue]+=1; if(r.issue!=="rentre") assert.ok(r.days>=1&&r.days<=3); else assert.equal(r.days,0); }
@@ -72,8 +73,11 @@ const scriptedRandom=()=>scripted.length?scripted.shift():random();
 const campaign=createCampaignRules({generator,tavern:createTavernRules({random:()=>0.999,reference}),reference,
   bodyguard:createBodyguardRules({reference,random:scriptedRandom})});
 const state=campaign.createCampaign({captain,squad});
-// Taverne à 5 missions (Idan, 2026-11-01) : sans contrat de ménage dans cette campagne, 5 gardes du corps.
-assert.ok(campaign.boardOffers(state).length===5&&campaign.boardOffers(state).every(o=>o.kind==="bodyguard"));
+// Tableau des missions (Idan, 2026-11-08) : 3 + 1 case par étoile de la compagnie ; sans contrat de ménage dans cette
+// campagne, que des gardes du corps.
+const size=3+campaign.companyRenownLevel(state);
+assert.equal(campaign.boardSize(state),size);
+assert.ok(campaign.boardOffers(state).length===size&&campaign.boardOffers(state).every(o=>o.kind==="bodyguard"));
 assert.equal(campaign.fillTavernBoard(state),false,"tableau plein");
 const slot=campaign.tavernSlots(state)[0];
 slot.offer={...slot.offer,level:2,count:2,days:5,payment:1000};

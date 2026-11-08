@@ -232,7 +232,7 @@ Le Guerrier d'élite (bouclier et Brigandine) reste tel quel : les mercenaires m
 
 Une mission sans combat pour gagner de l'or ; la contrepartie : on est privé des mercenaires pendant la mission. Code : `game-core/bodyguard.js` (règles), `game-core/campaign.js` (offre, départ, retour), `prototype-web/contract-ui.js` et `mission.js` (tableau, choix des gardes, fenêtre du retour). Données et textes : `data/reference/bodyguard-missions.json`.
 
-- **Offre** : une à la fois au tableau de la Taverne, sous le contrat, valable 3 à 6 jours ; un client (texte de JC), **1 à 3 mercenaires** d'un **niveau de réputation minimal**, pour **3 à 21 jours**. Niveau tiré : 1★ 10 %, 2★ 30 %, 3★ 30 %, 4★ 20 %, 5★ 10 % ; les offres montent avec la compagnie : + max(0, niveau du meilleur mercenaire − 4), jusqu'à 15★ (proposé par JC, validé par Idan ; plus tard, lié à la renommée).
+- **Offre** : une à la fois au tableau de la Taverne, sous le contrat, valable 3 à 6 jours ; un client (texte de JC), **1 à 3 mercenaires** d'un **niveau de réputation minimal**, pour **3 à 21 jours**. Niveau : le **niveau de renommée de la compagnie + un écart de −4 à +1**, chaque écart avec la même chance, de 1 à 15 (Idan, 2026-11-08 : « Ecart : -4 / +1 pour les 3 types de missions » ; « De la compagnie » ; `bodyguard-missions.json`, `niveau.ecart`). Avant : 1★ 10 %, 2★ 30 %, 3★ 30 %, 4★ 20 %, 5★ 10 %, + max(0, niveau du meilleur mercenaire − 4).
 - **Cercle des Fines Lames** (doc 11 §7 ; Idan, 2026-11-03) : le paiement d'une offre × (1 + 5 % par niveau du Cercle), arrondi à 10 PO ; la fiche de l'offre montre le paiement, sans commentaire.
 - **Paiement d'avance**, versé **le matin du départ** (Idan, 2026-11-02 : « On reçoit l'argent le lendemain matin ! Les SEPA heroic fantasy, c'est long » ; annuler avant le départ ne coûte ni ne rapporte rien), par mercenaire (formule de JC, validée et relevée sur les durées courtes par Idan) : **W × (2 + jours × (1,3 + (jours − 3) / 22))**, arrondi à 10 PO, où **W = 10 × Réputation minimale du niveau suivant / 30** (le salaire d'un mercenaire en haut du niveau demandé ; au-delà de 15★, × 1,25). Plus c'est long, plus la journée paie ; un mercenaire payé nettement plus que son niveau fait perdre de l'or, surtout sur les missions courtes.
 
@@ -352,7 +352,7 @@ Ordres (trois par peuple, textes de JC, à changer si besoin) : chef de village 
 
 Le niveau d'une mission va de 1 à 15, comme les étoiles : 1 à 5 étoiles de bronze (niveaux 1 à 5), d'argent (6 à 10), d'or (11 à 15). Dans les formules, « niveau » est ce nombre.
 
-- **Niveau de la mission** = niveau de Renommée de la compagnie + un écart tiré entre −3 et +2, chaque écart avec la même chance, borné de 1 à 15 (`one-shot-missions.json`, `niveau.ecart`). Une compagnie de départ est à 2 ou 3 étoiles de bronze.
+- **Niveau de la mission** = niveau de Renommée de la compagnie + un écart tiré entre **−4 et +1** (avant : −3 et +2 ; Idan, 2026-11-08 : « Ecart : -4 / +1 pour les 3 types de missions »), chaque écart avec la même chance, borné de 1 à 15 (`one-shot-missions.json`, `niveau.ecart`). Une compagnie de départ est à 2 ou 3 étoiles de bronze.
 - **Budget en points de combat** (`budgets`, un par métal) :
   - Bronze : tirage 40–60 × niveau ; monstres novice / normal (50 % / 50 %) ; chef 1.
   - Argent : tirage 60–80 × niveau ; novice / normal / vétéran (25 % / 50 % / 25 %) ; chef 2.
@@ -392,8 +392,8 @@ Une qualité par tier (`item-qualities.json`, doc 05) : T1 Usée, T2 Correcte, T
 
 > « La taverne a 5 missions. On génère aléatoirement une mission. Une fois la mission prise, on laisse 24 h une case vide et on régénère une mission. » « Totalement aléatoire sur le type de missions. On va en avoir une dizaine de types à terme. Le niveau de référence, c'est la réputation de la compagnie. »
 
-- **5 cases** au tableau des missions de la Taverne (`formula-constants.json`, `tavern.missions.slots`). Chaque case tire un type de mission au hasard, chacun avec la même chance : aujourd'hui « Faire le ménage » ou garde du corps. Un nouveau type de mission s'ajoute à ce tirage.
-- **Niveau** : le contrat suit la Renommée de la compagnie (§16) ; la garde du corps garde sa règle (le meilleur mercenaire, §12).
+- **3 + 1 case par étoile de la compagnie** au tableau des missions de la Taverne (Idan, 2026-11-08 : « Cases : 3 + Nombre d'étoiles de la compagnie » ; à 6 étoiles, 9 cases — bronze, argent, or ne sont que l'affichage : 1★ d'argent = 6 étoiles ; `formula-constants.json`, `tavern.missions.slots` et `tavern.missions.slots_per_renown_level` ; avant : 5 cases). Si la renommée baisse, une case vide en trop disparaît ; une offre en cours garde la sienne. Chaque case tire un type de mission au hasard, **chacun avec la même chance** (Idan, 2026-11-08 : « Tous les types de missions sont équiprobables ») : contrat « Faire le ménage », garde du corps, chasse. Un nouveau type de mission s'ajoute à ce tirage.
+- **Niveau** : les trois types suivent la Renommée de la compagnie, avec le même écart de −4 à +1 (§12, §16, §23).
 - **Case prise** : une offre signée laisse sa case vide jusqu'au lendemain (`tavern.missions.empty_days`, 1 jour), puis une nouvelle mission arrive. Plusieurs escouades peuvent partir en même temps.
 - **Offre perdue** : une offre non signée qui dépasse sa date est prise par une autre compagnie et remplacée aussitôt. Le journal le dit ; la notification du jour n'en fait plus une alerte (une seule ligne).
 - **Anciennes sauvegardes** : l'offre de contrat et l'offre de garde du corps passent dans les deux premières cases.
@@ -500,12 +500,12 @@ Une ligne **Cavalier** (poids 10) au camp de voleurs, dès le niveau de mission 
 
 Deux missions (`one-shot-missions.json`, celles qui ont une `bete`) : **Chasse au loup** (`hunt_wolves`) et **Chasse à la licorne** (`hunt_unicorn`).
 
-- **Difficulté** : le niveau de Renommée de la compagnie + un écart de −2 à +2 (`niveau.ecart`), de 1 à 15.
+- **Difficulté** : le niveau de Renommée de la compagnie + un écart de **−4 à +1** (`niveau.ecart` ; avant : −2 à +2 ; Idan, 2026-11-08), de 1 à 15.
 - **Les bêtes** : **1D6 loups par étoile** (3★ : 3D6, une dizaine), **1D3 licornes par étoile** ; au plus 100. Après le bêta-test (Idan, 2026-11-07 : « On passe la mission loup à 1D6 loups au lieu de 3D6 et les licornes en 1D3 ») ; avant : 3D6 loups et 1D6 licornes par étoile. Elles ont la **fiche fixe** de nos animaux (`mounts.json` : le Loup, la Licorne), quelle que soit l'étoile : pas de chef, pas de niveaux. Elles se battent et fuient comme tout combattant ; la licorne lance sa Création de double.
 - **Marche** : étoiles × un tirage de 0,25 à 1, arrondi au jour supérieur.
 - **Récompense** : **1 000 PO par étoile**, seule : ni coffre ni butin (l'équipement de nos morts revient). Un échec fait baisser la renommée et une défaite double le jet de mort, comme un contrat.
 - **Capture** : après la victoire, chaque bête restée à terre passe le test de survie et rentre avec l'escouade, s'il reste une place au Chenil (loups) ou aux Écuries (licornes ; doc 11 §8).
-- **Au tableau** : environ **une case sur cinq** (`tavern.missions.weight_*` : contrat 2, garde du corps 2, chasse 1) ; les loups **3 fois sur 4** (`poids`). Elle se signe comme un contrat (l'escouade part le lendemain matin).
+- **Au tableau** : **une case sur trois** (`tavern.missions.weight_*` : contrat 1, garde du corps 1, chasse 1 ; Idan, 2026-11-08 : « Tous les types de missions sont équiprobables » ; avant : 2, 2, 1) ; loups et licornes **à égalité** (`poids` ; Idan : « Equiprobables » ; avant : les loups 3 fois sur 4). Elle se signe comme un contrat (l'escouade part le lendemain matin).
 - **Lieux** : « Repaire des loups », « Territoire de la meute », « Bois des hurlements » ; « Bois de la licorne », « Vallon de la licorne », « Sanctuaire de la licorne » ; paysages : **Forêt profonde** (loups), **Clairière** (licornes), sans enceinte (`mission-landscapes.json`).
 - **Lettres** : un village d'éleveurs et un seigneur sans gibier pour les loups ; un noble endetté et un alchimiste pour les licornes (`ordres`, noms `alchimistes`).
 - Code : `missions.js` (`createHunt`, `rollBeasts`, `huntDistance`, `buildEnemies`), `campaign.js` (tableau), `mission.js`, `contract-ui.js`. Test : `tests/hunts.test.js`.

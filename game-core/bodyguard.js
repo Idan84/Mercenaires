@@ -50,12 +50,13 @@
       return count*Math.round(each/round)*round;
     }
 
-    // Une offre ; bestLevel : niveau du meilleur mercenaire de la compagnie (les offres montent avec elle).
-    function createOffer({day=1,bestLevel=0}={}){
+    // Une offre (Idan, 2026-11-08 : « Ecart : -4 / +1 pour les 3 types de missions ») : le niveau de renommée de la
+    // compagnie (companyLevel, 1 à 15) + un écart tiré dans niveau.ecart, chaque écart avec la même chance, de 1 à 15.
+    function createOffer({day=1,companyLevel=1}={}){
       const crew=data.mercenaires||{min:1,max:3},duration=data.duree_jours||{min:3,max:21};
       const [minDays,maxDays]=data.validite_jours||[3,6];
-      const shift=Math.max(0,(Number(bestLevel)||0)-(Number(data.decalage_niveau?.reference)||4));
-      const level=Math.min(maxLevel,Number(weighted(data.niveaux||[{etoiles:1,poids:1}]).etoiles)+shift);
+      const [low,high]=data.niveau?.ecart||[-4,1];
+      const level=Math.max(1,Math.min(maxLevel,(Number(companyLevel)||1)+between(low,high)));
       const count=between(crew.min,crew.max),days=between(duration.min,duration.max);
       return {id:`bodyguard-${day}-${Math.floor(random()*1e9).toString(36)}`,kind:"bodyguard",day,
         expiresDay:day+minDays+Math.floor(random()*(maxDays-minDays+1)),level,count,days,client:pick(data.clients||[]),

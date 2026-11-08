@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 406,
+  "row_count": 407,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -1291,11 +1291,19 @@
       "version": "V1"
     },
     {
-      "nom": "Taverne — cases de missions",
+      "nom": "Taverne — cases de missions de base",
       "code": "tavern.missions.slots",
-      "description": "Taverne à 5 missions (Idan, 2026-11-01) : nombre de cases du tableau des missions ; chaque case tire un type de mission au hasard (contrat « Faire le ménage » ou garde du corps).",
+      "description": "Cases du tableau des missions = cette base + tavern.missions.slots_per_renown_level × niveau de renommée de la compagnie (1 à 15). Idan, 2026-11-08 : « Cases : 3 + Nombre d'étoiles de la compagnie » ; « 9 » à 6 étoiles (bronze, argent, or ne sont que l'affichage : 1★ d'argent = 6 étoiles). Avant : 5 cases fixes. Si la renommée baisse, une case vide en trop disparaît.",
       "formule": "Taverne à 5 missions",
-      "valeur": 5,
+      "valeur": 3,
+      "version": "V1"
+    },
+    {
+      "nom": "Taverne — cases de missions par niveau de renommée",
+      "code": "tavern.missions.slots_per_renown_level",
+      "description": "Voir tavern.missions.slots (Idan, 2026-11-08).",
+      "formule": "Taverne à 5 missions",
+      "valeur": 1,
       "version": "V1"
     },
     {
@@ -1309,23 +1317,23 @@
     {
       "nom": "Taverne — poids des contrats",
       "code": "tavern.missions.weight_cleanup",
-      "description": "Poids du contrat « Faire le ménage » au tirage d’une case du tableau (Idan, 2026-11-07 : les chasses environ une case sur cinq).",
+      "description": "Poids du contrat « Faire le ménage » au tirage d’une case du tableau (Idan, 2026-11-08 : « Tous les types de missions sont équiprobables »). Avant : 2.",
       "formule": "Taverne à 5 missions",
-      "valeur": 2,
+      "valeur": 1,
       "version": "V1"
     },
     {
       "nom": "Taverne — poids des gardes du corps",
       "code": "tavern.missions.weight_bodyguard",
-      "description": "Poids de la garde du corps au tirage d’une case du tableau.",
+      "description": "Poids de la garde du corps au tirage d’une case du tableau (Idan, 2026-11-08 : types équiprobables). Avant : 2.",
       "formule": "Taverne à 5 missions",
-      "valeur": 2,
+      "valeur": 1,
       "version": "V1"
     },
     {
       "nom": "Taverne — poids des chasses",
       "code": "tavern.missions.weight_hunt",
-      "description": "Poids des chasses (meute de loups, licornes) au tirage d’une case du tableau : environ une case sur cinq.",
+      "description": "Poids des chasses (meute de loups, licornes) au tirage d’une case du tableau (Idan, 2026-11-08 : types équiprobables, une case sur trois).",
       "formule": "Taverne à 5 missions",
       "valeur": 1,
       "version": "V1"

@@ -3,7 +3,7 @@
 // Les chasses (Idan, 2026-11-07 : « Récompense de 1000 Po par étoile. 0,25 à 1 jour de marche par étoile. Arrondi sup.
 // Textes cohérents avec l'espèce : Version Meute de Loup : 3D6 par étoile. Version Licorne : 1D6 par étoile. On élimine
 // les animaux. On peut en capturer ou se prendre une pilée ! On génère des missions -2 / +2 étoiles par rapport à
-// l'étoile » ; « Les fiches fixes » ; ni coffre ni butin : « Oui » ; une case sur cinq au tableau, les loups 3 fois sur 4) :
+// l'étoile » ; « Les fiches fixes » ; ni coffre ni butin : « Oui » ; une case sur cinq au tableau, les loups 3 fois sur 4 ; depuis le 2026-11-08 : une case sur trois, loups et licornes à égalité) :
 // le tirage, les bêtes, la récompense, le tableau, les lettres, le paysage, des combats entiers, la capture. Après le
 // bêta-test (Idan, 2026-11-07 : « On passe la mission loup à 1D6 loups au lieu de 3D6 et les licornes en 1D3 »).
 const assert = require("node:assert/strict");
@@ -34,7 +34,7 @@ const rules = Missions.createMissionRules({reference, random});
 // 1. Les données : deux chasses, leurs bêtes, leurs lettres.
 const wolves = rules.definition("hunt_wolves"), unicorns = rules.definition("hunt_unicorn");
 assert.deepEqual([wolves.bete.code, wolves.bete.des, wolves.bete.faces, wolves.poids, wolves.niveau.ecart, wolves.recompense.par_niveau, wolves.marche.facteur],
-  ["loup", 1, 6, 3, [-2, 2], 1000, [0.25, 1]]);
+  ["loup", 1, 6, 1, [-4, 1], 1000, [0.25, 1]]);
 assert.deepEqual([unicorns.bete.code, unicorns.bete.des, unicorns.bete.faces, unicorns.poids], ["licorne", 1, 3, 1]);
 assert.equal(wolves.coffre, undefined, "ni coffre");
 for (const def of [wolves, unicorns]) {
@@ -60,7 +60,8 @@ for (let i = 0; i < 400; i++) {
   const letter = rules.orderText(offer, {date: "1er du mois", récompense: offer.reward});
   assert.ok(letter && letter.paragraphs.every(p => !/\{[^}]+\}/.test(p)), "la lettre est remplie");
 }
-assert.ok(seen.hunt_wolves > 2 * seen.hunt_unicorn && seen.hunt_unicorn > 50, "les loups 3 fois sur 4 : " + JSON.stringify(seen));
+const huntTotal = seen.hunt_wolves + seen.hunt_unicorn;
+assert.ok(seen.hunt_wolves > 0.4 * huntTotal && seen.hunt_unicorn > 0.4 * huntTotal, "loups et licornes à égalité (Idan, 2026-11-08) : " + JSON.stringify(seen));
 const big = rules.createOffer({code: "hunt_wolves", level: 15});
 assert.ok(big.enemyCount <= 100, "au plus 100");
 assert.ok(big.distance >= 4 && big.distance <= 15);
@@ -80,7 +81,7 @@ assert.equal(rules.outcome(offer, {victory: false}).renown, -30, "un échec fait
 const terrain = createMissionTerrain({reference});
 assert.deepEqual(["Loups", "Licornes"].map(f => [terrain.landscape(f)?.nom, terrain.landscape(f)?.enceinte]), [["Forêt profonde", false], ["Clairière", false]]);
 
-// 5. Le tableau : environ une case sur cinq.
+// 5. Le tableau : une case sur trois.
 const generator = createGenerator(reference, {random, nameGenerator: (people, id) => people + " " + id});
 const campMagic = Magic.createMagicRules({reference, combat: createCombatEngine(reference, {})});
 const campaign = createCampaignRules({generator, tavern: createTavernRules({random: () => 0.999, reference}), reference,
@@ -94,7 +95,7 @@ for (let i = 0; i < 80; i++) {
   campaign.fillTavernBoard(state);
   for (const o of campaign.boardOffers(state)) { total++; if (o.hunt) hunts++; }
 }
-assert.ok(hunts / total > 0.12 && hunts / total < 0.28, "une case sur cinq : " + hunts + " / " + total);
+assert.ok(hunts / total > 0.25 && hunts / total < 0.42, "une case sur trois (Idan, 2026-11-08 : types équiprobables) : " + hunts + " / " + total);
 // Une chasse se signe comme un contrat.
 const hunt = campaign.boardOffers(state).find(o => o.hunt) || (() => { const o = rules.createOffer({code: "hunt_wolves", level: 1}); state.tavernBoard.slots[0].offer = o; return o; })();
 const departed = campaign.departExpedition(state, [state.company.roster[1].id], hunt.id);

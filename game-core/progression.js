@@ -1,7 +1,8 @@
 "use strict";
 
 // Progression naturelle (08-progression-and-experience.md §1–2 ; décisions Idan du 2026-10-06) :
-// - la valeur d'une caractéristique est son niveau : XP cumulée = coefficient × Niveau² ;
+// - la valeur d'une caractéristique est son niveau : XP cumulée = coefficient × Niveau², par zones depuis le 2026-11-08
+//   (xpForLevel) ;
 // - pendant la mission, chaque combattant tient un journal de ce qu'il vit (charges tentées,
 //   adversaires mis hors combat, blessures subies, cases parcourues en fuite, activations…) ;
 // - en fin de mission, ce journal devient de l'XP : une caractéristique peut monter ou descendre,
@@ -199,6 +200,9 @@
     const k=(code,fallback)=>referenceConstant(reference,code,fallback);
     const C={
       curve:k("progression.xp_curve.coefficient",10),
+      // Courbe par zones (Idan, 2026-11-08) : largeur d'une zone et diviseur du coût d'un point, zone par zone.
+      zoneWidth:k("progression.xp_curve.zone_width",50),
+      zoneDivisors:[1,2,3,4].map(i=>k("progression.xp_curve.zone_"+i+"_divisor",[4,2,1,0.75][i-1])),
       startPosition:k("progression.xp_curve.start_position",0.5),
       chanceCriticalFailure:k("progression.chance.critical_failure_xp",30),
       chanceCriticalSuccess:k("progression.chance.critical_success_xp",-5),
@@ -283,8 +287,47 @@
       return load;
     }
 
-    const xpForLevel=level=>C.curve*level*level;
-    const levelForXp=xp=>Math.floor(Math.sqrt(Math.max(0,xp)/C.curve)+1e-9);
+    // Courbe XP → niveau par zones, lissée (Idan, 2026-11-08 : « De 0 à 50, c'est très facile (on divise par 4) De 51 à
+    // 100, (on divise par 2) De 101 à 150 comme aujourd'hui De 151 à 200 on divise par 0,75 » ; « on lisse le tout » ;
+    // « Après 200, on durcit encore un peu ») : le point n → n + 1 coûte coefficient × (2n + 1) (la courbe 10 × N²)
+    // × un multiplicateur, arrondi. Le multiplicateur vaut 1 / diviseur au milieu de chaque zone (25 : ¼, 75 : ½, 125 : 1,
+    // 175 : 1 / 0,75), varie en ligne droite d'un milieu à l'autre (pas de marche à 50 ni à 100), reste à ¼ sous 25 et
+    // continue de monter au-delà de 175 avec la même pente. Repères : 50 = 7 561 XP, 100 = 48 970, 150 = 173 107,
+    // 200 = 407 826, 250 = 784 210. Même courbe pour les caractéristiques, les compétences et les sorts.
+    const ZONE_POINTS=C.zoneDivisors.map((d,i)=>[C.zoneWidth*(i+0.5),1/d]);
+    const ZONE_SLOPE=(ZONE_POINTS.at(-1)[1]-ZONE_POINTS.at(-2)[1])/(ZONE_POINTS.at(-1)[0]-ZONE_POINTS.at(-2)[0]);
+    function curveMultiplier(v){
+      if(v<=ZONE_POINTS[0][0]) return ZONE_POINTS[0][1];
+      for(let i=0;i<ZONE_POINTS.length-1;i++){
+        const [x0,y0]=ZONE_POINTS[i],[x1,y1]=ZONE_POINTS[i+1];
+        if(v<=x1) return y0+(y1-y0)*(v-x0)/(x1-x0);
+      }
+      const [xl,yl]=ZONE_POINTS.at(-1);
+      return yl+ZONE_SLOPE*(v-xl);
+    }
+    // XP cumulée de chaque niveau entier, calculée au besoin (sans plafond).
+    const XP_TABLE=[0];
+    function growTable(level){
+      while(XP_TABLE.length<=level){
+        const n=XP_TABLE.length-1;
+        XP_TABLE.push(XP_TABLE[n]+Math.max(1,Math.round(C.curve*(2*n+1)*curveMultiplier(n+0.5))));
+      }
+    }
+    function xpForLevel(level){
+      const n=Math.max(0,Math.floor(Number(level)||0));
+      growTable(n);
+      return XP_TABLE[n];
+    }
+    function levelForXp(xp){
+      const x=Math.max(0,Number(xp)||0);
+      while(XP_TABLE[XP_TABLE.length-1]<=x) growTable(XP_TABLE.length*2);
+      let low=0,high=XP_TABLE.length-1;
+      while(low<high){
+        const mid=(low+high+1)>>1;
+        if(XP_TABLE[mid]<=x+1e-9) low=mid; else high=mid-1;
+      }
+      return low;
+    }
     // XP d'une valeur qui n'en a pas encore (valeur générée) : position dans la tranche de son niveau.
     function startingXp(value){
       const level=Math.max(0,Math.floor(Number(value)||0));

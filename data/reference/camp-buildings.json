@@ -559,7 +559,7 @@
     },
     {
       "code": "survival_poison",
-      "nom": "La Cantine",
+      "nom": "L’Assommoir",
       "description": "« Le plat du jour est toujours un test. Personne n'a jamais su lequel. »",
       "niveaux": 10,
       "prix_base": 500,

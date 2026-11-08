@@ -45,7 +45,10 @@
       weaponUses:{},twoHandedAttacks:0,oneHandedAttacks:0,dualSequences:0,blocks:{},intimidations:0,
       enemyWounds:{},enemyKnockouts:{},
       spellCasts:{},manaSpent:0,spellCriticalSuccesses:0,spellCriticalFailures:0,
-      animalUses:{}
+      animalUses:{},
+      // XP de combat (Idan, 2026-11-08) : cases parcourues, PV encaissés, tours au contact, tirs au loin, sorts ennemis
+      // résistés, tests de Courage tenus grâce à son aura.
+      hexesMoved:0,damageTaken:0,contactTurns:0,longShots:0,spellsResisted:0,auraHolds:0
     };
   }
   function logOf(unit){ return unit.progress||(unit.progress=emptyLog()); }
@@ -97,6 +100,10 @@
     }
     // Intelligence : apprendre de ses erreurs quand il choisit le pire type de dégâts (Idan, 2026-10-20).
     if(result.matchup?.choice==="pire"&&!result.accidental) logOf(attacker).worstChoices++;
+    // Perception (Idan, 2026-11-08 : « +20 par tir qui touche au-delà de la moitié de la portée ») : un tir qui touche
+    // vraiment (ni bloqué ni paré) à plus de la moitié de la portée de l'arme.
+    if(result.mode==="ranged"&&result.hit&&!result.blocked&&!result.parried&&Number(result.rangeMax)>0
+      &&Number(result.distance)>Number(result.rangeMax)/2) logOf(attacker).longShots=(Number(logOf(attacker).longShots)||0)+1;
     const adversary=!(attacker.team&&attacker.team===defender.team);
     // Réputation (09 §1, Exploits et carrière) : participation à la blessure d'un adversaire, une seule fois
     // par ennemi, dès que le coup lui inflige des dégâts ; on garde sa réputation pour le bilan.
@@ -145,6 +152,23 @@
   }
   // Chaque case parcourue en état de fuite.
   function recordFleeHex(unit){ logOf(unit).fleeHexes++; }
+  // XP de combat (Idan, 2026-11-08). Vitesse : chaque case parcourue en combat, pas seulement en fuite (recordStep).
+  // Constitution : les PV encaissés pendant la mission (le cumul du combattant, unit.damageTaken), comptés à la fin.
+  function recordDamageTaken(unit,damage){ logOf(unit).damageTaken=Math.max(0,Number(damage)||0); }
+  // Endurance : chaque activation commencée au contact d'un ennemi.
+  function recordContactTurn(unit){ const log=logOf(unit); log.contactTurns=(Number(log.contactTurns)||0)+1; }
+  // Volonté : chaque sort ennemi résisté (Paralysie, Sommeil, Prison de glace).
+  function recordSpellResisted(unit,caster=null){
+    if(!unit||(caster&&caster.team&&caster.team===unit.team)) return;
+    const log=logOf(unit);
+    log.spellsResisted=(Number(log.spellsResisted)||0)+1;
+  }
+  // Charisme : un allié tient son test de Courage avec l'aura de ce capitaine ou de ce lieutenant.
+  function recordAuraHold(leader){
+    if(!leader) return;
+    const log=logOf(leader);
+    log.auraHolds=(Number(log.auraHolds)||0)+1;
+  }
   // Dextérité : chaque enchaînement réussi (attaque, tir ou séquence à deux armes supplémentaire).
   function recordChain(unit){ logOf(unit).chains++; }
   // Combat à deux armes : chaque séquence où les DEUX armes ont réellement frappé (revue Chatty du
@@ -241,7 +265,16 @@
       schoolRegressionRatio:k("progression.magic.opposite_regression_ratio",0.5),
       schoolFloor:k("progression.magic.school_floor",1),
       magicPowerSpellEffect:k("progression.magic_power.spell_effect_xp",20),
-      manaReserveManaSpent:k("progression.mana_reserve.mana_spent_xp",2)
+      manaReserveManaSpent:k("progression.mana_reserve.mana_spent_xp",2),
+      // XP de combat (Idan, 2026-11-08).
+      speedHexMoved:k("progression.speed.hex_moved_xp",1),
+      constitutionDamageTaken:k("progression.constitution.damage_taken_xp",2),
+      enduranceContactTurn:k("progression.endurance.contact_turn_xp",10),
+      perceptionLongShot:k("progression.perception.long_shot_xp",20),
+      willSpellResisted:k("progression.will.spell_resisted_xp",80),
+      charismaAuraHold:k("progression.charisma.aura_hold_xp",40),
+      // Multiplicateur d'étoiles (Idan, 2026-11-08) : × (1 + part par étoile au-delà de 1).
+      starBonus:k("progression.mission.star_bonus",0.25)
     };
     // Réputation de carrière (09-reputation-renown-and-salaries.md §1, Exploits et carrière ; Idan, 2026-10-20).
     const R={
@@ -420,22 +453,41 @@
     // Force : XP par activation = coefficient × max(0, Charge / Force − seuil).
     // Le mercenaire sert aux régressions de compétences (celles qu'il possède).
     // spells : XP de chaque sort lancé (par code), appliquée aux sorts du grimoire.
-    function gains(log,mercenary=null){
+    // Multiplicateur d'étoiles (Idan, 2026-11-08 : « Multiplicateur selon les étoiles de la mission… le plus rapide à équilibrer
+    // et ça boostera tout le monde ») : toute l'XP de la mission × (1 + 0,25 par étoile au-delà de 1) : 1★ × 1, 3★ × 1,5,
+    // 5★ × 2, 10★ × 3,25, 15★ × 4,5. Sans mission (combat de test) : × 1.
+    function starMultiplier(stars){
+      const n=Math.max(1,Math.floor(Number(stars)||1));
+      return 1+C.starBonus*(n-1);
+    }
+    function scaled(xp,factor){
+      if(factor===1) return xp;
+      const out={};
+      for(const [key,value] of Object.entries(xp||{})){
+        if(value&&typeof value==="object") out[key]=scaled(value,factor);
+        else out[key]=Number(value)*factor;
+      }
+      return out;
+    }
+    function gains(log,mercenary=null,{stars=1}={}){
+      return scaled(baseGains(log,mercenary),starMultiplier(stars));
+    }
+    function baseGains(log,mercenary=null){
       const l={...emptyLog(),...(log||{})};
       const stats={},resistances={};
       const add=(target,name,xp)=>{ if(xp) target[name]=(target[name]||0)+xp; };
       add(stats,"Chance",(l.criticalFailures+l.spellCriticalFailures)*C.chanceCriticalFailure
         +(l.criticalSuccesses+l.spellCriticalSuccesses)*C.chanceCriticalSuccess);
-      add(stats,"Constitution",l.hpHealed*C.constitutionHpHealed);
+      add(stats,"Constitution",l.hpHealed*C.constitutionHpHealed+(Number(l.damageTaken)||0)*C.constitutionDamageTaken);
       add(stats,"Courage",l.chargeAttempts*C.courageChargeAttempt);
-      add(stats,"Vitesse",l.fleeHexes*C.speedFleeHex);
-      add(stats,"Charisme",l.knockouts*C.charismaKnockout);
-      add(stats,"Perception",l.backstabWounds*C.perceptionBackstabWound);
+      add(stats,"Vitesse",l.fleeHexes*C.speedFleeHex+(Number(l.hexesMoved)||0)*C.speedHexMoved);
+      add(stats,"Charisme",l.knockouts*C.charismaKnockout+(Number(l.auraHolds)||0)*C.charismaAuraHold);
+      add(stats,"Perception",l.backstabWounds*C.perceptionBackstabWound+(Number(l.longShots)||0)*C.perceptionLongShot);
       add(stats,"Force",Math.round((l.loadRatios||[]).reduce((sum,ratio)=>sum+C.forceLoadXp*Math.max(0,ratio-C.forceLoadThreshold),0)));
       add(stats,"Dextérité",l.chains*C.dexterityChain);
       add(stats,"Esquive",l.woundsTaken*C.dodgeWoundTaken);
-      add(stats,"Endurance",l.heavyArmorHexes*C.enduranceHeavyArmorHex);
-      add(stats,"Volonté",l.courageHeld*C.willCourageHeld+l.recoveries*C.willRecovery);
+      add(stats,"Endurance",l.heavyArmorHexes*C.enduranceHeavyArmorHex+(Number(l.contactTurns)||0)*C.enduranceContactTurn);
+      add(stats,"Volonté",l.courageHeld*C.willCourageHeld+l.recoveries*C.willRecovery+(Number(l.spellsResisted)||0)*C.willSpellResisted);
       add(stats,"Intelligence",l.worstChoices*C.intelligenceWorstChoice);
       // Puissance magique : chaque sort réussi qui a un vrai effet ; Réserve de mana : chaque point de mana dépensé.
       add(stats,"Puissance magique",Object.values(l.spellCasts||{}).reduce((sum,cast)=>sum+(Number(cast.effects)||0),0)*C.magicPowerSpellEffect);
@@ -532,6 +584,8 @@
     // Chaque case parcourue : Endurance si l'armure portée à ce moment est lourde.
     function recordStep(unit){
       if(wearsHeavyArmor(unit.character)) logOf(unit).heavyArmorHexes++;
+      // Vitesse (Idan, 2026-11-08 : « +1 par case parcourue en combat »).
+      logOf(unit).hexesMoved=(Number(logOf(unit).hexesMoved)||0)+1;
     }
 
     // Journal → gains de réputation d'un survivant. wounded = issue « Blessé » de fin de mission
@@ -563,13 +617,14 @@
 
     return {
       constants:C,reputationConstants:R,xpForLevel,levelForXp,startingXp,continuousLevel,xpForContinuous,loadOf,wearsHeavyArmor,
-      gains,apply,martialSpread,reputationGains,applyReputation,recordActivation:recordUnitActivation,recordStep
+      gains,starMultiplier,apply,martialSpread,reputationGains,applyReputation,recordActivation:recordUnitActivation,recordStep
     };
   }
 
   return {
     createProgressionRules,emptyLog,recordActivation,recordAttack,recordChargeAttempt,recordWound,recordFleeHex,recordHeal,
     recordSpell,recordSpellDamage,
-    recordCritical,recordChain,recordDualSequence,recordCourageHeld,recordRecovery,recordIntimidation,RESISTANCES,RESISTANCE_BY_DAMAGE
+    recordCritical,recordChain,recordDualSequence,recordCourageHeld,recordRecovery,recordIntimidation,
+    recordDamageTaken,recordContactTurn,recordSpellResisted,recordAuraHold,RESISTANCES,RESISTANCE_BY_DAMAGE
   };
 });

@@ -905,6 +905,7 @@ function selectNextMissionPlayer(){
     // Paralysie (Foudre) : il perd cette activation.
     if(missionParalyzedSkip(next)){ next.acted=true; continue; }
     m.progression.recordActivation(next);
+    if(missionInContact(next)) MercenairesProgression.recordContactTurn(next);
     // Frénésie (Illusion) : il joue seul cette activation.
     if(next.frenzy){
       m.actingUnit=next;
@@ -1003,6 +1004,8 @@ function checkMissionEnd(){
 function resolveMissionAftermath(){
   const m=game.mission;
   const captainId=game.campaign?game.campaign.company.captainId:game.captain?.id;
+  // Constitution (Idan, 2026-11-08 : « +2 XP par PV de dégâts encaissés et survécus ») : le cumul de la mission.
+  for(const u of m.players) if(Number(u.damageTaken)>0) MercenairesProgression.recordDamageTaken(u,u.damageTaken);
   // Nos montures passent la même chaîne, à part (settleOwnMissionMounts) : elles ne sont pas des membres de la compagnie.
   const participants=m.players.filter(u=>!u.summon&&!u.character?.mount).map(u=>({
     id:u.character.id,name:u.character.name,hp:u.hp,pvMax:u.pvMax,
@@ -1021,7 +1024,8 @@ function resolveMissionAftermath(){
   if(!game.campaign) return;
   settleOwnMissionMounts(m,endOptions);
   // Expédition : les primes sont versées au retour de l'escouade (doc 17).
-  const report=m.companyReport=campaignRules().applyMissionAftermath(game.campaign,m.aftermath,{deferBonuses:Boolean(m.expeditionId)});
+  // Multiplicateur d'étoiles (Idan, 2026-11-08) : toute l'XP de la mission selon son niveau.
+  const report=m.companyReport=campaignRules().applyMissionAftermath(game.campaign,m.aftermath,{deferBonuses:Boolean(m.expeditionId),stars:m.contract?.level||1});
   for(const h of report.heritage||[]) missionLog(h.name+" entre dans la mémoire de la compagnie.","death");
   // Réputation et renommée en étoiles : une ligne seulement quand le niveau change.
   const renownStars=report.renown&&starChange(starRules().company(report.renown.before),starRules().company(report.renown.after));
@@ -1097,7 +1101,7 @@ function settleOwnMissionMounts(m,options={}){
   });
   // Son mana à la fin du combat (gardé jusqu'au prochain), son XP (sa fiche progresse comme celle d'un mercenaire).
   const results=aftermath.results.map((r,i)=>({...r,mana:horses[i].character.mana}));
-  const report=campaignRules().applyMountAftermath(game.campaign,results);
+  const report=campaignRules().applyMountAftermath(game.campaign,results,{stars:m.contract?.level||1});
   for(const {mount,changes} of report?.progression||[]){
     const name=horses.find(u=>String(u.character.mount.itemId)===String(mount.id))?.character.name||mount.name;
     for(const c of (typeof visibleProgressionChanges==="function"?visibleProgressionChanges(changes):[]))
@@ -1617,6 +1621,17 @@ function missionAuraNote(aura,from="captain",whip=0){
   return (leader>0?", aura "+(from==="lieutenant"?"du lieutenant":"du capitaine")+" +"+Math.round(leader):"")+(whip>0?", fouet +"+Math.round(whip):"");
 }
 
+// Charisme (Idan, 2026-11-08 : « +40 quand un allié proche réussit son test de Courage et qu'il a utilisé son aura (donc
+// pour capitaine et lieutenant uniquement) ») : le capitaine ou le lieutenant dont l'aura a compté dans le test tenu.
+function missionAuraHold(c){
+  if(c?.auraFrom&&c.auraSource) MercenairesProgression.recordAuraHold(c.auraSource);
+}
+// Endurance (Idan, 2026-11-08 : « +10 par tour passé au contact d'un ennemi ») : une activation commencée à une case
+// d'un ennemi.
+function missionInContact(unit){
+  const e=game.mission.engine;
+  return missionOpponents(unit).some(o=>!o.offMap&&!o.decoy&&e.axialDistance(unit,o)<=1);
+}
 function resolveMissionCourage(attacker,defender,result,override={}){
   const m=game.mission;
   if(!m||m.over||!result?.ok) return;
@@ -1630,7 +1645,7 @@ function resolveMissionCourage(attacker,defender,result,override={}){
   const c=e.resolveCourage(attacker,defender,result,context);
   if(!c) return;
   const detail=" (Courage "+Math.round(c.pHold)+" %"+(c.rule==="outnumbered"?", en sous-nombre":"")+missionAuraNote(c.aura,c.auraFrom,c.whip)+", jet "+c.roll+")";
-  if(!c.flees){ missionLog(c.subject.character.name+" tient bon"+detail+".","info"); MercenairesProgression.recordCourageHeld(c.subject); return; }
+  if(!c.flees){ missionLog(c.subject.character.name+" tient bon"+detail+".","info"); MercenairesProgression.recordCourageHeld(c.subject); missionAuraHold(c); return; }
   missionLog(c.subject.character.name+" panique et prend la fuite"+detail+" !","bad");
   MercenairesProgression.recordIntimidation(c.source,c.subject);
   applyMissionFlee(c.subject,c.source);
@@ -2146,6 +2161,7 @@ function resolveMissionSpell(caster,target,code,extra={}){
       effect=false;
       missionLog(name+" lance "+spell.nom+on+detail+" : "+target.character.name+" résiste"+test+".","miss");
       missionFx(target,"Résiste","miss");
+      MercenairesProgression.recordSpellResisted(target,caster);
     }else{
       target.paralyzed={turns:p.turns};
       missionLog(name+" lance "+spell.nom+on+detail+" : "+target.character.name+" est paralysé"+(missionFeminine(target)?"e":"")
@@ -2159,6 +2175,7 @@ function resolveMissionSpell(caster,target,code,extra={}){
       effect=false;
       missionLog(name+" lance "+spell.nom+on+detail+" : "+target.character.name+" résiste"+test+".","miss");
       missionFx(target,"Résiste","miss");
+      MercenairesProgression.recordSpellResisted(target,caster);
     }else{
       target.asleep={turns:p.turns};
       missionLog(name+" lance "+spell.nom+on+detail+" : "+target.character.name+" s’endort"+test+" et perdra ses "
@@ -2225,6 +2242,7 @@ function resolveMissionSpell(caster,target,code,extra={}){
       effect=false;
       missionLog(name+" lance "+spell.nom+on+detail+" : "+target.character.name+" résiste"+test+".","miss");
       missionFx(target,"Résiste","miss");
+      MercenairesProgression.recordSpellResisted(target,caster);
     }else{
       target.frozen={turns:f.turns,factor:f.factor};
       missionLog(name+" lance "+spell.nom+on+detail+" : "+target.character.name+" est figé"+(missionFeminine(target)?"e":"")+" dans la glace"+test
@@ -2279,7 +2297,7 @@ function resolveMissionSpell(caster,target,code,extra={}){
       const c=m.engine.resolveFear(foe,caster,out.fear.mastery,missionUnits());
       if(!c) continue;
       const fear=" (Courage "+Math.round(c.pHold)+" %"+missionAuraNote(c.aura,c.auraFrom,c.whip)+", jet "+c.roll+")";
-      if(!c.flees){ missionLog(foe.character.name+" tient bon"+fear+".","info"); MercenairesProgression.recordCourageHeld(foe); continue; }
+      if(!c.flees){ missionLog(foe.character.name+" tient bon"+fear+".","info"); MercenairesProgression.recordCourageHeld(foe); missionAuraHold(c); continue; }
       effect=true;
       missionLog(foe.character.name+" panique et prend la fuite"+fear+" !","bad");
       MercenairesProgression.recordIntimidation(caster,foe);
@@ -3498,7 +3516,7 @@ function resolveMissionCounterchargeCourage(reactor,charger,result,charge,remain
   const c=e.resolveCourage(reactor,charger,result,{defenderSurplus:0,units:missionUnits()});
   if(!c) return;
   const detail=" (Courage "+Math.round(c.pHold)+" %"+missionAuraNote(c.aura,c.auraFrom,c.whip)+", jet "+c.roll+")";
-  if(!c.flees){ missionLog(charger.character.name+" tient bon"+detail+".","info"); MercenairesProgression.recordCourageHeld(charger); return; }
+  if(!c.flees){ missionLog(charger.character.name+" tient bon"+detail+".","info"); MercenairesProgression.recordCourageHeld(charger); missionAuraHold(c); return; }
   missionLog(charger.character.name+" panique et prend la fuite"+detail+" !","bad");
   MercenairesProgression.recordIntimidation(reactor,charger);
   charger.fleeing=true;charger.fleeTurn=0;

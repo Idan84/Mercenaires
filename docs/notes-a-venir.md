@@ -7,15 +7,6 @@ fait, puis sera retiré d'ici.
 
 Décidé :
 
-6. **XP de combat** : on garde le système à l'action (Idan : « j'aime globalement l'idée »).
-   - **Multiplicateur d'étoiles** (décidé) : toute l'XP gagnée pendant une mission × (1 + 0,25 par étoile au-delà
-     de 1) : 1★ × 1, 3★ × 1,5, 5★ × 2, 10★ × 3,25, 15★ × 4,5 (« le plus rapide à équilibrer et ça boostera tout le
-     monde »). Pas de multiplicateur par tier d'ennemi.
-   - **Nouvelles actions** (décidé) : Vitesse +1 par case parcourue en combat (pas seulement en fuite) ; Constitution +2
-     par PV de dégâts encaissés et survécus ; Endurance +10 par tour passé au contact d'un ennemi ; Perception +20 par
-     tir qui touche au-delà de la moitié de la portée ; Volonté +80 par sort ennemi résisté (Sommeil, Choc
-     psychique…) ; Charisme +40 quand un allié proche réussit son test de Courage grâce à son aura (capitaine et
-     lieutenants seulement ; l'aura existe : combat-engine.js, captainAuraBonus, lieutenant à 50 %).
 7. **La Cantine** (Idan, 2026-11-08) : **une salle de la Taverne**, pas un bâtiment du camp ; le **tavernier** (personnage
    du décor) y cuisine. Elle s'ouvre au niveau 1 pour 500 PO ; niveaux 1 à 10 au prix des autres bâtiments,
    500 × niveau² PO (500, 2 000, 4 500… 50 000). Chaque jour, elle donne **40 × niveau XP** (40 au niveau 1… 400 au

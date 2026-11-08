@@ -139,6 +139,8 @@ assert.equal(engine.allyAura(hero,[hero,{...lt,team:"enemy"}]).bonus,0,"pas pour
 assert.equal(engine.captainAura(hero,[hero,lt]),0,"l'aura du capitaine reste la sienne");
 const courage=engine.resolveCourage(unit("foe",{},{team:"enemy"}),hero,{ok:true,wound:true,mode:"ranged"},{units:[hero,lt]});
 assert.deepEqual([courage.aura,courage.auraFrom],[16,"lieutenant"]);
+// XP de Charisme du lieutenant quand l'allié tient grâce à son aura (Idan, 2026-11-08) : le résultat nomme qui la donne.
+assert.equal(courage.auraSource,lt);
 
 // Étape 3 : demandes au lieutenant (courage, respect), une par jour ; résultat le lendemain matin ; 30 jours par type.
 const C=rules.constants;

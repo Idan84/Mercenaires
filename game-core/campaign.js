@@ -1396,10 +1396,11 @@
       return {ok:true,member,before,name:clean};
     }
 
-    function applyMountAftermath(state,results){
+    // stars : le niveau de la mission (multiplicateur d'étoiles de l'XP, Idan, 2026-11-08) ; 1 sans mission.
+    function applyMountAftermath(state,results,{stars=1}={}){
       return stableRules?stableRules.applyAftermath(state,results,{woundDays:days=>woundDaysFor({},days,state),
         fatigueDays:days=>fatigueDaysFor(days,state,{dormitory:false}),
-        learn:(sheet,progress)=>progression?progression.apply(sheet,progression.gains(progress,sheet)):[]}):null;
+        learn:(sheet,progress)=>progression?progression.apply(sheet,progression.gains(progress,sheet,{stars})):[]}):null;
     }
     function applyMissionAftermath(state,aftermath,options={}){
       if(appliedAftermaths.has(aftermath)) return appliedAftermaths.get(aftermath);
@@ -1442,7 +1443,7 @@
         // en fin de mission aux survivants, y compris ceux qui ont fui le combat.
         // Réputation de carrière (09 §1) : retour de mission, critiques et ennemis blessés / mis hors combat.
         if(progression){
-          const xp=progression.gains(result.progress,mercenary);
+          const xp=progression.gains(result.progress,mercenary,{stars:options.stars});
           const changes=progression.apply(mercenary,xp);
           const gain=progression.reputationGains(result.progress,{wounded:result.wounded});
           report.progression.push({mercenary,xp,changes,reputation:{...gain,...progression.applyReputation(mercenary,gain)}});

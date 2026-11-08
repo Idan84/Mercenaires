@@ -23,8 +23,10 @@ Décidé :
    −100 % (plus de fatigue du tout) ; arrondi ; cumul avec les Bains chauds (−1 jour par niveau).
 5. **Courbe d'XP** (« on garde la même courbe, mais le point dur, c'est 200 au lieu de 100… En gros on divise par 2
    l'xp nécessaire ») : même forme (quadratique), moins d'XP par point. À préciser : coefficient 5 (XP ÷ 2 : 100 coûte
-   50 000 ; 100 000 XP mènent à ≈ 141) ou 2,5 (200 coûte ce que coûtait 100 : XP ÷ 4) ; caractéristiques seules ou
-   compétences aussi (aujourd'hui la même courbe, doc 08 §1).
+   50 000 ; 100 000 XP mènent à ≈ 141) ou 2,5 (200 coûte ce que coûtait 100 : XP ÷ 4). **Caractéristiques et
+   compétences restent alignées sur la même courbe** (Idan : « ça c'est certain »). Repères sur un an de la partie n°5 :
+   Zizza 64 → 72 aujourd'hui, → 79 avec ÷ 2, → 92 avec ÷ 4 ; le capitaine (entraînement quotidien) 55 → 88, → 112,
+   → 148.
 6. **Design Lab** (`/design/graph/`) : la renommée y montre 3 des 6 parts (capitaine, mercenaires, héritage) ; ajouter
    les points de mission (gardes, échecs), le dortoir et le médecin, et le nouveau classement (capitaine 1er).
 

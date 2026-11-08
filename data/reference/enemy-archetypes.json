@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "enemy-archetypes",
-  "description": "Archétypes d’ennemis fixes (Idan, 2026-10-24 ; doc 17 §10 et §14). Gobelins, Orcs, Hommes-bêtes, Voleurs (Humains) et Ogres (2026-11-01) : cinq lignes sur quatre niveaux et quatre niveaux de chef chacun. Culte des morts (doc 17 §19) et Cour de sang (§20). Le Cavalier des voleurs (§22) monte un destrier (mounts.json). Créatures (§21) : des fiches partagées entre peuples, qu’un camp appelle par sa ligne (le troll chez les gobelins, les orcs et les hommes-bêtes ; le troll mort-vivant au Culte des morts). Valeurs figées à partir des centiles des personnages générés du même peuple (novice P20, normal P50, vétéran P75, élite P90 ; chefs P75 à P99), avec la spécialisation de chaque ligne (trois caractéristiques un cran au-dessus, deux un cran au-dessous). PV = 3 × (Constitution + 0,2 × Endurance + 0,1 × Volonté). Points de combat (Idan, 2026-11-01) : un mercenaire généré moyen vaut 10 points (simulateur, 150 combats par effectif ; chefs : 10 × le nombre de mercenaires qui le battent une fois sur deux ; les plus forts mesurés jusqu’à 27 mercenaires, 200 combats par effectif ; fiches T4 remesurées avec la qualité De luxe, Idan 2026-11-01). Niveau de mission minimum et butin par créature (Idan, 2026-11-01) : niveau 1 pour l’instant ; l’équipement peut se casser au combat : 100 % − 10 % par tier de chance de récupérer chaque objet porté (T1 90 %, T2 80 %, T3 70 %, T4 60 %). Ils composent les camps de « Faire le ménage » (one-shot-missions.json, budgets).",
+  "description": "Archétypes d’ennemis fixes (Idan, 2026-10-24 ; doc 17 §10 et §14). Gobelins, Orcs, Hommes-bêtes, Voleurs (Humains) et Ogres (2026-11-01) : cinq lignes sur quatre niveaux et quatre niveaux de chef chacun. Culte des morts (doc 17 §19) et Cour de sang (§20). Le Cavalier des voleurs (§22) monte un destrier (mounts.json). Créatures (§21) : des fiches partagées entre peuples, qu’un camp appelle par sa ligne (le troll chez les gobelins, les orcs et les hommes-bêtes ; le troll mort-vivant au Culte des morts). Valeurs figées à partir des centiles des personnages générés du même peuple (novice P20, normal P50, vétéran P75, élite P90 ; chefs P75 à P99), avec la spécialisation de chaque ligne (trois caractéristiques un cran au-dessus, deux un cran au-dessous). PV = 3 × (Constitution + 0,2 × Endurance + 0,1 × Volonté). Points de combat (Idan, 2026-11-01) : un mercenaire généré moyen vaut 10 points (simulateur, 150 combats par effectif ; chefs : 10 × le nombre de mercenaires qui le battent une fois sur deux ; les plus forts mesurés jusqu’à 27 mercenaires, 200 combats par effectif ; fiches T4 remesurées avec la qualité De luxe, Idan 2026-11-01). Niveau de mission minimum et butin par créature (Idan, 2026-11-01) : niveau 1 pour l’instant ; l’équipement peut se casser au combat : 100 % − 10 % par tier de chance de récupérer chaque objet porté (T1 90 %, T2 80 %, T3 70 %, T4 60 %). Ils composent les camps de « Faire le ménage » (one-shot-missions.json, budgets). Humanoïde (Idan, 2026-11-08 : « La règle, c'est plutôt humanoïde ou non ») : tous, morts-vivants et trolls compris, sauf les loups et les chauves-souris de la Cour de sang ; un humanoïde mort laisse parfois des accessoires (doc 17 §16).",
   "columns": [
     {
       "source": "Nom",
@@ -86,6 +86,10 @@
     {
       "source": "Butin : equipement = chance (%) de récupérer chaque objet porté ; objets = tirages en plus [{type, nom, tier, chance}]",
       "key": "butin"
+    },
+    {
+      "source": "Humanoïde (laisse des accessoires à sa mort : 2 % par emplacement, au tier de sa fiche ; Idan, 2026-11-08)",
+      "key": "humanoide"
     },
     {
       "source": "Mort-vivant",
@@ -201,7 +205,8 @@
       "butin": {
         "equipement": 90,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Lancier gobelin",
@@ -260,7 +265,8 @@
       "butin": {
         "equipement": 80,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Lancier gobelin vétéran",
@@ -319,7 +325,8 @@
       "butin": {
         "equipement": 70,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Lancier gobelin d’élite",
@@ -379,7 +386,8 @@
       "butin": {
         "equipement": 60,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Frondeur gobelin novice",
@@ -436,7 +444,8 @@
       "butin": {
         "equipement": 90,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Frondeur gobelin",
@@ -493,7 +502,8 @@
       "butin": {
         "equipement": 80,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Frondeur gobelin vétéran",
@@ -552,7 +562,8 @@
       "butin": {
         "equipement": 70,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Frondeur gobelin d’élite",
@@ -611,7 +622,8 @@
       "butin": {
         "equipement": 60,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Archer gobelin novice",
@@ -668,7 +680,8 @@
       "butin": {
         "equipement": 90,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Archer gobelin",
@@ -727,7 +740,8 @@
       "butin": {
         "equipement": 80,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Archer gobelin vétéran",
@@ -786,7 +800,8 @@
       "butin": {
         "equipement": 70,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Archer gobelin d’élite",
@@ -845,7 +860,8 @@
       "butin": {
         "equipement": 60,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Guerrier gobelin novice",
@@ -907,7 +923,8 @@
       "butin": {
         "equipement": 90,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Guerrier gobelin",
@@ -969,7 +986,8 @@
       "butin": {
         "equipement": 80,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Guerrier gobelin vétéran",
@@ -1032,7 +1050,8 @@
       "butin": {
         "equipement": 70,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Guerrier gobelin d’élite",
@@ -1095,7 +1114,8 @@
       "butin": {
         "equipement": 60,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Assassin gobelin novice",
@@ -1153,7 +1173,8 @@
       "butin": {
         "equipement": 90,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Assassin gobelin",
@@ -1211,7 +1232,8 @@
       "butin": {
         "equipement": 80,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Assassin gobelin vétéran",
@@ -1269,7 +1291,8 @@
       "butin": {
         "equipement": 70,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Assassin gobelin d’élite",
@@ -1327,7 +1350,8 @@
       "butin": {
         "equipement": 60,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Caïd gobelin",
@@ -1390,7 +1414,8 @@
       "butin": {
         "equipement": 70,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Grand Caïd gobelin",
@@ -1453,7 +1478,8 @@
       "butin": {
         "equipement": 60,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Chef de clan gobelin",
@@ -1516,7 +1542,8 @@
       "butin": {
         "equipement": 60,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Roi des Cavernes",
@@ -1580,7 +1607,8 @@
       "butin": {
         "equipement": 60,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Lancier orc novice",
@@ -1637,7 +1665,8 @@
       "butin": {
         "equipement": 90,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Lancier orc",
@@ -1696,7 +1725,8 @@
       "butin": {
         "equipement": 80,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Lancier orc vétéran",
@@ -1755,7 +1785,8 @@
       "butin": {
         "equipement": 70,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Lancier orc d’élite",
@@ -1815,7 +1846,8 @@
       "butin": {
         "equipement": 60,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Frondeur orc novice",
@@ -1872,7 +1904,8 @@
       "butin": {
         "equipement": 90,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Frondeur orc",
@@ -1929,7 +1962,8 @@
       "butin": {
         "equipement": 80,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Frondeur orc vétéran",
@@ -1988,7 +2022,8 @@
       "butin": {
         "equipement": 70,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Frondeur orc d’élite",
@@ -2047,7 +2082,8 @@
       "butin": {
         "equipement": 60,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Archer orc novice",
@@ -2104,7 +2140,8 @@
       "butin": {
         "equipement": 90,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Archer orc",
@@ -2163,7 +2200,8 @@
       "butin": {
         "equipement": 80,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Archer orc vétéran",
@@ -2222,7 +2260,8 @@
       "butin": {
         "equipement": 70,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Archer orc d’élite",
@@ -2281,7 +2320,8 @@
       "butin": {
         "equipement": 60,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Guerrier orc novice",
@@ -2343,7 +2383,8 @@
       "butin": {
         "equipement": 90,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Guerrier orc",
@@ -2405,7 +2446,8 @@
       "butin": {
         "equipement": 80,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Guerrier orc vétéran",
@@ -2468,7 +2510,8 @@
       "butin": {
         "equipement": 70,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Guerrier orc d’élite",
@@ -2531,7 +2574,8 @@
       "butin": {
         "equipement": 60,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Assassin orc novice",
@@ -2589,7 +2633,8 @@
       "butin": {
         "equipement": 90,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Assassin orc",
@@ -2647,7 +2692,8 @@
       "butin": {
         "equipement": 80,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Assassin orc vétéran",
@@ -2705,7 +2751,8 @@
       "butin": {
         "equipement": 70,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Assassin orc d’élite",
@@ -2763,7 +2810,8 @@
       "butin": {
         "equipement": 60,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Chef de bande orc",
@@ -2826,7 +2874,8 @@
       "butin": {
         "equipement": 70,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Chef de guerre orc",
@@ -2889,7 +2938,8 @@
       "butin": {
         "equipement": 60,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Seigneur de guerre orc",
@@ -2952,7 +3002,8 @@
       "butin": {
         "equipement": 60,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Khan des Steppes",
@@ -3016,7 +3067,8 @@
       "butin": {
         "equipement": 60,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Brute homme-bête novice",
@@ -3073,7 +3125,8 @@
       "butin": {
         "equipement": 90,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Brute homme-bête",
@@ -3132,7 +3185,8 @@
       "butin": {
         "equipement": 80,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Brute homme-bête vétéran",
@@ -3191,7 +3245,8 @@
       "butin": {
         "equipement": 70,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Brute homme-bête d’élite",
@@ -3251,7 +3306,8 @@
       "butin": {
         "equipement": 60,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Guerrier homme-bête novice",
@@ -3313,7 +3369,8 @@
       "butin": {
         "equipement": 90,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Guerrier homme-bête",
@@ -3375,7 +3432,8 @@
       "butin": {
         "equipement": 80,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Guerrier homme-bête vétéran",
@@ -3438,7 +3496,8 @@
       "butin": {
         "equipement": 70,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Guerrier homme-bête d’élite",
@@ -3501,7 +3560,8 @@
       "butin": {
         "equipement": 60,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Traqueur homme-bête novice",
@@ -3559,7 +3619,8 @@
       "butin": {
         "equipement": 90,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Traqueur homme-bête",
@@ -3617,7 +3678,8 @@
       "butin": {
         "equipement": 80,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Traqueur homme-bête vétéran",
@@ -3675,7 +3737,8 @@
       "butin": {
         "equipement": 70,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Traqueur homme-bête d’élite",
@@ -3733,7 +3796,8 @@
       "butin": {
         "equipement": 60,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Arbalétrier homme-bête novice",
@@ -3790,7 +3854,8 @@
       "butin": {
         "equipement": 90,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Arbalétrier homme-bête",
@@ -3847,7 +3912,8 @@
       "butin": {
         "equipement": 80,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Arbalétrier homme-bête vétéran",
@@ -3906,7 +3972,8 @@
       "butin": {
         "equipement": 70,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Arbalétrier homme-bête d’élite",
@@ -3965,7 +4032,8 @@
       "butin": {
         "equipement": 60,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Archer homme-bête novice",
@@ -4022,7 +4090,8 @@
       "butin": {
         "equipement": 90,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Archer homme-bête",
@@ -4081,7 +4150,8 @@
       "butin": {
         "equipement": 80,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Archer homme-bête vétéran",
@@ -4140,7 +4210,8 @@
       "butin": {
         "equipement": 70,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Archer homme-bête d’élite",
@@ -4199,7 +4270,8 @@
       "butin": {
         "equipement": 60,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Chef de harde",
@@ -4262,7 +4334,8 @@
       "butin": {
         "equipement": 70,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Grand Chef de harde",
@@ -4325,7 +4398,8 @@
       "butin": {
         "equipement": 60,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Seigneur des Bêtes",
@@ -4388,7 +4462,8 @@
       "butin": {
         "equipement": 60,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Roi-Totem",
@@ -4452,7 +4527,8 @@
       "butin": {
         "equipement": 60,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Coupe-jarret novice",
@@ -4510,7 +4586,8 @@
       "butin": {
         "equipement": 90,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Coupe-jarret",
@@ -4568,7 +4645,8 @@
       "butin": {
         "equipement": 80,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Coupe-jarret vétéran",
@@ -4626,7 +4704,8 @@
       "butin": {
         "equipement": 70,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Coupe-jarret d’élite",
@@ -4684,7 +4763,8 @@
       "butin": {
         "equipement": 60,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Spadassin novice",
@@ -4746,7 +4826,8 @@
       "butin": {
         "equipement": 90,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Spadassin",
@@ -4808,7 +4889,8 @@
       "butin": {
         "equipement": 80,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Spadassin vétéran",
@@ -4871,7 +4953,8 @@
       "butin": {
         "equipement": 70,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Spadassin d’élite",
@@ -4934,7 +5017,8 @@
       "butin": {
         "equipement": 60,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Bandit novice",
@@ -4991,7 +5075,8 @@
       "butin": {
         "equipement": 90,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Bandit",
@@ -5050,7 +5135,8 @@
       "butin": {
         "equipement": 80,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Bandit vétéran",
@@ -5109,7 +5195,8 @@
       "butin": {
         "equipement": 70,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Bandit d’élite",
@@ -5169,7 +5256,8 @@
       "butin": {
         "equipement": 60,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Cavalier novice",
@@ -5232,6 +5320,7 @@
         "equipement": 90,
         "objets": []
       },
+      "humanoide": true,
       "competences_animales": {
         "Compagnon animal": 48,
         "Équidés": 36
@@ -5299,6 +5388,7 @@
         "equipement": 80,
         "objets": []
       },
+      "humanoide": true,
       "competences_animales": {
         "Compagnon animal": 54,
         "Équidés": 44
@@ -5367,6 +5457,7 @@
         "equipement": 70,
         "objets": []
       },
+      "humanoide": true,
       "competences_animales": {
         "Compagnon animal": 59,
         "Équidés": 51
@@ -5435,6 +5526,7 @@
         "equipement": 60,
         "objets": []
       },
+      "humanoide": true,
       "competences_animales": {
         "Compagnon animal": 63,
         "Équidés": 57
@@ -5496,7 +5588,8 @@
       "butin": {
         "equipement": 90,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Arbalétrier",
@@ -5553,7 +5646,8 @@
       "butin": {
         "equipement": 80,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Arbalétrier vétéran",
@@ -5612,7 +5706,8 @@
       "butin": {
         "equipement": 70,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Arbalétrier d’élite",
@@ -5671,7 +5766,8 @@
       "butin": {
         "equipement": 60,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Archer novice",
@@ -5728,7 +5824,8 @@
       "butin": {
         "equipement": 90,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Archer",
@@ -5787,7 +5884,8 @@
       "butin": {
         "equipement": 80,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Archer vétéran",
@@ -5846,7 +5944,8 @@
       "butin": {
         "equipement": 70,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Archer d’élite",
@@ -5905,7 +6004,8 @@
       "butin": {
         "equipement": 60,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Chef de brigands",
@@ -5968,7 +6068,8 @@
       "butin": {
         "equipement": 70,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Capitaine des brigands",
@@ -6031,7 +6132,8 @@
       "butin": {
         "equipement": 60,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Maître de la Guilde",
@@ -6094,7 +6196,8 @@
       "butin": {
         "equipement": 60,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Prince des Voleurs",
@@ -6158,7 +6261,8 @@
       "butin": {
         "equipement": 60,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Cogneur ogre novice",
@@ -6215,7 +6319,8 @@
       "butin": {
         "equipement": 90,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Cogneur ogre",
@@ -6274,7 +6379,8 @@
       "butin": {
         "equipement": 80,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Cogneur ogre vétéran",
@@ -6333,7 +6439,8 @@
       "butin": {
         "equipement": 70,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Cogneur ogre d’élite",
@@ -6393,7 +6500,8 @@
       "butin": {
         "equipement": 60,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Écraseur ogre novice",
@@ -6452,7 +6560,8 @@
       "butin": {
         "equipement": 90,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Écraseur ogre",
@@ -6511,7 +6620,8 @@
       "butin": {
         "equipement": 80,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Écraseur ogre vétéran",
@@ -6571,7 +6681,8 @@
       "butin": {
         "equipement": 70,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Écraseur ogre d’élite",
@@ -6631,7 +6742,8 @@
       "butin": {
         "equipement": 60,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Perceur ogre novice",
@@ -6688,7 +6800,8 @@
       "butin": {
         "equipement": 90,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Perceur ogre",
@@ -6747,7 +6860,8 @@
       "butin": {
         "equipement": 80,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Perceur ogre vétéran",
@@ -6806,7 +6920,8 @@
       "butin": {
         "equipement": 70,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Perceur ogre d’élite",
@@ -6866,7 +6981,8 @@
       "butin": {
         "equipement": 60,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Tromblonnier ogre novice",
@@ -6923,7 +7039,8 @@
       "butin": {
         "equipement": 90,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Tromblonnier ogre",
@@ -6980,7 +7097,8 @@
       "butin": {
         "equipement": 80,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Tromblonnier ogre vétéran",
@@ -7039,7 +7157,8 @@
       "butin": {
         "equipement": 70,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Tromblonnier ogre d’élite",
@@ -7098,7 +7217,8 @@
       "butin": {
         "equipement": 60,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Canonnier ogre novice",
@@ -7155,7 +7275,8 @@
       "butin": {
         "equipement": 90,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Canonnier ogre",
@@ -7214,7 +7335,8 @@
       "butin": {
         "equipement": 80,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Canonnier ogre vétéran",
@@ -7273,7 +7395,8 @@
       "butin": {
         "equipement": 70,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Canonnier ogre d’élite",
@@ -7332,7 +7455,8 @@
       "butin": {
         "equipement": 60,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Patron ogre",
@@ -7392,7 +7516,8 @@
       "butin": {
         "equipement": 70,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Grand Patron ogre",
@@ -7452,7 +7577,8 @@
       "butin": {
         "equipement": 60,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Tyran ogre",
@@ -7512,7 +7638,8 @@
       "butin": {
         "equipement": 60,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Ventre-Roi",
@@ -7573,7 +7700,8 @@
       "butin": {
         "equipement": 60,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Squelette guerrier novice",
@@ -7636,6 +7764,7 @@
         "equipement": 90,
         "objets": []
       },
+      "humanoide": true,
       "mort_vivant": true,
       "insensible_poison": true,
       "sorts": [],
@@ -7705,6 +7834,7 @@
         "equipement": 80,
         "objets": []
       },
+      "humanoide": true,
       "mort_vivant": true,
       "insensible_poison": true,
       "sorts": [],
@@ -7775,6 +7905,7 @@
         "equipement": 70,
         "objets": []
       },
+      "humanoide": true,
       "mort_vivant": true,
       "insensible_poison": true,
       "sorts": [],
@@ -7845,6 +7976,7 @@
         "equipement": 60,
         "objets": []
       },
+      "humanoide": true,
       "mort_vivant": true,
       "insensible_poison": true,
       "sorts": [],
@@ -7909,6 +8041,7 @@
         "equipement": 90,
         "objets": []
       },
+      "humanoide": true,
       "mort_vivant": true,
       "insensible_poison": true,
       "sorts": [],
@@ -7975,6 +8108,7 @@
         "equipement": 80,
         "objets": []
       },
+      "humanoide": true,
       "mort_vivant": true,
       "insensible_poison": true,
       "sorts": [],
@@ -8041,6 +8175,7 @@
         "equipement": 70,
         "objets": []
       },
+      "humanoide": true,
       "mort_vivant": true,
       "insensible_poison": true,
       "sorts": [],
@@ -8107,6 +8242,7 @@
         "equipement": 60,
         "objets": []
       },
+      "humanoide": true,
       "mort_vivant": true,
       "insensible_poison": true,
       "sorts": [],
@@ -8169,6 +8305,7 @@
         "equipement": 90,
         "objets": []
       },
+      "humanoide": true,
       "attaque": {
         "nom": "Griffes",
         "degats_pv_base": "1D8",
@@ -8233,6 +8370,7 @@
         "equipement": 80,
         "objets": []
       },
+      "humanoide": true,
       "attaque": {
         "nom": "Griffes",
         "degats_pv_base": "1D8",
@@ -8297,6 +8435,7 @@
         "equipement": 70,
         "objets": []
       },
+      "humanoide": true,
       "attaque": {
         "nom": "Griffes",
         "degats_pv_base": "1D8",
@@ -8361,6 +8500,7 @@
         "equipement": 60,
         "objets": []
       },
+      "humanoide": true,
       "attaque": {
         "nom": "Griffes",
         "degats_pv_base": "1D8",
@@ -8425,6 +8565,7 @@
         "equipement": 90,
         "objets": []
       },
+      "humanoide": true,
       "attaque": {
         "nom": "Toucher spectral",
         "degats_pv_base": "1D6",
@@ -8489,6 +8630,7 @@
         "equipement": 80,
         "objets": []
       },
+      "humanoide": true,
       "attaque": {
         "nom": "Toucher spectral",
         "degats_pv_base": "1D6",
@@ -8553,6 +8695,7 @@
         "equipement": 70,
         "objets": []
       },
+      "humanoide": true,
       "attaque": {
         "nom": "Toucher spectral",
         "degats_pv_base": "1D6",
@@ -8617,6 +8760,7 @@
         "equipement": 60,
         "objets": []
       },
+      "humanoide": true,
       "attaque": {
         "nom": "Toucher spectral",
         "degats_pv_base": "1D6",
@@ -8683,7 +8827,8 @@
       "butin": {
         "equipement": 90,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Acolyte",
@@ -8741,7 +8886,8 @@
       "butin": {
         "equipement": 80,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Acolyte vétéran",
@@ -8801,7 +8947,8 @@
       "butin": {
         "equipement": 70,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Acolyte d’élite",
@@ -8861,7 +9008,8 @@
       "butin": {
         "equipement": 60,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Nécromancien",
@@ -8919,6 +9067,7 @@
         "equipement": 70,
         "objets": []
       },
+      "humanoide": true,
       "ecoles": {
         "Nécromancie": 56
       },
@@ -8995,6 +9144,7 @@
         "equipement": 60,
         "objets": []
       },
+      "humanoide": true,
       "ecoles": {
         "Nécromancie": 61
       },
@@ -9077,6 +9227,7 @@
         "equipement": 60,
         "objets": []
       },
+      "humanoide": true,
       "ecoles": {
         "Nécromancie": 64
       },
@@ -9167,6 +9318,7 @@
         "equipement": 60,
         "objets": []
       },
+      "humanoide": true,
       "ecoles": {
         "Nécromancie": 70
       },
@@ -9261,7 +9413,8 @@
       "butin": {
         "equipement": 90,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Garde de sang",
@@ -9321,7 +9474,8 @@
       "butin": {
         "equipement": 80,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Garde de sang vétéran",
@@ -9382,7 +9536,8 @@
       "butin": {
         "equipement": 70,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Garde de sang d’élite",
@@ -9443,7 +9598,8 @@
       "butin": {
         "equipement": 60,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Rejeton novice",
@@ -9502,6 +9658,7 @@
         "equipement": 90,
         "objets": []
       },
+      "humanoide": true,
       "mort_vivant": true,
       "insensible_poison": true,
       "ecoles": {
@@ -9578,6 +9735,7 @@
         "equipement": 80,
         "objets": []
       },
+      "humanoide": true,
       "mort_vivant": true,
       "insensible_poison": true,
       "ecoles": {
@@ -9654,6 +9812,7 @@
         "equipement": 70,
         "objets": []
       },
+      "humanoide": true,
       "mort_vivant": true,
       "insensible_poison": true,
       "ecoles": {
@@ -9730,6 +9889,7 @@
         "equipement": 60,
         "objets": []
       },
+      "humanoide": true,
       "mort_vivant": true,
       "insensible_poison": true,
       "ecoles": {
@@ -9802,7 +9962,8 @@
       "butin": {
         "equipement": 90,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Arbalétrier asservi",
@@ -9859,7 +10020,8 @@
       "butin": {
         "equipement": 80,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Arbalétrier asservi vétéran",
@@ -9918,7 +10080,8 @@
       "butin": {
         "equipement": 70,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Arbalétrier asservi d’élite",
@@ -9977,7 +10140,8 @@
       "butin": {
         "equipement": 60,
         "objets": []
-      }
+      },
+      "humanoide": true
     },
     {
       "nom": "Goule novice",
@@ -10033,6 +10197,7 @@
         "equipement": 90,
         "objets": []
       },
+      "humanoide": true,
       "attaque": {
         "nom": "Griffes",
         "degats_pv_base": "1D8",
@@ -10097,6 +10262,7 @@
         "equipement": 80,
         "objets": []
       },
+      "humanoide": true,
       "attaque": {
         "nom": "Griffes",
         "degats_pv_base": "1D8",
@@ -10161,6 +10327,7 @@
         "equipement": 70,
         "objets": []
       },
+      "humanoide": true,
       "attaque": {
         "nom": "Griffes",
         "degats_pv_base": "1D8",
@@ -10225,6 +10392,7 @@
         "equipement": 60,
         "objets": []
       },
+      "humanoide": true,
       "attaque": {
         "nom": "Griffes",
         "degats_pv_base": "1D8",
@@ -10289,6 +10457,7 @@
         "equipement": 90,
         "objets": []
       },
+      "humanoide": false,
       "attaque": {
         "nom": "Morsure",
         "degats_pv_base": "1D8",
@@ -10350,6 +10519,7 @@
         "equipement": 80,
         "objets": []
       },
+      "humanoide": false,
       "attaque": {
         "nom": "Morsure",
         "degats_pv_base": "1D8",
@@ -10411,6 +10581,7 @@
         "equipement": 70,
         "objets": []
       },
+      "humanoide": false,
       "attaque": {
         "nom": "Morsure",
         "degats_pv_base": "1D8",
@@ -10472,6 +10643,7 @@
         "equipement": 60,
         "objets": []
       },
+      "humanoide": false,
       "attaque": {
         "nom": "Morsure",
         "degats_pv_base": "1D8",
@@ -10533,6 +10705,7 @@
         "equipement": 90,
         "objets": []
       },
+      "humanoide": false,
       "attaque": {
         "nom": "Morsure",
         "degats_pv_base": "1D6",
@@ -10594,6 +10767,7 @@
         "equipement": 80,
         "objets": []
       },
+      "humanoide": false,
       "attaque": {
         "nom": "Morsure",
         "degats_pv_base": "1D6",
@@ -10655,6 +10829,7 @@
         "equipement": 70,
         "objets": []
       },
+      "humanoide": false,
       "attaque": {
         "nom": "Morsure",
         "degats_pv_base": "1D6",
@@ -10716,6 +10891,7 @@
         "equipement": 60,
         "objets": []
       },
+      "humanoide": false,
       "attaque": {
         "nom": "Morsure",
         "degats_pv_base": "1D6",
@@ -10782,6 +10958,7 @@
         "equipement": 70,
         "objets": []
       },
+      "humanoide": true,
       "mort_vivant": true,
       "insensible_poison": true,
       "regeneration": 50,
@@ -10863,6 +11040,7 @@
         "equipement": 60,
         "objets": []
       },
+      "humanoide": true,
       "mort_vivant": true,
       "insensible_poison": true,
       "regeneration": 75,
@@ -10948,6 +11126,7 @@
         "equipement": 60,
         "objets": []
       },
+      "humanoide": true,
       "mort_vivant": true,
       "insensible_poison": true,
       "regeneration": 100,
@@ -11038,6 +11217,7 @@
         "equipement": 60,
         "objets": []
       },
+      "humanoide": true,
       "mort_vivant": true,
       "insensible_poison": true,
       "regeneration": 150,
@@ -11126,6 +11306,7 @@
         "equipement": 90,
         "objets": []
       },
+      "humanoide": true,
       "attaque": {
         "nom": "Grosse massue",
         "degats_pv_base": "2D8",
@@ -11187,6 +11368,7 @@
         "equipement": 80,
         "objets": []
       },
+      "humanoide": true,
       "attaque": {
         "nom": "Grosse massue",
         "degats_pv_base": "2D8",
@@ -11248,6 +11430,7 @@
         "equipement": 70,
         "objets": []
       },
+      "humanoide": true,
       "attaque": {
         "nom": "Grosse massue",
         "degats_pv_base": "2D8",
@@ -11309,6 +11492,7 @@
         "equipement": 60,
         "objets": []
       },
+      "humanoide": true,
       "attaque": {
         "nom": "Grosse massue",
         "degats_pv_base": "2D8",
@@ -11370,6 +11554,7 @@
         "equipement": 90,
         "objets": []
       },
+      "humanoide": true,
       "attaque": {
         "nom": "Grosse massue",
         "degats_pv_base": "2D8",
@@ -11432,6 +11617,7 @@
         "equipement": 80,
         "objets": []
       },
+      "humanoide": true,
       "attaque": {
         "nom": "Grosse massue",
         "degats_pv_base": "2D8",
@@ -11494,6 +11680,7 @@
         "equipement": 70,
         "objets": []
       },
+      "humanoide": true,
       "attaque": {
         "nom": "Grosse massue",
         "degats_pv_base": "2D8",
@@ -11556,6 +11743,7 @@
         "equipement": 60,
         "objets": []
       },
+      "humanoide": true,
       "attaque": {
         "nom": "Grosse massue",
         "degats_pv_base": "2D8",

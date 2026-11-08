@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 408,
+  "row_count": 409,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -816,6 +816,14 @@
       "description": "Durée maximale de fatigue, en jours. Issue #14 — valeurs PLAYTEST validées par Idan pour le code, à ajuster au jeu.",
       "formule": "Fin de mission V1 — fatigue",
       "valeur": 7,
+      "version": "V1"
+    },
+    {
+      "nom": "Butin — accessoire par emplacement",
+      "code": "loot.accessory.chance_per_slot",
+      "description": "Chance (%) qu'un ennemi humanoïde mort laisse un accessoire, pour chacun des 13 emplacements d'accessoire de la fiche (casque, amulette, cape, gants, ceinturon, culotte, bottes, 6 bagues), un objet de cette famille tiré au hasard, au tier de l'ennemi et à sa qualité (Idan, 2026-11-08 : « Sur chaque mort, on a 2% de chance de dropper un accessoire par slot d'un tier equivalent au tier de l'ennemi mort »). Ni loup ni chauve-souris (enemy-archetypes.json, humanoide). Doc 17 §16.",
+      "formule": "Butin V1",
+      "valeur": 2,
       "version": "V1"
     },
     {

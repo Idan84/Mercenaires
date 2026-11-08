@@ -22,7 +22,8 @@ function seeded(seed){
 }
 const reference={oneShotMissions:read("one-shot-missions.json"),enemyArchetypes:read("enemy-archetypes.json"),weapons:read("weapons.json"),
   baseArmors:read("base-armors.json"),skills:read("skills.json"),itemQualities:read("item-qualities.json"),
-  reputationStars:read("reputation-stars.json"),spells:read("spells.json"),formulaConstants:read("formula-constants.json")};
+  reputationStars:read("reputation-stars.json"),spells:read("spells.json"),formulaConstants:read("formula-constants.json"),
+  equipmentSlots:read("equipment-slots.json")};
 const rules=createMissionRules({reference,random:seeded(7)});
 
 // Camps (Idan, 2026-11-01) : gobelin, orc, homme-bête, voleurs ou ogre au hasard. Budget par métal (doc 17 §16) :
@@ -220,11 +221,45 @@ for(const a of reference.enemyArchetypes.rows){
 {
   const breakRules=createMissionRules({reference,random:seeded(21)});
   let novice=null;
-  for(let day=50;!novice;day++) novice=rules.buildEnemies(rules.createOffer({day,level:1}),()=>base()).find(e=>breakRules.archetype(e.archetype).tier===1);
+  for(let day=50;!novice;day++) novice=rules.buildEnemies(rules.createOffer({day,level:1}),()=>base())
+    .find(e=>breakRules.archetype(e.archetype).tier===1&&e.items.some(it=>!it.natural));
   let kept=0,carried=0;
   // Une arme naturelle (griffes, morsure) ne se ramasse jamais : on ne compte que l'équipement.
   for(let i=0;i<500;i++){ kept+=breakRules.outcome(offer,{victory:true,deadEnemies:[novice]}).loot.length; carried+=novice.items.filter(it=>!it.natural).length; }
   assert.ok(Math.abs(kept/carried-0.9)<0.04,`T1 : 90 % récupérés (${kept} / ${carried})`);
+}
+// Accessoires sur les morts (Idan, 2026-11-08 : « Sur chaque mort, on a 2% de chance de dropper un accessoire par slot
+// d'un tier equivalent au tier de l'ennemi mort » ; « La règle, c'est plutôt humanoïde ou non ») : 13 emplacements, un
+// tirage chacun, un objet de la famille au tier de la fiche ; ni loup ni chauve-souris de la Cour de sang.
+{
+  assert.equal(reference.formulaConstants.rows.find(r=>r.code==="loot.accessory.chance_per_slot").valeur,2);
+  assert.deepEqual(rules.ACCESSORY_SLOTS.map(s=>s.type),["helmet","amulet","cape","gloves","belt","pants","boots","ring","ring","ring","ring","ring","ring"]);
+  assert.deepEqual(createMissionRules({reference:{}}).ACCESSORY_SLOTS,rules.ACCESSORY_SLOTS,"sans equipment-slots.json : les mêmes 13");
+  assert.ok(reference.enemyArchetypes.rows.every(a=>typeof a.humanoide==="boolean"),"chaque fiche dit si elle est humanoïde");
+  assert.deepEqual(reference.enemyArchetypes.rows.filter(a=>!a.humanoide).map(a=>a.code).sort(),
+    ["court_bat","court_bat_elite","court_bat_novice","court_bat_veteran","court_wolf","court_wolf_elite","court_wolf_novice","court_wolf_veteran"]);
+  for(const code of ["court_ghoul","cult_zombie","cult_specter","troll","undead_troll","cult_skeleton_warrior"]) assert.equal(rules.archetype(code).humanoide,true,code+" : il droppe");
+  const dropRules=createMissionRules({reference,random:seeded(31)});
+  const spearman=dropRules.archetype("goblin_spearman"),N=6000;
+  let drops=0,rings=0;
+  for(let i=0;i<N;i++){
+    const d=dropRules.accessoryDrops(spearman);
+    drops+=d.length; rings+=d.filter(x=>x.type==="ring").length;
+    assert.ok(d.every(x=>x.tier===spearman.tier),"au tier de la fiche");
+  }
+  assert.ok(Math.abs(drops/N-0.26)<0.03,"≈ 0,26 accessoire par ennemi : "+drops/N);
+  assert.ok(Math.abs(rings/N-0.12)<0.02,"≈ 0,12 bague : "+rings/N);
+  for(let i=0;i<500;i++) assert.deepEqual(dropRules.accessoryDrops(dropRules.archetype("court_wolf")),[],"un loup ne laisse rien");
+  // Au bilan : makeItem(famille, sans nom, tier) fabrique l'objet ; il rejoint le butin sans propriétaire.
+  const always=JSON.parse(JSON.stringify(reference));
+  always.formulaConstants.rows.find(r=>r.code==="loot.accessory.chance_per_slot").valeur=100;
+  const made=[];
+  const sure=createMissionRules({reference:always,random:seeded(32)});
+  const won=sure.outcome(offer,{victory:true,deadEnemies:[enemies[0]],makeItem:(type,name,tier)=>(made.push([type,name,tier]),{id:"a"+made.length,name:type,owner:7})});
+  const tier=sure.archetype(enemies[0].archetype).tier;
+  assert.deepEqual(made,sure.ACCESSORY_SLOTS.map(s=>[s.type,null,tier]),"un par emplacement à 100 %");
+  assert.equal(won.loot.filter(i=>/^a\d+$/.test(i.id)).length,13);
+  assert.ok(won.loot.every(i=>i.owner===null));
 }
 // Chefs (Idan, 2026-11-01 : « les chefs qui n'ont pas de points mesurés ») : toutes les fiches ont leurs points, et chaque
 // chef pèse plus que le précédent de son peuple.

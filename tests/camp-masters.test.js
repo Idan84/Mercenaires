@@ -4,7 +4,7 @@
 // à l'Académie de la survie, le Maître des lames au Cercle des Fines Lames, nommés comme le directeur de l'École (bâtiment
 // construit, refus, retour sur le terrain, hors mission, pas de place au dortoir) ; ils aident à l'entraînement libre de
 // leur bâtiment comme le directeur à l'École (test + Charisme / 10 + affinité / 10 ; gain × (1 + niveau / 100) ×
-// (1 + Transmission / 100), niveau : leur valeur dans ce que travaille la salle) et gagnent 5 XP de Transmission par
+// (1 + Transmission / 100), niveau : leur valeur dans ce que travaille la salle) et gagnent 20 XP de Transmission par
 // élève de leur bâtiment. Un panneau par maître dans l'Intendance, une fois le bâtiment construit.
 const assert=require("node:assert/strict");
 const fs=require("node:fs");
@@ -93,22 +93,22 @@ const mill={code:"ludus_force",building:"ludus",trains:"Force",learnWith:"Endura
 assert.equal(training.trainingChance(student).delta,0);
 assert.equal(training.trainingChance(student,master).delta,3+2,"Charisme 30 / 10 + affinité 20 / 10");
 assert.equal(training.directorLevel(master,mill),60,"sa Force à la Meule");
-assert.equal(training.dailyXp(student,mill),44,"40 × 50 / 50 × 1,1 (XP doublée)");
-assert.equal(training.dailyXp(student,mill,master),Math.round(44*1.6*1.4),"× (1 + 60 / 100) × (1 + 40 / 100)");
+assert.equal(training.dailyXp(student,mill),88,"80 × 50 / 50 × 1,1 (XP doublée deux fois, Idan, 2026-11-07 et 2026-11-08)");
+assert.equal(training.dailyXp(student,mill,master),Math.round(88*1.6*1.4),"× (1 + 60 / 100) × (1 + 40 / 100)");
 assert.equal(training.directorLevel(master,{code:"survival_fire",building:"survival_academy",trains:"Résistance au feu"}),0);
 const always=createSchoolTrainingRules({reference,random:()=>0});
 const run=always.runDay({rooms:[mill,{code:"blade_circle",building:"blade_circle",trains:"Dextérité",learnWith:"Dextérité",level:1,places:1}],
   candidates:[student,{id:"t",name:"Autre",stats:{Volonté:50,Endurance:50,Force:30,Dextérité:20}}],masters:{ludus:master}});
-// L'autre va au Cercle (là où il est le plus doué), sans maître : 40 × 20 / 50 × 1,1 (XP doublée).
-assert.deepEqual(run.entries.map(e=>[e.id,e.code,e.xp]),[["t","blade_circle",18],["s","ludus_force",99]]);
-assert.deepEqual([run.masterXp,run.directorXp],[{ludus:10},0],"10 XP de Transmission par élève de son bâtiment");
+// L'autre va au Cercle (là où il est le plus doué), sans maître : 80 × 20 / 50 × 1,1 (XP doublée deux fois, Idan, 2026-11-07 et 2026-11-08).
+assert.deepEqual(run.entries.map(e=>[e.id,e.code,e.xp]),[["t","blade_circle",35],["s","ludus_force",197]]);
+assert.deepEqual([run.masterXp,run.directorXp],[{ludus:20},0],"20 XP de Transmission par élève de son bâtiment");
 
 // Le matin du camp : chaque maître compte les élèves de son bâtiment ; les maîtres ne s'entraînent pas.
 const day=rules.runSchoolDay(state);
 const roomOf=new Map(rules.trainingRooms(state).map(r=>[r.code,r.building]));
 for(const p of Posts.POSTS.slice(1)){
   const students=day.entries.filter(e=>e.code&&roomOf.get(e.code)===p.building).length;
-  assert.equal(day.masterXp[p.building]||0,10*students,p.key);
+  assert.equal(day.masterXp[p.building]||0,20*students,p.key);
 }
 assert.ok(!day.entries.some(e=>[brute.id,survivor.id,fencer.id].includes(e.id)),"les maîtres enseignent");
 

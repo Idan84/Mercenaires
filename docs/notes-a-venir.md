@@ -27,11 +27,8 @@ Constat (parties n°3 et n°4, simulateur) : en 69 jours, les armes gagnent 0 à
 bougent pas, alors que la réputation double (≈ une étoile par mission) et fait monter les salaires et le niveau des
 contrats (≈ 5 ennemis de plus par étoile).
 
-Décidé :
+Décidé (l'XP gagnée × 2 à nouveau est faite, doc 08 §2) :
 
-- **XP gagnée × 2 à nouveau** : toutes les sources d'XP (combat, entraînement, médecine, magie…), comme le doublement
-  du bêta-test (les 36 constantes `progression.*_xp`, `medic.xp.per_wound_day`, `school.training.*_xp`,
-  `spell_study.*_xp`).
 - **Réputation, 4 leviers** :
   1. Une **réputation propre à chaque fiche d'ennemi**, selon son rang (aujourd'hui : celle du personnage tiré sous la
      fiche, 100 à 180, même pour un gobelin novice ; tuer rapporte 10 % de cette réputation).

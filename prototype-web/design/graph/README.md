@@ -10,7 +10,7 @@
 - Dans le simulateur, les nœuds modifiés sont mis en évidence ; les flèches directement reliées à la variable testée reçoivent une épaisseur proportionnelle à la **variation relative observée dans ce scénario**. Cela n'est **pas** un coefficient universel de sensibilité.
 - Simulation **avant / après** : choisir un domaine, un paramètre et sa nouvelle valeur ; comparer les sorties modifiées ou toutes les sorties.
 - Quatre domaines pris en charge par l'adaptateur pur `simulation-core.js` : **économie/recrutement**, **combat**, **progression de mission**, **affinité**.
-- Import local facultatif d'une sauvegarde JSON de Blood & Wages (format `mercenaires-save`) : calcul de la réputation de compagnie avec **l'effectif complet**, le capitaine et l'héritage historique ; préremplissage des paramètres du candidat à la taverne.
+- Import local facultatif d'une sauvegarde JSON de Blood & Wages (format `mercenaires-save`) : calcul de la réputation de compagnie avec **l'effectif complet** (le capitaine toujours 1er, puis les autres au rang 2, 3…), l'héritage historique, les missions, la qualité du dortoir et le médecin : les six parts du doc 09 §2 ; préremplissage des paramètres du candidat à la taverne.
 
 ## Sources réelles
 

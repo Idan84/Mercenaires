@@ -23,12 +23,17 @@
       .sort((a,b)=>safeNumber(b.raw.reputation)-safeNumber(a.raw.reputation)||a.index-b.index);
     const first=others[0]?.raw,second=others[1]?.raw;
     const heritage=(company.renownHeritage||[]).reduce((sum,h)=>sum+safeNumber(h.heritage),0);
+    // Les autres parts de la renommée : missions, qualité du dortoir, Médecine du médecin.
+    const medic=company.medicId==null?null:company.roster.find(m=>String(m.id)===String(company.medicId));
     const candidate=(state.tavern?.candidates||[]).find(c=>c?.mercenary)?.mercenary||first||captain;
     const economy={
       captain:safeNumber(captain.reputation),
       first:safeNumber(first?.reputation),
       second:safeNumber(second?.reputation),
       heritage,
+      missions:safeNumber(company.missionRenown),
+      dorm:safeNumber(company.camp?.dormitoryQuality),
+      medic:safeNumber(medic?.skills?.camp?.["Médecine"]),
       reputation:safeNumber(candidate.reputation),
       salary:safeNumber(candidate.salary),
       courage:safeNumber(candidate.stats?.Courage),
@@ -37,7 +42,7 @@
       will:safeNumber(candidate.stats?.["Volonté"]),
       offerPercent:75,
       companySnapshot:{
-        captainId:company.captainId,firstId:first?.id,secondId:second?.id,
+        captainId:company.captainId,firstId:first?.id,secondId:second?.id,medicId:medic?.id,
         roster:company.roster.map(m=>({id:m.id,name:String(m.name||"Mercenaire"),reputation:safeNumber(m.reputation)}))
       }
     };

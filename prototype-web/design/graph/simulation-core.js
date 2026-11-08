@@ -49,6 +49,17 @@
           if(member)member.reputation=atLeast(reputation);
         }
       }
+      // Les autres parts de la renommée (doc 09 §2) : missions (gardes du corps, échecs, chasses), qualité du dortoir et
+      // médecin (sa Médecine).
+      state.company.missionRenown=num(v.missions);
+      state.company.camp={dormitoryQuality:Math.max(0,Math.min(10,Math.round(num(v.dorm))))};
+      if(atLeast(v.medic)>0){
+        const medicId=imported?.medicId??"medic";
+        let medic=state.company.roster.find(m=>String(m.id)===String(medicId));
+        if(!medic){ medic={id:medicId,name:"Médecin",reputation:0}; state.company.roster.push(medic); }
+        medic.skills={camp:{"Médecine":atLeast(v.medic)}};
+        state.company.medicId=medic.id;
+      }
       const renown = company.companyRenown(state);
       const mercenary = {
         reputation:atLeast(v.reputation),
@@ -71,6 +82,9 @@
           renownCaptain:renown.parts.captain,
           renownOthers:renown.parts.members,
           renownLegacy:renown.parts.heritage,
+          renownMissions:renown.parts.missions,
+          renownCamp:renown.parts.camp,
+          renownMedic:renown.parts.medic,
           bonus,
           resistance,
           departure,
@@ -83,7 +97,8 @@
           "Salaire demandé saisi : il n'est pas recalculé automatiquement quand la réputation change.",
           "Probabilités et contre-offres issues du moteur, avec RNG fixe (aucun jet ne décide du résultat).",
           "La réputation de compagnie n'affecte pas encore les offres de mission ou les candidats.",
-          imported?.roster?.length?"Réputation calculée à partir de tous les membres de la sauvegarde importée.":"Réputation calculée avec trois membres fictifs."
+          imported?.roster?.length?"Réputation calculée à partir de tous les membres de la sauvegarde importée.":"Réputation calculée avec trois membres fictifs.",
+          "Classement : le capitaine est toujours 1er (100 %) ; les autres membres comptent au rang 2, 3… (÷ rang^1,5 ; Idan, 2026-11-08)."
         ],
         source:["game-core/campaign.js","game-core/tavern.js"]
       };

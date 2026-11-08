@@ -16,6 +16,8 @@
       fields:[
         ["captain","Réputation capitaine",200,"rep"],["first","Réputation mercenaire A",300,"rep"],
         ["second","Réputation mercenaire B",120,"rep"],["heritage","Héritage des morts",50,"heritage"],
+        ["missions","Renommée des missions (gardes +3, échecs −30)",0,"missions"],["dorm","Qualité du dortoir (0 à 10)",0,"camp"],
+        ["medic","Médecine du médecin (0 : aucun)",0,"artisanat"],
         ["reputation","Réputation du candidat",100,"rep"],["salary","Salaire demandé (PO/jour)",25,"salaire"],
         ["courage","Courage",50,"courage"],["pretensions","Prétentions salariales",35,"pretentions"],
         ["intelligence","Intelligence",60,"intel"],["will","Volonté",70,"volonte"],
@@ -23,6 +25,7 @@
       ],
       metrics:{
         renown:"Réputation compagnie",renownCaptain:"Part capitaine",renownOthers:"Part mercenaires",renownLegacy:"Part héritage",
+        renownMissions:"Part missions",renownCamp:"Part dortoir",renownMedic:"Part médecin",
         bonus:"Prime de mission (PO)",resistance:"Résistance à la négociation",departure:"Départ de la taverne (%)",
         pAccept:"Acceptation de l'offre (%)",pQuit:"Risque de départ après refus (%)",
         offerSalary:"Salaire proposé (PO)",offerBonus:"Prime proposée (PO)"
@@ -103,7 +106,7 @@
       formulaConstants:"formula-constants.json",characteristics:"characteristics.json",
       weapons:"weapons.json",skills:"skills.json",baseArmors:"base-armors.json",
       itemQualities:"item-qualities.json",peopleAffinity:"people-affinity.json",
-      alignmentGeneration:"alignment-generation.json"
+      alignmentGeneration:"alignment-generation.json",dormitoryQuality:"dormitory-quality.json"
     };
     const entries=await Promise.all(Object.entries(names).map(async([k,path])=>{
       try{
@@ -231,7 +234,7 @@
       const labels=configs[mode].metrics;
       const changed=compared.rows.filter(x=>x.changed);
       const metricNodes={
-        economy:{renown:"renommee",renownCaptain:"renommee",renownOthers:"renommee",renownLegacy:"heritage",bonus:"prime",resistance:"negociation",departure:"taverne",pAccept:"negociation",pQuit:"negociation",offerSalary:"negociation",offerBonus:"negociation"},
+        economy:{renown:"renommee",renownCaptain:"renommee",renownOthers:"renommee",renownLegacy:"heritage",renownMissions:"missions",renownCamp:"camp",renownMedic:"artisanat",bonus:"prime",resistance:"negociation",departure:"taverne",pAccept:"negociation",pQuit:"negociation",offerSalary:"negociation",offerBonus:"negociation"},
         combat:{hit:"toucher",wound:"blesser",crit:"critique",speed:"vitesse",dodge:"esquive",initiative:"vitesse",movement:"vitesse",chain:"toucher",armorMatchup:"blesser"},
         progression:{reputationGain:"repcarriere",reputationTotal:"rep",intimidationXP:"xp",intimidationLevel:"skills"},
         affinity:{affinityInitial:"affinite",affinityAcquired:"affacquise",affinityTotal:"affinite",people:"affinite",culture:"affinite",alignment:"affinite",distance:"affinite"}

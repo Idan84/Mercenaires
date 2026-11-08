@@ -5,10 +5,8 @@ fait, puis sera retiré d'ici.
 
 ## À appliquer (Idan, 2026-11-08, après la partie n°5 de 365 jours)
 
-Décidé :
-
-8. **Design Lab** (`/design/graph/`) : la renommée y montre 3 des 6 parts (capitaine, mercenaires, héritage) ; ajouter
-   les points de mission (gardes, échecs), le dortoir et le médecin, et le nouveau classement (capitaine 1er).
+Tout est fait (2026-11-08) : chefs, renommée (gardes +3, capitaine 1er), dortoir, courbe d'XP, XP de combat, Cantine,
+Design Lab.
 
 ## En réflexion (propositions du 2026-11-08, non décidées)
 

@@ -419,7 +419,10 @@
       const def=definition(offer.code);
       if(!victory) return {victory:false,reward:0,chestGold:0,chestItems:[],loot:[],renown:Number(def.echec?.renommee)||0,hunt:Boolean(def.bete)};
       const chestGold=rollChestGold(offer);
-      const loot=[...deadEnemies.flatMap(c=>enemyLoot(c,makeItem)),...deadMercenaries.flatMap(c=>c.items||[])].map(it=>({...it,owner:null}));
+      // Sauf leurs montures : elles repartent déjà dans l'enclos (Idan, 2026-11-07 ; campaign.js), sinon elles reviendraient
+      // en double à l'Intendance.
+      const fallenGear=c=>(c.items||[]).filter(it=>it.itemType!=="mount");
+      const loot=[...deadEnemies.flatMap(c=>enemyLoot(c,makeItem)),...deadMercenaries.flatMap(fallenGear)].map(it=>({...it,owner:null}));
       return {victory:true,reward:offer.reward,chestGold,chestItems:chestItems.map(it=>({...it,owner:null})),loot,renown:0,hunt:Boolean(def.bete)};
     }
 

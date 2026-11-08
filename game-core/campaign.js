@@ -113,8 +113,21 @@
     }
     // Hors mission, comme l'intendant : ni dortoir, ni mission, ni garde du corps (médecin, directeur de l'École, maîtres).
     const offField=(state,m)=>m.id===state.company.intendantId||(state.company.medicId!=null&&m.id===state.company.medicId)||Boolean(postOf(state,m));
-    // Bains chauds (Idan, 2026-11-01) : un jour de fatigue de moins par niveau, au moins 1 jour.
-    const fatigueDaysFor=(days,state)=>Math.max(1,(Number(days)||0)-fatigueRelief(state));
+    // Fatigue au retour (mission, garde du corps). Qualité du dortoir d'abord (Idan, 2026-11-08 : « La qualité du dortoir
+    // réduit la fatigue de 10 % par niveau » ; dormitory-quality.json, fatigue) : arrondi au jour supérieur, et au niveau
+    // 10, plus de fatigue du tout (0 jour). Puis les Bains chauds (Idan, 2026-11-01) : un jour de moins par niveau, au
+    // moins 1 jour. Nos animaux ne dorment pas au dortoir : {dormitory:false} (Écuries, Chenil), les Bains seulement.
+    function fatigueDaysFor(days,state,{dormitory=true}={}){
+      const cut=dormitory?dormitoryFatigueCut(state):0;
+      const left=Math.ceil((Number(days)||0)*(100-cut)/100);
+      if(left<=0) return 0;
+      return Math.max(1,left-fatigueRelief(state));
+    }
+    // Un retour fatigué : la récupération, ou null s'il n'y a plus de fatigue du tout.
+    const fatigueRecovery=(days,state)=>{
+      const daysLeft=fatigueDaysFor(days,state);
+      return daysLeft>0?{kind:"fatigued",daysLeft,sinceDay:state.day}:null;
+    };
     const STARTING_DORMITORY_CAPACITY=referenceConstant(reference,"camp.dormitory.initial_capacity",25);
     const RENOWN_RANK_EXPONENT=referenceConstant(reference,"company.renown.rank_exponent",1.5);
     const RENOWN_HERITAGE_SHARE=referenceConstant(reference,"company.renown.heritage_share",0.2);
@@ -573,6 +586,10 @@
       const level=dormitoryQualityLevel(state);
       return QUALITY_LEVELS.find(q=>q.niveau===level)||{niveau:level,nom:"Niveau "+level};
     }
+    // Le pourcentage de jours de fatigue en moins (0 à 100) au niveau de qualité actuel.
+    function dormitoryFatigueCut(state){
+      return Math.min(100,Math.max(0,Number(dormitoryQuality(state).fatigue)||0));
+    }
     function dormitoryQualityRenown(state){
       const level=dormitoryQualityLevel(state);
       return QUALITY_LEVELS.filter(q=>q.niveau>0&&q.niveau<=level).reduce((sum,q)=>sum+(Number(q.renommee)||0),0);
@@ -581,7 +598,7 @@
     function nextDormitoryQuality(state){
       const row=QUALITY_LEVELS.find(q=>q.niveau===dormitoryQualityLevel(state)+1);
       return row?{level:row.niveau,name:row.nom,gold:Number(row.prix)||0,days:Number(row.jours)||0,
-        renown:Number(row.renommee)||0,affinity:Number(row.affinite)||0}:null;
+        renown:Number(row.renommee)||0,affinity:Number(row.affinite)||0,fatigue:Number(row.fatigue)||0}:null;
     }
     function startDormitoryQuality(state){
       const camp=state.company.camp;
@@ -1279,7 +1296,7 @@
         const m=rosterOf(state).find(x=>x.id===id);
         if(!m) continue;
         const back=bodyguard.rollReturn();
-        if(back.issue==="fatigue") m.recovery={kind:"fatigued",daysLeft:fatigueDaysFor(back.days,state),sinceDay:state.day};
+        if(back.issue==="fatigue"){ const rest=fatigueRecovery(back.days,state); if(rest) m.recovery=rest; }
         if(back.issue==="blesse") m.recovery={kind:"wounded",daysLeft:woundDaysFor(m,back.days,state),sinceDay:state.day};
         const reputation=bodyguard.reputationGain(back.issue);
         if(reputation){
@@ -1290,7 +1307,8 @@
         const bonus=Number(m.contract?.missionBonus)||0;
         state.company.gold-=bonus;
         bonusPaid+=bonus;
-        const days=back.issue==="blesse"?m.recovery.daysLeft:back.days;
+        // Les jours de repos réels (dortoir, Bains, Dispensaire, médecin) ; 0 si le dortoir efface la fatigue.
+        const days=back.issue==="blesse"?m.recovery.daysLeft:back.issue==="fatigue"?(m.recovery?.daysLeft||0):back.days;
         History.record(m,state.day,"bodyguard",{issue:back.issue,days,client:expedition.offer.client});
         results.push({mercenary:m,issue:back.issue,days,reputation,bonus});
       }
@@ -1380,7 +1398,7 @@
 
     function applyMountAftermath(state,results){
       return stableRules?stableRules.applyAftermath(state,results,{woundDays:days=>woundDaysFor({},days,state),
-        fatigueDays:days=>fatigueDaysFor(days,state),
+        fatigueDays:days=>fatigueDaysFor(days,state,{dormitory:false}),
         learn:(sheet,progress)=>progression?progression.apply(sheet,progression.gains(progress,sheet)):[]}):null;
     }
     function applyMissionAftermath(state,aftermath,options={}){
@@ -1433,8 +1451,8 @@
           mercenary.recovery={kind:"wounded",daysLeft:woundDaysFor(mercenary,result.woundDays,state),sinceDay:state.day};
           report.wounded.push(mercenary);
         }else{
-          mercenary.recovery={kind:"fatigued",daysLeft:fatigueDaysFor(result.fatigueDays,state),sinceDay:state.day};
-          report.fatigued.push(mercenary);
+          const rest=fatigueRecovery(result.fatigueDays,state);
+          if(rest){ mercenary.recovery=rest; report.fatigued.push(mercenary); }
         }
         // Historique : une mission de plus, ses adversaires abattus, ses coups encaissés, sa blessure.
         History.recordMission(mercenary,state.day,{progress:result.progress,wounded:result.wounded,
@@ -1496,7 +1514,7 @@
       dormitoryFree,
       dormitoryUsed,
       campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,trainingRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,spellStudy,armorStudy,poisonStudy,lumberjacks,miners,palaceWorkers,dungeonRules,desertionRules,salaryReviewRules,stableRules,tamingRules,socialPolicy:social,agenda,studyBusy,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
-      woundDaysFor,fatigueDaysFor,
+      woundDaysFor,fatigueDaysFor,dormitoryFatigueCut,
       dormitoryPlaces,
       dormitoryExpansionCost,
       nextDormitoryExpansion,

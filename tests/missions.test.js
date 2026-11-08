@@ -338,7 +338,8 @@ const files={peoples:"peoples.json",cultures:"cultures.json",socialOrigins:"soci
   d6Scale:"d6-generation-scale.json",generationMatrix:"generation-matrix.json",skills:"skills.json",characteristics:"characteristics.json",
   formulaConstants:"formula-constants.json",weapons:"weapons.json",baseArmors:"base-armors.json",itemQualities:"item-qualities.json",
   equipmentSlots:"equipment-slots.json",startingEquipmentGeneration:"starting-equipment-generation.json",binaryAptitudeGrants:"binary-aptitude-grants.json",
-  alignmentGeneration:"alignment-generation.json",renamedNames:"renamed-names.json",reputationStars:"reputation-stars.json"};
+  alignmentGeneration:"alignment-generation.json",renamedNames:"renamed-names.json",reputationStars:"reputation-stars.json",
+  dormitoryQuality:"dormitory-quality.json"};
 const full=Object.fromEntries(Object.entries(files).map(([key,file])=>[key,read(file)]));
 const generator=createGenerator(full,{random:seeded(3),nameGenerator:(people,id)=>people+" "+id});
 const tavern=createTavernRules({reference:full,random:seeded(4)});
@@ -437,6 +438,15 @@ squad[0].recovery=null;
 const deferred=campaign.applyMissionAftermath(game,{results:[{id:2,dead:false,wounded:false,fatigueDays:3,offMap:false}],captainDead:false},{deferBonuses:true});
 assert.deepEqual([deferred.bonusPaid,deferred.bonusesDue.map(b=>[b.id,b.bonus])],[0,[[2,100]]],"expédition : prime due au retour");
 assert.equal(game.company.gold,gold);
+// Dortoir de qualité 10 (Idan, 2026-11-08) : plus de fatigue du tout au retour ; qualité 5 : 3 jours → 2.
+squad[0].recovery=null;
+game.company.camp.dormitoryQuality=10;
+const restedReport=campaign.applyMissionAftermath(game,{results:[{id:2,dead:false,wounded:false,fatigueDays:3,offMap:false}],captainDead:false});
+assert.deepEqual([Boolean(squad[0].recovery),restedReport.fatigued.length],[false,0]);
+game.company.camp.dormitoryQuality=5;
+campaign.applyMissionAftermath(game,{results:[{id:2,dead:false,wounded:false,fatigueDays:3,offMap:false}],captainDead:false});
+assert.equal(squad[0].recovery.daysLeft,2);
+game.company.camp.dormitoryQuality=0;
 // Inventaire (Idan, 2026-10-30) : un mort en mission rend à l'Intendance ce qu'il gardait au dortoir ; ce qu'il portait
 // reste avec lui (butin d'une victoire).
 const dead=squad[0],deadWorn=Object.values(dead.equipment.slots).filter(Boolean);

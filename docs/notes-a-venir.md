@@ -38,19 +38,19 @@ Décidé :
      tir qui touche au-delà de la moitié de la portée ; Volonté +80 par sort ennemi résisté (Sommeil, Choc
      psychique…) ; Charisme +40 quand un allié proche réussit son test de Courage grâce à son aura (capitaine et
      lieutenants seulement ; l'aura existe : combat-engine.js, captainAuraBonus, lieutenant à 50 %).
-7. **La Cantine** (nouveau bâtiment, Idan, 2026-11-08) : se construit pour 500 PO comme les autres ; niveaux 1 à 10
-   qui multiplient l'effet (niveau 1 : 40). Chaque jour, elle fait gagner de l'XP dans la caractéristique du plat
-   cuisiné à **tous les mercenaires au camp, blessés et fatigués compris**, pas à ceux qui sont dehors (mission,
-   garde). Dix plats, un par peuple ; la compagnie commence avec celui du peuple du capitaine :
+7. **La Cantine** (Idan, 2026-11-08) : **une salle de la Taverne**, pas un bâtiment du camp ; le **tavernier** (personnage
+   du décor) y cuisine. Elle s'ouvre au niveau 1 pour 500 PO ; niveaux 1 à 10 au prix des autres bâtiments,
+   500 × niveau² PO (500, 2 000, 4 500… 50 000). Chaque jour, elle donne **40 × niveau XP** (40 au niveau 1… 400 au
+   niveau 10) dans la caractéristique du plat cuisiné à **tous les mercenaires au camp, blessés et fatigués compris**,
+   pas à ceux qui sont dehors (mission, garde). Dix plats, un par peuple :
    Force — Ragoût de Mamie Ogresse (Ogre) ; Endurance — Fromage au lait de poule (Nain) ; Vitesse — Hérisson rôti à
    la sauce des bois (Reptilien) ; Perception — Poêlée de champignons (Gnome) ; Esquive — Lapin rôti et ses carottes
    confites (Gobelin) ; Chance — Tourte aux trèfles (Halfling) ; Constitution — Soupe de Géant Vert (Orc) ;
    Intelligence — Têtes de harengs (Elfe) ; Courage — Chili aux piments doux (Homme-bête) ; Dextérité — Tataki
-   d'hirondelle (Humain). À partir du niveau 2 du Labo d'alchimie, le cantinier propose de débloquer un nouveau plat,
-   dont on ne connaît l'effet qu'une fois débloqué ; ensuite on choisit le plat du jour (effet affiché : « augmente la
-   Force »). À préciser : effet par niveau (40 × niveau XP par jour ?) ; prix des niveaux (500 × n² comme les
-   autres ?) ; rythme et prix du déblocage (un plat par niveau du Labo à partir de 2 ?) ; le cantinier est-il un
-   personnage du décor ou un poste tenu par un mercenaire ?
+   d'hirondelle (Humain). Le plat du peuple du capitaine est inclus à l'ouverture de la Cantine. Ensuite, **un
+   nouveau plat par niveau du Labo d'alchimie à partir du niveau 2** (niveaux 2 à 10 : les 9 autres plats), proposé
+   par le tavernier, **gratuit** ; on ne connaît son effet qu'une fois débloqué. On choisit le plat du jour parmi
+   les plats débloqués (effet affiché : « augmente la Force »).
 8. **Design Lab** (`/design/graph/`) : la renommée y montre 3 des 6 parts (capitaine, mercenaires, héritage) ; ajouter
    les points de mission (gardes, échecs), le dortoir et le médecin, et le nouveau classement (capitaine 1er).
 

@@ -1,0 +1,239 @@
+{
+  "schema_version": 1,
+  "name": "memorial",
+  "description": "Le Mémorial (Idan, 2026-11-09 : « plus un bâtiment souvenir. Il est là dès le début. On y retrouve le portrait de tous ceux qui sont décédés au sein de la compagnie. Quand on clique dessus, on voit l'avatar complet avec sa date de décès, la cause de son décès (un peu drôle, c'est mieux !) et un épitaphe délirant »). causes : les tournures de la cause du décès, par nature (melee, ranged, charge, countercharge, opportunity, fleeing, backstab, fumble, spell, spell_feu, spell_froid, spell_foudre, spell_fumble, poison, curse, raised, friendly, raised_friendly, captured, duel, unknown) ; une nature avec un tueur sans tueur connu prend <nature>_seul, sinon unknown. {un_tueur} : « un Guerrier orc » (feminins : les noms qui prennent « une ») ou le nom d'un camarade ; {Un_tueur} en début de phrase ; {tueur} : le nom seul ; {a|b} : masculin|féminin du défunt. details : la ligne sous la cause (l'arme, le sort). epitaphs : tirées au hasard, jamais deux fois dans une même partie ({prenom} : le prénom du défunt). panel : les textes du bâtiment et de la galerie.",
+  "feminins": ["Goule", "Chauve-souris", "Araignée", "Licorne", "Meute", "Brute"],
+  "causes": {
+    "melee": [
+      "S’est approché{|e} d’un peu trop près de {un_tueur}.",
+      "Un duel loyal contre {un_tueur}. Loyal pour l’un des deux, en tout cas.",
+      "A découvert, un peu tard, que {un_tueur} frappait plus fort que prévu.",
+      "Corps à corps avec {un_tueur}. Le corps a perdu.",
+      "A voulu montrer à {un_tueur} qui commandait. {Un_tueur} a très bien compris."
+    ],
+    "ranged": [
+      "N’a pas vu venir le tir de {un_tueur}. C’est un peu le principe.",
+      "A servi de cible d’entraînement à {un_tueur}. Excellent score.",
+      "Abattu{|e} de loin par {un_tueur}, sans même avoir été présenté{|e}.",
+      "Se croyait hors de portée de {un_tueur}. {Il|Elle} ne l’était pas."
+    ],
+    "charge": [
+      "Renversé{|e} par la charge de {un_tueur}. Pas de passage protégé sur un champ de bataille.",
+      "A tenté d’arrêter la charge de {un_tueur} avec son corps. Le corps a perdu.",
+      "A vu {un_tueur} arriver de loin. Très vite. Beaucoup trop vite."
+    ],
+    "countercharge": [
+      "A chargé tête baissée sur l’arme de {un_tueur}. La tête est restée baissée.",
+      "Sa charge héroïque s’est arrêtée net sur {un_tueur}. Net, vraiment."
+    ],
+    "opportunity": [
+      "A tourné le dos à {un_tueur} une seconde. Une seconde de trop.",
+      "A voulu partir sans dire au revoir à {un_tueur}. C’était impoli.",
+      "A tenté de se désengager. {Un_tueur} n’avait pas fini la conversation."
+    ],
+    "fleeing": [
+      "A fui avec beaucoup de conviction. {Un_tueur} courait plus vite.",
+      "Courait vers la sortie. {Un_tueur} aussi, juste derrière.",
+      "Une retraite stratégique, interrompue par {un_tueur}."
+    ],
+    "backstab": [
+      "Frappé{|e} dans le dos par {un_tueur}. Ne s’est jamais retourné{|e}, et pour cause.",
+      "N’a jamais vu {un_tueur}. {Un_tueur}, si.",
+      "{Un_tueur} est arrivé sans bruit. {Il|Elle} est parti{|e} sans bruit aussi."
+    ],
+    "fumble": [
+      "S’est vaincu{|e} {lui-même|elle-même}. Personne d’autre n’y serait arrivé.",
+      "Blessé{|e} par sa propre arme. Le talent, ça ne s’invente pas.",
+      "A raté son coup sur l’ennemi. Pas sur {lui-même|elle-même}."
+    ],
+    "spell": [
+      "A reçu un sort de {un_tueur} en pleine figure. {Il|Elle} n’avait rien demandé.",
+      "Victime de la magie de {un_tueur}. {Il|Elle} ne croyait pas à la magie.",
+      "{Un_tueur} lui a lancé un sort. Pas un sort de soin."
+    ],
+    "spell_feu": [
+      "Réduit{|e} en cendres par {un_tueur}. {Il|Elle} voulait juste se réchauffer.",
+      "A pris feu à cause de {un_tueur}. Ça sentait le roussi depuis le début."
+    ],
+    "spell_froid": [
+      "Congelé{|e} par {un_tueur}. Se conserve très bien.",
+      "{Un_tueur} lui a jeté un froid. Définitif."
+    ],
+    "spell_foudre": [
+      "Foudroyé{|e} par {un_tueur}. Les cheveux sont restés dressés.",
+      "A attiré la foudre de {un_tueur}. Mauvais choix de casque."
+    ],
+    "spell_seul": [
+      "Emporté{|e} par une magie que personne n’a su expliquer.",
+      "Un sort est passé par là. {Il|Elle} aussi, malheureusement."
+    ],
+    "spell_fumble": [
+      "Son propre sort lui est revenu en pleine figure. Retour à l’envoyeur.",
+      "A raté son sort. Le sort, lui, ne l’a pas raté{|e}."
+    ],
+    "poison": [
+      "Empoisonné{|e} par {un_tueur}. Il fallait lire l’étiquette.",
+      "A succombé au poison de {un_tueur}, lentement mais sûrement."
+    ],
+    "poison_seul": [
+      "Empoisonné{|e}. Le dernier verre n’était pas le bon.",
+      "Le poison a fait son œuvre. Une œuvre très réussie."
+    ],
+    "curse": [
+      "Maudit{|e} par {un_tueur}. {Il|Elle} aurait dû garder son porte-bonheur.",
+      "La malédiction de {un_tueur} a fini par l’avoir à l’usure."
+    ],
+    "curse_seul": [
+      "Une malédiction tenace. Plus tenace que {lui|elle}."
+    ],
+    "raised": [
+      "Relevé{|e} en zombie par {un_tueur} : a fini le combat dans l’autre camp. Mauvais choix de carrière.",
+      "{Un_tueur} l’a relevé{|e} en zombie. Première promotion de sa carrière, dans le mauvais camp."
+    ],
+    "raised_friendly": [
+      "Relevé{|e} en zombie par {tueur}, pour la bonne cause. {Il|Elle} n’a pas eu son mot à dire.",
+      "A continué à se battre après sa mort, grâce à {tueur}. Sans supplément de solde."
+    ],
+    "friendly": [
+      "Tué{|e} par {tueur}, de sa propre compagnie. Il y aura une enquête. Courte.",
+      "Victime d’un « tir ami » de {tueur}. Ami, c’est vite dit."
+    ],
+    "captured": [
+      "Parti{|e} en éclaireur. On l’attend toujours.",
+      "Capturé{|e} pendant une reconnaissance. La reconnaissance n’a pas été réciproque."
+    ],
+    "duel": [
+      "A défié {tueur}, son capitaine. Une fois.",
+      "A voulu quitter la compagnie. {Tueur} a insisté pour qu’{il|elle} reste. Pour toujours."
+    ],
+    "unknown": [
+      "Mort{|e} au combat, sans témoin. Les versions divergent.",
+      "Personne n’a vraiment vu ce qui s’est passé. Tout le monde a un avis."
+    ]
+  },
+  "details": {
+    "weapon": "Arme du crime : {arme}.",
+    "spell": "Sort : {sort}."
+  },
+  "epitaphs": [
+    "{Il|Elle} avait dit : « Couvrez-moi. » Personne n’avait compris que c’était un ordre.",
+    "Mort{|e} comme {il|elle} a vécu : en retard sur l’initiative.",
+    "Ses dernières paroles : « Il est tout seul, je m’en occupe. »",
+    "{Il|Elle} a légué son arme à la compagnie. Elle est déjà revendue.",
+    "Ci-gît {prenom}. Enfin un endroit où personne ne lui demande de monter la garde.",
+    "« Je reviens tout de suite. » {Prenom}, il y a longtemps.",
+    "A payé toutes ses dettes. Sauf celle de la taverne.",
+    "Parti{|e} trop tôt. Ou trop vite. Ou dans la mauvaise direction.",
+    "{Il|Elle} n’avait peur de rien. C’était justement le problème.",
+    "Ici repose {prenom}, qui pensait sincèrement que l’armure, c’était surfait.",
+    "Toujours en première ligne. Surtout la dernière fois.",
+    "{Il|Elle} voulait voir du pays. {Il|Elle} en a vu un mètre carré, de très près.",
+    "Son salaire court encore, d’après ses créanciers.",
+    "A enfin trouvé une couchette plus confortable que celles du dortoir.",
+    "« Ça ne fait même pas mal. » Erreur d’appréciation.",
+    "Mort{|e} au champ d’honneur. Le champ réclame encore des dommages.",
+    "Le capitaine a dit quelques mots. Surtout pour réclamer son équipement.",
+    "{Il|Elle} a toujours rêvé d’un monument. Voici une plaque. C’est déjà ça.",
+    "Repose en paix. Ou en morceaux, selon le rapport.",
+    "{Il|Elle} ne doit plus rien à personne. Le contraire n’est pas vrai.",
+    "Aimé{|e} de tous. Enfin, de deux ou trois personnes. Bon, du cuisinier.",
+    "Enfin à l’abri de la cuisine de la Taverne.",
+    "Héros pour certains, statistique pour l’intendant.",
+    "{Il|Elle} savait compter jusqu’à trois. L’ennemi était quatre.",
+    "Mort{|e} pour la compagnie. La compagnie remercie et cherche déjà un{|e} remplaçant{|e}.",
+    "« J’ai un plan. » {Il|Elle} n’en avait pas.",
+    "Le dernier à avoir dit : « Qu’est-ce qui pourrait mal tourner ? »",
+    "A fini par tomber sur plus fort. Et plus nombreux. Et mieux armé.",
+    "Sa place au dortoir a été attribuée avant la fin des funérailles.",
+    "Ci-gît une légende. Une petite légende.",
+    "Parti{|e} rejoindre ses ancêtres, qui ne l’attendaient pas si tôt.",
+    "Fidèle jusqu’au bout. Le bout est arrivé vite.",
+    "{Il|Elle} chantait faux, sentait fort et frappait juste. Deux qualités sur trois.",
+    "{Le premier|La première} arrivé{|e} à la taverne, {le premier|la première} arrivé{|e} ici.",
+    "A courageusement couvert la retraite. Personne ne lui avait dit qu’on reculait.",
+    "Ne {le|la} prévenez pas : {il|elle} le prendrait mal.",
+    "Une vie de combats, de beuveries et de dettes. Une vie bien remplie.",
+    "Il reste ses bottes. Elles cherchent un nouveau propriétaire.",
+    "Repose ici en attendant qu’un nécromancien ait besoin de bras.",
+    "{Il|Elle} voulait mourir {vieux|vieille}. C’est raté de peu.",
+    "Vaillant{|e}, loyal{|e}, et légèrement trop confiant{|e}.",
+    "Mort{|e} en héros. Les détails ne regardent personne.",
+    "« Après toi. » La phrase de trop.",
+    "Ses camarades {le|la} regrettent. Surtout ceux à qui {il|elle} devait de l’argent.",
+    "Sa devise : « Frappe d’abord. » {Il|Elle} aurait dû lire la suite.",
+    "{Il|Elle} n’a jamais reculé. Même quand c’était clairement indiqué.",
+    "A rendu l’âme. En assez mauvais état, d’ailleurs.",
+    "Ci-gît {prenom}. {Il|Elle} ne laisse derrière {lui|elle} qu’une ardoise et des souvenirs flous.",
+    "Toujours {prêt|prête} à rendre service. Même le dernier.",
+    "Mort{|e} les armes à la main. Elles n’ont pas suffi.",
+    "Partage désormais sa chambre avec le silence. Le dortoir respire.",
+    "{Il|Elle} avait toujours une histoire à raconter. Celle-ci, on la racontera pour {lui|elle}.",
+    "« Je les retiens, partez ! » Personne n’est parti. Tout le monde voulait voir.",
+    "L’intendant a rayé son nom à regret. Puis il a recompté l’or.",
+    "Brave parmi les braves. {Pressé|Pressée} parmi les pressés.",
+    "Ses ennemis {le|la} craignaient. Ses amis aussi, pour d’autres raisons.",
+    "A trouvé la paix. Elle était cachée sous six pieds de terre.",
+    "Ici dort {prenom}. Ne {le|la} réveillez pas : {il|elle} a toujours eu le réveil difficile.",
+    "{Il|Elle} voulait qu’on se souvienne de son courage. On se souvient surtout de ses ronflements.",
+    "{Promis|Promise} à un grand avenir. L’avenir a été écourté.",
+    "« Ce n’est qu’une égratignure. » La dernière.",
+    "Mort{|e} en service commandé. Le capitaine nie avoir commandé quoi que ce soit.",
+    "Pas de fleurs, merci. {Il|Elle} y était allergique.",
+    "{Il|Elle} a affronté des monstres terribles. Le dernier était le plus terrible.",
+    "Une pensée émue pour son arme, restée seule au monde.",
+    "Disparu{|e} au combat. Retrouvé{|e}, mais pas en un seul morceau.",
+    "Ci-gît quelqu’un qui détestait les épitaphes.",
+    "A enfin cessé de réclamer une augmentation.",
+    "Le Mémorial lui offre ce que la compagnie n’a jamais pu : une place au calme.",
+    "Encore un{|e} qui n’aura jamais lu son contrat jusqu’au bout.",
+    "« La prime de risque, c’est pour les lâches. »",
+    "Mort{|e} sans dettes. C’était la première fois.",
+    "A rejoint la grande taverne céleste. On lui garde un tabouret.",
+    "Son dernier jet de dés n’était pas le bon.",
+    "Héros du jour. Le jour a été court.",
+    "A donné son sang pour la compagnie. Tout son sang.",
+    "Repose ici entre deux missions. Pour une fois, personne ne viendra {le|la} chercher.",
+    "{Il|Elle} a vécu libre et pauvre. {Il|Elle} est mort{|e} pauvre.",
+    "Le genre de personne qui retourne au combat pour récupérer sa pipe.",
+    "Le capitaine a promis de {le|la} venger. Puis il a regardé les tarifs.",
+    "Inutile de frapper : {il|elle} ne répondra plus.",
+    "Mort{|e} les yeux ouverts. {Il|Elle} voulait voir la suite.",
+    "{Il|Elle} disait qu’{il|elle} mourrait au combat. Pour une fois, {il|elle} avait raison.",
+    "Une minute de silence, s’il vous plaît. {Il|Elle} n’en a jamais respecté une.",
+    "{Il|Elle} avait parié sur sa survie. Cote à vingt contre un.",
+    "A quitté la compagnie sans préavis. Le capitaine est furieux.",
+    "Que la terre lui soit légère. Plus légère que son armure, en tout cas.",
+    "{Il|Elle} a crié : « À l’attaque ! » {Il|Elle} était {le seul|la seule} à charger.",
+    "{Mort heureux|Morte heureuse}, selon ses dernières volontés. Mort{|e} quand même.",
+    "Sa mère disait qu’{il|elle} finirait mal. Sa mère avait souvent raison.",
+    "Ne reviendra pas. Même pour la solde.",
+    "A sacrifié sa vie pour sauver ses camarades. Ou pour ramasser un anneau. Les témoignages divergent.",
+    "Grand cœur, petite armure.",
+    "Ici repose {prenom}, qui n’a jamais su dire non. Surtout à une mauvaise idée.",
+    "{Il|Elle} a tout donné. L’ennemi a tout pris.",
+    "Sa tombe est la seule chose qu’{il|elle} ait jamais gardée propre.",
+    "Pas {mort|morte} : en congé illimité, non payé.",
+    "{Il|Elle} aimait la bagarre, la bière et les longues marches. Surtout la bagarre.",
+    "Le Mémorial accueille {prenom}. {Il|Elle} n’avait pas réservé.",
+    "Repose en paix, {prenom}. Tu nous dois encore trois pièces d’or.",
+    "Mort{|e} debout. Puis {il|elle} s’est {allongé|allongée}."
+  ],
+  "panel": {
+    "name": "Mémorial",
+    "description": "Il est là depuis toujours. On y garde la mémoire de ceux qui sont morts dans la compagnie.",
+    "count_zero": "Aucun nom gravé",
+    "count_one": "1 nom gravé",
+    "count_many": "{n} noms gravés",
+    "go": "Aller au Mémorial",
+    "eyebrow": "Mémorial",
+    "title": "Ceux qui ne sont pas revenus",
+    "intro": "Leurs portraits restent ici, tant que la compagnie existera.",
+    "empty": "Aucun nom n’est encore gravé. Pourvu que ça dure.",
+    "died": "Mort{|e} le {date}",
+    "days": "Dans la compagnie : {jours}",
+    "cause": "Cause du décès",
+    "epitaph": "Épitaphe",
+    "history": "Historique",
+    "close": "Fermer"
+  }
+}

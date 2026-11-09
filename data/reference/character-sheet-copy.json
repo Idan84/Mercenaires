@@ -506,6 +506,9 @@
       "desertion": "Quitte la compagnie en pleine nuit, avec son sac.",
       "desertion_let_go": "Quitte la compagnie : le capitaine l’a {laissé|laissée} partir.",
       "duel": "Meurt en combat singulier contre le capitaine.",
+    "death": "Tombe au combat.",
+    "death_knockouts": "Tombe au combat après avoir abattu {n}.",
+    "death_captured": "{Capturé|Capturée} en éclaireur, ne revient jamais.",
       "salary_raise": "Obtient une augmentation : de {avant} à {apres} PO par jour.",
       "salary_refused": "Réclame une augmentation ; n’obtient rien."
     },

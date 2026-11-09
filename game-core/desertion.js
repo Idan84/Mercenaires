@@ -165,7 +165,8 @@
       state.company.deserting=state.company.deserting.filter(e=>e!==entry);
       History?.record(m,state.day,"duel",{});
       const out=camp.remove(state,m,"duel");
-      listOf(state,"memorial").push({id:m.id,name:m.name,day:state.day,cause:"duel",profile:m});
+      // Le Mémorial (memorial.js) l'a reçu dans camp.remove ; sans lui (tests), la liste d'avant.
+      if(!out?.memorial) listOf(state,"memorial").push({id:m.id,name:m.name,day:state.day,cause:"duel",profile:m});
       return {ok:true,mercenary:m,heritage:out?.heritage||null,items:out?.items||[]};
     }
     // Le laisser partir : son affinité remonte un peu, mais il part.

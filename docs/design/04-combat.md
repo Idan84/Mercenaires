@@ -281,12 +281,15 @@ peut y avoir une subtilité dans franchissable : vitesse réduite ». Données :
 
 ## Capacités de terrain (Idan, 2026-11-09)
 
-Idan : « J'ai oublié les sangs de fées qui ont aussi vol et charge au niveau 3 » ; « On ajoute aussi quelques compétences ».
+Idan : « J'ai oublié les sangs de fées qui ont aussi vol et charge au niveau 3 » ; « On ajoute aussi quelques compétences » ;
+« les mercenaires de sang divin ou sang de dragon de niveau 3 : on leur ajoute Vol + Charge aérienne à la création. On les
+mets sur la fiche avec les autres compétences également ».
 Données : `terrain-skills.json` (qui les a, ce qu'elles donnent par décor) ; code : `terrainSkillsOf`, `terrainEffect`,
 `skillFlies` (moteur), `missionTerrainEffect`, `missionDecorCost`, `missionTerrainStealth` (combat). Le niveau d'un sang :
-1 lointain ancêtre, 2 lignée proche, **3 bâtard**.
+1 lointain ancêtre, 2 lignée proche, **3 bâtard**. Sur la fiche (onglet Compétences), elles s'affichent avec les
+**Aptitudes** ; au survol, ce qu'elles donnent.
 
-- **Vol** — **sang féerique bâtard** : il vole (comme les chauves-souris : 1 point de mouvement par case, au-dessus du
+- **Vol** — **sang féerique, sang divin ou sang de dragon bâtard** (dès la création) : il vole (comme les chauves-souris : 1 point de mouvement par case, au-dessus du
   décor) et **charge par les airs** (charge aérienne, comme le pégase). À cheval, c'est la monture qui compte : il ne vole pas.
 - **Déplacement aquatique** — **tous les Reptiliens, tous les sangs de sirène, les crocodiles invoqués** : pas de malus de
   déplacement dans l'**eau peu profonde** (1 point par case au lieu de 3) et **Discrétion +30 tant qu'il y est** (« boost

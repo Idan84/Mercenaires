@@ -6,7 +6,8 @@
 // Pour les sangs de sirène 3 - Couverture totale sur une case d'eau profonde et partielle sur une case d'eau peu profonde.
 // Peu traverser l'eau profonde qui est normalement infranchissable. Déplacement sylvains : Pour les elfes sylvains, Tribus
 // de la jungle, Gnomes des forêts, Tribus des forêts anciennes : Pas de malus de déplacement en fôret et boost temporaire de
-// discrétion de +30 »).
+// discrétion de +30 » ; « les mercenaires de sang divin ou sang de dragon de niveau 3 : on leur ajoute Vol + Charge aérienne
+// à la création. On les mets sur la fiche avec les autres compétences également »).
 const assert=require("node:assert/strict");
 const fs=require("node:fs");
 const path=require("node:path");
@@ -26,7 +27,7 @@ const reference=Object.fromEntries(Object.entries(files).map(([key,file])=>[key,
 // 1. Les données : qui les a existe (peuples, cultures, sangs, invocations, décors).
 const skills=reference.terrainSkills;
 assert.equal(skills.row_count,skills.rows.length);
-assert.deepEqual(skills.rows.map(r=>r.code),["vol_feerique","deplacement_aquatique","respiration_aquatique","deplacement_sylvain"]);
+assert.deepEqual(skills.rows.map(r=>r.code),["vol","deplacement_aquatique","respiration_aquatique","deplacement_sylvain"]);
 const names=key=>new Set(reference[key].rows.map(r=>r.nom));
 const peoples=names("peoples"),cultures=names("cultures"),ancestries=names("ancestries");
 const summons=new Set(reference.summonArchetypes.rows.map(r=>r.code)),decors=new Set(reference.terrainDecors.rows.map(r=>r.code));
@@ -38,8 +39,9 @@ for(const s of skills.rows){
   for(const d of Object.keys(s.decors)) assert.ok(decors.has(d),s.code+" : "+d);
 }
 const skill=code=>skills.rows.find(r=>r.code===code);
-assert.deepEqual(skill("vol_feerique").ascendances,[{nom:"Sang féerique",niveau_min:3}],"le sang féerique bâtard");
-assert.deepEqual([skill("vol_feerique").vol,skill("vol_feerique").charge_aerienne],[true,"toujours"]);
+assert.deepEqual(skill("vol").ascendances,[{nom:"Sang féerique",niveau_min:3},{nom:"Sang divin",niveau_min:3},{nom:"Sang de dragon",niveau_min:3}],
+  "les sangs féerique, divin et de dragon bâtards");
+assert.deepEqual([skill("vol").vol,skill("vol").charge_aerienne],[true,"toujours"]);
 assert.deepEqual(skill("deplacement_aquatique").peuples,["Reptilien"]);
 assert.deepEqual(skill("deplacement_aquatique").ascendances,[{nom:"Sang de sirène",niveau_min:1}],"tous les sangs de sirène");
 assert.deepEqual(skill("deplacement_aquatique").invocations,["crocodile"]);
@@ -60,7 +62,12 @@ const fairy3=sheet(2,{ascendance:"Sang féerique",ascendanceLevel:3}),fairy2=she
 const siren1=sheet(4,{ascendance:"Sang de sirène",ascendanceLevel:1}),siren3=sheet(5,{ascendance:"Sang de sirène",ascendanceLevel:3});
 const lizard=sheet(6,{people:"Reptilien",culture:"Reptiliens des marécages"}),sylvan=sheet(7,{people:"Elfe",culture:"Elfes sylvains"});
 const plain=sheet(8,{});
-assert.deepEqual(codes(fairy3),["vol_feerique"]);
+assert.deepEqual(codes(fairy3),["vol"]);
+for(const blood of ["Sang divin","Sang de dragon"]){
+  assert.deepEqual(codes(sheet(10,{ascendance:blood,ascendanceLevel:3})),["vol"],blood+" bâtard : il vole");
+  assert.deepEqual(codes(sheet(11,{ascendance:blood,ascendanceLevel:2})),[],blood+" lignée proche : non");
+  assert.equal(engine.aerialCharger(unitOf(sheet(12,{ascendance:blood,ascendanceLevel:3}))),true,blood+" : charge aérienne");
+}
 assert.deepEqual(codes(fairy2),[],"une lignée proche ne vole pas");
 assert.deepEqual(codes(siren1),["deplacement_aquatique"]);
 assert.deepEqual(codes(siren3),["deplacement_aquatique","respiration_aquatique"]);
@@ -134,5 +141,10 @@ elf.q=2;elf.r=4;
 assert.equal(api.missionTerrainStealth(elf),0,"hors de la forêt, plus rien");
 // Le repérage en tient compte.
 assert.match(mission,/e\.coverDiscretion\(missionCoverLevel\(observer,target\)\)\+missionTerrainStealth\(target\)/);
+
+// 4. Sur la fiche, avec les aptitudes (au survol : ce qu'elles donnent).
+const ui=fs.readFileSync(path.join(ROOT,"prototype-web","ui.js"),"utf8");
+assert.match(ui,/combatEngine\(\)\.terrainSkillsOf\?\.\(\{character:c\}\)/);
+assert.match(ui,/const aptitudes=layout\.aptitudes\.filter\(yes\)[^\n]*\+terrain;/);
 
 console.log("Capacités de terrain : vol des sangs féeriques, Déplacement aquatique, Respiration aquatique, Déplacement sylvain — OK");

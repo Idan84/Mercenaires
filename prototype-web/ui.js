@@ -1258,7 +1258,11 @@ function renderSkillsTab(c){
   const style=layout.styles_de_combat.map(n=>({n,v:skillValue(c,"martial",n)})).filter(x=>Number.isFinite(x.v)).sort((a,b)=>b.v-a.v)[0];
   const yes=name=>c.skills?.martial?.[name]===true||c.skills?.physiology?.[name]===true;
   const armors=layout.armures.map(a=>`<span class="sheet-armor ${yes(a.nom)?"is-yes":"is-no"}" title="${esc(a.nom)} : ${yes(a.nom)?"oui":"non"}">${statIcon(a.nom)}${esc(a.label)}</span>`).join("");
-  const aptitudes=layout.aptitudes.filter(yes).map(n=>`<span class="sheet-armor is-yes">${esc(n)}</span>`).join("");
+  // Capacités de terrain (doc 04 ; Idan, 2026-11-09 : « On les mets sur la fiche avec les autres compétences ») : Vol,
+  // Déplacement aquatique, Respiration aquatique, Déplacement sylvain ; au survol, ce qu'elles donnent.
+  const terrain=(combatEngine().terrainSkillsOf?.({character:c})||[])
+    .map(s=>`<span class="sheet-armor is-yes" title="${esc(s.nom)} : ${esc(s.description||"")}">${esc(s.nom)}</span>`).join("");
+  const aptitudes=layout.aptitudes.filter(yes).map(n=>`<span class="sheet-armor is-yes">${esc(n)}</span>`).join("")+terrain;
   return `<section class="sheet-skills">
     <aside class="sheet-portrait">
       ${renderEvaluation(c)}${renderAvatar(c,{variant:"detail",kind:"full"})}

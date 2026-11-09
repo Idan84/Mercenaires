@@ -53,7 +53,7 @@ assert.equal(copy.stats.find(r=>r.nom==="Intimidation")?.groupe,"mental");
 // Onglet Compétences : chaque catégorie martiale est dans une seule colonne ; les armures sont les aptitudes.
 const skills=read("skills.json").rows;
 const layout=copy.skills_layout;
-const placed=[...layout.corps_a_corps,...layout.style,...layout.tir,...layout.discretion_et_pieges];
+const placed=[...layout.corps_a_corps,...layout.style,...layout.tir,...layout.discretion_et_pieges,layout.magie_en_armure];
 assert.equal(new Set(placed).size,placed.length,"une catégorie dans une seule colonne");
 // Armes naturelles (aux créatures) et Combat à mains nues (désactivé) ne sont pas sur la fiche (Idan, 2026-11-02).
 assert.deepEqual(placed.sort(),skills.filter(r=>r.domaine==="Martial"&&r.niveau==="Catégorie"&&r.mercenaire!==false).map(r=>r.nom).sort());

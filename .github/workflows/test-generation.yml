@@ -89,6 +89,7 @@ jobs:
       - run: node tests/mercenary-domain.test.js
       - run: node scripts/build-mercenary-profile.js --check
       - run: node tests/magic.test.js
+      - run: node tests/magic-armor.test.js
       - run: node tests/mission-spells.test.js
       - run: node tests/mission-ui.test.js
       - run: node tests/mission-sentinel.test.js

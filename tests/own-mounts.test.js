@@ -135,8 +135,11 @@ assert.ok(target.hp <= hpBefore);
 assert.equal(duo.mount.attackAvailable, false, "l'action principale du cheval est prise");
 assert.equal(m.activeUnit === duo && duo.attackAvailable, true, "celle du cavalier reste : il joue toujours");
 assert.equal(api.missionActionAvailability().mountMelee, false);
-// Le cavalier apprend (Idan : « xp catégorie animal pour le cavalier ») : chaque attaque de sa monture, comme une arme.
-assert.equal(duo.progress.animalUses["Équidés"].attacks, 1);
+// Le cavalier apprend (Idan : « xp catégorie animal pour le cavalier ») : chaque attaque de sa monture, comme une arme
+// (enchaînement compris).
+const mountAttacks = m.log.filter(l => new RegExp("^" + duo.mount.character.name + " attaque ").test(l.message)).length;
+assert.ok(mountAttacks >= 1);
+assert.equal(duo.progress.animalUses["Équidés"].attacks, mountAttacks);
 const learned = Progression.createProgressionRules({reference}).gains(duo.progress, rider).skills.animal;
 assert.ok(learned["Équidés"] >= 10 && learned["Compagnon animal"] === learned["Équidés"], "Équidés et Compagnon animal : " + JSON.stringify(learned));
 // Les exploits de sa monture comptent pour sa réputation (Idan : « réputation 1 ») : participation et coup de grâce.
@@ -184,10 +187,12 @@ const foeRider = m.enemies[0], victim = m.players[0];
 adjacentTo(foeRider, victim);
 victim.camouflaged = false;
 victim.character.undead = true; // sans peur : il reste au contact
+foeRider.character.undead = true; // lui aussi : un raté ne le fait pas fuir avant que son cheval frappe
 foeRider.fleeing = false;
 api.enemyMissionAct(foeRider);
 assert.ok(m.log.some(l => /^Destrier de Cavalier attaque /.test(l.message)), "le cheval du Cavalier attaque : " + m.log.map(l => l.message).join(" | "));
 delete victim.character.undead;
+delete foeRider.character.undead;
 game.campaign = keepCampaign;
 // Descendre / Monter (Idan : « un bouton descendre de la monture / monter. […] La monture joue alors seule dans l'ordre, juste
 // après le mercenaire. Monter : il faut être adjacent. Cela prend une action rapide. » ; « Le cavalier descend : il aura son

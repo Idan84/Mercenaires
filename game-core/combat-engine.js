@@ -280,6 +280,18 @@
       return off;
     }
     function armorItem(unit){ return itemBySlot(unit,"armor"); }
+    // Le bouclier tenu en main : dans le set actif (Idan, 2026-11-09 : rangé dans l'autre set, il ne gêne pas les sorts).
+    function heldShieldItem(unit){
+      const items=[itemBySlot(unit,"weapon_set_"+unit.activeSet+"_main"),offhandSlotItem(unit)];
+      return items.find(item=>item&&isShield(weaponTemplate(item)))||null;
+    }
+    // La qualité d'un objet ; sans qualité notée (un casque), celle de son tier (Idan, 2026-11-09 : « Le tier, c'est la
+    // qualité ! » : T1 Usée, T2 Correcte, T3 De bonne facture, T4 De luxe).
+    const TIER_QUALITY={1:"worn",2:"standard",3:"luxury",4:"deluxe"};
+    function gearQuality(item){
+      if(item?.qualityCode) return quality(item);
+      return qualityByCode.get(TIER_QUALITY[Number(item?.tier)])||quality(null);
+    }
     // Bottes, ceinture, amulette et cape (Idan, 2026-10-24) : + bonus_t<tier> % de la valeur de base qu'elles servent
     // (Vitesse, Esquive, Perception pour les bottes ; Réserve de mana, Endurance, Courage pour la ceinture ; Puissance
     // magique, Volonté, Chance pour l'amulette ; Esquive, Discrétion pour la cape ; Pièges, Dextérité, Force pour les
@@ -1477,7 +1489,7 @@
       activeOffhandItem,
       withHand,
       weaponTemplate,
-      armorItem,
+      armorItem,heldShieldItem,gearQuality,
       itemBySlot,
       armorTemplate,
       baseValue,

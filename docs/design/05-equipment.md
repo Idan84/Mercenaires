@@ -49,7 +49,7 @@ Le même jet de blocage est utilisé au **CAC et contre les projectiles physique
 
 Les boucliers ne sont pas traités comme des armures. Ils ajoutent leur propre **malus de vitesse** et utilisent [Blocage bouclier physique V1](/design/#doc=formulas/blocage-bouclier-physique-v1.md) comme jet de sauvegarde après un Toucher réussi.
 
-Ils possèdent aussi désormais le champ numérique **`Altération magique base`**, identique à celui des armures, afin que les boucliers métalliques puissent pénaliser ultérieurement les mécaniques de magie sans passer par le système d'armure.
+Ils possèdent aussi le champ numérique **`Altération magique base`**, identique à celui des armures : Rondache **10**, Écu **15**, Pavois **20** (Idan, 2026-11-09), × le malus de la qualité, seulement pour le bouclier tenu dans le set actif ; il se retire de la réussite des sorts avec celui de l'armure et du casque (doc 12, « Magie en armure »).
 
 La vue **Boucliers — équilibrage** expose `Bonus blocage base`, `Malus vitesse arme base` et `Altération magique base` ensemble.
 
@@ -217,7 +217,7 @@ Onze bagues (`data/reference/rings.json`), portées dans les **six emplacements 
 
 Trois coiffes (`data/reference/helmets.json`), portées dans l’emplacement **Casque / Chapeau** :
 
-- **Casque de constitution** : **+5 / 10 / 15 / 20 %** de la Constitution de base selon le tier ; en contrepartie, **−20 / 15 / 10 / 5 %** de la Puissance magique de base et **−4 / 3 / 2 / 1 de Vitesse** (le poids du casque, compté avec l’armure et les armes tenues). La qualité ne change ni le bonus ni les malus.
+- **Casque de constitution** : **+5 / 10 / 15 / 20 %** de la Constitution de base selon le tier ; en contrepartie, **−20 / 15 / 10 / 5 %** de la Puissance magique de base et **−4 / 3 / 2 / 1 de Vitesse** (le poids du casque, compté avec l’armure et les armes tenues). La qualité ne change ni le bonus ni ces malus. Il gêne aussi les sorts : **5 d'Altération magique**, × la qualité de son tier (Idan, 2026-11-09 : T1 × 1,2, T2 × 1, T3 × 0,8, T4 × 0,6 ; doc 12) ; les chapeaux ne gênent pas.
 - **Chapeau d’intelligence** : **+5 / 10 / 15 / 20 %** de l’Intelligence de base.
 - **Chapeau du dresseur** : **+5 / 10 / 15 / 20 %** de la compétence animale (Compagnon animal).
 - Au combat (`statWithGear`) : la Vitesse (déplacement, Initiative) ; l’Intelligence pour l’Initiative et le choix du type de dégâts. La Constitution compte dans les **PV max** (Idan, 2026-10-25 : ils suivent la Constitution, l’Endurance et la Volonté équipées, voir `formulas/pv-maximum-v1.md`) ; la Puissance magique et le Compagnon animal servent à des systèmes à venir : la fiche montre les valeurs bonifiées (Caractéristiques, Magie, Compétences) avec la ligne du casque.

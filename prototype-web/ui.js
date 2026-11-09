@@ -1283,6 +1283,7 @@ function renderSkillsTab(c){
         <section class="sheet-skill-column"><h4>Tir</h4>${skillRows(c,layout.tir)}
           <h4>Monture ou compagnon</h4>${skillLine(c,"animal",layout.animal)}
           <h4>Armures</h4><div class="sheet-armors">${armors}</div>
+          ${layout.magie_en_armure&&Number.isFinite(skillValue(c,"martial",layout.magie_en_armure))?skillLine(c,"martial",layout.magie_en_armure):""}
           ${aptitudes?`<h4>Aptitudes</h4><div class="sheet-armors">${aptitudes}</div>`:""}</section>
       </div>
       <div class="sheet-skill-overlay-host" id="sheet-skill-overlay-host"></div>

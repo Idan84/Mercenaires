@@ -144,7 +144,8 @@ assert.ok(m.log.some(x=>/\(d’en haut\)/.test(x.message)),"le journal le dit");
 api.setMissionMode("ranged");
 const preview=api.missionAttackPreview(shooter,foe)[0];
 assert.equal(preview.heightDiff,2);
-assert.equal(preview.pHit,engine.hitProbability(shooter,foe,"ranged",engine.axialDistance(shooter,foe),{heightDiff:2}));
+// Le premier tir a pu le faire fuir : l'aperçu compte alors le dos tourné, comme le tir.
+assert.equal(preview.pHit,engine.hitProbability(shooter,foe,"ranged",engine.axialDistance(shooter,foe),{heightDiff:2,backstab:preview.backstab}));
 // Vers le haut, au corps à corps.
 seen.length=0;
 const blade=at(m.players[1],2,4);

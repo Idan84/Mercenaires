@@ -144,7 +144,11 @@ let vamp = m.enemies[0], foe = m.players[0];
 foe.q = vamp.q - 3; foe.r = vamp.r;
 vamp.character.mana = 999;
 api.resetMissionActivation(vamp);
+// Le jet du sort réussit (tirage suivant 0,3) : on vérifie le choix du sort, pas la chance.
+const keptSeed = seed;
+seed = 38332;
 assert.equal(api.missionAiSpell(vamp), true);
+seed = keptSeed;
 assert.ok(m.log.some(x => /lance Drain de vie/.test(x.message)), "Drain de vie sur lui-même");
 assert.ok(vamp.lifeDrain && vamp.attackAvailable !== false, "action rapide : il peut encore agir");
 const before = m.log.length;

@@ -251,6 +251,8 @@
       c.pvMax=c.pv=arch.pv;
       const martial={};
       for(const [key,value] of Object.entries(c.skills?.martial||{})) martial[key]=typeof value==="boolean"?false:0;
+      // Magie en armure reste celle de la génération (nains 2D6, autres 1) : les fiches ennemies ne la fixent pas.
+      if(Number.isFinite(c.skills?.martial?.["Magie en armure"])) martial["Magie en armure"]=c.skills.martial["Magie en armure"];
       Object.assign(martial,arch.competences_martiales);
       for(const port of arch.port_d_armure||[]) martial[port]=true;
       c.skills={...c.skills,martial,social:{...(c.skills?.social||{}),Intimidation:arch.intimidation}};

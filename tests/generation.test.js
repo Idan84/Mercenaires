@@ -46,7 +46,7 @@ assert.equal(audit.counts.peoples, 10);
 assert.equal(audit.counts.cultures, 32);
 assert.equal(audit.counts.cultureOriginCompatibilities, 224);
 assert.equal(audit.counts.matrixRows, 106);
-assert.equal(audit.counts.skills, 95, "dont Combat à une main (Idan, 2026-11-02)");
+assert.equal(audit.counts.skills, 96, "dont Combat à une main (Idan, 2026-11-02) et Magie en armure (2026-11-09)");
 assert.equal(audit.counts.baseArmors, 8);
 assert.equal(audit.counts.equipmentSlots, 23, "dont gants et culotte (Idan, 2026-10-24)");
 assert.deepEqual(generator.equipmentTierDistribution(0), {1:0.9,2:0.09,3:0.01});

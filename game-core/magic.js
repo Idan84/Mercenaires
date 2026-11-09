@@ -66,6 +66,10 @@
     const CAST={floor:constant("magic.cast.floor",10),span:constant("magic.cast.span",85),scale:constant("magic.cast.scale",15),
       difficulty:constant("magic.cast.difficulty",30)};
     const FUMBLE_THRESHOLD=constant("combat.melee.fumble.threshold",96);
+    // Magie en armure (Idan, 2026-11-09) : la compétence retire cette part de sa valeur au malus de l'équipement porté.
+    const ARMOR_SKILL={name:"Magie en armure",factor:constant("magic.armor_skill.factor",0.5),base:constant("generation.magic_armor.base",1)};
+    const shieldAlteration=new Map(rows(reference?.skills).filter(r=>r.parent==="Boucliers").map(r=>[r.nom,Number(r.alteration_magique_base)||0]));
+    const helmetAlteration=new Map(rows(reference?.helmets).map(r=>[r.nom,Number(r.alteration_magique_base)||0]));
     const RECHARGE={base:constant("magic.mana.recharge_base",10),willShare:constant("magic.mana.recharge_will_share",0.5)};
     const SUMMON={hold:constant("magic.summon.hold_difficulty",30),zombieMin:constant("magic.summon.zombie_share_min",10),
       zombieMax:constant("magic.summon.zombie_share_max",100)};
@@ -157,11 +161,28 @@
       return {before,after:character.mana,gained:character.mana-before,max};
     }
 
-    // Altération magique de l'armure portée, × le multiplicateur de malus de sa qualité (Usée 1,2 ; De bonne facture 0,8 ; De luxe 0,6).
+    // Altération magique de l'équipement porté (Idan, 2026-11-09 : « Deux choses à régler : les boucliers et les casques
+    // (pas les chapeaux...) » ; « 10 / 15 / 20 pour rondache / écu / pavois et encore 5 pour les casques ») : l'armure, le
+    // bouclier tenu en main (set actif) et le casque, chacun × le multiplicateur de malus de sa qualité (Usée 1,2 ; De bonne
+    // facture 0,8 ; De luxe 0,6 ; un casque : celle de son tier).
+    function gearPenalty(unit){
+      const malus=item=>Number(combat.gearQuality?combat.gearQuality(item).multiplicateur_malus:combat.quality(item).multiplicateur_malus)||1;
+      const armor=combat.armorItem(unit),armorTemplate=combat.armorTemplate(armor);
+      let total=armorTemplate?(Number(armorTemplate.alteration_magique_base)||0)*(Number(combat.quality(armor).multiplicateur_malus)||1):0;
+      const shield=combat.heldShieldItem?.(unit);
+      if(shield) total+=(shieldAlteration.get(combat.weaponTemplate(shield)?.nom||shield.name)||0)*malus(shield);
+      const head=combat.itemBySlot?.(unit,"head");
+      if(head) total+=(helmetAlteration.get(head.name)||0)*malus(head);
+      return total;
+    }
+    // Magie en armure (Idan, 2026-11-09 : « Piste 2 ») : sa valeur (1 si elle manque : « tous les autres à 1 »).
+    function armorSkill(unit){
+      const value=Number(unit?.character?.skills?.martial?.[ARMOR_SKILL.name]);
+      return Number.isFinite(value)?value:ARMOR_SKILL.base;
+    }
+    // Le malus qui reste : celui de l'équipement, moins la part de la compétence, jamais sous 0.
     function armorPenalty(unit){
-      const item=combat.armorItem(unit),template=combat.armorTemplate(item);
-      if(!template) return 0;
-      return (Number(template.alteration_magique_base)||0)*(Number(combat.quality(item).multiplicateur_malus)||1);
+      return Math.max(0,gearPenalty(unit)-ARMOR_SKILL.factor*armorSkill(unit));
     }
     function castChance(unit,code){
       const s=spell(code);
@@ -171,7 +192,7 @@
       const armor=armorPenalty(unit);
       // Brouillage mental (Illusion) : unit.mindFog = {malus, turns}, des points de chance en moins.
       const fog=Math.max(0,num(unit?.mindFog?.malus,0));
-      return {delta,base,armor,fog,p:clamp(base-armor-fog,0,100)};
+      return {delta,base,armor,gear:gearPenalty(unit),fog,p:clamp(base-armor-fog,0,100)};
     }
 
     // Invocations (Nécromancie ; Idan, 2026-10-28). Entretien : entretien_mana × (1 − Maîtrise / 300) mana par tour, au
@@ -754,7 +775,7 @@
       currentMana,
       dailyRecharge,
       rechargeMana,
-      armorPenalty,
+      armorPenalty,gearPenalty,armorSkill,
       castChance,
       isUndead,
       isPoisoned,

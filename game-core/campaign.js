@@ -33,10 +33,12 @@
   const taming=typeof module!=="undefined"&&module.exports?require("./taming.js"):root.MercenairesTaming;
   // La Cantine, salle de la Taverne : le plat du jour (facultatif hors du jeu, de même).
   const canteen=typeof module!=="undefined"&&module.exports?require("./canteen.js"):root.MercenairesCanteen;
-  const api=factory(history,regeneration,training,study,posts,armorPorts,armorStudy,lumber,agenda,dungeon,desertion,salaryReview,socialPolicy,stables,taming,canteen);
+  // Le Mémorial : les morts de la compagnie (facultatif hors du jeu, de même).
+  const memorial=typeof module!=="undefined"&&module.exports?require("./memorial.js"):root.MercenairesMemorial;
+  const api=factory(history,regeneration,training,study,posts,armorPorts,armorStudy,lumber,agenda,dungeon,desertion,salaryReview,socialPolicy,stables,taming,canteen,memorial);
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesCampaign=api;
-})(typeof globalThis!=="undefined"?globalThis:this,function(History,Regeneration,Training,Study,Posts,ArmorPorts,ArmorStudy,Lumber,Agenda,Dungeon,Desertion,SalaryReview,SocialPolicy,Stables,Taming,Canteen){
+})(typeof globalThis!=="undefined"?globalThis:this,function(History,Regeneration,Training,Study,Posts,ArmorPorts,ArmorStudy,Lumber,Agenda,Dungeon,Desertion,SalaryReview,SocialPolicy,Stables,Taming,Canteen,Memorial){
   // Sauvegarde : l'état de partie complet, sérialisé en JSON avec un format et une version.
   // La trace de génération des mercenaires (détail de calcul pour le Design Lab, ~85 % du poids)
   // n'est pas sauvegardée : un mercenaire passe d'environ 36 Ko à 5 Ko.
@@ -739,6 +741,9 @@
     const hasPlaces=row=>Number(row?.places_pas)>0||animalWing(row);
     const TRAINING_HALLS=[...CAMP_BUILDINGS.values()].filter(row=>!row.requiert
       &&(hasPlaces(row)||campRoomCodes(row.code).some(code=>hasPlaces(CAMP_BUILDINGS.get(code))))).map(row=>row.code);
+    const MEMORIAL={code:"memorial",name:reference?.memorial?.panel?.name||"Mémorial",school:"Nécromancie",
+      deathsPerLevel:Math.max(1e-9,referenceConstant(reference,"camp.memorial.deaths_per_level",10)),
+      places:Math.max(0,Math.floor(referenceConstant(reference,"camp.memorial.places",1)))};
     function trainingRooms(state){
       const rooms=[];
       for(const hall of TRAINING_HALLS){
@@ -757,6 +762,14 @@
           rooms.push(room);
         }
       }
+      // Le Mémorial (Idan, 2026-11-09 : « un mercenaire peut aller s'entrainer de lui même pour la nécromancie, comme dans
+      // l'école de magie. L'xp depend ici du nombre de morts dans la compagnie ») : une place (camp.memorial.places), le
+      // test et le gain d'une salle de l'École sans directeur ; niveau = morts ÷ 10 (camp.memorial.deaths_per_level), sans
+      // arrondi ni plafond, dès le premier mort.
+      const deaths=memorialRules?memorialRules.deaths(state):0;
+      if(deaths>0&&MEMORIAL.places>0) rooms.push({code:MEMORIAL.code,building:MEMORIAL.code,name:MEMORIAL.name,label:MEMORIAL.name,
+        school:MEMORIAL.school,trains:MEMORIAL.school,learnWith:"Intelligence",schoolTest:true,level:deaths/MEMORIAL.deathsPerLevel,
+        places:MEMORIAL.places});
       return rooms;
     }
     // L'agenda (agenda.js ; Idan, 2026-11-04) : chaque apprentissage et chaque corvée y est inscrit une fois, et lui demande
@@ -827,6 +840,8 @@
     // Les Écuries (Idan, 2026-11-07 ; règles : stables.js) : les montures capturées, leurs places et leur entretien.
     const stableRules=Stables?Stables.createStableRules({reference,random,camp:{buildingLevel},
       makeItem:(type,name)=>typeof generator?.createItemByName==="function"?generator.createItemByName(type,name):null}):null;
+    // Le Mémorial (Idan, 2026-11-09 ; règles : memorial.js) : chaque mort de la compagnie y entre, avec la cause de sa mort.
+    const memorialRules=Memorial?Memorial.createMemorialRules({reference,random}):null;
     // Héritage (issue #111) : 20 % de la part du défunt juste avant son retrait (standing : sa place au classement), figés
     // pour toujours et comptés une seule fois. Le capitaine n'en laisse pas : sa mort met fin à la partie.
     function recordHeritage(state,mercenary,standing){
@@ -849,6 +864,9 @@
       if(m.avatar?.id) (state.avatarsRetired=state.avatarsRetired||[]).push(m.avatar.id);
       if(how!=="duel") return {left};
       const heritage=recordHeritage(state,m,standing);
+      // Le Mémorial : mort en combat singulier contre le capitaine.
+      const captain=captainOf(state);
+      const memorial=memorialRules?memorialRules.record(state,m,{cause:{kind:"duel",by:captain?{name:captain.name,proper:true}:null}}):null;
       const items=m.items||[];
       if(items.length){
         if(!Array.isArray(state.company.stock)) state.company.stock=[];
@@ -856,7 +874,7 @@
       }
       m.items=[];
       if(m.equipment?.slots) for(const slot of Object.keys(m.equipment.slots)) m.equipment.slots[slot]=null;
-      return {left,heritage,items};
+      return {left,heritage,items,memorial};
     }
     // Désertion (Idan, 2026-11-04 ; règles : desertion.js) : l'affinité avec le capitaine, celle envers un lieutenant, la
     // Discrétion avec l'équipement (statOf, fourni par le jeu).
@@ -1425,6 +1443,14 @@
           // et comptés une seule fois. Le capitaine n'en laisse pas : sa mort met fin à la partie.
           const entry=recordHeritage(state,mercenary,standingAtStart.get(mercenary.id));
           if(entry) report.heritage.push(entry);
+          // Le Mémorial (Idan, 2026-11-09) : sa dernière mission dans son historique, puis son portrait, la cause de sa
+          // mort (result.cause, notée quand il est tombé) et son épitaphe.
+          History.recordDeath(mercenary,state.day,{progress:result.progress,captured:Boolean(result.captured)});
+          if(memorialRules){
+            const cause=result.captured?{kind:"captured"}:result.cause||null;
+            const memorial=memorialRules.record(state,mercenary,{cause});
+            if(memorial) (report.memorial=report.memorial||[]).push(memorial);
+          }
           roster.splice(roster.indexOf(mercenary),1);
           if(state.company.intendantId===mercenary.id) state.company.intendantId=null;
           if(state.company.medicId===mercenary.id) state.company.medicId=null;
@@ -1521,7 +1547,7 @@
       completeExpeditionCombat,
       dormitoryFree,
       dormitoryUsed,
-      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,trainingRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,spellStudy,armorStudy,poisonStudy,lumberjacks,miners,palaceWorkers,dungeonRules,canteenRules,desertionRules,salaryReviewRules,stableRules,tamingRules,socialPolicy:social,agenda,studyBusy,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
+      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,trainingRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,spellStudy,armorStudy,poisonStudy,lumberjacks,miners,palaceWorkers,dungeonRules,canteenRules,desertionRules,memorialRules,salaryReviewRules,stableRules,tamingRules,socialPolicy:social,agenda,studyBusy,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
       woundDaysFor,fatigueDaysFor,dormitoryFatigueCut,
       dormitoryPlaces,
       dormitoryExpansionCost,

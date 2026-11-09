@@ -2142,6 +2142,30 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .dormitory-panel h2{margin:0;font:normal 32px Georgia,serif;color:#f4d9a6}
 .dormitory-meta{margin:4px 0 16px;color:#c2b29e;font-size:14px}
 .dormitory-back{padding:6px 12px;font-size:13px}
+/* Le Mémorial (Idan, 2026-11-09) : la galerie des portraits, puis la fiche d'un mort. */
+.memorial-panel{width:min(100%,1040px);margin:0 auto;padding:18px 22px 22px;border:1px solid #957652;border-radius:14px;background:rgba(22,17,13,.9);color:#f0e2ca;box-shadow:0 20px 60px #000a}
+.memorial-panel .eyebrow{margin:6px 0 2px;color:#d3ac76}
+.memorial-panel h2{margin:0;font:normal 32px Georgia,serif;color:#f4d9a6}
+.memorial-intro{margin:4px 0 16px;color:#c2b29e;font-size:14px}
+.memorial-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:14px}
+.memorial-portrait{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px;border:1px solid #6f5a43;border-radius:12px;background:linear-gradient(160deg,#2f241c,#17120e);color:#e9d9c0;text-align:center;filter:grayscale(.55)}
+.memorial-portrait:hover,.memorial-portrait:focus-visible{border-color:#eed098;filter:none;outline:none}
+.memorial-portrait .avatar-frame{width:96px;aspect-ratio:1;margin:0;box-shadow:none}
+.memorial-portrait b{font:normal 15px Georgia,serif;color:#f4d9a6}
+.memorial-portrait small{color:#a8977f;font-size:12px}
+.memorial-back{padding:6px 12px;font-size:13px;margin-bottom:12px}
+.memorial-detail-body{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:22px;align-items:start}
+.memorial-detail-avatar .avatar-frame{width:100%;margin:0;filter:grayscale(.35)}
+.memorial-detail-text h3{margin:0;font:normal 30px Georgia,serif;color:#f4d9a6}
+.memorial-detail-text h4{margin:16px 0 4px;color:#d3ac76;font:600 13px system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase}
+.memorial-people,.memorial-days{margin:2px 0;color:#c2b29e;font-size:14px}
+.memorial-date{margin:8px 0 2px;color:#f0e2ca}
+.memorial-cause{margin:0;font-size:16px}
+.memorial-cause-detail{margin:4px 0 0;color:#c2b29e;font-size:14px}
+.memorial-epitaph{margin:0;padding:10px 14px;border-left:3px solid #9c7952;font:italic 17px Georgia,serif;color:#f4d9a6}
+.memorial-history{margin-top:18px}
+.memorial-history>h4{margin:0 0 8px;color:#d3ac76;font:600 13px system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase}
+@media(max-width:700px){.memorial-detail-body{grid-template-columns:minmax(0,1fr)}.memorial-detail-avatar{max-width:260px}}
 @media(max-width:640px){.building-actions{grid-template-columns:minmax(0,1fr);gap:6px}.building-cost{margin-bottom:8px}.building-card--link{grid-template-columns:minmax(0,1fr)}}
 .character-list{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
 .roster-card{display:grid;grid-template-columns:94px minmax(0,1fr) auto;gap:14px;align-items:start;padding:14px;border:1px solid #9c7952;border-radius:13px;background:linear-gradient(130deg,#443126,#201916);text-align:left;color:#e9d9c0;box-shadow:0 10px 25px #0005;min-width:0;transition:border-color .16s,transform .16s}

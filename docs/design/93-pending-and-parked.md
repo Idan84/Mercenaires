@@ -32,7 +32,8 @@ Les gros chantiers à venir, dans l'ordre de la liste d'Idan, avec ce qui s'y ra
     revenus à recaler ensemble.
 14. **Onglet Conseils** (Idan : « super important ») : l'intendant façon adjoint de Football Manager, avec des erreurs
     volontaires ([doc 19](/design/#doc=19-mercenary-profile.md)).
-15. **Mémorial** (Idan : « indispensable ») : le bâtiment, et les morts de mission qui y entrent.
+15. ~~**Mémorial**~~ : fait le 2026-11-09 — la galerie des morts (cause drôle, épitaphe, historique) et l'étude de la
+    Nécromancie ([doc 11 §9](/design/#doc=11-camp-and-ruined-castle.md)).
 16. **Traumatismes physiques et psychologiques après une mission** (Idan, 2026-11-06) ; ils reprennent les séquelles
     permanentes des blessures, reportées le 2026-10-03 ([doc 10](/design/#doc=10-mission-time-and-unavailability.md)).
 17. **Marchands** : leurs portraits (aucun pour l'instant) et la négociation du capitaine ([doc 18](/design/#doc=18-merchants.md)).

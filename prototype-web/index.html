@@ -341,7 +341,10 @@
       <div class="mission-command">
         <div id="mission-active-card" class="mission-active-card"></div>
         <div class="mission-command-main">
-          <div class="mission-actions">
+          <div class="mission-actions" id="mission-actions">
+            <!-- Déploiement (rapport de l'éclaireur, Idan 2026-11-09) : seulement ces deux-là. -->
+            <button id="mission-deploy-start-btn" class="primary deploy-only" title="Les hommes sont en place : le combat commence">Lancer le combat</button>
+            <button id="mission-retreat-btn" class="secondary deploy-only" title="Le contrat est perdu et la renommée baisse, mais personne ne meurt">Rebrousser chemin</button>
             <button id="mission-move-btn" class="secondary">Se déplacer</button>
             <button id="mission-attack-btn" class="secondary">Attaquer</button>
             <button id="mission-two-hands-btn" class="secondary hidden" title="Frapper fort, mais perdre l’esquive de la main libre jusqu’au prochain tour.">Attaquer à deux mains</button>

@@ -64,7 +64,8 @@ const game={campaign:null,captain,referenceData:reference};
 const mission=read("mission.js");
 const api=new Function("game","$","esc","fmt","renderAvatar","combatEngine","MercenairesProgression","MercenairesMissionEnd","MercenairesMagic",
   mission+"\nreturn {makeMissionUnit,sortMissionInitiative,resolveMissionScouting,revealMissionScouted,startMissionCamouflage,"
-  +"resolveMissionAftermath,checkMissionEnd};")
+  +"resolveMissionAftermath,checkMissionEnd,setMissionMapSize,missionDeployBand,missionDeployCells,startMissionDeployment,"
+  +"handleMissionHexClick,targetableMissionCells,startMissionAfterDeployment,retreatMissionExpedition,missionKey};")
   .call(null,game,$,v=>String(v??""),v=>String(Math.round(Number(v)||0)),()=>"",()=>engine,Progression,MissionEnd,Magic);
 function newMission(){
   const squad=[2,3,4].map(id=>generator.createMercenary({id,captain}));
@@ -128,13 +129,67 @@ assert.ok(logged(/revient de son repérage sans avoir été vu : il a repéré 0
 // 3. Le combat d'expédition : l'éclaireur avant le camouflage, les ennemis vus révélés après ; le choix après les jours de
 // marche (fenêtre « Escouade sur place »), pas à la Taverne.
 const start=mission.slice(mission.indexOf("function startExpeditionCombat("),mission.indexOf("function resolveMissionScouting("));
-assert.match(start,/const scouting=scout\?resolveMissionScouting\(scout\):null;\n[^\n]*\n  if\(scouting\?\.captured&&!livingMissionUnits\("player"\)\.length&&checkMissionEnd\(\)\)\{ renderMission\(\); return; \}\n  startMissionCamouflage\(\);\n  if\(scouting&&!scouting\.captured\) revealMissionScouted\(scouting\);/,
-  "parti seul et capturé : la mission est perdue");
+assert.match(start,/const scouting=scout\?resolveMissionScouting\(scout\):null;\n[^\n]*\n  if\(scouting\?\.captured&&!livingMissionUnits\("player"\)\.length&&checkMissionEnd\(\)\)\{ renderMission\(\); return; \}\n[^\n]*\n  if\(scouting&&!scouting\.captured\)\{ startMissionDeployment\(scouting\); return; \}\n  startMissionCamouflage\(\);\n  selectNextMissionPlayer\(\);/,
+  "parti seul et capturé : la mission est perdue ; revenu : le déploiement ; sans éclaireur (ou capturé) : comme avant");
 const ui=read("contract-ui.js"),html=read("index.html");
 assert.match(html,/id="expedition-dialog-scout"[^>]*data-expedition-scout=""[^>]*>Envoyer un éclaireur</);
 assert.match(html,/id="expedition-scout-list"/);
 assert.match(ui,/startExpeditionCombat\(go\.dataset\.expeditionScoutGo,\{scoutId:Number\(go\.dataset\.scoutId\)\}\)/);
 assert.match(ui,/e\.memberIds\.map\(mid=>game\.campaign\.company\.roster\.find/,"un mercenaire de l'escouade (un animal ne part pas seul)");
 assert.match(ui,/\.sort\(\(a,b\)=>discretion\(b\)-discretion\(a\)\)/,"les plus discrets d'abord");
+
+// 4. Revenu : le rapport (la carte, les ennemis vus), puis le déploiement libre sur la bande de 4 cases, ou la retraite.
+assert.equal(reference.formulaConstants.rows.find(r=>r.code==="combat.deploy.band").valeur,4);
+api.setMissionMapSize({cols:36,rows:25});
+const at=(col,r)=>({q:col-((r-(r&1))>>1),r});
+assert.deepEqual([at(3,12),at(4,12),at(32,12),at(31,12),at(18,3),at(18,4),at(18,21),at(18,20)].map(c=>api.missionDeployBand(c)),
+  [true,false,true,false,true,false,true,false],"la bande : 4 cases sur chaque bord");
+m=newMission();
+const place=(u,col,r)=>{ const c=at(col,r); u.q=c.q; u.r=c.r; };
+m.players.forEach((u,i)=>place(u,1,10+i));
+m.enemies.forEach((u,i)=>place(u,17+i,12));
+api.startMissionDeployment({spotted:[m.enemies[0]]});
+assert.equal(m.phase,"deploy");
+assert.deepEqual(m.enemies.map(u=>u.camouflaged),[false,true,true],"seuls les ennemis vus par l'éclaireur sont sur la carte");
+assert.equal(api.targetableMissionCells().size,0,"rien à placer tant qu'on n'a choisi personne");
+const [d1]=m.players;
+api.handleMissionHexClick(d1.q,d1.r);
+assert.equal(m.deploySelected,d1,"un clic sur l'un des nôtres le choisit");
+const band=api.targetableMissionCells();
+assert.ok(band.size>200&&[...band].every(k=>{ const [q,r]=k.split(",").map(Number); return api.missionDeployBand({q,r}); }),"ses cases : la bande");
+assert.ok(!band.has(api.missionKey(m.players[1].q,m.players[1].r)),"pas sur un des nôtres");
+const center=at(18,12);
+api.handleMissionHexClick(center.q,center.r);
+assert.notDeepEqual([d1.q,d1.r],[center.q,center.r],"pas au milieu de la carte");
+const far=at(34,22);
+api.handleMissionHexClick(far.q,far.r);
+assert.deepEqual([d1.q,d1.r,m.deploySelected],[far.q,far.r,null],"posé de l'autre côté de la carte, sur la bande");
+assert.ok(logged(/Déploiement : cliquez un de vos hommes/));
+force=0.999;
+api.startMissionAfterDeployment();
+force=null;
+assert.equal(m.phase,"player");
+assert.equal(m.enemies[0].camouflaged,false,"l'ennemi vu par l'éclaireur reste repéré");
+assert.ok(m.activeUnit&&m.activeUnit.team==="player","le combat commence, notre équipe d'abord");
+// Rebrousser chemin : le contrat perdu (la renommée de l'échec), sans combat ni mort ; l'escouade rentre.
+m=newMission();
+api.startMissionDeployment({spotted:[]});
+const calls=[];
+globalThis.missionRules=()=>({outcome:(offer,o)=>({victory:o.victory,reward:0,chestGold:0,chestItems:[],loot:[],renown:-30,hunt:false})});
+globalThis.campaignRules=()=>({completeExpeditionCombat:(state,id,o)=>{ calls.push({id,...o}); return {expedition:{id}}; }});
+globalThis.renderGame=()=>{};
+game.campaign={company:{captainId:1}};
+Object.assign(m,{expeditionId:"exp-1",contract:{distance:3}});
+api.retreatMissionExpedition();
+assert.equal(calls.length,1);
+assert.deepEqual([calls[0].id,calls[0].result.victory,calls[0].result.renown,calls[0].result.retreat,calls[0].bonuses],["exp-1",false,-30,true,[]]);
+assert.equal(game.mission,null,"retour au camp");
+game.campaign=null;
+const retreatLine=m.log.map(x=>x.message).find(t=>/rebrousse chemin/.test(t));
+assert.equal(retreatLine,"L’escouade rebrousse chemin : le contrat est perdu, sans combat ni mort, et la renommée de la compagnie baisse (-30). Retour au camp dans 3 jours.");
+assert.ok(!m.aftermath,"personne ne passe la fin de mission : ni mort, ni blessure");
+const html2=read("index.html");
+assert.match(html2,/id="mission-deploy-start-btn" class="primary deploy-only"[^>]*>Lancer le combat</);
+assert.match(html2,/id="mission-retreat-btn" class="secondary deploy-only"[^>]*>Rebrousser chemin</);
 
 console.log("Éclaireur : capture rare, prisonnier libéré ou perdu, ennemis vus repérés, choix après la marche — OK");

@@ -2358,6 +2358,7 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .sheet-magic{display:grid;grid-template-columns:250px minmax(0,1fr);gap:18px;align-items:start}
 .sheet-magic-main{display:grid;gap:12px;min-width:0}
 .magic-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.magic-stats--3{grid-template-columns:repeat(3,minmax(0,1fr))}
 .magic-stat{padding:10px 14px}
 .magic-stat .sheet-stat-icon{width:24px;height:24px;color:#b9a3f0}
 .magic-stat .sheet-stat-name{font:700 15px Georgia,serif}

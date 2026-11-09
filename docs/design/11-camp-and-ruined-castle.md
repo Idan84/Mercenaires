@@ -704,6 +704,36 @@ de désertion pendant 15 jours » ; « Si ! Il est mort dans un combat ».
   le capitaine. ». Code `game-core/desertion.js`, `prototype-web/desertion-ui.js` ; textes `desertion-dialogue.json` ; test
   `tests/desertion.test.js`.
 
+### Le Défi du capitaine
+
+Idan, 2026-11-09 (« On ajoute sur la carte du mercenaire un bouton de défi » ; « On va la faire gladiateur ! ») ; règles
+`game-core/duel.js` et `campaign.js` (`canChallenge`, `applyDuel`), combat `prototype-web/mission.js`, textes
+`duel-dialogue.json`, constantes `duel.*` ; test `tests/duel.test.js`. Étape 1 (faite) : depuis la fiche ; étape 2 :
+« Défier » à côté d'Intimider et Convaincre après un refus ; étape 3 : la désertion (le vrai duel à la place du duel
+automatique ci-dessus).
+
+- **Défier** : un bouton sur la fiche (onglet Profil, sous le portrait), à tout moment, sans limite par jour (« Oui, sauf le
+  au plus un défi par jour ») ; le capitaine et le défié doivent être au camp, ni blessés, ni fatigués, ni au cachot.
+- **L'arène** : **15 × 15 cases** (`duel.map.*` ; « la carte doit être un peu plus grande... même s'ils peuvent démarrer au
+  centre, l'un assez proche de l'autre »), un peu de décor, les deux au centre, face à face, à **3 cases**
+  (`duel.start.distance`) ; un contre un, avec l'équipement porté, sans monture ni compagnon ; personne n'est caché. Le
+  combat est celui des missions : on joue le capitaine, l'IA joue le défié.
+- **Se rendre** : le capitaine peut se rendre (bouton « Se rendre ») ; le défié ne le peut pas, mais il peut paniquer et
+  fuir : **sortir de l'arène est une victoire du capitaine** (« Il court, mais se fait rattraper par les autres »).
+- **Le capitaine perd** (il tombe, ou se rend) : la fin de mission habituelle — jet de mort s'il est sous 0 PV (sa mort met
+  fin à la partie), sinon blessure ou fatigue.
+- **Nous gagnons** (il tombe, ou il a fui) : la fenêtre « La compagnie attend votre verdict » — **Mise à mort** : il meurt
+  (Mémorial §9, cause « Défié par son capitaine », héritage de renommée) ; **Épargner** : pas de jet de mort, le **jet de
+  blessure** (comme à 0 PV s'il est tombé), et **+50** d'affinité (`duel.affinity.spared`).
+- **La compagnie**, si nous gagnons : chaque mercenaire gagne **+5 d'affinité par case d'écart** entre son alignement et
+  celui du défié (`duel.affinity.alignment_step` ; grille 3 × 3, 0 à 4 cases, comme l'affinité) ; **+10** pour les
+  alignements mauvais s'il est mis à mort (`duel.affinity.evil_kill`), **+10** pour les alignements bons s'il est épargné
+  (`duel.affinity.good_spare`). Rien si le capitaine perd.
+- **Dans tous les cas** : **+150 XP d'Intimidation** et **+50 XP de Charisme** pour le capitaine (`duel.xp.*`), et l'XP
+  normale du combat pour les deux ; ni prime, ni réputation. Puis la fatigue ou la blessure de fin de mission, pour les deux.
+- **Historique** : « Défie … en combat singulier : victoire, et la grâce. » (ou « et le pouce vers le bas », « défaite ») ;
+  côté défié : « Défié par … en combat singulier : vaincu, mais épargné. » ou « victorieux ».
+
 ## 12 — Embellissement / prestige kitsch
 
 Le joueur peut dépenser beaucoup d’or dans des améliorations purement ou largement prestigieuses qui alimentent la **renommée de la compagnie**.

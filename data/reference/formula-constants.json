@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 436,
+  "row_count": 445,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -2752,6 +2752,78 @@
       "description": "Les places pour étudier la Nécromancie au Mémorial ; les morts, eux, y sont en nombre illimité (Idan, 2026-11-09 : « Une seule place. C'est un mini bonus gratuit... »).",
       "formule": "Entraînement libre V1",
       "valeur": 1,
+      "version": "V1"
+    },
+    {
+      "nom": "Défi du capitaine — largeur de l'arène",
+      "code": "duel.map.cols",
+      "description": "Colonnes de l'arène du combat singulier (Idan, 2026-11-09 : « la carte doit être un peu plus grande... même s'ils peuvent démarrer au centre, l'un assez proche de l'autre »).",
+      "formule": "Défi du capitaine V1",
+      "valeur": 15,
+      "version": "V1"
+    },
+    {
+      "nom": "Défi du capitaine — hauteur de l'arène",
+      "code": "duel.map.rows",
+      "description": "Rangées de l'arène du combat singulier ; les deux combattants démarrent au milieu.",
+      "formule": "Défi du capitaine V1",
+      "valeur": 15,
+      "version": "V1"
+    },
+    {
+      "nom": "Défi du capitaine — écart au départ",
+      "code": "duel.start.distance",
+      "description": "Cases entre le capitaine et le défié au début du combat, au centre de l'arène, face à face.",
+      "formule": "Défi du capitaine V1",
+      "valeur": 3,
+      "version": "V1"
+    },
+    {
+      "nom": "Défi du capitaine — XP d'Intimidation",
+      "code": "duel.xp.intimidation",
+      "description": "XP d'Intimidation du capitaine à chaque duel, quelle qu'en soit l'issue (Idan, 2026-11-09 : « Dans tous les cas : +150 xp en intimidation pour le capitaine »).",
+      "formule": "Défi du capitaine V1",
+      "valeur": 150,
+      "version": "V1"
+    },
+    {
+      "nom": "Défi du capitaine — XP de Charisme",
+      "code": "duel.xp.charisma",
+      "description": "XP de Charisme du capitaine à chaque duel, quelle qu'en soit l'issue (« +50 xp en charisme »).",
+      "formule": "Défi du capitaine V1",
+      "valeur": 50,
+      "version": "V1"
+    },
+    {
+      "nom": "Défi du capitaine — affinité par case d'écart",
+      "code": "duel.affinity.alignment_step",
+      "description": "Si le capitaine gagne : chaque mercenaire gagne cette affinité envers lui par case d'écart entre son alignement et celui du défié (grille 3 × 3, de 0 à 4 cases ; « +5 en affinité pour le capitaine par case d'écart »).",
+      "formule": "Défi du capitaine V1",
+      "valeur": 5,
+      "version": "V1"
+    },
+    {
+      "nom": "Défi du capitaine — mise à mort, alignements mauvais",
+      "code": "duel.affinity.evil_kill",
+      "description": "Affinité gagnée envers le capitaine par les mercenaires d'alignement mauvais s'il met le défié à mort (« +10 en affinité pour les mercenaires alignement mauvais si le capitaine le tue »).",
+      "formule": "Défi du capitaine V1",
+      "valeur": 10,
+      "version": "V1"
+    },
+    {
+      "nom": "Défi du capitaine — grâce, alignements bons",
+      "code": "duel.affinity.good_spare",
+      "description": "Affinité gagnée envers le capitaine par les mercenaires d'alignement bon s'il épargne le défié (« +10 en affinité pour les mercenaires alignement bons s'il l'épargne »).",
+      "formule": "Défi du capitaine V1",
+      "valeur": 10,
+      "version": "V1"
+    },
+    {
+      "nom": "Défi du capitaine — le défié épargné",
+      "code": "duel.affinity.spared",
+      "description": "Affinité gagnée envers le capitaine par le mercenaire qu'il épargne (« Pour le mercenaire épargné par le capitaine : +50 en affinité »).",
+      "formule": "Défi du capitaine V1",
+      "valeur": 50,
       "version": "V1"
     },
     {

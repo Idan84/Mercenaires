@@ -509,6 +509,17 @@
     "death": "Tombe au combat.",
     "death_knockouts": "Tombe au combat après avoir abattu {n}.",
     "death_captured": "{Capturé|Capturée} en éclaireur, ne revient jamais.",
+    "duel_fought": {
+      "captain": {
+        "killed": "Défie {nom} en combat singulier : victoire, et le pouce vers le bas.",
+        "spared": "Défie {nom} en combat singulier : victoire, et la grâce.",
+        "lost": "Défie {nom} en combat singulier : défaite."
+      },
+      "challenged": {
+        "spared": "{Défié|Défiée} par {nom} en combat singulier : {vaincu|vaincue}, mais {épargné|épargnée}.",
+        "lost": "{Défié|Défiée} par {nom} en combat singulier : {victorieux|victorieuse}."
+      }
+    },
       "salary_raise": "Obtient une augmentation : de {avant} à {apres} PO par jour.",
       "salary_refused": "Réclame une augmentation ; n’obtient rien."
     },

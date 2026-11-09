@@ -17,7 +17,7 @@
     "ascendanceLevel","ascendanceLevelName","age","domain","reputation","avatar","contract","history"];
   // Les natures où un tueur est nommé ; sans tueur connu : <nature>_seul, sinon unknown.
   const KILLER_KINDS=new Set(["melee","ranged","charge","countercharge","opportunity","fleeing","backstab","spell","spell_feu",
-    "spell_froid","spell_foudre","poison","curse","raised","raised_friendly","friendly","duel"]);
+    "spell_froid","spell_foudre","poison","curse","raised","raised_friendly","friendly","duel","challenged"]);
 
   const clone=value=>value===undefined?undefined:JSON.parse(JSON.stringify(value));
   function profileOf(m){

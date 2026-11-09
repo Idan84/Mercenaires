@@ -2604,6 +2604,7 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .roster-status--scheduled{border-color:#a08a4c;background:linear-gradient(180deg,#4a4122,#332c17);color:#f3e2a8}
 .expedition-dialog{padding:22px 26px;border:1px solid #9a7a4f;border-radius:12px}
 .expedition-dialog p{max-width:52ch;margin:12px 0 18px;line-height:1.5}
+.expedition-scout-list{display:flex;flex-wrap:wrap;gap:8px;max-width:60ch;margin:0 0 18px}
 /* Marchand du jour (doc 18 ; Idan, 2026-10-31) : portrait et nom en tête, onglets Acheter / Vendre, une case par objet
    avec son prix dessous ; ses armes, à la vente, ont un liseré doré. */
 .merchant-head{display:flex;align-items:center;gap:16px;flex-wrap:wrap}

@@ -917,7 +917,7 @@ function departContractSquad(chosen){
 
 // Le combat de l'expédition, à son arrivée : le camp ennemi (gobelin ou orc) sur une carte plus grande ; votre équipe a l'initiative (elle
 // joue la première).
-function startExpeditionCombat(expeditionId){
+function startExpeditionCombat(expeditionId,{scoutId=null}={}){
   const e=(game.campaign?.expeditions||[]).find(x=>x.id===expeditionId);
   if(!e||e.status!=="arrived") return;
   const chosen=e.memberIds.map(id=>game.campaign.company.roster.find(m=>m.id===id)).filter(Boolean);
@@ -951,8 +951,39 @@ function startExpeditionCombat(expeditionId){
   missionLog(beast?"Sur place : "+enemies.length+" "+(enemies.length>1?(beast.plural||beastLabel+"s").toLocaleLowerCase("fr"):beastLabel)+"."
     :"Dans le camp : "+enemies.map(u=>u.character.name).join(", ")+".");
   deployMissionCompanions();
+  // L'éclaireur (Idan, 2026-11-09) : avant le combat, sur le terrain déjà posé.
+  const scout=scoutId!=null?players.find(u=>u.character.id===scoutId):null;
+  const scouting=scout?resolveMissionScouting(scout):null;
+  // Parti seul et capturé : plus personne pour se battre, la mission est perdue.
+  if(scouting?.captured&&!livingMissionUnits("player").length&&checkMissionEnd()){ renderMission(); return; }
   startMissionCamouflage();
+  if(scouting&&!scouting.captured) revealMissionScouted(scouting);
   selectNextMissionPlayer();
+}
+
+// L'éclaireur (doc 04 ; Idan, 2026-11-09) : chaque ennemi tente de le repérer (moteur, resolveScouting). Capturé, il quitte
+// le combat avec son animal : prisonnier, on le récupère indemne si on gagne, sinon il est perdu (resolveMissionAftermath).
+// Revenu, il dit où sont les ennemis qu'il a vus.
+function resolveMissionScouting(scout){
+  const m=game.mission,e=m.engine,name=scout.character.name;
+  const foes=m.enemies.filter(u=>u.alive&&!u.offMap);
+  const out=e.resolveScouting(scout,foes);
+  m.scouting={scoutId:scout.character.id,name,captured:out.captured,seen:out.spotted.length,total:foes.length};
+  if(out.captured){
+    const party=m.players.filter(u=>u===scout||u.master===scout);
+    m.players=m.players.filter(u=>!party.includes(u));
+    m.playerOrder=m.playerOrder.filter(u=>!party.includes(u));
+    const animals=[...party.filter(u=>u!==scout),scout.mount].filter(Boolean);
+    m.capturedScout={id:scout.character.id,name,animals:animals.map(u=>({itemId:u.character.mount?.itemId??null,name:u.character.name}))};
+    const roll=out.capture[out.capture.length-1];
+    missionLog(name+" part en éclaireur"+(animals.length?" avec "+animals.map(u=>u.character.name).join(" et "):"")+" et ne revient pas : l’ennemi l’a repéré ("
+      +missionPercent(roll.p)+", jet "+String(roll.roll).replace(".",",")+"). Prisonnier : vous le récupérerez indemne si vous gagnez ; sinon, il est perdu.","bad");
+  }else missionLog(name+" revient de son repérage sans avoir été vu : il a repéré "+out.spotted.length+" ennemi"+(out.spotted.length>1?"s":"")
+    +(out.spotted.length<foes.length?" (il y en a peut-être d’autres)":"")+".","info");
+  return out;
+}
+function revealMissionScouted(scouting){
+  for(const foe of scouting.spotted) if(foe.alive) foe.camouflaged=false;
 }
 
 function missionTerrain(){
@@ -1110,10 +1141,27 @@ function resolveMissionAftermath(){
   // Défaite d'un contrat : l'ennemi tient le terrain, le jet de mort de nos mercenaires à terre est doublé (doc 17 §8).
   const endOptions={deathMultiplier:m.contract?missionRules().deathMultiplier(m.contract,victory):1};
   m.aftermath=m.endRules.resolveMissionEnd(participants,endOptions);
+  // L'éclaireur prisonnier (Idan, 2026-11-09 : « S'il est repéré, on le récupère Indemne comme prisonnier si on gagne la
+  // mission. Sinon, il est considéré comme mort ») : sur une victoire, il rentre avec l'escouade, sans bilan ; sinon, il est
+  // perdu, avec l'animal qui l'accompagnait.
+  const prisoner=m.capturedScout;
+  if(prisoner&&!victory){
+    const isCaptain=captainId!=null&&prisoner.id===captainId;
+    m.aftermath.results.push({id:prisoner.id,name:prisoner.name,isCaptain,captured:true,dead:true,wounded:false,death:null,wound:null,
+      severity:null,woundDays:null,fatigueDays:null,damageTaken:0});
+    if(isCaptain) m.aftermath.captainDead=true;
+  }
   missionLog("Fin de mission : bilan de votre équipe.","turn");
+  if(prisoner&&victory) missionLog(prisoner.name+", prisonnier de l’ennemi, est libéré indemne : il rentre avec l’escouade.","gear");
   for(const r of m.aftermath.results) missionLog(r.name+" — "+missionAftermathText(r),r.dead?"death":r.wounded?"bad":"info");
   if(!game.campaign) return;
   settleOwnMissionMounts(m,endOptions);
+  // L'animal de l'éclaireur perdu le suit (avant son maître : sinon il repartirait à l'enclos).
+  const lostAnimals=prisoner&&!victory?prisoner.animals.filter(a=>a.itemId!=null):[];
+  if(lostAnimals.length){
+    campaignRules().applyMountAftermath(game.campaign,lostAnimals.map(a=>({id:a.itemId,name:a.name,dead:true})),{stars:m.contract?.level||1});
+    for(const a of lostAnimals) missionLog(a.name+" — perdu avec son maître, prisonnier de l’ennemi.","death");
+  }
   // Expédition : les primes sont versées au retour de l'escouade (doc 17).
   // Multiplicateur d'étoiles (Idan, 2026-11-08) : toute l'XP de la mission selon son niveau.
   const report=m.companyReport=campaignRules().applyMissionAftermath(game.campaign,m.aftermath,{deferBonuses:Boolean(m.expeditionId),stars:m.contract?.level||1});
@@ -1256,6 +1304,7 @@ function contractResultLines(result,trip=null){
 function missionAftermathDetail(r){
   const pct=x=>Math.round(x)+" %";
   const parts=[];
+  if(r.captured) parts.push("éclaireur prisonnier de l’ennemi : la mission perdue, il ne revient pas");
   if(r.offMap) parts.push("a fui le combat");
   if(r.death?.raised) parts.push("relevé en zombie par un nécromancien");
   else if(r.death) parts.push((r.dead?"jet de mort ":"survit au jet de mort ")+pct(r.death.p)+" ("+r.death.roll+")");

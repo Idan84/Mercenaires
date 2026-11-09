@@ -240,7 +240,27 @@ function openExpeditionDialog(id){
   $("expedition-dialog-title").textContent=e.offer.campName+" de "+e.offer.fields.lieu;
   $("expedition-dialog-text").textContent="Après "+e.offer.distance+" jour"+(e.offer.distance>1?"s":"")+" de marche, l’escouade est sur place : "+e.memberIds.map(name).join(", ")+". Elle attend vos ordres ; le jour suivant attendra son combat.";
   $("expedition-dialog-fight").dataset.expeditionFight=e.id;
+  $("expedition-dialog-scout").dataset.expeditionScout=e.id;
+  $("expedition-dialog-scout").hidden=false;
+  $("expedition-scout").hidden=true;
+  $("expedition-scout-list").innerHTML="";
   if(!dialog.open) dialog.showModal();
+}
+// L'éclaireur (Idan, 2026-11-09 : « On peut, avant le combat envoyer un éclaireur choisi parmi les mercenaires de la mission »
+// ; « On envoie après les jours de marche, pas depuis la taverne ») : un mercenaire de l'escouade (son animal le suit ; un
+// animal ne part pas seul), avec sa Discrétion.
+function openExpeditionScoutChoice(id){
+  const e=(game.campaign?.expeditions||[]).find(x=>x.id===id&&x.status==="arrived");
+  if(!e) return;
+  const discretion=m=>Math.round(combatEngine().statWithGear({character:m,activeSet:1},"Discrétion"));
+  // Les plus discrets d'abord.
+  const members=e.memberIds.map(mid=>game.campaign.company.roster.find(m=>m.id===mid)).filter(Boolean)
+    .sort((a,b)=>discretion(b)-discretion(a));
+  const animal=m=>typeof missionMountOf==="function"?missionMountOf(m)?.item?.petName||"":"";
+  $("expedition-scout-list").innerHTML=members.map(m=>`<button type="button" class="secondary" data-expedition-scout-go="${esc(e.id)}" data-scout-id="${esc(m.id)}">
+    ${esc(m.name)} · Discrétion ${fmt(discretion(m))}${animal(m)?" · avec "+esc(animal(m)):""}</button>`).join("");
+  $("expedition-scout").hidden=false;
+  $("expedition-dialog-scout").hidden=true;
 }
 
 function initializeExpeditionUi(){
@@ -260,6 +280,10 @@ function initializeExpeditionUi(){
     if(event.target.closest("#bodyguard-return-ok")){ showNextBodyguardReturn(); return; }
     const fight=event.target.closest("[data-expedition-fight]");
     if(fight) startExpeditionCombat(fight.dataset.expeditionFight);
+    const scout=event.target.closest("[data-expedition-scout]");
+    if(scout) openExpeditionScoutChoice(scout.dataset.expeditionScout);
+    const go=event.target.closest("[data-expedition-scout-go]");
+    if(go) startExpeditionCombat(go.dataset.expeditionScoutGo,{scoutId:Number(go.dataset.scoutId)});
     const cancel=event.target.closest("[data-expedition-cancel]");
     if(cancel) cancelScheduledExpedition(cancel.dataset.expeditionCancel);
     if(event.target.closest("[data-expedition-later]")) $("expedition-dialog").close();

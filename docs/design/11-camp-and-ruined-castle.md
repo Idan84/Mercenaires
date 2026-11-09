@@ -504,6 +504,13 @@ Objectif : supporter des unités montées, y compris des compositions volontaire
   et le **molosse de guerre** (5 PO, rang 1, neutre mauvais, entêtement 25, vendu par Kippa Ressortdor, des Gnomes des villes ;
   **une demi-place** : `place`, « Il prend une demi place au chenil »). Les places prises comptent ces demi-places (l'écran le
   dit : « 1,5 / 2 »).
+- **La Serre** (`trainer_greenhouse` ; Idan, 2026-11-09 : « J'ai envie de faire les papillons ! » ; « parfait » pour la
+  Serre) : la troisième aile de la Grange, comme le Chenil (2 places par niveau ; on s'y entraîne avec son papillon :
+  Papillons et Compagnon animal). Les petits papillons (télépathe, vénéneux) prennent **une demi-place**, le géant une
+  place. **Papillon télépathe** (3 PO, chaotique bon, vendu par Callie Loincompas, des Explorateurs ; il ne se capture
+  pas), **papillon vénéneux** (4 PO, chaotique neutre, vendu par Jasper Bonnebourse, des Halflings des cités humaines ; il
+  se capture à la Chasse aux papillons), **papillon géant** (10 PO, neutre bon, « à dos de papillon » pour un petit qui le
+  monte, vendu par Dottie Mielbruyère, des Halflings des villages isolés ; seulement vendu). Les fiches : doc 04.
 - **Entretien** : chaque matin, **10 PO par destrier** (`mounts.json`, `entretien`), avec les salaires (le journal et la notification du jour le disent ; l'or peut passer sous 0).
 - **Écran** : sous la Grange, dans Ma Compagnie, la liste des montures (d'où elles viennent, le jour de leur capture, leur entretien), places prises / places, **Relâcher** pour libérer une place (sans propriétaire), **Apprivoiser** (à un mercenaire, sa chance du jour au survol). Apprivoisée et équipée, il part à cheval (doc 04, « Combat à cheval »).
 - **Une monture est un objet** (Idan, 2026-11-07 : « On peut donc acheter et vendre des chevaux comme les autres biens ») : type `mount`, sans tier ni qualité ; sans propriétaire, à l'**Intendance** (onglet **Montures**) ; où qu'elle soit, elle loge aux Écuries (sa place, son entretien). Achat et vente chez les marchands : doc 18 §12 bis.

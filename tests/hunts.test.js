@@ -45,7 +45,7 @@ for (const def of [wolves, unicorns]) {
 
 // 2. Le tirage : renommée ± 2, les bêtes, la marche, la récompense.
 const renown = 0, base = rules.renownLevel(renown);
-const seen = {hunt_wolves: 0, hunt_unicorn: 0, hunt_cerberus: 0, hunt_wild_dogs: 0};
+const seen = {hunt_wolves: 0, hunt_unicorn: 0, hunt_cerberus: 0, hunt_wild_dogs: 0, hunt_butterflies: 0};
 for (let i = 0; i < 400; i++) {
   const offer = rules.createHunt({day: 1, renown});
   seen[offer.code]++;
@@ -63,8 +63,8 @@ for (let i = 0; i < 400; i++) {
   assert.ok(letter && letter.paragraphs.every(p => !/\{[^}]+\}/.test(p)), "la lettre est remplie");
 }
 const huntTotal = Object.values(seen).reduce((a, b) => a + b, 0);
-// À ce niveau : loups, licornes et chiens sauvages à égalité ; pas de cerbère avant le niveau 6.
-assert.ok(["hunt_wolves", "hunt_unicorn", "hunt_wild_dogs"].every(c => seen[c] > 0.25 * huntTotal), "à égalité (Idan, 2026-11-08) : " + JSON.stringify(seen));
+// À ce niveau : loups, licornes, chiens sauvages et papillons à égalité ; pas de cerbère avant le niveau 6.
+assert.ok(["hunt_wolves", "hunt_unicorn", "hunt_wild_dogs", "hunt_butterflies"].every(c => seen[c] > 0.18 * huntTotal), "à égalité (Idan, 2026-11-08) : " + JSON.stringify(seen));
 assert.equal(seen.hunt_cerberus, 0, "pas de cerbère avant le niveau 6");
 // Le cerbère (dès le niveau 6) et les chiens sauvages (jusqu'à 6 : « au dessus elle n'est pas proposée ») ; Idan, 2026-11-09.
 const cerberus = rules.definition("hunt_cerberus"), dogs = rules.definition("hunt_wild_dogs");
@@ -73,7 +73,10 @@ assert.deepEqual([dogs.bete.code, dogs.bete.nom, dogs.bete.des, dogs.bete.faces,
 for (const def of [cerberus, dogs]) assert.equal(reference.oneShotMissions.ordres.filter(o => o.mission === def.code).length, 2, def.code + " : deux lettres");
 const kinds = level => new Set(Array.from({length: 300}, () => rules.createHunt({day: 1, level}).code));
 assert.ok(kinds(6).has("hunt_cerberus") && kinds(6).has("hunt_wild_dogs"), "à 6 étoiles : les deux");
-assert.ok(kinds(7).has("hunt_cerberus") && !kinds(7).has("hunt_wild_dogs"), "à 7 étoiles : plus de chiens sauvages");
+assert.ok(kinds(7).has("hunt_cerberus") && !kinds(7).has("hunt_wild_dogs") && !kinds(7).has("hunt_butterflies"), "à 7 étoiles : plus de chiens sauvages ni de papillons");
+// Les papillons vénéneux (Idan, 2026-11-09 : « Chasse aux papillons 3D6 » ; « On fait que les vénéneux » ; jusqu'à 6★).
+const butterflies = rules.definition("hunt_butterflies");
+assert.deepEqual([butterflies.bete.code, butterflies.bete.des, butterflies.bete.faces, butterflies.niveau.max], ["papillon_veneneux", 3, 6, 6]);
 const pack = rules.buildEnemies(rules.createOffer({code: "hunt_wild_dogs", level: 2}));
 assert.ok(pack.length >= 4 && pack.every(b => b.mount?.code === "molosse"), "des molosses");
 assert.equal(pack[0].name, "Chien sauvage 1", "nommés chiens sauvages");

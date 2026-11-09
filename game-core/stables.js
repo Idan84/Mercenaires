@@ -36,11 +36,13 @@
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesStables=api;
 })(typeof globalThis!=="undefined"?globalThis:this,function(missionEnd){
-  const BARN="trainer_barn",STABLES="trainer_stables",KENNEL="trainer_kennel";
+  // La Serre (Idan, 2026-11-09 : « J'ai envie de faire les papillons ! ») : la troisième aile, pour les papillons.
+  const BARN="trainer_barn",STABLES="trainer_stables",KENNEL="trainer_kennel",GREENHOUSE="trainer_greenhouse";
   // Les logements : leurs mots dans les phrases (« Pas de place au Chenil. »).
   const HOUSE_WORDS={
     [STABLES]:{the:"les Écuries",at:"aux Écuries",need:"des Écuries"},
-    [KENNEL]:{the:"le Chenil",at:"au Chenil",need:"un Chenil"}
+    [KENNEL]:{the:"le Chenil",at:"au Chenil",need:"un Chenil"},
+    [GREENHOUSE]:{the:"la Serre",at:"à la Serre",need:"une Serre"}
   };
   const houseWords=code=>HOUSE_WORDS[code]||HOUSE_WORDS[STABLES];
   const rows=x=>Array.isArray(x)?x:(x?.rows||[]);
@@ -233,9 +235,9 @@
       return {ok:true,mount:item,before,name:clean};
     }
 
-    return {BARN,STABLES,KENNEL,houseOf,houseWords,mountsIn,placeOf,used,rides,sheet,sheetOf,isMount,mountsOf,ownerOf,places,free,canStore,upkeepOf,upkeep,payUpkeep,rollSurvival,capturable,admit,release,
+    return {BARN,STABLES,KENNEL,GREENHOUSE,houseOf,houseWords,mountsIn,placeOf,used,rides,sheet,sheetOf,isMount,mountsOf,ownerOf,places,free,canStore,upkeepOf,upkeep,payUpkeep,rollSurvival,capturable,admit,release,
       applyAftermath,recoverOneDay,returnToStable,ownSheet,giveName,rename};
   }
 
-  return {createStableRules,BARN,STABLES,KENNEL,isMount,cleanName,houseWords};
+  return {createStableRules,BARN,STABLES,KENNEL,GREENHOUSE,isMount,cleanName,houseWords};
 });

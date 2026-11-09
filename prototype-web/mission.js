@@ -6,7 +6,8 @@ const HEX_DIRS=[
 ];
 // Carte rectangulaire en coordonnées « offset » (lignes impaires décalées) ; la logique reste en axial (q, r).
 const MISSION_MAP={cols:13,rows:9,size:34,spawnRows:[3,4,5],spawnInset:2};
-// Taille de la carte : 13 × 9 pour la Mission Test, plus grande pour un contrat (doc 17, « Faire le ménage » : 30 × 15).
+// Taille de la carte : 13 × 9 pour la Mission Test, plus grande pour un contrat ou une chasse (doc 17 : 36 × 25, le camp au
+// centre ; Idan, 2026-11-09).
 function setMissionMapSize({cols=13,rows=9}={}){ MISSION_MAP.cols=cols; MISSION_MAP.rows=rows; }
 function missionColumn(q,r){ return q+((r-(r&1))>>1); }
 function missionAxial(col,r){ return {q:col-((r-(r&1))>>1),r}; }
@@ -958,8 +959,8 @@ function missionTerrain(){
   if(typeof MercenairesMissionTerrain==="undefined") return null;
   return game.missionTerrain||(game.missionTerrain=MercenairesMissionTerrain.createMissionTerrain({reference:game.referenceData}));
 }
-// Déploiement : votre escouade en colonnes sur le bord gauche, du centre vers les bords ; le camp ennemi à droite, le
-// chef au fond et les autres devant lui.
+// Déploiement : votre escouade en colonnes sur le bord gauche, du centre vers les bords ; le camp ennemi au centre de la
+// carte, le chef au milieu.
 function placeMissionArmy(units,team){
   const {cols,rows}=MISSION_MAP,mid=Math.floor(rows/2);
   const order=[...Array(rows).keys()].sort((a,b)=>Math.abs(a-mid)-Math.abs(b-mid)||a-b);
@@ -968,10 +969,13 @@ function placeMissionArmy(units,team){
     units.forEach((u,i)=>put(u,1+Math.floor(i/rows),order[i%rows]));
     return fitMissionLarge(units);
   }
+  // Le camp au centre de la carte (Idan, 2026-11-09 : « on peut agrandir la carte et centrer le camp, comme les chasses ») :
+  // le chef au milieu, les autres autour de lui, au plus près d'abord.
   const chief=units[units.length-1],others=units.slice(0,-1);
-  put(chief,cols-2,mid);
-  const perCol=Math.max(1,Math.min(rows,Math.max(3,Math.ceil(others.length/2))));
-  others.forEach((u,i)=>put(u,cols-4-Math.floor(i/perCol),order[i%perCol]));
+  put(chief,Math.floor(cols/2),mid);
+  const away=c=>(Math.abs(c.q-chief.q)+Math.abs(c.r-chief.r)+Math.abs(c.q+c.r-chief.q-chief.r))/2;
+  const ring=missionCells().filter(c=>away(c)>0).map((c,i)=>({c,i,d:away(c)})).sort((a,b)=>a.d-b.d||a.i-b.i);
+  others.forEach((u,i)=>{ u.q=ring[i].c.q; u.r=ring[i].c.r; });
   return fitMissionLarge(units);
 }
 

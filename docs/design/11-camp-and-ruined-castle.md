@@ -499,6 +499,11 @@ Objectif : supporter des unités montées, y compris des compositions volontaire
   d'entretien**, rang d'échange 4, neutre bon, entêtement (Intelligence 80 + Volonté 70) ÷ 2 = **75** (un cran d'écart :
   25 % par jour ; trois : 1,6 %) ; titre « à dos de pégase » ; vendu par Aymeric Belcomptoir (doc 18) ; il vole et charge
   par les airs (doc 04).
+- **Au Chenil, le cerbère et le molosse** (Idan, 2026-11-09) : le **cerbère** (35 PO d'entretien, rang d'échange 4, loyal
+  mauvais, entêtement (20 + 60) ÷ 2 = 40, « à dos de cerbère », vendu par Bruga Roc-Fendu, des Ogres des montagnes ; 1 place)
+  et le **molosse de guerre** (5 PO, rang 1, neutre mauvais, entêtement 25, vendu par Kippa Ressortdor, des Gnomes des villes ;
+  **une demi-place** : `place`, « Il prend une demi place au chenil »). Les places prises comptent ces demi-places (l'écran le
+  dit : « 1,5 / 2 »).
 - **Entretien** : chaque matin, **10 PO par destrier** (`mounts.json`, `entretien`), avec les salaires (le journal et la notification du jour le disent ; l'or peut passer sous 0).
 - **Écran** : sous la Grange, dans Ma Compagnie, la liste des montures (d'où elles viennent, le jour de leur capture, leur entretien), places prises / places, **Relâcher** pour libérer une place (sans propriétaire), **Apprivoiser** (à un mercenaire, sa chance du jour au survol). Apprivoisée et équipée, il part à cheval (doc 04, « Combat à cheval »).
 - **Une monture est un objet** (Idan, 2026-11-07 : « On peut donc acheter et vendre des chevaux comme les autres biens ») : type `mount`, sans tier ni qualité ; sans propriétaire, à l'**Intendance** (onglet **Montures**) ; où qu'elle soit, elle loge aux Écuries (sa place, son entretien). Achat et vente chez les marchands : doc 18 §12 bis.

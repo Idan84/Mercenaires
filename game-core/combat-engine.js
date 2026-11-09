@@ -379,9 +379,17 @@
       const skill=clamp(Number(unit.character.skills?.martial?.["Combat à deux armes"])||0,0,100);
       return dexterity/(DUAL.dexterityBase-skill/100);
     }
+    // Plusieurs coups d'une arme naturelle (le cerbère, trois morsures ; Idan, 2026-11-09 : « Il a 3 attaques de morsures
+    // séparés » ; « comme le combat à deux armes, chacune frappe une fois avec son propre jet ») : weapons.attaques.
+    function strikeCount(unit){
+      if(isDualWielding(unit)) return 1;
+      return Math.max(1,Math.floor(Number(weaponTemplate(itemBySlot(unit,"weapon_set_"+unit.activeSet+"_main"))?.attaques)||1));
+    }
+    // Plusieurs coups par séquence : deux armes, ou une arme naturelle à plusieurs coups.
+    function severalStrikes(unit){ return isDualWielding(unit)||strikeCount(unit)>1; }
     // Les mains qui peuvent frapper cette cible à cette distance, chacune avec son mode (arme principale d'abord).
     function usableHands(unit,distance){
-      const hands=isDualWielding(unit)?["main","off"]:["main"];
+      const hands=isDualWielding(unit)?["main","off"]:Array.from({length:strikeCount(unit)},()=>"main");
       return hands.map(hand=>withHand(unit,hand,()=>{
         const weapon=weaponTemplate(activeWeaponItem(unit));
         const mode=isRangedWeapon(weapon)?"ranged":"melee";
@@ -1450,6 +1458,8 @@
       physicalDamage,
       criticalChance,
       isDualWielding,
+      strikeCount,
+      severalStrikes,
       effectiveDexterity,
       usableHands,
       blockChance,

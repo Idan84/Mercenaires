@@ -46,7 +46,9 @@ function stableHtml(c){
     </div>`).join("");
     const upkeep=mounts.reduce((sum,m)=>sum+rules.upkeepOf(m),0);
     const title=campaignRules().campBuildingRow?.(house)?.nom||"Les Écuries";
-    return `<div class="study-list"><h4>${esc(title)} (${fmt(mounts.length)} / ${fmt(places)})${upkeep?` · entretien ${fmt(upkeep)} PO par jour`:""}</h4>${rows}</div>`;
+    // Places prises : le molosse n'en prend qu'une demie (Idan, 2026-11-09).
+    const taken=rules.used?rules.used(c,house):mounts.length;
+    return `<div class="study-list"><h4>${esc(title)} (${Number.isInteger(taken)?fmt(taken):String(taken).replace(".",",")} / ${fmt(places)})${upkeep?` · entretien ${fmt(upkeep)} PO par jour`:""}</h4>${rows}</div>`;
   }).join("");
 }
 

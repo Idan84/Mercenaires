@@ -107,6 +107,7 @@ jobs:
       - run: node tests/animal-names.test.js
       - run: node tests/wolf.test.js
       - run: node tests/pegasus.test.js
+      - run: node tests/kennel.test.js
       - run: node tests/companion-training.test.js
       - run: node tests/hunts.test.js
       - run: node tests/combat-ai.test.js

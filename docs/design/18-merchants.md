@@ -138,7 +138,7 @@ bloque si elle n'est plus à jour (`node scripts/merchant-coverage.js --check`).
 
 <!-- couverture:debut (généré par node scripts/merchant-coverage.js : ne pas modifier à la main) -->
 
-**Bilan** : 94 objets ; **94** vendus par au moins 2 marchands (les montures : un marchand chacune), **0** par un seul, **0** par aucun.
+**Bilan** : 96 objets ; **96** vendus par au moins 2 marchands (les montures : un marchand chacune), **0** par un seul, **0** par aucun.
 
 **32 marchands**, dont 16 marchandes.
 
@@ -171,10 +171,10 @@ bloque si elle n'est plus à jour (`node scripts/merchant-coverage.js --check`).
 | Cairn Racinesombre | Tribus des forêts anciennes | Lance, Massue, Arme d’hast double, Armure de cuir, Chapeau du dresseur, Bague du nécromancien, Manuels de Nécromancie | 7 |
 | Fizzi Doigts-Légers | Gobelins des villes | Dague, Épée courte, Cape de discrétion, Gants de dextérité, Slip d’Affinité, Bague de l’illusionniste, Manuels d’Illusion, Loup | 8 |
 | Draz Crinsauvage | Orcs des steppes | Lance, Bague de la transmutation, Hachette, Bottes de vitesse, Cuir renforcé, Ceinture d’endurance, Manuels de Transmutation | 7 |
-| Bruga Roc-Fendu | Ogres des montagnes | Massue, Marteau de guerre, Pavois, Armure d'écailles, Casque de constitution, Ceinture d’endurance | 6 |
+| Bruga Roc-Fendu | Ogres des montagnes | Massue, Marteau de guerre, Pavois, Armure d'écailles, Casque de constitution, Ceinture d’endurance, Cerbère | 7 |
 | Bimble Lampeterne | Gnomes des cavernes | Pic de guerre, Fronde, Gants de pièges, Chapeau d’intelligence, Potion de mana, Bague du nécromancien, Manuels de Nécromancie | 7 |
 | Azhiss Kaal'Thesh | Reptiliens des cités-temples | Trident, Bâton long, Gambison, Amulette de puissance magique, Ceinture de mana, Bague de l’invocation, Manuels d’Invocation | 7 |
-| Kippa Ressortdor | Gnomes des villes | Pistolet, Arquebuse, Épée double, Chapeau d’intelligence, Potion de mana, Bague de l’illusionniste, Manuels d’Illusion | 7 |
+| Kippa Ressortdor | Gnomes des villes | Pistolet, Arquebuse, Épée double, Chapeau d’intelligence, Potion de mana, Bague de l’illusionniste, Manuels d’Illusion, Molosse | 8 |
 | Krosh Grand-Galop | Ogres des steppes | Masse d’armes, Fléau d’armes, Arme d’hast double, Hallebarde, Bardiche, Bague de Feu, Manuels de Feu | 7 |
 
 | Famille | Objet | Marchands | Nombre |
@@ -260,9 +260,11 @@ bloque si elle n'est plus à jour (`node scripts/merchant-coverage.js --check`).
 | Fioles | Fiole de poison | Isska, Calaena, Malaika | 3 |
 | Fioles | Potion de mana | Dottie, Bimble, Kippa | 3 |
 | Fioles | Potion de soins | Gorma, Isska, Dottie | 3 |
+| Montures | Cerbère | Bruga | 1 |
 | Montures | Destrier | Amar | 1 |
 | Montures | Licorne | Ysolwen | 1 |
 | Montures | Loup | Fizzi | 1 |
+| Montures | Molosse | Kippa | 1 |
 | Montures | Pégase | Aymeric | 1 |
 | Manuels | Manuels de Vie | Jiraya, Ysolwen, Aymeric | 3 |
 | Manuels | Manuels de Feu | Drusk, Amar, Krosh | 3 |
@@ -284,6 +286,8 @@ bloque si elle n'est plus à jour (`node scripts/merchant-coverage.js --check`).
 - **Valeur** = 300 × entretien (`economy.mount_value_per_upkeep`, `mounts.json`) : destrier **3 000 PO**, licorne **9 000 PO** ; puis les prix habituels (achat × 1,5, revente × 0,8, × 0,4 hors de sa liste…). Sans tier ni qualité : pas de rareté.
 - **Aymeric Belcomptoir** (Cités libres) vend des **pégases** (Idan, 2026-11-09 : « Il est vendu par le marchand humain des
   cités libres ») : **12 000 PO** de valeur (40 PO d'entretien).
+- **Bruga Roc-Fendu** (Ogres des montagnes) vend des **cerbères** (10 500 PO de valeur, 35 PO d'entretien) ; **Kippa
+  Ressortdor** (Gnomes des villes) des **molosses de guerre** (1 500 PO, 5 PO) (Idan, 2026-11-09).
 - **Fizzi Doigts-Légers** (Gobelins des villes) vend des **loups** (Idan, 2026-11-07 : « Marchand gobelin », « Gobelin des villes ! ») : 3 000 PO de valeur (10 PO d'entretien).
 - **Acheter** demande une place libre dans son logement (doc 11 §8 : les Écuries, le Chenil pour un loup) ; la monture rejoint l'Intendance (onglet **Montures**).
 - **Vendre** : depuis l'Intendance, comme tout objet ; une monture donnée à un mercenaire n'y est plus, on ne peut pas la vendre.

@@ -27,11 +27,13 @@ assert.equal(bestiary.factions.reduce((s,f)=>s+f.lines.reduce((n,l)=>n+l.rows.le
 const goblins=bestiary.factions.find(f=>f.name==="Gobelins");
 assert.deepEqual(goblins.lines.find(l=>l.name==="Lancier").rows.map(e=>e.niveau),["novice","normal","vétéran","d’élite"]);
 assert.equal(goblins.camps.length,1);
-assert.deepEqual([goblins.camps[0].camp,goblins.camps[0].chance,goblins.camps[0].lines.Frondeur],["Camp gobelin","14 %","32 %"]);
+// Le Chevaucheur gobelin (Idan, 2026-11-09) : 10 de plus au camp gobelin, 35 sur 120.
+assert.deepEqual([goblins.camps[0].camp,goblins.camps[0].chance,goblins.camps[0].lines.Frondeur],["Camp gobelin","14 %","29 %"]);
 // Les créatures partagées (le troll, faction Créatures) : leurs camps, ceux des peuples qui les appellent.
 const creatures=bestiary.factions.find(f=>f.name==="Créatures");
 assert.deepEqual(creatures.camps.map(c=>c.camp).sort(),["Camp gobelin","Camp homme-bête","Camp orc","Cimetière profané"]);
-assert.ok(creatures.camps.filter(c=>c.camp!=="Cimetière profané").every(c=>c.lines.Troll==="9 %"),"le troll : 10 sur 110 dans chaque camp");
+assert.ok(creatures.camps.filter(c=>!["Cimetière profané","Camp gobelin"].includes(c.camp)).every(c=>c.lines.Troll==="9 %"),"le troll : 10 sur 110 dans chaque camp");
+assert.equal(creatures.camps.find(c=>c.camp==="Camp gobelin").lines.Troll,"8 %","10 sur 120 au camp gobelin (le Chevaucheur)");
 assert.equal(creatures.camps.find(c=>c.camp==="Cimetière profané").lines["Troll mort-vivant"],"9 %");
 const html=BestiaryLab.render(built);
 for(const e of enemies) assert.ok(html.includes("("+e.code+")"),"fiche affichée : "+e.code);
@@ -50,9 +52,9 @@ assert.match(html,/<th title="Niveau de mission minimum">Dès<\/th><th title="[^
 
 // Missions : « Faire le ménage » (camps, ordres, variables) et la garde du corps.
 const builtMissions=MissionsLab.build(reference),missions=plain(builtMissions);
-assert.deepEqual(missions.types.map(t=>t.code),["cleanup","hunt_wolves","hunt_unicorn","bodyguard"]);
+assert.deepEqual(missions.types.map(t=>t.code),["cleanup","hunt_wolves","hunt_unicorn","hunt_cerberus","hunt_wild_dogs","bodyguard"]);
 // Les chasses (Idan, 2026-11-07) : leurs règles et leurs lettres, sans camp.
-assert.deepEqual(missions.types.filter(t=>t.kind==="hunt").map(t=>[t.code,t.orders.length]),[["hunt_wolves",2],["hunt_unicorn",2]]);
+assert.deepEqual(missions.types.filter(t=>t.kind==="hunt").map(t=>[t.code,t.orders.length]),[["hunt_wolves",2],["hunt_unicorn",2],["hunt_cerberus",2],["hunt_wild_dogs",2]]);
 assert.match(MissionsLab.render(builtMissions),/1D6 par étoile, au plus 100 · fiche fixe : loup/);
 const cleanup=missions.types[0];
 assert.deepEqual(cleanup.camps.map(c=>c.faction),reference.oneShotMissions.missions[0].camps.map(c=>c.faction));

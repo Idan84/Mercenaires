@@ -238,8 +238,8 @@ assert.equal(rules.deathMultiplier(offer,false),2);
 // 100 % − 10 % par tier de chance de récupérer chaque objet porté ; rien en plus ; dès le niveau 1.
 // Culte des morts (2026-11-06) : les spectres, insensibles aux armes, à partir du niveau de mission 6 (Idan : « un peu plus tard. 6 ou 7 »).
 for(const a of reference.enemyArchetypes.rows){
-  // Le troll (Idan, 2026-11-06 : « à partir de 6* ») aussi.
-  assert.deepEqual([a.niveau_mission_min,a.butin],[["Spectre","Troll","Troll mort-vivant"].includes(a.ligne)?6:1,{equipement:100-10*a.tier,objets:[]}],"butin : "+a.code);
+  // Le troll (Idan, 2026-11-06 : « à partir de 6* ») aussi, et le cerbère des ogres (2026-11-09).
+  assert.deepEqual([a.niveau_mission_min,a.butin],[["Spectre","Troll","Troll mort-vivant","Cerbère"].includes(a.ligne)?6:1,{equipement:100-10*a.tier,objets:[]}],"butin : "+a.code);
 }
 {
   const breakRules=createMissionRules({reference,random:seeded(21)});
@@ -260,7 +260,9 @@ for(const a of reference.enemyArchetypes.rows){
   assert.deepEqual(createMissionRules({reference:{}}).ACCESSORY_SLOTS,rules.ACCESSORY_SLOTS,"sans equipment-slots.json : les mêmes 13");
   assert.ok(reference.enemyArchetypes.rows.every(a=>typeof a.humanoide==="boolean"),"chaque fiche dit si elle est humanoïde");
   assert.deepEqual(reference.enemyArchetypes.rows.filter(a=>!a.humanoide).map(a=>a.code).sort(),
-    ["court_bat","court_bat_elite","court_bat_novice","court_bat_veteran","court_wolf","court_wolf_elite","court_wolf_novice","court_wolf_veteran"]);
+    ["court_bat","court_bat_elite","court_bat_novice","court_bat_veteran","court_wolf","court_wolf_elite","court_wolf_novice","court_wolf_veteran",
+      // Le cerbère des ogres et le molosse des voleurs (Idan, 2026-11-09) : des bêtes.
+      "ogre_cerberus","ogre_cerberus_elite","ogre_cerberus_novice","ogre_cerberus_veteran","thief_mastiff","thief_mastiff_elite","thief_mastiff_novice","thief_mastiff_veteran"]);
   for(const code of ["court_ghoul","cult_zombie","cult_specter","troll","undead_troll","cult_skeleton_warrior"]) assert.equal(rules.archetype(code).humanoide,true,code+" : il droppe");
   const dropRules=createMissionRules({reference,random:seeded(31)});
   const spearman=dropRules.archetype("goblin_spearman"),N=6000;

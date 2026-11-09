@@ -90,7 +90,8 @@
       min:constant("combat.stealth.min",5),
       max:constant("combat.stealth.max",95),
       partialCover:constant("combat.stealth.cover_partial",30),
-      totalCover:constant("combat.stealth.cover_total",60)
+      totalCover:constant("combat.stealth.cover_total",60),
+      scoutDistance:constant("combat.scout.distance",8)
     };
     const POISON={
       turns:constant("combat.poison.turns",3),
@@ -692,6 +693,23 @@
     function rollDetection(observer,target,distance,cover=0){
       const p=detectionChance(observer,target,distance,cover),roll=Math.max(1,Math.ceil(random()*10000))/100;
       return {p,roll,spotted:roll<=p};
+    }
+    // L'éclaireur (doc 04 ; Idan, 2026-11-09 : « On peut, avant le combat envoyer un éclaireur choisi parmi les mercenaires
+    // de la mission. Il peut ne pas revenir ! ( Test en fonction de sa discrétion et la perception de chaque ennemi) La chance
+    // de se faire repérer reste faible » ; « on ne peut pas envoyer un compagnon animal seul. Il peut y aller avec son maître,
+    // donc discrétion de son maître ») : chaque ennemi tente de le repérer, à combat.scout.distance cases, l'éclaireur
+    // derrière une couverture totale, avec sa propre Discrétion (son animal le suit) ; un seul succès : il est capturé. Sinon,
+    // il cherche à son tour chaque ennemi, à la même distance, à découvert : ceux qu'il voit commencent le combat repérés (« il
+    // peut en avoir qu'il ne voit pas »). Renvoie {captured, by, capture: [jets], looks: [jets], spotted: [ennemis vus]}.
+    function resolveScouting(scout,enemies=[]){
+      const alone={character:scout?.character,activeSet:scout?.activeSet||1},d=STEALTH.scoutDistance,capture=[];
+      for(const foe of enemies){
+        const r=rollDetection(foe,alone,d,STEALTH.totalCover);
+        capture.push({foe,...r});
+        if(r.spotted) return {captured:true,by:foe,capture,looks:[],spotted:[]};
+      }
+      const looks=enemies.map(foe=>({foe,...rollDetection(alone,foe,d,0)}));
+      return {captured:false,by:null,capture,looks,spotted:looks.filter(x=>x.spotted).map(x=>x.foe)};
     }
 
     // Fiole de poison (Idan, 2026-11-03 : « Seul ceux qui ont la compétence peuvent empoisonner leur arme en utilisant une
@@ -1439,7 +1457,7 @@
       CHARGE_FALL,
       ALTITUDE,
       coverHitFactor,
-      coverDiscretion,
+      coverDiscretion,resolveScouting,
       detectionChance,
       rollDetection,
       spellWoundChance,

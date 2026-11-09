@@ -114,6 +114,7 @@ jobs:
       - run: node tests/combat-ai.test.js
       - run: node tests/stealth.test.js
       - run: node tests/terrain-skills.test.js
+      - run: node tests/scout.test.js
       - run: node tests/spell-icons.test.js
       - run: node tests/starting-spells.test.js
       - run: node tests/equipment-effects.test.js

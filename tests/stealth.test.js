@@ -138,7 +138,8 @@ assert.equal(b1.camouflaged,false);
 
 // Un ennemi caché derrière la ligne de front : les autres le cherchent à chaque tour.
 assert.match(source,/m\.turn\+=1;\n  pruneMissionTerrain\(\);\n  tickMissionStorms\(\);\n  tickMissionBlizzards\(\);\n  maintainMissionSummons\(\);\n  if\(checkMissionEnd\(\)\)\{ renderMission\(\); return; \}\n  resolveMissionDetection\(\);/);
-assert.equal((source.match(/startMissionCamouflage\(\);\n  selectNextMissionPlayer\(\);/g)||[]).length,2,"les deux débuts de combat");
+// (Le combat d'expédition révèle entre les deux les ennemis vus par l'éclaireur.)
+assert.equal((source.match(/startMissionCamouflage\(\);\n(  if\(scouting&&!scouting\.captured\) revealMissionScouted\(scouting\);\n)?  selectNextMissionPlayer\(\);/g)||[]).length,2,"les deux débuts de combat");
 
 // Le brouillard de guerre et l'IA aveugle (Idan, 2026-11-09 : « Je voudrais qu'ils disparaissent totalement » ; « l'IA ne
 // doit pas connaître nos mecs pas cachés ! Si elle ne voit personne, elle ne sait pas qu'elle est attaquée, donc elle bouge

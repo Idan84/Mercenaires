@@ -281,14 +281,21 @@ api.enemyMissionAct(walker,{reset:false});
 assert.ok(engine.axialDistance(walker,aim)<6,"il avance vers sa cible");
 assert.ok(walker.q!==6||walker.r!==4,"il ne reste pas collé au mur");
 assert.ok(routeAround&&!routeAround.some(c=>c.q===5&&c.r>=2&&c.r<=6),"le chemin contourne le mur");
-// Personne en vue : il va chercher l'ennemi le plus proche, puis guette s'il ne le voit toujours pas.
+// Personne en vue (Idan, 2026-11-09 : « l'IA ne doit pas connaître nos mecs cachés ! » ; « Si elle ne voit personne, elle ne
+// sait pas qu'elle est attaquée ») : sans alerte, il reste à son poste ; alerté (un coup venu de là), il fouille vers
+// l'endroit d'où vient le coup.
 m=newMission();
 const hunter=at(m.enemies[0],10,4);
 for(const p of m.players) p.camouflaged=true;
 hunter.movementRemaining=engine.movementBase(hunter);
+hunter.watch="garde";
 const from=engine.axialDistance(hunter,m.players[0]);
 api.enemyMissionAct(hunter,{reset:false});
-assert.ok(engine.axialDistance(hunter,m.players[0])<from,"il avance vers eux");
+assert.equal(engine.axialDistance(hunter,m.players[0]),from,"sans alerte, il ne sait pas où ils sont");
+m.awareness={player:{alert:true,lastKnown:null,objective:null},enemy:{alert:true,lastKnown:{q:m.players[0].q,r:m.players[0].r},objective:null}};
+hunter.movementRemaining=engine.movementBase(hunter);
+api.enemyMissionAct(hunter,{reset:false});
+assert.ok(engine.axialDistance(hunter,m.players[0])<from,"alerté, il fouille vers l'endroit du coup");
 
 // 11. Plus de combat automatique bloqué par le décor : 200 combats de Mission Test au hasard, tous finissent.
 let stuck=0;

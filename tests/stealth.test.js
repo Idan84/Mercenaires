@@ -22,7 +22,8 @@ const files={
   characteristics:"characteristics.json",formulaConstants:"formula-constants.json",weapons:"weapons.json",
   baseArmors:"base-armors.json",itemQualities:"item-qualities.json",equipmentSlots:"equipment-slots.json",
   startingEquipmentGeneration:"starting-equipment-generation.json",binaryAptitudeGrants:"binary-aptitude-grants.json",
-  alignmentGeneration:"alignment-generation.json",spells:"spells.json",belts:"belts.json",amulets:"amulets.json"
+  alignmentGeneration:"alignment-generation.json",spells:"spells.json",belts:"belts.json",amulets:"amulets.json",
+  terrainDecors:"terrain-decors.json"
 };
 const reference=Object.fromEntries(Object.entries(files).map(([key,file])=>[key,read(file)]));
 // Tirages : force (toujours la même valeur) si posé, sinon la file, sinon une suite fixe.
@@ -42,7 +43,8 @@ const source=fs.readFileSync(path.join(ROOT,"prototype-web","mission.js"),"utf8"
 const api=new Function("game","$","esc","fmt","renderAvatar","combatEngine","MercenairesProgression","MercenairesMissionEnd","MercenairesMagic",
   source+"\nreturn {makeMissionUnit,sortMissionInitiative,selectNextMissionPlayer,startMissionCamouflage,resolveMissionDetection,"
   +"missionUsableHands,missionChargeIfClear,missionPathOpportunityCount,nearestMissionTarget,renderMissionRoster,missionMagic,"
-  +"targetableMissionCells,setMissionMode,teachMissionTestSpells,missionKey,handleMissionHexClick,resetMissionActivation};")
+  +"targetableMissionCells,setMissionMode,teachMissionTestSpells,missionKey,handleMissionHexClick,resetMissionActivation,"
+  +"missionShownToPlayer,missionUnitAt,missionAlert,moveMissionUnitAlongPath,enemyMoveToward,missionAiWatch};")
   .call(null,game,$,v=>String(v??""),v=>String(Math.round(Number(v)||0)),()=>"",()=>engine,Progression,MissionEnd,Magic);
 
 function newMission(){
@@ -59,19 +61,21 @@ function newMission(){
 const logged=re=>game.mission.log.some(x=>re.test(x.message));
 const unitOf=(stats,skills={})=>({character:{stats,skills:{martial:skills},items:[],equipment:{slots:{}}},activeSet:1});
 
-// Le test : P = 100 / (1 + e^(−Δ/15)), Δ = Perception − (Discrétion + couverture) + 40 − 5 × distance, de 5 à 95 %.
+// Le test : P = 100 / (1 + e^(−Δ/15)), Δ = 2 × (Perception − (Discrétion + couverture)) + 40 − 5 × distance, de 0,1 à 95 %
+// (Idan, 2026-11-09 : « une courbe qui récompense grandement la discrétion et la perception » ; « Partons sur B »).
 const archer=unitOf({Perception:62}),lancer=unitOf({Perception:43}),sneaky=unitOf({},{Discrétion:30});
 const chance=(o,t,d,c=0)=>Math.round(engine.detectionChance(o,t,d,c)*10)/10;
 assert.equal(chance(archer,sneaky,3),95,"à 3 cases, on le voit (95 % au plus)");
-assert.equal(chance(archer,sneaky,8),89.4);
-assert.equal(chance(lancer,sneaky,12),38.5);
-assert.equal(chance(archer,sneaky,8,engine.STEALTH.partialCover),53.3,"couverture partielle : +30 de Discrétion");
-assert.equal(chance(lancer,unitOf({},{Discrétion:200}),20),5,"jamais moins de 5 %");
+assert.equal(chance(archer,sneaky,8),95);
+assert.equal(chance(lancer,sneaky,12),59.9);
+assert.equal(chance(archer,sneaky,8,engine.STEALTH.partialCover),56.6,"couverture partielle : +30 de Discrétion, qui compte double");
+assert.equal(chance(lancer,unitOf({},{Discrétion:200}),20),0.1,"jamais moins de 0,1 %");
+assert.equal(chance(unitOf({Perception:60}),unitOf({},{Discrétion:100}),5),1.3,"40 points d'avance : 1,3 % (16 % avant)");
 // Avancée cachée (Illusion) : la Discrétion du bonus compte.
 const hidden={...sneaky,statBuffs:{hidden_advance:{stats:["Discrétion"],value:52,unit:"points"}}};
 assert.ok(engine.detectionChance(archer,hidden,6)<engine.detectionChance(archer,sneaky,6)-30);
 queue.push(0.5);
-assert.deepEqual(engine.rollDetection(archer,sneaky,8),{p:engine.detectionChance(archer,sneaky,8),roll:51,spotted:true});
+assert.deepEqual(engine.rollDetection(archer,sneaky,8),{p:engine.detectionChance(archer,sneaky,8),roll:50,spotted:true},"un jet au centième");
 
 // Au début du combat, tout le monde est camouflé ; un repérage raté laisse tout le monde caché.
 let m=newMission();
@@ -81,7 +85,8 @@ api.startMissionCamouflage();
 force=null;
 assert.ok([...m.players,...m.enemies].every(u=>u.camouflaged));
 assert.ok(logged(/tout le monde est camouflé/));
-assert.ok(logged(/Toujours camouflés — vos hommes : .* — ennemis : /));
+assert.ok(logged(/Toujours camouflés — vos hommes : /));
+assert.ok(!logged(/ennemis : /),"les ennemis cachés ne sont pas nommés (brouillard de guerre)");
 assert.match(api.renderMissionRoster([p1]),/· Camouflé/);
 // Invisible : ni attaque, ni charge, ni sort, et l'IA ne le choisit pas comme cible.
 p1.character.items.push({id:"test-dagger",name:"Dague",category:"Lames courtes",tier:1,qualityCode:"correcte"});
@@ -105,7 +110,7 @@ force=0;
 api.resolveMissionDetection();
 force=null;
 assert.ok([...m.players,...m.enemies].every(u=>!u.camouflaged));
-assert.ok(logged(/repère .* \(95 %, jet 1\)/));
+assert.ok(logged(/repère .* \(95 %, jet 0,01\)/));
 assert.ok(api.missionUsableHands(p1,e1).some(h=>h.mode==="melee"),"repéré : on peut le frapper");
 assert.notEqual(api.nearestMissionTarget(e1),null);
 force=0.99;
@@ -134,5 +139,55 @@ assert.equal(b1.camouflaged,false);
 // Un ennemi caché derrière la ligne de front : les autres le cherchent à chaque tour.
 assert.match(source,/m\.turn\+=1;\n  pruneMissionTerrain\(\);\n  tickMissionStorms\(\);\n  tickMissionBlizzards\(\);\n  maintainMissionSummons\(\);\n  if\(checkMissionEnd\(\)\)\{ renderMission\(\); return; \}\n  resolveMissionDetection\(\);/);
 assert.equal((source.match(/startMissionCamouflage\(\);\n  selectNextMissionPlayer\(\);/g)||[]).length,2,"les deux débuts de combat");
+
+// Le brouillard de guerre et l'IA aveugle (Idan, 2026-11-09 : « Je voudrais qu'ils disparaissent totalement » ; « l'IA ne
+// doit pas connaître nos mecs pas cachés ! Si elle ne voit personne, elle ne sait pas qu'elle est attaquée, donc elle bouge
+// pas ou fait des rondes »).
+m=newMission();
+force=0.99;
+api.startMissionCamouflage();
+force=null;
+assert.deepEqual([m.awareness.player.alert,m.awareness.enemy.alert],[true,false],"au début, personne repéré : l'ennemi ne sait rien");
+assert.ok(m.enemies.every(u=>["garde","ronde"].includes(u.watch)&&u.post),"chacun sa garde ou sa ronde, autour de son poste");
+assert.ok(m.enemies.some(u=>u.watch==="ronde")&&m.enemies.some(u=>u.watch==="garde"),"la moitié en ronde");
+assert.ok(m.awareness.player.objective,"notre équipe sait où est le camp ennemi");
+const [g1,g2]=m.enemies,[h1]=m.players;
+for(const u of [...m.players,...m.enemies]) u.camouflaged=true;
+assert.equal(api.missionShownToPlayer(g1),false,"un ennemi camouflé n'apparaît pas");
+assert.equal(api.missionShownToPlayer(h1),true,"les nôtres, si");
+assert.doesNotMatch(api.renderMissionRoster(m.enemies),new RegExp(g1.character.name),"ni dans la liste");
+assert.equal(api.missionUnitAt(g1.q,g1.r),null,"ni au clic");
+g1.camouflaged=false;
+assert.equal(api.missionUnitAt(g1.q,g1.r),g1);
+g1.camouflaged=true;
+// La ronde reste près de son poste ; la garde ne bouge pas.
+g2.watch="garde"; g2.movementRemaining=engine.movementBase(g2);
+const post2={q:g2.q,r:g2.r};
+assert.equal(api.missionAiWatch(g2),false);
+assert.deepEqual({q:g2.q,r:g2.r},post2);
+g2.watch="ronde"; g2.post=post2;
+for(let k=0;k<6;k++){ g2.movementRemaining=engine.movementBase(g2); api.missionAiWatch(g2); assert.ok(engine.axialDistance(g2,post2)<=3,"la ronde reste à 3 cases de son poste"); }
+// L'alerte : une seule fois dans le journal ; elle retient l'endroit du coup.
+api.missionAlert("enemy",h1);
+api.missionAlert("enemy",h1);
+assert.equal(m.log.filter(x=>/L’ennemi donne l’alerte/.test(x.message)).length,1);
+assert.deepEqual(m.awareness.enemy.lastKnown,{q:h1.q,r:h1.r});
+// Nez à nez : on entre dans la case d'un ennemi invisible, on s'arrête, il est découvert ; les deux camps sont alertés.
+m.awareness.enemy={alert:false,lastKnown:null,objective:null};
+for(const u of [...m.players,...m.enemies]) if(u!==h1&&u!==g1) u.alive=false;
+h1.q=5;h1.r=4;g1.q=7;g1.r=4;
+const bump=api.moveMissionUnitAlongPath(h1,[{q:6,r:4},{q:7,r:4},{q:8,r:4}]);
+assert.deepEqual([bump,h1.q,h1.r,g1.camouflaged],[1,6,4,false]);
+assert.ok(logged(/tombe nez à nez avec .*, caché là !/));
+assert.equal(m.awareness.enemy.alert,true);
+// Bloqué (la première case coûte plus que tout son mouvement) : l'IA renonce à attaquer pour un second mouvement.
+const slow=m.players[0];
+g1.q=12;g1.r=4;
+slow.movementRemaining=1;slow.attackAvailable=true;slow.secondMove=false;
+m.decor=[{q:7,r:4,code:"foret"},{q:7,r:3,code:"foret"},{q:6,r:5,code:"foret"},{q:7,r:5,code:"foret"},{q:5,r:4,code:"foret"},{q:5,r:5,code:"foret"},{q:6,r:3,code:"foret"}];
+api.enemyMoveToward(slow,g1);
+assert.deepEqual([slow.secondMove,slow.attackAvailable],[true,false]);
+assert.ok(logged(/renonce à attaquer pour un second mouvement/));
+assert.ok(engine.axialDistance(slow,g1)<6,"il a avancé");
 
 console.log("Discrétion : camouflage, repérage, cibles invisibles, attaques non détectées — OK");

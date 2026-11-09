@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "enemy-archetypes",
-  "description": "Archétypes d’ennemis fixes (Idan, 2026-10-24 ; doc 17 §10 et §14). Gobelins, Orcs, Hommes-bêtes, Voleurs (Humains) et Ogres (2026-11-01) : cinq lignes sur quatre niveaux et quatre niveaux de chef chacun. Culte des morts (doc 17 §19) et Cour de sang (§20). Le Cavalier des voleurs (§22) monte un destrier (mounts.json). Créatures (§21) : des fiches partagées entre peuples, qu’un camp appelle par sa ligne (le troll chez les gobelins, les orcs et les hommes-bêtes ; le troll mort-vivant au Culte des morts). Valeurs figées à partir des centiles des personnages générés du même peuple (novice P20, normal P50, vétéran P75, élite P90 ; chefs P75 à P99), avec la spécialisation de chaque ligne (trois caractéristiques un cran au-dessus, deux un cran au-dessous). PV = 3 × (Constitution + 0,2 × Endurance + 0,1 × Volonté). Points de combat (Idan, 2026-11-01) : un mercenaire généré moyen vaut 10 points (simulateur, 150 combats par effectif ; chefs : 10 × le nombre de mercenaires qui le battent une fois sur deux ; les plus forts mesurés jusqu’à 27 mercenaires, 200 combats par effectif ; fiches T4 remesurées avec la qualité De luxe, Idan 2026-11-01). Niveau de mission minimum et butin par créature (Idan, 2026-11-01) : niveau 1 pour l’instant ; l’équipement peut se casser au combat : 100 % − 10 % par tier de chance de récupérer chaque objet porté (T1 90 %, T2 80 %, T3 70 %, T4 60 %). Ils composent les camps de « Faire le ménage » (one-shot-missions.json, budgets). Humanoïde (Idan, 2026-11-08 : « La règle, c'est plutôt humanoïde ou non ») : tous, morts-vivants et trolls compris, sauf les loups et les chauves-souris de la Cour de sang ; un humanoïde mort laisse parfois des accessoires (doc 17 §16).",
+  "description": "Archétypes d’ennemis fixes (Idan, 2026-10-24 ; doc 17 §10 et §14). Gobelins, Orcs, Hommes-bêtes, Voleurs (Humains) et Ogres (2026-11-01) : cinq lignes sur quatre niveaux et quatre niveaux de chef chacun. Culte des morts (doc 17 §19) et Cour de sang (§20). Le Cavalier des voleurs (§22) monte un destrier (mounts.json) ; le Chevaucheur gobelin, un loup (Idan, 2026-11-09). Le Molosse chez les voleurs et le Cerbère chez les ogres (dès le niveau 6) : la fiche de nos animaux pour le niveau normal, et les écarts de la ligne du loup de la Cour de sang pour les autres ; points mesurés au simulateur, étalonnés sur les lignes voisines (Cavalier, loup, troll). Créatures (§21) : des fiches partagées entre peuples, qu’un camp appelle par sa ligne (le troll chez les gobelins, les orcs et les hommes-bêtes ; le troll mort-vivant au Culte des morts). Valeurs figées à partir des centiles des personnages générés du même peuple (novice P20, normal P50, vétéran P75, élite P90 ; chefs P75 à P99), avec la spécialisation de chaque ligne (trois caractéristiques un cran au-dessus, deux un cran au-dessous). PV = 3 × (Constitution + 0,2 × Endurance + 0,1 × Volonté). Points de combat (Idan, 2026-11-01) : un mercenaire généré moyen vaut 10 points (simulateur, 150 combats par effectif ; chefs : 10 × le nombre de mercenaires qui le battent une fois sur deux ; les plus forts mesurés jusqu’à 27 mercenaires, 200 combats par effectif ; fiches T4 remesurées avec la qualité De luxe, Idan 2026-11-01). Niveau de mission minimum et butin par créature (Idan, 2026-11-01) : niveau 1 pour l’instant ; l’équipement peut se casser au combat : 100 % − 10 % par tier de chance de récupérer chaque objet porté (T1 90 %, T2 80 %, T3 70 %, T4 60 %). Ils composent les camps de « Faire le ménage » (one-shot-missions.json, budgets). Humanoïde (Idan, 2026-11-08 : « La règle, c'est plutôt humanoïde ou non ») : tous, morts-vivants et trolls compris, sauf les loups et les chauves-souris de la Cour de sang ; un humanoïde mort laisse parfois des accessoires (doc 17 §16).",
   "columns": [
     {
       "source": "Nom",
@@ -148,7 +148,7 @@
       "key": "capture"
     }
   ],
-  "row_count": 184,
+  "row_count": 196,
   "rows": [
     {
       "nom": "Lancier gobelin novice",
@@ -11751,6 +11751,745 @@
       },
       "mort_vivant": true,
       "insensible_poison": true
+    },
+    {
+      "nom": "Cerbère novice",
+      "code": "ogre_cerberus_novice",
+      "faction": "Ogres",
+      "peuple": "Ogre",
+      "culture": "Ogres des montagnes",
+      "ligne": "Cerbère",
+      "niveau": "novice",
+      "centile": "P20",
+      "caracteristiques": {
+        "Force": 89,
+        "Constitution": 81,
+        "Dextérité": 51,
+        "Vitesse": 68,
+        "Endurance": 73,
+        "Esquive": 21,
+        "Courage": 50,
+        "Volonté": 50,
+        "Perception": 61,
+        "Intelligence": 20,
+        "Chance": 40,
+        "Charisme": 15,
+        "Puissance magique": 1,
+        "Réserve de mana": 1
+      },
+      "resistances": {
+        "Résistance physique": 5,
+        "Résistance au feu": 4,
+        "Résistance au froid": 3,
+        "Résistance à la foudre": 4,
+        "Résistance au poison": 5
+      },
+      "pv": 302,
+      "competences_martiales": {
+        "Armes naturelles": 52,
+        "Morsure": 52,
+        "Discrétion": 2
+      },
+      "intimidation": 55,
+      "port_d_armure": [],
+      "armes": [],
+      "armure": null,
+      "tier": 1,
+      "qualite": "Usée",
+      "points": 17,
+      "niveau_mission_min": 6,
+      "butin": {
+        "equipement": 90,
+        "objets": []
+      },
+      "humanoide": false,
+      "attaque": {
+        "nom": "Morsure",
+        "degats_pv_base": "1D8",
+        "puissance_perforante": 35,
+        "attaques": 3
+      },
+      "capture": "cerbere"
+    },
+    {
+      "nom": "Cerbère",
+      "code": "ogre_cerberus",
+      "faction": "Ogres",
+      "peuple": "Ogre",
+      "culture": "Ogres des montagnes",
+      "ligne": "Cerbère",
+      "niveau": "normal",
+      "centile": "P50",
+      "caracteristiques": {
+        "Force": 100,
+        "Constitution": 90,
+        "Dextérité": 60,
+        "Vitesse": 75,
+        "Endurance": 85,
+        "Esquive": 30,
+        "Courage": 60,
+        "Volonté": 60,
+        "Perception": 70,
+        "Intelligence": 20,
+        "Chance": 50,
+        "Charisme": 15,
+        "Puissance magique": 1,
+        "Réserve de mana": 1
+      },
+      "resistances": {
+        "Résistance physique": 8,
+        "Résistance au feu": 6,
+        "Résistance au froid": 6,
+        "Résistance à la foudre": 6,
+        "Résistance au poison": 8
+      },
+      "pv": 339,
+      "competences_martiales": {
+        "Armes naturelles": 60,
+        "Morsure": 60,
+        "Discrétion": 10
+      },
+      "intimidation": 60,
+      "port_d_armure": [],
+      "armes": [],
+      "armure": null,
+      "tier": 2,
+      "qualite": "Correcte",
+      "points": 32,
+      "niveau_mission_min": 6,
+      "butin": {
+        "equipement": 80,
+        "objets": []
+      },
+      "humanoide": false,
+      "attaque": {
+        "nom": "Morsure",
+        "degats_pv_base": "1D8",
+        "puissance_perforante": 35,
+        "attaques": 3
+      },
+      "capture": "cerbere"
+    },
+    {
+      "nom": "Cerbère vétéran",
+      "code": "ogre_cerberus_veteran",
+      "faction": "Ogres",
+      "peuple": "Ogre",
+      "culture": "Ogres des montagnes",
+      "ligne": "Cerbère",
+      "niveau": "vétéran",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 114,
+        "Constitution": 100,
+        "Dextérité": 66,
+        "Vitesse": 82,
+        "Endurance": 94,
+        "Esquive": 37,
+        "Courage": 68,
+        "Volonté": 67,
+        "Perception": 78,
+        "Intelligence": 20,
+        "Chance": 59,
+        "Charisme": 15,
+        "Puissance magique": 1,
+        "Réserve de mana": 1
+      },
+      "resistances": {
+        "Résistance physique": 11,
+        "Résistance au feu": 8,
+        "Résistance au froid": 13,
+        "Résistance à la foudre": 8,
+        "Résistance au poison": 14
+      },
+      "pv": 377,
+      "competences_martiales": {
+        "Armes naturelles": 67,
+        "Morsure": 67,
+        "Discrétion": 17
+      },
+      "intimidation": 64,
+      "port_d_armure": [],
+      "armes": [],
+      "armure": null,
+      "tier": 3,
+      "qualite": "De bonne facture",
+      "points": 49,
+      "niveau_mission_min": 6,
+      "butin": {
+        "equipement": 70,
+        "objets": []
+      },
+      "humanoide": false,
+      "attaque": {
+        "nom": "Morsure",
+        "degats_pv_base": "1D8",
+        "puissance_perforante": 35,
+        "attaques": 3
+      },
+      "capture": "cerbere"
+    },
+    {
+      "nom": "Cerbère d’élite",
+      "code": "ogre_cerberus_elite",
+      "faction": "Ogres",
+      "peuple": "Ogre",
+      "culture": "Ogres des montagnes",
+      "ligne": "Cerbère",
+      "niveau": "d’élite",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 126,
+        "Constitution": 108,
+        "Dextérité": 66,
+        "Vitesse": 86,
+        "Endurance": 103,
+        "Esquive": 44,
+        "Courage": 74,
+        "Volonté": 74,
+        "Perception": 83,
+        "Intelligence": 20,
+        "Chance": 68,
+        "Charisme": 15,
+        "Puissance magique": 1,
+        "Réserve de mana": 1
+      },
+      "resistances": {
+        "Résistance physique": 15,
+        "Résistance au feu": 14,
+        "Résistance au froid": 21,
+        "Résistance à la foudre": 12,
+        "Résistance au poison": 22
+      },
+      "pv": 408,
+      "competences_martiales": {
+        "Armes naturelles": 73,
+        "Morsure": 73,
+        "Discrétion": 23
+      },
+      "intimidation": 69,
+      "port_d_armure": [],
+      "armes": [],
+      "armure": null,
+      "tier": 4,
+      "qualite": "De luxe",
+      "points": 60,
+      "niveau_mission_min": 6,
+      "butin": {
+        "equipement": 60,
+        "objets": []
+      },
+      "humanoide": false,
+      "attaque": {
+        "nom": "Morsure",
+        "degats_pv_base": "1D8",
+        "puissance_perforante": 35,
+        "attaques": 3
+      },
+      "capture": "cerbere"
+    },
+    {
+      "nom": "Molosse novice",
+      "code": "thief_mastiff_novice",
+      "faction": "Voleurs",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Molosse",
+      "niveau": "novice",
+      "centile": "P20",
+      "caracteristiques": {
+        "Force": 19,
+        "Constitution": 26,
+        "Dextérité": 55,
+        "Vitesse": 43,
+        "Endurance": 34,
+        "Esquive": 36,
+        "Courage": 35,
+        "Volonté": 30,
+        "Perception": 46,
+        "Intelligence": 10,
+        "Chance": 34,
+        "Charisme": 15,
+        "Puissance magique": 1,
+        "Réserve de mana": 1
+      },
+      "resistances": {
+        "Résistance physique": 0,
+        "Résistance au feu": 0,
+        "Résistance au froid": 0,
+        "Résistance à la foudre": 0,
+        "Résistance au poison": 0
+      },
+      "pv": 108,
+      "competences_martiales": {
+        "Armes naturelles": 38,
+        "Morsure": 37,
+        "Discrétion": 12
+      },
+      "intimidation": 25,
+      "port_d_armure": [],
+      "armes": [],
+      "armure": null,
+      "tier": 1,
+      "qualite": "Usée",
+      "points": 2,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 90,
+        "objets": []
+      },
+      "humanoide": false,
+      "attaque": {
+        "nom": "Morsure",
+        "degats_pv_base": "1D6",
+        "puissance_perforante": 25
+      },
+      "capture": "molosse"
+    },
+    {
+      "nom": "Molosse",
+      "code": "thief_mastiff",
+      "faction": "Voleurs",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Molosse",
+      "niveau": "normal",
+      "centile": "P50",
+      "caracteristiques": {
+        "Force": 30,
+        "Constitution": 35,
+        "Dextérité": 64,
+        "Vitesse": 50,
+        "Endurance": 46,
+        "Esquive": 45,
+        "Courage": 45,
+        "Volonté": 40,
+        "Perception": 55,
+        "Intelligence": 10,
+        "Chance": 44,
+        "Charisme": 15,
+        "Puissance magique": 1,
+        "Réserve de mana": 1
+      },
+      "resistances": {
+        "Résistance physique": 2,
+        "Résistance au feu": 2,
+        "Résistance au froid": 1,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 2
+      },
+      "pv": 145,
+      "competences_martiales": {
+        "Armes naturelles": 46,
+        "Morsure": 45,
+        "Discrétion": 20
+      },
+      "intimidation": 30,
+      "port_d_armure": [],
+      "armes": [],
+      "armure": null,
+      "tier": 2,
+      "qualite": "Correcte",
+      "points": 4,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 80,
+        "objets": []
+      },
+      "humanoide": false,
+      "attaque": {
+        "nom": "Morsure",
+        "degats_pv_base": "1D6",
+        "puissance_perforante": 25
+      },
+      "capture": "molosse"
+    },
+    {
+      "nom": "Molosse vétéran",
+      "code": "thief_mastiff_veteran",
+      "faction": "Voleurs",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Molosse",
+      "niveau": "vétéran",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 44,
+        "Constitution": 45,
+        "Dextérité": 70,
+        "Vitesse": 57,
+        "Endurance": 55,
+        "Esquive": 52,
+        "Courage": 53,
+        "Volonté": 47,
+        "Perception": 63,
+        "Intelligence": 10,
+        "Chance": 53,
+        "Charisme": 15,
+        "Puissance magique": 1,
+        "Réserve de mana": 1
+      },
+      "resistances": {
+        "Résistance physique": 5,
+        "Résistance au feu": 4,
+        "Résistance au froid": 8,
+        "Résistance à la foudre": 4,
+        "Résistance au poison": 8
+      },
+      "pv": 183,
+      "competences_martiales": {
+        "Armes naturelles": 53,
+        "Morsure": 52,
+        "Discrétion": 27
+      },
+      "intimidation": 34,
+      "port_d_armure": [],
+      "armes": [],
+      "armure": null,
+      "tier": 3,
+      "qualite": "De bonne facture",
+      "points": 10,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 70,
+        "objets": []
+      },
+      "humanoide": false,
+      "attaque": {
+        "nom": "Morsure",
+        "degats_pv_base": "1D6",
+        "puissance_perforante": 25
+      },
+      "capture": "molosse"
+    },
+    {
+      "nom": "Molosse d’élite",
+      "code": "thief_mastiff_elite",
+      "faction": "Voleurs",
+      "peuple": "Humain",
+      "culture": "Cités libres",
+      "ligne": "Molosse",
+      "niveau": "d’élite",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 56,
+        "Constitution": 53,
+        "Dextérité": 70,
+        "Vitesse": 61,
+        "Endurance": 64,
+        "Esquive": 59,
+        "Courage": 59,
+        "Volonté": 54,
+        "Perception": 68,
+        "Intelligence": 10,
+        "Chance": 62,
+        "Charisme": 15,
+        "Puissance magique": 1,
+        "Réserve de mana": 1
+      },
+      "resistances": {
+        "Résistance physique": 9,
+        "Résistance au feu": 10,
+        "Résistance au froid": 16,
+        "Résistance à la foudre": 8,
+        "Résistance au poison": 16
+      },
+      "pv": 214,
+      "competences_martiales": {
+        "Armes naturelles": 59,
+        "Morsure": 58,
+        "Discrétion": 33
+      },
+      "intimidation": 39,
+      "port_d_armure": [],
+      "armes": [],
+      "armure": null,
+      "tier": 4,
+      "qualite": "De luxe",
+      "points": 14,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 60,
+        "objets": []
+      },
+      "humanoide": false,
+      "attaque": {
+        "nom": "Morsure",
+        "degats_pv_base": "1D6",
+        "puissance_perforante": 25
+      },
+      "capture": "molosse"
+    },
+    {
+      "nom": "Chevaucheur gobelin novice",
+      "code": "goblin_rider_novice",
+      "faction": "Gobelins",
+      "peuple": "Gobelin",
+      "culture": "Gobelins des cavernes",
+      "ligne": "Chevaucheur",
+      "niveau": "novice",
+      "centile": "P20",
+      "caracteristiques": {
+        "Force": 50,
+        "Constitution": 45,
+        "Dextérité": 54,
+        "Vitesse": 42,
+        "Endurance": 44,
+        "Esquive": 53,
+        "Chance": 43,
+        "Charisme": 38,
+        "Courage": 34,
+        "Intelligence": 32,
+        "Volonté": 33,
+        "Perception": 43,
+        "Puissance magique": 43,
+        "Réserve de mana": 43
+      },
+      "resistances": {
+        "Résistance physique": 1,
+        "Résistance au feu": 1,
+        "Résistance au froid": 2,
+        "Résistance à la foudre": 2,
+        "Résistance au poison": 10
+      },
+      "pv": 172,
+      "competences_martiales": {
+        "Lance": 38,
+        "Armes d’hast": 40,
+        "Discrétion": 29,
+        "Pièges": 24,
+        "Combat à deux armes": 35,
+        "Combat à mains nues": 25,
+        "Combat à deux mains": 27,
+        "Rondache": 22,
+        "Boucliers": 24
+      },
+      "intimidation": 31,
+      "port_d_armure": [],
+      "armes": [
+        "Lance",
+        "Rondache"
+      ],
+      "armure": "Vêtements",
+      "tier": 1,
+      "qualite": "Usée",
+      "points": 15,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 90,
+        "objets": []
+      },
+      "humanoide": true,
+      "competences_animales": {
+        "Compagnon animal": 48,
+        "Canidés": 36
+      },
+      "monture": "loup"
+    },
+    {
+      "nom": "Chevaucheur gobelin",
+      "code": "goblin_rider",
+      "faction": "Gobelins",
+      "peuple": "Gobelin",
+      "culture": "Gobelins des cavernes",
+      "ligne": "Chevaucheur",
+      "niveau": "normal",
+      "centile": "P50",
+      "caracteristiques": {
+        "Force": 59,
+        "Constitution": 53,
+        "Dextérité": 65,
+        "Vitesse": 49,
+        "Endurance": 54,
+        "Esquive": 62,
+        "Chance": 52,
+        "Charisme": 48,
+        "Courage": 43,
+        "Intelligence": 43,
+        "Volonté": 43,
+        "Perception": 52,
+        "Puissance magique": 52,
+        "Réserve de mana": 52
+      },
+      "resistances": {
+        "Résistance physique": 1,
+        "Résistance au feu": 1,
+        "Résistance au froid": 4,
+        "Résistance à la foudre": 4,
+        "Résistance au poison": 15
+      },
+      "pv": 205,
+      "competences_martiales": {
+        "Lance": 43,
+        "Armes d’hast": 44,
+        "Discrétion": 36,
+        "Pièges": 31,
+        "Combat à deux armes": 41,
+        "Combat à mains nues": 30,
+        "Combat à deux mains": 32,
+        "Rondache": 24,
+        "Boucliers": 28
+      },
+      "intimidation": 37,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Lance",
+        "Rondache"
+      ],
+      "armure": "Gambison",
+      "tier": 2,
+      "qualite": "Correcte",
+      "points": 22,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 80,
+        "objets": []
+      },
+      "humanoide": true,
+      "competences_animales": {
+        "Compagnon animal": 54,
+        "Canidés": 44
+      },
+      "monture": "loup"
+    },
+    {
+      "nom": "Chevaucheur gobelin vétéran",
+      "code": "goblin_rider_veteran",
+      "faction": "Gobelins",
+      "peuple": "Gobelin",
+      "culture": "Gobelins des cavernes",
+      "ligne": "Chevaucheur",
+      "niveau": "vétéran",
+      "centile": "P75",
+      "caracteristiques": {
+        "Force": 68,
+        "Constitution": 61,
+        "Dextérité": 73,
+        "Vitesse": 59,
+        "Endurance": 62,
+        "Esquive": 70,
+        "Chance": 61,
+        "Charisme": 56,
+        "Courage": 50,
+        "Intelligence": 51,
+        "Volonté": 51,
+        "Perception": 62,
+        "Puissance magique": 59,
+        "Réserve de mana": 59
+      },
+      "resistances": {
+        "Résistance physique": 2,
+        "Résistance au feu": 4,
+        "Résistance au froid": 6,
+        "Résistance à la foudre": 6,
+        "Résistance au poison": 19
+      },
+      "pv": 236,
+      "competences_martiales": {
+        "Lance": 47,
+        "Armes d’hast": 48,
+        "Discrétion": 42,
+        "Pièges": 36,
+        "Combat à deux armes": 47,
+        "Combat à mains nues": 36,
+        "Combat à deux mains": 37,
+        "Rondache": 27,
+        "Boucliers": 32
+      },
+      "intimidation": 41,
+      "port_d_armure": [
+        "Port d’armure légère"
+      ],
+      "armes": [
+        "Lance",
+        "Rondache"
+      ],
+      "armure": "Armure de cuir",
+      "tier": 3,
+      "qualite": "De bonne facture",
+      "points": 36,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 70,
+        "objets": []
+      },
+      "humanoide": true,
+      "competences_animales": {
+        "Compagnon animal": 59,
+        "Canidés": 51
+      },
+      "monture": "loup"
+    },
+    {
+      "nom": "Chevaucheur gobelin d’élite",
+      "code": "goblin_rider_elite",
+      "faction": "Gobelins",
+      "peuple": "Gobelin",
+      "culture": "Gobelins des cavernes",
+      "ligne": "Chevaucheur",
+      "niveau": "d’élite",
+      "centile": "P90",
+      "caracteristiques": {
+        "Force": 74,
+        "Constitution": 66,
+        "Dextérité": 81,
+        "Vitesse": 66,
+        "Endurance": 71,
+        "Esquive": 77,
+        "Chance": 68,
+        "Charisme": 64,
+        "Courage": 55,
+        "Intelligence": 59,
+        "Volonté": 58,
+        "Perception": 70,
+        "Puissance magique": 65,
+        "Réserve de mana": 66
+      },
+      "resistances": {
+        "Résistance physique": 6,
+        "Résistance au feu": 5,
+        "Résistance au froid": 9,
+        "Résistance à la foudre": 10,
+        "Résistance au poison": 22
+      },
+      "pv": 258,
+      "competences_martiales": {
+        "Lance": 51,
+        "Armes d’hast": 52,
+        "Discrétion": 49,
+        "Pièges": 44,
+        "Combat à deux armes": 53,
+        "Combat à mains nues": 42,
+        "Combat à deux mains": 42,
+        "Rondache": 29,
+        "Boucliers": 37
+      },
+      "intimidation": 46,
+      "port_d_armure": [
+        "Port d’armure légère",
+        "Port d’armure intermédiaire"
+      ],
+      "armes": [
+        "Lance",
+        "Rondache"
+      ],
+      "armure": "Cuir renforcé",
+      "tier": 4,
+      "qualite": "De luxe",
+      "points": 55,
+      "niveau_mission_min": 1,
+      "butin": {
+        "equipement": 60,
+        "objets": []
+      },
+      "humanoide": true,
+      "competences_animales": {
+        "Compagnon animal": 63,
+        "Canidés": 57
+      },
+      "monture": "loup"
     }
   ]
 }

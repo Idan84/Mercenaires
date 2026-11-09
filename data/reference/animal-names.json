@@ -12,7 +12,7 @@
       "key": "noms"
     }
   ],
-  "row_count": 4,
+  "row_count": 6,
   "rows": [
     {
       "code": "destrier",
@@ -29,6 +29,14 @@
     {
       "code": "loup",
       "noms": ["Croc", "Griffe-Noire", "Hurleur", "Cendre-Grise", "Ombre-Lune", "Rôdeur", "Sauvage", "Grisou", "Mâchefer", "Saignée", "Faucheur", "Écorche", "Brumeloup", "Taïga", "Vorace", "Givrecroc", "Ronce", "Charogne", "Balafre", "Fenrir", "Sorgue", "Pillard", "Noirpoil", "Hargne"]
+    },
+    {
+      "code": "cerbere",
+      "noms": ["Trois-Gueules", "Gorgone", "Charognard", "Tison", "Croc-Noir", "Brasier", "Gueule-d'Enfer", "Triple-Croc", "Cendreux", "Hurlesang", "Funeste", "Grondeur", "Ténèbre", "Cerbérus", "Mâche-Fer", "Sombregueule", "Tricéphale", "Gardien", "Abîme", "Fournaise", "Rogue", "Rictus", "Soufre", "Charnier"]
+    },
+    {
+      "code": "molosse",
+      "noms": ["Rex", "Brutus", "Fidèle", "Médor", "Pataud", "Taïaut", "Mâtin", "Hercule", "Goliath", "Bijou", "Filou", "Caporal", "Sergent", "Bastille", "Pirate", "Ronchon", "Sultan", "Vulcain", "Canaille", "Croquant", "Gaspard", "Lascar", "Bourru", "Dogue"]
     }
   ]
 }

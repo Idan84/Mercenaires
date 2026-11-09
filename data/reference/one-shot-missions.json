@@ -144,6 +144,10 @@
               "ligne": "Troll",
               "faction": "Créatures",
               "poids": 10
+            },
+            {
+              "ligne": "Chevaucheur",
+              "poids": 10
             }
           ],
           "noms": {
@@ -251,6 +255,10 @@
             {
               "ligne": "Cavalier",
               "poids": 10
+            },
+            {
+              "ligne": "Molosse",
+              "poids": 10
             }
           ],
           "noms": {
@@ -282,6 +290,10 @@
             {
               "ligne": "Canonnier",
               "poids": 15
+            },
+            {
+              "ligne": "Cerbère",
+              "poids": 10
             }
           ],
           "noms": {
@@ -502,6 +514,110 @@
           "Bois de la licorne",
           "Vallon de la licorne",
           "Sanctuaire de la licorne"
+        ]
+      },
+      "marche": {
+        "facteur": [
+          0.25,
+          1
+        ]
+      },
+      "recompense": {
+        "par_niveau": 1000
+      },
+      "poids": 1,
+      "echec": {
+        "renommee": -30
+      },
+      "defaite": {
+        "multiplicateur_mort": 2
+      }
+    },
+    {
+      "code": "hunt_cerberus",
+      "nom": "Chasse au cerbère",
+      "description": "Une meute de cerbères : tous tués ou mis en déroute. Ceux qui restent à terre peuvent être capturés.",
+      "illustration": "",
+      "niveau": {
+        "ecart": [
+          -4,
+          1
+        ],
+        "min": 6
+      },
+      "max_ennemis": 100,
+      "validite_jours": [
+        3,
+        6
+      ],
+      "carte": {
+        "colonnes": 30,
+        "lignes": 15
+      },
+      "bete": {
+        "code": "cerbere",
+        "des": 1,
+        "faces": 3,
+        "faction": "Cerbères",
+        "lieux": [
+          "Gorge des trois gueules",
+          "Antre du cerbère",
+          "Vieille mine"
+        ]
+      },
+      "marche": {
+        "facteur": [
+          0.25,
+          1
+        ]
+      },
+      "recompense": {
+        "par_niveau": 1000
+      },
+      "poids": 1,
+      "echec": {
+        "renommee": -30
+      },
+      "defaite": {
+        "multiplicateur_mort": 2
+      }
+    },
+    {
+      "code": "hunt_wild_dogs",
+      "nom": "Chasse aux chiens sauvages",
+      "description": "Une meute de chiens sauvages : tous tués ou mis en déroute. Ceux qui restent à terre peuvent être capturés : ce sont des molosses.",
+      "illustration": "",
+      "niveau": {
+        "ecart": [
+          -4,
+          1
+        ],
+        "max": 6
+      },
+      "max_ennemis": 100,
+      "validite_jours": [
+        3,
+        6
+      ],
+      "carte": {
+        "colonnes": 30,
+        "lignes": 15
+      },
+      "bete": {
+        "code": "molosse",
+        "nom": "Chien sauvage",
+        "pluriel": "chiens sauvages",
+        "des": 1,
+        "faces": 6,
+        "plus": {
+          "des": 1,
+          "faces": 3
+        },
+        "faction": "Chiens sauvages",
+        "lieux": [
+          "Vieux domaine",
+          "Friches aux crocs",
+          "Lande des chiens perdus"
         ]
       },
       "marche": {
@@ -953,6 +1069,67 @@
       ],
       "signature": "{commanditaire}, alchimiste à {lieu}, le {date}",
       "noms_commanditaire": "alchimistes"
+    },
+    {
+      "code": "cerberus_mine",
+      "mission": "hunt_cerberus",
+      "faction": "Cerbères",
+      "commanditaire": "Chef de village",
+      "titre": "Une mine de trop",
+      "texte": [
+        "À la compagnie de mercenaires qui n'a peur de rien,",
+        "Je suis {commanditaire}, chef de {lieu}, à {jours} de marche de votre camp. Nos mineurs ont percé une galerie de trop. Ce qui en est sorti a trois têtes, et chacune a faim.",
+        "Le premier soir, ils ont mangé les mulets. Le deuxième, la porte de la forge. Depuis, plus personne ne descend, et le village vit de soupe aux cailloux.",
+        "Les mineurs disent qu'ils sont {estimation}. Ils ont compté les têtes et divisé par trois ; j'espère qu'ils savent diviser.",
+        "Le village a réuni {récompense} pièces d'or. Tuez-les, ou ramenez-les en laisse si vous êtes assez fous : on ne vous demandera rien."
+      ],
+      "signature": "{commanditaire}, chef de {lieu}, le {date}",
+      "noms_commanditaire": "chefs_de_village"
+    },
+    {
+      "code": "cerberus_priest",
+      "mission": "hunt_cerberus",
+      "faction": "Cerbères",
+      "commanditaire": "Prêtre",
+      "titre": "Les portes d'en bas",
+      "texte": [
+        "Aux mercenaires de bonne volonté, s'il en reste,",
+        "Je suis {commanditaire}, prêtre à {lieu}, à {jours} de marche de votre camp. Le cimetière derrière ma chapelle s'est ouvert une nuit d'orage, et des chiens à trois têtes en sont sortis. Mes fidèles y voient un signe. Moi, j'y vois des morsures.",
+        "Les fossoyeurs en ont vu {estimation}. Ils ne creusent plus : ils prient, et ils dorment au clocher.",
+        "L'évêché m'envoie {récompense} pièces d'or et sa bénédiction. Prenez l'or ; je vous laisse aussi la bénédiction, vous en aurez besoin."
+      ],
+      "signature": "{commanditaire}, prêtre de {lieu}, le {date}",
+      "noms_commanditaire": "pretres"
+    },
+    {
+      "code": "dogs_village",
+      "mission": "hunt_wild_dogs",
+      "faction": "Chiens sauvages",
+      "commanditaire": "Chef de village",
+      "titre": "Les chiens du vieux domaine",
+      "texte": [
+        "À la compagnie de mercenaires la plus proche,",
+        "Je suis {commanditaire}, chef de {lieu}, à {jours} de marche de votre camp. Quand le seigneur du vieux domaine est parti, ses chiens sont restés. Le seigneur n'est jamais revenu ; les chiens, si.",
+        "Ils vont par bandes, la nuit. On en compte {estimation}. Ils ont déjà pris les poules, les oies et la jambe de bois du cordonnier.",
+        "Le village paie {récompense} pièces d'or. Si vous en ramenez de vivants, dressez-les : on dit qu'un molosse bien tenu vaut trois sentinelles."
+      ],
+      "signature": "{commanditaire}, chef de {lieu}, le {date}",
+      "noms_commanditaire": "chefs_de_village"
+    },
+    {
+      "code": "dogs_lord",
+      "mission": "hunt_wild_dogs",
+      "faction": "Chiens sauvages",
+      "commanditaire": "Seigneur",
+      "titre": "La meute du baron",
+      "texte": [
+        "À la compagnie de mercenaires de passage,",
+        "Moi, {commanditaire}, seigneur de {lieu}, à {jours} de marche de votre camp, ai lâché ma meute sur un cerf trop malin. Le cerf court toujours. La meute aussi, et elle chasse maintenant mes paysans.",
+        "Mon maître-chien les estime à {estimation}. Il est le seul à les avoir approchés, et il lui manque deux doigts.",
+        "Je vous offre {récompense} pièces d'or. Ces chiens m'ont coûté une fortune : ramenez-en quelques-uns vivants, et je ne compterai pas les autres."
+      ],
+      "signature": "{commanditaire}, seigneur de {lieu}, le {date}",
+      "noms_commanditaire": "nobles"
     }
   ],
   "noms": {

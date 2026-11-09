@@ -511,4 +511,21 @@ Deux missions (`one-shot-missions.json`, celles qui ont une `bete`) : **Chasse a
 - **Au tableau** : **une case sur trois** (`tavern.missions.weight_*` : contrat 1, garde du corps 1, chasse 1 ; Idan, 2026-11-08 : « Tous les types de missions sont équiprobables » ; avant : 2, 2, 1) ; loups et licornes **à égalité** (`poids` ; Idan : « Equiprobables » ; avant : les loups 3 fois sur 4). Elle se signe comme un contrat (l'escouade part le lendemain matin).
 - **Lieux** : « Repaire des loups », « Territoire de la meute », « Bois des hurlements » ; « Bois de la licorne », « Vallon de la licorne », « Sanctuaire de la licorne » ; paysages : **Forêt profonde** (loups), **Clairière** (licornes), sans enceinte (`mission-landscapes.json`).
 - **Lettres** : un village d'éleveurs et un seigneur sans gibier pour les loups ; un noble endetté et un alchimiste pour les licornes (`ordres`, noms `alchimistes`).
+- **Cerbères et chiens sauvages** (Idan, 2026-11-09 : le cerbère, « on peut aussi le chasser en meute » ; « 1D3 » ; « On peut attaquer des meutes de chiens sauvages » ; « 1D6 + 1D3 » ; « On limite la mission à 1 étoile argent max. Au dessus elle n'est pas proposée ») : **Chasse au cerbère** (`hunt_cerberus`, **1D3 cerbères par étoile**, dès le niveau 6 comme dans les camps ogres : `niveau.min`) ; **Chasse aux chiens sauvages** (`hunt_wild_dogs`, **1D6 + 1D3 chiens par étoile** : `bete.plus`, **jusqu'à 6★** : `niveau.max` ; au-dessus, elle n'est pas tirée). Les chiens sauvages ont la fiche du **molosse** (`bete.nom` : « Chien sauvage 1, 2… » sur la carte) : capturés, ce sont des molosses. Le niveau de la chasse est tiré d'abord, puis la chasse parmi celles qui l'acceptent, à égalité. Paysages : **Gorge rocheuse** (cerbères), **Friches** (chiens) ; lettres : une mine de trop et un prêtre pour les cerbères, un village et un baron pour les chiens.
 - Code : `missions.js` (`createHunt`, `rollBeasts`, `huntDistance`, `buildEnemies`), `campaign.js` (tableau), `mission.js`, `contract-ui.js`. Test : `tests/hunts.test.js`.
+
+## 24 — Le Chenil chez l'ennemi (Idan, 2026-11-09)
+
+> « oui loup chez les Gobelins » ; le cerbère : « Pas dans les camps orcs, mais Ogres. Il n'est pas monté » ; le molosse : « On en trouve dans les camps humains » (les voleurs ; « oui »).
+
+Trois lignes de quatre niveaux, **poids 10** dans leur camp :
+
+| Ligne | Camp | Dès le niveau | Fiche | Points (novice → élite) |
+|---|---|---|---|---|
+| **Chevaucheur** gobelin | Gobelins | 1 | le Lancier gobelin de même niveau, la lance et la rondache du Cavalier (§22), Compagnon animal et Canidés du Cavalier, **sur un loup** (`monture`) | 15, 22, 36, 55 |
+| **Cerbère** | Ogres | 6 (comme le troll) | notre cerbère pour le normal (339 PV, **trois morsures**) ; les écarts de la ligne du loup de la Cour de sang pour les autres | 17, 32, 49, 60 |
+| **Molosse** | Voleurs | 1 | notre molosse pour le normal (145 PV) ; mêmes écarts | 2, 4, 10, 14 |
+
+- **Points** : mesurés au simulateur (100 combats par effectif ; un mercenaire généré moyen vaut 10), étalonnés sur les lignes voisines mesurées de la même façon (Cavalier × 1,24 ; loup × 1,2 ; troll × 1,1). Un cerbère normal vaut environ quatre loups : « il mange 3 loups au Petit déjeuner ».
+- **Capture** : le cerbère et le molosse tombés (`capture`), le loup du chevaucheur (sa monture) : test de survie, une place au Chenil (doc 11 §8).
+- Test : `tests/kennel.test.js`.

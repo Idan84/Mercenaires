@@ -428,6 +428,15 @@ chance pour enchaîner plusieurs tirs (sauf arme à feu). Il ne peut passer en m
   + 2 (physique 7, feu, froid et foudre 6, poison 7), les **Sabots** du cheval (1D8, contondant 50) ; neutre bon. **Il vole**
   (`physiologie`, `Vol`) : monté, **le couple vole** (le vol des chauves-souris : 1 point par case, au-dessus du décor). Et
   la **charge aérienne** (`charge_aerienne` : « toujours », seul ou monté ; section « Charge aérienne »).
+- **Cerbère** (Idan, 2026-11-09 : « Il a 3 attaques de morsures séparés. Il est de taille 2. ( Donc à côté des ogres) Il va un
+  peu moins vite qu'un destrier, mais il mange 3 loups au Petit déjeuner » ; « on peut le monter ») : Force 100, Constitution
+  90 (**339 PV**), Vitesse 75 (7 cases, le destrier 8), Intelligence 20, Volonté 60 ; **trois Morsures** (1D8, perforant 35,
+  chacune) : **comme le combat à deux armes**, chacune frappe une fois par séquence avec son propre jet, aussi en charge et en
+  attaque d'opportunité, et la séquence peut s'enchaîner (`attaque.attaques` ; `strikeCount`, `severalStrikes`) ; gabarit 2 :
+  tout le monde le monte, sauf l'ogre, qui l'emmène à pied (`compagnon`) ; loyal mauvais.
+- **Molosse de guerre** (Idan : « Il est assez faible » ; « Personne ne le monte ») : Force 30, Constitution 35 (**145 PV**),
+  Vitesse 50, **Morsure** 1D6, perforant 25 ; gabarit 0,5 : personne ne le monte, il se bat à pied à côté de son maître
+  (`compagnon`) ; neutre mauvais.
 - **Une fiche complète, comme un mercenaire** (Idan, 2026-11-07 : « la monture doit avoir une fiche complète comme les
   mercenaires. Les ennemis également » ; valeurs : « Parfait ») : destrier Charisme 30, Intimidation 40, Discrétion 10,
   Puissance magique 0, Réserve de mana 0 ; licorne Charisme 70, Intimidation 20, Discrétion 10, Puissance magique 50,

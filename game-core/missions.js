@@ -178,10 +178,12 @@
     const hunts=()=>(data.missions||[]).filter(m=>m.bete);
     // Le nombre de bêtes : les dés de la bête pour chaque étoile (1D6 loups, 1D3 licornes depuis le bêta-test ; Idan,
     // 2026-11-07), au plus max_ennemis.
+    // Des dés en plus par étoile (bete.plus : les chiens sauvages, 1D6 + 1D3 ; Idan, 2026-11-09).
     function rollBeasts(def,level){
       const b=def.bete||{};
+      const dice=[{des:b.des,faces:b.faces},...(Array.isArray(b.plus)?b.plus:b.plus?[b.plus]:[])];
       let count=0;
-      for(let star=0;star<level;star++) for(let d=0;d<(Number(b.des)||1);d++) count+=die(Number(b.faces)||6);
+      for(let star=0;star<level;star++) for(const x of dice) for(let d=0;d<(Number(x.des)||1);d++) count+=die(Number(x.faces)||6);
       return Math.min(Number(def.max_ennemis)||100,Math.max(1,count));
     }
     // Jours de marche : étoiles × un tirage de 0,25 à 1, arrondi au jour supérieur.
@@ -195,7 +197,8 @@
       const names=data.noms||{};
       const order=pick((data.ordres||[]).filter(o=>o.mission===def.code&&o.faction===b.faction));
       const place=pick(b.lieux||[])||def.nom;
-      const camp={faction:b.faction,campName:place,enemies:[],chief:null,beast:{code:b.code,count},points:0,budget:0,names:{}};
+      // bete.nom : le nom des bêtes sur la carte, s'il n'est pas celui de leur fiche (les chiens sauvages : des molosses).
+      const camp={faction:b.faction,campName:place,enemies:[],chief:null,beast:{code:b.code,count,...(b.nom?{name:b.nom,plural:b.pluriel||null}:{})},points:0,budget:0,names:{}};
       const [minDays,maxDays]=def.validite_jours||[3,6];
       const reward=(Number(def.recompense?.par_niveau)||0)*missionLevel;
       const fields={
@@ -207,12 +210,18 @@
         difficulty:missionLevel,level:missionLevel,day,expiresDay:day+minDays+Math.floor(random()*(maxDays-minDays+1)),distance,camp,enemyCount:count,
         reward,order:order?.code||null,fields,hunt:true};
     }
-    // Une chasse au tableau : l'une des missions de chasse, selon son poids (les loups 3 fois sur 4).
+    // Une chasse au tableau : l'une des missions de chasse, selon son poids. Une chasse plafonnée (niveau.max : les chiens
+    // sauvages, Idan, 2026-11-09 : « On limite la mission à 1 étoile argent max. Au dessus elle n'est pas proposée ») n'est
+    // tirée que si le niveau de la mission ne la dépasse pas.
     function createHunt({day=1,renown=0,level=null}={}){
       const list=hunts();
       if(!list.length) return null;
-      const def=weighted(list.map(m=>({...m,poids:Number(m.poids)||1})));
-      return createHuntOffer(definition(def.code),{day,renown,level});
+      const missionLevel=level==null?rollMissionLevel(list[0],renown):clampLevel(level);
+      // niveau.min : le cerbère, dès le niveau 6 comme dans les camps ogres.
+      const open=list.filter(m=>(!(Number(m.niveau?.max)>0)||missionLevel<=Number(m.niveau.max))&&missionLevel>=(Number(m.niveau?.min)||1));
+      if(!open.length) return null;
+      const def=weighted(open.map(m=>({...m,poids:Number(m.poids)||1})));
+      return createHuntOffer(definition(def.code),{day,renown,level:missionLevel});
     }
 
     // Texte de l'ordre : les accolades remplacées par les champs de l'offre et par extra (dates mises en forme,
@@ -319,7 +328,9 @@
         template:{nom:a.nom,domaine:"Armes naturelles",prise:"1 main",degats_pv_base:a.degats_pv_base,degats_type:a.degats_type||null,
           puissance_tranchante_base:Number(a.puissance_tranchante)||0,puissance_perforante_base:Number(a.puissance_perforante)||0,
           puissance_contondante_base:Number(a.puissance_contondante)||0,malus_vitesse_arme_base:0,bonus_charge_base:Number(a.bonus_charge)||1,
-          contre_charge:false,portee_min_hex:1,portee_max_hex:1}};
+          contre_charge:false,portee_min_hex:1,portee_max_hex:1,
+          // Plusieurs coups (le cerbère, trois morsures ; Idan, 2026-11-09) : chacun son jet, comme le combat à deux armes.
+          ...(Number(a.attaques)>1?{attaques:Number(a.attaques)}:{})}};
     }
 
     // Montures (Idan, 2026-11-07 ; mounts.json) : une fiche fixe. Le personnage du cheval : ses caractéristiques, ses
@@ -361,8 +372,9 @@
       const beast=offer.camp?.beast;
       if(beast){
         const sheet=mountSheet(beast.code);
+        const label=beast.name||sheet?.nom||beast.code;
         return Array.from({length:Number(beast.count)||0},(_,i)=>createMount(beast.code,{id:`${offer.id}-b${i}`,
-          name:beast.count>1?`${sheet?.nom||beast.code} ${i+1}`:sheet?.nom})).filter(Boolean);
+          name:beast.count>1?`${label} ${i+1}`:label})).filter(Boolean);
       }
       const troops=[...offer.camp.enemies];
       let boss=offer.camp.chief;

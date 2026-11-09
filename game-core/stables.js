@@ -78,12 +78,19 @@
     }
     function places(state,house=STABLES){ return (Number(houseRows.get(house)?.places_par_niveau)||0)*levelOf(state,house); }
     function mountsIn(state,house=STABLES){ return mountsOf(state).filter(i=>houseOf(i)===house); }
-    function free(state,house=STABLES){ return Math.max(0,places(state,house)-mountsIn(state,house).length); }
+    // Sa place (mounts.json, place ; 1 par défaut) : le molosse n'en prend qu'une demie (Idan, 2026-11-09).
+    function placeOf(itemOrCode){
+      const s=typeof itemOrCode==="string"?sheet(itemOrCode):sheetOf(itemOrCode);
+      const p=Number(s?.place);
+      return Number.isFinite(p)&&p>0?p:1;
+    }
+    function used(state,house=STABLES){ return mountsIn(state,house).reduce((sum,i)=>sum+placeOf(i),0); }
+    function free(state,house=STABLES){ return Math.max(0,places(state,house)-used(state,house)); }
     // Un objet qui demande une place dans son logement (un achat chez un marchand) : {ok, reason}.
     function canStore(state,item){
       if(!isMount(item)) return {ok:true};
       const house=houseOf(item),words=houseWords(house);
-      return free(state,house)>0?{ok:true}:{ok:false,reason:places(state,house)?"Pas de place "+words.at+".":"Il faut d’abord "+words.need+" (à la Grange du dresseur)."};
+      return free(state,house)>=placeOf(item)?{ok:true}:{ok:false,reason:places(state,house)?"Pas de place "+words.at+".":"Il faut d’abord "+words.need+" (à la Grange du dresseur)."};
     }
     function upkeepOf(item){ return Number(sheetOf(item)?.entretien)||0; }
     function upkeep(state){ return mountsOf(state).reduce((sum,m)=>sum+upkeepOf(m),0); }
@@ -110,7 +117,7 @@
       for(const c of captured||[]){
         const s=sheet(c?.code);
         if(!s) continue;
-        if(free(state,houseOf(s.code))<=0){ released.push(c); continue; }
+        if(free(state,houseOf(s.code))<placeOf(s.code)){ released.push(c); continue; }
         const item=typeof makeItem==="function"?makeItem("mount",s.nom):null;
         if(!item){ released.push(c); continue; }
         Object.assign(item,{owner:null,origin:c.origin||null,day});
@@ -226,7 +233,7 @@
       return {ok:true,mount:item,before,name:clean};
     }
 
-    return {BARN,STABLES,KENNEL,houseOf,houseWords,mountsIn,rides,sheet,sheetOf,isMount,mountsOf,ownerOf,places,free,canStore,upkeepOf,upkeep,payUpkeep,rollSurvival,capturable,admit,release,
+    return {BARN,STABLES,KENNEL,houseOf,houseWords,mountsIn,placeOf,used,rides,sheet,sheetOf,isMount,mountsOf,ownerOf,places,free,canStore,upkeepOf,upkeep,payUpkeep,rollSurvival,capturable,admit,release,
       applyAftermath,recoverOneDay,returnToStable,ownSheet,giveName,rename};
   }
 

@@ -84,6 +84,7 @@
     const ELEMENTAL={min:constant("combat.elemental.protection_min",-50),max:constant("combat.elemental.protection_max",75)};
     const STEALTH={
       offset:constant("combat.stealth.offset",40),
+      gap:constant("combat.stealth.gap_factor",2),
       distance:constant("combat.stealth.distance_factor",5),
       scale:constant("combat.stealth.scale",15),
       min:constant("combat.stealth.min",5),
@@ -653,12 +654,16 @@
       const own=statWithGear(unit,"Discrétion"),m=mountOf(unit);
       return m?Math.min(own,statWithGear(m,"Discrétion")):own;
     }
+    // Une courbe qui récompense la discrétion et la perception (Idan, 2026-11-09 : « on fait une courbe qui récompense
+    // grandement la discrétion et la perception » ; « Partons sur B ») : l'écart Perception − (Discrétion + couverture) compte
+    // STEALTH.gap fois (× 2), et la chance descend jusqu'à 0,1 % (au lieu de 5 %).
     function detectionChance(observer,target,distance,cover=0){
-      const delta=statWithGear(observer,"Perception")-(stealthOf(target)+cover)+STEALTH.offset-STEALTH.distance*distance;
+      const delta=STEALTH.gap*(statWithGear(observer,"Perception")-(stealthOf(target)+cover))+STEALTH.offset-STEALTH.distance*distance;
       return clamp(100/(1+Math.exp(-delta/STEALTH.scale)),STEALTH.min,STEALTH.max);
     }
+    // Un jet au centième (0,01 à 100) : une chance de 0,1 % reste possible.
     function rollDetection(observer,target,distance,cover=0){
-      const p=detectionChance(observer,target,distance,cover),roll=d100();
+      const p=detectionChance(observer,target,distance,cover),roll=Math.max(1,Math.ceil(random()*10000))/100;
       return {p,roll,spotted:roll<=p};
     }
 

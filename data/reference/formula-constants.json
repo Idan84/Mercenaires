@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 425,
+  "row_count": 428,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -1096,6 +1096,22 @@
       "description": "Encore camouflé et hors de vue, un combattant qui ne pourrait pas frapper au tour suivant attend au plus ce nombre de tours avant d'entrer dans la vue de l'ennemi (Idan, 2026-11-07, après le bêta-test : « Rendre l'IA plus performante : jouer des sorts. Savoir reculer. Se regrouper. Se cacher » ; « On fait un premier jet »).",
       "formule": "IA de combat commune V1",
       "valeur": 2,
+      "version": "V1"
+    },
+    {
+      "nom": "IA aveugle — part des rondes",
+      "code": "combat.ai.patrol_share",
+      "description": "Au début du combat, cette part des ennemis fait des rondes autour de son poste ; les autres montent la garde. Tant que l'ennemi n'a pas donné l'alerte (il voit l'un des nôtres, est frappé ou touché par un sort), il ne sait pas qu'il est attaqué (Idan, 2026-11-09 : « l'IA ne doit pas connaître nos mecs pas cachés ! Si elle ne voit personne, elle ne sait pas qu'elle est attaquée, donc elle bouge pas ou fait des rondes »).",
+      "formule": "IA aveugle V1",
+      "valeur": 0.5,
+      "version": "V1"
+    },
+    {
+      "nom": "IA aveugle — rayon des rondes",
+      "code": "combat.ai.patrol_radius",
+      "description": "Une ronde fait au plus 2 pas par tour, vers une case au hasard à ce nombre de cases au plus de son poste.",
+      "formule": "IA aveugle V1",
+      "valeur": 3,
       "version": "V1"
     },
     {
@@ -2237,7 +2253,7 @@
     {
       "nom": "Repérage — décalage",
       "code": "combat.stealth.offset",
-      "description": "Discrétion et camouflage (doc 04 ; Idan, 2026-10-28) : au début de chaque tour, chaque personnage teste chaque ennemi encore camouflé dans sa ligne de vue ; P = 100 / (1 + e^(−Δ / échelle)), Δ = Perception − (Discrétion + couverture) + décalage − facteur × distance, bornée par min et max. Un succès le révèle à toute l'armée ennemie, pour toute la partie.",
+      "description": "Discrétion et camouflage (doc 04 ; Idan, 2026-10-28) : au début de chaque tour, chaque personnage teste chaque ennemi encore camouflé dans sa ligne de vue ; P = 100 / (1 + e^(−Δ / échelle)), Δ = écart × (Perception − (Discrétion + couverture)) + décalage − facteur × distance, bornée par min et max. Un succès le révèle à toute l'armée ennemie, pour toute la partie.",
       "formule": "Repérage",
       "valeur": 40,
       "version": "V1"
@@ -2259,11 +2275,19 @@
       "version": "V1"
     },
     {
+      "nom": "Repérage — poids de l’écart",
+      "code": "combat.stealth.gap_factor",
+      "description": "Idan, 2026-11-09 (« une courbe qui récompense grandement la discrétion et la perception ») : l’écart Perception − (Discrétion + couverture) compte ce nombre de fois dans Δ. À valeurs égales, rien ne change ; 20 points d’avance à 5 cases : 16 % au lieu de 42 % ; 40 points : 1,3 % au lieu de 16 %. La couverture compte double elle aussi.",
+      "formule": "Repérage",
+      "valeur": 2,
+      "version": "V1"
+    },
+    {
       "nom": "Repérage — chance minimale",
       "code": "combat.stealth.min",
-      "description": "Chance minimale de repérer un ennemi camouflé en vue.",
+      "description": "Chance minimale de repérer un ennemi camouflé en vue (Idan, 2026-11-09 : « Partons sur B » : 0,1 % au lieu de 5 %, pour que la discrétion compte au-delà de 120 ; jet au centième).",
       "formule": "Repérage",
-      "valeur": 5,
+      "valeur": 0.1,
       "version": "V1"
     },
     {

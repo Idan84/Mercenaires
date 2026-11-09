@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "helmets",
-  "description": "Casques et chapeaux (Idan, 2026-10-25), portés dans l’emplacement Casque / Chapeau. Bonus de +5 / 10 / 15 / 20 % de la valeur de base selon le tier. Casque de constitution : − malus_t<tier> % de la Puissance magique de base et − vitesse_t<tier> points de Vitesse (le poids du casque). Chapeau du dresseur : la compétence animale (Compagnon animal). Images : assets-src/Equipements/Casques.",
+  "description": "Casques et chapeaux (Idan, 2026-10-25), portés dans l’emplacement Casque / Chapeau. Bonus de +5 / 10 / 15 / 20 % de la valeur de base selon le tier. Casque de constitution : − malus_t<tier> % de la Puissance magique de base et − vitesse_t<tier> points de Vitesse (le poids du casque). Chapeau du dresseur : la compétence animale (Compagnon animal). Images : assets-src/Equipements/Casques. Altération magique base (Idan, 2026-11-09 : « encore 5 pour les casques (pas les chapeaux) ») : points retirés à la réussite des sorts, × le multiplicateur de malus de la qualité du casque (son tier : T1 Usée × 1,2 … T4 De luxe × 0,6).",
   "columns": [
     {
       "source": "Nom",
@@ -74,6 +74,10 @@
     {
       "source": "Prix de base (PO)",
       "key": "prix_base"
+    },
+    {
+      "source": "Altération magique base",
+      "key": "alteration_magique_base"
     }
   ],
   "row_count": 3,
@@ -96,7 +100,8 @@
       "vitesse_t2": 3,
       "vitesse_t3": 2,
       "vitesse_t4": 1,
-      "prix_base": 100
+      "prix_base": 100,
+      "alteration_magique_base": 5
     },
     {
       "nom": "Chapeau d’intelligence",
@@ -116,7 +121,8 @@
       "vitesse_t2": 0,
       "vitesse_t3": 0,
       "vitesse_t4": 0,
-      "prix_base": 100
+      "prix_base": 100,
+      "alteration_magique_base": 0
     },
     {
       "nom": "Chapeau du dresseur",
@@ -136,7 +142,8 @@
       "vitesse_t2": 0,
       "vitesse_t3": 0,
       "vitesse_t4": 0,
-      "prix_base": 100
+      "prix_base": 100,
+      "alteration_magique_base": 0
     }
   ]
 }

@@ -48,7 +48,9 @@
       animalUses:{},
       // XP de combat (Idan, 2026-11-08) : cases parcourues, PV encaissés, tours au contact, tirs au loin, sorts ennemis
       // résistés, tests de Courage tenus grâce à son aura.
-      hexesMoved:0,damageTaken:0,contactTurns:0,longShots:0,spellsResisted:0,auraHolds:0
+      hexesMoved:0,damageTaken:0,contactTurns:0,longShots:0,spellsResisted:0,auraHolds:0,
+      // Magie en armure (Idan, 2026-11-09) : les sorts ratés alors que l'équipement gêne encore.
+      armorFailures:0
     };
   }
   function logOf(unit){ return unit.progress||(unit.progress=emptyLog()); }
@@ -189,9 +191,12 @@
   // Chaque sort lancé, même raté (12-magic.md, étape 3 ; Idan, 2026-10-25). school : école du sort ; success : il
   // réussit ; effect : il a un vrai effet (PV soignés, dégâts qui passent la protection, effet posé, poison purgé) ;
   // mana : mana dépensé, même en cas d'échec ; critical : coup critique ; fumble : échec critique confirmé.
-  function recordSpell(unit,{code,school=null,success=false,effect=false,mana=0,critical=false,fumble=false}={}){
+  function recordSpell(unit,{code,school=null,success=false,effect=false,mana=0,critical=false,fumble=false,hindered=false}={}){
     if(!unit||!code) return;
     const log=logOf(unit);
+    // Magie en armure (Idan, 2026-11-09 : « On gagne [80] points d'XP à chaque echec de sort uniquement si on porte quelque
+    // chose qui interfère ») : hindered, un malus d'équipement qui reste après la compétence.
+    if(!success&&hindered) log.armorFailures=(Number(log.armorFailures)||0)+1;
     const casts=log.spellCasts||(log.spellCasts={});
     const cast=casts[code]||(casts[code]={school,casts:0,successes:0,effects:0});
     cast.casts++;
@@ -273,6 +278,7 @@
       perceptionLongShot:k("progression.perception.long_shot_xp",20),
       willSpellResisted:k("progression.will.spell_resisted_xp",80),
       charismaAuraHold:k("progression.charisma.aura_hold_xp",40),
+      magicArmorFailure:k("progression.magic_armor.failure_xp",80),
       // Multiplicateur d'étoiles (Idan, 2026-11-08) : × (1 + part par étoile au-delà de 1).
       starBonus:k("progression.mission.star_bonus",0.25)
     };
@@ -409,6 +415,8 @@
         add(shield,count*C.skillShieldBlock);
         add("Boucliers",count*C.skillShieldBlock);
       }
+      // Magie en armure : chaque sort raté alors que l'équipement gêne encore (sans perte pour les autres compétences).
+      add("Magie en armure",(Number(l.armorFailures)||0)*C.magicArmorFailure);
       return martialSpread(mercenary,raw);
     }
     // La régression d'un gain martial (combat ou entraînement au camp, Idan, 2026-11-03) : raw = { compétence: XP } →

@@ -79,13 +79,15 @@ assert.equal(magic.mastery(ringed,"quick_heal"),70.5);
 assert.equal(Math.round(magic.effectFactor(ringed,"quick_heal")*1e4)/1e4,Math.round(2*63.6/100*(0.5+70.5/100)*1e4)/1e4);
 
 // Armure : son Altération magique se retire de la réussite, × le malus de sa qualité (usée 1,2 ; Grand Luxe 0,8).
+// Magie en armure en retire la moitié de sa valeur (1 sans compétence notée : −0,5 ; tests/magic-armor.test.js).
 const armored=(name,qualityCode)=>unit(mage({pm:53,vie:31,int:35,items:[{id:"x",name,qualityCode,templateId:""}],slots:{armor:"x"}}));
 const base=magic.castChance(beginner,"quick_heal").p;
-assert.equal(magic.armorPenalty(armored("Armure de plates","standard")),45);
-assert.equal(Math.round(magic.castChance(armored("Armure de plates","standard"),"quick_heal").p*10)/10,Math.round((base-45)*10)/10);
-assert.equal(magic.armorPenalty(armored("Armure de plates","worn")),54);
-assert.equal(magic.armorPenalty(armored("Armure de plates","luxury")),36);
-assert.equal(magic.armorPenalty(armored("Armure de cuir","standard")),5);
+assert.equal(magic.gearPenalty(armored("Armure de plates","standard")),45);
+assert.equal(magic.armorPenalty(armored("Armure de plates","standard")),44.5);
+assert.equal(Math.round(magic.castChance(armored("Armure de plates","standard"),"quick_heal").p*10)/10,Math.round((base-44.5)*10)/10);
+assert.equal(magic.gearPenalty(armored("Armure de plates","worn")),54);
+assert.equal(magic.gearPenalty(armored("Armure de plates","luxury")),36);
+assert.equal(magic.gearPenalty(armored("Armure de cuir","standard")),5);
 assert.equal(magic.armorPenalty(armored("Vêtements","standard")),0);
 assert.equal(magic.castChance(unit(mage({pm:53,vie:1,level:1,int:10,items:[{id:"x",name:"Armure de plates"}],slots:{armor:"x"}})),"quick_heal").p,0,
   "jamais sous 0");

@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 430,
+  "row_count": 434,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -1283,6 +1283,14 @@
       "version": "V2"
     },
     {
+      "nom": "Progression — Magie en armure — sort raté",
+      "code": "progression.magic_armor.failure_xp",
+      "description": "XP de Magie en armure à chaque sort raté tant que l'équipement porté gêne encore (un malus magique restant, après la compétence), × le multiplicateur d'étoiles de la mission (Idan, 2026-11-09 : « On gagne 2 points d'XP à chaque echec de sort uniquement si on porte quelque chose qui interfère. Ca marche indifféremment pour les armures ou les boucliers ou autre » ; « 20xp » ; « passons à 80xp »).",
+      "formule": "Progression naturelle V2",
+      "valeur": 80,
+      "version": "V2"
+    },
+    {
       "nom": "Progression — Charisme — Courage tenu grâce à l'aura",
       "code": "progression.charisma.aura_hold_xp",
       "description": "XP de Charisme du capitaine ou du lieutenant dont l'aura a compté dans un test de Courage tenu par un allié (la plus forte aura à portée ; le fouet seul ne compte pas) (08 §2). Idan, 2026-11-08 : « On ajoute : Vitesse +1 par case parcourue en combat… Constitution +2 XP par PV de dégâts encaissés et survécus… Endurance +10 par tour passé au contact d'un ennemi… Perception +20 par tir qui touche au-delà de la moitié de la portée… Volonté +80 par sort ennemi résisté… Charisme +40 quand un allié proche réussit son test de Courage et qu'il a utilisé son aura (donc pour capitaine et lieutenant uniquement) ».",
@@ -1968,6 +1976,30 @@
       "description": "Difficulté de tous les sorts dans la réussite : Δ = (Maîtrise + Intelligence) / 2 − difficulté. La même pour tous (Idan, 2026-11-01 : pas de paliers de sorts) ; un gros sort ne se distingue que par son effet et son mana.",
       "formule": "Magie — maîtrise et réussite d’un sort",
       "valeur": 30,
+      "version": "V1"
+    },
+    {
+      "nom": "Magie en armure — part de la compétence",
+      "code": "magic.armor_skill.factor",
+      "description": "Le malus magique de l'équipement porté (armure, bouclier en main, casque ; chacun × le multiplicateur de malus de sa qualité) baisse de cette part de la compétence Magie en armure, sans descendre sous 0 (Idan, 2026-11-09 : « Piste 2 » : la compétence retire la moitié de sa valeur au malus). Cuir neutralisé vers 10, mailles vers 50, plates vers 90.",
+      "formule": "Magie — maîtrise et réussite d’un sort",
+      "valeur": 0.5,
+      "version": "V1"
+    },
+    {
+      "nom": "Magie en armure — valeur de départ",
+      "code": "generation.magic_armor.base",
+      "description": "Magie en armure à la création, pour tous les peuples sauf les nains (Idan, 2026-11-09 : « Les nains comment 2D6 de magie en armure, tous les autres à 1 »).",
+      "formule": "Génération",
+      "valeur": 1,
+      "version": "V1"
+    },
+    {
+      "nom": "Magie en armure — dés des nains",
+      "code": "generation.magic_armor.dwarf_d6",
+      "description": "Magie en armure à la création des nains : ce nombre de D6 (Idan, 2026-11-09 : « Les nains comment 2D6 de magie en armure »).",
+      "formule": "Génération",
+      "valeur": 2,
       "version": "V1"
     },
     {

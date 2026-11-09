@@ -45,14 +45,16 @@ for (const def of [wolves, unicorns]) {
 
 // 2. Le tirage : renommée ± 2, les bêtes, la marche, la récompense.
 const renown = 0, base = rules.renownLevel(renown);
-const seen = {hunt_wolves: 0, hunt_unicorn: 0};
+const seen = {hunt_wolves: 0, hunt_unicorn: 0, hunt_cerberus: 0, hunt_wild_dogs: 0};
 for (let i = 0; i < 400; i++) {
   const offer = rules.createHunt({day: 1, renown});
   seen[offer.code]++;
   const def = rules.definition(offer.code), L = offer.level;
   assert.ok(L >= Math.max(1, base - 2) && L <= base + 2, "étoiles : " + L);
-  const dice = def.bete.des * L;
-  assert.ok(offer.enemyCount >= dice && offer.enemyCount <= Math.min(100, dice * def.bete.faces), "bêtes : " + offer.enemyCount);
+  // Les chiens sauvages (Idan, 2026-11-09) : 1D6 + 1D3 par étoile (bete.plus).
+  const all = [def.bete, ...[].concat(def.bete.plus || [])];
+  const dice = all.reduce((n, x) => n + x.des, 0) * L, top = all.reduce((n, x) => n + x.des * x.faces, 0) * L;
+  assert.ok(offer.enemyCount >= dice && offer.enemyCount <= Math.min(100, top), "bêtes : " + offer.enemyCount);
   assert.ok(offer.distance >= Math.ceil(0.25 * L) && offer.distance <= L, "marche : " + offer.distance + " pour " + L + " étoiles");
   assert.equal(offer.reward, 1000 * L);
   assert.equal(offer.hunt, true);
@@ -60,8 +62,21 @@ for (let i = 0; i < 400; i++) {
   const letter = rules.orderText(offer, {date: "1er du mois", récompense: offer.reward});
   assert.ok(letter && letter.paragraphs.every(p => !/\{[^}]+\}/.test(p)), "la lettre est remplie");
 }
-const huntTotal = seen.hunt_wolves + seen.hunt_unicorn;
-assert.ok(seen.hunt_wolves > 0.4 * huntTotal && seen.hunt_unicorn > 0.4 * huntTotal, "loups et licornes à égalité (Idan, 2026-11-08) : " + JSON.stringify(seen));
+const huntTotal = Object.values(seen).reduce((a, b) => a + b, 0);
+// À ce niveau : loups, licornes et chiens sauvages à égalité ; pas de cerbère avant le niveau 6.
+assert.ok(["hunt_wolves", "hunt_unicorn", "hunt_wild_dogs"].every(c => seen[c] > 0.25 * huntTotal), "à égalité (Idan, 2026-11-08) : " + JSON.stringify(seen));
+assert.equal(seen.hunt_cerberus, 0, "pas de cerbère avant le niveau 6");
+// Le cerbère (dès le niveau 6) et les chiens sauvages (jusqu'à 6 : « au dessus elle n'est pas proposée ») ; Idan, 2026-11-09.
+const cerberus = rules.definition("hunt_cerberus"), dogs = rules.definition("hunt_wild_dogs");
+assert.deepEqual([cerberus.bete.code, cerberus.bete.des, cerberus.bete.faces, cerberus.niveau.min], ["cerbere", 1, 3, 6]);
+assert.deepEqual([dogs.bete.code, dogs.bete.nom, dogs.bete.des, dogs.bete.faces, dogs.bete.plus, dogs.niveau.max], ["molosse", "Chien sauvage", 1, 6, {des: 1, faces: 3}, 6]);
+for (const def of [cerberus, dogs]) assert.equal(reference.oneShotMissions.ordres.filter(o => o.mission === def.code).length, 2, def.code + " : deux lettres");
+const kinds = level => new Set(Array.from({length: 300}, () => rules.createHunt({day: 1, level}).code));
+assert.ok(kinds(6).has("hunt_cerberus") && kinds(6).has("hunt_wild_dogs"), "à 6 étoiles : les deux");
+assert.ok(kinds(7).has("hunt_cerberus") && !kinds(7).has("hunt_wild_dogs"), "à 7 étoiles : plus de chiens sauvages");
+const pack = rules.buildEnemies(rules.createOffer({code: "hunt_wild_dogs", level: 2}));
+assert.ok(pack.length >= 4 && pack.every(b => b.mount?.code === "molosse"), "des molosses");
+assert.equal(pack[0].name, "Chien sauvage 1", "nommés chiens sauvages");
 const big = rules.createOffer({code: "hunt_wolves", level: 15});
 assert.ok(big.enemyCount <= 100, "au plus 100");
 assert.ok(big.distance >= 4 && big.distance <= 15);

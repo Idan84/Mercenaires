@@ -1298,6 +1298,10 @@
         {
           "type": "belt",
           "objet": "Ceinture d’endurance"
+        },
+        {
+          "type": "mount",
+          "objet": "Cerbère"
         }
       ],
       "repliques": {
@@ -1433,6 +1437,10 @@
         {
           "type": "manual",
           "ecole": "Illusion"
+        },
+        {
+          "type": "mount",
+          "objet": "Molosse"
         }
       ],
       "repliques": {

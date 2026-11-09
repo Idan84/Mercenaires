@@ -863,7 +863,9 @@ function startExpeditionCombat(expeditionId){
   missionLog(offer.name+" : le "+offer.campName.toLocaleLowerCase("fr")+" de "+offer.fields.lieu+". Votre équipe a l’initiative.","turn");
   // Une chasse (Idan, 2026-11-07) : les bêtes, en nombre.
   const beast=offer.camp?.beast;
-  missionLog(beast?"Sur place : "+enemies.length+" "+(enemies.length>1?(beast.code==="licorne"?"licornes":"loups"):(beast.code==="licorne"?"licorne":"loup"))+"."
+  // Le nom des bêtes : celui de la chasse (les chiens sauvages), sinon celui de leur fiche (mounts.json).
+  const beastLabel=beast?String(beast.name||(typeof missionRules==="function"?missionRules().mountSheet(beast.code)?.nom:"")||beast.code).toLocaleLowerCase("fr"):"";
+  missionLog(beast?"Sur place : "+enemies.length+" "+(enemies.length>1?(beast.plural||beastLabel+"s").toLocaleLowerCase("fr"):beastLabel)+"."
     :"Dans le camp : "+enemies.map(u=>u.character.name).join(", ")+".");
   deployMissionCompanions();
   startMissionCamouflage();
@@ -1546,7 +1548,8 @@ function performMissionAttack(attacker,target,mode,distance,charge=null,{sentine
   }
   // Combat à deux armes CAC V1 : à chaque séquence, chaque arme utilisable frappe une fois (principale puis
   // secondaire), chacune avec son propre mode ; sinon, la seule arme principale.
-  const dual=e.isDualWielding(attacker);
+  // Plusieurs coups (deux armes, ou les trois morsures du cerbère) : chacun frappe une fois par séquence.
+  const dual=e.severalStrikes?e.severalStrikes(attacker):e.isDualWielding(attacker);
   const handsAt=d=>(dual?e.usableHands(attacker,d):(e.canAttackAtDistance(attacker,d,mode)?[{hand:"main",mode}]:[]))
     .filter(h=>h.mode!=="ranged"||missionLineOfSight(attacker,target));
   if(handsAt(distance).some(h=>h.mode==="ranged")){
@@ -1597,7 +1600,7 @@ function performMissionAttack(attacker,target,mode,distance,charge=null,{sentine
       if(result.fumble||result.woundFumble) break;
     }
     if(!results.length){ if(n===1) return first; break; }
-    if(dual) MercenairesProgression.recordDualSequence(attacker,results);
+    if(e.isDualWielding(attacker)) MercenairesProgression.recordDualSequence(attacker,results);
     if(charge||m.over||!handsAt(e.axialDistance(attacker,target)).length) break;
     const chain=dual?e.rollPairChain(attacker,target,results,n+1):e.rollChain(attacker,target,results[0],n+1,mode,{sentinel});
     if(!chain) break;
@@ -3806,7 +3809,7 @@ function missionMeleeApproach(u,target,reach=null){
   const m=game.mission,e=m.engine;
   if(!u||!target?.alive||target.team===u.team||!u.attackAvailable||!(u.movementRemaining>0)||missionHiddenFrom(target,u)) return null;
   if(missionCanAttack(u,target,"melee")) return null;
-  const dual=e.isDualWielding(u),strikesAt=d=>dual?e.usableHands(u,d).some(h=>h.mode==="melee"):e.canAttackAtDistance(u,d,"melee");
+  const dual=e.severalStrikes?e.severalStrikes(u):e.isDualWielding(u),strikesAt=d=>dual?e.usableHands(u,d).some(h=>h.mode==="melee"):e.canAttackAtDistance(u,d,"melee");
   let best=null;
   for(const path of (reach||missionReachablePaths(u,u.movementRemaining)).values()){
     if(!path.length) continue;
@@ -3870,7 +3873,7 @@ function missionRangeCells(){
     return set;
   }
   if(m.mode==="melee"||m.mode==="ranged"){
-    const dual=e.isDualWielding(u);
+    const dual=e.severalStrikes?e.severalStrikes(u):e.isDualWielding(u);
     add(d=>(dual?e.usableHands(u,d):(e.canAttackAtDistance(u,d,m.mode)?[{mode:m.mode}]:[])).some(h=>h.mode===m.mode));
   }
   return set;
@@ -4369,7 +4372,7 @@ function missionAttackPreview(u,target){
   if(m.mode!=="ranged") target=missionAimed(target);
   const charge=m.mode==="charge"?missionChargeIfClear(u,target):null;
   if(m.mode==="charge"&&!charge) return [];
-  const dual=e.isDualWielding(u),distance=charge?1:e.axialDistance(u,target);
+  const dual=e.severalStrikes?e.severalStrikes(u):e.isDualWielding(u),distance=charge?1:e.axialDistance(u,target);
   const mode=m.mode==="charge"?"melee":m.mode;
   const approach=m.mode==="melee"?missionMeleeApproach(u,target):null;
   const hands=approach?(dual?e.usableHands(u,approach.distance).filter(h=>h.mode==="melee"):[{hand:"main",mode}])

@@ -279,6 +279,27 @@ peut y avoir une subtilité dans franchissable : vitesse réduite ». Données :
   provoquant le moins d'attaques d'opportunité ; sinon il avance comme avant. Sans cela, deux archers au contact tournaient
   l'un autour de l'autre sans fin (un combat automatique sur quelques centaines se bloquait ; plus aucun sur 2 000 après).
 
+## Capacités de terrain (Idan, 2026-11-09)
+
+Idan : « J'ai oublié les sangs de fées qui ont aussi vol et charge au niveau 3 » ; « On ajoute aussi quelques compétences ».
+Données : `terrain-skills.json` (qui les a, ce qu'elles donnent par décor) ; code : `terrainSkillsOf`, `terrainEffect`,
+`skillFlies` (moteur), `missionTerrainEffect`, `missionDecorCost`, `missionTerrainStealth` (combat). Le niveau d'un sang :
+1 lointain ancêtre, 2 lignée proche, **3 bâtard**.
+
+- **Vol** — **sang féerique bâtard** : il vole (comme les chauves-souris : 1 point de mouvement par case, au-dessus du
+  décor) et **charge par les airs** (charge aérienne, comme le pégase). À cheval, c'est la monture qui compte : il ne vole pas.
+- **Déplacement aquatique** — **tous les Reptiliens, tous les sangs de sirène, les crocodiles invoqués** : pas de malus de
+  déplacement dans l'**eau peu profonde** (1 point par case au lieu de 3) et **Discrétion +30 tant qu'il y est** (« boost
+  temporaire »).
+- **Respiration aquatique** — **sang de sirène bâtard** : il **traverse l'eau profonde** (normalement infranchissable), sans
+  malus (1 point par case) ; **couverture totale** sur une case d'eau profonde, **partielle** sur une case d'eau peu profonde
+  (Toucher et repérage, comme le décor).
+- **Déplacement sylvain** — cultures **Elfes sylvains, Tribus de la jungle, Gnomes des forêts, Tribus des forêts
+  anciennes** : pas de malus de déplacement en **forêt** (1 point par case au lieu de 2) et **Discrétion +30 tant qu'il y
+  est** (en plus de la couverture partielle de la forêt).
+- Plusieurs capacités : le coût le plus bas, les bonus de Discrétion s'ajoutent, la meilleure couverture. **Monté**, il se
+  déplace et se cache comme sa monture (le cheval d'un elfe sylvain paie la forêt).
+
 ## Altitude (Idan, 2026-11-06)
 
 « Je voudrais aussi qu'on bosse l'altitude » ; « l'idée, c'est de faire des cartes à la Mordheim / X-Com à terme » ; puis,

@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "name": "terrain-skills",
+  "description": "Capacités de terrain (doc 04 ; Idan, 2026-11-09 : « J'ai oublié les sangs de fées qui ont aussi vol et charge au niveau 3 » ; « On ajoute aussi quelques compétences : Déplacement aquatique, Respiration aquatique, Déplacement sylvain »). Qui les a : un peuple (peuples), une culture (cultures), un sang à partir d'un niveau (ascendances : niveau 1 lointain ancêtre, 2 lignée proche, 3 bâtard), une invocation (invocations : son archétype). Ce qu'elles donnent : vol (comme les chauves-souris) et charge_aerienne (« toujours » : seul ; pas monté sur une bête qui ne vole pas) ; par décor (decors), sur la case où il est : cout_mouvement (remplace celui du décor ; une case infranchissable devient franchissable), discretion (bonus au repérage tant qu'il y est), couverture (la couverture qu'il y trouve). Plusieurs capacités : le coût le plus bas, les bonus de Discrétion s'ajoutent, la meilleure couverture. Monté, il se déplace et se cache comme sa monture.",
+  "columns": [
+    {
+      "source": "Code",
+      "key": "code"
+    },
+    {
+      "source": "Nom",
+      "key": "nom"
+    },
+    {
+      "source": "Description",
+      "key": "description"
+    },
+    {
+      "source": "Peuples",
+      "key": "peuples"
+    },
+    {
+      "source": "Cultures",
+      "key": "cultures"
+    },
+    {
+      "source": "Sangs (niveau minimum)",
+      "key": "ascendances"
+    },
+    {
+      "source": "Invocations",
+      "key": "invocations"
+    },
+    {
+      "source": "Vol",
+      "key": "vol"
+    },
+    {
+      "source": "Charge aérienne",
+      "key": "charge_aerienne"
+    },
+    {
+      "source": "Par décor",
+      "key": "decors"
+    }
+  ],
+  "row_count": 4,
+  "rows": [
+    {
+      "code": "vol_feerique",
+      "nom": "Vol",
+      "description": "Il vole (comme les chauves-souris : 1 point de mouvement par case, au-dessus du décor) et charge par les airs (charge aérienne). Pas à cheval.",
+      "peuples": [],
+      "cultures": [],
+      "ascendances": [{"nom": "Sang féerique", "niveau_min": 3}],
+      "invocations": [],
+      "vol": true,
+      "charge_aerienne": "toujours",
+      "decors": {}
+    },
+    {
+      "code": "deplacement_aquatique",
+      "nom": "Déplacement aquatique",
+      "description": "Pas de malus de déplacement dans l'eau peu profonde, et Discrétion +30 tant qu'il y est.",
+      "peuples": ["Reptilien"],
+      "cultures": [],
+      "ascendances": [{"nom": "Sang de sirène", "niveau_min": 1}],
+      "invocations": ["crocodile"],
+      "vol": false,
+      "charge_aerienne": null,
+      "decors": {"eau_peu_profonde": {"cout_mouvement": 1, "discretion": 30}}
+    },
+    {
+      "code": "respiration_aquatique",
+      "nom": "Respiration aquatique",
+      "description": "Il traverse l'eau profonde, normalement infranchissable, sans malus ; couverture totale sur une case d'eau profonde, partielle sur une case d'eau peu profonde.",
+      "peuples": [],
+      "cultures": [],
+      "ascendances": [{"nom": "Sang de sirène", "niveau_min": 3}],
+      "invocations": [],
+      "vol": false,
+      "charge_aerienne": null,
+      "decors": {"eau_profonde": {"cout_mouvement": 1, "couverture": "totale"}, "eau_peu_profonde": {"couverture": "partielle"}}
+    },
+    {
+      "code": "deplacement_sylvain",
+      "nom": "Déplacement sylvain",
+      "description": "Pas de malus de déplacement en forêt, et Discrétion +30 tant qu'il y est.",
+      "peuples": [],
+      "cultures": ["Elfes sylvains", "Tribus de la jungle", "Gnomes des forêts", "Tribus des forêts anciennes"],
+      "ascendances": [],
+      "invocations": [],
+      "vol": false,
+      "charge_aerienne": null,
+      "decors": {"foret": {"cout_mouvement": 1, "discretion": 30}}
+    }
+  ]
+}

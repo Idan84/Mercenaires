@@ -62,7 +62,7 @@ function occupiedMissionKeys(except=null){
   const keys=new Set(missionUnits().filter(u=>u.alive&&u!==except&&!(except&&missionHiddenFrom(u,except))).flatMap(missionFootprint).map(c=>missionKey(c.q,c.r)));
   for(const t of game.mission?.terrain||[]) keys.add(missionKey(t.q,t.r));
   // Un volant passe au-dessus du décor infranchissable (missionPaths l'empêche de s'y arrêter).
-  if(!missionFlies(except)) for(const d of game.mission?.decor||[]) if(missionDecorBlocksMove(d.q,d.r)) keys.add(missionKey(d.q,d.r));
+  if(!missionFlies(except)) for(const d of game.mission?.decor||[]) if(missionDecorBlocksMove(d.q,d.r,except)) keys.add(missionKey(d.q,d.r));
   return keys;
 }
 // Décor (doc 04 ; Idan, 2026-11-06 ; terrain-decors.json) : m.decor = [{q, r, code}]. Trois réglages par décor : le
@@ -72,13 +72,27 @@ function missionDecorAt(q,r){
   const cell=(game.mission?.decor||[]).find(d=>d.q===q&&d.r===r);
   return cell?missionDecorRow(cell.code):null;
 }
-function missionDecorBlocksMove(q,r){ const d=missionDecorAt(q,r); return Boolean(d)&&d.cout_mouvement==null; }
+// Capacités de terrain (doc 04 ; Idan, 2026-11-09 ; terrain-skills.json) : ce que celui qui est (ou entre) sur la case y
+// gagne (coût, Discrétion, couverture). Monté, il se déplace et se cache comme sa monture.
+function missionTerrainEffect(unit,c){
+  if(!unit?.character||!c) return null;
+  const cell=(game.mission?.decor||[]).find(d=>d.q===c.q&&d.r===c.r),e=missionEngine();
+  return cell&&e?.terrainEffect?e.terrainEffect(e.mountOf?.(unit)||unit,cell.code):null;
+}
+function missionDecorBlocksMove(q,r,unit=null){
+  const d=missionDecorAt(q,r);
+  return Boolean(d)&&d.cout_mouvement==null&&missionTerrainEffect(unit,{q,r})?.cost==null;
+}
 // Points de mouvement du décor pour entrer dans la case (Idan : « vitesse réduite : mouvement à moitié / tiers / quart »).
-function missionDecorCost(c){
+function missionDecorCost(c,unit=null){
   const d=missionDecorAt(c.q,c.r);
   if(!d) return 1;
+  const own=missionTerrainEffect(unit,c)?.cost;
+  if(own!=null) return Math.max(1,own);
   return d.cout_mouvement==null?Infinity:Math.max(1,Number(d.cout_mouvement)||1);
 }
+// Discrétion gagnée sur sa case (Déplacement aquatique, Déplacement sylvain : +30 tant qu'il y est).
+function missionTerrainStealth(unit){ return unit?missionTerrainEffect(unit,{q:unit.q,r:unit.r})?.discretion||0:0; }
 // Altitude (doc 04 ; Idan, 2026-11-06 : « vas-y pour l'altitude ») : m.relief = [{q, r, h}], une hauteur de 0 à 3 par case.
 function missionHeightAt(q,r){ return (game.mission?.relief||[]).find(c=>c.q===q&&c.r===r)?.h||0; }
 function missionUnitHeight(u){ return u?missionHeightAt(u.q,u.r):0; }
@@ -86,12 +100,14 @@ function missionAltitude(){ return game.mission?.engine?.ALTITUDE||{climbCost:1,
 // Vol (les chauves-souris de la Cour de sang ; Idan, 2026-11-06 : « Elles volent donc ignorent les pénalités de
 // mouvement », « Elles survolent tout ») : 1 point par case, sans décor, montée ni falaise ; elles passent au-dessus d'un
 // décor infranchissable, mais ne peuvent pas s'y arrêter. Monté sur un volant (le pégase ; Idan, 2026-11-09), le couple vole.
-function missionFlies(unit){ return Boolean(unit?.character?.flies)||Boolean(missionEngine()?.mountOf?.(unit)?.character?.flies); }
+function missionFlies(unit){
+  return Boolean(unit?.character?.flies)||Boolean(missionEngine()?.mountOf?.(unit)?.character?.flies)||Boolean(missionEngine()?.skillFlies?.(unit));
+}
 // Un pas de from à c : le décor, plus la montée (+ climbCost par niveau ; descendre est gratuit) ; un écart de cliff niveaux
 // ou plus est une falaise, infranchissable dans les deux sens. Un volant (unit) : 1.
 function missionStepCost(c,from=null,unit=null){
   if(missionFlies(unit)) return 1;
-  const decor=missionDecorCost(c);
+  const decor=missionDecorCost(c,unit);
   if(!from||!game.mission?.relief?.length) return decor;
   const rise=missionHeightAt(c.q,c.r)-missionHeightAt(from.q,from.r),alt=missionAltitude();
   if(Math.abs(rise)>=alt.cliff) return Infinity;
@@ -113,7 +129,7 @@ function missionLargeStep(mover,cur,next,blocked){
     if(Math.max(...heights)-Math.min(...heights)>=alt.cliff) continue;
     const rise=missionHeightAt(next.q,next.r)-missionHeightAt(cur.q,cur.r);
     if(Math.abs(rise)>=alt.cliff) continue;
-    const decor=Math.max(...cells.map(missionDecorCost));
+    const decor=Math.max(...cells.map(c=>missionDecorCost(c,mover)));
     if(!Number.isFinite(decor)) continue;
     return {cost:decor+Math.max(0,rise)*alt.climbCost,facing};
   }
@@ -122,7 +138,7 @@ function missionLargeStep(mover,cur,next,blocked){
 // Une grande créature volante peut survoler un décor infranchissable, mais pas s'y arrêter (aucune de ses cases).
 function missionCanStop(mover,cell){
   if(!missionFlies(mover)) return true;
-  return game.mission.engine.footprint(missionAt(mover,cell)).every(c=>!missionDecorBlocksMove(c.q,c.r));
+  return game.mission.engine.footprint(missionAt(mover,cell)).every(c=>!missionDecorBlocksMove(c.q,c.r,mover));
 }
 function missionPathCost(path,start=null){
   let prev=start,total=0;
@@ -162,7 +178,10 @@ function missionCellCover(from,target,{shot=false}={}){
   if(before&&!(before.q===from.q&&before.r===from.r)) cells.push(before);
   let best=null;
   for(const c of cells){
-    const level=missionDecorAt(c.q,c.r)?.couverture;
+    // Respiration aquatique : la couverture qu'il trouve sur sa propre case (l'eau profonde : totale).
+    const own=c===cells[0]?missionTerrainEffect(target,c)?.cover:null;
+    const decor=missionDecorAt(c.q,c.r)?.couverture;
+    const level=[own,decor].includes("totale")?"totale":[own,decor].includes("partielle")?"partielle":null;
     if(level==="totale") return "totale";
     if(level==="partielle"&&!above) best="partielle";
   }
@@ -312,7 +331,7 @@ function resolveMissionDetection(){
     if(!observer.alive||observer.offMap) continue;
     for(const target of missionOpponents(observer)){
       if(!target.camouflaged||target.offMap||!missionLineOfSight(observer,target)) continue;
-      const r=e.rollDetection(observer,target,e.axialDistance(observer,target),e.coverDiscretion(missionCoverLevel(observer,target)));
+      const r=e.rollDetection(observer,target,e.axialDistance(observer,target),e.coverDiscretion(missionCoverLevel(observer,target))+missionTerrainStealth(target));
       if(!r.spotted) continue;
       target.camouflaged=false;
       missionAlert(observer.team,target);
@@ -391,7 +410,7 @@ function missionPaths(start,blocked,budget=Infinity,stopKey=null,mover=null){
     open.delete(key);
     seen.add(key);
     // Un volant survole un décor infranchissable, sans pouvoir s'y arrêter.
-    if(large?missionCanStop(mover,cur.cell):(!flyer||!missionDecorBlocksMove(cur.cell.q,cur.cell.r))) done.set(key,{path:cur.path,cost:cur.cost});
+    if(large?missionCanStop(mover,cur.cell):(!flyer||!missionDecorBlocksMove(cur.cell.q,cur.cell.r,mover))) done.set(key,{path:cur.path,cost:cur.cost});
     if(key===stopKey) break;
     if(missionMireAt(cur.cell.q,cur.cell.r)) continue;
     for(const next of missionNeighbors(cur.cell)){
@@ -402,7 +421,7 @@ function missionPaths(start,blocked,budget=Infinity,stopKey=null,mover=null){
         const step=missionLargeStep(mover,cur.cell,next,blocked);
         if(!step) continue;
         stepCost=step.cost;cell={...next,facing:step.facing};
-      }else stepCost=missionStepCost(next,cur.cell,flyer);
+      }else stepCost=missionStepCost(next,cur.cell,mover);
       const cost=cur.cost+stepCost;
       if(!Number.isFinite(cost)||cost>budget) continue;
       const known=open.get(k);
@@ -1578,11 +1597,11 @@ function missionChargeIfClear(unit,target){
   else if(charge.path.some(h=>occupied.has(missionKey(h.q,h.r))||missionMireAt(h.q,h.r)||!validMissionHex(h.q,h.r))) return null;
   // Un volant survole le décor, mais ne finit pas sa charge dessus.
   const last=charge.path[charge.path.length-1];
-  if(last&&missionDecorBlocksMove(last.q,last.r)) return null;
+  if(last&&missionDecorBlocksMove(last.q,last.r,unit)) return null;
   // Décor (Idan, 2026-11-06) : la charge traverse un décor lent, mais risque davantage la chute (« pieds dans le tapis ») ;
   // la cible derrière une couverture, vue du point de départ de la charge, est protégée.
   const flyer=missionFlies(unit);
-  const slowSteps=flyer?0:charge.path.reduce((total,h)=>total+Math.max(0,missionDecorCost(h)-1),0);
+  const slowSteps=flyer?0:charge.path.reduce((total,h)=>total+Math.max(0,missionDecorCost(h,unit)-1),0);
   // Altitude (Idan, 2026-11-06) : pas de falaise sur la ligne, et pas de charge qui monte de plus d'un niveau (un volant
   // survole tout).
   if(game.mission?.relief?.length&&!flyer){
@@ -2998,7 +3017,7 @@ function missionForcedMove(unit,out,caster){
     const other=missionUnitAtCell(c.q,c.r,u=>u!==unit&&u.alive&&!u.offMap);
     if(other){ obstacle=other.character.name; break; }
     if(missionTerrainAt(c.q,c.r)){ obstacle="la flaque de magma"; break; }
-    if(missionDecorBlocksMove(c.q,c.r)){ obstacle=missionDecorAt(c.q,c.r).article||missionDecorAt(c.q,c.r).nom; break; }
+    if(missionDecorBlocksMove(c.q,c.r,unit)){ obstacle=missionDecorAt(c.q,c.r).article||missionDecorAt(c.q,c.r).nom; break; }
     if(Math.abs(missionHeightAt(c.q,c.r)-missionHeightAt(unit.q,unit.r))>=missionAltitude().cliff){ obstacle="la falaise"; break; }
     unit.q=c.q;unit.r=c.r;moved++;
     missionFx(unit,"","",c);

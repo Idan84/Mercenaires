@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 423,
+  "row_count": 425,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -3368,6 +3368,22 @@
       "description": "Combat à cheval (doc 04 ; Idan, 2026-11-07) : monté, le Courage et la Volonté du couple = ceux du cheval + (ceux du cavalier − ceux du cheval) × part ; part = (Compagnon animal + compétence de la famille de la monture) ÷ ce nombre, au plus 1.",
       "formule": "Monture",
       "valeur": 100,
+      "version": "V1"
+    },
+    {
+      "nom": "Charge aérienne — bonus du chargeur",
+      "code": "combat.charge_aerienne.bonus",
+      "description": "Charge aérienne (doc 04 ; Idan, 2026-11-09 : « tous les jets ( toucher/ blessé/ dégâts)X1.2 ») : chance de toucher, chance de blesser et dégâts de chaque arme qui frappe dans la charge (celles du cavalier et l’arme naturelle de la monture), multipliés par ce facteur, en plus du bonus de charge habituel ; une chance plafonnée à 100 %.",
+      "formule": "Charge",
+      "valeur": 1.2,
+      "version": "V1"
+    },
+    {
+      "nom": "Charge aérienne — contre-charge",
+      "code": "combat.charge_aerienne.contre_charge",
+      "description": "Charge aérienne (doc 04 ; Idan, 2026-11-09 : « 50% de toucher en moins ») : la chance de toucher d’une contre-charge contre une charge aérienne est multipliée par ce facteur.",
+      "formule": "Charge",
+      "valeur": 0.5,
       "version": "V1"
     },
     {

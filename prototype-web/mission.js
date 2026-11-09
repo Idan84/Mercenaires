@@ -83,8 +83,8 @@ function missionUnitHeight(u){ return u?missionHeightAt(u.q,u.r):0; }
 function missionAltitude(){ return game.mission?.engine?.ALTITUDE||{climbCost:1,cliff:2,hitPerLevel:10,max:3}; }
 // Vol (les chauves-souris de la Cour de sang ; Idan, 2026-11-06 : « Elles volent donc ignorent les pénalités de
 // mouvement », « Elles survolent tout ») : 1 point par case, sans décor, montée ni falaise ; elles passent au-dessus d'un
-// décor infranchissable, mais ne peuvent pas s'y arrêter.
-function missionFlies(unit){ return Boolean(unit?.character?.flies); }
+// décor infranchissable, mais ne peuvent pas s'y arrêter. Monté sur un volant (le pégase ; Idan, 2026-11-09), le couple vole.
+function missionFlies(unit){ return Boolean(unit?.character?.flies)||Boolean(missionEngine()?.mountOf?.(unit)?.character?.flies); }
 // Un pas de from à c : le décor, plus la montée (+ climbCost par niveau ; descendre est gratuit) ; un écart de cliff niveaux
 // ou plus est une falaise, infranchissable dans les deux sens. Un volant (unit) : 1.
 function missionStepCost(c,from=null,unit=null){
@@ -1298,6 +1298,7 @@ function logMissionAttackLines(a,d,result,kind){
   const prefix=a.character.name+verb+d.character.name+" avec "+result.weapon
     +(result.opportunity?" (attaque d’opportunité, dans le dos)":result.encircled?" (cible encerclée, dans le dos)":result.backstab?" (dans le dos)":"")
     +(result.cover?" (couverture "+result.cover+")":"")
+    +(result.aerialCharge?" (charge aérienne : × 1,2)":result.againstAerialCharge?" (contre une charge aérienne : toucher ÷ 2)":"")
     +(result.heightDiff>0?" (d’en haut)":result.heightDiff<0?" (vers le haut)":"")
     // Squelettes : dégâts tranchants × 0,5, contondants × 1,5 (character.damageTypeFactors).
     +(result.typeFactor?" ("+result.matchup?.type+" × "+String(result.typeFactor).replace(".",",")+")":"");
@@ -1428,16 +1429,19 @@ function resolveOpportunityAttacks(reactors,target){
 }
 
 // Déplacement hex par hex : quitter une zone de menace provoque les réactions avant de quitter la case.
-function moveMissionUnitAlongPath(unit,path){
+// aerial : la course d'une charge aérienne (doc 04 ; Idan, 2026-11-09) : au-dessus des personnages, du bourbier et de la
+// flaque de magma, sans attaque d'opportunité (« pas d'attaque d'opportunités ») ; landing, sa case d'arrivée (un bourbier
+// y retient).
+function moveMissionUnitAlongPath(unit,path,{aerial=false,landing=null}={}){
   const e=game.mission.engine;
   let moved=0;
   for(const step of path){
     if(!unit.alive||game.mission.over) break;
     const from={q:unit.q,r:unit.r,facing:unit.facing},wasFleeing=unit.fleeing;
-    const large=missionLarge(unit),largeStep=large?missionLargeStep(unit,from,step,occupiedMissionKeys(unit)):null,stepCost=largeStep?.cost;
+    const large=missionLarge(unit),largeStep=large?missionLargeStep(unit,from,step,aerial?new Set():occupiedMissionKeys(unit)):null,stepCost=largeStep?.cost;
     if(large&&stepCost==null) break;
     const facing=large?step.facing??largeStep.facing:undefined;
-    const reactors=unit.camouflaged?[]:e.opportunityReactors(missionReactors(unit),unit,missionAt(unit,{...step,facing}));
+    const reactors=unit.camouflaged||aerial?[]:e.opportunityReactors(missionReactors(unit),unit,missionAt(unit,{...step,facing}));
     if(reactors.length){
       missionLog(unit.character.name+" quitte la zone de menace de "+reactors.map(x=>x.character.name).join(", ")+".","move");
       resolveOpportunityAttacks(reactors,unit);
@@ -1457,7 +1461,7 @@ function moveMissionUnitAlongPath(unit,path){
     // Mode sentinelle : un pas à la portée d'une sentinelle ennemie, et il essuie son tir.
     missionSentinelReact(unit);
     if(!unit.alive||game.mission.over||unit.q!==step.q||unit.r!==step.r||unit.fleeing!==wasFleeing) break;
-    if(missionMireAt(step.q,step.r)){
+    if(missionMireAt(step.q,step.r)&&(!aerial||(landing&&landing.q===step.q&&landing.r===step.r))){
       unit.movementRemaining=0;
       missionLog(unit.character.name+" s’enlise dans le bourbier.","bad");
       break;
@@ -1480,11 +1484,20 @@ function missionPathOpportunityCount(unit,path){
 // La charge suit une ligne droite : chaque case du trajet doit être libre.
 function missionChargeIfClear(unit,target){
   if(missionHiddenFrom(target,unit)) return null;
-  const charge=game.mission.engine.chargeData(unit,target);
+  const e=game.mission.engine,charge=e.chargeData(unit,target);
   if(!charge.valid) return null;
-  // Aucun personnage, aucune flaque de magma, aucun bourbier sur la ligne (Idan, 2026-11-04) ; le brouillard ne gêne pas.
   const occupied=occupiedMissionKeys(unit);
-  if(charge.path.some(h=>occupied.has(missionKey(h.q,h.r))||missionMireAt(h.q,h.r)||!validMissionHex(h.q,h.r))) return null;
+  // Charge aérienne (doc 04 ; Idan, 2026-11-09 : « ils peuvent charger en passant au dessus des ennemis » ; au-dessus du
+  // bourbier et de la flaque de magma aussi) : seule l'arrivée doit être libre, corps compris (le pégase prend 2 cases).
+  const aerial=Boolean(e.aerialCharger?.(unit));
+  if(aerial){
+    if(charge.path.some(h=>!validMissionHex(h.q,h.r))) return null;
+    const land=charge.path[charge.path.length-1],from=charge.path[charge.path.length-2]||{q:unit.q,r:unit.r,facing:unit.facing};
+    const landing=missionLarge(unit)?missionLargeStep(unit,from,land,occupied):occupied.has(missionKey(land.q,land.r))?null:{cost:1};
+    if(!landing||!missionCanStop(unit,{...land,facing:landing.facing})) return null;
+  }
+  // Aucun personnage, aucune flaque de magma, aucun bourbier sur la ligne (Idan, 2026-11-04) ; le brouillard ne gêne pas.
+  else if(charge.path.some(h=>occupied.has(missionKey(h.q,h.r))||missionMireAt(h.q,h.r)||!validMissionHex(h.q,h.r))) return null;
   // Un volant survole le décor, mais ne finit pas sa charge dessus.
   const last=charge.path[charge.path.length-1];
   if(last&&missionDecorBlocksMove(last.q,last.r)) return null;
@@ -1503,7 +1516,7 @@ function missionChargeIfClear(unit,target){
     }
     if(climb>1) return null;
   }
-  return {...charge,slowSteps,cover:missionCoverLevel({q:unit.q,r:unit.r},target)};
+  return {...charge,slowSteps,cover:missionCoverLevel({q:unit.q,r:unit.r},target),...(aerial?{aerial:true}:{})};
 }
 
 function missionActiveUnitLost(){
@@ -1560,7 +1573,7 @@ function performMissionAttack(attacker,target,mode,distance,charge=null,{sentine
       const charging=charge&&h.mode==="melee";
       const result=e.resolveAttack(attacker,target,{
         mode:h.mode,distance:d,hand:h.hand,encircled:h.mode==="melee"&&missionEncircled(target),bystanders:missionUnits(),
-        chargeDistance:charging?charge.travel:0,chargeFollowUp:Boolean(charging&&first),sentinel,
+        chargeDistance:charging?charge.travel:0,chargeFollowUp:Boolean(charging&&first),sentinel,aerialCharge:Boolean(charging&&charge.aerial),
         chargeSlowSteps:charging?charge.slowSteps||0:0,cover:h.mode==="ranged"?missionCoverLevel(attacker,target,{shot:true}):charging?charge.cover:null
       });
       first=first||result;
@@ -3469,12 +3482,15 @@ function performMissionCharge(unit,target,charge,{chosen=false}={}){
   const defender=e.pairOf?e.pairOf(target):target;
   const reactions=unit.camouflaged?[]:e.counterchargeTriggers(defender,unit,charge);
   const stillCharging=()=>unit.alive&&!unit.fleeing&&!m.over;
+  // Charge aérienne (doc 04 ; Idan, 2026-11-09) : au-dessus de la mêlée ; la contre-charge a deux fois moins de chances de toucher.
+  const aerial=Boolean(charge.aerial),flight=aerial?{aerial:true,landing:charge.path[charge.path.length-1]}:{};
+  if(aerial) missionLog(unit.character.name+" charge par les airs, au-dessus de la mêlée.","move");
   // Une charge arrêtée avant son attaque reste une charge tentée (Courage, doc 08).
   const broken=()=>{ MercenairesProgression.recordChargeAttempt(unit); };
   let moved=0;
   const advanceTo=at=>{
     const leg=charge.path.slice(moved,at);
-    const done=moveMissionUnitAlongPath(unit,leg);
+    const done=moveMissionUnitAlongPath(unit,leg,flight);
     moved+=done;
     return done===leg.length&&stillCharging();
   };
@@ -3483,7 +3499,7 @@ function performMissionCharge(unit,target,charge,{chosen=false}={}){
     if(!advanceTo(reaction.at)){ broken(); return; }
     const distance=e.axialDistance(defender,unit);
     if(!defender.alive||defender.fleeing||!missionUsableHands(defender,unit).some(h=>h.hand===reaction.hand&&h.mode===reaction.mode)) continue;
-    const r=e.resolveAttack(defender,unit,{mode:reaction.mode,distance,hand:reaction.hand,bystanders:missionUnits()});
+    const r=e.resolveAttack(defender,unit,{mode:reaction.mode,distance,hand:reaction.hand,bystanders:missionUnits(),againstAerialCharge:aerial});
     logMissionAttack(defender,unit,r,"countercharge");
     missionWeaponEnchantStrike(defender,unit,r);
     const stray=logMissionStray(defender,r);
@@ -4377,7 +4393,10 @@ function missionAttackPreviewRows(u,target,hands,{e,charge,distance,hidden,from=
     const backstab=hidden||Boolean(target.fleeing)||(h.mode==="melee"&&missionEncircled(target));
     const cover=h.mode==="ranged"?missionCoverLevel(u,target,{shot:true}):charge&&h.mode==="melee"?charge.cover:null;
     const heightDiff=missionHeightAt(from.q,from.r)-missionUnitHeight(target);
-    const row={weapon:item?.name||weapon?.nom||"Arme",mode:h.mode,backstab,cover,heightDiff,pHit:e.hitProbability(u,target,h.mode,distance,{backstab,cover,heightDiff})};
+    // Charge aérienne (doc 04) : Toucher, Blesser et dégâts × 1,2.
+    const factor=charge?.aerial&&h.mode==="melee"?Number(e.AERIAL?.bonus)||1:1;
+    const row={weapon:item?.name||weapon?.nom||"Arme",mode:h.mode,backstab,cover,heightDiff,pHit:e.hitProbability(u,target,h.mode,distance,{backstab,cover,heightDiff,factor}),
+      ...(factor!==1?{aerial:true}:{})};
     if(h.mode==="ranged"&&target.projectileShield) row.pDeflect=Number(target.projectileShield.chance)||0;
     if(target.character?.immunePhysical&&weapon?.degats_type!=="psychique"){ row.immune=true; return row; }
     // Pas de blocage dans le dos, ni s'il a déjà bloqué ce tour (Idan, 2026-11-04).
@@ -4387,11 +4406,11 @@ function missionAttackPreviewRows(u,target,hands,{e,charge,distance,hidden,from=
     if(weapon?.degats_type==="psychique"){ row.psychic=true; return row; }
     const chargePower=charge&&h.mode==="melee"?charge.travel*(Number(weapon?.bonus_charge_base)||1)*(Number(e.quality(item).multiplicateur_qualite)||1):0;
     const matchups=e.damageMatchups(target,weapon,{backstab});
-    const wounds=(matchups.length?matchups:[null]).map(x=>e.woundProbability(u,target,h.mode,x,{chargePower}));
+    const wounds=(matchups.length?matchups:[null]).map(x=>e.woundProbability(u,target,h.mode,x,{chargePower,factor}));
     row.pWound=[Math.min(...wounds),Math.max(...wounds)];
     if(h.mode==="melee"&&matchups.some(x=>x.type==="tranchant")) row.pParry=e.parryChance(target,"tranchant");
     row.damage=[e.physicalDamage(u,target,h.mode,chargePower,{roll:"min",resistanceRoll:3}).damage,
-      e.physicalDamage(u,target,h.mode,chargePower,{roll:"max",resistanceRoll:1}).damage];
+      e.physicalDamage(u,target,h.mode,chargePower,{roll:"max",resistanceRoll:1}).damage].map(d=>Math.round(d*factor));
     return row;
   }));
 }
@@ -4412,7 +4431,7 @@ function renderMissionHoverCard(q,r){
         +(m.aimMount&&(m.mode==="melee"||m.mode==="charge")&&u&&unit.team!==u.team?" · visé":"")+`</span>`:"")
       +(tags.length?`<span class="hc-tags">${tags.join(" · ")}</span>`:"");
     for(const row of missionAttackPreview(u,unit)){
-      html+=`<div class="hc-attack"><em>${esc(row.weapon)} · ${row.mode==="ranged"?"tir":m.mode==="charge"?"charge":m.twoHands?"à deux mains":"corps à corps"}${row.backstab?" · dans le dos":""}</em><dl>`
+      html+=`<div class="hc-attack"><em>${esc(row.weapon)} · ${row.mode==="ranged"?"tir":m.mode==="charge"?(row.aerial?"charge aérienne":"charge"):m.twoHands?"à deux mains":"corps à corps"}${row.backstab?" · dans le dos":""}</em><dl>`
         +(row.approach?`<dt>Approche</dt><dd>${row.approach.steps} case${row.approach.steps>1?"s":""}</dd>`
           +(row.approach.risk?`<dt>Danger</dt><dd class="odds-bad">${row.approach.risk} attaque${row.approach.risk>1?"s":""} d’opportunité</dd>`:""):"")
         +(row.pDeflect?`<dt>Déviation</dt>${missionOdds(row.pDeflect)}`:"")

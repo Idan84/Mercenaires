@@ -138,7 +138,7 @@ bloque si elle n'est plus à jour (`node scripts/merchant-coverage.js --check`).
 
 <!-- couverture:debut (généré par node scripts/merchant-coverage.js : ne pas modifier à la main) -->
 
-**Bilan** : 93 objets ; **93** vendus par au moins 2 marchands (les montures : un marchand chacune), **0** par un seul, **0** par aucun.
+**Bilan** : 94 objets ; **94** vendus par au moins 2 marchands (les montures : un marchand chacune), **0** par un seul, **0** par aucun.
 
 **32 marchands**, dont 16 marchandes.
 
@@ -158,7 +158,7 @@ bloque si elle n'est plus à jour (`node scripts/merchant-coverage.js --check`).
 | Calaena Ombrevenin | Elfes noirs | Dague, Arbalète, Fouet, Cape de discrétion, Fiole de poison, Bague de la Foudre, Manuels de Foudre | 7 |
 | Jasper Bonnebourse | Halflings des cités humaines | Dague, Fronde, Rondache, String du Charisme, Gants de dextérité, Bague de la télékinésie, Manuels de Télékinésie | 7 |
 | Malaika Ilunga | Tribus de la jungle | Lance, Sarbacane, Kukri, Armure de cuir, Fiole de poison, Bague de la transmutation, Manuels de Transmutation | 7 |
-| Aymeric Belcomptoir | Cités libres | Épée longue, Écu, Rondache, Cotte de mailles, Brigandine, Bague du soigneur, Manuels de Vie | 7 |
+| Aymeric Belcomptoir | Cités libres | Épée longue, Écu, Rondache, Cotte de mailles, Brigandine, Bague du soigneur, Manuels de Vie, Pégase | 8 |
 | Flek Visseclou | Caravanes de ferrailleurs | Amulette de chance, Tromblon, Canon à main, Fléau d’armes, Gants de pièges, Bague de la chance, Manuels de Télékinésie | 7 |
 | Lirri Feuillecoque | Gnomes des forêts | Fronde, Bâton court, Cape d’esquive, Gants de dextérité, Bottes d’esquive, Bague de l’illusionniste, Manuels d’Illusion | 7 |
 | Callie Loincompas | Explorateurs | Katana, Sai, Nunchaku, Bottes de perception, Chapeau du dresseur, Amulette de chance, Manuels d’Invocation | 7 |
@@ -263,6 +263,7 @@ bloque si elle n'est plus à jour (`node scripts/merchant-coverage.js --check`).
 | Montures | Destrier | Amar | 1 |
 | Montures | Licorne | Ysolwen | 1 |
 | Montures | Loup | Fizzi | 1 |
+| Montures | Pégase | Aymeric | 1 |
 | Manuels | Manuels de Vie | Jiraya, Ysolwen, Aymeric | 3 |
 | Manuels | Manuels de Feu | Drusk, Amar, Krosh | 3 |
 | Manuels | Manuels d’Eau | Hroska, Isska, Ilyra | 3 |
@@ -281,6 +282,8 @@ bloque si elle n'est plus à jour (`node scripts/merchant-coverage.js --check`).
 
 - **Amar Rathore** (Steppes désertiques) vend des **destriers** ; **Ysolwen Chantesève** (Elfes sylvains) des **licornes** (`merchants.json`, type `mount`). Un marchand chacune : l'exception à la règle des deux marchands (`scripts/merchant-coverage.js`).
 - **Valeur** = 300 × entretien (`economy.mount_value_per_upkeep`, `mounts.json`) : destrier **3 000 PO**, licorne **9 000 PO** ; puis les prix habituels (achat × 1,5, revente × 0,8, × 0,4 hors de sa liste…). Sans tier ni qualité : pas de rareté.
+- **Aymeric Belcomptoir** (Cités libres) vend des **pégases** (Idan, 2026-11-09 : « Il est vendu par le marchand humain des
+  cités libres ») : **12 000 PO** de valeur (40 PO d'entretien).
 - **Fizzi Doigts-Légers** (Gobelins des villes) vend des **loups** (Idan, 2026-11-07 : « Marchand gobelin », « Gobelin des villes ! ») : 3 000 PO de valeur (10 PO d'entretien).
 - **Acheter** demande une place libre dans son logement (doc 11 §8 : les Écuries, le Chenil pour un loup) ; la monture rejoint l'Intendance (onglet **Montures**).
 - **Vendre** : depuis l'Intendance, comme tout objet ; une monture donnée à un mercenaire n'y est plus, on ne peut pas la vendre.

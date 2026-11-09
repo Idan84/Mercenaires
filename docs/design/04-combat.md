@@ -421,6 +421,13 @@ chance pour enchaîner plusieurs tirs (sauf arme à feu). Il ne peut passer en m
   activation (`mounts.json`, `competences_magiques`, `sorts`). **Sa fiche à elle** (Idan : « Mana de la licorne + xp
   licorne ») : chacune de nos montures garde son mana d'un combat à l'autre (recharge au camp comme nos mercenaires) et
   progresse avec l'XP de ses combats, avec les règles de nos mercenaires (doc 08 ; stables.js, `ownSheet`).
+- **Pégase** (Idan, 2026-11-09 : « Il vole, va vite comme une licorne mais frappe comme un cheval. Il est neutre bon.
+  Plutôt intelligent ( comme la licorne) et coûte 40po d'entretien » ; « Volonté 70 » ; « Il est quand-même un peu plus fort
+  physiquement que le Destrier et un peu plus résistant » ; « + de PV et un peu plus de résistance ») : le destrier, avec
+  Force 100, Constitution 80 (**312 PV**), Vitesse 110 (10 cases, comme la licorne), Intelligence 80, Volonté 70, résistances
+  + 2 (physique 7, feu, froid et foudre 6, poison 7), les **Sabots** du cheval (1D8, contondant 50) ; neutre bon. **Il vole**
+  (`physiologie`, `Vol`) : monté, **le couple vole** (le vol des chauves-souris : 1 point par case, au-dessus du décor). Et
+  la **charge aérienne** (`charge_aerienne` : « toujours », seul ou monté ; section « Charge aérienne »).
 - **Une fiche complète, comme un mercenaire** (Idan, 2026-11-07 : « la monture doit avoir une fiche complète comme les
   mercenaires. Les ennemis également » ; valeurs : « Parfait ») : destrier Charisme 30, Intimidation 40, Discrétion 10,
   Puissance magique 0, Réserve de mana 0 ; licorne Charisme 70, Intimidation 20, Discrétion 10, Puissance magique 50,
@@ -462,6 +469,25 @@ chance pour enchaîner plusieurs tirs (sauf arme à feu). Il ne peut passer en m
   cheval frappe aussi** (Idan, 2026-11-07 : « La monture frappe également »), juste après, sur la même cible, avec le bonus
   de charge : c'est son action principale. Les armes de contre-charge restent la parade ; charger le cheval, c'est essuyer
   la contre-charge de son cavalier.
+- **Charge aérienne** (Idan, 2026-11-09 : « la charge aérienne : comme tous les trucs un peu massifs qui chargent : ils
+  peuvent charger en passant au dessus des ennemis. 50% de contre charge en moins et tous les jets ( toucher/ blessé/
+  dégâts)X1.2 » ; « 50% de toucher en moins » ; « on mets la capacité en général qu'on applique à qui on veut. Pas pour les
+  chauves-souris. Pegase seul l'a également ») : une **capacité de fiche** (`charge_aerienne` dans `mounts.json`, et dans
+  `enemy-archetypes.json` pour qui on veut) : « toujours » (seule ou montée : le pégase) ou « montée » (seulement avec un
+  cavalier). Monté sur une bête qui l'a, le cavalier charge par les airs ; une grande bête qui l'a « toujours » charge aussi
+  seule, comme un couple.
+  - **La ligne** : la charge habituelle (ligne droite, de 1 à 2 fois le déplacement), mais **au-dessus des personnages, du
+    décor, du bourbier et de la flaque de magma** (Idan : « oui ») ; seule **l'arrivée**, corps compris, doit être libre.
+  - **Pas d'attaque d'opportunité** pendant la course (Idan : « pas d'attaque d'opportunités ») ; un bourbier ne retient qu'à
+    l'arrivée.
+  - **La contre-charge** garde son moment, avec **deux fois moins de chances de toucher**
+    (`combat.charge_aerienne.contre_charge` : × 0,5).
+  - **Chaque arme qui frappe dans la charge** (celles du cavalier, l'arme naturelle de la monture) : **Toucher, Blesser et
+    dégâts × 1,2** (`combat.charge_aerienne.bonus`), en plus du bonus de charge et de la Force du cheval ; une chance
+    plafonnée à 100 %. L'aperçu et le journal le disent (« charge aérienne »).
+  - Code : `combat-engine.js` (`aerialCharger`, `AERIAL`, `chargeData`, facteurs de `hitProbability`, `woundProbability`,
+    `resolveAttack`), `mission.js` (`missionChargeIfClear`, `moveMissionUnitAlongPath`, `performMissionCharge`). Test :
+    `tests/pegasus.test.js`.
 - **Courage et Volonté partagés** (Idan : « Montées, elles les partagent avec le cavalier en fonction de son niveau ») : ceux
   du cheval + (ceux du cavalier − ceux du cheval) × part ; part = (Compagnon animal + la famille de la monture, Équidés pour
   le destrier) ÷ 100, au plus 1 (`combat.monture.partage_diviseur`). **Un seul test de Courage pour le couple** (un coup sur

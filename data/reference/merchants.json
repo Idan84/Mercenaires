@@ -615,6 +615,10 @@
         {
           "type": "manual",
           "ecole": "Télékinésie"
+        },
+        {
+          "type": "mount",
+          "objet": "Papillon vénéneux"
         }
       ],
       "repliques": {
@@ -844,6 +848,10 @@
         {
           "type": "manual",
           "ecole": "Invocation"
+        },
+        {
+          "type": "mount",
+          "objet": "Papillon télépathe"
         }
       ],
       "repliques": {
@@ -1073,6 +1081,10 @@
         {
           "type": "manual",
           "ecole": "Illusion"
+        },
+        {
+          "type": "mount",
+          "objet": "Papillon géant"
         }
       ],
       "repliques": {

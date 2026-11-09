@@ -1053,7 +1053,10 @@
       Object.assign(crit,{criticalWoundRoll,criticalWound});
       const dealt=withTypeFactor(defender,matchup.type,physicalDamage(attacker,defender,mode,chargePower,criticalWound?{roll:"max",resistanceRoll:1}:{}));
       // Charge aérienne : les dégâts × AERIAL.bonus.
-      const damageData=aerial?{...dealt,damage:Math.round(dealt.damage*AERIAL.bonus)}:dealt;
+      // Une piqûre sans dégâts (le papillon vénéneux ; Idan, 2026-11-09 : « Son attaque ne fait pas de dégâts, mais
+      // empoisonne comme une sarbacane ») : le coup qui blesse n'enlève aucun PV, mais il empoisonne.
+      const harmless=Boolean(weapon?.sans_degats);
+      const damageData=harmless?{...dealt,damage:0}:aerial?{...dealt,damage:Math.round(dealt.damage*AERIAL.bonus)}:dealt;
       // Les PV restent signés : la profondeur sous 0 sert au jet de mort de fin de mission (Issue #13).
       defender.hp-=damageData.damage;
       wake(defender,damageData.damage);
@@ -1067,7 +1070,7 @@
       const coated=attacker.weaponPoison&&attacker.weaponPoison.itemId!=null&&attacker.weaponPoison.itemId===activeWeaponItem(attacker)?.id;
       const blowgun=weapon?.empoisonne?Math.ceil(10*parseDice(weapon.degats_pv_base).count*(Number(quality(activeWeaponItem(attacker)).multiplicateur_qualite)||1)-1e-9):0;
       const vial=coated?Number(attacker.weaponPoison.amount)||0:0;
-      const poison=(blowgun||vial)&&damageData.damage>0&&defender.alive&&!poisonImmune(defender)
+      const poison=(blowgun||vial)&&(damageData.damage>0||harmless)&&defender.alive&&!poisonImmune(defender)
         ?{turns:POISON.turns,amount:Math.max(blowgun,vial),source:vial>blowgun?"poison_vial":"blowgun"}:null;
       return {...crit,matchup,pWound,woundRoll,wound:true,...damageData,targetHp:defender.hp,targetDown:!defender.alive,...(poison?{poison}:{})};
     }

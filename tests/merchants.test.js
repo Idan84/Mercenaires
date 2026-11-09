@@ -381,7 +381,7 @@ assert.deepEqual(cover.unknown,[]);
 // pégase, Idan, 2026-11-09 : « Il est vendu par le marchand humain des cités libres » ; Bruga le cerbère, « vendu par les ogres
 // des montagnes » ; Kippa le molosse, « vendu par les gnomes des villes »).
 assert.deepEqual(cover.items.filter(i=>i.sellers.length<targetOf(i)).map(i=>i.name),[],"chaque objet chez au moins deux marchands");
-assert.deepEqual(cover.items.filter(i=>i.type==="mount").map(i=>[i.name,i.sellers]),[["Cerbère",["Bruga"]],["Destrier",["Amar"]],["Licorne",["Ysolwen"]],["Loup",["Fizzi"]],["Molosse",["Kippa"]],["Pégase",["Aymeric"]]]);
+assert.deepEqual(cover.items.filter(i=>i.type==="mount").map(i=>[i.name,i.sellers]),[["Cerbère",["Bruga"]],["Destrier",["Amar"]],["Licorne",["Ysolwen"]],["Loup",["Fizzi"]],["Molosse",["Kippa"]],["Papillon géant",["Dottie"]],["Papillon télépathe",["Callie"]],["Papillon vénéneux",["Jasper"]],["Pégase",["Aymeric"]]]);
 // Ses plates sont « ses armes » à la revente ; il hait les nains du chaos et en est haï (doc 02).
 const plates=generator.createItemByName("armor","Armure de plates",3);
 twoProbe.market.visit={merchantId:"durgan-battefer",day:twoProbe.day,stock:[],sold:{},traded:false};

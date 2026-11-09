@@ -987,7 +987,10 @@ function checkMissionEnd(){
   if(!game.mission||game.mission.over) return false;
   settleMissionMounts();
   releaseMissionSummons();
-  const p=livingMissionUnits("player"),e=livingMissionUnits("enemy");
+  // Un animal qui n'attaque pas ne tient pas le terrain (Idan, 2026-11-09 : « si seuls des papillons qui n'attaquent pas
+  // restent debout, le combat est perdu : oui »).
+  const fighting=u=>!u.character?.noAttack;
+  const p=livingMissionUnits("player").filter(fighting),e=livingMissionUnits("enemy").filter(fighting);
   if(p.length&&e.length) return false;
   game.mission.over=true;
   game.mission.winner=e.length?"enemy":"player";
@@ -1709,6 +1712,18 @@ function missionReachablePaths(unit,budget=Infinity,forbidden=null){
 }
 
 // Meilleure destination selon le score ; à score égal, le chemin le plus court (ordre de parcours).
+// Un animal qui n'attaque pas (le papillon télépathe, le papillon géant sans cavalier ; Idan, 2026-11-09 : « il n'attaque
+// pas... C'est un peu le drone de repérage ! ») : il ne va pas au contact. Au contact d'un ennemi qu'il voit, il s'éloigne ;
+// sinon, il reste à deux cases au plus de son maître ; seul, il reste où il est.
+function missionAiStandBy(unit){
+  const e=game.mission.engine,budget=Number(unit.movementRemaining)||0;
+  if(!budget) return;
+  const threats=missionOpponents(unit).filter(o=>!o.offMap&&!missionHiddenFrom(o,unit));
+  const path=threats.some(o=>e.axialDistance(unit,o)<=1)?missionBestPath(unit,budget,cell=>missionMinDistance(cell,threats))
+    :unit.master?.alive&&!unit.master.offMap&&e.axialDistance(unit,unit.master)>2?missionBestPath(unit,budget,cell=>-e.axialDistance(cell,unit.master)):[];
+  const moved=path.length?moveMissionUnitAlongPath(unit,path):0;
+  if(moved) missionLog(unit.character.name+" se tient à l’écart ("+moved+" hex).","move");
+}
 function missionBestPath(unit,budget,score,forbidden=null){
   let best=[],bestScore=score({q:unit.q,r:unit.r});
   for(const path of missionReachablePaths(unit,budget,forbidden).values()){
@@ -3572,6 +3587,7 @@ function enemyMissionActivation(unit,{reset=true}={}){
   if(unit.fleeing&&resolveMissionFleeingActivation(unit)) return;
   if(!unit.alive||game.mission.over) return;
   if(unit.frenzy){ frenzyMissionActivation(unit); return; }
+  if(unit.character?.noAttack){ missionAiStandBy(unit); return; }
   missionAiPotion(unit);
   missionAiCast(unit);
   if(unit.alive&&!game.mission.over) missionAiSpell(unit);

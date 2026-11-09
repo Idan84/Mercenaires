@@ -1038,6 +1038,26 @@
       "lieu": null
     },
     {
+      "code": "trainer_greenhouse",
+      "nom": "La Serre",
+      "description": "Les papillons : deux places par niveau (un petit papillon n'en prend qu'une demie). Chaque papillon coûte son entretien, chaque jour.",
+      "niveaux": 10,
+      "prix_base": 500,
+      "jours_base": 4,
+      "soins_par_niveau": 0,
+      "fatigue_jours_par_niveau": 0,
+      "mana_par_niveau": 0,
+      "requiert": "trainer_barn",
+      "ecole": null,
+      "places_base": 0,
+      "places_pas": 0,
+      "entraine": "Papillons",
+      "garde_paie_par_niveau": 0,
+      "apprend_avec": null,
+      "places_par_niveau": 2,
+      "lieu": null
+    },
+    {
       "code": "canteen",
       "nom": "La Cantine",
       "description": "Le tavernier y cuisine pour toute la compagnie : chaque jour, le plat du jour fait progresser ceux qui sont au camp.",
@@ -1058,5 +1078,5 @@
       "lieu": "taverne"
     }
   ],
-  "row_count": 49
+  "row_count": 50
 }

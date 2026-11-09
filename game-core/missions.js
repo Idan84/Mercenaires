@@ -198,7 +198,7 @@
       const order=pick((data.ordres||[]).filter(o=>o.mission===def.code&&o.faction===b.faction));
       const place=pick(b.lieux||[])||def.nom;
       // bete.nom : le nom des bêtes sur la carte, s'il n'est pas celui de leur fiche (les chiens sauvages : des molosses).
-      const camp={faction:b.faction,campName:place,enemies:[],chief:null,beast:{code:b.code,count,...(b.nom?{name:b.nom,plural:b.pluriel||null}:{})},points:0,budget:0,names:{}};
+      const camp={faction:b.faction,campName:place,enemies:[],chief:null,beast:{code:b.code,count,...(b.nom?{name:b.nom}:{}),...(b.pluriel?{plural:b.pluriel}:{})},points:0,budget:0,names:{}};
       const [minDays,maxDays]=def.validite_jours||[3,6];
       const reward=(Number(def.recompense?.par_niveau)||0)*missionLevel;
       const fields={
@@ -329,6 +329,8 @@
           puissance_tranchante_base:Number(a.puissance_tranchante)||0,puissance_perforante_base:Number(a.puissance_perforante)||0,
           puissance_contondante_base:Number(a.puissance_contondante)||0,malus_vitesse_arme_base:0,bonus_charge_base:Number(a.bonus_charge)||1,
           contre_charge:false,portee_min_hex:1,portee_max_hex:1,
+          // La piqûre du papillon vénéneux : elle empoisonne comme une sarbacane, sans dégâts (Idan, 2026-11-09).
+          ...(a.empoisonne?{empoisonne:true}:{}),...(a.sans_degats?{sans_degats:true}:{}),
           // Plusieurs coups (le cerbère, trois morsures ; Idan, 2026-11-09) : chacun son jet, comme le combat à deux armes.
           ...(Number(a.attaques)>1?{attaques:Number(a.attaques)}:{})}};
     }
@@ -349,11 +351,13 @@
           spells:(own.spells||base.spells).map(x=>({...x})),aiSpells:(own.spells||base.spells).map(x=>x.code)},
           Number.isFinite(Number(own.mana))?{mana:Number(own.mana)}:{});
       }
-      const weapon={id:`${id??s.code}-1`,owner:id,...naturalWeapon(s.attaque||{},s.code)};
+      // Sans attaque (attaque null : le papillon télépathe, le papillon géant ; Idan, 2026-11-09 : « il n'attaque pas ») :
+      // aucune arme, il ne frappe pas (noAttack).
+      const weapon=s.attaque===null?null:{id:`${id??s.code}-1`,owner:id,...naturalWeapon(s.attaque||{},s.code)};
       // Le pégase (Idan, 2026-11-09) : il vole (physiologie, Vol), et sa charge aérienne (charge_aerienne : « toujours » ou
       // « montée », doc 04).
       return {id,name:name||s.nom,role:s.nom,people:"",mount:{code:s.code,capturable:s.capturable!==false},
-        ...(s.physiologie?.Vol===true?{flies:true}:{}),...(s.charge_aerienne?{aerialCharge:s.charge_aerienne}:{}),
+        ...(s.physiologie?.Vol===true?{flies:true}:{}),...(s.charge_aerienne?{aerialCharge:s.charge_aerienne}:{}),...(weapon?{}:{noAttack:true}),
         gabarit:Number(s.gabarit)||1,taille:s.taille||"normale",mountSkill:s.espece||null,
         stats:{...s.caracteristiques},resistances:{...s.resistances},
         // Sa fiche complète, comme un mercenaire (Idan, 2026-11-07) : artisanat, camp et compétences animales à 0.
@@ -361,7 +365,7 @@
           craft:{},camp:{},technique:{},physiology:{...(s.physiologie||{})}},
         // Ses sorts, comme un mercenaire (la licorne : Création de double) ; l'IA les essaie dans l'ordre.
         spells:(s.sorts||[]).map(x=>({code:x.code,mastery:Number(x.maitrise)||1})),aiSpells:(s.sorts||[]).map(x=>x.code),
-        items:[weapon],equipment:{slots:{weapon_set_1_main:weapon.id},profile:{type:"melee"}}};
+        items:weapon?[weapon]:[],equipment:{slots:{weapon_set_1_main:weapon?weapon.id:null},profile:{type:"melee"}}};
     }
 
     // Les ennemis du camp, chef en dernier : makeBase(archétype) donne le personnage de base. Les doublons sont numérotés

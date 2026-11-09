@@ -12,7 +12,7 @@
       "key": "noms"
     }
   ],
-  "row_count": 3,
+  "row_count": 4,
   "rows": [
     {
       "code": "destrier",
@@ -21,6 +21,10 @@
     {
       "code": "licorne",
       "noms": ["Aube-d'Argent", "Lune-Claire", "Nacre", "Étoile", "Opaline", "Brume", "Perle", "Aurore", "Clarté", "Givre", "Iris", "Albe", "Candide", "Lys", "Neige", "Rosée", "Sylphe", "Aster", "Félicité", "Ondine", "Célesta", "Blanche-Corne", "Pâle-Crinière", "Songe"]
+    },
+    {
+      "code": "pegase",
+      "noms": ["Zéphyr", "Nuée", "Altaïr", "Cumulus", "Aile-Blanche", "Haut-Vol", "Firmament", "Alizé", "Éther", "Nimbus", "Plume-d'Argent", "Rafale", "Azur", "Cirrus", "Envol", "Mistral", "Céleste", "Aquilon", "Vent-Clair", "Cime", "Orion", "Sillage", "Embrun", "Volute"]
     },
     {
       "code": "loup",

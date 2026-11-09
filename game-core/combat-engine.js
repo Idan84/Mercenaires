@@ -134,6 +134,20 @@
       chargeForce:constant("combat.monture.force_charge",0.5),
       shareDivisor:constant("combat.monture.partage_diviseur",100)
     };
+    // Charge aérienne (doc 04 ; Idan, 2026-11-09 : « ils peuvent charger en passant au dessus des ennemis. 50% de contre
+    // charge en moins et tous les jets ( toucher/ blessé/ dégâts)X1.2 » ; « 50% de toucher en moins ») : bonus, le facteur
+    // du chargeur (Toucher, Blesser, dégâts) ; counter, celui du Toucher d'une contre-charge contre elle.
+    const AERIAL={
+      bonus:constant("combat.charge_aerienne.bonus",1.2),
+      counter:constant("combat.charge_aerienne.contre_charge",0.5)
+    };
+    // Qui charge par les airs : une bête qui l'a « toujours », seule ou montée ; montée, son cavalier avec elle (« montée » :
+    // seulement avec un cavalier ; Idan, 2026-11-09, le papillon géant). Une capacité de fiche (character.aerialCharge).
+    function aerialCharger(unit){
+      const m=mountOf(unit);
+      if(m) return Boolean(m.character?.aerialCharge);
+      return unit?.character?.aerialCharge==="toujours";
+    }
     const MOUNT_SHARED=["Courage","Volonté"];
     // Gabarit (Idan, 2026-11-07 : « on fait la même chose que pour le dortoir ») : les places du dortoir du peuple
     // (peoples.json : 0,5, 1 ou 2) ; une monture, le sien (mounts.json, gabarit). On ne monte qu'une bête plus grande que soi.
@@ -734,7 +748,8 @@
         }
       }
       // Couverture (doc 04 ; Idan, 2026-11-06) : context.cover, « partielle » ou « totale », au tir et en défense de charge.
-      return clamp(logistic(delta),10,90)*coverHitFactor(context.cover);
+      // context.factor : la charge aérienne (× 1,2 pour le chargeur, × 0,5 pour la contre-charge), au plus 100 %.
+      return Math.min(100,clamp(logistic(delta),10,90)*coverHitFactor(context.cover)*(Number(context.factor)||1));
     }
 
     // Charge à cheval (Idan, 2026-11-07) : la moitié de la Force du cheval s'ajoute à celle du cavalier.
@@ -748,7 +763,8 @@
         +(mode==="ranged"?0:(Number(context.chargePower)||0)+mountChargeForce(attacker,context.chargePower))
         +(Number(matchup?.matchup)||0)
         -statWithGear(defender,"Endurance");
-      return clamp(logistic(delta),10,90);
+      // context.factor : la charge aérienne (× 1,2), au plus 100 %.
+      return Math.min(100,clamp(logistic(delta),10,90)*(Number(context.factor)||1));
     }
 
     function parseDice(expr){
@@ -942,13 +958,18 @@
       // Couverture : au tir, et contre une charge (options.cover : « partielle » ou « totale »).
       const cover=(mode==="ranged"||chargePower>0)&&COVER[options.cover]?options.cover:null;
       const heightDiff=options.heightDiff??heightDiffOf(attacker,defender);
-      const tags={chargePower,opportunity,encircled,fleeingTarget,backstab,hidden,...(sentinel?{sentinel}:{}),...(cover?{cover}:{}),...(heightDiff?{heightDiff}:{})};
+      // Charge aérienne (doc 04 ; Idan, 2026-11-09) : options.aerialCharge, une arme qui frappe dans la charge (Toucher,
+      // Blesser et dégâts × AERIAL.bonus) ; options.againstAerialCharge, une contre-charge contre elle (Toucher × AERIAL.counter).
+      const aerial=mode==="melee"&&Boolean(options.aerialCharge);
+      const hitFactor=(aerial?AERIAL.bonus:1)*(options.againstAerialCharge?AERIAL.counter:1);
+      const tags={chargePower,opportunity,encircled,fleeingTarget,backstab,hidden,...(sentinel?{sentinel}:{}),...(cover?{cover}:{}),...(heightDiff?{heightDiff}:{}),
+        ...(aerial?{aerialCharge:true}:{}),...(options.againstAerialCharge?{againstAerialCharge:true}:{})};
       // Champ de protection (Télékinésie, doc 12) : avant le Toucher, le projectile a projectileShield.chance % d'être dévié.
       if(mode==="ranged"&&defender.projectileShield){
         const pDeflect=Number(defender.projectileShield.chance)||0,deflectRoll=d100();
         if(deflectRoll<=pDeflect) return {ok:true,mode,weapon:weapon.nom,distance,deflected:true,pDeflect,deflectRoll,hit:false,wound:false,damage:0,...tags};
       }
-      const pHit=hitProbability(attacker,defender,mode,distance,{opportunity,backstab,sentinel,cover,heightDiff});
+      const pHit=hitProbability(attacker,defender,mode,distance,{opportunity,backstab,sentinel,cover,heightDiff,factor:hitFactor});
       const hitRoll=d100(),hit=hitRoll<=pHit;
       // twoHanded : arme tenue à deux mains (XP de Combat à deux mains) ; oneHanded : arme à une main tenue seule (XP de
       // Combat à une main).
@@ -964,11 +985,11 @@
         if(mode==="ranged"&&Array.isArray(options.bystanders)) missed.stray=resolveStray(attacker,defender,options.bystanders,weapon);
         return missed;
       }
-      return {...head,hit:true,...resolveHit(attacker,defender,mode,{chargePower,backstab}),...tags};
+      return {...head,hit:true,...resolveHit(attacker,defender,mode,{chargePower,backstab,aerial}),...tags};
     }
 
     // Suite d'un Toucher réussi : blocage, critique au Toucher, Blesser, critique de blessure, dégâts.
-    function resolveHit(attacker,defender,mode,{chargePower=0,backstab=false}={}){
+    function resolveHit(attacker,defender,mode,{chargePower=0,backstab=false,aerial=false}={}){
       const weapon=weaponTemplate(activeWeaponItem(attacker));
       const psychic=weapon?.degats_type==="psychique";
       // Spectre (Idan, 2026-10-28) : immunisé aux dégâts physiques, le coup le traverse.
@@ -1002,7 +1023,7 @@
         if(parryRoll<=pParry) return {...crit,matchup,pParry,parryRoll,parried:true,parryWeapon:parryWeapon(defender,matchup.type),wound:false,damage:0};
         Object.assign(crit,{pParry,parryRoll});
       }
-      const pWound=woundProbability(attacker,defender,mode,matchup,{chargePower});
+      const pWound=woundProbability(attacker,defender,mode,matchup,{chargePower,factor:aerial?AERIAL.bonus:1});
       const woundRoll=d100(),wound=woundRoll<=pWound;
       if(!wound){
         // Échec critique de blessure CAC V1 : naturel 96–100 puis test de Chance raté → l'attaquant
@@ -1022,7 +1043,9 @@
       // Critique de blessure positif CAC V1 : dégâts de l'arme au maximum et variation de Résistance à 0,9.
       const criticalWoundRoll=d100(),criticalWound=criticalWoundRoll<=pCritical;
       Object.assign(crit,{criticalWoundRoll,criticalWound});
-      const damageData=withTypeFactor(defender,matchup.type,physicalDamage(attacker,defender,mode,chargePower,criticalWound?{roll:"max",resistanceRoll:1}:{}));
+      const dealt=withTypeFactor(defender,matchup.type,physicalDamage(attacker,defender,mode,chargePower,criticalWound?{roll:"max",resistanceRoll:1}:{}));
+      // Charge aérienne : les dégâts × AERIAL.bonus.
+      const damageData=aerial?{...dealt,damage:Math.round(dealt.damage*AERIAL.bonus)}:dealt;
       // Les PV restent signés : la profondeur sous 0 sert au jet de mort de fin de mission (Issue #13).
       defender.hp-=damageData.damage;
       wake(defender,damageData.damage);
@@ -1321,7 +1344,8 @@
       // cible. L'écran de combat vérifie qu'aucune n'est occupée. step : la direction de la dernière case vers la cible.
       // Une grande créature ne charge pas encore (à venir avec les bêtes) ; contre elle, on charge sa case la plus proche. Un
       // cavalier charge (Idan, 2026-11-07) : la ligne part de sa tête, le corps suit, avec le déplacement du cheval.
-      if(isLarge(attacker)&&!mountOf(attacker)) return {valid:false};
+      // Le pégase seul charge par les airs (Idan, 2026-11-09 : « Pegase seul l'a également ») : comme un couple.
+      if(isLarge(attacker)&&!mountOf(attacker)&&!aerialCharger(attacker)) return {valid:false};
       const distance=axialDistance(attacker,defender);
       if(distance<2) return {valid:false};
       const aim=footprint(defender).reduce((best,c)=>!best||hexDistance(attacker,c)<hexDistance(attacker,best)?c:best,null);
@@ -1355,6 +1379,8 @@
       stealthOf,
       mentalStat,
       mountChargeForce,
+      aerialCharger,
+      AERIAL,
       mountHitChance,
       rollShotTarget,
       sizeOf,

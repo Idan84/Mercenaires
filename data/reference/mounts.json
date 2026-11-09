@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "mounts",
-  "description": "Montures (Idan, 2026-11-07 ; doc 04, « Combat à cheval » ; doc 11 §8). Une fiche fixe par monture : le destrier et la licorne (plus rapide, plus endurante, une corne, un peu moins courageuse, intelligente, une grande volonté et de fortes résistances élémentaires). Valeur = 300 × entretien (economy.mount_value_per_upkeep). gabarit : sa taille sur l'échelle des places du dortoir (peoples.json, places_dortoir : 0,5, 1, 2…) ; on ne monte qu'une bête plus grande que soi (un humain, 1, monte un destrier, 2 ; un ogre, 2, ne peut pas). taille : ses cases au combat (longue = 2). PV = 3 × (Constitution + 0,2 × Endurance + 0,1 × Volonté), comme nos mercenaires. Monté, le cheval prête son déplacement ; le Courage et la Volonté du couple se partagent selon la compétence du cavalier (Compagnon animal + espece). Sans cavalier, il se bat avec son arme naturelle et fuit comme tout combattant. Résistances, Chance et maîtrise de l'arme naturelle : celles d'un humain moyen (P50). Une fiche complète, comme un mercenaire (Idan, 2026-11-07 : « la monture doit avoir une fiche complète comme les mercenaires. Les ennemis également » ; valeurs validées : « Parfait ») : Charisme, Puissance magique, Réserve de mana, Discrétion 10 (la Discrétion d'un couple est la plus basse des deux), Intimidation, physiologie ; artisanat, camp et compétences animales à 0. Ses sorts, comme un mercenaire (Idan, 2026-11-07 : « Reprend le sort qui existe déjà. On lui donne juste des points de mana et des niveaux de compétences de magie ») : la licorne, Création de double (Illusion 50, Réserve de mana 40).",
+  "description": "Montures (Idan, 2026-11-07 ; doc 04, « Combat à cheval » ; doc 11 §8). Une fiche fixe par monture : le destrier, la licorne (plus rapide, plus endurante, une corne, un peu moins courageuse, intelligente, une grande volonté et de fortes résistances élémentaires) et le pégase (Idan, 2026-11-09 : « Il vole, va vite comme une licorne mais frappe comme un cheval » ; « un peu plus fort physiquement que le Destrier et un peu plus résistant » : Force 100, Constitution 80, résistances + 2 ; Intelligence 80, Volonté 70 ; la charge aérienne). Valeur = 300 × entretien (economy.mount_value_per_upkeep). gabarit : sa taille sur l'échelle des places du dortoir (peoples.json, places_dortoir : 0,5, 1, 2…) ; on ne monte qu'une bête plus grande que soi (un humain, 1, monte un destrier, 2 ; un ogre, 2, ne peut pas). taille : ses cases au combat (longue = 2). PV = 3 × (Constitution + 0,2 × Endurance + 0,1 × Volonté), comme nos mercenaires. Monté, le cheval prête son déplacement ; le Courage et la Volonté du couple se partagent selon la compétence du cavalier (Compagnon animal + espece). Sans cavalier, il se bat avec son arme naturelle et fuit comme tout combattant. Résistances, Chance et maîtrise de l'arme naturelle : celles d'un humain moyen (P50). Une fiche complète, comme un mercenaire (Idan, 2026-11-07 : « la monture doit avoir une fiche complète comme les mercenaires. Les ennemis également » ; valeurs validées : « Parfait ») : Charisme, Puissance magique, Réserve de mana, Discrétion 10 (la Discrétion d'un couple est la plus basse des deux), Intimidation, physiologie ; artisanat, camp et compétences animales à 0. Ses sorts, comme un mercenaire (Idan, 2026-11-07 : « Reprend le sort qui existe déjà. On lui donne juste des points de mana et des niveaux de compétences de magie ») : la licorne, Création de double (Illusion 50, Réserve de mana 40).",
   "columns": [
     {
       "source": "Nom",
@@ -82,9 +82,13 @@
     {
       "source": "Compagnon : celui qui ne peut pas le monter l'emmène quand même au combat, à ses côtés (le loup)",
       "key": "compagnon"
+    },
+    {
+      "source": "Charge aérienne (doc 04, Idan, 2026-11-09) : « toujours » (seule ou montée) ou « montée » (seulement avec un cavalier) ; absente : pas de charge aérienne",
+      "key": "charge_aerienne"
     }
   ],
-  "row_count": 3,
+  "row_count": 4,
   "rows": [
     {
       "nom": "Destrier",
@@ -206,6 +210,64 @@
       "titre": "à dos de licorne",
       "logement": "trainer_stables",
       "compagnon": false
+    },
+    {
+      "nom": "Pégase",
+      "code": "pegase",
+      "espece": "Équidés",
+      "gabarit": 2,
+      "taille": "longue",
+      "caracteristiques": {
+        "Force": 100,
+        "Constitution": 80,
+        "Dextérité": 30,
+        "Vitesse": 110,
+        "Endurance": 85,
+        "Esquive": 20,
+        "Courage": 35,
+        "Volonté": 70,
+        "Perception": 60,
+        "Intelligence": 80,
+        "Chance": 60,
+        "Charisme": 30,
+        "Puissance magique": 0,
+        "Réserve de mana": 0
+      },
+      "resistances": {
+        "Résistance physique": 7,
+        "Résistance au feu": 6,
+        "Résistance au froid": 6,
+        "Résistance à la foudre": 6,
+        "Résistance au poison": 7
+      },
+      "competences_martiales": {
+        "Armes naturelles": 54,
+        "Sabots": 50,
+        "Discrétion": 10
+      },
+      "attaque": {
+        "nom": "Sabots",
+        "degats_pv_base": "1D8",
+        "puissance_contondante": 50
+      },
+      "competences_magiques": {},
+      "sorts": [],
+      "competences_sociales": {
+        "Intimidation": 40
+      },
+      "physiologie": {
+        "Régénération": 0,
+        "Vision nocturne": false,
+        "Vol": true
+      },
+      "capturable": true,
+      "entretien": 40,
+      "alignement": "Neutre bon",
+      "rang_echange": 4,
+      "titre": "à dos de pégase",
+      "logement": "trainer_stables",
+      "compagnon": false,
+      "charge_aerienne": "toujours"
     },
     {
       "nom": "Loup",

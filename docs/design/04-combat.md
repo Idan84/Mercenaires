@@ -258,7 +258,8 @@ peut y avoir une subtilité dans franchissable : vitesse réduite ». Données :
   | Voleurs | Repaire | maisons, murs, caisses, blé haut, eau peu profonde | collines basses |
 
   10 à 18 groupes de décor (28 à 36 en forêt) sur la carte de 30 × 15 : en moyenne 24 à 37 cases de décor, 130 pour la forêt
-  des hommes-bêtes. **Le camp des carrières** est sur un **plateau** (le camp et une case autour) **bordé de falaises**, avec
+  des hommes-bêtes. Sur la carte de 36 × 25 (le camp au centre, Idan 2026-11-09), les groupes de décor et les collines sont
+  multipliés par le rapport des surfaces (× 2) : même densité (`carte_reference` de mission-landscapes.json). **Le camp des carrières** est sur un **plateau** (le camp et une case autour) **bordé de falaises**, avec
   **1 ou 2 rampes**, dont une au moins face à votre escouade. Pas de décor à 2 cases ou moins de votre escouade ni sur ses
   colonnes de déploiement, ni à côté des ennemis (4 cases pour la clairière). **Garde-fou** : chacun peut toujours atteindre
   l'ennemi à pied (sinon on retire, jusqu'à 30 fois, puis la carte garde son relief sans décor). Mesure : 1 500 combats

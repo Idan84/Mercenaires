@@ -333,7 +333,9 @@ assert.ok(Math.abs(mean(p1.map(p=>p.manuals.length))-0.9)<0.1,"1★ bronze : 90 
 assert.ok(Math.abs(mean(p15.map(p=>p.manuals.length))-13.5)<0.5,"5★ or : 90 sorts à 15 %");
 assert.ok(p15.every(p=>p.manuals.every(code=>reference.spells.rows.some(sp=>sp.code===code))));
 assert.equal(rules.deathMultiplier(offer,true),1);
-assert.deepEqual(rules.mapSize(offer),{cols:30,rows:15},"carte de 30 × 15 (Idan : « une ambiance à la X-com »)");
+// Carte de 36 × 25, le camp au centre (Idan, 2026-11-09 : « 36 × 25 c'est parfait » ; 30 × 15 avant, « une ambiance à la X-com »).
+assert.deepEqual(rules.mapSize(offer),{cols:36,rows:25},"carte de 36 × 25");
+for(const m of reference.oneShotMissions.missions) assert.deepEqual(m.carte,{colonnes:36,lignes:25},m.code+" : 36 × 25, chasses comprises");
 
 // Campagne : une offre au tableau dès le départ, prise par une autre compagnie après sa date ; l'expédition ; la renommée
 // de missions ; pas de prime pour un fuyard sorti de la carte.
@@ -505,4 +507,4 @@ assert.equal(campaign.ensureHalvedMissionBonuses(halved),true);
 assert.equal(veteran.contract.missionBonus,76);
 assert.equal(campaign.ensureHalvedMissionBonuses(halved),false,"une seule fois");
 
-console.log("Missions one shot : niveau, budget par métal, monstres, récompense, coffre loterie, casse au combat, carte 30 × 15, ordres, renommée, primes ÷ 2 — OK");
+console.log("Missions one shot : niveau, budget par métal, monstres, récompense, coffre loterie, casse au combat, carte 36 × 25, ordres, renommée, primes ÷ 2 — OK");

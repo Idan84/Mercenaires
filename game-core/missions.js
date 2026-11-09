@@ -470,8 +470,9 @@
       const manuals=chance>0?monoSchoolSpells.filter(()=>random()*100<chance).map(sp=>sp.code):[];
       return {tiers,manuals};
     }
-    // Carte (Idan, 2026-11-01 : « une ambiance à la X-com ») : 30 × 15 cases pour les contrats.
-    function mapSize(offer){ const map=definition(offer.code)?.carte||{}; return {cols:map.colonnes||30,rows:map.lignes||15}; }
+    // Carte (Idan, 2026-11-01 : « une ambiance à la X-com ») : 36 × 25 cases pour les contrats et les chasses, le camp au
+    // centre (2026-11-09 ; 30 × 15 avant).
+    function mapSize(offer){ const map=definition(offer.code)?.carte||{}; return {cols:map.colonnes||36,rows:map.lignes||25}; }
 
     return {definition,archetype,points,missionMin,lootOf,accessoryDrops,ACCESSORY_SLOTS,campsOf,budgetOf,rollBudget,renownLevel,rollMissionLevel,rollCamp,estimation,contractReward,
       createOffer,createHunt,rollBeasts,huntDistance,orderText,applyArchetype,buildEnemies,outcome,deathMultiplier,rollChestGold,chestPlan,mapSize,mountSheet,createMount};

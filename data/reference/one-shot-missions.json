@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "one-shot-missions",
-  "description": "Missions one shot (doc 17). « Faire le ménage » : la mission de la Taverne, en boucle (Idan, 2026-10-24) ; le camp est tiré au hasard parmi les peuples de camps (Idan, 2026-11-01 : Gobelins, Orcs, Hommes-bêtes, Voleurs, Ogres), chacun avec ses lignes, ses ordres et ses noms. Niveau de la mission, budget, récompense et coffre (Idan, 2026-11-01 ; doc 17 §16) : niveau = niveau de Renommée de la compagnie (1 à 15) + écart de −3 à +2 ; budget en points de combat par métal (budgets : Bronze tirage 40–60 × niveau, Argent 60–80 × niveau, Or niveau² × tirage 8–12), avec les niveaux de monstres et le chef de chaque métal ; au plus 100 ennemis ; jours de marche : tirage 1 à niveau ; récompense = 5 000 + tirage 30–40 × budget × niveau ; coffre : or = tirage 1–100 × budget × niveau ÷ 2, objets T1 à T4 selon le niveau, chaque sort d’une seule école à niveau % ; carte de 30 × 15 cases.",
+  "description": "Missions one shot (doc 17). « Faire le ménage » : la mission de la Taverne, en boucle (Idan, 2026-10-24) ; le camp est tiré au hasard parmi les peuples de camps (Idan, 2026-11-01 : Gobelins, Orcs, Hommes-bêtes, Voleurs, Ogres), chacun avec ses lignes, ses ordres et ses noms. Niveau de la mission, budget, récompense et coffre (Idan, 2026-11-01 ; doc 17 §16) : niveau = niveau de Renommée de la compagnie (1 à 15) + écart de −3 à +2 ; budget en points de combat par métal (budgets : Bronze tirage 40–60 × niveau, Argent 60–80 × niveau, Or niveau² × tirage 8–12), avec les niveaux de monstres et le chef de chaque métal ; au plus 100 ennemis ; jours de marche : tirage 1 à niveau ; récompense = 5 000 + tirage 30–40 × budget × niveau ; coffre : or = tirage 1–100 × budget × niveau ÷ 2, objets T1 à T4 selon le niveau, chaque sort d’une seule école à niveau % ; carte de 36 × 25 cases, le camp au centre (Idan, 2026-11-09 : « 36 × 25 c'est parfait » ; avant : 30 × 15, le camp à droite).",
   "missions": [
     {
       "code": "cleanup",
@@ -378,8 +378,8 @@
         6
       ],
       "carte": {
-        "colonnes": 30,
-        "lignes": 15
+        "colonnes": 36,
+        "lignes": 25
       },
       "recompense": {
         "base": 5000,
@@ -454,8 +454,8 @@
         6
       ],
       "carte": {
-        "colonnes": 30,
-        "lignes": 15
+        "colonnes": 36,
+        "lignes": 25
       },
       "bete": {
         "code": "loup",
@@ -502,8 +502,8 @@
         6
       ],
       "carte": {
-        "colonnes": 30,
-        "lignes": 15
+        "colonnes": 36,
+        "lignes": 25
       },
       "bete": {
         "code": "licorne",
@@ -551,8 +551,8 @@
         6
       ],
       "carte": {
-        "colonnes": 30,
-        "lignes": 15
+        "colonnes": 36,
+        "lignes": 25
       },
       "bete": {
         "code": "cerbere",
@@ -600,8 +600,8 @@
         6
       ],
       "carte": {
-        "colonnes": 30,
-        "lignes": 15
+        "colonnes": 36,
+        "lignes": 25
       },
       "bete": {
         "code": "molosse",
@@ -655,8 +655,8 @@
         6
       ],
       "carte": {
-        "colonnes": 30,
-        "lignes": 15
+        "colonnes": 36,
+        "lignes": 25
       },
       "bete": {
         "code": "papillon_veneneux",

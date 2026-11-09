@@ -27,6 +27,13 @@
     };
     const cliff=constant("combat.altitude.cliff",2),maxHeight=constant("combat.altitude.max",3);
     const between=([min,max]=[0,0])=>min+Math.floor(random()*(max-min+1));
+    // Densité (Idan, 2026-11-09 : la carte passe à 36 × 25) : les groupes de décor et les collines sont donnés pour la carte
+    // de référence (carte_reference, 30 × 15) ; sur une carte plus grande, leur nombre suit la surface.
+    const refMap=data.carte_reference||{colonnes:30,lignes:15};
+    const scaled=(range,cols,rowCount)=>{
+      const factor=(cols*rowCount)/((Number(refMap.colonnes)||30)*(Number(refMap.lignes)||15));
+      return Math.round(between(range)*Math.max(1,factor));
+    };
     const pick=list=>list[Math.floor(random()*list.length)];
     const weighted=weights=>{
       const entries=Object.entries(weights||{}).filter(([code,w])=>w>0&&decorRows.has(code));
@@ -44,7 +51,7 @@
       for(let r=0;r<rowCount;r++) for(let col=0;col<cols;col++) cells.push(axial(col,r));
       const inside=c=>c.r>=0&&c.r<rowCount&&column(c.q,c.r)>=0&&column(c.q,c.r)<cols;
       const neighbors=c=>DIRS.map(d=>({q:c.q+d.q,r:c.r+d.r})).filter(inside);
-      return {cells,inside,neighbors};
+      return {cells,inside,neighbors,cols,rows:rowCount};
     }
 
     // Enceinte (Idan, 2026-11-06 : « palissade nouvelle », « vas-y pour la palissade et l'enceinte ») : l'anneau des cases à
@@ -103,7 +110,7 @@
         for(const a of anchors) cones.push({...a,h:H});
       }
       const middle=map.cells.filter(c=>{ const col=column(c.q,c.r); return col>=4&&col<=cols-6; });
-      for(let i=0,n=between(land.collines||[0,0]);i<n&&middle.length;i++)
+      for(let i=0,n=scaled(land.collines||[0,0],cols,map.rows);i<n&&middle.length;i++)
         cones.push({...pick(middle),h:1+Math.floor(random()*Math.max(1,Number(land.hauteur_collines)||1))});
       const out=[];
       for(const c of map.cells){
@@ -122,7 +129,7 @@
         &&!walled.has(key(c))&&!doors.some(o=>distance(o,c)<=1);
       const spots=map.cells.filter(allowed);
       const out=[...(ring?.wall||[])],taken=new Set(walled);
-      for(let g=0,groups=between(land.groupes);g<groups&&spots.length;g++){
+      for(let g=0,groups=scaled(land.groupes,map.cols,map.rows);g<groups&&spots.length;g++){
         const code=weighted(land.decors);
         if(!code) break;
         let cell=pick(spots);

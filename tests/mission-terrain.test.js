@@ -65,14 +65,16 @@ assert.ok(land("Voleurs").decors.maison > 0 && land("Ogres").decors.gros_rocher 
 let seed = 21;
 const random = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
 const terrain = Terrain.createMissionTerrain({reference, random});
-const cols = 30, rows = 15, mid = 7;
+// La carte des contrats et des chasses : 36 × 25, le camp au centre (Idan, 2026-11-09 : « 36 × 25 c'est parfait »).
+const cols = 36, rows = 25, mid = 12;
 const order = [...Array(rows).keys()].sort((a, b) => Math.abs(a - mid) - Math.abs(b - mid) || a - b);
+// Comme placeMissionArmy : l'escouade à gauche ; le chef au centre de la carte, les autres autour de lui, au plus près d'abord.
 function deploy(nP, nE) {
   const players = [...Array(nP)].map((_, i) => Terrain.axial(1 + Math.floor(i / rows), order[i % rows]));
-  const enemies = [], perCol = Math.max(1, Math.min(rows, Math.max(3, Math.ceil((nE - 1) / 2))));
-  for (let i = 0; i < nE - 1; i++) enemies.push(Terrain.axial(cols - 4 - Math.floor(i / perCol), order[i % perCol]));
-  enemies.push(Terrain.axial(cols - 2, mid));
-  return {players, enemies};
+  const chief = Terrain.axial(Math.floor(cols / 2), mid);
+  const around = terrain.grid(cols, rows).cells.map((c, i) => ({c, i, d: Terrain.distance(c, chief)})).filter(x => x.d > 0)
+    .sort((a, b) => a.d - b.d || a.i - b.i).map(x => x.c);
+  return {players, enemies: [...around.slice(0, nE - 1), chief]};
 }
 const key = c => c.q + "," + c.r;
 const map = terrain.grid(cols, rows);
@@ -154,7 +156,7 @@ assert.match(mission, /game\.mission\.relief=generateMissionRelief\(\);\n\s+game
 assert.match(mission, /filter\(row=>row\.code!==wall\)/, "sans palissade au hasard");
 assert.match(read("index.html"), /<script src="\/core\/mission-terrain\.js"><\/script>/);
 
-// 4. Les combats automatiques finissent, sur chaque paysage : 30 par faction, carte de contrat 30 × 15.
+// 4. Les combats automatiques finissent, sur chaque paysage : 30 par faction, carte de contrat 36 × 25, le camp au centre.
 const generator = createGenerator(reference, {random, nameGenerator: (people, id) => people + " " + id});
 const captain = generator.createCaptain({id: 1});
 const element = () => ({textContent: "", innerHTML: "", disabled: false, title: "", style: {}, parentElement: {clientWidth: 900},
@@ -172,6 +174,18 @@ api = new Function("game", "$", "esc", "fmt", "renderAvatar", "combatEngine", "M
   + "startMissionCamouflage,autoResolveMission,setMissionMapSize,placeMissionArmy,missionTerrain,missionUnitHeight};")
   .call(null, game, $, v => String(v ?? ""), v => String(Math.round(Number(v) || 0)), () => "", () => engine, Progression, MissionEnd, Magic, Terrain);
 api.setMissionMapSize({cols, rows});
+// Le camp au centre (Idan, 2026-11-09) : le chef au milieu de la carte, les autres autour de lui, au plus près d'abord ;
+// l'escouade à gauche.
+{
+  game.mission = {engine, players: [], enemies: []};
+  const camp = api.placeMissionArmy([...Array(8)].map((_, i) => api.makeMissionUnit(generator.createMercenary({id: 4900 + i, captain}), "enemy", i % 3)), "enemy");
+  const chief = camp[camp.length - 1];
+  assert.deepEqual([Terrain.column(chief.q, chief.r), chief.r], [18, 12], "le chef au centre de la carte");
+  assert.ok(camp.slice(0, -1).every(u => Terrain.distance(u, chief) <= 2), "les autres autour de lui");
+  assert.equal(camp.slice(0, -1).filter(u => Terrain.distance(u, chief) === 1).length, 6, "le premier cercle plein");
+  const squad = api.placeMissionArmy([1, 2, 3].map(i => api.makeMissionUnit(generator.createMercenary({id: 4950 + i, captain}), "player", i % 3)), "player");
+  assert.ok(squad.every(u => Terrain.column(u.q, u.r) === 1), "l'escouade sur le bord gauche");
+}
 // Le hasard des combats ne dépend pas du nombre de paysages tirés plus haut (2026-11-09 : un paysage de plus décalait les
 // tirages et tombait sur un duel interminable déjà possible, un elfe à couvert contre un orc qui se régénère).
 seed = 1594012420;

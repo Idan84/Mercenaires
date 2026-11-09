@@ -165,6 +165,7 @@ function renderGame() {
   renderTavern();
   renderQuartermaster();
   renderCampBuildings();
+  if(typeof renderMemorial==="function") renderMemorial();
   if(typeof renderCanteen==="function") renderCanteen();
   renderLieutenants();
   if (typeof renderMerchant === "function") renderMerchant();
@@ -1350,6 +1351,9 @@ function historyEntryText(c,entry){
   const fill=(text,vars={})=>MercenairesRecruitDialogue.fill(text,vars,female);
   if(entry.kind==="founded") return fill(copy.founded);
   if(entry.kind==="joined") return fill(entry.initial?copy.joined_initial:copy.joined);
+  // Mort en mission (le Mémorial, Idan, 2026-11-09).
+  if(entry.kind==="death") return entry.captured?fill(copy.death_captured)
+    :entry.knockouts?fill(copy.death_knockouts,{n:historyPlural(entry.knockouts,"adversaire","adversaires")}):fill(copy.death);
   if(entry.kind==="mission"){
     const back=entry.knockouts?fill(copy.mission_knockouts,{n:historyPlural(entry.knockouts,"adversaire","adversaires")}):fill(copy.mission);
     return entry.wounded?`${back} ${fill(copy.mission_wounded,{jours:historyPlural(entry.days,"jour","jours")})}`:back;
@@ -1404,10 +1408,11 @@ function historyDate(day){
   try{ return `Jour ${fmt(day)} · ${campaignCalendarDate(day,game.referenceData).dateLabel}`; }
   catch{ return `Jour ${fmt(day)}`; }
 }
-function renderHistoryTab(c){
+// day : arrêter le compte à ce jour (le Mémorial : le jour de sa mort).
+function renderHistoryTab(c,{day=null}={}){
   const copy=game.referenceData?.characterSheetCopy?.history||{};
   const history=c.history||{};
-  const values={...history,days:MercenairesHistory.daysInCompany(c,game.campaign?.day),
+  const values={...history,days:MercenairesHistory.daysInCompany(c,day??game.campaign?.day),
     stewardDays:typeof stewardRules==="function"&&game.campaign?stewardRules().totalStewardDays(game.campaign,c):Number(history.stewardDays)||0,
     medicDays:typeof medicRules==="function"&&game.campaign?medicRules().totalMedicDays(game.campaign,c):Number(history.medicDays)||0,
     ...Object.fromEntries(MercenairesCampPosts.POSTS.map(post=>[post.key+"Days",

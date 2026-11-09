@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 434,
+  "row_count": 436,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -2736,6 +2736,22 @@
       "description": "Chaque matin, un mercenaire disponible va, avec cette chance, là où il se classe le mieux dans la compagnie parmi les salles et ailes qui ont une place libre ; sinon au hasard parmi elles (Idan, 2026-11-03 : « Là où il est le plus doué à 75 % de chance, sinon au hasard »).",
       "formule": "Entraînement libre V1",
       "valeur": 0.75,
+      "version": "V1"
+    },
+    {
+      "nom": "Mémorial — morts par niveau",
+      "code": "camp.memorial.deaths_per_level",
+      "description": "Le niveau de la salle d'entraînement du Mémorial (Nécromancie) : le nombre de morts de la compagnie divisé par cette valeur, sans arrondi ni plafond, dès le premier mort (Idan, 2026-11-09 : « A 10 morts, c'est l'équivalent du lvl 1. A 100 morts, du level 10... mais ici, pas de limites ! » ; « on peut pas le faire linéaire ? On ouvre à 1 mort ? »).",
+      "formule": "Entraînement libre V1",
+      "valeur": 10,
+      "version": "V1"
+    },
+    {
+      "nom": "Mémorial — places d'entraînement",
+      "code": "camp.memorial.places",
+      "description": "Les places pour étudier la Nécromancie au Mémorial ; les morts, eux, y sont en nombre illimité (Idan, 2026-11-09 : « Une seule place. C'est un mini bonus gratuit... »).",
+      "formule": "Entraînement libre V1",
+      "valeur": 1,
       "version": "V1"
     },
     {

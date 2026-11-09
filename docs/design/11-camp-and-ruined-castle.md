@@ -596,8 +596,44 @@ Les bâtiments médicaux améliorent :
 
 Le mémorial a une **capacité illimitée** et conserve la mémoire des mercenaires morts.
 
-Pour l'instant, la compagnie garde la liste des morts en combat singulier contre le capitaine (`company.memorial`, §11, la
-désertion) ; le bâtiment viendra plus tard.
+**Le Mémorial** (Idan, 2026-11-09 : « plus un bâtiment souvenir. Il est là dès le début. On y retrouve le portrait de tous
+ceux qui sont décédés au sein de la compagnie. Quand on clique dessus, on voit l'avatar complet avec sa date de décès, la
+cause de son décès (un peu drôle, c'est mieux !) et un épitaphe délirant » ; règles `game-core/memorial.js`, textes
+`data/reference/memorial.json`, écran `prototype-web/memorial-ui.js` ; test : `tests/memorial.test.js`) :
+
+- **là dès le début** : ni construction, ni niveau, ni entretien ; une carte dans **Ma Compagnie**, sous le Dortoir, et
+  « Aller au Mémorial » ;
+- **qui y entre** : tous les mercenaires morts dans la compagnie — au jet de mort de fin de mission, l'éclaireur prisonnier
+  jamais revenu (doc 04), le déserteur tué en combat singulier par le capitaine (§11) ; **pas les animaux** (« Non ») ;
+  chacun une seule fois (`company.memorial`, du plus ancien au plus récent) ;
+- **la galerie** : les portraits, du plus récent au plus ancien ; au clic : l'**avatar complet**, le nom, le peuple et la
+  culture, la **date du décès** (jour de campagne et calendrier du camp), les jours passés dans la compagnie, la **cause**,
+  l'**épitaphe** et **son historique** (« si on peut garder son historique, c'est cool » : les compteurs et le journal,
+  arrêtés au jour de sa mort ; sa dernière mission compte, et le journal finit sur « Tombe au combat ») ;
+- **la cause** : l'écran de combat note ce qui fait tomber l'un des nôtres — un coup (corps à corps, tir, charge, contre la
+  contre-charge, attaque d'opportunité, en fuite, dans le dos), sa propre arme (échec critique), un sort (feu, froid,
+  foudre ou autre), son propre sort qui se retourne, le poison, une malédiction, le relevé en zombie (par l'ennemi ou un
+  camarade), un camarade (« tir ami ») ; avec le tueur (« un Guerrier orc vétéran », « une Goule », ou le nom d'un
+  camarade) et l'arme ou le sort (« Arme du crime : Hache de guerre. ») ; une tournure drôle est tirée une fois pour toutes
+  parmi celles de sa nature ;
+- **l'épitaphe** : une centaine, délirantes (« Mort comme il a vécu : en retard sur l'initiative. »), tirées au hasard,
+  **jamais deux fois dans une même partie** tant qu'il en reste ; au masculin ou au féminin ;
+- la fiche gardée est réduite à ce que la galerie montre (nom, peuple, avatar, contrat, historique) : une fiche complète
+  pèse ~18 Ko.
+
+**Étudier la Nécromancie au Mémorial** (Idan, 2026-11-09 : « un mercenaire peut aller s'entrainer de lui même pour la
+nécromancie, comme dans l'école de magie. L'xp depend ici du nombre de morts dans la compagnie. A 10 morts, c'est
+l'équivalent du lvl 1. A 100 morts, du level 10... mais ici, pas de limites ! » ; « on peut pas le faire linéaire ? On ouvre
+à 1 mort ? » ; « Une seule place. C'est un mini bonus gratuit... ») :
+
+- une salle de l'entraînement libre (§ École de magie), ouverte **dès le premier mort** ; **une place**
+  (`camp.memorial.places`) ; elle travaille la **Nécromancie** (et fait reculer ses écoles opposées, comme à l'École) ;
+- son **niveau = morts ÷ 10** (`camp.memorial.deaths_per_level`), sans arrondi ni plafond : 1 mort 0,1 ; 10 morts 1 ;
+  100 morts 10 ;
+- le **test** et le **gain** d'une salle de l'École, **sans directeur** : 80 × Intelligence / 50 × (1 + 0,1 × niveau) ; pour une
+  Intelligence de 50 : 81 XP par jour à 1 mort, 88 à 10, 160 à 100, 320 à 300 ;
+- le capitaine peut y être envoyé (« Le capitaine », sous les bâtiments) ; la carte du Mémorial montre son niveau et qui
+  occupe la place aujourd'hui.
 
 ## 10 — Grande salle du château
 

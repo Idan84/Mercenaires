@@ -88,7 +88,9 @@ function captainTrainingChoice(c){
   if(!rooms.length) return "";
   const current=rules.captainTraining(c)||"";
   const option=(value,label)=>`<option value="${esc(value)}"${value===current?" selected":""}>${esc(label)}</option>`;
-  const groups=[...new Set(rooms.map(room=>room.building))].map(building=>`<optgroup label="${esc(rules.campBuildingRow(building).nom)}">${
+  // Le Mémorial n'est pas un bâtiment à construire : son nom vient de sa salle.
+  const groupName=building=>rules.campBuildingRow(building)?.nom||rooms.find(room=>room.building===building)?.name||building;
+  const groups=[...new Set(rooms.map(room=>room.building))].map(building=>`<optgroup label="${esc(groupName(building))}">${
     rooms.filter(room=>room.building===building).map(room=>option(room.code,room.code===building&&building!=="magic_school"?room.trains:room.label)).join("")}</optgroup>`).join("");
   return `<label class="building-captain" title="Chaque matin, avant les autres et sans test ; à partir de demain.">Le capitaine
       <select data-captain-training>${option("","À la taverne")}${groups}</select></label>`;
@@ -137,7 +139,7 @@ function renderCampBuildings(){
     <article class="building-card building-card--link">
       <div class="building-info"><strong>Dortoir</strong><span>${dormitoryPlacesLine(c)} · ${esc(quality.nom)}</span>${work?`<span class="building-work">${campWorkText(work,c.day)}</span>`:""}</div>
       <button type="button" class="primary" data-open-camp-scene="dormitory" data-destination="Dortoir">Aller au dortoir</button>
-    </article>`+(rules.campBuildingCodes?rules.campBuildingCodes().map(code=>campBuildingCard(c,code)).join(""):"")+captainTrainingChoice(c);
+    </article>`+(typeof memorialCardHtml==="function"?memorialCardHtml(c):"")+(rules.campBuildingCodes?rules.campBuildingCodes().map(code=>campBuildingCard(c,code)).join(""):"")+captainTrainingChoice(c);
   renderDormitory();
 }
 
@@ -213,7 +215,9 @@ function logSchoolDay(report){
     const row=rules.campBuildingRow(e.code),building=row?.requiert||e.code;
     count.set(building,(count.get(building)||0)+1);
   }
-  for(const [building,n] of count) tavernLog(`${rules.campBuildingRow(building)?.nom||"École de magie"} : ${fmt(n)} élève${n>1?"s":""} aujourd’hui.`,"turn");
+  const rooms=rules.trainingRooms?rules.trainingRooms(game.campaign):[];
+  const name=building=>rules.campBuildingRow(building)?.nom||rooms.find(room=>room.building===building)?.name||"École de magie";
+  for(const [building,n] of count) tavernLog(`${name(building)} : ${fmt(n)} élève${n>1?"s":""} aujourd’hui.`,"turn");
 }
 
 // Journal du matin : les bâtiments (et les salles) qui montent d'un niveau.

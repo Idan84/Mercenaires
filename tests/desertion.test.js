@@ -128,7 +128,7 @@ drop(e); dice=[0.999,0];
 morning();
 const stock=(company.stock||[]).length,owned=e.items.length;
 const fallen=desertion.duel(state,e.id);
-assert.deepEqual([fallen.ok,company.roster.includes(e),company.memorial.at(-1).id,company.memorial.at(-1).cause],[true,false,e.id,"duel"]);
+assert.deepEqual([fallen.ok,company.roster.includes(e),company.memorial.at(-1).id,company.memorial.at(-1).cause.kind],[true,false,e.id,"duel"]);
 assert.equal(fallen.heritage?.id,e.id,"il est mort dans un combat : son héritage");
 assert.ok(company.renownHeritage.some(h=>h.id===e.id));
 assert.deepEqual([(company.stock||[]).length-stock,e.items.length,Object.values(e.equipment?.slots||{}).filter(Boolean).length],[owned,0,0]);

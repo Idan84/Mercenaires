@@ -1202,7 +1202,8 @@ function resolveMissionAftermath(){
     // les lisent aussi.
     damageTaken:u.damageTaken,stats:{...u.character.stats,Endurance:m.engine.statWithGear(u,"Endurance"),
       "Volonté":m.engine.statWithGear(u,"Volonté")},
-    isCaptain:captainId!=null&&u.character.id===captainId,offMap:u.offMap,progress:u.progress||null,raised:Boolean(u.raised)
+    isCaptain:captainId!=null&&u.character.id===captainId,offMap:u.offMap,progress:u.progress||null,raised:Boolean(u.raised),
+    cause:u.downCause||null
   }));
   const victory=m.winner==="player";
   // Défaite d'un contrat : l'ennemi tient le terrain, le jet de mort de nos mercenaires à terre est doublé (doc 17 §8).
@@ -1557,6 +1558,9 @@ function logMissionAttackLines(a,d,result,kind){
 // lanceur récupère percent % des PV que son coup d'arme au corps à corps a retirés (pas sous zéro).
 function onMissionAttack(attacker,defender,options,result){
   MercenairesProgression.recordAttack(attacker,defender,options,result);
+  // Le Mémorial : ce qui a fait tomber l'un des nôtres (le coup, ou son propre échec critique).
+  if(result?.targetDown) noteMissionDown(defender,attacker,missionAttackCause(attacker,defender,options,result));
+  if(result?.attackerDown) noteMissionDown(attacker,null,{kind:"fumble",weapon:result.weapon||null});
   if(result?.ok&&attacker&&defender&&attacker.team!==defender.team) missionAlert(defender.team,attacker);
   poisonMissionTarget(attacker,defender,result);
   webMissionTarget(attacker,defender,result);
@@ -1565,6 +1569,38 @@ function onMissionAttack(attacker,defender,options,result){
   const removed=Math.min(result.damage,Math.max(0,(Number(result.targetHp)||0)+result.damage));
   const amount=Math.ceil(removed*fx.percent/100-1e-9);
   if(amount>0) result.drain={amount,healed:healMissionUnit(attacker,amount)};
+}
+// Le Mémorial (Idan, 2026-11-09 : « la cause de son décès (un peu drôle, c'est mieux !) ») : quand l'un des nôtres tombe, on
+// note ce qui l'a fait tomber — la nature (corps à corps, tir, charge, fuite, dans le dos, sort, poison…), le tueur (le nom
+// de sa fiche, ou celui d'un camarade) et l'arme ou le sort. S'il meurt au jet de fin de mission, c'est sa cause de décès.
+function missionCauseActor(actor,victim){
+  const c=actor?.character;
+  if(!c) return null;
+  const friendly=actor.team===victim.team,proper=friendly||actor.team==="player";
+  const name=proper?String(c.name||""):String(c.role||c.name||"").replace(/\s+\d+$/,"");
+  return name?{name,proper,friendly}:null;
+}
+function noteMissionDown(victim,actor,cause){
+  if(!victim||victim.team!=="player"||!cause) return;
+  const by=missionCauseActor(actor,victim);
+  victim.downCause={...cause,...(by?{by}:{})};
+}
+function missionAttackCause(attacker,defender,options,result){
+  const weapon=result?.weapon||null;
+  if(attacker?.team===defender?.team) return {kind:"friendly",weapon};
+  const kind=options?.counterCharge?"countercharge":result.opportunity?"opportunity":defender.fleeing||result.fleeingTarget?"fleeing"
+    :result.backstab||result.hidden?"backstab":Number(result.chargePower)>0||Number(options?.chargeDistance)>0?"charge"
+    :result.mode==="ranged"?"ranged":"melee";
+  return {kind,weapon};
+}
+// Un sort, ou ses suites : le sort en cours (game.mission.castingSpell), l'élément, ou how (poison, curse) ; le lanceur qui
+// se blesse lui-même (le sort se retourne) : spell_fumble.
+function missionSpellCause(unit,source,element,how){
+  const m=game.mission,spell=m?.castingSpell||null,named=spell?{spell}:{};
+  if(how) return {kind:how};
+  if(!source&&m?.castingBy===unit) return {kind:"spell_fumble",...named};
+  if(source&&source.team===unit.team&&source!==unit) return {kind:"friendly",...named};
+  return {kind:["feu","froid","foudre"].includes(element)?"spell_"+element:"spell",...named};
 }
 // Toile (araignée géante ; Idan, 2026-10-31) : un coup qui touche, ni paré ni bloqué, englue la cible : pas de déplacement à
 // sa prochaine activation (comme l'Écrasement).
@@ -2227,7 +2263,7 @@ function healMissionUnit(unit,amount){
 function missionWitherNote(unit){ return unit?.withered?" — flétri"+(missionFeminine(unit)?"e":"")+", aucun soin":""; }
 // source : le lanceur (ou le porteur de l'arme enflammée), pour la réputation et le Charisme ; element : la résistance
 // qui progresse chez la cible (doc 08).
-function damageMissionUnitBySpell(unit,amount,source=null,element=null){
+function damageMissionUnitBySpell(unit,amount,source=null,element=null,how=null){
   if(!amount) return;
   if(source&&source.team!==unit.team) missionAlert(unit.team,source);
   const wasUp=unit.alive!==false;
@@ -2237,6 +2273,7 @@ function damageMissionUnitBySpell(unit,amount,source=null,element=null){
   // Le feu bloque la régénération (sang de troll) à sa prochaine activation.
   if(element==="feu"&&amount>0) unit.burned=true;
   if(unit.hp<=0){ unit.alive=false; missionLog(unit.character.name+" est hors combat.","death"); }
+  if(wasUp&&unit.alive===false) noteMissionDown(unit,source,missionSpellCause(unit,source,element,how));
   game.mission.engine.wake(unit,amount);
   missionAfterStrike(unit,true);
   missionFx(unit,wasUp&&!unit.alive?"Hors combat":"",wasUp&&!unit.alive?"down":"");
@@ -2245,7 +2282,14 @@ function damageMissionUnitBySpell(unit,amount,source=null,element=null){
 
 // Lance un sort et applique son résultat (joueur et IA) : action, mana, PV, effets, journal.
 // extra : {destination} (Déplacement) ou {second} (Entrechoc).
+// Le sort en cours de résolution (le Mémorial : la cause d'une mort par un sort, ou par son propre sort qui se retourne).
 function resolveMissionSpell(caster,target,code,extra={}){
+  const m=game.mission,before={spell:m?.castingSpell,by:m?.castingBy};
+  if(m){ m.castingSpell=missionMagic()?.spell(code)?.nom||null; m.castingBy=caster; }
+  try{ return resolveMissionSpellNow(caster,target,code,extra); }
+  finally{ if(m){ m.castingSpell=before.spell; m.castingBy=before.by; } }
+}
+function resolveMissionSpellNow(caster,target,code,extra={}){
   const m=game.mission,magic=missionMagic(),spell=magic?.spell(code);
   if(!spell) return null;
   if(spell.cible==="soi") target=caster;
@@ -2752,6 +2796,8 @@ function missionCreatureCharacter(arch,n){
 function raiseMissionDead(caster,dead,out,detail){
   const s=out.summon,share=Math.round(s.share);
   dead.raised=true;
+  // Le Mémorial : relevé en zombie (par l'ennemi, ou par un camarade).
+  noteMissionDown(dead,caster,{kind:caster.team===dead.team?"raised_friendly":"raised"});
   const zombie=addMissionSummon(caster,missionZombieCharacter(dead,share),dead,{casterId:caster.id,code:s.code,upkeep:s.upkeep});
   missionLog(caster.character.name+" lance Résurrection sur le corps de "+dead.character.name+detail+" : "+dead.character.name
     +" se relève en zombie, avec "+share+" % de ses forces ("+zombie.pvMax+" PV) ; entretien "+s.upkeep+" mana par tour.","magic");
@@ -2952,7 +2998,7 @@ function tickMissionCurse(unit){
   const amount=magic.isUndead(unit)?0:tick.amount;
   missionLog("Malédiction : "+unit.character.name+" souffre, −"+amount+" PV nécrotiques"
     +(effect.turns>0?" (encore "+effect.turns+" tour"+(effect.turns>1?"s":"")+").":" ; la malédiction se dissipe."),"damage");
-  damageMissionUnitBySpell(unit,amount,source,null);
+  damageMissionUnitBySpell(unit,amount,source,null,"curse");
   checkMissionEnd();
 }
 // Mur de flammes : une brûlure (les dés du sort × le facteur du lancer, moins la protection contre le feu).
@@ -3094,7 +3140,7 @@ function tickMissionPoison(unit){
   const detail=" (résistance "+missionPercent(r.p)+", jet "+r.roll+")";
   if(r.resisted){ unit.poisoned=false; missionLog(name+" résiste au poison"+detail+" : l’effet est annulé.","magic"); return; }
   missionLog(name+" souffre du poison"+detail+" : −"+r.damage+" PV"+missionProtectionNote(r)+".","damage");
-  damageMissionUnitBySpell(unit,r.damage,missionUnits().find(u=>u.id===fx.sourceId)||null,"poison");
+  damageMissionUnitBySpell(unit,r.damage,missionUnits().find(u=>u.id===fx.sourceId)||null,"poison","poison");
   fx.turns-=1;
   if(unit.alive&&fx.turns<=0){ unit.poisoned=false; missionLog("Le poison quitte "+name+".","magic"); }
   checkMissionEnd();
@@ -3744,7 +3790,7 @@ function performMissionCharge(unit,target,charge,{chosen=false}={}){
     if(!advanceTo(reaction.at)){ broken(); return; }
     const distance=e.axialDistance(defender,unit);
     if(!defender.alive||defender.fleeing||!missionUsableHands(defender,unit).some(h=>h.hand===reaction.hand&&h.mode===reaction.mode)) continue;
-    const r=e.resolveAttack(defender,unit,{mode:reaction.mode,distance,hand:reaction.hand,bystanders:missionUnits(),againstAerialCharge:aerial});
+    const r=e.resolveAttack(defender,unit,{mode:reaction.mode,distance,hand:reaction.hand,bystanders:missionUnits(),againstAerialCharge:aerial,counterCharge:true});
     logMissionAttack(defender,unit,r,"countercharge");
     missionWeaponEnchantStrike(defender,unit,r);
     const stray=logMissionStray(defender,r);

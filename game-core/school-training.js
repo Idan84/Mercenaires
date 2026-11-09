@@ -178,7 +178,8 @@
 
     // Une salle de l'École de magie (son directeur, son test) : building magic_school, ou une salle sans building (ancien
     // appel, l'École seule).
-    const atSchool=room=>!room.building||room.building===HALL;
+    // Le Mémorial (schoolTest) : le test de l'École, sans directeur.
+    const atSchool=room=>!room.building||room.building===HALL||Boolean(room.schoolTest);
     // Une journée. rooms : [{ code, building, school, trains, learnWith, level, places }] (salles et ailes construites) ;
     // candidates : les mercenaires disponibles, sans le capitaine ; captain : le capitaine s'il est disponible ;
     // captainChoice : le code de la salle choisie pour lui (null : la taverne) ; masters : les maîtres par bâtiment

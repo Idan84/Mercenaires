@@ -37,11 +37,23 @@
     history.log.push({day,kind:"mission",knockouts,wounded:Boolean(wounded),days:Number(days)||0});
   }
 
+  // Mort en mission (le Mémorial, Idan, 2026-11-09) : sa dernière mission compte (adversaires abattus, coups encaissés,
+  // critiques), et le journal finit sur sa mort ; captured : l'éclaireur prisonnier jamais revenu.
+  function recordDeath(mercenary,day,{progress=null,captured=false}={}){
+    const history=historyOf(mercenary);
+    const knockouts=Number(progress?.knockouts)||0;
+    history.missions+=1;
+    history.knockouts+=knockouts;
+    history.woundsTaken+=Number(progress?.woundsTaken)||0;
+    history.criticals+=Number(progress?.criticalSuccesses)||0;
+    history.log.push({day,kind:"death",knockouts,...(captured?{captured:true}:{})});
+  }
+
   // Jours passés dans la compagnie (0 le jour de l'arrivée).
   function daysInCompany(mercenary,day){
     const since=Number(mercenary?.history?.since??mercenary?.contract?.signedDay??1);
     return Math.max(0,(Number(day)||since)-since);
   }
 
-  return {COUNTERS,historyOf,record,recordMission,daysInCompany};
+  return {COUNTERS,historyOf,record,recordMission,recordDeath,daysInCompany};
 });

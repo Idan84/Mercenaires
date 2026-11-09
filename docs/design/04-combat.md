@@ -437,6 +437,18 @@ chance pour enchaîner plusieurs tirs (sauf arme à feu). Il ne peut passer en m
 - **Molosse de guerre** (Idan : « Il est assez faible » ; « Personne ne le monte ») : Force 30, Constitution 35 (**145 PV**),
   Vitesse 50, **Morsure** 1D6, perforant 25 ; gabarit 0,5 : personne ne le monte, il se bat à pied à côté de son maître
   (`compagnon`) ; neutre mauvais.
+- **Les papillons** (Idan, 2026-11-09), qui **volent** tous :
+  - **télépathe** (« le drone de repérage ») : Discrétion **300**, Perception 90, Vitesse 110 ; **il n'attaque pas**
+    (`attaque` null : pas d'arme) ; personne ne le monte ;
+  - **vénéneux** : Discrétion **150** ; sa **Piqûre** (`empoisonne`, `sans_degats`) : un coup qui blesse n'enlève aucun PV,
+    mais **empoisonne comme une sarbacane** (10 PV par tour, 3 tours, jet de résistance à chaque activation) ; il pique sans
+    se découvrir (la règle du camouflage) ;
+  - **géant** : la taille d'un loup (gabarit 1 : les petits le montent ; le couple vole), Discrétion **100** ; **il ne frappe
+    pas** ; **charge aérienne seulement monté** (`charge_aerienne` : « montée »).
+  - **Un animal qui n'attaque pas** ne va pas au contact : au contact d'un ennemi qu'il voit, il s'éloigne ; sinon il reste à
+    deux cases de son maître (l'IA, et le combat automatique). Il **ne tient pas le terrain** : si seuls des animaux qui
+    n'attaquent pas restent debout dans un camp, ce camp a perdu (Idan : « si seuls des papillons qui n'attaquent pas restent
+    debout, le combat est perdu : oui »). Test : `tests/greenhouse.test.js`.
 - **Une fiche complète, comme un mercenaire** (Idan, 2026-11-07 : « la monture doit avoir une fiche complète comme les
   mercenaires. Les ennemis également » ; valeurs : « Parfait ») : destrier Charisme 30, Intimidation 40, Discrétion 10,
   Puissance magique 0, Réserve de mana 0 ; licorne Charisme 70, Intimidation 20, Discrétion 10, Puissance magique 50,

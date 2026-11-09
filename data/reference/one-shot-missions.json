@@ -636,6 +636,56 @@
       "defaite": {
         "multiplicateur_mort": 2
       }
+    },
+    {
+      "code": "hunt_butterflies",
+      "nom": "Chasse aux papillons",
+      "description": "Une nuée de papillons vénéneux : tous tués ou mis en déroute. Ceux qui restent à terre peuvent être capturés. Le plus dur : les repérer.",
+      "illustration": "",
+      "niveau": {
+        "ecart": [
+          -4,
+          1
+        ],
+        "max": 6
+      },
+      "max_ennemis": 100,
+      "validite_jours": [
+        3,
+        6
+      ],
+      "carte": {
+        "colonnes": 30,
+        "lignes": 15
+      },
+      "bete": {
+        "code": "papillon_veneneux",
+        "pluriel": "papillons vénéneux",
+        "des": 3,
+        "faces": 6,
+        "faction": "Papillons",
+        "lieux": [
+          "Sous-bois fleuri",
+          "Vallon des ailes",
+          "Prairie aux mille couleurs"
+        ]
+      },
+      "marche": {
+        "facteur": [
+          0.25,
+          1
+        ]
+      },
+      "recompense": {
+        "par_niveau": 1000
+      },
+      "poids": 1,
+      "echec": {
+        "renommee": -30
+      },
+      "defaite": {
+        "multiplicateur_mort": 2
+      }
     }
   ],
   "ordres": [
@@ -1130,6 +1180,36 @@
       ],
       "signature": "{commanditaire}, seigneur de {lieu}, le {date}",
       "noms_commanditaire": "nobles"
+    },
+    {
+      "code": "butterflies_herbalist",
+      "mission": "hunt_butterflies",
+      "faction": "Papillons",
+      "commanditaire": "Alchimiste",
+      "titre": "Des ailes pour un herboriste",
+      "texte": [
+        "Messieurs les mercenaires,",
+        "Je suis {commanditaire}, alchimiste à {lieu}, à {jours} de marche de votre camp. Une nuée de papillons vénéneux s'est posée sur les champs de pavots. Leur poison est rarissime, et je le veux.",
+        "Mes cueilleurs disent qu'ils sont {estimation}. Mes cueilleurs les ont surtout sentis : on ne les voit qu'au moment où ils piquent.",
+        "Je paie {récompense} pièces d'or. Ceux que vous ramènerez vivants, gardez-les ; un papillon vénéneux bien dressé vaut une dague empoisonnée qui vole."
+      ],
+      "signature": "{commanditaire}, alchimiste à {lieu}, le {date}",
+      "noms_commanditaire": "alchimistes"
+    },
+    {
+      "code": "butterflies_village",
+      "mission": "hunt_butterflies",
+      "faction": "Papillons",
+      "commanditaire": "Chef de village",
+      "titre": "Le village qui s'endort",
+      "texte": [
+        "À la compagnie de mercenaires la plus proche,",
+        "Je suis {commanditaire}, chef de {lieu}, à {jours} de marche de votre camp. Depuis le printemps, nos moissonneurs tombent dans les blés et ne se relèvent qu'au soir, verts et tremblants. Le guérisseur a trouvé de minuscules piqûres.",
+        "Ce sont des papillons, de jolis papillons, et ils sont {estimation}. Personne ne les a vus venir.",
+        "Le village a réuni {récompense} pièces d'or. Ouvrez l'œil : ce qu'on ne voit pas est ce qui pique."
+      ],
+      "signature": "{commanditaire}, chef de {lieu}, le {date}",
+      "noms_commanditaire": "chefs_de_village"
     }
   ],
   "noms": {

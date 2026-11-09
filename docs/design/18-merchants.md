@@ -138,7 +138,7 @@ bloque si elle n'est plus à jour (`node scripts/merchant-coverage.js --check`).
 
 <!-- couverture:debut (généré par node scripts/merchant-coverage.js : ne pas modifier à la main) -->
 
-**Bilan** : 96 objets ; **96** vendus par au moins 2 marchands (les montures : un marchand chacune), **0** par un seul, **0** par aucun.
+**Bilan** : 99 objets ; **99** vendus par au moins 2 marchands (les montures : un marchand chacune), **0** par un seul, **0** par aucun.
 
 **32 marchands**, dont 16 marchandes.
 
@@ -156,17 +156,17 @@ bloque si elle n'est plus à jour (`node scripts/merchant-coverage.js --check`).
 | Gudrun Isfjell | Montagnes du Nord | Hache double, Épée à deux mains, Hache de guerre, Cotte de mailles, Cape de résistance physique, Bague du nécromancien, Manuels de Nécromancie | 7 |
 | Isska Ssul'Varek | Reptiliens des marécages | Trident, Sarbacane, Armure d'écailles, Fiole de poison, Bague de l’Eau, Potion de soins, Manuels d’Eau | 7 |
 | Calaena Ombrevenin | Elfes noirs | Dague, Arbalète, Fouet, Cape de discrétion, Fiole de poison, Bague de la Foudre, Manuels de Foudre | 7 |
-| Jasper Bonnebourse | Halflings des cités humaines | Dague, Fronde, Rondache, String du Charisme, Gants de dextérité, Bague de la télékinésie, Manuels de Télékinésie | 7 |
+| Jasper Bonnebourse | Halflings des cités humaines | Dague, Fronde, Rondache, String du Charisme, Gants de dextérité, Bague de la télékinésie, Manuels de Télékinésie, Papillon vénéneux | 8 |
 | Malaika Ilunga | Tribus de la jungle | Lance, Sarbacane, Kukri, Armure de cuir, Fiole de poison, Bague de la transmutation, Manuels de Transmutation | 7 |
 | Aymeric Belcomptoir | Cités libres | Épée longue, Écu, Rondache, Cotte de mailles, Brigandine, Bague du soigneur, Manuels de Vie, Pégase | 8 |
 | Flek Visseclou | Caravanes de ferrailleurs | Amulette de chance, Tromblon, Canon à main, Fléau d’armes, Gants de pièges, Bague de la chance, Manuels de Télékinésie | 7 |
 | Lirri Feuillecoque | Gnomes des forêts | Fronde, Bâton court, Cape d’esquive, Gants de dextérité, Bottes d’esquive, Bague de l’illusionniste, Manuels d’Illusion | 7 |
-| Callie Loincompas | Explorateurs | Katana, Sai, Nunchaku, Bottes de perception, Chapeau du dresseur, Amulette de chance, Manuels d’Invocation | 7 |
+| Callie Loincompas | Explorateurs | Katana, Sai, Nunchaku, Bottes de perception, Chapeau du dresseur, Amulette de chance, Manuels d’Invocation, Papillon télépathe | 8 |
 | Amar Rathore | Steppes désertiques | Sabre, Arc, Lance, Cuir renforcé, Gambison, Bague de Feu, Manuels de Feu, Destrier | 8 |
 | Karg Brisenclume | Orcs noirs | Épée à deux mains, Hache double, Bardiche, Armure de plates, Armure d'écailles, Gants de force, Manuels de Transmutation | 7 |
 | Ilyra Hauteverrière | Elfes des grandes cités | Estoc, Épée longue, Bâton long, Ceinture de mana, Amulette de puissance magique, Vêtements, Manuels d’Eau | 7 |
 | Crik Fouillecrâne | Gobelins des cavernes | Dague, Kukri, Fronde, Bottes d’esquive, Gants de pièges, Bague de l’invocation, Manuels d’Invocation | 7 |
-| Dottie Mielbruyère | Halflings des villages isolés | Bâton court, Potion de soins, Potion de mana, Slip d’Affinité, Bague du soigneur, Vêtements, Manuels d’Illusion | 7 |
+| Dottie Mielbruyère | Halflings des villages isolés | Bâton court, Potion de soins, Potion de mana, Slip d’Affinité, Bague du soigneur, Vêtements, Manuels d’Illusion, Papillon géant | 8 |
 | Gasha Poing-de-Marché | Orcs des villes | Épée courte, Arbalète, Épée double, Pavois, Culotte d’Intimidation, Ceinture de courage, Manuels de Transmutation | 7 |
 | Cairn Racinesombre | Tribus des forêts anciennes | Lance, Massue, Arme d’hast double, Armure de cuir, Chapeau du dresseur, Bague du nécromancien, Manuels de Nécromancie | 7 |
 | Fizzi Doigts-Légers | Gobelins des villes | Dague, Épée courte, Cape de discrétion, Gants de dextérité, Slip d’Affinité, Bague de l’illusionniste, Manuels d’Illusion, Loup | 8 |
@@ -265,6 +265,9 @@ bloque si elle n'est plus à jour (`node scripts/merchant-coverage.js --check`).
 | Montures | Licorne | Ysolwen | 1 |
 | Montures | Loup | Fizzi | 1 |
 | Montures | Molosse | Kippa | 1 |
+| Montures | Papillon géant | Dottie | 1 |
+| Montures | Papillon télépathe | Callie | 1 |
+| Montures | Papillon vénéneux | Jasper | 1 |
 | Montures | Pégase | Aymeric | 1 |
 | Manuels | Manuels de Vie | Jiraya, Ysolwen, Aymeric | 3 |
 | Manuels | Manuels de Feu | Drusk, Amar, Krosh | 3 |
@@ -288,6 +291,9 @@ bloque si elle n'est plus à jour (`node scripts/merchant-coverage.js --check`).
   cités libres ») : **12 000 PO** de valeur (40 PO d'entretien).
 - **Bruga Roc-Fendu** (Ogres des montagnes) vend des **cerbères** (10 500 PO de valeur, 35 PO d'entretien) ; **Kippa
   Ressortdor** (Gnomes des villes) des **molosses de guerre** (1 500 PO, 5 PO) (Idan, 2026-11-09).
+- Les papillons (Idan, 2026-11-09) : **Callie Loincompas** (Explorateurs) le **papillon télépathe** (900 PO de valeur, 3 PO
+  d'entretien), **Jasper Bonnebourse** (Halflings des cités humaines) le **papillon vénéneux** (1 200 PO, 4 PO), **Dottie
+  Mielbruyère** (Halflings des villages isolés) le **papillon géant** (3 000 PO, 10 PO) ; ils logent à la Serre.
 - **Fizzi Doigts-Légers** (Gobelins des villes) vend des **loups** (Idan, 2026-11-07 : « Marchand gobelin », « Gobelin des villes ! ») : 3 000 PO de valeur (10 PO d'entretien).
 - **Acheter** demande une place libre dans son logement (doc 11 §8 : les Écuries, le Chenil pour un loup) ; la monture rejoint l'Intendance (onglet **Montures**).
 - **Vendre** : depuis l'Intendance, comme tout objet ; une monture donnée à un mercenaire n'y est plus, on ne peut pas la vendre.

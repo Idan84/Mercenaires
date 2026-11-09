@@ -37,7 +37,7 @@ function stableHtml(c){
   const rules=stableRules();
   if(!rules||!c) return "";
   // Les Écuries, puis le Chenil (Idan, 2026-11-07 : « Il loge au chenil ») : chacun ses places et ses animaux.
-  return [rules.STABLES,rules.KENNEL].map(house=>{
+  return [rules.STABLES,rules.KENNEL,rules.GREENHOUSE].filter(Boolean).map(house=>{
     const places=rules.places(c,house),mounts=rules.mountsIn(c,house);
     if(!places&&!mounts.length) return "";
     const rows=mounts.map(m=>`<div class="study-row">

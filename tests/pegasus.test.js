@@ -42,7 +42,8 @@ assert.ok(sheet.caracteristiques.Force > destrier.caracteristiques.Force && shee
 for (const [k, v] of Object.entries(sheet.resistances)) assert.ok(v > destrier.resistances[k], k + " : un peu plus résistant");
 assert.deepEqual([sheet.alignement, sheet.entretien, sheet.rang_echange, sheet.titre, sheet.physiologie.Vol, sheet.charge_aerienne],
   ["Neutre bon", 40, 4, "à dos de pégase", true, "toujours"]);
-assert.ok(reference.mounts.rows.filter(r => r.code !== "pegase").every(r => !r.charge_aerienne), "les autres n'ont pas la charge aérienne");
+assert.deepEqual(reference.mounts.rows.filter(r => r.charge_aerienne).map(r => [r.code, r.charge_aerienne]), [["pegase", "toujours"], ["papillon_geant", "montée"]],
+  "le pégase, et le papillon géant seulement monté (Idan, 2026-11-09 : « Si ! Charge aérienne ! Mais seulement avec un cavalier »)");
 assert.ok(reference.enemyArchetypes.rows.filter(r => r.vol).every(r => !r.charge_aerienne), "pas pour les chauves-souris");
 assert.ok(reference.merchants.rows.find(r => r.nom === "Aymeric Belcomptoir").vend.some(v => v.type === "mount" && v.objet === "Pégase"),
   "Aymeric Belcomptoir (Cités libres) le vend");

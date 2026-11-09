@@ -12,7 +12,7 @@
       "key": "noms"
     }
   ],
-  "row_count": 6,
+  "row_count": 9,
   "rows": [
     {
       "code": "destrier",
@@ -37,6 +37,18 @@
     {
       "code": "molosse",
       "noms": ["Rex", "Brutus", "Fidèle", "Médor", "Pataud", "Taïaut", "Mâtin", "Hercule", "Goliath", "Bijou", "Filou", "Caporal", "Sergent", "Bastille", "Pirate", "Ronchon", "Sultan", "Vulcain", "Canaille", "Croquant", "Gaspard", "Lascar", "Bourru", "Dogue"]
+    },
+    {
+      "code": "papillon_telepathe",
+      "noms": ["Songe-Bleu", "Murmure", "Écho", "Chimère", "Pensée", "Iris-d'Or", "Lueur", "Rêverie", "Vision", "Esprit", "Mirage", "Augure", "Voile", "Présage", "Silence", "Azurine", "Clairvoyant", "Oracle", "Opale", "Prisme", "Sibylle", "Brume-d'Été", "Nébuleuse", "Arcane"]
+    },
+    {
+      "code": "papillon_veneneux",
+      "noms": ["Ciguë", "Belladone", "Aconit", "Datura", "Mandragore", "Vipérine", "Morsure-d'Ombre", "Nielle", "Ortie", "Épine", "Venin", "Amanite", "Digitale", "Jusquiame", "Vénéfice", "Piqûre", "Fiel", "Sombre-Aile", "Poison-d'Or", "Dard", "Herbe-aux-Gueux", "Absinthe", "Cantharide", "Toxine"]
+    },
+    {
+      "code": "papillon_geant",
+      "noms": ["Grand-Voile", "Zéphyrine", "Envergure", "Plume-de-Lune", "Monarque", "Paon-de-Nuit", "Machaon", "Vanesse", "Morpho", "Atlas", "Sphinx", "Satyre", "Citron", "Apollon", "Amiral", "Flambé", "Grand-Mars", "Aurore-Boréale", "Ailes-d'Or", "Brise", "Planeur", "Voilier", "Céleste-Bleu", "Grand-Paon"]
     }
   ]
 }

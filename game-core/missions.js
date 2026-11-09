@@ -296,6 +296,8 @@
       // Cour de sang (Idan, 2026-11-06) : les chauves-souris volent (« Elles survolent tout ») ; le vampire régénère (la
       // règle du sang de troll, game-core/regeneration.js : Régénération = points de la fiche ; le feu la bloque).
       if(arch.vol) c.flies=true;
+      // Charge aérienne (doc 04 ; Idan, 2026-11-09 : « on mets la capacité en général qu'on applique à qui on veut »).
+      if(arch.charge_aerienne) c.aerialCharge=arch.charge_aerienne;
       // Taille (doc 04) : normale, longue (2 cases), grande (3) ou énorme (7).
       if(arch.taille) c.taille=arch.taille;
       // La mana du personnage de base ne dépasse pas la Réserve de la fiche (un troll affichait « 66/37 »).
@@ -337,7 +339,10 @@
           Number.isFinite(Number(own.mana))?{mana:Number(own.mana)}:{});
       }
       const weapon={id:`${id??s.code}-1`,owner:id,...naturalWeapon(s.attaque||{},s.code)};
+      // Le pégase (Idan, 2026-11-09) : il vole (physiologie, Vol), et sa charge aérienne (charge_aerienne : « toujours » ou
+      // « montée », doc 04).
       return {id,name:name||s.nom,role:s.nom,people:"",mount:{code:s.code,capturable:s.capturable!==false},
+        ...(s.physiologie?.Vol===true?{flies:true}:{}),...(s.charge_aerienne?{aerialCharge:s.charge_aerienne}:{}),
         gabarit:Number(s.gabarit)||1,taille:s.taille||"normale",mountSkill:s.espece||null,
         stats:{...s.caracteristiques},resistances:{...s.resistances},
         // Sa fiche complète, comme un mercenaire (Idan, 2026-11-07) : artisanat, camp et compétences animales à 0.

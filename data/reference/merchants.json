@@ -705,6 +705,10 @@
         {
           "type": "manual",
           "ecole": "Vie"
+        },
+        {
+          "type": "mount",
+          "objet": "Pégase"
         }
       ],
       "repliques": {

@@ -56,8 +56,10 @@ function missionUnitAtCell(q,r,filter=x=>x.alive&&!x.offMap){ return missionUnit
 function missionAt(unit,cell){
   return missionLarge(unit)?{q:cell.q,r:cell.r,facing:cell.facing??unit.facing,character:unit.character}:{q:cell.q,r:cell.r};
 }
+// Un ennemi caché n'arrête pas celui qui ne le voit pas (brouillard de guerre, Idan, 2026-11-09) : on tombe sur lui en
+// entrant dans sa case (moveMissionUnitAlongPath).
 function occupiedMissionKeys(except=null){
-  const keys=new Set(missionUnits().filter(u=>u.alive&&u!==except).flatMap(missionFootprint).map(c=>missionKey(c.q,c.r)));
+  const keys=new Set(missionUnits().filter(u=>u.alive&&u!==except&&!(except&&missionHiddenFrom(u,except))).flatMap(missionFootprint).map(c=>missionKey(c.q,c.r)));
   for(const t of game.mission?.terrain||[]) keys.add(missionKey(t.q,t.r));
   // Un volant passe au-dessus du décor infranchissable (missionPaths l'empêche de s'y arrêter).
   if(!missionFlies(except)) for(const d of game.mission?.decor||[]) if(missionDecorBlocksMove(d.q,d.r)) keys.add(missionKey(d.q,d.r));
@@ -297,6 +299,7 @@ function pruneMissionTerrain(){
 function startMissionCamouflage(){
   raiseMissionStartSummons();
   for(const u of missionUnits()) u.camouflaged=true;
+  startMissionWatch();
   missionLog("Personne ne s’est encore vu : tout le monde est camouflé. Au début de chaque tour, chacun cherche les ennemis qu’il a en vue.","info");
   resolveMissionDetection();
 }
@@ -312,16 +315,68 @@ function resolveMissionDetection(){
       const r=e.rollDetection(observer,target,e.axialDistance(observer,target),e.coverDiscretion(missionCoverLevel(observer,target)));
       if(!r.spotted) continue;
       target.camouflaged=false;
+      missionAlert(observer.team,target);
       missionFx(target,"Repéré","spot");
-      missionLog(observer.character.name+" repère "+target.character.name+" ("+missionPercent(r.p)+", jet "+r.roll+").","info");
+      const who=missionShownToPlayer(observer)?observer.character.name:"Un ennemi invisible";
+      missionLog(who+" repère "+target.character.name+" ("+missionPercent(r.p)+", jet "+String(r.roll).replace(".",",")+").","info");
     }
   }
-  const hidden=team=>livingMissionUnits(team).filter(u=>u.camouflaged).map(u=>u.character.name);
-  const ours=hidden("player"),theirs=hidden("enemy");
-  if(ours.length||theirs.length) missionLog("Toujours camouflés"+(ours.length?" — vos hommes : "+ours.join(", "):"")+(theirs.length?" — ennemis : "+theirs.join(", "):"")+".","info");
+  // Brouillard de guerre : nos camouflés seulement ; les ennemis cachés ne sont pas nommés.
+  const ours=livingMissionUnits("player").filter(u=>u.camouflaged).map(u=>u.character.name);
+  if(ours.length) missionLog("Toujours camouflés — vos hommes : "+ours.join(", ")+".","info");
 }
 // Un ennemi camouflé est invisible pour son adversaire.
 function missionHiddenFrom(target,observer){ return Boolean(target?.camouflaged)&&target.team!==observer?.team; }
+// Brouillard de guerre (Idan, 2026-11-09 : « on les voit sur la carte en grisé. Je voudrais qu'ils disparaissent
+// totalement ») : un ennemi camouflé n'est pas montré au joueur (carte, listes, frise, survol, journal) ; un ennemi tombé,
+// si.
+function missionShownToPlayer(u){ return !u||u.team!=="enemy"||!u.camouflaged||u.alive===false; }
+
+// L'IA aveugle (Idan, 2026-11-09 : « l'IA ne doit pas connaître nos mecs cachés ! » ; « Si elle ne voit personne, elle ne
+// sait pas qu'elle est attaquée, donc elle bouge pas ou fait des rondes... » ; « oui pour tout » : l'alerte quand elle repère
+// l'un des nôtres ou qu'un des siens est touché ; elle fouille alors vers l'endroit d'où vient le coup). Chaque camp sait ou
+// non qu'on l'attaque (alert) et où il a vu l'ennemi pour la dernière fois (lastKnown). Nos hommes attaquent : ils le savent
+// dès le départ et marchent sur le camp (objective : le milieu des ennemis au départ).
+function missionAwareness(team){
+  const m=game.mission;
+  if(!m.awareness) m.awareness={};
+  return m.awareness[team]||(m.awareness[team]={alert:team==="player",lastKnown:null,objective:null});
+}
+function missionAlert(team,where=null){
+  if(!game.mission||!team) return;
+  const a=missionAwareness(team);
+  if(!a.alert){ a.alert=true; if(team==="enemy"&&!game.mission.over) missionLog("L’ennemi donne l’alerte.","bad"); }
+  if(where&&Number.isFinite(where.q)) a.lastKnown={q:where.q,r:where.r};
+}
+// Au début du combat : une part des ennemis (combat.ai.patrol_share, la moitié) font des rondes autour de leur poste, les
+// autres montent la garde.
+function startMissionWatch(){
+  const m=game.mission,share=missionAiConstant("combat.ai.patrol_share",0.5);
+  m.awareness={player:{alert:true,lastKnown:null,objective:null},enemy:{alert:false,lastKnown:null,objective:null}};
+  const foes=m.enemies.filter(u=>u.alive&&!u.offMap);
+  foes.forEach((u,i)=>{ u.watch=Math.floor((i+1)*share)>Math.floor(i*share)?"ronde":"garde"; u.post={q:u.q,r:u.r}; });
+  if(foes.length) m.awareness.player.objective={q:Math.round(foes.reduce((s,u)=>s+u.q,0)/foes.length),r:Math.round(foes.reduce((s,u)=>s+u.r,0)/foes.length)};
+}
+// Où aller sans personne en vue : l'endroit où l'ennemi a été vu (atteint, la piste se perd), sinon le camp (nos hommes) ;
+// sans alerte, nulle part.
+function missionAiGoal(unit){
+  const a=missionAwareness(unit.team),e=game.mission.engine;
+  if(!a.alert) return null;
+  if(a.lastKnown&&e.axialDistance(unit,a.lastKnown)<=1) a.lastKnown=null;
+  if(!a.lastKnown&&a.objective&&e.axialDistance(unit,a.objective)<=1) a.objective=null;
+  return a.lastKnown||a.objective||null;
+}
+// Sans alerte : la garde reste à son poste ; la ronde fait quelques pas vers une case au hasard, à patrol_radius cases au
+// plus de son poste.
+function missionAiWatch(unit){
+  if(unit.watch!=="ronde"||!unit.post) return false;
+  const e=game.mission.engine,radius=missionAiConstant("combat.ai.patrol_radius",3),budget=Math.min(Number(unit.movementRemaining)||0,2);
+  const options=[...missionReachablePaths(unit,budget).values()].filter(p=>p.length&&e.axialDistance(p[p.length-1],unit.post)<=radius);
+  if(!options.length) return false;
+  const moved=moveMissionUnitAlongPath(unit,options[Math.floor(Math.random()*options.length)]);
+  if(moved) missionLog(unit.character.name+" fait sa ronde.","move");
+  return moved>0;
+}
 
 // Plus courts chemins en points de mouvement (décor lent : 2, 3 ou 4 par case), depuis start ; blocked : cases interdites.
 // Dans un bourbier, on entre mais on n'en sort plus : on ne le traverse pas. Renvoie la Map clé → {path, cost}, dans
@@ -565,6 +620,14 @@ function missionAimed(target){
 
 function missionLog(message,kind="info"){
   if(!game.mission) return;
+  // Brouillard de guerre (Idan, 2026-11-09) : pendant l'activation d'un ennemi caché, ses déplacements ne s'écrivent pas,
+  // et son nom devient « Un ennemi invisible ».
+  const hidden=game.mission.actingUnit;
+  if(hidden&&!missionShownToPlayer(hidden)){
+    if(kind==="move") return;
+    const name=hidden.character?.name;
+    if(name&&message.includes(name)) message=message.split(name).join("Un ennemi invisible").replace(/^Un ennemi invisible/,"Un ennemi invisible").replace(/ Un ennemi invisible/g," un ennemi invisible");
+  }
   // Tout le combat, du premier au dernier mot (Idan, 2026-11-07, après le bêta-test : « Journal de combat limité à 180
   // lignes : impossible de relire un combat long ») ; la console le montre en entier, du plus récent au plus ancien.
   game.mission.log.push({message,kind});
@@ -575,7 +638,7 @@ function missionLog(message,kind="info"){
 // Purement visuel : la file ne change rien aux règles. Un pas de déplacement : step:{q,r}.
 function missionFx(unit,text="",cls="",step=null){
   const m=game.mission;
-  if(!m||!unit||m.autoRunning) return;
+  if(!m||!unit||m.autoRunning||!missionShownToPlayer(unit)) return;
   (m.fx||(m.fx=[])).push({id:unit.id,text,cls,hp:unit.hp,q:unit.q,r:unit.r,step});
 }
 function missionAttackFx(a,d,result){
@@ -1355,6 +1418,7 @@ function logMissionAttackLines(a,d,result,kind){
 // lanceur récupère percent % des PV que son coup d'arme au corps à corps a retirés (pas sous zéro).
 function onMissionAttack(attacker,defender,options,result){
   MercenairesProgression.recordAttack(attacker,defender,options,result);
+  if(result?.ok&&attacker&&defender&&attacker.team!==defender.team) missionAlert(defender.team,attacker);
   poisonMissionTarget(attacker,defender,result);
   webMissionTarget(attacker,defender,result);
   const fx=attacker.lifeDrain;
@@ -1442,6 +1506,15 @@ function moveMissionUnitAlongPath(unit,path,{aerial=false,landing=null}={}){
   let moved=0;
   for(const step of path){
     if(!unit.alive||game.mission.over) break;
+    // Nez à nez avec un ennemi caché : il s'arrête, et l'ennemi est découvert.
+    const lurker=missionUnitAtCell(step.q,step.r,x=>x.alive&&!x.offMap&&x!==unit&&x!==unit.mount&&missionHiddenFrom(x,unit));
+    if(lurker&&(!aerial||(landing&&landing.q===step.q&&landing.r===step.r))){
+      lurker.camouflaged=false;
+      missionAlert(unit.team,lurker);missionAlert(lurker.team,unit);
+      missionFx(lurker,"Repéré","spot");
+      missionLog(unit.character.name+" tombe nez à nez avec "+lurker.character.name+", caché là !","info");
+      break;
+    }
     const from={q:unit.q,r:unit.r,facing:unit.facing},wasFleeing=unit.fleeing;
     const large=missionLarge(unit),largeStep=large?missionLargeStep(unit,from,step,aerial?new Set():occupiedMissionKeys(unit)):null,stepCost=largeStep?.cost;
     if(large&&stepCost==null) break;
@@ -1856,7 +1929,8 @@ function handleMissionHexClick(q,r){
   const m=game.mission,u=missionActiveUnit();
   if(!m||m.phase!=="player"||!u||m.over) return;
 
-  const clicked=missionUnitAtCell(q,r,x=>x.alive);
+  // Un ennemi caché n'est pas là pour le joueur (brouillard de guerre) : on peut cliquer sa case.
+  const clicked=missionUnitAtCell(q,r,x=>x.alive&&missionShownToPlayer(x));
 
   if(m.mode==="move"&&!clicked){
     const path=shortestMissionPath(u,{q,r},u);
@@ -2015,6 +2089,7 @@ function missionWitherNote(unit){ return unit?.withered?" — flétri"+(missionF
 // qui progresse chez la cible (doc 08).
 function damageMissionUnitBySpell(unit,amount,source=null,element=null){
   if(!amount) return;
+  if(source&&source.team!==unit.team) missionAlert(unit.team,source);
   const wasUp=unit.alive!==false;
   unit.hp-=amount;
   if(unit.decoy){ dissipateMissionDecoy(unit); return; }
@@ -2945,7 +3020,7 @@ function missionTwoStepTargets(spell){
     if(spell.effet==="deplacement_force"){
       for(const c of missionNeighbors(first)) if(missionCellFree(c)) set.add(missionKey(c.q,c.r));
     }else{
-      for(const foe of missionOpponents(u)) if(!foe.offMap&&magic.canCastPair(u,first,foe,spell.code,{lineOfSight:missionLineOfSight(u,first),
+      for(const foe of missionOpponents(u)) if(!foe.offMap&&!missionHiddenFrom(foe,u)&&magic.canCastPair(u,first,foe,spell.code,{lineOfSight:missionLineOfSight(u,first),
         secondLineOfSight:missionLineOfSight(u,foe)}).ok) set.add(missionKey(foe.q,foe.r));
     }
     return set;
@@ -3098,7 +3173,7 @@ function missionAiSpellTarget(unit,code,spell,opponents){
 function missionAiSpell(unit){
   const magic=missionMagic(),codes=magic?missionAiSpellCodes(unit):[];
   if(!codes.length||unit.attackAvailable===false||!unit.alive) return false;
-  const opponents=missionOpponents(unit).filter(o=>!o.offMap);
+  const opponents=missionOpponents(unit).filter(o=>!o.offMap&&!missionHiddenFrom(o,unit));
   if(!opponents.length) return false;
   // Sans fiche, il ne tente pas un sort qu'il rate trop souvent : il frappe plutôt avec son arme.
   const listed=Boolean(unit.character?.aiSpells?.length),minChance=missionAiConstant("combat.ai.min_cast_chance",40);
@@ -3345,7 +3420,7 @@ function enemyTryReload(unit){
 
 // L'IA avance vers sa cible par le vrai chemin, autour du décor (Dijkstra jusqu'à une case voisine de la cible), aussi
 // loin que son mouvement le permet ; sans chemin, vers la case atteignable la plus proche à vol d'oiseau.
-function enemyMoveToward(unit,target){
+function enemyMoveToward(unit,target,{second=true}={}){
   const e=game.mission.engine,budget=unit.movementRemaining??e.movementBase(unit);
   let best={path:[],distance:e.axialDistance(unit,target)};
   const blocked=occupiedMissionKeys(unit);
@@ -3378,6 +3453,17 @@ function enemyMoveToward(unit,target){
     }
   }
 
+  // Bloqué (un nain lent au pied d'une forêt en montée : la première case coûte plus que tout son mouvement) : comme le
+  // joueur, il renonce à attaquer pour un second mouvement (doc 04), plutôt que de rester planté là pour tout le combat.
+  if(!best.path.length&&second&&budget>0&&unit.attackAvailable!==false&&!unit.secondMove&&!unit.rider
+    &&e.axialDistance(unit,target)>1){
+    unit.attackAvailable=false;
+    unit.secondMove=true;
+    unit.movementRemaining=budget+e.movementBase(unit);
+    missionLog(unit.character.name+" renonce à attaquer pour un second mouvement.","move");
+    enemyMoveToward(unit,target,{second:false});
+    return;
+  }
   if(best.path.length) best.path=missionAiKeepFormation(unit,best.path);
   if(best.path.length){
     const moved=moveMissionUnitAlongPath(unit,best.path);
@@ -3390,7 +3476,7 @@ function enemyMoveToward(unit,target){
 // - Se cacher : encore camouflé et hors de vue des ennemis, il n'entre pas dans leur vue s'il ne pourra pas frapper au tour
 //   suivant ; il attend en embuscade, au plus combat.ai.ambush_turns tours.
 function missionAiKeepFormation(unit,path){
-  const e=game.mission.engine,foes=missionOpponents(unit).filter(o=>!o.offMap&&!o.decoy);
+  const e=game.mission.engine,foes=missionOpponents(unit).filter(o=>!o.offMap&&!o.decoy&&!missionHiddenFrom(o,unit));
   if(!foes.length||!path.length) return path;
   const foeDist=x=>Math.min(...foes.map(o=>e.axialDistance(x,o)));
   const cellDist=c=>foeDist(missionAt(unit,c));
@@ -3429,7 +3515,7 @@ function missionAiRetreat(unit){
   if(!unit.alive||unit.fleeing||unit.decoy||unit.summon||unit.rider||ch?.undead||ch?.staysBehind) return false;
   if(unit.hp>=unit.pvMax*missionAiConstant("combat.ai.retreat_hp_ratio",0.3)) return false;
   if(!(unit.movementRemaining>0)||missionMireAt(unit.q,unit.r)) return false;
-  const foes=missionOpponents(unit).filter(o=>!o.offMap&&!o.decoy);
+  const foes=missionOpponents(unit).filter(o=>!o.offMap&&!o.decoy&&!missionHiddenFrom(o,unit));
   if(!foes.length||foes.some(o=>e.axialDistance(unit,o)<=1)) return false;
   const reach=unit.movementRemaining+1,finish=missionAiConstant("combat.ai.finish_hp_ratio",0.25);
   if(foes.some(o=>!o.camouflaged&&o.hp<=o.pvMax*finish&&(missionUsableHands(unit,o).length||e.axialDistance(unit,o)<=reach))) return false;
@@ -3614,8 +3700,10 @@ function enemyMissionActivation(unit,{reset=true}={}){
   // Personne en vue (le décor coupe la vue) : il va chercher l'ennemi le plus proche, puis, s'il le voit, l'attaque ; sinon,
   // un tireur que personne ne voit guette (mode sentinelle, Idan, 2026-11-06 : les ennemis aussi).
   if(!target){
-    const sought=missionOpponents(unit).filter(o=>!o.offMap).sort((a,b)=>game.mission.engine.axialDistance(unit,a)-game.mission.engine.axialDistance(unit,b))[0];
-    if(sought) enemyMoveToward(unit,sought);
+    // L'IA aveugle (Idan, 2026-11-09) : la piste, le camp, sinon la garde ou la ronde.
+    const goal=missionAiGoal(unit);
+    if(goal) enemyMoveToward(unit,goal);
+    else missionAiWatch(unit);
     if(game.mission.over||!unit.alive||unit.fleeing) return;
     target=nearestMissionTarget(unit);
     if(target){
@@ -3725,8 +3813,11 @@ function stepMissionEnemyTurn(m){
   while(m.enemyQueue?.length&&!m.over){
     const unit=m.enemyQueue.shift();
     if(!unit.alive||unit.decoy) continue;
+    const unseen=!missionShownToPlayer(unit);
     m.pacedUnit=unit;
     enemyMissionAct(unit);
+    // Un ennemi resté caché : pas de pause (on devinerait qu'il bouge).
+    if(unseen&&!missionShownToPlayer(unit)){ m.pacedUnit=null; continue; }
     const wait=missionFxEstimate(m.fx)+(game.missionFast?MISSION_PACE.fastPause:MISSION_PACE.pause);
     renderMission();
     m.enemyTimer=setTimeout(()=>stepMissionEnemyTurn(m),wait);
@@ -3923,7 +4014,7 @@ function targetableMissionCells(){
     return set;
   }
   if(m.mode==="venom"){
-    for(const foe of missionOpponents(u)) if(!foe.offMap&&magic?.canSpit(u,foe,{lineOfSight:missionLineOfSight(u,foe)}).ok) set.add(missionKey(foe.q,foe.r));
+    for(const foe of missionOpponents(u)) if(!foe.offMap&&!missionHiddenFrom(foe,u)&&magic?.canSpit(u,foe,{lineOfSight:missionLineOfSight(u,foe)}).ok) set.add(missionKey(foe.q,foe.r));
     return set;
   }
   if(spellCode){
@@ -3983,7 +4074,7 @@ function renderMissionPortrait(unit,variant){
 }
 
 function renderMissionRoster(units){
-  return units.filter(u=>!u.vanished).map(u=>{
+  return units.filter(u=>!u.vanished&&missionShownToPlayer(u)).map(u=>{
     const pct=Math.max(0,Math.min(100,Math.round(u.hp/u.pvMax*100)));
     return `
     <div class="mission-roster-row ${u.team} ${u.alive?"":"down"}${missionActiveUnit()===u?" active":""}"${missionDomainAttr(u)} data-unit-id="${esc(String(u.id))}" title="Centrer la carte sur ${esc(u.character.name)}">
@@ -4001,7 +4092,7 @@ function renderMissionRoster(units){
 // Ordre d'activation du tour : votre équipe dans l'ordre d'initiative (déjà joués estompés), puis les ennemis.
 function renderMissionInitiative(){
   const m=game.mission,u=missionActiveUnit();
-  const shown=x=>x.alive&&!x.offMap&&!x.vanished&&!x.raised;
+  const shown=x=>x.alive&&!x.offMap&&!x.vanished&&!x.raised&&missionShownToPlayer(x);
   const chip=(x,done)=>`<li class="mission-init ${x.team}${x===u?" active":""}${done?" done":""}"${missionDomainAttr(x)} data-unit-id="${esc(String(x.id))}" title="${esc(x.character.name)} — initiative ${Math.round(m.engine.initiative(x))}${done?" — a joué":""}">`
     +`${renderMissionPortrait(x,"compact")}</li>`;
   const players=m.playerOrder.filter(shown),enemies=m.enemyOrder.filter(shown);
@@ -4162,7 +4253,7 @@ function renderMission(){
 
   // Pions : portrait rond, anneau de camp ou de rang, barre de PV ; le nom s'affiche au survol et sur l'actif.
   // Un clic sur un pion vaut un clic sur sa case.
-  const tokens=missionUnits().filter(unit=>!unit.offMap&&!unit.raised).map(unit=>{
+  const tokens=missionUnits().filter(unit=>!unit.offMap&&!unit.raised&&missionShownToPlayer(unit)).map(unit=>{
     // Une grande créature : un gros pion au centre de ses cases.
     const large=missionLarge(unit),cells=large?missionFootprint(unit).map(c=>missionHexPixel(c.q,c.r)):null;
     const p=large?{x:cells.reduce((t,c)=>t+c.x,0)/cells.length,y:cells.reduce((t,c)=>t+c.y,0)/cells.length}:missionHexPixel(unit.q,unit.r);
@@ -4379,7 +4470,7 @@ function playMissionFx(){
 // Tout est calculé par les fonctions du moteur, sans jet de dé.
 const missionHover={key:null,click:null};
 function missionUnitAt(q,r){
-  const here=missionUnits().filter(x=>!x.offMap&&!x.raised&&!x.vanished&&missionOccupies(x,q,r));
+  const here=missionUnits().filter(x=>!x.offMap&&!x.raised&&!x.vanished&&missionShownToPlayer(x)&&missionOccupies(x,q,r));
   return here.find(x=>x.alive)||here[0]||null;
 }
 function missionAttackPreview(u,target){

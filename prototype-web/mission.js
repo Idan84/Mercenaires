@@ -956,8 +956,9 @@ function startExpeditionCombat(expeditionId,{scoutId=null}={}){
   const scouting=scout?resolveMissionScouting(scout):null;
   // Parti seul et capturé : plus personne pour se battre, la mission est perdue.
   if(scouting?.captured&&!livingMissionUnits("player").length&&checkMissionEnd()){ renderMission(); return; }
+  // Revenu : son rapport, puis le déploiement libre ou la retraite.
+  if(scouting&&!scouting.captured){ startMissionDeployment(scouting); return; }
   startMissionCamouflage();
-  if(scouting&&!scouting.captured) revealMissionScouted(scouting);
   selectNextMissionPlayer();
 }
 
@@ -984,6 +985,72 @@ function resolveMissionScouting(scout){
 }
 function revealMissionScouted(scouting){
   for(const foe of scouting.spotted) if(foe.alive) foe.camouflaged=false;
+}
+// Le déploiement (Idan, 2026-11-09 : « Il revient et nous donne des infos : La topologie de la carte / Les positions des
+// ennemis qu'il a repéré ( il peut en avoir qu'il ne voit pas) / Et nous permet soit de rebrousser chemin ( mission perdue
+// mais sans mort !). Soit de gérer le déploiement. On peut positionner nos mercenaires où on veut sur une bande de 4 cases
+// autour de la carte. Bien entendu on a déjà repéré les ennemis repères par l'éclaireur ») : la carte, ses ennemis vus ;
+// on clique un des nôtres, puis sa case dans la bande (combat.deploy.band cases du bord) ; puis « Lancer le combat » ou
+// « Rebrousser chemin ».
+function missionDeployBand(c){
+  const band=missionAiConstant("combat.deploy.band",4),col=missionColumn(c.q,c.r);
+  return col<band||col>=MISSION_MAP.cols-band||c.r<band||c.r>=MISSION_MAP.rows-band;
+}
+function missionDeployCells(unit){
+  const set=new Set(),e=game.mission.engine;
+  if(!unit) return set;
+  for(const c of missionCells()){
+    if(!missionDeployBand(c)) continue;
+    const cells=missionLarge(unit)?e.footprintAt(c.q,c.r,e.sizeOf(unit),unit.facing):[c];
+    const free=x=>validMissionHex(x.q,x.r)&&missionDeployBand(x)&&!missionDecorBlocksMove(x.q,x.r,unit)
+      &&!missionUnitAtCell(x.q,x.r,o=>o!==unit&&o!==unit.mount&&o.alive&&!o.offMap);
+    if(cells.every(free)) set.add(missionKey(c.q,c.r));
+  }
+  return set;
+}
+function startMissionDeployment(scouting){
+  const m=game.mission;
+  m.phase="deploy";m.mode=null;m.activeUnit=null;m.deploySelected=null;
+  // Le brouillard de guerre : seuls les ennemis vus par l'éclaireur sont sur la carte.
+  for(const u of m.enemies) u.camouflaged=!scouting.spotted.includes(u);
+  missionLog("Déploiement : cliquez un de vos hommes, puis sa case sur la bande de "+missionAiConstant("combat.deploy.band",4)
+    +" cases autour de la carte. Lancez le combat quand vous êtes prêt, ou rebroussez chemin.","turn");
+  renderMission();
+}
+function handleMissionDeployClick(q,r){
+  const m=game.mission;
+  const own=missionUnitAtCell(q,r,x=>x.alive&&!x.offMap&&x.team==="player");
+  if(own){ m.deploySelected=own===m.deploySelected?null:own; renderMission(); return; }
+  const unit=m.deploySelected;
+  if(!unit||!missionDeployCells(unit).has(missionKey(q,r))) return;
+  unit.q=q;unit.r=r;m.deploySelected=null;
+  renderMission();
+}
+function startMissionAfterDeployment(){
+  const m=game.mission;
+  if(m?.phase!=="deploy") return;
+  const seen=m.enemies.filter(u=>!u.camouflaged);
+  m.phase="player";m.deploySelected=null;
+  missionLog("L’escouade est en place : le combat commence. Votre équipe a l’initiative.","turn");
+  startMissionCamouflage();
+  revealMissionScouted({spotted:seen});
+  selectNextMissionPlayer();
+}
+// Rebrousser chemin : la mission est perdue (la renommée de l'échec du contrat), sans combat ni mort, sans récompense ;
+// l'escouade rentre au camp.
+function retreatMissionExpedition(){
+  const m=game.mission;
+  if(m?.phase!=="deploy"||!m.expeditionId||!game.campaign) return;
+  const result={...missionRules().outcome(m.contract,{victory:false}),retreat:true,mounts:[]};
+  const back=campaignRules().completeExpeditionCombat(game.campaign,m.expeditionId,{result,bonuses:[]});
+  m.over=true;m.winner="retreat";m.phase="player";m.deploySelected=null;
+  const days=m.contract.distance;
+  const text="L’escouade rebrousse chemin : le contrat est perdu, sans combat ni mort, et la renommée de la compagnie baisse ("
+    +result.renown+")."+(back?.expedition?" Retour au camp dans "+days+" jour"+(days>1?"s":"")+".":"");
+  missionLog(text,"bad");
+  if(typeof tavernLog==="function") tavernLog(text,"bad");
+  if(typeof saveGame==="function") saveGame();
+  leaveMission();
 }
 
 function missionTerrain(){
@@ -1999,6 +2066,7 @@ function resolvePlayerMissionAttack(a,d,mode,distance){
 
 function handleMissionHexClick(q,r){
   const m=game.mission,u=missionActiveUnit();
+  if(m?.phase==="deploy"&&!m.over){ handleMissionDeployClick(q,r); return; }
   if(!m||m.phase!=="player"||!u||m.over) return;
 
   // Un ennemi caché n'est pas là pour le joueur (brouillard de guerre) : on peut cliquer sa case.
@@ -4073,6 +4141,7 @@ function missionSpellAreaCells(u,code,target){
 
 function targetableMissionCells(){
   const set=new Set(),m=game.mission,u=missionSpellUnit();
+  if(m?.phase==="deploy") return missionDeployCells(m.deploySelected);
   if(!m||!u||m.phase!=="player") return set;
 
   if(m.mode==="move"){
@@ -4271,7 +4340,9 @@ function renderMission(){
   const e=m.engine,u=missionActiveUnit(),targets=targetableMissionCells(),inRange=missionRangeCells();
   const {width,height}=missionMapSize();
 
-  $("mission-turn").textContent=m.over?(m.winner==="player"?"Victoire":"Défaite"):"Tour "+m.turn+" · "+(m.phase==="player"?"Votre équipe":"Ennemi");
+  $("mission-turn").textContent=m.over?(m.winner==="player"?"Victoire":m.winner==="retreat"?"Retraite":"Défaite")
+    :m.phase==="deploy"?"Déploiement · rapport de l’éclaireur":"Tour "+m.turn+" · "+(m.phase==="player"?"Votre équipe":"Ennemi");
+  $("mission-actions")?.classList?.toggle("deploying",m.phase==="deploy"&&!m.over);
   $("mission-active").textContent=u
     ?"Actif : "+u.character.name+" · Mouvement "+u.movementRemaining+"/"+e.movementBase(u)*(u.secondMove?2:1)+" · Set "+u.activeSet
     :"";
@@ -4293,7 +4364,7 @@ function renderMission(){
   for(const {q,r} of missionCells()){
     const p=missionHexPixel(q,r),key=missionKey(q,r),classes=["hex-cell"];
     let title="";
-    if(targets.has(key)) classes.push(m.mode==="move"?"reachable":missionSpellMode()?"spell-target":"targetable");
+    if(targets.has(key)) classes.push(m.mode==="move"||m.phase==="deploy"?"reachable":missionSpellMode()?"spell-target":"targetable");
     else if(inRange.has(key)) classes.push("in-range");
     const decor=missionDecorAt(q,r),level=missionHeightAt(q,r);
     const about=[decor?missionDecorLabel(decor):"",level?"altitude "+level:""].filter(Boolean).join(" · ");
@@ -4333,7 +4404,7 @@ function renderMission(){
     const pct=Math.max(0,Math.min(100,Math.round(unit.hp/unit.pvMax*100)));
     const classes=["mission-token",unit.team,unit.alive?"alive":"down"];
     if(large) classes.push("size-"+m.engine.sizeOf(unit));
-    if(u===unit||m.pacedUnit===unit) classes.push("active");
+    if(u===unit||m.pacedUnit===unit||m.deploySelected===unit) classes.push("active");
     const encircled=unit.alive&&missionEncircled(unit);
     if(encircled) classes.push("encircled");
     if(unit.alive&&unit.fleeing) classes.push("fleeing");
@@ -4779,6 +4850,10 @@ function initializeMissionUi(){
   window.addEventListener("resize",()=>{ if(game.mission) renderMission(); });
   $("mission-end-activation-btn").addEventListener("click",endMissionActivation);
   $("mission-auto-btn").addEventListener("click",autoResolveMission);
+  $("mission-deploy-start-btn")?.addEventListener("click",startMissionAfterDeployment);
+  $("mission-retreat-btn")?.addEventListener("click",()=>{
+    if(typeof confirm!=="function"||confirm("Rebrousser chemin ? Le contrat est perdu et la renommée de la compagnie baisse, mais personne ne meurt.")) retreatMissionExpedition();
+  });
   $("mission-speed-btn")?.addEventListener("click",()=>{ game.missionFast=!game.missionFast; renderMission(); });
   $("mission-test-spells-btn").addEventListener("click",teachMissionTestSpells);
   $("mission-spells").addEventListener("click",event=>{

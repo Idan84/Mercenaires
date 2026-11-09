@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 429,
+  "row_count": 430,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -1104,6 +1104,14 @@
       "description": "L'éclaireur (Idan, 2026-11-09 : « On peut, avant le combat envoyer un éclaireur choisi parmi les mercenaires de la mission. Il peut ne pas revenir ! ( Test en fonction de sa discrétion et la perception de chaque ennemi) La chance de se faire repérer reste faible ») : chaque ennemi tente de le repérer à cette distance, l'éclaireur derrière une couverture totale (combat.stealth.cover_total) ; un seul succès, il est capturé. Sinon, il cherche chaque ennemi à la même distance, à découvert : ceux qu'il voit commencent le combat repérés.",
       "formule": "Repérage (combat.stealth.*)",
       "valeur": 8,
+      "version": "V1"
+    },
+    {
+      "nom": "Déploiement — bande autour de la carte",
+      "code": "combat.deploy.band",
+      "description": "Revenu, l'éclaireur permet de rebrousser chemin (contrat perdu, renommée de l'échec, sans combat ni mort) ou de déployer l'escouade où l'on veut dans une bande de cette largeur, en cases, tout autour de la carte (Idan, 2026-11-09 : « On peut positionner nos mercenaires où on veut sur une bande de 4 cases autour de la carte »).",
+      "formule": "Déploiement",
+      "valeur": 4,
       "version": "V1"
     },
     {

@@ -635,6 +635,8 @@ body[data-screen="mission"] .app-shell{max-width:none;padding:8px 10px}
 .mission-actions:not(.deploying) .deploy-only,.mission-actions.deploying>button:not(.deploy-only){display:none}
 #mission-deploy-start-btn{border-color:#d0805a;background:linear-gradient(180deg,#8f3b2b,#5a1f16);color:#ffe9cf;--mission-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='m8 12 3 3 5-6'/%3E%3C/svg%3E")}
 #mission-retreat-btn{--mission-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10 5 3 12l7 7M3 12h18'/%3E%3C/svg%3E")}
+/* « Se rendre » (le Défi du capitaine) : le drapeau blanc. */
+#mission-surrender-btn{--mission-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 21V4'/%3E%3Cpath d='M5 4h12l-3 4 3 4H5'/%3E%3C/svg%3E")}
 #mission-auto-btn,#mission-test-spells-btn,#mission-speed-btn{min-width:64px;background:linear-gradient(180deg,#33271e,#1f1712);color:#cbb592}
 #mission-move-btn{--mission-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 3.5c1.6 0 2.5 2 2.5 4.4S8.6 12 7.2 12 4.9 10.5 4.9 8.2 5.4 3.5 7 3.5zM5.3 14.6h3.9l-.3 2.2a1.8 1.8 0 0 1-3.4 0zM17 7.5c1.6 0 2.3 2.1 2.3 4.4S18.4 16 17 16s-2.3-1.6-2.3-4 .7-4.5 2.3-4.5zM15.1 18.6H19l-.3 2.1a1.8 1.8 0 0 1-3.4 0z'/%3E%3C/svg%3E")}
 #mission-attack-btn,#mission-two-hands-btn{--mission-icon:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14.5 17.5 3 6V3h3l11.5 11.5'/%3E%3Cpath d='m13 19 6-6'/%3E%3Cpath d='m16 16 4 4'/%3E%3Cpath d='m19 21 2-2'/%3E%3C/svg%3E")}
@@ -2142,6 +2144,12 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .dormitory-panel h2{margin:0;font:normal 32px Georgia,serif;color:#f4d9a6}
 .dormitory-meta{margin:4px 0 16px;color:#c2b29e;font-size:14px}
 .dormitory-back{padding:6px 12px;font-size:13px}
+/* Le Défi du capitaine (Idan, 2026-11-09) : « Défier » sous le portrait de la fiche ; la fenêtre du verdict. */
+.sheet-duel-btn{display:block;width:100%;margin-top:8px;padding:6px 10px;font-size:14px}
+.duel-verdict-portrait{width:200px;margin:4px auto 0}
+.duel-verdict-portrait .avatar-frame{width:100%;margin:0}
+.duel-verdict-actions{display:flex;justify-content:center;gap:12px;margin:14px 0 4px}
+.duel-verdict-actions button.danger{background:#7a2a22;border-color:#c2554a;color:#fbe1dc}
 /* Le Mémorial (Idan, 2026-11-09) : la galerie des portraits, puis la fiche d'un mort. */
 .memorial-panel{width:min(100%,1040px);margin:0 auto;padding:18px 22px 22px;border:1px solid #957652;border-radius:14px;background:rgba(22,17,13,.9);color:#f0e2ca;box-shadow:0 20px 60px #000a}
 .memorial-panel .eyebrow{margin:6px 0 2px;color:#d3ac76}

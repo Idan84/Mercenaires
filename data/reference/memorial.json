@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "memorial",
-  "description": "Le Mémorial (Idan, 2026-11-09 : « plus un bâtiment souvenir. Il est là dès le début. On y retrouve le portrait de tous ceux qui sont décédés au sein de la compagnie. Quand on clique dessus, on voit l'avatar complet avec sa date de décès, la cause de son décès (un peu drôle, c'est mieux !) et un épitaphe délirant »). causes : les tournures de la cause du décès, par nature (melee, ranged, charge, countercharge, opportunity, fleeing, backstab, fumble, spell, spell_feu, spell_froid, spell_foudre, spell_fumble, poison, curse, raised, friendly, raised_friendly, captured, duel, unknown) ; une nature avec un tueur sans tueur connu prend <nature>_seul, sinon unknown. {un_tueur} : « un Guerrier orc » (feminins : les noms qui prennent « une ») ou le nom d'un camarade ; {Un_tueur} en début de phrase ; {tueur} : le nom seul ; {a|b} : masculin|féminin du défunt. details : la ligne sous la cause (l'arme, le sort). epitaphs : tirées au hasard, jamais deux fois dans une même partie ({prenom} : le prénom du défunt). panel : les textes du bâtiment et de la galerie.",
+  "description": "Le Mémorial (Idan, 2026-11-09 : « plus un bâtiment souvenir. Il est là dès le début. On y retrouve le portrait de tous ceux qui sont décédés au sein de la compagnie. Quand on clique dessus, on voit l'avatar complet avec sa date de décès, la cause de son décès (un peu drôle, c'est mieux !) et un épitaphe délirant »). causes : les tournures de la cause du décès, par nature (melee, ranged, charge, countercharge, opportunity, fleeing, backstab, fumble, spell, spell_feu, spell_froid, spell_foudre, spell_fumble, poison, curse, raised, friendly, raised_friendly, captured, duel, challenged, unknown) ; une nature avec un tueur sans tueur connu prend <nature>_seul, sinon unknown. {un_tueur} : « un Guerrier orc » (feminins : les noms qui prennent « une ») ou le nom d'un camarade ; {Un_tueur} en début de phrase ; {tueur} : le nom seul ; {a|b} : masculin|féminin du défunt. details : la ligne sous la cause (l'arme, le sort). epitaphs : tirées au hasard, jamais deux fois dans une même partie ({prenom} : le prénom du défunt). panel : les textes du bâtiment et de la galerie.",
   "feminins": ["Goule", "Chauve-souris", "Araignée", "Licorne", "Meute", "Brute"],
   "causes": {
     "melee": [
@@ -101,6 +101,11 @@
     "captured": [
       "Parti{|e} en éclaireur. On l’attend toujours.",
       "Capturé{|e} pendant une reconnaissance. La reconnaissance n’a pas été réciproque."
+    ],
+    "challenged": [
+      "Défié{|e} par {tueur}, son capitaine. Le pouce est descendu.",
+      "A perdu un combat singulier contre {tueur}. La foule voulait du sang, {tueur} aussi.",
+      "{Tueur} l’a défié{|e}, l’a vaincu{|e}, puis a regardé la foule. Mauvaise idée de la regarder."
     ],
     "duel": [
       "A défié {tueur}, son capitaine. Une fois.",

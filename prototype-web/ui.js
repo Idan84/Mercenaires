@@ -955,6 +955,7 @@ function renderProfileTab(c){
     <aside class="sheet-portrait">
       ${renderEvaluation(c)}${renderAvatar(c,{variant:"detail",kind:"full"})}
       <em class="roster-status roster-status--${status.kind}">${esc(status.label)}</em>
+      ${typeof duelButtonHtml==="function"?duelButtonHtml(c):""}
     </aside>
     <div class="sheet-profile-main">
       <div class="sheet-origins">
@@ -1351,6 +1352,8 @@ function historyEntryText(c,entry){
   const fill=(text,vars={})=>MercenairesRecruitDialogue.fill(text,vars,female);
   if(entry.kind==="founded") return fill(copy.founded);
   if(entry.kind==="joined") return fill(entry.initial?copy.joined_initial:copy.joined);
+  // Le Défi du capitaine (Idan, 2026-11-09) : le combat singulier, côté capitaine ou côté défié.
+  if(entry.kind==="duel_fought") return fill(copy.duel_fought?.[entry.role]?.[entry.outcome]||"",{nom:entry.opponent||""});
   // Mort en mission (le Mémorial, Idan, 2026-11-09).
   if(entry.kind==="death") return entry.captured?fill(copy.death_captured)
     :entry.knockouts?fill(copy.death_knockouts,{n:historyPlural(entry.knockouts,"adversaire","adversaires")}):fill(copy.death);

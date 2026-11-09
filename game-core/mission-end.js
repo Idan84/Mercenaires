@@ -90,6 +90,16 @@
       };
       // Relevé en zombie par un nécromancien (Idan, 2026-10-28) : son jet de mort est forcément raté.
       if(p.raised){ result.death={p:100,roll:null,raised:true}; result.dead=true; result.outcome="dead"; return result; }
+      // Le Défi du capitaine (Idan, 2026-11-09) : mis à mort, il meurt ; épargné (« S'il n'est pas mis à mort, jet de
+      // blessure »), pas de jet de mort : le jet de blessure, comme s'il était à 0 PV s'il est tombé.
+      if(p.killed){ result.death={p:100,roll:null,killed:true}; result.dead=true; result.outcome="dead"; return result; }
+      if(p.spared){
+        const pWound=woundChance({...p,hp:Math.max(0,Number(p.hp)||0)});
+        if(pWound!==null){ const roll=d100(); result.wound={automatic:false,p:pWound,roll,spared:true}; result.wounded=roll<=pWound; }
+        if(result.wounded){ result.severity=woundSeverity(p); result.woundDays=woundDays(p,options); result.outcome="wounded"; }
+        else{ result.fatigueDays=fatigueDays(p); result.outcome="fatigued"; }
+        return result;
+      }
       const pDeath=deathChance(p,Number(options.deathMultiplier)||1);
       if(pDeath!==null){
         const roll=d100();

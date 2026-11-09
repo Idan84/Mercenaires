@@ -445,7 +445,8 @@ function missionHexPixel(q,r){
   return {x:44+Math.sqrt(3)*s*(q+r/2),y:44+1.5*s*r};
 }
 
-function makeMissionUnit(character,team,index){
+// noMount : sans sa monture (le Défi du capitaine : « sans monture »).
+function makeMissionUnit(character,team,index,{noMount=false}={}){
   const col=team==="player"?MISSION_MAP.spawnInset:MISSION_MAP.cols-1-MISSION_MAP.spawnInset;
   const spawn=missionAxial(col,MISSION_MAP.spawnRows[index]);
   // Aura du capitaine (Idan, 2026-10-24) : le capitaine de la compagnie, s'il part en mission ; et celle des lieutenants
@@ -462,7 +463,7 @@ function makeMissionUnit(character,team,index){
     acted:false,movementRemaining:0,attackAvailable:true,quickAvailable:true,
     fleeing:false,fleeTurn:0,offMap:false,damageTaken:0
   };
-  attachMissionMount(unit);
+  if(!noMount) attachMissionMount(unit);
   return unit;
 }
 
@@ -1053,6 +1054,145 @@ function retreatMissionExpedition(){
   leaveMission();
 }
 
+// Le Défi du capitaine (Idan, 2026-11-09 ; règles : game-core/duel.js, campaign.js canChallenge / applyDuel) : le capitaine
+// défie un membre en combat singulier, dans une arène (duel.map.*), tous deux au centre, face à face (duel.start.distance),
+// sans monture ni compagnon ; personne n'est caché. Le capitaine peut se rendre ; le défié ne le peut pas, mais il peut
+// tenter de fuir : sortir de l'arène est une victoire du capitaine (« Il court, mais se fait rattraper par les autres »).
+// Victoire : la fenêtre « Mise à mort » / « Épargner » (« On va la faire gladiateur ! »).
+function duelCopy(){ return game.referenceData?.duelDialogue||{}; }
+const duelFemale=c=>String(c?.sex||"").trim().toLowerCase().startsWith("f");
+function duelFill(text,vars={},female=false){
+  if(typeof MercenairesRecruitDialogue!=="undefined") return MercenairesRecruitDialogue.fill(String(text||""),vars,female);
+  return String(text||"").replace(/\{([^{}]*)\}/g,(all,key)=>key.includes("|")?key.split("|")[female?1:0]:key.toLowerCase() in vars?String(vars[key.toLowerCase()]):all);
+}
+// Sur la fiche (onglet Profil) : « Défier », grisé avec la raison s'il ne peut pas l'être aujourd'hui.
+function duelButtonHtml(c){
+  if(!game.campaign||typeof campaignRules!=="function"||!campaignRules().canChallenge) return "";
+  const company=game.campaign.company;
+  if(!company.roster.includes(c)||c.id===company.captainId) return "";
+  const check=campaignRules().canChallenge(game.campaign,c.id),copy=duelCopy();
+  return `<button type="button" class="secondary sheet-duel-btn" data-duel-challenge="${esc(c.id)}"${check.ok?"":" disabled"} title="${esc(check.ok?copy.button_tip||"":check.reason)}">${esc(copy.button||"Défier")}</button>`;
+}
+function challengeFromSheet(mercenaryId){
+  const m=game.campaign?.company.roster.find(x=>String(x.id)===String(mercenaryId));
+  if(!m) return;
+  const text=duelFill(duelCopy().confirm,{nom:m.name},duelFemale(m));
+  if(typeof confirm==="function"&&!confirm(text)) return;
+  if(startCaptainDuel(m.id)) $("character-dialog")?.close?.();
+}
+function startCaptainDuel(mercenaryId){
+  if(!game.campaign||typeof campaignRules!=="function") return false;
+  const rules=campaignRules(),check=rules.canChallenge(game.campaign,mercenaryId);
+  if(!check.ok){ if(typeof tavernLog==="function") tavernLog(check.reason,"warn"); return false; }
+  const C=rules.duelRules.constants,copy=duelCopy();
+  setMissionMapSize({cols:C.cols,rows:C.rows});
+  const engine=MercenairesCombat.createCombatEngine(game.referenceData,{onAttack:onMissionAttack,heightOf:missionUnitHeight});
+  const endRules=MercenairesMissionEnd.createMissionEndRules({reference:game.referenceData});
+  const progression=MercenairesProgression.createProgressionRules({reference:game.referenceData});
+  const me=makeMissionUnit(check.captain,"player",0,{noMount:true});
+  const foe=makeMissionUnit(check.mercenary,"enemy",0,{noMount:true});
+  // Au centre de l'arène, sur la même rangée, à duel.start.distance cases l'un de l'autre.
+  const row=Math.floor(MISSION_MAP.rows/2),left=Math.floor((MISSION_MAP.cols-C.distance)/2);
+  Object.assign(me,missionAxial(left,row));
+  Object.assign(foe,missionAxial(left+C.distance,row));
+  game.mission={
+    engine,endRules,progression,players:[me],enemies:[foe],playerOrder:[me],enemyOrder:[foe],
+    activeUnit:null,phase:"player",turn:1,mode:null,log:[],over:false,winner:null,aftermath:null,
+    duel:{mercenaryId:check.mercenary.id,captainId:check.captain.id,name:check.mercenary.name}
+  };
+  const m=game.mission;
+  m.relief=generateMissionRelief();
+  // Le décor de l'arène, sans rien autour des deux combattants.
+  m.decor=generateMissionDecor().filter(d=>![me,foe].some(u=>engine.axialDistance(u,d)<=1));
+  // Personne ne se cache : chacun sait où est l'autre.
+  m.awareness={player:{alert:true,lastKnown:{q:foe.q,r:foe.r},objective:null},enemy:{alert:true,lastKnown:{q:me.q,r:me.r},objective:null}};
+  $("game-panel")?.classList?.add("hidden");
+  $("mission-panel")?.classList?.remove("hidden");
+  missionLog(duelFill(copy.start,{capitaine:me.character.name,nom:foe.character.name},duelFemale(foe.character)),"turn");
+  selectNextMissionPlayer();
+  return true;
+}
+function surrenderMissionDuel(){
+  const m=game.mission;
+  if(!m?.duel||m.over) return;
+  m.duel.surrendered=true;
+  Object.assign(m,{over:true,winner:"enemy",activeUnit:null,mode:null});
+  const me=m.players[0];
+  missionLog(duelFill(duelCopy().surrendered,{capitaine:me.character.name},duelFemale(me.character)),"bad");
+  finishMissionDuel();
+}
+// La fin du combat : nous gagnons (il est tombé, ou il a fui l'arène) : le verdict ; sinon, le bilan tout de suite.
+function finishMissionDuel(){
+  const m=game.mission,copy=duelCopy(),foe=m.enemies[0],me=m.players[0];
+  if(m.winner==="player"){
+    if(foe.offMap) missionLog(duelFill(copy.fled,{nom:foe.character.name},duelFemale(foe.character)),"info");
+    else missionLog(duelFill(copy.won,{capitaine:me.character.name,nom:foe.character.name},duelFemale(foe.character)),"turn");
+    m.duel.pending=true;
+    if(typeof renderMission==="function") renderMission();
+    openDuelVerdict();
+    return;
+  }
+  if(!m.duel.surrendered) missionLog(duelFill(copy.lost,{capitaine:me.character.name,nom:foe.character.name},duelFemale(me.character)),"bad");
+  resolveMissionDuel(false);
+}
+// La fenêtre du verdict : « Mise à mort » ou « Épargner ».
+function openDuelVerdict(){
+  const m=game.mission,d=m?.duel,dialog=$("duel-verdict-dialog");
+  if(!d?.pending||!dialog) return;
+  const foe=m.enemies[0].character,copy=duelCopy(),female=duelFemale(foe);
+  const face=$("duel-verdict-portrait");
+  if(face) face.innerHTML=typeof renderAvatar==="function"?renderAvatar(foe,{variant:"detail",kind:"full"}):"";
+  if($("duel-verdict-title")) $("duel-verdict-title").textContent=copy.verdict_title||"";
+  if($("duel-verdict-line")) $("duel-verdict-line").textContent=duelFill(copy.verdict_line,{nom:foe.name},female);
+  for(const button of dialog.querySelectorAll?.("[data-duel-verdict]")||[]) button.textContent=(button.dataset.duelVerdict==="kill"?copy.kill:copy.spare)||button.textContent;
+  if(typeof dialog.showModal==="function"&&!dialog.open) dialog.showModal();
+}
+function chooseDuelVerdict(killed){
+  const m=game.mission;
+  if(!m?.duel?.pending) return;
+  $("duel-verdict-dialog")?.close?.();
+  const foe=m.enemies[0].character,copy=duelCopy();
+  missionLog(duelFill(killed?copy.killed:copy.spared,{nom:foe.name},duelFemale(foe)),killed?"death":"gear");
+  resolveMissionDuel(killed);
+}
+// Le bilan : la fin de combat des deux (mise à mort, ou jet de blessure de l'épargné ; jet de mort du capitaine tombé),
+// appliquée à la compagnie (campaign.js, applyDuel : affinité, XP, Mémorial, historique).
+function resolveMissionDuel(killed=false){
+  const m=game.mission,d=m?.duel;
+  if(!d||d.resolved) return null;
+  d.resolved=true;d.pending=false;
+  const me=m.players[0],foe=m.enemies[0],won=m.winner==="player",copy=duelCopy();
+  for(const u of [me,foe]) if(Number(u.damageTaken)>0) MercenairesProgression.recordDamageTaken(u,u.damageTaken);
+  const part=(u,extra={})=>({id:u.character.id,name:u.character.name,hp:u.hp,pvMax:u.pvMax,damageTaken:u.damageTaken,
+    stats:{...u.character.stats,Endurance:m.engine.statWithGear(u,"Endurance"),"Volonté":m.engine.statWithGear(u,"Volonté")},
+    offMap:false,progress:u.progress||null,...extra});
+  const cause={kind:"challenged",by:{name:me.character.name,proper:true}};
+  m.aftermath=m.endRules.resolveMissionEnd([part(me,{isCaptain:true}),part(foe,won?killed?{killed:true,cause}:{spared:true}:{})],{});
+  for(const r of m.aftermath.results) missionLog(r.name+" — "+missionAftermathText(r),r.dead?"death":r.wounded?"bad":"info");
+  if(!game.campaign||typeof campaignRules!=="function"){ if(typeof renderMission==="function") renderMission(); return null; }
+  const report=m.companyReport=campaignRules().applyDuel(game.campaign,{mercenaryId:d.mercenaryId,won,killed,aftermath:m.aftermath});
+  if(report?.duel?.effects&&!report.gameOver){
+    const fx=report.duel.effects,C=campaignRules().duelRules.constants;
+    missionLog(duelFill(copy.xp,{capitaine:me.character.name,intimidation:C.intimidationXp,charisme:C.charismaXp}),"gear");
+    // L'affinité des témoins : le compte et l'écart (le détail sur la fiche de chacun).
+    const gains=fx.effects.map(e=>e.delta);
+    if(gains.length===1) missionLog(duelFill(copy.affinity_one,{liste:fx.effects[0].name+" +"+gains[0]}),"gear");
+    else if(gains.length){
+      const min=Math.min(...gains),max=Math.max(...gains);
+      missionLog(duelFill(min===max?copy.affinity_same:copy.affinity,{n:gains.length+" mercenaires",min,max}),"gear");
+    }
+    if(fx.spared) missionLog(duelFill(copy.affinity_spared,{nom:foe.character.name,n:fx.spared},duelFemale(foe.character)),"gear");
+  }
+  for(const {mercenary,changes} of report?.progression||[])
+    for(const c of visibleProgressionChanges(changes)) missionLog(mercenary.name+" : "+c.name+" "+c.shownBefore+" → "+c.shownAfter+".",c.shownAfter>c.shownBefore?"gear":"bad");
+  if(report?.gameOver){
+    missionLog("Le capitaine est mort : la partie est terminée.","death");
+    if(typeof deleteSavedGame==="function") deleteSavedGame();
+  }else if(typeof saveGame==="function") saveGame();
+  if(typeof renderMission==="function") renderMission();
+  return report;
+}
+
 function missionTerrain(){
   if(typeof MercenairesMissionTerrain==="undefined") return null;
   return game.missionTerrain||(game.missionTerrain=MercenairesMissionTerrain.createMissionTerrain({reference:game.referenceData}));
@@ -1180,6 +1320,8 @@ function checkMissionEnd(){
   game.mission.winner=e.length?"enemy":"player";
   game.mission.activeUnit=null;
   game.mission.mode=null;
+  // Le Défi du capitaine : sa propre fin (la fenêtre de verdict, puis applyDuel).
+  if(game.mission.duel){ finishMissionDuel(); return true; }
   missionLog(game.mission.winner==="player"
     ?"VICTOIRE — les ennemis sont hors combat ou en déroute."
     :"DÉFAITE — votre équipe est hors combat.","turn");
@@ -1402,6 +1544,7 @@ function renderMissionAftermath(m){
     ?"Ces personnages ne font pas partie d’une compagnie : bilan non appliqué."
     :report.gameOver
       ?""
+      :m.duel?"Bilan du duel appliqué à la compagnie (ni prime ni réputation)."
       :"Bilan appliqué à la compagnie. "+(m.expeditionId?"Primes versées au retour de l’escouade.":"Primes de mission versées : "+report.bonusPaid+" PO.")+missionRenownNote(report);
   const contract=m.contractResult?`<ul class="mission-contract-result">${contractResultLines(m.contractResult,m.contractReturn).map(l=>`<li class="is-${l.kind}">${esc(l.text)}</li>`).join("")}</ul>`:"";
   return `${contract}<ul class="mission-aftermath">${rows}</ul>
@@ -4536,6 +4679,9 @@ function renderMission(){
   $("mission-result").classList.toggle("hidden",!m.over);
   $("mission-aftermath").innerHTML=m.over?renderMissionAftermath(m):"";
   $("mission-result-back-btn").textContent=m.companyReport?.gameOver?"Fin de la partie":"Retour à la compagnie";
+  // Le Défi du capitaine : « Se rendre », pendant le combat et au tour du capitaine.
+  const surrender=$("mission-surrender-btn");
+  if(surrender){ surrender.classList.toggle("hidden",!m.duel||m.over); surrender.disabled=Boolean(m.over||m.phase!=="player"); }
   $("mission-leave-btn").disabled=!m.over;
   $("mission-leave-btn").title=m.over?"":"Disponible une fois le combat terminé";
 }
@@ -4867,6 +5013,8 @@ function hideMissionHover(){
 // (review Chatty, PR #20). Une vraie retraite aura plus tard sa propre résolution.
 function leaveMission(){
   if(game.mission&&!game.mission.over) return;
+  // Le duel attend encore le verdict : la fenêtre revient.
+  if(game.mission?.duel&&!game.mission.duel.resolved){ openDuelVerdict(); return; }
   const gameOver=game.mission?.companyReport?.gameOver;
   game.mission=null;
   $("mission-panel").classList.add("hidden");
@@ -4918,6 +5066,16 @@ function initializeMissionUi(){
     setMissionMode(same?null:mode,{caster});
   });
   $("mission-leave-btn").addEventListener("click",leaveMission);
+  // Le Défi du capitaine : « Défier » (fiche), « Se rendre » (combat), le verdict (fenêtre).
+  $("mission-surrender-btn")?.addEventListener("click",()=>{
+    if(typeof confirm!=="function"||confirm(duelCopy().surrender_confirm||"Se rendre ?")) surrenderMissionDuel();
+  });
+  document.addEventListener("click",event=>{
+    const challenge=event.target.closest?.("[data-duel-challenge]");
+    if(challenge&&!challenge.disabled){ challengeFromSheet(challenge.dataset.duelChallenge); return; }
+    const verdict=event.target.closest?.("[data-duel-verdict]");
+    if(verdict) chooseDuelVerdict(verdict.dataset.duelVerdict==="kill");
+  });
   $("mission-result-back-btn").addEventListener("click",leaveMission);
 
   $("mission-map").addEventListener("click",event=>{

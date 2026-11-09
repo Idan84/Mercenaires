@@ -35,10 +35,12 @@
   const canteen=typeof module!=="undefined"&&module.exports?require("./canteen.js"):root.MercenairesCanteen;
   // Le Mémorial : les morts de la compagnie (facultatif hors du jeu, de même).
   const memorial=typeof module!=="undefined"&&module.exports?require("./memorial.js"):root.MercenairesMemorial;
-  const api=factory(history,regeneration,training,study,posts,armorPorts,armorStudy,lumber,agenda,dungeon,desertion,salaryReview,socialPolicy,stables,taming,canteen,memorial);
+  // Le Défi du capitaine : le combat singulier (facultatif hors du jeu, de même).
+  const duel=typeof module!=="undefined"&&module.exports?require("./duel.js"):root.MercenairesDuel;
+  const api=factory(history,regeneration,training,study,posts,armorPorts,armorStudy,lumber,agenda,dungeon,desertion,salaryReview,socialPolicy,stables,taming,canteen,memorial,duel);
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesCampaign=api;
-})(typeof globalThis!=="undefined"?globalThis:this,function(History,Regeneration,Training,Study,Posts,ArmorPorts,ArmorStudy,Lumber,Agenda,Dungeon,Desertion,SalaryReview,SocialPolicy,Stables,Taming,Canteen,Memorial){
+})(typeof globalThis!=="undefined"?globalThis:this,function(History,Regeneration,Training,Study,Posts,ArmorPorts,ArmorStudy,Lumber,Agenda,Dungeon,Desertion,SalaryReview,SocialPolicy,Stables,Taming,Canteen,Memorial,Duel){
   // Sauvegarde : l'état de partie complet, sérialisé en JSON avec un format et une version.
   // La trace de génération des mercenaires (détail de calcul pour le Design Lab, ~85 % du poids)
   // n'est pas sauvegardée : un mercenaire passe d'environ 36 Ko à 5 Ko.
@@ -842,6 +844,38 @@
       makeItem:(type,name)=>typeof generator?.createItemByName==="function"?generator.createItemByName(type,name):null}):null;
     // Le Mémorial (Idan, 2026-11-09 ; règles : memorial.js) : chaque mort de la compagnie y entre, avec la cause de sa mort.
     const memorialRules=Memorial?Memorial.createMemorialRules({reference,random}):null;
+    // Le Défi du capitaine (Idan, 2026-11-09 ; règles : duel.js) : la disponibilité, puis l'issue du combat singulier.
+    const duelRules=Duel?Duel.createDuelRules({reference,affinity,progression}):null;
+    // Le capitaine peut défier un membre (pas lui-même) : tous deux au camp, ni blessés ni fatigués, ni au cachot (« sauf
+    // le au plus un défi par jour » : pas de limite par jour).
+    function canChallenge(state,mercenaryId){
+      const captain=captainOf(state),m=rosterOf(state).find(x=>String(x.id)===String(mercenaryId));
+      if(!duelRules||!captain) return {ok:false,reason:"Pas de capitaine."};
+      if(!m) return {ok:false,reason:"Mercenaire introuvable."};
+      if(m===captain) return {ok:false,reason:"Le capitaine ne peut pas se défier lui-même."};
+      const away=(x,who)=>{
+        if(x.recovery) return who+(x.recovery.kind==="wounded"?" est blessé.":" est fatigué.");
+        if(expeditionOf(state,x.id)) return who+" est en mission.";
+        if(x.dungeon) return who+" est au cachot.";
+        return null;
+      };
+      const reason=away(captain,"Le capitaine")||away(m,m.name);
+      return reason?{ok:false,reason}:{ok:true,captain,mercenary:m};
+    }
+    // L'issue du duel : aftermath, la fin de combat des deux (mission-end.js : la mise à mort, le jet de blessure de
+    // l'épargné) ; won : le capitaine a gagné ; killed : il l'a mis à mort. Fin de mission sans prime ni réputation, puis
+    // l'affinité de la compagnie et l'XP du capitaine (duel.js) et une ligne d'historique pour chacun.
+    function applyDuel(state,{mercenaryId,won=false,killed=false,aftermath}){
+      const captain=captainOf(state),m=rosterOf(state).find(x=>String(x.id)===String(mercenaryId));
+      if(!duelRules||!captain||!m||!aftermath) return null;
+      const report=applyMissionAftermath(state,aftermath,{duel:true,stars:1});
+      const dead=!rosterOf(state).includes(m);
+      const effects=report.gameOver?null:duelRules.applyEffects(state,{captain,challenged:m,won,killed:won&&killed&&dead});
+      const outcome=!won?"lost":killed&&dead?"killed":"spared";
+      if(!report.gameOver) History.record(captain,state.day,"duel_fought",{opponent:m.name,role:"captain",outcome});
+      if(!dead) History.record(m,state.day,"duel_fought",{opponent:captain.name,role:"challenged",outcome});
+      return {...report,duel:{won,killed:outcome==="killed",outcome,mercenary:m,effects}};
+    }
     // Héritage (issue #111) : 20 % de la part du défunt juste avant son retrait (standing : sa place au classement), figés
     // pour toujours et comptés une seule fois. Le capitaine n'en laisse pas : sa mort met fin à la partie.
     function recordHeritage(state,mercenary,standing){
@@ -1427,8 +1461,10 @@
         fatigueDays:days=>fatigueDaysFor(days,state,{dormitory:false}),
         learn:(sheet,progress)=>progression?progression.apply(sheet,progression.gains(progress,sheet,{stars})):[]}):null;
     }
+    // options.duel : le Défi du capitaine (applyDuel) — ni prime, ni réputation, ni « retour de mission » dans l'historique.
     function applyMissionAftermath(state,aftermath,options={}){
       if(appliedAftermaths.has(aftermath)) return appliedAftermaths.get(aftermath);
+      const duel=Boolean(options.duel);
       const report={deaths:[],wounded:[],fatigued:[],bonuses:[],bonusPaid:0,bonusesDue:[],gameOver:false,progression:[],heritage:[]};
       // Classement du début de mission : les morts d'une même mission sont pondérés sur ce même classement,
       // quel que soit l'ordre des résultats (Idan, 2026-10-20).
@@ -1445,7 +1481,8 @@
           if(entry) report.heritage.push(entry);
           // Le Mémorial (Idan, 2026-11-09) : sa dernière mission dans son historique, puis son portrait, la cause de sa
           // mort (result.cause, notée quand il est tombé) et son épitaphe.
-          History.recordDeath(mercenary,state.day,{progress:result.progress,captured:Boolean(result.captured)});
+          if(duel) History.record(mercenary,state.day,"duel",{});
+          else History.recordDeath(mercenary,state.day,{progress:result.progress,captured:Boolean(result.captured)});
           if(memorialRules){
             const cause=result.captured?{kind:"captured"}:result.cause||null;
             const memorial=memorialRules.record(state,mercenary,{cause});
@@ -1478,8 +1515,9 @@
         if(progression){
           const xp=progression.gains(result.progress,mercenary,{stars:options.stars});
           const changes=progression.apply(mercenary,xp);
-          const gain=progression.reputationGains(result.progress,{wounded:result.wounded});
-          report.progression.push({mercenary,xp,changes,reputation:{...gain,...progression.applyReputation(mercenary,gain)}});
+          // Un duel ne rapporte pas de réputation (ni retour de mission, ni adversaire abattu).
+          const gain=duel?null:progression.reputationGains(result.progress,{wounded:result.wounded});
+          report.progression.push({mercenary,xp,changes,reputation:gain?{...gain,...progression.applyReputation(mercenary,gain)}:null});
         }
         if(result.wounded){
           mercenary.recovery={kind:"wounded",daysLeft:woundDaysFor(mercenary,result.woundDays,state),sinceDay:state.day};
@@ -1488,12 +1526,12 @@
           const rest=fatigueRecovery(result.fatigueDays,state);
           if(rest){ mercenary.recovery=rest; report.fatigued.push(mercenary); }
         }
-        // Historique : une mission de plus, ses adversaires abattus, ses coups encaissés, sa blessure.
-        History.recordMission(mercenary,state.day,{progress:result.progress,wounded:result.wounded,
+        // Historique : une mission de plus, ses adversaires abattus, ses coups encaissés, sa blessure (un duel s'écrit à part).
+        if(!duel) History.recordMission(mercenary,state.day,{progress:result.progress,wounded:result.wounded,
           days:result.wounded?mercenary.recovery.daysLeft:result.fatigueDays});
         // §8 — La prime de mission individuelle n'est payée que si le mercenaire revient ; pas à celui qui a fui hors de
         // la carte (Idan, 2026-10-24, doc 17 §8).
-        const bonus=result.offMap?0:Number(mercenary.contract?.missionBonus)||0;
+        const bonus=result.offMap||duel?0:Number(mercenary.contract?.missionBonus)||0;
         if(bonus>0&&options.deferBonuses) report.bonusesDue.push({id:mercenary.id,mercenary,bonus});
         else if(bonus>0){
           state.company.gold-=bonus;
@@ -1547,7 +1585,7 @@
       completeExpeditionCombat,
       dormitoryFree,
       dormitoryUsed,
-      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,trainingRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,spellStudy,armorStudy,poisonStudy,lumberjacks,miners,palaceWorkers,dungeonRules,canteenRules,desertionRules,memorialRules,salaryReviewRules,stableRules,tamingRules,socialPolicy:social,agenda,studyBusy,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
+      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,trainingRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,spellStudy,armorStudy,poisonStudy,lumberjacks,miners,palaceWorkers,dungeonRules,canteenRules,desertionRules,memorialRules,duelRules,canChallenge,applyDuel,salaryReviewRules,stableRules,tamingRules,socialPolicy:social,agenda,studyBusy,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
       woundDaysFor,fatigueDaysFor,dormitoryFatigueCut,
       dormitoryPlaces,
       dormitoryExpansionCost,

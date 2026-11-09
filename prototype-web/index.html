@@ -351,6 +351,8 @@
             <!-- Déploiement (rapport de l'éclaireur, Idan 2026-11-09) : seulement ces deux-là. -->
             <button id="mission-deploy-start-btn" class="primary deploy-only" title="Les hommes sont en place : le combat commence">Lancer le combat</button>
             <button id="mission-retreat-btn" class="secondary deploy-only" title="Le contrat est perdu et la renommée baisse, mais personne ne meurt">Rebrousser chemin</button>
+            <!-- Le Défi du capitaine (Idan, 2026-11-09) : le capitaine peut se rendre. -->
+            <button id="mission-surrender-btn" class="secondary hidden" title="Le capitaine abandonne le duel.">Se rendre</button>
             <button id="mission-move-btn" class="secondary">Se déplacer</button>
             <button id="mission-attack-btn" class="secondary">Attaquer</button>
             <button id="mission-two-hands-btn" class="secondary hidden" title="Frapper fort, mais perdre l’esquive de la main libre jusqu’au prochain tour.">Attaquer à deux mains</button>
@@ -434,6 +436,18 @@
       <nav id="dialog-tabs" class="sheet-tabs" role="tablist" aria-label="Fiche du mercenaire"></nav>
     </div>
     <div id="dialog-content" role="tabpanel"></div>
+  </dialog>
+  <!-- Le Défi du capitaine (Idan, 2026-11-09 : « On va la faire gladiateur ! ») : le verdict après la victoire. -->
+  <dialog id="duel-verdict-dialog" class="talk-dialog duel-verdict-dialog" aria-labelledby="duel-verdict-title">
+    <header class="talk-head">
+      <div><p class="eyebrow">Combat singulier</p><h2 id="duel-verdict-title"></h2></div>
+    </header>
+    <div id="duel-verdict-portrait" class="duel-verdict-portrait"></div>
+    <p id="duel-verdict-line" class="talk-line"></p>
+    <div class="duel-verdict-actions">
+      <button type="button" class="danger" data-duel-verdict="kill">Mise à mort</button>
+      <button type="button" class="primary" data-duel-verdict="spare">Épargner</button>
+    </div>
   </dialog>
   <dialog id="steward-talk-dialog" class="talk-dialog talk-dialog--recruit" aria-labelledby="steward-talk-name">
     <header class="talk-head">
@@ -531,6 +545,7 @@
   <script src="/core/dungeon.js"></script>
   <script src="/core/canteen.js"></script>
   <script src="/core/memorial.js"></script>
+  <script src="/core/duel.js"></script>
   <script src="/core/stables.js"></script>
   <script src="/core/taming.js"></script>
   <script src="/core/desertion.js"></script>

@@ -147,8 +147,35 @@
     function aerialCharger(unit){
       const m=mountOf(unit);
       if(m) return Boolean(m.character?.aerialCharge);
-      return unit?.character?.aerialCharge==="toujours";
+      return unit?.character?.aerialCharge==="toujours"||terrainSkillsOf(unit).some(s=>s.charge_aerienne==="toujours");
     }
+    // Capacités de terrain (doc 04 ; Idan, 2026-11-09 : le vol des sangs féeriques, Déplacement aquatique, Respiration
+    // aquatique, Déplacement sylvain ; terrain-skills.json) : un peuple, une culture, un sang à partir d'un niveau (3 :
+    // bâtard), une invocation (son archétype).
+    const terrainSkillRows=rows.terrainSkills||[];
+    function terrainSkillsOf(unit){
+      const c=unit?.character;
+      if(!c||!terrainSkillRows.length) return [];
+      return terrainSkillRows.filter(s=>(s.peuples||[]).includes(c.people)||(s.cultures||[]).includes(c.culture)
+        ||(s.invocations||[]).includes(c.archetype)
+        ||(s.ascendances||[]).some(a=>a.nom===c.ascendance&&(Number(c.ascendanceLevel)||0)>=(Number(a.niveau_min)||1)));
+    }
+    // Ce qu'elles lui donnent sur une case de ce décor : cost (remplace le coût du décor ; undefined : celui du décor), le
+    // plus bas ; discretion, les bonus additionnés ; cover, la meilleure couverture.
+    function terrainEffect(unit,decorCode){
+      const out={cost:undefined,discretion:0,cover:null},rank={partielle:1,totale:2};
+      if(!decorCode) return out;
+      for(const s of terrainSkillsOf(unit)){
+        const d=s.decors?.[decorCode];
+        if(!d) continue;
+        if(d.cout_mouvement!=null) out.cost=out.cost==null?Number(d.cout_mouvement):Math.min(out.cost,Number(d.cout_mouvement));
+        out.discretion+=Number(d.discretion)||0;
+        if(d.couverture&&(rank[d.couverture]||0)>(rank[out.cover]||0)) out.cover=d.couverture;
+      }
+      return out;
+    }
+    // Il vole par lui-même (le sang féerique) ; monté, c'est sa monture qui compte.
+    function skillFlies(unit){ return !mountOf(unit)&&terrainSkillsOf(unit).some(s=>s.vol===true); }
     const MOUNT_SHARED=["Courage","Volonté"];
     // Gabarit (Idan, 2026-11-07 : « on fait la même chose que pour le dortoir ») : les places du dortoir du peuple
     // (peoples.json : 0,5, 1 ou 2) ; une monture, le sien (mounts.json, gabarit). On ne monte qu'une bête plus grande que soi.
@@ -1395,7 +1422,7 @@
       stealthOf,
       mentalStat,
       mountChargeForce,
-      aerialCharger,
+      aerialCharger,terrainSkillsOf,terrainEffect,skillFlies,
       AERIAL,
       mountHitChance,
       rollShotTarget,

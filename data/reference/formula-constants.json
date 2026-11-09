@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 428,
+  "row_count": 429,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -1096,6 +1096,14 @@
       "description": "Encore camouflé et hors de vue, un combattant qui ne pourrait pas frapper au tour suivant attend au plus ce nombre de tours avant d'entrer dans la vue de l'ennemi (Idan, 2026-11-07, après le bêta-test : « Rendre l'IA plus performante : jouer des sorts. Savoir reculer. Se regrouper. Se cacher » ; « On fait un premier jet »).",
       "formule": "IA de combat commune V1",
       "valeur": 2,
+      "version": "V1"
+    },
+    {
+      "nom": "Éclaireur — distance d'observation",
+      "code": "combat.scout.distance",
+      "description": "L'éclaireur (Idan, 2026-11-09 : « On peut, avant le combat envoyer un éclaireur choisi parmi les mercenaires de la mission. Il peut ne pas revenir ! ( Test en fonction de sa discrétion et la perception de chaque ennemi) La chance de se faire repérer reste faible ») : chaque ennemi tente de le repérer à cette distance, l'éclaireur derrière une couverture totale (combat.stealth.cover_total) ; un seul succès, il est capturé. Sinon, il cherche chaque ennemi à la même distance, à découvert : ceux qu'il voit commencent le combat repérés.",
+      "formule": "Repérage (combat.stealth.*)",
+      "valeur": 8,
       "version": "V1"
     },
     {

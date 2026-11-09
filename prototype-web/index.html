@@ -371,8 +371,14 @@
       <div><p class="eyebrow">Escouade sur place</p><h2 id="expedition-dialog-title">Expédition</h2></div>
     </div>
     <p id="expedition-dialog-text"></p>
+    <!-- L'éclaireur (Idan, 2026-11-09) : choisi parmi l'escouade, il part repérer le camp avant le combat. -->
+    <div id="expedition-scout" class="expedition-scout" hidden>
+      <p>Qui part en éclaireur ? Il repère le terrain et les ennemis qu’il voit, mais il peut être capturé : prisonnier, vous le récupérez si vous gagnez ; sinon, il est perdu. Son animal le suit.</p>
+      <div id="expedition-scout-list" class="expedition-scout-list"></div>
+    </div>
     <div class="actions-row">
       <button type="button" id="expedition-dialog-fight" class="primary" data-expedition-fight="">Commencer le combat</button>
+      <button type="button" id="expedition-dialog-scout" class="secondary" data-expedition-scout="">Envoyer un éclaireur</button>
       <button type="button" class="secondary" data-expedition-later>Plus tard</button>
     </div>
   </dialog>

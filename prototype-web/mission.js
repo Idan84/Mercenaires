@@ -2265,11 +2265,12 @@ function resolveMissionSpell(caster,target,code,extra={}){
   if(spell.action==="rapide") caster.quickAvailable=false; else caster.attackAvailable=false;
   caster.character.mana=Math.max(0,Math.round((magic.currentMana(caster)-out.cost)*100)/100);
   // XP du sort, de son école, de la Puissance magique, de la Réserve de mana et de la Chance (doc 12, étape 3).
+  // Magie en armure (Idan, 2026-11-09) : un sort raté alors que l'équipement gêne encore (out.armor : le malus restant).
   const learn=effect=>MercenairesProgression.recordSpell(caster,{code,school:spell.ecole,success:out.success,effect,
-    mana:out.cost,critical:out.critical,fumble:out.fumble});
+    mana:out.cost,critical:out.critical,fumble:out.fumble,hindered:Number(out.armor)>0});
   const name=caster.character.name;
   const on=["case","case_vide","soi"].includes(spell.cible)?"":target===caster?" sur "+missionSelf(caster):" sur "+target.character.name;
-  const detail=" ("+Math.round(out.p)+" %"+(out.armor?", armure −"+Math.round(out.armor):"")+", jet "+out.roll+", "+out.cost+" mana)";
+  const detail=" ("+Math.round(out.p)+" %"+(out.armor?", équipement −"+Math.round(out.armor):"")+", jet "+out.roll+", "+out.cost+" mana)";
   if(!out.success){
     learn(false);
     missionLog(name+" rate "+spell.nom+on+detail+".","miss");

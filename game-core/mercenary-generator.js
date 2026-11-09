@@ -657,7 +657,8 @@
         "Combat à une main",
         "Combat à mains nues",
         "Combat à deux mains",
-        "Armes naturelles"
+        "Armes naturelles",
+        "Magie en armure"
       ]);
 
       // Pièges, Discrétion et Combat à mains nues partent des caractéristiques (≈ 60) ; le facteur les ramène
@@ -1622,6 +1623,15 @@
       };
       character.items = startingEquipment.items;
       character.salary = calcSalary(character, captain);
+      // Magie en armure (Idan, 2026-11-09 : « Les nains comment 2D6 de magie en armure, tous les autres à 1 ») : tirée en
+      // dernier, pour ne rien changer aux autres tirages.
+      if (skillByName.has("Magie en armure")) {
+        const dwarf = character.people === "Nain";
+        const dice = constant("generation.magic_armor.dwarf_d6", 2);
+        setRawSkill(character.skills, trace, "martial", "Magie en armure",
+          dwarf ? rollDice(dice, 6) : constant("generation.magic_armor.base", 1),
+          {rawFormula: dwarf ? dice + "D6 (nain)" : "1"});
+      }
 
       trace.derived = {
         pvMax: {formula: "ceil(3 × (Constitution + 0,2×Endurance + 0,1×Volonté))", value: character.pvMax},
@@ -1727,6 +1737,7 @@
       if (skill.nom === "Combat à mains nues") return {status:"derived", rule:`Moyenne(Force, Dextérité) × Rand(0,8 ; 1,2) × ${String(constant("generation.martial.stat_skill_factor", 0.5)).replace(".", ",")}`};
       if (skill.nom === "Combat à deux mains") return {status:"derived", rule:"Max arme de mêlée 2 mains × Rand(0,8 ; 1,2)"};
       if (skill.nom === "Armes naturelles") return {status:"generated", rule:"0 puis modificateurs"};
+      if (skill.nom === "Magie en armure") return {status:"generated", rule:"Nains 2D6, autres 1"};
       if (skill.nom === "Régénération") return {status:"generated", rule:"0 puis modificateurs"};
       if (skill.domaine === "Social" && skill.niveau === "Catégorie") return {status:"generated", rule:"10D6"};
       if (skill.niveau === "Catégorie" && skill.domaine === "Martial") {

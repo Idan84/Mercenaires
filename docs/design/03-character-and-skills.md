@@ -185,6 +185,16 @@ pas, il ne peut pas la sortir de son inventaire (où il peut la garder). Une par
 son port retourne dans son inventaire, au dortoir. Les recrues partent déjà avec une armure qu’elles savent porter, et
 tous les ennemis aussi. Code : `game-core/armor-ports.js`, `equipment-deals.js` ; test : `tests/armor-ports.test.js`.
 
+### Magie en armure
+
+Idan, 2026-11-09 : « Les nains commencent à 2D6 de magie en armure, tous les autres à 1. » Compétence martiale de 0 à
+l'infini, générée à la fin de la création (après le reste des compétences) : **2D6** pour un nain, **1** pour tous les
+autres, recrues, capitaines et ennemis (les fiches ennemies ne la fixent pas : elle reste celle de la génération). Elle
+retire la moitié de sa valeur au malus magique de l'armure, du bouclier et du casque portés (doc 12) et progresse de
+80 XP par sort raté tant que l'équipement gêne encore (doc 08). Sur la fiche, onglet Magie, à côté de la Puissance
+magique et de la Réserve de mana (Idan, 2026-11-09 : « Il faut la faire apparaître dans l'onglet Magie » ;
+`character-sheet-copy.json`, `skills_layout.magie_en_armure`).
+
 ## Fiche : onglets Camp et Historique (Idan, 2026-10-24)
 
 - **Camp** : les compétences de camp — Transmission du savoir, Intendance, Médecine — et l’Artisanat avec ses huit métiers, du meilleur au moins bon ; en tête, le point fort au camp et le meilleur métier.

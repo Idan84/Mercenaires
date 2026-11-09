@@ -38,6 +38,8 @@ assert.deepEqual(real.constants,{
   spellCast:40,spellSuccess:20,spellEffect:20,schoolRegressionRatio:0.5,schoolFloor:1,magicPowerSpellEffect:80,manaReserveManaSpent:8,
   // XP de combat (Idan, 2026-11-08) : valeurs telles quelles (pas de doublement) ; multiplicateur d'étoiles.
   speedHexMoved:1,constitutionDamageTaken:2,enduranceContactTurn:10,perceptionLongShot:20,willSpellResisted:80,charismaAuraHold:40,
+  // Magie en armure (Idan, 2026-11-09 : « passons à 80xp ») : par sort raté tant que l'équipement gêne encore.
+  magicArmorFailure:80,
   starBonus:0.25
 });
 const tuned=P.createProgressionRules({reference:{formulaConstants:{rows:[{code:"progression.charisma.knockout_xp",valeur:80}]}}});

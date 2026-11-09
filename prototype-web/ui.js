@@ -1025,7 +1025,8 @@ const STAT_ICONS={
   "Intimidation":'<path d="M5 10.5a7 7 0 0 1 14 0v3l-2 2V19H7v-3.5l-2-2z"/><path d="M9.3 11.5h.01M14.7 11.5h.01" stroke-width="2.8"/><path d="M10.5 19v-2M13.5 19v-2"/>',
   "Port d’armure légère":'<path d="M8.5 3.5h7l3.5 4-2.5 2V20.5h-9V9.5L5 7.5z"/>',
   "Port d’armure intermédiaire":'<path d="M8.5 3.5h7l3.5 4-2.5 2V20.5h-9V9.5L5 7.5z"/><path d="M9.5 11h5M9.5 14h5M9.5 17h5"/>',
-  "Port d’armure lourde":'<path d="M6 4h12l1 6c0 5.8-3 9-7 11-4-2-7-5.2-7-11z"/><path d="M12 4v17M7.5 10h9"/>'
+  "Port d’armure lourde":'<path d="M6 4h12l1 6c0 5.8-3 9-7 11-4-2-7-5.2-7-11z"/><path d="M12 4v17M7.5 10h9"/>',
+  "Magie en armure":'<path d="M6 4h12l1 6c0 5.8-3 9-7 11-4-2-7-5.2-7-11z"/><path d="M12 8v6M9 11h6M10 9l4 4M14 9l-4 4"/>'
 };
 function statIcon(name){
   return `<svg class="sheet-stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${STAT_ICONS[name]||""}</svg>`;
@@ -1516,13 +1517,18 @@ function renderMagicTab(c) {
     const shift=effect?Math.sign(value-Math.round(effect.base)):0;
     return `<div class="sheet-stat magic-stat">${statIcon(name)}<span class="sheet-stat-name" tabindex="0">${esc(name)}${statTip(row)}</span><span class="sheet-stat-value${shift<0?" is-malus":shift>0?" is-bonus":""}" tabindex="0">${fmt(value)}${statPopover(c,name,value,equipmentDetail(effect,"Total"))}</span></div>`;
   };
+  // Magie en armure (Idan, 2026-11-09 : « Il faut la faire apparaître dans l'onglet Magie ») : à côté de la Puissance
+  // magique et de la Réserve de mana ; à quoi elle sert au survol, la compagnie au survol de sa valeur.
+  const armorSkill=game.referenceData?.characterSheetCopy?.skills_layout?.magie_en_armure;
+  const armorMagic=armorSkill&&Number.isFinite(skillValue(c,"martial",armorSkill))
+    ?`<div class="sheet-stat magic-stat">${statIcon(armorSkill)}<span class="sheet-stat-name" tabindex="0">${esc(armorSkill)}${statTip({nom:armorSkill,usage:skillUsage(armorSkill)})}</span>${skillValueCell(c,"martial",armorSkill)}</div>`:"";
   return `<section class="sheet-magic">
     <aside class="sheet-portrait">
       ${renderEvaluation(c)}${renderAvatar(c,{variant:"detail",kind:"full"})}
       <em class="roster-status roster-status--${status.kind}">${esc(status.label)}</em>
     </aside>
     <div class="sheet-magic-main">
-      <div class="magic-stats">${stat("Puissance magique")}${stat("Réserve de mana")}</div>
+      <div class="magic-stats${armorMagic?" magic-stats--3":""}">${stat("Puissance magique")}${stat("Réserve de mana")}${armorMagic}</div>
       <div class="magic-favorites">${top.map((x,i)=>`<div class="magic-favorite school--${esc(pictoSlug(x.name))}${known.has(x.name)?"":" is-unknown"}">${schoolIcon(x.name)}<span class="magic-favorite-name"><small>École n° ${i+1}</small><strong>${esc(x.name)}</strong></span><span class="sheet-stat-value${shift(x.name)<0?" is-malus":shift(x.name)>0?" is-bonus":""}" tabindex="0">${fmt(Math.round(x.value))}${comparePopover(c,Math.round(x.value),m=>sheetEquippedValue(m,x.name),equipmentDetail(effects[x.name],"Total"))}</span></div>`).join("")}</div>
       <div class="magic-bottom">
         <section class="magic-wheel-card"><h4>Écoles de magie</h4>${renderMagicWheel(c,schoolValue)}<p>Chaque école s’oppose aux deux écoles d’en face.</p></section>

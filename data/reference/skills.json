@@ -128,7 +128,7 @@
       "key": "mercenaire"
     }
   ],
-  "row_count": 95,
+  "row_count": 96,
   "rows": [
     {
       "nom": "Lames longues",
@@ -805,7 +805,7 @@
     {
       "nom": "Écu",
       "acquisition_possible": null,
-      "alteration_magique_base": null,
+      "alteration_magique_base": 15,
       "attaque_de_zone": false,
       "bonus_blocage_base": 10,
       "bonus_charge_base": null,
@@ -1029,7 +1029,7 @@
     {
       "nom": "Rondache",
       "acquisition_possible": null,
-      "alteration_magique_base": null,
+      "alteration_magique_base": 10,
       "attaque_de_zone": false,
       "bonus_blocage_base": 5,
       "bonus_charge_base": null,
@@ -1189,7 +1189,7 @@
     {
       "nom": "Pavois",
       "acquisition_possible": null,
-      "alteration_magique_base": null,
+      "alteration_magique_base": 20,
       "attaque_de_zone": false,
       "bonus_blocage_base": 20,
       "bonus_charge_base": null,
@@ -3167,6 +3167,38 @@
       "types_de_degats": null,
       "valeur_maximale": 100,
       "ecoles_d_influence": "Télékinésie,Transmutation",
+      "ecoles_opposees": null,
+      "mercenaire": true
+    },
+    {
+      "nom": "Magie en armure",
+      "acquisition_possible": "Génération (nains 2D6, autres 1) ; expérience : chaque sort raté tant que l’équipement gêne encore.",
+      "alteration_magique_base": null,
+      "attaque_de_zone": false,
+      "bonus_blocage_base": null,
+      "bonus_charge_base": null,
+      "cadence_tir": null,
+      "contre_charge": false,
+      "description": "Lancer ses sorts malgré l’armure, le bouclier et le casque : retire la moitié de sa valeur au malus magique de l’équipement porté.",
+      "domaine": "Martial",
+      "degats_pv_base": null,
+      "exemples": null,
+      "malus_vitesse_arme_base": null,
+      "mode": "Passive",
+      "niveau": "Catégorie",
+      "ordre": 3,
+      "parent": null,
+      "portee_max_hex": null,
+      "portee_min_hex": null,
+      "prise": null,
+      "puissance_contondante_base": null,
+      "puissance_perforante_base": null,
+      "puissance_tranchante_base": null,
+      "recharge_action_rapide": null,
+      "type_de_valeur": "Progressive",
+      "types_de_degats": null,
+      "valeur_maximale": 100,
+      "ecoles_d_influence": null,
       "ecoles_opposees": null,
       "mercenaire": true
     }

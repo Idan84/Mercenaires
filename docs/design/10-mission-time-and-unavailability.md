@@ -118,6 +118,8 @@ $$
 JoursFatigue = Clamp\left(Ceil\left(5 + 2 \times \frac{DegatsCumulesSubis}{PV_{max}} - \frac{Endurance}{100}\right),\ 1,\ 7\right)
 $$
 
+**Partir fatigué** (Idan, 2026-11-10 : « Un mercenaire fatigué peut partir dans toutes les missions. Il aura juste un malus de 20% de ses stats pour tout s'il commence le combat encore fatigué. Sinon, y'a pas de différence avec blessé… ») : un fatigué peut partir en mission (contrat, chasse, garde du corps, Mission Test) ; un blessé, non. Ses jours de fatigue continuent de s'écouler en route (départ le lendemain matin, puis les jours de marche). S'il lui en reste au début du combat, il se bat **à 80 %** pendant tout ce combat (`combat.fatigue.malus` = 0,2) : caractéristiques, résistances et compétences (armes, styles, écoles et sorts, Magie en armure, compagnon animal), l'équipement en pourcentage suivant. Ses PV max et sa Réserve de mana restent entiers, et la fin de mission (§7) lit ses valeurs reposées. Exemple d'Idan : fatigué pour 4 jours, sur une mission à 5 jours de marche, il commence le combat reposé. Le reste du camp (entraînement, corvées, défi du capitaine) attend toujours qu'il soit remis.
+
 Avec Endurance 50 : 5 jours sans dégâts, 6 jours après 0,5 × PV max encaissés, 7 jours dès 1 × PV max. **Qualité du dortoir** (Idan, 2026-11-08 ; doc 11 §4) : −10 % des jours par niveau, arrondi au jour supérieur ; au niveau 10, plus de fatigue. Puis les **Bains chauds** (Idan, 2026-11-01 ; doc 11 §9) : 1 jour de moins par niveau, au moins 1 jour. Un tank soigné plusieurs fois peut revenir à pleins PV mais complètement rincé.
 
 ## 6 — Durée d’une blessure
@@ -189,7 +191,8 @@ En complément des données déjà prévues dans l’architecture :
 - Mission Test : à la fin du combat, votre équipe passe la chaîne §7 et un bilan s’affiche (mort, blessé ou fatigué, durée d’indisponibilité, détail des jets).
 - Ce bilan est **appliqué à la compagnie** (décisions Idan du 2026-10-03) :
   - un mort quitte définitivement la compagnie ; s’il était Intendant, la compagnie n’a plus d’Intendant ;
-  - un blessé ou un fatigué reçoit un compteur de jours ; il ne peut pas partir en mission tant qu’il n’est pas écoulé ; chaque jour de `AdvanceTime` le diminue de 1, avant la Taverne ; la Mission Test n’ayant pas de trajet, le compteur part du jour du combat ;
+  - un blessé ou un fatigué reçoit un compteur de jours ; un blessé ne peut pas partir en mission tant qu’il n’est pas écoulé, un fatigué si (§5, « Partir fatigué ») ; chaque jour de `AdvanceTime` le diminue de 1, avant la Taverne ; la Mission Test n’ayant pas de trajet, le compteur part du jour du combat ;
+  - « Partir fatigué » : `campaign.js` (`isAvailable`, `fatigueOnArrival`, `departExpedition` refuse un blessé) ; au combat, `unit.fatigued` (posé par l'écran de combat) et `combat-engine.js` (`fatigueFactor`, `rested`, `skillValue`) ; le choix de l'escouade indique « −20 % au combat » ou « reposé à l’arrivée », le journal et la fiche de combat « Fatigué −20 % » ;
   - la prime de mission (§8) est payée à chaque survivant sous contrat ; l’or peut alors passer sous 0 ;
   - la mort du capitaine met fin à la partie : **la sauvegarde est effacée**.
 - Outil de test, pas une règle : un bouton « +1 000 (test) » ajoute de l’or à la compagnie.

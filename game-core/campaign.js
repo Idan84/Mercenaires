@@ -1007,12 +1007,22 @@
         greenhousePlaces:stableRules?.GREENHOUSE?stableRules.places(state,stableRules.GREENHOUSE):0};
     }
 
-    // Indisponibilité après mission (10-mission-time §4 à §6) : un blessé ou un fatigué ne peut pas
-    // partir en mission tant que son compteur de jours n'est pas écoulé.
+    // Indisponibilité après mission (10-mission-time §4 à §6) : un blessé ne peut pas partir en mission tant que son
+    // compteur de jours n'est pas écoulé. Un fatigué, si (Idan, 2026-11-10 : « Un mercenaire fatigué peut partir dans toutes
+    // les missions ») : ses jours continuent de s'écouler en route (fatigueOnArrival).
     // state (facultatif) : un mercenaire parti en expédition, ou dont la mission est programmée, n'est pas disponible non
     // plus.
     function isAvailable(mercenary,state=null){
-      return !mercenary.recovery&&!(state&&expeditionOf(state,mercenary.id));
+      return mercenary.recovery?.kind!=="wounded"&&!(state&&expeditionOf(state,mercenary.id));
+    }
+    // Encore fatigué au début du combat (Idan, 2026-11-10 : « il est fatigué pour 4 jours, mais la mission est à 5 jours de
+    // marche, il commencera normal. Sinon, il commencera la mission fatigué avec 80% de ses stats pour tout le combat ») :
+    // les jours de fatigue qui lui resteront à l'arrivée (0 : reposé). Départ le lendemain matin, puis offer.distance jours de
+    // marche ; sans offre (Mission Test), le combat est tout de suite.
+    function fatigueOnArrival(mercenary,offer=null){
+      if(mercenary?.recovery?.kind!=="fatigued") return 0;
+      const road=offer?1+(Number(offer.distance)||0):0;
+      return Math.max(0,(Number(mercenary.recovery.daysLeft)||0)-road);
     }
 
     function recoverOneDay(state){
@@ -1242,6 +1252,9 @@
       const ids=[...new Set(memberIds)].filter(id=>roster.has(id));
       if(!ids.length) return {ok:false,reason:"Aucun mercenaire choisi."};
       if(ids.some(id=>expeditionOf(state,id))) return {ok:false,reason:"Un de ces mercenaires est déjà en mission."};
+      const wounded=rosterOf(state).find(m=>ids.includes(m.id)&&m.recovery?.kind==="wounded");
+      const she=String(wounded?.sex||"").toLowerCase().startsWith("f");
+      if(wounded) return {ok:false,reason:wounded.name+(she?" est blessée : elle":" est blessé : il")+" doit d’abord guérir."};
       if(state.company.medicId!=null&&ids.includes(state.company.medicId)) return {ok:false,reason:"Le médecin reste au camp."};
       const post=ids.map(id=>postOf(state,{id})).find(Boolean);
       if(post) return {ok:false,reason:`${post.title} reste au camp.`};
@@ -1319,8 +1332,8 @@
       return rosterOf(state).filter(m=>m.id!==company.captainId&&!offField(state,m))
         .reduce((best,m)=>Math.max(best,bodyguard.levelOf(m.reputation)),0);
     }
-    // Qui peut partir : un mercenaire au camp, disponible (ni blessé, ni fatigué), du niveau demandé ; ni le capitaine ni
-    // l'intendant.
+    // Qui peut partir : un mercenaire au camp, disponible (pas blessé ; fatigué, il peut), du niveau demandé ; ni le
+    // capitaine ni l'intendant.
     function canGuard(state,m,offer=boardOffer(state,{kind:"bodyguard"})){
       if(!m||!offer) return {ok:false,reason:"Aucune offre."};
       if(m.id===state.company.captainId) return {ok:false,reason:"Le capitaine reste à la compagnie."};
@@ -1606,6 +1619,7 @@
       medicOf,medicCareFactor,medicRenown,
       askCandidate,
       isAvailable,
+      fatigueOnArrival,
       applyMissionAftermath,
       applyMountAftermath,
       renameMember,

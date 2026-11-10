@@ -461,7 +461,10 @@ function makeMissionUnit(character,team,index,{noMount=false}={}){
     isLieutenant:team==="player"&&lieutenantIds.includes(character.id),
     hp:pvMax,pvMax,alive:true,activeSet:1,prone:false,
     acted:false,movementRemaining:0,attackAvailable:true,quickAvailable:true,
-    fleeing:false,fleeTurn:0,offMap:false,damageTaken:0
+    fleeing:false,fleeTurn:0,offMap:false,damageTaken:0,
+    // Encore fatigué au début du combat (Idan, 2026-11-10) : 80 % de ses valeurs pour tout le combat (combat-engine.js,
+    // fatigueFactor) ; ses PV max restent entiers.
+    fatigued:character?.recovery?.kind==="fatigued"
   };
   if(!noMount) attachMissionMount(unit);
   return unit;
@@ -760,10 +763,22 @@ function tickMissionNaturalRegeneration(unit){
   if(healed) missionLog(name+" se régénère : +"+healed+" PV"+missionWitherNote(unit)+".","magic");
 }
 
-// Un blessé ou un fatigué de la compagnie ne peut pas partir en mission (10-mission-time §4 à §6).
+// Un blessé de la compagnie ne peut pas partir en mission (10-mission-time §4 à §6) ; un fatigué, si (Idan, 2026-11-10).
 function recoveryLabel(c){
   if(!c.recovery) return "";
   return (c.recovery.kind==="wounded"?"Blessé":"Fatigué")+" · "+c.recovery.daysLeft+" j";
+}
+const missionWounded=c=>c?.recovery?.kind==="wounded";
+// Fatigué : encore fatigué au combat (−20 %), ou reposé en route (contrat : départ demain, puis les jours de marche).
+function missionFatigueNote(c,contract=null){
+  if(c?.recovery?.kind!=="fatigued") return "";
+  const left=game.campaign&&typeof campaignRules==="function"&&campaignRules().fatigueOnArrival
+    ?campaignRules().fatigueOnArrival(c,contract):c.recovery.daysLeft;
+  return left>0?"−"+missionFatiguePercent()+" % au combat":"reposé"+(String(c.sex||"").toLowerCase().startsWith("f")?"e":"")+" à l’arrivée";
+}
+function missionFatiguePercent(){
+  const row=(game.referenceData?.formulaConstants?.rows||[]).find(r=>r.code==="combat.fatigue.malus");
+  return Math.round((Number(row?.valeur)||0.2)*100);
 }
 
 // Mission Test : exactement 3 personnages. Contrat de la Taverne (doc 17) : de 1 à 20 mercenaires, au choix du joueur,
@@ -782,13 +797,15 @@ function openMissionSelection(contract=null){
   // Le médecin, le directeur de l'École et les maîtres (camp-posts.js) restent au camp, comme l'intendant.
   const offField=c=>game.campaign&&(c.id===game.campaign.company.intendantId||(game.campaign.company.medicId!=null&&c.id===game.campaign.company.medicId)||Boolean(MercenairesCampPosts.postOf(game.campaign,c)));
   const eligible=allCharacters().filter(c=>!offField(c)&&!away(c)&&!studying(c));
-  const available=eligible.filter(c=>!c.recovery);
-  const preselected=new Set(game.missionSelect.contract?[]:available.slice(0,3));
+  const available=eligible.filter(c=>!missionWounded(c));
+  // Mission Test : les reposés d'abord.
+  const preselected=new Set(game.missionSelect.contract?[]:[...available.filter(c=>!c.recovery),...available.filter(c=>c.recovery)].slice(0,3));
+  const offer=game.missionSelect.contract;
   $("mission-select-list").innerHTML=eligible.map(c=>`
-    <label class="mission-pick${c.recovery?" unavailable":""}">
-      <input type="checkbox" value="${c.id}" ${preselected.has(c)?"checked":""} ${c.recovery?"disabled":""}>
+    <label class="mission-pick${missionWounded(c)?" unavailable":""}">
+      <input type="checkbox" value="${c.id}" ${preselected.has(c)?"checked":""} ${missionWounded(c)?"disabled":""}>
       ${renderAvatar(c,{variant:"compact",kind:"portrait"})}
-      <span><strong>${esc(c.name)}</strong><small>${esc(c.people)} · ${esc(c.equipment?.profile?.type||"")}${c.recovery?" · "+esc(recoveryLabel(c)):""}</small></span>
+      <span><strong>${esc(c.name)}</strong><small>${esc(c.people)} · ${esc(c.equipment?.profile?.type||"")}${c.recovery?" · "+esc(recoveryLabel(c)):""}${missionFatigueNote(c,offer)?" · "+esc(missionFatigueNote(c,offer)):""}</small></span>
       <em>${combatEngine().maxHp({character:c,activeSet:1})} PV</em>
     </label>
   `).join("");
@@ -885,8 +902,20 @@ function startMissionFromSelection(){
   $("mission-panel").classList.remove("hidden");
   missionLog("Mission Test : votre équipe joue en premier.","turn");
   missionLog("Ennemis générés : "+enemies.map(u=>u.character.name).join(", ")+".");
+  logMissionFatigue(players);
   startMissionCamouflage();
   selectNextMissionPlayer();
+}
+
+// Partir fatigué (Idan, 2026-11-10) : ceux qui commencent le combat encore fatigués, dans le journal.
+function missionFatigueTag(u){ return "Fatigué"+(missionFeminine(u)?"e":"")+" −"+missionFatiguePercent()+" %"; }
+function logMissionFatigue(units){
+  const tired=units.filter(u=>u.fatigued&&!u.summon);
+  if(!tired.length) return;
+  const names=tired.map(u=>u.character.name),list=names.length>1?names.slice(0,-1).join(", ")+" et "+names[names.length-1]:names[0];
+  const all=tired.every(missionFeminine);
+  missionLog(list+(tired.length>1?" sont encore fatigué"+(all?"e":"")+"s : −"+missionFatiguePercent()+" % à toutes leurs valeurs"
+    :" est encore fatigué"+(all?"e":"")+" : −"+missionFatiguePercent()+" % à toutes ses valeurs")+" pour ce combat.","bad");
 }
 
 // Garde du corps : le paiement arrive tout de suite ; les gardes partent le lendemain matin et reviennent au bout de la
@@ -951,6 +980,7 @@ function startExpeditionCombat(expeditionId,{scoutId=null}={}){
   const beastLabel=beast?String(beast.name||(typeof missionRules==="function"?missionRules().mountSheet(beast.code)?.nom:"")||beast.code).toLocaleLowerCase("fr"):"";
   missionLog(beast?"Sur place : "+enemies.length+" "+(enemies.length>1?(beast.plural||beastLabel+"s").toLocaleLowerCase("fr"):beastLabel)+"."
     :"Dans le camp : "+enemies.map(u=>u.character.name).join(", ")+".");
+  logMissionFatigue(players);
   deployMissionCompanions();
   // L'éclaireur (Idan, 2026-11-09) : avant le combat, sur le terrain déjà posé.
   const scout=scoutId!=null?players.find(u=>u.character.id===scoutId):null;
@@ -1164,7 +1194,7 @@ function resolveMissionDuel(killed=false){
   const me=m.players[0],foe=m.enemies[0],won=m.winner==="player",copy=duelCopy();
   for(const u of [me,foe]) if(Number(u.damageTaken)>0) MercenairesProgression.recordDamageTaken(u,u.damageTaken);
   const part=(u,extra={})=>({id:u.character.id,name:u.character.name,hp:u.hp,pvMax:u.pvMax,damageTaken:u.damageTaken,
-    stats:{...u.character.stats,Endurance:m.engine.statWithGear(u,"Endurance"),"Volonté":m.engine.statWithGear(u,"Volonté")},
+    stats:{...u.character.stats,Endurance:m.engine.statWithGear(m.engine.rested(u),"Endurance"),"Volonté":m.engine.statWithGear(m.engine.rested(u),"Volonté")},
     offMap:false,progress:u.progress||null,...extra});
   const cause={kind:"challenged",by:{name:me.character.name,proper:true}};
   m.aftermath=m.endRules.resolveMissionEnd([part(me,{isCaptain:true}),part(foe,won?killed?{killed:true,cause}:{spared:true}:{})],{});
@@ -1342,8 +1372,9 @@ function resolveMissionAftermath(){
     id:u.character.id,name:u.character.name,hp:u.hp,pvMax:u.pvMax,
     // Endurance avec la ceinture et Volonté avec l'amulette (Idan, 2026-10-24) : blessure, mort et convalescence
     // les lisent aussi.
-    damageTaken:u.damageTaken,stats:{...u.character.stats,Endurance:m.engine.statWithGear(u,"Endurance"),
-      "Volonté":m.engine.statWithGear(u,"Volonté")},
+    // Fatigué pendant le combat : la fin de mission lit ses valeurs reposées (« pour tout le combat »).
+    damageTaken:u.damageTaken,stats:{...u.character.stats,Endurance:m.engine.statWithGear(m.engine.rested(u),"Endurance"),
+      "Volonté":m.engine.statWithGear(m.engine.rested(u),"Volonté")},
     isCaptain:captainId!=null&&u.character.id===captainId,offMap:u.offMap,progress:u.progress||null,raised:Boolean(u.raised),
     cause:u.downCause||null
   }));
@@ -4412,7 +4443,7 @@ function renderMissionRoster(units){
       ${renderMissionPortrait(u,"compact")}
       <div class="mission-roster-copy">
         <strong>${esc(u.character.name)}</strong>
-        <span>${u.raised?"Relevé en zombie":u.offMap?"A quitté le combat":(u.summon?"Invocation · ":"")+Math.max(0,u.hp)+"/"+u.pvMax+" PV"+(u.hp<0?" ("+u.hp+")":"")+(u.alive&&u.fleeing?" · En fuite":"")+(u.alive&&u.camouflaged?" · Camouflé":"")+(u.alive&&u.sentinel?" · En sentinelle":"")+(u.alive&&!game.mission.engine.isLoaded(u,game.mission.engine.activeWeaponItem(u))?" · Arme déchargée":"")}</span>
+        <span>${u.raised?"Relevé en zombie":u.offMap?"A quitté le combat":(u.summon?"Invocation · ":"")+Math.max(0,u.hp)+"/"+u.pvMax+" PV"+(u.hp<0?" ("+u.hp+")":"")+(u.alive&&u.fleeing?" · En fuite":"")+(u.alive&&u.camouflaged?" · Camouflé":"")+(u.alive&&u.sentinel?" · En sentinelle":"")+(u.alive&&u.fatigued?" · "+missionFatigueTag(u):"")+(u.alive&&!game.mission.engine.isLoaded(u,game.mission.engine.activeWeaponItem(u))?" · Arme déchargée":"")}</span>
         ${u.alive&&!u.offMap?`<i class="mission-roster-hp${missionHpClass(pct)}"><b style="width:${pct}%"></b></i>`:""}
         <small>Init ${Math.round(game.mission.engine.initiative(u))} · Mvt ${game.mission.engine.movementBase(u)}${missionRosterMagic(u)}</small>
       </div>
@@ -4869,7 +4900,7 @@ function renderMissionHoverCard(q,r){
     const weapon=e.activeWeaponItem(unit);
     const up=unit.alive;
     const tags=[unit.summon&&"Invocation",unit.character.undead&&"Mort-vivant",up&&unit.camouflaged&&"Camouflé",up&&unit.sentinel&&"En sentinelle",up&&unit.fleeing&&"En fuite",
-      up&&missionEncircled(unit)&&"Encerclé",up&&unit.poisoned&&"Empoisonné",up&&unit.weaponPoison&&"Arme empoisonnée",up&&unit.prone&&"Au sol",!up&&"Hors combat"].filter(Boolean);
+      up&&missionEncircled(unit)&&"Encerclé",up&&unit.poisoned&&"Empoisonné",up&&unit.weaponPoison&&"Arme empoisonnée",up&&unit.prone&&"Au sol",up&&unit.fatigued&&missionFatigueTag(unit),!up&&"Hors combat"].filter(Boolean);
     const horse=up?e.mountOf?.(unit):null;
     html+=`<strong>${esc(unit.character.name)}</strong><span class="hc-sub">${Math.max(0,unit.hp)} / ${unit.pvMax} PV · ${esc(weapon?.name||"Sans arme")}</span>`
       +(horse?`<span class="hc-sub">${esc(horse.character.name)} : ${Math.max(0,horse.hp)} / ${horse.pvMax} PV`

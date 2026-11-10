@@ -86,11 +86,13 @@
       return [...(unit?.character?.spells||[]),...(unit?.spells||[])].find(x=>x.code===code||x.name===spell(code)?.nom)||null;
     }
     function knownSpells(unit){ return spells.filter(x=>knownSpell(unit,x.code)); }
+    const fatigue=unit=>typeof combat.fatigueFactor==="function"?combat.fatigueFactor(unit):1;
     function spellLevel(unit,code){ return Math.max(1,Number(knownSpell(unit,code)?.mastery)||1); }
     function schoolLevel(unit,school){ return combat.statWithGear(unit,school); }
     function mastery(unit,code){
       const s=spell(code);
-      return s?schoolLevel(unit,s.ecole)+SPELL_SHARE*spellLevel(unit,code):0;
+      // Fatigué (combat-engine.js, fatigueFactor) : l'école et le sort comptent pour 80 %.
+      return s?schoolLevel(unit,s.ecole)+SPELL_SHARE*spellLevel(unit,code)*fatigue(unit):0;
     }
     // base + Maîtrise / pas, arrondi bas (portée, durée, rayon de zone, bonus) ; sans pas, la base seule ; plafond éventuel.
     function stepped(unit,code,baseKey,stepKey,maxKey=null){
@@ -142,7 +144,8 @@
       const s=spell(code);
       return s?Math.max(1,Math.ceil(num(s.mana_base,0)*(1-mastery(unit,code)/num(s.mana_diviseur_maitrise,300))-1e-9)):0;
     }
-    function manaMax(unit){ return combat.statWithGear(unit,"Réserve de mana"); }
+    // Fatigué (combat-engine.js, rested) : sa Réserve reste entière, comme ses PV max.
+    function manaMax(unit){ return combat.statWithGear(typeof combat.rested==="function"?combat.rested(unit):unit,"Réserve de mana"); }
     function currentMana(unit){
       const mana=Number(unit?.character?.mana);
       return Number.isFinite(mana)?mana:manaMax(unit);
@@ -178,7 +181,7 @@
     // Magie en armure (Idan, 2026-11-09 : « Piste 2 ») : sa valeur (1 si elle manque : « tous les autres à 1 »).
     function armorSkill(unit){
       const value=Number(unit?.character?.skills?.martial?.[ARMOR_SKILL.name]);
-      return Number.isFinite(value)?value:ARMOR_SKILL.base;
+      return (Number.isFinite(value)?value:ARMOR_SKILL.base)*fatigue(unit);
     }
     // Le malus qui reste : celui de l'équipement, moins la part de la compétence, jamais sous 0.
     function armorPenalty(unit){

@@ -1354,6 +1354,8 @@ function historyEntryText(c,entry){
   if(entry.kind==="joined") return fill(entry.initial?copy.joined_initial:copy.joined);
   // Le Défi du capitaine (Idan, 2026-11-09) : le combat singulier, côté capitaine ou côté défié.
   if(entry.kind==="duel_fought") return fill(copy.duel_fought?.[entry.role]?.[entry.outcome]||"",{nom:entry.opponent||""});
+  // La Cave (Idan, 2026-11-10) : la bagarre du soir.
+  if(entry.kind==="cellar_fight") return fill(copy.cellar_fight?.[entry.outcome]||"",{nom:entry.opponent||""});
   // Mort en mission (le Mémorial, Idan, 2026-11-09).
   if(entry.kind==="death") return entry.captured?fill(copy.death_captured)
     :entry.knockouts?fill(copy.death_knockouts,{n:historyPlural(entry.knockouts,"adversaire","adversaires")}):fill(copy.death);
@@ -1760,6 +1762,7 @@ async function init() {
     initializeExpeditionUi();
     initializeCampBuildingsUi();
     if(typeof initializeCanteenUi==="function") initializeCanteenUi();
+    if(typeof initializeCellarUi==="function") initializeCellarUi();
     initializeSaveUi();
     initializeScreenUi();
     initializeIntroUi();

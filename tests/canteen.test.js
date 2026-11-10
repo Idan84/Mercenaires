@@ -46,7 +46,9 @@ assert.deepEqual([k("canteen.xp_per_level"),k("canteen.unlock_from_lab_level")],
 // La salle : une ligne de camp-buildings.json à la Taverne (lieu taverne), 10 niveaux, 500 × n² PO.
 const row=rules.campBuildingRow("canteen");
 assert.deepEqual([row.nom,row.niveaux,row.prix_base,row.lieu,row.requiert],["La Cantine",10,500,"taverne",null]);
-assert.ok(reference.campBuildings.rows.filter(r=>r.code!=="canteen").every(r=>r.lieu===null),"les autres sont au camp");
+// La Cave (Idan, 2026-11-10) : l'autre salle de la Taverne.
+assert.ok(reference.campBuildings.rows.filter(r=>!["canteen","cellar"].includes(r.code)).every(r=>r.lieu===null),"les autres sont au camp");
+assert.equal(rules.campBuildingRow("cellar")?.lieu,"taverne");
 
 const captain=generator.createCaptain({id:1});
 captain.people="Nain";

@@ -153,7 +153,7 @@ const start = mission.slice(mission.indexOf("function startExpeditionCombat("), 
 assert.match(start, /missionTerrain\(\)\?\.generate\(\{cols:MISSION_MAP\.cols,rows:MISSION_MAP\.rows,faction:offer\.faction,players,enemies\}\)/);
 assert.match(start, /decor:terrain\?\.decor\|\|\[\],relief:terrain\?\.relief\|\|\[\]/);
 assert.match(mission, /game\.mission\.relief=generateMissionRelief\(\);\n\s+game\.mission\.decor=generateMissionDecor\(\);/, "la Mission Test garde les siens");
-assert.match(mission, /filter\(row=>row\.code!==wall\)/, "sans palissade au hasard");
+assert.match(mission, /filter\(row=>row\.code!==wall&&row\.code!==CELLAR_DECOR\)/, "sans palissade ni tonneaux au hasard");
 assert.match(read("index.html"), /<script src="\/core\/mission-terrain\.js"><\/script>/);
 
 // 4. Les combats automatiques finissent, sur chaque paysage : 30 par faction, carte de contrat 36 × 25, le camp au centre.

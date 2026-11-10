@@ -212,7 +212,8 @@ function generateMissionRelief(){
 function generateMissionDecor(){
   // La palissade sert à l'enceinte des camps de contrat (mission-landscapes.json), pas au hasard.
   const wall=game.referenceData?.missionLandscapes?.enceinte?.decor;
-  const rows=(game.referenceData?.terrainDecors?.rows||[]).filter(row=>row.code!==wall);
+  // Les tonneaux restent à la cave (La Cave, generateCellarDecor).
+  const rows=(game.referenceData?.terrainDecors?.rows||[]).filter(row=>row.code!==wall&&row.code!==CELLAR_DECOR);
   if(!rows.length) return [];
   const inner=missionCells().filter(c=>{ const col=missionColumn(c.q,c.r); return col>MISSION_MAP.spawnInset&&col<MISSION_MAP.cols-1-MISSION_MAP.spawnInset; });
   const isInner=c=>inner.some(x=>x.q===c.q&&x.r===c.r);
@@ -1223,6 +1224,161 @@ function resolveMissionDuel(killed=false){
   return report;
 }
 
+// ---- La Cave (Idan, 2026-11-10 ; règles : game-core/cellar.js ; écran : cellar-ui.js) ----
+// Deux mercenaires règlent leur désaccord dans la cave de la taverne, armes à la main, jusqu'à ce que l'un tombe (fuir, c'est
+// perdre). Personne ne commande : chacun se bat seul (l'IA des ennemis), au rythme de l'IA ; on regarde. Le premier tiré à
+// gauche (camp « player »), son adversaire à droite (« enemy ») ; ni aura de capitaine ni de lieutenant. Une petite cave sans
+// relief, quelques tonneaux. Les cotes : la même bagarre jouée en coulisses sur des copies des deux fiches.
+const CELLAR_DECOR="tonneaux";
+const CELLAR_MAX_TURNS=60;
+function cellarRulesOf(){ return game.campaign&&typeof campaignRules==="function"?campaignRules().cellarRules||null:null; }
+function cellarCopy(){ return game.referenceData?.cellarDialogue||{}; }
+function cellarQuarrel(t){ const list=cellarCopy().quarrels||[]; return list[t?.quarrel]??list[0]??""; }
+function cellarOddsText(x){ return (Math.round((Number(x)||0)*100)/100).toFixed(2).replace(".",","); }
+// Les tonneaux : quelques tas contre les murs et dans les coins, loin des deux combattants.
+function generateCellarDecor(engine,units){
+  const far=c=>units.every(u=>engine.hexDistance(u,c)>2);
+  const edge=c=>{ const col=missionColumn(c.q,c.r); return col<=1||col>=MISSION_MAP.cols-2||c.r<=1||c.r>=MISSION_MAP.rows-2; };
+  const cells=missionCells().filter(c=>far(c)&&edge(c));
+  const decor=[],taken=new Set(),groups=3+Math.floor(Math.random()*3);
+  for(let i=0;i<groups&&cells.length;i++){
+    let cell=cells[Math.floor(Math.random()*cells.length)];
+    for(let n=0,size=1+Math.floor(Math.random()*3);n<size&&cell;n++){
+      const key=missionKey(cell.q,cell.r);
+      if(!taken.has(key)){ taken.add(key); decor.push({q:cell.q,r:cell.r,code:CELLAR_DECOR}); }
+      const next=missionNeighbors(cell).filter(c=>far(c)&&edge(c)&&!taken.has(missionKey(c.q,c.r)));
+      cell=next[Math.floor(Math.random()*next.length)];
+    }
+  }
+  return decor;
+}
+// La bagarre : a à gauche, b à droite, au centre de la cave, à cellar.start.distance cases l'un de l'autre.
+function buildCellarMission(a,b,{simulation=false}={}){
+  const C=cellarRulesOf()?.constants||{cols:9,rows:9,distance:2};
+  setMissionMapSize({cols:C.cols,rows:C.rows});
+  const engine=MercenairesCombat.createCombatEngine(game.referenceData,{onAttack:onMissionAttack,heightOf:missionUnitHeight});
+  const left=makeMissionUnit(a,"player",0,{noMount:true}),right=makeMissionUnit(b,"enemy",0,{noMount:true});
+  for(const u of [left,right]) Object.assign(u,{isCaptain:false,isLieutenant:false});
+  const row=Math.floor(MISSION_MAP.rows/2),col=Math.floor((MISSION_MAP.cols-C.distance)/2);
+  Object.assign(left,missionAxial(col,row));
+  Object.assign(right,missionAxial(col+C.distance,row));
+  return {engine,endRules:MercenairesMissionEnd.createMissionEndRules({reference:game.referenceData}),
+    progression:MercenairesProgression.createProgressionRules({reference:game.referenceData}),
+    players:[left],enemies:[right],playerOrder:[left],enemyOrder:[right],
+    activeUnit:null,phase:"player",turn:1,mode:null,log:[],over:false,winner:null,aftermath:null,
+    relief:[],decor:generateCellarDecor(engine,[left,right]),
+    // Chacun sait où est l'autre.
+    awareness:{player:{alert:true,lastKnown:{q:right.q,r:right.r},objective:null},enemy:{alert:true,lastKnown:{q:left.q,r:left.r},objective:null}},
+    cellar:{simulation,ids:[a.id,b.id]}};
+}
+// En coulisses : la bagarre jouée d'un trait, sans rien afficher, sur des copies (rien ne change pour de vrai). Rend la
+// mission terminée ; game.mission et la carte reviennent comme avant.
+function playCellarInBackstage(a,b){
+  const saved={mission:game.mission,cols:MISSION_MAP.cols,rows:MISSION_MAP.rows};
+  const copy=x=>JSON.parse(JSON.stringify(x));
+  try{
+    const m=buildCellarMission(copy(a),copy(b),{simulation:true});
+    game.mission=m;
+    m.autoRunning=true;
+    selectNextMissionPlayer();
+    return m;
+  }finally{
+    game.mission=saved.mission;
+    setMissionMapSize({cols:saved.cols,rows:saved.rows});
+  }
+}
+// Les cotes : n bagarres en coulisses ; wins, celles gagnées par a.
+function simulateCellarOdds(a,b,n){
+  let wins=0;
+  for(let i=0;i<n;i++) if(playCellarInBackstage(a,b).winner==="player") wins+=1;
+  return {wins,n};
+}
+// Trop long : le tavernier les sépare, le plus frais (PV restants) gagne.
+function endCellarByTime(){
+  const m=game.mission,left=m.players[0],right=m.enemies[0];
+  const fresh=u=>u.alive&&!u.offMap?u.hp/Math.max(1,u.pvMax):-Infinity;
+  Object.assign(m,{over:true,winner:fresh(left)>=fresh(right)?"player":"enemy",activeUnit:null,mode:null});
+  m.cellar.timeout=true;
+  finishMissionCellar();
+}
+// La bagarre sous nos yeux : la mise est déjà posée (cellar.js, placeBet), ou on regarde sans parier.
+function startCellarFight(){
+  const rules=cellarRulesOf(),c=game.campaign,go=rules?.ready(c);
+  if(!go?.ok) return false;
+  const [a,b]=go.fighters,t=rules.tonight(c),copy=cellarCopy();
+  game.mission=buildCellarMission(a,b);
+  $("game-panel")?.classList?.add("hidden");
+  $("mission-panel")?.classList?.remove("hidden");
+  missionLog(duelFill(copy.start,{a:a.name,b:b.name,raison:cellarQuarrel(t)}),"turn");
+  const bet=t.bet,on=bet?[a,b].find(m=>m.id===bet.on):null;
+  missionLog(bet?duelFill(copy.bet_placed,{mise:fmt(bet.stake),nom:on?.name||"",cote:cellarOddsText(bet.odds)}):String(copy.no_bet||""),"gear");
+  logMissionFatigue(missionUnits());
+  selectNextMissionPlayer();
+  return true;
+}
+// La fin de la bagarre : qui a gagné, puis le bilan.
+function finishMissionCellar(){
+  const m=game.mission;
+  if(m.cellar.simulation) return;
+  const left=m.players[0],right=m.enemies[0],copy=cellarCopy();
+  const [winner,loser]=m.winner==="player"?[left,right]:[right,left];
+  const names={gagnant:winner.character.name,perdant:loser.character.name};
+  if(m.cellar.timeout) missionLog(duelFill(copy.timeout,{...names,n:CELLAR_MAX_TURNS}),"turn");
+  else if(loser.offMap) missionLog(duelFill(copy.fled,names),"turn");
+  else missionLog(duelFill(copy.won,names),"turn");
+  resolveMissionCellar(winner,loser);
+}
+// La fin de combat : le perdant fait un jet de blessure (sinon il est fatigué, sans jet de mort) ; le gagnant n'est ni
+// blessé ni fatigué. Les deux gardent l'XP de leur combat.
+function cellarAftermath(m,winner,loser){
+  for(const u of [winner,loser]) if(Number(u.damageTaken)>0) MercenairesProgression.recordDamageTaken(u,u.damageTaken);
+  const rested=u=>m.engine.rested(u);
+  const lost=m.endRules.resolveMissionEnd([{id:loser.character.id,name:loser.character.name,hp:loser.hp,pvMax:loser.pvMax,
+    damageTaken:loser.damageTaken,stats:{...loser.character.stats,Endurance:m.engine.statWithGear(rested(loser),"Endurance"),
+      "Volonté":m.engine.statWithGear(rested(loser),"Volonté")},offMap:Boolean(loser.offMap),progress:loser.progress||null,spared:true}],{});
+  const won={id:winner.character.id,name:winner.character.name,hp:winner.hp,pvMax:winner.pvMax,damageTaken:winner.damageTaken,
+    dead:false,wounded:false,fatigueDays:0,outcome:"standing",progress:winner.progress||null};
+  return {...lost,results:[won,...lost.results]};
+}
+// Le bilan appliqué à la compagnie (campaign.js, applyCellarFight) : le pari, l'XP, l'historique ; puis la sauvegarde.
+function resolveMissionCellar(winner,loser){
+  const m=game.mission;
+  if(!m?.cellar||m.cellar.resolved) return null;
+  m.cellar.resolved=true;
+  const copy=cellarCopy();
+  m.aftermath=cellarAftermath(m,winner,loser);
+  const fallen=m.aftermath.results.find(r=>r.id===loser.character.id);
+  if(fallen) missionLog(loser.character.name+" — "+missionAftermathText(fallen),fallen.wounded?"bad":"info");
+  if(!game.campaign||typeof campaignRules!=="function"){ renderMission(); return null; }
+  const report=m.companyReport=campaignRules().applyCellarFight(game.campaign,{winnerId:winner.character.id,aftermath:m.aftermath,
+    fled:Boolean(loser.offMap)});
+  const fight=report?.cellar;
+  if(fight){
+    missionLog(duelFill(copy.xp,{gagnant:winner.character.name,xp:fight.xp.intimidation}),"gear");
+    const bet=fight.bet,on=bet?[winner,loser].find(u=>u.character.id===bet.on)?.character.name||"":"";
+    if(bet) missionLog(duelFill(bet.won?copy.bet_won:copy.bet_lost,{mise:fmt(bet.stake),gain:fmt(bet.payout),nom:on}),bet.won?"gear":"bad");
+  }
+  for(const {mercenary,changes} of report?.progression||[])
+    for(const c of visibleProgressionChanges(changes)) missionLog(mercenary.name+" : "+c.name+" "+c.shownBefore+" → "+c.shownAfter+".",c.shownAfter>c.shownBefore?"gear":"bad");
+  if(typeof saveGame==="function") saveGame();
+  renderMission();
+  return report;
+}
+// La bagarre que personne n'a regardée (on a quitté la cave sans la lancer) : elle a lieu quand même, avant le lendemain
+// (« En tant que Capitaine, on peut décider de les arrêter ? Non »), jouée en coulisses, sans pari.
+function resolveUnwatchedCellarFight(){
+  const rules=cellarRulesOf(),c=game.campaign,go=rules?.ready(c);
+  if(!go?.ok) return null;
+  const [a,b]=go.fighters,t=rules.tonight(c);
+  const m=playCellarInBackstage(a,b);
+  const left=m.players[0],right=m.enemies[0];
+  const [winner,loser]=m.winner==="player"?[left,right]:[right,left];
+  const report=campaignRules().applyCellarFight(c,{winnerId:winner.character.id,aftermath:cellarAftermath(m,winner,loser),fled:Boolean(loser.offMap)});
+  if(report&&typeof tavernLog==="function")
+    tavernLog(duelFill(cellarCopy().unwatched,{gagnant:winner.character.name,perdant:loser.character.name,raison:cellarQuarrel(t)}),"turn");
+  return report;
+}
+
 function missionTerrain(){
   if(typeof MercenairesMissionTerrain==="undefined") return null;
   return game.missionTerrain||(game.missionTerrain=MercenairesMissionTerrain.createMissionTerrain({reference:game.referenceData}));
@@ -1250,6 +1406,7 @@ function placeMissionArmy(units,team){
 function selectNextMissionPlayer(){
   const m=game.mission;
   if(!m||m.over) return;
+  if(m.cellar&&m.turn>CELLAR_MAX_TURNS){ endCellarByTime(); return; }
   for(;;){
     const next=m.playerOrder.find(u=>u.alive&&!u.acted);
     if(!next){ runMissionEnemyTurn(); return; }
@@ -1274,6 +1431,19 @@ function selectNextMissionPlayer(){
       next.acted=true;
       if(m.over){ renderMission(); return; }
       continue;
+    }
+    // La Cave : personne ne commande ; il se bat seul (l'IA), puis la pause de l'IA ennemie.
+    if(m.cellar){
+      Object.assign(m,{phase:"player",activeUnit:next,mode:null,pacedUnit:next});
+      enemyMissionAct(next,{reset:false});
+      next.acted=true;
+      m.activeUnit=null;
+      if(m.over){ m.pacedUnit=null; renderMission(); return; }
+      if(!missionPaced()){ m.pacedUnit=null; continue; }
+      const wait=missionFxEstimate(m.fx)+(game.missionFast?MISSION_PACE.fastPause:MISSION_PACE.pause);
+      renderMission();
+      m.enemyTimer=setTimeout(()=>{ if(game.mission!==m||m.over) return; m.pacedUnit=null; selectNextMissionPlayer(); },wait);
+      return;
     }
     m.phase="player";
     m.activeUnit=next;
@@ -1352,6 +1522,8 @@ function checkMissionEnd(){
   game.mission.mode=null;
   // Le Défi du capitaine : sa propre fin (la fenêtre de verdict, puis applyDuel).
   if(game.mission.duel){ finishMissionDuel(); return true; }
+  // La Cave : sa propre fin (le bilan de la bagarre, le pari).
+  if(game.mission.cellar){ finishMissionCellar(); return true; }
   missionLog(game.mission.winner==="player"
     ?"VICTOIRE — les ennemis sont hors combat ou en déroute."
     :"DÉFAITE — votre équipe est hors combat.","turn");
@@ -1563,11 +1735,11 @@ function missionAftermathText(r){
 
 function renderMissionAftermath(m){
   if(!m.aftermath) return "";
-  const label={dead:"Mort",wounded:"Blessé",fatigued:"Fatigué"};
+  const label={dead:"Mort",wounded:"Blessé",fatigued:"Fatigué",standing:"Vainqueur"};
   const rows=m.aftermath.results.map(r=>`
     <li class="aftermath-${r.outcome}">
       <strong>${esc(r.name)}${r.isCaptain?" (capitaine)":""}</strong>
-      <span>${label[r.outcome]}${r.dead?"":" · "+(r.wounded?r.woundDays:r.fatigueDays)+" j"}</span>
+      <span>${label[r.outcome]}${r.outcome==="standing"?" · ni blessé ni fatigué":r.dead?"":" · "+(r.wounded?r.woundDays:r.fatigueDays)+" j"}</span>
       <small>${esc(missionAftermathDetail(r))}</small>
     </li>`).join("");
   const report=m.companyReport;
@@ -1576,6 +1748,7 @@ function renderMissionAftermath(m){
     :report.gameOver
       ?""
       :m.duel?"Bilan du duel appliqué à la compagnie (ni prime ni réputation)."
+      :m.cellar?"Bilan de la bagarre appliqué à la compagnie (ni prime ni réputation)."
       :"Bilan appliqué à la compagnie. "+(m.expeditionId?"Primes versées au retour de l’escouade.":"Primes de mission versées : "+report.bonusPaid+" PO.")+missionRenownNote(report);
   const contract=m.contractResult?`<ul class="mission-contract-result">${contractResultLines(m.contractResult,m.contractReturn).map(l=>`<li class="is-${l.kind}">${esc(l.text)}</li>`).join("")}</ul>`:"";
   return `${contract}<ul class="mission-aftermath">${rows}</ul>
@@ -4154,7 +4327,8 @@ function runMissionEnemyTurn(){
   const m=game.mission;
   if(!m||m.over) return;
   m.phase="enemy";m.activeUnit=null;m.mode=null;
-  missionLog("Tour ennemi.","turn");
+  // À la cave, pas d'ennemi : deux des nôtres.
+  if(!m.cellar) missionLog("Tour ennemi.","turn");
   renderMission();
   if(!missionPaced()){
     for(const unit of m.enemyOrder){
@@ -4202,7 +4376,7 @@ function finishMissionEnemyTurn(){
   for(const unit of m.players) unit.acted=false;
   // Un seul blocage au bouclier par tour (Idan, 2026-11-04) : chacun retrouve le sien.
   m.engine.resetShieldBlocks(missionUnits());
-  missionLog("Tour "+m.turn+" — votre équipe.","turn");
+  missionLog("Tour "+m.turn+(m.cellar?".":" — votre équipe."),"turn");
   selectNextMissionPlayer();
 }
 
@@ -5047,11 +5221,13 @@ function leaveMission(){
   // Le duel attend encore le verdict : la fenêtre revient.
   if(game.mission?.duel&&!game.mission.duel.resolved){ openDuelVerdict(); return; }
   const gameOver=game.mission?.companyReport?.gameOver;
+  const cellar=Boolean(game.mission?.cellar);
   game.mission=null;
   $("mission-panel").classList.add("hidden");
   if(gameOver){ showGameOver(); return; }
   $("game-panel").classList.remove("hidden");
   if(game.campaign) renderGame();
+  if(cellar&&typeof renderCellar==="function") renderCellar();
 }
 
 function initializeMissionUi(){

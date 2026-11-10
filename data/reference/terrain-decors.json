@@ -32,7 +32,7 @@
       "key": "couleur"
     }
   ],
-  "row_count": 15,
+  "row_count": 16,
   "rows": [
     {
       "code": "buissons",
@@ -168,6 +168,15 @@
       "bloque_vue": false,
       "couverture": "partielle",
       "couleur": "#5d5a52"
+    },
+    {
+      "code": "tonneaux",
+      "nom": "Tonneaux",
+      "article": "les tonneaux",
+      "cout_mouvement": null,
+      "bloque_vue": false,
+      "couverture": "partielle",
+      "couleur": "#7a5532"
     }
   ]
 }

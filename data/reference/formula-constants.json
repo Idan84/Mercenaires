@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 446,
+  "row_count": 453,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -3600,6 +3600,62 @@
       "description": "Le tavernier propose un nouveau plat par niveau du Labo d'alchimie à partir de ce niveau (2 : un plat au niveau 2… les neuf autres au niveau 10), gratuitement ; le plat du peuple du capitaine est inclus à l'ouverture (Idan, 2026-11-08 : « A partir du niveau 2 du laboratoire d'alchimie, […] le cantinier nous propose de débloquer un nouveau plat » ; « Débloquage gratuit. Le premier est inclus dans la construction du bâtiment »).",
       "formule": "La Cantine V1",
       "valeur": 2,
+      "version": "V1"
+    },
+    {
+      "nom": "Cave — largeur de la cave",
+      "code": "cellar.map.cols",
+      "description": "La Cave (Idan, 2026-11-10 ; validé : « une petite cave d'environ 9 × 9 cases avec quelques tonneaux ») : colonnes de la carte de la bagarre.",
+      "formule": "La Cave V1",
+      "valeur": 9,
+      "version": "V1"
+    },
+    {
+      "nom": "Cave — hauteur de la cave",
+      "code": "cellar.map.rows",
+      "description": "La Cave : rangées de la carte de la bagarre.",
+      "formule": "La Cave V1",
+      "valeur": 9,
+      "version": "V1"
+    },
+    {
+      "nom": "Cave — écart au départ",
+      "code": "cellar.start.distance",
+      "description": "La Cave : les deux mercenaires commencent au centre de la cave, sur la même rangée, à ce nombre de cases l'un de l'autre.",
+      "formule": "La Cave V1",
+      "valeur": 2,
+      "version": "V1"
+    },
+    {
+      "nom": "Cave — simulations des cotes",
+      "code": "cellar.odds.simulations",
+      "description": "La Cave (« Tu calcules un système de côtes de parieur par rapport au profil ») : le tavernier simule la bagarre ce nombre de fois, en coulisses (même combat, même IA), pour mesurer la chance de chacun ; la chance est lissée ((victoires + 1) ÷ (simulations + 2)). Il refait ses calculs si l'un des deux change d'équipement ou de valeurs.",
+      "formule": "La Cave V1",
+      "valeur": 100,
+      "version": "V1"
+    },
+    {
+      "nom": "Cave — part du tavernier",
+      "code": "cellar.odds.margin",
+      "description": "La Cave (Idan, 2026-11-10 : « C'est bien que le tavernier garde 10% ») : la cote d'un combattant = (1 − part) ÷ sa chance de gagner, arrondie au centième. Un pari gagné rapporte mise × cote (mise comprise).",
+      "formule": "La Cave V1",
+      "valeur": 0.1,
+      "version": "V1"
+    },
+    {
+      "nom": "Cave — cote minimale",
+      "code": "cellar.odds.min",
+      "description": "La Cave : une cote ne descend jamais sous cette valeur (sinon parier sur un grand favori ferait perdre de l'or même en gagnant).",
+      "formule": "La Cave V1",
+      "valeur": 1.01,
+      "version": "V1"
+    },
+    {
+      "nom": "Cave — XP d'Intimidation du gagnant",
+      "code": "cellar.xp.intimidation",
+      "description": "La Cave (Idan, 2026-11-10 : « Le gagnant gagne 50XP en intimidation en bonus ») : en plus de l'XP de combat des deux ; le perdant fait un jet de blessure (sinon il est fatigué), le gagnant n'est ni blessé ni fatigué.",
+      "formule": "La Cave V1",
+      "valeur": 50,
       "version": "V1"
     }
   ]

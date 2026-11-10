@@ -164,6 +164,8 @@ function advanceCampDay(){
     if(typeof openExpeditionDialog==="function") openExpeditionDialog(allowed.expedition.id);
     return;
   }
+  // La Cave (Idan, 2026-11-10) : une bagarre tirée et pas regardée a lieu quand même, avant le lendemain.
+  if(typeof resolveUnwatchedCellarFight==="function") resolveUnwatchedCellarFight();
   const [report]=campaignRules().advanceTime(game.campaign,1);
   logDayReport(report);
   // Domaine évolutif (Idan, 2026-11-06) : chaque matin, après les entraînements et les apprentissages de la nuit.
@@ -354,12 +356,13 @@ function finishRecruitment(){
 
 // Les deux consommations sont pour l'instant des dépenses sans effet de gameplay.
 function showTavernView(view="home"){
-  for(const [name,id] of [["home","tavern-home"],["missions","tavern-missions-view"],["recruits","tavern-recruits-view"],["canteen","tavern-canteen-view"]]){
+  for(const [name,id] of [["home","tavern-home"],["missions","tavern-missions-view"],["recruits","tavern-recruits-view"],["canteen","tavern-canteen-view"],["cellar","tavern-cellar-view"]]){
     $(id).classList.toggle("hidden",name!==view);
   }
   if(view==="missions") renderContractBoard();
   if(view==="recruits") updateRecruitCarousel();
   if(view==="canteen"&&typeof renderCanteen==="function") renderCanteen();
+  if(view==="cellar"&&typeof renderCellar==="function") renderCellar();
   // La bulle du tavernier n'apparaît que sur l'accueil de la taverne (styles.css).
   document.body.dataset.tavernView=view;
 }
@@ -463,9 +466,10 @@ function initializeTavernUi(){
     if(option&&!option.disabled) tavernTalk(option.dataset.talk,option.dataset.arg);
   });
   talk.addEventListener("close",()=>{ game.tavernTalk=null; });
-  for(const id of ["tavern-missions-view","tavern-recruits-view","tavern-canteen-view"]){
+  for(const id of ["tavern-missions-view","tavern-recruits-view","tavern-canteen-view","tavern-cellar-view"]){
     $(id).addEventListener("click",event=>{
-      const btn=event.target.closest("[data-tavern-view]");
+      // Pas le <body> (qui porte data-tavern-view, la vue ouverte) : seulement un bouton de la vue.
+      const btn=event.target.closest("[data-tavern-view]:not(body)");
       if(btn) showTavernView(btn.dataset.tavernView);
     });
   }

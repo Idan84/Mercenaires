@@ -39,10 +39,12 @@
   const duel=typeof module!=="undefined"&&module.exports?require("./duel.js"):root.MercenairesDuel;
   // La Cave (Idan, 2026-11-10) : la bagarre du jour et les paris.
   const cellar=typeof module!=="undefined"&&module.exports?require("./cellar.js"):root.MercenairesCellar;
-  const api=factory(history,regeneration,training,study,posts,armorPorts,armorStudy,lumber,agenda,dungeon,desertion,salaryReview,socialPolicy,stables,taming,canteen,memorial,duel,cellar);
+  // Les dettes (Idan, 2026-11-10) : la caisse ne descend jamais sous 0 ; ce qu'elle ne paie pas est dû au mercenaire.
+  const debts=typeof module!=="undefined"&&module.exports?require("./debts.js"):root.MercenairesDebts;
+  const api=factory(history,regeneration,training,study,posts,armorPorts,armorStudy,lumber,agenda,dungeon,desertion,salaryReview,socialPolicy,stables,taming,canteen,memorial,duel,cellar,debts);
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesCampaign=api;
-})(typeof globalThis!=="undefined"?globalThis:this,function(History,Regeneration,Training,Study,Posts,ArmorPorts,ArmorStudy,Lumber,Agenda,Dungeon,Desertion,SalaryReview,SocialPolicy,Stables,Taming,Canteen,Memorial,Duel,Cellar){
+})(typeof globalThis!=="undefined"?globalThis:this,function(History,Regeneration,Training,Study,Posts,ArmorPorts,ArmorStudy,Lumber,Agenda,Dungeon,Desertion,SalaryReview,SocialPolicy,Stables,Taming,Canteen,Memorial,Duel,Cellar,Debts){
   // Sauvegarde : l'état de partie complet, sérialisé en JSON avec un format et une version.
   // La trace de génération des mercenaires (détail de calcul pour le Design Lab, ~85 % du poids)
   // n'est pas sauvegardée : un mercenaire passe d'environ 36 Ko à 5 Ko.
@@ -464,18 +466,60 @@
       return Math.round(salaried(state).reduce((sum,m)=>sum+salaryToday(state,m),0));
     }
 
-    // Salaire journalier versé chaque jour ; l'or peut passer sous 0 (aucune conséquence définie pour l'instant). Chaque jour
-    // de blessure, l'affinité d'un blessé sous contrat bouge selon le taux des blessés : (taux − 50) ÷ 25.
-    function paySalaries(state){
+    // Les dettes (Idan, 2026-11-10 ; règles : debts.js) : la caisse ne descend jamais sous 0 ; quand elle ne suffit pas,
+    // chacun est payé au prorata et le reste lui est dû.
+    const debtRules=Debts?Debts.createDebtRules({reference}):null;
+    // Payer une note (lines : { creditor, amount, kind }) ; sans le module des dettes, la caisse paie tout.
+    function settleBill(state,lines){
+      if(debtRules) return debtRules.settle(state,lines,{day:state.day});
+      const bill=Math.round(lines.reduce((sum,l)=>sum+(Number(l.amount)||0),0));
+      state.company.gold=Math.max(0,(Number(state.company.gold)||0)-bill);
+      return {due:bill,paid:bill,owed:0,lines:lines.map(l=>({...l,missing:0})),unpaid:[]};
+    }
+    const salaryLines=state=>salaried(state).map(m=>({creditor:m,amount:salaryToday(state,m),kind:"salary"})).filter(l=>l.amount>0);
+    // L'entretien des montures (Idan, 2026-11-10 : « le mercenaire subvient aux besoins de sa monture en attendant. On lui
+    // doit cet argent. Les autres, c'est le dresseur. Sinon, elles sont relâchées ») : la monture d'un mercenaire, on le lui
+    // doit ; une monture sans propriétaire, au Dresseur ; sans Dresseur, personne (elle sera relâchée). Celle du capitaine
+    // (Idan, 2026-11-10 : « On augmente la dette envers le dresseur. Sinon, on relâche la monture ») : comme une monture
+    // sans propriétaire.
+    function upkeepLines(state){
+      if(!stableRules) return [];
+      const trainer=holderOfPost("trainer")(state);
+      return stableRules.mountsOf(state).map(item=>{
+        const owner=stableRules.ownerOf(state,item);
+        const captain=Boolean(owner&&owner.id===state.company.captainId);
+        return {creditor:owner&&!captain?owner:trainer||null,amount:stableRules.upkeepOf(item),kind:"upkeep",mount:item,owner:owner||null,captain};
+      }).filter(l=>l.amount>0);
+    }
+
+    // Salaire journalier versé chaque jour (avec l'entretien des montures, upkeep : true, sur la même note : le prorata
+    // vaut pour tous). Chaque jour de blessure, l'affinité d'un blessé sous contrat bouge selon le taux des blessés :
+    // (taux − 50) ÷ 25.
+    function paySalaries(state,{upkeep=false}={}){
       const paid=salaried(state).filter(m=>Number(m.contract?.dailySalary)>0);
-      const total=payroll(state);
-      state.company.gold-=total;
+      const salaries=salaryLines(state),mounts=upkeep?upkeepLines(state):[];
+      const bill=settleBill(state,[...salaries,...mounts]);
+      const sum=(list,key)=>list.reduce((s,l)=>s+(Number(l[key])||0),0);
+      const billed=bill.lines.filter(l=>l.kind==="salary"),kept=bill.lines.filter(l=>l.kind==="upkeep");
+      const total=Math.round(sum(salaries,"amount")),owed=sum(billed,"missing");
+      // Sans Dresseur : la monture impayée sans propriétaire, ou celle du capitaine, est relâchée.
+      const released=[];
+      for(const l of bill.unpaid){
+        if(l.kind!=="upkeep"||!stableRules) continue;
+        if(l.captain){ stableRules.remove(state,l.mount); released.push(l.mount); }
+        else if(!l.owner&&stableRules.release(state,l.mount.id)?.ok) released.push(l.mount);
+      }
+      const stable=upkeep&&stableRules?{total:Math.round(sum(mounts,"amount")),paid:Math.max(0,Math.round(sum(mounts,"amount"))-sum(kept,"missing")),
+        owed:sum(kept.filter(l=>l.creditor),"missing"),
+        count:stableRules.mountsOf(state).length+released.length,released,
+        debts:kept.filter(l=>l.creditor&&l.missing>0).map(l=>({id:l.creditor.id,name:l.creditor.name,mount:l.mount.petName||l.mount.name,amount:l.missing}))}:null;
       const delta=social?social.woundedAffinity(state):0;
       const wounded=paid.filter(m=>m.id!==state.company.captainId&&m.recovery?.kind==="wounded").map(m=>{
         if(delta) m.affinityAcquired=(Number(m.affinityAcquired)||0)+delta;
         return {id:m.id,salary:salaryToday(state,m),affinityDelta:delta||0};
       });
-      return {total,count:paid.length,wounded};
+      const debts=billed.filter(l=>l.missing>0).map(l=>({id:l.creditor.id,name:l.creditor.name,amount:l.missing}));
+      return {total,paid:Math.max(0,total-owed),owed,count:paid.length,wounded,debts,...(stable?{stable}:{})};
     }
 
     function createCampaign({captain,squad=[],companyName=null}){
@@ -920,6 +964,7 @@
       // Le Mémorial : mort en combat singulier contre le capitaine.
       const captain=captainOf(state);
       const memorial=memorialRules?memorialRules.record(state,m,{cause:{kind:"duel",by:captain?{name:captain.name,proper:true}:null}}):null;
+      debtRules?.forget(state,m.id);
       const items=m.items||[];
       if(items.length){
         if(!Array.isArray(state.company.stock)) state.company.stock=[];
@@ -1070,9 +1115,9 @@
     function advanceOneDay(state){
       state.day+=1;
       const recovered=recoverOneDay(state);
-      const salaries=paySalaries(state);
-      // Les Écuries : l'entretien des montures, chaque matin.
-      const stable=stableRules?{...stableRules.payUpkeep(state),recovered:stableRules.recoverOneDay(state)}:null;
+      // Les salaires et l'entretien des montures, chaque matin, sur une même note (les dettes : debts.js).
+      const salaries=paySalaries(state,{upkeep:true});
+      const stable=stableRules?{...(salaries.stable||{total:0,owed:0,count:0,released:[],debts:[]}),recovered:stableRules.recoverOneDay(state)}:null;
       const tavernReport=tavern.tavernMorning(state.tavern,state.day,candidateFactory(state),tavern.slotsFor?.(companyRenown(state).total));
       const offersLost=expireBoardOffers(state);
       const expeditions=advanceExpeditions(state);
@@ -1258,7 +1303,7 @@
       if(expedition.status!=="scheduled") return {ok:false,reason:"L’escouade est déjà partie."};
       list.splice(list.indexOf(expedition),1);
       // Ancienne sauvegarde : une garde du corps payée à la signature rend son paiement.
-      if(expedition.kind==="bodyguard"&&!expedition.payOnDeparture) state.company.gold-=Number(expedition.offer.payment)||0;
+      if(expedition.kind==="bodyguard"&&!expedition.payOnDeparture) state.company.gold=Math.max(0,state.company.gold-(Number(expedition.offer.payment)||0));
       const slots=boardOf(state).slots;
       const slot=slots.find(x=>!x.offer&&x.emptyUntil===expedition.signedDay+TAVERN_EMPTY_DAYS)||slots.find(x=>!x.offer);
       if(slot){ slot.offer=expedition.offer; slot.emptyUntil=null; }
@@ -1311,7 +1356,11 @@
         if(!Array.isArray(state.company.stock)) state.company.stock=[];
         state.company.stock.push(...(pending.items||[]));
         report.items=(pending.items||[]).length;
-        for(const b of pending.bonuses||[]) if(roster.has(b.id)){ state.company.gold-=b.bonus; report.bonusPaid+=b.bonus; }
+        // Les primes des survivants encore là, sur une même note (au prorata si la caisse ne suffit pas ; debts.js).
+        const due=(pending.bonuses||[]).filter(b=>roster.has(b.id)).map(b=>({creditor:rosterOf(state).find(m=>m.id===b.id),amount:b.bonus,kind:"bonus"}));
+        const bill=settleBill(state,due);
+        report.bonusPaid=bill.paid;
+        report.bonusOwed=bill.owed;
         // Les montures capturées rentrent avec l'escouade : une place aux Écuries chacune, sinon relâchées.
         if(stableRules&&pending.mounts?.length) report.mounts=stableRules.admit(state,pending.mounts);
       }
@@ -1381,8 +1430,7 @@
     // Retour : chacun tire son sort (rentré, fatigué, blessé), gagne un peu de réputation et touche sa prime ; la
     // compagnie gagne un peu de renommée.
     function finishBodyguard(state,expedition){
-      const results=[];
-      let bonusPaid=0;
+      const results=[],bonuses=[];
       for(const id of expedition.memberIds){
         const m=rosterOf(state).find(x=>x.id===id);
         if(!m) continue;
@@ -1396,17 +1444,19 @@
           if(m.reputationBreakdown) m.reputationBreakdown.careerDelta=m.reputationCareerDelta;
         }
         const bonus=Number(m.contract?.missionBonus)||0;
-        state.company.gold-=bonus;
-        bonusPaid+=bonus;
+        if(bonus>0) bonuses.push({creditor:m,amount:bonus,kind:"bonus"});
         // Les jours de repos réels (dortoir, Bains, Dispensaire, médecin) ; 0 si le dortoir efface la fatigue.
         const days=back.issue==="blesse"?m.recovery.daysLeft:back.issue==="fatigue"?(m.recovery?.daysLeft||0):back.days;
         History.record(m,state.day,"bodyguard",{issue:back.issue,days,client:expedition.offer.client});
         results.push({mercenary:m,issue:back.issue,days,reputation,bonus});
       }
+      // Les primes, sur une même note (au prorata si la caisse ne suffit pas ; debts.js).
+      const bill=settleBill(state,bonuses);
+      for(const l of bill.lines){ const r=results.find(x=>x.mercenary===l.creditor); if(r) r.owed=l.missing; }
       const renown=results.length?bodyguard.renownGain():0;
       if(renown) state.company.missionRenown=(Number(state.company.missionRenown)||0)+renown;
       state.expeditions=expeditionsOf(state).filter(e=>e!==expedition);
-      return {expedition,results,bonusPaid,renown};
+      return {expedition,results,bonusPaid:bill.paid,bonusOwed:bill.owed,renown};
     }
 
     // AdvanceTime(5) = cinq résolutions successives d'une journée. Seul un nombre entier de jours ≥ 0 est accepté.
@@ -1521,6 +1571,8 @@
             if(memorial) (report.memorial=report.memorial||[]).push(memorial);
           }
           roster.splice(roster.indexOf(mercenary),1);
+          // Sa mort éteint ce que la compagnie lui devait.
+          debtRules?.forget(state,mercenary.id);
           if(state.company.intendantId===mercenary.id) state.company.intendantId=null;
           if(state.company.medicId===mercenary.id) state.company.medicId=null;
           if(Posts) Posts.release(state,mercenary);
@@ -1565,11 +1617,14 @@
         // la carte (Idan, 2026-10-24, doc 17 §8).
         const bonus=result.offMap||duel?0:Number(mercenary.contract?.missionBonus)||0;
         if(bonus>0&&options.deferBonuses) report.bonusesDue.push({id:mercenary.id,mercenary,bonus});
-        else if(bonus>0){
-          state.company.gold-=bonus;
-          report.bonusPaid+=bonus;
-          report.bonuses.push({mercenary,bonus});
-        }
+        else if(bonus>0) report.bonuses.push({mercenary,bonus});
+      }
+      // Les primes, sur une même note (au prorata si la caisse ne suffit pas ; debts.js) : la part impayée est due.
+      if(report.bonuses.length){
+        const bill=settleBill(state,report.bonuses.map(b=>({creditor:b.mercenary,amount:b.bonus,kind:"bonus"})));
+        report.bonusPaid=bill.paid;
+        report.bonusOwed=bill.owed;
+        report.bonuses=report.bonuses.map((b,i)=>({...b,owed:bill.lines[i]?.missing||0}));
       }
       if(aftermath.captainDead){
         state.gameOver={day:state.day,reason:"captain-dead"};
@@ -1617,7 +1672,7 @@
       completeExpeditionCombat,
       dormitoryFree,
       dormitoryUsed,
-      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,trainingRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,spellStudy,armorStudy,poisonStudy,lumberjacks,miners,palaceWorkers,dungeonRules,canteenRules,desertionRules,memorialRules,duelRules,canChallenge,applyDuel,cellarRules,applyCellarFight,salaryReviewRules,stableRules,tamingRules,socialPolicy:social,agenda,studyBusy,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
+      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,trainingRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,spellStudy,armorStudy,poisonStudy,lumberjacks,miners,palaceWorkers,dungeonRules,canteenRules,desertionRules,memorialRules,duelRules,canChallenge,applyDuel,cellarRules,applyCellarFight,debtRules,salaryReviewRules,stableRules,tamingRules,socialPolicy:social,agenda,studyBusy,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
       woundDaysFor,fatigueDaysFor,dormitoryFatigueCut,
       dormitoryPlaces,
       dormitoryExpansionCost,

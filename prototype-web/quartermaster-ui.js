@@ -50,6 +50,8 @@ function renderQuartermaster(){
   const items=game.campaign.company.stock||[];
   // La politique sociale (Idan, 2026-11-04 ; social-policy-ui.js).
   if(typeof renderSocialPolicyPanel==="function") renderSocialPolicyPanel();
+  // Les dettes (Idan, 2026-11-10 ; debts-ui.js).
+  if(typeof renderDebtsPanel==="function") renderDebtsPanel();
   if(typeof renderStewardPanel==="function") renderStewardPanel();
   if(typeof renderMedicPanel==="function") renderMedicPanel();
   if(typeof renderSchoolDirectorPanel==="function") renderSchoolDirectorPanel();

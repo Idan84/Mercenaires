@@ -1627,7 +1627,10 @@ function resolveMissionAftermath(){
   // Réputation et renommée en étoiles : une ligne seulement quand le niveau change.
   const renownStars=report.renown&&starChange(starRules().company(report.renown.before),starRules().company(report.renown.after));
   if(renownStars) missionLog("Renommée de la compagnie : "+renownStars.text+".",renownStars.up?"gear":"bad");
-  if(report.bonusPaid) missionLog("Primes de mission versées : "+report.bonusPaid+" PO ("+report.bonuses.map(b=>b.mercenary.name+" "+b.bonus).join(", ")+").","gear");
+  if(report.bonusPaid) missionLog("Primes de mission versées : "+report.bonusPaid+" PO ("+report.bonuses.map(b=>b.mercenary.name+" "+(b.bonus-(b.owed||0))).join(", ")+").","gear");
+  // Les dettes (Idan, 2026-11-10 ; debts-ui.js) : la part des primes que la caisse n'a pas pu payer.
+  if(report.bonusOwed&&typeof bonusDebtLine==="function")
+    missionLog(bonusDebtLine(report.bonusOwed,report.bonuses.filter(b=>b.owed>0).map(b=>({name:b.mercenary.name,amount:b.owed}))),"bad");
   for(const {mercenary,changes,reputation} of report.progression||[]){
     for(const c of visibleProgressionChanges(changes)) missionLog(mercenary.name+" : "+c.name+" "+c.shownBefore+" → "+c.shownAfter+".",c.shownAfter>c.shownBefore?"gear":"bad");
     const repStars=reputation&&starChange(starRules().personal(reputation.before),starRules().personal(reputation.after));
@@ -1794,7 +1797,7 @@ function renderMissionAftermath(m){
       ?""
       :m.duel?"Bilan du duel appliqué à la compagnie (ni prime ni réputation)."
       :m.cellar?"Bilan de la bagarre appliqué à la compagnie (ni prime ni réputation)."
-      :"Bilan appliqué à la compagnie. "+(m.expeditionId?"Primes versées au retour de l’escouade.":"Primes de mission versées : "+report.bonusPaid+" PO.")+missionRenownNote(report);
+      :"Bilan appliqué à la compagnie. "+(m.expeditionId?"Primes versées au retour de l’escouade.":"Primes de mission versées : "+report.bonusPaid+" PO."+(report.bonusOwed?" "+fmt(report.bonusOwed)+" PO restent dues.":""))+missionRenownNote(report);
   const contract=m.contractResult?`<ul class="mission-contract-result">${contractResultLines(m.contractResult,m.contractReturn).map(l=>`<li class="is-${l.kind}">${esc(l.text)}</li>`).join("")}</ul>`:"";
   return `${contract}<ul class="mission-aftermath">${rows}</ul>
     ${report?.gameOver?`<p class="aftermath-gameover">Le capitaine est mort : la partie est terminée et la sauvegarde est effacée.</p>`:""}

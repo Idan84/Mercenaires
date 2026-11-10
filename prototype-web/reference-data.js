@@ -70,6 +70,7 @@ const REFERENCE_FILES = {
   desertionDialogue: "desertion-dialogue.json",
   salaryReviewDialogue: "salary-review-dialogue.json",
   socialPolicyCopy: "social-policy-copy.json",
+  debtsCopy: "debts-copy.json",
   lieutenantDialogue: "lieutenant-dialogue.json",
   bodyguardMissions: "bodyguard-missions.json",
   merchants: "merchants.json",

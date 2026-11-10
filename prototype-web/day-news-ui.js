@@ -1,7 +1,7 @@
 "use strict";
 
 // Notification du jour (Idan, 2026-10-31 : « l'essentiel, et joliment ») : à chaque nouvelle journée, ce qui compte,
-// de l'urgent au reste — escouade arrivée, contrat perdu, caisse dans le rouge ; retours et départs ; guérisons ;
+// de l'urgent au reste — escouade arrivée, contrat perdu, caisse vide ; retours et départs ; guérisons ;
 // note du tavernier ; marchand ; travaux du camp ; l'argent en pied. Une ligne n'apparaît que si la chose a eu lieu ; un
 // jour sans rien : « Rien à signaler aujourd'hui ». Phrases : data/reference/day-news.json. Construite à
 // partir du rapport de la journée (game-core/campaign.js, advanceTime) ; le journal de la barre du bas garde le détail.
@@ -43,7 +43,8 @@ function dayDigest(report){
   // Taverne à 5 missions : une offre prise ailleurs est aussitôt remplacée ; une seule ligne, pas d'alerte.
   const lost=(report.offersLost||[]).length;
   if(lost) entries.push({tone:"",icon:"alert",text:lost>1?lost+" offres prises ailleurs":"Une offre prise ailleurs",detail:"Remplacée"+(lost>1?"s":"")+" à la Taverne"});
-  if(c.company.gold<0) entries.push({tone:"alert",icon:"gold",text:"Caisse dans le rouge",detail:fmt(Math.round(c.company.gold))+" PO"});
+  // Les dettes (Idan, 2026-11-10 ; debts-ui.js) : la caisse vide, une monture relâchée.
+  if(typeof debtNews==="function") entries.push(...debtNews(report));
   // Retours et départs.
   for(const r of ex.returned||[]){
     const e=r.expedition;
@@ -96,9 +97,11 @@ function showDayNews(day,report){
   const entries=dayDigest(report);
   // Un jour calme (Idan, 2026-10-31) : la fenêtre s'ouvre quand même, « Rien à signaler aujourd'hui ».
   $("day-news-list").innerHTML=entries.length?entries.map(renderDayEntry).join(""):`<li class="day-news-calm">${esc(dayPhrase("calme",day))}</li>`;
-  const salaries=report?.salaries?.total||0,gold=Math.round(game.campaign.company.gold);
-  const upkeep=report?.stable?.total||0;
-  $("day-news-money").innerHTML=`${dayIcon("gold")}<span>${salaries?`Salaires <b>−${fmt(salaries)} PO</b> · `:""}${upkeep?`Animaux <b>−${fmt(upkeep)} PO</b> · `:""}Caisse <b${gold<0?' class="is-negative"':""}>${fmt(gold)} PO</b></span>`;
+  // Ce que la caisse a payé ce matin ; ce qui reste dû est dans les dettes (debts-ui.js).
+  const salaries=report?.salaries?.paid??report?.salaries?.total??0,gold=Math.round(game.campaign.company.gold);
+  const upkeep=report?.stable?.paid??report?.stable?.total??0;
+  const debts=typeof debtTotal==="function"?debtTotal(game.campaign):0;
+  $("day-news-money").innerHTML=`${dayIcon("gold")}<span>${salaries?`Salaires <b>−${fmt(salaries)} PO</b> · `:""}${upkeep?`Animaux <b>−${fmt(upkeep)} PO</b> · `:""}Caisse <b${gold<0?' class="is-negative"':""}>${fmt(gold)} PO</b>${debts?` · ${esc(debtCopy().money||"")} <b class="is-negative">${fmt(debts)} PO</b>`:""}</span>`;
   if(dialog.open) dialog.close();
   dialog.showModal();
 }

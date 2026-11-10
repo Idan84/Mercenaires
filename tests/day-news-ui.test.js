@@ -7,15 +7,18 @@ const fs = require("node:fs");
 const path = require("node:path");
 const root = path.resolve(__dirname, "..");
 const js = fs.readFileSync(path.join(root, "prototype-web/day-news-ui.js"), "utf8");
+// Les dettes (Idan, 2026-11-10) : leur ligne vient de debts-ui.js.
+const debtsJs = fs.readFileSync(path.join(root, "prototype-web/debts-ui.js"), "utf8");
 const html = fs.readFileSync(path.join(root, "prototype-web/index.html"), "utf8");
 const esc = value => String(value ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 const nodes = {};
 const node = id => nodes[id] || (nodes[id] = {innerHTML:"", textContent:"", hidden:false, open:false, showModal(){ this.open = true; }, close(){ this.open = false; }});
 const brakka = {id:2, name:"Brakka Os"}, lia = {id:3, name:"Lia Vent", sex:"Femme"};
 const phrases = JSON.parse(fs.readFileSync(path.join(root, "data/reference/day-news.json"), "utf8"));
-const game = {campaign:{day:4, company:{gold:850, roster:[brakka, lia]}}, referenceData:{dayNews:phrases}};
+const debtsCopy = JSON.parse(fs.readFileSync(path.join(root, "data/reference/debts-copy.json"), "utf8"));
+const game = {campaign:{day:4, company:{gold:850, roster:[brakka, lia]}}, referenceData:{dayNews:phrases, debtsCopy}};
 const ui = new Function("game","$","esc","fmt","renderAvatar","campaignCalendarDate","openCampScene",
-  js + "\nreturn {dayDigest,showDayNews};")(game, node, esc, String, m => `<avatar ${m.id}>`, null, null);
+  debtsJs + "\n" + js + "\nreturn {dayDigest,showDayNews};")(game, node, esc, String, m => `<avatar ${m.id}>`, null, null);
 
 const camp = {campName:"Camp gobelin", fields:{lieu:"Brumecendre"}, distance:2};
 const report = {
@@ -35,10 +38,13 @@ assert.equal(ui.dayDigest({...report, tavern:{arrivals:[], departures:[{candidat
 assert.equal(entries[0].tone, "alert");
 assert.equal(entries[2].go, "tavern", "« Voir » mène à la Taverne");
 
-// Caisse dans le rouge : en tête des alertes ; le marchand arrivé a sa ligne.
-game.campaign.company.gold = -40;
-const second = ui.dayDigest({...report, expeditions:{}, merchant:{arrived:{name:"Ysolde", sex:"Femme"}}});
-assert.equal(second[0].text, "Caisse dans le rouge");
+// Caisse vide (les dettes, Idan, 2026-11-10 : la caisse reste à 0, le reste est dû) : en tête des alertes ; le marchand
+// arrivé a sa ligne.
+game.campaign.company.gold = 0;
+const second = ui.dayDigest({...report, expeditions:{}, salaries:{total:70, paid:30, owed:40, debts:[{id:2, name:"Brakka Os", amount:40}]},
+  merchant:{arrived:{name:"Ysolde", sex:"Femme"}}});
+assert.equal(second[0].text, "Caisse vide");
+assert.match(second[0].detail, /^40 PO de dettes de plus/);
 assert.ok(second.some(e => e.text === "Marchande au camp : Ysolde" && e.go === "merchant"));
 
 // Affichage : la date, une ligne par chose, les visages, l'argent en pied.

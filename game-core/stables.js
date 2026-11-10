@@ -15,7 +15,8 @@
 // - capture : après une victoire, chaque monture capturable restée KO sur la carte passe le jet de mort de nos mercenaires
 //   (doc 10 §3, mission-end.js : à 0 PV ou plus, elle survit) ; une monture partie avec son cavalier n'est pas prise ;
 //   après un contrat, elle rentre avec l'escouade (la place se juge à l'arrivée) ;
-// - entretien : chaque matin, entretien (PO, mounts.json) par monture ; « Relâcher » (sans propriétaire) libère sa place ;
+// - entretien : chaque matin, entretien (PO, mounts.json) par monture, payé avec les salaires (impayé : debts.js) ;
+//   « Relâcher » (sans propriétaire) libère sa place ;
 // - nos montures au combat (Idan, 2026-11-07 : « La monture peut mourir indépendamment du cavalier ou être blessée en fin de
 //   mission. Si le cavalier meurt, elle repart dans l'enclos et peut être attribuée à un autre mercenaire. Globalement, elle
 //   a la même fiche qu'un mercenaire. ») : la chaîne de fin de mission de nos mercenaires (mort → blessure → fatigue,
@@ -97,12 +98,8 @@
     function upkeepOf(item){ return Number(sheetOf(item)?.entretien)||0; }
     function upkeep(state){ return mountsOf(state).reduce((sum,m)=>sum+upkeepOf(m),0); }
 
-    // Chaque matin : l'entretien des montures, comme les salaires (l'or peut passer sous 0).
-    function payUpkeep(state){
-      const total=upkeep(state);
-      if(total) state.company.gold-=total;
-      return {total,count:mountsOf(state).length};
-    }
+    // L'entretien se paie chaque matin avec les salaires, sur la même note (campaign.js, paySalaries ; les dettes :
+    // debts.js).
 
     // Le test de survie d'une monture tombée : le jet de mort de nos mercenaires (pDeath null : à 0 PV ou plus, elle vit).
     function rollSurvival({hp,pvMax,stats}={}){
@@ -235,8 +232,8 @@
       return {ok:true,mount:item,before,name:clean};
     }
 
-    return {BARN,STABLES,KENNEL,GREENHOUSE,houseOf,houseWords,mountsIn,placeOf,used,rides,sheet,sheetOf,isMount,mountsOf,ownerOf,places,free,canStore,upkeepOf,upkeep,payUpkeep,rollSurvival,capturable,admit,release,
-      applyAftermath,recoverOneDay,returnToStable,ownSheet,giveName,rename};
+    return {BARN,STABLES,KENNEL,GREENHOUSE,houseOf,houseWords,mountsIn,placeOf,used,rides,sheet,sheetOf,isMount,mountsOf,ownerOf,places,free,canStore,upkeepOf,upkeep,rollSurvival,capturable,admit,release,
+      remove,applyAftermath,recoverOneDay,returnToStable,ownSheet,giveName,rename};
   }
 
   return {createStableRules,BARN,STABLES,KENNEL,GREENHOUSE,isMount,cleanName,houseWords};

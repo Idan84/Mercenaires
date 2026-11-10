@@ -191,7 +191,7 @@
       if(!persuasion?.approachOf(approach)) return no("Approche inconnue.");
       const check=canRetry(state,m);
       if(!check.ok) return check;
-      const odds=chance(state,m,approach).chance,dice=roll(),accepted=dice<odds;
+      const odds=chance(state,m,approach).chance,dice=roll(),accepted=persuasion.decide(approach,dice<odds);
       Object.assign(m[COURSE.offerKey],{retried:true,accepted,approach});
       return {ok:true,accepted,approach,chance:odds,roll:dice,mercenary:m,entry:accepted?assign(state,m,approach):null,dailyLoss:dailyLoss(approach)};
     }

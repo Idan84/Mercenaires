@@ -1,15 +1,18 @@
 {
   "schema_version": 1,
   "name": "persuasion-dialogue",
-  "description": "Relance après un refus (Idan, 2026-11-04 : « On peut retenter via deux options de dialogues (ou laisser tomber) : Intimider, Convaincre ») : les options, la phrase du capitaine, la réplique du mercenaire (accepted / refused), l'issue d'un second refus, l'étiquette laissée sur la carte. Commun à tous les tests de refus. {prenom} ; {masculin|féminin} selon le mercenaire. Textes de JC, à retoucher librement.",
+  "description": "Relance après un refus (Idan, 2026-11-04 : « On peut retenter via deux options de dialogues (ou laisser tomber) : Intimider, Convaincre ») : les options, la phrase du capitaine, la réplique du mercenaire (accepted / refused), l'issue d'un second refus, l'étiquette laissée sur la carte. Commun à tous les tests de refus. {prenom} ; {masculin|féminin} selon le mercenaire. Textes de JC, à retoucher librement. Le Défi du capitaine, étape 2 (Idan, 2026-11-09) : « Défier » (challenge), la phrase du capitaine et la réplique après le duel (gagné : il cède ; perdu : le refus tient).",
   "options": {
     "intimidate": "Intimider",
     "convince": "Convaincre",
+    "challenge": "Défier",
+    "challenge_tip": "Le défier en combat singulier, dans l’arène : s’il perd, il cède ; si vous perdez, son refus tient.",
     "leave": "Laisser tomber"
   },
   "labels": {
     "intimidate": "{intimidé|intimidée}",
-    "convince": "{convaincu|convaincue}"
+    "convince": "{convaincu|convaincue}",
+    "challenge_won": "{vaincu en duel|vaincue en duel}"
   },
   "captain": {
     "intimidate": [
@@ -21,6 +24,11 @@
       "Faites-le pour la compagnie. Je m’en souviendrai.",
       "Tout le monde saura ce que vous avez fait pour nous.",
       "Je vous le demande comme un service, pas comme un ordre."
+    ],
+    "challenge": [
+      "On va régler ça dans l’arène. Devant tout le monde.",
+      "Prenez votre arme. Si je gagne, vous obéissez.",
+      "Très bien. Que la compagnie juge."
     ]
   },
   "reply": {
@@ -46,6 +54,18 @@
         "C’est gentil, mais non.",
         "Belle tentative. Toujours non.",
         "Je vous aime bien, capitaine. Mais non."
+      ]
+    },
+    "challenge": {
+      "accepted": [
+        "… Vous avez gagné, capitaine. Je m’incline.",
+        "D’accord, d’accord. J’ai compris la leçon.",
+        "Bien joué. Ça ne se reproduira pas."
+      ],
+      "refused": [
+        "Vous voyez ? C’est toujours non.",
+        "Un capitaine à terre ne donne pas d’ordres.",
+        "La prochaine fois, choisissez mieux vos combats."
       ]
     }
   },

@@ -21,8 +21,8 @@
 // - inaperçu : il part avec ce qu'il porte et son sac ; l'intendant le signale (sans intendant, on l'apprend quand même) ;
 // - repéré : une scène au début de la journée, qui bloque le jeu : Intimider ou Convaincre (une tentative, dur :
 //   10 + 80 / (1 + e^(−Δ/20)), Δ = 0,5 × affinité + Intimidation ou Charisme ÷ 2 − 60) ; s'il reste, +20 d'affinité et 15
-//   jours sans test ; sinon (ou d'emblée) : le défier en combat singulier (le capitaine gagne ; il meurt : mémorial,
-//   héritage de renommée, ses affaires à l'Intendance) ou le laisser partir (+10 d'affinité, gardé dans son profil).
+//   jours sans test ; sinon (ou d'emblée) : le défier en combat singulier (le vrai duel, depuis le 2026-11-10 : duelOutcome)
+//   ou le laisser partir (+10 d'affinité, gardé dans son profil).
 //
 // Constantes : desertion.* (formula-constants.json). État : m.loyalty = { affinity (la veille), immuneUntil, wantsToLeave } ;
 // state.company.deserting (les repérés, en attente de la scène), deserters, memorial. Module pur ; campaign.js fournit
@@ -158,16 +158,24 @@
       History?.record(m,state.day,"desertion_stayed",{approach:key});
       return {ok:true,accepted:true,approach:key,chance,roll:dice,affinityDelta,immuneUntil:loyalty.immuneUntil,mercenary:m};
     }
-    // Le défier en combat singulier : le capitaine gagne ; il meurt.
-    function duel(state,mercenaryId){
-      const entry=pendingOf(state,mercenaryId),m=memberOf(state,mercenaryId);
+    // Le défier en combat singulier (Idan, 2026-11-09, étape 3 du Défi du capitaine : « Le vrai duel remplace le duel
+    // automatique. Si on gagne, il reste, ou il est mis à mort. Si on perd, il part avec son sac » ; la fuite hors de l'arène
+    // est une victoire du capitaine) : le duel se joue à l'écran (mission.js) et se termine comme un défi de la fiche
+    // (campaign.js, applyDuel : mise à mort ou jet de blessure, XP, affinité de la compagnie) ; puis son sort, ici : mis à
+    // mort, il n'est plus là ; épargné, il reste (desertion.immunity_days jours sans test, comme s'il avait été retenu) ;
+    // vainqueur, il part avec son sac. won : le capitaine a gagné.
+    function duelOutcome(state,mercenaryId,{won=false}={}){
+      const entry=(state.company.deserting||[]).find(e=>e.id===mercenaryId);
       if(!entry) return no("Il ne veut pas partir.");
       state.company.deserting=state.company.deserting.filter(e=>e!==entry);
-      History?.record(m,state.day,"duel",{});
-      const out=camp.remove(state,m,"duel");
-      // Le Mémorial (memorial.js) l'a reçu dans camp.remove ; sans lui (tests), la liste d'avant.
-      if(!out?.memorial) listOf(state,"memorial").push({id:m.id,name:m.name,day:state.day,cause:"duel",profile:m});
-      return {ok:true,mercenary:m,heritage:out?.heritage||null,items:out?.items||[]};
+      const m=memberOf(state,mercenaryId);
+      if(!m) return {ok:true,outcome:"killed",id:mercenaryId};
+      if(!won) return {ok:true,outcome:"left",...leave(state,m,{spotted:true,letGo:false})};
+      const loyalty=m.loyalty||(m.loyalty={});
+      loyalty.immuneUntil=state.day+C.immunityDays;
+      loyalty.affinity=camp.affinityOf(state,m)?.raw??loyalty.affinity;
+      History?.record(m,state.day,"desertion_stayed",{approach:"duel"});
+      return {ok:true,outcome:"stayed",mercenary:m,immuneUntil:loyalty.immuneUntil};
     }
     // Le laisser partir : son affinité remonte un peu, mais il part.
     function letGo(state,mercenaryId){
@@ -178,7 +186,7 @@
       return {ok:true,affinityDelta,...leave(state,m,{spotted:true,letGo:true})};
     }
 
-    return {constants:C,TOWER,stayChance,spotChance,persuadeChance,pending,pendingOf,canAdvance,morning,persuade,duel,letGo};
+    return {constants:C,TOWER,stayChance,spotChance,persuadeChance,pending,pendingOf,canAdvance,morning,persuade,duelOutcome,letGo};
   }
 
   return {createDesertionRules};

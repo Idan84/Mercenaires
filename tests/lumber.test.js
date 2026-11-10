@@ -147,7 +147,7 @@ assert.match(html,new RegExp(`<h4>Bûcherons \\(2 / 2\\)</h4>[\\s\\S]*<strong>${
 assert.match(html,new RegExp(`data-course="lumber" data-work-withdraw="${second.id}">Retirer`));
 const copy=reference.lumberDialogue,pers=reference.persuasionDialogue;
 assert.ok(copy.send.accepted.length>=3&&copy.send.refused.length>=3);
-assert.deepEqual(pers.options,{intimidate:"Intimider",convince:"Convaincre",leave:"Laisser tomber"});
+assert.deepEqual([pers.options.intimidate,pers.options.convince,pers.options.challenge,pers.options.leave],["Intimider","Convaincre","Défier","Laisser tomber"]);
 for(const key of ["intimidate","convince"]) assert.ok(pers.captain[key].length>=3&&pers.reply[key].accepted.length>=3&&pers.reply[key].refused.length>=3);
 const uiSource=fs.readFileSync(path.join(ROOT,"prototype-web","lumber-ui.js"),"utf8");
 assert.match(uiSource,/persuasionAfter\(result,"work",\{member:m\.id,course\}\)/,"après un refus : Intimider, Convaincre ou laisser tomber (persuasion-ui.js)");

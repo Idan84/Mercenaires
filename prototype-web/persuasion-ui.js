@@ -8,11 +8,17 @@ const PERSUASION_HANDLERS={};
 function registerPersuasion(kind,handler){ PERSUASION_HANDLERS[kind]=handler; }
 function persuasionCopy(){ return game.referenceData?.persuasionDialogue||{}; }
 const persuasionLeaveHtml=()=>`<ol class="talk-options"><li><button type="button" data-deal-leave>Partir</button></li></ol>`;
-// Les trois choix ; data : le contexte de la relance ({ member, item, study, course… } → data-persuade-member…).
+// Les choix ; data : le contexte de la relance ({ member, item, study, course… } → data-persuade-member…). « Défier » (le Défi
+// du capitaine, étape 2 ; Idan, 2026-11-09) : grisé, avec la raison, si l'un des deux ne peut pas se battre aujourd'hui.
 function persuasionChoicesHtml(kind,data={}){
   const options=persuasionCopy().options||{};
   const attrs=Object.entries(data).map(([key,value])=>` data-persuade-${key}="${esc(value)}"`).join("");
-  return `<ol class="talk-options">${["intimidate","convince"].map(key=>`<li><button type="button" data-persuade="${key}" data-persuade-kind="${esc(kind)}"${attrs}>${esc(options[key]||"")}</button></li>`).join("")}
+  const button=key=>`<li><button type="button" data-persuade="${key}" data-persuade-kind="${esc(kind)}"${attrs}>${esc(options[key]||"")}</button></li>`;
+  const check=game.campaign&&typeof campaignRules==="function"&&campaignRules().canChallenge&&data.member!=null
+    ?campaignRules().canChallenge(game.campaign,data.member):null;
+  const challenge=check?`<li><button type="button" data-persuade="challenge" data-persuade-kind="${esc(kind)}"${attrs}${check.ok?"":" disabled"}
+      title="${esc(check.ok?options.challenge_tip||"":check.reason)}">${esc(options.challenge||"")}</button></li>`:"";
+  return `<ol class="talk-options">${button("intimidate")}${button("convince")}${challenge}
       <li><button type="button" data-deal-leave>${esc(options.leave||"")}</button></li></ol>`;
 }
 // Après un refus : les trois choix s'il a refusé (et qu'on peut insister), sinon « Partir ».
@@ -22,7 +28,8 @@ function persuasionAfter(result,kind,data){
 // La relance, ajoutée au dialogue : la phrase du capitaine, la réplique, l'issue (outcome : l'issue d'un accord, déjà
 // remplie) ; puis « Partir ».
 function persuasionAppend(m,result,outcome,seed){
-  const pers=persuasionCopy(),approach=result.approach;
+  // Un défi (challenge_won, challenge_lost) : les phrases du défi.
+  const pers=persuasionCopy(),approach=String(result.approach||"").startsWith("challenge")?"challenge":result.approach;
   const line=variantPhrase(pers.captain?.[approach]||[],seed);
   const reply=variantPhrase(pers.reply?.[approach]?.[result.accepted?"accepted":"refused"]||[],seed);
   $("deal-talk-log").insertAdjacentHTML("beforeend",`<p class="talk-say talk-say--you"><b>Vous</b><span>« ${esc(studyFill(line,m))} »</span></p>
@@ -36,7 +43,12 @@ function persuasionAppend(m,result,outcome,seed){
 function initializePersuasion(){
   document.addEventListener("click",event=>{
     const button=event.target.closest?.("[data-persuade]");
-    if(!button) return;
+    if(!button||button.disabled) return;
+    // Défier : le duel d'abord (mission.js) ; la relance reçoit son issue ensuite.
+    if(button.dataset.persuade==="challenge"){
+      if(typeof challengeFromRequest==="function") challengeFromRequest(button.dataset.persuadeKind,{...button.dataset});
+      return;
+    }
     const handler=PERSUASION_HANDLERS[button.dataset.persuadeKind];
     if(handler) handler(button.dataset.persuade,button.dataset);
   });

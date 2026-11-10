@@ -121,18 +121,32 @@ d.affinityAcquired=0; d.affinityAcquired=-20-total(d);
 assert.equal(total(d),-20);
 assert.deepEqual([Math.round(desertion.persuadeChance(state,d,"intimidate")),Math.round(desertion.persuadeChance(state,d,"convince"))],[23,18]);
 
-// Le défier en combat singulier : il meurt ; mémorial, héritage de renommée, ses affaires à l'Intendance.
+// Le défier en combat singulier (Défi du capitaine, étape 3 ; Idan, 2026-11-09 : « Le vrai duel remplace le duel
+// automatique. Si on gagne, il reste, ou il est mis à mort. Si on perd, il part avec son sac ») : le duel se joue à l'écran
+// (tests/duel-requests.test.js) ; ici, son issue (duelOutcome).
 // (L'affinité de d vient de baisser pour la mesure ci-dessus : on l'immunise, pour que seul e passe le test ce matin.)
 d.loyalty.immuneUntil=state.day+1;
+assert.equal(desertion.duel,undefined,"plus de duel automatique");
+assert.equal(desertion.duelOutcome(state,e.id,{won:true}).reason,"Il ne veut pas partir.");
+// Le capitaine gagne et l'épargne : il reste, 15 jours sans test (comme s'il avait été retenu).
 drop(e); dice=[0.999,0];
 morning();
-const stock=(company.stock||[]).length,owned=e.items.length;
-const fallen=desertion.duel(state,e.id);
-assert.deepEqual([fallen.ok,company.roster.includes(e),company.memorial.at(-1).id,company.memorial.at(-1).cause.kind],[true,false,e.id,"duel"]);
-assert.equal(fallen.heritage?.id,e.id,"il est mort dans un combat : son héritage");
-assert.ok(company.renownHeritage.some(h=>h.id===e.id));
-assert.deepEqual([(company.stock||[]).length-stock,e.items.length,Object.values(e.equipment?.slots||{}).filter(Boolean).length],[owned,0,0]);
-assert.equal(e.history.log.at(-1).kind,"duel");
+assert.deepEqual(desertion.pending(state).map(x=>x.id),[e.id]);
+const spared=desertion.duelOutcome(state,e.id,{won:true});
+assert.deepEqual([spared.ok,spared.outcome,spared.immuneUntil,company.roster.includes(e),desertion.pending(state)],[true,"stayed",state.day+15,true,[]]);
+assert.deepEqual([e.history.log.at(-1).kind,e.history.log.at(-1).approach],["desertion_stayed","duel"]);
+assert.equal(rules.canAdvanceDay(state).ok,true);
+// Le capitaine perd : il part avec son sac.
+e.loyalty.immuneUntil=null;
+drop(e); dice=[0.999,0];
+morning();
+const winner=desertion.duelOutcome(state,e.id,{won:false});
+assert.deepEqual([winner.outcome,winner.spotted,winner.letGo,company.roster.includes(e),company.deserters.at(-1).id],["left",true,false,false,e.id]);
+assert.equal(company.deserters.at(-1).profile,e,"il garde son sac");
+assert.equal(e.history.log.at(-1).kind,"desertion");
+// Mis à mort (le duel l'a déjà retiré de la compagnie : campaign.js, applyDuel) : la scène est réglée.
+company.deserting=[{id:999,day:state.day,chance:50,attempted:null}];
+assert.deepEqual([desertion.duelOutcome(state,999,{won:true}).outcome,company.deserting],["killed",[]]);
 
 // Au cachot : il ne part pas ; il le fera le matin qui suit sa libération (plus de test entre-temps).
 company.camp.buildings={dungeon:{level:1,construction:null}};

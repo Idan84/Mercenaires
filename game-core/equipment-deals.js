@@ -314,7 +314,7 @@
       const allowed=canDeal(state,mercenary,deal.slot);
       if(!allowed.ok) return allowed;
       const {slot,given,received}=deal;
-      const roll=Math.floor(random()*100)+1,accepted=roll<=deal.chance;
+      const roll=Math.floor(random()*100)+1,accepted=persuasion.decide(approach,roll<=deal.chance);
       persuasion.markRetried(mercenary,REFUSAL,approach,accepted);
       const affinityDelta=persuasion.outcomeExtra(deal.affinityDelta,approach,accepted);
       mercenary.affinityAcquired=(Number(mercenary.affinityAcquired)||0)+affinityDelta;

@@ -226,7 +226,8 @@ for(const [file,kind] of [["steward-ui.js",'"steward",{member:m.id}'],["medic-ui
 
 // 5. L'interface commune : les trois choix après un refus, la relance ajoutée au dialogue.
 const ui=fs.readFileSync(path.join(ROOT,"prototype-web","persuasion-ui.js"),"utf8");
-assert.match(ui,/\["intimidate","convince"\]\.map\(key=>`<li><button type="button" data-persuade="\$\{key\}" data-persuade-kind="\$\{esc\(kind\)\}"/);
+assert.match(ui,/const button=key=>`<li><button type="button" data-persuade="\$\{key\}" data-persuade-kind="\$\{esc\(kind\)\}"/);
+assert.match(ui,/\$\{button\("intimidate"\)\}\$\{button\("convince"\)\}\$\{challenge\}/,"Intimider, Convaincre, Défier");
 assert.match(ui,/<button type="button" data-deal-leave>\$\{esc\(options\.leave\|\|""\)\}<\/button>/,"ou laisser tomber");
 const spellUi=fs.readFileSync(path.join(ROOT,"prototype-web","spell-study-ui.js"),"utf8");
 assert.match(spellUi,/registerPersuasion\("study",/);
@@ -234,5 +235,63 @@ assert.match(spellUi,/registerPersuasion\("teach",/);
 assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","armor-study-ui.js"),"utf8"),/persuasionAfter\(result,"aptitude",\{member:m\.id,course\}\)/);
 const index=fs.readFileSync(path.join(ROOT,"prototype-web","index.html"),"utf8");
 assert.ok(index.indexOf('<script src="persuasion-ui.js">')>0&&index.indexOf('<script src="persuasion-ui.js">')<index.indexOf('<script src="deal-ui.js">'));
+
+// 6. Le Défi du capitaine, étape 2 (Idan, 2026-11-09 : « Après chaque refus (apprentissage, échange, poste, corvée),
+// "Défier" s'ajoute à côté d'Intimider et Convaincre. Si on gagne, il cède. Si on perd, le refus tient ») : l'issue du duel
+// tient lieu de jet ; ni bonus ni perte d'affinité en plus (le duel a les siens).
+assert.deepEqual([persuasion.decide("challenge_won",false),persuasion.decide("challenge_lost",true),persuasion.decide("convince",true),
+  persuasion.decide("intimidate",false)],[true,false,true,false]);
+assert.deepEqual([persuasion.isChallenge("challenge_won"),persuasion.isChallenge("challenge_lost"),persuasion.isChallenge("convince")],[true,true,false]);
+assert.deepEqual([persuasion.bonus(boss,"challenge_won"),persuasion.lossFactor("challenge_lost"),persuasion.gainFactor("challenge_won")],[0,1,1]);
+// Un échange : il refuse ; vaincu en duel, il cède même sur un mauvais jet ; il refuse un autre jour, gagne le duel, le
+// refus tient même sur un bon jet. Pas d'affinité en plus.
+{
+  const duelDeal=camp(20,{mine:gear("d","Hache",3)}),who=duelDeal.company.roster[1];
+  roll=0.999;
+  assert.equal(deals.propose(duelDeal,{mercenaryId:2,slot:"weapon_set_1_main"}).accepted,false);
+  const before=who.affinityAcquired;
+  const won=deals.retry(duelDeal,2,"challenge_won");
+  assert.deepEqual([won.accepted,won.approach,who.affinityAcquired-before,who.equipment.slots.weapon_set_1_main],[true,"challenge_won",0,null]);
+  const again=camp(21,{mine:gear("e","Hache",3)}),him=again.company.roster[1];
+  roll=0.999;
+  deals.propose(again,{mercenaryId:2,slot:"weapon_set_1_main"});
+  roll=0;
+  const lost=deals.retry(again,2,"challenge_lost"),after=him.affinityAcquired;
+  assert.deepEqual([lost.accepted,him.equipment.slots.weapon_set_1_main],[false,"e"],"le refus tient");
+  assert.equal(deals.retry(again,2,"convince").reason,"Vous avez déjà insisté aujourd’hui.","le défi compte comme la relance");
+  assert.equal(him.affinityAcquired,after);
+}
+// Un port d'armure : refusé, puis vaincu en duel : il entre à l'Académie.
+state.day+=1;
+for(const port of ["légère","intermédiaire","lourde"]) soldier.skills.martial["Port d’armure "+port]=false;
+delete soldier.armorStudyOfferDay;
+dice=[0.999,0.999];
+const armorOffer=rules.armorStudy.offer(state,soldier.id);
+assert.equal(armorOffer.accepted,false);
+const armorWon=rules.armorStudy.retry(state,soldier.id,"challenge_won");
+assert.deepEqual([armorWon.accepted,armorWon.study?.status],[true,"planned"]);
+// Les postes : l'intendant vaincu en duel accepte ; le médecin qui gagne le duel garde son refus (sans perte en plus).
+{
+  const duelPosts=rules.createCampaign({captain,squad:[30,31].map(id=>generator.createMercenary({id,captain}))});
+  duelPosts.company.intendantId=null; duelPosts.company.medicId=null;
+  const [, clerk, doc]=duelPosts.company.roster;
+  postDice=[0.999,0.999];
+  assert.equal(stewardRules.offer(duelPosts,clerk.id).accepted,false);
+  const yes=stewardRules.retry(duelPosts,clerk.id,"challenge_won");
+  assert.deepEqual([yes.accepted,duelPosts.company.intendantId],[true,clerk.id]);
+  postDice=[0.999,0];
+  const docRefusal=medicRules.offer(duelPosts,doc.id);
+  assert.equal(docRefusal.accepted,false);
+  const docBefore=Number(doc.affinityAcquired)||0;
+  const stands=medicRules.retry(duelPosts,doc.id,"challenge_lost");
+  assert.deepEqual([stands.accepted,duelPosts.company.medicId,(Number(doc.affinityAcquired)||0)-docBefore],[false,null,0]);
+}
+// Chaque test de refus passe par decide : apprentissages, échanges, corvées, postes.
+for(const file of ["armor-study.js","equipment-deals.js","lumber.js","spell-study.js","medic.js","school-director.js","steward.js"])
+  assert.match(fs.readFileSync(path.join(ROOT,"game-core",file),"utf8"),/decide\(approach,/,file);
+assert.equal((fs.readFileSync(path.join(ROOT,"game-core","spell-study.js"),"utf8").match(/persuasion\.decide\(approach,/g)||[]).length,2,"élève et professeur");
+const persuasionCopy=reference.persuasionDialogue;
+assert.ok(persuasionCopy.options.challenge&&persuasionCopy.options.challenge_tip&&persuasionCopy.captain.challenge.length>=3
+  &&persuasionCopy.reply.challenge.accepted.length>=3&&persuasionCopy.reply.challenge.refused.length>=3&&persuasionCopy.labels.challenge_won);
 
 console.log("Relance : Intimider (+ Intimidation, perte × 2) ou Convaincre (+ Charisme ÷ 2, perte × 0,5), une fois ; sorts, professeurs, ports d'armure, empoisonnement, équipements, postes — OK");

@@ -42,6 +42,8 @@
     const no=reason=>({ok:false,reason});
     const persuasion=Persuasion?Persuasion.createPersuasionRules({reference}):null;
     const REFUSAL=P.key+"Refusal";
+    // Un défi (le Défi du capitaine) : l'issue du duel tient lieu de jet (persuasion.js, decide).
+    const decide=(key,rolled)=>persuasion?.decide?persuasion.decide(key,rolled):rolled;
     const persuade=(state,key)=>persuasion&&key?persuasion.bonus(rosterOf(state).find(m=>m.id===state.company.captainId),key):0;
     const directorOf=state=>Posts.holderOf(state,P);
     function daysAsDirector(state){
@@ -101,7 +103,7 @@
       if(!allowed.ok) return allowed;
       const chance=approach?clamp(steward.desire(m)+persuade(state,approach),C.min,C.max):appointChance(m),dice=roll();
       m[OFFER_DAY]=state.day;
-      if(dice<=chance){
+      if(decide(approach,dice<=chance)){
         state.company[ID]=m.id;
         state.company[SINCE]=state.day;
         History.record(m,state.day,P.key,{accepted:true});
@@ -118,7 +120,7 @@
       if(dormitory&&dormitory.free(state)<dormitory.places(m)) return {...no("Le dortoir est plein : pas de place pour son retour."),dormFull:true};
       const chance=clamp(returnChance(state,m)+persuade(state,approach),C.min,C.max),dice=roll(),days=daysAsDirector(state);
       m[OFFER_DAY]=state.day;
-      if(dice<=chance){
+      if(decide(approach,dice<=chance)){
         History.historyOf(m)[DAYS]=(Number(m.history?.[DAYS])||0)+days;
         state.company[ID]=null;
         delete state.company[SINCE];

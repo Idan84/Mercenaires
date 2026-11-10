@@ -171,13 +171,16 @@ const here=day.entries.filter(e=>e.code==="memorial");
 assert.deepEqual(here.map(e=>e.id),[cap.id],"le capitaine prend la seule place");
 assert.ok(cap.skills.magic.Nécromancie>necro,"il progresse en Nécromancie");
 
-// 6. Le duel de la désertion : au Mémorial, tué par son capitaine.
+// 6. Le duel de la désertion (le vrai duel depuis le 2026-11-10, Défi du capitaine étape 3) : mis à mort, au Mémorial,
+// défié par son capitaine.
 const desertion=rules.desertionRules;
 state.company.deserting=[{id:m3.id,day:state.day}];
-const fallen=desertion.duel(state,m3.id);
-assert.equal(fallen.ok,true);
+const killedAftermath={captainDead:false,results:[{id:m3.id,name:m3.name,dead:true,wounded:false,outcome:"dead",
+  cause:{kind:"challenged",by:{name:cap.name,proper:true}},progress:null}]};
+assert.equal(rules.applyDuel(state,{mercenaryId:m3.id,won:true,killed:true,aftermath:killedAftermath}).duel.outcome,"killed");
+assert.equal(desertion.duelOutcome(state,m3.id,{won:true}).outcome,"killed");
 const e3=rules.memorialRules.entryOf(state,m3.id);
-assert.deepEqual([e3.cause.kind,e3.cause.by.name],["duel",cap.name]);
+assert.deepEqual([e3.cause.kind,e3.cause.by.name],["challenged",cap.name]);
 assert.ok(rules.memorialRules.describe(e3).cause.includes(cap.name));
 assert.equal(state.company.memorial.filter(e=>e.id===m3.id).length,1,"une seule fois");
 

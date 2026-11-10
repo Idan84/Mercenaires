@@ -27,11 +27,14 @@ function desertionNews(report){
     ...(report?.spotted||[]).map(s=>({tone:"alert",icon:"alert",text:desertionFill(news.spotted,s.mercenary),detail:news.spotted_detail,faces:[s.mercenary]}))];
 }
 
-// Les choix de la scène ; une fois réglée : « Continuer ».
+// Les choix de la scène ; une fois réglée : « Continuer ». Le défier (le vrai duel, Défi du capitaine, étape 3 ; Idan,
+// 2026-11-09) : grisé, avec la raison, si l'un des deux ne peut pas se battre aujourd'hui (blessé, fatigué).
 function desertionChoicesHtml(m,entry){
   const options=desertionCopy().scene?.options||{};
   const keys=!entry?["continue"]:entry.attempted?["duel","let_go"]:["intimidate","convince","duel","let_go"];
-  return `<ol class="talk-options">${keys.map(key=>`<li><button type="button" data-desertion="${key}" data-desertion-member="${esc(m.id)}">${esc(desertionFill(options[key],m))}</button></li>`).join("")}</ol>`;
+  const duel=key=>key==="duel"&&game.campaign&&typeof campaignRules==="function"&&campaignRules().canChallenge?campaignRules().canChallenge(game.campaign,m.id):{ok:true};
+  return `<ol class="talk-options">${keys.map(key=>{ const check=duel(key);
+    return `<li><button type="button" data-desertion="${key}" data-desertion-member="${esc(m.id)}"${check.ok?"":` disabled title="${esc(check.reason)}"`}>${esc(desertionFill(options[key],m))}</button></li>`; }).join("")}</ol>`;
 }
 function openDesertionScene(entry){
   const m=game.campaign.company.roster.find(x=>x.id===entry.id);
@@ -76,8 +79,16 @@ function desertionChoice(key,memberId){
       +note(scene.outcome?.[result.accepted?"stayed":"refused"]);
     if(result.accepted) tavernLog(desertionFill(log.stayed,m),"info");
     else entry=rules.pendingOf(c,m.id);
-  }else if(key==="duel"||key==="let_go"){
-    const result=key==="duel"?rules.duel(c,m.id):rules.letGo(c,m.id);
+  }else if(key==="duel"){
+    // Le vrai duel (mission.js) ; son issue (desertion.js, duelOutcome) s'applique à la fin du combat.
+    game.desertionScene=null;
+    if(typeof challengeDeserter==="function"&&challengeDeserter(m.id)){
+      const line=desertionFill(variantPhrase(scene.captain?.duel||[],seed),m);
+      if(line&&typeof missionLog==="function") missionLog(`${c.company.roster.find(x=>x.id===c.company.captainId)?.name||"Le capitaine"} : « ${line} »`,"turn");
+    }else game.desertionScene={id:m.id,mercenary:m};
+    return;
+  }else if(key==="let_go"){
+    const result=rules.letGo(c,m.id);
     if(!result.ok){ tavernLog(result.reason,"warn"); return; }
     html=say(scene.captain?.[key])+note(scene.outcome?.[key]);
     tavernLog(desertionFill(log[key],m),"bad");

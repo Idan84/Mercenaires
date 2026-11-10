@@ -708,8 +708,9 @@ de désertion pendant 15 jours » ; « Si ! Il est mort dans un combat ».
     23 % en intimidant, 18 % en convainquant. **Il reste** : **+20** d'affinité (« on la fait bien remonter »,
     `desertion.persuade.stay_affinity`) et **15 jours sans test** (`desertion.immunity_days`). Raté : il reste les deux choix
     suivants ;
-  - **le défier en combat singulier** (pour l'instant automatique) : le capitaine gagne, **il meurt** ; il rejoint le
-    mémorial (§9), laisse son **héritage de renommée** (doc 09) ; ses affaires (portées et sac) vont à l'Intendance ;
+  - **le défier en combat singulier** : le vrai duel (depuis le 2026-11-10 ; « Le Défi du capitaine » ci-dessous) — gagné,
+    **mis à mort** (le Mémorial §9, l'héritage de renommée doc 09) ou **épargné : il reste** (15 jours sans test) ; perdu,
+    **il part avec son sac** ;
   - **le laisser partir** : **+10** d'affinité (`desertion.let_go.affinity`, gardée dans son profil), et il part avec son sac.
 - **En partant ou en mourant**, il quitte son poste, sa corvée et son apprentissage, comme pour le Cachot.
 - Historique : « A voulu quitter la compagnie ; le capitaine l'a retenu. » ; dans le profil gardé : « Quitte la compagnie en
@@ -721,9 +722,9 @@ de désertion pendant 15 jours » ; « Si ! Il est mort dans un combat ».
 
 Idan, 2026-11-09 (« On ajoute sur la carte du mercenaire un bouton de défi » ; « On va la faire gladiateur ! ») ; règles
 `game-core/duel.js` et `campaign.js` (`canChallenge`, `applyDuel`), combat `prototype-web/mission.js`, textes
-`duel-dialogue.json`, constantes `duel.*` ; test `tests/duel.test.js`. Étape 1 (faite) : depuis la fiche ; étape 2 :
-« Défier » à côté d'Intimider et Convaincre après un refus ; étape 3 : la désertion (le vrai duel à la place du duel
-automatique ci-dessus).
+`duel-dialogue.json`, constantes `duel.*` ; tests `tests/duel.test.js` et `tests/duel-requests.test.js`. Étape 1 : depuis
+la fiche ; étape 2 : « Défier » à côté d'Intimider et Convaincre après un refus ; étape 3 : la désertion (le vrai duel à la
+place du duel automatique ci-dessus). Les trois sont faites (2026-11-09 et 2026-11-10).
 
 - **Défier** : un bouton sur la fiche (onglet Profil, sous le portrait), à tout moment, sans limite par jour (« Oui, sauf le
   au plus un défi par jour ») ; le capitaine et le défié doivent être au camp, ni blessés, ni fatigués, ni au cachot.
@@ -746,6 +747,19 @@ automatique ci-dessus).
   normale du combat pour les deux ; ni prime, ni réputation. Puis la fatigue ou la blessure de fin de mission, pour les deux.
 - **Historique** : « Défie … en combat singulier : victoire, et la grâce. » (ou « et le pouce vers le bas », « défaite ») ;
   côté défié : « Défié par … en combat singulier : vaincu, mais épargné. » ou « victorieux ».
+- **Après un refus** (étape 2 ; « Après chaque refus (apprentissage, échange, poste, corvée), "Défier" s'ajoute à côté
+  d'Intimider et Convaincre. Si on gagne, il cède. Si on perd, le refus tient ») : « Défier » est la troisième relance
+  (`persuasion-dialogue.json`, grisée avec la raison si l'un des deux ne peut pas se battre) ; elle compte comme la relance
+  du jour. Le duel se joue comme depuis la fiche (verdict, XP, affinité de la compagnie) ; puis **gagné et épargné, il
+  cède** (l'apprentissage, l'échange, le poste ou la corvée est accepté), **perdu, le refus tient**, sans perte ni gain
+  d'affinité en plus (`persuasion.js` : approches `challenge_won`, `challenge_lost`, qui tiennent lieu de jet) ; mis à mort,
+  il n'y a plus rien à demander. L'issue s'applique avant le bilan du duel, qui le laisse fatigué ou blessé ; la discussion
+  reprend ensuite avec sa réplique.
+- **La désertion** (étape 3 ; « Le vrai duel remplace le duel automatique. Si on gagne, il reste, ou il est mis à mort. Si
+  on perd, il part avec son sac ») : « Le défier en combat singulier » ouvre l'arène (grisé si l'un des deux ne peut pas se
+  battre). Gagné (il tombe, ou il fuit l'arène) : le verdict — **mis à mort**, il entre au Mémorial ; **épargné, il reste**,
+  15 jours sans test de désertion (`desertion.immunity_days`, comme s'il avait été retenu). **Perdu** (ou le capitaine se
+  rend) : **il part avec son sac** (la liste des déserteurs). `desertion.js` : `duelOutcome`.
 
 ## 12 — Embellissement / prestige kitsch
 

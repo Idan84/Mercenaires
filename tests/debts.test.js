@@ -116,32 +116,40 @@ assert.deepEqual([report.bonusPaid,report.bonusOwed,game.company.gold],[50,50,0]
 assert.deepEqual(report.bonuses.map(b=>[b.mercenary.id,b.bonus,b.owed]),[[m2.id,60,30],[m3.id,40,20]]);
 assert.deepEqual(["amount","salary","bonus"].map(k=>rules.debtRules.entryOf(game,m3.id)[k]),[98,78,20]);
 
-// 3. L'entretien des montures : celle d'un mercenaire, on la lui doit ; sans propriétaire, au Dresseur ; sans Dresseur,
-// relâchée ; celle du capitaine, il la nourrit lui-même.
+// 3. L'entretien des montures : celle d'un mercenaire, on la lui doit ; sans propriétaire, ou celle du capitaine (« On
+// augmente la dette envers le dresseur. Sinon, on relâche la monture »), au Dresseur ; sans Dresseur, relâchée.
 for(const id of [m2.id,m3.id]) rules.debtRules.forget(game,id);
 game.company.camp.buildings={trainer_barn:{level:3,construction:null},trainer_stables:{level:3,construction:null}};
-const give=(m,name)=>{
+const give=(m,name,{equip=false}={})=>{
   const item=generator.createItemByName("mount",name);
   item.owner=m?m.id:null;
   if(m) m.items.push(item); else game.company.stock.push(item);
+  if(m&&equip){ item.slot="mount"; m.equipment.slots.mount=item.id; }
   return item;
 };
-const ridden=give(m2,"Destrier"),captains=give(boss,"Destrier"),loose=give(null,"Destrier");
-const upkeep=rules.stableRules.upkeepOf(ridden);
+// Assez d'or : la caisse paie l'entretien de la monture du capitaine, comme les autres (sa seule dépense ici).
+const captains=give(boss,"Destrier",{equip:true});
+const upkeep=rules.stableRules.upkeepOf(captains);
 assert.ok(upkeep>0);
+game.company.gold=100;
+rules.advanceTime(game,1);
+assert.deepEqual([game.company.gold,list()],[100-upkeep,[]],"la caisse paie, personne n'avance rien");
+// Sans or ni Dresseur : la sienne et celle sans propriétaire sont relâchées ; celle d'un mercenaire, on la lui doit.
+const ridden=give(m2,"Destrier"),loose=give(null,"Destrier");
 game.company.gold=0;
 [day]=rules.advanceTime(game,1);
 assert.deepEqual(list(),[[m2.id,upkeep]],"sa monture : on la lui doit");
-assert.deepEqual(day.stable.released.map(i=>i.id),[loose.id],"sans Dresseur : relâchée");
+assert.deepEqual(day.stable.released.map(i=>i.id).sort(),[captains.id,loose.id].sort(),"sans Dresseur : relâchées");
 assert.ok(!rules.stableRules.mountsOf(game).includes(loose));
-assert.ok(rules.stableRules.mountsOf(game).includes(captains),"celle du capitaine reste, sans dette");
-// Avec un Dresseur : les montures sans propriétaire, on les lui doit.
-const loose2=give(null,"Destrier");
+assert.ok(!boss.items.includes(captains)&&boss.equipment.slots.mount===null,"le capitaine n'a plus sa monture");
+assert.ok(rules.stableRules.mountsOf(game).includes(ridden));
+// Avec un Dresseur : la monture du capitaine et celles sans propriétaire, on les lui doit.
+const captains2=give(boss,"Destrier",{equip:true}),loose2=give(null,"Destrier");
 game.company.trainerId=m3.id;
 rules.advanceTime(game,1);
-assert.deepEqual(list(),[[m2.id,2*upkeep],[m3.id,upkeep]],"le Dresseur avance l'entretien");
-assert.ok(rules.stableRules.mountsOf(game).includes(loose2));
-assert.equal(rules.debtRules.entryOf(game,m3.id).upkeep,upkeep);
+assert.deepEqual(list(),[[m2.id,2*upkeep],[m3.id,2*upkeep]],"le Dresseur avance l'entretien");
+assert.ok(rules.stableRules.mountsOf(game).includes(loose2)&&boss.items.includes(captains2));
+assert.equal(rules.debtRules.entryOf(game,m3.id).upkeep,2*upkeep);
 
 // 4. L'écran : le menu « Dettes » de l'Intendance, le journal, la notification.
 const html=fs.readFileSync(path.join(ROOT,"prototype-web","index.html"),"utf8");
@@ -155,9 +163,10 @@ const logged=[];
 const api=new Function("game","$","esc","fmt","campaignRules","tavernLog","saveGame","renderGame",
   ui+"\nreturn {debtsPanelHtml,renderDebtsPanel,logDebts,debtNews,repayDebt};")(
   {campaign:game,referenceData:reference},$,v=>String(v??""),v=>String(v),()=>rules,(t,k)=>logged.push([t,k]),()=>{},()=>{});
-game.company.gold=upkeep;
+game.company.gold=2*upkeep;
+rules.debtRules.owe(game,m2,5,"salary");
 const panel=api.debtsPanelHtml(game);
-assert.match(panel,new RegExp("Dettes · "+3*upkeep+" PO"));
+assert.match(panel,new RegExp("Dettes · "+(4*upkeep+5)+" PO"));
 assert.match(panel,new RegExp(`data-debt-repay="${m3.id}">Rembourser`),"assez d'or pour lui");
 assert.match(panel,new RegExp(`data-debt-repay="${m2.id}" disabled title="Pas assez d’or"`),"pas assez pour lui");
 api.repayDebt(m3.id);
@@ -166,7 +175,7 @@ assert.ok(logged.some(([t])=>t.startsWith(m3.name+" est rembours")));
 api.logDebts(day);
 assert.ok(logged.some(([t])=>/avancées par/.test(t)));
 assert.ok(logged.some(([t])=>/personne pour payer son entretien, relâché/.test(t)));
-assert.deepEqual(api.debtNews(day).map(e=>e.text),["Caisse vide","Destrier relâché"].map((t,i)=>i?(loose.petName||"Destrier")+" relâché":t));
+assert.deepEqual(api.debtNews(day).map(e=>e.text),["Caisse vide",...day.stable.released.map(i=>(i.petName||"Destrier")+" relâché")]);
 rules.debtRules.forget(game,m2.id);
 assert.equal(api.debtsPanelHtml(game),"","pas de dettes : pas de menu");
 

@@ -233,7 +233,7 @@
     }
 
     return {BARN,STABLES,KENNEL,GREENHOUSE,houseOf,houseWords,mountsIn,placeOf,used,rides,sheet,sheetOf,isMount,mountsOf,ownerOf,places,free,canStore,upkeepOf,upkeep,rollSurvival,capturable,admit,release,
-      applyAftermath,recoverOneDay,returnToStable,ownSheet,giveName,rename};
+      remove,applyAftermath,recoverOneDay,returnToStable,ownSheet,giveName,rename};
   }
 
   return {createStableRules,BARN,STABLES,KENNEL,GREENHOUSE,isMount,cleanName,houseWords};

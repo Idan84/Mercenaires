@@ -479,15 +479,16 @@
     const salaryLines=state=>salaried(state).map(m=>({creditor:m,amount:salaryToday(state,m),kind:"salary"})).filter(l=>l.amount>0);
     // L'entretien des montures (Idan, 2026-11-10 : « le mercenaire subvient aux besoins de sa monture en attendant. On lui
     // doit cet argent. Les autres, c'est le dresseur. Sinon, elles sont relâchées ») : la monture d'un mercenaire, on le lui
-    // doit ; une monture sans propriétaire, au Dresseur ; sans Dresseur, personne (elle sera relâchée). Celle du capitaine :
-    // il la nourrit lui-même, la compagnie ne lui doit rien.
+    // doit ; une monture sans propriétaire, au Dresseur ; sans Dresseur, personne (elle sera relâchée). Celle du capitaine
+    // (Idan, 2026-11-10 : « On augmente la dette envers le dresseur. Sinon, on relâche la monture ») : comme une monture
+    // sans propriétaire.
     function upkeepLines(state){
       if(!stableRules) return [];
       const trainer=holderOfPost("trainer")(state);
       return stableRules.mountsOf(state).map(item=>{
         const owner=stableRules.ownerOf(state,item);
-        const captain=owner&&owner.id===state.company.captainId;
-        return {creditor:captain?null:owner||trainer||null,amount:stableRules.upkeepOf(item),kind:"upkeep",mount:item,owner:owner||null,captain};
+        const captain=Boolean(owner&&owner.id===state.company.captainId);
+        return {creditor:owner&&!captain?owner:trainer||null,amount:stableRules.upkeepOf(item),kind:"upkeep",mount:item,owner:owner||null,captain};
       }).filter(l=>l.amount>0);
     }
 
@@ -501,9 +502,13 @@
       const sum=(list,key)=>list.reduce((s,l)=>s+(Number(l[key])||0),0);
       const billed=bill.lines.filter(l=>l.kind==="salary"),kept=bill.lines.filter(l=>l.kind==="upkeep");
       const total=Math.round(sum(salaries,"amount")),owed=sum(billed,"missing");
-      // Sans propriétaire ni Dresseur : la monture impayée est relâchée.
+      // Sans Dresseur : la monture impayée sans propriétaire, ou celle du capitaine, est relâchée.
       const released=[];
-      for(const l of bill.unpaid) if(l.kind==="upkeep"&&!l.owner&&stableRules?.release(state,l.mount.id)?.ok) released.push(l.mount);
+      for(const l of bill.unpaid){
+        if(l.kind!=="upkeep"||!stableRules) continue;
+        if(l.captain){ stableRules.remove(state,l.mount); released.push(l.mount); }
+        else if(!l.owner&&stableRules.release(state,l.mount.id)?.ok) released.push(l.mount);
+      }
       const stable=upkeep&&stableRules?{total:Math.round(sum(mounts,"amount")),paid:Math.max(0,Math.round(sum(mounts,"amount"))-sum(kept,"missing")),
         owed:sum(kept.filter(l=>l.creditor),"missing"),
         count:stableRules.mountsOf(state).length+released.length,released,

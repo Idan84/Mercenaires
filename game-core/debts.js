@@ -10,7 +10,8 @@
 // - le salaire du matin, l'entretien des montures et la prime de mission (« oui ») ;
 // - l'entretien (« le mercenaire subvient aux besoins de sa monture en attendant. On lui doit cet argent. Les autres, c'est
 //   le dresseur. Sinon, elles sont relâchées ») : la monture d'un mercenaire, on le lui doit ; une monture sans
-//   propriétaire, au Dresseur ; sans Dresseur, elle est relâchée ;
+//   propriétaire, ou celle du capitaine (« On augmente la dette envers le dresseur. Sinon, on relâche la monture »), au
+//   Dresseur ; sans Dresseur, elle est relâchée ;
 // - un mercenaire qui part vivant garde sa créance (« ok ») ; à sa mort, elle s'éteint ;
 // - le remboursement : un mercenaire à la fois, toute sa dette (« individuel mais total »), jamais automatique.
 // Module pur. L'état : state.company.debts = [{ id, name, sex, amount, salary, bonus, upkeep, since, last }] (montants en

@@ -15,8 +15,8 @@ Les gros chantiers à venir, dans l'ordre de la liste d'Idan, avec ce qui s'y ra
 3. **Nombreuses nouvelles missions variées.** Elles portent aussi le **terrain en combat** (décor, obstacles, hauteur,
    pièges, remparts autour des camps ; [doc 90](/design/#doc=90-mechanics-backlog.md)) et les **ennemis** (Morts-vivants,
    ennemis typés, monstres de niveau 5, factions ; docs 07 et 17).
-4. **Défi du capitaine contre un mercenaire** : en cours — étape 1 faite le 2026-11-09 (le duel depuis la fiche, l'arène, le
-   verdict) ; étapes 2 (« Défier » après un refus) et 3 (la désertion) à suivre
+4. ~~**Défi du capitaine contre un mercenaire**~~ : fait — étape 1 le 2026-11-09 (le duel depuis la fiche, l'arène, le
+   verdict) ; étapes 2 (« Défier » après un refus) et 3 (la désertion en vrai duel) le 2026-11-10
    ([doc 11 §11](/design/#doc=11-camp-and-ruined-castle.md)).
 5. **Fabrication d'objets** (craft).
 6. **Cristaux de magie** (forge magique), et les tiers au-delà du T4 (au moins jusqu'au T6 ;

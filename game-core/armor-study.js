@@ -191,7 +191,7 @@
       if(!again.ok) return again;
       const check=canStudy(state,m,{retry:true});
       if(!check.ok) return check;
-      const {chance}=offerChance(state,m,approach),dice=roll(),accepted=dice<chance;
+      const {chance}=offerChance(state,m,approach),dice=roll(),accepted=persuasion.decide(approach,dice<chance);
       persuasion.markRetried(m,REFUSAL,approach,accepted);
       if(!accepted){
         const affinityDelta=shiftAffinity(state,m,persuasion.refusalExtra(C.affinity.refuse,approach));

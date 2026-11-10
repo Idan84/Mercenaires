@@ -50,6 +50,8 @@
     // La relance (persuasion.js) : + Intimidation du capitaine, ou + son Charisme ÷ 2, en points de chance.
     const persuasion=Persuasion?Persuasion.createPersuasionRules({reference}):null;
     const REFUSAL="stewardRefusal";
+    // Un défi (le Défi du capitaine) : l'issue du duel tient lieu de jet (persuasion.js, decide).
+    const decide=(key,rolled)=>persuasion?.decide?persuasion.decide(key,rolled):rolled;
     const persuade=(state,key)=>persuasion&&key?persuasion.bonus(rosterOf(state).find(m=>m.id===state.company.captainId),key):0;
     function stewardOf(state){
       const id=state?.company?.intendantId;
@@ -119,7 +121,7 @@
       if(!allowed.ok) return allowed;
       const chance=approach?clamp(desire(m)+persuade(state,approach),C.min,C.max):appointChance(m),dice=roll();
       m.stewardOfferDay=state.day;
-      if(dice<=chance){
+      if(decide(approach,dice<=chance)){
         state.company.intendantId=m.id;
         state.company.intendantSince=state.day;
         History.record(m,state.day,"steward",{accepted:true});
@@ -137,7 +139,7 @@
       if(dormitory&&dormitory.free(state)<dormitory.places(m)) return {...no("Le dortoir est plein : pas de place pour son retour."),dormFull:true};
       const chance=clamp(C.returnBase-desire(m)+C.perDay*daysAsSteward(state)+persuade(state,approach),C.min,C.max),dice=roll(),days=daysAsSteward(state);
       m.stewardOfferDay=state.day;
-      if(dice<=chance){
+      if(decide(approach,dice<=chance)){
         History.historyOf(m).stewardDays=(Number(m.history?.stewardDays)||0)+days;
         state.company.intendantId=null;
         delete state.company.intendantSince;

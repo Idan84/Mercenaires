@@ -29,6 +29,8 @@
     const no=reason=>({ok:false,reason});
     const persuasion=Persuasion?Persuasion.createPersuasionRules({reference}):null;
     const REFUSAL="medicRefusal";
+    // Un défi (le Défi du capitaine) : l'issue du duel tient lieu de jet (persuasion.js, decide).
+    const decide=(key,rolled)=>persuasion?.decide?persuasion.decide(key,rolled):rolled;
     const persuade=(state,key)=>persuasion&&key?persuasion.bonus(rosterOf(state).find(m=>m.id===state.company.captainId),key):0;
     function medicOf(state){
       const id=state?.company?.medicId;
@@ -90,7 +92,7 @@
       if(!allowed.ok) return allowed;
       const chance=approach?clamp(steward.desire(m)+persuade(state,approach),C.min,C.max):appointChance(m),dice=roll();
       m.medicOfferDay=state.day;
-      if(dice<=chance){
+      if(decide(approach,dice<=chance)){
         state.company.medicId=m.id;
         state.company.medicSince=state.day;
         History.record(m,state.day,"medic",{accepted:true});
@@ -107,7 +109,7 @@
       if(dormitory&&dormitory.free(state)<dormitory.places(m)) return {...no("Le dortoir est plein : pas de place pour son retour."),dormFull:true};
       const chance=clamp(returnChance(state,m)+persuade(state,approach),C.min,C.max),dice=roll(),days=daysAsMedic(state);
       m.medicOfferDay=state.day;
-      if(dice<=chance){
+      if(decide(approach,dice<=chance)){
         History.historyOf(m).medicDays=(Number(m.history?.medicDays)||0)+days;
         state.company.medicId=null;
         delete state.company.medicSince;

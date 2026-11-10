@@ -239,7 +239,7 @@ for(let i=0;i<30;i++){
   for(const t of tops){ const col=api.missionColumn(t.q,t.r); assert.ok(col>2&&col<10,"sommet entre les lignes de déploiement"); }
 }
 assert.match(source,/game\.mission\.relief=generateMissionRelief\(\);/);
-assert.equal((source.match(/heightOf:missionUnitHeight/g)||[]).length,4,"les quatre écrans de combat (Mission Test, contrat, duel, cave) donnent la hauteur au moteur");
+assert.equal((source.match(/heightOf:missionUnitHeight/g)||[]).length,5,"les cinq écrans de combat (Mission Test, contrat, duel, cave, mutinerie) donnent la hauteur au moteur");
 // L'affichage : une couche par niveau, avec son chiffre ; la case dit son altitude.
 const css=fs.readFileSync(path.join(ROOT,"prototype-web","styles.css"),"utf8");
 assert.match(css,/\.hex-relief\{/);

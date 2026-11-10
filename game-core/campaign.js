@@ -924,6 +924,33 @@
       if(!dead) History.record(m,state.day,"duel_fought",{opponent:captain.name,role:"challenged",outcome});
       return {...report,duel:{won,killed:outcome==="killed",outcome,mercenary:m,effects}};
     }
+    // Le combat de la mutinerie (Idan, 2026-11-10 : « Oui, épargner ou mise à mort et dettes toujours dues. On est tranquille
+    // pour la journée. Le capitaine gagne les même bonus pour chaque mutin qu'en défie » ; « S'il perd. Game Over ! ») :
+    // aftermath, la fin de combat de tous (le capitaine, ses alliés, les mutins : mise à mort ou épargné), sans prime ni
+    // réputation ; verdicts : { id: true } pour chaque mutin mis à mort ; allies : les ids de ceux qui se sont battus avec lui.
+    function applyMutinyFight(state,{won=false,verdicts={},aftermath,allies=[]}){
+      const captain=captainOf(state),mutineers=mutinyRules?mutinyRules.fighters(state):[];
+      if(!captain||!aftermath||!mutinyRules?.fighting(state)) return null;
+      const report=applyMissionAftermath(state,aftermath,{duel:true,stars:1,deathEvent:"mutiny"});
+      if(!won){
+        state.gameOver={day:state.day,reason:report.gameOver?"captain-dead":"mutiny"};
+        report.gameOver=true;
+        mutinyRules.fought(state);
+        return {...report,mutiny:{won:false,mutineers,effects:[]}};
+      }
+      const effects=[];
+      if(!report.gameOver){
+        for(const m of mutineers){
+          const killed=Boolean(verdicts[m.id])&&!rosterOf(state).includes(m);
+          effects.push({mercenary:m,killed,...duelRules.applyEffects(state,{captain,challenged:m,won:true,killed})});
+          if(!killed) History.record(m,state.day,"mutiny_fought",{role:"mutineer",outcome:"spared"});
+        }
+        History.record(captain,state.day,"mutiny_fought",{role:"captain",outcome:"won",count:mutineers.length});
+        for(const id of allies){ const m=rosterOf(state).find(x=>x.id===id); if(m) History.record(m,state.day,"mutiny_fought",{role:"ally",outcome:"won"}); }
+      }
+      mutinyRules.fought(state);
+      return {...report,mutiny:{won:true,mutineers,effects}};
+    }
     // La Cave (Idan, 2026-11-10 ; règles : cellar.js) : la bagarre du jour entre deux mercenaires aux alignements opposés, et
     // les paris du capitaine.
     const cellarRules=Cellar?Cellar.createCellarRules({reference,affinity,progression,random,
@@ -1574,7 +1601,7 @@
           if(entry) report.heritage.push(entry);
           // Le Mémorial (Idan, 2026-11-09) : sa dernière mission dans son historique, puis son portrait, la cause de sa
           // mort (result.cause, notée quand il est tombé) et son épitaphe.
-          if(duel) History.record(mercenary,state.day,"duel",{});
+          if(duel) History.record(mercenary,state.day,options.deathEvent||"duel",{});
           else History.recordDeath(mercenary,state.day,{progress:result.progress,captured:Boolean(result.captured)});
           if(memorialRules){
             const cause=result.captured?{kind:"captured"}:result.cause||null;
@@ -1683,7 +1710,7 @@
       completeExpeditionCombat,
       dormitoryFree,
       dormitoryUsed,
-      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,trainingRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,spellStudy,armorStudy,poisonStudy,lumberjacks,miners,palaceWorkers,dungeonRules,canteenRules,desertionRules,memorialRules,duelRules,canChallenge,applyDuel,cellarRules,applyCellarFight,debtRules,mutinyRules,salaryReviewRules,stableRules,tamingRules,socialPolicy:social,agenda,studyBusy,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
+      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,trainingRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,spellStudy,armorStudy,poisonStudy,lumberjacks,miners,palaceWorkers,dungeonRules,canteenRules,desertionRules,memorialRules,duelRules,canChallenge,applyDuel,cellarRules,applyCellarFight,debtRules,mutinyRules,applyMutinyFight,salaryReviewRules,stableRules,tamingRules,socialPolicy:social,agenda,studyBusy,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
       woundDaysFor,fatigueDaysFor,dormitoryFatigueCut,
       dormitoryPlaces,
       dormitoryExpansionCost,

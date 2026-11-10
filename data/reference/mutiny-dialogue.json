@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "mutiny-dialogue",
-  "description": "La mutinerie (Idan, 2026-11-10) : les mercenaires à qui l'on doit de l'argent viennent voir le capitaine. scene : l'origine, le titre, l'arrivée du groupe, ce qu'ils disent, les choix (rembourser l'un d'eux, Promettre, Faire peur), les phrases du capitaine, leurs réponses, les issues ; day_news : la notification du jour ; log : le journal. {nombre} : le nombre de mutins (one : un seul, many : plusieurs) ; {nom}, {prenom}, {montant} : un mutin et sa dette ; {masculin|féminin} selon lui. Textes de JC, à retoucher librement.",
+  "description": "La mutinerie (Idan, 2026-11-10) : les mercenaires à qui l'on doit de l'argent viennent voir le capitaine. scene : l'origine, le titre, l'arrivée du groupe, ce qu'ils disent, les choix (rembourser l'un d'eux, Promettre, Faire peur), les phrases du capitaine, leurs réponses, les issues ; day_news : la notification du jour ; log : le journal ; fight : le combat ({capitaine} ; {mutins} : « 3 mutins » ; {noms} : ses alliés). {nombre} : le nombre de mutins (one : un seul, many : plusieurs) ; {nom}, {prenom}, {montant} : un mutin et sa dette ; {masculin|féminin} selon lui. Textes de JC, à retoucher librement.",
   "scene": {
     "origin": "Mutinerie",
     "title": "Les mutins",
@@ -91,5 +91,15 @@
     "repaid": "{nom} est {remboursé|remboursée} : {montant} PO ; {il|elle} quitte les mutins.",
     "calm": "La mutinerie est calmée, pour aujourd’hui.",
     "fight": "La mutinerie tourne au combat."
+  },
+  "fight": {
+    "start": "Les mutins tirent l’épée. {capitaine} fait face à {mutins}.",
+    "allies": "À ses côtés : {noms}.",
+    "alone": "Personne ne vient l’aider.",
+    "won": "Les mutins sont à terre : {capitaine} a maté la mutinerie.",
+    "fled": "{nom} s’enfuit, mais se fait rattraper.",
+    "lost": "{capitaine} tombe : les mutins ont gagné.",
+    "game_over": "Les mutins ont eu raison du capitaine : la partie est terminée.",
+    "xp": "{capitaine} : +{intimidation} XP d’Intimidation et +{charisme} XP de Charisme ({mutins})."
   }
 }

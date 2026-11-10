@@ -62,6 +62,14 @@
       return Number.isFinite(value)?value:fallback;
     }
     const ONE_HAND_DODGE=constant("combat.one_handed.dodge_factor",0.2);
+    // Partir fatigué (Idan, 2026-11-10 : « Il aura juste un malus de 20% de ses stats pour tout s'il commence le combat
+    // encore fatigué ») : unit.fatigued, posé au début du combat (makeMissionUnit). Ses caractéristiques, résistances et
+    // compétences comptent pour 1 − malus ; l'équipement en pourcentage suit. Ses PV max restent entiers (maxHp).
+    const FATIGUE={malus:constant("combat.fatigue.malus",0.2)};
+    function fatigueFactor(unit){ return unit?.fatigued?1-FATIGUE.malus:1; }
+    // La même unité, reposée : les PV max, et la fin de mission (jets de mort, de blessure, durée de fatigue).
+    function rested(unit){ return unit?.fatigued?{...unit,fatigued:false}:unit; }
+    function skillValue(unit,group,name){ return (Number(unit?.character?.skills?.[group]?.[name])||0)*fatigueFactor(unit); }
     const CRIT={
       min:constant("combat.melee.crit.min",1),
       max:constant("combat.melee.crit.max",25),
@@ -309,10 +317,10 @@
     // objet qui la sert ;
     // statWithGear : la valeur bonifiée.
     function baseValue(unit,stat){
-      const c=unit.character;
-      if(c.stats&&stat in c.stats) return Number(c.stats[stat])||0;
-      if(c.resistances&&stat in c.resistances) return Number(c.resistances[stat])||0;
-      for(const group of ["martial","social","magic","animal"]) if(c.skills?.[group]&&stat in c.skills[group]) return Number(c.skills[group][stat])||0;
+      const c=unit.character,f=fatigueFactor(unit);
+      if(c.stats&&stat in c.stats) return (Number(c.stats[stat])||0)*f;
+      if(c.resistances&&stat in c.resistances) return (Number(c.resistances[stat])||0)*f;
+      for(const group of ["martial","social","magic","animal"]) if(c.skills?.[group]&&stat in c.skills[group]) return (Number(c.skills[group][stat])||0)*f;
       return 0;
     }
     function gearBonuses(unit,stat){
@@ -388,12 +396,12 @@
         || null;
     }
 
-    function mastery(character,weapon){
-      const category=weaponCategory(character,weapon);
+    function mastery(unit,weapon){
+      const category=weaponCategory(unit.character,weapon);
       return {
         category,
-        categoryScore:Number(character.skills?.martial?.[category])||0,
-        weaponScore:Number(character.skills?.martial?.[weapon?.nom])||0
+        categoryScore:skillValue(unit,"martial",category),
+        weaponScore:skillValue(unit,"martial",weapon?.nom)
       };
     }
 
@@ -417,7 +425,7 @@
     function effectiveDexterity(unit){
       const dexterity=statWithGear(unit,"Dextérité")+attackStatBonus(unit,"Dextérité");
       if(!isDualWielding(unit)) return dexterity;
-      const skill=clamp(Number(unit.character.skills?.martial?.["Combat à deux armes"])||0,0,100);
+      const skill=clamp(skillValue(unit,"martial","Combat à deux armes"),0,100);
       return dexterity/(DUAL.dexterityBase-skill/100);
     }
     // Plusieurs coups d'une arme naturelle (le cerbère, trois morsures ; Idan, 2026-11-09 : « Il a 3 attaques de morsures
@@ -477,7 +485,7 @@
       return weapon.prise==="1 main"||(weapon.prise==="Au choix"&&unit.twoHandGrip!==true);
     }
     function oneHandDodge(unit){
-      return fightsOneHanded(unit)?ONE_HAND_DODGE*(Number(unit.character?.skills?.martial?.["Combat à une main"])||0):0;
+      return fightsOneHanded(unit)?ONE_HAND_DODGE*skillValue(unit,"martial","Combat à une main"):0;
     }
 
     function armorMobility(unit){
@@ -501,7 +509,7 @@
     function heldItemSpeedPenalty(unit,item){
       const weapon=weaponTemplate(item);
       if(!weapon) return 0;
-      const q=quality(item),m=mastery(unit.character,weapon);
+      const q=quality(item),m=mastery(unit,weapon);
       const qualityPenalty=(Number(weapon.malus_vitesse_arme_base)||0)*(Number(q.multiplicateur_malus)||1);
       const masteryFactor=Math.max(0,1-(m.categoryScore+m.weaponScore)/400);
       // Plus de malus divisé par deux pour une arme « Au choix » à deux mains (Idan, 2026-11-02).
@@ -526,6 +534,7 @@
     // PV maximum (formula pv-maximum-v1) : ceil(3 × (Constitution + 0,2 × Endurance + 0,1 × Volonté)), avec l'équipement
     // et ce que le mercenaire a gagné en mission (Idan, 2026-10-25). Les ennemis gardent les PV de leur fiche (doc 17 §10).
     function maxHp(unit){
+      if(unit?.fatigued) return maxHp(rested(unit));
       const c=unit?.character;
       if(c?.archetype) return Number(c.pvMax)||1;
       const score=statWithGear(unit,"Constitution")+0.2*statWithGear(unit,"Endurance")+0.1*statWithGear(unit,"Volonté");
@@ -785,15 +794,15 @@
     // Puissance = Force (Perception au tir) + 0,2 × (maîtrises de catégorie et d'arme + Combat à deux mains si l'arme
     // est réellement maniée à deux mains au corps à corps).
     function attackPrecision(attacker){
-      const m=mastery(attacker.character,weaponTemplate(activeWeaponItem(attacker)));
+      const m=mastery(attacker,weaponTemplate(activeWeaponItem(attacker)));
       return effectiveDexterity(attacker)
         +0.2*(m.categoryScore+m.weaponScore+statWithGear(attacker,"Perception")+effectiveSpeed(attacker));
     }
     function attackPower(attacker,mode){
       const weapon=weaponTemplate(activeWeaponItem(attacker));
-      const m=mastery(attacker.character,weapon);
+      const m=mastery(attacker,weapon);
       if(mode==="ranged") return statWithGear(attacker,"Perception")+0.2*(m.categoryScore+m.weaponScore);
-      const twoHands=usesTwoHands(attacker,weapon)?Number(attacker.character.skills?.martial?.["Combat à deux mains"])||0:0;
+      const twoHands=usesTwoHands(attacker,weapon)?skillValue(attacker,"martial","Combat à deux mains"):0;
       return statWithGear(attacker,"Force")+0.2*(m.categoryScore+m.weaponScore+twoHands);
     }
 
@@ -887,7 +896,7 @@
     function blockChance(unit){
       const item=activeOffhandItem(unit),shield=weaponTemplate(item);
       if(!isShield(shield)) return null;
-      const m=mastery(unit.character,shield);
+      const m=mastery(unit,shield);
       const bonus=(Number(skillByName.get(shield.nom)?.bonus_blocage_base)||0)*(Number(quality(item).multiplicateur_qualite)||1);
       const dexterity=statWithGear(unit,"Dextérité");
       return clamp((dexterity+(m.categoryScore+m.weaponScore)/2)/2+bonus,BLOCK.min,BLOCK.max);
@@ -1311,8 +1320,7 @@
     function riderShare(unit){
       const m=mountOf(unit);
       if(!m) return 1;
-      const animal=unit.character?.skills?.animal||{};
-      const skill=(Number(animal["Compagnon animal"])||0)+(Number(animal[m.character?.mountSkill])||0);
+      const skill=skillValue(unit,"animal","Compagnon animal")+(m.character?.mountSkill?skillValue(unit,"animal",m.character.mountSkill):0);
       return clamp(skill/MOUNT.shareDivisor,0,1);
     }
     function mentalStat(unit,stat){
@@ -1493,6 +1501,10 @@
       itemBySlot,
       armorTemplate,
       baseValue,
+      FATIGUE,
+      fatigueFactor,
+      rested,
+      skillValue,
       MAGIC_SCHOOLS,
       gearBonuses,
       statWithGear,

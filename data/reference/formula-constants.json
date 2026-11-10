@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 445,
+  "row_count": 446,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -816,6 +816,14 @@
       "description": "Durée maximale de fatigue, en jours. Issue #14 — valeurs PLAYTEST validées par Idan pour le code, à ajuster au jeu.",
       "formule": "Fin de mission V1 — fatigue",
       "valeur": 7,
+      "version": "V1"
+    },
+    {
+      "nom": "Combat — Fatigue — malus",
+      "code": "combat.fatigue.malus",
+      "description": "Partir fatigué (Idan, 2026-11-10 : « Un mercenaire fatigué peut partir dans toutes les missions. Il aura juste un malus de 20% de ses stats pour tout s'il commence le combat encore fatigué »). Ses jours de fatigue s'écoulent en route ; encore fatigué au début du combat, ses caractéristiques, résistances et compétences comptent pour 1 − malus pendant tout le combat. Ses PV max et sa Réserve de mana restent entiers ; la fin de mission lit ses valeurs reposées. Un blessé ne part toujours pas.",
+      "formule": "Partir fatigué V1",
+      "valeur": 0.2,
       "version": "V1"
     },
     {

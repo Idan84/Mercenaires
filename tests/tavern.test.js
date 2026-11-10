@@ -255,7 +255,9 @@ assert.deepEqual(rookie.recovery,{kind:"fatigued",daysLeft:2,sinceDay:1});
 assert.equal(report.bonusPaid,60,"seul le survivant sous contrat touche sa prime");
 assert.equal(s7.company.gold,goldBefore-60);
 assert.equal(report.gameOver,false);
-assert.equal(stable.isAvailable(rookie),false);
+// Partir fatigué (Idan, 2026-11-10) : un fatigué peut partir en mission, un blessé non.
+assert.equal(stable.isAvailable(rookie),true,"un fatigué peut partir");
+assert.equal(stable.isAvailable(cap),false,"un blessé, non");
 const [day2]=stable.advanceTime(s7,1);
 assert.deepEqual(day2.recovered,[]);
 assert.equal(rookie.recovery.daysLeft,1);

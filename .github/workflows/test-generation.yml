@@ -65,6 +65,7 @@ jobs:
       - run: node tests/desertion.test.js
       - run: node tests/memorial.test.js
       - run: node tests/duel.test.js
+      - run: node tests/fatigue-departure.test.js
       - run: node tests/salary-review.test.js
       - run: node tests/social-policy.test.js
       - run: bash tests/deploy-changes.test.sh

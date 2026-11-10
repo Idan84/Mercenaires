@@ -70,6 +70,7 @@ jobs:
       - run: node tests/cellar.test.js
       - run: node tests/salary-review.test.js
       - run: node tests/social-policy.test.js
+      - run: node tests/debts.test.js
       - run: bash tests/deploy-changes.test.sh
       - run: node tests/agenda.test.js
       - run: node tests/tavern-slots.test.js

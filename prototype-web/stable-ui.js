@@ -142,7 +142,8 @@ function releaseStableMount(id){
 
 // Journal du matin : l'entretien du jour, les montures remises de leur mission.
 function logStableUpkeep(report){
-  if(report?.total) tavernLog("Animaux : −"+fmt(report.total)+" PO d’entretien ("+fmt(report.count)+" anima"+(report.count>1?"ux":"l")+").","gear");
+  const paid=report?.paid??report?.total;
+  if(paid) tavernLog("Animaux : −"+fmt(paid)+" PO d’entretien ("+fmt(report.count)+" anima"+(report.count>1?"ux":"l")+").","gear");
   for(const r of report?.recovered||[]){
     const e=mountWords(r.mount).e;
     tavernLog(`${mountName(r.mount)}${r.owner?" de "+r.owner.name:""} est ${r.kind==="wounded"?"guéri"+e+" de ses blessures":"reposé"+e}.`,"turn");

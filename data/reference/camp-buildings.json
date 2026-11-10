@@ -1076,7 +1076,27 @@
       "apprend_avec": null,
       "places_par_niveau": 0,
       "lieu": "taverne"
+    },
+    {
+      "code": "cellar",
+      "nom": "La Cave",
+      "description": "Chaque soir, deux mercenaires aux alignements opposés y règlent leur désaccord, armes à la main. Le capitaine ne peut pas les arrêter, mais il peut parier sur le vainqueur.",
+      "niveaux": 1,
+      "prix_base": 500,
+      "jours_base": 4,
+      "soins_par_niveau": 0,
+      "fatigue_jours_par_niveau": 0,
+      "mana_par_niveau": 0,
+      "requiert": null,
+      "ecole": null,
+      "places_base": 0,
+      "places_pas": 0,
+      "entraine": null,
+      "garde_paie_par_niveau": 0,
+      "apprend_avec": null,
+      "places_par_niveau": 0,
+      "lieu": "taverne"
     }
   ],
-  "row_count": 50
+  "row_count": 51
 }

@@ -37,10 +37,12 @@
   const memorial=typeof module!=="undefined"&&module.exports?require("./memorial.js"):root.MercenairesMemorial;
   // Le Défi du capitaine : le combat singulier (facultatif hors du jeu, de même).
   const duel=typeof module!=="undefined"&&module.exports?require("./duel.js"):root.MercenairesDuel;
-  const api=factory(history,regeneration,training,study,posts,armorPorts,armorStudy,lumber,agenda,dungeon,desertion,salaryReview,socialPolicy,stables,taming,canteen,memorial,duel);
+  // La Cave (Idan, 2026-11-10) : la bagarre du jour et les paris.
+  const cellar=typeof module!=="undefined"&&module.exports?require("./cellar.js"):root.MercenairesCellar;
+  const api=factory(history,regeneration,training,study,posts,armorPorts,armorStudy,lumber,agenda,dungeon,desertion,salaryReview,socialPolicy,stables,taming,canteen,memorial,duel,cellar);
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesCampaign=api;
-})(typeof globalThis!=="undefined"?globalThis:this,function(History,Regeneration,Training,Study,Posts,ArmorPorts,ArmorStudy,Lumber,Agenda,Dungeon,Desertion,SalaryReview,SocialPolicy,Stables,Taming,Canteen,Memorial,Duel){
+})(typeof globalThis!=="undefined"?globalThis:this,function(History,Regeneration,Training,Study,Posts,ArmorPorts,ArmorStudy,Lumber,Agenda,Dungeon,Desertion,SalaryReview,SocialPolicy,Stables,Taming,Canteen,Memorial,Duel,Cellar){
   // Sauvegarde : l'état de partie complet, sérialisé en JSON avec un format et une version.
   // La trace de génération des mercenaires (détail de calcul pour le Design Lab, ~85 % du poids)
   // n'est pas sauvegardée : un mercenaire passe d'environ 36 Ko à 5 Ko.
@@ -876,6 +878,23 @@
       if(!dead) History.record(m,state.day,"duel_fought",{opponent:captain.name,role:"challenged",outcome});
       return {...report,duel:{won,killed:outcome==="killed",outcome,mercenary:m,effects}};
     }
+    // La Cave (Idan, 2026-11-10 ; règles : cellar.js) : la bagarre du jour entre deux mercenaires aux alignements opposés, et
+    // les paris du capitaine.
+    const cellarRules=Cellar?Cellar.createCellarRules({reference,affinity,progression,random,
+      camp:{buildingLevel,expeditionOf:(state,id)=>expeditionOf(state,id)}}):null;
+    // L'issue de la bagarre : aftermath, la fin de combat du perdant (jet de blessure, sinon fatigue ; mission-end.js) et du
+    // gagnant (ni blessure ni fatigue) ; fin de mission sans prime ni réputation (comme un duel), puis le pari, l'XP
+    // d'Intimidation du gagnant et une ligne d'historique pour chacun.
+    function applyCellarFight(state,{winnerId,aftermath,fled=false}){
+      const c=cellarRules?.tonight(state);
+      if(!c||c.none||c.done||!aftermath||!c.fighters.includes(winnerId)) return null;
+      const report=applyMissionAftermath(state,aftermath,{duel:true,stars:1});
+      const settled=cellarRules.settle(state,{winnerId,fled});
+      const [winner,loser]=[winnerId,settled.loserId].map(id=>rosterOf(state).find(m=>m.id===id)||null);
+      if(winner) History.record(winner,state.day,"cellar_fight",{opponent:loser?.name||"",outcome:"won"});
+      if(loser) History.record(loser,state.day,"cellar_fight",{opponent:winner?.name||"",outcome:fled?"fled":"lost"});
+      return {...report,cellar:{...settled,winner,loser,fled:Boolean(fled)}};
+    }
     // Héritage (issue #111) : 20 % de la part du défunt juste avant son retrait (standing : sa place au classement), figés
     // pour toujours et comptés une seule fois. Le capitaine n'en laisse pas : sa mort met fin à la partie.
     function recordHeritage(state,mercenary,standing){
@@ -1598,7 +1617,7 @@
       completeExpeditionCombat,
       dormitoryFree,
       dormitoryUsed,
-      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,trainingRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,spellStudy,armorStudy,poisonStudy,lumberjacks,miners,palaceWorkers,dungeonRules,canteenRules,desertionRules,memorialRules,duelRules,canChallenge,applyDuel,salaryReviewRules,stableRules,tamingRules,socialPolicy:social,agenda,studyBusy,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
+      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,trainingRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,spellStudy,armorStudy,poisonStudy,lumberjacks,miners,palaceWorkers,dungeonRules,canteenRules,desertionRules,memorialRules,duelRules,canChallenge,applyDuel,cellarRules,applyCellarFight,salaryReviewRules,stableRules,tamingRules,socialPolicy:social,agenda,studyBusy,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
       woundDaysFor,fatigueDaysFor,dormitoryFatigueCut,
       dormitoryPlaces,
       dormitoryExpansionCost,

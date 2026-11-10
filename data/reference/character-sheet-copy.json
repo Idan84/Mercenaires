@@ -520,6 +520,11 @@
         "lost": "{Défié|Défiée} par {nom} en combat singulier : {victorieux|victorieuse}."
       }
     },
+    "cellar_fight": {
+      "won": "Règle un désaccord avec {nom} à la cave de la taverne : victoire.",
+      "lost": "Règle un désaccord avec {nom} à la cave de la taverne : défaite.",
+      "fled": "Règle un désaccord avec {nom} à la cave de la taverne : s’enfuit."
+    },
       "salary_raise": "Obtient une augmentation : de {avant} à {apres} PO par jour.",
       "salary_refused": "Réclame une augmentation ; n’obtient rien."
     },

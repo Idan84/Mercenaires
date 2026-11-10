@@ -113,8 +113,9 @@ assert.ok(opposites.get(cycle.at(-1)).includes(cycle[0]));
 // Dialogues (Idan, 2026-10-25) : portrait de 400 px sur la gauche (recrutement, échanges, intendant).
 {
   const css=fs.readFileSync(path.join(__dirname,"..","prototype-web","styles.css"),"utf8");
-  assert.match(css,/\.talk-dialog--recruit\[open\]\{display:grid;grid-template-columns:400px minmax\(0,1fr\)/);
-  assert.match(css,/\.talk-dialog--recruit \.avatar-frame--talk\{width:400px;height:100%;min-height:400px/);
+  assert.match(css,/\.talk-dialog--recruit\[open\]\{display:grid;grid-template-columns:400px minmax\(0,1fr\);grid-template-rows:auto minmax\(0,1fr\) auto;align-items:start;height:440px\}/);
+  // Hauteur fixe (Idan, 2026-11-10) : le portrait ne zoome plus quand la conversation s'allonge.
+  assert.match(css,/\.talk-dialog--recruit \.avatar-frame--talk\{width:400px;height:440px;min-height:0/);
   const html=fs.readFileSync(path.join(__dirname,"..","prototype-web","index.html"),"utf8");
   for(const id of ["recruit","steward","deal"]) assert.match(html,new RegExp(`<dialog id="${id}-talk-dialog" class="talk-dialog talk-dialog--recruit"`));
 }

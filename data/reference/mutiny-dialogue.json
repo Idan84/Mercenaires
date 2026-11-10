@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "name": "mutiny-dialogue",
+  "description": "La mutinerie (Idan, 2026-11-10) : les mercenaires à qui l'on doit de l'argent viennent voir le capitaine. scene : l'origine, le titre, l'arrivée du groupe, ce qu'ils disent, les choix (rembourser l'un d'eux, Promettre, Faire peur), les phrases du capitaine, leurs réponses, les issues ; day_news : la notification du jour ; log : le journal. {nombre} : le nombre de mutins (one : un seul, many : plusieurs) ; {nom}, {prenom}, {montant} : un mutin et sa dette ; {masculin|féminin} selon lui. Textes de JC, à retoucher librement.",
+  "scene": {
+    "origin": "Mutinerie",
+    "title": "Les mutins",
+    "arrival": {
+      "one": [
+        "{nom} attend devant la tente du capitaine. {Il|Elle} ne sourit pas.",
+        "On frappe au montant de la tente : {nom}, la main sur le pommeau.",
+        "Le camp s’est tu. {nom} barre le passage au capitaine."
+      ],
+      "many": [
+        "{nombre} mercenaires attendent devant la tente du capitaine. Personne ne sourit.",
+        "On frappe au montant de la tente. Ils sont {nombre}, la main sur le pommeau.",
+        "Le camp s’est tu. {nombre} mercenaires barrent le passage au capitaine."
+      ]
+    },
+    "says": [
+      "On veut notre solde, capitaine. Tout de suite.",
+      "Ça fait trop longtemps qu’on se bat pour rien.",
+      "Pas d’or, pas d’épées. C’est la règle."
+    ],
+    "owed": "{nom} : {montant} PO dues",
+    "options": {
+      "repay": "Rembourser {nom} ({montant} PO)",
+      "promise": "Promettre de les rembourser au plus vite",
+      "fear": "Leur faire peur",
+      "fight": "Se battre",
+      "continue": "Continuer"
+    },
+    "short": "Pas assez d’or",
+    "captain": {
+      "promise": [
+        "Vous serez payés. Tous, et jusqu’à la dernière pièce. Vous avez ma parole.",
+        "Le prochain contrat est pour vous. Je vous le jure.",
+        "Encore quelques jours. L’or arrive, et il sera pour vous."
+      ],
+      "fear": [
+        "Le premier qui tire l’épée ne verra pas le soir.",
+        "Vous oubliez à qui vous parlez. Retournez à vos postes.",
+        "Allez-y. Essayez. J’attends."
+      ]
+    },
+    "reply": {
+      "promise": {
+        "success": [
+          "… Bon. On vous laisse encore un peu de temps.",
+          "Votre parole, capitaine. On s’en souviendra.",
+          "D’accord. Mais c’est la dernière fois."
+        ],
+        "failure": [
+          "Des promesses, encore des promesses.",
+          "Votre parole ne vaut plus rien, capitaine.",
+          "Assez parlé."
+        ]
+      },
+      "fear": {
+        "success": [
+          "… C’est bon, c’est bon. On s’en va.",
+          "Personne ne veut mourir pour quelques pièces.",
+          "Pas aujourd’hui, capitaine."
+        ],
+        "failure": [
+          "On n’a plus peur de vous.",
+          "Vous êtes seul, capitaine. Nous, on est nombreux.",
+          "Alors on va voir ça."
+        ]
+      }
+    },
+    "repaid": "{prenom} compte ses pièces et s’écarte du groupe.",
+    "outcome": {
+      "calm": "Les mutins se dispersent. Le camp est tranquille, pour aujourd’hui.",
+      "fight": "La conversation s’échauffe. Les mutins tirent l’épée."
+    }
+  },
+  "day_news": {
+    "text": "Mutinerie !",
+    "detail": {
+      "one": "{nom} veut sa solde",
+      "many": "{nombre} mercenaires veulent leur solde"
+    }
+  },
+  "log": {
+    "mutiny": {
+      "one": "Mutinerie : {nom} vient réclamer sa solde au capitaine.",
+      "many": "Mutinerie : {nombre} mercenaires viennent réclamer leur solde au capitaine."
+    },
+    "grumble": "Les mercenaires à qui l’on doit de l’argent grognent, mais personne ne vient voir le capitaine.",
+    "repaid": "{nom} est {remboursé|remboursée} : {montant} PO ; {il|elle} quitte les mutins.",
+    "calm": "La mutinerie est calmée, pour aujourd’hui.",
+    "fight": "La mutinerie tourne au combat."
+  }
+}

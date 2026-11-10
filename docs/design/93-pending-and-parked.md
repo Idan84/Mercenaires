@@ -32,7 +32,7 @@ Les gros chantiers à venir, dans l'ordre de la liste d'Idan, avec ce qui s'y ra
     « Lancier chargeur » des titres.
 13. **Économie : l'usurier** (Idan : « on va mettre en place un usurier ! ») ; avec l'or de départ et les revenus à recaler
     ensemble. Les dettes envers les mercenaires sont faites le 2026-11-10 (la caisse ne descend plus sous 0 ;
-    [doc 09](/design/#doc=09-reputation-renown-and-salaries.md)) ; restent leurs conséquences et l'usurier.
+    [doc 09](/design/#doc=09-reputation-renown-and-salaries.md)) ; la mutinerie aussi (leurs conséquences) ; reste l'usurier.
 14. **Onglet Conseils** (Idan : « super important ») : l'intendant façon adjoint de Football Manager, avec des erreurs
     volontaires ([doc 19](/design/#doc=19-mercenary-profile.md)).
 15. ~~**Mémorial**~~ : fait le 2026-11-09 — la galerie des morts (cause drôle, épitaphe, historique) et l'étude de la

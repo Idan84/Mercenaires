@@ -171,6 +171,8 @@ function renderGame() {
   if (typeof renderMerchant === "function") renderMerchant();
   // Un déserteur repéré par la Tour de guet : la scène, avant tout le reste (desertion-ui.js).
   if (typeof checkDesertions === "function") checkDesertions();
+  // Puis des mutins qui réclament leur solde (mutiny-ui.js).
+  if (typeof checkMutiny === "function" && !$("desertion-dialog")?.open) checkMutiny();
   // Puis un mercenaire qui réclame une augmentation (salary-review-ui.js).
   if (typeof checkSalaryReviews === "function") checkSalaryReviews();
 }

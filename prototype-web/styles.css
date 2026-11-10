@@ -2569,6 +2569,10 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .debt-amount{color:#ff9d86;font-variant-numeric:tabular-nums}
 .debt-repay{padding:4px 10px}
 .debt-repay:disabled{opacity:.4;cursor:not-allowed}
+/* La mutinerie (Idan, 2026-11-10 ; mutiny-ui.js) : ce qu'on doit à chaque mutin, avec « Rembourser ». */
+.mutiny-owed{display:grid;gap:6px;margin:0;padding:10px 22px 0;list-style:none}
+.mutiny-owed li{display:grid;grid-template-columns:34px minmax(0,1fr) auto;align-items:center;gap:10px;color:#ead9bd;font:15px Georgia,serif}
+.mutiny-face .avatar-frame{width:34px;height:34px;margin:0;border:2px solid #2a1e17;border-radius:50%}
 /* Garde du corps (Idan, 2026-10-25) : l'offre au tableau de la Taverne, la fenêtre du retour. */
 .contract-card--bodyguard{margin-top:16px}
 .contract-pitch{margin:0 0 10px;color:#e9d9c0;font:italic 16px/1.45 Georgia,serif}

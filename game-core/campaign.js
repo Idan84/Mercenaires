@@ -41,10 +41,12 @@
   const cellar=typeof module!=="undefined"&&module.exports?require("./cellar.js"):root.MercenairesCellar;
   // Les dettes (Idan, 2026-11-10) : la caisse ne descend jamais sous 0 ; ce qu'elle ne paie pas est dû au mercenaire.
   const debts=typeof module!=="undefined"&&module.exports?require("./debts.js"):root.MercenairesDebts;
-  const api=factory(history,regeneration,training,study,posts,armorPorts,armorStudy,lumber,agenda,dungeon,desertion,salaryReview,socialPolicy,stables,taming,canteen,memorial,duel,cellar,debts);
+  // La mutinerie (Idan, 2026-11-10) : ceux à qui l'on doit de l'argent viennent le réclamer au capitaine.
+  const mutiny=typeof module!=="undefined"&&module.exports?require("./mutiny.js"):root.MercenairesMutiny;
+  const api=factory(history,regeneration,training,study,posts,armorPorts,armorStudy,lumber,agenda,dungeon,desertion,salaryReview,socialPolicy,stables,taming,canteen,memorial,duel,cellar,debts,mutiny);
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesCampaign=api;
-})(typeof globalThis!=="undefined"?globalThis:this,function(History,Regeneration,Training,Study,Posts,ArmorPorts,ArmorStudy,Lumber,Agenda,Dungeon,Desertion,SalaryReview,SocialPolicy,Stables,Taming,Canteen,Memorial,Duel,Cellar,Debts){
+})(typeof globalThis!=="undefined"?globalThis:this,function(History,Regeneration,Training,Study,Posts,ArmorPorts,ArmorStudy,Lumber,Agenda,Dungeon,Desertion,SalaryReview,SocialPolicy,Stables,Taming,Canteen,Memorial,Duel,Cellar,Debts,Mutiny){
   // Sauvegarde : l'état de partie complet, sérialisé en JSON avec un format et une version.
   // La trace de génération des mercenaires (détail de calcul pour le Design Lab, ~85 % du poids)
   // n'est pas sauvegardée : un mercenaire passe d'environ 36 Ko à 5 Ko.
@@ -976,13 +978,17 @@
     }
     // Désertion (Idan, 2026-11-04 ; règles : desertion.js) : l'affinité avec le capitaine, celle envers un lieutenant, la
     // Discrétion avec l'équipement (statOf, fourni par le jeu).
+    const captainBondOf=(state,m)=>{
+      const captain=captainOf(state);
+      const bond=captain&&affinity?affinity.memberAffinity(captain,m):null;
+      return bond?.ok?{total:bond.total,raw:bond.initial+bond.acquired+(bond.gear||0)}:null;
+    };
+    // La mutinerie (Idan, 2026-11-10 ; règles : mutiny.js) : ceux à qui l'on doit de l'argent ; « le mutin ne déserte plus ! ».
+    const mutinyRules=Mutiny&&debtRules?Mutiny.createMutinyRules({reference,random,debts:debtRules,camp:{awayOf,statOf,affinityOf:captainBondOf}}):null;
     const desertionRules=Desertion&&affinity?Desertion.createDesertionRules({reference,random,camp:{buildingLevel,awayOf,statOf,
-      affinityOf:(state,m)=>{
-        const captain=captainOf(state);
-        const bond=captain?affinity.memberAffinity(captain,m):null;
-        return bond?.ok?{total:bond.total,raw:bond.initial+bond.acquired+(bond.gear||0)}:null;
-      },
+      affinityOf:captainBondOf,
       bondOf:(lieutenant,m)=>{ const bond=affinity.affinity(lieutenant,m); return bond?.ok?bond.total:0; },
+      inMutiny:(state,m)=>Boolean(mutinyRules?.inMutiny(state,m)),
       remove:leaveCompany}}):null;
     // Renégociation salariale (Idan, 2026-11-04 ; règles : salary-review.js) : son salaire théorique (la formule du
     // recrutement, generator.salaryDemand), sa résistance à la négociation (tavern.js).
@@ -1148,6 +1154,8 @@
       const school=runSchoolDay(state);
       // La Cantine (Idan, 2026-11-08) : le plat du jour pour tous ceux qui sont au camp, blessés et fatigués compris.
       const canteen=canteenRules?canteenRules.morning(state):null;
+      // La mutinerie (Idan, 2026-11-10) : l'affinité de ceux à qui l'on doit de l'argent, puis les tests du matin.
+      const mutiny=mutinyRules?mutinyRules.morning(state):null;
       // Désertion (Idan, 2026-11-04) : après tout ce qui fait bouger l'affinité du matin.
       const desertion=desertionRules?desertionRules.morning(state):null;
       // La part calculée de la réputation suit la progression (doc 09 ; Idan, 2026-11-08) : recalculée chaque matin, après
@@ -1155,7 +1163,7 @@
       if(generator?.recalculateReputation) for(const m of rosterOf(state)) generator.recalculateReputation(m);
       // Renégociation salariale (Idan, 2026-11-04) : ceux qui ont gagné une étoile.
       const salaryReview=salaryReviewRules?salaryReviewRules.morning(state):null;
-      return {day:state.day,recovered,salaries,tavern:tavernReport,offersLost,expeditions,built,buildings,lieutenants:lieutenantReports,mana,merchant,school,study,armorStudy:armor,poisonStudy:poison,lumber,mine,palace,dungeon,desertion,salaryReview,stable,taming:tamingReport,canteen};
+      return {day:state.day,recovered,salaries,tavern:tavernReport,offersLost,expeditions,built,buildings,lieutenants:lieutenantReports,mana,merchant,school,study,armorStudy:armor,poisonStudy:poison,lumber,mine,palace,dungeon,desertion,mutiny,salaryReview,stable,taming:tamingReport,canteen};
     }
 
     // Recharge du mana (doc 12 ; Idan, 2026-10-25) : chaque jour, pour les membres présents au camp, pas pour ceux qui sont
@@ -1373,6 +1381,9 @@
       // Un mercenaire repéré par la Tour de guet attend qu'on décide de son sort (Idan, 2026-11-04).
       const leaving=desertionRules?desertionRules.canAdvance(state):{ok:true};
       if(!leaving.ok) return {...leaving,desertion:leaving.id};
+      // Des mutins attendent le capitaine (Idan, 2026-11-10).
+      const rising=mutinyRules?mutinyRules.canAdvance(state):{ok:true};
+      if(!rising.ok) return {...rising,mutiny:true};
       // Un mercenaire réclame une augmentation (Idan, 2026-11-04) : on lui répond d'abord.
       const asking=salaryReviewRules?salaryReviewRules.canAdvance(state):{ok:true};
       if(!asking.ok) return {...asking,salaryReview:asking.id};
@@ -1672,7 +1683,7 @@
       completeExpeditionCombat,
       dormitoryFree,
       dormitoryUsed,
-      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,trainingRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,spellStudy,armorStudy,poisonStudy,lumberjacks,miners,palaceWorkers,dungeonRules,canteenRules,desertionRules,memorialRules,duelRules,canChallenge,applyDuel,cellarRules,applyCellarFight,debtRules,salaryReviewRules,stableRules,tamingRules,socialPolicy:social,agenda,studyBusy,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
+      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,trainingRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,spellStudy,armorStudy,poisonStudy,lumberjacks,miners,palaceWorkers,dungeonRules,canteenRules,desertionRules,memorialRules,duelRules,canChallenge,applyDuel,cellarRules,applyCellarFight,debtRules,mutinyRules,salaryReviewRules,stableRules,tamingRules,socialPolicy:social,agenda,studyBusy,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
       woundDaysFor,fatigueDaysFor,dormitoryFatigueCut,
       dormitoryPlaces,
       dormitoryExpansionCost,

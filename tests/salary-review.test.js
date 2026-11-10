@@ -200,7 +200,8 @@ assert.ok(index.indexOf('<script src="salary-review-ui.js">')>index.indexOf('<sc
 const tavernUi=fs.readFileSync(path.join(ROOT,"prototype-web","tavern-ui.js"),"utf8");
 assert.match(tavernUi,/if\(allowed\.salaryReview!=null\)\{ if\(typeof checkSalaryReviews==="function"\) checkSalaryReviews\(\); return; \}/);
 const ui2=fs.readFileSync(path.join(ROOT,"prototype-web","ui.js"),"utf8");
-assert.match(ui2,/checkDesertions\(\);\n[^\n]*\n  if \(typeof checkSalaryReviews === "function"\) checkSalaryReviews\(\);\n\}/);
+// La mutinerie (Idan, 2026-11-10) passe entre les deux : désertion, mutins, puis salaire.
+assert.match(ui2,/checkDesertions\(\);\n(?:[^\n]*\n)*?  if \(typeof checkSalaryReviews === "function"\) checkSalaryReviews\(\);\n\}/);
 assert.match(ui2,/entry\.kind==="salary_raise"/);
 assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","day-news-ui.js"),"utf8"),/entries\.push\(\.\.\.salaryReviewNews\(report\.salaryReview\)\)/);
 const events=reference.characterSheetCopy.history.events;

@@ -47,6 +47,7 @@
   //   buildingLevel(state, code), awayOf(state, id) → en mission,
   //   affinityOf(state, m) → { total, raw } (avec le capitaine ; raw : sans les bornes ±100), bondOf(lieutenant, m) → son
   //   affinité envers le lieutenant, statOf(m, nom) → avec l'équipement,
+  //   inMutiny(state, m) → on lui doit de l'argent (mutiny.js : il ne déserte pas),
   //   remove(state, m, how) → il quitte la compagnie (how : "fled", "let_go", "duel") ; { left, heritage } }.
   function createDesertionRules({reference,random=Math.random,camp}={}){
     const k=(code,fallback)=>referenceConstant(reference,code,fallback);
@@ -124,6 +125,8 @@
         const before=loyalty.affinity,away=Boolean(camp.awayOf(state,m.id));
         loyalty.affinity=bond.raw;
         if(away||pendingOf(state,m.id)) continue;
+        // En mode mutinerie, on lui doit de l'argent : il ne part pas sans (Idan, 2026-11-10 : « le mutin ne déserte plus ! »).
+        if(camp.inMutiny?.(state,m)) continue;
         // Sorti du cachot : il file.
         if(loyalty.wantsToLeave&&!m.dungeon){ delete loyalty.wantsToLeave; flee(state,m,report); continue; }
         if(loyalty.wantsToLeave||!(Number.isFinite(before)&&bond.raw<before)) continue;

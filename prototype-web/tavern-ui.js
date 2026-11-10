@@ -159,6 +159,7 @@ function advanceCampDay(){
     tavernLog(allowed.reason,"warn");
     // Un déserteur repéré attend qu'on décide de son sort (desertion-ui.js).
     if(allowed.desertion!=null){ if(typeof checkDesertions==="function") checkDesertions(); return; }
+    if(allowed.mutiny){ if(typeof checkMutiny==="function") checkMutiny(); return; }
     // Un mercenaire réclame une augmentation (salary-review-ui.js).
     if(allowed.salaryReview!=null){ if(typeof checkSalaryReviews==="function") checkSalaryReviews(); return; }
     if(typeof openExpeditionDialog==="function") openExpeditionDialog(allowed.expedition.id);
@@ -186,8 +187,9 @@ function logDayReport(report){
   const salaries=report.salaries.paid??report.salaries.total;
   if(salaries) tavernLog("Salaires : −"+fmt(salaries)+" PO.","gear");
   if(typeof logStableUpkeep==="function") logStableUpkeep(report.stable);
-  // Les dettes (Idan, 2026-11-10 ; debts-ui.js) : ce que la caisse n'a pas pu payer.
+  // Les dettes (Idan, 2026-11-10 ; debts-ui.js) : ce que la caisse n'a pas pu payer ; la mutinerie (mutiny-ui.js).
   if(typeof logDebts==="function") logDebts(report);
+  if(typeof logMutiny==="function") logMutiny(report.mutiny);
   if(typeof logTaming==="function") logTaming(report.taming);
   const gone=report.tavern.departures.map(d=>d.candidate.mercenary.name);
   const arrived=report.tavern.arrivals.map(a=>a.mercenary.name);

@@ -2562,6 +2562,13 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .social-policy-row{display:grid;grid-template-columns:150px minmax(0,1fr) 60px;align-items:center;gap:12px;color:#ead9bd;font:15px Georgia,serif}
 .social-policy-row input{width:100%;accent-color:#c9a15f;cursor:pointer}
 .social-policy-row output{color:#ffe1ac;text-align:right;font-variant-numeric:tabular-nums}
+/* Les dettes (Idan, 2026-11-10 ; debts-ui.js) : une ligne par mercenaire, sa dette et « Rembourser ». */
+.quartermaster-head .debt-rows{left:0;right:auto;grid-template-columns:1fr;width:min(440px,80vw);gap:8px;padding:12px 16px}
+.debt-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:12px;color:#ead9bd;font:15px Georgia,serif}
+.debt-row small{color:#b9a27e}
+.debt-amount{color:#ff9d86;font-variant-numeric:tabular-nums}
+.debt-repay{padding:4px 10px}
+.debt-repay:disabled{opacity:.4;cursor:not-allowed}
 /* Garde du corps (Idan, 2026-10-25) : l'offre au tableau de la Taverne, la fenêtre du retour. */
 .contract-card--bodyguard{margin-top:16px}
 .contract-pitch{margin:0 0 10px;color:#e9d9c0;font:italic 16px/1.45 Georgia,serif}

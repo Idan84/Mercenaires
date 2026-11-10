@@ -192,7 +192,7 @@ function logExpeditionReport(report){
   for(const r of report.returned){
     const e=r.expedition;
     tavernLog(e.memberIds.length
-      ?"L’escouade du "+e.offer.campName.toLocaleLowerCase("fr")+" de "+e.offer.fields.lieu+" est rentrée"+(r.gold?" : +"+fmt(r.gold)+" PO":"")+(r.items?", "+r.items+" objet"+(r.items>1?"s":"")+" à l’Intendance":"")+(r.bonusPaid?", primes versées "+fmt(r.bonusPaid)+" PO":"")+"."
+      ?"L’escouade du "+e.offer.campName.toLocaleLowerCase("fr")+" de "+e.offer.fields.lieu+" est rentrée"+(r.gold?" : +"+fmt(r.gold)+" PO":"")+(r.items?", "+r.items+" objet"+(r.items>1?"s":"")+" à l’Intendance":"")+(r.bonusPaid?", primes versées "+fmt(r.bonusPaid)+" PO":"")+(r.bonusOwed?", "+fmt(r.bonusOwed)+" PO de primes restent dues":"")+"."
       :"Personne ne revient du "+e.offer.campName.toLocaleLowerCase("fr")+" de "+e.offer.fields.lieu+".",r.gold?"gear":"info");
     if(typeof logStableArrivals==="function") logStableArrivals(r.mounts);
   }
@@ -209,7 +209,7 @@ function queueBodyguardReturn(report){
   const female=m=>String(m?.sex||"").trim().toLowerCase().startsWith("f");
   const state=r=>(r.issue==="blesse"?"Blessé":"Fatigué")+(female(r.mercenary)?"e":"");
   const lines=report.results.map(r=>({id:r.mercenary.id,text:bodyguardReturnLine(r),
-    detail:[r.days?`${state(r)} ${r.days} jour${r.days>1?"s":""}`:"",r.reputation?`réputation +${fmt(r.reputation)}`:"",r.bonus?`prime ${fmt(r.bonus)} PO`:""].filter(Boolean).join(" · ")}));
+    detail:[r.days?`${state(r)} ${r.days} jour${r.days>1?"s":""}`:"",r.reputation?`réputation +${fmt(r.reputation)}`:"",r.bonus?`prime ${fmt(r.bonus)} PO${r.owed?` (${fmt(r.owed)} PO dues)`:""}`:""].filter(Boolean).join(" · ")}));
   for(const line of lines) tavernLog(line.text,"turn");
   if(report.renown) tavernLog("Garde du corps : renommée de la compagnie +"+fmt(report.renown)+".","gear");
   (game.bodyguardReturns||(game.bodyguardReturns=[])).push({client:report.expedition.offer.client,lines});

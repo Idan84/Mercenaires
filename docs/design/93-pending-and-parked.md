@@ -30,8 +30,9 @@ Les gros chantiers à venir, dans l'ordre de la liste d'Idan, avec ce qui s'y ra
 11. **Amourettes du capitaine.**
 12. **Montures et animaux** : avec les créatures sur plusieurs cases (Ogres, dragons, grandes montures) et le
     « Lancier chargeur » des titres.
-13. **Économie : l'usurier** (Idan : « on va mettre en place un usurier ! ») ; avec l'or sous 0, l'or de départ et les
-    revenus à recaler ensemble.
+13. **Économie : l'usurier** (Idan : « on va mettre en place un usurier ! ») ; avec l'or de départ et les revenus à recaler
+    ensemble. Les dettes envers les mercenaires sont faites le 2026-11-10 (la caisse ne descend plus sous 0 ;
+    [doc 09](/design/#doc=09-reputation-renown-and-salaries.md)) ; restent leurs conséquences et l'usurier.
 14. **Onglet Conseils** (Idan : « super important ») : l'intendant façon adjoint de Football Manager, avec des erreurs
     volontaires ([doc 19](/design/#doc=19-mercenary-profile.md)).
 15. ~~**Mémorial**~~ : fait le 2026-11-09 — la galerie des morts (cause drôle, épitaphe, historique) et l'étude de la
@@ -52,7 +53,6 @@ Rien de ce bloc n'est codé : JC3 attend ton choix avant d'y toucher.
 - **Taverne — consommations** : quels effets positifs ? → [issue #87](https://github.com/Idan84/Mercenaires/issues/87)
 - **Sorts — catalogue V0 de Chatty** : à accepter ou corriger avant d'être fusionné. → [PR #32](https://github.com/Idan84/Mercenaires/pull/32), [doc 12](/design/#doc=12-magic.md)
 - **Combat interrompu** : recharger la page en plein combat revient à l'état d'avant le combat. Avec les vraies missions : retraite, défaite ou combat sauvegardé ?
-- **Trésor négatif** : l'or peut passer sous 0 sans conséquence. Réponse en cours : l'usurier (feuille de route, 13).
 - **Type de dégâts, cas « moyen »** : la formule dit `AVERAGE(matchups)` ; le moteur choisit le type le plus proche de cette moyenne. Moyenne numérique ou type le plus proche ?
 - **Missions one shot** : récompense, renommée, factions, cartes, abandon, combat automatique (brouillon du 2026-10-24). → [doc 17 §6](/design/#doc=17-one-shot-missions.md)
 - **Loyauté** : formules de loyauté, de départ et d'attractivité. → [doc 09](/design/#doc=09-reputation-renown-and-salaries.md)

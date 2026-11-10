@@ -58,7 +58,7 @@ function renderCompanyMeta(){
   const c=game.campaign;
   if(!c) return;
   $("company-gold").textContent=fmt(c.company.gold);
-  $("company-gold").classList.toggle("negative",c.company.gold<0);
+  $("company-gold").classList.toggle("negative",c.company.gold<0||(typeof debtTotal==="function"&&debtTotal(c)>0));
   $("company-day").textContent=c.day;
   $("company-dorm").textContent=dormitoryPlacesText(campaignRules().dormitoryUsed(c))+" / "+c.company.camp.dormitoryCapacity;
   $("company-payroll").textContent=fmt(campaignRules().payroll(c));
@@ -183,8 +183,11 @@ function advanceCampDay(){
 // Journal d'une journée passée : guérisons, salaires, Taverne, contrat pris par une autre compagnie (doc 17).
 function logDayReport(report){
   for(const r of report.recovered) tavernLog(r.mercenary.name+(r.kind==="wounded"?" est guéri de ses blessures.":" est reposé."),"turn");
-  if(report.salaries.total) tavernLog("Salaires : −"+fmt(report.salaries.total)+" PO.","gear");
+  const salaries=report.salaries.paid??report.salaries.total;
+  if(salaries) tavernLog("Salaires : −"+fmt(salaries)+" PO.","gear");
   if(typeof logStableUpkeep==="function") logStableUpkeep(report.stable);
+  // Les dettes (Idan, 2026-11-10 ; debts-ui.js) : ce que la caisse n'a pas pu payer.
+  if(typeof logDebts==="function") logDebts(report);
   if(typeof logTaming==="function") logTaming(report.taming);
   const gone=report.tavern.departures.map(d=>d.candidate.mercenary.name);
   const arrived=report.tavern.arrivals.map(a=>a.mercenary.name);

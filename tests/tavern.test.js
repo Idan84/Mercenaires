@@ -270,7 +270,8 @@ assert.equal(stable.isAvailable(cap),true,"guéri après 20 jours");
 const restored=restoreCampaign(serializeCampaign(s7));
 assert.equal(restored.ok,true,"l'indisponibilité se sauvegarde");
 
-// La prime peut faire passer l'or sous 0 ; la mort du capitaine met fin à la partie.
+// La prime ne fait pas passer l'or sous 0 : la part impayée est une dette envers lui (Idan, 2026-11-10 ; tests/debts.test.js) ;
+// la mort du capitaine met fin à la partie.
 const s8=stable.createCampaign({captain,squad});
 const paid=s8.company.roster[1];
 paid.contract={dailySalary:10,missionBonus:s8.company.gold+50,signedDay:1};
@@ -278,7 +279,8 @@ const end=stable.applyMissionAftermath(s8,{captainDead:true,results:[
   {id:s8.company.captainId,dead:true,wounded:false},
   {id:paid.id,dead:false,wounded:false,fatigueDays:5}
 ]});
-assert.equal(s8.company.gold,-50);
+assert.equal(s8.company.gold,0);
+assert.deepEqual(s8.company.debts.map(d=>[d.id,d.amount,d.bonus]),[[paid.id,50,50]]);
 assert.equal(end.gameOver,true);
 assert.deepEqual(s8.gameOver,{day:1,reason:"captain-dead"});
 
@@ -293,7 +295,9 @@ const daily=crew.reduce((sum,m)=>sum+m.salary,0);
 assert.equal(stable.payroll(s9),daily);
 const gold9=s9.company.gold;
 const [pay]=stable.advanceTime(s9,1);
-assert.deepEqual(pay.salaries,{total:daily,count:crew.length,wounded:[]});
+const {stable:upkeep,...salaries}=pay.salaries;
+assert.deepEqual(salaries,{total:daily,paid:daily,owed:0,count:crew.length,wounded:[],debts:[]});
+assert.equal(upkeep.total,0,"pas d'animaux à nourrir");
 assert.equal(s9.company.gold,gold9-daily,"un jour de salaires versé");
 stable.advanceTime(s9,2);
 assert.equal(s9.company.gold,gold9-3*daily,"trois jours de salaires");

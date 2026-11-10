@@ -193,7 +193,7 @@ En complément des données déjà prévues dans l’architecture :
   - un mort quitte définitivement la compagnie ; s’il était Intendant, la compagnie n’a plus d’Intendant ;
   - un blessé ou un fatigué reçoit un compteur de jours ; un blessé ne peut pas partir en mission tant qu’il n’est pas écoulé, un fatigué si (§5, « Partir fatigué ») ; chaque jour de `AdvanceTime` le diminue de 1, avant la Taverne ; la Mission Test n’ayant pas de trajet, le compteur part du jour du combat ;
   - « Partir fatigué » : `campaign.js` (`isAvailable`, `fatigueOnArrival`, `departExpedition` refuse un blessé) ; au combat, `unit.fatigued` (posé par l'écran de combat) et `combat-engine.js` (`fatigueFactor`, `rested`, `skillValue`) ; le choix de l'escouade indique « −20 % au combat » ou « reposé à l’arrivée », le journal et la fiche de combat « Fatigué −20 % » ;
-  - la prime de mission (§8) est payée à chaque survivant sous contrat ; l’or peut alors passer sous 0 ;
+  - la prime de mission (§8) est payée à chaque survivant sous contrat ; si la caisse ne suffit pas, au prorata, et le reste lui est dû (les dettes, doc 09 ; Idan, 2026-11-10) ;
   - la mort du capitaine met fin à la partie : **la sauvegarde est effacée**.
 - Outil de test, pas une règle : un bouton « +1 000 (test) » ajoute de l’or à la compagnie.
 - Choix d’implémentation validés par Idan le 2026-10-20, en attendant les règles du §10 : la chaîne s’applique après une victoire comme après une défaite ; un mercenaire sorti de la carte en fuite la passe comme tout survivant, avec ses PV restants ; les ennemis ne la passent pas.

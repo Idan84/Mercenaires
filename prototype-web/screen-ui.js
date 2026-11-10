@@ -109,8 +109,10 @@ function renderGameHud(){
   $("hud-renown").innerHTML=rules?renderRenownStars(rules.companyRenown(game.campaign)):"";
   const gold=Math.round(company.gold);
   $("hud-gold").textContent=fmt(gold);
-  $("hud-gold-stat").title="Trésor de la compagnie : "+fmt(gold)+" PO";
-  $("hud-gold-stat").classList.toggle("hud-stat--debt",gold<0);
+  // Les dettes (Idan, 2026-11-10 ; debts-ui.js) : la caisse ne descend plus sous 0 ; ce qui est dû passe en rouge.
+  const debts=typeof debtTotal==="function"?debtTotal(game.campaign):0;
+  $("hud-gold-stat").title="Trésor de la compagnie : "+fmt(gold)+" PO"+(debts?" · Dettes : "+fmt(debts)+" PO":"");
+  $("hud-gold-stat").classList.toggle("hud-stat--debt",gold<0||debts>0);
   hudGoldDelta(gold);
   $("hud-upkeep").textContent=fmt(Math.round(rules?rules.payroll(game.campaign):0))+" PO/j";
   // Places occupées au dortoir (un ogre en prend deux, un halfling, un gnome ou un gobelin une demi ; ni le capitaine ni

@@ -320,7 +320,13 @@ La négociation conjointe **Salaire + Prime de mission** est définie dans [Tave
 - Les recrues de la Taverne gardent le contrat négocié (`14-tavern-recruitment.md`).
 - Le **salaire contractuel est versé chaque jour** par `AdvanceTime`, après la guérison et avant la Taverne, à tous les membres sous contrat. Les fatigués sont payés à 100 % ; les blessés et les corvées suivent la politique sociale de l'Intendance (§7 ; Idan, 2026-11-04 : blessés à 50 % par défaut).
 - La prime de mission est payée au retour de mission (`10-mission-time-and-unavailability.md` §8 et §11).
-- Si l’or manque, le trésor passe sous 0, sans conséquence pour l’instant (Idan, 2026-10-04). Dette, impayés et départs restent à concevoir.
+- **Les dettes** (Idan, 2026-11-10 : « on ne passe pas en négatif, on reste à 0 et on a des dettes envers chaque mercenaire ») : le trésor ne descend jamais sous 0.
+  - **Au prorata** : quand la caisse ne suffit pas à payer une note (les salaires et l'entretien des montures du matin ; les primes d'une fin de mission ou d'un retour), elle est vidée et chacun touche la même part de ce qui lui est dû. Le reste devient une **dette envers lui**, en PO entières.
+  - **L'entretien d'une monture** (« le mercenaire subvient aux besoins de sa monture en attendant. On lui doit cet argent. Les autres, c'est le dresseur. Sinon, elles sont relâchées ») : la monture d'un mercenaire, on le lui doit ; une monture sans propriétaire, on le doit au **Dresseur** ; sans Dresseur, elle est **relâchée**. Celle du capitaine : il la nourrit lui-même, la compagnie ne lui doit rien.
+  - **Une dette s'éteint** quand on la rembourse, ou à la **mort** du mercenaire. Un mercenaire qui part vivant (désertion) **garde sa créance** : elle reste dans la liste, marquée « parti ».
+  - **Le remboursement** n'est jamais automatique : à l'Intendance, le menu **Dettes** liste chaque créancier (sa dette, le détail et le premier jour impayé au survol) ; « Rembourser » paie **toute** sa dette, un mercenaire à la fois, s'il y a assez d'or (« individuel mais total »).
+  - Les conséquences des impayés (grogne, réclamation, mutinerie) et l'usurier viendront ensuite.
+  - Code : `game-core/debts.js` (le prorata, la liste, le remboursement), `campaign.js` (`paySalaries`, les primes, la mort) ; écran : `debts-ui.js` ; textes : `debts-copy.json`.
 
 ### Renégociation salariale (Idan, 2026-11-04)
 

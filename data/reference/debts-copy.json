@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "name": "debts-copy",
+  "description": "Les dettes de la compagnie (Idan, 2026-11-10) : la caisse ne descend jamais sous 0 ; ce qu'elle ne peut pas payer (salaire, prime, entretien d'une monture) est dû au mercenaire. Le menu « Dettes » de l'Intendance, le journal et la notification du jour. Textes de JC, à retoucher librement.",
+  "panel": {
+    "title": "Dettes",
+    "left": "parti",
+    "repay": "Rembourser",
+    "short": "Pas assez d’or",
+    "since": "depuis le jour {jour}",
+    "kinds": {
+      "salary": "Salaires",
+      "bonus": "Primes",
+      "upkeep": "Entretien de sa monture"
+    }
+  },
+  "log": {
+    "salary": "Caisse vide : {montant} PO de salaires restent dues ({noms}).",
+    "upkeep": "Entretien des animaux : {montant} PO avancées par {noms}.",
+    "released": "{nom} : personne pour payer son entretien, relâché{e}.",
+    "bonus": "{montant} PO de primes restent dues ({noms}).",
+    "repaid": "{nom} est remboursé{e} : {montant} PO."
+  },
+  "day_news": {
+    "text": "Caisse vide",
+    "detail": "{montant} PO de dettes de plus · {total} PO en tout",
+    "released": "{nom} relâché{e}",
+    "released_detail": "Personne pour payer son entretien"
+  },
+  "money": "Dettes"
+}

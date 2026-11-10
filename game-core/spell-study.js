@@ -176,7 +176,7 @@
       const check=canStudy(state,m,item,{retry:true});
       if(!check.ok) return check;
       const {spell,room}=check;
-      const {chance}=offerChance(state,m,spell,approach),dice=roll(),accepted=dice<chance;
+      const {chance}=offerChance(state,m,spell,approach),dice=roll(),accepted=persuasion.decide(approach,dice<chance);
       persuasion.markRetried(m,"studyRefusal",approach,accepted);
       if(!accepted){
         const affinityDelta=shiftAffinity(state,m,persuasion.refusalExtra(C.affinity.refuse,approach));
@@ -365,7 +365,7 @@
       const check=canTeach(state,study,t,{retry:true});
       if(!check.ok) return check;
       const student=memberOf(state,study.studentId);
-      const {chance}=teachChance(state,study,t,approach),dice=roll(),accepted=dice<chance;
+      const {chance}=teachChance(state,study,t,approach),dice=roll(),accepted=persuasion.decide(approach,dice<chance);
       persuasion.markRetried(t,"teachRefusal",approach,accepted);
       if(accepted){
         study.teacherId=t.id; study.teacherFrom=state.day+1; study.teacherStarted=false; study.teacherApproach=approach;

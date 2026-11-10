@@ -34,14 +34,25 @@
       intimidate:{key:"intimidate",name:"Intimidation",weight:k("persuasion.intimidate.weight",1),lossFactor:k("persuasion.intimidate.loss_factor",2),
         gainFactor:k("persuasion.intimidate.gain_factor",0)},
       convince:{key:"convince",name:"Charisme",weight:k("persuasion.convince.weight",0.5),lossFactor:k("persuasion.convince.loss_factor",0.5),
-        gainFactor:k("persuasion.convince.gain_factor",1)}
+        gainFactor:k("persuasion.convince.gain_factor",1)},
+      // Le Défi du capitaine (Idan, 2026-11-09, étape 2 : « Après chaque refus (apprentissage, échange, poste, corvée),
+      // "Défier" s'ajoute à côté d'Intimider et Convaincre. Si on gagne, il cède. Si on perd, le refus tient ») : l'issue du
+      // duel tient lieu de jet (forced) ; ni bonus, ni perte ou gain d'affinité en plus (le duel a déjà les siens).
+      challenge_won:{key:"challenge_won",name:null,weight:0,lossFactor:1,gainFactor:1,forced:true},
+      challenge_lost:{key:"challenge_lost",name:null,weight:0,lossFactor:1,gainFactor:1,forced:false}
     };
     const approachOf=key=>APPROACHES[key]||null;
-    // Ce que la relance ajoute à l'écart (Δ) du test : l'Intimidation du capitaine, ou son Charisme ÷ 2.
+    // Ce que la relance ajoute à l'écart (Δ) du test : l'Intimidation du capitaine, ou son Charisme ÷ 2 (rien pour un défi).
     function bonus(captain,key){
       const a=approachOf(key);
-      return a?a.weight*valueOf(captain,a.name):0;
+      return a&&a.name?a.weight*valueOf(captain,a.name):0;
     }
+    // L'issue de la relance : celle du duel pour un défi (gagné : il cède ; perdu : le refus tient), sinon le jet.
+    function decide(key,rolled){
+      const a=approachOf(key);
+      return a&&typeof a.forced==="boolean"?a.forced:Boolean(rolled);
+    }
+    const isChallenge=key=>typeof approachOf(key)?.forced==="boolean";
     // Le facteur de la perte d'affinité : 2 (intimidé), 0,5 (convaincu), 1 sans relance.
     const lossFactor=key=>approachOf(key)?.lossFactor??1;
     // Le gain d'affinité d'un accord (un apprentissage : +5 au premier matin) : rien s'il a été intimidé, entier s'il a été
@@ -86,7 +97,7 @@
       if(before>0&&extra<0&&flatteredKey) m[flatteredKey]=false;
       return {...result,approach:key,affinityDelta:extra,mood:again.refusal.mood||result.mood,kind};
     }
-    return {APPROACHES,approachOf,bonus,lossFactor,gainFactor,refusalExtra,reviseExtra,outcomeExtra,markRefused,canRetry,markRetried,
+    return {APPROACHES,approachOf,bonus,decide,isChallenge,lossFactor,gainFactor,refusalExtra,reviseExtra,outcomeExtra,markRefused,canRetry,markRetried,
       retryRefusal,valueOf};
   }
   return {createPersuasionRules,valueOf};

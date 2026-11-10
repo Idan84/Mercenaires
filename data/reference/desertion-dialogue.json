@@ -56,7 +56,6 @@
     "outcome": {
       "stayed": "{prenom} reste dans la compagnie.",
       "refused": "{prenom} ne changera pas d’avis.",
-      "duel": "Le combat est bref. {prenom} ne se relève pas.",
       "let_go": "{prenom} s’en va."
     }
   },
@@ -73,6 +72,7 @@
     "spotted": "La Vigie a repéré {nom} qui filait.",
     "stayed": "{nom} reste dans la compagnie.",
     "duel": "{nom} est {mort|morte} en combat singulier contre le capitaine.",
-    "let_go": "{nom} a quitté la compagnie."
+    "let_go": "{nom} a quitté la compagnie.",
+    "duel_lost": "{nom} a battu le capitaine en combat singulier et quitte la compagnie, avec son sac."
   }
 }

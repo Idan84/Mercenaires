@@ -1111,7 +1111,26 @@ function challengeFromSheet(mercenaryId){
   if(typeof confirm==="function"&&!confirm(text)) return;
   if(startCaptainDuel(m.id)) $("character-dialog")?.close?.();
 }
-function startCaptainDuel(mercenaryId){
+// Le Défi du capitaine, étape 2 (Idan, 2026-11-09 : « Après chaque refus (apprentissage, échange, poste, corvée), "Défier"
+// s'ajoute à côté d'Intimider et Convaincre. Si on gagne, il cède. Si on perd, le refus tient ») : kind, data, la relance
+// (persuasion-ui.js) qui reçoit l'issue du duel (challenge_won, challenge_lost).
+function challengeFromRequest(kind,data={}){
+  const m=game.campaign?.company.roster.find(x=>String(x.id)===String(data.persuadeMember));
+  if(!m) return false;
+  const text=duelFill(duelCopy().request_confirm,{nom:m.name},duelFemale(m));
+  if(typeof confirm==="function"&&!confirm(text)) return false;
+  if(!campaignRules().canChallenge(game.campaign,m.id).ok) return false;
+  $("deal-talk-dialog")?.close?.();
+  return startCaptainDuel(m.id,{request:{kind,data:{...data}}});
+}
+// Étape 3 (Idan, 2026-11-09 : « Le vrai duel remplace le duel automatique. Si on gagne, il reste, ou il est mis à mort. Si
+// on perd, il part avec son sac ») : le duel contre un déserteur repéré, depuis sa scène (desertion-ui.js).
+function challengeDeserter(mercenaryId){
+  if(!campaignRules().canChallenge(game.campaign,mercenaryId).ok) return false;
+  $("desertion-dialog")?.close?.();
+  return startCaptainDuel(mercenaryId,{desertion:true});
+}
+function startCaptainDuel(mercenaryId,{request=null,desertion=false}={}){
   if(!game.campaign||typeof campaignRules!=="function") return false;
   const rules=campaignRules(),check=rules.canChallenge(game.campaign,mercenaryId);
   if(!check.ok){ if(typeof tavernLog==="function") tavernLog(check.reason,"warn"); return false; }
@@ -1129,7 +1148,7 @@ function startCaptainDuel(mercenaryId){
   game.mission={
     engine,endRules,progression,players:[me],enemies:[foe],playerOrder:[me],enemyOrder:[foe],
     activeUnit:null,phase:"player",turn:1,mode:null,log:[],over:false,winner:null,aftermath:null,
-    duel:{mercenaryId:check.mercenary.id,captainId:check.captain.id,name:check.mercenary.name}
+    duel:{mercenaryId:check.mercenary.id,captainId:check.captain.id,name:check.mercenary.name,request,desertion}
   };
   const m=game.mission;
   m.relief=generateMissionRelief();
@@ -1201,7 +1220,10 @@ function resolveMissionDuel(killed=false){
   m.aftermath=m.endRules.resolveMissionEnd([part(me,{isCaptain:true}),part(foe,won?killed?{killed:true,cause}:{spared:true}:{})],{});
   for(const r of m.aftermath.results) missionLog(r.name+" — "+missionAftermathText(r),r.dead?"death":r.wounded?"bad":"info");
   if(!game.campaign||typeof campaignRules!=="function"){ if(typeof renderMission==="function") renderMission(); return null; }
+  // Après un refus : il cède, ou le refus tient — avant le bilan du duel, qui le laisse fatigué ou blessé.
+  if(d.request&&!(won&&killed)) settleDuelRequest(d,won,foe.character);
   const report=m.companyReport=campaignRules().applyDuel(game.campaign,{mercenaryId:d.mercenaryId,won,killed,aftermath:m.aftermath});
+  if(d.desertion&&!report?.gameOver) settleDuelDesertion(d,won,foe.character);
   if(report?.duel?.effects&&!report.gameOver){
     const fx=report.duel.effects,C=campaignRules().duelRules.constants;
     missionLog(duelFill(copy.xp,{capitaine:me.character.name,intimidation:C.intimidationXp,charisme:C.charismaXp}),"gear");
@@ -1377,6 +1399,29 @@ function resolveUnwatchedCellarFight(){
   if(report&&typeof tavernLog==="function")
     tavernLog(duelFill(cellarCopy().unwatched,{gagnant:winner.character.name,perdant:loser.character.name,raison:cellarQuarrel(t)}),"turn");
   return report;
+}
+
+// La relance (persuasion-ui.js) avec l'issue du duel : gagné, il cède ; perdu, le refus tient.
+function settleDuelRequest(d,won,foe){
+  const handler=typeof PERSUASION_HANDLERS!=="undefined"?PERSUASION_HANDLERS[d.request.kind]:null;
+  if(!handler) return;
+  handler(won?"challenge_won":"challenge_lost",d.request.data);
+  const copy=duelCopy(),captain=game.campaign.company.roster.find(x=>x.id===d.captainId);
+  missionLog(duelFill(won?copy.request_won:copy.request_lost,{nom:foe.name,capitaine:captain?.name||""},duelFemale(foe)),won?"gear":"bad");
+  d.requestSettled=won?"won":"lost";
+}
+// Le déserteur (desertion.js, duelOutcome) : mis à mort, il n'est plus là ; épargné, il reste ; vainqueur, il part avec son
+// sac.
+function settleDuelDesertion(d,won,foe){
+  const rules=campaignRules().desertionRules;
+  const out=rules?.duelOutcome(game.campaign,d.mercenaryId,{won});
+  if(!out?.ok) return;
+  const log=game.referenceData?.desertionDialogue?.log||{};
+  const line=out.outcome==="killed"?log.duel:out.outcome==="stayed"?log.stayed:log.duel_lost;
+  const text=duelFill(line,{nom:foe.name,prenom:MercenairesRecruitDialogue.firstName(foe)},duelFemale(foe));
+  missionLog(text,out.outcome==="stayed"?"gear":"bad");
+  if(typeof tavernLog==="function") tavernLog(text,out.outcome==="stayed"?"info":"bad");
+  if(typeof saveGame==="function") saveGame();
 }
 
 function missionTerrain(){
@@ -5221,13 +5266,18 @@ function leaveMission(){
   // Le duel attend encore le verdict : la fenêtre revient.
   if(game.mission?.duel&&!game.mission.duel.resolved){ openDuelVerdict(); return; }
   const gameOver=game.mission?.companyReport?.gameOver;
-  const cellar=Boolean(game.mission?.cellar);
+  const cellar=Boolean(game.mission?.cellar),duel=game.mission?.duel||null;
+  const challenged=duel?game.campaign?.company.roster.find(x=>x.id===duel.mercenaryId):null;
   game.mission=null;
   $("mission-panel").classList.add("hidden");
   if(gameOver){ showGameOver(); return; }
   $("game-panel").classList.remove("hidden");
   if(game.campaign) renderGame();
   if(cellar&&typeof renderCellar==="function") renderCellar();
+  // Défié après un refus : la discussion reprend, avec l'issue (il cède, ou le refus tient).
+  if(duel?.requestSettled&&challenged&&typeof $("deal-talk-dialog")?.showModal==="function") $("deal-talk-dialog").showModal();
+  // Un déserteur : le suivant, s'il y en a.
+  if(duel?.desertion&&typeof checkDesertions==="function") checkDesertions();
 }
 
 function initializeMissionUi(){

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "duel-dialogue",
-  "description": "Le Défi du capitaine (Idan, 2026-11-09) : les textes du combat singulier — le bouton de la fiche, la confirmation, le journal de l'arène, « Se rendre », la fenêtre du verdict (« Mise à mort » / « Épargner ») et le bilan. {capitaine}, {nom} : les combattants ; {a|b} : masculin|féminin (du défié, sauf dans « surrendered » et « lost », du capitaine) ; {intimidation}, {charisme}, {n}, {min}, {max} : l'XP et l'affinité ; {liste} : l'affinité d'un seul témoin.",
+  "description": "Le Défi du capitaine (Idan, 2026-11-09) : les textes du combat singulier — le bouton de la fiche, la confirmation, le journal de l'arène, « Se rendre », la fenêtre du verdict (« Mise à mort » / « Épargner ») et le bilan. {capitaine}, {nom} : les combattants ; {a|b} : masculin|féminin (du défié, sauf dans « surrendered » et « lost », du capitaine) ; {intimidation}, {charisme}, {n}, {min}, {max} : l'XP et l'affinité ; {liste} : l'affinité d'un seul témoin. Étape 2 (Idan, 2026-11-09) : request_confirm, request_won, request_lost, le défi après un refus ({capitaine}, {nom}, {il|elle} du défié).",
   "button": "Défier",
   "button_tip": "Le défier en combat singulier, dans l’arène.",
   "confirm": "Défier {nom} en combat singulier ? Si le capitaine perd, il peut y laisser la vie.",
@@ -23,5 +23,8 @@
   "affinity": "La compagnie a vu le combat : {n} gagnent de +{min} à +{max} d’affinité envers le capitaine.",
   "affinity_same": "La compagnie a vu le combat : {n} gagnent +{min} d’affinité envers le capitaine.",
   "affinity_one": "La compagnie a vu le combat : {liste}.",
-  "affinity_spared": "{Nom} : +{n} d’affinité envers le capitaine, pour la grâce."
+  "affinity_spared": "{Nom} : +{n} d’affinité envers le capitaine, pour la grâce.",
+  "request_confirm": "Défier {nom} en combat singulier ? {S’il|Si elle} perd, {il|elle} cède ; si le capitaine perd, son refus tient, et le capitaine peut y laisser la vie.",
+  "request_won": "{Nom} a perdu le duel : {il|elle} cède.",
+  "request_lost": "{Capitaine} a perdu le duel : le refus de {nom} tient."
 }

@@ -34,6 +34,8 @@ function checkSalaryReviews(){
   if($("desertion-dialog")?.open||campaignRules().desertionRules?.pending(game.campaign).length) return;
   // Des mutins d'abord (mutiny-ui.js).
   if($("mutiny-dialog")?.open||campaignRules().mutinyRules?.pending(game.campaign)) return;
+  // Puis l'usurier (usurer-ui.js).
+  if($("usurer-dialog")?.open||campaignRules().usurerRules?.pending(game.campaign)) return;
   const entry=salaryReviewRules()?.pending(game.campaign)[0];
   if(entry) openSalaryTalk(entry,game.salaryTalk?.id===entry.id||entry.rounds>0);
 }

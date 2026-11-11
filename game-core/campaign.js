@@ -43,10 +43,12 @@
   const debts=typeof module!=="undefined"&&module.exports?require("./debts.js"):root.MercenairesDebts;
   // La mutinerie (Idan, 2026-11-10) : ceux à qui l'on doit de l'argent viennent le réclamer au capitaine.
   const mutiny=typeof module!=="undefined"&&module.exports?require("./mutiny.js"):root.MercenairesMutiny;
-  const api=factory(history,regeneration,training,study,posts,armorPorts,armorStudy,lumber,agenda,dungeon,desertion,salaryReview,socialPolicy,stables,taming,canteen,memorial,duel,cellar,debts,mutiny);
+  // L'usurier (Idan, 2026-11-11) : l'emprunt, l'échéance, les voleurs.
+  const usurer=typeof module!=="undefined"&&module.exports?require("./usurer.js"):root.MercenairesUsurer;
+  const api=factory(history,regeneration,training,study,posts,armorPorts,armorStudy,lumber,agenda,dungeon,desertion,salaryReview,socialPolicy,stables,taming,canteen,memorial,duel,cellar,debts,mutiny,usurer);
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesCampaign=api;
-})(typeof globalThis!=="undefined"?globalThis:this,function(History,Regeneration,Training,Study,Posts,ArmorPorts,ArmorStudy,Lumber,Agenda,Dungeon,Desertion,SalaryReview,SocialPolicy,Stables,Taming,Canteen,Memorial,Duel,Cellar,Debts,Mutiny){
+})(typeof globalThis!=="undefined"?globalThis:this,function(History,Regeneration,Training,Study,Posts,ArmorPorts,ArmorStudy,Lumber,Agenda,Dungeon,Desertion,SalaryReview,SocialPolicy,Stables,Taming,Canteen,Memorial,Duel,Cellar,Debts,Mutiny,Usurer){
   // Sauvegarde : l'état de partie complet, sérialisé en JSON avec un format et une version.
   // La trace de génération des mercenaires (détail de calcul pour le Design Lab, ~85 % du poids)
   // n'est pas sauvegardée : un mercenaire passe d'environ 36 Ko à 5 Ko.
@@ -951,6 +953,27 @@
       mutinyRules.fought(state);
       return {...report,mutiny:{won:true,mutineers,effects}};
     }
+    // L'usurier (Idan, 2026-11-11 ; règles : usurer.js) : la limite se lit en étoiles de la compagnie.
+    const usurerRules=Usurer?Usurer.createUsurerRules({reference,random,camp:{starsOf:state=>companyRenownLevel(state),awayOf:(state,id)=>awayOf(state,id)}}):null;
+    // Le combat final contre les voleurs de l'usurier (« sauf miracle, c'est un combat qui se termine en game over. Si le
+    // capitaine gagne, il récupère l'XP, l'equipement et l'usurier lui indique que la médiation musclée à fonctionné et
+    // qu'il n'a plus de dettes (mais il ne pourra plus emprunter...) ») : aftermath, la fin de combat du capitaine (son XP),
+    // sans prime ni réputation ; loot, l'équipement des voleurs tombés, à l'Intendance ; perdu, la partie est finie.
+    function applyUsurerFight(state,{won=false,aftermath,loot=[]}){
+      const captain=captainOf(state);
+      if(!usurerRules||!captain||!aftermath||usurerRules.pending(state)?.kind!=="final") return null;
+      const report=applyMissionAftermath(state,aftermath,{duel:true,stars:companyRenownLevel(state),deathEvent:"usurer"});
+      if(!won||report.gameOver){
+        state.gameOver={day:state.day,reason:report.gameOver?"captain-dead":"usurer"};
+        report.gameOver=true;
+        return {...report,usurer:{won:false,loot:[]}};
+      }
+      if(!Array.isArray(state.company.stock)) state.company.stock=[];
+      state.company.stock.push(...loot);
+      usurerRules.settleFinal(state,{won:true});
+      History.record(captain,state.day,"usurer_fight",{outcome:"won"});
+      return {...report,usurer:{won:true,loot}};
+    }
     // La Cave (Idan, 2026-11-10 ; règles : cellar.js) : la bagarre du jour entre deux mercenaires aux alignements opposés, et
     // les paris du capitaine.
     const cellarRules=Cellar?Cellar.createCellarRules({reference,affinity,progression,random,
@@ -1183,6 +1206,8 @@
       const canteen=canteenRules?canteenRules.morning(state):null;
       // La mutinerie (Idan, 2026-11-10) : l'affinité de ceux à qui l'on doit de l'argent, puis les tests du matin.
       const mutiny=mutinyRules?mutinyRules.morning(state):null;
+      // L'usurier (Idan, 2026-11-11) : sa visite, l'échéance, les voleurs.
+      const usurer=usurerRules?usurerRules.morning(state):null;
       // Désertion (Idan, 2026-11-04) : après tout ce qui fait bouger l'affinité du matin.
       const desertion=desertionRules?desertionRules.morning(state):null;
       // La part calculée de la réputation suit la progression (doc 09 ; Idan, 2026-11-08) : recalculée chaque matin, après
@@ -1190,7 +1215,7 @@
       if(generator?.recalculateReputation) for(const m of rosterOf(state)) generator.recalculateReputation(m);
       // Renégociation salariale (Idan, 2026-11-04) : ceux qui ont gagné une étoile.
       const salaryReview=salaryReviewRules?salaryReviewRules.morning(state):null;
-      return {day:state.day,recovered,salaries,tavern:tavernReport,offersLost,expeditions,built,buildings,lieutenants:lieutenantReports,mana,merchant,school,study,armorStudy:armor,poisonStudy:poison,lumber,mine,palace,dungeon,desertion,mutiny,salaryReview,stable,taming:tamingReport,canteen};
+      return {day:state.day,recovered,salaries,tavern:tavernReport,offersLost,expeditions,built,buildings,lieutenants:lieutenantReports,mana,merchant,school,study,armorStudy:armor,poisonStudy:poison,lumber,mine,palace,dungeon,desertion,mutiny,usurer,salaryReview,stable,taming:tamingReport,canteen};
     }
 
     // Recharge du mana (doc 12 ; Idan, 2026-10-25) : chaque jour, pour les membres présents au camp, pas pour ceux qui sont
@@ -1411,6 +1436,9 @@
       // Des mutins attendent le capitaine (Idan, 2026-11-10).
       const rising=mutinyRules?mutinyRules.canAdvance(state):{ok:true};
       if(!rising.ok) return {...rising,mutiny:true};
+      // L'usurier attend une réponse (Idan, 2026-11-11).
+      const lender=usurerRules?usurerRules.canAdvance(state):{ok:true};
+      if(!lender.ok) return {...lender,usurer:true};
       // Un mercenaire réclame une augmentation (Idan, 2026-11-04) : on lui répond d'abord.
       const asking=salaryReviewRules?salaryReviewRules.canAdvance(state):{ok:true};
       if(!asking.ok) return {...asking,salaryReview:asking.id};
@@ -1710,7 +1738,7 @@
       completeExpeditionCombat,
       dormitoryFree,
       dormitoryUsed,
-      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,trainingRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,spellStudy,armorStudy,poisonStudy,lumberjacks,miners,palaceWorkers,dungeonRules,canteenRules,desertionRules,memorialRules,duelRules,canChallenge,applyDuel,cellarRules,applyCellarFight,debtRules,mutinyRules,applyMutinyFight,salaryReviewRules,stableRules,tamingRules,socialPolicy:social,agenda,studyBusy,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
+      campBuildingRow,campBuildingCodes,campRoomCodes,buildingLevel,buildingPlaces,schoolRooms,trainingRooms,captainTraining,setCaptainTraining,runSchoolDay,schoolDayOf,schoolEntryOf,schoolTraining,spellStudy,armorStudy,poisonStudy,lumberjacks,miners,palaceWorkers,dungeonRules,canteenRules,desertionRules,memorialRules,duelRules,canChallenge,applyDuel,cellarRules,applyCellarFight,debtRules,mutinyRules,applyMutinyFight,usurerRules,applyUsurerFight,salaryReviewRules,stableRules,tamingRules,socialPolicy:social,agenda,studyBusy,buildingWork,nextBuildingLevel,startBuilding,campBuildingEffects,
       woundDaysFor,fatigueDaysFor,dormitoryFatigueCut,
       dormitoryPlaces,
       dormitoryExpansionCost,

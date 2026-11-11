@@ -30,9 +30,8 @@ Les gros chantiers à venir, dans l'ordre de la liste d'Idan, avec ce qui s'y ra
 11. **Amourettes du capitaine.**
 12. **Montures et animaux** : avec les créatures sur plusieurs cases (Ogres, dragons, grandes montures) et le
     « Lancier chargeur » des titres.
-13. **Économie : l'usurier** (Idan : « on va mettre en place un usurier ! ») ; avec l'or de départ et les revenus à recaler
-    ensemble. Les dettes envers les mercenaires sont faites le 2026-11-10 (la caisse ne descend plus sous 0 ;
-    [doc 09](/design/#doc=09-reputation-renown-and-salaries.md)) ; la mutinerie aussi (leurs conséquences) ; reste l'usurier.
+13. ~~**Économie : l'usurier**~~ : fait — les dettes envers les mercenaires et la mutinerie le 2026-11-10, l'usurier le
+    2026-11-11 ([doc 09](/design/#doc=09-reputation-renown-and-salaries.md)) ; l'or de départ et les revenus restent à recaler.
 14. **Onglet Conseils** (Idan : « super important ») : l'intendant façon adjoint de Football Manager, avec des erreurs
     volontaires ([doc 19](/design/#doc=19-mercenary-profile.md)).
 15. ~~**Mémorial**~~ : fait le 2026-11-09 — la galerie des morts (cause drôle, épitaphe, historique) et l'étude de la

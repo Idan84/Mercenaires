@@ -173,6 +173,8 @@ function renderGame() {
   if (typeof checkDesertions === "function") checkDesertions();
   // Puis des mutins qui réclament leur solde (mutiny-ui.js).
   if (typeof checkMutiny === "function" && !$("desertion-dialog")?.open) checkMutiny();
+  // Puis l'usurier ou ses voleurs (usurer-ui.js).
+  if (typeof checkUsurer === "function") checkUsurer();
   // Puis un mercenaire qui réclame une augmentation (salary-review-ui.js).
   if (typeof checkSalaryReviews === "function") checkSalaryReviews();
 }
@@ -1400,7 +1402,9 @@ function historyEntryText(c,entry){
   if(entry.kind==="dungeon") return fill(copy.dungeon);
   if(entry.kind==="dungeon_release") return fill(copy.dungeon_release,{jours:historyPlural(entry.days||0,"jour","jours")});
   // Désertion (Idan, 2026-11-04).
-  if(["desertion_stayed","desertion","desertion_let_go","duel","mutiny"].includes(entry.kind)) return fill(copy[entry.kind]);
+  if(["desertion_stayed","desertion","desertion_let_go","duel","mutiny","usurer"].includes(entry.kind)) return fill(copy[entry.kind]);
+  // L'usurier (Idan, 2026-11-11) : la victoire contre ses voleurs.
+  if(entry.kind==="usurer_fight") return fill(copy.usurer_fight?.[entry.outcome]||"");
   // Renégociation salariale (Idan, 2026-11-04).
   if(entry.kind==="salary_raise") return fill(copy.salary_raise,{avant:fmt(entry.from||0),apres:fmt(entry.to||0)});
   if(entry.kind==="salary_refused") return fill(copy.salary_refused);

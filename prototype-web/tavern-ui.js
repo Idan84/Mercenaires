@@ -160,6 +160,7 @@ function advanceCampDay(){
     // Un déserteur repéré attend qu'on décide de son sort (desertion-ui.js).
     if(allowed.desertion!=null){ if(typeof checkDesertions==="function") checkDesertions(); return; }
     if(allowed.mutiny){ if(typeof checkMutiny==="function") checkMutiny(); return; }
+    if(allowed.usurer){ if(typeof checkUsurer==="function") checkUsurer(); return; }
     // Un mercenaire réclame une augmentation (salary-review-ui.js).
     if(allowed.salaryReview!=null){ if(typeof checkSalaryReviews==="function") checkSalaryReviews(); return; }
     if(typeof openExpeditionDialog==="function") openExpeditionDialog(allowed.expedition.id);
@@ -190,6 +191,8 @@ function logDayReport(report){
   // Les dettes (Idan, 2026-11-10 ; debts-ui.js) : ce que la caisse n'a pas pu payer ; la mutinerie (mutiny-ui.js).
   if(typeof logDebts==="function") logDebts(report);
   if(typeof logMutiny==="function") logMutiny(report.mutiny);
+  // L'usurier (Idan, 2026-11-11 ; usurer-ui.js) : la menace des voleurs.
+  if(typeof logUsurer==="function") logUsurer(report.usurer);
   if(typeof logTaming==="function") logTaming(report.taming);
   const gone=report.tavern.departures.map(d=>d.candidate.mercenary.name);
   const arrived=report.tavern.arrivals.map(a=>a.mercenary.name);
@@ -409,7 +412,9 @@ function tavernTalkOptions(t){
   if(t.view==="who") return [...(game.campaign?.tavern.candidates||[]).map(c=>({key:"who",arg:c.mercenary.id,label:MercenairesRecruitDialogue.firstName(c.mercenary)})),back];
   if(t.view==="what") return [...(keeper.groups||[]).map(g=>({key:"group",arg:g.groupe,label:g.label})),back];
   if(t.view==="stats") return [...adviceStats(t.group).map(name=>({key:"stat",arg:name,label:name})),back];
-  return ["beer","round","advice","leave"].map(key=>({key,label:o[key]}));
+  // L'usurier (Idan, 2026-11-11 ; usurer-ui.js) : la petite avance de trésorerie, ou son remboursement.
+  const usurer=typeof usurerTavernOptions==="function"?usurerTavernOptions():[];
+  return [...["beer","round","advice"].map(key=>({key,label:o[key]})),...usurer,{key:"leave",label:o.leave}];
 }
 function tavernTalkLine(t){
   const d=recruitDialogue(),m=tavernCandidate(t.candidateId)?.mercenary;
@@ -436,6 +441,12 @@ function tavernTalk(choice,arg){
   if(choice==="leave"){ $("tavern-talk-dialog").close(); return; }
   if(choice==="beer"||choice==="round"){ buyTavernDrink(choice); return; }
   if(choice==="stat"){ askTavernAdvice(arg); renderTavernTalk(); return; }
+  if((choice==="usurer"||choice==="usurer_pay")&&typeof usurerTavernChoice==="function"){
+    const line=usurerTavernChoice(choice);
+    if(line) t.line=line;
+    renderTavernTalk();
+    return;
+  }
   if(choice==="advice") t.view="who";
   if(choice==="who"){ t.candidateId=Number(arg); t.view="what"; }
   if(choice==="group"){ t.group=arg; t.view="stats"; }

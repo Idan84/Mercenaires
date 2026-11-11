@@ -538,6 +538,10 @@
         "ally": {
           "won": "Se bat aux côtés du capitaine contre des mutins : victoire."
         }
+      },
+      "usurer": "Tombe sous les coups des voleurs de l’usurier.",
+      "usurer_fight": {
+        "won": "Disperse les voleurs de l’usurier : plus de dette, mais plus de crédit."
       }
     },
     "empty": "Rien à raconter pour l’instant."

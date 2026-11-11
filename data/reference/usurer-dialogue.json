@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "name": "usurer-dialogue",
+  "description": "L'usurier (Idan, 2026-11-11) : la question au tavernier, la visite de l'usurier (l'emprunt), l'échéance, l'avertissement des voleurs et leur retour. {montant}, {total} (à rendre), {jour}, {max}, {jours}, {nombre} (voleurs), {capitaine}. Textes de JC, à retoucher librement.",
+  "tavern": {
+    "ask": "Vous ne connaîtriez pas quelqu’un qui connaîtrait quelqu’un… pour une petite avance de trésorerie ?",
+    "answer": [
+      "Hmm. Je connais peut-être quelqu’un qui connaît quelqu’un. Je fais passer le mot.",
+      "Une avance ? Je fais passer le mot. Mais ne dites pas que ça vient de moi.",
+      "Je ne connais personne. Mais je fais passer le mot, à tout hasard."
+    ],
+    "waiting": "J’ai fait passer le mot. Il viendra, ne vous en faites pas.",
+    "repay": "Faire porter son dû à l’usurier ({montant} PO)",
+    "repaid": "Le tavernier fait porter la bourse. Vous ne devez plus rien à l’usurier.",
+    "no_gold": "Il vous manque de l’or : il faut {montant} PO."
+  },
+  "scene": {
+    "origin": "Prêteur sur gages",
+    "name": "L’usurier"
+  },
+  "visit": {
+    "arrival": [
+      "Un homme maigre en manteau de velours s’assoit sans qu’on l’y invite. « On m’a dit que vous aviez besoin d’or, capitaine. »",
+      "Il sent l’encens et la cave. « Un ami d’un ami m’a parlé de vous. Combien ? »",
+      "Il pose sur la table une bourse et un petit couteau. « Je prête. Vous rendez. C’est simple. »"
+    ],
+    "terms": "« Jusqu’à {max} PO, à rendre dans {jours} jours au plus. Deux pour cent par jour. C’est donné. »",
+    "amount": "Montant (PO)",
+    "days": "À rendre dans (jours)",
+    "total": "À rendre le jour {jour} : {total} PO",
+    "accept": "Marché conclu",
+    "decline": "Finalement, non",
+    "accepted": "L’usurier compte {montant} PO sur la table. « Le jour {jour}, {total} PO. Pas une pièce de moins. »",
+    "declined": "L’usurier hausse les épaules, reprend sa bourse et s’en va."
+  },
+  "due": {
+    "arrival": [
+      "L’usurier est revenu. Il ne s’assoit pas. « Le jour est venu, capitaine. {total} PO. »",
+      "« Bonjour, capitaine. Vous n’avez pas oublié notre petit arrangement ? {total} PO. »"
+    ],
+    "pay": "Payer ({total} PO)",
+    "cannot": "Je ne peux pas payer",
+    "paid": "L’usurier recompte, sourit, et disparaît comme il était venu.",
+    "angry": "L’usurier pâlit, puis rougit. « Vous allez le regretter, capitaine. » Il claque la porte."
+  },
+  "warning": {
+    "arrival": "Une bande du camp des voleurs entre dans le camp. Ils veulent voir le capitaine. Seul.",
+    "fight": "Les recevoir",
+    "title": "Avertissement",
+    "pay": "Payer l’usurier ({total} PO)",
+    "start": "Les hommes de l’usurier : {nombre} voleurs. {capitaine} est seul.",
+    "end": "« Bon. On repasse la semaine prochaine. T’as intérêt à payer… sinon on reviendra te couper ta zézette ! »",
+    "continue": "Continuer"
+  },
+  "final": {
+    "arrival": "Les voleurs sont revenus. Cette fois, ils ne viennent pas pour parler.",
+    "fight": "Se battre",
+    "pay": "Payer l’usurier ({total} PO)",
+    "start": "Les hommes de l’usurier sont revenus : {nombre} voleurs. {capitaine} est seul.",
+    "won": "Contre toute attente, {capitaine} a dispersé les hommes de l’usurier.",
+    "usurer": "L’usurier fait savoir que la « médiation musclée » a fonctionné : vous ne lui devez plus rien. Mais plus personne ne vous prêtera un sou.",
+    "lost": "Les hommes de l’usurier ont eu raison de {capitaine}.",
+    "game_over": "L’usurier a récupéré son dû, à sa manière : la partie est terminée."
+  },
+  "paid": "Vous ne devez plus rien à l’usurier.",
+  "day_news": {
+    "visit": "L’usurier est arrivé",
+    "visit_detail": "Il attend au camp",
+    "due": "L’usurier réclame son dû",
+    "due_detail": "{total} PO",
+    "warning": "Les voleurs de l’usurier sont au camp",
+    "final": "Les voleurs de l’usurier sont revenus"
+  },
+  "log": {
+    "asked": "Le tavernier fait passer le mot : un prêteur viendra demain.",
+    "borrowed": "Emprunt à l’usurier : {montant} PO, à rendre le jour {jour} ({total} PO).",
+    "repaid": "Remboursé à l’usurier : {montant} PO.",
+    "refused": "L’usurier repart sans son argent. Il est furieux.",
+    "warned": "Les voleurs de l’usurier repasseront dans une semaine.",
+    "threat": "Les voleurs de l’usurier rôdent : {chance} % qu’ils reviennent ce matin."
+  }
+}

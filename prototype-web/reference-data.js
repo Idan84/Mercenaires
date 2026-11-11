@@ -72,6 +72,7 @@ const REFERENCE_FILES = {
   socialPolicyCopy: "social-policy-copy.json",
   debtsCopy: "debts-copy.json",
   mutinyDialogue: "mutiny-dialogue.json",
+  usurerDialogue: "usurer-dialogue.json",
   lieutenantDialogue: "lieutenant-dialogue.json",
   bodyguardMissions: "bodyguard-missions.json",
   merchants: "merchants.json",

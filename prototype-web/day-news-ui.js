@@ -40,6 +40,8 @@ function dayDigest(report){
   if(typeof desertionNews==="function") entries.push(...desertionNews(report.desertion));
   // La mutinerie (Idan, 2026-11-10 ; mutiny-ui.js) : des mutins attendent le capitaine.
   if(typeof mutinyNews==="function") entries.push(...mutinyNews(report.mutiny));
+  // L'usurier (Idan, 2026-11-11 ; usurer-ui.js) : sa visite, l'échéance, ses voleurs.
+  if(typeof usurerNews==="function") entries.push(...usurerNews(report.usurer));
   // Renégociation salariale (Idan, 2026-11-04 ; salary-review-ui.js) : il veut vous parler de son salaire.
   if(typeof salaryReviewNews==="function") entries.push(...salaryReviewNews(report.salaryReview));
   // Taverne à 5 missions : une offre prise ailleurs est aussitôt remplacée ; une seule ligne, pas d'alerte.

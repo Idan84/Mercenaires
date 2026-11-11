@@ -105,10 +105,11 @@
     // Le camp : le chef, puis des ennemis (niveau selon le métal, ligne selon les poids du camp) tant que le total plus la
     // moitié du suivant reste dans le budget ; au plus max_ennemis (100), plus le chef (Idan, 2026-11-02 : « 100 + chef »).
     // Si le peuple du camp n'a aucun chef permis, un autre camp est tiré (Idan, 2026-11-02).
-    function rollCamp(def=definition(),camp=null,{level:missionLevel=1}={}){
+    // budget : imposé (l'armée des voleurs de l'usurier, usurer.js : 5 × PC du capitaine), sinon tiré.
+    function rollCamp(def=definition(),camp=null,{level:missionLevel=1,budget:forced=null}={}){
       const weightedCamp=list=>weighted(list.map(c=>({...c,poids:Number(c.poids)||1})));
       let chosen=camp||weightedCamp(campsOf(def));
-      const tier=budgetOf(def,missionLevel),budget=rollBudget(tier,missionLevel);
+      const tier=budgetOf(def,missionLevel),budget=forced!=null?Number(forced):rollBudget(tier,missionLevel);
       const chiefLevel=weighted((tier?.chefs||[{niveau:"chef 1",poids:1}]).map(c=>({...c,poids:Number(c.poids)||1}))).niveau;
       let chief=chiefFor(chosen.faction,chiefLevel,missionLevel);
       if(!chief&&!camp){
@@ -435,6 +436,9 @@
       return [...kept,...extra,...accessories];
     }
 
+    // Le butin d'ennemis morts (leur fiche : équipement, objets, accessoires), sans propriétaire ; hors contrat (l'usurier).
+    function lootFrom(deadEnemies=[],makeItem=null){ return deadEnemies.flatMap(c=>enemyLoot(c,makeItem)).map(it=>({...it,owner:null})); }
+
     // Issue (doc 17 §8). Victoire : récompense du contrat, coffre (or et objets), le butin des ennemis morts (selon leur
     // fiche) et l'équipement de nos morts, sans propriétaire. Défaite : rien, et la renommée baisse ; l'équipement de nos
     // morts est perdu.
@@ -477,7 +481,7 @@
     function mapSize(offer){ const map=definition(offer.code)?.carte||{}; return {cols:map.colonnes||36,rows:map.lignes||25}; }
 
     return {definition,archetype,points,missionMin,lootOf,accessoryDrops,ACCESSORY_SLOTS,campsOf,budgetOf,rollBudget,renownLevel,rollMissionLevel,rollCamp,estimation,contractReward,
-      createOffer,createHunt,rollBeasts,huntDistance,orderText,applyArchetype,buildEnemies,outcome,deathMultiplier,rollChestGold,chestPlan,mapSize,mountSheet,createMount};
+      createOffer,createHunt,rollBeasts,huntDistance,orderText,applyArchetype,buildEnemies,lootFrom,outcome,deathMultiplier,rollChestGold,chestPlan,mapSize,mountSheet,createMount};
   }
 
   return {createMissionRules};

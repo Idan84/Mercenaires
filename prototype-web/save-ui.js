@@ -36,7 +36,9 @@ function showGameOver(){
   const name=game.captain?.name||"Le capitaine";
   const day=game.campaign?.day;
   // Vaincu par ses mutins (Idan, 2026-11-10 : « S'il perd. Game Over ! »), même s'il a survécu.
-  const mutiny=game.campaign?.gameOver?.reason==="mutiny",female=String(game.captain?.sex||"").trim().toLowerCase().startsWith("f");
+  const reason=game.campaign?.gameOver?.reason,female=String(game.captain?.sex||"").trim().toLowerCase().startsWith("f");
+  // Vaincu par les voleurs de l'usurier (Idan, 2026-11-11), même s'il a survécu.
+  const beaten=reason==="mutiny"?"par ses mutins":reason==="usurer"?"par les hommes de l’usurier":null;
   game.campaign=null;
   game.captain=null;
   game.initialSquad=[];
@@ -44,7 +46,7 @@ function showGameOver(){
   game.tavernLog=[];
   game.recruitTalk=null;
   $("game-panel").classList.add("hidden");
-  $("game-over-text").textContent=`${name} ${mutiny?`a été ${female?"vaincue":"vaincu"} par ses mutins`:"est mort"}${day?" au jour "+day:""}. La compagnie est dissoute et la sauvegarde a été effacée.`;
+  $("game-over-text").textContent=`${name} ${beaten?`a été ${female?"vaincue":"vaincu"} ${beaten}`:"est mort"}${day?" au jour "+day:""}. La compagnie est dissoute et la sauvegarde a été effacée.`;
   $("game-over-panel").classList.remove("hidden");
   renderSaveStatus();
 }

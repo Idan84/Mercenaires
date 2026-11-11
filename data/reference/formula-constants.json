@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 467,
+  "row_count": 475,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -3768,6 +3768,70 @@
       "description": "Le combat de la mutinerie (Idan, 2026-11-10 : « Pour qu'un mercenaire rejoigne le capitaine, plusieurs règles. Il doit être au camp et pas blessé. On fait un test d'affinité envers le capitaine bien dur. Genre 50% de chance si l'affinité est au max. 0% si l'affinité est négatie ») : chance de se battre aux côtés du capitaine = facteur × son affinité avec le capitaine (%), 0 si elle est négative.",
       "formule": "Mutinerie V1",
       "valeur": 0.5,
+      "version": "V1"
+    },
+    {
+      "nom": "Usurier — montant par étoile",
+      "code": "usurer.amount_per_star",
+      "description": "L'usurier (Idan, 2026-11-11) : « On peut demander le montant qu'on veut dans la limite de 10 000 PO par étoile de la compagnie » (le niveau d'étoiles, 1 à 15).",
+      "formule": "Usurier V1",
+      "valeur": 10000,
+      "version": "V1"
+    },
+    {
+      "nom": "Usurier — jours par étoile",
+      "code": "usurer.days_per_star",
+      "description": "L'usurier (Idan, 2026-11-11) : « le jour du remboursement dans la limite de 2x nombre d'étoiles » (un simple choix : « On negocie pas, on prends ce qu'on veut prendre »).",
+      "formule": "Usurier V1",
+      "valeur": 2,
+      "version": "V1"
+    },
+    {
+      "nom": "Usurier — taux par jour",
+      "code": "usurer.daily_rate",
+      "description": "L'usurier (Idan, 2026-11-11) : « Le taux est de +2% du montant par jour » ; à rendre = montant × (1 + taux × jours depuis l'emprunt), avant, le jour même ou après l'échéance (les intérêts courent).",
+      "formule": "Usurier V1",
+      "valeur": 0.02,
+      "version": "V1"
+    },
+    {
+      "nom": "Usurier — armée des voleurs",
+      "code": "usurer.army_factor",
+      "description": "L'usurier (Idan, 2026-11-11) : « une armée du camp des voleurs (5xPC du capitaine) » ; le budget de l'armée (points des fiches ennemies) = facteur × PC du capitaine.",
+      "formule": "Usurier V1",
+      "valeur": 5,
+      "version": "V1"
+    },
+    {
+      "nom": "Usurier — PC du capitaine",
+      "code": "usurer.pc_divisor",
+      "description": "Le PC du capitaine = sa réputation ÷ ce diviseur (Idan, 2026-11-11 : « 1) ok » ; l'échelle des fiches ennemies, réputation = 3 × points).",
+      "formule": "Usurier V1",
+      "valeur": 3,
+      "version": "V1"
+    },
+    {
+      "nom": "Usurier — semaine de répit",
+      "code": "usurer.grace_days",
+      "description": "L'usurier (Idan, 2026-11-11) : après l'avertissement des voleurs, « Au bout de 7 jours, on a un jet de dé chaque matin ».",
+      "formule": "Usurier V1",
+      "valeur": 7,
+      "version": "V1"
+    },
+    {
+      "nom": "Usurier — menace, premier jet",
+      "code": "usurer.threat.start",
+      "description": "L'usurier (Idan, 2026-11-11) : chance (%) que les voleurs reviennent le premier matin de la menace (« à 5% le premier jour »).",
+      "formule": "Usurier V1",
+      "valeur": 5,
+      "version": "V1"
+    },
+    {
+      "nom": "Usurier — menace, facteur",
+      "code": "usurer.threat.factor",
+      "description": "L'usurier (Idan, 2026-11-11) : la chance est multipliée par ce facteur chaque matin (« Ca double tous les jours »), au plus 100 %.",
+      "formule": "Usurier V1",
+      "valeur": 2,
       "version": "V1"
     }
   ]

@@ -1374,6 +1374,98 @@ function resolveMissionMutiny(){
   return report;
 }
 
+// ---- L'usurier : ses voleurs (Idan, 2026-11-11 ; règles : game-core/usurer.js, campaign.js applyUsurerFight ; écran :
+// usurer-ui.js) ----
+// « une armée du camp des voleurs (5xPC du capitaine) qui vient rendre une visite. Le capitaine joue en premier. Il est seul.
+// A la fin de son tour, le combat s'arrête » : l'avertissement (kind « warning ») ne compte pas (ni XP, ni morts, ni
+// blessures : « 6) Non ») ; leur retour (kind « final ») est un vrai combat, seul (« seul et dès son retour ») : gagné, l'XP
+// du capitaine et l'équipement des voleurs tombés, plus de dette ; perdu, la partie est finie. Le camp des voleurs du
+// contrat (one-shot-missions.json), son budget imposé ; la carte des contrats, sans relief de camp.
+function usurerFightCopy(kind){ return game.referenceData?.usurerDialogue?.[kind]||{}; }
+function usurerArmy(){
+  const c=game.campaign,rules=campaignRules(),mr=missionRules();
+  const def=mr.definition("cleanup"),camp=mr.campsOf(def).find(x=>x.faction==="Voleurs")||null;
+  const rolled=mr.rollCamp(def,camp,{level:rules.companyRenownLevel(c),budget:rules.usurerRules.armyBudget(c)});
+  return {id:"usurer-"+c.day,code:"cleanup",camp:rolled,faction:rolled.faction,fields:{}};
+}
+function startUsurerFight(kind){
+  const c=game.campaign;
+  if(!c||typeof campaignRules!=="function") return false;
+  const rules=campaignRules();
+  if(rules.usurerRules?.pending(c)?.kind!==kind||(kind!=="warning"&&kind!=="final")) return false;
+  const captain=c.company.roster.find(m=>m.id===c.company.captainId);
+  if(!captain) return false;
+  setMissionMapSize(missionRules().mapSize({code:"cleanup"}));
+  const offer=usurerArmy();
+  const enemyChars=missionRules().buildEnemies(offer,arch=>createCharacter({forcedPeople:arch.peuple,forcedCulture:arch.culture,role:arch.nom}));
+  const engine=MercenairesCombat.createCombatEngine(game.referenceData,{onAttack:onMissionAttack,heightOf:missionUnitHeight});
+  const endRules=MercenairesMissionEnd.createMissionEndRules({reference:game.referenceData});
+  const progression=MercenairesProgression.createProgressionRules({reference:game.referenceData});
+  const me=makeMissionUnit(captain,"player",0,{noMount:true});
+  const col=Math.floor(MISSION_MAP.cols/3);
+  Object.assign(me,missionAxial(col,Math.floor(MISSION_MAP.rows/2)));
+  const enemies=placeMutinyLine(enemyChars.map(ch=>makeMissionUnit(ch,"enemy",0)),col+6,1);
+  game.mission={
+    engine,endRules,progression,players:[me],enemies,playerOrder:[me],enemyOrder:sortMissionInitiative(enemies,engine),
+    activeUnit:null,phase:"player",turn:1,mode:null,log:[],over:false,winner:null,aftermath:null,usurer:{kind}
+  };
+  const m=game.mission;
+  m.relief=generateMissionRelief();
+  m.decor=generateMissionDecor().filter(d=>![me,...enemies].some(u=>engine.axialDistance(u,d)<=1));
+  m.awareness={player:{alert:true,lastKnown:{q:enemies[0]?.q??me.q,r:enemies[0]?.r??me.r},objective:null},enemy:{alert:true,lastKnown:{q:me.q,r:me.r},objective:null}};
+  $("game-panel")?.classList?.add("hidden");
+  $("mission-panel")?.classList?.remove("hidden");
+  missionLog(duelFill(usurerFightCopy(kind).start,{nombre:enemies.length,capitaine:captain.name}),"turn");
+  selectNextMissionPlayer();
+  return true;
+}
+// L'avertissement : le tour du capitaine fini, ils s'arrêtent ; rien ne compte ; ils reviendront.
+function endUsurerWarning(){
+  const m=game.mission;
+  if(!m?.usurer||m.usurer.resolved) return;
+  Object.assign(m,{over:true,winner:null,activeUnit:null,mode:null});
+  m.usurer.resolved=true;
+  const text=usurerFightCopy("warning").end;
+  missionLog(text,"bad");
+  if(game.campaign&&typeof campaignRules==="function"){
+    campaignRules().usurerRules.warned(game.campaign);
+    if(typeof tavernLog==="function") tavernLog(game.referenceData?.usurerDialogue?.log?.warned,"bad");
+    if(typeof saveGame==="function") saveGame();
+  }
+  if(typeof renderMission==="function") renderMission();
+  if(typeof showUsurerNote==="function") showUsurerNote(text);
+}
+// Le retour des voleurs : la fin de combat du capitaine, l'équipement des voleurs tombés, ou la partie perdue.
+function finishUsurerFight(){
+  const m=game.mission,copy=usurerFightCopy("final");
+  if(!m?.usurer||m.usurer.resolved) return null;
+  m.usurer.resolved=true;
+  const me=m.players[0],won=m.winner==="player",name=me.character.name;
+  if(Number(me.damageTaken)>0) MercenairesProgression.recordDamageTaken(me,me.damageTaken);
+  m.aftermath=m.endRules.resolveMissionEnd([{id:me.character.id,name,hp:me.hp,pvMax:me.pvMax,damageTaken:me.damageTaken,
+    stats:{...me.character.stats,Endurance:m.engine.statWithGear(m.engine.rested(me),"Endurance"),"Volonté":m.engine.statWithGear(m.engine.rested(me),"Volonté")},
+    isCaptain:true,offMap:Boolean(me.offMap),progress:me.progress||null,cause:me.downCause||null}],{});
+  missionLog(duelFill(won?copy.won:copy.lost,{capitaine:name}),won?"turn":"bad");
+  for(const r of m.aftermath.results) missionLog(r.name+" — "+missionAftermathText(r),r.dead?"death":r.wounded?"bad":"info");
+  if(!game.campaign||typeof campaignRules!=="function"){ if(typeof renderMission==="function") renderMission(); return null; }
+  const dead=m.enemies.filter(u=>!u.alive&&!u.offMap&&!u.summon&&!u.character?.mount).map(u=>u.character);
+  const loot=won?missionRules().lootFrom(dead,(type,nm,tier)=>game.generator?.createItemByName(type,nm,tier)):[];
+  const report=m.companyReport=campaignRules().applyUsurerFight(game.campaign,{won,aftermath:m.aftermath,loot});
+  if(report?.usurer?.won){
+    if(loot.length) missionLog(loot.length+" objet"+(loot.length>1?"s":"")+" des voleurs à l’Intendance.","gear");
+    missionLog(copy.usurer,"gear");
+    if(typeof tavernLog==="function") tavernLog(copy.usurer,"gear");
+  }
+  for(const {mercenary,changes} of report?.progression||[])
+    for(const c of visibleProgressionChanges(changes)) missionLog(mercenary.name+" : "+c.name+" "+c.shownBefore+" → "+c.shownAfter+".",c.shownAfter>c.shownBefore?"gear":"bad");
+  if(report?.gameOver){
+    missionLog(copy.game_over,"death");
+    if(typeof deleteSavedGame==="function") deleteSavedGame();
+  }else if(typeof saveGame==="function") saveGame();
+  if(typeof renderMission==="function") renderMission();
+  return report;
+}
+
 // ---- La Cave (Idan, 2026-11-10 ; règles : game-core/cellar.js ; écran : cellar-ui.js) ----
 // Deux mercenaires règlent leur désaccord dans la cave de la taverne, armes à la main, jusqu'à ce que l'un tombe (fuir, c'est
 // perdre). Personne ne commande : chacun se bat seul (l'IA des ennemis), au rythme de l'IA ; on regarde. Le premier tiré à
@@ -1702,6 +1794,8 @@ function checkMissionEnd(){
   if(game.mission.cellar){ finishMissionCellar(); return true; }
   // La mutinerie : sa propre fin (le verdict de chaque mutin, puis applyMutinyFight ; perdue, la partie est finie).
   if(game.mission.mutiny){ finishMissionMutiny(); return true; }
+  // Les voleurs de l'usurier : l'avertissement s'arrête là ; leur retour, sa propre fin.
+  if(game.mission.usurer){ if(game.mission.usurer.kind==="warning"){ game.mission.over=false; endUsurerWarning(); } else finishUsurerFight(); return true; }
   missionLog(game.mission.winner==="player"
     ?"VICTOIRE — les ennemis sont hors combat ou en déroute."
     :"DÉFAITE — votre équipe est hors combat.","turn");
@@ -1933,6 +2027,7 @@ function renderMissionAftermath(m){
       :m.duel?"Bilan du duel appliqué à la compagnie (ni prime ni réputation)."
       :m.cellar?"Bilan de la bagarre appliqué à la compagnie (ni prime ni réputation)."
       :m.mutiny?"Bilan de la mutinerie appliqué à la compagnie (ni prime ni réputation ; les dettes restent dues)."
+      :m.usurer?"Bilan du combat appliqué à la compagnie (ni prime ni réputation)."
       :"Bilan appliqué à la compagnie. "+(m.expeditionId?"Primes versées au retour de l’escouade.":"Primes de mission versées : "+report.bonusPaid+" PO."+(report.bonusOwed?" "+fmt(report.bonusOwed)+" PO restent dues.":""))+missionRenownNote(report);
   const contract=m.contractResult?`<ul class="mission-contract-result">${contractResultLines(m.contractResult,m.contractReturn).map(l=>`<li class="is-${l.kind}">${esc(l.text)}</li>`).join("")}</ul>`:"";
   return `${contract}<ul class="mission-aftermath">${rows}</ul>
@@ -4510,6 +4605,8 @@ function missionFxEstimate(fx){
 function runMissionEnemyTurn(){
   const m=game.mission;
   if(!m||m.over) return;
+  // L'avertissement des voleurs de l'usurier : le tour du capitaine fini, le combat s'arrête.
+  if(m.usurer?.kind==="warning"){ endUsurerWarning(); return; }
   m.phase="enemy";m.activeUnit=null;m.mode=null;
   // À la cave, pas d'ennemi : deux des nôtres.
   if(!m.cellar) missionLog("Tour ennemi.","turn");
@@ -4919,7 +5016,7 @@ function renderMission(){
   const e=m.engine,u=missionActiveUnit(),targets=targetableMissionCells(),inRange=missionRangeCells();
   const {width,height}=missionMapSize();
 
-  $("mission-turn").textContent=m.over?(m.winner==="player"?"Victoire":m.winner==="retreat"?"Retraite":"Défaite")
+  $("mission-turn").textContent=m.over?(m.usurer?.kind==="warning"?usurerFightCopy("warning").title||"Fin du combat":m.winner==="player"?"Victoire":m.winner==="retreat"?"Retraite":"Défaite")
     :m.phase==="deploy"?"Déploiement · rapport de l’éclaireur":"Tour "+m.turn+" · "+(m.phase==="player"?"Votre équipe":"Ennemi");
   $("mission-actions")?.classList?.toggle("deploying",m.phase==="deploy"&&!m.over);
   $("mission-active").textContent=u

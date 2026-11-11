@@ -2573,6 +2573,13 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .mutiny-owed{display:grid;gap:6px;margin:0;padding:10px 22px 0;list-style:none}
 .mutiny-owed li{display:grid;grid-template-columns:34px minmax(0,1fr) auto;align-items:center;gap:10px;color:#ead9bd;font:15px Georgia,serif}
 .mutiny-face .avatar-frame{width:34px;height:34px;margin:0;border:2px solid #2a1e17;border-radius:50%}
+/* L'usurier (Idan, 2026-11-11 ; usurer-ui.js) : le montant, le jour, ce qu'il faudra rendre. */
+.usurer-form{display:grid;gap:12px;padding:6px 22px 4px}
+.usurer-form label{display:grid;grid-template-columns:190px minmax(0,1fr) auto;align-items:center;gap:12px;color:#ead9bd;font:15px Georgia,serif}
+.usurer-form input[type=number]{grid-column:2/span 2;padding:6px 10px;border:1px solid #9a7a4f;border-radius:8px;background:#1a120c;color:#ffe1ac;font:16px Georgia,serif}
+.usurer-form input[type=range]{width:100%;accent-color:#c9a15f;cursor:pointer}
+.usurer-form output{min-width:28px;color:#ffe1ac;text-align:right;font-variant-numeric:tabular-nums}
+.usurer-total{margin:0;color:#ffcf8a;font:italic 16px Georgia,serif}
 /* Garde du corps (Idan, 2026-10-25) : l'offre au tableau de la Taverne, la fenêtre du retour. */
 .contract-card--bodyguard{margin-top:16px}
 .contract-pitch{margin:0 0 10px;color:#e9d9c0;font:italic 16px/1.45 Georgia,serif}

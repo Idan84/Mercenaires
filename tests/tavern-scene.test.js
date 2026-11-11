@@ -18,6 +18,10 @@ assert.match(css,/url\("\/media\/video\/Img_Tavern\.jpg"\) center center \/ cove
 assert.match(css,/\.tavern-video\{[^}]*object-fit:cover/);
 assert.match(css,/\[data-tavern-view="home"\] \.tavern-zones\{display:block\}/,"les zones sur l'accueil de la taverne seulement");
 assert.match(css,/prefers-reduced-motion: reduce\)\{\.tavern-video\{display:none\}\}/);
+// Au survol, pas de cadre qui s'éclaire (Idan, 2026-11-11) : seul le nom, fin et petit.
+assert.ok(!/\.tavern-zone:hover polygon|\.tavern-zone:focus-visible polygon/.test(css),"pas de cadre au survol");
+assert.match(css,/\.tavern-zone polygon\{fill:transparent;stroke:none\}/);
+assert.match(css,/\.tavern-zone text\{font:400 /,"un nom fin");
 
 // Les zones : les cinq entrées du menu de la barre, avec les mêmes libellés.
 const scene=new Function("window","document",js.replace('if(typeof document!=="undefined") initializeTavernScene();','')

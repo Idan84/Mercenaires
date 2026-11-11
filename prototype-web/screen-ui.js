@@ -9,11 +9,12 @@ const CAMP_SCENES=["company","dormitory","memorial","mercenaries","tavern","quar
 // Scènes sans bouton retour (Idan, 2026-10-30) : un clic hors du cadre ramène au camp.
 const CAMP_SCENES_CLOSED_FROM_OUTSIDE=["mercenaries"];
 
+// Le retour au château (Idan, 2026-11-11) : un bouton de la barre du bas, dans chaque lieu du camp ; plus de bouton flottant
+// en haut à droite.
 function updateCampHomeIcon(){
-  const button=document.getElementById("camp-home-icon-btn");
+  const button=document.getElementById("hud-castle-btn");
   if(!button) return;
-  const scene=document.body.dataset.campScene;
-  button.classList.toggle("hidden",document.body.dataset.screen!=="camp"||scene==="home"||CAMP_SCENES_CLOSED_FROM_OUTSIDE.includes(scene));
+  button.classList.toggle("hidden",document.body.dataset.screen!=="camp"||document.body.dataset.campScene==="home");
 }
 
 function closeCampSceneFromOutside(event){
@@ -81,7 +82,8 @@ const HUD_ICONS={
   upkeep:'<path d="M4 8.5h16"/><path d="M5.6 8.5c-.4 4.2 2.4 7 6.4 7s6.8-2.8 6.4-7"/><path d="M4 8.5 2.8 7M20 8.5 21.2 7"/><path d="M8.2 21c-.9-1.3.6-2 .3-3.4M12 21c-1-1.5.8-2.3.3-3.9M15.8 21c-.9-1.3.6-2 .3-3.4"/><path d="M10.3 5.6c0-1 .8-1.3.8-2.3M13.7 5.6c0-1 .8-1.3.8-2.3"/>',
   roster:'<path d="M4 4l11 11M20 4 9 15"/><path d="m12.6 17.4 4.8-4.8M6.6 12.6l4.8 4.8"/><path d="m16.3 16.3 3.2 3.2M7.7 16.3l-3.2 3.2"/>',
   journal:'<path d="M7 4.5h10.5a2 2 0 0 1 2 2v0a2 2 0 0 1-2 2H16v9.5a2 2 0 0 1-2 2H6.5a2 2 0 0 1-2-2v0a2 2 0 0 1 2-2H8"/><path d="M7 4.5a2 2 0 0 0-2 2v9.5M10 9h3M10 12.5h3"/>',
-  play:'<path d="M9 5.8v12.4l9.6-6.2z" fill="currentColor" stroke="none"/>'
+  play:'<path d="M9 5.8v12.4l9.6-6.2z" fill="currentColor" stroke="none"/>',
+  castle:'<path d="M2 21h20"/><path d="M3.5 21V5.5h1.7v1.7h1.6V5.5h1.7V21M15.5 21V5.5h1.7v1.7h1.6V5.5h1.7V21"/><path d="M8.5 12h7M12 12V3.5"/><path d="M12 3.8h4.2l-1.3 1.5 1.3 1.5H12z" fill="currentColor"/><path d="M9.8 21v-3.6a2.2 2.2 0 0 1 4.4 0V21"/><path d="M6 10.5v2.2M18 10.5v2.2"/>'
 };
 function hudIcon(kind){
   return '<svg class="hud-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">'+(HUD_ICONS[kind]||"")+'</svg>';
@@ -202,7 +204,7 @@ function initializeScreenUi(){
     const panel=document.getElementById(id);
     if(panel) observer.observe(panel,{attributes:true,attributeFilter:["class"]});
   }
-  $("camp-home-icon-btn").addEventListener("click",()=>{openCampScene("home");gameAction("Retour au château.");});
+  $("hud-castle-btn").addEventListener("click",()=>{openCampScene("home");gameAction("Retour au château.");});
   $("hud-pause-btn").addEventListener("click",()=>setPauseOpen(true));
   $("hud-console-toggle").addEventListener("click",()=>toggleHudJournal());
   for(const slot of document.querySelectorAll("#game-hud [data-hud-icon]")) slot.innerHTML=hudIcon(slot.dataset.hudIcon);

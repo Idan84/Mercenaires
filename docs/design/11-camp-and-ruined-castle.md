@@ -37,6 +37,8 @@ Fonctions validées :
 
 **Interface (Idan, 2026-11-11)** : un bouton **Taverne** dans la barre du bas ouvre un menu déroulant : Trouver une mission, Recruter, La Cantine, La Cave, Parler au tavernier. L'accueil de la taverne n'a plus de boutons ni de bulle sur le tavernier : seulement le décor.
 
+**La Taverne animée (Idan, 2026-11-11)** : le décor est une vidéo en boucle, muette (`/media/video/Video_Tavern.mp4`, 1920 × 1080, déposée par Idan sur Hostinger, hors de Git) ; sa première image (`Img_Tavern.jpg`) s'affiche en attendant, et seule en mouvement réduit. Sur l'accueil de la taverne, on clique sur le décor, avec les mêmes actions que le menu : le **tableau des primes** (Trouver une mission), les **clients attablés** (Recruter), le **menu** (La Cantine), la **trappe** (La Cave), le **tavernier** (lui parler). Une zone s'éclaire au survol et donne son nom (`prototype-web/tavern-scene-ui.js`).
+
 <aside>
 🍺
 

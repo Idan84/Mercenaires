@@ -110,7 +110,7 @@ assert.equal(canteen.lockedDishes(state).length,0);
 
 // Écran : la Cantine dans la Taverne (bouton du menu, vue), pas dans Ma Compagnie.
 const html=fs.readFileSync(path.join(ROOT,"prototype-web","index.html"),"utf8");
-assert.match(html,/data-tavern-view="canteen"><span>La Cantine<\/span>/);
+assert.match(html,/data-hud-tavern="canteen">La Cantine<\/button>/,"le menu Taverne de la barre du bas (Idan, 2026-11-11)");
 assert.match(html,/<section id="tavern-canteen-view"[\s\S]*<div id="tavern-canteen"/);
 assert.match(html,/<script src="\/core\/canteen\.js"><\/script>/);
 assert.match(html,/<script src="canteen-ui\.js"><\/script>/);

@@ -35,12 +35,13 @@ function campaignCalendarDate(day, reference) {
   };
 }
 
-// Petit calendrier de la barre du bas (Idan, 2026-10-21) : la date, le jour et l'an ; l'ère et la citation
+// Petit calendrier de la barre du bas (Idan, 2026-10-21) : la date et le jour de campagne ; compact depuis le
+// 2026-11-11 (« on optimise l'espace principalement sur le calendrier ») : le nom du jour, l'an, l'ère et la citation
 // du jour s'affichent au survol.
 function renderCampCalendar() {
   if (!game.campaign || !game.referenceData?.campCalendar) return;
   const date = campaignCalendarDate(game.campaign.day, game.referenceData);
-  const label = `${date.weekday} ${date.dayOfMonth} ${date.month}`;
+  const label = `${date.dayOfMonth} ${date.month}`;
   const node = document.getElementById("hud-date");
   if (node.textContent !== label) {
     node.textContent = label;
@@ -48,8 +49,8 @@ function renderCampCalendar() {
     void node.offsetWidth;
     node.classList.add("is-new");
   }
-  document.getElementById("hud-day").textContent = `Jour ${date.campaignDay} · An ${date.year}`;
-  document.getElementById("hud-calendar").title = `An ${date.year} — ${date.era}\n« ${date.quote} »`;
+  document.getElementById("hud-day").textContent = `Jour ${date.campaignDay}`;
+  document.getElementById("hud-calendar").title = `${date.weekday} ${date.dayOfMonth} ${date.month}, an ${date.year} — ${date.era}\n« ${date.quote} »`;
 }
 
 if (typeof module !== "undefined" && module.exports) {

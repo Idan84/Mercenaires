@@ -18,6 +18,7 @@ jobs:
       - run: node tests/combat-styles.test.js
       - run: node tests/tavern.test.js
       - run: node tests/tavern-home-ui.test.js
+      - run: node tests/tavern-scene.test.js
       - run: node tests/music-ui.test.js
       - run: node tests/recruit-dialogue.test.js
       - run: node tests/camp-calendar.test.js

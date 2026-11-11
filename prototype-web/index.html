@@ -7,13 +7,6 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body data-screen="home">
-  <!-- Taverne : on parle au tavernier par cette bulle posée sur lui (visible sur l'accueil de la taverne). -->
-  <button id="tavern-talk-btn" class="tavern-talk-btn" type="button" aria-label="Parler au tavernier" title="Parler au tavernier">
-    <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M4.5 5.5h15a1.5 1.5 0 0 1 1.5 1.5v8.5a1.5 1.5 0 0 1-1.5 1.5H11l-4.5 3.5V17h-2A1.5 1.5 0 0 1 3 15.5V7a1.5 1.5 0 0 1 1.5-1.5z"/>
-      <path d="M8 11.3h.01M12 11.3h.01M16 11.3h.01" stroke-width="2.6"/>
-    </svg>
-  </button>
   <aside id="game-hud" class="game-hud hidden" aria-label="Interface de jeu">
     <div class="game-bottom-bar">
       <div class="hud-side hud-side--left">
@@ -33,7 +26,17 @@
           <button id="hud-console-toggle" class="hud-journal-head" type="button" aria-expanded="false" aria-controls="game-action-lines" title="Afficher ou réduire le journal"><span class="hud-journal-label"><span class="hud-icon" data-hud-icon="journal"></span>Journal</span><span id="hud-journal-last" class="hud-journal-last"></span><span class="hud-journal-chevron" aria-hidden="true">▴</span></button>
           <ol id="game-action-lines" class="hud-journal-lines" aria-live="polite" aria-relevant="additions"></ol>
         </section>
-        <button id="hud-castle-btn" class="hud-castle hidden" type="button" aria-label="Retour au château" title="Retour au château"><span class="hud-icon" data-hud-icon="castle"></span><span>Château</span></button>
+        <div id="hud-tavern" class="hud-menu">
+          <button id="hud-tavern-btn" class="hud-nav" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="hud-tavern-menu" title="Taverne"><span class="hud-icon" data-hud-icon="tavern"></span><span class="hud-nav-label">Taverne</span><span class="hud-nav-chevron" aria-hidden="true">▴</span></button>
+          <ul id="hud-tavern-menu" class="hud-menu-list" role="menu" aria-label="Taverne" hidden>
+            <li role="none"><button type="button" role="menuitem" data-hud-tavern="missions">Trouver une mission</button></li>
+            <li role="none"><button type="button" role="menuitem" data-hud-tavern="recruits">Recruter</button></li>
+            <li role="none"><button type="button" role="menuitem" data-hud-tavern="canteen">La Cantine</button></li>
+            <li role="none"><button type="button" role="menuitem" data-hud-tavern="cellar">La Cave</button></li>
+            <li role="none"><button type="button" role="menuitem" data-hud-tavern="talk">Parler au tavernier</button></li>
+          </ul>
+        </div>
+        <button id="hud-castle-btn" class="hud-nav hidden" type="button" aria-label="Retour au château" title="Retour au château"><span class="hud-icon" data-hud-icon="castle"></span><span class="hud-nav-label">Château</span></button>
         <button id="hud-pause-btn" type="button" aria-label="Ouvrir le menu de pause">☰ <span>Échap</span></button>
       </div>
     </div>
@@ -225,12 +228,6 @@
       <section class="camp-scene hidden" data-camp-scene-panel="tavern" aria-label="Taverne">
         <div class="camp-scene-nav"><button class="secondary camp-scene-back" data-camp-back>← Retour au camp</button></div>
         <div id="tavern-home" class="camp-hub tavern-hub">
-          <nav class="camp-hub-menu" aria-label="Taverne">
-            <button class="menu-btn camp-hub-btn" data-tavern-view="missions"><span>Trouver une mission</span><i class="menu-btn-line"></i></button>
-            <button class="menu-btn camp-hub-btn" data-tavern-view="recruits"><span>Recruter</span><i class="menu-btn-line"></i></button>
-            <button class="menu-btn camp-hub-btn" data-tavern-view="canteen"><span>La Cantine</span><i class="menu-btn-line"></i></button>
-            <button class="menu-btn camp-hub-btn" data-tavern-view="cellar"><span>La Cave</span><i class="menu-btn-line"></i></button>
-          </nav>
         </div>
         <section id="tavern-missions-view" class="panel tavern-panel hidden">
           <button class="secondary" data-tavern-view="home">← Retour à la taverne</button>

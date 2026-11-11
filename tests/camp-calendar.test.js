@@ -78,12 +78,12 @@ const render = new Function("game","document","campaignCalendarDate",
   fakeGame,{getElementById:id=>nodes[id]},calendar.campaignCalendarDate
 );
 render();
-assert.equal(nodes["hud-date"].textContent,"Druiden 31 Brumecendre");
-assert.equal(nodes["hud-day"].textContent,"Jour 31 · An 842");
-assert.match(nodes["hud-calendar"].title,/^An 842 — Âge des Couronnes Brisées\n« .+ »$/);
+assert.equal(nodes["hud-date"].textContent,"31 Brumecendre","compact (Idan, 2026-11-11) : le nom du jour passe au survol");
+assert.equal(nodes["hud-day"].textContent,"Jour 31");
+assert.match(nodes["hud-calendar"].title,/^Druiden 31 Brumecendre, an 842 — Âge des Couronnes Brisées\n« .+ »$/);
 fakeGame.campaign.day=32;
 render();
-assert.match(nodes["hud-date"].textContent,/1 Corbenaël$/);
+assert.equal(nodes["hud-date"].textContent,"1 Corbenaël");
 
 // Le bouton du camp réutilise exactement le moteur AdvanceTime : salaires,
 // soins, mouvements à la Taverne, sauvegarde et réaffichage. Aucune double horloge.
@@ -117,7 +117,7 @@ assert.equal(redrawn,1);
 assert.ok(logged.some(m=>m.includes("guéri")));
 assert.ok(logged.some(m=>m.includes("Salaires : −35 PO")));
 assert.ok(logged.some(m=>m.includes("Nouveaux candidats : Erik")));
-assert.equal(nodes["hud-day"].textContent,"Jour 33 · An 842");
+assert.equal(nodes["hud-day"].textContent,"Jour 33");
 // Une escouade arrivée attend son combat (Idan, 2026-10-24) : pas de jour suivant.
 blocker={ok:false,reason:"Une escouade attend vos ordres : livrez son combat avant de passer au jour suivant.",expedition:{id:"x"}};
 advance();

@@ -83,6 +83,7 @@ const HUD_ICONS={
   roster:'<path d="M4 4l11 11M20 4 9 15"/><path d="m12.6 17.4 4.8-4.8M6.6 12.6l4.8 4.8"/><path d="m16.3 16.3 3.2 3.2M7.7 16.3l-3.2 3.2"/>',
   journal:'<path d="M7 4.5h10.5a2 2 0 0 1 2 2v0a2 2 0 0 1-2 2H16v9.5a2 2 0 0 1-2 2H6.5a2 2 0 0 1-2-2v0a2 2 0 0 1 2-2H8"/><path d="M7 4.5a2 2 0 0 0-2 2v9.5M10 9h3M10 12.5h3"/>',
   play:'<path d="M9 5.8v12.4l9.6-6.2z" fill="currentColor" stroke="none"/>',
+  tavern:'<path d="M5 8.5h10V19a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2z"/><path d="M15 10.5h2.2a2.3 2.3 0 0 1 2.3 2.3v1.4a2.3 2.3 0 0 1-2.3 2.3H15"/><path d="M4.6 8.5c-.9-1.7.4-3.6 2.2-3.3.6-1.6 2.7-2.1 3.8-.9 1.1-1.1 3.3-.6 3.7 1 1.7 0 2.6 1.7 1.8 3.2"/><path d="M8.4 11.5v6.5M11.6 11.5v6.5"/>',
   castle:'<path d="M2 21h20"/><path d="M3.5 21V5.5h1.7v1.7h1.6V5.5h1.7V21M15.5 21V5.5h1.7v1.7h1.6V5.5h1.7V21"/><path d="M8.5 12h7M12 12V3.5"/><path d="M12 3.8h4.2l-1.3 1.5 1.3 1.5H12z" fill="currentColor"/><path d="M9.8 21v-3.6a2.2 2.2 0 0 1 4.4 0V21"/><path d="M6 10.5v2.2M18 10.5v2.2"/>'
 };
 function hudIcon(kind){

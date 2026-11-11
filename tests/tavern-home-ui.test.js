@@ -1,7 +1,7 @@
 "use strict";
 
-// Accueil de la Taverne (Idan, 2026-10-21) : « Trouver une mission » et « Recruter » à gauche, une bulle sur
-// le tavernier ouvre un dialogue façon jeu de rôle ; bière et tournée débitent l'or et passent au journal.
+// Accueil de la Taverne (Idan, 2026-10-21, puis 2026-11-11 : le menu passe dans la barre du bas) ; le dialogue du
+// tavernier, façon jeu de rôle ; bière et tournée débitent l'or et passent au journal.
 const assert=require("node:assert/strict");
 const fs=require("node:fs");
 const path=require("node:path");
@@ -10,9 +10,28 @@ const html=fs.readFileSync(path.join(root,"prototype-web/index.html"),"utf8");
 const js=fs.readFileSync(path.join(root,"prototype-web/tavern-ui.js"),"utf8");
 const css=fs.readFileSync(path.join(root,"prototype-web/styles.css"),"utf8");
 
+// Depuis le 2026-11-11 (Idan) : l'accueil de la taverne n'a plus de boutons ni de bulle ; un bouton « Taverne » de la
+// barre du bas ouvre un menu déroulant : les salles (La Cantine, 2026-11-08 ; La Cave, 2026-11-10) et le tavernier.
 const home=html.slice(html.indexOf('<div id="tavern-home"'),html.indexOf('<section id="tavern-missions-view"'));
-assert.deepEqual([...home.matchAll(/data-tavern-view="(\w+)"><span>([^<]+)<\/span>/g)].map(m=>[m[1],m[2]]),
-  [["missions","Trouver une mission"],["recruits","Recruter"],["canteen","La Cantine"],["cellar","La Cave"]],"La Cantine (Idan, 2026-11-08) et La Cave (Idan, 2026-11-10), salles de la Taverne");
+assert.ok(!/<button/.test(home),"plus de boutons sur l'accueil de la taverne");
+assert.ok(!/tavern-talk-btn/.test(html+css+js),"plus de bulle sur le tavernier");
+const bar=html.slice(html.indexOf('<div id="hud-tavern"'),html.indexOf('<button id="hud-castle-btn"'));
+assert.match(bar,/<button id="hud-tavern-btn"[^>]*aria-expanded="false"[^>]*>.*Taverne/,"le bouton de la barre");
+assert.deepEqual([...bar.matchAll(/data-hud-tavern="(\w+)">([^<]+)<\/button>/g)].map(m=>[m[1],m[2]]),
+  [["missions","Trouver une mission"],["recruits","Recruter"],["canteen","La Cantine"],["cellar","La Cave"],["talk","Parler au tavernier"]]);
+assert.match(bar,/<ul id="hud-tavern-menu"[^>]*hidden>/,"menu fermé au départ");
+// Choisir une option : la taverne, puis la salle (ou le dialogue du tavernier) ; le menu se referme.
+const pick=new Function("$","openCampScene","openTavernTalk","showTavernView",
+  js.slice(js.indexOf("function setHudTavernMenu(open){"),js.indexOf("function initializeHudTavern(){"))+"return {setHudTavernMenu,chooseHudTavern};");
+const calls=[];
+const els={"hud-tavern-menu":{hidden:false},"hud-tavern-btn":{setAttribute:(k,v)=>calls.push([k,v])},"hud-tavern":{classList:{toggle:(c,on)=>calls.push([c,on])}}};
+const ui=pick(id=>els[id],scene=>calls.push(["scene",scene]),()=>calls.push(["talk"]),view=>calls.push(["view",view]));
+ui.chooseHudTavern("cellar");
+assert.deepEqual(calls,[["aria-expanded","false"],["is-open",false],["scene","tavern"],["view","cellar"]]);
+assert.equal(els["hud-tavern-menu"].hidden,true);
+calls.length=0;
+ui.chooseHudTavern("talk");
+assert.deepEqual(calls.slice(2),[["scene","tavern"],["talk"]]);
 assert.ok(!/data-tavern-drink/.test(html),"la bière et la tournée passent dans le dialogue");
 
 const talk=html.slice(html.indexOf('<dialog id="tavern-talk-dialog"'),html.indexOf('<dialog id="recruit-talk-dialog"'));
@@ -31,7 +50,6 @@ assert.deepEqual(labels({view:"main"}),["Boire une bière (1 PO)","Payer sa tour
 assert.deepEqual(labels({view:"who"}),["Inga","Retour"]);
 assert.deepEqual(labels({view:"what"}),[...keeper.groups.map(g=>g.label),"Retour"]);
 assert.deepEqual(labels({view:"stats",group:"physique"}),["Force","Retour"]);
-assert.match(css,/\[data-tavern-view="home"\] \.tavern-talk-btn\{display:grid\}/,"bulle visible sur l'accueil seulement");
 
 // Logique : bière 1 PO, tournée 1 PO par membre, refus sans assez d'or ; tout va au journal.
 const extract=(start,end)=>js.slice(js.indexOf(start),js.indexOf(end));
@@ -57,4 +75,4 @@ assert.equal(log.at(-1)[0],"Pas assez d'or : 3 PO nécessaires.");
 assert.equal(api.captainFirstName(),"Bob","prénom du capitaine dans « Salut [Prénom] ! »");
 campaign.company.roster[0].firstName="Aldric";
 assert.equal(api.captainFirstName(),"Aldric");
-console.log("Taverne : accueil, dialogue du tavernier, bière et tournée — OK");
+console.log("Taverne : menu de la barre du bas, dialogue du tavernier, bière et tournée — OK");

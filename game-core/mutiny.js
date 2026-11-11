@@ -52,7 +52,8 @@
       generalAffinity:k("mutiny.general.affinity_weight",0.5),
       memberDays:k("mutiny.member.days_weight",5),memberCourage:k("mutiny.member.courage_weight",0.5),
       memberIntimidation:k("mutiny.member.intimidation_weight",0.5),memberAffinity:k("mutiny.member.affinity_weight",0.5),
-      memberOffset:k("mutiny.member.offset",-20),promiseDays:k("mutiny.promise.days_factor",10)
+      memberOffset:k("mutiny.member.offset",-20),promiseDays:k("mutiny.promise.days_factor",10),
+      allyFactor:k("mutiny.ally.affinity_factor",0.5)
     };
     const rosterOf=state=>state?.company?.roster||[];
     const memberOf=(state,id)=>rosterOf(state).find(m=>String(m.id)===String(id))||null;
@@ -170,6 +171,24 @@
       const today=stateOf(state).today;
       return today&&today.day===state.day&&today.status==="fight"?today:null;
     }
+    // Le combat (Idan, 2026-11-10) : ceux qui se battent aux côtés du capitaine (« Il doit être au camp et pas blessé. On
+    // fait un test d'affinité envers le capitaine bien dur. Genre 50% de chance si l'affinité est au max. 0% si l'affinité
+    // est négative ») : chance = facteur × affinité, 0 si elle est négative ; un seul tirage par combat (gardé).
+    function allyChance(state,m){ return round(Math.max(0,C.allyFactor*affinityOf(state,m))); }
+    function rally(state){
+      const today=fighting(state);
+      if(!today) return [];
+      if(Array.isArray(today.allies)) return today.allies;
+      const foes=new Set((today.result?.members||[]).map(String));
+      today.allies=rosterOf(state).filter(m=>m.id!==state.company.captainId&&!foes.has(String(m.id))&&atCamp(state,m)&&m.recovery?.kind!=="wounded")
+        .map(m=>{ const chance=allyChance(state,m),dice=chance>0?roll():null; return {id:m.id,chance,roll:dice,joins:dice!=null&&dice<=chance}; });
+      return today.allies;
+    }
+    // Les mutins du combat : ceux du groupe, toujours là.
+    function fighters(state){
+      const today=fighting(state);
+      return today?(today.result?.members||[]).map(id=>memberOf(state,id)).filter(Boolean):[];
+    }
     // La mutinerie du jour, une fois le combat livré (étape 2).
     function fought(state){
       const today=stateOf(state).today;
@@ -178,7 +197,7 @@
     }
 
     return {constants:C,valueOf,inMutiny,mutineers,canRise,debtDays,generalChance,memberChance,confrontChance,morning,present,pending,
-      canAdvance,settled,confront,fighting,fought};
+      canAdvance,settled,confront,fighting,allyChance,rally,fighters,fought};
   }
 
   return {createMutinyRules};

@@ -2,7 +2,14 @@
   "schema_version": 1,
   "name": "memorial",
   "description": "Le Mémorial (Idan, 2026-11-09 : « plus un bâtiment souvenir. Il est là dès le début. On y retrouve le portrait de tous ceux qui sont décédés au sein de la compagnie. Quand on clique dessus, on voit l'avatar complet avec sa date de décès, la cause de son décès (un peu drôle, c'est mieux !) et un épitaphe délirant »). causes : les tournures de la cause du décès, par nature (melee, ranged, charge, countercharge, opportunity, fleeing, backstab, fumble, spell, spell_feu, spell_froid, spell_foudre, spell_fumble, poison, curse, raised, friendly, raised_friendly, captured, duel, challenged, unknown) ; une nature avec un tueur sans tueur connu prend <nature>_seul, sinon unknown. {un_tueur} : « un Guerrier orc » (feminins : les noms qui prennent « une ») ou le nom d'un camarade ; {Un_tueur} en début de phrase ; {tueur} : le nom seul ; {a|b} : masculin|féminin du défunt. details : la ligne sous la cause (l'arme, le sort). epitaphs : tirées au hasard, jamais deux fois dans une même partie ({prenom} : le prénom du défunt). panel : les textes du bâtiment et de la galerie.",
-  "feminins": ["Goule", "Chauve-souris", "Araignée", "Licorne", "Meute", "Brute"],
+  "feminins": [
+    "Goule",
+    "Chauve-souris",
+    "Araignée",
+    "Licorne",
+    "Meute",
+    "Brute"
+  ],
   "causes": {
     "melee": [
       "S’est approché{|e} d’un peu trop près de {un_tueur}.",
@@ -114,6 +121,11 @@
     "unknown": [
       "Mort{|e} au combat, sans témoin. Les versions divergent.",
       "Personne n’a vraiment vu ce qui s’est passé. Tout le monde a un avis."
+    ],
+    "mutiny": [
+      "Réclamait sa solde à {tueur}. {Tueur} a payé en acier.",
+      "S’est {mutiné|mutinée} contre {tueur}. Le pouce est descendu.",
+      "Voulait son or. {Tueur} lui a offert une tombe, c’est moins cher."
     ]
   },
   "details": {

@@ -11,9 +11,10 @@ function mutinyCopy(){ return game.referenceData?.mutinyDialogue||{}; }
 const mutinyFemale=m=>String(m?.sex||"").trim().toLowerCase().startsWith("f");
 const mutinyFill=(text,m,vars={})=>MercenairesRecruitDialogue.fill(String(text||""),
   {prenom:m?MercenairesRecruitDialogue.firstName(m):"",nom:m?.name||"",...vars},mutinyFemale(m));
-const mutinyCount=(byCount,members,vars={})=>{
-  const one=members.length===1;
-  return mutinyFill(byCount?.[one?"one":"many"],one?members[0]:null,{nombre:fmt(members.length),...vars});
+// Un texte pour un seul mutin ou pour plusieurs (byCount.one / byCount.many) ; une liste : l'une de ses variantes.
+const mutinyCount=(byCount,members,vars={},seed="")=>{
+  const one=members.length===1,text=byCount?.[one?"one":"many"];
+  return mutinyFill(Array.isArray(text)?variantPhrase(text,seed+"|"+members.length):text,one?members[0]:null,{nombre:fmt(members.length),...vars});
 };
 const mutinyMembers=report=>(report?.today?.members||[]).map(id=>game.campaign?.company.roster.find(m=>m.id===id)).filter(Boolean);
 
@@ -62,7 +63,7 @@ function openMutinyScene(){
   $("mutiny-portrait").innerHTML=voice?renderAvatar(voice,{variant:"talk",kind:"portrait"}):"";
   $("mutiny-origin").textContent=scene.origin||"";
   $("mutiny-name").textContent=scene.title||"";
-  $("mutiny-log").innerHTML=`<p class="talk-note">${esc(mutinyCount(scene.arrival,members))}</p>`
+  $("mutiny-log").innerHTML=`<p class="talk-note">${esc(mutinyCount(scene.arrival,members,{},seed))}</p>`
     +(voice?`<p class="talk-say talk-say--merc"><b>${esc(MercenairesRecruitDialogue.firstName(voice))}</b><span>« ${esc(mutinyFill(variantPhrase(scene.says||[],seed),voice))} »</span></p>`:"");
   game.mutinyScene={day:c.day};
   renderMutinyChoices();

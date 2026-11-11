@@ -1356,6 +1356,8 @@ function historyEntryText(c,entry){
   if(entry.kind==="joined") return fill(entry.initial?copy.joined_initial:copy.joined);
   // Le Défi du capitaine (Idan, 2026-11-09) : le combat singulier, côté capitaine ou côté défié.
   if(entry.kind==="duel_fought") return fill(copy.duel_fought?.[entry.role]?.[entry.outcome]||"",{nom:entry.opponent||""});
+  // La mutinerie (Idan, 2026-11-10) : le combat, côté capitaine, mutin épargné ou allié.
+  if(entry.kind==="mutiny_fought") return fill(copy.mutiny_fought?.[entry.role]?.[entry.outcome]||"",{n:historyPlural(entry.count||0,"mutin","mutins")});
   // La Cave (Idan, 2026-11-10) : la bagarre du soir.
   if(entry.kind==="cellar_fight") return fill(copy.cellar_fight?.[entry.outcome]||"",{nom:entry.opponent||""});
   // Mort en mission (le Mémorial, Idan, 2026-11-09).
@@ -1398,7 +1400,7 @@ function historyEntryText(c,entry){
   if(entry.kind==="dungeon") return fill(copy.dungeon);
   if(entry.kind==="dungeon_release") return fill(copy.dungeon_release,{jours:historyPlural(entry.days||0,"jour","jours")});
   // Désertion (Idan, 2026-11-04).
-  if(["desertion_stayed","desertion","desertion_let_go","duel"].includes(entry.kind)) return fill(copy[entry.kind]);
+  if(["desertion_stayed","desertion","desertion_let_go","duel","mutiny"].includes(entry.kind)) return fill(copy[entry.kind]);
   // Renégociation salariale (Idan, 2026-11-04).
   if(entry.kind==="salary_raise") return fill(copy.salary_raise,{avant:fmt(entry.from||0),apres:fmt(entry.to||0)});
   if(entry.kind==="salary_refused") return fill(copy.salary_refused);

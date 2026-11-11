@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 466,
+  "row_count": 467,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -3760,6 +3760,14 @@
       "description": "La scène, « Promettre » : chance = Charisme ÷ (Charisme + facteur × la somme des jours de dette des mutins venus) ; « Faire peur » : Intimidation ÷ (Intimidation + la somme de leurs Courages).",
       "formule": "Mutinerie V1",
       "valeur": 10,
+      "version": "V1"
+    },
+    {
+      "nom": "Mutinerie — alliés, facteur d'affinité",
+      "code": "mutiny.ally.affinity_factor",
+      "description": "Le combat de la mutinerie (Idan, 2026-11-10 : « Pour qu'un mercenaire rejoigne le capitaine, plusieurs règles. Il doit être au camp et pas blessé. On fait un test d'affinité envers le capitaine bien dur. Genre 50% de chance si l'affinité est au max. 0% si l'affinité est négatie ») : chance de se battre aux côtés du capitaine = facteur × son affinité avec le capitaine (%), 0 si elle est négative.",
+      "formule": "Mutinerie V1",
+      "valeur": 0.5,
       "version": "V1"
     }
   ]

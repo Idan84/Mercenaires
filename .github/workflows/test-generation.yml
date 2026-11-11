@@ -72,6 +72,7 @@ jobs:
       - run: node tests/social-policy.test.js
       - run: node tests/debts.test.js
       - run: node tests/mutiny.test.js
+      - run: node tests/mutiny-fight.test.js
       - run: bash tests/deploy-changes.test.sh
       - run: node tests/agenda.test.js
       - run: node tests/tavern-slots.test.js

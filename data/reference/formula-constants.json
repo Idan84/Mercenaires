@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 453,
+  "row_count": 467,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -3656,6 +3656,118 @@
       "description": "La Cave (Idan, 2026-11-10 : « Le gagnant gagne 50XP en intimidation en bonus ») : en plus de l'XP de combat des deux ; le perdant fait un jet de blessure (sinon il est fatigué), le gagnant n'est ni blessé ni fatigué.",
       "formule": "La Cave V1",
       "valeur": 50,
+      "version": "V1"
+    },
+    {
+      "nom": "Mutinerie — affinité par jour",
+      "code": "mutiny.affinity_per_day",
+      "description": "Mutinerie (Idan, 2026-11-10 : « quand on doit de l'argent à un mercenaire, il passe dans un statut particulier, mode \"mutinerie\" » ; formules proposées, validées le même jour : « 1 - Parfait ») : chaque matin, l'affinité d'un mercenaire à qui l'on doit de l'argent bouge de cette valeur (« Chaque jour, une grosse baisse d'affinité pour chaque mercenaire à qui on doit de l'argent. ( -10 ?) »).",
+      "formule": "Mutinerie V1",
+      "valeur": -10,
+      "version": "V1"
+    },
+    {
+      "nom": "Mutinerie — échelle",
+      "code": "mutiny.scale",
+      "description": "Échelle des courbes des tests de mutinerie (le test général et celui de chacun) : chance = 100 / (1 + e^(−Δ/échelle)).",
+      "formule": "Mutinerie V1",
+      "valeur": 10,
+      "version": "V1"
+    },
+    {
+      "nom": "Mutinerie — minimum",
+      "code": "mutiny.min",
+      "description": "Chance d'un test de mutinerie, au moins (%).",
+      "formule": "Mutinerie V1",
+      "valeur": 1,
+      "version": "V1"
+    },
+    {
+      "nom": "Mutinerie — maximum",
+      "code": "mutiny.max",
+      "description": "Chance d'un test de mutinerie, au plus (%).",
+      "formule": "Mutinerie V1",
+      "valeur": 99,
+      "version": "V1"
+    },
+    {
+      "nom": "Mutinerie générale — poids des jours",
+      "code": "mutiny.general.days_weight",
+      "description": "Test général, chaque matin où l'on doit de l'argent à au moins un membre : Δ = poids × J − poids de l'Intimidation × Intimidation du capitaine − poids de l'affinité × affinité moyenne des mutins (au camp, pas blessés) ; J : les jours d'affilée avec des dettes.",
+      "formule": "Mutinerie V1",
+      "valeur": 5,
+      "version": "V1"
+    },
+    {
+      "nom": "Mutinerie générale — poids de l'Intimidation",
+      "code": "mutiny.general.intimidation_weight",
+      "description": "Test général : poids de l'Intimidation du capitaine (équipement compris).",
+      "formule": "Mutinerie V1",
+      "valeur": 0.5,
+      "version": "V1"
+    },
+    {
+      "nom": "Mutinerie générale — poids de l'affinité",
+      "code": "mutiny.general.affinity_weight",
+      "description": "Test général : poids de l'affinité moyenne des mutins avec le capitaine.",
+      "formule": "Mutinerie V1",
+      "valeur": 0.5,
+      "version": "V1"
+    },
+    {
+      "nom": "Mutinerie de chacun — poids des jours",
+      "code": "mutiny.member.days_weight",
+      "description": "Test de chacun, si la mutinerie éclate : Δ = poids × ses jours de dette + poids du Courage × son Courage − poids de l'Intimidation × Intimidation du capitaine − poids de l'affinité × son affinité + décalage ; réussi, il vient parler au capitaine.",
+      "formule": "Mutinerie V1",
+      "valeur": 5,
+      "version": "V1"
+    },
+    {
+      "nom": "Mutinerie de chacun — poids du Courage",
+      "code": "mutiny.member.courage_weight",
+      "description": "Test de chacun : poids de son Courage.",
+      "formule": "Mutinerie V1",
+      "valeur": 0.5,
+      "version": "V1"
+    },
+    {
+      "nom": "Mutinerie de chacun — poids de l'Intimidation",
+      "code": "mutiny.member.intimidation_weight",
+      "description": "Test de chacun : poids de l'Intimidation du capitaine.",
+      "formule": "Mutinerie V1",
+      "valeur": 0.5,
+      "version": "V1"
+    },
+    {
+      "nom": "Mutinerie de chacun — poids de l'affinité",
+      "code": "mutiny.member.affinity_weight",
+      "description": "Test de chacun : poids de son affinité avec le capitaine.",
+      "formule": "Mutinerie V1",
+      "valeur": 0.5,
+      "version": "V1"
+    },
+    {
+      "nom": "Mutinerie de chacun — décalage",
+      "code": "mutiny.member.offset",
+      "description": "Test de chacun : décalage ajouté à Δ.",
+      "formule": "Mutinerie V1",
+      "valeur": -20,
+      "version": "V1"
+    },
+    {
+      "nom": "Mutinerie — promesse, jours",
+      "code": "mutiny.promise.days_factor",
+      "description": "La scène, « Promettre » : chance = Charisme ÷ (Charisme + facteur × la somme des jours de dette des mutins venus) ; « Faire peur » : Intimidation ÷ (Intimidation + la somme de leurs Courages).",
+      "formule": "Mutinerie V1",
+      "valeur": 10,
+      "version": "V1"
+    },
+    {
+      "nom": "Mutinerie — alliés, facteur d'affinité",
+      "code": "mutiny.ally.affinity_factor",
+      "description": "Le combat de la mutinerie (Idan, 2026-11-10 : « Pour qu'un mercenaire rejoigne le capitaine, plusieurs règles. Il doit être au camp et pas blessé. On fait un test d'affinité envers le capitaine bien dur. Genre 50% de chance si l'affinité est au max. 0% si l'affinité est négatie ») : chance de se battre aux côtés du capitaine = facteur × son affinité avec le capitaine (%), 0 si elle est négative.",
+      "formule": "Mutinerie V1",
+      "valeur": 0.5,
       "version": "V1"
     }
   ]

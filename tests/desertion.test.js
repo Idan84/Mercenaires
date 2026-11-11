@@ -213,7 +213,7 @@ assert.match(tavernUi,/if\(allowed\.desertion!=null\)\{ if\(typeof checkDesertio
 assert.match(tavernUi,/statOf:\(m,name\)=>combatEngine\(\)\.statWithGear/);
 const ui2=fs.readFileSync(path.join(ROOT,"prototype-web","ui.js"),"utf8");
 assert.match(ui2,/if \(typeof checkDesertions === "function"\) checkDesertions\(\);\n/);
-assert.match(ui2,/\["desertion_stayed","desertion","desertion_let_go","duel"\]\.includes\(entry\.kind\)/);
+assert.match(ui2,/\["desertion_stayed","desertion","desertion_let_go","duel"(?:,"mutiny")?\]\.includes\(entry\.kind\)/);
 const events=reference.characterSheetCopy.history.events;
 assert.ok(["desertion_stayed","desertion","desertion_let_go","duel"].every(kind=>events[kind]));
 const copy=reference.desertionDialogue.scene;

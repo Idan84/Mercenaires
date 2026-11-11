@@ -1199,6 +1199,8 @@ function openDuelVerdict(){
 }
 function chooseDuelVerdict(killed){
   const m=game.mission;
+  // La mutinerie : un verdict par mutin.
+  if(m?.mutiny?.pending) return chooseMutinyVerdict(killed);
   if(!m?.duel?.pending) return;
   $("duel-verdict-dialog")?.close?.();
   const foe=m.enemies[0].character,copy=duelCopy();
@@ -1240,6 +1242,132 @@ function resolveMissionDuel(killed=false){
     for(const c of visibleProgressionChanges(changes)) missionLog(mercenary.name+" : "+c.name+" "+c.shownBefore+" → "+c.shownAfter+".",c.shownAfter>c.shownBefore?"gear":"bad");
   if(report?.gameOver){
     missionLog("Le capitaine est mort : la partie est terminée.","death");
+    if(typeof deleteSavedGame==="function") deleteSavedGame();
+  }else if(typeof saveGame==="function") saveGame();
+  if(typeof renderMission==="function") renderMission();
+  return report;
+}
+
+// ---- La mutinerie, le combat (Idan, 2026-11-10 ; règles : game-core/mutiny.js, campaign.js applyMutinyFight) ----
+// « la conversation s'échauffe, et le capitaine doit se battre face à l'ensemble des mutins » : l'arène du duel ; à gauche
+// le capitaine et ceux qui le rejoignent (« au camp et pas blessé », test d'affinité : mutiny.js, rally), à droite les mutins ;
+// sans monture ; personne ne se cache. Le capitaine à terre (ou hors de l'arène) : défaite, la partie est perdue (« S'il
+// perd. Game Over ! »). Tous les mutins à terre ou enfuis (rattrapés, comme au duel) : victoire, puis le verdict de chacun
+// (« épargner ou mise à mort et dettes toujours dues »).
+function mutinyFightCopy(){ return game.referenceData?.mutinyDialogue?.fight||{}; }
+function mutineersText(n){ return n+" "+(n>1?"mutins":"mutin"); }
+// Une ligne de combattants sur une colonne, du milieu vers les bords ; pleine, la colonne suivante (step : vers le bord).
+function placeMutinyLine(units,col,step){
+  const {rows}=MISSION_MAP,mid=Math.floor(rows/2);
+  const order=[...Array(rows).keys()].sort((a,b)=>Math.abs(a-mid)-Math.abs(b-mid)||a-b);
+  units.forEach((u,i)=>Object.assign(u,missionAxial(col+step*Math.floor(i/rows),order[i%rows])));
+  return fitMissionLarge(units);
+}
+function startMutinyFight(){
+  const c=game.campaign;
+  if(!c||typeof campaignRules!=="function") return false;
+  const rules=campaignRules(),mutiny=rules.mutinyRules;
+  if(!mutiny?.fighting(c)) return false;
+  const captain=c.company.roster.find(m=>m.id===c.company.captainId),foes=mutiny.fighters(c);
+  if(!captain||!foes.length){
+    mutiny.fought(c);
+    if(typeof saveGame==="function") saveGame();
+    if(typeof renderGame==="function") renderGame();
+    return false;
+  }
+  const allies=mutiny.rally(c).filter(a=>a.joins).map(a=>c.company.roster.find(m=>m.id===a.id)).filter(Boolean);
+  const C=rules.duelRules.constants,copy=mutinyFightCopy();
+  setMissionMapSize({cols:C.cols,rows:C.rows});
+  const engine=MercenairesCombat.createCombatEngine(game.referenceData,{onAttack:onMissionAttack,heightOf:missionUnitHeight});
+  const endRules=MercenairesMissionEnd.createMissionEndRules({reference:game.referenceData});
+  const progression=MercenairesProgression.createProgressionRules({reference:game.referenceData});
+  const left=Math.floor((MISSION_MAP.cols-C.distance)/2);
+  const players=placeMutinyLine([captain,...allies].map(m=>makeMissionUnit(m,"player",0,{noMount:true})),left,-1);
+  const enemies=placeMutinyLine(foes.map(m=>makeMissionUnit(m,"enemy",0,{noMount:true})),left+C.distance,1);
+  game.mission={
+    engine,endRules,progression,players,enemies,playerOrder:sortMissionInitiative(players,engine),enemyOrder:sortMissionInitiative(enemies,engine),
+    activeUnit:null,phase:"player",turn:1,mode:null,log:[],over:false,winner:null,aftermath:null,
+    mutiny:{captainId:captain.id,members:foes.map(m=>m.id),allies:allies.map(m=>m.id),verdicts:{},queue:[]}
+  };
+  const m=game.mission;
+  m.relief=generateMissionRelief();
+  m.decor=generateMissionDecor().filter(d=>![...players,...enemies].some(u=>engine.axialDistance(u,d)<=1));
+  m.awareness={player:{alert:true,lastKnown:{q:enemies[0].q,r:enemies[0].r},objective:null},enemy:{alert:true,lastKnown:{q:players[0].q,r:players[0].r},objective:null}};
+  $("game-panel")?.classList?.add("hidden");
+  $("mission-panel")?.classList?.remove("hidden");
+  missionLog(duelFill(copy.start,{capitaine:captain.name,mutins:mutineersText(foes.length)}),"turn");
+  missionLog(allies.length?duelFill(copy.allies,{noms:allies.map(a=>a.name).join(", ")}):duelFill(copy.alone),"info");
+  selectNextMissionPlayer();
+  return true;
+}
+// La fin du combat : nous gagnons, le verdict de chaque mutin ; sinon le bilan tout de suite (la partie est perdue).
+function finishMissionMutiny(){
+  const m=game.mission,copy=mutinyFightCopy(),captain=m.players.find(u=>u.character.id===m.mutiny.captainId);
+  if(m.winner==="player"){
+    for(const u of m.enemies.filter(x=>x.offMap)) missionLog(duelFill(copy.fled,{nom:u.character.name},duelFemale(u.character)),"info");
+    missionLog(duelFill(copy.won,{capitaine:captain.character.name},duelFemale(captain.character)),"turn");
+    m.mutiny.queue=m.enemies.filter(u=>!u.summon).map(u=>u.character.id);
+    m.mutiny.pending=true;
+    if(typeof renderMission==="function") renderMission();
+    openMutinyVerdict();
+    return;
+  }
+  missionLog(duelFill(copy.lost,{capitaine:captain.character.name},duelFemale(captain.character)),"bad");
+  resolveMissionMutiny();
+}
+// Le verdict, un mutin après l'autre (la fenêtre du duel).
+function openMutinyVerdict(){
+  const m=game.mission,id=m?.mutiny?.queue?.[0],dialog=$("duel-verdict-dialog");
+  if(!m?.mutiny?.pending||id==null||!dialog) return;
+  const foe=m.enemies.find(u=>u.character.id===id)?.character,copy=duelCopy(),female=duelFemale(foe);
+  const face=$("duel-verdict-portrait");
+  if(face) face.innerHTML=typeof renderAvatar==="function"?renderAvatar(foe,{variant:"detail",kind:"full"}):"";
+  if($("duel-verdict-title")) $("duel-verdict-title").textContent=copy.verdict_title||"";
+  if($("duel-verdict-line")) $("duel-verdict-line").textContent=duelFill(copy.verdict_line,{nom:foe?.name||""},female);
+  for(const button of dialog.querySelectorAll?.("[data-duel-verdict]")||[]) button.textContent=(button.dataset.duelVerdict==="kill"?copy.kill:copy.spare)||button.textContent;
+  if(typeof dialog.showModal==="function"&&!dialog.open) dialog.showModal();
+}
+function chooseMutinyVerdict(killed){
+  const m=game.mission,d=m?.mutiny;
+  if(!d?.pending||!d.queue.length) return;
+  $("duel-verdict-dialog")?.close?.();
+  const id=d.queue.shift(),foe=m.enemies.find(u=>u.character.id===id)?.character,copy=duelCopy();
+  d.verdicts[id]=Boolean(killed);
+  if(foe) missionLog(duelFill(killed?copy.killed:copy.spared,{nom:foe.name},duelFemale(foe)),killed?"death":"gear");
+  if(d.queue.length){ openMutinyVerdict(); return; }
+  d.pending=false;
+  resolveMissionMutiny();
+}
+// Le bilan : la fin de combat de tous (mise à mort, ou jet de blessure de l'épargné ; la chaîne habituelle pour le capitaine
+// et ses alliés), appliquée à la compagnie (campaign.js, applyMutinyFight : les bonus du défi par mutin, ou la partie perdue).
+function resolveMissionMutiny(){
+  const m=game.mission,d=m?.mutiny;
+  if(!d||d.resolved) return null;
+  d.resolved=true;d.pending=false;
+  const won=m.winner==="player",copy=mutinyFightCopy(),captain=m.players.find(u=>u.character.id===d.captainId);
+  const units=[...m.players,...m.enemies].filter(u=>!u.summon&&!u.character?.mount);
+  for(const u of units) if(Number(u.damageTaken)>0) MercenairesProgression.recordDamageTaken(u,u.damageTaken);
+  const part=(u,extra={})=>({id:u.character.id,name:u.character.name,hp:u.hp,pvMax:u.pvMax,damageTaken:u.damageTaken,
+    stats:{...u.character.stats,Endurance:m.engine.statWithGear(m.engine.rested(u),"Endurance"),"Volonté":m.engine.statWithGear(m.engine.rested(u),"Volonté")},
+    offMap:false,progress:u.progress||null,cause:u.downCause||null,...extra});
+  const cause={kind:"mutiny",by:{name:captain.character.name,proper:true}};
+  const parts=[
+    ...m.players.filter(u=>!u.summon&&!u.character?.mount).map(u=>part(u,u.character.id===d.captainId?{isCaptain:true}:{offMap:Boolean(u.offMap)})),
+    ...m.enemies.filter(u=>!u.summon&&!u.character?.mount).map(u=>part(u,won?d.verdicts[u.character.id]?{killed:true,cause}:{spared:true}:{}))
+  ];
+  m.aftermath=m.endRules.resolveMissionEnd(parts,{});
+  for(const r of m.aftermath.results) missionLog(r.name+" — "+missionAftermathText(r),r.dead?"death":r.wounded?"bad":"info");
+  if(!game.campaign||typeof campaignRules!=="function"){ if(typeof renderMission==="function") renderMission(); return null; }
+  const report=m.companyReport=campaignRules().applyMutinyFight(game.campaign,{won,verdicts:d.verdicts,aftermath:m.aftermath,allies:d.allies});
+  if(report?.mutiny?.won&&!report.gameOver){
+    const fx=report.mutiny.effects,C=campaignRules().duelRules.constants,dcopy=duelCopy();
+    if(fx.length) missionLog(duelFill(copy.xp,{capitaine:captain.character.name,intimidation:C.intimidationXp*fx.length,charisme:C.charismaXp*fx.length,mutins:mutineersText(fx.length)}),"gear");
+    for(const e of fx) if(e.spared) missionLog(duelFill(dcopy.affinity_spared,{nom:e.mercenary.name,n:e.spared},duelFemale(e.mercenary)),"gear");
+  }
+  for(const {mercenary,changes} of report?.progression||[])
+    for(const c of visibleProgressionChanges(changes)) missionLog(mercenary.name+" : "+c.name+" "+c.shownBefore+" → "+c.shownAfter+".",c.shownAfter>c.shownBefore?"gear":"bad");
+  if(report?.gameOver){
+    missionLog(duelFill(copy.game_over),"death");
     if(typeof deleteSavedGame==="function") deleteSavedGame();
   }else if(typeof saveGame==="function") saveGame();
   if(typeof renderMission==="function") renderMission();
@@ -1560,15 +1688,20 @@ function checkMissionEnd(){
   // restent debout, le combat est perdu : oui »).
   const fighting=u=>!u.character?.noAttack;
   const p=livingMissionUnits("player").filter(fighting),e=livingMissionUnits("enemy").filter(fighting);
-  if(p.length&&e.length) return false;
+  // La mutinerie : le capitaine à terre ou hors de l'arène, c'est perdu, même si ses alliés tiennent encore.
+  const mutiny=game.mission.mutiny;
+  const captainDown=Boolean(mutiny)&&!game.mission.players.some(u=>u.character.id===mutiny.captainId&&u.alive&&!u.offMap);
+  if(p.length&&e.length&&!captainDown) return false;
   game.mission.over=true;
-  game.mission.winner=e.length?"enemy":"player";
+  game.mission.winner=e.length||captainDown?"enemy":"player";
   game.mission.activeUnit=null;
   game.mission.mode=null;
   // Le Défi du capitaine : sa propre fin (la fenêtre de verdict, puis applyDuel).
   if(game.mission.duel){ finishMissionDuel(); return true; }
   // La Cave : sa propre fin (le bilan de la bagarre, le pari).
   if(game.mission.cellar){ finishMissionCellar(); return true; }
+  // La mutinerie : sa propre fin (le verdict de chaque mutin, puis applyMutinyFight ; perdue, la partie est finie).
+  if(game.mission.mutiny){ finishMissionMutiny(); return true; }
   missionLog(game.mission.winner==="player"
     ?"VICTOIRE — les ennemis sont hors combat ou en déroute."
     :"DÉFAITE — votre équipe est hors combat.","turn");
@@ -1768,6 +1901,8 @@ function missionAftermathDetail(r){
   if(r.captured) parts.push("éclaireur prisonnier de l’ennemi : la mission perdue, il ne revient pas");
   if(r.offMap) parts.push("a fui le combat");
   if(r.death?.raised) parts.push("relevé en zombie par un nécromancien");
+  // La mise à mort (duel, mutinerie) : pas de jet.
+  else if(r.death&&r.dead&&r.death.roll==null) parts.push("mise à mort");
   else if(r.death) parts.push((r.dead?"jet de mort ":"survit au jet de mort ")+pct(r.death.p)+" ("+r.death.roll+")");
   if(r.death&&!r.dead) parts.push("blessure automatique");
   if(r.wound&&!r.wound.automatic) parts.push((r.wounded?"jet de blessure ":"évite la blessure ")+pct(r.wound.p)+" ("+r.wound.roll+")");
@@ -1797,6 +1932,7 @@ function renderMissionAftermath(m){
       ?""
       :m.duel?"Bilan du duel appliqué à la compagnie (ni prime ni réputation)."
       :m.cellar?"Bilan de la bagarre appliqué à la compagnie (ni prime ni réputation)."
+      :m.mutiny?"Bilan de la mutinerie appliqué à la compagnie (ni prime ni réputation ; les dettes restent dues)."
       :"Bilan appliqué à la compagnie. "+(m.expeditionId?"Primes versées au retour de l’escouade.":"Primes de mission versées : "+report.bonusPaid+" PO."+(report.bonusOwed?" "+fmt(report.bonusOwed)+" PO restent dues.":""))+missionRenownNote(report);
   const contract=m.contractResult?`<ul class="mission-contract-result">${contractResultLines(m.contractResult,m.contractReturn).map(l=>`<li class="is-${l.kind}">${esc(l.text)}</li>`).join("")}</ul>`:"";
   return `${contract}<ul class="mission-aftermath">${rows}</ul>
@@ -5268,6 +5404,8 @@ function leaveMission(){
   if(game.mission&&!game.mission.over) return;
   // Le duel attend encore le verdict : la fenêtre revient.
   if(game.mission?.duel&&!game.mission.duel.resolved){ openDuelVerdict(); return; }
+  // La mutinerie attend encore un verdict : la fenêtre revient.
+  if(game.mission?.mutiny&&!game.mission.mutiny.resolved){ openMutinyVerdict(); return; }
   const gameOver=game.mission?.companyReport?.gameOver;
   const cellar=Boolean(game.mission?.cellar),duel=game.mission?.duel||null;
   const challenged=duel?game.campaign?.company.roster.find(x=>x.id===duel.mercenaryId):null;

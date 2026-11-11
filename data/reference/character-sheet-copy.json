@@ -506,27 +506,39 @@
       "desertion": "Quitte la compagnie en pleine nuit, avec son sac.",
       "desertion_let_go": "Quitte la compagnie : le capitaine l’a {laissé|laissée} partir.",
       "duel": "Meurt en combat singulier contre le capitaine.",
-    "death": "Tombe au combat.",
-    "death_knockouts": "Tombe au combat après avoir abattu {n}.",
-    "death_captured": "{Capturé|Capturée} en éclaireur, ne revient jamais.",
-    "duel_fought": {
-      "captain": {
-        "killed": "Défie {nom} en combat singulier : victoire, et le pouce vers le bas.",
-        "spared": "Défie {nom} en combat singulier : victoire, et la grâce.",
-        "lost": "Défie {nom} en combat singulier : défaite."
+      "death": "Tombe au combat.",
+      "death_knockouts": "Tombe au combat après avoir abattu {n}.",
+      "death_captured": "{Capturé|Capturée} en éclaireur, ne revient jamais.",
+      "duel_fought": {
+        "captain": {
+          "killed": "Défie {nom} en combat singulier : victoire, et le pouce vers le bas.",
+          "spared": "Défie {nom} en combat singulier : victoire, et la grâce.",
+          "lost": "Défie {nom} en combat singulier : défaite."
+        },
+        "challenged": {
+          "spared": "{Défié|Défiée} par {nom} en combat singulier : {vaincu|vaincue}, mais {épargné|épargnée}.",
+          "lost": "{Défié|Défiée} par {nom} en combat singulier : {victorieux|victorieuse}."
+        }
       },
-      "challenged": {
-        "spared": "{Défié|Défiée} par {nom} en combat singulier : {vaincu|vaincue}, mais {épargné|épargnée}.",
-        "lost": "{Défié|Défiée} par {nom} en combat singulier : {victorieux|victorieuse}."
-      }
-    },
-    "cellar_fight": {
-      "won": "Règle un désaccord avec {nom} à la cave de la taverne : victoire.",
-      "lost": "Règle un désaccord avec {nom} à la cave de la taverne : défaite.",
-      "fled": "Règle un désaccord avec {nom} à la cave de la taverne : s’enfuit."
-    },
+      "cellar_fight": {
+        "won": "Règle un désaccord avec {nom} à la cave de la taverne : victoire.",
+        "lost": "Règle un désaccord avec {nom} à la cave de la taverne : défaite.",
+        "fled": "Règle un désaccord avec {nom} à la cave de la taverne : s’enfuit."
+      },
       "salary_raise": "Obtient une augmentation : de {avant} à {apres} PO par jour.",
-      "salary_refused": "Réclame une augmentation ; n’obtient rien."
+      "salary_refused": "Réclame une augmentation ; n’obtient rien.",
+      "mutiny": "Meurt en se mutinant contre le capitaine.",
+      "mutiny_fought": {
+        "captain": {
+          "won": "Mate une mutinerie : {n}."
+        },
+        "mutineer": {
+          "spared": "Se mutine pour sa solde : {vaincu|vaincue} par le capitaine, mais {épargné|épargnée}."
+        },
+        "ally": {
+          "won": "Se bat aux côtés du capitaine contre des mutins : victoire."
+        }
+      }
     },
     "empty": "Rien à raconter pour l’instant."
   },

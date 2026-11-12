@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "name": "mercenary-tags",
+  "description": "Tags de la fiche mercenaire, phase 1 (Idan, 2026-11-12 ; doc 20) : le joueur note ce qu'il veut faire de chaque mercenaire, pour retrouver vite qui doit faire quoi. Trois colonnes : Occupations principales (tons rouges), Équipement (tons verts), Rôle au combat (tons bleus). Un tag peut avoir des sous-tags et des sous-sous-tags ; tous se cochent, un sous-tag allume ses parents, éteindre un tag éteint ses sous-tags. Aucun tag n'en exclut un autre ; le joueur leur donne le sens qu'il veut. Un nœud est un nom (une feuille) ou un objet : nom, enfants (liste écrite à la main) ou source (liste tirée des données du jeu, pour qu'un nouveau bâtiment, une nouvelle mission ou une nouvelle arme ait son tag sans toucher à ce fichier) ; ordre range les noms d'une source (ceux qu'il ne cite pas viennent ensuite, dans l'ordre des données). Sources : missions (factions des ordres des missions citées, « hunt_* » = toutes les chasses), entrainements (ce que travaillent les bâtiments du camp et les écoles de leurs salles, plus aussi ; sous une école, ses sorts ; sous une famille d'animaux, ses montures), armes (familles de compétences martiales et leurs armes de weapons.json), armures (classes de base-armors.json et leurs armures ; a_plat : classes dont les armures se rangent directement sous Armure), bonus (tout ce qu'un objet augmente : bagues, amulettes, ceintures, capes, gants, casques, culottes, bottes, bonus et aura des armes), ecoles (écoles de magie de skills.json), animaux (espèces de mounts.json et leurs montures). Code : game-core/mercenary-tags.js.",
+  "colonnes": [
+    {
+      "code": "occupation",
+      "nom": "Occupations principales",
+      "teinte": "rouge",
+      "tags": [
+        {
+          "nom": "Mission",
+          "enfants": [
+            {"nom": "Camps", "source": "missions", "missions": ["cleanup"]},
+            {"nom": "Chasses", "source": "missions", "missions": ["hunt_*"]}
+          ]
+        },
+        "Garde du corps",
+        {"nom": "Job", "enfants": ["Bûcheron", "Mines", "Palais des plaisirs"]},
+        {
+          "nom": "Entraînement",
+          "source": "entrainements",
+          "aussi": ["Port d’armure légère", "Port d’armure intermédiaire", "Port d’armure lourde", "Empoisonnement des armes"],
+          "ordre": [
+            "Force", "Endurance", "Vitesse", "Esquive", "Constitution", "Résistance physique", "Dextérité", "Perception", "Courage",
+            "Résistance au feu", "Résistance au froid", "Résistance à la foudre", "Résistance au poison",
+            "Lames longues", "Lames courtes", "Armes d’hast", "Haches", "Armes contondantes", "Armes flexibles ou articulées", "Bâtons",
+            "Armes de tir", "Armes à feu", "Boucliers", "Combat à une main", "Combat à deux armes", "Combat à deux mains",
+            "Discrétion", "Pièges", "Réserve de mana",
+            "Feu", "Eau", "Foudre", "Vie", "Nécromancie", "Illusion", "Invocation", "Transmutation", "Télékinésie",
+            "Équidés", "Canidés", "Papillons",
+            "Port d’armure légère", "Port d’armure intermédiaire", "Port d’armure lourde", "Empoisonnement des armes"
+          ]
+        },
+        {
+          "nom": "Poste",
+          "enfants": ["Intendant", "Médecin", "Directeur de l’École", "Doctore", "Vétéran", "Maître des lames", "Alchimiste", "Maître des plaisirs", "Dresseur", "Officier"]
+        }
+      ]
+    },
+    {
+      "code": "equipment",
+      "nom": "Équipement",
+      "teinte": "vert",
+      "tags": [
+        {"nom": "Arme", "source": "armes", "ordre": ["Lames longues", "Lames courtes", "Armes d’hast", "Haches", "Armes contondantes", "Armes flexibles ou articulées", "Bâtons", "Boucliers", "Armes de tir", "Armes à feu"]},
+        {"nom": "Armure", "source": "armures", "ordre": ["Légère", "Intermédiaire", "Lourde"], "a_plat": ["Vêtement"]},
+        {
+          "nom": "Caractéristiques",
+          "source": "bonus",
+          "ordre": [
+            "Force", "Endurance", "Vitesse", "Esquive", "Dextérité", "Constitution", "Résistance physique",
+            "Intelligence", "Volonté", "Courage", "Charisme", "Perception", "Chance",
+            "Puissance magique", "Réserve de mana", "Feu", "Eau", "Foudre", "Vie", "Nécromancie", "Illusion", "Invocation", "Transmutation", "Télékinésie",
+            "Discrétion", "Pièges", "Intimidation", "Compagnon animal", "Affinité"
+          ]
+        }
+      ]
+    },
+    {
+      "code": "role",
+      "nom": "Rôle au combat",
+      "teinte": "bleu",
+      "tags": [
+        {
+          "nom": "Dégâts",
+          "enfants": ["De zone", "Charge", "À distance", "Tranchant", "Perforant", "Contondant", "Brûlant", "Glaçant", "Foudroyant", "Corrosif", "Poison", "Nécrotique", "Anti morts-vivants", "Anti invocations"]
+        },
+        {"nom": "Soin", "enfants": ["De zone", "Dans la durée"]},
+        {
+          "nom": "Soutien",
+          "enfants": [
+            "Enchantements",
+            {"nom": "Dégâts élémentaires", "enfants": ["Brûlant", "Glaçant", "Foudroyant"]},
+            "Discrétion",
+            "Récupération de mana",
+            "Purges"
+          ]
+        },
+        {
+          "nom": "Protection",
+          "enfants": [
+            {"nom": "Protection élémentaire", "enfants": ["Contre le feu", "Contre le froid", "Contre la foudre"]},
+            "Protection à distance"
+          ]
+        },
+        {"nom": "Entrave", "enfants": ["Immobilisation", "Affaiblissement", "Démoralisateur", "Anti-magie", "Anti-soins"]},
+        "Contrôle du terrain",
+        "Commandement",
+        "Éclaireur",
+        {"nom": "Magie", "source": "ecoles", "ordre": ["Feu", "Eau", "Foudre", "Vie", "Nécromancie", "Illusion", "Invocation", "Transmutation", "Télékinésie"]},
+        {"nom": "Animal", "source": "animaux"},
+        "Régénération",
+        "Vol"
+      ]
+    }
+  ]
+}

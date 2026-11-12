@@ -134,10 +134,11 @@ for(const [cible,col,value] of [["Arc","elfes_des_grandes_cites",1],["Dague","gn
   ["Épée courte","elfes_sylvains",1],["Sarbacane","reptiliens_des_cites_temples",2]])
   assert.equal(matrix[cible][col],value,cible+" / "+col);
 
-// Fiche : le picto à côté du nom ; les mercenaires d'avant le domaine prennent le profil de leur équipement.
+// Fiche : plus de picto à côté du nom (Idan, 2026-11-12 : « On retire l'icône arc / cac / magie à côté du nom ») ; les
+// mercenaires d'avant le domaine prennent le profil de leur équipement.
 const ui=fs.readFileSync(path.join(ROOT,"prototype-web","ui.js"),"utf8");
-assert.match(ui,/\$\("dialog-name"\)\.innerHTML = domainBadge\(c\) \+ esc\(c\.name\) \+/);
+assert.match(ui,/\$\("dialog-name"\)\.innerHTML = esc\(c\.name\) \+/);
+assert.ok(!/domainBadge|DOMAIN_ICONS|domain-badge/.test(ui),"pas de picto du domaine");
 assert.match(ui,/function mercenaryDomain\(c\) \{ return c\?\.domain \|\| c\?\.equipment\?\.profile\?\.type \|\| null; \}/);
-for(const code of ["melee","ranged","magic"]) assert.match(ui,new RegExp("\\b"+code+":'<path"));
 console.log("Domaine du mercenaire : choix d'après les tirages, coup de pouce d'un sort, déplacements 2D6 / 2D10, garde-fou de l'escouade, équipement et fiche — OK",
   Object.fromEntries(Object.entries(shares).map(([k,v])=>[k,Math.round(100*v)+" %"])));

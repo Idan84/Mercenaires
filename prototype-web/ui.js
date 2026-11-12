@@ -850,9 +850,9 @@ const SHEET_TABS = [
   ["magic", "Magie"],
   ["camp", "Camp"],
   ["history", "Historique"],
-  ["tags", "Tags"]
+  ["tags", "Rôle et occupations"]
 ];
-// Les onglets d'une fiche : les Tags pour ceux de la compagnie seulement (Idan, 2026-11-12 : « retrouver rapidement, dans
+// Les onglets d'une fiche : Rôle et occupations (les tags, Idan, 2026-11-12) pour ceux de la compagnie seulement (Idan, 2026-11-12 : « retrouver rapidement, dans
 // sa compagnie, qui doit faire quoi »).
 const sheetTabsFor = c => SHEET_TABS.filter(([key]) => key !== "tags" || renamable(c));
 
@@ -1622,7 +1622,7 @@ function renderSheetTab(c, tab) {
   return renderProfileTab(c);
 }
 
-// Onglet Tags, phase 1 (Idan, 2026-11-12 ; doc 20) : trois colonnes en accordéon (Occupations principales en rouge,
+// Onglet Rôle et occupations (les tags), phase 1 (Idan, 2026-11-12 ; doc 20) : une phrase qui dit à quoi servent les tags ; trois colonnes en accordéon (Occupations principales en rouge,
 // Équipement en vert, Rôle au combat en bleu) ; « Pas de case à cocher. Des tags grisés ou pas grisés » ; « Une petite
 // flèche à droite du tag pour ouvrir la sous-catégorie » ; tous se cochent. Les règles : game-core/mercenary-tags.js.
 // Ce qui est ouvert le reste d'une fiche à l'autre, pendant la partie.
@@ -1648,7 +1648,8 @@ function renderTagsTab(c) {
   const rules = tagRules();
   if (!rules) return `<p class="muted">Tags indisponibles.</p>`;
   const tags = rules.normalize(c.tags);
-  return `<div class="sheet-tags">${rules.columns.map(col =>
+  return (rules.intro ? `<p class="sheet-tags-intro">${esc(rules.intro)}</p>` : "")
+    + `<div class="sheet-tags">${rules.columns.map(col =>
     `<section class="tags-col tags-col--${esc(col.teinte)}" aria-label="${esc(col.nom)}"><h4>${esc(col.nom)}</h4>`
     + `<ul class="tag-list tag-root">${col.tags.map(node => tagNodeHtml(node, tags, 1)).join("")}</ul></section>`
   ).join("")}</div>`;
@@ -1710,14 +1711,10 @@ function stepSheet(step){
   showCharacter(order[(index+step+order.length)%order.length]);
 }
 
-// Domaine du mercenaire (Idan, 2026-11-01 : « 3 pictos, pour l'instant à côté de son nom dans la fiche ») : Combat rapproché,
-// Distance ou Mage (domains.json) ; il évolue avec le titre (refreshMercenaryDomains, plus bas). Les mercenaires d'avant le domaine prennent le profil de leur équipement de
-// départ, qui en tenait lieu.
-const DOMAIN_ICONS = {
-  melee:'<path d="M4 4h3.5l9.5 9.5-3.5 3.5L4 7.5z"/><path d="M12 19l7-7M16.5 16.5 20 20M18.5 21.5l3-3"/>',
-  ranged:'<path d="M6 3a13 13 0 0 1 0 18"/><path d="M6 3v18"/><path d="M3 12h17M17 9l3 3-3 3"/>',
-  magic:'<path d="M12 3l2.1 6.9L21 12l-6.9 2.1L12 21l-2.1-6.9L3 12l6.9-2.1z"/>'
-};
+// Domaine du mercenaire : Combat rapproché, Distance ou Mage (domains.json) ; il évolue avec le titre
+// (refreshMercenaryDomains, plus bas) et colore le cadre de combat. Les mercenaires d'avant le domaine prennent le profil de
+// leur équipement de départ, qui en tenait lieu. Le picto à côté du nom, dans la fiche, est retiré (Idan, 2026-11-12 : « On
+// retire l'icône arc / cac / magie à côté du nom »).
 function mercenaryDomain(c) { return c?.domain || c?.equipment?.profile?.type || null; }
 // Domaine évolutif (Idan, 2026-11-06 : « le statut (l'icône) évolue dans le temps », « un message dans le journal, mais on
 // utilise le terme de combat rapproché ») : le titre recalculé (game-core/mercenary-profile.js, titleDomain) ; à la fin
@@ -1738,13 +1735,6 @@ function refreshMercenaryDomains(characters, {log = null} = {}) {
     if (log) log(message);
   }
   return changed;
-}
-function domainBadge(c) {
-  const code = mercenaryDomain(c), row = (game.referenceData?.domains?.rows || []).find(r => r.code === code);
-  if (!row) return "";
-  return `<span class="domain-badge domain-badge--${esc(code)}" tabindex="0" aria-label="${esc(row.nom)}">`
-    + `<svg class="domain-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${DOMAIN_ICONS[code] || ""}</svg>`
-    + `<span class="sheet-stat-tip" role="tooltip"><strong>${esc(row.nom)}</strong><em>${esc(row.description)}</em></span></span>`;
 }
 
 // Renommer (Idan, 2026-11-07 : « renommer un mercenaire ou un animal librement ») : le crayon à côté du nom ouvre un
@@ -1779,7 +1769,7 @@ function renameSheetCharacter(){
 }
 
 function showCharacter(c) {
-  $("dialog-name").innerHTML = domainBadge(c) + esc(c.name) + (renamable(c) ? renameButton("member", c.id) : "");
+  $("dialog-name").innerHTML = esc(c.name) + (renamable(c) ? renameButton("member", c.id) : "");
   game.sheetCharacter = c;
   renderSheetNav(c);
   renderSheet();

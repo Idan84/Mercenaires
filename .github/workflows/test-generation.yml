@@ -1,12 +1,36 @@
 name: Test mercenary generation
 
+# Économiser les minutes GitHub Actions (Idan, 2026-11-12 : « ne pas faire une CI pour une image qui change ») :
+# - une seule fois par changement, sur sa PR ; plus rien au push sur test ou main (déjà testé), ni sur la PR
+#   test → main (job sauté) ;
+# - rien pour une PR qui ne touche que des images, du son ou des vidéos ;
+# - un nouveau push sur une PR annule le test encore en cours ;
+# - lançable à la main (Actions → Run workflow).
+
 on:
-  push:
-    branches: [main, test]
   pull_request:
+    paths-ignore:
+      - "**/*.webp"
+      - "**/*.jpg"
+      - "**/*.jpeg"
+      - "**/*.png"
+      - "**/*.gif"
+      - "**/*.svg"
+      - "**/*.mp3"
+      - "**/*.ogg"
+      - "**/*.wav"
+      - "**/*.mp4"
+      - "**/*.webm"
+      - "**/*.zip"
+  workflow_dispatch:
+
+concurrency:
+  group: tests-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   generation:
+    if: github.event_name != 'pull_request' || github.head_ref != 'test'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

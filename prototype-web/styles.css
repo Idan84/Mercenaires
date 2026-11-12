@@ -2294,10 +2294,6 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .sheet-stat-pop{right:-12px;width:290px}
 .sheet-stat-name:hover .sheet-stat-tip,.sheet-stat-name:focus .sheet-stat-tip{display:block}
 /* Domaine du mercenaire : picto à côté du nom sur la fiche, infobulle au survol. */
-.domain-badge{position:relative;display:inline-flex;align-items:center;justify-content:center;width:1.15em;height:1.15em;margin-right:.35em;vertical-align:-.12em;color:#e8c27e;cursor:help}
-.domain-badge .domain-icon{width:100%;height:100%}
-.domain-badge .sheet-stat-tip{left:0;top:calc(100% + 8px);bottom:auto;font-weight:400;letter-spacing:0;text-transform:none}
-.domain-badge:hover .sheet-stat-tip,.domain-badge:focus .sheet-stat-tip{display:block}
 /* Infobulle d'un sort du grimoire : ce qu'il fait, puis ses chiffres pour ce mercenaire ; elle s'ouvre vers la gauche
    (le grimoire est la colonne de droite) et laisse passer la souris. */
 .spell-tip{left:auto;right:0;width:300px;pointer-events:none}
@@ -2829,6 +2825,7 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 /* Onglet Tags de la fiche, phase 1 (Idan, 2026-11-12 ; doc 20) : trois colonnes en accordéon, une couleur par colonne
    (Occupations principales en rouge, Équipement en vert, Rôle au combat en bleu), plus claire à chaque niveau ; « Pas de
    case à cocher. Des tags grisés ou pas grisés » ; la petite flèche à droite du tag ouvre ses sous-tags. */
+.sheet-tags-intro{margin:0 0 14px;color:#cdb38c;font:italic 15px/1.4 Georgia,serif}
 .sheet-tags{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;align-items:start}
 .tags-col{padding:14px 14px 16px;border:1px solid #4d3c2f;border-radius:12px;background:#271e19;min-width:0}
 .tags-col h4{margin:0 0 12px;font:normal 19px Georgia,serif;color:var(--tag-head)}

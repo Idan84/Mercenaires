@@ -110,7 +110,9 @@ assert.equal(rules.toggleMemberTag(member,"nulle/part").ok,false);
 
 // La fiche : l'onglet Tags, pour ceux de la compagnie ; des tags grisés ou non, une flèche, pas de case à cocher.
 const ui=read("prototype-web/ui.js"),css=read("prototype-web/styles.css"),html=read("prototype-web/index.html");
-assert.match(ui,/\["history", "Historique"\],\n  \["tags", "Tags"\]\n\];/,"le dernier onglet");
+assert.match(ui,/\["history", "Historique"\],\n  \["tags", "Rôle et occupations"\]\n\];/,"le dernier onglet : « À la place de tags, on met rôle et occupations »");
+assert.equal(rules.intro,"Ces tags vous permettent de vous souvenir à quoi peut servir ce mercenaire.","la petite phrase en haut de l'onglet");
+assert.match(ui,/<p class="sheet-tags-intro">\$\{esc\(rules\.intro\)\}<\/p>/);
 assert.match(ui,/key !== "tags" \|\| renamable\(c\)/,"pas pour un candidat ni un ennemi");
 assert.match(ui,/class="tag-pill\$\{on \? " is-on" : ""\}" data-tag-toggle=/);
 assert.match(ui,/class="tag-open" data-tag-open=.*>▸<\/button>/);

@@ -1,6 +1,6 @@
 # Tags des mercenaires
 
-> Décisions d'Idan du 2026-11-12. Phase 1 codée : l'onglet **Tags** de la fiche. Données : `data/reference/mercenary-tags.json` ;
+> Décisions d'Idan du 2026-11-12. Phase 1 codée : l'onglet **Rôle et occupations** de la fiche. Données : `data/reference/mercenary-tags.json` ;
 > règles : `game-core/mercenary-tags.js` ; fiche : `prototype-web/ui.js` (`renderTagsTab`) ; test : `tests/mercenary-tags.test.js`.
 
 ## 1 — Pourquoi
@@ -75,11 +75,13 @@ premier animal.
 L'identifiant d'un tag est son chemin (`role/degats/brulant`) ; le mercenaire garde la liste de ses tags allumés
 (`tags`), sauvegardée avec lui.
 
-## 4 — L'onglet Tags (phase 1)
+## 4 — L'onglet Rôle et occupations (phase 1)
 
 « On fait très simple en phase 1 : Ajoute un onglet dans la fiche mercenaire avec les tags qu'on peut cocher décocher. »
 
-- Dernier onglet de la fiche, pour ceux de la compagnie (pas un candidat de la Taverne).
+- Dernier onglet de la fiche, pour ceux de la compagnie (pas un candidat de la Taverne). Son nom : « À la place de tags,
+  on met rôle et occupations ».
+- En haut, une petite phrase : « Ces tags vous permettent de vous souvenir à quoi peut servir ce mercenaire. »
 - Trois colonnes en accordéon ; une couleur par colonne, plus claire à chaque niveau.
 - « Pas de case à cocher. Des tags grisés ou pas grisés » : un clic sur le tag l'allume ou l'éteint.
 - « Une petite flèche à droite du tag pour ouvrir la sous-catégorie. » Ce qui est ouvert le reste d'une fiche à l'autre.

@@ -59,6 +59,7 @@ state.company.camp.buildings={magic_school:{level:3,construction:null},magic_roo
 assert.equal(study.canStudy(state,mage,book).ok,true);
 assert.equal(study.canStudy(state,mage,book).room.code,"magic_room_fire");
 
+if(state.company.oldSteward) state.company.oldSteward.retiredDay=state.day; // Cruxor, l'ancien intendant, est parti : sans intendant
 // Conviction : 10 + 80 / (1 + e^(−Δ/20)), Δ = 0,5 × affinité + 0,5 × (école − 50).
 neutral(mage); mage.skills.magic.Feu=80;
 assert.equal(Math.round(study.offerChance(state,mage,fireball).chance),64,"affinité 0, école 80");

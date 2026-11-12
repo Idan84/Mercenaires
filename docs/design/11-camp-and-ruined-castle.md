@@ -863,6 +863,25 @@ Constantes `steward.*` et `equipment_deal.steward_*` ; code `game-core/steward.j
 
 **Interface** (`prototype-web/steward-ui.js` ; textes `data/reference/steward-dialogue.json`, 4 variantes par réponse, écrites par JC) : en tête de l'Intendance, sans intendant, « Proposer le poste à… » liste les mercenaires (grisés s'ils ont déjà été sollicités ce jour-là) ; la réponse s'affiche dans la boîte de dialogue des échanges (proposition, réplique acceptée / flattée / vexée / neutre, issue, Partir). Avec un intendant : son portrait (qui ouvre sa fiche), son Intendance, depuis quand il est en poste, et « Lui parler » — évaluer un candidat de la Taverne (candidat → catégorie → caractéristique) ou lui proposer de revenir sur le terrain. Sa carte passe dans Ma Compagnie, avec le cartouche « Intendant » ; il n'apparaît plus dans Mes mercenaires ni dans la sélection de mission. Dans un échange d'équipement qu'il appuie, la boîte de dialogue le dit (« Isolde, votre intendante, appuie votre proposition. »).
 
+#### Cruxor Limortel, l'ancien intendant (Idan, 2026-11-12)
+
+« Un vieux qui était intendant avant le nouveau capitaine, qui veut juste partir à la retraite, et qui demande en
+permanence à être remplacé. Il a 10 d'intendance et il est là par défaut. »
+
+- **Là dès le premier jour** d'une partie ; il fait tout ce que fait un intendant (estimer les candidats de la Taverne,
+  appuyer les échanges et les apprentissages, les prix des marchands, les tags), avec **10 d'Intendance**.
+- **Ce n'est pas un mercenaire** : ni salaire, ni place au dortoir, ni fiche, ni mission.
+- **Affinité** (Idan : « B ») : chaque mercenaire l'apprécie exactement comme il apprécie le capitaine ; un marchand aussi.
+- **Il demande à partir, mais n'ose pas de lui-même** : seulement quand on lui parle, en fin de phrase (« Vous savez, je
+  pensais à ma retraite et… ») ; « Lui parler » : évaluer les candidats, ou « Vous comptez rester encore longtemps ? ».
+- **Remplacé, il part pour de bon** : dès qu'un mercenaire accepte le poste (« Nommer un intendant » reste à côté de sa
+  carte), il fait ses adieux ; il ne revient pas si le nouvel intendant retourne sur le terrain ou meurt. Plus tard, on
+  pourra lui parler à la Taverne (avec la nouvelle interface).
+- Son portrait : l'image d'Idan (à venir) ; ses initiales en attendant.
+
+Données : `data/reference/old-steward.json` (nom, Intendance, répliques) ; code : `game-core/old-steward.js`,
+`game-core/steward.js` (`personOf`) ; écran : `prototype-web/steward-ui.js` ; test : `tests/old-steward.test.js`.
+
 ## 17 — Laboratoire d’alchimie
 
 Fonctions :

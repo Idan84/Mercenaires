@@ -29,10 +29,11 @@
   const history=typeof module!=="undefined"&&module.exports?require("./history.js"):root.MercenairesHistory;
   const armorPorts=typeof module!=="undefined"&&module.exports?require("./armor-ports.js"):root.MercenairesArmorPorts;
   const persuasion=typeof module!=="undefined"&&module.exports?require("./persuasion.js"):root.MercenairesPersuasion;
-  const api=factory(history,armorPorts,persuasion);
+  const oldSteward=typeof module!=="undefined"&&module.exports?require("./old-steward.js"):root.MercenairesOldSteward;
+  const api=factory(history,armorPorts,persuasion,oldSteward);
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesEquipmentDeals=api;
-})(typeof globalThis!=="undefined"?globalThis:this,function(History,ArmorPorts,Persuasion){
+})(typeof globalThis!=="undefined"?globalThis:this,function(History,ArmorPorts,Persuasion,OldSteward){
   const rows=data=>Array.isArray(data)?data:(data?.rows||[]);
   const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
   const WEAPON_SLOT=/^weapon_set_(\d+)_(main|off)$/;
@@ -43,6 +44,7 @@
   const isPocket=slot=>BELT_POCKET.test(String(slot));
 
   function createEquipmentDeals({reference,affinityRules=null,random=Math.random}={}){
+    const oldSteward=OldSteward?OldSteward.createOldSteward({reference}):null;
     const weapons=new Map(rows(reference?.weapons).map(r=>[r.nom,r]));
     const ports=ArmorPorts.createArmorPorts(reference);
     const persuasion=Persuasion?Persuasion.createPersuasionRules({reference}):null;
@@ -142,11 +144,12 @@
     // + 0,25 × l'affinité du mercenaire envers lui (même règle qu'envers le capitaine : peuple, culture, alignement).
     // Pas d'aide quand c'est à l'intendant lui-même qu'on parle.
     function stewardHelp(state,mercenary){
+      // Le mercenaire nommé, sinon Cruxor (old-steward.js), apprécié comme le capitaine.
       const id=state?.company?.intendantId;
-      const steward=id==null?null:rosterOf(state).find(m=>m.id===id)||null;
+      const steward=oldSteward?oldSteward.stewardOf(state):id==null?null:rosterOf(state).find(m=>m.id===id)||null;
       if(!steward||steward===mercenary) return {steward:null,bonus:0};
       const skill=clamp(Number(steward.skills?.camp?.Intendance)||0,0,100);
-      const affinity=Number(affinityRules?.affinity?.(steward,mercenary)?.total)||0;
+      const affinity=oldSteward?oldSteward.feeling(state,steward,mercenary,affinityRules):Number(affinityRules?.affinity?.(steward,mercenary)?.total)||0;
       return {steward,bonus:C.stewardSkill*skill+C.stewardAffinity*affinity};
     }
 
@@ -328,7 +331,7 @@
         mercenaryId:mercenary.id,slot,given,received,steward:deal.steward||null};
     }
 
-    return {constants:C,perceivedValue,slotAccepts,compatibleSlots,evaluate,canDeal,propose,retry,isPocket,INVENTORY,inventoryOf,
+    return {constants:C,stewardHelp,perceivedValue,slotAccepts,compatibleSlots,evaluate,canDeal,propose,retry,isPocket,INVENTORY,inventoryOf,
       canRearrange,rearrange,placeOptions,swapSets};
   }
 

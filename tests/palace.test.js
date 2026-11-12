@@ -53,6 +53,7 @@ assert.equal(work.slots(state),2);
 assert.deepEqual(rules.trainingRooms(state).filter(r=>r.building==="pleasure_palace").map(r=>[r.code,r.trains,r.learnWith,r.places]),
   [["pleasure_backroom","Armes flexibles ou articulées","Charisme",1]]);
 
+if(state.company.oldSteward) state.company.oldSteward.retiredDay=state.day; // Cruxor, l'ancien intendant, est parti : sans intendant
 // Le test : 50 % à affinité 0 ; la relance ; −1 par jour (× 2 intimidé, × 0,5 convaincu) ; le capitaine sans test.
 assert.equal(work.chance(state,first).chance,50);
 assert.equal(work.chance(state,captain).chance,100);

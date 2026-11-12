@@ -30,10 +30,11 @@
   const ports=node?require("./armor-ports.js"):root.MercenairesArmorPorts;
   // Relance après un refus (Idan, 2026-11-04) : Intimider ou Convaincre ; si elle échoue, la perte du refus × 2 ou × 0,5.
   const persuasion=node?require("./persuasion.js"):root.MercenairesPersuasion;
-  const api=factory(history,ports,persuasion);
+  const oldSteward=node?require("./old-steward.js"):root.MercenairesOldSteward;
+  const api=factory(history,ports,persuasion,oldSteward);
   if(node) module.exports=api;
   root.MercenairesArmorStudy=api;
-})(typeof globalThis!=="undefined"?globalThis:this,function(History,ArmorPorts,Persuasion){
+})(typeof globalThis!=="undefined"?globalThis:this,function(History,ArmorPorts,Persuasion,OldSteward){
   const TRANSMISSION="Transmission du savoir";
   const POISONER="Empoisonnement des armes";
   function referenceConstant(reference,code,fallback){
@@ -83,6 +84,7 @@
   //          veteranOf, l'ancien nom), expeditionOf(state, id), busyElsewhere(state, id) → raison ou null (un autre
   //          apprentissage) } (campaign.js). course : "armor" (par défaut) ou "poison".
   function createAptitudeStudyRules({reference,random=Math.random,affinity=null,progression=null,camp,course="armor"}={}){
+    const oldSteward=OldSteward?OldSteward.createOldSteward({reference}):null;
     const COURSE=COURSES[course];
     if(!COURSE) throw new Error(`Apprentissage inconnu : ${course}`);
     const HALL=COURSE.hall,TEXT=COURSE.text;
@@ -149,9 +151,11 @@
     }
     // L'appui de l'intendant, comme pour un sort (pas quand on lui parle à lui).
     function stewardHelp(state,m){
-      const steward=state.company.intendantId==null?null:memberOf(state,state.company.intendantId);
+      // Le mercenaire nommé, sinon Cruxor (old-steward.js), apprécié comme le capitaine.
+      const steward=oldSteward?oldSteward.stewardOf(state):state.company.intendantId==null?null:memberOf(state,state.company.intendantId);
       if(!steward||steward===m) return 0;
-      return C.stewardSkill*clamp(Number(steward.skills?.camp?.Intendance)||0,0,100)+C.stewardAffinity*feeling(steward,m);
+      const liking=oldSteward?oldSteward.feeling(state,steward,m,affinity):feeling(steward,m);
+      return C.stewardSkill*clamp(Number(steward.skills?.camp?.Intendance)||0,0,100)+C.stewardAffinity*liking;
     }
     // La chance qu'il accepte (en %), sans jet ; approach : la relance (Intimider, Convaincre).
     function offerChance(state,m,approach=null){

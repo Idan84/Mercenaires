@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "name": "old-steward",
+  "description": "Cruxor Limortel, l'ancien intendant (Idan, 2026-11-12) : un vieux qui était intendant avant le nouveau capitaine et qui veut juste partir à la retraite. Il est là par défaut au début de la partie, avec 10 d'Intendance, et fait tout ce que fait un intendant. Ce n'est pas un mercenaire : ni salaire, ni place au dortoir, ni fiche. Les mercenaires l'apprécient exactement comme ils apprécient le capitaine (Idan : « B »). Il ne demande à partir que quand on lui parle, à demi-mot, en fin de phrase (« il veut partir, mais il n'ose pas de lui-même ») : talk.greetings + talk.endings. Dès qu'un mercenaire devient intendant, il part pour de bon (talk.farewell ; {intendant} : le prénom du nouveau). Plus tard : on pourra lui parler à la Taverne. portrait : l'image d'Idan (chemin sur le site), null en attendant. Code : game-core/old-steward.js ; écran : prototype-web/steward-ui.js.",
+  "code": "cruxor",
+  "nom": "Cruxor Limortel",
+  "sexe": "M",
+  "intendance": 10,
+  "portrait": null,
+  "panel": {
+    "detail": "Intendance {intendance} · Il était là bien avant vous."
+  },
+  "talk": {
+    "greetings": [
+      "Capitaine. Les registres sont à jour. À peu près.",
+      "Ah, capitaine. Je recomptais les lances. Il en manque une, ou j’en ai compté une de trop.",
+      "Capitaine ! Je ne dormais pas. Je réfléchissais, les yeux fermés.",
+      "Capitaine. Que puis-je pour vous, en ce beau jour qui ressemble tant à hier ?",
+      "Ah, c’est vous. J’avais peur que ce soit encore le marchand d’huile.",
+      "Capitaine. Votre prédécesseur aussi venait me voir. Souvent.",
+      "Rien n’a disparu depuis hier. Enfin, rien que j’aie remarqué.",
+      "Capitaine. Les rats ont mangé une page du registre. Une page sans importance, j’espère."
+    ],
+    "endings": [
+      "Remarquez, n’importe qui de sérieux pourrait tenir ces registres. N’importe qui.",
+      "Ma sœur a une petite maison au bord du lac. Enfin, je dis ça comme ça.",
+      "Il paraît que la pêche, c’est reposant. Je ne sais pas, je n’ai jamais eu le temps.",
+      "Mes genoux vous saluent, capitaine. Ils aimeraient vous saluer de plus loin.",
+      "Vous avez des mercenaires qui savent compter ? Je demande pour… rien.",
+      "J’ai déjà fait mes malles. Pour ranger, hein. Juste pour ranger.",
+      "J’ai servi trois capitaines. Le quatrième, je l’aurais bien regardé partir depuis un fauteuil.",
+      "Si un jour vous trouvez quelqu’un, ne vous sentez pas obligé de me prévenir longtemps à l’avance.",
+      "Vous savez, je pensais à ma retraite et… non, rien. Oubliez.",
+      "On m’a offert une canne pour mes soixante ans. Je ne l’ai jamais déballée. Elle attend son heure.",
+      "Le vieux Bertold a pris sa retraite au printemps. Il paraît qu’il dort jusqu’à midi. Jusqu’à midi, capitaine.",
+      "J’ai rêvé d’un hamac, cette nuit. Ça ne veut sûrement rien dire.",
+      "Je ne me plains pas. Je constate. Je constate beaucoup, ces temps-ci.",
+      "Un jeune avec de bons yeux ferait des merveilles ici. Les miens confondent les pièces d’or et les boutons.",
+      "Si vous croisez un mercenaire qui aime les inventaires… vous me le direz, n’est-ce pas ?",
+      "J’ai commencé un potager, dans ma tête. Les tomates y poussent très bien.",
+      "Le tavernier garde une chaise près de la cheminée pour les vieux. Elle est libre, je crois.",
+      "À mon âge, on compte les lances et on compte les jours."
+    ],
+    "options": {
+      "evaluate": "Que pensez-vous des candidats de la Taverne ?",
+      "stay": "Vous comptez rester encore longtemps ?",
+      "back": "Revenir",
+      "leave": "Partir"
+    },
+    "stay": [
+      "Moi ? Oh, tant qu’il le faudra, capitaine. (Long soupir.) Tant qu’il le faudra.",
+      "Rester ? Mais bien sûr. Enfin, si vous insistez. Vous insistez ?",
+      "Je ne voudrais pas vous laisser sans intendant. Ce serait… très mal. Même si un mercenaire pourrait très bien… Non. Je reste.",
+      "Aussi longtemps que vous n’aurez trouvé personne. Personne de mieux, je veux dire. Ce qui ne doit pas être bien difficile.",
+      "Partir ? Qui a parlé de partir ? Pas moi. Pas à voix haute, en tout cas."
+    ],
+    "farewell": [
+      "Enfin ! … Pardon. Je veux dire : quel dommage. Les registres sont à jour, la clé est sous le tonneau. Vous me trouverez à la Taverne, je compte y user une chaise.",
+      "{intendant} ? Excellent choix. Excellent ! Je file avant que vous… je veux dire, je vous laisse travailler. La clé est sous le tonneau.",
+      "Ah. Bon. Eh bien. Les registres sont là, les lances aussi, enfin presque toutes. Si vous avez besoin de moi, je serai à la Taverne. Mais vous n’aurez pas besoin de moi."
+    ]
+  }
+}

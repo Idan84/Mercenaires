@@ -37,10 +37,11 @@
   const history=node?require("./history.js"):root.MercenairesHistory;
   const manuals=node?require("./spell-manuals.js"):root.MercenairesSpellManuals;
   const persuasion=node?require("./persuasion.js"):root.MercenairesPersuasion;
-  const api=factory(history,manuals,persuasion);
+  const oldSteward=node?require("./old-steward.js"):root.MercenairesOldSteward;
+  const api=factory(history,manuals,persuasion,oldSteward);
   if(node) module.exports=api;
   root.MercenairesSpellStudy=api;
-})(typeof globalThis!=="undefined"?globalThis:this,function(History,Manuals,Persuasion){
+})(typeof globalThis!=="undefined"?globalThis:this,function(History,Manuals,Persuasion,OldSteward){
   const TRANSMISSION="Transmission du savoir";
   function referenceConstant(reference,code,fallback){
     const value=Number((reference?.formulaConstants?.rows||[]).find(r=>r.code===code)?.valeur);
@@ -53,6 +54,7 @@
   //          directorOf(state), expeditionOf(state, id), busyElsewhere(state, id) → raison ou null (une armure à
   //          l'Académie) } (campaign.js).
   function createSpellStudyRules({reference,random=Math.random,affinity=null,progression=null,camp}={}){
+    const oldSteward=OldSteward?OldSteward.createOldSteward({reference}):null;
     const k=(code,fallback)=>referenceConstant(reference,code,fallback);
     const persuasion=Persuasion?Persuasion.createPersuasionRules({reference}):null;
     const C={
@@ -132,9 +134,11 @@
     }
     // L'appui de l'intendant, comme pour un échange d'équipement (pas quand on lui parle à lui).
     function stewardHelp(state,m){
-      const steward=state.company.intendantId==null?null:memberOf(state,state.company.intendantId);
+      // Le mercenaire nommé, sinon Cruxor (old-steward.js), apprécié comme le capitaine.
+      const steward=oldSteward?oldSteward.stewardOf(state):state.company.intendantId==null?null:memberOf(state,state.company.intendantId);
       if(!steward||steward===m) return 0;
-      return C.stewardSkill*clamp(Number(steward.skills?.camp?.Intendance)||0,0,100)+C.stewardAffinity*feeling(steward,m);
+      const liking=oldSteward?oldSteward.feeling(state,steward,m,affinity):feeling(steward,m);
+      return C.stewardSkill*clamp(Number(steward.skills?.camp?.Intendance)||0,0,100)+C.stewardAffinity*liking;
     }
     // La relance : ce qu'elle ajoute à l'écart (l'Intimidation du capitaine, ou son Charisme ÷ 2).
     const persuade=(state,key)=>persuasion&&key?persuasion.bonus(captainOf(state),key):0;

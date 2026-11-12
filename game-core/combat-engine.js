@@ -488,16 +488,21 @@
       return fightsOneHanded(unit)?ONE_HAND_DODGE*skillValue(unit,"martial","Combat à une main"):0;
     }
 
+    // Malus de Discrétion des armures (Idan, 2026-11-12 : « je pense qu'il faudrait mettre des malus de discrétion sur les
+    // grosses armures » ; les mêmes points que l'Esquive, validés) : base-armors.json, malus_discretion_base.
     function armorMobility(unit){
       const item=armorItem(unit),armor=armorTemplate(item);
-      if(!armor) return {speed:0,dodge:0};
+      if(!armor) return {speed:0,dodge:0,stealth:0};
       const q=quality(item);
       const malus=Number(q.multiplicateur_malus)||1;
       return {
         speed:(Number(armor.malus_vitesse_base)||0)*malus,
-        dodge:(Number(armor.malus_esquive_base)||0)*malus
+        dodge:(Number(armor.malus_esquive_base)||0)*malus,
+        stealth:(Number(armor.malus_discretion_base)||0)*malus
       };
     }
+    // La Discrétion portée : les objets (cape) moins l'armure.
+    function effectiveStealth(unit){ return Math.max(0,statWithGear(unit,"Discrétion")-armorMobility(unit).stealth); }
 
     // Vitesse combat effective CAC V1 : les malus de tous les objets tenus s'additionnent (arme principale et
     // main secondaire : seconde arme ou bouclier).
@@ -700,8 +705,8 @@
     // Un cavalier (Idan, 2026-11-07 : « Quand un cavalier est sur une monture, c'est la discrétion minimale des deux qui est
     // prise en compte. ( Dur de se camoufler sur un dragon) ») : la plus basse du cavalier et de sa monture.
     function stealthOf(unit){
-      const own=statWithGear(unit,"Discrétion"),m=mountOf(unit);
-      return m?Math.min(own,statWithGear(m,"Discrétion")):own;
+      const own=effectiveStealth(unit),m=mountOf(unit);
+      return m?Math.min(own,effectiveStealth(m)):own;
     }
     // Une courbe qui récompense la discrétion et la perception (Idan, 2026-11-09 : « on fait une courbe qui récompense
     // grandement la discrétion et la perception » ; « Partons sur B ») : l'écart Perception − (Discrétion + couverture) compte
@@ -737,6 +742,13 @@
     // potion ») : il faut l'aptitude Empoisonnement des armes. La sarbacane, elle, empoisonne d'elle-même.
     const POISONER="Empoisonnement des armes";
     function canPoisonWeapon(unit){ return unit?.character?.skills?.martial?.[POISONER]===true; }
+    // Une arme qui peut porter le poison (Idan, 2026-11-12 : « Les armes contondantes ne peuvent pas être empoisonnées…
+    // Les armes à feu non plus » ; « toutes les armes qui ne font pas de dégâts tranchants ou perforants ») : il lui faut
+    // une puissance tranchante ou perforante, et ce n'est pas une arme à feu.
+    function poisonableWeapon(weapon){
+      if(!weapon||/Armes à feu/.test(String(weapon.domaine||""))) return false;
+      return (Number(weapon.puissance_tranchante_base)||0)>0||(Number(weapon.puissance_perforante_base)||0)>0;
+    }
     // Poison (Idan, 2026-10-27) : au début de chaque activation de l'empoisonné (unit.poisoned = {turns, amount}), un jet
     // de résistance, D100 ≤ part × Constitution + Résistance au poison (équipement compris, de 5 à 95 %), annule l'effet ;
     // sinon il subit les dégâts légers du poison, réduits par sa Résistance au poison. L'écran de combat décompte les tours.
@@ -1138,7 +1150,8 @@
       // Sarbacane (Idan, 2026-10-29) : une fléchette qui blesse empoisonne (poison : POISON.turns tours, 10 × dés × qualité).
       // Fiole de poison (Idan, 2026-10-29) : l'arme enduite (attacker.weaponPoison, l'objet tenu) empoisonne aussi, au
       // corps à corps comme au tir, de amount PV par tour. Les deux à la fois : le plus fort.
-      const coated=attacker.weaponPoison&&attacker.weaponPoison.itemId!=null&&attacker.weaponPoison.itemId===activeWeaponItem(attacker)?.id;
+      const coated=attacker.weaponPoison&&attacker.weaponPoison.itemId!=null&&attacker.weaponPoison.itemId===activeWeaponItem(attacker)?.id
+        &&poisonableWeapon(weaponTemplate(activeWeaponItem(attacker)));
       const blowgun=weapon?.empoisonne?Math.ceil(10*parseDice(weapon.degats_pv_base).count*(Number(quality(activeWeaponItem(attacker)).multiplicateur_qualite)||1)-1e-9):0;
       const vial=coated?Number(attacker.weaponPoison.amount)||0:0;
       const poison=(blowgun||vial)&&(damageData.damage>0||harmless)&&defender.alive&&!poisonImmune(defender)
@@ -1492,6 +1505,8 @@
       poisonImmune,
       damageTypeFactor,
       canPoisonWeapon,
+      poisonableWeapon,
+      effectiveStealth,
       resolvePoison,
       activeWeaponItem,
       activeOffhandItem,

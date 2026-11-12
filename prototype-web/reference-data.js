@@ -79,6 +79,7 @@ const REFERENCE_FILES = {
   mercenaryProfile: "mercenary-profile.json",
   mercenaryTitles: "mercenary-titles.json",
   mercenaryTags: "mercenary-tags.json",
+  stewardTags: "steward-tags.json",
   dayNews: "day-news.json",
   spells: "spells.json",
   domains: "domains.json",

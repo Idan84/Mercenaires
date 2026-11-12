@@ -294,6 +294,10 @@
     {
       "source": "Retire au lieu d'ajouter : un malus sur la cible (Désespoir, Brouillage mental)",
       "key": "malus"
+    },
+    {
+      "source": "Tags de rôle (Idan, 2026-11-12, doc 20 : « Je te fais confiance ») : les tags de la colonne Rôle au combat que ce sort donne quand il compte, préremplis d’après l’effet et la description ; un nouveau sort arrive avec ses tags",
+      "key": "tags"
     }
   ],
   "row_count": 90,
@@ -323,7 +327,10 @@
       "creature": null,
       "invocation_nb_des": null,
       "invocation_de": null,
-      "invocation_pas_maitrise": null
+      "invocation_pas_maitrise": null,
+      "tags": [
+        "role/soin"
+      ]
     },
     {
       "nom": "Soin profond",
@@ -350,7 +357,10 @@
       "creature": null,
       "invocation_nb_des": null,
       "invocation_de": null,
-      "invocation_pas_maitrise": null
+      "invocation_pas_maitrise": null,
+      "tags": [
+        "role/soin"
+      ]
     },
     {
       "nom": "Régénération",
@@ -380,7 +390,11 @@
       "creature": null,
       "invocation_nb_des": null,
       "invocation_de": null,
-      "invocation_pas_maitrise": null
+      "invocation_pas_maitrise": null,
+      "tags": [
+        "role/soin",
+        "role/soin/dans-la-duree"
+      ]
     },
     {
       "nom": "Soin de masse",
@@ -409,7 +423,11 @@
       "creature": null,
       "invocation_nb_des": null,
       "invocation_de": null,
-      "invocation_pas_maitrise": null
+      "invocation_pas_maitrise": null,
+      "tags": [
+        "role/soin",
+        "role/soin/de-zone"
+      ]
     },
     {
       "nom": "Restitution",
@@ -436,7 +454,12 @@
       "creature": null,
       "invocation_nb_des": null,
       "invocation_de": null,
-      "invocation_pas_maitrise": null
+      "invocation_pas_maitrise": null,
+      "tags": [
+        "role/degats",
+        "role/degats/anti-morts-vivants",
+        "role/degats/a-distance"
+      ]
     },
     {
       "nom": "Purge",
@@ -459,7 +482,11 @@
       "creature": null,
       "invocation_nb_des": null,
       "invocation_de": null,
-      "invocation_pas_maitrise": null
+      "invocation_pas_maitrise": null,
+      "tags": [
+        "role/soutien",
+        "role/soutien/purges"
+      ]
     },
     {
       "nom": "Bénédiction",
@@ -482,7 +509,11 @@
       "bonus_unite": "points",
       "caracteristiques": "Chance",
       "description": "La chance sourit à un allié ou au lanceur : sa Chance augmente pendant 2 tours (plus de coups critiques, moins d’échecs critiques). Action rapide.",
-      "cadre": "spells/vie/cadre.webp"
+      "cadre": "spells/vie/cadre.webp",
+      "tags": [
+        "role/soutien",
+        "role/soutien/enchantements"
+      ]
     },
     {
       "nom": "Lien de vie",
@@ -504,7 +535,10 @@
       "mana_diviseur_maitrise": 300,
       "transfert_facteur": 1.5,
       "description": "Le lanceur donne ses propres PV à un allié : il en perd, l’allié en gagne une fois et demie plus. Il ne donne que ce qu’il faut et garde toujours 1 PV. Action principale.",
-      "cadre": "spells/vie/cadre.webp"
+      "cadre": "spells/vie/cadre.webp",
+      "tags": [
+        "role/soin"
+      ]
     },
     {
       "nom": "Délivrance",
@@ -522,7 +556,11 @@
       "mana_diviseur_maitrise": 300,
       "retire": "fuite,paralysie,gel,frenesie,sommeil,desespoir,brouillage",
       "description": "Libère un allié ou le lanceur de la peur (il cesse de fuir), de la paralysie, du gel et de la frénésie. Pas de coup critique. Action rapide.",
-      "cadre": "spells/vie/cadre.webp"
+      "cadre": "spells/vie/cadre.webp",
+      "tags": [
+        "role/soutien",
+        "role/soutien/purges"
+      ]
     },
     {
       "nom": "Lumière sacrée",
@@ -546,7 +584,13 @@
       "mana_base": 30,
       "mana_diviseur_maitrise": 300,
       "description": "Une lumière éclatante dans un cercle : chaque mort-vivant qui s’y trouve, les nôtres compris, subit des dégâts qui ignorent armure, résistances et blocage. Sans effet sur les vivants. Action principale.",
-      "cadre": "spells/vie/cadre.webp"
+      "cadre": "spells/vie/cadre.webp",
+      "tags": [
+        "role/degats",
+        "role/degats/anti-morts-vivants",
+        "role/degats/de-zone",
+        "role/degats/a-distance"
+      ]
     },
     {
       "nom": "Trait de feu",
@@ -576,7 +620,12 @@
       "invocation_pas_maitrise": null,
       "cadre": "spells/feu/cadre.webp",
       "icone": "spells/feu/fire_bolt.webp",
-      "illustration": "spells/feu/fire_bolt-large.webp"
+      "illustration": "spells/feu/fire_bolt-large.webp",
+      "tags": [
+        "role/degats",
+        "role/degats/brulant",
+        "role/degats/a-distance"
+      ]
     },
     {
       "nom": "Boule de feu",
@@ -614,7 +663,13 @@
       "invocation_pas_maitrise": null,
       "cadre": "spells/feu/cadre.webp",
       "icone": "spells/feu/fireball.webp",
-      "illustration": "spells/feu/fireball-large.webp"
+      "illustration": "spells/feu/fireball-large.webp",
+      "tags": [
+        "role/degats",
+        "role/degats/brulant",
+        "role/degats/de-zone",
+        "role/degats/a-distance"
+      ]
     },
     {
       "nom": "Anneau de feu",
@@ -643,7 +698,12 @@
       "invocation_pas_maitrise": null,
       "cadre": "spells/feu/cadre.webp",
       "icone": "spells/feu/fire_ring.webp",
-      "illustration": "spells/feu/fire_ring-large.webp"
+      "illustration": "spells/feu/fire_ring-large.webp",
+      "tags": [
+        "role/degats",
+        "role/degats/brulant",
+        "role/degats/de-zone"
+      ]
     },
     {
       "nom": "Arme enflammée",
@@ -675,7 +735,12 @@
       "invocation_pas_maitrise": null,
       "cadre": "spells/feu/cadre.webp",
       "icone": "spells/feu/flaming_weapon.webp",
-      "illustration": "spells/feu/flaming_weapon-large.webp"
+      "illustration": "spells/feu/flaming_weapon-large.webp",
+      "tags": [
+        "role/soutien",
+        "role/soutien/degats-elementaires",
+        "role/soutien/degats-elementaires/brulant"
+      ]
     },
     {
       "nom": "Armure de feu",
@@ -705,7 +770,12 @@
       "invocation_pas_maitrise": null,
       "cadre": "spells/feu/cadre.webp",
       "icone": "spells/feu/fire_armor.webp",
-      "illustration": "spells/feu/fire_armor-large.webp"
+      "illustration": "spells/feu/fire_armor-large.webp",
+      "tags": [
+        "role/protection",
+        "role/protection/protection-elementaire",
+        "role/protection/protection-elementaire/contre-le-froid"
+      ]
     },
     {
       "nom": "Flaque de magma",
@@ -731,7 +801,10 @@
       "invocation_pas_maitrise": null,
       "cadre": "spells/feu/cadre.webp",
       "icone": "spells/feu/magma.webp",
-      "illustration": "spells/feu/magma-large.webp"
+      "illustration": "spells/feu/magma-large.webp",
+      "tags": [
+        "role/controle-du-terrain"
+      ]
     },
     {
       "nom": "Embrasement",
@@ -760,7 +833,12 @@
       "description": "La cible prend feu : elle brûle au début de chacune de ses activations, pendant 2 à 3 tours (1D6 de feu à chaque fois). Ne se cumule pas : le relancer remplace le précédent. Action principale.",
       "cadre": "spells/feu/cadre.webp",
       "icone": "spells/feu/ignite.webp",
-      "illustration": "spells/feu/ignite-large.webp"
+      "illustration": "spells/feu/ignite-large.webp",
+      "tags": [
+        "role/degats",
+        "role/degats/brulant",
+        "role/degats/a-distance"
+      ]
     },
     {
       "nom": "Mur de flammes",
@@ -789,7 +867,10 @@
       "description": "Une ligne de feu de 3 à 5 cases, en travers, pendant 3 tours : qui y entre, ou y commence son activation, brûle (1D6 de feu à chaque fois). Action principale.",
       "cadre": "spells/feu/cadre.webp",
       "icone": "spells/feu/flame_wall.webp",
-      "illustration": "spells/feu/flame_wall-large.webp"
+      "illustration": "spells/feu/flame_wall-large.webp",
+      "tags": [
+        "role/controle-du-terrain"
+      ]
     },
     {
       "nom": "Souffle ardent",
@@ -814,7 +895,12 @@
       "description": "Les flammes balaient un cône de 3 cases de profondeur devant le lanceur, dans la direction de la case voisine choisie : tous ceux qui s’y trouvent, alliés compris, subissent les mêmes dégâts de feu. Ne s’évite pas. Action principale.",
       "cadre": "spells/feu/cadre.webp",
       "icone": "spells/feu/fiery_breath.webp",
-      "illustration": "spells/feu/fiery_breath-large.webp"
+      "illustration": "spells/feu/fiery_breath-large.webp",
+      "tags": [
+        "role/degats",
+        "role/degats/brulant",
+        "role/degats/de-zone"
+      ]
     },
     {
       "nom": "Torche vivante",
@@ -841,7 +927,12 @@
       "description": "Un allié, ou le lanceur, s’entoure de flammes pendant 2 à 4 tours : au début de chacune de ses activations, les ennemis à son contact brûlent (1D4 de feu). Lui ne brûle pas. Action rapide.",
       "cadre": "spells/feu/cadre.webp",
       "icone": "spells/feu/living_torch.webp",
-      "illustration": "spells/feu/living_torch-large.webp"
+      "illustration": "spells/feu/living_torch-large.webp",
+      "tags": [
+        "role/soutien",
+        "role/soutien/degats-elementaires",
+        "role/soutien/degats-elementaires/brulant"
+      ]
     },
     {
       "nom": "Brouillard",
@@ -868,7 +959,10 @@
       "invocation_pas_maitrise": null,
       "cadre": "spells/eau/cadre.webp",
       "icone": "spells/eau/fog.webp",
-      "illustration": "spells/eau/fog-large.webp"
+      "illustration": "spells/eau/fog-large.webp",
+      "tags": [
+        "role/controle-du-terrain"
+      ]
     },
     {
       "nom": "Eau guérissante",
@@ -896,7 +990,10 @@
       "invocation_pas_maitrise": null,
       "cadre": "spells/eau/cadre.webp",
       "icone": "spells/eau/healing_water.webp",
-      "illustration": "spells/eau/healing_water-large.webp"
+      "illustration": "spells/eau/healing_water-large.webp",
+      "tags": [
+        "role/soin"
+      ]
     },
     {
       "nom": "Flèche de glace",
@@ -926,7 +1023,12 @@
       "invocation_pas_maitrise": null,
       "cadre": "spells/eau/cadre.webp",
       "icone": "spells/eau/ice_arrow.webp",
-      "illustration": "spells/eau/ice_arrow-large.webp"
+      "illustration": "spells/eau/ice_arrow-large.webp",
+      "tags": [
+        "role/degats",
+        "role/degats/glacant",
+        "role/degats/a-distance"
+      ]
     },
     {
       "nom": "Tsunami",
@@ -958,7 +1060,11 @@
       "invocation_pas_maitrise": null,
       "cadre": "spells/eau/cadre.webp",
       "icone": "spells/eau/tsunami.webp",
-      "illustration": "spells/eau/tsunami-large.webp"
+      "illustration": "spells/eau/tsunami-large.webp",
+      "tags": [
+        "role/degats",
+        "role/degats/de-zone"
+      ]
     },
     {
       "nom": "Armure de froid",
@@ -988,7 +1094,12 @@
       "invocation_pas_maitrise": null,
       "cadre": "spells/eau/cadre.webp",
       "icone": "spells/eau/frost_armor.webp",
-      "illustration": "spells/eau/frost_armor-large.webp"
+      "illustration": "spells/eau/frost_armor-large.webp",
+      "tags": [
+        "role/protection",
+        "role/protection/protection-elementaire",
+        "role/protection/protection-elementaire/contre-le-feu"
+      ]
     },
     {
       "nom": "Gel",
@@ -1020,7 +1131,11 @@
       "invocation_pas_maitrise": null,
       "cadre": "spells/eau/cadre.webp",
       "icone": "spells/eau/freeze.webp",
-      "illustration": "spells/eau/freeze-large.webp"
+      "illustration": "spells/eau/freeze-large.webp",
+      "tags": [
+        "role/entrave",
+        "role/entrave/affaiblissement"
+      ]
     },
     {
       "nom": "Arme de glace",
@@ -1052,7 +1167,12 @@
       "invocation_pas_maitrise": null,
       "cadre": "spells/eau/cadre.webp",
       "icone": "spells/eau/ice_weapon.webp",
-      "illustration": "spells/eau/ice_weapon-large.webp"
+      "illustration": "spells/eau/ice_weapon-large.webp",
+      "tags": [
+        "role/soutien",
+        "role/soutien/degats-elementaires",
+        "role/soutien/degats-elementaires/glacant"
+      ]
     },
     {
       "nom": "Prison de glace",
@@ -1079,7 +1199,11 @@
       "description": "La cible est figée dans la glace 1 tour (2 pour un maître) : elle ne bouge ni n’agit, mais ne subit que la moitié des dégâts. Elle résiste avec sa Constitution et sa protection contre le froid. Action principale.",
       "cadre": "spells/eau/cadre.webp",
       "icone": "spells/eau/ice_prison.webp",
-      "illustration": "spells/eau/ice_prison-large.webp"
+      "illustration": "spells/eau/ice_prison-large.webp",
+      "tags": [
+        "role/entrave",
+        "role/entrave/immobilisation"
+      ]
     },
     {
       "nom": "Blizzard",
@@ -1109,7 +1233,10 @@
       "description": "Une tempête de neige sur une zone pendant 3 tours : à chaque tour, dès le lancer, tous ceux qui s’y trouvent, alliés compris, prennent de petits dégâts de froid ; on n’y voit rien à travers, comme dans le Brouillard ; qui y commence son activation n’a que la moitié de son déplacement. Action principale.",
       "cadre": "spells/eau/cadre.webp",
       "icone": "spells/eau/blizzard.webp",
-      "illustration": "spells/eau/blizzard-large.webp"
+      "illustration": "spells/eau/blizzard-large.webp",
+      "tags": [
+        "role/controle-du-terrain"
+      ]
     },
     {
       "nom": "Source vive",
@@ -1132,7 +1259,11 @@
       "description": "Le lanceur rend du mana à un autre allié, sans dépasser sa réserve. Action principale.",
       "cadre": "spells/eau/cadre.webp",
       "icone": "spells/eau/living_spring.webp",
-      "illustration": "spells/eau/living_spring-large.webp"
+      "illustration": "spells/eau/living_spring-large.webp",
+      "tags": [
+        "role/soutien",
+        "role/soutien/recuperation-de-mana"
+      ]
     },
     {
       "nom": "6e sens",
@@ -1162,7 +1293,11 @@
       "invocation_nb_des": null,
       "invocation_de": null,
       "invocation_pas_maitrise": null,
-      "cadre": "spells/transmutation/cadre.webp"
+      "cadre": "spells/transmutation/cadre.webp",
+      "tags": [
+        "role/soutien",
+        "role/soutien/enchantements"
+      ]
     },
     {
       "nom": "Force de titan",
@@ -1192,7 +1327,11 @@
       "invocation_nb_des": null,
       "invocation_de": null,
       "invocation_pas_maitrise": null,
-      "cadre": "spells/transmutation/cadre.webp"
+      "cadre": "spells/transmutation/cadre.webp",
+      "tags": [
+        "role/soutien",
+        "role/soutien/enchantements"
+      ]
     },
     {
       "nom": "Vitesse du guépard",
@@ -1222,7 +1361,11 @@
       "invocation_nb_des": null,
       "invocation_de": null,
       "invocation_pas_maitrise": null,
-      "cadre": "spells/transmutation/cadre.webp"
+      "cadre": "spells/transmutation/cadre.webp",
+      "tags": [
+        "role/soutien",
+        "role/soutien/enchantements"
+      ]
     },
     {
       "nom": "Peau de pierre",
@@ -1252,7 +1395,12 @@
       "invocation_nb_des": null,
       "invocation_de": null,
       "invocation_pas_maitrise": null,
-      "cadre": "spells/transmutation/cadre.webp"
+      "cadre": "spells/transmutation/cadre.webp",
+      "tags": [
+        "role/soutien",
+        "role/soutien/enchantements",
+        "role/protection"
+      ]
     },
     {
       "nom": "Crachat de venin",
@@ -1285,7 +1433,11 @@
       "invocation_nb_des": null,
       "invocation_de": null,
       "invocation_pas_maitrise": null,
-      "cadre": "spells/transmutation/cadre.webp"
+      "cadre": "spells/transmutation/cadre.webp",
+      "tags": [
+        "role/soutien",
+        "role/soutien/enchantements"
+      ]
     },
     {
       "nom": "Cautérisation",
@@ -1311,7 +1463,10 @@
       "invocation_nb_des": null,
       "invocation_de": null,
       "invocation_pas_maitrise": null,
-      "cadre": "spells/transmutation/cadre.webp"
+      "cadre": "spells/transmutation/cadre.webp",
+      "tags": [
+        "role/soin"
+      ]
     },
     {
       "nom": "Robustesse de l’ours",
@@ -1336,7 +1491,11 @@
       "bonus_unite": "pourcentage",
       "caracteristiques": "Constitution",
       "description": "Sa Constitution augmente d’un pourcentage de sa valeur de base, donc ses PV max (et ses PV d’autant), pendant 1 tour (2 pour un maître). Action rapide.",
-      "cadre": "spells/transmutation/cadre.webp"
+      "cadre": "spells/transmutation/cadre.webp",
+      "tags": [
+        "role/soutien",
+        "role/soutien/enchantements"
+      ]
     },
     {
       "nom": "Peau d’écailles",
@@ -1360,7 +1519,14 @@
       "bonus_pas_maitrise": 5,
       "elements": "feu,froid,foudre",
       "description": "Sa peau se couvre d’écailles : sa protection contre le feu, le froid et la foudre augmente pendant 1 tour (2 pour un maître). Action rapide.",
-      "cadre": "spells/transmutation/cadre.webp"
+      "cadre": "spells/transmutation/cadre.webp",
+      "tags": [
+        "role/protection",
+        "role/protection/protection-elementaire",
+        "role/protection/protection-elementaire/contre-le-feu",
+        "role/protection/protection-elementaire/contre-le-froid",
+        "role/protection/protection-elementaire/contre-la-foudre"
+      ]
     },
     {
       "nom": "Sagesse du hibou",
@@ -1385,7 +1551,11 @@
       "bonus_unite": "pourcentage",
       "caracteristiques": "Intelligence",
       "description": "Son Intelligence augmente d’un pourcentage de sa valeur de base pendant 1 tour (2 pour un maître) : ses sorts réussissent plus souvent. Action rapide.",
-      "cadre": "spells/transmutation/cadre.webp"
+      "cadre": "spells/transmutation/cadre.webp",
+      "tags": [
+        "role/soutien",
+        "role/soutien/enchantements"
+      ]
     },
     {
       "nom": "Agilité du chat",
@@ -1410,7 +1580,11 @@
       "bonus_unite": "pourcentage",
       "caracteristiques": "Esquive",
       "description": "Son Esquive augmente d’un pourcentage de sa valeur de base pendant 1 tour (2 pour un maître). Action rapide.",
-      "cadre": "spells/transmutation/cadre.webp"
+      "cadre": "spells/transmutation/cadre.webp",
+      "tags": [
+        "role/soutien",
+        "role/soutien/enchantements"
+      ]
     },
     {
       "nom": "Décharge électrique",
@@ -1438,7 +1612,11 @@
       "invocation_pas_maitrise": null,
       "cadre": "spells/foudre/cadre.webp",
       "icone": "spells/foudre/shock.webp",
-      "illustration": "spells/foudre/shock-large.webp"
+      "illustration": "spells/foudre/shock-large.webp",
+      "tags": [
+        "role/degats",
+        "role/degats/foudroyant"
+      ]
     },
     {
       "nom": "Éclair",
@@ -1468,7 +1646,12 @@
       "invocation_pas_maitrise": null,
       "cadre": "spells/foudre/cadre.webp",
       "icone": "spells/foudre/lightning_bolt.webp",
-      "illustration": "spells/foudre/lightning_bolt-large.webp"
+      "illustration": "spells/foudre/lightning_bolt-large.webp",
+      "tags": [
+        "role/degats",
+        "role/degats/foudroyant",
+        "role/degats/a-distance"
+      ]
     },
     {
       "nom": "Arme électrique",
@@ -1500,7 +1683,12 @@
       "invocation_pas_maitrise": null,
       "cadre": "spells/foudre/cadre.webp",
       "icone": "spells/foudre/shock_weapon.webp",
-      "illustration": "spells/foudre/shock_weapon-large.webp"
+      "illustration": "spells/foudre/shock_weapon-large.webp",
+      "tags": [
+        "role/soutien",
+        "role/soutien/degats-elementaires",
+        "role/soutien/degats-elementaires/foudroyant"
+      ]
     },
     {
       "nom": "Boule d'éclairs",
@@ -1533,7 +1721,13 @@
       "invocation_pas_maitrise": null,
       "cadre": "spells/foudre/cadre.webp",
       "icone": "spells/foudre/chain_lightning.webp",
-      "illustration": "spells/foudre/chain_lightning-large.webp"
+      "illustration": "spells/foudre/chain_lightning-large.webp",
+      "tags": [
+        "role/degats",
+        "role/degats/foudroyant",
+        "role/degats/de-zone",
+        "role/degats/a-distance"
+      ]
     },
     {
       "nom": "Foudre",
@@ -1563,7 +1757,12 @@
       "invocation_pas_maitrise": null,
       "cadre": "spells/foudre/cadre.webp",
       "icone": "spells/foudre/thunder.webp",
-      "illustration": "spells/foudre/thunder-large.webp"
+      "illustration": "spells/foudre/thunder-large.webp",
+      "tags": [
+        "role/degats",
+        "role/degats/foudroyant",
+        "role/degats/a-distance"
+      ]
     },
     {
       "nom": "Célérité",
@@ -1591,7 +1790,8 @@
       "invocation_pas_maitrise": null,
       "cadre": "spells/foudre/cadre.webp",
       "icone": "spells/foudre/celerity.webp",
-      "illustration": "spells/foudre/celerity-large.webp"
+      "illustration": "spells/foudre/celerity-large.webp",
+      "tags": []
     },
     {
       "nom": "Étincelle",
@@ -1615,7 +1815,11 @@
       "description": "Une petite décharge sur un ennemi proche, au contact au début (la portée monte avec la maîtrise) : peu de dégâts de foudre, sans jet de toucher. Le métal la conduit. Action rapide.",
       "cadre": "spells/foudre/cadre.webp",
       "icone": "spells/foudre/spark.webp",
-      "illustration": "spells/foudre/spark-large.webp"
+      "illustration": "spells/foudre/spark-large.webp",
+      "tags": [
+        "role/degats",
+        "role/degats/foudroyant"
+      ]
     },
     {
       "nom": "Arc électrique",
@@ -1642,7 +1846,12 @@
       "description": "Un arc de foudre part de la case voisine choisie et traverse tout en ligne droite sur 4 à 8 cases : tous ceux qui s’y trouvent, alliés compris, subissent les mêmes dégâts de foudre. Ne s’évite pas. Action principale.",
       "cadre": "spells/foudre/cadre.webp",
       "icone": "spells/foudre/electric_arc.webp",
-      "illustration": "spells/foudre/electric_arc-large.webp"
+      "illustration": "spells/foudre/electric_arc-large.webp",
+      "tags": [
+        "role/degats",
+        "role/degats/foudroyant",
+        "role/degats/de-zone"
+      ]
     },
     {
       "nom": "Paralysie",
@@ -1666,7 +1875,11 @@
       "description": "Une décharge bloque les muscles d’un ennemi : il perd sa prochaine activation, sauf s’il résiste (Constitution et protection contre la foudre, contre la maîtrise du lanceur ; le métal aide la foudre). Action principale.",
       "cadre": "spells/foudre/cadre.webp",
       "icone": "spells/foudre/paralysis.webp",
-      "illustration": "spells/foudre/paralysis-large.webp"
+      "illustration": "spells/foudre/paralysis-large.webp",
+      "tags": [
+        "role/entrave",
+        "role/entrave/immobilisation"
+      ]
     },
     {
       "nom": "Tempête",
@@ -1696,7 +1909,10 @@
       "description": "Une tempête au-dessus d’une zone pendant 3 tours : à chaque tour, dès le lancer, la foudre frappe 1 à 3 personnages au hasard dans la zone, alliés et lanceur compris. Dégâts de foudre, sans jet de toucher. Action principale.",
       "cadre": "spells/foudre/cadre.webp",
       "icone": "spells/foudre/storm.webp",
-      "illustration": "spells/foudre/storm-large.webp"
+      "illustration": "spells/foudre/storm-large.webp",
+      "tags": [
+        "role/controle-du-terrain"
+      ]
     },
     {
       "nom": "Attraction",
@@ -1729,7 +1945,13 @@
       "invocation_nb_des": null,
       "invocation_de": null,
       "invocation_pas_maitrise": null,
-      "cadre": "spells/telekinesie/cadre.webp"
+      "cadre": "spells/telekinesie/cadre.webp",
+      "tags": [
+        "role/controle-du-terrain",
+        "role/degats",
+        "role/degats/contondant",
+        "role/degats/a-distance"
+      ]
     },
     {
       "nom": "Projection",
@@ -1763,7 +1985,13 @@
       "invocation_nb_des": null,
       "invocation_de": null,
       "invocation_pas_maitrise": null,
-      "cadre": "spells/telekinesie/cadre.webp"
+      "cadre": "spells/telekinesie/cadre.webp",
+      "tags": [
+        "role/controle-du-terrain",
+        "role/degats",
+        "role/degats/contondant",
+        "role/degats/a-distance"
+      ]
     },
     {
       "nom": "Déplacement",
@@ -1787,7 +2015,10 @@
       "invocation_nb_des": null,
       "invocation_de": null,
       "invocation_pas_maitrise": null,
-      "cadre": "spells/telekinesie/cadre.webp"
+      "cadre": "spells/telekinesie/cadre.webp",
+      "tags": [
+        "role/controle-du-terrain"
+      ]
     },
     {
       "nom": "Entrechoc",
@@ -1816,7 +2047,12 @@
       "invocation_nb_des": null,
       "invocation_de": null,
       "invocation_pas_maitrise": null,
-      "cadre": "spells/telekinesie/cadre.webp"
+      "cadre": "spells/telekinesie/cadre.webp",
+      "tags": [
+        "role/degats",
+        "role/degats/contondant",
+        "role/degats/a-distance"
+      ]
     },
     {
       "nom": "Champ de protection",
@@ -1840,7 +2076,11 @@
       "invocation_nb_des": null,
       "invocation_de": null,
       "invocation_pas_maitrise": null,
-      "cadre": "spells/telekinesie/cadre.webp"
+      "cadre": "spells/telekinesie/cadre.webp",
+      "tags": [
+        "role/protection",
+        "role/protection/protection-a-distance"
+      ]
     },
     {
       "nom": "Lancer de pierre",
@@ -1869,7 +2109,12 @@
       "invocation_nb_des": null,
       "invocation_de": null,
       "invocation_pas_maitrise": null,
-      "cadre": "spells/telekinesie/cadre.webp"
+      "cadre": "spells/telekinesie/cadre.webp",
+      "tags": [
+        "role/degats",
+        "role/degats/contondant",
+        "role/degats/a-distance"
+      ]
     },
     {
       "nom": "Lancer d’arme",
@@ -1887,7 +2132,11 @@
       "mana_base": 15,
       "mana_diviseur_maitrise": 300,
       "description": "Le mage projette par l’esprit l’arme de corps à corps qu’il tient, puis la ramène : les dés de l’arme et sa qualité, avec la Puissance magique au lieu de la Force ; l’armure compte. Il faut une arme de corps à corps en main. Action principale.",
-      "cadre": "spells/telekinesie/cadre.webp"
+      "cadre": "spells/telekinesie/cadre.webp",
+      "tags": [
+        "role/degats",
+        "role/degats/a-distance"
+      ]
     },
     {
       "nom": "Onde de choc",
@@ -1913,7 +2162,10 @@
       "choc_nb_des": 1,
       "choc_de": 4,
       "description": "Repousse tous ceux qui sont à 2 cases ou moins du lanceur, alliés compris, de 2 cases (plus avec la maîtrise) ; s’ils heurtent quelque chose, un choc contondant, qui passe par l’armure. Action principale.",
-      "cadre": "spells/telekinesie/cadre.webp"
+      "cadre": "spells/telekinesie/cadre.webp",
+      "tags": [
+        "role/controle-du-terrain"
+      ]
     },
     {
       "nom": "Bond",
@@ -1931,7 +2183,8 @@
       "mana_base": 10,
       "mana_diviseur_maitrise": 300,
       "description": "Le lanceur se propulse sur une case libre à 2 à 4 cases, par-dessus tout, sans attaque d’opportunité ; ce n’est pas un déplacement. Action rapide.",
-      "cadre": "spells/telekinesie/cadre.webp"
+      "cadre": "spells/telekinesie/cadre.webp",
+      "tags": []
     },
     {
       "nom": "Écrasement",
@@ -1956,7 +2209,14 @@
       "puissance": 45,
       "immobilise": 1,
       "description": "Une pression écrase un ennemi : 2D6 de dégâts contondants, qui passent par l’armure ; et il ne peut pas se déplacer à sa prochaine activation. Action principale.",
-      "cadre": "spells/telekinesie/cadre.webp"
+      "cadre": "spells/telekinesie/cadre.webp",
+      "tags": [
+        "role/degats",
+        "role/degats/contondant",
+        "role/degats/a-distance",
+        "role/entrave",
+        "role/entrave/immobilisation"
+      ]
     },
     {
       "nom": "Peur",
@@ -1982,7 +2242,11 @@
       "invocation_nb_des": null,
       "invocation_de": null,
       "invocation_pas_maitrise": null,
-      "cadre": "spells/illusion/cadre.webp"
+      "cadre": "spells/illusion/cadre.webp",
+      "tags": [
+        "role/entrave",
+        "role/entrave/demoralisateur"
+      ]
     },
     {
       "nom": "Soutien illusoire",
@@ -2010,7 +2274,12 @@
       "invocation_nb_des": null,
       "invocation_de": null,
       "invocation_pas_maitrise": null,
-      "cadre": "spells/illusion/cadre.webp"
+      "cadre": "spells/illusion/cadre.webp",
+      "tags": [
+        "role/soutien",
+        "role/soutien/enchantements",
+        "role/commandement"
+      ]
     },
     {
       "nom": "Courage de masse",
@@ -2044,7 +2313,12 @@
       "invocation_nb_des": null,
       "invocation_de": null,
       "invocation_pas_maitrise": null,
-      "cadre": "spells/illusion/cadre.webp"
+      "cadre": "spells/illusion/cadre.webp",
+      "tags": [
+        "role/soutien",
+        "role/soutien/enchantements",
+        "role/commandement"
+      ]
     },
     {
       "nom": "Avancée cachée",
@@ -2078,7 +2352,11 @@
       "invocation_nb_des": null,
       "invocation_de": null,
       "invocation_pas_maitrise": null,
-      "cadre": "spells/illusion/cadre.webp"
+      "cadre": "spells/illusion/cadre.webp",
+      "tags": [
+        "role/soutien",
+        "role/soutien/discretion"
+      ]
     },
     {
       "nom": "Choc psychique",
@@ -2107,7 +2385,11 @@
       "invocation_nb_des": null,
       "invocation_de": null,
       "invocation_pas_maitrise": null,
-      "cadre": "spells/illusion/cadre.webp"
+      "cadre": "spells/illusion/cadre.webp",
+      "tags": [
+        "role/degats",
+        "role/degats/a-distance"
+      ]
     },
     {
       "nom": "Frénésie",
@@ -2134,7 +2416,11 @@
       "invocation_nb_des": null,
       "invocation_de": null,
       "invocation_pas_maitrise": null,
-      "cadre": "spells/illusion/cadre.webp"
+      "cadre": "spells/illusion/cadre.webp",
+      "tags": [
+        "role/soutien",
+        "role/soutien/enchantements"
+      ]
     },
     {
       "nom": "Désespoir",
@@ -2159,7 +2445,11 @@
       "description": "Le doute envahit un ennemi : −(30 + Maîtrise / 5) de Courage pendant 2 tours. Il tient moins bien après les coups et face à la Peur. Action rapide.",
       "critique": false,
       "mana_diviseur_maitrise": 300,
-      "cadre": "spells/illusion/cadre.webp"
+      "cadre": "spells/illusion/cadre.webp",
+      "tags": [
+        "role/entrave",
+        "role/entrave/demoralisateur"
+      ]
     },
     {
       "nom": "Brouillage mental",
@@ -2183,7 +2473,11 @@
       "description": "L'esprit d'un ennemi se brouille : pendant 2 tours, ses sorts ont −(20 + Maîtrise / 5) % de chances de réussir, × la Volonté du mage / la sienne (de × 0,5 à × 2). Action principale.",
       "critique": false,
       "mana_diviseur_maitrise": 300,
-      "cadre": "spells/illusion/cadre.webp"
+      "cadre": "spells/illusion/cadre.webp",
+      "tags": [
+        "role/entrave",
+        "role/entrave/anti-magie"
+      ]
     },
     {
       "nom": "Création de double",
@@ -2200,7 +2494,8 @@
       "description": "Un double illusoire du mage apparaît sur une case libre : les ennemis le prennent pour lui et l'attaquent. Il n'agit pas et se dissipe dès qu'un coup ou un sort le touche, ou si le mage tombe. Action principale.",
       "critique": false,
       "mana_diviseur_maitrise": 300,
-      "cadre": "spells/illusion/cadre.webp"
+      "cadre": "spells/illusion/cadre.webp",
+      "tags": []
     },
     {
       "nom": "Sommeil",
@@ -2223,7 +2518,11 @@
       "description": "Un ennemi s'endort, sauf s'il résiste (sa Volonté) : il perd ses 2 à 4 prochaines activations et ne réagit plus, mais se réveille dès qu'il est blessé. Action principale.",
       "critique": false,
       "mana_diviseur_maitrise": 300,
-      "cadre": "spells/illusion/cadre.webp"
+      "cadre": "spells/illusion/cadre.webp",
+      "tags": [
+        "role/entrave",
+        "role/entrave/immobilisation"
+      ]
     },
     {
       "nom": "Résurrection",
@@ -2280,16 +2579,18 @@
       "choc_nb_des": null,
       "choc_de": null,
       "portee_min": null,
-      "icone": null,
-      "cadre": "spells/necromancie/cadre.webp",
       "icone": "spells/necromancie/raise_dead.webp",
+      "cadre": "spells/necromancie/cadre.webp",
       "illustration": "spells/necromancie/raise_dead-large.webp",
       "description": "Relève un combattant mort, allié ou ennemi, sur une case voisine : il devient un zombie de votre camp, avec 10 à 100 % de ses caractéristiques, compétences et PV selon la Maîtrise et le Charisme du nécromancien ; il garde son arme et son armure. Chaque tour, un test de Charisme le maintient, et il coûte du mana ; sinon, il tombe en poussière. Un allié relevé ne survit pas au combat. Action principale.",
       "entretien_mana": 5,
       "creature": "zombie",
       "invocation_nb_des": null,
       "invocation_de": null,
-      "invocation_pas_maitrise": null
+      "invocation_pas_maitrise": null,
+      "tags": [
+        "role/degats"
+      ]
     },
     {
       "nom": "Invocation de spectre",
@@ -2346,16 +2647,18 @@
       "choc_nb_des": null,
       "choc_de": null,
       "portee_min": null,
-      "icone": null,
-      "cadre": "spells/necromancie/cadre.webp",
       "icone": "spells/necromancie/summon_specter.webp",
+      "cadre": "spells/necromancie/cadre.webp",
       "illustration": "spells/necromancie/summon_specter-large.webp",
       "description": "Invoque un spectre sur une case libre voisine : rapide, immunisé aux dégâts physiques, il frappe au contact avec des dégâts psychiques. Chaque tour, un test de Charisme le maintient, et il coûte du mana ; sinon, il disparaît. Action principale.",
       "entretien_mana": 5,
       "creature": "specter",
       "invocation_nb_des": null,
       "invocation_de": null,
-      "invocation_pas_maitrise": null
+      "invocation_pas_maitrise": null,
+      "tags": [
+        "role/degats"
+      ]
     },
     {
       "nom": "Drain de vie",
@@ -2412,16 +2715,16 @@
       "choc_nb_des": null,
       "choc_de": null,
       "portee_min": null,
-      "icone": null,
-      "cadre": "spells/necromancie/cadre.webp",
       "icone": "spells/necromancie/life_drain.webp",
+      "cadre": "spells/necromancie/cadre.webp",
       "illustration": "spells/necromancie/life_drain-large.webp",
       "description": "Le nécromancien, et lui seul, récupère en PV la moitié des PV que ses coups d'arme au corps à corps retirent, pendant 2 à 3 tours : cette activation et les suivantes. Action rapide.",
       "entretien_mana": null,
       "creature": null,
       "invocation_nb_des": null,
       "invocation_de": null,
-      "invocation_pas_maitrise": null
+      "invocation_pas_maitrise": null,
+      "tags": []
     },
     {
       "nom": "Flèche de mort",
@@ -2478,16 +2781,20 @@
       "choc_nb_des": null,
       "choc_de": null,
       "portee_min": null,
-      "icone": null,
-      "cadre": "spells/necromancie/cadre.webp",
       "icone": "spells/necromancie/death_arrow.webp",
+      "cadre": "spells/necromancie/cadre.webp",
       "illustration": "spells/necromancie/death_arrow-large.webp",
       "description": "Un trait de mort, comme une flèche : jet de toucher, puis des dégâts nécrotiques qui traversent l'armure et les résistances. Sans effet sur les morts-vivants. Action principale.",
       "entretien_mana": null,
       "creature": null,
       "invocation_nb_des": null,
       "invocation_de": null,
-      "invocation_pas_maitrise": null
+      "invocation_pas_maitrise": null,
+      "tags": [
+        "role/degats",
+        "role/degats/necrotique",
+        "role/degats/a-distance"
+      ]
     },
     {
       "nom": "Nécrose",
@@ -2544,16 +2851,19 @@
       "choc_nb_des": null,
       "choc_de": null,
       "portee_min": null,
-      "icone": null,
-      "cadre": "spells/necromancie/cadre.webp",
       "icone": "spells/necromancie/necrosis.webp",
+      "cadre": "spells/necromancie/cadre.webp",
       "illustration": "spells/necromancie/necrosis-large.webp",
       "description": "Au contact, sans jet de toucher : de gros dégâts nécrotiques à un ennemi voisin, qui traversent l'armure et les résistances. Sans effet sur les morts-vivants. Action principale.",
       "entretien_mana": null,
       "creature": null,
       "invocation_nb_des": null,
       "invocation_de": null,
-      "invocation_pas_maitrise": null
+      "invocation_pas_maitrise": null,
+      "tags": [
+        "role/degats",
+        "role/degats/necrotique"
+      ]
     },
     {
       "nom": "Flétrissement",
@@ -2610,16 +2920,19 @@
       "choc_nb_des": null,
       "choc_de": null,
       "portee_min": null,
-      "icone": null,
-      "cadre": "spells/necromancie/cadre.webp",
       "icone": "spells/necromancie/wither.webp",
+      "cadre": "spells/necromancie/cadre.webp",
       "illustration": "spells/necromancie/wither-large.webp",
       "description": "Pendant 3 à 4 tours, la cible ne peut plus être soignée ni récupérer de PV : sorts de soin, Régénération, Drain de vie. Sans jet de toucher. Action principale.",
       "entretien_mana": null,
       "creature": null,
       "invocation_nb_des": null,
       "invocation_de": null,
-      "invocation_pas_maitrise": null
+      "invocation_pas_maitrise": null,
+      "tags": [
+        "role/entrave",
+        "role/entrave/anti-soins"
+      ]
     },
     {
       "nom": "Malédiction",
@@ -2646,7 +2959,12 @@
       "description": "Une malédiction ronge un ennemi vivant : 1D4 de dégâts nécrotiques au début de chacune de ses 3 prochaines activations, qui traversent l'armure et les résistances. Sans effet sur les morts-vivants. Ne se cumule pas : la relancer remplace la précédente. Action principale.",
       "cadre": "spells/necromancie/cadre.webp",
       "icone": "spells/necromancie/curse.webp",
-      "illustration": "spells/necromancie/curse-large.webp"
+      "illustration": "spells/necromancie/curse-large.webp",
+      "tags": [
+        "role/degats",
+        "role/degats/necrotique",
+        "role/degats/a-distance"
+      ]
     },
     {
       "nom": "Armée d'os",
@@ -2669,7 +2987,10 @@
       "description": "Relève du sol 1D4 squelettes, et un de plus par tranche de 50 de Maîtrise, autour d'une case libre voisine : faibles, lents, nombreux, sans peur. Le groupe compte pour une seule invocation : un test de Charisme et un entretien chaque tour. Action principale.",
       "cadre": "spells/necromancie/cadre.webp",
       "icone": "spells/necromancie/bone_army.webp",
-      "illustration": "spells/necromancie/bone_army-large.webp"
+      "illustration": "spells/necromancie/bone_army-large.webp",
+      "tags": [
+        "role/degats"
+      ]
     },
     {
       "nom": "Siphon d'âme",
@@ -2693,7 +3014,11 @@
       "description": "Le nécromancien aspire le mana d'un ennemi, à son seul profit : la cible perd ce mana, il le récupère sans dépasser sa réserve. Action principale.",
       "cadre": "spells/necromancie/cadre.webp",
       "icone": "spells/necromancie/soul_siphon.webp",
-      "illustration": "spells/necromancie/soul_siphon-large.webp"
+      "illustration": "spells/necromancie/soul_siphon-large.webp",
+      "tags": [
+        "role/entrave",
+        "role/entrave/anti-magie"
+      ]
     },
     {
       "nom": "Pacte de sang",
@@ -2715,7 +3040,8 @@
       "description": "Le nécromancien sacrifie son sang : il regagne du mana et perd 2 PV par point de mana regagné. Il ne prend que ce qu'il faut pour remplir sa réserve et garde toujours 1 PV. Action rapide.",
       "cadre": "spells/necromancie/cadre.webp",
       "icone": "spells/necromancie/blood_pact.webp",
-      "illustration": "spells/necromancie/blood_pact-large.webp"
+      "illustration": "spells/necromancie/blood_pact-large.webp",
+      "tags": []
     },
     {
       "nom": "Corbeau",
@@ -2736,7 +3062,10 @@
       "invocation_nb_des": null,
       "invocation_de": null,
       "invocation_pas_maitrise": null,
-      "cadre": "spells/invocation/cadre.webp"
+      "cadre": "spells/invocation/cadre.webp",
+      "tags": [
+        "role/eclaireur"
+      ]
     },
     {
       "nom": "Bourbier",
@@ -2762,7 +3091,10 @@
       "invocation_nb_des": null,
       "invocation_de": null,
       "invocation_pas_maitrise": null,
-      "cadre": "spells/invocation/cadre.webp"
+      "cadre": "spells/invocation/cadre.webp",
+      "tags": [
+        "role/controle-du-terrain"
+      ]
     },
     {
       "nom": "Transposition",
@@ -2782,7 +3114,8 @@
       "invocation_nb_des": null,
       "invocation_de": null,
       "invocation_pas_maitrise": null,
-      "cadre": "spells/invocation/cadre.webp"
+      "cadre": "spells/invocation/cadre.webp",
+      "tags": []
     },
     {
       "nom": "Invocation de loups",
@@ -2803,7 +3136,10 @@
       "invocation_nb_des": 1,
       "invocation_de": 6,
       "invocation_pas_maitrise": 50,
-      "cadre": "spells/invocation/cadre.webp"
+      "cadre": "spells/invocation/cadre.webp",
+      "tags": [
+        "role/degats"
+      ]
     },
     {
       "nom": "Invocation d'ours",
@@ -2824,7 +3160,11 @@
       "invocation_nb_des": 1,
       "invocation_de": 3,
       "invocation_pas_maitrise": null,
-      "cadre": "spells/invocation/cadre.webp"
+      "cadre": "spells/invocation/cadre.webp",
+      "tags": [
+        "role/degats",
+        "role/protection"
+      ]
     },
     {
       "nom": "Invocation de crocodiles",
@@ -2845,7 +3185,10 @@
       "invocation_nb_des": 1,
       "invocation_de": 3,
       "invocation_pas_maitrise": null,
-      "cadre": "spells/invocation/cadre.webp"
+      "cadre": "spells/invocation/cadre.webp",
+      "tags": [
+        "role/degats"
+      ]
     },
     {
       "nom": "Nuée d'insectes",
@@ -2872,7 +3215,11 @@
       "bonus_unite": "pourcentage",
       "caracteristiques": "Perception, Dextérité",
       "description": "Une nuée d'insectes s'abat sur une zone pendant 2 tours : les ennemis qui s'y trouvent perdent (20 + Maîtrise / 5) % de Perception et de Dextérité, donc de Précision. Action principale.",
-      "cadre": "spells/invocation/cadre.webp"
+      "cadre": "spells/invocation/cadre.webp",
+      "tags": [
+        "role/entrave",
+        "role/entrave/affaiblissement"
+      ]
     },
     {
       "nom": "Invocation de sangliers",
@@ -2892,7 +3239,11 @@
       "invocation_nb_des": 1,
       "invocation_de": 4,
       "description": "Invoque 1D4 sangliers autour d'une case libre voisine : rapides, ils chargent fort mais tiennent mal. Un test de Charisme et un entretien chaque tour pour le groupe. Action principale.",
-      "cadre": "spells/invocation/cadre.webp"
+      "cadre": "spells/invocation/cadre.webp",
+      "tags": [
+        "role/degats",
+        "role/degats/charge"
+      ]
     },
     {
       "nom": "Invocation d'araignées géantes",
@@ -2912,7 +3263,13 @@
       "invocation_nb_des": 1,
       "invocation_de": 2,
       "description": "Invoque 1D2 araignées géantes autour d'une case libre voisine : leur morsure empoisonne, et leur toile empêche la cible de se déplacer à sa prochaine activation. Un test de Charisme et un entretien chaque tour pour le groupe. Action principale.",
-      "cadre": "spells/invocation/cadre.webp"
+      "cadre": "spells/invocation/cadre.webp",
+      "tags": [
+        "role/degats",
+        "role/degats/poison",
+        "role/entrave",
+        "role/entrave/immobilisation"
+      ]
     },
     {
       "nom": "Bannissement",
@@ -2930,7 +3287,11 @@
       "mana_base": 15,
       "mana_diviseur_maitrise": 300,
       "description": "Renvoie une invocation ennemie d'où elle vient : elle disparaît, avec tout son groupe (une meute compte pour une seule invocation). Action principale.",
-      "cadre": "spells/invocation/cadre.webp"
+      "cadre": "spells/invocation/cadre.webp",
+      "tags": [
+        "role/degats",
+        "role/degats/anti-invocations"
+      ]
     }
   ]
 }

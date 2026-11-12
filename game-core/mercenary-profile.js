@@ -488,7 +488,7 @@
       return {name,lines:tip?.[g]||tip?.m||[]};
     }
 
-    return {measure,level,evaluate,titleDomain,strike,perTurn,categories,spellRole,composeTitle,tierIndex};
+    return {measure,level,evaluate,titleDomain,strike,perTurn,setDamage,setWeapon,spellValue,categories,spellRole,composeTitle,tierIndex};
   }
 
   return {createProfileRules};

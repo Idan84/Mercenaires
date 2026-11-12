@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "name": "steward-tags",
+  "description": "L'intendant qui tague (Idan, 2026-11-12 ; doc 20 §5 à §8) : les seuils, ce qui sert chaque rôle, la table trait → réponse des camps et les postes. Toujours comparer à la bande (médiane, quarts, rang), jamais à des recrues générées. Les tags des sorts sont dans spells.json (tags). Code : game-core/steward-tags.js.",
+  "seuils": {
+    "mission_bas": 0.2,
+    "meilleur": 75,
+    "mediane": 50,
+    "quart_haut": 75,
+    "trois_quarts": 0.75,
+    "ecoles_max": 3,
+    "vol_bonus": 25,
+    "postes_meilleurs": 3,
+    "garde_ecart": -4,
+    "faiblesses": 3,
+    "sorts_a_apprendre": 3,
+    "aura_officier": {"courage": 0.175, "charisme": 0.125}
+  },
+  "usages": {
+    "magie": ["@ecole", "Intelligence", "Puissance magique", "Réserve de mana"],
+    "contact": ["@arme", "Dextérité", "Vitesse", "Perception", "Force"],
+    "distance": ["@tir", "Dextérité", "Perception", "Force"],
+    "protection": ["Constitution", "Résistance physique", "Esquive", "Boucliers"],
+    "eclaireur": ["Discrétion", "Perception"],
+    "commandement": ["Courage", "Charisme"],
+    "demoralisateur": ["Intimidation"],
+    "animal": ["Compagnon animal"]
+  },
+  "traits": [
+    {"code": "mort_vivant", "nom": "des morts-vivants", "reponses": ["anti_morts_vivants"], "inutiles": ["demoralisateur"]},
+    {"code": "insensible_poison", "nom": "insensibles au poison", "reponses": [], "inutiles": ["poison"]},
+    {"code": "degats_subis", "nom": "qui encaissent mal un type de dégâts", "reponses": ["type"], "inutiles": []},
+    {"code": "immunite_physique", "nom": "insensibles aux armes", "reponses": ["magie"], "inutiles": []},
+    {"code": "vol", "nom": "qui volent", "reponses": ["distance"], "inutiles": []},
+    {"code": "regeneration", "nom": "qui se régénèrent", "reponses": ["anti_soins"], "inutiles": []},
+    {"code": "monture", "nom": "des cavaliers", "reponses": ["contre_charge"], "inutiles": []},
+    {"code": "sorts", "nom": "des lanceurs de sorts", "reponses": ["anti_magie"], "inutiles": []},
+    {"code": "armures", "nom": "des armures faibles contre un type", "reponses": ["type"], "inutiles": []},
+    {"code": "nombreux", "nom": "des meutes nombreuses", "reponses": ["de_zone"], "inutiles": []}
+  ],
+  "postes": [
+    {"tag": "Intendant", "valeur": "camp:Intendance"},
+    {"tag": "Médecin", "valeur": "camp:Médecine"},
+    {"tag": "Directeur de l’École", "poste": "director"},
+    {"tag": "Doctore", "poste": "doctore"},
+    {"tag": "Vétéran", "poste": "veteran"},
+    {"tag": "Maître des lames", "poste": "bladeMaster"},
+    {"tag": "Alchimiste", "poste": "alchemist"},
+    {"tag": "Maître des plaisirs", "poste": "pleasureMaster"},
+    {"tag": "Dresseur", "poste": "trainer"},
+    {"tag": "Officier", "valeur": "aura_officier", "meilleurs_admis": true}
+  ]
+}

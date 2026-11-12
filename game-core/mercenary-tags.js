@@ -1,17 +1,22 @@
 "use strict";
 
-// Tags de la fiche mercenaire, phase 1 (Idan, 2026-11-12 ; doc 20) : « Ce qui compte, c'est qu'il puisse retrouver
-// rapidement, dans sa compagnie, qui doit faire quoi. » Trois colonnes (Occupations principales, Équipement, Rôle au
-// combat), des tags, des sous-tags et des sous-sous-tags ; « Tous les tags sont cochables (on peut taguer juste
-// animal) » ; « Les sous tags allument les tags » ; éteindre un tag éteint ses sous-tags. Aucun tag n'en exclut un
-// autre. L'arbre vient de data/reference/mercenary-tags.json ; ses listes « source » sont tirées des données du jeu.
-// Identifiant d'un tag : son chemin (« role/degats/tranchant ») ; un mercenaire garde la liste de ses tags allumés
-// (member.tags). Aucune règle de jeu ne lit les tags.
+// Tags de la fiche mercenaire (Idan, 2026-11-12 ; doc 20) : « Ce qui compte, c'est qu'il puisse retrouver rapidement, dans
+// sa compagnie, qui doit faire quoi. » Trois colonnes (Occupations principales, Équipement, Rôle au combat), des tags,
+// des sous-tags et des sous-sous-tags ; « Tous les tags sont cochables (on peut taguer juste animal) » ; aucun tag n'en
+// exclut un autre. L'arbre vient de data/reference/mercenary-tags.json ; ses listes « source » sont tirées des données du
+// jeu. Identifiant d'un tag : son chemin (« role/degats/tranchant »).
+// Trois niveaux (« que le mec puisse mettre arc et épée, mets arc plus important ») : 1 pâle, 2 moyen, 3 plein ; un tag
+// est au moins aussi fort que son sous-tag le plus fort (« Les sous tags allument les tags ») ; le clic fait le tour
+// grisé → pâle → moyen → plein → grisé, et éteindre un tag éteint ses sous-tags.
+// Deux sources sur un mercenaire : member.tags ({id: niveau}, ce que le joueur a mis) et member.stewardTags (ce que
+// l'intendant a mis, marqué d'un point) ; member.stewardRefused : les tags de l'intendant que le joueur a éteints, qu'il ne
+// remet plus. Retaguer ne remplace que stewardTags. Aucune règle de jeu ne lit les tags.
 (function(root,factory){
   const api=factory();
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesTags=api;
 })(typeof globalThis!=="undefined"?globalThis:this,function(){
+  const MAX_LEVEL=3;
   const slug=name=>String(name||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase()
     .replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
   const rowsOf=table=>Array.isArray(table?.rows)?table.rows:[];
@@ -28,7 +33,7 @@
     // Les factions des ordres de ces missions (Camps : celles de « Faire le ménage » ; Chasses : les bêtes).
     missions(spec,ref){
       const codes=spec.missions||[];
-      return unique(rowsOf({rows:ref.oneShotMissions?.ordres}).filter(o=>matches(o.mission,codes)).map(o=>o.faction)).map(name=>({nom:name}));
+      return unique((ref.oneShotMissions?.ordres||[]).filter(o=>matches(o.mission,codes)).map(o=>o.faction)).map(name=>({nom:name}));
     },
     // Ce que travaillent les bâtiments du camp et leurs salles d'école ; sous une école, ses sorts ; sous une famille
     // d'animaux, ses montures (à apprivoiser).
@@ -42,12 +47,19 @@
         return children.length?{nom:name,enfants:children}:{nom:name};
       });
     },
-    // Les familles de compétences martiales qui ont des armes (weapons.json), et leurs armes.
+    // Les familles de compétences martiales qui ont des armes (weapons.json), et leurs armes ; sauf : familles rangées
+    // ailleurs (les boucliers, sous Style de combat).
     armes(spec,ref){
-      const weapons=new Set(rowsOf(ref.weapons).map(w=>w.nom));
-      const skills=rowsOf(ref.skills);
-      const families=skills.filter(s=>!s.parent&&skills.some(w=>w.parent===s.nom&&weapons.has(w.nom))).map(s=>s.nom);
-      return ordered(families,spec.ordre).map(name=>({nom:name,enfants:skills.filter(w=>w.parent===name&&weapons.has(w.nom)).map(w=>w.nom)}));
+      const skip=new Set(spec.sauf||[]);
+      return ordered(weaponFamilies(ref).filter(f=>!skip.has(f)),spec.ordre).map(name=>({nom:name,enfants:familyWeapons(ref,name)}));
+    },
+    // Les styles de combat de la fiche (character-sheet-copy.json), renommés (noms) ; sous le Bouclier, les boucliers.
+    styles(spec,ref){
+      const styles=ref.characterSheetCopy?.skills_layout?.styles_de_combat||[];
+      return styles.map(name=>{
+        const shields=familyWeapons(ref,name);
+        return {nom:spec.noms?.[name]||name,competence:name,...(shields.length?{enfants:shields}:{})};
+      });
     },
     // Les classes d'armure et leurs armures ; celles de « a_plat » directement (Vêtements).
     armures(spec,ref){
@@ -72,12 +84,20 @@
       return ordered(mounts.map(m=>m.espece),spec.ordre).map(name=>({nom:name,enfants:mounts.filter(m=>m.espece===name).map(m=>m.nom)}));
     }
   };
+  function familyWeapons(ref,family){
+    const weapons=new Set(rowsOf(ref.weapons).map(w=>w.nom));
+    return rowsOf(ref.skills).filter(w=>w.parent===family&&weapons.has(w.nom)).map(w=>w.nom);
+  }
+  function weaponFamilies(ref){
+    const skills=rowsOf(ref.skills);
+    return skills.filter(s=>!s.parent&&familyWeapons(ref,s.nom).length).map(s=>s.nom);
+  }
 
   function buildNode(spec,parentId,ref){
     const node=typeof spec==="string"?{nom:spec}:spec;
     const id=parentId+"/"+slug(node.nom);
     const children=node.source?(SOURCES[node.source]?.(node,ref)||[]):(node.enfants||[]);
-    return {id,nom:node.nom,enfants:children.map(child=>buildNode(child,id,ref))};
+    return {id,nom:node.nom,...(node.competence?{competence:node.competence}:{}),enfants:children.map(child=>buildNode(child,id,ref))};
   }
 
   function createTagRules({reference}={}){
@@ -86,38 +106,76 @@
       code:col.code,nom:col.nom,teinte:col.teinte,
       tags:(col.tags||[]).map(tag=>buildNode(tag,col.code,ref))
     }));
-    const byId=new Map();
-    const walk=(node,depth)=>{ byId.set(node.id,{node,depth}); node.enfants.forEach(child=>walk(child,depth+1)); };
+    const byId=new Map(),order=[];
+    const walk=(node,depth)=>{ byId.set(node.id,{node,depth}); order.push(node.id); node.enfants.forEach(child=>walk(child,depth+1)); };
     for(const col of columns) col.tags.forEach(tag=>walk(tag,1));
 
     const has=id=>byId.has(id);
+    const node=id=>byId.get(id)?.node||null;
     // Les parents d'un tag (pas la colonne).
     const ancestors=id=>{
       const parts=String(id).split("/"),out=[];
       for(let i=2;i<parts.length;i++) out.push(parts.slice(0,i).join("/"));
       return out;
     };
-    // Les tags connus, sans doublon, dans l'ordre de l'arbre ; un tag allumé allume ses parents.
-    function normalize(tags){
-      const on=new Set();
-      for(const id of Array.isArray(tags)?tags:[]) if(has(id)){ on.add(id); ancestors(id).forEach(a=>on.add(a)); }
-      return [...byId.keys()].filter(id=>on.has(id));
+    const descendants=id=>order.filter(t=>t.startsWith(id+"/"));
+    // Un tag par nom, sous un parent (« role/degats » + « Tranchant »).
+    const childNamed=(parentId,name)=>node(parentId)?.enfants.find(c=>c.nom===name)?.id||null;
+    const clampLevel=v=>Math.max(0,Math.min(MAX_LEVEL,Math.round(Number(v)||0)));
+    // Des niveaux propres : {id: 1 à 3} ; une ancienne liste (phase 1) compte au niveau plein.
+    function levelsOf(raw){
+      const out={};
+      if(Array.isArray(raw)){ for(const id of raw) if(has(id)) out[id]=MAX_LEVEL; return out; }
+      for(const [id,value] of Object.entries(raw||{})){ const level=clampLevel(value); if(level&&has(id)) out[id]=level; }
+      return out;
     }
-    const isOn=(tags,id)=>Array.isArray(tags)&&tags.includes(id);
-    // Allumer : le tag et ses parents. Éteindre : le tag et tous ses sous-tags.
-    function toggle(tags,id){
-      if(!has(id)) return normalize(tags);
-      const current=normalize(tags);
-      if(current.includes(id)) return current.filter(t=>t!==id&&!t.startsWith(id+"/"));
-      return normalize([...current,id]);
+    // Ce que montre la fiche : pour chaque tag allumé, son niveau (au moins celui de son sous-tag le plus fort) et s'il vient
+    // de l'intendant (le point) — le joueur l'emporte sur l'intendant ; un tag allumé par ses seuls sous-tags porte le point
+    // si tous ceux-là le portent.
+    function view(member){
+      const own=levelsOf(member?.tags),refused=new Set(member?.stewardRefused||[]);
+      const steward=levelsOf(member?.stewardTags);
+      const out={};
+      for(const id of [...order].reverse()){
+        const mine=own[id]||0,his=refused.has(id)?0:(steward[id]||0);
+        const kids=node(id).enfants.map(c=>out[c.id]).filter(Boolean);
+        const level=Math.max(mine||his,...kids.map(k=>k.level),0);
+        if(!level) continue;
+        const fromSteward=mine?false:his?true:kids.every(k=>k.steward);
+        out[id]={level,steward:fromSteward};
+      }
+      return out;
     }
-    function toggleMemberTag(member,id){
+    const levelOf=(member,id)=>view(member)[id]?.level||0;
+    // Le clic : un cran de plus ; au-delà du plein, éteint (lui et ses sous-tags). Éteindre un tag de l'intendant, c'est
+    // le refuser : il ne le remettra pas.
+    function cycle(member,id){
       if(!member||!has(id)) return {ok:false,reason:"Tag inconnu."};
-      member.tags=toggle(member.tags,id);
-      return {ok:true,on:member.tags.includes(id),tags:member.tags};
+      const shown=view(member),current=shown[id]?.level||0,next=current>=MAX_LEVEL?0:current+1;
+      const own=levelsOf(member.tags),refused=new Set(member.stewardRefused||[]),steward=levelsOf(member.stewardTags);
+      if(next){
+        own[id]=next;
+        refused.delete(id);
+      }else{
+        for(const t of [id,...descendants(id)]){
+          delete own[t];
+          if(steward[t]) refused.add(t);
+        }
+      }
+      member.tags=own;
+      member.stewardRefused=[...refused].filter(has);
+      return {ok:true,level:next};
     }
-    return {intro:ref.mercenaryTags?.intro||"",columns,has,node:id=>byId.get(id)?.node||null,depth:id=>byId.get(id)?.depth||0,ancestors,normalize,isOn,toggle,toggleMemberTag};
+    // Ce que l'intendant pose : remplace ses tags d'avant, garde ceux du joueur et ses refus.
+    function setSteward(member,levels){
+      if(!member) return;
+      member.stewardTags=levelsOf(levels);
+    }
+    // Tous les tags allumés d'un mercenaire, dans l'ordre de l'arbre.
+    const litIds=member=>{ const shown=view(member); return order.filter(id=>shown[id]); };
+    return {MAX_LEVEL,intro:String(ref.mercenaryTags?.intro||""),columns,has,node,childNamed,depth:id=>byId.get(id)?.depth||0,ancestors,
+      descendants,levelsOf,view,levelOf,cycle,setSteward,litIds,order};
   }
 
-  return {createTagRules,slug};
+  return {createTagRules,slug,MAX_LEVEL};
 });

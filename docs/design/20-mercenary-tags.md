@@ -1,7 +1,10 @@
 # Tags des mercenaires
 
-> Décisions d'Idan du 2026-11-12. Phase 1 codée : l'onglet **Rôle et occupations** de la fiche. Données : `data/reference/mercenary-tags.json` ;
-> règles : `game-core/mercenary-tags.js` ; fiche : `prototype-web/ui.js` (`renderTagsTab`) ; test : `tests/mercenary-tags.test.js`.
+> Décisions d'Idan du 2026-11-12. Codés : l'onglet **Rôle et occupations** de la fiche (trois niveaux) et l'intendant qui
+> tague. Données : `data/reference/mercenary-tags.json`, `data/reference/steward-tags.json`, la colonne `tags` de
+> `spells.json` ; règles : `game-core/mercenary-tags.js`, `game-core/steward-tags.js` ; fiche : `prototype-web/ui.js`
+> (`renderTagsTab`) ; Intendance : `prototype-web/steward-ui.js` ; tests : `tests/mercenary-tags.test.js`,
+> `tests/steward-tags.test.js`.
 
 ## 1 — Pourquoi
 
@@ -38,7 +41,9 @@ Laissés de côté, parce qu'on ne les prévoit pas : la Cave, le Cachot, le rep
 ### Équipement (tons verts) — ce qu'il porte ou doit porter
 
 - **Arme** → les familles (Lames longues, Lames courtes, Armes d'hast, Haches, Armes contondantes, Armes flexibles ou
-  articulées, Bâtons, Boucliers, Armes de tir, Armes à feu), puis leurs armes.
+  articulées, Bâtons, Armes de tir, Armes à feu), puis leurs armes.
+- **Style de combat** (« on a oublié les styles de combat ! ») → Une main, Deux armes, Deux mains, Bouclier ; sous
+  Bouclier, les boucliers (Écu, Rondache, Pavois).
 - **Armure** → Légère, Intermédiaire, Lourde, puis leurs armures ; Vêtements.
 - **Caractéristiques** → tout ce qu'un objet augmente (« c'est un mage du feu, il doit porter Intelligence, Puissance
   magique, Feu, Mana ») : caractéristiques, Puissance magique, Réserve de mana, écoles de magie, Discrétion, Pièges,
@@ -72,8 +77,9 @@ armure, un nouveau bonus d'objet ou un nouvel animal a son tag sans toucher au f
 les nouveaux viennent ensuite. Une famille d'animaux du Compagnon animal (Rapaces, Félins…) apparaît le jour où elle a son
 premier animal.
 
-L'identifiant d'un tag est son chemin (`role/degats/brulant`) ; le mercenaire garde la liste de ses tags allumés
-(`tags`), sauvegardée avec lui.
+L'identifiant d'un tag est son chemin (`role/degats/brulant`). Le mercenaire garde, sauvegardés avec lui, ses tags et
+leur niveau (`tags` : ceux du joueur ; `stewardTags` : ceux de l'intendant ; `stewardRefused` : les tags de l'intendant
+que le joueur a éteints). Une ancienne liste de tags (phase 1) compte au niveau plein.
 
 ## 4 — L'onglet Rôle et occupations (phase 1)
 
@@ -83,11 +89,16 @@ L'identifiant d'un tag est son chemin (`role/degats/brulant`) ; le mercenaire ga
   on met rôle et occupations ».
 - En haut, une petite phrase : « Ces tags vous permettent de vous souvenir à quoi peut servir ce mercenaire. »
 - Trois colonnes en accordéon ; une couleur par colonne, plus claire à chaque niveau.
-- « Pas de case à cocher. Des tags grisés ou pas grisés » : un clic sur le tag l'allume ou l'éteint.
+- « Pas de case à cocher. Des tags grisés ou pas grisés » ; trois niveaux (pâle, moyen, plein) : le clic fait le tour
+  grisé → pâle → moyen → plein → grisé ; un tag est au moins aussi fort que son sous-tag le plus fort ; éteindre un tag
+  éteint ses sous-tags.
+- Un petit point sur les tags de l'intendant ; le joueur l'emporte. Avec un intendant nommé, « Demander à l'intendant »
+  en haut de l'onglet (sans intendant : « Nommez un intendant : il proposera ses tags. ») ; à l'Intendance, « Retaguer la
+  compagnie ». Il compare toujours à toute la bande, et ne remplace que ses propres tags.
 - « Une petite flèche à droite du tag pour ouvrir la sous-catégorie. » Ce qui est ouvert le reste d'une fiche à l'autre.
 - Sur téléphone, les colonnes passent l'une sous l'autre.
 
-## 5 — L'intendant qui tague : les principes (validés le 2026-11-12, pas encore codés)
+## 5 — L'intendant qui tague : les principes (validés le 2026-11-12, codés)
 
 « On doit pouvoir lui demander de le qualifier tout seul. L'intendant met les tags qu'il veut. » Scénario sans biais
 d'abord (« rajouter des biais après sera facile »). Il faut un intendant nommé. Les questions fermées viendront ensuite :
@@ -177,27 +188,76 @@ c'est pas utile en mission ? »).
   encaisse mal ou bien un type de dégâts → ce type (× > 1), pas celui (× < 1) ; immunité physique → Magie ; vol → À
   distance ; régénération → Anti-soins ; cavaliers → armes d'hast et armes de tir (elles arrêtent les charges) ; lanceurs de
   sorts → Anti-magie ; armures portées → les types de dégâts qui les passent le mieux (calculé) ; meutes nombreuses → De
-  zone. Le tag d'un camp : il a la réponse et il est au-dessus de la médiane de la bande pour elle, même sans le niveau
-  Mission (« camp mort-vivants ok, mais sinon, à la mine ! »). Un camp sans trait distinctif n'est pas tagué par
+  zone. Le tag d'un camp : il a la réponse et il est au-dessus de la médiane de ceux de la bande qui l'ont, même sans le
+  niveau Mission (« camp mort-vivants ok, mais sinon, à la mine ! ») ; une attaque ne répond que si elle compte (voir
+  Dégâts) et atteint les trois quarts de la meilleure de son genre. Un camp sans trait distinctif n'est pas tagué par
   l'intendant ; un nouveau genre de trait demande une ligne de plus dans la table.
-- **Les meilleurs** (au-dessus de la médiane dans au moins un de leurs rôles) ne reçoivent jamais Garde du corps ni Job
-  (« Il faut évincer les meilleurs des gardes et job, sinon on va le mettre à tout le monde »).
+- **Les meilleurs** (dans le quart du haut d'au moins un de leurs rôles ; réglage de la simulation, voir §9) ne
+  reçoivent jamais Garde du corps ni Job (« Il faut évincer les meilleurs des gardes et job, sinon on va le mettre à tout
+  le monde »).
 - **Garde du corps** (les autres) : s'il atteint le plus bas niveau d'offre (renommée de la compagnie − 4).
 - **Job** (les autres), seulement si le bâtiment est construit : **Palais** si ce qu'il y rapporterait (Charisme × (1 + 0,2
   × niveau de réputation)) est au-dessus de la médiane de la bande ; **Bûcheron**, **Mines** pour ceux qui n'ont pas le
   niveau Mission (le travail retire un jour de chantier, qui que ce soit).
-- **Entraînement**, **Poste** : à écrire (après l'Équipement : « pour entraînement et équipement, il faut déjà connaître le
-  rôle »).
+- **Entraînement** (« pour entraînement et équipement, il faut déjà connaître le rôle » ; « Le plus intéressant pour
+  lui… ses faiblesses utiles ») : là où le camp entraîne (bâtiment construit), les 3 choses les plus basses (sa place dans
+  la bande) parmi ce qui sert son rôle principal (`usages`), la plus basse en plein ; le style conseillé ; le port
+  d'armure suivant si une armure plus lourde que celles qu'il sait porter le rendait plus efficace (Académie de la
+  survie : ils s'apprennent dans l'ordre) ; 3 sorts de ses écoles qui servent son rôle principal (École de magie) ; ses
+  montures pas encore apprivoisées (Grange du dresseur).
+- **Poste** (« Faut pas qu'il soit trop bon au combat… sinon on veut pas le mettre en poste ») : les 3 meilleurs de la
+  compagnie (capitaine à part) pour ce que demande le poste — Intendance, Médecine, la compétence du maître ou ce
+  qu'entraîne sa salle, avec la Transmission du savoir ; l'aura d'officier pour Officier — seulement si le bâtiment est
+  construit ; ceux qui sont parmi les meilleurs au combat restent en mission, sauf pour Officier.
 
-## 8 — Équipement : les pistes (à écrire)
+## 8 — Les règles de l'Équipement
 
-Il découle du rôle et des camps visés. L'arme conseillée n'est pas forcément la meilleure : une autre famille passe devant
-si elle sert mieux ses rôles ou ses camps et qu'il y est au-dessus de la médiane de la bande (« J'ai des sorts anti morts
-vivants… je suis peut-être un peu moins fort en masses qu'en épée, mais c'est pas bête de mettre une masse »). Autres liens
-déjà dans le jeu : un mage et l'équipement qui fait rater ses sorts (sauf Magie en armure), les armes d'hast et de tir
-contre les cavaliers, le bonus de charge pour Charge, pas de poison contre ceux qui y sont insensibles.
+« On renforce son rôle par le meilleur équipement… Il a des dégâts d'eau… un Trident même s'il fera pas mal au CAC. »
+Tout se calcule avec les règles du combat, contre l'ennemi médian des missions.
 
-## 9 — Pas encore décidé
+- **Caractéristiques** : ce qui sert son rôle principal, d'après d'où il le tient (`usages`) : sa magie (son école,
+  Intelligence, Puissance magique, Réserve de mana), son arme de contact (Dextérité, Vitesse, Perception, Force) ou de tir,
+  sa solidité (Constitution, Résistance physique, Esquive), Discrétion et Perception pour un éclaireur, Courage et
+  Charisme pour un meneur (aura, grade), Intimidation pour un démoralisateur, Compagnon animal.
+- **Le profil** : deux styles cachés (« L'arme de soutien peut remplacer les deux même… deux styles cachés… soutien et
+  pur distance »), sinon son meilleur style visible (« on retombe sur deux armes, deux mains, bouclier »).
+  - **Soutien** : son rôle principal vient de sa magie. Une arme de soutien, qui remplace les deux : celle qui augmente
+    son école (Trident : Eau ; Épée à deux mains : Feu ; Marteau de guerre : Foudre), sinon la Puissance magique (Bâton
+    long), la Réserve de mana (Bâton court) ; le Fouet (Charisme) pour un meneur.
+  - **Pur distance** (« être mauvais au cac et assez rapide pour fuir ») : sa meilleure attaque est à distance, il est sous
+    la médiane de la bande au corps à corps, au-dessus en Vitesse, et ce n'est pas un protecteur (il ne fuit pas) : sa
+    meilleure arme de tir, et une lame courte de secours.
+  - **Son style visible** (tagué dans Style de combat) : sa meilleure arme pour ce style ; avec Bouclier, le bouclier qui
+    le rend le plus solide. Un rôle principal tenu par un objet (le fouet) : il le garde.
+- **Plusieurs propositions** (« Avoir plusieurs propositions, c'est pas gênant… trancher sur les armes ayant le même rôle
+  ») : pour un camp tagué, sa meilleure arme contre l'ennemi de ce camp si elle n'est pas la même et qu'il est au-dessus de
+  la médiane de la bande dans sa famille (la masse contre les squelettes) ; une arme de tir en second jeu si son tir
+  compte.
+- **Armure** (« faut voir ce qui le rend le plus efficace ») : parmi celles qu'il sait porter, celle qui lui donne la
+  meilleure valeur dans son rôle principal (puis le suivant) : ses chances de lancer ses sorts pour un rôle tenu par la
+  magie, ses dégâts, Discrétion + Perception pour un éclaireur, sinon sa solidité contre l'ennemi type de chaque camp
+  (moyenne géométrique : un seul adversaire, un canonnier, rend toute armure inutile).
+- Deux règles de jeu décidées en chemin (doc 04, doc 05) : le poison ne prend que sur une arme qui tranche ou perce, jamais
+  sur une arme à feu ; une armure retire de la Discrétion autant qu'elle retire d'Esquive (« parfait »).
+
+## 9 — La simulation (2026-11-12) et ses réglages
+
+Idan : « générer des mercenaires pour voir si ça marche bien dans le fond ». Compagnies générées de 9 à 41 mercenaires,
+niveaux 1 à 8, tous les bâtiments construits. Réglages faits pour que les tags disent quelque chose (à valider) :
+
+- **Les meilleurs** : le quart du haut d'un de leurs rôles (`seuils.meilleur`, 75) au lieu de la médiane. Avec la médiane,
+  13 mercenaires sur 13 l'étaient (avec onze rôles, presque tout le monde passe la médiane quelque part) : personne en
+  garde, personne au travail, personne à un poste.
+- **Mission** : la règle des 20 % se compte bien parmi ceux qui tiennent le rôle. Dans une petite compagnie, presque tout
+  le monde garde le niveau Mission (c'est la règle : 4 dans un rôle, personne n'est écarté).
+- **Camps** : la médiane parmi ceux qui ont la réponse, et seulement les attaques qui comptent (sinon une arbalète de
+  secours suffisait) : de 10 sur 13 à environ la moitié pour le Culte des morts, qui a six traits distinctifs.
+- **Postes** : les 3 meilleurs de la compagnie, puis on retire les meilleurs au combat (au lieu des 3 meilleurs parmi les
+  autres, qui donnait 9 postes au même mercenaire).
+- **Un seul style conseillé**, et les caractéristiques du **seul rôle principal** (12 tags verts en moyenne avant, 5 à 6
+  après).
+
+## 10 — Pas encore décidé
 
 Les questions fermées à l'intendant, ses biais, l'endroit où les tags ressortent ailleurs (liste des mercenaires, choix de
 l'équipe d'une mission…) et des titres plus drôles (historique, classement dans la compagnie) : à discuter.

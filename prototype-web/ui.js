@@ -1622,50 +1622,94 @@ function renderSheetTab(c, tab) {
   return renderProfileTab(c);
 }
 
-// Onglet Rôle et occupations (les tags), phase 1 (Idan, 2026-11-12 ; doc 20) : une phrase qui dit à quoi servent les tags ; trois colonnes en accordéon (Occupations principales en rouge,
-// Équipement en vert, Rôle au combat en bleu) ; « Pas de case à cocher. Des tags grisés ou pas grisés » ; « Une petite
-// flèche à droite du tag pour ouvrir la sous-catégorie » ; tous se cochent. Les règles : game-core/mercenary-tags.js.
-// Ce qui est ouvert le reste d'une fiche à l'autre, pendant la partie.
+// Onglet Rôle et occupations (les tags) (Idan, 2026-11-12 ; doc 20) : une phrase qui dit à quoi servent les tags ; trois
+// colonnes en accordéon (Occupations principales en rouge, Équipement en vert, Rôle au combat en bleu) ; « Pas de case à
+// cocher. Des tags grisés ou pas grisés » ; « Une petite flèche à droite du tag pour ouvrir la sous-catégorie » ; tous se
+// cochent, à trois niveaux (pâle, moyen, plein : le clic fait le tour) ; un point sur ceux de l'intendant. Les règles :
+// game-core/mercenary-tags.js. Ce qui est ouvert le reste d'une fiche à l'autre, pendant la partie.
 const TAGS_OPEN = new Set();
+const TAG_LEVELS = ["", "pâle", "moyen", "plein"];
 function tagRules() {
   const reference = game.referenceData;
   if (!reference || !globalThis.MercenairesTags) return null;
   if (game.tagRulesFor !== reference) { game.tagRules = MercenairesTags.createTagRules({reference}); game.tagRulesFor = reference; }
   return game.tagRules;
 }
-function tagNodeHtml(node, tags, depth) {
-  const on = tags.includes(node.id), kids = node.enfants.length > 0, open = kids && TAGS_OPEN.has(node.id);
+// L'intendant qui tague (doc 20 §5 à §8 ; game-core/steward-tags.js) : il compare toujours à la bande.
+function stewardTagRules() {
+  const reference = game.referenceData, rules = tagRules(), profile = profileRules();
+  if (!reference?.stewardTags || !rules || !profile || typeof MercenairesStewardTags === "undefined") return null;
+  if (game.stewardTagRulesFor !== reference) {
+    game.stewardTagRules = MercenairesStewardTags.createStewardTags({reference, engine: combatEngine(), magic: magicRules(), profile,
+      missions: missionRules(), tags: rules, stars: starRules(), campPosts: MercenairesCampPosts,
+      lieutenants: typeof lieutenantRules === "function" ? lieutenantRules() : null,
+      armorPorts: MercenairesArmorPorts.createArmorPorts(reference)});
+    game.stewardTagRulesFor = reference;
+  }
+  return game.stewardTagRules;
+}
+// L'intendant tague un mercenaire (ids) ou toute la compagnie : il ne remplace que ses propres tags.
+function stewardRetag(ids = null) {
+  const steward = stewardTagRules(), rules = tagRules(), c = game.campaign;
+  if (!steward || !rules || c?.company?.intendantId == null) return 0;
+  const out = steward.evaluate(c, {level: campaignRules().companyRenownLevel(c)});
+  let count = 0;
+  for (const m of c.company.roster) {
+    if (ids && !ids.includes(m.id)) continue;
+    const found = out.get(m.id);
+    if (!found) continue;
+    rules.setSteward(m, found.levels);
+    count++;
+  }
+  saveGame();
+  return count;
+}
+function tagNodeHtml(node, shown, depth) {
+  const lit = shown[node.id], level = lit?.level || 0, kids = node.enfants.length > 0, open = kids && TAGS_OPEN.has(node.id);
   const listId = "tags-" + node.id.replace(/[^a-z0-9]+/gi, "-");
   const opener = kids
     ? `<button type="button" class="tag-open" data-tag-open="${esc(node.id)}" aria-expanded="${open}"${open ? ` aria-controls="${listId}"` : ""} aria-label="${open ? "Fermer" : "Ouvrir"} ${esc(node.nom)}" title="${open ? "Fermer" : "Ouvrir"}">▸</button>`
     : "";
+  const tip = level ? `${TAG_LEVELS[level][0].toLocaleUpperCase("fr")}${TAG_LEVELS[level].slice(1)}${lit.steward ? " · proposé par l’intendant" : ""}` : "";
   return `<li class="tag-item tag-depth-${Math.min(depth, 4)}${open ? " is-open" : ""}"><span class="tag-row">`
-    + `<button type="button" class="tag-pill${on ? " is-on" : ""}" data-tag-toggle="${esc(node.id)}" aria-pressed="${on}">${esc(node.nom)}</button>${opener}</span>`
-    + (open ? `<ul class="tag-list" id="${listId}">${node.enfants.map(child => tagNodeHtml(child, tags, depth + 1)).join("")}</ul>` : "")
+    + `<button type="button" class="tag-pill${level ? ` is-on lvl-${level}` : ""}${lit?.steward ? " is-steward" : ""}" data-tag-toggle="${esc(node.id)}" aria-pressed="${level > 0}"${tip ? ` title="${esc(tip)}" aria-label="${esc(node.nom)} (${esc(tip)})"` : ""}>${esc(node.nom)}</button>${opener}</span>`
+    + (open ? `<ul class="tag-list" id="${listId}">${node.enfants.map(child => tagNodeHtml(child, shown, depth + 1)).join("")}</ul>` : "")
     + `</li>`;
 }
 function renderTagsTab(c) {
   const rules = tagRules();
   if (!rules) return `<p class="muted">Tags indisponibles.</p>`;
-  const tags = rules.normalize(c.tags);
-  return (rules.intro ? `<p class="sheet-tags-intro">${esc(rules.intro)}</p>` : "")
+  const shown = rules.view(c);
+  const company = game.campaign?.company, inCompany = Boolean(company?.roster?.some(m => m.id === c.id));
+  const ask = !inCompany || !stewardTagRules() ? ""
+    : company.intendantId != null
+      ? `<button type="button" class="talk-offer-btn" data-tag-steward="${esc(c.id)}" title="L’intendant propose ses tags (il ne touche pas aux vôtres)">Demander à l’intendant</button>`
+      : `<small class="muted">Nommez un intendant : il proposera ses tags.</small>`;
+  return `<div class="sheet-tags-head">${rules.intro ? `<p class="sheet-tags-intro">${esc(rules.intro)}</p>` : ""}${ask}</div>`
     + `<div class="sheet-tags">${rules.columns.map(col =>
     `<section class="tags-col tags-col--${esc(col.teinte)}" aria-label="${esc(col.nom)}"><h4>${esc(col.nom)}</h4>`
-    + `<ul class="tag-list tag-root">${col.tags.map(node => tagNodeHtml(node, tags, 1)).join("")}</ul></section>`
+    + `<ul class="tag-list tag-root">${col.tags.map(node => tagNodeHtml(node, shown, 1)).join("")}</ul></section>`
   ).join("")}</div>`;
 }
 // Cocher, décocher, ouvrir, fermer : la fiche se redessine et garde le focus sur le même bouton.
 function refocusTag(kind, id) {
-  const target = [...$("dialog-content").querySelectorAll(`[data-tag-${kind}]`)].find(el => el.dataset[kind === "open" ? "tagOpen" : "tagToggle"] === id);
+  const key = {open: "tagOpen", toggle: "tagToggle", steward: "tagSteward"}[kind];
+  const target = [...$("dialog-content").querySelectorAll(`[data-tag-${kind}]`)].find(el => el.dataset[key] === id);
   target?.focus({preventScroll: true});
 }
 function onTagClick(event) {
-  const toggle = event.target.closest("[data-tag-toggle]"), opener = event.target.closest("[data-tag-open]");
-  if (!toggle && !opener) return;
+  const toggle = event.target.closest("[data-tag-toggle]"), opener = event.target.closest("[data-tag-open]"), ask = event.target.closest("[data-tag-steward]");
+  if (!toggle && !opener && !ask) return;
   const c = game.sheetCharacter, rules = tagRules();
   if (!c || !rules) return;
+  if (ask) {
+    stewardRetag([c.id]);
+    renderSheet();
+    refocusTag("steward", ask.dataset.tagSteward);
+    return;
+  }
   if (toggle) {
-    if (!rules.toggleMemberTag(c, toggle.dataset.tagToggle).ok) return;
+    if (!rules.cycle(c, toggle.dataset.tagToggle).ok) return;
     saveGame();
     renderSheet();
     refocusTag("toggle", toggle.dataset.tagToggle);

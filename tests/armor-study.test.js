@@ -46,6 +46,7 @@ assert.equal(study.canStudy(state,fourth).reason,"Il sait déjà porter une armu
 assert.deepEqual([study.nextClass({skills:{martial:{"Port d’armure légère":true}}}),study.nextClass({skills:{martial:{}}})],["Intermédiaire","Légère"]);
 
 // Le convaincre : comme pour un sort, sans école (affinité 0, sans intendant : 50 %) ; une fois par jour.
+if(state.company.oldSteward) state.company.oldSteward.retiredDay=state.day; // Cruxor, l'ancien intendant, est parti : sans intendant
 state.company.intendantId=null;
 const affinity=Number(rules.affinity?.memberAffinity?.(captain,novice)?.total)||0;
 assert.ok(Math.abs(study.offerChance(state,novice).chance-(10+80/(1+Math.exp(-0.5*affinity/20))))<1e-9);

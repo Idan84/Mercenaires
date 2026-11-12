@@ -30,10 +30,11 @@
 // reputation-stars.json), × (1 + Charisme du Maître des plaisirs ÷ 200) s'il y en a un (camp.palace.master_divisor).
 (function(root,factory){
   const Persuasion=typeof module!=="undefined"&&module.exports?require("./persuasion.js"):root.MercenairesPersuasion;
-  const api=factory(Persuasion);
+  const OldSteward=typeof module!=="undefined"&&module.exports?require("./old-steward.js"):root.MercenairesOldSteward;
+  const api=factory(Persuasion,OldSteward);
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesLumber=api;
-})(typeof globalThis!=="undefined"?globalThis:this,function(Persuasion){
+})(typeof globalThis!=="undefined"?globalThis:this,function(Persuasion,OldSteward){
   const HALL="lumber_camp";
   const COURSES={
     lumber:{hall:"lumber_camp",key:"lumberjacks",offerKey:"lumberOffer",prefix:"camp.lumber",minLevel:1,maxLevel:5,text:{
@@ -74,6 +75,7 @@
   //          les chantiers en cours (objets construction, modifiés sur place), masterOf(state) → le Maître des plaisirs }
   //          (campaign.js).
   function createLumberRules({reference,random=Math.random,affinity=null,camp,course="lumber"}={}){
+    const oldSteward=OldSteward?OldSteward.createOldSteward({reference}):null;
     const COURSE=COURSES[course]||COURSES.lumber,T=COURSE.text,hall=COURSE.hall;
     const k=(code,fallback)=>referenceConstant(reference,code,fallback);
     const persuasion=Persuasion?Persuasion.createPersuasionRules({reference}):null;
@@ -134,9 +136,11 @@
     const affinityWithCaptain=(state,m)=>Number(affinity?.memberAffinity?.(captainOf(state),m)?.total)||0;
     const feeling=(toward,who)=>Number(affinity?.affinity?.(toward,who)?.total)||0;
     function stewardHelp(state,m){
-      const steward=state.company.intendantId==null?null:memberOf(state,state.company.intendantId);
+      // Le mercenaire nommé, sinon Cruxor (old-steward.js), apprécié comme le capitaine.
+      const steward=oldSteward?oldSteward.stewardOf(state):state.company.intendantId==null?null:memberOf(state,state.company.intendantId);
       if(!steward||steward===m) return 0;
-      return C.stewardSkill*clamp(Number(steward.skills?.camp?.Intendance)||0,0,100)+C.stewardAffinity*feeling(steward,m);
+      const liking=oldSteward?oldSteward.feeling(state,steward,m,affinity):feeling(steward,m);
+      return C.stewardSkill*clamp(Number(steward.skills?.camp?.Intendance)||0,0,100)+C.stewardAffinity*liking;
     }
     // La chance qu'il accepte (en %), sans jet ; approach : la relance (Intimider, Convaincre).
     function chance(state,m,approach=null){

@@ -164,7 +164,8 @@ const elements = {};
 const $ = id => elements[id] || (elements[id] = element());
 const game = {campaign: null, captain, referenceData: reference};
 let api = null;
-const combat = createCombatEngine(reference, {onAttack: Progression.recordAttack, heightOf: u => api.missionUnitHeight(u)});
+// Le même tirage que le reste du test (sans lui, le moteur prenait le vrai hasard : « seul, il avance » ratait parfois).
+const combat = createCombatEngine(reference, {random, onAttack: Progression.recordAttack, heightOf: u => api.missionUnitHeight(u)});
 Math.random = random;
 const mission = fs.readFileSync(path.join(ROOT, "prototype-web", "mission.js"), "utf8");
 api = new Function("game", "$", "esc", "fmt", "renderAvatar", "combatEngine", "MercenairesProgression", "MercenairesMissionEnd",

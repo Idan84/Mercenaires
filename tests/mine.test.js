@@ -49,6 +49,7 @@ state.company.camp.buildings={miners_guild:{level:2,construction:null},lumber_ca
 assert.equal(mine.slots(state),2);
 assert.equal(rules.trainingRooms(state).find(r=>r.code==="miners_guild")?.trains,"Armes contondantes");
 
+if(state.company.oldSteward) state.company.oldSteward.retiredDay=state.day; // Cruxor, l'ancien intendant, est parti : sans intendant
 // Même test que les bûcherons (« pareil ») : 25 % à affinité 0, la même relance, la même perte par jour ; le capitaine sans test.
 assert.equal(mine.chance(state,first).chance,lumber.chance(state,first).chance);
 assert.equal(mine.chance(state,first,"intimidate").chance,lumber.chance(state,first,"intimidate").chance);

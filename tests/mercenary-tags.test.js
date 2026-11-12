@@ -145,7 +145,7 @@ const ui=read("prototype-web/ui.js"),css=read("prototype-web/styles.css"),html=r
 assert.match(ui,/\["history", "Historique"\],\n  \["tags", "Rôle et occupations"\]\n\];/,"le dernier onglet : « À la place de tags, on met rôle et occupations »");
 assert.equal(rules.intro,"Ces tags vous permettent de vous souvenir à quoi peut servir ce mercenaire.","la petite phrase en haut de l'onglet");
 assert.match(ui,/<p class="sheet-tags-intro">\$\{esc\(rules\.intro\)\}<\/p>/);
-assert.match(ui,/company\.intendantId != null[\s\S]{0,40}\? `<button type="button" class="talk-offer-btn" data-tag-steward=/,"« Demander à l'intendant » s'il y a un intendant");
+assert.match(ui,/: hasSteward\(\)\s*\? `<button type="button" class="talk-offer-btn" data-tag-steward=/,"« Demander à l'intendant » s'il y a un intendant (un mercenaire ou Cruxor)");
 assert.match(ui,/stewardRetag\(\[c\.id\]\)/,"il tague ce mercenaire (en comparant à toute la bande)");
 assert.match(ui,/key !== "tags" \|\| renamable\(c\)/,"pas pour un candidat ni un ennemi");
 assert.match(ui,/class="tag-pill\$\{level \? ` is-on lvl-\$\{level\}` : ""\}\$\{lit\?\.steward \? " is-steward" : ""\}" data-tag-toggle=/);

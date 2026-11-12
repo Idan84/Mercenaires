@@ -14,7 +14,8 @@ const desertionFill=(text,m,vars={})=>MercenairesRecruitDialogue.fill(String(tex
 function logDesertion(report){
   if(!report) return;
   const log=desertionCopy().log||{},company=game.campaign?.company;
-  const steward=company?.roster.find(m=>m.id===company.intendantId);
+  // L'intendant (un mercenaire, ou Cruxor, l'ancien) signale les déserteurs.
+  const steward=game.campaign&&typeof stewardRules==="function"?stewardRules().personOf(game.campaign):company?.roster.find(m=>m.id===company.intendantId);
   for(const f of report.fled||[]) tavernLog(steward?desertionFill(log.steward,f.mercenary,{intendant:steward.name}):desertionFill(log.vanished,f.mercenary),"bad");
   for(const s of report.spotted||[]) tavernLog(desertionFill(log.spotted,s.mercenary),"warn");
 }
@@ -22,7 +23,7 @@ function logDesertion(report){
 // La notification du jour (day-news-ui.js) : des lignes urgentes.
 function desertionNews(report){
   const news=desertionCopy().day_news||{},company=game.campaign?.company;
-  const steward=company?.roster.some(m=>m.id===company.intendantId);
+  const steward=game.campaign&&typeof stewardRules==="function"?Boolean(stewardRules().personOf(game.campaign)):company?.roster.some(m=>m.id===company.intendantId);
   return [...(report?.fled||[]).map(f=>({tone:"alert",icon:"alert",text:desertionFill(news.fled,f.mercenary),detail:steward?news.fled_steward:news.fled_alone,faces:[f.mercenary]})),
     ...(report?.spotted||[]).map(s=>({tone:"alert",icon:"alert",text:desertionFill(news.spotted,s.mercenary),detail:news.spotted_detail,faces:[s.mercenary]}))];
 }

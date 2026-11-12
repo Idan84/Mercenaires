@@ -25,12 +25,12 @@
 // Constantes : merchants.* (formula-constants.json).
 (function(root,factory){
   const deps=typeof module!=="undefined"&&module.exports
-    ?{itemValue:require("./item-value.js"),stars:require("./stars.js")}
-    :{itemValue:root.MercenairesItemValue,stars:root.MercenairesStars};
+    ?{itemValue:require("./item-value.js"),stars:require("./stars.js"),oldSteward:require("./old-steward.js")}
+    :{itemValue:root.MercenairesItemValue,stars:root.MercenairesStars,oldSteward:root.MercenairesOldSteward};
   const api=factory(deps);
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesMerchants=api;
-})(typeof globalThis!=="undefined"?globalThis:this,function({itemValue,stars}){
+})(typeof globalThis!=="undefined"?globalThis:this,function({itemValue,stars,oldSteward:OldSteward}){
   const rows=data=>Array.isArray(data)?data:(data?.rows||[]);
   const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
 
@@ -39,6 +39,7 @@
   // canStore (facultatif) : canStore(state, objet) → {ok, reason} ; une monture demande une place aux Écuries (stables.js).
   // onAcquire(state, item) : à l'achat (une monture reçoit son nom : stables.js, giveName).
   function createMerchantRules({reference,generator,affinity=null,random=Math.random,canStore=null,onAcquire=null}={}){
+    const oldSteward=OldSteward?OldSteward.createOldSteward({reference}):null;
     const constants=new Map(rows(reference?.formulaConstants).map(r=>[r.code,Number(r.valeur)]));
     const constant=(code,fallback)=>Number.isFinite(constants.get(code))?constants.get(code):fallback;
     const C={
@@ -168,11 +169,11 @@
     }
 
     // L'intendant : {steward, bonus} ; bonus = 1 % par tranche de 10 points d'Intendance, si l'affinité du marchand avec
-    // lui est d'au moins +20.
+    // lui est d'au moins +20. Cruxor (old-steward.js) : le marchand l'apprécie comme le capitaine.
     function stewardHelp(state,merchant){
       const id=state?.company?.intendantId;
-      const steward=id==null?null:state.company.roster.find(m=>m.id===id)||null;
-      const score=initialWith(steward,merchant);
+      const steward=oldSteward?oldSteward.stewardOf(state):id==null?null:state.company.roster.find(m=>m.id===id)||null;
+      const score=oldSteward?.isOld(steward)?affinityWith(state,merchant):initialWith(steward,merchant);
       if(!steward||score===null||score<C.stewardMinAffinity) return {steward:null,bonus:0};
       const skill=clamp(Number(steward.skills?.camp?.Intendance)||0,0,100);
       const bonus=Math.floor(skill/C.stewardStep)*C.stewardPerStep;

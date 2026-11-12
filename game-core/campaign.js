@@ -537,6 +537,9 @@
           captainId:captain.id,
           roster:[captain,...squad],
           intendantId:null,
+          // Cruxor Limortel, l'ancien intendant (Idan, 2026-11-12 ; old-steward.js) : là dès le premier jour, il part
+          // quand un mercenaire devient intendant.
+          oldSteward:{since:1,retiredDay:null},
           medicId:null,
           directorId:null,
           doctoreId:null,

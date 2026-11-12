@@ -169,7 +169,9 @@ const dancer = caped("Cape d’esquive", 2);
 near(dancer.e.Esquive.value, 31 * 1.10 - 19.2, "Esquive 31 + 10 % − armure");
 assert.deepEqual(dancer.e.Esquive.lines.map(l => l.reason), ["gear","armor"]);
 const shadow = caped("Cape de discrétion", 4);
-near(shadow.e["Discrétion"].value, 36, "Discrétion 30 + 20 %");
+// … moins le malus de Discrétion des plates (Idan, 2026-11-12 : 16 × 1,2 pour sa qualité, comme l'Esquive).
+near(shadow.e["Discrétion"].value, 36 - 19.2, "Discrétion 30 + 20 % − armure");
+assert.deepEqual(shadow.e["Discrétion"].lines.map(l => l.reason), ["gear","armor"]);
 assert.equal(shadow.e["Résistance physique"].lines.length, 0, "une cape de discrétion ne touche pas la Résistance physique");
 
 // Gants (Idan, 2026-10-24) : Force (dégâts et blessure au CAC), Dextérité (toucher, blocage), Pièges.

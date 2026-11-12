@@ -27,7 +27,7 @@ Archive historique : ../../archive/notion-export/
 - [17-one-shot-missions.md](./17-one-shot-missions.md) — missions one shot (brouillon) : tableau des contrats, escouades, difficulté, échec
 - [18-merchants.md](./18-merchants.md) — marchands : passage du jour, Thorval Poudredefeu (armes à feu), étal de 10 articles, affinité, achat, revente, intendant
 - [19-mercenary-profile.md](./19-mercenary-profile.md) — titres des mercenaires : 10 catégories de rôle et leurs sous-catégories, notées en étoiles de réputation ; 1 à 3 rôles fondus en un seul titre écrit (« ce qu'il fait × comment », v3) ou « Chair à canon »
-- [20-mercenary-tags.md](./20-mercenary-tags.md) — tags des mercenaires : Occupations principales, Équipement, Rôle au combat ; sous-tags qui allument leurs parents ; l'onglet Rôle et occupations de la fiche (phase 1)
+- [20-mercenary-tags.md](./20-mercenary-tags.md) — tags des mercenaires : Occupations principales, Équipement, Rôle au combat ; sous-tags qui allument leurs parents ; l'onglet Rôle et occupations de la fiche (phase 1) ; les règles de l'intendant qui tague (Rôle, Occupations)
 - [90-mechanics-backlog.md](./90-mechanics-backlog.md)
 - [91-combat-ideas.md](./91-combat-ideas.md)
 - [92-balance-questions.md](./92-balance-questions.md)

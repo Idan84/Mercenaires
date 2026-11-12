@@ -30,7 +30,7 @@ delete global.game;
 
 // Chaque peuple, chaque culture (Idan, 2026-10-22) et chaque ascendance du référentiel a son picto, et aucun
 // picto n'est orphelin.
-assert.equal(pictoPath("culture","Nains réduits en esclavage dans les colonies"),"assets/pictos/culture-nains-reduits-en-esclavage-dans-les-colonies.webp");
+assert.equal(pictoPath("culture","Nains esclaves"),"assets/pictos/culture-nains-esclaves.webp");
 const expected=[
   ...names("peoples.json").map(n=>pictoPath("people",n)),
   ...names("cultures.json").map(n=>pictoPath("culture",n)),

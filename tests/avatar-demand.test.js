@@ -167,7 +167,7 @@ if(real.fingerprint!==demand.fingerprint(reference))
   console.warn("Attention : la génération a changé depuis les mesures du "+real.generated_on+" — relancer node scripts/build-avatar-demand.js");
 // Ordre de grandeur (Idan, 2026-10-30) : environ 85 avatars précis par culture naine pour 50 nains, 10 % / 20 %.
 const live=demand.createDemand({reference,measures:real,catalog:[]});
-for(const culture of ["Nains des montagnes","Nains du chaos","Nains réduits en esclavage dans les colonies"]){
+for(const culture of ["Nains des montagnes","Nains du chaos","Nains esclaves"]){
   const need=live.forCulture(culture).summary.need;
   assert.ok(need>=70&&need<=105,culture+" : "+need);
 }

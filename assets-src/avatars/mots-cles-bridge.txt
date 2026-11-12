@@ -44,7 +44,7 @@
 		Hallebarde
 		Lance
 		Trident
-	Armes flexibles ou articulées
+	Armes articulées
 		Fléau d’armes
 		Fouet
 		Nunchaku
@@ -106,7 +106,7 @@
 	Elfes sylvains
 	Nains du chaos
 	Reptiliens des cités-temples
-	Nains réduits en esclavage dans les colonies
+	Nains esclaves
 	Gnomes des villes
 	Ogres des steppes
 [Origine]

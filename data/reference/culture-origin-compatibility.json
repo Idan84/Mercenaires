@@ -1473,8 +1473,8 @@
       "possible": true
     },
     {
-      "association": "Nains réduits en esclavage dans les colonies — Hors-la-loi",
-      "culture": "Nains réduits en esclavage dans les colonies",
+      "association": "Nains esclaves — Hors-la-loi",
+      "culture": "Nains esclaves",
       "note": null,
       "origine_sociale": "Hors-la-loi",
       "possible": true
@@ -1487,15 +1487,15 @@
       "possible": true
     },
     {
-      "association": "Nains réduits en esclavage dans les colonies — Soldat / Guerrier / Combattant",
-      "culture": "Nains réduits en esclavage dans les colonies",
+      "association": "Nains esclaves — Soldat / Guerrier / Combattant",
+      "culture": "Nains esclaves",
       "note": null,
       "origine_sociale": "Soldat / Guerrier / Combattant",
       "possible": true
     },
     {
-      "association": "Nains réduits en esclavage dans les colonies — Commerçant",
-      "culture": "Nains réduits en esclavage dans les colonies",
+      "association": "Nains esclaves — Commerçant",
+      "culture": "Nains esclaves",
       "note": "Les esclaves n’y exercent pas de commerce indépendant.",
       "origine_sociale": "Commerçant",
       "possible": false
@@ -1522,8 +1522,8 @@
       "possible": true
     },
     {
-      "association": "Nains réduits en esclavage dans les colonies — Érudit",
-      "culture": "Nains réduits en esclavage dans les colonies",
+      "association": "Nains esclaves — Érudit",
+      "culture": "Nains esclaves",
       "note": "L’accès à une formation érudite est interdit dans cette colonie servile.",
       "origine_sociale": "Érudit",
       "possible": false
@@ -1550,15 +1550,15 @@
       "possible": true
     },
     {
-      "association": "Nains réduits en esclavage dans les colonies — Noble",
-      "culture": "Nains réduits en esclavage dans les colonies",
+      "association": "Nains esclaves — Noble",
+      "culture": "Nains esclaves",
       "note": "La colonie ne reconnaît aucune noblesse parmi les Nains asservis.",
       "origine_sociale": "Noble",
       "possible": false
     },
     {
-      "association": "Nains réduits en esclavage dans les colonies — Paysan / Ouvrier",
-      "culture": "Nains réduits en esclavage dans les colonies",
+      "association": "Nains esclaves — Paysan / Ouvrier",
+      "culture": "Nains esclaves",
       "note": null,
       "origine_sociale": "Paysan / Ouvrier",
       "possible": true
@@ -1585,8 +1585,8 @@
       "possible": true
     },
     {
-      "association": "Nains réduits en esclavage dans les colonies — Esclave",
-      "culture": "Nains réduits en esclavage dans les colonies",
+      "association": "Nains esclaves — Esclave",
+      "culture": "Nains esclaves",
       "note": null,
       "origine_sociale": "Esclave",
       "possible": true

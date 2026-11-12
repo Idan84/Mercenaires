@@ -27,7 +27,7 @@ les « Nains du chaos ».
 | Montagnes du Nord | `montagnes-du-nord.jpg` | Axe_and_wolf_emblem_design_20261022215821.jpg | validé |
 | Nains des montagnes | `nains-des-montagnes.jpg` | Mountain_dwarf_heraldic_logo_20261022215821.jpg | oui |
 | Nains du chaos | `nains-du-chaos.jpg` | Chaos_Dwarf_demonic_skull_emblem_20261022215821.jpg | validé |
-| Nains réduits en esclavage dans les colonies | `nains-reduits-en-esclavage-dans-les-colonies.jpg` | Iron_shackle_and_broken_hammer_20261022215821.jpg | oui |
+| Nains esclaves | `nains-esclaves.jpg` | Iron_shackle_and_broken_hammer_20261022215821.jpg | oui |
 | Ogres des cités humaines | `ogres-des-cites-humaines.jpg` | Ogre_heraldic_logo_emblem_20261022215821.jpg | oui |
 | Ogres des montagnes | `ogres-des-montagnes.jpg` | Dark_fantasy_mountain_ogre_emblem_20261022215821.jpg | oui |
 | Ogres des steppes | `ogres-des-steppes.jpg` | Dark_fantasy_emblem_with_skull_20261022215821.jpg | oui |

@@ -146,7 +146,7 @@ bloque si elle n'est plus à jour (`node scripts/merchant-coverage.js --check`).
 |---|---|---|---|
 | Thorval Poudredefeu | Nains du chaos | Pistolet, Tromblon, Canon à main, Arquebuse, Arbalète, Bague de la Foudre, Manuels de Foudre | 7 |
 | Durgan Battefer | Nains des montagnes | Armure de plates, Casque de constitution, Amulette de volonté, Bague du courage, Marteau de guerre, Hache de guerre | 6 |
-| Orvald Sans-Collier | Nains réduits en esclavage dans les colonies | Pic de guerre, Hachette, Fouet, Ceinture de courage, Amulette de volonté, Bague de la chance | 6 |
+| Orvald Sans-Collier | Nains esclaves | Pic de guerre, Hachette, Fouet, Ceinture de courage, Amulette de volonté, Bague de la chance | 6 |
 | Jiraya Senin | Royaumes du Soleil Levant | Katana, Nunchaku, Sai, Bottes d’esquive, Cape de discrétion, String du Charisme, Manuels de Vie | 7 |
 | Ysolwen Chantesève | Elfes sylvains | Arc, Bâton court, Bâton long, Slip d’Affinité, Cape d’esquive, Bottes de perception, Manuels de Vie, Licorne | 8 |
 | Hroska Crocs-de-Neige | Tribus nordiques | Hache double, Écu, Trident, Cape de résistance physique, Ceinture d’endurance, Bague de l’Eau, Manuels d’Eau | 7 |

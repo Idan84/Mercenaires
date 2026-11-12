@@ -25,7 +25,7 @@
           "ordre": [
             "Force", "Endurance", "Vitesse", "Esquive", "Constitution", "Résistance physique", "Dextérité", "Perception", "Courage",
             "Résistance au feu", "Résistance au froid", "Résistance à la foudre", "Résistance au poison",
-            "Lames longues", "Lames courtes", "Armes d’hast", "Haches", "Armes contondantes", "Armes flexibles ou articulées", "Bâtons",
+            "Lames longues", "Lames courtes", "Armes d’hast", "Haches", "Armes contondantes", "Armes articulées", "Bâtons",
             "Armes de tir", "Armes à feu", "Boucliers", "Combat à une main", "Combat à deux armes", "Combat à deux mains",
             "Discrétion", "Pièges", "Réserve de mana",
             "Feu", "Eau", "Foudre", "Vie", "Nécromancie", "Illusion", "Invocation", "Transmutation", "Télékinésie",
@@ -44,7 +44,7 @@
       "nom": "Équipement",
       "teinte": "vert",
       "tags": [
-        {"nom": "Arme", "source": "armes", "sauf": ["Boucliers"], "ordre": ["Lames longues", "Lames courtes", "Armes d’hast", "Haches", "Armes contondantes", "Armes flexibles ou articulées", "Bâtons", "Armes de tir", "Armes à feu"]},
+        {"nom": "Arme", "source": "armes", "sauf": ["Boucliers"], "ordre": ["Lames longues", "Lames courtes", "Armes d’hast", "Haches", "Armes contondantes", "Armes articulées", "Bâtons", "Armes de tir", "Armes à feu"]},
         {"nom": "Style de combat", "source": "styles", "noms": {"Combat à une main": "Une main", "Combat à deux armes": "Deux armes", "Combat à deux mains": "Deux mains", "Boucliers": "Bouclier"}},
         {"nom": "Armure", "source": "armures", "ordre": ["Légère", "Intermédiaire", "Lourde"], "a_plat": ["Vêtement"]},
         {

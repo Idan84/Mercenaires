@@ -35,7 +35,7 @@ assert.equal(cultureOf("Cités libres").ecole_magie,"Vie");
 assert.equal(cultureOf("Ogres des steppes").ecole_magie,"Feu");
 assert.equal(cultureOf("Gnomes des villes").ecole_magie,"Illusion");
 assert.deepEqual(cultures.filter(c=>!c.ecole_magie).map(c=>[c.nom,c.compensation_sans_ecole]),[
-  ["Nains des montagnes","Courage"],["Nains réduits en esclavage dans les colonies","Courage"],
+  ["Nains des montagnes","Courage"],["Nains esclaves","Courage"],
   ["Ogres des cités humaines","Force"],["Ogres des montagnes","Force"]
 ].sort((a,b)=>cultures.findIndex(c=>c.nom===a[0])-cultures.findIndex(c=>c.nom===b[0])));
 for(const school of SCHOOLS) assert.ok(cultures.some(c=>c.ecole_magie===school),school+" : au moins une culture");

@@ -40,7 +40,7 @@ Laissés de côté, parce qu'on ne les prévoit pas : la Cave, le Cachot, le rep
 
 ### Équipement (tons verts) — ce qu'il porte ou doit porter
 
-- **Arme** → les familles (Lames longues, Lames courtes, Armes d'hast, Haches, Armes contondantes, Armes flexibles ou
+- **Arme** → les familles (Lames longues, Lames courtes, Armes d'hast, Haches, Armes contondantes, Armes articulées ou
   articulées, Bâtons, Armes de tir, Armes à feu), puis leurs armes.
 - **Style de combat** (« on a oublié les styles de combat ! ») → Une main, Deux armes, Deux mains, Bouclier ; sous
   Bouclier, les boucliers (Écu, Rondache, Pavois).

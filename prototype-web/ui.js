@@ -1648,10 +1648,12 @@ function stewardTagRules() {
   }
   return game.stewardTagRules;
 }
+// Y a-t-il un intendant (un mercenaire nommé, ou Cruxor, l'ancien) ?
+const hasSteward = () => Boolean(game.campaign && typeof stewardRules === "function" && stewardRules().personOf(game.campaign));
 // L'intendant tague un mercenaire (ids) ou toute la compagnie : il ne remplace que ses propres tags.
 function stewardRetag(ids = null) {
   const steward = stewardTagRules(), rules = tagRules(), c = game.campaign;
-  if (!steward || !rules || c?.company?.intendantId == null) return 0;
+  if (!steward || !rules || !hasSteward()) return 0;
   const out = steward.evaluate(c, {level: campaignRules().companyRenownLevel(c)});
   let count = 0;
   for (const m of c.company.roster) {
@@ -1682,7 +1684,7 @@ function renderTagsTab(c) {
   const shown = rules.view(c);
   const company = game.campaign?.company, inCompany = Boolean(company?.roster?.some(m => m.id === c.id));
   const ask = !inCompany || !stewardTagRules() ? ""
-    : company.intendantId != null
+    : hasSteward()
       ? `<button type="button" class="talk-offer-btn" data-tag-steward="${esc(c.id)}" title="L’intendant propose ses tags (il ne touche pas aux vôtres)">Demander à l’intendant</button>`
       : `<small class="muted">Nommez un intendant : il proposera ses tags.</small>`;
   return `<div class="sheet-tags-head">${rules.intro ? `<p class="sheet-tags-intro">${esc(rules.intro)}</p>` : ""}${ask}</div>`

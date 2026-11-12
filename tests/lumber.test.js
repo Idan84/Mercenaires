@@ -50,6 +50,7 @@ assert.equal(lumber.slots(state),2);
 assert.equal(rules.trainingRooms(state).find(r=>r.code==="lumber_camp")?.trains,"Haches");
 
 // Le test : 10 + 80 / (1 + e^(−Δ/20)), Δ = 0,5 × affinité − 30 (+ l'intendant) : 25 % à affinité 0 ; le capitaine sans test.
+if(state.company.oldSteward) state.company.oldSteward.retiredDay=state.day; // Cruxor, l'ancien intendant, est parti : sans intendant
 state.company.intendantId=null;
 const curve=delta=>10+80/(1+Math.exp(-delta/20));
 assert.ok(Math.abs(lumber.chance(state,first).chance-curve(-30))<1e-9);

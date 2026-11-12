@@ -19,10 +19,12 @@
   const posts=typeof module!=="undefined"&&module.exports?require("./camp-posts.js"):root.MercenairesCampPosts;
   // Relance après un refus (Idan, 2026-11-04) : Intimider ou Convaincre, ajoutés à la chance.
   const persuasion=typeof module!=="undefined"&&module.exports?require("./persuasion.js"):root.MercenairesPersuasion;
-  const api=factory(history,posts,persuasion);
+  // Cruxor Limortel, l'ancien intendant (Idan, 2026-11-12) : intendant par défaut, il part quand un mercenaire le remplace.
+  const old=typeof module!=="undefined"&&module.exports?require("./old-steward.js"):root.MercenairesOldSteward;
+  const api=factory(history,posts,persuasion,old);
   if(typeof module!=="undefined"&&module.exports) module.exports=api;
   root.MercenairesSteward=api;
-})(typeof globalThis!=="undefined"?globalThis:this,function(History,Posts,Persuasion){
+})(typeof globalThis!=="undefined"?globalThis:this,function(History,Posts,Persuasion,OldSteward){
   const rows=data=>Array.isArray(data)?data:(data?.rows||[]);
   const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
 
@@ -57,6 +59,10 @@
       const id=state?.company?.intendantId;
       return id==null?null:rosterOf(state).find(m=>m.id===id)||null;
     }
+    // Cruxor Limortel : l'intendant tant qu'aucun mercenaire ne l'est (old-steward.js).
+    const oldSteward=OldSteward?OldSteward.createOldSteward({reference}):null;
+    // Celui qui tient l'Intendance : le mercenaire nommé, sinon Cruxor.
+    const personOf=state=>stewardOf(state)||oldSteward?.person(state)||null;
 
     function desire(m){
       const history=m?.history||{};
@@ -125,7 +131,9 @@
         state.company.intendantId=m.id;
         state.company.intendantSince=state.day;
         History.record(m,state.day,"steward",{accepted:true});
-        return {ok:true,accepted:true,roll:dice,chance,affinityDelta:0,mood:"neutral",mercenary:m};
+        // Cruxor part pour de bon.
+        const oldRetired=oldSteward?oldSteward.retire(state):false;
+        return {ok:true,accepted:true,roll:dice,chance,affinityDelta:0,mood:"neutral",mercenary:m,oldRetired};
       }
       return refused(state,m,"offer","steward",{roll:dice,chance},retry);
     }
@@ -158,7 +166,7 @@
 
     // Évaluer une caractéristique d'un candidat de la Taverne : estimation figée, gratuite.
     function estimate(state,candidate,key,value){
-      const steward=stewardOf(state);
+      const steward=personOf(state);
       if(!steward) return no("La compagnie n’a pas d’intendant.");
       const known=candidate.stewardEstimates?.[key];
       if(Number.isFinite(known)) return {ok:true,estimate:known,repeated:true,steward};
@@ -176,7 +184,7 @@
       return (Number(m?.history?.stewardDays)||0)+(stewardOf(state)===m?daysAsSteward(state):0);
     }
 
-    return {constants:C,stewardOf,desire,appointChance,returnChance,daysAsSteward,totalStewardDays,refusalAffinity,canOffer,offer,recall,retry,estimate};
+    return {constants:C,stewardOf,personOf,oldSteward,desire,appointChance,returnChance,daysAsSteward,totalStewardDays,refusalAffinity,canOffer,offer,recall,retry,estimate};
   }
 
   return {createStewardRules};

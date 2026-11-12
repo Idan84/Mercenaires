@@ -95,6 +95,7 @@ scripted.push(0);
 morning=rules.morning(state,{renown});
 assert.equal(morning.arrived.id,"thorval-poudredefeu");
 assert.equal(morning.arrived.name,"Thorval Poudredefeu");
+if(state.company.oldSteward) state.company.oldSteward.retiredDay=state.day; // Cruxor, l'ancien intendant, est parti : sans intendant
 let visit=rules.visitOf(state,{renown});
 assert.equal(visit.offers.length,10);
 assert.equal(visit.affinity,44);

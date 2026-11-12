@@ -4082,6 +4082,9 @@ function missionPotionBlock(unit,potion,drinker=unit){
   if(potion.effet==="mana"&&(!magic||magic.currentMana(drinker)>=magic.manaMax(drinker))) return "Mana au maximum.";
   if(potion.effet==="poison_arme"&&!game.mission.engine.canPoisonWeapon(unit)) return "Il ne sait pas empoisonner une arme.";
   if(potion.effet==="poison_arme"&&!game.mission.engine.activeWeaponItem(unit)) return "Aucune arme à enduire.";
+  // Ni arme contondante ni arme à feu (Idan, 2026-11-12) : combat-engine.js, poisonableWeapon.
+  if(potion.effet==="poison_arme"&&!game.mission.engine.poisonableWeapon(game.mission.engine.weaponTemplate(game.mission.engine.activeWeaponItem(unit))))
+    return "Cette arme ne peut pas être empoisonnée.";
   return "";
 }
 function useMissionPotion(unit,slot){

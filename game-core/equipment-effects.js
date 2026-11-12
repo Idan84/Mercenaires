@@ -9,6 +9,7 @@
 // - Endurance, Courage, Réserve de mana : + ceinture (Idan, 2026-10-24) ;
 // - Puissance magique, Volonté, Chance : + amulette (Idan, 2026-10-24) ;
 // - Esquive, Résistance physique, Discrétion : + cape (Idan, 2026-10-24 ; des points pour la Résistance physique) ;
+//   Discrétion : − handicap de l'armure (Idan, 2026-11-12) ;
 // - Force, Pièges : + gants (Idan, 2026-10-24) ;
 // - Charisme, Intimidation : + culotte (Idan, 2026-10-24) ;
 // - Chance, Courage : + bagues ; écoles de magie : + bague de l'école, − bagues des écoles opposées (Idan, 2026-10-24) ;
@@ -79,6 +80,10 @@
         ...(engine.MAGIC_SCHOOLS||[])]){
         add(stat,engine.baseValue(unit,stat),engine.statWithGear(unit,stat),gearLines(unit,stat));
       }
+      // Discrétion : moins le malus de l'armure (Idan, 2026-11-12).
+      const stealth=engine.armorMobility(unit).stealth||0;
+      if(stealth&&engine.effectiveStealth) add("Discrétion",engine.baseValue(unit,"Discrétion"),engine.effectiveStealth(unit),
+        [...gearLines(unit,"Discrétion"),{label:itemLabel(armor),delta:-stealth,reason:"armor"}]);
       const speedGap=engine.effectiveSpeed(unit)-engine.effectiveSpeed(bare);
       const courageGap=0.10*(engine.statWithGear(unit,"Courage")-engine.statWithGear(bare,"Courage"));
       const willGap=0.05*(engine.statWithGear(unit,"Volonté")-engine.statWithGear(bare,"Volonté"));

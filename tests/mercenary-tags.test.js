@@ -4,7 +4,8 @@
 // tags qu'on peut cocher décocher. 3 Col : Occupations principales / Equipement / Rôle au combat. Présentation en
 // accordéon avec cat et sous cat. On fait 3 grandes couleurs : Tons rouges / Tons verts / Tons bleus. Pas de case à
 // cocher. Des tags grisés ou pas grisés. Une petite flèche à droite du tag pour ouvrir la sous catégorie. Tous les tags
-// sont cochables (on peut taguer juste animal). » ; « Les sous tags allument les tags. »
+// sont cochables (on peut taguer juste animal). » ; « Les sous tags allument les tags. » ; trois niveaux (« que le mec
+// puisse mettre arc et épée, mets arc plus important ») et les tags de l'intendant (un point, ses refus retenus).
 const assert=require("node:assert/strict");
 const fs=require("node:fs");
 const path=require("node:path");
@@ -55,13 +56,18 @@ assert.equal(find(occupation,"Entraînement","Force").enfants.length,0);
 assert.deepEqual(names(find(occupation,"Poste").enfants),
   ["Intendant","Médecin","Directeur de l’École","Doctore","Vétéran","Maître des lames","Alchimiste","Maître des plaisirs","Dresseur","Officier"],"Officier, pas lieutenant");
 
-// Équipement : ce qu'il porte ou doit porter ; ni monture ni potion.
-assert.deepEqual(names(equipment),["Arme","Armure","Caractéristiques"]);
+// Équipement : ce qu'il porte ou doit porter ; ni monture ni potion ; les styles de combat (« on a oublié les styles de
+// combat ! »), les boucliers sous Bouclier.
+assert.deepEqual(names(equipment),["Arme","Style de combat","Armure","Caractéristiques"]);
 assert.deepEqual(names(find(equipment,"Arme").enfants),["Lames longues","Lames courtes","Armes d’hast","Haches","Armes contondantes",
-  "Armes flexibles ou articulées","Bâtons","Boucliers","Armes de tir","Armes à feu"]);
+  "Armes flexibles ou articulées","Bâtons","Armes de tir","Armes à feu"]);
 assert.ok(names(find(equipment,"Arme","Lames longues").enfants).includes("Épée longue"));
-const weaponTags=find(equipment,"Arme").enfants.flatMap(f=>names(f.enfants));
-assert.deepEqual([...weaponTags].sort(),reference.weapons.rows.map(w=>w.nom).sort(),"chaque arme une fois, sous sa famille");
+assert.deepEqual(names(find(equipment,"Style de combat").enfants),["Une main","Deux armes","Deux mains","Bouclier"]);
+assert.deepEqual(find(equipment,"Style de combat").enfants.map(n=>n.competence),["Combat à une main","Combat à deux armes","Combat à deux mains","Boucliers"],
+  "chaque style garde sa compétence");
+assert.deepEqual(names(find(equipment,"Style de combat","Bouclier").enfants),["Écu","Rondache","Pavois"]);
+const weaponTags=[...find(equipment,"Arme").enfants.flatMap(f=>names(f.enfants)),...names(find(equipment,"Style de combat","Bouclier").enfants)];
+assert.deepEqual([...weaponTags].sort(),reference.weapons.rows.map(w=>w.nom).sort(),"chaque arme une fois, sous sa famille (les boucliers sous Bouclier)");
 assert.deepEqual(names(find(equipment,"Armure").enfants),["Légère","Intermédiaire","Lourde","Vêtements"]);
 assert.deepEqual(names(find(equipment,"Armure","Lourde").enfants),["Armure de plates","Armure d'écailles"]);
 assert.equal(find(equipment,"Armure","Vêtements").enfants.length,0,"les vêtements, directement");
@@ -91,35 +97,66 @@ assert.equal(find(role,"Soutien","Dégâts élémentaires","Brûlant").id,"role/
 assert.equal(slug("Armes d’hast"),"armes-d-hast");
 assert.equal(rules.depth("occupation/entrainement/feu/boule-de-feu"),3);
 
-// Cocher : un sous-tag allume ses parents ; éteindre un tag éteint ses sous-tags ; tout se coche, même seul.
-let tags=rules.toggle([],"occupation/entrainement/feu/boule-de-feu");
-assert.deepEqual(tags,["occupation/entrainement","occupation/entrainement/feu","occupation/entrainement/feu/boule-de-feu"]);
-tags=rules.toggle(tags,"role/animal");
-assert.ok(rules.isOn(tags,"role/animal")&&!tags.some(t=>t.startsWith("role/animal/")),"Animal seul");
-tags=rules.toggle(tags,"occupation/entrainement/feu");
-assert.deepEqual(tags,["occupation/entrainement","role/animal"],"Feu éteint : ses sorts aussi, Entraînement reste");
-tags=rules.toggle(tags,"occupation/entrainement");
-assert.deepEqual(tags,["role/animal"]);
-assert.deepEqual(rules.toggle(tags,"role/inconnu"),["role/animal"],"un tag inconnu ne change rien");
-assert.deepEqual(rules.normalize(["equipment/arme/lames-longues/epee-longue","vieux/tag","role/vol"]),
-  ["equipment/arme","equipment/arme/lames-longues","equipment/arme/lames-longues/epee-longue","role/vol"],"dans l'ordre de l'arbre, parents allumés");
+// Trois niveaux : le clic fait le tour grisé → pâle → moyen → plein → grisé ; un sous-tag allume ses parents au moins à son
+// niveau ; éteindre un tag éteint ses sous-tags ; tout se coche, même seul.
 const member={name:"Brunehilde"};
-assert.deepEqual(rules.toggleMemberTag(member,"occupation/job/palais-des-plaisirs"),{ok:true,on:true,tags:["occupation/job","occupation/job/palais-des-plaisirs"]});
-assert.deepEqual(member.tags,["occupation/job","occupation/job/palais-des-plaisirs"],"gardé sur le mercenaire (sauvegardé avec lui)");
-assert.equal(rules.toggleMemberTag(member,"nulle/part").ok,false);
+assert.deepEqual(rules.cycle(member,"occupation/entrainement/feu/boule-de-feu"),{ok:true,level:1});
+assert.deepEqual(member.tags,{"occupation/entrainement/feu/boule-de-feu":1},"gardé sur le mercenaire (sauvegardé avec lui)");
+let shown=rules.view(member);
+assert.deepEqual(Object.keys(shown).sort(),["occupation/entrainement","occupation/entrainement/feu","occupation/entrainement/feu/boule-de-feu"],"le sous-tag allume ses parents");
+assert.ok(Object.values(shown).every(t=>t.level===1&&!t.steward));
+rules.cycle(member,"occupation/entrainement/feu/boule-de-feu");
+rules.cycle(member,"occupation/entrainement/feu/boule-de-feu");
+assert.equal(rules.levelOf(member,"occupation/entrainement"),3,"le parent au moins aussi fort que son sous-tag le plus fort");
+assert.deepEqual(rules.cycle(member,"role/animal"),{ok:true,level:1});
+assert.ok(rules.levelOf(member,"role/animal")===1&&!rules.litIds(member).some(t=>t.startsWith("role/animal/")),"Animal seul");
+rules.cycle(member,"role/animal"); rules.cycle(member,"role/animal");
+assert.deepEqual(rules.cycle(member,"role/animal"),{ok:true,level:0},"après plein : éteint");
+assert.deepEqual(rules.cycle(member,"occupation/entrainement/feu"),{ok:true,level:0},"Feu plein (par son sort) : le clic l'éteint");
+assert.equal(rules.levelOf(member,"occupation/entrainement/feu/boule-de-feu"),0,"Feu éteint : ses sorts aussi");
+assert.equal(rules.levelOf(member,"occupation/entrainement"),0,"plus rien dessous : Entraînement s'éteint aussi");
+assert.equal(rules.cycle(member,"nulle/part").ok,false,"un tag inconnu ne change rien");
+assert.deepEqual(rules.levelsOf(["equipment/arme/lames-longues/epee-longue","vieux/tag"]),{"equipment/arme/lames-longues/epee-longue":3},
+  "une ancienne liste (phase 1) compte au niveau plein ; un tag disparu est oublié");
+assert.deepEqual(rules.levelsOf({"role/vol":7,"role/soin":0,"role/inconnu":2}),{"role/vol":3});
+
+// L'intendant : ses tags portent le point ; le joueur l'emporte ; éteindre un de ses tags le refuse, il ne le remet pas.
+const merc={name:"Ragnar",tags:{"role/vol":2}};
+rules.setSteward(merc,{"role/degats/tranchant":3,"role/vol":1,"occupation/garde-du-corps":2});
+shown=rules.view(merc);
+assert.deepEqual(shown["role/degats/tranchant"],{level:3,steward:true});
+assert.deepEqual(shown["role/degats"],{level:3,steward:true},"un parent allumé par les seuls tags de l'intendant porte le point");
+assert.deepEqual(shown["role/vol"],{level:2,steward:false},"le joueur l'emporte sur l'intendant");
+rules.cycle(merc,"occupation/garde-du-corps");
+assert.deepEqual(rules.view(merc)["occupation/garde-du-corps"],{level:3,steward:false},"cliquer un tag de l'intendant : il devient celui du joueur");
+rules.cycle(merc,"occupation/garde-du-corps");
+assert.equal(rules.levelOf(merc,"occupation/garde-du-corps"),0);
+assert.deepEqual(merc.stewardRefused,["occupation/garde-du-corps"],"éteint : refusé");
+rules.setSteward(merc,{"occupation/garde-du-corps":2,"role/soin":1});
+assert.equal(rules.levelOf(merc,"occupation/garde-du-corps"),0,"retaguer ne remet pas un tag refusé");
+assert.equal(rules.levelOf(merc,"role/soin"),1,"retaguer remplace les tags de l'intendant…");
+assert.equal(rules.levelOf(merc,"role/degats/tranchant"),0);
+assert.equal(rules.levelOf(merc,"role/vol"),2,"… jamais ceux du joueur");
+rules.cycle(merc,"occupation/garde-du-corps");
+assert.ok(!merc.stewardRefused.includes("occupation/garde-du-corps"),"le joueur le rallume : plus refusé");
 
 // La fiche : l'onglet Tags, pour ceux de la compagnie ; des tags grisés ou non, une flèche, pas de case à cocher.
 const ui=read("prototype-web/ui.js"),css=read("prototype-web/styles.css"),html=read("prototype-web/index.html");
 assert.match(ui,/\["history", "Historique"\],\n  \["tags", "Rôle et occupations"\]\n\];/,"le dernier onglet : « À la place de tags, on met rôle et occupations »");
 assert.equal(rules.intro,"Ces tags vous permettent de vous souvenir à quoi peut servir ce mercenaire.","la petite phrase en haut de l'onglet");
 assert.match(ui,/<p class="sheet-tags-intro">\$\{esc\(rules\.intro\)\}<\/p>/);
+assert.match(ui,/company\.intendantId != null[\s\S]{0,40}\? `<button type="button" class="talk-offer-btn" data-tag-steward=/,"« Demander à l'intendant » s'il y a un intendant");
+assert.match(ui,/stewardRetag\(\[c\.id\]\)/,"il tague ce mercenaire (en comparant à toute la bande)");
 assert.match(ui,/key !== "tags" \|\| renamable\(c\)/,"pas pour un candidat ni un ennemi");
-assert.match(ui,/class="tag-pill\$\{on \? " is-on" : ""\}" data-tag-toggle=/);
+assert.match(ui,/class="tag-pill\$\{level \? ` is-on lvl-\$\{level\}` : ""\}\$\{lit\?\.steward \? " is-steward" : ""\}" data-tag-toggle=/);
 assert.match(ui,/class="tag-open" data-tag-open=.*>▸<\/button>/);
 assert.ok(!/renderTagsTab[\s\S]{0,1500}checkbox/.test(ui),"pas de case à cocher");
-assert.match(ui,/toggleMemberTag\(c, toggle\.dataset\.tagToggle\)[\s\S]{0,80}saveGame\(\)/,"sauvegardé à chaque clic");
+assert.match(ui,/rules\.cycle\(c, toggle\.dataset\.tagToggle\)[\s\S]{0,80}saveGame\(\)/,"sauvegardé à chaque clic");
+assert.match(css,/\.tag-pill\.lvl-1\{--tag-mix:38%/,"pâle");
+assert.match(css,/\.tag-pill\.lvl-2\{--tag-mix:68%\}/,"moyen");
+assert.match(css,/\.tag-pill\.is-steward::after\{content:""/,"le point de l'intendant");
 assert.ok(html.indexOf('src="/core/mercenary-tags.js"')>0&&html.indexOf('src="/core/mercenary-tags.js"')<html.indexOf('src="ui.js"'));
 for(const [tone,hue] of [["rouge",/--tag-1:#8e2b22/],["vert",/--tag-1:#2c6235/],["bleu",/--tag-1:#284980/]]) assert.match(css,new RegExp("\\.tags-col--"+tone+"\\{"+hue.source),"tons "+tone+"s");
 assert.match(css,/\.sheet-tags\{display:grid;grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/,"trois colonnes");
 assert.match(css,/@media\(max-width:900px\)\{\.sheet-tags\{grid-template-columns:1fr\}\}/,"une colonne sur téléphone");
-console.log("Tags de la fiche : 3 colonnes, listes tirées des données, sous-tags qui allument leurs parents — OK");
+console.log("Tags de la fiche : 3 colonnes, listes tirées des données, 3 niveaux, tags de l'intendant — OK");

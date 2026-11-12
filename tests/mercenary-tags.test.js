@@ -60,7 +60,7 @@ assert.deepEqual(names(find(occupation,"Poste").enfants),
 // combat ! »), les boucliers sous Bouclier.
 assert.deepEqual(names(equipment),["Arme","Style de combat","Armure","Caractéristiques"]);
 assert.deepEqual(names(find(equipment,"Arme").enfants),["Lames longues","Lames courtes","Armes d’hast","Haches","Armes contondantes",
-  "Armes flexibles ou articulées","Bâtons","Armes de tir","Armes à feu"]);
+  "Armes articulées","Bâtons","Armes de tir","Armes à feu"]);
 assert.ok(names(find(equipment,"Arme","Lames longues").enfants).includes("Épée longue"));
 assert.deepEqual(names(find(equipment,"Style de combat").enfants),["Une main","Deux armes","Deux mains","Bouclier"]);
 assert.deepEqual(find(equipment,"Style de combat").enfants.map(n=>n.competence),["Combat à une main","Combat à deux armes","Combat à deux mains","Boucliers"],

@@ -22,7 +22,7 @@ Le pipeline ci-dessous décrit la génération statistique commune. Son point d�
 7. **Lecture des modificateurs de culture** : appliquer caractéristiques / résistances ; mémoriser les modificateurs de compétences.
 8. **Tirage de l’origine sociale** parmi celles compatibles avec la culture.
 9. **Lecture des modificateurs d’origine sociale** : appliquer caractéristiques / résistances ; mémoriser les modificateurs de compétences.
-   - **Cultures sans école de magie** (doc 12 ; Idan, 2026-10-25) : +1D6 Courage (Nains des montagnes, Nains réduits en esclavage dans les colonies) ou +1D6 Force (Ogres des cités humaines, Ogres des montagnes) ; `cultures.json`, colonne `compensation_sans_ecole`.
+   - **Cultures sans école de magie** (doc 12 ; Idan, 2026-10-25) : +1D6 Courage (Nains des montagnes, Nains esclaves) ou +1D6 Force (Ogres des cités humaines, Ogres des montagnes) ; `cultures.json`, colonne `compensation_sans_ecole`.
 10. **Génération brute des compétences** selon les règles propres à chaque famille, en sachant déjà si un bonus de génération existe.
 11. **Application des modificateurs numériques de compétences** accumulés depuis la Matrice de génération.
    - **Ogres et bâtons** (Idan, 2026-10-29 : « le A est bien ! Et même encore trop de bâtons ») : depuis que le bâton est une arme de mage (doc 05), les ogres passent de +1 à **−1 en Bâtons** et perdent leur +1 en **Bâton long** ; ils gagnent **+1 en Armes contondantes** (massue, masse d’armes, marteau de guerre, pic de guerre). Sur 2 000 ogres : bâton en arme principale **48 % → 4,5 %** (surtout des érudits, que leur origine pousse vers le bâton), armes contondantes **17 % → 60 %**.
@@ -140,7 +140,7 @@ selon les tirages.
 | Humain | Tribus de la jungle | 47 % | 15 % | 38 % |
 | Nain | Nains des montagnes | 74 % | 13 % | 14 % |
 | Nain | Nains du chaos | 33 % | 49 % | 19 % |
-| Nain | Nains réduits en esclavage dans les colonies | 72 % | 21 % | 8 % |
+| Nain | Nains esclaves | 72 % | 21 % | 8 % |
 | Ogre | Ogres des cités humaines | 75 % | 16 % | 10 % |
 | Ogre | Ogres des montagnes | 78 % | 17 % | 6 % |
 | Ogre | Ogres des steppes | 80 % | 14 % | 6 % |

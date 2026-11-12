@@ -598,7 +598,7 @@
     },
     {
       "nom": "Fléau d’armes",
-      "domaine": "Armes flexibles ou articulées, Martial",
+      "domaine": "Armes articulées, Martial",
       "prise": "1 main",
       "malus_vitesse_arme_base": 18,
       "portee_min_hex": null,
@@ -631,7 +631,7 @@
     },
     {
       "nom": "Fouet",
-      "domaine": "Armes flexibles ou articulées, Martial",
+      "domaine": "Armes articulées, Martial",
       "prise": "1 main",
       "malus_vitesse_arme_base": 3,
       "portee_min_hex": null,
@@ -1060,7 +1060,7 @@
     },
     {
       "nom": "Nunchaku",
-      "domaine": "Armes flexibles ou articulées, Martial",
+      "domaine": "Armes articulées, Martial",
       "prise": "1 main",
       "malus_vitesse_arme_base": 6,
       "portee_min_hex": null,

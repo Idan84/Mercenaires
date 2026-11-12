@@ -525,7 +525,7 @@ Avec les sorts, deux règles déjà écrites (doc 08) s'appliquent enfin : **Con
 - La chance **monte légèrement** pour les sorts suivants : × 1 pour le premier sort obtenu, **× 1,1** pour le deuxième, **× 1,3** pour le troisième (un mercenaire doué en apprend plus facilement un autre).
 - Le sort est tiré au hasard parmi tous les sorts de l'école. Si l'école de la culture est aussi sa n°1 ou sa n°2, il peut apprendre **deux sorts de cette école** (jamais deux fois le même) ; si l'école n'a plus de sort disponible, le tirage ne donne rien.
 - Un sort connu à la création démarre au **niveau 1**.
-- Les cultures **sans école** n'ont que les deux derniers tirages. En compensation : **Nains des montagnes** et **Nains réduits en esclavage dans les colonies** : **+1D6 Courage** à la création ; **Ogres des cités humaines** et **Ogres des montagnes** : **+1D6 Force**.
+- Les cultures **sans école** n'ont que les deux derniers tirages. En compensation : **Nains des montagnes** et **Nains esclaves** : **+1D6 Courage** à la création ; **Ogres des cités humaines** et **Ogres des montagnes** : **+1D6 Force**.
 
 | École | Cultures |
 |---|---|
@@ -538,7 +538,7 @@ Avec les sorts, deux règles déjà écrites (doc 08) s'appliquent enfin : **Con
 | Invocation | Explorateurs, Gobelins des cavernes, Reptiliens des cités-temples |
 | Transmutation | Tribus de la jungle, Orcs noirs, Orcs des villes, Orcs des steppes |
 | Télékinésie | Reptiliens des villes, Halflings des cités humaines, Caravanes de ferrailleurs |
-| Aucune | Nains des montagnes, Nains réduits en esclavage dans les colonies, Ogres des cités humaines, Ogres des montagnes |
+| Aucune | Nains des montagnes, Nains esclaves, Ogres des cités humaines, Ogres des montagnes |
 
 Simulation (6 000 recrues, tous les sorts supposés écrits) : 48 % ne connaissent aucun sort, 36 % un, 13 % deux, 2,9 % trois (cible d'Idan : 50 / 35 / 12,5 / 2,5). Tant qu'une école n'a pas de sort écrit, un tirage dans cette école ne donne rien.
 

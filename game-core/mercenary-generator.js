@@ -365,7 +365,7 @@
 
     // Cultures sans école de magie (12-magic.md ; Idan, 2026-10-25) : elles n'ont que deux tirages de sorts ; en
     // compensation, +1D6 à une caractéristique (cultures.json, compensation_sans_ecole : Courage pour les nains des
-    // montagnes et ceux réduits en esclavage dans les colonies, Force pour les ogres des cités humaines et des montagnes).
+    // montagnes et les nains esclaves, Force pour les ogres des cités humaines et des montagnes).
     function applyNoSchoolCompensation(character, trace) {
       const stat = cultureByName.get(character.culture)?.compensation_sans_ecole;
       if (!stat || !(stat in character.stats)) return;

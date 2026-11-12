@@ -849,8 +849,12 @@ const SHEET_TABS = [
   ["skills", "Compétences"],
   ["magic", "Magie"],
   ["camp", "Camp"],
-  ["history", "Historique"]
+  ["history", "Historique"],
+  ["tags", "Tags"]
 ];
+// Les onglets d'une fiche : les Tags pour ceux de la compagnie seulement (Idan, 2026-11-12 : « retrouver rapidement, dans
+// sa compagnie, qui doit faire quoi »).
+const sheetTabsFor = c => SHEET_TABS.filter(([key]) => key !== "tags" || renamable(c));
 
 // Situation dans la compagnie : rôle, contrat, indisponibilité.
 function renderSituation(c) {
@@ -1614,18 +1618,74 @@ function renderSheetTab(c, tab) {
   if (tab === "history") return renderHistoryTab(c);
   if (tab === "equipment") return renderEquipment(c);
   if (tab === "magic") return renderMagicTab(c);
+  if (tab === "tags") return renderTagsTab(c);
   return renderProfileTab(c);
+}
+
+// Onglet Tags, phase 1 (Idan, 2026-11-12 ; doc 20) : trois colonnes en accordéon (Occupations principales en rouge,
+// Équipement en vert, Rôle au combat en bleu) ; « Pas de case à cocher. Des tags grisés ou pas grisés » ; « Une petite
+// flèche à droite du tag pour ouvrir la sous-catégorie » ; tous se cochent. Les règles : game-core/mercenary-tags.js.
+// Ce qui est ouvert le reste d'une fiche à l'autre, pendant la partie.
+const TAGS_OPEN = new Set();
+function tagRules() {
+  const reference = game.referenceData;
+  if (!reference || !globalThis.MercenairesTags) return null;
+  if (game.tagRulesFor !== reference) { game.tagRules = MercenairesTags.createTagRules({reference}); game.tagRulesFor = reference; }
+  return game.tagRules;
+}
+function tagNodeHtml(node, tags, depth) {
+  const on = tags.includes(node.id), kids = node.enfants.length > 0, open = kids && TAGS_OPEN.has(node.id);
+  const listId = "tags-" + node.id.replace(/[^a-z0-9]+/gi, "-");
+  const opener = kids
+    ? `<button type="button" class="tag-open" data-tag-open="${esc(node.id)}" aria-expanded="${open}"${open ? ` aria-controls="${listId}"` : ""} aria-label="${open ? "Fermer" : "Ouvrir"} ${esc(node.nom)}" title="${open ? "Fermer" : "Ouvrir"}">▸</button>`
+    : "";
+  return `<li class="tag-item tag-depth-${Math.min(depth, 4)}${open ? " is-open" : ""}"><span class="tag-row">`
+    + `<button type="button" class="tag-pill${on ? " is-on" : ""}" data-tag-toggle="${esc(node.id)}" aria-pressed="${on}">${esc(node.nom)}</button>${opener}</span>`
+    + (open ? `<ul class="tag-list" id="${listId}">${node.enfants.map(child => tagNodeHtml(child, tags, depth + 1)).join("")}</ul>` : "")
+    + `</li>`;
+}
+function renderTagsTab(c) {
+  const rules = tagRules();
+  if (!rules) return `<p class="muted">Tags indisponibles.</p>`;
+  const tags = rules.normalize(c.tags);
+  return `<div class="sheet-tags">${rules.columns.map(col =>
+    `<section class="tags-col tags-col--${esc(col.teinte)}" aria-label="${esc(col.nom)}"><h4>${esc(col.nom)}</h4>`
+    + `<ul class="tag-list tag-root">${col.tags.map(node => tagNodeHtml(node, tags, 1)).join("")}</ul></section>`
+  ).join("")}</div>`;
+}
+// Cocher, décocher, ouvrir, fermer : la fiche se redessine et garde le focus sur le même bouton.
+function refocusTag(kind, id) {
+  const target = [...$("dialog-content").querySelectorAll(`[data-tag-${kind}]`)].find(el => el.dataset[kind === "open" ? "tagOpen" : "tagToggle"] === id);
+  target?.focus({preventScroll: true});
+}
+function onTagClick(event) {
+  const toggle = event.target.closest("[data-tag-toggle]"), opener = event.target.closest("[data-tag-open]");
+  if (!toggle && !opener) return;
+  const c = game.sheetCharacter, rules = tagRules();
+  if (!c || !rules) return;
+  if (toggle) {
+    if (!rules.toggleMemberTag(c, toggle.dataset.tagToggle).ok) return;
+    saveGame();
+    renderSheet();
+    refocusTag("toggle", toggle.dataset.tagToggle);
+    return;
+  }
+  const id = opener.dataset.tagOpen;
+  if (TAGS_OPEN.has(id)) TAGS_OPEN.delete(id); else TAGS_OPEN.add(id);
+  renderSheet();
+  refocusTag("open", id);
 }
 
 function renderSheet() {
   const c = game.sheetCharacter;
   if (!c) return;
-  const tab = SHEET_TABS.some(([key]) => key === game.sheetTab) ? game.sheetTab : "profile";
-  $("dialog-tabs").innerHTML = SHEET_TABS.map(([key,label]) =>
+  const tabs = sheetTabsFor(c);
+  const tab = tabs.some(([key]) => key === game.sheetTab) ? game.sheetTab : "profile";
+  $("dialog-tabs").innerHTML = tabs.map(([key,label]) =>
     `<button type="button" role="tab" class="sheet-tab${key === tab ? " active" : ""}" aria-selected="${key === tab}" data-sheet-tab="${key}">${esc(label)}</button>`
   ).join("");
   $("dialog-content").innerHTML = renderSheetTab(c, tab);
-  $("dialog-content").setAttribute("aria-label", SHEET_TABS.find(([key]) => key === tab)[1]);
+  $("dialog-content").setAttribute("aria-label", tabs.find(([key]) => key === tab)[1]);
 }
 
 // Ordre de passage d'une fiche à l'autre (Idan, 2026-10-24) : le capitaine, puis les mercenaires dans l'ordre
@@ -1856,6 +1916,7 @@ async function init() {
       const open = event.target.closest?.("[data-skill-open]");
       if (open) { event.preventDefault(); open.click(); }
     });
+    $("dialog-content").addEventListener("click", onTagClick);
     // Portrait du min ou du max d'une caractéristique : on passe à sa fiche, sur le même onglet.
     $("dialog-content").addEventListener("click", event => {
       const btn = event.target.closest("[data-sheet-open]");

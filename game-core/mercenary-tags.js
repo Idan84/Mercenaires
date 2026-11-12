@@ -116,7 +116,7 @@
       member.tags=toggle(member.tags,id);
       return {ok:true,on:member.tags.includes(id),tags:member.tags};
     }
-    return {columns,has,node:id=>byId.get(id)?.node||null,depth:id=>byId.get(id)?.depth||0,ancestors,normalize,isOn,toggle,toggleMemberTag};
+    return {intro:ref.mercenaryTags?.intro||"",columns,has,node:id=>byId.get(id)?.node||null,depth:id=>byId.get(id)?.depth||0,ancestors,normalize,isOn,toggle,toggleMemberTag};
   }
 
   return {createTagRules,slug};

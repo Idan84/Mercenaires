@@ -80,8 +80,9 @@ voir doc 19, « Domaine évolutif ». L'accentuation, elle, n'a lieu qu'une fois
     meilleure) et perd 2D10 sur sa meilleure arme de mêlée et sa meilleure arme de tir.
 - **Rattrapage du mage** (Idan, 2026-11-01) : un Mage qui n'a tiré aucun sort en apprend un dans sa meilleure école
   (doc 12). Il n'y a plus de Mage sans sort.
-- **L'équipement de départ et l'avatar suivent le domaine.** Sur la fiche, un **picto** à côté du nom (épée, arc, étoile),
-  avec une infobulle. Les mercenaires créés avant prennent le profil de leur équipement de départ, sans rien changer à leurs
+- **L'équipement de départ et l'avatar suivent le domaine.** Sur la fiche, le **picto** à côté du nom (épée, arc, étoile)
+  est retiré (Idan, 2026-11-12 : « On retire l'icône arc / cac / magie à côté du nom ») ; le domaine reste (titre, cadre de
+  combat). Les mercenaires créés avant prennent le profil de leur équipement de départ, sans rien changer à leurs
   chiffres.
 - **Effet mesuré** (3 000 recrues) : domaine net (≥ 1 écart-type devant le deuxième) **36 % → 84 %** ; recrues sans titre
   (« Chair à canon ») **51 % → 31 %**. Comme on pousse les meilleures compétences et que la réputation compte les trois

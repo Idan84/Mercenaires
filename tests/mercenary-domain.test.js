@@ -89,7 +89,7 @@ assert.equal(profile.titleDomain(profile.evaluate(swordsman(60))), "melee");
 
 // 4. Le jeu : le domaine change, un message dans le journal (« combat rapproché ») ; rien quand il ne change pas.
 const ui = read("ui.js");
-const code = ui.slice(ui.indexOf("function mercenaryDomain("), ui.indexOf("function domainBadge("));
+const code = ui.slice(ui.indexOf("function mercenaryDomain("), ui.indexOf("function renameButton("));
 const journal = [];
 const refresh = new Function("profileRules", "evaluationContext", "gameAction", code + "\nreturn refreshMercenaryDomains;")
   (() => profile, () => ({}), message => journal.push(message));

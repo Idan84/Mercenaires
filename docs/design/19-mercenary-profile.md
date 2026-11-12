@@ -95,7 +95,7 @@ titres au début ».
   au maximum, n'y passe qu'avec +40 en Force, Dextérité et Vitesse : 5★ au CAC), et il faudra ensuite une étoile de plus à
   sa magie pour revenir. À la génération, le titre suit le domaine tiré : personne ne change au premier matin. Le journal
   de la compagnie le dit (« Malik passe au combat rapproché. », « … au combat à distance. », « … à la magie. »), le journal
-  du combat aussi en fin de mission. Le picto de la fiche suit. Code : `titleDomain` (`game-core/mercenary-profile.js`),
+  du combat aussi en fin de mission. (Le picto de la fiche est retiré depuis le 2026-11-12.) Code : `titleDomain` (`game-core/mercenary-profile.js`),
   `refreshMercenaryDomains` (`prototype-web/ui.js`).
 - **Cadre de combat** (Idan, 2026-11-06 : « un cadre de couleur pour nos personnages ? Archer / CAC / Magie » ; « combat
   seulement », « on ne touche pas aux ennemis ») : en combat, l'anneau de nos personnages prend la couleur de leur domaine

@@ -1,9 +1,9 @@
 "use strict";
 
-// La barre du haut du camp (Idan, 2026-11-13, d'après sa maquette) : le blason, le nom et les étoiles de la compagnie, ses
-// chiffres (or, salaires, mercenaires) avec les pictos d'Idan, la date et le bouton menu (Échap) ; plus de logo au camp.
-// La barre du bas garde la Taverne, le Château, Jour suivant et le journal. La culture du capitaine est posée sur
-// <body data-captain-culture> pour l'habillage de la barre par culture (32 cultures).
+// La barre du haut du camp (Idan, 2026-11-13, d'après sa maquette) : la barre illustrée de la culture du capitaine (packs
+// d'Idan, scripts/build-hud-bars.js → hud-bars.js), le blason, le nom et les étoiles de la compagnie, ses chiffres (or,
+// salaires, mercenaires) avec les pictos d'Idan, la date et le bouton menu (Échap) ; plus de logo au camp. La barre du bas
+// garde la Taverne, le Château, Jour suivant et le journal.
 const assert=require("node:assert/strict");
 const fs=require("node:fs");
 const path=require("node:path");
@@ -26,11 +26,17 @@ assert.match(top,/<button id="hud-pause-btn" type="button" aria-label="Ouvrir le
 assert.match(js,/  menu:'<path d="M4\.5 7h15M4\.5 12h15M4\.5 17h15"\/>',/);
 assert.deepEqual(ids(bottom),["hud-tavern","hud-tavern-btn","hud-tavern-menu","hud-castle-btn","hud-next-day-btn","hud-journal","hud-console-toggle","hud-journal-last","game-action-lines"],
   "en bas : Taverne et Château à gauche, Jour suivant au centre, le journal à droite");
-assert.match(top,/<img id="hud-blason" class="hud-blason" alt="Blason de la compagnie" width="84" height="84" hidden>/,"pas de blason tant qu'il n'est pas connu");
+assert.match(top,/<img id="hud-blason" class="hud-blason" alt="Blason de la compagnie" width="160" height="160" hidden>/,"pas de blason tant qu'il n'est pas connu");
 
 // --- Mise en page --------------------------------------------------------------------------------------------------------
-assert.match(css,/:root\{--hud-top-h:58px\}/);
-assert.match(css,/\.game-top-bar\{position:fixed;top:0;left:0;right:0;box-sizing:border-box;display:grid;grid-template-columns:minmax\(0,1fr\) auto;/);
+// Une seule mesure règle la barre : la hauteur de la bande sombre (85 px pour un écran de 2000 px, comme la maquette).
+assert.match(css,/--hb-B:clamp\(52px,4\.25vw,85px\);/);
+assert.match(css,/--hud-top-h:calc\(var\(--hb-top\) \+ var\(--hb-B\) \* 1\.3\);/,"les lieux commencent sous la barre");
+assert.match(css,/\.game-top-bar\{--hb-k:calc\(var\(--hb-B\) \/ var\(--hb-band,90\)\);position:fixed;top:0;/);
+assert.match(css,/\.hud-bar-center\{[^}]*background-repeat:repeat-x;/,"le milieu de la barre se répète");
+assert.match(css,/\.game-top-bar:not\(\.has-art\) \.hud-bar-art\{/,"un cadre provisoire sans pack");
+assert.match(html,/<div class="hud-bar-art" aria-hidden="true"><span class="hud-bar-piece hud-bar-left"><\/span><span class="hud-bar-piece hud-bar-center"><\/span><span class="hud-bar-piece hud-bar-right"><\/span><\/div>/);
+assert.ok(html.indexOf('<script src="hud-bars.js"></script>')>0&&html.indexOf('<script src="hud-bars.js"></script>')<html.indexOf('<script src="screen-ui.js"></script>'));
 assert.match(css,/\.game-top-bar #hud-day::before\{content:"\\00a0·\\00a0";/,"la date sur une ligne : « 1 Brumecendre · Jour 1 »");
 assert.match(css,/body\[data-screen="camp"\] \.topbar\{display:none\}/,"plus de logo au camp, même sur l'accueil");
 assert.match(css,/body\[data-screen="camp"\]:not\(\[data-camp-scene="home"\]\) \.app-shell\{padding-top:calc\(var\(--hud-top-h\) \+ 24px\)\}/,"chaque lieu commence sous la barre");
@@ -38,20 +44,62 @@ assert.match(css,/body\[data-screen="camp"\]\[data-camp-scene="home"\] \.app-she
 assert.match(css,/\.hud-side--left \.hud-menu-list\{left:0;right:auto\}/,"le menu Taverne s'ouvre depuis la gauche");
 assert.match(css,/body\[data-screen="mission"\] \.game-hud\{display:none\}/,"en combat, aucune des deux barres");
 
+// --- Les barres par culture (hud-bars.js) ---------------------------------------------------------------------------------
+const {HUD_BARS}=require("../prototype-web/hud-bars.js");
+const cultures=JSON.parse(fs.readFileSync(path.join(WEB,"..","data","reference","cultures.json"),"utf8")).rows;
+const slugOf=s=>String(s).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
+assert.ok(Object.keys(HUD_BARS).length>=16);
+for(const [key,bar] of Object.entries(HUD_BARS)){
+  assert.ok(cultures.some(c=>c.nom===bar.culture),bar.culture);
+  assert.equal(key,slugOf(bar.culture));
+  for(const piece of ["left","center","right"]) assert.ok(fs.existsSync(path.join(WEB,"assets","hud","barres",key,piece+".webp")),key+"/"+piece);
+  assert.ok(bar.frameTop<=bar.bandTop&&bar.bandTop<bar.bandBottom&&bar.bandBottom<=bar.frameBottom&&bar.frameBottom<bar.h,key+" : cadre et bande");
+  assert.ok(bar.bandBottom-bar.bandTop>=40,key+" : bande assez haute pour écrire");
+  assert.ok(bar.bandLeft<bar.left&&bar.bandRight<bar.right,key+" : la bande traverse les embouts");
+}
+// Le script reconnaît la culture d'un pack par son dossier (peuple, puis mots).
+const {cultureOfPack}=require("../scripts/build-hud-bars.js");
+const packCulture=pack=>cultureOfPack(pack,cultures)?.nom;
+assert.equal(packCulture("Humains/nordique"),"Montagnes du Nord","un humain nordique : pas les Tribus nordiques (hommes-bêtes)");
+assert.equal(packCulture("Orcs/orques-noirs"),"Orcs noirs");
+assert.equal(packCulture("Gnomes/gnomes-forets"),"Gnomes des forêts");
+assert.equal(packCulture("Gobelins/gobelins-cavernes-ferrailleurs"),"Caravanes de ferrailleurs");
+assert.equal(packCulture("Elfes/elfes-solaires"),"Elfes des grandes cités");
+assert.equal(packCulture("Nains/nains-fer-entrave"),"Nains esclaves");
+assert.equal(packCulture("Elfes/inconnus"),undefined);
+
 // --- Blason, culture du capitaine, chiffres ---------------------------------------------------------------------------------------
 const start=js.indexOf("const HUD_BLASON_COUNT=60;");
-const hud=new Function("game","$","document","pictoSlug",js.slice(start,js.indexOf("function renderGameHud(){",start))+"return {hudBlasonUrl,hudNumber,renderHudIdentity};");
+const hud=new Function("game","$","document","pictoSlug","HUD_BARS",js.slice(start,js.indexOf("function renderGameHud(){",start))+"return {hudBlasonUrl,hudNumber,renderHudIdentity};");
+// La barre : ses variables CSS et les images de ses trois morceaux.
+const props={},pieces={left:{style:{}},center:{style:{}},right:{style:{}}},classes=new Set();
+const bar={style:{setProperty:(k,v)=>{props[k]=v;},removeProperty:k=>{delete props[k];}},classList:{toggle:(c,on)=>on?classes.add(c):classes.delete(c)},
+  querySelector:sel=>pieces[sel.replace(".hud-bar-","")]||null};
 const body={dataset:{}};
 const img={attrs:{},hidden:true,getAttribute(k){return this.attrs[k]??null;},setAttribute(k,v){this.attrs[k]=v;}};
 const game={campaign:{company:{blason:7}},captain:{people:"Nain",culture:"Nains des montagnes"}};
 const slug=s=>String(s).normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
-const ui=hud(game,id=>id==="hud-blason"?img:null,{body},slug);
-assert.equal(ui.hudBlasonUrl(1),"assets/creation/blasons/b01.webp");
-assert.equal(ui.hudBlasonUrl(60),"assets/creation/blasons/b60.webp");
+const ui=hud(game,id=>id==="hud-blason"?img:null,{body,querySelector:sel=>sel===".game-top-bar"?bar:null},slug,HUD_BARS);
+assert.equal(ui.hudBlasonUrl(1),"assets/creation/blasons-hd/b01.webp","le blason en haute définition (il est grand)");
+assert.equal(ui.hudBlasonUrl(60),"assets/creation/blasons-hd/b60.webp");
 for(const bad of [0,61,1.5,null,undefined,"x"]) assert.equal(ui.hudBlasonUrl(bad),"",String(bad));
 for(let n=1;n<=60;n++) assert.ok(fs.existsSync(path.join(WEB,ui.hudBlasonUrl(n))),"blason "+n);
 ui.renderHudIdentity();
-assert.deepEqual([body.dataset.captainCulture,img.attrs.src,img.hidden],["nains-des-montagnes","assets/creation/blasons/b07.webp",false]);
+assert.deepEqual([body.dataset.captainCulture,img.attrs.src,img.hidden],["nains-des-montagnes","assets/creation/blasons-hd/b07.webp",false]);
+const nains=HUD_BARS["nains-des-montagnes"];
+assert.ok(classes.has("has-art"),"la barre illustrée des Nains des montagnes");
+assert.deepEqual(props,{"--hb-h":String(nains.h),"--hb-lw":String(nains.left),"--hb-rw":String(nains.right),"--hb-bt":String(nains.bandTop),
+  "--hb-band":String(nains.bandBottom-nains.bandTop),"--hb-ri":String(nains.bandRight)});
+assert.equal(pieces.center.style.backgroundImage,'url("assets/hud/barres/nains-des-montagnes/center.webp")');
+// Une culture encore sans pack : le cadre provisoire, sans image ni mesure.
+const bare=cultures.find(c=>!HUD_BARS[slugOf(c.nom)]);
+if(bare){
+  game.captain.culture=bare.nom;
+  ui.renderHudIdentity();
+  assert.ok(!classes.has("has-art"),bare.nom);
+  assert.deepEqual([Object.keys(props).length,pieces.left.style.backgroundImage],[0,""]);
+  game.captain.culture="Nains des montagnes";
+}
 assert.equal("captainPeople" in body.dataset,false,"la barre suit la culture, pas le peuple (Idan)");
 // L'espace des milliers, comme sur la maquette : « 10 000 ».
 assert.match(ui.hudNumber(10000),/^10\s000$/u);

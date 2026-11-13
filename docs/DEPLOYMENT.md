@@ -94,6 +94,10 @@ Pour savoir quoi produire : l'onglet **Avatars** du Design Lab (https://bloodand
 
 Idan y dépose ses masters de pictos sur fond blanc, rangés par famille : `media/pictos/Culture/` (une image par culture, 2026-10-22). `api/pictos.php` liste le dossier et ses sous-dossiers (même bibliothèque que les avatars) : https://bloodandwages.idanwizen.com/api/pictos.php. Les masters sont ensuite copiés dans `assets-src/Picto/Culture/` sous le nom de leur culture (le fichier d'origine est noté dans le `README.md` du dossier), détourés par `scripts/build-pictos.sh`, comme ceux des peuples et des ascendances, et les versions web vont dans `prototype-web/assets/pictos/culture-<culture>.webp`. Le dossier Hostinger n'est lu que pour cette étape : le jeu n'en dépend pas.
 
+### Barres du haut : `media/hud-pack/`
+
+Idan y dépose les packs de la barre du haut du camp (2026-11-13) : un pack par culture du capitaine, 32 en tout, qui arrivent petit à petit (doc 16). Le dossier n'est pas listable de l'extérieur (403) : `api/hud-pack.php` le liste, sous-dossiers compris, avec la même bibliothèque que les avatars : https://bloodandwages.idanwizen.com/api/hud-pack.php
+
 ### Images d'équipement : `media/equipements/`
 
 Premier dépôt des images des objets (2026-10-23) : `media/equipements/armures/` (une image par armure et par tier, T1 à T4 ; le T4 n'est pas encore en jeu) et `media/equipements/Frames/` (les cadres de tier). Le dossier n'est pas listable de l'extérieur (403) : `api/equipment.php` le liste, sous-dossiers compris, avec la même bibliothèque que les avatars : https://bloodandwages.idanwizen.com/api/equipment.php. **Le jeu ne lit pas ce dossier** : depuis le même jour, les masters sont dans Git (`assets-src/Equipements/`, plus simple pour Idan comme pour JC3) et les versions du jeu sont tirées par `scripts/build-equipment.js`.

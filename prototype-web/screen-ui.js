@@ -78,9 +78,7 @@ function gameAction(message){
 // Barre du bas (Idan, 2026-10-21) : infos principales à gauche, date et « Jour suivant » au centre,
 // journal à droite. Icônes au trait, dans le style de rosterMetricIcon : aucun nouvel asset visuel.
 const HUD_ICONS={
-  gold:'<ellipse cx="12" cy="6.3" rx="7.5" ry="3.3"/><path d="M4.5 6.3v5.1c0 1.8 3.4 3.3 7.5 3.3s7.5-1.5 7.5-3.3V6.3M4.5 11.4v5.1c0 1.8 3.4 3.3 7.5 3.3s7.5-1.5 7.5-3.3v-5.1"/>',
-  upkeep:'<path d="M4 8.5h16"/><path d="M5.6 8.5c-.4 4.2 2.4 7 6.4 7s6.8-2.8 6.4-7"/><path d="M4 8.5 2.8 7M20 8.5 21.2 7"/><path d="M8.2 21c-.9-1.3.6-2 .3-3.4M12 21c-1-1.5.8-2.3.3-3.9M15.8 21c-.9-1.3.6-2 .3-3.4"/><path d="M10.3 5.6c0-1 .8-1.3.8-2.3M13.7 5.6c0-1 .8-1.3.8-2.3"/>',
-  roster:'<path d="M4 4l11 11M20 4 9 15"/><path d="m12.6 17.4 4.8-4.8M6.6 12.6l4.8 4.8"/><path d="m16.3 16.3 3.2 3.2M7.7 16.3l-3.2 3.2"/>',
+  menu:'<path d="M4.5 7h15M4.5 12h15M4.5 17h15"/>',
   journal:'<path d="M7 4.5h10.5a2 2 0 0 1 2 2v0a2 2 0 0 1-2 2H16v9.5a2 2 0 0 1-2 2H6.5a2 2 0 0 1-2-2v0a2 2 0 0 1 2-2H8"/><path d="M7 4.5a2 2 0 0 0-2 2v9.5M10 9h3M10 12.5h3"/>',
   play:'<path d="M9 5.8v12.4l9.6-6.2z" fill="currentColor" stroke="none"/>',
   tavern:'<path d="M5 8.5h10V19a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2z"/><path d="M15 10.5h2.2a2.3 2.3 0 0 1 2.3 2.3v1.4a2.3 2.3 0 0 1-2.3 2.3H15"/><path d="M4.6 8.5c-.9-1.7.4-3.6 2.2-3.3.6-1.6 2.7-2.1 3.8-.9 1.1-1.1 3.3-.6 3.7 1 1.7 0 2.6 1.7 1.8 3.2"/><path d="M8.4 11.5v6.5M11.6 11.5v6.5"/>',
@@ -102,16 +100,19 @@ function hudGoldDelta(gold){
   $("hud-gold-stat").appendChild(delta);
 }
 // La barre du haut (Idan, 2026-11-13) : le blason choisi à la création du capitaine (60 blasons ; une ancienne partie n'en
-// a pas) et le peuple du capitaine sur <body data-captain-people>, pour habiller les barres selon son peuple.
+// a pas) et la culture du capitaine sur <body data-captain-culture>, pour habiller la barre selon sa culture (Idan : « la
+// barre qui change en fonction de la culture, et pas du peuple »).
 const HUD_BLASON_COUNT=60;
 function hudBlasonUrl(blason){
   const n=Number(blason);
   return Number.isInteger(n)&&n>=1&&n<=HUD_BLASON_COUNT?`assets/creation/blasons/b${String(n).padStart(2,"0")}.webp`:"";
 }
+// Les chiffres de la barre du haut avec l'espace des milliers, comme sur la maquette d'Idan (« 10 000 »).
+function hudNumber(n){ return Math.round(Number(n)||0).toLocaleString("fr-FR"); }
 function renderHudIdentity(){
-  const people=game.campaign&&game.captain?.people&&typeof pictoSlug==="function"?pictoSlug(game.captain.people):"";
-  if(people) document.body.dataset.captainPeople=people;
-  else delete document.body.dataset.captainPeople;
+  const culture=game.campaign&&game.captain?.culture&&typeof pictoSlug==="function"?pictoSlug(game.captain.culture):"";
+  if(culture) document.body.dataset.captainCulture=culture;
+  else delete document.body.dataset.captainCulture;
   const img=$("hud-blason");
   if(!img) return;
   const url=hudBlasonUrl(game.campaign?.company.blason);
@@ -129,13 +130,13 @@ function renderGameHud(){
   $("hud-company").textContent=company.name;
   $("hud-renown").innerHTML=rules?renderRenownStars(rules.companyRenown(game.campaign)):"";
   const gold=Math.round(company.gold);
-  $("hud-gold").textContent=fmt(gold);
+  $("hud-gold").textContent=hudNumber(gold);
   // Les dettes (Idan, 2026-11-10 ; debts-ui.js) : la caisse ne descend plus sous 0 ; ce qui est dû passe en rouge.
   const debts=typeof debtTotal==="function"?debtTotal(game.campaign):0;
   $("hud-gold-stat").title="Trésor de la compagnie : "+fmt(gold)+" PO"+(debts?" · Dettes : "+fmt(debts)+" PO":"");
   $("hud-gold-stat").classList.toggle("hud-stat--debt",gold<0||debts>0);
   hudGoldDelta(gold);
-  $("hud-upkeep").textContent=fmt(Math.round(rules?rules.payroll(game.campaign):0))+" PO/j";
+  $("hud-upkeep").textContent=hudNumber(rules?rules.payroll(game.campaign):0)+" PO/j";
   // Places occupées au dortoir (un ogre en prend deux, un halfling, un gnome ou un gobelin une demi ; ni le capitaine ni
   // l'intendant).
   $("hud-roster").textContent=dormitoryPlacesText(rules?rules.dormitoryUsed(game.campaign):company.roster.length)+" / "+(company.camp?.dormitoryCapacity??"—");

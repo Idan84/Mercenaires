@@ -207,6 +207,33 @@
     const extra=rows.filter(a=>!ids.has(a.id)&&captainFits(a,{people,culture,ascendance:null})&&fitsSex(a));
     return {portraits:[...own,...extra],own:own.length,added:extra.length};
   }
+  // Portraits proposés dans l'assistant de création (Idan, 2026-11-12 : « ça permet de filtrer en fonction des réponses pour
+  // les armes / la magie… On met les 12 avatars les plus proches par genre ») : même peuple et même sexe (ou sans sexe) ;
+  // un avatar « Ascendance only » ne va qu'à son ascendance. Puis on classe : culture +3 ; arme favorite +4 (ou une arme
+  // de sa famille +2) ; école choisie +3 ; « Franchement aucune ! » −2 pour un profil mage ; profil distance ou mêlée
+  // de l'arme favorite +1 ; ascendance +2. À égalité, l'ordre du catalogue. Les 12 premiers.
+  const CAPTAIN_RANKED_COUNT=12;
+  function captainPortraitsRanked(catalog,{people,culture=null,ascendance=null,sex=null,weapon=null,weaponFamily=[],school=null,noMagic=false,ranged=false}={},{count=CAPTAIN_RANKED_COUNT}={}){
+    const rows=Array.isArray(catalog)?catalog:[],wanted=sexOf(sex),family=list(weaponFamily);
+    const has=(a,key,value)=>Boolean(value)&&list(a.tags?.[key]).includes(norm(value));
+    return rows.map((a,index)=>({a,index}))
+      .filter(({a})=>a?.id&&a.full&&a.portrait&&norm(a.people)===norm(people)
+        &&(!wanted||!sexOf(a.sex)||sexOf(a.sex)===wanted)
+        &&(!a.ascendanceOnly||has(a,"ascendance",ascendance)))
+      .map(({a,index})=>{
+        let score=0;
+        if(has(a,"culture",culture)) score+=3;
+        if(weapon&&has(a,"weapon",weapon)) score+=4;
+        else if(weapon&&list(a.tags?.weapon).some(w=>family.includes(w))) score+=2;
+        if(school&&has(a,"magic",school)) score+=3;
+        if(noMagic&&has(a,"profile","magic")) score-=2;
+        if(weapon&&has(a,"profile",ranged?"ranged":"melee")) score+=1;
+        if(has(a,"ascendance",ascendance)) score+=2;
+        return {a,index,score};
+      })
+      .sort((x,y)=>y.score-x.score||x.index-y.index)
+      .slice(0,count).map(x=>x.a);
+  }
   // Contrôle du Design Lab : pour une culture, chaque ascendance possible (null = sans ascendance) × genre, les portraits
   // de cette ascendance (sans le complément) et ce qui manque pour en avoir 3.
   function captainCoverage(catalog,{people,culture,ascendances=[null]}={},{minimum=CAPTAIN_MINIMUM}={}){
@@ -217,5 +244,5 @@
   }
 
   return {createAvatarRules,avatarTags,scoreAvatar,weaponFamilies,avatarLook,sameCulture,sameAscendance,norm,captainPortraits,captainCoverage,
-    CAPTAIN_MINIMUM,SCORE,SHARED_ASCENDANCE,VISIBLE,MISMATCH_SHARE,NOISE_MAX};
+    captainPortraitsRanked,CAPTAIN_RANKED_COUNT,CAPTAIN_MINIMUM,SCORE,SHARED_ASCENDANCE,VISIBLE,MISMATCH_SHARE,NOISE_MAX};
 });

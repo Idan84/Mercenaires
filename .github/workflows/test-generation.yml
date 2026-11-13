@@ -67,7 +67,7 @@ jobs:
       - run: node tests/design-lab-bestiary.test.js
       - run: node tests/asset-coverage.test.js
       - run: node tests/affinity-display.test.js
-      - run: node tests/wizard-ui-refinements.test.js
+      - run: node tests/captain-creation-ui.test.js
       - run: node tests/design-graph-simulation.test.js
       - run: node tests/design-graph-integrity.test.js
       - run: node tests/biography.test.js
@@ -164,6 +164,7 @@ jobs:
       - run: node tests/steward-ui.test.js
       - run: node tests/avatars.test.js
       - run: node tests/creation.test.js
+      - run: node tests/captain-choices.test.js
       - run: node tests/avatar-catalog.test.js
       - run: node tests/avatar-demand.test.js
       - run: node --check scripts/build-avatar-demand.js

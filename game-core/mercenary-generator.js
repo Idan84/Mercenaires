@@ -439,6 +439,86 @@
       return cleared;
     }
 
+    // Choix du capitaine dans l'assistant de création (Idan, 2026-11-12 : « on laisse un tout petit peu plus de choix au
+    // joueur… on peut se retrouver à jouer un healer alors qu'on est un bourrin ») :
+    // - arme favorite : +3D6 dans l'arme, +2D6 dans sa famille ;
+    // - tenue : les ports d'armure qu'il souhaite (0 aucun, 1 légère, 2 + intermédiaire, 3 + lourde) ;
+    // - esprit : +2D6 dans l'école choisie ; « Franchement aucune ! » : les points de ses écoles (au-dessus de la valeur
+    //   « non pratiquée ») sont répartis au hasard, point par point, dans ses caractéristiques non magiques, et il perd
+    //   ses sorts ;
+    // - caractère : +2D6 dans la caractéristique.
+    // Appliqués une fois le profil tiré (après la remise à 1 des compétences non pratiquées, pour que le gain se voie) et
+    // avant les valeurs dérivées (PV, réputation, équipement, salaire).
+    const ARMOR_PORT_TYPES = ["légère", "intermédiaire", "lourde"];
+    const MAGIC_STATS = new Set(["Puissance magique", "Réserve de mana"]);
+    function applyCaptainChoices(character, choices, trace) {
+      const applied = {};
+      const note = (target, label, dice, roll, delta) => {
+        const entry = trace.skills[target] || trace.characteristics[target];
+        if (!entry) return;
+        entry.contributions.push({name: label, kind: "captain-choice", dice, roll, delta});
+        entry.final = character.skills.martial?.[target] ?? character.skills.magic?.[target] ?? character.stats[target];
+      };
+      const addSkill = (group, name, dice, label) => {
+        if (!character.skills[group] || !Number.isFinite(Number(character.skills[group][name]))) return null;
+        const rolled = rollDice(dice, 6);
+        character.skills[group][name] = Number(character.skills[group][name]) + rolled;
+        note(name, label, dice + "D6", rolled, rolled);
+        return {name, dice: dice + "D6", roll: rolled, value: character.skills[group][name]};
+      };
+      if (choices.weapon && weaponByName.has(choices.weapon)) {
+        applied.weapon = addSkill("martial", choices.weapon, constant("generation.captain.favorite_weapon_d6", 3), "Arme favorite");
+        const family = skillByName.get(choices.weapon)?.parent;
+        if (family) applied.weaponFamily = addSkill("martial", family, constant("generation.captain.favorite_weapon_family_d6", 2), "Arme favorite (famille)");
+      }
+      const ports = Number(choices.armorPorts);
+      if (Number.isInteger(ports) && ports >= 0) {
+        applied.armorPorts = ARMOR_PORT_TYPES.slice(0, Math.min(ports, ARMOR_PORT_TYPES.length)).map(type => {
+          character.skills.martial["Port d’armure " + type] = true;
+          return type;
+        });
+      }
+      if (choices.noMagic) {
+        let points = 0;
+        for (const school of magicSchoolNames) {
+          const value = Number(character.skills.magic?.[school]);
+          if (!Number.isFinite(value) || value <= unpracticedValue) continue;
+          points += value - unpracticedValue;
+          character.skills.magic[school] = unpracticedValue;
+          note(school, "Aucune affinité spirituelle", null, null, unpracticedValue - value);
+        }
+        const targets = Object.keys(character.stats).filter(name => !MAGIC_STATS.has(name) && Number.isFinite(character.stats[name]));
+        const gains = {};
+        for (let i = 0; i < Math.round(points) && targets.length; i++) {
+          const name = targets[Math.floor(random() * targets.length)];
+          gains[name] = (gains[name] || 0) + 1;
+        }
+        for (const [name, delta] of Object.entries(gains)) {
+          character.stats[name] += delta;
+          note(name, "Points de magie redistribués", null, null, delta);
+        }
+        applied.noMagic = {points: Math.round(points), gains, spellsLost: (character.spells || []).map(s => s.code)};
+        character.spells = [];
+      } else if (choices.school && magicSchoolNames.includes(choices.school)) {
+        applied.school = addSkill("magic", choices.school, constant("generation.captain.spirit_school_d6", 2), "Affinité spirituelle");
+      }
+      if (choices.stat && Number.isFinite(character.stats[choices.stat])) {
+        const dice = constant("generation.captain.character_stat_d6", 2);
+        const rolled = rollDice(dice, 6);
+        character.stats[choices.stat] += rolled;
+        note(choices.stat, "Caractère", dice + "D6", rolled, rolled);
+        applied.stat = {name: choices.stat, dice: dice + "D6", roll: rolled, value: character.stats[choices.stat]};
+      }
+      character.weaponPreferences = computeWeaponPreferences(character.skills);
+      // Sans magie, un capitaine mage change de domaine (sans nouvelle accentuation).
+      if (choices.noMagic && character.domain === "magic") {
+        const domain = chooseDomain(character).code;
+        applied.domain = {from: character.domain, to: domain};
+        character.domain = domain;
+      }
+      return applied;
+    }
+
     function grantMageSpell(character) {
       if (character.domain !== "magic" || (character.spells || []).length || !spellRows.length) return null;
       const values = character.skills.magic || {};
@@ -1605,6 +1685,7 @@
       trace.mageSpell = grantMageSpell(character);
       trace.unpracticed = clearUnpracticedSkills(character, trace);
       if (trace.unpracticed.length) character.weaponPreferences = computeWeaponPreferences(character.skills);
+      if (createOptions.captainChoices) trace.captainChoices = applyCaptainChoices(character, createOptions.captainChoices, trace);
 
       character.salaryPretension = rollDice(10,6);
       character.pvMax = Math.ceil(3 * (

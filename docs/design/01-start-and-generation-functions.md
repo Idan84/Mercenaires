@@ -39,13 +39,31 @@ Le capitaine est un mercenaire particulier dont **l’identité est orientée pa
 
 Le joueur choisit :
 
+- son prénom et, s’il le souhaite, son nom de famille ;
 - le peuple ;
 - s’il souhaite une ascendance ;
 - la culture ;
 - l’origine sociale ;
-- l’alignement.
+- son arme favorite, sa tenue, ses affinités spirituelles et son caractère (voir ci-dessous) ;
+- son portrait ;
+- l’alignement (par défaut, le plus fréquent de son peuple ou de sa culture) ;
+- le nom et le blason de sa compagnie.
 
-Les jets de caractéristiques ne sont **pas améliorés, relancés ou modifiés par ces choix**. On utilise les mêmes jets bruts que pour un mercenaire normal : caractéristiques fondamentales = `20 + 3D20`, résistances = `1D6`. Les choix déterminent simplement quels modificateurs de peuple, ascendance, culture et origine seront ensuite appliqués.
+Les jets de caractéristiques ne sont **pas améliorés, relancés ou modifiés par l’identité**. On utilise les mêmes jets bruts que pour un mercenaire normal : caractéristiques fondamentales = `20 + 3D20`, résistances = `1D6`. Le peuple, l’ascendance, la culture et l’origine déterminent simplement quels modificateurs seront ensuite appliqués.
+
+### Choix de personnalité (Idan, 2026-11-12)
+
+Quatre questions, posées après l’ascendance, laissent un peu plus de choix au joueur (« on peut se retrouver à jouer un healer alors qu’on est un bourrin »). Les gains ne sont jamais affichés à l’écran. Ils s’appliquent une fois le profil tiré (après la remise à 1 des compétences non pratiquées, pour que le gain se voie) et avant les valeurs dérivées (PV, réputation, équipement, salaire) :
+
+| Question | Effet |
+|---|---|
+| Arme favorite (toutes les armes du jeu, sans les boucliers) | +3D6 dans l’arme, +2D6 dans sa famille |
+| « Vestimentairement, vous êtes plutôt ? » | Ports d’armure : le vent = aucun ; un petit truc léger = légère ; mon cuir = légère et intermédiaire ; une vraie boîte de conserve = les trois |
+| « Sur le plan spirituel, vous avez des affinités » | +2D6 dans l’école (bain = Eau, barbecues = Feu, foudre = Foudre, chaque chose vivante = Vie, changer d’apparence = Transmutation, refuser de croire en la mort = Nécromancie, animaux de compagnie = Invocation, faire voler les choses = Télékinésie, ne croire que ce qu’on ne voit pas = Illusion) |
+| « Franchement aucune ! » | Les points de ses écoles (au-dessus de 1, la valeur « non pratiquée ») sont répartis au hasard, point par point, dans ses caractéristiques non magiques (toutes sauf Puissance magique et Réserve de mana) ; il perd ses sorts ; un capitaine mage change de domaine |
+| « Pour bien vous comprendre » | +2D6 dans la caractéristique : Vitesse, Perception, Courage, Intelligence, Force ou Dextérité |
+
+Constantes : `generation.captain.favorite_weapon_d6 = 3`, `generation.captain.favorite_weapon_family_d6 = 2`, `generation.captain.spirit_school_d6 = 2`, `generation.captain.character_stat_d6 = 2`. Code : `applyCaptainChoices` (game-core/mercenary-generator.js), option `captainChoices` de `createCaptain`.
 
 Si le joueur demande une ascendance :
 

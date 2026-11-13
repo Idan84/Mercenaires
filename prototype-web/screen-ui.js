@@ -174,6 +174,7 @@ function backToMenu(){
   game.initialSquad=[];
   game.recruitTalk=null;
   if(typeof stopIntroVoice==="function") stopIntroVoice();
+  if(typeof closeCreation==="function") closeCreation();
   for(const id of ["setup-panel","game-panel","game-over-panel","intro-panel","creation-wizard"]) $(id).classList.add("hidden");
   renderSaveStatus();
   renderGameHud();

@@ -22,12 +22,18 @@ function createCharacter(options = {}) {
   return ensureGenerator().createMercenary({...options, id});
 }
 
+// Depuis la création du capitaine (intro-ui.js), le prénom, le nom de famille et les réponses aux questions de
+// personnalité (arme favorite, tenue, esprit, caractère : game-core/creation.js) accompagnent le formulaire.
 function createCaptainFromForm() {
   const ascendance = $("captain-ascendance").value || null;
   const id = nextCharacterId();
+  const created = typeof captainCreation !== "undefined" ? captainCreation.result : null;
   return ensureGenerator().createCaptain({
     id,
     name: $("captain-name").value.trim() || "Bob",
+    firstName: created?.prenom || null,
+    familyName: created?.nom || null,
+    captainChoices: created ? MercenairesCreation.captainChoices(game.referenceData?.captainCreationCopy, created.reponses) : null,
     role: "Capitaine",
     forcedPeople: $("captain-people").value,
     forcedCulture: $("captain-culture").value,

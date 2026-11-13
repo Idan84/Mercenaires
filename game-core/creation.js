@@ -23,5 +23,27 @@
     return {forces:forces.sort(order),faiblesses:faiblesses.sort(order)};
   }
 
-  return {traitsFor};
+  // Alignement proposé par défaut (Idan, 2026-11-12 : « on sélectionne simplement par défaut le plus fréquent du peuple /
+  // culture choisi ») : l'exception de la culture (alignment-generation.json, culture_overrides), sinon l'alignement
+  // principal du peuple (peoples.json), comme le générateur.
+  function usualAlignment(reference,people,culture){
+    return reference?.alignmentGeneration?.culture_overrides?.[culture]
+      ||(reference?.peoples?.rows||[]).find(r=>r.nom===people)?.alignement_principal||null;
+  }
+
+  // Les réponses aux questions de personnalité (indices dans captain-creation-copy.json : outfits, spirits, characters)
+  // → option captainChoices de createCaptain (game-core/mercenary-generator.js, applyCaptainChoices).
+  function captainChoices(copy,{weapon=null,outfit=null,spirit=null,character=null}={}){
+    const choices={};
+    if(weapon) choices.weapon=weapon;
+    const o=copy?.outfits?.[outfit];
+    if(o&&Number.isInteger(o.ports)) choices.armorPorts=o.ports;
+    const s=copy?.spirits?.[spirit];
+    if(s) s.ecole?choices.school=s.ecole:choices.noMagic=true;
+    const c=copy?.characters?.[character];
+    if(c?.carac) choices.stat=c.carac;
+    return choices;
+  }
+
+  return {traitsFor,usualAlignment,captainChoices};
 });

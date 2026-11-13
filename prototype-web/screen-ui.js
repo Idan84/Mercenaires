@@ -122,7 +122,7 @@ function applyHudBar(culture){
   if(!bar||hudBarShown===key) return;
   hudBarShown=key;
   bar.classList.toggle("has-art",Boolean(data));
-  const vars={h:data?.h,lw:data?.left,rw:data?.right,bt:data?.bandTop,band:data?data.bandBottom-data.bandTop:null,ri:data?.bandRight};
+  const vars={h:data?.h,lw:data?.left,rw:data?.right,bt:data?.bandTop,band:data?data.bandBottom-data.bandTop:null,li:data?.bandLeft,ri:data?.bandRight};
   for(const [name,value] of Object.entries(vars)){
     if(value==null) bar.style.removeProperty("--hb-"+name);
     else bar.style.setProperty("--hb-"+name,String(value));
@@ -133,26 +133,52 @@ function applyHudBar(culture){
   }
 }
 // Le nom de la compagnie tient dans sa place : quand un grand ornement de barre (la toile des elfes noirs, le crâne des
-// orcs) ou un long nom ne laisse pas assez de largeur, sa police rétrécit jusqu'à 70 % ; au-delà, points de suspension.
+// orcs), un blason très décoré ou un long nom ne laisse pas assez de largeur, sa police rétrécit jusqu'à 80 %, puis il passe
+// sur deux lignes ; au-delà de deux lignes, points de suspension.
 let hudNameFitted="";
+// Le nom déborde-t-il ? scrollWidth arrondit au pixel : un débordement d'une fraction de pixel suffit pourtant au navigateur
+// pour couper le nom ; on compare donc aussi la largeur exacte du texte.
+function hudNameOverflows(node){
+  if(node.scrollWidth>node.clientWidth) return true;
+  if(typeof document.createRange!=="function") return false;
+  const range=document.createRange();
+  range.selectNodeContents(node);
+  return range.getBoundingClientRect().width>node.getBoundingClientRect().width+.01;
+}
 function fitHudCompanyName(force=false){
   const node=$("hud-company");
   if(!node||typeof getComputedStyle!=="function") return;
   // Barre cachée (combat) : rien à mesurer ; on recommencera quand elle reviendra.
   if(!node.getClientRects().length) return;
-  const key=node.textContent+"|"+(typeof innerWidth==="number"?innerWidth:0);
+  // La place dépend de l'écran, du blason et de la barre : on refait l'ajustement quand la largeur disponible change.
+  const room=node.closest(".hud-top-content");
+  const key=node.textContent+"|"+(room?Math.round(room.getBoundingClientRect().width):0);
   if(!force&&key===hudNameFitted) return;
   hudNameFitted=key;
   node.style.removeProperty("font-size");
+  node.classList.remove("is-two-lines");
   let size=parseFloat(getComputedStyle(node).fontSize);
-  const min=size*.7;
-  while(node.scrollWidth>node.clientWidth+1&&size>min){
+  const min=size*.8;
+  while(hudNameOverflows(node)&&size>min){
     size=Math.max(min,size-.5);
     node.style.fontSize=size+"px";
   }
+  if(hudNameOverflows(node)) node.classList.add("is-two-lines");
 }
 // Les chiffres de la barre du haut avec l'espace des milliers, comme sur la maquette d'Idan (« 10 000 »).
 function hudNumber(n){ return Math.round(Number(n)||0).toLocaleString("fr-FR"); }
+// L'écu du blason (sa partie principale) et l'étendue de l'image (blason-bodies.js), en variables CSS de la page : la barre
+// du haut s'y aligne.
+const HUD_BLASON_BODY=["x0","y0","x1","y1","ox0","oy0","ox1"];
+function applyHudBlasonBody(blason){
+  const root=document.documentElement;
+  if(!root?.style) return;
+  const body=typeof BLASON_BODIES==="object"&&hudBlasonUrl(blason)?BLASON_BODIES[Number(blason)]:null;
+  HUD_BLASON_BODY.forEach((name,i)=>{
+    if(body) root.style.setProperty("--bl-"+name,String(body[i]));
+    else root.style.removeProperty("--bl-"+name);
+  });
+}
 function renderHudIdentity(){
   const culture=game.campaign&&game.captain?.culture&&typeof pictoSlug==="function"?pictoSlug(game.captain.culture):"";
   if(culture) document.body.dataset.captainCulture=culture;
@@ -163,6 +189,7 @@ function renderHudIdentity(){
   const url=hudBlasonUrl(game.campaign?.company.blason);
   if(url&&img.getAttribute("src")!==url) img.setAttribute("src",url);
   img.hidden=!url;
+  applyHudBlasonBody(game.campaign?.company.blason);
 }
 function renderGameHud(){
   const hud=$("game-hud");

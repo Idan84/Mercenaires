@@ -1494,32 +1494,45 @@ body[data-screen="camp"] .app-shell{padding-bottom:112px}
    en dessous ; dans sa bande sombre, le nom de la compagnie en italique et ses étoiles, puis l'or, les salaires et les
    mercenaires dans des pastilles avec les pictos d'Idan ; à droite, après un filet, la date et le bouton menu.
    Une seule mesure, --hb-B (la hauteur de la bande sombre), règle tout : proportions de la maquette (bande de 85 px pour
-   un écran de 2000 px). Les mesures du pack (en pixels de l'image : --hb-h, --hb-lw, --hb-rw, --hb-bt, --hb-band, --hb-ri)
-   viennent de hud-bars.js ; sans pack pour cette culture, un cadre provisoire de mêmes proportions. */
+   un écran de 2000 px). Les mesures du pack (en pixels de l'image : --hb-h, --hb-lw, --hb-rw, --hb-bt, --hb-band, --hb-li,
+   --hb-ri) viennent de hud-bars.js ; sans pack pour cette culture, un cadre provisoire de mêmes proportions.
+   Le blason (Idan : « il faut pas mesurer la taille de l'image mais la taille de la partie principale ») : son écu
+   (--bl-x0, --bl-y0, --bl-x1, --bl-y1, en fractions de l'image, blason-bodies.js) fait deux bandes de haut, est centré sur
+   la bande, et la barre part de son milieu : rien ne dépasse à gauche du blason. L'image entière (--bl-ox0, --bl-oy0,
+   --bl-ox1 : ses pixels opaques) reste dans l'écran, garde de l'air au-dessus (un casque ou une couronne fait descendre la
+   barre), et le texte commence après ses décors. */
 :root{
   --hb-B:clamp(52px,4.25vw,85px);
-  --hb-m:calc(var(--hb-B) * .15);
-  --hb-top:calc(var(--hb-m) + var(--hb-B) * 1.07);
+  --hb-m:calc(var(--hb-B) * .3);
+  --bl-x0:.12;--bl-y0:0;--bl-x1:.88;--bl-y1:1;--bl-ox0:.1;--bl-oy0:0;--bl-ox1:.9;
+  --bl-S:min(calc(var(--hb-B) * 2 / (var(--bl-y1) - var(--bl-y0))),calc(var(--hb-B) * 2.1 / (var(--bl-x1) - var(--bl-x0))));
+  --hb-mid:max(calc(var(--hb-m) + var(--bl-S) * ((var(--bl-y0) + var(--bl-y1)) / 2 - var(--bl-oy0))),calc(var(--hb-m) + var(--hb-B)));
+  --hb-top:calc(var(--hb-mid) - var(--hb-B) / 2);
   --hud-top-h:calc(var(--hb-top) + var(--hb-B) * 1.3);
+  --bl-left:max(calc(var(--hb-B) * .4),calc(var(--bl-S) * (var(--bl-x0) - var(--bl-ox0)) + var(--hb-B) * .12));
+  --bl-cx:calc(var(--bl-left) + var(--bl-S) * (var(--bl-x1) - var(--bl-x0)) / 2);
+  --bl-right:max(calc(var(--bl-left) + var(--bl-S) * (var(--bl-x1) - var(--bl-x0)) + var(--hb-B) * .3),calc(var(--bl-left) + var(--bl-S) * (var(--bl-ox1) - var(--bl-x0)) + var(--hb-B) * .08));
 }
 body[data-screen="camp"][data-camp-scene="home"] .app-shell{padding-top:calc(var(--hud-top-h) + 18px)}
 .game-top-bar{--hb-k:calc(var(--hb-B) / var(--hb-band,90));position:fixed;top:0;left:0;right:0;height:var(--hud-top-h);pointer-events:none}
-.hud-bar-art{position:absolute;left:calc(var(--hb-B) * .45);right:calc(var(--hb-B) * .12);top:calc(var(--hb-top) - var(--hb-k) * var(--hb-bt,0));height:calc(var(--hb-k) * var(--hb-h,90));filter:drop-shadow(0 8px 16px #000a)}
+.hud-bar-art{position:absolute;left:calc(var(--bl-cx) - var(--hb-k) * var(--hb-li,0));right:calc(var(--hb-B) * .12);top:calc(var(--hb-top) - var(--hb-k) * var(--hb-bt,0));height:calc(var(--hb-k) * var(--hb-h,90));
+  clip-path:inset(-60% -10% -60% calc(var(--hb-k) * var(--hb-li,0)));filter:drop-shadow(0 8px 16px #000a)}
 .hud-bar-piece{position:absolute;top:0;bottom:0;background-repeat:no-repeat;background-size:100% 100%}
 .hud-bar-left{left:0;width:calc(var(--hb-k) * var(--hb-lw,0))}
 .hud-bar-right{right:0;width:calc(var(--hb-k) * var(--hb-rw,0))}
 .hud-bar-center{left:calc(var(--hb-k) * var(--hb-lw,0) - 1px);right:calc(var(--hb-k) * var(--hb-rw,0) - 1px);background-repeat:repeat-x;background-size:auto 100%}
 /* Sans pack : un cadre provisoire autour de la bande. */
-.game-top-bar:not(.has-art) .hud-bar-art{top:calc(var(--hb-top) - var(--hb-B) * .22);height:calc(var(--hb-B) * 1.44);box-sizing:border-box;border:1px solid #b58c53;border-radius:calc(var(--hb-B) * .2);
+.game-top-bar:not(.has-art) .hud-bar-art{left:var(--bl-cx);clip-path:none;top:calc(var(--hb-top) - var(--hb-B) * .22);height:calc(var(--hb-B) * 1.44);box-sizing:border-box;border:1px solid #b58c53;border-radius:calc(var(--hb-B) * .2);
   background:linear-gradient(180deg,rgba(255,214,150,.08),transparent 45%),linear-gradient(180deg,#3d2c20f7,#1b130ef9 70%,#110b08);box-shadow:inset 0 0 0 calc(var(--hb-B) * .12) #2a1d15,inset 0 0 0 calc(var(--hb-B) * .13) #b58c5399}
-.game-top-bar .hud-blason{position:absolute;left:calc(var(--hb-B) * .55);top:var(--hb-m);z-index:2;display:block;width:calc(var(--hb-B) * 2.8);height:calc(var(--hb-B) * 2.8);object-fit:contain;filter:drop-shadow(0 6px 12px #000d);pointer-events:auto}
+.game-top-bar .hud-blason{position:absolute;left:calc(var(--bl-left) - var(--bl-S) * var(--bl-x0));top:calc(var(--hb-mid) - var(--bl-S) * (var(--bl-y0) + var(--bl-y1)) / 2);z-index:2;display:block;width:var(--bl-S);height:var(--bl-S);object-fit:contain;filter:drop-shadow(0 6px 12px #000d);pointer-events:auto}
 .hud-blason[hidden]{display:none}
-.hud-top-content{position:absolute;z-index:1;top:var(--hb-top);height:var(--hb-B);left:calc(var(--hb-B) * 3.61);right:calc(var(--hb-B) * .32 + var(--hb-k) * var(--hb-ri,0));display:flex;align-items:center;justify-content:space-between;gap:calc(var(--hb-B) * .35);pointer-events:auto}
+.hud-top-content{position:absolute;z-index:1;top:var(--hb-top);height:var(--hb-B);left:var(--bl-right);right:calc(var(--hb-B) * .32 + var(--hb-k) * var(--hb-ri,0));display:flex;align-items:center;justify-content:space-between;gap:calc(var(--hb-B) * .35);pointer-events:auto}
 .hud-top-side{display:flex;align-items:center;min-width:0}
 .hud-top-side--left{flex:1 1 auto;gap:calc(var(--hb-B) * .53)}
 .hud-top-side--right{flex:none;gap:calc(var(--hb-B) * .35)}
 .game-top-bar .hud-company{flex:0 1 auto;align-items:center;min-width:0;max-width:none;line-height:1.1}
 .game-top-bar #hud-company{max-width:100%;font:italic calc(var(--hb-B) * .365) Georgia,serif;color:#efe3c6;text-shadow:0 2px 6px #000}
+.game-top-bar #hud-company.is-two-lines{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;white-space:normal;line-height:1.05;text-align:center}
 .game-top-bar .hud-renown{margin-top:calc(var(--hb-B) * .04);font-size:calc(var(--hb-B) * .3);letter-spacing:.12em;line-height:1}
 .game-top-bar .hud-stats{flex:none;gap:calc(var(--hb-B) * .19);margin:0}
 .game-top-bar .hud-stat{box-sizing:border-box;height:calc(var(--hb-B) * .73);gap:calc(var(--hb-B) * .2);padding:0 calc(var(--hb-B) * .41) 0 calc(var(--hb-B) * .29);border:2px solid #d8dee466;border-radius:999px;background:#05080a59;box-shadow:inset 0 1px 4px #000a}

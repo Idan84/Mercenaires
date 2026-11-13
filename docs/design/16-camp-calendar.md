@@ -14,16 +14,19 @@ Le même jour, Idan a précisé l'emplacement : le calendrier, en petit, et le b
 Refonte de l'interface du camp, en trois temps : **1.** le contenu (ce qui suit), **2.** l'habillage graphique (Idan
 fournit les images), **3.** des infobulles utiles sur l'or, les salaires et les mercenaires.
 
-**La barre du haut** dit où en est la compagnie :
+**La barre du haut** dit où en est la compagnie (disposition de la maquette d'Idan, 2026-11-13) :
 
-- **À gauche** : le **blason** choisi à la création du capitaine, le **nom** de la compagnie et ses **étoiles** de renommée.
-- **Au centre** : l'**or**, les **salaires** du jour et les **mercenaires** (places occupées au dortoir / places).
-- **À droite** : la **date** (le jour de campagne et l'an ; l'ère et la citation du jour au survol) et le bouton
-  **Échap** (menu de pause).
+- **À gauche** : le **blason** choisi à la création du capitaine (en grand ; il déborde sous la barre), le **nom** de la
+  compagnie en italique et ses **étoiles** de renommée dessous ; puis l'**or**, les **salaires** du jour et les
+  **mercenaires** (places occupées au dortoir / places), chacun dans une pastille avec son picto (pictos d'Idan : pièces,
+  bourse, trois casques). Les nombres prennent l'espace des milliers (« 10 000 »).
+- **À droite** : après un filet, la **date** sur une ligne (« 1 Brumecendre · Jour 1 » ; l'ère et la citation du jour au
+  survol) et le **bouton menu** (Échap).
 - Le logo Blood & Wages n'apparaît plus au camp : il reste sur l'écran titre.
-- **Habillage par peuple** (idée d'Idan) : la barre se décline selon le peuple du capitaine ; le jeu pose ce peuple sur la
-  page (`body[data-captain-people]`, par exemple `nain`, `elfe`, `homme-bete`). En attendant les images, la barre reprend le
-  style de la barre du bas.
+- **Habillage par culture** (Idan : « la barre qui change en fonction de la culture, et pas du peuple ») : une barre
+  illustrée par culture, soit 32. Le jeu pose la culture du capitaine sur la page (`body[data-captain-culture]`, par
+  exemple `nains-des-montagnes`). Le blason, les textes, les chiffres et les pictos restent hors de l'image : le jeu les
+  pose par-dessus. En attendant les images, la barre garde un fond provisoire.
 
 **La barre du bas** sert à se déplacer et à agir. Pour l'instant : **Taverne** (son menu) et **Château** à gauche,
 **Jour suivant** au centre, le **journal** à droite. Liste retenue pour la suite (à préciser) : Château (l'écran du camp),

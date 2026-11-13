@@ -1489,34 +1489,49 @@ body[data-screen="camp"]:not([data-camp-scene="home"]) .app-shell{padding-top:ca
    Château à gauche, gros bouton « Jour suivant » au centre, journal intégré à droite. Univers heroic fantasy : bois
    sombre, liserés dorés, médaillon central. Aucun nouvel asset visuel (icônes SVG au trait dans screen-ui.js). */
 body[data-screen="camp"] .app-shell{padding-bottom:112px}
-/* La barre du haut (Idan, 2026-11-13, d'après sa maquette) : à gauche, le blason (il déborde sous la barre), le nom de la
-   compagnie en italique et ses étoiles dessous ; au milieu, l'or, les salaires et les mercenaires dans des pastilles, avec
-   les pictos d'Idan ; à droite, après un filet, la date sur une ligne et le bouton menu. Fond provisoire, en attendant
-   l'habillage d'Idan, un par culture du capitaine (body[data-captain-culture]). */
-:root{--hud-top-h:58px}
+/* La barre du haut (Idan, 2026-11-13, d'après sa maquette) : la barre illustrée de la culture du capitaine (packs d'Idan,
+   scripts/build-hud-bars.js), décollée du haut de l'écran pour laisser respirer le blason, qui la déborde au-dessus et
+   en dessous ; dans sa bande sombre, le nom de la compagnie en italique et ses étoiles, puis l'or, les salaires et les
+   mercenaires dans des pastilles avec les pictos d'Idan ; à droite, après un filet, la date et le bouton menu.
+   Une seule mesure, --hb-B (la hauteur de la bande sombre), règle tout : proportions de la maquette (bande de 85 px pour
+   un écran de 2000 px). Les mesures du pack (en pixels de l'image : --hb-h, --hb-lw, --hb-rw, --hb-bt, --hb-band, --hb-ri)
+   viennent de hud-bars.js ; sans pack pour cette culture, un cadre provisoire de mêmes proportions. */
+:root{
+  --hb-B:clamp(52px,4.25vw,85px);
+  --hb-m:calc(var(--hb-B) * .15);
+  --hb-top:calc(var(--hb-m) + var(--hb-B) * 1.07);
+  --hud-top-h:calc(var(--hb-top) + var(--hb-B) * 1.3);
+}
 body[data-screen="camp"][data-camp-scene="home"] .app-shell{padding-top:calc(var(--hud-top-h) + 18px)}
-.game-top-bar{position:fixed;top:0;left:0;right:0;box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:18px;min-height:var(--hud-top-h);padding:6px 22px;
-  background:linear-gradient(0deg,rgba(255,214,150,.08),transparent 45%),repeating-linear-gradient(90deg,rgba(0,0,0,.06) 0 2px,transparent 2px 9px),linear-gradient(0deg,#3d2c20f7,#1b130ef9 70%,#110b08);
-  border-bottom:1px solid #b58c53;box-shadow:0 10px 34px #0008,inset 0 -1px #ffe4a826;pointer-events:auto}
-.game-top-bar::after{content:"";position:absolute;left:0;right:0;bottom:4px;height:1px;background:linear-gradient(90deg,transparent,#c9a15f73 18%,#c9a15f73 82%,transparent);pointer-events:none}
-.hud-top-side{display:flex;align-items:center;gap:12px;min-width:0}
-.hud-top-side--right{justify-content:flex-end;gap:16px}
-.hud-blason{display:block;flex:none;align-self:flex-start;width:84px;height:84px;margin:-4px 0 -42px -8px;object-fit:contain;filter:drop-shadow(0 4px 8px #000d)}
+.game-top-bar{--hb-k:calc(var(--hb-B) / var(--hb-band,90));position:fixed;top:0;left:0;right:0;height:var(--hud-top-h);pointer-events:none}
+.hud-bar-art{position:absolute;left:calc(var(--hb-B) * .45);right:calc(var(--hb-B) * .12);top:calc(var(--hb-top) - var(--hb-k) * var(--hb-bt,0));height:calc(var(--hb-k) * var(--hb-h,90));filter:drop-shadow(0 8px 16px #000a)}
+.hud-bar-piece{position:absolute;top:0;bottom:0;background-repeat:no-repeat;background-size:100% 100%}
+.hud-bar-left{left:0;width:calc(var(--hb-k) * var(--hb-lw,0))}
+.hud-bar-right{right:0;width:calc(var(--hb-k) * var(--hb-rw,0))}
+.hud-bar-center{left:calc(var(--hb-k) * var(--hb-lw,0) - 1px);right:calc(var(--hb-k) * var(--hb-rw,0) - 1px);background-repeat:repeat-x;background-size:auto 100%}
+/* Sans pack : un cadre provisoire autour de la bande. */
+.game-top-bar:not(.has-art) .hud-bar-art{top:calc(var(--hb-top) - var(--hb-B) * .22);height:calc(var(--hb-B) * 1.44);box-sizing:border-box;border:1px solid #b58c53;border-radius:calc(var(--hb-B) * .2);
+  background:linear-gradient(180deg,rgba(255,214,150,.08),transparent 45%),linear-gradient(180deg,#3d2c20f7,#1b130ef9 70%,#110b08);box-shadow:inset 0 0 0 calc(var(--hb-B) * .12) #2a1d15,inset 0 0 0 calc(var(--hb-B) * .13) #b58c5399}
+.game-top-bar .hud-blason{position:absolute;left:calc(var(--hb-B) * .55);top:var(--hb-m);z-index:2;display:block;width:calc(var(--hb-B) * 2.8);height:calc(var(--hb-B) * 2.8);object-fit:contain;filter:drop-shadow(0 6px 12px #000d);pointer-events:auto}
 .hud-blason[hidden]{display:none}
-.game-top-bar .hud-company{align-items:center;max-width:340px}
-.game-top-bar #hud-company{max-width:100%;font:italic 1.14rem Georgia,serif;color:#f1e3c8}
-.game-top-bar .hud-renown{margin-top:1px;font-size:13px;letter-spacing:2px}
-.game-top-bar .hud-stats{flex:none;gap:12px;margin-left:30px}
-.game-top-bar .hud-stat{gap:9px;padding:2px 16px 2px 9px;border-color:#cdb58a5c;background:#0e0b0999}
+.hud-top-content{position:absolute;z-index:1;top:var(--hb-top);height:var(--hb-B);left:calc(var(--hb-B) * 3.61);right:calc(var(--hb-B) * .32 + var(--hb-k) * var(--hb-ri,0));display:flex;align-items:center;justify-content:space-between;gap:calc(var(--hb-B) * .35);pointer-events:auto}
+.hud-top-side{display:flex;align-items:center;min-width:0}
+.hud-top-side--left{flex:1 1 auto;gap:calc(var(--hb-B) * .53)}
+.hud-top-side--right{flex:none;gap:calc(var(--hb-B) * .35)}
+.game-top-bar .hud-company{flex:0 1 auto;align-items:center;min-width:0;max-width:none;line-height:1.1}
+.game-top-bar #hud-company{max-width:100%;font:italic calc(var(--hb-B) * .365) Georgia,serif;color:#efe3c6;text-shadow:0 2px 6px #000}
+.game-top-bar .hud-renown{margin-top:calc(var(--hb-B) * .04);font-size:calc(var(--hb-B) * .3);letter-spacing:.12em;line-height:1}
+.game-top-bar .hud-stats{flex:none;gap:calc(var(--hb-B) * .19);margin:0}
+.game-top-bar .hud-stat{box-sizing:border-box;height:calc(var(--hb-B) * .73);gap:calc(var(--hb-B) * .2);padding:0 calc(var(--hb-B) * .41) 0 calc(var(--hb-B) * .29);border:2px solid #d8dee466;border-radius:999px;background:#05080a59;box-shadow:inset 0 1px 4px #000a}
 .game-top-bar .hud-stat dt{filter:none}
-.hud-picto{display:block;width:auto;height:30px;filter:drop-shadow(0 2px 3px #000b)}
-.game-top-bar .hud-stat dd,.game-top-bar .hud-stat--gold dd{font-size:1.04rem;font-weight:400;color:#f1e3c8}
+.hud-picto{display:block;width:auto;height:calc(var(--hb-B) * .53);filter:drop-shadow(0 2px 3px #000b)}
+.game-top-bar .hud-stat dd,.game-top-bar .hud-stat--gold dd{font:calc(var(--hb-B) * .35) Georgia,serif;font-weight:400;color:#f1e8d6;text-shadow:0 2px 5px #000}
 .game-top-bar .hud-stat--debt dd{color:#ff8a6e}
-.game-top-bar .hud-calendar{flex-direction:row;align-items:baseline;gap:0;padding-left:18px;border-left:1px solid #cdb58a55}
-.game-top-bar #hud-day{font:1rem Georgia,serif;letter-spacing:0;color:#ffe1ac;text-shadow:0 1px 6px #000}
-.game-top-bar #hud-day::before{content:"\00a0·\00a0";color:#c9a15f}
-.game-top-bar #hud-pause-btn{display:grid;place-items:center;width:40px;height:40px;padding:0;border:1px solid #cdb58a8c;border-radius:9px;background:#0e0b0999;color:#f1e3c8;cursor:pointer}
-.game-top-bar #hud-pause-btn .hud-svg{width:24px;height:24px;stroke-width:2}
+.game-top-bar .hud-calendar{flex-direction:row;align-items:center;gap:0;height:calc(var(--hb-B) * .68);margin:0;padding-left:calc(var(--hb-B) * .35);border-left:2px solid #d8dee44d}
+.game-top-bar #hud-date,.game-top-bar #hud-day{font:calc(var(--hb-B) * .35) Georgia,serif;letter-spacing:0;color:#efe5cf;text-shadow:0 2px 5px #000}
+.game-top-bar #hud-day::before{content:"\00a0·\00a0";color:#c9b48a}
+.game-top-bar #hud-pause-btn{display:grid;place-items:center;flex:none;box-sizing:border-box;width:calc(var(--hb-B) * .8);height:calc(var(--hb-B) * .68);padding:0;border:2px solid #d8dee499;border-radius:calc(var(--hb-B) * .14);background:#05080a73;color:#f1e8d6;cursor:pointer}
+.game-top-bar #hud-pause-btn .hud-svg{width:calc(var(--hb-B) * .42);height:calc(var(--hb-B) * .42);stroke-width:2.2}
 .game-top-bar #hud-pause-btn:hover,.game-top-bar #hud-pause-btn:focus-visible{border-color:#ffe1a5;color:#ffe1a5;outline:none}
 /* Le chiffre de l'or descend sous la barre (il montait au-dessus de la barre du bas). */
 .game-top-bar .hud-delta{bottom:auto;top:100%;animation-name:hud-sink}

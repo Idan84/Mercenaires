@@ -105,7 +105,51 @@ function hudGoldDelta(gold){
 const HUD_BLASON_COUNT=60;
 function hudBlasonUrl(blason){
   const n=Number(blason);
-  return Number.isInteger(n)&&n>=1&&n<=HUD_BLASON_COUNT?`assets/creation/blasons/b${String(n).padStart(2,"0")}.webp`:"";
+  return Number.isInteger(n)&&n>=1&&n<=HUD_BLASON_COUNT?`assets/creation/blasons-hd/b${String(n).padStart(2,"0")}.webp`:"";
+}
+// La barre illustrée de la culture du capitaine (packs d'Idan : scripts/build-hud-bars.js → hud-bars.js). Ses mesures,
+// en pixels de l'image, vont dans des variables CSS de .game-top-bar (styles.css place les morceaux et la bande où l'on
+// écrit) ; sans pack pour cette culture, la barre garde son cadre provisoire.
+const HUD_BAR_PIECES=["left","center","right"];
+let hudBarShown=null;
+function hudBarFor(culture){
+  return culture&&typeof HUD_BARS==="object"&&HUD_BARS[culture]?HUD_BARS[culture]:null;
+}
+function applyHudBar(culture){
+  const bar=typeof document.querySelector==="function"?document.querySelector(".game-top-bar"):null;
+  const data=hudBarFor(culture);
+  const key=data?culture:"";
+  if(!bar||hudBarShown===key) return;
+  hudBarShown=key;
+  bar.classList.toggle("has-art",Boolean(data));
+  const vars={h:data?.h,lw:data?.left,rw:data?.right,bt:data?.bandTop,band:data?data.bandBottom-data.bandTop:null,ri:data?.bandRight};
+  for(const [name,value] of Object.entries(vars)){
+    if(value==null) bar.style.removeProperty("--hb-"+name);
+    else bar.style.setProperty("--hb-"+name,String(value));
+  }
+  for(const piece of HUD_BAR_PIECES){
+    const node=bar.querySelector(".hud-bar-"+piece);
+    if(node) node.style.backgroundImage=data?`url("assets/hud/barres/${culture}/${piece}.webp")`:"";
+  }
+}
+// Le nom de la compagnie tient dans sa place : quand un grand ornement de barre (la toile des elfes noirs, le crâne des
+// orcs) ou un long nom ne laisse pas assez de largeur, sa police rétrécit jusqu'à 70 % ; au-delà, points de suspension.
+let hudNameFitted="";
+function fitHudCompanyName(force=false){
+  const node=$("hud-company");
+  if(!node||typeof getComputedStyle!=="function") return;
+  // Barre cachée (combat) : rien à mesurer ; on recommencera quand elle reviendra.
+  if(!node.getClientRects().length) return;
+  const key=node.textContent+"|"+(typeof innerWidth==="number"?innerWidth:0);
+  if(!force&&key===hudNameFitted) return;
+  hudNameFitted=key;
+  node.style.removeProperty("font-size");
+  let size=parseFloat(getComputedStyle(node).fontSize);
+  const min=size*.7;
+  while(node.scrollWidth>node.clientWidth+1&&size>min){
+    size=Math.max(min,size-.5);
+    node.style.fontSize=size+"px";
+  }
 }
 // Les chiffres de la barre du haut avec l'espace des milliers, comme sur la maquette d'Idan (« 10 000 »).
 function hudNumber(n){ return Math.round(Number(n)||0).toLocaleString("fr-FR"); }
@@ -113,6 +157,7 @@ function renderHudIdentity(){
   const culture=game.campaign&&game.captain?.culture&&typeof pictoSlug==="function"?pictoSlug(game.captain.culture):"";
   if(culture) document.body.dataset.captainCulture=culture;
   else delete document.body.dataset.captainCulture;
+  applyHudBar(culture);
   const img=$("hud-blason");
   if(!img) return;
   const url=hudBlasonUrl(game.campaign?.company.blason);
@@ -128,6 +173,7 @@ function renderGameHud(){
   const company=game.campaign.company;
   const rules=typeof campaignRules==="function"?campaignRules():null;
   $("hud-company").textContent=company.name;
+  fitHudCompanyName();
   $("hud-renown").innerHTML=rules?renderRenownStars(rules.companyRenown(game.campaign)):"";
   const gold=Math.round(company.gold);
   $("hud-gold").textContent=hudNumber(gold);
@@ -228,6 +274,7 @@ function initializeScreenUi(){
   $("hud-castle-btn").addEventListener("click",()=>{openCampScene("home");gameAction("Retour au château.");});
   $("hud-pause-btn").addEventListener("click",()=>setPauseOpen(true));
   $("hud-console-toggle").addEventListener("click",()=>toggleHudJournal());
+  window.addEventListener("resize",()=>fitHudCompanyName());
   for(const slot of document.querySelectorAll("#game-hud [data-hud-icon]")) slot.innerHTML=hudIcon(slot.dataset.hudIcon);
   $("game-pause").addEventListener("click",event=>{
     // Un clic hors du menu de pause reprend la partie, comme Échap.

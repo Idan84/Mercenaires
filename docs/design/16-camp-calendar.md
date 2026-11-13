@@ -14,19 +14,23 @@ Le même jour, Idan a précisé l'emplacement : le calendrier, en petit, et le b
 Refonte de l'interface du camp, en trois temps : **1.** le contenu (ce qui suit), **2.** l'habillage graphique (Idan
 fournit les images), **3.** des infobulles utiles sur l'or, les salaires et les mercenaires.
 
-**La barre du haut** dit où en est la compagnie (disposition de la maquette d'Idan, 2026-11-13) :
+**La barre du haut** dit où en est la compagnie (maquette d'Idan, 2026-11-13 : « la barre ne colle pas le haut. Elle
+laisse le blason respirer […] la barre doit être belle, les infos lisibles ») :
 
-- **À gauche** : le **blason** choisi à la création du capitaine (en grand ; il déborde sous la barre), le **nom** de la
-  compagnie en italique et ses **étoiles** de renommée dessous ; puis l'**or**, les **salaires** du jour et les
-  **mercenaires** (places occupées au dortoir / places), chacun dans une pastille avec son picto (pictos d'Idan : pièces,
-  bourse, trois casques). Les nombres prennent l'espace des milliers (« 10 000 »).
-- **À droite** : après un filet, la **date** sur une ligne (« 1 Brumecendre · Jour 1 » ; l'ère et la citation du jour au
-  survol) et le **bouton menu** (Échap).
+- **La barre illustrée de la culture du capitaine** (Idan : « la barre qui change en fonction de la culture, et pas du
+  peuple ») : un pack par culture, 32 en tout, dessinés par Idan (embout gauche, milieu qui se répète, embout droit). Elle
+  est décollée du haut de l'écran ; le **blason** de la compagnie, en grand, la déborde au-dessus et en dessous.
+- **Dans sa bande sombre** : le **nom** de la compagnie en italique et ses **étoiles** dessous ; l'**or**, les
+  **salaires** du jour et les **mercenaires** (places occupées au dortoir / places), chacun dans une pastille avec son
+  picto (pièces, bourse, trois casques) ; puis, après un filet, la **date** sur une ligne (« 1 Brumecendre · Jour 1 » ;
+  l'ère et la citation du jour au survol) et le **bouton menu** (Échap). Les nombres prennent l'espace des milliers
+  (« 10 000 »). Quand un grand ornement ou un long nom manque de place, le nom rétrécit (jusqu'à 70 %), puis se termine
+  par des points de suspension.
+- **Proportions de la maquette**, quelle que soit la largeur de l'écran : tout se règle sur la hauteur de la bande sombre
+  (85 px pour un écran de 2000 px de large). Chaque pack est mesuré à son arrivée (cadre, bande, ornements des embouts :
+  `scripts/build-hud-bars.js`), pour que le texte tombe toujours dans sa bande.
+- **Culture sans pack** (en attendant les 32) : un cadre provisoire, aux mêmes proportions.
 - Le logo Blood & Wages n'apparaît plus au camp : il reste sur l'écran titre.
-- **Habillage par culture** (Idan : « la barre qui change en fonction de la culture, et pas du peuple ») : une barre
-  illustrée par culture, soit 32. Le jeu pose la culture du capitaine sur la page (`body[data-captain-culture]`, par
-  exemple `nains-des-montagnes`). Le blason, les textes, les chiffres et les pictos restent hors de l'image : le jeu les
-  pose par-dessus. En attendant les images, la barre garde un fond provisoire.
 
 **La barre du bas** sert à se déplacer et à agir. Pour l'instant : **Taverne** (son menu) et **Château** à gauche,
 **Jour suivant** au centre, le **journal** à droite. Liste retenue pour la suite (à préciser) : Château (l'écran du camp),

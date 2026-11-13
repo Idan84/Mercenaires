@@ -98,6 +98,8 @@ Idan y dépose ses masters de pictos sur fond blanc, rangés par famille : `medi
 
 Idan y dépose les packs de la barre du haut du camp (2026-11-13) : un pack par culture du capitaine, 32 en tout, qui arrivent petit à petit (doc 16). Le dossier n'est pas listable de l'extérieur (403) : `api/hud-pack.php` le liste, sous-dossiers compris, avec la même bibliothèque que les avatars : https://bloodandwages.idanwizen.com/api/hud-pack.php
 
+Rangement : `media/hud-pack/<Peuple>/<culture>/` avec `left`, `center`, `right` (et `full`, l'aperçu d'Idan, que le jeu n'utilise pas). Quand des packs arrivent, `node scripts/build-hud-bars.js` les télécharge, reconnaît leur culture (le dossier du peuple, puis les mots du dossier ; les cas ambigus sont fixés dans `PACK_CULTURE`), les mesure, les convertit en WebP dans `prototype-web/assets/hud/barres/<culture>/` et réécrit `prototype-web/hud-bars.js`. Comme pour les pictos, le dossier Hostinger n'est lu que pour cette étape : le jeu n'en dépend pas.
+
 ### Images d'équipement : `media/equipements/`
 
 Premier dépôt des images des objets (2026-10-23) : `media/equipements/armures/` (une image par armure et par tier, T1 à T4 ; le T4 n'est pas encore en jeu) et `media/equipements/Frames/` (les cadres de tier). Le dossier n'est pas listable de l'extérieur (403) : `api/equipment.php` le liste, sous-dossiers compris, avec la même bibliothèque que les avatars : https://bloodandwages.idanwizen.com/api/equipment.php. **Le jeu ne lit pas ce dossier** : depuis le même jour, les masters sont dans Git (`assets-src/Equipements/`, plus simple pour Idan comme pour JC3) et les versions du jeu sont tirées par `scripts/build-equipment.js`.

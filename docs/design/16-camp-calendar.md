@@ -1,15 +1,35 @@
-# Calendrier du Royaume — barre du bas
+# Calendrier du Royaume — les barres du camp
 
 Décision d'Idan, 21 octobre 2026 : un calendrier gaélico-médiéval cynique, avec une courte citation quotidienne. Le bouton **Jour suivant** quitte la Taverne.
 
-Le même jour, Idan a précisé l'emplacement : le calendrier, en petit, et le bouton vivent dans **la barre du bas**, et non plus sur l'accueil du camp.
+Le même jour, Idan a précisé l'emplacement : le calendrier, en petit, et le bouton vivent dans **la barre du bas**, et non plus sur l'accueil du camp. Depuis le 13 novembre 2026, la date est passée dans **la barre du haut** (voir plus bas).
 
 - **Au centre** : un gros bouton play, qui fait passer au jour suivant. Il n'apparaît qu'au camp, jamais en mission.
-- **Juste à sa gauche** : la date, le jour de campagne et l'an. L'ère et la citation du jour s'affichent au survol.
-- **À gauche** : la compagnie et ses étoiles de renommée, puis l'or, l'entretien de la compagnie et l'effectif, chacun avec son picto.
 - **À droite** : le journal de la compagnie. La barre montre sa dernière ligne ; un clic le déplie au-dessus de la barre.
 - **En combat, pas de barre** (Idan, 2026-11-06 : « Elle n'a pas raison d'être là. Ça permet d'agrandir un peu la
-  carte ») : l'écran de combat prend toute la hauteur ; Échap ouvre toujours le menu de pause. La barre revient au camp.
+  carte ») : l'écran de combat prend toute la hauteur ; Échap ouvre toujours le menu de pause. Les barres reviennent au camp.
+
+## Les deux barres du camp (Idan, 2026-11-13)
+
+Refonte de l'interface du camp, en trois temps : **1.** le contenu (ce qui suit), **2.** l'habillage graphique (Idan
+fournit les images), **3.** des infobulles utiles sur l'or, les salaires et les mercenaires.
+
+**La barre du haut** dit où en est la compagnie :
+
+- **À gauche** : le **blason** choisi à la création du capitaine, le **nom** de la compagnie et ses **étoiles** de renommée.
+- **Au centre** : l'**or**, les **salaires** du jour et les **mercenaires** (places occupées au dortoir / places).
+- **À droite** : la **date** (le jour de campagne et l'an ; l'ère et la citation du jour au survol) et le bouton
+  **Échap** (menu de pause).
+- Le logo Blood & Wages n'apparaît plus au camp : il reste sur l'écran titre.
+- **Habillage par peuple** (idée d'Idan) : la barre se décline selon le peuple du capitaine ; le jeu pose ce peuple sur la
+  page (`body[data-captain-people]`, par exemple `nain`, `elfe`, `homme-bete`). En attendant les images, la barre reprend le
+  style de la barre du bas.
+
+**La barre du bas** sert à se déplacer et à agir. Pour l'instant : **Taverne** (son menu) et **Château** à gauche,
+**Jour suivant** au centre, le **journal** à droite. Liste retenue pour la suite (à préciser) : Château (l'écran du camp),
+Marchand (grisé sans marchand), Intendance, Taverne, Dortoir (où iront les fiches des mercenaires), Construction (l'actuel
+Ma Compagnie, réorganisé), Mes bâtiments (tous les bâtiments, y compris ceux à construire), Ce bâtiment (les salles et les
+options du lieu où l'on est). Le journal sera trié : ce qu'il affiche reste à choisir.
 
 ## Référentiel et convention d'affichage
 

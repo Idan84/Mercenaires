@@ -19,17 +19,23 @@ laisse le blason respirer […] la barre doit être belle, les infos lisibles »
 
 - **La barre illustrée de la culture du capitaine** (Idan : « la barre qui change en fonction de la culture, et pas du
   peuple ») : un pack par culture, 32 en tout, dessinés par Idan (embout gauche, milieu qui se répète, embout droit). Elle
-  est décollée du haut de l'écran ; le **blason** de la compagnie, en grand, la déborde au-dessus et en dessous.
+  est décollée du haut de l'écran ; le **blason** de la compagnie la déborde au-dessus et en dessous.
+- **Le blason se règle sur son écu** (Idan : « il faut pas mesurer la taille de l'image mais la taille de la partie
+  principale, hors petits trucs qui dépassent ») : l'écu fait deux fois la hauteur de la bande sombre et se centre sur
+  elle ; la barre part du milieu de l'écu, si bien que **rien ne dépasse à gauche du blason** ; le texte commence après
+  ses décors ; un décor au-dessus de l'écu (casque, couronne, phénix) fait descendre la barre pour qu'il garde de l'air.
+  L'écu de chacun des 60 blasons est mesuré par `scripts/build-blason-bodies.js` (cinq, très décorés, à la main).
 - **Dans sa bande sombre** : le **nom** de la compagnie en italique et ses **étoiles** dessous ; l'**or**, les
   **salaires** du jour et les **mercenaires** (places occupées au dortoir / places), chacun dans une pastille avec son
   picto (pièces, bourse, trois casques) ; puis, après un filet, la **date** sur une ligne (« 1 Brumecendre · Jour 1 » ;
   l'ère et la citation du jour au survol) et le **bouton menu** (Échap). Les nombres prennent l'espace des milliers
-  (« 10 000 »). Quand un grand ornement ou un long nom manque de place, le nom rétrécit (jusqu'à 70 %), puis se termine
-  par des points de suspension.
+  (« 10 000 »). Quand un grand ornement, un blason très décoré ou un long nom manque de place, le nom rétrécit (jusqu'à
+  80 %), puis passe sur deux lignes.
 - **Proportions de la maquette**, quelle que soit la largeur de l'écran : tout se règle sur la hauteur de la bande sombre
   (85 px pour un écran de 2000 px de large). Chaque pack est mesuré à son arrivée (cadre, bande, ornements des embouts :
   `scripts/build-hud-bars.js`), pour que le texte tombe toujours dans sa bande.
-- **Culture sans pack** (en attendant les 32) : un cadre provisoire, aux mêmes proportions.
+- **Les 32 cultures ont leur barre** (13 novembre 2026). Une culture ajoutée plus tard, sans pack, aurait un cadre
+  provisoire aux mêmes proportions.
 - Le logo Blood & Wages n'apparaît plus au camp : il reste sur l'écran titre.
 
 **La barre du bas** sert à se déplacer et à agir. Pour l'instant : **Taverne** (son menu) et **Château** à gauche,

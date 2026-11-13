@@ -8,18 +8,23 @@
 </head>
 <body data-screen="home">
   <aside id="game-hud" class="game-hud hidden" aria-label="Interface de jeu">
-    <!-- La barre du haut (Idan, 2026-11-13) : la compagnie (blason, nom, étoiles), ses chiffres (or, salaires, mercenaires), la
-         date et Échap. L'habillage graphique viendra d'Idan, un par peuple du capitaine (body[data-captain-people]). -->
+    <!-- La barre du haut (Idan, 2026-11-13) : les chiffres de la compagnie (or, salaires, mercenaires) à gauche ; au milieu, en
+         gros, son blason, son nom et ses étoiles ; la date et Échap à droite. L'habillage graphique viendra d'Idan, un par
+         peuple du capitaine (body[data-captain-people]). -->
     <div class="game-top-bar">
       <div class="hud-top-side hud-top-side--left">
-        <img id="hud-blason" class="hud-blason" alt="Blason de la compagnie" width="44" height="44" hidden>
-        <div class="hud-company"><span id="hud-company">Blood &amp; Wages</span><span id="hud-renown" class="hud-renown"></span></div>
+        <dl class="hud-stats">
+          <div id="hud-gold-stat" class="hud-stat hud-stat--gold" title="Trésor de la compagnie"><dt><span class="hud-icon" data-hud-icon="gold"></span><span class="sr-only">Trésor</span></dt><dd id="hud-gold">0</dd></div>
+          <div class="hud-stat" title="Entretien de la compagnie : salaires versés chaque jour"><dt><span class="hud-icon" data-hud-icon="upkeep"></span><span class="sr-only">Entretien de la compagnie</span></dt><dd id="hud-upkeep">0 PO/j</dd></div>
+          <div class="hud-stat" title="Effectif de la compagnie / places au dortoir"><dt><span class="hud-icon" data-hud-icon="roster"></span><span class="sr-only">Effectif</span></dt><dd id="hud-roster">0</dd></div>
+        </dl>
       </div>
-      <dl class="hud-stats">
-        <div id="hud-gold-stat" class="hud-stat hud-stat--gold" title="Trésor de la compagnie"><dt><span class="hud-icon" data-hud-icon="gold"></span><span class="sr-only">Trésor</span></dt><dd id="hud-gold">0</dd></div>
-        <div class="hud-stat" title="Entretien de la compagnie : salaires versés chaque jour"><dt><span class="hud-icon" data-hud-icon="upkeep"></span><span class="sr-only">Entretien de la compagnie</span></dt><dd id="hud-upkeep">0 PO/j</dd></div>
-        <div class="hud-stat" title="Effectif de la compagnie / places au dortoir"><dt><span class="hud-icon" data-hud-icon="roster"></span><span class="sr-only">Effectif</span></dt><dd id="hud-roster">0</dd></div>
-      </dl>
+      <div class="hud-crest">
+        <div class="hud-crest-plate">
+          <img id="hud-blason" class="hud-blason" alt="Blason de la compagnie" width="76" height="76" hidden>
+          <div class="hud-company"><span id="hud-company">Blood &amp; Wages</span><span id="hud-renown" class="hud-renown"></span></div>
+        </div>
+      </div>
       <div class="hud-top-side hud-top-side--right">
         <div id="hud-calendar" class="hud-calendar" aria-live="polite"><strong id="hud-date">Lunbrume 1 Brumecendre</strong><small id="hud-day">Jour 1 · An 842</small></div>
         <button id="hud-pause-btn" type="button" aria-label="Ouvrir le menu de pause">☰ <span>Échap</span></button>

@@ -1489,8 +1489,9 @@ body[data-screen="camp"]:not([data-camp-scene="home"]) .app-shell{padding-top:ca
    Château à gauche, gros bouton « Jour suivant » au centre, journal intégré à droite. Univers heroic fantasy : bois
    sombre, liserés dorés, médaillon central. Aucun nouvel asset visuel (icônes SVG au trait dans screen-ui.js). */
 body[data-screen="camp"] .app-shell{padding-bottom:112px}
-/* La barre du haut (Idan, 2026-11-13) : la compagnie (blason, nom, étoiles) à gauche, ses chiffres au centre, la date et
-   Échap à droite. Style provisoire, en miroir de la barre du bas, en attendant l'habillage d'Idan (un par peuple du
+/* La barre du haut (Idan, 2026-11-13) : les chiffres de la compagnie à gauche ; au milieu, en gros, son blason, son nom
+   et ses étoiles, sur une plaque qui pend sous la barre (en miroir du bouton Jour suivant, qui déborde au-dessus de la
+   barre du bas) ; la date et Échap à droite. Style provisoire, en attendant l'habillage d'Idan (un par peuple du
    capitaine : body[data-captain-people]). */
 :root{--hud-top-h:58px}
 body[data-screen="camp"][data-camp-scene="home"] .app-shell{padding-top:calc(var(--hud-top-h) + 18px)}
@@ -1500,9 +1501,15 @@ body[data-screen="camp"][data-camp-scene="home"] .app-shell{padding-top:calc(var
 .game-top-bar::after{content:"";position:absolute;left:0;right:0;bottom:4px;height:1px;background:linear-gradient(90deg,transparent,#c9a15f73 18%,#c9a15f73 82%,transparent);pointer-events:none}
 .hud-top-side{display:flex;align-items:center;gap:12px;min-width:0}
 .hud-top-side--right{justify-content:flex-end;gap:16px}
-.hud-blason{flex:none;width:44px;height:44px;object-fit:contain;filter:drop-shadow(0 2px 4px #000c)}
+.hud-crest{position:relative;align-self:stretch;width:300px}
+.hud-crest-plate{position:absolute;top:-6px;left:50%;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;min-width:220px;max-width:400px;padding:6px 26px 9px;transform:translateX(-50%);
+  background:linear-gradient(0deg,rgba(255,214,150,.08),transparent 45%),repeating-linear-gradient(90deg,rgba(0,0,0,.06) 0 2px,transparent 2px 9px),linear-gradient(0deg,#3d2c20,#1b130e 70%,#110b08);
+  border:1px solid #b58c53;border-top:0;border-radius:0 0 24px 24px;box-shadow:0 12px 30px #000a,inset 0 -1px #ffe4a826}
+.hud-blason{display:block;flex:none;width:76px;height:76px;object-fit:contain;filter:drop-shadow(0 3px 6px #000d)}
 .hud-blason[hidden]{display:none}
-.game-top-bar .hud-company{max-width:340px}
+.hud-crest .hud-company{align-items:center;min-width:0;max-width:348px;margin-top:3px;text-align:center}
+.hud-crest #hud-company{max-width:100%;font-size:1.05rem}
+.hud-crest .hud-renown{margin-top:2px;font-size:13px;letter-spacing:2px}
 /* Le chiffre de l'or descend sous la barre (il montait au-dessus de la barre du bas). */
 .game-top-bar .hud-delta{bottom:auto;top:100%;animation-name:hud-sink}
 @keyframes hud-sink{0%{opacity:0;transform:translate(-50%,-6px)}15%{opacity:1}100%{opacity:0;transform:translate(-50%,22px)}}

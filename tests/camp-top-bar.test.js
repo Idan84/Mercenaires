@@ -15,11 +15,13 @@ const js=fs.readFileSync(path.join(WEB,"screen-ui.js"),"utf8");
 const top=html.slice(html.indexOf('<div class="game-top-bar">'),html.indexOf('<div class="game-bottom-bar">'));
 const bottom=html.slice(html.indexOf('<div class="game-bottom-bar">'),html.indexOf("</aside>",html.indexOf('<div class="game-bottom-bar">')));
 const ids=part=>[...part.matchAll(/\bid="([\w-]+)"/g)].map(m=>m[1]);
-assert.deepEqual(ids(top),["hud-blason","hud-company","hud-renown","hud-gold-stat","hud-gold","hud-upkeep","hud-roster","hud-calendar","hud-date","hud-day","hud-pause-btn"],
-  "en haut : blason, nom, étoiles, puis or, salaires, mercenaires, puis la date et Échap");
+assert.deepEqual(ids(top),["hud-gold-stat","hud-gold","hud-upkeep","hud-roster","hud-blason","hud-company","hud-renown","hud-calendar","hud-date","hud-day","hud-pause-btn"],
+  "en haut : or, salaires, mercenaires ; au milieu, en gros, blason, nom, étoiles ; la date et Échap");
+assert.match(top,/<div class="hud-crest">\s*<div class="hud-crest-plate">\s*<img id="hud-blason"[^>]*>\s*<div class="hud-company"><span id="hud-company">[^<]*<\/span><span id="hud-renown"/,
+  "le blason, puis le nom, puis les étoiles (Idan, 2026-11-13)");
 assert.deepEqual(ids(bottom),["hud-tavern","hud-tavern-btn","hud-tavern-menu","hud-castle-btn","hud-next-day-btn","hud-journal","hud-console-toggle","hud-journal-last","game-action-lines"],
   "en bas : Taverne et Château à gauche, Jour suivant au centre, le journal à droite");
-assert.match(top,/<img id="hud-blason" class="hud-blason" alt="Blason de la compagnie" width="44" height="44" hidden>/,"pas de blason tant qu'il n'est pas connu");
+assert.match(top,/<img id="hud-blason" class="hud-blason" alt="Blason de la compagnie" width="76" height="76" hidden>/,"pas de blason tant qu'il n'est pas connu");
 
 // --- Mise en page --------------------------------------------------------------------------------------------------------
 assert.match(css,/:root\{--hud-top-h:58px\}/);

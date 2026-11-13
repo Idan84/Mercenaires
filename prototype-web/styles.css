@@ -1456,7 +1456,7 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 .recruit-track::-webkit-scrollbar{display:none}
 .recruit-track>:first-child{margin-left:auto}
 .recruit-track>:last-child{margin-right:auto}
-.recruit-track .recruit-card{flex:0 0 auto;width:clamp(150px,calc((100dvh - 400px) * 9 / 16),220px);max-width:none;scroll-snap-align:start}
+.recruit-track .recruit-card{flex:0 0 auto;width:clamp(150px,calc((100dvh - 392px - var(--hud-top-h)) * 9 / 16),220px);max-width:none;scroll-snap-align:start}
 .recruit-track .recruit-empty{flex:1}
 .recruit-nav{position:absolute;top:calc(50% - 42px);z-index:2;width:40px;height:72px;padding:0;border:1px solid #b58c53;border-radius:10px;background:linear-gradient(180deg,#3a2a1ef2,#1b130ef2);color:#f1d49b;font:700 30px/1 Georgia,serif;box-shadow:0 6px 18px #0009;cursor:pointer;transition:opacity .2s}
 .recruit-nav[data-recruit-scroll="-1"]{left:-4px}
@@ -1464,7 +1464,7 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 .recruit-nav:hover,.recruit-nav:focus-visible{border-color:#ffe1a5;color:#ffe1ac;outline:none}
 .recruit-nav:disabled{opacity:0;pointer-events:none}
 .recruit-carousel.is-static .recruit-nav{display:none}
-.recruit-card{display:flex;flex-direction:column;width:100%;max-width:min(220px,calc((100dvh - 400px) * 9 / 16));overflow:hidden;border:1px solid #9a7a4f;border-radius:12px;background:linear-gradient(180deg,#3a2b21f5,#1b130ef5);box-shadow:0 12px 30px #000a;color:#ead9bd}
+.recruit-card{display:flex;flex-direction:column;width:100%;max-width:min(220px,calc((100dvh - 392px - var(--hud-top-h)) * 9 / 16));overflow:hidden;border:1px solid #9a7a4f;border-radius:12px;background:linear-gradient(180deg,#3a2b21f5,#1b130ef5);box-shadow:0 12px 30px #000a;color:#ead9bd}
 .avatar-frame--recruit{width:100%;aspect-ratio:9 / 16;margin:0;border:0;border-bottom:1px solid #71583e;border-radius:0;box-shadow:none}
 .avatar-frame--recruit .avatar-fallback span{font-size:3rem}
 .recruit-card-body{display:flex;flex:1;flex-direction:column;gap:5px;padding:10px 12px 12px}
@@ -1478,16 +1478,34 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 #tavern-missions-view h2{margin:20px 0 12px}
 
 
-/* Navigation desktop des lieux : le château reste visible, pas le gros bandeau prototype. */
-body[data-screen="camp"]:not([data-camp-scene="home"]) .topbar{display:none}
+/* Navigation desktop des lieux : le château reste visible, pas le gros bandeau prototype. Plus de logo au camp, même sur
+   l'accueil (Idan, 2026-11-13) : la barre du haut prend sa place ; chaque lieu commence sous elle. */
+body[data-screen="camp"] .topbar{display:none}
 body[data-screen="camp"]:not([data-camp-scene="home"]) .camp-scene-nav{display:none}
-body[data-screen="camp"]:not([data-camp-scene="home"]) .app-shell{padding-top:32px}
+body[data-screen="camp"]:not([data-camp-scene="home"]) .app-shell{padding-top:calc(var(--hud-top-h) + 24px)}
 
 
-/* Barre du bas (Idan, 2026-10-21) : infos principales à gauche, date et gros bouton « Jour suivant » au
-   centre, journal intégré à droite. Univers heroic fantasy : bois sombre, liserés dorés, médaillon central.
-   Aucun nouvel asset visuel (icônes SVG au trait dans screen-ui.js). */
+/* Barre du bas (Idan, 2026-10-21 ; 2026-11-13 : les infos et la date passent dans la barre du haut) : la Taverne et le
+   Château à gauche, gros bouton « Jour suivant » au centre, journal intégré à droite. Univers heroic fantasy : bois
+   sombre, liserés dorés, médaillon central. Aucun nouvel asset visuel (icônes SVG au trait dans screen-ui.js). */
 body[data-screen="camp"] .app-shell{padding-bottom:112px}
+/* La barre du haut (Idan, 2026-11-13) : la compagnie (blason, nom, étoiles) à gauche, ses chiffres au centre, la date et
+   Échap à droite. Style provisoire, en miroir de la barre du bas, en attendant l'habillage d'Idan (un par peuple du
+   capitaine : body[data-captain-people]). */
+:root{--hud-top-h:58px}
+body[data-screen="camp"][data-camp-scene="home"] .app-shell{padding-top:calc(var(--hud-top-h) + 18px)}
+.game-top-bar{position:fixed;top:0;left:0;right:0;box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:18px;min-height:var(--hud-top-h);padding:6px 22px;
+  background:linear-gradient(0deg,rgba(255,214,150,.08),transparent 45%),repeating-linear-gradient(90deg,rgba(0,0,0,.06) 0 2px,transparent 2px 9px),linear-gradient(0deg,#3d2c20f7,#1b130ef9 70%,#110b08);
+  border-bottom:1px solid #b58c53;box-shadow:0 10px 34px #0008,inset 0 -1px #ffe4a826;pointer-events:auto}
+.game-top-bar::after{content:"";position:absolute;left:0;right:0;bottom:4px;height:1px;background:linear-gradient(90deg,transparent,#c9a15f73 18%,#c9a15f73 82%,transparent);pointer-events:none}
+.hud-top-side{display:flex;align-items:center;gap:12px;min-width:0}
+.hud-top-side--right{justify-content:flex-end;gap:16px}
+.hud-blason{flex:none;width:44px;height:44px;object-fit:contain;filter:drop-shadow(0 2px 4px #000c)}
+.hud-blason[hidden]{display:none}
+.game-top-bar .hud-company{max-width:340px}
+/* Le chiffre de l'or descend sous la barre (il montait au-dessus de la barre du bas). */
+.game-top-bar .hud-delta{bottom:auto;top:100%;animation-name:hud-sink}
+@keyframes hud-sink{0%{opacity:0;transform:translate(-50%,-6px)}15%{opacity:1}100%{opacity:0;transform:translate(-50%,22px)}}
 .game-hud{position:fixed;inset:auto 0 0;z-index:90;pointer-events:none;color:#e9d9b9;font-family:Georgia,serif}
 .game-hud .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .game-bottom-bar{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:18px;min-height:66px;padding:8px 22px;
@@ -1549,12 +1567,12 @@ body[data-screen="camp"] .app-shell{padding-bottom:112px}
 /* Le menu de la Taverne (Idan, 2026-11-11) : il s'ouvre vers le haut, au-dessus de la barre. */
 .hud-menu{position:relative;display:flex;flex:none}
 .hud-menu-list{position:absolute;right:0;bottom:calc(100% + 12px);z-index:5;min-width:230px;margin:0;padding:6px;list-style:none;border:1px solid #95744d;border-radius:12px;background:linear-gradient(180deg,#2e2119f8,#1b130ef9);box-shadow:0 -10px 28px #0009,inset 0 1px #ffe4a826}
+.hud-side--left .hud-menu-list{left:0;right:auto}
 .hud-menu-list[hidden]{display:none}
 .hud-menu-list button{display:block;width:100%;padding:9px 12px;border:0;border-radius:8px;background:transparent;color:#f0dfbf;font:14px Georgia,serif;text-align:left;cursor:pointer}
 .hud-menu-list button:hover,.hud-menu-list button:focus-visible{background:#ffe1a51a;color:#ffe1a5;outline:none}
 #game-action-lines li{padding:3px 0;border-bottom:1px solid #ffffff12}
 #game-action-lines small{color:#c6a576;margin-right:6px}
-@media (max-width:1300px){.hud-stat:nth-child(3){display:none}}
 @media (max-width:1180px){
   .game-bottom-bar{gap:12px;padding:8px 14px}
   .hud-company{max-width:150px}
@@ -1566,8 +1584,7 @@ body[data-screen="camp"] .app-shell{padding-bottom:112px}
 @media (max-width:700px){
   .game-bottom-bar{gap:8px;padding:6px 10px}
   .hud-stat:nth-child(2),#hud-date{display:none}
-  .hud-side--left{flex-wrap:wrap;gap:3px 8px}
-  .hud-calendar{align-items:flex-start;margin-left:0;text-align:left}
+  .game-top-bar{gap:8px;padding:6px 10px}
   .hud-center{width:66px}
   .hud-play{width:64px;height:64px}
   .hud-play .hud-svg{width:30px;height:30px}
@@ -1575,7 +1592,7 @@ body[data-screen="camp"] .app-shell{padding-bottom:112px}
   #hud-pause-btn span{display:none}
   .hud-nav-label{display:none}
 }
-@media (prefers-reduced-motion:reduce){.hud-play::after,.hud-delta,#hud-date.is-new,.hud-journal-last.is-fresh{animation:none}}
+@media (prefers-reduced-motion:reduce){.hud-play::after,.hud-delta,.game-top-bar .hud-delta,#hud-date.is-new,.hud-journal-last.is-fresh{animation:none}}
 .game-pause{position:fixed;inset:0;z-index:200;display:grid;place-items:center;background:#0e0c0be6;backdrop-filter:blur(7px)}
 .game-pause.hidden{display:none!important}
 .game-pause-panel{width:min(440px,90vw);padding:32px;border:1px solid #ae8654;border-radius:15px;background:linear-gradient(145deg,#403023,#17120f);box-shadow:0 20px 70px #000b;text-align:center}
@@ -1639,7 +1656,7 @@ body[data-screen="camp"] .camp-scene>.panel .muted{color:#c2b29e}
 @media(max-width:640px){.study-row{grid-template-columns:minmax(0,1fr)}.study-actions{justify-content:flex-start}}
 .building-captain select{width:auto;min-width:0;max-width:100%;font:inherit;color:#e9d9c0;background:#201916;border:1px solid #9c7952;border-radius:8px;padding:4px 8px}
 /* Écran Dortoir : le décor en plein écran, le panneau en bas à gauche. */
-body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="dormitory"]{display:flex;align-items:flex-end;min-height:calc(100dvh - 150px)}
+body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="dormitory"]{display:flex;align-items:flex-end;min-height:calc(100dvh - 142px - var(--hud-top-h))}
 .dormitory-panel{width:min(100%,640px);padding:18px 22px 20px;border:1px solid #957652;border-radius:14px;background:rgba(22,17,13,.86);color:#f0e2ca;box-shadow:0 20px 60px #000a}
 .dormitory-panel .eyebrow{margin:14px 0 2px;color:#d3ac76}
 .dormitory-panel h2{margin:0;font:normal 32px Georgia,serif;color:#f4d9a6}

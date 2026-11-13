@@ -23,7 +23,7 @@ Archive historique : ../../archive/notion-export/
 - [13-fleeing.md](./13-fleeing.md)
 - [14-tavern-recruitment.md](./14-tavern-recruitment.md)
 - [15-biographies-and-narrative-tags.md](./15-biographies-and-narrative-tags.md)
-- [16-camp-calendar.md](./16-camp-calendar.md) — mois, jours, citations et passage du temps au camp
+- [16-camp-calendar.md](./16-camp-calendar.md) — mois, jours, citations et passage du temps au camp ; les barres du haut et du bas du camp
 - [17-one-shot-missions.md](./17-one-shot-missions.md) — missions one shot (brouillon) : tableau des contrats, escouades, difficulté, échec
 - [18-merchants.md](./18-merchants.md) — marchands : passage du jour, Thorval Poudredefeu (armes à feu), étal de 10 articles, affinité, achat, revente, intendant
 - [19-mercenary-profile.md](./19-mercenary-profile.md) — titres des mercenaires : 10 catégories de rôle et leurs sous-catégories, notées en étoiles de réputation ; 1 à 3 rôles fondus en un seul titre écrit (« ce qu'il fait × comment », v3) ou « Chair à canon »

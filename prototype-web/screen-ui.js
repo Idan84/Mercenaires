@@ -101,10 +101,28 @@ function hudGoldDelta(gold){
   delta.addEventListener("animationend",()=>delta.remove());
   $("hud-gold-stat").appendChild(delta);
 }
+// La barre du haut (Idan, 2026-11-13) : le blason choisi à la création du capitaine (60 blasons ; une ancienne partie n'en
+// a pas) et le peuple du capitaine sur <body data-captain-people>, pour habiller les barres selon son peuple.
+const HUD_BLASON_COUNT=60;
+function hudBlasonUrl(blason){
+  const n=Number(blason);
+  return Number.isInteger(n)&&n>=1&&n<=HUD_BLASON_COUNT?`assets/creation/blasons/b${String(n).padStart(2,"0")}.webp`:"";
+}
+function renderHudIdentity(){
+  const people=game.campaign&&game.captain?.people&&typeof pictoSlug==="function"?pictoSlug(game.captain.people):"";
+  if(people) document.body.dataset.captainPeople=people;
+  else delete document.body.dataset.captainPeople;
+  const img=$("hud-blason");
+  if(!img) return;
+  const url=hudBlasonUrl(game.campaign?.company.blason);
+  if(url&&img.getAttribute("src")!==url) img.setAttribute("src",url);
+  img.hidden=!url;
+}
 function renderGameHud(){
   const hud=$("game-hud");
   const active=Boolean(game.campaign)&&["camp","mission"].includes(currentScreen());
   hud.classList.toggle("hidden",!active);
+  renderHudIdentity();
   if(!active){$("game-pause").classList.add("hidden");hudGoldShown=null;return;}
   const company=game.campaign.company;
   const rules=typeof campaignRules==="function"?campaignRules():null;

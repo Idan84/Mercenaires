@@ -32,7 +32,7 @@
       "key": "version"
     }
   ],
-  "row_count": 475,
+  "row_count": 479,
   "rows": [
     {
       "nom": "Toucher CAC — maximum",
@@ -96,6 +96,38 @@
       "description": "Points de pourcentage ajoutés à la probabilité de l’alignement exact du capitaine dans Create_Mercenary ; les autres alignements sont réduits proportionnellement pour conserver un total de 100 %.",
       "formule": null,
       "valeur": 15,
+      "version": "V1"
+    },
+    {
+      "nom": "Capitaine — arme favorite",
+      "code": "generation.captain.favorite_weapon_d6",
+      "description": "Nombre de D6 ajoutés à l’arme favorite choisie par le joueur dans l’assistant de création du capitaine (Idan, 2026-11-12).",
+      "formule": null,
+      "valeur": 3,
+      "version": "V1"
+    },
+    {
+      "nom": "Capitaine — famille de l’arme favorite",
+      "code": "generation.captain.favorite_weapon_family_d6",
+      "description": "Nombre de D6 ajoutés à la famille de l’arme favorite (catégorie d’armes) du capitaine (Idan, 2026-11-12).",
+      "formule": null,
+      "valeur": 2,
+      "version": "V1"
+    },
+    {
+      "nom": "Capitaine — affinité spirituelle",
+      "code": "generation.captain.spirit_school_d6",
+      "description": "Nombre de D6 ajoutés à l’école de magie choisie par le joueur (« Sur le plan spirituel… ») ; « Franchement aucune ! » redistribue au contraire ses points d’écoles dans ses caractéristiques non magiques et retire ses sorts (Idan, 2026-11-12).",
+      "formule": null,
+      "valeur": 2,
+      "version": "V1"
+    },
+    {
+      "nom": "Capitaine — caractère",
+      "code": "generation.captain.character_stat_d6",
+      "description": "Nombre de D6 ajoutés à la caractéristique choisie par le joueur (« Pour bien vous comprendre… ») : Vitesse, Perception, Courage, Intelligence, Force ou Dextérité (Idan, 2026-11-12).",
+      "formule": null,
+      "valeur": 2,
       "version": "V1"
     },
     {

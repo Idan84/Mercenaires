@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "name": "captain-creation-copy",
-  "purpose": "Textes courts d'aide au choix pour l'écran de création du capitaine. Aucun chiffre d'équilibrage.",
+  "purpose": "Textes de l’assistant de création du capitaine : aides au choix (peuples, cultures, ascendances, origines, alignements) et phrases des questions de personnalité (tenue → ports d’armure, esprit → école de magie, caractère → caractéristique ; Idan, 2026-11-12). Aucun chiffre d’équilibrage.",
   "fields": [
     "description",
     "force",
@@ -98,7 +98,7 @@
       "nom": "Royaumes du Soleil Levant",
       "description": "Culture martiale fondée sur la maîtrise du geste, la discipline personnelle et les armes spécialisées.",
       "force": "Combat à deux armes, arts martiaux, discrétion et lames asiatiques.",
-      "faiblesse": "Aucune faiblesse marquée dans le profil actuel."
+      "faiblesse": "Aucune faiblesse particulière."
     },
     {
       "nom": "Elfes des grandes cités",
@@ -194,13 +194,13 @@
       "nom": "Gnomes des forêts",
       "description": "Naturalistes excentriques mêlant alchimie, enchantement et illusions.",
       "force": "Alchimie, enchantement, perception et magie subtile.",
-      "faiblesse": "Aucune faiblesse marquée dans le profil actuel."
+      "faiblesse": "Aucune faiblesse particulière."
     },
     {
       "nom": "Gnomes des cavernes",
       "description": "Expérimentateurs souterrains fascinés par l’alchimie, les pièges et les magies peu rassurantes.",
       "force": "Alchimie, pièges, enchantement, invocation et transmutation.",
-      "faiblesse": "Aucune faiblesse marquée dans le profil actuel."
+      "faiblesse": "Aucune faiblesse particulière."
     },
     {
       "nom": "Gnomes des villes",
@@ -212,55 +212,55 @@
       "nom": "Ogres des montagnes",
       "description": "Ogres acclimatés aux hauteurs, aux monstres et aux conditions où les autres préfèrent faire demi-tour.",
       "force": "Constitution, intimidation, grands monstres et résistance au froid.",
-      "faiblesse": "Aucune faiblesse culturelle marquée dans le profil actuel."
+      "faiblesse": "Aucune faiblesse particulière."
     },
     {
       "nom": "Ogres des cités humaines",
       "description": "Ogres ayant appris à survivre parmi les humains en développant davantage leur intelligence pratique.",
       "force": "Intelligence et résistance au poison.",
-      "faiblesse": "Aucune faiblesse culturelle marquée dans le profil actuel."
+      "faiblesse": "Aucune faiblesse particulière."
     },
     {
       "nom": "Ogres des steppes",
       "description": "Nomades massifs habitués à la chaleur, aux longues marches et aux créatures dangereuses.",
       "force": "Endurance, intimidation, grands monstres et résistance au feu.",
-      "faiblesse": "Aucune faiblesse culturelle marquée dans le profil actuel."
+      "faiblesse": "Aucune faiblesse particulière."
     },
     {
       "nom": "Reptiliens des villes",
       "description": "Reptiliens urbanisés, plus techniques et plus instruits que leurs cousins sauvages.",
       "force": "Dextérité, intelligence, artisanat, télékinésie et savoir.",
-      "faiblesse": "Aucune faiblesse culturelle marquée dans le profil actuel."
+      "faiblesse": "Aucune faiblesse particulière."
     },
     {
       "nom": "Reptiliens des marécages",
       "description": "Chasseurs des zones humides, experts des poisons, de la discrétion et des terrains ingrats.",
       "force": "Perception, poison, eau, discrétion, pièges et alchimie.",
-      "faiblesse": "Aucune faiblesse culturelle marquée dans le profil actuel."
+      "faiblesse": "Aucune faiblesse particulière."
     },
     {
       "nom": "Reptiliens des cités-temples",
       "description": "Gardien·nes d’une tradition savante où magie, médecine et rites sont étroitement liés.",
       "force": "Enchantement, invocation, médecine, savoir et résistance à la foudre.",
-      "faiblesse": "Aucune faiblesse culturelle marquée dans le profil actuel."
+      "faiblesse": "Aucune faiblesse particulière."
     },
     {
       "nom": "Tribus nordiques",
       "description": "Hommes-bêtes des terres froides où survivre exige autant de muscles que de fourrure.",
       "force": "Force, froid, haches et magie de l’eau.",
-      "faiblesse": "Aucune faiblesse culturelle marquée dans le profil actuel."
+      "faiblesse": "Aucune faiblesse particulière."
     },
     {
       "nom": "Clans des grandes steppes",
       "description": "Clans hommes-bêtes mobiles, endurcis par la chaleur et les combats rapides.",
       "force": "Constitution, feu, sabres et résistance à la chaleur.",
-      "faiblesse": "Aucune faiblesse culturelle marquée dans le profil actuel."
+      "faiblesse": "Aucune faiblesse particulière."
     },
     {
       "nom": "Tribus des forêts anciennes",
       "description": "Prédateurs des bois profonds, familiers des pièges, des monstres et des magies inquiétantes.",
       "force": "Discrétion, esquive, intimidation, monstres et nécromancie.",
-      "faiblesse": "Aucune faiblesse culturelle marquée dans le profil actuel."
+      "faiblesse": "Aucune faiblesse particulière."
     }
   ],
   "ancestries": [
@@ -429,6 +429,96 @@
       "description": "Suit ses pulsions, sa colère ou son ambition et considère volontiers la violence comme une solution.",
       "force": "Audace, intimidation et capacité à agir sans hésiter.",
       "faiblesse": "Instable, difficile à contrôler et dangereux pour la cohésion du groupe."
+    }
+  ],
+  "outfits": [
+    {
+      "phrase": "J’aime sentir le vent contre ma peau.",
+      "ports": 0,
+      "armure": "Vêtements"
+    },
+    {
+      "phrase": "Un petit truc léger me réchauffe et m’apaise.",
+      "ports": 1,
+      "armure": "Gambison"
+    },
+    {
+      "phrase": "Je ne sors jamais sans mon cuir.",
+      "ports": 2,
+      "armure": "Cuir renforcé"
+    },
+    {
+      "phrase": "Une vraie boîte de conserve.",
+      "ports": 3,
+      "armure": "Armure de plates"
+    }
+  ],
+  "spirits": [
+    {
+      "phrase": "Rien de tel qu’un bon bain !",
+      "ecole": "Eau"
+    },
+    {
+      "phrase": "Un fan des barbecues.",
+      "ecole": "Feu"
+    },
+    {
+      "phrase": "J’adore voir la foudre s’abattre au loin.",
+      "ecole": "Foudre"
+    },
+    {
+      "phrase": "Je bénis chaque chose vivante de ce monde.",
+      "ecole": "Vie"
+    },
+    {
+      "phrase": "J’adore les soirées où on peut changer d’apparence.",
+      "ecole": "Transmutation"
+    },
+    {
+      "phrase": "J’ai toujours refusé de croire en la mort.",
+      "ecole": "Nécromancie"
+    },
+    {
+      "phrase": "J’aime vivre entouré de mes animaux de compagnie.",
+      "ecole": "Invocation"
+    },
+    {
+      "phrase": "Quand je me dispute, j’adore faire voler les choses.",
+      "ecole": "Télékinésie"
+    },
+    {
+      "phrase": "Je ne crois que ce que je ne vois pas !",
+      "ecole": "Illusion"
+    },
+    {
+      "phrase": "Franchement, aucune !",
+      "ecole": null
+    }
+  ],
+  "characters": [
+    {
+      "phrase": "Vous aimez que les choses soient vite faites, bien faites.",
+      "carac": "Vitesse"
+    },
+    {
+      "phrase": "Vous aimez les faits précis.",
+      "carac": "Perception"
+    },
+    {
+      "phrase": "Vous avez une force de caractère à toute épreuve.",
+      "carac": "Courage"
+    },
+    {
+      "phrase": "Vous analysez la situation avant d’agir.",
+      "carac": "Intelligence"
+    },
+    {
+      "phrase": "Vous agissez avant d’analyser.",
+      "carac": "Force"
+    },
+    {
+      "phrase": "Même dans ce monde de brutes, vous aimez faire preuve de finesse !",
+      "carac": "Dextérité"
     }
   ]
 }

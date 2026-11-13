@@ -8,24 +8,25 @@
 </head>
 <body data-screen="home">
   <aside id="game-hud" class="game-hud hidden" aria-label="Interface de jeu">
+    <!-- La barre du haut (Idan, 2026-11-13) : la compagnie (blason, nom, étoiles), ses chiffres (or, salaires, mercenaires), la
+         date et Échap. L'habillage graphique viendra d'Idan, un par peuple du capitaine (body[data-captain-people]). -->
+    <div class="game-top-bar">
+      <div class="hud-top-side hud-top-side--left">
+        <img id="hud-blason" class="hud-blason" alt="Blason de la compagnie" width="44" height="44" hidden>
+        <div class="hud-company"><span id="hud-company">Blood &amp; Wages</span><span id="hud-renown" class="hud-renown"></span></div>
+      </div>
+      <dl class="hud-stats">
+        <div id="hud-gold-stat" class="hud-stat hud-stat--gold" title="Trésor de la compagnie"><dt><span class="hud-icon" data-hud-icon="gold"></span><span class="sr-only">Trésor</span></dt><dd id="hud-gold">0</dd></div>
+        <div class="hud-stat" title="Entretien de la compagnie : salaires versés chaque jour"><dt><span class="hud-icon" data-hud-icon="upkeep"></span><span class="sr-only">Entretien de la compagnie</span></dt><dd id="hud-upkeep">0 PO/j</dd></div>
+        <div class="hud-stat" title="Effectif de la compagnie / places au dortoir"><dt><span class="hud-icon" data-hud-icon="roster"></span><span class="sr-only">Effectif</span></dt><dd id="hud-roster">0</dd></div>
+      </dl>
+      <div class="hud-top-side hud-top-side--right">
+        <div id="hud-calendar" class="hud-calendar" aria-live="polite"><strong id="hud-date">Lunbrume 1 Brumecendre</strong><small id="hud-day">Jour 1 · An 842</small></div>
+        <button id="hud-pause-btn" type="button" aria-label="Ouvrir le menu de pause">☰ <span>Échap</span></button>
+      </div>
+    </div>
     <div class="game-bottom-bar">
       <div class="hud-side hud-side--left">
-        <div class="hud-company"><span id="hud-company">Blood &amp; Wages</span><span id="hud-renown" class="hud-renown"></span></div>
-        <dl class="hud-stats">
-          <div id="hud-gold-stat" class="hud-stat hud-stat--gold" title="Trésor de la compagnie"><dt><span class="hud-icon" data-hud-icon="gold"></span><span class="sr-only">Trésor</span></dt><dd id="hud-gold">0</dd></div>
-          <div class="hud-stat" title="Entretien de la compagnie : salaires versés chaque jour"><dt><span class="hud-icon" data-hud-icon="upkeep"></span><span class="sr-only">Entretien de la compagnie</span></dt><dd id="hud-upkeep">0 PO/j</dd></div>
-          <div class="hud-stat" title="Effectif de la compagnie / places au dortoir"><dt><span class="hud-icon" data-hud-icon="roster"></span><span class="sr-only">Effectif</span></dt><dd id="hud-roster">0</dd></div>
-        </dl>
-        <div id="hud-calendar" class="hud-calendar" aria-live="polite"><strong id="hud-date">Lunbrume 1 Brumecendre</strong><small id="hud-day">Jour 1 · An 842</small></div>
-      </div>
-      <div class="hud-center">
-        <button id="hud-next-day-btn" class="hud-play" type="button" aria-label="Jour suivant" title="Jour suivant"><span class="hud-icon" data-hud-icon="play"></span></button>
-      </div>
-      <div class="hud-side hud-side--right">
-        <section id="hud-journal" class="hud-journal" aria-label="Journal de la compagnie">
-          <button id="hud-console-toggle" class="hud-journal-head" type="button" aria-expanded="false" aria-controls="game-action-lines" title="Afficher ou réduire le journal"><span class="hud-journal-label"><span class="hud-icon" data-hud-icon="journal"></span>Journal</span><span id="hud-journal-last" class="hud-journal-last"></span><span class="hud-journal-chevron" aria-hidden="true">▴</span></button>
-          <ol id="game-action-lines" class="hud-journal-lines" aria-live="polite" aria-relevant="additions"></ol>
-        </section>
         <div id="hud-tavern" class="hud-menu">
           <button id="hud-tavern-btn" class="hud-nav" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="hud-tavern-menu" title="Taverne"><span class="hud-icon" data-hud-icon="tavern"></span><span class="hud-nav-label">Taverne</span><span class="hud-nav-chevron" aria-hidden="true">▴</span></button>
           <ul id="hud-tavern-menu" class="hud-menu-list" role="menu" aria-label="Taverne" hidden>
@@ -37,7 +38,15 @@
           </ul>
         </div>
         <button id="hud-castle-btn" class="hud-nav hidden" type="button" aria-label="Retour au château" title="Retour au château"><span class="hud-icon" data-hud-icon="castle"></span><span class="hud-nav-label">Château</span></button>
-        <button id="hud-pause-btn" type="button" aria-label="Ouvrir le menu de pause">☰ <span>Échap</span></button>
+      </div>
+      <div class="hud-center">
+        <button id="hud-next-day-btn" class="hud-play" type="button" aria-label="Jour suivant" title="Jour suivant"><span class="hud-icon" data-hud-icon="play"></span></button>
+      </div>
+      <div class="hud-side hud-side--right">
+        <section id="hud-journal" class="hud-journal" aria-label="Journal de la compagnie">
+          <button id="hud-console-toggle" class="hud-journal-head" type="button" aria-expanded="false" aria-controls="game-action-lines" title="Afficher ou réduire le journal"><span class="hud-journal-label"><span class="hud-icon" data-hud-icon="journal"></span>Journal</span><span id="hud-journal-last" class="hud-journal-last"></span><span class="hud-journal-chevron" aria-hidden="true">▴</span></button>
+          <ol id="game-action-lines" class="hud-journal-lines" aria-live="polite" aria-relevant="additions"></ol>
+        </section>
       </div>
     </div>
   </aside>

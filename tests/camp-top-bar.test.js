@@ -55,7 +55,7 @@ assert.match(css,/body\[data-screen="mission"\] \.game-hud\{display:none\}/,"en 
 const {HUD_BARS}=require("../prototype-web/hud-bars.js");
 const cultures=JSON.parse(fs.readFileSync(path.join(WEB,"..","data","reference","cultures.json"),"utf8")).rows;
 const slugOf=s=>String(s).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
-assert.ok(Object.keys(HUD_BARS).length>=16);
+assert.deepEqual(Object.keys(HUD_BARS).sort(),cultures.map(c=>slugOf(c.nom)).sort(),"les 32 cultures ont leur barre (Idan, 2026-11-13)");
 for(const [key,bar] of Object.entries(HUD_BARS)){
   assert.ok(cultures.some(c=>c.nom===bar.culture),bar.culture);
   assert.equal(key,slugOf(bar.culture));
@@ -73,6 +73,9 @@ assert.equal(packCulture("Gnomes/gnomes-forets"),"Gnomes des forêts");
 assert.equal(packCulture("Gobelins/gobelins-cavernes-ferrailleurs"),"Caravanes de ferrailleurs");
 assert.equal(packCulture("Elfes/elfes-solaires"),"Elfes des grandes cités");
 assert.equal(packCulture("Nains/nains-fer-entrave"),"Nains esclaves");
+assert.equal(packCulture("Hommes Betes/hommes-betes-runiques"),"Tribus nordiques");
+assert.equal(packCulture("Humains/grandes-steppes"),"Steppes désertiques","les Clans des grandes steppes sont des hommes-bêtes");
+assert.equal(packCulture("Hommes Betes/hommes-betes-steppes"),"Clans des grandes steppes");
 assert.equal(packCulture("Elfes/inconnus"),undefined);
 
 // L'écu des 60 blasons (blason-bodies.js) : [gauche, haut, droite, bas] de l'écu, puis l'étendue de l'image [gauche, haut, droite].
@@ -111,15 +114,12 @@ assert.ok(classes.has("has-art"),"la barre illustrée des Nains des montagnes");
 assert.deepEqual(props,{"--hb-h":String(nains.h),"--hb-lw":String(nains.left),"--hb-rw":String(nains.right),"--hb-bt":String(nains.bandTop),
   "--hb-band":String(nains.bandBottom-nains.bandTop),"--hb-li":String(nains.bandLeft),"--hb-ri":String(nains.bandRight)});
 assert.equal(pieces.center.style.backgroundImage,'url("assets/hud/barres/nains-des-montagnes/center.webp")');
-// Une culture encore sans pack : le cadre provisoire, sans image ni mesure.
-const bare=cultures.find(c=>!HUD_BARS[slugOf(c.nom)]);
-if(bare){
-  game.captain.culture=bare.nom;
-  ui.renderHudIdentity();
-  assert.ok(!classes.has("has-art"),bare.nom);
-  assert.deepEqual([Object.keys(props).length,pieces.left.style.backgroundImage],[0,""]);
-  game.captain.culture="Nains des montagnes";
-}
+// Une culture sans pack (une culture ajoutée plus tard) : le cadre provisoire, sans image ni mesure.
+game.captain.culture="Culture à venir";
+ui.renderHudIdentity();
+assert.ok(!classes.has("has-art"));
+assert.deepEqual([Object.keys(props).length,pieces.left.style.backgroundImage],[0,""]);
+game.captain.culture="Nains des montagnes";
 assert.equal("captainPeople" in body.dataset,false,"la barre suit la culture, pas le peuple (Idan)");
 // L'espace des milliers, comme sur la maquette : « 10 000 ».
 assert.match(ui.hudNumber(10000),/^10\s000$/u);

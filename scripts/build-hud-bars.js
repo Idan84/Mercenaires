@@ -24,12 +24,15 @@ const OUT=path.join(ROOT,"prototype-web","assets","hud","barres");
 const DATA=path.join(ROOT,"prototype-web","hud-bars.js");
 const PIECES=["left","center","right"];
 const STOPWORDS=new Set(["de","d","des","du","la","le","l","les","a","et"]);
-// Packs dont le dossier ne suffit pas à trouver la culture (pour les deux derniers : la seule culture de leur peuple qui
-// restait sans pack).
+// Packs dont le dossier ne suffit pas à trouver la culture : chacun est la seule culture de son peuple restée sans pack.
 const PACK_CULTURE={
   "Gobelins/gobelins-cavernes-ferrailleurs":"Caravanes de ferrailleurs",
   "Elfes/elfes-solaires":"Elfes des grandes cités",
-  "Nains/nains-fer-entrave":"Nains esclaves"
+  "Nains/nains-fer-entrave":"Nains esclaves",
+  "Halflings/halflings-villes":"Halflings des cités humaines",
+  "Ogres/ogres-villes":"Ogres des cités humaines",
+  "Reptiliens/reptiliens-marais":"Reptiliens des marécages",
+  "Hommes Betes/hommes-betes-runiques":"Tribus nordiques"
 };
 const TOKEN_ALIASES={orque:"orc"};
 
@@ -123,6 +126,7 @@ async function measure(page,pieces){
 async function main(){
   const args=process.argv.slice(2);
   const from=args.includes("--from")?path.resolve(args[args.indexOf("--from")+1]):download();
+  console.log("Packs lus dans "+from);
   const cultures=JSON.parse(fs.readFileSync(path.join(ROOT,"data","reference","cultures.json"),"utf8")).rows;
   const packs=findPacks(from);
   const {chromium}=require("playwright");

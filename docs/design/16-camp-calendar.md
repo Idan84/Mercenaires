@@ -34,7 +34,8 @@ laisse le blason respirer […] la barre doit être belle, les infos lisibles »
 - **Proportions de la maquette**, quelle que soit la largeur de l'écran : tout se règle sur la hauteur de la bande sombre
   (85 px pour un écran de 2000 px de large). Chaque pack est mesuré à son arrivée (cadre, bande, ornements des embouts :
   `scripts/build-hud-bars.js`), pour que le texte tombe toujours dans sa bande.
-- **Culture sans pack** (en attendant les 32) : un cadre provisoire, aux mêmes proportions.
+- **Les 32 cultures ont leur barre** (13 novembre 2026). Une culture ajoutée plus tard, sans pack, aurait un cadre
+  provisoire aux mêmes proportions.
 - Le logo Blood & Wages n'apparaît plus au camp : il reste sur l'écran titre.
 
 **La barre du bas** sert à se déplacer et à agir. Pour l'instant : **Taverne** (son menu) et **Château** à gauche,

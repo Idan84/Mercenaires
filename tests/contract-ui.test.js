@@ -52,7 +52,7 @@ assert.match(board, /<div class="board-notice-art"><\/div>/, "sans image : le ca
 assert.match(board, /<div class="board-notice-art" data-fade="[1-4]"><img src="assets\/missions\/garde\.webp"/, "avec image : l'illustration, et son masque d'estompage");
 // La charte de la création : le lieu en Cinzel, « de … » en Garamond italique, le filet à la fleur de lys.
 assert.match(board, /<h3 class="board-notice-title"><span class="board-notice-name">Camp gobelin<\/span><span class="board-notice-place">de Brumecendre<\/span><\/h3>/);
-assert.match(board, /<h3 class="board-notice-title"><span class="board-notice-name">Une veuve fortunée<\/span><\/h3>/, "garde du corps : le client seul");
+assert.match(board, /<h3 class="board-notice-title"><span class="board-notice-name board-notice-name--l">Une veuve fortunée<\/span><\/h3>/, "garde du corps : le client seul, titre long un peu plus petit");
 assert.match(board, /<span class="board-notice-rule" aria-hidden="true"><i><\/i><\/span>/);
 assert.match(board, /<stars 1>[\s\S]*<img class="board-notice-gold" src="assets\/hud\/picto-or\.webp" alt=""><b>6\u202f800<\/b>[\s\S]*M5\.5 2\.8h13[\s\S]*2 jours de marche/,
   "étoiles, or (avec l'espace des milliers), sablier et durée");
@@ -133,6 +133,9 @@ for (const mark of ["tache-o", "coul-o", "bord-o", "points-o"]) {
   const share = many.filter(l => l.style.includes("--" + mark + ":1")).length / many.length;
   assert.ok(share > .2 && share < .55, mark + " : " + share);
 }
+// Les titres longs rapetissent (Idan, 2026-11-14 : « réduis la police des longs titres »).
+assert.match(board, /<span class="board-notice-name(?: board-notice-name--(?:m|l|xl))?">/);
+for (const cls of ["m", "l", "xl"]) assert.ok(boardCss.includes(".board-notice-name--" + cls + "{"), "cran " + cls);
 assert.ok(many.every(l => [1, 2, 3, 4].every(k => { const x = varOf(l, "p" + k + "x"); return x === undefined || +x <= 20 || +x >= 80; })), "les chiures restent dans les marges");
 assert.deepEqual([arrows.prev.hidden, arrows.next.hidden], [true, true], "une seule page : pas de flèches");
 assert.doesNotMatch(js, /Escouades en mission/, "les escouades parties ne sont plus sur le tableau");

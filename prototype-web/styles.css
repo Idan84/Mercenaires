@@ -2243,6 +2243,10 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .board-notice-art img{-webkit-mask:var(--estompe) 0 0 / 100% 100% no-repeat,var(--feuille) calc(var(--parch-edge) * -.45) calc(var(--parch-edge) * -.4) / calc(100% + var(--parch-edge) * .9) calc(100% / .56 + var(--parch-edge) * 2.8) no-repeat;-webkit-mask-composite:source-in;mask:var(--estompe) 0 0 / 100% 100% no-repeat,var(--feuille) calc(var(--parch-edge) * -.45) calc(var(--parch-edge) * -.4) / calc(100% + var(--parch-edge) * .9) calc(100% / .56 + var(--parch-edge) * 2.8) no-repeat;mask-composite:intersect}
 .board-notice-title{display:grid;gap:calc(var(--u) * 2);margin:calc(var(--u) * 14) 0 0;font-weight:400}
 .board-notice-name{font:700 calc(var(--u) * 10.5)/1.2 var(--police-titre);letter-spacing:.09em;text-transform:uppercase;color:var(--encre);text-wrap:balance}
+/* Les titres longs rapetissent un peu (nameSize dans contract-ui.js) pour tenir sur deux lignes. */
+.board-notice-name--m{font-size:calc(var(--u) * 9.4);letter-spacing:.07em}
+.board-notice-name--l{font-size:calc(var(--u) * 8.6);letter-spacing:.05em}
+.board-notice-name--xl{font-size:calc(var(--u) * 7.8);letter-spacing:.04em}
 .board-notice-place{font:italic 500 calc(var(--u) * 11)/1.15 var(--police-texte);color:var(--encre-secondaire)}
 /* Le filet : épais près de son motif, il s'affine jusqu'à disparaître ; il entre dans la fleur de lys par le milieu. */
 .board-notice-rule{display:flex;align-items:center;gap:calc(var(--u) * 5);width:78%;margin:calc(var(--u) * 9) 0 calc(var(--u) * 6);color:var(--encre-secondaire)}

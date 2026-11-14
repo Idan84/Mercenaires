@@ -167,6 +167,12 @@ function noticeLook(id){
     +(specks?";--points-o:1"+[1,2,3,4].map(k=>`;--p${k}x:${margin()};--p${k}y:${pct(10,92)}`).join(""):"");
   return {pin,wax,head,fade,paper,style:`--tilt:${tilt.toFixed(2)}deg;--dy:${dy.toFixed(1)};--tone:${tone.toFixed(3)};--hue:${paperHue.toFixed(1)}deg;--stain-o:${stain?1:0};--stain-x:${sx.toFixed(0)}%;--stain-y:${sy.toFixed(0)}%${dirt};--w:${w.toFixed(3)};--h:${ht.toFixed(3)}${folds}${crumple}${marks}`};
 }
+// Idan, 2026-11-14 : « réduis la police des longs titres » (sur les feuilles étroites, « Camp d'hommes-bêtes » passait
+// sur trois lignes). Trois crans selon le nombre de lettres du titre.
+function nameSize(name){
+  const n=String(name||"").length;
+  return n>24?" board-notice-name--xl":n>17?" board-notice-name--l":n>13?" board-notice-name--m":"";
+}
 function renderBoardNotice(card){
   const look=noticeLook(card.id);
   const art=card.illustration?`<img src="${esc(card.illustration)}" alt="" loading="lazy">`:"";
@@ -175,7 +181,7 @@ function renderBoardNotice(card){
     <span class="board-notice-paper" aria-hidden="true"></span>
     <span class="board-notice-pins" aria-hidden="true"><i></i>${look.pin==="punaises"?"<i></i>":""}</span>
     <div class="board-notice-art"${art?` data-fade="${look.fade}"`:""}>${art}</div>
-    <h3 class="board-notice-title"><span class="board-notice-name">${esc(card.name||card.title)}</span>${card.place?`<span class="board-notice-place">de ${esc(card.place)}</span>`:""}</h3>
+    <h3 class="board-notice-title"><span class="board-notice-name${nameSize(card.name||card.title)}">${esc(card.name||card.title)}</span>${card.place?`<span class="board-notice-place">de ${esc(card.place)}</span>`:""}</h3>
     <span class="board-notice-rule" aria-hidden="true"><i></i></span>
     <span class="board-notice-level" title="${esc(card.difficulty.label)}">${levelStars(card.difficulty.level,card.difficulty.label)}</span>
     <div class="board-notice-stats">

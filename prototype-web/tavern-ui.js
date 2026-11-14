@@ -158,12 +158,9 @@ function advanceCampDay(){
   const allowed=campaignRules().canAdvanceDay(game.campaign);
   if(!allowed.ok){
     tavernLog(allowed.reason,"warn");
-    // Un déserteur repéré attend qu'on décide de son sort (desertion-ui.js).
-    if(allowed.desertion!=null){ if(typeof checkDesertions==="function") checkDesertions(); return; }
-    if(allowed.mutiny){ if(typeof checkMutiny==="function") checkMutiny(); return; }
-    if(allowed.usurer){ if(typeof checkUsurer==="function") checkUsurer(); return; }
-    // Un mercenaire réclame une augmentation (salary-review-ui.js).
-    if(allowed.salaryReview!=null){ if(typeof checkSalaryReviews==="function") checkSalaryReviews(); return; }
+    // Quelqu'un attend une réponse (un déserteur repéré, les mutins, l'usurier, une augmentation) : la première de ces
+    // discussions s'ouvre, même remise à plus tard (discussions-ui.js).
+    if(allowed.desertion!=null||allowed.mutiny||allowed.usurer||allowed.salaryReview!=null){ if(typeof openFirstTalk==="function") openFirstTalk(); return; }
     if(typeof openExpeditionDialog==="function") openExpeditionDialog(allowed.expedition.id);
     return;
   }

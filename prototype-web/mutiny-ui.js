@@ -74,6 +74,8 @@ function openMutinyScene(){
 function checkMutiny(){
   const dialog=$("mutiny-dialog");
   if(!game.campaign||!dialog||dialog.open||!mutinyRules()||game.mission) return;
+  // Remise à plus tard (discussions-ui.js) : le picto Discussions la rouvre.
+  if(typeof talkPutOff==="function"&&talkPutOff("mutiny")) return;
   if(mutinyRules().pending(game.campaign)){ openMutinyScene(); return; }
   const fight=mutinyRules().fighting(game.campaign);
   if(!fight) return;
@@ -129,8 +131,6 @@ function mutinyChoice(key,memberId){
 }
 
 function initializeMutiny(){
-  // La scène ne se ferme pas avec Échap : il faut décider.
-  document.getElementById("mutiny-dialog")?.addEventListener("cancel",event=>event.preventDefault());
   document.addEventListener("click",event=>{
     const button=event.target.closest?.("[data-mutiny]");
     if(button&&!button.disabled) mutinyChoice(button.dataset.mutiny,button.dataset.mutinyMember);

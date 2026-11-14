@@ -23,7 +23,7 @@ assert.ok(!/\.tavern-zone:hover polygon|\.tavern-zone:focus-visible polygon/.tes
 assert.match(css,/\.tavern-zone polygon\{fill:transparent;stroke:none\}/);
 assert.match(css,/\.tavern-zone text\{font:400 /,"un nom fin");
 
-// Les zones : les cinq entrées du menu de la barre, avec les mêmes libellés.
+// Les zones : les missions, le recrutement, les deux salles et le tavernier.
 const scene=new Function("window","document",js.replace('if(typeof document!=="undefined") initializeTavernScene();','')
   +"return {TAVERN_ZONES,TAVERN_SCENE_SIZE,TAVERN_VIDEO,tavernZonesSvg,updateTavernScene};");
 const body={dataset:{}};
@@ -34,9 +34,8 @@ const video={attrs:{},paused:true,plays:0,pauses:0,
   pause(){ this.pauses++; this.paused=true; }};
 let reduced=false;
 const api=scene({matchMedia:()=>({matches:reduced})},{body,getElementById:id=>id==="tavern-video"?video:null});
-const menu=[...html.slice(html.indexOf('<ul id="hud-tavern-menu"'),html.indexOf("</ul>",html.indexOf('<ul id="hud-tavern-menu"')))
-  .matchAll(/data-hud-tavern="(\w+)">([^<]+)<\/button>/g)].map(m=>[m[1],m[2]]);
-assert.deepEqual(api.TAVERN_ZONES.map(z=>[z.key,z.label]),menu,"mêmes actions que le menu Taverne");
+assert.deepEqual(api.TAVERN_ZONES.map(z=>[z.key,z.label]),
+  [["missions","Trouver une mission"],["recruits","Recruter"],["canteen","La Cantine"],["cellar","La Cave"],["talk","Parler au tavernier"]],"les salles et le tavernier");
 for(const z of api.TAVERN_ZONES){
   assert.ok(z.points.length>=3,z.key);
   for(const [x,y] of [...z.points,z.at]) assert.ok(x>=0&&x<=api.TAVERN_SCENE_SIZE.width&&y>=0&&y<=api.TAVERN_SCENE_SIZE.height,z.key);
@@ -44,7 +43,7 @@ for(const z of api.TAVERN_ZONES){
 const svg=api.tavernZonesSvg();
 assert.equal((svg.match(/<polygon /g)||[]).length,5);
 assert.match(svg,/data-tavern-zone="talk" role="button" tabindex="0" aria-label="Parler au tavernier"/,"au clavier aussi");
-assert.match(js,/chooseHudTavern\(zone\.dataset\.tavernZone\)/,"l'action du menu de la barre");
+assert.match(js,/openTavernPlace\(zone\.dataset\.tavernZone\)/,"la salle ou le tavernier (tavern-ui.js)");
 
 // La vidéo : chargée à la première visite de la taverne seulement, en pause ailleurs, jamais en mouvement réduit.
 Object.assign(body.dataset,{screen:"camp",campScene:"home"});
@@ -62,4 +61,4 @@ reduced=true;
 body.dataset.campScene="tavern";
 api.updateTavernScene();
 assert.equal(video.plays,1,"pas de vidéo en mouvement réduit");
-console.log("Taverne animée : vidéo, image, zones cliquables (mêmes actions que le menu) — OK");
+console.log("Taverne animée : vidéo, image, zones cliquables (salles et tavernier) — OK");

@@ -469,41 +469,15 @@ function askTavernAdvice(statName){
   renderTavern();
 }
 
-// La Taverne dans la barre du bas (Idan, 2026-11-11) : un bouton et son menu déroulant (les salles, le tavernier) ;
-// l'accueil de la taverne n'a plus de boutons, ni de bulle sur le tavernier.
-function setHudTavernMenu(open){
-  const menu=$("hud-tavern-menu"),button=$("hud-tavern-btn");
-  if(!menu||!button) return;
-  menu.hidden=!open;
-  button.setAttribute("aria-expanded",String(open));
-  $("hud-tavern")?.classList.toggle("is-open",open);
-}
-function chooseHudTavern(key){
-  setHudTavernMenu(false);
+// Les salles de la taverne et son tavernier, depuis les zones de l'accueil de la taverne (tavern-scene-ui.js). Le picto
+// Taverne de la barre du bas mène juste à la taverne (Idan, 2026-11-14 : « pas de menu déroulant »).
+function openTavernPlace(key){
   if(typeof openCampScene==="function") openCampScene("tavern");
   if(key==="talk") openTavernTalk();
   else showTavernView(key);
 }
-function initializeHudTavern(){
-  $("hud-tavern-btn").addEventListener("click",()=>setHudTavernMenu($("hud-tavern-menu").hidden));
-  $("hud-tavern-menu").addEventListener("click",event=>{
-    const item=event.target.closest("[data-hud-tavern]");
-    if(item) chooseHudTavern(item.dataset.hudTavern);
-  });
-  // Un clic ailleurs ou Échap referme le menu (Échap n'ouvre pas alors le menu de pause).
-  document.addEventListener("click",event=>{
-    if(!$("hud-tavern-menu").hidden&&!event.target.closest?.("#hud-tavern")) setHudTavernMenu(false);
-  });
-  window.addEventListener("keydown",event=>{
-    if(event.key!=="Escape"||$("hud-tavern-menu").hidden) return;
-    event.preventDefault();
-    event.stopImmediatePropagation();
-    setHudTavernMenu(false);
-  },true);
-}
 
 function initializeTavernUi(){
-  initializeHudTavern();
   const talk=$("tavern-talk-dialog");
   talk.addEventListener("click",event=>{
     const option=event.target.closest("[data-talk]");

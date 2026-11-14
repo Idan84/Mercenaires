@@ -47,8 +47,11 @@ n'est pas fonctionnel immédiatement, on commence par la barre ») :
 - **Au centre, le bouton Jour suivant** dessiné par Idan (`next.png`), dans **l'anneau de la culture**
   (`ornement_central`, les 32 cultures) ; le bord du bouton passe sous l'anneau.
 - **À gauche de l'anneau, les six lieux** en pictos d'Idan (« que des pictos » ; le nom au survol), dans l'ordre de ses
-  images : **Château** (l'écran du camp), **Taverne** (son menu), **Dortoir**, **Marchand** (grisé sans marchand),
-  **Intendance**, **Construction** (l'actuel Ma Compagnie, à réorganiser). Ils se rangent contre l'anneau, à sa hauteur.
+  images : **Château** (l'écran du camp), **Taverne** (elle mène juste à la taverne, sans menu déroulant : ses zones
+  donnent les salles), **Dortoir**, **Marchand** (grisé sans marchand), **Intendance**, **Construction** (l'actuel Ma
+  Compagnie, à réorganiser). Ils se rangent contre l'anneau, à sa hauteur. Le picto du lieu où l'on est est grisé (Idan :
+  « quand on est sur le château, on le grise ») ; au survol, un très léger grossissement ; au clic, il s'enfonce et
+  rebondit au relâchement.
 - **Le menu de l'accueil du camp est retiré** (Idan : « on peut retirer les boutons du menu principal ») : on se déplace
   avec la barre ; « Mes mercenaires » s'ouvre depuis les mercenaires de la barre du haut. Chaque lieu garde son bouton
   « ← Retour au camp », et la Taverne ses zones cliquables.

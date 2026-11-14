@@ -5,7 +5,7 @@
 // que sur les boutons qu'on vient de déplacer dans la barre. » Les fichiers sont déposés par Idan sur Hostinger, hors de
 // Git (/media/video/). La vidéo (1920 × 1080, en boucle, muette) ne se charge qu'à la première visite de la Taverne ; en
 // mouvement réduit, l'image seule. Les zones (sur l'accueil de la taverne) sont des polygones dans le repère de la
-// vidéo : un SVG « slice » se cale exactement comme la vidéo en « cover ». Les actions : chooseHudTavern (tavern-ui.js).
+// vidéo : un SVG « slice » se cale exactement comme la vidéo en « cover ». Les actions : openTavernPlace (tavern-ui.js).
 const TAVERN_VIDEO="/media/video/Video_Tavern.mp4";
 const TAVERN_SCENE_SIZE={width:1920,height:1080};
 const TAVERN_ZONES=[
@@ -47,7 +47,7 @@ function initializeTavernScene(){
     svg.innerHTML=tavernZonesSvg();
     const choose=target=>{
       const zone=target.closest?.("[data-tavern-zone]");
-      if(zone&&typeof chooseHudTavern==="function") chooseHudTavern(zone.dataset.tavernZone);
+      if(zone&&typeof openTavernPlace==="function") openTavernPlace(zone.dataset.tavernZone);
     };
     svg.addEventListener("click",event=>choose(event.target));
     svg.addEventListener("keydown",event=>{

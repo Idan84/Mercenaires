@@ -59,10 +59,10 @@ assert.match(board, /<stars 1>[\s\S]*<img class="board-notice-gold" src="assets\
 assert.doesNotMatch(board, /Faire le ménage|Garde du corps|Attaquer un camp|cherche 2 gardes|Nouvelle mission demain|PO</, "ni type, ni description, ni case vide");
 assert.doesNotMatch(board, /M14\.8 9\.2/, "plus de symbole dollar");
 // Chaque annonce a son allure (travers, papier, auréole, attache), toujours la même pour la même offre.
-const looks = [...board.matchAll(/data-pin="(clou|punaises|cire)"(?: data-wax="(?:rouge|noire|bleue)"| data-head="[123]")? style="(--tilt:-?[\d.]+deg;--dy:-?[\d.]+;--tone:[\d.]+;--hue:-?[\d.]+deg;--stain-o:[01];--stain-x:\d+%;--stain-y:\d+%(?:;--sat:[\d.]+;--sale:1;--sale-x1:\d+%;--sale-y1:\d+%;--sale-x2:\d+%;--sale-y2:\d+%)?)"/g)];
+const looks = [...board.matchAll(/data-pin="(clou|punaises|cire)"(?: data-wax="(?:rouge|noire|bleue)"| data-head="[123]")? style="(--tilt:-?[\d.]+deg;--dy:-?[\d.]+;--tone:[\d.]+;--hue:-?[\d.]+deg;--stain-o:[01];--stain-x:\d+%;--stain-y:\d+%(?:;--sat:[\d.]+;--sale:1;--sale-x1:\d+%;--sale-y1:\d+%;--sale-x2:\d+%;--sale-y2:\d+%)?;--w:[\d.]+;--h:[\d.]+;--pli1:[^"]*)" data-paper="[1-6]"/g)];
 assert.equal(looks.length, 2, "une allure par annonce");
 ui.renderContractBoard();
-assert.deepEqual([...node("tavern-contracts").innerHTML.matchAll(/data-pin="[^"]+"(?: data-(?:wax|head)="[^"]+")? style="[^"]+"/g)].map(m => m[0]), looks.map(m => m[0]), "la même allure à chaque affichage");
+assert.deepEqual([...node("tavern-contracts").innerHTML.matchAll(/data-pin="[^"]+"(?: data-(?:wax|head)="[^"]+")? style="[^"]+" data-paper="\d"/g)].map(m => m[0]), looks.map(m => m[0]), "la même allure à chaque affichage");
 assert.match(board, /<span class="board-notice-paper" aria-hidden="true"><\/span>/);
 // L'illustration du camp (Jean-Mi, 2026-11-14 : une gravure par peuple), sinon celle de la mission.
 game.referenceData.oneShotMissions.missions[0].camps = [{faction:"Orcs", illustrations:["assets/missions/camp-orc-1.webp"]}, {faction:"Gobelins", illustrations:["assets/missions/camp-gobelin.webp"]}];
@@ -117,6 +117,22 @@ const oldShare = many.filter(l => l.style.includes("--sale:1")).length / many.le
 assert.ok(oldShare > .2 && oldShare < .36, "un vieux papier sur quatre environ : " + oldShare);
 assert.ok(many.filter(l => l.style.includes("--sale:1")).every(l => /--hue:1\.0deg;.*--sat:\.72/.test(l.style)), "les vieux papiers : teint neutre, désaturés");
 assert.deepEqual(new Set(many.map(l => l.fade)), new Set([1, 2, 3, 4]), "les quatre masques servent");
+// Idan, 2026-11-14 : « trop le même gabarit, les mêmes défauts ». Six formes de papier, toutes tirées ; taille, plis,
+// froissé et taches changent d'une annonce à l'autre.
+for (const n of [2, 3, 4, 5, 6]) {
+  assert.ok(fs.existsSync(path.join(root, "prototype-web/assets/taverne/papier-annonce-" + n + ".webp")), "papier " + n);
+  assert.ok(boardCss.includes("assets/taverne/papier-annonce-" + n + ".webp"), "le CSS utilise le papier " + n);
+}
+assert.deepEqual(new Set(many.map(l => l.paper)), new Set([1, 2, 3, 4, 5, 6]), "les six papiers servent");
+assert.ok(many.every(l => !(l.paper === 5 && l.pin === "punaises")), "pas de punaise sur le coin arraché");
+const varOf = (l, name) => (new RegExp("--" + name + ":(-?[\\d.]+)").exec(l.style) || [])[1];
+assert.ok(many.every(l => +varOf(l, "w") >= .9 && +varOf(l, "w") <= 1 && +varOf(l, "h") >= .83 && +varOf(l, "h") <= .92), "des tailles un peu différentes");
+assert.ok(new Set(many.map(l => varOf(l, "pli1"))).size > 10, "les plis ne tombent pas toujours au même endroit");
+for (const mark of ["tache-o", "coul-o", "bord-o", "points-o"]) {
+  const share = many.filter(l => l.style.includes("--" + mark + ":1")).length / many.length;
+  assert.ok(share > .2 && share < .55, mark + " : " + share);
+}
+assert.ok(many.every(l => [1, 2, 3, 4].every(k => { const x = varOf(l, "p" + k + "x"); return x === undefined || +x <= 20 || +x >= 80; })), "les chiures restent dans les marges");
 assert.deepEqual([arrows.prev.hidden, arrows.next.hidden], [true, true], "une seule page : pas de flèches");
 assert.doesNotMatch(js, /Escouades en mission/, "les escouades parties ne sont plus sur le tableau");
 

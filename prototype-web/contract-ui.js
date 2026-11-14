@@ -136,7 +136,7 @@ function noticeLook(id){
   let h=2166136261;
   for(const ch of String(id)){ h^=ch.charCodeAt(0); h=Math.imul(h,16777619); }
   const r=()=>{ h^=h>>>13; h=Math.imul(h,0x5bd1e995); h^=h>>>15; return (h>>>0)/4294967296; };
-  const tilt=(r()*2-1)*2.2,dy=(r()*2-1)*9,tone=.9+r()*.12,hue=(r()*2-1)*7;
+  const tilt=(r()*2-1)*3.2,dy=(r()*2-1)*9,tone=.9+r()*.12,hue=(r()*2-1)*7;
   const stain=r()<.45,side=r()<.5,sx=side?14+r()*14:72+r()*14,sy=72+r()*16,pinRoll=r();
   const pin=pinRoll<.5?"clou":pinRoll<.8?"punaises":"cire";
   // La cire (Jean-Mi, 2026-11-14) : un cachet rouge, noir ou bleu.
@@ -149,13 +149,29 @@ function noticeLook(id){
   // allés le plus loin (un sur quatre environ) sont des papiers plus vieux : moins saturés, salis par endroits.
   const old=hue<-3,paperHue=old?1:hue<0?hue*.3:hue;
   const dirt=old?`;--sat:.72;--sale:1;--sale-x1:${(15+r()*70).toFixed(0)}%;--sale-y1:${(10+r()*80).toFixed(0)}%;--sale-x2:${(15+r()*70).toFixed(0)}%;--sale-y2:${(10+r()*80).toFixed(0)}%`:"";
-  return {pin,wax,head,fade,style:`--tilt:${tilt.toFixed(2)}deg;--dy:${dy.toFixed(1)};--tone:${tone.toFixed(3)};--hue:${paperHue.toFixed(1)}deg;--stain-o:${stain?1:0};--stain-x:${sx.toFixed(0)}%;--stain-y:${sy.toFixed(0)}%${dirt}`};
+  // Idan, 2026-11-14 : « trop le même gabarit, les mêmes défauts ». La forme du papier (papier-annonce-1…6 : le parchemin
+  // de la création et cinq papiers déchirés autrement, dont un coin arraché et deux coins cornés), la taille, les plis,
+  // le froissé et les taches changent d'une annonce à l'autre. Le papier au coin haut droit arraché ne prend pas de punaises.
+  let paper=1+Math.floor(r()*6);
+  if(paper===5&&pin==="punaises") paper=2;
+  const w=.9+r()*.1,ht=.83+r()*.09;
+  const pct=(a,b)=>(a+r()*(b-a)).toFixed(0)+"%",num=(a,b,d=0)=>(a+r()*(b-a)).toFixed(d);
+  // les chiures de mouche restent dans les marges : au milieu, on les prendrait pour des fautes d'impression
+  const margin=()=>r()<.5?pct(6,20):pct(80,94);
+  const folds=`;--pli1:${pct(24,40)};--pli2:${pct(58,75)};--pli2-o:${r()<.7?1:0};--pli-a:${num(-1.6,1.6,1)}deg;--pliv:${pct(38,62)};--pliv-o:${r()<.35?1:0}`;
+  const crumple=`;--froisse-x:${num(0,300)};--froisse-y:${num(0,300)};--froisse-s:${num(240,360)}`;
+  const blotch=r()<.45,drip=r()<.3,damp=r()<.4,specks=r()<.35;
+  const marks=(blotch?`;--tache-o:1;--tache-x:${pct(12,88)};--tache-y:${pct(14,88)};--tache-r:${num(12,30)}`:"")
+    +(drip?`;--coul-o:1;--coul-x:${pct(10,90)}`:"")
+    +(damp?`;--bord-o:1;--bord-a:${[0,90,180,270][Math.floor(r()*4)]}deg`:"")
+    +(specks?";--points-o:1"+[1,2,3,4].map(k=>`;--p${k}x:${margin()};--p${k}y:${pct(10,92)}`).join(""):"");
+  return {pin,wax,head,fade,paper,style:`--tilt:${tilt.toFixed(2)}deg;--dy:${dy.toFixed(1)};--tone:${tone.toFixed(3)};--hue:${paperHue.toFixed(1)}deg;--stain-o:${stain?1:0};--stain-x:${sx.toFixed(0)}%;--stain-y:${sy.toFixed(0)}%${dirt};--w:${w.toFixed(3)};--h:${ht.toFixed(3)}${folds}${crumple}${marks}`};
 }
 function renderBoardNotice(card){
   const look=noticeLook(card.id);
   const art=card.illustration?`<img src="${esc(card.illustration)}" alt="" loading="lazy">`:"";
   const open=card.scheduled?"":` data-mission-open="${esc(card.id)}" role="button" tabindex="0"`;
-  return `<article class="board-notice${card.scheduled?" board-notice--scheduled":""}"${open} aria-label="${esc(card.title)}" data-pin="${look.pin}"${look.pin==="cire"?` data-wax="${look.wax}"`:` data-head="${look.head}"`} style="${look.style}">
+  return `<article class="board-notice${card.scheduled?" board-notice--scheduled":""}"${open} aria-label="${esc(card.title)}" data-pin="${look.pin}"${look.pin==="cire"?` data-wax="${look.wax}"`:` data-head="${look.head}"`} style="${look.style}" data-paper="${look.paper}">
     <span class="board-notice-paper" aria-hidden="true"></span>
     <span class="board-notice-pins" aria-hidden="true"><i></i>${look.pin==="punaises"?"<i></i>":""}</span>
     <div class="board-notice-art"${art?` data-fade="${look.fade}"`:""}>${art}</div>

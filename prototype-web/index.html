@@ -35,7 +35,8 @@
          ses images : Château, Taverne, Dortoir, Marchand (grisé sans marchand), Intendance, Construction (Ma Compagnie) ;
          celui du lieu où l'on est est grisé. À droite (Idan, 2026-11-14) : le bouton du lieu (son menu : dans la taverne,
          ses cinq zones ; ailleurs, rien pour l'instant), puis Combat (les combats du jour : grisé s'il n'y en a pas), Nouvelles (le pigeon : les
-         nouvelles du jour), Journal (il remplace le journal au-dessus de la barre) et Discussions (bientôt). -->
+         nouvelles du jour), Journal (il remplace le journal au-dessus de la barre) et Discussions (ceux qui attendent une
+         réponse : discussions-ui.js). -->
     <div class="game-bottom-bar">
       <div class="hud-bar-art" aria-hidden="true"><span class="hud-bar-piece hud-bar-center"></span></div>
       <nav class="hud-places" aria-label="Lieux du camp">
@@ -56,7 +57,7 @@
         <button id="hud-combat-btn" class="hud-nav" type="button" data-hud-action="combat" title="Pas de combat aujourd’hui" disabled><img class="hud-nav-img" src="assets/hud/pictos-bas/combat.webp" alt="" width="200" height="200"><span class="hud-nav-label">Combats du jour</span></button>
         <button id="hud-news-btn" class="hud-nav" type="button" data-hud-action="news" title="Nouvelles du jour"><img class="hud-nav-img" src="assets/hud/pictos-bas/nouvelles.webp" alt="" width="200" height="200"><span class="hud-nav-label">Nouvelles du jour</span></button>
         <button id="hud-journal-btn" class="hud-nav" type="button" data-hud-action="journal" aria-expanded="false" aria-controls="hud-journal" title="Journal"><img class="hud-nav-img" src="assets/hud/pictos-bas/journal.webp" alt="" width="200" height="200"><span class="hud-nav-label">Journal</span></button>
-        <button id="hud-talk-btn" class="hud-nav" type="button" data-hud-action="talk" title="Discussions : bientôt" disabled><img class="hud-nav-img" src="assets/hud/pictos-bas/discussions.webp" alt="" width="200" height="200"><span class="hud-nav-label">Discussions</span></button>
+        <button id="hud-talk-btn" class="hud-nav" type="button" data-hud-action="talk" title="Personne ne vous attend" disabled><img class="hud-nav-img" src="assets/hud/pictos-bas/discussions.webp" alt="" width="200" height="200"><span class="hud-nav-label">Discussions</span></button>
         <ul id="hud-action-menu" class="hud-menu-list" role="menu" hidden></ul>
       </nav>
       <section id="hud-journal" class="hud-journal" aria-label="Journal de la compagnie" hidden>
@@ -518,6 +519,7 @@
     </header>
     <div id="desertion-log" class="talk-log" aria-live="polite"></div>
     <div id="desertion-choices"></div>
+    <button type="button" class="talk-later" data-talk-later="desertion" title="Fermer sans répondre : le picto Discussions la rouvre. Le jour suivant attend votre réponse.">Plus tard</button>
   </dialog>
   <!-- La mutinerie (Idan, 2026-11-10) : ceux à qui l'on doit de l'argent viennent réclamer leur solde (mutiny-ui.js). -->
   <dialog id="mutiny-dialog" class="talk-dialog talk-dialog--recruit" aria-labelledby="mutiny-name">
@@ -527,6 +529,7 @@
     </header>
     <div id="mutiny-log" class="talk-log" aria-live="polite"></div>
     <div id="mutiny-choices"></div>
+    <button type="button" class="talk-later" data-talk-later="mutiny" title="Fermer sans répondre : le picto Discussions la rouvre. Le jour suivant attend votre réponse.">Plus tard</button>
   </dialog>
   <!-- L'usurier (Idan, 2026-11-11) : sa visite, l'échéance, ses voleurs (usurer-ui.js). -->
   <dialog id="usurer-dialog" class="talk-dialog" aria-labelledby="usurer-name">
@@ -536,6 +539,7 @@
     <div id="usurer-log" class="talk-log" aria-live="polite"></div>
     <div id="usurer-form"></div>
     <ol id="usurer-options" class="talk-options"></ol>
+    <button type="button" class="talk-later" data-talk-later="usurer" title="Fermer sans répondre : le picto Discussions la rouvre. Le jour suivant attend votre réponse.">Plus tard</button>
   </dialog>
   <dialog id="salary-dialog" class="talk-dialog talk-dialog--recruit" aria-labelledby="salary-name">
     <header class="talk-head">
@@ -544,6 +548,7 @@
     </header>
     <div id="salary-log" class="talk-log" aria-live="polite"></div>
     <div id="salary-choices"></div>
+    <button type="button" class="talk-later" data-talk-later="salary" title="Fermer sans répondre : le picto Discussions la rouvre. Le jour suivant attend votre réponse.">Plus tard</button>
   </dialog>
 
 
@@ -636,6 +641,7 @@
   <script src="debts-ui.js"></script>
   <script src="mutiny-ui.js"></script>
   <script src="usurer-ui.js"></script>
+  <script src="discussions-ui.js"></script>
   <script src="lieutenant-ui.js"></script>
   <script src="merchant-ui.js"></script>
   <script src="save-ui.js"></script>

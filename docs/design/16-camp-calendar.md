@@ -73,8 +73,15 @@ n'est pas fonctionnel immédiatement, on commence par la barre ») :
     signaler » jusqu'au lendemain) ;
   - **Journal** : il remplace le journal au-dessus de la barre (« on peut l'ouvrir en cliquant dessus ») ; il s'ouvre
     au-dessus des actions et défile ; un clic ailleurs ou Échap le referme ;
-  - **Discussions** : pour parler avec les mercenaires qui viennent nous voir (fuite, augmentation de salaire…) ; grisé
-    pour l'instant, son fonctionnement reste à décider.
+  - **Discussions** (Idan : « il doit ouvrir les fenêtres de dialogues avec les mercenaires qui viennent nous parler »)
+    : ceux qui attendent une réponse et que le jour suivant attend — un déserteur repéré par la Vigie, les mutins,
+    l'usurier (ou ses voleurs), une demande d'augmentation. Le matin, leurs scènes s'ouvrent toujours toutes seules, l'une
+    après l'autre (« C'est bien. On change pas ») ; mais on peut **fermer sans répondre** (« Plus tard », en haut à droite
+    de la scène, ou Échap) et y revenir par le picto, « pour parler à chaque personne dans l'ordre qu'on veut ou après
+    avoir fait autre chose ». Grisé s'il n'y a personne ; une seule discussion : elle s'ouvre ; plusieurs : un menu. Une
+    scène remise à plus tard ne se rouvre plus toute seule ce jour-là ; le bouton Jour suivant rouvre la première qui
+    attend ; après un rechargement de la page, elles se rouvrent toutes, comme un nouveau matin
+    (`prototype-web/discussions-ui.js`).
 - **Réglée culture par culture** par Idan dans l'**Atelier des barres** (14 novembre) : la hauteur de la barre, la taille
   du bouton et de l'anneau, leur hauteur, la taille des pictos, leur écart, leur écart avec l'anneau, leur hauteur, et un
   bord du bas à cacher sous l'écran. Ses réglages sont dans `scripts/hud-bars-reglages.json` ; `scripts/build-hud-bars.js`

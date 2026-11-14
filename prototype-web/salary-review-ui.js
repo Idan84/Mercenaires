@@ -27,16 +27,18 @@ function openSalaryTalk(entry,resumed=false){
   renderSalaryTalk();
   $("salary-dialog").showModal();
 }
-// Le premier qui attend (après les déserteurs ; au chargement, après la scène précédente).
+// Le premier qui attend (après les déserteurs ; au chargement, après la scène précédente), sauf ceux remis à plus tard
+// (discussions-ui.js) ; les scènes d'avant passent d'abord, sauf remises à plus tard.
 function checkSalaryReviews(){
   const dialog=$("salary-dialog");
   if(!game.campaign||!dialog||dialog.open||typeof campaignRules!=="function") return;
-  if($("desertion-dialog")?.open||campaignRules().desertionRules?.pending(game.campaign).length) return;
+  const later=key=>typeof talkPutOff==="function"&&talkPutOff(key);
+  if($("desertion-dialog")?.open||campaignRules().desertionRules?.pending(game.campaign).some(e=>!later("desertion:"+e.id))) return;
   // Des mutins d'abord (mutiny-ui.js).
-  if($("mutiny-dialog")?.open||campaignRules().mutinyRules?.pending(game.campaign)) return;
+  if($("mutiny-dialog")?.open||(campaignRules().mutinyRules?.pending(game.campaign)&&!later("mutiny"))) return;
   // Puis l'usurier (usurer-ui.js).
-  if($("usurer-dialog")?.open||campaignRules().usurerRules?.pending(game.campaign)) return;
-  const entry=salaryReviewRules()?.pending(game.campaign)[0];
+  if($("usurer-dialog")?.open||(campaignRules().usurerRules?.pending(game.campaign)&&!later("usurer"))) return;
+  const entry=salaryReviewRules()?.pending(game.campaign).find(e=>!later("salary:"+e.id));
   if(entry) openSalaryTalk(entry,game.salaryTalk?.id===entry.id||entry.rounds>0);
 }
 
@@ -134,8 +136,6 @@ function salaryTalkChoice(key,amount){
 }
 
 function initializeSalaryReview(){
-  // La scène ne se ferme pas avec Échap : il faut lui répondre.
-  document.getElementById("salary-dialog")?.addEventListener("cancel",event=>event.preventDefault());
   document.addEventListener("click",event=>{
     const button=event.target.closest?.("[data-salary-talk]");
     if(button) salaryTalkChoice(button.dataset.salaryTalk);

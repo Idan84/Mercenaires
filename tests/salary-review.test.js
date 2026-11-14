@@ -190,15 +190,16 @@ assert.deepEqual(labels(ui.salaryChoicesHtml(zia,open,"broken")),[["intimidate",
 assert.deepEqual(labels(ui.salaryChoicesHtml(zia,null,"ended")),[["continue","Continuer"]]);
 assert.match(ui.salaryChoicesHtml(zia,open,"negotiate"),/<form id="salary-offer" class="talk-offer">[\s\S]*<input id="salary-offer-salary" type="number" min="40" value="64">/);
 const salaryUi=fs.readFileSync(path.join(ROOT,"prototype-web","salary-review-ui.js"),"utf8");
-assert.match(salaryUi,/addEventListener\("cancel",event=>event\.preventDefault\(\)\)/,"on ne la ferme pas avec Échap");
-assert.match(salaryUi,/desertionRules\?\.pending\(game\.campaign\)\.length\) return;/,"les déserteurs d'abord");
+// Depuis le 14 novembre (Idan) : on peut la remettre à plus tard (discussions-ui.js) ; le jour suivant attend toujours.
+assert.doesNotMatch(salaryUi,/addEventListener\("cancel"/,"Échap : discussions-ui.js");
+assert.match(salaryUi,/desertionRules\?\.pending\(game\.campaign\)\.some\(e=>!later\("desertion:"\+e\.id\)\)\) return;/,"les déserteurs d'abord, sauf remis à plus tard");
 const index=fs.readFileSync(path.join(ROOT,"prototype-web","index.html"),"utf8");
 assert.match(index,/<dialog id="salary-dialog" class="talk-dialog talk-dialog--recruit"/);
 assert.ok(index.indexOf('<script src="/core/salary-review.js">')>index.indexOf('<script src="/core/persuasion.js">')
   &&index.indexOf('<script src="/core/salary-review.js">')<index.indexOf('<script src="/core/campaign.js">'));
 assert.ok(index.indexOf('<script src="salary-review-ui.js">')>index.indexOf('<script src="desertion-ui.js">'));
 const tavernUi=fs.readFileSync(path.join(ROOT,"prototype-web","tavern-ui.js"),"utf8");
-assert.match(tavernUi,/if\(allowed\.salaryReview!=null\)\{ if\(typeof checkSalaryReviews==="function"\) checkSalaryReviews\(\); return; \}/);
+assert.match(tavernUi,/allowed\.salaryReview!=null\)\{ if\(typeof openFirstTalk==="function"\) openFirstTalk\(\); return; \}/);
 const ui2=fs.readFileSync(path.join(ROOT,"prototype-web","ui.js"),"utf8");
 // La mutinerie (Idan, 2026-11-10) passe entre les deux : désertion, mutins, puis salaire.
 assert.match(ui2,/checkDesertions\(\);\n(?:[^\n]*\n)*?  if \(typeof checkSalaryReviews === "function"\) checkSalaryReviews\(\);\n\}/);

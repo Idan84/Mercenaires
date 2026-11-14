@@ -120,8 +120,10 @@ function checkUsurer(){
   const dialog=$("usurer-dialog");
   if(!game.campaign||!dialog||dialog.open||!usurerRules()||game.mission) return;
   if(["desertion-dialog","mutiny-dialog"].some(id=>$(id)?.open)) return;
-  if(campaignRules().mutinyRules?.pending(game.campaign)) return;
-  if(usurerRules().pending(game.campaign)) openUsurerScene();
+  // Les mutins d'abord, sauf remis à plus tard ; l'usurier remis à plus tard attend le picto Discussions (discussions-ui.js).
+  const later=key=>typeof talkPutOff==="function"&&talkPutOff(key);
+  if(campaignRules().mutinyRules?.pending(game.campaign)&&!later("mutiny")) return;
+  if(usurerRules().pending(game.campaign)&&!later("usurer")) openUsurerScene();
 }
 // Après l'avertissement des voleurs (mission.js) : leur message, puis le camp.
 function showUsurerNote(text){
@@ -174,8 +176,6 @@ function usurerChoice(key){
 }
 
 function initializeUsurer(){
-  // La scène ne se ferme pas avec Échap : il faut décider.
-  document.getElementById("usurer-dialog")?.addEventListener("cancel",event=>event.preventDefault());
   document.addEventListener("click",event=>{
     const button=event.target.closest?.("[data-usurer]");
     if(button&&!button.disabled) usurerChoice(button.dataset.usurer);

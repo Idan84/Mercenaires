@@ -705,8 +705,9 @@ de désertion pendant 15 jours » ; « Si ! Il est mort dans un combat ».
 - **Passé inaperçu** : il part avec ce qu'il porte **et son sac** ; dans la notification du jour et au journal, l'intendant le signale (« Brak a
   filé cette nuit, avec son sac. ») ; sans intendant, on l'apprend quand même (« … a disparu cette nuit »). Son profil est
   gardé (`company.deserters`), pour plus tard.
-- **Repéré** (« La Vigie a repéré … » dans la notification du jour) : une scène **au début de la journée**, une par repéré ; on ne peut rien faire d'autre (ni passer au jour
-  suivant) avant de l'avoir réglée :
+- **Repéré** (« La Vigie a repéré … » dans la notification du jour) : une scène **au début de la journée**, une par repéré ;
+  on ne peut pas passer au jour suivant avant de l'avoir réglée. Au début, on ne pouvait rien faire d'autre ; depuis
+  les **Discussions** (Idan, 2026-11-14) : on peut la fermer sans répondre (« Plus tard », Échap) et y revenir par le picto Discussions de la barre du bas ; le jour suivant attend toujours la réponse (doc 16) :
   - **Intimider** ou **Convaincre** : une seule tentative, **dure** : 10 + 80 / (1 + e^(−Δ/20)), **Δ = 0,5 × affinité +
     Intimidation (ou Charisme ÷ 2) du capitaine − 60** (`desertion.persuade.*`) ; capitaine moyen, mercenaire à −20 :
     23 % en intimidant, 18 % en convainquant. **Il reste** : **+20** d'affinité (« on la fait bien remonter »,

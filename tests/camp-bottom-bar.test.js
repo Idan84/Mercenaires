@@ -43,7 +43,7 @@ assert.doesNotMatch(placesNav,/aria-haspopup/);
 // À droite : le bouton du lieu (son menu, rempli selon le lieu), puis les quatre actions.
 assert.deepEqual(actions.map(a=>[a.label,a.action,a.src]),[["Combats du jour","combat"],["Nouvelles du jour","news"],["Journal","journal"],["Discussions","talk"]]
   .map(([label,action],i)=>[label,action,`assets/hud/pictos-bas/${["combat","nouvelles","journal","discussions"][i]}.webp`]),"les quatre pictos d'Idan");
-assert.deepEqual(actions.filter(a=>a.disabled).map(a=>a.label),["Combats du jour","Discussions"],"Combat : grisé tant qu'aucun combat n'attend ; Discussions : bientôt");
+assert.deepEqual(actions.filter(a=>a.disabled).map(a=>a.label),["Combats du jour","Discussions"],"grisés tant que rien n'attend (combat, discussion)");
 assert.match(actionsNav,/<ul id="hud-action-menu" class="hud-menu-list" role="menu" hidden><\/ul>/,"le menu des combats, s'il y en a plusieurs");
 assert.match(actionsNav,/^<nav class="hud-actions" aria-label="Actions du jour">\s*<div id="hud-context" class="hud-context">\s*<button id="hud-context-btn" class="hud-context-btn" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="hud-context-menu"/,"le bouton du lieu d'abord, contre l'anneau");
 assert.match(actionsNav,/<ul id="hud-context-menu" class="hud-menu-list" role="menu" aria-label="Ce lieu" hidden><\/ul>/);
@@ -189,9 +189,10 @@ const TAVERN={zones:[{key:"missions",label:"Trouver une mission"},{key:"recruits
   menu:["talk","missions","recruits","cellar","canteen"]};
 const done=[];
 const fakeGame={campaign:{day:12,expeditions:[]}};
-const right=new Function("$","document","esc","TAVERN_ZONES","TAVERN_MENU","openTavernPlace","showTodayNews","openExpeditionDialog","game",
-  js.slice(js.indexOf("function toggleHudJournal("),js.indexOf("function setPauseOpen("))+"return {updateHudContext,setHudContextMenu,chooseHudContext,runHudAction,updateHudCombat};")(
-  el,{body}, x=>String(x),TAVERN.zones,TAVERN.menu,key=>done.push(["lieu",key]),()=>done.push(["nouvelles"]),id=>done.push(["combat",id]),fakeGame);
+let talks=[];
+const right=new Function("$","document","esc","TAVERN_ZONES","TAVERN_MENU","openTavernPlace","showTodayNews","openExpeditionDialog","pendingTalks","openTalk","game",
+  js.slice(js.indexOf("function toggleHudJournal("),js.indexOf("function setPauseOpen("))+"return {updateHudContext,setHudContextMenu,chooseHudContext,runHudAction,updateHudCombat,updateHudTalks};")(
+  el,{body}, x=>String(x),TAVERN.zones,TAVERN.menu,key=>done.push(["lieu",key]),()=>done.push(["nouvelles"]),id=>done.push(["combat",id]),()=>talks,key=>done.push(["parler",key]),fakeGame);
 Object.assign(body.dataset,{screen:"camp",campScene:"home"});
 right.updateHudContext();
 assert.ok(!els["hud-context"].classes.has("is-active")&&els["hud-context-menu"].innerHTML==="","au château, pas de bouton du lieu (pour l'instant)");
@@ -236,8 +237,25 @@ right.runHudAction("journal");
 assert.deepEqual([els["hud-journal"].hidden,els["hud-journal-btn"].attrs["aria-expanded"]],[false,"true"],"le journal s'ouvre au clic");
 right.runHudAction("journal");
 assert.equal(els["hud-journal"].hidden,true,"et se referme");
-right.runHudAction("talk");
-assert.deepEqual(done,[],"Discussions : rien pour l'instant");
+// Discussions (Idan, 2026-11-14 : « il doit ouvrir les fenêtres de dialogues avec les mercenaires qui viennent nous
+// parler ») : grisé sans personne ; une seule discussion : elle s'ouvre ; plusieurs : un menu (discussions-ui.js).
+const talkBtn=el("hud-talk-btn");
+talkBtn.dataset={hudAction:"talk"};
+talkBtn.offsetLeft=300;
+right.updateHudTalks();
+assert.deepEqual([talkBtn.disabled,talkBtn.title],[true,"Personne ne vous attend"]);
+talks=[{key:"salary:2",label:"Zia veut vous parler de son salaire"}];
+right.updateHudTalks();
+assert.deepEqual([talkBtn.disabled,talkBtn.title],[false,"Zia veut vous parler de son salaire"]);
+right.runHudAction("talk",talkBtn);
+assert.deepEqual(done.shift(),["parler","salary:2"]);
+talks=[{key:"desertion:1",label:"Brak veut quitter la compagnie"},...talks];
+right.updateHudTalks();
+assert.equal(talkBtn.title,"2 discussions vous attendent");
+right.runHudAction("talk",talkBtn);
+assert.deepEqual([el("hud-action-menu").hidden,el("hud-action-menu").style.left,[...el("hud-action-menu").innerHTML.matchAll(/data-hud-pick="([\w:]+)">([^<]+)</g)].map(m=>m[1])],
+  [false,"300px",["desertion:1","salary:2"]],"dans l'ordre qu'on veut");
+assert.deepEqual(done,[]);
 assert.match(fs.readFileSync(path.join(WEB,"save-ui.js"),"utf8"),/serializeCampaign\(game\.campaign,\{tavernLog:game\.tavernLog\|\|\[\],dayNews:game\.dayNews\|\|null\}\)/,"les nouvelles du jour, gardées avec la partie");
 assert.match(fs.readFileSync(path.join(WEB,"save-ui.js"),"utf8"),/game\.dayNews=save\.extra\.dayNews\|\|null;/);
 assert.match(js,/function openCampScene[\s\S]*?updateCampHomeIcon\(\);\n  updateHudContext\(\);/,"le bouton du lieu suit le lieu");

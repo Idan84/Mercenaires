@@ -7,8 +7,8 @@
 // (Idan, 2026-11-14 : « on fera un jour de la vidéo et de l'animation, mais l'urgence, c'est de faire quelque chose de
 // joli »). Au survol d'un élément cliquable : un contour lumineux et son nom ; au clic, sa salle (openTavernPlace,
 // tavern-ui.js). Le choix se fait au pixel près : le calque le plus haut qui est opaque sous le pointeur (les tonneaux du
-// premier plan cachent ce qui est derrière eux). Les autres salles de la taverne gardent l'image complète en fond
-// (taverne.webp, styles.css). Le bouton du lieu de la barre du bas reprend les cinq zones, dans l'ordre d'Idan
+// premier plan cachent ce qui est derrière eux). Les autres salles de la taverne gardent le même décor en fond, et il
+// s'efface en fondu à la sortie (styles.css) : on n'y entrevoit jamais un autre tavernier. Le bouton du lieu de la barre du bas reprend les cinq zones, dans l'ordre d'Idan
 // (TAVERN_MENU : « Tavernier - missions - recrutement - cave - menu »). Le tavernier change à chaque entrée dans la
 // taverne (Idan, 2026-11-14 : « au chargement de la taverne, on charge une image au hasard du tavernier ») : l'original
 // ou l'une de ses variantes. Les images, leurs cadres et les enveloppes viennent de tavern-layers.js (écrit par

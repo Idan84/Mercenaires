@@ -1269,15 +1269,17 @@ body[data-screen="camp"][data-camp-scene="home"] .menu-back {
 }
 
 
-/* Décor de la Taverne : fondu sur le château, sans modifier le fond des autres écrans. L'image complète de la taverne en
-   calques (Idan, 2026-11-14 : assets/taverne/taverne.webp, tous les calques de l'accueil assemblés), derrière ses salles. */
+/* Décor de la Taverne : fondu sur le château, sans modifier le fond des autres écrans. Sous le décor en calques, le fond
+   vide de la taverne (assets/taverne/fond.webp, son premier calque) : sans tavernier, pour ne jamais en entrevoir un autre
+   que celui tiré au sort (Idan, 2026-11-14 : « quand on quitte la taverne, on voit un glimpse entre le tavernier par défaut
+   et l'alternate »). */
 body[data-screen="camp"]::before {
   content: "";
   position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background: #1d1a16 url("assets/taverne/taverne.webp") center center / cover no-repeat;
+  background: #1d1a16 url("assets/taverne/fond.webp") center center / cover no-repeat;
   opacity: 0;
   transition: opacity .36s ease-in-out;
 }
@@ -1288,7 +1290,10 @@ body[data-screen="camp"][data-camp-scene="tavern"]::before { opacity: 1; }
 .tavern-scene,.tavern-zones{display:none;position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
 .tavern-scene{z-index:0}
 .tavern-zones{z-index:2}
-body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tavern-scene,
+/* Le décor (et son tavernier tiré au sort) dans toutes les vues de la taverne, en fondu avec le fond du camp : à l'entrée
+   comme à la sortie. Les zones, sur l'accueil seulement. */
+body[data-screen="camp"] .tavern-scene{display:block;opacity:0;visibility:hidden;transition:opacity .36s ease-in-out,visibility 0s linear .36s}
+body[data-screen="camp"][data-camp-scene="tavern"] .tavern-scene{opacity:1;visibility:visible;transition:opacity .36s ease-in-out,visibility 0s}
 body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tavern-zones{display:block}
 .tavern-layer.is-hover{filter:url(#tavern-glow)}
 .tavern-zone{pointer-events:all;cursor:default;outline:none}

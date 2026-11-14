@@ -1424,7 +1424,7 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 .talk-offer-btn{background:linear-gradient(180deg,#6a4a2f,#3a2819);color:#ffe1ac}
 .talk-offer-back{border-color:#71583e;background:transparent;color:#cdb38c}
 .talk-offer-btn:hover,.talk-offer-btn:focus-visible,.talk-offer-back:hover,.talk-offer-back:focus-visible{border-color:#ffe1a5;outline:none}
-#tavern-missions-view,#tavern-recruits-view{margin-top:24px}
+#tavern-recruits-view{margin-top:24px}
 /* Écran Recruter (Idan, 2026-10-21) : portraits en pied (9:16), nom, peuple, culture, réputation, présence. */
 .tavern-back{margin-bottom:16px;padding:8px 14px;border:1px solid #b58c53;border-radius:10px;background:linear-gradient(180deg,#3a2a1ef2,#1b130ef2);color:#f1d49b;font:600 14px Georgia,serif;box-shadow:0 6px 18px #0009;cursor:pointer}
 .tavern-back:hover,.tavern-back:focus-visible{border-color:#ffe1a5;color:#ffe1ac;outline:none}
@@ -1455,7 +1455,6 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 .recruit-talk-btn{margin-top:auto;padding:9px 10px;border:1px solid #c9a15f;border-radius:9px;background:linear-gradient(180deg,#6a4a2f,#3a2819);color:#ffe1ac;font:700 14px Georgia,serif;letter-spacing:.03em;cursor:pointer}
 .recruit-talk-btn:hover,.recruit-talk-btn:focus-visible{border-color:#ffe1a5;background:linear-gradient(180deg,#80592f,#4a321f);outline:none}
 .recruit-empty{color:#f1e5cd;text-align:center;text-shadow:0 2px 8px #000}
-#tavern-missions-view h2{margin:20px 0 12px}
 
 
 /* Navigation desktop des lieux : le château reste visible, pas le gros bandeau prototype. Plus de logo au camp, même sur
@@ -2151,25 +2150,49 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .contract-letter p{margin:0 0 .6em}
 .contract-letter .contract-signature{margin:.8em 0 0;font-style:italic;text-align:right}
 .contract-actions{display:flex;justify-content:flex-end}
-/* Tableau des missions (Idan, 2026-10-31) : des cartes au même gabarit, le détail au clic. */
-.mission-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px}
-.mission-card{display:grid;grid-template-rows:auto 1fr;overflow:hidden;border:1px solid #9a7a4f;border-radius:14px;background:linear-gradient(180deg,#3a2b21,#211812);color:#f1e3c8;cursor:pointer;transition:transform .15s,border-color .15s,box-shadow .15s}
-.mission-card:hover,.mission-card:focus-visible{transform:translateY(-3px);border-color:#e0b878;box-shadow:0 12px 28px rgba(0,0,0,.45);outline:none}
+/* Trouver une mission (Idan, 2026-11-14) : le panneau de bois (panneau-missions.webp, 2000 × 1116) couvre l'écran comme le
+   fond de la taverne ; un clic sur le mur, autour du cadre, ramène à la taverne (contract-ui.js). Les annonces sur les
+   planches, trois par page, sur notre parchemin ; une flèche de fer de chaque côté ; la page suivante pousse l'autre. */
+.mission-board{--board-w:max(100vw,100vh * 2000 / 1116);position:fixed;left:50%;top:50%;z-index:1;width:var(--board-w);aspect-ratio:2000/1116;transform:translate(-50%,-50%);background:#16100b url("assets/taverne/panneau-missions.webp") center/100% 100% no-repeat}
+.mission-board-planks{position:absolute;left:18.6%;top:21.6%;width:63.2%;height:58.2%;overflow:hidden}
+.board-page{position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:center;gap:3.2%;padding:0 3.4%}
+.board-notice{--parch-edge:calc(var(--board-w) * .022);display:flex;flex-direction:column;gap:calc(var(--board-w) * .006);height:88%;min-height:0;box-sizing:border-box;padding:calc(var(--parch-edge) * .5);border:var(--parch-edge) solid transparent;border-image:url("assets/creation/parchemin.webp") 180 fill / var(--parch-edge) stretch;color:#2c1b10;font-family:Georgia,serif;filter:drop-shadow(0 calc(var(--board-w) * .006) calc(var(--board-w) * .008) rgba(0,0,0,.6));transform-origin:50% 50%;transition:transform .16s ease}
+.board-notice[data-mission-open]{cursor:pointer}
+.board-notice[data-mission-open]:hover,.board-notice[data-mission-open]:focus-visible{transform:translateY(-.4%) rotate(-.4deg);outline:none}
+.board-notice.is-zooming{position:relative;z-index:2}
+.board-notice-art{flex:0 0 46%;min-height:0;overflow:hidden;border:1px solid #8a6a43;background:rgba(120,88,52,.12);box-shadow:inset 0 0 calc(var(--board-w) * .01) rgba(90,60,30,.35)}
+.board-notice-art img{display:block;width:100%;height:100%;object-fit:cover}
+.board-notice h3{margin:0;color:#2c1b10;font:600 clamp(15px,calc(var(--board-w) * .0118),26px)/1.2 Georgia,serif;text-align:center;text-wrap:balance}
+.board-notice-stats{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px 14px;margin-top:auto;padding-top:calc(var(--board-w) * .004);border-top:1px solid rgba(100,73,46,.45);color:#64492e;font-size:clamp(13px,calc(var(--board-w) * .0088),19px)}
+.board-notice-stats span{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.board-notice-stats b{color:#2c1b10}
+.board-notice-stats .rep-stars{font-size:1.15em}
+.board-notice-gold{width:1.35em;height:1.35em;object-fit:contain}
+.board-notice-stats .mission-svg{width:1.15em;height:1.15em;color:#64492e}
+.board-notice-departure{display:flex;align-items:center;justify-content:center;gap:10px;margin:0;color:#64492e;font:italic clamp(13px,calc(var(--board-w) * .0085),18px) Georgia,serif}
+.board-notice-departure button{padding:3px 10px;border:1px solid #8a6a43;border-radius:6px;background:rgba(120,88,52,.14);color:#2c1b10;font:600 1em Georgia,serif;cursor:pointer}
+.board-notice-departure button:hover,.board-notice-departure button:focus-visible{border-color:#2c1b10;background:rgba(120,88,52,.26);outline:none}
+/* Les flèches : le chevron de la création du capitaine, couleur du fer du cadre, posées sur ses montants. */
+.mission-board-arrow{position:absolute;top:50%;z-index:2;display:grid;place-items:center;width:calc(var(--board-w) * .034);height:calc(var(--board-w) * .06);padding:0;border:0;background:none;color:#d6cbb9;cursor:pointer;transform:translate(-50%,-50%);filter:drop-shadow(0 0 2px #000) drop-shadow(0 3px 4px rgba(0,0,0,.9));transition:color .12s}
+.mission-board-arrow::before{content:"";width:60%;height:80%;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 22 44%27%3E%3Cpath d=%27M20 1C15 10 9 17 2 22C9 27 15 34 20 43C16 34 12 27 7 22C12 17 16 10 20 1Z%27/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 22 44%27%3E%3Cpath d=%27M20 1C15 10 9 17 2 22C9 27 15 34 20 43C16 34 12 27 7 22C12 17 16 10 20 1Z%27/%3E%3C/svg%3E") center/contain no-repeat}
+.mission-board-arrow--prev{left:15.6%}
+.mission-board-arrow--next{left:84.4%;transform:translate(-50%,-50%) scaleX(-1)}
+.mission-board-arrow:hover,.mission-board-arrow:focus-visible{color:#f0d395;outline:none}
+.mission-board-arrow:disabled{opacity:.3;cursor:default;color:#d6cbb9}
+.mission-board-arrow[hidden]{display:none}
+/* Au clic, l'annonce s'avance ; la fiche s'ouvre ensuite en grand, d'un petit zoom. */
+.mission-detail[open]{animation:mission-detail-in .22s ease-out}
+@keyframes mission-detail-in{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){.mission-detail[open]{animation:none}.board-notice{transition:none}}
+/* Le détail d'une mission (Idan, 2026-10-31). */
 .mission-art{position:relative;display:grid;place-items:center;aspect-ratio:16/9;overflow:hidden;background:radial-gradient(circle at 50% 40%,#5a3f28,#22170f 75%)}
 .mission-art img{width:100%;height:100%;object-fit:cover}
 .mission-art--bodyguard{background:radial-gradient(circle at 50% 40%,#3d4a52,#151b20 75%)}
 .mission-art::after{content:"";position:absolute;inset:0;box-shadow:inset 0 -40px 40px -20px rgba(20,14,10,.85);pointer-events:none}
 .mission-emblem{display:grid;place-items:center;width:84px;height:84px;border:1px solid rgba(240,210,160,.35);border-radius:50%;color:rgba(240,210,160,.7)}
 .mission-emblem .mission-svg{width:44px;height:44px}
-.mission-card-body{display:grid;align-content:start;gap:6px;padding:12px 16px 14px}
 .mission-type{margin:0;color:#bb9a6e;font:700 11px Georgia,serif;letter-spacing:.12em;text-transform:uppercase}
-.mission-card h3{margin:0;color:#f3d9a4;font:600 19px/1.2 Georgia,serif}
-.mission-description{display:-webkit-box;margin:0;overflow:hidden;color:#d8c4a3;font:14px/1.4 Georgia,serif;-webkit-line-clamp:2;-webkit-box-orient:vertical}
-.mission-stats{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;margin-top:4px;padding-top:8px;border-top:1px solid #4d3a2a;color:#e3cfac;font:13px Georgia,serif}
-.mission-stat{display:inline-flex;align-items:center;gap:5px}
-.mission-stat b{color:#ffe1ac}
 .mission-svg{width:17px;height:17px;flex:none;color:#d8b77d}
-.mission-empty{margin:20px 0;color:#a98d66;font:italic 16px Georgia,serif;text-align:center}
 .mission-detail{width:min(720px,calc(100vw - 32px));max-height:calc(100vh - 32px);padding:0;overflow:auto;border:1px solid #b58c53;border-radius:16px;background:linear-gradient(180deg,#33261d,#1b130e);color:#ead9bd;box-shadow:0 24px 60px #000c}
 .mission-detail::backdrop{background:rgba(10,7,5,.65)}
 .mission-art--big{aspect-ratio:21/8}
@@ -2192,14 +2215,6 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .mission-contract-result{display:grid;gap:4px;margin:0 0 8px;padding:0;list-style:none}
 .mission-contract-result li{padding:6px 9px;border-radius:8px;background:#f4ecd9;border-left:3px solid #b08a3e}
 .mission-contract-result li.is-bad{background:#f6e0da;border-left-color:#b53025}
-/* Escouades en mission (doc 17) : en route, sur place (le combat attend), sur le retour. */
-.expedition-list{display:grid;gap:8px}
-.expedition-list h3{margin:0;color:#f3d9a4;font:600 1.1rem Georgia,serif}
-.expedition-row{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:12px;padding:10px 14px;border:1px solid #71583e;border-radius:10px;background:#2e231c;color:#f1e3c8}
-.expedition-row div{display:grid;gap:2px;min-width:0}
-.expedition-row small{color:#cdb38c}
-.expedition-row em{color:#e7d3b0;font-style:normal;font-weight:600}
-.expedition-row--arrived{border-color:#c9a15f;box-shadow:0 0 0 1px rgba(201,161,95,.4)}
 .roster-status--away{border-color:#6c86a8;background:linear-gradient(180deg,#2c3a4f,#1f2938);color:#d6e4f7}
 .roster-status--scheduled{border-color:#a08a4c;background:linear-gradient(180deg,#4a4122,#332c17);color:#f3e2a8}
 .expedition-dialog{padding:22px 26px;border:1px solid #9a7a4f;border-radius:12px}
@@ -2330,9 +2345,6 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
   .sheet-portrait:has(.sheet-evaluation){grid-template-rows:auto minmax(0,1fr) auto;height:calc(min(800px,90vh) - 176px)}
   .sheet-portrait:has(.sheet-evaluation) .avatar-frame{width:auto;height:100%;max-width:none;max-height:445px;justify-self:start}
 }
-/* Taverne à 5 missions (Idan, 2026-11-01) : une case prise reste vide jusqu'au lendemain. */
-.mission-card--empty{display:flex;align-items:center;justify-content:center;min-height:180px;border-style:dashed;opacity:.6;cursor:default}
-.mission-card--empty p{margin:0;color:#a98d66;font:italic 15px Georgia,serif}
 
 /* Le portrait et le cadre partagent la même boîte, à toutes les tailles de miniature. */
 .enemy-rank-portrait{position:relative;display:block;width:100%;height:100%;aspect-ratio:1;overflow:hidden;border-radius:50%}

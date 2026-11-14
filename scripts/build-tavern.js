@@ -6,14 +6,16 @@
 // place — le décor vide (BG_EMPTY), les ombres des clients (Shadow, sur fond blanc), le tableau des primes, le menu, les
 // deux tables, la trappe, le tavernier, les tonneaux du premier plan ; et des variantes, tirées au sort à chaque entrée dans
 // la taverne : « Alternate tavernier/ » (« au chargement de la taverne, on charge une image au hasard du tavernier ») et
-// « Alternate table 1/ » (Idan : « L'idée, c'est des variantes. Mais ces tables sont plus grandes que la table 1, il faut
-// rétrécir et remplacer »). Le repère du jeu reste 1376 × 768 : une image plus grande (haute définition) garde ses pixels,
+// « Alternate table 1/ », « Alternate table 2/ » (Idan : « L'idée, c'est des variantes. Mais ces tables sont plus grandes
+// que la table 1, il faut rétrécir et remplacer »). Le repère du jeu reste 1376 × 768 : une image plus grande (haute définition) garde ses pixels,
 // son cadre est ramené à ce repère. La qualité avant le poids, mais une page qui charge (Idan : « l'idée c'est de faire un
 // jeu Unreal, pas de gagner sur Google Speed » ; « Faut quand même qu'on puisse charger la page ! »). Ce script :
 // - détoure chaque calque (keyImage : la couleur du fond, l'intérieur des personnages intact, les bords nettoyés) ;
 // - le recadre sur ce qu'il montre et l'écrit en WebP qualité 95 (l'encodeur de Chromium : ImageMagick ignorait la
 //   qualité) dans prototype-web/assets/taverne/ ; les variantes dans taverniers/ et table1/ ;
-// - réduit chaque variante de la Table 1 à la largeur de la table d'origine, ses pieds au même endroit ;
+// - ne garde d'une variante que ce qui touche la place du calque d'origine (Jean-Mi laisse parfois un « truc bizarre »
+//   ailleurs dans l'image : une bande de couleur, une tache) ;
+// - réduit chaque variante d'une table à la largeur de la table d'origine, ses pieds au même endroit ;
 // - assemble le décor avec les ombres (fond.webp) ;
 // - calcule où chaque zone capte le pointeur (l'enveloppe de chaque calque et de toutes ses variantes) ;
 // - écrit prototype-web/tavern-layers.js, lu par la taverne (tavern-scene-ui.js).
@@ -55,7 +57,8 @@ const LAYERS=[
 // d'origine (les tables d'Idan sont plus grandes que la Table 1).
 const VARIANT_SETS=[
   {layer:"tavernier",dir:/^alternate tavernier$/i,out:"taverniers"},
-  {layer:"table1",dir:/^alternate table ?1$/i,out:"table1",fit:true}
+  {layer:"table1",dir:/^alternate table ?1$/i,out:"table1",fit:true},
+  {layer:"table2",dir:/^alternate table ?2$/i,out:"table2",fit:true}
 ];
 const BACKGROUND=/bg_?empty/i,SHADOW=/shadow/i;
 
@@ -162,11 +165,12 @@ function keyPixels(d,w,h,key){
 }
 
 // Dans le navigateur : détourage, cadre de ce que montre le calque, points du contour (gauche et droite de chaque ligne),
-// WebP recadré. Le tout ramené au repère de la taverne (scale : largeur de l'image ÷ 1376). fit : [x, y, largeur,
-// hauteur] du calque d'origine, que la variante prend en largeur, ses pieds au même endroit.
-async function keyImage(page,file,fit=null){
+// WebP recadré. Le tout ramené au repère de la taverne (scale : largeur de l'image ÷ 1376). keep : [x, y, largeur,
+// hauteur] du calque d'origine : seuls les morceaux (d'un seul tenant) qui touchent ce cadre sont gardés ; fit : la
+// variante en prend la largeur, ses pieds au même endroit.
+async function keyImage(page,file,{keep=null,fit=null}={}){
   const src="data:image/"+(/\.png$/i.test(file)?"png":/\.webp$/i.test(file)?"webp":"jpeg")+";base64,"+fs.readFileSync(file).toString("base64");
-  return page.evaluate(async({src,keySource,key,sceneWidth,fit,quality})=>{
+  return page.evaluate(async({src,keySource,key,sceneWidth,keep,fit,quality})=>{
     const keyPixels=new Function("return "+keySource)();
     const img=new Image();
     img.src=src;
@@ -177,8 +181,31 @@ async function keyImage(page,file,fit=null){
     g.drawImage(img,0,0);
     const im=g.getImageData(0,0,w,h),d=im.data;
     const screen=keyPixels(d,w,h,key);
-    g.putImageData(im,0,0);
     const s=w/sceneWidth,step=Math.max(1,Math.round(s));
+    if(keep){
+      // Les morceaux d'un seul tenant (pixels pas tout à fait transparents, 8 voisins) ; on efface ceux qui ne touchent
+      // pas le cadre du calque d'origine.
+      const n=w*h,label=new Int32Array(n).fill(-1),stack=new Int32Array(n),kept=[];
+      const kx0=keep[0]*s,ky0=keep[1]*s,kx1=(keep[0]+keep[2])*s,ky1=(keep[1]+keep[3])*s;
+      for(let p0=0,id=0;p0<n;p0++){
+        if(label[p0]>=0||!d[p0*4+3]) continue;
+        let sp=0,touches=false;
+        stack[sp++]=p0;label[p0]=id;
+        while(sp){
+          const p=stack[--sp],x=p%w,y=(p-x)/w;
+          if(x>=kx0&&x<kx1&&y>=ky0&&y<ky1) touches=true;
+          for(let dy=-1;dy<=1;dy++) for(let dx=-1;dx<=1;dx++){
+            const xx=x+dx,yy=y+dy;
+            if(xx<0||yy<0||xx>=w||yy>=h) continue;
+            const q=yy*w+xx;
+            if(label[q]<0&&d[q*4+3]){ label[q]=id; stack[sp++]=q; }
+          }
+        }
+        kept[id++]=touches;
+      }
+      for(let p=0;p<n;p++) if(label[p]>=0&&!kept[label[p]]) d[p*4+3]=0;
+    }
+    g.putImageData(im,0,0);
     let x0=w,y0=h,x1=-1,y1=-1;let pts=[];
     for(let y=0;y<h;y++){
       let l=-1,r=-1;
@@ -203,7 +230,7 @@ async function keyImage(page,file,fit=null){
       out=small;box=to;
     }
     return {w,h,scale:s,box,pts,screen,webp:out.toDataURL("image/webp",quality)};
-  },{src,keySource:keyPixels.toString(),key:KEY,sceneWidth:SCENE.width,fit,quality:WEBP_QUALITY});
+  },{src,keySource:keyPixels.toString(),key:KEY,sceneWidth:SCENE.width,keep,fit,quality:WEBP_QUALITY});
 }
 
 // Un PNG en WebP, avec l'encodeur de Chromium.
@@ -273,7 +300,7 @@ async function main(){
     }
     const target=zonePoints[LAYERS.find(L=>L.key===set.layer).zone].find(x=>x.key===set.layer);
     for(const [key,{file}] of byKey){
-      const r=await keyImage(page,file,set.fit?layers[set.layer]:null);
+      const r=await keyImage(page,file,{keep:layers[set.layer],fit:set.fit?layers[set.layer]:null});
       if(!sameFormat(r)){ console.warn("ignorée (format ou image vide) :",path.basename(file)); continue; }
       writeWebp(r.webp,path.join(out,key+".webp"));
       list.push({key,src:set.out+"/"+key+".webp",box:r.box.map(round2)});
@@ -286,7 +313,7 @@ async function main(){
   const text=`"use strict";
 
 // La Taverne en calques (Idan, 2026-11-14), écrite par scripts/build-tavern.js : ne pas modifier à la main.
-// Images : assets/taverne/<calque>.webp et les variantes (taverniers/, table1/), à la taille des images d'Idan (décor :
+// Images : assets/taverne/<calque>.webp et les variantes (taverniers/, table1/, table2/), à la taille des images d'Idan (décor :
 // ${bw} × ${bh}) ; les cadres [x, y, largeur, hauteur] et les enveloppes sont dans le repère de la taverne
 // (${SCENE.width} × ${SCENE.height}).
 const TAVERN_SOURCE_SIZE=${JSON.stringify({width:bw,height:bh})};

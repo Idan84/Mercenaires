@@ -16,7 +16,7 @@
 // - ne garde d'une variante que ce qui touche la place du calque d'origine (Jean-Mi laisse parfois un « truc bizarre »
 //   ailleurs dans l'image : une bande de couleur, une tache) ;
 // - réduit chaque variante d'une table à la largeur de la table d'origine, ses pieds au même endroit ;
-// - assemble le décor avec les ombres (fond.webp) ;
+// - assemble le décor avec les ombres des clients, floutées et coupées avant le comptoir (fond.webp) ;
 // - calcule où chaque zone capte le pointeur (l'enveloppe de chaque calque et de toutes ses variantes) ;
 // - écrit prototype-web/tavern-layers.js, lu par la taverne (tavern-scene-ui.js).
 // Usage : node scripts/build-tavern.js            (télécharge les images depuis le site)
@@ -61,6 +61,10 @@ const VARIANT_SETS=[
   {layer:"table2",dir:/^alternate table ?2$/i,out:"table2",fit:true}
 ];
 const BACKGROUND=/bg_?empty/i,SHADOW=/shadow/i;
+// Les ombres des clients (Idan, 2026-11-14 : « Il faut couper l'image à peu près à la moitié (elle passe devant le
+// comptoir, alors qu'elle devrait pas...) Et faut vraiment la flouter beaucoup pour qu'elle soit raccord avec les orcs ou
+// les nains ») : floutées (blur, en part de la largeur), puis effacées à droite de la moitié (en fondu de cutFrom à cutTo).
+const SHADOW_EDIT={blur:0.015,cutFrom:0.46,cutTo:0.52};
 
 // Le nom d'une variante, tiré du fichier : « Dwarf_tavern_keeper_holding_ale_ab54f84f.jpg » → « holding-ale » ; une
 // version haute définition (« …_a43b3db4_2K.jpg ») porte le même nom que l'autre.
@@ -267,9 +271,12 @@ async function main(){
   fs.mkdirSync(OUT,{recursive:true});
   // Chaque image a sa taille (Idan les passe en haute définition une à une) : au format de la taverne.
   const sameFormat=r=>r&&Math.abs(r.h/r.w-SCENE.height/SCENE.width)<0.01;
-  // Le décor vide, assombri par les ombres des clients (sur fond blanc : « multiply »), à sa taille.
-  const shadow=find(SHADOW),fondPng=path.join(tmp,"fond.png");
-  execFileSync("convert",shadow?[background,"(",shadow,"-resize",`${bw}x${bh}!`,")","-compose","multiply","-composite",fondPng]:[background,fondPng]);
+  // Le décor vide, assombri par les ombres des clients (sur fond blanc : « multiply »), à sa taille ; les ombres floutées
+  // et coupées avant le comptoir (SHADOW_EDIT).
+  const shadow=find(SHADOW),fondPng=path.join(tmp,"fond.png"),{blur,cutFrom,cutTo}=SHADOW_EDIT;
+  const soft=["-resize",`${bw}x${bh}!`,"-blur",`0x${Math.round(blur*bw)}`,
+    "-fx",`i<w*${cutFrom} ? u : i>w*${cutTo} ? 1 : u+(1-u)*(i-w*${cutFrom})/(w*${round2(cutTo-cutFrom)})`];
+  execFileSync("convert",shadow?[background,"(",shadow,...soft,")","-compose","multiply","-composite",fondPng]:[background,fondPng]);
   writeWebp(await encodeWebp(page,fondPng),path.join(OUT,"fond.webp"));
   // L'ancienne image complète (le fond des autres salles, remplacé par le décor en calques) n'existe plus.
   fs.rmSync(path.join(OUT,"taverne.webp"),{force:true});
@@ -328,4 +335,4 @@ if(typeof module!=="undefined") module.exports={TAVERN_SOURCE_SIZE,TAVERN_LAYER_
 }
 
 if(require.main===module) main().catch(error=>{ console.error(error); process.exit(1); });
-module.exports={variantKey,hull,keyPixels,KEY};
+module.exports={variantKey,hull,keyPixels,KEY,SHADOW_EDIT};

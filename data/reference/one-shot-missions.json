@@ -498,7 +498,7 @@
       "nom": "Chasse à la licorne",
       "description": "Des licornes : toutes tuées ou mises en déroute. Celles qui restent à terre peuvent être capturées.",
       "illustration": "",
-      "illustrations": ["assets/missions/chasse-licorne-1.webp"],
+      "illustrations": ["assets/missions/chasse-licorne-1.webp", "assets/missions/chasse-licorne-2.webp"],
       "niveau": {
         "ecart": [
           -4,

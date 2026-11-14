@@ -51,6 +51,18 @@
   },
   "renommee": 3,
   "illustration": "",
+  "illustrations_clients": {
+    "Un marchand d’épices et sa caravane": ["assets/missions/garde-marchand-epices-1.webp"],
+    "Une veuve fortunée": ["assets/missions/garde-veuve-1.webp"],
+    "Un abbé en pèlerinage": ["assets/missions/garde-abbe-1.webp"],
+    "Un banquier nain": ["assets/missions/garde-banquier-nain-1.webp"],
+    "Un noble en disgrâce": ["assets/missions/garde-noble-1.webp"],
+    "Une cantatrice en tournée": ["assets/missions/garde-cantatrice-1.webp"],
+    "Un collecteur d’impôts": ["assets/missions/garde-collecteur-impots-1.webp"],
+    "Le fils d’un bourgmestre": ["assets/missions/garde-fils-bourgmestre-1.webp"],
+    "Une alchimiste et ses fioles": ["assets/missions/garde-alchimiste-1.webp"],
+    "Un ambassadeur elfe": ["assets/missions/garde-ambassadeur-elfe-1.webp"]
+  },
   "clients": [
     "Un marchand d’épices et sa caravane",
     "Une veuve fortunée",

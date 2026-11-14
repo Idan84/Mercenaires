@@ -264,6 +264,20 @@ ennemis, récompense, expiration…), la lettre du commanditaire s'il y en a une
   caler avec Idan quand les missions plus dures arriveront.
 - Un nouveau type de mission ajoute son gabarit dans `missionCards`.
 
+**Le panneau de bois (Idan, 2026-11-14)** : « Trouver une mission » s'affiche sur un panneau de bois accroché au mur
+(`assets/taverne/panneau-missions.webp`, plein écran comme le fond de la taverne) ; plus de bouton « Retour à la taverne » :
+**un clic sur le mur, autour du cadre, ramène à la taverne**.
+
+- **Les annonces** sur notre parchemin (celui de la création du capitaine), **trois par page** : l'illustration (cadre vide
+  en attendant les images), le titre, la difficulté en étoiles, la récompense (le picto or de la barre du haut, sans « PO »)
+  et la durée (un sablier). Plus de type, plus de description, plus de symbole dollar (ils restent dans le détail).
+- **Les flèches** de chaque côté du cadre (le chevron de la création, couleur du fer) : trois annonces de plus ; la page
+  suivante pousse l'autre, par la droite ou par la gauche. Une seule page : pas de flèches ; au bout : la flèche grisée.
+- **Case vide** : rien (« Rien. Même pas de parchemin. On a le fond en bois »).
+- **Départ demain** : une mission signée qui part le lendemain reste en tête du tableau, avec « Annuler » sur l'annonce
+  elle-même. Les escouades déjà parties ne sont plus listées ici (« Ça n'a rien à faire ici »).
+- **Au clic**, l'annonce s'avance un peu, puis le détail s'ouvre en grand (le détail sera refait ensuite).
+
 ## 14 — Points de combat et camps par peuple (Idan, 2026-11-01)
 
 > « Le peuple est aléatoire, la difficulté dépend de la réputation et on équilibre la difficulté grâce aux nombre d'ennemis qu'on ajoute. » « Chaque ennemi devrait avoir un équivalent en point de combat […] et on monte des escouades grâce à cela. » « Oui, vas-y pour les points et 35 PO par point. »
@@ -400,7 +414,7 @@ Une qualité par tier (`item-qualities.json`, doc 05) : T1 Usée, T2 Correcte, T
 - **Case prise** : une offre signée laisse sa case vide jusqu'au lendemain (`tavern.missions.empty_days`, 1 jour), puis une nouvelle mission arrive. Plusieurs escouades peuvent partir en même temps.
 - **Offre perdue** : une offre non signée qui dépasse sa date est prise par une autre compagnie et remplacée aussitôt. Le journal le dit ; la notification du jour n'en fait plus une alerte (une seule ligne).
 - **Anciennes sauvegardes** : l'offre de contrat et l'offre de garde du corps passent dans les deux premières cases.
-- Code : `game-core/campaign.js` (`tavernBoard`, `fillTavernBoard`, `boardOffers`, `boardOffer`) ; interface `prototype-web/contract-ui.js` (une carte par case, « Nouvelle mission demain » pour une case vide).
+- Code : `game-core/campaign.js` (`tavernBoard`, `fillTavernBoard`, `boardOffers`, `boardOffer`) ; interface `prototype-web/contract-ui.js` (une annonce par offre ; une case vide n'affiche rien depuis le 2026-11-14, §13).
 
 
 ## 19 — Culte des morts (Idan, 2026-11-06)

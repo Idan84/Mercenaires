@@ -1713,7 +1713,8 @@ function selectNextMissionPlayer(){
     }
     m.phase="player";
     m.activeUnit=next;
-    m.mode=null;
+    // Déplacer, choisi d'office (Idan, 2026-11-14 : « Par défaut, le bouton est cliqué quand on commence un tour »).
+    m.mode=missionCanMove(next)?"move":null;
     m.aimMount=false;
     missionLog("Activation de "+next.character.name+".","turn");
     renderMission();
@@ -2757,9 +2758,11 @@ function handleMissionHexClick(q,r){
   const clicked=missionUnitAtCell(q,r,x=>x.alive&&missionShownToPlayer(x));
 
   if(m.mode==="move"&&!clicked){
-    const path=shortestMissionPath(u,{q,r},u);
-    if(path&&missionPathCost(path,u)<=u.movementRemaining){
+    const path=shortestMissionPath(u,{q,r},u),cost=path?missionPathCost(path,u):Infinity;
+    const second=cost>u.movementRemaining&&missionCanSecondMove(u)&&cost<=u.movementRemaining+m.engine.movementBase(u);
+    if(path&&(cost<=u.movementRemaining||second)){
       m.mode=null;
+      if(second) missionTakeSecondMove(u);
       const moved=moveMissionUnitAlongPath(u,path);
       if(moved) missionLog(u.character.name+" se déplace de "+moved+" hex.","move");
       if(missionActiveUnitLost()) return;
@@ -2833,15 +2836,29 @@ function handleMissionHexClick(q,r){
 }
 
 // Activation hexagonale V1 : l'Attaque peut être sacrifiée pour une seconde action de Mouvement.
-function missionSecondMove(){
-  const u=missionActiveUnit(),m=game.mission;
-  if(!u||!u.attackAvailable||u.secondMove||m.phase!=="player"||m.over) return;
+function missionCanSecondMove(u){ return Boolean(u?.attackAvailable&&!u.secondMove); }
+function missionTakeSecondMove(u){
   u.attackAvailable=false;
   u.secondMove=true;
-  u.movementRemaining+=m.engine.movementBase(u);
-  m.mode="move";
+  u.movementRemaining+=game.mission.engine.movementBase(u);
   missionLog(u.character.name+" renonce à attaquer pour un second mouvement.","move");
+}
+function missionSecondMove(){
+  const u=missionActiveUnit(),m=game.mission;
+  if(!missionCanSecondMove(u)||m.phase!=="player"||m.over) return;
+  missionTakeSecondMove(u);
+  m.mode="move";
   renderMission();
+}
+// Un seul bouton Déplacer (Idan, 2026-11-14 : « On vire le bouton second mouvement (c'est juste le mouvement déplacer qui
+// change une fois qu'on a fait le 1er déplacement) » ; « On peut également faire les deux mouvements d'un coup (on voit deux
+// zones de couleurs différentes) ») : la zone du mouvement qui reste (near), puis celle du second mouvement, au prix de
+// l'attaque (far).
+function missionCanMove(u){ return Boolean(u)&&(u.movementRemaining>0||missionCanSecondMove(u)); }
+function missionMoveZones(u){
+  const near=missionReachablePaths(u,u.movementRemaining);
+  const far=missionCanSecondMove(u)?missionReachablePaths(u,u.movementRemaining+game.mission.engine.movementBase(u)):new Map();
+  return {near,far};
 }
 
 function switchMissionWeapon(){
@@ -4779,7 +4796,7 @@ function missionActionAvailability(){
   const chargeReady=u.attackAvailable&&e.isMeleeWeapon(w)&&u.movementRemaining===e.movementBase(u);
   const chargeable=chargeReady&&missionOpponents(u).some(t=>!t.offMap&&missionChargeIfClear(u,t));
   return {
-    move:u.movementRemaining>0,
+    move:missionCanMove(u),
     melee:u.attackAvailable&&missionHeldModes(u).has("melee"),
     twoHands:u.attackAvailable&&missionHeldModes(u).has("melee")&&e.canGripTwoHands(u),
     ranged:u.attackAvailable&&missionHeldModes(u).has("ranged"),
@@ -4790,7 +4807,7 @@ function missionActionAvailability(){
     mountMelee:Boolean(horse?.attackAvailable&&missionHeldModes(horse).has("melee")),
     switch:u.quickAvailable&&e.canSwitchWeaponSet(u),
     reload:u.quickAvailable&&e.canReload(u),
-    secondMove:u.attackAvailable&&!u.secondMove,
+    secondMove:missionCanSecondMove(u),
     dismount:Boolean(horse)&&u.quickAvailable!==false&&missionDismountCells(u).length>0,
     remount:Boolean(missionRemountable(u)),
     end:true,
@@ -4850,7 +4867,8 @@ function targetableMissionCells(){
   if(!m||!u||m.phase!=="player") return set;
 
   if(m.mode==="move"){
-    for(const [key,path] of missionReachablePaths(u,u.movementRemaining)) if(path.length) set.add(key);
+    const {near,far}=missionMoveZones(u);
+    for(const zone of [near,far]) for(const [key,path] of zone) if(path.length) set.add(key);
     return set;
   }
 
@@ -5064,7 +5082,7 @@ function renderMission(){
     const p=missionHexPixel(c.q,c.r);
     reliefTiles+=`<span class="hex-relief" data-level="${c.h}" style="left:${p.x-MISSION_MAP.size}px;top:${p.y-MISSION_MAP.size}px"></span>`;
   }
-  const reach=m.mode==="move"&&u?missionReachablePaths(u,u.movementRemaining):null;
+  const zones=m.mode==="move"&&u?missionMoveZones(u):null;
   let cells="";
   for(const {q,r} of missionCells()){
     const p=missionHexPixel(q,r),key=missionKey(q,r),classes=["hex-cell"];
@@ -5090,11 +5108,12 @@ function renderMission(){
     const storm=missionStormAt(q,r);
     if(storm){ classes.push("storm"); title=` title="Tempête : la foudre frappe au hasard dans la zone (encore ${storm.turnsLeft} tour${storm.turnsLeft>1?"s":""})"`; }
     if(targets.has(key)&&m.mode==="move"){
-      const risk=missionPathOpportunityCount(u,reach?.get(key)||[]);
-      if(risk){
-        classes.push("provokes");
-        title=` title="Provoque ${risk} attaque${risk>1?"s":""} d’opportunité"`;
-      }
+      const near=zones?.near.get(key)?.length?zones.near.get(key):null;
+      const risk=missionPathOpportunityCount(u,near||zones?.far.get(key)||[]);
+      const notes=[near?"":"Second mouvement : sans attaque",risk?`Provoque ${risk} attaque${risk>1?"s":""} d’opportunité`:""].filter(Boolean);
+      if(!near) classes.push("second-move");
+      if(risk) classes.push("provokes");
+      if(notes.length) title=` title="${notes.join(" · ")}"`;
     }
     cells+=`<button class="${classes.join(" ")}" data-hex-q="${q}" data-hex-r="${r}"${title} style="left:${p.x-MISSION_MAP.size}px;top:${p.y-MISSION_MAP.size}px"></button>`;
   }
@@ -5149,12 +5168,17 @@ function renderMission(){
   const buttons=[
     ["mission-move-btn","move"],["mission-attack-btn","melee"],["mission-charge-btn","charge"],["mission-mount-attack-btn","mountMelee"],
     ["mission-dismount-btn","dismount"],["mission-remount-btn","remount"],
-    ["mission-switch-btn","switch"],["mission-reload-btn","reload"],["mission-ranged-btn","ranged"],["mission-sentinel-btn","sentinel"],["mission-second-move-btn","secondMove"],["mission-end-activation-btn","end"],["mission-auto-btn","auto"]
+    ["mission-switch-btn","switch"],["mission-reload-btn","reload"],["mission-ranged-btn","ranged"],["mission-sentinel-btn","sentinel"],["mission-end-activation-btn","end"],["mission-auto-btn","auto"]
   ];
   for(const [id,key] of buttons){
     $(id).disabled=!availability[key];
     $(id).classList.toggle("selected",m.mode===key&&!(key==="melee"&&m.twoHands));
   }
+  // Déplacer devient « Second mouvement » une fois le premier fait (Idan, 2026-11-14).
+  const secondOnly=Boolean(u)&&u.movementRemaining<=0&&missionCanSecondMove(u);
+  $("mission-move-btn").textContent=secondOnly?"Second mouvement":"Se déplacer";
+  $("mission-move-btn").classList.toggle("is-second",secondOnly);
+  $("mission-move-btn").title=secondOnly?"Renoncer à l’attaque pour un second mouvement":"";
   $("mission-charge-btn").title=availability.chargeNone
     ?`Personne à charger : il faut une course de ${e.movementBase(u)} à ${2*e.movementBase(u)} cases en ligne droite, sans personne ni obstacle`:"";
   // « Attaquer à deux mains » : seulement avec une arme « Au choix » tenue seule.
@@ -5421,8 +5445,10 @@ function renderMissionHoverCard(q,r){
     html+=`<div class="hc-attack hc-spell"><em>${esc(spell?.nom||"Sort")}</em><dl>${missionSpellPreviewRows(missionSpellUnit(),spellCode,q,r)}</dl></div>`;
   }
   if(u&&m.mode==="move"&&targets.has(key)){
-    const path=shortestMissionPath(u,{q,r},u)||[],risk=missionPathOpportunityCount(u,path);
-    html+=`<div class="hc-attack"><em>Déplacement</em><dl><dt>Mouvement</dt><dd>${missionPathCost(path,u)} / ${u.movementRemaining}</dd>`
+    const path=shortestMissionPath(u,{q,r},u)||[],risk=missionPathOpportunityCount(u,path),cost=missionPathCost(path,u);
+    const second=cost>u.movementRemaining;
+    html+=`<div class="hc-attack"><em>${second?"Second mouvement":"Déplacement"}</em><dl><dt>Mouvement</dt><dd>${cost} / ${u.movementRemaining+(second?e.movementBase(u):0)}</dd>`
+      +(second?`<dt>Attaque</dt><dd class="odds-bad">sacrifiée</dd>`:"")
       +(risk?`<dt>Danger</dt><dd class="odds-bad">${risk} attaque${risk>1?"s":""} d’opportunité</dd>`:"")
       +(missionMireAt(q,r)?`<dt>Bourbier</dt><dd class="odds-bad">arrêt</dd>`:"")+`</dl></div>`;
   }
@@ -5571,7 +5597,6 @@ function initializeMissionUi(){
   $("mission-sentinel-btn").addEventListener("click",standMissionSentinel);
   $("mission-switch-btn").addEventListener("click",switchMissionWeapon);
   $("mission-reload-btn").addEventListener("click",reloadMissionWeapon);
-  $("mission-second-move-btn").addEventListener("click",missionSecondMove);
   window.addEventListener("resize",()=>{ if(game.mission) renderMission(); });
   $("mission-end-activation-btn").addEventListener("click",endMissionActivation);
   $("mission-auto-btn").addEventListener("click",autoResolveMission);

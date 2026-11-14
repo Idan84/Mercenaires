@@ -16,9 +16,14 @@ assert.ok(!/<video|tavern-video/.test(html),"plus de vidéo (« on va la virer p
 assert.ok(!/tavern-video|TAVERN_VIDEO|\.play\(/.test(js+css));
 assert.match(html,/<svg id="tavern-scene" class="tavern-scene" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><\/svg>\n  <svg id="tavern-zones" class="tavern-zones" preserveAspectRatio="xMidYMid slice"/,"le décor, puis les zones, calés comme le fond");
 assert.ok(html.indexOf('src="tavern-ui.js"')<html.indexOf('src="tavern-scene-ui.js"'));
-assert.match(css,/url\("assets\/taverne\/taverne\.webp"\) center center \/ cover/,"l'image complète derrière les salles");
+// Sous le décor, le fond vide, sans tavernier (Idan, 2026-11-14 : « quand on quitte la taverne, on voit un glimpse entre le
+// tavernier par défaut et l'alternate ») ; le décor fond avec lui, dans toutes les vues de la taverne.
+assert.match(css,/url\("assets\/taverne\/fond\.webp"\) center center \/ cover/,"le fond vide sous le décor");
+assert.ok(!/taverne\/taverne\.webp/.test(css),"plus l'image complète (le tavernier par défaut) en fond");
+assert.match(css,/body\[data-screen="camp"\] \.tavern-scene\{display:block;opacity:0;visibility:hidden;transition:opacity \.36s ease-in-out,visibility 0s linear \.36s\}/,"il s'efface en fondu");
+assert.match(css,/body\[data-screen="camp"\]\[data-camp-scene="tavern"\] \.tavern-scene\{opacity:1;visibility:visible;/,"dans toutes les vues de la taverne");
+assert.match(css,/\[data-tavern-view="home"\] \.tavern-zones\{display:block\}/,"les zones, sur l'accueil seulement");
 assert.match(css,/\.tavern-scene\{z-index:0\}\n\.tavern-zones\{z-index:2\}/,"le décor derrière les panneaux, les zones au-dessus");
-assert.match(css,/\[data-tavern-view="home"\] \.tavern-scene,\nbody[^{]*\[data-tavern-view="home"\] \.tavern-zones\{display:block\}/,"sur l'accueil de la taverne seulement");
 assert.match(css,/\.tavern-layer\.is-hover\{filter:url\(#tavern-glow\)\}/,"le glow au survol");
 assert.match(css,/\.tavern-label\.is-on\{opacity:1\}/,"et le nom");
 

@@ -631,7 +631,16 @@ Périmètre actif :
 - équipe du joueur en premier, puis équipe ennemie ;
 - ordre interne par la formule d'Initiative validée ;
 - activation avec Mouvement + Action rapide + Attaque ;
-- actions disponibles : **Se déplacer, Attaquer, Charger, Changer de set d'armes, Attaquer à distance, Second mouvement** (l'Attaque est sacrifiée pour une seconde action de Mouvement, [Activation hexagonale V1](/design/#doc=formulas/activation-hexagonale-v1.md)) ;
+- actions disponibles : **Se déplacer, Attaquer, Charger, Changer de set d'armes, Attaquer à distance** ; le second mouvement
+  (l'Attaque est sacrifiée pour une seconde action de Mouvement, [Activation hexagonale V1](/design/#doc=formulas/activation-hexagonale-v1.md))
+  passe par **Se déplacer** (Idan, 2026-11-14 : « On vire le bouton second mouvement (c'est juste le mouvement déplacer qui
+  change une fois qu'on a fait le 1er déplacement). Par défaut, le bouton est cliqué quand on commence un tour avec un
+  mercenaire. On peut également faire les deux mouvements d'un coup (on voit deux zones de couleurs différentes) ») :
+  - au début de son activation, **Se déplacer** est déjà choisi ;
+  - la carte montre la zone du mouvement qui reste (bleu) et, au-delà, celle du second mouvement (violet) tant que
+    l'Attaque est disponible ; un clic dans le violet fait les deux d'un coup et sacrifie l'Attaque ; le survol le dit ;
+  - le premier mouvement fait, le bouton devient **Second mouvement** ;
+  - code : `missionMoveZones`, `missionTakeSecondMove` (`prototype-web/mission.js`) ;
 - IA V1 : attaque si possible, sinon charge si valide, sinon avance vers la cible la plus proche puis attaque si elle entre en portée ;
 - [Attaques d'opportunité](/design/#doc=formulas/attaque-d-opportunite-cac-v1.md) avec [Frappe dans le dos](/design/#doc=formulas/frappe-dans-le-dos-v1.md) : en quittant une zone de menace (déplacement ou charge, résolu hexagone par hexagone) et en tirant sur une autre cible que l'adversaire qui menace ; en mode déplacement, la carte signale les destinations qui en provoquent ;
 - [Encerclement](/design/#doc=formulas/encerclement-cac-v1.md) : toute attaque au CAC contre une cible encerclée est une Frappe dans le dos ; la carte entoure de pointillés les personnages encerclés ;

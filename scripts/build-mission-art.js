@@ -93,7 +93,17 @@ const REJECTED={
   "Parchment_fragments_fixed_by_nails_54ad35e0_2K.jpg":"lambeaux : bien, mais en bandes étroites ; gardés ceux des deux autres planches",
   "Parchment_fragments_fixed_by_nails_903e07f9_2K.jpg":"lambeaux : de gros pâtés verts dans le fond et du faux texte anglais bien lisible",
   "Parchment_fragments_on_green_bac…_82577d7b_2K.jpg":"pas une gravure : lambeaux sous leur clou, détourés à part (scripts/key-green-sheet.js → assets/taverne/lambeau-1.webp, lambeau-3.webp)",
-  "Torn_parchment_fragments_on_wall_52aec780_2K.jpg":"pas une gravure : lambeaux sous leur clou, détourés à part (scripts/key-green-sheet.js → assets/taverne/lambeau-2.webp, celui à l'écriture)"
+  "Torn_parchment_fragments_on_wall_52aec780_2K.jpg":"pas une gravure : lambeaux sous leur clou, détourés à part (scripts/key-green-sheet.js → assets/taverne/lambeau-2.webp, celui à l'écriture)",
+  "Charred_parchment_sheet_isolated_fdd48de3.jpg":"papier d'annonce : trop brûlé, troué de part en part",
+  "Medieval_parchment_scroll_unrolled_37984693.jpg":"papier d'annonce : un rouleau en largeur, avec de l'écriture",
+  "Parchment_banner_with_tear_marks_8755bdf8.jpg":"papier d'annonce : une banderole, trop étroite",
+  "Parchment_fragment_on_green_back…_defc563f.jpg":"papier d'annonce : deux pages couvertes de runes",
+  "Ripped_paper_scrap_on_green_7bd65cd1.jpg":"papier d'annonce : vierge, mais une forme ronde posée de biais, fond vert clair",
+  "Scorched_parchment_fragment_isol…_b5a4f2dc.jpg":"papier d'annonce : écrit et très brûlé",
+  "Tattered_medieval_parchment_docu…_3b8525e1.jpg":"papier d'annonce : couvert d'écriture, de biais",
+  "Torn_parchment_paper_isolated_2390114e.jpg":"papier d'annonce : un triangle, sur fond presque noir",
+  "Torn_scroll_on_green_background_4d0dbf23.jpg":"papier d'annonce : le bon sens (en hauteur), mais couvert de runes et de dessins",
+  "Vertical_rolled_scroll_standing_5af1e276.jpg":"papier d'annonce : un rouleau fermé"
 };
 
 function listMissions(){

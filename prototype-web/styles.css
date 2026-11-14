@@ -1544,8 +1544,8 @@ body[data-screen="camp"][data-camp-scene="home"] .app-shell{padding-top:calc(var
 .hud-ornament[hidden]{display:none}
 .hud-places{position:absolute;right:calc(50% + var(--hb-B) * var(--bb-pictos-droite));bottom:calc(var(--hb-B) * (var(--bb-pictos-y) - var(--bb-picto) / 2));z-index:3;display:flex;align-items:center;gap:calc(var(--hb-B) * var(--bb-ecart));height:calc(var(--hb-B) * var(--bb-picto));pointer-events:auto}
 .hud-actions{position:absolute;left:calc(50% + var(--hb-B) * var(--bb-pictos-gauche));bottom:calc(var(--hb-B) * (var(--bb-pictos-y) - var(--bb-picto) / 2));z-index:3;display:flex;align-items:center;gap:calc(var(--hb-B) * var(--bb-ecart));height:calc(var(--hb-B) * var(--bb-picto));pointer-events:auto}
-/* Le bouton du lieu : sa place reste, même là où il n'y a rien (les actions ne bougent pas) ; un rond sombre provisoire,
-   en attendant son dessin (« on va le designer ce bouton pour qu'il soit joli »). Son menu s'ouvre vers le haut. */
+/* Le bouton du lieu, à droite des pictos (Idan, 2026-11-14) : caché là où il n'y a rien ; un rond sombre provisoire, en
+   attendant son dessin (« on va le designer ce bouton pour qu'il soit joli »). Son menu s'ouvre vers le haut, calé à droite. */
 .hud-context{position:relative;flex:none;width:calc(var(--hb-B) * var(--bb-picto));height:calc(var(--hb-B) * var(--bb-picto))}
 .hud-context:not(.is-active){visibility:hidden}
 .hud-context-btn{display:grid;place-items:center;width:100%;height:100%;padding:0;border:1px solid #ab8959;border-radius:50%;background:radial-gradient(circle at 50% 35%,#3a2a1f,#140e0b);color:#f0c050;font:700 calc(var(--hb-B) * .2) Georgia,serif;letter-spacing:.05em;cursor:pointer;box-shadow:0 4px 8px #000c,inset 0 1px #ffe4a833;transition:transform .22s cubic-bezier(.34,1.56,.64,1),filter .15s}
@@ -1554,6 +1554,7 @@ body[data-screen="camp"][data-camp-scene="home"] .app-shell{padding-top:calc(var
 .hud-context-btn:focus-visible{box-shadow:0 0 0 2px #f0c050aa}
 .hud-menu-list{position:absolute;left:0;bottom:calc(100% + 12px);z-index:5;min-width:230px;margin:0;padding:6px;list-style:none;border:1px solid #95744d;border-radius:12px;background:linear-gradient(180deg,#2e2119f8,#1b130ef9);box-shadow:0 -10px 28px #0009,inset 0 1px #ffe4a826}
 .hud-menu-list[hidden]{display:none}
+.hud-context .hud-menu-list{left:auto;right:0}
 .hud-menu-list button{display:block;width:100%;padding:9px 12px;border:0;border-radius:8px;background:transparent;color:#f0dfbf;font:14px Georgia,serif;text-align:left;cursor:pointer}
 .hud-menu-list button:hover,.hud-menu-list button:focus-visible{background:#ffe1a51a;color:#ffe1a5;outline:none}
 .hud-company{display:flex;flex:0 1 auto;flex-direction:column;min-width:96px;max-width:210px;line-height:1.15}

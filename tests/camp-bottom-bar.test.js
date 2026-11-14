@@ -45,7 +45,8 @@ assert.deepEqual(actions.map(a=>[a.label,a.action,a.src]),[["Combats du jour","c
   .map(([label,action],i)=>[label,action,`assets/hud/pictos-bas/${["combat","nouvelles","journal","discussions"][i]}.webp`]),"les quatre pictos d'Idan");
 assert.deepEqual(actions.filter(a=>a.disabled).map(a=>a.label),["Combats du jour","Discussions"],"grisés tant que rien n'attend (combat, discussion)");
 assert.match(actionsNav,/<ul id="hud-action-menu" class="hud-menu-list" role="menu" hidden><\/ul>/,"le menu des combats, s'il y en a plusieurs");
-assert.match(actionsNav,/^<nav class="hud-actions" aria-label="Actions du jour">\s*<div id="hud-context" class="hud-context">\s*<button id="hud-context-btn" class="hud-context-btn" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="hud-context-menu"/,"le bouton du lieu d'abord, contre l'anneau");
+assert.match(actionsNav,/<button id="hud-talk-btn"[^\n]*\n\s*<div id="hud-context" class="hud-context">\s*<button id="hud-context-btn" class="hud-context-btn" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="hud-context-menu"/,"le bouton du lieu à droite des pictos (Idan, 2026-11-14)");
+assert.match(css,/\.hud-context \.hud-menu-list\{left:auto;right:0\}/,"son menu calé à droite");
 assert.match(actionsNav,/<ul id="hud-context-menu" class="hud-menu-list" role="menu" aria-label="Ce lieu" hidden><\/ul>/);
 assert.match(actionsNav,/id="hud-journal-btn" class="hud-nav" type="button" data-hud-action="journal" aria-expanded="false" aria-controls="hud-journal"/);
 assert.ok(bottom.indexOf('class="hud-play"')<bottom.indexOf('class="hud-actions"'),"à droite du bouton play");
@@ -59,6 +60,8 @@ assert.match(bottom,/<div class="hud-bar-art" aria-hidden="true"><span class="hu
 assert.match(html,/<section id="camp-home" class="camp-hub" aria-label="Accueil du camp"><\/section>/);
 assert.doesNotMatch(html+css,/camp-hub-menu|camp-hub-btn|camp-merchant/);
 assert.equal((html.match(/data-camp-back>← Retour au camp<\/button>/g)||[]).length,(html.match(/class="camp-scene-nav"/g)||[]).length);
+// Sauf la Taverne (Idan, 2026-11-14 : « tu peux retirer le bouton retour au camp, il ne sert à rien »).
+assert.doesNotMatch(html.slice(html.indexOf('data-camp-scene-panel="tavern"'),html.indexOf('id="tavern-home"')),/data-camp-back/);
 
 // --- Mise en page --------------------------------------------------------------------------------------------------------
 assert.match(css,/--hud-bottom-h:calc\(var\(--hb-B\) \* var\(--bb-h\)\);/,"la place que prend la barre, selon la culture");

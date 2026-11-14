@@ -65,9 +65,12 @@ n'est pas fonctionnel immédiatement, on commence par la barre ») :
     recrutement - cave - menu ») : Parler au tavernier, Trouver une mission, Recruter, La Cave, La Cantine. Ailleurs, pas de
     bouton pour l'instant (« au château, on n'en a pas pour l'instant »), mais sa place reste. Son dessin viendra (« on va
     le designer ce bouton pour qu'il soit joli ») : en attendant, un rond sombre « ••• » ;
-  - **Combat** : les missions du jour (la vue Missions de la taverne : les offres, et les escouades arrivées) ;
-  - **Nouvelles** (le pigeon) : rouvre la fenêtre des nouvelles du jour (le rapport du dernier jour passé dans cette
-    session ; après un rechargement de la page, « Rien à signaler ») ;
+  - **Combat** (Idan : « ça ouvre les missions qui doivent avoir un combat aujourd'hui » ; « juste commencer le combat,
+    sinon grisé ») : grisé tant qu'aucune escouade n'est arrivée sur place ; avec une escouade arrivée, sa fenêtre
+    « Commencer le combat » ; avec plusieurs, un menu pour choisir laquelle ;
+  - **Nouvelles** (le pigeon) : rouvre la fenêtre des nouvelles du jour. Elles sont gardées avec la partie : le pigeon les
+    retrouve même après un rechargement de la page (une partie sauvegardée avant le 14 novembre n'en a pas : « Rien à
+    signaler » jusqu'au lendemain) ;
   - **Journal** : il remplace le journal au-dessus de la barre (« on peut l'ouvrir en cliquant dessus ») ; il s'ouvre
     au-dessus des actions et défile ; un clic ailleurs ou Échap le referme ;
   - **Discussions** : pour parler avec les mercenaires qui viennent nous voir (fuite, augmentation de salaire…) ; grisé

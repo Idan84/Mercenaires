@@ -217,6 +217,7 @@ function renderGameHud(){
   $("hud-roster").textContent=dormitoryPlacesText(rules?rules.dormitoryUsed(game.campaign):company.roster.length)+" / "+(company.camp?.dormitoryCapacity??"—");
   renderCampCalendar();
   $("game-action-lines").innerHTML=gameActionMessages.map(x=>'<li><small>J'+(x.day||"—")+'</small> '+esc(x.message)+'</li>').join("");
+  updateHudCombat();
 }
 // Les lieux de la barre du bas (Idan, 2026-11-14) : un clic ouvre le lieu, comme les boutons du château ; la Taverne a son
 // menu (tavern-ui.js). Rien ne se passe sur le lieu où l'on est déjà.
@@ -260,15 +261,45 @@ function chooseHudContext(key){
   setHudContextMenu(false);
   if(document.body.dataset.campScene==="tavern"&&typeof openTavernPlace==="function") openTavernPlace(key);
 }
-// Les actions de droite : Combat (les missions du jour : les escouades et les offres de la taverne), Nouvelles (le pigeon :
-// la fenêtre des nouvelles du jour, rouverte), Journal ; Discussions viendra plus tard.
-function runHudAction(action){
+// Le menu d'une action de droite (Combat : les combats du jour, s'il y en a plusieurs), au-dessus de son picto.
+function setHudActionMenu(button,items=[]){
+  const menu=$("hud-action-menu");
+  if(!menu) return;
+  const open=Boolean(button&&items.length);
+  menu.hidden=!open;
+  menu.dataset.action=open?button.dataset.hudAction:"";
+  menu.innerHTML=open?items.map(x=>`<li role="none"><button type="button" role="menuitem" data-hud-pick="${esc(x.key)}">${esc(x.label)}</button></li>`).join(""):"";
+  if(open){ menu.style.left=button.offsetLeft+"px"; menu.setAttribute("aria-label",button.title||""); }
+}
+// Combat (Idan, 2026-11-14 : « ça ouvre les missions qui doivent avoir un combat aujourd'hui » ; « juste commencer le
+// combat, sinon grisé ») : les escouades arrivées sur place ; leur fenêtre « Commencer le combat » (contract-ui.js).
+function hudCombats(){ return (game.campaign?.expeditions||[]).filter(e=>e.status==="arrived"); }
+function updateHudCombat(){
+  const button=$("hud-combat-btn");
+  if(!button) return;
+  const n=hudCombats().length;
+  button.disabled=!n;
+  button.title=n>1?n+" combats vous attendent":n?"Commencer le combat":"Pas de combat aujourd’hui";
+  if(!n&&$("hud-action-menu")?.dataset.action==="combat") setHudActionMenu(null);
+}
+function chooseHudAction(action,key){
+  setHudActionMenu(null);
+  if(action==="combat"&&typeof openExpeditionDialog==="function") openExpeditionDialog(key);
+}
+// Les actions de droite : Combat, Nouvelles (le pigeon : les nouvelles du jour, rouvertes, même après un rechargement :
+// day-news-ui.js), Journal ; Discussions viendra plus tard.
+function runHudAction(action,button){
   if(action==="journal"){toggleHudJournal();return;}
   if(action==="news"){
-    if(typeof showDayNews==="function"&&game.campaign) showDayNews(game.campaign.day,game.lastDayReport||null);
+    if(typeof showTodayNews==="function") showTodayNews();
     return;
   }
-  if(action==="combat"&&typeof openTavernPlace==="function") openTavernPlace("missions");
+  if(action==="combat"){
+    const waiting=hudCombats();
+    if(waiting.length===1){ chooseHudAction("combat",waiting[0].id); return; }
+    const open=$("hud-action-menu").hidden||$("hud-action-menu").dataset.action!=="combat";
+    setHudActionMenu(open?button:null,waiting.map(e=>({key:e.id,label:e.offer.campName+" de "+e.offer.fields.lieu})));
+  }
 }
 function setPauseOpen(open){
   if(!game.campaign||!["camp","mission"].includes(currentScreen())) return;
@@ -357,19 +388,25 @@ function initializeScreenUi(){
   });
   document.querySelector(".hud-actions").addEventListener("click",event=>{
     const button=event.target.closest?.("[data-hud-action]");
-    if(button&&!button.disabled) runHudAction(button.dataset.hudAction);
+    if(button&&!button.disabled) runHudAction(button.dataset.hudAction,button);
   });
-  // Un clic ailleurs ou Échap referme le menu du lieu et le journal (Échap n'ouvre pas alors le menu de pause).
+  $("hud-action-menu").addEventListener("click",event=>{
+    const item=event.target.closest("[data-hud-pick]");
+    if(item) chooseHudAction($("hud-action-menu").dataset.action,item.dataset.hudPick);
+  });
+  // Un clic ailleurs ou Échap referme les menus et le journal (Échap n'ouvre pas alors le menu de pause).
   document.addEventListener("click",event=>{
     if(!$("hud-context-menu").hidden&&!event.target.closest?.("#hud-context")) setHudContextMenu(false);
+    if(!$("hud-action-menu").hidden&&!event.target.closest?.("#hud-action-menu, [data-hud-action]")) setHudActionMenu(null);
     if(!$("hud-journal").hidden&&!event.target.closest?.("#hud-journal, #hud-journal-btn")) toggleHudJournal(false);
   });
   window.addEventListener("keydown",event=>{
     if(event.key!=="Escape") return;
-    if($("hud-context-menu").hidden&&$("hud-journal").hidden) return;
+    if($("hud-context-menu").hidden&&$("hud-action-menu").hidden&&$("hud-journal").hidden) return;
     event.preventDefault();
     event.stopImmediatePropagation();
     setHudContextMenu(false);
+    setHudActionMenu(null);
     toggleHudJournal(false);
   },true);
   window.addEventListener("resize",()=>fitHudCompanyName());

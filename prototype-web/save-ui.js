@@ -1,7 +1,8 @@
 "use strict";
 
 // Sauvegarde automatique de la partie dans le navigateur (localStorage).
-// Sont sauvegardés : l'état de partie (compagnie, Taverne, jour) et le journal de la Taverne.
+// Sont sauvegardés : l'état de partie (compagnie, Taverne, jour), le journal de la Taverne et les nouvelles du jour (le
+// pigeon de la barre du bas les rouvre ; une partie d'avant n'en a pas : « Rien à signaler » jusqu'au lendemain).
 // Ne sont pas sauvegardés : un combat en cours et le banc de test du générateur.
 
 const SAVE_KEY="mercenaires.save.v1";
@@ -18,7 +19,7 @@ function savedGame(){
 function saveGame(){
   if(!game.campaign||game.campaign.gameOver) return;
   try{
-    localStorage.setItem(SAVE_KEY,MercenairesCampaign.serializeCampaign(game.campaign,{tavernLog:game.tavernLog||[]}));
+    localStorage.setItem(SAVE_KEY,MercenairesCampaign.serializeCampaign(game.campaign,{tavernLog:game.tavernLog||[],dayNews:game.dayNews||null}));
     game.saveError=null;
   }catch(error){
     game.saveError="Sauvegarde impossible : "+(error.message||error);
@@ -44,6 +45,7 @@ function showGameOver(){
   game.initialSquad=[];
   game.mission=null;
   game.tavernLog=[];
+  game.dayNews=null;
   game.recruitTalk=null;
   $("game-panel").classList.add("hidden");
   $("game-over-text").textContent=`${name} ${beaten?`a été ${female?"vaincue":"vaincu"} ${beaten}`:"est mort"}${day?" au jour "+day:""}. La compagnie est dissoute et la sauvegarde a été effacée.`;
@@ -64,6 +66,7 @@ function continueSavedGame(){
   game.generated=[];
   game.mission=null;
   game.tavernLog=save.extra.tavernLog||[];
+  game.dayNews=save.extra.dayNews||null;
   game.recruitTalk=null;
   // Bios ajoutées à une ancienne partie : on les sauvegarde tout de suite pour qu'elles ne changent plus.
   if(migrated) saveGame();

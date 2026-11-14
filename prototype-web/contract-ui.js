@@ -175,9 +175,13 @@ function nameSize(name){
 }
 function renderBoardNotice(card){
   const look=noticeLook(card.id);
+  // Argent et Or (Idan, 2026-11-14) : le métal du niveau de la mission (6 à 10 : argent, 11 à 15 : or) se voit sur
+  // l'annonce (titre à la feuille de métal, étoiles plus grandes ; bientôt une dague plantée).
+  const metal=starRules().byLevel(Number(card.difficulty?.level)||1)?.metalKey;
+  const metalAttr=metal==="silver"||metal==="gold"?` data-metal="${metal}"`:"";
   const art=card.illustration?`<img src="${esc(card.illustration)}" alt="" loading="lazy">`:"";
   const open=card.scheduled?"":` data-mission-open="${esc(card.id)}" role="button" tabindex="0"`;
-  return `<article class="board-notice${card.scheduled?" board-notice--scheduled":""}"${open} aria-label="${esc(card.title)}" data-pin="${look.pin}"${look.pin==="cire"?` data-wax="${look.wax}"`:` data-head="${look.head}"`} style="${look.style}" data-paper="${look.paper}">
+  return `<article class="board-notice${card.scheduled?" board-notice--scheduled":""}"${open} aria-label="${esc(card.title)}" data-pin="${look.pin}"${look.pin==="cire"?` data-wax="${look.wax}"`:` data-head="${look.head}"`} style="${look.style}" data-paper="${look.paper}"${metalAttr}>
     <span class="board-notice-paper" aria-hidden="true"></span>
     <span class="board-notice-pins" aria-hidden="true"><i></i>${look.pin==="punaises"?"<i></i>":""}</span>
     <div class="board-notice-art"${art?` data-fade="${look.fade}"`:""}>${art}</div>

@@ -302,6 +302,9 @@ ennemis, récompense, expiration…), la lettre du commanditaire s'il y en a une
   un ou deux plis en travers à des hauteurs différentes et parfois un pli en long, le froissé décalé, et selon
   l'annonce une tache de graisse, une coulure depuis le haut, un bord qui a pris l'humidité, des chiures de mouche
   (dans les marges, pour ne pas passer pour des fautes d'impression).
+  Les missions d'argent (niveaux 6 à 10) et d'or (11 à 15) se reconnaissent d'un coup d'œil (Idan, 2026-11-14 :
+  « 1 et 3 ») : le titre à la feuille de métal (étain ou or, gravé d'un filet sombre) et des étoiles plus grandes qui
+  brillent ; à venir, une dague d'acier ou à garde dorée plantée en haut de l'annonce (Jean-Mi).
   Les flèches sont des équerres de fer forgé, platine vissée sur le montant du cadre : au survol, le fer s'éclaire et la
   flèche avance un peu ; sur la première ou la dernière page, elle reste sombre.
   Toute cette matière vient de Jean-Mi, sur fond vert, détourée par `scripts/key-green-sheet.js` (`assets/taverne/` :

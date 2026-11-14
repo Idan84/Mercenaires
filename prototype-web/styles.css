@@ -2255,6 +2255,15 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .board-notice-rule i{width:calc(var(--u) * 9);height:calc(var(--u) * 11);background:currentColor;-webkit-mask:url("assets/creation/svg/fleur-de-lys.svg") center/contain no-repeat;mask:url("assets/creation/svg/fleur-de-lys.svg") center/contain no-repeat}
 .board-notice-level .rep-stars{font-size:calc(var(--u) * 11.5);letter-spacing:.12em;text-shadow:none}
 .board-notice-level .rep-stars-empty{color:rgba(100,73,46,.38);opacity:1}
+/* Argent et Or (Idan, 2026-11-14) : le titre à la feuille de métal (un dégradé découpé dans les lettres, assez sombre
+   pour se lire sur le papier, avec un filet d'ombre qui le grave) et des étoiles plus grandes qui brillent. */
+.board-notice[data-metal] .board-notice-name{color:transparent;-webkit-background-clip:text;background-clip:text;-webkit-text-stroke:calc(var(--u) * .3) rgba(36,24,12,.55);filter:drop-shadow(0 calc(var(--u) * .7) 0 rgba(40,24,8,.45))}
+.board-notice[data-metal="silver"] .board-notice-name{background-image:linear-gradient(172deg,#2b3136 0%,#6c757d 26%,#363d43 44%,#a7b0b7 58%,#465057 76%,#293035 100%)}
+.board-notice[data-metal="gold"] .board-notice-name{background-image:linear-gradient(172deg,#4c3007 0%,#a8761f 26%,#5f3e0b 44%,#d9ad4a 58%,#7a5112 76%,#4c3007 100%)}
+.board-notice[data-metal] .board-notice-level .rep-stars{font-size:calc(var(--u) * 14.5)}
+.board-notice[data-metal="silver"] .board-notice-level .rep-stars{color:#8b949c;text-shadow:0 0 calc(var(--u) * 3) rgba(235,242,248,.9),0 calc(var(--u) * .6) 0 rgba(30,36,42,.45)}
+.board-notice[data-metal="gold"] .board-notice-level .rep-stars{color:#d29a2a;text-shadow:0 0 calc(var(--u) * 3) rgba(255,220,130,.95),0 calc(var(--u) * .6) 0 rgba(70,40,5,.45)}
+.board-notice[data-metal] .board-notice-level .rep-stars-empty{text-shadow:none}
 .board-notice-stats{display:grid;justify-items:center;gap:calc(var(--u) * 3);margin-top:auto;padding-top:calc(var(--u) * 8);color:var(--encre-secondaire);font:italic 500 calc(var(--u) * 9.6)/1.2 var(--police-texte)}
 .board-notice-stats span{display:inline-flex;align-items:center;gap:calc(var(--u) * 4);white-space:nowrap}
 .board-notice-stats b{color:var(--encre);font:700 calc(var(--u) * 13)/1 var(--police-texte);font-variant-numeric:lining-nums}

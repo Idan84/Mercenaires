@@ -238,10 +238,14 @@
       <section class="camp-scene hidden" data-camp-scene-panel="tavern" aria-label="Taverne">
         <div id="tavern-home" class="camp-hub tavern-hub">
         </div>
-        <section id="tavern-missions-view" class="panel tavern-panel hidden">
-          <button class="secondary" data-tavern-view="home">← Retour à la taverne</button>
-          <h2>Missions</h2>
-          <div id="tavern-contracts" class="contract-board"></div>
+        <!-- Trouver une mission (Idan, 2026-11-14) : le panneau de bois, les annonces sur parchemin, trois à la fois ; un clic
+             hors du panneau ramène à la taverne (contract-ui.js). -->
+        <section id="tavern-missions-view" class="tavern-panel mission-board-view hidden" aria-label="Trouver une mission">
+          <div class="mission-board" data-mission-board>
+            <button type="button" class="mission-board-arrow mission-board-arrow--prev" data-board-page="-1" aria-label="Annonces précédentes"></button>
+            <div id="tavern-contracts" class="mission-board-planks"></div>
+            <button type="button" class="mission-board-arrow mission-board-arrow--next" data-board-page="1" aria-label="Annonces suivantes"></button>
+          </div>
         </section>
         <!-- La Cantine (Idan, 2026-11-08) : une salle de la Taverne, le tavernier cuisine (canteen-ui.js). -->
         <section id="tavern-canteen-view" class="panel tavern-panel hidden">

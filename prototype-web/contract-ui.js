@@ -52,7 +52,10 @@ const MISSION_ICONS={
   crew:'<circle cx="9" cy="8" r="3"/><path d="M3.5 19c.6-3.2 2.8-5 5.5-5s4.9 1.8 5.5 5"/><circle cx="17" cy="9" r="2.4"/><path d="M15.5 14.2c2.6-.3 4.5 1.3 5 4.3"/>',
   enemies:'<path d="M12 3c4.4 0 7 3 7 6.8 0 2.4-1.2 3.9-2.6 4.8V18H7.6v-3.4C6.2 13.7 5 12.2 5 9.8 5 6 7.6 3 12 3z"/><path d="M9.3 11h.01M14.7 11h.01M10 18v3M14 18v3" stroke-width="2.2"/>',
   client:'<path d="M6 3.5h9l3 3V20.5H6z"/><path d="M15 3.5v3h3M9 11h6M9 14.5h6M9 18h4"/>',
-  expires:'<path d="M7 3.5h10M7 20.5h10M8 3.5c0 4 4 5 4 8.5s-4 4.5-4 8.5M16 3.5c0 4-4 5-4 8.5s4 4.5 4 8.5"/>'
+  expires:'<path d="M7 3.5h10M7 20.5h10M8 3.5c0 4 4 5 4 8.5s-4 4.5-4 8.5M16 3.5c0 4-4 5-4 8.5s4 4.5 4 8.5"/>',
+  // Le sablier de la maquette du dortoir (Idan, 2026-11-14 : « On a pas un sablier qui irait bien ? ») : deux barres, le
+  // verre, le sable en bas.
+  hourglass:'<path d="M5.5 2.8h13M5.5 21.2h13" stroke-width="2.2"/><path d="M7.4 2.8c0 4.6 3.6 6.1 3.6 9.2s-3.6 4.6-3.6 9.2M16.6 2.8c0 4.6-3.6 6.1-3.6 9.2s3.6 4.6 3.6 9.2"/><path d="M8.6 20.4c.6-2.4 2-3.4 3.4-4.4 1.4 1 2.8 2 3.4 4.4z" fill="currentColor" stroke="none"/>'
 };
 function missionIcon(kind){
   return `<svg class="mission-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${MISSION_ICONS[kind]||""}</svg>`;
@@ -68,7 +71,7 @@ function contractCard(offer){
   return {id:"contract:"+offer.id,kind:"contract",type:offer.name,title:offer.campName+" de "+offer.fields.lieu,
     illustration:def.illustration||"",description:def.description||"",
     difficulty:{level:offer.difficulty||1,label:"Difficulté"},
-    reward:fmt(offer.reward)+" PO",rewardNote:loot.trim(),duration:missionDays(offer.distance)+" de marche",
+    reward:fmt(offer.reward)+" PO",gold:offer.reward,rewardNote:loot.trim(),duration:missionDays(offer.distance)+" de marche",
     facts:[["client","Commanditaire",order?.from||""],["days","Distance",missionDays(offer.distance)+" de marche, "+missionDays(2*offer.distance)+" aller-retour"],
       ["enemies","Ennemis",offer.faction+", "+offer.fields.estimation],["gold","Récompense",fmt(offer.reward)+" PO"+loot],
       ["expires","Expire le",contractDate(offer.expiresDay).label]],
@@ -80,7 +83,7 @@ function bodyguardCard(guard){
     illustration:game.referenceData?.bodyguardMissions?.illustration||"",
     description:MercenairesRecruitDialogue.fill(t.offre||"",{client:guard.client,n:guard.count,s:plural?"s":"",jours:guard.days},false),
     difficulty:{level:guard.level,label:"Réputation minimale"},
-    reward:fmt(guard.payment)+" PO",rewardNote:"d’avance",duration:missionDays(guard.days),
+    reward:fmt(guard.payment)+" PO",gold:guard.payment,rewardNote:"d’avance",duration:missionDays(guard.days),
     facts:[["crew","Mercenaires",String(guard.count)],["days","Durée",missionDays(guard.days)+", sans combat"],
       ["gold","Paiement d’avance",fmt(guard.payment)+" PO"],["expires","Expire le",contractDate(guard.expiresDay).label]],
     letter:null,action:{label:plural?"Choisir les gardes":"Choisir le garde",attr:`data-bodyguard-accept="${esc(guard.id)}"`}};
@@ -95,21 +98,43 @@ function renderMissionArt(card,big=false){
     ?`<img src="${esc(card.illustration)}" alt="" loading="lazy">`
     :`<span class="mission-emblem">${missionIcon(card.kind)}</span>`}</div>`;
 }
-function renderMissionCard(card){
-  if(card.kind==="empty") return `<article class="mission-card mission-card--empty" aria-label="Case libre"><p>Nouvelle mission demain</p></article>`;
-  return `<article class="mission-card" data-mission-open="${esc(card.id)}" role="button" tabindex="0" aria-label="${esc(card.title)}">
-    ${renderMissionArt(card)}
-    <div class="mission-card-body">
-      <p class="mission-type">${esc(card.type)}</p>
-      <h3>${esc(card.title)}</h3>
-      <p class="mission-description">${esc(card.description)}</p>
-      <div class="mission-stats">
-        <span class="mission-stat" title="${esc(card.difficulty.label)}">${levelStars(card.difficulty.level,card.difficulty.label)}</span>
-        <span class="mission-stat" title="Récompense">${missionIcon("gold")}<b>${esc(card.reward)}</b></span>
-        <span class="mission-stat" title="Durée">${missionIcon("days")}${esc(card.duration)}</span>
-      </div>
+// Trouver une mission (Idan, 2026-11-14) : sur le panneau de bois, les annonces sur notre parchemin ; l'illustration (vide pour
+// l'instant), le titre, la difficulté, la récompense (le picto or de la barre du haut), la durée (le sablier) ; ni type, ni
+// description, ni case vide (« Rien. Même pas de parchemin. On a le fond en bois »). Une mission qui part demain reste
+// affichée, avec « Annuler » (« Parfait sur la fiche elle-même »).
+const BOARD_PAGE_SIZE=3;
+const boardState={page:0};
+function boardNotices(){
+  const scheduled=(game.campaign?.expeditions||[]).filter(e=>e.status==="scheduled")
+    .map(e=>({...(e.kind==="bodyguard"?bodyguardCard(e.offer):contractCard(e.offer)),scheduled:e.id}));
+  return [...scheduled,...missionCards().filter(c=>c.kind!=="empty")];
+}
+function renderBoardNotice(card){
+  const art=card.illustration?`<img src="${esc(card.illustration)}" alt="" loading="lazy">`:"";
+  const open=card.scheduled?"":` data-mission-open="${esc(card.id)}" role="button" tabindex="0"`;
+  return `<article class="board-notice${card.scheduled?" board-notice--scheduled":""}"${open} aria-label="${esc(card.title)}">
+    <div class="board-notice-art">${art}</div>
+    <h3>${esc(card.title)}</h3>
+    <div class="board-notice-stats">
+      <span title="${esc(card.difficulty.label)}">${levelStars(card.difficulty.level,card.difficulty.label)}</span>
+      <span title="Récompense"><img class="board-notice-gold" src="assets/hud/picto-or.webp" alt=""><b>${esc(fmt(card.gold))}</b></span>
+      <span title="Durée">${missionIcon("hourglass")}${esc(card.duration)}</span>
     </div>
+    ${card.scheduled?`<p class="board-notice-departure">Départ demain <button type="button" data-expedition-cancel="${esc(card.scheduled)}" title="Au jour J, on organise J+1 : on peut encore changer d’avis avant le départ.">Annuler</button></p>`:""}
   </article>`;
+}
+function boardPageHtml(notices,page){
+  return `<div class="board-page">${notices.slice(page*BOARD_PAGE_SIZE,(page+1)*BOARD_PAGE_SIZE).map(renderBoardNotice).join("")}</div>`;
+}
+// Les flèches : cachées s'il n'y a qu'une page, grisées au début et à la fin.
+function updateBoardArrows(count){
+  const pages=Math.max(1,Math.ceil(count/BOARD_PAGE_SIZE));
+  for(const [dir,id] of [[-1,"prev"],[1,"next"]]){
+    const arrow=document.querySelector?.(`.mission-board-arrow--${id}`);
+    if(!arrow) continue;
+    arrow.hidden=pages<2;
+    arrow.disabled=dir<0?boardState.page<=0:boardState.page>=pages-1;
+  }
 }
 
 function openMissionDetail(id){
@@ -132,37 +157,39 @@ function openMissionDetail(id){
 function renderContractBoard(){
   const box=$("tavern-contracts");
   if(!box) return;
-  const cards=missionCards();
-  box.innerHTML=renderExpeditions()+(cards.length?`<div class="mission-grid">${cards.map(renderMissionCard).join("")}</div>`:`<p class="mission-empty">Aucune offre aujourd’hui.</p>`);
+  const notices=boardNotices();
+  boardState.page=Math.max(0,Math.min(boardState.page,Math.ceil(notices.length/BOARD_PAGE_SIZE)-1));
+  box.innerHTML=notices.length?boardPageHtml(notices,boardState.page):"";
+  updateBoardArrows(notices.length);
+}
+// Trois autres annonces : la nouvelle page pousse l'ancienne, par la droite ou par la gauche.
+function turnBoardPage(dir){
+  const box=$("tavern-contracts"),notices=boardNotices(),pages=Math.ceil(notices.length/BOARD_PAGE_SIZE);
+  const next=boardState.page+dir;
+  if(!box||next<0||next>=pages) return;
+  boardState.page=next;
+  const old=box.querySelector?.(".board-page");
+  box.insertAdjacentHTML("beforeend",boardPageHtml(notices,next));
+  updateBoardArrows(notices.length);
+  const fresh=box.lastElementChild;
+  if(!old||!fresh?.animate||window.matchMedia?.("(prefers-reduced-motion: reduce)").matches){ old?.remove(); return; }
+  const timing={duration:420,easing:"cubic-bezier(.45,0,.25,1)"};
+  old.animate([{transform:"translateX(0)"},{transform:`translateX(${-dir*100}%)`}],timing).finished.then(()=>old.remove(),()=>old.remove());
+  fresh.animate([{transform:`translateX(${dir*100}%)`},{transform:"translateX(0)"}],timing);
+}
+// Au clic, l'annonce s'avance un peu (« une sorte de zoom sur la fiche »), puis la fiche s'ouvre en grand.
+function zoomMissionNotice(notice){
+  const id=notice.dataset.missionOpen;
+  if(!notice.animate||window.matchMedia?.("(prefers-reduced-motion: reduce)").matches){ openMissionDetail(id); return; }
+  notice.classList.add("is-zooming");
+  notice.animate([{transform:"scale(1)"},{transform:"scale(1.14)"}],{duration:220,easing:"ease-out",fill:"forwards"}).finished
+    .then(()=>{ openMissionDetail(id); notice.getAnimations().forEach(a=>a.cancel()); notice.classList.remove("is-zooming"); });
 }
 
 // Accepter une offre (contrat ou garde du corps) : le choix de l'escouade s'ouvre.
 function acceptOffer(id){
   const offer=boardOffer(id);
   if(offer) openMissionSelection(offer);
-}
-
-// Escouades parties en expédition (doc 17) : en route, arrivées (le combat attend le joueur) ou sur le retour.
-function expeditionLabel(e){
-  const left=day=>{ const n=day-game.campaign.day; return n<=0?"aujourd’hui":"dans "+n+" jour"+(n>1?"s":""); };
-  if(e.status==="scheduled") return (e.kind==="bodyguard"?"Garde du corps · ":"")+"Départ demain matin";
-  if(e.kind==="bodyguard") return "Garde du corps · retour "+left(e.returnDay);
-  if(e.status==="outbound") return "En route · arrivée "+left(e.arriveDay);
-  if(e.status==="arrived") return "Arrivée sur place : le combat vous attend";
-  return "Sur le retour · au camp "+left(e.returnDay);
-}
-
-function renderExpeditions(){
-  const list=game.campaign?.expeditions||[];
-  if(!list.length) return "";
-  const name=id=>game.campaign.company.roster.find(m=>m.id===id)?.name||"?";
-  return `<section class="expedition-list"><h3>Escouades en mission</h3>${list.map(e=>`
-    <article class="expedition-row expedition-row--${esc(e.status)}">
-      <div><strong>${esc(e.kind==="bodyguard"?e.offer.client:e.offer.campName+" de "+e.offer.fields.lieu)}</strong><small>${esc(e.memberIds.map(name).join(", "))}</small></div>
-      <em>${esc(expeditionLabel(e))}</em>
-      ${e.status==="arrived"?`<button type="button" class="primary" data-expedition-fight="${esc(e.id)}">Commencer le combat</button>`:""}
-      ${e.status==="scheduled"?`<button type="button" class="secondary" data-expedition-cancel="${esc(e.id)}" title="Au jour J, on organise J+1 : on peut encore changer d’avis avant le départ.">Annuler le départ</button>`:""}
-    </article>`).join("")}</section>`;
 }
 
 // Au jour J, on organise J+1 (Idan, 2026-11-02) : une mission qui part demain matin peut encore être annulée ; le contrat
@@ -263,6 +290,14 @@ function openExpeditionScoutChoice(id){
   $("expedition-dialog-scout").hidden=true;
 }
 
+// Le cadre du panneau dans l'image (panneau-missions.webp, 2000 × 1116) : un clic en dehors (le mur) ramène à la taverne.
+const MISSION_BOARD_FRAME={left:.128,right:.877,top:.072,bottom:.926};
+function missionBoardOutside(board,event){
+  const r=board.getBoundingClientRect?.();
+  if(!r||!r.width) return false;
+  const x=(event.clientX-r.left)/r.width,y=(event.clientY-r.top)/r.height,f=MISSION_BOARD_FRAME;
+  return x<f.left||x>f.right||y<f.top||y>f.bottom;
+}
 function initializeExpeditionUi(){
   // Fenêtre fermée par Échap : les retours suivants s'affichent quand même.
   $("bodyguard-return-dialog")?.addEventListener("close",()=>{
@@ -270,7 +305,11 @@ function initializeExpeditionUi(){
   });
   document.addEventListener("click",event=>{
     const open=event.target.closest("[data-mission-open]");
-    if(open){ openMissionDetail(open.dataset.missionOpen); return; }
+    if(open){ if(open.classList?.contains("board-notice")) zoomMissionNotice(open); else openMissionDetail(open.dataset.missionOpen); return; }
+    const turn=event.target.closest("[data-board-page]");
+    if(turn){ turnBoardPage(Number(turn.dataset.boardPage)); return; }
+    const board=event.target.closest("[data-mission-board]");
+    if(board&&missionBoardOutside(board,event)){ showTavernView("home"); return; }
     if(event.target.closest("[data-mission-close]")){ $("mission-detail").close(); return; }
     // Accepter depuis le détail : la fenêtre se ferme, le choix de l'escouade s'ouvre.
     if(event.target.closest("[data-contract-accept],[data-bodyguard-accept]")&&$("mission-detail")?.open) $("mission-detail").close();
@@ -290,6 +329,8 @@ function initializeExpeditionUi(){
   });
   document.addEventListener("keydown",event=>{
     const card=event.target.closest?.("[data-mission-open]");
-    if(card&&(event.key==="Enter"||event.key===" ")){ event.preventDefault(); openMissionDetail(card.dataset.missionOpen); }
+    if(!card||(event.key!=="Enter"&&event.key!==" ")) return;
+    event.preventDefault();
+    if(card.classList?.contains("board-notice")) zoomMissionNotice(card); else openMissionDetail(card.dataset.missionOpen);
   });
 }

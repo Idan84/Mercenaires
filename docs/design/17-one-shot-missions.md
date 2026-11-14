@@ -297,9 +297,11 @@ ennemis, récompense, expiration…), la lettre du commanditaire s'il y en a une
   d'avoir des images différentes pour les mêmes missions ») : chaque offre en tire une d'après son identifiant, toujours
   la même. Idan les dépose dans `media/background/Taverne/Missions/` ; on garde les bonnes (`scripts/build-mission-art.js`,
   voir `docs/DEPLOYMENT.md`). Arrivées : les sept camps (une gravure chacun ; deux pour les voleurs, deux scènes vraiment
-  différentes) et les bêtes (loups, licorne, cerbère, chiens sauvages, papillons : 1 chacune).
+  différentes) et les bêtes (loups, cerbère, chiens sauvages, papillons : 1 chacune ; licorne : 2, la forêt et la
+  montagne étoilée), et les dix clients des gardes du corps (une gravure chacun, `bodyguard-missions.json`,
+  `illustrations_clients`).
   Une variante n'est gardée que si elle apporte une autre image (Idan : « Y'en a beaucoup qui sont proches… Faut pas
-  hésiter à les virer ») ; les écartées et leur raison sont en tête de `scripts/build-mission-art.js`. À venir : les clients des gardes du corps.
+  hésiter à les virer ») ; les écartées et leur raison sont en tête de `scripts/build-mission-art.js`. 
 
 ## 14 — Points de combat et camps par peuple (Idan, 2026-11-01)
 

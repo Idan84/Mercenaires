@@ -30,9 +30,20 @@ const KEEP=[
   ["Hooded_figure_holding_lantern_gr…_1a5d46be.jpg","cimetiere-profane-1"],
   ["Pack_of_wolves_howling_aaf26095.jpg","chasse-loups-1"],
   ["Wild_unicorn_rearing_in_forest_cddc5f4f.jpg","chasse-licorne-1"],
+  ["Celestial_unicorn_on_snowy_mountain_da8c0e7e_2K.jpg","chasse-licorne-2"],
   ["Three-headed_hellhound_at_mine_0991b14a.jpg","chasse-cerbere-1"],
   ["Feral_mastiffs_snarling_near_manor_6302de4d.jpg","chasse-chiens-sauvages-1"],
-  ["Giant_poisonous_butterflies_over…_d1bd2095.jpg","chasse-papillons-1"]
+  ["Giant_poisonous_butterflies_over…_d1bd2095.jpg","chasse-papillons-1"],
+  ["Abbot_on_mountain_pilgrimage_c69b45e3.jpg","garde-abbe-1"],
+  ["Boy_riding_pony_af274755.jpg","garde-fils-bourgmestre-1"],
+  ["Disgraced_nobleman_glancing_back…_c8c70d61.jpg","garde-noble-1"],
+  ["Dwarf_banker_with_ledger_and_46e0fb20.jpg","garde-banquier-nain-1"],
+  ["Elven_ambassador_holding_sealed_…_d9bfb99e.jpg","garde-ambassadeur-elfe-1"],
+  ["Opera_singer_leaning_from_coach_b470d288.jpg","garde-cantatrice-1"],
+  ["Spice_merchant_and_caravan_38ca95bc.jpg","garde-marchand-epices-1"],
+  ["Tax_collector_with_angry_peasants_c1b38448.jpg","garde-collecteur-impots-1"],
+  ["Wealthy_widow_seated_in_carriage_eaedcf51.jpg","garde-veuve-1"],
+  ["Woman_alchemist_carrying_glowing…_620df9ec.jpg","garde-alchimiste-1"]
 ];
 // Écartées : les raisons servent pour la prochaine série.
 const REJECTED={
@@ -54,7 +65,21 @@ const REJECTED={
   "Feral_mastiffs_snarling_ruined_m…_2cbc4bb3.jpg":"trop proche de chasse-chiens-sauvages-1 (les molosses devant le château)",
   "Wild_unicorn_rearing_in_forest_02373464.jpg":"trop proche de chasse-licorne-1 (la licorne cabrée dans la forêt)",
   "Wild_unicorn_rearing_in_forest_a8e1f79b.jpg":"un lavis gris plutôt qu'une gravure, et la même licorne cabrée",
-  "Poisonous_butterflies_over_flowe…_da0dfe2d.jpg":"le même essaim que chasse-papillons-1, en pleine page plus sombre"
+  "Poisonous_butterflies_over_flowe…_da0dfe2d.jpg":"le même essaim que chasse-papillons-1, en pleine page plus sombre",
+  "Abbot_on_mountain_pilgrimage_6ee1ce70.jpg":"un cadre dessiné tout autour : un rectangle sur l'annonce (et trop proche de garde-abbe-1)",
+  "Abbot_walking_on_mountain_path_2102bcd0.jpg":"trop proche de garde-abbe-1 (l'abbé au bâton sur le sentier)",
+  "Disgraced_nobleman_glancing_over…_5eda4243.jpg":"trop proche de garde-noble-1 (le noble en guenilles, l'écu brisé), et plus petit",
+  "Disgraced_nobleman_glancing_over…_d5a20b10.jpg":"trop proche de garde-noble-1 (le noble en guenilles, l'écu brisé), et plus petit",
+  "Dwarf_banker_with_ledger_and_7ccfa8c9.jpg":"trop proche de garde-banquier-nain-1 (le registre, le coffre)",
+  "Dwarf_banker_with_ledger_and_fa0e8a4a.jpg":"trop proche de garde-banquier-nain-1 (le registre, le coffre)",
+  "Elven_ambassador_holding_sealed_…_202a2f29.jpg":"trop proche de garde-ambassadeur-elfe-1 (l'elfe en robe, la lettre)",
+  "Elven_ambassador_holding_sealed_…_935c1fdf.jpg":"trop proche de garde-ambassadeur-elfe-1 (l'elfe en robe, la lettre)",
+  "Spice_merchant_and_caravan_91b6a4b5.jpg":"trop proche de garde-marchand-epices-1 (le marchand devant ses mules)",
+  "Spice_merchant_traveling_with_ca…_6489bd59.jpg":"trop proche de garde-marchand-epices-1 (le marchand devant ses mules)",
+  "Wealthy_widow_in_carriage_ad463919.jpg":"un cadre dessiné tout autour : un rectangle sur l'annonce (et trop proche de garde-veuve-1)",
+  "Wealthy_widow_seated_in_carriage_356fe131.jpg":"trop proche de garde-veuve-1 (la veuve voilée dans sa voiture), en pleine largeur",
+  "Woman_alchemist_carrying_glowing…_023e0cbe.jpg":"trop proche de garde-alchimiste-1 (l'alchimiste et ses fioles)",
+  "Woman_alchemist_carrying_glowing…_11f60eb1.jpg":"trop proche de garde-alchimiste-1 (l'alchimiste et ses fioles)"
 };
 
 function listMissions(){

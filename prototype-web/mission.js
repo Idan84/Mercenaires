@@ -196,7 +196,8 @@ function missionDecorBlocksSight(a,b){
   const e=game.mission.engine,blocks=c=>Boolean(missionDecorAt(c.q,c.r)?.bloque_vue);
   if(e.axialDistance(a,b)>1&&(blocks(a)||blocks(b))) return true;
   const eye=Math.max(missionHeightAt(a.q,a.r),missionHeightAt(b.q,b.r));
-  return e.hexLine(a,b).slice(1,-1).some(c=>missionHeightAt(c.q,c.r)+(blocks(c)?1:0)>eye);
+  // La ligne qui frôle le coin d'un décor (Idan, 2026-11-14 : « Frôler ne bloque pas ») : coupée seulement des deux côtés.
+  return e.hexLineSides(a,b).every(line=>line.slice(1,-1).some(c=>missionHeightAt(c.q,c.r)+(blocks(c)?1:0)>eye));
 }
 // Mission Test (altitude) : 1 à 3 collines, centrées entre les deux lignes de déploiement, de hauteur 1 à 3 ; chaque case
 // prend la plus haute des collines, moins sa distance au sommet : deux cases voisines ne diffèrent jamais de plus d'un niveau
@@ -258,7 +259,7 @@ function missionLineOfSight(a,b){
 function missionCellLineOfSight(a,b){
   if(missionDecorBlocksSight(a,b)) return false;
   if(!game.mission?.fog?.length&&!game.mission?.blizzards?.length) return true;
-  return !game.mission.engine.hexLine(a,b).some(c=>missionFogAt(c.q,c.r)||missionBlizzardAt(c.q,c.r));
+  return game.mission.engine.hexLineSides(a,b).some(line=>!line.some(c=>missionFogAt(c.q,c.r)||missionBlizzardAt(c.q,c.r)));
 }
 // Blizzard (Eau ; Idan, 2026-10-31) : la zone où il neige, jusqu'au tour untilTurn (exclu) ; on n'y voit pas à travers.
 function missionBlizzardAt(q,r){
@@ -2361,25 +2362,36 @@ function missionPathOpportunityCount(unit,path){
 }
 
 // La charge suit une ligne droite : chaque case du trajet doit être libre.
-function missionChargeIfClear(unit,target){
-  if(missionHiddenFrom(target,unit)) return null;
+function missionChargeIfClear(unit,target){ return missionChargeCheck(unit,target).charge||null; }
+// Pourquoi on ne peut pas charger (Idan, 2026-11-14 : « j'arrive pas à charger » ; la règle reste, l'écran l'explique) : la
+// charge, ou la raison du refus, montrée au survol en mode charge.
+function missionChargeCheck(unit,target){
+  const no=reason=>({charge:null,reason});
+  if(missionHiddenFrom(target,unit)) return no("on ne le voit pas");
   const e=game.mission.engine,charge=e.chargeData(unit,target);
-  if(!charge.valid) return null;
+  if(!charge.valid){
+    if(charge.travel==null) return no(e.axialDistance(unit,target)<2?"déjà au contact":"il ne peut pas charger");
+    return no(charge.travel<charge.min?`trop près : il faut au moins ${charge.min} cases de course (ici ${charge.travel})`
+      :`trop loin : au plus ${charge.max} cases de course (ici ${charge.travel})`);
+  }
   const occupied=occupiedMissionKeys(unit);
   // Charge aérienne (doc 04 ; Idan, 2026-11-09 : « ils peuvent charger en passant au dessus des ennemis » ; au-dessus du
   // bourbier et de la flaque de magma aussi) : seule l'arrivée doit être libre, corps compris (le pégase prend 2 cases).
   const aerial=Boolean(e.aerialCharger?.(unit));
   if(aerial){
-    if(charge.path.some(h=>!validMissionHex(h.q,h.r))) return null;
+    if(charge.path.some(h=>!validMissionHex(h.q,h.r))) return no("la ligne sort de la carte");
     const land=charge.path[charge.path.length-1],from=charge.path[charge.path.length-2]||{q:unit.q,r:unit.r,facing:unit.facing};
     const landing=missionLarge(unit)?missionLargeStep(unit,from,land,occupied):occupied.has(missionKey(land.q,land.r))?null:{cost:1};
-    if(!landing||!missionCanStop(unit,{...land,facing:landing.facing})) return null;
+    if(!landing||!missionCanStop(unit,{...land,facing:landing.facing})) return no("la case d’arrivée n’est pas libre");
   }
   // Aucun personnage, aucune flaque de magma, aucun bourbier sur la ligne (Idan, 2026-11-04) ; le brouillard ne gêne pas.
-  else if(charge.path.some(h=>occupied.has(missionKey(h.q,h.r))||missionMireAt(h.q,h.r)||!validMissionHex(h.q,h.r))) return null;
+  else{
+    const bar=charge.path.find(h=>occupied.has(missionKey(h.q,h.r))||missionMireAt(h.q,h.r)||!validMissionHex(h.q,h.r));
+    if(bar) return no(missionChargeBarrier(unit,bar));
+  }
   // Un volant survole le décor, mais ne finit pas sa charge dessus.
   const last=charge.path[charge.path.length-1];
-  if(last&&missionDecorBlocksMove(last.q,last.r,unit)) return null;
+  if(last&&missionDecorBlocksMove(last.q,last.r,unit)) return no("arrivée sur un décor infranchissable ("+String(missionDecorAt(last.q,last.r)?.nom||"décor").toLowerCase()+")");
   // Décor (Idan, 2026-11-06) : la charge traverse un décor lent, mais risque davantage la chute (« pieds dans le tapis ») ;
   // la cible derrière une couverture, vue du point de départ de la charge, est protégée.
   const flyer=missionFlies(unit);
@@ -2390,12 +2402,22 @@ function missionChargeIfClear(unit,target){
     let prev={q:unit.q,r:unit.r},climb=0;
     for(const h of charge.path){
       const rise=missionHeightAt(h.q,h.r)-missionHeightAt(prev.q,prev.r);
-      if(Math.abs(rise)>=missionAltitude().cliff) return null;
+      if(Math.abs(rise)>=missionAltitude().cliff) return no("une falaise sur la ligne");
       climb+=Math.max(0,rise);prev=h;
     }
-    if(climb>1) return null;
+    if(climb>1) return no("la course monte de plus d’un niveau");
   }
-  return {...charge,slowSteps,cover:missionCoverLevel({q:unit.q,r:unit.r},target),...(aerial?{aerial:true}:{})};
+  return {charge:{...charge,slowSteps,cover:missionCoverLevel({q:unit.q,r:unit.r},target),...(aerial?{aerial:true}:{})},reason:null};
+}
+// Ce qui barre la ligne de la charge : un personnage, le bourbier, une flaque de magma, un décor, le bord de la carte.
+function missionChargeBarrier(unit,h){
+  if(!validMissionHex(h.q,h.r)) return "la ligne sort de la carte";
+  const who=missionUnits().find(x=>x.alive&&x!==unit&&!missionHiddenFrom(x,unit)&&missionOccupies(x,h.q,h.r));
+  if(who) return who.character.name+" est sur la ligne";
+  if(missionMireAt(h.q,h.r)) return "un bourbier sur la ligne";
+  if((game.mission?.terrain||[]).some(t=>t.q===h.q&&t.r===h.r)) return "une flaque de magma sur la ligne";
+  const decor=missionDecorAt(h.q,h.r);
+  return decor?"un décor infranchissable sur la ligne ("+String(decor.nom).toLowerCase()+")":"la ligne n’est pas libre";
 }
 
 function missionActiveUnitLost(){
@@ -4753,13 +4775,17 @@ function missionActionAvailability(){
   const u=missionActiveUnit(),m=game.mission;
   if(!u||!m||m.phase!=="player"||m.over) return {};
   const e=m.engine,w=e.weaponTemplate(e.activeWeaponItem(u)),horse=e.mountOf?.(u);
+  // Charger : seulement s'il y a quelqu'un à charger (Idan, 2026-11-14) ; sinon le bouton est grisé et dit pourquoi.
+  const chargeReady=u.attackAvailable&&e.isMeleeWeapon(w)&&u.movementRemaining===e.movementBase(u);
+  const chargeable=chargeReady&&missionOpponents(u).some(t=>!t.offMap&&missionChargeIfClear(u,t));
   return {
     move:u.movementRemaining>0,
     melee:u.attackAvailable&&missionHeldModes(u).has("melee"),
     twoHands:u.attackAvailable&&missionHeldModes(u).has("melee")&&e.canGripTwoHands(u),
     ranged:u.attackAvailable&&missionHeldModes(u).has("ranged"),
     sentinel:missionCanStandSentinel(u),
-    charge:u.attackAvailable&&e.isMeleeWeapon(w)&&u.movementRemaining===e.movementBase(u),
+    charge:chargeable,
+    chargeNone:chargeReady&&!chargeable,
     // L'attaque de sa monture : son action principale à elle.
     mountMelee:Boolean(horse?.attackAvailable&&missionHeldModes(horse).has("melee")),
     switch:u.quickAvailable&&e.canSwitchWeaponSet(u),
@@ -5129,6 +5155,8 @@ function renderMission(){
     $(id).disabled=!availability[key];
     $(id).classList.toggle("selected",m.mode===key&&!(key==="melee"&&m.twoHands));
   }
+  $("mission-charge-btn").title=availability.chargeNone
+    ?`Personne à charger : il faut une course de ${e.movementBase(u)} à ${2*e.movementBase(u)} cases en ligne droite, sans personne ni obstacle`:"";
   // « Attaquer à deux mains » : seulement avec une arme « Au choix » tenue seule.
   const twoHandsBtn=$("mission-two-hands-btn");
   if(twoHandsBtn){
@@ -5365,7 +5393,11 @@ function renderMissionHoverCard(q,r){
         +(m.mode==="ranged"&&u&&unit.team!==u.team?` · ${missionPercent(e.mountHitChance(unit))} de prendre le tir`:"")
         +(m.aimMount&&(m.mode==="melee"||m.mode==="charge")&&u&&unit.team!==u.team?" · visé":"")+`</span>`:"")
       +(tags.length?`<span class="hc-tags">${tags.join(" · ")}</span>`:"");
-    for(const row of missionAttackPreview(u,unit)){
+    const rows=missionAttackPreview(u,unit);
+    // En mode charge, sur un ennemi qu'on ne peut pas charger : pourquoi.
+    if(m.mode==="charge"&&u&&unit.alive&&unit.team!==u.team&&!rows.length)
+      html+=`<div class="hc-attack"><em>Charge impossible</em><dl><dt>Pourquoi</dt><dd class="odds-bad">${esc(missionChargeCheck(u,missionAimed(unit)).reason||"")}</dd></dl></div>`;
+    for(const row of rows){
       html+=`<div class="hc-attack"><em>${esc(row.weapon)} · ${row.mode==="ranged"?"tir":m.mode==="charge"?(row.aerial?"charge aérienne":"charge"):m.twoHands?"à deux mains":"corps à corps"}${row.backstab?" · dans le dos":""}</em><dl>`
         +(row.approach?`<dt>Approche</dt><dd>${row.approach.steps} case${row.approach.steps>1?"s":""}</dd>`
           +(row.approach.risk?`<dt>Danger</dt><dd class="odds-bad">${row.approach.risk} attaque${row.approach.risk>1?"s":""} d’opportunité</dd>`:""):"")

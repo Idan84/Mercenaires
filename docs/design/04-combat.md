@@ -230,7 +230,11 @@ peut y avoir une subtilité dans franchissable : vitesse réduite ». Données :
   les chemins prennent le moins cher (à coût égal, le moins de cases) ; une case infranchissable ne se traverse pas (ni
   déplacement, ni charge, ni déplacement forcé : on la heurte ; on n'y invoque rien).
 - **Vue** : un décor qui bloque coupe la ligne de vue (ni tir, ni sort visé, ni repérage à travers), comme le Brouillard ;
-  **dedans, on ne voit et on n'est vu qu'au contact** (Idan : « oui »).
+  **dedans, on ne voit et on n'est vu qu'au contact** (Idan : « oui »). Une ligne qui passe **pile entre deux cases** (elle
+  frôle le coin d'un décor) n'est coupée que si **les deux** la coupent (Idan, 2026-11-14 : « Frôler ne bloque pas ») :
+  depuis le coin d'un mur, on se penche pour tirer, nous comme l'ennemi, dans toutes les directions (`hexLineSides` ; avant,
+  le jeu prenait toujours le même côté, et un mur collé à droite du tireur coupait plus de tirs qu'à gauche). Pareil pour
+  l'altitude, le Brouillard et le Blizzard.
 - **Couverture** (Idan : « au tir et en défense de charge ») : la cible est couverte par le décor **collé à elle sur la
   ligne** qui vient de l'attaquant (pas la case de l'attaquant : un muret collé au tireur ne gêne pas son tir), ou par
   **sa propre case** (dans les buissons) ; la meilleure des deux. Pour une charge, la ligne part de la case de départ.

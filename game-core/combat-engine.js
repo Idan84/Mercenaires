@@ -254,17 +254,23 @@
     }
     // Cases traversées par une ligne droite de a à b, extrémités comprises (ligne de vue : Brouillard, doc 12). Un petit
     // décalage fixe tranche quand la ligne passe exactement entre deux cases : toujours du même côté.
-    function hexLine(a,b){
+    function hexLine(a,b,nudge={q:1e-6,r:1e-6}){
       const n=axialDistance(a,b),cells=[];
       for(let i=0;i<=n;i++){
         const t=n?i/n:0;
-        const x=a.q+(b.q-a.q)*t+1e-6,z=a.r+(b.r-a.r)*t+1e-6,y=-x-z;
+        const x=a.q+(b.q-a.q)*t+nudge.q,z=a.r+(b.r-a.r)*t+nudge.r,y=-x-z;
         let rx=Math.round(x),ry=Math.round(y),rz=Math.round(z);
         const dx=Math.abs(rx-x),dy=Math.abs(ry-y),dz=Math.abs(rz-z);
         if(dx>dy&&dx>dz) rx=-ry-rz; else if(dy<=dz) rz=-rx-ry;
-        cells.push({q:rx,r:rz});
+        cells.push({q:rx||0,r:rz||0}); // jamais −0 (une ligne poussée vers le négatif)
       }
       return cells;
+    }
+    // La ligne qui frôle (Idan, 2026-11-14 : « Frôler ne bloque pas ») : quand la ligne droite passe pile sur le bord entre
+    // deux cases, hexLine choisit toujours le même côté (un mur collé à droite du tireur coupait plus de tirs qu'à gauche).
+    // Les deux lignes, poussées d'un côté puis de l'autre (le décalage 1/2 ne longe aucun bord) ; identiques sans bord frôlé.
+    function hexLineSides(a,b){
+      return [hexLine(a,b,{q:1e-6,r:2e-6}),hexLine(a,b,{q:-1e-6,r:-2e-6})];
     }
 
     function itemBySlot(unit,slot){
@@ -1483,6 +1489,7 @@
       footprint,
       sizeHitBonus,
       hexLine,
+      hexLineSides,
       POISON,
       STEALTH,
       SENTINEL,

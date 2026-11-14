@@ -77,10 +77,17 @@ contract.id = "v3";
 assert.equal(ui.missionCards()[0].illustration, picks[3], "la même offre, la même gravure");
 contract.id = "c1";
 delete game.referenceData.oneShotMissions.missions[0].camps;
+// Une chasse : les gravures de la bête (missions[].illustrations).
+game.referenceData.oneShotMissions.missions[0].illustrations = ["assets/missions/chasse-loups-1.webp"];
+assert.equal(ui.missionCards()[0].illustration, "assets/missions/chasse-loups-1.webp", "sans camp : les gravures de la mission");
+delete game.referenceData.oneShotMissions.missions[0].illustrations;
 const realMissions = JSON.parse(fs.readFileSync(path.join(root, "data/reference/one-shot-missions.json"), "utf8")).missions;
 for (const camp of realMissions.find(m => m.code === "cleanup").camps)
   for (const pic of camp.illustrations || [])
     assert.ok(fs.existsSync(path.join(root, "prototype-web", pic)), camp.faction + " : " + pic);
+for (const mission of realMissions)
+  for (const pic of mission.illustrations || [])
+    assert.ok(fs.existsSync(path.join(root, "prototype-web", pic)), mission.code + " : " + pic);
 assert.match(board, /<span class="board-notice-pins" aria-hidden="true"><i><\/i>/);
 assert.deepEqual([arrows.prev.hidden, arrows.next.hidden], [true, true], "une seule page : pas de flèches");
 assert.doesNotMatch(js, /Escouades en mission/, "les escouades parties ne sont plus sur le tableau");

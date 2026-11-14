@@ -58,6 +58,13 @@ assert.match(board, /<stars 1>[\s\S]*<img class="board-notice-gold" src="assets\
   "étoiles, or (avec l'espace des milliers), sablier et durée");
 assert.doesNotMatch(board, /Faire le ménage|Garde du corps|Attaquer un camp|cherche 2 gardes|Nouvelle mission demain|PO</, "ni type, ni description, ni case vide");
 assert.doesNotMatch(board, /M14\.8 9\.2/, "plus de symbole dollar");
+// Chaque annonce a son allure (travers, papier, auréole, attache), toujours la même pour la même offre.
+const looks = [...board.matchAll(/data-pin="(clou|punaises|cire)" style="(--tilt:-?[\d.]+deg;--dy:-?[\d.]+;--tone:[\d.]+;--hue:-?[\d.]+deg;--stain-o:[01];--stain-x:\d+%;--stain-y:\d+%)"/g)];
+assert.equal(looks.length, 2, "une allure par annonce");
+ui.renderContractBoard();
+assert.deepEqual([...node("tavern-contracts").innerHTML.matchAll(/data-pin="[^"]+" style="[^"]+"/g)].map(m => m[0]), looks.map(m => m[0]), "la même allure à chaque affichage");
+assert.match(board, /<span class="board-notice-paper" aria-hidden="true"><\/span>/);
+assert.match(board, /<span class="board-notice-pins" aria-hidden="true"><i><\/i>/);
 assert.deepEqual([arrows.prev.hidden, arrows.next.hidden], [true, true], "une seule page : pas de flèches");
 assert.doesNotMatch(js, /Escouades en mission/, "les escouades parties ne sont plus sur le tableau");
 
@@ -104,7 +111,7 @@ game.campaign.expeditions = [{id:"e1", kind:"contract", status:"scheduled", offe
 ui.boardState.page = 0;
 ui.renderContractBoard();
 const scheduled = node("tavern-contracts").innerHTML;
-assert.match(scheduled, /^<div class="board-page"><article class="board-notice board-notice--scheduled" aria-label="Camp gobelin de Brumecendre">/, "en tête, sans ouverture du détail");
+assert.match(scheduled, /^<div class="board-page"><article class="board-notice board-notice--scheduled" aria-label="Camp gobelin de Brumecendre" data-pin=/, "en tête, sans ouverture du détail");
 assert.match(scheduled, /<p class="board-notice-stamp">Départ demain<\/p>/, "le tampon");
 assert.match(scheduled, /<button type="button" data-expedition-cancel="e1"[^>]*>Annuler le départ<\/button>/);
 assert.doesNotMatch(scheduled, /data-expedition-cancel="e2"/, "une escouade déjà partie n'est pas sur le tableau");

@@ -2161,21 +2161,38 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
    lys ; l'illustration dans un double filet d'or, comme une toile ; au survol, un halo doré qui épouse le parchemin.
    Chaque annonce est clouée au panneau, un peu de travers ; l'ombre tombe à gauche (la lumière vient de la droite). */
 .mission-board{--fil:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 2' preserveAspectRatio='none'%3E%3ClinearGradient id='g'%3E%3Cstop offset='0' stop-opacity='0'/%3E%3Cstop offset='.55' stop-opacity='.85'/%3E%3Cstop offset='1'/%3E%3C/linearGradient%3E%3Cpolygon points='0,1 100,0 100,2' fill='url(%23g)'/%3E%3C/svg%3E");--fil-v:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2 100' preserveAspectRatio='none'%3E%3ClinearGradient id='g' x2='0' y2='1'%3E%3Cstop offset='0' stop-opacity='0'/%3E%3Cstop offset='.5'/%3E%3Cstop offset='1' stop-opacity='0'/%3E%3C/linearGradient%3E%3Cpolygon points='1,0 2,50 1,100 0,50' fill='url(%23g)'/%3E%3C/svg%3E");--encre:#2c1b10;--encre-secondaire:#64492e;--or:#c9a461;--or-clair:#f0d395;--bordeaux:#7a1f1c;--police-titre:"Cinzel",Georgia,serif;--police-texte:"EB Garamond",Georgia,serif}
-.board-notice{--parch-edge:calc(var(--board-w) * .022);--u:calc(var(--board-w) * .001);--ombre:drop-shadow(calc(var(--u) * -4) calc(var(--u) * 8) calc(var(--u) * 6) rgba(0,0,0,.62));position:relative;display:flex;flex-direction:column;align-items:center;height:88%;min-height:0;box-sizing:border-box;padding:calc(var(--parch-edge) * .45) calc(var(--parch-edge) * .4) calc(var(--parch-edge) * .35);border:var(--parch-edge) solid transparent;border-image:url("assets/creation/parchemin.webp") 180 fill / var(--parch-edge) stretch;color:var(--encre);font-family:var(--police-texte);text-align:center;filter:var(--ombre);rotate:var(--tilt,0deg);transform-origin:50% 0;transition:translate .12s ease,filter .12s ease}
-.board-page>.board-notice:nth-child(1){--tilt:-1.3deg}
-.board-page>.board-notice:nth-child(2){--tilt:.7deg;translate:0 calc(var(--u) * -6)}
-.board-page>.board-notice:nth-child(3){--tilt:-.5deg;translate:0 calc(var(--u) * 4)}
-/* Le clou, à cheval sur le haut du parchemin. */
-.board-notice::before{content:"";position:absolute;z-index:1;top:calc(var(--parch-edge) * -.62);left:50%;width:calc(var(--u) * 13);aspect-ratio:1;border-radius:50%;transform:translateX(-50%);background:radial-gradient(circle at 36% 30%,#e0b98c 0 8%,#9a6a40 22%,#5a3720 52%,#24150b 100%);box-shadow:calc(var(--u) * -2) calc(var(--u) * 3) calc(var(--u) * 3) rgba(0,0,0,.7),inset 0 0 0 1px rgba(0,0,0,.35)}
-/* Le papier vieilli : les bords un peu roussis. */
-.board-notice::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 45%,transparent 55%,rgba(120,72,30,.16) 100%)}
+.board-notice{--parch-edge:calc(var(--board-w) * .022);--u:calc(var(--board-w) * .001);--ombre:drop-shadow(calc(var(--u) * -4) calc(var(--u) * 8) calc(var(--u) * 6) rgba(0,0,0,.62));position:relative;display:flex;flex-direction:column;align-items:center;height:88%;min-height:0;box-sizing:border-box;padding:calc(var(--parch-edge) * .45) calc(var(--parch-edge) * .4) calc(var(--parch-edge) * .35);border:var(--parch-edge) solid transparent;border-image:url("assets/creation/parchemin.webp") 180 fill / var(--parch-edge) stretch;color:var(--encre);font-family:var(--police-texte);text-align:center;--papier:brightness(var(--tone,1)) hue-rotate(var(--hue,0deg));filter:var(--papier) var(--ombre);rotate:var(--tilt,0deg);translate:0 calc(var(--u) * var(--dy,0));transform-origin:50% 0;transition:filter .12s ease}
+/* La matière du papier, découpée à la forme du parchemin (même découpe que son border-image) : le froissé éclairé par la
+   droite (papier-froisse.webp, tiré de la texture CC0 « Paper003 » d'ambientCG), plié en trois ; dessous, l'ombre qui
+   gagne vers la gauche et, sur certaines, l'auréole d'une chope posée dessus. */
+.board-notice-paper,.board-notice::after{position:absolute;inset:calc(var(--parch-edge) * -1);pointer-events:none;-webkit-mask-box-image:url("assets/creation/parchemin.webp") 180 / var(--parch-edge) stretch}
+.board-notice-paper{mix-blend-mode:multiply;background:
+  radial-gradient(circle at calc(var(--stain-x,50%) + var(--u) * 4) calc(var(--stain-y,70%) + var(--u) * 2),transparent calc(var(--u) * 27),rgba(120,66,22,calc(.16 * var(--stain-o,0))) calc(var(--u) * 28),transparent calc(var(--u) * 31)),
+  radial-gradient(circle at var(--stain-x,50%) var(--stain-y,70%),rgba(150,90,35,calc(.07 * var(--stain-o,0))) calc(var(--u) * 26),rgba(110,58,18,calc(.32 * var(--stain-o,0))) calc(var(--u) * 28),rgba(120,66,22,calc(.12 * var(--stain-o,0))) calc(var(--u) * 31),transparent calc(var(--u) * 33)),
+  linear-gradient(212deg,rgba(255,255,255,0) 30%,rgba(92,52,20,.34) 100%),
+  linear-gradient(rgba(214,180,132,.32),rgba(214,180,132,.32))}
+.board-notice::after{content:"";opacity:.6;mix-blend-mode:overlay;background:
+  linear-gradient(180deg,transparent calc(34% - var(--u) * 3),rgba(0,0,0,.45) 34%,rgba(255,255,255,.6) calc(34% + var(--u) * 1.5),transparent calc(34% + var(--u) * 5)),
+  linear-gradient(180deg,transparent calc(67% - var(--u) * 3),rgba(0,0,0,.4) 67%,rgba(255,255,255,.55) calc(67% + var(--u) * 1.5),transparent calc(67% + var(--u) * 5)),
+  url("assets/taverne/papier-froisse.webp") 0 0 / calc(var(--u) * 300) repeat}
+/* Ce qui tient l'annonce au bois : un clou forgé, deux punaises de laiton aux coins, ou une goutte de cire rouge. */
+.board-notice-pins{position:absolute;z-index:2;inset:calc(var(--parch-edge) * -.62) 0 auto;height:0;pointer-events:none}
+.board-notice-pins i{position:absolute;left:50%;top:0;width:calc(var(--u) * 13);aspect-ratio:1;border-radius:50%;transform:translateX(-50%);background:radial-gradient(circle at 36% 30%,#e0b98c 0 8%,#9a6a40 22%,#5a3720 52%,#24150b 100%);box-shadow:calc(var(--u) * -2) calc(var(--u) * 3) calc(var(--u) * 3) rgba(0,0,0,.7),inset 0 0 0 1px rgba(0,0,0,.35)}
+[data-pin="punaises"] .board-notice-pins{top:calc(var(--parch-edge) * -.2)}
+[data-pin="punaises"] .board-notice-pins i{width:calc(var(--u) * 10);background:radial-gradient(circle at 35% 30%,#fff3c2 0 7%,#e2b44f 20%,#a87420 55%,#5b3b0c 100%)}
+[data-pin="punaises"] .board-notice-pins i:first-child{left:calc(var(--parch-edge) * .55)}
+[data-pin="punaises"] .board-notice-pins i:last-child{left:auto;right:calc(var(--parch-edge) * .55);transform:translateX(50%)}
+[data-pin="cire"] .board-notice-pins{top:calc(var(--parch-edge) * -.55)}
+[data-pin="cire"] .board-notice-pins i{width:calc(var(--u) * 32);aspect-ratio:1.22;border-radius:58% 42% 61% 39% / 44% 57% 43% 56%;background:radial-gradient(ellipse 34% 38% at 50% 50%,transparent 0 70%,rgba(255,165,140,.22) 78%,rgba(60,8,6,.35) 86%,transparent 96%),radial-gradient(circle at 40% 34%,#b9473b 0,#8d2419 42%,#6a160f 78%,#4a0e0a 100%);box-shadow:calc(var(--u) * -1.5) calc(var(--u) * 2) calc(var(--u) * 2.5) rgba(0,0,0,.45),inset calc(var(--u) * 1) calc(var(--u) * 1.5) calc(var(--u) * 2) rgba(255,190,170,.18),inset calc(var(--u) * -1) calc(var(--u) * -2) calc(var(--u) * 3) rgba(0,0,0,.35)}
+[data-pin="cire"] .board-notice-pins i::after{content:"";position:absolute;left:62%;top:78%;width:28%;height:46%;border-radius:40% 60% 50% 50% / 30% 30% 70% 70%;background:linear-gradient(#7d1c14,#5a110c);box-shadow:inset calc(var(--u) * .8) calc(var(--u) * 1) calc(var(--u) * 1.5) rgba(255,180,160,.15)}
 .board-notice[data-mission-open]{cursor:pointer}
-.board-notice[data-mission-open]:hover,.board-notice[data-mission-open]:focus-visible{outline:none;filter:var(--ombre) drop-shadow(0 0 calc(var(--u) * 3) rgba(240,211,149,.95)) drop-shadow(0 0 calc(var(--u) * 12) rgba(240,211,149,.5))}
+.board-notice[data-mission-open]:hover,.board-notice[data-mission-open]:focus-visible{outline:none;filter:var(--papier) var(--ombre) drop-shadow(0 0 calc(var(--u) * 3) rgba(240,211,149,.95)) drop-shadow(0 0 calc(var(--u) * 12) rgba(240,211,149,.5))}
 .board-notice.is-zooming{z-index:2}
 .mission-board-planks:has(.is-zooming){overflow:visible}
 /* La toile : double filet d'or (comme le portrait de la création), vide en attendant les illustrations. */
-.board-notice-art{flex:0 0 44%;align-self:stretch;min-height:0;box-sizing:border-box;padding:calc(var(--u) * 5);border:calc(var(--u) * 1.5) solid #9a7434;border-radius:2px;background:#1a120c;box-shadow:0 calc(var(--u) * 5) calc(var(--u) * 10) rgba(40,22,8,.45),inset 0 0 0 calc(var(--u) * 3) #1a120c,inset 0 0 0 calc(var(--u) * 4) rgba(240,211,149,.5)}
-.board-notice-art::before{content:"";display:block;height:100%;background:radial-gradient(ellipse at 50% 40%,#3a2a1c,#1a120c 75%);box-shadow:inset 0 0 calc(var(--u) * 18) rgba(0,0,0,.6)}
+.board-notice-art{flex:0 0 44%;align-self:stretch;min-height:0;box-sizing:border-box;padding:calc(var(--u) * 5);border:calc(var(--u) * 1.5) solid #8a6a3a;border-radius:2px;background:#e9d6b0;box-shadow:0 calc(var(--u) * 3) calc(var(--u) * 6) rgba(40,22,8,.3),inset 0 0 0 calc(var(--u) * 3) #e9d6b0,inset 0 0 0 calc(var(--u) * 4) rgba(110,78,40,.7)}
+/* En attendant les illustrations : une vignette gravée, des hachures croisées qui s'épaississent vers les bords. */
+.board-notice-art::before{content:"";display:block;height:100%;background:repeating-linear-gradient(-38deg,rgba(70,42,18,.55) 0 calc(var(--u) * .7),transparent calc(var(--u) * .7) calc(var(--u) * 2.4)),radial-gradient(ellipse at 50% 45%,rgba(200,160,105,.1),rgba(110,70,30,.45));-webkit-mask:radial-gradient(ellipse 72% 70% at 50% 46%,transparent 30%,#000 92%);mask:radial-gradient(ellipse 72% 70% at 50% 46%,transparent 30%,#000 92%)}
 .board-notice-art:has(img)::before{display:none}
 .board-notice-art img{display:block;width:100%;height:100%;object-fit:cover;box-shadow:inset 0 0 calc(var(--u) * 18) rgba(0,0,0,.6)}
 .board-notice-title{display:grid;gap:calc(var(--u) * 2);margin:calc(var(--u) * 14) 0 0;font-weight:400}
@@ -2187,6 +2204,7 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .board-notice-rule::after{transform:scaleX(-1)}
 .board-notice-rule i{width:calc(var(--u) * 9);height:calc(var(--u) * 11);background:currentColor;-webkit-mask:url("assets/creation/svg/fleur-de-lys.svg") center/contain no-repeat;mask:url("assets/creation/svg/fleur-de-lys.svg") center/contain no-repeat}
 .board-notice-level .rep-stars{font-size:calc(var(--u) * 11.5);letter-spacing:.12em;text-shadow:none}
+.board-notice-level .rep-stars-empty{color:rgba(100,73,46,.38);opacity:1}
 .board-notice-stats{display:grid;justify-items:center;gap:calc(var(--u) * 3);margin-top:auto;padding-top:calc(var(--u) * 8);color:var(--encre-secondaire);font:italic 500 calc(var(--u) * 9.6)/1.2 var(--police-texte)}
 .board-notice-stats span{display:inline-flex;align-items:center;gap:calc(var(--u) * 4);white-space:nowrap}
 .board-notice-stats b{color:var(--encre);font:700 calc(var(--u) * 13)/1 var(--police-texte);font-variant-numeric:lining-nums}
@@ -2197,6 +2215,22 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .board-notice-departure{margin:calc(var(--u) * 6) 0 0}
 .board-notice-departure button{padding:calc(var(--u) * 3) calc(var(--u) * 10);border:1px solid rgba(100,73,46,.6);border-radius:calc(var(--u) * 3);background:rgba(120,88,52,.1);color:var(--encre);font:600 calc(var(--u) * 9)/1.2 var(--police-texte);cursor:pointer;transition:background .12s,border-color .12s}
 .board-notice-departure button:hover,.board-notice-departure button:focus-visible{border-color:var(--encre);background:rgba(120,88,52,.24);outline:none}
+/* Des restes d'annonces arrachées : le coin resté sous son clou, un peu plus vieux que les autres. */
+.mission-board-scraps span{position:absolute;background:url("assets/creation/parchemin.webp") 0 0 / 420% 420%;filter:sepia(.35) brightness(.72) drop-shadow(calc(var(--board-w) * -.002) calc(var(--board-w) * .004) calc(var(--board-w) * .004) rgba(0,0,0,.6))}
+.mission-board-scraps span::after{content:"";position:absolute;width:calc(var(--board-w) * .0065);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 36% 30%,#d6ac80 0 8%,#8a5c36 24%,#4a2c18 58%,#1f120a 100%);box-shadow:-1px 2px 2px rgba(0,0,0,.7)}
+.mission-board-scraps span:nth-child(1){left:19.4%;top:22.5%;width:5.6%;height:9%;rotate:-7deg;clip-path:polygon(0 0,100% 0,96% 18%,100% 31%,78% 46%,84% 58%,55% 71%,44% 88%,22% 82%,12% 100%,0 92%)}
+.mission-board-scraps span:nth-child(1)::after{left:28%;top:16%}
+.mission-board-scraps span:nth-child(2){left:47%;top:77.5%;width:7.5%;height:3.4%;rotate:3deg;background-position:40% 100%;clip-path:polygon(0 12%,18% 0,40% 8%,63% 0,86% 6%,100% 0,97% 52%,100% 100%,72% 86%,51% 100%,30% 88%,9% 100%,3% 60%)}
+.mission-board-scraps span:nth-child(2)::after{left:48%;top:28%}
+.mission-board-scraps span:nth-child(3){left:77.2%;top:21.4%;width:4.4%;height:6.6%;rotate:11deg;background-position:100% 0;clip-path:polygon(0 0,100% 0,100% 100%,88% 86%,72% 92%,60% 70%,41% 64%,30% 42%,12% 38%,0 20%)}
+.mission-board-scraps span:nth-child(3)::after{right:24%;top:18%}
+/* La lumière vient d'une bougie, en haut à droite : elle vacille un peu ; dans le rayon, de la poussière qui flotte. */
+.mission-board-light{position:absolute;inset:0;z-index:1;pointer-events:none;mix-blend-mode:soft-light;background:radial-gradient(ellipse 55% 60% at 88% 12%,rgba(255,196,120,.55),transparent 70%),radial-gradient(ellipse 60% 55% at 8% 96%,rgba(0,0,0,.45),transparent 70%);animation:bougie 6s ease-in-out infinite}
+.mission-board-light::before,.mission-board-light::after{content:"";position:absolute;left:78%;top:30%;width:calc(var(--board-w) * .0018);aspect-ratio:1;border-radius:50%;background:rgba(255,226,170,.9);mix-blend-mode:screen;animation:poussiere 26s linear infinite;
+  box-shadow:calc(var(--board-w) * .02) calc(var(--board-w) * -.05) 0 rgba(255,226,170,.7),calc(var(--board-w) * -.03) calc(var(--board-w) * .02) 0 rgba(255,226,170,.5),calc(var(--board-w) * .05) calc(var(--board-w) * .06) 0 rgba(255,226,170,.6),calc(var(--board-w) * .08) calc(var(--board-w) * -.02) 0 rgba(255,226,170,.8),calc(var(--board-w) * -.06) calc(var(--board-w) * -.07) 0 rgba(255,226,170,.4),calc(var(--board-w) * .11) calc(var(--board-w) * .09) 0 rgba(255,226,170,.5),calc(var(--board-w) * .015) calc(var(--board-w) * .12) 0 rgba(255,226,170,.35),calc(var(--board-w) * .13) calc(var(--board-w) * -.09) 0 rgba(255,226,170,.6)}
+.mission-board-light::after{left:86%;top:22%;width:calc(var(--board-w) * .0013);animation-duration:34s;animation-delay:-12s}
+@keyframes bougie{0%,100%{opacity:1}18%{opacity:.86}24%{opacity:.97}47%{opacity:.9}61%{opacity:1}74%{opacity:.84}83%{opacity:.95}}
+@keyframes poussiere{0%{transform:translate(0,0);opacity:0}12%{opacity:1}50%{transform:translate(calc(var(--board-w) * -.025),calc(var(--board-w) * -.03))}88%{opacity:1}100%{transform:translate(calc(var(--board-w) * -.05),calc(var(--board-w) * -.06));opacity:0}}
 /* Les flèches : le chevron de la création du capitaine, couleur du fer du cadre, posées sur ses montants. */
 .mission-board-arrow{position:absolute;top:50%;z-index:2;display:grid;place-items:center;width:calc(var(--board-w) * .034);height:calc(var(--board-w) * .06);padding:0;border:0;background:none;color:#d6cbb9;cursor:pointer;transform:translate(-50%,-50%);filter:drop-shadow(0 0 2px #000) drop-shadow(0 3px 4px rgba(0,0,0,.9));transition:color .12s}
 .mission-board-arrow::before{content:"";width:60%;height:80%;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 22 44%27%3E%3Cpath d=%27M20 1C15 10 9 17 2 22C9 27 15 34 20 43C16 34 12 27 7 22C12 17 16 10 20 1Z%27/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 22 44%27%3E%3Cpath d=%27M20 1C15 10 9 17 2 22C9 27 15 34 20 43C16 34 12 27 7 22C12 17 16 10 20 1Z%27/%3E%3C/svg%3E") center/contain no-repeat}
@@ -2208,7 +2242,7 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 /* Au clic, l'annonce s'avance ; la fiche s'ouvre ensuite en grand, d'un petit zoom. */
 .mission-detail[open]{animation:mission-detail-in .22s ease-out}
 @keyframes mission-detail-in{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:none}}
-@media (prefers-reduced-motion: reduce){.mission-detail[open]{animation:none}.board-notice{transition:none}}
+@media (prefers-reduced-motion: reduce){.mission-detail[open]{animation:none}.board-notice{transition:none}.mission-board-light,.mission-board-light::before,.mission-board-light::after{animation:none}.mission-board-light::before,.mission-board-light::after{display:none}}
 /* Le détail d'une mission (Idan, 2026-10-31). */
 .mission-art{position:relative;display:grid;place-items:center;aspect-ratio:16/9;overflow:hidden;background:radial-gradient(circle at 50% 40%,#5a3f28,#22170f 75%)}
 .mission-art img{width:100%;height:100%;object-fit:cover}

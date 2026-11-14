@@ -246,8 +246,11 @@
              hors du panneau ramène à la taverne (contract-ui.js). -->
         <section id="tavern-missions-view" class="tavern-panel mission-board-view hidden" aria-label="Trouver une mission">
           <div class="mission-board" data-mission-board>
+            <!-- Des restes d'annonces arrachées, toujours clouées (décor) ; la lumière de la bougie et sa poussière. -->
+            <div class="mission-board-scraps" aria-hidden="true"><span></span><span></span><span></span></div>
             <button type="button" class="mission-board-arrow mission-board-arrow--prev" data-board-page="-1" aria-label="Annonces précédentes"></button>
             <div id="tavern-contracts" class="mission-board-planks"></div>
+            <div class="mission-board-light" aria-hidden="true"></div>
             <button type="button" class="mission-board-arrow mission-board-arrow--next" data-board-page="1" aria-label="Annonces suivantes"></button>
           </div>
         </section>

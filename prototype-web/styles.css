@@ -1265,28 +1265,34 @@ body[data-screen="camp"][data-camp-scene="home"] .menu-back {
 }
 
 
-/* Décor distant de la Taverne : fondu sur le château, sans modifier le fond des autres écrans.
-   Le fichier est déposé par Idan directement sur Hostinger, hors des assets gérés par Git. */
+/* Décor de la Taverne : fondu sur le château, sans modifier le fond des autres écrans. L'image complète de la taverne en
+   calques (Idan, 2026-11-14 : assets/taverne/taverne.webp, tous les calques de l'accueil assemblés), derrière ses salles. */
 body[data-screen="camp"]::before {
   content: "";
   position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background: #1d1a16 url("/media/video/Img_Tavern.jpg") center center / cover no-repeat;
+  background: #1d1a16 url("assets/taverne/taverne.webp") center center / cover no-repeat;
   opacity: 0;
   transition: opacity .36s ease-in-out;
 }
 body[data-screen="camp"][data-camp-scene="tavern"]::before { opacity: 1; }
-/* La Taverne (Idan, 2026-11-11 ; sans vidéo depuis le 2026-11-14) : les zones cliquables dans le repère de l'image
-   (SVG « slice », comme le « cover » du fond), sur l'accueil de la taverne seulement. */
-.tavern-zones{display:none;position:fixed;inset:0;z-index:2;width:100%;height:100%;pointer-events:none}
+/* La Taverne en calques (Idan, 2026-11-14 ; tavern-scene-ui.js), sur son accueil : les calques dans le repère de l'image
+   (SVG « slice », comme le « cover » du fond), derrière les panneaux ; au-dessus, les zones qui captent le pointeur. Au
+   survol : un contour lumineux (« faire un glow au survol ») et le nom, fin et petit. */
+.tavern-scene,.tavern-zones{display:none;position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
+.tavern-scene{z-index:0}
+.tavern-zones{z-index:2}
+body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tavern-scene,
 body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tavern-zones{display:block}
-.tavern-zone{pointer-events:all;cursor:pointer;outline:none}
-/* Au survol, rien ne s'éclaire : seul le nom de la rubrique apparaît, fin et petit (Idan, 2026-11-11). */
+.tavern-layer.is-hover{filter:url(#tavern-glow)}
+.tavern-zone{pointer-events:all;cursor:default;outline:none}
+.tavern-zones.is-pointer .tavern-zone{cursor:pointer}
 .tavern-zone polygon{fill:transparent;stroke:none}
-.tavern-zone text{font:400 21px Georgia,serif;letter-spacing:.05em;fill:#f3e2c0;stroke:rgba(10,6,4,.7);stroke-width:3px;paint-order:stroke;opacity:0;transition:opacity .2s;pointer-events:none}
-.tavern-zone:hover text,.tavern-zone:focus-visible text{opacity:1}
+.tavern-label{font:400 15px Georgia,serif;letter-spacing:.05em;fill:#f3e2c0;stroke:rgba(10,6,4,.75);stroke-width:2.5px;paint-order:stroke;opacity:0;transition:opacity .2s}
+.tavern-label.is-on{opacity:1}
+@media (prefers-reduced-motion:reduce){.tavern-label{transition:none}}
 /* Intendance : même transition que la Taverne, sans modifier les futurs contrôles. */
 body[data-screen="camp"][data-camp-scene="quartermaster"]::before {
   background-image: url("/media/background/Quatermaster.jpg");

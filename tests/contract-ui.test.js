@@ -64,6 +64,13 @@ assert.equal(looks.length, 2, "une allure par annonce");
 ui.renderContractBoard();
 assert.deepEqual([...node("tavern-contracts").innerHTML.matchAll(/data-pin="[^"]+" style="[^"]+"/g)].map(m => m[0]), looks.map(m => m[0]), "la même allure à chaque affichage");
 assert.match(board, /<span class="board-notice-paper" aria-hidden="true"><\/span>/);
+// L'illustration du camp (Jean-Mi, 2026-11-14 : une gravure par peuple), sinon celle de la mission.
+game.referenceData.oneShotMissions.missions[0].camps = [{faction:"Orcs", illustration:"assets/missions/camp-orc.webp"}, {faction:"Gobelins", illustration:"assets/missions/camp-gobelin.webp"}];
+assert.equal(ui.missionCards()[0].illustration, "assets/missions/camp-gobelin.webp", "la gravure du camp de ce peuple");
+delete game.referenceData.oneShotMissions.missions[0].camps;
+const realMissions = JSON.parse(fs.readFileSync(path.join(root, "data/reference/one-shot-missions.json"), "utf8")).missions;
+for (const camp of realMissions.find(m => m.code === "cleanup").camps.filter(c => c.illustration))
+  assert.ok(fs.existsSync(path.join(root, "prototype-web", camp.illustration)), camp.faction + " : " + camp.illustration);
 assert.match(board, /<span class="board-notice-pins" aria-hidden="true"><i><\/i>/);
 assert.deepEqual([arrows.prev.hidden, arrows.next.hidden], [true, true], "une seule page : pas de flèches");
 assert.doesNotMatch(js, /Escouades en mission/, "les escouades parties ne sont plus sur le tableau");

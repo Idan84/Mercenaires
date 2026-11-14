@@ -4,7 +4,8 @@
 // illustrée de la culture du capitaine, d'un bord à l'autre de l'écran (« en bas, on va mettre que la partie centre de la
 // barre et on va l'étendre jusqu'au bout ») ; au centre, le bouton Jour suivant d'Idan (next.png) dans l'anneau de la
 // culture (ornement_central) ; à gauche de l'anneau, les six lieux en pictos d'Idan (« je pense que tu les câbleras sans
-// moi ») ; le menu de l'accueil du camp est retiré (« on peut retirer les boutons du menu principal ») ; la partie droite
+// moi ») ; la Taverne mène juste à la taverne (« pas de menu déroulant ») ; le lieu où l'on est est grisé ; le menu de
+// l'accueil du camp est retiré (« on peut retirer les boutons du menu principal ») ; la partie droite
 // viendra plus tard ; le journal est retiré pour l'instant.
 const assert=require("node:assert/strict");
 const fs=require("node:fs");
@@ -32,7 +33,7 @@ const CAMP_SCENES=JSON.parse(js.match(/const CAMP_SCENES=(\[[^\]]+\]);/)[1]);
 for(const p of places.filter(p=>p.scene!=="home")) assert.ok(CAMP_SCENES.includes(p.scene),p.scene);
 assert.deepEqual(places.filter(p=>p.disabled).map(p=>p.label),["Marchand"],"grisé : le Marchand tant qu'il n'y en a pas");
 assert.ok(bottom.indexOf('<nav class="hud-places" aria-label="Lieux du camp">')<bottom.indexOf('id="hud-castle-btn"'));
-assert.ok(bottom.indexOf('id="hud-tavern-menu"')>bottom.indexOf('id="hud-tavern-btn"')&&bottom.indexOf('id="hud-tavern-menu"')<bottom.indexOf('id="hud-dormitory-btn"'),"la Taverne garde son menu");
+assert.doesNotMatch(html+css,/hud-tavern-menu|hud-menu|data-hud-tavern|aria-haspopup/,"la Taverne n'a plus de menu déroulant (Idan, 2026-11-14)");
 assert.match(bottom,/<button id="hud-next-day-btn" class="hud-play" type="button" aria-label="Jour suivant" title="Jour suivant"><img class="hud-play-img" src="assets\/hud\/next\.webp"/,"le bouton d'Idan");
 assert.ok(fs.existsSync(path.join(WEB,"assets","hud","next.webp")));
 assert.match(bottom,/<img class="hud-ornament" alt="" aria-hidden="true" hidden>/,"l'anneau, posé quand la culture en a un");
@@ -51,8 +52,10 @@ assert.match(css,/\.hud-play\{position:absolute;left:50%;bottom:calc\(var\(--hb-
 assert.match(css,/\.hud-ornament\{position:absolute;left:calc\(50% - var\(--hb-B\) \* var\(--bb-anneau\) \/ 2\);bottom:calc\(var\(--hb-B\) \* \(var\(--bb-centre\) - var\(--bb-anneau\) \/ 4\)\);z-index:2;/,"l'anneau autour du bouton, par-dessus");
 assert.match(css,/\.hud-places\{position:absolute;right:calc\(50% \+ var\(--hb-B\) \* var\(--bb-pictos-droite\)\);bottom:calc\(var\(--hb-B\) \* \(var\(--bb-pictos-y\) - var\(--bb-picto\) \/ 2\)\);/,"les pictos contre l'anneau");
 assert.match(css,/\.hud-nav-label\{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect\(0 0 0 0\);/,"pictos seuls : le nom reste pour les lecteurs d'écran");
-assert.match(css,/\.hud-nav:disabled\{filter:grayscale\(1\)/);
-assert.match(css,/\.hud-places \.hud-menu-list\{left:0;right:auto\}/,"le menu Taverne s'ouvre au-dessus de son picto");
+assert.match(css,/\.hud-nav:hover,\.hud-nav:focus-visible\{transform:scale\(1\.08\);/,"un très léger grossissement au survol");
+assert.match(css,/\.hud-nav:active\{transform:scale\(\.94\);/,"enfoncé au clic, puis un petit rebond au relâchement");
+assert.match(css,/\.hud-nav\{[^}]*transition:transform \.22s cubic-bezier\(\.34,1\.56,\.64,1\)/);
+assert.match(css,/\.hud-nav\.is-current,\.hud-nav:disabled\{transform:none;filter:grayscale\(1\)/,"grisé : le lieu où l'on est (« quand on est sur le château, on le grise »)");
 assert.match(css,/body\[data-screen="camp"\] \.app-shell\{padding-bottom:calc\(var\(--hud-bottom-h\) \+ 36px\)\}/,"les lieux s'arrêtent au-dessus de la barre");
 
 // --- La barre du bas de chaque culture (hud-bars.js, bas) ----------------------------------------------------------------
@@ -135,7 +138,8 @@ const open=new Function("document","openCampScene","gameAction",js.slice(js.inde
 open(buttons[1]);
 assert.deepEqual(calls,[],"rien sur le lieu où l'on est déjà");
 open(buttons[2]);
-assert.deepEqual(calls,[],"la Taverne ouvre son menu (tavern-ui.js)");
+assert.deepEqual(calls,[["scene","tavern"],["journal","Destination : tavern."]],"la Taverne mène juste à la taverne");
+calls.length=0;
 open(buttons[0]);
 assert.deepEqual(calls,[["scene","home"],["journal","Retour au château."]]);
 calls.length=0;

@@ -32,22 +32,13 @@
     <!-- La barre du bas (Idan, 2026-11-14 ; réglée par culture dans l'Atelier des barres) : le milieu de la barre illustrée
          de la culture du capitaine, d'un bord à l'autre ; au centre, le bouton Jour suivant d'Idan dans l'anneau de la
          culture (ornement_central) ; à gauche de l'anneau, les six lieux en pictos d'Idan (le nom au survol), dans l'ordre de
-         ses images : Château, Taverne (son menu), Dortoir, Marchand (grisé sans marchand), Intendance, Construction (Ma
-         Compagnie). La partie droite viendra plus tard ; le journal est retiré pour l'instant. -->
+         ses images : Château, Taverne, Dortoir, Marchand (grisé sans marchand), Intendance, Construction (Ma Compagnie) ;
+         celui du lieu où l'on est est grisé. La partie droite viendra plus tard ; le journal est retiré pour l'instant. -->
     <div class="game-bottom-bar">
       <div class="hud-bar-art" aria-hidden="true"><span class="hud-bar-piece hud-bar-center"></span></div>
       <nav class="hud-places" aria-label="Lieux du camp">
         <button id="hud-castle-btn" class="hud-nav" type="button" data-hud-scene="home" title="Château"><img class="hud-nav-img" src="assets/hud/pictos-bas/chateau.webp" alt="" width="200" height="200"><span class="hud-nav-label">Château</span></button>
-        <div id="hud-tavern" class="hud-menu">
-          <button id="hud-tavern-btn" class="hud-nav" type="button" data-hud-scene="tavern" aria-haspopup="menu" aria-expanded="false" aria-controls="hud-tavern-menu" title="Taverne"><img class="hud-nav-img" src="assets/hud/pictos-bas/taverne.webp" alt="" width="200" height="200"><span class="hud-nav-label">Taverne</span></button>
-          <ul id="hud-tavern-menu" class="hud-menu-list" role="menu" aria-label="Taverne" hidden>
-            <li role="none"><button type="button" role="menuitem" data-hud-tavern="missions">Trouver une mission</button></li>
-            <li role="none"><button type="button" role="menuitem" data-hud-tavern="recruits">Recruter</button></li>
-            <li role="none"><button type="button" role="menuitem" data-hud-tavern="canteen">La Cantine</button></li>
-            <li role="none"><button type="button" role="menuitem" data-hud-tavern="cellar">La Cave</button></li>
-            <li role="none"><button type="button" role="menuitem" data-hud-tavern="talk">Parler au tavernier</button></li>
-          </ul>
-        </div>
+        <button id="hud-tavern-btn" class="hud-nav" type="button" data-hud-scene="tavern" title="Taverne"><img class="hud-nav-img" src="assets/hud/pictos-bas/taverne.webp" alt="" width="200" height="200"><span class="hud-nav-label">Taverne</span></button>
         <button id="hud-dormitory-btn" class="hud-nav" type="button" data-hud-scene="dormitory" title="Dortoir"><img class="hud-nav-img" src="assets/hud/pictos-bas/dortoir.webp" alt="" width="200" height="200"><span class="hud-nav-label">Dortoir</span></button>
         <button id="hud-merchant-btn" class="hud-nav" type="button" data-hud-scene="merchant" title="Pas de marchand aujourd’hui" disabled><img class="hud-nav-img" src="assets/hud/pictos-bas/marchand.webp" alt="" width="200" height="200"><span class="hud-nav-label">Marchand</span></button>
         <button id="hud-quartermaster-btn" class="hud-nav" type="button" data-hud-scene="quartermaster" title="Intendance"><img class="hud-nav-img" src="assets/hud/pictos-bas/intendance.webp" alt="" width="200" height="200"><span class="hud-nav-label">Intendance</span></button>

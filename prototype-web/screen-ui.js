@@ -9,7 +9,8 @@ const CAMP_SCENES=["company","dormitory","memorial","mercenaries","tavern","quar
 // Scènes sans bouton retour (Idan, 2026-10-30) : un clic hors du cadre ramène au camp.
 const CAMP_SCENES_CLOSED_FROM_OUTSIDE=["mercenaries"];
 
-// Les lieux des barres (Idan, 2026-11-14) : le bouton du lieu où l'on est (le château compris) est marqué.
+// Les lieux des barres (Idan, 2026-11-14) : le bouton du lieu où l'on est (le château compris) est marqué ; en bas, il
+// est grisé (« quand on est sur le château, on le grise »).
 function updateCampHomeIcon(){
   if(typeof document.querySelectorAll!=="function") return;
   const scene=document.body.dataset.screen==="camp"?document.body.dataset.campScene:"";
@@ -230,7 +231,7 @@ function renderGameHud(){
 // menu (tavern-ui.js). Rien ne se passe sur le lieu où l'on est déjà.
 function openHudScene(button){
   const scene=button.dataset.hudScene;
-  if(button.disabled||button.id==="hud-tavern-btn"||document.body.dataset.campScene===scene) return;
+  if(button.disabled||document.body.dataset.campScene===scene) return;
   openCampScene(scene);
   gameAction(scene==="home"?"Retour au château.":"Destination : "+(button.dataset.destination||button.textContent.trim())+".");
 }

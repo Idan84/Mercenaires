@@ -10,28 +10,24 @@ const html=fs.readFileSync(path.join(root,"prototype-web/index.html"),"utf8");
 const js=fs.readFileSync(path.join(root,"prototype-web/tavern-ui.js"),"utf8");
 const css=fs.readFileSync(path.join(root,"prototype-web/styles.css"),"utf8");
 
-// Depuis le 2026-11-11 (Idan) : l'accueil de la taverne n'a plus de boutons ni de bulle ; un bouton « Taverne » de la
-// barre du bas ouvre un menu déroulant : les salles (La Cantine, 2026-11-08 ; La Cave, 2026-11-10) et le tavernier.
+// Depuis le 2026-11-11 (Idan) : l'accueil de la taverne n'a plus de boutons ni de bulle ; ses zones cliquables
+// (tavern-scene-ui.js) mènent aux salles (La Cantine, 2026-11-08 ; La Cave, 2026-11-10) et au tavernier. Depuis le
+// 2026-11-14, le picto Taverne de la barre du bas mène juste à la taverne (« pas de menu déroulant »).
 const home=html.slice(html.indexOf('<div id="tavern-home"'),html.indexOf('<section id="tavern-missions-view"'));
 assert.ok(!/<button/.test(home),"plus de boutons sur l'accueil de la taverne");
 assert.ok(!/tavern-talk-btn/.test(html+css+js),"plus de bulle sur le tavernier");
-const bar=html.slice(html.indexOf('<div id="hud-tavern"'),html.indexOf("</ul>",html.indexOf('<div id="hud-tavern"')));
-assert.match(bar,/<button id="hud-tavern-btn"[^>]*aria-expanded="false"[^>]*>.*Taverne/,"le bouton de la barre");
-assert.deepEqual([...bar.matchAll(/data-hud-tavern="(\w+)">([^<]+)<\/button>/g)].map(m=>[m[1],m[2]]),
-  [["missions","Trouver une mission"],["recruits","Recruter"],["canteen","La Cantine"],["cellar","La Cave"],["talk","Parler au tavernier"]]);
-assert.match(bar,/<ul id="hud-tavern-menu"[^>]*hidden>/,"menu fermé au départ");
-// Choisir une option : la taverne, puis la salle (ou le dialogue du tavernier) ; le menu se referme.
-const pick=new Function("$","openCampScene","openTavernTalk","showTavernView",
-  js.slice(js.indexOf("function setHudTavernMenu(open){"),js.indexOf("function initializeHudTavern(){"))+"return {setHudTavernMenu,chooseHudTavern};");
+assert.match(html,/<button id="hud-tavern-btn" class="hud-nav" type="button" data-hud-scene="tavern" title="Taverne">/,"le picto de la barre");
+assert.ok(!/hud-tavern-menu|setHudTavernMenu|chooseHudTavern/.test(html+js),"plus de menu déroulant");
+// Une zone : la taverne, puis la salle (ou le dialogue du tavernier).
+const pick=new Function("openCampScene","openTavernTalk","showTavernView",
+  js.slice(js.indexOf("function openTavernPlace(key){"),js.indexOf("function initializeTavernUi(){"))+"return openTavernPlace;");
 const calls=[];
-const els={"hud-tavern-menu":{hidden:false},"hud-tavern-btn":{setAttribute:(k,v)=>calls.push([k,v])},"hud-tavern":{classList:{toggle:(c,on)=>calls.push([c,on])}}};
-const ui=pick(id=>els[id],scene=>calls.push(["scene",scene]),()=>calls.push(["talk"]),view=>calls.push(["view",view]));
-ui.chooseHudTavern("cellar");
-assert.deepEqual(calls,[["aria-expanded","false"],["is-open",false],["scene","tavern"],["view","cellar"]]);
-assert.equal(els["hud-tavern-menu"].hidden,true);
+const openPlace=pick(scene=>calls.push(["scene",scene]),()=>calls.push(["talk"]),view=>calls.push(["view",view]));
+openPlace("cellar");
+assert.deepEqual(calls,[["scene","tavern"],["view","cellar"]]);
 calls.length=0;
-ui.chooseHudTavern("talk");
-assert.deepEqual(calls.slice(2),[["scene","tavern"],["talk"]]);
+openPlace("talk");
+assert.deepEqual(calls,[["scene","tavern"],["talk"]]);
 assert.ok(!/data-tavern-drink/.test(html),"la bière et la tournée passent dans le dialogue");
 
 const talk=html.slice(html.indexOf('<dialog id="tavern-talk-dialog"'),html.indexOf('<dialog id="recruit-talk-dialog"'));
@@ -75,4 +71,4 @@ assert.equal(log.at(-1)[0],"Pas assez d'or : 3 PO nécessaires.");
 assert.equal(api.captainFirstName(),"Bob","prénom du capitaine dans « Salut [Prénom] ! »");
 campaign.company.roster[0].firstName="Aldric";
 assert.equal(api.captainFirstName(),"Aldric");
-console.log("Taverne : menu de la barre du bas, dialogue du tavernier, bière et tournée — OK");
+console.log("Taverne : picto de la barre du bas, zones, dialogue du tavernier, bière et tournée — OK");

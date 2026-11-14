@@ -109,15 +109,20 @@ assert.deepEqual(["Dwarf_tavern_keeper_holding_ale_ab54f84f.jpg","Dwarf_counting
 // Les variantes de la Table 1 (Idan, 2026-11-14 : « L'idée, c'est des variantes. Mais ces tables sont plus grandes que la
 // table 1, il faut rétrécir et remplacer ») : à la largeur de la table d'origine, ses pieds au même endroit ; l'enveloppe
 // de « Recruter » les couvre toutes.
-const t1=data.TAVERN_LAYER_BOXES.table1,tables=api.tavernVariants("table1");
-assert.deepEqual(tables[0],{key:"table1",src:"assets/taverne/table1.webp",box:t1},"l'original d'abord, à son cadre");
-for(const v of tables.slice(1)){
-  assert.ok(Math.abs(v.box[0]-t1[0])<0.5&&Math.abs(v.box[2]-t1[2])<0.5,v.key+" : la largeur de la Table 1");
-  assert.ok(Math.abs(v.box[1]+v.box[3]-(t1[1]+t1[3]))<0.5,v.key+" : les pieds au même endroit");
-  assert.ok(fs.existsSync(path.join(root,"prototype-web",v.src)),v.key);
+// Les variantes de la Table 2 aussi (Idan : « Une table 2 alternative avec un truc bizarre » : seul ce qui touche la place
+// de la table d'origine est gardé).
+for(const table of ["table1","table2"]){
+  const t=data.TAVERN_LAYER_BOXES[table],tables=api.tavernVariants(table);
+  assert.deepEqual(tables[0],{key:table,src:`assets/taverne/${table}.webp`,box:t},"l'original d'abord, à son cadre");
+  for(const v of tables.slice(1)){
+    assert.ok(Math.abs(v.box[0]-t[0])<0.5&&Math.abs(v.box[2]-t[2])<0.5,v.key+" : la largeur de la table d'origine");
+    assert.ok(Math.abs(v.box[1]+v.box[3]-(t[1]+t[3]))<0.5,v.key+" : les pieds au même endroit");
+    assert.ok(v.box[3]<t[3]*2,v.key+" : rien d'autre que la table");
+    assert.ok(fs.existsSync(path.join(root,"prototype-web",v.src)),v.key);
+  }
+  assert.equal(api.pickTavernVariant(table,()=>0).key,table);
 }
-assert.equal(api.pickTavernVariant("table1",()=>0).key,"table1");
-assert.deepEqual(api.TAVERN_LAYERS.filter(L=>L.variants).map(L=>L.key),["table1","tavernier"]);
+assert.deepEqual(api.TAVERN_LAYERS.filter(L=>L.variants).map(L=>L.key),["table2","table1","tavernier"]);
 assert.equal(api.TAVERN_ZONES.find(z=>z.key==="recruits").hulls.length,2,"une enveloppe par table, variantes comprises");
 
 // Le détourage (scripts/build-tavern.js, keyPixels) : quelle que soit la couleur du fond, l'intérieur des personnages ne

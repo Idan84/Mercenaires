@@ -19,40 +19,42 @@ const OUT=path.join(__dirname,"..","prototype-web","assets","missions");
 const WIDTH=1000;
 const QUALITY=0.8;
 
+// Une variante n'est gardée que si elle apporte une autre image (Idan, 2026-11-14 : « Y'en a beaucoup qui sont
+// proches… Faut pas hésiter à les virer »).
 const KEEP=[
   ["Orc_warrior_guarding_war_camp_a9cf545c.jpg","camp-orc-1"],
-  ["Orc_warrior_standing_guard_536c622a.jpg","camp-orc-2"],
-  ["Orc_warrior_standing_guard_894f7d18.jpg","camp-orc-3"],
   ["Thief_at_bandit_hideout_6808b4ff.jpg","camp-voleurs-1"],
-  ["Thief_at_bandit_hideout_6f991c2c.jpg","camp-voleurs-2"],
-  ["Thief_guarding_bandit_hideout_39ee5d23.jpg","camp-voleurs-3"],
-  ["Thief_in_bandit_hideout_fb6e104f.jpg","camp-voleurs-4"],
+  ["Thief_in_bandit_hideout_fb6e104f.jpg","camp-voleurs-2"],
   ["Ogre_encampment_with_cauldron_an…_9a91bb9a.jpg","camp-ogre-1"],
-  ["Ogre_in_encampment_with_weapons_0c709554.jpg","camp-ogre-2"],
-  ["Ogre_encampment_with_giant_cauldron_d0008d80.jpg","camp-ogre-3"],
-  ["Ogre_encampment_with_cauldron_an…_b50c0c65.jpg","camp-ogre-4"],
   ["Vampire_silhouette_in_ruined_castle_ccb42c11.jpg","chateau-maudit-1"],
-  ["Vampire_in_ruined_castle_window_d9d4443a.jpg","chateau-maudit-2"],
-  ["Vampire_at_castle_window_c4c62323.jpg","chateau-maudit-3"],
-  ["Hooded_figure_in_ancient_graveyard_93e85a0f.jpg","cimetiere-profane-1"],
-  ["Hooded_figure_holding_lantern_gr…_1a5d46be.jpg","cimetiere-profane-2"],
+  ["Hooded_figure_holding_lantern_gr…_1a5d46be.jpg","cimetiere-profane-1"],
   ["Pack_of_wolves_howling_aaf26095.jpg","chasse-loups-1"],
-  ["Wild_unicorn_rearing_in_forest_02373464.jpg","chasse-licorne-1"],
-  ["Wild_unicorn_rearing_in_forest_cddc5f4f.jpg","chasse-licorne-2"],
+  ["Wild_unicorn_rearing_in_forest_cddc5f4f.jpg","chasse-licorne-1"],
   ["Three-headed_hellhound_at_mine_0991b14a.jpg","chasse-cerbere-1"],
   ["Feral_mastiffs_snarling_near_manor_6302de4d.jpg","chasse-chiens-sauvages-1"],
-  ["Feral_mastiffs_snarling_ruined_m…_2cbc4bb3.jpg","chasse-chiens-sauvages-2"],
-  ["Giant_poisonous_butterflies_over…_d1bd2095.jpg","chasse-papillons-1"],
-  ["Poisonous_butterflies_over_flowe…_da0dfe2d.jpg","chasse-papillons-2"]
+  ["Giant_poisonous_butterflies_over…_d1bd2095.jpg","chasse-papillons-1"]
 ];
 // Écartées : les raisons servent pour la prochaine série.
 const REJECTED={
   "Ogre_encampment_with_cauldron_an…_08bb96c7.jpg":"fond noir tout autour : un rectangle sombre sur l'annonce, l'encre ne se pose plus sur le papier",
-  "Ogre_encampment_with_cauldron_an…_ef1e4da0.jpg":"presque la même que camp-ogre-3 (ogre assis à droite du chaudron) : une variante de plus sans rien de neuf",
-  "Cerberus_at_mine_entrance_30035809.jpg":"deux têtes seulement : un cerbère en a trois",
-  "Cerberus_at_mine_mouth_ed39f50f.jpg":"deux têtes seulement : un cerbère en a trois",
-  "Feral_mastiffs_snarling_near_manor_c85a0952.jpg":"presque la même que chasse-chiens-sauvages-2 (même château, même escalier)",
-  "Wild_unicorn_rearing_in_forest_a8e1f79b.jpg":"un lavis gris plutôt qu'une gravure : elle détonne à côté des autres"
+  "Orc_warrior_standing_guard_536c622a.jpg":"trop proche de camp-orc-1 (un orc debout dans le camp de yourtes)",
+  "Orc_warrior_standing_guard_894f7d18.jpg":"trop proche de camp-orc-1 (un orc debout dans le camp de yourtes)",
+  "Thief_at_bandit_hideout_6f991c2c.jpg":"trop proche de camp-voleurs-2 (la tour en ruine, le voleur encapuchonné à l'arbalète)",
+  "Thief_guarding_bandit_hideout_39ee5d23.jpg":"trop proche de camp-voleurs-2 (la tour en ruine, le voleur encapuchonné à l'arbalète)",
+  "Ogre_encampment_with_giant_cauldron_d0008d80.jpg":"trop proche de camp-ogre-1 (l'ogre près du chaudron)",
+  "Ogre_encampment_with_cauldron_an…_ef1e4da0.jpg":"trop proche de camp-ogre-1 (l'ogre près du chaudron)",
+  "Ogre_encampment_with_cauldron_an…_b50c0c65.jpg":"trop proche de camp-ogre-1 (l'ogre près du chaudron)",
+  "Ogre_in_encampment_with_weapons_0c709554.jpg":"trop proche de camp-ogre-1 (l'ogre près du chaudron)",
+  "Vampire_at_castle_window_c4c62323.jpg":"trop proche de chateau-maudit-1 (le château sur son rocher, la lune)",
+  "Vampire_in_ruined_castle_window_d9d4443a.jpg":"trop proche de chateau-maudit-1 (le château sur son rocher, la lune)",
+  "Hooded_figure_in_ancient_graveyard_93e85a0f.jpg":"trop proche de cimetiere-profane-1 (le nécromancien à la lanterne entre les tombes)",
+  "Cerberus_at_mine_entrance_30035809.jpg":"trop proche de chasse-cerbere-1 (le cerbère à la sortie de la mine)",
+  "Cerberus_at_mine_mouth_ed39f50f.jpg":"trop proche de chasse-cerbere-1 (le cerbère à la sortie de la mine)",
+  "Feral_mastiffs_snarling_near_manor_c85a0952.jpg":"trop proche de chasse-chiens-sauvages-1 (les molosses devant le château)",
+  "Feral_mastiffs_snarling_ruined_m…_2cbc4bb3.jpg":"trop proche de chasse-chiens-sauvages-1 (les molosses devant le château)",
+  "Wild_unicorn_rearing_in_forest_02373464.jpg":"trop proche de chasse-licorne-1 (la licorne cabrée dans la forêt)",
+  "Wild_unicorn_rearing_in_forest_a8e1f79b.jpg":"un lavis gris plutôt qu'une gravure, et la même licorne cabrée",
+  "Poisonous_butterflies_over_flowe…_da0dfe2d.jpg":"le même essaim que chasse-papillons-1, en pleine page plus sombre"
 };
 
 function listMissions(){
@@ -68,7 +70,7 @@ function whitePoint(file){
   const out=execFileSync("convert",[file,"-colorspace","Gray","-format","%[fx:p{4,4}] %[fx:p{w-5,4}] %[fx:p{4,h-5}] %[fx:p{w-5,h-5}]","info:"],{encoding:"utf8"});
   const v=out.trim().split(/\s+/).map(Number).sort((a,b)=>b-a);
   const paper=(v[0]+v[1])/2;
-  return paper<.88?1:Math.min(1,paper-.012);
+  return paper<.7?1:Math.min(1,paper-.012);
 }
 
 async function main(){

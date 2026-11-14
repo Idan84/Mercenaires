@@ -8,17 +8,21 @@
 // Planches utilisées (media/background/Taverne/Missions/ sur Hostinger) :
 //   Sealing_wax_on_wooden_board_060d3342.jpg → assets/taverne cire-rouge cire-noire cire-bleue (--max 320)
 //   Arrow_shaped_wrought_iron_bracket_cae7a463_2K.jpg → assets/taverne fleche-fer (--max 640)
+//   Medieval_dagger_embedded_in_board_9b2ff4a6_2K.jpg → assets/taverne dague-argent-1 (--max 600 --slit) ;
+//   Medieval_dagger_embedded_in_wood_8af4fcc1_2K.jpg → dague-argent-2 ; …_planted_in_board_ce7c1590_2K.jpg → dague-or-1 ;
+//   Medieval_dagger_stuck_in_board_edf19128_2K.jpg → dague-or-2 (mêmes options)
 //   Fasteners_on_green_background_92b036a6_2K.jpg → assets/taverne clou-1 clou-2 clou-3 punaise-1 punaise-2 punaise-3 (--max 128)
 //   Parchment_fragments_on_green_bac…_82577d7b_2K.jpg → (--max 400) le 3e devient lambeau-1, le 2e lambeau-3
 //   Torn_parchment_fragments_on_wall_52aec780_2K.jpg → (--max 400) le 1er devient lambeau-2
 const {chromium}=require("playwright");const fs=require("fs");
 // --flop retourne l'objet gauche-droite, --turn le tourne d'un demi-tour (pour varier une feuille sans la dupliquer).
+// --slit (les dagues plantées) : sous le bout de la lame, coupé net en bas de l'image, une fente sombre dans le papier.
 (async()=>{const args=process.argv.slice(2);let max=320;const mi=args.indexOf("--max");if(mi>=0){max=Number(args[mi+1]);args.splice(mi,2);}
-const flag=f=>{const i=args.indexOf(f);if(i<0)return false;args.splice(i,1);return true;};const flop=flag("--flop"),turn=flag("--turn");
-const [src,outDir,...names]=args;if(!src||!outDir||!names.length){console.error("usage : key-green-sheet.js <planche.jpg> <dossier> [--max N] [--flop] [--turn] nom…");process.exit(1);}
+const flag=f=>{const i=args.indexOf(f);if(i<0)return false;args.splice(i,1);return true;};const flop=flag("--flop"),turn=flag("--turn"),slit=flag("--slit");
+const [src,outDir,...names]=args;if(!src||!outDir||!names.length){console.error("usage : key-green-sheet.js <planche.jpg> <dossier> [--max N] [--flop] [--turn] [--slit] nom…");process.exit(1);}
 const b=await chromium.launch();const p=await b.newPage();
 const data="data:image/jpeg;base64,"+fs.readFileSync(src).toString("base64");
-const outs=await p.evaluate(async({data,names,max,flop,turn})=>{
+const outs=await p.evaluate(async({data,names,max,flop,turn,slit})=>{
   const img=new Image();img.src=data;await img.decode();
   const w=img.naturalWidth,h=img.naturalHeight,c=document.createElement("canvas");c.width=w;c.height=h;
   const g=c.getContext("2d");g.drawImage(img,0,0);const d=g.getImageData(0,0,w,h).data;
@@ -55,7 +59,20 @@ const outs=await p.evaluate(async({data,names,max,flop,turn})=>{
     const fg=f.getContext("2d");fg.imageSmoothingQuality="high";
     if(flop||turn){fg.translate(f.width/2,f.height/2);if(turn)fg.rotate(Math.PI);if(flop)fg.scale(-1,1);fg.translate(-f.width/2,-f.height/2);}
     fg.drawImage(o,0,0,f.width,f.height);
-    res.push({name:names[k],w:f.width,h:f.height,url:f.toDataURL("image/webp",0.9)});});
-  return res;},{data,names,max,flop,turn});
+    let out=f;
+    if(slit){ // le bout de la lame : les pixels opaques des dernières rangées
+      const fd=fg.getImageData(0,0,f.width,f.height).data;let x0=f.width,x1=-1,yb=-1;
+      for(let y=f.height-1;y>=0&&yb<0;y--)for(let x=0;x<f.width;x++)if(fd[4*(y*f.width+x)+3]>128){yb=y;break;}
+      for(let y=Math.max(0,yb-3);y<=yb;y++)for(let x=0;x<f.width;x++)if(fd[4*(y*f.width+x)+3]>128){x0=Math.min(x0,x);x1=Math.max(x1,x);}
+      const bw=Math.max(4,x1-x0+1),cx=(x0+x1)/2,rx=bw*.78,ry=Math.max(3,bw*.2),pad=Math.ceil(ry*2.2);
+      const g2=document.createElement("canvas");g2.width=f.width;g2.height=f.height+pad;const c2=g2.getContext("2d");
+      // l'ombre autour de la fente, puis la fente elle-même, puis la dague par-dessus
+      c2.save();c2.translate(cx,yb);c2.scale(1,ry*2.4/(rx*1.6));let gr=c2.createRadialGradient(0,0,0,0,0,rx*1.6);
+      gr.addColorStop(0,"rgba(40,24,10,.45)");gr.addColorStop(1,"rgba(40,24,10,0)");c2.fillStyle=gr;c2.beginPath();c2.arc(0,0,rx*1.6,0,Math.PI*2);c2.fill();c2.restore();
+      c2.save();c2.translate(cx,yb);c2.scale(1,ry/rx);gr=c2.createRadialGradient(0,0,0,0,0,rx);
+      gr.addColorStop(0,"rgba(18,10,4,.92)");gr.addColorStop(.7,"rgba(24,14,6,.8)");gr.addColorStop(1,"rgba(24,14,6,0)");c2.fillStyle=gr;c2.beginPath();c2.arc(0,0,rx,0,Math.PI*2);c2.fill();c2.restore();
+      c2.drawImage(f,0,0);out=g2;}
+    res.push({name:names[k],w:out.width,h:out.height,url:out.toDataURL("image/webp",0.9)});});
+  return res;},{data,names,max,flop,turn,slit});
 for(const o of outs){fs.writeFileSync(outDir+"/"+o.name+".webp",Buffer.from(o.url.split(",")[1],"base64"));console.log(o.name,o.w+"x"+o.h);}
 await b.close();})();

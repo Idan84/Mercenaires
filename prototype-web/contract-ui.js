@@ -176,14 +176,16 @@ function nameSize(name){
 function renderBoardNotice(card){
   const look=noticeLook(card.id);
   // Argent et Or (Idan, 2026-11-14) : le métal du niveau de la mission (6 à 10 : argent, 11 à 15 : or) se voit sur
-  // l'annonce (titre à la feuille de métal, étoiles plus grandes ; bientôt une dague plantée).
+  // l'annonce (titre à la feuille de métal, étoiles plus grandes, une dague plantée).
   const metal=starRules().byLevel(Number(card.difficulty?.level)||1)?.metalKey;
   const metalAttr=metal==="silver"||metal==="gold"?` data-metal="${metal}"`:"";
   const art=card.illustration?`<img src="${esc(card.illustration)}" alt="" loading="lazy">`:"";
   const open=card.scheduled?"":` data-mission-open="${esc(card.id)}" role="button" tabindex="0"`;
-  return `<article class="board-notice${card.scheduled?" board-notice--scheduled":""}"${open} aria-label="${esc(card.title)}" data-pin="${look.pin}"${look.pin==="cire"?` data-wax="${look.wax}"`:` data-head="${look.head}"`} style="${look.style}" data-paper="${look.paper}"${metalAttr}>
+  // Argent et Or : une dague plantée tient l'annonce, à la place du clou, des punaises ou du cachet.
+  const pin=metalAttr?"dague":look.pin;
+  return `<article class="board-notice${card.scheduled?" board-notice--scheduled":""}"${open} aria-label="${esc(card.title)}" data-pin="${pin}"${pin==="cire"?` data-wax="${look.wax}"`:` data-head="${look.head}"`} style="${look.style}" data-paper="${look.paper}"${metalAttr}>
     <span class="board-notice-paper" aria-hidden="true"></span>
-    <span class="board-notice-pins" aria-hidden="true"><i></i>${look.pin==="punaises"?"<i></i>":""}</span>
+    <span class="board-notice-pins" aria-hidden="true"><i></i>${pin==="punaises"?"<i></i>":""}</span>
     <div class="board-notice-art"${art?` data-fade="${look.fade}"`:""}>${art}</div>
     <h3 class="board-notice-title"><span class="board-notice-name${nameSize(card.name||card.title)}">${esc(card.name||card.title)}</span>${card.place?`<span class="board-notice-place">de ${esc(card.place)}</span>`:""}</h3>
     <span class="board-notice-rule" aria-hidden="true"><i></i></span>

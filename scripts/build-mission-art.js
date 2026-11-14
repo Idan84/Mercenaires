@@ -115,7 +115,15 @@ const REJECTED={
   "Old_blank_paper_sheet_7c5b7ab9.jpg":"feuille : trop proche de feuille-1 (même coin coupé en haut à droite)",
   "Old_blank_paper_sheet_8a4a9427.jpg":"feuille : trop proche de feuille-7 (même coin coupé en haut à droite)",
   "Old_blank_sheet_of_paper_bfa96cf8.jpg":"feuille : trop proche de feuille-1 (même coin coupé, mêmes taches)",
-  "Old_blank_sheet_of_paper_e7db4196.jpg":"feuille : trop proche de feuille-7 (même coin coupé en haut à droite)"
+  "Old_blank_sheet_of_paper_e7db4196.jpg":"feuille : trop proche de feuille-7 (même coin coupé en haut à droite)",
+  "Medieval_dagger_embedded_in_board_9b2ff4a6_2K.jpg":"pas une gravure : dague d'argent, détourée à part (scripts/key-green-sheet.js --max 600 --slit → assets/taverne/dague-argent-1)",
+  "Medieval_dagger_embedded_in_wood_8af4fcc1_2K.jpg":"pas une gravure : dague d'argent, détourée à part (scripts/key-green-sheet.js --max 600 --slit → assets/taverne/dague-argent-2)",
+  "Medieval_dagger_planted_in_board_ce7c1590_2K.jpg":"pas une gravure : dague d'or, détourée à part (scripts/key-green-sheet.js --max 600 --slit → assets/taverne/dague-or-1)",
+  "Medieval_dagger_stuck_in_board_edf19128_2K.jpg":"pas une gravure : dague d'or, détourée à part (scripts/key-green-sheet.js --max 600 --slit → assets/taverne/dague-or-2)",
+  "Medieval_dagger_planted_in_board_009266b0_2K.jpg":"dague d'argent : une pierre verte dans le pommeau, elle partirait avec le fond vert",
+  "Medieval_dagger_planted_in_board_24ea6966_2K.jpg":"dague d'or : trop proche de dague-or-1",
+  "Medieval_dagger_stuck_in_wood_6e776638_2K.jpg":"dague d'or : trop proche de dague-or-1",
+  "Ornate_medieval_dagger_planted_u…_56a577a8_2K.jpg":"dague d'argent : trop proche de dague-argent-2, fond vert taché"
 };
 
 function listMissions(){

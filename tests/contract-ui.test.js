@@ -139,6 +139,10 @@ for (const cls of ["m", "l", "xl"]) assert.ok(boardCss.includes(".board-notice-n
 // Argent et Or (Idan, 2026-11-14) : le métal du niveau marque l'annonce (ici, le faux barème ne donne pas de métal).
 assert.doesNotMatch(board, /data-metal=/, "bronze ou inconnu : rien de plus");
 for (const metal of ["silver", "gold"]) assert.ok(boardCss.includes('.board-notice[data-metal="' + metal + '"] .board-notice-name{'), "titre " + metal);
+for (const file of ["dague-argent-1", "dague-argent-2", "dague-or-1", "dague-or-2"]) {
+  assert.ok(fs.existsSync(path.join(root, "prototype-web/assets/taverne/" + file + ".webp")), file);
+  assert.ok(boardCss.includes("assets/taverne/" + file + ".webp"), "le CSS utilise " + file);
+}
 assert.ok(many.every(l => [1, 2, 3, 4].every(k => { const x = varOf(l, "p" + k + "x"); return x === undefined || +x <= 20 || +x >= 80; })), "les chiures restent dans les marges");
 assert.deepEqual([arrows.prev.hidden, arrows.next.hidden], [true, true], "une seule page : pas de flèches");
 assert.doesNotMatch(js, /Escouades en mission/, "les escouades parties ne sont plus sur le tableau");

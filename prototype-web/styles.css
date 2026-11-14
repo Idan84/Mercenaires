@@ -2216,6 +2216,12 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 [data-pin="cire"] .board-notice-pins i{width:calc(var(--u) * 40);aspect-ratio:290/320;background:url("assets/taverne/cire-rouge.webp") center/contain no-repeat;filter:drop-shadow(calc(var(--u) * -1.5) calc(var(--u) * 2.5) calc(var(--u) * 2) rgba(0,0,0,.55))}
 [data-wax="noire"] .board-notice-pins i{background-image:url("assets/taverne/cire-noire.webp")}
 [data-wax="bleue"] .board-notice-pins i{background-image:url("assets/taverne/cire-bleue.webp")}
+/* La dague (missions d'argent et d'or, Idan, 2026-11-14) : plantée en haut de l'annonce, un peu à droite, la garde
+   au-dessus du papier ; deux dagues par métal (dague-argent|or-1|2.webp de Jean-Mi, avec la fente où la lame entre). */
+[data-pin="dague"] .board-notice-pins i{left:64%;top:calc(var(--u) * -22);width:auto;height:calc(var(--u) * 100);aspect-ratio:293/635;transform:translateX(-50%);background:url("assets/taverne/dague-argent-2.webp") center bottom / contain no-repeat;filter:drop-shadow(0 0 calc(var(--u) * 1.2) rgba(20,12,4,.7)) drop-shadow(calc(var(--u) * -4) calc(var(--u) * 7) calc(var(--u) * 3) rgba(0,0,0,.6))}
+[data-metal="silver"][data-head="2"] .board-notice-pins i{aspect-ratio:411/653;background-image:url("assets/taverne/dague-argent-1.webp")}
+[data-metal="gold"] .board-notice-pins i{aspect-ratio:288/635;background-image:url("assets/taverne/dague-or-1.webp")}
+[data-metal="gold"][data-head="2"] .board-notice-pins i{aspect-ratio:289/640;background-image:url("assets/taverne/dague-or-2.webp")}
 .board-notice[data-mission-open]{cursor:pointer}
 .board-notice[data-mission-open]:hover,.board-notice[data-mission-open]:focus-visible{outline:none;filter:var(--papier) var(--ombre) drop-shadow(0 0 calc(var(--u) * 3) rgba(240,211,149,.95)) drop-shadow(0 0 calc(var(--u) * 12) rgba(240,211,149,.5))}
 .board-notice.is-zooming{z-index:2}

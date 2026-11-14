@@ -103,7 +103,19 @@ const REJECTED={
   "Tattered_medieval_parchment_docu…_3b8525e1.jpg":"papier d'annonce : couvert d'écriture, de biais",
   "Torn_parchment_paper_isolated_2390114e.jpg":"papier d'annonce : un triangle, sur fond presque noir",
   "Torn_scroll_on_green_background_4d0dbf23.jpg":"papier d'annonce : le bon sens (en hauteur), mais couvert de runes et de dessins",
-  "Vertical_rolled_scroll_standing_5af1e276.jpg":"papier d'annonce : un rouleau fermé"
+  "Vertical_rolled_scroll_standing_5af1e276.jpg":"papier d'annonce : un rouleau fermé",
+  "Aged_blank_paper_sheet_550275a2.jpg":"pas une gravure : feuille d'annonce, détourée à part (scripts/key-green-sheet.js --max 800 → assets/taverne/feuille-1)",
+  "Blank_parchment_on_green_background_9da38c1c.jpg":"pas une gravure : feuille d'annonce, détourée à part (scripts/key-green-sheet.js --max 800 → assets/taverne/feuille-2)",
+  "Old_blank_paper_on_green_bf3a780f.jpg":"pas une gravure : feuille d'annonce, détourée à part (scripts/key-green-sheet.js --max 800 → assets/taverne/feuille-3)",
+  "Old_blank_sheet_of_paper_00af52ff.jpg":"pas une gravure : feuille d'annonce, détourée à part (scripts/key-green-sheet.js --max 800 → assets/taverne/feuille-4)",
+  "Old_blank_sheet_of_paper_804057fb.jpg":"pas une gravure : feuille d'annonce, détourée à part (scripts/key-green-sheet.js --max 800 → assets/taverne/feuille-5)",
+  "Old_blank_sheet_of_paper_cf34ac1f.jpg":"pas une gravure : feuille d'annonce, détourée à part (scripts/key-green-sheet.js --max 800 → assets/taverne/feuille-6)",
+  "Old_blank_sheet_of_paper_a53a9456.jpg":"pas une gravure : feuille d'annonce, détourée à part (scripts/key-green-sheet.js --max 800 → assets/taverne/feuille-7 (retournée, --flop))",
+  "Old_blank_paper_on_green_9063b127.jpg":"pas une gravure : feuille d'annonce, détourée à part (scripts/key-green-sheet.js --max 800 → assets/taverne/feuille-8 (tournée d'un demi-tour, --turn))",
+  "Old_blank_paper_sheet_7c5b7ab9.jpg":"feuille : trop proche de feuille-1 (même coin coupé en haut à droite)",
+  "Old_blank_paper_sheet_8a4a9427.jpg":"feuille : trop proche de feuille-7 (même coin coupé en haut à droite)",
+  "Old_blank_sheet_of_paper_bfa96cf8.jpg":"feuille : trop proche de feuille-1 (même coin coupé, mêmes taches)",
+  "Old_blank_sheet_of_paper_e7db4196.jpg":"feuille : trop proche de feuille-7 (même coin coupé en haut à droite)"
 };
 
 function listMissions(){

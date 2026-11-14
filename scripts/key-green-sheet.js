@@ -12,11 +12,13 @@
 //   Parchment_fragments_on_green_bac…_82577d7b_2K.jpg → (--max 400) le 3e devient lambeau-1, le 2e lambeau-3
 //   Torn_parchment_fragments_on_wall_52aec780_2K.jpg → (--max 400) le 1er devient lambeau-2
 const {chromium}=require("playwright");const fs=require("fs");
+// --flop retourne l'objet gauche-droite, --turn le tourne d'un demi-tour (pour varier une feuille sans la dupliquer).
 (async()=>{const args=process.argv.slice(2);let max=320;const mi=args.indexOf("--max");if(mi>=0){max=Number(args[mi+1]);args.splice(mi,2);}
-const [src,outDir,...names]=args;if(!src||!outDir||!names.length){console.error("usage : key-green-sheet.js <planche.jpg> <dossier> [--max N] nom…");process.exit(1);}
+const flag=f=>{const i=args.indexOf(f);if(i<0)return false;args.splice(i,1);return true;};const flop=flag("--flop"),turn=flag("--turn");
+const [src,outDir,...names]=args;if(!src||!outDir||!names.length){console.error("usage : key-green-sheet.js <planche.jpg> <dossier> [--max N] [--flop] [--turn] nom…");process.exit(1);}
 const b=await chromium.launch();const p=await b.newPage();
 const data="data:image/jpeg;base64,"+fs.readFileSync(src).toString("base64");
-const outs=await p.evaluate(async({data,names,max})=>{
+const outs=await p.evaluate(async({data,names,max,flop,turn})=>{
   const img=new Image();img.src=data;await img.decode();
   const w=img.naturalWidth,h=img.naturalHeight,c=document.createElement("canvas");c.width=w;c.height=h;
   const g=c.getContext("2d");g.drawImage(img,0,0);const d=g.getImageData(0,0,w,h).data;
@@ -50,8 +52,10 @@ const outs=await p.evaluate(async({data,names,max})=>{
       od.data[j]=d[4*i];od.data[j+1]=d[4*i+1];od.data[j+2]=d[4*i+2];od.data[j+3]=mine?Math.round(255*A[i]):0;}
     og.putImageData(od,0,0);
     const sc=Math.min(1,max/Math.max(cw,ch)),f=document.createElement("canvas");f.width=Math.round(cw*sc);f.height=Math.round(ch*sc);
-    const fg=f.getContext("2d");fg.imageSmoothingQuality="high";fg.drawImage(o,0,0,f.width,f.height);
+    const fg=f.getContext("2d");fg.imageSmoothingQuality="high";
+    if(flop||turn){fg.translate(f.width/2,f.height/2);if(turn)fg.rotate(Math.PI);if(flop)fg.scale(-1,1);fg.translate(-f.width/2,-f.height/2);}
+    fg.drawImage(o,0,0,f.width,f.height);
     res.push({name:names[k],w:f.width,h:f.height,url:f.toDataURL("image/webp",0.9)});});
-  return res;},{data,names,max});
+  return res;},{data,names,max,flop,turn});
 for(const o of outs){fs.writeFileSync(outDir+"/"+o.name+".webp",Buffer.from(o.url.split(",")[1],"base64"));console.log(o.name,o.w+"x"+o.h);}
 await b.close();})();

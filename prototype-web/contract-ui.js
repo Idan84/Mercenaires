@@ -149,11 +149,11 @@ function noticeLook(id){
   // allés le plus loin (un sur quatre environ) sont des papiers plus vieux : moins saturés, salis par endroits.
   const old=hue<-3,paperHue=old?1:hue<0?hue*.3:hue;
   const dirt=old?`;--sat:.72;--sale:1;--sale-x1:${(15+r()*70).toFixed(0)}%;--sale-y1:${(10+r()*80).toFixed(0)}%;--sale-x2:${(15+r()*70).toFixed(0)}%;--sale-y2:${(10+r()*80).toFixed(0)}%`:"";
-  // Idan, 2026-11-14 : « trop le même gabarit, les mêmes défauts ». La forme du papier (papier-annonce-1…6 : le parchemin
-  // de la création et cinq papiers déchirés autrement, dont un coin arraché et deux coins cornés), la taille, les plis,
-  // le froissé et les taches changent d'une annonce à l'autre. Le papier au coin haut droit arraché ne prend pas de punaises.
-  let paper=1+Math.floor(r()*6);
-  if(paper===5&&pin==="punaises") paper=2;
+  // Idan, 2026-11-14 : « trop le même gabarit, les mêmes défauts ». La feuille (une des huit feuilles vierges de Jean-Mi,
+  // feuille-1…8), la taille, les plis, le froissé et les taches changent d'une annonce à l'autre. Les feuilles au coin
+  // du haut arraché (1, 6, 7) ne prennent pas de punaises : l'une flotterait dans le vide.
+  let paper=1+Math.floor(r()*8);
+  if(pin==="punaises") paper={1:2,6:5,7:8}[paper]||paper;
   const w=.9+r()*.1,ht=.83+r()*.09;
   const pct=(a,b)=>(a+r()*(b-a)).toFixed(0)+"%",num=(a,b,d=0)=>(a+r()*(b-a)).toFixed(d);
   // les chiures de mouche restent dans les marges : au milieu, on les prendrait pour des fautes d'impression

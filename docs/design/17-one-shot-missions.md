@@ -294,16 +294,18 @@ ennemis, récompense, expiration…), la lettre du commanditaire s'il y en a une
   Sur le panneau, trois restes d'annonces arrachées dépassent derrière, encore sous leur clou ; la lumière d'une bougie
   vacille en haut à droite, avec un peu de poussière dans le rayon (rien ne bouge si le système demande moins de mouvement).
   Les trois annonces d'une page ne se ressemblent pas (Idan, 2026-11-14 : « trop le même gabarit, les mêmes défauts…
-  plis à des endroits différents, taches, orientations, forme du parchemin ») : six formes de papier (le parchemin de la
-  création, avec ses ornements, et cinq papiers unis déchirés autrement, dont un coin arraché et deux coins cornés :
-  `assets/taverne/papier-annonce-2…6.webp`, `scripts/make-notice-papers.js`), une taille un peu différente, plus ou
-  moins de travers (jusqu'à 3°), un ou deux plis en travers à des hauteurs différentes et parfois un pli en long, le
-  froissé décalé, et selon l'annonce une tache de graisse, une coulure depuis le haut, un bord qui a pris l'humidité,
-  des chiures de mouche (dans les marges, pour ne pas passer pour des fautes d'impression).
+  plis à des endroits différents, taches, orientations, forme du parchemin ») : chacune est une des huit feuilles
+  vierges de Jean-Mi (`assets/taverne/feuille-1…8.webp`, détourées par `scripts/key-green-sheet.js`, la 7 retournée et
+  la 8 tournée d'un demi-tour pour que les coins arrachés ne tombent pas tous au même endroit), étirée à la taille de
+  l'annonce ; la matière par-dessus et la gravure sont découpées à la forme de la feuille. Les feuilles au coin du haut
+  arraché ne prennent pas de punaises. En plus : une taille un peu différente, plus ou moins de travers (jusqu'à 3°),
+  un ou deux plis en travers à des hauteurs différentes et parfois un pli en long, le froissé décalé, et selon
+  l'annonce une tache de graisse, une coulure depuis le haut, un bord qui a pris l'humidité, des chiures de mouche
+  (dans les marges, pour ne pas passer pour des fautes d'impression).
   Les flèches sont des équerres de fer forgé, platine vissée sur le montant du cadre : au survol, le fer s'éclaire et la
   flèche avance un peu ; sur la première ou la dernière page, elle reste sombre.
   Toute cette matière vient de Jean-Mi, sur fond vert, détourée par `scripts/key-green-sheet.js` (`assets/taverne/` :
-  `cire-*`, `clou-*`, `punaise-*`, `lambeau-*`, `fleche-fer`) ; les planches écartées et leur raison sont dans
+  `feuille-*`, `cire-*`, `clou-*`, `punaise-*`, `lambeau-*`, `fleche-fer`) ; les planches écartées et leur raison sont dans
   `scripts/build-mission-art.js`.
 - **Les illustrations** (Idan et Jean-Mi, 2026-11-14) : des gravures à l'encre sur fond blanc, posées en « produit » sur
   le papier (le blanc disparaît, l'encre semble imprimée). En test (Idan, 2026-11-14 : « jusqu'au bord du parchemin, avec sur

@@ -2161,13 +2161,13 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
    lys ; l'illustration dans un double filet d'or, comme une toile ; au survol, un halo doré qui épouse le parchemin.
    Chaque annonce est clouée au panneau, un peu de travers ; l'ombre tombe à gauche (la lumière vient de la droite). */
 .mission-board{--fil:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 2' preserveAspectRatio='none'%3E%3ClinearGradient id='g'%3E%3Cstop offset='0' stop-opacity='0'/%3E%3Cstop offset='.55' stop-opacity='.85'/%3E%3Cstop offset='1'/%3E%3C/linearGradient%3E%3Cpolygon points='0,1 100,0 100,2' fill='url(%23g)'/%3E%3C/svg%3E");--fil-v:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2 100' preserveAspectRatio='none'%3E%3ClinearGradient id='g' x2='0' y2='1'%3E%3Cstop offset='0' stop-opacity='0'/%3E%3Cstop offset='.5'/%3E%3Cstop offset='1' stop-opacity='0'/%3E%3C/linearGradient%3E%3Cpolygon points='1,0 2,50 1,100 0,50' fill='url(%23g)'/%3E%3C/svg%3E");--encre:#2c1b10;--encre-secondaire:#64492e;--or:#c9a461;--or-clair:#f0d395;--bordeaux:#7a1f1c;--police-titre:"Cinzel",Georgia,serif;--police-texte:"EB Garamond",Georgia,serif}
-.board-notice{--parch-edge:calc(var(--board-w) * .022);--u:calc(var(--board-w) * .001);--ombre:drop-shadow(calc(var(--u) * -4) calc(var(--u) * 8) calc(var(--u) * 6) rgba(0,0,0,.62));position:relative;display:flex;flex-direction:column;align-items:center;justify-self:center;width:calc(var(--w,1) * 100%);height:calc(var(--h,.88) * 100%);min-height:0;box-sizing:border-box;padding:calc(var(--parch-edge) * .45) calc(var(--parch-edge) * .4) calc(var(--parch-edge) * .35);border:var(--parch-edge) solid transparent;border-image:url("assets/creation/parchemin.webp") 180 fill / var(--parch-edge) stretch;color:var(--encre);font-family:var(--police-texte);text-align:center;--papier:brightness(var(--tone,1)) hue-rotate(var(--hue,0deg)) saturate(var(--sat,1));filter:var(--papier) var(--ombre);rotate:var(--tilt,0deg);translate:0 calc(var(--u) * var(--dy,0));transform-origin:50% 0;transition:filter .12s ease}
-/* La matière du papier, découpée à la forme du parchemin (même découpe que son border-image) : le froissé éclairé par la
+.board-notice{--parch-edge:calc(var(--board-w) * .022);--u:calc(var(--board-w) * .001);--ombre:drop-shadow(calc(var(--u) * -4) calc(var(--u) * 8) calc(var(--u) * 6) rgba(0,0,0,.62));position:relative;display:flex;flex-direction:column;align-items:center;justify-self:center;width:calc(var(--w,1) * 100%);height:calc(var(--h,.88) * 100%);min-height:0;box-sizing:border-box;padding:calc(var(--parch-edge) * .45) calc(var(--parch-edge) * .4) calc(var(--parch-edge) * .35);border:var(--parch-edge) solid transparent;--feuille:url("assets/taverne/feuille-1.webp");background:var(--feuille) 0 0 / 100% 100% no-repeat border-box;color:var(--encre);font-family:var(--police-texte);text-align:center;--papier:brightness(var(--tone,1)) hue-rotate(var(--hue,0deg)) saturate(var(--sat,1));filter:var(--papier) var(--ombre);rotate:var(--tilt,0deg);translate:0 calc(var(--u) * var(--dy,0));transform-origin:50% 0;transition:filter .12s ease}
+/* La matière du papier, découpée à la forme de la feuille (même image, en masque) : le froissé éclairé par la
    droite (papier-froisse.webp, tiré de la texture CC0 « Paper003 » d'ambientCG), plié en trois ; dessous, l'ombre qui
    gagne vers la gauche, sur certaines l'auréole d'une chope posée dessus, sur les plus vieilles (--sale) deux traces
    de crasse et des bords salis ; selon l'annonce, une tache de graisse, une coulure depuis le haut, un bord qui a pris
    l'humidité, des chiures de mouche. Plis (un ou deux en travers, parfois un en long) et froissé changent aussi. */
-.board-notice-paper,.board-notice::after{position:absolute;inset:calc(var(--parch-edge) * -1);pointer-events:none;-webkit-mask-box-image:url("assets/creation/parchemin.webp") 180 / var(--parch-edge) stretch}
+.board-notice-paper,.board-notice::after{position:absolute;inset:calc(var(--parch-edge) * -1);pointer-events:none;-webkit-mask:var(--feuille) 0 0 / 100% 100% no-repeat;mask:var(--feuille) 0 0 / 100% 100% no-repeat}
 .board-notice-paper{mix-blend-mode:multiply;background:
   radial-gradient(circle at var(--tache-x,50%) var(--tache-y,50%),rgba(130,88,40,calc(.2 * var(--tache-o,0))) 0,rgba(130,88,40,calc(.14 * var(--tache-o,0))) calc(var(--u) * var(--tache-r,20) * .6),transparent calc(var(--u) * var(--tache-r,20))),
   radial-gradient(circle at calc(var(--tache-x,50%) + var(--u) * 9) calc(var(--tache-y,50%) - var(--u) * 6),rgba(120,80,36,calc(.13 * var(--tache-o,0))) 0,transparent calc(var(--u) * var(--tache-r,20) * .7)),
@@ -2184,23 +2184,21 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
   radial-gradient(circle at var(--stain-x,50%) var(--stain-y,70%),rgba(150,90,35,calc(.07 * var(--stain-o,0))) calc(var(--u) * 26),rgba(110,58,18,calc(.32 * var(--stain-o,0))) calc(var(--u) * 28),rgba(120,66,22,calc(.12 * var(--stain-o,0))) calc(var(--u) * 31),transparent calc(var(--u) * 33)),
   linear-gradient(212deg,rgba(255,255,255,0) 30%,rgba(92,52,20,.34) 100%),
   linear-gradient(rgba(214,180,132,.32),rgba(214,180,132,.32))}
-.board-notice::after{content:"";opacity:.6;mix-blend-mode:overlay;background:
+.board-notice::after{content:"";opacity:.38;mix-blend-mode:overlay;background:
   linear-gradient(calc(180deg + var(--pli-a,0deg)),transparent calc(var(--pli1,34%) - var(--u) * 3),rgba(0,0,0,.45) var(--pli1,34%),rgba(255,255,255,.6) calc(var(--pli1,34%) + var(--u) * 1.5),transparent calc(var(--pli1,34%) + var(--u) * 5)),
   linear-gradient(calc(180deg - var(--pli-a,0deg)),transparent calc(var(--pli2,67%) - var(--u) * 3),rgba(0,0,0,calc(.4 * var(--pli2-o,1))) var(--pli2,67%),rgba(255,255,255,calc(.55 * var(--pli2-o,1))) calc(var(--pli2,67%) + var(--u) * 1.5),transparent calc(var(--pli2,67%) + var(--u) * 5)),
   linear-gradient(90deg,transparent calc(var(--pliv,50%) - var(--u) * 3),rgba(0,0,0,calc(.32 * var(--pliv-o,0))) var(--pliv,50%),rgba(255,255,255,calc(.45 * var(--pliv-o,0))) calc(var(--pliv,50%) + var(--u) * 1.5),transparent calc(var(--pliv,50%) + var(--u) * 5)),
   url("assets/taverne/papier-froisse.webp") calc(var(--u) * var(--froisse-x,0)) calc(var(--u) * var(--froisse-y,0)) / calc(var(--u) * var(--froisse-s,300)) repeat}
-/* La forme du papier (data-paper) : le parchemin de la création ou un des cinq papiers déchirés autrement
-   (papier-annonce-2…6.webp, scripts/make-notice-papers.js) ; la matière par-dessus suit la même découpe. */
-.board-notice[data-paper="2"]{border-image-source:url("assets/taverne/papier-annonce-2.webp")}
-[data-paper="2"] .board-notice-paper,.board-notice[data-paper="2"]::after{-webkit-mask-box-image-source:url("assets/taverne/papier-annonce-2.webp")}
-.board-notice[data-paper="3"]{border-image-source:url("assets/taverne/papier-annonce-3.webp")}
-[data-paper="3"] .board-notice-paper,.board-notice[data-paper="3"]::after{-webkit-mask-box-image-source:url("assets/taverne/papier-annonce-3.webp")}
-.board-notice[data-paper="4"]{border-image-source:url("assets/taverne/papier-annonce-4.webp")}
-[data-paper="4"] .board-notice-paper,.board-notice[data-paper="4"]::after{-webkit-mask-box-image-source:url("assets/taverne/papier-annonce-4.webp")}
-.board-notice[data-paper="5"]{border-image-source:url("assets/taverne/papier-annonce-5.webp")}
-[data-paper="5"] .board-notice-paper,.board-notice[data-paper="5"]::after{-webkit-mask-box-image-source:url("assets/taverne/papier-annonce-5.webp")}
-.board-notice[data-paper="6"]{border-image-source:url("assets/taverne/papier-annonce-6.webp")}
-[data-paper="6"] .board-notice-paper,.board-notice[data-paper="6"]::after{-webkit-mask-box-image-source:url("assets/taverne/papier-annonce-6.webp")}
+/* La feuille (data-paper) : une des huit feuilles vierges de Jean-Mi (feuille-1…8.webp, détourées de leur fond vert par
+   scripts/key-green-sheet.js, la 7 retournée et la 8 tournée d'un demi-tour), étirée à la taille de l'annonce ; la
+   matière par-dessus et la gravure prennent la même feuille en masque (--feuille). */
+.board-notice[data-paper="2"]{--feuille:url("assets/taverne/feuille-2.webp")}
+.board-notice[data-paper="3"]{--feuille:url("assets/taverne/feuille-3.webp")}
+.board-notice[data-paper="4"]{--feuille:url("assets/taverne/feuille-4.webp")}
+.board-notice[data-paper="5"]{--feuille:url("assets/taverne/feuille-5.webp")}
+.board-notice[data-paper="6"]{--feuille:url("assets/taverne/feuille-6.webp")}
+.board-notice[data-paper="7"]{--feuille:url("assets/taverne/feuille-7.webp")}
+.board-notice[data-paper="8"]{--feuille:url("assets/taverne/feuille-8.webp")}
 /* Ce qui tient l'annonce au bois : une tête de clou forgé, deux punaises de laiton aux coins (clou-1|2|3, punaise-1|2|3.webp de Jean-Mi, data-head), ou un cachet de cire. */
 .board-notice-pins{position:absolute;z-index:2;inset:calc(var(--parch-edge) * -.62) 0 auto;height:0;pointer-events:none}
 .board-notice-pins i{position:absolute;left:50%;top:0;width:calc(var(--u) * 15);aspect-ratio:1;transform:translateX(-50%);background:url("assets/taverne/clou-1.webp") center/contain no-repeat;filter:drop-shadow(calc(var(--u) * -2) calc(var(--u) * 3) calc(var(--u) * 2.5) rgba(0,0,0,.75))}
@@ -2235,10 +2233,14 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
    masque est sur l'image elle-même : posé sur la boîte, il isolerait l'image et le blanc ne disparaîtrait plus. */
 .board-notice-art:has(img){flex-basis:56%;margin:calc(var(--parch-edge) * -1.05) calc(var(--parch-edge) * -.95) 0;padding:0;border:0;border-radius:0;background:none;box-shadow:none}
 .board-notice-art:has(img) + .board-notice-title{margin-top:calc(var(--u) * 4)}
-.board-notice-art img{-webkit-mask:url("assets/taverne/estompe-1.webp") 0 0 / 100% 100% no-repeat;mask:url("assets/taverne/estompe-1.webp") 0 0 / 100% 100% no-repeat}
-[data-fade="2"] img{-webkit-mask-image:url("assets/taverne/estompe-2.webp");mask-image:url("assets/taverne/estompe-2.webp")}
-[data-fade="3"] img{-webkit-mask-image:url("assets/taverne/estompe-3.webp");mask-image:url("assets/taverne/estompe-3.webp")}
-[data-fade="4"] img{-webkit-mask-image:url("assets/taverne/estompe-4.webp");mask-image:url("assets/taverne/estompe-4.webp")}
+/* Deux masques sur la gravure : son estompage, et la feuille (là où la feuille est arrachée, la gravure ne doit pas
+   flotter dans le vide). La feuille couvre toute l'annonce : vue depuis la gravure, elle commence 0,45 bord à gauche et
+   0,4 bord au-dessus, et mesure la largeur + 0,9 bord sur la hauteur du contenu (gravure ÷ 0,56) + 2,8 bords. */
+.board-notice-art{--estompe:url("assets/taverne/estompe-1.webp")}
+.board-notice-art[data-fade="2"]{--estompe:url("assets/taverne/estompe-2.webp")}
+.board-notice-art[data-fade="3"]{--estompe:url("assets/taverne/estompe-3.webp")}
+.board-notice-art[data-fade="4"]{--estompe:url("assets/taverne/estompe-4.webp")}
+.board-notice-art img{-webkit-mask:var(--estompe) 0 0 / 100% 100% no-repeat,var(--feuille) calc(var(--parch-edge) * -.45) calc(var(--parch-edge) * -.4) / calc(100% + var(--parch-edge) * .9) calc(100% / .56 + var(--parch-edge) * 2.8) no-repeat;-webkit-mask-composite:source-in;mask:var(--estompe) 0 0 / 100% 100% no-repeat,var(--feuille) calc(var(--parch-edge) * -.45) calc(var(--parch-edge) * -.4) / calc(100% + var(--parch-edge) * .9) calc(100% / .56 + var(--parch-edge) * 2.8) no-repeat;mask-composite:intersect}
 .board-notice-title{display:grid;gap:calc(var(--u) * 2);margin:calc(var(--u) * 14) 0 0;font-weight:400}
 .board-notice-name{font:700 calc(var(--u) * 10.5)/1.2 var(--police-titre);letter-spacing:.09em;text-transform:uppercase;color:var(--encre);text-wrap:balance}
 .board-notice-place{font:italic 500 calc(var(--u) * 11)/1.15 var(--police-texte);color:var(--encre-secondaire)}

@@ -286,7 +286,8 @@ ennemis, récompense, expiration…), la lettre du commanditaire s'il y en a une
 - **La matière** (Idan, 2026-11-14 : « Continue à essayer de faire un peu mieux, sois créatif ») : le papier froissé,
   éclairé par la droite comme le panneau (`assets/taverne/papier-froisse.webp`, tiré de la texture libre de droits CC0
   « Paper003 » d'ambientCG), plié en trois ; l'ombre gagne vers la gauche. Chaque annonce a son allure, toujours la même
-  pour la même offre (tirée de son identifiant) : un peu de travers, un papier un peu plus clair ou plus jaune, parfois
+  pour la même offre (tirée de son identifiant) : un peu de travers, un papier un peu plus clair ou plus jaune (jamais rouge : Idan, 2026-11-14 ; environ une sur
+  quatre est un vieux papier, désaturé, avec deux traces de crasse et les bords salis), parfois
   l'auréole d'une chope dans un coin du bas, et ce qui la tient au bois : une tête de clou forgé, deux punaises de laiton
   ou un cachet de cire rouge, noir ou bleu (trois têtes de chaque sorte, `data-head`). En attendant les illustrations, une
   vignette gravée (hachures qui s'épaississent vers les bords).
@@ -298,7 +299,12 @@ ennemis, récompense, expiration…), la lettre du commanditaire s'il y en a une
   `cire-*`, `clou-*`, `punaise-*`, `lambeau-*`, `fleche-fer`) ; les planches écartées et leur raison sont dans
   `scripts/build-mission-art.js`.
 - **Les illustrations** (Idan et Jean-Mi, 2026-11-14) : des gravures à l'encre sur fond blanc, posées en « produit » sur
-  le papier (le blanc disparaît, l'encre semble imprimée). Par camp (`one-shot-missions.json`, `camps[].illustrations`),
+  le papier (le blanc disparaît, l'encre semble imprimée). En test (Idan, 2026-11-14 : « jusqu'au bord du parchemin, avec sur
+  les bords un effet d'estompage… on baisse l'opacité en dégradé et en random par zone ») : sur l'annonce, sans cadre,
+  la gravure prend toute la largeur du parchemin et la moitié de sa hauteur, et s'estompe vers les bords, plus loin par
+  endroits, avec le grain d'une encre usée ; l'intérieur pâlit un peu par plaques. Quatre masques
+  (`assets/taverne/estompe-1…4.webp`, `scripts/make-fade-masks.js`), un par annonce d'après son identifiant. Le détail
+  de la mission garde son cadre. Par camp (`one-shot-missions.json`, `camps[].illustrations`),
   sinon celles de la mission (`missions[].illustrations` : les bêtes des chasses), sinon son illustration. Un camp peut en avoir plusieurs (Idan : « c'est plutôt pas mal
   d'avoir des images différentes pour les mêmes missions ») : chaque offre en tire une d'après son identifiant, toujours
   la même. Idan les dépose dans `media/background/Taverne/Missions/` ; on garde les bonnes (`scripts/build-mission-art.js`,

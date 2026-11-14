@@ -2161,12 +2161,16 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
    lys ; l'illustration dans un double filet d'or, comme une toile ; au survol, un halo doré qui épouse le parchemin.
    Chaque annonce est clouée au panneau, un peu de travers ; l'ombre tombe à gauche (la lumière vient de la droite). */
 .mission-board{--fil:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 2' preserveAspectRatio='none'%3E%3ClinearGradient id='g'%3E%3Cstop offset='0' stop-opacity='0'/%3E%3Cstop offset='.55' stop-opacity='.85'/%3E%3Cstop offset='1'/%3E%3C/linearGradient%3E%3Cpolygon points='0,1 100,0 100,2' fill='url(%23g)'/%3E%3C/svg%3E");--fil-v:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2 100' preserveAspectRatio='none'%3E%3ClinearGradient id='g' x2='0' y2='1'%3E%3Cstop offset='0' stop-opacity='0'/%3E%3Cstop offset='.5'/%3E%3Cstop offset='1' stop-opacity='0'/%3E%3C/linearGradient%3E%3Cpolygon points='1,0 2,50 1,100 0,50' fill='url(%23g)'/%3E%3C/svg%3E");--encre:#2c1b10;--encre-secondaire:#64492e;--or:#c9a461;--or-clair:#f0d395;--bordeaux:#7a1f1c;--police-titre:"Cinzel",Georgia,serif;--police-texte:"EB Garamond",Georgia,serif}
-.board-notice{--parch-edge:calc(var(--board-w) * .022);--u:calc(var(--board-w) * .001);--ombre:drop-shadow(calc(var(--u) * -4) calc(var(--u) * 8) calc(var(--u) * 6) rgba(0,0,0,.62));position:relative;display:flex;flex-direction:column;align-items:center;height:88%;min-height:0;box-sizing:border-box;padding:calc(var(--parch-edge) * .45) calc(var(--parch-edge) * .4) calc(var(--parch-edge) * .35);border:var(--parch-edge) solid transparent;border-image:url("assets/creation/parchemin.webp") 180 fill / var(--parch-edge) stretch;color:var(--encre);font-family:var(--police-texte);text-align:center;--papier:brightness(var(--tone,1)) hue-rotate(var(--hue,0deg));filter:var(--papier) var(--ombre);rotate:var(--tilt,0deg);translate:0 calc(var(--u) * var(--dy,0));transform-origin:50% 0;transition:filter .12s ease}
+.board-notice{--parch-edge:calc(var(--board-w) * .022);--u:calc(var(--board-w) * .001);--ombre:drop-shadow(calc(var(--u) * -4) calc(var(--u) * 8) calc(var(--u) * 6) rgba(0,0,0,.62));position:relative;display:flex;flex-direction:column;align-items:center;height:88%;min-height:0;box-sizing:border-box;padding:calc(var(--parch-edge) * .45) calc(var(--parch-edge) * .4) calc(var(--parch-edge) * .35);border:var(--parch-edge) solid transparent;border-image:url("assets/creation/parchemin.webp") 180 fill / var(--parch-edge) stretch;color:var(--encre);font-family:var(--police-texte);text-align:center;--papier:brightness(var(--tone,1)) hue-rotate(var(--hue,0deg)) saturate(var(--sat,1));filter:var(--papier) var(--ombre);rotate:var(--tilt,0deg);translate:0 calc(var(--u) * var(--dy,0));transform-origin:50% 0;transition:filter .12s ease}
 /* La matière du papier, découpée à la forme du parchemin (même découpe que son border-image) : le froissé éclairé par la
    droite (papier-froisse.webp, tiré de la texture CC0 « Paper003 » d'ambientCG), plié en trois ; dessous, l'ombre qui
-   gagne vers la gauche et, sur certaines, l'auréole d'une chope posée dessus. */
+   gagne vers la gauche, sur certaines l'auréole d'une chope posée dessus, et sur les plus vieilles (--sale) deux traces
+   de crasse et des bords salis. */
 .board-notice-paper,.board-notice::after{position:absolute;inset:calc(var(--parch-edge) * -1);pointer-events:none;-webkit-mask-box-image:url("assets/creation/parchemin.webp") 180 / var(--parch-edge) stretch}
 .board-notice-paper{mix-blend-mode:multiply;background:
+  radial-gradient(ellipse 34% 24% at var(--sale-x1,50%) var(--sale-y1,50%),rgba(92,64,36,calc(.3 * var(--sale,0))),transparent 72%),
+  radial-gradient(ellipse 26% 20% at var(--sale-x2,50%) var(--sale-y2,50%),rgba(78,62,44,calc(.24 * var(--sale,0))),transparent 70%),
+  radial-gradient(ellipse 78% 72% at 50% 46%,transparent 52%,rgba(86,60,32,calc(.45 * var(--sale,0))) 100%),
   radial-gradient(circle at calc(var(--stain-x,50%) + var(--u) * 4) calc(var(--stain-y,70%) + var(--u) * 2),transparent calc(var(--u) * 27),rgba(120,66,22,calc(.16 * var(--stain-o,0))) calc(var(--u) * 28),transparent calc(var(--u) * 31)),
   radial-gradient(circle at var(--stain-x,50%) var(--stain-y,70%),rgba(150,90,35,calc(.07 * var(--stain-o,0))) calc(var(--u) * 26),rgba(110,58,18,calc(.32 * var(--stain-o,0))) calc(var(--u) * 28),rgba(120,66,22,calc(.12 * var(--stain-o,0))) calc(var(--u) * 31),transparent calc(var(--u) * 33)),
   linear-gradient(212deg,rgba(255,255,255,0) 30%,rgba(92,52,20,.34) 100%),
@@ -2204,6 +2208,15 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 /* Les illustrations sont des gravures à l'encre sur fond blanc (Jean-Mi) : en « produit », le blanc disparaît et l'encre
    semble imprimée sur le papier de l'annonce. */
 .board-notice-art img{display:block;width:100%;height:100%;object-fit:cover;mix-blend-mode:multiply;filter:contrast(1.08)}
+/* Test (Idan, 2026-11-14) : la gravure en pleine page, jusqu'au bord du parchemin, sans cadre ; elle s'estompe vers les
+   bords, plus loin par endroits, avec le grain d'une encre usée (estompe-1…4.webp, scripts/make-fade-masks.js). Le
+   masque est sur l'image elle-même : posé sur la boîte, il isolerait l'image et le blanc ne disparaîtrait plus. */
+.board-notice-art:has(img){flex-basis:56%;margin:calc(var(--parch-edge) * -1.05) calc(var(--parch-edge) * -.95) 0;padding:0;border:0;border-radius:0;background:none;box-shadow:none}
+.board-notice-art:has(img) + .board-notice-title{margin-top:calc(var(--u) * 4)}
+.board-notice-art img{-webkit-mask:url("assets/taverne/estompe-1.webp") 0 0 / 100% 100% no-repeat;mask:url("assets/taverne/estompe-1.webp") 0 0 / 100% 100% no-repeat}
+[data-fade="2"] img{-webkit-mask-image:url("assets/taverne/estompe-2.webp");mask-image:url("assets/taverne/estompe-2.webp")}
+[data-fade="3"] img{-webkit-mask-image:url("assets/taverne/estompe-3.webp");mask-image:url("assets/taverne/estompe-3.webp")}
+[data-fade="4"] img{-webkit-mask-image:url("assets/taverne/estompe-4.webp");mask-image:url("assets/taverne/estompe-4.webp")}
 .board-notice-title{display:grid;gap:calc(var(--u) * 2);margin:calc(var(--u) * 14) 0 0;font-weight:400}
 .board-notice-name{font:700 calc(var(--u) * 10.5)/1.2 var(--police-titre);letter-spacing:.09em;text-transform:uppercase;color:var(--encre);text-wrap:balance}
 .board-notice-place{font:italic 500 calc(var(--u) * 11)/1.15 var(--police-texte);color:var(--encre-secondaire)}

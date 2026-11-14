@@ -143,7 +143,13 @@ function noticeLook(id){
   const wax=["rouge","noire","bleue"][Math.floor(r()*3)];
   // Les têtes de clou et de punaise (Jean-Mi, 2026-11-14) : trois de chaque, la seconde punaise prend la suivante.
   const head=1+Math.floor(r()*3);
-  return {pin,wax,head,style:`--tilt:${tilt.toFixed(2)}deg;--dy:${dy.toFixed(1)};--tone:${tone.toFixed(3)};--hue:${hue.toFixed(1)}deg;--stain-o:${stain?1:0};--stain-x:${sx.toFixed(0)}%;--stain-y:${sy.toFixed(0)}%`};
+  // La gravure en pleine page s'estompe vers les bords : un des quatre masques (estompe-1…4.webp).
+  const fade=1+Math.floor(r()*4);
+  // Idan, 2026-11-14 : un papier tirait trop vers le rouge. Le teint ne part plus vers le rouge ; ceux qui y seraient
+  // allés le plus loin (un sur quatre environ) sont des papiers plus vieux : moins saturés, salis par endroits.
+  const old=hue<-3,paperHue=old?1:hue<0?hue*.3:hue;
+  const dirt=old?`;--sat:.72;--sale:1;--sale-x1:${(15+r()*70).toFixed(0)}%;--sale-y1:${(10+r()*80).toFixed(0)}%;--sale-x2:${(15+r()*70).toFixed(0)}%;--sale-y2:${(10+r()*80).toFixed(0)}%`:"";
+  return {pin,wax,head,fade,style:`--tilt:${tilt.toFixed(2)}deg;--dy:${dy.toFixed(1)};--tone:${tone.toFixed(3)};--hue:${paperHue.toFixed(1)}deg;--stain-o:${stain?1:0};--stain-x:${sx.toFixed(0)}%;--stain-y:${sy.toFixed(0)}%${dirt}`};
 }
 function renderBoardNotice(card){
   const look=noticeLook(card.id);
@@ -152,7 +158,7 @@ function renderBoardNotice(card){
   return `<article class="board-notice${card.scheduled?" board-notice--scheduled":""}"${open} aria-label="${esc(card.title)}" data-pin="${look.pin}"${look.pin==="cire"?` data-wax="${look.wax}"`:` data-head="${look.head}"`} style="${look.style}">
     <span class="board-notice-paper" aria-hidden="true"></span>
     <span class="board-notice-pins" aria-hidden="true"><i></i>${look.pin==="punaises"?"<i></i>":""}</span>
-    <div class="board-notice-art">${art}</div>
+    <div class="board-notice-art"${art?` data-fade="${look.fade}"`:""}>${art}</div>
     <h3 class="board-notice-title"><span class="board-notice-name">${esc(card.name||card.title)}</span>${card.place?`<span class="board-notice-place">de ${esc(card.place)}</span>`:""}</h3>
     <span class="board-notice-rule" aria-hidden="true"><i></i></span>
     <span class="board-notice-level" title="${esc(card.difficulty.label)}">${levelStars(card.difficulty.level,card.difficulty.label)}</span>

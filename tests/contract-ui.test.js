@@ -25,7 +25,7 @@ const arrows = {prev:{}, next:{}}, views = [];
 const fakeDocument = {addEventListener:(type, fn) => { listeners[type] = fn; }, querySelector:selector => arrows[selector.replace(".mission-board-arrow--", "")]};
 const ui = new Function("game","$","esc","fmt","saveGame","campaignRules","starRules","renderStarLevel","campaignCalendarDate",
   "MercenairesMissions","MercenairesRecruitDialogue","openMissionSelection","renderAvatar","document","startExpeditionCombat","showTavernView",
-  js + "\nreturn {missionCards,renderContractBoard,openMissionDetail,initializeExpeditionUi,turnBoardPage,boardState};")(
+  js + "\nreturn {missionCards,renderContractBoard,openMissionDetail,initializeExpeditionUi,turnBoardPage,boardState,noticeLook};")(
   game, node, esc, String, () => {}, () => ({fillTavernBoard:() => false, tavernSlots:c => c.tavernBoard.slots, boardOffer:(c, {id}) => c.tavernBoard.slots.find(x => x.offer?.id === id)?.offer || null}),
   () => ({byLevel:level => ({level})}), info => `<stars ${info.level}>`, day => ({dayOfMonth:day, month:"Brumecendre", year:842}),
   {createMissionRules:() => ({orderText:() => ({from:"Chef de village", paragraphs:["À toute compagnie…"], signature:"Hugon"})})},
@@ -49,7 +49,7 @@ assert.match(board, /^<div class="board-page">/, "une page d'annonces");
 assert.equal((board.match(/<article class="board-notice"/g) || []).length, 2, "une annonce par mission, rien pour la case vide");
 assert.match(board, /data-mission-open="contract:c1"/);
 assert.match(board, /<div class="board-notice-art"><\/div>/, "sans image : le cadre vide");
-assert.match(board, /<div class="board-notice-art"><img src="assets\/missions\/garde\.webp"/, "avec image : l'illustration");
+assert.match(board, /<div class="board-notice-art" data-fade="[1-4]"><img src="assets\/missions\/garde\.webp"/, "avec image : l'illustration, et son masque d'estompage");
 // La charte de la création : le lieu en Cinzel, « de … » en Garamond italique, le filet à la fleur de lys.
 assert.match(board, /<h3 class="board-notice-title"><span class="board-notice-name">Camp gobelin<\/span><span class="board-notice-place">de Brumecendre<\/span><\/h3>/);
 assert.match(board, /<h3 class="board-notice-title"><span class="board-notice-name">Une veuve fortunée<\/span><\/h3>/, "garde du corps : le client seul");
@@ -59,7 +59,7 @@ assert.match(board, /<stars 1>[\s\S]*<img class="board-notice-gold" src="assets\
 assert.doesNotMatch(board, /Faire le ménage|Garde du corps|Attaquer un camp|cherche 2 gardes|Nouvelle mission demain|PO</, "ni type, ni description, ni case vide");
 assert.doesNotMatch(board, /M14\.8 9\.2/, "plus de symbole dollar");
 // Chaque annonce a son allure (travers, papier, auréole, attache), toujours la même pour la même offre.
-const looks = [...board.matchAll(/data-pin="(clou|punaises|cire)"(?: data-wax="(?:rouge|noire|bleue)"| data-head="[123]")? style="(--tilt:-?[\d.]+deg;--dy:-?[\d.]+;--tone:[\d.]+;--hue:-?[\d.]+deg;--stain-o:[01];--stain-x:\d+%;--stain-y:\d+%)"/g)];
+const looks = [...board.matchAll(/data-pin="(clou|punaises|cire)"(?: data-wax="(?:rouge|noire|bleue)"| data-head="[123]")? style="(--tilt:-?[\d.]+deg;--dy:-?[\d.]+;--tone:[\d.]+;--hue:-?[\d.]+deg;--stain-o:[01];--stain-x:\d+%;--stain-y:\d+%(?:;--sat:[\d.]+;--sale:1;--sale-x1:\d+%;--sale-y1:\d+%;--sale-x2:\d+%;--sale-y2:\d+%)?)"/g)];
 assert.equal(looks.length, 2, "une allure par annonce");
 ui.renderContractBoard();
 assert.deepEqual([...node("tavern-contracts").innerHTML.matchAll(/data-pin="[^"]+"(?: data-(?:wax|head)="[^"]+")? style="[^"]+"/g)].map(m => m[0]), looks.map(m => m[0]), "la même allure à chaque affichage");
@@ -105,6 +105,18 @@ for (const file of ["fleche-fer", "clou-1", "clou-2", "clou-3", "punaise-1", "pu
   assert.ok(boardCss.includes("assets/taverne/" + file + ".webp"), "le CSS utilise " + file);
 }
 assert.ok(looks.every(m => /data-pin="cire" data-wax=|data-pin="(?:clou|punaises)" data-head=/.test(m[0])), "une tête de clou pour les clous et punaises, une cire pour les cachets");
+for (const file of ["estompe-1", "estompe-2", "estompe-3", "estompe-4"]) {
+  assert.ok(fs.existsSync(path.join(root, "prototype-web/assets/taverne/" + file + ".webp")), file);
+  assert.ok(boardCss.includes("assets/taverne/" + file + ".webp"), "le CSS utilise " + file);
+}
+// Idan, 2026-11-14 : un papier tirait vers le rouge. Sur 2 000 annonces : jamais plus de 1° vers le rouge, et environ
+// une sur quatre est un vieux papier, désaturé et sali.
+const many = Array.from({length: 2000}, (_, i) => ui.noticeLook("contract:offre-" + i));
+assert.ok(many.every(l => Number(/--hue:(-?[\d.]+)deg/.exec(l.style)[1]) >= -1), "plus de papier rouge");
+const oldShare = many.filter(l => l.style.includes("--sale:1")).length / many.length;
+assert.ok(oldShare > .2 && oldShare < .36, "un vieux papier sur quatre environ : " + oldShare);
+assert.ok(many.filter(l => l.style.includes("--sale:1")).every(l => /--hue:1\.0deg;.*--sat:\.72/.test(l.style)), "les vieux papiers : teint neutre, désaturés");
+assert.deepEqual(new Set(many.map(l => l.fade)), new Set([1, 2, 3, 4]), "les quatre masques servent");
 assert.deepEqual([arrows.prev.hidden, arrows.next.hidden], [true, true], "une seule page : pas de flèches");
 assert.doesNotMatch(js, /Escouades en mission/, "les escouades parties ne sont plus sur le tableau");
 

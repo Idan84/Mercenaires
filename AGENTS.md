@@ -19,6 +19,8 @@ Avant toute modification de logique métier :
 3. Marquer explicitement tout élément provisoire ou à définir.
 4. Garder logique métier, données et interface séparées.
 5. Préférer des changements petits, testables et lisibles.
+6. La qualité visuelle avant le poids des fichiers (Idan, 2026-11-14 : « l'idée c'est de faire un jeu Unreal, pas de
+   gagner sur Google Speed ») : images en haute définition, compression légère ; le prototype web prépare le jeu Unreal.
 
 ## Architecture cible
 

@@ -91,7 +91,7 @@ let advanced=0,saved=0,redrawn=0,blocker={ok:true};
 const logged=[];
 let screen="camp";
 const shownNews=[];
-const advance = new Function("game","campaignRules","tavernLog","fmt","saveGame","renderGame","currentScreen","showDayNews",
+const advance = new Function("game","campaignRules","tavernLog","fmt","saveGame","renderGame","currentScreen","showDayNews","dayNewsOf",
   extract(tavernUI,"function advanceCampDay()","// Dialogue de recrutement")+
   "\nreturn advanceCampDay;"
 )(
@@ -104,13 +104,13 @@ const advance = new Function("game","campaignRules","tavernLog","fmt","saveGame"
       tavern:{departures:[],arrivals:[{mercenary:{name:"Erik"}}]}}];
   }}),
   (message)=>logged.push(message),String,
-  ()=>saved++,()=>{redrawn++;render();},()=>screen,(day,news)=>shownNews.push({day,news})
+  ()=>{saved++;assert.equal(fakeGame.dayNews?.day,33,"les nouvelles du jour, gardées avec la partie");},()=>{redrawn++;render();},()=>screen,news=>shownNews.push(news),(day,report)=>({day,report})
 );
 advance();
 assert.equal(fakeGame.campaign.day,33);
 // Notification du jour (Idan, 2026-10-30 et 2026-10-31) : à chaque passage de journée, à partir du rapport du jour.
 assert.deepEqual(shownNews.map(n=>n.day),[33]);
-assert.equal(shownNews[0].news.salaries.total,35,"le rapport de la journée");
+assert.equal(shownNews[0].report.salaries.total,35,"le rapport de la journée");
 assert.equal(advanced,1);
 assert.equal(saved,1);
 assert.equal(redrawn,1);

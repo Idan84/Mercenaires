@@ -273,7 +273,7 @@
         {
           "faction": "Ogres",
           "nom_camp": "Camp ogre",
-          "illustrations": ["assets/missions/camp-ogre-1.webp"],
+          "illustrations": ["assets/missions/camp-ogre-1.webp", "assets/missions/camp-ogre-2.webp", "assets/missions/camp-ogre-3.webp", "assets/missions/camp-ogre-4.webp"],
           "poids": 1,
           "lignes": [
             {
@@ -309,6 +309,7 @@
         {
           "faction": "Culte des morts",
           "nom_camp": "Cimetière profané",
+          "illustrations": ["assets/missions/cimetiere-profane-1.webp", "assets/missions/cimetiere-profane-2.webp"],
           "poids": 1,
           "lignes": [
             {
@@ -345,6 +346,7 @@
         {
           "faction": "Cour de sang",
           "nom_camp": "Château maudit",
+          "illustrations": ["assets/missions/chateau-maudit-1.webp", "assets/missions/chateau-maudit-2.webp", "assets/missions/chateau-maudit-3.webp"],
           "poids": 1,
           "lignes": [
             {

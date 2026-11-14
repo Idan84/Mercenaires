@@ -5,7 +5,8 @@
 // que tu ne trouves pas bonnes ») et on les prépare pour le rendu « produit » sur le papier de l'annonce :
 //   marges rognées, fond crème ramené au blanc (le blanc disparaît, l'encre semble imprimée), 1000 px de large, WebP
 //   encodé par Chromium (ImageMagick ignore la qualité du WebP).
-// Usage : node scripts/build-mission-art.js        (outils : curl, ImageMagick « convert », Playwright)
+// Usage : node scripts/build-mission-art.js [--force]   (outils : curl, ImageMagick « convert », Playwright)
+//   sans --force, les gravures déjà rangées ne sont pas refaites.
 // Les images retenues sont listées ci-dessous, avec leur nom dans prototype-web/assets/missions/ ; les écartées aussi,
 // avec la raison. Les camps les déclarent dans data/reference/one-shot-missions.json (camps[].illustrations).
 const fs=require("fs");
@@ -26,11 +27,20 @@ const KEEP=[
   ["Thief_at_bandit_hideout_6f991c2c.jpg","camp-voleurs-2"],
   ["Thief_guarding_bandit_hideout_39ee5d23.jpg","camp-voleurs-3"],
   ["Thief_in_bandit_hideout_fb6e104f.jpg","camp-voleurs-4"],
-  ["Ogre_encampment_with_cauldron_an…_9a91bb9a.jpg","camp-ogre-1"]
+  ["Ogre_encampment_with_cauldron_an…_9a91bb9a.jpg","camp-ogre-1"],
+  ["Ogre_in_encampment_with_weapons_0c709554.jpg","camp-ogre-2"],
+  ["Ogre_encampment_with_giant_cauldron_d0008d80.jpg","camp-ogre-3"],
+  ["Ogre_encampment_with_cauldron_an…_b50c0c65.jpg","camp-ogre-4"],
+  ["Vampire_silhouette_in_ruined_castle_ccb42c11.jpg","chateau-maudit-1"],
+  ["Vampire_in_ruined_castle_window_d9d4443a.jpg","chateau-maudit-2"],
+  ["Vampire_at_castle_window_c4c62323.jpg","chateau-maudit-3"],
+  ["Hooded_figure_in_ancient_graveyard_93e85a0f.jpg","cimetiere-profane-1"],
+  ["Hooded_figure_holding_lantern_gr…_1a5d46be.jpg","cimetiere-profane-2"]
 ];
 // Écartées : les raisons servent pour la prochaine série.
 const REJECTED={
-  "Ogre_encampment_with_cauldron_an…_08bb96c7.jpg":"fond noir tout autour : un rectangle sombre sur l'annonce, l'encre ne se pose plus sur le papier"
+  "Ogre_encampment_with_cauldron_an…_08bb96c7.jpg":"fond noir tout autour : un rectangle sombre sur l'annonce, l'encre ne se pose plus sur le papier",
+  "Ogre_encampment_with_cauldron_an…_ef1e4da0.jpg":"presque la même que camp-ogre-3 (ogre assis à droite du chaudron) : une variante de plus sans rien de neuf"
 };
 
 function listMissions(){
@@ -56,7 +66,9 @@ async function main(){
   const browser=await chromium.launch();
   const page=await browser.newPage();
   fs.mkdirSync(OUT,{recursive:true});
+  const force=process.argv.includes("--force");
   for(const [src,name] of KEEP){
+    if(!force&&fs.existsSync(path.join(OUT,name+".webp"))) continue;
     const rel=files.get(src);
     if(!rel){ console.log("absente sur Hostinger : "+src); continue; }
     const raw=path.join(tmp,name+path.extname(src));

@@ -296,8 +296,8 @@ ennemis, récompense, expiration…), la lettre du commanditaire s'il y en a une
   sinon celle de la mission (`missions[].illustration`). Un camp peut en avoir plusieurs (Idan : « c'est plutôt pas mal
   d'avoir des images différentes pour les mêmes missions ») : chaque offre en tire une d'après son identifiant, toujours
   la même. Idan les dépose dans `media/background/Taverne/Missions/` ; on garde les bonnes (`scripts/build-mission-art.js`,
-  voir `docs/DEPLOYMENT.md`). Arrivées : gobelins (1), hommes-bêtes (1), orcs (3), voleurs (4), ogres (1). À venir : le
-  cimetière profané, le château maudit, les bêtes et les clients des gardes du corps.
+  voir `docs/DEPLOYMENT.md`). Arrivées : les sept camps (gobelins 1, hommes-bêtes 1, orcs 3, voleurs 4, ogres 4,
+  cimetière profané 2, château maudit 3). À venir : les bêtes et les clients des gardes du corps.
 
 ## 14 — Points de combat et camps par peuple (Idan, 2026-11-01)
 

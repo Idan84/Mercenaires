@@ -101,7 +101,11 @@ assert.deepEqual([api.pickTavernier(()=>0).key,api.pickTavernier(()=>0.9999).key
 assert.equal(api.TAVERN_ZONES.find(z=>z.key==="talk").hulls.length,1,"une seule enveloppe pour tous les taverniers");
 assert.match(js,/if\(now==="tavern"&&lastScene!=="tavern"\) chooseVariants\(\);/,"un nouveau tirage à chaque entrée");
 assert.ok(html.indexOf('src="tavern-layers.js"')<html.indexOf('src="tavern-scene-ui.js"'));
-const {variantKey,keyPixels,KEY}=require("../scripts/build-tavern.js");
+const {variantKey,keyPixels,KEY,SHADOW_EDIT}=require("../scripts/build-tavern.js");
+// Les ombres des clients (Idan, 2026-11-14 : « couper l'image à peu près à la moitié (elle passe devant le comptoir) » ;
+// « la flouter beaucoup pour qu'elle soit raccord avec les orcs ou les nains ») : floutées, effacées passé la moitié.
+assert.ok(SHADOW_EDIT.blur>=0.01,"un flou fort");
+assert.ok(SHADOW_EDIT.cutFrom>=0.4&&SHADOW_EDIT.cutTo<=0.55&&SHADOW_EDIT.cutFrom<SHADOW_EDIT.cutTo,"coupées vers la moitié, en fondu");
 assert.deepEqual(["Dwarf_tavern_keeper_holding_ale_ab54f84f.jpg","Dwarf_counting_coins_9f85b58d.jpg","Surprised_dwarf_tavern_keeper_st…_28bf94a3.jpg",
   "Dwarf_counting_coins_7a5d88a1_2K.jpg","Orcs_table.jpg"].map(variantKey),
   ["holding-ale","counting-coins","surprised-st","counting-coins","orcs-table"],"une version _2K porte le même nom que l'autre");

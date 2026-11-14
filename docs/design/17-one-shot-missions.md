@@ -320,15 +320,18 @@ ennemis, récompense, expiration…), la lettre du commanditaire s'il y en a une
   `scripts/build-mission-art.js`.
 - **Le détail de l'annonce** (Idan, 2026-11-14 : « reprends tout le magnifique univers graphique », « immersif dans le
   jeu et pas ce qu'un dev doit savoir, limite à l'utile et l'essentiel », « les boutons de la création de capitaine »,
-  « pense icônes et pictos ») : au clic, deux feuilles posées sur le panneau assombri. À gauche, l'annonce en grand (la
-  même feuille, la même gravure, la même attache, le même titre et les mêmes étoiles) et l'essentiel en pictos, une
-  ligne chacun : la paie (le picto or ; « et le butin », ou « payées d'avance »), la route (la botte : jours de marche,
-  aller-retour), l'ennemi (les épées croisées : qui, combien), les gardes demandés (le picto des mercenaires), la durée
-  d'une garde (le sablier, « sans combat »), l'échéance (la chandelle : « Jusqu'au … »). À droite, pour un contrat, la
-  lettre du commanditaire sur une feuille plus propre : l'en-tête en capitales bordeaux, une lettrine, la signature,
-  le cachet de cire au lion de la création. Plus de libellés techniques (« Difficulté », « Commanditaire »,
+  « pense icônes et pictos ») : au clic, l'annonce en grand sur le panneau assombri (la même feuille, la même gravure,
+  la même attache, le même titre et les mêmes étoiles) et l'essentiel en pictos, une ligne chacun : la paie (le picto
+  or ; « et le butin », ou « payées d'avance »), la route (la botte : jours de marche, aller-retour), l'ennemi (les
+  épées croisées : qui, combien), les gardes demandés (le picto des mercenaires), la durée d'une garde (le sablier,
+  « sans combat »), l'échéance (la chandelle : « Jusqu'au … »). Une seule feuille par mission (Idan, 2026-11-14 :
+  « deux feuilles différentes de papier pour la même mission… c'est ce qui me gêne le plus ») : pour un contrat, la
+  feuille de l'annonce couchée à l'horizontale (`feuille-N-large.webp`, `scripts/make-landscape-sheets.js`, le coin
+  arraché en haut à gauche sous la gravure), l'annonce à gauche du pli, à droite la lettre du commanditaire : l'en-tête
+  en capitales bordeaux, une lettrine, la signature, le cachet de cire au lion de la création dans le coin. Une garde
+  du corps n'a pas de lettre : l'annonce reste debout. Plus de libellés techniques (« Difficulté », « Commanditaire »,
   description de la règle). Dessous, « ‹ Retour au panneau » et le bouton bordeaux cerclé de laiton de la création
-  (« Accepter le contrat », « Choisir le garde ») ; un clic à côté des feuilles ramène aussi au panneau.
+  (« Accepter le contrat », « Choisir le garde ») ; un clic à côté de la feuille ramène aussi au panneau.
 - **Les illustrations** (Idan et Jean-Mi, 2026-11-14) : des gravures à l'encre sur fond blanc, posées en « produit » sur
   le papier (le blanc disparaît, l'encre semble imprimée). En test (Idan, 2026-11-14 : « jusqu'au bord du parchemin, avec sur
   les bords un effet d'estompage… on baisse l'opacité en dégradé et en random par zone ») : sur l'annonce, sans cadre,

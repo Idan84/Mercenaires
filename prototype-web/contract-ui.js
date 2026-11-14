@@ -212,7 +212,7 @@ function renderBoardNotice(card,detail=null){
   const title=detail?'h2 id="mission-detail-title"':"h3";
   // Argent et Or : une dague plantée tient l'annonce, à la place du clou, des punaises ou du cachet.
   const pin=metalAttr?"dague":look.pin;
-  return `<article class="board-notice${card.scheduled?" board-notice--scheduled":""}${detail?" board-notice--detail":""}"${open} aria-label="${esc(card.title)}" data-pin="${pin}"${pin==="cire"?` data-wax="${look.wax}"`:` data-head="${look.head}"`} style="${look.style}" data-paper="${look.paper}"${metalAttr}>
+  return `<article class="board-notice${card.scheduled?" board-notice--scheduled":""}${detail?` board-notice--detail${card.letter?" board-notice--lettre":""}`:""}"${open} aria-label="${esc(card.title)}" data-pin="${pin}"${pin==="cire"?` data-wax="${look.wax}"`:` data-head="${look.head}"`} style="${look.style}" data-paper="${look.paper}"${metalAttr}>
     <span class="board-notice-paper" aria-hidden="true"></span>
     <span class="board-notice-pins" aria-hidden="true"><i></i>${pin==="punaises"?"<i></i>":""}</span>
     <div class="board-notice-art"${art?` data-fade="${look.fade}"`:""}>${art}</div>
@@ -243,9 +243,10 @@ function updateBoardArrows(count){
 
 // Le détail de l'annonce (Idan, 2026-11-14 : « reprends tout le magnifique univers graphique », « immersif, pas ce qu'un
 // dev doit savoir, limite à l'utile et l'essentiel », « les boutons de la création de capitaine », « pense icônes et
-// pictos »). Deux feuilles posées l'une sur l'autre : l'annonce en grand (la même feuille, la même gravure, la même
-// attache), l'essentiel en pictos ; pour un contrat, la lettre du commanditaire, scellée. Dessous, « Retour au panneau »
-// et le bouton de la création. Un clic à côté des feuilles ramène au panneau.
+// pictos »). L'annonce en grand (la même feuille, la même gravure, la même attache), l'essentiel en pictos ; pour un
+// contrat, une seule feuille pour la mission (« deux feuilles différentes de papier pour la même mission… c'est ce qui
+// me gêne le plus ») : couchée à l'horizontale, l'annonce d'un côté du pli, la lettre du commanditaire de l'autre,
+// scellée. Dessous, « Retour au panneau » et le bouton de la création. Un clic à côté de la feuille ramène au panneau.
 function openMissionDetail(id){
   const card=missionCards().find(c=>c.id===id);
   const dialog=$("mission-detail");
@@ -258,7 +259,7 @@ function openMissionDetail(id){
       <p class="mission-letter-signature">${esc(card.letter.signature)}</p>
       <img class="mission-letter-seal" src="assets/creation/cachet.webp" alt="">
     </article>`:"";
-  $("mission-detail-body").innerHTML=`<div class="mission-sheets${letter?"":" mission-sheets--single"}">${renderBoardNotice(card,facts)}${letter}</div>
+  $("mission-detail-body").innerHTML=`<div class="mission-sheets">${renderBoardNotice(card,facts+letter)}</div>
     <footer class="mission-detail-actions"><button type="button" class="mission-retour" data-mission-close>‹ Retour au panneau</button><button type="button" class="mission-btn" ${card.action.attr}>${esc(card.action.label)}</button></footer>`;
   if(!dialog.open) dialog.showModal();
 }

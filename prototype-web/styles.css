@@ -2342,15 +2342,35 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .mission-facts b{font:600 calc(var(--u) * 7.6)/1.15 var(--police-texte);color:var(--encre)}
 .mission-facts small{font:italic 500 calc(var(--u) * 6.5)/1.15 var(--police-texte);color:var(--encre-secondaire)}
 .mission-facts small::before{content:" · "}
-/* La lettre du commanditaire : sur une feuille plus propre, un peu de travers, sous l'annonce ; l'en-tête en capitales
-   bordeaux, une lettrine, la signature en italique, le cachet de cire de la création. */
-.mission-letter{position:relative;z-index:1;flex:none;box-sizing:border-box;width:calc(var(--u) * 212);min-height:calc(var(--u) * 238);margin:calc(var(--u) * 9) 0 0 calc(var(--u) * -12);padding:calc(var(--u) * 19) calc(var(--u) * 19) calc(var(--u) * 30) calc(var(--u) * 28);background:url("assets/taverne/feuille-3.webp") 0 0 / 100% 100% no-repeat;color:var(--encre);font:500 calc(var(--u) * 6.3)/1.42 var(--police-texte);text-align:justify;hyphens:auto;rotate:1.3deg;filter:sepia(.18) drop-shadow(calc(var(--u) * -3) calc(var(--u) * 6) calc(var(--u) * 6) rgba(0,0,0,.6))}
+/* Un contrat (Idan, 2026-11-14 : « deux feuilles différentes de papier pour la même mission… c'est ce qui me gêne le
+   plus ») : une seule feuille, la sienne couchée à l'horizontale (feuille-N-large.webp, scripts/make-landscape-sheets.js),
+   l'annonce à gauche du pli, la lettre du commanditaire à droite ; à peine de travers, pour se lire. */
+.mission-detail .board-notice--lettre,.mission-detail .board-notice--lettre[data-pin="dague"]{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:auto auto auto auto 1fr;justify-items:center;column-gap:calc(var(--u) * 24);width:calc(var(--u) * 400);height:calc(var(--u) * 288);padding:calc(var(--u) * 8);rotate:calc(var(--tilt,0deg) * .25)}
+.board-notice--lettre[data-paper]{--feuille:url("assets/taverne/feuille-1-large.webp")}
+.board-notice--lettre[data-paper="2"]{--feuille:url("assets/taverne/feuille-2-large.webp")}
+.board-notice--lettre[data-paper="3"]{--feuille:url("assets/taverne/feuille-3-large.webp")}
+.board-notice--lettre[data-paper="4"]{--feuille:url("assets/taverne/feuille-4-large.webp")}
+.board-notice--lettre[data-paper="5"]{--feuille:url("assets/taverne/feuille-5-large.webp")}
+.board-notice--lettre[data-paper="6"]{--feuille:url("assets/taverne/feuille-6-large.webp")}
+.board-notice--lettre[data-paper="7"]{--feuille:url("assets/taverne/feuille-7-large.webp")}
+.board-notice--lettre[data-paper="8"]{--feuille:url("assets/taverne/feuille-8-large.webp")}
+.board-notice--lettre > *{grid-column:1}
+/* La gravure jusqu'au bord, en haut à gauche ; le masque de la feuille suit la feuille entière (2u du coin). */
+.board-notice--lettre .board-notice-art{justify-self:stretch;height:calc(var(--u) * 84)}
+.board-notice--lettre .board-notice-art:has(img){height:calc(var(--u) * 112);margin:calc(var(--u) * -30) 0 0 calc(var(--u) * -30)}
+.board-notice--lettre .board-notice-art img{-webkit-mask:var(--estompe) 0 0 / 100% 100% no-repeat,var(--feuille) calc(var(--u) * -2) calc(var(--u) * -2) / calc(var(--u) * 400) calc(var(--u) * 288) no-repeat;-webkit-mask-composite:source-in;mask:var(--estompe) 0 0 / 100% 100% no-repeat,var(--feuille) calc(var(--u) * -2) calc(var(--u) * -2) / calc(var(--u) * 400) calc(var(--u) * 288) no-repeat;mask-composite:intersect}
+.board-notice--lettre .board-notice-rule{margin:calc(var(--u) * 5) 0 calc(var(--u) * 3)}
+/* Le coin arraché est en haut à gauche, sous la gravure : la dague s'y plante à côté, la punaise de gauche plus loin. */
+.board-notice--lettre[data-pin="dague"] .board-notice-pins i{left:26%}
+.board-notice--lettre[data-pin="punaises"] .board-notice-pins i:first-child{left:26%}
+/* La lettre : l'en-tête en capitales bordeaux, une lettrine, la signature en italique, le cachet de cire de la création. */
+.mission-letter{position:relative;grid-column:2;grid-row:1 / -1;align-self:stretch;justify-self:stretch;box-sizing:border-box;padding:calc(var(--u) * 6) calc(var(--u) * 4) calc(var(--u) * 4);color:var(--encre);font:500 calc(var(--u) * 6.3)/1.42 var(--police-texte);text-align:justify;hyphens:auto}
 .mission-letter p{margin:0 0 .5em}
 .mission-letter-head{padding:0 calc(var(--u) * 6);hyphens:manual;text-wrap:balance;font:700 calc(var(--u) * 5.8)/1.35 var(--police-titre);letter-spacing:.05em;text-align:center;color:var(--bordeaux)}
 .mission-letter-head::after{content:"";display:block;height:calc(var(--u) * 3);margin:calc(var(--u) * 4) 25% 0;background:var(--encre-secondaire);opacity:.55;-webkit-mask:var(--fil) center/100% 100%;mask:var(--fil) center/100% 100%}
 .mission-letter-head + p::first-letter{float:left;margin:calc(var(--u) * 1) calc(var(--u) * 2.5) 0 0;font:700 3.1em/.82 var(--police-titre);color:var(--bordeaux)}
-.mission-letter .mission-letter-signature{margin:.9em 0 0;padding-right:calc(var(--u) * 34);font-style:italic;text-align:right;color:var(--encre-secondaire)}
-.mission-letter-seal{position:absolute;right:calc(var(--u) * 12);bottom:calc(var(--u) * 6);width:calc(var(--u) * 30);rotate:-9deg;filter:drop-shadow(calc(var(--u) * -1.5) calc(var(--u) * 2.5) calc(var(--u) * 2) rgba(0,0,0,.5))}
+.mission-letter .mission-letter-signature{margin:.9em 0 0;padding-right:calc(var(--u) * 30);font-style:italic;text-align:right;color:var(--encre-secondaire)}
+.mission-letter-seal{position:absolute;right:calc(var(--u) * -14);bottom:calc(var(--u) * -20);width:calc(var(--u) * 30);rotate:-9deg;filter:drop-shadow(calc(var(--u) * -1.5) calc(var(--u) * 2.5) calc(var(--u) * 2) rgba(0,0,0,.5))}
 /* Les boutons de la création du capitaine : le retour souligné d'un filet, le bouton bordeaux cerclé de laiton. */
 .mission-detail-actions{display:flex;align-items:center;justify-content:center;gap:calc(var(--u) * 18)}
 .mission-retour{all:unset;position:relative;cursor:pointer;padding:8px 2px;font:600 20px/1 var(--police-texte);color:var(--or-clair);text-shadow:0 1px 3px #000;transition:color .12s}

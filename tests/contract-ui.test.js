@@ -157,7 +157,7 @@ const detail = node("mission-detail-body").innerHTML;
 assert.equal(node("mission-detail").open, true);
 // Le détail (Idan, 2026-11-14) : l'annonce en grand (même feuille, même attache, sans ouverture au clic), l'essentiel
 // en pictos, la lettre du commanditaire scellée, le retour et le bouton de la création.
-assert.match(detail, /<article class="board-notice board-notice--detail" aria-label="Camp gobelin de Brumecendre" data-pin=/);
+assert.match(detail, /<article class="board-notice board-notice--detail board-notice--lettre" aria-label="Camp gobelin de Brumecendre" data-pin=/);
 assert.match(detail, /<h2 id="mission-detail-title" class="board-notice-title"><span class="board-notice-name">Camp gobelin<\/span><span class="board-notice-place">de Brumecendre<\/span><\/h2>/);
 assert.doesNotMatch(detail, /data-mission-open|board-notice-stats|Commanditaire|Difficulté<|mission-detail-description/, "ni ouverture, ni libellés techniques");
 assert.match(detail, /<ul class="mission-facts"><li><img class="mission-fact-picto" src="assets\/hud\/picto-or\.webp" alt=""><span><b>6\u202f800 pièces d’or<\/b><small>et le butin<\/small><\/span><\/li>/);
@@ -166,6 +166,15 @@ assert.match(detail, /<li><svg[^>]*>[\s\S]*?<\/svg><span><b>Jusqu’au [^<]+<\/b
 for (const icon of ["route", "swords", "candle"]) assert.ok(js.includes("  " + icon + ":'<path"), "picto " + icon);
 assert.match(detail, /<article class="mission-letter" aria-label="La lettre du commanditaire">\s*<p class="mission-letter-head">À toute compagnie…<\/p>/);
 assert.match(detail, /<img class="mission-letter-seal" src="assets\/creation\/cachet\.webp" alt="">/);
+// « Deux feuilles différentes de papier pour la même mission… c'est ce qui me gêne le plus » (Idan, 2026-11-14) : une
+// seule feuille, la sienne couchée, l'annonce d'un côté du pli et la lettre de l'autre.
+assert.equal((detail.match(/class="board-notice[ "]/g) || []).length, 1, "une seule feuille");
+assert.match(detail, /<\/ul><article class="mission-letter"[\s\S]*<\/article>\s*<\/article><\/div>/, "la lettre est sur la feuille de l'annonce");
+for (const n of [1, 2, 3, 4, 5, 6, 7, 8]) {
+  assert.ok(fs.existsSync(path.join(root, "prototype-web/assets/taverne/feuille-" + n + "-large.webp")), "feuille couchée " + n);
+  assert.ok(boardCss.includes(`.board-notice--lettre[data-paper${n === 1 ? "" : `="${n}"`}]{--feuille:url("assets/taverne/feuille-${n}-large.webp")}`), "le CSS couche la feuille " + n);
+}
+assert.doesNotMatch(boardCss, /feuille-3\.webp"\) 0 0 \/ 100% 100% no-repeat;color/, "plus de feuille à part pour la lettre");
 assert.match(detail, /<button type="button" class="mission-retour" data-mission-close>‹ Retour au panneau<\/button><button type="button" class="mission-btn" data-contract-accept="c1">/);
 assert.match(detail, /data-contract-accept="c1">Accepter le contrat<\/button>/);
 // « Accepter le contrat » (Idan, 2026-11-01 : le lancement du camp gobelin ne marchait plus) : le bouton est dans la
@@ -179,7 +188,7 @@ assert.doesNotMatch(tavern, /\$\("tavern-contracts"\)\.addEventListener/, "plus 
 ui.openMissionDetail("bodyguard:g1");
 assert.match(node("mission-detail-body").innerHTML, /data-bodyguard-accept="g1">Choisir les gardes<\/button>/);
 assert.doesNotMatch(node("mission-detail-body").innerHTML, /mission-letter/, "pas de lettre pour une garde du corps");
-assert.match(node("mission-detail-body").innerHTML, /<div class="mission-sheets mission-sheets--single">/);
+assert.match(node("mission-detail-body").innerHTML, /<div class="mission-sheets"><article class="board-notice board-notice--detail" /, "l'annonce seule, debout");
 assert.match(node("mission-detail-body").innerHTML, /<b>[^<]+ pièces d’or<\/b><small>payées d’avance<\/small>/);
 clickOn("[data-bodyguard-accept]", {bodyguardAccept:"g1"});
 assert.deepEqual(selections, [contract, guard], "et la garde du corps, pareil");

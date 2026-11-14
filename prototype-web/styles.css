@@ -2156,22 +2156,47 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .mission-board{--board-w:max(100vw,100vh * 2000 / 1116);position:fixed;left:50%;top:50%;z-index:1;width:var(--board-w);aspect-ratio:2000/1116;transform:translate(-50%,-50%);background:#16100b url("assets/taverne/panneau-missions.webp") center/100% 100% no-repeat}
 .mission-board-planks{position:absolute;left:18.6%;top:21.6%;width:63.2%;height:58.2%;overflow:hidden}
 .board-page{position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:center;gap:3.2%;padding:0 3.4%}
-.board-notice{--parch-edge:calc(var(--board-w) * .022);display:flex;flex-direction:column;gap:calc(var(--board-w) * .006);height:88%;min-height:0;box-sizing:border-box;padding:calc(var(--parch-edge) * .5);border:var(--parch-edge) solid transparent;border-image:url("assets/creation/parchemin.webp") 180 fill / var(--parch-edge) stretch;color:#2c1b10;font-family:Georgia,serif;filter:drop-shadow(0 calc(var(--board-w) * .006) calc(var(--board-w) * .008) rgba(0,0,0,.6));transform-origin:50% 50%;transition:transform .16s ease}
+/* Les annonces selon la charte de la création (creation-capitaine.css) : le parchemin d'Idan, Cinzel 700 en capitales
+   espacées pour le lieu, EB Garamond pour le reste ; un filet qui s'affine jusqu'à disparaître et entre dans sa fleur de
+   lys ; l'illustration dans un double filet d'or, comme une toile ; au survol, un halo doré qui épouse le parchemin.
+   Chaque annonce est clouée au panneau, un peu de travers ; l'ombre tombe à gauche (la lumière vient de la droite). */
+.mission-board{--fil:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 2' preserveAspectRatio='none'%3E%3ClinearGradient id='g'%3E%3Cstop offset='0' stop-opacity='0'/%3E%3Cstop offset='.55' stop-opacity='.85'/%3E%3Cstop offset='1'/%3E%3C/linearGradient%3E%3Cpolygon points='0,1 100,0 100,2' fill='url(%23g)'/%3E%3C/svg%3E");--fil-v:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2 100' preserveAspectRatio='none'%3E%3ClinearGradient id='g' x2='0' y2='1'%3E%3Cstop offset='0' stop-opacity='0'/%3E%3Cstop offset='.5'/%3E%3Cstop offset='1' stop-opacity='0'/%3E%3C/linearGradient%3E%3Cpolygon points='1,0 2,50 1,100 0,50' fill='url(%23g)'/%3E%3C/svg%3E");--encre:#2c1b10;--encre-secondaire:#64492e;--or:#c9a461;--or-clair:#f0d395;--bordeaux:#7a1f1c;--police-titre:"Cinzel",Georgia,serif;--police-texte:"EB Garamond",Georgia,serif}
+.board-notice{--parch-edge:calc(var(--board-w) * .022);--u:calc(var(--board-w) * .001);--ombre:drop-shadow(calc(var(--u) * -4) calc(var(--u) * 8) calc(var(--u) * 6) rgba(0,0,0,.62));position:relative;display:flex;flex-direction:column;align-items:center;height:88%;min-height:0;box-sizing:border-box;padding:calc(var(--parch-edge) * .45) calc(var(--parch-edge) * .4) calc(var(--parch-edge) * .35);border:var(--parch-edge) solid transparent;border-image:url("assets/creation/parchemin.webp") 180 fill / var(--parch-edge) stretch;color:var(--encre);font-family:var(--police-texte);text-align:center;filter:var(--ombre);rotate:var(--tilt,0deg);transform-origin:50% 0;transition:translate .12s ease,filter .12s ease}
+.board-page>.board-notice:nth-child(1){--tilt:-1.3deg}
+.board-page>.board-notice:nth-child(2){--tilt:.7deg;translate:0 calc(var(--u) * -6)}
+.board-page>.board-notice:nth-child(3){--tilt:-.5deg;translate:0 calc(var(--u) * 4)}
+/* Le clou, à cheval sur le haut du parchemin. */
+.board-notice::before{content:"";position:absolute;z-index:1;top:calc(var(--parch-edge) * -.62);left:50%;width:calc(var(--u) * 13);aspect-ratio:1;border-radius:50%;transform:translateX(-50%);background:radial-gradient(circle at 36% 30%,#e0b98c 0 8%,#9a6a40 22%,#5a3720 52%,#24150b 100%);box-shadow:calc(var(--u) * -2) calc(var(--u) * 3) calc(var(--u) * 3) rgba(0,0,0,.7),inset 0 0 0 1px rgba(0,0,0,.35)}
+/* Le papier vieilli : les bords un peu roussis. */
+.board-notice::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 45%,transparent 55%,rgba(120,72,30,.16) 100%)}
 .board-notice[data-mission-open]{cursor:pointer}
-.board-notice[data-mission-open]:hover,.board-notice[data-mission-open]:focus-visible{transform:translateY(-.4%) rotate(-.4deg);outline:none}
-.board-notice.is-zooming{position:relative;z-index:2}
-.board-notice-art{flex:0 0 46%;min-height:0;overflow:hidden;border:1px solid #8a6a43;background:rgba(120,88,52,.12);box-shadow:inset 0 0 calc(var(--board-w) * .01) rgba(90,60,30,.35)}
-.board-notice-art img{display:block;width:100%;height:100%;object-fit:cover}
-.board-notice h3{margin:0;color:#2c1b10;font:600 clamp(15px,calc(var(--board-w) * .0118),26px)/1.2 Georgia,serif;text-align:center;text-wrap:balance}
-.board-notice-stats{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px 14px;margin-top:auto;padding-top:calc(var(--board-w) * .004);border-top:1px solid rgba(100,73,46,.45);color:#64492e;font-size:clamp(13px,calc(var(--board-w) * .0088),19px)}
-.board-notice-stats span{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
-.board-notice-stats b{color:#2c1b10}
-.board-notice-stats .rep-stars{font-size:1.15em}
-.board-notice-gold{width:1.35em;height:1.35em;object-fit:contain}
-.board-notice-stats .mission-svg{width:1.15em;height:1.15em;color:#64492e}
-.board-notice-departure{display:flex;align-items:center;justify-content:center;gap:10px;margin:0;color:#64492e;font:italic clamp(13px,calc(var(--board-w) * .0085),18px) Georgia,serif}
-.board-notice-departure button{padding:3px 10px;border:1px solid #8a6a43;border-radius:6px;background:rgba(120,88,52,.14);color:#2c1b10;font:600 1em Georgia,serif;cursor:pointer}
-.board-notice-departure button:hover,.board-notice-departure button:focus-visible{border-color:#2c1b10;background:rgba(120,88,52,.26);outline:none}
+.board-notice[data-mission-open]:hover,.board-notice[data-mission-open]:focus-visible{outline:none;filter:var(--ombre) drop-shadow(0 0 calc(var(--u) * 3) rgba(240,211,149,.95)) drop-shadow(0 0 calc(var(--u) * 12) rgba(240,211,149,.5))}
+.board-notice.is-zooming{z-index:2}
+.mission-board-planks:has(.is-zooming){overflow:visible}
+/* La toile : double filet d'or (comme le portrait de la création), vide en attendant les illustrations. */
+.board-notice-art{flex:0 0 44%;align-self:stretch;min-height:0;box-sizing:border-box;padding:calc(var(--u) * 5);border:calc(var(--u) * 1.5) solid #9a7434;border-radius:2px;background:#1a120c;box-shadow:0 calc(var(--u) * 5) calc(var(--u) * 10) rgba(40,22,8,.45),inset 0 0 0 calc(var(--u) * 3) #1a120c,inset 0 0 0 calc(var(--u) * 4) rgba(240,211,149,.5)}
+.board-notice-art::before{content:"";display:block;height:100%;background:radial-gradient(ellipse at 50% 40%,#3a2a1c,#1a120c 75%);box-shadow:inset 0 0 calc(var(--u) * 18) rgba(0,0,0,.6)}
+.board-notice-art:has(img)::before{display:none}
+.board-notice-art img{display:block;width:100%;height:100%;object-fit:cover;box-shadow:inset 0 0 calc(var(--u) * 18) rgba(0,0,0,.6)}
+.board-notice-title{display:grid;gap:calc(var(--u) * 2);margin:calc(var(--u) * 14) 0 0;font-weight:400}
+.board-notice-name{font:700 calc(var(--u) * 10.5)/1.2 var(--police-titre);letter-spacing:.09em;text-transform:uppercase;color:var(--encre);text-wrap:balance}
+.board-notice-place{font:italic 500 calc(var(--u) * 11)/1.15 var(--police-texte);color:var(--encre-secondaire)}
+/* Le filet : épais près de son motif, il s'affine jusqu'à disparaître ; il entre dans la fleur de lys par le milieu. */
+.board-notice-rule{display:flex;align-items:center;gap:calc(var(--u) * 5);width:78%;margin:calc(var(--u) * 9) 0 calc(var(--u) * 6);color:var(--encre-secondaire)}
+.board-notice-rule::before,.board-notice-rule::after{content:"";flex:1;height:calc(var(--u) * 2);background:currentColor;opacity:.85;-webkit-mask:var(--fil) center/100% 100%;mask:var(--fil) center/100% 100%}
+.board-notice-rule::after{transform:scaleX(-1)}
+.board-notice-rule i{width:calc(var(--u) * 9);height:calc(var(--u) * 11);background:currentColor;-webkit-mask:url("assets/creation/svg/fleur-de-lys.svg") center/contain no-repeat;mask:url("assets/creation/svg/fleur-de-lys.svg") center/contain no-repeat}
+.board-notice-level .rep-stars{font-size:calc(var(--u) * 11.5);letter-spacing:.12em;text-shadow:none}
+.board-notice-stats{display:grid;justify-items:center;gap:calc(var(--u) * 3);margin-top:auto;padding-top:calc(var(--u) * 8);color:var(--encre-secondaire);font:italic 500 calc(var(--u) * 9.6)/1.2 var(--police-texte)}
+.board-notice-stats span{display:inline-flex;align-items:center;gap:calc(var(--u) * 4);white-space:nowrap}
+.board-notice-stats b{color:var(--encre);font:700 calc(var(--u) * 13)/1 var(--police-texte);font-variant-numeric:lining-nums}
+.board-notice-gold{width:calc(var(--u) * 17);height:calc(var(--u) * 17);object-fit:contain}
+.board-notice-stats .mission-svg{width:calc(var(--u) * 12);height:calc(var(--u) * 12);color:var(--encre-secondaire)}
+/* Départ demain : un tampon à l'encre rouge sur la toile ; « Annuler le départ » sous l'annonce. */
+.board-notice-stamp{position:absolute;z-index:1;top:24%;left:50%;margin:0;padding:calc(var(--u) * 4) calc(var(--u) * 10);border:calc(var(--u) * 3) double rgba(160,40,34,.9);border-radius:calc(var(--u) * 3);color:rgba(178,48,40,.95);font:700 calc(var(--u) * 11)/1 var(--police-titre);letter-spacing:.14em;text-transform:uppercase;white-space:nowrap;transform:translate(-50%,-50%) rotate(-9deg);background:rgba(26,18,12,.35);text-shadow:0 0 1px rgba(0,0,0,.4)}
+.board-notice-departure{margin:calc(var(--u) * 6) 0 0}
+.board-notice-departure button{padding:calc(var(--u) * 3) calc(var(--u) * 10);border:1px solid rgba(100,73,46,.6);border-radius:calc(var(--u) * 3);background:rgba(120,88,52,.1);color:var(--encre);font:600 calc(var(--u) * 9)/1.2 var(--police-texte);cursor:pointer;transition:background .12s,border-color .12s}
+.board-notice-departure button:hover,.board-notice-departure button:focus-visible{border-color:var(--encre);background:rgba(120,88,52,.24);outline:none}
 /* Les flèches : le chevron de la création du capitaine, couleur du fer du cadre, posées sur ses montants. */
 .mission-board-arrow{position:absolute;top:50%;z-index:2;display:grid;place-items:center;width:calc(var(--board-w) * .034);height:calc(var(--board-w) * .06);padding:0;border:0;background:none;color:#d6cbb9;cursor:pointer;transform:translate(-50%,-50%);filter:drop-shadow(0 0 2px #000) drop-shadow(0 3px 4px rgba(0,0,0,.9));transition:color .12s}
 .mission-board-arrow::before{content:"";width:60%;height:80%;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 22 44%27%3E%3Cpath d=%27M20 1C15 10 9 17 2 22C9 27 15 34 20 43C16 34 12 27 7 22C12 17 16 10 20 1Z%27/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 22 44%27%3E%3Cpath d=%27M20 1C15 10 9 17 2 22C9 27 15 34 20 43C16 34 12 27 7 22C12 17 16 10 20 1Z%27/%3E%3C/svg%3E") center/contain no-repeat}

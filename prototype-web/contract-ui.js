@@ -68,7 +68,7 @@ function contractCard(offer){
   const order=contractOrder(offer);
   // Une chasse (Idan, 2026-11-07) : la récompense seule, ni coffre ni butin.
   const loot=def.bete?"":" + butin";
-  return {id:"contract:"+offer.id,kind:"contract",type:offer.name,title:offer.campName+" de "+offer.fields.lieu,
+  return {id:"contract:"+offer.id,kind:"contract",type:offer.name,title:offer.campName+" de "+offer.fields.lieu,name:offer.campName,place:offer.fields.lieu,
     illustration:def.illustration||"",description:def.description||"",
     difficulty:{level:offer.difficulty||1,label:"Difficulté"},
     reward:fmt(offer.reward)+" PO",gold:offer.reward,rewardNote:loot.trim(),duration:missionDays(offer.distance)+" de marche",
@@ -109,18 +109,24 @@ function boardNotices(){
     .map(e=>({...(e.kind==="bodyguard"?bodyguardCard(e.offer):contractCard(e.offer)),scheduled:e.id}));
   return [...scheduled,...missionCards().filter(c=>c.kind!=="empty")];
 }
+// Selon la charte de la création du capitaine (Idan, 2026-11-14 : « Ça manque de détails de matière, de mise en page. Peut-être
+// un choix de police pour le titre ») : le lieu en Cinzel, « de … » en Garamond italique, un filet à la fleur de lys,
+// l'illustration dans un double filet d'or. Une mission qui part demain porte le tampon « Départ demain ».
+const goldAmount=n=>Math.round(Number(n)||0).toLocaleString("fr-FR");
 function renderBoardNotice(card){
   const art=card.illustration?`<img src="${esc(card.illustration)}" alt="" loading="lazy">`:"";
   const open=card.scheduled?"":` data-mission-open="${esc(card.id)}" role="button" tabindex="0"`;
   return `<article class="board-notice${card.scheduled?" board-notice--scheduled":""}"${open} aria-label="${esc(card.title)}">
     <div class="board-notice-art">${art}</div>
-    <h3>${esc(card.title)}</h3>
+    <h3 class="board-notice-title"><span class="board-notice-name">${esc(card.name||card.title)}</span>${card.place?`<span class="board-notice-place">de ${esc(card.place)}</span>`:""}</h3>
+    <span class="board-notice-rule" aria-hidden="true"><i></i></span>
+    <span class="board-notice-level" title="${esc(card.difficulty.label)}">${levelStars(card.difficulty.level,card.difficulty.label)}</span>
     <div class="board-notice-stats">
-      <span title="${esc(card.difficulty.label)}">${levelStars(card.difficulty.level,card.difficulty.label)}</span>
-      <span title="Récompense"><img class="board-notice-gold" src="assets/hud/picto-or.webp" alt=""><b>${esc(fmt(card.gold))}</b></span>
+      <span title="Récompense"><img class="board-notice-gold" src="assets/hud/picto-or.webp" alt=""><b>${esc(goldAmount(card.gold))}</b></span>
       <span title="Durée">${missionIcon("hourglass")}${esc(card.duration)}</span>
     </div>
-    ${card.scheduled?`<p class="board-notice-departure">Départ demain <button type="button" data-expedition-cancel="${esc(card.scheduled)}" title="Au jour J, on organise J+1 : on peut encore changer d’avis avant le départ.">Annuler</button></p>`:""}
+    ${card.scheduled?`<p class="board-notice-stamp">Départ demain</p>
+    <p class="board-notice-departure"><button type="button" data-expedition-cancel="${esc(card.scheduled)}" title="Au jour J, on organise J+1 : on peut encore changer d’avis avant le départ.">Annuler le départ</button></p>`:""}
   </article>`;
 }
 function boardPageHtml(notices,page){
@@ -182,7 +188,7 @@ function zoomMissionNotice(notice){
   const id=notice.dataset.missionOpen;
   if(!notice.animate||window.matchMedia?.("(prefers-reduced-motion: reduce)").matches){ openMissionDetail(id); return; }
   notice.classList.add("is-zooming");
-  notice.animate([{transform:"scale(1)"},{transform:"scale(1.14)"}],{duration:220,easing:"ease-out",fill:"forwards"}).finished
+  notice.animate([{scale:"1"},{scale:"1.14"}],{duration:220,easing:"ease-out",fill:"forwards"}).finished
     .then(()=>{ openMissionDetail(id); notice.getAnimations().forEach(a=>a.cancel()); notice.classList.remove("is-zooming"); });
 }
 

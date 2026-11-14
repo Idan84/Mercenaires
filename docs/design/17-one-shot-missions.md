@@ -283,6 +283,14 @@ ennemis, récompense, expiration…), la lettre du commanditaire s'il y en a une
   portrait de la création ; l'or en grand (avec l'espace des milliers), la durée en italique dessous. Chaque annonce est
   clouée au panneau, un peu de travers, son ombre à gauche ; au survol, un halo doré. Une mission qui part demain porte
   un tampon rouge « Départ demain » et le bouton « Annuler le départ ».
+- **La matière** (Idan, 2026-11-14 : « Continue à essayer de faire un peu mieux, sois créatif ») : le papier froissé,
+  éclairé par la droite comme le panneau (`assets/taverne/papier-froisse.webp`, tiré de la texture libre de droits CC0
+  « Paper003 » d'ambientCG), plié en trois ; l'ombre gagne vers la gauche. Chaque annonce a son allure, toujours la même
+  pour la même offre (tirée de son identifiant) : un peu de travers, un papier un peu plus clair ou plus jaune, parfois
+  l'auréole d'une chope dans un coin du bas, et ce qui la tient au bois : un clou forgé, deux punaises de laiton ou une
+  goutte de cire rouge. En attendant les illustrations, une vignette gravée (hachures qui s'épaississent vers les bords).
+  Sur le panneau, des restes d'annonces arrachées sont encore cloués ; la lumière d'une bougie vacille en haut à droite,
+  avec un peu de poussière dans le rayon (rien ne bouge si le système demande moins de mouvement).
 
 ## 14 — Points de combat et camps par peuple (Idan, 2026-11-01)
 

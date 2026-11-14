@@ -113,10 +113,25 @@ function boardNotices(){
 // un choix de police pour le titre ») : le lieu en Cinzel, « de … » en Garamond italique, un filet à la fleur de lys,
 // l'illustration dans un double filet d'or. Une mission qui part demain porte le tampon « Départ demain ».
 const goldAmount=n=>Math.round(Number(n)||0).toLocaleString("fr-FR");
+// Chaque annonce a son allure, toujours la même pour la même offre (tirée de son identifiant, pas du hasard du jeu) :
+// un peu de travers, son papier, une auréole de chope ou non (dans un coin du bas, loin du texte), et ce qui la tient au
+// bois (un clou, deux punaises, de la cire).
+function noticeLook(id){
+  let h=2166136261;
+  for(const ch of String(id)){ h^=ch.charCodeAt(0); h=Math.imul(h,16777619); }
+  const r=()=>{ h^=h>>>13; h=Math.imul(h,0x5bd1e995); h^=h>>>15; return (h>>>0)/4294967296; };
+  const tilt=(r()*2-1)*2.2,dy=(r()*2-1)*9,tone=.9+r()*.12,hue=(r()*2-1)*7;
+  const stain=r()<.45,side=r()<.5,sx=side?14+r()*14:72+r()*14,sy=72+r()*16,pinRoll=r();
+  const pin=pinRoll<.5?"clou":pinRoll<.8?"punaises":"cire";
+  return {pin,style:`--tilt:${tilt.toFixed(2)}deg;--dy:${dy.toFixed(1)};--tone:${tone.toFixed(3)};--hue:${hue.toFixed(1)}deg;--stain-o:${stain?1:0};--stain-x:${sx.toFixed(0)}%;--stain-y:${sy.toFixed(0)}%`};
+}
 function renderBoardNotice(card){
+  const look=noticeLook(card.id);
   const art=card.illustration?`<img src="${esc(card.illustration)}" alt="" loading="lazy">`:"";
   const open=card.scheduled?"":` data-mission-open="${esc(card.id)}" role="button" tabindex="0"`;
-  return `<article class="board-notice${card.scheduled?" board-notice--scheduled":""}"${open} aria-label="${esc(card.title)}">
+  return `<article class="board-notice${card.scheduled?" board-notice--scheduled":""}"${open} aria-label="${esc(card.title)}" data-pin="${look.pin}" style="${look.style}">
+    <span class="board-notice-paper" aria-hidden="true"></span>
+    <span class="board-notice-pins" aria-hidden="true"><i></i>${look.pin==="punaises"?"<i></i>":""}</span>
     <div class="board-notice-art">${art}</div>
     <h3 class="board-notice-title"><span class="board-notice-name">${esc(card.name||card.title)}</span>${card.place?`<span class="board-notice-place">de ${esc(card.place)}</span>`:""}</h3>
     <span class="board-notice-rule" aria-hidden="true"><i></i></span>

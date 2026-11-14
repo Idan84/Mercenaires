@@ -139,13 +139,15 @@ function noticeLook(id){
   const tilt=(r()*2-1)*2.2,dy=(r()*2-1)*9,tone=.9+r()*.12,hue=(r()*2-1)*7;
   const stain=r()<.45,side=r()<.5,sx=side?14+r()*14:72+r()*14,sy=72+r()*16,pinRoll=r();
   const pin=pinRoll<.5?"clou":pinRoll<.8?"punaises":"cire";
-  return {pin,style:`--tilt:${tilt.toFixed(2)}deg;--dy:${dy.toFixed(1)};--tone:${tone.toFixed(3)};--hue:${hue.toFixed(1)}deg;--stain-o:${stain?1:0};--stain-x:${sx.toFixed(0)}%;--stain-y:${sy.toFixed(0)}%`};
+  // La cire (Jean-Mi, 2026-11-14) : un cachet rouge, noir ou bleu.
+  const wax=["rouge","noire","bleue"][Math.floor(r()*3)];
+  return {pin,wax,style:`--tilt:${tilt.toFixed(2)}deg;--dy:${dy.toFixed(1)};--tone:${tone.toFixed(3)};--hue:${hue.toFixed(1)}deg;--stain-o:${stain?1:0};--stain-x:${sx.toFixed(0)}%;--stain-y:${sy.toFixed(0)}%`};
 }
 function renderBoardNotice(card){
   const look=noticeLook(card.id);
   const art=card.illustration?`<img src="${esc(card.illustration)}" alt="" loading="lazy">`:"";
   const open=card.scheduled?"":` data-mission-open="${esc(card.id)}" role="button" tabindex="0"`;
-  return `<article class="board-notice${card.scheduled?" board-notice--scheduled":""}"${open} aria-label="${esc(card.title)}" data-pin="${look.pin}" style="${look.style}">
+  return `<article class="board-notice${card.scheduled?" board-notice--scheduled":""}"${open} aria-label="${esc(card.title)}" data-pin="${look.pin}"${look.pin==="cire"?` data-wax="${look.wax}"`:""} style="${look.style}">
     <span class="board-notice-paper" aria-hidden="true"></span>
     <span class="board-notice-pins" aria-hidden="true"><i></i>${look.pin==="punaises"?"<i></i>":""}</span>
     <div class="board-notice-art">${art}</div>

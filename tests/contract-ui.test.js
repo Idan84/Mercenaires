@@ -59,7 +59,7 @@ assert.match(board, /<stars 1>[\s\S]*<img class="board-notice-gold" src="assets\
 assert.doesNotMatch(board, /Faire le ménage|Garde du corps|Attaquer un camp|cherche 2 gardes|Nouvelle mission demain|PO</, "ni type, ni description, ni case vide");
 assert.doesNotMatch(board, /M14\.8 9\.2/, "plus de symbole dollar");
 // Chaque annonce a son allure (travers, papier, auréole, attache), toujours la même pour la même offre.
-const looks = [...board.matchAll(/data-pin="(clou|punaises|cire)" style="(--tilt:-?[\d.]+deg;--dy:-?[\d.]+;--tone:[\d.]+;--hue:-?[\d.]+deg;--stain-o:[01];--stain-x:\d+%;--stain-y:\d+%)"/g)];
+const looks = [...board.matchAll(/data-pin="(clou|punaises|cire)"(?: data-wax="(?:rouge|noire|bleue)")? style="(--tilt:-?[\d.]+deg;--dy:-?[\d.]+;--tone:[\d.]+;--hue:-?[\d.]+deg;--stain-o:[01];--stain-x:\d+%;--stain-y:\d+%)"/g)];
 assert.equal(looks.length, 2, "une allure par annonce");
 ui.renderContractBoard();
 assert.deepEqual([...node("tavern-contracts").innerHTML.matchAll(/data-pin="[^"]+" style="[^"]+"/g)].map(m => m[0]), looks.map(m => m[0]), "la même allure à chaque affichage");
@@ -97,6 +97,7 @@ for (const client of realGuards.clients) assert.ok(realGuards.illustrations_clie
 for (const [client, pics] of Object.entries(realGuards.illustrations_clients))
   for (const pic of pics) assert.ok(fs.existsSync(path.join(root, "prototype-web", pic)), client + " : " + pic);
 assert.match(board, /<span class="board-notice-pins" aria-hidden="true"><i><\/i>/);
+for (const wax of ["rouge", "noire", "bleue"]) assert.ok(fs.existsSync(path.join(root, "prototype-web/assets/taverne/cire-" + wax + ".webp")), "la cire " + wax);
 assert.deepEqual([arrows.prev.hidden, arrows.next.hidden], [true, true], "une seule page : pas de flèches");
 assert.doesNotMatch(js, /Escouades en mission/, "les escouades parties ne sont plus sur le tableau");
 

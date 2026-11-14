@@ -2182,9 +2182,11 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 [data-pin="punaises"] .board-notice-pins i{width:calc(var(--u) * 10);background:radial-gradient(circle at 35% 30%,#fff3c2 0 7%,#e2b44f 20%,#a87420 55%,#5b3b0c 100%)}
 [data-pin="punaises"] .board-notice-pins i:first-child{left:calc(var(--parch-edge) * .55)}
 [data-pin="punaises"] .board-notice-pins i:last-child{left:auto;right:calc(var(--parch-edge) * .55);transform:translateX(50%)}
-[data-pin="cire"] .board-notice-pins{top:calc(var(--parch-edge) * -.55)}
-[data-pin="cire"] .board-notice-pins i{width:calc(var(--u) * 32);aspect-ratio:1.22;border-radius:58% 42% 61% 39% / 44% 57% 43% 56%;background:radial-gradient(ellipse 34% 38% at 50% 50%,transparent 0 70%,rgba(255,165,140,.22) 78%,rgba(60,8,6,.35) 86%,transparent 96%),radial-gradient(circle at 40% 34%,#b9473b 0,#8d2419 42%,#6a160f 78%,#4a0e0a 100%);box-shadow:calc(var(--u) * -1.5) calc(var(--u) * 2) calc(var(--u) * 2.5) rgba(0,0,0,.45),inset calc(var(--u) * 1) calc(var(--u) * 1.5) calc(var(--u) * 2) rgba(255,190,170,.18),inset calc(var(--u) * -1) calc(var(--u) * -2) calc(var(--u) * 3) rgba(0,0,0,.35)}
-[data-pin="cire"] .board-notice-pins i::after{content:"";position:absolute;left:62%;top:78%;width:28%;height:46%;border-radius:40% 60% 50% 50% / 30% 30% 70% 70%;background:linear-gradient(#7d1c14,#5a110c);box-shadow:inset calc(var(--u) * .8) calc(var(--u) * 1) calc(var(--u) * 1.5) rgba(255,180,160,.15)}
+/* La cire : les cachets de Jean-Mi (cire-rouge|noire|bleue.webp, détourés de leur fond vert), à cheval sur le haut. */
+[data-pin="cire"] .board-notice-pins{top:calc(var(--parch-edge) * -.75)}
+[data-pin="cire"] .board-notice-pins i{width:calc(var(--u) * 40);aspect-ratio:290/320;border-radius:0;background:url("assets/taverne/cire-rouge.webp") center/contain no-repeat;box-shadow:none;filter:drop-shadow(calc(var(--u) * -1.5) calc(var(--u) * 2.5) calc(var(--u) * 2) rgba(0,0,0,.55))}
+[data-wax="noire"] .board-notice-pins i{background-image:url("assets/taverne/cire-noire.webp")}
+[data-wax="bleue"] .board-notice-pins i{background-image:url("assets/taverne/cire-bleue.webp")}
 .board-notice[data-mission-open]{cursor:pointer}
 .board-notice[data-mission-open]:hover,.board-notice[data-mission-open]:focus-visible{outline:none;filter:var(--papier) var(--ombre) drop-shadow(0 0 calc(var(--u) * 3) rgba(240,211,149,.95)) drop-shadow(0 0 calc(var(--u) * 12) rgba(240,211,149,.5))}
 .board-notice.is-zooming{z-index:2}

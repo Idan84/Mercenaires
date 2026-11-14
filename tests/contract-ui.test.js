@@ -88,6 +88,14 @@ for (const camp of realMissions.find(m => m.code === "cleanup").camps)
 for (const mission of realMissions)
   for (const pic of mission.illustrations || [])
     assert.ok(fs.existsSync(path.join(root, "prototype-web", pic)), mission.code + " : " + pic);
+// Les gardes du corps : la gravure du client, sinon l'illustration commune.
+game.referenceData.bodyguardMissions.illustrations_clients = {"Une veuve fortunée":["assets/missions/garde-veuve-1.webp"]};
+assert.equal(ui.missionCards().find(c => c.kind === "bodyguard").illustration, "assets/missions/garde-veuve-1.webp", "la gravure du client");
+delete game.referenceData.bodyguardMissions.illustrations_clients;
+const realGuards = JSON.parse(fs.readFileSync(path.join(root, "data/reference/bodyguard-missions.json"), "utf8"));
+for (const client of realGuards.clients) assert.ok(realGuards.illustrations_clients[client]?.length, client + " : une gravure");
+for (const [client, pics] of Object.entries(realGuards.illustrations_clients))
+  for (const pic of pics) assert.ok(fs.existsSync(path.join(root, "prototype-web", pic)), client + " : " + pic);
 assert.match(board, /<span class="board-notice-pins" aria-hidden="true"><i><\/i>/);
 assert.deepEqual([arrows.prev.hidden, arrows.next.hidden], [true, true], "une seule page : pas de flèches");
 assert.doesNotMatch(js, /Escouades en mission/, "les escouades parties ne sont plus sur le tableau");

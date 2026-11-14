@@ -95,7 +95,8 @@ function contractCard(offer){
 function bodyguardCard(guard){
   const t=bodyguardTexts(),plural=guard.count>1;
   return {id:"bodyguard:"+guard.id,kind:"bodyguard",type:t.titre||"Garde du corps",title:guard.client,
-    illustration:game.referenceData?.bodyguardMissions?.illustration||"",
+    // La gravure du client (Jean-Mi, 2026-11-14), sinon l'illustration commune des gardes du corps.
+    illustration:stablePick(game.referenceData?.bodyguardMissions?.illustrations_clients?.[guard.client],guard.id)||game.referenceData?.bodyguardMissions?.illustration||"",
     description:MercenairesRecruitDialogue.fill(t.offre||"",{client:guard.client,n:guard.count,s:plural?"s":"",jours:guard.days},false),
     difficulty:{level:guard.level,label:"Réputation minimale"},
     reward:fmt(guard.payment)+" PO",gold:guard.payment,rewardNote:"d’avance",duration:missionDays(guard.days),

@@ -59,7 +59,7 @@ const game={campaign:null,captain,referenceData:reference};
 const engine=createCombatEngine(reference,{onAttack:Progression.recordAttack});
 const source=fs.readFileSync(path.join(ROOT,"prototype-web","mission.js"),"utf8");
 const EXPOSED="makeMissionUnit,sortMissionInitiative,selectNextMissionPlayer,shortestMissionPath,missionReachablePaths,"
-  +"moveMissionUnitAlongPath,missionLineOfSight,missionCoverLevel,missionChargeIfClear,performMissionAttack,missionForcedMove,"
+  +"moveMissionUnitAlongPath,missionLineOfSight,missionCoverLevel,missionChargeIfClear,missionChargeCheck,performMissionAttack,missionForcedMove,"
   +"generateMissionDecor,missionDecorLabel,missionCellFree,handleMissionHexClick,setMissionMode,resolveMissionDetection,"
   +"missionAttackPreview,missionColumn,missionKey,startMissionCamouflage,autoResolveMission,enemyMissionAct,resolveMissionSpell,"
   +"missionMagic,missionSpellPreviewRows";
@@ -153,6 +153,15 @@ at(foe,4,4);
 assert.equal(api.missionLineOfSight(shooter,foe),false,"dans la forêt, invisible de loin");
 at(shooter,3,4);
 assert.equal(api.missionLineOfSight(shooter,foe),true,"au contact, on le voit");
+// La ligne qui frôle le coin d'un mur (Idan, 2026-11-14 : « Frôler ne bloque pas ») : de (3,4) à (5,3), elle passe pile entre
+// (4,4) et (4,3) ; un mur d'un côté ou de l'autre ne la coupe pas, les deux, si (avant : un seul côté comptait, toujours le
+// même, et un mur collé au tireur coupait plus de tirs d'un côté que de l'autre).
+for(const [walls,seen,label] of [[[[4,4]],true,"un mur d'un côté"],[[[4,3]],true,"ou de l'autre"],[[[4,4],[4,3]],false,"les deux côtés"]]){
+  m=newMission(walls.map(([q,r])=>({q,r,code:"mur"})));
+  [shooter,foe]=[at(m.players[0],3,4),at(m.enemies[0],5,3)];
+  assert.equal(api.missionLineOfSight(shooter,foe),seen,label);
+  assert.equal(api.missionLineOfSight(foe,shooter),seen,label+" : dans les deux sens");
+}
 
 // 5. La couverture : le décor collé à la cible sur la ligne de tir, ou sa propre case ; pas celui collé au tireur.
 m=newMission([{q:6,r:4,code:"gros_rocher"},{q:2,r:4,code:"muret"}]);
@@ -208,6 +217,20 @@ assert.ok(charge,"elle traverse le marais");
 assert.equal(charge.slowSteps,2,"un pas au tiers : 3 − 1");
 m.decor=[{q:3,r:4,code:"muret"}];
 assert.equal(api.missionChargeIfClear(charger,foe),null,"pas à travers un muret");
+// Pourquoi (Idan, 2026-11-14 : « j'arrive pas à charger ») : la raison, montrée au survol en mode charge.
+assert.equal(api.missionChargeCheck(charger,foe).reason,"un décor infranchissable sur la ligne (muret)");
+m.decor=[];
+const archer=m.players[0],home={q:archer.q,r:archer.r};
+at(archer,3,4);
+assert.equal(api.missionChargeCheck(charger,foe).reason,archer.character.name+" est sur la ligne");
+at(archer,home.q,home.r);
+at(foe,1+base,4);
+assert.equal(api.missionChargeCheck(charger,foe).reason,`trop près : il faut au moins ${base} cases de course (ici ${base-1})`);
+at(foe,2,4);
+assert.equal(api.missionChargeCheck(charger,foe).reason,"déjà au contact");
+at(foe,1+base+1,4);
+assert.equal(api.missionChargeCheck(charger,foe).reason,null);
+m.decor=[{q:3,r:4,code:"muret"}];
 const last=api.missionChargeIfClear((m.decor=[],charger),foe).destination;
 m.decor=[{q:last.q,r:last.r,code:"buissons"}];
 charge=api.missionChargeIfClear(charger,foe);
@@ -263,7 +286,9 @@ const magic=api.missionMagic();
 const bare=magic.hitChance(mage,prey,"fire_bolt");
 assert.equal(magic.hitChance(mage,prey,"fire_bolt",{cover:"partielle"}),bare*0.5);
 assert.equal(magic.hitChance(mage,prey,"fire_bolt",{cover:"totale"}),bare*0.25);
+forced=0.01; // le sort réussit (sinon pas de couverture à lire)
 const out=api.resolveMissionSpell(mage,prey,"fire_bolt");
+forced=null;
 assert.ok(out.ok,out.reason);
 assert.equal(out.cover,"partielle");
 assert.equal(out.pHit,bare*0.5);

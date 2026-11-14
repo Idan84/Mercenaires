@@ -195,6 +195,7 @@
         {
           "faction": "Hommes-bêtes",
           "nom_camp": "Camp homme-bête",
+          "illustration": "assets/missions/camp-homme-bete.webp",
           "poids": 1,
           "lignes": [
             {

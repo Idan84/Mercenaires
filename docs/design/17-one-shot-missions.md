@@ -294,8 +294,8 @@ ennemis, récompense, expiration…), la lettre du commanditaire s'il y en a une
 - **Les illustrations** (Idan et Jean-Mi, 2026-11-14) : des gravures à l'encre sur fond blanc, posées en « produit » sur
   le papier (le blanc disparaît, l'encre semble imprimée). Une par camp (`one-shot-missions.json`, `camps[].illustration`),
   sinon celle de la mission (`missions[].illustration`) ; fichiers dans `prototype-web/assets/missions/`, marges blanches
-  rognées, 1000 px de large, WebP. Première arrivée : le camp gobelin. À venir : les autres camps, les bêtes et les clients
-  des gardes du corps.
+  rognées, 1000 px de large, WebP. Arrivées : le camp gobelin, le camp homme-bête. À venir : les autres camps, les bêtes et
+  les clients des gardes du corps.
 
 ## 14 — Points de combat et camps par peuple (Idan, 2026-11-01)
 

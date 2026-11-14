@@ -292,10 +292,12 @@ ennemis, récompense, expiration…), la lettre du commanditaire s'il y en a une
   Sur le panneau, des restes d'annonces arrachées sont encore cloués ; la lumière d'une bougie vacille en haut à droite,
   avec un peu de poussière dans le rayon (rien ne bouge si le système demande moins de mouvement).
 - **Les illustrations** (Idan et Jean-Mi, 2026-11-14) : des gravures à l'encre sur fond blanc, posées en « produit » sur
-  le papier (le blanc disparaît, l'encre semble imprimée). Une par camp (`one-shot-missions.json`, `camps[].illustration`),
-  sinon celle de la mission (`missions[].illustration`) ; fichiers dans `prototype-web/assets/missions/`, marges blanches
-  rognées, 1000 px de large, WebP. Arrivées : le camp gobelin, le camp homme-bête. À venir : les autres camps, les bêtes et
-  les clients des gardes du corps.
+  le papier (le blanc disparaît, l'encre semble imprimée). Par camp (`one-shot-missions.json`, `camps[].illustrations`),
+  sinon celle de la mission (`missions[].illustration`). Un camp peut en avoir plusieurs (Idan : « c'est plutôt pas mal
+  d'avoir des images différentes pour les mêmes missions ») : chaque offre en tire une d'après son identifiant, toujours
+  la même. Idan les dépose dans `media/background/Taverne/Missions/` ; on garde les bonnes (`scripts/build-mission-art.js`,
+  voir `docs/DEPLOYMENT.md`). Arrivées : gobelins (1), hommes-bêtes (1), orcs (3), voleurs (4), ogres (1). À venir : le
+  cimetière profané, le château maudit, les bêtes et les clients des gardes du corps.
 
 ## 14 — Points de combat et camps par peuple (Idan, 2026-11-01)
 

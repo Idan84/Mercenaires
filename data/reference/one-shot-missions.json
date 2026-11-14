@@ -118,7 +118,7 @@
         {
           "faction": "Gobelins",
           "nom_camp": "Camp gobelin",
-          "illustration": "assets/missions/camp-gobelin.webp",
+          "illustrations": ["assets/missions/camp-gobelin.webp"],
           "poids": 1,
           "lignes": [
             {
@@ -159,6 +159,7 @@
         {
           "faction": "Orcs",
           "nom_camp": "Camp orc",
+          "illustrations": ["assets/missions/camp-orc-1.webp", "assets/missions/camp-orc-2.webp", "assets/missions/camp-orc-3.webp"],
           "poids": 1,
           "lignes": [
             {
@@ -195,7 +196,7 @@
         {
           "faction": "Hommes-bêtes",
           "nom_camp": "Camp homme-bête",
-          "illustration": "assets/missions/camp-homme-bete.webp",
+          "illustrations": ["assets/missions/camp-homme-bete.webp"],
           "poids": 1,
           "lignes": [
             {
@@ -232,6 +233,7 @@
         {
           "faction": "Voleurs",
           "nom_camp": "Camp de voleurs",
+          "illustrations": ["assets/missions/camp-voleurs-1.webp", "assets/missions/camp-voleurs-2.webp", "assets/missions/camp-voleurs-3.webp", "assets/missions/camp-voleurs-4.webp"],
           "poids": 1,
           "lignes": [
             {
@@ -271,6 +273,7 @@
         {
           "faction": "Ogres",
           "nom_camp": "Camp ogre",
+          "illustrations": ["assets/missions/camp-ogre-1.webp"],
           "poids": 1,
           "lignes": [
             {

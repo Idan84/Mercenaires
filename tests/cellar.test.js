@@ -46,7 +46,7 @@ const css=fs.readFileSync(path.join(ROOT,"prototype-web","styles.css"),"utf8");
 assert.match(css,/\.hex-decor\[data-decor="tonneaux"\]\{background-image:url\("data:image\/svg\+xml,/,"le dessin des tonneaux");
 const html=fs.readFileSync(path.join(ROOT,"prototype-web","index.html"),"utf8");
 assert.ok(html.indexOf("/core/cellar.js")<html.indexOf("/core/campaign.js"),"cellar.js avant campaign.js");
-assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","tavern-scene-ui.js"),"utf8"),/\{key:"cellar",label:"La Cave",/,"une zone de l'accueil de la taverne");
+assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","tavern-scene-ui.js"),"utf8"),/\{key:"cellar",label:"La Cave"\}/,"une zone de l'accueil de la taverne");
 assert.match(html,/id="tavern-cellar"/);
 assert.match(html,/<script src="cellar-ui.js"><\/script>/);
 

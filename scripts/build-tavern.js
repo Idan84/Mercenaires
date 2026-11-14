@@ -80,6 +80,7 @@ function download(){
   for(const f of index.files){
     const parts=f.path.split("/");
     if(!/^taverne$/i.test(parts[0])||parts.length>3||!/\.(png|jpe?g|webp)$/i.test(f.path)) continue;
+    if(parts.length===3&&/^missions$/i.test(parts[1])) continue; // les gravures des annonces : scripts/build-mission-art.js
     const dest=path.join(dir,...parts.slice(1));
     fs.mkdirSync(path.dirname(dest),{recursive:true});
     execFileSync("curl",["-sf","-o",dest,SITE+"/"+index.base+"/"+parts.map(encodeURIComponent).join("/")]);

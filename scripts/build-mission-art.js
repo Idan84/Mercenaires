@@ -79,7 +79,11 @@ const REJECTED={
   "Wealthy_widow_in_carriage_ad463919.jpg":"un cadre dessiné tout autour : un rectangle sur l'annonce (et trop proche de garde-veuve-1)",
   "Wealthy_widow_seated_in_carriage_356fe131.jpg":"trop proche de garde-veuve-1 (la veuve voilée dans sa voiture), en pleine largeur",
   "Woman_alchemist_carrying_glowing…_023e0cbe.jpg":"trop proche de garde-alchimiste-1 (l'alchimiste et ses fioles)",
-  "Woman_alchemist_carrying_glowing…_11f60eb1.jpg":"trop proche de garde-alchimiste-1 (l'alchimiste et ses fioles)"
+  "Woman_alchemist_carrying_glowing…_11f60eb1.jpg":"trop proche de garde-alchimiste-1 (l'alchimiste et ses fioles)",
+  "Sealing_wax_on_wooden_board_060d3342.jpg":"pas une gravure : les cachets de cire, détourés à part (scripts/key-wax-seals.js → assets/taverne/cire-*.webp)",
+  "Three_sealing_wax_drops_on_041fb773.jpg":"cachets de cire : des bouts de bois et de papier collés derrière",
+  "Three_sealing_wax_drops_on_cdafefe0.jpg":"cachets de cire : les mêmes que la planche gardée",
+  "Three_sealing_wax_drops_on_d7dfc70b.jpg":"cachets de cire : des bouts de bois et de papier collés derrière"
 };
 
 function listMissions(){

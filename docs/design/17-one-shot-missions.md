@@ -287,8 +287,8 @@ ennemis, récompense, expiration…), la lettre du commanditaire s'il y en a une
   éclairé par la droite comme le panneau (`assets/taverne/papier-froisse.webp`, tiré de la texture libre de droits CC0
   « Paper003 » d'ambientCG), plié en trois ; l'ombre gagne vers la gauche. Chaque annonce a son allure, toujours la même
   pour la même offre (tirée de son identifiant) : un peu de travers, un papier un peu plus clair ou plus jaune, parfois
-  l'auréole d'une chope dans un coin du bas, et ce qui la tient au bois : un clou forgé, deux punaises de laiton ou une
-  goutte de cire rouge. En attendant les illustrations, une vignette gravée (hachures qui s'épaississent vers les bords).
+  l'auréole d'une chope dans un coin du bas, et ce qui la tient au bois : un clou forgé, deux punaises de laiton ou un
+  cachet de cire rouge, noir ou bleu (Jean-Mi : `assets/taverne/cire-*.webp`, détourés par `scripts/key-wax-seals.js`). En attendant les illustrations, une vignette gravée (hachures qui s'épaississent vers les bords).
   Sur le panneau, des restes d'annonces arrachées sont encore cloués ; la lumière d'une bougie vacille en haut à droite,
   avec un peu de poussière dans le rayon (rien ne bouge si le système demande moins de mouvement).
 - **Les illustrations** (Idan et Jean-Mi, 2026-11-14) : des gravures à l'encre sur fond blanc, posées en « produit » sur

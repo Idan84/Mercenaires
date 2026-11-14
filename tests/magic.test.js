@@ -407,6 +407,11 @@ assert.deepEqual(magic.wallCells({q:0,r:0},{q:0,r:3},5),[{q:-2,r:3},{q:-1,r:3},{
 assert.deepEqual(combat.hexLine({q:0,r:0},{q:3,r:0}),[{q:0,r:0},{q:1,r:0},{q:2,r:0},{q:3,r:0}]);
 assert.equal(combat.hexLine({q:0,r:0},{q:2,r:1}).length,4);
 assert.deepEqual(combat.hexLine({q:2,r:2},{q:2,r:2}),[{q:2,r:2}]);
+// La ligne qui frôle (Idan, 2026-11-14 : « Frôler ne bloque pas ») : pile entre deux cases, une ligne de chaque côté ;
+// sinon, deux fois la même.
+const sides=combat.hexLineSides({q:0,r:0},{q:2,r:-1}).map(line=>line[1]);
+assert.deepEqual(sides.map(c=>c.q+","+c.r).sort(),["1,-1","1,0"]);
+assert.deepEqual(combat.hexLineSides({q:0,r:0},{q:3,r:0}),[combat.hexLine({q:0,r:0},{q:3,r:0}),combat.hexLine({q:0,r:0},{q:3,r:0})]);
 assert.match(magic.canCast(caster,enemy,"ice_arrow",{lineOfSight:false}).reason,/ligne de vue/);
 // Gel : le malus baisse avec la protection contre le froid de la cible (Résistance au froid 20 : 26 × 0,8 → 21).
 const frozen=mage({pm:50,vie:1,int:50});

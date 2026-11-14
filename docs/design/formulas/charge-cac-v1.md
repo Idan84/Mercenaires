@@ -19,6 +19,12 @@ Version: V1
 - distance maximale : `2 × MouvementBase` ;
 - arrivée suivie d'une attaque si aucun événement ne l'annule.
 
+À l'écran (Idan, 2026-11-14 : « j'arrive pas à charger » ; la règle reste) : le bouton **Charger** est grisé quand aucun
+ennemi ne peut être chargé, et son infobulle rappelle la course demandée (`MouvementBase` à `2 × MouvementBase` cases en
+ligne droite libre) ; en mode charge, le survol d'un ennemi qu'on ne peut pas charger dit pourquoi (trop près, trop loin,
+un personnage ou un décor infranchissable sur la ligne, un bourbier, une falaise, une course qui monte de plus d'un niveau…).
+Code : `missionChargeCheck` (`prototype-web/mission.js`).
+
 ## Chute de charge
 
 Avant résolution : `D100 ≤ 2` → chute.

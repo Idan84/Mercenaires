@@ -2,21 +2,24 @@
 "use strict";
 
 // La Taverne en calques (Idan, 2026-11-14), fabriquée depuis ses images : media/background/Taverne/ sur Hostinger
-// (liste : api/background.php), toutes sur fond vert à la taille de la taverne, chaque élément à sa place — le décor vide
-// (BG_EMPTY), les ombres des clients (Shadow, sur fond blanc), le tableau des primes, le menu, les deux tables, la trappe, le
-// tavernier, les tonneaux du premier plan ; et, dans « Alternate tavernier/ », les variantes du tavernier (« au chargement
-// de la taverne, on charge une image au hasard du tavernier »). Le repère du jeu reste 1376 × 768 : une image plus grande
-// (haute définition, Idan : « je vais te charger des images + haute def ») garde tous ses pixels, son cadre est ramené à ce
-// repère. La qualité avant le poids des fichiers (Idan : « l'idée c'est de faire un jeu Unreal, pas de gagner sur Google
-// Speed »). Ce script :
-// - détoure chaque calque (le vert devient transparent ; le reflet vert sur le personnage est retiré) ;
-// - le recadre sur ce qu'il montre et l'écrit en WebP dans prototype-web/assets/taverne/ (variantes : taverniers/) ;
-// - assemble le décor avec les ombres (fond.webp) et la taverne complète (taverne.webp, le fond des autres salles) ;
-// - calcule où chaque zone capte le pointeur (l'enveloppe de ses calques ; celle de tous les taverniers pour le tavernier) ;
+// (liste : api/background.php), toutes sur un fond uni (vert, magenta…) à la taille de la taverne, chaque élément à sa
+// place — le décor vide (BG_EMPTY), les ombres des clients (Shadow, sur fond blanc), le tableau des primes, le menu, les
+// deux tables, la trappe, le tavernier, les tonneaux du premier plan ; et des variantes, tirées au sort à chaque entrée dans
+// la taverne : « Alternate tavernier/ » (« au chargement de la taverne, on charge une image au hasard du tavernier ») et
+// « Alternate table 1/ » (Idan : « L'idée, c'est des variantes. Mais ces tables sont plus grandes que la table 1, il faut
+// rétrécir et remplacer »). Le repère du jeu reste 1376 × 768 : une image plus grande (haute définition) garde ses pixels,
+// son cadre est ramené à ce repère. La qualité avant le poids, mais une page qui charge (Idan : « l'idée c'est de faire un
+// jeu Unreal, pas de gagner sur Google Speed » ; « Faut quand même qu'on puisse charger la page ! »). Ce script :
+// - détoure chaque calque (keyImage : la couleur du fond, l'intérieur des personnages intact, les bords nettoyés) ;
+// - le recadre sur ce qu'il montre et l'écrit en WebP qualité 95 (l'encodeur de Chromium : ImageMagick ignorait la
+//   qualité) dans prototype-web/assets/taverne/ ; les variantes dans taverniers/ et table1/ ;
+// - réduit chaque variante de la Table 1 à la largeur de la table d'origine, ses pieds au même endroit ;
+// - assemble le décor avec les ombres (fond.webp) ;
+// - calcule où chaque zone capte le pointeur (l'enveloppe de chaque calque et de toutes ses variantes) ;
 // - écrit prototype-web/tavern-layers.js, lu par la taverne (tavern-scene-ui.js).
 // Usage : node scripts/build-tavern.js            (télécharge les images depuis le site)
 //         node scripts/build-tavern.js --from DIR (DIR a la même arborescence que media/background/Taverne)
-// Nécessite Playwright (détourage, mesures) et ImageMagick (convert, pour le WebP).
+// Nécessite Playwright (détourage, mesures, WebP) et ImageMagick (identify ; convert pour les ombres).
 const fs=require("fs");
 const os=require("os");
 const path=require("path");
@@ -28,9 +31,16 @@ const OUT=path.join(ROOT,"prototype-web","assets","taverne");
 const DATA=path.join(ROOT,"prototype-web","tavern-layers.js");
 // Le repère de la taverne dans le jeu (celui des premières images d'Idan).
 const SCENE={width:1376,height:768};
-// Combien le vert peut dépasser la moyenne du rouge et du bleu (sur 255) : au-delà, c'est du reflet du fond vert.
-const DESPILL_TOLERANCE=6;
-const WEBP=["-strip","-quality","92","-define","webp:alpha-quality=100","-define","webp:method=6"];
+// La qualité des WebP (0 à 1) : sans différence visible avec l'original, quatre fois plus léger que sans perte.
+const WEBP_QUALITY=0.95;
+// Le détourage, sur la « dominance » de la couleur du fond (ses canaux forts moins ses canaux faibles : le vert moins le
+// plus fort du rouge et du bleu, pour un fond vert) :
+// - lo / hi : opaque en dessous, transparent au-dessus (le fond en a ~220, les personnages moins de ~50) ;
+// - ring : la bande du bord (en pixels de l'image), où la part du fond mêlée à la couleur est retirée par le calcul du
+//   mélange, entre ringLo et ringHi (plus strict : Jean-Mi laisse un léger halo clair autour des personnages) ;
+// - near : autour du bord, la couleur propre de l'objet (la dominance moyenne de ses pixels opaques) : le bord n'est pas
+//   plus coloré que lui, à edge près (un reflet vert sur du brun disparaît ; une cape verte garde son vert).
+const KEY={lo:50,hi:195,ring:3,ringLo:0,ringHi:110,near:7,edge:10};
 // Les calques, reconnus par leur nom, du fond vers l'avant ; zone : la salle qu'ils ouvrent.
 const LAYERS=[
   {key:"annonce",match:/annonce/i,zone:"missions"},
@@ -41,11 +51,18 @@ const LAYERS=[
   {key:"tavernier",match:/^tavernier/i,zone:"talk"},
   {key:"premier-plan",match:/premier_?plan/i}
 ];
-const BACKGROUND=/bg_?empty/i,SHADOW=/shadow/i,VARIANTS=/^alternate tavernier$/i;
+// Les variantes : leur dossier sur Hostinger, leur dossier dans le jeu ; fit : à la largeur et aux pieds du calque
+// d'origine (les tables d'Idan sont plus grandes que la Table 1).
+const VARIANT_SETS=[
+  {layer:"tavernier",dir:/^alternate tavernier$/i,out:"taverniers"},
+  {layer:"table1",dir:/^alternate table ?1$/i,out:"table1",fit:true}
+];
+const BACKGROUND=/bg_?empty/i,SHADOW=/shadow/i;
 
-// Le nom d'une variante, tiré du fichier : « Dwarf_tavern_keeper_holding_ale_ab54f84f.jpg » → « holding-ale ».
+// Le nom d'une variante, tiré du fichier : « Dwarf_tavern_keeper_holding_ale_ab54f84f.jpg » → « holding-ale » ; une
+// version haute définition (« …_a43b3db4_2K.jpg ») porte le même nom que l'autre.
 function variantKey(file){
-  return path.basename(file).replace(/\.[^.]+$/,"").replace(/_[0-9a-f]{8}$/i,"").replace(/…/g,"")
+  return path.basename(file).replace(/\.[^.]+$/,"").replace(/_2K$/i,"").replace(/_[0-9a-f]{8}$/i,"").replace(/…/g,"")
     .replace(/^(surprised_)?dwarf_(tavern_keeper_)?/i,(m,s)=>s?"surprised_":"")
     .normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
 }
@@ -83,11 +100,74 @@ function hull(points){
 }
 const round2=v=>Math.round(v*100)/100;
 
+// Le détourage, sur les pixels RGBA d (modifiés sur place) d'une image w × h. Exporté pour les tests (keyPixels) ; le
+// navigateur l'exécute tel quel (sa source y est envoyée).
+function keyPixels(d,w,h,key){
+  // La couleur du fond : la médiane du pourtour de l'image ; ses canaux forts (D) et faibles (O).
+  const border=[];
+  for(let x=0;x<w;x+=2) for(const y of [0,h-1]) border.push((y*w+x)*4);
+  for(let y=0;y<h;y+=2) for(const x of [0,w-1]) border.push((y*w+x)*4);
+  const med=k=>border.map(i=>d[i+k]).sort((a,b)=>a-b)[border.length>>1];
+  const K=[med(0),med(1),med(2)];
+  const D=[0,1,2].filter(k=>K[k]>=128),O=[0,1,2].filter(k=>K[k]<128);
+  if(!D.length||!O.length) throw new Error("Fond introuvable (ni vert, ni magenta, ni autre couleur vive) : "+K);
+  const dom=(r,g,b)=>{ const c=[r,g,b]; let lo=255,hi=0; for(const k of D) lo=Math.min(lo,c[k]); for(const k of O) hi=Math.max(hi,c[k]); return lo-hi; };
+  const hi=Math.min(key.hi,dom(...K)-15),n=w*h;
+  const m=new Int16Array(n);
+  for(let p=0;p<n;p++) m[p]=dom(d[p*4],d[p*4+1],d[p*4+2]);
+  // La bande du bord : à moins de key.ring pixels d'un pixel qui tient du fond (dilatation en deux passes).
+  const soft=new Uint8Array(n),row=new Uint8Array(n),ring=new Uint8Array(n),R=key.ring;
+  for(let p=0;p<n;p++) soft[p]=m[p]>key.lo?1:0;
+  for(let y=0;y<h;y++) for(let x=0;x<w;x++){
+    let v=0;
+    for(let k=Math.max(0,x-R);k<=Math.min(w-1,x+R)&&!v;k++) v=soft[y*w+k];
+    row[y*w+x]=v;
+  }
+  for(let y=0;y<h;y++) for(let x=0;x<w;x++){
+    let v=0;
+    for(let k=Math.max(0,y-R);k<=Math.min(h-1,y+R)&&!v;k++) v=row[k*w+x];
+    ring[y*w+x]=v;
+  }
+  // La couleur propre de l'objet autour du bord : la dominance moyenne des pixels opaques hors de la bande (image intégrale).
+  const W1=w+1,sumD=new Float64Array(W1*(h+1)),sumN=new Float64Array(W1*(h+1)),N=key.near;
+  for(let y=0;y<h;y++){
+    let rd=0,rn=0;
+    for(let x=0;x<w;x++){
+      const p=y*w+x;
+      if(!ring[p]&&m[p]<=key.lo){ rd+=m[p]; rn++; }
+      sumD[(y+1)*W1+x+1]=sumD[y*W1+x+1]+rd;
+      sumN[(y+1)*W1+x+1]=sumN[y*W1+x+1]+rn;
+    }
+  }
+  const box=(t,x0,y0,x1,y1)=>t[y1*W1+x1]-t[y1*W1+x0]-t[y0*W1+x1]+t[y0*W1+x0];
+  for(let p=0;p<n;p++){
+    const i=p*4;
+    if(!ring[p]){ d[i+3]=m[p]<=key.lo?255:m[p]>=hi?0:Math.round(255*(hi-m[p])/(hi-key.lo)); continue; }
+    const x=p%w,y=(p-x)/w,x0=Math.max(0,x-N),y0=Math.max(0,y-N),x1=Math.min(w,x+N+1),y1=Math.min(h,y+N+1);
+    const cnt=box(sumN,x0,y0,x1,y1),ref=cnt?box(sumD,x0,y0,x1,y1)/cnt:0;
+    const lo=Math.max(key.ringLo,Math.min(key.lo,ref+15)),top=Math.max(key.ringHi,lo+60);
+    let a=m[p]<=lo?1:m[p]>=top?0:(top-m[p])/(top-lo);
+    let c=[d[i],d[i+1],d[i+2]];
+    // Le calcul du mélange : C = α·F + (1 − α)·K, donc F = (C − (1 − α)·K) / α.
+    if(a>0&&a<1) c=c.map((v,k)=>Math.max(0,Math.min(255,(v-(1-a)*K[k])/a)));
+    if(a>0){
+      const spill=dom(...c)-Math.max(ref,-40)-key.edge;
+      if(spill>0) for(const k of D) c[k]=Math.max(0,c[k]-spill);
+    }
+    // Le bord, resserré : ses pixels à demi transparents le sont un peu plus (pas de liseré).
+    if(a>0&&a<1) a=a*a;
+    d[i]=Math.round(c[0]);d[i+1]=Math.round(c[1]);d[i+2]=Math.round(c[2]);d[i+3]=Math.round(255*a);
+  }
+  return {K,D};
+}
+
 // Dans le navigateur : détourage, cadre de ce que montre le calque, points du contour (gauche et droite de chaque ligne),
-// PNG recadré. Le tout ramené au repère de la taverne (scale : largeur de l'image ÷ 1376).
-async function keyImage(page,file){
+// WebP recadré. Le tout ramené au repère de la taverne (scale : largeur de l'image ÷ 1376). fit : [x, y, largeur,
+// hauteur] du calque d'origine, que la variante prend en largeur, ses pieds au même endroit.
+async function keyImage(page,file,fit=null){
   const src="data:image/"+(/\.png$/i.test(file)?"png":/\.webp$/i.test(file)?"webp":"jpeg")+";base64,"+fs.readFileSync(file).toString("base64");
-  return page.evaluate(async({src,tolerance,sceneWidth})=>{
+  return page.evaluate(async({src,keySource,key,sceneWidth,fit,quality})=>{
+    const keyPixels=new Function("return "+keySource)();
     const img=new Image();
     img.src=src;
     await img.decode();
@@ -96,17 +176,10 @@ async function keyImage(page,file){
     const g=c.getContext("2d",{willReadFrequently:true});
     g.drawImage(img,0,0);
     const im=g.getImageData(0,0,w,h),d=im.data;
-    // Le vert du fond devient transparent ; le reflet vert sur le personnage (les bords, les vêtements) est retiré : le
-    // vert ne dépasse plus la moyenne du rouge et du bleu (les bruns et les gris ne bougent pas, l'olive redevient brun).
-    for(let i=0;i<d.length;i+=4){
-      const r=d[i],gr=d[i+1],b=d[i+2],spill=gr-Math.max(r,b);
-      d[i+3]=Math.round(255*(1-Math.min(1,Math.max(0,(spill-30)/77))));
-      const cap=(r+b)/2+tolerance;
-      if(gr>cap) d[i+1]=Math.round(cap);
-    }
+    const screen=keyPixels(d,w,h,key);
     g.putImageData(im,0,0);
     const s=w/sceneWidth,step=Math.max(1,Math.round(s));
-    let x0=w,y0=h,x1=-1,y1=-1;const pts=[];
+    let x0=w,y0=h,x1=-1,y1=-1;let pts=[];
     for(let y=0;y<h;y++){
       let l=-1,r=-1;
       for(let x=0;x<w;x++) if(d[(y*w+x)*4+3]>40){ if(l<0) l=x; r=x; }
@@ -115,13 +188,38 @@ async function keyImage(page,file){
       x0=Math.min(x0,l);x1=Math.max(x1,r+1);y0=Math.min(y0,y);y1=Math.max(y1,y+1);
     }
     if(x1<0) return null;
-    const out=document.createElement("canvas");
+    let out=document.createElement("canvas");
     out.width=x1-x0;out.height=y1-y0;
     out.getContext("2d").drawImage(c,x0,y0,out.width,out.height,0,0,out.width,out.height);
-    return {w,h,scale:s,box:[x0/s,y0/s,(x1-x0)/s,(y1-y0)/s],pts,png:out.toDataURL("image/png"),
-      crop:[x0,y0]};
-  },{src,tolerance:DESPILL_TOLERANCE,sceneWidth:SCENE.width});
+    let box=[x0/s,y0/s,(x1-x0)/s,(y1-y0)/s];
+    if(fit){
+      const k=fit[2]/box[2],to=[fit[0],fit[1]+fit[3]-box[3]*k,fit[2],box[3]*k];
+      pts=pts.map(([px,py])=>[to[0]+(px-box[0])*k,to[1]+(py-box[1])*k]);
+      const small=document.createElement("canvas");
+      small.width=Math.max(1,Math.round(out.width*k));small.height=Math.max(1,Math.round(out.height*k));
+      const sg=small.getContext("2d");
+      sg.imageSmoothingQuality="high";
+      sg.drawImage(out,0,0,small.width,small.height);
+      out=small;box=to;
+    }
+    return {w,h,scale:s,box,pts,screen,webp:out.toDataURL("image/webp",quality)};
+  },{src,keySource:keyPixels.toString(),key:KEY,sceneWidth:SCENE.width,fit,quality:WEBP_QUALITY});
 }
+
+// Un PNG en WebP, avec l'encodeur de Chromium.
+async function encodeWebp(page,file){
+  const src="data:image/png;base64,"+fs.readFileSync(file).toString("base64");
+  return page.evaluate(async({src,quality})=>{
+    const img=new Image();
+    img.src=src;
+    await img.decode();
+    const c=document.createElement("canvas");
+    c.width=img.naturalWidth;c.height=img.naturalHeight;
+    c.getContext("2d").drawImage(img,0,0);
+    return c.toDataURL("image/webp",quality);
+  },{src,quality:WEBP_QUALITY});
+}
+const writeWebp=(dataUrl,dest)=>fs.writeFileSync(dest,Buffer.from(dataUrl.split(",")[1],"base64"));
 
 async function main(){
   const args=process.argv.slice(2);
@@ -131,7 +229,6 @@ async function main(){
   const sizeOf=file=>execFileSync("identify",["-format","%w %h",file],{encoding:"utf8"}).trim().split(" ").map(Number);
   const files=images(from);
   const find=re=>files.filter(f=>re.test(path.basename(f))).map(f=>({f,w:sizeOf(f)[0]})).sort((a,b)=>b.w-a.w)[0]?.f;
-  const variantsDir=fs.readdirSync(from).find(d=>VARIANTS.test(d)&&fs.statSync(path.join(from,d)).isDirectory());
   const background=find(BACKGROUND);
   if(!background) throw new Error("Pas de décor vide (BG_EMPTY) dans "+from);
   const [bw,bh]=sizeOf(background);
@@ -141,69 +238,67 @@ async function main(){
   const page=await browser.newPage();
   const tmp=fs.mkdtempSync(path.join(os.tmpdir(),"tavern-png-"));
   fs.mkdirSync(OUT,{recursive:true});
-  const writeLayer=(r,dest)=>{
-    const png=path.join(tmp,path.basename(dest,".webp")+".png");
-    fs.writeFileSync(png,Buffer.from(r.png.split(",")[1],"base64"));
-    execFileSync("convert",[png,...WEBP,dest]);
-    return png;
-  };
   // Chaque image a sa taille (Idan les passe en haute définition une à une) : au format de la taverne.
   const sameFormat=r=>r&&Math.abs(r.h/r.w-SCENE.height/SCENE.width)<0.01;
   // Le décor vide, assombri par les ombres des clients (sur fond blanc : « multiply »), à sa taille.
   const shadow=find(SHADOW),fondPng=path.join(tmp,"fond.png");
   execFileSync("convert",shadow?[background,"(",shadow,"-resize",`${bw}x${bh}!`,")","-compose","multiply","-composite",fondPng]:[background,fondPng]);
-  execFileSync("convert",[fondPng,...WEBP,path.join(OUT,"fond.webp")]);
+  writeWebp(await encodeWebp(page,fondPng),path.join(OUT,"fond.webp"));
+  // L'ancienne image complète (le fond des autres salles, remplacé par le décor en calques) n'existe plus.
+  fs.rmSync(path.join(OUT,"taverne.webp"),{force:true});
   // Les calques.
-  const layers={},zonePoints={},composite=[];
+  const layers={},zonePoints={};
   for(const L of LAYERS){
     const file=find(L.match);
     if(!file) throw new Error("Calque introuvable : "+L.key);
     const r=await keyImage(page,file);
     if(!sameFormat(r)) throw new Error(`${path.basename(file)} : pas au format de la taverne (${r?.w} × ${r?.h})`);
-    composite.push([writeLayer(r,path.join(OUT,L.key+".webp")),r.crop,r.w]);
+    writeWebp(r.webp,path.join(OUT,L.key+".webp"));
     layers[L.key]=r.box.map(round2);
     if(L.zone) (zonePoints[L.zone]||(zonePoints[L.zone]=[])).push({key:L.key,pts:r.pts});
   }
-  // Les variantes du tavernier.
-  const variants=[],tavernPoints=[...zonePoints.talk[0].pts];
-  const variantsOut=path.join(OUT,"taverniers");
-  fs.rmSync(variantsOut,{recursive:true,force:true});
-  fs.mkdirSync(variantsOut,{recursive:true});
-  for(const file of variantsDir?images(path.join(from,variantsDir)):[]){
-    const r=await keyImage(page,file);
-    if(!sameFormat(r)){ console.warn("ignorée (format ou image vide) :",path.basename(file)); continue; }
-    let key=variantKey(file),n=2;
-    while(variants.some(v=>v.key===key)) key=variantKey(file)+"-"+n++;
-    writeLayer(r,path.join(variantsOut,key+".webp"));
-    variants.push({key,box:r.box.map(round2)});
-    tavernPoints.push(...r.pts);
+  // Les variantes : une par nom (la plus grande des versions), détourées de même ; leurs contours s'ajoutent à
+  // l'enveloppe de leur calque.
+  const variants={};
+  for(const set of VARIANT_SETS){
+    const list=variants[set.layer]=[];
+    const out=path.join(OUT,set.out);
+    fs.rmSync(out,{recursive:true,force:true});
+    fs.mkdirSync(out,{recursive:true});
+    const dir=fs.readdirSync(from).find(d=>set.dir.test(d)&&fs.statSync(path.join(from,d)).isDirectory());
+    const byKey=new Map();
+    for(const file of dir?images(path.join(from,dir)):[]){
+      const key=variantKey(file),w=sizeOf(file)[0];
+      if(!byKey.has(key)||byKey.get(key).w<w) byKey.set(key,{file,w});
+    }
+    const target=zonePoints[LAYERS.find(L=>L.key===set.layer).zone].find(x=>x.key===set.layer);
+    for(const [key,{file}] of byKey){
+      const r=await keyImage(page,file,set.fit?layers[set.layer]:null);
+      if(!sameFormat(r)){ console.warn("ignorée (format ou image vide) :",path.basename(file)); continue; }
+      writeWebp(r.webp,path.join(out,key+".webp"));
+      list.push({key,src:set.out+"/"+key+".webp",box:r.box.map(round2)});
+      target.pts.push(...r.pts);
+    }
   }
   await browser.close();
-  // La taverne complète (le tavernier d'origine) : le fond des autres salles.
-  // (Un calque d'une autre taille que le décor y est remis à l'échelle.)
-  const full=[fondPng];
-  for(const [png,[x,y],w] of composite){
-    const k=bw/w;
-    full.push("(",png,"-resize",`${Math.round(k*100*1000)/1000}%`,")","-geometry",`+${Math.round(x*k)}+${Math.round(y*k)}`,"-composite");
-  }
-  execFileSync("convert",[...full,...WEBP,path.join(OUT,"taverne.webp")]);
-  // Où chaque zone capte le pointeur : une enveloppe par calque ; pour le tavernier, celle de tous les taverniers.
-  const hulls=Object.fromEntries(Object.entries(zonePoints).map(([zone,list])=>[zone,
-    zone==="talk"?[hull(tavernPoints)]:list.map(x=>hull(x.pts))]));
+  // Où chaque zone capte le pointeur : une enveloppe par calque, variantes comprises.
+  const hulls=Object.fromEntries(Object.entries(zonePoints).map(([zone,list])=>[zone,list.map(x=>hull(x.pts))]));
   const text=`"use strict";
 
 // La Taverne en calques (Idan, 2026-11-14), écrite par scripts/build-tavern.js : ne pas modifier à la main.
-// Images : assets/taverne/<calque>.webp et taverniers/<variante>.webp, à la taille des images d'Idan (décor : ${bw} × ${bh}) ;
-// les cadres [x, y, largeur, hauteur] et les enveloppes sont dans le repère de la taverne (${SCENE.width} × ${SCENE.height}).
+// Images : assets/taverne/<calque>.webp et les variantes (taverniers/, table1/), à la taille des images d'Idan (décor :
+// ${bw} × ${bh}) ; les cadres [x, y, largeur, hauteur] et les enveloppes sont dans le repère de la taverne
+// (${SCENE.width} × ${SCENE.height}).
 const TAVERN_SOURCE_SIZE=${JSON.stringify({width:bw,height:bh})};
 const TAVERN_LAYER_BOXES=${JSON.stringify(layers)};
 const TAVERN_ZONE_HULLS=${JSON.stringify(hulls)};
-const TAVERN_TAVERNIERS=${JSON.stringify(variants)};
-if(typeof module!=="undefined") module.exports={TAVERN_SOURCE_SIZE,TAVERN_LAYER_BOXES,TAVERN_ZONE_HULLS,TAVERN_TAVERNIERS};
+const TAVERN_VARIANTS=${JSON.stringify(variants)};
+if(typeof module!=="undefined") module.exports={TAVERN_SOURCE_SIZE,TAVERN_LAYER_BOXES,TAVERN_ZONE_HULLS,TAVERN_VARIANTS};
 `;
   fs.writeFileSync(DATA,text);
-  console.log(`Taverne ${bw} × ${bh} : ${Object.keys(layers).length} calques, ${variants.length} taverniers (${variants.map(v=>v.key).join(", ")})`);
+  console.log(`Taverne ${bw} × ${bh} : ${Object.keys(layers).length} calques ; `
+    +Object.entries(variants).map(([k,list])=>`${list.length} variantes de ${k} (${list.map(v=>v.key).join(", ")})`).join(" ; "));
 }
 
 if(require.main===module) main().catch(error=>{ console.error(error); process.exit(1); });
-module.exports={variantKey,hull};
+module.exports={variantKey,hull,keyPixels,KEY};

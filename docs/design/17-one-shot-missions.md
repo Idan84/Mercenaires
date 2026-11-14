@@ -304,7 +304,9 @@ ennemis, récompense, expiration…), la lettre du commanditaire s'il y en a une
   (dans les marges, pour ne pas passer pour des fautes d'impression).
   Les missions d'argent (niveaux 6 à 10) et d'or (11 à 15) se reconnaissent d'un coup d'œil (Idan, 2026-11-14 :
   « 1 et 3 ») : le titre à la feuille de métal (étain ou or, gravé d'un filet sombre) et des étoiles plus grandes qui
-  brillent, et une dague plantée en haut de l'annonce à la place du clou, des punaises ou du cachet : acier pour
+  brillent, et une dague plantée dans le haut du papier, la lame entrant juste au-dessus de la gravure et la poignée
+  dépassant vers le haut (Idan : « le bas de la dague devrait arriver en haut de l'image »), à la place du clou, des
+  punaises ou du cachet : acier pour
   l'argent, garde dorée pour l'or, deux de chaque (`assets/taverne/dague-argent|or-1|2.webp`, Jean-Mi, détourées avec
   `--slit` : une fente sombre dans le papier là où la lame entre).
   Les flèches sont des équerres de fer forgé, platine vissée sur le montant du cadre : au survol, le fer s'éclaire et la

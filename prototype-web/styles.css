@@ -2154,7 +2154,8 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
    fond de la taverne ; un clic sur le mur, autour du cadre, ramène à la taverne (contract-ui.js). Les annonces sur les
    planches, trois par page, sur notre parchemin ; une flèche de fer de chaque côté ; la page suivante pousse l'autre. */
 .mission-board{--board-w:max(100vw,100vh * 2000 / 1116);position:fixed;left:50%;top:50%;z-index:1;width:var(--board-w);aspect-ratio:2000/1116;transform:translate(-50%,-50%);background:#16100b url("assets/taverne/panneau-missions.webp") center/100% 100% no-repeat}
-.mission-board-planks{position:absolute;left:18.6%;top:21.6%;width:63.2%;height:58.2%;overflow:hidden}
+.mission-board-planks{position:absolute;left:18.6%;top:21.6%;width:63.2%;height:58.2%;overflow:hidden;overflow:clip;overflow-y:visible}
+/* Coupé à gauche et à droite seulement (le glissement des pages) : en haut, la poignée d'une dague dépasse. */
 .board-page{position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:center;gap:3.2%;padding:0 3.4%}
 /* Les annonces selon la charte de la création (creation-capitaine.css) : le parchemin d'Idan, Cinzel 700 en capitales
    espacées pour le lieu, EB Garamond pour le reste ; un filet qui s'affine jusqu'à disparaître et entre dans sa fleur de
@@ -2216,9 +2217,10 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 [data-pin="cire"] .board-notice-pins i{width:calc(var(--u) * 40);aspect-ratio:290/320;background:url("assets/taverne/cire-rouge.webp") center/contain no-repeat;filter:drop-shadow(calc(var(--u) * -1.5) calc(var(--u) * 2.5) calc(var(--u) * 2) rgba(0,0,0,.55))}
 [data-wax="noire"] .board-notice-pins i{background-image:url("assets/taverne/cire-noire.webp")}
 [data-wax="bleue"] .board-notice-pins i{background-image:url("assets/taverne/cire-bleue.webp")}
-/* La dague (missions d'argent et d'or, Idan, 2026-11-14) : plantée en haut de l'annonce, un peu à droite, la garde
-   au-dessus du papier ; deux dagues par métal (dague-argent|or-1|2.webp de Jean-Mi, avec la fente où la lame entre). */
-[data-pin="dague"] .board-notice-pins i{left:64%;top:calc(var(--u) * -22);width:auto;height:calc(var(--u) * 100);aspect-ratio:293/635;transform:translateX(-50%);background:url("assets/taverne/dague-argent-2.webp") center bottom / contain no-repeat;filter:drop-shadow(0 0 calc(var(--u) * 1.2) rgba(20,12,4,.7)) drop-shadow(calc(var(--u) * -4) calc(var(--u) * 7) calc(var(--u) * 3) rgba(0,0,0,.6))}
+/* La dague (missions d'argent et d'or, Idan, 2026-11-14) : plantée dans le haut du papier, un peu à droite, la lame
+   entre juste au-dessus de la gravure (Idan : « le bas de la dague devrait arriver en haut de l'image ») et la poignée
+   dépasse vers le haut ; deux dagues par métal (dague-argent|or-1|2.webp de Jean-Mi, avec la fente où la lame entre). */
+[data-pin="dague"] .board-notice-pins i{left:64%;top:calc(var(--u) * -66);width:auto;height:calc(var(--u) * 72);aspect-ratio:293/635;transform:translateX(-50%);background:url("assets/taverne/dague-argent-2.webp") center bottom / contain no-repeat;filter:drop-shadow(0 0 calc(var(--u) * 1.2) rgba(20,12,4,.7)) drop-shadow(calc(var(--u) * -4) calc(var(--u) * 7) calc(var(--u) * 3) rgba(0,0,0,.6))}
 [data-metal="silver"][data-head="2"] .board-notice-pins i{aspect-ratio:411/653;background-image:url("assets/taverne/dague-argent-1.webp")}
 [data-metal="gold"] .board-notice-pins i{aspect-ratio:288/635;background-image:url("assets/taverne/dague-or-1.webp")}
 [data-metal="gold"][data-head="2"] .board-notice-pins i{aspect-ratio:289/640;background-image:url("assets/taverne/dague-or-2.webp")}

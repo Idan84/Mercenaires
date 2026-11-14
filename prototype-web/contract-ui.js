@@ -69,7 +69,8 @@ function contractCard(offer){
   // Une chasse (Idan, 2026-11-07) : la récompense seule, ni coffre ni butin.
   const loot=def.bete?"":" + butin";
   return {id:"contract:"+offer.id,kind:"contract",type:offer.name,title:offer.campName+" de "+offer.fields.lieu,name:offer.campName,place:offer.fields.lieu,
-    illustration:def.illustration||"",description:def.description||"",
+    // L'illustration du camp (Jean-Mi, 2026-11-14 : gravure à l'encre sur fond blanc), sinon celle de la mission.
+    illustration:(def.camps||[]).find(c=>c.faction===offer.faction)?.illustration||def.illustration||"",description:def.description||"",
     difficulty:{level:offer.difficulty||1,label:"Difficulté"},
     reward:fmt(offer.reward)+" PO",gold:offer.reward,rewardNote:loot.trim(),duration:missionDays(offer.distance)+" de marche",
     facts:[["client","Commanditaire",order?.from||""],["days","Distance",missionDays(offer.distance)+" de marche, "+missionDays(2*offer.distance)+" aller-retour"],

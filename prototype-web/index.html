@@ -33,7 +33,9 @@
          de la culture du capitaine, d'un bord à l'autre ; au centre, le bouton Jour suivant d'Idan dans l'anneau de la
          culture (ornement_central) ; à gauche de l'anneau, les six lieux en pictos d'Idan (le nom au survol), dans l'ordre de
          ses images : Château, Taverne, Dortoir, Marchand (grisé sans marchand), Intendance, Construction (Ma Compagnie) ;
-         celui du lieu où l'on est est grisé. La partie droite viendra plus tard ; le journal est retiré pour l'instant. -->
+         celui du lieu où l'on est est grisé. À droite (Idan, 2026-11-14) : le bouton du lieu (son menu : dans la taverne,
+         ses cinq zones ; ailleurs, rien pour l'instant), puis Combat (les missions du jour), Nouvelles (le pigeon : les
+         nouvelles du jour), Journal (il remplace le journal au-dessus de la barre) et Discussions (bientôt). -->
     <div class="game-bottom-bar">
       <div class="hud-bar-art" aria-hidden="true"><span class="hud-bar-piece hud-bar-center"></span></div>
       <nav class="hud-places" aria-label="Lieux du camp">
@@ -46,8 +48,17 @@
       </nav>
       <button id="hud-next-day-btn" class="hud-play" type="button" aria-label="Jour suivant" title="Jour suivant"><img class="hud-play-img" src="assets/hud/next.webp" alt="" width="320" height="320"></button>
       <img class="hud-ornament" alt="" aria-hidden="true" hidden>
+      <nav class="hud-actions" aria-label="Actions du jour">
+        <div id="hud-context" class="hud-context">
+          <button id="hud-context-btn" class="hud-context-btn" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="hud-context-menu" title="Ce lieu"><span class="hud-context-dots" aria-hidden="true">•••</span><span class="hud-nav-label">Ce lieu</span></button>
+          <ul id="hud-context-menu" class="hud-menu-list" role="menu" aria-label="Ce lieu" hidden></ul>
+        </div>
+        <button id="hud-combat-btn" class="hud-nav" type="button" data-hud-action="combat" title="Missions du jour"><img class="hud-nav-img" src="assets/hud/pictos-bas/combat.webp" alt="" width="200" height="200"><span class="hud-nav-label">Missions du jour</span></button>
+        <button id="hud-news-btn" class="hud-nav" type="button" data-hud-action="news" title="Nouvelles du jour"><img class="hud-nav-img" src="assets/hud/pictos-bas/nouvelles.webp" alt="" width="200" height="200"><span class="hud-nav-label">Nouvelles du jour</span></button>
+        <button id="hud-journal-btn" class="hud-nav" type="button" data-hud-action="journal" aria-expanded="false" aria-controls="hud-journal" title="Journal"><img class="hud-nav-img" src="assets/hud/pictos-bas/journal.webp" alt="" width="200" height="200"><span class="hud-nav-label">Journal</span></button>
+        <button id="hud-talk-btn" class="hud-nav" type="button" data-hud-action="talk" title="Discussions : bientôt" disabled><img class="hud-nav-img" src="assets/hud/pictos-bas/discussions.webp" alt="" width="200" height="200"><span class="hud-nav-label">Discussions</span></button>
+      </nav>
       <section id="hud-journal" class="hud-journal" aria-label="Journal de la compagnie" hidden>
-        <button id="hud-console-toggle" class="hud-journal-head" type="button" aria-expanded="false" aria-controls="game-action-lines" title="Afficher ou réduire le journal"><span class="hud-journal-label"><span class="hud-icon" data-hud-icon="journal"></span>Journal</span><span id="hud-journal-last" class="hud-journal-last"></span><span class="hud-journal-chevron" aria-hidden="true">▴</span></button>
         <ol id="game-action-lines" class="hud-journal-lines" aria-live="polite" aria-relevant="additions"></ol>
       </section>
     </div>
@@ -62,9 +73,8 @@
       <button type="button" data-pause-action="menu">Menu principal</button>
     </div>
   </div>
-  <!-- La Taverne animée (Idan, 2026-11-11) : la vidéo (chargée à la première visite) et les zones cliquables de
-       l'accueil de la taverne (tavern-scene-ui.js). Fichiers déposés par Idan sur Hostinger, hors de Git. -->
-  <video id="tavern-video" class="tavern-video" muted loop playsinline preload="none" poster="/media/video/Img_Tavern.jpg" aria-hidden="true"></video>
+  <!-- La Taverne (Idan, 2026-11-11 ; sans vidéo depuis le 2026-11-14) : les zones cliquables de son accueil
+       (tavern-scene-ui.js), sur son image (déposée par Idan sur Hostinger, hors de Git). -->
   <svg id="tavern-zones" class="tavern-zones" preserveAspectRatio="xMidYMid slice" aria-label="La Taverne"></svg>
   <main class="app-shell">
     <header class="topbar">

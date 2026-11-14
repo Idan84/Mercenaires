@@ -35,10 +35,12 @@ const PIECES=["left","center","right"];
 const ORNAMENT_MAX_WIDTH=800;
 // Le bouton Jour suivant : un carré de 1,12 fois le diamètre du disque, centré sur lui (voir NEXT_DISC dans styles.css).
 const NEXT_MARGIN=1.12,NEXT_SIZE=320;
-// Les pictos des lieux : <nom>-<n>.png à la racine du dossier, dans l'ordre de leurs numéros (Idan). Chacun est recadré sur
-// le carré central de PICTO_CROP de son côté (les six sont dessinés à la même échelle, sur la même toile).
+// Les pictos de la barre du bas : <nom>-<n>.png à la racine du dossier, reconnus par un mot de leur nom ; à gauche de
+// l'anneau, les six lieux, à droite les quatre actions (Idan, 2026-11-14), chacun dans l'ordre de ses numéros. Chacun est
+// recadré sur le carré central de PICTO_CROP de son côté (ils sont dessinés à la même échelle, sur la même toile).
 const PICTOS_OUT=path.join(ROOT,"prototype-web","assets","hud","pictos-bas");
-const BOTTOM_PICTOS=["chateau","taverne","dortoir","marchand","intendance","construction"];
+const BOTTOM_PICTOS=[["chateau","chateau"],["taverne","chope"],["dortoir","lit"],["marchand","balance"],["intendance","caisse"],
+  ["construction","maison"],["combat","epee"],["nouvelles","pigeon"],["journal","journal"],["discussions","bulle"]];
 const PICTO_CROP=960/1254,PICTO_SIZE=200;
 // Les réglages par culture (Atelier des barres) ; une culture sans réglage prend ceux de départ de l'atelier.
 const SETTINGS=path.join(__dirname,"hud-bars-reglages.json");
@@ -201,16 +203,20 @@ function buildNextButton(file){
   return {disc:[bw,bh],side};
 }
 
-// Le bord gauche de l'anneau, ligne par ligne : le premier pixel opaque de chaque ligne de l'image WebP (null : ligne vide).
+// Les bords de l'anneau, ligne par ligne : le premier pixel opaque de chaque ligne de l'image WebP et la fin du dernier
+// (null : ligne vide).
 async function ornamentProfile(page,file){
   const src="data:image/webp;base64,"+fs.readFileSync(file).toString("base64");
   return page.evaluate(async src=>{
     const i=new Image();i.src=src;await i.decode();
     const w=i.width,h=i.height,c=document.createElement("canvas");c.width=w;c.height=h;
     const g=c.getContext("2d");g.drawImage(i,0,0);const d=g.getImageData(0,0,w,h).data;
-    const left=[];
-    for(let y=0;y<h;y++){let x=0;while(x<w&&d[(y*w+x)*4+3]<=128)x++;left.push(x<w?x:null);}
-    return {w,h,left};
+    const left=[],right=[];
+    for(let y=0;y<h;y++){
+      let x=0;while(x<w&&d[(y*w+x)*4+3]<=128)x++;left.push(x<w?x:null);
+      x=w-1;while(x>=0&&d[(y*w+x)*4+3]<=128)x--;right.push(x>=0?x+1:null);
+    }
+    return {w,h,left,right};
   },src);
 }
 
@@ -218,7 +224,9 @@ async function ornamentProfile(page,file){
 function buildPictos(dir){
   const built=[];
   for(const name of fs.readdirSync(dir)){
-    const m=name.match(/-(\d)\.png$/i),key=m&&BOTTOM_PICTOS[Number(m[1])-1];
+    if(!/-\d+\.png$/i.test(name)) continue;
+    const words=tokens(name.replace(/-\d+\.png$/i,""));
+    const key=BOTTOM_PICTOS.find(([,word])=>words.includes(word))?.[0];
     if(!key) continue;
     const file=path.join(dir,name);
     const [w,h]=execFileSync("identify",["-format","%w %h",file],{encoding:"utf8"}).trim().split(" ").map(Number);
@@ -228,7 +236,7 @@ function buildPictos(dir){
       "-strip","-quality","90","-define","webp:alpha-quality=100","-define","webp:method=6",path.join(PICTOS_OUT,key+".webp")]);
     built.push(key);
   }
-  return BOTTOM_PICTOS.filter(k=>built.includes(k));
+  return BOTTOM_PICTOS.map(([key])=>key).filter(k=>built.includes(k));
 }
 
 // Les réglages d'une culture, complétés par ceux de départ.
@@ -256,7 +264,8 @@ function topLayout(bar,s){
 //   milieu de l'écran, à centre (s.decalage pixels de l'image de l'anneau sous la ligne) ;
 // - les six pictos (picto de côté, ecart entre eux), centrés dans la bande sombre (pictosY, relevés de s.pictoHaut),
 //   rangés à gauche de l'anneau : leur bord droit (pictosDroite) à s.pictoAnneau du bord de l'anneau à leur hauteur (le
-//   premier pixel opaque de ces lignes de l'image) ou du bouton s'il dépasse ;
+//   premier pixel opaque de ces lignes de l'image) ou du bouton s'il dépasse ; à droite de l'anneau, de même, le bouton du
+//   lieu et les quatre actions (pictosGauche : leur bord gauche) ;
 // - hauteur : ce que la barre, le bouton et l'anneau occupent (les lieux du camp s'arrêtent au-dessus).
 function bottomLayout(bar,s,profile){
   const line=(bar.frameTop+bar.bandTop)/2,bottom=bar.bandBottom-s.rogner;
@@ -266,20 +275,22 @@ function bottomLayout(bar,s,profile){
   const ringW=1600*unit*s.anneau/100,ringH=ringW/2,ringTop=centre+ringH/2;
   const picto=s.pictoTaille,pictosY=k*(bottom-bar.bandTop)/2-s.pictoHaut;
   const lo=pictosY-picto/2,hi=pictosY+picto/2;
-  let edge=0;
+  let edge=0,edgeRight=0;
   const R=s.bouton/2,dy=Math.max(0,lo-centre,centre-hi);
-  if(dy<R) edge=Math.sqrt(R*R-dy*dy);
+  if(dy<R) edge=edgeRight=Math.sqrt(R*R-dy*dy);
   let top=centre+s.bouton*NEXT_MARGIN/2;
   if(profile){
     const px=ringW/profile.w;
     const r0=Math.max(0,Math.floor((ringTop-hi)/px)),r1=Math.min(profile.h-1,Math.ceil((ringTop-lo)/px));
     for(let r=r0;r<=r1;r++) if(profile.left[r]!==null) edge=Math.max(edge,ringW/2-profile.left[r]*px);
+    for(let r=r0;r<=r1;r++) if(profile.right?.[r]!=null) edgeRight=Math.max(edgeRight,profile.right[r]*px-ringW/2);
     const first=profile.left.findIndex(x=>x!==null);
     if(first>=0) top=Math.max(top,ringTop-first*px);
   }
   if(!edge) edge=s.bouton*NEXT_MARGIN/2;
+  if(!edgeRight) edgeRight=s.bouton*NEXT_MARGIN/2;
   return Object.fromEntries(Object.entries({artBas:s.ligne-k*(bar.h-line),artHaut:k*bar.h,centre,bouton:s.bouton,anneau:ringW,
-    picto,ecart:s.pictoEcart,pictosDroite:edge+s.pictoAnneau,pictosY,hauteur:Math.max(s.ligne,top)}).map(([n,v])=>[n,round4(v)]));
+    picto,ecart:s.pictoEcart,pictosDroite:edge+s.pictoAnneau,pictosGauche:edgeRight+s.pictoAnneau,pictosY,hauteur:Math.max(s.ligne,top)}).map(([n,v])=>[n,round4(v)]));
 }
 
 async function main(){
@@ -334,7 +345,7 @@ async function main(){
   else console.log("Pas de next.png : le bouton Jour suivant n'est pas refait.");
   const pictos=buildPictos(from);
   console.log(`${pictos.length} pictos de la barre du bas : ${pictos.join(", ")||"aucun"}`);
-  if(pictos.length!==BOTTOM_PICTOS.length) problems.push(`pictos de la barre du bas : ${BOTTOM_PICTOS.filter(k=>!pictos.includes(k)).join(", ")} manquant(s)`);
+  if(pictos.length!==BOTTOM_PICTOS.length) problems.push(`pictos de la barre du bas : ${BOTTOM_PICTOS.map(([k])=>k).filter(k=>!pictos.includes(k)).join(", ")} manquant(s)`);
   const sorted=Object.fromEntries(Object.entries(bars).sort(([a],[b])=>a.localeCompare(b)));
   const lines=Object.entries(sorted).map(([k,v])=>`  ${JSON.stringify(k)}:${JSON.stringify(v)}`);
   fs.writeFileSync(DATA,`"use strict";

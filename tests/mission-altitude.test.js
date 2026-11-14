@@ -122,6 +122,7 @@ assert.equal(reach.has("2,4"),false,"une falaise : on n'y monte pas");
 m=newMission([{q:2,r:4,h:1}]);
 u=m.players[0];
 u.movementRemaining=1;
+u.attackAvailable=false; // sans second mouvement
 api.setMissionMode("move");
 api.handleMissionHexClick(2,4);
 assert.deepEqual([u.q,u.r],[1,4],"il faut 2 points pour monter");

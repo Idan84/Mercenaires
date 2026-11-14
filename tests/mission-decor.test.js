@@ -62,7 +62,7 @@ const EXPOSED="makeMissionUnit,sortMissionInitiative,selectNextMissionPlayer,sho
   +"moveMissionUnitAlongPath,missionLineOfSight,missionCoverLevel,missionChargeIfClear,missionChargeCheck,performMissionAttack,missionForcedMove,"
   +"generateMissionDecor,missionDecorLabel,missionCellFree,handleMissionHexClick,setMissionMode,resolveMissionDetection,"
   +"missionAttackPreview,missionColumn,missionKey,startMissionCamouflage,autoResolveMission,enemyMissionAct,resolveMissionSpell,"
-  +"missionMagic,missionSpellPreviewRows";
+  +"missionMagic,missionSpellPreviewRows,targetableMissionCells,renderMission,missionActionAvailability";
 const api=new Function("game","$","esc","fmt","renderAvatar","combatEngine","MercenairesProgression","MercenairesMissionEnd",
   "MercenairesMagic",source+"\nreturn {"+EXPOSED+"};")
   .call(null,game,$,v=>String(v??""),v=>String(Math.round(Number(v)||0)),()=>"",()=>engine,Progression,MissionEnd,Magic);
@@ -124,10 +124,11 @@ u=m.players[0];
 assert.equal(api.shortestMissionPath(u,{q:2,r:4},u),null,"on n'entre pas dans un mur");
 assert.equal(has(api.shortestMissionPath(u,{q:3,r:4},u),{q:2,r:4}),false);
 assert.equal(api.missionCellFree({q:2,r:4}),false);
-// Un clic au-delà du mouvement restant ne bouge pas.
+// Un clic au-delà du mouvement restant ne bouge pas (son attaque déjà faite : plus de second mouvement).
 m=newMission([{q:2,r:4,code:"marais"}]);
 u=m.players[0];
 u.movementRemaining=2;
+u.attackAvailable=false;
 api.setMissionMode("move");
 api.handleMissionHexClick(2,4);
 assert.deepEqual([u.q,u.r],[1,4],"le marais coûte 3");
@@ -338,4 +339,30 @@ for(let k=0;k<200;k++){
   if(!game.mission.over) stuck++;
 }
 assert.equal(stuck,0,"combats bloqués : "+stuck);
+// (en dernier : ces tirages ne décalent pas ceux des sections au-dessus)
+// Les deux mouvements d'un coup (Idan, 2026-11-14) : dans la seconde zone, il renonce à son attaque.
+m=newMission([{q:2,r:4,code:"marais"}]);
+u=m.players[0];
+assert.equal(m.mode,"move","Déplacer, choisi d'office au début de son tour");
+u.movementRemaining=2;
+api.setMissionMode("move");
+const targets=api.targetableMissionCells();
+assert.ok(targets.has("2,4"),"la seconde zone se clique aussi");
+api.renderMission();
+const zone=c=>(elements["mission-map"].innerHTML.match(new RegExp(`<button class="([^"]*)" data-hex-q="${c[0]}" data-hex-r="${c[1]}"`))||[])[1]||"";
+assert.match(zone([2,4]),/reachable second-move/,"le marais (3) : la seconde zone, en violet");
+assert.ok(/reachable/.test(zone([1,3]))&&!/second-move/.test(zone([1,3])),"une case à 1 : la première zone");
+api.handleMissionHexClick(2,4);
+assert.deepEqual([u.q,u.r,u.movementRemaining,u.attackAvailable,u.secondMove],[2,4,2+engine.movementBase(u)-3,false,true],"le second mouvement, au prix de l'attaque");
+assert.equal(m.mode,null);
+// Le premier fait : Déplacer devient « Second mouvement » ; plus de bouton à part.
+Object.assign(u,{movementRemaining:0,attackAvailable:true,secondMove:false});
+api.renderMission();
+assert.equal(elements["mission-move-btn"].textContent,"Second mouvement");
+assert.equal(api.missionActionAvailability().move,true);
+u.attackAvailable=false;
+assert.equal(api.missionActionAvailability().move,false,"ni mouvement ni attaque : plus de déplacement");
+const html=fs.readFileSync(path.join(ROOT,"prototype-web","index.html"),"utf8");
+assert.ok(!html.includes("mission-second-move-btn"),"le bouton Second mouvement a disparu");
+assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","styles.css"),"utf8"),/\.hex-cell\.reachable\.second-move\{background:/);
 console.log("Décor : passage (coût, infranchissable), vue (mur, forêt, au contact), couverture (tir, charge, sorts qui volent, repérage), chute de charge, IA (contourne, va chercher), Mission Test — OK");

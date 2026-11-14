@@ -159,7 +159,7 @@
         {
           "faction": "Orcs",
           "nom_camp": "Camp orc",
-          "illustrations": ["assets/missions/camp-orc-1.webp", "assets/missions/camp-orc-2.webp"],
+          "illustrations": ["assets/missions/camp-orc-1.webp"],
           "poids": 1,
           "lignes": [
             {
@@ -233,7 +233,7 @@
         {
           "faction": "Voleurs",
           "nom_camp": "Camp de voleurs",
-          "illustrations": ["assets/missions/camp-voleurs-1.webp", "assets/missions/camp-voleurs-2.webp", "assets/missions/camp-voleurs-3.webp"],
+          "illustrations": ["assets/missions/camp-voleurs-1.webp", "assets/missions/camp-voleurs-2.webp"],
           "poids": 1,
           "lignes": [
             {
@@ -273,7 +273,7 @@
         {
           "faction": "Ogres",
           "nom_camp": "Camp ogre",
-          "illustrations": ["assets/missions/camp-ogre-1.webp", "assets/missions/camp-ogre-2.webp"],
+          "illustrations": ["assets/missions/camp-ogre-1.webp"],
           "poids": 1,
           "lignes": [
             {
@@ -309,7 +309,7 @@
         {
           "faction": "Culte des morts",
           "nom_camp": "Cimetière profané",
-          "illustrations": ["assets/missions/cimetiere-profane-1.webp", "assets/missions/cimetiere-profane-2.webp"],
+          "illustrations": ["assets/missions/cimetiere-profane-1.webp"],
           "poids": 1,
           "lignes": [
             {
@@ -346,7 +346,7 @@
         {
           "faction": "Cour de sang",
           "nom_camp": "Château maudit",
-          "illustrations": ["assets/missions/chateau-maudit-1.webp", "assets/missions/chateau-maudit-2.webp"],
+          "illustrations": ["assets/missions/chateau-maudit-1.webp"],
           "poids": 1,
           "lignes": [
             {

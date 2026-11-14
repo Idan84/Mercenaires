@@ -108,7 +108,7 @@ function hudGoldDelta(gold){
 // culture, un cadre provisoire ; sans anneau, le bouton Jour suivant seul.
 const HUD_BAR_PIECES=["center","right"];
 const HUD_BAR_VARS={h:"--hb-h",right:"--hb-rw",bandTop:"--hb-bt",band:"--hb-band",bandRight:"--hb-ri"};
-const HUD_TOP_VARS={top:"--ht-top",haut:"--ht-haut",contenu:"--ht-s",fonds:"--ht-fonds",marge:"--ht-marge"};
+const HUD_TOP_VARS={barre:"--ht-barre",embout:"--ht-embout",top:"--ht-top",haut:"--ht-haut",contenu:"--ht-s",fonds:"--ht-fonds",marge:"--ht-marge"};
 const HUD_BOTTOM_VARS={artBas:"--bb-art-bas",artHaut:"--bb-art-haut",centre:"--bb-centre",bouton:"--bb-bouton",anneau:"--bb-anneau",
   picto:"--bb-picto",ecart:"--bb-ecart",pictosDroite:"--bb-pictos-droite",pictosY:"--bb-pictos-y",hauteur:"--bb-h"};
 let hudBarShown=null;

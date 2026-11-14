@@ -55,6 +55,11 @@ const MISSION_ICONS={
   expires:'<path d="M7 3.5h10M7 20.5h10M8 3.5c0 4 4 5 4 8.5s-4 4.5-4 8.5M16 3.5c0 4-4 5-4 8.5s4 4.5 4 8.5"/>',
   // Le sablier de la maquette du dortoir (Idan, 2026-11-14 : « On a pas un sablier qui irait bien ? ») : deux barres, le
   // verre, le sable en bas.
+  // Les pictos du détail (Idan, 2026-11-14 : « pense icônes et pictos ») : à l'encre, comme le sablier.
+  route:'<path d="M8.5 3h5v8l5 3.2c.9.6 1.5 1.6 1.5 2.7V20H4.5v-3.2c1.6-.7 2.9-2 3.4-3.8z"/><path d="M4.5 17.5h15.5M13.5 6.5h-2.2M13.5 9.2h-2.2"/>',
+  swords:'<path d="M3.5 3.5 13 13M10.5 15.5l5-5M14 14l4.3 4.3"/><circle cx="19.2" cy="19.2" r="1.1"/><path d="M20.5 3.5 11 13M13.5 15.5l-5-5M10 14l-4.3 4.3"/><circle cx="4.8" cy="19.2" r="1.1"/>',
+  chest:'<path d="M4 10.5h16v9H4zM4 10.5c0-3 2.4-5 5-5h6c2.6 0 5 2 5 5"/><path d="M10.6 12.6h2.8v2.6h-2.8zM4 13.8h6.6M13.4 13.8H20"/>',
+  candle:'<path d="M10 9.5h4v11h-4zM7.5 20.5h9M12 9.5V7.6"/><path d="M12 2.8c1.7 1.6 1.7 3.4 0 4.6-1.7-1.2-1.7-3 0-4.6z" fill="currentColor" stroke="none"/>',
   hourglass:'<path d="M5.5 2.8h13M5.5 21.2h13" stroke-width="2.2"/><path d="M7.4 2.8c0 4.6 3.6 6.1 3.6 9.2s-3.6 4.6-3.6 9.2M16.6 2.8c0 4.6-3.6 6.1-3.6 9.2s3.6 4.6 3.6 9.2"/><path d="M8.6 20.4c.6-2.4 2-3.4 3.4-4.4 1.4 1 2.8 2 3.4 4.4z" fill="currentColor" stroke="none"/>'
 };
 function missionIcon(kind){
@@ -87,9 +92,11 @@ function contractCard(offer){
     illustration:missionIllustration(def,offer),description:def.description||"",
     difficulty:{level:offer.difficulty||1,label:"Difficulté"},
     reward:fmt(offer.reward)+" PO",gold:offer.reward,rewardNote:loot.trim(),duration:missionDays(offer.distance)+" de marche",
-    facts:[["client","Commanditaire",order?.from||""],["days","Distance",missionDays(offer.distance)+" de marche, "+missionDays(2*offer.distance)+" aller-retour"],
-      ["enemies","Ennemis",offer.faction+", "+offer.fields.estimation],["gold","Récompense",fmt(offer.reward)+" PO"+loot],
-      ["expires","Expire le",contractDate(offer.expiresDay).label]],
+    // L'essentiel, en pictos (le commanditaire signe la lettre) : la paie, la route, l'ennemi, l'échéance.
+    facts:[{icon:"gold",value:goldAmount(offer.reward)+" pièces d’or",note:def.bete?"":"et le butin"},
+      {icon:"route",value:missionDays(offer.distance)+" de marche",note:missionDays(2*offer.distance)+" aller-retour"},
+      {icon:"swords",value:offer.faction,note:offer.fields.estimation},
+      {icon:"candle",value:"Jusqu’au "+contractDate(offer.expiresDay).label}],
     letter:order,action:{label:"Accepter le contrat",attr:`data-contract-accept="${esc(offer.id)}"`}};
 }
 function bodyguardCard(guard){
@@ -100,8 +107,10 @@ function bodyguardCard(guard){
     description:MercenairesRecruitDialogue.fill(t.offre||"",{client:guard.client,n:guard.count,s:plural?"s":"",jours:guard.days},false),
     difficulty:{level:guard.level,label:"Réputation minimale"},
     reward:fmt(guard.payment)+" PO",gold:guard.payment,rewardNote:"d’avance",duration:missionDays(guard.days),
-    facts:[["crew","Mercenaires",String(guard.count)],["days","Durée",missionDays(guard.days)+", sans combat"],
-      ["gold","Paiement d’avance",fmt(guard.payment)+" PO"],["expires","Expire le",contractDate(guard.expiresDay).label]],
+    facts:[{icon:"gold",value:goldAmount(guard.payment)+" pièces d’or",note:"payées d’avance"},
+      {icon:"crew",value:guard.count+(plural?" gardes du corps":" garde du corps")},
+      {icon:"hourglass",value:missionDays(guard.days),note:"sans combat"},
+      {icon:"candle",value:"Jusqu’au "+contractDate(guard.expiresDay).label}],
     letter:null,action:{label:plural?"Choisir les gardes":"Choisir le garde",attr:`data-bodyguard-accept="${esc(guard.id)}"`}};
 }
 function missionCards(){
@@ -184,33 +193,42 @@ function nameSize(name){
   const n=String(name||"").length;
   return n>24?" board-notice-name--xl":n>17?" board-notice-name--l":n>13?" board-notice-name--m":"";
 }
-function renderBoardNotice(card){
+// Le picto d'un fait : l'or et les mercenaires de la barre du haut, le reste à l'encre.
+function factIcon(kind){
+  if(kind==="gold") return '<img class="mission-fact-picto" src="assets/hud/picto-or.webp" alt="">';
+  if(kind==="crew") return '<img class="mission-fact-picto" src="assets/hud/picto-mercenaires.webp" alt="">';
+  return missionIcon(kind);
+}
+// L'annonce, en petit sur le panneau, ou en grand dans le détail (detail : l'essentiel en pictos à la place de la
+// paie et de la durée, sans ouverture au clic, le titre en h2 pour la fenêtre).
+function renderBoardNotice(card,detail=null){
   const look=noticeLook(card.id,card.difficulty?.level);
   // Argent et Or (Idan, 2026-11-14) : le métal du niveau de la mission (6 à 10 : argent, 11 à 15 : or) se voit sur
   // l'annonce (titre à la feuille de métal, étoiles plus grandes, une dague plantée).
   const metal=starRules().byLevel(Number(card.difficulty?.level)||1)?.metalKey;
   const metalAttr=metal==="silver"||metal==="gold"?` data-metal="${metal}"`:"";
   const art=card.illustration?`<img src="${esc(card.illustration)}" alt="" loading="lazy">`:"";
-  const open=card.scheduled?"":` data-mission-open="${esc(card.id)}" role="button" tabindex="0"`;
+  const open=card.scheduled||detail?"":` data-mission-open="${esc(card.id)}" role="button" tabindex="0"`;
+  const title=detail?'h2 id="mission-detail-title"':"h3";
   // Argent et Or : une dague plantée tient l'annonce, à la place du clou, des punaises ou du cachet.
   const pin=metalAttr?"dague":look.pin;
-  return `<article class="board-notice${card.scheduled?" board-notice--scheduled":""}"${open} aria-label="${esc(card.title)}" data-pin="${pin}"${pin==="cire"?` data-wax="${look.wax}"`:` data-head="${look.head}"`} style="${look.style}" data-paper="${look.paper}"${metalAttr}>
+  return `<article class="board-notice${card.scheduled?" board-notice--scheduled":""}${detail?" board-notice--detail":""}"${open} aria-label="${esc(card.title)}" data-pin="${pin}"${pin==="cire"?` data-wax="${look.wax}"`:` data-head="${look.head}"`} style="${look.style}" data-paper="${look.paper}"${metalAttr}>
     <span class="board-notice-paper" aria-hidden="true"></span>
     <span class="board-notice-pins" aria-hidden="true"><i></i>${pin==="punaises"?"<i></i>":""}</span>
     <div class="board-notice-art"${art?` data-fade="${look.fade}"`:""}>${art}</div>
-    <h3 class="board-notice-title"><span class="board-notice-name${nameSize(card.name||card.title)}">${esc(card.name||card.title)}</span>${card.place?`<span class="board-notice-place">de ${esc(card.place)}</span>`:""}</h3>
+    <${title} class="board-notice-title"><span class="board-notice-name${nameSize(card.name||card.title)}">${esc(card.name||card.title)}</span>${card.place?`<span class="board-notice-place">de ${esc(card.place)}</span>`:""}</${title.split(" ")[0]}>
     <span class="board-notice-rule" aria-hidden="true"><i></i></span>
     <span class="board-notice-level" title="${esc(card.difficulty.label)}">${levelStars(card.difficulty.level,card.difficulty.label)}</span>
-    <div class="board-notice-stats">
+    ${detail||`<div class="board-notice-stats">
       <span title="Récompense"><img class="board-notice-gold" src="assets/hud/picto-or.webp" alt=""><b>${esc(goldAmount(card.gold))}</b></span>
       <span title="Durée">${missionIcon("hourglass")}${esc(card.duration)}</span>
-    </div>
+    </div>`}
     ${card.scheduled?`<p class="board-notice-stamp">Départ demain</p>
     <p class="board-notice-departure"><button type="button" data-expedition-cancel="${esc(card.scheduled)}" title="Au jour J, on organise J+1 : on peut encore changer d’avis avant le départ.">Annuler le départ</button></p>`:""}
   </article>`;
 }
 function boardPageHtml(notices,page){
-  return `<div class="board-page">${notices.slice(page*BOARD_PAGE_SIZE,(page+1)*BOARD_PAGE_SIZE).map(renderBoardNotice).join("")}</div>`;
+  return `<div class="board-page">${notices.slice(page*BOARD_PAGE_SIZE,(page+1)*BOARD_PAGE_SIZE).map(c=>renderBoardNotice(c)).join("")}</div>`;
 }
 // Les flèches : cachées s'il n'y a qu'une page, grisées au début et à la fin.
 function updateBoardArrows(count){
@@ -223,20 +241,25 @@ function updateBoardArrows(count){
   }
 }
 
+// Le détail de l'annonce (Idan, 2026-11-14 : « reprends tout le magnifique univers graphique », « immersif, pas ce qu'un
+// dev doit savoir, limite à l'utile et l'essentiel », « les boutons de la création de capitaine », « pense icônes et
+// pictos »). Deux feuilles posées l'une sur l'autre : l'annonce en grand (la même feuille, la même gravure, la même
+// attache), l'essentiel en pictos ; pour un contrat, la lettre du commanditaire, scellée. Dessous, « Retour au panneau »
+// et le bouton de la création. Un clic à côté des feuilles ramène au panneau.
 function openMissionDetail(id){
   const card=missionCards().find(c=>c.id===id);
   const dialog=$("mission-detail");
   if(!card||!dialog) return;
-  $("mission-detail-body").innerHTML=`${renderMissionArt(card,true)}
-    <header class="mission-detail-head">
-      <p class="mission-type">${esc(card.type)}</p>
-      <h2 id="mission-detail-title">${esc(card.title)}</h2>
-      <span class="mission-detail-level" title="${esc(card.difficulty.label)}"><small>${esc(card.difficulty.label)}</small>${levelStars(card.difficulty.level,card.difficulty.label)}</span>
-    </header>
-    <p class="mission-detail-description">${esc(card.description)}</p>
-    <dl class="mission-facts">${card.facts.filter(([, ,value])=>value).map(([icon,label,value])=>`<div><dt>${missionIcon(icon)}${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join("")}</dl>
-    ${card.letter?`<div class="contract-letter">${card.letter.paragraphs.map(p=>`<p>${esc(p)}</p>`).join("")}<p class="contract-signature">${esc(card.letter.signature)}</p></div>`:""}
-    <footer class="mission-detail-actions"><button type="button" class="secondary" data-mission-close>Fermer</button><button type="button" class="primary" ${card.action.attr}>${esc(card.action.label)}</button></footer>`;
+  const facts=`<ul class="mission-facts">${card.facts.map(f=>`<li>${factIcon(f.icon)}<span><b>${esc(f.value)}</b>${f.note?`<small>${esc(f.note)}</small>`:""}</span></li>`).join("")}</ul>`;
+  const [head,...rest]=card.letter?.paragraphs||[];
+  const letter=card.letter?`<article class="mission-letter" aria-label="La lettre du commanditaire">
+      <p class="mission-letter-head">${esc(head)}</p>
+      ${rest.map(p=>`<p>${esc(p)}</p>`).join("")}
+      <p class="mission-letter-signature">${esc(card.letter.signature)}</p>
+      <img class="mission-letter-seal" src="assets/creation/cachet.webp" alt="">
+    </article>`:"";
+  $("mission-detail-body").innerHTML=`<div class="mission-sheets${letter?"":" mission-sheets--single"}">${renderBoardNotice(card,facts)}${letter}</div>
+    <footer class="mission-detail-actions"><button type="button" class="mission-retour" data-mission-close>‹ Retour au panneau</button><button type="button" class="mission-btn" ${card.action.attr}>${esc(card.action.label)}</button></footer>`;
   if(!dialog.open) dialog.showModal();
 }
 
@@ -397,6 +420,8 @@ function initializeExpeditionUi(){
     const board=event.target.closest("[data-mission-board]");
     if(board&&missionBoardOutside(board,event)){ showTavernView("home"); return; }
     if(event.target.closest("[data-mission-close]")){ $("mission-detail").close(); return; }
+    const detailBox=$("mission-detail");
+    if(detailBox?.open&&(event.target===detailBox||event.target.id==="mission-detail-body"||event.target.classList?.contains("mission-sheets"))){ detailBox.close(); return; }
     // Accepter depuis le détail : la fenêtre se ferme, le choix de l'escouade s'ouvre.
     if(event.target.closest("[data-contract-accept],[data-bodyguard-accept]")&&$("mission-detail")?.open) $("mission-detail").close();
     // Le bouton est dans la fenêtre de détail (hors du tableau) : on l'écoute ici, pour le contrat comme pour la garde.

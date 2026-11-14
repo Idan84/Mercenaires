@@ -318,6 +318,17 @@ ennemis, récompense, expiration…), la lettre du commanditaire s'il y en a une
   Toute cette matière vient de Jean-Mi, sur fond vert, détourée par `scripts/key-green-sheet.js` (`assets/taverne/` :
   `feuille-*`, `cire-*`, `clou-*`, `punaise-*`, `lambeau-*`, `fleche-fer`) ; les planches écartées et leur raison sont dans
   `scripts/build-mission-art.js`.
+- **Le détail de l'annonce** (Idan, 2026-11-14 : « reprends tout le magnifique univers graphique », « immersif dans le
+  jeu et pas ce qu'un dev doit savoir, limite à l'utile et l'essentiel », « les boutons de la création de capitaine »,
+  « pense icônes et pictos ») : au clic, deux feuilles posées sur le panneau assombri. À gauche, l'annonce en grand (la
+  même feuille, la même gravure, la même attache, le même titre et les mêmes étoiles) et l'essentiel en pictos, une
+  ligne chacun : la paie (le picto or ; « et le butin », ou « payées d'avance »), la route (la botte : jours de marche,
+  aller-retour), l'ennemi (les épées croisées : qui, combien), les gardes demandés (le picto des mercenaires), la durée
+  d'une garde (le sablier, « sans combat »), l'échéance (la chandelle : « Jusqu'au … »). À droite, pour un contrat, la
+  lettre du commanditaire sur une feuille plus propre : l'en-tête en capitales bordeaux, une lettrine, la signature,
+  le cachet de cire au lion de la création. Plus de libellés techniques (« Difficulté », « Commanditaire »,
+  description de la règle). Dessous, « ‹ Retour au panneau » et le bouton bordeaux cerclé de laiton de la création
+  (« Accepter le contrat », « Choisir le garde ») ; un clic à côté des feuilles ramène aussi au panneau.
 - **Les illustrations** (Idan et Jean-Mi, 2026-11-14) : des gravures à l'encre sur fond blanc, posées en « produit » sur
   le papier (le blanc disparaît, l'encre semble imprimée). En test (Idan, 2026-11-14 : « jusqu'au bord du parchemin, avec sur
   les bords un effet d'estompage… on baisse l'opacité en dégradé et en random par zone ») : sur l'annonce, sans cadre,

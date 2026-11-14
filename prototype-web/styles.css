@@ -2161,7 +2161,7 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
    espacées pour le lieu, EB Garamond pour le reste ; un filet qui s'affine jusqu'à disparaître et entre dans sa fleur de
    lys ; l'illustration dans un double filet d'or, comme une toile ; au survol, un halo doré qui épouse le parchemin.
    Chaque annonce est clouée au panneau, un peu de travers ; l'ombre tombe à gauche (la lumière vient de la droite). */
-.mission-board{--fil:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 2' preserveAspectRatio='none'%3E%3ClinearGradient id='g'%3E%3Cstop offset='0' stop-opacity='0'/%3E%3Cstop offset='.55' stop-opacity='.85'/%3E%3Cstop offset='1'/%3E%3C/linearGradient%3E%3Cpolygon points='0,1 100,0 100,2' fill='url(%23g)'/%3E%3C/svg%3E");--fil-v:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2 100' preserveAspectRatio='none'%3E%3ClinearGradient id='g' x2='0' y2='1'%3E%3Cstop offset='0' stop-opacity='0'/%3E%3Cstop offset='.5'/%3E%3Cstop offset='1' stop-opacity='0'/%3E%3C/linearGradient%3E%3Cpolygon points='1,0 2,50 1,100 0,50' fill='url(%23g)'/%3E%3C/svg%3E");--encre:#2c1b10;--encre-secondaire:#64492e;--or:#c9a461;--or-clair:#f0d395;--bordeaux:#7a1f1c;--police-titre:"Cinzel",Georgia,serif;--police-texte:"EB Garamond",Georgia,serif}
+.mission-board,.mission-detail{--fil:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 2' preserveAspectRatio='none'%3E%3ClinearGradient id='g'%3E%3Cstop offset='0' stop-opacity='0'/%3E%3Cstop offset='.55' stop-opacity='.85'/%3E%3Cstop offset='1'/%3E%3C/linearGradient%3E%3Cpolygon points='0,1 100,0 100,2' fill='url(%23g)'/%3E%3C/svg%3E");--fil-v:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2 100' preserveAspectRatio='none'%3E%3ClinearGradient id='g' x2='0' y2='1'%3E%3Cstop offset='0' stop-opacity='0'/%3E%3Cstop offset='.5'/%3E%3Cstop offset='1' stop-opacity='0'/%3E%3C/linearGradient%3E%3Cpolygon points='1,0 2,50 1,100 0,50' fill='url(%23g)'/%3E%3C/svg%3E");--encre:#2c1b10;--encre-secondaire:#64492e;--or:#c9a461;--or-clair:#f0d395;--bordeaux:#7a1f1c;--police-titre:"Cinzel",Georgia,serif;--police-texte:"EB Garamond",Georgia,serif}
 .board-notice{--parch-edge:calc(var(--board-w) * .022);--u:calc(var(--board-w) * .001);--ombre:drop-shadow(calc(var(--u) * -4) calc(var(--u) * 8) calc(var(--u) * 6) rgba(0,0,0,.62));position:relative;display:flex;flex-direction:column;align-items:center;justify-self:center;width:calc(var(--w,1) * 100%);height:calc(var(--h,.88) * 100%);min-height:0;box-sizing:border-box;padding:calc(var(--parch-edge) * .45) calc(var(--parch-edge) * .4) calc(var(--parch-edge) * .35);border:var(--parch-edge) solid transparent;--feuille:url("assets/taverne/feuille-1.webp");background:var(--feuille) 0 0 / 100% 100% no-repeat border-box;color:var(--encre);font-family:var(--police-texte);text-align:center;--papier:brightness(var(--tone,1)) hue-rotate(var(--hue,0deg)) saturate(var(--sat,1));filter:var(--papier) var(--ombre);rotate:var(--tilt,0deg);translate:0 calc(var(--u) * var(--dy,0));transform-origin:50% 0;transition:filter .12s ease}
 /* La matière du papier, découpée à la forme de la feuille (même image, en masque) : le froissé éclairé par la
    droite (papier-froisse.webp, tiré de la texture CC0 « Paper003 » d'ambientCG), plié en trois ; dessous, l'ombre qui
@@ -2242,16 +2242,16 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 /* Test (Idan, 2026-11-14) : la gravure en pleine page, jusqu'au bord du parchemin, sans cadre ; elle s'estompe vers les
    bords, plus loin par endroits, avec le grain d'une encre usée (estompe-1…4.webp, scripts/make-fade-masks.js). Le
    masque est sur l'image elle-même : posé sur la boîte, il isolerait l'image et le blanc ne disparaîtrait plus. */
-.board-notice-art:has(img){flex-basis:56%;margin:calc(var(--parch-edge) * -1.05) calc(var(--parch-edge) * -.95) 0;padding:0;border:0;border-radius:0;background:none;box-shadow:none}
+.board-notice-art:has(img){flex-basis:calc(var(--art,.56) * 100%);margin:calc(var(--parch-edge) * -1.05) calc(var(--parch-edge) * -.95) 0;padding:0;border:0;border-radius:0;background:none;box-shadow:none}
 .board-notice-art:has(img) + .board-notice-title{margin-top:calc(var(--u) * 4)}
 /* Deux masques sur la gravure : son estompage, et la feuille (là où la feuille est arrachée, la gravure ne doit pas
    flotter dans le vide). La feuille couvre toute l'annonce : vue depuis la gravure, elle commence 0,45 bord à gauche et
-   0,4 bord au-dessus, et mesure la largeur + 0,9 bord sur la hauteur du contenu (gravure ÷ 0,56) + 2,8 bords. */
+   0,4 bord au-dessus, et mesure la largeur + 0,9 bord sur la hauteur du contenu (gravure ÷ --art) + 2,8 bords. */
 .board-notice-art{--estompe:url("assets/taverne/estompe-1.webp")}
 .board-notice-art[data-fade="2"]{--estompe:url("assets/taverne/estompe-2.webp")}
 .board-notice-art[data-fade="3"]{--estompe:url("assets/taverne/estompe-3.webp")}
 .board-notice-art[data-fade="4"]{--estompe:url("assets/taverne/estompe-4.webp")}
-.board-notice-art img{-webkit-mask:var(--estompe) 0 0 / 100% 100% no-repeat,var(--feuille) calc(var(--parch-edge) * -.45) calc(var(--parch-edge) * -.4) / calc(100% + var(--parch-edge) * .9) calc(100% / .56 + var(--parch-edge) * 2.8) no-repeat;-webkit-mask-composite:source-in;mask:var(--estompe) 0 0 / 100% 100% no-repeat,var(--feuille) calc(var(--parch-edge) * -.45) calc(var(--parch-edge) * -.4) / calc(100% + var(--parch-edge) * .9) calc(100% / .56 + var(--parch-edge) * 2.8) no-repeat;mask-composite:intersect}
+.board-notice-art img{-webkit-mask:var(--estompe) 0 0 / 100% 100% no-repeat,var(--feuille) calc(var(--parch-edge) * -.45) calc(var(--parch-edge) * -.4) / calc(100% + var(--parch-edge) * .9) calc(100% / var(--art,.56) + var(--parch-edge) * 2.8) no-repeat;-webkit-mask-composite:source-in;mask:var(--estompe) 0 0 / 100% 100% no-repeat,var(--feuille) calc(var(--parch-edge) * -.45) calc(var(--parch-edge) * -.4) / calc(100% + var(--parch-edge) * .9) calc(100% / var(--art,.56) + var(--parch-edge) * 2.8) no-repeat;mask-composite:intersect}
 .board-notice-title{display:grid;gap:calc(var(--u) * 2);margin:calc(var(--u) * 14) 0 0;font-weight:400}
 .board-notice-name{font:700 calc(var(--u) * 10.5)/1.2 var(--police-titre);letter-spacing:.09em;text-transform:uppercase;color:var(--encre);text-wrap:balance}
 /* Les titres longs rapetissent un peu (nameSize dans contract-ui.js) pour tenir sur deux lignes. */
@@ -2321,24 +2321,49 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .mission-emblem .mission-svg{width:44px;height:44px}
 .mission-type{margin:0;color:#bb9a6e;font:700 11px Georgia,serif;letter-spacing:.12em;text-transform:uppercase}
 .mission-svg{width:17px;height:17px;flex:none;color:#d8b77d}
-.mission-detail{width:min(720px,calc(100vw - 32px));max-height:calc(100vh - 32px);padding:0;overflow:auto;border:1px solid #b58c53;border-radius:16px;background:linear-gradient(180deg,#33261d,#1b130e);color:#ead9bd;box-shadow:0 24px 60px #000c}
-.mission-detail::backdrop{background:rgba(10,7,5,.65)}
-.mission-art--big{aspect-ratio:21/8}
-.mission-art--big .mission-emblem{width:110px;height:110px}
-.mission-art--big .mission-emblem .mission-svg{width:58px;height:58px}
-.mission-detail-head{display:grid;grid-template-columns:1fr auto;align-items:end;gap:4px 16px;margin-top:-34px;padding:0 24px;position:relative}
-.mission-detail-head .mission-type{grid-column:1}
-.mission-detail-head h2{grid-column:1;margin:0;color:#ffe1ac;font:600 28px/1.15 Georgia,serif;text-shadow:0 2px 8px #000}
-.mission-detail-level{grid-column:2;grid-row:1/3;display:grid;justify-items:end;gap:2px}
-.mission-detail-level small{color:#bb9a6e;font:700 10px Georgia,serif;letter-spacing:.1em;text-transform:uppercase}
-.mission-detail-level .rep-stars{font-size:18px}
-.mission-detail-description{margin:12px 24px 0;color:#e2cfae;font:italic 16px/1.45 Georgia,serif}
-.mission-facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px 18px;margin:16px 24px 0;padding:14px 16px;border:1px solid #5c4530;border-radius:12px;background:rgba(20,14,10,.5)}
-.mission-facts div{display:grid;gap:3px}
-.mission-facts dt{display:flex;align-items:center;gap:6px;color:#bb9a6e;font:700 11px Georgia,serif;letter-spacing:.08em;text-transform:uppercase}
-.mission-facts dd{margin:0;color:#f4dfbb;font:600 15px Georgia,serif}
-.mission-detail .contract-letter{margin:16px 24px 0}
-.mission-detail-actions{position:sticky;bottom:0;display:flex;justify-content:flex-end;gap:10px;margin-top:18px;padding:14px 24px;border-top:1px solid #5c4530;background:#1f1610}
+/* Le détail de l'annonce (Idan, 2026-11-14 : « reprends tout le magnifique univers graphique », « immersif », « les
+   boutons de la création de capitaine », « pense icônes et pictos ») : deux feuilles posées sur le panneau assombri,
+   l'annonce en grand et la lettre du commanditaire ; dessous, le retour et le bouton de la création. --board-w fixe
+   l'échelle (--u, le bord du papier), comme sur le panneau. */
+.mission-detail{--board-w:min(250vh,140vw);width:100vw;height:100vh;max-width:none;max-height:none;margin:0;padding:0;border:0;background:transparent;overflow:hidden;color:var(--encre)}
+.mission-detail::backdrop{background:radial-gradient(ellipse at 50% 45%,rgba(14,9,5,.42),rgba(8,5,3,.84));backdrop-filter:blur(3px)}
+#mission-detail-body{--u:calc(var(--board-w) * .001);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(var(--u) * 8);width:100%;height:100%;box-sizing:border-box;padding:calc(var(--u) * 46) 16px calc(var(--u) * 8)}
+.mission-sheets{display:flex;align-items:flex-start;justify-content:center}
+/* L'annonce en grand : la même, plus haute pour l'essentiel en pictos ; la dague, plus petite, reste dans l'écran. */
+.board-notice--detail,.mission-detail .board-notice--detail[data-pin="dague"]{flex:none;width:calc(var(--u) * 190);height:calc(var(--u) * 254);translate:none;z-index:2;--art:.42}
+.mission-detail .board-notice--detail[data-pin="dague"] .board-notice-pins i{height:calc(var(--u) * 64);top:calc(var(--u) * -58)}
+.board-notice--detail .board-notice-title{margin-top:calc(var(--u) * 6)}
+/* L'essentiel en pictos : une ligne chacun, la précision en italique à la suite. */
+.mission-facts{display:grid;justify-content:center;gap:calc(var(--u) * 4.2);margin:auto 0 calc(var(--u) * 6);padding:calc(var(--u) * 6) 0 0;list-style:none;text-align:left}
+.mission-facts li{display:flex;align-items:center;gap:calc(var(--u) * 4.5);min-width:0}
+.mission-facts .mission-svg,.mission-fact-picto{flex:none;width:calc(var(--u) * 13);height:calc(var(--u) * 13);color:var(--encre-secondaire)}
+.mission-fact-picto{object-fit:contain;filter:drop-shadow(0 calc(var(--u) * .6) calc(var(--u) * .6) rgba(40,24,8,.35))}
+.mission-facts span{display:block;min-width:0;line-height:1.15}
+.mission-facts b{font:600 calc(var(--u) * 7.6)/1.15 var(--police-texte);color:var(--encre)}
+.mission-facts small{font:italic 500 calc(var(--u) * 6.5)/1.15 var(--police-texte);color:var(--encre-secondaire)}
+.mission-facts small::before{content:" · "}
+/* La lettre du commanditaire : sur une feuille plus propre, un peu de travers, sous l'annonce ; l'en-tête en capitales
+   bordeaux, une lettrine, la signature en italique, le cachet de cire de la création. */
+.mission-letter{position:relative;z-index:1;flex:none;box-sizing:border-box;width:calc(var(--u) * 212);min-height:calc(var(--u) * 238);margin:calc(var(--u) * 9) 0 0 calc(var(--u) * -12);padding:calc(var(--u) * 19) calc(var(--u) * 19) calc(var(--u) * 30) calc(var(--u) * 28);background:url("assets/taverne/feuille-3.webp") 0 0 / 100% 100% no-repeat;color:var(--encre);font:500 calc(var(--u) * 6.3)/1.42 var(--police-texte);text-align:justify;hyphens:auto;rotate:1.3deg;filter:sepia(.18) drop-shadow(calc(var(--u) * -3) calc(var(--u) * 6) calc(var(--u) * 6) rgba(0,0,0,.6))}
+.mission-letter p{margin:0 0 .5em}
+.mission-letter-head{padding:0 calc(var(--u) * 6);hyphens:manual;text-wrap:balance;font:700 calc(var(--u) * 5.8)/1.35 var(--police-titre);letter-spacing:.05em;text-align:center;color:var(--bordeaux)}
+.mission-letter-head::after{content:"";display:block;height:calc(var(--u) * 3);margin:calc(var(--u) * 4) 25% 0;background:var(--encre-secondaire);opacity:.55;-webkit-mask:var(--fil) center/100% 100%;mask:var(--fil) center/100% 100%}
+.mission-letter-head + p::first-letter{float:left;margin:calc(var(--u) * 1) calc(var(--u) * 2.5) 0 0;font:700 3.1em/.82 var(--police-titre);color:var(--bordeaux)}
+.mission-letter .mission-letter-signature{margin:.9em 0 0;padding-right:calc(var(--u) * 34);font-style:italic;text-align:right;color:var(--encre-secondaire)}
+.mission-letter-seal{position:absolute;right:calc(var(--u) * 12);bottom:calc(var(--u) * 6);width:calc(var(--u) * 30);rotate:-9deg;filter:drop-shadow(calc(var(--u) * -1.5) calc(var(--u) * 2.5) calc(var(--u) * 2) rgba(0,0,0,.5))}
+/* Les boutons de la création du capitaine : le retour souligné d'un filet, le bouton bordeaux cerclé de laiton. */
+.mission-detail-actions{display:flex;align-items:center;justify-content:center;gap:calc(var(--u) * 18)}
+.mission-retour{all:unset;position:relative;cursor:pointer;padding:8px 2px;font:600 20px/1 var(--police-texte);color:var(--or-clair);text-shadow:0 1px 3px #000;transition:color .12s}
+.mission-retour::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:currentColor;opacity:.6;-webkit-mask:var(--fil) center/100% 100%;mask:var(--fil) center/100% 100%}
+.mission-retour:hover{color:#fff7e4}
+.mission-retour:focus-visible{outline:1px solid var(--or-clair);outline-offset:4px}
+.mission-btn{all:unset;position:relative;isolation:isolate;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;min-width:240px;height:81px;padding:0 38px 2px;font:700 18px/1 var(--police-titre);letter-spacing:.12em;text-transform:uppercase;color:var(--or-clair);text-shadow:0 1px 2px rgba(0,0,0,.85);transition:transform .12s,color .12s}
+.mission-btn::before{content:"";position:absolute;inset:0;z-index:-1;background:url("assets/creation/bouton.webp") center/100% 100% no-repeat;filter:drop-shadow(0 6px 6px rgba(0,0,0,.55));transition:filter .12s}
+.mission-btn:hover{color:#fff7e4}
+.mission-btn:hover::before{filter:brightness(1.13) saturate(1.2) hue-rotate(4deg) drop-shadow(0 6px 6px rgba(0,0,0,.55))}
+.mission-btn:active{transform:translateY(2px)}
+.mission-btn:active::before{filter:brightness(.84) drop-shadow(0 2px 2px rgba(0,0,0,.55))}
+.mission-btn:focus-visible{outline:2px solid var(--or-clair);outline-offset:4px}
 .mission-select-cost{margin:0;font-weight:600;color:#6d4f2a}
 .mission-contract-result{display:grid;gap:4px;margin:0 0 8px;padding:0;list-style:none}
 .mission-contract-result li{padding:6px 9px;border-radius:8px;background:#f4ecd9;border-left:3px solid #b08a3e}

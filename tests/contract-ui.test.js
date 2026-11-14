@@ -155,9 +155,18 @@ assert.doesNotMatch(js, /Escouades en mission/, "les escouades parties ne sont p
 ui.openMissionDetail("contract:c1");
 const detail = node("mission-detail-body").innerHTML;
 assert.equal(node("mission-detail").open, true);
-assert.match(detail, /<h2 id="mission-detail-title">Camp gobelin de Brumecendre<\/h2>/);
-assert.match(detail, /Commanditaire<\/dt><dd>Chef de village/);
-assert.match(detail, /class="contract-letter"><p>À toute compagnie…<\/p>/);
+// Le détail (Idan, 2026-11-14) : l'annonce en grand (même feuille, même attache, sans ouverture au clic), l'essentiel
+// en pictos, la lettre du commanditaire scellée, le retour et le bouton de la création.
+assert.match(detail, /<article class="board-notice board-notice--detail" aria-label="Camp gobelin de Brumecendre" data-pin=/);
+assert.match(detail, /<h2 id="mission-detail-title" class="board-notice-title"><span class="board-notice-name">Camp gobelin<\/span><span class="board-notice-place">de Brumecendre<\/span><\/h2>/);
+assert.doesNotMatch(detail, /data-mission-open|board-notice-stats|Commanditaire|Difficulté<|mission-detail-description/, "ni ouverture, ni libellés techniques");
+assert.match(detail, /<ul class="mission-facts"><li><img class="mission-fact-picto" src="assets\/hud\/picto-or\.webp" alt=""><span><b>6\u202f800 pièces d’or<\/b><small>et le butin<\/small><\/span><\/li>/);
+assert.match(detail, /<b>2 jours de marche<\/b><small>4 jours aller-retour<\/small>/);
+assert.match(detail, /<li><svg[^>]*>[\s\S]*?<\/svg><span><b>Jusqu’au [^<]+<\/b><\/span><\/li>/, "l'échéance, sans précision inutile");
+for (const icon of ["route", "swords", "candle"]) assert.ok(js.includes("  " + icon + ":'<path"), "picto " + icon);
+assert.match(detail, /<article class="mission-letter" aria-label="La lettre du commanditaire">\s*<p class="mission-letter-head">À toute compagnie…<\/p>/);
+assert.match(detail, /<img class="mission-letter-seal" src="assets\/creation\/cachet\.webp" alt="">/);
+assert.match(detail, /<button type="button" class="mission-retour" data-mission-close>‹ Retour au panneau<\/button><button type="button" class="mission-btn" data-contract-accept="c1">/);
 assert.match(detail, /data-contract-accept="c1">Accepter le contrat<\/button>/);
 // « Accepter le contrat » (Idan, 2026-11-01 : le lancement du camp gobelin ne marchait plus) : le bouton est dans la
 // fenêtre de détail, hors du tableau ; le clic la ferme et ouvre le choix de l'escouade.
@@ -169,7 +178,9 @@ const tavern = fs.readFileSync(path.join(root, "prototype-web/tavern-ui.js"), "u
 assert.doesNotMatch(tavern, /\$\("tavern-contracts"\)\.addEventListener/, "plus d'écoute sur l'ancien tableau (sinon deux ouvertures)");
 ui.openMissionDetail("bodyguard:g1");
 assert.match(node("mission-detail-body").innerHTML, /data-bodyguard-accept="g1">Choisir les gardes<\/button>/);
-assert.doesNotMatch(node("mission-detail-body").innerHTML, /contract-letter/);
+assert.doesNotMatch(node("mission-detail-body").innerHTML, /mission-letter/, "pas de lettre pour une garde du corps");
+assert.match(node("mission-detail-body").innerHTML, /<div class="mission-sheets mission-sheets--single">/);
+assert.match(node("mission-detail-body").innerHTML, /<b>[^<]+ pièces d’or<\/b><small>payées d’avance<\/small>/);
 clickOn("[data-bodyguard-accept]", {bodyguardAccept:"g1"});
 assert.deepEqual(selections, [contract, guard], "et la garde du corps, pareil");
 

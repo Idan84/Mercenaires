@@ -24,6 +24,8 @@ const ORIGINAL=path.join(ROOT,"prototype-web","assets","taverne","tavernier.webp
 const ORIGINAL_BOX=[1022,208,250,544];
 const DATA=path.join(ROOT,"prototype-web","tavern-taverniers.js");
 const SCENE={width:1376,height:768};
+// Combien le vert peut dépasser la moyenne du rouge et du bleu (sur 255) : au-delà, c'est du reflet du fond vert.
+const DESPILL_TOLERANCE=6;
 
 // Le nom d'une variante, tiré du fichier : « Dwarf_tavern_keeper_holding_ale_ab54f84f.jpg » → « holding-ale ».
 function variantKey(file){
@@ -64,7 +66,7 @@ function hull(points){
 // Dans le navigateur : détourage, cadre du tavernier, points du contour (gauche et droite de chaque ligne), PNG recadré.
 async function keyImage(page,file,keyed){
   const src="data:image/"+(/\.png$/i.test(file)?"png":/\.webp$/i.test(file)?"webp":"jpeg")+";base64,"+fs.readFileSync(file).toString("base64");
-  return page.evaluate(async({src,keyed})=>{
+  return page.evaluate(async({src,keyed,DESPILL_TOLERANCE})=>{
     const img=new Image();
     img.src=src;
     await img.decode();
@@ -74,10 +76,13 @@ async function keyImage(page,file,keyed){
     g.drawImage(img,0,0);
     const im=g.getImageData(0,0,w,h),d=im.data;
     if(keyed){
+      // Le vert du fond devient transparent ; le reflet vert sur le personnage (les bords, les vêtements) est retiré : le
+      // vert ne dépasse plus la moyenne du rouge et du bleu (les bruns et les gris ne bougent pas, l'olive redevient brun).
       for(let i=0;i<d.length;i+=4){
-        const r=d[i],gr=d[i+1],b=d[i+2],m=Math.max(r,b),spill=gr-m;
+        const r=d[i],gr=d[i+1],b=d[i+2],spill=gr-Math.max(r,b);
         d[i+3]=Math.round(255*(1-Math.min(1,Math.max(0,(spill-30)/77))));
-        if(gr>m+5) d[i+1]=m+5;
+        const cap=(r+b)/2+DESPILL_TOLERANCE;
+        if(gr>cap) d[i+1]=Math.round(cap);
       }
       g.putImageData(im,0,0);
     }
@@ -94,7 +99,7 @@ async function keyImage(page,file,keyed){
     out.width=x1-x0;out.height=y1-y0;
     out.getContext("2d").drawImage(c,x0,y0,out.width,out.height,0,0,out.width,out.height);
     return {w,h,box:[x0,y0,x1-x0,y1-y0],pts,png:keyed?out.toDataURL("image/png"):null};
-  },{src,keyed});
+  },{src,keyed,DESPILL_TOLERANCE});
 }
 
 async function main(){

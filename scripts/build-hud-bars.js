@@ -42,6 +42,9 @@ const PICTOS_OUT=path.join(ROOT,"prototype-web","assets","hud","pictos-bas");
 const BOTTOM_PICTOS=[["chateau","chateau"],["taverne","chope"],["dortoir","lit"],["marchand","balance"],["intendance","caisse"],
   ["construction","maison"],["combat","epee"],["nouvelles","pigeon"],["journal","journal"],["discussions","bulle"]];
 const PICTO_CROP=960/1254,PICTO_SIZE=200;
+// Retouches d'un picto dont le dessin sort du lot (Idan, 2026-11-14 : « les épées du combat semblent décalées et un peu
+// trop grosses ») : taille, l'échelle du dessin ; haut, de combien de pixels (sur PICTO_SIZE) le remonter.
+const PICTO_TWEAKS={combat:{taille:.86,haut:5}};
 // Les réglages par culture (Atelier des barres) ; une culture sans réglage prend ceux de départ de l'atelier.
 const SETTINGS=path.join(__dirname,"hud-bars-reglages.json");
 const DEFAULT_SETTINGS={
@@ -230,9 +233,11 @@ function buildPictos(dir){
     if(!key) continue;
     const file=path.join(dir,name);
     const [w,h]=execFileSync("identify",["-format","%w %h",file],{encoding:"utf8"}).trim().split(" ").map(Number);
-    const side=Math.round(Math.min(w,h)*PICTO_CROP);
+    const tweak=PICTO_TWEAKS[key]||{},side=Math.round(Math.min(w,h)*PICTO_CROP/(tweak.taille||1));
+    // Le carré, décalé vers le bas pour remonter le dessin ; une marge transparente s'il dépasse de l'image.
+    const shift=Math.round((tweak.haut||0)*side/PICTO_SIZE),margin=side;
     fs.mkdirSync(PICTOS_OUT,{recursive:true});
-    execFileSync("convert",[file,"-crop",`${side}x${side}+${Math.round((w-side)/2)}+${Math.round((h-side)/2)}`,"+repage","-resize",`${PICTO_SIZE}x${PICTO_SIZE}`,
+    execFileSync("convert",[file,"-bordercolor","none","-border",String(margin),"-crop",`${side}x${side}+${Math.round((w-side)/2)+margin}+${Math.round((h-side)/2)+shift+margin}`,"+repage","-resize",`${PICTO_SIZE}x${PICTO_SIZE}`,
       "-strip","-quality","90","-define","webp:alpha-quality=100","-define","webp:method=6",path.join(PICTOS_OUT,key+".webp")]);
     built.push(key);
   }

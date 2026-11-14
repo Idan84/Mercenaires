@@ -298,15 +298,19 @@ ennemis, récompense, expiration…), la lettre du commanditaire s'il y en a une
   vierges de Jean-Mi (`assets/taverne/feuille-1…8.webp`, détourées par `scripts/key-green-sheet.js`, la 7 retournée et
   la 8 tournée d'un demi-tour pour que les coins arrachés ne tombent pas tous au même endroit), étirée à la taille de
   l'annonce ; la matière par-dessus et la gravure sont découpées à la forme de la feuille. Les feuilles au coin du haut
-  arraché ne prennent pas de punaises. En plus : une taille un peu différente, plus ou moins de travers (jusqu'à 3°),
+  arraché ne prennent pas de punaises. Les feuilles sont classées de la plus abîmée à la plus propre (2, 6, 5, 1, 7, 8,
+  4, 3) et suivent le niveau de la mission (Idan, 2026-11-14 : « les plus abîmés pour les missions avec le moins
+  d'étoiles et les plus propres pour les missions plus hautes… sans être rigide totalement ») : le niveau 1 à 15 donne
+  un rang dans ce classement, à un rang et demi près de chaque côté. En plus : une taille un peu différente, plus ou moins de travers (jusqu'à 3°),
   un ou deux plis en travers à des hauteurs différentes et parfois un pli en long, le froissé décalé, et selon
   l'annonce une tache de graisse, une coulure depuis le haut, un bord qui a pris l'humidité, des chiures de mouche
   (dans les marges, pour ne pas passer pour des fautes d'impression).
   Les missions d'argent (niveaux 6 à 10) et d'or (11 à 15) se reconnaissent d'un coup d'œil (Idan, 2026-11-14 :
   « 1 et 3 ») : le titre à la feuille de métal (étain ou or, gravé d'un filet sombre) et des étoiles plus grandes qui
   brillent, et une dague plantée dans le haut du papier, la lame entrant juste au-dessus de la gravure et la poignée
-  dépassant vers le haut (Idan : « le bas de la dague devrait arriver en haut de l'image »), à la place du clou, des
-  punaises ou du cachet : acier pour
+  dépassant vers le haut (Idan : « le bas de la dague devrait arriver en haut de l'image » ; « elles étaient à la bonne
+  taille sur la v1 » : l'annonce à dague descend un peu et raccourcit un peu pour que la poignée reste sous la barre du
+  haut), à la place du clou, des punaises ou du cachet : acier pour
   l'argent, garde dorée pour l'or, deux de chaque (`assets/taverne/dague-argent|or-1|2.webp`, Jean-Mi, détourées avec
   `--slit` : une fente sombre dans le papier là où la lame entre).
   Les flèches sont des équerres de fer forgé, platine vissée sur le montant du cadre : au survol, le fer s'éclaire et la

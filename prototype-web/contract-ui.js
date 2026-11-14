@@ -132,7 +132,12 @@ const goldAmount=n=>Math.round(Number(n)||0).toLocaleString("fr-FR");
 // Chaque annonce a son allure, toujours la même pour la même offre (tirée de son identifiant, pas du hasard du jeu) :
 // un peu de travers, son papier, une auréole de chope ou non (dans un coin du bas, loin du texte), et ce qui la tient au
 // bois (un clou, deux punaises, de la cire).
-function noticeLook(id){
+// Les feuilles de Jean-Mi, de la plus abîmée à la plus propre (Idan, 2026-11-14 : « les plus abîmés pour les missions
+// avec le moins d'étoiles et les plus propres pour les missions plus hautes », « sans être rigide totalement »).
+const PAPER_WEAR=[2,6,5,1,7,8,4,3];
+// Les feuilles au coin du haut arraché : pas de punaises dessus, l'une flotterait dans le vide.
+const PAPER_TOP_TORN=[1,6,7];
+function noticeLook(id,level=1){
   let h=2166136261;
   for(const ch of String(id)){ h^=ch.charCodeAt(0); h=Math.imul(h,16777619); }
   const r=()=>{ h^=h>>>13; h=Math.imul(h,0x5bd1e995); h^=h>>>15; return (h>>>0)/4294967296; };
@@ -150,10 +155,16 @@ function noticeLook(id){
   const old=hue<-3,paperHue=old?1:hue<0?hue*.3:hue;
   const dirt=old?`;--sat:.72;--sale:1;--sale-x1:${(15+r()*70).toFixed(0)}%;--sale-y1:${(10+r()*80).toFixed(0)}%;--sale-x2:${(15+r()*70).toFixed(0)}%;--sale-y2:${(10+r()*80).toFixed(0)}%`:"";
   // Idan, 2026-11-14 : « trop le même gabarit, les mêmes défauts ». La feuille (une des huit feuilles vierges de Jean-Mi,
-  // feuille-1…8), la taille, les plis, le froissé et les taches changent d'une annonce à l'autre. Les feuilles au coin
-  // du haut arraché (1, 6, 7) ne prennent pas de punaises : l'une flotterait dans le vide.
-  let paper=1+Math.floor(r()*8);
-  if(pin==="punaises") paper={1:2,6:5,7:8}[paper]||paper;
+  // feuille-1…8), la taille, les plis, le froissé et les taches changent d'une annonce à l'autre. La feuille suit le
+  // niveau de la mission (1 à 15) dans PAPER_WEAR, à un rang et demi près de chaque côté.
+  const t=(Math.min(15,Math.max(1,Number(level)||1))-1)/14;
+  let rank=Math.min(PAPER_WEAR.length-1,Math.max(0,Math.round(t*(PAPER_WEAR.length-1)+(r()*2-1)*1.6)));
+  if(pin==="punaises"&&PAPER_TOP_TORN.includes(PAPER_WEAR[rank])){
+    // la plus proche dans le classement, côté propre d'abord
+    const ok=PAPER_WEAR.map((p,i)=>({p,i})).filter(x=>!PAPER_TOP_TORN.includes(x.p)).sort((a,b)=>Math.abs(a.i-rank)-Math.abs(b.i-rank)||b.i-a.i);
+    rank=ok[0].i;
+  }
+  const paper=PAPER_WEAR[rank];
   const w=.9+r()*.1,ht=.83+r()*.09;
   const pct=(a,b)=>(a+r()*(b-a)).toFixed(0)+"%",num=(a,b,d=0)=>(a+r()*(b-a)).toFixed(d);
   // les chiures de mouche restent dans les marges : au milieu, on les prendrait pour des fautes d'impression
@@ -174,7 +185,7 @@ function nameSize(name){
   return n>24?" board-notice-name--xl":n>17?" board-notice-name--l":n>13?" board-notice-name--m":"";
 }
 function renderBoardNotice(card){
-  const look=noticeLook(card.id);
+  const look=noticeLook(card.id,card.difficulty?.level);
   // Argent et Or (Idan, 2026-11-14) : le métal du niveau de la mission (6 à 10 : argent, 11 à 15 : or) se voit sur
   // l'annonce (titre à la feuille de métal, étoiles plus grandes, une dague plantée).
   const metal=starRules().byLevel(Number(card.difficulty?.level)||1)?.metalKey;

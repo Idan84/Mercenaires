@@ -111,7 +111,7 @@ for (const file of ["estompe-1", "estompe-2", "estompe-3", "estompe-4"]) {
 }
 // Idan, 2026-11-14 : un papier tirait vers le rouge. Sur 2 000 annonces : jamais plus de 1° vers le rouge, et environ
 // une sur quatre est un vieux papier, désaturé et sali.
-const many = Array.from({length: 2000}, (_, i) => ui.noticeLook("contract:offre-" + i));
+const many = Array.from({length: 2000}, (_, i) => ui.noticeLook("contract:offre-" + i, 1 + i % 15));
 assert.ok(many.every(l => Number(/--hue:(-?[\d.]+)deg/.exec(l.style)[1]) >= -1), "plus de papier rouge");
 const oldShare = many.filter(l => l.style.includes("--sale:1")).length / many.length;
 assert.ok(oldShare > .2 && oldShare < .36, "un vieux papier sur quatre environ : " + oldShare);
@@ -126,6 +126,11 @@ for (const n of [1, 2, 3, 4, 5, 6, 7, 8]) {
 assert.ok(!boardCss.includes("papier-annonce-"), "plus de papiers fabriqués");
 assert.deepEqual(new Set(many.map(l => l.paper)), new Set([1, 2, 3, 4, 5, 6, 7, 8]), "les huit feuilles servent");
 assert.ok(many.every(l => !([1, 6, 7].includes(l.paper) && l.pin === "punaises")), "pas de punaise sur un coin du haut arraché");
+// Les plus abîmées pour les missions basses, les plus propres pour les hautes, sans rigidité (Idan, 2026-11-14).
+const wear = [2, 6, 5, 1, 7, 8, 4, 3];
+const meanRank = lvl => { const ls = Array.from({length: 600}, (_, i) => ui.noticeLook("contract:usure-" + i, lvl)); return ls.reduce((a, l) => a + wear.indexOf(l.paper), 0) / ls.length; };
+assert.ok(meanRank(1) < 1.5 && meanRank(15) > 5.5 && meanRank(8) > 2.5 && meanRank(8) < 4.5, "rang moyen : " + [1, 8, 15].map(meanRank).join(" / "));
+assert.ok(new Set(Array.from({length: 600}, (_, i) => ui.noticeLook("contract:usure-" + i, 1).paper)).size >= 3, "même au niveau 1, plusieurs feuilles");
 const varOf = (l, name) => (new RegExp("--" + name + ":(-?[\\d.]+)").exec(l.style) || [])[1];
 assert.ok(many.every(l => +varOf(l, "w") >= .9 && +varOf(l, "w") <= 1 && +varOf(l, "h") >= .83 && +varOf(l, "h") <= .92), "des tailles un peu différentes");
 assert.ok(new Set(many.map(l => varOf(l, "pli1"))).size > 10, "les plis ne tombent pas toujours au même endroit");

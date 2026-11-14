@@ -2220,7 +2220,10 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 /* La dague (missions d'argent et d'or, Idan, 2026-11-14) : plantée dans le haut du papier, un peu à droite, la lame
    entre juste au-dessus de la gravure (Idan : « le bas de la dague devrait arriver en haut de l'image ») et la poignée
    dépasse vers le haut ; deux dagues par métal (dague-argent|or-1|2.webp de Jean-Mi, avec la fente où la lame entre). */
-[data-pin="dague"] .board-notice-pins i{left:64%;top:calc(var(--u) * -66);width:auto;height:calc(var(--u) * 72);aspect-ratio:293/635;transform:translateX(-50%);background:url("assets/taverne/dague-argent-2.webp") center bottom / contain no-repeat;filter:drop-shadow(0 0 calc(var(--u) * 1.2) rgba(20,12,4,.7)) drop-shadow(calc(var(--u) * -4) calc(var(--u) * 7) calc(var(--u) * 3) rgba(0,0,0,.6))}
+[data-pin="dague"] .board-notice-pins i{left:64%;top:calc(var(--u) * -94);width:auto;height:calc(var(--u) * 100);aspect-ratio:293/635;transform:translateX(-50%);background:url("assets/taverne/dague-argent-2.webp") center bottom / contain no-repeat;filter:drop-shadow(0 0 calc(var(--u) * 1.2) rgba(20,12,4,.7)) drop-shadow(calc(var(--u) * -4) calc(var(--u) * 7) calc(var(--u) * 3) rgba(0,0,0,.6))}
+/* À la taille de la v1 (Idan : « elles étaient à la bonne taille sur la v1 »), la poignée passerait sous la barre du
+   haut : l'annonce à dague descend un peu (jamais plus haut que sa place) et raccourcit un peu. */
+.board-notice[data-pin="dague"]{height:calc(min(var(--h,.88), .84) * 100%);translate:0 calc(var(--u) * (max(var(--dy,0), 0) + 18))}
 [data-metal="silver"][data-head="2"] .board-notice-pins i{aspect-ratio:411/653;background-image:url("assets/taverne/dague-argent-1.webp")}
 [data-metal="gold"] .board-notice-pins i{aspect-ratio:288/635;background-image:url("assets/taverne/dague-or-1.webp")}
 [data-metal="gold"][data-head="2"] .board-notice-pins i{aspect-ratio:289/640;background-image:url("assets/taverne/dague-or-2.webp")}

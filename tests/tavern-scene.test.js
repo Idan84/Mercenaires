@@ -22,9 +22,10 @@ assert.match(css,/\[data-tavern-view="home"\] \.tavern-scene,\nbody[^{]*\[data-t
 assert.match(css,/\.tavern-layer\.is-hover\{filter:url\(#tavern-glow\)\}/,"le glow au survol");
 assert.match(css,/\.tavern-label\.is-on\{opacity:1\}/,"et le nom");
 
-const scene=new Function("window","document",js.replace('if(typeof document!=="undefined") initializeTavernScene();','')
-  +"return {TAVERN_ZONES,TAVERN_SCENE_SIZE,TAVERN_LAYERS,TAVERN_MENU,TAVERN_ASSETS,tavernSceneSvg,tavernZonesSvg,tavernPick};");
-const api=scene({},{});
+const scene=new Function("window","document","TAVERN_TAVERNIERS","TAVERN_TAVERNIER_HULL",js.replace('if(typeof document!=="undefined") initializeTavernScene();','')
+  +"return {TAVERN_ZONES,TAVERN_SCENE_SIZE,TAVERN_LAYERS,TAVERN_MENU,TAVERN_ASSETS,tavernSceneSvg,tavernZonesSvg,tavernPick,tavernTaverniers,pickTavernier};");
+const variants=require("../prototype-web/tavern-taverniers.js");
+const api=scene({},{},variants.TAVERN_TAVERNIERS,variants.TAVERN_TAVERNIER_HULL);
 const {width:W,height:H}=api.TAVERN_SCENE_SIZE;
 assert.deepEqual([W,H],[1376,768]);
 // Les calques : le décor, puis du fond vers l'avant ; chacun dans l'image, son fichier dans le jeu, à sa taille.
@@ -68,6 +69,31 @@ assert.equal(api.tavernPick(1150,300,alpha),"talk");
 assert.equal(api.tavernPick(1150,400,alpha),null,"derrière les tonneaux");
 assert.equal(api.tavernPick(700,700,alpha),null,"le sol de la taverne");
 assert.equal(api.tavernPick(1150,300,()=>null),undefined);
+
+// Le tavernier change à chaque entrée dans la taverne (Idan, 2026-11-14 : « au chargement de la taverne, on charge une
+// image au hasard du tavernier ») : l'original ou l'une des variantes d'Idan (scripts/build-tavern.js), chacune à sa
+// place, à sa taille ; le pointeur est capté sur l'enveloppe de tous.
+const all=api.tavernTaverniers();
+assert.equal(all.length,1+variants.TAVERN_TAVERNIERS.length);
+assert.ok(variants.TAVERN_TAVERNIERS.length>=28,"les 28 variantes d'Idan");
+assert.deepEqual(all[0],{key:"tavernier",src:"assets/taverne/tavernier.webp",box:[1022,208,250,544]},"l'original d'abord");
+for(const v of all.slice(1)){
+  const [x,y,w,h]=v.box,file=path.join(root,"prototype-web",v.src);
+  assert.ok(x>=0&&y>=0&&x+w<=W&&y+h<=H&&x>900&&y>150,v.key+" : à la place du tavernier");
+  assert.ok(fs.existsSync(file),v.key);
+  let size=null;
+  try{ size=execFileSync("identify",["-format","%w %h",file],{encoding:"utf8"}).trim(); }catch{ /* sans ImageMagick */ }
+  if(size) assert.equal(size,`${w} ${h}`,v.key);
+}
+assert.equal(new Set(all.map(v=>v.key)).size,all.length,"des noms uniques");
+assert.deepEqual([api.pickTavernier(()=>0).key,api.pickTavernier(()=>0.9999).key],["tavernier",all[all.length-1].key]);
+assert.equal(api.TAVERN_ZONES.find(z=>z.key==="talk").hulls[0],variants.TAVERN_TAVERNIER_HULL);
+for(const [x,y] of variants.TAVERN_TAVERNIER_HULL) assert.ok(x>=0&&x<=W&&y>=0&&y<=H);
+assert.match(js,/if\(now==="tavern"&&lastScene!=="tavern"\) chooseTavernier\(\);/,"un nouveau tirage à chaque entrée");
+assert.ok(html.indexOf('src="tavern-taverniers.js"')<html.indexOf('src="tavern-scene-ui.js"'));
+const {variantKey}=require("../scripts/build-tavern.js");
+assert.deepEqual(["Dwarf_tavern_keeper_holding_ale_ab54f84f.jpg","Dwarf_counting_coins_9f85b58d.jpg","Surprised_dwarf_tavern_keeper_st…_28bf94a3.jpg"].map(variantKey),
+  ["holding-ale","counting-coins","surprised-st"]);
 
 // Le menu du lieu (Idan, 2026-11-14 : « Tavernier - missions - recrutement - cave - menu ») : les cinq zones, une fois chacune.
 assert.deepEqual(api.TAVERN_MENU,["talk","missions","recruits","cellar","canteen"]);

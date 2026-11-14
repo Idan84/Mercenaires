@@ -102,7 +102,7 @@ Rangement : `media/hud-pack/<Peuple>/<culture>/` avec `left`, `center`, `right` 
 
 ### Décors : `media/background/`
 
-Idan y dépose les décors des lieux (2026-11-14) : `media/background/Taverne/`, dont le dossier des variantes du tavernier sur fond vert (« alternate tavernier »). Le dossier n'est pas listable de l'extérieur (403) : `api/background.php` le liste, sous-dossiers compris, avec la même bibliothèque que les avatars : https://bloodandwages.idanwizen.com/api/background.php ; les variantes sont détourées et rangées dans le jeu (`prototype-web/assets/taverne/`). Les calques de la taverne eux-mêmes viennent de `media/video/Taverne.zip`, détourés dans l'artefact « Taverne en calques » (doc 11).
+Idan y dépose les décors des lieux (2026-11-14) : `media/background/Taverne/`, dont le dossier des variantes du tavernier sur fond vert (« alternate tavernier »). Le dossier n'est pas listable de l'extérieur (403) : `api/background.php` le liste, sous-dossiers compris, avec la même bibliothèque que les avatars : https://bloodandwages.idanwizen.com/api/background.php ; `node scripts/build-tavern.js` télécharge les variantes du tavernier, les détoure, les range dans le jeu (`prototype-web/assets/taverne/taverniers/`) et écrit `prototype-web/tavern-taverniers.js` (Playwright et ImageMagick). Comme pour les barres, le dossier Hostinger n'est lu que pour cette étape. Les calques de la taverne eux-mêmes viennent de `media/video/Taverne.zip`, détourés dans l'artefact « Taverne en calques » (doc 11).
 
 ### Images d'équipement : `media/equipements/`
 

@@ -22,23 +22,30 @@ assert.match(css,/\[data-tavern-view="home"\] \.tavern-scene,\nbody[^{]*\[data-t
 assert.match(css,/\.tavern-layer\.is-hover\{filter:url\(#tavern-glow\)\}/,"le glow au survol");
 assert.match(css,/\.tavern-label\.is-on\{opacity:1\}/,"et le nom");
 
-const scene=new Function("window","document","TAVERN_TAVERNIERS","TAVERN_TAVERNIER_HULL",js.replace('if(typeof document!=="undefined") initializeTavernScene();','')
+const scene=new Function("window","document","TAVERN_TAVERNIERS","TAVERN_LAYER_BOXES","TAVERN_ZONE_HULLS",js.replace('if(typeof document!=="undefined") initializeTavernScene();','')
   +"return {TAVERN_ZONES,TAVERN_SCENE_SIZE,TAVERN_LAYERS,TAVERN_MENU,TAVERN_ASSETS,tavernSceneSvg,tavernZonesSvg,tavernPick,tavernTaverniers,pickTavernier};");
-const variants=require("../prototype-web/tavern-taverniers.js");
-const api=scene({},{},variants.TAVERN_TAVERNIERS,variants.TAVERN_TAVERNIER_HULL);
+// Les calques, leurs cadres et les taverniers : tavern-layers.js, écrit par scripts/build-tavern.js depuis les images d'Idan.
+const data=require("../prototype-web/tavern-layers.js");
+const api=scene({},{},data.TAVERN_TAVERNIERS,data.TAVERN_LAYER_BOXES,data.TAVERN_ZONE_HULLS);
+const variants=data;
+// La qualité avant le poids (Idan, 2026-11-14) : les images gardent tous les pixels d'Idan ; le repère reste 1376 × 768.
+const scale=data.TAVERN_SOURCE_SIZE.width/1376;
+assert.ok(scale>=1&&Math.abs(data.TAVERN_SOURCE_SIZE.height/768-scale)<0.01,"le format de la taverne");
+const sizeOf=file=>{ try{ return execFileSync("identify",["-format","%w %h",file],{encoding:"utf8"}).trim().split(" ").map(Number); }catch{ return null; } };
+// Chaque image à sa taille (Idan les passe en haute définition une à une) : son cadre, à la même échelle en largeur et en
+// hauteur, jamais plus petite que le repère.
+const fits=(size,box,label)=>{ if(size){ const rw=size[0]/box[2],rh=size[1]/box[3]; assert.ok(rw>=0.99&&Math.abs(rw-rh)<0.03,label+" : à sa taille"); } };
 const {width:W,height:H}=api.TAVERN_SCENE_SIZE;
 assert.deepEqual([W,H],[1376,768]);
 // Les calques : le décor, puis du fond vers l'avant ; chacun dans l'image, son fichier dans le jeu, à sa taille.
 assert.deepEqual(api.TAVERN_LAYERS.map(L=>[L.key,L.zone||""]),[["fond",""],["annonce","missions"],["menu","canteen"],["table2","recruits"],
   ["table1","recruits"],["trappe","cellar"],["tavernier","talk"],["premier-plan",""]]);
-const {execFileSync}=require("node:child_process");
 for(const L of api.TAVERN_LAYERS){
   const [x,y,w,h]=L.box,file=path.join(root,"prototype-web",api.TAVERN_ASSETS,L.key+".webp");
   assert.ok(x>=0&&y>=0&&x+w<=W&&y+h<=H,L.key);
   assert.ok(fs.existsSync(file),L.key);
-  let size=null;
-  try{ size=execFileSync("identify",["-format","%w %h",file],{encoding:"utf8"}).trim(); }catch{ /* sans ImageMagick */ }
-  if(size) assert.equal(size,`${w} ${h}`,L.key+" : à sa taille");
+  assert.ok(w>0&&h>0,L.key+" : un cadre");
+  fits(sizeOf(file),L.box,L.key);
 }
 assert.ok(fs.existsSync(path.join(root,"prototype-web",api.TAVERN_ASSETS,"taverne.webp")));
 // Les zones : les salles et le tavernier, leur nom, où le pointeur est capté.
@@ -54,8 +61,9 @@ for(const z of api.TAVERN_ZONES){
 const decor=api.tavernSceneSvg();
 assert.match(decor,/<filter id="tavern-glow"/);
 assert.equal((decor.match(/<image class="tavern-layer"/g)||[]).length,8);
-assert.match(decor,/<image class="tavern-layer" data-tavern-layer="tavernier" data-layer-zone="talk" href="assets\/taverne\/tavernier\.webp" x="1022" y="208" width="250" height="544"/);
-assert.match(decor,/<text class="tavern-label" data-tavern-label="talk" x="1147" y="202" text-anchor="middle">Parler au tavernier<\/text>/);
+const tb=data.TAVERN_LAYER_BOXES.tavernier;
+assert.ok(decor.includes(`<image class="tavern-layer" data-tavern-layer="tavernier" data-layer-zone="talk" href="assets/taverne/tavernier.webp" x="${tb[0]}" y="${tb[1]}" width="${tb[2]}" height="${tb[3]}" preserveAspectRatio="none"/>`));
+assert.ok(decor.includes(`<text class="tavern-label" data-tavern-label="talk" x="${Math.round(tb[0]+tb[2]/2)}" y="${Math.round(tb[1]-7)}" text-anchor="middle">Parler au tavernier</text>`),"le nom au-dessus de lui");
 const zones=api.tavernZonesSvg();
 assert.equal((zones.match(/<polygon /g)||[]).length,6,"une enveloppe par calque cliquable");
 assert.match(zones,/data-tavern-zone="talk" role="button" tabindex="0" aria-label="Parler au tavernier"/,"au clavier aussi");
@@ -76,21 +84,18 @@ assert.equal(api.tavernPick(1150,300,()=>null),undefined);
 const all=api.tavernTaverniers();
 assert.equal(all.length,1+variants.TAVERN_TAVERNIERS.length);
 assert.ok(variants.TAVERN_TAVERNIERS.length>=28,"les 28 variantes d'Idan");
-assert.deepEqual(all[0],{key:"tavernier",src:"assets/taverne/tavernier.webp",box:[1022,208,250,544]},"l'original d'abord");
+assert.deepEqual(all[0],{key:"tavernier",src:"assets/taverne/tavernier.webp",box:data.TAVERN_LAYER_BOXES.tavernier},"l'original d'abord");
 for(const v of all.slice(1)){
   const [x,y,w,h]=v.box,file=path.join(root,"prototype-web",v.src);
   assert.ok(x>=0&&y>=0&&x+w<=W&&y+h<=H&&x>900&&y>150,v.key+" : à la place du tavernier");
   assert.ok(fs.existsSync(file),v.key);
-  let size=null;
-  try{ size=execFileSync("identify",["-format","%w %h",file],{encoding:"utf8"}).trim(); }catch{ /* sans ImageMagick */ }
-  if(size) assert.equal(size,`${w} ${h}`,v.key);
+  fits(sizeOf(file),v.box,v.key);
 }
 assert.equal(new Set(all.map(v=>v.key)).size,all.length,"des noms uniques");
 assert.deepEqual([api.pickTavernier(()=>0).key,api.pickTavernier(()=>0.9999).key],["tavernier",all[all.length-1].key]);
-assert.equal(api.TAVERN_ZONES.find(z=>z.key==="talk").hulls[0],variants.TAVERN_TAVERNIER_HULL);
-for(const [x,y] of variants.TAVERN_TAVERNIER_HULL) assert.ok(x>=0&&x<=W&&y>=0&&y<=H);
+assert.equal(api.TAVERN_ZONES.find(z=>z.key==="talk").hulls.length,1,"une seule enveloppe pour tous les taverniers");
 assert.match(js,/if\(now==="tavern"&&lastScene!=="tavern"\) chooseTavernier\(\);/,"un nouveau tirage à chaque entrée");
-assert.ok(html.indexOf('src="tavern-taverniers.js"')<html.indexOf('src="tavern-scene-ui.js"'));
+assert.ok(html.indexOf('src="tavern-layers.js"')<html.indexOf('src="tavern-scene-ui.js"'));
 const {variantKey}=require("../scripts/build-tavern.js");
 assert.deepEqual(["Dwarf_tavern_keeper_holding_ale_ab54f84f.jpg","Dwarf_counting_coins_9f85b58d.jpg","Surprised_dwarf_tavern_keeper_st…_28bf94a3.jpg"].map(variantKey),
   ["holding-ale","counting-coins","surprised-st"]);

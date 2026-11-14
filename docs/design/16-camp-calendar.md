@@ -14,23 +14,23 @@ Le même jour, Idan a précisé l'emplacement : le calendrier, en petit, et le b
 Refonte de l'interface du camp, en trois temps : **1.** le contenu (ce qui suit), **2.** l'habillage graphique (Idan
 fournit les images), **3.** des infobulles utiles sur l'or, les salaires et les mercenaires.
 
-**La barre du haut** dit où en est la compagnie (maquette d'Idan, 2026-11-13 : « la barre ne colle pas le haut. Elle
-laisse le blason respirer […] la barre doit être belle, les infos lisibles ») :
+**La barre du haut** dit où en est la compagnie (maquette d'Idan, 2026-11-13 : « la barre doit être belle, les infos
+lisibles ») :
 
 - **La barre illustrée de la culture du capitaine** (Idan : « la barre qui change en fonction de la culture, et pas du
-  peuple ») : un pack par culture, 32 en tout, dessinés par Idan (embout gauche, milieu qui se répète, embout droit). Elle
-  est décollée du haut de l'écran ; le **blason** de la compagnie la déborde au-dessus et en dessous.
-- **Le blason se règle sur son écu** (Idan : « il faut pas mesurer la taille de l'image mais la taille de la partie
-  principale, hors petits trucs qui dépassent ») : l'écu fait deux fois la hauteur de la bande sombre et se centre sur
-  elle ; la barre part du milieu de l'écu, si bien que **rien ne dépasse à gauche du blason** ; le texte commence après
-  ses décors ; un décor au-dessus de l'écu (casque, couronne, phénix) fait descendre la barre pour qu'il garde de l'air.
-  L'écu de chacun des 60 blasons est mesuré par `scripts/build-blason-bodies.js` (cinq, très décorés, à la main).
-- **Dans sa bande sombre** : le **nom** de la compagnie en italique et ses **étoiles** dessous ; l'**or**, les
-  **salaires** du jour et les **mercenaires** (places occupées au dortoir / places), chacun dans une pastille avec son
-  picto (pièces, bourse, trois casques) ; puis, après un filet, la **date** sur une ligne (« 1 Brumecendre · Jour 1 » ;
-  l'ère et la citation du jour au survol) et le **bouton menu** (Échap). Les nombres prennent l'espace des milliers
-  (« 10 000 »). Quand un grand ornement, un blason très décoré ou un long nom manque de place, le nom rétrécit (jusqu'à
-  80 %), puis passe sur deux lignes.
+  peuple ») : un pack par culture, 32 en tout, dessinés par Idan (milieu qui se répète, embout droit). **Pas d'embout à
+  gauche** : le milieu sort de l'écran (Idan, 2026-11-14 : « laisse la ligne centre aller tout au bout et sortir de
+  l'image »). **Pas de blason** (essai validé le 14 novembre).
+- **Dans sa bande sombre** : le **nom** de la compagnie en italique et ses **étoiles** sur la même ligne ; l'**or**, les
+  **salaires** du jour et les **mercenaires** (places occupées au dortoir / places), chacun dans un fond sombre sans
+  contour avec son picto (pièces, bourse, trois casques) ; puis, après un filet, la **date** sur une ligne
+  (« 1 Brumecendre · Jour 1 » ; l'ère et la citation du jour au survol) et le **bouton menu** (Échap), avec de l'air à sa
+  droite. Les nombres prennent l'espace des milliers (« 10 000 »). Quand un grand ornement ou un long nom manque de place,
+  le nom rétrécit (jusqu'à 80 %), puis passe sur deux lignes.
+- **Les mercenaires ouvrent « Mes mercenaires »** (le menu de l'accueil du camp est retiré, voir la barre du bas).
+- **Réglée culture par culture** par Idan dans l'**Atelier des barres** (14 novembre) : la taille du contenu, la hauteur
+  des fonds sombres, l'air à droite du menu et l'écart avec le haut de l'écran. Ses réglages sont dans
+  `scripts/hud-bars-reglages.json`.
 - **Proportions de la maquette**, quelle que soit la largeur de l'écran : tout se règle sur la hauteur de la bande sombre
   (85 px pour un écran de 2000 px de large). Chaque pack est mesuré à son arrivée (cadre, bande, ornements des embouts :
   `scripts/build-hud-bars.js`), pour que le texte tombe toujours dans sa bande.
@@ -38,11 +38,26 @@ laisse le blason respirer […] la barre doit être belle, les infos lisibles »
   provisoire aux mêmes proportions.
 - Le logo Blood & Wages n'apparaît plus au camp : il reste sur l'écran titre.
 
-**La barre du bas** sert à se déplacer et à agir. Pour l'instant : **Taverne** (son menu) et **Château** à gauche,
-**Jour suivant** au centre, le **journal** à droite. Liste retenue pour la suite (à préciser) : Château (l'écran du camp),
-Marchand (grisé sans marchand), Intendance, Taverne, Dortoir (où iront les fiches des mercenaires), Construction (l'actuel
-Ma Compagnie, réorganisé), Mes bâtiments (tous les bâtiments, y compris ceux à construire), Ce bâtiment (les salles et les
-options du lieu où l'on est). Le journal sera trié : ce qu'il affiche reste à choisir.
+**La barre du bas** sert à se déplacer et à agir. On la fait pas à pas (Idan, 2026-11-14 : « c'est pas grave si tout
+n'est pas fonctionnel immédiatement, on commence par la barre ») :
+
+- **Le milieu de la barre de la culture**, sans ses embouts, d'un bord à l'autre de l'écran (Idan : « en bas, on va mettre
+  que la partie centre de la barre et on va l'étendre jusqu'au bout ») ; sa bande sombre touche le bas de l'écran (« le
+  fond sombre touche le bas de l'image »).
+- **Au centre, le bouton Jour suivant** dessiné par Idan (`next.png`), dans **l'anneau de la culture**
+  (`ornement_central`, les 32 cultures) ; le bord du bouton passe sous l'anneau.
+- **À gauche de l'anneau, les six lieux** en pictos d'Idan (« que des pictos » ; le nom au survol), dans l'ordre de ses
+  images : **Château** (l'écran du camp), **Taverne** (son menu), **Dortoir**, **Marchand** (grisé sans marchand),
+  **Intendance**, **Construction** (l'actuel Ma Compagnie, à réorganiser). Ils se rangent contre l'anneau, à sa hauteur.
+- **Le menu de l'accueil du camp est retiré** (Idan : « on peut retirer les boutons du menu principal ») : on se déplace
+  avec la barre ; « Mes mercenaires » s'ouvre depuis les mercenaires de la barre du haut. Chaque lieu garde son bouton
+  « ← Retour au camp », et la Taverne ses zones cliquables.
+- **La partie droite** de la barre reste à faire. **Le journal** est retiré pour l'instant (Idan : « le journal,
+  retire-le pour l'instant ») ; il sera trié : ce qu'il affiche reste à choisir.
+- **Réglée culture par culture** par Idan dans l'**Atelier des barres** (14 novembre) : la hauteur de la barre, la taille
+  du bouton et de l'anneau, leur hauteur, la taille des pictos, leur écart, leur écart avec l'anneau, leur hauteur, et un
+  bord du bas à cacher sous l'écran. Ses réglages sont dans `scripts/hud-bars-reglages.json` ; `scripts/build-hud-bars.js`
+  en tire la barre de chaque culture.
 
 ## Référentiel et convention d'affichage
 

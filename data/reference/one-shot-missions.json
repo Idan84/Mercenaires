@@ -449,6 +449,7 @@
       "nom": "Chasse au loup",
       "description": "Une meute de loups : tous tués ou mis en déroute. Ceux qui restent à terre peuvent être capturés.",
       "illustration": "",
+      "illustrations": ["assets/missions/chasse-loups-1.webp"],
       "niveau": {
         "ecart": [
           -4,
@@ -497,6 +498,7 @@
       "nom": "Chasse à la licorne",
       "description": "Des licornes : toutes tuées ou mises en déroute. Celles qui restent à terre peuvent être capturées.",
       "illustration": "",
+      "illustrations": ["assets/missions/chasse-licorne-1.webp", "assets/missions/chasse-licorne-2.webp"],
       "niveau": {
         "ecart": [
           -4,
@@ -545,6 +547,7 @@
       "nom": "Chasse au cerbère",
       "description": "Une meute de cerbères : tous tués ou mis en déroute. Ceux qui restent à terre peuvent être capturés.",
       "illustration": "",
+      "illustrations": ["assets/missions/chasse-cerbere-1.webp"],
       "niveau": {
         "ecart": [
           -4,
@@ -594,6 +597,7 @@
       "nom": "Chasse aux chiens sauvages",
       "description": "Une meute de chiens sauvages : tous tués ou mis en déroute. Ceux qui restent à terre peuvent être capturés : ce sont des molosses.",
       "illustration": "",
+      "illustrations": ["assets/missions/chasse-chiens-sauvages-1.webp", "assets/missions/chasse-chiens-sauvages-2.webp"],
       "niveau": {
         "ecart": [
           -4,
@@ -649,6 +653,7 @@
       "nom": "Chasse aux papillons",
       "description": "Une nuée de papillons vénéneux : tous tués ou mis en déroute. Ceux qui restent à terre peuvent être capturés. Le plus dur : les repérer.",
       "illustration": "",
+      "illustrations": ["assets/missions/chasse-papillons-1.webp", "assets/missions/chasse-papillons-2.webp"],
       "niveau": {
         "ecart": [
           -4,

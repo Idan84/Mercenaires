@@ -35,12 +35,24 @@ const KEEP=[
   ["Vampire_in_ruined_castle_window_d9d4443a.jpg","chateau-maudit-2"],
   ["Vampire_at_castle_window_c4c62323.jpg","chateau-maudit-3"],
   ["Hooded_figure_in_ancient_graveyard_93e85a0f.jpg","cimetiere-profane-1"],
-  ["Hooded_figure_holding_lantern_gr…_1a5d46be.jpg","cimetiere-profane-2"]
+  ["Hooded_figure_holding_lantern_gr…_1a5d46be.jpg","cimetiere-profane-2"],
+  ["Pack_of_wolves_howling_aaf26095.jpg","chasse-loups-1"],
+  ["Wild_unicorn_rearing_in_forest_02373464.jpg","chasse-licorne-1"],
+  ["Wild_unicorn_rearing_in_forest_cddc5f4f.jpg","chasse-licorne-2"],
+  ["Three-headed_hellhound_at_mine_0991b14a.jpg","chasse-cerbere-1"],
+  ["Feral_mastiffs_snarling_near_manor_6302de4d.jpg","chasse-chiens-sauvages-1"],
+  ["Feral_mastiffs_snarling_ruined_m…_2cbc4bb3.jpg","chasse-chiens-sauvages-2"],
+  ["Giant_poisonous_butterflies_over…_d1bd2095.jpg","chasse-papillons-1"],
+  ["Poisonous_butterflies_over_flowe…_da0dfe2d.jpg","chasse-papillons-2"]
 ];
 // Écartées : les raisons servent pour la prochaine série.
 const REJECTED={
   "Ogre_encampment_with_cauldron_an…_08bb96c7.jpg":"fond noir tout autour : un rectangle sombre sur l'annonce, l'encre ne se pose plus sur le papier",
-  "Ogre_encampment_with_cauldron_an…_ef1e4da0.jpg":"presque la même que camp-ogre-3 (ogre assis à droite du chaudron) : une variante de plus sans rien de neuf"
+  "Ogre_encampment_with_cauldron_an…_ef1e4da0.jpg":"presque la même que camp-ogre-3 (ogre assis à droite du chaudron) : une variante de plus sans rien de neuf",
+  "Cerberus_at_mine_entrance_30035809.jpg":"deux têtes seulement : un cerbère en a trois",
+  "Cerberus_at_mine_mouth_ed39f50f.jpg":"deux têtes seulement : un cerbère en a trois",
+  "Feral_mastiffs_snarling_near_manor_c85a0952.jpg":"presque la même que chasse-chiens-sauvages-2 (même château, même escalier)",
+  "Wild_unicorn_rearing_in_forest_a8e1f79b.jpg":"un lavis gris plutôt qu'une gravure : elle détonne à côté des autres"
 };
 
 function listMissions(){
@@ -50,11 +62,13 @@ function listMissions(){
   return {base:index.base,files};
 }
 
-// Le blanc du papier : la teinte des coins (le fond de la gravure), ramenée au blanc pur.
+// Le blanc du papier : la teinte des coins (le fond de la gravure), ramenée au blanc pur. Une gravure en pleine page
+// (coins sombres : pas de papier autour) reste telle quelle.
 function whitePoint(file){
   const out=execFileSync("convert",[file,"-colorspace","Gray","-format","%[fx:p{4,4}] %[fx:p{w-5,4}] %[fx:p{4,h-5}] %[fx:p{w-5,h-5}]","info:"],{encoding:"utf8"});
   const v=out.trim().split(/\s+/).map(Number).sort((a,b)=>b-a);
-  return Math.max(.85,Math.min(1,(v[0]+v[1])/2-.012));
+  const paper=(v[0]+v[1])/2;
+  return paper<.88?1:Math.min(1,paper-.012);
 }
 
 async function main(){

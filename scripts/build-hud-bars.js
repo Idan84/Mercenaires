@@ -43,7 +43,8 @@ const PICTO_CROP=960/1254,PICTO_SIZE=200;
 // Les réglages par culture (Atelier des barres) ; une culture sans réglage prend ceux de départ de l'atelier.
 const SETTINGS=path.join(__dirname,"hud-bars-reglages.json");
 const DEFAULT_SETTINGS={
-  haut:{contenu:100,fonds:.54,margeMenu:.6,haut:.3},
+  version:"v1",
+  haut:{barre:100,embout:100,contenu:100,fonds:.54,margeMenu:.6,haut:.3},
   bas:{ligne:1.2,rogner:0,decalage:0,bouton:1.54,anneau:100,pictoTaille:.85,pictoEcart:.3,pictoAnneau:.3,pictoHaut:.03}
 };
 const STOPWORDS=new Set(["de","d","des","du","la","le","l","les","a","et"]);
@@ -85,9 +86,11 @@ function cultureOfPack(pack,cultures){
   return scored[0].c;
 }
 
-// Les packs d'un dossier : chaque sous-dossier qui a ses trois morceaux.
+// Les packs d'un dossier : chaque sous-dossier qui a ses trois morceaux. Un sous-dossier v2, v3… d'un pack est une autre
+// version de sa barre (Idan, 2026-11-14 : « un v2 pour toute la barre ») : versions.v2 = ses morceaux, l'anneau du pack
+// s'il n'en a pas ; la version v1 est le pack lui-même.
 function findPacks(dir){
-  const packs=[];
+  const found=new Map();
   const walk=rel=>{
     const abs=path.join(dir,rel);
     const files=fs.readdirSync(abs,{withFileTypes:true});
@@ -97,9 +100,20 @@ function findPacks(dir){
       const m=f.name.match(/^(left|center|right|ornement_central)\.(png|webp)$/i);
       if(m) pieces[m[1].toLowerCase()]=path.join(abs,f.name);
     }
-    if(PIECES.every(p=>pieces[p])) packs.push({pack:rel.split(path.sep).join("/"),pieces});
+    if(PIECES.every(p=>pieces[p])) found.set(rel.split(path.sep).join("/"),pieces);
   };
   walk("");
+  const packs=[];
+  for(const [rel,pieces] of found){
+    const m=rel.match(/^(.+)\/(v\d+)$/i);
+    if(m&&found.has(m[1])) continue;
+    const versions={v1:pieces};
+    for(const [other,more] of found){
+      const v=other.startsWith(rel+"/")&&other.slice(rel.length+1).match(/^v\d+$/i);
+      if(v) versions[v[0].toLowerCase()]={ornement_central:pieces.ornement_central,...more};
+    }
+    packs.push({pack:rel,pieces,versions});
+  }
   return packs.sort((a,b)=>a.pack.localeCompare(b.pack));
 }
 
@@ -220,15 +234,18 @@ function buildPictos(dir){
 // Les réglages d'une culture, complétés par ceux de départ.
 function settingsOf(all,key){
   const own=all[key]||{};
-  return {haut:{...DEFAULT_SETTINGS.haut,...own.haut},bas:{...DEFAULT_SETTINGS.bas,...own.bas}};
+  return {version:own.version||DEFAULT_SETTINGS.version,haut:{...DEFAULT_SETTINGS.haut,...own.haut},bas:{...DEFAULT_SETTINGS.bas,...own.bas}};
 }
 const round4=v=>Math.round(v*1e4)/1e4;
 
-// La barre du haut d'une culture, en bandes B (hauteur de sa bande sombre) : top, l'écart entre le haut de l'écran et la
-// bande sombre ; contenu, la taille du texte et des boutons (1 : celle de la maquette) ; fonds, la hauteur des pastilles ;
-// marge, l'air à droite du bouton menu ; haut, l'écart entre le haut de l'écran et la barre.
+// La barre du haut d'une culture : barre, sa taille (1 : la bande sombre fait B ; Idan, 2026-11-14 : « une barre plus
+// fine ») ; embout, la largeur de son embout droit (1 : celle du dessin). Le reste en bandes de cette barre : top, l'écart
+// entre le haut de l'écran et la bande sombre ; contenu, la taille du texte et des boutons (1 : celle de la maquette) ;
+// fonds, la hauteur des pastilles ; marge, l'air à droite du bouton menu ; haut, l'écart entre le haut de l'écran et la
+// barre (négatif : le haut de l'image passe au-dessus de l'écran).
 function topLayout(bar,s){
-  return {top:round4(s.haut+bar.bandTop/(bar.bandBottom-bar.bandTop)),haut:s.haut,contenu:s.contenu/100,fonds:s.fonds,marge:s.margeMenu};
+  return {barre:s.barre/100,embout:s.embout/100,top:round4(s.haut+bar.bandTop/(bar.bandBottom-bar.bandTop)),haut:s.haut,
+    contenu:s.contenu/100,fonds:s.fonds,marge:s.margeMenu};
 }
 
 // La barre du bas d'une culture, en bandes B, comme dans l'Atelier des barres (tout y est proportionnel à B) ; hauteurs
@@ -277,11 +294,15 @@ async function main(){
   const page=await browser.newPage();
   await page.setContent("<body></body>");
   const bars={},problems=[];
-  for(const {pack,pieces} of packs){
+  for(const {pack,versions} of packs){
     const culture=cultureOfPack(pack,cultures);
     if(!culture){problems.push(`${pack} : culture introuvable (à ajouter dans PACK_CULTURE)`);continue;}
     const key=slug(culture.nom);
     if(bars[key]){problems.push(`${pack} : ${culture.nom} a déjà le pack ${bars[key].pack}`);continue;}
+    const own=settingsOf(settings,key);
+    if(!settings[key]) problems.push(`${culture.nom} : pas de réglages dans hud-bars-reglages.json (ceux de départ de l'atelier)`);
+    if(!versions[own.version]) problems.push(`${culture.nom} : pas de version ${own.version} dans ${pack} (la v1)`);
+    const version=versions[own.version]?own.version:"v1",pieces=versions[version];
     const m=await measure(page,pieces);
     if(new Set(m.heights).size>1){problems.push(`${pack} : les trois morceaux n'ont pas la même hauteur (${m.heights.join(", ")})`);continue;}
     if(m.bandBottom-m.bandTop<20){problems.push(`${pack} : bande sombre introuvable`);continue;}
@@ -291,9 +312,7 @@ async function main(){
       execFileSync("convert",[pieces[p],"-strip","-quality","90","-define","webp:alpha-quality=100","-define","webp:method=6",path.join(dir,p+".webp")]);
     }
     delete m.heights;
-    bars[key]={culture:culture.nom,pack,...m};
-    const own=settingsOf(settings,key);
-    if(!settings[key]) problems.push(`${culture.nom} : pas de réglages dans hud-bars-reglages.json (ceux de départ de l'atelier)`);
+    bars[key]={culture:culture.nom,pack,...(version==="v1"?{}:{version}),...m};
     bars[key].haut=topLayout(m,own.haut);
     if(pieces.ornement_central){
       const o=await measureOrnament(page,pieces.ornement_central);
@@ -321,7 +340,8 @@ async function main(){
   fs.writeFileSync(DATA,`"use strict";
 
 // Barres du camp par culture du capitaine (Idan, 2026-11-13 et 14). Généré par scripts/build-hud-bars.js : ne pas modifier
-// à la main. Images : assets/hud/barres/<culture>/{left,center,right}.webp. Mesures en pixels de l'image d'origine :
+// à la main. Images : assets/hud/barres/<culture>/{left,center,right}.webp (version : celle du pack choisie par Idan, si ce
+// n'est pas la première). Mesures en pixels de l'image d'origine :
 // h (hauteur commune), left / center / right (largeurs), frameTop / frameBottom (cadre du milieu), bandTop / bandBottom
 // (bande sombre où le jeu écrit), bandLeft (début de la bande dans l'embout gauche), bandRight (distance entre la fin de la
 // bande et le bord droit de l'embout droit). ornament (s'il y en a un, assets/hud/barres/<culture>/ornement.webp) : l'anneau
@@ -342,4 +362,4 @@ if(typeof module!=="undefined") module.exports={HUD_BARS};
 }
 
 if(require.main===module) main().catch(e=>{console.error(e);process.exit(1);});
-module.exports={cultureOfPack,tokens,slug,topLayout,bottomLayout};
+module.exports={cultureOfPack,tokens,slug,findPacks,topLayout,bottomLayout};

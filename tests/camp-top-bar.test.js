@@ -33,18 +33,21 @@ assert.match(top,/<div class="hud-stat hud-stat--link" title="Mes mercenaires : 
 assert.match(js,/\$\("game-hud"\)\.addEventListener\("keydown",event=>\{\n    const button=event\.target\.closest\?\.\('\[role="button"\]\[data-hud-scene\]'\);/);
 
 // --- Mise en page --------------------------------------------------------------------------------------------------------
-// Une seule mesure règle la barre : la hauteur de la bande sombre (85 px pour un écran de 2000 px, comme la maquette) ; les
-// réglages d'Idan pour la culture, en bandes B, sont posés sur la page (--ht-*).
+// Une seule mesure règle les barres : la hauteur de la bande sombre (85 px pour un écran de 2000 px, comme la maquette) ;
+// la barre du haut a la sienne, --ht-B, à --ht-barre de B (Idan, 2026-11-14 : « une barre plus fine ») ; les réglages
+// d'Idan pour la culture sont posés sur la page (--ht-*), en bandes de cette barre.
 assert.match(css,/--hb-B:clamp\(52px,4\.25vw,85px\);/);
-assert.match(css,/--hb-top:calc\(var\(--hb-B\) \* var\(--ht-top\)\);/,"la bande sombre à --ht-top bandes du haut de l'écran");
-assert.match(css,/--hud-top-h:calc\(var\(--hb-top\) \+ var\(--hb-B\) \* 1\.3\);/,"les lieux commencent sous la barre");
-assert.match(css,/\.game-top-bar\{--hb-k:calc\(var\(--hb-B\) \/ var\(--hb-band,90\)\);position:fixed;top:0;/);
-assert.match(css,/\.hud-bar-art\{position:absolute;left:0;right:calc\(var\(--hb-B\) \* \.12\);top:calc\(var\(--hb-B\) \* var\(--ht-haut\)\);/,"la barre part du bord gauche");
-assert.match(css,/\.hud-bar-center\{left:0;right:calc\(var\(--hb-k\) \* var\(--hb-rw,0\) - 1px\);background-repeat:repeat-x;/,"le milieu se répète jusqu'à l'embout droit");
-assert.match(css,/\.hud-top-content\{[^}]*left:calc\(var\(--hb-B\) \* \.5\);right:calc\(var\(--hb-B\) \* var\(--ht-marge\) \+ var\(--hb-k\) \* var\(--hb-ri,0\)\);/,"de l'air à droite du bouton menu (--ht-marge)");
-assert.match(css,/--ht-u:calc\(var\(--hb-B\) \* var\(--ht-s\)\);/,"la taille du contenu (--ht-s)");
+assert.match(css,/--ht-B:calc\(var\(--hb-B\) \* var\(--ht-barre\)\);/,"la taille de la barre du haut");
+assert.match(css,/--hb-top:calc\(var\(--ht-B\) \* var\(--ht-top\)\);/,"la bande sombre à --ht-top bandes du haut de l'écran");
+assert.match(css,/--hud-top-h:calc\(var\(--hb-top\) \+ var\(--ht-B\) \* 1\.3\);/,"les lieux commencent sous la barre");
+assert.match(css,/\.game-top-bar\{--hb-k:calc\(var\(--ht-B\) \/ var\(--hb-band,90\)\);position:fixed;top:0;/);
+assert.match(css,/\.hud-bar-art\{position:absolute;left:0;right:calc\(var\(--ht-B\) \* \.12\);top:calc\(var\(--ht-B\) \* var\(--ht-haut\)\);/,"la barre part du bord gauche");
+assert.match(css,/\.hud-bar-right\{right:0;width:calc\(var\(--hb-k\) \* var\(--hb-rw,0\) \* var\(--ht-embout\)\)\}/,"l'embout droit resserré en largeur (--ht-embout)");
+assert.match(css,/\.hud-bar-center\{left:0;right:calc\(var\(--hb-k\) \* var\(--hb-rw,0\) \* var\(--ht-embout\) - 1px\);background-repeat:repeat-x;/,"le milieu se répète jusqu'à l'embout droit");
+assert.match(css,/\.hud-top-content\{[^}]*left:calc\(var\(--ht-B\) \* \.5\);right:calc\(var\(--ht-B\) \* var\(--ht-marge\) \+ var\(--hb-k\) \* var\(--hb-ri,0\) \* var\(--ht-embout\)\);/,"de l'air à droite du bouton menu (--ht-marge)");
+assert.match(css,/--ht-u:calc\(var\(--ht-B\) \* var\(--ht-s\)\);/,"la taille du contenu (--ht-s)");
 assert.match(css,/\.game-top-bar \.hud-company\{flex:0 1 auto;flex-direction:row;/,"les étoiles sur la ligne du nom");
-assert.match(css,/\.game-top-bar \.hud-stat\{box-sizing:border-box;height:calc\(var\(--hb-B\) \* var\(--ht-fonds\)\);[^}]*border:0;/,"des fonds sombres sans contour, de la hauteur réglée");
+assert.match(css,/\.game-top-bar \.hud-stat\{box-sizing:border-box;height:calc\(var\(--ht-B\) \* var\(--ht-fonds\)\);[^}]*border:0;/,"des fonds sombres sans contour, de la hauteur réglée");
 assert.match(css,/\.game-top-bar:not\(\.has-art\) \.hud-bar-art\{/,"un cadre provisoire sans pack");
 assert.match(css,/#hud-company\.is-two-lines\{[^}]*-webkit-line-clamp:2;/,"un nom trop long passe sur deux lignes");
 assert.match(css,/\.game-top-bar #hud-day::before\{content:"\\00a0·\\00a0";/,"la date sur une ligne : « 1 Brumecendre · Jour 1 »");
@@ -73,9 +76,26 @@ for(const [key,bar] of Object.entries(HUD_BARS)){
   // La barre du haut de la culture, d'après les réglages d'Idan.
   assert.deepEqual(bar.haut,topLayout(bar,settings[key].haut),key+" : réglages de la barre du haut");
   assert.ok(bar.haut.top>=bar.haut.haut&&bar.haut.contenu>.5&&bar.haut.contenu<=1.2&&bar.haut.fonds>0&&bar.haut.fonds<1&&bar.haut.marge>=0,key);
+  assert.ok(bar.haut.barre>=.5&&bar.haut.barre<=1.2&&bar.haut.embout>=.6&&bar.haut.embout<=1,key+" : taille de la barre et largeur de l'embout");
+  assert.equal(bar.version||"v1",settings[key].version,key+" : la version choisie dans l'atelier");
 }
-assert.deepEqual(topLayout({bandTop:50,bandBottom:150},{contenu:85,fonds:.54,margeMenu:1.5,haut:.1}),{top:.6,haut:.1,contenu:.85,fonds:.54,marge:1.5},
-  "la bande sombre commence à haut + bandTop / bande bandes du haut de l'écran");
+assert.deepEqual(topLayout({bandTop:50,bandBottom:150},{barre:80,embout:90,contenu:85,fonds:.54,margeMenu:1.5,haut:.1}),
+  {barre:.8,embout:.9,top:.6,haut:.1,contenu:.85,fonds:.54,marge:1.5},"la bande sombre commence à haut + bandTop / bande bandes du haut de l'écran");
+// Une autre version d'un pack (Idan, 2026-11-14 : « un v2 pour toute la barre ») : son sous-dossier v2, avec l'anneau du
+// pack s'il n'a pas le sien ; un seul pack par culture.
+const {findPacks}=require("../scripts/build-hud-bars.js");
+const tmp=fs.mkdtempSync(path.join(require("node:os").tmpdir(),"hud-pack-test-"));
+for(const f of ["Humains/grandes-steppes/left.png","Humains/grandes-steppes/center.png","Humains/grandes-steppes/right.png","Humains/grandes-steppes/ornement_central.png",
+  "Humains/grandes-steppes/v2/left.png","Humains/grandes-steppes/v2/center.png","Humains/grandes-steppes/v2/right.png"]){
+  fs.mkdirSync(path.dirname(path.join(tmp,f)),{recursive:true});
+  fs.writeFileSync(path.join(tmp,f),"");
+}
+const found=findPacks(tmp);
+assert.deepEqual(found.map(p=>p.pack),["Humains/grandes-steppes"]);
+assert.deepEqual(Object.keys(found[0].versions),["v1","v2"]);
+assert.equal(path.relative(tmp,found[0].versions.v2.center),path.join("Humains","grandes-steppes","v2","center.png"));
+assert.equal(path.relative(tmp,found[0].versions.v2.ornement_central),path.join("Humains","grandes-steppes","ornement_central.png"),"l'anneau du pack");
+fs.rmSync(tmp,{recursive:true,force:true});
 // Le script reconnaît la culture d'un pack par son dossier (peuple, puis mots).
 const {cultureOfPack}=require("../scripts/build-hud-bars.js");
 const packCulture=pack=>cultureOfPack(pack,cultures)?.nom;
@@ -117,7 +137,8 @@ assert.deepEqual(bar.props,{"--hb-h":String(nains.h),"--hb-rw":String(nains.righ
 assert.equal(bar.pieces.center.style.backgroundImage,'url("assets/hud/barres/nains-des-montagnes/center.webp")');
 assert.equal(bar.pieces.right.style.backgroundImage,'url("assets/hud/barres/nains-des-montagnes/right.webp")');
 assert.deepEqual(Object.fromEntries(Object.entries(rootProps).filter(([k])=>k.startsWith("--ht-"))),
-  {"--ht-top":String(nains.haut.top),"--ht-haut":String(nains.haut.haut),"--ht-s":String(nains.haut.contenu),"--ht-fonds":String(nains.haut.fonds),"--ht-marge":String(nains.haut.marge)},
+  {"--ht-barre":String(nains.haut.barre),"--ht-embout":String(nains.haut.embout),"--ht-top":String(nains.haut.top),"--ht-haut":String(nains.haut.haut),
+    "--ht-s":String(nains.haut.contenu),"--ht-fonds":String(nains.haut.fonds),"--ht-marge":String(nains.haut.marge)},
   "les réglages d'Idan pour les Nains des montagnes");
 // Une culture sans pack (une culture ajoutée plus tard) : le cadre provisoire et les valeurs de départ de styles.css.
 game.captain.culture="Culture à venir";

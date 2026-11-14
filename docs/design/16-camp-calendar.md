@@ -28,9 +28,13 @@ lisibles ») :
   droite. Les nombres prennent l'espace des milliers (« 10 000 »). Quand un grand ornement ou un long nom manque de place,
   le nom rétrécit (jusqu'à 80 %), puis passe sur deux lignes.
 - **Les mercenaires ouvrent « Mes mercenaires »** (le menu de l'accueil du camp est retiré, voir la barre du bas).
-- **Réglée culture par culture** par Idan dans l'**Atelier des barres** (14 novembre) : la taille du contenu, la hauteur
-  des fonds sombres, l'air à droite du menu et l'écart avec le haut de l'écran. Ses réglages sont dans
-  `scripts/hud-bars-reglages.json`.
+- **Réglée culture par culture** par Idan dans l'**Atelier des barres** (14 novembre) : la **taille de la barre** (Idan :
+  « une barre plus fine » ; toute la barre rapetisse ensemble, ornement et contenu compris, et le raccord reste parfait),
+  la **largeur de l'embout droit** (l'ornement resserré en largeur seulement), la taille du contenu, la hauteur des fonds
+  sombres, l'air à droite du menu et l'écart avec le haut de l'écran (négatif : le haut de l'image passe au-dessus). Ses
+  réglages sont dans `scripts/hud-bars-reglages.json`.
+- **Une culture peut avoir une autre version de sa barre** (Idan, 14 novembre : « un v2 pour toute la barre ») : les
+  Steppes désertiques ont la v2.
 - **Proportions de la maquette**, quelle que soit la largeur de l'écran : tout se règle sur la hauteur de la bande sombre
   (85 px pour un écran de 2000 px de large). Chaque pack est mesuré à son arrivée (cadre, bande, ornements des embouts :
   `scripts/build-hud-bars.js`), pour que le texte tombe toujours dans sa bande.

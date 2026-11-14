@@ -38,6 +38,7 @@ function campaignRules(){
 function startCampaign(captain,squad){
   game.campaign=campaignRules().createCampaign({captain,squad});
   game.tavernLog=[];
+  game.dayNews=null;
   game.recruitTalk=null;
 }
 
@@ -172,6 +173,8 @@ function advanceCampDay(){
   logDayReport(report);
   // Domaine évolutif (Idan, 2026-11-06) : chaque matin, après les entraînements et les apprentissages de la nuit.
   if(typeof refreshMercenaryDomains==="function") refreshMercenaryDomains(game.campaign.company.roster);
+  // Les nouvelles du jour, gardées avec la partie : le pigeon de la barre du bas les rouvre (Idan, 2026-11-14).
+  game.dayNews=typeof dayNewsOf==="function"?dayNewsOf(game.campaign.day,report):null;
   saveGame();
   renderGame();
   if(typeof renderContractBoard==="function"&&!$("tavern-missions-view").classList.contains("hidden")) renderContractBoard();
@@ -179,9 +182,7 @@ function advanceCampDay(){
   if(game.pendingExpeditionDialog){ openExpeditionDialog(game.pendingExpeditionDialog); game.pendingExpeditionDialog=null; }
   // La notification du jour par-dessus (Idan, 2026-10-30 et 2026-10-31 : day-news-ui.js) ; les rapports des
   // lieutenants et l'arrivée d'une escouade attendent dessous.
-  // Le pigeon de la barre du bas la rouvre (Idan, 2026-11-14) : le rapport du jour est gardé pour lui.
-  game.lastDayReport=report;
-  if(typeof showDayNews==="function") showDayNews(game.campaign.day,report);
+  if(typeof showDayNews==="function"&&game.dayNews) showDayNews(game.dayNews);
 }
 
 // Journal d'une journée passée : guérisons, salaires, Taverne, contrat pris par une autre compagnie (doc 17).

@@ -18,7 +18,7 @@ const phrases = JSON.parse(fs.readFileSync(path.join(root, "data/reference/day-n
 const debtsCopy = JSON.parse(fs.readFileSync(path.join(root, "data/reference/debts-copy.json"), "utf8"));
 const game = {campaign:{day:4, company:{gold:850, roster:[brakka, lia]}}, referenceData:{dayNews:phrases, debtsCopy}};
 const ui = new Function("game","$","esc","fmt","renderAvatar","campaignCalendarDate","openCampScene",
-  debtsJs + "\n" + js + "\nreturn {dayDigest,showDayNews};")(game, node, esc, String, m => `<avatar ${m.id}>`, null, null);
+  debtsJs + "\n" + js + "\nreturn {dayDigest,dayNewsOf,showDayNews,showTodayNews};")(game, node, esc, String, m => `<avatar ${m.id}>`, null, null);
 
 const camp = {campName:"Camp gobelin", fields:{lieu:"Brumecendre"}, distance:2};
 const report = {
@@ -49,7 +49,8 @@ assert.ok(second.some(e => e.text === "Marchande au camp : Ysolde" && e.go === "
 
 // Affichage : la date, une ligne par chose, les visages, l'argent en pied.
 game.campaign.company.gold = 850;
-ui.showDayNews(4, report);
+const news = ui.dayNewsOf(4, report);
+ui.showDayNews(news);
 assert.equal(node("day-news-title").textContent, "Jour 4", "sans calendrier, le numéro du jour");
 const list = node("day-news-list").innerHTML;
 assert.match(list, /day-news-entry--alert/);
@@ -58,8 +59,22 @@ assert.match(list, /data-day-news-go="tavern">Voir</);
 assert.match(node("day-news-money").innerHTML, /Salaires <b>−70 PO<\/b> · Caisse <b>850 PO<\/b>/);
 assert.equal(node("day-news-dialog").open, true);
 // Une journée sans rien (Idan, 2026-10-31) : la fenêtre s'ouvre quand même, « Rien à signaler aujourd'hui ».
-ui.showDayNews(5, {salaries:{total:0}, tavern:{arrivals:[], departures:[]}, recovered:[], expeditions:{}});
+ui.showDayNews(ui.dayNewsOf(5, {salaries:{total:0}, tavern:{arrivals:[], departures:[]}, recovered:[], expeditions:{}}));
 assert.match(node("day-news-list").innerHTML, /<li class="day-news-calm">Rien à signaler aujourd’hui\.<\/li>/);
+// Gardées avec la partie (Idan, 2026-11-14 : le pigeon les rouvre, même après un rechargement) : du texte, et des visages
+// juste ce qu'il faut pour leur portrait.
+const kept = JSON.parse(JSON.stringify(news));
+assert.deepEqual(kept.entries.map(e => e.text), entries.map(e => e.text));
+assert.deepEqual(kept.entries[0].faces, [{id:2, name:"Brakka Os"}]);
+assert.deepEqual([kept.day, kept.salaries, kept.upkeep], [4, 70, 0]);
+game.dayNews = kept;
+ui.showTodayNews();
+assert.match(node("day-news-list").innerHTML, /<avatar 2>[\s\S]*data-day-news-go="tavern"/, "le pigeon rouvre celles du jour");
+assert.match(node("day-news-money").innerHTML, /Salaires <b>−70 PO<\/b>/);
+game.campaign.day = 6;
+ui.showTodayNews();
+assert.match(node("day-news-list").innerHTML, /day-news-calm/, "rien de gardé pour ce jour : « Rien à signaler »");
+game.campaign.day = 4;
 assert.ok(phrases.calme.length >= 1 && phrases.taverne.length >= 1, "les variantes vivent dans day-news.json");
 
 assert.match(html, /<script src="day-news-ui\.js"><\/script>/);

@@ -34,7 +34,7 @@
          culture (ornement_central) ; à gauche de l'anneau, les six lieux en pictos d'Idan (le nom au survol), dans l'ordre de
          ses images : Château, Taverne, Dortoir, Marchand (grisé sans marchand), Intendance, Construction (Ma Compagnie) ;
          celui du lieu où l'on est est grisé. À droite (Idan, 2026-11-14) : le bouton du lieu (son menu : dans la taverne,
-         ses cinq zones ; ailleurs, rien pour l'instant), puis Combat (les missions du jour), Nouvelles (le pigeon : les
+         ses cinq zones ; ailleurs, rien pour l'instant), puis Combat (les combats du jour : grisé s'il n'y en a pas), Nouvelles (le pigeon : les
          nouvelles du jour), Journal (il remplace le journal au-dessus de la barre) et Discussions (bientôt). -->
     <div class="game-bottom-bar">
       <div class="hud-bar-art" aria-hidden="true"><span class="hud-bar-piece hud-bar-center"></span></div>
@@ -53,10 +53,11 @@
           <button id="hud-context-btn" class="hud-context-btn" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="hud-context-menu" title="Ce lieu"><span class="hud-context-dots" aria-hidden="true">•••</span><span class="hud-nav-label">Ce lieu</span></button>
           <ul id="hud-context-menu" class="hud-menu-list" role="menu" aria-label="Ce lieu" hidden></ul>
         </div>
-        <button id="hud-combat-btn" class="hud-nav" type="button" data-hud-action="combat" title="Missions du jour"><img class="hud-nav-img" src="assets/hud/pictos-bas/combat.webp" alt="" width="200" height="200"><span class="hud-nav-label">Missions du jour</span></button>
+        <button id="hud-combat-btn" class="hud-nav" type="button" data-hud-action="combat" title="Pas de combat aujourd’hui" disabled><img class="hud-nav-img" src="assets/hud/pictos-bas/combat.webp" alt="" width="200" height="200"><span class="hud-nav-label">Combats du jour</span></button>
         <button id="hud-news-btn" class="hud-nav" type="button" data-hud-action="news" title="Nouvelles du jour"><img class="hud-nav-img" src="assets/hud/pictos-bas/nouvelles.webp" alt="" width="200" height="200"><span class="hud-nav-label">Nouvelles du jour</span></button>
         <button id="hud-journal-btn" class="hud-nav" type="button" data-hud-action="journal" aria-expanded="false" aria-controls="hud-journal" title="Journal"><img class="hud-nav-img" src="assets/hud/pictos-bas/journal.webp" alt="" width="200" height="200"><span class="hud-nav-label">Journal</span></button>
         <button id="hud-talk-btn" class="hud-nav" type="button" data-hud-action="talk" title="Discussions : bientôt" disabled><img class="hud-nav-img" src="assets/hud/pictos-bas/discussions.webp" alt="" width="200" height="200"><span class="hud-nav-label">Discussions</span></button>
+        <ul id="hud-action-menu" class="hud-menu-list" role="menu" hidden></ul>
       </nav>
       <section id="hud-journal" class="hud-journal" aria-label="Journal de la compagnie" hidden>
         <ol id="game-action-lines" class="hud-journal-lines" aria-live="polite" aria-relevant="additions"></ol>

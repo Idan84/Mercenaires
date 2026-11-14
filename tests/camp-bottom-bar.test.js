@@ -41,9 +41,10 @@ assert.ok(bottom.indexOf('<nav class="hud-places" aria-label="Lieux du camp">')<
 assert.doesNotMatch(html+css,/hud-tavern-menu|data-hud-tavern/,"la Taverne n'a plus de menu déroulant (Idan, 2026-11-14)");
 assert.doesNotMatch(placesNav,/aria-haspopup/);
 // À droite : le bouton du lieu (son menu, rempli selon le lieu), puis les quatre actions.
-assert.deepEqual(actions.map(a=>[a.label,a.action,a.src]),[["Missions du jour","combat"],["Nouvelles du jour","news"],["Journal","journal"],["Discussions","talk"]]
+assert.deepEqual(actions.map(a=>[a.label,a.action,a.src]),[["Combats du jour","combat"],["Nouvelles du jour","news"],["Journal","journal"],["Discussions","talk"]]
   .map(([label,action],i)=>[label,action,`assets/hud/pictos-bas/${["combat","nouvelles","journal","discussions"][i]}.webp`]),"les quatre pictos d'Idan");
-assert.deepEqual(actions.filter(a=>a.disabled).map(a=>a.label),["Discussions"],"Discussions : bientôt");
+assert.deepEqual(actions.filter(a=>a.disabled).map(a=>a.label),["Combats du jour","Discussions"],"Combat : grisé tant qu'aucun combat n'attend ; Discussions : bientôt");
+assert.match(actionsNav,/<ul id="hud-action-menu" class="hud-menu-list" role="menu" hidden><\/ul>/,"le menu des combats, s'il y en a plusieurs");
 assert.match(actionsNav,/^<nav class="hud-actions" aria-label="Actions du jour">\s*<div id="hud-context" class="hud-context">\s*<button id="hud-context-btn" class="hud-context-btn" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="hud-context-menu"/,"le bouton du lieu d'abord, contre l'anneau");
 assert.match(actionsNav,/<ul id="hud-context-menu" class="hud-menu-list" role="menu" aria-label="Ce lieu" hidden><\/ul>/);
 assert.match(actionsNav,/id="hud-journal-btn" class="hud-nav" type="button" data-hud-action="journal" aria-expanded="false" aria-controls="hud-journal"/);
@@ -187,10 +188,10 @@ const el=id=>els[id]||(els[id]={id,hidden:true,innerHTML:"",attrs:{},classes:new
 const TAVERN={zones:[{key:"missions",label:"Trouver une mission"},{key:"recruits",label:"Recruter"},{key:"canteen",label:"La Cantine"},{key:"cellar",label:"La Cave"},{key:"talk",label:"Parler au tavernier"}],
   menu:["talk","missions","recruits","cellar","canteen"]};
 const done=[];
-const fakeGame={campaign:{day:12},lastDayReport:{events:[]}};
-const right=new Function("$","document","esc","TAVERN_ZONES","TAVERN_MENU","openTavernPlace","showDayNews","game",
-  js.slice(js.indexOf("function toggleHudJournal("),js.indexOf("function setPauseOpen("))+"return {updateHudContext,setHudContextMenu,chooseHudContext,runHudAction};")(
-  el,{body}, x=>String(x),TAVERN.zones,TAVERN.menu,key=>done.push(["lieu",key]),(day,report)=>done.push(["nouvelles",day,report]),fakeGame);
+const fakeGame={campaign:{day:12,expeditions:[]}};
+const right=new Function("$","document","esc","TAVERN_ZONES","TAVERN_MENU","openTavernPlace","showTodayNews","openExpeditionDialog","game",
+  js.slice(js.indexOf("function toggleHudJournal("),js.indexOf("function setPauseOpen("))+"return {updateHudContext,setHudContextMenu,chooseHudContext,runHudAction,updateHudCombat};")(
+  el,{body}, x=>String(x),TAVERN.zones,TAVERN.menu,key=>done.push(["lieu",key]),()=>done.push(["nouvelles"]),id=>done.push(["combat",id]),fakeGame);
 Object.assign(body.dataset,{screen:"camp",campScene:"home"});
 right.updateHudContext();
 assert.ok(!els["hud-context"].classes.has("is-active")&&els["hud-context-menu"].innerHTML==="","au château, pas de bouton du lieu (pour l'instant)");
@@ -203,10 +204,33 @@ right.setHudContextMenu(true);
 assert.deepEqual([els["hud-context-menu"].hidden,els["hud-context-btn"].attrs["aria-expanded"]],[false,"true"]);
 right.chooseHudContext("cellar");
 assert.deepEqual([done.shift(),els["hud-context-menu"].hidden],[["lieu","cellar"],true],"la salle choisie, le menu se referme");
-right.runHudAction("combat");
-assert.deepEqual(done.shift(),["lieu","missions"],"Combat : les missions du jour, à la taverne");
+// Combat (Idan, 2026-11-14 : « juste commencer le combat, sinon grisé ») : grisé sans escouade arrivée ; une seule : sa
+// fenêtre « Commencer le combat » ; plusieurs : un menu.
+const combatBtn=el("hud-combat-btn");
+combatBtn.dataset={hudAction:"combat"};
+combatBtn.offsetLeft=120;
+el("hud-action-menu").dataset={};
+el("hud-action-menu").style={};
+right.updateHudCombat();
+assert.deepEqual([combatBtn.disabled,combatBtn.title],[true,"Pas de combat aujourd’hui"]);
+const camp=(id,status,name)=>({id,status,offer:{campName:name,fields:{lieu:"Brumecendre"}}});
+fakeGame.campaign.expeditions=[camp("e1","outbound","Camp orque"),camp("e2","arrived","Camp gobelin")];
+right.updateHudCombat();
+assert.deepEqual([combatBtn.disabled,combatBtn.title],[false,"Commencer le combat"]);
+right.runHudAction("combat",combatBtn);
+assert.deepEqual(done.shift(),["combat","e2"],"la fenêtre « Commencer le combat » de l'escouade arrivée");
+fakeGame.campaign.expeditions[0].status="arrived";
+right.updateHudCombat();
+assert.equal(combatBtn.title,"2 combats vous attendent");
+right.runHudAction("combat",combatBtn);
+assert.deepEqual(done,[],"plusieurs : on choisit d'abord");
+assert.equal(el("hud-action-menu").hidden,false);
+assert.deepEqual([...el("hud-action-menu").innerHTML.matchAll(/data-hud-pick="(\w+)">([^<]+)</g)].map(m=>[m[1],m[2]]),[["e1","Camp orque de Brumecendre"],["e2","Camp gobelin de Brumecendre"]]);
+assert.equal(el("hud-action-menu").style.left,"120px","au-dessus de son picto");
+right.runHudAction("combat",combatBtn);
+assert.equal(el("hud-action-menu").hidden,true,"un second clic le referme");
 right.runHudAction("news");
-assert.deepEqual(done.shift(),["nouvelles",12,fakeGame.lastDayReport],"le pigeon rouvre les nouvelles du jour");
+assert.deepEqual(done.shift(),["nouvelles"],"le pigeon rouvre les nouvelles du jour (day-news-ui.js)");
 el("hud-journal").hidden=true;
 right.runHudAction("journal");
 assert.deepEqual([els["hud-journal"].hidden,els["hud-journal-btn"].attrs["aria-expanded"]],[false,"true"],"le journal s'ouvre au clic");
@@ -214,7 +238,8 @@ right.runHudAction("journal");
 assert.equal(els["hud-journal"].hidden,true,"et se referme");
 right.runHudAction("talk");
 assert.deepEqual(done,[],"Discussions : rien pour l'instant");
-assert.match(fs.readFileSync(path.join(WEB,"tavern-ui.js"),"utf8"),/game\.lastDayReport=report;\n  if\(typeof showDayNews==="function"\) showDayNews\(game\.campaign\.day,report\);/,"le rapport du jour, gardé pour le pigeon");
+assert.match(fs.readFileSync(path.join(WEB,"save-ui.js"),"utf8"),/serializeCampaign\(game\.campaign,\{tavernLog:game\.tavernLog\|\|\[\],dayNews:game\.dayNews\|\|null\}\)/,"les nouvelles du jour, gardées avec la partie");
+assert.match(fs.readFileSync(path.join(WEB,"save-ui.js"),"utf8"),/game\.dayNews=save\.extra\.dayNews\|\|null;/);
 assert.match(js,/function openCampScene[\s\S]*?updateCampHomeIcon\(\);\n  updateHudContext\(\);/,"le bouton du lieu suit le lieu");
 
 console.log("camp bottom bar ok");

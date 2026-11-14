@@ -92,18 +92,33 @@ function renderDayEntry(e){
   </li>`;
 }
 
-function showDayNews(day,report){
+// Les nouvelles du jour, gardées (Idan, 2026-11-14 : le pigeon de la barre du bas les rouvre, même après un rechargement de
+// la page) : les lignes, avec des visages juste ce qu'il faut pour leur portrait (un déserteur n'est plus dans la
+// compagnie), et ce que la caisse a payé ce matin. Gardées avec la partie (save-ui.js), à côté du journal.
+function dayNewsFace(m){ return m?{id:m.id,name:m.name,people:m.people,sex:m.sex,avatar:m.avatar}:null; }
+function dayNewsOf(day,report){
+  const entries=dayDigest(report).map(e=>e.faces?{...e,faces:e.faces.map(dayNewsFace).filter(Boolean)}:e);
+  return {day,entries,salaries:report?.salaries?.paid??report?.salaries?.total??0,upkeep:report?.stable?.paid??report?.stable?.total??0};
+}
+// Le pigeon : celles du jour ; une partie d'avant (rien de gardé) : « Rien à signaler ».
+function showTodayNews(){
+  if(!game.campaign) return;
+  const day=game.campaign.day;
+  showDayNews(game.dayNews?.day===day?game.dayNews:dayNewsOf(day,null));
+}
+
+function showDayNews(news){
   const dialog=$("day-news-dialog");
-  if(!dialog||!game.campaign) return;
+  if(!dialog||!game.campaign||!news) return;
+  const day=news.day,entries=news.entries||[];
   const date=game.referenceData?.campCalendar?campaignCalendarDate(day,game.referenceData):null;
   $("day-news-title").textContent=date?`${date.weekday} ${date.dayOfMonth} ${date.month}`:"Jour "+day;
   $("day-news-sub").textContent=date?`Jour ${day} · An ${date.year}`:"";
-  const entries=dayDigest(report);
   // Un jour calme (Idan, 2026-10-31) : la fenêtre s'ouvre quand même, « Rien à signaler aujourd'hui ».
   $("day-news-list").innerHTML=entries.length?entries.map(renderDayEntry).join(""):`<li class="day-news-calm">${esc(dayPhrase("calme",day))}</li>`;
   // Ce que la caisse a payé ce matin ; ce qui reste dû est dans les dettes (debts-ui.js).
-  const salaries=report?.salaries?.paid??report?.salaries?.total??0,gold=Math.round(game.campaign.company.gold);
-  const upkeep=report?.stable?.paid??report?.stable?.total??0;
+  const salaries=news.salaries||0,gold=Math.round(game.campaign.company.gold);
+  const upkeep=news.upkeep||0;
   const debts=typeof debtTotal==="function"?debtTotal(game.campaign):0;
   $("day-news-money").innerHTML=`${dayIcon("gold")}<span>${salaries?`Salaires <b>−${fmt(salaries)} PO</b> · `:""}${upkeep?`Animaux <b>−${fmt(upkeep)} PO</b> · `:""}Caisse <b${gold<0?' class="is-negative"':""}>${fmt(gold)} PO</b>${debts?` · ${esc(debtCopy().money||"")} <b class="is-negative">${fmt(debts)} PO</b>`:""}</span>`;
   if(dialog.open) dialog.close();

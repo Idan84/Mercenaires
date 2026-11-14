@@ -287,10 +287,16 @@ ennemis, récompense, expiration…), la lettre du commanditaire s'il y en a une
   éclairé par la droite comme le panneau (`assets/taverne/papier-froisse.webp`, tiré de la texture libre de droits CC0
   « Paper003 » d'ambientCG), plié en trois ; l'ombre gagne vers la gauche. Chaque annonce a son allure, toujours la même
   pour la même offre (tirée de son identifiant) : un peu de travers, un papier un peu plus clair ou plus jaune, parfois
-  l'auréole d'une chope dans un coin du bas, et ce qui la tient au bois : un clou forgé, deux punaises de laiton ou un
-  cachet de cire rouge, noir ou bleu (Jean-Mi : `assets/taverne/cire-*.webp`, détourés par `scripts/key-wax-seals.js`). En attendant les illustrations, une vignette gravée (hachures qui s'épaississent vers les bords).
-  Sur le panneau, des restes d'annonces arrachées sont encore cloués ; la lumière d'une bougie vacille en haut à droite,
-  avec un peu de poussière dans le rayon (rien ne bouge si le système demande moins de mouvement).
+  l'auréole d'une chope dans un coin du bas, et ce qui la tient au bois : une tête de clou forgé, deux punaises de laiton
+  ou un cachet de cire rouge, noir ou bleu (trois têtes de chaque sorte, `data-head`). En attendant les illustrations, une
+  vignette gravée (hachures qui s'épaississent vers les bords).
+  Sur le panneau, trois restes d'annonces arrachées dépassent derrière, encore sous leur clou ; la lumière d'une bougie
+  vacille en haut à droite, avec un peu de poussière dans le rayon (rien ne bouge si le système demande moins de mouvement).
+  Les flèches sont des équerres de fer forgé, platine vissée sur le montant du cadre : au survol, le fer s'éclaire et la
+  flèche avance un peu ; sur la première ou la dernière page, elle reste sombre.
+  Toute cette matière vient de Jean-Mi, sur fond vert, détourée par `scripts/key-green-sheet.js` (`assets/taverne/` :
+  `cire-*`, `clou-*`, `punaise-*`, `lambeau-*`, `fleche-fer`) ; les planches écartées et leur raison sont dans
+  `scripts/build-mission-art.js`.
 - **Les illustrations** (Idan et Jean-Mi, 2026-11-14) : des gravures à l'encre sur fond blanc, posées en « produit » sur
   le papier (le blanc disparaît, l'encre semble imprimée). Par camp (`one-shot-missions.json`, `camps[].illustrations`),
   sinon celles de la mission (`missions[].illustrations` : les bêtes des chasses), sinon son illustration. Un camp peut en avoir plusieurs (Idan : « c'est plutôt pas mal

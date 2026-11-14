@@ -141,13 +141,15 @@ function noticeLook(id){
   const pin=pinRoll<.5?"clou":pinRoll<.8?"punaises":"cire";
   // La cire (Jean-Mi, 2026-11-14) : un cachet rouge, noir ou bleu.
   const wax=["rouge","noire","bleue"][Math.floor(r()*3)];
-  return {pin,wax,style:`--tilt:${tilt.toFixed(2)}deg;--dy:${dy.toFixed(1)};--tone:${tone.toFixed(3)};--hue:${hue.toFixed(1)}deg;--stain-o:${stain?1:0};--stain-x:${sx.toFixed(0)}%;--stain-y:${sy.toFixed(0)}%`};
+  // Les têtes de clou et de punaise (Jean-Mi, 2026-11-14) : trois de chaque, la seconde punaise prend la suivante.
+  const head=1+Math.floor(r()*3);
+  return {pin,wax,head,style:`--tilt:${tilt.toFixed(2)}deg;--dy:${dy.toFixed(1)};--tone:${tone.toFixed(3)};--hue:${hue.toFixed(1)}deg;--stain-o:${stain?1:0};--stain-x:${sx.toFixed(0)}%;--stain-y:${sy.toFixed(0)}%`};
 }
 function renderBoardNotice(card){
   const look=noticeLook(card.id);
   const art=card.illustration?`<img src="${esc(card.illustration)}" alt="" loading="lazy">`:"";
   const open=card.scheduled?"":` data-mission-open="${esc(card.id)}" role="button" tabindex="0"`;
-  return `<article class="board-notice${card.scheduled?" board-notice--scheduled":""}"${open} aria-label="${esc(card.title)}" data-pin="${look.pin}"${look.pin==="cire"?` data-wax="${look.wax}"`:""} style="${look.style}">
+  return `<article class="board-notice${card.scheduled?" board-notice--scheduled":""}"${open} aria-label="${esc(card.title)}" data-pin="${look.pin}"${look.pin==="cire"?` data-wax="${look.wax}"`:` data-head="${look.head}"`} style="${look.style}">
     <span class="board-notice-paper" aria-hidden="true"></span>
     <span class="board-notice-pins" aria-hidden="true"><i></i>${look.pin==="punaises"?"<i></i>":""}</span>
     <div class="board-notice-art">${art}</div>

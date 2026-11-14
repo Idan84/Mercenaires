@@ -59,10 +59,10 @@ assert.match(board, /<stars 1>[\s\S]*<img class="board-notice-gold" src="assets\
 assert.doesNotMatch(board, /Faire le ménage|Garde du corps|Attaquer un camp|cherche 2 gardes|Nouvelle mission demain|PO</, "ni type, ni description, ni case vide");
 assert.doesNotMatch(board, /M14\.8 9\.2/, "plus de symbole dollar");
 // Chaque annonce a son allure (travers, papier, auréole, attache), toujours la même pour la même offre.
-const looks = [...board.matchAll(/data-pin="(clou|punaises|cire)"(?: data-wax="(?:rouge|noire|bleue)")? style="(--tilt:-?[\d.]+deg;--dy:-?[\d.]+;--tone:[\d.]+;--hue:-?[\d.]+deg;--stain-o:[01];--stain-x:\d+%;--stain-y:\d+%)"/g)];
+const looks = [...board.matchAll(/data-pin="(clou|punaises|cire)"(?: data-wax="(?:rouge|noire|bleue)"| data-head="[123]")? style="(--tilt:-?[\d.]+deg;--dy:-?[\d.]+;--tone:[\d.]+;--hue:-?[\d.]+deg;--stain-o:[01];--stain-x:\d+%;--stain-y:\d+%)"/g)];
 assert.equal(looks.length, 2, "une allure par annonce");
 ui.renderContractBoard();
-assert.deepEqual([...node("tavern-contracts").innerHTML.matchAll(/data-pin="[^"]+" style="[^"]+"/g)].map(m => m[0]), looks.map(m => m[0]), "la même allure à chaque affichage");
+assert.deepEqual([...node("tavern-contracts").innerHTML.matchAll(/data-pin="[^"]+"(?: data-(?:wax|head)="[^"]+")? style="[^"]+"/g)].map(m => m[0]), looks.map(m => m[0]), "la même allure à chaque affichage");
 assert.match(board, /<span class="board-notice-paper" aria-hidden="true"><\/span>/);
 // L'illustration du camp (Jean-Mi, 2026-11-14 : une gravure par peuple), sinon celle de la mission.
 game.referenceData.oneShotMissions.missions[0].camps = [{faction:"Orcs", illustrations:["assets/missions/camp-orc-1.webp"]}, {faction:"Gobelins", illustrations:["assets/missions/camp-gobelin.webp"]}];
@@ -98,6 +98,13 @@ for (const [client, pics] of Object.entries(realGuards.illustrations_clients))
   for (const pic of pics) assert.ok(fs.existsSync(path.join(root, "prototype-web", pic)), client + " : " + pic);
 assert.match(board, /<span class="board-notice-pins" aria-hidden="true"><i><\/i>/);
 for (const wax of ["rouge", "noire", "bleue"]) assert.ok(fs.existsSync(path.join(root, "prototype-web/assets/taverne/cire-" + wax + ".webp")), "la cire " + wax);
+// La matière du panneau (Jean-Mi, détourée par scripts/key-green-sheet.js) : chaque fichier existe et le CSS s'en sert.
+const boardCss = fs.readFileSync(path.join(root, "prototype-web/styles.css"), "utf8");
+for (const file of ["fleche-fer", "clou-1", "clou-2", "clou-3", "punaise-1", "punaise-2", "punaise-3", "lambeau-1", "lambeau-2", "lambeau-3"]) {
+  assert.ok(fs.existsSync(path.join(root, "prototype-web/assets/taverne/" + file + ".webp")), file);
+  assert.ok(boardCss.includes("assets/taverne/" + file + ".webp"), "le CSS utilise " + file);
+}
+assert.ok(looks.every(m => /data-pin="cire" data-wax=|data-pin="(?:clou|punaises)" data-head=/.test(m[0])), "une tête de clou pour les clous et punaises, une cire pour les cachets");
 assert.deepEqual([arrows.prev.hidden, arrows.next.hidden], [true, true], "une seule page : pas de flèches");
 assert.doesNotMatch(js, /Escouades en mission/, "les escouades parties ne sont plus sur le tableau");
 

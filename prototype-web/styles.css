@@ -2175,16 +2175,21 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
   linear-gradient(180deg,transparent calc(34% - var(--u) * 3),rgba(0,0,0,.45) 34%,rgba(255,255,255,.6) calc(34% + var(--u) * 1.5),transparent calc(34% + var(--u) * 5)),
   linear-gradient(180deg,transparent calc(67% - var(--u) * 3),rgba(0,0,0,.4) 67%,rgba(255,255,255,.55) calc(67% + var(--u) * 1.5),transparent calc(67% + var(--u) * 5)),
   url("assets/taverne/papier-froisse.webp") 0 0 / calc(var(--u) * 300) repeat}
-/* Ce qui tient l'annonce au bois : un clou forgé, deux punaises de laiton aux coins, ou une goutte de cire rouge. */
+/* Ce qui tient l'annonce au bois : une tête de clou forgé, deux punaises de laiton aux coins (clou-1|2|3, punaise-1|2|3.webp de Jean-Mi, data-head), ou un cachet de cire. */
 .board-notice-pins{position:absolute;z-index:2;inset:calc(var(--parch-edge) * -.62) 0 auto;height:0;pointer-events:none}
-.board-notice-pins i{position:absolute;left:50%;top:0;width:calc(var(--u) * 13);aspect-ratio:1;border-radius:50%;transform:translateX(-50%);background:radial-gradient(circle at 36% 30%,#e0b98c 0 8%,#9a6a40 22%,#5a3720 52%,#24150b 100%);box-shadow:calc(var(--u) * -2) calc(var(--u) * 3) calc(var(--u) * 3) rgba(0,0,0,.7),inset 0 0 0 1px rgba(0,0,0,.35)}
+.board-notice-pins i{position:absolute;left:50%;top:0;width:calc(var(--u) * 15);aspect-ratio:1;transform:translateX(-50%);background:url("assets/taverne/clou-1.webp") center/contain no-repeat;filter:drop-shadow(calc(var(--u) * -2) calc(var(--u) * 3) calc(var(--u) * 2.5) rgba(0,0,0,.75))}
 [data-pin="punaises"] .board-notice-pins{top:calc(var(--parch-edge) * -.2)}
-[data-pin="punaises"] .board-notice-pins i{width:calc(var(--u) * 10);background:radial-gradient(circle at 35% 30%,#fff3c2 0 7%,#e2b44f 20%,#a87420 55%,#5b3b0c 100%)}
+[data-pin="punaises"] .board-notice-pins i{width:calc(var(--u) * 12);background-image:url("assets/taverne/punaise-1.webp")}
+[data-head="2"] .board-notice-pins i{background-image:url("assets/taverne/clou-2.webp")}
+[data-head="3"] .board-notice-pins i{background-image:url("assets/taverne/clou-3.webp")}
+[data-pin="punaises"] .board-notice-pins i:last-child,[data-pin="punaises"][data-head="2"] .board-notice-pins i:first-child{background-image:url("assets/taverne/punaise-2.webp")}
+[data-pin="punaises"][data-head="2"] .board-notice-pins i:last-child,[data-pin="punaises"][data-head="3"] .board-notice-pins i:first-child{background-image:url("assets/taverne/punaise-3.webp")}
+[data-pin="punaises"][data-head="3"] .board-notice-pins i:last-child{background-image:url("assets/taverne/punaise-1.webp")}
 [data-pin="punaises"] .board-notice-pins i:first-child{left:calc(var(--parch-edge) * .55)}
 [data-pin="punaises"] .board-notice-pins i:last-child{left:auto;right:calc(var(--parch-edge) * .55);transform:translateX(50%)}
 /* La cire : les cachets de Jean-Mi (cire-rouge|noire|bleue.webp, détourés de leur fond vert), à cheval sur le haut. */
 [data-pin="cire"] .board-notice-pins{top:calc(var(--parch-edge) * -.75)}
-[data-pin="cire"] .board-notice-pins i{width:calc(var(--u) * 40);aspect-ratio:290/320;border-radius:0;background:url("assets/taverne/cire-rouge.webp") center/contain no-repeat;box-shadow:none;filter:drop-shadow(calc(var(--u) * -1.5) calc(var(--u) * 2.5) calc(var(--u) * 2) rgba(0,0,0,.55))}
+[data-pin="cire"] .board-notice-pins i{width:calc(var(--u) * 40);aspect-ratio:290/320;background:url("assets/taverne/cire-rouge.webp") center/contain no-repeat;filter:drop-shadow(calc(var(--u) * -1.5) calc(var(--u) * 2.5) calc(var(--u) * 2) rgba(0,0,0,.55))}
 [data-wax="noire"] .board-notice-pins i{background-image:url("assets/taverne/cire-noire.webp")}
 [data-wax="bleue"] .board-notice-pins i{background-image:url("assets/taverne/cire-bleue.webp")}
 .board-notice[data-mission-open]{cursor:pointer}
@@ -2219,15 +2224,11 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .board-notice-departure{margin:calc(var(--u) * 6) 0 0}
 .board-notice-departure button{padding:calc(var(--u) * 3) calc(var(--u) * 10);border:1px solid rgba(100,73,46,.6);border-radius:calc(var(--u) * 3);background:rgba(120,88,52,.1);color:var(--encre);font:600 calc(var(--u) * 9)/1.2 var(--police-texte);cursor:pointer;transition:background .12s,border-color .12s}
 .board-notice-departure button:hover,.board-notice-departure button:focus-visible{border-color:var(--encre);background:rgba(120,88,52,.24);outline:none}
-/* Des restes d'annonces arrachées : le coin resté sous son clou, un peu plus vieux que les autres. */
-.mission-board-scraps span{position:absolute;background:url("assets/creation/parchemin.webp") 0 0 / 420% 420%;filter:sepia(.35) brightness(.72) drop-shadow(calc(var(--board-w) * -.002) calc(var(--board-w) * .004) calc(var(--board-w) * .004) rgba(0,0,0,.6))}
-.mission-board-scraps span::after{content:"";position:absolute;width:calc(var(--board-w) * .0065);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 36% 30%,#d6ac80 0 8%,#8a5c36 24%,#4a2c18 58%,#1f120a 100%);box-shadow:-1px 2px 2px rgba(0,0,0,.7)}
-.mission-board-scraps span:nth-child(1){left:19.4%;top:22.5%;width:5.6%;height:9%;rotate:-7deg;clip-path:polygon(0 0,100% 0,96% 18%,100% 31%,78% 46%,84% 58%,55% 71%,44% 88%,22% 82%,12% 100%,0 92%)}
-.mission-board-scraps span:nth-child(1)::after{left:28%;top:16%}
-.mission-board-scraps span:nth-child(2){left:47%;top:77.5%;width:7.5%;height:3.4%;rotate:3deg;background-position:40% 100%;clip-path:polygon(0 12%,18% 0,40% 8%,63% 0,86% 6%,100% 0,97% 52%,100% 100%,72% 86%,51% 100%,30% 88%,9% 100%,3% 60%)}
-.mission-board-scraps span:nth-child(2)::after{left:48%;top:28%}
-.mission-board-scraps span:nth-child(3){left:77.2%;top:21.4%;width:4.4%;height:6.6%;rotate:11deg;background-position:100% 0;clip-path:polygon(0 0,100% 0,100% 100%,88% 86%,72% 92%,60% 70%,41% 64%,30% 42%,12% 38%,0 20%)}
-.mission-board-scraps span:nth-child(3)::after{right:24%;top:18%}
+/* Des restes d'annonces arrachées, encore sous leur clou (lambeau-1|2|3.webp de Jean-Mi), un peu plus vieux que les annonces : ils dépassent derrière. */
+.mission-board-scraps span{position:absolute;background:center/contain no-repeat;filter:sepia(.25) brightness(.8) drop-shadow(calc(var(--board-w) * -.002) calc(var(--board-w) * .004) calc(var(--board-w) * .004) rgba(0,0,0,.6))}
+.mission-board-scraps span:nth-child(1){left:18.9%;top:22%;width:3.7%;aspect-ratio:162/400;rotate:-8deg;background-image:url("assets/taverne/lambeau-1.webp")}
+.mission-board-scraps span:nth-child(2){left:57.6%;top:22.6%;width:4.2%;aspect-ratio:184/400;rotate:5deg;background-image:url("assets/taverne/lambeau-2.webp")}
+.mission-board-scraps span:nth-child(3){left:78.4%;top:21.8%;width:3.6%;aspect-ratio:156/400;rotate:9deg;background-image:url("assets/taverne/lambeau-3.webp")}
 /* La lumière vient d'une bougie, en haut à droite : elle vacille un peu ; dans le rayon, de la poussière qui flotte. */
 .mission-board-light{position:absolute;inset:0;z-index:1;pointer-events:none;mix-blend-mode:soft-light;background:radial-gradient(ellipse 55% 60% at 88% 12%,rgba(255,196,120,.55),transparent 70%),radial-gradient(ellipse 60% 55% at 8% 96%,rgba(0,0,0,.45),transparent 70%);animation:bougie 6s ease-in-out infinite}
 .mission-board-light::before,.mission-board-light::after{content:"";position:absolute;left:78%;top:30%;width:calc(var(--board-w) * .0018);aspect-ratio:1;border-radius:50%;background:rgba(255,226,170,.9);mix-blend-mode:screen;animation:poussiere 26s linear infinite;
@@ -2235,13 +2236,14 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .mission-board-light::after{left:86%;top:22%;width:calc(var(--board-w) * .0013);animation-duration:34s;animation-delay:-12s}
 @keyframes bougie{0%,100%{opacity:1}18%{opacity:.86}24%{opacity:.97}47%{opacity:.9}61%{opacity:1}74%{opacity:.84}83%{opacity:.95}}
 @keyframes poussiere{0%{transform:translate(0,0);opacity:0}12%{opacity:1}50%{transform:translate(calc(var(--board-w) * -.025),calc(var(--board-w) * -.03))}88%{opacity:1}100%{transform:translate(calc(var(--board-w) * -.05),calc(var(--board-w) * -.06));opacity:0}}
-/* Les flèches : le chevron de la création du capitaine, couleur du fer du cadre, posées sur ses montants. */
-.mission-board-arrow{position:absolute;top:50%;z-index:2;display:grid;place-items:center;width:calc(var(--board-w) * .034);height:calc(var(--board-w) * .06);padding:0;border:0;background:none;color:#d6cbb9;cursor:pointer;transform:translate(-50%,-50%);filter:drop-shadow(0 0 2px #000) drop-shadow(0 3px 4px rgba(0,0,0,.9));transition:color .12s}
-.mission-board-arrow::before{content:"";width:60%;height:80%;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 22 44%27%3E%3Cpath d=%27M20 1C15 10 9 17 2 22C9 27 15 34 20 43C16 34 12 27 7 22C12 17 16 10 20 1Z%27/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 22 44%27%3E%3Cpath d=%27M20 1C15 10 9 17 2 22C9 27 15 34 20 43C16 34 12 27 7 22C12 17 16 10 20 1Z%27/%3E%3C/svg%3E") center/contain no-repeat}
-.mission-board-arrow--prev{left:15.6%}
-.mission-board-arrow--next{left:84.4%;transform:translate(-50%,-50%) scaleX(-1)}
-.mission-board-arrow:hover,.mission-board-arrow:focus-visible{color:#f0d395;outline:none}
-.mission-board-arrow:disabled{opacity:.3;cursor:default;color:#d6cbb9}
+/* Les flèches : une équerre de fer forgé en forme de flèche (fleche-fer.webp de Jean-Mi), sa platine vissée sur le montant du cadre. */
+.mission-board-arrow{position:absolute;top:50%;z-index:2;display:block;width:calc(var(--board-w) * .088);aspect-ratio:640/284;padding:0;border:0;background:url("assets/taverne/fleche-fer.webp") center/contain no-repeat;cursor:pointer;transform:translate(-50%,-50%);filter:drop-shadow(calc(var(--board-w) * -.0015) calc(var(--board-w) * .003) calc(var(--board-w) * .002) rgba(0,0,0,.85));transition:filter .15s,translate .15s}
+.mission-board-arrow--prev{left:14.2%;transform:translate(-50%,-50%) scaleX(-1)}
+.mission-board-arrow--next{left:85.8%}
+.mission-board-arrow:hover,.mission-board-arrow:focus-visible{outline:none;filter:brightness(1.3) sepia(.2) drop-shadow(0 0 calc(var(--board-w) * .004) rgba(240,211,149,.55)) drop-shadow(calc(var(--board-w) * -.0015) calc(var(--board-w) * .003) calc(var(--board-w) * .002) rgba(0,0,0,.85))}
+.mission-board-arrow--next:hover,.mission-board-arrow--next:focus-visible{translate:calc(var(--board-w) * .003) 0}
+.mission-board-arrow--prev:hover,.mission-board-arrow--prev:focus-visible{translate:calc(var(--board-w) * -.003) 0}
+.mission-board-arrow:disabled{cursor:default;translate:0 0;opacity:.6;filter:grayscale(.7) brightness(.5) drop-shadow(calc(var(--board-w) * -.0015) calc(var(--board-w) * .003) calc(var(--board-w) * .002) rgba(0,0,0,.85))}
 .mission-board-arrow[hidden]{display:none}
 /* Au clic, l'annonce s'avance ; la fiche s'ouvre ensuite en grand, d'un petit zoom. */
 .mission-detail[open]{animation:mission-detail-in .22s ease-out}

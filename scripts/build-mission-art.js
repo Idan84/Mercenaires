@@ -80,10 +80,20 @@ const REJECTED={
   "Wealthy_widow_seated_in_carriage_356fe131.jpg":"trop proche de garde-veuve-1 (la veuve voilée dans sa voiture), en pleine largeur",
   "Woman_alchemist_carrying_glowing…_023e0cbe.jpg":"trop proche de garde-alchimiste-1 (l'alchimiste et ses fioles)",
   "Woman_alchemist_carrying_glowing…_11f60eb1.jpg":"trop proche de garde-alchimiste-1 (l'alchimiste et ses fioles)",
-  "Sealing_wax_on_wooden_board_060d3342.jpg":"pas une gravure : les cachets de cire, détourés à part (scripts/key-wax-seals.js → assets/taverne/cire-*.webp)",
+  "Sealing_wax_on_wooden_board_060d3342.jpg":"pas une gravure : les cachets de cire, détourés à part (scripts/key-green-sheet.js → assets/taverne/cire-*.webp)",
   "Three_sealing_wax_drops_on_041fb773.jpg":"cachets de cire : des bouts de bois et de papier collés derrière",
   "Three_sealing_wax_drops_on_cdafefe0.jpg":"cachets de cire : les mêmes que la planche gardée",
-  "Three_sealing_wax_drops_on_d7dfc70b.jpg":"cachets de cire : des bouts de bois et de papier collés derrière"
+  "Three_sealing_wax_drops_on_d7dfc70b.jpg":"cachets de cire : des bouts de bois et de papier collés derrière",
+  "Arrow_shaped_wrought_iron_bracket_cae7a463_2K.jpg":"pas une gravure : la flèche du panneau, détourée à part (scripts/key-green-sheet.js → assets/taverne/fleche-fer.webp)",
+  "Arrow_shaped_wrought_iron_bracket_d2b05d43_2K.jpg":"flèche : plus fine, elle se lit moins bien en petit que celle gardée",
+  "Wrought-iron_arrow_bracket_5b1f956c_2K.jpg":"flèche : fond vert sombre, la barre en travers brouille la forme de la flèche",
+  "Wrought_iron_bracket_pointing_right_0dcb4343_2K.jpg":"flèche : fond vert sombre, trop chargée (double pointe, trois attaches)",
+  "Fasteners_on_green_background_92b036a6_2K.jpg":"pas une gravure : têtes de clou et de punaise, détourées à part (scripts/key-green-sheet.js → assets/taverne/clou-*.webp, punaise-*.webp)",
+  "Fasteners_on_green_background_f5ab5e1f_2K.jpg":"têtes de clou et de punaise : les mêmes que la planche gardée",
+  "Parchment_fragments_fixed_by_nails_54ad35e0_2K.jpg":"lambeaux : bien, mais en bandes étroites ; gardés ceux des deux autres planches",
+  "Parchment_fragments_fixed_by_nails_903e07f9_2K.jpg":"lambeaux : de gros pâtés verts dans le fond et du faux texte anglais bien lisible",
+  "Parchment_fragments_on_green_bac…_82577d7b_2K.jpg":"pas une gravure : lambeaux sous leur clou, détourés à part (scripts/key-green-sheet.js → assets/taverne/lambeau-1.webp, lambeau-3.webp)",
+  "Torn_parchment_fragments_on_wall_52aec780_2K.jpg":"pas une gravure : lambeaux sous leur clou, détourés à part (scripts/key-green-sheet.js → assets/taverne/lambeau-2.webp, celui à l'écriture)"
 };
 
 function listMissions(){

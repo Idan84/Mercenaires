@@ -104,6 +104,12 @@ function renderMerchant(){
   const visit=merchantVisit();
   button.disabled=!visit;
   $("camp-merchant-note").textContent=visit?visit.merchant.name:"";
+  // Le bouton Marchand de la barre du bas (Idan, 2026-11-14) : grisé quand il n'y a pas de marchand.
+  const hudButton=$("hud-merchant-btn");
+  if(hudButton){
+    hudButton.disabled=!visit;
+    hudButton.title=visit?"Marchand : "+visit.merchant.name:"Pas de marchand aujourd’hui";
+  }
   const head=$("merchant-head"),tabs=$("merchant-tabs"),content=$("merchant-content");
   if(!visit){
     head.innerHTML=`<div class="merchant-name"><h2>Pas de marchand aujourd’hui</h2></div>`;

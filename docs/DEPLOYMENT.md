@@ -94,11 +94,11 @@ Pour savoir quoi produire : l'onglet **Avatars** du Design Lab (https://bloodand
 
 Idan y dépose ses masters de pictos sur fond blanc, rangés par famille : `media/pictos/Culture/` (une image par culture, 2026-10-22). `api/pictos.php` liste le dossier et ses sous-dossiers (même bibliothèque que les avatars) : https://bloodandwages.idanwizen.com/api/pictos.php. Les masters sont ensuite copiés dans `assets-src/Picto/Culture/` sous le nom de leur culture (le fichier d'origine est noté dans le `README.md` du dossier), détourés par `scripts/build-pictos.sh`, comme ceux des peuples et des ascendances, et les versions web vont dans `prototype-web/assets/pictos/culture-<culture>.webp`. Le dossier Hostinger n'est lu que pour cette étape : le jeu n'en dépend pas.
 
-### Barres du haut : `media/hud-pack/`
+### Barres du camp : `media/hud-pack/`
 
 Idan y dépose les packs de la barre du haut du camp (2026-11-13) : un pack par culture du capitaine, 32 en tout, qui arrivent petit à petit (doc 16). Le dossier n'est pas listable de l'extérieur (403) : `api/hud-pack.php` le liste, sous-dossiers compris, avec la même bibliothèque que les avatars : https://bloodandwages.idanwizen.com/api/hud-pack.php
 
-Rangement : `media/hud-pack/<Peuple>/<culture>/` avec `left`, `center`, `right` (et `full`, l'aperçu d'Idan, que le jeu n'utilise pas). Quand des packs arrivent, `node scripts/build-hud-bars.js` les télécharge, reconnaît leur culture (le dossier du peuple, puis les mots du dossier ; les cas ambigus sont fixés dans `PACK_CULTURE`), les mesure, les convertit en WebP dans `prototype-web/assets/hud/barres/<culture>/` et réécrit `prototype-web/hud-bars.js`. Comme pour les pictos, le dossier Hostinger n'est lu que pour cette étape : le jeu n'en dépend pas.
+Rangement : `media/hud-pack/<Peuple>/<culture>/` avec `left`, `center`, `right` (et `full`, l'aperçu d'Idan, que le jeu n'utilise pas), et `ornement_central` quand Idan a dessiné l'anneau de la barre du bas pour cette culture (2026-11-14) ; à la racine, `next.png`, le bouton Jour suivant, commun à toutes les cultures. Quand des packs arrivent, `node scripts/build-hud-bars.js` les télécharge, reconnaît leur culture (le dossier du peuple, puis les mots du dossier ; les cas ambigus sont fixés dans `PACK_CULTURE`), les mesure (pour l'anneau : son trou, où se loge le bouton), les convertit en WebP dans `prototype-web/assets/hud/barres/<culture>/` (l'anneau : `ornement.webp`), recadre le bouton sur son disque (`prototype-web/assets/hud/next.webp`) et réécrit `prototype-web/hud-bars.js`. Comme pour les pictos, le dossier Hostinger n'est lu que pour cette étape : le jeu n'en dépend pas.
 
 ### Images d'équipement : `media/equipements/`
 

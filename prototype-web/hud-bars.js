@@ -4,7 +4,9 @@
 // la main. Images : assets/hud/barres/<culture>/{left,center,right}.webp. Mesures en pixels de l'image d'origine :
 // h (hauteur commune), left / center / right (largeurs), frameTop / frameBottom (cadre du milieu), bandTop / bandBottom
 // (bande sombre où le jeu écrit), bandLeft (début de la bande dans l'embout gauche), bandRight (distance entre la fin de la
-// bande et le bord droit de l'embout droit).
+// bande et le bord droit de l'embout droit). ornament (s'il y en a un, assets/hud/barres/<culture>/ornement.webp) : l'anneau
+// du centre de la barre du bas, en pixels de son image : w / h, cx / cy / hole (centre et diamètre du trou où se loge le
+// bouton Jour suivant), x0 / y0 / x1 / y1 (étendue des pixels opaques).
 const HUD_BARS={
   "caravanes-de-ferrailleurs":{"culture":"Caravanes de ferrailleurs","pack":"Gobelins/gobelins-cavernes-ferrailleurs","h":293,"left":621,"center":901,"right":622,"frameTop":64,"frameBottom":240,"bandTop":84,"bandBottom":216,"bandLeft":183,"bandRight":341},
   "cites-libres":{"culture":"Cités libres","pack":"Humains/cites-libres","h":246,"left":622,"center":903,"right":623,"frameTop":55,"frameBottom":202,"bandTop":71,"bandBottom":182,"bandLeft":323,"bandRight":360},
@@ -20,7 +22,7 @@ const HUD_BARS={
   "gobelins-des-villes":{"culture":"Gobelins des villes","pack":"Gobelins/gobelins-villes","h":227,"left":626,"center":909,"right":627,"frameTop":58,"frameBottom":188,"bandTop":76,"bandBottom":171,"bandLeft":146,"bandRight":201},
   "halflings-des-cites-humaines":{"culture":"Halflings des cités humaines","pack":"Halflings/halflings-villes","h":264,"left":622,"center":903,"right":623,"frameTop":87,"frameBottom":193,"bandTop":95,"bandBottom":179,"bandLeft":393,"bandRight":397},
   "halflings-des-villages-isoles":{"culture":"Halflings des villages isolés","pack":"Halflings/halflings-villages","h":367,"left":621,"center":900,"right":622,"frameTop":128,"frameBottom":289,"bandTop":143,"bandBottom":266,"bandLeft":453,"bandRight":453},
-  "montagnes-du-nord":{"culture":"Montagnes du Nord","pack":"Humains/nordique","h":206,"left":598,"center":868,"right":599,"frameTop":35,"frameBottom":170,"bandTop":58,"bandBottom":148,"bandLeft":55,"bandRight":128},
+  "montagnes-du-nord":{"culture":"Montagnes du Nord","pack":"Humains/nordique","h":206,"left":598,"center":868,"right":599,"frameTop":35,"frameBottom":170,"bandTop":58,"bandBottom":148,"bandLeft":55,"bandRight":128,"ornament":{"w":800,"h":400,"cx":398,"cy":195.8,"hole":295.3,"x0":12.5,"y0":10.5,"x1":787,"y1":381.5}},
   "nains-des-montagnes":{"culture":"Nains des montagnes","pack":"Nains/nains-montagnes","h":191,"left":623,"center":902,"right":624,"frameTop":28,"frameBottom":166,"bandTop":43,"bandBottom":146,"bandLeft":122,"bandRight":293},
   "nains-du-chaos":{"culture":"Nains du chaos","pack":"Nains/nains-chaos","h":257,"left":624,"center":904,"right":625,"frameTop":58,"frameBottom":223,"bandTop":85,"bandBottom":190,"bandLeft":122,"bandRight":227},
   "nains-esclaves":{"culture":"Nains esclaves","pack":"Nains/nains-fer-entrave","h":240,"left":622,"center":901,"right":623,"frameTop":36,"frameBottom":213,"bandTop":58,"bandBottom":186,"bandLeft":134,"bandRight":260},

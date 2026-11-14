@@ -9,7 +9,11 @@
 // - mesure le pack : hauteur commune, largeur des trois morceaux ; dans le milieu, le cadre (haut, bas) et la bande sombre
 //   où le jeu écrit (haut, bas) ; dans les embouts, où la bande commence (à gauche) et où elle s'arrête (à droite) ;
 // - convertit left, center et right en WebP dans prototype-web/assets/hud/barres/<culture>/ (le full ne sert qu'à Idan) ;
-// - écrit prototype-web/hud-bars.js, la liste des barres et leurs mesures, lue par la barre du haut (screen-ui.js).
+// - l'anneau du centre de la barre du bas (ornement_central, Idan, 2026-11-14), s'il est dans le pack : WebP (ornement.webp,
+//   800 px de large au plus) et mesures (trou où se loge le bouton Jour suivant, étendue de l'image) ;
+// - le bouton Jour suivant (media/hud-pack/next.png, commun à toutes les cultures) : recadré sur son disque, en WebP
+//   (prototype-web/assets/hud/next.webp) ;
+// - écrit prototype-web/hud-bars.js, la liste des barres et leurs mesures, lue par les deux barres du camp (screen-ui.js).
 // Usage : node scripts/build-hud-bars.js            (télécharge les packs depuis le site)
 //         node scripts/build-hud-bars.js --from DIR (DIR a la même arborescence que media/hud-pack)
 // Nécessite Playwright (mesures) et ImageMagick (convert, pour le WebP).
@@ -22,7 +26,11 @@ const ROOT=path.resolve(__dirname,"..");
 const SITE="https://bloodandwages.idanwizen.com";
 const OUT=path.join(ROOT,"prototype-web","assets","hud","barres");
 const DATA=path.join(ROOT,"prototype-web","hud-bars.js");
+const NEXT_OUT=path.join(ROOT,"prototype-web","assets","hud","next.webp");
 const PIECES=["left","center","right"];
+const ORNAMENT_MAX_WIDTH=800;
+// Le bouton Jour suivant : un carré de 1,12 fois le diamètre du disque, centré sur lui (voir NEXT_DISC dans styles.css).
+const NEXT_MARGIN=1.12,NEXT_SIZE=320;
 const STOPWORDS=new Set(["de","d","des","du","la","le","l","les","a","et"]);
 // Packs dont le dossier ne suffit pas à trouver la culture : chacun est la seule culture de son peuple restée sans pack.
 const PACK_CULTURE={
@@ -71,7 +79,7 @@ function findPacks(dir){
     const pieces={};
     for(const f of files){
       if(f.isDirectory()){walk(path.join(rel,f.name));continue;}
-      const m=f.name.match(/^(left|center|right)\.(png|webp|jpe?g)$/i);
+      const m=f.name.match(/^(left|center|right|ornement_central)\.(png|webp)$/i);
       if(m) pieces[m[1].toLowerCase()]=path.join(abs,f.name);
     }
     if(PIECES.every(p=>pieces[p])) packs.push({pack:rel.split(path.sep).join("/"),pieces});
@@ -85,7 +93,7 @@ function download(){
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),"hud-pack-"));
   const index=JSON.parse(execFileSync("curl",["-sf",SITE+"/api/hud-pack.php"],{encoding:"utf8"}));
   for(const f of index.files){
-    if(!/\/(left|center|right)\.\w+$/i.test(f.path)) continue;
+    if(!/\/(left|center|right|ornement_central)\.\w+$/i.test(f.path)&&!/^next\.png$/i.test(f.path)) continue;
     const dest=path.join(dir,...f.path.split("/"));
     fs.mkdirSync(path.dirname(dest),{recursive:true});
     execFileSync("curl",["-sf","-o",dest,SITE+"/"+index.base+"/"+f.path.split("/").map(encodeURIComponent).join("/")]);
@@ -123,6 +131,47 @@ async function measure(page,pieces){
   },data);
 }
 
+// L'anneau du centre de la barre du bas : son trou (les pixels transparents reliés au centre de l'image, où se loge le
+// bouton Jour suivant : centre et diamètre) et l'étendue de ses pixels opaques. Mesures en pixels de l'image d'origine.
+async function measureOrnament(page,file){
+  const src="data:image/png;base64,"+fs.readFileSync(file).toString("base64");
+  return page.evaluate(async src=>{
+    const i=new Image();i.src=src;await i.decode();
+    const w=i.width,h=i.height,c=document.createElement("canvas");c.width=w;c.height=h;
+    const g=c.getContext("2d");g.drawImage(i,0,0);const d=g.getImageData(0,0,w,h).data;
+    const opaque=(x,y)=>d[(y*w+x)*4+3]>=128;
+    let x0=w,y0=h,x1=-1,y1=-1;
+    for(let y=0;y<h;y++)for(let x=0;x<w;x++)if(opaque(x,y)){if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y;}
+    const sx=Math.floor(w/2),sy=Math.floor(h/2);
+    if(opaque(sx,sy)) return {w,h,error:"le centre de l'image n'est pas dans le trou de l'anneau"};
+    const seen=new Uint8Array(w*h),stack=[sx,sy];seen[sy*w+sx]=1;
+    let hx0=sx,hx1=sx,hy0=sy,hy1=sy,open=false;
+    while(stack.length){
+      const y=stack.pop(),x=stack.pop();
+      if(x<hx0)hx0=x;if(x>hx1)hx1=x;if(y<hy0)hy0=y;if(y>hy1)hy1=y;
+      if(x===0||y===0||x===w-1||y===h-1){open=true;break;}
+      for(const [nx,ny] of [[x+1,y],[x-1,y],[x,y+1],[x,y-1]]){
+        const k=ny*w+nx;
+        if(!seen[k]&&!opaque(nx,ny)){seen[k]=1;stack.push(nx,ny);}
+      }
+    }
+    if(open) return {w,h,error:"le trou de l'anneau n'est pas fermé"};
+    return {w,h,cx:(hx0+hx1+1)/2,cy:(hy0+hy1+1)/2,hole:(hx1-hx0+hy1-hy0+2)/2,x0,y0,x1:x1+1,y1:y1+1};
+  },src);
+}
+
+// Le bouton Jour suivant : un carré centré sur son disque (pixels opaques), de NEXT_MARGIN fois sa largeur.
+function buildNextButton(file){
+  const box=execFileSync("convert",[file,"-alpha","extract","-threshold","50%","-format","%@","info:"],{encoding:"utf8"}).trim();
+  const [,bw,bh,bx,by]=box.match(/^(\d+)x(\d+)\+(\d+)\+(\d+)$/).map(Number);
+  const side=Math.round(bw*NEXT_MARGIN),cx=bx+bw/2,cy=by+bh/2;
+  const left=Math.round(cx-side/2),top=Math.round(cy-side/2);
+  fs.mkdirSync(path.dirname(NEXT_OUT),{recursive:true});
+  execFileSync("convert",[file,"-background","none","-extent",`${side}x${side}${left>=0?"+":""}${left}${top>=0?"+":""}${top}`,
+    "-resize",`${NEXT_SIZE}x${NEXT_SIZE}`,"-strip","-quality","90","-define","webp:alpha-quality=100","-define","webp:method=6",NEXT_OUT]);
+  return {disc:[bw,bh],side};
+}
+
 async function main(){
   const args=process.argv.slice(2);
   const from=args.includes("--from")?path.resolve(args[args.indexOf("--from")+1]):download();
@@ -149,8 +198,23 @@ async function main(){
     }
     delete m.heights;
     bars[key]={culture:culture.nom,pack,...m};
+    if(pieces.ornement_central){
+      const o=await measureOrnament(page,pieces.ornement_central);
+      if(o.error){problems.push(`${pack} : ornement_central, ${o.error}`);continue;}
+      // Réduit à 800 px de large au plus (assez pour la plus grande barre, sur un écran à double densité) ; mesures à
+      // la même échelle que l'image WebP.
+      const scale=Math.min(1,ORNAMENT_MAX_WIDTH/o.w),r=v=>Math.round(v*scale*10)/10;
+      execFileSync("convert",[pieces.ornement_central,"-resize",`${Math.round(o.w*scale)}x${Math.round(o.h*scale)}!`,"-strip","-quality","90",
+        "-define","webp:alpha-quality=100","-define","webp:method=6",path.join(dir,"ornement.webp")]);
+      bars[key].ornament={w:Math.round(o.w*scale),h:Math.round(o.h*scale),cx:r(o.cx),cy:r(o.cy),hole:r(o.hole),x0:r(o.x0),y0:r(o.y0),x1:r(o.x1),y1:r(o.y1)};
+    }else{
+      fs.rmSync(path.join(dir,"ornement.webp"),{force:true});
+    }
   }
   await browser.close();
+  const next=fs.existsSync(path.join(from,"next.png"))?buildNextButton(path.join(from,"next.png")):null;
+  if(next) console.log(`Bouton Jour suivant : disque ${next.disc.join("×")}, carré de ${next.side} px → ${NEXT_SIZE} px`);
+  else console.log("Pas de next.png : le bouton Jour suivant n'est pas refait.");
   const sorted=Object.fromEntries(Object.entries(bars).sort(([a],[b])=>a.localeCompare(b)));
   const lines=Object.entries(sorted).map(([k,v])=>`  ${JSON.stringify(k)}:${JSON.stringify(v)}`);
   fs.writeFileSync(DATA,`"use strict";
@@ -159,7 +223,9 @@ async function main(){
 // la main. Images : assets/hud/barres/<culture>/{left,center,right}.webp. Mesures en pixels de l'image d'origine :
 // h (hauteur commune), left / center / right (largeurs), frameTop / frameBottom (cadre du milieu), bandTop / bandBottom
 // (bande sombre où le jeu écrit), bandLeft (début de la bande dans l'embout gauche), bandRight (distance entre la fin de la
-// bande et le bord droit de l'embout droit).
+// bande et le bord droit de l'embout droit). ornament (s'il y en a un, assets/hud/barres/<culture>/ornement.webp) : l'anneau
+// du centre de la barre du bas, en pixels de son image : w / h, cx / cy / hole (centre et diamètre du trou où se loge le
+// bouton Jour suivant), x0 / y0 / x1 / y1 (étendue des pixels opaques).
 const HUD_BARS={
 ${lines.join(",\n")}
 };
@@ -168,6 +234,8 @@ if(typeof module!=="undefined") module.exports={HUD_BARS};
   const missing=cultures.map(c=>c.nom).filter(n=>!sorted[slug(n)]);
   console.log(`${Object.keys(sorted).length} barres : ${Object.values(sorted).map(b=>`${b.culture} (${b.pack})`).join(", ")}`);
   console.log(`${missing.length} cultures sans barre : ${missing.join(", ")}`);
+  const rings=Object.values(sorted).filter(b=>b.ornament).map(b=>b.culture);
+  console.log(`${rings.length} anneaux (barre du bas) : ${rings.join(", ")||"aucun"}`);
   if(problems.length){console.log("À voir :\n- "+problems.join("\n- "));process.exitCode=1;}
 }
 

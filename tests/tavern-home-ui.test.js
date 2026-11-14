@@ -15,7 +15,7 @@ const css=fs.readFileSync(path.join(root,"prototype-web/styles.css"),"utf8");
 const home=html.slice(html.indexOf('<div id="tavern-home"'),html.indexOf('<section id="tavern-missions-view"'));
 assert.ok(!/<button/.test(home),"plus de boutons sur l'accueil de la taverne");
 assert.ok(!/tavern-talk-btn/.test(html+css+js),"plus de bulle sur le tavernier");
-const bar=html.slice(html.indexOf('<div id="hud-tavern"'),html.indexOf('<button id="hud-castle-btn"'));
+const bar=html.slice(html.indexOf('<div id="hud-tavern"'),html.indexOf("</ul>",html.indexOf('<div id="hud-tavern"')));
 assert.match(bar,/<button id="hud-tavern-btn"[^>]*aria-expanded="false"[^>]*>.*Taverne/,"le bouton de la barre");
 assert.deepEqual([...bar.matchAll(/data-hud-tavern="(\w+)">([^<]+)<\/button>/g)].map(m=>[m[1],m[2]]),
   [["missions","Trouver une mission"],["recruits","Recruter"],["canteen","La Cantine"],["cellar","La Cave"],["talk","Parler au tavernier"]]);

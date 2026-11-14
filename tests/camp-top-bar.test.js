@@ -2,8 +2,8 @@
 
 // La barre du haut du camp (Idan, 2026-11-13, d'après sa maquette) : la barre illustrée de la culture du capitaine (packs
 // d'Idan, scripts/build-hud-bars.js → hud-bars.js), le blason, le nom et les étoiles de la compagnie, ses chiffres (or,
-// salaires, mercenaires) avec les pictos d'Idan, la date et le bouton menu (Échap) ; plus de logo au camp. La barre du bas
-// garde la Taverne, le Château, Jour suivant et le journal.
+// salaires, mercenaires) avec les pictos d'Idan, la date et le bouton menu (Échap) ; plus de logo au camp. La barre du bas :
+// tests/camp-bottom-bar.test.js.
 const assert=require("node:assert/strict");
 const fs=require("node:fs");
 const path=require("node:path");
@@ -24,8 +24,9 @@ assert.deepEqual(pictos,["assets/hud/picto-or.webp","assets/hud/picto-salaires.w
 for(const p of pictos) assert.ok(fs.existsSync(path.join(WEB,p)),p);
 assert.match(top,/<button id="hud-pause-btn" type="button" aria-label="Ouvrir le menu de pause \(Échap\)" title="Menu \(Échap\)"><span class="hud-icon" data-hud-icon="menu"><\/span><\/button>/);
 assert.match(js,/  menu:'<path d="M4\.5 7h15M4\.5 12h15M4\.5 17h15"\/>',/);
-assert.deepEqual(ids(bottom),["hud-tavern","hud-tavern-btn","hud-tavern-menu","hud-castle-btn","hud-next-day-btn","hud-journal","hud-console-toggle","hud-journal-last","game-action-lines"],
-  "en bas : Taverne et Château à gauche, Jour suivant au centre, le journal à droite");
+assert.deepEqual(ids(bottom),["hud-castle-btn","hud-merchant-btn","hud-quartermaster-btn","hud-tavern","hud-tavern-btn","hud-tavern-menu","hud-next-day-btn",
+  "hud-dormitory-btn","hud-company-btn","hud-buildings-btn","hud-building-btn","hud-journal","hud-console-toggle","hud-journal-last","game-action-lines"],
+  "en bas (Idan, 2026-11-14) : Château, Marchand, Intendance, Taverne, puis Jour suivant, puis Dortoir, Construction, Mes bâtiments, Ce bâtiment ; le journal");
 assert.match(top,/<img id="hud-blason" class="hud-blason" alt="Blason de la compagnie" width="160" height="160" hidden>/,"pas de blason tant qu'il n'est pas connu");
 
 // --- Mise en page --------------------------------------------------------------------------------------------------------

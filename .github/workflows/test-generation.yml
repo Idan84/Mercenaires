@@ -69,6 +69,7 @@ jobs:
       - run: node tests/affinity-display.test.js
       - run: node tests/captain-creation-ui.test.js
       - run: node tests/camp-top-bar.test.js
+      - run: node tests/camp-bottom-bar.test.js
       - run: node tests/design-graph-simulation.test.js
       - run: node tests/design-graph-integrity.test.js
       - run: node tests/biography.test.js

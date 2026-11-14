@@ -38,11 +38,24 @@ laisse le blason respirer […] la barre doit être belle, les infos lisibles »
   provisoire aux mêmes proportions.
 - Le logo Blood & Wages n'apparaît plus au camp : il reste sur l'écran titre.
 
-**La barre du bas** sert à se déplacer et à agir. Pour l'instant : **Taverne** (son menu) et **Château** à gauche,
-**Jour suivant** au centre, le **journal** à droite. Liste retenue pour la suite (à préciser) : Château (l'écran du camp),
-Marchand (grisé sans marchand), Intendance, Taverne, Dortoir (où iront les fiches des mercenaires), Construction (l'actuel
-Ma Compagnie, réorganisé), Mes bâtiments (tous les bâtiments, y compris ceux à construire), Ce bâtiment (les salles et les
-options du lieu où l'on est). Le journal sera trié : ce qu'il affiche reste à choisir.
+**La barre du bas** sert à se déplacer et à agir. On la fait pas à pas (Idan, 2026-11-14 : « c'est pas grave si tout
+n'est pas fonctionnel immédiatement, on commence par la barre » ; « on fait que la barre nordique ») :
+
+- **Le milieu de la barre de la culture**, sans ses embouts, d'un bord à l'autre de l'écran (Idan : « en bas, on va mettre
+  que la partie centre de la barre et on va l'étendre jusqu'au bout »). Elle est décollée du bas de l'écran, comme la barre
+  du haut l'est du haut.
+- **Au centre, le bouton Jour suivant** dessiné par Idan (`next.png`), dans **l'anneau de la culture**
+  (`ornement_central`) ; le bord du bouton passe sous l'anneau.
+- **Une culture à la fois** : la barre du bas n'est illustrée que pour une culture dont Idan a dessiné l'anneau, d'abord
+  les Montagnes du Nord ; les autres gardent pour l'instant un cadre provisoire, avec le bouton seul.
+- **Les lieux, retirés pour l'instant** (Idan : « retire temporairement tous les boutons dedans sauf le next ») ; ils sont
+  prêts, en pictos seuls (Idan : « que des pictos » ; le nom au survol), dans l'ordre d'Idan : à gauche **Château** (l'écran
+  du camp), **Marchand** (grisé sans marchand), **Intendance**, **Taverne** (son menu) ; à droite **Dortoir** (où iront les
+  fiches des mercenaires), **Construction** (l'actuel Ma Compagnie, à réorganiser), **Mes bâtiments** (tous les bâtiments,
+  y compris ceux à construire) et **Ce bâtiment** (les salles et les options du lieu où l'on est). En attendant, chaque
+  lieu garde son bouton « ← Retour au camp », et la Taverne ses zones cliquables.
+- **Le journal** passe au-dessus de la barre, à droite : sa dernière ligne, un clic le déplie. Il sera trié : ce qu'il
+  affiche reste à choisir.
 
 ## Référentiel et convention d'affichage
 

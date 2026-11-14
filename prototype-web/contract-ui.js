@@ -63,14 +63,24 @@ function missionIcon(kind){
 const missionDays=n=>n+" jour"+(n>1?"s":"");
 
 // Les gabarits : une carte par case du tableau, toutes au même format ; une case vide attend le lendemain.
+// L'illustration du camp (Jean-Mi, 2026-11-14 : gravures à l'encre sur fond blanc), sinon celle de la mission. Un camp peut
+// en avoir plusieurs (« c'est plutôt pas mal d'avoir des images différentes pour les mêmes missions ») : chaque offre en
+// tire une d'après son identifiant, toujours la même (l'annonce et son détail montrent la même gravure).
+function campIllustration(def,offer){
+  const camp=(def.camps||[]).find(c=>c.faction===offer.faction);
+  const pics=camp?.illustrations||(camp?.illustration?[camp.illustration]:[]);
+  if(!pics.length) return "";
+  let h=0;
+  for(const ch of String(offer.id)) h=(Math.imul(h,31)+ch.charCodeAt(0))>>>0;
+  return pics[h%pics.length];
+}
 function contractCard(offer){
   const def=(game.referenceData?.oneShotMissions?.missions||[]).find(m=>m.code===offer.code)||{};
   const order=contractOrder(offer);
   // Une chasse (Idan, 2026-11-07) : la récompense seule, ni coffre ni butin.
   const loot=def.bete?"":" + butin";
   return {id:"contract:"+offer.id,kind:"contract",type:offer.name,title:offer.campName+" de "+offer.fields.lieu,name:offer.campName,place:offer.fields.lieu,
-    // L'illustration du camp (Jean-Mi, 2026-11-14 : gravure à l'encre sur fond blanc), sinon celle de la mission.
-    illustration:(def.camps||[]).find(c=>c.faction===offer.faction)?.illustration||def.illustration||"",description:def.description||"",
+    illustration:campIllustration(def,offer)||def.illustration||"",description:def.description||"",
     difficulty:{level:offer.difficulty||1,label:"Difficulté"},
     reward:fmt(offer.reward)+" PO",gold:offer.reward,rewardNote:loot.trim(),duration:missionDays(offer.distance)+" de marche",
     facts:[["client","Commanditaire",order?.from||""],["days","Distance",missionDays(offer.distance)+" de marche, "+missionDays(2*offer.distance)+" aller-retour"],

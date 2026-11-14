@@ -277,6 +277,12 @@ ennemis, récompense, expiration…), la lettre du commanditaire s'il y en a une
 - **Départ demain** : une mission signée qui part le lendemain reste en tête du tableau, avec « Annuler » sur l'annonce
   elle-même. Les escouades déjà parties ne sont plus listées ici (« Ça n'a rien à faire ici »).
 - **Au clic**, l'annonce s'avance un peu, puis le détail s'ouvre en grand (le détail sera refait ensuite).
+- **Mise en page selon la charte de la création du capitaine** (Idan, 2026-11-14 : « Ça manque de détails de matière, de
+  mise en page. Peut-être un choix de police pour le titre ») : le lieu en Cinzel 700, en capitales espacées, « de … » en
+  EB Garamond italique ; un filet qui entre dans une fleur de lys ; l'illustration dans un double filet d'or, comme le
+  portrait de la création ; l'or en grand (avec l'espace des milliers), la durée en italique dessous. Chaque annonce est
+  clouée au panneau, un peu de travers, son ombre à gauche ; au survol, un halo doré. Une mission qui part demain porte
+  un tampon rouge « Départ demain » et le bouton « Annuler le départ ».
 
 ## 14 — Points de combat et camps par peuple (Idan, 2026-11-01)
 

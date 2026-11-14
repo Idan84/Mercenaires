@@ -201,7 +201,10 @@ assert.deepEqual(labels(ui.desertionChoicesHtml({id:9,name:"Zia",sex:"F"},{attem
 assert.deepEqual(labels(ui.desertionChoicesHtml(runaway,{attempted:"convince"})),[["duel","Le défier en combat singulier"],["let_go","Le laisser partir"]]);
 assert.deepEqual(labels(ui.desertionChoicesHtml(runaway,null)),[["continue","Continuer"]]);
 const desertionUi=fs.readFileSync(path.join(ROOT,"prototype-web","desertion-ui.js"),"utf8");
-assert.match(desertionUi,/addEventListener\("cancel",event=>event\.preventDefault\(\)\)/,"on ne la ferme pas avec Échap");
+// Depuis le 14 novembre (Idan) : on peut la remettre à plus tard (« Plus tard », Échap ; discussions-ui.js), sauf le jour
+// suivant, qui attend toujours.
+assert.doesNotMatch(desertionUi,/addEventListener\("cancel"/,"Échap : discussions-ui.js");
+assert.match(desertionUi,/pending\(game\.campaign\)\.find\(e=>!later\("desertion:"\+e\.id\)\)/,"pas rouverte toute seule une fois remise à plus tard");
 const index=fs.readFileSync(path.join(ROOT,"prototype-web","index.html"),"utf8");
 assert.match(index,/<dialog id="desertion-dialog" class="talk-dialog talk-dialog--recruit"/);
 assert.ok(index.indexOf('<script src="/core/desertion.js">')>index.indexOf('<script src="/core/persuasion.js">')
@@ -209,7 +212,7 @@ assert.ok(index.indexOf('<script src="/core/desertion.js">')>index.indexOf('<scr
 assert.match(index,/<script src="desertion-ui\.js"><\/script>/);
 const tavernUi=fs.readFileSync(path.join(ROOT,"prototype-web","tavern-ui.js"),"utf8");
 assert.match(tavernUi,/logDesertion\(report\.desertion\)/);
-assert.match(tavernUi,/if\(allowed\.desertion!=null\)\{ if\(typeof checkDesertions==="function"\) checkDesertions\(\); return; \}/);
+assert.match(tavernUi,/if\(allowed\.desertion!=null\|\|allowed\.mutiny\|\|allowed\.usurer\|\|allowed\.salaryReview!=null\)\{ if\(typeof openFirstTalk==="function"\) openFirstTalk\(\); return; \}/,"le jour suivant rouvre la discussion qui attend");
 assert.match(tavernUi,/statOf:\(m,name\)=>combatEngine\(\)\.statWithGear/);
 const ui2=fs.readFileSync(path.join(ROOT,"prototype-web","ui.js"),"utf8");
 assert.match(ui2,/if \(typeof checkDesertions === "function"\) checkDesertions\(\);\n/);

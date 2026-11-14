@@ -1373,7 +1373,11 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
    bouge : les répliques défilent au milieu, les choix restent en bas. */
 .talk-dialog--recruit .avatar-frame--talk{width:400px;height:440px;min-height:0;aspect-ratio:auto;border:0;border-radius:0;box-shadow:none}
 .talk-dialog--recruit>.talk-log,.talk-dialog--recruit>.talk-line{align-self:stretch;max-height:none;overflow-y:auto}
-.talk-dialog--recruit>:last-child{max-height:260px;overflow-y:auto}
+.talk-dialog--recruit>:last-child,.talk-dialog--recruit>:nth-last-child(2):has(+.talk-later){max-height:260px;overflow-y:auto}
+/* « Plus tard » (Idan, 2026-11-14 : « on peut fermer sans répondre ») : en haut à droite des scènes qui attendent une
+   réponse (discussions-ui.js) ; dernier dans la fenêtre, pour que le premier choix garde le focus à l'ouverture. */
+.talk-later{position:absolute;top:12px;right:14px;z-index:2;padding:5px 12px;border:1px solid #71583e;border-radius:999px;background:#1b130ecc;color:#d8b77d;font:13px Georgia,serif;cursor:pointer;box-shadow:none}
+.talk-later:hover,.talk-later:focus-visible{border-color:#c9a15f;color:#ffe1ac;outline:none}
 .talk-dialog--recruit .avatar-frame--talk .avatar-fallback span{font-size:5rem}
 @media(max-width:760px){
   .talk-dialog--recruit[open]{grid-template-columns:minmax(0,1fr);grid-template-rows:none;height:auto}

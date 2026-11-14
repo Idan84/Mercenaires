@@ -1,9 +1,10 @@
 "use strict";
 
 // Désertion (Idan, 2026-11-04), interface. Le journal du matin : celui qui a filé (l'intendant le signale), celui que la
-// Vigie a repéré. La scène, au début de la journée (et au chargement d'une partie), une par repéré : on ne peut rien faire
-// d'autre avant de l'avoir réglée (« Cette interface arrive en début de journée et on ne peut pas faire autre chose avant
-// d'avoir résolu ça ») : Intimider, Convaincre (une tentative), le défier en combat singulier, le laisser partir.
+// Vigie a repéré. La scène, au début de la journée (et au chargement d'une partie), une par repéré : Intimider,
+// Convaincre (une tentative), le défier en combat singulier, le laisser partir. Au début (2026-11-04), on ne pouvait rien
+// faire d'autre avant de l'avoir réglée ; depuis le 14 novembre, on peut la remettre à plus tard (discussions-ui.js) :
+// le jour suivant, lui, attend toujours.
 // Règles : game-core/desertion.js ; textes : data/reference/desertion-dialogue.json.
 function desertionRules(){ return campaignRules().desertionRules||null; }
 function desertionCopy(){ return game.referenceData?.desertionDialogue||{}; }
@@ -50,11 +51,13 @@ function openDesertionScene(entry){
   game.desertionScene={id:m.id,mercenary:m};
   $("desertion-dialog").showModal();
 }
-// Le premier repéré qui attend (après le passage au jour suivant, au chargement, après la scène précédente).
+// Le premier repéré qui attend (après le passage au jour suivant, au chargement, après la scène précédente), sauf ceux
+// remis à plus tard (discussions-ui.js).
 function checkDesertions(){
   const dialog=$("desertion-dialog");
   if(!game.campaign||!dialog||dialog.open||typeof campaignRules!=="function") return;
-  const entry=desertionRules()?.pending(game.campaign)[0];
+  const later=key=>typeof talkPutOff==="function"&&talkPutOff(key);
+  const entry=desertionRules()?.pending(game.campaign).find(e=>!later("desertion:"+e.id));
   if(entry) openDesertionScene(entry);
 }
 
@@ -100,8 +103,6 @@ function desertionChoice(key,memberId){
 }
 
 function initializeDesertion(){
-  // La scène ne se ferme pas avec Échap : il faut décider.
-  document.getElementById("desertion-dialog")?.addEventListener("cancel",event=>event.preventDefault());
   document.addEventListener("click",event=>{
     const button=event.target.closest?.("[data-desertion]");
     if(button) desertionChoice(button.dataset.desertion,button.dataset.desertionMember);

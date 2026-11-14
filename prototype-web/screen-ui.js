@@ -218,6 +218,7 @@ function renderGameHud(){
   renderCampCalendar();
   $("game-action-lines").innerHTML=gameActionMessages.map(x=>'<li><small>J'+(x.day||"—")+'</small> '+esc(x.message)+'</li>').join("");
   updateHudCombat();
+  updateHudTalks();
 }
 // Les lieux de la barre du bas (Idan, 2026-11-14) : un clic ouvre le lieu, comme les boutons du château ; la Taverne a son
 // menu (tavern-ui.js). Rien ne se passe sur le lieu où l'on est déjà.
@@ -282,24 +283,38 @@ function updateHudCombat(){
   button.title=n>1?n+" combats vous attendent":n?"Commencer le combat":"Pas de combat aujourd’hui";
   if(!n&&$("hud-action-menu")?.dataset.action==="combat") setHudActionMenu(null);
 }
+// Discussions (Idan, 2026-11-14 : « il doit ouvrir les fenêtres de dialogues avec les mercenaires qui viennent nous
+// parler ») : ceux qui attendent une réponse (discussions-ui.js) ; grisé s'il n'y a personne.
+function hudTalks(){ return typeof pendingTalks==="function"?pendingTalks():[]; }
+function updateHudTalks(){
+  const button=$("hud-talk-btn");
+  if(!button) return;
+  const talks=hudTalks();
+  button.disabled=!talks.length;
+  button.title=talks.length>1?talks.length+" discussions vous attendent":talks.length?talks[0].label:"Personne ne vous attend";
+  if(!talks.length&&$("hud-action-menu")?.dataset.action==="talk") setHudActionMenu(null);
+}
 function chooseHudAction(action,key){
   setHudActionMenu(null);
   if(action==="combat"&&typeof openExpeditionDialog==="function") openExpeditionDialog(key);
+  if(action==="talk"&&typeof openTalk==="function") openTalk(key);
+}
+// Combat et Discussions : une seule chose qui attend, elle s'ouvre ; plusieurs, un menu pour choisir.
+function toggleHudChoice(action,button,items){
+  if(items.length===1){ chooseHudAction(action,items[0].key); return; }
+  const open=$("hud-action-menu").hidden||$("hud-action-menu").dataset.action!==action;
+  setHudActionMenu(open?button:null,items);
 }
 // Les actions de droite : Combat, Nouvelles (le pigeon : les nouvelles du jour, rouvertes, même après un rechargement :
-// day-news-ui.js), Journal ; Discussions viendra plus tard.
+// day-news-ui.js), Journal, Discussions.
 function runHudAction(action,button){
   if(action==="journal"){toggleHudJournal();return;}
   if(action==="news"){
     if(typeof showTodayNews==="function") showTodayNews();
     return;
   }
-  if(action==="combat"){
-    const waiting=hudCombats();
-    if(waiting.length===1){ chooseHudAction("combat",waiting[0].id); return; }
-    const open=$("hud-action-menu").hidden||$("hud-action-menu").dataset.action!=="combat";
-    setHudActionMenu(open?button:null,waiting.map(e=>({key:e.id,label:e.offer.campName+" de "+e.offer.fields.lieu})));
-  }
+  if(action==="combat") toggleHudChoice("combat",button,hudCombats().map(e=>({key:e.id,label:e.offer.campName+" de "+e.offer.fields.lieu})));
+  if(action==="talk") toggleHudChoice("talk",button,hudTalks().map(t=>({key:t.key,label:t.label})));
 }
 function setPauseOpen(open){
   if(!game.campaign||!["camp","mission"].includes(currentScreen())) return;

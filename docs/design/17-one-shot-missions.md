@@ -296,9 +296,10 @@ ennemis, récompense, expiration…), la lettre du commanditaire s'il y en a une
   sinon celles de la mission (`missions[].illustrations` : les bêtes des chasses), sinon son illustration. Un camp peut en avoir plusieurs (Idan : « c'est plutôt pas mal
   d'avoir des images différentes pour les mêmes missions ») : chaque offre en tire une d'après son identifiant, toujours
   la même. Idan les dépose dans `media/background/Taverne/Missions/` ; on garde les bonnes (`scripts/build-mission-art.js`,
-  voir `docs/DEPLOYMENT.md`). Arrivées : les sept camps (gobelins 1, hommes-bêtes 1, orcs 3, voleurs 4, ogres 4,
-  cimetière profané 2, château maudit 3). Les bêtes : loups 1, licorne 2, cerbère 1 (trois têtes : les versions à deux têtes sont écartées), chiens sauvages 2,
-  papillons 2. À venir : les clients des gardes du corps.
+  voir `docs/DEPLOYMENT.md`). Arrivées : les sept camps (gobelins 1, hommes-bêtes 1, orcs 2, voleurs 3, ogres 2,
+  cimetière profané 2, château maudit 2) et les bêtes (loups, licorne, cerbère, chiens sauvages, papillons : 1 chacune).
+  Une variante n'est gardée que si elle apporte une autre image (Idan : « Y'en a beaucoup qui sont proches… Faut pas
+  hésiter à les virer ») ; les écartées et leur raison sont en tête de `scripts/build-mission-art.js`. À venir : les clients des gardes du corps.
 
 ## 14 — Points de combat et camps par peuple (Idan, 2026-11-01)
 

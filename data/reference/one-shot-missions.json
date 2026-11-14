@@ -159,7 +159,7 @@
         {
           "faction": "Orcs",
           "nom_camp": "Camp orc",
-          "illustrations": ["assets/missions/camp-orc-1.webp", "assets/missions/camp-orc-2.webp", "assets/missions/camp-orc-3.webp"],
+          "illustrations": ["assets/missions/camp-orc-1.webp", "assets/missions/camp-orc-2.webp"],
           "poids": 1,
           "lignes": [
             {
@@ -233,7 +233,7 @@
         {
           "faction": "Voleurs",
           "nom_camp": "Camp de voleurs",
-          "illustrations": ["assets/missions/camp-voleurs-1.webp", "assets/missions/camp-voleurs-2.webp", "assets/missions/camp-voleurs-3.webp", "assets/missions/camp-voleurs-4.webp"],
+          "illustrations": ["assets/missions/camp-voleurs-1.webp", "assets/missions/camp-voleurs-2.webp", "assets/missions/camp-voleurs-3.webp"],
           "poids": 1,
           "lignes": [
             {
@@ -273,7 +273,7 @@
         {
           "faction": "Ogres",
           "nom_camp": "Camp ogre",
-          "illustrations": ["assets/missions/camp-ogre-1.webp", "assets/missions/camp-ogre-2.webp", "assets/missions/camp-ogre-3.webp", "assets/missions/camp-ogre-4.webp"],
+          "illustrations": ["assets/missions/camp-ogre-1.webp", "assets/missions/camp-ogre-2.webp"],
           "poids": 1,
           "lignes": [
             {
@@ -346,7 +346,7 @@
         {
           "faction": "Cour de sang",
           "nom_camp": "Château maudit",
-          "illustrations": ["assets/missions/chateau-maudit-1.webp", "assets/missions/chateau-maudit-2.webp", "assets/missions/chateau-maudit-3.webp"],
+          "illustrations": ["assets/missions/chateau-maudit-1.webp", "assets/missions/chateau-maudit-2.webp"],
           "poids": 1,
           "lignes": [
             {
@@ -498,7 +498,7 @@
       "nom": "Chasse à la licorne",
       "description": "Des licornes : toutes tuées ou mises en déroute. Celles qui restent à terre peuvent être capturées.",
       "illustration": "",
-      "illustrations": ["assets/missions/chasse-licorne-1.webp", "assets/missions/chasse-licorne-2.webp"],
+      "illustrations": ["assets/missions/chasse-licorne-1.webp"],
       "niveau": {
         "ecart": [
           -4,
@@ -597,7 +597,7 @@
       "nom": "Chasse aux chiens sauvages",
       "description": "Une meute de chiens sauvages : tous tués ou mis en déroute. Ceux qui restent à terre peuvent être capturés : ce sont des molosses.",
       "illustration": "",
-      "illustrations": ["assets/missions/chasse-chiens-sauvages-1.webp", "assets/missions/chasse-chiens-sauvages-2.webp"],
+      "illustrations": ["assets/missions/chasse-chiens-sauvages-1.webp"],
       "niveau": {
         "ecart": [
           -4,
@@ -653,7 +653,7 @@
       "nom": "Chasse aux papillons",
       "description": "Une nuée de papillons vénéneux : tous tués ou mis en déroute. Ceux qui restent à terre peuvent être capturés. Le plus dur : les repérer.",
       "illustration": "",
-      "illustrations": ["assets/missions/chasse-papillons-1.webp", "assets/missions/chasse-papillons-2.webp"],
+      "illustrations": ["assets/missions/chasse-papillons-1.webp"],
       "niveau": {
         "ecart": [
           -4,

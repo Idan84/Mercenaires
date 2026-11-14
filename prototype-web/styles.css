@@ -1193,39 +1193,6 @@ body[data-screen="camp"][data-camp-scene="home"] .menu-back {
   justify-content: center;
   padding: 2dvh clamp(4px,2vw,26px) 8dvh;
 }
-.camp-hub-heading,
-.camp-hub-menu { width: min(420px,90vw); }
-.camp-hub-heading {
-  margin-bottom: 16px;
-  padding-left: 4px;
-  color: #f1e5cd;
-  text-shadow: 0 2px 12px rgba(0,0,0,.78);
-}
-.camp-hub-heading .eyebrow {
-  color: rgba(235,204,145,.8);
-  font-size: .66rem;
-}
-.camp-hub-heading h2 {
-  color: #fff0cf;
-  font-family: Georgia,"Times New Roman",serif;
-  font-size: clamp(1.65rem,2.5vw,2.35rem);
-  font-weight: 500;
-  letter-spacing: .02em;
-}
-.camp-hub-menu {
-  display: grid;
-  gap: 12px;
-}
-.camp-hub-btn {
-  width: 100%;
-  min-height: 56px;
-  background:
-    linear-gradient(180deg,rgba(48,35,26,.92),rgba(18,13,10,.95)),
-    #18110d;
-}
-.camp-hub-btn:first-child {
-  border-color: rgba(218,172,82,.62);
-}
 
 .camp-scene {
   max-width: 1200px;
@@ -1295,9 +1262,6 @@ body[data-screen="camp"][data-camp-scene="home"] .menu-back {
     min-height: calc(100dvh - 98px);
     padding-bottom: 6dvh;
   }
-  .camp-hub-heading,
-  .camp-hub-menu { width: min(88vw,420px); }
-  .camp-hub-heading { text-align: center; }
 }
 
 
@@ -1489,103 +1453,87 @@ body[data-screen="camp"]:not([data-camp-scene="home"]) .app-shell{padding-top:ca
    Château à gauche, gros bouton « Jour suivant » au centre, journal intégré à droite. Univers heroic fantasy : bois
    sombre, liserés dorés, médaillon central. Aucun nouvel asset visuel (icônes SVG au trait dans screen-ui.js). */
 body[data-screen="camp"] .app-shell{padding-bottom:calc(var(--hud-bottom-h) + 36px)}
-/* La barre du haut (Idan, 2026-11-13, d'après sa maquette) : la barre illustrée de la culture du capitaine (packs d'Idan,
-   scripts/build-hud-bars.js), décollée du haut de l'écran pour laisser respirer le blason, qui la déborde au-dessus et
-   en dessous ; dans sa bande sombre, le nom de la compagnie en italique et ses étoiles, puis l'or, les salaires et les
-   mercenaires dans des pastilles avec les pictos d'Idan ; à droite, après un filet, la date et le bouton menu.
+/* La barre du haut (Idan, 2026-11-13, d'après sa maquette ; réglée par culture dans l'Atelier des barres, 2026-11-14) : la
+   barre illustrée de la culture du capitaine (packs d'Idan, scripts/build-hud-bars.js), sans embout à gauche (Idan :
+   « laisse la ligne centre aller tout au bout et sortir de l'image ») ni blason ; dans sa bande sombre, le nom de la
+   compagnie en italique et ses étoiles sur la même ligne, puis l'or, les salaires et les mercenaires dans des fonds sombres
+   sans contour, avec les pictos d'Idan ; à droite, après un filet, la date et le bouton menu, avec de l'air à sa droite.
    Une seule mesure, --hb-B (la hauteur de la bande sombre), règle tout : proportions de la maquette (bande de 85 px pour
-   un écran de 2000 px). Les mesures du pack (en pixels de l'image : --hb-h, --hb-lw, --hb-rw, --hb-bt, --hb-band, --hb-li,
-   --hb-ri) viennent de hud-bars.js ; sans pack pour cette culture, un cadre provisoire de mêmes proportions.
-   Le blason (Idan : « il faut pas mesurer la taille de l'image mais la taille de la partie principale ») : son écu
-   (--bl-x0, --bl-y0, --bl-x1, --bl-y1, en fractions de l'image, blason-bodies.js) fait deux bandes de haut, est centré sur
-   la bande, et la barre part de son milieu : rien ne dépasse à gauche du blason. L'image entière (--bl-ox0, --bl-oy0,
-   --bl-ox1 : ses pixels opaques) reste dans l'écran, garde de l'air au-dessus (un casque ou une couronne fait descendre la
-   barre), et le texte commence après ses décors. */
+   un écran de 2000 px). Les mesures du pack (en pixels de l'image : --hb-h, --hb-rw, --hb-bt, --hb-band, --hb-ri) sont
+   posées sur la barre, et les réglages d'Idan pour la culture (en bandes B : --ht-haut, l'écart avec le haut de l'écran ;
+   --ht-top, celui de la bande sombre ; --ht-s, la taille du contenu ; --ht-fonds, la hauteur des fonds sombres ;
+   --ht-marge, l'air à droite du menu) sur la page, par screen-ui.js (hud-bars.js) ; sans pack, un cadre provisoire. */
 :root{
   --hb-B:clamp(52px,4.25vw,85px);
-  --hb-m:calc(var(--hb-B) * .3);
-  --bl-x0:.12;--bl-y0:0;--bl-x1:.88;--bl-y1:1;--bl-ox0:.1;--bl-oy0:0;--bl-ox1:.9;
-  --bl-S:min(calc(var(--hb-B) * 2 / (var(--bl-y1) - var(--bl-y0))),calc(var(--hb-B) * 2.1 / (var(--bl-x1) - var(--bl-x0))));
-  --hb-mid:max(calc(var(--hb-m) + var(--bl-S) * ((var(--bl-y0) + var(--bl-y1)) / 2 - var(--bl-oy0))),calc(var(--hb-m) + var(--hb-B)));
-  --hb-top:calc(var(--hb-mid) - var(--hb-B) / 2);
+  --ht-haut:.3;--ht-top:.5;--ht-s:1;--ht-fonds:.54;--ht-marge:.6;
+  --ht-u:calc(var(--hb-B) * var(--ht-s));
+  --hb-top:calc(var(--hb-B) * var(--ht-top));
   --hud-top-h:calc(var(--hb-top) + var(--hb-B) * 1.3);
-  --bl-left:max(calc(var(--hb-B) * .4),calc(var(--bl-S) * (var(--bl-x0) - var(--bl-ox0)) + var(--hb-B) * .12));
-  --bl-cx:calc(var(--bl-left) + var(--bl-S) * (var(--bl-x1) - var(--bl-x0)) / 2);
-  --bl-right:max(calc(var(--bl-left) + var(--bl-S) * (var(--bl-x1) - var(--bl-x0)) + var(--hb-B) * .3),calc(var(--bl-left) + var(--bl-S) * (var(--bl-ox1) - var(--bl-x0)) + var(--hb-B) * .08));
 }
 body[data-screen="camp"][data-camp-scene="home"] .app-shell{padding-top:calc(var(--hud-top-h) + 18px)}
 .game-top-bar{--hb-k:calc(var(--hb-B) / var(--hb-band,90));position:fixed;top:0;left:0;right:0;height:var(--hud-top-h);pointer-events:none}
-.hud-bar-art{position:absolute;left:calc(var(--bl-cx) - var(--hb-k) * var(--hb-li,0));right:calc(var(--hb-B) * .12);top:calc(var(--hb-top) - var(--hb-k) * var(--hb-bt,0));height:calc(var(--hb-k) * var(--hb-h,90));
-  clip-path:inset(-60% -10% -60% calc(var(--hb-k) * var(--hb-li,0)));filter:drop-shadow(0 8px 16px #000a)}
+.hud-bar-art{position:absolute;left:0;right:calc(var(--hb-B) * .12);top:calc(var(--hb-B) * var(--ht-haut));height:calc(var(--hb-k) * var(--hb-h,90));filter:drop-shadow(0 8px 16px #000a)}
 .hud-bar-piece{position:absolute;top:0;bottom:0;background-repeat:no-repeat;background-size:100% 100%}
-.hud-bar-left{left:0;width:calc(var(--hb-k) * var(--hb-lw,0))}
 .hud-bar-right{right:0;width:calc(var(--hb-k) * var(--hb-rw,0))}
-.hud-bar-center{left:calc(var(--hb-k) * var(--hb-lw,0) - 1px);right:calc(var(--hb-k) * var(--hb-rw,0) - 1px);background-repeat:repeat-x;background-size:auto 100%}
+.hud-bar-center{left:0;right:calc(var(--hb-k) * var(--hb-rw,0) - 1px);background-repeat:repeat-x;background-size:auto 100%}
 /* Sans pack : un cadre provisoire autour de la bande (en haut comme en bas). */
-.game-bottom-bar:not(.has-art) .hud-bar-art,.game-top-bar:not(.has-art) .hud-bar-art{left:var(--bl-cx);clip-path:none;top:calc(var(--hb-top) - var(--hb-B) * .22);height:calc(var(--hb-B) * 1.44);box-sizing:border-box;border:1px solid #b58c53;border-radius:calc(var(--hb-B) * .2);
+.game-bottom-bar:not(.has-art) .hud-bar-art,.game-top-bar:not(.has-art) .hud-bar-art{top:calc(var(--hb-top) - var(--hb-B) * .22);height:calc(var(--hb-B) * 1.44);box-sizing:border-box;border:1px solid #b58c53;border-radius:calc(var(--hb-B) * .2);
   background:linear-gradient(180deg,rgba(255,214,150,.08),transparent 45%),linear-gradient(180deg,#3d2c20f7,#1b130ef9 70%,#110b08);box-shadow:inset 0 0 0 calc(var(--hb-B) * .12) #2a1d15,inset 0 0 0 calc(var(--hb-B) * .13) #b58c5399}
-.game-top-bar .hud-blason{position:absolute;left:calc(var(--bl-left) - var(--bl-S) * var(--bl-x0));top:calc(var(--hb-mid) - var(--bl-S) * (var(--bl-y0) + var(--bl-y1)) / 2);z-index:2;display:block;width:var(--bl-S);height:var(--bl-S);object-fit:contain;filter:drop-shadow(0 6px 12px #000d);pointer-events:auto}
-.hud-blason[hidden]{display:none}
-.hud-top-content{position:absolute;z-index:1;top:var(--hb-top);height:var(--hb-B);left:var(--bl-right);right:calc(var(--hb-B) * .32 + var(--hb-k) * var(--hb-ri,0));display:flex;align-items:center;justify-content:space-between;gap:calc(var(--hb-B) * .35);pointer-events:auto}
+.hud-top-content{position:absolute;z-index:1;top:var(--hb-top);height:var(--hb-B);left:calc(var(--hb-B) * .5);right:calc(var(--hb-B) * var(--ht-marge) + var(--hb-k) * var(--hb-ri,0));display:flex;align-items:center;justify-content:space-between;gap:calc(var(--ht-u) * .35);pointer-events:auto}
 .hud-top-side{display:flex;align-items:center;min-width:0}
-.hud-top-side--left{flex:1 1 auto;gap:calc(var(--hb-B) * .53)}
-.hud-top-side--right{flex:none;gap:calc(var(--hb-B) * .35)}
-.game-top-bar .hud-company{flex:0 1 auto;align-items:center;min-width:0;max-width:none;line-height:1.1}
-.game-top-bar #hud-company{max-width:100%;font:italic calc(var(--hb-B) * .365) Georgia,serif;color:#efe3c6;text-shadow:0 2px 6px #000}
+.hud-top-side--left{flex:1 1 auto;gap:calc(var(--ht-u) * .45)}
+.hud-top-side--right{flex:none;gap:calc(var(--ht-u) * .3)}
+.game-top-bar .hud-company{flex:0 1 auto;flex-direction:row;align-items:center;gap:calc(var(--ht-u) * .45);min-width:0;max-width:none;line-height:1.1}
+.game-top-bar #hud-company{flex:0 1 auto;min-width:0;max-width:100%;font:italic calc(var(--ht-u) * .32) Georgia,serif;color:#efe3c6;text-shadow:0 2px 6px #000}
 .game-top-bar #hud-company.is-two-lines{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;white-space:normal;line-height:1.05;text-align:center}
-.game-top-bar .hud-renown{margin-top:calc(var(--hb-B) * .04);font-size:calc(var(--hb-B) * .3);letter-spacing:.12em;line-height:1}
-.game-top-bar .hud-stats{flex:none;gap:calc(var(--hb-B) * .19);margin:0}
-.game-top-bar .hud-stat{box-sizing:border-box;height:calc(var(--hb-B) * .73);gap:calc(var(--hb-B) * .2);padding:0 calc(var(--hb-B) * .41) 0 calc(var(--hb-B) * .29);border:2px solid #d8dee466;border-radius:999px;background:#05080a59;box-shadow:inset 0 1px 4px #000a}
+.game-top-bar .hud-renown{flex:none;font-size:calc(var(--ht-u) * .26);letter-spacing:.12em;line-height:1}
+.game-top-bar .hud-stats{flex:none;gap:calc(var(--ht-u) * .16);margin:0}
+.game-top-bar .hud-stat{box-sizing:border-box;height:calc(var(--hb-B) * var(--ht-fonds));gap:calc(var(--ht-u) * .17);padding:0 calc(var(--ht-u) * .44) 0 calc(var(--ht-u) * .32);border:0;border-radius:999px;background:#05080a59;box-shadow:inset 0 1px 4px #000a}
 .game-top-bar .hud-stat dt{filter:none}
-.hud-picto{display:block;width:auto;height:calc(var(--hb-B) * .53);filter:drop-shadow(0 2px 3px #000b)}
-.game-top-bar .hud-stat dd,.game-top-bar .hud-stat--gold dd{font:calc(var(--hb-B) * .35) Georgia,serif;font-weight:400;color:#f1e8d6;text-shadow:0 2px 5px #000}
+.hud-picto{display:block;width:auto;height:calc(var(--ht-u) * .42);filter:drop-shadow(0 2px 3px #000b)}
+.game-top-bar .hud-stat dd,.game-top-bar .hud-stat--gold dd{font:calc(var(--ht-u) * .28) Georgia,serif;font-weight:400;color:#f1e8d6;text-shadow:0 2px 5px #000}
 .game-top-bar .hud-stat--debt dd{color:#ff8a6e}
-.game-top-bar .hud-calendar{flex-direction:row;align-items:center;gap:0;height:calc(var(--hb-B) * .68);margin:0;padding-left:calc(var(--hb-B) * .35);border-left:2px solid #d8dee44d}
-.game-top-bar #hud-date,.game-top-bar #hud-day{font:calc(var(--hb-B) * .35) Georgia,serif;letter-spacing:0;color:#efe5cf;text-shadow:0 2px 5px #000}
+/* Les mercenaires ouvrent « Mes mercenaires » (le menu de l'accueil du camp est retiré). */
+.game-top-bar .hud-stat--link{cursor:pointer}
+.game-top-bar .hud-stat--link:hover,.game-top-bar .hud-stat--link:focus-visible,.game-top-bar .hud-stat--link.is-current{background:#05080a8c;box-shadow:inset 0 1px 4px #000a,0 0 0 2px #ffe1a54d;outline:none}
+.game-top-bar .hud-calendar{flex-direction:row;align-items:center;gap:0;height:calc(var(--ht-u) * .6);margin:0;padding-left:calc(var(--ht-u) * .3);border-left:2px solid #d8dee44d}
+.game-top-bar #hud-date,.game-top-bar #hud-day{font:calc(var(--ht-u) * .31) Georgia,serif;letter-spacing:0;color:#efe5cf;text-shadow:0 2px 5px #000}
 .game-top-bar #hud-day::before{content:"\00a0·\00a0";color:#c9b48a}
-.game-top-bar #hud-pause-btn{display:grid;place-items:center;flex:none;box-sizing:border-box;width:calc(var(--hb-B) * .8);height:calc(var(--hb-B) * .68);padding:0;border:2px solid #d8dee499;border-radius:calc(var(--hb-B) * .14);background:#05080a73;color:#f1e8d6;cursor:pointer}
-.game-top-bar #hud-pause-btn .hud-svg{width:calc(var(--hb-B) * .42);height:calc(var(--hb-B) * .42);stroke-width:2.2}
+.game-top-bar #hud-pause-btn{display:grid;place-items:center;flex:none;box-sizing:border-box;width:calc(var(--ht-u) * .7);height:calc(var(--ht-u) * .6);padding:0;border:2px solid #d8dee499;border-radius:calc(var(--ht-u) * .14);background:#05080a73;color:#f1e8d6;cursor:pointer}
+.game-top-bar #hud-pause-btn .hud-svg{width:calc(var(--ht-u) * .37);height:calc(var(--ht-u) * .37);stroke-width:2.2}
 .game-top-bar #hud-pause-btn:hover,.game-top-bar #hud-pause-btn:focus-visible{border-color:#ffe1a5;color:#ffe1a5;outline:none}
 /* Le chiffre de l'or descend sous la barre (il montait au-dessus de la barre du bas). */
 .game-top-bar .hud-delta{bottom:auto;top:100%;animation-name:hud-sink}
 @keyframes hud-sink{0%{opacity:0;transform:translate(-50%,-6px)}15%{opacity:1}100%{opacity:0;transform:translate(-50%,22px)}}
 .game-hud{position:fixed;inset:auto 0 0;z-index:90;pointer-events:none;color:#e9d9b9;font-family:Georgia,serif}
 .game-hud .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-/* La barre du bas (Idan, 2026-11-14 : « barre de la culture » ; « en bas, on va mettre que la partie centre de la barre et
-   on va l'étendre jusqu'au bout » ; « on fait que la barre nordique ») : le milieu de la barre illustrée du haut, sans ses
-   embouts, d'un bord à l'autre de l'écran, décollé du bas de l'écran, pour une culture qui a son anneau (sinon le cadre
-   provisoire) ; au centre, l'anneau de la culture (ornement_central d'Idan ; ses mesures --or-*, en pixels de son image, sont
-   posées par screen-ui.js) et, dans son trou, le bouton Jour suivant d'Idan ; quatre lieux de chaque côté, en pictos seuls
-   (Idan : « que des pictos » ; le nom au survol), retirés pour l'instant (« retire temporairement tous les boutons dedans
-   sauf le next ») ; le journal au-dessus de la barre, à droite. Tout se règle sur --hb-B, comme en haut : le trou de
-   l'anneau fait 1,75 bande, le disque du bouton 1,82 bande (son bord passe sous l'anneau), et l'anneau garde --hb-m d'air
-   sous lui. Sans anneau pour cette culture, le bouton seul, à la même taille. */
+/* La barre du bas (Idan, 2026-11-14 ; réglée par culture dans l'Atelier des barres) : le milieu de la barre illustrée de la
+   culture, sans ses embouts, d'un bord à l'autre de l'écran (« en bas, on va mettre que la partie centre de la barre et on
+   va l'étendre jusqu'au bout ») ; au centre, le bouton Jour suivant d'Idan dans l'anneau de la culture (ornement_central) ;
+   à gauche de l'anneau, les six lieux en pictos d'Idan (le nom au survol). La partie droite viendra plus tard ; le
+   journal est retiré pour l'instant (« le journal, retire-le pour l'instant »).
+   Tout se règle en bandes B (--hb-B), depuis le bas de l'écran et depuis son milieu (hud-bars.js, bas ; screen-ui.js pose
+   les valeurs de la culture sur la page) : l'image de la barre (--bb-art-bas, --bb-art-haut : sa bande sombre finit au bas
+   de l'écran), le bouton (--bb-bouton de diamètre, centré à --bb-centre du bas), l'anneau autour de lui (--bb-anneau de
+   large), les pictos (--bb-picto de côté, --bb-ecart entre eux ; leur bord droit à --bb-pictos-droite du milieu, contre
+   l'anneau ; leur centre à --bb-pictos-y du bas, dans la bande sombre) ; --bb-h, la place qu'ils prennent, que les lieux
+   du camp laissent libre. Sans anneau pour cette culture, un cadre provisoire et le bouton seul (valeurs de départ). */
 :root{
-  --nx-d:calc(var(--hb-B) * 1.82);
-  --or-k:calc(var(--hb-B) * 1.75 / var(--or-hole,295));
-  --hbb-below:max(calc(var(--hb-B) * .95),calc(var(--or-k) * (var(--or-y1,0) - var(--or-cy,0))));
-  --hbb-mid:calc(var(--hb-m) + var(--hbb-below));
-  --hud-bottom-h:calc(var(--hbb-mid) + var(--hb-B) * .8);
-  --hbb-half:max(calc(var(--nx-d) * .5),calc(var(--or-k) * max(var(--or-cx,0) - var(--or-x0,0),var(--or-x1,0) - var(--or-cx,0))));
+  --bb-art-bas:-.2;--bb-art-haut:1.44;--bb-centre:1.2;--bb-bouton:1.54;--bb-anneau:4.1;--bb-picto:.85;--bb-ecart:.3;--bb-pictos-droite:1.2;--bb-pictos-y:.55;--bb-h:2.1;
+  --hud-bottom-h:calc(var(--hb-B) * var(--bb-h));
 }
-.game-bottom-bar{--hb-k:calc(var(--hb-B) / var(--hb-band,90));position:fixed;left:0;right:0;bottom:0;height:var(--hud-bottom-h);pointer-events:none}
-.game-bottom-bar .hud-bar-art{left:0;right:0;top:auto;bottom:calc(var(--hbb-mid) - var(--hb-B) / 2 - var(--hb-k) * (var(--hb-h,90) - var(--hb-bt,0) - var(--hb-band,90)));clip-path:none}
-.game-bottom-bar:not(.has-art) .hud-bar-art{left:0;top:auto;border-radius:0;border-width:1px 0;bottom:calc(var(--hbb-mid) - var(--hb-B) * .72);height:calc(var(--hb-B) * 1.44)}
-.game-bottom-bar .hud-bar-left,.game-bottom-bar .hud-bar-right{display:none}
-.game-bottom-bar .hud-bar-center{left:0;right:0}
-.hud-bottom-content{position:absolute;bottom:calc(var(--hbb-mid) - var(--hb-B) / 2);height:var(--hb-B);left:calc(var(--hb-B) * .37);right:calc(var(--hb-B) * .37);
-  display:grid;grid-template-columns:minmax(0,1fr) calc(var(--hbb-half) * 2 + var(--hb-B) * .3) minmax(0,1fr);align-items:center}
-.hud-side{display:flex;align-items:center;justify-content:space-evenly;gap:calc(var(--hb-B) * .1);min-width:0;height:100%;pointer-events:auto}
-.hud-side[hidden]{display:none}
-.hud-center{position:relative;grid-column:2;align-self:stretch}
-.hud-side--right{grid-column:3}
-.hud-play{position:absolute;left:50%;top:50%;z-index:1;width:var(--nx-d);height:var(--nx-d);padding:0;border:0;border-radius:50%;background:none;cursor:pointer;transform:translate(-50%,-50%);pointer-events:auto;transition:transform .15s,filter .15s}
-.hud-play-img{position:absolute;left:50%;top:50%;display:block;width:calc(var(--nx-d) * 1.12);height:calc(var(--nx-d) * 1.12);max-width:none;transform:translate(-50%,-50%);filter:drop-shadow(0 6px 10px #000c);pointer-events:none}
+.game-bottom-bar{position:fixed;left:0;right:0;bottom:0;height:var(--hud-bottom-h);pointer-events:none}
+.game-bottom-bar .hud-bar-art{left:0;right:0;top:auto;bottom:calc(var(--hb-B) * var(--bb-art-bas));height:calc(var(--hb-B) * var(--bb-art-haut))}
+.game-bottom-bar:not(.has-art) .hud-bar-art{top:auto;bottom:calc(var(--hb-B) * var(--bb-art-bas));height:calc(var(--hb-B) * var(--bb-art-haut));border-radius:0;border-width:1px 0}
+.game-bottom-bar .hud-bar-center{right:0}
+.hud-play{position:absolute;left:50%;bottom:calc(var(--hb-B) * (var(--bb-centre) - var(--bb-bouton) / 2));z-index:1;width:calc(var(--hb-B) * var(--bb-bouton));height:calc(var(--hb-B) * var(--bb-bouton));padding:0;border:0;border-radius:50%;background:none;cursor:pointer;transform:translateX(-50%);pointer-events:auto;transition:transform .15s,filter .15s}
+.hud-play-img{position:absolute;left:50%;top:50%;display:block;width:112%;height:112%;max-width:none;transform:translate(-50%,-50%);filter:drop-shadow(0 6px 10px #000c);pointer-events:none}
 .hud-play:hover,.hud-play:focus-visible{filter:brightness(1.18);outline:none}
 .hud-play:focus-visible{box-shadow:0 0 0 3px #f0c050aa}
-.hud-play:active{transform:translate(-50%,-50%) scale(.95)}
-.hud-ornament{position:absolute;left:calc(50% - var(--or-k) * var(--or-cx));top:calc(50% - var(--or-k) * var(--or-cy));z-index:2;display:block;width:calc(var(--or-k) * var(--or-w));height:calc(var(--or-k) * var(--or-h));max-width:none;filter:drop-shadow(0 6px 12px #000c);pointer-events:none}
+.hud-play:active{transform:translateX(-50%) scale(.95)}
+.hud-ornament{position:absolute;left:calc(50% - var(--hb-B) * var(--bb-anneau) / 2);bottom:calc(var(--hb-B) * (var(--bb-centre) - var(--bb-anneau) / 4));z-index:2;display:block;width:calc(var(--hb-B) * var(--bb-anneau));height:calc(var(--hb-B) * var(--bb-anneau) / 2);max-width:none;filter:drop-shadow(0 6px 12px #000c);pointer-events:none}
 .hud-ornament[hidden]{display:none}
+.hud-places{position:absolute;right:calc(50% + var(--hb-B) * var(--bb-pictos-droite));bottom:calc(var(--hb-B) * (var(--bb-pictos-y) - var(--bb-picto) / 2));z-index:3;display:flex;align-items:center;gap:calc(var(--hb-B) * var(--bb-ecart));height:calc(var(--hb-B) * var(--bb-picto));pointer-events:auto}
 .hud-company{display:flex;flex:0 1 auto;flex-direction:column;min-width:96px;max-width:210px;line-height:1.15}
 #hud-company{font-size:1.02rem;color:#ffe3ab;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-shadow:0 1px 6px #000}
 .hud-renown{font-size:12px;letter-spacing:1px}
@@ -1607,6 +1555,7 @@ body[data-screen="camp"][data-camp-scene="home"] .app-shell{padding-top:calc(var
 @keyframes hud-page{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
 #hud-day{font-size:11px;color:#c0ac91;letter-spacing:.04em;white-space:nowrap}
 .hud-journal{position:absolute;right:calc(var(--hb-B) * .37);bottom:calc(var(--hud-bottom-h) - var(--hb-B) * .05);display:flex;width:min(30vw,420px);pointer-events:auto}
+.hud-journal[hidden]{display:none}
 .hud-journal-head{display:flex;align-items:center;gap:10px;width:100%;padding:7px 12px;border:1px solid #ab895966;border-radius:9px;background:#0e0a0899;color:#e9d9b9;font:13px Georgia,serif;text-align:left;cursor:pointer;box-shadow:inset 0 1px 3px #000a}
 .hud-journal-head:hover,.hud-journal-head:focus-visible{border-color:#e3bd76;outline:none}
 .hud-journal-label{display:flex;align-items:center;gap:6px;flex:none;color:#d8b77d;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
@@ -1620,17 +1569,17 @@ body[data-screen="camp"][data-camp-scene="home"] .app-shell{padding-top:calc(var
 .hud-journal.is-open .hud-journal-lines{display:block}
 #hud-pause-btn{flex:none;border:1px solid #ab8959;border-radius:8px;padding:8px 12px;background:#241a15;color:#f2d7a6;font-size:16px}
 #hud-pause-btn span{font-size:11px;opacity:.8}
-.hud-nav{position:relative;display:grid;flex:none;place-items:center;box-sizing:border-box;width:calc(var(--hb-B) * .86);height:calc(var(--hb-B) * .86);padding:0;
-  border:2px solid #d8dee44d;border-radius:calc(var(--hb-B) * .16);background:#05080a59;box-shadow:inset 0 1px 4px #000a;color:#efe5cf;cursor:pointer;transition:border-color .15s,background .15s}
-.hud-nav .hud-svg{width:calc(var(--hb-B) * .52);height:calc(var(--hb-B) * .52);stroke-width:1.6;color:#f0c050;filter:drop-shadow(0 2px 3px #000b)}
+/* Les pictos des lieux : plus clairs au survol et pour le lieu où l'on est ; grisé, le Marchand sans marchand. */
+.hud-nav{position:relative;display:block;flex:none;width:calc(var(--hb-B) * var(--bb-picto));height:calc(var(--hb-B) * var(--bb-picto));padding:0;border:0;border-radius:calc(var(--hb-B) * .12);background:none;cursor:pointer;transition:filter .15s}
+.hud-nav-img{display:block;width:100%;height:100%;filter:drop-shadow(0 4px 6px #000c);pointer-events:none}
 .hud-nav-label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-.hud-nav:hover,.hud-nav:focus-visible,.hud-menu.is-open .hud-nav{border-color:#ffe1a5b3;background:#05080a80;outline:none}
-.hud-nav.is-current{border-color:#f0c050b3;color:#ffe1a5}
-.hud-nav:disabled{opacity:.4;cursor:default;border-color:#d8dee44d;background:#05080a59}
+.hud-nav:hover,.hud-nav:focus-visible,.hud-menu.is-open .hud-nav,.hud-nav.is-current{filter:brightness(1.3);outline:none}
+.hud-nav:focus-visible{box-shadow:0 0 0 2px #f0c050aa}
+.hud-nav:disabled{filter:grayscale(1) brightness(.65);opacity:.6;cursor:default}
 /* Le menu de la Taverne (Idan, 2026-11-11) : il s'ouvre vers le haut, au-dessus de la barre. */
 .hud-menu{position:relative;display:flex;flex:none}
 .hud-menu-list{position:absolute;right:0;bottom:calc(100% + 12px);z-index:5;min-width:230px;margin:0;padding:6px;list-style:none;border:1px solid #95744d;border-radius:12px;background:linear-gradient(180deg,#2e2119f8,#1b130ef9);box-shadow:0 -10px 28px #0009,inset 0 1px #ffe4a826}
-.hud-side--left .hud-menu-list{left:0;right:auto}
+.hud-places .hud-menu-list{left:0;right:auto}
 .hud-menu-list[hidden]{display:none}
 .hud-menu-list button{display:block;width:100%;padding:9px 12px;border:0;border-radius:8px;background:transparent;color:#f0dfbf;font:14px Georgia,serif;text-align:left;cursor:pointer}
 .hud-menu-list button:hover,.hud-menu-list button:focus-visible{background:#ffe1a51a;color:#ffe1a5;outline:none}

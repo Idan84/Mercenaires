@@ -13,6 +13,10 @@
 //   800 px de large au plus) et mesures (trou où se loge le bouton Jour suivant, étendue de l'image) ;
 // - le bouton Jour suivant (media/hud-pack/next.png, commun à toutes les cultures) : recadré sur son disque, en WebP
 //   (prototype-web/assets/hud/next.webp) ;
+// - les six pictos des lieux de la barre du bas (Idan, 2026-11-14 : media/hud-pack/<nom>-1.png à -6.png, communs à toutes
+//   les cultures) : recadrés comme dans l'Atelier des barres, en WebP (prototype-web/assets/hud/pictos-bas/<lieu>.webp) ;
+// - applique les réglages d'Idan par culture (scripts/hud-bars-reglages.json, exportés de l'Atelier des barres) : la
+//   barre du haut et la barre du bas de chaque culture, calculées en bandes B (voir topLayout et bottomLayout) ;
 // - écrit prototype-web/hud-bars.js, la liste des barres et leurs mesures, lue par les deux barres du camp (screen-ui.js).
 // Usage : node scripts/build-hud-bars.js            (télécharge les packs depuis le site)
 //         node scripts/build-hud-bars.js --from DIR (DIR a la même arborescence que media/hud-pack)
@@ -31,6 +35,17 @@ const PIECES=["left","center","right"];
 const ORNAMENT_MAX_WIDTH=800;
 // Le bouton Jour suivant : un carré de 1,12 fois le diamètre du disque, centré sur lui (voir NEXT_DISC dans styles.css).
 const NEXT_MARGIN=1.12,NEXT_SIZE=320;
+// Les pictos des lieux : <nom>-<n>.png à la racine du dossier, dans l'ordre de leurs numéros (Idan). Chacun est recadré sur
+// le carré central de PICTO_CROP de son côté (les six sont dessinés à la même échelle, sur la même toile).
+const PICTOS_OUT=path.join(ROOT,"prototype-web","assets","hud","pictos-bas");
+const BOTTOM_PICTOS=["chateau","taverne","dortoir","marchand","intendance","construction"];
+const PICTO_CROP=960/1254,PICTO_SIZE=200;
+// Les réglages par culture (Atelier des barres) ; une culture sans réglage prend ceux de départ de l'atelier.
+const SETTINGS=path.join(__dirname,"hud-bars-reglages.json");
+const DEFAULT_SETTINGS={
+  haut:{contenu:100,fonds:.54,margeMenu:.6,haut:.3},
+  bas:{ligne:1.2,rogner:0,decalage:0,bouton:1.54,anneau:100,pictoTaille:.85,pictoEcart:.3,pictoAnneau:.3,pictoHaut:.03}
+};
 const STOPWORDS=new Set(["de","d","des","du","la","le","l","les","a","et"]);
 // Packs dont le dossier ne suffit pas à trouver la culture : chacun est la seule culture de son peuple restée sans pack.
 const PACK_CULTURE={
@@ -93,7 +108,7 @@ function download(){
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),"hud-pack-"));
   const index=JSON.parse(execFileSync("curl",["-sf",SITE+"/api/hud-pack.php"],{encoding:"utf8"}));
   for(const f of index.files){
-    if(!/\/(left|center|right|ornement_central)\.\w+$/i.test(f.path)&&!/^next\.png$/i.test(f.path)) continue;
+    if(!/\/(left|center|right|ornement_central)\.\w+$/i.test(f.path)&&!/^next\.png$/i.test(f.path)&&!/^[^/]+-\d\.png$/i.test(f.path)) continue;
     const dest=path.join(dir,...f.path.split("/"));
     fs.mkdirSync(path.dirname(dest),{recursive:true});
     execFileSync("curl",["-sf","-o",dest,SITE+"/"+index.base+"/"+f.path.split("/").map(encodeURIComponent).join("/")]);
@@ -172,12 +187,91 @@ function buildNextButton(file){
   return {disc:[bw,bh],side};
 }
 
+// Le bord gauche de l'anneau, ligne par ligne : le premier pixel opaque de chaque ligne de l'image WebP (null : ligne vide).
+async function ornamentProfile(page,file){
+  const src="data:image/webp;base64,"+fs.readFileSync(file).toString("base64");
+  return page.evaluate(async src=>{
+    const i=new Image();i.src=src;await i.decode();
+    const w=i.width,h=i.height,c=document.createElement("canvas");c.width=w;c.height=h;
+    const g=c.getContext("2d");g.drawImage(i,0,0);const d=g.getImageData(0,0,w,h).data;
+    const left=[];
+    for(let y=0;y<h;y++){let x=0;while(x<w&&d[(y*w+x)*4+3]<=128)x++;left.push(x<w?x:null);}
+    return {w,h,left};
+  },src);
+}
+
+// Les pictos des lieux de la barre du bas : le carré central de chaque image, réduit, en WebP.
+function buildPictos(dir){
+  const built=[];
+  for(const name of fs.readdirSync(dir)){
+    const m=name.match(/-(\d)\.png$/i),key=m&&BOTTOM_PICTOS[Number(m[1])-1];
+    if(!key) continue;
+    const file=path.join(dir,name);
+    const [w,h]=execFileSync("identify",["-format","%w %h",file],{encoding:"utf8"}).trim().split(" ").map(Number);
+    const side=Math.round(Math.min(w,h)*PICTO_CROP);
+    fs.mkdirSync(PICTOS_OUT,{recursive:true});
+    execFileSync("convert",[file,"-crop",`${side}x${side}+${Math.round((w-side)/2)}+${Math.round((h-side)/2)}`,"+repage","-resize",`${PICTO_SIZE}x${PICTO_SIZE}`,
+      "-strip","-quality","90","-define","webp:alpha-quality=100","-define","webp:method=6",path.join(PICTOS_OUT,key+".webp")]);
+    built.push(key);
+  }
+  return BOTTOM_PICTOS.filter(k=>built.includes(k));
+}
+
+// Les réglages d'une culture, complétés par ceux de départ.
+function settingsOf(all,key){
+  const own=all[key]||{};
+  return {haut:{...DEFAULT_SETTINGS.haut,...own.haut},bas:{...DEFAULT_SETTINGS.bas,...own.bas}};
+}
+const round4=v=>Math.round(v*1e4)/1e4;
+
+// La barre du haut d'une culture, en bandes B (hauteur de sa bande sombre) : top, l'écart entre le haut de l'écran et la
+// bande sombre ; contenu, la taille du texte et des boutons (1 : celle de la maquette) ; fonds, la hauteur des pastilles ;
+// marge, l'air à droite du bouton menu ; haut, l'écart entre le haut de l'écran et la barre.
+function topLayout(bar,s){
+  return {top:round4(s.haut+bar.bandTop/(bar.bandBottom-bar.bandTop)),haut:s.haut,contenu:s.contenu/100,fonds:s.fonds,marge:s.margeMenu};
+}
+
+// La barre du bas d'une culture, en bandes B, comme dans l'Atelier des barres (tout y est proportionnel à B) ; hauteurs
+// au-dessus du bas de l'écran, distances depuis son milieu :
+// - la ligne du haut de la barre (entre le haut du cadre et la bande sombre) à s.ligne ; sa bande sombre finit au bas de
+//   l'écran (s.rogner pixels de l'image plus haut, pour cacher un bord qui remonte) : artBas et artHaut placent l'image ;
+// - le bouton (s.bouton de diamètre, 600 px de l'image de l'anneau) et l'anneau (1600 × 800 px, s.anneau %) centrés au
+//   milieu de l'écran, à centre (s.decalage pixels de l'image de l'anneau sous la ligne) ;
+// - les six pictos (picto de côté, ecart entre eux), centrés dans la bande sombre (pictosY, relevés de s.pictoHaut),
+//   rangés à gauche de l'anneau : leur bord droit (pictosDroite) à s.pictoAnneau du bord de l'anneau à leur hauteur (le
+//   premier pixel opaque de ces lignes de l'image) ou du bouton s'il dépasse ;
+// - hauteur : ce que la barre, le bouton et l'anneau occupent (les lieux du camp s'arrêtent au-dessus).
+function bottomLayout(bar,s,profile){
+  const line=(bar.frameTop+bar.bandTop)/2,bottom=bar.bandBottom-s.rogner;
+  const k=s.ligne/(bottom-line);
+  const unit=s.bouton/600;
+  const centre=s.ligne-s.decalage*unit;
+  const ringW=1600*unit*s.anneau/100,ringH=ringW/2,ringTop=centre+ringH/2;
+  const picto=s.pictoTaille,pictosY=k*(bottom-bar.bandTop)/2-s.pictoHaut;
+  const lo=pictosY-picto/2,hi=pictosY+picto/2;
+  let edge=0;
+  const R=s.bouton/2,dy=Math.max(0,lo-centre,centre-hi);
+  if(dy<R) edge=Math.sqrt(R*R-dy*dy);
+  let top=centre+s.bouton*NEXT_MARGIN/2;
+  if(profile){
+    const px=ringW/profile.w;
+    const r0=Math.max(0,Math.floor((ringTop-hi)/px)),r1=Math.min(profile.h-1,Math.ceil((ringTop-lo)/px));
+    for(let r=r0;r<=r1;r++) if(profile.left[r]!==null) edge=Math.max(edge,ringW/2-profile.left[r]*px);
+    const first=profile.left.findIndex(x=>x!==null);
+    if(first>=0) top=Math.max(top,ringTop-first*px);
+  }
+  if(!edge) edge=s.bouton*NEXT_MARGIN/2;
+  return Object.fromEntries(Object.entries({artBas:s.ligne-k*(bar.h-line),artHaut:k*bar.h,centre,bouton:s.bouton,anneau:ringW,
+    picto,ecart:s.pictoEcart,pictosDroite:edge+s.pictoAnneau,pictosY,hauteur:Math.max(s.ligne,top)}).map(([n,v])=>[n,round4(v)]));
+}
+
 async function main(){
   const args=process.argv.slice(2);
   const from=args.includes("--from")?path.resolve(args[args.indexOf("--from")+1]):download();
   console.log("Packs lus dans "+from);
   const cultures=JSON.parse(fs.readFileSync(path.join(ROOT,"data","reference","cultures.json"),"utf8")).rows;
   const packs=findPacks(from);
+  const settings=JSON.parse(fs.readFileSync(SETTINGS,"utf8")).cultures;
   const {chromium}=require("playwright");
   const browser=await chromium.launch();
   const page=await browser.newPage();
@@ -198,6 +292,9 @@ async function main(){
     }
     delete m.heights;
     bars[key]={culture:culture.nom,pack,...m};
+    const own=settingsOf(settings,key);
+    if(!settings[key]) problems.push(`${culture.nom} : pas de réglages dans hud-bars-reglages.json (ceux de départ de l'atelier)`);
+    bars[key].haut=topLayout(m,own.haut);
     if(pieces.ornement_central){
       const o=await measureOrnament(page,pieces.ornement_central);
       if(o.error){problems.push(`${pack} : ornement_central, ${o.error}`);continue;}
@@ -207,6 +304,7 @@ async function main(){
       execFileSync("convert",[pieces.ornement_central,"-resize",`${Math.round(o.w*scale)}x${Math.round(o.h*scale)}!`,"-strip","-quality","90",
         "-define","webp:alpha-quality=100","-define","webp:method=6",path.join(dir,"ornement.webp")]);
       bars[key].ornament={w:Math.round(o.w*scale),h:Math.round(o.h*scale),cx:r(o.cx),cy:r(o.cy),hole:r(o.hole),x0:r(o.x0),y0:r(o.y0),x1:r(o.x1),y1:r(o.y1)};
+      bars[key].bas=bottomLayout(m,own.bas,await ornamentProfile(page,path.join(dir,"ornement.webp")));
     }else{
       fs.rmSync(path.join(dir,"ornement.webp"),{force:true});
     }
@@ -215,17 +313,21 @@ async function main(){
   const next=fs.existsSync(path.join(from,"next.png"))?buildNextButton(path.join(from,"next.png")):null;
   if(next) console.log(`Bouton Jour suivant : disque ${next.disc.join("×")}, carré de ${next.side} px → ${NEXT_SIZE} px`);
   else console.log("Pas de next.png : le bouton Jour suivant n'est pas refait.");
+  const pictos=buildPictos(from);
+  console.log(`${pictos.length} pictos de la barre du bas : ${pictos.join(", ")||"aucun"}`);
+  if(pictos.length!==BOTTOM_PICTOS.length) problems.push(`pictos de la barre du bas : ${BOTTOM_PICTOS.filter(k=>!pictos.includes(k)).join(", ")} manquant(s)`);
   const sorted=Object.fromEntries(Object.entries(bars).sort(([a],[b])=>a.localeCompare(b)));
   const lines=Object.entries(sorted).map(([k,v])=>`  ${JSON.stringify(k)}:${JSON.stringify(v)}`);
   fs.writeFileSync(DATA,`"use strict";
 
-// Barres du haut par culture du capitaine (Idan, 2026-11-13). Généré par scripts/build-hud-bars.js : ne pas modifier à
-// la main. Images : assets/hud/barres/<culture>/{left,center,right}.webp. Mesures en pixels de l'image d'origine :
+// Barres du camp par culture du capitaine (Idan, 2026-11-13 et 14). Généré par scripts/build-hud-bars.js : ne pas modifier
+// à la main. Images : assets/hud/barres/<culture>/{left,center,right}.webp. Mesures en pixels de l'image d'origine :
 // h (hauteur commune), left / center / right (largeurs), frameTop / frameBottom (cadre du milieu), bandTop / bandBottom
 // (bande sombre où le jeu écrit), bandLeft (début de la bande dans l'embout gauche), bandRight (distance entre la fin de la
 // bande et le bord droit de l'embout droit). ornament (s'il y en a un, assets/hud/barres/<culture>/ornement.webp) : l'anneau
 // du centre de la barre du bas, en pixels de son image : w / h, cx / cy / hole (centre et diamètre du trou où se loge le
-// bouton Jour suivant), x0 / y0 / x1 / y1 (étendue des pixels opaques).
+// bouton Jour suivant), x0 / y0 / x1 / y1 (étendue des pixels opaques). haut et bas : les deux barres de la culture selon les
+// réglages d'Idan (scripts/hud-bars-reglages.json), en bandes B ; voir topLayout et bottomLayout dans le script.
 const HUD_BARS={
 ${lines.join(",\n")}
 };
@@ -240,4 +342,4 @@ if(typeof module!=="undefined") module.exports={HUD_BARS};
 }
 
 if(require.main===module) main().catch(e=>{console.error(e);process.exit(1);});
-module.exports={cultureOfPack,tokens,slug};
+module.exports={cultureOfPack,tokens,slug,topLayout,bottomLayout};

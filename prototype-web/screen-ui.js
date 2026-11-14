@@ -9,7 +9,7 @@ const CAMP_SCENES=["company","dormitory","memorial","mercenaries","tavern","quar
 // Scènes sans bouton retour (Idan, 2026-10-30) : un clic hors du cadre ramène au camp.
 const CAMP_SCENES_CLOSED_FROM_OUTSIDE=["mercenaries"];
 
-// Les lieux de la barre du bas (Idan, 2026-11-14) : le bouton du lieu où l'on est (le château compris) est marqué.
+// Les lieux des barres (Idan, 2026-11-14) : le bouton du lieu où l'on est (le château compris) est marqué.
 function updateCampHomeIcon(){
   if(typeof document.querySelectorAll!=="function") return;
   const scene=document.body.dataset.screen==="camp"?document.body.dataset.campScene:"";
@@ -79,19 +79,10 @@ function gameAction(message){
   gameActionMessages.length=Math.min(gameActionMessages.length,35);
   renderGameHud();
 }
-// Icônes au trait des boutons des barres. Celles de la barre du bas (marchand, intendance, dortoir, construction, bâtiments)
-// sont provisoires, en attendant les pictos d'Idan.
+// Icônes au trait des barres : le bouton menu et le journal (les lieux ont les pictos d'Idan).
 const HUD_ICONS={
   menu:'<path d="M4.5 7h15M4.5 12h15M4.5 17h15"/>',
-  journal:'<path d="M7 4.5h10.5a2 2 0 0 1 2 2v0a2 2 0 0 1-2 2H16v9.5a2 2 0 0 1-2 2H6.5a2 2 0 0 1-2-2v0a2 2 0 0 1 2-2H8"/><path d="M7 4.5a2 2 0 0 0-2 2v9.5M10 9h3M10 12.5h3"/>',
-  tavern:'<path d="M5 8.5h10V19a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2z"/><path d="M15 10.5h2.2a2.3 2.3 0 0 1 2.3 2.3v1.4a2.3 2.3 0 0 1-2.3 2.3H15"/><path d="M4.6 8.5c-.9-1.7.4-3.6 2.2-3.3.6-1.6 2.7-2.1 3.8-.9 1.1-1.1 3.3-.6 3.7 1 1.7 0 2.6 1.7 1.8 3.2"/><path d="M8.4 11.5v6.5M11.6 11.5v6.5"/>',
-  castle:'<path d="M2 21h20"/><path d="M3.5 21V5.5h1.7v1.7h1.6V5.5h1.7V21M15.5 21V5.5h1.7v1.7h1.6V5.5h1.7V21"/><path d="M8.5 12h7M12 12V3.5"/><path d="M12 3.8h4.2l-1.3 1.5 1.3 1.5H12z" fill="currentColor"/><path d="M9.8 21v-3.6a2.2 2.2 0 0 1 4.4 0V21"/><path d="M6 10.5v2.2M18 10.5v2.2"/>',
-  merchant:'<path d="M12 3.5v16.5M7.5 20h9M4.5 7h15M10.5 4.8h3"/><path d="M4.5 7 2 13.5a2.5 2.5 0 0 0 5 0z"/><path d="M19.5 7 17 13.5a2.5 2.5 0 0 0 5 0z"/>',
-  quartermaster:'<path d="M3.5 10.5h17V19a1 1 0 0 1-1 1h-15a1 1 0 0 1-1-1z"/><path d="M3.5 10.5V9a5 5 0 0 1 5-5h7a5 5 0 0 1 5 5v1.5"/><path d="M10.5 9.5h3v3.5h-3zM8.5 4.3v6.2M15.5 4.3v6.2"/>',
-  dormitory:'<path d="M2.5 19V6.5M2.5 15h19v4M21.5 15v-2.5a3 3 0 0 0-3-3h-8V15"/><circle cx="6.5" cy="11.8" r="2"/>',
-  construction:'<path d="M11.5 3.5 18 10l-2.6 2.6-6.5-6.5z"/><path d="M14 8.5 4.3 18.2a1.6 1.6 0 0 0 2.3 2.3L16.3 10.8"/><path d="M11.5 3.5c1.6-.9 3.4-.8 4.7.4"/>',
-  buildings:'<path d="M2.5 20.5h19"/><path d="M4 20.5v-9l5-4.5 5 4.5v9"/><path d="M14 20.5v-7l3.5-3 3.5 3v7"/><path d="M7.5 20.5v-4h3v4"/>',
-  building:'<path d="M3.5 20.5h17"/><path d="M6 20.5V9.5a6 6 0 0 1 12 0v11"/><path d="M9.5 20.5v-6.5a2.5 2.5 0 0 1 5 0v6.5"/><circle cx="13" cy="17.5" r=".7" fill="currentColor"/>'
+  journal:'<path d="M7 4.5h10.5a2 2 0 0 1 2 2v0a2 2 0 0 1-2 2H16v9.5a2 2 0 0 1-2 2H6.5a2 2 0 0 1-2-2v0a2 2 0 0 1 2-2H8"/><path d="M7 4.5a2 2 0 0 0-2 2v9.5M10 9h3M10 12.5h3"/>'
 };
 function hudIcon(kind){
   return '<svg class="hud-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">'+(HUD_ICONS[kind]||"")+'</svg>';
@@ -108,18 +99,17 @@ function hudGoldDelta(gold){
   delta.addEventListener("animationend",()=>delta.remove());
   $("hud-gold-stat").appendChild(delta);
 }
-// La barre du haut (Idan, 2026-11-13) : le blason choisi à la création du capitaine (60 blasons ; une ancienne partie n'en
-// a pas) et la culture du capitaine sur <body data-captain-culture>, pour habiller la barre selon sa culture (Idan : « la
-// barre qui change en fonction de la culture, et pas du peuple »).
-const HUD_BLASON_COUNT=60;
-function hudBlasonUrl(blason){
-  const n=Number(blason);
-  return Number.isInteger(n)&&n>=1&&n<=HUD_BLASON_COUNT?`assets/creation/blasons-hd/b${String(n).padStart(2,"0")}.webp`:"";
-}
-// La barre illustrée de la culture du capitaine (packs d'Idan : scripts/build-hud-bars.js → hud-bars.js), en haut et en
-// bas (Idan, 2026-11-14 : « barre de la culture »). Ses mesures, en pixels de l'image, vont dans des variables CSS de chaque
-// barre (styles.css place les morceaux et la bande) ; sans pack pour cette culture, les barres gardent leur cadre provisoire.
-const HUD_BAR_PIECES=["left","center","right"];
+// Les deux barres du camp suivent la culture du capitaine, posée sur <body data-captain-culture> (Idan : « la barre qui
+// change en fonction de la culture, et pas du peuple ») : sa barre illustrée (packs d'Idan : scripts/build-hud-bars.js →
+// hud-bars.js), réglée par culture dans l'Atelier des barres (Idan, 2026-11-14). Les mesures de l'image (en pixels) vont
+// dans des variables CSS de chaque barre, qui placent ses morceaux ; les réglages des deux barres (en bandes B), sur la
+// page (:root), car les lieux du camp s'arrêtent sous la barre du haut et au-dessus de celle du bas. Sans pack pour cette
+// culture, un cadre provisoire ; sans anneau, le bouton Jour suivant seul.
+const HUD_BAR_PIECES=["center","right"];
+const HUD_BAR_VARS={h:"--hb-h",right:"--hb-rw",bandTop:"--hb-bt",band:"--hb-band",bandRight:"--hb-ri"};
+const HUD_TOP_VARS={top:"--ht-top",haut:"--ht-haut",contenu:"--ht-s",fonds:"--ht-fonds",marge:"--ht-marge"};
+const HUD_BOTTOM_VARS={artBas:"--bb-art-bas",artHaut:"--bb-art-haut",centre:"--bb-centre",bouton:"--bb-bouton",anneau:"--bb-anneau",
+  picto:"--bb-picto",ecart:"--bb-ecart",pictosDroite:"--bb-pictos-droite",pictosY:"--bb-pictos-y",hauteur:"--bb-h"};
 let hudBarShown=null;
 function hudBarFor(culture){
   return culture&&typeof HUD_BARS==="object"&&HUD_BARS[culture]?HUD_BARS[culture]:null;
@@ -127,49 +117,41 @@ function hudBarFor(culture){
 function hudFind(selector){
   return typeof document.querySelector==="function"?document.querySelector(selector):null;
 }
+function setHudVars(style,names,values){
+  for(const [key,name] of Object.entries(names)){
+    if(values&&values[key]!=null) style?.setProperty(name,String(values[key]));
+    else style?.removeProperty(name);
+  }
+}
 function applyHudBar(culture){
   const topBar=hudFind(".game-top-bar"),bottomBar=hudFind(".game-bottom-bar");
   const data=hudBarFor(culture);
   const key=data?culture:"";
   if((!topBar&&!bottomBar)||hudBarShown===key) return;
   hudBarShown=key;
+  const bottom=data?.ornament&&data.bas?data:null;
   paintHudBar(topBar,culture,data);
-  // En bas, une culture à la fois (Idan, 2026-11-14 : « on fait que la barre nordique ») : la barre illustrée quand la
-  // culture a son anneau ; sinon, le cadre provisoire.
-  paintHudBar(bottomBar,culture,data?.ornament?data:null);
-  applyHudOrnament(data?.ornament?culture:"",data?.ornament||null);
+  paintHudBar(bottomBar,culture,bottom);
+  const root=document.documentElement?.style;
+  setHudVars(root,HUD_TOP_VARS,data?.haut);
+  setHudVars(root,HUD_BOTTOM_VARS,bottom?.bas);
+  bottomBar?.classList.toggle("has-ornament",Boolean(bottom));
+  const ring=hudFind(".hud-ornament");
+  if(!ring) return;
+  if(bottom) ring.setAttribute("src",`assets/hud/barres/${culture}/ornement.webp`);
+  ring.hidden=!bottom;
 }
 function paintHudBar(bar,culture,data){
   if(!bar) return;
   bar.classList.toggle("has-art",Boolean(data));
-  const vars={h:data?.h,lw:data?.left,rw:data?.right,bt:data?.bandTop,band:data?data.bandBottom-data.bandTop:null,li:data?.bandLeft,ri:data?.bandRight};
-  for(const [name,value] of Object.entries(vars)){
-    if(value==null) bar.style.removeProperty("--hb-"+name);
-    else bar.style.setProperty("--hb-"+name,String(value));
-  }
+  setHudVars(bar.style,HUD_BAR_VARS,data&&{...data,band:data.bandBottom-data.bandTop});
   for(const piece of HUD_BAR_PIECES){
     const node=bar.querySelector(".hud-bar-"+piece);
     if(node) node.style.backgroundImage=data?`url("assets/hud/barres/${culture}/${piece}.webp")`:"";
   }
 }
-// L'anneau du centre de la barre du bas (ornement_central d'Idan, 2026-11-14), autour du bouton Jour suivant : ses mesures
-// vont sur :root (--or-*), car la hauteur de la barre du bas, dont dépendent les marges des scènes, en tient compte. Sans
-// anneau pour cette culture, le bouton seul.
-const HUD_ORNAMENT_VARS=["w","h","cx","cy","hole","x0","y0","x1","y1"];
-function applyHudOrnament(culture,ornament){
-  const root=document.documentElement?.style;
-  for(const name of HUD_ORNAMENT_VARS){
-    if(ornament) root?.setProperty("--or-"+name,String(ornament[name]));
-    else root?.removeProperty("--or-"+name);
-  }
-  hudFind(".game-bottom-bar")?.classList.toggle("has-ornament",Boolean(ornament));
-  const img=hudFind(".hud-ornament");
-  if(!img) return;
-  if(ornament) img.setAttribute("src",`assets/hud/barres/${culture}/ornement.webp`);
-  img.hidden=!ornament;
-}
 // Le nom de la compagnie tient dans sa place : quand un grand ornement de barre (la toile des elfes noirs, le crâne des
-// orcs), un blason très décoré ou un long nom ne laisse pas assez de largeur, sa police rétrécit jusqu'à 80 %, puis il passe
+// orcs) ou un long nom ne laisse pas assez de largeur, sa police rétrécit jusqu'à 80 %, puis il passe
 // sur deux lignes ; au-delà de deux lignes, points de suspension.
 let hudNameFitted="";
 // Le nom déborde-t-il ? scrollWidth arrondit au pixel : un débordement d'une fraction de pixel suffit pourtant au navigateur
@@ -186,7 +168,7 @@ function fitHudCompanyName(force=false){
   if(!node||typeof getComputedStyle!=="function") return;
   // Barre cachée (combat) : rien à mesurer ; on recommencera quand elle reviendra.
   if(!node.getClientRects().length) return;
-  // La place dépend de l'écran, du blason et de la barre : on refait l'ajustement quand la largeur disponible change.
+  // La place dépend de l'écran et de la barre : on refait l'ajustement quand la largeur disponible change.
   const room=node.closest(".hud-top-content");
   const key=node.textContent+"|"+(room?Math.round(room.getBoundingClientRect().width):0);
   if(!force&&key===hudNameFitted) return;
@@ -203,29 +185,11 @@ function fitHudCompanyName(force=false){
 }
 // Les chiffres de la barre du haut avec l'espace des milliers, comme sur la maquette d'Idan (« 10 000 »).
 function hudNumber(n){ return Math.round(Number(n)||0).toLocaleString("fr-FR"); }
-// L'écu du blason (sa partie principale) et l'étendue de l'image (blason-bodies.js), en variables CSS de la page : la barre
-// du haut s'y aligne.
-const HUD_BLASON_BODY=["x0","y0","x1","y1","ox0","oy0","ox1"];
-function applyHudBlasonBody(blason){
-  const root=document.documentElement;
-  if(!root?.style) return;
-  const body=typeof BLASON_BODIES==="object"&&hudBlasonUrl(blason)?BLASON_BODIES[Number(blason)]:null;
-  HUD_BLASON_BODY.forEach((name,i)=>{
-    if(body) root.style.setProperty("--bl-"+name,String(body[i]));
-    else root.style.removeProperty("--bl-"+name);
-  });
-}
 function renderHudIdentity(){
   const culture=game.campaign&&game.captain?.culture&&typeof pictoSlug==="function"?pictoSlug(game.captain.culture):"";
   if(culture) document.body.dataset.captainCulture=culture;
   else delete document.body.dataset.captainCulture;
   applyHudBar(culture);
-  const img=$("hud-blason");
-  if(!img) return;
-  const url=hudBlasonUrl(game.campaign?.company.blason);
-  if(url&&img.getAttribute("src")!==url) img.setAttribute("src",url);
-  img.hidden=!url;
-  applyHudBlasonBody(game.campaign?.company.blason);
 }
 function renderGameHud(){
   const hud=$("game-hud");
@@ -268,7 +232,7 @@ function openHudScene(button){
   const scene=button.dataset.hudScene;
   if(button.disabled||button.id==="hud-tavern-btn"||document.body.dataset.campScene===scene) return;
   openCampScene(scene);
-  gameAction(scene==="home"?"Retour au château.":"Destination : "+button.textContent.trim()+".");
+  gameAction(scene==="home"?"Retour au château.":"Destination : "+(button.dataset.destination||button.textContent.trim())+".");
 }
 function toggleHudJournal(open=!$("hud-journal").classList.contains("is-open")){
   $("hud-journal").classList.toggle("is-open",open);
@@ -342,9 +306,16 @@ function initializeScreenUi(){
     const panel=document.getElementById(id);
     if(panel) observer.observe(panel,{attributes:true,attributeFilter:["class"]});
   }
-  document.querySelector(".game-bottom-bar").addEventListener("click",event=>{
+  // Les lieux des barres : les pictos du bas, et les mercenaires de la barre du haut (« Mes mercenaires »).
+  $("game-hud").addEventListener("click",event=>{
     const button=event.target.closest?.("[data-hud-scene]");
     if(button) openHudScene(button);
+  });
+  $("game-hud").addEventListener("keydown",event=>{
+    const button=event.target.closest?.('[role="button"][data-hud-scene]');
+    if(!button||(event.key!=="Enter"&&event.key!==" ")) return;
+    event.preventDefault();
+    openHudScene(button);
   });
   $("hud-pause-btn").addEventListener("click",()=>setPauseOpen(true));
   $("hud-console-toggle").addEventListener("click",()=>toggleHudJournal());

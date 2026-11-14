@@ -25,19 +25,20 @@ const ui = new Function("game","$","esc","fmt","gearTile","gearIcon","renderAvat
   game, node, esc, String, (slot, it) => `<tile ${it.id}>`, icon => `<icon ${icon}>`, m => `<avatar ${m.name}>`, it => it.name, () => {}, () => {}, () => {},
   () => ({companyRenown:() => ({total:400})}), () => null, {}, STOCK_KINDS, STOCK_TABS);
 
-// Pas de marchand : le bouton du camp est grisé.
+// Pas de marchand : le Marchand de la barre du bas est grisé (Idan, 2026-11-14).
 ui.renderMerchant();
-assert.equal(node("camp-merchant-btn").disabled, true);
+assert.equal(node("hud-merchant-btn").disabled, true);
+assert.equal(node("hud-merchant-btn").title, "Pas de marchand aujourd’hui");
 assert.match(node("merchant-head").innerHTML, /Pas de marchand aujourd’hui/);
 assert.equal(node("merchant-tabs").innerHTML, "");
 
-// Thorval est là : son nom sur le bouton, ses initiales en attendant son portrait, la caisse.
+// Thorval est là : son nom au survol du Marchand, ses initiales en attendant son portrait, la caisse.
 visit = {merchant:{id:"thorval-poudredefeu", name:"Thorval Poudredefeu", culture:"Nains du chaos", portrait:null}, affinity:44, steward:null,
   offers:[{id:0, item:item("a0","Pistolet",2), price:739}, {id:1, item:item("a1","Tromblon",4), price:7182}, {id:2, item:item("a2","Pistolet",2), price:739}],
   buyback:it => it.name === "Pistolet" ? {specialty:true, price:1900} : it.name === "Gambison" ? {specialty:false, price:null} : {specialty:false, price:20}};
 ui.renderMerchant();
-assert.equal(node("camp-merchant-btn").disabled, false);
-assert.equal(node("camp-merchant-note").textContent, "Thorval Poudredefeu");
+assert.equal(node("hud-merchant-btn").disabled, false);
+assert.equal(node("hud-merchant-btn").title, "Marchand : Thorval Poudredefeu");
 const head = node("merchant-head").innerHTML;
 assert.match(head, /<h2>Thorval Poudredefeu<\/h2><small>Nains du chaos<\/small>/);
 assert.match(head, /class="merchant-initials">TP</);

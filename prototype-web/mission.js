@@ -5174,6 +5174,7 @@ function renderMission(){
     $(id).disabled=!availability[key];
     $(id).classList.toggle("selected",m.mode===key&&!(key==="melee"&&m.twoHands));
   }
+  // Déplacer devient « Second mouvement » une fois le premier fait (Idan, 2026-11-14).
   const secondOnly=Boolean(u)&&u.movementRemaining<=0&&missionCanSecondMove(u);
   $("mission-move-btn").textContent=secondOnly?"Second mouvement":"Se déplacer";
   $("mission-move-btn").classList.toggle("is-second",secondOnly);

@@ -5,7 +5,7 @@ Décision d'Idan, 21 octobre 2026 : un calendrier gaélico-médiéval cynique, a
 Le même jour, Idan a précisé l'emplacement : le calendrier, en petit, et le bouton vivent dans **la barre du bas**, et non plus sur l'accueil du camp. Depuis le 13 novembre 2026, la date est passée dans **la barre du haut** (voir plus bas).
 
 - **Au centre** : un gros bouton play, qui fait passer au jour suivant. Il n'apparaît qu'au camp, jamais en mission.
-- **À droite** : le journal de la compagnie. La barre montre sa dernière ligne ; un clic le déplie au-dessus de la barre.
+- **À droite** : le bouton du lieu et les actions du jour, dont le journal de la compagnie (voir la barre du bas).
 - **En combat, pas de barre** (Idan, 2026-11-06 : « Elle n'a pas raison d'être là. Ça permet d'agrandir un peu la
   carte ») : l'écran de combat prend toute la hauteur ; Échap ouvre toujours le menu de pause. Les barres reviennent au camp.
 
@@ -59,8 +59,19 @@ n'est pas fonctionnel immédiatement, on commence par la barre ») :
 - **Le menu de l'accueil du camp est retiré** (Idan : « on peut retirer les boutons du menu principal ») : on se déplace
   avec la barre ; « Mes mercenaires » s'ouvre depuis les mercenaires de la barre du haut. Chaque lieu garde son bouton
   « ← Retour au camp », et la Taverne ses zones cliquables.
-- **La partie droite** de la barre reste à faire. **Le journal** est retiré pour l'instant (Idan : « le journal,
-  retire-le pour l'instant ») ; il sera trié : ce qu'il affiche reste à choisir.
+- **À droite de l'anneau** (Idan, 2026-11-14), rangés contre lui de la même façon :
+  - **le bouton du lieu** (« à droite du bouton play, on va mettre un bouton contextuel ») : son menu reprend les zones
+    cliquables du lieu où l'on est. Dans la **taverne**, ses cinq zones, dans l'ordre d'Idan (« Tavernier - missions -
+    recrutement - cave - menu ») : Parler au tavernier, Trouver une mission, Recruter, La Cave, La Cantine. Ailleurs, pas de
+    bouton pour l'instant (« au château, on n'en a pas pour l'instant »), mais sa place reste. Son dessin viendra (« on va
+    le designer ce bouton pour qu'il soit joli ») : en attendant, un rond sombre « ••• » ;
+  - **Combat** : les missions du jour (la vue Missions de la taverne : les offres, et les escouades arrivées) ;
+  - **Nouvelles** (le pigeon) : rouvre la fenêtre des nouvelles du jour (le rapport du dernier jour passé dans cette
+    session ; après un rechargement de la page, « Rien à signaler ») ;
+  - **Journal** : il remplace le journal au-dessus de la barre (« on peut l'ouvrir en cliquant dessus ») ; il s'ouvre
+    au-dessus des actions et défile ; un clic ailleurs ou Échap le referme ;
+  - **Discussions** : pour parler avec les mercenaires qui viennent nous voir (fuite, augmentation de salaire…) ; grisé
+    pour l'instant, son fonctionnement reste à décider.
 - **Réglée culture par culture** par Idan dans l'**Atelier des barres** (14 novembre) : la hauteur de la barre, la taille
   du bouton et de l'anneau, leur hauteur, la taille des pictos, leur écart, leur écart avec l'anneau, leur hauteur, et un
   bord du bas à cacher sous l'écran. Ses réglages sont dans `scripts/hud-bars-reglages.json` ; `scripts/build-hud-bars.js`

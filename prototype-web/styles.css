@@ -1278,10 +1278,8 @@ body[data-screen="camp"]::before {
   transition: opacity .36s ease-in-out;
 }
 body[data-screen="camp"][data-camp-scene="tavern"]::before { opacity: 1; }
-/* La Taverne animée (Idan, 2026-11-11) : la vidéo au-dessus de l'image (la première image de la vidéo), en « cover »
-   comme elle ; les zones cliquables dans le même repère (SVG « slice »), sur l'accueil de la taverne seulement. */
-.tavern-video{position:fixed;inset:0;z-index:0;width:100%;height:100%;object-fit:cover;pointer-events:none;opacity:0;transition:opacity .36s ease-in-out}
-body[data-screen="camp"][data-camp-scene="tavern"] .tavern-video.is-playing{opacity:1}
+/* La Taverne (Idan, 2026-11-11 ; sans vidéo depuis le 2026-11-14) : les zones cliquables dans le repère de l'image
+   (SVG « slice », comme le « cover » du fond), sur l'accueil de la taverne seulement. */
 .tavern-zones{display:none;position:fixed;inset:0;z-index:2;width:100%;height:100%;pointer-events:none}
 body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tavern-zones{display:block}
 .tavern-zone{pointer-events:all;cursor:pointer;outline:none}
@@ -1289,7 +1287,6 @@ body[data-screen="camp"][data-camp-scene="tavern"][data-tavern-view="home"] .tav
 .tavern-zone polygon{fill:transparent;stroke:none}
 .tavern-zone text{font:400 21px Georgia,serif;letter-spacing:.05em;fill:#f3e2c0;stroke:rgba(10,6,4,.7);stroke-width:3px;paint-order:stroke;opacity:0;transition:opacity .2s;pointer-events:none}
 .tavern-zone:hover text,.tavern-zone:focus-visible text{opacity:1}
-@media (prefers-reduced-motion: reduce){.tavern-video{display:none}}
 /* Intendance : même transition que la Taverne, sans modifier les futurs contrôles. */
 body[data-screen="camp"][data-camp-scene="quartermaster"]::before {
   background-image: url("/media/background/Quatermaster.jpg");
@@ -1512,8 +1509,8 @@ body[data-screen="camp"][data-camp-scene="home"] .app-shell{padding-top:calc(var
 /* La barre du bas (Idan, 2026-11-14 ; réglée par culture dans l'Atelier des barres) : le milieu de la barre illustrée de la
    culture, sans ses embouts, d'un bord à l'autre de l'écran (« en bas, on va mettre que la partie centre de la barre et on
    va l'étendre jusqu'au bout ») ; au centre, le bouton Jour suivant d'Idan dans l'anneau de la culture (ornement_central) ;
-   à gauche de l'anneau, les six lieux en pictos d'Idan (le nom au survol). La partie droite viendra plus tard ; le
-   journal est retiré pour l'instant (« le journal, retire-le pour l'instant »).
+   à gauche de l'anneau, les six lieux en pictos d'Idan (le nom au survol) ; à droite (2026-11-14), le bouton du lieu puis
+   Combat, Nouvelles, Journal et Discussions, leur bord gauche à --bb-pictos-gauche du milieu, contre l'anneau.
    Tout se règle en bandes B (--hb-B), depuis le bas de l'écran et depuis son milieu (hud-bars.js, bas ; screen-ui.js pose
    les valeurs de la culture sur la page) : l'image de la barre (--bb-art-bas, --bb-art-haut : sa bande sombre finit au bas
    de l'écran), le bouton (--bb-bouton de diamètre, centré à --bb-centre du bas), l'anneau autour de lui (--bb-anneau de
@@ -1521,7 +1518,7 @@ body[data-screen="camp"][data-camp-scene="home"] .app-shell{padding-top:calc(var
    l'anneau ; leur centre à --bb-pictos-y du bas, dans la bande sombre) ; --bb-h, la place qu'ils prennent, que les lieux
    du camp laissent libre. Sans anneau pour cette culture, un cadre provisoire et le bouton seul (valeurs de départ). */
 :root{
-  --bb-art-bas:-.2;--bb-art-haut:1.44;--bb-centre:1.2;--bb-bouton:1.54;--bb-anneau:4.1;--bb-picto:.85;--bb-ecart:.3;--bb-pictos-droite:1.2;--bb-pictos-y:.55;--bb-h:2.1;
+  --bb-art-bas:-.2;--bb-art-haut:1.44;--bb-centre:1.2;--bb-bouton:1.54;--bb-anneau:4.1;--bb-picto:.85;--bb-ecart:.3;--bb-pictos-droite:1.2;--bb-pictos-gauche:1.2;--bb-pictos-y:.55;--bb-h:2.1;
   --hud-bottom-h:calc(var(--hb-B) * var(--bb-h));
 }
 .game-bottom-bar{position:fixed;left:0;right:0;bottom:0;height:var(--hud-bottom-h);pointer-events:none}
@@ -1536,6 +1533,19 @@ body[data-screen="camp"][data-camp-scene="home"] .app-shell{padding-top:calc(var
 .hud-ornament{position:absolute;left:calc(50% - var(--hb-B) * var(--bb-anneau) / 2);bottom:calc(var(--hb-B) * (var(--bb-centre) - var(--bb-anneau) / 4));z-index:2;display:block;width:calc(var(--hb-B) * var(--bb-anneau));height:calc(var(--hb-B) * var(--bb-anneau) / 2);max-width:none;filter:drop-shadow(0 6px 12px #000c);pointer-events:none}
 .hud-ornament[hidden]{display:none}
 .hud-places{position:absolute;right:calc(50% + var(--hb-B) * var(--bb-pictos-droite));bottom:calc(var(--hb-B) * (var(--bb-pictos-y) - var(--bb-picto) / 2));z-index:3;display:flex;align-items:center;gap:calc(var(--hb-B) * var(--bb-ecart));height:calc(var(--hb-B) * var(--bb-picto));pointer-events:auto}
+.hud-actions{position:absolute;left:calc(50% + var(--hb-B) * var(--bb-pictos-gauche));bottom:calc(var(--hb-B) * (var(--bb-pictos-y) - var(--bb-picto) / 2));z-index:3;display:flex;align-items:center;gap:calc(var(--hb-B) * var(--bb-ecart));height:calc(var(--hb-B) * var(--bb-picto));pointer-events:auto}
+/* Le bouton du lieu : sa place reste, même là où il n'y a rien (les actions ne bougent pas) ; un rond sombre provisoire,
+   en attendant son dessin (« on va le designer ce bouton pour qu'il soit joli »). Son menu s'ouvre vers le haut. */
+.hud-context{position:relative;flex:none;width:calc(var(--hb-B) * var(--bb-picto));height:calc(var(--hb-B) * var(--bb-picto))}
+.hud-context:not(.is-active){visibility:hidden}
+.hud-context-btn{display:grid;place-items:center;width:100%;height:100%;padding:0;border:1px solid #ab8959;border-radius:50%;background:radial-gradient(circle at 50% 35%,#3a2a1f,#140e0b);color:#f0c050;font:700 calc(var(--hb-B) * .2) Georgia,serif;letter-spacing:.05em;cursor:pointer;box-shadow:0 4px 8px #000c,inset 0 1px #ffe4a833;transition:transform .22s cubic-bezier(.34,1.56,.64,1),filter .15s}
+.hud-context-btn:hover,.hud-context-btn:focus-visible,.hud-context.is-open .hud-context-btn{transform:scale(1.08);filter:brightness(1.2);outline:none}
+.hud-context-btn:active{transform:scale(.94);transition-duration:.06s}
+.hud-context-btn:focus-visible{box-shadow:0 0 0 2px #f0c050aa}
+.hud-menu-list{position:absolute;left:0;bottom:calc(100% + 12px);z-index:5;min-width:230px;margin:0;padding:6px;list-style:none;border:1px solid #95744d;border-radius:12px;background:linear-gradient(180deg,#2e2119f8,#1b130ef9);box-shadow:0 -10px 28px #0009,inset 0 1px #ffe4a826}
+.hud-menu-list[hidden]{display:none}
+.hud-menu-list button{display:block;width:100%;padding:9px 12px;border:0;border-radius:8px;background:transparent;color:#f0dfbf;font:14px Georgia,serif;text-align:left;cursor:pointer}
+.hud-menu-list button:hover,.hud-menu-list button:focus-visible{background:#ffe1a51a;color:#ffe1a5;outline:none}
 .hud-company{display:flex;flex:0 1 auto;flex-direction:column;min-width:96px;max-width:210px;line-height:1.15}
 #hud-company{font-size:1.02rem;color:#ffe3ab;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-shadow:0 1px 6px #000}
 .hud-renown{font-size:12px;letter-spacing:1px}
@@ -1556,19 +1566,12 @@ body[data-screen="camp"][data-camp-scene="home"] .app-shell{padding-top:calc(var
 #hud-date.is-new{animation:hud-page .6s ease-out}
 @keyframes hud-page{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
 #hud-day{font-size:11px;color:#c0ac91;letter-spacing:.04em;white-space:nowrap}
-.hud-journal{position:absolute;right:calc(var(--hb-B) * .37);bottom:calc(var(--hud-bottom-h) - var(--hb-B) * .05);display:flex;width:min(30vw,420px);pointer-events:auto}
+/* Le journal (2026-11-14) : il s'ouvre au clic sur son picto, au-dessus des actions de droite, et défile. */
+.hud-journal{position:absolute;left:calc(50% + var(--hb-B) * var(--bb-pictos-gauche));bottom:calc(var(--hb-B) * (var(--bb-pictos-y) + var(--bb-picto) / 2 + .3));z-index:5;width:min(34vw,440px);max-height:min(46vh,360px);overflow-y:auto;border:1px solid #95744d;border-radius:12px;background:linear-gradient(180deg,#2e2119f8,#1b130ef9);box-shadow:0 -10px 28px #0009,inset 0 1px #ffe4a826;color:#e9d9b9;pointer-events:auto}
 .hud-journal[hidden]{display:none}
-.hud-journal-head{display:flex;align-items:center;gap:10px;width:100%;padding:7px 12px;border:1px solid #ab895966;border-radius:9px;background:#0e0a0899;color:#e9d9b9;font:13px Georgia,serif;text-align:left;cursor:pointer;box-shadow:inset 0 1px 3px #000a}
-.hud-journal-head:hover,.hud-journal-head:focus-visible{border-color:#e3bd76;outline:none}
-.hud-journal-label{display:flex;align-items:center;gap:6px;flex:none;color:#d8b77d;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
-.hud-journal-last{flex:1;min-width:0;overflow:hidden;color:#f0dfbf;text-overflow:ellipsis;white-space:nowrap}
-.hud-journal-last.is-fresh{animation:hud-fresh 1.6s ease-out}
-@keyframes hud-fresh{0%{color:#ffe08a;text-shadow:0 0 10px #f0c050aa}100%{color:#f0dfbf;text-shadow:none}}
-.hud-journal-chevron{flex:none;color:#d8b77d;transition:transform .2s}
-.hud-journal.is-open .hud-journal-chevron{transform:rotate(180deg)}
-.hud-journal-lines{display:none;position:absolute;left:0;right:0;bottom:calc(100% + 9px);max-height:240px;margin:0;padding:10px 14px 10px 30px;overflow-y:auto;
-  border:1px solid #95744d;border-bottom:0;border-radius:12px 12px 0 0;background:linear-gradient(180deg,#2e2119f8,#1b130ef9);box-shadow:0 -10px 28px #0009;font:12px/1.55 Georgia,serif}
-.hud-journal.is-open .hud-journal-lines{display:block}
+.hud-journal-lines{margin:0;padding:10px 14px 10px 30px;font:12px/1.55 Georgia,serif}
+.hud-journal-lines:empty::before{content:"Rien pour l'instant.";display:block;margin-left:-16px;color:#c0ac91;font-style:italic}
+.hud-nav.is-open{filter:brightness(1.25)}
 #hud-pause-btn{flex:none;border:1px solid #ab8959;border-radius:8px;padding:8px 12px;background:#241a15;color:#f2d7a6;font-size:16px}
 #hud-pause-btn span{font-size:11px;opacity:.8}
 /* Les pictos des lieux (Idan, 2026-11-14) : un très léger grossissement au survol, enfoncés au clic, un petit rebond au
@@ -1588,15 +1591,14 @@ body[data-screen="camp"][data-camp-scene="home"] .app-shell{padding-top:calc(var
 }
 
 @media (max-width:900px){
-  .hud-company,.hud-journal-last{display:none}
+  .hud-company{display:none}
 }
 @media (max-width:700px){
   .hud-stat:nth-child(2),#hud-date{display:none}
   .game-top-bar{gap:8px;padding:6px 10px}
-  .hud-journal-label{font-size:0;gap:0}
   #hud-pause-btn span{display:none}
 }
-@media (prefers-reduced-motion:reduce){.hud-delta,.game-top-bar .hud-delta,#hud-date.is-new,.hud-journal-last.is-fresh{animation:none}}
+@media (prefers-reduced-motion:reduce){.hud-delta,.game-top-bar .hud-delta,#hud-date.is-new{animation:none}}
 .game-pause{position:fixed;inset:0;z-index:200;display:grid;place-items:center;background:#0e0c0be6;backdrop-filter:blur(7px)}
 .game-pause.hidden{display:none!important}
 .game-pause-panel{width:min(440px,90vw);padding:32px;border:1px solid #ae8654;border-radius:15px;background:linear-gradient(145deg,#403023,#17120f);box-shadow:0 20px 70px #000b;text-align:center}

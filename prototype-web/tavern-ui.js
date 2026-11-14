@@ -179,6 +179,8 @@ function advanceCampDay(){
   if(game.pendingExpeditionDialog){ openExpeditionDialog(game.pendingExpeditionDialog); game.pendingExpeditionDialog=null; }
   // La notification du jour par-dessus (Idan, 2026-10-30 et 2026-10-31 : day-news-ui.js) ; les rapports des
   // lieutenants et l'arrivée d'une escouade attendent dessous.
+  // Le pigeon de la barre du bas la rouvre (Idan, 2026-11-14) : le rapport du jour est gardé pour lui.
+  game.lastDayReport=report;
   if(typeof showDayNews==="function") showDayNews(game.campaign.day,report);
 }
 

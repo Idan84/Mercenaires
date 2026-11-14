@@ -42,6 +42,7 @@ function openCampScene(scene="home"){
   }
   document.body.dataset.campScene=target;
   updateCampHomeIcon();
+  updateHudContext();
   if(typeof refreshMusic==="function") refreshMusic();
   if(target==="tavern"&&typeof showTavernView==="function") showTavernView("home");
 
@@ -110,7 +111,7 @@ const HUD_BAR_PIECES=["center","right"];
 const HUD_BAR_VARS={h:"--hb-h",right:"--hb-rw",bandTop:"--hb-bt",band:"--hb-band",bandRight:"--hb-ri"};
 const HUD_TOP_VARS={barre:"--ht-barre",embout:"--ht-embout",top:"--ht-top",haut:"--ht-haut",contenu:"--ht-s",fonds:"--ht-fonds",marge:"--ht-marge"};
 const HUD_BOTTOM_VARS={artBas:"--bb-art-bas",artHaut:"--bb-art-haut",centre:"--bb-centre",bouton:"--bb-bouton",anneau:"--bb-anneau",
-  picto:"--bb-picto",ecart:"--bb-ecart",pictosDroite:"--bb-pictos-droite",pictosY:"--bb-pictos-y",hauteur:"--bb-h"};
+  picto:"--bb-picto",ecart:"--bb-ecart",pictosDroite:"--bb-pictos-droite",pictosGauche:"--bb-pictos-gauche",pictosY:"--bb-pictos-y",hauteur:"--bb-h"};
 let hudBarShown=null;
 function hudBarFor(culture){
   return culture&&typeof HUD_BARS==="object"&&HUD_BARS[culture]?HUD_BARS[culture]:null;
@@ -215,17 +216,7 @@ function renderGameHud(){
   // l'intendant).
   $("hud-roster").textContent=dormitoryPlacesText(rules?rules.dormitoryUsed(game.campaign):company.roster.length)+" / "+(company.camp?.dormitoryCapacity??"—");
   renderCampCalendar();
-  const lines=gameActionMessages.slice(0,8);
-  const last=$("hud-journal-last");
-  const latest=lines[0]?lines[0].message:"";
-  if(last.textContent!==latest){
-    last.textContent=latest;
-    last.title=latest;
-    last.classList.remove("is-fresh");
-    void last.offsetWidth;
-    if(lines.length) last.classList.add("is-fresh");
-  }
-  $("game-action-lines").innerHTML=lines.map(x=>'<li><small>J'+(x.day||"—")+'</small> '+esc(x.message)+'</li>').join("");
+  $("game-action-lines").innerHTML=gameActionMessages.map(x=>'<li><small>J'+(x.day||"—")+'</small> '+esc(x.message)+'</li>').join("");
 }
 // Les lieux de la barre du bas (Idan, 2026-11-14) : un clic ouvre le lieu, comme les boutons du château ; la Taverne a son
 // menu (tavern-ui.js). Rien ne se passe sur le lieu où l'on est déjà.
@@ -235,9 +226,49 @@ function openHudScene(button){
   openCampScene(scene);
   gameAction(scene==="home"?"Retour au château.":"Destination : "+(button.dataset.destination||button.textContent.trim())+".");
 }
-function toggleHudJournal(open=!$("hud-journal").classList.contains("is-open")){
-  $("hud-journal").classList.toggle("is-open",open);
-  $("hud-console-toggle").setAttribute("aria-expanded",String(open));
+// Le journal (Idan, 2026-11-14 : « une icône journal, qui remplace le log ; on peut l'ouvrir en cliquant dessus ») : il
+// s'ouvre au-dessus de son picto, à droite de la barre du bas.
+function toggleHudJournal(open=$("hud-journal").hidden){
+  $("hud-journal").hidden=!open;
+  $("hud-journal-btn").setAttribute("aria-expanded",String(open));
+  $("hud-journal-btn").classList.toggle("is-open",open);
+}
+// Le bouton du lieu (Idan, 2026-11-14 : « à droite du bouton play, un bouton contextuel ») : son menu reprend les zones
+// cliquables du lieu où l'on est. Pour l'instant, la taverne seule (ses cinq zones, dans l'ordre d'Idan, tavern-scene-ui.js) ;
+// ailleurs, pas de bouton (« au château, on n'en a pas pour l'instant »), mais sa place reste, pour que les actions ne
+// bougent pas.
+function hudContextItems(scene){
+  if(scene!=="tavern"||typeof TAVERN_ZONES==="undefined"||typeof TAVERN_MENU==="undefined") return [];
+  return TAVERN_MENU.map(key=>TAVERN_ZONES.find(z=>z.key===key)).filter(Boolean).map(z=>({key:z.key,label:z.label}));
+}
+function setHudContextMenu(open){
+  const menu=$("hud-context-menu"),button=$("hud-context-btn");
+  if(!menu||!button) return;
+  menu.hidden=!open;
+  button.setAttribute("aria-expanded",String(open));
+  $("hud-context")?.classList.toggle("is-open",open);
+}
+function updateHudContext(){
+  const box=$("hud-context"),menu=$("hud-context-menu");
+  if(!box||!menu) return;
+  const items=hudContextItems(document.body.dataset.screen==="camp"?document.body.dataset.campScene:"");
+  box.classList.toggle("is-active",items.length>0);
+  menu.innerHTML=items.map(x=>`<li role="none"><button type="button" role="menuitem" data-hud-context="${esc(x.key)}">${esc(x.label)}</button></li>`).join("");
+  setHudContextMenu(false);
+}
+function chooseHudContext(key){
+  setHudContextMenu(false);
+  if(document.body.dataset.campScene==="tavern"&&typeof openTavernPlace==="function") openTavernPlace(key);
+}
+// Les actions de droite : Combat (les missions du jour : les escouades et les offres de la taverne), Nouvelles (le pigeon :
+// la fenêtre des nouvelles du jour, rouverte), Journal ; Discussions viendra plus tard.
+function runHudAction(action){
+  if(action==="journal"){toggleHudJournal();return;}
+  if(action==="news"){
+    if(typeof showDayNews==="function"&&game.campaign) showDayNews(game.campaign.day,game.lastDayReport||null);
+    return;
+  }
+  if(action==="combat"&&typeof openTavernPlace==="function") openTavernPlace("missions");
 }
 function setPauseOpen(open){
   if(!game.campaign||!["camp","mission"].includes(currentScreen())) return;
@@ -319,7 +350,28 @@ function initializeScreenUi(){
     openHudScene(button);
   });
   $("hud-pause-btn").addEventListener("click",()=>setPauseOpen(true));
-  $("hud-console-toggle").addEventListener("click",()=>toggleHudJournal());
+  $("hud-context-btn").addEventListener("click",()=>setHudContextMenu($("hud-context-menu").hidden));
+  $("hud-context-menu").addEventListener("click",event=>{
+    const item=event.target.closest("[data-hud-context]");
+    if(item) chooseHudContext(item.dataset.hudContext);
+  });
+  document.querySelector(".hud-actions").addEventListener("click",event=>{
+    const button=event.target.closest?.("[data-hud-action]");
+    if(button&&!button.disabled) runHudAction(button.dataset.hudAction);
+  });
+  // Un clic ailleurs ou Échap referme le menu du lieu et le journal (Échap n'ouvre pas alors le menu de pause).
+  document.addEventListener("click",event=>{
+    if(!$("hud-context-menu").hidden&&!event.target.closest?.("#hud-context")) setHudContextMenu(false);
+    if(!$("hud-journal").hidden&&!event.target.closest?.("#hud-journal, #hud-journal-btn")) toggleHudJournal(false);
+  });
+  window.addEventListener("keydown",event=>{
+    if(event.key!=="Escape") return;
+    if($("hud-context-menu").hidden&&$("hud-journal").hidden) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    setHudContextMenu(false);
+    toggleHudJournal(false);
+  },true);
   window.addEventListener("resize",()=>fitHudCompanyName());
   for(const slot of document.querySelectorAll("#game-hud [data-hud-icon]")) slot.innerHTML=hudIcon(slot.dataset.hudIcon);
   $("game-pause").addEventListener("click",event=>{

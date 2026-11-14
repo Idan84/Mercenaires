@@ -35,9 +35,9 @@ Fonctions validées :
 - améliorations permettant davantage de candidats et davantage de missions ;
 - achat de renseignements supplémentaires sur les missions.
 
-**Interface (Idan, 2026-11-11 ; 2026-11-14)** : le picto **Taverne** de la barre du bas mène à la taverne (plus de menu déroulant depuis le 14 novembre). L'accueil de la taverne n'a plus de boutons ni de bulle sur le tavernier : son décor animé a des zones cliquables (Trouver une mission, Recruter, La Cantine, La Cave, Parler au tavernier).
+**Interface (Idan, 2026-11-11 ; 2026-11-14)** : le picto **Taverne** de la barre du bas mène à la taverne (plus de menu déroulant depuis le 14 novembre). L'accueil de la taverne n'a plus de boutons ni de bulle sur le tavernier : son décor a des zones cliquables (Trouver une mission, Recruter, La Cantine, La Cave, Parler au tavernier), que reprend le menu du bouton du lieu de la barre du bas (doc 16).
 
-**La Taverne animée (Idan, 2026-11-11)** : le décor est une vidéo en boucle, muette (`/media/video/Video_Tavern.mp4`, 1920 × 1080, déposée par Idan sur Hostinger, hors de Git) ; sa première image (`Img_Tavern.jpg`) s'affiche en attendant, et seule en mouvement réduit. Sur l'accueil de la taverne, on clique sur le décor, avec les mêmes actions que le menu : le **tableau des primes** (Trouver une mission), les **clients attablés** (Recruter), le **menu** (La Cantine), la **trappe** (La Cave), le **tavernier** (lui parler). Au survol, rien ne s'éclaire : seul le nom de la rubrique apparaît, fin et petit (`prototype-web/tavern-scene-ui.js`).
+**Le décor de la Taverne (Idan, 2026-11-11 ; 2026-11-14)** : l'image de la taverne (`/media/video/Img_Tavern.jpg`, 1920 × 1080, déposée par Idan sur Hostinger, hors de Git). La vidéo en boucle est retirée pour l'instant (Idan, 2026-11-14 : « on va la virer pour l'instant […] l'urgence, c'est de faire quelque chose de joli » ; vidéo et animation viendront plus tard). Sur l'accueil de la taverne, on clique sur le décor : le **tableau des primes** (Trouver une mission), les **clients attablés** (Recruter), le **menu** (La Cantine), la **trappe** (La Cave), le **tavernier** (lui parler). Au survol, rien ne s'éclaire : seul le nom de la rubrique apparaît, fin et petit (`prototype-web/tavern-scene-ui.js`).
 
 <aside>
 🍺

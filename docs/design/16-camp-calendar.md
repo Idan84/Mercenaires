@@ -5,7 +5,7 @@ Décision d'Idan, 21 octobre 2026 : un calendrier gaélico-médiéval cynique, a
 Le même jour, Idan a précisé l'emplacement : le calendrier, en petit, et le bouton vivent dans **la barre du bas**, et non plus sur l'accueil du camp. Depuis le 13 novembre 2026, la date est passée dans **la barre du haut** (voir plus bas).
 
 - **Au centre** : un gros bouton play, qui fait passer au jour suivant. Il n'apparaît qu'au camp, jamais en mission.
-- **À droite** : le bouton du lieu et les actions du jour, dont le journal de la compagnie (voir la barre du bas).
+- **À droite** : les actions du jour, dont le journal de la compagnie, puis le bouton du lieu (voir la barre du bas).
 - **En combat, pas de barre** (Idan, 2026-11-06 : « Elle n'a pas raison d'être là. Ça permet d'agrandir un peu la
   carte ») : l'écran de combat prend toute la hauteur ; Échap ouvre toujours le menu de pause. Les barres reviennent au camp.
 
@@ -59,7 +59,8 @@ n'est pas fonctionnel immédiatement, on commence par la barre ») :
 - **Le menu de l'accueil du camp est retiré** (Idan : « on peut retirer les boutons du menu principal ») : on se déplace
   avec la barre ; « Mes mercenaires » s'ouvre depuis les mercenaires de la barre du haut. Chaque lieu garde son bouton
   « ← Retour au camp », et la Taverne ses zones cliquables.
-- **À droite de l'anneau** (Idan, 2026-11-14), rangés contre lui de la même façon :
+- **À droite de l'anneau** (Idan, 2026-11-14), rangés contre lui de la même façon : Combat, Nouvelles, Journal,
+  Discussions, puis, à droite des pictos (« je te propose qu'on mette le bouton contextuel à droite des pictos »),
   - **le bouton du lieu** (« à droite du bouton play, on va mettre un bouton contextuel ») : son menu reprend les zones
     cliquables du lieu où l'on est. Dans la **taverne**, ses cinq zones, dans l'ordre d'Idan (« Tavernier - missions -
     recrutement - cave - menu ») : Parler au tavernier, Trouver une mission, Recruter, La Cave, La Cantine. Ailleurs, pas de

@@ -8,10 +8,11 @@
 // joli »). Au survol d'un élément cliquable : un contour lumineux et son nom ; au clic, sa salle (openTavernPlace,
 // tavern-ui.js). Le choix se fait au pixel près : le calque le plus haut qui est opaque sous le pointeur (les tonneaux du
 // premier plan cachent ce qui est derrière eux). Les autres salles de la taverne gardent le même décor en fond, et il
-// s'efface en fondu à la sortie (styles.css) : on n'y entrevoit jamais un autre tavernier. Le bouton du lieu de la barre du bas reprend les cinq zones, dans l'ordre d'Idan
-// (TAVERN_MENU : « Tavernier - missions - recrutement - cave - menu »). Le tavernier change à chaque entrée dans la
-// taverne (Idan, 2026-11-14 : « au chargement de la taverne, on charge une image au hasard du tavernier ») : l'original
-// ou l'une de ses variantes. Les images, leurs cadres et les enveloppes viennent de tavern-layers.js (écrit par
+// s'efface en fondu à la sortie (styles.css) : on n'y entrevoit jamais un autre tavernier. Le bouton du lieu de la barre
+// du bas reprend les cinq zones, dans l'ordre d'Idan (TAVERN_MENU : « Tavernier - missions - recrutement - cave - menu »).
+// Le tavernier et la Table 1 changent à chaque entrée dans la taverne (Idan, 2026-11-14 : « au chargement de la taverne,
+// on charge une image au hasard du tavernier » ; pour la table : « L'idée, c'est des variantes ») : l'original ou l'une
+// de ses variantes. Les images, leurs cadres et les enveloppes viennent de tavern-layers.js (écrit par
 // scripts/build-tavern.js depuis les images d'Idan, haute définition comprise ; le repère reste 1376 × 768).
 const TAVERN_SCENE_SIZE={width:1376,height:768};
 const TAVERN_ASSETS="assets/taverne/";
@@ -23,7 +24,7 @@ const TAVERN_LAYERS=[
   {key:"annonce",zone:"missions"},
   {key:"menu",zone:"canteen"},
   {key:"table2",zone:"recruits"},
-  {key:"table1",zone:"recruits"},
+  {key:"table1",zone:"recruits",variants:true},
   {key:"trappe",zone:"cellar"},
   {key:"tavernier",zone:"talk",variants:true},
   {key:"premier-plan"}
@@ -43,16 +44,19 @@ function tavernLabelAt(boxes){
   const x0=Math.min(...boxes.map(b=>b[0])),x1=Math.max(...boxes.map(b=>b[0]+b[2])),y0=Math.min(...boxes.map(b=>b[1]));
   return [Math.round((x0+x1)/2),Math.max(14,Math.round(y0-7))];
 }
-// Les taverniers : l'original, puis ses variantes ; un au hasard à chaque entrée dans la taverne.
-function tavernTaverniers(){
-  const more=typeof TAVERN_TAVERNIERS!=="undefined"?TAVERN_TAVERNIERS:[];
-  return [{key:"tavernier",src:TAVERN_ASSETS+"tavernier.webp",box:TAVERN_LAYERS.find(L=>L.variants).box},
-    ...more.map(v=>({key:v.key,src:TAVERN_ASSETS+"taverniers/"+v.key+".webp",box:v.box}))];
+// Un calque et ses variantes : l'original (son cadre d'origine, même après le tirage d'une variante), puis les variantes ;
+// un au hasard à chaque entrée dans la taverne.
+function tavernVariants(key){
+  const more=typeof TAVERN_VARIANTS!=="undefined"?TAVERN_VARIANTS[key]||[]:[];
+  return [{key,src:TAVERN_ASSETS+key+".webp",box:TAVERN_DATA_BOXES[key]||[0,0,0,0]},
+    ...more.map(v=>({key:v.key,src:TAVERN_ASSETS+v.src,box:v.box}))];
 }
-function pickTavernier(random=Math.random){
-  const all=tavernTaverniers();
+function pickTavernVariant(key,random=Math.random){
+  const all=tavernVariants(key);
   return all[Math.min(all.length-1,Math.floor(random()*all.length))];
 }
+const tavernTaverniers=()=>tavernVariants("tavernier");
+const pickTavernier=(random=Math.random)=>pickTavernVariant("tavernier",random);
 const tavernLayerSrc=L=>L.src||TAVERN_ASSETS+L.key+".webp";
 const TAVERN_MENU=["talk","missions","recruits","cellar","canteen"];
 
@@ -122,23 +126,25 @@ function initializeTavernScene(){
     const ix=Math.min(p.w-1,Math.floor(px*p.w/L.box[2])),iy=Math.min(p.h-1,Math.floor(py*p.h/L.box[3]));
     return p.data[(iy*p.w+ix)*4+3];
   };
-  // Un tavernier au hasard : son image, son cadre, son nom au-dessus de lui.
-  const tavernier=TAVERN_LAYERS.find(L=>L.variants),talk=TAVERN_ZONES.find(z=>z.key==="talk");
-  const chooseTavernier=()=>{
-    const v=pickTavernier();
-    Object.assign(tavernier,{src:v.src,box:v.box,variant:v.key});
-    const [x,y,w,h]=v.box,image=scene.querySelector(`[data-tavern-layer="${tavernier.key}"]`),label=scene.querySelector('[data-tavern-label="talk"]');
-    if(image) for(const [k,val] of Object.entries({href:v.src,x,y,width:w,height:h})) image.setAttribute(k,String(val));
-    talk.at=tavernLabelAt([v.box]);
-    if(label){ label.setAttribute("x",String(talk.at[0])); label.setAttribute("y",String(talk.at[1])); }
-    readPixels(v.src);
+  // Un tavernier et une Table 1 au hasard : leur image, leur cadre ; le nom de leur zone au-dessus d'eux.
+  const chooseVariants=()=>{
+    for(const L of TAVERN_LAYERS.filter(L=>L.variants)){
+      const v=pickTavernVariant(L.key);
+      Object.assign(L,{src:v.src,box:v.box,variant:v.key});
+      const [x,y,w,h]=v.box,image=scene.querySelector(`[data-tavern-layer="${L.key}"]`);
+      if(image) for(const [k,val] of Object.entries({href:v.src,x,y,width:w,height:h})) image.setAttribute(k,String(val));
+      readPixels(v.src);
+      const z=TAVERN_ZONES.find(z=>z.key===L.zone),label=scene.querySelector(`[data-tavern-label="${L.zone}"]`);
+      z.at=tavernLabelAt(TAVERN_LAYERS.filter(M=>M.zone===L.zone).map(M=>M.box));
+      if(label){ label.setAttribute("x",String(z.at[0])); label.setAttribute("y",String(z.at[1])); }
+    }
   };
-  chooseTavernier();
+  chooseVariants();
   // À chaque entrée dans la taverne.
   let lastScene=document.body?.dataset.campScene;
   if(typeof MutationObserver!=="undefined"&&document.body) new MutationObserver(()=>{
     const now=document.body.dataset.campScene;
-    if(now==="tavern"&&lastScene!=="tavern") chooseTavernier();
+    if(now==="tavern"&&lastScene!=="tavern") chooseVariants();
     lastScene=now;
   }).observe(document.body,{attributes:true,attributeFilter:["data-camp-scene"]});
   let hovered=null;

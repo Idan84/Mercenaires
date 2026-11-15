@@ -33,20 +33,29 @@ function pictoDescription(kind,name){
 // d'utiliser le halo magique partout ou on utilise la goutte de sang ») ; la goutte sombre pour « Aucune » ascendance.
 const PICTO_GOUTTE={halo:"assets/pictos/goutte-halo.webp",rubis:"assets/pictos/goutte-rubis.webp",sombre:"assets/pictos/goutte-sombre.webp"};
 
+// Le numéro de la mise en ligne (« picto-ui.js?v=<commit> », scripts/build-site.sh), ajouté à chaque image : Hostinger et
+// les navigateurs gardent une image 7 jours, et un picto remplacé sous le même nom restait l'ancien (les emblèmes des
+// gouttes, 2026-11-15). Sans numéro (en local, dans les tests), l'adresse reste nue.
+const PICTO_VERSION=(()=>{
+  try{ return new URL(document.currentScript.src).searchParams.get("v")||""; }catch{ return ""; }
+})();
+const pictoUrl=path=>PICTO_VERSION?`${path}?v=${encodeURIComponent(PICTO_VERSION)}`:path;
+
 // Le picto prêt à insérer, ou "" sans nom (pas d'ascendance). Une image manquante se masque.
 // size : xs, sm, md… (styles.css), ou null pour laisser la page le dimensionner (création du capitaine) ;
 // tip : false, sans la bulle au survol ; none : true, la goutte sombre d'une ascendance absente (« Aucune »).
 function renderPicto(kind,name,{size="sm",tip=true,none=false}={}){
   const attr=text=>String(text).replace(/[&<>"]/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
   const cls="picto"+(size?" picto-"+size:"");
-  if(kind==="ascendance"&&none) return `<img class="${cls} picto-goutte-sombre" src="${PICTO_GOUTTE.sombre}" alt="" loading="lazy">`;
-  const src=pictoPath(kind,name);
-  if(!src) return "";
+  if(kind==="ascendance"&&none) return `<img class="${cls} picto-goutte-sombre" src="${pictoUrl(PICTO_GOUTTE.sombre)}" alt="" loading="lazy">`;
+  const path=pictoPath(kind,name);
+  if(!path) return "";
+  const src=pictoUrl(path);
   const data=` data-picto-kind="${kind}"`+(tip?` data-picto-name="${attr(name)}"`:"");
   if(kind==="ascendance"){
     return `<span class="${cls} picto-goutte"${data} data-goutte="${pictoSlug(name)}">`
-      +`<img class="goutte-halo" src="${PICTO_GOUTTE.halo}" alt="" loading="lazy">`
-      +`<img class="goutte-rubis" src="${PICTO_GOUTTE.rubis}" alt="" loading="lazy">`
+      +`<img class="goutte-halo" src="${pictoUrl(PICTO_GOUTTE.halo)}" alt="" loading="lazy">`
+      +`<img class="goutte-rubis" src="${pictoUrl(PICTO_GOUTTE.rubis)}" alt="" loading="lazy">`
       +`<img class="goutte-embleme" src="${src}" alt="" loading="lazy" onerror="this.remove()"></span>`;
   }
   return `<img class="${cls}" src="${src}" alt=""${data} loading="lazy" onerror="this.remove()">`;

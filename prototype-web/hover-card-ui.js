@@ -75,39 +75,36 @@ function hoverCultureFrame(culture,barHeight){
       `--hc-hole-y:${o?(o.cy/o.h*100).toFixed(2):50}%`,`--hc-hole:${o?(o.hole/o.w*100).toFixed(2):30}%`].join(";")};
 }
 
+// La forme : la direction « A · Le diptyque » de Chatty (Idan, 2026-11-15 : « Fais un test avec le A… Part de ce qu'on a,
+// si ça va pas, on refera »), faite avec nos pièces : la barre de sa culture en haut (son nom dans la bande) et en bas
+// (son anneau au milieu), la bande en rails sur les côtés ; à gauche le portrait en pied ; à droite une page du parchemin
+// de la création (titre, origines, réputation et affinité, prime, tags en plaques, armes et armure, écoles).
 function renderMercenaryHoverCard(c,{missionTag=null}={}){
   const d=mercenaryHoverData(c,{missionTag});
   const frame=hoverCultureFrame(d.culture,64);
   const bar=kind=>`<div class="hover-card-bar hover-card-bar--${kind}" aria-hidden="true"><i class="hover-card-cap hover-card-cap--l"></i><i class="hover-card-band"></i><i class="hover-card-cap hover-card-cap--r"></i></div>`;
-  const pictos=["people","ascendance"].map(kind=>d[kind]?renderPicto(kind,d[kind],{size:"sm"}):"").join("");
-  const origin=[d.people,d.culture,d.ascendance].filter(Boolean).join(" · ");
-  const hearts=d.affinity?`<span class="hover-card-hearts" title="${esc(d.affinity.phrase)}"><b>${"♥".repeat(d.affinity.filled)}</b>${"♡".repeat(10-d.affinity.filled)}</span>`:"";
-  const row=(label,value)=>value?`<div class="hover-card-row"><dt>${esc(label)}</dt><dd>${value}</dd></div>`:"";
-  const setText=list=>list.length?esc(list.join(" + ")):"";
-  const schools=d.schools.length?`<span class="hover-card-schools">${d.schools.map(name=>`<span class="hover-card-school school--${esc(pictoSlug(name))}" title="${esc(name)}">${schoolIcon(name)}</span>`).join("")}</span>`:"";
-  const tags=d.tags.map(tag=>`<li class="hover-card-tag mission-tag--${esc(tag.tone)}${tag.mission?" is-mission":""}">${esc(tag.name)}</li>`).join("");
+  const origin=["people","culture","ascendance"].filter(kind=>d[kind])
+    .map(kind=>`<span class="hover-card-origin-item">${renderPicto(kind,d[kind],{size:"md"})}<span>${esc(d[kind])}</span></span>`).join("");
+  const hearts=d.affinity?`<span class="hover-card-hearts" title="${esc(d.affinity.phrase)}"><b>${"♥".repeat(d.affinity.filled)}</b>${"♥".repeat(10-d.affinity.filled)}</span>`:"";
+  const kit=[["Set 1",d.sets[0].join(" + ")||"Mains nues"],["Set 2",d.sets[1].join(" + ")],["Armure",d.armor||"Sans armure"],
+    ["Monture",d.mount?d.mount.name+(d.mount.kind?" · "+d.mount.kind:""):""]].filter(([,value])=>value)
+    .map(([label,value])=>`<div class="hover-card-kit-item"><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join("");
+  const schools=d.schools.map(name=>`<span class="hover-card-school school--${esc(pictoSlug(name))}">${schoolIcon(name)}<span>${esc(name)}</span></span>`).join("");
+  const tags=d.tags.map(tag=>`<li class="hover-card-tag hover-card-tag--${esc(tag.tone)}${tag.mission?" is-mission":""}">${esc(tag.name)}</li>`).join("");
   return `<article class="hover-card" data-culture="${esc(frame.key)}" style='${frame.vars}' aria-label="${esc(d.name)}">
     ${bar("top")}
     <header class="hover-card-head"><h3>${esc(d.name)}</h3></header>
     <div class="hover-card-rails" aria-hidden="true"><i class="hover-card-rail hover-card-rail--l"></i><i class="hover-card-rail hover-card-rail--r"></i></div>
     <div class="hover-card-body">
-      <p class="hover-card-title">${esc(d.title)}</p>
-      <div class="hover-card-main">
-        <div class="hover-card-avatar">${renderAvatar(c,{variant:"detail",kind:"full"})}</div>
-        <div class="hover-card-info">
-          <div class="hover-card-origin">${pictos}<span>${esc(origin)}</span></div>
-          <div class="hover-card-fame">${renderReputationStars(c)}${hearts}</div>
-          <div class="hover-card-bonus"><img src="assets/hud/picto-or.webp" alt=""><span><b>${esc(goldAmount(d.bonus))} PO</b><small>Prime de mission</small></span></div>
-          <dl class="hover-card-kit">
-            ${row("Set 1",setText(d.sets[0])||"Mains nues")}
-            ${row("Set 2",setText(d.sets[1]))}
-            ${row("Armure",esc(d.armor||"Sans armure"))}
-            ${row("Monture",d.mount?esc(d.mount.name)+(d.mount.kind?` <small>${esc(d.mount.kind)}</small>`:""):"")}
-            ${row("Magie",schools)}
-          </dl>
-        </div>
+      <div class="hover-card-avatar">${renderAvatar(c,{variant:"detail",kind:"full"})}</div>
+      <div class="hover-card-page">
+        ${d.title?`<p class="hover-card-title">${esc(d.title)}</p>`:""}
+        <div class="hover-card-origin">${origin}</div>
+        <div class="hover-card-fame">${renderReputationStars(c)}${hearts}<span class="hover-card-bonus"><img src="assets/hud/picto-or.webp" alt=""><b>${esc(goldAmount(d.bonus))} PO</b><small>de prime</small></span></div>
+        ${tags?`<ul class="hover-card-tags">${tags}</ul>`:""}
+        <dl class="hover-card-kit">${kit}</dl>
+        ${schools?`<div class="hover-card-schools">${schools}</div>`:""}
       </div>
-      ${tags?`<ul class="hover-card-tags">${tags}</ul>`:""}
     </div>
     ${bar("bottom")}
     <span class="hover-card-ring" aria-hidden="true">${d.culture?renderPicto("culture",d.culture,{size:"md"}):""}</span>

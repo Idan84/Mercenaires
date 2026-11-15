@@ -138,6 +138,8 @@ niveau comme on avait déjà ».
   bouge pas ; une monture dans l'inventaire ne compte pas. Le loup (Idan, 2026-11-07 : « Oui ») : « à dos de loup » pour un
   petit qui le monte ; rien pour celui qui l'emmène à pied (il faut pouvoir la monter).
 - **Infobulle** : deux lignes sur le rôle principal (ou sa sous-catégorie), comme avant.
+- **Affichés au masculin pour tous** (Idan, 2026-11-15 : « garde au masculin (neutre) l'ensemble des titres ») : sur la
+  fiche complète comme sur la fiche au survol. La version féminine reste dans les données, sans servir.
 - **Masculin et féminin** (Idan, 2026-11-06 : « je te laisse faire la version féminine ») : *Archère éclaireuse*,
   *Assommeuse dévastatrice à la massue*, *Cheffe de guerre*, *Mage de Foudre paralyseuse*, *Transmutatrice*. Restent
   identiques : Épéiste, Samouraï, Coupe-jarret, Brise-plates, Bâtonniste, Rétiaire, Ambidextre, Duelliste, Mage de…,

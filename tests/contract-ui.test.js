@@ -422,9 +422,11 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
   assert.equal(api.originPhrase({people: "Humain", culture: "Montagnes du Nord"}), "Humain des montagnes du Nord");
   assert.equal(api.originPhrase({people: "Gobelin", culture: "Caravanes de ferrailleurs"}), "Gobelin des caravanes de ferrailleurs");
   assert.equal(api.originPhrase({people: "Nain", culture: "Nains des montagnes", ascendance: "Sang de dragon"}), "Nain des montagnes au sang de dragon");
-  assert.equal(api.originPhrase({people: "Elfe", culture: "Elfes noirs", ascendance: "Sang d’orc"}, true), "Elfe noire au sang d’orc");
-  assert.equal(api.originPhrase({people: "Homme-bête", culture: "Tribus nordiques"}, true), "Femme-bête des tribus nordiques");
-  assert.equal(api.originPhrase({people: "Halfling", culture: "Explorateurs"}, true), "Halfling exploratrice");
+  assert.equal(api.originPhrase({people: "Elfe", culture: "Elfes noirs", ascendance: "Sang d’orc"}), "Elfe noir au sang d’orc");
+  assert.equal(api.originPhrase({people: "Homme-bête", culture: "Tribus nordiques"}), "Homme-bête des tribus nordiques");
+  assert.equal(api.originPhrase({people: "Halfling", culture: "Explorateurs"}), "Halfling explorateur");
+  // Au masculin pour tous, la phrase comme le titre (« Humain (pour un homme et une femme) »).
+  assert.doesNotMatch(hoverSrc, /isFemale|female/);
   assert.deepEqual(d.tags.map(t => t.name), ["Garde du corps", "Culte des morts", "Haches", "Dégâts"], "seulement les plus précis, celui de la mission d'abord");
   assert.deepEqual(d.tags.map(t => t.tone), ["rouge", "rouge", "vert", "bleu"]);
   assert.equal(d.tags[0].mission, true);

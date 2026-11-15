@@ -11,29 +11,22 @@
 
 // La phrase d'origine, sous les pictos (Idan, 2026-11-15) : le peuple et la culture en une fois, sans répéter le peuple
 // (« Nains / Nains des montagnes devient Nains des montagnes ! » ; « Humain des cités libres », « Humain des montagnes du
-// Nord », « Gobelin des caravanes de ferrailleurs »), puis l'ascendance (« au sang de »). Au singulier, et au féminin pour
-// une mercenaire, comme son titre. Les formes de chaque peuple : masculin, féminin, pluriel (celui des noms de culture).
-const ORIGIN_PEOPLES={
-  "Humain":["Humain","Humaine","Humains"],"Nain":["Nain","Naine","Nains"],"Elfe":["Elfe","Elfe","Elfes"],
-  "Gnome":["Gnome","Gnome","Gnomes"],"Halfling":["Halfling","Halfling","Halflings"],"Ogre":["Ogre","Ogresse","Ogres"],
-  "Orc":["Orc","Orque","Orcs"],"Gobelin":["Gobelin","Gobeline","Gobelins"],"Reptilien":["Reptilien","Reptilienne","Reptiliens"],
-  "Homme-bête":["Homme-bête","Femme-bête","Hommes-bêtes"]
-};
+// Nord », « Gobelin des caravanes de ferrailleurs »), puis l'ascendance (« au sang de »). Au singulier et au masculin pour
+// tous (Idan, 2026-11-15 : « c'est un titre… Humain (pour un homme et une femme) »). Le pluriel de chaque peuple, celui
+// des noms de culture.
+const ORIGIN_PLURALS={"Humain":"Humains","Nain":"Nains","Elfe":"Elfes","Gnome":"Gnomes","Halfling":"Halflings","Ogre":"Ogres",
+  "Orc":"Orcs","Gobelin":"Gobelins","Reptilien":"Reptiliens","Homme-bête":"Hommes-bêtes"};
 // Les cultures qui ne commencent ni par leur peuple ni ne se disent « des … ».
-const ORIGIN_CULTURE_WORDS={"Explorateurs":["explorateur","exploratrice"]};
-function originPhrase({people="",culture="",ascendance=""}={},female=false){
+const ORIGIN_CULTURE_WORDS={"Explorateurs":"explorateur"};
+function originPhrase({people="",culture="",ascendance=""}={}){
   const lower=text=>text?text[0].toLocaleLowerCase("fr")+text.slice(1):"";
-  const [male,fem,plural]=ORIGIN_PEOPLES[people]||[people,people,people+"s"];
-  const who=female?fem:male;
-  let phrase=who;
+  const plural=ORIGIN_PLURALS[people]||people+"s";
+  let phrase=people;
   if(culture&&culture.startsWith(plural+" ")){
-    // « Nains des montagnes » → « Nain des montagnes » ; « Elfes noirs » → « Elfe noir », « Elfe noire ».
+    // « Nains des montagnes » → « Nain des montagnes » ; « Elfes noirs » → « Elfe noir ».
     const rest=culture.slice(plural.length+1);
-    phrase+=" "+(/^(des|du|de) /.test(rest)?rest:rest.split(" ").map(word=>{
-      const one=word.replace(/s$/,"");
-      return female&&!one.endsWith("e")?one+"e":one;
-    }).join(" "));
-  }else if(ORIGIN_CULTURE_WORDS[culture]) phrase+=" "+ORIGIN_CULTURE_WORDS[culture][female?1:0];
+    phrase+=" "+(/^(des|du|de) /.test(rest)?rest:rest.split(" ").map(word=>word.replace(/s$/,"")).join(" "));
+  }else if(ORIGIN_CULTURE_WORDS[culture]) phrase+=" "+ORIGIN_CULTURE_WORDS[culture];
   else if(culture) phrase+=" des "+lower(culture);
   return (ascendance?`${phrase} au ${lower(ascendance)}`:phrase).trim();
 }
@@ -65,18 +58,19 @@ function mercenaryHoverData(c,{missionTag=null}={}){
   // Sa monture : celle qu'il a équipée.
   const mountItem=itemIn("mount");
   const mountKind=mountItem?.mountCode?(reference.mounts?.rows||[]).find(row=>row.code===mountItem.mountCode)?.nom:"";
-  // Le titre, comme la fiche complète.
+  // Le titre, comme la fiche complète : au masculin pour tous (Idan, 2026-11-15 : « garde au masculin (neutre) l'ensemble
+  // des titres »).
   let title="";
   const profile=typeof profileRules==="function"?profileRules():null;
   if(profile){
     const context=evaluationContext(c),result=profile.evaluate(c,context);
-    title=result&&profile.composeTitle?.(c,result,context,{female:isFemale(c)})?.name||"";
+    title=result&&profile.composeTitle?.(c,result,context)?.name||"";
   }
   const affinity=typeof captainAffinity==="function"?captainAffinity(c):null;
   return {
     name:c.name,title,
     people:c.people||"",culture:c.culture||"",ascendance:c.ascendance||"",
-    origin:originPhrase({people:c.people||"",culture:c.culture||"",ascendance:c.ascendance||""},typeof isFemale==="function"&&isFemale(c)),
+    origin:originPhrase({people:c.people||"",culture:c.culture||"",ascendance:c.ascendance||""}),
     bonus:Number(c.contract?.missionBonus??(typeof tavernRules==="function"?tavernRules().missionBonusDemand(c):0))||0,
     affinity:affinity?affinityPresentation(affinity.total,c):null,
     sets:[set(1),set(2)],

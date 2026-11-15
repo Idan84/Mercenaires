@@ -74,15 +74,14 @@ for src in "$SRC"/Peuple/peuple-*.png; do
 done
 
 # Ascendances (Idan, 2026-11-15) : des gouttes de la même taille, déjà détourées (assets-src/Picto/Ascendance/README.md),
-# réduites toile entière comme les peuples ; la goutte rubis (sous l'emblème) et la goutte sombre (« Aucune ») aussi ;
-# le halo animé (WebP de 80 images), réduit image par image (prototype-web/goutte-ui.js les superpose).
+# réduites toile entière comme les peuples ; la goutte rubis (sous l'emblème) et la goutte sombre (« Aucune ») aussi
+# (prototype-web/picto-ui.js les superpose). Le halo animé a son propre script : ImageMagick lit mal ce WebP animé.
 for src in "$SRC"/Ascendance/ascendance-*.png "$SRC"/Ascendance/goutte-*.png; do
   out="$OUT/$(basename "$src" .png).webp"
   convert "$src" -resize ${SIZE}x${SIZE} -quality 90 "$out"
   echo "$out"
 done
-convert "$SRC/Ascendance/goutte-halo.webp" -coalesce -resize ${SIZE}x${SIZE} -quality 75 -define webp:method=6 "$OUT/goutte-halo.webp"
-echo "$OUT/goutte-halo.webp"
+node scripts/build-halo.js
 
 # Écoles de magie (Idan, 2026-11-15) : masters déjà détourés (PNG transparents, assets-src/Picto/Magie/README.md),
 # nommés d'après le slug de l'école : on recadre sur la partie nettement opaque et on réduit, comme les autres.

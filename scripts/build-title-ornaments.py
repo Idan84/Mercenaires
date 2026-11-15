@@ -22,7 +22,7 @@ from collections import deque
 SRC = sys.argv[1]
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "prototype-web", "assets", "fiche", "ornements")
 W, H, CY = 104, 24, 12
-LEVE = -3  # un motif sans filet est un peu remonté (Idan : « remonte » la chope, le cadenas, la chaîne…)
+LEVE = 0  # un décalage commun aux motifs sans filet (aucun : tous sur la même ligne, réglée dans le CSS)
 
 # motif : (planche, x, y, largeur, hauteur, nettoyage), réglages. Nettoyage : True garde la plus grande forme et ce qui ne
 # touche pas le bord de la découpe ; "seul" ne garde que la plus grande forme. Réglages : filet (False : sans ; sinon
@@ -33,16 +33,16 @@ PLANCHES = {
  "croissant":      (("wolf-head-in-crescent-moon", 55, 50, 915, 920, "seul"), dict(filet=30, taille=.82, rot=15)),
  "bougie":         (("candle-with-flaming-skull-silhou", 150, 20, 470, 1330, False), dict(filet=False, taille=.8, rot=90)),
  "cle-ailee":      (("winged-key-wrapped-in-chains", 0, 0, 768, 1376, False), dict(filet=False, rot=90)),
- "cadenas":        (("chain-link-strand-with-padlock", 560, 250, 220, 260, True), dict(filet=False, taille=.8, dy=-4)),
+ "cadenas":        (("chain-link-strand-with-padlock", 560, 250, 220, 260, True), dict(filet=False, taille=.8)),
  "tentacule-sabre": (("octopus-tentacle-holding-cutlass", 300, 215, 460, 585, True), dict(filet=False, rot=90)),
  "couronne-croix": (("toad-wearing-crown-silhouette", 380, 195, 240, 190, True), dict(taille=.72, ancre=.64)),
  "totem":          (("vertical-totem-pole-silhouette", 25, 35, 720, 1305, False), dict(filet=False, taille=.55, rot=90)),
  "corbeau":        (("flying-raven-vector-ornament-div", 225, 195, 890, 385, False), dict(filet=False, taille=.6)),
- "dragon":         (("sea-serpent-vector-ornament-divider", 55, 160, 235, 140, True), dict(filet=False, taille=.68, dy=-4)),
+ "dragon":         (("sea-serpent-vector-ornament-divider", 55, 160, 235, 140, True), dict(filet=False, taille=.68)),
  "crane-flamme":   (("candle-with-flaming-skull-silhou", 235, 28, 310, 415, True), dict(ancre=.76)),
- "chaine":         (("chain-link-strand-with-padlock", 205, 340, 345, 90, False), dict(filet=False, dy=-4)),
- "chope":          (("beer-mug-and-crossed-bones", 35, 30, 955, 965, "seul"), dict(filet=False, dy=-4)),
- "ours":           (("roaring-bear-head-silhouette-vector", 100, 120, 825, 810, "seul"), dict(filet=False, dy=-4)),
+ "chaine":         (("chain-link-strand-with-padlock", 205, 340, 345, 90, False), dict(filet=False)),
+ "chope":          (("beer-mug-and-crossed-bones", 35, 30, 955, 965, "seul"), dict(filet=False)),
+ "ours":           (("roaring-bear-head-silhouette-vector", 100, 120, 825, 810, "seul"), dict(filet=False)),
  "crane-pique":    (("fence-spikes-skull-divider-icon", 92, 140, 76, 125, True), dict(taille=.6, rot=-90)),
  "fleuron-chaine": (("chain-link-strand-with-padlock", 20, 305, 185, 150, False), dict(taille=.8)),
  "poing":          (("iron-gauntlet-punching-starburst", 40, 45, 945, 935, True), dict(miroir_h=True)),

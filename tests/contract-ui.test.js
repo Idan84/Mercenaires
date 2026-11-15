@@ -460,7 +460,7 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
   assert.match(css, /\.hc-title\{[^}]*font:italic 500 calc\(var\(--hc-cart-h\) \* \.29\)[^}]*color:var\(--hc-parchemin\)/);
   assert.match(css, /\.hc-title span\{[^}]*background:var\(--hc-encre-titre\);[^}]*background-clip:text;[^}]*filter:drop-shadow\(1px 1px 1\.5px rgba\(0,0,0,\.7\)\)/);
   // Les ornements du titre : courts, fins, monochromes, centrés sur le milieu des minuscules.
-  assert.match(css, /\.hc-orn\{[^}]*width:calc\(var\(--hc-cart-h\) \* \.64\);height:calc\(var\(--hc-cart-h\) \* \.148\);translate:0 \.14em;background:var\(--hc-parchemin\);[^}]*mask:var\(--hc-orn\) center\/contain no-repeat\}/);
+  assert.match(css, /\.hc-orn\{[^}]*width:calc\(var\(--hc-cart-h\) \* \.64\);height:calc\(var\(--hc-cart-h\) \* \.148\);translate:0 \.085em;background:var\(--hc-parchemin\);[^}]*mask:var\(--hc-orn\) center\/contain no-repeat\}/);
   assert.match(css, /\.hc-orn--r\{transform:scaleX\(-1\)\}/);
   assert.match(hoverSrc, /function fitHoverCard\(root\)/);
   assert.match(css, /\.hover-card\{--hc-w:860px;--hc-h:565px;--hc-cart-h:calc\(var\(--hc-h\) \* \.1435\);/);

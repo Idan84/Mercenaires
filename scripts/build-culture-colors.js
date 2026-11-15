@@ -44,15 +44,15 @@ function oklchToHex({L, C, h}) {
 }
 // Le ton moyen d'une couleur sombre : même teinte, luminosité TONE_L, chroma multipliée d'autant (bornée, et baissée tant
 // que la couleur sort de ce qu'un écran sait afficher).
-function midTone(hex) {
+function midTone(hex, L = TONE_L, maxC = TONE_MAX_C) {
   const dark = hexToOklch(hex);
-  let C = Math.min(TONE_MAX_C, dark.C * (TONE_L / Math.max(dark.L, 0.05)));
+  let C = Math.min(maxC, dark.C * (L / Math.max(dark.L, 0.05)));
   for (let i = 0; i < 40; i++) {
-    const out = oklchToHex({L: TONE_L, C, h: dark.h});
+    const out = oklchToHex({L, C, h: dark.h});
     if (Math.abs(hexToOklch(out).C - C) < 0.006) return out;
     C *= 0.92;
   }
-  return oklchToHex({L: TONE_L, C, h: dark.h});
+  return oklchToHex({L, C, h: dark.h});
 }
 
 // La couleur moyenne de la bande de texture d'une culture.
@@ -64,6 +64,9 @@ function textureColor(key, bar) {
     "-resize", "1x1!", "-format", "%[hex:p{0,0}]", "info:"], {encoding: "utf8"}).trim().slice(0, 6);
   return "#" + value.toLowerCase();
 }
+
+// Aussi utilisé par scripts/build-charte.js (les trois tons de chaque culture de la charte).
+if (require.main !== module) { module.exports = {HUD_BARS, textureColor, midTone, hexToOklch, oklchToHex}; return; }
 
 const cultures = JSON.parse(fs.readFileSync(path.join(ROOT, "data/reference/cultures.json"), "utf8")).rows.map(row => row.nom);
 const rows = cultures.map(nom => {

@@ -1,0 +1,24 @@
+<!-- @dsCard group="Surfaces" height=780 subtitle="Le parchemin d'Idan : en-tête, titre, filets, champs, navigation" -->
+<!doctype html>
+<html lang="fr">
+<head><meta charset="utf-8"><title>Parchemin</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&amp;family=EB+Garamond:ital,wght@0,500;0,600;0,700;1,500&amp;display=swap">
+<style>
+  body{margin:0;padding:34px 20px 50px;background:var(--ink);display:grid;justify-items:center}
+  .parch{display:flex;flex-direction:column;text-align:left}
+  .parch .parch-head,.parch .parch-title{text-align:center}
+</style></head>
+<body>
+<div class="parch">
+  <div class="parch-head">Registre des capitaines</div>
+  <h2 class="parch-title">Quel est votre nom ?</h2>
+  <div class="divider haut" aria-hidden="true"><i class="orn" style="--orn:url('{{asset:Ornements de la charte/fleur-de-lys.svg}}')"></i></div>
+  <label class="lbl" for="prenom">Prénom</label>
+  <input type="text" class="champ" id="prenom" value="Hargrim" autocomplete="off" spellcheck="false">
+  <label class="lbl" for="nom">Nom de famille <small>· facultatif</small></label>
+  <input type="text" class="champ" id="nom" placeholder="Pierremarteau" autocomplete="off" spellcheck="false">
+  <div class="divider bas" aria-hidden="true"><i class="losange"></i></div>
+  <nav class="parch-nav"><button class="retour" type="button">‹ Retour</button><button class="btn" type="button">Continuer <span class="fl">→</span></button></nav>
+</div>
+</body>
+</html>

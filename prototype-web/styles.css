@@ -2475,20 +2475,21 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .mission-squad-head h3::after{content:"";flex:1;height:1.5px;background:linear-gradient(90deg,var(--or),transparent);opacity:.7}
 .mission-squad-count{font:700 30px/1 var(--police-titre);color:var(--or-clair)}
 .mission-squad-subtitle{grid-column:1 / -1;margin:0;font:italic 500 19px/1.2 var(--police-texte);color:#d8c6a4}
-/* Les places : toutes tiennent, toujours ; plus il y en a, plus elles rétrécissent (--squad-cols, --slot : mission.js),
-   quatre par rangée au moins ; petites, sans le nom (au survol). */
+/* Les places : toutes tiennent, toujours, aussi grandes que possible (--squad-cols, --slot : mission.js) ; plus il y en a,
+   plus elles rétrécissent ; sans le nom (au survol) quand la place manque. */
 .mission-squad-frame{flex:1 1 auto;min-height:0;padding:6px 2px;overflow:hidden}
-.mission-squad-slots{display:grid;grid-template-columns:repeat(var(--squad-cols,4),minmax(0,1fr));align-content:start;gap:12px 10px}
+.mission-squad-slots{display:grid;grid-template-columns:repeat(var(--squad-cols,3),var(--slot,150px));justify-content:center;align-content:start;gap:10px}
 .mission-slot{display:grid;justify-items:center;align-content:start;gap:3px;min-width:0;text-align:center}
 .mission-slot-portrait{position:relative;display:block;width:100%;aspect-ratio:4/3}
 .mission-slot-portrait .avatar-frame{width:100%;height:100%;aspect-ratio:auto;border:1px solid rgba(201,164,97,.55);border-radius:3px;box-shadow:0 5px 9px rgba(0,0,0,.5)}
 .mission-slot--empty .mission-slot-portrait{box-sizing:border-box;border:1.5px dashed rgba(201,164,97,.4);border-radius:3px;background:rgba(0,0,0,.2)}
-.mission-slot-remove{all:unset;position:absolute;top:5px;right:5px;z-index:3;width:24px;height:24px;box-sizing:border-box;cursor:pointer;border:1px solid rgba(240,211,149,.65);border-radius:3px;background:linear-gradient(45deg,transparent 45%,var(--or-clair) 45%,var(--or-clair) 55%,transparent 55%) center/12px 12px no-repeat,linear-gradient(-45deg,transparent 45%,var(--or-clair) 45%,var(--or-clair) 55%,transparent 55%) center/12px 12px no-repeat,rgba(20,13,8,.8);transition:background-color .12s}
+.mission-slot-remove{--rm:clamp(14px,calc(var(--slot,108px) * .2),24px);all:unset;position:absolute;top:clamp(2px,calc(var(--slot,108px) * .04),5px);right:clamp(2px,calc(var(--slot,108px) * .04),5px);z-index:3;width:var(--rm);height:var(--rm);box-sizing:border-box;cursor:pointer;border:1px solid rgba(240,211,149,.65);border-radius:3px;background:linear-gradient(45deg,transparent 45%,var(--or-clair) 45%,var(--or-clair) 55%,transparent 55%) center/12px 12px no-repeat,linear-gradient(-45deg,transparent 45%,var(--or-clair) 45%,var(--or-clair) 55%,transparent 55%) center/12px 12px no-repeat,rgba(20,13,8,.8);background-size:calc(var(--rm) / 2) calc(var(--rm) / 2),calc(var(--rm) / 2) calc(var(--rm) / 2),auto;transition:background-color .12s}
 .mission-slot-remove:hover,.mission-slot-remove:focus-visible{outline:none;background-color:var(--bordeaux)}
-.mission-squad-slots[data-named="false"] .mission-slot-remove{top:3px;right:3px;width:18px;height:18px;background-size:9px 9px,9px 9px,auto}
 .mission-slot .mission-pick-name{font-size:clamp(14px,calc(var(--slot,108px) * .16),17px);color:var(--ivoire)}
 .mission-slot .mission-pick-name:hover,.mission-slot .mission-pick-name:focus-visible{color:var(--or-clair)}
-.mission-slot .rep-stars{font-size:clamp(10px,calc(var(--slot,108px) * .13),14px)}
+.mission-slot .rep-stars{max-width:100%;overflow:hidden;white-space:nowrap;font-size:clamp(7px,calc(var(--slot,108px) * .13),14px)}
+.mission-slot .avatar-fallback{padding:calc(var(--slot,108px) * .07)}
+.mission-slot .avatar-fallback span{font-size:calc(var(--slot,108px) * .3)}
 .mission-squad-slots[data-named="false"] .mission-pick-name{display:none}
 .mission-squad-slots[data-named="false"] .rep-stars{letter-spacing:0}
 .mission-squad-hint{grid-column:1 / -1;margin:18px 0;font:italic 500 19px/1.3 var(--police-texte);text-align:center;color:#d8c6a4}

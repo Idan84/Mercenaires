@@ -1051,10 +1051,10 @@ function pageWheel(turn){
 }
 
 // L'escouade : les portraits choisis, dans l'ordre du choix, avec leur croix ; la garde du corps montre toutes ses
-// places. En 4:3, plus petits que ceux de la galerie, en carré (Idan : « Gardons le carré pour la sélection, c'est natif.
-// Le 4:3 plus petit à droite »). Elle tient toujours en entier (Idan, 2026-11-15 : « faisons de la taille de portrait
-// relative au nombre de mercenaires de l'escouade… chaque fois qu'on en rajoute, les portraits rétrécissent pour laisser
-// la place de tout afficher. Comme ça pas de flèche. Effectivement, ici, c'est pas grave si c'est petit »).
+// places. En 4:3, quand la galerie est en carré (Idan : « Gardons le carré pour la sélection, c'est natif. Le 4:3 plus
+// petit à droite »). Elle tient toujours en entier (Idan, 2026-11-15 : « faisons de la taille de portrait relative au
+// nombre de mercenaires de l'escouade… chaque fois qu'on en rajoute, les portraits rétrécissent pour laisser la place
+// de tout afficher. Comme ça pas de flèche »).
 function renderMissionSquad(){
   const sel=game.missionSelect,pool=allCharacters();
   const chosen=sel.order.map(id=>pool.find(c=>c.id===id)).filter(Boolean);
@@ -1069,28 +1069,31 @@ function renderMissionSquad(){
     +(chosen.length||empty?"":`<p class="mission-squad-hint">Cliquez sur un portrait pour l’ajouter.</p>`);
   layoutMissionSquad();
 }
-// Le moins de colonnes possible pour que toutes les places tiennent (quatre au moins : plus petits que la galerie), avec
-// le nom tant qu'il a la place (nameMinWidth) ; sinon sans le nom (il reste au survol), à la même taille, avant de
-// rétrécir encore : un mercenaire de plus ne fait jamais grandir les portraits ni revenir les noms.
-// labelWithName / labelWithoutName : la hauteur sous le portrait, avec ou sans le nom. Logique pure (tests, portage).
-function missionSquadGrid({count,width,height,gapX=10,gapY=12,labelWithName=46,labelWithoutName=16,nameMinWidth=84,minCols=4,maxCols=20}){
-  const sideOf=cols=>Math.floor((width-(cols-1)*gapX)/cols);
-  const fits=(cols,named)=>{
-    const rows=Math.max(1,Math.ceil(count/cols));
-    return rows*(sideOf(cols)*3/4+(named?labelWithName:labelWithoutName))+(rows-1)*gapY<=height;
-  };
-  let lastNamed=minCols;
-  for(let cols=minCols;cols<=maxCols&&sideOf(cols)>=nameMinWidth;cols++){
-    lastNamed=cols;
-    if(fits(cols,true)) return {cols,side:sideOf(cols),named:true};
+// Les plus grands portraits possibles, tous visibles (Idan, 2026-11-15 : « Ils sont trop petits, c'est dommage… ils
+// devraient être à 4 col - 5 lignes. Ça rentre » ; « on veut pas forcément qu'ils soient plus petits que ceux de gauche.
+// Ceux de gauche sont fixes. À droite, ça s'adapte ») : on essaie chaque nombre de colonnes et on garde le plus grand
+// portrait (à taille égale, les rangées les plus longues : on remplit de gauche à droite) ; avec le nom tant que ça ne
+// les rend pas beaucoup plus petits (namedRatio), sinon sans (il reste au survol). labelWithName / labelWithoutName : la
+// hauteur sous le portrait (nom, étoiles). Logique pure, sans page web (tests, portage).
+function missionSquadGrid({count,width,height,gapX=10,gapY=10,labelWithName=46,labelWithoutName=16,nameMinWidth=84,maxSide=150,namedRatio=.9}){
+  if(count<1) return {cols:3,side:maxSide,named:true};
+  const best={true:null,false:null};
+  for(let cols=1;cols<=count;cols++){
+    const rows=Math.ceil(count/cols);
+    for(const named of [true,false]){
+      const side=Math.floor(Math.min(maxSide,(width-(cols-1)*gapX)/cols,((height-(rows-1)*gapY)/rows-(named?labelWithName:labelWithoutName))*4/3));
+      if(side<1||named&&side<nameMinWidth) continue;
+      const b=best[named];
+      if(!b||side>b.side||side===b.side&&cols>b.cols) best[named]={cols,side,named};
+    }
   }
-  for(let cols=lastNamed;cols<=maxCols;cols++) if(fits(cols,false)) return {cols,side:sideOf(cols),named:false};
-  return {cols:maxCols,side:Math.max(1,sideOf(maxCols)),named:false};
+  const pick=best.true&&(!best.false||best.true.side>=namedRatio*best.false.side)?best.true:best.false;
+  return pick?{cols:pick.cols,side:pick.side,named:pick.named}:{cols:count,side:1,named:false};
 }
 function layoutMissionSquad(){
   const box=$("mission-squad-slots"),frame=box?.parentElement;
   if(!box||!frame?.clientHeight) return;
-  const count=box.querySelectorAll(".mission-slot").length;
+  const slots=[...box.querySelectorAll(".mission-slot")],count=slots.length;
   const cs=getComputedStyle(box),fs=getComputedStyle(frame);
   const width=frame.clientWidth-parseFloat(fs.paddingLeft)-parseFloat(fs.paddingRight);
   const height=frame.clientHeight-parseFloat(fs.paddingTop)-parseFloat(fs.paddingBottom);
@@ -1100,15 +1103,19 @@ function layoutMissionSquad(){
     box.style.setProperty("--slot",side+"px");
     box.dataset.named=String(named);
   };
-  const overflows=()=>count>0&&box.scrollHeight>height+1;
-  let grid=missionSquadGrid({count,width,height,gapX,gapY});
-  apply(grid);
-  // Avec les noms tels qu'ils s'affichent (sur deux lignes, parfois) : sans le nom d'abord, puis une colonne de plus.
-  if(overflows()&&grid.named) apply(grid=missionSquadGrid({count,width,height,gapX,gapY,nameMinWidth:Infinity,minCols:grid.cols}));
-  while(overflows()&&grid.cols<20){
-    const cols=grid.cols+1;
-    apply(grid={cols,side:Math.floor((width-(cols-1)*gapX)/cols),named:false});
+  const below=()=>Math.max(0,...slots.map(slot=>slot.offsetHeight-(slot.querySelector(".mission-slot-portrait")?.offsetHeight||0)));
+  // Avec ce qu'il y a vraiment sous les portraits (un nom sur deux lignes, parfois).
+  const labels={labelWithName:46,labelWithoutName:16};
+  let grid=null;
+  for(let i=0;i<4;i++){
+    apply(grid=missionSquadGrid({count,width,height,gapX,gapY,...labels}));
+    if(!count) return;
+    const key=grid.named?"labelWithName":"labelWithoutName",measured=below();
+    if(measured<=labels[key]+0.5) break;
+    labels[key]=measured;
   }
+  // Jamais rien de coupé : un peu plus petit, s'il le faut encore.
+  while(box.scrollHeight>height+1&&grid.side>12) apply(grid={...grid,side:grid.side-2});
 }
 
 function onMissionSquadClick(event){

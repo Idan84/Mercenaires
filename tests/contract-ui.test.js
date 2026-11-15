@@ -325,22 +325,35 @@ assert.match(fs.readFileSync(path.join(root, "AGENTS.md"), "utf8"), /jamais de d
 assert.match(choice, /card\.hidden=order\.includes\(Number\(input\?\.value\)\)\|\|/);
 assert.match(choice, /renderMissionSquad\(\);\s*refreshMissionRoster\(\);/);
 assert.doesNotMatch(choice + choiceCss, /mission-pick-seal/, "plus de cachet : le choisi n'est plus à gauche");
-// « La taille de portrait relative au nombre de mercenaires de l'escouade… pas de flèche » : tout tient, toujours.
+// « La taille de portrait relative au nombre de mercenaires de l'escouade… pas de flèche » : tout tient, toujours ; « ils
+// sont trop petits… ils devraient être à 4 col - 5 lignes. Ça rentre » : les plus grands possibles.
 {
   const squadGrid = new Function(choice.slice(choice.indexOf("function missionSquadGrid("), choice.indexOf("function layoutMissionSquad(")) + "\nreturn missionSquadGrid;")();
+  const fits = (g, count, width, height) => {
+    const rows = Math.ceil(count / g.cols);
+    return g.cols * g.side + (g.cols - 1) * 10 <= width && rows * (g.side * 3 / 4 + (g.named ? 46 : 16)) + (rows - 1) * 10 <= height;
+  };
   let last = null;
   for (let count = 1; count <= 20; count++) {
     const g = squadGrid({count, width: 476, height: 496});
-    const rows = Math.ceil(count / g.cols);
-    assert.ok(rows * (g.side * 3 / 4 + (g.named ? 46 : 16)) + (rows - 1) * 12 <= 496, `${count} : toute l'escouade tient`);
-    assert.ok(g.cols >= 4, "quatre par rangée au moins : plus petits que la galerie");
+    assert.ok(fits(g, count, 476, 496), `${count} : toute l'escouade tient`);
+    assert.ok(g.side <= 150, "pas plus grand que 150 px");
     if (last) {
       assert.ok(g.side <= last.side, `${count} : un de plus ne fait jamais grandir les portraits`);
       assert.ok(!g.named || last.named, `${count} : ni revenir les noms`);
     }
     last = g;
   }
-  assert.ok(squadGrid({count: 20, width: 460, height: 184}).cols > 4, "petit écran : plus petits, mais tous là");
+  const twenty = squadGrid({count: 20, width: 476, height: 496});
+  assert.equal(twenty.cols, 4, "20 en 1920 × 1080 : 4 colonnes…");
+  assert.equal(Math.ceil(20 / twenty.cols), 5, "… et 5 rangées");
+  assert.ok(twenty.side >= 95, `des portraits plus grands qu'avant (${twenty.side})`);
+  const six = squadGrid({count: 6, width: 476, height: 496});
+  assert.deepEqual([six.cols, six.named], [3, true], "6 : trois par rangée, avec le nom");
+  const small = squadGrid({count: 19, width: 476, height: 178});
+  assert.equal(Math.ceil(19 / small.cols), 3, "petit écran : trois rangées");
+  assert.ok(fits(small, 19, 476, 178));
+  assert.deepEqual(squadGrid({count: 0, width: 476, height: 496}).cols, 3);
 }
 // « Tous ceux qui peuvent pas partir en mission sont déjà filtrés (blessés, autres missions…). Les fatigués sont là. »
 assert.match(choice, /const available=eligible\.filter\(c=>!missionWounded\(c\)\);[\s\S]*renderMissionChoice\(available,/, "les blessés ne sont pas dans la galerie");

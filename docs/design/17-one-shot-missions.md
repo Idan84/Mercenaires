@@ -354,10 +354,12 @@ ennemis, récompense, expiration…), la lettre du commanditaire s'il y en a une
   cachées s'il n'y a qu'une page, grisées au début et à la fin, comme celles du panneau ; la molette tourne les pages
   aussi (« Oui, la molette tourne les pages aussi », un choix pour tout le jeu, comme sur le panneau des annonces). À
   droite, l'**escouade**, dans un panneau de cuir sombre aux coins de bronze : le compte (« 6 / 20 » ; une garde : toutes
-  ses places), les portraits choisis en 4:3, plus petits que ceux de la galerie (« Le 4:3 plus petit à droite »), avec
-  leur croix ; elle tient toujours en entier, sans flèches (« chaque fois qu'on en rajoute, les portraits rétrécissent
-  pour laisser la place de tout afficher… c'est pas grave si c'est petit ») : quatre par rangée au moins, puis plus
-  petits ; le nom tant qu'il a la place, puis seulement au survol (« 20 pour la mission… + en dortoirs ») ; les fatigués en clair (« 2 mercenaires fatigués : 1 encore fatigué au combat (−20 %), 1 reposé à
+  ses places), les portraits choisis en 4:3 (« Le 4:3… à droite »), avec leur croix ; elle tient toujours en entier,
+  sans flèches (« chaque fois qu'on en rajoute, les portraits rétrécissent pour laisser la place de tout afficher »),
+  avec les plus grands portraits possibles (« Ils sont trop petits… ils devraient être à 4 col - 5 lignes. Ça rentre » ;
+  « on veut pas forcément qu'ils soient plus petits que ceux de gauche. Ceux de gauche sont fixes. À droite, ça
+  s'adapte ») : en 1920 × 1080, 150 px jusqu'à 9, puis 128, 110, et 97 px pour 20 (4 colonnes, 5 rangées) ; le nom tant
+  qu'il ne les rend pas beaucoup plus petits, puis seulement au survol (« 20 pour la mission… + en dortoirs ») ; les fatigués en clair (« 2 mercenaires fatigués : 1 encore fatigué au combat (−20 %), 1 reposé à
   l'arrivée »), les primes au retour, « Partir demain » et « D'ici demain matin, le départ peut encore être annulé ». En
   bas à gauche, « ‹ Retour à l'annonce ».
 - **Les illustrations** (Idan et Jean-Mi, 2026-11-14) : des gravures à l'encre sur fond blanc, posées en « produit » sur

@@ -471,9 +471,9 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
   // Le nom en grand : les noms de 20 caractères tiennent ; au-delà, il rapetisse d'autant (20 / longueur).
   assert.match(css, /\.hc-banner h3\{[^}]*font:700 calc\(var\(--hc-cart-h\) \* \.54 \* var\(--hc-name-fit,1\)\)/);
   assert.match(hoverSrc, /const nameFit=Math\.max\(\.6,Math\.min\(1,20\/d\.name\.length\)\);/);
-  assert.match(css, /\.hc-banner h3\{[^}]*font:700 [^}]*background:var\(--hc-encre-titre\);[^}]*background-clip:text;[^}]*filter:drop-shadow\(1px 2px 1\.5px rgba\(0,0,0,\.7\)\)/);
+  assert.match(css, /\.hc-banner h3\{[^}]*font:700 [^}]*background:var\(--hc-encre-titre\);[^}]*background-clip:text;[^}]*filter:drop-shadow\(0 3px 3px rgba\(0,0,0,\.55\)\)/);
   assert.match(css, /\.hc-title\{[^}]*font:italic 500 calc\(var\(--hc-cart-h\) \* \.29\)[^}]*color:var\(--hc-parchemin\)/);
-  assert.match(css, /\.hc-title span\{[^}]*background:var\(--hc-encre-titre\);[^}]*background-clip:text;[^}]*filter:drop-shadow\(1px 1px 1\.5px rgba\(0,0,0,\.7\)\)/);
+  assert.match(css, /\.hc-title span\{[^}]*background:var\(--hc-encre-titre\);[^}]*background-clip:text;[^}]*filter:drop-shadow\(1px 1px 1\.5px rgba\(0,0,0,\.65\)\)/);
   // Les ornements du titre : courts, fins, monochromes, centrés sur le milieu des minuscules.
   assert.match(css, /\.hc-orn\{[^}]*width:calc\(var\(--hc-cart-h\) \* \.64\);height:calc\(var\(--hc-cart-h\) \* \.148\);translate:0 \.085em;background:var\(--hc-parchemin\);[^}]*mask:var\(--hc-orn\) center\/contain no-repeat\}/);
   assert.match(css, /\.hc-orn--r\{transform:scaleX\(-1\)\}/);

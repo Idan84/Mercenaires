@@ -145,16 +145,16 @@ const shadow = (name, file, selector, value, usage) => ({name, value: cssLiteral
 const SHADOWS = [
   shadow("ombre-parchemin", CC, ".parch::before", "0 26px 34px rgba(0,0,0,.65)", "Sous le parchemin d'Idan (en filtre drop-shadow, qui suit ses bords)."),
   shadow("ombre-bouton", CC, ".btn::before", "0 6px 6px rgba(0,0,0,.55)", "Sous le bouton d'Idan, au repos et au survol (en filtre drop-shadow)."),
-  shadow("ombre-bouton-appui", CC, ".btn:active::before", "0 2px 2px rgba(0,0,0,.55)", "Sous le bouton d'Idan quand on appuie (il descend de 2 px)."),
+  shadow("ombre-bouton-appui", CC, ".btn:active::before", "0 3px 3px rgba(0,0,0,.55)", "Sous le bouton d'Idan quand on appuie (il descend de 2 px)."),
   shadow("ombre-texte-bouton", CC, ".btn", "0 1px 2px rgba(0,0,0,.85)", "Ombre du texte du bouton (text-shadow)."),
   shadow("ombre-texte-marque", CC, ".brand", "0 2px 8px #000", "Ombre du titre de l'en-tête sur la scène (text-shadow)."),
-  shadow("ombre-replique", CC, ".message", "0 2px 6px #000,0 0 24px rgba(0,0,0,.7)", "Ombre de la réplique de Cruxor sur la scène (text-shadow)."),
+  shadow("ombre-replique", CC, ".message", "0 2px 6px #000,0 0 24px rgba(0,0,0,.65)", "Ombre de la réplique de Cruxor sur la scène (text-shadow)."),
   shadow("ombre-fiche", ST, ".hover-card", "0 26px 50px rgba(0,0,0,.75)", "Sous la fiche au survol."),
-  shadow("ombre-nom-fiche", ST, ".hc-banner h3", "1px 2px 1.5px rgba(0,0,0,.7)", "Sous le nom de la fiche au survol (en filtre drop-shadow : les lettres sont remplies de texture)."),
-  shadow("ombre-titre-fiche", ST, ".hc-title span", "1px 1px 1.5px rgba(0,0,0,.7)", "Sous le titre de la fiche au survol (en filtre drop-shadow)."),
-  shadow("ombre-ornement-titre", ST, ".hc-orn", "0 1px 1px rgba(0,0,0,.65)", "Sous les ornements du titre de la fiche au survol (en filtre drop-shadow)."),
-  shadow("ombre-picto", ST, ".hc-emblem .picto", "0 2px 3px rgba(40,24,10,.55)", "Sous les pictos peuple, culture, ascendance de la fiche au survol (en filtre drop-shadow)."),
-  shadow("ombre-phrase-origine", ST, ".hc-origin", "0 1px 1.5px rgba(40,24,10,.35)", "Sous la phrase d'origine de la fiche au survol (text-shadow)."),
+  shadow("ombre-nom-fiche", ST, ".hc-banner h3", "0 3px 3px rgba(0,0,0,.55)", "Sous le nom de la fiche au survol (en filtre drop-shadow : les lettres sont remplies de texture)."),
+  shadow("ombre-titre-fiche", ST, ".hc-title span", "1px 1px 1.5px rgba(0,0,0,.65)", "Sous le titre de la fiche au survol (en filtre drop-shadow)."),
+  shadow("ombre-ornement-titre", ST, ".hc-orn", "1px 1px 1.5px rgba(0,0,0,.65)", "Sous les ornements du titre de la fiche au survol (en filtre drop-shadow)."),
+  shadow("ombre-picto", ST, ".hc-emblem .picto", "0 2px 3px rgba(36,24,12,.55)", "Sous les pictos peuple, culture, ascendance de la fiche au survol (en filtre drop-shadow)."),
+  shadow("ombre-phrase-origine", ST, ".hc-origin", "0 1px 1.5px rgba(40,22,8,.3)", "Sous la phrase d'origine de la fiche au survol (text-shadow)."),
 ];
 
 const dim = (name, file, selector, literal, value, usage) => (cssLiteral(file, selector, literal), {name, value, usage});

@@ -208,7 +208,7 @@ assert.match(ui,/if\(entry\.kind==="lieutenant"\)/);
 const mission=fs.readFileSync(path.join(ROOT,"prototype-web","mission.js"),"utf8");
 assert.match(mission,/isLieutenant:team==="player"&&lieutenantIds\.includes\(character\.id\),/);
 assert.match(mission,/function missionAuraNote\(aura,from="captain",whip=0\)/);
-assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","styles.css"),"utf8"),/\.roster-lieutenant\{border-color:#e0b85f;/);
+assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","styles.css"),"utf8"),/\.roster-lieutenant\{border-color:#e3bd76;/);
 assert.match(fs.readFileSync(path.join(ROOT,"prototype-web","reference-data.js"),"utf8"),/lieutenantDialogue: "lieutenant-dialogue\.json"/);
 const copy=read("lieutenant-dialogue.json");
 for(const key of ["demand","accepted","counter","refused"]) assert.ok(copy.promote[key].length>=4,key);

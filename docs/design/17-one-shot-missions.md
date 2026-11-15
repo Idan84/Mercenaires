@@ -358,8 +358,11 @@ ennemis, récompense, expiration…), la lettre du commanditaire s'il y en a une
   sans flèches (« chaque fois qu'on en rajoute, les portraits rétrécissent pour laisser la place de tout afficher »),
   avec les plus grands portraits possibles (« Ils sont trop petits… ils devraient être à 4 col - 5 lignes. Ça rentre » ;
   « on veut pas forcément qu'ils soient plus petits que ceux de gauche. Ceux de gauche sont fixes. À droite, ça
-  s'adapte ») : en 1920 × 1080, 150 px jusqu'à 9, puis 128, 110, et 97 px pour 20 (4 colonnes, 5 rangées) ; le nom tant
-  qu'il ne les rend pas beaucoup plus petits, puis seulement au survol (« 20 pour la mission… + en dortoirs ») ; les fatigués en clair (« 2 mercenaires fatigués : 1 encore fatigué au combat (−20 %), 1 reposé à
+  s'adapte » ; « je préfère que ça soit dynamique. On remplit le panneau en fonction du nombre de mercenaires. On
+  rétrécit à chaque fois qu'on en ajoute ») : seul, un mercenaire prend toute la largeur du panneau ; en 1920 × 1080, 2
+  l'un sur l'autre, 4 en deux par deux, 6 en trois par deux, 9 en trois par trois, puis 12, 16 et 20 (4 colonnes, 5
+  rangées) ; le nom quand les portraits sont grands, puis seulement au survol (« 20 pour la mission… + en dortoirs ») ;
+  les fatigués en clair (« 2 mercenaires fatigués : 1 encore fatigué au combat (−20 %), 1 reposé à
   l'arrivée »), les primes au retour, « Partir demain » et « D'ici demain matin, le départ peut encore être annulé ». En
   bas à gauche, « ‹ Retour à l'annonce ».
 - **Les illustrations** (Idan et Jean-Mi, 2026-11-14) : des gravures à l'encre sur fond blanc, posées en « produit » sur

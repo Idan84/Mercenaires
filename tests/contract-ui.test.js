@@ -337,7 +337,6 @@ assert.doesNotMatch(choice + choiceCss, /mission-pick-seal/, "plus de cachet : l
   for (let count = 1; count <= 20; count++) {
     const g = squadGrid({count, width: 476, height: 496});
     assert.ok(fits(g, count, 476, 496), `${count} : toute l'escouade tient`);
-    assert.ok(g.side <= 150, "pas plus grand que 150 px");
     if (last) {
       assert.ok(g.side <= last.side, `${count} : un de plus ne fait jamais grandir les portraits`);
       assert.ok(!g.named || last.named, `${count} : ni revenir les noms`);
@@ -348,12 +347,16 @@ assert.doesNotMatch(choice + choiceCss, /mission-pick-seal/, "plus de cachet : l
   assert.equal(twenty.cols, 4, "20 en 1920 × 1080 : 4 colonnes…");
   assert.equal(Math.ceil(20 / twenty.cols), 5, "… et 5 rangées");
   assert.ok(twenty.side >= 95, `des portraits plus grands qu'avant (${twenty.side})`);
+  // « Je préfère que ça soit dynamique. On remplit le panneau en fonction du nombre de mercenaires » : seul, il le remplit.
+  const one = squadGrid({count: 1, width: 476, height: 496});
+  assert.deepEqual([one.cols, one.side, one.named], [1, 476, true], "un seul : toute la largeur du panneau, avec son nom");
+  assert.ok(squadGrid({count: 2, width: 476, height: 496}).side < one.side, "un de plus : plus petits");
   const six = squadGrid({count: 6, width: 476, height: 496});
   assert.deepEqual([six.cols, six.named], [3, true], "6 : trois par rangée, avec le nom");
   const small = squadGrid({count: 19, width: 476, height: 178});
   assert.equal(Math.ceil(19 / small.cols), 3, "petit écran : trois rangées");
   assert.ok(fits(small, 19, 476, 178));
-  assert.deepEqual(squadGrid({count: 0, width: 476, height: 496}).cols, 3);
+  assert.equal(squadGrid({count: 0, width: 476, height: 496}).cols, 1, "personne : rien à placer");
 }
 // « Tous ceux qui peuvent pas partir en mission sont déjà filtrés (blessés, autres missions…). Les fatigués sont là. »
 assert.match(choice, /const available=eligible\.filter\(c=>!missionWounded\(c\)\);[\s\S]*renderMissionChoice\(available,/, "les blessés ne sont pas dans la galerie");

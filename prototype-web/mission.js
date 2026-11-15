@@ -1071,12 +1071,14 @@ function renderMissionSquad(){
 }
 // Les plus grands portraits possibles, tous visibles (Idan, 2026-11-15 : « Ils sont trop petits, c'est dommage… ils
 // devraient être à 4 col - 5 lignes. Ça rentre » ; « on veut pas forcément qu'ils soient plus petits que ceux de gauche.
-// Ceux de gauche sont fixes. À droite, ça s'adapte ») : on essaie chaque nombre de colonnes et on garde le plus grand
-// portrait (à taille égale, les rangées les plus longues : on remplit de gauche à droite) ; avec le nom tant que ça ne
-// les rend pas beaucoup plus petits (namedRatio), sinon sans (il reste au survol). labelWithName / labelWithoutName : la
-// hauteur sous le portrait (nom, étoiles). Logique pure, sans page web (tests, portage).
-function missionSquadGrid({count,width,height,gapX=10,gapY=10,labelWithName=46,labelWithoutName=16,nameMinWidth=84,maxSide=150,namedRatio=.9}){
-  if(count<1) return {cols:3,side:maxSide,named:true};
+// Ceux de gauche sont fixes. À droite, ça s'adapte » ; « je préfère que ça soit dynamique. On remplit le panneau en
+// fonction du nombre de mercenaires » : seul, il prend tout le panneau) : on essaie chaque nombre de colonnes et on garde
+// le plus grand portrait (à taille égale, les rangées les plus longues : on remplit de gauche à droite) ; avec le nom
+// quand les portraits sont grands (namedAlways) ou que le nom ne les rend pas beaucoup plus petits (namedRatio), sinon
+// sans (il reste au survol). labelWithName / labelWithoutName : la hauteur sous le portrait (nom, étoiles). Logique
+// pure, sans page web (tests, portage).
+function missionSquadGrid({count,width,height,gapX=10,gapY=10,labelWithName=46,labelWithoutName=16,nameMinWidth=84,maxSide=Infinity,namedRatio=.9,namedAlways=120}){
+  if(count<1) return {cols:1,side:Math.floor(Math.min(maxSide,width)),named:true};
   const best={true:null,false:null};
   for(let cols=1;cols<=count;cols++){
     const rows=Math.ceil(count/cols);
@@ -1087,7 +1089,7 @@ function missionSquadGrid({count,width,height,gapX=10,gapY=10,labelWithName=46,l
       if(!b||side>b.side||side===b.side&&cols>b.cols) best[named]={cols,side,named};
     }
   }
-  const pick=best.true&&(!best.false||best.true.side>=namedRatio*best.false.side)?best.true:best.false;
+  const pick=best.true&&(!best.false||best.true.side>=namedAlways||best.true.side>=namedRatio*best.false.side)?best.true:best.false;
   return pick?{cols:pick.cols,side:pick.side,named:pick.named}:{cols:count,side:1,named:false};
 }
 function layoutMissionSquad(){

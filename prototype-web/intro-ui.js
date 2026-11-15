@@ -82,7 +82,7 @@ function captainCreationData(){
   const ref=game.referenceData||{},copy=ref.captainCreationCopy||{};
   const texts=(section,name)=>{ const r=(copy[section]||[]).find(x=>x.nom===name); return r?{d:r.description,f:r.force,w:r.faiblesse}:{}; };
   const bySection=section=>Object.fromEntries((copy[section]||[]).map(r=>[r.nom,texts(section,r.nom)]));
-  const medallion=(kind,name)=>`assets/creation/medaillons/${kind}-${pictoSlug(name)}.webp`;
+  const medallion=(kind,name)=>`assets/pictos/${kind}-${pictoSlug(name)}.webp`;
   return {
     peoples:peopleNames().map(people=>({nom:people,img:medallion("peuple",people),copy:texts("peoples",people),
       ascendances:compatibleAscendances(people),

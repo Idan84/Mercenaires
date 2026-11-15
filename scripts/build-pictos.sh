@@ -1,26 +1,20 @@
 #!/usr/bin/env bash
-# Pictos des peuples, des cultures et des ascendances : masters d'Idan (assets-src/Picto/, 1024×1024 sur fond blanc)
-# → versions web détourées (prototype-web/assets/pictos/, WebP 128×128 transparent).
+# Pictos des peuples, des cultures et des ascendances : masters d'Idan (assets-src/Picto/, 1024×1024 ; cultures et
+# ascendances sur fond blanc, peuples déjà détourés) → versions web (prototype-web/assets/pictos/, WebP 256×256 transparent).
+# Une seule série pour tout le jeu (Idan, 2026-11-15 : « Ca devrait être la même chose... Je pense qu'on utilise les mêmes
+# images deux fois ») : les pictos (20 à 66 px) et les médaillons de la création du capitaine (140 px) ; 256 px reste net
+# sur un écran haute définition.
 # Le nom de sortie est le « slug » du nom de référence (peoples.json, ancestries.json),
 # calculé de la même façon par prototype-web/picto-ui.js. Nécessite ImageMagick.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 SRC=assets-src/Picto
 OUT=prototype-web/assets/pictos
+SIZE=256
 mkdir -p "$OUT"
 
 # master → nom de sortie
 MAP=(
-  "Peuple/Peuple_Orc.jpg:peuple-orc"
-  "Peuple/Peuple_Homme_Betes.jpg:peuple-homme-bete"
-  "Peuple/Peuple_Reptilien.jpg:peuple-reptilien"
-  "Peuple/Peuple_Humain.jpg:peuple-humain"
-  "Peuple/Peuple_Halfling.jpg:peuple-halfling"
-  "Peuple/Peuple_Elfes.jpg:peuple-elfe"
-  "Peuple/Peuple_Gobelin.jpg:peuple-gobelin"
-  "Peuple/Peuple_Gnome.jpg:peuple-gnome"
-  "Peuple/Peuple_Orgre.jpg:peuple-ogre"
-  "Peuple/Peuple_Nain.jpg:peuple-nain"
   "Ascendance/Asc_Divin.jpg:ascendance-sang-divin"
   "Ascendance/Asc_Dragon.jpg:ascendance-sang-de-dragon"
   "Ascendance/Asc_Djiin.jpg:ascendance-sang-de-djinn"
@@ -70,7 +64,7 @@ cut_picto(){
   convert "$tmp/region.png" -negate \( "$tmp/a.png" -level 6%,100% \) -compose lighten -composite "$tmp/alpha.png"
   box=$(convert "$tmp/alpha.png" -threshold 35% -format %@ info:)
   convert "$tmp/color.png" "$tmp/alpha.png" -alpha off -compose copy_opacity -composite -compose over \
-    -crop "$box" +repage -resize 128x128 -gravity center -background none -extent 128x128 \
+    -crop "$box" +repage -resize ${SIZE}x${SIZE} -gravity center -background none -extent ${SIZE}x${SIZE} \
     -quality 90 "$out"
 }
 
@@ -81,11 +75,20 @@ for entry in "${MAP[@]}"; do
   echo "$out"
 done
 
+# Peuples (Idan, 2026-11-15) : masters déjà détourés, décontaminés et à la bonne proportion (PNG transparents 1024 × 1024,
+# assets-src/Picto/Peuple/README.md). « Ce qui compte ici, c'est la taille extérieure du png, pas l'intérieur » : on garde
+# toute la toile, sans recadrer, et on réduit.
+for src in "$SRC"/Peuple/peuple-*.png; do
+  out="$OUT/$(basename "$src" .png).webp"
+  convert "$src" -resize ${SIZE}x${SIZE} -quality 90 "$out"
+  echo "$out"
+done
+
 # Écoles de magie (Idan, 2026-11-15) : masters déjà détourés (PNG transparents, assets-src/Picto/Magie/README.md),
 # nommés d'après le slug de l'école : on recadre sur la partie nettement opaque et on réduit, comme les autres.
 for src in "$SRC"/Magie/ecole-*.png; do
   out="$OUT/$(basename "$src" .png).webp"
   box=$(convert "$src" -alpha extract -threshold 35% -format %@ info:)
-  convert "$src" -crop "$box" +repage -resize 128x128 -gravity center -background none -extent 128x128 -quality 90 "$out"
+  convert "$src" -crop "$box" +repage -resize ${SIZE}x${SIZE} -gravity center -background none -extent ${SIZE}x${SIZE} -quality 90 "$out"
   echo "$out"
 done

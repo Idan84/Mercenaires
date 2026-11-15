@@ -2427,8 +2427,8 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .mission-roster{flex:1;min-height:0;overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));align-content:start;gap:18px 14px;box-sizing:border-box;padding:10px 52px 54px 6px;scrollbar-width:none;-webkit-mask:linear-gradient(#000 calc(100% - 46px),transparent);mask:linear-gradient(#000 calc(100% - 46px),transparent)}
 .mission-roster::-webkit-scrollbar{display:none}
 .mission-scroll{all:unset;position:absolute;right:-22px;z-index:4;width:84px;height:38px;cursor:pointer;background:url("assets/taverne/fleche-fer.webp") center/contain no-repeat;filter:drop-shadow(0 3px 3px rgba(0,0,0,.6));transition:filter .15s,translate .15s}
-.mission-scroll--down{bottom:30px;transform:rotate(90deg)}
-.mission-scroll--up{top:30px;transform:rotate(-90deg)}
+.mission-scroll--down{top:calc(50% + 33px);transform:rotate(90deg)}
+.mission-scroll--up{top:calc(50% - 71px);transform:rotate(-90deg)}
 .mission-scroll[hidden]{display:none}
 .mission-scroll:hover,.mission-scroll:focus-visible{outline:none;filter:brightness(1.3) sepia(.2) drop-shadow(0 0 5px rgba(240,211,149,.55)) drop-shadow(0 3px 3px rgba(0,0,0,.6))}
 .mission-scroll--down:hover{translate:0 3px}

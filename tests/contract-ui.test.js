@@ -394,4 +394,41 @@ assert.match(choice, /min:1,max:20/, "un contrat : de 1 à 20");
 assert.match(choice, /<button type="button" class="mission-pick-name" data-sheet-open="\$\{c\.id\}"/);
 assert.match(missionJs, /function openMissionChoiceSheet\(event\)\{[\s\S]*?event\.preventDefault\(\);[\s\S]*?showCharacter\(c\);/);
 assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",openMissionChoiceSheet\);/);
+// La fiche au survol (Idan, 2026-11-15) : maquette, pas encore branchée. Le contenu d'Idan ; le cadre de SA culture.
+{
+  const hoverSrc = fs.readFileSync(path.join(root, "prototype-web/hover-card-ui.js"), "utf8");
+  assert.match(html, /<script src="contract-ui\.js"><\/script>\s*<script src="hover-card-ui\.js"><\/script>/);
+  const HUD_BARS = new Function(fs.readFileSync(path.join(root, "prototype-web/hud-bars.js"), "utf8") + "\nreturn HUD_BARS;")();
+  const tagIds = ["occupation/mission", "occupation/mission/camps", "occupation/mission/camps/culte-des-morts", "occupation/garde-du-corps",
+    "equipement/armes", "equipement/armes/haches", "role/degats"];
+  const names = {"occupation/mission/camps/culte-des-morts": "Culte des morts", "occupation/garde-du-corps": "Garde du corps", "equipement/armes/haches": "Haches", "role/degats": "Dégâts"};
+  const stubs = {
+    game: {referenceData: {spells: {rows: [{code: "boule", nom: "Boule de feu", ecole: "Feu"}, {code: "soin", nom: "Soin", ecole: "Vie"}]}, mounts: {rows: [{code: "loup", nom: "Loup de combat"}]}}},
+    tagRules: () => ({litIds: () => tagIds, node: id => ({nom: names[id] || id}),
+      columns: [{code: "occupation", teinte: "rouge"}, {code: "equipement", teinte: "vert"}, {code: "role", teinte: "bleu"}]}),
+    profileRules: () => null, captainAffinity: () => null, tavernRules: () => ({missionBonusDemand: () => 40}), HUD_BARS
+  };
+  const api = new Function(...Object.keys(stubs), hoverSrc + "\nreturn {mercenaryHoverData, hoverCultureFrame};")(...Object.values(stubs));
+  const merc = {name: "Yazga", people: "Orc", culture: "Orcs des steppes", contract: {missionBonus: 81},
+    spells: [{code: "boule"}, {code: "soin"}, {code: "boule"}],
+    items: [{id: 1, category: "Épées à une main"}, {id: 2, category: "Épées à une main"}, {id: 3, category: "Armes de tir"},
+      {id: 4, category: "Intermédiaire"}, {id: 5, itemType: "mount", name: "Croc-Noir", mountCode: "loup"}],
+    equipment: {slots: {weapon_set_1_main: 1, weapon_set_1_off: 2, weapon_set_2_main: 3, armor: 4, mount: 5}}};
+  const d = api.mercenaryHoverData(merc, {missionTag: "occupation/garde-du-corps"});
+  assert.deepEqual(d.tags.map(t => t.name), ["Garde du corps", "Culte des morts", "Haches", "Dégâts"], "seulement les plus précis, celui de la mission d'abord");
+  assert.deepEqual(d.tags.map(t => t.tone), ["rouge", "rouge", "vert", "bleu"]);
+  assert.equal(d.tags[0].mission, true);
+  assert.deepEqual(d.sets, [["Épées à une main", "Épées à une main"], ["Armes de tir"]], "« deux épées, c'est pas épée et bouclier »");
+  assert.equal(d.armor, "Armure intermédiaire");
+  assert.deepEqual(d.schools, ["Feu", "Vie"], "les écoles où il a au moins un sort");
+  assert.deepEqual(d.mount, {name: "Croc-Noir", kind: "Loup de combat"}, "« Ah oui » : sa monture");
+  assert.equal(d.bonus, 81);
+  assert.equal(api.mercenaryHoverData({...merc, contract: null}).bonus, 40, "sans contrat : la prime qu'il demanderait");
+  // Le cadre : la barre et l'anneau de SA culture, pour chacune des 32.
+  for (const bar of Object.values(HUD_BARS)) {
+    const frame = api.hoverCultureFrame(bar.culture, 64);
+    assert.ok(frame.vars.includes(`assets/hud/barres/${frame.key}/center.webp`) && frame.vars.includes(`assets/hud/barres/${frame.key}/ornement.webp`), bar.culture);
+    assert.equal(HUD_BARS[frame.key].culture, bar.culture);
+  }
+}
 console.log("Tableau des missions : annonces sur le panneau, trois par page, flèches, départ annulable, détail, action, choix de l'escouade — OK");

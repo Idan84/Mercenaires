@@ -2375,6 +2375,54 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .mission-btn:active{transform:translateY(2px)}
 .mission-btn:active::before{filter:brightness(.84) drop-shadow(0 2px 2px rgba(0,0,0,.55))}
 .mission-btn:focus-visible{outline:2px solid var(--or-clair);outline-offset:4px}
+/* La fiche au survol (hover-card-ui.js) : le cadre de la culture du mercenaire, sa barre en haut (son nom dans la bande)
+   et en bas, son anneau au milieu de la barre du bas, la bande de la barre en rails sur les côtés. Mesures : hud-bars.js. */
+.hover-card{--or:#c9a461;--or-clair:#f0d395;--ivoire:#f4e5c7;--police-titre:"Cinzel",Georgia,serif;--police-texte:"EB Garamond",Georgia,serif;position:relative;isolation:isolate;box-sizing:border-box;width:480px;padding:calc(var(--hc-bar-h) + 4px) 34px calc(var(--hc-bar-h) + 30px);color:var(--ivoire);font-family:var(--police-texte);text-align:left}
+.hover-card::before{content:"";position:absolute;inset:calc(var(--hc-bar-h) * .45) 12px calc(var(--hc-bar-h) * .45);z-index:-1;border-radius:4px;background:radial-gradient(ellipse at 50% 18%,rgba(74,47,28,.42) 0%,rgba(36,23,13,.62) 60%,rgba(14,9,5,.88) 100%),url("assets/taverne/papier-froisse.webp") center/380px,#2a1c11;background-blend-mode:normal,soft-light,normal;box-shadow:0 24px 44px rgba(0,0,0,.7),inset 0 0 44px rgba(0,0,0,.75)}
+.hover-card-bar{position:absolute;left:0;right:0;z-index:3;display:flex;height:var(--hc-bar-h);pointer-events:none;filter:drop-shadow(0 4px 5px rgba(0,0,0,.6))}
+.hover-card-bar--top{top:0}
+.hover-card-bar--bottom{bottom:0}
+.hover-card-bar i{display:block;height:100%;background-repeat:no-repeat}
+.hover-card-cap--l{flex:none;width:var(--hc-cap-l);background-image:var(--hc-left);background-size:var(--hc-left-w) 100%;background-position:left center}
+.hover-card-band{flex:1;background-image:var(--hc-center);background-size:100% 100%}
+.hover-card-cap--r{flex:none;width:var(--hc-cap-r);background-image:var(--hc-right);background-size:var(--hc-right-w) 100%;background-position:right center}
+.hover-card-head{position:absolute;top:var(--hc-band-top);left:max(var(--hc-cap-l),var(--hc-cap-r));right:max(var(--hc-cap-l),var(--hc-cap-r));z-index:4;display:flex;align-items:center;justify-content:center;height:var(--hc-band-h)}
+.hover-card-head h3{margin:0;overflow:hidden;font:700 clamp(17px,calc(var(--hc-band-h) * .6),24px)/1 var(--police-titre);letter-spacing:.05em;white-space:nowrap;text-overflow:ellipsis;color:#f6ead2;text-shadow:0 2px 3px #000}
+.hover-card-rails{position:absolute;top:calc(var(--hc-bar-h) * .6);bottom:calc(var(--hc-bar-h) * .6);left:12px;right:12px;z-index:2;container-type:size;pointer-events:none}
+.hover-card-rail{--rail:calc(var(--hc-rim-h) * .38);position:absolute;top:50%;width:100cqh;height:var(--rail);background:var(--hc-center) 0 calc(var(--hc-rim-top) * -.38)/100% calc(var(--hc-bar-h) * .38) no-repeat;filter:drop-shadow(0 0 3px rgba(0,0,0,.6))}
+.hover-card-rail--l{left:0;transform:translate(calc(var(--rail) / 2 - 50% - 6px),-50%) rotate(90deg)}
+.hover-card-rail--r{right:0;transform:translate(calc(50% - var(--rail) / 2 + 6px),-50%) rotate(-90deg)}
+.hover-card-ring{position:absolute;left:50%;bottom:calc(var(--hc-bar-h) * .5);z-index:5;height:92px;aspect-ratio:var(--hc-ring-ratio);background:var(--hc-ring) center/contain no-repeat;transform:translate(-50%,50%);filter:drop-shadow(0 4px 6px rgba(0,0,0,.65))}
+.hover-card-ring .picto{position:absolute;left:var(--hc-hole-x);top:var(--hc-hole-y);width:calc(var(--hc-hole) * .8);height:auto;aspect-ratio:1;margin:0;object-fit:contain;transform:translate(-50%,-50%)}
+.hover-card-body{position:relative;z-index:2;display:grid;gap:12px}
+.hover-card-title{margin:0;text-align:center;font:italic 600 19px/1.2 var(--police-texte);color:var(--or-clair)}
+.hover-card-main{display:grid;grid-template-columns:150px minmax(0,1fr);gap:18px;align-items:start}
+.hover-card-avatar .avatar-frame{width:150px;margin:0;border:1px solid rgba(201,164,97,.5);border-radius:4px;box-shadow:0 8px 16px rgba(0,0,0,.55)}
+.hover-card .avatar-fallback small{display:none}
+.hover-card .avatar-fallback span{font-size:2.6rem}
+.hover-card-info{display:grid;align-content:start;gap:11px;min-width:0}
+.hover-card-origin{display:flex;align-items:center;gap:2px;font:500 15px/1.25 var(--police-texte);color:#d8c6a4}
+.hover-card-origin .picto{width:30px;height:30px;margin:0 4px 0 0}
+.hover-card-fame{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px}
+.hover-card-fame .rep-stars{font-size:19px}
+.hover-card-hearts{font-size:15px;letter-spacing:1px;color:rgba(240,211,149,.32)}
+.hover-card-hearts b{font-weight:400;color:#c4352a}
+.hover-card-bonus{display:flex;align-items:center;gap:10px}
+.hover-card-bonus img{width:36px;height:36px;object-fit:contain;filter:drop-shadow(0 3px 3px rgba(0,0,0,.5))}
+.hover-card-bonus span{display:grid;line-height:1.1}
+.hover-card-bonus b{font:700 23px/1.1 var(--police-titre);color:#f3e6cc}
+.hover-card-bonus small{font:italic 500 15px/1.2 var(--police-texte);color:#cdb994}
+.hover-card-kit{display:grid;gap:6px;margin:0;padding-top:10px;border-top:1px solid rgba(201,164,97,.3)}
+.hover-card-row{display:grid;grid-template-columns:78px minmax(0,1fr);align-items:baseline;gap:8px}
+.hover-card-row dt{font:700 12px/1.3 var(--police-texte);letter-spacing:.09em;text-transform:uppercase;color:#a8936f}
+.hover-card-row dd{margin:0;font:600 16px/1.3 var(--police-texte);color:#f3e6cc}
+.hover-card-row dd small{font-weight:500;font-style:italic;color:#cdb994}
+.hover-card-schools{display:inline-flex;flex-wrap:wrap;gap:6px;vertical-align:middle}
+.hover-card-school .school-icon{width:28px;height:28px;padding:4px}
+.hover-card-tags{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:10px 0 0;border-top:1px solid rgba(201,164,97,.3);list-style:none}
+.hover-card-tag{padding:3px 11px 4px;border:1px solid rgba(255,255,255,.12);border-radius:999px;background:var(--tag-1);font:600 14px/1.2 var(--police-texte);color:#f6e9d6}
+.hover-card-tag.is-mission{background:var(--tag-3);box-shadow:0 0 0 2px var(--or-clair),0 0 12px rgba(240,211,149,.5)}
+
 /* Le choix de l'escouade, d'après la maquette de Chatty (Idan, 2026-11-15 : « Oui, vas-y avec la maquette de Chatty ») :
    sur le panneau des missions assombri, la mission en grand ; à gauche, les mercenaires au camp sur le parchemin de la
    création ; à droite, l'escouade dans un panneau de cuir sombre aux coins de bronze ; le retour en bas à gauche. Pensé

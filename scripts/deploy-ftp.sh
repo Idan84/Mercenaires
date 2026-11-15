@@ -4,8 +4,12 @@
 #   1. lit le manifeste du dernier envoi (.deploy-manifest, dans le dossier distant) ; absent : tout le site part ;
 #   2. choisit les fichiers nouveaux ou modifiés (scripts/deploy-changes.sh) ;
 #   3. les envoie, en remplaçant chaque fichier sans l'effacer d'abord (--overwrite : un envoi raté laisse l'ancien en
-#      place), puis envoie le nouveau manifeste, seulement si tout est passé.
-# Rien n'est jamais effacé chez Hostinger : ce qu'Idan y dépose directement (médias) n'est jamais touché.
+#      place) ;
+#   4. efface ce qui ne sert plus (Idan, 2026-11-15 : « Tu peux virer des dossiers ou des fichiers inutiles ? » — « Go ») :
+#      les fichiers qu'elle avait elle-même envoyés et qui ont quitté le site, et ceux de scripts/deploy-obsolete.txt
+#      (scripts/deploy-obsolete.sh), puis leurs dossiers s'ils sont vides ; un échec est signalé sans arrêter l'envoi ;
+#   5. envoie le nouveau manifeste, seulement si l'envoi est passé.
+# Ce qu'Idan dépose directement chez Hostinger (media/) n'est jamais touché.
 #
 # Usage : LFTP_OPEN='open …' bash scripts/deploy-ftp.sh <site> <dossier distant>
 #   LFTP_OPEN : la commande lftp « open » complète (le mot de passe reste dans LFTP_PASSWORD, avec --env-password).
@@ -27,13 +31,38 @@ else
   echo "Pas de manifeste en ligne : tout le site part."
 fi
 
-bash "$(dirname "$0")/deploy-changes.sh" "$SITE" "$WORK/remote-manifest" "$WORK/changes" "$WORK/manifest"
-if [ -z "$(find "$WORK/changes" -type f -print -quit)" ]; then
-  echo "Rien de nouveau à envoyer."
+# Envoi complet : tout part, mais le manifeste en ligne dit encore ce qui avait été envoyé (pour l'effacement).
+if [ "${DEPLOY_FULL:-}" = "1" ]; then
+  lftp -c "$SETTINGS $LFTP_OPEN; get \"$DIR/.deploy-manifest\" -o \"$WORK/previous-manifest\"" 2>/dev/null || true
+  bash "$(dirname "$0")/deploy-changes.sh" "$SITE" "$WORK/absent" "$WORK/changes" "$WORK/manifest"
+else
+  bash "$(dirname "$0")/deploy-changes.sh" "$SITE" "$WORK/remote-manifest" "$WORK/changes" "$WORK/manifest"
+  [ -f "$WORK/remote-manifest" ] && cp "$WORK/remote-manifest" "$WORK/previous-manifest"
+fi
+bash "$(dirname "$0")/deploy-obsolete.sh" "$WORK/previous-manifest" "$WORK/manifest" "$(dirname "$0")/deploy-obsolete.txt" \
+  "$WORK/obsolete-files" "$WORK/obsolete-dirs"
+if [ -z "$(find "$WORK/changes" -type f -print -quit)" ] && [ ! -s "$WORK/obsolete-files" ]; then
+  echo "Rien de nouveau à envoyer ni à effacer."
   exit 0
 fi
 
-lftp -c "$SETTINGS $LFTP_OPEN;
-  mirror --reverse --no-perms --overwrite --parallel=4 --verbose \"$WORK/changes/\" \"$DIR\";
-  put \"$WORK/manifest\" -o \"$DIR/.deploy-manifest\""
+if [ -n "$(find "$WORK/changes" -type f -print -quit)" ]; then
+  lftp -c "$SETTINGS $LFTP_OPEN; mirror --reverse --no-perms --overwrite --parallel=4 --verbose \"$WORK/changes/\" \"$DIR\""
+fi
+
+# L'effacement : fichier par fichier, sans arrêter l'envoi au premier échec (un fichier déjà absent, par exemple).
+if [ -s "$WORK/obsolete-files" ]; then
+  q(){ printf '"%s"' "$(printf '%s' "$1" | sed 's/["\\]/\\&/g')"; }
+  {
+    echo "set ftp:ssl-force true; set ftp:ssl-protect-data true; set net:max-retries 3; set net:timeout 120; set cmd:fail-exit no;"
+    echo "$LFTP_OPEN"
+    while IFS= read -r f; do echo "rm $(q "$DIR/${f#./}")"; done < "$WORK/obsolete-files"
+    while IFS= read -r d; do echo "rmdir $(q "$DIR/${d#./}")"; done < "$WORK/obsolete-dirs"
+  } > "$WORK/obsolete.lftp"
+  if lftp -f "$WORK/obsolete.lftp"; then echo "Effacé : $(wc -l < "$WORK/obsolete-files") fichier(s) qui ne servaient plus."
+  else echo "::warning::Effacement incomplet chez Hostinger (voir ci-dessus)."; fi
+  sed 's/^/  effacé : /' "$WORK/obsolete-files"
+fi
+
+lftp -c "$SETTINGS $LFTP_OPEN; put \"$WORK/manifest\" -o \"$DIR/.deploy-manifest\""
 echo "Envoi terminé ; manifeste mis à jour."

@@ -1,0 +1,91 @@
+# Fichiers à effacer chez Hostinger à la prochaine mise en ligne (scripts/deploy-obsolete.sh). Idan, 2026-11-15 : « Tu
+# peux virer des dossiers ou des fichiers inutiles ? » — « Go ».
+# Les restes d'avant le nettoyage automatique : retirés du jeu, mais jamais effacés en ligne (la mise en ligne n'effaçait
+# rien). Repérés par l'historique du dépôt, puis vérifiés en ligne (présents) et dans le code (plus utilisés).
+# Un chemin du site par ligne. Sans effet sur ce qui est encore dans le site, sur media/ ou sur un fichier déjà effacé :
+# la liste peut rester telle quelle.
+
+# Médaillons de la création : une seule série d'images, assets/pictos/ (#847).
+assets/creation/medaillons/ascendance-sang-d-elfe.webp
+assets/creation/medaillons/ascendance-sang-d-humain.webp
+assets/creation/medaillons/ascendance-sang-d-orc.webp
+assets/creation/medaillons/ascendance-sang-de-demon.webp
+assets/creation/medaillons/ascendance-sang-de-djinn.webp
+assets/creation/medaillons/ascendance-sang-de-dragon.webp
+assets/creation/medaillons/ascendance-sang-de-dryade.webp
+assets/creation/medaillons/ascendance-sang-de-sirene.webp
+assets/creation/medaillons/ascendance-sang-de-troll.webp
+assets/creation/medaillons/ascendance-sang-divin.webp
+assets/creation/medaillons/ascendance-sang-feerique.webp
+assets/creation/medaillons/culture-caravanes-de-ferrailleurs.webp
+assets/creation/medaillons/culture-cites-libres.webp
+assets/creation/medaillons/culture-clans-des-grandes-steppes.webp
+assets/creation/medaillons/culture-elfes-des-grandes-cites.webp
+assets/creation/medaillons/culture-elfes-noirs.webp
+assets/creation/medaillons/culture-elfes-sylvains.webp
+assets/creation/medaillons/culture-explorateurs.webp
+assets/creation/medaillons/culture-gnomes-des-cavernes.webp
+assets/creation/medaillons/culture-gnomes-des-forets.webp
+assets/creation/medaillons/culture-gnomes-des-villes.webp
+assets/creation/medaillons/culture-gobelins-des-cavernes.webp
+assets/creation/medaillons/culture-gobelins-des-villes.webp
+assets/creation/medaillons/culture-halflings-des-cites-humaines.webp
+assets/creation/medaillons/culture-halflings-des-villages-isoles.webp
+assets/creation/medaillons/culture-montagnes-du-nord.webp
+assets/creation/medaillons/culture-nains-des-montagnes.webp
+assets/creation/medaillons/culture-nains-du-chaos.webp
+assets/creation/medaillons/culture-nains-esclaves.webp
+assets/creation/medaillons/culture-ogres-des-cites-humaines.webp
+assets/creation/medaillons/culture-ogres-des-montagnes.webp
+assets/creation/medaillons/culture-ogres-des-steppes.webp
+assets/creation/medaillons/culture-orcs-des-steppes.webp
+assets/creation/medaillons/culture-orcs-des-villes.webp
+assets/creation/medaillons/culture-orcs-noirs.webp
+assets/creation/medaillons/culture-reptiliens-des-cites-temples.webp
+assets/creation/medaillons/culture-reptiliens-des-marecages.webp
+assets/creation/medaillons/culture-reptiliens-des-villes.webp
+assets/creation/medaillons/culture-royaumes-du-soleil-levant.webp
+assets/creation/medaillons/culture-steppes-desertiques.webp
+assets/creation/medaillons/culture-tribus-de-la-jungle.webp
+assets/creation/medaillons/culture-tribus-des-forets-anciennes.webp
+assets/creation/medaillons/culture-tribus-nordiques.webp
+assets/creation/medaillons/peuple-elfe.webp
+assets/creation/medaillons/peuple-gnome.webp
+assets/creation/medaillons/peuple-gobelin.webp
+assets/creation/medaillons/peuple-halfling.webp
+assets/creation/medaillons/peuple-homme-bete.webp
+assets/creation/medaillons/peuple-humain.webp
+assets/creation/medaillons/peuple-nain.webp
+assets/creation/medaillons/peuple-ogre.webp
+assets/creation/medaillons/peuple-orc.webp
+assets/creation/medaillons/peuple-reptilien.webp
+
+# Gravures de missions écartées par Idan (trop proches d'une autre).
+assets/missions/camp-ogre-2.webp
+assets/missions/camp-ogre-3.webp
+assets/missions/camp-ogre-4.webp
+assets/missions/camp-orc-2.webp
+assets/missions/camp-orc-3.webp
+assets/missions/camp-voleurs-3.webp
+assets/missions/camp-voleurs-4.webp
+assets/missions/chasse-chiens-sauvages-2.webp
+assets/missions/chasse-papillons-2.webp
+assets/missions/chateau-maudit-2.webp
+assets/missions/chateau-maudit-3.webp
+assets/missions/cimetiere-profane-2.webp
+
+# « Grande épée », renommée « Épée à deux mains ».
+assets/equipment-large/armes/grande-epee-1.webp
+assets/equipment-large/armes/grande-epee-2.webp
+assets/equipment-large/armes/grande-epee-3.webp
+assets/equipment-large/armes/grande-epee-4.webp
+assets/equipment/armes/grande-epee-1.webp
+assets/equipment/armes/grande-epee-2.webp
+assets/equipment/armes/grande-epee-3.webp
+assets/equipment/armes/grande-epee-4.webp
+
+# Anciens fichiers remplacés : picto de culture, image de la taverne, scripts.
+assets/pictos/culture-nains-reduits-en-esclavage-dans-les-colonies.webp
+assets/taverne/taverne.webp
+blason-bodies.js
+tavern-taverniers.js

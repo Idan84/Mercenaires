@@ -4,6 +4,8 @@
 // scripts/build-pictos.sh). Le fichier porte le « slug » du nom de référence :
 // « Sang d’elfe » → assets/pictos/ascendance-sang-d-elfe.webp. Purement visuel.
 // Écoles de magie (Idan, 2026-11-15) : « Feu » → assets/pictos/ecole-feu.webp.
+// Le même composant pour tout le jeu, création du capitaine comprise (Idan, 2026-11-15 : « La création du capitaine
+// construit ses propres images : C'est pas normal ») ; ses styles communs : pictos.css.
 const PICTO_KINDS={people:"peuple",culture:"culture",ascendance:"ascendance",school:"ecole"};
 
 function pictoSlug(name){
@@ -26,13 +28,43 @@ function pictoDescription(kind,name){
   return rows.find(r=>r.nom===name)?.description||"";
 }
 
-// <img> prêt à insérer, ou "" sans nom (pas d'ascendance). Une image manquante se masque.
-function renderPicto(kind,name,{size="sm"}={}){
+// Les gouttes d'ascendance (Idan, 2026-11-15) : « la goutte arrive toujours par opacité d'une seconde sur la goutte rubis
+// puis on fait jouer en boucle le webp derrière pour faire le halo » ; le halo partout où l'on voit la goutte (« On tente
+// d'utiliser le halo magique partout ou on utilise la goutte de sang ») ; la goutte sombre pour « Aucune » ascendance.
+const PICTO_GOUTTE={halo:"assets/pictos/goutte-halo.webp",rubis:"assets/pictos/goutte-rubis.webp",sombre:"assets/pictos/goutte-sombre.webp"};
+
+// Le picto prêt à insérer, ou "" sans nom (pas d'ascendance). Une image manquante se masque.
+// size : xs, sm, md… (styles.css), ou null pour laisser la page le dimensionner (création du capitaine) ;
+// tip : false, sans la bulle au survol ; none : true, la goutte sombre d'une ascendance absente (« Aucune »).
+function renderPicto(kind,name,{size="sm",tip=true,none=false}={}){
+  const attr=text=>String(text).replace(/[&<>"]/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
+  const cls="picto"+(size?" picto-"+size:"");
+  if(kind==="ascendance"&&none) return `<img class="${cls} picto-goutte-sombre" src="${PICTO_GOUTTE.sombre}" alt="" loading="lazy">`;
   const src=pictoPath(kind,name);
   if(!src) return "";
-  const attr=text=>String(text).replace(/[&<>"]/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
-  return `<img class="picto picto-${size}" src="${src}" alt="" data-picto-kind="${kind}" data-picto-name="${attr(name)}" loading="lazy" onerror="this.remove()">`;
+  const data=` data-picto-kind="${kind}"`+(tip?` data-picto-name="${attr(name)}"`:"");
+  if(kind==="ascendance"){
+    return `<span class="${cls} picto-goutte"${data} data-goutte="${pictoSlug(name)}">`
+      +`<img class="goutte-halo" src="${PICTO_GOUTTE.halo}" alt="" loading="lazy">`
+      +`<img class="goutte-rubis" src="${PICTO_GOUTTE.rubis}" alt="" loading="lazy">`
+      +`<img class="goutte-embleme" src="${src}" alt="" loading="lazy" onerror="this.remove()"></span>`;
+  }
+  return `<img class="${cls}" src="${src}" alt=""${data} loading="lazy" onerror="this.remove()">`;
 }
+
+// Le fondu de l'emblème joue quand la goutte apparaît, pas quand le jeu redessine un écran déjà affiché : une goutte qui
+// remplace, dans la même mise à jour, une goutte de la même ascendance arrive sans fondu (is-still, pictos.css).
+function watchGouttes(root){
+  if(typeof MutationObserver==="undefined"||!root) return;
+  const gouttes=node=>node.nodeType!==1?[]:[...(node.matches(".picto-goutte")?[node]:[]),...node.querySelectorAll(".picto-goutte")];
+  new MutationObserver(records=>{
+    const gone=new Set();
+    for(const r of records) for(const n of r.removedNodes) for(const g of gouttes(n)) gone.add(g.dataset.goutte);
+    if(!gone.size) return;
+    for(const r of records) for(const n of r.addedNodes) for(const g of gouttes(n)) if(gone.has(g.dataset.goutte)) g.classList.add("is-still");
+  }).observe(root,{childList:true,subtree:true});
+}
+if(typeof document!=="undefined") watchGouttes(document.documentElement);
 
 function pictoTipElement(){
   let tip=document.getElementById("picto-tip");
@@ -69,4 +101,4 @@ function initializePictoTips(){
 }
 if(typeof document!=="undefined") initializePictoTips();
 
-if(typeof module!=="undefined"&&module.exports) module.exports={pictoSlug,pictoPath,renderPicto,pictoDescription};
+if(typeof module!=="undefined"&&module.exports) module.exports={pictoSlug,pictoPath,renderPicto,pictoDescription,PICTO_GOUTTE};

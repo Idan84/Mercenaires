@@ -1,0 +1,16 @@
+/* Pictos : styles communs au jeu (index.html) et à la création du capitaine (creation-capitaine.html), avec le même
+   composant (picto-ui.js, renderPicto). Idan, 2026-11-15 : « La création du capitaine construit ses propres images :
+   C'est pas normal ». */
+
+/* Gouttes d'ascendance (Idan, 2026-11-15) : trois calques de la même toile, le halo animé derrière, la goutte rubis,
+   puis la goutte à emblème qui « arrive toujours par opacité d'une seconde » ; pas de fondu quand le jeu redessine un
+   écran déjà affiché (is-still, picto-ui.js). Sans animation pour qui les a coupées dans son système. */
+.picto-goutte{position:relative;display:inline-block}
+.picto-goutte>img{position:absolute;inset:0;width:100%;height:100%;margin:0;object-fit:contain;filter:none}
+.picto-goutte>.goutte-embleme{animation:goutte-apparait 1s ease-out both}
+.picto-goutte.is-still>.goutte-embleme{animation:none}
+@keyframes goutte-apparait{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){
+  .picto-goutte>.goutte-halo{display:none}
+  .picto-goutte>.goutte-embleme{animation:none}
+}

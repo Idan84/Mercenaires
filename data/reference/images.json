@@ -219,13 +219,13 @@
     {
       "cle": "pictos",
       "famille": "Pictos : peuples, cultures, ascendances, écoles",
-      "nombre": 62,
+      "nombre": 65,
       "ou": "Création du capitaine (choix du peuple, de la culture et de l'ascendance, récapitulatif), recrues de la taverne, liste des mercenaires, fiche du mercenaire, fiche au survol (zone 2).",
       "pourquoi": "Reconnaître d'un coup d'œil le peuple, la culture, l'ascendance ou l'école de magie.",
-      "fichiers": "assets/pictos/<peuple|culture|ascendance|ecole>-<nom>.webp",
+      "fichiers": "assets/pictos/<peuple|culture|ascendance|ecole>-<nom>.webp ; gouttes d'ascendance : goutte-halo.webp (halo animé), goutte-rubis.webp, goutte-sombre.webp (« Aucune »).",
       "affichage": "20 px (taverne), 32 px (liste), 52 à 66 px (fiches), 134 à 140 px (création du capitaine).",
       "depot": "Carré, 1024 px : JPEG sur fond blanc (JC3 détoure) ou PNG transparent.",
-      "format_jeu": "WebP transparent 256 × 256 : une seule série pour le jeu et la création du capitaine.",
+      "format_jeu": "WebP transparent 256 × 256 : une seule série pour le jeu et la création du capitaine (picto-ui.js, pictos.css). Ascendance : trois calques de la même toile, le halo animé (WebP de 80 images, 4 s), la goutte rubis, la goutte à emblème qui apparaît en une seconde.",
       "alternates": "Non. Les pictos des écoles ne s'affichent encore que dans la fiche au survol, pas encore branchée au jeu.",
       "source": "assets-src/Picto/ et Hostinger media/pictos/ → scripts/build-pictos.sh.",
       "exemples": [

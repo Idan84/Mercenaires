@@ -82,11 +82,10 @@ function captainCreationData(){
   const ref=game.referenceData||{},copy=ref.captainCreationCopy||{};
   const texts=(section,name)=>{ const r=(copy[section]||[]).find(x=>x.nom===name); return r?{d:r.description,f:r.force,w:r.faiblesse}:{}; };
   const bySection=section=>Object.fromEntries((copy[section]||[]).map(r=>[r.nom,texts(section,r.nom)]));
-  const medallion=(kind,name)=>`assets/pictos/${kind}-${pictoSlug(name)}.webp`;
   return {
-    peoples:peopleNames().map(people=>({nom:people,img:medallion("peuple",people),copy:texts("peoples",people),
+    peoples:peopleNames().map(people=>({nom:people,copy:texts("peoples",people),
       ascendances:compatibleAscendances(people),
-      cultures:culturesForPeople(people).map(culture=>({nom:culture,img:medallion("culture",culture),copy:texts("cultures",culture),
+      cultures:culturesForPeople(people).map(culture=>({nom:culture,copy:texts("cultures",culture),
         origins:originsForCulture(culture),alignment:MercenairesCreation.usualAlignment(ref,people,culture)}))})),
     weapons:(ref.weapons?.rows||[]).map(w=>({nom:w.nom,famille:weaponFamily(w)})).filter(w=>w.famille&&w.famille!=="Boucliers"),
     grid:ref.alignmentGeneration?.grid||[],

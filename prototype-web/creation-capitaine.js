@@ -74,11 +74,11 @@ const roueLecture=(it,u)=>`<div class="rl-f"><b>Forces</b><p>${txt(it?.f||"")}</
 // Ce que chaque écran à choix propose : valeur, nom, image, textes ; lignes réservées (lt : description, lc : colonnes).
 const CHOIX={
   people:{attr:"people",cur:()=>S.people,lignes:1,lt:2,lc:2,
-    list:()=>DATA.peoples.map(p=>({v:p.nom,nom:p.nom,img:p.img,...p.copy}))},
+    list:()=>DATA.peoples.map(p=>({v:p.nom,nom:p.nom,pic:"people",...p.copy}))},
   culture:{attr:"culture",cur:()=>S.culture,lignes:2,lt:2,lc:3,
-    list:()=>(peopleOf()?.cultures||[]).map(c=>({v:c.nom,nom:c.nom,img:c.img,...c.copy}))},
+    list:()=>(peopleOf()?.cultures||[]).map(c=>({v:c.nom,nom:c.nom,pic:"culture",...c.copy}))},
   ascendance:{attr:"ascendance",cur:()=>S.ascendance,lignes:1,lt:2,lc:2,
-    list:()=>["",...(peopleOf()?.ascendances||[])].map(a=>a?{v:a,nom:a,img:medaillon("ascendance",a),...DATA.ancestryCopy[a]}:{v:"",nom:"Aucune",img:null,d:"Le sang de votre peuple, sans mélange."})},
+    list:()=>["",...(peopleOf()?.ascendances||[])].map(a=>a?{v:a,nom:a,pic:"ascendance",...DATA.ancestryCopy[a]}:{v:"",nom:"Aucune",pic:"ascendance",aucune:true,d:"Le sang de votre peuple, sans mélange."})},
   origin:{attr:"origin",cur:()=>S.origin,lecture:{titre:false},
     list:()=>(cultureOf()?.origins||[]).map(o=>({v:o,nom:ORIGIN_LABELS[o]||o,...DATA.originCopy[o]}))},
   alignment:{attr:"alignment",cur:()=>S.alignment,
@@ -89,7 +89,9 @@ const CHOIX={
       t?.parentElement.classList.toggle("apercu",(v!=null&&v!==S.avatar)||S.avatar==null); }},
 };
 const itemOf=(key,v)=>CHOIX[key].list().find(x=>x.v===v)||null;
-const medaillon=(kind,nom)=>`assets/pictos/${kind}-${slug(nom)}.webp`;
+// Les médaillons de peuple, de culture et d'ascendance : le picto du jeu (picto-ui.js), sans bulle (la fiche sur le
+// parchemin explique) ; la goutte sombre pour « Aucune » ascendance (Idan, 2026-11-15).
+const medaillon=x=>renderPicto(x.pic,x.v,{size:null,tip:false,none:Boolean(x.aucune)});
 // Les grands parchemins font la largeur de la bande des étapes (de « Nom » à « Récap »), mesurée par ajusteZoom.
 const BANDE="var(--bande,1200px)";
 // La compagnie : nom par défaut (le texte d'exemple du champ), soixante blasons.
@@ -114,7 +116,7 @@ document.addEventListener("focusin",e=>{ const m=e.target.closest?.("[data-lire]
 function ecranMedailles(key){
   const c=CHOIX[key],list=c.list(),cur=c.cur(),n=list.length,cols=n>6?Math.ceil(n/2):n,it=itemOf(key,cur);
   return `<div class="ecran" style="--l:860px;--lt:${c.lt};--lc:${c.lc}">
-    <div class="medailles lecture" style="--c:${cols};--w:${n===6?140:166}px;--p:${n===6?134:140}px;--lignes:${c.lignes}" role="group">${list.map((x,i)=>`<button type="button" class="medaille" style="--i:${i}" data-${c.attr}="${esc(x.v)}" data-lire="${esc(x.v)}" aria-pressed="${cur===x.v}">${x.img?`<img src="${x.img}" alt="">`:`<span class="aucune" aria-hidden="true"><i></i></span>`}<span class="nom">${txt(x.nom)}</span></button>`).join("")}</div>
+    <div class="medailles lecture" style="--c:${cols};--w:${n===6?140:166}px;--p:${n===6?134:140}px;--lignes:${c.lignes}" role="group">${list.map((x,i)=>`<button type="button" class="medaille" style="--i:${i}" data-${c.attr}="${esc(x.v)}" data-lire="${esc(x.v)}" aria-pressed="${cur===x.v}">${medaillon(x)}<span class="nom">${txt(x.nom)}</span></button>`).join("")}</div>
     <div class="parch fiche${it?"":" vide"}" id="fiche" aria-live="polite"><div id="lecture">${lectureHtml(it)}</div>${navHtml(STEPS[S.step].ok())}</div>
   </div>`;
 }
@@ -200,7 +202,7 @@ const RENDER={
   recap(){
     const w=S.weapon,sp=SPIRITS[S.spirit],tr=TRAITS[S.trait],ar=ARMORS.find(x=>x.key===S.armor);
     const p=peopleOf(),c=cultureOf(),nom=[S.prenom.trim(),S.nom.trim()].filter(Boolean).join(" ")||"—";
-    const picto=(img,label)=>`<figure>${img?`<img src="${img}" alt="">`:`<span class="aucune"></span>`}<figcaption>${txt(label)}</figcaption></figure>`;
+    const picto=(kind,nom)=>`<figure>${renderPicto(kind,nom,{size:null,tip:false})}<figcaption>${txt(nom)}</figcaption></figure>`;
     const rows=[["Origine",ORIGIN_LABELS[S.origin]||S.origin],["Alignement",S.alignment],["Arme favorite",w],
       ["Tenue",ar&&`<q>${txt(ar.q)}</q>`],["Esprit",sp&&`<q>${txt(sp.q)}</q>`],["Caractère",tr&&`<q>${txt(tr.q)}</q>`]];
     // Signé : le cachet se pose, puis la partie commence (le bouton y mène aussitôt).
@@ -208,7 +210,7 @@ const RENDER={
     return formulaire("Registre des capitaines",`<div class="registre2">
         <figure class="tableau"><span class="toile" style="${S.avatar?piedStyle(S.avatar):""}"></span></figure>
         <div><h2 class="r-entete"><span>Capitaine ${txt(nom)}</span></h2><div class="r-cols">
-        <section><div class="r-pictos">${p?picto(p.img,p.nom):""}${c?picto(c.img,c.nom):""}${S.ascendance?picto(medaillon("ascendance",S.ascendance),S.ascendance):""}</div>
+        <section><div class="r-pictos">${p?picto("people",p.nom):""}${c?picto("culture",c.nom):""}${S.ascendance?picto("ascendance",S.ascendance):""}</div>
           <dl>${rows.map(([k,v])=>`<dt>${k}</dt><dd>${v&&String(v).startsWith("<q>")?v:txt(v||"—")}</dd>`).join("")}</dl>
           <div class="signature"><span class="${S.signature?"trace":""}">${S.signe?txt(nom):""}</span><small>Signature</small></div></section>
         <i></i>

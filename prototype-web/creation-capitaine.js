@@ -89,7 +89,7 @@ const CHOIX={
       t?.parentElement.classList.toggle("apercu",(v!=null&&v!==S.avatar)||S.avatar==null); }},
 };
 const itemOf=(key,v)=>CHOIX[key].list().find(x=>x.v===v)||null;
-const medaillon=(kind,nom)=>`assets/creation/medaillons/${kind}-${slug(nom)}.webp`;
+const medaillon=(kind,nom)=>`assets/pictos/${kind}-${slug(nom)}.webp`;
 // Les grands parchemins font la largeur de la bande des étapes (de « Nom » à « Récap »), mesurée par ajusteZoom.
 const BANDE="var(--bande,1200px)";
 // La compagnie : nom par défaut (le texte d'exemple du champ), soixante blasons.

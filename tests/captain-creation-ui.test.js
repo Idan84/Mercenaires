@@ -49,7 +49,7 @@ for(const p of data.peoples){
     assert.ok(c.origins.length,c.nom);
     assert.ok(reference.alignments.rows.some(a=>a.nom===c.alignment),"alignement usuel de "+c.nom);
   }
-  for(const a of p.ascendances) assert.ok(fs.existsSync(path.join(WEB,"assets/creation/medaillons/ascendance-"+pictoSlug(a)+".webp")),a);
+  for(const a of p.ascendances) assert.ok(fs.existsSync(path.join(WEB,"assets/pictos/ascendance-"+pictoSlug(a)+".webp")),a);
 }
 assert.equal(data.peoples.find(p=>p.nom==="Elfe").cultures.find(c=>c.nom==="Elfes noirs").alignment,"Chaotique mauvais","exception de la culture");
 assert.equal(data.peoples.find(p=>p.nom==="Elfe").cultures.find(c=>c.nom==="Elfes sylvains").alignment,"Loyal bon","alignement du peuple");

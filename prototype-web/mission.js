@@ -4976,6 +4976,7 @@ function stepMissionEnemyTurn(m){
     if(!unit.alive||unit.decoy) continue;
     const unseen=!missionShownToPlayer(unit);
     m.pacedUnit=unit;
+    m.pacedStart={id:unit.id,q:unit.q,r:unit.r,unseen};
     enemyMissionAct(unit);
     // Un ennemi resté caché : pas de pause (on devinerait qu'il bouge).
     if(unseen&&!missionShownToPlayer(unit)){ m.pacedUnit=null; continue; }
@@ -5300,10 +5301,13 @@ function missionStageSize(){
   const stage=$("mission-map").parentElement;
   return {w:Number(stage?.clientWidth)||0,h:Number(stage?.clientHeight)||0};
 }
-function fitMissionView(){
+function missionFitScale(){
   const {width,height}=missionMapSize(),{w,h}=missionStageSize();
-  const scale=Math.min(MISSION_ZOOM.fitMax,w>0?(w-16)/width:1,h>0?(h-16)/height:1);
-  Object.assign(missionView,{scale,x:w>0?(w-width*scale)/2:0,y:h>0?(h-height*scale)/2:0,fitted:true});
+  return Math.min(MISSION_ZOOM.fitMax,w>0?(w-16)/width:1,h>0?(h-16)/height:1);
+}
+function fitMissionView(){
+  const {width,height}=missionMapSize(),{w,h}=missionStageSize(),scale=missionFitScale();
+  Object.assign(missionView,{scale,x:w>0?(w-width*scale)/2:0,y:h>0?(h-height*scale)/2:0,fitted:true,anim:null});
 }
 // La carte ne sort jamais entièrement de l'écran : il en reste toujours une bande visible.
 function clampMissionView(){
@@ -5316,6 +5320,7 @@ function applyMissionView(){
   $("mission-map").style.transform=`translate(${Math.round(missionView.x)}px,${Math.round(missionView.y)}px) scale(${missionView.scale})`;
 }
 function zoomMissionView(factor,cx=null,cy=null){
+  missionView.anim=null;
   const {w,h}=missionStageSize(),s0=missionView.scale;
   const s=Math.min(MISSION_ZOOM.max,Math.max(MISSION_ZOOM.min,s0*factor));
   if(cx===null){ cx=w/2; cy=h/2; }
@@ -5335,6 +5340,46 @@ function centerMissionView(unit,onlyIfHidden=false){
   missionView.y=h/2-p.y*s;
   missionView.fitted=false;
   clampMissionView();
+}
+// La caméra au début de chaque tour (Idan, 2026-11-14 : « quand un joueur ou un ennemi commence son tour, on fait une
+// petite animation de caméra qui se met sur lui, zoom et dézoome un peu en le mettant au centre sauf si après le dézoom
+// on a des bords vides de la carte. Dans ce cas, le personnage n'est plus centré dans la vue, on décale pour voir sur les
+// bords les bords de la carte. ») : la vue glisse sur lui en zoomant un peu (× 1,15), puis revient au zoom du joueur
+// (celui de la carte entière s'il ne l'a pas changé), centrée sur lui ; sur un bord, la vue s'arrête au bord de la carte
+// (une carte plus petite que l'écran reste centrée). Plus courte en mode Accélérer ; rien si le système demande moins de
+// mouvement (la vue va directement à sa place). Le joueur qui zoome ou fait glisser la carte l'interrompt.
+const MISSION_CAMERA={zoom:1.15,duration:700,fastDuration:320,peak:.42};
+// La vue à cette échelle, le point p au centre ; bounded : sans vide au-delà des bords de la carte.
+function missionViewOn(p,scale,bounded){
+  const {width,height}=missionMapSize(),{w,h}=missionStageSize();
+  const axis=(stage,size,want)=>!bounded?want:size<=stage?(stage-size)/2:Math.min(0,Math.max(stage-size,want));
+  return {scale,x:axis(w,width*scale,w/2-p.x*scale),y:axis(h,height*scale,h/2-p.y*scale)};
+}
+function missionReducedMotion(){
+  return typeof window==="undefined"||!window.requestAnimationFrame||Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches);
+}
+function startMissionCamera(unit,from=unit){
+  const {w,h}=missionStageSize();
+  if(!unit||unit.offMap||!from||!(w>0&&h>0)) return;
+  const p=missionHexPixel(from.q,from.r),fitted=missionView.fitted,base=fitted?missionFitScale():missionView.scale;
+  const end={...missionViewOn(p,base,true),fitted};
+  if(missionReducedMotion()){ Object.assign(missionView,end,{anim:null}); applyMissionView(); return; }
+  const start={scale:missionView.scale,x:missionView.x,y:missionView.y};
+  const peak=missionViewOn(p,Math.min(MISSION_ZOOM.max,base*MISSION_CAMERA.zoom),false);
+  const duration=game.missionFast?MISSION_CAMERA.fastDuration:MISSION_CAMERA.duration,anim={unit:unit.id};
+  const ease=k=>k*k*(3-2*k),mix=(a,b,k)=>({scale:a.scale+(b.scale-a.scale)*k,x:a.x+(b.x-a.x)*k,y:a.y+(b.y-a.y)*k});
+  missionView.anim=anim;
+  let t0=null;
+  const step=now=>{
+    if(missionView.anim!==anim) return;
+    if(t0===null) t0=now;
+    const t=Math.min(1,(now-t0)/duration),k=MISSION_CAMERA.peak;
+    Object.assign(missionView,t<k?mix(start,peak,ease(t/k)):mix(peak,end,ease((t-k)/(1-k))));
+    if(t>=1){ Object.assign(missionView,end,{anim:null}); applyMissionView(); return; }
+    applyMissionView();
+    window.requestAnimationFrame(step);
+  };
+  window.requestAnimationFrame(step);
 }
 // Tiroirs repliables (équipes à gauche, console à droite) : état retenu dans le navigateur.
 const MISSION_DRAWERS_KEY="bw-mission-drawers";
@@ -5459,8 +5504,15 @@ function renderMission(){
     m.fx=[];
     fitMissionView();
   }
-  else if(missionView.fitted) fitMissionView();
-  if(u&&u.id!==missionView.activeId){ missionView.activeId=u.id; if(!missionView.fitted) centerMissionView(u,true); }
+  else if(missionView.fitted&&!missionView.anim) fitMissionView();
+  // L'ennemi a déjà joué quand la carte se redessine : la caméra part de la case où il a commencé son tour.
+  const turnUnit=m.phase==="deploy"||m.over?null:u||m.pacedUnit;
+  if(turnUnit&&turnUnit.id!==missionView.activeId){
+    missionView.activeId=turnUnit.id;
+    const start=m.pacedStart?.id===turnUnit.id?m.pacedStart:null;
+    const from=start?(start.unseen?turnUnit:start):missionView.pos?.[turnUnit.id]||turnUnit;
+    startMissionCamera(turnUnit,from);
+  }
   applyMissionView();
   map.innerHTML=decorTiles+reliefTiles+cells+tokens;
   missionHover.key=null;
@@ -5963,7 +6015,7 @@ function initializeMissionMapView(){
   const stage=$("mission-map").parentElement;
   // La place du plateau change (tiroirs, barre de sorts, fenêtre) : une carte encore cadrée se recadre.
   if(typeof ResizeObserver!=="undefined") new ResizeObserver(()=>{
-    if(!game.mission||!missionView.fitted) return;
+    if(!game.mission||!missionView.fitted||missionView.anim) return;
     fitMissionView();
     applyMissionView();
   }).observe(stage);
@@ -5987,6 +6039,7 @@ function initializeMissionMapView(){
   // Glisser pour déplacer la carte ; au-delà de 6 px, le clic qui suit ne compte pas sur une case.
   stage.addEventListener("pointerdown",event=>{
     if(event.button!==0&&event.button!==1) return;
+    missionView.anim=null;
     missionView.drag={x:event.clientX,y:event.clientY,vx:missionView.x,vy:missionView.y};
     missionView.dragged=false;
   });
@@ -6028,6 +6081,7 @@ function initializeMissionMapView(){
     const row=event.target.closest("[data-unit-id]");
     const unit=row&&game.mission?missionUnitById(row.dataset.unitId):null;
     if(!unit||unit.offMap) return;
+    missionView.anim=null;
     centerMissionView(unit);
     applyMissionView();
   };

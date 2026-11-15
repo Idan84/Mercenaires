@@ -2424,7 +2424,7 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
    maquette (sa carte : 1645 × 1080 pixels) ; chaque zone est placée en pourcentage de la carte, donc de sa largeur et de sa
    hauteur. Pas de cadre pour l'instant (Idan, 2026-11-15) : ils viendront en dernier, une image par culture posée dessus. */
 .hover-card{--hc-w:860px;--hc-h:565px;--hc-cart-h:calc(var(--hc-h) * .1435);--hc-parchemin:#ebdfc4;
-  --hc-fil:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 2' preserveAspectRatio='none'%3E%3ClinearGradient id='g'%3E%3Cstop offset='0' stop-opacity='0'/%3E%3Cstop offset='.55' stop-opacity='.85'/%3E%3Cstop offset='1'/%3E%3C/linearGradient%3E%3Cpolygon points='0,1 100,0 100,2' fill='url(%23g)'/%3E%3C/svg%3E");--hc-lance:url("assets/creation/svg/lance.svg");
+  --hc-encre-titre:linear-gradient(180deg,rgba(255,251,240,.6),rgba(255,251,240,.1) 55%,rgba(60,38,16,.24)) 0 0/100% 1lh repeat-y,url("assets/creation/parchemin.webp") 50% 50%/1000px auto,var(--hc-parchemin);
   --or:#c9a461;--or-clair:#f0d395;--encre:#2c1b10;--encre-2:#5d4429;
   --police-titre:"Cinzel",Georgia,serif;--police-texte:"EB Garamond",Georgia,serif;
   position:relative;isolation:isolate;box-sizing:border-box;display:block;width:var(--hc-w);height:var(--hc-h);
@@ -2439,18 +2439,22 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
    la culture seule : la bande de la pièce du milieu de sa barre, à la hauteur du cartouche, coupée en haut et en bas. */
 .hc-banner{position:absolute;left:36.2%;right:1.2%;top:1.5%;height:14.35%;box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1fr);align-content:center;justify-items:center;gap:calc(var(--hc-cart-h) * .04);padding:0 4%;overflow:hidden;
   background:var(--hc-texture) 50% calc(var(--hc-cart-h) * var(--hc-tex-y) * -1)/max(100%,calc(var(--hc-cart-h) * var(--hc-tex-w))) calc(var(--hc-cart-h) * var(--hc-tex-h)) no-repeat,#1d2a22;text-align:center}
-/* Le nom et le titre : en réserve du parchemin (sa couleur), avec une légère ombre portée, comme chez Chatty. Une seule
-   ligne chacun (fitHoverCard baisse la police s'il le faut). */
-.hc-banner h3{position:relative;z-index:1;margin:0;max-width:100%;font:600 calc(var(--hc-cart-h) * .42 * var(--hc-name-fit,1))/1.05 var(--police-texte);letter-spacing:.01em;color:var(--hc-parchemin);text-shadow:1px 2px 2px rgba(0,0,0,.7);white-space:nowrap}
-.hc-title{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:calc(var(--hc-cart-h) * .08);margin:0;max-width:100%;font:italic 500 calc(var(--hc-cart-h) * .29)/1.15 var(--police-texte);color:var(--hc-parchemin);text-shadow:1px 1px 2px rgba(0,0,0,.7)}
-.hc-title span{min-width:0;white-space:nowrap;overflow:hidden}
+/* Le nom (en gras) et le titre : en réserve du parchemin, avec une légère ombre portée, comme chez Chatty. Les lettres
+   sont remplies de la texture du parchemin d'Idan, éclairée en haut de chaque ligne et un peu assombrie en bas
+   (--hc-encre-titre), pour qu'elles ne soient pas plates ; l'ombre passe donc en filtre (une ombre de texte couvrirait le
+   remplissage). Une seule ligne chacun (fitHoverCard baisse la police s'il le faut). */
+.hc-banner h3{position:relative;z-index:1;margin:0;max-width:100%;font:700 calc(var(--hc-cart-h) * .42 * var(--hc-name-fit,1))/1.05 var(--police-texte);letter-spacing:.01em;white-space:nowrap;
+  color:var(--hc-parchemin);background:var(--hc-encre-titre);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(1px 2px 1.5px rgba(0,0,0,.7))}
+.hc-title{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:calc(var(--hc-cart-h) * .07);margin:0;max-width:100%;font:italic 500 calc(var(--hc-cart-h) * .29)/1.15 var(--police-texte);color:var(--hc-parchemin)}
+.hc-title span{min-width:0;padding:0 .12em;white-space:nowrap;overflow:hidden;
+  background:var(--hc-encre-titre);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(1px 1px 1.5px rgba(0,0,0,.7))}
 .hc-title.is-two-lines span{white-space:normal;text-wrap:balance;text-align:center;line-height:1.05}
-/* Les ornements du titre : les petits SVG de la charte (création du capitaine), monochromes, couleur du titre : un filet
-   épais près de son motif qui s'affine jusqu'à disparaître, puis la pointe de lance où il entre par le milieu ; à droite,
-   le même en miroir. */
-.hc-orn{flex:none;width:calc(var(--hc-cart-h) * .95);height:calc(var(--hc-cart-h) * .16);background:var(--hc-parchemin);filter:drop-shadow(0 1px 1px rgba(0,0,0,.65));
-  -webkit-mask:var(--hc-fil) left center/calc(100% - var(--hc-cart-h) * .37) 2px no-repeat,var(--hc-lance) right center/calc(var(--hc-cart-h) * .38) 100% no-repeat;
-  mask:var(--hc-fil) left center/calc(100% - var(--hc-cart-h) * .37) 2px no-repeat,var(--hc-lance) right center/calc(var(--hc-cart-h) * .38) 100% no-repeat}
+/* Les ornements du titre, un par culture (--hc-orn, hover-card-ui.js) : courts, fins, monochromes, couleur du parchemin.
+   Un filet effilé entre dans un petit motif des planches d'Idan, côté titre ; à droite, le même en miroir. Ils sont
+   centrés sur le milieu des minuscules du titre, comme chez Chatty, et non sur la boîte de la ligne : 0,14 em plus bas
+   (EB Garamond : hampe 1,01 em, jambage 0,30 em, hauteur d'x 0,43 em). */
+.hc-orn{flex:none;width:calc(var(--hc-cart-h) * .64);height:calc(var(--hc-cart-h) * .148);translate:0 .14em;background:var(--hc-parchemin);filter:drop-shadow(0 1px 1px rgba(0,0,0,.65));
+  -webkit-mask:var(--hc-orn) center/contain no-repeat;mask:var(--hc-orn) center/contain no-repeat}
 .hc-orn--r{transform:scaleX(-1)}
 /* La page : sous le cartouche, jusqu'en bas. Hauteur fixe : ce qui dépasse est coupé, en attendant de tout faire rentrer. */
 .hc-page{position:absolute;left:36.2%;right:1.2%;top:17.25%;bottom:1.5%;overflow:hidden;box-sizing:border-box;display:grid;align-content:start;gap:8px;padding:14px 18px 16px;background:radial-gradient(ellipse at 50% 40%,rgba(255,251,240,.6),transparent 78%),linear-gradient(rgba(239,226,197,.82),rgba(239,226,197,.82)),url("assets/taverne/papier-froisse.webp") center/420px,#eadcbc;background-blend-mode:normal,normal,multiply,normal;box-shadow:inset 0 0 28px rgba(120,86,42,.42)}

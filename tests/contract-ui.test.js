@@ -439,16 +439,26 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
     assert.ok(frame.vars.includes(`assets/hud/barres/${frame.key}/center.webp`), bar.culture);
     assert.ok(frame.vars.includes(`--hc-tex-y:${((bar.bandTop + inset) / band).toFixed(4)}`) && frame.vars.includes(`--hc-tex-h:${(bar.h / band).toFixed(4)}`), bar.culture);
     assert.equal(HUD_BARS[frame.key].culture, bar.culture);
+    // L'ornement du titre : un motif par culture, chacun le sien, et son SVG existe.
+    assert.ok(frame.vars.includes(`--hc-orn:url("assets/fiche/ornements/${frame.ornament}.svg")`), bar.culture);
+    assert.ok(fs.existsSync(path.join(root, "prototype-web/assets/fiche/ornements", frame.ornament + ".svg")), frame.ornament);
+  }
+  const ornaments = Object.values(HUD_BARS).map(bar => api.hoverCultureFrame(bar.culture).ornament);
+  assert.equal(new Set(ornaments).size, 32, "« 1 par culture »");
+  for (const file of fs.readdirSync(path.join(root, "prototype-web/assets/fiche/ornements"))) {
+    const svg = fs.readFileSync(path.join(root, "prototype-web/assets/fiche/ornements", file), "utf8");
+    assert.match(svg, /^<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg" viewBox="0 0 104 24">/, file + " : court, toujours la même boîte");
+    assert.doesNotMatch(svg, /fill="#(?!000")|stroke="(?!none")/, file + " : monochrome");
   }
   const css = choiceCss;
-  // Le nom et le titre : en réserve du parchemin, une légère ombre portée ; le titre plus grand.
-  assert.match(css, /\.hc-banner h3\{[^}]*color:var\(--hc-parchemin\);text-shadow:1px 2px 2px rgba\(0,0,0,\.7\)/);
+  // Le nom (en gras) et le titre : en réserve du parchemin, remplis de sa texture, une légère ombre portée ; le titre plus grand.
+  assert.match(css, /--hc-encre-titre:linear-gradient\([^;]*url\("assets\/creation\/parchemin\.webp"\)[^;]*var\(--hc-parchemin\);/);
+  assert.match(css, /\.hc-banner h3\{[^}]*font:700 [^}]*background:var\(--hc-encre-titre\);[^}]*background-clip:text;[^}]*filter:drop-shadow\(1px 2px 1\.5px rgba\(0,0,0,\.7\)\)/);
   assert.match(css, /\.hc-title\{[^}]*font:italic 500 calc\(var\(--hc-cart-h\) \* \.29\)[^}]*color:var\(--hc-parchemin\)/);
-  // Les ornements du titre : les petits SVG de la charte, monochromes (un filet qui entre dans la pointe de lance).
-  assert.match(css, /--hc-lance:url\("assets\/creation\/svg\/lance\.svg"\)/);
-  assert.match(css, /\.hc-orn\{[^}]*background:var\(--hc-parchemin\);[^}]*mask:var\(--hc-fil\) left center[^}]*var\(--hc-lance\) right center/);
+  assert.match(css, /\.hc-title span\{[^}]*background:var\(--hc-encre-titre\);[^}]*background-clip:text;[^}]*filter:drop-shadow\(1px 1px 1\.5px rgba\(0,0,0,\.7\)\)/);
+  // Les ornements du titre : courts, fins, monochromes, centrés sur le milieu des minuscules.
+  assert.match(css, /\.hc-orn\{[^}]*width:calc\(var\(--hc-cart-h\) \* \.64\);height:calc\(var\(--hc-cart-h\) \* \.148\);translate:0 \.14em;background:var\(--hc-parchemin\);[^}]*mask:var\(--hc-orn\) center\/contain no-repeat\}/);
   assert.match(css, /\.hc-orn--r\{transform:scaleX\(-1\)\}/);
-  assert.ok(fs.existsSync(path.join(root, "prototype-web/assets/creation/svg/lance.svg")));
   assert.match(hoverSrc, /function fitHoverCard\(root\)/);
   assert.match(css, /\.hover-card\{--hc-w:860px;--hc-h:565px;--hc-cart-h:calc\(var\(--hc-h\) \* \.1435\);/);
   assert.match(css, /\.hc-portrait\{position:absolute;left:1\.2%;top:1\.5%;width:34%;height:97%;/);

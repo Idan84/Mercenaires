@@ -340,14 +340,20 @@ ennemis, récompense, expiration…), la lettre du commanditaire s'il y en a une
   Mission, doc 20, ou Garde du corps), Dégâts, Soutien, Protection, Magie, et les autres rôles dans « Autres rôles » (ceux
   que porte au moins l'un d'eux) ; puis la galerie, seulement ceux qui peuvent partir (« tous ceux qui peuvent pas partir
   en mission sont déjà filtrés (blessés, autres missions…). Les fatigués sont là bien entendu »). Une carte : le portrait
-  (un « + » ; choisi, teinté de rouge, un cachet coché), le nom (un clic ouvre la fiche complète par-dessus : « les persos
+  carré (« Gardons le carré pour la sélection, c'est natif » ; un « + » ; choisi, teinté de rouge, un cachet coché), le nom (un clic ouvre la fiche complète par-dessus : « les persos
   sont cliquables et ça ouvre la fiche complète ? »), les étoiles, l'état — Prêt, Fatigué −20 % (encore fatigué au
   combat) ou Reposé à l'arrivée (une garde du corps, sans combat : Prêt ou Fatigué) ; pas de picto de combat (« on va le
-  virer / refaire »). Pas de barre de défilement (« je ferais bien un bouton js pour descendre ») : deux flèches de fer
-  dans la marge, l'une pour descendre d'une page, l'autre pour remonter. À droite, l'**escouade**, dans un panneau de
-  cuir sombre aux coins de bronze : le compte (« 6 / 20 » ; une garde : toutes ses places), les portraits choisis avec
-  leur croix (trois par rangée, puis quatre, puis six sans le nom quand elle grandit : « 20 pour la mission… + en
-  dortoirs »), les fatigués en clair (« 2 mercenaires fatigués : 1 encore fatigué au combat (−20 %), 1 reposé à
+  virer / refaire »). Des pages, jamais de défilement (Idan, 2026-11-15 : « je veux pas des flèches de défilement. Ce
+  sont des flèches de clic. Je trouve ça mieux (globalement, sur l'ensemble du jeu) », « on a 12 mercenaires visibles. On
+  clique, on en voit 12 autres. Je trouve que le défilement ne fait pas très jeux », « avec des clics, on ne devrait
+  jamais avoir des portraits coupés ») : une page montre autant de cartes entières que la place en tient (en 1920 × 1080,
+  trois rangées de sept), le portrait jamais sous 120 px (80 px sur un petit écran) ; deux flèches de fer l'une sur
+  l'autre au milieu de la marge (« les mettre au milieu »), sur le même axe, pour la page précédente et la suivante,
+  cachées s'il n'y a qu'une page, grisées au début et à la fin, comme celles du panneau. À droite, l'**escouade**, dans un
+  panneau de cuir sombre aux coins de bronze : le compte (« 6 / 20 » ; une garde : toutes ses places), les portraits
+  choisis en 4:3, plus petits que ceux de la galerie (« Le 4:3 plus petit à droite »), avec leur croix (quatre par rangée,
+  puis cinq, puis six sans le nom quand elle grandit : « 20 pour la mission… + en dortoirs ») ; s'ils ne tiennent pas
+  tous, des pages aussi, avec de petites flèches sur le filet d'or (un nouveau venu : on va à sa page), les fatigués en clair (« 2 mercenaires fatigués : 1 encore fatigué au combat (−20 %), 1 reposé à
   l'arrivée »), les primes au retour, « Partir demain » et « D'ici demain matin, le départ peut encore être annulé ». En
   bas à gauche, « ‹ Retour à l'annonce ».
 - **Les illustrations** (Idan et Jean-Mi, 2026-11-14) : des gravures à l'encre sur fond blanc, posées en « produit » sur

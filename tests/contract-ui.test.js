@@ -265,14 +265,48 @@ assert.match(choiceDialog, /<aside class="mission-squad"[\s\S]*id="mission-selec
 assert.match(choiceDialog, /<footer class="mission-choice-foot">\s*<button type="button" id="cancel-mission-select-btn" class="mission-retour">/, "le retour en bas à gauche");
 assert.match(choiceCss, /\.mission-recruits::before\{[^}]*parchemin\.webp/, "les mercenaires au camp sur le parchemin de la création");
 assert.equal((choiceDialog.match(/class="mission-corner mission-corner--(tl|tr|bl|br)"/g) || []).length, 4, "les coins de bronze du panneau");
-// « La scroll bar : je ferais bien un bouton js pour descendre » : pas de barre, deux flèches de fer.
-assert.match(choiceCss, /\.mission-roster\{[^}]*overflow-y:auto[^}]*scrollbar-width:none/);
-assert.match(choiceCss, /\.mission-roster::-webkit-scrollbar\{display:none\}/);
-assert.match(choiceDialog, /data-roster-scroll="-1"[\s\S]*data-roster-scroll="1"/);
+// « Je veux pas des flèches de défilement. Ce sont des flèches de clic » ; « on a 12 mercenaires visibles. On clique, on
+// en voit 12 autres » ; « avec des clics, on ne devrait jamais avoir des portraits coupés » : des pages de cartes entières,
+// à gauche comme à droite, jamais de défilement.
+assert.match(choiceCss, /\.mission-roster\{[^}]*overflow:hidden[^}]*grid-template-columns:repeat\(var\(--cols,5\),var\(--card,180px\)\)/);
+assert.doesNotMatch(choiceCss, /\.mission-roster\{[^}]*(overflow-y:auto|mask:)/, "ni défilement ni carte à moitié effacée");
+assert.match(choiceCss, /\.mission-squad-frame\{(?![^}]*overflow-y:auto)[^}]*\}/, "l'escouade ne défile pas non plus");
+assert.match(choiceCss, /\.mission-pick\.is-off-page,\.mission-slot\.is-off-page\{display:none\}/);
+assert.match(choiceDialog, /data-roster-page="-1"[\s\S]*data-roster-page="1"[\s\S]*data-squad-page="-1"[\s\S]*data-squad-page="1"/, "des flèches pour la galerie et pour l'escouade");
+assert.doesNotMatch(choiceDialog, /data-roster-scroll/);
 assert.match(choiceCss, /\.mission-scroll\{[^}]*fleche-fer\.webp/, "la flèche de fer du panneau");
+// « Un léger problème d'alignement de ces flèches » : celle du haut est celle du bas retournée, sur le même axe.
+assert.match(choiceCss, /\.mission-scroll--down\{[^}]*transform:rotate\(90deg\)\}/);
+assert.match(choiceCss, /\.mission-scroll--up\{[^}]*transform:rotate\(90deg\) scaleX\(-1\)\}/);
+assert.match(choiceCss, /\.mission-scroll:disabled\{/, "grisées au début et à la fin, comme celles du panneau");
+// « Gardons le carré pour la sélection, c'est natif. Le 4:3 plus petit à droite. »
+assert.match(choiceCss, /\.mission-pick-portrait\{[^}]*aspect-ratio:1\}/);
+assert.match(choiceCss, /\.mission-slot-portrait\{[^}]*aspect-ratio:4\/3\}/);
 const choice = missionJs.slice(missionJs.indexOf("function openMissionSelection("), missionJs.indexOf("function startMissionFromSelection("));
-assert.match(choice, /function updateMissionRosterScroll\(\)\{[\s\S]*?up\.hidden=list\.scrollTop<=2;[\s\S]*?down\.hidden=list\.scrollTop\+list\.clientHeight>=list\.scrollHeight-2;/);
-assert.match(choice, /list\.scrollBy\(\{top:Number\(button\.dataset\.rosterScroll\)\*/);
+assert.doesNotMatch(choice, /scrollBy|scrollTop|updateMissionRosterScroll/, "plus de défilement");
+{
+  const grid = new Function(choice.slice(choice.indexOf("function missionChoiceGrid("), choice.indexOf("// La page qui contient")) + "\nreturn missionChoiceGrid;")();
+  const pageOf = new Function(choice.slice(choice.indexOf("function missionChoicePage("), choice.indexOf("// Les flèches, comme celles du panneau")) + "\nreturn missionChoicePage;")();
+  // Toutes les cartes tiennent en entier dans la page, avec un portrait confortable.
+  for (const [width, height, extra] of [[994, 740, 100], [830, 560, 100], [589, 368, 100], [1400, 1000, 90]]) {
+    const g = grid({width, height, extra, gapX: 14, gapY: 18});
+    assert.ok(g.cols * g.side + (g.cols - 1) * 14 <= width, `${width}×${height} : la largeur tient`);
+    assert.ok(g.rows * (g.side + extra) + (g.rows - 1) * 18 <= height, `${width}×${height} : la hauteur tient`);
+    assert.ok(g.side >= 120 && g.side <= 200, `${width}×${height} : un portrait confortable (${g.side})`);
+    assert.equal(g.size, g.cols * g.rows);
+  }
+  const big = grid({width: 994, height: 740, extra: 100, gapX: 14, gapY: 18});
+  assert.equal(big.size, 21, "en 1920 × 1080 : trois rangées de sept");
+  // Rien ne tient à 120 : un portrait plus petit plutôt qu'aucun.
+  assert.ok(grid({width: 600, height: 300, extra: 100}).side >= 80);
+  assert.deepEqual(pageOf(30, 21, 0), {page: 0, pages: 2});
+  assert.deepEqual(pageOf(30, 21, 5), {page: 1, pages: 2}, "pas au-delà de la dernière page");
+  assert.deepEqual(pageOf(30, 21, -1), {page: 0, pages: 2});
+  assert.deepEqual(pageOf(13, 12, Infinity), {page: 1, pages: 2}, "le nouveau venu : la dernière page");
+  assert.deepEqual(pageOf(0, 12, 0), {page: 0, pages: 1});
+}
+assert.match(choice, /function missionPageArrows\(scope,page,pages\)\{[\s\S]*?arrow\.hidden=pages<2;[\s\S]*?arrow\.disabled=off;/, "cachées s'il n'y a qu'une page, grisées au bout");
+assert.match(choice, /sel\.order\.push\(id\); sel\.squadPage=Infinity;/, "on voit arriver le nouveau venu dans l'escouade");
 // « Tous ceux qui peuvent pas partir en mission sont déjà filtrés (blessés, autres missions…). Les fatigués sont là. »
 assert.match(choice, /const available=eligible\.filter\(c=>!missionWounded\(c\)\);[\s\S]*renderMissionChoice\(available,/, "les blessés ne sont pas dans la galerie");
 assert.match(choice, /&&rules\.canGuard\(c,m,offer\)\.ok\);/, "garde du corps : seulement ceux qui peuvent la prendre");

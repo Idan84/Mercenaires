@@ -431,8 +431,8 @@
           </div>
           <div class="mission-roster-frame">
             <div id="mission-select-list" class="mission-roster"></div>
-            <button type="button" class="mission-scroll mission-scroll--up" data-roster-scroll="-1" aria-label="Remonter" hidden></button>
-            <button type="button" class="mission-scroll mission-scroll--down" data-roster-scroll="1" aria-label="Descendre" hidden></button>
+            <button type="button" class="mission-scroll mission-scroll--up" data-roster-page="-1" aria-label="Mercenaires précédents" hidden></button>
+            <button type="button" class="mission-scroll mission-scroll--down" data-roster-page="1" aria-label="Mercenaires suivants" hidden></button>
           </div>
           <p id="mission-select-error" class="mission-choice-error"></p>
         </section>
@@ -443,7 +443,11 @@
             <span id="mission-select-count" class="mission-squad-count"></span>
             <p id="mission-squad-subtitle" class="mission-squad-subtitle">Mercenaires sélectionnés</p>
           </div>
-          <div class="mission-squad-frame"><div id="mission-squad-slots" class="mission-squad-slots"></div></div>
+          <div class="mission-squad-frame">
+            <div id="mission-squad-slots" class="mission-squad-slots"></div>
+            <button type="button" class="mission-scroll mission-scroll--up mission-scroll--squad" data-squad-page="-1" aria-label="Escouade : page précédente" hidden></button>
+            <button type="button" class="mission-scroll mission-scroll--down mission-scroll--squad" data-squad-page="1" aria-label="Escouade : page suivante" hidden></button>
+          </div>
           <span class="mission-squad-rule" aria-hidden="true"></span>
           <p id="mission-squad-fatigue" class="mission-squad-fatigue" hidden></p>
           <p id="mission-select-cost" class="mission-squad-cost"></p>

@@ -60,10 +60,8 @@ function mercenaryHoverData(c,{missionTag=null}={}){
 // La texture de sa culture (hud-bars.js) pour le fond du cartouche du nom (Idan, 2026-11-15 : « la texture de la culture
 // uniquement… notre PNG centre de culture mais on coupe en haut et en bas ») : la pièce du milieu de sa barre, réduite à sa
 // bande (de bandTop à bandBottom), rognée encore de 8 % en haut et en bas : chez certaines cultures (chaînes des Orcs noirs,
-// cordes des Tribus de la jungle…) la bande mesurée garde un liseré du cadre. Les ornements du titre (Idan : « un petit truc
-// joli propre à chaque culture avec notre stock d'ornements ») : le bout droit de sa barre (de la fin de la bande au bord de
-// l'embout droit, là où est le bijou), répété en miroir à gauche. Des rapports sans unité, que le CSS multiplie par la
-// hauteur du cartouche.
+// cordes des Tribus de la jungle…) la bande mesurée garde un liseré du cadre. Des rapports sans unité, que le CSS multiplie
+// par la hauteur du cartouche.
 const HOVER_TEXTURE_INSET=.08;
 function hoverCultureFrame(culture){
   const all=typeof HUD_BARS!=="undefined"?HUD_BARS:{};
@@ -72,9 +70,7 @@ function hoverCultureFrame(culture){
   const top=bar.bandTop+inset,band=bar.bandBottom-bar.bandTop-2*inset;
   return {key,
     vars:[`--hc-texture:url("assets/hud/barres/${key}/center.webp")`,`--hc-tex-w:${(bar.center/band).toFixed(4)}`,
-      `--hc-tex-h:${(bar.h/band).toFixed(4)}`,`--hc-tex-y:${(top/band).toFixed(4)}`,
-      `--hc-tip-img:url("assets/hud/barres/${key}/right.webp")`,`--hc-tip:${(bar.bandRight/bar.h).toFixed(4)}`,
-      `--hc-tip-dy:${((bar.h-bar.frameTop-bar.frameBottom)/2/bar.h).toFixed(4)}`].join(";")};
+      `--hc-tex-h:${(bar.h/band).toFixed(4)}`,`--hc-tex-y:${(top/band).toFixed(4)}`].join(";")};
 }
 
 // La forme : la direction « A · Le diptyque » de Chatty (Idan, 2026-11-15). Une carte et un avatar aux dimensions fixes,

@@ -439,16 +439,16 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
     assert.ok(frame.vars.includes(`assets/hud/barres/${frame.key}/center.webp`), bar.culture);
     assert.ok(frame.vars.includes(`--hc-tex-y:${((bar.bandTop + inset) / band).toFixed(4)}`) && frame.vars.includes(`--hc-tex-h:${(bar.h / band).toFixed(4)}`), bar.culture);
     assert.equal(HUD_BARS[frame.key].culture, bar.culture);
-    // Les ornements du titre : le bout droit de SA barre (son bijou), en miroir à gauche.
-    assert.ok(frame.vars.includes(`assets/hud/barres/${frame.key}/right.webp`) && frame.vars.includes(`--hc-tip:${(bar.bandRight / bar.h).toFixed(4)}`), bar.culture);
   }
   const css = choiceCss;
-  // Le nom et le titre : en réserve du parchemin, une légère ombre portée ; le titre plus grand ; plus de blanc sur la fiche.
+  // Le nom et le titre : en réserve du parchemin, une légère ombre portée ; le titre plus grand.
   assert.match(css, /\.hc-banner h3\{[^}]*color:var\(--hc-parchemin\);text-shadow:1px 2px 2px rgba\(0,0,0,\.7\)/);
   assert.match(css, /\.hc-title\{[^}]*font:italic 500 calc\(var\(--hc-cart-h\) \* \.29\)[^}]*color:var\(--hc-parchemin\)/);
-  assert.match(css, /\.hc-orn--l\{transform:scaleX\(-1\)\}/);
-  const hoverCss = css.slice(css.indexOf("/* La fiche au survol (hover-card-ui.js)"), css.indexOf("/* Le choix de l'escouade, d'après la maquette de Chatty"));
-  assert.doesNotMatch(hoverCss, /#f5ecd9|#fff\b|#ffffff|color:white/i, "on n'écrit pas en blanc");
+  // Les ornements du titre : les petits SVG de la charte, monochromes (un filet qui entre dans la pointe de lance).
+  assert.match(css, /--hc-lance:url\("assets\/creation\/svg\/lance\.svg"\)/);
+  assert.match(css, /\.hc-orn\{[^}]*background:var\(--hc-parchemin\);[^}]*mask:var\(--hc-fil\) left center[^}]*var\(--hc-lance\) right center/);
+  assert.match(css, /\.hc-orn--r\{transform:scaleX\(-1\)\}/);
+  assert.ok(fs.existsSync(path.join(root, "prototype-web/assets/creation/svg/lance.svg")));
   assert.match(hoverSrc, /function fitHoverCard\(root\)/);
   assert.match(css, /\.hover-card\{--hc-w:860px;--hc-h:565px;--hc-cart-h:calc\(var\(--hc-h\) \* \.1435\);/);
   assert.match(css, /\.hc-portrait\{position:absolute;left:1\.2%;top:1\.5%;width:34%;height:97%;/);

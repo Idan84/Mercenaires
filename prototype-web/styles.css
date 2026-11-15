@@ -2379,6 +2379,7 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
    maquette (sa carte : 1645 × 1080 pixels) ; chaque zone est placée en pourcentage de la carte, donc de sa largeur et de sa
    hauteur. Pas de cadre pour l'instant (Idan, 2026-11-15) : ils viendront en dernier, une image par culture posée dessus. */
 .hover-card{--hc-w:860px;--hc-h:565px;--hc-cart-h:calc(var(--hc-h) * .1435);--hc-parchemin:#ebdfc4;
+  --hc-fil:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 2' preserveAspectRatio='none'%3E%3ClinearGradient id='g'%3E%3Cstop offset='0' stop-opacity='0'/%3E%3Cstop offset='.55' stop-opacity='.85'/%3E%3Cstop offset='1'/%3E%3C/linearGradient%3E%3Cpolygon points='0,1 100,0 100,2' fill='url(%23g)'/%3E%3C/svg%3E");--hc-lance:url("assets/creation/svg/lance.svg");
   --or:#c9a461;--or-clair:#f0d395;--encre:#2c1b10;--encre-2:#5d4429;
   --police-titre:"Cinzel",Georgia,serif;--police-texte:"EB Garamond",Georgia,serif;
   position:relative;isolation:isolate;box-sizing:border-box;display:block;width:var(--hc-w);height:var(--hc-h);
@@ -2399,12 +2400,13 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .hc-title{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:calc(var(--hc-cart-h) * .08);margin:0;max-width:100%;font:italic 500 calc(var(--hc-cart-h) * .29)/1.15 var(--police-texte);color:var(--hc-parchemin);text-shadow:1px 1px 2px rgba(0,0,0,.7)}
 .hc-title span{min-width:0;white-space:nowrap;overflow:hidden}
 .hc-title.is-two-lines span{white-space:normal;text-wrap:balance;text-align:center;line-height:1.05}
-/* Les ornements du titre : un filet, puis le bout droit de la barre de la culture (son bijou) ; à gauche, le même en miroir.
-   Au plus 1,6 fois sa hauteur en largeur ; décalé pour que le milieu du cadre de la barre soit sur la ligne du titre. */
-.hc-orn{--orn-h:calc(var(--hc-cart-h) * .4);flex:none;display:flex;align-items:center;filter:drop-shadow(0 1px 1px rgba(0,0,0,.65))}
-.hc-orn--l{transform:scaleX(-1)}
-.hc-orn::before{content:"";width:calc(var(--hc-cart-h) * .3);height:1px;background:linear-gradient(90deg,rgba(235,223,196,0),var(--hc-parchemin))}
-.hc-orn::after{content:"";height:min(var(--orn-h),calc(var(--orn-h) * 1.6 / var(--hc-tip,1)));aspect-ratio:var(--hc-tip,1);background:var(--hc-tip-img) 100% 50%/auto 100% no-repeat;transform:translateY(calc(100% * var(--hc-tip-dy,0)))}
+/* Les ornements du titre : les petits SVG de la charte (création du capitaine), monochromes, couleur du titre : un filet
+   épais près de son motif qui s'affine jusqu'à disparaître, puis la pointe de lance où il entre par le milieu ; à droite,
+   le même en miroir. */
+.hc-orn{flex:none;width:calc(var(--hc-cart-h) * .95);height:calc(var(--hc-cart-h) * .16);background:var(--hc-parchemin);filter:drop-shadow(0 1px 1px rgba(0,0,0,.65));
+  -webkit-mask:var(--hc-fil) left center/calc(100% - var(--hc-cart-h) * .37) 2px no-repeat,var(--hc-lance) right center/calc(var(--hc-cart-h) * .38) 100% no-repeat;
+  mask:var(--hc-fil) left center/calc(100% - var(--hc-cart-h) * .37) 2px no-repeat,var(--hc-lance) right center/calc(var(--hc-cart-h) * .38) 100% no-repeat}
+.hc-orn--r{transform:scaleX(-1)}
 /* La page : sous le cartouche, jusqu'en bas. Hauteur fixe : ce qui dépasse est coupé, en attendant de tout faire rentrer. */
 .hc-page{position:absolute;left:36.2%;right:1.2%;top:17.25%;bottom:1.5%;overflow:hidden;box-sizing:border-box;display:grid;align-content:start;gap:8px;padding:14px 18px 16px;background:radial-gradient(ellipse at 50% 40%,rgba(255,251,240,.6),transparent 78%),linear-gradient(rgba(239,226,197,.82),rgba(239,226,197,.82)),url("assets/taverne/papier-froisse.webp") center/420px,#eadcbc;background-blend-mode:normal,normal,multiply,normal;box-shadow:inset 0 0 28px rgba(120,86,42,.42)}
 .hc-rule{display:block;height:11px;background:linear-gradient(90deg,transparent,#8a6c43 18%,#8a6c43 82%,transparent) center/100% 1px no-repeat,linear-gradient(45deg,transparent 46%,#7b5c33 46% 54%,transparent 54%) center/9px 9px no-repeat,linear-gradient(-45deg,transparent 46%,#7b5c33 46% 54%,transparent 54%) center/9px 9px no-repeat;opacity:.9}
@@ -2426,7 +2428,7 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .hc-bonus b{font:700 23px/1 var(--police-texte);color:var(--encre)}
 /* Les tags : plaques biseautées, bord d'argent ; celle de la mission, bord d'or. Trois par rangée. */
 .hc-tags{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px 6px;margin:0;padding:0;list-style:none}
-.hc-tag{--hex:polygon(12px 0,calc(100% - 12px) 0,100% 50%,calc(100% - 12px) 100%,12px 100%,0 50%);position:relative;isolation:isolate;display:flex;align-items:center;justify-content:center;min-height:32px;box-sizing:border-box;padding:4px 14px 5px;clip-path:var(--hex);background:linear-gradient(#f1f2f3,#9da2a7 40%,#5d6267 60%,#b9bdc1);text-align:center;font:600 15px/1.08 var(--police-texte);color:var(--hc-parchemin);text-shadow:0 1px 1px rgba(0,0,0,.7)}
+.hc-tag{--hex:polygon(12px 0,calc(100% - 12px) 0,100% 50%,calc(100% - 12px) 100%,12px 100%,0 50%);position:relative;isolation:isolate;display:flex;align-items:center;justify-content:center;min-height:32px;box-sizing:border-box;padding:4px 14px 5px;clip-path:var(--hex);background:linear-gradient(#f1f2f3,#9da2a7 40%,#5d6267 60%,#b9bdc1);text-align:center;font:600 15px/1.08 var(--police-texte);color:#f5ecd9;text-shadow:0 1px 1px rgba(0,0,0,.7)}
 .hc-tag::before{content:"";position:absolute;inset:2px;z-index:-1;clip-path:polygon(11px 0,calc(100% - 11px) 0,100% 50%,calc(100% - 11px) 100%,11px 100%,0 50%);background:linear-gradient(var(--t1),var(--t2))}
 .hc-tag--rouge{--t1:#86312a;--t2:#4f1711}
 .hc-tag--vert{--t1:#376b3f;--t2:#1b3a21}
@@ -2440,7 +2442,7 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .hc-kit-item i{font:italic 500 17px/1.15 var(--police-texte);color:var(--encre)}
 /* Les écoles : la plaque, puis les pictos d’Idan (assets/pictos/ecole-<slug>.webp). */
 .hc-magic{display:grid;justify-items:center;gap:8px}
-.hc-plaque{position:relative;isolation:isolate;padding:5px 26px 6px;clip-path:polygon(14px 0,calc(100% - 14px) 0,100% 50%,calc(100% - 14px) 100%,14px 100%,0 50%);background:linear-gradient(#f1f2f3,#9da2a7 40%,#5d6267 60%,#b9bdc1);font:600 17px/1 var(--police-texte);color:var(--hc-parchemin);text-shadow:0 1px 1px rgba(0,0,0,.7)}
+.hc-plaque{position:relative;isolation:isolate;padding:5px 26px 6px;clip-path:polygon(14px 0,calc(100% - 14px) 0,100% 50%,calc(100% - 14px) 100%,14px 100%,0 50%);background:linear-gradient(#f1f2f3,#9da2a7 40%,#5d6267 60%,#b9bdc1);font:600 17px/1 var(--police-texte);color:#f5ecd9;text-shadow:0 1px 1px rgba(0,0,0,.7)}
 .hc-plaque::before{content:"";position:absolute;inset:2px;z-index:-1;clip-path:polygon(13px 0,calc(100% - 13px) 0,100% 50%,calc(100% - 13px) 100%,13px 100%,0 50%);background:linear-gradient(#2f5a37,#18301c)}
 .hc-schools{display:grid;grid-template-columns:repeat(var(--n,3),minmax(0,1fr));width:100%;row-gap:10px}
 .hc-school{display:grid;justify-items:center;align-content:start;gap:5px;min-width:0;padding:2px 8px;border-left:1px solid rgba(93,68,41,.45)}

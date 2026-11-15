@@ -30,6 +30,20 @@ assert.doesNotMatch(renderPicto("people","Nain",{size:null,tip:false}),/data-pic
 const css=fs.readFileSync(path.join(ROOT,"prototype-web","pictos.css"),"utf8");
 assert.match(css,/\.picto-goutte>\.goutte-embleme\{animation:goutte-apparait 1s/,"l'emblème arrive en une seconde");
 assert.match(css,/\.picto-goutte\.is-still>\.goutte-embleme\{animation:none\}/,"pas de fondu quand le jeu redessine");
+// En ligne, chaque image porte le numéro de la mise en ligne, lu sur le script (« picto-ui.js?v=<commit> ») : sinon le
+// cache de Hostinger (7 jours) sert l'ancien picto remplacé sous le même nom (les emblèmes des gouttes, 2026-11-15).
+{
+  const vm=require("node:vm");
+  const sandbox={module:{exports:{}},URL,document:{currentScript:{src:"https://exemple.test/picto-ui.js?v=abc1234"},addEventListener(){}}};
+  vm.runInNewContext(fs.readFileSync(path.join(ROOT,"prototype-web","picto-ui.js"),"utf8"),sandbox);
+  const enLigne=sandbox.module.exports.renderPicto;
+  const srcs=html=>[...html.matchAll(/ src="([^"]+)"/g)].map(m=>m[1]);
+  assert.deepEqual(srcs(enLigne("ascendance","Sang de dragon")),["assets/pictos/goutte-halo.webp?v=abc1234",
+    "assets/pictos/goutte-rubis.webp?v=abc1234","assets/pictos/ascendance-sang-de-dragon.webp?v=abc1234"]);
+  assert.deepEqual(srcs(enLigne("ascendance","",{none:true})),["assets/pictos/goutte-sombre.webp?v=abc1234"]);
+  assert.deepEqual(srcs(enLigne("people","Nain")),["assets/pictos/peuple-nain.webp?v=abc1234"]);
+  assert.equal(sandbox.module.exports.pictoPath("people","Nain"),"assets/pictos/peuple-nain.webp","le chemin du fichier reste nu");
+}
 for(const page of ["index.html","creation-capitaine.html"]){
   const html=fs.readFileSync(path.join(ROOT,"prototype-web",page),"utf8");
   assert.ok(html.includes('href="pictos.css"')&&html.includes('src="picto-ui.js"'),page+" : le même composant de pictos");

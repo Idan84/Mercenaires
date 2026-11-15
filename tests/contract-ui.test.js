@@ -424,6 +424,13 @@ assert.match(missionJs, /\$\("mission-select-list"\)\.addEventListener\("click",
   assert.deepEqual(d.mount, {name: "Croc-Noir", kind: "Loup de combat"}, "« Ah oui » : sa monture");
   assert.equal(d.bonus, 81);
   assert.equal(api.mercenaryHoverData({...merc, contract: null}).bonus, 40, "sans contrat : la prime qu'il demanderait");
+  // Les écoles : les 9 pictos d'Idan (assets/pictos/ecole-<slug>.webp), un par école de magie.
+  assert.match(hoverSrc, /renderPicto\("school",name,/);
+  const {pictoPath} = require(path.join(root, "prototype-web/picto-ui.js"));
+  for (const school of ["Feu", "Eau", "Foudre", "Vie", "Nécromancie", "Illusion", "Invocation", "Transmutation", "Télékinésie"]) {
+    const file = pictoPath("school", school);
+    assert.ok(fs.existsSync(path.join(root, "prototype-web", file)), school + " : " + file);
+  }
   // Le cadre : la barre et l'anneau de SA culture, pour chacune des 32.
   for (const bar of Object.values(HUD_BARS)) {
     const frame = api.hoverCultureFrame(bar.culture, 64);

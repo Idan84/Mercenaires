@@ -97,7 +97,8 @@ function renderMercenaryHoverCard(c,{missionTag=null}={}){
   const kit=[["Set 1",d.sets[0].join(" + ")||"Mains nues"],["Set 2",d.sets[1].join(" + ")],["Armure",d.armor||"Sans armure"],
     ["Monture",d.mount?d.mount.name+(d.mount.kind?` (${d.mount.kind})`:""):""]]
     .filter(([,value])=>value).map(([label,value])=>`<span class="hc-kit-item"><b>${esc(label)}</b><i>${esc(value)}</i></span>`).join("");
-  const schools=d.schools.map(name=>`<span class="hc-school school--${esc(pictoSlug(name))}"><i class="hc-medal">${schoolIcon(name)}</i><span>${esc(name)}</span></span>`).join("");
+  // Les pictos des écoles d'Idan (assets/pictos/ecole-<slug>.webp).
+  const schools=d.schools.map(name=>`<span class="hc-school">${renderPicto("school",name,{size:"md"})}<span>${esc(name)}</span></span>`).join("");
   const tags=d.tags.map(tag=>`<li class="hc-tag hc-tag--${esc(tag.tone)}${tag.mission?" is-mission":""}">${esc(tag.name)}</li>`).join("");
   const corner=pos=>`<i class="hc-corner hc-corner--${pos}" aria-hidden="true"></i>`;
   return `<article class="hover-card" data-culture="${esc(frame.key)}" style='${frame.vars};--hc-name:${nameSize.toFixed(1)}px' aria-label="${esc(d.name)}">

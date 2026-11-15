@@ -2438,7 +2438,7 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .hc-kit-item+.hc-kit-item{border-left:1px solid rgba(93,68,41,.45)}
 .hc-kit-item b{font:600 13px/1.1 var(--police-texte);letter-spacing:.08em;text-transform:uppercase;color:var(--encre-2)}
 .hc-kit-item i{font:italic 500 17px/1.15 var(--police-texte);color:var(--encre)}
-/* Les écoles : la plaque, puis les médaillons. */
+/* Les écoles : la plaque, puis les pictos d’Idan (assets/pictos/ecole-<slug>.webp). */
 .hc-magic{display:grid;justify-items:center;gap:8px}
 .hc-plaque{position:relative;isolation:isolate;padding:5px 26px 6px;clip-path:polygon(14px 0,calc(100% - 14px) 0,100% 50%,calc(100% - 14px) 100%,14px 100%,0 50%);background:linear-gradient(#f1f2f3,#9da2a7 40%,#5d6267 60%,#b9bdc1);font:600 17px/1 var(--police-texte);color:#f5ecd9;text-shadow:0 1px 1px rgba(0,0,0,.7)}
 .hc-plaque::before{content:"";position:absolute;inset:2px;z-index:-1;clip-path:polygon(13px 0,calc(100% - 13px) 0,100% 50%,calc(100% - 13px) 100%,13px 100%,0 50%);background:linear-gradient(#2f5a37,#18301c)}
@@ -2446,8 +2446,7 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .hc-school{display:grid;justify-items:center;align-content:start;gap:5px;min-width:0;padding:2px 8px;border-left:1px solid rgba(93,68,41,.45)}
 .hc-school:nth-child(3n+1){border-left:0}
 .hc-school>span{font:600 16px/1.1 var(--police-texte);text-align:center;color:var(--encre)}
-.hc-medal{display:grid;place-items:center;width:42px;height:42px;border-radius:50%;background:radial-gradient(circle at 35% 30%,color-mix(in srgb,currentColor 70%,#fff),currentColor 45%,color-mix(in srgb,currentColor 45%,#000));box-shadow:0 0 0 2px #e7e9ea,0 0 0 3px #6c7176,0 3px 5px rgba(0,0,0,.45)}
-.hover-card .hc-medal .school-icon{width:26px;height:26px;padding:0;border:0;background:none;color:#fff;filter:drop-shadow(0 1px 1px rgba(0,0,0,.6))}
+.hc-school .picto{width:56px;height:56px;margin:0;filter:drop-shadow(0 3px 3px rgba(60,40,20,.45))}
 /* En bas : la barre de la culture et son anneau, le picto de la culture dedans. */
 .hover-card-bar{position:absolute;left:24px;right:24px;z-index:5;display:flex;height:var(--hc-bar-h);pointer-events:none;filter:drop-shadow(0 4px 5px rgba(0,0,0,.7))}
 .hover-card-bar--bottom{bottom:calc(var(--hc-bar-h) * -.5 - 3px)}

@@ -2375,64 +2375,88 @@ body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="do
 .mission-btn:active{transform:translateY(2px)}
 .mission-btn:active::before{filter:brightness(.84) drop-shadow(0 2px 2px rgba(0,0,0,.55))}
 .mission-btn:focus-visible{outline:2px solid var(--or-clair);outline-offset:4px}
-/* La fiche au survol (hover-card-ui.js), « A · Le diptyque » de Chatty avec nos pièces : la barre de la culture du
-   mercenaire en haut (son nom dans la bande) et en bas (son anneau au milieu), la bande en rails sur les côtés ; le
-   portrait en pied à gauche ; à droite une page du parchemin de la création. Mesures des barres : hud-bars.js. */
-.hover-card{--or:#c9a461;--or-clair:#f0d395;--ivoire:#f4e5c7;--encre:#2c1b10;--encre-2:#64492e;--bordeaux:#7a1f1c;--police-titre:"Cinzel",Georgia,serif;--police-texte:"EB Garamond",Georgia,serif;position:relative;isolation:isolate;box-sizing:border-box;width:700px;padding:calc(var(--hc-bar-h) - 4px) 30px calc(var(--hc-bar-h) + 8px);color:var(--encre);font-family:var(--police-texte);text-align:left}
-.hover-card::before{content:"";position:absolute;inset:calc(var(--hc-bar-h) * .45) 12px calc(var(--hc-bar-h) * .45);z-index:-1;border-radius:4px;background:radial-gradient(ellipse at 50% 18%,rgba(74,47,28,.42) 0%,rgba(36,23,13,.62) 60%,rgba(14,9,5,.88) 100%),url("assets/taverne/papier-froisse.webp") center/380px,#2a1c11;background-blend-mode:normal,soft-light,normal;box-shadow:0 24px 44px rgba(0,0,0,.7),inset 0 0 44px rgba(0,0,0,.75)}
-.hover-card-bar{position:absolute;left:0;right:0;z-index:3;display:flex;height:var(--hc-bar-h);pointer-events:none;filter:drop-shadow(0 4px 5px rgba(0,0,0,.6))}
-.hover-card-bar--top{top:0}
-.hover-card-bar--bottom{bottom:0}
+/* La fiche au survol (hover-card-ui.js), au plus près de « A · Le diptyque » de Chatty, avec nos pièces : un cadre
+   d'argent aux coins ciselés (ceux du menu, passés à l'argent), le portrait en pied à gauche, le cartouche du nom (la
+   bande de la barre de la culture) et une page claire à droite ; en bas, la barre de la culture et son anneau. */
+.hover-card{--or:#c9a461;--or-clair:#f0d395;--encre:#2c1b10;--encre-2:#5d4429;--argent:linear-gradient(135deg,#f5f6f7 0%,#9ba0a5 22%,#e3e5e7 42%,#6f7479 64%,#c8ccd0 82%,#868b90 100%);
+  --police-titre:"Cinzel",Georgia,serif;--police-texte:"EB Garamond",Georgia,serif;
+  position:relative;isolation:isolate;box-sizing:border-box;display:grid;grid-template-columns:270px minmax(0,1fr);gap:14px;width:800px;
+  padding:16px 16px 34px;border:6px solid transparent;border-image:var(--argent) 1;
+  background:radial-gradient(ellipse at 50% 0%,rgba(80,62,44,.5),transparent 70%),#15100c;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.8),inset 0 0 30px rgba(0,0,0,.7),0 26px 50px rgba(0,0,0,.75);
+  color:var(--encre);font-family:var(--police-texte);text-align:left}
+.hc-corner{position:absolute;z-index:6;width:74px;height:74px;background:url("assets/ui/menu-corner-tl.webp") center/contain no-repeat;filter:grayscale(1) brightness(1.55) contrast(1.15) drop-shadow(0 2px 3px rgba(0,0,0,.8));pointer-events:none}
+.hc-corner--tl{top:-14px;left:-14px}
+.hc-corner--tr{top:-14px;right:-14px;transform:scaleX(-1)}
+.hc-corner--bl{bottom:-14px;left:-14px;transform:scaleY(-1)}
+.hc-corner--br{bottom:-14px;right:-14px;transform:scale(-1,-1)}
+/* Le portrait : tout en hauteur, cadre d'argent. */
+.hc-portrait{position:relative;min-height:470px;border:4px solid transparent;border-image:var(--argent) 1;background:#0c0806;box-shadow:inset 0 0 18px rgba(0,0,0,.8);overflow:hidden}
+.hc-portrait .avatar-frame{position:absolute;inset:0;width:100%;height:100%;margin:0;aspect-ratio:auto;border:0;border-radius:0;box-shadow:none}
+.hc-portrait .avatar-frame img{object-fit:cover;object-position:50% 15%}
+.hover-card .avatar-fallback small{display:none}
+.hover-card .avatar-fallback span{font-size:3.2rem}
+.hc-side{display:grid;grid-template-rows:auto 1fr;min-width:0;border:4px solid transparent;border-image:var(--argent) 1}
+/* Le cartouche : la bande de la barre de la culture, le nom en grand, le titre entre deux filets. */
+.hc-banner{position:relative;display:grid;align-content:center;justify-items:center;gap:4px;height:104px;box-sizing:border-box;padding:6px 18px 8px;background:var(--hc-center) 0 var(--hc-banner-bg-y)/100% var(--hc-banner-bg-h) no-repeat,#1d2a22;border-bottom:3px solid #8f959a;text-align:center}
+.hc-banner::after{content:"";position:absolute;inset:0;background:linear-gradient(rgba(0,0,0,.05),rgba(0,0,0,.28));pointer-events:none}
+.hc-banner h3{position:relative;z-index:1;margin:0;max-width:100%;font:600 var(--hc-name)/1.05 var(--police-texte);letter-spacing:.01em;color:#f7eedb;text-shadow:0 2px 3px #000,0 0 12px rgba(0,0,0,.6);white-space:nowrap}
+.hc-title{position:relative;z-index:1;display:flex;align-items:center;gap:10px;margin:0;max-width:100%;font:italic 500 20px/1.15 var(--police-texte);color:#ecc77c;text-shadow:0 1px 2px #000}
+.hc-title::before,.hc-title::after{content:"";flex:0 0 34px;height:9px;background:linear-gradient(90deg,transparent,#d8b26a) center/100% 1px no-repeat,radial-gradient(circle,#ecc77c 0 2.6px,transparent 3px) right center/9px 9px no-repeat}
+.hc-title::after{transform:scaleX(-1)}
+.hc-title span{min-width:0;text-align:center;text-wrap:balance}
+/* La page. */
+.hc-page{position:relative;display:grid;align-content:start;gap:8px;padding:14px 18px 16px;background:radial-gradient(ellipse at 50% 40%,rgba(255,251,240,.6),transparent 78%),linear-gradient(rgba(239,226,197,.82),rgba(239,226,197,.82)),url("assets/taverne/papier-froisse.webp") center/420px,#eadcbc;background-blend-mode:normal,normal,multiply,normal;box-shadow:inset 0 0 28px rgba(120,86,42,.42)}
+.hc-rule{display:block;height:11px;background:linear-gradient(90deg,transparent,#8a6c43 18%,#8a6c43 82%,transparent) center/100% 1px no-repeat,linear-gradient(45deg,transparent 46%,#7b5c33 46% 54%,transparent 54%) center/9px 9px no-repeat,linear-gradient(-45deg,transparent 46%,#7b5c33 46% 54%,transparent 54%) center/9px 9px no-repeat;opacity:.9}
+.hc-emblems{display:flex;flex-wrap:wrap;justify-content:center}
+.hc-emblem{display:inline-flex;align-items:center;gap:8px;padding:2px 14px;font:600 18px/1.1 var(--police-texte);color:var(--encre)}
+.hc-emblem+.hc-emblem{border-left:1px solid rgba(93,68,41,.45)}
+.hc-emblem .picto{width:46px;height:46px;margin:0;filter:drop-shadow(0 2px 2px rgba(60,40,20,.45))}
+.hc-stats{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:7px 16px;padding:0 6px}
+.hc-stat{display:contents}
+.hc-stat>:not(.hc-label){justify-self:start}
+.hc-bonus{display:inline-flex;align-items:center;gap:8px}
+.hc-label{font:600 17px/1 var(--police-texte);color:#3b2614}
+.hc-stats .rep-stars{font-size:20px;letter-spacing:0;text-shadow:0 1px 0 rgba(70,40,0,.55),0 0 1px rgba(0,0,0,.5)}
+.hc-stats .rep-stars-empty{color:#9a917f;opacity:.9}
+.hc-hearts{display:inline-flex;gap:2px}
+.hc-heart{width:14px;height:13px;fill:#a39a8a;stroke:rgba(60,40,20,.45);stroke-width:1.2}
+.hc-heart.is-full{fill:#c4241a;stroke:#6e0f09;filter:drop-shadow(0 1px 0 rgba(255,255,255,.35))}
+.hc-bonus img{width:32px;height:32px;object-fit:contain;filter:drop-shadow(0 2px 2px rgba(60,40,20,.5))}
+.hc-bonus b{font:700 23px/1 var(--police-texte);color:var(--encre)}
+/* Les tags : plaques biseautées, bord d'argent ; celle de la mission, bord d'or. Trois par rangée. */
+.hc-tags{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px 6px;margin:0;padding:0;list-style:none}
+.hc-tag{--hex:polygon(12px 0,calc(100% - 12px) 0,100% 50%,calc(100% - 12px) 100%,12px 100%,0 50%);position:relative;isolation:isolate;display:flex;align-items:center;justify-content:center;min-height:32px;box-sizing:border-box;padding:4px 14px 5px;clip-path:var(--hex);background:linear-gradient(#f1f2f3,#9da2a7 40%,#5d6267 60%,#b9bdc1);text-align:center;font:600 15px/1.08 var(--police-texte);color:#f5ecd9;text-shadow:0 1px 1px rgba(0,0,0,.7)}
+.hc-tag::before{content:"";position:absolute;inset:2px;z-index:-1;clip-path:polygon(11px 0,calc(100% - 11px) 0,100% 50%,calc(100% - 11px) 100%,11px 100%,0 50%);background:linear-gradient(var(--t1),var(--t2))}
+.hc-tag--rouge{--t1:#86312a;--t2:#4f1711}
+.hc-tag--vert{--t1:#376b3f;--t2:#1b3a21}
+.hc-tag--bleu{--t1:#38598c;--t2:#1b2f52}
+.hc-tag.is-mission{--t1:#5e4513;--t2:#3a2909;background:linear-gradient(#fff3c4,#d9ae55 40%,#8a6120 62%,#e6c378);color:#ffe3a0}
+/* Les armes, l'armure et la monture : une case chacune, le nom au-dessus, entre de fins filets. */
+.hc-kit{display:grid;grid-auto-columns:minmax(0,1fr);grid-auto-flow:column}
+.hc-kit-item{display:grid;align-content:start;gap:2px;padding:0 8px;text-align:center}
+.hc-kit-item+.hc-kit-item{border-left:1px solid rgba(93,68,41,.45)}
+.hc-kit-item b{font:600 13px/1.1 var(--police-texte);letter-spacing:.08em;text-transform:uppercase;color:var(--encre-2)}
+.hc-kit-item i{font:italic 500 17px/1.15 var(--police-texte);color:var(--encre)}
+/* Les écoles : la plaque, puis les médaillons. */
+.hc-magic{display:grid;justify-items:center;gap:8px}
+.hc-plaque{position:relative;isolation:isolate;padding:5px 26px 6px;clip-path:polygon(14px 0,calc(100% - 14px) 0,100% 50%,calc(100% - 14px) 100%,14px 100%,0 50%);background:linear-gradient(#f1f2f3,#9da2a7 40%,#5d6267 60%,#b9bdc1);font:600 17px/1 var(--police-texte);color:#f5ecd9;text-shadow:0 1px 1px rgba(0,0,0,.7)}
+.hc-plaque::before{content:"";position:absolute;inset:2px;z-index:-1;clip-path:polygon(13px 0,calc(100% - 13px) 0,100% 50%,calc(100% - 13px) 100%,13px 100%,0 50%);background:linear-gradient(#2f5a37,#18301c)}
+.hc-schools{display:grid;grid-template-columns:repeat(var(--n,3),minmax(0,1fr));width:100%;row-gap:10px}
+.hc-school{display:grid;justify-items:center;align-content:start;gap:5px;min-width:0;padding:2px 8px;border-left:1px solid rgba(93,68,41,.45)}
+.hc-school:nth-child(3n+1){border-left:0}
+.hc-school>span{font:600 16px/1.1 var(--police-texte);text-align:center;color:var(--encre)}
+.hc-medal{display:grid;place-items:center;width:42px;height:42px;border-radius:50%;background:radial-gradient(circle at 35% 30%,color-mix(in srgb,currentColor 70%,#fff),currentColor 45%,color-mix(in srgb,currentColor 45%,#000));box-shadow:0 0 0 2px #e7e9ea,0 0 0 3px #6c7176,0 3px 5px rgba(0,0,0,.45)}
+.hover-card .hc-medal .school-icon{width:26px;height:26px;padding:0;border:0;background:none;color:#fff;filter:drop-shadow(0 1px 1px rgba(0,0,0,.6))}
+/* En bas : la barre de la culture et son anneau, le picto de la culture dedans. */
+.hover-card-bar{position:absolute;left:24px;right:24px;z-index:5;display:flex;height:var(--hc-bar-h);pointer-events:none;filter:drop-shadow(0 4px 5px rgba(0,0,0,.7))}
+.hover-card-bar--bottom{bottom:calc(var(--hc-bar-h) * -.5 - 3px)}
 .hover-card-bar i{display:block;height:100%;background-repeat:no-repeat}
 .hover-card-cap--l{flex:none;width:var(--hc-cap-l);background-image:var(--hc-left);background-size:var(--hc-left-w) 100%;background-position:left center}
 .hover-card-band{flex:1;background-image:var(--hc-center);background-size:100% 100%}
 .hover-card-cap--r{flex:none;width:var(--hc-cap-r);background-image:var(--hc-right);background-size:var(--hc-right-w) 100%;background-position:right center}
-.hover-card-head{position:absolute;top:var(--hc-band-top);left:max(var(--hc-cap-l),var(--hc-cap-r));right:max(var(--hc-cap-l),var(--hc-cap-r));z-index:4;display:flex;align-items:center;justify-content:center;height:var(--hc-band-h)}
-.hover-card-head h3{margin:0;overflow:hidden;font:700 clamp(17px,calc(var(--hc-band-h) * .62),26px)/1 var(--police-titre);letter-spacing:.05em;white-space:nowrap;text-overflow:ellipsis;color:#f6ead2;text-shadow:0 2px 3px #000}
-.hover-card-rails{position:absolute;top:calc(var(--hc-bar-h) * .6);bottom:calc(var(--hc-bar-h) * .6);left:12px;right:12px;z-index:2;container-type:size;pointer-events:none}
-.hover-card-rail{--rail:calc(var(--hc-rim-h) * .38);position:absolute;top:50%;width:100cqh;height:var(--rail);background:var(--hc-center) 0 calc(var(--hc-rim-top) * -.38)/100% calc(var(--hc-bar-h) * .38) no-repeat;filter:drop-shadow(0 0 3px rgba(0,0,0,.6))}
-.hover-card-rail--l{left:0;transform:translate(calc(var(--rail) / 2 - 50% - 6px),-50%) rotate(90deg)}
-.hover-card-rail--r{right:0;transform:translate(calc(50% - var(--rail) / 2 + 6px),-50%) rotate(-90deg)}
-.hover-card-ring{position:absolute;left:50%;bottom:calc(var(--hc-bar-h) * .5);z-index:5;height:92px;aspect-ratio:var(--hc-ring-ratio);background:var(--hc-ring) center/contain no-repeat;transform:translate(-50%,50%);filter:drop-shadow(0 4px 6px rgba(0,0,0,.65))}
+.hover-card-ring{position:absolute;left:50%;bottom:-3px;z-index:7;height:84px;aspect-ratio:var(--hc-ring-ratio);background:var(--hc-ring) center/contain no-repeat;transform:translate(-50%,50%);filter:drop-shadow(0 4px 6px rgba(0,0,0,.7))}
 .hover-card-ring .picto{position:absolute;left:var(--hc-hole-x);top:var(--hc-hole-y);width:calc(var(--hc-hole) * .8);height:auto;aspect-ratio:1;margin:0;object-fit:contain;transform:translate(-50%,-50%)}
-/* Le diptyque : le portrait à gauche, la page à droite. */
-.hover-card-body{position:relative;z-index:2;display:grid;grid-template-columns:232px minmax(0,1fr);gap:14px;align-items:stretch}
-/* Le portrait remplit sa colonne, même quand la page est plus haute (beaucoup de tags) : coupé sur les côtés, pas en haut. */
-.hover-card-avatar{position:relative;min-height:0;border:1px solid rgba(201,164,97,.55);border-radius:4px;background:#110b07;box-shadow:0 8px 16px rgba(0,0,0,.55);overflow:hidden}
-.hover-card-avatar .avatar-frame{position:absolute;inset:0;width:100%;height:100%;margin:0;aspect-ratio:auto;border:0;border-radius:0;box-shadow:none}
-.hover-card-avatar .avatar-frame img{object-fit:cover;object-position:50% 15%}
-.hover-card-body{min-height:412px}
-.hover-card .avatar-fallback small{display:none}
-.hover-card .avatar-fallback span{font-size:3rem}
-.hover-card-page{position:relative;isolation:isolate;display:grid;align-content:start;gap:11px;min-width:0;padding:22px 26px 22px}
-.hover-card-page::before{content:"";position:absolute;inset:0;z-index:-1;border:40px solid transparent;border-image:url("assets/creation/parchemin.webp") 180 fill / 40px stretch;filter:drop-shadow(0 6px 10px rgba(0,0,0,.5))}
-.hover-card-title{margin:0;padding-bottom:7px;border-bottom:1px solid rgba(100,73,46,.35);text-align:center;text-wrap:balance;font:italic 600 20px/1.15 var(--police-texte);color:var(--bordeaux)}
-.hover-card-origin{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px 14px}
-.hover-card-origin-item{display:inline-flex;align-items:center;gap:6px;font:600 16px/1.15 var(--police-texte);color:var(--encre)}
-.hover-card-origin .picto{width:34px;height:34px;margin:0}
-.hover-card-fame{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 16px;padding:6px 0;border-block:1px solid rgba(100,73,46,.3)}
-.hover-card-fame .rep-stars{font-size:20px;text-shadow:none}
-.hover-card-fame .rep-stars-empty{color:rgba(100,73,46,.45);opacity:1}
-.hover-card-hearts{font-size:15px;letter-spacing:1px;color:rgba(100,73,46,.3)}
-.hover-card-hearts b{font-weight:400;color:#b3271c}
-.hover-card-bonus{display:inline-flex;align-items:center;gap:6px}
-.hover-card-bonus img{width:28px;height:28px;object-fit:contain}
-.hover-card-bonus b{font:700 20px/1 var(--police-titre);color:var(--encre)}
-.hover-card-bonus small{font:italic 500 15px/1 var(--police-texte);color:var(--encre-2)}
-/* Les tags, en plaques : rouge (occupation), vert (équipement), bleu (rôle) ; celui de la mission en or, d'abord. */
-.hover-card-tags{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 5px;margin:0;padding:0;list-style:none}
-.hover-card-tag{padding:4px 15px 5px;clip-path:polygon(9px 0,calc(100% - 9px) 0,100% 50%,calc(100% - 9px) 100%,9px 100%,0 50%);font:600 14px/1.15 var(--police-texte);color:#f6ead2}
-.hover-card-tag--rouge{background:linear-gradient(#8e2b22,#6a1d16)}
-.hover-card-tag--vert{background:linear-gradient(#36643c,#244a2a)}
-.hover-card-tag--bleu{background:linear-gradient(#335689,#223d66)}
-.hover-card-tag.is-mission{background:linear-gradient(#f2d488,#c79a45 55%,#9c7128);font-weight:700;color:#2c1b10}
-.hover-card-kit{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 14px;margin:0;padding-top:9px;border-top:1px solid rgba(100,73,46,.3)}
-.hover-card-kit-item{display:grid;min-width:0}
-.hover-card-kit-item dt{font:700 11px/1.2 var(--police-texte);letter-spacing:.1em;text-transform:uppercase;color:var(--encre-2)}
-.hover-card-kit-item dd{margin:0;font:600 16px/1.2 var(--police-texte);color:var(--encre)}
-.hover-card-schools{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 14px;padding-top:9px;border-top:1px solid rgba(100,73,46,.3)}
-.hover-card-school{display:inline-flex;align-items:center;gap:5px;font:600 15px/1 var(--police-texte);color:var(--encre)}
-.hover-card-school .school-icon{width:32px;height:32px;padding:5px;border-width:1.5px;background:#1f1610}
 
 /* Le choix de l'escouade, d'après la maquette de Chatty (Idan, 2026-11-15 : « Oui, vas-y avec la maquette de Chatty ») :
    sur le panneau des missions assombri, la mission en grand ; à gauche, les mercenaires au camp sur le parchemin de la

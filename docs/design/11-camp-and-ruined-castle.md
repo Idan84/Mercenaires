@@ -134,6 +134,8 @@ Le dortoir fixe la **capacité maximale de mercenaires** hébergés.
   | 5 | 8 | 25 000 | 25 |
   | 6 | 10 | 36 000 | 30 |
 
+- **écran Dortoir** (maquette d'Idan, 2026-11-14) : le fond du niveau de qualité ; à gauche, le parchemin d'Idan (celui de la création du capitaine) : « Dortoir », le nom de la qualité et son niveau, les places occupées et libres avec une barre, le nombre de quartiers du lieutenant ; puis quatre lignes, chacune avec son icône : **Agrandir** (+5 places), **Améliorer** (la qualité suivante ; Renommée, affinité et fatigue dans l'infobulle), **Quartier du lieutenant** (construire, ou le niveau de dortoir requis), chacune avec son prix et sa durée, et **Mes mercenaires** (leur nombre ; ouvre la liste). Un chantier en cours s'affiche et grise les trois lignes de construction ; une ligne trop chère se grise, son prix en rouge. Pas de bouton retour : la barre du bas mène partout. Les icônes sont découpées dans la maquette en attendant celles d'Idan (`assets-src/ui/dortoir-maquette/`). Code : `renderDormitory` (`prototype-web/camp-buildings-ui.js`).
+
 ### Le lieutenant (Idan, 2026-10-25)
 
 Règles validées par Idan ; formules proposées par JC et validées. En jeu : les quartiers (ci-dessus), la promotion (renégociation, refus définitif, affinité), l'aura, l'encart et le cadre, les demandes et le rapport du lendemain (`game-core/lieutenants.js`, `prototype-web/lieutenant-ui.js`, textes `lieutenant-dialogue.json`, constantes `lieutenant.*`).

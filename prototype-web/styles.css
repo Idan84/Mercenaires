@@ -1671,13 +1671,58 @@ body[data-screen="camp"] .camp-scene>.panel .muted{color:#c2b29e}
 .study-teacher-offer .steward-picks{position:absolute;right:0;z-index:5;min-width:240px}
 @media(max-width:640px){.study-row{grid-template-columns:minmax(0,1fr)}.study-actions{justify-content:flex-start}}
 .building-captain select{width:auto;min-width:0;max-width:100%;font:inherit;color:#e9d9c0;background:#201916;border:1px solid #9c7952;border-radius:8px;padding:4px 8px}
-/* Écran Dortoir : le décor en plein écran, le panneau en bas à gauche. */
-body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="dormitory"]{display:flex;align-items:flex-end;min-height:calc(100dvh - 66px - var(--hud-bottom-h) - var(--hud-top-h))}
-.dormitory-panel{width:min(100%,640px);padding:18px 22px 20px;border:1px solid #957652;border-radius:14px;background:rgba(22,17,13,.86);color:#f0e2ca;box-shadow:0 20px 60px #000a}
-.dormitory-panel .eyebrow{margin:14px 0 2px;color:#d3ac76}
-.dormitory-panel h2{margin:0;font:normal 32px Georgia,serif;color:#f4d9a6}
-.dormitory-meta{margin:4px 0 16px;color:#c2b29e;font-size:14px}
-.dormitory-back{padding:6px 12px;font-size:13px}
+/* Écran Dortoir, d'après la maquette d'Idan (2026-11-14) : le décor en plein écran ; à gauche, sous la barre du haut, le
+   parchemin d'Idan (celui de la création du capitaine, coins jamais déformés) : l'état du dortoir, puis quatre lignes.
+   Pas de bouton retour : la barre du bas mène partout. */
+.dormitory-scene{max-width:none;margin:0}
+.dormitory-scene .camp-scene-nav{display:none}
+body[data-screen="camp"][data-camp-scene="dormitory"] [data-camp-scene-panel="dormitory"]{display:flex;align-items:flex-start;min-height:calc(100dvh - 66px - var(--hud-bottom-h) - var(--hud-top-h))}
+/* Le parchemin à gauche de l'écran, comme sur la maquette, hors de la colonne centrale du camp (1 200 px). */
+.dormitory-panel{width:clamp(420px,34vw,600px);max-width:100%;margin-left:calc(-1 * max(0px,(100vw - 1200px) / 2) - 20px + max(16px,2.5vw))}
+.dorm-sheet{--encre:#2c1b10;--encre-2:#5d4429;--bordeaux:#7a1f1c;--police-titre:"Cinzel",Georgia,serif;--police-texte:"EB Garamond",Georgia,serif;
+  --fil-centre:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 2' preserveAspectRatio='none'%3E%3ClinearGradient id='g'%3E%3Cstop offset='0' stop-opacity='0'/%3E%3Cstop offset='.5'/%3E%3Cstop offset='1' stop-opacity='0'/%3E%3C/linearGradient%3E%3Cpolygon points='0,1 50,0 100,1 50,2' fill='url(%23g)'/%3E%3C/svg%3E");
+  position:relative;isolation:isolate;display:grid;gap:clamp(5px,.9vh,9px);box-sizing:border-box;padding:clamp(26px,4vh,40px) clamp(28px,2.4vw,40px);color:var(--encre);font:500 17px/1.3 var(--police-texte)}
+.dorm-sheet::before{content:"";position:absolute;inset:0;z-index:-1;box-sizing:border-box;border-style:solid;border-width:80px;border-image:url("assets/creation/parchemin.webp") 180 fill / 80px stretch;filter:drop-shadow(0 20px 28px rgba(0,0,0,.65))}
+.dorm-eyebrow{margin:0;text-align:center;font:700 15px/1 var(--police-titre);letter-spacing:.2em;text-transform:uppercase;color:var(--encre-2)}
+/* Le filet de la charte, un losange au milieu. */
+.dorm-rule{display:block;height:9px;margin:0 8%;background:linear-gradient(45deg,transparent 42%,var(--encre-2) 42% 58%,transparent 58%) center/7px 7px no-repeat,linear-gradient(-45deg,transparent 42%,var(--encre-2) 42% 58%,transparent 58%) center/7px 7px no-repeat;opacity:.85}
+.dorm-rule::before{content:"";display:block;height:2px;margin-top:3.5px;background:var(--encre-2);-webkit-mask:var(--fil-centre) center/100% 100%;mask:var(--fil-centre) center/100% 100%}
+.dorm-sheet h2{margin:4px 0 0;font:700 clamp(28px,3.6vh,36px)/1.05 var(--police-texte);color:var(--encre);text-wrap:balance}
+.dorm-level{margin:-4px 0 4px;font:italic 500 19px/1.2 var(--police-texte);color:var(--encre-2)}
+.dorm-places{display:flex;align-items:center;gap:10px}
+.dorm-places strong{font:700 21px/1 var(--police-texte);font-variant-numeric:lining-nums tabular-nums}
+.dorm-places span{margin-left:auto;font-size:16px;color:var(--encre-2)}
+.dorm-icon--lit{width:42px;height:auto}
+.dorm-icon--chevrons{width:24px;height:auto}
+/* La barre des places : un fourreau aux bouts en pointe, rempli de bordeaux. */
+.dorm-bar{--pointe:polygon(9px 0,calc(100% - 9px) 0,100% 50%,calc(100% - 9px) 100%,9px 100%,0 50%);position:relative;height:20px;padding:3px;box-sizing:border-box;clip-path:var(--pointe);background:linear-gradient(#b08d5d,#7d5d33 55%,#a7834f)}
+.dorm-bar::before{content:"";position:absolute;inset:3px;clip-path:var(--pointe);background:#e6d6b5}
+.dorm-bar i{position:relative;display:block;height:100%;max-width:100%;clip-path:var(--pointe);background:linear-gradient(#a33a2c,#6e1712 60%,#83241b)}
+.dorm-quarters{display:flex;align-items:center;gap:12px;margin:2px 0 0}
+.dorm-work{display:flex;align-items:center;gap:8px;margin:0;font-style:italic;color:var(--bordeaux)}
+.dorm-hourglass{flex:none;width:18px;height:18px}
+/* Les lignes : une plaque de parchemin plus clair, l'icône, le titre et sa précision, l'or et les jours. */
+.dorm-rows{display:grid;gap:clamp(6px,1vh,10px);margin-top:2px}
+.dorm-row{all:unset;box-sizing:border-box;cursor:pointer;display:grid;grid-template-columns:84px minmax(0,1fr) auto auto;align-items:center;gap:0 10px;min-height:clamp(56px,7.6vh,84px);padding:4px 12px 4px 6px;
+  border:1px solid rgba(93,68,41,.55);border-radius:10px;background:linear-gradient(rgba(255,250,236,.55),rgba(232,214,180,.35));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 0 -2px 6px rgba(120,86,42,.18),0 2px 5px rgba(60,40,20,.28);color:var(--encre);transition:transform .12s,box-shadow .12s,filter .12s}
+.dorm-row:hover:not(:disabled){transform:translateY(-1px);box-shadow:inset 0 1px 0 rgba(255,255,255,.6),inset 0 -2px 6px rgba(120,86,42,.18),0 4px 10px rgba(60,40,20,.35),0 0 0 2px rgba(201,164,97,.7)}
+.dorm-row:focus-visible{outline:2px solid #b0843e;outline-offset:2px}
+.dorm-row:disabled{cursor:default}
+.dorm-row:disabled .dorm-row-icon,.dorm-row:disabled .dorm-row-text,.dorm-row:disabled .dorm-days{opacity:.55;filter:grayscale(.7)}
+.dorm-row-icon{display:grid;place-items:center;height:clamp(48px,6.6vh,72px);padding-right:10px;border-right:1px solid rgba(93,68,41,.4)}
+.dorm-row-icon .dorm-icon{max-width:76px;max-height:clamp(44px,6.2vh,70px);filter:drop-shadow(0 2px 2px rgba(60,40,20,.35))}
+.dorm-row-text{display:grid;gap:2px;min-width:0}
+.dorm-row-text b{display:flex;align-items:center;gap:8px;font:700 clamp(18px,2.2vh,21px)/1.1 var(--police-texte);white-space:nowrap}
+.dorm-row-text small{font-size:16px;color:var(--encre-2)}
+.dorm-info{display:inline-grid;place-items:center;width:17px;height:17px;border:1.5px solid var(--encre-2);border-radius:50%;font:italic 700 12px/1 Georgia,serif;color:var(--encre-2);cursor:help}
+.dorm-cost,.dorm-days{display:inline-flex;align-items:center;gap:5px;font:600 17px/1 var(--police-texte);font-variant-numeric:lining-nums tabular-nums;white-space:nowrap}
+.dorm-cost img{width:24px;height:24px;object-fit:contain;filter:drop-shadow(0 1px 1px rgba(60,40,20,.45))}
+.dorm-cost.is-short{color:var(--bordeaux)}
+.dorm-days{padding-left:10px;border-left:1px solid rgba(93,68,41,.4)}
+.dorm-chevron{grid-column:3/5;justify-self:end;font:700 30px/1 var(--police-texte);color:var(--encre)}
+.dorm-sheet .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (prefers-reduced-motion:reduce){.dorm-row{transition:none}}
 /* Le Défi du capitaine (Idan, 2026-11-09) : « Défier » sous le portrait de la fiche ; la fenêtre du verdict. */
 .sheet-duel-btn{display:block;width:100%;margin-top:8px;padding:6px 10px;font-size:14px}
 .duel-verdict-portrait{width:200px;margin:4px auto 0}

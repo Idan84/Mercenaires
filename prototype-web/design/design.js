@@ -61,7 +61,7 @@ function renderNav(){
       .concat((state.coverage?.results||[]).map(r=>({id:AvatarsLab.anchor(r.culture),label:r.culture,
         sub:r.people+" · "+(r.summary.toProduce?r.summary.toProduce+" à produire":"tout vert")})))
     : state.mode==="images"
-    ? (state.images?.summary||[]).map(s=>({id:ImagesLab.anchor(s.key),label:s.title,sub:s.missing?s.missing+" / "+s.total+" manquantes":"complet"}))
+    ? ImagesLab.catalogueNav(state.images).concat((state.images?.summary||[]).map(s=>({id:ImagesLab.anchor(s.key),label:s.title,sub:s.missing?s.missing+" / "+s.total+" manquantes":"complet"})))
     : LABS[state.mode]
     ? (state[state.mode]?LABS[state.mode].module().nav(state[state.mode]):[])
     : state.tables.tables.map(x=>({id:x.file,label:labelTable(x.name),sub:x.rows+" lignes"}));

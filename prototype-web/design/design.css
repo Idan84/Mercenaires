@@ -116,3 +116,17 @@ details.cov-family{margin-top:10px}details.cov-family summary{cursor:pointer;fon
 .charte-frame figcaption{font-weight:750;font-size:.85rem;color:#4d463e}
 .charte-frame iframe{width:100%;max-width:980px;border:1px solid #e1d9cc;border-radius:10px;background:#120d0a}
 .charte-rules{max-width:78ch}
+/* Onglet Images : le catalogue (images-lab.js, data/reference/images.json) */
+.cat-rules{margin:0 0 12px;padding-left:20px;color:#4d463e;font-size:.88rem;display:grid;gap:4px}
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:12px;align-items:start}
+.cat-card{background:#fff;border:1px solid #e1d9cc;border-radius:10px;padding:12px 14px;display:grid;gap:10px;min-width:0}
+.cat-card header{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.cat-card h4{margin:0;font-size:1rem}
+.cat-card header small{color:#81796e;white-space:nowrap}
+.cat-thumbs{display:flex;flex-wrap:wrap;gap:6px;padding:8px;background:#1d1915;border-radius:8px}
+.cat-thumbs img{height:56px;max-width:140px;object-fit:contain}
+.cat-card dl{margin:0;display:grid;gap:5px}
+.cat-row{display:grid;grid-template-columns:110px minmax(0,1fr);gap:8px;font-size:.84rem;line-height:1.35}
+.cat-row dt{color:#81796e;font-weight:650}
+.cat-row dd{margin:0;color:#2b2722;overflow-wrap:anywhere}
+.cat-coverage-title{margin:26px 0 6px}

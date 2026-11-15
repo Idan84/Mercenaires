@@ -15,13 +15,13 @@
 //   copiées du jeu, les couleurs et les polices branchées sur les jetons ;
 // - charte/components/Cultures|FicheAuSurvol/preview.html (générés ici) ; les autres aperçus et les README sont écrits
 //   à la main.
-// Les images restent dans prototype-web/assets/ : sur la page, ce sont des fichiers envoyés une fois (leurs numéros sont
-// dans charte/publication.json, avec l'adresse de la page).
+// Les images restent dans prototype-web/assets/ ; --out les copie dans les fichiers de la page (son adresse est dans
+// charte/publication.json).
 //
 // Usage : node scripts/build-charte.js                (écrit les fichiers générés de charte/)
 //         node scripts/build-charte.js --check        (vérifie qu'ils sont à jour, pour les tests)
-//         node scripts/build-charte.js --out <dossier> (prépare en plus <dossier>/project/ pour publier la page, et
-//                                                       <dossier>/a-envoyer.json : les images pas encore envoyées)
+//         node scripts/build-charte.js --out <dossier> (prépare en plus <dossier>/project/ pour publier la page, images
+//                                                       comprises, et <dossier>/fichiers.json : la liste à publier)
 
 const fs = require("fs");
 const path = require("path");
@@ -414,28 +414,30 @@ function main(argv) {
   if (outIndex >= 0) assemble(path.resolve(argv[outIndex + 1]), assets);
 }
 
-// Prépare <out>/project/ (la page) : les fichiers de charte/ (sauf assets.json et publication.json), les {{asset:…}}
-// remplacés par l'adresse des images envoyées, et l'index design-system.json. <out>/a-envoyer.json liste les images à
-// envoyer (pas encore dans publication.json), leur chemin local (les SVG en data URI sont écrits dans <out>/svg/).
+// Prépare <out>/project/ (la page) : les fichiers de charte/ (sauf assets.json et publication.json), les images copiées
+// dans project/assets/<famille>/ (fichiers de la page, servis comme ses textes : Idan, 2026-11-15, les images envoyées
+// à part dans le stock de la page ne se chargeaient pas chez lui), les {{asset:…}} des aperçus remplacés par leur chemin
+// depuis l'aperçu (../../assets/…), et l'index design-system.json. <out>/fichiers.json : la liste à publier.
 function assemble(out, assets) {
   const pubFile = path.join(CHARTE, "publication.json");
-  const pub = fs.existsSync(pubFile) ? JSON.parse(fs.readFileSync(pubFile, "utf8")) : {uploads: {}};
+  const pub = fs.existsSync(pubFile) ? JSON.parse(fs.readFileSync(pubFile, "utf8")) : {};
   const project = path.join(out, "project");
   fs.rmSync(out, {recursive: true, force: true});
-  const toSend = [];
+  const written = [];
+  const known = new Set();
   for (const g of assets) for (const f of g.files) {
-    const key = `${g.name}/${f.name}`;
-    let local = path.join(ROOT, f.source);
-    if (f.dataUri) { local = path.join(out, "svg", f.name); fs.mkdirSync(path.dirname(local), {recursive: true}); fs.writeFileSync(local, assetBytes(f)); }
-    if (!pub.uploads[key]) toSend.push({key, file: local});
+    const rel = `assets/${g.name}/${f.name}`;
+    fs.mkdirSync(path.join(project, "assets", g.name), {recursive: true});
+    fs.writeFileSync(path.join(project, rel), assetBytes(f));
+    written.push(`project/${rel}`);
+    known.add(`${g.name}/${f.name}`);
   }
   const walk = dir => fs.readdirSync(dir, {withFileTypes: true}).flatMap(e => e.isDirectory() ? walk(path.join(dir, e.name)) : [path.join(dir, e.name)]);
-  const missing = new Set();
+  // Depuis un aperçu (project/components/<Comp>/preview.html), et pour bundle.css que la page lit à l'adresse de l'aperçu.
   const resolve = text => text.replace(/\{\{asset:([^}]+)\}\}/g, (_, key) => {
-    if (!pub.uploads[key]) { missing.add(key); return ""; }
-    return `/_blob/${pub.uploads[key].id}`;
+    if (!known.has(key)) throw new Error(`Image hors de la charte : ${key}`);
+    return "../../assets/" + key.split("/").map(encodeURIComponent).join("/");
   });
-  const written = [];
   for (const abs of walk(CHARTE)) {
     const rel = path.relative(CHARTE, abs);
     if (["assets.json", "publication.json"].includes(rel)) continue;
@@ -445,18 +447,13 @@ function assemble(out, assets) {
     written.push(`project/${rel}`);
   }
   const now = new Date().toISOString().replace(/\.\d+Z$/, "Z");
-  const assetGroups = Object.fromEntries(assets.map(g => [g.name, {name: g.name, tile: g.tile, order: g.files.map(f => f.name),
-    files: Object.fromEntries(g.files.filter(f => pub.uploads[`${g.name}/${f.name}`]).map(f => {
-      const up = pub.uploads[`${g.name}/${f.name}`];
-      return [f.name, {name: f.name, blob: up.id, size: assetBytes(f).length, type: MIME[path.extname(f.name)]}];
-    }))}]));
+  const assetGroups = Object.fromEntries(assets.map(g => [g.name, {name: g.name, tile: g.tile, order: g.files.map(f => f.name)}]));
   const index = {v: 3, layout: "files", createdOnFiles: pub.createdOnFiles || {v: 1, at: now}, title: "Charte Blood & Wages",
     namespace: "BloodWages", libraries: [], sections: {}, groups: assets.map(g => g.name), assetGroups, blobs: {}, docs: {sections: []},
-    lastChange: {by: "Idan", at: now, via: "Claude Code", note: pub.note || "Charte, étape 1 : ce qui est déjà validé, rassemblé."}};
+    lastChange: {by: "Idan", at: now, via: "Claude Code", note: process.env.CHARTE_NOTE || "Charte : ce qui est déjà validé, rassemblé."}};
   fs.writeFileSync(path.join(project, "design-system.json"), json(index));
-  fs.writeFileSync(path.join(out, "a-envoyer.json"), json(toSend));
   fs.writeFileSync(path.join(out, "fichiers.json"), json(Object.fromEntries(written.map(p => [p, p]))));
-  console.log(`${out} : ${written.length} fichiers + index ; ${toSend.length} images à envoyer${missing.size ? ` ; ${missing.size} images manquantes dans les aperçus` : ""}`);
+  console.log(`${out} : ${written.length} fichiers + index`);
 }
 
 if (require.main === module) main(process.argv.slice(2));

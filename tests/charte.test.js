@@ -47,9 +47,9 @@ for (const row of cultureColors) {
 }
 assert.equal(tokens.color.tokens.filter(token => token.name.startsWith("culture-")).length, cultureColors.length * 3);
 
-// 4. Les images : chaque fichier source existe, et chacune est envoyée sur la page (charte/publication.json).
+// 4. Les images : chaque fichier source existe (--out les copie dans les fichiers de la page).
 const assets = readJson("assets.json");
-const publication = readJson("publication.json");
+assert.match(readJson("publication.json").url, /^https:\/\/claude\.ai\/artifact\//);
 let count = 0;
 for (const group of assets.groups) {
   assert.ok(fs.existsSync(path.join(CHARTE, "assets", group.name, "README.md")), `${group.name} : un README`);
@@ -60,8 +60,6 @@ for (const group of assets.groups) {
       assert.ok(fs.existsSync(abs), file.source);
       assert.equal(fs.statSync(abs).size, file.size, `${file.source} : taille`);
     }
-    assert.match(publication.uploads[`${group.name}/${file.name}`]?.id || "", /^[0-9a-f]{32}$/,
-      `${group.name}/${file.name} pas encore envoyée sur la page (node scripts/build-charte.js --out <dossier>)`);
   }
 }
 
